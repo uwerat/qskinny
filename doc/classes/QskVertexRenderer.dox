@@ -1,0 +1,12 @@
+/*!
+    \headerfile QskVertexRenderer.h
+    \brief A vertex renderer for creating vertex lists for monochrome shapes
+ */
+
+class QskVertexRenderer
+{
+/*!
+
+*/
+};
+

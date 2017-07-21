@@ -1,0 +1,13 @@
+INTERFACE
+    CLASS: QskRangeControl
+    BASE:  QskControl
+
+    QMLCLASS: RangeControl
+    QMLBASE: Control
+
+    HEADER: QskRangeControl.h
+
+    DESCRIPTION
+        \brief A push button
+    END
+END

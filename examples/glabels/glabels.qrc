@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/qml">
+        <file>glabels.qml</file>
+    </qresource>
+</RCC>

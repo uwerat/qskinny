@@ -1,0 +1,14 @@
+/*! 
+    \headerfile QskPlainTextRenderer.h
+    \brief A renderer for creating a scene graph subtree from plain text content
+    \sa QskTextRenderer
+ */
+
+class QskPlainTextRenderer
+{
+/*!
+
+*/
+};
+
+

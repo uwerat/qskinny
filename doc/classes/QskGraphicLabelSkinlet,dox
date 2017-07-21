@@ -1,0 +1,11 @@
+/*!
+    \headerfile QskGraphicLabelSkin.h
+    \brief Base class of all skins for QskGraphicLabel
+ */
+
+class QskGraphicLabelSkin
+{
+/*!
+
+*/
+};

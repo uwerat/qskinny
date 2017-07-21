@@ -1,0 +1,13 @@
+/*! 
+    \headerfile QskGraphicProvider.h
+
+    \brief QskGraphicProvider loads QskGraphic from a source URL.
+    \sa QskGraphicImageProvider, Qsk::addGraphicProvider
+ */
+
+class QskGraphicProvider
+{
+/*!
+
+*/
+};

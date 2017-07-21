@@ -1,0 +1,11 @@
+/*! 
+    \headerfile QskGraphicPaintEngine.h
+    \brief The paint engine for QskGraphic
+*/
+
+class QskGraphicPaintEngine
+{
+/*!
+
+*/
+};

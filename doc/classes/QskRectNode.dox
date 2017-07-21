@@ -1,0 +1,12 @@
+/*! 
+    \headerfile QskRectNode.h
+    \brief A scene graph node for rounded rectangles with an optional border
+ */
+
+class QskRectNode
+{
+/*!
+
+*/
+};
+

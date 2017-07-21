@@ -1,0 +1,11 @@
+/*! 
+    \headerfile QskTextOptions.h
+    \brief Text attributes that can be set from QML
+ */
+
+class QskTextOptions
+{
+/*!
+
+*/
+};

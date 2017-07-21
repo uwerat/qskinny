@@ -1,0 +1,11 @@
+/*!
+    \headerfile QskLayoutItem.h
+    \brief A QGridLayoutItem tailored for Qsk layouts
+ */
+
+class QskLayoutItem
+{
+/*!
+
+*/
+};

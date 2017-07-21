@@ -1,0 +1,14 @@
+INTERFACE
+    CLASS: QskMessageBox
+    BASE:  QskDialog
+
+    QMLCLASS: MessageBox
+    QMLBASE: Dialog
+    
+    HEADER: QskMessageBox.h
+        
+    DESCRIPTION
+		\brief A dialog displaying a message
+		\sa QskMessage
+    END 
+END     

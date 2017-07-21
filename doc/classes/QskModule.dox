@@ -1,0 +1,10 @@
+/*! 
+    \headerfile QskModule.h
+    \brief A collection of global methods of the Qsk module.
+ */
+
+namespace QskModule
+{
+/*!
+*/
+}

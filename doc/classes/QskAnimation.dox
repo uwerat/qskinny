@@ -1,0 +1,12 @@
+/*!
+    \headerfile QskAnimation.h
+    \brief Yet another system for animations
+ */
+
+class QskAnimation
+{
+/*!
+
+*/
+};
+

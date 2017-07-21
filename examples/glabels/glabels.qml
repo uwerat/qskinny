@@ -1,0 +1,43 @@
+import QtQuick 2.0
+import Skinny 1.0 as Qsk
+import "qrc:/qml"
+
+Qsk.Window
+{
+    visible: true
+    width: 600
+    height: 600
+
+    color: "Beige"
+
+    Qsk.LinearBox
+    {
+        orientation: Qt.Horizontal
+        dimension: 3
+
+        margins: 10
+        spacing: 20
+
+        Repeater
+        {
+            model: [
+                "image://shapes/rectangle/royalblue",
+                "image://shapes/triangleright/thistle",
+                "image://shapes/ellipse/khaki",
+                "image://shapes/ring/sandybrown",
+                "image://shapes/star/darkviolet",
+                "image://shapes/hexagon/darkslategray"
+            ]
+
+            Qsk.GraphicLabel
+            {
+                source: modelData
+
+                sourceSize.width: 100 // width according to aspect ratio
+                fillMode: Qsk.GraphicLabel.PreserveAspectFit
+                alignment: Qt.AlignCenter
+                //mirror: true
+            }
+        }
+    }
+}

@@ -1,0 +1,14 @@
+INTERFACE
+    CLASS: QskFocusIndicator
+    BASE:  QskControl
+
+    QMLCLASS: FocusIndicator
+    QMLBASE: Control
+
+    HEADER: QskFocusIndicator.h
+
+    DESCRIPTION
+		\brief An indicator showing the current position of the keyboard focus
+    END
+END 
+

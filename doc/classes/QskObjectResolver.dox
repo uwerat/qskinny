@@ -1,0 +1,11 @@
+/*! 
+    \headerfile QskObjectResolver.h
+    \brief A helper class for resolving properties on the window/item tree
+ */
+
+class QskObjectResolver
+{
+/*!
+
+*/
+};

@@ -1,0 +1,11 @@
+/*!
+    \headerfile QskFrameSkinlet.h
+    \brief Base class of all skinlets for QskFrame
+ */
+
+class QskFrameSkinlet
+{
+/*!
+
+*/
+};

@@ -1,0 +1,11 @@
+/*! 
+    \headerfile QskCorner.h
+    \brief Attributes of a rounded corner that can be used from QML
+ */
+
+class QskCorner
+{
+/*!
+
+*/
+};

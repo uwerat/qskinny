@@ -1,0 +1,11 @@
+/*! 
+    \headerfile QskArcIterator.h
+    \brief A helper class for interpolating an arc with lines
+ */
+
+class QskArcIterator
+{
+/*!
+
+*/
+};

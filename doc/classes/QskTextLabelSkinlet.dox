@@ -1,0 +1,12 @@
+/*!
+    \headerfile QskTextLabelSkinlet.h
+    \brief Base class of all skinlets for QskTextLabel
+ */
+
+class QskTextLabelSkinlet
+{
+/*!
+
+*/
+};
+

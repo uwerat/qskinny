@@ -1,0 +1,45 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * This file may be used under the terms of the QSkinny License, Version 1.0
+ *****************************************************************************/
+
+#ifndef QSK_FUNCTIONS_H
+#define QSK_FUNCTIONS_H
+
+#include "QskGlobal.h"
+
+#include <QMargins>
+#include <QRectF>
+
+QSK_EXPORT qreal qskDpiScaled( qreal value );
+
+QSK_EXPORT QRect qskAlignedRect( const QRect& outerRect,
+    int width, int height, Qt::Alignment alignment );
+
+QSK_EXPORT QRectF qskAlignedRectF( const QRectF& outerRect,
+    qreal width, qreal height, Qt::Alignment alignment );
+
+QSK_EXPORT QRect qskInnerRect( const QRectF& rect );
+
+inline bool qskFuzzyCompare( qreal value1, qreal value2 )
+{
+    if ( qFuzzyIsNull( value1 ) )
+        return qFuzzyIsNull( value2 );
+
+    if ( qFuzzyIsNull( value2 ) )
+        return false;
+
+    return qFuzzyCompare( value1, value2 );
+}
+
+inline QMarginsF qskMargins( const QRectF& rect, const QRectF& innerRect )
+{
+    return QMarginsF(
+        innerRect.left() - rect.left(),
+        innerRect.top() - rect.top(),
+        rect.right() - innerRect.right(),
+        rect.bottom() - innerRect.bottom()
+        );
+}
+
+#endif

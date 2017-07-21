@@ -1,0 +1,11 @@
+/*! 
+    \headerfile QskTextureNode.h
+    \brief QSGSimpleTextureNode under control of a QSGTransformNode
+ */
+
+class QskTextureNode
+{
+/*!
+
+*/
+};

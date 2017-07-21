@@ -1,0 +1,12 @@
+/*!
+\page qsklayouts Layouts
+
+- QskResizable
+- QskSizePolicy
+- QskControl::sizeHint
+- QskLayout
+- QskGridBox
+- QskLinearBox
+- QskStackBox
+
+*/

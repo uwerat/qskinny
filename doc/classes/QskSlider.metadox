@@ -1,0 +1,13 @@
+INTERFACE
+    CLASS: QskSlider
+    BASE:  QskRangeControl
+
+    QMLCLASS: Slider
+    QMLBASE: RangeControl
+
+    HEADER: QskSlider.h
+
+    DESCRIPTION
+        \brief A slider
+    END       
+END 

@@ -1,0 +1,17 @@
+INTERFACE
+    CLASS: QskSimpleListBox
+    BASE:  QskListView
+    
+    QMLCLASS: SimpleListBox
+    QMLBASE: ListView
+    
+    HEADER: QskSimpleListBox.h
+        
+    DESCRIPTION
+		\brief A lightweight list box made from one QObject only
+
+		\note Implementation/Design is incomplete and will be totally
+              different in the final version.
+    END 
+END     
+

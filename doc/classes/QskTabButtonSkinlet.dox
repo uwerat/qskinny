@@ -1,0 +1,12 @@
+/*!
+    \headerfile QskTabButtonSkinlet.h
+    \brief Base class of all skinlets for QskTabButton
+ */
+
+class QskTabButtonSkinlet
+{
+/*!
+
+*/
+};
+

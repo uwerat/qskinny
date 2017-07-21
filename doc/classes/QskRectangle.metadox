@@ -1,0 +1,13 @@
+INTERFACE
+    CLASS: QskRectangle
+    BASE:  QskControl
+
+    QMLCLASS: Rectangle
+    QMLBASE: Control
+
+    HEADER: QskRectangle.h
+
+    DESCRIPTION
+		\brief An item displaying a filled rectangle with optional borders
+    END
+END

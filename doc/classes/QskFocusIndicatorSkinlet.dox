@@ -1,0 +1,12 @@
+/*!
+    \headerfile QskFocusIndicatorSkinlet.h
+    \brief Base class of all skinlets for QskFocusIndicator
+ */
+
+class QskFocusIndicatorSkinlet
+{
+/*!
+
+*/
+};
+

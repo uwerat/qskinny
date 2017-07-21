@@ -1,0 +1,7 @@
+Makefile
+obj
+moc
+rcc
+lib
+bin
+qvg

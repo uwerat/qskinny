@@ -1,0 +1,72 @@
+/*!
+  \mainpage Introduction
+
+The (Q)Skinny library contains a set of lightweight Qt Quick Controls.
+It is implemented to be 100% usable in C++, but can be used from C++ and/or QML
+application code. Being "skinny", the framework is intended to be both lightweight
+and skinnable.
+
+The framework separates concerns between the API and logic of the controls
+themselves, the styling of these controls, and the delegated rendering of the
+controls to the screen.
+
+@dot
+digraph skinny {
+  table [ shape=record, label="{
+    QSkinny: key functionality and classes |
+    {
+        { Controls | <Controls>API, logic and layout of UI } |
+        { Rendering | <Rendering>Delegation of rendering commands } |
+        { Styling | <Styling>Visual configuration }
+    }
+  }"];
+
+  QskControl [ URL="\ref QskControl"]
+  QskLayout [ URL="\ref QskLayout"]
+  QskSkinlet [ URL="\ref QskSkinlet"]
+  QskGraphic [ URL="\ref QskGraphic"]
+  QskSkin [ URL="\ref QskSkin"]
+  QskSkinnable [ URL="\ref QskSkinnable"]
+
+  table:Controls:s -> QskControl
+  table:Controls:s -> QskLayout
+
+  table:Rendering:s -> QskSkinlet
+  table:Rendering:s -> QskGraphic
+
+  table:Styling:s -> QskSkin
+  table:Styling:s -> QskSkinnable
+}
+@enddot
+
+Besides establishing a more complete C++ API for Qt Quick application development,
+the QSkinny project offers:
+
+- Special attention to resource requirements (i.e. memory consumption and
+  start-up performance), with a number of \ref qskoptimizations "optimizations"
+  enabled by default
+- A \ref qsklayouts "layout system" comparable to the one available for \ref QWidget "Qt Widgets"
+- A way to \ref qskskinning "skin" (theme/style) applications entirely from C++,
+  including built-in support for CSS-like inheritance and \ref qskanimations "animated transitions"
+- Better support for \ref qskvectorgraphics "vector image formats" to aid in
+  scalable UI creation
+
+Doing the implementation in C++ allows to make use of the \ref qsknodes "scene graph"
+classes. Building controls from scene graph nodes allows for a lighter implementation
+than found with stacking "heavier" objects like QObject or QQuickItem.
+
+\note The current selection of implemented controls is driven by the needs of specific
+projects and therefore may feel a bit random. Conceptually, though, any type of
+control fits into QSkinny, as long as it is usable from C++ (as opposed to only
+QML).
+
+  \section license License
+
+  QSkinny is distributed under the terms of the QSkinny license.
+
+  \section platforms Platforms
+
+  QSkinny 0.0.1 might be source code compatible in all environments where you find
+  Qt >= 5.6. Due to its use of private Qt headers, it might be necessary to
+  recompile QSkinny for different Qt versions.
+*/

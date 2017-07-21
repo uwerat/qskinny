@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/qml">
+        <file>lineedit.qml</file>
+    </qresource>
+</RCC>

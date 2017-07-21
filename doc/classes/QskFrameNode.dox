@@ -1,0 +1,13 @@
+/*! 
+    \headerfile QskFrameNode.h
+    \brief A geometry node for displaying a frame
+
+    \sa QskVertexRendererColored
+*/
+
+class QskFrameNode
+{
+/*!
+
+*/
+};

@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/qml">
+        <file>frames.qml</file>
+    </qresource>
+</RCC>
