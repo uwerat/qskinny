@@ -51,7 +51,7 @@ void ButtonBox::insertButton( const QColor& color, SkinnyShapeFactory::Shape sha
     button->setObjectName( QString( "Shape %1" ).arg( int( shape ) ) );
     button->setGraphic( graphic );
     button->setMetric( QskPushButton::Panel | QskAspect::Border, 3 );
-    button->setCorner( QskCorner( Qt::RelativeSize, 100 ) );
+    //button->setCorner( QskCorner( Qt::RelativeSize, 100 ) );
     button->setSizePolicy( QskSizePolicy::MinimumExpanding,
         QskSizePolicy::MinimumExpanding );
 
