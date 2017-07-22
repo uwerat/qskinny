@@ -1,7 +1,9 @@
 Makefile
+.qmake.stash
 obj
 moc
 rcc
 lib
 bin
 qvg
+*.swp

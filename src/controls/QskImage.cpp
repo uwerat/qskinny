@@ -172,11 +172,6 @@ QSGNode* QskImage::updatePaintNode( QSGNode* oldNode, UpdatePaintNodeData* data 
         if ( !isVisible() )
         {
             m_data->dirtyUpdate = true;
-
-#if 0
-            delete oldNode;
-            oldNode = nullptr;
-#endif
             return oldNode;
         }
     }

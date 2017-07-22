@@ -205,27 +205,7 @@ void QskLayout::adjustItemAt( int index )
 void QskLayout::updateLayout()
 {
     if ( m_data->isActive )
-    {
-#if 0
-        // the list of items to be polished is unordered,
-        // while setting geometries should always be done top down
-        // to avoid unnecessary ( potentially heavy ) operations
-
-        QQuickItem* item = this;
-
-        while ( QQuickItem* item = item->parentItem() )
-        {
-            if ( parent->isPolishScheduled() )
-            {
-                // putting parent at the end of the list
-                ...
-                return;
-            }
-        }
-#endif
-
         engine().setGeometries( alignedLayoutRect( layoutRect() ) );
-    }
 }
 
 QRectF QskLayout::alignedLayoutRect( const QRectF& rect ) const
