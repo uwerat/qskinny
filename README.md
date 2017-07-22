@@ -3,7 +3,7 @@ QSkinny
 
 The (Q)Skinny library contains a set of lightweight Qt Quick Controls.
 
-It is implemented to be 100% usable in C++, but can be used from C++ and/or QML
+It is implemented to 100% in C++, but can be used from C++ and/or QML
 application code. 
 
 Doing the implementation in C++ allows to make use of the "scene graph"
