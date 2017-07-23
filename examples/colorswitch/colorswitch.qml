@@ -6,14 +6,14 @@ Main
 {
     id: main
 
-    property var accentColors: [ "red", "lightgreen", "#66336699" ]
-
-    skin: listBox.entries[ listBox.selectedRow ]
     inputPanel: embeddedInputPanel
+
+    property var accentColors: [ "red", "lightgreen", "#66336699" ]
 
     Theme
     {
         accent: accentColors[ tabBar.currentIndex < 0 ? 0 : tabBar.currentIndex ]
+		skin: listBox.entries[ listBox.selectedRow ]
     }
 
     Window
