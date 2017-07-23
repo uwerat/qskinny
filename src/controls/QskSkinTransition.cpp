@@ -139,13 +139,14 @@ namespace
     public:         
         AnimatorGroup()
         {
-            QskAnimator::addAdvanceHandler( this,
-                SLOT( notify( QQuickWindow* ) ) );
         }
         
         void start()
         {
-            for ( auto it : m_map )
+            m_notifyConnection = QskAnimator::addAdvanceHandler( this,
+                SLOT( notify( QQuickWindow* ) ) );
+
+            for ( auto& it : m_map )
                 it.second.start();
         }
 
@@ -156,6 +157,8 @@ namespace
 
         void reset()
         {
+            disconnect( m_notifyConnection );
+
             m_map.clear();
             m_updateInfos.clear();
         }
@@ -310,7 +313,6 @@ namespace
 
             animator.setControl( nullptr );
             animator.setWindow( control->window() );
-            animator.start();
         }
 
         inline void storeUpdateInfo( QskControl* control, QskAspect::Aspect aspect )
@@ -333,6 +335,8 @@ namespace
 
         std::map< QskAspect::Aspect, QskHintAnimator > m_map;
         std::vector< UpdateInfo > m_updateInfos; // vector: for fast iteration
+
+         QMetaObject::Connection m_notifyConnection;
     };
 }
 
