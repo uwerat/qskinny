@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/qml">
-        <file>gallery.qml</file>
+        <file>colorswitch.qml</file>
     </qresource>
 </RCC>

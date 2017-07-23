@@ -106,7 +106,7 @@ int main( int argc, char* argv[] )
     SkinnyShortcut::enable( SkinnyShortcut::Quit |
         SkinnyShortcut::DebugShortcuts );
 
-    QQmlApplicationEngine engine( QUrl( "qrc:/qml/gallery.qml" ) );
+    QQmlApplicationEngine engine( QUrl( "qrc:/qml/colorswitch.qml" ) );
 
     return app.exec();
 }

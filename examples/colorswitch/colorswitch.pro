@@ -1,9 +1,9 @@
 include( $${PWD}/../examples.pri )
 
-TARGET = gallery
+TARGET = colorswitch
 
 RESOURCES += \
-    gallery.qrc
+    colorswitch.qrc
 
 SOURCES += \
     main.cpp

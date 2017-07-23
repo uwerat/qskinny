@@ -17,8 +17,8 @@ SUBDIRS += \
 # qml
 SUBDIRS += \
     buttons \
+    colorswitch \
     frames \
-    gallery \
     gbenchmark \
     glabels \
     lineedit \
