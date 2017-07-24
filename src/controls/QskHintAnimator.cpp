@@ -9,10 +9,27 @@
 #include "QskEvent.h"
 
 #include <QObject>
+#include <QThread>
 
 #include <map>
 #include <vector>
 #include <algorithm>
+
+static inline bool qskCheckReceiverThread( const QObject *receiver )
+{
+    /*
+        QskInputPanelSkinlet changes the skin state, what leads to
+        sending events from the wrong thread. Until we have fixed it
+        let's block sending the event to avoid running into assertions
+        in QCoreApplication::sendEvent
+     */
+
+    const QThread *thread = receiver->thread();
+    if ( thread == nullptr )
+        return true;
+
+    return ( thread == QThread::currentThread() );
+}   
 
 static inline QVariant qskAdjustedValue(
     QskAspect::Aspect aspect, const QVariant& value )
@@ -168,8 +185,11 @@ void QskHintAnimatorTable::start( QskControl* control,
 
     animator.start();
 
-    QskAnimatorEvent event( aspect, QskAnimatorEvent::Started );
-    QCoreApplication::sendEvent( control, &event );
+    if ( qskCheckReceiverThread( control ) )
+    {
+        QskAnimatorEvent event( aspect, QskAnimatorEvent::Started );
+        QCoreApplication::sendEvent( control, &event );
+    }
 }
 
 const QskHintAnimator* QskHintAnimatorTable::animator( QskAspect::Aspect aspect ) const
@@ -217,8 +237,11 @@ bool QskHintAnimatorTable::cleanup()
 
             if ( control )
             {
-                QskAnimatorEvent event( aspect, QskAnimatorEvent::Terminated );
-                QCoreApplication::sendEvent( control, &event );
+                if ( qskCheckReceiverThread( control ) )
+                {
+                    QskAnimatorEvent event( aspect, QskAnimatorEvent::Terminated );
+                    QCoreApplication::sendEvent( control, &event );
+                }
             }
         }
         else
