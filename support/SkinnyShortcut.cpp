@@ -16,6 +16,7 @@
 #include <QDebug>
 
 #include <unordered_map>
+#include <iostream>
 
 namespace
 {
@@ -36,7 +37,30 @@ SkinnyShortcut::SkinnyShortcut( QObject* parent ):
 
 void SkinnyShortcut::enable( Types types )
 {
+    using namespace std;
+
     static SkinnyShortcut s_shortcut;
+
+    if ( types & RotateSkin )
+    {
+        QskShortcut::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_S ),
+            &s_shortcut, SLOT(rotateSkin()) );
+        cout << "CTRL-S to change the skin." << endl;
+    }
+
+    if ( types & DebugBackground )
+    {
+        QskShortcut::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_B ),
+            &s_shortcut, SLOT(showBackground()) );
+        cout << "CTRL-B to enable visual debugging modes." << endl;
+    }
+
+    if ( types & DebugStatistics )
+    {
+        QskShortcut::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_K ),
+            &s_shortcut, SLOT(debugStatistics()) );
+        cout << "CTRL-K to dump statistics about the items/nodes being currently used." << endl;
+    }
 
     if ( types & Quit )
     {
@@ -44,25 +68,8 @@ void SkinnyShortcut::enable( Types types )
         // when not being implemented by the platform !!
 
         QskShortcut::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_Q ),
-            QGuiApplication::instance(), SLOT( quit() ) );
-    }
-
-    if ( types & RotateSkin )
-    {
-        QskShortcut::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_S ),
-            &s_shortcut, SLOT( rotateSkin() ) );
-    }
-
-    if ( types & DebugBackground )
-    {
-        QskShortcut::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_B ),
-            &s_shortcut, SLOT( showBackground() ) );
-    }
-
-    if ( types & DebugStatistics )
-    {
-        QskShortcut::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_K ),
-            &s_shortcut, SLOT( debugStatistics() ) );
+            QGuiApplication::instance(), SLOT(quit()) );
+        cout << "CTRL-Q to terminate the application." << endl;
     }
 }
 
@@ -209,8 +216,8 @@ void SkinnyShortcut::debugStatistics()
         int counter[4] = {};
         countItems( w->contentItem(), counter );
 
-        qDebug() << w << "\n\titems:" << counter[0] << "visible" << counter[1]
-            << "\n\tnodes:" << counter[2] << "visible" << counter[3];
+        std::cout << w << "\n\titems:" << counter[0] << "visible" << counter[1]
+            << "\n\tnodes:" << counter[2] << "visible" << counter[3] << std::endl;
     }
 }
 
