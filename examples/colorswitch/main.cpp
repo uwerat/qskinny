@@ -11,6 +11,7 @@
 #include <QskModule.h>
 #include <QskObjectCounter.h>
 
+#include <QtQml>
 #include <QQmlApplicationEngine>
 #include <QGuiApplication>
 
