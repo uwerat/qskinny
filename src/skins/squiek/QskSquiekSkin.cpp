@@ -19,7 +19,6 @@
 #include <QskScrollView.h>
 #include <QskListView.h>
 #include <QskSubWindow.h>
-#include <QskLineEdit.h>
 
 #include <QskAspect.h>
 #include <QskNamespace.h>
@@ -156,7 +155,6 @@ void QskSquiekSkin::initHints()
     initTabBarHints();
     initTabViewHints();
     initInputPanelHints();
-    initLineEditHints();
     initScrollViewHints();
     initListViewHints();
     initSubWindowHints();
@@ -477,20 +475,6 @@ void QskSquiekSkin::initInputPanelHints()
     // glyph
     setColor( Q::KeyGlyph, pal.themeForeground );
     setColor( Q::KeyGlyph | Q::Disabled, pal.darker200 );
-}
-
-void QskSquiekSkin::initLineEditHints()
-{
-    using namespace QskAspect;
-    using Q = QskLineEdit;
-
-    const ColorPalette& pal = m_data->palette;
-
-    setMetric( Q::Panel | Radius, 0 );
-    setMetric( Q::Panel | Border, 2 );
-    setMetric( Q::Panel | Padding, 4 );
-
-    pal.initBaseBox( this, QskLineEdit::Panel );
 }
 
 void QskSquiekSkin::initScrollViewHints()

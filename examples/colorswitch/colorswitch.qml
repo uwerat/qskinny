@@ -6,8 +6,6 @@ Main
 {
     id: main
 
-    inputPanel: embeddedInputPanel
-
     property var accentColors: [ "red", "lightgreen", "#66336699" ]
 
     Theme
@@ -175,20 +173,6 @@ Main
 
                         text: slider.value
                     }
-                }
-
-                LineEdit
-                {
-                    sizePolicy: SizePolicy.Maximum
-
-                    text: "editable text"
-                }
-
-                InputPanel
-                {
-                    id: embeddedInputPanel
-
-                    visible: Qt.inputMethod.visible
                 }
             }
         }

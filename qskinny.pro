@@ -7,7 +7,8 @@ SUBDIRS = \
     inputcontext \
     tools \
     support \
-    examples
+    examples \
+    playground
 
 OTHER_FILES = \
     doc/Doxyfile \
@@ -21,3 +22,4 @@ inputcontext.depends = src
 tools.depends = src
 support.depends = src
 examples.depends = tools support
+playground.depends = tools support

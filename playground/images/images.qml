@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import Skinny 1.0 as Qsk
+import Images 1.0
 import "qrc:/qml"
 
 Qsk.Window
@@ -34,7 +35,7 @@ Qsk.Window
             // to width/height, but Qsk.Image avoids several pointless
             // image updates for this use case
 
-            Qsk.Image
+            Image
             {
                 source: modelData
 

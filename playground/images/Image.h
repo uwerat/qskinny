@@ -3,8 +3,8 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef QSK_IMAGE_H
-#define QSK_IMAGE_H
+#ifndef _IMAGE_H
+#define _IMAGE_H
 
 #include "QskGlobal.h"
 
@@ -21,7 +21,7 @@
 
 #include <memory>
 
-class QSK_EXPORT QskImage : public QQuickImage
+class Image : public QQuickImage
 {
     Q_OBJECT
 
@@ -34,8 +34,8 @@ class QSK_EXPORT QskImage : public QQuickImage
     using Inherited = QQuickImage;
 
 public:
-    QskImage( QQuickItem* parent = nullptr );
-    virtual ~QskImage();
+    Image( QQuickItem* parent = nullptr );
+    virtual ~Image();
 
     void setSourceSizeAdjustment( bool );
     bool sourceSizeAdjustment() const;

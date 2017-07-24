@@ -132,11 +132,8 @@ HEADERS += \
     controls/QskGraphicLabel.h \
     controls/QskGraphicLabelSkinlet.h \
     controls/QskHintAnimator.h \
-    controls/QskImage.h \
     controls/QskInputPanel.h \
     controls/QskInputPanelSkinlet.h \
-    controls/QskLineEdit.h \
-    controls/QskLineEditSkinlet.h \
     controls/QskListView.h \
     controls/QskListViewSkinlet.h \
     controls/QskObjectTree.h \
@@ -199,11 +196,8 @@ SOURCES += \
     controls/QskGraphicLabel.cpp \
     controls/QskGraphicLabelSkinlet.cpp \
     controls/QskHintAnimator.cpp \
-    controls/QskImage.cpp \
     controls/QskInputPanel.cpp \
     controls/QskInputPanelSkinlet.cpp \
-    controls/QskLineEdit.cpp \
-    controls/QskLineEditSkinlet.cpp \
     controls/QskListView.cpp \
     controls/QskListViewSkinlet.cpp \
     controls/QskObjectTree.cpp \

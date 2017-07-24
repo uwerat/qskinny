@@ -3,8 +3,8 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef QSK_LINE_EDIT_H
-#define QSK_LINE_EDIT_H
+#ifndef _LINE_EDIT_H
+#define _LINE_EDIT_H
 
 #include "QskControl.h"
 
@@ -13,8 +13,8 @@
 class QValidator;
 class QQuickTextInput;
 
-class QskLineEditPrivate;
-class QSK_EXPORT QskLineEdit : public QskControl
+class LineEditPrivate;
+class LineEdit : public QskControl
 {
     Q_OBJECT
 
@@ -108,8 +108,8 @@ class QSK_EXPORT QskLineEdit : public QskControl
 public:
     QSK_SUBCONTROLS( Panel, Text )
 
-    QskLineEdit( QQuickItem* parent = nullptr );
-    ~QskLineEdit();
+    LineEdit( QQuickItem* parent = nullptr );
+    ~LineEdit();
 
     virtual void updateLayout() override;
 
@@ -358,14 +358,14 @@ Q_SIGNALS:
     void maximumLengthChanged(int maximumLength);
     void validatorChanged();
     void inputMaskChanged(const QString& inputMask);
-    void echoModeChanged(QskLineEdit::EchoMode echoMode);
+    void echoModeChanged(LineEdit::EchoMode echoMode);
     void passwordCharacterChanged();
     void passwordMaskDelayChanged(int delay);
     void displayTextChanged();
     void activeFocusOnPressChanged(bool activeFocusOnPress);
     void autoScrollChanged(bool autoScroll);
     void selectByMouseChanged(bool selectByMouse);
-    void mouseSelectionModeChanged(QskLineEdit::SelectionMode mode);
+    void mouseSelectionModeChanged(LineEdit::SelectionMode mode);
     void persistentSelectionChanged();
     void canPasteChanged();
     void canUndoChanged();
@@ -422,9 +422,9 @@ private:
 
     QQuickTextInput* p_func() const;
 
-    Q_DECLARE_PRIVATE( QskLineEdit )
+    Q_DECLARE_PRIVATE( LineEdit )
 
-    friend class QskLineEditSkinlet;
+    friend class LineEditSkinlet;
 };
 
 #endif

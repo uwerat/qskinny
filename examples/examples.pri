@@ -5,10 +5,6 @@ QSK_OUT_ROOT = $${OUT_PWD}/../..
 
 QT += quick
 
-# QskImage would need it
-#QT += quick quick-private
-#CONFIG += no_private_qt_headers_warning
-
 TEMPLATE     = app
 
 QSK_DIRS = \

@@ -3,6 +3,8 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
+#include "Image.h"
+
 #include <SkinnyShapeProvider.h>
 #include <SkinnyShortcut.h>
 
@@ -22,6 +24,8 @@ int main( int argc, char* argv[] )
     const char providerId[] = "shapes";
 
     QskModule::registerTypes();
+    qmlRegisterType< Image >( "Images", 1, 0, "Image" );
+
     Qsk::addGraphicProvider( providerId, new SkinnyShapeProvider() );
 
     QGuiApplication app( argc, argv );

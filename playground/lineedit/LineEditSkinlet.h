@@ -3,15 +3,15 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef QSK_LINE_EDIT_SKINLET_H
-#define QSK_LINE_EDIT_SKINLET_H
+#ifndef _LINE_EDIT_SKINLET_H
+#define _LINE_EDIT_SKINLET_H
 
 #include "QskGlobal.h"
 #include "QskSkinlet.h"
 
-class QskLineEdit;
+class LineEdit;
 
-class QSK_EXPORT QskLineEditSkinlet : public QskSkinlet
+class LineEditSkinlet : public QskSkinlet
 {
     Q_GADGET
 
@@ -24,8 +24,8 @@ public:
         ForegroundRole
     };
 
-    Q_INVOKABLE QskLineEditSkinlet( QskSkin* = nullptr );
-    virtual ~QskLineEditSkinlet();
+    Q_INVOKABLE LineEditSkinlet( QskSkin* = nullptr );
+    virtual ~LineEditSkinlet();
 
     virtual QRectF subControlRect( const QskSkinnable*,
         QskAspect::Subcontrol ) const override;
@@ -35,10 +35,10 @@ protected:
         quint8, QSGNode* ) const override;
 
 private:
-    QRectF panelRect( const QskLineEdit* ) const;
+    QRectF panelRect( const LineEdit* ) const;
 
-    QSGNode* updateBackgroundNode( const QskLineEdit*, QSGNode* ) const;
-    QSGNode* updateForegroundNode( const QskLineEdit*, QSGNode* ) const;
+    QSGNode* updateBackgroundNode( const LineEdit*, QSGNode* ) const;
+    QSGNode* updateForegroundNode( const LineEdit*, QSGNode* ) const;
 };
 
 #endif

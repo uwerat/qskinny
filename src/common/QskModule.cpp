@@ -18,9 +18,7 @@
 #include "QskGradient.h"
 #include "QskGraphicLabel.h"
 #include "QskGridBox.h"
-#include "QskImage.h"
 #include "QskInputPanel.h"
-#include "QskLineEdit.h"
 #include "QskRgbValue.h"
 #include "QskScrollView.h"
 #include "QskScrollArea.h"
@@ -252,12 +250,9 @@ void QskModule::registerTypes()
     QSK_REGISTER( QskLinearBox, "LinearBox" );
     QSK_REGISTER( QskStackBox, "StackBox" );
 
-    QSK_REGISTER( QskImage, "Image" );
-
     QSK_REGISTER( QskControl, "Control" );
     QSK_REGISTER( QskGraphicLabel, "GraphicLabel" );
     QSK_REGISTER( QskInputPanel, "InputPanel" );
-    QSK_REGISTER( QskLineEdit, "LineEdit" );
     QSK_REGISTER( QskTextLabel, "TextLabel" );
     QSK_REGISTER( QskTabButton, "TabButton" );
     QSK_REGISTER( QskTabBar, "TabBar" );

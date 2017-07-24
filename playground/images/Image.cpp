@@ -3,12 +3,12 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#include "QskImage.h"
+#include "Image.h"
 
 // QQuickImagePrivate is not exported, so we
 // we can't derive here
 
-class QskImage::PrivateData
+class Image::PrivateData
 {
 public:
     PrivateData():
@@ -26,33 +26,33 @@ public:
     bool dirtyUpdate : 1;
 };
 
-QskImage::QskImage( QQuickItem* parent ):
+Image::Image( QQuickItem* parent ):
     Inherited( parent ),
     m_data( new PrivateData() )
 {
 }
 
-QskImage::~QskImage()
+Image::~Image()
 {
 }
 
-void QskImage::setVisible( bool on )
+void Image::setVisible( bool on )
 {
     // QQuickItem::setVisible is no slot
     Inherited::setVisible( on );
 }
 
-void QskImage::show()
+void Image::show()
 {
     Inherited::setVisible( true );
 }
 
-void QskImage::hide()
+void Image::hide()
 {
     Inherited::setVisible( false );
 }
 
-void QskImage::setSourceSizeAdjustment( bool on )
+void Image::setSourceSizeAdjustment( bool on )
 {
     if ( on != m_data->sourceSizeAdjustment )
     {
@@ -61,12 +61,12 @@ void QskImage::setSourceSizeAdjustment( bool on )
     }
 }
 
-bool QskImage::sourceSizeAdjustment() const
+bool Image::sourceSizeAdjustment() const
 {
     return m_data->sourceSizeAdjustment;
 }
 
-void QskImage::setDeferredUpdates( bool on )
+void Image::setDeferredUpdates( bool on )
 {
     if ( on != m_data->deferredUpdates )
     {
@@ -85,12 +85,12 @@ void QskImage::setDeferredUpdates( bool on )
     }
 }
 
-bool QskImage::deferredUpdates() const
+bool Image::deferredUpdates() const
 {
     return m_data->deferredUpdates;
 }
 
-void QskImage::componentComplete()
+void Image::componentComplete()
 {
     if ( m_data->deferredUpdates && m_data->sourceSizeAdjustment )
     {
@@ -106,7 +106,7 @@ void QskImage::componentComplete()
     }
 }
 
-void QskImage::itemChange( QQuickItem::ItemChange change,
+void Image::itemChange( QQuickItem::ItemChange change,
     const QQuickItem::ItemChangeData& value )
 {
     Inherited::itemChange( change, value );
@@ -124,7 +124,7 @@ void QskImage::itemChange( QQuickItem::ItemChange change,
     }
 }
 
-void QskImage::geometryChanged( const QRectF& newGeometry,
+void Image::geometryChanged( const QRectF& newGeometry,
     const QRectF& oldGeometry )
 {
     Inherited::geometryChanged( newGeometry, oldGeometry );
@@ -146,7 +146,7 @@ void QskImage::geometryChanged( const QRectF& newGeometry,
     }
 }
 
-void QskImage::updatePolish()
+void Image::updatePolish()
 {
     if ( m_data->deferredUpdates )
     {
@@ -165,7 +165,7 @@ void QskImage::updatePolish()
     Inherited::updatePolish();
 }
 
-QSGNode* QskImage::updatePaintNode( QSGNode* oldNode, UpdatePaintNodeData* data )
+QSGNode* Image::updatePaintNode( QSGNode* oldNode, UpdatePaintNodeData* data )
 {
     if ( m_data->deferredUpdates )
     {
@@ -181,30 +181,30 @@ QSGNode* QskImage::updatePaintNode( QSGNode* oldNode, UpdatePaintNodeData* data 
     return Inherited::updatePaintNode( oldNode, data );
 }
 
-bool QskImage::hasHeightForWidth() const
+bool Image::hasHeightForWidth() const
 {
     // TODO
     return false;
 }
 
-qreal QskImage::heightForWidth( qreal width ) const
+qreal Image::heightForWidth( qreal width ) const
 {
     // TODO
     Q_UNUSED( width )
     return -1.0;
 }
 
-bool QskImage::hasWidthForHeight() const
+bool Image::hasWidthForHeight() const
 {
     // TODO
     return false;
 }
 
-qreal QskImage::widthForHeight( qreal height ) const
+qreal Image::widthForHeight( qreal height ) const
 {
     // TODO
     Q_UNUSED( height )
     return -1.0;
 }
 
-#include "moc_QskImage.cpp"
+#include "moc_Image.cpp"

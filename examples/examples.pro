@@ -21,11 +21,6 @@ SUBDIRS += \
     frames \
     gbenchmark \
     glabels \
-    lineedit \
     messageboxQml \
     rectangles \
     tlabels
-
-# non controls: qml
-SUBDIRS += \
-   images

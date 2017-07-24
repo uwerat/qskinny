@@ -3,7 +3,8 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#include "QskLineEdit.h"
+#include "LineEdit.h"
+#include "LineEditSkinlet.h"
 
 #include <QskAspect.h>
 
@@ -24,12 +25,12 @@ QSK_QT_PRIVATE_END
 #define Q_P(ClassName) \
     auto p = reinterpret_cast< ClassName* >( this )
 
-QSK_SUBCONTROL( QskLineEdit, Panel )
-QSK_SUBCONTROL( QskLineEdit, Text )
+QSK_SUBCONTROL( LineEdit, Panel )
+QSK_SUBCONTROL( LineEdit, Text )
 
-class QskLineEditPrivate : public QQuickTextInputPrivate
+class LineEditPrivate : public QQuickTextInputPrivate
 {
-    Q_DECLARE_PUBLIC(QskLineEdit)
+    Q_DECLARE_PUBLIC(LineEdit)
 
     using Inherited = QQuickTextInputPrivate;
 public:
@@ -43,20 +44,23 @@ public:
     }
 };
 
-QskLineEdit::QskLineEdit( QQuickItem* parent ):
-    QskControl( *( new QskLineEditPrivate ), parent )
+LineEdit::LineEdit( QQuickItem* parent ):
+    QskControl( *( new LineEditPrivate ), parent )
 {
-    Q_D( QskLineEdit );
+    Q_D( LineEdit );
     d->init();
 
     setActiveFocusOnTab( true );
+#if 1
+    setSkinlet( new LineEditSkinlet() );
+#endif
 }
 
-QskLineEdit::~QskLineEdit()
+LineEdit::~LineEdit()
 {
 }
 
-void QskLineEdit::updateLayout()
+void LineEdit::updateLayout()
 {
     Inherited::updateLayout();
 
@@ -71,62 +75,62 @@ void QskLineEdit::updateLayout()
 
 // Begin proxy methods
 
-void QskLineEdit::componentComplete()
+void LineEdit::componentComplete()
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::componentComplete();
 }
 
-void QskLineEdit::positionAt( QQmlV4Function* args ) const
+void LineEdit::positionAt( QQmlV4Function* args ) const
 {
     Q_P( const QQuickTextInput );
     p->QQuickTextInput::positionAt( args );
 }
 
-QRectF QskLineEdit::positionToRectangle( int pos ) const
+QRectF LineEdit::positionToRectangle( int pos ) const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::positionToRectangle( pos );
 }
 
-void QskLineEdit::moveCursorSelection( int pos )
+void LineEdit::moveCursorSelection( int pos )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::moveCursorSelection( pos );
 }
 
-void QskLineEdit::moveCursorSelection( int pos, QskLineEdit::SelectionMode mode )
+void LineEdit::moveCursorSelection( int pos, LineEdit::SelectionMode mode )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::moveCursorSelection(
         pos, static_cast< QQuickTextInput::SelectionMode >( mode ) );
 }
 
-QskLineEdit::RenderType QskLineEdit::renderType() const
+LineEdit::RenderType LineEdit::renderType() const
 {
     Q_P( const QQuickTextInput );
-    return static_cast< QskLineEdit::RenderType >( p->QQuickTextInput::renderType() );
+    return static_cast< LineEdit::RenderType >( p->QQuickTextInput::renderType() );
 }
 
-void QskLineEdit::setRenderType( RenderType renderType )
+void LineEdit::setRenderType( RenderType renderType )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setRenderType( static_cast< QQuickTextInput::RenderType >( renderType ) );
 }
 
-QString QskLineEdit::text() const
+QString LineEdit::text() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::text();
 }
 
-void QskLineEdit::setText( const QString& text )
+void LineEdit::setText( const QString& text )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setText( text );
 }
 
-int QskLineEdit::length() const
+int LineEdit::length() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::length();
@@ -134,97 +138,97 @@ int QskLineEdit::length() const
 
 #if 0
 
-QFont QskLineEdit::font() const
+QFont LineEdit::font() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::font();
 }
 
-void QskLineEdit::setFont( const QFont& font )
+void LineEdit::setFont( const QFont& font )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setFont( font );
 }
 
-QColor QskLineEdit::color() const
+QColor LineEdit::color() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::color();
 }
 
-void QskLineEdit::setColor( const QColor& color )
+void LineEdit::setColor( const QColor& color )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setColor( color );
 }
 
-QColor QskLineEdit::selectionColor() const
+QColor LineEdit::selectionColor() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::selectionColor();
 }
 
-void QskLineEdit::setSelectionColor( const QColor& color )
+void LineEdit::setSelectionColor( const QColor& color )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setSelectionColor( color );
 }
 
-QColor QskLineEdit::selectedTextColor() const
+QColor LineEdit::selectedTextColor() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::selectedTextColor();
 }
 
-void QskLineEdit::setSelectedTextColor( const QColor& color )
+void LineEdit::setSelectedTextColor( const QColor& color )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setSelectedTextColor( color );
 }
 
-QskLineEdit::HAlignment QskLineEdit::hAlign() const
+LineEdit::HAlignment LineEdit::hAlign() const
 {
     Q_P( const QQuickTextInput );
     return static_cast< HAlignment >( p->QQuickTextInput::hAlign() );
 }
 
-void QskLineEdit::setHAlign( HAlignment alignment )
+void LineEdit::setHAlign( HAlignment alignment )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setHAlign( static_cast< QQuickTextInput::HAlignment >( alignment ) );
 }
 
-void QskLineEdit::resetHAlign()
+void LineEdit::resetHAlign()
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::resetHAlign();
 }
 
-QskLineEdit::HAlignment QskLineEdit::effectiveHAlign() const
+LineEdit::HAlignment LineEdit::effectiveHAlign() const
 {
     Q_P( const QQuickTextInput );
     return static_cast< HAlignment >( p->QQuickTextInput::effectiveHAlign() );
 }
 
-QskLineEdit::VAlignment QskLineEdit::vAlign() const
+LineEdit::VAlignment LineEdit::vAlign() const
 {
     Q_P( const QQuickTextInput );
     return static_cast< VAlignment >( p->QQuickTextInput::vAlign() );
 }
 
-void QskLineEdit::setVAlign( QskLineEdit::VAlignment alignment )
+void LineEdit::setVAlign( LineEdit::VAlignment alignment )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setVAlign( static_cast< QQuickTextInput::VAlignment >( alignment ) );
 }
 
-QskLineEdit::WrapMode QskLineEdit::wrapMode() const
+LineEdit::WrapMode LineEdit::wrapMode() const
 {
     Q_P( const QQuickTextInput );
     return static_cast< WrapMode >( p->QQuickTextInput::wrapMode() );
 }
 
-void QskLineEdit::setWrapMode( QskLineEdit::WrapMode wrapMode )
+void LineEdit::setWrapMode( LineEdit::WrapMode wrapMode )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setWrapMode( static_cast< QQuickTextInput::WrapMode >( wrapMode ) );
@@ -232,145 +236,145 @@ void QskLineEdit::setWrapMode( QskLineEdit::WrapMode wrapMode )
 
 #endif
 
-bool QskLineEdit::isReadOnly() const
+bool LineEdit::isReadOnly() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::isReadOnly();
 }
 
-void QskLineEdit::setReadOnly( bool readOnly )
+void LineEdit::setReadOnly( bool readOnly )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setReadOnly( readOnly );
 }
 
-bool QskLineEdit::isCursorVisible() const
+bool LineEdit::isCursorVisible() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::isCursorVisible();
 }
 
-void QskLineEdit::setCursorVisible( bool cursorVisible )
+void LineEdit::setCursorVisible( bool cursorVisible )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setCursorVisible( cursorVisible );
 }
 
-int QskLineEdit::cursorPosition() const
+int LineEdit::cursorPosition() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::cursorPosition();
 }
 
-void QskLineEdit::setCursorPosition( int cursorPosition )
+void LineEdit::setCursorPosition( int cursorPosition )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setCursorPosition( cursorPosition );
 }
 
-QRectF QskLineEdit::cursorRectangle() const
+QRectF LineEdit::cursorRectangle() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::cursorRectangle();
 }
 
-int QskLineEdit::selectionStart() const
+int LineEdit::selectionStart() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::selectionStart();
 }
 
-int QskLineEdit::selectionEnd() const
+int LineEdit::selectionEnd() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::selectionEnd();
 }
 
-QString QskLineEdit::selectedText() const
+QString LineEdit::selectedText() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::selectedText();
 }
 
-int QskLineEdit::maxLength() const
+int LineEdit::maxLength() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::maxLength();
 }
 
-void QskLineEdit::setMaxLength( int maxLength )
+void LineEdit::setMaxLength( int maxLength )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setMaxLength( maxLength );
 }
 
-QValidator* QskLineEdit::validator() const
+QValidator* LineEdit::validator() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::validator();
 }
 
-void QskLineEdit::setValidator( QValidator* validator )
+void LineEdit::setValidator( QValidator* validator )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setValidator( validator );
 }
 
-QString QskLineEdit::inputMask() const
+QString LineEdit::inputMask() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::inputMask();
 }
 
-void QskLineEdit::setInputMask( const QString& inputMask )
+void LineEdit::setInputMask( const QString& inputMask )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setInputMask( inputMask );
 }
 
-QskLineEdit::EchoMode QskLineEdit::echoMode() const
+LineEdit::EchoMode LineEdit::echoMode() const
 {
     Q_P( const QQuickTextInput );
     return static_cast< EchoMode >( p->QQuickTextInput::echoMode() );
 }
 
-void QskLineEdit::setEchoMode( QskLineEdit::EchoMode echoMode )
+void LineEdit::setEchoMode( LineEdit::EchoMode echoMode )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setEchoMode( static_cast< QQuickTextInput::EchoMode >( echoMode ) );
 }
 
-QString QskLineEdit::passwordCharacter() const
+QString LineEdit::passwordCharacter() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::passwordCharacter();
 }
 
-void QskLineEdit::setPasswordCharacter( const QString& passordCharacter )
+void LineEdit::setPasswordCharacter( const QString& passordCharacter )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setPasswordCharacter( passordCharacter );
 }
 
-int QskLineEdit::passwordMaskDelay() const
+int LineEdit::passwordMaskDelay() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::passwordMaskDelay();
 }
 
-void QskLineEdit::setPasswordMaskDelay( int delay )
+void LineEdit::setPasswordMaskDelay( int delay )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setPasswordMaskDelay( delay );
 }
 
-void QskLineEdit::resetPasswordMaskDelay()
+void LineEdit::resetPasswordMaskDelay()
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::resetPasswordMaskDelay();
 }
 
-QString QskLineEdit::displayText() const
+QString LineEdit::displayText() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::displayText();
@@ -378,13 +382,13 @@ QString QskLineEdit::displayText() const
 
 #if 0
 
-QQmlComponent* QskLineEdit::cursorDelegate() const
+QQmlComponent* LineEdit::cursorDelegate() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::cursorDelegate();
 }
 
-void QskLineEdit::setCursorDelegate( QQmlComponent* component )
+void LineEdit::setCursorDelegate( QQmlComponent* component )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setCursorDelegate( component );
@@ -392,76 +396,76 @@ void QskLineEdit::setCursorDelegate( QQmlComponent* component )
 
 #endif
 
-bool QskLineEdit::focusOnPress() const
+bool LineEdit::focusOnPress() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::focusOnPress();
 }
 
-void QskLineEdit::setFocusOnPress( bool focusOnPress )
+void LineEdit::setFocusOnPress( bool focusOnPress )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setFocusOnPress( focusOnPress );
 }
 
-bool QskLineEdit::autoScroll() const
+bool LineEdit::autoScroll() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::autoScroll();
 }
 
-void QskLineEdit::setAutoScroll( bool autoScroll )
+void LineEdit::setAutoScroll( bool autoScroll )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setAutoScroll( autoScroll );
 }
 
-bool QskLineEdit::selectByMouse() const
+bool LineEdit::selectByMouse() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::selectByMouse();
 }
 
-void QskLineEdit::setSelectByMouse( bool selectByMouse )
+void LineEdit::setSelectByMouse( bool selectByMouse )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setSelectByMouse( selectByMouse );
 }
 
-QskLineEdit::SelectionMode QskLineEdit::mouseSelectionMode() const
+LineEdit::SelectionMode LineEdit::mouseSelectionMode() const
 {
     Q_P( const QQuickTextInput );
     return static_cast< SelectionMode >( p->QQuickTextInput::mouseSelectionMode() );
 }
 
-void QskLineEdit::setMouseSelectionMode( SelectionMode selectionMode )
+void LineEdit::setMouseSelectionMode( SelectionMode selectionMode )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setMouseSelectionMode(
         static_cast< QQuickTextInput::SelectionMode >( selectionMode ) );
 }
 
-bool QskLineEdit::persistentSelection() const
+bool LineEdit::persistentSelection() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::persistentSelection();
 }
 
-void QskLineEdit::setPersistentSelection( bool persistentSelection )
+void LineEdit::setPersistentSelection( bool persistentSelection )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setPersistentSelection( persistentSelection );
 }
 
-bool QskLineEdit::hasAcceptableInput() const
+bool LineEdit::hasAcceptableInput() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::hasAcceptableInput();
 }
 
-QVariant QskLineEdit::inputMethodQuery( Qt::InputMethodQuery inputMethodQuery ) const
+QVariant LineEdit::inputMethodQuery( Qt::InputMethodQuery inputMethodQuery ) const
 {
-    Q_D( const QskLineEdit );
+    Q_D( const LineEdit );
     Q_P( const QQuickTextInput );
     auto value = p->QQuickTextInput::inputMethodQuery( inputMethodQuery );
     if ( inputMethodQuery == Qt::ImPreferredLanguage && value.isNull() )
@@ -469,75 +473,75 @@ QVariant QskLineEdit::inputMethodQuery( Qt::InputMethodQuery inputMethodQuery ) 
     return value;
 }
 
-QVariant QskLineEdit::inputMethodQuery(
+QVariant LineEdit::inputMethodQuery(
     Qt::InputMethodQuery inputMethodQuery, QVariant argument ) const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::inputMethodQuery( inputMethodQuery, argument );
 }
 
-QRectF QskLineEdit::boundingRect() const
+QRectF LineEdit::boundingRect() const
 {
     // Special case: we use the control definition of boundingRect instead of
     // QQuickLineEdit's, because boundingRect is used in layout and rendering
     return Inherited::boundingRect();
 }
 
-QRectF QskLineEdit::clipRect() const
+QRectF LineEdit::clipRect() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::clipRect();
 }
 
-bool QskLineEdit::canPaste() const
+bool LineEdit::canPaste() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::canPaste();
 }
 
-bool QskLineEdit::canUndo() const
+bool LineEdit::canUndo() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::canUndo();
 }
 
-bool QskLineEdit::canRedo() const
+bool LineEdit::canRedo() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::canRedo();
 }
 
-bool QskLineEdit::isInputMethodComposing() const
+bool LineEdit::isInputMethodComposing() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::isInputMethodComposing();
 }
 
-Qt::InputMethodHints QskLineEdit::inputMethodHints() const
+Qt::InputMethodHints LineEdit::inputMethodHints() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::inputMethodHints();
 }
 
-void QskLineEdit::setInputMethodHints( Qt::InputMethodHints inputMethodHints )
+void LineEdit::setInputMethodHints( Qt::InputMethodHints inputMethodHints )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setInputMethodHints( inputMethodHints );
 }
 
-QString QskLineEdit::getText( int start, int end ) const
+QString LineEdit::getText( int start, int end ) const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::getText( start, end );
 }
 
-qreal QskLineEdit::contentWidth() const
+qreal LineEdit::contentWidth() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::contentWidth();
 }
 
-qreal QskLineEdit::contentHeight() const
+qreal LineEdit::contentHeight() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::contentHeight();
@@ -545,91 +549,91 @@ qreal QskLineEdit::contentHeight() const
 
 #if 0
 
-qreal QskLineEdit::padding() const
+qreal LineEdit::padding() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::padding();
 }
 
-void QskLineEdit::setPadding( qreal padding )
+void LineEdit::setPadding( qreal padding )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setPadding( padding );
 }
 
-void QskLineEdit::resetPadding()
+void LineEdit::resetPadding()
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::resetPadding();
 }
 
-qreal QskLineEdit::topPadding() const
+qreal LineEdit::topPadding() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::padding();
 }
 
-void QskLineEdit::setTopPadding( qreal topPadding )
+void LineEdit::setTopPadding( qreal topPadding )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setTopPadding( topPadding );
 }
 
-void QskLineEdit::resetTopPadding()
+void LineEdit::resetTopPadding()
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::resetTopPadding();
 }
 
-qreal QskLineEdit::leftPadding() const
+qreal LineEdit::leftPadding() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::leftPadding();
 }
 
-void QskLineEdit::setLeftPadding( qreal leftPadding )
+void LineEdit::setLeftPadding( qreal leftPadding )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setLeftPadding( leftPadding );
 }
 
-void QskLineEdit::resetLeftPadding()
+void LineEdit::resetLeftPadding()
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::resetLeftPadding();
 }
 
-qreal QskLineEdit::rightPadding() const
+qreal LineEdit::rightPadding() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::leftPadding();
 }
 
-void QskLineEdit::setRightPadding( qreal rightPadding )
+void LineEdit::setRightPadding( qreal rightPadding )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setRightPadding( rightPadding );
 }
 
-void QskLineEdit::resetRightPadding()
+void LineEdit::resetRightPadding()
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::resetRightPadding();
 }
 
-qreal QskLineEdit::bottomPadding() const
+qreal LineEdit::bottomPadding() const
 {
     Q_P( const QQuickTextInput );
     return p->QQuickTextInput::leftPadding();
 }
 
-void QskLineEdit::setBottomPadding( qreal bottomPadding )
+void LineEdit::setBottomPadding( qreal bottomPadding )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setBottomPadding( bottomPadding );
 }
 
-void QskLineEdit::resetBottomPadding()
+void LineEdit::resetBottomPadding()
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::resetBottomPadding();
@@ -637,103 +641,103 @@ void QskLineEdit::resetBottomPadding()
 
 #endif
 
-void QskLineEdit::geometryChanged( const QRectF& newGeometry, const QRectF& oldGeometry )
+void LineEdit::geometryChanged( const QRectF& newGeometry, const QRectF& oldGeometry )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::geometryChanged( newGeometry, oldGeometry );
 }
 
-void QskLineEdit::mousePressEvent( QMouseEvent* event )
+void LineEdit::mousePressEvent( QMouseEvent* event )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::mousePressEvent( event );
 }
 
-void QskLineEdit::mouseMoveEvent( QMouseEvent* event )
+void LineEdit::mouseMoveEvent( QMouseEvent* event )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::mouseMoveEvent( event );
 }
 
-void QskLineEdit::mouseReleaseEvent( QMouseEvent* event )
+void LineEdit::mouseReleaseEvent( QMouseEvent* event )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::mouseReleaseEvent( event );
 }
 
-void QskLineEdit::mouseDoubleClickEvent( QMouseEvent* event )
+void LineEdit::mouseDoubleClickEvent( QMouseEvent* event )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::mouseDoubleClickEvent( event );
 }
 
-void QskLineEdit::keyPressEvent( QKeyEvent* event )
+void LineEdit::keyPressEvent( QKeyEvent* event )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::keyPressEvent( event );
 }
 
-void QskLineEdit::inputMethodEvent( QInputMethodEvent* event )
+void LineEdit::inputMethodEvent( QInputMethodEvent* event )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::inputMethodEvent( event );
 }
 
-void QskLineEdit::mouseUngrabEvent()
+void LineEdit::mouseUngrabEvent()
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::mouseUngrabEvent();
 }
 
-bool QskLineEdit::event( QEvent* event )
+bool LineEdit::event( QEvent* event )
 {
     Q_P( QQuickTextInput );
     return p->QQuickTextInput::event( event );
 }
 
-void QskLineEdit::focusOutEvent( QFocusEvent* event )
+void LineEdit::focusOutEvent( QFocusEvent* event )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::focusOutEvent( event );
 }
 
-void QskLineEdit::focusInEvent( QFocusEvent* event )
+void LineEdit::focusInEvent( QFocusEvent* event )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::focusInEvent( event );
 }
 
-void QskLineEdit::timerEvent( QTimerEvent* event )
+void LineEdit::timerEvent( QTimerEvent* event )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::timerEvent( event );
 }
 
-void QskLineEdit::selectAll()
+void LineEdit::selectAll()
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::selectAll();
 }
 
-void QskLineEdit::selectWord()
+void LineEdit::selectWord()
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::selectWord();
 }
 
-void QskLineEdit::select( int start, int end )
+void LineEdit::select( int start, int end )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::select( start, end );
 }
 
-void QskLineEdit::deselect()
+void LineEdit::deselect()
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::deselect();
 }
 
-bool QskLineEdit::isRightToLeft( int start, int end )
+bool LineEdit::isRightToLeft( int start, int end )
 {
     Q_P( QQuickTextInput );
     return p->QQuickTextInput::isRightToLeft( start, end );
@@ -741,19 +745,19 @@ bool QskLineEdit::isRightToLeft( int start, int end )
 
 #ifndef QT_NO_CLIPBOARD
 
-void QskLineEdit::cut()
+void LineEdit::cut()
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::cut();
 }
 
-void QskLineEdit::copy()
+void LineEdit::copy()
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::copy();
 }
 
-void QskLineEdit::paste()
+void LineEdit::paste()
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::paste();
@@ -761,74 +765,74 @@ void QskLineEdit::paste()
 
 #endif // QT_NO_CLIPBOARD
 
-void QskLineEdit::undo()
+void LineEdit::undo()
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::undo();
 }
 
-void QskLineEdit::redo()
+void LineEdit::redo()
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::redo();
 }
 
-void QskLineEdit::insert( int position, const QString& text )
+void LineEdit::insert( int position, const QString& text )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::insert( position, text );
 }
 
-void QskLineEdit::remove( int start, int end )
+void LineEdit::remove( int start, int end )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::remove( start, end );
 }
 
-void QskLineEdit::ensureVisible( int position )
+void LineEdit::ensureVisible( int position )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::ensureVisible( position );
 }
 
-void QskLineEdit::selectionChanged()
+void LineEdit::selectionChanged()
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::selectionChanged();
 }
 
-void QskLineEdit::createCursor()
+void LineEdit::createCursor()
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::createCursor();
 }
 
-void QskLineEdit::updateCursorRectangle( bool scroll )
+void LineEdit::updateCursorRectangle( bool scroll )
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::updateCursorRectangle( scroll );
 }
 
-void QskLineEdit::q_canPasteChanged()
+void LineEdit::q_canPasteChanged()
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::q_canPasteChanged();
 }
 
-void QskLineEdit::q_updateAlignment()
+void LineEdit::q_updateAlignment()
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::q_updateAlignment();
 }
 
-void QskLineEdit::triggerPreprocess()
+void LineEdit::triggerPreprocess()
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::triggerPreprocess();
 }
 
 #ifndef QT_NO_VALIDATOR
-void QskLineEdit::q_validatorChanged()
+void LineEdit::q_validatorChanged()
 {
     Q_P( QQuickTextInput );
     p->QQuickTextInput::q_validatorChanged();
@@ -837,10 +841,10 @@ void QskLineEdit::q_validatorChanged()
 
 // end proxy methods
 
-QSGNode* QskLineEdit::updateTextInputNode( QSGNode* node )
+QSGNode* LineEdit::updateTextInputNode( QSGNode* node )
 {
     Q_P( QQuickTextInput );
     return p->QQuickTextInput::updatePaintNode( node, nullptr );
 }
 
-#include "moc_QskLineEdit.cpp"
+#include "moc_LineEdit.cpp"

@@ -1,8 +1,11 @@
-import Skinny 1.0
 import QtQuick 2.5
+import Skinny 1.0
+import LineEdit 1.0
 
 Main
 {
+	// inputPanel: embeddedInputPanel
+
     Window
     {
         id: window
