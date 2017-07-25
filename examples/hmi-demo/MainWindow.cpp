@@ -24,9 +24,7 @@ namespace {
     }
 }
 
-MainWindow::MainWindow() : QskWindow()
-  , m_backgroundImage( new QskGraphicLabel( contentItem() ) )
-  , m_layout( new QskLinearBox( Qt::Vertical, contentItem() ) )
+MainWindow::MainWindow()
 {
     setPreferredSize( QSize( 1024, 576 ) );
     setAutoLayoutChildren( true );
@@ -36,10 +34,13 @@ MainWindow::MainWindow() : QskWindow()
 //    font.setPointSize( 20 );
 //    setFont( QskSkin::DefaultFont, 20 );
 
-    QImage image( ":/images/background.jpg" );
-    QskGraphic graphic = QskGraphic::fromImage( image );
-    m_backgroundImage->setGraphic( graphic );
+    const QImage image( ":/images/background.jpg" );
 
+    auto backgroundImage = new QskGraphicLabel( contentItem() );
+    backgroundImage->setGraphic( QskGraphic::fromImage( image ) );
+    backgroundImage->setFillMode( QskGraphicLabel::Stretch );
+
+    m_layout = new QskLinearBox( Qt::Vertical, contentItem() );
     m_layout->setAutoAddChildren( true );
 
     addHeaderBar();
@@ -49,29 +50,23 @@ MainWindow::MainWindow() : QskWindow()
 
 void MainWindow::addHeaderBar()
 {
-    QskPushButton* headerBar = new QskPushButton( m_layout );
-    headerBar->setEnabled( false );
-    headerBar->setPosition( QPointF( 0, 0 ) );
-    headerBar->setOpacity( 0.5 );
-    headerBar->setBackgroundColor( Qt::black );
-    headerBar->setFixedHeight( 50 );
-    headerBar->setFlat( true );
-    headerBar->setAutoLayoutChildren( true );
+    QskLinearBox* header = new QskLinearBox( m_layout );
+    header->setOpacity( 0.5 );
+    header->setBackgroundColor( Qt::black );
+    header->setFixedHeight( 50 );
+    header->setMargins( QMarginsF( 20, 0, 20, 0 ) );
 
-    QskLinearBox* headerLayout = new QskLinearBox( headerBar );
-    headerLayout->setMargins( QMarginsF( 20, 0, 20, 0 ) );
-
-    addIcon( headerLayout, ":/images/ic_pan_tool_white_48dp_2x.png" );
-    addIcon( headerLayout, ":/images/ic_star_rate_white_18dp_2x.png" );
-    addIcon( headerLayout, ":/images/ic_airplanemode_active_white_18dp_2x.png" );
+    addIcon( header, ":/images/ic_pan_tool_white_48dp_2x.png" );
+    addIcon( header, ":/images/ic_star_rate_white_18dp_2x.png" );
+    addIcon( header, ":/images/ic_airplanemode_active_white_18dp_2x.png" );
 
     QDate currentDate = QDate::currentDate();
-    QskTextLabel* dateLabel = new QskTextLabel( currentDate.toString(), headerLayout );
+    QskTextLabel* dateLabel = new QskTextLabel( currentDate.toString(), header );
     dateLabel->setColor( QskTextLabel::Text, Qt::white );
 
-    addIcon( headerLayout, ":/images/ic_face_white_48px.svg" );
-    addIcon( headerLayout, ":/images/ic_extension_white_48dp_2x.png" );
-    addIcon( headerLayout, ":/images/ic_build_white_24dp_2x.png" );
+    addIcon( header, ":/images/ic_face_white_48px.svg" );
+    addIcon( header, ":/images/ic_extension_white_48dp_2x.png" );
+    addIcon( header, ":/images/ic_build_white_24dp_2x.png" );
 }
 
 void MainWindow::addMainContent()

@@ -3,8 +3,6 @@
 
 #include <QskControl.h>
 
-class QskLinearBox;
-
 class RadioControl : public QskControl
 {
 public:

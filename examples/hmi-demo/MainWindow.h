@@ -1,10 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QskPushButton.h>
 #include <QskWindow.h>
 
-class QskGraphicLabel;
 class QskLinearBox;
 
 class MainWindow : public QskWindow
@@ -17,7 +15,6 @@ private:
     void addMainContent();
     void addBottomBar();
 
-    QskGraphicLabel* m_backgroundImage;
     QskLinearBox* m_layout;
 };
 
