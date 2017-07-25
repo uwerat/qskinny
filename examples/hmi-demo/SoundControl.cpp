@@ -2,44 +2,158 @@
 
 #include <QskGraphic.h>
 #include <QskGraphicLabel.h>
-#include <QskGraphicProvider.h>
+#include <QskGraphicIO.h>
 #include <QskGridBox.h>
 #include <QskLinearBox.h>
 #include <QskPushButton.h>
 #include <QskSlider.h>
-#include <QskTabBar.h>
 #include <QskTextLabel.h>
+#include <QskSeparator.h>
+#include <QskBox.h>
+#include <QskNamespace.h>
 
-#include <QImage>
+QSK_SUBCONTROL( SoundControl, CrossHair )
+QSK_SUBCONTROL( SoundControl, Marker )
+QSK_SUBCONTROL( SoundControl, SliderControl )
 
-QSK_SUBCONTROL( FilledRectangle, Panel )
-
-QskAspect::Subcontrol FilledRectangle::effectiveSubcontrol(
-    QskAspect::Subcontrol subControl ) const
+class CrossHairLine : public QskBox
 {
-    if ( subControl == QskPushButton::Panel )
-        return FilledRectangle::Panel;
+public:
+    CrossHairLine( QQuickItem* parent ):
+        QskBox( parent )
+    {
+    }
 
-    return subControl;
-}
+    virtual QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol subControl ) const override final
+    {
+        if ( subControl == QskBox::Panel )
+            return SoundControl::CrossHair;
 
-QSK_SUBCONTROL( BalanceFadeBox, Panel )
+        return subControl;
+    }
+};
 
-QskAspect::Subcontrol BalanceFadeBox::effectiveSubcontrol(
-    QskAspect::Subcontrol subControl ) const
+class BalanceFadeMarker : public QskBox
 {
-    if ( subControl == QskPushButton::Panel )
-        return BalanceFadeBox::Panel;
+public:
+    BalanceFadeMarker( QQuickItem* parent ):
+        QskBox( parent )
+    {
+    }
 
-    return subControl;
-}
+    virtual QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol subControl ) const override final
+    {
+        if ( subControl == QskBox::Panel )
+            return SoundControl::Marker;
 
-class StackedControl : public QskControl {
+        return subControl;
+    }
+};
+
+class NavigationButton : public QskPushButton
+{
+public:
+    NavigationButton( Qsk::Direction direction, QQuickItem* parentItem = nullptr ):
+        QskPushButton( parentItem ),
+        m_direction( direction )
+    {
+        const char* svgList[] = { "right", "left", "down", "up" };
+
+        const QString fileName = QString( ":/qvg/%1.qvg" ).arg( svgList[ direction ] );
+        setGraphic( QskGraphicIO::read( fileName ) );
+
+        setAutoRepeat( true );
+        setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
+    }
+
+    QPointF offset() const
+    {
+        const qreal off = 5.0;
+
+        switch( m_direction )
+        {
+            case Qsk::LeftToRight:
+                return QPointF( off, 0.0 );
+
+            case Qsk::RightToLeft:
+                return QPointF( -off, 0.0 );
+
+            case Qsk::TopToBottom:
+                return QPointF( 0.0, off );
+
+            case Qsk::BottomToTop:
+                return QPointF( 0.0, -off );
+        }
+
+        return QPointF();
+    }
+
+protected:
+    virtual QSizeF contentsSizeHint() const override final
+    {
+        const qreal dim = 100;
+
+        if ( m_direction == Qsk::LeftToRight || m_direction == Qsk::RightToLeft )
+            return QSizeF( 0.5 * dim, dim );
+        else
+            return QSizeF( dim, 0.5 * dim );
+    }
+
+private:
+    const Qsk::Direction m_direction;
+};
+
+class ControlButton : public QskPushButton
+{
+public:
+    ControlButton( const char symbol, QQuickItem* parentItem = nullptr ):
+        QskPushButton( parentItem )
+    {
+        setText( QChar( symbol ) );
+        setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
+
+        setAutoRepeat( true );
+    }
+
+    virtual QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol subControl ) const override
+    {
+        if ( subControl == QskPushButton::Panel )
+            return SoundControl::SliderControl;
+
+        return QskPushButton::effectiveSubcontrol( subControl );
+    }
+
+    virtual QSizeF contentsSizeHint() const override final
+    {
+        qreal h = QskPushButton::contentsSizeHint().height();
+        return QSizeF( h, h );
+    }
+};
+
+class StackedControl : public QskControl
+{
 public:
     StackedControl( QQuickItem* parent = nullptr ):
         QskControl( parent ),
         m_offset( 0.0, 0.0 )
     {
+        setPolishOnResize( true ); // we have t re-layout the crosshair
+        setSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
+
+        auto horizontalCarRectangle = new CrossHairLine( this );
+        horizontalCarRectangle->setObjectName( "horizontalBar" );
+
+        auto verticalCarRectangle = new CrossHairLine( this );
+        verticalCarRectangle->setObjectName( "verticalBar" );
+
+        auto* carLabel = new QskGraphicLabel( this );
+        carLabel->setGraphic( QskGraphicIO::read( QString( ":/qvg/car.qvg" ) ) );
+
+        auto marker = new BalanceFadeMarker( this );
+        marker->setObjectName( "marker" );
     }
 
     QPointF offset() const
@@ -50,44 +164,41 @@ public:
     void setOffset( const QPointF& offset )
     {
         m_offset = offset;
+        polish();
     }
 
 protected:
     virtual void updateLayout() override final
     {
         const QRectF cr = contentsRect();
+        const qreal crossHairSize = 3;
 
         for ( int a = 0; a < children().count(); a++ )
         {
             QskControl* control = static_cast< QskControl* >( children().at( a ) );
 
-            qreal xCenter = ( cr.width() + margins().top() + margins().bottom() ) / 2;
-            qreal yCenter = ( cr.height() + margins().left() + margins().right() ) / 2;
-
             if ( control->objectName() == "verticalBar" )
             {
-                control->setPosition( QPointF( xCenter, margins().top() ) );
-                control->setSize( QSizeF( 3, cr.height() ) );
+                control->setGeometry( cr.center().x(), cr.top(), crossHairSize, cr.height() );
                 control->setZ( 1 );
             }
             else if ( control->objectName() == "horizontalBar" )
             {
-                control->setPosition( QPointF( margins().left(), yCenter ) );
-                control->setSize( QSizeF( cr.width(), 3 ) );
+                control->setGeometry( cr.left(), cr.center().y(), cr.width(), crossHairSize );
                 control->setZ( 1 );
             }
-            else if ( control->objectName() == "box" )
+            else if ( control->objectName() == "marker" )
             {
-                qreal size = 30;
-                control->setPosition( QPointF( xCenter - ( size / 2 ) + 1 + m_offset.x(),
-                                               yCenter - ( size / 2 ) + 1 + m_offset.y() ) );
+                qreal size = 31;
+
+                control->setPosition(
+                    cr.center() - 0.5 * QPointF( size, size ) + m_offset + QPointF( 1, 1 ) );
                 control->setSize( QSizeF( size, size ) );
-                control->setZ( 2 );
+                control->setZ( 1 );
             }
             else
             {
-                control->setPosition( cr.topLeft() );
-                control->setSize( cr.size() );
+                control->setGeometry( cr );
             }
         }
     }
@@ -96,198 +207,160 @@ private:
     QPointF m_offset;
 };
 
+class SectionTitleBar : public QskLinearBox
+{
+public:
+    SectionTitleBar( const char* title, QQuickItem* parentItem = nullptr ):
+        QskLinearBox( Qt::Horizontal, parentItem )
+    {
+        setSpacing( 10 );
+
+        auto* label = new QskTextLabel( title );
+        label->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
+
+        addItem( new QskSeparator() );
+        addItem( label );
+        addItem( new QskSeparator() );
+
+        setStretchFactor( 0, 1 );
+        setStretchFactor( 2, 5 );
+    }
+};
+
+class SliderBox : public QskLinearBox
+{
+public:
+    SliderBox( const char* title, qreal min, qreal max, QQuickItem* parentItem = nullptr ):
+        QskLinearBox( Qt::Vertical, parentItem )
+    {
+        auto label = new QskTextLabel( title );
+        m_numberLabel = new QskTextLabel();
+
+        // don't stretch the labels, so that the layout centers them
+        label->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
+        m_numberLabel->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
+
+        auto* plusButton = new ControlButton( '+' );
+        auto minusButton = new ControlButton( '-' );
+
+        m_slider = new QskSlider( Qt::Vertical );
+        m_slider->setMinimum( min );
+        m_slider->setMaximum( max );
+
+        // layout
+
+        addItem( label );
+        addItem( m_numberLabel );
+        addItem( plusButton );
+        addSpacer( 10 );
+        addItem( m_slider );
+        addSpacer( 10 );
+        addItem( minusButton );
+
+        setDefaultAlignment( Qt::AlignCenter );
+
+        // finally connect buttons/slider/labels
+
+        connect( plusButton, &QskPushButton::pressed,
+            [ this ]() { increment( 1 ); } );
+
+        connect( minusButton, &QskPushButton::pressed,
+            [ this ]() { increment( -1 ); } );
+
+        connect( m_slider, &QskSlider::valueChanged,
+            this, &SliderBox::setValue );
+    }
+
+public Q_SLOTS:
+    void setValue( qreal value )
+    {
+        m_slider->setValue( value );
+
+        QString txt;
+        txt.setNum( m_slider->value(), 'f', 1 );
+
+        m_numberLabel->setText( txt );
+    }
+
+private:
+    void increment( qreal offset )
+    {
+        setValue( m_slider->value() + offset );
+    }
+
+    QskTextLabel* m_numberLabel;
+    QskSlider* m_slider;
+};
+
+class ToneControlBox : public QskLinearBox
+{
+public:
+    ToneControlBox( QQuickItem* parentItem = nullptr ):
+        QskLinearBox( Qt::Horizontal, parentItem )
+    {
+        auto bassControl = new SliderBox( "Bass", 0.0, 40.0, this );
+        auto treebleControl = new SliderBox( "Treeble", 0.0, 40.0, this );
+        auto subControl = new SliderBox( "Sub", 0.0, 40.0, this );
+
+        bassControl->setValue( 30 );
+        treebleControl->setValue( 11 );
+        subControl->setValue( 18 );
+    }
+};
+
+class BalanceFadeControlBox : public QskGridBox
+{
+public:
+    BalanceFadeControlBox( QQuickItem* parentItem = nullptr ):
+        QskGridBox( parentItem )
+    {
+        NavigationButton* buttons[4];
+        for ( int i = 0; i < 4; i++ )
+            buttons[i] = new NavigationButton( static_cast< Qsk::Direction >( i ) );
+
+        m_carControl = new StackedControl();
+
+        addItem( buttons[ Qsk::RightToLeft ], 1, 0 );
+        addItem( buttons[ Qsk::BottomToTop ], 0, 0, 1, 3 );
+        addItem( buttons[ Qsk::LeftToRight ], 1, 2 );
+        addItem( buttons[ Qsk::TopToBottom ], 2, 0, 1, 3 );
+
+        addItem( m_carControl, 1, 1 );
+
+        for ( int i = 0; i < 4; i++ )
+        {
+            const auto button = buttons[i];
+
+            setAlignment( button, Qt::AlignCenter );
+
+            connect( button, &QskPushButton::pressed,
+                [ = ]() { shift( button->offset() ); } );
+        }
+    }
+
+    void shift( const QPointF& offset )
+    {
+        m_carControl->setOffset( m_carControl->offset() + offset );
+    }
+
+    StackedControl* m_carControl;
+};
+
 SoundControl::SoundControl( QQuickItem* parent ):
     QskControl( parent )
 {
     setMargins( QMarginsF( 40, 20, 40, 20 ) );
     setAutoLayoutChildren( true );
 
-    QskGridBox* outterLayout = new QskGridBox( this );
-    outterLayout->setVerticalSpacing( 40 );
-    outterLayout->setHorizontalSpacing( 60 );
-    outterLayout->setColumnStretchFactor( 0, 1 );
-    outterLayout->setColumnStretchFactor( 1, 2 );
+    QskGridBox* outerLayout = new QskGridBox( this );
+    outerLayout->setVerticalSpacing( 10 );
+    outerLayout->setHorizontalSpacing( 60 );
+    outerLayout->setColumnStretchFactor( 0, 1 );
+    outerLayout->setColumnStretchFactor( 1, 2 );
 
-    QskLinearBox* toneBox = new QskLinearBox( Qt::Horizontal, outterLayout );
-    toneBox->setSpacing( 20 );
-    toneBox->setAutoAddChildren( true );
-    toneBox->setAutoLayoutChildren( true );
-    toneBox->addSpacer( 0, 1 );
-    FilledRectangle* toneRectangle = new FilledRectangle( toneBox );
-    QskTextLabel* toneLabel = new QskTextLabel( "Tone", toneBox );
-    toneLabel->setAlignment( Qt::AlignLeft );
-    toneRectangle->setFixedHeight(
-        QFontMetricsF( toneLabel->effectiveFont( QskTextLabel::Text ) ).height() );
-    toneBox->addSpacer( 0, 1 );
-    outterLayout->addItem( toneBox, 0, 0 );
+    outerLayout->addItem( new SectionTitleBar( "Tone" ), 0, 0 );
+    outerLayout->addItem( new ToneControlBox(), 1, 0 );
 
-
-    QskLinearBox* balanceBox = new QskLinearBox( Qt::Horizontal, outterLayout );
-    balanceBox->setSpacing( 20 );
-    balanceBox->setAutoAddChildren( true );
-    balanceBox->setAutoLayoutChildren( true );
-    balanceBox->addSpacer( 0, 1 );
-    FilledRectangle* balanceRectangle = new FilledRectangle( balanceBox );
-    QskTextLabel* balanceLabel = new QskTextLabel( "Balance / Fade", balanceBox );
-    balanceLabel->setAlignment( Qt::AlignLeft );
-    balanceRectangle->setFixedHeight(
-        QFontMetricsF( balanceLabel->effectiveFont( QskTextLabel::Text ) ).height() );
-    balanceBox->addSpacer( 0, 1 );
-    outterLayout->addItem( balanceBox, 0, 1 );
-
-
-    QskGridBox* toneGridBox = new QskGridBox( outterLayout );
-    QskTextLabel* bassLabel = new QskTextLabel( "Bass", toneGridBox );
-    toneGridBox->addItem( bassLabel, 0, 0 );
-    QskTextLabel* trebleLabel = new QskTextLabel( "Treble", toneGridBox );
-    toneGridBox->addItem( trebleLabel, 0, 1 );
-    QskTextLabel* subLabel = new QskTextLabel( "Sub", toneGridBox );
-    toneGridBox->addItem( subLabel, 0, 2 );
-
-    QskTextLabel* bassNumberLabel = new QskTextLabel( "0", toneGridBox );
-    toneGridBox->addItem( bassNumberLabel, 1, 0 );
-    QskTextLabel* trebleNumberLabel = new QskTextLabel( "0", toneGridBox );
-    toneGridBox->addItem( trebleNumberLabel, 1, 1 );
-    QskTextLabel* subNumberLabel = new QskTextLabel( "0", toneGridBox );
-    toneGridBox->addItem( subNumberLabel, 1, 2 );
-
-    QskPushButton* bassPlusButton = new QskPushButton( "+", toneGridBox );
-    bassPlusButton->setFixedSize( 35, 35 );
-    toneGridBox->addItem( bassPlusButton, 2, 0 );
-    toneGridBox->setAlignment( bassPlusButton, Qt::AlignCenter );
-    QskPushButton* treblePlusButton = new QskPushButton( "+", toneGridBox );
-    treblePlusButton->setFixedSize( 35, 35 );
-    toneGridBox->addItem( treblePlusButton, 2, 1 );
-    toneGridBox->setAlignment( treblePlusButton, Qt::AlignCenter );
-    QskPushButton* subPlusButton = new QskPushButton( "+", toneGridBox );
-    subPlusButton->setFixedSize( 35, 35 );
-    toneGridBox->addItem( subPlusButton, 2, 2 );
-    toneGridBox->setAlignment( subPlusButton, Qt::AlignCenter );
-
-    QskSlider* bassSlider = new QskSlider( Qt::Vertical, toneGridBox );
-    bassSlider->setMinimum( 0 );
-    bassSlider->setMaximum( 40 );
-    bassSlider->setValue( 30 );
-    toneGridBox->addItem( bassSlider, 3, 0 );
-    toneGridBox->setAlignment( bassSlider, Qt::AlignCenter );
-    QskSlider* trebleSlider = new QskSlider( Qt::Vertical, toneGridBox );
-    trebleSlider->setMinimum( 0 );
-    trebleSlider->setMaximum( 40 );
-    trebleSlider->setValue( 11 );
-    toneGridBox->addItem( trebleSlider, 3, 1 );
-    toneGridBox->setAlignment( trebleSlider, Qt::AlignCenter );
-    QskSlider* subSlider = new QskSlider( Qt::Vertical, toneGridBox );
-    subSlider->setMinimum( 0 );
-    subSlider->setMaximum( 40 );
-    subSlider->setValue( 18 );
-    toneGridBox->addItem( subSlider, 3, 2 );
-    toneGridBox->setAlignment( subSlider, Qt::AlignCenter );
-
-    QskPushButton* bassMinusButton = new QskPushButton( "-", toneGridBox );
-    bassMinusButton->setFixedSize( 35, 35 );
-    toneGridBox->addItem( bassMinusButton, 4, 0 );
-    toneGridBox->setAlignment( bassMinusButton, Qt::AlignCenter );
-    QskPushButton* trebleMinusButton = new QskPushButton( "-", toneGridBox );
-    trebleMinusButton->setFixedSize( 35, 35 );
-    toneGridBox->addItem( trebleMinusButton, 4, 1 );
-    toneGridBox->setAlignment( trebleMinusButton, Qt::AlignCenter );
-    QskPushButton* subMinusButton = new QskPushButton( "-", toneGridBox );
-    subMinusButton->setFixedSize( 35, 35 );
-    toneGridBox->addItem( subMinusButton, 4, 2 );
-    toneGridBox->setAlignment( subMinusButton, Qt::AlignCenter );
-
-    connect( bassPlusButton, &QskPushButton::pressed, [ bassSlider ]() {
-        bassSlider->setValue( bassSlider->value() + 1 );
-    } );
-    connect( treblePlusButton, &QskPushButton::pressed, [ trebleSlider ]() {
-        trebleSlider->setValue( trebleSlider->value() + 1 );
-    } );
-    connect( subPlusButton, &QskPushButton::pressed, [ subSlider ]() {
-        subSlider->setValue( subSlider->value() + 1 );
-    } );
-    connect( bassMinusButton, &QskPushButton::pressed, [ bassSlider ]() {
-        bassSlider->setValue( bassSlider->value() - 1 );
-    } );
-    connect( trebleMinusButton, &QskPushButton::pressed, [ trebleSlider ]() {
-        trebleSlider->setValue( trebleSlider->value() - 1 );
-    } );
-    connect( subMinusButton, &QskPushButton::pressed, [ subSlider ]() {
-        subSlider->setValue( subSlider->value() - 1 );
-    } );
-
-    outterLayout->addItem( toneGridBox, 1, 0 );
-
-
-    QskGridBox* carGridBox = new QskGridBox( outterLayout );
-    carGridBox->setAutoLayoutChildren( true );
-
-    QskPushButton* upButton = new QskPushButton( carGridBox );
-    upButton->setFixedSize( 100, 50 );
-    QImage upImage( ":/images/up.svg" );
-    QskGraphic upGraphic = QskGraphic::fromImage( upImage );
-    upButton->setGraphic( upGraphic ); // ### try with setGraphicSource
-    carGridBox->addItem( upButton, 0, 0, 1, 3 );
-    carGridBox->setAlignment( upButton, Qt::AlignCenter );
-
-    QskPushButton* leftButton = new QskPushButton( carGridBox );
-    leftButton->setFixedSize( 50, 100 );
-    QImage leftImage( ":/images/left.svg" );
-    QskGraphic leftGraphic = QskGraphic::fromImage( leftImage );
-    leftButton->setGraphic( leftGraphic );
-    carGridBox->addItem( leftButton, 1, 0 );
-
-    StackedControl* carControl = new StackedControl( carGridBox );
-    carControl->setSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
-    carControl->setPolishOnResize( true );
-    carControl->setMargins( 10 );
-    FilledRectangle* horizontalCarRectangle = new FilledRectangle( carControl );
-    horizontalCarRectangle->setObjectName( "horizontalBar" );
-    FilledRectangle* verticalCarRectangle = new FilledRectangle( carControl );
-    verticalCarRectangle->setObjectName( "verticalBar" );
-    BalanceFadeBox *box = new BalanceFadeBox( carControl );
-    box->setObjectName( "box" );
-    QImage carImage( ":/images/car.svg" );
-    QskGraphic graphic = QskGraphic::fromImage( carImage );
-    QskGraphicLabel* carLabel = new QskGraphicLabel( carControl );
-    carLabel->setGraphic( graphic );
-    carGridBox->addItem( carControl, 1, 1 );
-
-    QskPushButton* rightButton = new QskPushButton( carGridBox );
-    rightButton->setFixedSize( 50, 100 );
-    QImage rightImage( ":/images/right.svg" );
-    QskGraphic rightGraphic = QskGraphic::fromImage( rightImage );
-    rightButton->setGraphic( rightGraphic );
-    carGridBox->addItem( rightButton, 1, 2 );
-    carGridBox->setAlignment( rightButton, Qt::AlignRight );
-
-    QskPushButton* downButton = new QskPushButton( carGridBox );
-    downButton->setFixedSize( 100, 50 );
-    QImage downImage( ":/images/down.svg" );
-    QskGraphic downGraphic = QskGraphic::fromImage( downImage );
-    downButton->setGraphic( downGraphic );
-    carGridBox->addItem( downButton, 2, 0, 1, 3 );
-    carGridBox->setAlignment( downButton, Qt::AlignCenter );
-
-    connect( upButton, &QskPushButton::pressed, [ carControl ]() {
-        carControl->setOffset( QPointF( carControl->offset().x(),
-                                        carControl->offset().y() - 5.0 ) );
-        carControl->polish();
-    } );
-    connect( leftButton, &QskPushButton::pressed, [ carControl ]() {
-        carControl->setOffset( QPointF( carControl->offset().x() - 5.0,
-                                        carControl->offset().y() ) );
-        carControl->polish();
-    } );
-    connect( rightButton, &QskPushButton::pressed, [ carControl ]() {
-        carControl->setOffset( QPointF( carControl->offset().x() + 5.0,
-                                        carControl->offset().y() ) );
-        carControl->polish();
-    } );
-    connect( downButton, &QskPushButton::pressed, [ carControl ]() {
-        carControl->setOffset( QPointF( carControl->offset().x(),
-                                        carControl->offset().y() + 5.0 ) );
-        carControl->polish();
-    } );
-
-    outterLayout->addItem( carGridBox, 1, 1 );
+    outerLayout->addItem( new SectionTitleBar( "Balance / Fade" ), 0, 1 );
+    outerLayout->addItem( new BalanceFadeControlBox(), 1, 1 );
 }

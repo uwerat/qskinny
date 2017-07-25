@@ -8,6 +8,7 @@
 #include <QskSkinTransition.h>
 #include <QskSlider.h>
 #include <QskTextLabel.h>
+#include <QskSeparator.h>
 
 #include <QDebug>
 
@@ -21,7 +22,8 @@ protected:
     }
 };
 
-class Palette {
+class Palette
+{
 public:
 
     Palette( DefaultSkin::Scheme scheme = DefaultSkin::Daylight )
@@ -65,8 +67,8 @@ namespace {
 
 }
 
-DefaultSkin::DefaultSkin( const QString& name, QObject* parent ) :
-        QskSkin( parent ),
+DefaultSkin::DefaultSkin( const QString& name, QObject* parent ):
+    QskSkin( parent ),
     m_name( name ),
     m_palette( new Palette ),
     m_scheme( Daylight )
@@ -82,11 +84,26 @@ void DefaultSkin::initHints()
 
     setColor( QskTextLabel::Text, m_palette->color4 );
 
-    setColor( FilledRectangle::Panel, m_palette->color3 );
+    setColor( SoundControl::CrossHair, m_palette->color3 );
+    setColor( SoundControl::Marker, m_palette->color5 );
 
+    // a circle
+    setMetric( SoundControl::Marker | QskAspect::Radius, 100 );
+    setSkinHint( SoundControl::Marker
+        | QskAspect::Radius | QskAspect::AllCorners
+        | QskAspect::SizeMode, Qt::RelativeSize );
+
+    setColor( QskSeparator::Panel, m_palette->color3 );
+    setMetric( QskSeparator::Panel, 2 );
+
+    setMetric( QskPushButton::Panel | QskAspect::Padding, 10 );
     setColor( QskPushButton::Panel, m_palette->color1 );
     setColor( QskPushButton::Text, m_palette->color3 );
     setColor( QskPushButton::Panel | QskPushButton::Pressed, m_palette->color2 );
+
+    setColor( SoundControl::SliderControl, m_palette->color1 );
+    setColor( SoundControl::SliderControl | QskPushButton::Pressed, m_palette->color2 );
+
     setMetric( QskPushButton::Text | QskAspect::Size, 20 );
     setSkinHint( QskPushButton::Text | QskAspect::FontRole, int( QskSkin::LargeFont ) );
     setSkinHint( QskPushButton::Text | QskAspect::Alignment, Qt::AlignCenter );
@@ -97,9 +114,6 @@ void DefaultSkin::initHints()
     setMetric( QskSlider::Handle | QskAspect::Size, 18 );
     setMetric( QskSlider::Handle | QskAspect::Radius, 9 );
     setColor( QskSlider::Handle, m_palette->color5 );
-
-    setColor( BalanceFadeBox::Panel, m_palette->color5 );
-    setMetric( BalanceFadeBox::Panel | QskAspect::Radius, 15 );
 
     // animator for daylight/night scheme transitions
     setAnimation( QskAspect::Color, QskAnimationHint( 1000, QEasingCurve::InQuad ) );

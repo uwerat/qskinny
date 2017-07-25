@@ -3,6 +3,7 @@
 #include "SoundControl.h"
 
 #include <QskGraphic.h>
+#include <QskGraphicIO.h>
 #include <QskGraphicLabel.h>
 #include <QskLinearBox.h>
 #include <QskTextLabel.h>
@@ -18,40 +19,40 @@ namespace
         ButtonBar( QQuickItem* parentItem = nullptr ):
             QskLinearBox( parentItem )
         {
-            setOpacity( 0.5 );
-            setBackgroundColor( Qt::black );
-            setMargins( QMarginsF( 20, 0, 20, 0 ) );
+            QColor c( Qt::black );
+            c.setAlphaF( 0.5 );
+            setBackgroundColor( c );
 
-            setSizePolicy( QskSizePolicy::MinimumExpanding, QskSizePolicy::Fixed );
+            setMargins( QMarginsF( 20, 15, 20, 15 ) );
+            setSpacing( 20 );
+
+            setSizePolicy( QskSizePolicy::MinimumExpanding, QskSizePolicy::MinimumExpanding );
         }
 
         void addIcon( const char* name )
         {
-            const QString fileName = QString( ":/images/%1" ).arg( name );
-
             auto* label = new QskGraphicLabel( this );
-            label->setFixedSize( 76, 36 );
-            label->setMargins( QMarginsF( 20, 7, 20, 7 ) );
-            label->setGraphic( QskGraphic::fromImage( QImage( fileName ) ) );
+
+            /*
+                The label should adjust vertically and be stretched horizontally
+                according to its aspect ratio.
+             */
+
+            label->setSizePolicy( QskSizePolicy::Constrained, QskSizePolicy::Ignored );
+
+            const QString fileName = QString( ":/qvg/%1.qvg" ).arg( name );
+            label->setGraphic( QskGraphicIO::read( fileName ) );
         }
 
     protected:
         virtual QSizeF contentsSizeHint() const override final
         {
-            return QSizeF( -1, 50 );
+            return QSizeF( -1, 20 );
         }
     };
 }
 
 MainWindow::MainWindow()
-{
-    setPreferredSize( QSize( 1024, 576 ) );
-    setAutoLayoutChildren( true );
-
-    populate();
-}
-
-void MainWindow::populate()
 {
     const QImage image( ":/images/background.jpg" );
 
@@ -66,23 +67,30 @@ void MainWindow::populate()
     auto layout = new QskLinearBox( Qt::Vertical, contentItem() );
 
     layout->addItem( header );
+    layout->setStretchFactor( header, 1 );
+
     layout->addItem( content );
+    layout->setStretchFactor( content, 10 );
+
     layout->addItem( footer );
+    layout->setStretchFactor( footer, 1 );
+
+    setAutoLayoutChildren( true );
 }
 
 QQuickItem* MainWindow::headerBar() const
 {
     auto* header = new ButtonBar();
-    header->addIcon( "ic_pan_tool_white_48dp_2x.png" );
-    header->addIcon( "ic_star_rate_white_18dp_2x.png" );
-    header->addIcon( "ic_airplanemode_active_white_18dp_2x.png" );
+    header->addIcon( "bluetooth" );
+    header->addIcon( "location" );
+    header->addIcon( "phone" );
 
     auto dateLabel = new QskTextLabel( QDate::currentDate().toString(), header );
     dateLabel->setColor( QskTextLabel::Text, Qt::white );
 
-    header->addIcon( "ic_face_white_48px.svg" );
-    header->addIcon( "ic_extension_white_48dp_2x.png" );
-    header->addIcon( "ic_build_white_24dp_2x.png" );
+    header->addIcon( "user" );
+    header->addIcon( "bookmark" );
+    header->addIcon( "menu" );
 
     return header;
 }
@@ -100,9 +108,12 @@ QQuickItem* MainWindow::footerBar() const
 {
     auto* footer = new ButtonBar();
 
-    footer->addIcon( "ic_pan_tool_white_48dp_2x.png" );
-    footer->addIcon( "ic_star_rate_white_18dp_2x.png" );
-    footer->addIcon( "ic_airplanemode_active_white_18dp_2x.png" );
+    footer->addIcon( "cloud" );
+    footer->addIcon( "man" );
+    footer->addIcon( "bus" );
+    footer->addIcon( "plane" );
+    footer->addIcon( "train" );
+
     footer->addStretch( 10 );
 
     return footer;

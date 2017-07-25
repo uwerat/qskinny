@@ -11,8 +11,6 @@ public:
     MainWindow();
 
 private:
-    void populate();
-
     QQuickItem* headerBar() const;
     QQuickItem* mainContent() const;
     QQuickItem* footerBar() const;
