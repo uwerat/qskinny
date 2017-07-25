@@ -12,7 +12,7 @@ class FilledRectangle : public QskPushButton // ### move to some main control fi
 public:
     QSK_SUBCONTROLS( Panel )
 
-    FilledRectangle( QQuickItem* parent ) : QskPushButton( parent )
+    FilledRectangle( QQuickItem* parent ): QskPushButton( parent )
     {
         setFlat( true );
         setFixedWidth( 80 ); // ### style
@@ -27,7 +27,7 @@ class BalanceFadeBox : public QskPushButton
 public:
     QSK_SUBCONTROLS( Panel )
 
-    BalanceFadeBox( QQuickItem* parent ) : QskPushButton( parent )
+    BalanceFadeBox( QQuickItem* parent ): QskPushButton( parent )
     {
     }
 
@@ -38,7 +38,7 @@ public:
 class SoundControl : public QskControl
 {
 public:
-    SoundControl( QQuickItem *parent = nullptr );
+    SoundControl( QQuickItem* parent = nullptr );
 };
 
 #endif // SOUNDCONTROL_H

@@ -14,7 +14,8 @@ public:
     void toggleScheme();
     void resetColors();
 
-    enum Scheme {
+    enum Scheme
+    {
         Daylight,
         Nighttime
     };

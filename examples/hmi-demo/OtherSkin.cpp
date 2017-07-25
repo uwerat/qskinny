@@ -33,19 +33,19 @@ public:
 
 namespace {
 
-static inline QFont qskFont( int pointSize )
-{
-    QFont font( "Roboto" );
-    font.setPointSize( pointSize / qskDpiScaled( 1.0 ) );
-    return font;
-}
+    static inline QFont qskFont( int pointSize )
+    {
+        QFont font( "Roboto" );
+        font.setPointSize( pointSize / qskDpiScaled( 1.0 ) );
+        return font;
+    }
 
 }
 
-OtherSkin::OtherSkin( const QString &name, QObject *parent )
-    : QskSkin( parent ),
-      m_name( name ),
-      m_palette( new Palette )
+OtherSkin::OtherSkin( const QString& name, QObject* parent ) :
+        QskSkin( parent ),
+    m_name( name ),
+    m_palette( new Palette )
 {
     setObjectName( "OtherSkin" );
     initHints();
@@ -75,7 +75,6 @@ void OtherSkin::initHints()
 
     setColor( BalanceFadeBox::Panel, m_palette->color5 );
     setMetric( BalanceFadeBox::Panel | QskAspect::Radius, 15 );
-
 }
 
 OtherSkin::~OtherSkin()

@@ -12,15 +12,16 @@
 #include <QDate>
 #include <QTimer>
 
-namespace {
+namespace
+{
     void addIcon( QskLayout* layout, const QString& fileName )
     {
-        QImage buildIcon( fileName );
-        QskGraphic graphic = QskGraphic::fromImage( buildIcon );
+        const QImage buildIcon( fileName );
+
         QskGraphicLabel* buildLabel = new QskGraphicLabel( layout );
         buildLabel->setFixedSize( 76, 36 );
         buildLabel->setMargins( QMarginsF( 20, 7, 20, 7 ) );
-        buildLabel->setGraphic( graphic );
+        buildLabel->setGraphic( QskGraphic::fromImage( buildIcon ) );
     }
 }
 

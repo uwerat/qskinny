@@ -8,8 +8,9 @@
 #include <QskTabButton.h>
 #include <QskTextLabel.h>
 
-RadioControl::RadioControl( QQuickItem* parent ) : QskControl( parent )
-  , m_currentBand( "FM" )
+RadioControl::RadioControl( QQuickItem* parent ):
+    QskControl( parent ),
+    m_currentBand( "FM" )
 {
     setMargins( QMarginsF( 40, 30, 40, 30 ) );
     setAutoLayoutChildren( true );

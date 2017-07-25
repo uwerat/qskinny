@@ -6,7 +6,7 @@
 class RadioControl : public QskControl
 {
 public:
-    RadioControl( QQuickItem *parent = nullptr );
+    RadioControl( QQuickItem* parent = nullptr );
 
 private:
     QString m_currentBand;

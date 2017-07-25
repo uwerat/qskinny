@@ -56,20 +56,20 @@ public:
 
 namespace {
 
-static inline QFont qskFont( int pointSize )
-{
-    QFont font( "Roboto" );
-    font.setPointSize( pointSize / qskDpiScaled( 1.0 ) );
-    return font;
-}
+    static inline QFont qskFont( int pointSize )
+    {
+        QFont font( "Roboto" );
+        font.setPointSize( pointSize / qskDpiScaled( 1.0 ) );
+        return font;
+    }
 
 }
 
-DefaultSkin::DefaultSkin( const QString &name, QObject *parent )
-    : QskSkin( parent ),
-      m_name( name ),
-      m_palette( new Palette ),
-      m_scheme( Daylight )
+DefaultSkin::DefaultSkin( const QString& name, QObject* parent ) :
+        QskSkin( parent ),
+    m_name( name ),
+    m_palette( new Palette ),
+    m_scheme( Daylight )
 {
     setObjectName( "DefaultSkin" );
     initHints();

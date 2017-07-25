@@ -26,7 +26,7 @@ QskAspect::Subcontrol FilledRectangle::effectiveSubcontrol(
 QSK_SUBCONTROL( BalanceFadeBox, Panel )
 
 QskAspect::Subcontrol BalanceFadeBox::effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const
+    QskAspect::Subcontrol subControl ) const
 {
     if ( subControl == QskPushButton::Panel )
         return BalanceFadeBox::Panel;
@@ -36,7 +36,8 @@ QskAspect::Subcontrol BalanceFadeBox::effectiveSubcontrol(
 
 class StackedControl : public QskControl {
 public:
-    StackedControl( QQuickItem* parent = nullptr ) : QskControl( parent ),
+    StackedControl( QQuickItem* parent = nullptr ):
+        QskControl( parent ),
         m_offset( 0.0, 0.0 )
     {
     }
@@ -95,7 +96,8 @@ private:
     QPointF m_offset;
 };
 
-SoundControl::SoundControl( QQuickItem *parent ) : QskControl( parent )
+SoundControl::SoundControl( QQuickItem* parent ):
+    QskControl( parent )
 {
     setMargins( QMarginsF( 40, 20, 40, 20 ) );
     setAutoLayoutChildren( true );
