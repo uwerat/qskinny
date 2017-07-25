@@ -7,6 +7,7 @@ SUBDIRS += \
     qvgviewer \
     desktop \
     dialogbuttons \
+    hmi-demo \
     layouts \
     listbox \
     messagebox \
