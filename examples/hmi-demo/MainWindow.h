@@ -3,7 +3,7 @@
 
 #include <QskWindow.h>
 
-class QskLinearBox;
+class QQuickItem;
 
 class MainWindow : public QskWindow
 {
@@ -11,11 +11,11 @@ public:
     MainWindow();
 
 private:
-    void addHeaderBar();
-    void addMainContent();
-    void addBottomBar();
+    void populate();
 
-    QskLinearBox* m_layout;
+    QQuickItem* headerBar() const;
+    QQuickItem* mainContent() const;
+    QQuickItem* footerBar() const;
 };
 
-#endif // MAINWINDOW_H
+#endif
