@@ -392,6 +392,11 @@ QskAnimationHint QskSkinTransition::animation() const
     return m_animation;
 }
 
+void QskSkinTransition::updateSkin( QskSkin*, QskSkin* )
+{
+    // nop
+}
+
 void QskSkinTransition::process()
 {
     if ( ( m_skins[0] == nullptr ) || ( m_skins[1] == nullptr ) )

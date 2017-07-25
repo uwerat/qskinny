@@ -41,7 +41,7 @@ public:
     static QVariant animatedHint( QskAspect::Aspect );
 
 protected:
-    virtual void updateSkin( QskSkin*, QskSkin* ) = 0;
+    virtual void updateSkin( QskSkin*, QskSkin* );
 
 private:
     QskSkin* m_skins[2];

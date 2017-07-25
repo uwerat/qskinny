@@ -18,18 +18,6 @@
 #include <unordered_map>
 #include <iostream>
 
-namespace
-{
-    class SkinTransition : public QskSkinTransition
-    {
-    protected:
-        virtual void updateSkin( QskSkin*, QskSkin* ) override final
-        {
-            // nop
-        }
-    };
-}
-
 SkinnyShortcut::SkinnyShortcut( QObject* parent ):
     QObject( parent )
 {
@@ -88,7 +76,7 @@ void SkinnyShortcut::rotateSkin()
 
     QskSkin* newSkin = qskSetup->setSkin( names[ index ] );
 
-    SkinTransition transition;
+    QskSkinTransition transition;
 
     //transition.setMask( QskAspect::Color ); // Metrics are flickering -> TODO
     transition.setSourceSkin( oldSkin );
