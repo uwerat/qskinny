@@ -1,6 +1,6 @@
 include( $${PWD}/../examples.pri )
 
-TARGET = hmi-demo
+TARGET = automotive
 
 HEADERS += \
     MainWindow.h \

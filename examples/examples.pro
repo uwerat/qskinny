@@ -4,10 +4,10 @@ TEMPLATE = subdirs
 
 # c++
 SUBDIRS += \
+    automotive \
     qvgviewer \
     desktop \
     dialogbuttons \
-    hmi-demo \
     layouts \
     listbox \
     messagebox \
