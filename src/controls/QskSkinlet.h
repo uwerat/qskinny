@@ -76,14 +76,16 @@ protected:
         const QString&, const QskTextOptions&, QskAspect::Subcontrol ) const;
 
     QSGNode* updateGraphicNode( const QskSkinnable*, QSGNode*,
-        const QskGraphic&, const QRectF& , QskAspect::Subcontrol ) const;
-
-    QSGNode* updateGraphicNode( const QskSkinnable*, QSGNode*,
         const QskGraphic&, QskAspect::Subcontrol ) const;
 
+    // keeping the aspect ratio
     QSGNode* updateGraphicNode( const QskSkinnable*, QSGNode*,
         const QskGraphic&, const QskColorFilter&,
         const QRectF&, Qt::Alignment ) const;
+
+    // stretching to fit
+    QSGNode* updateGraphicNode( const QskSkinnable*, QSGNode*,
+        const QskGraphic&, const QskColorFilter&, const QRectF& ) const;
 
     void insertRemoveNodes( QSGNode* parentNode,
         QSGNode* oldNode, QSGNode* newNode, int nodeRole ) const;

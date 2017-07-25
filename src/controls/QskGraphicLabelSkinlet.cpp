@@ -7,6 +7,7 @@
 #include "QskGraphicLabel.h"
 #include "QskGraphic.h"
 #include "QskGraphicTextureFactory.h"
+#include "QskGraphicNode.h"
 #include "QskAspect.h"
 #include "QskSkin.h"
 #include "QskTextureNode.h"
@@ -80,10 +81,19 @@ QSGNode* QskGraphicLabelSkinlet::updateSubNode(
 QSGNode* QskGraphicLabelSkinlet::updateGraphicNode(
     const QskGraphicLabel* label, QSGNode* node ) const
 {
-    const QRectF rect = subControlRect( label, QskGraphicLabel::Graphic );
+    const auto colorFilter = label->graphicFilter();
+    const auto rect = subControlRect( label, QskGraphicLabel::Graphic );
 
-    node = QskSkinlet::updateGraphicNode( label, node,
-        label->graphic(), label->graphicFilter(), rect, Qt::AlignCenter );
+    if ( label->fillMode() == QskGraphicLabel::Stretch )
+    {
+        node = QskSkinlet::updateGraphicNode( label, node,
+            label->graphic(), colorFilter, rect );
+    }
+    else
+    {
+        node = QskSkinlet::updateGraphicNode( label, node,
+            label->graphic(), colorFilter, rect, Qt::AlignCenter );
+    }
 
     if ( node && label->mirror() )
     {
