@@ -22,7 +22,7 @@ QSK_DIRS = \
 INCLUDEPATH *= $${QSK_DIRS}
 DEPENDPATH  += $${QSK_DIRS}
 
-DESTDIR      = $${QSK_OUT_ROOT}/examples/bin
+DESTDIR      = $${QSK_OUT_ROOT}/playground/bin
 
 QMAKE_RPATHDIR *= $${QSK_OUT_ROOT}/lib
 LIBS *= -L$${QSK_OUT_ROOT}/lib -lqsktestsupport -lqskinny
