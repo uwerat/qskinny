@@ -5,6 +5,7 @@
 
 #include <QHash>
 #include <QPointer>
+#include <QGlobalStatic>
 
 namespace
 {
@@ -41,18 +42,21 @@ namespace
             return skin;
         }
     };
+
+    typedef QHash< QString, QPointer< QskSkinFactory > > FactoryTable;
 }
 
-static QHash< QString, QPointer< QskSkinFactory > >& qskFactoryTable()
+Q_GLOBAL_STATIC( FactoryTable, qskFactoryTable )
+
+static FactoryTable& qskGetFactoryTable()
 {
-    static QHash< QString, QPointer< QskSkinFactory > > table;
-    if ( table.isEmpty() )
+    if ( qskFactoryTable->isEmpty() )
     {
         static SkinFactory dummySkinFactory ( nullptr );
-        table.insert( factoryId.toLower(), &dummySkinFactory );
+        qskFactoryTable->insert( factoryId.toLower(), &dummySkinFactory );
     }
 
-    return table;
+    return *qskFactoryTable;
 }
 
 QskSkinFactory::QskSkinFactory( QObject* parent ):
@@ -65,19 +69,19 @@ QskSkinFactory::~QskSkinFactory() = default;
 
 void Qsk::registerSkinFactory( const QString& id, QskSkinFactory* factory )
 {
-    qskFactoryTable().insert( id.toLower(), factory );
+    qskFactoryTable->insert( id.toLower(), factory );
 }
 
 QskSkinFactory* Qsk::skinFactory( const QString& id )
 {
-    return qskFactoryTable().value( id.toLower() ).data();
+    return qskGetFactoryTable().value( id.toLower() ).data();
 }
 
 QStringList Qsk::skinNames()
 {
     QStringList names;
 
-    for ( auto factory : qskFactoryTable() )
+    for ( auto factory : qskGetFactoryTable() )
     {
         if ( factory )
             names += factory->skinNames();
@@ -90,7 +94,7 @@ QskSkin* Qsk::createSkin( const QString& skinName )
 {
     if ( !skinName.isEmpty() )
     {
-        for ( auto factory : qskFactoryTable() )
+        for ( auto factory : qskGetFactoryTable() )
         {
             QskSkin* skin = factory->createSkin( skinName );
             if ( skin )
