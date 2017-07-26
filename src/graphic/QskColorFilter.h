@@ -25,6 +25,10 @@ public:
     ~QskColorFilter();
 
     void addColorSubstitution( QRgb from, QRgb to );
+    void addColorSubstitution( Qt::GlobalColor, QRgb );
+    void addColorSubstitution( QRgb, Qt::GlobalColor );
+    void addColorSubstitution( Qt::GlobalColor, Qt::GlobalColor );
+
     void reset();
 
     QPen substituted( const QPen& ) const;
@@ -66,6 +70,22 @@ inline const QVector< QPair< QRgb, QRgb > >&
 QskColorFilter::substitutions() const
 {
     return m_substitutions;
+}
+
+inline void QskColorFilter::addColorSubstitution( Qt::GlobalColor from, QRgb to )
+{
+    addColorSubstitution( QColor( from ).rgb(), to );
+}
+
+inline void QskColorFilter::addColorSubstitution( QRgb from, Qt::GlobalColor to )
+{
+    addColorSubstitution( from, QColor( to ).rgb() );
+}
+
+inline void QskColorFilter::addColorSubstitution(
+    Qt::GlobalColor from, Qt::GlobalColor to )
+{
+    addColorSubstitution( QColor( from ).rgb(), QColor( to ).rgb() );
 }
 
 Q_DECLARE_METATYPE( QskColorFilter )
