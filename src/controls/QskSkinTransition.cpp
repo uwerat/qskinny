@@ -63,6 +63,7 @@ static QVector< AnimatorCandidate > qskAnimatorCandidates(
     // building a list of candidates for animations by comparing
     // the old/new set of skin hints
 
+    const QskColorFilter noFilter;
     QVector< AnimatorCandidate > candidates;
 
     if ( oldMap.empty() )
@@ -89,16 +90,16 @@ static QVector< AnimatorCandidate > qskAnimatorCandidates(
                     const auto it1 = oldFilters.find( entry.second.toInt() );
                     const auto it2 = newFilters.find( entry.second.toInt() );
 
-                    if ( it1 != oldFilters.end() && it2 != newFilters.end() )
+                    if ( it1 != oldFilters.end() || it2 != newFilters.end() )
                     {
-                        const auto& filter1 = it1->second;
-                        const auto& filter2 = it2->second;
+                        const auto& f1 = ( it1 != oldFilters.end() ) ? it1->second : noFilter;
+                        const auto& f2 = ( it2 != newFilters.end() ) ? it2->second : noFilter;
 
-                        if ( filter1 != filter2 )
+                        if ( f1 != f2 )
                         {
                             candidates += AnimatorCandidate( aspect, 
-                                QVariant::fromValue( filter1 ),
-                                QVariant::fromValue( filter2 ) );
+                                QVariant::fromValue( f1 ),
+                                QVariant::fromValue( f2 ) );
                         }
                     }
                     break;
