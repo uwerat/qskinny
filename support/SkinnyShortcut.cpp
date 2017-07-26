@@ -204,8 +204,8 @@ void SkinnyShortcut::debugStatistics()
         int counter[4] = {};
         countItems( w->contentItem(), counter );
 
-        std::cout << w << "\n\titems:" << counter[0] << "visible" << counter[1]
-            << "\n\tnodes:" << counter[2] << "visible" << counter[3] << std::endl;
+        qDebug() << w << "\n\titems:" << counter[0] << "visible" << counter[1]
+            << "\n\tnodes:" << counter[2] << "visible" << counter[3]; 
     }
 }
 

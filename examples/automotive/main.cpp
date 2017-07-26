@@ -6,6 +6,9 @@
 #include <SkinnyShortcut.h>
 
 #include <QGuiApplication>
+#include <iostream>
+
+using namespace std;
 
 int main( int argc, char** argv )
 {
@@ -29,13 +32,18 @@ int main( int argc, char** argv )
 
     qskSetup->setSkin( "DefaultSkin" );
 
-    SkinnyShortcut::enable( SkinnyShortcut::DebugBackground | SkinnyShortcut::Quit );
+    cout << "CTRL-S to change the skin." << endl;
+    cout << "CTRL-T to change the color scheme, when the \"Default\" skin is active." << endl;
 
     QskShortcut::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_T ),
         &skinFactory, SLOT( toggleScheme()), false );
 
     QskShortcut::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_S ),
         &skinFactory, SLOT( rotateSkin()), false );
+
+    // With CTRL-B you can rotate a couple of visual debug modes
+    SkinnyShortcut::enable( SkinnyShortcut::DebugBackground | 
+        SkinnyShortcut::DebugStatistics | SkinnyShortcut::Quit );
 
     MainWindow mainWindow;
     mainWindow.show();
