@@ -21,8 +21,6 @@ public:
     };
 
 private:
-    class Transition;
-
     void initHints();
 
     QString m_name;

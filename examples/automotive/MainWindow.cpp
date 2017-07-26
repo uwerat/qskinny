@@ -1,6 +1,8 @@
 #include "MainWindow.h"
+#include "ButtonBar.h"
 #include "RadioControl.h"
 #include "SoundControl.h"
+#include "SkinFactory.h"
 
 #include <QskGraphic.h>
 #include <QskGraphicIO.h>
@@ -10,47 +12,6 @@
 
 #include <QDate>
 #include <QImage>
-
-namespace
-{
-    class ButtonBar : public QskLinearBox
-    {
-    public:
-        ButtonBar( QQuickItem* parentItem = nullptr ):
-            QskLinearBox( parentItem )
-        {
-            QColor c( Qt::black );
-            c.setAlphaF( 0.5 );
-            setBackgroundColor( c );
-
-            setMargins( QMarginsF( 20, 15, 20, 15 ) );
-            setSpacing( 20 );
-
-            setSizePolicy( QskSizePolicy::MinimumExpanding, QskSizePolicy::MinimumExpanding );
-        }
-
-        void addIcon( const char* name )
-        {
-            auto* label = new QskGraphicLabel( this );
-
-            /*
-                The label should adjust vertically and be stretched horizontally
-                according to its aspect ratio.
-             */
-
-            label->setSizePolicy( QskSizePolicy::Constrained, QskSizePolicy::Ignored );
-
-            const QString fileName = QString( ":/qvg/%1.qvg" ).arg( name );
-            label->setGraphic( QskGraphicIO::read( fileName ) );
-        }
-
-    protected:
-        virtual QSizeF contentsSizeHint() const override final
-        {
-            return QSizeF( -1, 20 );
-        }
-    };
-}
 
 MainWindow::MainWindow()
 {
@@ -81,16 +42,15 @@ MainWindow::MainWindow()
 QQuickItem* MainWindow::headerBar() const
 {
     auto* header = new ButtonBar();
-    header->addIcon( "bluetooth" );
-    header->addIcon( "location" );
-    header->addIcon( "phone" );
+    header->addIndicator( "bluetooth" );
+    header->addIndicator( "location" );
+    header->addIndicator( "phone" );
 
-    auto dateLabel = new QskTextLabel( QDate::currentDate().toString(), header );
-    dateLabel->setColor( QskTextLabel::Text, Qt::white );
+    (void) new QskTextLabel( QDate::currentDate().toString(), header );
 
-    header->addIcon( "user" );
-    header->addIcon( "bookmark" );
-    header->addIcon( "menu" );
+    header->addIndicator( "user" );
+    header->addIndicator( "bookmark" );
+    header->addIndicator( "menu" );
 
     return header;
 }
@@ -108,11 +68,11 @@ QQuickItem* MainWindow::footerBar() const
 {
     auto* footer = new ButtonBar();
 
-    footer->addIcon( "cloud" );
-    footer->addIcon( "man" );
-    footer->addIcon( "bus" );
-    footer->addIcon( "plane" );
-    footer->addIcon( "train" );
+    footer->addIndicator( "cloud" );
+    footer->addIndicator( "man" );
+    footer->addIndicator( "bus" );
+    footer->addIndicator( "plane" );
+    footer->addIndicator( "train" );
 
     footer->addStretch( 10 );
 

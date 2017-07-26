@@ -3,21 +3,23 @@ include( $${PWD}/../examples.pri )
 TARGET = automotive
 
 HEADERS += \
-    MainWindow.h \
+    ButtonBar.h \
     RadioControl.h \
     SoundControl.h \
     SkinFactory.h \
     DefaultSkin.h \
-    OtherSkin.h
+    OtherSkin.h \
+    MainWindow.h
 
 SOURCES += \
-    main.cpp \
-    MainWindow.cpp \
+    ButtonBar.cpp \
     RadioControl.cpp \
     SoundControl.cpp \
     SkinFactory.cpp \
     DefaultSkin.cpp \
-    OtherSkin.cpp
+    OtherSkin.cpp \
+    MainWindow.cpp \
+    main.cpp
 
 QRCFILES += \
     images.qrc

@@ -1,14 +1,17 @@
 #ifndef SOUNDCONTROL_H
 #define SOUNDCONTROL_H
 
-#include <QskControl.h>
+#include <QskBox.h>
 
-class SoundControl : public QskControl
+class SoundControl : public QskBox
 {
 public:
-    QSK_SUBCONTROLS( CrossHair, Marker, SliderControl )
+    QSK_SUBCONTROLS( Overlay, CrossHair, Marker, Vehicle, SliderControl, MarkerControl )
 
     SoundControl( QQuickItem* parent = nullptr );
+
+    virtual QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol subControl ) const override final;
 };
 
 #endif // SOUNDCONTROL_H

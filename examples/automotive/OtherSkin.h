@@ -13,6 +13,7 @@ public:
 
 private:
     void initHints();
+    void initGraphicFilters();
 
     QString m_name;
     Palette* m_palette;

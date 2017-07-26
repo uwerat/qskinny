@@ -1,4 +1,5 @@
 #include "SoundControl.h"
+#include "SkinFactory.h"
 
 #include <QskGraphic.h>
 #include <QskGraphicLabel.h>
@@ -12,9 +13,33 @@
 #include <QskBox.h>
 #include <QskNamespace.h>
 
+QSK_SUBCONTROL( SoundControl, Overlay )
 QSK_SUBCONTROL( SoundControl, CrossHair )
 QSK_SUBCONTROL( SoundControl, Marker )
+QSK_SUBCONTROL( SoundControl, MarkerControl )
+QSK_SUBCONTROL( SoundControl, Vehicle )
 QSK_SUBCONTROL( SoundControl, SliderControl )
+
+class VehicleLabel : public QskGraphicLabel
+{
+public:
+    VehicleLabel( QQuickItem* parentItem = nullptr ):
+        QskGraphicLabel( parentItem )
+    {
+        setGraphic( QskGraphicIO::read( QString( ":/qvg/car.qvg" ) ) );
+    }
+
+    virtual QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol subControl ) const override final
+    {
+        // so that we can set specific colors in the skin
+
+        if ( subControl == QskGraphicLabel::Graphic )
+            return SoundControl::Vehicle;
+
+        return subControl;
+    }
+};
 
 class CrossHairLine : public QskBox
 {
@@ -52,10 +77,10 @@ public:
     }
 };
 
-class NavigationButton : public QskPushButton
+class MarkerControlButton : public QskPushButton
 {
 public:
-    NavigationButton( Qsk::Direction direction, QQuickItem* parentItem = nullptr ):
+    MarkerControlButton( Qsk::Direction direction, QQuickItem* parentItem = nullptr ):
         QskPushButton( parentItem ),
         m_direction( direction )
     {
@@ -88,6 +113,17 @@ public:
         }
 
         return QPointF();
+    }
+
+    virtual QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol subControl ) const override final
+    {
+        // so that we can set specific colors in the skin
+
+        if ( subControl == QskPushButton::Graphic )
+            return SoundControl::MarkerControl;
+
+        return subControl;
     }
 
 protected:
@@ -149,8 +185,7 @@ public:
         auto verticalCarRectangle = new CrossHairLine( this );
         verticalCarRectangle->setObjectName( "verticalBar" );
 
-        auto* carLabel = new QskGraphicLabel( this );
-        carLabel->setGraphic( QskGraphicIO::read( QString( ":/qvg/car.qvg" ) ) );
+        (void) new VehicleLabel( this );
 
         auto marker = new BalanceFadeMarker( this );
         marker->setObjectName( "marker" );
@@ -246,6 +281,7 @@ public:
         m_slider = new QskSlider( Qt::Vertical );
         m_slider->setMinimum( min );
         m_slider->setMaximum( max );
+        m_slider->setStepSize( 10 );
 
         // layout
 
@@ -314,9 +350,9 @@ public:
     BalanceFadeControlBox( QQuickItem* parentItem = nullptr ):
         QskGridBox( parentItem )
     {
-        NavigationButton* buttons[4];
+        MarkerControlButton* buttons[4];
         for ( int i = 0; i < 4; i++ )
-            buttons[i] = new NavigationButton( static_cast< Qsk::Direction >( i ) );
+            buttons[i] = new MarkerControlButton( static_cast< Qsk::Direction >( i ) );
 
         m_carControl = new StackedControl();
 
@@ -347,20 +383,30 @@ public:
 };
 
 SoundControl::SoundControl( QQuickItem* parent ):
-    QskControl( parent )
+    QskBox( parent )
 {
-    setMargins( QMarginsF( 40, 20, 40, 20 ) );
     setAutoLayoutChildren( true );
 
-    QskGridBox* outerLayout = new QskGridBox( this );
-    outerLayout->setVerticalSpacing( 10 );
-    outerLayout->setHorizontalSpacing( 60 );
-    outerLayout->setColumnStretchFactor( 0, 1 );
-    outerLayout->setColumnStretchFactor( 1, 2 );
+    auto layout = new QskGridBox( this );
+    layout->setMargins( QMarginsF( 40, 20, 40, 20 ) );
+    layout->setVerticalSpacing( 10 );
+    layout->setHorizontalSpacing( 60 );
+    layout->setColumnStretchFactor( 0, 1 );
+    layout->setColumnStretchFactor( 1, 2 );
 
-    outerLayout->addItem( new SectionTitleBar( "Tone" ), 0, 0 );
-    outerLayout->addItem( new ToneControlBox(), 1, 0 );
+    layout->addItem( new SectionTitleBar( "Tone" ), 0, 0 );
+    layout->addItem( new ToneControlBox(), 1, 0 );
 
-    outerLayout->addItem( new SectionTitleBar( "Balance / Fade" ), 0, 1 );
-    outerLayout->addItem( new BalanceFadeControlBox(), 1, 1 );
+    layout->addItem( new SectionTitleBar( "Balance / Fade" ), 0, 1 );
+    layout->addItem( new BalanceFadeControlBox(), 1, 1 );
 }
+
+QskAspect::Subcontrol SoundControl::effectiveSubcontrol(
+    QskAspect::Subcontrol subControl ) const
+{
+    if ( subControl == QskBox::Panel )
+        return SoundControl::Overlay;
+
+    return subControl;
+}
+
