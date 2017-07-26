@@ -8,6 +8,7 @@
 #include <QFontDatabase>
 #include <QTemporaryDir>
 #include <QFile>
+#include <QGuiApplication>
 
 static void foolFontconfig()
 {
@@ -41,5 +42,11 @@ void SkinnyFont::init( QGuiApplication* )
 
     QFontDatabase::addApplicationFont( ":/fonts/Roboto-Regular.ttf" );
     QFontDatabase::addApplicationFont( ":/fonts/DejaVuSans.ttf" );
+
+    /*
+        The default initialization in QskSkin sets up its font table
+        with using the application font for the default font role.
+     */
+    QGuiApplication::setFont( QFont( "DejaVuSans", 12 ) );
 }
 
