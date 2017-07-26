@@ -82,11 +82,11 @@ rccgen.commands += $${QMAKE_MKDIR} $${RCC_DIR}
     QRC_SHADOW_CLONE = $${OUT_PWD}/${QMAKE_FILE_BASE}_shadow.qrc
 
     rccgen.commands += && $${QMAKE_COPY} ${QMAKE_FILE_IN} $${QRC_SHADOW_CLONE}
-    rccgen.commands += && rcc $${QRC_SHADOW_CLONE} -o ${QMAKE_FILE_OUT}
+    rccgen.commands += && $$dirname(QMAKE_QMAKE)/rcc $${QRC_SHADOW_CLONE} -o ${QMAKE_FILE_OUT}
     rccgen.commands += && $${QMAKE_DEL_FILE} $${QRC_SHADOW_CLONE}
 }
 else {
-    rccgen.commands += && rcc ${QMAKE_FILE_IN} -o ${QMAKE_FILE_OUT}
+    rccgen.commands += && $$dirname(QMAKE_QMAKE)/rcc ${QMAKE_FILE_IN} -o ${QMAKE_FILE_OUT}
 }
 
 # We would like to define a dependency for "svg2qvg.variable_out" -
