@@ -20,3 +20,7 @@ projects and therefore may feel a bit random. Conceptually, though, any type of
 control fits into QSkinny, as long as it is usable from C++ (as opposed to only
 QML).
 
+
+This is a screenshot of a sample automotive UI (see examples/automotive):
+
+![Automotive screenshot](https://github.com/uwerat/qskinny/blob/master/doc/automotive-screenshot.jpg?raw=true)
