@@ -257,24 +257,6 @@ namespace
                         // the control is not interested in the aspect
                         continue;
                     }
-
-                    QskAspect::Aspect a = candidate.aspect;
-                    a.clearStates();
-                    a.addState( control->skinState() );
-     
-                    const QskSkinHintStatus requestState = control->hintStatus( a );
-
-                    if ( requestState.source != QskSkinHintStatus::Skin )
-                    {
-                        // The control does not resolve the aspect from the skin.
-                        continue;
-                    }
-
-                    if ( candidate.aspect != requestState.aspect )
-                    {
-                        // the aspect was resolved to something else
-                        continue;
-                    }
                 }
                 else
                 {
@@ -283,10 +265,28 @@ namespace
                         if ( candidate.aspect.isBoxPrimitive() &&
                             ( candidate.aspect.boxPrimitive() == QskAspect::Background ) )
                         {
-                            // no need to animate the background if we show it
+                            // no need to animate the background unless we show it
                             continue;
                         }
                     }
+                }
+
+                QskAspect::Aspect a = candidate.aspect;
+                a.clearStates();
+                a.addState( control->skinState() );
+ 
+                const QskSkinHintStatus requestState = control->hintStatus( a );
+
+                if ( requestState.source != QskSkinHintStatus::Skin )
+                {
+                    // The control does not resolve the aspect from the skin.
+                    continue;
+                }
+
+                if ( candidate.aspect != requestState.aspect )
+                {
+                    // the aspect was resolved to something else
+                    continue;
                 }
 
                 addAnimator( control, candidate, animatorHint );
