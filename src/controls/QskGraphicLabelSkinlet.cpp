@@ -7,7 +7,6 @@
 #include "QskGraphicLabel.h"
 #include "QskGraphic.h"
 #include "QskGraphicTextureFactory.h"
-#include "QskGraphicNode.h"
 #include "QskAspect.h"
 #include "QskSkin.h"
 #include "QskTextureNode.h"
