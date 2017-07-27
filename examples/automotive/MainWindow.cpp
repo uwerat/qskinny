@@ -1,6 +1,5 @@
 #include "MainWindow.h"
 #include "ButtonBar.h"
-#include "RadioControl.h"
 #include "SoundControl.h"
 #include "SkinFactory.h"
 
@@ -57,10 +56,6 @@ QQuickItem* MainWindow::headerBar() const
 
 QQuickItem* MainWindow::mainContent() const
 {
-//    RadioControl* radioControl = new RadioControl( m_layout );
-//    m_layout->setRetainSizeWhenHidden( radioControl, true );
-//    radioControl->setVisible( false );
-
     return new SoundControl();
 }
 

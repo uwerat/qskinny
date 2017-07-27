@@ -4,7 +4,6 @@ TARGET = automotive
 
 HEADERS += \
     ButtonBar.h \
-    RadioControl.h \
     SoundControl.h \
     SkinFactory.h \
     DefaultSkin.h \
@@ -13,7 +12,6 @@ HEADERS += \
 
 SOURCES += \
     ButtonBar.cpp \
-    RadioControl.cpp \
     SoundControl.cpp \
     SkinFactory.cpp \
     DefaultSkin.cpp \
