@@ -65,7 +65,8 @@ QskAspect::Subcontrol QskAspect::nextSubcontrol(
 
     names += name;
 
-    const auto subControl = static_cast< Subcontrol >( names.size() - 1 );
+    // 0 is QskAspect::Control, we hav to start with 1
+    const auto subControl = static_cast< Subcontrol >( names.size() );
     hashTable[ metaObject ] += subControl;
 
     return subControl;
@@ -76,8 +77,8 @@ QByteArray QskAspect::subControlName( Subcontrol subControl )
     const auto& names = qskAspectRegistry->subControlNames;
 
     const int index = subControl;
-    if ( index >= 0 && index < names.size() )
-        return names[ index ];
+    if ( index > 0 && index < names.size() )
+        return names[ index - 1 ];
 
     return QByteArray();
 }
