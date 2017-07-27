@@ -61,6 +61,9 @@ static inline QSGNode* qskUpdateGraphicNode(
     const QskGraphic& graphic, const QskColorFilter& colorFilter,
     const QRect& rect )
 {
+    if ( rect.isEmpty() )
+        return nullptr;
+
     auto mode = QskGraphicTextureFactory::OpenGL;
 
     const QskControl* control = skinnable->owningControl();
