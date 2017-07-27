@@ -12,7 +12,7 @@ SUBDIRS += \
     listbox \
     messagebox \
     sliders \
-    symbols \
+    thumbnails \
     tabview
 
 # qml
