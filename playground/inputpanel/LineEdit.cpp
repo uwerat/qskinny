@@ -52,7 +52,10 @@ LineEdit::LineEdit( QQuickItem* parent ):
 
     setActiveFocusOnTab( true );
 #if 1
-    setSkinlet( new LineEditSkinlet() );
+    auto skinlet = new LineEditSkinlet();
+    skinlet->setOwnedBySkinnable( true );
+
+    setSkinlet( skinlet );
 #endif
 }
 

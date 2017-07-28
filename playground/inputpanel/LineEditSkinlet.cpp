@@ -16,16 +16,16 @@ LineEditSkinlet::~LineEditSkinlet() = default;
 
 QRectF LineEditSkinlet::subControlRect(
     const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
-{      
+{
     const auto lineEdit = static_cast< const LineEdit* >( skinnable );
-    
+
     if ( subControl == LineEdit::Panel )
     {
         return panelRect( lineEdit );
     }
-    
+
     return Inherited::subControlRect( skinnable, subControl );
-}   
+}
 
 QRectF LineEditSkinlet::panelRect( const LineEdit* lineEdit ) const
 {
