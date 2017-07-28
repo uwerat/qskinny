@@ -1,9 +1,11 @@
 include( $${PWD}/../playground.pri )
 
-TARGET = lineedit
+TARGET = inputpanel
+
+DEFINES += PLUGIN_PATH=$$clean_path( $$QSK_OUT_ROOT/plugins )
 
 RESOURCES += \
-    qml.qrc
+    inputpanel.qrc
 
 HEADERS += \
     LineEditSkinlet.h \

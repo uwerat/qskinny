@@ -29,7 +29,7 @@ LIBS *= -L$${QSK_OUT_ROOT}/lib -lqsktestsupport -lqskinny
 
 win32 {
     contains(QSK_CONFIG, QskDll) {
-        DEFINES    += QT_DLL QSK_DLL QSK_DLL
+        DEFINES    += QT_DLL QSK_DLL
     }
 }
 

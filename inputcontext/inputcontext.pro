@@ -1,31 +1,35 @@
-SQUIEK_ROOT = $${PWD}/..
-SQUIEK_OUT_ROOT = $${OUT_PWD}/..
+QSK_ROOT = $${PWD}/..
+QSK_OUT_ROOT = $${OUT_PWD}/..
 
-include( $${SQUIEK_ROOT}/qskconfig.pri )
+include( $${QSK_ROOT}/qskconfig.pri )
 
 TEMPLATE = lib
-TARGET = skinnyinputcontext
+TARGET = qskinputcontext
 
 QT += quick gui-private
 CONFIG += no_private_qt_headers_warning
 
-SQUIEK_DIRS = \
-    $${SQUIEK_ROOT}/src/common \
-    $${SQUIEK_ROOT}/src/nodes \
-    $${SQUIEK_ROOT}/src/graphic \
-    $${SQUIEK_ROOT}/src/controls \
-    $${SQUIEK_ROOT}/src/layouts \
-    $${SQUIEK_ROOT}/src/dialogs
+QSK_SUBDIRS = \
+    $${QSK_ROOT}/src/common \
+    $${QSK_ROOT}/src/nodes \
+    $${QSK_ROOT}/src/graphic \
+    $${QSK_ROOT}/src/controls \
+    $${QSK_ROOT}/src/layouts \
+    $${QSK_ROOT}/src/dialogs
 
-INCLUDEPATH *= $${SQUIEK_DIRS}
-DEPENDPATH  += $${SQUIEK_DIRS}
+INCLUDEPATH *= $${QSK_SUBDIRS}
+DEPENDPATH  += $${QSK_SUBDIRS}
 
-DESTDIR      = $${SQUIEK_OUT_ROOT}/examples/bin/platforminputcontexts
+DESTDIR      = $${QSK_OUT_ROOT}/plugins/platforminputcontexts
 
-QMAKE_RPATHDIR *= $${SQUIEK_OUT_ROOT}/lib
-LIBS *= -L$${SQUIEK_OUT_ROOT}/lib -lqskinny
+QMAKE_RPATHDIR *= $${QSK_OUT_ROOT}/lib
+LIBS *= -L$${QSK_OUT_ROOT}/lib -lqskinny
 
-win32: contains(SQUIEK_CONFIG, SquiekDll): DEFINES += QT_DLL QSK_DLL SQUIEK_DLL
+win32 {
+    contains(QSK_CONFIG, QskDll) {
+        DEFINES += QT_DLL QSK_DLL
+    }
+}
 
 SOURCES += \
     QskInputContext.cpp \
@@ -40,4 +44,4 @@ HEADERS += \
     QskPinyinCompositionModel.h \
     pinyin/zh.h
 
-OTHER_FILES += metadata.json qml/ANSPInputPanel.qml
+OTHER_FILES += metadata.json

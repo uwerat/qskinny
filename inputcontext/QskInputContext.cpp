@@ -8,9 +8,6 @@
 #include <QskWindow.h>
 #include <QskSetup.h>
 
-#include <private/qguiapplication_p.h>
-#include <qpa/qplatformintegration.h>
-
 #include <QGuiApplication>
 #include <QQmlContext>
 #include <QQmlEngine>

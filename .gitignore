@@ -5,5 +5,6 @@ moc
 rcc
 lib
 bin
+plugins
 qvg
 *.swp

@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/qml">
-        <file>lineedit.qml</file>
+        <file>inputpanel.qml</file>
     </qresource>
 </RCC>

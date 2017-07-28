@@ -14,11 +14,17 @@
 #include <QQmlApplicationEngine>
 #include <QGuiApplication>
 
+#define STRINGIFY(x) #x
+#define STRING(x) STRINGIFY(x)
+
 int main( int argc, char* argv[] )
 {
 #ifdef ITEM_STATISTICS
     QskObjectCounter counter( true );
 #endif
+
+    qputenv( "QT_IM_MODULE", "skinny" );
+    qputenv( "QT_PLUGIN_PATH", STRING( PLUGIN_PATH ) );
 
     QskModule::registerTypes();
     qmlRegisterType< LineEdit >( "LineEdit", 1, 0, "LineEdit" );
@@ -29,7 +35,7 @@ int main( int argc, char* argv[] )
     SkinnyShortcut::enable( SkinnyShortcut::Quit |
         SkinnyShortcut::DebugShortcuts );
 
-    QQmlApplicationEngine engine( QUrl( QStringLiteral( "qrc:/qml/lineedit.qml" ) ) );
+    QQmlApplicationEngine engine( QUrl( QStringLiteral( "qrc:/qml/inputpanel.qml" ) ) );
 
     return app.exec();
 }

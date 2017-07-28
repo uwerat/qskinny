@@ -4,5 +4,5 @@ TEMPLATE = subdirs
 
 # qml
 SUBDIRS += \
-    lineedit \
+    inputpanel \
     images
