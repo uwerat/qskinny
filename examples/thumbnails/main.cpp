@@ -12,6 +12,7 @@
 #include <QskLinearBox.h>
 #include <QskObjectCounter.h>
 #include <QskGraphic.h>
+#include <QskAspect.h>
 
 #include <QGuiApplication>
 #include <QPainter>
@@ -111,22 +112,34 @@ int main( int argc, char* argv[] )
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
     /*
-        In a real world application a thumbnail viewer would probably implemented
+        In a real world application a thumbnail viewer would probably be implemented
         with QskScrollView using scene graph node composition - like done
-        in QskListView.
+        with QskListView.
 
         This example also shows, that blocking of the scene graph node creation
         ( QskControl::DeferredUpdate + QskControl::CleanupOnVisibility ) 
-        could be extended to respect being inside the window or a clip region.
+        could be improved to also respect being inside the window or a clip region.
 
         But here we only want to demonstrate how QskScrollArea works.
      */
 
     auto scrollArea = new QskScrollArea();
+    scrollArea->setMargins( QMarginsF( 25, 25, 5, 5 ) );
     scrollArea->setScrolledItem( new IconGrid() );
+
+#if 1
+    // settings that are usually done in the skins
+    scrollArea->setMetric( QskScrollView::Viewport | QskAspect::Radius, 20 );
+    scrollArea->setMetric( QskScrollView::VerticalScrollBar | QskAspect::Size, 20 );
+    scrollArea->setMetric( QskScrollView::VerticalScrollHandle | QskAspect::Radius, 8 );
+    scrollArea->setMetric( QskScrollView::HorizontalScrollBar | QskAspect::Size, 20 );
+    scrollArea->setMetric( QskScrollView::HorizontalScrollHandle | QskAspect::Radius, 0 );
+#endif
+
 
     QskWindow window;
     window.resize( 600, 600 );
+    window.setColor( "SteelBlue" );
     window.addItem( scrollArea );
 
     window.show();
