@@ -246,7 +246,7 @@ void QskListViewSkinlet::updateForegroundNodes(
         }
     }
 
-    updateVisisbleForegroundNodes( listView, listViewNode,
+    updateVisibleForegroundNodes( listView, listViewNode,
         rowMin, rowMax, colMin, colMax, margins, forwards );
 
     // finally putting the nodes into their position
@@ -278,7 +278,7 @@ void QskListViewSkinlet::updateForegroundNodes(
     listViewNode->resetRows( rowMin, rowMax );
 }
 
-void QskListViewSkinlet::updateVisisbleForegroundNodes(
+void QskListViewSkinlet::updateVisibleForegroundNodes(
     const QskListView* listView, QskListViewNode* listViewNode,
     int rowMin, int rowMax, int colMin, int colMax, const QMarginsF& margins,
     bool forward ) const

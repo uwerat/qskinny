@@ -45,7 +45,7 @@ private:
     void updateForegroundNodes( const QskListView*, QskListViewNode* ) const;
     void updateBackgroundNodes( const QskListView*, QskListViewNode* ) const;
 
-    void updateVisisbleForegroundNodes(
+    void updateVisibleForegroundNodes(
         const QskListView*, QskListViewNode*,
         int rowMin, int rowMax, int colMin, int colMax,
         const QMarginsF& margin, bool forward ) const;

@@ -143,7 +143,7 @@ void QskStackBoxAnimator1::setup()
             if ( i == 1 )
             {
                 // now move the new item outside of
-                // the visisble area and then "show" it
+                // the visible area and then "show" it
 
                 if ( orientation == Qt::Horizontal )
                     item->setX( stackBox->width() );
