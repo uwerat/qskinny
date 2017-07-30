@@ -1,9 +1,9 @@
 QSkinny
 -------
 
-The (Q)Skinny library contains a set of lightweight Qt Quick Controls.
-
-It can be used from C++ and/or QML application code. 
+The (Q)Skinny library is a framework built on top of the Qt scene graph
+and very few core classes from Qt/Quick. It offers a set of lightweight controls,
+that can be used from C++ and/or QML.
 
 Doing the implementation in C++ allows to make use of the "scene graph"
 classes. Building controls from scene graph nodes allows for a lighter implementation
