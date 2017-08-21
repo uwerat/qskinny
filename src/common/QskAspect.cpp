@@ -65,7 +65,7 @@ QskAspect::Subcontrol QskAspect::nextSubcontrol(
 
     names += name;
 
-    // 0 is QskAspect::Control, we hav to start with 1
+    // 0 is QskAspect::Control, so we have to start with 1
     const auto subControl = static_cast< Subcontrol >( names.size() );
     hashTable[ metaObject ] += subControl;
 
