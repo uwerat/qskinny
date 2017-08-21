@@ -177,6 +177,7 @@ protected:
     virtual void hoverEnterEvent( QHoverEvent* ) override;
     virtual void hoverLeaveEvent( QHoverEvent* ) override;
 
+    virtual bool childMouseEventFilter( QQuickItem*, QEvent* ) override;
     virtual bool gestureFilter( QQuickItem*, QEvent* );
 
     virtual void itemChange( ItemChange, const ItemChangeData& ) override;
@@ -195,8 +196,6 @@ private Q_SLOTS:
     void updateControlFlags();
 
 private:
-    virtual bool childMouseEventFilter( QQuickItem*, QEvent* ) override;
-
     virtual QSGNode* updatePaintNode( QSGNode*, UpdatePaintNodeData* ) override final;
     virtual void updatePolish() override final;
 
