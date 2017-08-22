@@ -43,19 +43,18 @@ public:
         using namespace QskAspect;
 
         const QskAspect::Aspect aspectRole = QskGraphicLabel::Graphic | GraphicRole;
+        const int oldRole = graphicRole( aspectRole );
 
-        const QVariant oldRole = storedSkinHint( aspectRole );
-
-        QRgb rgb;
+        QColor color;
         if ( on )
         {
-            rgb = qRgb( 40, 40, 40 );
-            setFlagHint( aspectRole, Inverted );
+            color.setRgb( 40, 40, 40 );
+            setGraphicRole( aspectRole, Inverted );
         }
         else
         {
-            rgb = qRgb( 255, 228, 181 );
-            setFlagHint( aspectRole, Normal );
+            color.setRgb( 255, 228, 181 );
+            setGraphicRole( aspectRole, Normal );
         }
 
         const int duration = 500;
@@ -64,12 +63,12 @@ public:
         {
             const Aspect aspectColor = Control | Color | Background | edge;
 
-            const auto oldColor = storedSkinHint( aspectColor );
-            setColor( aspectColor, rgb );
-            startTransition( aspectColor, duration, oldColor, storedSkinHint( aspectColor ) );
+            const auto oldColor = effectiveHint( aspectColor );
+            setColor( aspectColor, color );
+            startTransition( aspectColor, duration, oldColor, color );
         }
 
-        startTransition( aspectRole, duration, oldRole, storedSkinHint( aspectRole ) );
+        startTransition( aspectRole, duration, oldRole, graphicRole( aspectRole ) );
     }
 };
 

@@ -299,7 +299,7 @@ QskColorFilter QskSkinnable::effectiveGraphicFilter(
 #if 1
     QskSkinHintStatus status;
 
-    const QVariant hint = storedSkinHint( aspect | skinState(), &status );
+    const QVariant hint = storedHint( aspect | skinState(), &status );
     if ( status.isValid() )
     {
         // we need to know about how the aspect gets resolved
@@ -393,7 +393,7 @@ QVariant QskSkinnable::effectiveHint(
     aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
 
     if ( aspect.isAnimator() )
-        return storedSkinHint( aspect, status );
+        return storedHint( aspect, status );
 
     const QVariant v = animatedValue( aspect, status );
     if ( v.isValid() )
@@ -402,7 +402,7 @@ QVariant QskSkinnable::effectiveHint(
     if ( aspect.state() == QskAspect::NoState )
         aspect = aspect | skinState();
 
-    return storedSkinHint( aspect, status );
+    return storedHint( aspect, status );
 }
 
 QskSkinHintStatus QskSkinnable::hintStatus( QskAspect::Aspect aspect ) const
@@ -469,7 +469,7 @@ void QskSkinnable::removeSkinHint( QskAspect::Aspect aspect )
         m_data->skinHints->erase( aspect );
 }
 
-const QVariant& QskSkinnable::storedSkinHint(
+const QVariant& QskSkinnable::storedHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
     const auto skin = effectiveSkin();
@@ -722,15 +722,15 @@ void QskSkinnable::startTransition( QskAspect::Aspect aspect,
 void QskSkinnable::startTransition( QskAspect::Aspect aspect,
     QskAspect::State oldState, QskAspect::State newState )
 {
-    const auto animationHint = storedSkinHint( aspect ).value< QskAnimationHint >();
+    const auto animationHint = storedHint( aspect ).value< QskAnimationHint >();
     if ( animationHint.duration <= 0 )
         return;
 
     aspect.clearStates();
     aspect.setAnimator( false );
 
-    const auto from = storedSkinHint( aspect | oldState, nullptr );
-    const auto to = storedSkinHint( aspect | newState, nullptr );
+    const auto from = storedHint( aspect | oldState, nullptr );
+    const auto to = storedHint( aspect | newState, nullptr );
 
     startTransition( aspect, animationHint, from, to );
 }

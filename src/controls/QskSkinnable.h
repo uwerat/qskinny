@@ -97,7 +97,7 @@ public:
 
     void removeSkinHint( QskAspect::Aspect );
 
-    const QVariant& storedSkinHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
+    QVariant effectiveHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
     QskSkinHintStatus hintStatus( QskAspect::Aspect ) const;
 
@@ -136,10 +136,10 @@ protected:
 
 private:
     void setSkinHint( QskAspect::Aspect, const QVariant& );
-    QVariant effectiveHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
     void startTransition( QskAspect::Aspect, QskAspect::State, QskAspect::State );
     QVariant animatedValue( QskAspect::Aspect, QskSkinHintStatus* ) const;
+    const QVariant& storedHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

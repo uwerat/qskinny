@@ -228,9 +228,10 @@ void QskSlider::updatePosition()
 
     if ( animation.duration > 0 )
     {
-        const QVariant hint = storedSkinHint( aspect );
+        const qreal oldPos = metric( aspect );
         setMetric( aspect, pos );
-        startTransition( aspect, animation, hint, QVariant( pos ) );
+
+        startTransition( aspect, animation, oldPos, pos );
     }
     else
     {
