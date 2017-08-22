@@ -121,6 +121,24 @@ void QskGraphicLabel::setGraphic( const QskGraphic& graphic )
     }
 }
 
+void QskGraphicLabel::setGraphicRole( int role )
+{
+    const int oldRole = graphicRole();
+
+    QskSkinnable::setGraphicRole( effectiveSubcontrol( Graphic ), role );
+
+    if ( role != oldRole )
+    {
+        update();
+        Q_EMIT graphicRoleChanged();
+    }
+}
+
+int QskGraphicLabel::graphicRole() const
+{
+    return QskSkinnable::graphicRole( Graphic );
+}
+
 QskColorFilter QskGraphicLabel::graphicFilter() const
 {
     // can be removed once we can store a filter inidividually

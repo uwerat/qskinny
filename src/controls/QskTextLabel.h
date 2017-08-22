@@ -16,6 +16,12 @@ class QSK_EXPORT QskTextLabel : public QskControl
 
     Q_PROPERTY( QString text READ text WRITE setText NOTIFY textChanged )
 
+    Q_PROPERTY( int fontRole READ fontRole
+        WRITE setFontRole NOTIFY fontRoleChanged )
+
+    Q_PROPERTY( QColor textColor READ textColor
+        WRITE setTextColor NOTIFY textColorChanged )
+
     Q_PROPERTY( QskTextOptions textOptions READ textOptions
         WRITE setTextOptions NOTIFY textOptionsChanged )
 
@@ -34,6 +40,12 @@ public:
 
     QString text() const;
 
+    void setFontRole( int role );
+    int fontRole() const;
+
+    void setTextColor( const QColor& );
+    QColor textColor() const;
+
     void setTextOptions( const QskTextOptions& );
     QskTextOptions textOptions() const;
 
@@ -51,7 +63,9 @@ public:
 
 Q_SIGNALS:
     void textChanged( const QString& );
+    void textColorChanged();
     void textOptionsChanged();
+    void fontRoleChanged();
     void alignmentChanged();
 
 public Q_SLOTS:

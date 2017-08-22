@@ -42,19 +42,18 @@ public:
     {
         using namespace QskAspect;
 
-        const QskAspect::Aspect aspectRole = QskGraphicLabel::Graphic | GraphicRole;
-        const int oldRole = graphicRole( aspectRole );
+        const int oldRole = graphicRole();
 
         QColor color;
         if ( on )
         {
             color.setRgb( 40, 40, 40 );
-            setGraphicRole( aspectRole, Inverted );
+            setGraphicRole( Inverted );
         }
         else
         {
             color.setRgb( 255, 228, 181 );
-            setGraphicRole( aspectRole, Normal );
+            setGraphicRole( Normal );
         }
 
         const int duration = 500;
@@ -68,7 +67,8 @@ public:
             startTransition( aspectColor, duration, oldColor, color );
         }
 
-        startTransition( aspectRole, duration, oldRole, graphicRole( aspectRole ) );
+        const QskAspect::Aspect aspectRole = QskGraphicLabel::Graphic | GraphicRole;
+        startTransition( aspectRole, duration, oldRole, graphicRole() );
     }
 };
 

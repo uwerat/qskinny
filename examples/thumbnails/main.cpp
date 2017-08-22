@@ -101,6 +101,23 @@ public:
     }
 };
 
+class ScrollArea : public QskScrollArea
+{
+public:
+    ScrollArea( QQuickItem* parentItem = nullptr ) :
+        QskScrollArea( parentItem )
+    {
+        using namespace QskAspect;
+
+        // settings usually done in the skins
+        setMetric( Viewport | Radius, 20 );
+        setMetric( VerticalScrollBar | Size, 20 );
+        setMetric( VerticalScrollHandle | Radius, 8 );
+        setMetric( HorizontalScrollBar | Size, 20 );
+        setMetric( HorizontalScrollHandle | Radius, 0 );
+    }
+};
+
 int main( int argc, char* argv[] )
 {
 #ifdef ITEM_STATISTICS
@@ -123,19 +140,9 @@ int main( int argc, char* argv[] )
         But here we only want to demonstrate how QskScrollArea works.
      */
 
-    auto scrollArea = new QskScrollArea();
+    auto scrollArea = new ScrollArea();
     scrollArea->setMargins( QMarginsF( 25, 25, 5, 5 ) );
     scrollArea->setScrolledItem( new IconGrid() );
-
-#if 1
-    // settings that are usually done in the skins
-    scrollArea->setMetric( QskScrollView::Viewport | QskAspect::Radius, 20 );
-    scrollArea->setMetric( QskScrollView::VerticalScrollBar | QskAspect::Size, 20 );
-    scrollArea->setMetric( QskScrollView::VerticalScrollHandle | QskAspect::Radius, 8 );
-    scrollArea->setMetric( QskScrollView::HorizontalScrollBar | QskAspect::Size, 20 );
-    scrollArea->setMetric( QskScrollView::HorizontalScrollHandle | QskAspect::Radius, 0 );
-#endif
-
 
     QskWindow window;
     window.resize( 600, 600 );

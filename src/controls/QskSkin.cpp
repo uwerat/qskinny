@@ -173,11 +173,6 @@ QColor QskSkin::color( QskAspect::Aspect aspect ) const
     return skinHint( aspect | QskAspect::Color ).value<QColor>();
 }
 
-QColor QskSkin::baseColor() const
-{
-    return color( QskAspect::Control | QskAspect::Color );
-}
-
 void QskSkin::setMetric( QskAspect::Aspect aspect, qreal metric )
 {
     setSkinHint( aspect | QskAspect::Metric, metric );

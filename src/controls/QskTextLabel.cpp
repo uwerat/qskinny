@@ -93,6 +93,44 @@ QskTextOptions QskTextLabel::textOptions() const
     return m_data->textOptions;
 }
 
+void QskTextLabel::setFontRole( int role )
+{
+    const int oldRole = fontRole();
+
+    QskSkinnable::setFontRole( effectiveSubcontrol( Text ), role );
+
+    if ( oldRole != role )
+    {
+        resetImplicitSize();
+        update();
+
+        Q_EMIT fontRoleChanged();
+    }
+}
+
+int QskTextLabel::fontRole() const
+{
+    return QskSkinnable::fontRole( Text );
+}
+
+void QskTextLabel::setTextColor( const QColor& color )
+{
+    const QColor oldColor = textColor();
+
+    QskSkinnable::setColor( effectiveSubcontrol( Text ), color );
+
+    if ( oldColor != color )
+    {
+        update();
+        Q_EMIT textColorChanged();
+    }
+}
+
+QColor QskTextLabel::textColor() const
+{
+    return QskSkinnable::color( Text );
+}
+
 Qt::Alignment QskTextLabel::alignment() const
 {
     return flagHint< Qt::Alignment >(

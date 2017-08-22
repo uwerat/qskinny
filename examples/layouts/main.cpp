@@ -30,9 +30,8 @@ public:
         QskTextLabel( text, parent )
     {
         setBackgroundColor( Qt::black );
-        setColor( QskTextLabel::Text, Qt::white );
-
-        setFontRole( Text, QskSkin::MediumFont );
+        setTextColor( Qt::white );
+        setFontRole( QskSkin::MediumFont );
 
         QskTextOptions textOptions;
         textOptions.setWrapMode( QskTextOptions::WordWrap );

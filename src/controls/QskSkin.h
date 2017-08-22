@@ -61,7 +61,6 @@ public:
     void setColor( QskAspect::Aspect, const QColor& );
 
     QColor color( QskAspect::Aspect ) const;
-    QColor baseColor() const;
 
     void setMetric( QskAspect::Aspect, qreal metric );
     qreal metric( QskAspect::Aspect ) const;

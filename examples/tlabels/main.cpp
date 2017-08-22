@@ -6,16 +6,12 @@
 #include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
 
-#include <QskAspect.h>
-#include <QskModule.h>
 #include <QskObjectCounter.h>
-#include <QskSkin.h>
 #include <QskLinearBox.h>
 #include <QskTextLabel.h>
 #include <QskWindow.h>
 
 #include <QGuiApplication>
-#include <QFont>
 
 class TextBox: public QskLinearBox
 {
@@ -29,7 +25,7 @@ public:
         for ( int i = 0; i < texts.size(); i++ )
         {
             auto label = new QskTextLabel( texts[i] + " Font", this );
-            label->setFontRole( QskTextLabel::Text, i );
+            label->setFontRole( i );
         }
     }
 };

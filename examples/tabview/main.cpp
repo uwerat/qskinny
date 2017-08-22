@@ -25,9 +25,8 @@ public:
     Label( const QString& text, QQuickItem* parent = nullptr ):
         QskTextLabel( text, parent )
     {
-        setColor( Text, Qt::darkRed );
-
-        setFontRole( Text, QskSkin::LargeFont );
+        setTextColor( Qt::darkRed );
+        setFontRole( QskSkin::LargeFont );
         setAlignment( Qt::AlignCenter );
     }
 };

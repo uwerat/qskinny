@@ -12,6 +12,8 @@ public:
     IndicatorLabel( QQuickItem* parentItem = nullptr ):
         QskGraphicLabel( parentItem )
     {
+        // so the skins are able to colorize them
+        setGraphicRole( SkinFactory::Indicator );
     }
 
     virtual QskAspect::Subcontrol effectiveSubcontrol(
@@ -42,9 +44,6 @@ ButtonBar::ButtonBar( QQuickItem* parentItem ):
 void ButtonBar::addIndicator( const char* name )
 {
     auto* label = new IndicatorLabel( this );
-
-    // so the skins are able to colorize them
-    label->setGraphicRole( QskGraphicLabel::Graphic, SkinFactory::Indicator );
 
     /*
         The label should adjust vertically and be stretched horizontally
