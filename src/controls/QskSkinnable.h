@@ -30,6 +30,7 @@ class QskColorFilter;
 
 class QskSkin;
 class QskSkinlet;
+class QskSkinHintTable;
 
 class QSK_EXPORT QskSkinHintStatus
 {
@@ -95,8 +96,6 @@ public:
     void setAnimation( QskAspect::Aspect, QskAnimationHint );
     QskAnimationHint animation( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
-    void removeSkinHint( QskAspect::Aspect );
-
     QVariant effectiveHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
     QskSkinHintStatus hintStatus( QskAspect::Aspect ) const;
@@ -134,9 +133,10 @@ protected:
     void setSkinStateFlag( QskAspect::State, bool = true );
     virtual void updateNode( QSGNode* );
 
-private:
-    void setSkinHint( QskAspect::Aspect, const QVariant& );
+    QskSkinHintTable &hintTable();
+    const QskSkinHintTable &hintTable() const;
 
+private:
     void startTransition( QskAspect::Aspect, QskAspect::State, QskAspect::State );
     QVariant animatedValue( QskAspect::Aspect, QskSkinHintStatus* ) const;
     const QVariant& storedHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;

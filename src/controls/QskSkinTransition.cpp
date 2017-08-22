@@ -1,6 +1,7 @@
 #include "QskSkinTransition.h"
 #include "QskControl.h"
 #include "QskSkin.h"
+#include "QskSkinHintTable.h"
 #include "QskColorFilter.h"
 #include "QskHintAnimator.h"
 
@@ -421,14 +422,14 @@ void QskSkinTransition::process()
         // copy out all hints before updating the skin
         // - would be good to have Copy on Write here
 
-        const auto oldMap = m_skins[0]->skinHints();
+        const auto oldMap = m_skins[0]->hintTable().hints();
         const auto oldFilters = m_skins[0]->graphicFilters();
 
         // apply the changes
         updateSkin( m_skins[0], m_skins[1] );
 
         candidates = qskAnimatorCandidates( m_mask, oldMap, oldFilters,
-            m_skins[1]->skinHints(), m_skins[1]->graphicFilters() );
+            m_skins[1]->hintTable().hints(), m_skins[1]->graphicFilters() );
     }
 
     if ( !candidates.isEmpty() )

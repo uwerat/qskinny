@@ -157,6 +157,7 @@ HEADERS += \
     controls/QskSimpleListBox.h \
     controls/QskSkinFactory.h \
     controls/QskSkin.h \
+    controls/QskSkinHintTable.h \
     controls/QskAnimationHint.h \
     controls/QskSkinlet.h \
     controls/QskSkinnable.h \
@@ -220,6 +221,7 @@ SOURCES += \
     controls/QskShortcut.cpp \
     controls/QskSimpleListBox.cpp \
     controls/QskSkin.cpp \
+    controls/QskSkinHintTable.cpp \
     controls/QskSkinFactory.cpp \
     controls/QskSkinlet.cpp \
     controls/QskSkinnable.cpp \

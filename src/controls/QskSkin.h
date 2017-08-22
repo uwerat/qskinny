@@ -13,7 +13,6 @@
 #include <QColor>
 
 #include <unordered_map>
-#include <set>
 #include <memory>
 #include <type_traits>
 
@@ -26,6 +25,7 @@ class QskGraphic;
 class QskGraphicProvider;
 
 class QskAnimationHint;
+class QskSkinHintTable;
 
 class QVariant;
 
@@ -69,8 +69,6 @@ public:
     QskAnimationHint animation( QskAspect::Aspect ) const;
 
     void setSkinHint( QskAspect::Aspect, const QVariant& hint );
-    void removeSkinHint( QskAspect::Aspect );
-
     const QVariant& skinHint( QskAspect::Aspect ) const;
 
     void setGraphicFilter( int graphicRole, const QskColorFilter& );
@@ -94,10 +92,13 @@ public:
 
     QskSkinlet* skinlet( const QskSkinnable* );
 
-    const std::set< QskAspect::Aspect >& animatorAspects( QskAspect::Subcontrol ) const;
-    const std::unordered_map< QskAspect::Aspect, QVariant >& skinHints() const;
+    const QskSkinHintTable& hintTable() const;
+
     const std::unordered_map< int, QFont >& fonts() const;
     const std::unordered_map< int, QskColorFilter >& graphicFilters() const;
+
+protected:
+    QskSkinHintTable& skinHintTable();
 
 private:
     void declareSkinlet( const QMetaObject* controlMetaObject,

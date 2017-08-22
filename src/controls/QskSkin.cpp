@@ -12,6 +12,7 @@
 #include "QskSetup.h"
 #include "QskAnimationHint.h"
 #include "QskStandardSymbol.h"
+#include "QskSkinHintTable.h"
 
 #include "QskFocusIndicator.h"
 
@@ -105,15 +106,15 @@ class QskSkin::PrivateData
 {
 public:
     PrivateData( QskSkin* skin ):
-        skin( skin )
+        skin( skin ),
+        hintTable( true )
     {
     }
 
     QskSkin* skin;
     std::unordered_map< const QMetaObject*, SkinletData > skinletMap;
 
-    std::unordered_map< QskAspect::Aspect, QVariant > skinHints;
-    std::unordered_map< int, std::set< QskAspect::Aspect > > animatorAspects;
+    QskSkinHintTable hintTable;
 
     std::unordered_map< int, QFont > fonts;
     std::unordered_map< int, QskColorFilter > graphicFilters;
@@ -170,98 +171,38 @@ void QskSkin::setColor( QskAspect::Aspect aspect, const QColor& color )
 
 QColor QskSkin::color( QskAspect::Aspect aspect ) const
 {
-    return skinHint( aspect | QskAspect::Color ).value<QColor>();
+    return m_data->hintTable.color( aspect );
 }
 
 void QskSkin::setMetric( QskAspect::Aspect aspect, qreal metric )
 {
-    setSkinHint( aspect | QskAspect::Metric, metric );
+    m_data->hintTable.setMetric( aspect, metric );
 }
 
 qreal QskSkin::metric( QskAspect::Aspect aspect ) const
 {
-    return skinHint( aspect | QskAspect::Metric ).toReal();
+    return m_data->hintTable.metric( aspect );
 }
 
 void QskSkin::setAnimation(
     QskAspect::Aspect aspect, QskAnimationHint animation )
 {
-    aspect.setAnimator( true );
-    setSkinHint( aspect, QVariant::fromValue( animation ) );
+    m_data->hintTable.setAnimation( aspect, animation );
 }
 
 QskAnimationHint QskSkin::animation( QskAspect::Aspect aspect ) const
 {
-    aspect.setAnimator( true );
-    return skinHint( aspect ).value< QskAnimationHint >();
+    return m_data->hintTable.animation( aspect );
 }
 
 void QskSkin::setSkinHint( QskAspect::Aspect aspect, const QVariant& skinHint )
 {
-    // For edges/corners, add all the implied assignments
-    if ( aspect.isBoxPrimitive() )
-    {
-        if ( aspect.boxPrimitive() == QskAspect::Radius )
-        {
-            setSkinHint( aspect | QskAspect::RadiusX, skinHint );
-            setSkinHint( aspect | QskAspect::RadiusY, skinHint );
-            return;
-        }
-
-        const auto edges = aspect.edge();
-
-        const auto bitcount = qPopulationCount( static_cast<quint8>( edges ) );
-        if ( !bitcount || bitcount > 1 )
-        {
-            using namespace QskAspect;
-
-            auto aspectEdges = aspect;
-            aspectEdges.clearEdge();
-
-            if ( !bitcount || edges & TopEdge )
-                setSkinHint( aspectEdges | TopEdge, skinHint );
-
-            if ( !bitcount || ( edges & LeftEdge ) )
-                setSkinHint( aspectEdges | LeftEdge, skinHint );
-
-            if ( !bitcount || ( edges & RightEdge ) )
-                setSkinHint( aspectEdges | RightEdge, skinHint );
-
-            if ( !bitcount || ( edges & BottomEdge ) )
-                setSkinHint( aspectEdges | BottomEdge, skinHint );
-        }
-
-        if ( bitcount > 1 ) // Allows 0 to imply AllEdges
-            return;
-    }
-
-    auto it = m_data->skinHints.find( aspect );
-    if ( it == m_data->skinHints.end() )
-    {
-        m_data->skinHints.emplace( aspect, skinHint );
-    }
-    else if ( it->second != skinHint )
-    {
-        it->second = skinHint;
-    }
-
-    if ( aspect.isAnimator() )
-        m_data->animatorAspects[ aspect.subControl() ].insert( aspect );
-}
-
-void QskSkin::removeSkinHint( QskAspect::Aspect aspect )
-{
-    m_data->skinHints.erase( aspect );
+    m_data->hintTable.setSkinHint( aspect, skinHint );
 }
 
 const QVariant& QskSkin::skinHint( QskAspect::Aspect aspect ) const
 {
-    auto it = m_data->skinHints.find( aspect );
-    if ( it != m_data->skinHints.cend() )
-        return it->second;
-
-    static QVariant invalidHint;
-    return invalidHint;
+    return m_data->hintTable.skinHint( aspect );
 }
 
 void QskSkin::declareSkinlet( const QMetaObject* metaObject,
@@ -351,9 +292,14 @@ QskColorFilter QskSkin::graphicFilter( int graphicRole ) const
     return QskColorFilter();
 }
 
-const std::unordered_map< QskAspect::Aspect, QVariant >& QskSkin::skinHints() const
+const QskSkinHintTable& QskSkin::hintTable() const
 {
-    return m_data->skinHints;
+    return m_data->hintTable;
+}
+
+QskSkinHintTable& QskSkin::skinHintTable()
+{
+    return m_data->hintTable;
 }
 
 const std::unordered_map< int, QFont >& QskSkin::fonts() const
@@ -364,17 +310,6 @@ const std::unordered_map< int, QFont >& QskSkin::fonts() const
 const std::unordered_map< int, QskColorFilter >& QskSkin::graphicFilters() const
 {
     return m_data->graphicFilters;
-}
-
-const std::set< QskAspect::Aspect >& QskSkin::animatorAspects(
-    QskAspect::Subcontrol subControl ) const
-{
-    auto it = m_data->animatorAspects.find( subControl );
-    if ( it != m_data->animatorAspects.cend() )
-        return it->second;
-
-    static std::set< QskAspect::Aspect > dummyAspects;
-    return dummyAspects;
 }
 
 QskGraphic QskSkin::symbol( int symbolType ) const
