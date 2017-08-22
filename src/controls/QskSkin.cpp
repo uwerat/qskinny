@@ -220,51 +220,38 @@ void QskSkin::setSkinHint( QskAspect::Aspect aspect, const QVariant& skinHint )
         {
             using namespace QskAspect;
 
-            auto aspectEdge = aspect;
-            aspectEdge.clearEdge();
+            auto aspectEdges = aspect;
+            aspectEdges.clearEdge();
 
             if ( !bitcount || edges & TopEdge )
-                setSkinHint( aspectEdge | TopEdge, skinHint );
+                setSkinHint( aspectEdges | TopEdge, skinHint );
 
             if ( !bitcount || ( edges & LeftEdge ) )
-                setSkinHint( aspectEdge | LeftEdge, skinHint );
+                setSkinHint( aspectEdges | LeftEdge, skinHint );
 
             if ( !bitcount || ( edges & RightEdge ) )
-                setSkinHint( aspectEdge | RightEdge, skinHint );
+                setSkinHint( aspectEdges | RightEdge, skinHint );
 
             if ( !bitcount || ( edges & BottomEdge ) )
-                setSkinHint( aspectEdge | BottomEdge, skinHint );
+                setSkinHint( aspectEdges | BottomEdge, skinHint );
         }
 
         if ( bitcount > 1 ) // Allows 0 to imply AllEdges
             return;
     }
 
+    auto it = m_data->skinHints.find( aspect );
+    if ( it == m_data->skinHints.end() )
     {
-        bool isSame = true;
-        auto it = m_data->skinHints.find( aspect );
-        if ( it == m_data->skinHints.end() )
-        {
-            m_data->skinHints.emplace( aspect, skinHint );
-            isSame = false;
-        }
-        else if ( it->second != skinHint )
-        {
-            it->second = skinHint;
-            isSame = false;
-        }
-
-        if ( isSame )
-            return;
+        m_data->skinHints.emplace( aspect, skinHint );
+    }
+    else if ( it->second != skinHint )
+    {
+        it->second = skinHint;
     }
 
     if ( aspect.isAnimator() )
         m_data->animatorAspects[ aspect.subControl() ].insert( aspect );
-
-#if 0
-    // do we want to have such a signal - or maybe better an event ???
-    Q_EMIT skinHintChanged( aspect );
-#endif
 }
 
 void QskSkin::removeSkinHint( QskAspect::Aspect aspect )

@@ -382,13 +382,10 @@ void QskSkinnable::setSkinHint( QskAspect::Aspect aspect, const QVariant& skinHi
     auto it = m_data->skinHints->find( aspect );
     if ( it == m_data->skinHints->end() )
     {
-        ( *m_data->skinHints )[ aspect ] = skinHint;
+        m_data->skinHints->emplace( aspect, skinHint );
     }
-    else
+    else if ( it->second != skinHint )
     {
-        if ( it->second == skinHint )
-            return;
-
         it->second = skinHint;
     }
 
@@ -398,10 +395,6 @@ void QskSkinnable::setSkinHint( QskAspect::Aspect aspect, const QVariant& skinHi
             m_data->anminatorAspects = new std::set< QskAspect::Aspect >();
 
         m_data->anminatorAspects->insert( aspect );
-    }
-    else
-    {
-        owningControl()->update();
     }
 }
 
