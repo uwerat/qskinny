@@ -122,7 +122,6 @@ class QskSkinnable::PrivateData
 public:
     PrivateData():
         skinHints( nullptr ),
-        anminatorAspects( nullptr ),
         skinlet( nullptr ),
         skinState( QskAspect::NoState ),
         hasLocalSkinlet( false )
@@ -135,11 +134,9 @@ public:
             delete skinlet;
 
         delete skinHints;
-        delete anminatorAspects;
     }
 
     std::unordered_map< QskAspect::Aspect, QVariant >* skinHints;
-    std::set< QskAspect::Aspect >* anminatorAspects;
 
     QskHintAnimatorTable animators;
 
@@ -387,14 +384,6 @@ void QskSkinnable::setSkinHint( QskAspect::Aspect aspect, const QVariant& skinHi
     else if ( it->second != skinHint )
     {
         it->second = skinHint;
-    }
-
-    if ( aspect.isAnimator() )
-    {
-        if ( m_data->anminatorAspects == nullptr )
-            m_data->anminatorAspects = new std::set< QskAspect::Aspect >();
-
-        m_data->anminatorAspects->insert( aspect );
     }
 }
 
@@ -757,14 +746,18 @@ void QskSkinnable::setSkinStateFlag( QskAspect::State state, bool on )
     QskControl* control = owningControl();
     if ( control->window() && control->isInitiallyPainted() )
     {
-        const auto localAspects = m_data->anminatorAspects;
+        const auto localHints = m_data->skinHints;
 
-        if ( localAspects )
+        if ( localHints )
         {
-            for ( const auto aspect : *localAspects )
+            for ( const auto entry : *localHints )
             {
-                if ( !aspect.state() || aspect.state() == newState )
-                    startTransition( aspect, m_data->skinState, newState );
+                const auto aspect = entry.first;
+                if ( aspect.isAnimator() )
+                {
+                    if ( !aspect.state() || aspect.state() == newState )
+                        startTransition( aspect, m_data->skinState, newState );
+                }
             }
         }
 
@@ -781,7 +774,7 @@ void QskSkinnable::setSkinStateFlag( QskAspect::State state, bool on )
 
             for ( QskAspect::Aspect aspect : animatorAspects )
             {
-                if ( localAspects && localAspects->find( aspect ) != localAspects->end() )
+                if ( localHints && ( localHints->find( aspect ) != localHints->end() ) )
                 {
                     // ignore animators from the skin, when we have others
                     // specifically defined for the skinnable
