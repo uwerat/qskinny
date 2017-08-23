@@ -34,11 +34,12 @@ public:
 
         const qreal h = 30;
         const qreal w = 2.0 * h;
+        const qreal paddingW = 0.5 * w + 1;
 
         // Panel
         setMetric( Panel | Size, h );
         setMetric( Panel | Border, 1 );
-        setMetric( Panel | Padding | VerticalEdges, 0.5 * w + 1 );
+        setMarginsHint( Panel | Padding, QMarginsF( paddingW, 0, paddingW, 0 ) );
 
         setColor( Panel | Border, QskRgbValue::Grey900 );
         setColor( Panel, QskRgbValue::Grey400 );
@@ -56,7 +57,7 @@ public:
         setMetric( Handle | Border, 1 );
 
         const qreal m = qCeil( 0.5 * ( w - h ) ) + 2;
-        setMetric( Handle | Margin | VerticalEdges, -m );
+        setMarginsHint( Handle | Margin, QMarginsF( -m, 0, -m, 0 ) );
 
         for ( auto state : { NoState, Pressed } )
         {

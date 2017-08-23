@@ -123,13 +123,13 @@ public:
         {
             using namespace QskAspect;
 
-            QFontMetricsF fm( effectiveFont( Text ) );
+            const QFontMetricsF fm( effectiveFont( Text ) );
 
             for ( auto entry : m_values )
                 m_maxWidth = qMax( m_maxWidth, fm.width( entry.first ) );
 
-            m_maxWidth += metric( Cell | Padding | LeftEdge )
-                + metric( Cell | Padding | RightEdge );
+            const QMarginsF padding = marginsHint( Cell | Padding );
+            m_maxWidth += padding.left() + padding.right();
         }
 
         return m_maxWidth;
@@ -139,9 +139,10 @@ public:
     {
         using namespace QskAspect;
 
-        return QFontMetrics( effectiveFont( Text ) ).height()
-               + metric( Cell | Padding | TopEdge )
-               + metric( Cell | Padding | BottomEdge );
+        const QFontMetricsF fm( effectiveFont( Text ) );
+        const QMarginsF padding = marginsHint( Cell | Padding );
+
+        return fm.height() + padding.top() + padding.bottom();
     }
 
     virtual QVariant valueAt( int row, int ) const override final

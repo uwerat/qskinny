@@ -7,6 +7,7 @@
 #include "QskAnimationHint.h"
 #include "QskControl.h"
 #include "QskEvent.h"
+#include "QskMargins.h"
 
 #include <QObject>
 #include <QThread>
@@ -14,6 +15,12 @@
 #include <map>
 #include <vector>
 #include <algorithm>
+
+static inline qreal qskAligned05( qreal value )
+{
+    // aligned to 0.5
+    return qRound( 2.0 * value ) / 2.0;
+}
 
 static inline bool qskCheckReceiverThread( const QObject *receiver )
 {
@@ -34,7 +41,6 @@ static inline bool qskCheckReceiverThread( const QObject *receiver )
 static inline QVariant qskAdjustedValue(
     QskAspect::Aspect aspect, const QVariant& value )
 {
-#if 1
     if( value.type() == QVariant::Double )
     {
         if ( aspect.metricPrimitive() != QskAspect::Position )
@@ -42,10 +48,17 @@ static inline QVariant qskAdjustedValue(
             // all beside QskAspect::Position are real metrics,
             // that will be aligned to the resolution of the paint device
             // so we can avoid pointless operations by rounding
-            return qRound( 2.0 * value.toReal() ) / 2.0;
+            return qskAligned05( value.toReal() );
         }
     }
-#endif
+    else if ( value.canConvert< QskMargins >() )
+    {
+        const QskMargins m = value.value< QskMargins >();
+
+        return QVariant::fromValue( 
+            QskMargins( qskAligned05( m.left() ), qskAligned05( m.top() ),
+                qskAligned05( m.right() ), qskAligned05( m.bottom() ) ) ); 
+    }
 
     return value;
 }

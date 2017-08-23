@@ -25,6 +25,7 @@
 #include <QskFunctions.h>
 #include <QskRgbValue.h>
 #include <QskAnimationHint.h>
+#include <QskMargins.h>
 #include <QskSkinlet.h>
 
 static const int qskDuration = 200;
@@ -173,7 +174,7 @@ void QskSquiekSkin::initCommonHints()
 
     const ColorPalette& pal = m_data->palette;
 
-    setMetric( Control | Padding, 4 );
+    setMargins( Control | Padding, 4 );
 
     setColor( Control | Background, pal.lighter135 );
     setColor( Control | Border, pal.darker200 );
@@ -210,7 +211,7 @@ void QskSquiekSkin::initFocusIndicatorHints()
 
     setMetric( Q::Panel | Border, 2 );
     setMetric( Q::Panel | Radius, 4 );
-    setMetric( Q::Panel | Padding, 5 );
+    setMargins( Q::Panel | Padding, 5 );
 
     setColor( Q::Panel | Border, pal.highlighted );
 }
@@ -242,8 +243,8 @@ void QskSquiekSkin::initPageIndicatorHints()
     setMetric( Q::Highlighted | Size, 8 );
     setMetric( Q::Highlighted | Radius, 4 );
 
-    setMetric( Q::Panel | Margin, 0 );
-    setMetric( Q::Panel | Padding, 0 );
+    setMargins( Q::Panel | Margin, 0 );
+    setMargins( Q::Panel | Padding, 0 );
     setMetric( Q::Panel | Border, 0 );
     setColor( Q::Panel | Background, 0 );
 
@@ -264,7 +265,7 @@ void QskSquiekSkin::initPushButtonHints()
     setMetric( Q::Panel | Border | HorizontalEdges, 2 );
     setMetric( Q::Panel | Border | VerticalEdges, 1 );
 
-    setMetric( Q::Panel | Padding, 10 );
+    setMargins( Q::Panel | Padding, 10 );
     setMetric( Q::Panel | Spacing, 4 );
 
     setSkinHint( Q::Text | Q::Disabled | Style, Qsk::Sunken );
@@ -307,7 +308,7 @@ void QskSquiekSkin::initDialogButtonHints()
     setMetric( Q::Panel | Border | HorizontalEdges, 2 );
     setMetric( Q::Panel | Border | VerticalEdges, 1 );
 
-    setMetric( Q::Panel | Padding, 10 );
+    setMargins( Q::Panel | Padding, 10 );
     setMetric( Q::Panel | Spacing, 4 );
 
     setMetric( Q::Panel | MinimumWidth, qskDpiScaled( 75.0 ) );
@@ -339,23 +340,15 @@ void QskSquiekSkin::initTabButtonHints()
 
     setMetric( Q::Panel | Radius | TopCorners, 3 );
     setMetric( Q::Panel | Border | LeftEdge | TopEdge | RightEdge, 1 );
-    setMetric( Q::Panel | Padding | VerticalEdges, 10 );
-    setMetric( Q::Panel | Padding | HorizontalEdges, 4 );
+    setMargins( Q::Panel | Padding, QskMargins( 10, 4 ) );
     setMetric( Q::Panel | MinimumWidth, 30 );
     setMetric( Q::Panel | MinimumHeight, 16 );
 
     for ( const auto state : { NoState } )
-    {
-        setMetric( Q::Panel | Margin | TopEdge | state, 2 );
-        setMetric( Q::Panel | Margin | BottomEdge | state, 0 );
-        setMetric( Q::Panel | Margin | VerticalEdges | state, -1 );
-    }
+        setMargins( Q::Panel | Margin | state, QskMargins( -1, 2, -1, 0 ) );
 
     for ( const auto state : { Q::Checked, Q::Checked | Q::Pressed } )
-    {
-        setMetric( Q::Panel | Margin | TopEdge | state, 0 );
-        setMetric( Q::Panel | Margin | BottomEdge | state, -1 );
-    }
+        setMargins( Q::Panel | Margin | state, QskMargins( -1, 0, -1, -1 ) );
 
     setSkinHint( Q::Text | QskAspect::Alignment, Qt::AlignCenter );
 #if 0
@@ -393,13 +386,12 @@ void QskSquiekSkin::initSliderHints()
     setMetric( Q::Panel | Size, dim ); 
     setMetric( Q::Panel | Border, 0 );
 
-    setMetric( Q::Panel | Padding | HorizontalEdges, 0 );
-    setMetric( Q::Panel | Padding | VerticalEdges, 0.5 * dim );
+    setMargins( Q::Panel | Padding, QskMargins( 0.5 * dim, 0 ) );
 
     for ( auto subControl : { Q::Groove, Q::Fill } )
     {
         setMetric( subControl | Border, 0 );
-        setMetric( subControl | Padding, 0 );
+        setMargins( subControl | Padding, 0 );
         setMetric( subControl | Size, 0.3 * dim );
         setMetric( subControl | Radius, 0.1 * dim );
     }
@@ -427,8 +419,11 @@ void QskSquiekSkin::initTabBarHints()
     using namespace QskAspect;
     using Q = QskTabBar;
 
-    for ( auto aspect : { Radius, Border, Padding, Margin } )
-        setMetric( Q::Panel | aspect, 0 );
+    setMetric( Q::Panel | Radius, 0 );
+    setMetric( Q::Panel | Border, 0 );
+
+    setMargins( Q::Panel | Margin, 0 );
+    setMargins( Q::Panel | Padding, 0 );
 
     setColor( Q::Panel | Background, 0 );
 }
@@ -461,7 +456,7 @@ void QskSquiekSkin::initInputPanelHints()
     // frame
     setMetric( Q::KeyFrame | Border, 2 );
     setMetric( Q::KeyFrame | Radius, 4 );
-    setMetric( Q::KeyFrame | Margin, 2 );
+    setMargins( Q::KeyFrame | Margin, 2 );
 
     setAnimation( Q::KeyFrame | Color, qskDuration ); 
     setAnimation( Q::KeyFrame | Color | Border, qskDuration );
@@ -494,13 +489,13 @@ void QskSquiekSkin::initScrollViewHints()
     for ( auto subControl : { Q::HorizontalScrollBar, Q::VerticalScrollBar } )
     {
         setMetric( subControl | Size, 8 );
-        setMetric( subControl | Padding, 0 );
-        setMetric( subControl | Margin, 0 );
+        setMargins( subControl | Padding, 0 );
+        setMargins( subControl | Margin, 0 );
     }
 
     for ( auto subControl : { Q::HorizontalScrollHandle, Q::VerticalScrollHandle } )
     {
-        setMetric( subControl | Margin, 0 );
+        setMargins( subControl | Margin, 0 );
         setMetric( subControl | Radius, 3 );
         setMetric( subControl | Border, 1 );
 
@@ -523,8 +518,7 @@ void QskSquiekSkin::initListViewHints()
     const ColorPalette& pal = m_data->palette;
 
     // padding for each cell
-    setMetric( Q::Cell | Padding | HorizontalEdges, 8 );
-    setMetric( Q::Cell | Padding | VerticalEdges, 4 );
+    setMargins( Q::Cell | Padding, QskMargins( 4, 8 ) );
 
     setAnimation( Q::CellSelected | Color, qskDuration );
     setAnimation( Q::TextSelected | Color, qskDuration );
@@ -544,7 +538,7 @@ void QskSquiekSkin::initSubWindowHints()
     const ColorPalette& pal = m_data->palette;
 
     setMetric( Q::Panel | Border, 2 );
-    setMetric( Q::Panel | Padding, 10 );
+    setMargins( Q::Panel | Padding, 10 );
     setMetric( Q::TitleBar | Border, 2 );
 
     setSkinHint( Q::TitleBar | FontRole, int( QskSkin::TinyFont ) );

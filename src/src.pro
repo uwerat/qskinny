@@ -37,6 +37,7 @@ HEADERS += \
     common/QskFunctions.h \
     common/QskGlobal.h \
     common/QskGradient.h \
+    common/QskMargins.h \
     common/QskModule.h \
     common/QskNamespace.h \
     common/QskObjectCounter.h \
@@ -49,6 +50,7 @@ SOURCES += \
     common/QskCorner.cpp \
     common/QskFunctions.cpp \
     common/QskGradient.cpp \
+    common/QskMargins.cpp \
     common/QskModule.cpp \
     common/QskObjectCounter.cpp \
     common/QskSizePolicy.cpp \

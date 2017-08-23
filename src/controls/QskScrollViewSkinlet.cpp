@@ -236,7 +236,7 @@ QRectF QskScrollViewSkinlet::scrollHandleRect(
         const auto subControlBar = QskScrollView::VerticalScrollBar;
 
         const QRectF sbRect = subControlRect( scrollView, subControlBar );
-        const auto padding = scrollView->edgeMetrics( subControlBar, QskAspect::Padding );
+        const QMarginsF padding = scrollView->marginsHint( subControlBar | QskAspect::Padding );
 
         const qreal h = scrollView->scrollableSize().height();
 
@@ -259,7 +259,7 @@ QRectF QskScrollViewSkinlet::scrollHandleRect(
         const auto subControlBar = QskScrollView::HorizontalScrollBar;
 
         const QRectF sbRect = subControlRect( scrollView, subControlBar );
-        const auto padding = scrollView->edgeMetrics( subControlBar, QskAspect::Padding );
+        const auto padding = scrollView->marginsHint( subControlBar | QskAspect::Padding );
 
         const qreal w = scrollView->scrollableSize().width();
 

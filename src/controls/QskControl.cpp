@@ -570,13 +570,7 @@ void QskControl::setMargins( const QMarginsF& margins )
 
     if ( m != this->margins() )
     {
-        Aspect aspect = subControl | Margin;
-
-        setMetric( aspect | LeftEdge, m.left() );
-        setMetric( aspect | TopEdge, m.top() );
-        setMetric( aspect | RightEdge, m.right() );
-        setMetric( aspect | BottomEdge, m.bottom() );
-
+        setMarginsHint( subControl | Margin, m );
         resetImplicitSize();
 
         if ( m_polishOnResize || m_autoLayoutChildren )
@@ -593,7 +587,7 @@ void QskControl::resetMargins()
 
 QMarginsF QskControl::margins() const
 {
-    return edgeMetrics( QskAspect::Control, QskAspect::Margin );
+    return marginsHint( QskAspect::Control | QskAspect::Margin );
 }
 
 QRectF QskControl::contentsRect() const

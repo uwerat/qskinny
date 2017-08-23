@@ -184,6 +184,16 @@ qreal QskSkin::metric( QskAspect::Aspect aspect ) const
     return m_data->hintTable.metric( aspect );
 }
 
+void QskSkin::setMargins( QskAspect::Aspect aspect, const QskMargins& margins )
+{
+    m_data->hintTable.setMargins( aspect, margins );
+}
+
+QskMargins QskSkin::margins( QskAspect::Aspect aspect ) const
+{
+    return m_data->hintTable.margins( aspect );
+}
+
 void QskSkin::setAnimation(
     QskAspect::Aspect aspect, QskAnimationHint animation )
 {

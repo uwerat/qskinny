@@ -322,10 +322,7 @@ void qskDebugAspect( QDebug debug, const QMetaObject* metaObject, QskAspect::Asp
 
         switch( aspect.boxPrimitive() )
         {
-            case Margin:
-            case Padding:
             case Border:
-            case Shadow:
             {
                 if ( aspect.edge() )
                     debug << ", " << qskEnumString( "Edge", aspect.edge() );

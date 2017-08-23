@@ -67,7 +67,7 @@ void LineEdit::updateLayout()
 {
     Inherited::updateLayout();
 
-    const auto padding = edgeMetrics( Panel, QskAspect::Padding );
+    const QMarginsF padding = marginsHint( Panel | QskAspect::Padding );
 
     Q_P( QQuickTextInput );
     p->QQuickTextInput::setLeftPadding( padding.left() );

@@ -12,6 +12,7 @@
 #include <QskTextLabel.h>
 #include <QskSeparator.h>
 #include <QskColorFilter.h>
+#include <QskMargins.h>
 
 #include <QDebug>
 
@@ -109,7 +110,7 @@ void DefaultSkin::initHints()
 
     // -- push buttons
 
-    setMetric( QskPushButton::Panel | QskAspect::Padding, 10 );
+    setMargins( QskPushButton::Panel | QskAspect::Padding, 10 );
     setColor( QskPushButton::Panel, m_palette->color1 );
     setColor( QskPushButton::Text, m_palette->color3 );
     setColor( QskPushButton::Panel | QskPushButton::Pressed, m_palette->color2 );

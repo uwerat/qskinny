@@ -76,12 +76,15 @@ public:
     void setMetric( QskAspect::Aspect, qreal metric );
     qreal metric( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
+    void setMarginsHint( QskAspect::Aspect, const QMarginsF& );
+    QMarginsF marginsHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
+
     void setFlagHint( QskAspect::Aspect, int flag );
     int flagHint( QskAspect::Aspect ) const;
 
     template< typename T > T flagHint( QskAspect::Aspect, T = T() ) const;
 
-    QMarginsF edgeMetrics( QskAspect::Subcontrol, QskAspect::BoxPrimitive ) const;
+    QMarginsF borderMetrics( QskAspect::Subcontrol ) const;
 
     void setFontRole( QskAspect::Aspect, int role );
     int fontRole( QskAspect::Aspect ) const;

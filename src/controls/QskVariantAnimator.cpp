@@ -5,6 +5,7 @@
 
 #include "QskVariantAnimator.h"
 #include "QskColorFilter.h"
+#include "QskMargins.h"
 
 // Even if we don't use the standard Qt animation system we
 // use its registry of interpolators: why adding our own ...
@@ -16,6 +17,7 @@
 static void qskRegisterInterpolator()
 {
     qRegisterAnimationInterpolator<QskColorFilter>( QskColorFilter::interpolate );
+    qRegisterAnimationInterpolator<QskMargins>( QskMargins::interpolate );
 }
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterInterpolator )

@@ -11,6 +11,7 @@
 #include "QskSkinHintTable.h"
 #include "QskSkinlet.h"
 #include "QskAnimationHint.h"
+#include "QskMargins.h"
 #include "QskHintAnimator.h"
 #include "QskControl.h"
 #include "QskColorFilter.h"
@@ -256,12 +257,22 @@ qreal QskSkinnable::metric( QskAspect::Aspect aspect, QskSkinHintStatus* status 
     return effectiveHint( aspect | QskAspect::Metric, status ).toReal();
 }
 
-QMarginsF QskSkinnable::edgeMetrics( QskAspect::Subcontrol subControl,
-    QskAspect::BoxPrimitive primitive ) const
+void QskSkinnable::setMarginsHint( QskAspect::Aspect aspect, const QMarginsF& margins )
+{
+    m_data->hintTable.setMargins( aspect, margins );
+}
+
+QMarginsF QskSkinnable::marginsHint(
+    QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
+{
+    return effectiveHint( aspect | QskAspect::Metric, status ).value< QskMargins >();
+}
+
+QMarginsF QskSkinnable::borderMetrics( QskAspect::Subcontrol subControl ) const
 {
     using namespace QskAspect;
 
-    const Aspect aspect = subControl | primitive;
+    const Aspect aspect = subControl | Border;
 
     return QMarginsF(
         metric( aspect | LeftEdge ),
@@ -523,28 +534,30 @@ static inline QMarginsF qskMarginsInner( const QskSkinnable* skinnable,
     qreal top = skinnable->metric( aspect | Border | TopEdge );
     qreal bottom = skinnable->metric( aspect | Border | BottomEdge );
 
+    const QMarginsF padding = skinnable->marginsHint( aspect | Padding );
+
     const qreal w = size.width() - 0.5 * ( left + right );
     const qreal h = size.height() - 0.5 * ( top + bottom );
 
     left += qskMax(
         qskPaddingInner( skinnable, aspect | RadiusX | TopLeftCorner, w ),
         qskPaddingInner( skinnable, aspect | RadiusX | BottomLeftCorner, w ),
-        (qreal) skinnable->metric( aspect | Padding | LeftEdge ) );
+        padding.left() );
 
     right += qskMax(
         qskPaddingInner( skinnable, aspect | RadiusX | TopRightCorner, w ),
         qskPaddingInner( skinnable, aspect | RadiusX | BottomRightCorner, w ),
-        (qreal)skinnable->metric( aspect | Padding | RightEdge ) );
+        padding.right() );
 
     top += qskMax(
         qskPaddingInner( skinnable, aspect | RadiusY | TopLeftCorner, h ),
         qskPaddingInner( skinnable, aspect | RadiusY | TopRightCorner, h ),
-        (qreal)skinnable->metric( aspect | Padding | TopEdge ) );
+        padding.top() );
 
     bottom += qskMax(
         qskPaddingInner( skinnable, aspect | RadiusY | BottomLeftCorner, h ),
         qskPaddingInner( skinnable, aspect | RadiusY | BottomRightCorner, h ),
-        (qreal)skinnable->metric( aspect | Padding | BottomEdge ) );
+        padding.bottom() );
 
     return QMarginsF( left, top, right, bottom );
 }
@@ -561,28 +574,30 @@ static inline QMarginsF qskMarginsOuter( const QskSkinnable* skinnable,
     qreal top = skinnable->metric( aspect | Border | TopEdge );
     qreal bottom = skinnable->metric( aspect | Border | BottomEdge );
 
+    const QMarginsF padding = skinnable->marginsHint( aspect | Padding );
+
     const qreal w = size.width() + 0.5 * ( left + right );
     const qreal h = size.height() + 0.5 * ( top + bottom );
 
     left += qskMax(
         qskPaddingOuter( skinnable, aspect | RadiusX | TopLeftCorner, w ),
         qskPaddingOuter( skinnable, aspect | RadiusX | BottomLeftCorner, w ),
-        (qreal)skinnable->metric( aspect | Padding | LeftEdge ) );
+        padding.left() );
 
     right += qskMax(
         qskPaddingOuter( skinnable, aspect | RadiusX | TopRightCorner, w ),
         qskPaddingOuter( skinnable, aspect | RadiusX | BottomRightCorner, w ),
-        (qreal)skinnable->metric( aspect | Padding | RightEdge ) );
+        padding.right() );
 
     top += qskMax(
         qskPaddingOuter( skinnable, aspect | RadiusY | TopLeftCorner, h ),
         qskPaddingOuter( skinnable, aspect | RadiusY | TopRightCorner, h ),
-        (qreal)skinnable->metric( aspect | Padding | TopEdge ) );
+        padding.top() );
 
     bottom += qskMax(
         qskPaddingOuter( skinnable, aspect | RadiusY | BottomLeftCorner, h ),
         qskPaddingOuter( skinnable, aspect | RadiusY | BottomRightCorner, h ),
-        (qreal)skinnable->metric( aspect | Padding | BottomEdge ) );
+        padding.bottom() );
 
     return QMargins( left, top, right, bottom );
 }

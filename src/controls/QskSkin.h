@@ -28,6 +28,7 @@ class QskAnimationHint;
 class QskSkinHintTable;
 
 class QVariant;
+class QskMargins;
 
 class QSK_EXPORT QskSkin : public QObject
 {
@@ -64,6 +65,9 @@ public:
 
     void setMetric( QskAspect::Aspect, qreal metric );
     qreal metric( QskAspect::Aspect ) const;
+
+    void setMargins( QskAspect::Aspect, const QskMargins& );
+    QskMargins margins( QskAspect::Aspect ) const;
 
     void setAnimation( QskAspect::Aspect, QskAnimationHint );
     QskAnimationHint animation( QskAspect::Aspect ) const;

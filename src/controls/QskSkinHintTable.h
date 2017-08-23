@@ -8,6 +8,7 @@
 
 #include "QskGlobal.h"
 #include "QskAspect.h"
+#include "QskMargins.h"
 #include "QskAnimationHint.h"
 
 #include <QVariant>
@@ -30,6 +31,9 @@ public:
 
     void setMetric( QskAspect::Aspect, qreal metric );
     qreal metric( QskAspect::Aspect ) const;
+
+    void setMargins( QskAspect::Aspect, const QskMargins& );
+    QskMargins margins( QskAspect::Aspect ) const;
 
     void setAnimation( QskAspect::Aspect, QskAnimationHint animation );
     QskAnimationHint animation( QskAspect::Aspect ) const;
@@ -98,6 +102,16 @@ inline void QskSkinHintTable::setMetric( QskAspect::Aspect aspect, qreal metric 
 inline qreal QskSkinHintTable::metric( QskAspect::Aspect aspect ) const
 {
     return skinHint( aspect | QskAspect::Metric ).toReal();
+}
+
+inline void QskSkinHintTable::setMargins( QskAspect::Aspect aspect, const QskMargins& margins )
+{
+    setSkinHint( aspect | QskAspect::Metric, QVariant::fromValue( margins ) );
+}
+
+inline QskMargins QskSkinHintTable::margins( QskAspect::Aspect aspect ) const
+{
+    return skinHint( aspect | QskAspect::Metric ).value< QskMargins >();
 }
 
 inline void QskSkinHintTable::setAnimation(

@@ -12,6 +12,7 @@
 #include <QskTextLabel.h>
 #include <QskSeparator.h>
 #include <QskColorFilter.h>
+#include <QskMargins.h>
 
 #include <QDebug>
 
@@ -88,7 +89,7 @@ void OtherSkin::initHints()
     // -- push buttons
 
     setMetric( QskPushButton::Panel | QskAspect::Radius, 4 );
-    setMetric( QskPushButton::Panel | QskAspect::Padding, 8 );
+    setMargins( QskPushButton::Panel | QskAspect::Padding, 8 );
     setColor( QskPushButton::Panel, m_palette->color1 );
     setColor( QskPushButton::Text, m_palette->color3 );
     setColor( QskPushButton::Panel | QskPushButton::Pressed, m_palette->color2 );

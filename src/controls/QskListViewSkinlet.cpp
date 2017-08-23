@@ -190,7 +190,7 @@ void QskListViewSkinlet::updateForegroundNodes(
         return;
     }
 
-    const QMarginsF margins = listView->edgeMetrics( QskListView::Cell, QskAspect::Padding );
+    const QMarginsF margins = listView->marginsHint( QskListView::Cell | QskAspect::Padding );
 
     const QRectF cr = listView->viewContentsRect();
     const QPointF scrolledPos = listView->scrollPos();

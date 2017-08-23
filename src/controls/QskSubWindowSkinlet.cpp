@@ -134,12 +134,11 @@ qreal QskSubWindowSkinlet::titleBarHeight( const QskSubWindow* subWindow ) const
         return 0;
 
     const QFontMetricsF fm( subWindow->effectiveFont( QskSubWindow::TitleBar ) );
+    const QMarginsF margins = subWindow->marginsHint( QskSubWindow::TitleBar | Padding );
 
-    qreal height = fm.height()
-        + subWindow->metric( QskSubWindow::TitleBar | Padding | TopEdge )
-        + subWindow->metric( QskSubWindow::TitleBar | Padding | BottomEdge );
+    const qreal height = fm.height() + margins.top() + margins.bottom();
+    const qreal minHeight = subWindow->metric( QskSubWindow::TitleBar | MinimumHeight );
 
-    qreal minHeight = subWindow->metric( QskSubWindow::TitleBar | MinimumHeight );
     return qMax( height, minHeight);
 }
 

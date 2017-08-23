@@ -208,7 +208,7 @@ static inline QskAspect::Edge qskRotateEdge( QskAspect::Edge edge, int count )
 QMarginsF QskSkinRenderer::margins( const QskSkinnable* skinnable,
     QskAspect::Subcontrol subControl, int rotation )
 {
-    const QMarginsF m = skinnable->edgeMetrics( subControl, QskAspect::Margin );
+    const QMarginsF m = skinnable->marginsHint( subControl | QskAspect::Margin );
     return qskRotatedMargins( m, rotation );
 }
 
@@ -250,10 +250,10 @@ QskBoxOptions QskSkinRenderer::boxOptions( const QskSkinnable* skinnable,
     QskBoxOptions options; 
 
     options.borders = qskRotatedMargins( 
-        skinnable->edgeMetrics( subControl, Border ), rotation );
+        skinnable->borderMetrics( subControl ), rotation );
 
     options.shadows = qskRotatedMargins(
-        skinnable->edgeMetrics( subControl, Shadow ), rotation );
+        skinnable->marginsHint( subControl | Shadow ), rotation );
 
     const auto leftEdge = qskRotateEdge( LeftEdge, rotation );
     const auto topEdge = qskRotateEdge( TopEdge, rotation );

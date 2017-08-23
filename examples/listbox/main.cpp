@@ -24,8 +24,8 @@ public:
         setMargins( QMarginsF( 15, 10, 10, 10 ) );
         setAlternatingRowColors( true );
 
-        // increasing the height of each row: usually the job of the skin !
-        setMetric( Cell | Padding | HorizontalEdges, 20 );
+        // increasing the padding of each row: usually the job of the skin !
+        setMarginsHint( Cell | Padding, QMargins( 10, 20, 10, 20 ) );
 
         populate();
 

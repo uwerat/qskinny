@@ -279,23 +279,19 @@ int QskSimpleListBox::columnCount() const
 
 qreal QskSimpleListBox::columnWidth( int col ) const
 {
-    using namespace QskAspect;
-
     if ( col >= columnCount() )
         return 0.0;
 
-    return m_data->maxTextWidth
-           + metric( Cell | Padding | LeftEdge )
-           + metric( Cell | Padding | RightEdge );
+    const QMarginsF padding = marginsHint( Cell | QskAspect::Padding );
+    return m_data->maxTextWidth + padding.left() + padding.right();
 }
 
 qreal QskSimpleListBox::rowHeight() const
 {
-    using namespace QskAspect;
+    const QMarginsF padding = marginsHint( Cell | QskAspect::Padding );
+    const QFontMetricsF fm( effectiveFont( Text ) );
 
-    return QFontMetrics( effectiveFont( Text ) ).height()
-           + metric( Cell | Padding | TopEdge )
-           + metric( Cell | Padding | BottomEdge );
+    return fm.height() + padding.top() + padding.bottom();
 }
 
 #include "moc_QskSimpleListBox.cpp"

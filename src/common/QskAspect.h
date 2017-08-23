@@ -73,12 +73,9 @@ QSK_NAMESPACE( QskAspect )
     {
         Background =     0,
 
-        Margin =         1,
-        Padding =        2,
         RadiusX =        3,
         RadiusY =        4,
         Border =         5,
-        Shadow =         6,
 
         Radius  =        7, // RadiusX | RadiusY
     };
@@ -107,6 +104,11 @@ QSK_NAMESPACE( QskAspect )
         MinimumHeight,
         MaximumWidth,
         MaximumHeight,
+
+        Margin,
+        Padding,
+        Shadow,
+
         Spacing
     };
     QSK_ENUM( MetricPrimitive )

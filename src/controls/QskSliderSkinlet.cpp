@@ -15,7 +15,7 @@
 static QMarginsF qskMargins(
     const QskSlider* slider, QskAspect::Subcontrol subControl )
 {
-    QMarginsF m = slider->edgeMetrics( subControl, QskAspect::Margin );
+    QMarginsF m = slider->marginsHint( subControl | QskAspect::Margin );
 
     if ( slider->orientation() == Qt::Vertical )
         m = QMarginsF( m.top(), m.right(), m.bottom(), m.left() );
@@ -26,8 +26,8 @@ static QMarginsF qskMargins(
 static QMarginsF qskPadding(
     const QskSlider* slider, QskAspect::Subcontrol subControl )
 {
-    QMarginsF m = slider->edgeMetrics( subControl, QskAspect::Padding )
-        + slider->edgeMetrics( subControl, QskAspect::Border );
+    QMarginsF m = slider->marginsHint( subControl | QskAspect::Padding )
+        + slider->borderMetrics( subControl );
 
     if ( slider->orientation() == Qt::Vertical )
         m = QMarginsF( m.top(), m.right(), m.bottom(), m.left() );

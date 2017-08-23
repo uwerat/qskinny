@@ -25,6 +25,7 @@
 #include <QskFunctions.h>
 #include <QskRgbValue.h>
 #include <QskAnimationHint.h>
+#include <QskMargins.h>
 #include <QskSkinlet.h>
 
 #if 1
@@ -149,7 +150,7 @@ void QskMaterialSkin::initCommonHints()
 
     const ColorPalette& pal = m_data->palette;
 
-    setMetric( Control | Padding, 4 );
+    setMargins( Control | Padding, 4 );
 
     setColor( Control | Background, pal.baseColor );
     setColor( Control | Border, pal.darker200 );
@@ -189,7 +190,7 @@ void QskMaterialSkin::initFocusIndicatorHints()
     const ColorPalette& pal = m_data->palette;
 
     setMetric( Q::Panel | Border, 2 );
-    setMetric( Q::Panel | Padding, 5 );
+    setMargins( Q::Panel | Padding, 5 );
     setColor( Q::Panel | Border, pal.accentColor );
 }
 
@@ -229,8 +230,8 @@ void QskMaterialSkin::initPageIndicatorHints()
     setMetric( Q::Highlighted | Radius, 6 );
 #endif
 
-    setMetric( Q::Panel | Margin, 0 );
-    setMetric( Q::Panel | Padding, 0 );
+    setMargins( Q::Panel | Margin, 0 );
+    setMargins( Q::Panel | Padding, 0 );
     setMetric( Q::Panel | Border, 0 );
     setColor( Q::Panel | Background, 0 );
 
@@ -250,16 +251,17 @@ void QskMaterialSkin::initPushButtonHints()
     setSkinHint( Q::Text | QskAspect::FontRole, ButtonFontRole );
     setSkinHint( Q::Text | QskAspect::Alignment, Qt::AlignCenter );
 
+    const QskMargins margin( 4, 3 );
+    const QskMargins padding( 10, 6 );
+
     {
         const auto aspect = Q::Panel;
 
-        setMetric( aspect | Radius, 2.0f );
+        setMetric( aspect | Radius, 2 );
 
-        setMetric( aspect | Padding | HorizontalEdges, 6.0f );
-        setMetric( aspect | Padding | VerticalEdges, 10.0f );
-
-        setMetric( aspect | Margin | HorizontalEdges, 3.0f );
-        setMetric( aspect | Margin | VerticalEdges, 4.5f );
+        setMargins( aspect | Margin, margin );
+        setMargins( aspect | Padding, padding );
+        setMargins( aspect | Shadow, 0 );
 
         setMetric( aspect | Spacing, 4 );
     }
@@ -269,30 +271,20 @@ void QskMaterialSkin::initPushButtonHints()
     {
         const auto aspect = Q::Panel | state;
 
-        setMetric( aspect | Padding | TopEdge, 4.0f );
-        setMetric( aspect | Padding | BottomEdge, 8.0f );
-
-        setMetric( aspect | Margin | TopEdge, 0.0f );
-        setMetric( aspect | Margin | BottomEdge, 6.0f );
-
-        setMetric( aspect | Shadow | VerticalEdges, 4.5f );
-        setMetric( aspect | Shadow | TopEdge, -1.0f );
-        setMetric( aspect | Shadow | BottomEdge, 5.0f );
+        setMargins( aspect | Margin, margin.translated( 0, -margin.top() ) );
+        setMargins( aspect | Padding, padding.translated( 0, -2 ) );
+        setMargins( aspect | Shadow, QskMargins( 4, -1.0, 4, 5.0 ) );
     }
 
-    // Hover (or normal for touch)
     for ( const auto state :
         { Q::Hovered, Q::Checked | Q::Checkable
           | Q::Hovered, Q::Checkable | Q::Hovered } )
     {
-        const auto aspect = Q::Panel | Shadow | state;
-
-        setMetric( aspect | VerticalEdges, 2.5f );
-        setMetric( aspect | TopEdge, 1.5f );
-        setMetric( aspect | BottomEdge, 3.0f );
+        const auto aspect = Q::Panel | state;
+        setMargins( aspect | Shadow, QskMargins( 2, 2, 2, 4 ) );
     }
 
-    setMetric( Q::Panel | Q::Flat | Shadow, 0 );
+    setMargins( Q::Panel | Q::Flat | Shadow, 0 );
 
     setAnimation( Q::Panel | Color, qskDuration );
     setAnimation( Q::Panel | Margin | Metric, qskDuration );
@@ -355,27 +347,15 @@ void QskMaterialSkin::initDialogButtonHints()
 
     setMetric( Q::Panel | Radius, 2.0f );
 
-    setMetric( Q::Panel | Padding | HorizontalEdges, 6.0f );
-    setMetric( Q::Panel | Padding | VerticalEdges, 10.0f );
-
-    setMetric( Q::Panel | Margin | HorizontalEdges, 3.0f );
-    setMetric( Q::Panel | Margin | VerticalEdges, 4.5f );
+    setMargins( Q::Panel | Margin, QskMargins( 3, 4.5 ) );
+    setMargins( Q::Panel | Padding, QskMargins( 10, 6 ) );
 
     setMetric( Q::Panel | Spacing, 4 );
 
-    setMetric( Q::Panel | Q::Pressed | Padding | TopEdge, 4.0f );
-    setMetric( Q::Panel | Q::Pressed | Padding | BottomEdge, 8.0f );
-
-    setMetric( Q::Panel | Q::Pressed | Margin | TopEdge, 0.0f );
-    setMetric( Q::Panel | Q::Pressed | Margin | BottomEdge, 6.0f );
-
-    setMetric( Q::Panel | Q::Pressed | Shadow | VerticalEdges, 4.5f );
-    setMetric( Q::Panel | Q::Pressed | Shadow | TopEdge, -1.0f );
-    setMetric( Q::Panel | Q::Pressed | Shadow | BottomEdge, 5.0f );
-
-    setMetric( Q::Panel | Q::Hovered | Shadow | VerticalEdges, 2.5f );
-    setMetric( Q::Panel | Q::Hovered | Shadow | TopEdge, 1.5f );
-    setMetric( Q::Panel | Q::Hovered | Shadow | BottomEdge, 3.0f );
+    setMargins( Q::Panel | Q::Pressed | Margin, QskMargins( 3, 0, 3, 6 ) );
+    setMargins( Q::Panel | Q::Pressed | Padding, QskMargins( 10, 4, 10, 8 ) );
+    setMargins( Q::Panel | Q::Pressed | Shadow, QskMargins( 4.5, -1, 4.5, 5 ) );
+    setMargins( Q::Panel | Q::Hovered | Shadow, QskMargins( 2.5, 1.5, 2.5, 3 ) );
 
     setAnimation( Q::Panel | Color, qskDuration );
     setAnimation( Q::Panel | Margin | Metric, qskDuration );
@@ -414,12 +394,12 @@ void QskMaterialSkin::initSliderHints()
 
     setMetric( Q::Panel | Size, dim );
     setMetric( Q::Panel | Border, 0 );
-    setMetric( Q::Panel | Padding | VerticalEdges, 0.5 * dim );
+    setMargins( Q::Panel | Padding, QskMargins( 0.5 * dim, 0 ) );
 
     for ( auto subControl : { Q::Groove, Q::Fill } )
     {
         setMetric( subControl | Border, 0 );
-        setMetric( subControl | Padding, 0 );
+        setMargins( subControl | Padding, 0 );
         setMetric( subControl | Size, 5 );
         setMetric( subControl | Radius, 0 );
     }
@@ -516,7 +496,7 @@ void QskMaterialSkin::initInputPanelHints()
     // frame
     setMetric( Q::KeyFrame | Border, 2 );
     setMetric( Q::KeyFrame | Radius, 4 );
-    setMetric( Q::KeyFrame | Margin, 2 );
+    setMargins( Q::KeyFrame | Margin, 2 );
 
     setColor( Q::KeyFrame, pal.baseColor );
     setColor( Q::KeyFrame | Q::Pressed, pal.accentColor );
@@ -556,7 +536,7 @@ void QskMaterialSkin::initScrollViewHints()
     for ( auto subControl : { Q::HorizontalScrollBar, Q::VerticalScrollBar } )
     {
         setMetric( subControl | Size, 12 );
-        setMetric( subControl | Padding, 0 );
+        setMargins( subControl | Padding, 0 );
     }   
     
     setMetric( Q::HorizontalScrollHandle | MinimumWidth, qskDpiScaled( 40.0 ) );
@@ -564,7 +544,7 @@ void QskMaterialSkin::initScrollViewHints()
 
     for ( auto subControl : { Q::HorizontalScrollHandle, Q::VerticalScrollHandle } )
     {
-        setMetric( subControl | Margin, 0 );
+        setMargins( subControl | Margin, 0 );
         setMetric( subControl | Radius, 3 );
         setMetric( subControl | Border, 1 );
 
@@ -591,8 +571,7 @@ void QskMaterialSkin::initListViewHints()
     const ColorPalette& pal = m_data->palette;
 
     // padding for each cell
-    setMetric( Q::Cell | Padding | HorizontalEdges, 8 );
-    setMetric( Q::Cell | Padding | VerticalEdges, 4 );
+    setMargins( Q::Cell | Padding, QskMargins( 4, 8 ) );
 
     setAnimation( Q::CellSelected | Color, qskDuration );
     setAnimation( Q::TextSelected | Color, qskDuration );
@@ -616,7 +595,7 @@ void QskMaterialSkin::initSubWindowHints()
     // panel
 
     setMetric( Q::Panel | Border, 2 );
-    setMetric( Q::Panel | Padding, 10 );
+    setMargins( Q::Panel | Padding, 10 );
 
     setColor( Q::Panel | Border | LeftEdge | TopEdge, pal.lighter125 );
     setColor( Q::Panel | Border | RightEdge | BottomEdge, pal.darker200 );
