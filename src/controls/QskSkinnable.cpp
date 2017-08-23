@@ -543,7 +543,7 @@ static inline QMarginsF qskMarginsInner( const QskSkinnable* skinnable,
 
     bottom += qskMax(
         qskPaddingInner( skinnable, aspect | RadiusY | BottomLeftCorner, h ),
-        qskPaddingInner( skinnable, aspect | RadiusY | BottomLeftCorner, h ),
+        qskPaddingInner( skinnable, aspect | RadiusY | BottomRightCorner, h ),
         (qreal)skinnable->metric( aspect | Padding | BottomEdge ) );
 
     return QMarginsF( left, top, right, bottom );
@@ -581,7 +581,7 @@ static inline QMarginsF qskMarginsOuter( const QskSkinnable* skinnable,
 
     bottom += qskMax(
         qskPaddingOuter( skinnable, aspect | RadiusY | BottomLeftCorner, h ),
-        qskPaddingOuter( skinnable, aspect | RadiusY | BottomLeftCorner, h ),
+        qskPaddingOuter( skinnable, aspect | RadiusY | BottomRightCorner, h ),
         (qreal)skinnable->metric( aspect | Padding | BottomEdge ) );
 
     return QMargins( left, top, right, bottom );
