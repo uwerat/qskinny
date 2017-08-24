@@ -233,7 +233,7 @@ bool QskSubWindowArea::mouseEventFilter( QskSubWindow* window, const QMouseEvent
 #if 0
             // how to handle not to be process visual
             // changes for double click events ???
-            if ( window->titleBarRect().contains( event->localPos() )
+            if ( window->titleBarRect().contains( event->localPos() ) )
             {
                 // block button press until we know it is no double click
                 ///QGuiApplication::styleHints()->mouseDoubleClickInterval()

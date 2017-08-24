@@ -102,10 +102,9 @@ static inline const QVariant& qskResolvedHint( QskAspect::Aspect aspect,
 
     if ( aspect.subControl() != QskAspect::Control )
     {
-        // fall back from subcontrol to control
-
+        // trying to resolve from the skin default settings
         aspect.setSubControl( QskAspect::Control );
-        return qskResolvedHint( aspect, controlHints, skinHints, status );
+        return qskResolvedHint( aspect, nullptr, skinHints, status );
     }
 
     // Nothing left to try...
