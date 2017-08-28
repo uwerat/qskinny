@@ -148,6 +148,9 @@ QskSkin::QskSkin( QObject* parent ):
 
     const QFont font = QGuiApplication::font();
     setupFonts( font.family(), font.weight(), font.italic() );
+
+    setMargins( QskAspect::Control | QskAspect::Margin, 0 );
+    setMargins( QskAspect::Control | QskAspect::Padding, 0 );
 }
 
 QskSkin::~QskSkin()
@@ -192,6 +195,16 @@ void QskSkin::setMargins( QskAspect::Aspect aspect, const QskMargins& margins )
 QskMargins QskSkin::margins( QskAspect::Aspect aspect ) const
 {
     return m_data->hintTable.margins( aspect );
+}
+
+void QskSkin::setFontRole( QskAspect::Aspect aspect, int fontRole )
+{
+    m_data->hintTable.setFontRole( aspect, fontRole );
+}
+
+void QskSkin::setGraphicRole( QskAspect::Aspect aspect, int graphicRole )
+{
+    m_data->hintTable.setGraphicRole( aspect, graphicRole );
 }
 
 void QskSkin::setAnimation(

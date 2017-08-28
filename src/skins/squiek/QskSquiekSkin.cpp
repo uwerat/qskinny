@@ -465,7 +465,7 @@ void QskSquiekSkin::initInputPanelHints()
     pal.initButton( this, Q::KeyFrame | Q::Pressed, false );
 
     setSkinHint( Q::KeyGlyph | Alignment, Qt::AlignCenter );
-    setSkinHint( Q::KeyGlyph | FontRole, QskSkin::TinyFont );
+    setFontRole( Q::KeyGlyph, QskSkin::TinyFont );
 
     // glyph
     setColor( Q::KeyGlyph, pal.themeForeground );
@@ -541,7 +541,7 @@ void QskSquiekSkin::initSubWindowHints()
     setMargins( Q::Panel | Padding, 10 );
     setMetric( Q::TitleBar | Border, 2 );
 
-    setSkinHint( Q::TitleBar | FontRole, int( QskSkin::TinyFont ) );
+    setFontRole( Q::TitleBar, QskSkin::TinyFont );
 
     setColor( Q::Panel | Border | LeftEdge | TopEdge, pal.lighter125 );
     setColor( Q::Panel | Border | RightEdge | BottomEdge, pal.darker200 );

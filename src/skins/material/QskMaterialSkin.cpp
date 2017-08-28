@@ -248,7 +248,7 @@ void QskMaterialSkin::initPushButtonHints()
     setMetric( Q::Panel | MinimumWidth, 30 );
     setMetric( Q::Panel | MinimumHeight, 16 );
 
-    setSkinHint( Q::Text | QskAspect::FontRole, ButtonFontRole );
+    setFontRole( Q::Text, ButtonFontRole );
     setSkinHint( Q::Text | QskAspect::Alignment, Qt::AlignCenter );
 
     const QskMargins margin( 4, 3 );
@@ -371,7 +371,7 @@ void QskMaterialSkin::initDialogButtonHints()
 
     // text
 
-    setSkinHint( Q::Text | QskAspect::FontRole, ButtonFontRole );
+    setFontRole( Q::Text, ButtonFontRole );
     setSkinHint( Q::Text | QskAspect::Alignment, Qt::AlignCenter );
 
     setColor( Q::Text, pal.textColor );
@@ -468,7 +468,7 @@ void QskMaterialSkin::initTabButtonHints()
     for ( auto state : { Q::Checked, Q::Pressed, Q::Checkable | Q::Hovered } )
         setColor( Q::Panel | Border | BottomEdge | state, pal.accentColor );
 
-    setSkinHint( Q::Text | QskAspect::FontRole, ButtonFontRole );
+    setFontRole( Q::Text, ButtonFontRole );
     setSkinHint( Q::Text | QskAspect::Alignment, Qt::AlignCenter );
 
     setColor( Q::Text, pal.textColor );
@@ -509,7 +509,7 @@ void QskMaterialSkin::initInputPanelHints()
 
     // glyph
     setSkinHint( Q::KeyGlyph | Alignment, Qt::AlignCenter );
-    setSkinHint( Q::KeyGlyph | FontRole, QskSkin::TinyFont );
+    setFontRole( Q::KeyGlyph, QskSkin::TinyFont );
 
     setColor( Q::KeyGlyph, pal.textColor );
     setColor( Q::KeyGlyph | Q::Disabled, pal.darker200 );
@@ -606,7 +606,7 @@ void QskMaterialSkin::initSubWindowHints()
     setColor( Q::TitleBar, pal.darker200 );
     setColor( Q::TitleBar | Q::Focused, pal.accentColor );
 
-    setSkinHint( Q::TitleBar | FontRole, int( QskSkin::TinyFont ) );
+    setFontRole( Q::TitleBar, QskSkin::TinyFont );
 }
 
 #include "moc_QskMaterialSkin.cpp"

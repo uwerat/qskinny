@@ -79,6 +79,9 @@ public:
     void resetGraphicFilter( int graphicRole );
     QskColorFilter graphicFilter( int graphicRole ) const;
 
+    void setFontRole( QskAspect::Aspect, int fontRole );
+    void setGraphicRole( QskAspect::Aspect, int graphicRole );
+
     void setFont( int fontRole, const QFont& );
     void resetFont( int fontRole );
     QFont font( int fontRole ) const;
