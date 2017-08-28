@@ -9,7 +9,6 @@
 #include "QskStackBox.h"
 #include "QskStackBoxAnimator.h"
 #include "QskAspect.h"
-#include "QskSkinlet.h"
 #include "QskAnimationHint.h"
 
 QSK_SUBCONTROL( QskTabView, TabBar )
@@ -224,10 +223,8 @@ bool QskTabView::event( QEvent* event )
 
 void QskTabView::updateLayout()
 {
-    const QskSkinlet* skinlet = effectiveSkinlet();
-
-    m_data->tabBar->setGeometry( skinlet->subControlRect( this, TabBar ) );
-    m_data->stackBox->setGeometry( skinlet->subControlRect( this, Page ) );
+    m_data->tabBar->setGeometry( subControlRect( TabBar ) );
+    m_data->stackBox->setGeometry( subControlRect( Page ) );
 }
 
 #include "moc_QskTabView.cpp"

@@ -4,7 +4,6 @@
  *****************************************************************************/
 
 #include "QskBox.h"
-#include "QskSkinlet.h"
 
 QSK_SUBCONTROL( QskBox, Panel )
 
@@ -19,7 +18,7 @@ QskBox::~QskBox()
 
 QRectF QskBox::layoutRect() const
 {   
-    return innerBox( Panel, effectiveSkinlet()->subControlRect( this, Panel ) );
+    return innerBox( Panel, subControlRect( Panel ) );
 }
 
 QSizeF QskBox::contentsSizeHint() const

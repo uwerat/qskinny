@@ -5,7 +5,6 @@
 
 #include "QskSubWindow.h"
 #include "QskAspect.h"
-#include "QskSkinlet.h"
 #include "QskSkin.h"
 #include "QskFunctions.h"
 
@@ -121,7 +120,7 @@ bool QskSubWindow::testWindowButton( WindowButton button ) const
 
 QRectF QskSubWindow::titleBarRect() const
 {
-    return effectiveSkinlet()->subControlRect( this, QskSubWindow::TitleBar );
+    return subControlRect( QskSubWindow::TitleBar );
 }
 
 bool QskSubWindow::event( QEvent* event )
@@ -134,7 +133,7 @@ bool QskSubWindow::event( QEvent* event )
 
 QRectF QskSubWindow::layoutRect() const
 {
-    return innerBox( Panel, effectiveSkinlet()->subControlRect( this, Panel ) );
+    return innerBox( Panel, subControlRect( Panel ) );
 }
 
 void QskSubWindow::updateLayout()

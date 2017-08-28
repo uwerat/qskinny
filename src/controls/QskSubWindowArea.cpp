@@ -6,7 +6,6 @@
 #include "QskSubWindowArea.h"
 #include "QskSubWindow.h"
 #include "QskGradient.h"
-#include "QskSkinlet.h"
 #include "QskFunctions.h"
 #include "QskEvent.h"
 

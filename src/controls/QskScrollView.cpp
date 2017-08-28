@@ -4,7 +4,6 @@
  *****************************************************************************/
 
 #include "QskScrollView.h"
-#include "QskScrollViewSkinlet.h"
 #include "QskPanGestureRecognizer.h"
 #include "QskFlickAnimator.h"
 #include "QskGesture.h"
@@ -184,14 +183,14 @@ QRectF QskScrollView::viewContentsRect() const
 {
     // Border/Padding
     const int bw = metric( Viewport | QskAspect::Border );
-    const QRectF r = effectiveSkinlet()->subControlRect( this, Viewport );
+    const QRectF r = subControlRect( Viewport );
 
     return r.adjusted( bw, bw, -bw, -bw );
 }
 
 QRectF QskScrollView::gestureRect() const
 {
-    return effectiveSkinlet()->subControlRect( this, Viewport );
+    return subControlRect( Viewport );
 }
 
 void QskScrollView::geometryChangeEvent( QskGeometryChangeEvent* event )
@@ -204,12 +203,9 @@ void QskScrollView::geometryChangeEvent( QskGeometryChangeEvent* event )
 
 void QskScrollView::mousePressEvent( QMouseEvent* event )
 {
-    const QskScrollViewSkinlet* skinlet =
-        static_cast< const QskScrollViewSkinlet* >( effectiveSkinlet() );
-
-    if ( skinlet->subControlRect( this, VerticalScrollBar ).contains( event->pos() ) )
+    if ( subControlRect( VerticalScrollBar ).contains( event->pos() ) )
     {
-        const QRectF handleRect = skinlet->subControlRect( this, VerticalScrollHandle );
+        const QRectF handleRect = subControlRect( VerticalScrollHandle );
 
         if ( handleRect.contains( event->pos() ) )
         {
@@ -235,9 +231,9 @@ void QskScrollView::mousePressEvent( QMouseEvent* event )
         return;
     }
 
-    if ( skinlet->subControlRect( this, HorizontalScrollBar ).contains( event->pos() ) )
+    if ( subControlRect( HorizontalScrollBar ).contains( event->pos() ) )
     {
-        const QRectF handleRect = skinlet->subControlRect( this, HorizontalScrollHandle );
+        const QRectF handleRect = subControlRect( HorizontalScrollHandle );
 
         if ( handleRect.contains( event->pos() ) )
         {
@@ -279,8 +275,7 @@ void QskScrollView::mouseMoveEvent( QMouseEvent* event )
     if ( m_data->isScrolling == Qt::Horizontal )
     {
         const qreal dx = event->x() - m_data->scrollPressPos;
-        const qreal w = effectiveSkinlet()->subControlRect(
-            this, HorizontalScrollBar ).width();
+        const qreal w = subControlRect( HorizontalScrollBar ).width();
 
         pos.rx() += dx / w * m_data->scrollableSize.width();
         m_data->scrollPressPos = event->x();
@@ -288,8 +283,7 @@ void QskScrollView::mouseMoveEvent( QMouseEvent* event )
     else if ( m_data->isScrolling == Qt::Vertical )
     {
         const qreal dy = event->y() - m_data->scrollPressPos;
-        const qreal h = effectiveSkinlet()->subControlRect(
-            this, VerticalScrollBar ).height();
+        const qreal h = subControlRect( VerticalScrollBar ).height();
 
         pos.ry() += dy / h * m_data->scrollableSize.height();
         m_data->scrollPressPos = event->y();

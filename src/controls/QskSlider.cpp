@@ -5,7 +5,6 @@
 
 #include "QskSlider.h"
 #include "QskAspect.h"
-#include "QskSkinlet.h"
 #include "QskAnimationHint.h"
 
 #include <QtMath>
@@ -119,7 +118,7 @@ QSizeF QskSlider::handleSize() const
 
 QRectF QskSlider::handleRect() const
 {
-    return effectiveSkinlet()->subControlRect( this, QskSlider::Handle );
+    return subControlRect( QskSlider::Handle );
 }
 
 void QskSlider::mousePressEvent( QMouseEvent* event )
@@ -160,7 +159,7 @@ void QskSlider::mouseMoveEvent( QMouseEvent* event )
 #endif
     }
 
-    const auto r = effectiveSkinlet()->subControlRect( this, Scale );
+    const auto r = subControlRect( Scale );
 
     qreal newValue;
 

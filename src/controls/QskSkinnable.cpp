@@ -767,6 +767,11 @@ QskAspect::Subcontrol QskSkinnable::effectiveSubcontrol(
     return subControl;
 }
 
+QRectF QskSkinnable::subControlRect( QskAspect::Subcontrol subControl ) const
+{
+    return effectiveSkinlet()->subControlRect( this, subControl );
+}
+
 QskControl* QskSkinnable::controlCast()
 {
     return qskIsControl( this )

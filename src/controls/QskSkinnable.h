@@ -113,6 +113,8 @@ public:
     QRectF innerBox( QskAspect::Aspect, const QRectF& outerBox ) const;
     QRectF outerBox( QskAspect::Aspect, const QRectF& innerBox ) const;
 
+    QRectF subControlRect( QskAspect::Subcontrol ) const;
+
     virtual const QskSkinlet* effectiveSkinlet() const;
     QskSkin* effectiveSkin() const;
 
