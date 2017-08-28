@@ -434,6 +434,7 @@ QSK_RGB_VALUES
 #undef RGB
 
     QRgb interpolated( QRgb rgb1, QRgb rgb2, qreal ratio );
+    QColor interpolated( const QColor& c1, const QColor& c2, qreal ratio );
 }
 
 #endif

@@ -7,28 +7,48 @@
 #include "QskBoxOptions.h"
 #include "QskAspect.h"
 
+#include <QOpenGLContext>
 #include <qhashfunctions.h>
 
-static inline Qt::Edge qskAspectToEdge( QskAspect::Edge edge )
+// hashes based on CRC32 -> not necessarily unique: TODO
+
+static inline uint qskMetricsHash( const QskBoxOptions& options )
 {
-    switch ( edge )
+    uint hash = qHash( QOpenGLContext::currentContext() );
+
+    hash = qHashBits( &options.shadows, sizeof( options.shadows ), hash );
+
+    const auto& m = options.metrics;
+    hash = qHashBits( &m.widths(), sizeof( QskMargins ), hash );
+
+    QSizeF radius[4];
+    for ( int i = 0; i < 4; i++ )
+        radius[i] = m.radius( static_cast<Qt::Corner>( i ) );
+        
+    hash = qHashBits( radius, sizeof( radius ), hash );
+
+    uint flags[2];
+    flags[0] = m.radiusSizeMode();
+    flags[1] = m.widthSizeMode();
+    
+    return qHashBits( flags, sizeof( flags ), hash );
+}
+
+static inline uint qskColorsHash( const QskBoxOptions& options )
+{
+    const auto& colors = options.colors;
+
+    QRgb rgb[8];
+    for ( int i = 0; i < 4; i++ )
     {
-        case QskAspect::LeftEdge:
-            return Qt::LeftEdge;
+        const QColor c1 = colors.borderColor( static_cast< Qt::Edge >( i ) );
+        rgb[i] = c1.isValid() ? c1.rgba() : 0;
 
-        case QskAspect::TopEdge:
-            return Qt::TopEdge;
-
-        case QskAspect::RightEdge:
-            return Qt::RightEdge;
-
-        case QskAspect::BottomEdge:
-            return Qt::BottomEdge;
-
-        default:
-            break;
+        const QColor c2 = colors.fillColor( static_cast< Qt::Corner >( i ) );
+        rgb[2*i] = c2.isValid() ? c2.rgba() : 0;
     }
-    return static_cast< Qt::Edge >( 0 );
+
+    return qHashBits( rgb, sizeof( rgb ), 17000 );
 }
 
 QskBoxNode::QskBoxNode():
@@ -51,8 +71,8 @@ void QskBoxNode::setBoxData( const QRectF& rect, const QskBoxOptions& options )
 {
     using namespace QskAspect;
 
-    const uint metricsHash = options.metricsHash();
-    const uint colorsHash = options.colorsHash();
+    const uint metricsHash = qskMetricsHash( options );
+    const uint colorsHash = qskColorsHash( options );
 
     QSGNode::DirtyState dirtyState = 0;
 
@@ -62,7 +82,7 @@ void QskBoxNode::setBoxData( const QRectF& rect, const QskBoxOptions& options )
         if ( m_metricsHash > 0 )
             m_material.release( m_metricsHash );
 #endif
-        m_material.setBoxOptions( options );
+        m_material.setBoxOptions( options, metricsHash );
         dirtyState |= QSGNode::DirtyMaterial;
     }
 
@@ -79,22 +99,28 @@ void QskBoxNode::setBoxData( const QRectF& rect, const QskBoxOptions& options )
 
     if ( colorsHash != m_colorsHash )
     {
+        const auto& c = options.colors;
+
         m_geometry.setEdgeBackground( Qt::LeftEdge,
-            options.color.fillTopLeft, options.color.fillBottomLeft );
+            c.fillColor( Qt::TopLeftCorner ).rgba(),
+            c.fillColor( Qt::BottomLeftCorner ).rgba() );
 
         m_geometry.setEdgeBackground( Qt::TopEdge,
-            options.color.fillTopLeft, options.color.fillTopRight );
+            c.fillColor( Qt::TopLeftCorner ).rgba(),
+            c.fillColor( Qt::TopRightCorner ).rgba() );
 
         m_geometry.setEdgeBackground( Qt::RightEdge,
-            options.color.fillTopRight, options.color.fillBottomRight );
+            c.fillColor( Qt::TopRightCorner ).rgba(),
+            c.fillColor( Qt::BottomRightCorner ).rgba() );
 
         m_geometry.setEdgeBackground( Qt::BottomEdge,
-            options.color.fillBottomLeft, options.color.fillBottomRight );
+            c.fillColor( Qt::BottomLeftCorner ).rgba(),
+            c.fillColor( Qt::BottomRightCorner ).rgba() );
 
-        m_geometry.setEdgeForeground( qskAspectToEdge( LeftEdge ), options.color.borderLeft );
-        m_geometry.setEdgeForeground( qskAspectToEdge( TopEdge ), options.color.borderTop );
-        m_geometry.setEdgeForeground( qskAspectToEdge( RightEdge ), options.color.borderRight );
-        m_geometry.setEdgeForeground( qskAspectToEdge( BottomEdge ), options.color.borderBottom );
+        m_geometry.setEdgeForeground( Qt::LeftEdge, c.borderColor( Qt::LeftEdge ).rgba() );
+        m_geometry.setEdgeForeground( Qt::TopEdge, c.borderColor( Qt::TopEdge ).rgba() );
+        m_geometry.setEdgeForeground( Qt::RightEdge, c.borderColor( Qt::RightEdge ).rgba() );
+        m_geometry.setEdgeForeground( Qt::BottomEdge, c.borderColor( Qt::BottomEdge ).rgba() );
 
         dirtyState |= QSGNode::DirtyGeometry;
         m_colorsHash = colorsHash;

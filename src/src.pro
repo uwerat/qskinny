@@ -31,6 +31,8 @@ DEPENDPATH *= $${QSK_SUBDIRS}
 
 HEADERS += \
     common/QskAspect.h \
+    common/QskBorderMetrics.h \
+    common/QskBoxColors.h \
     common/QskBoxOptions.h \
     common/QskCorner.h \
     common/QskFlags.h \
@@ -46,6 +48,8 @@ HEADERS += \
 
 SOURCES += \
     common/QskAspect.cpp \
+    common/QskBorderMetrics.cpp \
+    common/QskBoxColors.cpp \
     common/QskBoxOptions.cpp \
     common/QskCorner.cpp \
     common/QskFunctions.cpp \

@@ -4,85 +4,30 @@
  *****************************************************************************/
 
 #include "QskBoxOptions.h"
-#include <qhashfunctions.h>
 
-QskBoxOptions::QskBoxOptions():
-    radius( { 0, 0, 0, 0, 0, 0, 0, 0 } ),
-    color( { 0, 0, 0, 0, 0, 0, 0, 0 } )
+static inline bool qskIsVisible( const QColor& color )
 {
+    return color.isValid() && color.alpha() > 0;
 }
 
-uint QskBoxOptions::metricsHash( uint seed ) const
+QskBoxOptions::QskBoxOptions()
 {
-    return qHashBits( this, 2 * sizeof( QMarginsF ) + 8 * sizeof( qreal ), seed );
-}
-
-uint QskBoxOptions::colorsHash( uint seed ) const
-{
-    return qHashBits( &color, 8 * sizeof( QRgb ), seed );
-}
-
-void QskBoxOptions::setBorder( qreal width )
-{
-    borders = QMarginsF( width, width, width, width );
-}   
-
-void QskBoxOptions::setBorder( qreal left, qreal top, qreal right, qreal bottom )
-{
-    borders = QMarginsF( left, top, right, bottom );
-}
-
-void QskBoxOptions::setRadius( qreal radius )
-{
-    this->radius = { radius, radius, radius, radius, radius, radius, radius, radius };
-}       
-
-void QskBoxOptions::setBorderRgb( QRgb rgb )
-{
-    color.borderLeft = color.borderTop =
-        color.borderRight = color.borderBottom = rgb;
-}
-
-void QskBoxOptions::setBorderRgb( QRgb rgbLeft, QRgb rgbTop,
-    QRgb rgbRight, QRgb rgbBottom )
-{
-    color.borderLeft = rgbLeft;
-    color.borderTop = rgbTop;
-    color.borderRight = rgbRight;
-    color.borderBottom = rgbBottom;
-}
-
-void QskBoxOptions::setFillRgb( QRgb rgb )
-{
-    color.fillTopLeft = color.fillTopRight =
-        color.fillBottomRight = color.fillBottomLeft = rgb;
-}
-
-void QskBoxOptions::setFillRgb( QRgb rgbTopLeft, QRgb rgbTopRight,
-    QRgb rgbBottomRight, QRgb rgbBottomLeft )
-{
-    color.fillTopLeft = rgbTopLeft;
-    color.fillTopRight = rgbTopRight;
-    color.fillBottomRight = rgbBottomRight;
-    color.fillBottomLeft = rgbBottomLeft;
 }
 
 bool QskBoxOptions::isVisible() const
 {
-    if ( qAlpha( color.fillTopLeft ) ||
-        qAlpha( color.fillTopRight ) ||
-        qAlpha( color.fillBottomRight ) ||
-        qAlpha( color.fillBottomLeft ) )
+    if ( qskIsVisible( colors.fillColor( Qt::TopLeftCorner ) )
+        || qskIsVisible( colors.fillColor( Qt::TopRightCorner ) )
+        || qskIsVisible( colors.fillColor( Qt::BottomLeftCorner ) )
+        || qskIsVisible( colors.fillColor( Qt::BottomRightCorner ) ) )
     {
         return true;
     }
 
-    if ( ( borders.left() && qAlpha( color.borderLeft ) ) ||
-        ( borders.top() && qAlpha( color.borderTop ) ) ||
-        ( borders.right() && qAlpha( color.borderRight ) ) ||
-        ( borders.bottom() && qAlpha( color.borderBottom ) ) )
+    for ( auto edge : { Qt::LeftEdge, Qt::TopEdge, Qt::RightEdge, Qt::BottomEdge } )
     {
-        return true;
+        if ( metrics.widthAt( edge ) && qskIsVisible( colors.borderColor( edge ) ) )
+            return true;
     }
 
     return false;
@@ -90,13 +35,16 @@ bool QskBoxOptions::isVisible() const
 
 QMarginsF QskBoxOptions::padding() const
 {
-    const qreal left = std::max( radius.topLeftX, radius.bottomLeftX );
-    const qreal top = std::max( radius.topLeftY, radius.topRightY );
-    const qreal right = std::max( radius.topRightX, radius.bottomRightX );
-    const qreal bottom = std::max( radius.bottomRightY, radius.bottomLeftY );
+    const QSizeF topLeft = metrics.radius( Qt::TopLeftCorner );
+    const QSizeF topRight = metrics.radius( Qt::TopRightCorner );
+    const QSizeF bottomLeft = metrics.radius( Qt::BottomLeftCorner );
+    const QSizeF bottomRight = metrics.radius( Qt::BottomRightCorner );
 
-    return QMarginsF( std::max( 0.0, left ), std::max( 0.0, top ),
-        std::max( 0.0, right ), std::max( 0.0, bottom ) );
+    return QMarginsF( 
+        std::max( topLeft.width(), bottomLeft.width() ),
+        std::max( topLeft.height(), topRight.height() ),
+        std::max( topRight.width(), bottomRight.width() ),
+        std::max( bottomLeft.height(), bottomRight.height() ) );
 }
 
 QMarginsF QskBoxOptions::unitedMargins() const
@@ -111,5 +59,5 @@ QMarginsF QskBoxOptions::unitedMargins() const
         std::max( 0.0, pad.bottom() - shadows.bottom() ) + 0.5
     );
 
-    return borders + shadows + pad + extra;
+    return metrics.widths() + shadows + pad + extra;
 }

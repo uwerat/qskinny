@@ -22,7 +22,7 @@ public:
     QskBoxMaterial();
     virtual ~QskBoxMaterial();
 
-    void setBoxOptions( const QskBoxOptions& );
+    void setBoxOptions( const QskBoxOptions&, uint key );
 
     QSizeF textureSize() const;
     QRectF textureCoordinates() const;

@@ -249,8 +249,8 @@ QskBoxOptions QskSkinRenderer::boxOptions( const QskSkinnable* skinnable,
 
     QskBoxOptions options; 
 
-    options.borders = qskRotatedMargins( 
-        skinnable->borderMetrics( subControl ), rotation );
+    options.metrics.setWidths( qskRotatedMargins( 
+        skinnable->borderMetrics( subControl ), rotation ) );
 
     options.shadows = qskRotatedMargins(
         skinnable->marginsHint( subControl | Shadow ), rotation );
@@ -267,26 +267,29 @@ QskBoxOptions QskSkinRenderer::boxOptions( const QskSkinnable* skinnable,
     const auto bottomLeft = static_cast<Corner>( bottomEdge );
 
     // corner radii
-    options.radius.topLeftX = qskRadius( skinnable, rect, subControl | RadiusX | topLeft );
-    options.radius.topLeftY = qskRadius( skinnable, rect, subControl | RadiusY | topLeft );
-    options.radius.topRightX = qskRadius( skinnable, rect, subControl | RadiusX | topRight );
-    options.radius.topRightY = qskRadius( skinnable, rect, subControl | RadiusY | topRight );
-    options.radius.bottomRightX = qskRadius( skinnable, rect, subControl | RadiusX | bottomRight );
-    options.radius.bottomRightY = qskRadius( skinnable, rect, subControl | RadiusY | bottomRight );
-    options.radius.bottomLeftX = qskRadius( skinnable, rect, subControl | RadiusX | bottomLeft );
-    options.radius.bottomLeftY = qskRadius( skinnable, rect, subControl | RadiusY | bottomLeft );
+    options.metrics.setRadius(
+        qskRadius( skinnable, rect, subControl | RadiusX | topLeft ),
+        qskRadius( skinnable, rect, subControl | RadiusY | topLeft ),
+        qskRadius( skinnable, rect, subControl | RadiusX | topRight ),
+        qskRadius( skinnable, rect, subControl | RadiusY | topRight ),
+        qskRadius( skinnable, rect, subControl | RadiusX | bottomLeft ),
+        qskRadius( skinnable, rect, subControl | RadiusY | bottomLeft ),
+        qskRadius( skinnable, rect, subControl | RadiusX | bottomRight ),
+        qskRadius( skinnable, rect, subControl | RadiusY | bottomRight ) );
 
     // border colors
-    options.color.borderLeft = skinnable->color( subControl | Border | leftEdge ).rgba();
-    options.color.borderTop = skinnable->color( subControl | Border | topEdge ).rgba();
-    options.color.borderRight = skinnable->color( subControl | Border | rightEdge ).rgba();
-    options.color.borderBottom = skinnable->color( subControl | Border | bottomEdge ).rgba();
+    options.colors.setBorderColor(
+        skinnable->color( subControl | Border | leftEdge ),
+        skinnable->color( subControl | Border | topEdge ),
+        skinnable->color( subControl | Border | rightEdge ),
+        skinnable->color( subControl | Border | bottomEdge ) );
 
     // background colors
-    options.color.fillTopLeft = skinnable->color( subControl | leftEdge ).rgba();
-    options.color.fillTopRight = skinnable->color( subControl | topEdge ).rgba();
-    options.color.fillBottomRight = skinnable->color( subControl | rightEdge ).rgba();
-    options.color.fillBottomLeft = skinnable->color( subControl | bottomEdge ).rgba();
+    options.colors.setFillColor(
+        skinnable->color( subControl | topLeft ),
+        skinnable->color( subControl | topRight ),
+        skinnable->color( subControl | bottomLeft ),
+        skinnable->color( subControl | bottomRight ) );
 
     return options;
 }

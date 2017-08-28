@@ -76,14 +76,19 @@ namespace
     static QPainterPath qskBorderPath( QMarginsF borders, QMarginsF marginsExtra,
         const QskBoxOptions& options, bool inner )
     {
-        qreal topLeftX = options.radius.topLeftX;
-        qreal topRightX = options.radius.topRightX;
-        qreal bottomRightX = options.radius.bottomRightX;
-        qreal bottomLeftX = options.radius.bottomLeftX;
-        qreal topLeftY = options.radius.topLeftY;
-        qreal topRightY = options.radius.topRightY;
-        qreal bottomRightY = options.radius.bottomRightY;
-        qreal bottomLeftY = options.radius.bottomLeftY;
+        const auto& metrics = options.metrics;
+
+        qreal topLeftX = metrics.radius( Qt::TopLeftCorner ).width();
+        qreal topRightX = metrics.radius( Qt::TopRightCorner ).width();
+
+        qreal bottomRightX = metrics.radius( Qt::BottomRightCorner ).width();
+        qreal bottomLeftX = metrics.radius( Qt::BottomLeftCorner ).width();
+
+        qreal topLeftY = metrics.radius( Qt::TopLeftCorner ).height();
+        qreal topRightY = metrics.radius( Qt::TopRightCorner ).height();
+
+        qreal bottomRightY = metrics.radius( Qt::BottomRightCorner ).height();
+        qreal bottomLeftY = metrics.radius( Qt::BottomLeftCorner).height();
 
         const auto spacingX = marginsExtra.left() + marginsExtra.right();
         const auto spacingY = marginsExtra.top() + marginsExtra.bottom();
@@ -200,8 +205,9 @@ namespace
 
         const QMarginsF allMargins = options.unitedMargins();
         const QMarginsF padding = options.padding();
+        const QMarginsF borders = options.metrics.widths();
 
-        const QMarginsF extra = allMargins - options.borders - options.shadows - padding;
+        const QMarginsF extra = allMargins - borders - options.shadows - padding;
 
         const auto width = allMargins.left() + allMargins.right();
         const auto height = allMargins.top() + allMargins.bottom();
@@ -211,15 +217,15 @@ namespace
         const auto translateY = options.shadows.top() + ( size.height() - height ) * 0.5f;
 
         {
-            auto outerPath = qskBorderPath( options.borders, extra, options, false );
+            auto outerPath = qskBorderPath( borders, extra, options, false );
             outerPath = outerPath.translated( translateX, translateY );
 
             paths.append( outerPath );
         }
 
-        if ( !options.borders.isNull() )
+        if ( !borders.isNull() )
         {
-            auto innerPath = qskBorderPath( options.borders, extra, options, true );
+            auto innerPath = qskBorderPath( borders, extra, options, true );
             innerPath = innerPath.translated( translateX, translateY );
 
             paths.append( innerPath );
@@ -232,7 +238,7 @@ namespace
         if ( !options.shadows.isNull() )
         {
             auto shadowPath = qskBorderPath(
-                options.borders + options.shadows, extra, options, false );
+                borders + options.shadows, extra, options, false );
 
             shadowPath = shadowPath.translated( translateX - options.shadows.left(),
                 translateY - options.shadows.top() );
@@ -356,11 +362,8 @@ QskBoxMaterialVM::~QskBoxMaterialVM()
     releaseTextures();
 }
 
-void QskBoxMaterialVM::setBoxOptions( const QskBoxOptions& options )
+void QskBoxMaterialVM::setBoxOptions( const QskBoxOptions& options, uint key )
 {
-    auto key = options.metricsHash();
-    key = qHash( QOpenGLContext::currentContext(), key );
-
     auto it = qskTextureCache.find( key );
     if ( it != qskTextureCache.cend() )
     {
