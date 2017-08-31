@@ -86,9 +86,10 @@ void QskInputCompositionModel::composeKey( Qt::Key key )
     {
         case Qt::Key_Backspace:
         case Qt::Key_Muhenkan:
+        {
             backspace();
             return;
-
+        }
         case Qt::Key_Space:
         {
             if ( !spaceLeft )
@@ -103,11 +104,10 @@ void QskInputCompositionModel::composeKey( Qt::Key key )
             }
             else
             {
-                commit(qskKeyString(key) );
+                commit( qskKeyString(key) );
             }
             return;
         }
-
         case Qt::Key_Return:
         {
             if ( !spaceLeft )
@@ -118,19 +118,20 @@ void QskInputCompositionModel::composeKey( Qt::Key key )
                 commit( m_data->preedit.left( spaceLeft ) );
             else if ( hints & Qt::ImhMultiLine )
                 commit( qskKeyString( key ) );
-            else
-                return;
-        }
 
+            return;
+        }
         case Qt::Key_Left:
         case Qt::Key_Right:
+        {
             moveCursor( key );
             return;
-
+        }
         default:
+        {
             if ( !spaceLeft )
                 return;
-            break;
+        }
     }
 
     if ( hints & Qt::ImhHiddenText )
