@@ -7,6 +7,8 @@
 #include "QskStackBoxAnimator.h"
 #include "QskLayoutItem.h"
 #include "QskLayoutEngine.h"
+#include "QskLayoutConstraint.h"
+
 #include <QPointer>
 
 class QskStackBox::PrivateData
@@ -163,7 +165,7 @@ QSizeF QskStackBox::contentsSizeHint() const
     if ( !isActive() )
         return QSizeF( -1, -1 );
 
-    if ( itemCount() == 0 ) 
+    if ( itemCount() == 0 )
         return QSizeF( 0, 0 );
 
     qreal width = -1;
@@ -237,16 +239,46 @@ QSizeF QskStackBox::contentsSizeHint() const
     return QSizeF( width, height );
 }
 
+qreal QskStackBox::heightForWidth( qreal width ) const
+{
+    qreal height = -1;
+
+    const QskLayoutEngine& engine = this->engine();
+    for ( int i = 0; i < engine.itemCount(); i++ )
+    {
+        const QskLayoutItem* layoutItem = engine.layoutItemAt( i );
+        if ( const auto item = layoutItem->item() )
+            height = qMax( height, QskLayoutConstraint::heightForWidth( item, width ) );
+    }
+
+    return height;
+}
+
+qreal QskStackBox::widthForHeight( qreal height ) const
+{
+    qreal width = -1;
+
+    const QskLayoutEngine& engine = this->engine();
+    for ( int i = 0; i < engine.itemCount(); i++ )
+    {
+        const QskLayoutItem* layoutItem = engine.layoutItemAt( i );
+        if ( const auto item = layoutItem->item() )
+            width = qMax( width, QskLayoutConstraint::widthForHeight( item, height ) );
+    }
+
+    return width;
+}
+
 void QskStackBox::layoutItemInserted( QskLayoutItem* layoutItem, int index )
 {
     Q_UNUSED( index )
 
-    QQuickItem *item = layoutItem->item();
+    QQuickItem* item = layoutItem->item();
     if ( item == nullptr )
         return;
 
 #if 1
-    /* 
+    /*
        In general QGridLayoutEngine supports having multiple entries
        in one cell, but well ...
        So we have to go away from using it and doing the simple use case of

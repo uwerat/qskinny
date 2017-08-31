@@ -34,6 +34,9 @@ public:
 
     virtual QSizeF contentsSizeHint() const override;
 
+    virtual qreal heightForWidth( qreal width ) const override;
+    virtual qreal widthForHeight( qreal height ) const override;
+
     void setAnimator( QskStackBoxAnimator* );
     const QskStackBoxAnimator* animator() const;
     QskStackBoxAnimator* animator();
