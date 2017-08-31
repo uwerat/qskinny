@@ -91,20 +91,6 @@ namespace
             skin->setColor( aspect | Border | RightEdge | BottomEdge, color );
         }
 
-        void initBaseBox( QskSkin* skin, QskAspect::Aspect aspect ) const
-        {
-            using namespace QskAspect;
-
-            skin->setColor( aspect | TopCorners, lighter125 );
-            skin->setColor( aspect | BottomCorners, lighter150 );
-
-            skin->setColor( aspect | Border | LeftEdge | TopEdge, lighter150 );
-            skin->setColor( aspect | Border | RightEdge | BottomEdge, darker200 );
-
-            skin->setColor( aspect, contrasted );
-            skin->setColor( aspect | StyleColor, contrastedText );
-        }
-
         QColor theme;
         QColor themeForeground;
 
