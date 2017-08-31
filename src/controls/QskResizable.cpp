@@ -17,6 +17,21 @@ QskResizable::~QskResizable()
 {
 }
 
+void QskResizable::initSizePolicy(
+    QskSizePolicy::Policy horizontalPolicy,
+    QskSizePolicy::Policy verticalPolicy )
+{
+    /*
+       In constructors of derived classes you don't need
+       to propagate changes by layoutConstraintChanged.
+       Sometimes it is even worse as the parent might not be
+       even prepared to handle the LayouRequest event.
+     */
+    
+    m_sizePolicy.setHorizontalPolicy( horizontalPolicy );
+    m_sizePolicy.setVerticalPolicy( verticalPolicy );
+}
+
 void QskResizable::setSizePolicy( const QskSizePolicy& policy )
 {
     if ( policy != m_sizePolicy )

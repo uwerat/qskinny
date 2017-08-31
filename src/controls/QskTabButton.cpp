@@ -37,7 +37,7 @@ QskTabButton::QskTabButton( const QString& text, QQuickItem* parent ):
 {
     resolveTabBar();
 
-    setSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Fixed );
+    initSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Fixed );
 
     setCheckable( true );
     setExclusive( true );

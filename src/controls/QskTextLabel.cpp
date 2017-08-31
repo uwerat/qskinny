@@ -37,7 +37,7 @@ QskTextLabel::QskTextLabel( const QString& text, QQuickItem* parent ):
     Inherited( parent ),
     m_data( new PrivateData( text ) )
 {
-    setSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Fixed );
+    initSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Fixed );
 }
 
 QskTextLabel::~QskTextLabel()

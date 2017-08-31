@@ -64,7 +64,7 @@ QskStatusIndicator::QskStatusIndicator( QQuickItem* parent ):
     Inherited( parent ),
     m_data( new PrivateData() )
 {
-    setSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
+    initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
 }
 
 QskStatusIndicator::~QskStatusIndicator()

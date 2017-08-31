@@ -46,9 +46,9 @@ QskTabBar::QskTabBar( Qt::Orientation orientation, QQuickItem* parent ):
     m_data->layoutBox->setExtraSpacingAt( Qt::RightEdge | Qt::BottomEdge );
 
     if ( orientation == Qt::Horizontal )
-        setSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Fixed );
+        initSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Fixed );
     else
-        setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Preferred );
+        initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Preferred );
 
     setAutoLayoutChildren( true );
 

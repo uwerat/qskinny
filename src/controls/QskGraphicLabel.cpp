@@ -44,7 +44,7 @@ QskGraphicLabel::QskGraphicLabel( const QUrl& source, QQuickItem* parent ):
     Inherited( parent ),
     m_data( new PrivateData( source ) )
 {
-    setSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
+    initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
 
     if ( !m_data->source.isEmpty() )
         polish();

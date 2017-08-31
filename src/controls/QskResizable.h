@@ -63,6 +63,9 @@ public:
     virtual qreal heightForWidth( qreal width ) const;
     virtual qreal widthForHeight( qreal height ) const;
 
+protected:
+    void initSizePolicy( QskSizePolicy::Policy, QskSizePolicy::Policy );
+
 private:
     virtual void layoutConstraintChanged();
 

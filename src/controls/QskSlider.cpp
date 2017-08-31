@@ -47,9 +47,9 @@ QskSlider::QskSlider( Qt::Orientation orientation, QQuickItem* parent ):
     setActiveFocusOnTab( true );
 
     if ( orientation == Qt::Horizontal )
-        setSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Fixed );
+        initSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Fixed );
     else
-        setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Minimum );
+        initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Minimum );
 
     setMetric( QskSlider::Handle | QskAspect::Position, position() );
 

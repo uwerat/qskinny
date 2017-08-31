@@ -226,9 +226,11 @@ QskInputPanel::QskInputPanel( QQuickItem* parent ):
     QskControl( parent ),
     m_data( new PrivateData )
 {
-    setSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
     setFlag( ItemHasContents );
     setAcceptedMouseButtons( Qt::MouseButtonMask );
+
+    initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
+
     updateLocale( locale() );
 
     QObject::connect( this, &QskControl::localeChanged,

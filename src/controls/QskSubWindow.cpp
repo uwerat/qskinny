@@ -34,7 +34,7 @@ QskSubWindow::QskSubWindow( QQuickItem* parent ):
     m_data( new PrivateData() )
 {
     setMargins( 0 );
-    setSizePolicy( QskSizePolicy::MinimumExpanding, QskSizePolicy::MinimumExpanding );
+    initSizePolicy( QskSizePolicy::MinimumExpanding, QskSizePolicy::MinimumExpanding );
 
     setAutoLayoutChildren( true );
 }

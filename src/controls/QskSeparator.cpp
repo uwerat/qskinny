@@ -18,9 +18,9 @@ QskSeparator::QskSeparator( Qt::Orientation orientation, QQuickItem* parent ):
     m_orientation( orientation )
 {
     if ( orientation == Qt::Horizontal )
-        setSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Fixed );
+        initSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Fixed );
     else
-        setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Minimum );
+        initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Minimum );
 }
 
 QskSeparator::~QskSeparator()

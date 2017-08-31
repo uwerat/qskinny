@@ -31,7 +31,7 @@ QskPageIndicator::QskPageIndicator( int count, QQuickItem* parent ):
     m_data( new PrivateData( count ) )
 {
     // as we don't stretch the bullets
-    setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
+    initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 }
 
 QskPageIndicator::QskPageIndicator( QQuickItem* parent ):
