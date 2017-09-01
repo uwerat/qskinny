@@ -31,8 +31,6 @@ public:
     virtual QRectF subControlRect(
         const QskSkinnable*, QskAspect::Subcontrol ) const override;
 
-    virtual qreal buttonShift( const QskPushButton* ) const;
-
 protected:
     virtual QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;

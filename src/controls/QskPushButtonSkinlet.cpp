@@ -19,12 +19,6 @@ QskPushButtonSkinlet::QskPushButtonSkinlet( QskSkin* skin ):
 
 QskPushButtonSkinlet::~QskPushButtonSkinlet() = default;
 
-qreal QskPushButtonSkinlet::buttonShift( const QskPushButton* button ) const
-{
-    // a good value for the button shift ???
-    return button->metric( QskPushButton::Panel );
-}
-
 QRectF QskPushButtonSkinlet::subControlRect(
     const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
 {
