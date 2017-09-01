@@ -51,7 +51,7 @@ QSGNode* QskSeparatorSkinlet::updateSubNode(
 QRectF QskSeparatorSkinlet::panelRect( const QskSeparator* separator ) const
 {
     const QRectF cr = separator->contentsRect();
-    const qreal m = separator->metric( QskSeparator::Panel );
+    const qreal m = separator->metric( QskSeparator::Panel | QskAspect::Size );
 
     QRectF r;
 

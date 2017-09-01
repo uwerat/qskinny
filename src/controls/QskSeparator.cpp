@@ -50,9 +50,29 @@ Qt::Orientation QskSeparator::orientation() const
     return m_orientation;
 }
 
+void QskSeparator::setThickness( qreal thickness )
+{
+    thickness = qMax( thickness, 0.0 );
+
+    if ( thickness != metric( QskSeparator::Panel | QskAspect::Size ) )
+    {
+        setMetric( QskSeparator::Panel | QskAspect::Size, thickness );
+
+        resetImplicitSize();
+        update();
+
+        Q_EMIT thicknessChanged();
+    }
+}
+
+qreal QskSeparator::thickness() const
+{
+    return metric( QskSeparator::Panel | QskAspect::Size );
+}
+
 QSizeF QskSeparator::contentsSizeHint() const
 {
-    const qreal m = metric( Panel );
+    const qreal m = thickness();
 
     if ( m_orientation == Qt::Horizontal )
         return QSizeF( -1, m );

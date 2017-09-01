@@ -201,7 +201,7 @@ void QskMaterialSkin::initSeparatorHints()
 
     const ColorPalette& pal = m_data->palette;
 
-    setMetric( Q::Panel, 4 );
+    setMetric( Q::Panel | Size, 4 );
     setColor( Q::Panel, pal.baseColor );
 }
 
