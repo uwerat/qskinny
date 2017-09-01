@@ -54,11 +54,8 @@ QSGNode* QskPageIndicatorSkinlet::updateSubNode( const QskSkinnable* skinnable,
 QRectF QskPageIndicatorSkinlet::bulletRect(
     const QskPageIndicator* indicator, const QRectF& rect, int index ) const
 {
-#if 1
-    // ignoring, that width/height might differ !!!
-    const qreal szNormal = indicator->bulletSize( QskPageIndicator::Bullet ).width();
-    const qreal szHighlighted = indicator->bulletSize( QskPageIndicator::Highlighted ).width();
-#endif
+    const qreal szNormal = indicator->metric( QskPageIndicator::Bullet | QskAspect::Size );
+    const qreal szHighlighted = indicator->metric( QskPageIndicator::Highlighted | QskAspect::Size );
 
     // scale bullet size if we are in between a transition:
     qreal indexDiff = qAbs( indicator->currentIndex() - index );
@@ -82,29 +79,27 @@ QRectF QskPageIndicatorSkinlet::bulletRect(
         w = rect.width();
         h = ( indicator->count() - 1 ) * ( szNormal + spacing ) + szHighlighted;
     }
+
     QRectF r( 0, 0, w, h );
     r.moveCenter( rect.center() );
 
-    // x-adjust (in horizontal mode) when not scrolling:
     const qreal s = ( index > indicator->currentIndex() ) ? szHighlighted : szNormal;
 
-    // adapt x-adjust while scrolling:
     qreal s2;
-    // scrolling from or to this bullet:
     if ( indexDiff < 1 && index >= indicator->currentIndex() )
     {
+        // scrolling from or to this bullet:
         s2 = szNormal + qAbs( szHighlighted - szNormal ) * indexDiff;
     }
-    // wrapping case:
     else if ( ( indicator->currentIndex() > ( indicator->count() - 1 ) &&
                 index > ( indicator->currentIndex() - indicator->count() + 1 ) ) )
     {
+        // wrapping case:
         qreal wrappingDiff = indexDiff;
         while ( wrappingDiff > 1 )
             wrappingDiff -= 1;
         s2 = szNormal + qAbs( szHighlighted - szNormal ) * wrappingDiff;
     }
-    // unrelated bullet:
     else
     {
         s2 = s;

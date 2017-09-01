@@ -102,8 +102,8 @@ QSizeF QskPageIndicator::contentsSizeHint() const
 {
     using namespace QskAspect;
 
-    const QSizeF sizeBullet = bulletSize( Bullet );
-    const QSizeF sizeCurrent = bulletSize( Highlighted );
+    const qreal sizeBullet = metric( Bullet | Size );
+    const qreal sizeCurrent = metric( Highlighted | Size );
     const qreal spacing = metric( Panel | Spacing );
 
     const int n = m_data->count;
@@ -115,39 +115,33 @@ QSizeF QskPageIndicator::contentsSizeHint() const
     {
         if ( n > 0 )
         {
-            w += qMax( sizeCurrent.width(), sizeBullet.width() );
+            w += qMax( sizeCurrent, sizeBullet );
 
             if ( n > 1 )
-                w += ( n - 1 ) * ( sizeBullet.width() + spacing );
+                w += ( n - 1 ) * ( sizeBullet + spacing );
 
         }
 
-        h = qMax( sizeCurrent.height(), sizeBullet.height() );
+        h = qMax( sizeCurrent, sizeBullet );
     }
     else
     {
         if ( n > 0 )
         {
-            h += qMax( sizeCurrent.height(), sizeBullet.height() );
+            h += qMax( sizeCurrent, sizeBullet );
 
             if ( n > 1 )
-                h += ( n - 1 ) * ( sizeBullet.height() + spacing );
+                h += ( n - 1 ) * ( sizeBullet + spacing );
         }
 
-        w = qMax( sizeCurrent.width(), sizeBullet.width() );
+        w = qMax( sizeCurrent, sizeBullet );
     }
 
     const QSizeF minSize(
-        metric( Panel | QskAspect::MinimumWidth ),
-        metric( Panel | QskAspect::MinimumHeight ) );
+        metric( Panel | MinimumWidth ),
+        metric( Panel | MinimumHeight ) );
 
     return outerBoxSize( Panel, QSizeF( w, h ) ).expandedTo( minSize );
-}
-
-QSizeF QskPageIndicator::bulletSize( QskAspect::Subcontrol subControl ) const
-{
-    const qreal dim = metric( subControl | QskAspect::Size );
-    return QSizeF( dim, dim );
 }
 
 #include "moc_QskPageIndicator.cpp"

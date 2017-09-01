@@ -36,8 +36,6 @@ public:
 
     virtual QSizeF contentsSizeHint() const override;
 
-    QSizeF bulletSize( QskAspect::Subcontrol ) const;
-
 Q_SIGNALS:
     void countChanged();
     void currentIndexChanged();
