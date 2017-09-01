@@ -5,7 +5,6 @@
 
 #include "QskSubWindowAreaSkinlet.h"
 #include "QskSubWindowArea.h"
-#include "QskSkin.h"
 #include "QskGradient.h"
 #include "QskRectNode.h"
 
@@ -24,15 +23,10 @@ QRectF QskSubWindowAreaSkinlet::subControlRect(
     
     if ( subControl == QskSubWindowArea::Panel )
     {
-        return panelRect( area );
+        return area->contentsRect();
     }
     
     return Inherited::subControlRect( skinnable, subControl );
-}
-
-QRectF QskSubWindowAreaSkinlet::panelRect( const QskSubWindowArea* area ) const
-{
-    return area->contentsRect();
 }
 
 QSGNode* QskSubWindowAreaSkinlet::updateSubNode(
@@ -43,11 +37,12 @@ QSGNode* QskSubWindowAreaSkinlet::updateSubNode(
     switch( nodeRole )
     {
         case PanelRole:
+        {
             return updatePanelNode( area, node );
-
-        default:
-            return nullptr;
+        }
     }
+
+    return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
 QSGNode* QskSubWindowAreaSkinlet::updatePanelNode(

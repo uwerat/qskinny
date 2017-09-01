@@ -35,9 +35,7 @@ protected:
         quint8 nodeRole, QSGNode* ) const override;
 
 private:
-    QSGNode* updatePanelNode( const QskPageIndicator*, QSGNode* ) const;
     QSGNode* updateBulletsNode( const QskPageIndicator*, QSGNode* ) const;
-
     QRectF bulletRect( const QskPageIndicator*, const QRectF&, int index ) const;
 };
 

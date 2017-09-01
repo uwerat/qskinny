@@ -36,8 +36,6 @@ protected:
 private:
     QRectF pageRect( const QskTabView* ) const;
     QRectF tabBarRect( const QskTabView* ) const;
-
-    QSGNode* updatePageNode( const QskTabView*, QSGNode* ) const;
 };
 
 #endif

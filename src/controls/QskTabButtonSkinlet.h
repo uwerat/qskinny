@@ -9,8 +9,6 @@
 #include "QskGlobal.h"
 #include "QskSkinlet.h"
 
-class QskTabButton;
-
 class QSK_EXPORT QskTabButtonSkinlet : public QskSkinlet
 {
     Q_GADGET
@@ -20,7 +18,7 @@ class QSK_EXPORT QskTabButtonSkinlet : public QskSkinlet
 public:
     enum NodeRole
     {
-        ButtonRole,
+        PanelRole,
         TextRole
     };
 
@@ -33,13 +31,6 @@ public:
 protected:
     virtual QSGNode* updateSubNode(
         const QskSkinnable*, quint8 nodeRole, QSGNode* ) const override;
-
-private:
-    QRectF textRect( const QskTabButton* ) const;
-    QRectF panelRect( const QskTabButton* ) const;
-
-    QSGNode* updateButtonNode( const QskTabButton*, QSGNode* ) const;
-    QSGNode* updateTextNode( const QskTabButton*, QSGNode* ) const;
 };
 
 #endif

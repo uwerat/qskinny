@@ -9,8 +9,6 @@
 #include "QskGlobal.h"
 #include "QskSkinlet.h"
 
-class QskTextLabel;
-
 class QSK_EXPORT QskTextLabelSkinlet : public QskSkinlet
 {
     Q_GADGET
@@ -32,10 +30,6 @@ public:
 protected:
     virtual QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
-
-private:
-    QRectF textRect( const QskTextLabel* ) const;
-    QSGNode* updateTextNode( const QskTextLabel*, QSGNode* ) const;
 };
 
 #endif

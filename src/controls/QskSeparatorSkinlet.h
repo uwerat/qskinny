@@ -35,7 +35,6 @@ protected:
 
 private:
     QRectF panelRect( const QskSeparator* ) const;
-    QSGNode* updatePanelNode( const QskSeparator*, QSGNode* ) const;
 };
 
 #endif

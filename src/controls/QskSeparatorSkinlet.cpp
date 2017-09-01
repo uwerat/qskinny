@@ -26,7 +26,27 @@ QRectF QskSeparatorSkinlet::subControlRect(
     }
     
     return Inherited::subControlRect( skinnable, subControl );
-}   
+}
+
+QSGNode* QskSeparatorSkinlet::updateSubNode(
+    const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
+{
+    const auto separator = static_cast< const QskSeparator* >( skinnable );
+
+    switch( nodeRole )
+    {
+        case PanelRole:
+        {
+            const bool isHorizontal = ( separator->orientation() == Qt::Horizontal );
+            const QRectF r = subControlRect( separator, QskSeparator::Panel );
+
+            return updateBoxNode( separator, node, r,
+                QskSeparator::Panel, isHorizontal ? 0 : -1 );
+        }
+    }
+
+    return Inherited::updateSubNode( skinnable, nodeRole, node );
+}
 
 QRectF QskSeparatorSkinlet::panelRect( const QskSeparator* separator ) const
 {
@@ -48,31 +68,6 @@ QRectF QskSeparatorSkinlet::panelRect( const QskSeparator* separator ) const
 
     r.moveCenter( cr.center() );
     return r;
-}
-
-QSGNode* QskSeparatorSkinlet::updateSubNode(
-    const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
-{
-    const auto separator = static_cast< const QskSeparator* >( skinnable );
-
-    switch( nodeRole )
-    {
-        case PanelRole:
-            return updatePanelNode( separator, node );
-
-        default:
-            return nullptr;
-    }
-}
-
-QSGNode* QskSeparatorSkinlet::updatePanelNode(
-    const QskSeparator* separator, QSGNode* node ) const
-{
-    const bool isHorizontal = ( separator->orientation() == Qt::Horizontal );
-    const QRectF r = subControlRect( separator, QskSeparator::Panel );
-
-    return updateBoxNode( separator, node, r,
-        QskSeparator::Panel, isHorizontal ? 0 : -1 );
 }
 
 #include "moc_QskSeparatorSkinlet.cpp"

@@ -132,11 +132,6 @@ const QVector< quint8 >& QskSkinlet::nodeRoles() const
     return m_data->nodeRoles;
 }
 
-QRectF QskSkinlet::subControlRect( const QskSkinnable*, QskAspect::Subcontrol ) const
-{
-    return QRectF();
-}
-
 void QskSkinlet::updateNode( QskSkinnable* skinnable, QSGNode* parentNode ) const
 {
     QSGNode* oldNode;
@@ -176,12 +171,6 @@ void QskSkinlet::updateNode( QskSkinnable* skinnable, QSGNode* parentNode ) cons
 
         insertRemoveNodes( parentNode, oldNode, newNode, nodeRole );
     }
-}
-
-QSGNode* QskSkinlet::updateSubNode(
-    const QskSkinnable*, quint8, QSGNode*) const
-{
-    return nullptr;
 }
 
 QSGNode* QskSkinlet::updateBackgroundNode(

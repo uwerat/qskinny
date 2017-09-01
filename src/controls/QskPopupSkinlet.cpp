@@ -34,11 +34,12 @@ QSGNode* QskPopupSkinlet::updateSubNode( const QskSkinnable* skinnable,
     switch( nodeRole )
     {
         case OverlayRole:
+        {
             return updateOverlayNode( popup, node );
-
-        default:
-            return Inherited::updateSubNode( skinnable, nodeRole, node );
+        }
     }
+
+    return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
 QSGNode* QskPopupSkinlet::updateOverlayNode(

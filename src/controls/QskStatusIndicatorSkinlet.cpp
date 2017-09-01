@@ -33,6 +33,22 @@ QRectF QskStatusIndicatorSkinlet::subControlRect(
     return Inherited::subControlRect( skinnable, subControl );
 }
 
+QSGNode* QskStatusIndicatorSkinlet::updateSubNode(
+    const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
+{
+    const auto indicator = static_cast< const QskStatusIndicator* >( skinnable );
+
+    switch( nodeRole )
+    {
+        case GraphicRole:
+        {
+            return updateGraphicNode( indicator, node );
+        }
+    }
+
+    return Inherited::updateSubNode( skinnable, nodeRole, node );
+}
+
 QRect QskStatusIndicatorSkinlet::graphicRect(
     const QskStatusIndicator* indicator ) const
 {
@@ -48,21 +64,6 @@ QRect QskStatusIndicatorSkinlet::graphicRect(
 
     return qskAlignedRect( graphicRect,
         ( int )sz.width(), ( int )sz.height(), Qt::AlignCenter );
-}
-
-QSGNode* QskStatusIndicatorSkinlet::updateSubNode(
-    const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
-{
-    const auto indicator = static_cast< const QskStatusIndicator* >( skinnable );
-
-    switch( nodeRole )
-    {
-        case GraphicRole:
-            return updateGraphicNode( indicator, node );
-
-        default:
-            return nullptr;
-    }
 }
 
 QSGNode* QskStatusIndicatorSkinlet::updateGraphicNode(

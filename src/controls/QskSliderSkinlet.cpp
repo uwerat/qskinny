@@ -49,21 +49,62 @@ QRectF QskSliderSkinlet::subControlRect(
     const auto slider = static_cast< const QskSlider* >( skinnable );
 
     if ( subControl == QskSlider::Panel )
+    {
         return panelRect( slider );
+    }
 
     if ( subControl == QskSlider::Groove )
+    {
         return grooveRect( slider );
+    }
 
     if ( subControl == QskSlider::Fill )
+    {
         return fillRect( slider );
+    }
 
     if ( subControl == QskSlider::Handle )
+    {
         return handleRect( slider );
+    }
 
     if ( subControl == QskSlider::Scale )
+    {
         return scaleRect( slider );
+    }
 
     return Inherited::subControlRect( skinnable, subControl );
+}
+
+QSGNode* QskSliderSkinlet::updateSubNode(
+    const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
+{
+    const auto slider = static_cast< const QskSlider* >( skinnable );
+
+    switch( nodeRole )
+    {
+        case PanelRole:
+        {
+            return updateBoxNode( slider, QskSlider::Panel, node );
+        }
+
+        case GrooveRole:
+        {
+            return updateBoxNode( slider, QskSlider::Groove, node );
+        }
+
+        case FillRole:
+        {
+            return updateBoxNode( slider, QskSlider::Fill, node );
+        }
+
+        case HandleRole:
+        {
+            return updateBoxNode( slider, QskSlider::Handle, node );
+        }
+    }
+
+    return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
 QRectF QskSliderSkinlet::panelRect( const QskSlider* slider ) const
@@ -210,30 +251,6 @@ QRectF QskSliderSkinlet::handleRect( const QskSlider* slider ) const
     }
 
     return handleRect;
-}
-
-QSGNode* QskSliderSkinlet::updateSubNode(
-    const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
-{
-    const auto slider = static_cast< const QskSlider* >( skinnable );
-
-    switch( nodeRole )
-    {
-        case PanelRole:
-            return updateBoxNode( slider, QskSlider::Panel, node );
-
-        case GrooveRole:
-            return updateBoxNode( slider, QskSlider::Groove, node );
-
-        case FillRole:
-            return updateBoxNode( slider, QskSlider::Fill, node );
-
-        case HandleRole:
-            return updateBoxNode( slider, QskSlider::Handle, node );
-
-        default:
-            return nullptr;
-    }
 }
 
 QSGNode* QskSliderSkinlet::updateBoxNode( const QskSlider* slider,

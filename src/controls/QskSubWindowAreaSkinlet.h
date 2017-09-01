@@ -34,7 +34,6 @@ protected:
         quint8 nodeRole, QSGNode* ) const override;
 
 private:
-    QRectF panelRect( const QskSubWindowArea* ) const;
     QSGNode* updatePanelNode( const QskSubWindowArea*, QSGNode* ) const;
 };
 

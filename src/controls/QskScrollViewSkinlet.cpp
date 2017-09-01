@@ -54,22 +54,34 @@ QRectF QskScrollViewSkinlet::subControlRect(
     const auto scrollView = static_cast< const QskScrollView* >( skinnable );
 
     if ( subControl == QskScrollView::Panel )
+    {
         return scrollView->contentsRect();
+    }
 
     if ( subControl == QskScrollView::Viewport )
+    {
         return viewportRect( scrollView );
+    }
 
     if ( subControl == QskScrollView::HorizontalScrollBar )
+    {
         return scrollBarRect( scrollView, Qt::Horizontal );
+    }
 
     if ( subControl == QskScrollView::HorizontalScrollHandle )
+    {
         return scrollHandleRect( scrollView, Qt::Horizontal );
+    }
 
     if ( subControl == QskScrollView::VerticalScrollBar )
+    {
         return scrollBarRect( scrollView, Qt::Vertical );
+    }
 
     if ( subControl == QskScrollView::VerticalScrollHandle )
+    {
         return scrollHandleRect( scrollView, Qt::Vertical );
+    }
 
     return Inherited::subControlRect( skinnable, subControl );
 }
@@ -82,20 +94,30 @@ QSGNode* QskScrollViewSkinlet::updateSubNode(
     switch( nodeRole )
     {
         case ViewportRole:
+        {
             return updateViewportNode( scrollView, node );
+        }
 
         case HorizontalScrollHandleRole:
+        {
             return updateBoxNode( skinnable, node, QskScrollView::HorizontalScrollHandle );
+        }
 
         case VerticalScrollHandleRole:
+        {
             return updateBoxNode( skinnable, node, QskScrollView::VerticalScrollHandle );
+        }
 
         case ContentsRootRole:
+        {
             return updateContentsRootNode( scrollView, node );
+        }
 
         case HorizontalScrollBarRole:
         case VerticalScrollBarRole:
+        {
             return nullptr;
+        }
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );

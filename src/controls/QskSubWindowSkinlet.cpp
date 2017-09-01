@@ -53,14 +53,17 @@ QSGNode* QskSubWindowSkinlet::updateSubNode( const QskSkinnable* skinnable,
     switch( nodeRole )
     {
         case PanelRole:
+        {
             return updatePanelNode( subWindow, node );
+        }
 
         case TitleBarRole:
+        {
             return updateTitleBarNode( subWindow, node );
-
-        default:
-            return Inherited::updateSubNode( skinnable, nodeRole, node );
+        }
     }
+
+    return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
 QSGNode* QskSubWindowSkinlet::updatePanelNode(

@@ -14,7 +14,7 @@
 QskPushButtonSkinlet::QskPushButtonSkinlet( QskSkin* skin ):
     Inherited( skin )
 {
-    setNodeRoles( { ButtonRole, GraphicRole, TextRole } );
+    setNodeRoles( { PanelRole, GraphicRole, TextRole } );
 }
 
 QskPushButtonSkinlet::~QskPushButtonSkinlet() = default;
@@ -40,10 +40,37 @@ QRectF QskPushButtonSkinlet::subControlRect(
     }
     else if ( subControl == QskPushButton::Panel )
     {
-        return panelRect( button );
+        return button->contentsRect();
     }
 
     return Inherited::subControlRect( skinnable, subControl );
+}
+
+QSGNode* QskPushButtonSkinlet::updateSubNode(
+    const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
+{
+    const auto button = static_cast< const QskPushButton* >( skinnable );
+
+    switch( nodeRole )
+    {
+        case PanelRole:
+        {
+            return updateBoxNode( button, node, QskPushButton::Panel );
+        }
+
+        case TextRole:
+        {
+            return updateTextNode( button, node );
+        }
+
+        case GraphicRole:
+        {
+            return updateGraphicNode( button, node,
+                button->graphic(), QskPushButton::Graphic );
+        }
+    }
+
+    return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
 QRectF QskPushButtonSkinlet::textRect( const QskPushButton* button ) const
@@ -97,38 +124,6 @@ QRectF QskPushButtonSkinlet::graphicRect( const QskPushButton* button ) const
     return QRectF( x, y, w, h );
 }
 
-QRectF QskPushButtonSkinlet::panelRect( const QskPushButton* button ) const
-{
-    return button->contentsRect();
-}
-
-QSGNode* QskPushButtonSkinlet::updateSubNode(
-    const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
-{
-    const auto button = static_cast< const QskPushButton* >( skinnable );
-
-    switch( nodeRole )
-    {
-        case ButtonRole:
-            return updateButtonNode( button, node );
-
-        case TextRole:
-            return updateTextNode( button, node );
-
-        case GraphicRole:
-            return updateGraphicNode( button, node );
-
-        default:
-            return nullptr;
-    }
-}
-
-QSGNode* QskPushButtonSkinlet::updateButtonNode(
-    const QskPushButton* button, QSGNode* node ) const
-{
-    return updateBoxNode( button, node, QskPushButton::Panel );
-}
-
 QSGNode* QskPushButtonSkinlet::updateTextNode(
     const QskPushButton* button, QSGNode* node ) const
 {
@@ -143,13 +138,6 @@ QSGNode* QskPushButtonSkinlet::updateTextNode(
 
     return QskSkinlet::updateTextNode( button, node, rect, alignment,
         button->text(), button->textOptions(), QskPushButton::Text );
-}
-
-QSGNode* QskPushButtonSkinlet::updateGraphicNode(
-    const QskPushButton* button, QSGNode* node ) const
-{
-    return QskSkinlet::updateGraphicNode( button, node,
-        button->graphic(), QskPushButton::Graphic );
 }
 
 #include "moc_QskPushButtonSkinlet.cpp"

@@ -33,6 +33,22 @@ QRectF QskGraphicLabelSkinlet::subControlRect(
     return Inherited::subControlRect( skinnable, subControl );
 }
 
+QSGNode* QskGraphicLabelSkinlet::updateSubNode(
+    const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
+{
+    const auto label = static_cast< const QskGraphicLabel* >( skinnable );
+
+    switch( nodeRole )
+    {
+        case GraphicRole:
+        {
+            return updateGraphicNode( label, node );
+        }
+    }
+
+    return Inherited::updateSubNode( skinnable, nodeRole, node );
+}
+
 QRect QskGraphicLabelSkinlet::graphicRect( const QskGraphicLabel* label ) const
 {
     // textures are in integers, to avoid useless recalculations
@@ -60,21 +76,6 @@ QRect QskGraphicLabelSkinlet::graphicRect( const QskGraphicLabel* label ) const
 
     return qskAlignedRect( graphicRect,
         ( int )sz.width(), ( int )sz.height(), label->alignment() );
-}
-
-QSGNode* QskGraphicLabelSkinlet::updateSubNode(
-    const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
-{
-    const auto label = static_cast< const QskGraphicLabel* >( skinnable );
-
-    switch( nodeRole )
-    {
-        case GraphicRole:
-            return updateGraphicNode( label, node );
-
-        default:
-            return nullptr;
-    }
 }
 
 QSGNode* QskGraphicLabelSkinlet::updateGraphicNode(

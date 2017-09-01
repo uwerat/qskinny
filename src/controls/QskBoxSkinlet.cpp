@@ -34,11 +34,12 @@ QSGNode* QskBoxSkinlet::updateSubNode(
     switch( nodeRole )
     {
         case PanelRole:
+        {
             return updateBoxNode( skinnable, node, QskBox::Panel );
-
-        default:
-            return nullptr;
+        }
     }
+
+    return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
 #include "moc_QskBoxSkinlet.cpp"

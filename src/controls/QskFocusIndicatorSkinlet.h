@@ -34,7 +34,6 @@ protected:
         quint8 nodeRole, QSGNode* ) const override;
 
 private:
-    QRectF panelRect( const QskFocusIndicator* ) const;
     QSGNode* updateFrameNode( const QskFocusIndicator*, QSGNode* ) const;
 };
 

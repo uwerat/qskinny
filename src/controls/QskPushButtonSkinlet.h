@@ -20,7 +20,7 @@ class QSK_EXPORT QskPushButtonSkinlet : public QskSkinlet
 public:
     enum NodeRole
     {
-        ButtonRole,
+        PanelRole,
         TextRole,
         GraphicRole
     };
@@ -38,13 +38,10 @@ protected:
         quint8 nodeRole, QSGNode* ) const override;
 
 private:
-    QRectF panelRect( const QskPushButton* ) const;
     QRectF textRect( const QskPushButton* ) const;
     QRectF graphicRect( const QskPushButton* ) const;
 
-    QSGNode* updateButtonNode( const QskPushButton*, QSGNode* ) const;
     QSGNode* updateTextNode( const QskPushButton*, QSGNode* ) const;
-    QSGNode* updateGraphicNode( const QskPushButton*, QSGNode* ) const;
 };
 
 #endif

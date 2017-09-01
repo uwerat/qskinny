@@ -22,15 +22,10 @@ QRectF QskTextLabelSkinlet::subControlRect(
     
     if ( subControl == QskTextLabel::Text )
     {
-        return textRect( label );
+        return label->contentsRect();
     }
 
     return Inherited::subControlRect( skinnable, subControl );
-}
-
-QRectF QskTextLabelSkinlet::textRect( const QskTextLabel* label ) const
-{
-    return label->contentsRect();
 }
 
 QSGNode* QskTextLabelSkinlet::updateSubNode( const QskSkinnable* skinnable,
@@ -41,18 +36,13 @@ QSGNode* QskTextLabelSkinlet::updateSubNode( const QskSkinnable* skinnable,
     switch( nodeRole )
     {
         case TextRole:
-            return updateTextNode( label, node );
-
-        default:
-            return nullptr;
+        {
+            return updateTextNode( label, node, 
+                label->text(), label->textOptions(), QskTextLabel::Text );
+        }
     }
-}
 
-QSGNode* QskTextLabelSkinlet::updateTextNode(
-    const QskTextLabel* label, QSGNode* node ) const
-{
-    return QskSkinlet::updateTextNode( label, node, 
-        label->text(), label->textOptions(), QskTextLabel::Text );
+    return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
 #include "moc_QskTextLabelSkinlet.cpp"

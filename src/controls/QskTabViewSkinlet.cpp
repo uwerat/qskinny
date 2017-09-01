@@ -21,12 +21,30 @@ QRectF QskTabViewSkinlet::subControlRect(
     const auto tabView = static_cast< const QskTabView* >( skinnable );
 
     if ( subControl == QskTabView::Page )
+    {
         return pageRect( tabView );
+    }
 
     if ( subControl == QskTabView::TabBar )
+    {
         return tabBarRect( tabView );
+    }
 
     return Inherited::subControlRect( skinnable, subControl );
+}
+
+QSGNode* QskTabViewSkinlet::updateSubNode( const QskSkinnable* skinnable,
+    quint8 nodeRole, QSGNode* node ) const
+{
+    switch( nodeRole )
+    {
+        case PageRole:
+        {
+            return updateBoxNode( skinnable, node, QskTabView::Page );
+        }
+    }
+
+    return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
 QRectF QskTabViewSkinlet::pageRect( const QskTabView* tabView ) const
@@ -68,27 +86,6 @@ QRectF QskTabViewSkinlet::tabBarRect( const QskTabView* tabView ) const
     }
 
     return r;
-}
-
-QSGNode* QskTabViewSkinlet::updateSubNode( const QskSkinnable* skinnable,
-    quint8 nodeRole, QSGNode* node ) const
-{
-    const auto tabView = static_cast< const QskTabView* >( skinnable );
-
-    switch( nodeRole )
-    {
-        case PageRole:
-            return updatePageNode( tabView, node );
-
-        default:
-            return nullptr;
-    }
-}
-
-QSGNode* QskTabViewSkinlet::updatePageNode(
-    const QskTabView* tabView, QSGNode* node ) const
-{
-    return updateBoxNode( tabView, node, QskTabView::Page );
 }
 
 #include "moc_QskTabViewSkinlet.cpp"

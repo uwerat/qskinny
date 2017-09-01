@@ -10,6 +10,7 @@
 #include "QskAspect.h"
 
 #include <Qt>
+#include <QRectF>
 #include <memory>
 
 class QskSkin;
@@ -98,5 +99,17 @@ private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
+
+inline QRectF QskSkinlet::subControlRect(
+    const QskSkinnable*, QskAspect::Subcontrol ) const
+{
+    return QRectF();
+}
+
+inline QSGNode* QskSkinlet::updateSubNode(
+    const QskSkinnable*, quint8, QSGNode*) const
+{
+    return nullptr;
+}
 
 #endif

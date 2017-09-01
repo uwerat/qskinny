@@ -23,16 +23,11 @@ QRectF QskFocusIndicatorSkinlet::subControlRect(
     
     if ( subControl == QskFocusIndicator::Panel )
     {
-        return panelRect( indicator );
+        return indicator->boundingRect();
     }
     
     return Inherited::subControlRect( skinnable, subControl );
 }       
-
-QRectF QskFocusIndicatorSkinlet::panelRect( const QskFocusIndicator* indicator ) const
-{   
-    return indicator->boundingRect();
-}
 
 QSGNode* QskFocusIndicatorSkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
@@ -42,11 +37,12 @@ QSGNode* QskFocusIndicatorSkinlet::updateSubNode(
     switch( nodeRole )
     {
         case FrameRole:
+        {
             return updateFrameNode( indicator, node );
-
-        default:
-            return nullptr;
+        }
     }
+
+    return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
 QSGNode* QskFocusIndicatorSkinlet::updateFrameNode(

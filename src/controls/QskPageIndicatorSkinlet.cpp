@@ -30,6 +30,27 @@ QRectF QskPageIndicatorSkinlet::subControlRect(
     return Inherited::subControlRect( skinnable, subControl );
 }
 
+QSGNode* QskPageIndicatorSkinlet::updateSubNode( const QskSkinnable* skinnable,
+    quint8 nodeRole, QSGNode* node ) const
+{
+    const auto indicator = static_cast< const QskPageIndicator* >( skinnable );
+
+    switch( nodeRole )
+    {
+        case PanelRole:
+        {
+            return updateBoxNode( indicator, node, QskPageIndicator::Panel );
+        }
+
+        case BulletsRole:
+        {
+            return updateBulletsNode( indicator, node );
+        }
+    }
+
+    return Inherited::updateSubNode( skinnable, nodeRole, node );
+}
+
 QRectF QskPageIndicatorSkinlet::bulletRect(
     const QskPageIndicator* indicator, const QRectF& rect, int index ) const
 {
@@ -106,30 +127,6 @@ QRectF QskPageIndicatorSkinlet::bulletRect(
 
     QRectF ret = horizontal ? QRectF( x, y, sz, sz ) : QRectF( y, x, sz, sz );
     return ret;
-}
-
-QSGNode* QskPageIndicatorSkinlet::updateSubNode( const QskSkinnable* skinnable,
-    quint8 nodeRole, QSGNode* node ) const
-{
-    const auto indicator = static_cast< const QskPageIndicator* >( skinnable );
-
-    switch( nodeRole )
-    {
-        case PanelRole:
-            return updatePanelNode( indicator, node );
-
-        case BulletsRole:
-            return updateBulletsNode( indicator, node );
-
-        default:
-            return nullptr;
-    }
-}
-
-QSGNode* QskPageIndicatorSkinlet::updatePanelNode(
-    const QskPageIndicator* indicator, QSGNode* node ) const
-{
-    return updateBoxNode( indicator, node, QskPageIndicator::Panel );
 }
 
 QSGNode* QskPageIndicatorSkinlet::updateBulletsNode(

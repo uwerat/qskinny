@@ -13,7 +13,7 @@
 QskTabButtonSkinlet::QskTabButtonSkinlet( QskSkin* skin ):
     Inherited( skin )
 {
-    setNodeRoles( { ButtonRole, TextRole } );
+    setNodeRoles( { PanelRole, TextRole } );
 }
 
 QskTabButtonSkinlet::~QskTabButtonSkinlet() = default;
@@ -25,32 +25,18 @@ QRectF QskTabButtonSkinlet::subControlRect(
 
     if ( subControl == QskTabButton::Text )
     {
-        return textRect( tabButton );
+        QRectF rect = subControlRect( tabButton, QskTabButton::Panel );
+        rect = tabButton->innerBox( QskTabButton::Panel, rect );
+
+        return rect;
     }
     else if ( subControl == QskTabButton::Panel )
     {
-        return panelRect( tabButton );
+        return tabButton->contentsRect();
     }
 
     return Inherited::subControlRect( skinnable, subControl );
 }
-
-QRectF QskTabButtonSkinlet::textRect( const QskTabButton* tabButton ) const
-{
-    QRectF rect = subControlRect( tabButton, QskTabButton::Panel );
-
-#if 1
-    // the margins might depend on the state ???
-    rect = tabButton->innerBox( QskTabButton::Panel, rect );
-#endif
-
-    return rect;
-}
-
-QRectF QskTabButtonSkinlet::panelRect( const QskTabButton* tabButton ) const
-{
-    return tabButton->contentsRect();
-}   
 
 QSGNode* QskTabButtonSkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
@@ -59,32 +45,23 @@ QSGNode* QskTabButtonSkinlet::updateSubNode(
 
     switch( nodeRole )
     {
-        case ButtonRole:
-            return updateButtonNode( tabButton, node );
+        case PanelRole:
+        {
+            const auto tabBar = tabButton->tabBar();
+            const Qt::Orientation o = tabBar ? tabBar->orientation() : Qt::Horizontal;
+
+            return updateBoxNode( tabButton, node, tabButton->contentsRect(),
+                QskTabButton::Panel, ( o == Qt::Vertical ) ? 1 : 0 );
+        }
 
         case TextRole:
-            return updateTextNode( tabButton, node );
-
-        default:
-            return nullptr;
+        {
+            return updateTextNode( tabButton, node, tabButton->text(),
+                tabButton->textOptions(), QskTabButton::Text );
+        }
     }
-}
 
-QSGNode* QskTabButtonSkinlet::updateButtonNode(
-    const QskTabButton* tabButton, QSGNode* node ) const
-{
-    const auto tabBar = tabButton->tabBar();
-    const Qt::Orientation o = tabBar ? tabBar->orientation() : Qt::Horizontal;
-
-    return updateBoxNode( tabButton, node, tabButton->contentsRect(),
-        QskTabButton::Panel, ( o == Qt::Vertical ) ? 1 : 0 );
-}
-
-QSGNode* QskTabButtonSkinlet::updateTextNode(
-    const QskTabButton* tabButton, QSGNode* node ) const
-{
-    return QskSkinlet::updateTextNode( tabButton, node, tabButton->text(),
-        tabButton->textOptions(), QskTabButton::Text );
+    return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
 #include "moc_QskTabButtonSkinlet.cpp"
