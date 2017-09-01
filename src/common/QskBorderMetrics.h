@@ -64,6 +64,7 @@ public:
     Qt::SizeMode widthSizeMode() const;
 
     QskBorderMetrics interpolated( const QskBorderMetrics&, qreal value ) const;
+    QskBorderMetrics toAbsolute ( const QSizeF& ) const;
 
     static QVariant interpolate( const QskBorderMetrics&,
         const QskBorderMetrics&, qreal progress );
@@ -86,6 +87,7 @@ private:
 };
 
 inline QskBorderMetrics::QskBorderMetrics():
+    m_radii( { { 0.0, 0.0 }, { 0.0, 0.0 }, { 0.0, 0.0 }, { 0.0, 0.0 } } ),
     m_widthIsRelative( false ),
     m_radiusIsRelative( false )
 {

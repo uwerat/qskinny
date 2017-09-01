@@ -20,6 +20,14 @@ static inline QSizeF qskInterpolatedSize(
     return from + ( to - from ) * ratio;
 }
 
+static inline qreal qskAbsoluted( qreal length, qreal percentage )
+{
+    // 100% means -> 0.5 of length
+    percentage = qBound( 0.0, percentage, 100.0 );
+    return percentage / 100.0 * 0.5 * length;
+}
+
+
 QskBorderMetrics::QskBorderMetrics( qreal width, qreal radiusX, qreal radiusY ):
     m_widths( ( width >= 0.0 ) ? width : 0.0 ),
     m_widthIsRelative( false ),
@@ -96,6 +104,52 @@ void QskBorderMetrics::setRadius( Qt::Corner corner, qreal radiusX, qreal radius
         m_radii[ corner ].setWidth( qMax( radiusX, 0.0 ) );
         m_radii[ corner ].setHeight( qMax( radiusY, 0.0 ) );
     }
+}
+
+QskBorderMetrics QskBorderMetrics::toAbsolute( const QSizeF& size ) const
+{
+    if ( !( m_radiusIsRelative || m_widthIsRelative ) )
+        return *this;
+
+    QskBorderMetrics absoluted = *this;
+
+    if ( m_radiusIsRelative )
+    {
+        if ( size.isEmpty() )
+        {
+            for ( int i = 0; i < 4; i++ )
+                absoluted.m_radii[ i ] = QSizeF( 0.0, 0.0 );
+        }
+        else
+        {
+            for ( int i = 0; i < 4; i++ )
+            {
+                auto& radii = absoluted.m_radii[ i ];
+
+                radii.setWidth( qskAbsoluted( size.width(), radii.width() ) );
+                radii.setHeight( qskAbsoluted( size.height(), radii.height() ) );
+            }
+        }
+    }
+
+    if ( m_widthIsRelative )
+    {
+        auto& w = absoluted.m_widths;
+
+        if ( size.isEmpty() )
+        {
+            w = QskMargins();
+        }
+        else
+        {
+            w.setLeft( qskAbsoluted( size.width(), w.left() ) );
+            w.setTop( qskAbsoluted( size.height(), w.top() ) );
+            w.setRight( qskAbsoluted( size.width(), w.right() ) );
+            w.setBottom( qskAbsoluted( size.height(), w.bottom() ) );
+        }
+    }
+
+    return absoluted;
 }
 
 QskBorderMetrics QskBorderMetrics::interpolated(
