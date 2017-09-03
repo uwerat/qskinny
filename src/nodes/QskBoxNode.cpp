@@ -23,14 +23,14 @@ static inline uint qskMetricsHash( const QskBoxOptions& options )
 
     QSizeF radius[4];
     for ( int i = 0; i < 4; i++ )
-        radius[i] = m.radius( static_cast<Qt::Corner>( i ) );
-        
+        radius[i] = m.radius( static_cast< Qt::Corner >( i ) );
+
     hash = qHashBits( radius, sizeof( radius ), hash );
 
     uint flags[2];
     flags[0] = m.radiusSizeMode();
     flags[1] = m.widthSizeMode();
-    
+
     return qHashBits( flags, sizeof( flags ), hash );
 }
 
@@ -39,14 +39,16 @@ static inline uint qskColorsHash( const QskBoxOptions& options )
     const auto& colors = options.colors;
 
     QRgb rgb[8];
-    for ( int i = 0; i < 4; i++ )
-    {
-        const QColor c1 = colors.borderColor( static_cast< Qt::Edge >( i ) );
-        rgb[i] = c1.isValid() ? c1.rgba() : 0;
 
-        const QColor c2 = colors.fillColor( static_cast< Qt::Corner >( i ) );
-        rgb[2*i] = c2.isValid() ? c2.rgba() : 0;
-    }
+    rgb[0] = colors.borderColor( Qt::TopEdge ).rgba();
+    rgb[1] = colors.borderColor( Qt::LeftEdge ).rgba();
+    rgb[2] = colors.borderColor( Qt::RightEdge ).rgba();
+    rgb[3] = colors.borderColor( Qt::BottomEdge ).rgba();
+
+    rgb[4] = colors.fillColor( Qt::TopLeftCorner ).rgba();
+    rgb[5] = colors.fillColor( Qt::TopRightCorner ).rgba();
+    rgb[6] = colors.fillColor( Qt::BottomLeftCorner ).rgba();
+    rgb[7] = colors.fillColor( Qt::BottomRightCorner ).rgba();
 
     return qHashBits( rgb, sizeof( rgb ), 17000 );
 }
