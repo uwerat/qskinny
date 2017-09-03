@@ -45,8 +45,10 @@ public:
     QColor fillColor( Qt::Corner ) const;
 
     QskBoxColors interpolated( const QskBoxColors&, qreal value ) const;
-    QskBoxColors mirrored( Qt::Orientations ) const;
     QskBoxColors shaded( uint alpha ) const;
+
+    QskBoxColors mirrored( Qt::Orientations ) const;
+    QskBoxColors rotated() const;
 
     static QVariant interpolate( const QskBoxColors&,
         const QskBoxColors&, qreal ratio );

@@ -106,6 +106,21 @@ void QskBorderMetrics::setRadius( Qt::Corner corner, qreal radiusX, qreal radius
     }
 }
 
+QskBorderMetrics QskBorderMetrics::rotated() const
+{
+    QskBorderMetrics other;
+
+    other.m_widths = m_widths.rotated();
+
+    for ( int i = 0; i < 4; i++ )
+        other.m_radii[i] = m_radii[i].transposed();
+
+    other.m_widthIsRelative = m_widthIsRelative;
+    other.m_radiusIsRelative = m_radiusIsRelative;
+
+    return other;
+}
+
 QskBorderMetrics QskBorderMetrics::toAbsolute( const QSizeF& size ) const
 {
     if ( !( m_radiusIsRelative || m_widthIsRelative ) )

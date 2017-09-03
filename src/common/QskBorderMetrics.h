@@ -65,6 +65,7 @@ public:
 
     QskBorderMetrics interpolated( const QskBorderMetrics&, qreal value ) const;
     QskBorderMetrics toAbsolute ( const QSizeF& ) const;
+    QskBorderMetrics rotated() const;
 
     static QVariant interpolate( const QskBorderMetrics&,
         const QskBorderMetrics&, qreal progress );

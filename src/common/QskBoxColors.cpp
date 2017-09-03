@@ -217,6 +217,23 @@ QskBoxColors QskBoxColors::mirrored( Qt::Orientations orientations ) const
     return c;
 }
 
+QskBoxColors QskBoxColors::rotated() const
+{
+    QskBoxColors c;
+
+    c.m_border[ Qsk::Left ] = m_border[ Qsk::Top ];
+    c.m_border[ Qsk::Top ] = m_border[ Qsk::Right ];
+    c.m_border[ Qsk::Right ] = m_border[ Qsk::Bottom ];
+    c.m_border[ Qsk::Bottom ] = m_border[ Qsk::Right ];
+
+    c.m_fill[ Qt::TopLeftCorner ] = m_fill[ Qt::TopRightCorner ];
+    c.m_fill[ Qt::TopRightCorner ] = m_fill[ Qt::BottomRightCorner ];
+    c.m_fill[ Qt::BottomLeftCorner ] = m_fill[ Qt::TopLeftCorner ];
+    c.m_fill[ Qt::BottomRightCorner ] = m_fill[ Qt::BottomLeftCorner ];
+
+    return c;
+}
+
 QskBoxColors QskBoxColors::interpolated( const QskBoxColors& to, qreal ratio ) const
 {
     QskBoxColors colors;
