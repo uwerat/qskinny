@@ -643,28 +643,21 @@ void QskSkinnable::startTransition( QskAspect::Aspect aspect,
     if ( control->window() == nullptr || !control->isInitiallyPainted() )
         return;
 
-    if ( from == to )
+    // We might be invalid for one of the values, when an aspect
+    // has not been defined for all states ( f.e. metrics are expected
+    // to fallback to 0.0 ). In this case we create a default one.
+
+    if ( !from.isValid() )
+    {
+        from = QVariant( to.type() );
+    }
+    else if ( !to.isValid() )
+    {
+        to = QVariant( from.type() );
+    }
+    else if ( from.type() != to.type() )
     {
         return;
-    }
-    else
-    {
-        // We might be invalid for one of the values, when an aspect
-        // has not been defined for all states ( f.e. metrics are expected
-        // to fallback to 0.0 ). In this case we create a default one.
-
-        if ( !from.isValid() )
-        {
-            from = QVariant( to.type() );
-        }
-        else if ( !to.isValid() )
-        {
-            to = QVariant( from.type() );
-        }
-        else if ( from.type() != to.type() )
-        {
-            return;
-        }
     }
 
     if( aspect.flagPrimitive() == QskAspect::GraphicRole  )
@@ -706,6 +699,13 @@ void QskSkinnable::setSkinStateFlag( QskAspect::State state, bool on )
         return;
 
     QskControl* control = owningControl();
+
+#if 0
+    qDebug() << control->className() << ":" 
+        << skinStateAsPrintable( m_data->skinState ) << "->"
+        << skinStateAsPrintable( newState );
+#endif
+
     if ( control->window() && control->isInitiallyPainted() )
     {
         for ( const auto entry : m_data->hintTable.hints() )

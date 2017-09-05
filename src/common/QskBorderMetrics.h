@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #ifndef QSK_BORDER_METRICS_H
-#define QSK_BORDER_HINTS_H
+#define QSK_BORDER_METRICS_H
 
 #include "QskGlobal.h"
 #include "QskMargins.h"
