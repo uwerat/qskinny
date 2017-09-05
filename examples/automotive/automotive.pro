@@ -22,16 +22,15 @@ SOURCES += \
 QRCFILES += \
     images.qrc
 
-SVGSOURCES = \
-    images/car.svg
+IMGSOURCES = \
+    images/background.jpg
 
-SVGSOURCES += \
+SVGSOURCES = \
+    images/car.svg \
     images/left.svg \
     images/down.svg \
     images/right.svg \
-    images/up.svg
-
-SVGSOURCES += \
+    images/up.svg \
     images/bluetooth.svg \
     images/bookmark.svg \
     images/bus.svg \
@@ -43,8 +42,7 @@ SVGSOURCES += \
     images/phone.svg \
     images/plane.svg \
     images/train.svg \
-    images/user.svg \
-
+    images/user.svg
 
 ###########
 # The rcc file includes the precompiled SVGs and so we need to build
@@ -65,11 +63,16 @@ svg2qvg.output = qvg/${QMAKE_FILE_BASE}.qvg
 svg2qvg.variable_out =
 svg2qvg.commands += mkdir -p qvg && $${SVG2QVG} ${QMAKE_FILE_IN} $${svg2qvg.output}
 
+imgcpy.name = Image copy
+imgcpy.input = IMGSOURCES
+imgcpy.output = images/${QMAKE_FILE_BASE}.jpg
+imgcpy.variable_out =
+imgcpy.commands += mkdir -p images && $${QMAKE_COPY} ${QMAKE_FILE_IN} $${imgcpy.output}
+
 rccgen.name = RCC compiler
 rccgen.input = QRCFILES
 rccgen.output = $${RCC_DIR}/qrc_${QMAKE_FILE_BASE}.cpp
 rccgen.variable_out = SOURCES
-
 rccgen.commands += $${QMAKE_MKDIR} $${RCC_DIR}
 
 !equals( OUT_PWD, $${PWD} ) {
@@ -84,6 +87,9 @@ rccgen.commands += $${QMAKE_MKDIR} $${RCC_DIR}
     rccgen.commands += && $${QMAKE_COPY} ${QMAKE_FILE_IN} $${QRC_SHADOW_CLONE}
     rccgen.commands += && $$dirname(QMAKE_QMAKE)/rcc $${QRC_SHADOW_CLONE} -o ${QMAKE_FILE_OUT}
     rccgen.commands += && $${QMAKE_DEL_FILE} $${QRC_SHADOW_CLONE}
+
+    rccgen.depends += $${IMGSOURCES}
+    QMAKE_EXTRA_COMPILERS += imgcpy
 }
 else {
     rccgen.commands += && $$dirname(QMAKE_QMAKE)/rcc ${QMAKE_FILE_IN} -o ${QMAKE_FILE_OUT}
@@ -104,6 +110,7 @@ defineReplace(qvgfiles) {
 
     return($$myfiles2)
 }
+
 rccgen.depends += $$qvgfiles( $${SVGSOURCES} )
 
 QMAKE_EXTRA_COMPILERS += svg2qvg rccgen
