@@ -172,8 +172,7 @@ int main( int argc, char* argv[] )
     QGuiApplication app( argc, argv );
 
     SkinnyFont::init( &app );
-    SkinnyShortcut::enable( SkinnyShortcut::Quit |
-        SkinnyShortcut::DebugShortcuts );
+    SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
 #if !LOCAL_PANEL
     // We don't want to have a top level window.
