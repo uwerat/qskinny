@@ -25,6 +25,8 @@
 #include <unordered_map>
 #include <set>
 
+#define DEBUG_LOOKUP 0
+
 static inline bool qskIsControl( const QskSkinnable* skinnable )
 {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
@@ -46,8 +48,16 @@ static inline const QVariant& qskResolvedHint( QskAspect::Aspect aspect,
     const std::unordered_map< QskAspect::Aspect, QVariant >* skinHints,
     QskSkinHintStatus* status )
 {
+#if DEBUG_LOOKUP
+    static int counter = 0;
+#endif
+
     if ( controlHints )
     {
+#if DEBUG_LOOKUP
+        qDebug() << aspect << ++counter;
+#endif
+
         auto it = controlHints->find( aspect );
         if ( it != controlHints->cend() )
         {
@@ -63,6 +73,10 @@ static inline const QVariant& qskResolvedHint( QskAspect::Aspect aspect,
 
     if ( skinHints )
     {
+#if DEBUG_LOOKUP
+        qDebug() << aspect << ++counter;
+#endif
+
         auto it = skinHints->find( aspect );
         if ( it != skinHints->cend() )
         {
