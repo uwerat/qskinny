@@ -43,8 +43,14 @@ linux-g++ | linux-g++-64 {
         # QMAKE_CXXFLAGS *= -Wshadow
 
         GCC_VERSION = $$system("$$QMAKE_CXX -dumpversion")
-        !contains(GCC_VERSION, 4.[0-9]) {
+
+        equals(GCC_VERSION,4) || contains(GCC_VERSION, 4.* ) {
+
+            # gcc 4.x is too old for certain warning options
+        }
+        else {
             QMAKE_CXXFLAGS *= -Wsuggest-override
+            QMAKE_CXXFLAGS *= -blubber
             #QMAKE_CXXFLAGS *= -Wsuggest-final-types
             #QMAKE_CXXFLAGS *= -Wsuggest-final-methods
         }
