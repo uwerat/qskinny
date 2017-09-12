@@ -50,7 +50,6 @@ linux-g++ | linux-g++-64 {
         }
         else {
             QMAKE_CXXFLAGS *= -Wsuggest-override
-            QMAKE_CXXFLAGS *= -blubber
             #QMAKE_CXXFLAGS *= -Wsuggest-final-types
             #QMAKE_CXXFLAGS *= -Wsuggest-final-methods
         }
