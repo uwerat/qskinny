@@ -151,20 +151,25 @@ static qreal qskKeyStretch( Qt::Key key )
         case Qt::Key_Shift:
         case Qt::Key_CapsLock:
             return 1.5;
+
         case Qt::Key_Space:
             return 3.5;
+
         case Qt::Key_Return:
         case Qt::Key_Mode_switch:
+
         // Possibly smaller
         default:
             break;
     }
+
     return 1.0;
 }
 
 static qreal qskRowStretch( const QskInputPanel::KeyRow& keyRow )
 {
     qreal stretch = 0;
+
     for ( const auto& key : keyRow )
     {
         if ( !key )
@@ -172,6 +177,7 @@ static qreal qskRowStretch( const QskInputPanel::KeyRow& keyRow )
 
         stretch += qskKeyStretch( key );
     }
+
     return stretch;
 }
 
@@ -261,29 +267,39 @@ QString QskInputPanel::textForKey( Qt::Key key ) const
     key &= ~KeyStates;
 
     // Special cases
-    switch ( key ) {
+    switch ( key )
+    {
         case Qt::Key_Backspace:
         case Qt::Key_Muhenkan:
             return QChar( 0x232B );
+
         case Qt::Key_CapsLock:
         case Qt::Key_Kana_Lock:
             return QChar( 0x21E7 );
+
         case Qt::Key_Shift:
         case Qt::Key_Kana_Shift:
             return QChar( 0x2B06 );
+
         case Qt::Key_Mode_switch:
             return QChar( 0x2026 );
+
         case Qt::Key_Return:
         case Qt::Key_Kanji:
             return QChar( 0x23CE );
+
         case Qt::Key_Left:
             return QChar( 0x2190 );
+
         case Qt::Key_Right:
             return QChar( 0x2192 );
+
         case Qt::Key_ApplicationLeft:
             return QChar( 0x2B05 );
+
         case Qt::Key_ApplicationRight:
             return QChar( 0x27A1 );
+
         default:
             break;
     }
@@ -297,18 +313,24 @@ QString QskInputPanel::textForKey( Qt::Key key ) const
 QString QskInputPanel::displayLanguageName() const
 {
     const auto locale = this->locale();
+
     switch ( locale.language() )
     {
         case QLocale::Bulgarian:
             return QStringLiteral( "български език" );
+
         case QLocale::Czech:
             return QStringLiteral( "Čeština" );
+
         case QLocale::German:
             return QStringLiteral( "Deutsch" );
+
         case QLocale::Danish:
             return QStringLiteral( "Dansk" );
+
         case QLocale::Greek:
             return QStringLiteral( "Eλληνικά" );
+
         case QLocale::English:
         {
             switch ( locale.country() )
@@ -318,52 +340,73 @@ QString QskInputPanel::displayLanguageName() const
                 case QLocale::UnitedStatesMinorOutlyingIslands:
                 case QLocale::UnitedStatesVirginIslands:
                     return QStringLiteral( "English (US)" );
+
                 default:
                     return QStringLiteral( "English (UK)" );
             }
+
             break;
         }
+
         case QLocale::Spanish:
             return QStringLiteral( "Español" );
+
         case QLocale::Finnish:
             return QStringLiteral( "Suomi" );
+
         case QLocale::French:
             return QStringLiteral( "Français" );
+
         case QLocale::Hungarian:
             return QStringLiteral( "Magyar" );
+
         case QLocale::Italian:
             return QStringLiteral( "Italiano" );
+
         case QLocale::Japanese:
             return QStringLiteral( "日本語" );
+
         case QLocale::Latvian:
             return QStringLiteral( "Latviešu" );
+
         case QLocale::Lithuanian:
             return QStringLiteral( "Lietuvių" );
+
         case QLocale::Dutch:
             return QStringLiteral( "Nederlands" );
+
         case QLocale::Portuguese:
             return QStringLiteral( "Português" );
+
         case QLocale::Romanian:
             return QStringLiteral( "Română" );
+
         case QLocale::Russia:
             return QStringLiteral( "Русский" );
+
         case QLocale::Slovenian:
             return QStringLiteral( "Slovenščina" );
+
         case QLocale::Slovak:
             return QStringLiteral( "Slovenčina" );
+
         case QLocale::Turkish:
             return QStringLiteral( "Türkçe" );
+
         case QLocale::Chinese:
             return QStringLiteral( "中文" );
+
         default:
             break;
     }
+
     return QLocale::languageToString( locale.language() );
 }
 
 void QskInputPanel::setPreeditGroups( const QVector< Qt::Key >& groups )
 {
     auto& topRow = m_data->keyTable[ LowercaseMode ].data[ 0 ];
+
     for ( const auto& group : groups )
     {
         auto& keyData = topRow[ &group - groups.data() ];
@@ -392,6 +435,7 @@ bool QskInputPanel::advanceFocus( bool forward )
     auto offset = forward ? 1 : -1;
 
     auto focusKeyIndex = m_data->focusKeyIndex;
+
     Q_FOREVER
     {
         focusKeyIndex += offset;
@@ -420,6 +464,7 @@ bool QskInputPanel::activateFocusKey()
     if ( m_data->focusKeyIndex > 0 && m_data->focusKeyIndex < RowCount * KeyCount )
     {
         auto& keyData = keyDataAt( m_data->focusKeyIndex );
+
         if ( keyData.key & KeyPressed )
             handleKey( m_data->focusKeyIndex );
         else
@@ -457,6 +502,7 @@ void QskInputPanel::clearFocusKey()
         keyDataAt( m_data->focusKeyIndex ).key &= ~KeyFocused;
         update();
     }
+
     m_data->focusKeyIndex = -1;
 }
 
@@ -475,6 +521,7 @@ void QskInputPanel::setCandidateOffset( int candidateOffset )
     for ( int i = 0; i < count; ++i )
     {
         auto& keyData = topRow[ i + groupCount ];
+
         if ( continueLeft && i == 0 )
             keyData.key = Qt::Key_ApplicationLeft;
         else if ( continueRight && ( i == KeyCount - groupCount - 1 ) )
@@ -566,6 +613,7 @@ void QskInputPanel::touchEvent( QTouchEvent* e )
     }
 
     const auto rect = keyboardRect();
+
     for ( const auto& tp : e->touchPoints() )
     {
         const auto pos = tp.pos();
@@ -587,6 +635,7 @@ void QskInputPanel::touchEvent( QTouchEvent* e )
 
         const auto keyIndex = m_data->keyTable[ m_data->mode ].indexOf( keyData );
         auto it = m_data->activeKeys.find( tp.id() );
+
         if ( tp.state() == Qt::TouchPointReleased )
         {
             const int repeatCount = it->second.count;
@@ -613,6 +662,7 @@ void QskInputPanel::touchEvent( QTouchEvent* e )
                 keyDataAt( it->second.keyIndex ).key &= ~KeyPressed;
                 it->second.count = 0;
             }
+
             it->second.keyIndex = keyIndex;
         }
 
@@ -680,6 +730,7 @@ void QskInputPanel::handleKey( int keyIndex )
     // Preedit keys
     const auto row = keyIndex / KeyCount;
     const auto column = keyIndex % KeyCount;
+
     if ( m_data->mode == LowercaseMode && !m_data->groups.isEmpty() && row == 0 )
     {
         if ( key == Qt::Key_ApplicationLeft
@@ -708,15 +759,18 @@ void QskInputPanel::handleKey( int keyIndex )
         case Qt::Key_Kana_Lock:
             setMode( UppercaseMode ); // Lock caps
             return;
+
         case Qt::Key_Shift:
         case Qt::Key_Kana_Shift:
             setMode( LowercaseMode ); // Unlock caps
             return;
+
         case Qt::Key_Mode_switch: // Cycle through modes, but skip caps
             setMode( static_cast< QskInputPanel::Mode >(
                 m_data->mode ? ( ( m_data->mode + 1 ) % QskInputPanel::ModeCount )
                 : SpecialCharacterMode ) );
             return;
+
         default:
             break;
     }
@@ -763,18 +817,23 @@ void QskInputPanel::updateLocale( const QLocale& locale )
         case QLocale::Bulgarian:
             m_data->currentLayout = &qskInputPanelLayouts.bg;
             break;
+
         case QLocale::Czech:
             m_data->currentLayout = &qskInputPanelLayouts.cs;
             break;
+
         case QLocale::German:
             m_data->currentLayout = &qskInputPanelLayouts.de;
             break;
+
         case QLocale::Danish:
             m_data->currentLayout = &qskInputPanelLayouts.da;
             break;
+
         case QLocale::Greek:
             m_data->currentLayout = &qskInputPanelLayouts.el;
             break;
+
         case QLocale::English:
         {
             switch ( locale.country() )
@@ -794,59 +853,76 @@ void QskInputPanel::updateLocale( const QLocale& locale )
         case QLocale::Spanish:
             m_data->currentLayout = &qskInputPanelLayouts.es;
             break;
+
         case QLocale::Finnish:
             m_data->currentLayout = &qskInputPanelLayouts.fi;
             break;
+
         case QLocale::French:
             m_data->currentLayout = &qskInputPanelLayouts.fr;
             break;
+
         case QLocale::Hungarian:
             m_data->currentLayout = &qskInputPanelLayouts.hu;
             break;
+
         case QLocale::Italian:
             m_data->currentLayout = &qskInputPanelLayouts.it;
             break;
+
         case QLocale::Japanese:
             m_data->currentLayout = &qskInputPanelLayouts.ja;
             break;
+
         case QLocale::Latvian:
             m_data->currentLayout = &qskInputPanelLayouts.lv;
             break;
+
         case QLocale::Lithuanian:
             m_data->currentLayout = &qskInputPanelLayouts.lt;
             break;
+
         case QLocale::Dutch:
             m_data->currentLayout = &qskInputPanelLayouts.nl;
             break;
+
         case QLocale::Portuguese:
             m_data->currentLayout = &qskInputPanelLayouts.pt;
             break;
+
         case QLocale::Romanian:
             m_data->currentLayout = &qskInputPanelLayouts.ro;
             break;
+
         case QLocale::Russia:
             m_data->currentLayout = &qskInputPanelLayouts.ru;
             break;
+
         case QLocale::Slovenian:
             m_data->currentLayout = &qskInputPanelLayouts.sl;
             break;
+
         case QLocale::Slovak:
             m_data->currentLayout = &qskInputPanelLayouts.sk;
             break;
+
         case QLocale::Turkish:
             m_data->currentLayout = &qskInputPanelLayouts.tr;
             break;
+
         case QLocale::Chinese:
             m_data->currentLayout = &qskInputPanelLayouts.zh;
             break;
+
         default:
             qWarning() << "QskInputPanel: unsupported locale:" << locale;
+
         case QLocale::C:
             m_data->currentLayout = &qskInputPanelLayouts.en_US;
             break;
     }
 
-    Q_EMIT displayLanguageName();
+    Q_EMIT displayLanguageNameChanged();
 
     updateKeyData();
     setMode( LowercaseMode );

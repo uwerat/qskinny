@@ -54,7 +54,7 @@ namespace
     private:
         virtual QskControl* owningControl() const override final
         {
-            return const_cast< QskInputPanel * >( m_panel );
+            return const_cast< QskInputPanel* >( m_panel );
         }
 
     private:
@@ -146,6 +146,7 @@ QSGNode* QskInputPanelSkinlet::updatePanelNode(
         const auto rowIndex = &keyRow - panelKeyData;
         auto& frames = panelNode->frames[ rowIndex ];
         auto& glyphs = panelNode->glyphs[ rowIndex ];
+
         for ( const auto& keyData : keyRow )
         {
             const auto colIndex = &keyData - keyRow;
