@@ -6,33 +6,14 @@
 #include "QskSliderSkinlet.h"
 #include "QskSlider.h"
 #include "QskAspect.h"
-#include "QskSkin.h"
-#include "QskSkinRenderer.h"
-#include "QskBoxOptions.h"
-#include "QskBoxNode.h"
+#include "QskBoxBorderMetrics.h"
 #include "QskFunctions.h"
-
-static QMarginsF qskMargins(
-    const QskSlider* slider, QskAspect::Subcontrol subControl )
-{
-    QMarginsF m = slider->marginsHint( subControl | QskAspect::Margin );
-
-    if ( slider->orientation() == Qt::Vertical )
-        m = QMarginsF( m.top(), m.right(), m.bottom(), m.left() );
-
-    return m;
-}
 
 static QMarginsF qskPadding(
     const QskSlider* slider, QskAspect::Subcontrol subControl )
 {
-    QMarginsF m = slider->marginsHint( subControl | QskAspect::Padding )
-        + slider->borderMetrics( subControl );
-
-    if ( slider->orientation() == Qt::Vertical )
-        m = QMarginsF( m.top(), m.right(), m.bottom(), m.left() );
-
-    return m;
+    return slider->marginsHint( subControl | QskAspect::Padding )
+        + slider->boxBorderHint( subControl ).widths();
 }
 
 QskSliderSkinlet::QskSliderSkinlet( QskSkin* skin ):
@@ -85,22 +66,22 @@ QSGNode* QskSliderSkinlet::updateSubNode(
     {
         case PanelRole:
         {
-            return updateBoxNode( slider, QskSlider::Panel, node );
+            return updateBoxNode( slider, node, QskSlider::Panel );
         }
 
         case GrooveRole:
         {
-            return updateBoxNode( slider, QskSlider::Groove, node );
+            return updateBoxNode( slider, node, QskSlider::Groove );
         }
 
         case FillRole:
         {
-            return updateBoxNode( slider, QskSlider::Fill, node );
+            return updateBoxNode( slider, node, QskSlider::Fill );
         }
 
         case HandleRole:
         {
-            return updateBoxNode( slider, QskSlider::Handle, node );
+            return updateBoxNode( slider, node, QskSlider::Handle );
         }
     }
 
@@ -234,7 +215,10 @@ QRectF QskSliderSkinlet::handleRect( const QskSlider* slider ) const
 
     QRectF handleRect( 0, 0, thickness, thickness );
     if ( thickness > 0 )
-        handleRect = handleRect.marginsRemoved( qskMargins( slider, QskSlider::Handle ) );
+    {
+        handleRect = handleRect.marginsRemoved(
+            slider->marginsHint( QskSlider::Handle | QskAspect::Margin ) );
+    }
 
     qreal pos = slider->metric( QskSlider::Handle | Position );
     pos = qBound( 0.0, pos, 1.0 );
@@ -251,33 +235,6 @@ QRectF QskSliderSkinlet::handleRect( const QskSlider* slider ) const
     }
 
     return handleRect;
-}
-
-QSGNode* QskSliderSkinlet::updateBoxNode( const QskSlider* slider,
-    QskAspect::Subcontrol subControl, QSGNode* node ) const
-{
-    const QRectF rect = subControlRect( slider, subControl );
-    if ( rect.isEmpty() )
-        return nullptr;
-
-    int rotation = 0;
-    if ( subControl != QskSlider::Handle )
-        rotation = ( slider->orientation() == Qt::Horizontal ) ? 0 : 1;
-
-    const QskBoxOptions options =
-        QskSkinRenderer::boxOptions( slider, rect, subControl, rotation );
-
-    const QRectF boxRect = rect.marginsAdded( options.shadows );
-
-    if ( boxRect.isEmpty() || !options.isVisible() )
-        return nullptr;
-
-    auto boxNode = static_cast< QskBoxNode* >( node );
-    if ( boxNode == nullptr )
-        boxNode = new QskBoxNode;
-
-    boxNode->setBoxData( boxRect, options );
-    return boxNode;
 }
 
 #include "moc_QskSliderSkinlet.cpp"

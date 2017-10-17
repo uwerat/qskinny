@@ -18,7 +18,7 @@
 #include <unordered_map>
 
 QSK_SUBCONTROL( QskInputPanel, Panel )
-QSK_SUBCONTROL( QskInputPanel, KeyFrame )
+QSK_SUBCONTROL( QskInputPanel, KeyPanel )
 QSK_SUBCONTROL( QskInputPanel, KeyGlyph )
 
 QSK_STATE( QskInputPanel, Checked, QskAspect::LastSystemState >> 3 )
@@ -184,11 +184,14 @@ static inline int qskKeyCount( const QskInputPanel::KeyDataRow& keyRow )
     return keyCount;
 }
 
-struct KeyCounter
+namespace
 {
-    int keyIndex;
-    int count;
-};
+    struct KeyCounter
+    {
+        int keyIndex;
+        int count;
+    };
+}
 
 class QskInputPanel::PrivateData
 {

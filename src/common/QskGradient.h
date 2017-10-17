@@ -7,11 +7,13 @@
 #define QSK_GRADIENT_H
 
 #include "QskGlobal.h"
+
 #include <QMetaType>
 #include <QColor>
 #include <QVector>
 
 class QDebug;
+class QVariant;
 
 class QSK_EXPORT QskGradientStop
 {
@@ -31,9 +33,14 @@ public:
     void setPosition( qreal position );
     void resetPosition();
 
-    QColor color() const;
+    const QColor& color() const;
     void setColor( const QColor& color );
     void resetColor();
+
+    static QColor interpolated(
+        const QskGradientStop&, const QskGradientStop&, qreal position );
+
+    uint hash( uint seed ) const;
 
 private:
     qreal m_position;
@@ -59,7 +66,11 @@ public:
     Q_ENUM( Orientation )
 
     QskGradient();
+    QskGradient( Qt::GlobalColor );
+    QskGradient( QRgb );
     QskGradient( const QColor& );
+
+    QskGradient( Orientation, const QVector< QskGradientStop >& );
     QskGradient( Orientation, const QColor&, const QColor& );
 
     ~QskGradient();
@@ -76,11 +87,26 @@ public:
     void setColor( const QColor& );
     void setColors( const QColor&, const QColor& );
 
-    void setStops( const QVector< QskGradientStop >& stops );
+    QColor startColor() const;
+    QColor endColor() const;
+
+    void setStops( const QVector< QskGradientStop >& );
     QVector< QskGradientStop > stops() const;
+
+    bool hasStopAt( qreal value ) const;
+
+    void setAlpha( int alpha );
 
     bool isMonochrome() const;
     bool isVisible() const;
+
+    QskGradient expanded( const QVector< QskGradientStop >& );
+    QskGradient interpolated( const QskGradient&, qreal value ) const;
+
+    static QVariant interpolate( const QskGradient&,
+        const QskGradient&, qreal progress );
+
+    uint hash( uint seed ) const;
 
 private:
     void setStopAt( int index, qreal stop );
@@ -92,6 +118,36 @@ private:
     Orientation m_orientation;
     QVector< QskGradientStop > m_stops;
 };
+
+inline QskGradient::QskGradient( Qt::GlobalColor color ):
+    QskGradient( QColor( color ) )
+{
+}
+
+inline QskGradient::QskGradient( QRgb rgb ):
+    QskGradient( QColor::fromRgba( rgb ) )
+{
+}
+
+inline QColor QskGradient::startColor() const
+{
+    return ( m_stops.size() >= 2 ) ? m_stops.first().color() : QColor();
+}
+
+inline QColor QskGradient::endColor() const
+{
+    return ( m_stops.size() >= 2 ) ? m_stops.last().color() : QColor();
+}
+
+inline qreal QskGradientStop::position() const
+{
+    return m_position;
+}
+
+inline const QColor& QskGradientStop::color() const
+{
+    return m_color;
+}
 
 inline bool QskGradientStop::operator==( const QskGradientStop& other ) const
 {

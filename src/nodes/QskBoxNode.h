@@ -7,17 +7,11 @@
 #define QSK_BOX_NODE_H
 
 #include "QskGlobal.h"
-#include "QskBorderGeometry.h"
 
-#define VM_SUPPORT 1
+class QskBoxOptions;
+class QRectF;
 
-#if VM_SUPPORT
-#include "QskBoxMaterialVM.h"
-#else
-#include "QskBoxMaterial.h"
-#endif
-
-#include <QSGGeometryNode>
+#include <QSGNode>
 
 class QSK_EXPORT QskBoxNode : public QSGGeometryNode
 {
@@ -25,22 +19,16 @@ public:
     QskBoxNode();
     virtual ~QskBoxNode();
 
-    void setBoxData( const QRectF&, const QskBoxOptions& );
-
-    QRectF rect() const;
+    void setBoxData( const QRectF& rect, const QskBoxOptions& );
 
 private:
+    void setMonochrome( bool on );
+
     uint m_metricsHash;
     uint m_colorsHash;
-
     QRectF m_rect;
 
-#if VM_SUPPORT
-    QskBoxMaterialVM m_material;
-#else
-    QskBoxMaterial m_material;
-#endif
-    QskBorderGeometry m_geometry;
+    QSGGeometry m_geometry;
 };
 
 #endif

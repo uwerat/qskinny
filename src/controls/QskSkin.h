@@ -29,6 +29,10 @@ class QskSkinHintTable;
 
 class QVariant;
 class QskMargins;
+class QskGradient;
+class QskBoxShapeMetrics;
+class QskBoxBorderMetrics;
+class QskBoxBorderColors;
 
 class QSK_EXPORT QskSkin : public QObject
 {
@@ -68,6 +72,20 @@ public:
 
     void setMargins( QskAspect::Aspect, const QskMargins& );
     QskMargins margins( QskAspect::Aspect ) const;
+
+    void setGradient( QskAspect::Aspect, const QskGradient& );
+    QskGradient gradient( QskAspect::Aspect ) const;
+
+    void setBoxRadius( QskAspect::Aspect, qreal radius, Qt::SizeMode = Qt::AbsoluteSize );
+
+    void setBoxShape( QskAspect::Aspect, const QskBoxShapeMetrics& );
+    QskBoxShapeMetrics boxShape( QskAspect::Aspect ) const;
+
+    void setBoxBorder( QskAspect::Aspect, const QskBoxBorderMetrics& );
+    QskBoxBorderMetrics boxBorder( QskAspect::Aspect ) const;
+
+    void setBoxBorderColors( QskAspect::Aspect, const QskBoxBorderColors& );
+    QskBoxBorderColors boxBorderColors( QskAspect::Aspect ) const;
 
     void setAnimation( QskAspect::Aspect, QskAnimationHint );
     QskAnimationHint animation( QskAspect::Aspect ) const;

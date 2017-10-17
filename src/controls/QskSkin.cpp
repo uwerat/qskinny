@@ -106,8 +106,7 @@ class QskSkin::PrivateData
 {
 public:
     PrivateData( QskSkin* skin ):
-        skin( skin ),
-        hintTable( true )
+        skin( skin )
     {
     }
 
@@ -149,8 +148,11 @@ QskSkin::QskSkin( QObject* parent ):
     const QFont font = QGuiApplication::font();
     setupFonts( font.family(), font.weight(), font.italic() );
 
-    setMargins( QskAspect::Control | QskAspect::Margin, 0 );
-    setMargins( QskAspect::Control | QskAspect::Padding, 0 );
+    using namespace QskAspect;
+
+    setMargins( Control | Margin, 0 );
+    setMargins( Control | Padding, 0 );
+    setMetric( Control | Spacing, 0 );
 }
 
 QskSkin::~QskSkin()
@@ -197,6 +199,51 @@ QskMargins QskSkin::margins( QskAspect::Aspect aspect ) const
     return m_data->hintTable.margins( aspect );
 }
 
+void QskSkin::setGradient( QskAspect::Aspect aspect, const QskGradient& gradient )
+{
+    m_data->hintTable.setGradient( aspect, gradient );
+}
+
+QskGradient QskSkin::gradient( QskAspect::Aspect aspect ) const
+{
+    return m_data->hintTable.gradient( aspect );
+}
+
+void QskSkin::setBoxRadius( QskAspect::Aspect aspect, qreal radius, Qt::SizeMode sizeMode )
+{
+    m_data->hintTable.setBoxShape( aspect, QskBoxShapeMetrics( radius, sizeMode ) );
+}
+
+void QskSkin::setBoxShape( QskAspect::Aspect aspect, const QskBoxShapeMetrics& shape )
+{
+    m_data->hintTable.setBoxShape( aspect, shape );
+}
+
+QskBoxShapeMetrics QskSkin::boxShape( QskAspect::Aspect aspect ) const
+{
+    return m_data->hintTable.boxShape( aspect );
+}
+
+void QskSkin::setBoxBorder( QskAspect::Aspect aspect, const QskBoxBorderMetrics& border )
+{
+    m_data->hintTable.setBoxBorder( aspect, border );
+}
+
+QskBoxBorderMetrics QskSkin::boxBorder( QskAspect::Aspect aspect ) const
+{
+    return m_data->hintTable.boxBorder( aspect );
+}
+
+void QskSkin::setBoxBorderColors( QskAspect::Aspect aspect, const QskBoxBorderColors& colors )
+{
+    m_data->hintTable.setBoxBorderColors( aspect, colors );
+}   
+
+QskBoxBorderColors QskSkin::boxBorderColors( QskAspect::Aspect aspect ) const
+{
+    return m_data->hintTable.boxBorderColors( aspect );
+}
+
 void QskSkin::setFontRole( QskAspect::Aspect aspect, int fontRole )
 {
     m_data->hintTable.setFontRole( aspect, fontRole );
@@ -220,12 +267,12 @@ QskAnimationHint QskSkin::animation( QskAspect::Aspect aspect ) const
 
 void QskSkin::setSkinHint( QskAspect::Aspect aspect, const QVariant& skinHint )
 {
-    m_data->hintTable.setSkinHint( aspect, skinHint );
+    m_data->hintTable.setHint( aspect, skinHint );
 }
 
 const QVariant& QskSkin::skinHint( QskAspect::Aspect aspect ) const
 {
-    return m_data->hintTable.skinHint( aspect );
+    return m_data->hintTable.hint( aspect );
 }
 
 void QskSkin::declareSkinlet( const QMetaObject* metaObject,

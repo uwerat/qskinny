@@ -42,6 +42,20 @@ private:
     void initListViewHints();
     void initSubWindowHints();
 
+    enum PanelStyle
+    {
+        NoPanel,
+        Raised,
+        Sunken,
+        Plain,
+        Flat
+    };
+
+    void setSeparator( QskAspect::Aspect, Qt::Orientation );
+    void setButton( QskAspect::Aspect, PanelStyle, qreal border = 2.0 );
+    void setPanel( QskAspect::Aspect, PanelStyle );
+    void setTab( QskAspect::Aspect, Qt::Orientation );
+
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

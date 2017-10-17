@@ -37,8 +37,6 @@ protected:
         quint8 nodeRole, QSGNode* ) const override;
 
 private:
-    QSGNode* updateBoxNode( const QskSlider*, QskAspect::Subcontrol, QSGNode* ) const;
-
     QRectF panelRect( const QskSlider* ) const;
     QRectF grooveRect( const QskSlider* ) const;
     QRectF fillRect( const QskSlider* ) const;

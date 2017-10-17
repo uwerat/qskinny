@@ -47,11 +47,7 @@ QSGNode* QskTabButtonSkinlet::updateSubNode(
     {
         case PanelRole:
         {
-            const auto tabBar = tabButton->tabBar();
-            const Qt::Orientation o = tabBar ? tabBar->orientation() : Qt::Horizontal;
-
-            return updateBoxNode( tabButton, node, tabButton->contentsRect(),
-                QskTabButton::Panel, ( o == Qt::Vertical ) ? 1 : 0 );
+            return updateBoxNode( tabButton, node, QskTabButton::Panel );
         }
 
         case TextRole:

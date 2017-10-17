@@ -207,21 +207,6 @@ QDebug operator<<( QDebug debug, const QskAspect::Type& type )
     return qskDebugEnum( debug, "Type", type );
 }
 
-QDebug operator<<( QDebug debug, const QskAspect::Edge& edge )
-{
-    return qskDebugEnum( debug, "Edge", edge );
-}
-
-QDebug operator<<( QDebug debug, const QskAspect::Corner& corner )
-{
-    return qskDebugEnum( debug, "Corner", corner );
-}
-
-QDebug operator<<( QDebug debug, const QskAspect::BoxPrimitive& primitive )
-{
-    return qskDebugEnum( debug, "BoxPrimitive", primitive );
-}
-
 QDebug operator<<( QDebug debug, const QskAspect::FlagPrimitive& primitive )
 {
     return qskDebugEnum( debug, "FlagPrimitive", primitive );
@@ -246,6 +231,12 @@ QDebug operator<<( QDebug debug, const QskAspect::Subcontrol& subControl )
     debug << subControlName( subControl );
     debug << ')';
 
+    return debug;
+}
+
+QDebug operator<<( QDebug debug, const QskAspect::Placement& placement )
+{
+    qskDebugEnum( debug, "Placement", placement );
     return debug;
 }
 
@@ -294,47 +285,29 @@ void qskDebugAspect( QDebug debug, const QMetaObject* metaObject, QskAspect::Asp
     if ( aspect.isAnimator() )
         debug << "(A)";
 
-    debug << ", ";
-
-    if ( !aspect.isBoxPrimitive() )
+    switch( aspect.type() )
     {
-        switch( aspect.type() )
+        case Color:
         {
-            case Color:
-            {
-                debug << qskEnumString( "ColorPrimitive", aspect.colorPrimitive() );
-                break;
-            }
-            case Metric:
-            {
-                debug << qskEnumString( "MetricPrimitive", aspect.metricPrimitive() );
-                break;
-            }
-            default:
-            {
-                debug << qskEnumString( "FlagPrimitive", aspect.flagPrimitive() );
-            }
+            if ( aspect.colorPrimitive() != 0 )
+                debug << ", " << qskEnumString( "ColorPrimitive", aspect.colorPrimitive() );
+            break;
+        }
+        case Metric:
+        {
+            if ( aspect.metricPrimitive() != 0 )
+                debug << ", " << qskEnumString( "MetricPrimitive", aspect.metricPrimitive() );
+            break;
+        }
+        default:
+        {
+            if ( aspect.flagPrimitive() != 0 )
+                debug << ", " << qskEnumString( "FlagPrimitive", aspect.flagPrimitive() );
         }
     }
-    else
-    {
-        debug << qskEnumString( "BoxPrimitive", aspect.boxPrimitive() );
 
-        switch( aspect.boxPrimitive() )
-        {
-            case Border:
-            {
-                if ( aspect.edge() )
-                    debug << ", " << qskEnumString( "Edge", aspect.edge() );
-                break;
-            }
-            default:
-            {
-                if ( aspect.corner() )
-                    debug << ", " << qskEnumString( "Corner", aspect.corner() );
-            }
-        }
-    }
+    if ( aspect.placement() != QskAspect::Preserved )
+        debug << ", " << qskEnumString( "Placement", aspect.placement() );
 
     if ( aspect.state() )
         debug << ", " << qskStateString( metaObject, aspect.state() );

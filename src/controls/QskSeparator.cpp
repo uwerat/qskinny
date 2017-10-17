@@ -80,4 +80,10 @@ QSizeF QskSeparator::contentsSizeHint() const
         return QSizeF( m, -1 );
 }
 
+QskAspect::Placement QskSeparator::effectivePlacement() const
+{
+    using namespace QskAspect;
+    return ( m_orientation == Qt::Horizontal ) ? Preserved : Transposed;
+}
+
 #include "moc_QskSeparator.cpp"

@@ -6,8 +6,10 @@
 #include "QskVariantAnimator.h"
 #include "QskColorFilter.h"
 #include "QskMargins.h"
-#include "QskBorderMetrics.h"
-#include "QskBoxColors.h"
+#include "QskBoxShapeMetrics.h"
+#include "QskBoxBorderMetrics.h"
+#include "QskBoxBorderColors.h"
+#include "QskGradient.h"
 
 // Even if we don't use the standard Qt animation system we
 // use its registry of interpolators: why adding our own ...
@@ -20,8 +22,10 @@ static void qskRegisterInterpolator()
 {
     qRegisterAnimationInterpolator<QskColorFilter>( QskColorFilter::interpolate );
     qRegisterAnimationInterpolator<QskMargins>( QskMargins::interpolate );
-    qRegisterAnimationInterpolator<QskBorderMetrics>( QskBorderMetrics::interpolate );
-    qRegisterAnimationInterpolator<QskBoxColors>( QskBoxColors::interpolate );
+    qRegisterAnimationInterpolator<QskGradient>( QskGradient::interpolate );
+    qRegisterAnimationInterpolator<QskBoxShapeMetrics>( QskBoxShapeMetrics::interpolate );
+    qRegisterAnimationInterpolator<QskBoxBorderMetrics>( QskBoxBorderMetrics::interpolate );
+    qRegisterAnimationInterpolator<QskBoxBorderColors>( QskBoxBorderColors::interpolate );
 }
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterInterpolator )

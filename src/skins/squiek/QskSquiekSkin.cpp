@@ -9,6 +9,7 @@
 #include <QskFocusIndicator.h>
 #include <QskSeparator.h>
 #include <QskDialogButton.h>
+#include <QskDialogButtonBox.h>
 #include <QskPageIndicator.h>
 #include <QskPushButton.h>
 #include <QskSlider.h>
@@ -20,13 +21,18 @@
 #include <QskListView.h>
 #include <QskSubWindow.h>
 
+#include <QskSkinlet.h>
+
 #include <QskAspect.h>
 #include <QskNamespace.h>
 #include <QskFunctions.h>
 #include <QskRgbValue.h>
 #include <QskAnimationHint.h>
 #include <QskMargins.h>
-#include <QskSkinlet.h>
+#include <QskGradient.h>
+#include <QskBoxShapeMetrics.h>
+#include <QskBoxBorderMetrics.h>
+#include <QskBoxBorderColors.h>
 
 static const int qskDuration = 200;
 
@@ -35,16 +41,18 @@ namespace
     class ColorPalette
     {
     public:
-        ColorPalette( const QColor& themeColor = Qt::gray )
+        ColorPalette( const QColor& themeColor = QskRgbValue::Silver )
         {
             const bool isBright = themeColor.value() > 128;
 
             theme = themeColor;
 
-            lighter150 = themeColor.lighter( 150 );
-            lighter135 = themeColor.lighter( 135 );
+            lighter110 = themeColor.lighter( 110 );
             lighter125 = themeColor.lighter( 125 );
+            lighter135 = themeColor.lighter( 135 );
+            lighter150 = themeColor.lighter( 150 );
 
+            darker125 = themeColor.darker( 125 );
             darker150 = themeColor.darker( 150 );
             darker200 = themeColor.darker( 200 );
 
@@ -52,7 +60,7 @@ namespace
             {
                 themeForeground = QskRgbValue::Black;
 
-                contrasted = QskRgbValue::White;
+                contrasted = QskRgbValue::Gainsboro;
                 contrastedText = QskRgbValue::Black;
 
                 highlighted = QskRgbValue::RoyalBlue;
@@ -70,33 +78,15 @@ namespace
             }
         }
 
-        void initButton( QskSkin* skin,
-            QskAspect::Aspect aspect, bool isRaised ) const
-        {
-            using namespace QskAspect;
-
-            skin->setColor( aspect | TopCorners, isRaised ? lighter150 : lighter125 );
-            skin->setColor( aspect | BottomCorners, isRaised ? lighter125 : lighter150 );
-            skin->setColor( aspect | Border | LeftEdge | TopEdge, isRaised ? lighter150 : darker200 );
-            skin->setColor( aspect | Border | RightEdge | BottomEdge, isRaised ? darker200 : lighter150 );
-        }
-
-        void initFlatButton( QskSkin* skin,
-            QskAspect::Aspect aspect, const QColor& color ) const
-        {
-            using namespace QskAspect;
-
-            skin->setColor( aspect, color );
-            skin->setColor( aspect | Border | LeftEdge | TopEdge, color );
-            skin->setColor( aspect | Border | RightEdge | BottomEdge, color );
-        }
-
         QColor theme;
         QColor themeForeground;
 
         QColor lighter150;
         QColor lighter135;
         QColor lighter125;
+        QColor lighter110;
+
+        QColor darker125;
         QColor darker150;
         QColor darker200;
 
@@ -124,6 +114,114 @@ QskSquiekSkin::QskSquiekSkin( QObject* parent ):
 
 QskSquiekSkin::~QskSquiekSkin()
 {
+}
+
+void QskSquiekSkin::setSeparator(
+    QskAspect::Aspect aspect, Qt::Orientation orientation )
+{
+    const ColorPalette& pal = m_data->palette;
+
+    QskGradient gradient( QskGradient::Vertical, pal.lighter110, pal.darker125 );
+
+    if ( orientation == Qt::Vertical )
+        gradient.setOrientation( QskGradient::Horizontal );
+
+    setGradient( aspect, gradient );
+    setBoxRadius( aspect, 0 );
+    setBoxBorder( aspect, 0 );
+}
+
+void QskSquiekSkin::setButton(
+    QskAspect::Aspect aspect, PanelStyle style, qreal border )
+{
+#if 1
+    // Buttons shift ???
+#endif
+    const ColorPalette& pal = m_data->palette;
+
+    QskBoxBorderColors borderColors;
+
+    QskGradient gradient;
+    gradient.setOrientation( QskGradient::Vertical );
+
+    switch( style )
+    {
+        case Raised:
+        {
+            borderColors.setColorsAt( Qt::TopEdge | Qt::LeftEdge, pal.lighter135 );
+            borderColors.setColorsAt( Qt::RightEdge | Qt::BottomEdge, pal.darker200 );
+            gradient.setColors( pal.lighter125, pal.lighter110 );
+
+            break;
+        }
+        case Sunken:
+        {
+            borderColors.setColorsAt( Qt::TopEdge | Qt::LeftEdge, pal.darker200 );
+            borderColors.setColorsAt( Qt::RightEdge | Qt::BottomEdge, pal.lighter135 );
+            gradient.setColors( pal.lighter110, pal.lighter125 );
+
+            break;
+        }
+        case Plain:
+        {
+            borderColors.setColors( pal.darker125 );
+            gradient.setColor( pal.lighter125 );
+
+            break;
+        }
+        case Flat:
+        case NoPanel:
+        {
+            QColor noColor( pal.theme );
+            noColor.setAlpha( 0 );
+
+            borderColors.setColors( noColor );
+            gradient.setColor( noColor );
+
+            if ( style == NoPanel )
+                border = 0;
+
+            break;
+        }
+    }
+
+    setBoxBorderColors( aspect, borderColors );
+    setGradient( aspect, gradient );
+    setBoxRadius( aspect, 4 );
+    setBoxBorder( aspect, border );
+}
+
+void QskSquiekSkin::setPanel( QskAspect::Aspect aspect, PanelStyle style )
+{
+    setButton( aspect, style, 1 );
+}
+
+void QskSquiekSkin::setTab( QskAspect::Aspect aspect,
+    Qt::Orientation orientation )
+{
+    const ColorPalette& pal = m_data->palette;
+
+    setGradient( aspect, QskGradient( QskGradient::Vertical, pal.lighter125, pal.lighter150 ) );
+    setBoxBorderColors( aspect, pal.darker200 );
+
+    QskBoxBorderMetrics border( 1 );
+    QskBoxShapeMetrics shape( 4 );
+
+    if ( orientation == Qt::Horizontal )
+    {
+        border.setWidthAt( Qt::RightEdge, 0 );
+        shape.setRadius( Qt::TopRightCorner, 0 );
+        shape.setRadius( Qt::BottomRightCorner, 0 );
+    }
+    else
+    {
+        border.setWidthAt( Qt::BottomEdge, 0 );
+        shape.setRadius( Qt::BottomLeftCorner, 0 );
+        shape.setRadius( Qt::BottomRightCorner, 0 );
+    }
+
+    setBoxBorder( aspect, border );
+    setBoxShape( aspect, shape );
 }
 
 void QskSquiekSkin::initHints()
@@ -162,8 +260,7 @@ void QskSquiekSkin::initCommonHints()
 
     setMargins( Control | Padding, 4 );
 
-    setColor( Control | Background, pal.lighter135 );
-    setColor( Control | Border, pal.darker200 );
+    setGradient( Control, pal.lighter135 );
     setColor( Control | StyleColor, pal.themeForeground );
     setColor( Control | StyleColor | Q::Disabled, pal.theme );
 }
@@ -174,7 +271,7 @@ void QskSquiekSkin::initPopupHints()
     using Q = QskPopup;
 
     setSkinHint( Q::Overlay | Style, true );
-    setColor( Q::Overlay, qRgba( 220, 220, 220, 150 ) );
+    setGradient( Q::Overlay, QColor( 220, 220, 220, 150 ) );
 }
 
 void QskSquiekSkin::initTextLabelHints()
@@ -195,11 +292,11 @@ void QskSquiekSkin::initFocusIndicatorHints()
 
     const ColorPalette& pal = m_data->palette;
 
-    setMetric( Q::Panel | Border, 2 );
-    setMetric( Q::Panel | Radius, 4 );
     setMargins( Q::Panel | Padding, 5 );
-
-    setColor( Q::Panel | Border, pal.highlighted );
+    setBoxBorder( Q::Panel, 2 );
+    setBoxRadius( Q::Panel, 4 );
+    setGradient( Q::Panel, Qt::transparent );
+    setBoxBorderColors( Q::Panel, pal.highlighted );
 }
 
 void QskSquiekSkin::initSeparatorHints()
@@ -207,11 +304,10 @@ void QskSquiekSkin::initSeparatorHints()
     using namespace QskAspect;
     using Q = QskSeparator;
 
-    const ColorPalette& pal = m_data->palette;
-
     setMetric( Q::Panel | Size, 4 );
-    setColor( Q::Panel | TopCorners, pal.lighter150 );
-    setColor( Q::Panel | BottomCorners, pal.lighter125 );
+
+    setSeparator( Q::Panel, Qt::Horizontal );
+    setSeparator( Q::Panel | Transposed, Qt::Vertical );
 }
 
 void QskSquiekSkin::initPageIndicatorHints()
@@ -221,18 +317,22 @@ void QskSquiekSkin::initPageIndicatorHints()
 
     const ColorPalette& pal = m_data->palette;
 
-    setMetric( Q::Bullet | Size, 8 );
-    setMetric( Q::Bullet | Radius, 4 );
-    setColor( Q::Bullet | Background, pal.darker150 );
-    setColor( Q::Highlighted | Background, pal.lighter150 );
+    for ( auto subControl : { Q::Bullet, Q::Highlighted } )
+    {
+        setMetric( subControl | Size, qskDpiScaled( 12 ) );
 
-    setMetric( Q::Highlighted | Size, 8 );
-    setMetric( Q::Highlighted | Radius, 4 );
+        setBoxBorder( subControl, QskBoxBorderMetrics( 50, Qt::RelativeSize ) );
+        setBoxRadius( subControl, 100, Qt::RelativeSize );
 
-    setMargins( Q::Panel | Margin, 0 );
-    setMargins( Q::Panel | Padding, 0 );
-    setMetric( Q::Panel | Border, 0 );
-    setColor( Q::Panel | Background, 0 );
+        setGradient( subControl,
+            ( subControl == Q::Bullet ) ? pal.darker150 : pal.lighter150 );
+            
+    }
+
+    // no visible background panel
+    setBoxBorder( Q::Panel, 0 );
+    setBoxRadius( Q::Panel, 2 );
+    setGradient( Q::Panel, QskGradient() );
 
     setMetric( Q::Panel | Spacing, 3 );
 }
@@ -244,40 +344,39 @@ void QskSquiekSkin::initPushButtonHints()
 
     const ColorPalette& pal = m_data->palette;
 
-    // Button shift ( TODO: place behind Pressed state )
-    setMetric( Q::Panel, 1 );
-
-    setMetric( Q::Panel | Radius, 3 );
-    setMetric( Q::Panel | Border | HorizontalEdges, 2 );
-    setMetric( Q::Panel | Border | VerticalEdges, 1 );
-
-    setMargins( Q::Panel | Padding, 10 );
-    setMetric( Q::Panel | Spacing, 4 );
-
-    setSkinHint( Q::Text | Q::Disabled | Style, Qsk::Sunken );
-    setSkinHint( Q::Text | Alignment, Qt::AlignCenter );
+    // Panel
 
     setMetric( Q::Panel | MinimumWidth, qskDpiScaled( 75.0 ) );
     setMetric( Q::Panel | MinimumHeight, qskDpiScaled( 23.0 ) );
 
+    setMargins( Q::Panel | Margin, 0 );
+    setMargins( Q::Panel | Padding, 10 );
+    setMetric( Q::Panel | Spacing, 4 );
+
+    for ( auto state : { NoState, Q::Checkable } )
+    {
+        setButton( Q::Panel | state, Raised );
+        setButton( Q::Panel | Q::Flat | Q::Hovered | state, Raised );
+
+        setButton( Q::Panel | Q::Flat | state, Flat );
+        setButton( Q::Panel | Q::Flat | Q::Disabled | state, Flat );
+    }
+
+    for ( auto state : { Q::Pressed, Q::Checked } )
+    {
+        setButton( Q::Panel | state, Sunken );
+        setButton( Q::Panel | Q::Flat | state, Sunken );
+    }
+
     setAnimation( Q::Panel | Color, qskDuration );
+    setAnimation( Q::Panel | Metric, qskDuration );
+
+    // Text
+    setSkinHint( Q::Text | Q::Disabled | Style, Qsk::Sunken );
+    setSkinHint( Q::Text | Alignment, Qt::AlignCenter );
 
     setColor( Q::Text, pal.themeForeground );
     setColor( Q::Text | Q::Disabled, pal.darker200 );
-
-    QColor noBorder = pal.lighter125;
-    noBorder.setAlpha( 0 ); // invisible
-
-    pal.initFlatButton( this, Q::Panel | Q::Flat, noBorder );
-    pal.initFlatButton( this, Q::Panel | Q::Flat | Q::Disabled, noBorder );
-
-    setColor( Q::Panel | Q::Flat | Q::Pressed, pal.lighter125 );
-    setColor( Q::Panel | Q::Flat | Q::Checked | Q::Pressed, noBorder );
-    setColor( Q::Panel | Q::Flat | Q::Checked, pal.lighter125 );
-
-    pal.initButton( this, Q::Panel, true );
-    pal.initButton( this, Q::Panel | Q::Checked, false );
-    pal.initButton( this, Q::Panel | Q::Pressed, false );
 }
 
 void QskSquiekSkin::initDialogButtonHints()
@@ -287,23 +386,18 @@ void QskSquiekSkin::initDialogButtonHints()
 
     const ColorPalette& pal = m_data->palette;
 
-    // panel ( TODO Button shift
-    setMetric( Q::Panel, 1 );
-
-    setMetric( Q::Panel | Radius, 3 );
-    setMetric( Q::Panel | Border | HorizontalEdges, 2 );
-    setMetric( Q::Panel | Border | VerticalEdges, 1 );
+    // panel
+    setMetric( Q::Panel | MinimumWidth, qskDpiScaled( 75.0 ) );
+    setMetric( Q::Panel | MinimumHeight, qskDpiScaled( 23.0 ) );
 
     setMargins( Q::Panel | Padding, 10 );
     setMetric( Q::Panel | Spacing, 4 );
 
-    setMetric( Q::Panel | MinimumWidth, qskDpiScaled( 75.0 ) );
-    setMetric( Q::Panel | MinimumHeight, qskDpiScaled( 23.0 ) );
+    setButton( Q::Panel, Raised );
+    setButton( Q::Panel | Q::Pressed, Sunken );
 
     setAnimation( Q::Panel | Color, qskDuration );
-
-    pal.initButton( this, Q::Panel, true );
-    pal.initButton( this, Q::Panel | Q::Pressed, false );
+    setAnimation( Q::Panel | Metric, qskDuration );
 
     // text
     setSkinHint( Q::Text | Q::Disabled | Style, Qsk::Sunken );
@@ -315,6 +409,15 @@ void QskSquiekSkin::initDialogButtonHints()
 
 void QskSquiekSkin::initDialogButtonBoxHints()
 {
+    using namespace QskAspect;
+    using Q = QskDialogButtonBox;
+
+    const ColorPalette& pal = m_data->palette;
+
+    setBoxBorderColors( Q::Panel, pal.theme );
+    setGradient( Q::Panel, pal.lighter135 );
+    setBoxBorder( Q::Panel, 0 );
+    setBoxRadius( Q::Panel, 2 );
 }
 
 void QskSquiekSkin::initTabButtonHints()
@@ -324,40 +427,46 @@ void QskSquiekSkin::initTabButtonHints()
 
     const ColorPalette& pal = m_data->palette;
 
-    setMetric( Q::Panel | Radius | TopCorners, 3 );
-    setMetric( Q::Panel | Border | LeftEdge | TopEdge | RightEdge, 1 );
-    setMargins( Q::Panel | Padding, QskMargins( 10, 4 ) );
     setMetric( Q::Panel | MinimumWidth, 30 );
     setMetric( Q::Panel | MinimumHeight, 16 );
 
-    for ( const auto state : { NoState } )
-        setMargins( Q::Panel | Margin | state, QskMargins( -1, 2, -1, 0 ) );
+    const QskMargins padding( 10, 4 );
 
-    for ( const auto state : { Q::Checked, Q::Checked | Q::Pressed } )
-        setMargins( Q::Panel | Margin | state, QskMargins( -1, 0, -1, -1 ) );
+    for ( auto placement : { Preserved, Transposed } ) 
+    {
+        const Aspect aspect = Q::Panel | placement;
 
-    setSkinHint( Q::Text | QskAspect::Alignment, Qt::AlignCenter );
-#if 0
-    setSkinHint( Q::Text | Checkable | Disabled | TextStyle, Qsk::Sunken );
-#endif
+        if ( placement == Preserved )
+        {
+            setMargins( aspect | Margin , QskMargins( -1, 2, -1, -2 ) );
+
+            for ( const auto state : { Q::Checked, Q::Checked | Q::Pressed } )
+                setMargins( aspect | Margin | state, QskMargins( -1, 0, -1, -3 ) );
+
+            setMargins( aspect | Padding, padding );
+            setTab( aspect, Qt::Vertical );
+        }
+        else
+        {
+            setMargins( aspect | Margin , QskMargins( 2, -1, -2, -1 ) );
+
+            for ( const auto state : { Q::Checked, Q::Checked | Q::Pressed } )
+                setMargins( aspect | Margin | state, QskMargins( 0, -1, -3, 0 ) );
+
+            setMargins( aspect | Padding, padding );
+
+            setMargins( aspect | Padding, padding.rotated() );
+            setTab( aspect, Qt::Horizontal );
+        }
+    }
 
     setAnimation( Q::Panel | Color, qskDuration );
-    setAnimation( Q::Panel | Margin | Metric, qskDuration );
+    setAnimation( Q::Panel | Metric, qskDuration );
 
+    // text
+    setSkinHint( Q::Text | QskAspect::Alignment, Qt::AlignCenter );
     setColor( Q::Text, pal.themeForeground );
-#if 0
-    setColor( Q::Text | Q::Checkable | Q::Disabled | TextStyle, ...);
-#endif
     setColor( Q::Text | Q::Checkable | Q::Disabled, pal.darker200 );
-
-    setColor( Q::Panel | Border, pal.darker200 );
-    setColor( Q::Panel | Background, pal.lighter150 );
-
-    for ( const auto state : { NoState, Q::Checkable, Q::Checkable | Q::Pressed } )
-    {
-        const QskAspect::Aspect aspect = Q::Panel | state;
-        setColor( aspect | TopCorners, pal.lighter125 );
-    }
 }
 
 void QskSquiekSkin::initSliderHints()
@@ -369,35 +478,55 @@ void QskSquiekSkin::initSliderHints()
 
     const qreal dim = 40;
 
-    setMetric( Q::Panel | Size, dim ); 
-    setMetric( Q::Panel | Border, 0 );
+    // Panel
 
-    setMargins( Q::Panel | Padding, QskMargins( 0.5 * dim, 0 ) );
-
-    for ( auto subControl : { Q::Groove, Q::Fill } )
+    for ( auto placement : { Preserved, Transposed } )
     {
-        setMetric( subControl | Border, 0 );
-        setMargins( subControl | Padding, 0 );
-        setMetric( subControl | Size, 0.3 * dim );
-        setMetric( subControl | Radius, 0.1 * dim );
+        const auto aspect = Q::Panel | placement;
+
+        setMetric( aspect | Size, dim ); 
+        setBoxBorder( aspect, 0 );
+        setBoxRadius( aspect, 0 );
+        setGradient( aspect, QskGradient() );
     }
 
-    //setMetric( Q::Handle | Size, dim );
-    setMetric( Q::Handle | Border, 1 );
-    setMetric( Q::Handle | Radius, 3 );
+    setMargins( Q::Panel | Preserved | Padding, QskMargins( 0.5 * dim, 0 ) );
+    setMargins( Q::Panel | Transposed | Padding, QskMargins( 0, 0.5 * dim ) );
 
-    setColor( Q::Groove, pal.darker200 );
-    setColor( Q::Panel, 0 ); // hide the panel
-    setColor( Q::Fill, 0 ); // no filling
+    // Groove, Fill
 
-    pal.initButton( this, Q::Handle, true );
-    pal.initButton( this, Q::Handle | Q::Pressed, false );
-
-    for ( auto state : { NoState, Q::Pressed } )
+    for ( auto placement : { Preserved, Transposed } )
     {
-        setAnimation( Q::Handle | Color | state, qskDuration );
-        setAnimation( Q::Handle | Border | Color | state, qskDuration );
+        for ( auto subControl : { Q::Groove, Q::Fill } )
+        {
+            const auto aspect = subControl | placement;
+
+            setMetric( aspect | Size, 0.3 * dim );
+            setMargins( aspect | Padding, 0 );
+
+            setBoxBorder( aspect, 0 );
+            setBoxRadius( aspect, 0.1 * dim );
+
+            if ( subControl == Q::Groove )
+                setGradient( aspect, pal.darker200 );
+            else
+                setGradient( aspect, QskGradient() ); // no filling
+        }
     }
+
+    // Handle
+
+    for ( auto placement : { Preserved, Transposed } )
+    {
+        Aspect aspect = Q::Handle | placement;
+
+        setButton( aspect, Raised, 1 );
+        setBoxRadius( aspect, 20.0, Qt::RelativeSize );
+        setButton( aspect | Q::Pressed, Sunken, 1 );
+        setMetric( Q::Handle | Size, 0.75 * dim );
+    }
+
+    setAnimation( Q::Handle | Color, qskDuration );
 }
 
 void QskSquiekSkin::initTabBarHints()
@@ -405,13 +534,9 @@ void QskSquiekSkin::initTabBarHints()
     using namespace QskAspect;
     using Q = QskTabBar;
 
-    setMetric( Q::Panel | Radius, 0 );
-    setMetric( Q::Panel | Border, 0 );
-
-    setMargins( Q::Panel | Margin, 0 );
     setMargins( Q::Panel | Padding, 0 );
-
-    setColor( Q::Panel | Background, 0 );
+    setMargins( Q::Panel | Margin, 0 );
+    setPanel( Q::Panel, NoPanel );
 }
 
 void QskSquiekSkin::initTabViewHints()
@@ -419,15 +544,9 @@ void QskSquiekSkin::initTabViewHints()
     using namespace QskAspect;
     using Q = QskTabView;
 
-    const ColorPalette& pal = m_data->palette;
-
-    setMetric( Q::Page | Radius, 0 );
-    setMetric( Q::Page | Border, 0 );
-    setMetric( Q::Page | Border | TopEdge, 1 );
-
-    setColor( Q::Page | Border | TopEdge, pal.darker200 );
-    setColor( Q::Page | TopCorners, pal.lighter150 );
-    setColor( Q::Page | BottomCorners, pal.lighter125 );
+    setMargins( Q::Page | Padding, 0 );
+    setMargins( Q::Page | Margin, 0 );
+    setPanel( Q::Page, Raised );
 
     setAnimation( Q::Page, qskDuration );
 }
@@ -439,23 +558,32 @@ void QskSquiekSkin::initInputPanelHints()
 
     const ColorPalette& pal = m_data->palette;
 
-    // frame
-    setMetric( Q::KeyFrame | Border, 2 );
-    setMetric( Q::KeyFrame | Radius, 4 );
-    setMargins( Q::KeyFrame | Margin, 2 );
+    // key panel
+    setMargins( Q::KeyPanel | Margin, 2 ); // should be Panel | Spacing
 
-    setAnimation( Q::KeyFrame | Color, qskDuration ); 
-    setAnimation( Q::KeyFrame | Color | Border, qskDuration );
+    setButton( Q::KeyPanel, Raised );
+    setButton( Q::KeyPanel | Q::Pressed, Sunken );
 
-    pal.initButton( this, Q::KeyFrame, true );
-    pal.initButton( this, Q::KeyFrame | Q::Pressed, false );
+    setAnimation( Q::KeyPanel | Color, qskDuration ); 
+#if 0
+    // crashes because animations are started from updateNode
+    // TODO ...
 
+    setAnimation( Q::KeyPanel | Metric, qskDuration ); 
+#endif
+
+    // glyph
     setSkinHint( Q::KeyGlyph | Alignment, Qt::AlignCenter );
     setFontRole( Q::KeyGlyph, QskSkin::TinyFont );
 
-    // glyph
     setColor( Q::KeyGlyph, pal.themeForeground );
     setColor( Q::KeyGlyph | Q::Disabled, pal.darker200 );
+
+    // panel
+
+    setMargins( Q::Panel | Padding, 5 );
+    setMargins( Q::Panel | Spacing, 5 );
+    setPanel( Q::Panel, Raised );
 }
 
 void QskSquiekSkin::initScrollViewHints()
@@ -463,37 +591,49 @@ void QskSquiekSkin::initScrollViewHints()
     using namespace QskAspect;
     using Q = QskScrollView;
 
-    const ColorPalette& pal = m_data->palette;
-
     setMetric( Q::Panel | Spacing, 4 );
 
-    setMetric( Q::Viewport | Border, 2 );
-    setMetric( Q::Viewport | Radius, 8 );
+    setBoxBorder( Q::Viewport, 2 );
+    setBoxRadius( Q::Viewport, 8 );
 
-    setColor( Q::Viewport | Background, Qt::white );
+    QColor fillColor( Qt::white );
 
+    const QskBoxBorderColors borderColors(
+        fillColor.darker( 170 ), fillColor.darker( 170 ),
+        fillColor.darker( 105 ), fillColor.darker( 105 ) );
+
+    setBoxBorderColors( Q::Viewport, borderColors );
+    setGradient( Q::Viewport, fillColor );
+
+    // scroll bars
     for ( auto subControl : { Q::HorizontalScrollBar, Q::VerticalScrollBar } )
     {
-        setMetric( subControl | Size, 8 );
+        setMetric( subControl | Size, qskDpiScaled( 12 ) );
         setMargins( subControl | Padding, 0 );
         setMargins( subControl | Margin, 0 );
     }
 
+    // scrollbar handles
     for ( auto subControl : { Q::HorizontalScrollHandle, Q::VerticalScrollHandle } )
     {
-        setMargins( subControl | Margin, 0 );
-        setMetric( subControl | Radius, 3 );
-        setMetric( subControl | Border, 1 );
+        const qreal bw = 1.0;
 
-        pal.initButton( this, subControl, true );
+        setButton( subControl, Raised, bw );
+
+        // placement ???
+        if ( subControl == Q::HorizontalScrollHandle )
+        {
+            setMetric( subControl | MinimumWidth, qskDpiScaled( 40.0 ) );
+            setButton( subControl | Q::HorizontalHandlePressed, Sunken, bw );
+        }
+        else
+        {
+            setMetric( subControl | MinimumHeight, qskDpiScaled( 40.0 ) );
+            setButton( subControl | Q::VerticalHandlePressed, Sunken, bw );
+        }
+
         setAnimation( subControl | Color, qskDuration );
     }
-
-    setMetric( Q::HorizontalScrollHandle | MinimumWidth, qskDpiScaled( 40.0 ) );
-    setMetric( Q::VerticalScrollHandle | MinimumHeight, qskDpiScaled( 40.0 ) );
-
-    pal.initButton( this, Q::HorizontalScrollHandle | Q::HorizontalHandlePressed, false );
-    pal.initButton( this, Q::VerticalScrollHandle | Q::VerticalHandlePressed, false );
 }
 
 void QskSquiekSkin::initListViewHints()
@@ -506,11 +646,8 @@ void QskSquiekSkin::initListViewHints()
     // padding for each cell
     setMargins( Q::Cell | Padding, QskMargins( 4, 8 ) );
 
-    setAnimation( Q::CellSelected | Color, qskDuration );
-    setAnimation( Q::TextSelected | Color, qskDuration );
-
     setColor( Q::Text, pal.themeForeground );
-    setColor( Q::Cell | StyleColor, pal.lighter135 );
+    setColor( Q::Cell, pal.contrasted );
 
     setColor( Q::CellSelected, pal.highlighted );
     setColor( Q::TextSelected, pal.highlightedText );
@@ -523,15 +660,22 @@ void QskSquiekSkin::initSubWindowHints()
 
     const ColorPalette& pal = m_data->palette;
 
-    setMetric( Q::Panel | Border, 2 );
+    // Panel
+
     setMargins( Q::Panel | Padding, 10 );
-    setMetric( Q::TitleBar | Border, 2 );
+    setBoxBorder( Q::Panel, 2 );
+    setBoxRadius( Q::Panel, 0 );
+
+    QskBoxBorderColors borderColors;
+    borderColors.setColorsAt( Qt::TopEdge | Qt::LeftEdge, pal.lighter125 );
+    borderColors.setColorsAt( Qt::RightEdge | Qt::BottomEdge, pal.darker200 );
+
+    setBoxBorderColors( Q::Panel, borderColors );
+    setGradient( Q::Panel, pal.lighter135 );
+
+    // TitleBar
 
     setFontRole( Q::TitleBar, QskSkin::TinyFont );
-
-    setColor( Q::Panel | Border | LeftEdge | TopEdge, pal.lighter125 );
-    setColor( Q::Panel | Border | RightEdge | BottomEdge, pal.darker200 );
-
     setColor( Q::TitleBar | Q::Focused, pal.highlighted );
     setColor( Q::TitleBar, pal.contrasted );
 }

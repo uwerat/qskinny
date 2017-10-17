@@ -8,7 +8,7 @@
 
 #include "QskControl.h"
 
-class QskFrameNode;
+class QskBoxNode;
 
 class QSK_EXPORT Frame : public QskControl
 {
@@ -63,7 +63,7 @@ protected:
     virtual void updateNode( QSGNode* ) override;
 
 private:
-    void updateFrameNode( const QRectF&, QskFrameNode* );
+    void updateFrameNode( const QRectF&, QskBoxNode* );
 
     Style m_style;
     QColor m_color;

@@ -150,13 +150,13 @@ QSGNode* QskPageIndicatorSkinlet::updateBulletsNode(
             bulletNode = bulletNode->nextSibling();
 
         if ( bulletNode == nullptr )
-        {
             bulletNode = new QskBoxNode();
-            node->appendChildNode( bulletNode );
-        }
 
         updateBoxNode( indicator, bulletNode, bulletRect( indicator, rect, i ),
             ( i == currentBullet ) ? Q::Highlighted : Q::Bullet );
+
+        if ( bulletNode->parent() != node )
+            node->appendChildNode( bulletNode );
     }
 
     // if count has decreased we need to remove superfluous nodes

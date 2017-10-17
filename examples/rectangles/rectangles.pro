@@ -2,14 +2,11 @@ include( $${PWD}/../examples.pri )
 
 TARGET = rectangles
 
-RESOURCES += \
-    rectangles.qrc
-
 HEADERS += \
-    Border.h \
-    Rectangle.h
+    Box.h \
+    Palette.h
 
 SOURCES += \
-    Border.cpp \
-    Rectangle.cpp \
+    Box.cpp \
+    Palette.cpp \
     main.cpp

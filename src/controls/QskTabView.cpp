@@ -55,12 +55,9 @@ QskTabView::QskTabView( Qt::Orientation orientation, QQuickItem* parent ):
     const QskAnimationHint hint = animation( Page );
     if ( hint.duration > 0 )
     {
-#if 0
-        auto animator = new QskStackBoxAnimator1( m_data->stackBox );
-        animator->setOrientation( m_data->tabBar->orientation() );
-#else
+        // When changing the skin, we have to update the animator. TODO ...
+
         auto animator = new QskStackBoxAnimator3( m_data->stackBox );
-#endif
         animator->setDuration( hint.duration );
         animator->setEasingCurve( hint.type );
         

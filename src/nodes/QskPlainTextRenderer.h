@@ -32,7 +32,7 @@ public:
         const QColor& textColor, Qsk::TextStyle, const QColor& styleColor );
 
     void updateNode(
-        const QQuickItem*, const QSizeF &size, const QString&, QSGNode* parentNode,
+        const QQuickItem*, const QSizeF& size, const QString&, QSGNode* parentNode,
         const QColor& textColor, Qsk::TextStyle, const QColor& styleColor );
 
     static void updateNodeColor( QSGNode* parentNode,

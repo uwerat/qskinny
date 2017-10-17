@@ -10,12 +10,47 @@
 
 #include "QskTextRenderer.h"
 #include "QskPlainTextRenderer.h"
-#include "QskBorderGeometry.h"
 #include "QskBoxOptions.h"
 #include "QskTextNode.h"
-#include "QskBoxNode.h"
 
 #include <QMatrix4x4>
+
+static inline qreal qskRadiusAt( const QskBoxShapeMetrics& shape, Qt::Edge edge )
+{
+    switch( edge )
+    {
+        case Qt::LeftEdge:
+        {
+            return qMax(
+                shape.radius( Qt::TopLeftCorner ).width(),
+                shape.radius( Qt::BottomLeftCorner ).width()
+            );
+        }
+        case Qt::TopEdge:
+        {
+            return qMax(
+                shape.radius( Qt::TopLeftCorner ).height(),
+                shape.radius( Qt::TopRightCorner ).height()
+            );
+        }
+        case Qt::RightEdge:
+        {
+            return qMax(
+                shape.radius( Qt::TopRightCorner ).width(),
+                shape.radius( Qt::BottomRightCorner ).width()
+            );
+        }
+        case Qt::BottomEdge:
+        {
+            return qMax(
+                shape.radius( Qt::BottomLeftCorner ).height(),
+                shape.radius( Qt::BottomRightCorner ).height()
+            );
+        }
+    }
+
+    return 0.0;
+}
 
 QSizeF QskSkinRenderer::textSize( const QskSkinnable* skinnable,
     const QString& text, const QskTextOptions& options,
@@ -161,152 +196,49 @@ void QskSkinRenderer::updateText( const QskSkinnable* skinnable,
     }
 }
 
-static inline QMarginsF qskRotatedMargins( QMarginsF margins, int count )
-{
-    count = count % 4;
-    if ( count < 0 )
-        count += 4;
-    
-    // counter clockwise
-
-    switch( count )
-    {
-        case 1:
-        {
-            return QMarginsF( margins.top(), margins.right(),
-                margins.bottom(), margins.left() );
-        }
-        case 2:
-        {
-            return QMarginsF( margins.right(), margins.bottom(),
-                margins.left(), margins.top() );
-        }
-        case 3:
-        {
-            return QMarginsF( margins.bottom(), margins.left(),
-                margins.top(), margins.right() );
-        }
-        default:
-            return margins;
-    }
-}
-
-static inline QskAspect::Edge qskRotateEdge( QskAspect::Edge edge, int count )
-{
-    edge = ( count > 0 ) ? edge << ( count % 4 )
-        : edge >> ( std::abs( count ) % 4 );
-
-    if ( edge < QskAspect::LeftEdge )
-        edge = edge << 4;
-
-    if ( edge > QskAspect::BottomEdge )
-        edge = edge >> 4;
-
-    return edge;
-}
-
-QMarginsF QskSkinRenderer::margins( const QskSkinnable* skinnable,
-    QskAspect::Subcontrol subControl, int rotation )
-{
-    const QMarginsF m = skinnable->marginsHint( subControl | QskAspect::Margin );
-    return qskRotatedMargins( m, rotation );
-}
-
-static inline qreal qskRadius( const QskSkinnable* skinnable,
-    const QRectF& rect, QskAspect::Aspect aspect )
-{
-    using namespace QskAspect;
-
-    qreal radius = skinnable->metric( aspect );
-    if ( radius <= 0.0 )
-        return 0.0;
-
-    const auto mode = skinnable->flagHint< Qt::SizeMode >(
-        aspect | SizeMode, Qt::AbsoluteSize );
-
-    if ( mode == Qt::RelativeSize )
-    {
-        // radius is a percentage
-
-        if ( radius > 100.0 )
-            radius = 100.0;
-
-        radius /= 100.0;
-
-        if ( aspect.boxPrimitive() & RadiusX )
-            radius *= 0.5 * rect.width();
-        else
-            radius *= 0.5 * rect.height();
-    }
-
-    return radius;
-}
-
 QskBoxOptions QskSkinRenderer::boxOptions( const QskSkinnable* skinnable,
-    const QRectF& rect, QskAspect::Subcontrol subControl, int rotation )
+    const QSizeF& size, QskAspect::Subcontrol subControl )
 {
     using namespace QskAspect;
 
     QskBoxOptions options; 
 
-    options.metrics.setWidths( qskRotatedMargins( 
-        skinnable->borderMetrics( subControl ), rotation ) );
-
-    options.shadows = qskRotatedMargins(
-        skinnable->marginsHint( subControl | Shadow ), rotation );
-
-    const auto leftEdge = qskRotateEdge( LeftEdge, rotation );
-    const auto topEdge = qskRotateEdge( TopEdge, rotation );
-    const auto rightEdge = qskRotateEdge( RightEdge, rotation );
-    const auto bottomEdge = qskRotateEdge( BottomEdge, rotation );
-
-    // Edge/Corner are the same bits
-    const auto topLeft = static_cast<Corner>( leftEdge );
-    const auto topRight = static_cast<Corner>( topEdge );
-    const auto bottomRight = static_cast<Corner>( rightEdge );
-    const auto bottomLeft = static_cast<Corner>( bottomEdge );
-
-    // corner radii
-    options.metrics.setRadius(
-        qskRadius( skinnable, rect, subControl | RadiusX | topLeft ),
-        qskRadius( skinnable, rect, subControl | RadiusY | topLeft ),
-        qskRadius( skinnable, rect, subControl | RadiusX | topRight ),
-        qskRadius( skinnable, rect, subControl | RadiusY | topRight ),
-        qskRadius( skinnable, rect, subControl | RadiusX | bottomLeft ),
-        qskRadius( skinnable, rect, subControl | RadiusY | bottomLeft ),
-        qskRadius( skinnable, rect, subControl | RadiusX | bottomRight ),
-        qskRadius( skinnable, rect, subControl | RadiusY | bottomRight ) );
-
-    // border colors
-    options.colors.setBorderColor(
-        skinnable->color( subControl | Border | leftEdge ),
-        skinnable->color( subControl | Border | topEdge ),
-        skinnable->color( subControl | Border | rightEdge ),
-        skinnable->color( subControl | Border | bottomEdge ) );
-
-    // background colors
-    options.colors.setFillColor(
-        skinnable->color( subControl | topLeft ),
-        skinnable->color( subControl | topRight ),
-        skinnable->color( subControl | bottomLeft ),
-        skinnable->color( subControl | bottomRight ) );
+    options.shape = skinnable->boxShapeHint( subControl | Shape ).toAbsolute( size );
+    options.border = skinnable->boxBorderHint( subControl | Border ).toAbsolute( size );
+    options.borderColors = skinnable->boxBorderColorHint( subControl | Border );
+    options.fillGradient = skinnable->gradientHint( subControl );
 
     return options;
 }
 
-void QskSkinRenderer::updateBox(
-    const QskSkinnable* skinnable, QskBoxNode* node,
-    const QRectF& rect, QskAspect::Subcontrol subControl, int rotation )
+QMarginsF QskSkinRenderer::paddingHint(
+    const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& border,
+    const QSizeF& size, bool inner )
 {
-    const auto options = QskSkinRenderer::boxOptions(
-        skinnable, rect, subControl, rotation );
+    const auto shapeAbsolute = shape.toAbsolute( size );
+    const auto borderAbsolute = border.toAbsolute( size );
 
-    // The shadow is inside the margins - in case of having
-    // no margins then outside the bounding rectangle.
-    // Is this really how we want it ???
+    QMarginsF padding(
+        qskRadiusAt( shapeAbsolute, Qt::LeftEdge ),
+        qskRadiusAt( shapeAbsolute, Qt::TopEdge ),
+        qskRadiusAt( shapeAbsolute, Qt::RightEdge ),
+        qskRadiusAt( shapeAbsolute, Qt::BottomEdge )
+    );
 
-    QRectF boxRect = rect.marginsRemoved( margins( skinnable, subControl, rotation ) );
-    boxRect = boxRect.marginsAdded( options.shadows );
+    // half of the border goes to the inner side
+    const QMarginsF b = borderAbsolute.widths() * 0.5;
 
-    node->setBoxData( boxRect, options );
+    /*
+        not correct for calculating the outer padding,
+        but to get things started. TODO ...
+     */
+
+    if ( inner )
+        padding -= b;
+    else
+        padding += b;
+
+    // sin 45° ceiled : 0.70710678;
+    constexpr double f = 1.0 - 0.70710678;
+    return f * padding;
 }

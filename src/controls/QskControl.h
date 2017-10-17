@@ -9,6 +9,7 @@
 #include "QskGlobal.h"
 #include "QskResizable.h"
 #include "QskSkinnable.h"
+#include "QskGradient.h"
 #include "QskAspect.h"
 
 #include <QQuickItem>
@@ -47,6 +48,8 @@ class QSK_EXPORT QskControl : public QQuickItem, public QskResizable, public Qsk
         WRITE setTabFence NOTIFY controlFlagsChanged FINAL )
 
     Q_PROPERTY( QMarginsF margins READ margins WRITE setMargins RESET resetMargins )
+    Q_PROPERTY( QskGradient background READ background
+        WRITE setBackground RESET resetBackground )
 
     Q_PROPERTY( QskSizePolicy sizePolicy READ sizePolicy WRITE setSizePolicy )
     Q_PROPERTY( QSizeF minimumSize READ minimumSize WRITE setMinimumSize )
@@ -91,6 +94,10 @@ public:
     QMarginsF margins() const;
 
     void setBackgroundColor( const QColor& );
+
+    void setBackground( const QskGradient& );
+    void resetBackground();
+    QskGradient background() const;
 
     QRectF geometry() const;
     QRectF contentsRect() const;

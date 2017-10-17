@@ -6,6 +6,7 @@
 #include "QskPushButton.h"
 #include "QskAspect.h"
 #include "QskCorner.h"
+#include "QskBoxShapeMetrics.h"
 #include "QskGraphic.h"
 #include "QskGraphicProvider.h"
 #include "QskTextOptions.h"
@@ -55,29 +56,33 @@ QskPushButton::~QskPushButton()
 
 void QskPushButton::setCorner( const QskCorner& corner )
 {
-    const QskCorner oldCorner = this->corner();
-    if ( corner == oldCorner )
-        return;
-
     using namespace QskAspect;
-    const Aspect aspect = Panel | AllCorners | Radius;
+    const Aspect aspect = Panel | Shape;
 
-    setMetric( aspect, corner.radius() );
-    setFlagHint( aspect | SizeMode, corner.mode() );
+    if ( corner.metrics() != boxShapeHint( aspect ) )
+    {
+        setBoxShapeHint( aspect, corner.metrics() );
 
-    update();
-    Q_EMIT cornerChanged();
+        update();
+        Q_EMIT cornerChanged();
+    }
 }
 
 QskCorner QskPushButton::corner() const
 {
     using namespace QskAspect;
+    const Aspect aspect = Panel | Shape;
 
-    const Aspect aspect = Panel | TopLeftCorner | RadiusX;
+    const auto shape = boxShapeHint( aspect );
 
-    const auto mode = flagHint< Qt::SizeMode >( aspect | SizeMode, Qt::AbsoluteSize );
+#if 1
+    QskCorner corner;
+    corner.setRadius( shape.radius( Qt::TopLeftCorner ).width() );
+    corner.setSizeMode( shape.sizeMode() );
+    corner.setAspectRatioMode( shape.aspectRatioMode() );
+#endif
 
-    return QskCorner( mode, metric( aspect ) );
+    return corner;
 }
 
 void QskPushButton::setFlat( bool on )

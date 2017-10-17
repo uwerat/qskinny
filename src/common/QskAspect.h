@@ -39,51 +39,9 @@ QSK_NAMESPACE( QskAspect )
     };
     QSK_ENUM( Type )
 
-    enum Edge : quint8
-    {
-        LeftEdge        = 1 << 0,
-        TopEdge         = 1 << 1,
-        RightEdge       = 1 << 2,
-        BottomEdge      = 1 << 3,
-
-        HorizontalEdges = TopEdge | BottomEdge,
-        VerticalEdges   = LeftEdge | RightEdge,
-
-        AllEdges        = HorizontalEdges | VerticalEdges
-    };
-    QSK_ENUM( Edge )
-
-    enum Corner : quint8
-    {
-        TopLeftCorner     = 1 << 0,
-        TopRightCorner    = 1 << 1,
-        BottomRightCorner = 1 << 2,
-        BottomLeftCorner  = 1 << 3,
-
-        LeftCorners       = TopLeftCorner | BottomLeftCorner,
-        RightCorners      = TopRightCorner | BottomRightCorner,
-        TopCorners        = TopLeftCorner | TopRightCorner,
-        BottomCorners     = BottomLeftCorner | BottomRightCorner,
-
-        AllCorners        = LeftCorners | RightCorners
-    };
-    QSK_ENUM( Corner )
-
-    enum BoxPrimitive : quint8
-    {
-        Background =     0,
-
-        RadiusX =        3,
-        RadiusY =        4,
-        Border =         5,
-
-        Radius  =        7, // RadiusX | RadiusY
-    };
-    QSK_ENUM( BoxPrimitive )
-
     enum FlagPrimitive : quint8
     {
-        NoFlag,
+        NoFlagPrimitive,
 
         Alignment,
         Style,
@@ -96,7 +54,7 @@ QSK_NAMESPACE( QskAspect )
 
     enum MetricPrimitive : quint8
     {
-        NoMetric,
+        NoMetricPrimitive,
 
         Size,
         Position,
@@ -109,19 +67,32 @@ QSK_NAMESPACE( QskAspect )
         Padding,
         Shadow,
 
-        Spacing
+        Spacing,
+
+        Shape,
+        Border
     };
     QSK_ENUM( MetricPrimitive )
 
+    enum { LastType = Color };   // max. value for all types
+    enum { LastPrimitive = 16 }; // max. value for all sort of primitives
+
     enum ColorPrimitive : quint8
     {
-        NoColor,
+        NoColorPrimitive,
 
         TextColor,
         StyleColor,
         LinkColor
     };
     QSK_ENUM( ColorPrimitive )
+
+    enum Placement : quint8
+    {
+        Preserved = 0,
+        Transposed = 1
+    };
+    QSK_ENUM ( Placement )
 
     enum State : quint16
     {
@@ -139,8 +110,6 @@ QSK_NAMESPACE( QskAspect )
     extern const QMetaObject staticMetaObject;
 }
 
-QSK_DECLARE_OPERATORS_FOR_FLAGS( QskAspect::Edge )
-QSK_DECLARE_OPERATORS_FOR_FLAGS( QskAspect::Corner )
 QSK_DECLARE_OPERATORS_FOR_FLAGS( QskAspect::State )
 
 #undef QSK_NAMESPACE
@@ -154,7 +123,7 @@ namespace QskAspect
         constexpr Aspect();
         constexpr Aspect( Subcontrol );
         constexpr Aspect( Type );
-        constexpr Aspect( BoxPrimitive );
+        constexpr Aspect( Placement );
 
         constexpr Aspect( const Aspect& ) = default;
         constexpr Aspect( Aspect&& ) = default;
@@ -168,12 +137,10 @@ namespace QskAspect
 
         constexpr Aspect operator|( Subcontrol ) const;
         constexpr Aspect operator|( Type ) const;
-        constexpr Aspect operator|( BoxPrimitive ) const;
-        constexpr Aspect operator|( Edge ) const;
-        constexpr Aspect operator|( Corner ) const;
         constexpr Aspect operator|( FlagPrimitive ) const;
         constexpr Aspect operator|( MetricPrimitive ) const;
         constexpr Aspect operator|( ColorPrimitive ) const;
+        constexpr Aspect operator|( Placement ) const;
         constexpr Aspect operator|( State ) const;
 
         constexpr quint64 value() const;
@@ -187,6 +154,9 @@ namespace QskAspect
         Type type() const;
         void setType( Type );
 
+        Placement placement() const;
+        void setPlacement( Placement );
+
         State state() const;
         State topState() const;
 
@@ -194,77 +164,68 @@ namespace QskAspect
         void clearState( State state );
         void clearStates();
 
-        bool isBoxPrimitive() const;
-        BoxPrimitive boxPrimitive() const;
-        void setBoxPrimitive( BoxPrimitive primitive );
-
-        Edge edge() const;
-        void setEdge( Edge edge );
-        void clearEdge();
-
-        Corner corner() const;
-        void setCorner( Corner corner );
-
         FlagPrimitive flagPrimitive() const;
         ColorPrimitive colorPrimitive() const;
         MetricPrimitive metricPrimitive() const;
 
+        void setPrimitive( Type, int primitive );
+        int primitive() const;
+        void clearPrimitive();
+
         const char* toPrintable() const;
 
     private:
-        constexpr Aspect( Subcontrol, Type, BoxPrimitive );
+        constexpr Aspect( Subcontrol, Type, Placement );
         constexpr Aspect( uint subControl, uint type, bool isAnimator,
-            uint primitive, bool isBoxPrimitive, uint states );
+            uint primitive, uint placement, uint states );
 
         uint m_subControl : 12;
 
         uint m_type : 3;
         bool m_isAnimator : 1;
 
+        uint m_primitive : 7;
+        uint m_placement : 1;
         uint m_reserved1 : 8;
 
-        uint m_primitive : 7;
-        bool m_isBoxPrimitive : 1;
-
         uint m_states : 16;
-
         uint m_reserved2 : 16;
 
     } Q_PACKED;
 
     inline constexpr Aspect::Aspect():
-        Aspect( Control, Flag, Background )
+        Aspect( Control, Flag, Preserved )
     {
     }
 
     inline constexpr Aspect::Aspect( Subcontrol subControl ):
-        Aspect( subControl, Flag, Background )
+        Aspect( subControl, Flag, Preserved )
     {
     }
 
     inline constexpr Aspect::Aspect( Type type ):
-        Aspect( Control, type, Background )
+        Aspect( Control, type, Preserved )
     {
     }
 
-    inline constexpr Aspect::Aspect( BoxPrimitive primitive ):
-        Aspect( Control, Flag, primitive )
+    inline constexpr Aspect::Aspect( Placement placement ):
+        Aspect( Control, Flag, placement )
     {
     }
 
-    inline constexpr Aspect::Aspect( Subcontrol subControl, Type type, BoxPrimitive primitive ):
-        Aspect( subControl, type, false, primitive, true, NoState )
+    inline constexpr Aspect::Aspect( Subcontrol subControl, Type type, Placement placement ):
+        Aspect( subControl, type, false, 0, placement, NoState )
     {
     }
 
     inline constexpr Aspect::Aspect( uint subControl, uint type, bool isAnimator,
-            uint primitive, bool isBoxPrimitive, uint states ):
+            uint primitive, uint placement, uint states ):
         m_subControl( subControl ),
         m_type( type ),
         m_isAnimator( isAnimator ),
-        m_reserved1( 0 ),
         m_primitive( primitive ),
-        m_isBoxPrimitive( isBoxPrimitive ),
+        m_placement( placement ),
+        m_reserved1( 0 ),
         m_states( states ),
         m_reserved2( 0 )
     {
@@ -288,36 +249,19 @@ namespace QskAspect
     inline constexpr Aspect Aspect::operator|( Subcontrol subControl ) const
     {
         return Aspect( subControl, m_type, m_isAnimator,
-            m_primitive, m_isBoxPrimitive, m_states );
+            m_primitive, m_placement, m_states );
     }
 
     inline constexpr Aspect Aspect::operator|( Type type ) const
     {
         return Aspect( m_subControl, type, m_isAnimator,
-            m_primitive, m_isBoxPrimitive, m_states );
-    }
-
-    inline constexpr Aspect Aspect::operator|( BoxPrimitive primitive ) const
-    {
-        return Aspect( m_subControl, m_type, m_isAnimator,
-            ( m_primitive & ~0x7 ) | primitive, true, m_states );
-    }
-
-    inline constexpr Aspect Aspect::operator|( Edge edge ) const
-    {
-        return Aspect( m_subControl, m_type, m_isAnimator,
-            m_primitive | ( edge << 3 ), true, m_states );
-    }
-
-    inline constexpr Aspect Aspect::operator|( Corner corner ) const
-    {
-        return operator|( static_cast< Edge >( corner ) );
+            m_primitive, m_placement,  m_states );
     }
 
     inline constexpr Aspect Aspect::operator|( FlagPrimitive primitive ) const
     {
         return Aspect( m_subControl, m_type, m_isAnimator,
-            primitive, false, m_states );
+            primitive, m_placement, m_states );
     }
 
     inline constexpr Aspect Aspect::operator|( MetricPrimitive primitive ) const
@@ -330,10 +274,16 @@ namespace QskAspect
         return operator|( static_cast< FlagPrimitive >( primitive ) );
     }
 
+    inline constexpr Aspect Aspect::operator|( Placement placement ) const
+    {
+        return Aspect( m_subControl, m_type, m_isAnimator,
+            m_primitive, placement, m_states );
+    }
+
     inline constexpr Aspect Aspect::operator|( State state ) const
     {
         return Aspect( m_subControl, m_type, m_isAnimator,
-            m_primitive, m_isBoxPrimitive, m_states | state );
+            m_primitive, m_placement, m_states | state );
     }
 
     inline constexpr quint64 Aspect::value() const
@@ -391,89 +341,59 @@ namespace QskAspect
         m_states = 0;
     }
 
-    inline bool Aspect::isBoxPrimitive() const
-    {
-        return m_isBoxPrimitive;
-    }
-
-    inline BoxPrimitive Aspect::boxPrimitive() const
-    {
-        return static_cast< BoxPrimitive >( m_primitive & 0x7 );
-    }
-
-    inline void Aspect::setBoxPrimitive( BoxPrimitive primitive )
-    {
-        m_isBoxPrimitive = true;
-        m_primitive = primitive;
-    }
-
-    inline Edge Aspect::edge() const
-    {
-        if ( m_isBoxPrimitive )
-            return static_cast< Edge >( m_primitive >> 3 );
-
-        return static_cast< Edge >( 0 );
-    }
-
-    inline void Aspect::setEdge( Edge edge )
-    {
-        m_isBoxPrimitive = true;
-        m_primitive |= ( edge << 3 );
-    }
-
-    inline void Aspect::clearEdge()
-    {
-        if ( m_isBoxPrimitive )
-            m_primitive &= ~( AllEdges << 3 );
-    }
-
-    inline Corner Aspect::corner() const
-    {
-        return static_cast< Corner >( edge() );
-    }
-
-    inline void Aspect::setCorner( Corner corner )
-    {
-        setEdge( static_cast< Edge >( corner ) );
-    }
-
     inline FlagPrimitive Aspect::flagPrimitive() const
     {
-        if ( m_isBoxPrimitive || ( m_type != Flag ) )
-            return NoFlag;
+        if ( m_type != Flag )
+            return NoFlagPrimitive;
 
         return static_cast< FlagPrimitive >( m_primitive );
     }
 
     inline ColorPrimitive Aspect::colorPrimitive() const
     {
-        if ( m_isBoxPrimitive || ( m_type != Color ) )
-            return NoColor;
+        if ( m_type != Color )
+            return NoColorPrimitive;
 
         return static_cast< ColorPrimitive >( m_primitive );
     }
 
     inline MetricPrimitive Aspect::metricPrimitive() const
     {
-        if ( m_isBoxPrimitive || ( m_type != Metric ) )
-            return NoMetric;
+        if ( m_type != Metric )
+            return NoMetricPrimitive;
 
         return static_cast< MetricPrimitive >( m_primitive );
+    }
+
+    inline int Aspect::primitive() const
+    {
+        return m_primitive;
+    }
+
+    inline void Aspect::setPrimitive( Type type, int primitive )
+    {
+        m_type = type;
+        m_primitive = primitive;
+    }
+
+    inline void Aspect::clearPrimitive()
+    {
+        m_primitive = 0;
+    }
+
+    inline Placement Aspect::placement() const
+    {
+        return static_cast< Placement >( m_placement );
+    }
+
+    inline void Aspect::setPlacement( Placement placement )
+    {
+        m_placement = placement;
     }
 
     inline constexpr Aspect operator|( State state, const Aspect& aspect )
     {
         return aspect | state;
-    }
-
-    inline constexpr Aspect operator|( Edge edge, const Aspect& aspect )
-    {
-        return aspect | edge;
-    }
-
-    inline constexpr Aspect operator|( Corner corner, const Aspect& aspect )
-    {
-        return aspect | corner;
     }
 
     inline constexpr Aspect operator|( Subcontrol subControl, const Aspect& aspect )
@@ -486,9 +406,9 @@ namespace QskAspect
         return aspect | type;
     }
 
-    inline constexpr Aspect operator|( BoxPrimitive primitive, const Aspect& aspect )
+    inline constexpr Aspect operator|( Placement placement, const Aspect& aspect )
     {
-        return aspect | primitive;
+        return aspect | placement;
     }
 
     inline constexpr Aspect operator|( Subcontrol subControl, Type type )
@@ -506,39 +426,19 @@ namespace QskAspect
         return Aspect( subControl ) | state;
     }
 
+   inline constexpr Aspect operator|( Type type, Placement placement )
+    {
+        return Aspect( type ) | placement;
+    }
+
+    inline constexpr Aspect operator|( Placement placement, Type type )
+    {
+        return type | placement;
+    }
+
     inline constexpr Aspect operator|( State state, Subcontrol subControl )
     {
         return subControl | state;
-    }
-
-    inline constexpr Aspect operator|( Type type, BoxPrimitive primitive )
-    {
-        return Aspect( type ) | primitive;
-    }
-
-    inline constexpr Aspect operator|( BoxPrimitive primitive, Type type )
-    {
-        return type | primitive;
-    }
-
-    inline constexpr Aspect operator|( BoxPrimitive primitive, Edge edge )
-    {
-        return Aspect( primitive ) | edge;
-    }
-
-    inline constexpr Aspect operator|( Edge edge, BoxPrimitive primitive )
-    {
-        return primitive | edge;
-    }
-
-    inline constexpr Aspect operator|( BoxPrimitive primitive, Corner corner )
-    {
-        return primitive | static_cast< Edge >( corner );
-    }
-
-    inline constexpr Aspect operator|( Corner corner, BoxPrimitive primitive )
-    {
-        return primitive | corner;
     }
 
     inline constexpr Aspect operator|( Subcontrol subControl, FlagPrimitive primitive )
@@ -571,34 +471,14 @@ namespace QskAspect
         return subControl | primitive;
     }
 
-    inline constexpr Aspect operator|( Subcontrol subControl, BoxPrimitive primitive )
+    inline constexpr Aspect operator|( Subcontrol subControl, Placement placement )
     {
-        return Aspect( subControl ) | primitive;
+        return Aspect( subControl ) | placement;
     }
 
-    inline constexpr Aspect operator|( BoxPrimitive primitive, Subcontrol subControl )
+    inline constexpr Aspect operator|( Placement placement, Subcontrol subControl )
     {
-        return subControl | primitive;
-    }
-
-    inline constexpr Aspect operator|( Subcontrol subControl, Edge edge )
-    {
-        return Aspect( subControl ) | edge;
-    }
-
-    inline constexpr Aspect operator|( Edge edge, Subcontrol subControl )
-    {
-        return subControl | edge;
-    }
-
-    inline constexpr Aspect operator|( Subcontrol subControl, Corner corner )
-    {
-        return Aspect( subControl ) | corner;
-    }
-
-    inline constexpr Aspect operator|( Corner corner, Subcontrol subControl )
-    {
-        return subControl | corner;
+        return subControl | placement;
     }
 
     QSK_EXPORT State registerState( const QMetaObject*, State, const char* );
@@ -628,13 +508,13 @@ class QDebug;
 
 QSK_EXPORT QDebug operator<<( QDebug, const QskAspect::Aspect& );
 QSK_EXPORT QDebug operator<<( QDebug, const QskAspect::Type& );
-QSK_EXPORT QDebug operator<<( QDebug, const QskAspect::Edge& );
-QSK_EXPORT QDebug operator<<( QDebug, const QskAspect::Corner& );
-QSK_EXPORT QDebug operator<<( QDebug, const QskAspect::BoxPrimitive& );
+QSK_EXPORT QDebug operator<<( QDebug, const QskAspect::Subcontrol& );
+
 QSK_EXPORT QDebug operator<<( QDebug, const QskAspect::FlagPrimitive& );
 QSK_EXPORT QDebug operator<<( QDebug, const QskAspect::ColorPrimitive& );
 QSK_EXPORT QDebug operator<<( QDebug, const QskAspect::MetricPrimitive& );
-QSK_EXPORT QDebug operator<<( QDebug, const QskAspect::Subcontrol& );
+
+QSK_EXPORT QDebug operator<<( QDebug, const QskAspect::Placement& );
 QSK_EXPORT QDebug operator<<( QDebug, const QskAspect::State& );
 
 QSK_EXPORT void qskDebugState( QDebug, const QMetaObject*, QskAspect::State );

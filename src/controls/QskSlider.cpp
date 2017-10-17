@@ -44,6 +44,7 @@ QskSlider::QskSlider( Qt::Orientation orientation, QQuickItem* parent ):
     Inherited ( parent ),
     m_data( new PrivateData( orientation ) )
 {
+    setAcceptHoverEvents( true );
     setActiveFocusOnTab( true );
 
     if ( orientation == Qt::Horizontal )
@@ -88,6 +89,12 @@ void QskSlider::setOrientation( Qt::Orientation orientation )
 Qt::Orientation QskSlider::orientation() const
 {
     return m_data->orientation;
+}
+
+QskAspect::Placement QskSlider::effectivePlacement() const
+{
+    using namespace QskAspect;
+    return ( m_data->orientation == Qt::Horizontal ) ? Preserved : Transposed;
 }
 
 void QskSlider::setTracking( bool on )
@@ -221,16 +228,16 @@ void QskSlider::updatePosition()
 
     const Aspect aspect = QskSlider::Handle | Position | Metric;
 
-    const QskAnimationHint animation = this->animation( aspect | skinState() );
+    const QskAnimationHint hint = animation( aspect | skinState() );
 
     const qreal pos = position();
 
-    if ( animation.duration > 0 )
+    if ( hint.duration > 0 )
     {
         const qreal oldPos = metric( aspect );
         setMetric( aspect, pos );
 
-        startTransition( aspect, animation, oldPos, pos );
+        startTransition( aspect, hint, oldPos, pos );
     }
     else
     {

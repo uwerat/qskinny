@@ -46,6 +46,8 @@ public:
 
     QskMargins interpolated( const QskMargins&, qreal progress ) const noexcept;
 
+    bool isExpanding() const;
+
     static QVariant interpolate( const QskMargins&,
         const QskMargins&, qreal progress ) noexcept;
 };
@@ -79,6 +81,11 @@ constexpr inline QskMargins::QskMargins( const QMargins& margins ) noexcept:
 inline void QskMargins::setMargins( qreal margin ) noexcept
 {
     *this = QskMargins( margin );
+}
+
+inline bool QskMargins::isExpanding() const
+{
+    return ( left() > 0 ) || ( right() > 0 ) || ( top() > 0 ) || ( right() > 0 );
 }
 
 inline void QskMargins::setMargins( qreal horizontal, qreal vertical ) noexcept

@@ -36,6 +36,7 @@ public:
     QskTextOptions textOptions() const;
 
     virtual QSizeF contentsSizeHint() const override;
+    virtual QskAspect::Placement effectivePlacement() const override;
 
     QskTabBar* tabBar() const;
 

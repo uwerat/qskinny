@@ -10,7 +10,6 @@
 #include "QskSkinlet.h"
 
 class QskPopup;
-class QskGradient;
 
 class QSK_EXPORT QskPopupSkinlet : public QskSkinlet
 {
@@ -36,7 +35,6 @@ protected:
 
 private:
     QSGNode* updateOverlayNode( const QskPopup*, QSGNode* ) const;
-    QskGradient overlayGradient( const QskPopup* ) const;
 };
 
 #endif

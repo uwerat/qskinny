@@ -16,8 +16,6 @@ public:
     QSK_SUBCONTROLS( Scale, Decoration )
 
     Slider( QQuickItem* parent = nullptr );
-    virtual ~Slider();
-
     virtual QSizeF contentsSizeHint() const override;
 };
 

@@ -27,6 +27,10 @@ class QSGNode;
 class QskControl;
 class QskAnimationHint;
 class QskColorFilter;
+class QskBoxShapeMetrics;
+class QskBoxBorderMetrics;
+class QskBoxBorderColors;
+class QskGradient;
 
 class QskSkin;
 class QskSkinlet;
@@ -79,12 +83,22 @@ public:
     void setMarginsHint( QskAspect::Aspect, const QMarginsF& );
     QMarginsF marginsHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
+    void setGradientHint( QskAspect::Aspect, const QskGradient& );
+    QskGradient gradientHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
+
+    void setBoxShapeHint( QskAspect::Aspect, const QskBoxShapeMetrics& );
+    QskBoxShapeMetrics boxShapeHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
+
+    void setBoxBorderHint( QskAspect::Aspect, const QskBoxBorderMetrics& );
+    QskBoxBorderMetrics boxBorderHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
+
+    void setBoxBorderColorHint( QskAspect::Aspect, const QskBoxBorderColors& );
+    QskBoxBorderColors boxBorderColorHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
+
     void setFlagHint( QskAspect::Aspect, int flag );
     int flagHint( QskAspect::Aspect ) const;
 
     template< typename T > T flagHint( QskAspect::Aspect, T = T() ) const;
-
-    QMarginsF borderMetrics( QskAspect::Subcontrol ) const;
 
     void setFontRole( QskAspect::Aspect, int role );
     int fontRole( QskAspect::Aspect ) const;
@@ -99,7 +113,11 @@ public:
     void setAnimation( QskAspect::Aspect, QskAnimationHint );
     QskAnimationHint animation( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
+    QskAnimationHint effectiveAnimation( QskAspect::Type, QskAspect::Subcontrol,
+        QskSkinHintStatus* status = nullptr ) const;
+
     QVariant effectiveHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
+    virtual QskAspect::Placement effectivePlacement() const;
 
     QskSkinHintStatus hintStatus( QskAspect::Aspect ) const;
 
@@ -142,7 +160,6 @@ protected:
     const QskSkinHintTable &hintTable() const;
 
 private:
-    void startTransition( QskAspect::Aspect, QskAspect::State, QskAspect::State );
     QVariant animatedValue( QskAspect::Aspect, QskSkinHintStatus* ) const;
     const QVariant& storedHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
@@ -158,6 +175,11 @@ inline T QskSkinnable::flagHint( QskAspect::Aspect aspect, T defaultValue ) cons
         return static_cast< T >( hint.value< int >() );
 
     return defaultValue;
+}
+
+inline QskAspect::Placement QskSkinnable::effectivePlacement() const
+{
+    return QskAspect::Preserved;
 }
 
 #endif

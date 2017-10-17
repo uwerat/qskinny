@@ -36,6 +36,7 @@ public:
     qreal thickness() const;
 
     virtual QSizeF contentsSizeHint() const override;
+    virtual QskAspect::Placement effectivePlacement() const override;
 
 Q_SIGNALS:
     void orientationChanged( Qt::Orientation );

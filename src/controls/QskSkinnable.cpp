@@ -16,16 +16,18 @@
 #include "QskControl.h"
 #include "QskColorFilter.h"
 #include "QskSkinTransition.h"
+#include "QskSkinRenderer.h"
 
 #include <QFont>
 #include <QElapsedTimer>
 #include <QMarginsF>
-#include <QtAlgorithms>
 
 #include <unordered_map>
 #include <set>
 
-#define DEBUG_LOOKUP 0
+#define DEBUG_MAP 0
+#define DEBUG_ANIMATOR 0
+#define DEBUG_STATE 0
 
 static inline bool qskIsControl( const QskSkinnable* skinnable )
 {
@@ -43,100 +45,71 @@ static inline bool qskIsControl( const QskSkinnable* skinnable )
 #endif
 }
 
-static inline const QVariant& qskResolvedHint( QskAspect::Aspect aspect,
-    const std::unordered_map< QskAspect::Aspect, QVariant >* controlHints,
-    const std::unordered_map< QskAspect::Aspect, QVariant >* skinHints,
-    QskSkinHintStatus* status )
+static inline bool qskCompareResolvedStates(
+    QskAspect::Aspect& aspect1, QskAspect::Aspect& aspect2,
+    const QskSkinHintTable& table )
 {
-#if DEBUG_LOOKUP
-    static int counter = 0;
-#endif
+    if ( !table.hasStates() )
+        return false;
 
-    if ( controlHints )
+    const QskAspect::Aspect a1 = aspect1;
+    const QskAspect::Aspect a2 = aspect2;
+
+    Q_FOREVER
     {
-#if DEBUG_LOOKUP
-        qDebug() << aspect << ++counter;
-#endif
+        const auto s1 = aspect1.topState();
+        const auto s2 = aspect2.topState();
 
-        auto it = controlHints->find( aspect );
-        if ( it != controlHints->cend() )
+        if ( s1 > s2 )
         {
-            if ( status )
+            if ( table.hasHint( aspect1 ) )
+                return false;
+
+            aspect1.clearState( s1 );
+        }
+        else if ( s2 > s1 )
+        {
+            if ( table.hasHint( aspect2 ) )
+                return false;
+
+            aspect2.clearState( s2 );
+        }
+        else
+        {
+            if ( aspect1 == aspect2 )
             {
-                status->source = QskSkinHintStatus::Skinnable;
-                status->aspect = aspect;
+                if ( table.hasHint( aspect1 ) )
+                    return true;
+
+                if ( s1 == 0 )
+                {
+                    if ( aspect1.placement() == 0 )
+                        return true;
+
+                    // clear the placement bit and restart with the initial state
+                    aspect1 = a1;
+                    aspect1.setPlacement( static_cast< QskAspect::Placement>( 0 ) );
+
+                    aspect2 = a2;
+                    aspect2.setPlacement( static_cast< QskAspect::Placement>( 0 ) );
+                }
+            }
+            else
+            {
+                if ( table.hasHint( aspect1 ) || table.hasHint( aspect2 ) )
+                    return false;
             }
 
-            return it->second;
+            aspect1.clearState( s1 );
+            aspect2.clearState( s2 );
         }
     }
-
-    if ( skinHints )
-    {
-#if DEBUG_LOOKUP
-        qDebug() << aspect << ++counter;
-#endif
-
-        auto it = skinHints->find( aspect );
-        if ( it != skinHints->cend() )
-        {
-            if ( status )
-            {
-                status->source = QskSkinHintStatus::Skin;
-                status->aspect = aspect;
-            }
-
-            return it->second;
-        }
-    }
-
-    const auto topState = aspect.topState();
-
-    if ( aspect.isBoxPrimitive() )
-    {
-        // progressively strip state flags
-        if ( topState )
-        {
-            aspect.clearState( topState );
-            return qskResolvedHint( aspect, controlHints, skinHints, status );
-        }
-
-        // fall back from specific edge to no edge
-        if ( qPopulationCount( static_cast< quint8 >( aspect.edge() ) ) == 1 )
-        {
-            aspect.clearEdge();
-            return qskResolvedHint( aspect, controlHints, skinHints, status );
-        }
-    }
-    else if ( topState ) // Fundamental elements (no edges/corners)
-    {
-        aspect.clearState( topState );
-        return qskResolvedHint( aspect, controlHints, skinHints, status );
-    }
-
-    if ( aspect.subControl() != QskAspect::Control )
-    {
-        // trying to resolve from the skin default settings
-        aspect.setSubControl( QskAspect::Control );
-        return qskResolvedHint( aspect, nullptr, skinHints, status );
-    }
-
-    // Nothing left to try...
-    if ( status )
-    {
-        status->source = QskSkinHintStatus::NoSource;
-        status->aspect = QskAspect::Aspect();
-    }
-
-    static QVariant hintInvalid;
-    return hintInvalid;
 }
 
 class QskSkinnable::PrivateData
 {
 public:
     PrivateData():
-        hintTable( false ),
         skinlet( nullptr ),
         skinState( QskAspect::NoState ),
         hasLocalSkinlet( false )
@@ -150,13 +123,11 @@ public:
     }
 
     QskSkinHintTable hintTable;
-
     QskHintAnimatorTable animators;
 
     const QskSkinlet* skinlet;
 
     QMetaObject::Connection connection;
-
     QskAspect::State skinState;
     bool hasLocalSkinlet : 1;
 };
@@ -232,7 +203,7 @@ const QskSkinHintTable &QskSkinnable::hintTable() const
 
 void QskSkinnable::setFlagHint( QskAspect::Aspect aspect, int flag )
 {
-    m_data->hintTable.setSkinHint( aspect, QVariant( flag ) );
+    m_data->hintTable.setHint( aspect, QVariant( flag ) );
 }
 
 int QskSkinnable::flagHint( QskAspect::Aspect aspect ) const
@@ -281,17 +252,54 @@ QMarginsF QskSkinnable::marginsHint(
     return effectiveHint( aspect | QskAspect::Metric, status ).value< QskMargins >();
 }
 
-QMarginsF QskSkinnable::borderMetrics( QskAspect::Subcontrol subControl ) const
+void QskSkinnable::setGradientHint(
+    QskAspect::Aspect aspect, const QskGradient& gradient )
+{
+    m_data->hintTable.setGradient( aspect, gradient );
+}
+
+QskGradient QskSkinnable::gradientHint(
+    QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
+{
+    return effectiveHint( aspect | QskAspect::Color, status ).value< QskGradient >();
+}
+
+void QskSkinnable::setBoxShapeHint(
+    QskAspect::Aspect aspect, const QskBoxShapeMetrics& shape )
+{
+    m_data->hintTable.setBoxShape( aspect, shape );
+}
+
+QskBoxShapeMetrics QskSkinnable::boxShapeHint(
+    QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
+{
+    return effectiveHint( aspect | QskAspect::Metric, status ).value< QskBoxShapeMetrics >();
+}
+
+void QskSkinnable::setBoxBorderHint(
+    QskAspect::Aspect aspect, const QskBoxBorderMetrics& border )
+{
+    m_data->hintTable.setBoxBorder( aspect, border );
+}
+
+QskBoxBorderMetrics QskSkinnable::boxBorderHint(
+    QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
     using namespace QskAspect;
+    return effectiveHint( aspect | Metric, status ).value< QskBoxBorderMetrics >();
+}
 
-    const Aspect aspect = subControl | Border;
+void QskSkinnable::setBoxBorderColorHint(
+    QskAspect::Aspect aspect, const QskBoxBorderColors& colors )
+{
+    m_data->hintTable.setBoxBorderColors( aspect, colors );
+}
 
-    return QMarginsF(
-        metric( aspect | LeftEdge ),
-        metric( aspect | TopEdge ),
-        metric( aspect | RightEdge ),
-        metric( aspect | BottomEdge ) );
+QskBoxBorderColors QskSkinnable::boxBorderColorHint(
+    QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
+{   
+    using namespace QskAspect;
+    return effectiveHint( aspect | Color, status ).value< QskBoxBorderColors >();
 }
 
 void QskSkinnable::setFontRole( QskAspect::Aspect aspect, int role )
@@ -323,6 +331,7 @@ QskColorFilter QskSkinnable::effectiveGraphicFilter(
     QskAspect::Aspect aspect ) const
 {
     aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
+    aspect.setPlacement( effectivePlacement() );
     aspect = aspect | QskAspect::GraphicRole;
 
 #if 1
@@ -361,10 +370,57 @@ QskAnimationHint QskSkinnable::animation(
     return effectiveHint( aspect, status ).value< QskAnimationHint >();
 }
 
+QskAnimationHint QskSkinnable::effectiveAnimation(
+    QskAspect::Type type, QskAspect::Subcontrol subControl, 
+    QskSkinHintStatus* status ) const
+{
+    QskAspect::Aspect aspect = subControl | type;
+    aspect.setAnimator( true );
+
+    QskAnimationHint hint;
+
+    const auto a = m_data->hintTable.resolvedAnimator( aspect, hint );
+    if ( a.isAnimator() )
+    {
+        if ( status )
+        {
+            status->source = QskSkinHintStatus::Skinnable;
+            status->aspect = a;
+        }
+
+        return hint;
+    }
+
+    const QskSkin* skin = effectiveSkin();
+    if ( skin )
+    {
+        const auto a = skin->hintTable().resolvedAnimator( aspect, hint );
+        if ( a.isAnimator() )
+        {
+            if ( status )
+            {
+                status->source = QskSkinHintStatus::Skin;
+                status->aspect = a;
+            }
+
+            return hint;
+        }
+    }
+
+    if ( status )
+    {
+        status->source = QskSkinHintStatus::NoSource;
+        status->aspect = QskAspect::Aspect();
+    }
+
+    return hint;
+}
+
 QVariant QskSkinnable::effectiveHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
     aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
+    aspect.setPlacement( effectivePlacement() );
 
     if ( aspect.isAnimator() )
         return storedHint( aspect, status );
@@ -406,7 +462,8 @@ QVariant QskSkinnable::animatedValue(
 
     if ( !v.isValid() )
     {
-        if ( QskSkinTransition::isRunning() )
+        if ( QskSkinTransition::isRunning()
+            && !m_data->hintTable.hasHint( aspect ) )
         {
             /*
                Next we check for values from the skin. Those
@@ -440,13 +497,78 @@ QVariant QskSkinnable::animatedValue(
 const QVariant& QskSkinnable::storedHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
-    const auto& localHints = m_data->hintTable.hints();
-    const QskSkin* skin = effectiveSkin();
+    QskAspect::Aspect resolvedAspect;
 
-    return qskResolvedHint( aspect, 
-        !localHints.empty() ? &localHints : nullptr,
-        skin ? &skin->hintTable().hints() : nullptr,
-        status );
+    const auto& localTable = m_data->hintTable;
+    if ( localTable.hasHints() )
+    {
+        QskAspect::Aspect a = aspect;
+
+        if ( !localTable.hasStates() )
+        {
+            // we don't need to clear the state bits stepwise
+            a.clearStates();
+        }
+
+        if ( const QVariant* value = localTable.resolvedHint( a, &resolvedAspect ) )
+        {
+            if ( status )
+            {
+                status->source = QskSkinHintStatus::Skinnable;
+                status->aspect = resolvedAspect;
+            }
+            return *value;
+        }
+    }
+
+    // next we try the hints from the skin
+
+    const auto& skinTable = effectiveSkin()->hintTable();
+    if ( skinTable.hasHints() )
+    {
+        QskAspect::Aspect a = aspect;
+
+        const QVariant* value = skinTable.resolvedHint( a, &resolvedAspect );
+        if ( value )
+        {
+            if ( status )
+            {
+                status->source = QskSkinHintStatus::Skin;
+                status->aspect = resolvedAspect;
+            }   
+
+            return *value;
+        }
+
+        if ( aspect.subControl() != QskAspect::Control )
+        {
+            // trying to resolve something the skin default settings
+
+            aspect.setSubControl( QskAspect::Control );
+            aspect.clearStates();
+
+            value = skinTable.resolvedHint( aspect, &resolvedAspect );
+            if ( value )
+            {
+                if ( status )
+                {
+                    status->source = QskSkinHintStatus::Skin;
+                    status->aspect = resolvedAspect;
+                }
+
+                return *value;
+            }
+        }
+    }
+
+    if ( status )
+    {
+        status->source = QskSkinHintStatus::NoSource;
+        status->aspect = QskAspect::Aspect();
+    }
+
+    static QVariant hintInvalid;
+    return hintInvalid;
 }
 
 QskAspect::State QskSkinnable::skinState() const
@@ -476,149 +598,30 @@ const char* QskSkinnable::skinStateAsPrintable( QskAspect::State state ) const
     return bytes[counter].constData();
 }
 
-static inline qreal qskMax( qreal v1, qreal v2, qreal v3 )
-{
-    return std::max( std::max( v1, v2 ), v3 );
-}
-
-static inline qreal qskPaddingInner( const QskSkinnable* skinnable,
-    QskAspect::Aspect aspect, qreal length )
-{
-    qreal radius = skinnable->metric( aspect );
-    if ( radius <= 0.0 )
-        return 0.0;
-
-    const auto mode = skinnable->flagHint< Qt::SizeMode >(
-        aspect | QskAspect::SizeMode, Qt::AbsoluteSize );
-
-    if ( mode == Qt::RelativeSize )
-    {
-        if ( radius > 100.0 )
-            radius = 100.0;
-
-        radius *= 0.5 * length / 100.0;
-    }
-
-    constexpr double sin45 = 0.70710678; // sin 45° ceiled
-    return radius * ( 1.0 - sin45 );
-}
-
-static inline qreal qskPaddingOuter( const QskSkinnable* skinnable,
-    QskAspect::Aspect aspect, qreal length )
-{
-    qreal radius = skinnable->metric( aspect );
-    if ( radius <= 0.0 )
-        return 0.0;
-
-    const auto mode = skinnable->flagHint< Qt::SizeMode >(
-        aspect | QskAspect::SizeMode, Qt::AbsoluteSize );
-
-    constexpr double sin45 = 0.70710677; // sin 45° floored
-
-    qreal padding;
-    if ( mode == Qt::RelativeSize )
-    {
-        if ( radius > 100.0 )
-            radius = 100.0;
-#if 1
-        // not correct as the radius is relative to the outer length
-        // expanded at both ends. TODO ...
-
-        const qreal t = 0.5 * radius / 100.0 * ( 1.0 - sin45 );
-        padding = length * ( t / ( 1.0 - t ) );
-#endif
-    }
-    else
-    {
-        padding = radius * ( 1.0 - sin45 );
-    }
-
-    return padding;
-}
-
-
-static inline QMarginsF qskMarginsInner( const QskSkinnable* skinnable,
-    QskAspect::Aspect aspect, const QSizeF& size )
+static inline QMarginsF qskMargins( const QskSkinnable* skinnable,
+    QskAspect::Aspect aspect, const QSizeF& size, bool inner )
 {
     using namespace QskAspect;
 
-    qreal left = skinnable->metric( aspect | Border | LeftEdge );
-    qreal right = skinnable->metric( aspect | Border | RightEdge );
-    qreal top = skinnable->metric( aspect | Border | TopEdge );
-    qreal bottom = skinnable->metric( aspect | Border | BottomEdge );
+    const QMarginsF padding1 = QskSkinRenderer::paddingHint(
+        skinnable->boxShapeHint( aspect | Shape),
+        skinnable->boxBorderHint( aspect | Border ),
+        size, inner );
 
-    const QMarginsF padding = skinnable->marginsHint( aspect | Padding );
+    const QMarginsF padding2 = skinnable->marginsHint( aspect | Padding );
 
-    const qreal w = size.width() - 0.5 * ( left + right );
-    const qreal h = size.height() - 0.5 * ( top + bottom );
-
-    left += qskMax(
-        qskPaddingInner( skinnable, aspect | RadiusX | TopLeftCorner, w ),
-        qskPaddingInner( skinnable, aspect | RadiusX | BottomLeftCorner, w ),
-        padding.left() );
-
-    right += qskMax(
-        qskPaddingInner( skinnable, aspect | RadiusX | TopRightCorner, w ),
-        qskPaddingInner( skinnable, aspect | RadiusX | BottomRightCorner, w ),
-        padding.right() );
-
-    top += qskMax(
-        qskPaddingInner( skinnable, aspect | RadiusY | TopLeftCorner, h ),
-        qskPaddingInner( skinnable, aspect | RadiusY | TopRightCorner, h ),
-        padding.top() );
-
-    bottom += qskMax(
-        qskPaddingInner( skinnable, aspect | RadiusY | BottomLeftCorner, h ),
-        qskPaddingInner( skinnable, aspect | RadiusY | BottomRightCorner, h ),
-        padding.bottom() );
-
-    return QMarginsF( left, top, right, bottom );
-}
-
-static inline QMarginsF qskMarginsOuter( const QskSkinnable* skinnable,
-    QskAspect::Aspect aspect, const QSizeF& size )
-{
-    // calculation is not yet correct, but to get something started
-
-    using namespace QskAspect;
-
-    qreal left = skinnable->metric( aspect | Border | LeftEdge );
-    qreal right = skinnable->metric( aspect | Border | RightEdge );
-    qreal top = skinnable->metric( aspect | Border | TopEdge );
-    qreal bottom = skinnable->metric( aspect | Border | BottomEdge );
-
-    const QMarginsF padding = skinnable->marginsHint( aspect | Padding );
-
-    const qreal w = size.width() + 0.5 * ( left + right );
-    const qreal h = size.height() + 0.5 * ( top + bottom );
-
-    left += qskMax(
-        qskPaddingOuter( skinnable, aspect | RadiusX | TopLeftCorner, w ),
-        qskPaddingOuter( skinnable, aspect | RadiusX | BottomLeftCorner, w ),
-        padding.left() );
-
-    right += qskMax(
-        qskPaddingOuter( skinnable, aspect | RadiusX | TopRightCorner, w ),
-        qskPaddingOuter( skinnable, aspect | RadiusX | BottomRightCorner, w ),
-        padding.right() );
-
-    top += qskMax(
-        qskPaddingOuter( skinnable, aspect | RadiusY | TopLeftCorner, h ),
-        qskPaddingOuter( skinnable, aspect | RadiusY | TopRightCorner, h ),
-        padding.top() );
-
-    bottom += qskMax(
-        qskPaddingOuter( skinnable, aspect | RadiusY | BottomLeftCorner, h ),
-        qskPaddingOuter( skinnable, aspect | RadiusY | BottomRightCorner, h ),
-        padding.bottom() );
-
-    return QMargins( left, top, right, bottom );
+    return QMarginsF(
+        qMax( padding1.left(), padding2.left() ),
+        qMax( padding1.top(), padding2.top() ),
+        qMax( padding1.right(), padding2.right() ),
+        qMax( padding1.bottom(), padding2.bottom() )
+    );
 }
 
 QSizeF QskSkinnable::innerBoxSize(
     QskAspect::Aspect aspect, const QSizeF& outerBoxSize ) const
 {
-    const QMarginsF m = qskMarginsInner( this, aspect, outerBoxSize );
+    const QMarginsF m = qskMargins( this, aspect, outerBoxSize, true );
 
     return QSizeF( outerBoxSize.width() - m.left() - m.right(),
         outerBoxSize.height() - m.top() - m.bottom() );
@@ -627,14 +630,14 @@ QSizeF QskSkinnable::innerBoxSize(
 QRectF QskSkinnable::innerBox(
     QskAspect::Aspect aspect, const QRectF& outerBox ) const
 {
-    const QMarginsF m = qskMarginsInner( this, aspect, outerBox.size() );
+    const QMarginsF m = qskMargins( this, aspect, outerBox.size(), true );
     return outerBox.marginsRemoved( m );
 }
 
 QSizeF QskSkinnable::outerBoxSize(
     QskAspect::Aspect aspect, const QSizeF& innerBoxSize ) const
 {
-    const QMarginsF m = qskMarginsOuter( this, aspect, innerBoxSize );
+    const QMarginsF m = qskMargins( this, aspect, innerBoxSize, false );
 
     return QSizeF( innerBoxSize.width() + m.left() + m.right(),
         innerBoxSize.height() + m.top() + m.bottom() );
@@ -643,7 +646,7 @@ QSizeF QskSkinnable::outerBoxSize(
 QRectF QskSkinnable::outerBox(
     QskAspect::Aspect aspect, const QRectF& innerBox ) const
 {
-    const QMarginsF m = qskMarginsOuter( this, aspect, innerBox.size() );
+    const QMarginsF m = qskMargins( this, aspect, innerBox.size(), false );
     return innerBox.marginsAdded( m );
 }
 
@@ -684,24 +687,17 @@ void QskSkinnable::startTransition( QskAspect::Aspect aspect,
 
     aspect.clearStates();
     aspect.setAnimator( false );
+    aspect.setPlacement( effectivePlacement() );
+
+#if DEBUG_ANIMATOR
+    qDebug() << aspect;
+#endif
+
+    auto animator = m_data->animators.animator( aspect );
+    if ( animator && animator->isRunning() )
+        from = animator->currentValue();
 
     m_data->animators.start( control, aspect, animationHint, from, to );
-}
-
-void QskSkinnable::startTransition( QskAspect::Aspect aspect,
-    QskAspect::State oldState, QskAspect::State newState )
-{
-    const auto animationHint = storedHint( aspect ).value< QskAnimationHint >();
-    if ( animationHint.duration <= 0 )
-        return;
-
-    aspect.clearStates();
-    aspect.setAnimator( false );
-
-    const auto from = storedHint( aspect | oldState, nullptr );
-    const auto to = storedHint( aspect | newState, nullptr );
-
-    startTransition( aspect, animationHint, from, to );
 }
 
 void QskSkinnable::setSkinStateFlag( QskAspect::State state, bool on )
@@ -714,7 +710,7 @@ void QskSkinnable::setSkinStateFlag( QskAspect::State state, bool on )
 
     QskControl* control = owningControl();
 
-#if 0
+#if DEBUG_STATE
     qDebug() << control->className() << ":" 
         << skinStateAsPrintable( m_data->skinState ) << "->"
         << skinStateAsPrintable( newState );
@@ -722,38 +718,57 @@ void QskSkinnable::setSkinStateFlag( QskAspect::State state, bool on )
 
     if ( control->window() && control->isInitiallyPainted() )
     {
-        for ( const auto entry : m_data->hintTable.hints() )
+        const auto placement = effectivePlacement();
+
+        for ( const auto subControl : control->subControls() )
         {
-            const auto aspect = entry.first;
-            if ( aspect.isAnimator() )
+            using namespace QskAspect;
+
+            Aspect aspect = subControl | placement;;
+
+            const auto& skinTable = effectiveSkin()->hintTable();
+
+            for ( int i = 0; i <= LastType; i++ )
             {
-                if ( !aspect.state() || aspect.state() == newState )
-                    startTransition( aspect, m_data->skinState, newState );
-            }
-        }
+                const auto type = static_cast< Type >( i );
 
-        const QskSkin* skin = effectiveSkin();
+                const auto hint = effectiveAnimation( type, subControl );
 
-        auto subControls = control->subControls();
-#if 1
-        subControls += QskAspect::Control;
-#endif
-
-        const auto& hintTable = skin->hintTable();
-
-        for ( const auto subControl : subControls )
-        {
-            const auto& animatorAspects = hintTable.animatorAspects( subControl );
-
-            for ( QskAspect::Aspect aspect : animatorAspects )
-            {
-                // ignore animators from the skin, when we have others
-                // specifically defined for the skinnable
-
-                if ( !m_data->hintTable.hasHint( aspect ) )
+                if ( hint.duration > 0 )
                 {
-                    if ( !aspect.state() || aspect.state() == newState )
-                        startTransition( aspect, m_data->skinState, newState );
+                    /*
+                        Starting an animator for all primitives,
+                        that differ between the states
+                     */
+                    for ( int primitive = 0; primitive <= LastPrimitive; primitive++ )
+                    {
+                        aspect.setPrimitive( type, primitive );
+
+                        Aspect a1 = aspect | m_data->skinState;
+                        Aspect a2 = aspect | newState;
+
+                        bool doTransition = true;
+
+                        if ( !m_data->hintTable.hasStates() )
+                        {
+                            /*
+                                The hints are found by stripping the state bits one by
+                                one until a lookup into the hint table is successful.
+                                So for deciding whether two aspects lead to the same hint
+                                we can stop as soon as the aspects have the same state bits.
+                                This way we can reduce the number of lookups significantly
+                                for skinnables with many state bits.
+        
+                             */
+                            doTransition = !qskCompareResolvedStates( a1, a2, skinTable );
+                        }
+
+                        if ( doTransition )
+                        {
+                            startTransition( aspect, hint,
+                                storedHint( a1 ), storedHint( a2 ) );
+                        }
+                    }
                 }
             }
         }

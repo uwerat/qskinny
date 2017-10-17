@@ -9,7 +9,7 @@ static inline uint qskHash(
     const auto& substitutions = colorFilter.substitutions();
     if ( substitutions.size() > 0 )
     {
-        hash = qHashBits( substitutions.constData(), 
+        hash = qHashBits( substitutions.constData(),
             substitutions.size() * sizeof( substitutions[0] ), hash );
     }
 

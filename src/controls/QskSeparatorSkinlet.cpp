@@ -37,11 +37,7 @@ QSGNode* QskSeparatorSkinlet::updateSubNode(
     {
         case PanelRole:
         {
-            const bool isHorizontal = ( separator->orientation() == Qt::Horizontal );
-            const QRectF r = subControlRect( separator, QskSeparator::Panel );
-
-            return updateBoxNode( separator, node, r,
-                QskSeparator::Panel, isHorizontal ? 0 : -1 );
+            return updateBoxNode( separator, node, QskSeparator::Panel );
         }
     }
 

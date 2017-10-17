@@ -133,6 +133,12 @@ void QskListViewSkinlet::updateBackgroundNodes(
 
     if ( listView->alternatingRowColors() )
     {
+#if 1
+        /*
+            Cell might be better for regular cells, while ( Cell | AlternateColor )
+            could be used for the alternate color TODO ...
+         */
+#endif
         const auto color = listView->color( QskListView::Cell );
 
         for ( int row = rowMin; row <= rowMax; row++ )

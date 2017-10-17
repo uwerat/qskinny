@@ -35,7 +35,6 @@ QskRangeControl::QskRangeControl( QQuickItem* parent ):
     m_data( new PrivateData() )
 {
     setActiveFocusOnTab( !m_data->readOnly );
-    setAcceptHoverEvents( true );
     setAcceptedMouseButtons( Qt::LeftButton );
 }
 

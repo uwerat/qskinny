@@ -73,6 +73,38 @@ QRect qskInnerRect( const QRectF& rect )
     return QRect( left, top, right - left, bottom - top );
 }
 
+QRectF qskValidOrEmptyInnerRect( const QRectF& rect, const QMarginsF& margins )
+{
+    qreal x, y, h, w;
+
+    const qreal marginsWidth = margins.left() + margins.right();
+    const qreal marginsHeight = margins.top() + margins.bottom();
+
+    if ( marginsWidth > rect.width() )
+    {
+        x = rect.x() + rect.width() * ( margins.left() / marginsWidth );
+        w = 0;
+    }   
+    else
+    {
+        x = rect.x() + margins.left();
+        w = rect.width() - marginsWidth;
+    }   
+    
+    if ( marginsHeight > rect.height() )
+    {
+        y = rect.y() + rect.height() * ( margins.top() / marginsHeight );
+        h = 0;
+    }   
+    else
+    {
+        y = rect.y() + margins.top();
+        h = rect.height() - marginsHeight;
+    }   
+
+    return QRectF( x, y, w, h );
+}   
+
 qreal qskDpiScaled( qreal value )
 {
     static qreal factor = 0.0;

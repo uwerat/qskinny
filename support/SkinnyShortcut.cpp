@@ -32,21 +32,21 @@ void SkinnyShortcut::enable( Types types )
     if ( types & RotateSkin )
     {
         QskShortcut::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_S ),
-            &s_shortcut, SLOT(rotateSkin()) );
+            &s_shortcut, SLOT( rotateSkin() ) );
         cout << "CTRL-S to change the skin." << endl;
     }
 
     if ( types & DebugBackground )
     {
         QskShortcut::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_B ),
-            &s_shortcut, SLOT(showBackground()) );
+            &s_shortcut, SLOT( showBackground() ) );
         cout << "CTRL-B to enable visual debugging modes." << endl;
     }
 
     if ( types & DebugStatistics )
     {
         QskShortcut::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_K ),
-            &s_shortcut, SLOT(debugStatistics()) );
+            &s_shortcut, SLOT( debugStatistics() ) );
         cout << "CTRL-K to dump statistics about the items/nodes being currently used." << endl;
     }
 
@@ -56,7 +56,7 @@ void SkinnyShortcut::enable( Types types )
         // when not being implemented by the platform !!
 
         QskShortcut::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_Q ),
-            QGuiApplication::instance(), SLOT(quit()) );
+            QGuiApplication::instance(), SLOT( quit() ) );
         cout << "CTRL-Q to terminate the application." << endl;
     }
 }

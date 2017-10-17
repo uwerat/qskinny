@@ -9,6 +9,7 @@
 #include <QskTextLabel.h>
 #include <QskPushButton.h>
 #include <QskSeparator.h>
+#include <QskBoxBorderMetrics.h>
 
 #include <squiek/QskSquiekSkin.h>
 #include <material/QskMaterialSkin.h>
@@ -34,7 +35,7 @@ QskSkin* SkinFactory::createSkin( const QString& skinName )
 
         QColor overlayColor( "SlateGray");
         overlayColor.setAlpha( 200 );
-        skin->setColor( SoundControl::Overlay, overlayColor );
+        skin->setGradient( SoundControl::Overlay, overlayColor );
 
         QskColorFilter filter;
         filter.addColorSubstitution( Qt::white, themeColor.rgb() );
@@ -46,10 +47,11 @@ QskSkin* SkinFactory::createSkin( const QString& skinName )
         skin->setSkinHint( SoundControl::MarkerControl | QskAspect::GraphicRole, SkinFactory::Indicator );
         skin->setSkinHint( SoundControl::Vehicle | QskAspect::GraphicRole, SkinFactory::Vehicle );
 
-        skin->setColor( SoundControl::Marker, themeColor );
-        skin->setMetric( SoundControl::Marker | QskAspect::Radius, 6 );
+        skin->setGradient( SoundControl::Marker, themeColor );
+        skin->setBoxBorder( SoundControl::Marker, 1 );
+        skin->setBoxRadius( SoundControl::Marker, 6 );
         skin->setColor( QskTextLabel::Text, "PeachPuff" );
-        skin->setColor( QskPushButton::Text, themeColor );
+        skin->setGradient( QskPushButton::Text, themeColor );
 
         return skin;
     }
@@ -62,7 +64,7 @@ QskSkin* SkinFactory::createSkin( const QString& skinName )
 
         QColor overlayColor = themeColor;
         overlayColor.setAlpha( 200 );
-        skin->setColor( SoundControl::Overlay, overlayColor );
+        skin->setGradient( SoundControl::Overlay, overlayColor );
 
         QskColorFilter filter;
         filter.addColorSubstitution( Qt::white, QColor( "SaddleBrown" ).rgb() );
@@ -70,11 +72,13 @@ QskSkin* SkinFactory::createSkin( const QString& skinName )
 
         skin->setSkinHint( SoundControl::MarkerControl | QskAspect::GraphicRole, SkinFactory::Indicator );
 
-        skin->setMetric( SoundControl::Marker | QskAspect::Radius, 8 );
-        skin->setColor( SoundControl::Marker, "SaddleBrown" );
-        skin->setColor( SoundControl::CrossHair, "Sienna" );
+        skin->setBoxBorder( SoundControl::Marker, 1 );
+        skin->setBoxRadius( SoundControl::Marker, 8 );
+
+        skin->setGradient( SoundControl::Marker, QColor( "SaddleBrown" ) );
+        skin->setGradient( SoundControl::CrossHair, QColor( "Sienna" ) );
         skin->setColor( QskTextLabel::Text, "SaddleBrown" );
-        skin->setColor( QskSeparator::Panel, "Sienna" );
+        skin->setGradient( QskSeparator::Panel, QColor( "Sienna" ) );
 
         return skin;
     }

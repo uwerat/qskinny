@@ -11,7 +11,8 @@ Qsk.PushButton
 
     corner
     {
-        mode: Qt.RelativeSize
+        sizeMode: Qt.RelativeSize
+        aspectRatioMode: Qt.KeepAspectRatio
         radius: 10
     }
 

@@ -31,9 +31,10 @@ DEPENDPATH *= $${QSK_SUBDIRS}
 
 HEADERS += \
     common/QskAspect.h \
-    common/QskBorderMetrics.h \
-    common/QskBoxColors.h \
     common/QskBoxOptions.h \
+    common/QskBoxBorderColors.h \
+    common/QskBoxBorderMetrics.h \
+    common/QskBoxShapeMetrics.h \
     common/QskCorner.h \
     common/QskFlags.h \
     common/QskFunctions.h \
@@ -48,9 +49,10 @@ HEADERS += \
 
 SOURCES += \
     common/QskAspect.cpp \
-    common/QskBorderMetrics.cpp \
-    common/QskBoxColors.cpp \
     common/QskBoxOptions.cpp \
+    common/QskBoxBorderColors.cpp \
+    common/QskBoxBorderMetrics.cpp \
+    common/QskBoxShapeMetrics.cpp \
     common/QskCorner.cpp \
     common/QskFunctions.cpp \
     common/QskGradient.cpp \
@@ -85,42 +87,29 @@ SOURCES += \
     graphic/QskStandardSymbol.cpp
 
 HEADERS += \
-    nodes/QskArcIterator.h \
-    nodes/QskBorderGeometry.h \
-    nodes/QskBoxMaterial.h \
-    nodes/QskBoxMaterialVM.h \
     nodes/QskBoxNode.h \
-    nodes/QskClipNode.h \
-    nodes/QskFrameNode.h \
+    nodes/QskBoxClipNode.h \
+    nodes/QskBoxRenderer.h \
+    nodes/QskBoxRendererColorMap.h \
     nodes/QskGraphicNode.h \
     nodes/QskPlainTextRenderer.h \
-    nodes/QskRectNode.h \
     nodes/QskTextNode.h \
     nodes/QskTextRenderer.h \
     nodes/QskTextureNode.h \
-    nodes/QskVertexColor.h \
-    nodes/QskVertexPen.h \
-    nodes/QskVertexRendererColored.h \
-    nodes/QskVertexRenderer.h
+    nodes/QskVertex.h
 
 SOURCES += \
-    nodes/QskArcIterator.cpp \
-    nodes/QskBorderGeometry.cpp \
-    nodes/QskBoxMaterial.cpp \
-    nodes/QskBoxMaterialVM.cpp \
     nodes/QskBoxNode.cpp \
-    nodes/QskClipNode.cpp \
-    nodes/QskFrameNode.cpp \
+    nodes/QskBoxClipNode.cpp \
+    nodes/QskBoxRendererRect.cpp \
+    nodes/QskBoxRendererEllipse.cpp \
+    nodes/QskBoxRendererDEllipse.cpp \
     nodes/QskGraphicNode.cpp \
     nodes/QskPlainTextRenderer.cpp \
-    nodes/QskRectNode.cpp \
     nodes/QskTextNode.cpp \
     nodes/QskTextRenderer.cpp \
     nodes/QskTextureNode.cpp \
-    nodes/QskVertexColor.cpp \
-    nodes/QskVertexPen.cpp \
-    nodes/QskVertexRendererColored.cpp \
-    nodes/QskVertexRenderer.cpp
+    nodes/QskVertex.cpp
 
 HEADERS += \
     controls/QskAbstractButton.h \

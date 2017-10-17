@@ -67,7 +67,13 @@ protected:
         QskAspect::Subcontrol ) const;
 
     QSGNode* updateBoxNode( const QskSkinnable*, QSGNode*,
-        const QRectF&, QskAspect::Subcontrol, int rotation = 0 ) const;
+        const QRectF&, QskAspect::Subcontrol ) const;
+
+    QSGNode* updateBoxClipNode( const QskSkinnable*, QSGNode*,
+        QskAspect::Subcontrol ) const;
+
+    QSGNode* updateBoxClipNode( const QskSkinnable*, QSGNode*,
+        const QRectF&, QskAspect::Subcontrol ) const;
 
     QSGNode* updateTextNode( const QskSkinnable*, QSGNode*,
         const QRectF&, Qt::Alignment, const QString&, const QskTextOptions&,
@@ -90,8 +96,6 @@ protected:
 
     void insertRemoveNodes( QSGNode* parentNode,
         QSGNode* oldNode, QSGNode* newNode, int nodeRole ) const;
-
-    virtual QskGradient backgroundGradient( const QskControl* ) const;
 
 private:
     void insertNodeSorted( QSGNode* node, QSGNode* parentNode ) const;

@@ -44,7 +44,6 @@ protected:
     QSGNode* contentsNode( const QskScrollView* );
 
 private:
-    QSGNode* updateViewportNode( const QskScrollView*, QSGNode* ) const;
     QSGNode* updateContentsRootNode( const QskScrollView*, QSGNode* ) const;
 
     QRectF viewportRect( const QskScrollView* ) const;

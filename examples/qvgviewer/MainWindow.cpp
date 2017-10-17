@@ -16,6 +16,8 @@
 #include <QskSetup.h>
 #include <QskSkin.h>
 #include <QskAnimationHint.h>
+#include <QskGradient.h>
+#include <QskRgbValue.h>
 
 #include <QDir>
 #include <QVariant>
@@ -44,31 +46,30 @@ public:
 
         const int oldRole = graphicRole();
 
-        QColor color;
+        QskGradient gradient;
         if ( on )
         {
-            color.setRgb( 40, 40, 40 );
+            gradient.setColor( qRgb( 40, 40, 40 ) );
             setGraphicRole( Inverted );
         }
         else
         {
-            color.setRgb( 255, 228, 181 );
+            gradient.setColor( QskRgbValue::Wheat );
             setGraphicRole( Normal );
         }
 
         const int duration = 500;
 
-        for ( auto edge : { TopEdge, BottomEdge } )
-        {
-            const Aspect aspectColor = Control | Color | Background | edge;
+        const QskGradient oldGradient = background();
 
-            const auto oldColor = effectiveHint( aspectColor );
-            setColor( aspectColor, color );
-            startTransition( aspectColor, duration, oldColor, color );
-        }
+        setBackground( gradient );
 
-        const QskAspect::Aspect aspectRole = QskGraphicLabel::Graphic | GraphicRole;
-        startTransition( aspectRole, duration, oldRole, graphicRole() );
+        // finally setup a smooth transition manually
+        startTransition( Control | Color, duration,
+            QVariant::fromValue( oldGradient ), QVariant::fromValue( gradient ) );
+
+        startTransition( QskGraphicLabel::Graphic | GraphicRole,
+            duration, oldRole, graphicRole() );
     }
 };
 

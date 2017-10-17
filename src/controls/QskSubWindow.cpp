@@ -120,7 +120,7 @@ bool QskSubWindow::testWindowButton( WindowButton button ) const
 
 QRectF QskSubWindow::titleBarRect() const
 {
-    return subControlRect( QskSubWindow::TitleBar );
+    return subControlRect( TitleBar );
 }
 
 bool QskSubWindow::event( QEvent* event )
@@ -133,7 +133,13 @@ bool QskSubWindow::event( QEvent* event )
 
 QRectF QskSubWindow::layoutRect() const
 {
-    return innerBox( Panel, subControlRect( Panel ) );
+    QRectF rect = contentsRect();
+
+    const qreal top = rect.top() + subControlRect( TitleBar ).height();
+    rect.setTop( qMin( top, rect.bottom() ) );
+
+    // wrong: the Padding would be above the header: TODO
+    return innerBox( Panel, rect );
 }
 
 void QskSubWindow::updateLayout()

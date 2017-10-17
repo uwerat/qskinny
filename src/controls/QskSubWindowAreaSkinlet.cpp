@@ -5,8 +5,8 @@
 
 #include "QskSubWindowAreaSkinlet.h"
 #include "QskSubWindowArea.h"
-#include "QskGradient.h"
-#include "QskRectNode.h"
+#include "QskBoxOptions.h"
+#include "QskBoxNode.h"
 
 QskSubWindowAreaSkinlet::QskSubWindowAreaSkinlet( QskSkin* skin ):
     Inherited( skin )
@@ -53,15 +53,15 @@ QSGNode* QskSubWindowAreaSkinlet::updatePanelNode(
     if ( !area->gradient().isValid() || rect.isEmpty() )
         return nullptr;
 
-    QskRectNode* rectNode = static_cast< QskRectNode* >( node );
-    if ( rectNode == nullptr )
-        rectNode = new QskRectNode();
+    auto boxNode = static_cast< QskBoxNode* >( node );
+    if ( boxNode == nullptr )
+        boxNode = new QskBoxNode();
 
-    rectNode->setRect( rect );
-    rectNode->setFillGradient( area->gradient() );
-    rectNode->update();
+    QskBoxOptions options;
+    options.fillGradient = area->gradient();
+    boxNode->setBoxData( rect, options );
 
-    return rectNode;
+    return boxNode;
 }
 
 #include "moc_QskSubWindowAreaSkinlet.cpp"

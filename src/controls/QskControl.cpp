@@ -9,6 +9,7 @@
 #include "QskSkinlet.h"
 #include "QskEvent.h"
 #include "QskDirtyItemFilter.h"
+#include "QskSkinHintTable.h"
 
 #include <QLocale>
 #include <QVector>
@@ -547,8 +548,59 @@ void QskControl::setupImplicitSizeConnections( bool on )
 
 void QskControl::setBackgroundColor( const QColor& color )
 {
-    setColor( QskAspect::Control | QskAspect::Background, color );
     setAutoFillBackground( true );
+    setBackground( QskGradient( color ) );
+}
+
+void QskControl::setBackground( const QskGradient& gradient )
+{
+    using namespace QskAspect;
+    const Aspect aspect = Control | Color;
+
+    if ( autoFillBackground() )
+    {
+        if ( hintTable().gradient( aspect ) != gradient )
+        {
+            setGradientHint( aspect, gradient );
+
+            // might be wrong, when the effective gradient was from the skin
+            update();
+        }
+    }
+    else
+    {
+        setGradientHint( aspect, gradient );
+    }
+}
+
+void QskControl::resetBackground()
+{
+    using namespace QskAspect;
+    const Aspect aspect = Control | Color;
+
+    auto& table = hintTable();
+
+    if ( autoFillBackground() )
+    {
+        const auto oldGradient = gradientHint( aspect );
+
+        if ( table.hint( aspect ).isValid() )
+        {
+            table.removeHint( aspect );
+            if ( gradientHint( aspect ) != oldGradient )
+                update();
+        }
+    }
+    else
+    {
+        table.removeHint( aspect );
+    }
+}
+
+QskGradient QskControl::background() const
+{
+    using namespace QskAspect;
+    return gradientHint( Control );
 }
 
 void QskControl::setMargins( qreal margin )
@@ -582,7 +634,25 @@ void QskControl::setMargins( const QMarginsF& margins )
 
 void QskControl::resetMargins()
 {
-    setMargins( QMarginsF() );
+    using namespace QskAspect;
+    const Aspect aspect = Control | Metric | Margin;
+
+    const auto oldMargin = marginsHint( aspect );
+
+    auto& table = hintTable();
+    if ( table.hint( aspect ).isValid() )
+    {
+        table.removeHint( aspect );
+        if ( marginsHint( aspect ) != oldMargin )
+        {
+            resetImplicitSize();
+
+            if ( m_polishOnResize || m_autoLayoutChildren )
+                polish();
+
+            qskSendEventTo( this, QEvent::ContentsRectChange );
+        }
+    }
 }
 
 QMarginsF QskControl::margins() const

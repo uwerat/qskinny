@@ -42,6 +42,7 @@ public:
     bool isTracking() const;
 
     virtual QSizeF contentsSizeHint() const override;
+    virtual QskAspect::Placement effectivePlacement() const override;
 
 Q_SIGNALS:
     void pressedChanged( bool );

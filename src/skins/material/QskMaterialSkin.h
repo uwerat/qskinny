@@ -38,7 +38,6 @@ private:
     void initTabBarHints();
     void initTabViewHints();
     void initInputPanelHints();
-    void initLineEditHints();
     void initScrollViewHints();
     void initListViewHints();
     void initSubWindowHints();

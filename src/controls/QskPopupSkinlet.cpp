@@ -5,7 +5,8 @@
 
 #include "QskPopupSkinlet.h"
 #include "QskPopup.h"
-#include "QskRectNode.h"
+#include "QskBoxNode.h"
+#include "QskBoxOptions.h"
 
 QskPopupSkinlet::QskPopupSkinlet( QskSkin* skin ):
     Inherited( skin )
@@ -49,41 +50,19 @@ QSGNode* QskPopupSkinlet::updateOverlayNode(
     if ( rect.isEmpty() )
         return nullptr;
 
-    const QskGradient gradient = overlayGradient( popup );
+    const QskGradient gradient = popup->gradientHint( QskPopup::Overlay );
     if ( !gradient.isValid() )
         return nullptr;
 
-    auto rectNode = static_cast< QskRectNode* >( node );
+    auto rectNode = static_cast< QskBoxNode* >( node );
     if ( rectNode == nullptr )
-        rectNode = new QskRectNode();
+        rectNode = new QskBoxNode();
 
-    rectNode->setRect( rect );
-    rectNode->setFillGradient( gradient );
-    rectNode->update();
+    QskBoxOptions options;
+    options.fillGradient = gradient;
+    rectNode->setBoxData( rect, options );
 
     return rectNode;
-}
-
-QskGradient QskPopupSkinlet::overlayGradient( const QskPopup* popup ) const
-{
-    using namespace QskAspect;
-
-    const QColor color1 = popup->color( QskPopup::Overlay | TopEdge );
-    const QColor color2 = popup->color( QskPopup::Overlay | BottomEdge );
-
-    if ( color1.isValid() && color2.isValid() )
-    {
-        if ( color1.alpha() == 0 && color2.alpha() == 0 )
-            return QskGradient();
-
-        return QskGradient( QskGradient::Vertical, color1, color2 );
-    }
-
-    const QColor color = popup->color( QskPopup::Overlay );
-    if ( color.isValid() && color.alpha() > 0 )
-        QskGradient( color );
-
-    return QskGradient(); // something invalid
 }
 
 #include "moc_QskPopupSkinlet.cpp"

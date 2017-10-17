@@ -12,6 +12,8 @@
 #include <QskLinearBox.h>
 #include <QskObjectCounter.h>
 #include <QskGraphic.h>
+#include <QskBoxBorderMetrics.h>
+#include <QskBoxShapeMetrics.h>
 #include <QskAspect.h>
 
 #include <QGuiApplication>
@@ -110,11 +112,17 @@ public:
         using namespace QskAspect;
 
         // settings usually done in the skins
-        setMetric( Viewport | Radius, 20 );
-        setMetric( VerticalScrollBar | Size, 20 );
-        setMetric( VerticalScrollHandle | Radius, 8 );
-        setMetric( HorizontalScrollBar | Size, 20 );
-        setMetric( HorizontalScrollHandle | Radius, 0 );
+        setBoxBorderHint( Viewport, 2 );
+        setBoxShapeHint( Viewport, 20 );
+
+        for ( auto subControl : { HorizontalScrollBar, VerticalScrollBar } )
+            setMetric( subControl | Size, 20 );
+
+        setBoxBorderHint( VerticalScrollHandle, 1 );
+        setBoxShapeHint( VerticalScrollHandle, 8 );
+
+        setBoxBorderHint( HorizontalScrollHandle, 1 );
+        setBoxShapeHint( HorizontalScrollHandle, 8 );
     }
 };
 

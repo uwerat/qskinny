@@ -17,7 +17,9 @@
 #include <QskSlider.h>
 #include <QskSeparator.h>
 #include <QskPushButton.h>
-#include <material/QskMaterialSkin.h>
+#include <QskBoxBorderMetrics.h>
+#include <QskBoxBorderColors.h>
+#include <QskBoxShapeMetrics.h>
 
 #include <QGuiApplication>
 #include <QtMath>
@@ -25,58 +27,81 @@
 class OtherSlider : public QskSlider
 {
 public:
-    // slider with skin hints overriding the hints from the skin
+    /*
+        Slider overriding many hints from the skin.
+        "Preserved" is for horizontal, "Transposed" for vertical orientation
+     */
 
     OtherSlider( QQuickItem* parentItem = nullptr ):
         QskSlider( parentItem )
     {
         using namespace QskAspect;
+        using namespace QskRgbValue;
 
         const qreal h = 30;
         const qreal w = 2.0 * h;
         const qreal paddingW = 0.5 * w + 1;
 
         // Panel
-        setMetric( Panel | Size, h );
-        setMetric( Panel | Border, 1 );
-        setMarginsHint( Panel | Padding, QMarginsF( paddingW, 0, paddingW, 0 ) );
 
-        setColor( Panel | Border, QskRgbValue::Grey900 );
-        setColor( Panel, QskRgbValue::Grey400 );
+        for ( auto placement : { Preserved, Transposed } )
+        {
+            const Aspect aspect = Panel | placement;
+
+            setMetric( aspect | Size, h );
+            setBoxBorderHint( aspect, 1 );
+            setBoxShapeHint( aspect, 4 );
+            setBoxBorderColorHint( aspect, Grey900 );
+            setGradientHint( aspect, Grey400 );
+
+            if ( placement == Preserved )
+                setMarginsHint( aspect | Padding, QMarginsF( paddingW, 0, paddingW, 0 ) );
+            else
+                setMarginsHint( aspect | Padding, QMarginsF( 0, paddingW, 0, paddingW ) );
+        }
 
         // Groove
-        setMetric( Groove | Size, 4 );
-        setMetric( Groove | Radius, 1 );
-        setMetric( Groove | Border, 0 );
-        setColor( Groove, Qt::black );
+
+        for ( auto placement : { Preserved, Transposed } )
+        {
+            const Aspect aspect = Groove | placement;
+
+            setMetric( aspect | Size, 4 );
+            setBoxBorderHint( aspect, 0 );
+            setBoxShapeHint( aspect, 1 );
+
+            setGradientHint( aspect, Qt::black );
+        }
 
         // no Fill
-        setMetric( Fill | Size, 0 );
-
-        // Handle
-        setMetric( Handle | Border, 1 );
-
-        const qreal m = qCeil( 0.5 * ( w - h ) ) + 2;
-        setMarginsHint( Handle | Margin, QMarginsF( -m, 0, -m, 0 ) );
-
-        for ( auto state : { NoState, Pressed } )
+        for ( auto placement : { Preserved, Transposed } )
         {
-            setColor( Handle | state, QskRgbValue::Blue400 );
-            setColor( Handle | state | Border, QskRgbValue::Grey600 );
+            const Aspect aspect = Fill | placement;
+            setMetric( aspect | Size, 0 );
         }
-    }
-};
+    
+        // Handle
 
-class MaterialSlider : public QskSlider
-{
-public:
-    // another customized skin slider with (almost) no skin overriding necessary
-    // from Android Material Style (https://material.google.com/components/sliders.html)
-    MaterialSlider( QQuickItem* parentItem = nullptr ):
-        QskSlider( parentItem )
-    {
-        static QskMaterialSkin skin;
-        setSkinlet( skin.skinlet( this ) );
+        for ( auto placement : { Preserved, Transposed } )
+        {
+            const Aspect aspect = Handle | placement;
+        
+            setBoxBorderHint( aspect, 1 );
+            setBoxShapeHint( aspect, 4 );
+
+            const qreal m = 0.5 * qCeil( 0.5 * ( w - h ) ) + 1;
+
+            if ( placement == Preserved )
+                setMarginsHint( aspect | Margin, QMarginsF( -m, 0, -m, 0 ) );
+            else
+                setMarginsHint( aspect | Margin, QMarginsF( 0, -m, 0, -m ) );
+
+            for ( auto state : { NoState, Pressed } )
+            {
+                setBoxBorderColorHint( aspect | state, Grey600 );
+                setGradientHint( aspect | state, Blue400 );
+            }
+        }
     }
 };
 
@@ -100,11 +125,6 @@ public:
         otherSlider->setMinimum( 0 );
         otherSlider->setMaximum( 10 );
         otherSlider->setStepSize( 1 );
-
-        auto materialSlider = new MaterialSlider( this );
-        materialSlider->setMinimum( 0.0 );
-        materialSlider->setMaximum( 1.0 );
-        materialSlider->setStepSize( 0.1 );
 
         auto customSlider = new Slider( this );
         customSlider->setMargins( QMarginsF( 0, 15, 0, 15 ) );

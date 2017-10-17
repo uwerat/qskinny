@@ -6,11 +6,11 @@
 #include "QskScrollViewSkinlet.h"
 #include "QskScrollView.h"
 #include "QskAspect.h"
-#include "QskFrameNode.h"
-#include "QskClipNode.h"
+#include "QskSkinRenderer.h"
 #include "QskFunctions.h"
 
 #include <QTransform>
+#include <QSGNode>
 
 static void qskAlignedHandle( qreal start, qreal end,
     qreal scrollBarLength, qreal minHandleLength,
@@ -95,7 +95,7 @@ QSGNode* QskScrollViewSkinlet::updateSubNode(
     {
         case ViewportRole:
         {
-            return updateViewportNode( scrollView, node );
+            return updateBoxNode( skinnable, node, QskScrollView::Viewport );
         }
 
         case HorizontalScrollHandleRole:
@@ -123,47 +123,12 @@ QSGNode* QskScrollViewSkinlet::updateSubNode(
     return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
-QSGNode* QskScrollViewSkinlet::updateViewportNode(
-    const QskScrollView* scrollView, QSGNode* node ) const
-{
-    auto frameNode = static_cast< QskFrameNode* >( node );
-    if ( frameNode == nullptr )
-        frameNode = new QskFrameNode();
-
-    const QColor fill = scrollView->color( QskScrollView::Viewport | QskAspect::Background );
-
-    const QColor dark = fill.darker( 150 );
-    const QColor light = fill.lighter( 150 );
-
-    const qreal radiusX = scrollView->metric( QskScrollView::Viewport | QskAspect::RadiusX );
-    const qreal border = scrollView->metric( QskScrollView::Viewport | QskAspect::Border );
-
-    frameNode->setColors( dark, fill, light );
-
-    frameNode->setBorderWidth( border );
-    frameNode->setShadeFactor( -1.0 );
-    frameNode->setRect( subControlRect( scrollView, QskScrollView::Viewport ) );
-
-    frameNode->setRadius( radiusX );
-
-    frameNode->update();
-
-    return frameNode;
-}
-
 QSGNode* QskScrollViewSkinlet::updateContentsRootNode(
     const QskScrollView* scrollView, QSGNode* node ) const
 {
-    const qreal radiusX = scrollView->metric( QskScrollView::Viewport | QskAspect::RadiusX );
-    const qreal border = scrollView->metric( QskScrollView::Viewport | QskAspect::Border );
-
-    auto* clipNode = static_cast< QskClipNode* >( node );
+    auto* clipNode = updateBoxClipNode( scrollView, node, QskScrollView::Viewport );
     if ( clipNode == nullptr )
-        clipNode = new QskClipNode();
-
-    clipNode->setRect( scrollView->viewContentsRect() );
-    clipNode->setRadius( radiusX - border );
-    clipNode->update();
+        return nullptr;
 
     QSGNode* oldContentsNode = findNodeByRole( clipNode, ContentsRootRole );
     QSGNode* contentsNode = updateContentsNode( scrollView, oldContentsNode );

@@ -15,6 +15,7 @@
 #include <QskPushButton.h>
 #include <QskLinearBox.h>
 #include <QskFocusIndicator.h>
+#include <QskBoxBorderColors.h>
 #include <QskSkin.h>
 
 #include <QGuiApplication>
@@ -86,7 +87,7 @@ int main( int argc, char* argv[] )
 
     auto focusIndicator = new QskFocusIndicator();
     focusIndicator->setObjectName( "FocusIndicator" );
-    focusIndicator->setColor( QskFocusIndicator::Panel | QskAspect::Border, Qt::red );
+    focusIndicator->setBoxBorderColorHint( QskFocusIndicator::Panel, Qt::red );
 
     QskWindow window;
     window.resize( 600, 400 );

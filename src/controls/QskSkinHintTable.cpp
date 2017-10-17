@@ -5,32 +5,84 @@
 
 #include "QskSkinHintTable.h"
 
-QskSkinHintTable::QskSkinHintTable( bool extraAnimatorLookup ):
-    m_hints( nullptr ),
-    m_animatorAspects( nullptr )
+QVariant QskSkinHintTable::invalidHint;
+
+inline const QVariant* qskResolvedHint( QskAspect::Aspect aspect,
+    const std::unordered_map< QskAspect::Aspect, QVariant >& hints,
+    QskAspect::Aspect* resolvedAspect )
 {
-    if ( extraAnimatorLookup )
-        m_animatorAspects = new std::unordered_map< int, std::set< QskAspect::Aspect > >();
+    const auto a = aspect;
+
+    Q_FOREVER
+    {
+        auto it = hints.find( aspect );
+        if ( it != hints.cend() )
+        {
+            if ( resolvedAspect )
+                *resolvedAspect = aspect;
+
+            return &it->second;
+        }
+
+        if ( const auto topState = aspect.topState() )
+        {
+            aspect.clearState( topState );
+            continue;
+        }
+
+        if ( aspect.placement() )
+        {
+            // clear the placement bit and restart
+            aspect = a;
+            aspect.setPlacement( static_cast< QskAspect::Placement >( 0 ) );
+
+            continue;
+        }
+
+        return nullptr;
+    }
+}
+
+QskSkinHintTable::QskSkinHintTable():
+    m_hints( nullptr ),
+    m_animatorCount( 0 ),
+    m_hasStates( false )
+{
+}
+
+QskSkinHintTable::QskSkinHintTable( const QskSkinHintTable& other ):
+    m_hints( nullptr ),
+    m_animatorCount( other.m_animatorCount ),
+    m_hasStates( other.m_hasStates )
+{
+    if ( other.m_hints )
+        m_hints = new HintMap( *(other.m_hints) );
 }
 
 QskSkinHintTable::~QskSkinHintTable()
 {
     delete m_hints;
-    delete m_animatorAspects;
 }
 
-const std::set< QskAspect::Aspect >& QskSkinHintTable::animatorAspects(
-    QskAspect::Subcontrol subControl ) const
+QskSkinHintTable& QskSkinHintTable::operator=( const QskSkinHintTable& other )
 {
-    if ( m_animatorAspects )
+    m_animatorCount = other.m_animatorCount;
+    m_hasStates = other.m_hasStates;
+
+    if ( other.m_hints )
     {
-        auto it = m_animatorAspects->find( subControl );
-        if ( it != m_animatorAspects->cend() )
-            return it->second;
+        if ( m_hints == nullptr )
+            m_hints = new HintMap();
+
+        *m_hints = *other.m_hints;
+    }
+    else
+    {
+        delete m_hints;
+        m_hints = nullptr;
     }
 
-    static std::set< QskAspect::Aspect > dummyAspects;
-    return dummyAspects;
+    return *this;
 }
 
 const std::unordered_map< QskAspect::Aspect, QVariant >& QskSkinHintTable::hints() const
@@ -42,96 +94,92 @@ const std::unordered_map< QskAspect::Aspect, QVariant >& QskSkinHintTable::hints
     return dummyHints;
 }
 
-void QskSkinHintTable::setSkinHint( QskAspect::Aspect aspect, const QVariant& skinHint )
+void QskSkinHintTable::setHint( QskAspect::Aspect aspect, const QVariant& skinHint )
 {
-    // For edges/corners, add all the implied assignments
-    if ( aspect.isBoxPrimitive() )
-    {
-        if ( aspect.boxPrimitive() == QskAspect::Radius )
-        {
-            setSkinHint( aspect | QskAspect::RadiusX, skinHint );
-            setSkinHint( aspect | QskAspect::RadiusY, skinHint );
-            return;
-        }
-
-        const auto edges = aspect.edge();
-
-        const auto bitcount = qPopulationCount( static_cast< quint8 >( edges ) );
-        if ( !bitcount || bitcount > 1 )
-        {
-            using namespace QskAspect;
-
-            auto aspectEdges = aspect;
-            aspectEdges.clearEdge();
-
-            if ( !bitcount || edges & TopEdge )
-                setSkinHint( aspectEdges | TopEdge, skinHint );
-
-            if ( !bitcount || ( edges & LeftEdge ) )
-                setSkinHint( aspectEdges | LeftEdge, skinHint );
-
-            if ( !bitcount || ( edges & RightEdge ) )
-                setSkinHint( aspectEdges | RightEdge, skinHint );
-
-            if ( !bitcount || ( edges & BottomEdge ) )
-                setSkinHint( aspectEdges | BottomEdge, skinHint );
-        }
-
-        if ( bitcount > 1 ) // Allows 0 to imply AllEdges
-            return;
-    }
-
     if ( m_hints == nullptr )
-        m_hints = new std::remove_pointer< decltype( m_hints ) >::type;
+        m_hints = new HintMap();
 
     auto it = m_hints->find( aspect );
     if ( it == m_hints->end() )
     {
         m_hints->emplace( aspect, skinHint );
+        if ( aspect.isAnimator() )
+            m_animatorCount++;
     }
     else if ( it->second != skinHint )
     {
         it->second = skinHint;
     }
 
-    if ( m_animatorAspects && aspect.isAnimator() )
-        ( *m_animatorAspects )[ aspect.subControl() ].insert( aspect );
+    if ( aspect.state() )
+        m_hasStates = true;
 }
 
-void QskSkinHintTable::removeSkinHint( QskAspect::Aspect aspect )
+void QskSkinHintTable::removeHint( QskAspect::Aspect aspect )
 {
     if ( m_hints == nullptr )
         return;
 
-    m_hints->erase( aspect );
-    if ( m_hints->empty() )
+    if ( m_hints->erase( aspect ) )
     {
-        delete m_hints;
-        m_hints = nullptr;
-    }
-
-    if ( m_animatorAspects && aspect.isAnimator() )
-    {
-        auto it = m_animatorAspects->find( aspect.subControl() );
-        if ( it != m_animatorAspects->end() )
+        if ( aspect.isAnimator() )
+            m_animatorCount--;
+        
+        if ( m_hints->empty() )
         {
-            auto& aspects = it->second;
-            aspects.erase( aspect );
-            if ( aspects.empty() )
-                m_animatorAspects->erase( it );
+            delete m_hints;
+            m_hints = nullptr;
         }
     }
 }
 
-const QVariant& QskSkinHintTable::skinHint( QskAspect::Aspect aspect ) const
+void QskSkinHintTable::clear()
 {
-    if ( m_hints )
+    delete m_hints;
+    m_hints = nullptr;
+
+    m_animatorCount = 0;
+}
+
+const QVariant* QskSkinHintTable::resolvedHint(
+    QskAspect::Aspect aspect, QskAspect::Aspect* resolvedAspect ) const
+{
+    if ( m_hints != nullptr )
+        return qskResolvedHint( aspect, *m_hints, resolvedAspect );
+
+    return nullptr;
+}
+
+QskAspect::Aspect QskSkinHintTable::resolvedAspect( QskAspect::Aspect aspect ) const
+{
+    QskAspect::Aspect a;
+
+    if ( m_hints != nullptr )
+        qskResolvedHint( aspect, *m_hints, &a );
+
+    return a;
+}
+
+QskAspect::Aspect QskSkinHintTable::resolvedAnimator(
+    QskAspect::Aspect aspect, QskAnimationHint& hint ) const
+{
+    if ( m_hints && m_animatorCount > 0 )
     {
-        auto it = m_hints->find( aspect );
-        if ( it != m_hints->cend() )
-            return it->second;
+        Q_FOREVER
+        {
+            auto it = m_hints->find( aspect );
+            if ( it != m_hints->cend() )
+            {
+                hint = it->second.value< QskAnimationHint >();
+                return aspect;
+            }
+
+            if ( const auto topState = aspect.topState() )
+                aspect.clearState( topState );
+            else
+                break;
+        }
     }
 
-    static QVariant invalidHint;
-    return invalidHint;
+    return QskAspect::Aspect();
 }

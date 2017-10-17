@@ -24,8 +24,6 @@ public:
     {
         setObjectName( graphicSource );
 
-        setColor( QskSubWindow::Panel | QskAspect::Background, "Wheat" );
-
         auto label = new QskGraphicLabel( this );
         label->setSource( graphicSource );
         label->setAlignment( Qt::AlignCenter );

@@ -11,8 +11,8 @@
 #include "QskControl.h"
 #include "QskGradient.h"
 #include "QskSkinRenderer.h"
-#include "QskRectNode.h"
 #include "QskBoxNode.h"
+#include "QskBoxClipNode.h"
 #include "QskTextNode.h"
 #include "QskGraphicNode.h"
 #include "QskGraphicTextureFactory.h"
@@ -180,36 +180,19 @@ QSGNode* QskSkinlet::updateBackgroundNode(
     if ( rect.isEmpty() )
         return nullptr;
 
-    const QskGradient gradient = backgroundGradient( control );
+    const QskGradient gradient = control->background();
     if ( !gradient.isValid() )
         return nullptr;
 
-    auto rectNode = static_cast< QskRectNode* >( node );
-    if ( rectNode == nullptr )
-        rectNode = new QskRectNode();
+    auto boxNode = static_cast< QskBoxNode* >( node );
+    if ( boxNode == nullptr )
+        boxNode = new QskBoxNode();
 
-    rectNode->setRect( rect );
-    rectNode->setFillGradient( gradient );
-    rectNode->update();
+    QskBoxOptions options;
+    options.fillGradient = gradient;
 
-    return rectNode;
-}
-
-QskGradient QskSkinlet::backgroundGradient( const QskControl* control ) const
-{
-    // how to express diagonal|verticla|horizontal with aspects ???
-
-    using namespace QskAspect;
-
-    const Aspect aspect = Control | Background;
-
-    const QColor color1 = control->color( aspect | TopEdge );
-    const QColor color2 = control->color( aspect | BottomEdge );
-
-    if ( color1.isValid() && color2.isValid() )
-        return QskGradient( QskGradient::Vertical, color1, color2 );
-
-    return QskGradient( control->color( aspect ) );
+    boxNode->setBoxData( rect, options );
+    return boxNode;
 }
 
 QSGNode* QskSkinlet::updateDebugNode(
@@ -347,20 +330,22 @@ QSGNode* QskSkinlet::findNodeByRole( QSGNode* parent, quint8 nodeRole )
     return qskFindNodeByFlag( parent, nodeRole );
 }
 
-QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable, QSGNode* node,
-    QskAspect::Subcontrol subControl ) const
+QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
+    QSGNode* node, QskAspect::Subcontrol subControl ) const
 {
     const QRectF rect = subControlRect( skinnable, subControl );
-    return updateBoxNode( skinnable, node, rect, subControl, 0 );
+    return updateBoxNode( skinnable, node, rect, subControl );
 }
 
-QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable, QSGNode* node,
-    const QRectF& rect, QskAspect::Subcontrol subControl, int rotation ) const
+QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
+    QSGNode* node, const QRectF& rect, QskAspect::Subcontrol subControl ) const
 {
+    using namespace QskAspect;
+
     if ( rect.isEmpty() )
         return nullptr;
 
-    const auto options = QskSkinRenderer::boxOptions( skinnable, rect, subControl, rotation );
+    const auto options = QskSkinRenderer::boxOptions( skinnable, rect.size(), subControl );
     if ( !options.isVisible() )
         return nullptr;
 
@@ -368,13 +353,43 @@ QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable, QSGNode* node
     if ( boxNode == nullptr )
         boxNode = new QskBoxNode();
 
-    QRectF boxRect = rect.marginsRemoved( 
-        QskSkinRenderer::margins( skinnable, subControl, rotation ) );
-    boxRect = boxRect.marginsAdded( options.shadows );
+    const QMarginsF margins = skinnable->marginsHint( subControl | Margin );
+    const QRectF boxRect = rect.marginsRemoved( margins );
 
     boxNode->setBoxData( boxRect, options );
 
     return boxNode;
+}
+
+QSGNode* QskSkinlet::updateBoxClipNode( const QskSkinnable* skinnable,
+    QSGNode* node, QskAspect::Subcontrol subControl ) const
+{
+    const QRectF rect = subControlRect( skinnable, subControl );
+    return updateBoxClipNode( skinnable, node, rect, subControl );
+}
+
+QSGNode* QskSkinlet::updateBoxClipNode( const QskSkinnable* skinnable,
+    QSGNode* node, const QRectF& rect, QskAspect::Subcontrol subControl ) const
+{
+    using namespace QskAspect;
+
+    if ( rect.isEmpty() )
+        return nullptr;
+
+    const auto options = QskSkinRenderer::boxOptions( skinnable, rect.size(), subControl );
+    if ( !options.isVisible() )
+        return nullptr;
+
+    auto clipNode = static_cast< QskBoxClipNode* >( node );
+    if ( clipNode == nullptr )
+        clipNode = new QskBoxClipNode();
+
+    const QRectF clipRect = rect.marginsRemoved(
+        skinnable->marginsHint( subControl | Margin ) );
+
+    clipNode->setBox( clipRect, options.shape, options.border );
+
+    return clipNode;
 }
 
 QSGNode* QskSkinlet::updateTextNode(

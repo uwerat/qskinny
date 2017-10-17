@@ -56,9 +56,9 @@ namespace
 
 static QVector< AnimatorCandidate > qskAnimatorCandidates(
     QskSkinTransition::Type mask,
-    const std::unordered_map< QskAspect::Aspect, QVariant >& oldMap,
+    const QskSkinHintTable& oldTable,
     const std::unordered_map< int, QskColorFilter >& oldFilters,
-    const std::unordered_map< QskAspect::Aspect, QVariant >& newMap,
+    const QskSkinHintTable& newTable,
     const std::unordered_map< int, QskColorFilter >& newFilters )
 {
     // building a list of candidates for animations by comparing
@@ -67,10 +67,10 @@ static QVector< AnimatorCandidate > qskAnimatorCandidates(
     const QskColorFilter noFilter;
     QVector< AnimatorCandidate > candidates;
 
-    if ( oldMap.empty() )
+    if ( !oldTable.hasHints() )
         return candidates;
 
-    for ( auto entry : newMap )
+    for ( auto entry : newTable.hints() )
     {
         const auto aspect = entry.first;
 
@@ -121,10 +121,21 @@ static QVector< AnimatorCandidate > qskAnimatorCandidates(
             if ( ( ( type == QskAspect::Color ) && ( mask & QskSkinTransition::Color ) ) ||
                 ( ( type == QskAspect::Metric ) && ( mask & QskSkinTransition::Metric ) ) )
             {
-                const auto oldEntry = oldMap.find( aspect );
+                auto value = oldTable.resolvedHint( aspect );
+                if ( value == nullptr && aspect.subControl() != QskAspect::Control )
+                {
+                    auto a = aspect;
+                    a.setSubControl( QskAspect::Control );
+                    a.clearStates();
+                    value = oldTable.resolvedHint( a );
+                }
 
-                if ( oldEntry != oldMap.end() && oldEntry->second != entry.second )
-                    candidates += AnimatorCandidate( aspect, oldEntry->second, entry.second );
+                /*
+                    We are missing transitions, when a hint in newTable
+                    gets resolved from QskControl. TODO ...
+                 */
+                if ( value && *value != entry.second )
+                    candidates += AnimatorCandidate( aspect, *value, entry.second );
             }
         }
     }
@@ -264,12 +275,8 @@ namespace
                 {
                     if ( !control->autoFillBackground() )
                     {
-                        if ( candidate.aspect.isBoxPrimitive() &&
-                            ( candidate.aspect.boxPrimitive() == QskAspect::Background ) )
-                        {
-                            // no need to animate the background unless we show it
-                            continue;
-                        }
+                        // no need to animate the background unless we show it
+                        continue;
                     }
                 }
 
@@ -338,7 +345,7 @@ namespace
         std::map< QskAspect::Aspect, QskHintAnimator > m_map;
         std::vector< UpdateInfo > m_updateInfos; // vector: for fast iteration
 
-         QMetaObject::Connection m_notifyConnection;
+        QMetaObject::Connection m_notifyConnection;
     };
 }
 
@@ -422,14 +429,14 @@ void QskSkinTransition::process()
         // copy out all hints before updating the skin
         // - would be good to have Copy on Write here
 
-        const auto oldMap = m_skins[0]->hintTable().hints();
+        const auto oldTable = m_skins[0]->hintTable();
         const auto oldFilters = m_skins[0]->graphicFilters();
 
         // apply the changes
         updateSkin( m_skins[0], m_skins[1] );
 
-        candidates = qskAnimatorCandidates( m_mask, oldMap, oldFilters,
-            m_skins[1]->hintTable().hints(), m_skins[1]->graphicFilters() );
+        candidates = qskAnimatorCandidates( m_mask, oldTable, oldFilters,
+            m_skins[1]->hintTable(), m_skins[1]->graphicFilters() );
     }
 
     if ( !candidates.isEmpty() )

@@ -11,6 +11,7 @@
 #include <QskAspect.h>
 #include <QskListView.h>
 #include <QskFocusIndicator.h>
+#include <QskBoxBorderColors.h>
 
 static void qskResetColors( QskSkin* skin, const QColor& accent )
 {
@@ -22,7 +23,7 @@ static void qskResetColors( QskSkin* skin, const QColor& accent )
         of attributes. So we do some manual extra work here
      */
     skin->setColor( QskListView::CellSelected, accent.darker( 130 ) );
-    skin->setColor( QskFocusIndicator::Panel | QskAspect::Border, accent.darker( 150 ) );
+    skin->setBoxBorderColors( QskFocusIndicator::Panel, accent.darker( 150 ) );
 }
 
 namespace

@@ -6,12 +6,9 @@
 #include "QskSubWindowSkinlet.h"
 #include "QskSubWindow.h"
 #include "QskAspect.h"
-#include "QskFrameNode.h"
-#include "QskSkin.h"
+#include "QskBoxBorderMetrics.h"
 
-#include <QSGGeometryNode>
 #include <QSGSimpleRectNode>
-
 #include <QFontMetricsF>
 
 QskSubWindowSkinlet::QskSubWindowSkinlet( QskSkin* skin ):
@@ -34,12 +31,7 @@ QRectF QskSubWindowSkinlet::subControlRect(
 
     if ( subControl == QskSubWindow::Panel )
     {
-        const qreal off = subControlRect( skinnable, QskSubWindow::TitleBar ).height();
-
-        QRectF r = subWindow->contentsRect();
-        r.setTop( r.top() + off );
-
-        return r;
+        return subWindow->contentsRect();
     }
 
     return Inherited::subControlRect( skinnable, subControl );
@@ -54,7 +46,7 @@ QSGNode* QskSubWindowSkinlet::updateSubNode( const QskSkinnable* skinnable,
     {
         case PanelRole:
         {
-            return updatePanelNode( subWindow, node );
+            return updateBoxNode( subWindow, node, QskSubWindow::Panel );
         }
 
         case TitleBarRole:
@@ -66,35 +58,6 @@ QSGNode* QskSubWindowSkinlet::updateSubNode( const QskSkinnable* skinnable,
     return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
-QSGNode* QskSubWindowSkinlet::updatePanelNode(
-    const QskSubWindow* subWindow, QSGNode* node ) const
-{
-    using namespace QskAspect;
-
-    auto panelNode = static_cast< QskFrameNode* >( node );
-    if ( panelNode == nullptr )
-        panelNode = new QskFrameNode;
-
-    const qreal radiusX = subWindow->metric( QskSubWindow::Panel | RadiusX );
-    const qreal radiusY = subWindow->metric( QskSubWindow::Panel | RadiusY );
-
-    panelNode->setRect( subWindow->contentsRect() );
-    panelNode->setBorderWidth( subWindow->metric( QskSubWindow::Panel | Border ) );
-
-    Q_UNUSED( radiusY ); // TODO
-    panelNode->setRadius( radiusX );
-
-    panelNode->setShadeFactor( 1.0 );
-
-    panelNode->setColors(
-        subWindow->color( QskSubWindow::Panel | Border | RightEdge ),
-        subWindow->color( QskSubWindow::Panel ),
-        subWindow->color( QskSubWindow::Panel | Border | LeftEdge ) );
-
-    panelNode->update();
-    return panelNode;
-}
-
 QSGNode* QskSubWindowSkinlet::updateTitleBarNode(
     const QskSubWindow* subWindow, QSGNode* node ) const
 {
@@ -102,8 +65,6 @@ QSGNode* QskSubWindowSkinlet::updateTitleBarNode(
     if ( rect.isEmpty() )
         return nullptr;
 
-    // should be done by updateBorderGeometry !!
-#if 1
     auto barNode = static_cast< QSGSimpleRectNode* >( node );
     if ( barNode == nullptr )
         barNode = new QSGSimpleRectNode();
@@ -114,16 +75,15 @@ QSGNode* QskSubWindowSkinlet::updateTitleBarNode(
 
     barNode->setColor( subWindow->color( aspect ) );
     barNode->setRect( rect );
-#endif
 
     return barNode;
 }
 
 QRectF QskSubWindowSkinlet::titleBarRect( const QskSubWindow* subWindow ) const
 {
-    const qreal bw = subWindow->metric( QskSubWindow::Panel | QskAspect::Border );
+    const auto border = subWindow->boxBorderHint( QskSubWindow::Panel | QskAspect::Border );
 
-    QRectF rect = subWindow->contentsRect().adjusted( bw, bw, -bw, -bw );
+    QRectF rect = subWindow->contentsRect().marginsRemoved( border.widths() );
     rect.setHeight( titleBarHeight( subWindow ) );
 
     return rect;

@@ -12,8 +12,8 @@
 #include "QskSkin.h"
 #include "QskSkinRenderer.h"
 #include "QskTextOptions.h"
-#include "QskBoxNode.h"
 #include "QskTextNode.h"
+#include "QskBoxNode.h"
 
 static constexpr const QSGNode::Flag IsSubtreeBlocked =
     static_cast< QSGNode::Flag >( 0x100000 );
@@ -182,7 +182,7 @@ QSGNode* QskInputPanelSkinlet::updatePanelNode(
         }
     }
 
-    QskSkinRenderer::updateBox( panel, panelNode, contentsRect, QskInputPanel::Panel );
+    updateBoxNode( panel, panelNode, contentsRect, QskInputPanel::Panel );
 
     return panelNode;
 }
@@ -196,7 +196,7 @@ QSGNode* QskInputPanelSkinlet::updateKeyFrameNode(
         frameNode = new FrameNode( const_cast< QskInputPanel* >( panel ) );
 
     frameNode->setKey( key );
-    QskSkinRenderer::updateBox( frameNode, frameNode, rect, QskInputPanel::KeyFrame );
+    updateBoxNode( frameNode, frameNode, rect, QskInputPanel::KeyPanel );
 
     return frameNode;
 }

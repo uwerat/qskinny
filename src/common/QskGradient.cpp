@@ -4,9 +4,20 @@
  *****************************************************************************/
 
 #include "QskGradient.h"
+#include "QskRgbValue.h"
+#include <QVariant>
 #include <QDebug>
 
-static bool isGradientValid( const QVector< QskGradientStop >& stops )
+#include <qhashfunctions.h>
+
+static void qskRegisterGradient()
+{
+    qRegisterMetaType< QskGradient >();
+}
+
+Q_CONSTRUCTOR_FUNCTION( qskRegisterGradient )
+
+static inline bool qskIsGradientValid( const QVector< QskGradientStop >& stops )
 {
     if ( stops.size() < 2 )
         return false;
@@ -22,7 +33,7 @@ static bool isGradientValid( const QVector< QskGradientStop >& stops )
 
     for ( int i = 1; i < stops.size(); i++ )
     {
-        if ( stops[i].position() <= stops[i - 1].position() )
+        if ( stops[i].position() < stops[i - 1].position() )
             return false;
 
         if ( !stops[i].color().isValid() )
@@ -30,6 +41,74 @@ static bool isGradientValid( const QVector< QskGradientStop >& stops )
     }
 
     return true;
+}
+
+static inline bool qskIsMonochrome( const QVector< QskGradientStop >& stops )
+{
+    for ( int i = 1; i < stops.size(); i++ )
+    {
+        if ( stops[i].color() != stops[0].color() )
+            return false;
+    }
+
+    return true;
+}
+
+static inline QColor qskInterpolated(
+    const QskGradientStop& s1, const QskGradientStop& s2, qreal pos )
+{
+    if ( s1.color() == s2.color() )
+        return s1.color();
+
+    const qreal ratio = ( pos - s1.position() ) / ( s2.position() - s1.position() );
+    return QskRgbValue::interpolated( s1.color(), s2.color(), ratio );
+}
+
+static inline bool qskComparePositions(
+    const QVector< QskGradientStop >& s1, const QVector< QskGradientStop >& s2 )
+{
+    if ( s1.count() != s2.count() )
+        return false;
+
+    // the first is always at 0.0, the last at 1.0
+    for ( int i = 1; i < s1.count() - 1; i++ )
+    {
+        if ( s1[i].position() != s2[i].position() )
+            return false;
+    }
+
+    return true;
+}
+
+static inline QVector< QskGradientStop > qskExpandedStops(
+    const QVector< QskGradientStop >& s1, const QVector< QskGradientStop >& s2 )
+{
+    // expand s1 by stops matching to the positions from s2
+
+    if ( qskComparePositions( s1, s2 ) )
+        return s1;
+
+    QVector< QskGradientStop > stops;
+
+    stops += s1.first();
+
+    int i = 1, j = 1;
+    while( ( i < s1.count() - 1 ) || ( j < s2.count() - 1 ) )
+    {
+        if ( s1[i].position() < s2[j].position() )
+        {
+            stops += s1[i++];
+        }
+        else
+        {
+            const qreal pos = s2[j++].position();
+            stops += QskGradientStop( pos, qskInterpolated( s1[i - 1], s1[i], pos ) );
+        }
+    }
+
+    stops += s1.last();
+
+    return stops;
 }
 
 QskGradientStop::QskGradientStop():
@@ -43,11 +122,6 @@ QskGradientStop::QskGradientStop( qreal position, const QColor& color ):
 {
 }
 
-qreal QskGradientStop::position() const
-{
-    return m_position;
-}
-
 void QskGradientStop::setPosition( qreal position )
 {
     m_position = position;
@@ -58,11 +132,6 @@ void QskGradientStop::resetPosition()
     m_position = -1.0;
 }
 
-QColor QskGradientStop::color() const
-{
-    return m_color;
-}
-
 void QskGradientStop::setColor( const QColor& color )
 {
     m_color = color;
@@ -71,6 +140,34 @@ void QskGradientStop::setColor( const QColor& color )
 void QskGradientStop::resetColor()
 {
     m_color = QColor();
+}
+
+uint QskGradientStop::hash( uint seed ) const
+{
+    uint hash = qHashBits( &m_position, sizeof( m_position ), seed );
+    return qHashBits( &m_color, sizeof( m_color ), hash );
+}
+
+QColor QskGradientStop::interpolated(
+    const QskGradientStop& s1, const QskGradientStop& s2, qreal position )
+{
+    if ( s1.color() == s2.color() )
+        return s1.color();
+
+    auto min = &s1;
+    auto max = &s2;
+
+    if ( min->position() > max->position() )
+        std::swap( min, max );
+
+    if ( position <= min->position() )
+        return min->color();
+
+    if ( position >= max->position() )
+        return max->color();
+
+    const qreal r = ( position - min->position() ) / ( max->position() - min->position() );
+    return QskRgbValue::interpolated( min->color(), max->color(), r );
 }
 
 QskGradient::QskGradient():
@@ -91,13 +188,20 @@ QskGradient::QskGradient( Orientation orientation,
     setColors( startColor, stopColor );
 }
 
+QskGradient::QskGradient( Orientation orientation,
+    const QVector< QskGradientStop >& stops ):
+    m_orientation( orientation ),
+    m_stops( stops )
+{
+}
+
 QskGradient::~QskGradient()
 {
 }
 
 bool QskGradient::isValid() const
 {
-    return ::isGradientValid( m_stops );
+    return qskIsGradientValid( m_stops );
 }
 
 void QskGradient::invalidate()
@@ -107,21 +211,25 @@ void QskGradient::invalidate()
 
 bool QskGradient::isMonochrome() const
 {
-    if ( !isValid() )
+    if ( !qskIsGradientValid( m_stops ) )
         return true;
 
-    for ( int i = 1; i < m_stops.size(); i++ )
-    {
-        if ( m_stops[i] != m_stops[0] )
-            return false;
-    }
-
-    return true;
+    return qskIsMonochrome( m_stops );
 }
 
 bool QskGradient::isVisible() const
 {
-    return isValid() && ( m_stops[0].color().alpha() > 0 );
+    if ( isValid() )
+    {
+        for ( const auto& stop : m_stops )
+        {
+            const auto& c = stop.color();
+            if ( c.isValid() && c.alpha() > 0 )
+                return true;
+        }
+    }
+
+    return false;
 }
 
 void QskGradient::setOrientation( Orientation orientation )
@@ -150,7 +258,7 @@ void QskGradient::setColors( const QColor& startColor, const QColor& stopColor )
 
 void QskGradient::setStops( const QVector< QskGradientStop >& stops )
 {
-    if ( !::isGradientValid( stops ) )
+    if ( !qskIsGradientValid( stops ) )
     {
         qWarning( "Invalid gradient stops" );
         invalidate();
@@ -208,6 +316,158 @@ QColor QskGradient::colorAt( int index ) const
 
     return m_stops[index].color();
 }
+
+void QskGradient::setAlpha( int alpha )
+{
+    for ( auto& stop : m_stops )
+    {
+        QColor c = stop.color();
+        if ( c.isValid() && c.alpha() )
+        {
+            c.setAlpha( alpha );
+            stop.setColor( c );
+        }
+    }
+}
+
+bool QskGradient::hasStopAt( qreal value ) const
+{
+    // better use binary search TODO ...
+    for ( auto& stop : m_stops )
+    {
+        if ( stop.position() == value )
+            return true;
+
+        if ( stop.position() > value )
+            break;
+    }
+
+    return false;
+}
+
+uint QskGradient::hash( uint seed ) const
+{
+    const int count = m_stops.size();
+    if ( count == 0 )
+        return seed;
+
+    uint hash = qHashBits( &m_orientation, sizeof( m_orientation ), seed );
+    for ( const auto& stop : m_stops )
+        hash = stop.hash( hash );
+
+    return hash;
+}
+
+QskGradient QskGradient::interpolated(
+    const QskGradient& to, qreal value ) const
+{
+    if ( !( isValid() && to.isValid() ) )
+        return to;
+
+    if ( qskIsMonochrome( m_stops ) )
+    {
+        // we can ignore our stops
+
+        const QColor c = m_stops[0].color();
+
+        QVector< QskGradientStop > s2 = to.m_stops;
+        for ( int i = 0; i < s2.count(); i++ )
+        {
+            const QColor c2 = QskRgbValue::interpolated(
+                c, s2[i].color(), value );
+
+            s2[i].setColor( c2 );
+        }
+
+        return QskGradient( to.m_orientation, s2 );
+    }
+
+    if ( qskIsMonochrome( to.m_stops ) )
+    {
+        // we can ignore the stops of to
+
+        const QColor c = to.m_stops[0].color();
+
+        QVector< QskGradientStop > s2 = m_stops;
+        for ( int i = 0; i < s2.count(); i++ )
+        {
+            const QColor c2 = QskRgbValue::interpolated(
+                s2[i].color(), c, value );
+
+            s2[i].setColor( c2 );
+        }
+
+        return QskGradient( m_orientation, s2 );
+    }
+
+    if ( m_orientation == to.m_orientation )
+    {
+        /*
+            we need to have the same number of stops
+            at the same positions
+         */
+
+        const QVector< QskGradientStop > s1 = qskExpandedStops( m_stops, to.m_stops );
+        QVector< QskGradientStop > s2 = qskExpandedStops( to.m_stops, m_stops );
+
+        for ( int i = 0; i < s1.count(); i++ )
+        {
+            const QColor c2 = QskRgbValue::interpolated(
+                s1[i].color(), s2[i].color(), value );
+
+            s2[i].setColor( c2 );
+        }
+
+        return QskGradient( m_orientation, s2 );
+    }
+    else
+    {
+        /*
+            The interpolation is devided into 2 steps. First we
+            interpolate into a monochrome gradient and ten change
+            the orientation before we continue in direction of the
+            final gradient.
+         */
+
+        const QColor c = m_stops[0].color();
+
+        if ( value <= 0.5 )
+        {
+            QVector< QskGradientStop > s2 = m_stops;
+
+            for ( int i = 0; i < s2.count(); i++ )
+            {
+                const QColor c2 = QskRgbValue::interpolated(
+                    s2[i].color(), c, 2 * value );
+
+                s2[i].setColor( c2 );
+            }
+
+            return QskGradient( m_orientation, s2 );
+        }
+        else
+        {
+            QVector< QskGradientStop > s2 = to.m_stops;
+
+            for ( int i = 0; i < s2.count(); i++ )
+            {
+                const QColor c2 = QskRgbValue::interpolated(
+                    c, s2[i].color(), 2 * ( value - 0.5 ) );
+
+                s2[i].setColor( c2 );
+            }
+
+            return QskGradient( to.m_orientation, s2 );
+        }
+    }
+}
+
+QVariant QskGradient::interpolate(
+    const QskGradient& from, const QskGradient& to, qreal progress )
+{
+    return QVariant::fromValue( from.interpolated( to, progress ) );
+}
+
 
 #ifndef QT_NO_DEBUG_STREAM
 

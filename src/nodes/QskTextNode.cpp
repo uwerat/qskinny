@@ -21,7 +21,7 @@ QskTextNode::~QskTextNode()
 bool QskTextNode::setTextData(
     const QString& text, const QSizeF& size, const QFont& font,
     const QskTextOptions& options, Qt::Alignment alignment, Qsk::TextStyle textStyle,
-    const QColor& textColor, const QColor& styleColor, const QColor& linkColor ) 
+    const QColor& textColor, const QColor& styleColor, const QColor& linkColor )
 {
     uint hash;
 
@@ -35,7 +35,7 @@ bool QskTextNode::setTextData(
     hash = qHash( linkColor.rgba(), hash );
     hash = qHashBits( &size, sizeof( QSizeF ), hash );
 
-    if ( hash == m_hash ) 
+    if ( hash == m_hash )
         return false;
 
     m_hash = hash;

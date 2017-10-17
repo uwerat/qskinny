@@ -14,14 +14,15 @@
 class QskSkinnable;
 class QskTextOptions;
 class QskBoxOptions;
+class QskBoxShapeMetrics;
+class QskBoxBorderMetrics;
 class QskTextNode;
-class QskBoxNode;
 
 class QPointF;
 class QRectF;
 class QSizeF;
-class QString;
 class QMarginsF;
+class QString;
 
 namespace QskSkinRenderer
 {
@@ -45,13 +46,10 @@ namespace QskSkinRenderer
         const QskTextOptions&, QskAspect::Subcontrol );
 
     QSK_EXPORT QskBoxOptions boxOptions( const QskSkinnable*,
-        const QRectF&, QskAspect::Subcontrol, int rotation = 0 );
+        const QSizeF&, QskAspect::Subcontrol );
 
-    QSK_EXPORT QMarginsF margins( const QskSkinnable*,
-        QskAspect::Subcontrol, int rotation = 0 );
-
-    QSK_EXPORT void updateBox( const QskSkinnable*, QskBoxNode*,
-        const QRectF&, QskAspect::Subcontrol, int rotation = 0 );
+    QSK_EXPORT QMarginsF paddingHint(
+        const QskBoxShapeMetrics&, const QskBoxBorderMetrics&, const QSizeF&, bool inner );
 }
 
 #endif

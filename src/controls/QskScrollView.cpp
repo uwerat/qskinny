@@ -6,6 +6,7 @@
 #include "QskScrollView.h"
 #include "QskPanGestureRecognizer.h"
 #include "QskFlickAnimator.h"
+#include "QskBoxBorderMetrics.h"
 #include "QskGesture.h"
 #include "QskAspect.h"
 #include "QskEvent.h"
@@ -181,10 +182,10 @@ QSizeF QskScrollView::scrollableSize() const
 
 QRectF QskScrollView::viewContentsRect() const
 {
-    // Border/Padding
-    const int bw = metric( Viewport | QskAspect::Border );
-    const QRectF r = subControlRect( Viewport );
+    // This code should be done in the skinlet. TODO ...
+    const qreal bw = boxBorderHint( Viewport | QskAspect::Border ).widthAt( Qt::TopEdge );
 
+    const QRectF r = subControlRect( Viewport );
     return r.adjusted( bw, bw, -bw, -bw );
 }
 
@@ -404,7 +405,7 @@ Qt::Orientations QskScrollView::scrollableOrientations() const
     {
         qreal h = vr.height();
         if ( policyH == Qt::ScrollBarAlwaysOn )
-            h -= metric( HorizontalScrollBar );
+            h -= metric( HorizontalScrollBar | QskAspect::Size );
 
         if ( m_data->scrollableSize.height() > h )
             policyV = Qt::ScrollBarAlwaysOn;
@@ -414,7 +415,7 @@ Qt::Orientations QskScrollView::scrollableOrientations() const
     {
         qreal w = vr.width();
         if ( policyV == Qt::ScrollBarAlwaysOn )
-            w -= metric( VerticalScrollBar );
+            w -= metric( VerticalScrollBar | QskAspect::Size );
 
         if ( m_data->scrollableSize.width() > w )
         {
@@ -423,7 +424,7 @@ Qt::Orientations QskScrollView::scrollableOrientations() const
             // we have to check the vertical once more
 
             if ( ( policyV == Qt::ScrollBarAsNeeded ) &&
-                 ( m_data->scrollableSize.height() > vr.height() - metric( HorizontalScrollBar ) ) )
+                 ( m_data->scrollableSize.height() > vr.height() - metric( HorizontalScrollBar | QskAspect::Size ) ) )
             {
                 policyV = Qt::ScrollBarAlwaysOn;
             }

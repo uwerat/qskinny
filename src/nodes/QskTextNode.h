@@ -24,7 +24,7 @@ public:
 
     bool setTextData( const QString& text, const QSizeF&, const QFont&,
         const QskTextOptions&, Qt::Alignment, Qsk::TextStyle,
-        const QColor& textColor, const QColor& styleColor, const QColor& linkColor ); 
+        const QColor& textColor, const QColor& styleColor, const QColor& linkColor );
 private:
     uint m_hash;
 

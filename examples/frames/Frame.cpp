@@ -5,28 +5,13 @@
 
 #include "Frame.h"
 
-#include <QskAspect.h>
-#include <QskFrameNode.h>
+#include <QskBoxOptions.h>
+#include <QskBoxNode.h>
 #include <QskSkinlet.h>
 
 static inline qreal effectiveRadius( const QRectF& rect, qreal percentage )
 {
     return percentage / 100.0 * 0.5 * qMin( rect.width(), rect.height() );
-}
-
-static inline qreal shadeFactor( Frame::Style style )
-{
-    switch( style )
-    {
-        case Frame::Raised:
-            return 1.0;
-
-        case Frame::Sunken:
-            return -1.0;
-
-        default:
-            return 0.0;
-    }
 }
 
 Frame::Frame( QQuickItem* parent ):
@@ -111,46 +96,67 @@ void Frame::updateNode( QSGNode* parentNode )
 
     const quint8 nodeRole = 0;
 
-    auto node = static_cast< QskFrameNode* >(
+    auto node = static_cast< QskBoxNode* >(
         QskSkinlet::findNodeByRole( parentNode, nodeRole ) );
 
     const QRectF rect = contentsRect();
     if ( rect.isEmpty() )
     {
         delete node;
+        return;
     }
-    else
+
+    if ( node == nullptr )
     {
-        if ( node == nullptr )
-        {
-            node = new QskFrameNode;
-            QskSkinlet::setNodeRole( node, nodeRole );
-
-            parentNode->appendChildNode( node );
-        }
-
-        updateFrameNode( rect, node );
+        node = new QskBoxNode;
+        QskSkinlet::setNodeRole( node, nodeRole );
     }
+
+    updateFrameNode( rect, node );
+
+    if ( node->parent() != parentNode )
+        parentNode->appendChildNode( node );
 }
 
-void Frame::updateFrameNode( const QRectF& rect, QskFrameNode* node )
+void Frame::updateFrameNode( const QRectF& rect, QskBoxNode* node )
 {
-    node->setRect( rect );
-    node->setRadius( effectiveRadius( rect, m_radius ) );
-    node->setBorderWidth( m_frameWidth );
-
     const QColor dark = m_color.darker( 150 );
     const QColor light = m_color.lighter( 150 );
 
-    const qreal sf = shadeFactor( m_style );
-    if ( sf == 0.0 )
-        node->setColors( dark, m_color, dark );
-    else
-        node->setColors( dark, m_color, light );
-    
-    node->setShadeFactor( sf );
+    QColor c1, c2;
 
-    node->update();
+    switch( m_style )
+    {
+        case Frame::Sunken:
+        {
+            c1 = dark;
+            c2 = light;
+            break;
+        }
+        case Frame::Raised:
+        {
+            c1 = light;
+            c2 = dark;
+            break;
+        }
+        default:
+        {
+            c1 = c2 = dark;
+        }
+    }
+   
+    QskBoxOptions options;
+
+    options.border.setWidths( m_frameWidth );
+    options.borderColors.setColor( Qsk::Left, c1 );
+    options.borderColors.setColor( Qsk::Top, c1 );
+    options.borderColors.setColor( Qsk::Right, c2 );
+    options.borderColors.setColor( Qsk::Bottom, c2 );
+
+    options.fillGradient.setColor( m_color );
+    options.shape.setRadius( effectiveRadius( rect, m_radius ) );
+    
+    node->setBoxData( rect, options );
 }
 
 #include "moc_Frame.cpp"

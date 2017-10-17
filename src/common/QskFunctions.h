@@ -21,6 +21,9 @@ QSK_EXPORT QRectF qskAlignedRectF( const QRectF& outerRect,
 
 QSK_EXPORT QRect qskInnerRect( const QRectF& rect );
 
+QSK_EXPORT QRectF qskValidOrEmptyInnerRect(
+    const QRectF& rect, const QMarginsF& margins );
+
 inline bool qskFuzzyCompare( qreal value1, qreal value2 )
 {
     if ( qFuzzyIsNull( value1 ) )

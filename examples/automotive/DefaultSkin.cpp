@@ -13,6 +13,8 @@
 #include <QskSeparator.h>
 #include <QskColorFilter.h>
 #include <QskMargins.h>
+#include <QskBoxBorderMetrics.h>
+#include <QskBoxBorderColors.h>
 
 #include <QDebug>
 
@@ -95,29 +97,27 @@ void DefaultSkin::initHints()
 
     setColor( QskTextLabel::Text, m_palette->color4 );
 
-    setColor( SoundControl::Overlay, 0 );
-    setColor( SoundControl::CrossHair, m_palette->color3 );
-    setColor( SoundControl::Marker, m_palette->color5 );
+    // - sound control
+    setGradient( SoundControl::Overlay, 0 );
+    setGradient( SoundControl::CrossHair, m_palette->color3 );
+    setGradient( SoundControl::Marker, m_palette->color5 );
 
-    // a circle
-    setMetric( SoundControl::Marker | QskAspect::Radius, 100 );
-    setSkinHint( SoundControl::Marker
-        | QskAspect::Radius | QskAspect::AllCorners
-        | QskAspect::SizeMode, Qt::RelativeSize );
+    setBoxBorder( SoundControl::Marker, 2 );
+    setBoxRadius( SoundControl::Marker, 100, Qt::RelativeSize );
 
-    setColor( QskSeparator::Panel, m_palette->color3 );
-    setMetric( QskSeparator::Panel, 2 );
+    setGradient( QskSeparator::Panel, m_palette->color3 );
+    setMetric( QskSeparator::Panel | QskAspect::Size, 2 );
 
     // -- push buttons
 
     setMargins( QskPushButton::Panel | QskAspect::Padding, 10 );
-    setColor( QskPushButton::Panel, m_palette->color1 );
+    setGradient( QskPushButton::Panel, m_palette->color1 );
     setColor( QskPushButton::Text, m_palette->color3 );
-    setColor( QskPushButton::Panel | QskPushButton::Pressed, m_palette->color2 );
+    setGradient( QskPushButton::Panel | QskPushButton::Pressed, m_palette->color2 );
     setAnimation( QskPushButton::Panel | QskAspect::Color, duration );
 
-    setColor( SoundControl::SliderControl, m_palette->color1 );
-    setColor( SoundControl::SliderControl | QskPushButton::Pressed, m_palette->color2 );
+    setGradient( SoundControl::SliderControl, m_palette->color1 );
+    setGradient( SoundControl::SliderControl | QskPushButton::Pressed, m_palette->color2 );
     setAnimation( SoundControl::SliderControl | QskAspect::Color, duration );
 
     setMetric( QskPushButton::Text | QskAspect::Size, 20 );
@@ -129,14 +129,18 @@ void DefaultSkin::initHints()
     const qreal dim = 30;
 
     setMetric( QskSlider::Panel | QskAspect::Size, dim );
+    setGradient( QskSlider::Panel, QskGradient() );
+
     setMetric( QskSlider::Groove | QskAspect::Size, 2 );
+    setGradient( QskSlider::Groove, m_palette->color4 );
+
     setMetric( QskSlider::Fill | QskAspect::Size, 2 );
-    setColor( QskSlider::Panel, Qt::transparent );
-    setColor( QskSlider::Groove, m_palette->color4 );
-    setColor( QskSlider::Fill, m_palette->color4.darker( 200 ) );
+    setGradient( QskSlider::Fill, m_palette->color4.darker( 200 ) );
+
     setMetric( QskSlider::Handle | QskAspect::Size, 24 );
-    setMetric( QskSlider::Handle | QskAspect::Radius, 12 );
-    setColor( QskSlider::Handle, m_palette->color5 );
+    setBoxBorder( QskSlider::Handle, 0 );
+    setBoxRadius( QskSlider::Handle, 100.0, Qt::RelativeSize );
+    setGradient( QskSlider::Handle, m_palette->color5 );
 
     // handle expanding, when being pressed
     for ( auto state : { QskAspect::NoState, QskSlider::Pressed } )
@@ -149,15 +153,13 @@ void DefaultSkin::initHints()
         const qreal sz = ( state == NoState ) ? 0.7 * dim : dim;
 
         setMetric( aspect | Size, sz );
-        setMetric( aspect | Radius, 0.5 * sz ); // a round handle
-
-        setAnimation( aspect | Size | Metric, duration );
-        setAnimation( aspect | Radius | Metric, 200 );
 
         // move the handle smoothly, when using keys
         setAnimation( aspect | Metric | Position,
             ( state == NoState ) ? 2 * duration : 0 );
     }
+
+    setAnimation( QskSlider::Handle | QskAspect::Metric, duration );
 
     // animator for color scheme transitions
     setAnimation( QskAspect::Color, QskAnimationHint( 1000, QEasingCurve::InQuad ) );

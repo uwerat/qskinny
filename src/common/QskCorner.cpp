@@ -7,76 +7,38 @@
 #include <QSizeF>
 #include <QDebug>
 
-QskCorner::QskCorner():
-    m_radius( 0.0 ),
-    m_mode( Qt::AbsoluteSize )
-{
-}
-
-QskCorner::QskCorner( Qt::SizeMode mode, qreal radius ):
-    m_radius( qMax( radius, 0.0 ) ),
-    m_mode( mode )
+QskCorner::QskCorner()
 {
 }
 
 void QskCorner::setRadius( qreal radius )
 {
-    m_radius = qMax( radius, 0.0 );
+    m_metrics.setRadius( radius );
 }
 
 qreal QskCorner::radius() const
 {
-    return m_radius;
+    return m_metrics.radius( Qt::TopLeftCorner ).width();
 }
 
-void QskCorner::setMode( Qt::SizeMode mode )
+void QskCorner::setSizeMode( Qt::SizeMode mode )
 {
-    m_mode = mode;
+    m_metrics.setSizeMode( mode );
 }
 
-Qt::SizeMode QskCorner::mode() const
+Qt::SizeMode QskCorner::sizeMode() const
 {
-    return m_mode;
+    return m_metrics.sizeMode();
 }
 
-bool QskCorner::operator==( const QskCorner& other ) const
+void QskCorner::setAspectRatioMode( Qt::AspectRatioMode mode )
 {
-    return ( m_mode == other.m_mode ) && ( m_radius == other.m_radius );
-}
+    m_metrics.setAspectRatioMode( mode );
+}   
 
-qreal QskCorner::effectiveRadius( const QSizeF& size ) const
+Qt::AspectRatioMode QskCorner::aspectRatioMode() const
 {
-    return effectiveRadius( size.width(), size.height() );
+    return m_metrics.aspectRatioMode();
 }
-
-qreal QskCorner::effectiveRadius( qreal width, qreal height ) const
-{
-    if ( width <= 0.0 || height <= 0.0 )
-        return 0.0;
-
-    qreal radius = m_radius;
-
-    if ( m_mode == Qt::RelativeSize )
-    {
-        // m_radius is a percentage
-        radius = qBound( 0.0, radius, 100.0 );
-        radius *= 0.5 * qMin( width, height ) / 100.0;
-    }
-
-    return radius;
-}
-
-#ifndef QT_NO_DEBUG_STREAM
-
-QDebug operator<<( QDebug debug, const QskCorner& corner )
-{
-    QDebugStateSaver saver( debug );
-    debug.nospace();
-    debug << "Corner" << '(';
-    debug << corner.mode() << "," << corner.radius();
-    debug << ')';
-    return debug;
-}
-#endif
 
 #include "moc_QskCorner.cpp"

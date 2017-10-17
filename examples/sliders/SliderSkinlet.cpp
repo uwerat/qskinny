@@ -239,7 +239,7 @@ QSGNode* SliderSkinlet::updateScaleNode(
 
     auto ticksNode = static_cast< TicksNode* >( node );
     if ( ticksNode == nullptr )
-        ticksNode = new TicksNode( slider->color( Slider::Scale | QskAspect::Border ) );
+        ticksNode = new TicksNode( slider->color( Slider::Scale ) );
 
     const int tickCount = std::floor( slider->range() / slider->stepSize() ) + 1;
 
@@ -341,7 +341,7 @@ QSGNode* SliderSkinlet::updateFillNode(
     {
         fillNode = new QSGSimpleRectNode;
         fillNode->setFlags( QSGNode::OwnedByParent );
-        fillNode->setColor( slider->color( QskSlider::Fill | QskAspect::Background ) );
+        fillNode->setColor( slider->color( QskSlider::Fill ) );
     }
 
     fillNode->setRect( fillRect );

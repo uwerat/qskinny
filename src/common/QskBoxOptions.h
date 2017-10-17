@@ -7,26 +7,21 @@
 #define QSK_BOX_OPTIONS_H
 
 #include "QskGlobal.h"
-#include "QskBoxColors.h"
-#include "QskBorderMetrics.h"
-
-#include <QMarginsF>
+#include "QskBoxShapeMetrics.h"
+#include "QskBoxBorderMetrics.h"
+#include "QskBoxBorderColors.h"
+#include "QskGradient.h"
 
 class QSK_EXPORT QskBoxOptions
 {
 public:
-    QskBoxOptions();
-
     bool isVisible() const;
 
-    QMarginsF unitedMargins() const;
-    QMarginsF padding() const;
+    QskBoxShapeMetrics shape;
+    QskBoxBorderMetrics border;
 
-public:
-    QskMargins shadows;
-
-    QskBorderMetrics metrics;
-    QskBoxColors colors;
+    QskBoxBorderColors borderColors;
+    QskGradient fillGradient;
 };
 
 #endif

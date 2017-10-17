@@ -93,6 +93,19 @@ QSizeF QskTabButton::contentsSizeHint() const
     return size;
 }
 
+QskAspect::Placement QskTabButton::effectivePlacement() const
+{
+    using namespace QskAspect;
+
+    if ( m_data->tabBar )
+    {
+        const auto o = m_data->tabBar->orientation();
+        return ( o == Qt::Horizontal ) ? Preserved : Transposed;
+    }
+
+    return Preserved;
+}
+
 QskTabBar* QskTabButton::tabBar() const
 {
     return m_data->tabBar;

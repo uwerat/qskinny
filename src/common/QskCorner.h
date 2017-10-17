@@ -7,6 +7,7 @@
 #define QSK_CORNER_H
 
 #include "QskGlobal.h"
+#include "QskBoxShapeMetrics.h"
 
 #include <QMetaType>
 #include <Qt>
@@ -19,39 +20,33 @@ class QSK_EXPORT QskCorner
     Q_GADGET
 
     Q_PROPERTY( qreal radius READ radius WRITE setRadius )
-    Q_PROPERTY( Qt::SizeMode mode READ mode WRITE setMode )
+    Q_PROPERTY( Qt::SizeMode sizeMode READ sizeMode WRITE setSizeMode )
+    Q_PROPERTY( Qt::AspectRatioMode aspectRatioMode READ aspectRatioMode WRITE setAspectRatioMode )
 
 public:
-    // currently only radial, ellipsoid will follow ...
-
     QskCorner();
     QskCorner( Qt::SizeMode, qreal radius );
 
     qreal radius() const;
     void setRadius( qreal width );
 
-    Qt::SizeMode mode() const;
-    void setMode( Qt::SizeMode );
+    Qt::SizeMode sizeMode() const;
+    void setSizeMode( Qt::SizeMode );
 
-    qreal effectiveRadius( qreal width, qreal height ) const;
-    qreal effectiveRadius( const QSizeF& ) const;
+    Qt::AspectRatioMode aspectRatioMode() const;
+    void setAspectRatioMode( Qt::AspectRatioMode );
 
-    bool operator==( const QskCorner& ) const;
-    bool operator!=( const QskCorner& ) const;
+    const QskBoxShapeMetrics& metrics() const;
 
 private:
-    qreal m_radius;
-    Qt::SizeMode m_mode;
+    // QskCorner could be replaced by QskBoxShapeMetrics TODO ...
+    QskBoxShapeMetrics m_metrics;
 };
 
-inline bool QskCorner::operator!=( const QskCorner& other ) const
+inline const QskBoxShapeMetrics& QskCorner::metrics() const
 {
-    return ( !( *this == other ) );
+    return m_metrics;
 }
-
-#ifndef QT_NO_DEBUG_STREAM
-QSK_EXPORT QDebug operator<<( QDebug, const QskCorner& );
-#endif
 
 Q_DECLARE_TYPEINFO( QskCorner, Q_MOVABLE_TYPE );
 Q_DECLARE_METATYPE( QskCorner )

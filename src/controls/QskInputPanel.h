@@ -24,7 +24,7 @@ class QSK_EXPORT QskInputPanel : public QskControl
     using Inherited = QskControl;
 
 public:
-    QSK_SUBCONTROLS( Panel, KeyFrame, KeyGlyph )
+    QSK_SUBCONTROLS( Panel, KeyPanel, KeyGlyph )
     QSK_STATES( Checked, Pressed )
 
     struct KeyData
