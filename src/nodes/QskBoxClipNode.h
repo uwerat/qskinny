@@ -3,26 +3,27 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef QSK_CLIP_NODE_H
-#define QSK_CLIP_NODE_H
+#ifndef QSK_BOX_CLIP_NODE_H
+#define QSK_BOX_CLIP_NODE_H
 
 #include "QskGlobal.h"
 #include <QSGClipNode>
 
-class QSK_EXPORT QskClipNode : public QSGClipNode
+class QskBoxShapeMetrics;
+class QskBoxBorderMetrics;
+
+class QSK_EXPORT QskBoxClipNode : public QSGClipNode
 {
 public:
-    QskClipNode();
-    virtual ~QskClipNode();
+    QskBoxClipNode();
+    virtual ~QskBoxClipNode();
 
-    void setRadius( double radius );
-    void setRect( const QRectF& rect );
-
-    void update();
+    void setBox( const QRectF&,
+        const QskBoxShapeMetrics&, const QskBoxBorderMetrics& );
 
 private:
-    double m_radius;
-    bool m_isDirty;
+    uint m_hash;
+    QRectF m_rect;
 
     QSGGeometry m_geometry;
 };
