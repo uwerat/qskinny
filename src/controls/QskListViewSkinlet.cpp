@@ -48,7 +48,7 @@ public:
         m_rowMin = rowMin;
         m_rowMax = rowMax;
     }
-    
+
     inline int rowMin() const
     {
         return m_rowMin;
@@ -278,6 +278,7 @@ void QskListViewSkinlet::updateForegroundNodes(
             node = node->nextSibling();
             x += listView->columnWidth( col );
         }
+
         y += rowHeight;
     }
 

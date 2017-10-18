@@ -203,9 +203,9 @@ QskBoxOptions QskSkinRenderer::boxOptions( const QskSkinnable* skinnable,
 
     QskBoxOptions options; 
 
-    options.shape = skinnable->boxShapeHint( subControl | Shape ).toAbsolute( size );
-    options.border = skinnable->boxBorderHint( subControl | Border ).toAbsolute( size );
-    options.borderColors = skinnable->boxBorderColorHint( subControl | Border );
+    options.shape = skinnable->boxShapeHint( subControl ).toAbsolute( size );
+    options.border = skinnable->boxBorderMetricsHint( subControl ).toAbsolute( size );
+    options.borderColors = skinnable->boxBorderColorsHint( subControl );
     options.fillGradient = skinnable->gradientHint( subControl );
 
     return options;

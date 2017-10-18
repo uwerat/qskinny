@@ -196,8 +196,8 @@ void QskMaterialSkin::initFocusIndicatorHints()
     const ColorPalette& pal = m_data->palette;
 
     setMargins( Q::Panel | Padding, 5 );
-    setBoxRadius( Q::Panel, 4 );
-    setBoxBorder( Q::Panel, 2 );
+    setBoxShape( Q::Panel, 4 );
+    setBoxBorderMetrics( Q::Panel, 2 );
     setBoxBorderColors( Q::Panel, pal.accentColor );
     setGradient( Q::Panel, QskGradient() );
 }
@@ -214,8 +214,8 @@ void QskMaterialSkin::initSeparatorHints()
         const Aspect aspect = Q::Panel | placement;
 
         setMetric( aspect | Size, 4 );
-        setBoxRadius( Q::Panel, 0 );
-        setBoxBorder( Q::Panel, 0 );
+        setBoxShape( Q::Panel, 0 );
+        setBoxBorderMetrics( Q::Panel, 0 );
         setGradient( aspect, pal.baseColor );
     }
 }
@@ -232,8 +232,8 @@ void QskMaterialSkin::initPageIndicatorHints()
         setMetric( subControl | Size, qskDpiScaled( 10 ) );
 
         // circles, without border
-        setBoxRadius( subControl, 100, Qt::RelativeSize );
-        setBoxBorder( subControl | Border, 0 );
+        setBoxShape( subControl, 100, Qt::RelativeSize );
+        setBoxBorderMetrics( subControl, 0 );
 
         const QColor color = ( subControl == Q::Bullet )
             ? pal.lighter150 : pal.accentColor;
@@ -243,8 +243,7 @@ void QskMaterialSkin::initPageIndicatorHints()
     }
 
     // no visible background panel
-    setBoxBorder( Q::Panel | Shape, 0 );
-    setBoxBorder( Q::Panel | Border, 0 );
+    setBoxBorderMetrics( Q::Panel, 0 );
     setGradient( Q::Panel, QskGradient() );
 
     setMetric( Q::Panel | Spacing, 3 );
@@ -273,8 +272,8 @@ void QskMaterialSkin::initPushButtonHints()
     QskBoxBorderColors noBorderColors = borderColors;
     noBorderColors.setAlpha( 0 );
 
-    setBoxRadius( Q::Panel, 0 );
-    setBoxBorder( Q::Panel, QskMargins( 1, 2, 1, 2 ) );
+    setBoxShape( Q::Panel, 0 );
+    setBoxBorderMetrics( Q::Panel, QskMargins( 1, 2, 1, 2 ) );
     setBoxBorderColors( Q::Panel, noBorderColors );
 
     setGradient( Q::Panel, White );
@@ -333,8 +332,8 @@ void QskMaterialSkin::initDialogButtonHints()
     QskBoxBorderColors noBorderColors = borderColors;
     noBorderColors.setAlpha( 0 );
 
-    setBoxRadius( Q::Panel, 0 );
-    setBoxBorder( Q::Panel, QskMargins( 1, 2, 1, 2 ) );
+    setBoxShape( Q::Panel, 0 );
+    setBoxBorderMetrics( Q::Panel, QskMargins( 1, 2, 1, 2 ) );
     setBoxBorderColors( Q::Panel, noBorderColors );
 
     setGradient( Q::Panel, White );
@@ -372,8 +371,8 @@ void QskMaterialSkin::initDialogButtonBoxHints()
     const ColorPalette& pal = m_data->palette;
 
     setGradient( Q::Panel, pal.baseColor );
-    setBoxRadius( Q::Panel, 0 );
-    setBoxBorder( Q::Panel, 0 );
+    setBoxShape( Q::Panel, 0 );
+    setBoxBorderMetrics( Q::Panel, 0 );
 }
 
 void QskMaterialSkin::initSliderHints()
@@ -389,8 +388,8 @@ void QskMaterialSkin::initSliderHints()
     // Panel
 
     setMetric( Q::Panel | Size, dim );
-    setBoxRadius( Q::Panel, 0 );
-    setBoxBorder( Q::Panel, 0 );
+    setBoxShape( Q::Panel, 0 );
+    setBoxBorderMetrics( Q::Panel, 0 );
     setGradient( Q::Panel, QskGradient() );
     
     setMargins( Q::Panel | Preserved | Padding, QskMargins( 0.5 * dim, 0 ) );
@@ -403,8 +402,8 @@ void QskMaterialSkin::initSliderHints()
         setMetric( subControl | Size, 5 );
         setMargins( subControl | Padding, 0 );
 
-        setBoxRadius( subControl, 0 );
-        setBoxBorder( subControl, 0 );
+        setBoxShape( subControl, 0 );
+        setBoxBorderMetrics( subControl, 0 );
         setGradient( subControl, QskGradient() );
     }
 
@@ -415,8 +414,8 @@ void QskMaterialSkin::initSliderHints()
 
     // handle
 
-    setBoxRadius( Q::Handle, 100, Qt::RelativeSize );
-    setBoxBorder( Q::Handle, 4 );
+    setBoxShape( Q::Handle, 100, Qt::RelativeSize );
+    setBoxBorderMetrics( Q::Handle, 4 );
     
     // handle expanding, when being pressed
     setMetric( Q::Handle | Size, 0.6 * dim );
@@ -468,11 +467,11 @@ void QskMaterialSkin::initTabButtonHints()
 
         // The highlighted button has a accented bar at the bottom/right edge
 
-        setBoxRadius( aspect, 0 );
+        setBoxShape( aspect, 0 );
 
         QskBoxBorderMetrics border;
         border.setWidthAt( edge, 3 );
-        setBoxBorder( aspect, border );
+        setBoxBorderMetrics( aspect, border );
 
         QskBoxBorderColors borderColors( QskRgbValue::White );
         setBoxBorderColors( placement, borderColors );
@@ -498,8 +497,8 @@ void QskMaterialSkin::initTabBarHints()
     using namespace QskAspect;
     using Q = QskTabBar;
 
-    setBoxRadius( Q::Panel, 0 );
-    setBoxBorder( Q::Panel, 0 );
+    setBoxShape( Q::Panel, 0 );
+    setBoxBorderMetrics( Q::Panel, 0 );
     setGradient( Q::Panel, QskGradient() );
 }
 
@@ -510,8 +509,8 @@ void QskMaterialSkin::initTabViewHints()
 
     const ColorPalette& pal = m_data->palette;
 
-    setBoxRadius( Q::Page, 0 );
-    setBoxBorder( Q::Page, 0 );
+    setBoxShape( Q::Page, 0 );
+    setBoxBorderMetrics( Q::Page, 0 );
     setGradient( Q::Page, pal.darker150 );
     setBoxBorderColors( Q::Page, pal.baseColor );
 
@@ -528,8 +527,8 @@ void QskMaterialSkin::initInputPanelHints()
     // key panel
     setMargins( Q::KeyPanel | Margin, 2 );
 
-    setBoxRadius( Q::KeyPanel, 20.0, Qt::RelativeSize );
-    setBoxBorder( Q::KeyPanel, 2 );
+    setBoxShape( Q::KeyPanel, 20.0, Qt::RelativeSize );
+    setBoxBorderMetrics( Q::KeyPanel, 2 );
 
     setGradient( Q::KeyPanel, pal.darker125 );
     setBoxBorderColors( Q::KeyPanel, pal.baseColor );
@@ -548,8 +547,8 @@ void QskMaterialSkin::initInputPanelHints()
     setColor( Q::KeyGlyph | Q::Disabled, pal.darker200 );
 
     // panel
-    setBoxRadius( Q::Panel, 0 );
-    setBoxBorder( Q::Panel, 0 );
+    setBoxShape( Q::Panel, 0 );
+    setBoxBorderMetrics( Q::Panel, 0 );
     setGradient( Q::Panel, pal.darker150 );
     setBoxBorderColors( Q::Panel, pal.baseColor );
 }
@@ -563,8 +562,8 @@ void QskMaterialSkin::initScrollViewHints()
 
     setMetric( Q::Panel | Spacing, 2 );
 
-    setBoxRadius( Q::Viewport, 5 );
-    setBoxBorder( Q::Viewport, 1 );
+    setBoxShape( Q::Viewport, 5 );
+    setBoxBorderMetrics( Q::Viewport, 1 );
     setGradient( Q::Viewport, QskRgbValue::White );
     setBoxBorderColors( Q::Viewport, Qt::black );
     
@@ -579,8 +578,8 @@ void QskMaterialSkin::initScrollViewHints()
 
     for ( auto subControl : { Q::HorizontalScrollHandle, Q::VerticalScrollHandle } )
     {
-        setBoxRadius( subControl, 3 );
-        setBoxBorder( subControl, 1 );
+        setBoxShape( subControl, 3 );
+        setBoxBorderMetrics( subControl, 1 );
         setGradient( subControl, pal.accentColor );
         setBoxBorderColors( subControl, QskRgbValue::White );
 
@@ -623,8 +622,8 @@ void QskMaterialSkin::initSubWindowHints()
     // panel
 
     setMargins( Q::Panel | Padding, 10 );
-    setBoxRadius( Q::Panel, 0 );
-    setBoxBorder( Q::Panel, 2 );
+    setBoxShape( Q::Panel, 0 );
+    setBoxBorderMetrics( Q::Panel, 2 );
     setGradient( Q::Panel, pal.baseColor );
 
     QskBoxBorderColors colors;

@@ -79,22 +79,22 @@ void OtherSkin::initHints()
     setGradient( SoundControl::CrossHair, QColor( "OliveDrab" ).lighter( 120 ) );
     setGradient( SoundControl::Marker, QColor( "OliveDrab" ) );
 
-    setBoxBorder( SoundControl::Marker, 2 );
-    setBoxRadius( SoundControl::Marker, 100, Qt::RelativeSize );
+    setBoxBorderMetrics( SoundControl::Marker, 2 );
+    setBoxShape( SoundControl::Marker, 100, Qt::RelativeSize );
 
     setSkinHint( ButtonBar::Indicator | QskAspect::GraphicRole, SkinFactory::Indicator );
     setSkinHint( SoundControl::Vehicle | QskAspect::GraphicRole, SkinFactory::Vehicle );
     setSkinHint( SoundControl::MarkerControl | QskAspect::GraphicRole, SkinFactory::Vehicle );
 
-    setBoxBorder( QskSeparator::Panel, 0 );
+    setBoxBorderMetrics( QskSeparator::Panel, 0 );
     setGradient( QskSeparator::Panel, m_palette->color3 );
     setMetric( QskSeparator::Panel | QskAspect::Size, 1 );
 
     // -- push buttons
 
     setMargins( QskPushButton::Panel | QskAspect::Padding, 8 );
-    setBoxBorder( QskPushButton::Panel, 0 );
-    setBoxRadius( QskPushButton::Panel, 4 );
+    setBoxBorderMetrics( QskPushButton::Panel, 0 );
+    setBoxShape( QskPushButton::Panel, 4 );
 
     setGradient( QskPushButton::Panel, m_palette->color1 );
     setGradient( QskPushButton::Panel | QskPushButton::Pressed, m_palette->color2 );
@@ -109,8 +109,8 @@ void OtherSkin::initHints()
     setGradient( SoundControl::Overlay, overlayColor );
 
     // -- slider control buttons
-    setBoxBorder( SoundControl::SliderControl, 0 ); 
-    setBoxRadius( SoundControl::SliderControl, 4 ); 
+    setBoxBorderMetrics( SoundControl::SliderControl, 0 ); 
+    setBoxShape( SoundControl::SliderControl, 4 ); 
 
     setGradient( SoundControl::SliderControl, m_palette->color1 );
     setGradient( SoundControl::SliderControl | QskPushButton::Pressed, m_palette->color2 );
@@ -133,8 +133,8 @@ void OtherSkin::initHints()
     setGradient( QskSlider::Fill, m_palette->color3.lighter( 150 ) );
 
     setMetric( QskSlider::Handle | QskAspect::Size, 22 );
-    setBoxBorder( QskSlider::Handle, 0 );
-    setBoxRadius( QskSlider::Handle, 6 );
+    setBoxBorderMetrics( QskSlider::Handle, 0 );
+    setBoxShape( QskSlider::Handle, 6 );
     setGradient( QskSlider::Handle, m_palette->color3 );
 }
 

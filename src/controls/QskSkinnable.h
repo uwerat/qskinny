@@ -80,6 +80,7 @@ public:
     void setMetric( QskAspect::Aspect, qreal metric );
     qreal metric( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
+    void setMarginsHint( QskAspect::Aspect, qreal );
     void setMarginsHint( QskAspect::Aspect, const QMarginsF& );
     QMarginsF marginsHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
@@ -89,11 +90,11 @@ public:
     void setBoxShapeHint( QskAspect::Aspect, const QskBoxShapeMetrics& );
     QskBoxShapeMetrics boxShapeHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
-    void setBoxBorderHint( QskAspect::Aspect, const QskBoxBorderMetrics& );
-    QskBoxBorderMetrics boxBorderHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
+    void setBoxBorderMetricsHint( QskAspect::Aspect, const QskBoxBorderMetrics& );
+    QskBoxBorderMetrics boxBorderMetricsHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
-    void setBoxBorderColorHint( QskAspect::Aspect, const QskBoxBorderColors& );
-    QskBoxBorderColors boxBorderColorHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
+    void setBoxBorderColorsHint( QskAspect::Aspect, const QskBoxBorderColors& );
+    QskBoxBorderColors boxBorderColorsHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
     void setFlagHint( QskAspect::Aspect, int flag );
     int flagHint( QskAspect::Aspect ) const;

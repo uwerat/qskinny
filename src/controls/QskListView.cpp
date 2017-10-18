@@ -172,6 +172,7 @@ void QskListView::keyPressEvent( QKeyEvent* event )
         return;
 
     int row = selectedRow();
+
     switch ( event->key() )
     {
         case Qt::Key_Down:

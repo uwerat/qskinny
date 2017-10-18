@@ -76,13 +76,18 @@ public:
     void setGradient( QskAspect::Aspect, const QskGradient& );
     QskGradient gradient( QskAspect::Aspect ) const;
 
-    void setBoxRadius( QskAspect::Aspect, qreal radius, Qt::SizeMode = Qt::AbsoluteSize );
+    void setBoxShape( QskAspect::Aspect, qreal radius, Qt::SizeMode = Qt::AbsoluteSize );
+    void setBoxShape( QskAspect::Aspect, qreal topLeft, qreal topRight,
+        qreal bottomLeft, qreal bottomRight, Qt::SizeMode = Qt::AbsoluteSize );
 
     void setBoxShape( QskAspect::Aspect, const QskBoxShapeMetrics& );
     QskBoxShapeMetrics boxShape( QskAspect::Aspect ) const;
 
-    void setBoxBorder( QskAspect::Aspect, const QskBoxBorderMetrics& );
-    QskBoxBorderMetrics boxBorder( QskAspect::Aspect ) const;
+    void setBoxBorderMetrics( QskAspect::Aspect, qreal left, qreal top,
+        qreal right, qreal bottom, Qt::SizeMode = Qt::AbsoluteSize );
+
+    void setBoxBorderMetrics( QskAspect::Aspect, const QskBoxBorderMetrics& );
+    QskBoxBorderMetrics boxBorderMetrics( QskAspect::Aspect ) const;
 
     void setBoxBorderColors( QskAspect::Aspect, const QskBoxBorderColors& );
     QskBoxBorderColors boxBorderColors( QskAspect::Aspect ) const;

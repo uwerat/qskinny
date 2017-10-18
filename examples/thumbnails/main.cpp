@@ -112,16 +112,16 @@ public:
         using namespace QskAspect;
 
         // settings usually done in the skins
-        setBoxBorderHint( Viewport, 2 );
+        setBoxBorderMetricsHint( Viewport, 2 );
         setBoxShapeHint( Viewport, 20 );
 
         for ( auto subControl : { HorizontalScrollBar, VerticalScrollBar } )
             setMetric( subControl | Size, 20 );
 
-        setBoxBorderHint( VerticalScrollHandle, 1 );
+        setBoxBorderMetricsHint( VerticalScrollHandle, 1 );
         setBoxShapeHint( VerticalScrollHandle, 8 );
 
-        setBoxBorderHint( HorizontalScrollHandle, 1 );
+        setBoxBorderMetricsHint( HorizontalScrollHandle, 1 );
         setBoxShapeHint( HorizontalScrollHandle, 8 );
     }
 };

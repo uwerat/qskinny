@@ -48,8 +48,9 @@ QskSkin* SkinFactory::createSkin( const QString& skinName )
         skin->setSkinHint( SoundControl::Vehicle | QskAspect::GraphicRole, SkinFactory::Vehicle );
 
         skin->setGradient( SoundControl::Marker, themeColor );
-        skin->setBoxBorder( SoundControl::Marker, 1 );
-        skin->setBoxRadius( SoundControl::Marker, 6 );
+        skin->setBoxBorderMetrics( SoundControl::Marker, 1 );
+        skin->setBoxShape( SoundControl::Marker, 6 );
+
         skin->setColor( QskTextLabel::Text, "PeachPuff" );
         skin->setGradient( QskPushButton::Text, themeColor );
 
@@ -72,8 +73,8 @@ QskSkin* SkinFactory::createSkin( const QString& skinName )
 
         skin->setSkinHint( SoundControl::MarkerControl | QskAspect::GraphicRole, SkinFactory::Indicator );
 
-        skin->setBoxBorder( SoundControl::Marker, 1 );
-        skin->setBoxRadius( SoundControl::Marker, 8 );
+        skin->setBoxBorderMetrics( SoundControl::Marker, 1 );
+        skin->setBoxShape( SoundControl::Marker, 8 );
 
         skin->setGradient( SoundControl::Marker, QColor( "SaddleBrown" ) );
         skin->setGradient( SoundControl::CrossHair, QColor( "Sienna" ) );

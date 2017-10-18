@@ -209,9 +209,18 @@ QskGradient QskSkin::gradient( QskAspect::Aspect aspect ) const
     return m_data->hintTable.gradient( aspect );
 }
 
-void QskSkin::setBoxRadius( QskAspect::Aspect aspect, qreal radius, Qt::SizeMode sizeMode )
+void QskSkin::setBoxShape( QskAspect::Aspect aspect,
+    qreal radius, Qt::SizeMode sizeMode )
 {
-    m_data->hintTable.setBoxShape( aspect, QskBoxShapeMetrics( radius, sizeMode ) );
+    m_data->hintTable.setBoxShape( aspect,
+        QskBoxShapeMetrics( radius, radius, radius, radius, sizeMode ) );
+}
+
+void QskSkin::setBoxShape( QskAspect::Aspect aspect, qreal topLeft, qreal topRight,
+    qreal bottomLeft, qreal bottomRight, Qt::SizeMode sizeMode )
+{
+    m_data->hintTable.setBoxShape( aspect, 
+        QskBoxShapeMetrics( topLeft, topRight, bottomLeft, bottomRight, sizeMode ) );
 }
 
 void QskSkin::setBoxShape( QskAspect::Aspect aspect, const QskBoxShapeMetrics& shape )
@@ -224,12 +233,20 @@ QskBoxShapeMetrics QskSkin::boxShape( QskAspect::Aspect aspect ) const
     return m_data->hintTable.boxShape( aspect );
 }
 
-void QskSkin::setBoxBorder( QskAspect::Aspect aspect, const QskBoxBorderMetrics& border )
+void QskSkin::setBoxBorderMetrics( QskAspect::Aspect aspect,
+    qreal left, qreal top, qreal right, qreal bottom, Qt::SizeMode sizeMode )
+{
+    m_data->hintTable.setBoxBorder( aspect, 
+        QskBoxBorderMetrics( left, top, right, bottom, sizeMode ) );
+}
+
+void QskSkin::setBoxBorderMetrics(
+    QskAspect::Aspect aspect, const QskBoxBorderMetrics& border )
 {
     m_data->hintTable.setBoxBorder( aspect, border );
 }
 
-QskBoxBorderMetrics QskSkin::boxBorder( QskAspect::Aspect aspect ) const
+QskBoxBorderMetrics QskSkin::boxBorderMetrics( QskAspect::Aspect aspect ) const
 {
     return m_data->hintTable.boxBorder( aspect );
 }

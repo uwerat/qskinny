@@ -11,8 +11,8 @@ Box::Box( QQuickItem* parentItem ):
 
     // decoupling the hints from the skin
     setBoxShapeHint( QskBox::Panel, QskBoxShapeMetrics() );
-    setBoxBorderHint( QskBox::Panel, QskBoxBorderMetrics() );
-    setBoxBorderColorHint( QskBox::Panel, QskBoxBorderColors() );
+    setBoxBorderMetricsHint( QskBox::Panel, QskBoxBorderMetrics() );
+    setBoxBorderColorsHint( QskBox::Panel, QskBoxBorderColors() );
     setGradientHint( QskBox::Panel, QskGradient() );
 }
 
@@ -116,23 +116,23 @@ void Box::setBorderColors( const QColor& left, const QColor& top,
     const QColor& right, const QColor& bottom )
 {
     QskBoxBorderColors colors( left, top, right, bottom );
-    setBoxBorderColorHint( QskBox::Panel, colors );
+    setBoxBorderColorsHint( QskBox::Panel, colors );
 }
 
 void Box::setBorderColor( const QColor& color )
 {
-    setBoxBorderColorHint( QskBox::Panel, color );
+    setBoxBorderColorsHint( QskBox::Panel, color );
 }
 
 void Box::setBorderWidth( qreal left, qreal top, qreal right, qreal bottom )
 {
-    setBoxBorderHint( QskBox::Panel,
+    setBoxBorderMetricsHint( QskBox::Panel,
         QskMargins( left, top, right, bottom ) );
 }
 
 void Box::setBorderWidth( int width )
 {
-    setBoxBorderHint( QskBox::Panel, QskMargins( width ) );
+    setBoxBorderMetricsHint( QskBox::Panel, QskMargins( width ) );
 }
 
 void Box::setGradient( QRgb rgb )

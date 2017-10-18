@@ -102,8 +102,8 @@ void DefaultSkin::initHints()
     setGradient( SoundControl::CrossHair, m_palette->color3 );
     setGradient( SoundControl::Marker, m_palette->color5 );
 
-    setBoxBorder( SoundControl::Marker, 2 );
-    setBoxRadius( SoundControl::Marker, 100, Qt::RelativeSize );
+    setBoxBorderMetrics( SoundControl::Marker, 2 );
+    setBoxShape( SoundControl::Marker, 100, Qt::RelativeSize );
 
     setGradient( QskSeparator::Panel, m_palette->color3 );
     setMetric( QskSeparator::Panel | QskAspect::Size, 2 );
@@ -138,8 +138,8 @@ void DefaultSkin::initHints()
     setGradient( QskSlider::Fill, m_palette->color4.darker( 200 ) );
 
     setMetric( QskSlider::Handle | QskAspect::Size, 24 );
-    setBoxBorder( QskSlider::Handle, 0 );
-    setBoxRadius( QskSlider::Handle, 100.0, Qt::RelativeSize );
+    setBoxBorderMetrics( QskSlider::Handle, 0 );
+    setBoxShape( QskSlider::Handle, 100.0, Qt::RelativeSize );
     setGradient( QskSlider::Handle, m_palette->color5 );
 
     // handle expanding, when being pressed

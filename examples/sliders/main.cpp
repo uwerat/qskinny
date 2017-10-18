@@ -49,9 +49,9 @@ public:
             const Aspect aspect = Panel | placement;
 
             setMetric( aspect | Size, h );
-            setBoxBorderHint( aspect, 1 );
             setBoxShapeHint( aspect, 4 );
-            setBoxBorderColorHint( aspect, Grey900 );
+            setBoxBorderMetricsHint( aspect, 1 );
+            setBoxBorderColorsHint( aspect, Grey900 );
             setGradientHint( aspect, Grey400 );
 
             if ( placement == Preserved )
@@ -67,7 +67,7 @@ public:
             const Aspect aspect = Groove | placement;
 
             setMetric( aspect | Size, 4 );
-            setBoxBorderHint( aspect, 0 );
+            setBoxBorderMetricsHint( aspect, 0 );
             setBoxShapeHint( aspect, 1 );
 
             setGradientHint( aspect, Qt::black );
@@ -86,7 +86,7 @@ public:
         {
             const Aspect aspect = Handle | placement;
         
-            setBoxBorderHint( aspect, 1 );
+            setBoxBorderMetricsHint( aspect, 1 );
             setBoxShapeHint( aspect, 4 );
 
             const qreal m = 0.5 * qCeil( 0.5 * ( w - h ) ) + 1;
@@ -98,7 +98,7 @@ public:
 
             for ( auto state : { NoState, Pressed } )
             {
-                setBoxBorderColorHint( aspect | state, Grey600 );
+                setBoxBorderColorsHint( aspect | state, Grey600 );
                 setGradientHint( aspect | state, Blue400 );
             }
         }

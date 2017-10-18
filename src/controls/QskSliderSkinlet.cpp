@@ -13,7 +13,7 @@ static QMarginsF qskPadding(
     const QskSlider* slider, QskAspect::Subcontrol subControl )
 {
     return slider->marginsHint( subControl | QskAspect::Padding )
-        + slider->boxBorderHint( subControl ).widths();
+        + slider->boxBorderMetricsHint( subControl ).widths();
 }
 
 QskSliderSkinlet::QskSliderSkinlet( QskSkin* skin ):

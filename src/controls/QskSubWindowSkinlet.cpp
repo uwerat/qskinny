@@ -81,7 +81,7 @@ QSGNode* QskSubWindowSkinlet::updateTitleBarNode(
 
 QRectF QskSubWindowSkinlet::titleBarRect( const QskSubWindow* subWindow ) const
 {
-    const auto border = subWindow->boxBorderHint( QskSubWindow::Panel | QskAspect::Border );
+    const auto border = subWindow->boxBorderMetricsHint( QskSubWindow::Panel );
 
     QRectF rect = subWindow->contentsRect().marginsRemoved( border.widths() );
     rect.setHeight( titleBarHeight( subWindow ) );

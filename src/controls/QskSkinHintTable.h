@@ -222,13 +222,6 @@ inline QskBoxBorderColors QskSkinHintTable::boxBorderColors( QskAspect::Aspect a
     return hint( aspect | Border | Color ).value< QskBoxBorderColors >();
 }   
 
-inline void QskSkinHintTable::setAnimation(
-    QskAspect::Aspect aspect, QskAnimationHint animation )
-{
-    aspect.setAnimator( true );
-    setHint( aspect, QVariant::fromValue( animation ) );
-}
-
 inline QskAnimationHint QskSkinHintTable::animation( QskAspect::Aspect aspect ) const
 {
     aspect.setAnimator( true );

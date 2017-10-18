@@ -87,7 +87,7 @@ int main( int argc, char* argv[] )
 
     auto focusIndicator = new QskFocusIndicator();
     focusIndicator->setObjectName( "FocusIndicator" );
-    focusIndicator->setBoxBorderColorHint( QskFocusIndicator::Panel, Qt::red );
+    focusIndicator->setBoxBorderColorsHint( QskFocusIndicator::Panel, Qt::red );
 
     QskWindow window;
     window.resize( 600, 400 );

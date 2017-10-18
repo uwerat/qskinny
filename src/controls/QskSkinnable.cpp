@@ -241,6 +241,11 @@ qreal QskSkinnable::metric( QskAspect::Aspect aspect, QskSkinHintStatus* status 
     return effectiveHint( aspect | QskAspect::Metric, status ).toReal();
 }
 
+void QskSkinnable::setMarginsHint( QskAspect::Aspect aspect, qreal margins )
+{
+    m_data->hintTable.setMargins( aspect, QskMargins( margins ) );
+}
+
 void QskSkinnable::setMarginsHint( QskAspect::Aspect aspect, const QMarginsF& margins )
 {
     m_data->hintTable.setMargins( aspect, margins );
@@ -273,33 +278,34 @@ void QskSkinnable::setBoxShapeHint(
 QskBoxShapeMetrics QskSkinnable::boxShapeHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
-    return effectiveHint( aspect | QskAspect::Metric, status ).value< QskBoxShapeMetrics >();
+    using namespace QskAspect;
+    return effectiveHint( aspect | Metric | Shape, status ).value< QskBoxShapeMetrics >();
 }
 
-void QskSkinnable::setBoxBorderHint(
+void QskSkinnable::setBoxBorderMetricsHint(
     QskAspect::Aspect aspect, const QskBoxBorderMetrics& border )
 {
     m_data->hintTable.setBoxBorder( aspect, border );
 }
 
-QskBoxBorderMetrics QskSkinnable::boxBorderHint(
+QskBoxBorderMetrics QskSkinnable::boxBorderMetricsHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
     using namespace QskAspect;
-    return effectiveHint( aspect | Metric, status ).value< QskBoxBorderMetrics >();
+    return effectiveHint( aspect | Metric | Border, status ).value< QskBoxBorderMetrics >();
 }
 
-void QskSkinnable::setBoxBorderColorHint(
+void QskSkinnable::setBoxBorderColorsHint(
     QskAspect::Aspect aspect, const QskBoxBorderColors& colors )
 {
     m_data->hintTable.setBoxBorderColors( aspect, colors );
 }
 
-QskBoxBorderColors QskSkinnable::boxBorderColorHint(
+QskBoxBorderColors QskSkinnable::boxBorderColorsHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {   
     using namespace QskAspect;
-    return effectiveHint( aspect | Color, status ).value< QskBoxBorderColors >();
+    return effectiveHint( aspect | Color | Border, status ).value< QskBoxBorderColors >();
 }
 
 void QskSkinnable::setFontRole( QskAspect::Aspect aspect, int role )
@@ -605,7 +611,7 @@ static inline QMarginsF qskMargins( const QskSkinnable* skinnable,
 
     const QMarginsF padding1 = QskSkinRenderer::paddingHint(
         skinnable->boxShapeHint( aspect | Shape),
-        skinnable->boxBorderHint( aspect | Border ),
+        skinnable->boxBorderMetricsHint( aspect | Border ),
         size, inner );
 
     const QMarginsF padding2 = skinnable->marginsHint( aspect | Padding );

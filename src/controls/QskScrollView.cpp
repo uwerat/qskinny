@@ -183,7 +183,7 @@ QSizeF QskScrollView::scrollableSize() const
 QRectF QskScrollView::viewContentsRect() const
 {
     // This code should be done in the skinlet. TODO ...
-    const qreal bw = boxBorderHint( Viewport | QskAspect::Border ).widthAt( Qt::TopEdge );
+    const qreal bw = boxBorderMetricsHint( Viewport ).widthAt( Qt::TopEdge );
 
     const QRectF r = subControlRect( Viewport );
     return r.adjusted( bw, bw, -bw, -bw );

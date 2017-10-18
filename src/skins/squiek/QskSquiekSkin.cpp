@@ -127,8 +127,8 @@ void QskSquiekSkin::setSeparator(
         gradient.setOrientation( QskGradient::Horizontal );
 
     setGradient( aspect, gradient );
-    setBoxRadius( aspect, 0 );
-    setBoxBorder( aspect, 0 );
+    setBoxShape( aspect, 0 );
+    setBoxBorderMetrics( aspect, 0 );
 }
 
 void QskSquiekSkin::setButton(
@@ -187,8 +187,8 @@ void QskSquiekSkin::setButton(
 
     setBoxBorderColors( aspect, borderColors );
     setGradient( aspect, gradient );
-    setBoxRadius( aspect, 4 );
-    setBoxBorder( aspect, border );
+    setBoxShape( aspect, 4 );
+    setBoxBorderMetrics( aspect, border );
 }
 
 void QskSquiekSkin::setPanel( QskAspect::Aspect aspect, PanelStyle style )
@@ -220,7 +220,7 @@ void QskSquiekSkin::setTab( QskAspect::Aspect aspect,
         shape.setRadius( Qt::BottomRightCorner, 0 );
     }
 
-    setBoxBorder( aspect, border );
+    setBoxBorderMetrics( aspect, border );
     setBoxShape( aspect, shape );
 }
 
@@ -293,8 +293,8 @@ void QskSquiekSkin::initFocusIndicatorHints()
     const ColorPalette& pal = m_data->palette;
 
     setMargins( Q::Panel | Padding, 5 );
-    setBoxBorder( Q::Panel, 2 );
-    setBoxRadius( Q::Panel, 4 );
+    setBoxBorderMetrics( Q::Panel, 2 );
+    setBoxShape( Q::Panel, 4 );
     setGradient( Q::Panel, Qt::transparent );
     setBoxBorderColors( Q::Panel, pal.highlighted );
 }
@@ -321,8 +321,8 @@ void QskSquiekSkin::initPageIndicatorHints()
     {
         setMetric( subControl | Size, qskDpiScaled( 12 ) );
 
-        setBoxBorder( subControl, QskBoxBorderMetrics( 50, Qt::RelativeSize ) );
-        setBoxRadius( subControl, 100, Qt::RelativeSize );
+        setBoxBorderMetrics( subControl, QskBoxBorderMetrics( 50, Qt::RelativeSize ) );
+        setBoxShape( subControl, 100, Qt::RelativeSize );
 
         setGradient( subControl,
             ( subControl == Q::Bullet ) ? pal.darker150 : pal.lighter150 );
@@ -330,8 +330,8 @@ void QskSquiekSkin::initPageIndicatorHints()
     }
 
     // no visible background panel
-    setBoxBorder( Q::Panel, 0 );
-    setBoxRadius( Q::Panel, 2 );
+    setBoxBorderMetrics( Q::Panel, 0 );
+    setBoxShape( Q::Panel, 2 );
     setGradient( Q::Panel, QskGradient() );
 
     setMetric( Q::Panel | Spacing, 3 );
@@ -416,8 +416,8 @@ void QskSquiekSkin::initDialogButtonBoxHints()
 
     setBoxBorderColors( Q::Panel, pal.theme );
     setGradient( Q::Panel, pal.lighter135 );
-    setBoxBorder( Q::Panel, 0 );
-    setBoxRadius( Q::Panel, 2 );
+    setBoxBorderMetrics( Q::Panel, 0 );
+    setBoxShape( Q::Panel, 2 );
 }
 
 void QskSquiekSkin::initTabButtonHints()
@@ -485,8 +485,8 @@ void QskSquiekSkin::initSliderHints()
         const auto aspect = Q::Panel | placement;
 
         setMetric( aspect | Size, dim ); 
-        setBoxBorder( aspect, 0 );
-        setBoxRadius( aspect, 0 );
+        setBoxBorderMetrics( aspect, 0 );
+        setBoxShape( aspect, 0 );
         setGradient( aspect, QskGradient() );
     }
 
@@ -504,8 +504,8 @@ void QskSquiekSkin::initSliderHints()
             setMetric( aspect | Size, 0.3 * dim );
             setMargins( aspect | Padding, 0 );
 
-            setBoxBorder( aspect, 0 );
-            setBoxRadius( aspect, 0.1 * dim );
+            setBoxBorderMetrics( aspect, 0 );
+            setBoxShape( aspect, 0.1 * dim );
 
             if ( subControl == Q::Groove )
                 setGradient( aspect, pal.darker200 );
@@ -521,7 +521,7 @@ void QskSquiekSkin::initSliderHints()
         Aspect aspect = Q::Handle | placement;
 
         setButton( aspect, Raised, 1 );
-        setBoxRadius( aspect, 20.0, Qt::RelativeSize );
+        setBoxShape( aspect, 20.0, Qt::RelativeSize );
         setButton( aspect | Q::Pressed, Sunken, 1 );
         setMetric( Q::Handle | Size, 0.75 * dim );
     }
@@ -593,8 +593,8 @@ void QskSquiekSkin::initScrollViewHints()
 
     setMetric( Q::Panel | Spacing, 4 );
 
-    setBoxBorder( Q::Viewport, 2 );
-    setBoxRadius( Q::Viewport, 8 );
+    setBoxBorderMetrics( Q::Viewport, 2 );
+    setBoxShape( Q::Viewport, 8 );
 
     QColor fillColor( Qt::white );
 
@@ -663,8 +663,8 @@ void QskSquiekSkin::initSubWindowHints()
     // Panel
 
     setMargins( Q::Panel | Padding, 10 );
-    setBoxBorder( Q::Panel, 2 );
-    setBoxRadius( Q::Panel, 0 );
+    setBoxBorderMetrics( Q::Panel, 2 );
+    setBoxShape( Q::Panel, 0 );
 
     QskBoxBorderColors borderColors;
     borderColors.setColorsAt( Qt::TopEdge | Qt::LeftEdge, pal.lighter125 );
