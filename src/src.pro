@@ -113,6 +113,7 @@ SOURCES += \
 
 HEADERS += \
     controls/QskAbstractButton.h \
+    controls/QskAnimationHint.h \
     controls/QskAnimator.h \
     controls/QskBox.h \
     controls/QskBoxSkinlet.h \
@@ -153,7 +154,6 @@ HEADERS += \
     controls/QskSkinFactory.h \
     controls/QskSkin.h \
     controls/QskSkinHintTable.h \
-    controls/QskAnimationHint.h \
     controls/QskSkinlet.h \
     controls/QskSkinnable.h \
     controls/QskSkinRenderer.h \
