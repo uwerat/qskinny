@@ -613,7 +613,6 @@ void QskInputPanel::touchEvent( QTouchEvent* e )
     }
 
     const auto rect = keyboardRect();
-
     for ( const auto& tp : e->touchPoints() )
     {
         const auto pos = tp.pos();

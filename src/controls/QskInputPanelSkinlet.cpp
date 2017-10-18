@@ -146,7 +146,6 @@ QSGNode* QskInputPanelSkinlet::updatePanelNode(
         const auto rowIndex = &keyRow - panelKeyData;
         auto& frames = panelNode->frames[ rowIndex ];
         auto& glyphs = panelNode->glyphs[ rowIndex ];
-
         for ( const auto& keyData : keyRow )
         {
             const auto colIndex = &keyData - keyRow;
