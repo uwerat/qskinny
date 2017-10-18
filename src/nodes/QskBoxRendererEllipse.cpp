@@ -106,13 +106,10 @@ namespace
     {
     public:
         inline BorderValuesUniform( const QskBoxRenderer::Metrics& metrics ):
-            m_corner( metrics.corner[0] )
+            m_corner( metrics.corner[0] ),
+            m_dx1( m_corner.radiusInnerX ),
+            m_dy1( m_corner.radiusInnerY )
         {
-            if ( m_corner.isCropped )
-            {
-                m_dx1 = m_corner.radiusInnerX;;
-                m_dy1 = m_corner.radiusInnerY;
-            }
         }
 
         inline void setAngle( qreal cos, qreal sin )
@@ -546,6 +543,7 @@ namespace
 #endif
 
             Line* linesBR, * linesTR, * linesTL, * linesBL;
+            linesBR = linesTR = linesTL = linesBL = nullptr;
 
             const int numCornerLines = stepCount + 1;
             int numFillLines = fillLines ? 2 * numCornerLines : 0;
