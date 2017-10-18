@@ -6,6 +6,7 @@
 #ifndef QSK_RGB_VALUE_H
 #define QSK_RGB_VALUE_H
 
+#include "QskGlobal.h"
 #include <QColor>
 
 #define QSK_RGB_VALUES \
@@ -433,8 +434,18 @@ namespace QskRgbValue
 QSK_RGB_VALUES
 #undef RGB
 
-    QRgb interpolated( QRgb rgb1, QRgb rgb2, qreal ratio );
-    QColor interpolated( const QColor& c1, const QColor& c2, qreal ratio );
+    QSK_EXPORT QRgb interpolated( QRgb rgb1, QRgb rgb2, qreal ratio );
+    QSK_EXPORT QColor interpolated( const QColor& c1, const QColor& c2, qreal ratio );
+
+    inline QColor toTransparent( const QColor& c1, int alpha = 0 )
+    {
+        return QColor::fromRgba( ( c1.rgb() & ColorMask ) | ( alpha & AlphaMask ) ); 
+    }
+
+    inline QRgb toTransparent( QRgb rgb, int alpha = 0 )
+    {
+        return ( rgb & ColorMask ) | ( alpha & AlphaMask ); 
+    }
 }
 
 #endif
