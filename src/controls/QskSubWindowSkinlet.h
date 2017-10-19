@@ -35,8 +35,6 @@ protected:
         quint8 nodeRole, QSGNode* ) const override;
 
 private:
-    QSGNode* updateTitleBarNode( const QskSubWindow*, QSGNode* ) const;
-
     qreal titleBarHeight( const QskSubWindow* ) const;
     QRectF titleBarRect( const QskSubWindow* ) const;
 

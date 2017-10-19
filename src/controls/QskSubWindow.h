@@ -55,8 +55,6 @@ public:
     virtual QSizeF contentsSizeHint() const override;
     virtual QRectF layoutRect() const override;
 
-    bool isActive() const;
-
 Q_SIGNALS:
     void titleChanged();
     void decoratedChanged();

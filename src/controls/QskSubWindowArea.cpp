@@ -199,6 +199,9 @@ bool QskSubWindowArea::mouseEventFilter( QskSubWindow* window, const QMouseEvent
                 return false;
             }
 
+            if ( event->button() == Qt::LeftButton )
+                window->setFocus( true );
+
 #if 0
             // how to handle not to be process visual
             // changes for double click events ???

@@ -633,8 +633,8 @@ void QskMaterialSkin::initSubWindowHints()
     setBoxBorderColors( Q::Panel, colors );
 
     // title bar
-    setColor( Q::TitleBar, pal.darker200 );
-    setColor( Q::TitleBar | Q::Focused, pal.accentColor );
+    setGradient( Q::TitleBar, pal.darker200 );
+    setGradient( Q::TitleBar | Q::Focused, pal.accentColor );
 
     setFontRole( Q::TitleBar, QskSkin::TinyFont );
 }

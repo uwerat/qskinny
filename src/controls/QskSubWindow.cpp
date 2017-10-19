@@ -43,12 +43,6 @@ QskSubWindow::~QskSubWindow()
 {
 }
 
-bool QskSubWindow::isActive() const
-{
-    // not implemented yet
-    return true;
-}
-
 void QskSubWindow::setDecorated( bool on )
 {
     if ( on == isDecorated() )

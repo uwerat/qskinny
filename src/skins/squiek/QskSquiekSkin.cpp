@@ -676,8 +676,8 @@ void QskSquiekSkin::initSubWindowHints()
     // TitleBar
 
     setFontRole( Q::TitleBar, QskSkin::TinyFont );
-    setColor( Q::TitleBar | Q::Focused, pal.highlighted );
-    setColor( Q::TitleBar, pal.contrasted );
+    setGradient( Q::TitleBar | Q::Focused, pal.highlighted );
+    setGradient( Q::TitleBar, pal.contrasted );
 }
 
 #include "moc_QskSquiekSkin.cpp"

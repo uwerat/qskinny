@@ -8,7 +8,6 @@
 #include "QskAspect.h"
 #include "QskBoxBorderMetrics.h"
 
-#include <QSGSimpleRectNode>
 #include <QFontMetricsF>
 
 QskSubWindowSkinlet::QskSubWindowSkinlet( QskSkin* skin ):
@@ -45,38 +44,13 @@ QSGNode* QskSubWindowSkinlet::updateSubNode( const QskSkinnable* skinnable,
     switch( nodeRole )
     {
         case PanelRole:
-        {
             return updateBoxNode( subWindow, node, QskSubWindow::Panel );
-        }
 
         case TitleBarRole:
-        {
-            return updateTitleBarNode( subWindow, node );
-        }
+            return updateBoxNode( subWindow, node, QskSubWindow::TitleBar );
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
-}
-
-QSGNode* QskSubWindowSkinlet::updateTitleBarNode(
-    const QskSubWindow* subWindow, QSGNode* node ) const
-{
-    const QRectF rect = subControlRect( subWindow, QskSubWindow::TitleBar );
-    if ( rect.isEmpty() )
-        return nullptr;
-
-    auto barNode = static_cast< QSGSimpleRectNode* >( node );
-    if ( barNode == nullptr )
-        barNode = new QSGSimpleRectNode();
-
-    QskAspect::Aspect aspect = QskSubWindow::TitleBar;
-    if ( subWindow->isActive() )
-        aspect = aspect | QskControl::Focused;
-
-    barNode->setColor( subWindow->color( aspect ) );
-    barNode->setRect( rect );
-
-    return barNode;
 }
 
 QRectF QskSubWindowSkinlet::titleBarRect( const QskSubWindow* subWindow ) const
