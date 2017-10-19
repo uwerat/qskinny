@@ -5,8 +5,6 @@
 
 #include "QskPopupSkinlet.h"
 #include "QskPopup.h"
-#include "QskBoxNode.h"
-#include "QskBoxOptions.h"
 
 QskPopupSkinlet::QskPopupSkinlet( QskSkin* skin ):
     Inherited( skin )
@@ -30,39 +28,13 @@ QRectF QskPopupSkinlet::subControlRect(
 QSGNode* QskPopupSkinlet::updateSubNode( const QskSkinnable* skinnable,
     quint8 nodeRole, QSGNode* node ) const
 {
-    const auto popup = static_cast< const QskPopup* >( skinnable );
-
     switch( nodeRole )
     {
         case OverlayRole:
-        {
-            return updateOverlayNode( popup, node );
-        }
+            return updateBoxNode( skinnable, node, QskPopup::Overlay );
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
-}
-
-QSGNode* QskPopupSkinlet::updateOverlayNode(
-    const QskPopup* popup, QSGNode* node ) const
-{
-    const QRectF rect = subControlRect( popup, QskPopup::Overlay );
-    if ( rect.isEmpty() )
-        return nullptr;
-
-    const QskGradient gradient = popup->gradientHint( QskPopup::Overlay );
-    if ( !gradient.isValid() )
-        return nullptr;
-
-    auto rectNode = static_cast< QskBoxNode* >( node );
-    if ( rectNode == nullptr )
-        rectNode = new QskBoxNode();
-
-    QskBoxOptions options;
-    options.fillGradient = gradient;
-    rectNode->setBoxData( rect, options );
-
-    return rectNode;
 }
 
 #include "moc_QskPopupSkinlet.cpp"
