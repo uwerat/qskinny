@@ -94,26 +94,6 @@ const std::unordered_map< QskAspect::Aspect, QVariant >& QskSkinHintTable::hints
     return dummyHints;
 }
 
-void QskSkinHintTable::setAnimation(
-    QskAspect::Aspect aspect, QskAnimationHint animation )
-{
-    aspect.setAnimator( true );
-
-    const QVariant v = QVariant::fromValue( animation );
-
-    if ( aspect.type() == 0 )
-    {
-        using namespace QskAspect;
-
-        setHint( aspect | Color, v );
-        setHint( aspect | Metric, v );
-    }
-    else
-    {
-        setHint( aspect, v );
-    }
-}
-
 void QskSkinHintTable::setHint( QskAspect::Aspect aspect, const QVariant& skinHint )
 {
     if ( m_hints == nullptr )

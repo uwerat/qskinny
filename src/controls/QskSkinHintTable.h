@@ -243,4 +243,11 @@ inline void QskSkinHintTable::setFlagHint( QskAspect::Aspect aspect, int flag )
     setHint( aspect, QVariant( flag ) );
 }
 
+inline void QskSkinHintTable::setAnimation(
+    QskAspect::Aspect aspect, QskAnimationHint animation )
+{   
+    aspect.setAnimator( true );
+    setHint( aspect, QVariant::fromValue( animation ) ); 
+}
+
 #endif
