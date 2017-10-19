@@ -5,8 +5,6 @@
 
 #include "QskSubWindowAreaSkinlet.h"
 #include "QskSubWindowArea.h"
-#include "QskBoxOptions.h"
-#include "QskBoxNode.h"
 
 QskSubWindowAreaSkinlet::QskSubWindowAreaSkinlet( QskSkin* skin ):
     Inherited( skin )
@@ -22,9 +20,7 @@ QRectF QskSubWindowAreaSkinlet::subControlRect(
     const auto area = static_cast< const QskSubWindowArea* >( skinnable );
     
     if ( subControl == QskSubWindowArea::Panel )
-    {
         return area->contentsRect();
-    }
     
     return Inherited::subControlRect( skinnable, subControl );
 }
@@ -32,36 +28,13 @@ QRectF QskSubWindowAreaSkinlet::subControlRect(
 QSGNode* QskSubWindowAreaSkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
-    const auto area = static_cast< const QskSubWindowArea* >( skinnable );
-
     switch( nodeRole )
     {
         case PanelRole:
-        {
-            return updatePanelNode( area, node );
-        }
+            return updateBoxNode( skinnable, node, QskSubWindowArea::Panel );
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
-}
-
-QSGNode* QskSubWindowAreaSkinlet::updatePanelNode(
-    const QskSubWindowArea* area, QSGNode* node ) const
-{
-    const QRectF rect = subControlRect( area, QskSubWindowArea::Panel );
-
-    if ( !area->gradient().isValid() || rect.isEmpty() )
-        return nullptr;
-
-    auto boxNode = static_cast< QskBoxNode* >( node );
-    if ( boxNode == nullptr )
-        boxNode = new QskBoxNode();
-
-    QskBoxOptions options;
-    options.fillGradient = area->gradient();
-    boxNode->setBoxData( rect, options );
-
-    return boxNode;
 }
 
 #include "moc_QskSubWindowAreaSkinlet.cpp"

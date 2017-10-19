@@ -5,7 +5,6 @@
 
 #include "QskSubWindowArea.h"
 #include "QskSubWindow.h"
-#include "QskGradient.h"
 #include "QskFunctions.h"
 #include "QskEvent.h"
 
@@ -86,8 +85,6 @@ public:
     {
     }
 
-    QskGradient gradient;
-
     // data about the window being dragged
 
     bool isDraggableByHeaderOnly : 1;
@@ -106,33 +103,6 @@ QskSubWindowArea::QskSubWindowArea( QQuickItem* parent ):
 
 QskSubWindowArea::~QskSubWindowArea()
 {
-}
-
-void QskSubWindowArea::setGradient( const QskGradient& gradient )
-{
-    if ( gradient != m_data->gradient )
-    {
-        m_data->gradient = gradient;
-
-        update();
-        Q_EMIT gradientChanged();
-    }
-}
-
-QskGradient QskSubWindowArea::gradient() const
-{
-    return m_data->gradient;
-}
-
-void QskSubWindowArea::resetGradient()
-{
-    if ( m_data->gradient.isValid() )
-    {
-        m_data->gradient.invalidate();
-        update();
-
-        Q_EMIT gradientChanged();
-    }
 }
 
 void QskSubWindowArea::geometryChangeEvent( QskGeometryChangeEvent* event )

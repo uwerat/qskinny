@@ -47,8 +47,8 @@ int main( int argc, char* argv[] )
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
     QskSubWindowArea* area = new QskSubWindowArea();
-    area->setGradient( QskGradient( QskGradient::Diagonal,
-        "DarkSlateGray", "LightSlateGray" ) );
+    area->setGradientHint( QskSubWindowArea::Panel,
+        QskGradient( QskGradient::Diagonal, "DarkSlateGray", "LightSlateGray" ) );
 
     QRectF windowRect( 0, 0, 250, 250 );
 
