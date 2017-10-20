@@ -38,8 +38,7 @@ public:
     static void updateNodeColor( QSGNode* parentNode,
         const QColor& textColor, Qsk::TextStyle, const QColor& styleColor );
 
-    QSizeF implicitSizeHint( const QString& ) const;
-
+    QSizeF textSize( const QString& ) const;
     QRectF textRect( const QSizeF&, const QString& ) const;
 
 private:

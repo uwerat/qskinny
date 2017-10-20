@@ -96,7 +96,7 @@ void QskTextRenderer::setAlignment( Qt::Alignment alignment )
     m_alignment = alignment;
 }
 
-QSizeF QskTextRenderer::implicitSizeHint( const QString& text ) const
+QSizeF QskTextRenderer::textSize( const QString& text ) const
 {
     if ( qskLayoutHelper == NULL )
         qskLayoutHelper = new QskTextHelperItem();

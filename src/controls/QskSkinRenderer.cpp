@@ -27,7 +27,7 @@ QSizeF QskSkinRenderer::textSize( const QskSkinnable* skinnable,
         renderer.setFont( font );
         renderer.setOptions( options );
 
-        return renderer.implicitSizeHint( text );
+        return renderer.textSize( text );
     }
     else
     {
@@ -35,7 +35,7 @@ QSizeF QskSkinRenderer::textSize( const QskSkinnable* skinnable,
         renderer.setFont( font );
         renderer.setOptions( options );
 
-        return renderer.implicitSizeHint( text );
+        return renderer.textSize( text );
     }
 }
 

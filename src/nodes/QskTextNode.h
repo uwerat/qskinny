@@ -10,7 +10,6 @@
 #include "QskNamespace.h"
 
 #include <QSGTransformNode>
-#include <QColor>
 #include <Qt>
 
 class QskTextOptions;
@@ -27,10 +26,6 @@ public:
         const QColor& textColor, const QColor& styleColor, const QColor& linkColor );
 private:
     uint m_hash;
-
-    QColor m_textRgb;
-    QColor m_styleRgb;
-    QColor m_linkRgb;
 };
 
 #endif

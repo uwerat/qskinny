@@ -7,6 +7,7 @@
 #include "QskTextOptions.h"
 
 #include <QFont>
+#include <QColor>
 #include <QString>
 
 QskTextNode::QskTextNode():

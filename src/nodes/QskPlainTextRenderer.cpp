@@ -51,7 +51,7 @@ void QskPlainTextRenderer::setAlignment( Qt::Alignment alignment )
     m_alignment = alignment;
 }
 
-QSizeF QskPlainTextRenderer::implicitSizeHint( const QString& text ) const
+QSizeF QskPlainTextRenderer::textSize( const QString& text ) const
 {
     // result differs from QskTextRenderer::implicitSizeHint ???
     return textRect( QSizeF( 10e6, 10e6 ), text ).size();

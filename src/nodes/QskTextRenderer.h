@@ -39,8 +39,7 @@ public:
         QSGTransformNode*, const QColor& textColor, Qsk::TextStyle,
         const QColor& styleColor, const QColor& linkColor );
 
-    QSizeF implicitSizeHint( const QString& ) const;
-
+    QSizeF textSize( const QString& ) const;
     QRectF textRect( const QSizeF&, const QString& ) const;
 
 private:
