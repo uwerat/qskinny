@@ -17,11 +17,11 @@ SUBDIRS += \
 
 # qml
 SUBDIRS += \
+    boxes \
     buttons \
     colorswitch \
     frames \
     gbenchmark \
     glabels \
     messageboxQml \
-    rectangles \
     tlabels

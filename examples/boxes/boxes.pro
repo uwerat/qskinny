@@ -1,6 +1,6 @@
 include( $${PWD}/../examples.pri )
 
-TARGET = rectangles
+TARGET = boxes
 
 HEADERS += \
     Box.h \
