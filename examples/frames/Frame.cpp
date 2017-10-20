@@ -5,7 +5,10 @@
 
 #include "Frame.h"
 
-#include <QskBoxOptions.h>
+#include <QskBoxShapeMetrics.h>
+#include <QskBoxBorderMetrics.h>
+#include <QskBoxBorderColors.h>
+#include <QskGradient.h>
 #include <QskBoxNode.h>
 #include <QskSkinlet.h>
 
@@ -145,18 +148,10 @@ void Frame::updateFrameNode( const QRectF& rect, QskBoxNode* node )
         }
     }
    
-    QskBoxOptions options;
-
-    options.border.setWidths( m_frameWidth );
-    options.borderColors.setColor( Qsk::Left, c1 );
-    options.borderColors.setColor( Qsk::Top, c1 );
-    options.borderColors.setColor( Qsk::Right, c2 );
-    options.borderColors.setColor( Qsk::Bottom, c2 );
-
-    options.fillGradient.setColor( m_color );
-    options.shape.setRadius( effectiveRadius( rect, m_radius ) );
+    const QskBoxBorderColors borderColors( c1, c1, c2, c2 );
+    const qreal radius = effectiveRadius( rect, m_radius );
     
-    node->setBoxData( rect, options );
+    node->setBoxData( rect, radius, m_frameWidth, borderColors, m_color );
 }
 
 #include "moc_Frame.cpp"

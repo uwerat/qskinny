@@ -57,8 +57,6 @@ public:
     virtual qreal heightForWidth( qreal width ) const override;
     virtual qreal widthForHeight( qreal height ) const override;
 
-    bool isRichText() const;
-
     QFont font() const;
 
 Q_SIGNALS:

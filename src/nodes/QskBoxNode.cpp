@@ -4,8 +4,12 @@
  *****************************************************************************/
 
 #include "QskBoxNode.h"
-#include "QskBoxOptions.h"
 #include "QskBoxRenderer.h"
+#include "QskBoxShapeMetrics.h"
+#include "QskBoxBorderMetrics.h"
+#include "QskBoxBorderColors.h"
+#include "QskGradient.h"
+
 
 #include <QSGVertexColorMaterial>
 #include <QSGFlatColorMaterial>
@@ -25,19 +29,21 @@ static inline bool qskIsMonochrome( const QRgb* rgbValues )
         && ( rgbValues[2] == rgbValues[3] );
 }
 
-static inline uint qskMetricsHash( const QskBoxOptions& options )
+static inline uint qskMetricsHash( const QskBoxShapeMetrics& shape,
+    const QskBoxBorderMetrics& borderMetrics )
 {
     uint hash = 13000;
 
-    hash = options.shape.hash( hash );
-    return options.border.hash( hash );
+    hash = shape.hash( hash );
+    return borderMetrics.hash( hash );
 }
 
-static inline uint qskColorsHash( const QskBoxOptions& options )
+static inline uint qskColorsHash( const QskBoxBorderColors& borderColors,
+    const QskGradient& fillGradient )
 {
     uint hash = 13000;
-    hash = options.borderColors.hash( hash );
-    return options.fillGradient.hash( hash );
+    hash = borderColors.hash( hash );
+    return fillGradient.hash( hash );
 }
 
 QskBoxNode::QskBoxNode():
@@ -55,11 +61,19 @@ QskBoxNode::~QskBoxNode()
         delete material();
 }
 
-void QskBoxNode::setBoxData( const QRectF& rect, const QskBoxOptions& options )
+void QskBoxNode::setBoxData( const QRectF& rect, const QskGradient& fillGradient )
+{
+    setBoxData( rect, QskBoxShapeMetrics(), QskBoxBorderMetrics(),
+        QskBoxBorderColors(), fillGradient );
+}
+
+void QskBoxNode::setBoxData( const QRectF& rect, 
+    const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& borderMetrics,
+    const QskBoxBorderColors& borderColors, const QskGradient& fillGradient )
 {
 #if 1
-    const uint metricsHash = qskMetricsHash( options );
-    const uint colorsHash = qskColorsHash( options );
+    const uint metricsHash = qskMetricsHash( shape, borderMetrics );
+    const uint colorsHash = qskColorsHash( borderColors, fillGradient );
 
     if ( ( metricsHash == m_metricsHash ) &&
         ( colorsHash == m_colorsHash ) && ( rect == m_rect ) )
@@ -81,11 +95,7 @@ void QskBoxNode::setBoxData( const QRectF& rect, const QskBoxOptions& options )
         return;
     }
 
-    const auto& gradient = options.fillGradient;
-    const auto& borderMetrics = options.border;
-    const auto& borderColors = options.borderColors;
-
-    bool hasFill = options.fillGradient.isValid();
+    bool hasFill = fillGradient.isValid();
 
     bool hasBorder = !borderMetrics.isNull();
     if ( hasBorder )
@@ -104,14 +114,14 @@ void QskBoxNode::setBoxData( const QRectF& rect, const QskBoxOptions& options )
         return;
     }
 
-    const bool isFillMonochrome = hasFill ? gradient.isMonochrome() : true;
+    const bool isFillMonochrome = hasFill ? fillGradient.isMonochrome() : true;
     const bool isBorderMonochrome = hasBorder ? borderColors.isMonochrome() : true;
 
     if ( hasFill && hasBorder )
     {
         if ( isFillMonochrome && isBorderMonochrome )
         {
-            if ( borderColors.color( Qsk::Left ) == gradient.startColor() )
+            if ( borderColors.color( Qsk::Left ) == fillGradient.startColor() )
             {
                 // we can draw border and background in one
                 hasBorder = false;
@@ -143,8 +153,8 @@ void QskBoxNode::setBoxData( const QRectF& rect, const QskBoxOptions& options )
     {
         setMonochrome( false );
 
-        renderer.renderBox( m_rect, options.shape, options.border,
-            options.borderColors, options.fillGradient, *geometry() );
+        renderer.renderBox( m_rect, shape, borderMetrics,
+            borderColors, fillGradient, *geometry() );
     }
     else
     {
@@ -155,15 +165,13 @@ void QskBoxNode::setBoxData( const QRectF& rect, const QskBoxOptions& options )
 
         if ( hasFill )
         {
-            flatMaterial->setColor( gradient.startColor() );
-            renderer.renderFill( m_rect, options.shape,
-                QskBoxBorderMetrics(), *geometry() );
+            flatMaterial->setColor( fillGradient.startColor() );
+            renderer.renderFill( m_rect, shape, QskBoxBorderMetrics(), *geometry() );
         }
         else
         {
             flatMaterial->setColor( borderColors.color( Qsk::Left ).rgba() );
-            renderer.renderBorder( m_rect, options.shape,
-                options.border, *geometry() );
+            renderer.renderBorder( m_rect, shape, borderMetrics, *geometry() );
         }
     }
 }

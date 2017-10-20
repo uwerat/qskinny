@@ -6,7 +6,6 @@
 #include "QskScrollViewSkinlet.h"
 #include "QskScrollView.h"
 #include "QskAspect.h"
-#include "QskSkinRenderer.h"
 #include "QskFunctions.h"
 
 #include <QTransform>

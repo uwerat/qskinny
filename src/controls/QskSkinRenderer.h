@@ -13,15 +13,11 @@
 
 class QskSkinnable;
 class QskTextOptions;
-class QskBoxOptions;
-class QskBoxShapeMetrics;
-class QskBoxBorderMetrics;
 class QskTextNode;
 
 class QPointF;
 class QRectF;
 class QSizeF;
-class QMarginsF;
 class QString;
 
 namespace QskSkinRenderer
@@ -34,22 +30,12 @@ namespace QskSkinRenderer
         const QString&, const QskTextOptions&,
         QskTextNode*, QskAspect::Subcontrol );
 
-    QSK_EXPORT void updateTextAt( const QskSkinnable*,
-        const QPointF&, const QString&, const QskTextOptions&,
-        QskTextNode*, QskAspect::Subcontrol );
-
     QSK_EXPORT QSizeF textSize( const QskSkinnable*,
         const QString&, const QskTextOptions&, QskAspect::Subcontrol );
 
     QSK_EXPORT QSizeF textSize( const QskSkinnable*,
         const QSizeF& boundingSize, const QString&,
         const QskTextOptions&, QskAspect::Subcontrol );
-
-    QSK_EXPORT QskBoxOptions boxOptions( const QskSkinnable*,
-        const QSizeF&, QskAspect::Subcontrol );
-
-    QSK_EXPORT QMarginsF paddingHint(
-        const QskBoxShapeMetrics&, const QskBoxBorderMetrics&, const QSizeF&, bool inner );
 }
 
 #endif

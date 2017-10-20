@@ -109,15 +109,15 @@ bool QskTextOptions::operator==( const QskTextOptions& other ) const
            && ( m_maximumLineCount == other.m_maximumLineCount );
 }
 
-bool QskTextOptions::isRichText( const QString& text ) const
+bool QskTextOptions::isPlainText( const QString& text ) const
 {
     if ( text.isEmpty() )
-        return false;
+        return true;
 
     if ( m_format == QskTextOptions::AutoText )
-        return Qt::mightBeRichText( text );
+        return !Qt::mightBeRichText( text );
 
-    return m_format == QskTextOptions::RichText;
+    return m_format == QskTextOptions::PlainText;
 }
 
 uint qHash( const QskTextOptions &options, uint seed ) noexcept

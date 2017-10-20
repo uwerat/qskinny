@@ -9,6 +9,9 @@
 #include "QskSetup.h"
 #include "QskSkin.h"
 #include "QskControl.h"
+#include "QskBoxShapeMetrics.h"
+#include "QskBoxBorderMetrics.h"
+#include "QskBoxBorderColors.h"
 #include "QskGradient.h"
 #include "QskSkinRenderer.h"
 #include "QskBoxNode.h"
@@ -16,7 +19,6 @@
 #include "QskTextNode.h"
 #include "QskGraphicNode.h"
 #include "QskGraphicTextureFactory.h"
-#include "QskBoxOptions.h"
 #include "QskFunctions.h"
 
 #include <QSGSimpleRectNode>
@@ -76,6 +78,15 @@ static inline QSGNode* qskUpdateGraphicNode(
 
     graphicNode->setGraphic( graphic, colorFilter, mode, rect );
     return graphicNode;
+}
+
+static inline bool qskIsBoxVisible( const QskBoxBorderMetrics& borderMetrics,
+    const QskBoxBorderColors& borderColors, const QskGradient& gradient )
+{
+    if ( gradient.isVisible() )
+        return true;
+
+    return !borderMetrics.isNull() && borderColors.isVisible();
 }
 
 class QskSkinlet::PrivateData
@@ -188,10 +199,7 @@ QSGNode* QskSkinlet::updateBackgroundNode(
     if ( boxNode == nullptr )
         boxNode = new QskBoxNode();
 
-    QskBoxOptions options;
-    options.fillGradient = gradient;
-
-    boxNode->setBoxData( rect, options );
+    boxNode->setBoxData( rect, gradient );
     return boxNode;
 }
 
@@ -342,21 +350,29 @@ QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
 {
     using namespace QskAspect;
 
-    if ( rect.isEmpty() )
+    const QMarginsF margins = skinnable->marginsHint( subControl | Margin );
+
+    const QRectF boxRect = rect.marginsRemoved( margins );
+    if ( boxRect.isEmpty() )
         return nullptr;
 
-    const auto options = QskSkinRenderer::boxOptions( skinnable, rect.size(), subControl );
-    if ( !options.isVisible() )
+    auto borderMetrics = skinnable->boxBorderMetricsHint( subControl );
+    borderMetrics = borderMetrics.toAbsolute( boxRect.size() );
+
+    const auto borderColors = skinnable->boxBorderColorsHint( subControl );
+    const auto fillGradient = skinnable->gradientHint( subControl );
+
+    if ( !qskIsBoxVisible( borderMetrics, borderColors, fillGradient ) )
         return nullptr;
+
+    auto shape = skinnable->boxShapeHint( subControl );
+    shape = shape.toAbsolute( boxRect.size() );
 
     auto boxNode = static_cast< QskBoxNode* >( node );
     if ( boxNode == nullptr )
         boxNode = new QskBoxNode();
 
-    const QMarginsF margins = skinnable->marginsHint( subControl | Margin );
-    const QRectF boxRect = rect.marginsRemoved( margins );
-
-    boxNode->setBoxData( boxRect, options );
+    boxNode->setBoxData( boxRect, shape, borderMetrics, borderColors, fillGradient );
 
     return boxNode;
 }
@@ -373,21 +389,28 @@ QSGNode* QskSkinlet::updateBoxClipNode( const QskSkinnable* skinnable,
 {
     using namespace QskAspect;
 
-    if ( rect.isEmpty() )
-        return nullptr;
-
-    const auto options = QskSkinRenderer::boxOptions( skinnable, rect.size(), subControl );
-    if ( !options.isVisible() )
-        return nullptr;
-
     auto clipNode = static_cast< QskBoxClipNode* >( node );
     if ( clipNode == nullptr )
         clipNode = new QskBoxClipNode();
 
-    const QRectF clipRect = rect.marginsRemoved(
-        skinnable->marginsHint( subControl | Margin ) );
+    const QMarginsF margins = skinnable->marginsHint( subControl | Margin );
 
-    clipNode->setBox( clipRect, options.shape, options.border );
+    const QRectF clipRect = rect.marginsRemoved( margins );
+    if ( clipRect.isEmpty() )
+    {
+        clipNode->setIsRectangular( true );
+        clipNode->setClipRect( clipRect );
+    }
+    else
+    {
+        auto borderMetrics = skinnable->boxBorderMetricsHint( subControl );
+        borderMetrics = borderMetrics.toAbsolute( clipRect.size() );
+
+        auto shape = skinnable->boxShapeHint( subControl );
+        shape = shape.toAbsolute( clipRect.size() );
+
+        clipNode->setBox( clipRect, shape, borderMetrics );
+    }
 
     return clipNode;
 }

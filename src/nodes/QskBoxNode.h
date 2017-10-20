@@ -8,7 +8,10 @@
 
 #include "QskGlobal.h"
 
-class QskBoxOptions;
+class QskBoxShapeMetrics;
+class QskBoxBorderMetrics;
+class QskBoxBorderColors;
+class QskGradient;
 class QRectF;
 
 #include <QSGNode>
@@ -19,7 +22,11 @@ public:
     QskBoxNode();
     virtual ~QskBoxNode();
 
-    void setBoxData( const QRectF& rect, const QskBoxOptions& );
+    void setBoxData( const QRectF& rect, 
+        const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
+        const QskBoxBorderColors&, const QskGradient& );
+
+    void setBoxData( const QRectF& rect, const QskGradient& );
 
 private:
     void setMonochrome( bool on );

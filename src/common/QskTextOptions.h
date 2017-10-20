@@ -70,7 +70,7 @@ public:
     bool operator==( const QskTextOptions& other ) const;
     bool operator!=( const QskTextOptions& other ) const;
 
-    bool isRichText( const QString& text ) const;
+    bool isPlainText( const QString& text ) const;
 
     int textFlags() const;
 

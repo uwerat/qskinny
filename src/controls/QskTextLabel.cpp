@@ -17,15 +17,32 @@ class QskTextLabel::PrivateData
 {
 public:
     PrivateData( const QString& txt ):
-        effectiveTextFormat( QskTextOptions::AutoText ),
         text( txt )
     {
+        effectiveTextFormat = textOptions.format();
     }
 
-    QskTextOptions textOptions;
+    QskTextOptions effectiveOptions() const
+    {
+        if ( textOptions.format() != QskTextOptions::AutoText )
+            return textOptions;
 
-    QskTextOptions::TextFormat effectiveTextFormat;
+        if ( effectiveTextFormat == QskTextOptions::AutoText )
+        {
+            effectiveTextFormat = textOptions.isPlainText( text )
+                 ? QskTextOptions::PlainText : QskTextOptions::RichText;
+        }
+
+        QskTextOptions options = textOptions;
+        options.setFormat( effectiveTextFormat );
+
+        return options;
+    }
+
     QString text;
+
+    QskTextOptions textOptions;
+    mutable QskTextOptions::TextFormat effectiveTextFormat;
 };
 
 QskTextLabel::QskTextLabel( QQuickItem* parent ):
@@ -50,7 +67,7 @@ void QskTextLabel::setText( const QString& text )
         return;
 
     m_data->text = text;
-    m_data->effectiveTextFormat = QskTextOptions::AutoText;
+    m_data->effectiveTextFormat = m_data->textOptions.format();
 
     resetImplicitSize();
     update();
@@ -68,9 +85,6 @@ void QskTextLabel::setTextOptions( const QskTextOptions& options )
     if ( options == m_data->textOptions )
         return;
 
-    if ( options.format() != m_data->textOptions.format() )
-        m_data->effectiveTextFormat = QskTextOptions::AutoText;
-
 #if 0
     // we are killing user settings of the policy this way ??
 
@@ -80,6 +94,7 @@ void QskTextLabel::setTextOptions( const QskTextOptions& options )
     setSizePolicy( policy, sizePolicy().verticalPolicy() );
 #endif
 
+    m_data->effectiveTextFormat = options.format();
     m_data->textOptions = options;
 
     resetImplicitSize();
@@ -156,27 +171,12 @@ QFont QskTextLabel::font() const
     return effectiveFont( QskTextLabel::Text );
 }
 
-bool QskTextLabel::isRichText() const
-{
-    if ( m_data->effectiveTextFormat == QskTextOptions::AutoText )
-    {
-        // caching the rich text evaluation
-        const bool isRichRext = m_data->textOptions.isRichText( m_data->text );
-        m_data->effectiveTextFormat = isRichRext ? QskTextOptions::RichText : QskTextOptions::PlainText;
-    }
-
-    return m_data->effectiveTextFormat;
-}
-
 QSizeF QskTextLabel::contentsSizeHint() const
 {
     if ( !m_data->text.isEmpty() )
     {
-        QskTextOptions options = textOptions();
-        options.setFormat( isRichText() ? QskTextOptions::RichText : QskTextOptions::PlainText );
-
-        return QskSkinRenderer::textSize(
-            this, m_data->text, options, QskTextLabel::Text );
+        return QskSkinRenderer::textSize( this, m_data->text,
+            m_data->effectiveOptions(), QskTextLabel::Text );
     }
 
     return QSizeF( 0, 0 );
@@ -199,11 +199,9 @@ qreal QskTextLabel::heightForWidth( qreal width ) const
         maxHeight = m_data->textOptions.maximumLineCount() * lineHeight;
     }
 
-    QskTextOptions options = textOptions();
-    options.setFormat( isRichText() ? QskTextOptions::RichText : QskTextOptions::PlainText );
-
     const QSizeF size = QskSkinRenderer::textSize( this,
-        QSizeF( width, maxHeight ), m_data->text, options, QskTextLabel::Text );
+        QSizeF( width, maxHeight ), m_data->text,
+        m_data->effectiveOptions(), QskTextLabel::Text );
 
     return qCeil( size.height() );
 }
@@ -218,11 +216,9 @@ qreal QskTextLabel::widthForHeight( qreal height ) const
 
     const qreal maxWidth = std::numeric_limits< qreal >::max();
 
-    QskTextOptions options = textOptions();
-    options.setFormat( isRichText() ? QskTextOptions::RichText : QskTextOptions::PlainText );
-
     const QSizeF size = QskSkinRenderer::textSize( this, 
-        QSizeF( maxWidth, height ), m_data->text, options, QskTextLabel::Text );
+        QSizeF( maxWidth, height ), m_data->text,
+        m_data->effectiveOptions(), QskTextLabel::Text );
 
     return qCeil( size.width() );
 }
