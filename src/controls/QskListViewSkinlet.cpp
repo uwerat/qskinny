@@ -6,7 +6,6 @@
 #include "QskListViewSkinlet.h"
 #include "QskListView.h"
 #include "QskAspect.h"
-#include "QskSkinRenderer.h"
 #include "QskTextOptions.h"
 #include "QskTextNode.h"
 #include "QskGraphic.h"

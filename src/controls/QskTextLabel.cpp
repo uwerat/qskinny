@@ -6,7 +6,7 @@
 #include "QskTextLabel.h"
 #include "QskAspect.h"
 #include "QskTextOptions.h"
-#include "QskSkinRenderer.h"
+#include "QskTextNode.h"
 
 #include <QFontMetricsF>
 #include <QtMath>
@@ -172,8 +172,9 @@ QSizeF QskTextLabel::contentsSizeHint() const
 {
     if ( !m_data->text.isEmpty() )
     {
-        return QskSkinRenderer::textSize( this, m_data->text,
-            m_data->effectiveOptions(), QskTextLabel::Text );
+        const auto font = effectiveFont( Text );
+        return QskTextNode::textSize(
+            m_data->text, font, m_data->effectiveOptions() );
     }
 
     return QSizeF( 0, 0 );
@@ -181,7 +182,8 @@ QSizeF QskTextLabel::contentsSizeHint() const
 
 qreal QskTextLabel::heightForWidth( qreal width ) const
 {
-    const qreal lineHeight = QFontMetricsF( effectiveFont( Text ) ).height();
+    const auto font = effectiveFont( Text );
+    const qreal lineHeight = QFontMetricsF( font ).height();
 
     if ( m_data->text.isEmpty() ||
         ( m_data->textOptions.wrapMode() == QskTextOptions::NoWrap ) )
@@ -196,9 +198,8 @@ qreal QskTextLabel::heightForWidth( qreal width ) const
         maxHeight = m_data->textOptions.maximumLineCount() * lineHeight;
     }
 
-    const QSizeF size = QskSkinRenderer::textSize( this,
-        QSizeF( width, maxHeight ), m_data->text,
-        m_data->effectiveOptions(), QskTextLabel::Text );
+    QSizeF size( width, maxHeight );
+    size = QskTextNode::textSize( m_data->text, font, size, m_data->effectiveOptions() );
 
     return qCeil( size.height() );
 }
@@ -211,11 +212,11 @@ qreal QskTextLabel::widthForHeight( qreal height ) const
         return Inherited::widthForHeight( height );
     }
 
+    const auto font = effectiveFont( Text );
     const qreal maxWidth = std::numeric_limits< qreal >::max();
 
-    const QSizeF size = QskSkinRenderer::textSize( this, 
-        QSizeF( maxWidth, height ), m_data->text,
-        m_data->effectiveOptions(), QskTextLabel::Text );
+    QSizeF size( maxWidth, height );
+    size = QskTextNode::textSize( m_data->text, font, size, m_data->effectiveOptions() );
 
     return qCeil( size.width() );
 }

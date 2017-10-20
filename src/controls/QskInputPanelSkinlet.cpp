@@ -10,7 +10,6 @@
 
 #include "QskAspect.h"
 #include "QskSkin.h"
-#include "QskSkinRenderer.h"
 #include "QskTextOptions.h"
 #include "QskTextNode.h"
 #include "QskBoxNode.h"
@@ -146,6 +145,7 @@ QSGNode* QskInputPanelSkinlet::updatePanelNode(
         const auto rowIndex = &keyRow - panelKeyData;
         auto& frames = panelNode->frames[ rowIndex ];
         auto& glyphs = panelNode->glyphs[ rowIndex ];
+
         for ( const auto& keyData : keyRow )
         {
             const auto colIndex = &keyData - keyRow;
@@ -217,10 +217,8 @@ QSGNode* QskInputPanelSkinlet::updateKeyGlyphNode(
     const auto alignment = textNode->flagHint< Qt::Alignment >(
         QskInputPanel::KeyGlyph | QskAspect::Alignment, Qt::AlignCenter );
 
-    QskSkinRenderer::updateText( textNode, rect, alignment,
-        panel->textForKey( key ), options, textNode, QskInputPanel::KeyGlyph );
-
-    return textNode;
+    return updateTextNode( panel, textNode, rect, alignment,
+        panel->textForKey( key ), options, QskInputPanel::KeyGlyph );
 }
 
 #include "moc_QskInputPanelSkinlet.cpp"

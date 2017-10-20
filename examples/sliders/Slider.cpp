@@ -3,6 +3,8 @@
 
 #include <QskAspect.h>
 #include <QskRgbValue.h>
+#include <QskBoxShapeMetrics.h>
+#include <QskGradient.h>
 #include <QskAnimationHint.h>
 
 QSK_SUBCONTROL( Slider, Scale )
@@ -15,7 +17,15 @@ Slider::Slider( QQuickItem* parentItem ):
 
     setMetric( QskSlider::Handle | Size, 80 );
 
-    setColor( Fill, QskRgbValue::Grey700 );
+#if 0
+    const QskGradient fillGradient( QskGradient::Horizontal,
+        QskRgbValue::Grey700, QskRgbValue::Grey500 );
+#else
+    const QskGradient fillGradient( QskRgbValue::Grey700 );
+#endif
+
+    setBoxShapeHint( Fill, 0 );
+    setGradientHint( Fill, fillGradient );
     setColor( Scale, qRgb( 178, 178, 178 ) ); // for the ticks
 
     setColor( QskSlider::Handle, QskRgbValue::Grey800 );

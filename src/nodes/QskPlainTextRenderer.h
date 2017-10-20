@@ -13,9 +13,13 @@
 #include <QFont>
 #include <QFontMetricsF>
 
+class QskTextColors;
+
 class QSGNode;
 class QQuickItem;
 class QColor;
+class QSGTransformNode;
+class QQuickItem;
 
 class QSK_EXPORT QskPlainTextRenderer
 {
@@ -27,13 +31,13 @@ public:
     void setOptions( const QskTextOptions& );
     void setAlignment( Qt::Alignment );
 
-    void updateNode(
-        const QQuickItem*, const QRectF&, const QString&, QSGNode* parentNode,
-        const QColor& textColor, Qsk::TextStyle, const QColor& styleColor );
+    void updateNode( const QString&, const QSizeF&,
+        Qsk::TextStyle, const QskTextColors&,
+        const QQuickItem*, QSGTransformNode* );
 
-    void updateNode(
-        const QQuickItem*, const QSizeF& size, const QString&, QSGNode* parentNode,
-        const QColor& textColor, Qsk::TextStyle, const QColor& styleColor );
+    void updateNode( const QString&, const QRectF&, 
+        Qsk::TextStyle, const QskTextColors&,
+        const QQuickItem*, QSGTransformNode* );
 
     static void updateNodeColor( QSGNode* parentNode,
         const QColor& textColor, Qsk::TextStyle, const QColor& styleColor );
@@ -49,13 +53,5 @@ private:
     QskTextOptions m_options;
     Qt::Alignment m_alignment;
 };
-
-inline void QskPlainTextRenderer::updateNode(
-    const QQuickItem* item, const QSizeF& size, const QString& text, QSGNode* parentNode,
-    const QColor& textColor, Qsk::TextStyle style, const QColor& styleColor )
-{
-    updateNode( item, QRectF( QPointF(), size ),
-        text, parentNode, textColor, style, styleColor );
-}
 
 #endif

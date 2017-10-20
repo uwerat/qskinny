@@ -16,7 +16,6 @@
 #include "QskControl.h"
 #include "QskColorFilter.h"
 #include "QskSkinTransition.h"
-#include "QskSkinRenderer.h"
 
 #include <QFont>
 #include <QElapsedTimer>

@@ -4,6 +4,8 @@
  *****************************************************************************/
 
 #include "QskTextRenderer.h"
+#include "QskTextColors.h"
+
 #include <QQuickWindow>
 
 QSK_QT_PRIVATE_BEGIN
@@ -16,62 +18,39 @@ QSK_QT_PRIVATE_END
 class QskTextHelperItem final : public QQuickText
 {
 public:
-    QskTextHelperItem();
-
     void refWindow( QQuickWindow* window );
     void derefWindow();
 
-    void begin();
-    void end();
+    void begin() { classBegin(); }
+    void end() { componentComplete(); }
 
-    QRectF layedOutTextRect() const;
-    void updateTextNode( QQuickWindow*, QSGNode* );
+    QRectF layedOutTextRect() const
+    {
+        auto that = const_cast< QskTextHelperItem* >( this );
+        return QQuickTextPrivate::get( that )->layedOutTextRect;
+    }
 
+    void updateTextNode( QQuickWindow* window, QSGNode* parentNode )
+    {
+        QQuickItemPrivate::get( this )->refWindow( window );
+
+        while ( parentNode->firstChild() )
+            delete parentNode->firstChild(); 
+
+        auto node = QQuickText::updatePaintNode( nullptr, nullptr );
+        node->reparentChildNodesTo( parentNode );
+        delete node;
+
+        QQuickItemPrivate::get( this )->derefWindow();
+    }
 protected:
     virtual QSGNode* updatePaintNode(
-        QSGNode*, UpdatePaintNodeData* ) override final;
+        QSGNode*, UpdatePaintNodeData* ) override final
+    {
+        // should never be called
+        return nullptr;
+    }
 };
-
-QskTextHelperItem::QskTextHelperItem():
-    QQuickText( nullptr )
-{
-}
-
-QRectF QskTextHelperItem::layedOutTextRect() const
-{
-    auto that = const_cast< QskTextHelperItem* >( this );
-    return QQuickTextPrivate::get( that )->layedOutTextRect;
-}
-
-void QskTextHelperItem::updateTextNode( QQuickWindow* window, QSGNode* parentNode )
-{
-    QQuickItemPrivate::get( this )->refWindow( window );
-
-    while ( parentNode->firstChild() )
-        delete parentNode->firstChild(); // This is done in QQuickText::updatePaintNode anyway
-
-    auto node = QQuickText::updatePaintNode( nullptr, nullptr );
-    node->reparentChildNodesTo( parentNode );
-    delete node;
-
-    QQuickItemPrivate::get( this )->derefWindow();
-}
-
-void QskTextHelperItem::begin()
-{
-    classBegin();
-}
-
-void QskTextHelperItem::end()
-{
-    componentComplete();
-}
-
-QSGNode* QskTextHelperItem::updatePaintNode( QSGNode*, UpdatePaintNodeData* )
-{
-    // should never be called
-    return nullptr;
-}
 
 /*
     size requests and rendering might be from different threads and we
@@ -171,13 +150,12 @@ void QskTextRenderer::setupItem( QskTextHelperItem* textItem ) const
 #endif
 }
 
-void QskTextRenderer::updateNode( const QQuickItem* item,
-    const QRectF& rect, const QString& text, QSGTransformNode* parentNode,
-    const QColor& textColor, Qsk::TextStyle style, const QColor& styleColor,
-    const QColor& linkColor )
+void QskTextRenderer::updateNode( const QString& text,
+    const QRectF& rect, Qsk::TextStyle style, const QskTextColors& colors,
+    const QQuickItem* item, QSGTransformNode* node )
 {
     // are we killing internal caches of QQuickText, when always using
-    // the same item for the creation the text nodes ???
+    // the same item for the creation the text nodes. TODO ... 
 
     if ( qskRenderHelper == NULL )
         qskRenderHelper = new QskTextHelperItem();
@@ -204,16 +182,23 @@ void QskTextRenderer::updateNode( const QQuickItem* item,
         textItem.doLayout();
     }
 
-    textItem.setColor( textColor );
+    textItem.setColor( colors.textColor );
     textItem.setStyle( static_cast< QQuickText::TextStyle >( style ) );
-    textItem.setStyleColor( styleColor );
-    textItem.setLinkColor( linkColor );
+    textItem.setStyleColor( colors.styleColor );
+    textItem.setLinkColor( colors.linkColor );
 
     textItem.setText( text );
 
     textItem.end();
 
-    textItem.updateTextNode( item->window(), parentNode );
-
+    textItem.updateTextNode( item->window(), node );
     textItem.setText( QString::null );
+}
+
+void QskTextRenderer::updateNode( const QString& text,
+    const QSizeF& size, Qsk::TextStyle style, const QskTextColors& colors,
+    const QQuickItem* item, QSGTransformNode* node )
+{
+    const QRectF textRect( 0, 0, size.width(), size.height() );
+    updateNode( text, textRect, style, colors, item, node );
 }

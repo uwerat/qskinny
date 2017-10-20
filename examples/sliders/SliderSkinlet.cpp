@@ -8,12 +8,12 @@
 
 #include <QskAspect.h>
 #include <QskSlider.h>
-#include <QskPlainTextRenderer.h>
 #include <QskRgbValue.h>
+#include <QskTextNode.h>
+#include <QskTextOptions.h>
+#include <QskTextColors.h>
 
-#include <QSGTransformNode>
 #include <QSGFlatColorMaterial>
-#include <QSGSimpleRectNode>
 #include <QFontMetricsF>
 
 #include <cmath>
@@ -58,7 +58,7 @@ public:
         setMaterial( &m_material );
     }
 
-    void update( const QRectF& rect, qreal peak, const QColor& color )
+    void update( const QRectF& rect, qreal peakPos, const QColor& color )
     {
         if ( color != m_color )
         {
@@ -68,15 +68,15 @@ public:
             markDirty( QSGNode::DirtyMaterial );
         }
 
-        if ( rect != m_rect || peak != m_peak )
+        if ( rect != m_rect || peakPos != m_peakPos )
         {
             QSGGeometry::Point2D* p =
                 reinterpret_cast< QSGGeometry::Point2D* >( m_geometry.vertexData() );
 
             const qreal y0 = rect.y() + qskPeak;
 
-            setLine( p, peak, peak, rect.y() );
-            setLine( p + 2, peak - 5, peak + 5, y0 );
+            setLine( p, peakPos, peakPos, rect.y() );
+            setLine( p + 2, peakPos - 5, peakPos + 5, y0 );
 
             // corners manually "rounded" by 3 pixels
 
@@ -88,7 +88,7 @@ public:
             setLine( p + 14, rect.left() + 2, rect.right() - 2, rect.bottom() );
 
             m_rect = rect;
-            m_peak = peak;
+            m_peakPos = peakPos;
             markDirty( QSGNode::DirtyGeometry );
         }
     }
@@ -104,7 +104,7 @@ private:
     }
 
     QRectF m_rect;
-    qreal m_peak;
+    qreal m_peakPos;
     QColor m_color;
 
     QSGFlatColorMaterial m_material;
@@ -164,7 +164,7 @@ QSGNode* SliderSkinlet::updateSubNode(
             return updateDecorationNode( slider, node );
 
         case FillRole:
-            return updateFillNode( slider, node );
+            return Inherited::updateSubNode( skinnable, nodeRole, node );
 
         case HandleRole:
             return updateHandleNode( slider, node );
@@ -224,12 +224,6 @@ QRectF SliderSkinlet::handleRect( const QskSlider* slider ) const
     return handleRect;
 }
 
-QSGNode* SliderSkinlet::updateGrooveNode( const QskSlider*, QSGNode* ) const
-{
-    // we don't have a groove
-    return nullptr;
-}
-
 QSGNode* SliderSkinlet::updateScaleNode(
     const QskSlider* slider, QSGNode* node ) const
 {
@@ -284,7 +278,7 @@ QSGNode* SliderSkinlet::updateDecorationNode(
 
     const int tickCount = std::floor( slider->range() / slider->stepSize() ) + 1;
 
-    auto labelNode = static_cast< QSGTransformNode* >( decorationNode->firstChild() );
+    auto labelNode = static_cast< QskTextNode* >( decorationNode->firstChild() );
 
     auto stepStride = slider->stepSize() / slider->range() * decorationRect.width();
 
@@ -295,24 +289,17 @@ QSGNode* SliderSkinlet::updateDecorationNode(
     {
         if ( labelNode == nullptr )
         {
-            labelNode = new QSGTransformNode;
+            labelNode = new QskTextNode;
             decorationNode->appendChildNode( labelNode );
         }
 
         auto labelText = QString::number( slider->minimum() + slider->stepSize() * i, 'f', 0 );
 
-        QskPlainTextRenderer renderer;
-        renderer.setFont( qskLabelFont );
-        renderer.setAlignment( Qt::AlignHCenter );
-        renderer.updateNode( slider, QRectF(), labelText, labelNode,
-            QskRgbValue::Grey700, Qsk::Normal, Qt::transparent );
-
-        QMatrix4x4 matrix;
-        matrix.translate( x, y );
-        labelNode->setMatrix( matrix );
+        labelNode->setTextData( slider, labelText, QRectF( x, y, 0, 0 ),
+            qskLabelFont, QskTextOptions(), QskTextColors( QskRgbValue::Grey700 ),
+            Qt::AlignHCenter, Qsk::Normal );
 
         labelNode = static_cast< decltype( labelNode ) >( labelNode->nextSibling() );
-
         x += 100 * stepStride;
     }
 
@@ -326,28 +313,6 @@ QSGNode* SliderSkinlet::updateDecorationNode(
     }
 
     return decorationNode;
-}
-
-QSGNode* SliderSkinlet::updateFillNode(
-    const QskSlider* slider, QSGNode* node ) const
-{
-    const QRectF fillRect = subControlRect( slider, QskSlider::Fill );
-    if ( fillRect.isEmpty() )
-        return nullptr;
-
-    QSGSimpleRectNode* fillNode = static_cast< QSGSimpleRectNode* >( node );
-
-    if ( fillNode == nullptr )
-    {
-        fillNode = new QSGSimpleRectNode;
-        fillNode->setFlags( QSGNode::OwnedByParent );
-        fillNode->setColor( slider->color( QskSlider::Fill ) );
-    }
-
-    fillNode->setRect( fillRect );
-    fillNode->markDirty( QSGNode::DirtyForceUpdate );
-
-    return fillNode;
 }
 
 QSGNode* SliderSkinlet::updateHandleNode(
@@ -367,31 +332,26 @@ QSGNode* SliderSkinlet::updateHandleNode(
         slider->color( QskSlider::Handle ) );
 
     // finally the value label
-    auto labelNode = static_cast< QSGTransformNode* >( handleNode->firstChild() );
+    auto labelNode = static_cast< QskTextNode* >( handleNode->firstChild() );
     if ( labelNode == nullptr  )
     {
-        labelNode = new QSGTransformNode;
+        labelNode = new QskTextNode;
         handleNode->appendChildNode( labelNode );
     }
 
     QFont font( QStringLiteral( "Roboto" ) );
     font.setPixelSize( 26 );
 
-    QskPlainTextRenderer renderer;
-    renderer.setFont( font );
-    renderer.setAlignment( Qt::AlignHCenter );
-    renderer.updateNode( slider, handleRect.size(),
-        QString::number( slider->value(), 'f', 0 ),
-        labelNode, Qt::white, Qsk::Normal, Qt::transparent );
-
-#if 1
     const qreal h = QFontMetrics( font ).height();
-    qreal y = handleRect.bottom() - 0.5 * ( handleRect.height() - qskPeak + h );
 
-    QMatrix4x4 matrix;
-    matrix.translate( handleRect.x(), y );
-    labelNode->setMatrix( matrix );
-#endif
+    auto textRect = handleRect;
+    textRect.setTop( textRect.bottom() - 0.5 * ( textRect.height() - qskPeak + h ) );
+
+    const QString text = QString::number( slider->value(), 'f', 0 );
+
+    labelNode->setTextData( slider, text, textRect,
+        font, QskTextOptions(), QskTextColors( Qt::white ),
+        Qt::AlignHCenter, Qsk::Normal );
 
     return handleNode;
 }

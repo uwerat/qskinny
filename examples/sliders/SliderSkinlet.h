@@ -17,7 +17,7 @@ class SliderSkinlet : public QskSliderSkinlet
 public:
     enum NodeRole
     {
-        // we have a scale instead of the groove
+        // we have a scale instead of a groove
         ScaleRole = QskSliderSkinlet::HandleRole + 1,
         DecorationRole
     };
@@ -32,20 +32,15 @@ protected:
     virtual QSGNode* updateSubNode(
         const QskSkinnable*, quint8 nodeRole, QSGNode* ) const override;
 
-    virtual QSGNode* updateScaleNode( const QskSlider*, QSGNode* ) const;
-    virtual QSGNode* updateDecorationNode( const QskSlider*, QSGNode* ) const;
-
-    QSGNode* updateFillNode( const QskSlider*, QSGNode* ) const;
-    QSGNode* updateHandleNode( const QskSlider*, QSGNode* ) const;
-    QSGNode* updateGrooveNode( const QskSlider*, QSGNode* ) const;
-
 private:
+    QSGNode* updateScaleNode( const QskSlider*, QSGNode* ) const;
+    QSGNode* updateDecorationNode( const QskSlider*, QSGNode* ) const;
+    QSGNode* updateHandleNode( const QskSlider*, QSGNode* ) const;
+
     QRectF fillRect( const QskSlider* ) const;
     QRectF scaleRect( const QskSlider* ) const;
     QRectF decorationRect( const QskSlider* ) const;
     QRectF handleRect( const QskSlider* ) const;
-
-    void updateHandleLabel( const QskSlider*, QSGTransformNode* ) const;
 };
 
 #endif

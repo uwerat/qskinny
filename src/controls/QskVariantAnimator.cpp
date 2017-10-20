@@ -10,6 +10,7 @@
 #include "QskBoxBorderMetrics.h"
 #include "QskBoxBorderColors.h"
 #include "QskGradient.h"
+#include "QskTextColors.h"
 
 // Even if we don't use the standard Qt animation system we
 // use its registry of interpolators: why adding our own ...
@@ -26,6 +27,7 @@ static void qskRegisterInterpolator()
     qRegisterAnimationInterpolator<QskBoxShapeMetrics>( QskBoxShapeMetrics::interpolate );
     qRegisterAnimationInterpolator<QskBoxBorderMetrics>( QskBoxBorderMetrics::interpolate );
     qRegisterAnimationInterpolator<QskBoxBorderColors>( QskBoxBorderColors::interpolate );
+    qRegisterAnimationInterpolator<QskTextColors>( QskTextColors::interpolate );
 }
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterInterpolator )

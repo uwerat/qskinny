@@ -14,6 +14,7 @@
 #include <QRectF>
 
 class QskTextHelperItem;
+class QskTextColors;
 
 class QQuickItem;
 class QQuickWindow;
@@ -31,13 +32,13 @@ public:
     void setOptions( const QskTextOptions& );
     void setAlignment( Qt::Alignment );
 
-    void updateNode( const QQuickItem*, const QSizeF&, const QString&,
-        QSGTransformNode*, const QColor& textColor,
-        Qsk::TextStyle, const QColor& styleColor, const QColor& linkColor );
+    void updateNode( const QString&, const QSizeF&,
+        Qsk::TextStyle, const QskTextColors&,
+        const QQuickItem*, QSGTransformNode* );
 
-    void updateNode( const QQuickItem*, const QRectF&, const QString&,
-        QSGTransformNode*, const QColor& textColor, Qsk::TextStyle,
-        const QColor& styleColor, const QColor& linkColor );
+    void updateNode( const QString&, const QRectF&, 
+        Qsk::TextStyle, const QskTextColors&,
+        const QQuickItem*, QSGTransformNode* );
 
     QSizeF textSize( const QString& ) const;
     QRectF textRect( const QSizeF&, const QString& ) const;
@@ -49,13 +50,5 @@ private:
     QskTextOptions m_options;
     Qt::Alignment m_alignment;
 };
-
-inline void QskTextRenderer::updateNode( const QQuickItem* item, const QSizeF& size,
-    const QString& text, QSGTransformNode* node, const QColor& textColor,
-    Qsk::TextStyle style, const QColor& styleColor, const QColor& linkColor )
-{
-    updateNode( item, QRectF( 0, 0, size.width(), size.height() ), text, node,
-        textColor, style, styleColor, linkColor );
-}
 
 #endif

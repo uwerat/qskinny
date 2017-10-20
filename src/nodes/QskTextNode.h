@@ -10,10 +10,13 @@
 #include "QskNamespace.h"
 
 #include <QSGTransformNode>
-#include <Qt>
+#include <QRectF>
 
 class QskTextOptions;
+class QskTextColors;
 class QString;
+class QFont;
+class QQuickItem;
 
 class QSK_EXPORT QskTextNode : public QSGTransformNode
 {
@@ -21,10 +24,22 @@ public:
     QskTextNode();
     virtual ~QskTextNode();
 
-    bool setTextData( const QString& text, const QSizeF&, const QFont&,
-        const QskTextOptions&, Qt::Alignment, Qsk::TextStyle,
-        const QColor& textColor, const QColor& styleColor, const QColor& linkColor );
+    void setTextData( const QQuickItem* item,
+        const QString& text, const QRectF&, const QFont&,
+        const QskTextOptions&, const QskTextColors&,
+        Qt::Alignment, Qsk::TextStyle );
+
+#if 1
+    // for the moment here TODO ...
+    static QSizeF textSize( const QString&,
+        const QFont&, const QskTextOptions& );
+        
+    static QSizeF textSize( const QString&, const QFont&,
+        const QSizeF&, const QskTextOptions& );
+#endif
+
 private:
+    QRectF m_rect;
     uint m_hash;
 };
 

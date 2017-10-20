@@ -44,6 +44,7 @@ HEADERS += \
     common/QskNamespace.h \
     common/QskObjectCounter.h \
     common/QskSizePolicy.h \
+    common/QskTextColors.h \
     common/QskTextOptions.h
 
 SOURCES += \
@@ -58,6 +59,7 @@ SOURCES += \
     common/QskModule.cpp \
     common/QskObjectCounter.cpp \
     common/QskSizePolicy.cpp \
+    common/QskTextColors.cpp \
     common/QskTextOptions.cpp
 
 HEADERS += \
@@ -154,7 +156,6 @@ HEADERS += \
     controls/QskSkinHintTable.h \
     controls/QskSkinlet.h \
     controls/QskSkinnable.h \
-    controls/QskSkinRenderer.h \
     controls/QskSkinTransition.h \
     controls/QskSlider.h \
     controls/QskSliderSkinlet.h \
@@ -218,7 +219,6 @@ SOURCES += \
     controls/QskSkinFactory.cpp \
     controls/QskSkinlet.cpp \
     controls/QskSkinnable.cpp \
-    controls/QskSkinRenderer.cpp \
     controls/QskSkinTransition.cpp \
     controls/QskSlider.cpp \
     controls/QskSliderSkinlet.cpp \

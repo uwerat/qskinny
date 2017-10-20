@@ -13,10 +13,11 @@
 #include "QskBoxBorderMetrics.h"
 #include "QskBoxBorderColors.h"
 #include "QskGradient.h"
-#include "QskSkinRenderer.h"
 #include "QskBoxNode.h"
 #include "QskBoxClipNode.h"
 #include "QskTextNode.h"
+#include "QskTextColors.h"
+#include "QskTextOptions.h"
 #include "QskGraphicNode.h"
 #include "QskGraphicTextureFactory.h"
 #include "QskFunctions.h"
@@ -87,6 +88,31 @@ static inline bool qskIsBoxVisible( const QskBoxBorderMetrics& borderMetrics,
         return true;
 
     return !borderMetrics.isNull() && borderColors.isVisible();
+}
+
+static inline QskTextColors qskTextColors(
+    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl )
+{
+    using namespace QskAspect;
+
+    /*
+        Would be more efficient to have QskTextColors hints instead of
+        storing the colors as seperated hints. TODO ...
+     */
+
+    QskSkinHintStatus status;
+    
+    QskTextColors c;
+    c.textColor = skinnable->color( subControl, &status );
+#if 1
+    if ( !status.isValid() )
+        c.textColor = skinnable->color( subControl | QskAspect::TextColor );
+#endif  
+
+    c.styleColor = skinnable->color( subControl | StyleColor );
+    c.linkColor = skinnable->color( subControl | LinkColor );
+
+    return c;
 }
 
 class QskSkinlet::PrivateData
@@ -428,8 +454,37 @@ QSGNode* QskSkinlet::updateTextNode(
     if ( textNode == nullptr )
         textNode = new QskTextNode();
 
-    QskSkinRenderer::updateText( skinnable, rect, alignment,
-        text, textOptions, textNode, subControl );
+    auto colors = qskTextColors( skinnable, subControl );
+
+    auto textStyle = Qsk::Normal;
+    if ( colors.styleColor.alpha() == 0 )
+    {
+        textStyle = skinnable->flagHint< Qsk::TextStyle >(
+            subControl | QskAspect::Style, Qsk::Normal );
+    }
+
+    auto font = skinnable->effectiveFont( subControl );
+
+    switch ( textOptions.fontSizeMode() )
+    {
+        case QskTextOptions::FixedSize:
+            break;
+
+        case QskTextOptions::HorizontalFit:
+            Q_UNIMPLEMENTED();
+            break;
+
+        case QskTextOptions::VerticalFit:
+            font.setPixelSize( rect.height() * 0.5 );
+            break;
+
+        case QskTextOptions::Fit:
+            Q_UNIMPLEMENTED();
+            break;
+    }
+
+    textNode->setTextData( skinnable->owningControl(),
+        text, rect, font, textOptions, colors, alignment, textStyle );
 
     return textNode;
 }
