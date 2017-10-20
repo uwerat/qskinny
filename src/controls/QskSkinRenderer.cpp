@@ -21,7 +21,7 @@ QSizeF QskSkinRenderer::textSize( const QskSkinnable* skinnable,
 
     auto font = skinnable->effectiveFont( subControl );
 
-    if ( options.isPlainText( text ) )
+    if ( options.effectiveFormat( text ) == QskTextOptions::PlainText )
     {
         QskPlainTextRenderer renderer;
         renderer.setFont( font );
@@ -45,7 +45,7 @@ QSizeF QskSkinRenderer::textSize( const QskSkinnable* skinnable,
 {
     const auto font = skinnable->effectiveFont( subControl );
 
-    if ( options.isPlainText( text ) )
+    if ( options.effectiveFormat( text ) == QskTextOptions::PlainText )
     {
         QskPlainTextRenderer renderer;
         renderer.setFont( font );
@@ -90,7 +90,7 @@ void QskSkinRenderer::updateText( const QskSkinnable* skinnable,
             subControl | Style, Qsk::Normal );
     }
 
-    const auto isPlainText = options.isPlainText( text );
+    const auto isPlainText = options.effectiveFormat( text ) == QskTextOptions::PlainText;
 
     // doesn't work - we end up with a black rectangle TODO ...
 #if 0

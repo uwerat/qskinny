@@ -74,7 +74,7 @@ bool QskListView::alternatingRowColors() const
     return m_data->alternatingRowColors;
 }
 
-void QskListView::setTextOptions(const QskTextOptions& textOptions )
+void QskListView::setTextOptions( const QskTextOptions& textOptions )
 {
     if ( textOptions != m_data->textOptions )
     {

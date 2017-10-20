@@ -55,6 +55,8 @@ public:
     TextFormat format() const;
     void setFormat( TextFormat );
 
+    TextFormat effectiveFormat( const QString& text ) const;
+
     Qt::TextElideMode elideMode() const;
     void setElideMode( Qt::TextElideMode );
 
@@ -69,8 +71,6 @@ public:
 
     bool operator==( const QskTextOptions& other ) const;
     bool operator!=( const QskTextOptions& other ) const;
-
-    bool isPlainText( const QString& text ) const;
 
     int textFlags() const;
 

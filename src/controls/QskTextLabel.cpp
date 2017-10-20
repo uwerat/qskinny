@@ -28,10 +28,7 @@ public:
             return textOptions;
 
         if ( effectiveTextFormat == QskTextOptions::AutoText )
-        {
-            effectiveTextFormat = textOptions.isPlainText( text )
-                 ? QskTextOptions::PlainText : QskTextOptions::RichText;
-        }
+            effectiveTextFormat = textOptions.effectiveFormat( text );
 
         QskTextOptions options = textOptions;
         options.setFormat( effectiveTextFormat );
