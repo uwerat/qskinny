@@ -50,6 +50,22 @@ public:
 
     static QSGNode* findNodeByRole( QSGNode* parent, quint8 nodeRole );
 
+    static QSGNode* updateBoxNode( const QskSkinnable*, QSGNode*,
+        const QRectF&, QskAspect::Subcontrol );
+
+    static QSGNode* updateTextNode( const QskSkinnable*, QSGNode*,
+        const QRectF&, Qt::Alignment, const QString&, const QskTextOptions&,
+        QskAspect::Subcontrol );
+
+    // keeping the aspect ratio
+    static QSGNode* updateGraphicNode( const QskSkinnable*, QSGNode*,
+        const QskGraphic&, const QskColorFilter&,
+        const QRectF&, Qt::Alignment );
+
+    // stretching to fit
+    static QSGNode* updateGraphicNode( const QskSkinnable*, QSGNode*,
+        const QskGraphic&, const QskColorFilter&, const QRectF& );
+
 protected:
     void setNodeRoles( const QVector< quint8 >& );
     void appendNodeRoles( const QVector< quint8 >& );
@@ -66,9 +82,6 @@ protected:
     QSGNode* updateBoxNode( const QskSkinnable*, QSGNode*,
         QskAspect::Subcontrol ) const;
 
-    static QSGNode* updateBoxNode( const QskSkinnable*, QSGNode*,
-        const QRectF&, QskAspect::Subcontrol );
-
     QSGNode* updateBoxClipNode( const QskSkinnable*, QSGNode*,
         QskAspect::Subcontrol ) const;
 
@@ -78,21 +91,8 @@ protected:
     QSGNode* updateTextNode( const QskSkinnable*, QSGNode*,
         const QString&, const QskTextOptions&, QskAspect::Subcontrol ) const;
 
-    static QSGNode* updateTextNode( const QskSkinnable*, QSGNode*,
-        const QRectF&, Qt::Alignment, const QString&, const QskTextOptions&,
-        QskAspect::Subcontrol );
-
     QSGNode* updateGraphicNode( const QskSkinnable*, QSGNode*,
         const QskGraphic&, QskAspect::Subcontrol ) const;
-
-    // keeping the aspect ratio
-    static QSGNode* updateGraphicNode( const QskSkinnable*, QSGNode*,
-        const QskGraphic&, const QskColorFilter&,
-        const QRectF&, Qt::Alignment );
-
-    // stretching to fit
-    static QSGNode* updateGraphicNode( const QskSkinnable*, QSGNode*,
-        const QskGraphic&, const QskColorFilter&, const QRectF& );
 
     void insertRemoveNodes( QSGNode* parentNode,
         QSGNode* oldNode, QSGNode* newNode, int nodeRole ) const;
