@@ -4,8 +4,8 @@
  *****************************************************************************/
 
 #include "QskPlainTextRenderer.h"
-#include "QskSkinlet.h"
 #include "QskTextColors.h"
+#include "QskTextOptions.h"
 
 #include <QFontMetrics>
 #include <QGuiApplication>
@@ -27,45 +27,20 @@ QSK_QT_PRIVATE_END
 
 #define GlyphFlag static_cast< QSGNode::Flag >( 0x800 )
 
-QskPlainTextRenderer::QskPlainTextRenderer():
-    m_fontMetrics( m_font )
-{
-}
-
-QskPlainTextRenderer::~QskPlainTextRenderer()
-{
-}
-
-void QskPlainTextRenderer::setFont( const QFont& font )
-{
-    m_font = font;
-    m_fontMetrics = QFontMetricsF( m_font );
-}
-
-void QskPlainTextRenderer::setOptions( const QskTextOptions& options )
-{
-    m_options = options;
-}
-
-void QskPlainTextRenderer::setAlignment( Qt::Alignment alignment )
-{
-    m_alignment = alignment;
-}
-
-QSizeF QskPlainTextRenderer::textSize( const QString& text ) const
+QSizeF QskPlainTextRenderer::textSize( const QString& text,
+    const QFont& font, const QskTextOptions& options )
 {
     // result differs from QskTextRenderer::implicitSizeHint ???
-    return textRect( QSizeF( 10e6, 10e6 ), text ).size();
+    return textRect( text, font, options, QSizeF( 10e6, 10e6 ) ).size();
 }
 
-QRectF QskPlainTextRenderer::textRect( const QSizeF& size, const QString& text ) const
+QRectF QskPlainTextRenderer::textRect( const QString& text,
+    const QFont& font, const QskTextOptions& options, const QSizeF& size )
 {
-    return m_fontMetrics.boundingRect( { QPointF(), size }, flags(), text );
-}
+    const QFontMetricsF fm( font );
+    const QRect r( 0, 0, size.width(), size.height() );
 
-int QskPlainTextRenderer::flags() const
-{
-    return m_options.textFlags() | m_alignment;
+    return fm.boundingRect( r, options.textFlags(), text );
 }
 
 static qreal qskLayoutText( QTextLayout* layout, const QPointF& position, qreal lineWidth,
@@ -177,37 +152,30 @@ static void qskRenderText(
 }
 
 void QskPlainTextRenderer::updateNode( const QString& text,
-    const QRectF& rect, Qsk::TextStyle style, const QskTextColors& colors,
+    const QFont& font, const QskTextOptions& options,
+    Qsk::TextStyle style, const QskTextColors& colors,
+    Qt::Alignment alignment, const QRectF& rect,
     const QQuickItem* item, QSGTransformNode* node )
 {
-    QTextOption textOption( m_alignment );
-    textOption.setWrapMode( static_cast< QTextOption::WrapMode >( m_options.wrapMode() ) );
+    QTextOption textOption( alignment );
+    textOption.setWrapMode( static_cast< QTextOption::WrapMode >( options.wrapMode() ) );
 
     QTextLayout layout;
-    layout.setFont( m_font );
+    layout.setFont( font );
     layout.setTextOption( textOption );
     layout.setText( text );
 
     layout.beginLayout();
     QPointF position;
-    position.ry() += qskLayoutText( &layout, position, rect.width(), m_options );
+    position.ry() += qskLayoutText( &layout, position, rect.width(), options );
     layout.endLayout();
 
     position.setX( 0 );
-    position.setY( m_fontMetrics.ascent()
-        + ( m_alignment & Qt::AlignVCenter
-            ? ( rect.height() - position.y() ) * 0.5 : 0 ) );
+    position.setY( QFontMetricsF( font ).ascent()
+        + ( alignment & Qt::AlignVCenter ? ( rect.height() - position.y() ) * 0.5 : 0 ) );
 
     qskRenderText( const_cast< QQuickItem* >( item ), node, &layout, position,
         colors.textColor, static_cast< QQuickText::TextStyle >( style ), colors.styleColor );
-}
-
-void QskPlainTextRenderer::updateNode( const QString& text,
-    const QSizeF& size, Qsk::TextStyle style, const QskTextColors& colors,
-    const QQuickItem* item, QSGTransformNode* node )
-{
-    const QRectF textRect( 0, 0, size.width(), size.height() );
-    updateNode( text, textRect, style, colors, item, node );
 }
 
 void QskPlainTextRenderer::updateNodeColor( QSGNode* parentNode, const QColor& textColor,

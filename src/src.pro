@@ -93,8 +93,9 @@ HEADERS += \
     nodes/QskBoxRendererColorMap.h \
     nodes/QskGraphicNode.h \
     nodes/QskPlainTextRenderer.h \
-    nodes/QskTextNode.h \
+    nodes/QskRichTextRenderer.h \
     nodes/QskTextRenderer.h \
+    nodes/QskTextNode.h \
     nodes/QskTextureNode.h \
     nodes/QskVertex.h
 
@@ -106,8 +107,9 @@ SOURCES += \
     nodes/QskBoxRendererDEllipse.cpp \
     nodes/QskGraphicNode.cpp \
     nodes/QskPlainTextRenderer.cpp \
-    nodes/QskTextNode.cpp \
+    nodes/QskRichTextRenderer.cpp \
     nodes/QskTextRenderer.cpp \
+    nodes/QskTextNode.cpp \
     nodes/QskTextureNode.cpp \
     nodes/QskVertex.cpp
 

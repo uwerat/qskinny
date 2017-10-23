@@ -59,7 +59,7 @@ static inline QSGNode* qskFindNodeByFlag( QSGNode* parent, int nodeRole )
     return nullptr;
 }
 
-static inline QSGNode* qskUpdateGraphicNode( 
+static inline QSGNode* qskUpdateGraphicNode(
     const QskSkinnable* skinnable, QSGNode* node,
     const QskGraphic& graphic, const QskColorFilter& colorFilter,
     const QRect& rect )
@@ -101,13 +101,13 @@ static inline QskTextColors qskTextColors(
      */
 
     QskSkinHintStatus status;
-    
+
     QskTextColors c;
     c.textColor = skinnable->color( subControl, &status );
 #if 1
     if ( !status.isValid() )
         c.textColor = skinnable->color( subControl | QskAspect::TextColor );
-#endif  
+#endif
 
     c.styleColor = skinnable->color( subControl | StyleColor );
     c.linkColor = skinnable->color( subControl | LinkColor );
@@ -372,7 +372,7 @@ QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
 }
 
 QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
-    QSGNode* node, const QRectF& rect, QskAspect::Subcontrol subControl ) const
+    QSGNode* node, const QRectF& rect, QskAspect::Subcontrol subControl )
 {
     using namespace QskAspect;
 
@@ -411,7 +411,7 @@ QSGNode* QskSkinlet::updateBoxClipNode( const QskSkinnable* skinnable,
 }
 
 QSGNode* QskSkinlet::updateBoxClipNode( const QskSkinnable* skinnable,
-    QSGNode* node, const QRectF& rect, QskAspect::Subcontrol subControl ) const
+    QSGNode* node, const QRectF& rect, QskAspect::Subcontrol subControl )
 {
     using namespace QskAspect;
 
@@ -445,7 +445,7 @@ QSGNode* QskSkinlet::updateTextNode(
     const QskSkinnable* skinnable, QSGNode* node,
     const QRectF& rect, Qt::Alignment alignment,
     const QString& text, const QskTextOptions& textOptions,
-    QskAspect::Subcontrol subControl ) const
+    QskAspect::Subcontrol subControl )
 {
     if ( text.isEmpty() || rect.isEmpty() )
         return nullptr;
@@ -510,9 +510,9 @@ QSGNode* QskSkinlet::updateGraphicNode(
 
     const Qt::Alignment alignment = skinnable->flagHint< Qt::Alignment >(
         subcontrol | QskAspect::Alignment, Qt::AlignCenter );
-    
+
     const auto colorFilter = skinnable->effectiveGraphicFilter( subcontrol );
-    
+
     return updateGraphicNode( skinnable, node,
         graphic, colorFilter, rect, alignment );
 }
@@ -520,7 +520,7 @@ QSGNode* QskSkinlet::updateGraphicNode(
 QSGNode* QskSkinlet::updateGraphicNode(
     const QskSkinnable* skinnable, QSGNode* node,
     const QskGraphic& graphic, const QskColorFilter& colorFilter,
-    const QRectF& rect, Qt::Alignment alignment ) const
+    const QRectF& rect, Qt::Alignment alignment )
 {
     if ( graphic.isNull() )
         return nullptr;
@@ -537,13 +537,13 @@ QSGNode* QskSkinlet::updateGraphicNode(
 QSGNode* QskSkinlet::updateGraphicNode(
     const QskSkinnable* skinnable, QSGNode* node,
     const QskGraphic& graphic, const QskColorFilter& colorFilter,
-    const QRectF& rect ) const
-{   
+    const QRectF& rect )
+{
     if ( graphic.isNull() )
         return nullptr;
 
     return qskUpdateGraphicNode( skinnable, node,
         graphic, colorFilter, rect.toAlignedRect() );
-}   
+}
 
 #include "moc_QskSkinlet.cpp"

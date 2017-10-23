@@ -8,47 +8,28 @@
 
 #include "QskGlobal.h"
 #include "QskNamespace.h"
-#include "QskTextOptions.h"
+#include <Qt>
 
-#include <QFont>
-#include <QRectF>
-
-class QskTextHelperItem;
 class QskTextColors;
+class QskTextOptions;
 
+class QString;
+class QFont;
+class QRectF;
+class QSizeF;
 class QQuickItem;
-class QQuickWindow;
 class QSGTransformNode;
-class QColor;
 
-// Hacking a QQuickTextNode using a QQuickText helper item
-// How to create the nodes in a better way needs further
-// investigations
-
-class QSK_EXPORT QskTextRenderer
+namespace QskTextRenderer
 {
-public:
-    void setFont( const QFont& font );
-    void setOptions( const QskTextOptions& );
-    void setAlignment( Qt::Alignment );
-
-    void updateNode( const QString&, const QSizeF&,
-        Qsk::TextStyle, const QskTextColors&,
+    QSK_EXPORT void updateNode( const QString&, const QFont&, const QskTextOptions&,
+        Qsk::TextStyle, const QskTextColors&, Qt::Alignment, const QRectF&,
         const QQuickItem*, QSGTransformNode* );
 
-    void updateNode( const QString&, const QRectF&, 
-        Qsk::TextStyle, const QskTextColors&,
-        const QQuickItem*, QSGTransformNode* );
+    QSK_EXPORT QSizeF textSize( const QString&, const QFont&, const QskTextOptions& );
 
-    QSizeF textSize( const QString& ) const;
-    QRectF textRect( const QSizeF&, const QString& ) const;
-
-private:
-    void setupItem( QskTextHelperItem* ) const;
-
-    QFont m_font;
-    QskTextOptions m_options;
-    Qt::Alignment m_alignment;
-};
+    QSK_EXPORT QSizeF textSize( const QString&, const QFont&,
+        const QskTextOptions&, const QSizeF& );
+}
 
 #endif

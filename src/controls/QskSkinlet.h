@@ -66,33 +66,33 @@ protected:
     QSGNode* updateBoxNode( const QskSkinnable*, QSGNode*,
         QskAspect::Subcontrol ) const;
 
-    QSGNode* updateBoxNode( const QskSkinnable*, QSGNode*,
-        const QRectF&, QskAspect::Subcontrol ) const;
+    static QSGNode* updateBoxNode( const QskSkinnable*, QSGNode*,
+        const QRectF&, QskAspect::Subcontrol );
 
     QSGNode* updateBoxClipNode( const QskSkinnable*, QSGNode*,
         QskAspect::Subcontrol ) const;
 
-    QSGNode* updateBoxClipNode( const QskSkinnable*, QSGNode*,
-        const QRectF&, QskAspect::Subcontrol ) const;
-
-    QSGNode* updateTextNode( const QskSkinnable*, QSGNode*,
-        const QRectF&, Qt::Alignment, const QString&, const QskTextOptions&,
-        QskAspect::Subcontrol ) const;
+    static QSGNode* updateBoxClipNode( const QskSkinnable*, QSGNode*,
+        const QRectF&, QskAspect::Subcontrol );
 
     QSGNode* updateTextNode( const QskSkinnable*, QSGNode*,
         const QString&, const QskTextOptions&, QskAspect::Subcontrol ) const;
+
+    static QSGNode* updateTextNode( const QskSkinnable*, QSGNode*,
+        const QRectF&, Qt::Alignment, const QString&, const QskTextOptions&,
+        QskAspect::Subcontrol );
 
     QSGNode* updateGraphicNode( const QskSkinnable*, QSGNode*,
         const QskGraphic&, QskAspect::Subcontrol ) const;
 
     // keeping the aspect ratio
-    QSGNode* updateGraphicNode( const QskSkinnable*, QSGNode*,
+    static QSGNode* updateGraphicNode( const QskSkinnable*, QSGNode*,
         const QskGraphic&, const QskColorFilter&,
-        const QRectF&, Qt::Alignment ) const;
+        const QRectF&, Qt::Alignment );
 
     // stretching to fit
-    QSGNode* updateGraphicNode( const QskSkinnable*, QSGNode*,
-        const QskGraphic&, const QskColorFilter&, const QRectF& ) const;
+    static QSGNode* updateGraphicNode( const QskSkinnable*, QSGNode*,
+        const QskGraphic&, const QskColorFilter&, const QRectF& );
 
     void insertRemoveNodes( QSGNode* parentNode,
         QSGNode* oldNode, QSGNode* newNode, int nodeRole ) const;

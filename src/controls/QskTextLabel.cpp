@@ -6,7 +6,7 @@
 #include "QskTextLabel.h"
 #include "QskAspect.h"
 #include "QskTextOptions.h"
-#include "QskTextNode.h"
+#include "QskTextRenderer.h"
 
 #include <QFontMetricsF>
 #include <QtMath>
@@ -173,7 +173,7 @@ QSizeF QskTextLabel::contentsSizeHint() const
     if ( !m_data->text.isEmpty() )
     {
         const auto font = effectiveFont( Text );
-        return QskTextNode::textSize(
+        return QskTextRenderer::textSize(
             m_data->text, font, m_data->effectiveOptions() );
     }
 
@@ -199,7 +199,8 @@ qreal QskTextLabel::heightForWidth( qreal width ) const
     }
 
     QSizeF size( width, maxHeight );
-    size = QskTextNode::textSize( m_data->text, font, size, m_data->effectiveOptions() );
+    size = QskTextRenderer::textSize( m_data->text, font,
+        m_data->effectiveOptions(), size );
 
     return qCeil( size.height() );
 }
@@ -216,7 +217,8 @@ qreal QskTextLabel::widthForHeight( qreal height ) const
     const qreal maxWidth = std::numeric_limits< qreal >::max();
 
     QSizeF size( maxWidth, height );
-    size = QskTextNode::textSize( m_data->text, font, size, m_data->effectiveOptions() );
+    size = QskTextRenderer::textSize( m_data->text, font,
+        m_data->effectiveOptions(), size );
 
     return qCeil( size.width() );
 }

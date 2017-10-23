@@ -7,7 +7,6 @@
 #include "QskTextOptions.h"
 #include "QskTextColors.h"
 #include "QskTextRenderer.h"
-#include "QskPlainTextRenderer.h"
 
 #include <QFont>
 #include <QColor>
@@ -64,75 +63,11 @@ void QskTextNode::setTextData( const QQuickItem* item,
 
     const QRectF textRect( 0, 0, rect.width(), rect.height() );
 
-    if ( options.format() == QskTextOptions::PlainText )
-    {
-#if 0
-        if ( colors_only )
-        {
-            // doesn't work - we end up with a black rectangle TODO ...
-
-            QskPlainTextRenderer::updateNodeColor( parentNode, textRgb,
-                fontOptions.textStyle, styleRgb );
-            return;
-        }
-#endif
-        QskPlainTextRenderer renderer;
-        renderer.setFont( font );
-        renderer.setOptions( options );
-        renderer.setAlignment( alignment );
-
-        renderer.updateNode( text, textRect, textStyle, colors, item, this );
-    }
-    else
-    {
-        QskTextRenderer renderer;
-        renderer.setFont( font );
-        renderer.setOptions( options );
-        renderer.setAlignment( alignment );
-
-        renderer.updateNode( text, textRect, textStyle, colors, item, this );
-    }
+    /*
+        In case of having color changes only we would could
+        go a faster update path: see QskPlainTextRenderer::updateNodeColor.
+        TODO ...
+     */
+    QskTextRenderer::updateNode( text, font, options, textStyle,
+        colors, alignment, textRect, item, this );
 }
-
-QSizeF QskTextNode::textSize( const QString& text,
-    const QFont& font, const QskTextOptions& options )
-{
-    if ( options.effectiveFormat( text ) == QskTextOptions::PlainText )
-    {
-        QskPlainTextRenderer renderer;
-        renderer.setFont( font );
-        renderer.setOptions( options );
-
-        return renderer.textSize( text );
-    }
-    else
-    {
-        QskTextRenderer renderer;
-        renderer.setFont( font );
-        renderer.setOptions( options );
-    
-        return renderer.textSize( text ); 
-    }   
-}
-
-QSizeF QskTextNode::textSize( const QString& text, const QFont& font,
-    const QSizeF& boundingSize, const QskTextOptions& options )
-{
-    if ( options.effectiveFormat( text ) == QskTextOptions::PlainText )
-    {
-        QskPlainTextRenderer renderer;
-        renderer.setFont( font );
-        renderer.setOptions( options );
-
-        return renderer.textRect( boundingSize, text ).size();
-    }
-    else
-    {
-        QskTextRenderer renderer;
-        renderer.setFont( font );
-        renderer.setOptions( options );
-
-        return renderer.textRect( boundingSize, text ).size();
-    }
-}
-

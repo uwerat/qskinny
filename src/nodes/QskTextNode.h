@@ -29,15 +29,6 @@ public:
         const QskTextOptions&, const QskTextColors&,
         Qt::Alignment, Qsk::TextStyle );
 
-#if 1
-    // for the moment here TODO ...
-    static QSizeF textSize( const QString&,
-        const QFont&, const QskTextOptions& );
-        
-    static QSizeF textSize( const QString&, const QFont&,
-        const QSizeF&, const QskTextOptions& );
-#endif
-
 private:
     QRectF m_rect;
     uint m_hash;
