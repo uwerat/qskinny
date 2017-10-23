@@ -60,9 +60,9 @@ int QskShortcutHandler::addShortcut( QQuickWindow* window, const QKeySequence& k
     if ( window )
         id = map().addShortcut( window, key, Qt::WindowShortcut, contextMatcher );
     else
-        id = map().addShortcut( this, key,  Qt::ApplicationShortcut, contextMatcher );
+        id = map().addShortcut( this, key, Qt::ApplicationShortcut, contextMatcher );
 
-    InvokeData& data = m_invokeDataMap[id];
+    InvokeData& data = m_invokeDataMap[ id ];
     data.receiver = receiver;
     data.method = method;
     data.connectionType = connectionType;

@@ -66,6 +66,9 @@ public:
     static QSGNode* updateGraphicNode( const QskSkinnable*, QSGNode*,
         const QskGraphic&, const QskColorFilter&, const QRectF& );
 
+    static QSGNode* updateBoxClipNode( const QskSkinnable*, QSGNode*,
+        const QRectF&, QskAspect::Subcontrol );
+
 protected:
     void setNodeRoles( const QVector< quint8 >& );
     void appendNodeRoles( const QVector< quint8 >& );
@@ -84,9 +87,6 @@ protected:
 
     QSGNode* updateBoxClipNode( const QskSkinnable*, QSGNode*,
         QskAspect::Subcontrol ) const;
-
-    static QSGNode* updateBoxClipNode( const QskSkinnable*, QSGNode*,
-        const QRectF&, QskAspect::Subcontrol );
 
     QSGNode* updateTextNode( const QskSkinnable*, QSGNode*,
         const QString&, const QskTextOptions&, QskAspect::Subcontrol ) const;
