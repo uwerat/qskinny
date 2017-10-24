@@ -44,6 +44,17 @@ class QSK_EXPORT QskControl : public QQuickItem, public QskResizable, public Qsk
     Q_PROPERTY( bool transparentForPositioners READ isTransparentForPositioner
         WRITE setTransparentForPositioner NOTIFY controlFlagsChanged FINAL )
 
+#if 0
+    Q_PROPERTY( Qt::FocusPolicy focusPolicy READ focusPolicy
+        WRITE setFocusPolicy NOTIFY focusPolicyChanged FINAL )
+
+    Q_PROPERTY( bool wheelEnabled READ isWheelEnabled
+        WRITE setWheelEnabled NOTIFY wheelEnabledChanged FINAL )
+#else
+    Q_PROPERTY( Qt::FocusPolicy focusPolicy READ focusPolicy WRITE setFocusPolicy FINAL )
+    Q_PROPERTY( bool wheelEnabled READ isWheelEnabled WRITE setWheelEnabled FINAL )
+#endif
+
     Q_PROPERTY( bool tabFence READ isTabFence
         WRITE setTabFence NOTIFY controlFlagsChanged FINAL )
 
@@ -55,11 +66,6 @@ class QSK_EXPORT QskControl : public QQuickItem, public QskResizable, public Qsk
     Q_PROPERTY( QSizeF minimumSize READ minimumSize WRITE setMinimumSize )
     Q_PROPERTY( QSizeF maximumSize READ maximumSize WRITE setMaximumSize )
     Q_PROPERTY( QSizeF preferredSize READ preferredSize WRITE setPreferredSize )
-
-#if 0
-    Q_PROPERTY(Qt::FocusPolicy focusPolicy READ focusPolicy
-        WRITE setFocusPolicy NOTIFY focusPolicyChanged FINAL)
-#endif
 
     using Inherited = QQuickItem;
 
@@ -121,6 +127,12 @@ public:
 
     static const QSGNode* itemNode( const QQuickItem* );
     static const QSGNode* paintNode( const QQuickItem* );
+
+    void setWheelEnabled( bool );
+    bool isWheelEnabled() const;
+
+    void setFocusPolicy( Qt::FocusPolicy );
+    Qt::FocusPolicy focusPolicy() const;
 
     void setTabFence( bool );
     bool isTabFence() const;
@@ -203,6 +215,8 @@ private Q_SLOTS:
     void updateControlFlags();
 
 private:
+    void setActiveFocusOnTab( bool ) = delete; // use setFocusPolicy instead
+
     virtual QSGNode* updatePaintNode( QSGNode*, UpdatePaintNodeData* ) override final;
     virtual void updatePolish() override final;
 
@@ -236,6 +250,9 @@ private:
     bool m_clearPreviousNodes : 1;
 
     bool m_isInitiallyPainted : 1;
+
+    uint m_focusPolicy : 4;
+    bool m_isWheelEnabled;
 
     Q_DECLARE_PRIVATE( QskControl )
 };

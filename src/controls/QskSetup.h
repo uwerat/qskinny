@@ -84,6 +84,8 @@ private:
     QskSetup();
     virtual ~QskSetup();
 
+    virtual bool eventFilter( QObject*, QEvent* ) override final;
+
     static QskSetup* s_instance;
 
     class PrivateData;

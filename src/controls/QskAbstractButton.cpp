@@ -56,9 +56,9 @@ QskAbstractButton::QskAbstractButton( QQuickItem* parent ):
     Inherited( parent ),
     m_data( new PrivateData() )
 {
+    setFocusPolicy( Qt::StrongFocus );
     setAcceptedMouseButtons( Qt::LeftButton );
     setAcceptHoverEvents( true );
-    setActiveFocusOnTab( true );
 }
 
 QskAbstractButton::~QskAbstractButton()
@@ -302,21 +302,15 @@ void QskAbstractButton::mouseMoveEvent( QMouseEvent* event )
     event->accept();
 }
 
-void QskAbstractButton::mousePressEvent( QMouseEvent* event )
+void QskAbstractButton::mousePressEvent( QMouseEvent* )
 {
-    // QPlatformTheme::GroupBoxTitleFont
-    // isSignalConnected( pressAndHold, ());
-    // QGuiApplication::styleHints()->mousePressAndHoldInterval()
+    // QGuiApplication::styleHints()->mousePressAndHoldInterval() ???
     setPressed( true );
-    forceActiveFocus( Qt::MouseFocusReason );
-
-    event->accept();
 }
 
-void QskAbstractButton::mouseReleaseEvent( QMouseEvent* event )
+void QskAbstractButton::mouseReleaseEvent( QMouseEvent* )
 {
     releaseButton();
-    event->accept();
 }
 
 void QskAbstractButton::mouseUngrabEvent()

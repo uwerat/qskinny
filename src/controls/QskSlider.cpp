@@ -45,7 +45,7 @@ QskSlider::QskSlider( Qt::Orientation orientation, QQuickItem* parent ):
     m_data( new PrivateData( orientation ) )
 {
     setAcceptHoverEvents( true );
-    setActiveFocusOnTab( true );
+    setFocusPolicy(Qt::StrongFocus);
 
     if ( orientation == Qt::Horizontal )
         initSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Fixed );
@@ -130,27 +130,26 @@ QRectF QskSlider::handleRect() const
 
 void QskSlider::mousePressEvent( QMouseEvent* event )
 {
-    // Case 1: press started in the handle, start sliding
-
     if ( handleRect().contains( event->pos() ) )
     {
+        // Case 1: press started in the handle, start sliding
+
         m_data->pressedPos = event->pos();
         m_data->pressedValue = value();
         setSkinStateFlag( Pressed );
         Q_EMIT pressedChanged( true );
-        return;
     }
-
-    // Case 2: pageSize is not used, we're done here
-    if ( !pageSize() )
+    else if ( !pageSize() )
     {
-        event->ignore();
-        return;
+        // Case 2: pageSize is not used, we're done here
     }
-
-    // Case 3: pressed outside of the handle, page the scroller in the direction of the press
-    // requires an auto-repeat behavior until the slider reaches the destination, or it simply jumps there (configurable)
-
+    else
+    {
+        // Case 3: pressed outside of the handle, page the scroller in
+        // the direction of the press requires an auto-repeat behavior
+        // until the slider reaches the destination, or it simply jumps
+        // there (configurable)
+    }
 }
 
 void QskSlider::mouseMoveEvent( QMouseEvent* event )

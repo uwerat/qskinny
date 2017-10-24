@@ -85,7 +85,8 @@ QskScrollView::QskScrollView( QQuickItem* parent ):
     m_data->panRecognizer.setTimeout( 200 );
 
     setAcceptedMouseButtons( Qt::LeftButton );
-    setActiveFocusOnTab( true );
+    setWheelEnabled( true );
+    setFocusPolicy( Qt::StrongFocus );
 }
 
 QskScrollView::~QskScrollView()
@@ -256,11 +257,7 @@ void QskScrollView::mousePressEvent( QMouseEvent* event )
 
             setScrollPos( QPointF( x, m_data->scrollPos.y() ) );
         }
-
-        return;
     }
-
-    Inherited::mousePressEvent( event );
 }
 
 void QskScrollView::mouseMoveEvent( QMouseEvent* event )
@@ -294,7 +291,7 @@ void QskScrollView::mouseMoveEvent( QMouseEvent* event )
         setScrollPos( pos );
 }
 
-void QskScrollView::mouseReleaseEvent( QMouseEvent* event )
+void QskScrollView::mouseReleaseEvent( QMouseEvent* )
 {
     if ( m_data->isScrolling )
     {
@@ -303,11 +300,7 @@ void QskScrollView::mouseReleaseEvent( QMouseEvent* event )
 
         setSkinStateFlag( HorizontalHandlePressed, false );
         setSkinStateFlag( VerticalHandlePressed, false );
-
-        return;
     }
-
-    Inherited::mouseReleaseEvent( event );
 }
 
 void QskScrollView::gestureEvent( QskGestureEvent* event )
@@ -347,11 +340,6 @@ void QskScrollView::gestureEvent( QskGestureEvent* event )
 
 void QskScrollView::wheelEvent( QWheelEvent* event )
 {
-    if ( !isEnabled() )
-    {
-        return Inherited::wheelEvent( event );
-    }
-
     const qreal dy = event->delta() / 120 * 20.0;
     setScrollPos( m_data->scrollPos - QPointF( 0.0, dy ) );
 }

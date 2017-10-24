@@ -34,8 +34,8 @@ QskRangeControl::QskRangeControl( QQuickItem* parent ):
     QskControl( parent ),
     m_data( new PrivateData() )
 {
-    setActiveFocusOnTab( !m_data->readOnly );
     setAcceptedMouseButtons( Qt::LeftButton );
+    setWheelEnabled( true );
 }
 
 QskRangeControl::~QskRangeControl()
@@ -219,7 +219,9 @@ void QskRangeControl::setReadOnly( bool readOnly )
     if ( m_data->readOnly == readOnly )
         return;
 
-    setActiveFocusOnTab( !readOnly );
+    // we are killing user settings here !!
+    setFocusPolicy( m_data->readOnly ? Qt::NoFocus : Qt::StrongFocus );
+    setWheelEnabled( m_data->readOnly );
 
     m_data->readOnly = readOnly;
     Q_EMIT readOnlyChanged( readOnly );
@@ -274,17 +276,11 @@ void QskRangeControl::keyPressEvent( QKeyEvent* event )
 
 void QskRangeControl::wheelEvent( QWheelEvent* event )
 {
-    if ( isReadOnly() )
-    {
-        return Inherited::wheelEvent( event );
-    }
-
     const int steps = event->delta() / 120;
     setValue( m_data->value + steps * m_data->stepSize );
 }
 
 #endif
-
 
 void QskRangeControl::componentComplete()
 {

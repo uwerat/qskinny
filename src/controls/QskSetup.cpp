@@ -12,7 +12,9 @@
 #include "QskWindow.h"
 #include "QskObjectTree.h"
 
-#include <QCoreApplication>
+#include <QGuiApplication>
+#include <QStyleHints>
+
 #include <QPointer>
 #include <QDebug>
 
@@ -66,7 +68,13 @@ static void qskApplicationHook()
     qAddPostRoutine( QskSetup::cleanup );
 }
 
+static void qskApplicationFilter()
+{
+    QCoreApplication::instance()->installEventFilter( QskSetup::instance() );
+}
+
 Q_CONSTRUCTOR_FUNCTION( qskApplicationHook )
+Q_COREAPP_STARTUP_FUNCTION( qskApplicationFilter )
 
 extern bool qskInheritLocale( QskControl*, const QLocale& );
 extern bool qskInheritLocale( QskWindow*, const QLocale& );
@@ -260,7 +268,7 @@ QskSkin* QskSetup::skin()
 void QskSetup::addGraphicProvider( const QString& providerId, QskGraphicProvider* provider )
 {
     m_data->graphicProviders.insert( providerId, provider );
-}       
+}
 
 QskGraphicProvider* QskSetup::graphicProvider( const QString& providerId ) const
 {
@@ -272,7 +280,7 @@ QskGraphicProvider* QskSetup::graphicProvider( const QString& providerId ) const
     }
 
     return m_data->graphicProviders.provider( providerId );
-}   
+}
 
 void QskSetup::setInputPanel( QskInputPanel* inputPanel )
 {
@@ -304,6 +312,75 @@ void QskSetup::inheritLocale( QObject* object, const QLocale& locale )
     visitor.setResolveValue( locale );
 
     QskObjectTree::traverseDown( object, visitor );
+}
+
+bool QskSetup::eventFilter( QObject* object, QEvent* event )
+{
+    if ( auto control = qobject_cast< QskControl* >( object ) )
+    {
+        /*
+            Qt::FocusPolicy has always been there with widgets, got lost with
+            Qt/Quick and has been reintroduced with Qt/Quick Controls 2 ( QC2 ).
+            Unfortunately this was done once more by adding code on top instead
+            of fixing the foundation.
+
+            But we also don't want to have how it is done in QC2 by adding
+            the focus management in the event handler of the base class.
+            This implementatio reverts the expected default behaviour of when
+            events are accepted/ignored + is an error prone nightmare, when it
+            comes to overloading event handlers missing to call the base class.
+
+            That's why we prefer to do the focus management outside of the
+            event handlers.
+         */
+        switch( event->type() )
+        {
+            case QEvent::MouseButtonPress:
+            case QEvent::MouseButtonRelease:
+            {
+                if ( ( control->focusPolicy() & Qt::ClickFocus ) == Qt::ClickFocus )
+                {
+                    const bool focusOnRelease =
+                        QGuiApplication::styleHints()->setFocusOnTouchRelease();
+
+                    if ( focusOnRelease )
+                    {
+                        if ( event->type() == QEvent::MouseButtonRelease )
+                            control->forceActiveFocus( Qt::MouseFocusReason );
+                    }
+                    else
+                    {
+                        if ( event->type() == QEvent::MouseButtonPress )
+                            control->forceActiveFocus( Qt::MouseFocusReason );
+                    }
+                }
+                break;
+            }
+            case QEvent::Wheel:
+            {
+                if ( !control->isWheelEnabled() )
+                {
+                    /*
+                        We block further processing of the event. This is in line
+                        with not receiving any mouse event that have not been
+                        explicitly enabled with setAcceptedMouseButtons().
+
+                     */
+                    event->ignore();
+                    return true;
+                }
+
+                if ( ( control->focusPolicy() & Qt::WheelFocus ) == Qt::WheelFocus )
+                    control->forceActiveFocus( Qt::MouseFocusReason );
+
+                break;
+            }
+            default:
+                break;
+        }
+    }
+
+    return false;
 }
 
 QskSetup* QskSetup::qmlAttachedProperties( QObject* )

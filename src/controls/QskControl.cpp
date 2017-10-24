@@ -175,7 +175,9 @@ QskControl::QskControl( QQuickItemPrivate& dd, QQuickItem* parent ):
     m_blockedPolish( false ),
     m_blockedImplicitSize( true ),
     m_clearPreviousNodes( false ),
-    m_isInitiallyPainted( false )
+    m_isInitiallyPainted( false ),
+    m_focusPolicy( Qt::NoFocus ),
+    m_isWheelEnabled( false )
 {
     Q_D( QskControl );
 
@@ -198,7 +200,7 @@ QskControl::QskControl( QQuickItemPrivate& dd, QQuickItem* parent ):
     }
 
     setFlag( QQuickItem::ItemHasContents, true );
-    setActiveFocusOnTab( false );
+    QQuickItem::setActiveFocusOnTab( false );
 
     if ( parent )
     {
@@ -366,6 +368,44 @@ void QskControl::setPolishOnResize( bool on )
 bool QskControl::polishOnResize() const
 {
     return m_polishOnResize;
+}
+
+void QskControl::setWheelEnabled( bool on )
+{
+    if ( on != m_isWheelEnabled )
+    {
+        m_isWheelEnabled = on;
+        // Q_EMIT wheelEnabledChanged();
+    }
+}
+
+bool QskControl::isWheelEnabled() const
+{
+    return m_isWheelEnabled;
+}
+
+void QskControl::setFocusPolicy( Qt::FocusPolicy policy )
+{
+    if ( policy != m_focusPolicy )
+    {
+        m_focusPolicy = policy & ~Qt::TabFocus;
+        QQuickItem::setActiveFocusOnTab( policy & Qt::TabFocus );
+
+#if 0
+        // we have to get rid of the hack used in playground/inputpanel
+        // so that we can add additional signals !!!
+        Q_EMIT ( focusPolicyChanged() );
+#endif
+    }
+}
+
+Qt::FocusPolicy QskControl::focusPolicy() const
+{
+    uint policy = m_focusPolicy;
+    if ( activeFocusOnTab() )
+        policy |= Qt::TabFocus;
+
+    return static_cast< Qt::FocusPolicy >( policy );
 }
 
 void QskControl::setTabFence( bool on )
@@ -1068,7 +1108,6 @@ void QskControl::itemChange( QQuickItem::ItemChange change,
         }
         case QQuickItem::ItemActiveFocusHasChanged:
         {
-            // creating focus events ???
             setSkinStateFlag( Focused, hasActiveFocus() );
             break;
         }
