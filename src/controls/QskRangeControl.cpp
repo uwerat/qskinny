@@ -34,8 +34,8 @@ QskRangeControl::QskRangeControl( QQuickItem* parent ):
     QskControl( parent ),
     m_data( new PrivateData() )
 {
-    setAcceptedMouseButtons( Qt::LeftButton );
-    setWheelEnabled( true );
+    m_data->readOnly = true;
+    setReadOnly( false );
 }
 
 QskRangeControl::~QskRangeControl()
@@ -219,11 +219,13 @@ void QskRangeControl::setReadOnly( bool readOnly )
     if ( m_data->readOnly == readOnly )
         return;
 
+    m_data->readOnly = readOnly;
+
     // we are killing user settings here !!
-    setFocusPolicy( m_data->readOnly ? Qt::NoFocus : Qt::StrongFocus );
+    setFocusPolicy( readOnly ? Qt::NoFocus : Qt::StrongFocus );
+    setAcceptedMouseButtons( readOnly ? Qt::NoButton : Qt::LeftButton );
     setWheelEnabled( m_data->readOnly );
 
-    m_data->readOnly = readOnly;
     Q_EMIT readOnlyChanged( readOnly );
 }
 
