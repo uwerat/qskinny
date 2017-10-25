@@ -3,8 +3,6 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#include "LineEdit.h"
-
 #include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
 
@@ -23,6 +21,8 @@
 #include <QGuiApplication>
 #include <QFontMetricsF>
 
+#include <private/qquicktextinput_p.h>
+
 #define STRINGIFY(x) #x
 #define STRING(x) STRINGIFY(x)
 
@@ -39,11 +39,8 @@ public:
         setMargins( 10 );
         setSpacing( 10 );
 
-        auto* lineEdit = new LineEdit( this );
-
-        lineEdit->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
-        lineEdit->setBackgroundColor( Qt::white );
-        lineEdit->setText( "I am a line edit. Press and edit Me." );
+        auto* textInput = new QQuickTextInput( this );
+        textInput->setText( "I am a line edit. Press and edit Me." );
 
 #if LOCAL_PANEL
         auto* inputPanel = new QskInputPanel( this );
