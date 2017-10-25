@@ -104,7 +104,24 @@ static QskWindowStore qskReleasedWindowCounter;
 class QskControlPrivate : public QQuickItemPrivate
 {
     Q_DECLARE_PUBLIC(QskControl)
+
 public:
+    QskControlPrivate():
+        controlFlags( qskControlFlags() ),
+        controlFlagsMask( 0 ),
+        explicitLocale( false ),
+        autoFillBackground( false ),
+        autoLayoutChildren( false ),
+        polishOnResize( false ),
+        blockedPolish( false ),
+        blockedImplicitSize( true ),
+        clearPreviousNodes( false ),
+        isInitiallyPainted( false ),
+        focusPolicy( Qt::NoFocus ),
+        isWheelEnabled( false )
+    {
+    }
+
     void mirrorChange() override
     {
         Q_Q( QskControl );
@@ -154,10 +171,27 @@ public:
 
         return q->gestureFilter( child, event );
     }
-};
 
-static_assert( sizeof( QskControlPrivate ) == sizeof( QQuickItemPrivate ),
-    "QskControlPrivate may not have additional members." );
+    QLocale locale;
+        
+    quint16 controlFlags;
+    quint16 controlFlagsMask;
+
+    bool explicitLocale : 1;
+        
+    bool autoFillBackground : 1;
+    bool autoLayoutChildren : 1;
+    bool polishOnResize : 1;
+        
+    bool blockedPolish : 1;
+    bool blockedImplicitSize : 1;
+    bool clearPreviousNodes : 1;
+        
+    bool isInitiallyPainted : 1;
+
+    uint focusPolicy : 4;
+    bool isWheelEnabled;
+};
 
 QskControl::QskControl( QQuickItem* parent ):
     QskControl( *( new QskControlPrivate() ), parent )
@@ -165,23 +199,11 @@ QskControl::QskControl( QQuickItem* parent ):
 }
 
 QskControl::QskControl( QQuickItemPrivate& dd, QQuickItem* parent ):
-    Inherited( dd, parent ),
-    m_controlFlags( qskControlFlags() ),
-    m_controlFlagsMask( 0 ),
-    m_explicitLocale( false ),
-    m_autoFillBackground( false ),
-    m_autoLayoutChildren( false ),
-    m_polishOnResize( false ),
-    m_blockedPolish( false ),
-    m_blockedImplicitSize( true ),
-    m_clearPreviousNodes( false ),
-    m_isInitiallyPainted( false ),
-    m_focusPolicy( Qt::NoFocus ),
-    m_isWheelEnabled( false )
+    Inherited( dd, parent )
 {
     Q_D( QskControl );
 
-    if ( m_controlFlags & QskControl::DeferredLayout )
+    if ( d->controlFlags & QskControl::DeferredLayout )
     {
         // In general the geometry of an item should be the job of
         // the parent - unfortunatly not done by Qt Quick
@@ -219,7 +241,7 @@ QskControl::QskControl( QQuickItemPrivate& dd, QQuickItem* parent ):
     connect( qskSetup, SIGNAL( controlFlagsChanged() ),
         this, SLOT( updateControlFlags() ) );
 
-    if ( m_controlFlags & QskControl::DeferredUpdate )
+    if ( d->controlFlags & QskControl::DeferredUpdate )
         qskFilterWindow( window() );
 }
 
@@ -293,15 +315,16 @@ void QskControl::setGeometry( qreal x, qreal y, qreal width, qreal height )
 
 QRectF QskControl::geometry() const
 {
-    Q_D( const QQuickItem );
+    Q_D( const QskControl );
     return QRectF( d->x, d->y, d->width, d->height );
 }
 
 void QskControl::setAutoFillBackground( bool on )
 {
-    if ( on != m_autoFillBackground )
+    Q_D( QskControl );
+    if ( on != d->autoFillBackground )
     {
-        m_autoFillBackground = on;
+        d->autoFillBackground = on;
 
         update();
         Q_EMIT controlFlagsChanged();
@@ -310,14 +333,15 @@ void QskControl::setAutoFillBackground( bool on )
 
 bool QskControl::autoFillBackground() const
 {
-    return m_autoFillBackground;
+    return d_func()->autoFillBackground;
 }
 
 void QskControl::setAutoLayoutChildren( bool on )
 {
-    if ( on != m_autoLayoutChildren )
+    Q_D( QskControl );
+    if ( on != d->autoLayoutChildren )
     {
-        m_autoLayoutChildren = on;
+        d->autoLayoutChildren = on;
         if ( on )
             polish();
 
@@ -327,7 +351,7 @@ void QskControl::setAutoLayoutChildren( bool on )
 
 bool QskControl::autoLayoutChildren() const
 {
-    return m_autoLayoutChildren;
+    return d_func()->autoLayoutChildren;
 }
 
 void QskControl::setTransparentForPositioner( bool on )
@@ -342,8 +366,7 @@ void QskControl::setTransparentForPositioner( bool on )
 
 bool QskControl::isTransparentForPositioner() const
 {
-    Q_D( const QskControl );
-    return d->isTransparentForPositioner();
+    return d_func()->isTransparentForPositioner();
 }
 
 bool QskControl::isTransparentForPositioner( const QQuickItem* item )
@@ -356,9 +379,10 @@ bool QskControl::isTransparentForPositioner( const QQuickItem* item )
 
 void QskControl::setPolishOnResize( bool on )
 {
-    if ( on != m_polishOnResize )
+    Q_D( QskControl );
+    if ( on != d->polishOnResize )
     {
-        m_polishOnResize = on;
+        d->polishOnResize = on;
         polish();
 
         Q_EMIT controlFlagsChanged();
@@ -367,41 +391,39 @@ void QskControl::setPolishOnResize( bool on )
 
 bool QskControl::polishOnResize() const
 {
-    return m_polishOnResize;
+    return d_func()->polishOnResize;
 }
 
 void QskControl::setWheelEnabled( bool on )
 {
-    if ( on != m_isWheelEnabled )
+    Q_D( QskControl );
+    if ( on != d->isWheelEnabled )
     {
-        m_isWheelEnabled = on;
-        // Q_EMIT wheelEnabledChanged();
+        d->isWheelEnabled = on;
+        Q_EMIT wheelEnabledChanged();
     }
 }
 
 bool QskControl::isWheelEnabled() const
 {
-    return m_isWheelEnabled;
+    return d_func()->isWheelEnabled;
 }
 
 void QskControl::setFocusPolicy( Qt::FocusPolicy policy )
 {
-    if ( policy != m_focusPolicy )
+    Q_D( QskControl );
+    if ( policy != d->focusPolicy )
     {
-        m_focusPolicy = policy & ~Qt::TabFocus;
+        d->focusPolicy = policy & ~Qt::TabFocus;
         QQuickItem::setActiveFocusOnTab( policy & Qt::TabFocus );
 
-#if 0
-        // we have to get rid of the hack used in playground/inputpanel
-        // so that we can add additional signals !!!
         Q_EMIT ( focusPolicyChanged() );
-#endif
     }
 }
 
 Qt::FocusPolicy QskControl::focusPolicy() const
 {
-    uint policy = m_focusPolicy;
+    uint policy = d_func()->focusPolicy;
     if ( activeFocusOnTab() )
         policy |= Qt::TabFocus;
 
@@ -420,34 +442,35 @@ void QskControl::setTabFence( bool on )
 
 bool QskControl::isTabFence() const
 {
-    Q_D( const QskControl );
-    return d->isTabFence;
+    return d_func()->isTabFence;
 }
 
 QskControl::Flags QskControl::controlFlags() const
 {
-    return QskControl::Flags( m_controlFlags );
+    return QskControl::Flags( d_func()->controlFlags );
 }
 
 void QskControl::setControlFlags( Flags flags )
 {
     // set all bits in the mask
-    m_controlFlagsMask = std::numeric_limits< controlFlags_t >::max();
+    d_func()->controlFlagsMask = std::numeric_limits< controlFlags_t >::max();
     updateControlFlags( flags );
 }
 
 void QskControl::resetControlFlags()
 {
     // clear all bits in the mask
-    m_controlFlagsMask = 0;
+    d_func()->controlFlagsMask = 0;
     updateControlFlags( static_cast< Flags >( qskControlFlags() ) );
 }
 
 void QskControl::setControlFlag( Flag flag, bool on )
 {
-    m_controlFlagsMask |= flag;
+    Q_D( QskControl );
 
-    if ( ( m_controlFlags & flag ) != on )
+    d->controlFlagsMask |= flag;
+
+    if ( ( d->controlFlags & flag ) != on )
     {
         updateControlFlag( flag, on );
         Q_EMIT controlFlagsChanged();
@@ -456,11 +479,13 @@ void QskControl::setControlFlag( Flag flag, bool on )
 
 void QskControl::resetControlFlag( Flag flag )
 {
-    m_controlFlagsMask &= ~flag;
+    Q_D( QskControl );
+
+    d->controlFlagsMask &= ~flag;
 
     const bool on = qskSetup->testControlFlag( static_cast< QskSetup::Flag >( flag ) );
 
-    if ( ( m_controlFlags & flag ) != on )
+    if ( ( d->controlFlags & flag ) != on )
     {
         updateControlFlag( flag, on );
         Q_EMIT controlFlagsChanged();
@@ -469,7 +494,7 @@ void QskControl::resetControlFlag( Flag flag )
 
 bool QskControl::testControlFlag( Flag flag ) const
 {
-    return m_controlFlags & flag;
+    return d_func()->controlFlags & flag;
 }
 
 void QskControl::updateControlFlags()
@@ -479,7 +504,7 @@ void QskControl::updateControlFlags()
 
 void QskControl::updateControlFlags( Flags flags )
 {
-    const auto oldFlags = m_controlFlags;
+    const auto oldFlags = d_func()->controlFlags;
     const auto newFlags = static_cast< controlFlags_t >( flags );
 
     if ( oldFlags != newFlags )
@@ -499,15 +524,15 @@ void QskControl::updateControlFlag( uint flag, bool on )
     Q_D( QskControl );
 
     if ( ( flag > std::numeric_limits< controlFlags_t >::max() )
-        || ( bool( m_controlFlags & flag ) == on ) )
+        || ( bool( d->controlFlags & flag ) == on ) )
     {
         return;
     }
 
     if ( on )
-        m_controlFlags |= flag;
+        d->controlFlags |= flag;
     else
-        m_controlFlags &= ~flag;
+        d->controlFlags &= ~flag;
 
     switch( flag )
     {
@@ -527,7 +552,7 @@ void QskControl::updateControlFlag( uint flag, bool on )
         }
         case QskControl::DeferredPolish:
         {
-            if ( !on && m_blockedPolish )
+            if ( !on && d->blockedPolish )
                 polish();
 
             break;
@@ -665,7 +690,8 @@ void QskControl::setMargins( const QMarginsF& margins )
         setMarginsHint( subControl | Margin, m );
         resetImplicitSize();
 
-        if ( m_polishOnResize || m_autoLayoutChildren )
+        Q_D( const QskControl );
+        if ( d->polishOnResize || d->autoLayoutChildren )
             polish();
 
         qskSendEventTo( this, QEvent::ContentsRectChange );
@@ -687,7 +713,8 @@ void QskControl::resetMargins()
         {
             resetImplicitSize();
 
-            if ( m_polishOnResize || m_autoLayoutChildren )
+            Q_D( const QskControl );
+            if ( d->polishOnResize || d->autoLayoutChildren )
                 polish();
 
             qskSendEventTo( this, QEvent::ContentsRectChange );
@@ -727,8 +754,7 @@ QRectF QskControl::contentsRect() const
 
 bool QskControl::layoutMirroring() const
 {
-    Q_D( const QskControl );
-    return d->effectiveLayoutMirror;
+    return d_func()->effectiveLayoutMirror;
 }
 
 void QskControl::setLayoutMirroring( bool on, bool recursive )
@@ -773,16 +799,18 @@ void QskControl::resetLayoutMirroring()
 
 QLocale QskControl::locale() const
 {
-    return m_locale;
+    return d_func()->locale;
 }
 
 void QskControl::setLocale( const QLocale& locale )
 {
-    m_explicitLocale = true;
+    Q_D( QskControl );
 
-    if ( m_locale != locale )
+    d->explicitLocale = true;
+
+    if ( d->locale != locale )
     {
-        m_locale = locale;
+        d->locale = locale;
         qskSendEventTo( this, QEvent::LocaleChange );
         qskSetup->inheritLocale( this, locale );
     }
@@ -790,9 +818,11 @@ void QskControl::setLocale( const QLocale& locale )
 
 void QskControl::resetLocale()
 {
-    if ( m_explicitLocale )
+    Q_D( QskControl );
+
+    if ( d->explicitLocale )
     {
-        m_explicitLocale = false;
+        d->explicitLocale = false;
         qskResolveLocale( this );
     }
 }
@@ -800,10 +830,12 @@ void QskControl::resetLocale()
 // not static as being called from QskSetup.cpp
 bool qskInheritLocale( QskControl* control, const QLocale& locale )
 {
-    if ( control->m_explicitLocale || control->m_locale == locale )
+    auto d = static_cast< QskControlPrivate *>( QQuickItemPrivate::get( control ) );
+
+    if ( d->explicitLocale || d->locale == locale )
         return false;
 
-    control->m_locale = locale;
+    d->locale = locale;
     qskSendEventTo( control, QEvent::LocaleChange );
 
     return true;
@@ -813,11 +845,12 @@ void qskResolveLocale( QskControl* control )
 {
     const QLocale locale = qskSetup->inheritedLocale( control );
 
-    if ( control->m_locale != locale )
+    auto d = static_cast< QskControlPrivate *>( QQuickItemPrivate::get( control ) );
+    if ( d->locale != locale )
     {
-        control->m_locale = locale;
-        qskSendEventTo( control, QEvent::LocaleChange );
+        d->locale = locale;
 
+        qskSendEventTo( control, QEvent::LocaleChange );
         qskSetup->inheritLocale( control, locale );
     }
 }
@@ -833,7 +866,7 @@ QSizeF QskControl::effectiveConstraint( Qt::SizeHint whichHint ) const
         // in most cases we don't have a preferred width or height
         // and fall back to the implicit size.
 
-        if ( m_blockedImplicitSize )
+        if ( d_func()->blockedImplicitSize )
         {
             QskControl* that = const_cast< QskControl* >( this );
             that->updateImplicitSize();
@@ -851,9 +884,11 @@ QSizeF QskControl::effectiveConstraint( Qt::SizeHint whichHint ) const
 
 void QskControl::resetImplicitSize()
 {
-    if ( m_controlFlags & QskControl::DeferredLayout )
+    Q_D( QskControl );
+
+    if ( d->controlFlags & QskControl::DeferredLayout )
     {
-        m_blockedImplicitSize = true;
+        d->blockedImplicitSize = true;
         layoutConstraintChanged();
     }
     else
@@ -893,7 +928,7 @@ bool QskControl::event( QEvent* event )
         }
         case QEvent::LayoutRequest:
         {
-            if ( m_autoLayoutChildren )
+            if ( d_func()->autoLayoutChildren )
                 resetImplicitSize();
 
             break;
@@ -981,7 +1016,7 @@ void QskControl::changeEvent( QEvent* event )
             different skinlets, that can't deal with nodes
             created from other skinlets
          */
-        m_clearPreviousNodes = true;
+        d_func()->clearPreviousNodes = true;
 
         resetImplicitSize();
         polish();
@@ -1003,7 +1038,7 @@ void QskControl::componentComplete()
 #if defined( QT_DEBUG )
     if ( qobject_cast< const QQuickBasePositioner* >( parent() ) )
     {
-        if ( m_controlFlags & QskControl::DeferredLayout )
+        if ( d_func()->controlFlags & QskControl::DeferredLayout )
         {
             qWarning( "QskControl in DeferredLayout mode under control of a positioner" );
         }
@@ -1046,11 +1081,13 @@ void QskControl::itemChange( QQuickItem::ItemChange change,
 {
     Inherited::itemChange( change, value );
 
+    Q_D( QskControl );
+
     switch( change )
     {
         case QQuickItem::ItemParentHasChanged:
         {
-            if ( !m_explicitLocale )
+            if ( !d->explicitLocale )
                 qskResolveLocale( this );
 
             // not necessarily correct, when parent != parentItem ???
@@ -1062,22 +1099,21 @@ void QskControl::itemChange( QQuickItem::ItemChange change,
         {
             if ( value.boolValue )
             {
-                if ( m_blockedPolish )
+                if ( d->blockedPolish )
                     polish();
 
-                if ( m_controlFlags & QskControl::DeferredUpdate )
+                if ( d->controlFlags & QskControl::DeferredUpdate )
                 {
-                    Q_D( QskControl );
                     if ( d->dirtyAttributes )
                         update();
                 }
             }
             else
             {
-                if ( m_controlFlags & QskControl::CleanupOnVisibility )
+                if ( d->controlFlags & QskControl::CleanupOnVisibility )
                     cleanupNodes();
 
-                m_isInitiallyPainted = false;
+                d->isInitiallyPainted = false;
             }
 
 #if 1
@@ -1096,7 +1132,7 @@ void QskControl::itemChange( QQuickItem::ItemChange change,
         {
             if ( value.window )
             {
-                if ( m_controlFlags & QskControl::DeferredUpdate )
+                if ( d->controlFlags & QskControl::DeferredUpdate )
                     qskFilterWindow( value.window );
             }
 
@@ -1125,7 +1161,8 @@ void QskControl::geometryChanged(
 
     if ( newGeometry.size() != oldGeometry.size() )
     {
-        if ( m_polishOnResize || m_autoLayoutChildren )
+        Q_D( const QskControl );
+        if ( d->polishOnResize || d->autoLayoutChildren )
             polish();
     }
 
@@ -1142,18 +1179,20 @@ void QskControl::layoutConstraintChanged()
 
 void QskControl::updatePolish()
 {
-    if ( m_controlFlags & QskControl::DeferredPolish )
+    Q_D( QskControl );
+
+    if ( d->controlFlags & QskControl::DeferredPolish )
     {
         if ( !isVisible() )
         {
-            m_blockedPolish = true;
+            d->blockedPolish = true;
             return;
         }
     }
 
-    m_blockedPolish = false;
+    d->blockedPolish = false;
 
-    if ( m_autoLayoutChildren )
+    if ( d->autoLayoutChildren )
     {
         const QRectF rect = layoutRect();
 
@@ -1173,17 +1212,20 @@ void QskControl::updatePolish()
 QSGNode* QskControl::updatePaintNode( QSGNode* node, UpdatePaintNodeData* data )
 {
     Q_UNUSED( data );
-    Q_ASSERT( isVisible() || !( m_controlFlags & QskControl::DeferredUpdate ) );
 
-    if ( !m_isInitiallyPainted )
-        m_isInitiallyPainted = true;
+    Q_D( QskControl );
 
-    if ( m_clearPreviousNodes )
+    Q_ASSERT( isVisible() || !( d->controlFlags & QskControl::DeferredUpdate ) );
+
+    if ( !d->isInitiallyPainted )
+        d->isInitiallyPainted = true;
+
+    if ( d->clearPreviousNodes )
     {
         delete node;
         node = nullptr;
 
-        m_clearPreviousNodes = false;
+        d->clearPreviousNodes = false;
     }
 
     if ( node == nullptr )
@@ -1267,7 +1309,7 @@ void QskControl::updateLayout()
 
 void QskControl::updateImplicitSize()
 {
-    m_blockedImplicitSize = false;
+    d_func()->blockedImplicitSize = false;
 
     const auto m = margins();
     const auto dw = m.left() + m.right();
@@ -1288,7 +1330,7 @@ QSizeF QskControl::contentsSizeHint() const
     qreal w = -1; // no hint
     qreal h = -1;
 
-    if ( m_autoLayoutChildren )
+    if ( d_func()->autoLayoutChildren )
     {
         for ( const auto child : childItems() )
         {
@@ -1310,8 +1352,7 @@ QSizeF QskControl::contentsSizeHint() const
 
 bool QskControl::isPolishScheduled() const
 {
-    Q_D( const QskControl );
-    return d->polishScheduled;
+    return d_func()->polishScheduled;
 }
 
 bool QskControl::isUpdateNodeScheduled() const
@@ -1324,7 +1365,7 @@ bool QskControl::isUpdateNodeScheduled() const
 
 bool QskControl::isInitiallyPainted() const
 {
-    return m_isInitiallyPainted;
+    return d_func()->isInitiallyPainted;
 }
 
 QVector< QskAspect::Subcontrol > QskControl::subControls() const

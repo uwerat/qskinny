@@ -44,16 +44,11 @@ class QSK_EXPORT QskControl : public QQuickItem, public QskResizable, public Qsk
     Q_PROPERTY( bool transparentForPositioners READ isTransparentForPositioner
         WRITE setTransparentForPositioner NOTIFY controlFlagsChanged FINAL )
 
-#if 0
     Q_PROPERTY( Qt::FocusPolicy focusPolicy READ focusPolicy
         WRITE setFocusPolicy NOTIFY focusPolicyChanged FINAL )
 
     Q_PROPERTY( bool wheelEnabled READ isWheelEnabled
         WRITE setWheelEnabled NOTIFY wheelEnabledChanged FINAL )
-#else
-    Q_PROPERTY( Qt::FocusPolicy focusPolicy READ focusPolicy WRITE setFocusPolicy FINAL )
-    Q_PROPERTY( bool wheelEnabled READ isWheelEnabled WRITE setWheelEnabled FINAL )
-#endif
 
     Q_PROPERTY( bool tabFence READ isTabFence
         WRITE setTabFence NOTIFY controlFlagsChanged FINAL )
@@ -171,8 +166,8 @@ public:
 Q_SIGNALS:
     void localeChanged( const QLocale& );
     void controlFlagsChanged();
-    // ### No additional signals can be added without finding a runtime
-    // metaobject replacement solution for the wrapped QQuickItem subclasses.
+    void focusPolicyChanged();
+    void wheelEnabledChanged();
 
 public Q_SLOTS:
     void setGeometry( const QRectF& );
@@ -231,29 +226,6 @@ private:
     void setupImplicitSizeConnections( bool );
 
 private:
-    friend bool qskInheritLocale( QskControl*, const QLocale& );
-    friend void qskResolveLocale( QskControl* );
-
-    QLocale m_locale;
-
-    quint16 m_controlFlags;
-    quint16 m_controlFlagsMask;
-
-    bool m_explicitLocale : 1;
-
-    bool m_autoFillBackground : 1;
-    bool m_autoLayoutChildren : 1;
-    bool m_polishOnResize : 1;
-
-    bool m_blockedPolish : 1;
-    bool m_blockedImplicitSize : 1;
-    bool m_clearPreviousNodes : 1;
-
-    bool m_isInitiallyPainted : 1;
-
-    uint m_focusPolicy : 4;
-    bool m_isWheelEnabled;
-
     Q_DECLARE_PRIVATE( QskControl )
 };
 
