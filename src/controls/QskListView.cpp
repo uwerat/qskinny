@@ -255,8 +255,12 @@ void QskListView::mousePressEvent( QMouseEvent* event )
             const int row = ( event->pos().y() - vr.top() + scrollPos().y() ) / rowHeight();
             if ( row >= 0 && row < rowCount() )
                 setSelectedRow( row );
+
+            return;
         }
     }
+
+    Inherited::mousePressEvent( event );
 }
 
 void QskListView::mouseReleaseEvent( QMouseEvent* event )

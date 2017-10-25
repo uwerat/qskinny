@@ -236,7 +236,7 @@ QskInputPanel::QskInputPanel( QQuickItem* parent ):
     m_data( new PrivateData )
 {
     setFlag( ItemHasContents );
-    setAcceptedMouseButtons( Qt::MouseButtonMask );
+    setAcceptedMouseButtons( Qt::LeftButton );
 
     initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
 
