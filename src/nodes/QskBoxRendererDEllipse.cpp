@@ -320,38 +320,18 @@ namespace
             m_corner = corner;
             const auto& c = metrics.corner[ corner ];
 
-            bool horizontal;
-
-            switch( corner )
-            {
-                case Qt::TopLeftCorner:
-                {
-                    horizontal = m_clockwise;
-                    break;
-                }
-                case Qt::BottomRightCorner:
-                {
-                    horizontal = m_clockwise;
-                    break;
-                }
-                case Qt::TopRightCorner:
-                {
-                    horizontal = !m_clockwise;
-                    break;
-                }
-                case Qt::BottomLeftCorner:
-                {
-                    horizontal = !m_clockwise;
-                    break;
-                }
-            }
-
             const double angleStep = M_PI_2 / c.stepCount;
 
             m_cosStep = qFastCos( angleStep );
             m_sinStep = qFastSin( angleStep );
             m_stepInv1 = m_sinStep / m_cosStep;
             m_stepInv2 = m_cosStep + m_sinStep * m_stepInv1;
+
+            bool horizontal;
+            if ( corner == Qt::TopRightCorner || corner == Qt::BottomLeftCorner )
+                horizontal = !m_clockwise;
+            else
+                horizontal = m_clockwise;
 
             if ( horizontal )
             {
