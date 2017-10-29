@@ -103,7 +103,7 @@ bool QskShortcutHandler::event( QEvent* event )
     {
         const QShortcutEvent* se = static_cast< const QShortcutEvent* >( event );
 
-        const auto it = m_invokeDataMap.find( se->shortcutId() );
+        const auto it = m_invokeDataMap.constFind( se->shortcutId() );
         if ( it != m_invokeDataMap.constEnd() )
         {
             const InvokeData& data = ( *it );

@@ -55,6 +55,7 @@ linux-g++ | linux-g++-64 {
         }
     }
 
+    DEFINES += QT_STRICT_ITERATORS
 
     # --- optional debug options
 

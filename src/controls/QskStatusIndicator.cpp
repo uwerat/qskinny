@@ -229,7 +229,7 @@ void QskStatusIndicator::setStatus( int status )
     if ( status == m_data->currentStatus )
         return;
 
-    const auto it = m_data->map.find( status );
+    const auto it = m_data->map.constFind( status );
     if ( it == m_data->map.constEnd() )
     {
         qWarning() << "QskStatusIndicator: invalid status:" << status;
