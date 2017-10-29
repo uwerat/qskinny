@@ -40,6 +40,7 @@ public:
         setSpacing( 10 );
 
         auto* textInput = new QQuickTextInput( this );
+        textInput->setActiveFocusOnTab( true );
         textInput->setText( "I am a line edit. Press and edit Me." );
 
 #if LOCAL_PANEL
