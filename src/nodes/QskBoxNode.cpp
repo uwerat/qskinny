@@ -16,19 +16,6 @@
 
 static QSGVertexColorMaterial qskMaterialVertex;
 
-static inline bool qskHasAlpha( const QRgb* rgbValues )
-{
-    return qAlpha( rgbValues[0] ) || qAlpha( rgbValues[1] )
-        || qAlpha( rgbValues[2] ) || qAlpha( rgbValues[3] );
-}
-
-static inline bool qskIsMonochrome( const QRgb* rgbValues )
-{
-    return ( rgbValues[0] == rgbValues[1] )
-        && ( rgbValues[1] == rgbValues[2] )
-        && ( rgbValues[2] == rgbValues[3] );
-}
-
 static inline uint qskMetricsHash( const QskBoxShapeMetrics& shape,
     const QskBoxBorderMetrics& borderMetrics )
 {
@@ -190,7 +177,7 @@ void QskBoxNode::setMonochrome( bool on )
         setMaterial( new QSGFlatColorMaterial() );
 
         const QSGGeometry g( QSGGeometry::defaultAttributes_Point2D(), 0 );
-        memcpy( &m_geometry, &g, sizeof( QSGGeometry ) );
+        memcpy( (void *)&m_geometry, (void *)&g, sizeof( QSGGeometry ) );
     }
     else
     {
@@ -198,6 +185,6 @@ void QskBoxNode::setMonochrome( bool on )
         delete material;
 
         const QSGGeometry g( QSGGeometry::defaultAttributes_ColoredPoint2D(), 0 );
-        memcpy( &m_geometry, &g, sizeof( QSGGeometry ) );
+        memcpy( (void *)&m_geometry, (void *)&g, sizeof( QSGGeometry ) );
     }
 }

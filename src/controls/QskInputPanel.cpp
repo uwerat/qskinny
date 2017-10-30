@@ -181,15 +181,6 @@ static qreal qskRowStretch( const QskInputPanel::KeyRow& keyRow )
     return stretch;
 }
 
-static inline int qskKeyCount( const QskInputPanel::KeyDataRow& keyRow )
-{
-    int keyCount = QskInputPanel::KeyCount;
-    while ( !keyRow[ keyCount - 1 ].key )
-        --keyCount;
-
-    return keyCount;
-}
-
 namespace
 {
     struct KeyCounter

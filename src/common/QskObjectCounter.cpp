@@ -145,41 +145,26 @@ void QskObjectCounter::reset()
 
 int QskObjectCounter::created( ObjectType objectType ) const
 {
-    if ( objectType >= 0 && objectType < 2 )
-        return m_counter[objectType].created;
-
-    return 0;
+    return m_counter[objectType].created;
 }
 
 int QskObjectCounter::destroyed( ObjectType objectType ) const
 {
-    if ( objectType >= 0 && objectType < 2 )
-        return m_counter[objectType].destroyed;
-
-    return 0;
+    return m_counter[objectType].destroyed;
 }
 
 int QskObjectCounter::current( ObjectType objectType ) const
 {
-    if ( objectType >= 0 && objectType < 2 )
-        return m_counter[objectType].current;
-
-    return 0;
+    return m_counter[objectType].current;
 }
 
 int QskObjectCounter::maximum( ObjectType objectType ) const
 {
-    if ( objectType >= 0 && objectType < 2 )
-        return m_counter[objectType].maximum;
-
-    return 0;
+    return m_counter[objectType].maximum;
 }
 
 void QskObjectCounter::debugStatistics( QDebug debug, ObjectType objectType ) const
 {
-    if ( objectType < 0 || objectType >= 2 )
-        return;
-
     const Counter& c = m_counter[objectType];
 
     QDebugStateSaver saver( debug );

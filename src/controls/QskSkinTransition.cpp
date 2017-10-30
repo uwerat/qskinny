@@ -416,7 +416,7 @@ void QskSkinTransition::process()
 
     qskSkinAnimator->reset();
 
-    if ( ( m_animation.duration <= 0 ) || ( m_mask == QskAspect::Type( 0 ) ) )
+    if ( ( m_animation.duration <= 0 ) || ( m_mask == 0 ) )
     {
         // no animations, we can apply the changes
         updateSkin( m_skins[0], m_skins[1] );

@@ -288,7 +288,7 @@ namespace QskAspect
 
     inline constexpr quint64 Aspect::value() const
     {
-        return *reinterpret_cast< const quint64* >( this );
+        return *( const quint64* ) this;
     }
 
     inline bool Aspect::isAnimator() const
@@ -398,7 +398,7 @@ namespace QskAspect
 
     inline constexpr Aspect operator|( Subcontrol subControl, const Aspect& aspect )
     {
-        return subControl | aspect;
+        return aspect | subControl;
     }
 
     inline constexpr Aspect operator|( Type type, const Aspect& aspect )

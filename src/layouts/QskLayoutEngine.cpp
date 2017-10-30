@@ -56,6 +56,10 @@ namespace
     class LayoutStyleInfo final : public QAbstractLayoutStyleInfo
     {
     public:
+        LayoutStyleInfo()
+        {
+        }
+
         virtual qreal spacing( Qt::Orientation ) const override
         {
             // later from the theme !!

@@ -18,7 +18,7 @@ class QRectF;
 class QColor;
 class QFont;
 class QMarginsF;
-class QMetaObject;
+struct QMetaObject;
 class QVariant;
 class QDebug;
 
