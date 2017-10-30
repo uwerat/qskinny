@@ -53,7 +53,9 @@ class QSK_EXPORT QskControl : public QQuickItem, public QskResizable, public Qsk
     Q_PROPERTY( bool tabFence READ isTabFence
         WRITE setTabFence NOTIFY controlFlagsChanged FINAL )
 
-    Q_PROPERTY( QMarginsF margins READ margins WRITE setMargins RESET resetMargins )
+    Q_PROPERTY( QMarginsF margins READ margins
+        WRITE setMargins RESET resetMargins NOTIFY marginsChanged )
+
     Q_PROPERTY( QskGradient background READ background
         WRITE setBackground RESET resetBackground )
 

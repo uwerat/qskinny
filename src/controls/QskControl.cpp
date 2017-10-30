@@ -695,6 +695,7 @@ void QskControl::setMargins( const QMarginsF& margins )
             polish();
 
         qskSendEventTo( this, QEvent::ContentsRectChange );
+        Q_EMIT marginsChanged();
     }
 }
 
@@ -718,6 +719,7 @@ void QskControl::resetMargins()
                 polish();
 
             qskSendEventTo( this, QEvent::ContentsRectChange );
+            Q_EMIT marginsChanged();
         }
     }
 }

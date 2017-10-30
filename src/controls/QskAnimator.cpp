@@ -358,14 +358,14 @@ QMetaObject::Connection QskAnimator::addCleanupHandler( QObject* receiver,
     const char* method, Qt::ConnectionType type )
 {
     return QObject::connect( qskAnimatorDriver,
-        SIGNAL( terminated( QQuickWindow* ) ), receiver, method, type );
+        SIGNAL( terminated(QQuickWindow*) ), receiver, method, type );
 }
 
 QMetaObject::Connection QskAnimator::addAdvanceHandler( QObject* receiver,
     const char* method, Qt::ConnectionType type )
 {   
     return QObject::connect( qskAnimatorDriver,
-        SIGNAL( advanced( QQuickWindow* ) ), receiver, method, type );
+        SIGNAL( advanced(QQuickWindow*) ), receiver, method, type );
 }
 
 #ifndef QT_NO_DEBUG_STREAM
