@@ -116,15 +116,6 @@ QskWindow::QskWindow( QWindow* parent ):
         qskResolveLocale( this );
     }
 
-#if 0
-    setColor( qskSetup->skin()->color( QskAspect::Background ) );
-#endif
-
-#if 1
-    connect( this, &QWindow::visibilityChanged,
-        this, &QskWindow::visibilityChanged );
-#endif
-
     d_func()->contentItemListener.setEnabled( contentItem(), true );
 
     if ( !qskEnforcedSkin )

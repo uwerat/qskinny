@@ -28,9 +28,6 @@ class QSK_EXPORT QskWindow : public QQuickWindow
         WRITE setFramebufferMode
         NOTIFY framebufferModeChanged FINAL )
 
-    Q_PROPERTY( Visibility visibility READ visibility
-        WRITE setVisibility NOTIFY visibilityChanged )
-
     using Inherited = QQuickWindow;
 
 public:
@@ -73,7 +70,6 @@ public:
 
 Q_SIGNALS:
     void localeChanged( const QLocale& );
-    void visibilityChanged( QWindow::Visibility visibility );
     void framebufferModeChanged( FramebufferMode );
     void autoLayoutChildrenChanged();
 
