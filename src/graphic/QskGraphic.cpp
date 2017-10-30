@@ -910,7 +910,8 @@ void QskGraphic::updateState( const QPaintEngineState& state )
         }
         else if ( auto gradient = pen.brush().gradient() )
         {
-            for ( const auto& stop : gradient->stops() )
+            const auto stops = gradient->stops();
+            for ( const auto& stop : stops )
                 qskInsertColor( stop.second, m_data->colorTable );
         }
     }
@@ -925,7 +926,8 @@ void QskGraphic::updateState( const QPaintEngineState& state )
         }
         else if ( auto gradient = brush.gradient() )
         {
-            for ( const auto& stop : gradient->stops() )
+            const auto stops = gradient->stops();
+            for ( const auto& stop : stops )
                 qskInsertColor( stop.second, m_data->colorTable );
         }
     }

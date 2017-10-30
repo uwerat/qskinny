@@ -13,6 +13,7 @@
 
 #include <QLocale>
 #include <QVector>
+#include <QGlobalStatic>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>
@@ -99,7 +100,7 @@ namespace
     };
 }
 
-static QskWindowStore qskReleasedWindowCounter;
+Q_GLOBAL_STATIC( QskWindowStore, qskReleasedWindowCounter )
 
 class QskControlPrivate : public QQuickItemPrivate
 {
@@ -1045,7 +1046,7 @@ void QskControl::releaseResources()
     // sequences to be able to provide the correct "oldWindow"
     // in the WindowChange event.
 
-    qskReleasedWindowCounter.setWindow( window() );
+    qskReleasedWindowCounter->setWindow( window() );
 }
 
 const QSGNode* QskControl::itemNode( const QQuickItem* item )
@@ -1125,7 +1126,7 @@ void QskControl::itemChange( QQuickItem::ItemChange change,
             }
 
             QskWindowChangeEvent event(
-                qskReleasedWindowCounter.window(), value.window );
+                qskReleasedWindowCounter->window(), value.window );
             QCoreApplication::sendEvent( this, &event );
 
             break;

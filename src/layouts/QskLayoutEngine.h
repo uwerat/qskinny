@@ -6,7 +6,17 @@
 #ifndef QSK_LAYOUT_ENGINE_H
 #define QSK_LAYOUT_ENGINE_H
 
-#include <QtGui/private/qgridlayoutengine_p.h>
+#include "QskGlobal.h"
+
+QSK_QT_PRIVATE_BEGIN
+/*
+    QskLayoutEngine.h should be hidden into some cpp file
+    as it needs private headers. TODO
+ */
+
+#include <private/qgridlayoutengine_p.h>
+QSK_QT_PRIVATE_END
+
 
 class QskLayoutItem;
 class QQuickItem;

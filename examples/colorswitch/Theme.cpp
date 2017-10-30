@@ -52,10 +52,10 @@ Theme::Theme( QObject* parent ):
     m_accent( qskSetup->skin()->color( QskAspect::Color ) )
 {
     connect( qskSetup, &QskSetup::skinChanged,
-        [this]( QskSkin* ) { updateColors(); } );
+        this, [this]( QskSkin* ) { updateColors(); } );
 
     connect( qskSetup, &QskSetup::skinChanged,
-        [this]( QskSkin* ) { Q_EMIT skinChanged(); } );
+        this, [this]( QskSkin* ) { Q_EMIT skinChanged(); } );
 }
 
 void Theme::setAccent( QColor color )

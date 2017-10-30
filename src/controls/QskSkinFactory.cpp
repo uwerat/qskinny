@@ -9,9 +9,9 @@
 
 namespace
 {
-    static const QString factoryId = "QSkinny";
-    static const QString squiekSkinName = "Squiek";
-    static const QString materialSkinName = "Material";
+    static const char factoryId[] = "qskinny";
+    static const char squiekSkinName[] = "Squiek";
+    static const char materialSkinName[] = "Material";
 
     class SkinFactory final : public QskSkinFactory
     {
@@ -53,7 +53,7 @@ static FactoryTable& qskGetFactoryTable()
     if ( qskFactoryTable->isEmpty() )
     {
         static SkinFactory dummySkinFactory ( nullptr );
-        qskFactoryTable->insert( factoryId.toLower(), &dummySkinFactory );
+        qskFactoryTable->insert( factoryId, &dummySkinFactory );
     }
 
     return *qskFactoryTable;

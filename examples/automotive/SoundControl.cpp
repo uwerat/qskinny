@@ -298,10 +298,10 @@ public:
         // finally connect buttons/slider/labels
 
         connect( plusButton, &QskPushButton::pressed,
-            [ this ]() { increment( 1 ); } );
+            this, [ this ]() { increment( 1 ); } );
 
         connect( minusButton, &QskPushButton::pressed,
-            [ this ]() { increment( -1 ); } );
+            this, [ this ]() { increment( -1 ); } );
 
         connect( m_slider, &QskSlider::valueChanged,
             this, &SliderBox::setValue );
@@ -370,7 +370,7 @@ public:
             setAlignment( button, Qt::AlignCenter );
 
             connect( button, &QskPushButton::pressed,
-                [ = ]() { shift( button->offset() ); } );
+                this, [ = ]() { shift( button->offset() ); } );
         }
     }
 

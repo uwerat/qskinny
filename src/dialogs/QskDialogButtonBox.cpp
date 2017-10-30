@@ -92,7 +92,7 @@ void QskDialogButtonBox::setOrientation( Qt::Orientation orientation )
 
     for ( int i = 0; i < QskDialog::NButtonRoles; i++ )
     {
-        for ( QskPushButton* button : m_data->buttonLists[i] )
+        for ( QskPushButton* button : qskAsConst( m_data->buttonLists[i] ) )
         {
             // avoid that buttons get deleted
             // together with the layout
@@ -307,7 +307,7 @@ void QskDialogButtonBox::clear()
 {
     for ( int i = 0; i < QskDialog::NButtonRoles; i++ )
     {
-        for ( QQuickItem* button : m_data->buttonLists[i] )
+        for ( const QQuickItem* button : qskAsConst( m_data->buttonLists[i] ) )
             delete button;
     }
 
@@ -319,7 +319,7 @@ void QskDialogButtonBox::setStandardButtons(
 {
     for ( int i = 0; i < QskDialog::NButtonRoles; i++ )
     {
-        for ( QQuickItem* button : m_data->buttonLists[i]  )
+        for ( const QQuickItem* button : qskAsConst( m_data->buttonLists[i] ) )
             delete button;
     }
 

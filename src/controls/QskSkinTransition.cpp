@@ -202,7 +202,8 @@ namespace
                     addControlAnimators( control, animatorHint, candidates );
             }
 
-            for ( auto child : item->childItems() )
+            const auto children = item->childItems();
+            for ( auto child : children )
                 addAnimators( child, animatorHint, candidates, skin );
         }
 
@@ -448,7 +449,8 @@ void QskSkinTransition::process()
           each object.
         */
 
-        for ( const auto window : qGuiApp->topLevelWindows() )
+        const auto windows = qGuiApp->topLevelWindows();
+        for ( const auto window : windows )
         {
             if ( auto quickWindow = qobject_cast< const QQuickWindow* >( window ) )
             {

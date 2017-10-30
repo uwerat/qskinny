@@ -126,17 +126,19 @@ QskWindow::~QskWindow()
 {
     // When being used from Qml the item destruction would run in the most
     // unefficient way, leading to lots of QQuickItem::ItemChildRemovedChange
-    // depending operations. We change this.
+    // depending operations. So let's remove the toplevel children manually.
 
-    QList<QQuickItem *> children; 
-    for ( auto child : contentItem()->childItems() )
+    QList<QQuickItem *> items; 
+
+    const auto children = contentItem()->childItems();
+    for ( auto child : children )
     {
         if ( child->parent() == contentItem() )
-            children += child;
+            items += child;
     }
 
-    for ( auto child : children )
-        delete child;
+    for ( auto item : qskAsConst( items ) )
+        delete item;
 }
 
 void QskWindow::resizeF( const QSizeF& size )
@@ -156,7 +158,12 @@ bool QskWindow::deleteOnClose() const
 void QskWindow::setDeleteOnClose( bool on )
 {
     Q_D( QskWindow );
-    d->deleteOnClose = on;
+
+    if ( on != d->deleteOnClose )
+    {
+        d->deleteOnClose = on;
+        Q_EMIT deleteOnCloseChanged();
+    }
 }
 
 void QskWindow::setAutoLayoutChildren( bool on )
@@ -377,7 +384,8 @@ void QskWindow::layoutItems()
 
     const QSizeF sz( contentItem()->width(), contentItem()->height() );
 
-    for ( auto child : contentItem()->childItems() )
+    const auto children = contentItem()->childItems();
+    for ( auto child : children )
     {
         if ( !QskControl::isTransparentForPositioner( child ) )
         {

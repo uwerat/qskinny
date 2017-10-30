@@ -10,11 +10,11 @@
 #include "QskBoxBorderColors.h"
 #include "QskGradient.h"
 
-
 #include <QSGVertexColorMaterial>
 #include <QSGFlatColorMaterial>
+#include <QGlobalStatic>
 
-static QSGVertexColorMaterial qskMaterialVertex;
+Q_GLOBAL_STATIC( QSGVertexColorMaterial, qskMaterialVertex )
 
 static inline uint qskMetricsHash( const QskBoxShapeMetrics& shape,
     const QskBoxBorderMetrics& borderMetrics )
@@ -38,13 +38,13 @@ QskBoxNode::QskBoxNode():
     m_colorsHash( 0 ),
     m_geometry( QSGGeometry::defaultAttributes_ColoredPoint2D(), 0 )
 {
-    setMaterial( &qskMaterialVertex );
+    setMaterial( qskMaterialVertex );
     setGeometry( &m_geometry );
 }
 
 QskBoxNode::~QskBoxNode()
 {
-    if ( material() != &qskMaterialVertex )
+    if ( material() != qskMaterialVertex )
         delete material();
 }
 
@@ -167,7 +167,7 @@ void QskBoxNode::setMonochrome( bool on )
 {
     const auto material = this->material();
 
-    if ( on == ( material != &qskMaterialVertex ) )
+    if ( on == ( material != qskMaterialVertex ) )
         return;
 
     m_geometry.allocate( 0 );
@@ -181,7 +181,7 @@ void QskBoxNode::setMonochrome( bool on )
     }
     else
     {
-        setMaterial( &qskMaterialVertex );
+        setMaterial( qskMaterialVertex );
         delete material;
 
         const QSGGeometry g( QSGGeometry::defaultAttributes_ColoredPoint2D(), 0 );

@@ -16,7 +16,8 @@ class QSK_EXPORT QskWindow : public QQuickWindow
 {
     Q_OBJECT
 
-    Q_PROPERTY( bool deleteOnClose READ deleteOnClose WRITE setDeleteOnClose FINAL )
+    Q_PROPERTY( bool deleteOnClose READ deleteOnClose
+        WRITE setDeleteOnClose NOTIFY deleteOnCloseChanged FINAL )
 
     Q_PROPERTY( bool autoLayoutChildren READ autoLayoutChildren
         WRITE setAutoLayoutChildren NOTIFY autoLayoutChildrenChanged FINAL )
@@ -72,6 +73,7 @@ Q_SIGNALS:
     void localeChanged( const QLocale& );
     void framebufferModeChanged( FramebufferMode );
     void autoLayoutChildrenChanged();
+    void deleteOnCloseChanged();
 
 public Q_SLOTS:
     void setLocale( const QLocale& );

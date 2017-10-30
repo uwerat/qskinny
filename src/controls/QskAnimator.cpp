@@ -61,8 +61,6 @@ namespace
         int current;
         int maximum;
     };
-
-    static Statistics qskStatistics;
 }
 
 /*
@@ -227,13 +225,15 @@ void QskAnimatorDriver::advanceAnimators( QQuickWindow* window )
 }
 
 Q_GLOBAL_STATIC( QskAnimatorDriver, qskAnimatorDriver )
+Q_GLOBAL_STATIC( Statistics, qskStatistics )
 
 QskAnimator::QskAnimator():
     m_window( nullptr ),
     m_duration( 200 ),
     m_startTime( -1 )
 {
-    qskStatistics.increment();
+    if ( qskStatistics )
+        qskStatistics->increment();
 }
 
 QskAnimator::~QskAnimator()
@@ -241,7 +241,8 @@ QskAnimator::~QskAnimator()
     if ( qskAnimatorDriver )
         qskAnimatorDriver->unregisterAnimator( this );
 
-    qskStatistics.decrement();
+    if ( qskStatistics )
+        qskStatistics->decrement();
 }
 
 QQuickWindow* QskAnimator::window() const
@@ -372,7 +373,8 @@ QMetaObject::Connection QskAnimator::addAdvanceHandler( QObject* receiver,
 
 void QskAnimator::debugStatistics( QDebug debug ) 
 {
-    qskStatistics.debugStatistics( debug );
+    if ( qskStatistics )
+        qskStatistics->debugStatistics( debug );
 }
 
 #endif

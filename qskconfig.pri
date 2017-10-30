@@ -28,10 +28,11 @@ linux {
             -isystem $$[QT_INSTALL_HEADERS] \
             -isystem $$[QT_INSTALL_HEADERS]/QtCore \
             -isystem $$[QT_INSTALL_HEADERS]/QtGui \
-            -isystem $$[QT_INSTALL_HEADERS]/QtGui/$$[QT_VERSION]/QtGui/private \
+            -isystem $$[QT_INSTALL_HEADERS]/QtGui/$$[QT_VERSION]/QtGui \
             -isystem $$[QT_INSTALL_HEADERS]/QtQuick \
-            -isystem $$[QT_INSTALL_HEADERS]/QtQuick/$$[QT_VERSION]/QtQuick/private \
-            -isystem $$[QT_INSTALL_HEADERS]/QtQml
+            -isystem $$[QT_INSTALL_HEADERS]/QtQuick/$$[QT_VERSION]/QtQuick \
+            -isystem $$[QT_INSTALL_HEADERS]/QtQml \
+            -isystem $$[QT_INSTALL_HEADERS]/QtQml/$$[QT_VERSION]/QtQml \
     }
 }
 

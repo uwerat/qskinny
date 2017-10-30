@@ -8,7 +8,15 @@
 
 #include "QskGlobal.h"
 #include "QskSizePolicy.h"
-#include <QtGui/private/qgridlayoutengine_p.h>
+
+QSK_QT_PRIVATE_BEGIN
+/*
+    QskLayoutItem.h should be hidden into some cpp file
+    as it needs private headers. TODO
+ */
+
+#include <private/qgridlayoutengine_p.h>
+QSK_QT_PRIVATE_END
 
 class QQuickItem;
 

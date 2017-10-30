@@ -50,13 +50,13 @@ public:
 
     void addObject( QObject* object )
     {
-        for ( auto counter : m_counterSet )
+        for ( auto counter : qskAsConst( m_counterSet ) )
             counter->addObject( object );
     }
 
     void removeObject( QObject* object )
     {
-        for ( auto counter : m_counterSet )
+        for ( auto counter : qskAsConst( m_counterSet ) )
             counter->removeObject( object );
     }
 
