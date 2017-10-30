@@ -755,7 +755,8 @@ void QskSkinnable::setSkinStateFlag( QskAspect::State state, bool on )
     {
         const auto placement = effectivePlacement();
 
-        for ( const auto subControl : control->subControls() )
+        const auto subControls = control->subControls();
+        for ( const auto subControl : subControls )
         {
             using namespace QskAspect;
 

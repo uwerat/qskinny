@@ -149,7 +149,8 @@ QSizeF QskSubWindow::contentsSizeHint() const
     qreal w = -1;
     qreal h = -1;
 
-    for ( auto child : childItems() )
+    const auto children = childItems();
+    for ( auto child : children )
     {
         if ( isTransparentForPositioner( child ) )
             continue;

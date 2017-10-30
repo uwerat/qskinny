@@ -29,7 +29,8 @@ static inline void qskBlockDirty( QQuickItem* item, bool on )
     if ( qskIsUpdateBlocked( item ) )
         QQuickItemPrivate::get( item )->componentComplete = !on;
 
-    for ( auto child : item->childItems() )
+    const auto children = item->childItems();
+    for ( auto child : children )
         qskBlockDirty( child, on );
 }
 

@@ -120,7 +120,8 @@ void SkinnyShortcut::showBackground()
 
     qskSetup->setControlFlag( QskSetup::DebugForceBackground, forceBackground );
 
-    for ( auto window : QGuiApplication::topLevelWindows() )
+    const auto windows = QGuiApplication::topLevelWindows();
+    for ( auto window : windows )
     {
         if ( QskWindow* w = qobject_cast< QskWindow* >( window ) )
         {
@@ -188,14 +189,16 @@ static void countItems( const QQuickItem* item, int counter[4] )
             counter[3] += nodeCounter;
         }
 
-        for ( const auto* child : item->childItems() )
+        const auto children = item->childItems();
+        for ( const auto* child : children )
             countItems( child, counter );
     }
 }
 
 void SkinnyShortcut::debugStatistics()
 {
-    for ( auto window : QGuiApplication::topLevelWindows() )
+    const auto windows = QGuiApplication::topLevelWindows();
+    for ( auto window : windows )
     {
         const auto w = qobject_cast< const QQuickWindow* >( window );
         if ( w == nullptr )

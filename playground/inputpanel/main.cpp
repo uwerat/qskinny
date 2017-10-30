@@ -123,7 +123,7 @@ public:
 
             const QFontMetricsF fm( effectiveFont( Text ) );
 
-            for ( auto entry : m_values )
+            for ( const auto& entry : m_values )
                 m_maxWidth = qMax( m_maxWidth, fm.width( entry.first ) );
 
             const QMarginsF padding = marginsHint( Cell | Padding );

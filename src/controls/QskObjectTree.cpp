@@ -19,7 +19,8 @@ QObjectList QskObjectTree::childNodes( const QObject* object )
 
     if ( object == nullptr )
     {
-        for ( QWindow* window : QGuiApplication::topLevelWindows() )
+        const auto windows = QGuiApplication::topLevelWindows();
+        for ( QWindow* window : windows )
             children += window;
     }
     else if ( object->isWindowType() )

@@ -622,19 +622,13 @@ void QskControl::setBackground( const QskGradient& gradient )
     using namespace QskAspect;
     const Aspect aspect = Control | Color;
 
-    if ( autoFillBackground() )
-    {
-        if ( hintTable().gradient( aspect ) != gradient )
-        {
-            setGradientHint( aspect, gradient );
-
-            // might be wrong, when the effective gradient was from the skin
-            update();
-        }
-    }
-    else
+    if ( hintTable().gradient( aspect ) != gradient )
     {
         setGradientHint( aspect, gradient );
+        if ( autoFillBackground() )
+            update();
+
+        Q_EMIT backgroundChanged();
     }
 }
 
@@ -645,20 +639,12 @@ void QskControl::resetBackground()
 
     auto& table = hintTable();
 
-    if ( autoFillBackground() )
-    {
-        const auto oldGradient = gradientHint( aspect );
-
-        if ( table.hint( aspect ).isValid() )
-        {
-            table.removeHint( aspect );
-            if ( gradientHint( aspect ) != oldGradient )
-                update();
-        }
-    }
-    else
+    if ( table.hint( aspect ).isValid() )
     {
         table.removeHint( aspect );
+
+        update();
+        Q_EMIT backgroundChanged();
     }
 }
 
@@ -1198,7 +1184,8 @@ void QskControl::updatePolish()
     {
         const QRectF rect = layoutRect();
 
-        for ( auto child : childItems() )
+        const auto children = childItems();
+        for ( auto child : children )
         {
             if ( !QQuickItemPrivate::get( child )->isTransparentForPositioner() )
             {
@@ -1334,7 +1321,8 @@ QSizeF QskControl::contentsSizeHint() const
 
     if ( d_func()->autoLayoutChildren )
     {
-        for ( const auto child : childItems() )
+        const auto children = childItems();
+        for ( const auto child : children )
         {
             if ( auto* control = qobject_cast< const QskControl* >( child ) )
             {

@@ -15,13 +15,11 @@ RCC_DIR      = rcc
 
 QSK_CONFIG += QskDll
 
-linux-g++ | linux-g++-64 {
-
-    # CONFIG           += separate_debug_info
-
-    # --- optional warnings
+linux {
 
     pedantic {
+
+        DEFINES += QT_STRICT_ITERATORS
 
         # Qt headers do not stand pedantic checks, so it's better
         # to exclude them by declaring them as system includes
@@ -30,8 +28,20 @@ linux-g++ | linux-g++-64 {
             -isystem $$[QT_INSTALL_HEADERS] \
             -isystem $$[QT_INSTALL_HEADERS]/QtCore \
             -isystem $$[QT_INSTALL_HEADERS]/QtGui \
+            -isystem $$[QT_INSTALL_HEADERS]/QtGui/$$[QT_VERSION]/QtGui/private \
             -isystem $$[QT_INSTALL_HEADERS]/QtQuick \
+            -isystem $$[QT_INSTALL_HEADERS]/QtQuick/$$[QT_VERSION]/QtQuick/private \
             -isystem $$[QT_INSTALL_HEADERS]/QtQml
+    }
+}
+
+linux-g++ | linux-g++-64 {
+
+    # CONFIG           += separate_debug_info
+
+    # --- optional warnings
+
+    pedantic {
 
         QMAKE_CXXFLAGS *= -pedantic-errors
         QMAKE_CXXFLAGS *= -Wextra
@@ -54,8 +64,6 @@ linux-g++ | linux-g++-64 {
             #QMAKE_CXXFLAGS *= -Wsuggest-final-methods
         }
     }
-
-    DEFINES += QT_STRICT_ITERATORS
 
     # --- optional debug options
 

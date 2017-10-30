@@ -57,7 +57,7 @@ class QSK_EXPORT QskControl : public QQuickItem, public QskResizable, public Qsk
         WRITE setMargins RESET resetMargins NOTIFY marginsChanged )
 
     Q_PROPERTY( QskGradient background READ background
-        WRITE setBackground RESET resetBackground )
+        WRITE setBackground RESET resetBackground NOTIFY backgroundChanged )
 
     Q_PROPERTY( QskSizePolicy sizePolicy READ sizePolicy WRITE setSizePolicy )
     Q_PROPERTY( QSizeF minimumSize READ minimumSize WRITE setMinimumSize )
@@ -166,6 +166,7 @@ public:
     QVector< QskAspect::Subcontrol > subControls() const;
 
 Q_SIGNALS:
+    void backgroundChanged();
     void marginsChanged();
     void localeChanged( const QLocale& );
     void controlFlagsChanged();

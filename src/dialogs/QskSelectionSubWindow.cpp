@@ -15,11 +15,11 @@ namespace
         {
             setObjectName( QStringLiteral( "QskSelectionSubWindowListBox" ) );
 
-            connect( this, SIGNAL( selectedRowChanged( int ) ),
-                window, SIGNAL( selectedRowChanged( int ) ) );
+            connect( this, SIGNAL( selectedRowChanged(int) ),
+                window, SIGNAL( selectedRowChanged(int) ) );
 
-            connect( this, SIGNAL( selectedEntryChanged( const QString& ) ),
-                window, SIGNAL( selectedEntryChanged( const QString& ) ) );
+            connect( this, SIGNAL( selectedEntryChanged(const QString&) ),
+                window, SIGNAL( selectedEntryChanged(const QString&) ) );
 
             connect( this, SIGNAL( entriesChanged() ),
                 window, SIGNAL( entriesChanged() ) );
