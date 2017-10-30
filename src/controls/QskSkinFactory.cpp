@@ -81,7 +81,7 @@ QStringList Qsk::skinNames()
 {
     QStringList names;
 
-    for ( auto factory : qskGetFactoryTable() )
+    for ( const auto& factory : qskGetFactoryTable() )
     {
         if ( factory )
             names += factory->skinNames();
@@ -94,7 +94,7 @@ QskSkin* Qsk::createSkin( const QString& skinName )
 {
     if ( !skinName.isEmpty() )
     {
-        for ( auto factory : qskGetFactoryTable() )
+        for ( const auto& factory : qskGetFactoryTable() )
         {
             QskSkin* skin = factory->createSkin( skinName );
             if ( skin )

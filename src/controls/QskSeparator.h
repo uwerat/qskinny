@@ -40,7 +40,7 @@ public:
 
 Q_SIGNALS:
     void orientationChanged( Qt::Orientation );
-    void thicknessChanged() const;
+    void thicknessChanged();
 
 private:
     Qt::Orientation m_orientation;

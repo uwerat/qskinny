@@ -23,7 +23,6 @@ const QskGraphic* SkinnyShapeProvider::loadGraphic( const QString& id ) const
     const QSizeF sz( 40, 40 );
 
     QPainterPath path;
-    QColor color;
 
     if ( shapeName == "rectangle" )
     {

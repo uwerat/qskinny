@@ -29,7 +29,7 @@ namespace
 
             setTextOptions( options );
 
-            connect( this, SIGNAL( textChanged( QString ) ),
+            connect( this, SIGNAL( textChanged(QString) ),
                 box, SIGNAL( infoTextChanged() ) );
 
             connect( this, SIGNAL( textOptionsChanged() ),

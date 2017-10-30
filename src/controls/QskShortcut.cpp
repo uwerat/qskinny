@@ -135,7 +135,7 @@ int QskShortcut::addShortcut( QQuickWindow* window, const QKeySequence& key,
     const QMetaObject* metaObject = receiver->metaObject();
 
     const int methodIndex = metaObject->indexOfMethod(
-        QMetaObject::normalizedSignature( method ).data() + 1 );
+        QMetaObject::normalizedSignature( method ).constData() + 1 );
 
     if ( methodIndex >= 0 )
     {

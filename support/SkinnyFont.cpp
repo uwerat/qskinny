@@ -24,7 +24,7 @@ static void foolFontconfig()
             "\t<dir>%1</dir>\n"
             "\t<cachedir>%2/cache</cachedir>\n"
         "</fontconfig>\n";
-    fontConfig = fontConfig.arg( dir.path() ).arg( dir.path() );
+    fontConfig = fontConfig.arg( dir.path(), dir.path() );
 
     QFile f( dir.path() + "/fonts.conf" );
     f.open( QIODevice::WriteOnly );

@@ -70,7 +70,7 @@ static QVector< AnimatorCandidate > qskAnimatorCandidates(
     if ( !oldTable.hasHints() )
         return candidates;
 
-    for ( auto entry : newTable.hints() )
+    for ( const auto& entry : newTable.hints() )
     {
         const auto aspect = entry.first;
 
@@ -241,7 +241,7 @@ namespace
         {
             const auto subControls = control->subControls();
 
-            for ( auto candidate : candidates )
+            for ( const auto& candidate : candidates )
             {
                 using namespace QskAspect;
 

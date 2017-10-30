@@ -24,7 +24,7 @@ protected:
     virtual void updateSkin( QskSkin*, QskSkin* newSkin ) override final
     {
         DefaultSkin* skin = static_cast< DefaultSkin* >( newSkin );
-        skin->resetColors();
+        skin->resetHints();
     }
 };
 
@@ -182,7 +182,7 @@ void DefaultSkin::toggleScheme()
     transition.process();
 }
 
-void DefaultSkin::resetColors()
+void DefaultSkin::resetHints()
 {
     delete m_palette;
     m_palette = new Palette( m_scheme );

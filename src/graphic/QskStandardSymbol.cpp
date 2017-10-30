@@ -32,7 +32,6 @@ static void qskOkGraphic( QPainter* painter )
 
     painter->setPen( Qt::NoPen );
 
-    painter->setBrush( QColor( "#4caf50" ) );
     painter->setBrush( QColor( 76, 175, 80 ) );
     painter->drawPath( path );
 }

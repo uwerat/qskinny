@@ -129,11 +129,11 @@ static QByteArray qskEnumString( const char* name, int value )
 
 QByteArray qskStateKey( const QMetaObject* metaObject, quint16 state )
 {
-    auto& stateTable = qskAspectRegistry->stateTable;
+    const auto& stateTable = qskAspectRegistry->stateTable;
 
     for ( auto mo = metaObject; mo != nullptr; mo = mo->superClass() )
     {
-        auto it = stateTable.find( mo );
+        const auto it = stateTable.find( mo );
         if ( it != stateTable.end() )
         {
             for ( const auto& info : it->second )
@@ -144,7 +144,7 @@ QByteArray qskStateKey( const QMetaObject* metaObject, quint16 state )
         }
     }
 
-    return QByteArray();;
+    return QByteArray();
 }
 
 static QByteArray qskStateString(

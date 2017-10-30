@@ -152,7 +152,7 @@ void QskInputCompositionModel::composeKey( Qt::Key key )
         if ( firstCandidate.isEmpty() )
         {
             commit( oldPreedit.left( spaceLeft ) );
-            spaceLeft -= oldPreedit.left( spaceLeft ).length();
+            spaceLeft -= oldPreedit.leftRef( spaceLeft ).length();
         }
         else
         {

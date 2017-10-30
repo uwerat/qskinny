@@ -12,7 +12,7 @@ public:
     virtual ~DefaultSkin();
 
     void toggleScheme();
-    void resetColors();
+    void resetHints();
 
     enum Scheme
     {

@@ -116,7 +116,7 @@ static void qskRenderText(
     for ( int i = 0; i < layout->lineCount(); ++i )
     {
         auto line = layout->lineAt( i );
-        for ( auto glyphRun : line.glyphRuns() )
+        for ( const auto& glyphRun : line.glyphRuns() )
         {
             const bool doCreate = !glyphNode;
             if ( doCreate )

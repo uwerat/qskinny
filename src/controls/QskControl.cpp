@@ -417,7 +417,7 @@ void QskControl::setFocusPolicy( Qt::FocusPolicy policy )
         d->focusPolicy = policy & ~Qt::TabFocus;
         QQuickItem::setActiveFocusOnTab( policy & Qt::TabFocus );
 
-        Q_EMIT ( focusPolicyChanged() );
+        Q_EMIT focusPolicyChanged();
     }
 }
 

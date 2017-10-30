@@ -48,7 +48,7 @@ void QskListView::setPreferredWidthFromColumns( bool on )
         m_data->preferredWidthFromColumns = on;
         resetImplicitSize();
 
-        Q_EMIT preferredWidthFromColumns();
+        Q_EMIT preferredWidthFromColumnsChanged();
     }
 }
 
