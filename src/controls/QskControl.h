@@ -166,6 +166,7 @@ public:
     QVector< QskAspect::Subcontrol > subControls() const;
 
 Q_SIGNALS:
+    void marginsChanged();
     void localeChanged( const QLocale& );
     void controlFlagsChanged();
     void focusPolicyChanged();
