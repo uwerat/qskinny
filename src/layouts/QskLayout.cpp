@@ -92,6 +92,11 @@ void QskLayout::insertItemInternal( QskLayoutItem* layoutItem, int index )
 
     QQuickItem* item = layoutItem->item();
 
+    if ( index > itemCount() )
+        index = -1; // append
+
+    QskLayoutEngine& engine = this->engine();
+
     if ( item )
     {
         if ( item->parent() == nullptr )
@@ -99,12 +104,21 @@ void QskLayout::insertItemInternal( QskLayoutItem* layoutItem, int index )
 
         if ( item->parentItem() != this )
             item->setParentItem( this );
+
+        if ( index >= 0 )
+        {
+            // to have a proper focus tab chain
+
+            for ( int i = index; i < engine.itemCount(); i++ )
+            {
+                QskLayoutItem* layoutItem = engine.layoutItemAt( index );
+                if ( layoutItem && layoutItem->item() )
+                    item->stackBefore( layoutItem->item() );
+            }
+        }
     }
 
-    if ( index > itemCount() )
-        index = -1; // append
-
-    engine().insertLayoutItem( layoutItem, index );
+    engine.insertLayoutItem( layoutItem, index );
 
     if ( m_data->isActive )
     {
