@@ -11,6 +11,7 @@
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>
+#include <private/qquickwindow_p.h>
 QSK_QT_PRIVATE_END
 
 QSK_SUBCONTROL( QskPopup, Overlay )
@@ -24,7 +25,36 @@ static inline QQuickItem* qskNearestFocusScope( const QQuickItem* item )
             return scope;
     }
 
+    /*
+        As the default setting of the root item is to be a focus scope
+        we usually never get here - beside the flag has been explicitely
+        disabled in application code.
+     */
+
     return nullptr;
+}
+
+static void qskSetFocus( QQuickItem* item, bool on )
+{
+    if ( item->window() == nullptr )
+        return;
+
+    /*
+        For unknown reasons Qt::PopupFocusReason is blocked inside of
+        QQuickItem::setFocus. So let's bypass it calling
+        QQuickWindowPrivate::setFocusInScope/clearFocusInScope directly,
+     */
+
+    const auto scope = qskNearestFocusScope( item );
+    if ( scope )
+    {
+        auto dw = QQuickWindowPrivate::get( item->window() );
+
+        if ( on )
+            dw->setFocusInScope( scope, item, Qt::PopupFocusReason );
+        else
+            dw->clearFocusInScope( scope, item, Qt::PopupFocusReason );
+    }
 }
 
 namespace
@@ -265,22 +295,12 @@ void QskPopup::grabFocus( bool on )
     if ( on == hasFocus() )
         return;
 
-    /*
-        For unknown reasons Qt::PopupFocusReason is blocked inside of
-        QQuickItem::setFocus. Nontheless there is specific code dealing
-        with it f.e in qquicktextinput.cpp. If this becomes a problem
-        we will have to bypass QQuickItem::setFocus by calling
-        QQuickWindowPrivate::setFocusInScope/clearFocusInScope directly,
-        but for the moment we use Qt::OtherFocusReason instead. TODO ...
-     */
-    const auto reason = Qt::OtherFocusReason;
-
     if ( on )
     {
         if ( auto scope = qskNearestFocusScope( this ) )
         {
             m_data->initialFocusItem = scope->scopedFocusItem();
-            setFocus( true, reason );
+            qskSetFocus( this, true );
         }
     }
     else
@@ -292,9 +312,9 @@ void QskPopup::grabFocus( bool on )
             focusItem = nextItemInFocusChain( false );
 
         if ( focusItem )
-            focusItem->setFocus( true, reason );
+            qskSetFocus( focusItem, true );
         else
-            setFocus( false, reason );
+            qskSetFocus( this, false );
     }
 }
 
