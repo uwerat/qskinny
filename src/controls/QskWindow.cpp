@@ -128,7 +128,7 @@ QskWindow::~QskWindow()
     // unefficient way, leading to lots of QQuickItem::ItemChildRemovedChange
     // depending operations. So let's remove the toplevel children manually.
 
-    QList<QQuickItem *> items; 
+    QList< QQuickItem* > items;
 
     const auto children = contentItem()->childItems();
     for ( auto child : children )
@@ -400,7 +400,7 @@ void QskWindow::setCustomRenderMode( const char* mode )
     class RenderJob final : public QRunnable
     {
     public:
-        RenderJob( QQuickWindow* window, const QByteArray mode ) :
+        RenderJob( QQuickWindow* window, const QByteArray mode ):
             m_window( window ),
             m_mode( mode )
         {
@@ -497,7 +497,7 @@ void QskWindow::resizeFramebuffer()
 
     const auto samples = format().samples();
     if ( samples && QOpenGLExtensions( openglContext() ).hasOpenGLExtension(
-            QOpenGLExtensions::FramebufferMultisample ) )
+        QOpenGLExtensions::FramebufferMultisample ) )
     {
         renderTargetFormat.setSamples( format().samples() );
     }
