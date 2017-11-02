@@ -6,7 +6,6 @@
 #include "QskDialogSubWindow.h"
 #include <QEventLoop>
 #include <QQuickWindow>
-#include <QPointer>
 
 QskDialogSubWindow::QskDialogSubWindow( QQuickItem* parent ):
     Inherited( parent ),
