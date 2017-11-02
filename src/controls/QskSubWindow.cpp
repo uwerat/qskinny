@@ -136,14 +136,6 @@ QRectF QskSubWindow::layoutRect() const
     return innerBox( Panel, rect );
 }
 
-void QskSubWindow::updateLayout()
-{
-    if ( !isInitiallyPainted() )
-        setFocus( true );
-
-    Inherited::updateLayout();
-}
-
 QSizeF QskSubWindow::contentsSizeHint() const
 {
     qreal w = -1;

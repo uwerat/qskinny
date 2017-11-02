@@ -37,10 +37,13 @@ Q_SIGNALS:
     void overlayChanged();
 
 protected:
+    virtual void updateLayout() override;
     virtual bool event( QEvent* ) override;
 
     virtual void itemChange( QQuickItem::ItemChange,
         const QQuickItem::ItemChangeData& ) override;
+
+    void grabFocus( bool );
 
 private:
     void updateInputGrabber();

@@ -55,17 +55,12 @@ QskDialog::DialogCode QskDialogSubWindow::exec()
         mouseGrabber->ungrabMouse();
     }
 
-    QPointer< QQuickItem > focusItem = window()->activeFocusItem();
-
     show();
 
     QEventLoop eventLoop;
 
     connect( this, &QskDialogSubWindow::finished, &eventLoop, &QEventLoop::quit );
     ( void ) eventLoop.exec( QEventLoop::DialogExec );
-
-    if ( focusItem )
-        focusItem->setFocus( true );
 
     return m_result;
 }

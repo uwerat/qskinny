@@ -62,7 +62,6 @@ Q_SIGNALS:
 
 protected:
     virtual bool event( QEvent* ) override;
-    virtual void updateLayout() override;
 
     virtual void itemChange( QQuickItem::ItemChange,
         const QQuickItem::ItemChangeData& ) override;

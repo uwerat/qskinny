@@ -26,8 +26,7 @@ class QSK_EXPORT QskWindow : public QQuickWindow
         WRITE setLocale RESET resetLocale NOTIFY localeChanged FINAL )
 
     Q_PROPERTY( FramebufferMode framebufferMode READ framebufferMode
-        WRITE setFramebufferMode
-        NOTIFY framebufferModeChanged FINAL )
+        WRITE setFramebufferMode NOTIFY framebufferModeChanged FINAL )
 
     using Inherited = QQuickWindow;
 

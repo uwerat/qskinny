@@ -6,6 +6,7 @@
 #include "QskPopup.h"
 #include "QskAspect.h"
 #include <QQuickWindow>
+#include <QPointer>
 #include <QtMath>
 
 QSK_QT_PRIVATE_BEGIN
@@ -13,6 +14,18 @@ QSK_QT_PRIVATE_BEGIN
 QSK_QT_PRIVATE_END
 
 QSK_SUBCONTROL( QskPopup, Overlay )
+
+static inline QQuickItem* qskNearestFocusScope( const QQuickItem* item )
+{
+    for ( QQuickItem* scope = item->parentItem();
+        scope != nullptr; scope = scope->parentItem() )
+    {
+        if ( scope->isFocusScope() )
+            return scope;
+    }
+
+    return nullptr;
+}
 
 namespace
 {
@@ -149,12 +162,18 @@ class QskPopup::PrivateData
 public:
     PrivateData():
         inputGrabber( nullptr ),
-        isModal( false )
+        isModal( false ),
+        isOpen( false ),
+        autoGrabFocus( true )
     {
     }
 
     InputGrabber* inputGrabber;
+    QPointer< QQuickItem > initialFocusItem;
+
     bool isModal : 1;
+    bool isOpen : 1;
+    bool autoGrabFocus : 1;
 };
 
 QskPopup::QskPopup( QQuickItem* parent ):
@@ -168,6 +187,7 @@ QskPopup::QskPopup( QQuickItem* parent ):
 
     setFlag( ItemIsFocusScope );
     setTabFence( true );
+    setFocusPolicy( Qt::ClickFocus );
 }
 
 QskPopup::~QskPopup()
@@ -234,6 +254,50 @@ bool QskPopup::hasOverlay() const
     return flagHint< bool >( QskPopup::Overlay | QskAspect::Style, true );
 }
 
+void QskPopup::grabFocus( bool on )
+{
+    /*
+        Note, that we are grabbing the local focus, what only
+        has an effect on the active focus, when all surrounding
+        focus scopes already have the focus.
+     */
+
+    if ( on == hasFocus() )
+        return;
+
+    /*
+        For unknown reasons Qt::PopupFocusReason is blocked inside of
+        QQuickItem::setFocus. Nontheless there is specific code dealing
+        with it f.e in qquicktextinput.cpp. If this becomes a problem
+        we will have to bypass QQuickItem::setFocus by calling
+        QQuickWindowPrivate::setFocusInScope/clearFocusInScope directly,
+        but for the moment we use Qt::OtherFocusReason instead. TODO ...
+     */
+    const auto reason = Qt::OtherFocusReason;
+
+    if ( on )
+    {
+        if ( auto scope = qskNearestFocusScope( this ) )
+        {
+            m_data->initialFocusItem = scope->scopedFocusItem();
+            setFocus( true, reason );
+        }
+    }
+    else
+    {
+        QQuickItem* focusItem = m_data->initialFocusItem;
+        m_data->initialFocusItem = nullptr;
+
+        if ( focusItem == nullptr )
+            focusItem = nextItemInFocusChain( false );
+
+        if ( focusItem )
+            focusItem->setFocus( true, reason );
+        else
+            setFocus( false, reason );
+    }
+}
+
 bool QskPopup::event( QEvent* event )
 {
     bool ok = Inherited::event( event );
@@ -260,6 +324,19 @@ bool QskPopup::event( QEvent* event )
     return ok;
 }
 
+void QskPopup::updateLayout()
+{
+    if ( !m_data->isOpen )
+    {
+        if ( m_data->autoGrabFocus )
+            grabFocus( true );
+
+        m_data->isOpen = true;
+    }
+
+    Inherited::updateLayout();
+}
+
 void QskPopup::itemChange( QQuickItem::ItemChange change,
     const QQuickItem::ItemChangeData& value )
 {
@@ -270,6 +347,12 @@ void QskPopup::itemChange( QQuickItem::ItemChange change,
         case QQuickItem::ItemVisibleHasChanged:
         {
             updateInputGrabber();
+            if ( !value.boolValue )
+            {
+                m_data->isOpen = false;
+                grabFocus( false );
+            }
+
             break;
         }
         case QQuickItem::ItemParentHasChanged:
@@ -278,6 +361,13 @@ void QskPopup::itemChange( QQuickItem::ItemChange change,
             m_data->inputGrabber = nullptr;
 
             updateInputGrabber();
+
+            break;
+        }
+        case QQuickItem::ItemActiveFocusHasChanged:
+        {
+            if ( !hasFocus() )
+                m_data->initialFocusItem = nullptr;
 
             break;
         }
