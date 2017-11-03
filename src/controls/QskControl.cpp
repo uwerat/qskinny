@@ -1307,8 +1307,20 @@ void QskControl::updateImplicitSize()
 
     const QSizeF hint = contentsSizeHint();
 
-    const auto w = ( hint.width() >= 0 ) ? dw + hint.width() : 0.0;
-    const auto h = ( hint.height() >= 0 ) ? dh + hint.height() : 0.0;
+    const qreal w = ( hint.width() >= 0 ) ? dw + hint.width() : 0.0;
+    const qreal h = ( hint.height() >= 0 ) ? dh + hint.height() : 0.0;
+
+#ifdef __GNUC__
+#if ( __GNUC__ * 100 + __GNUC_MINOR__) <= 700
+    /*
+        Certain gcc optimizer ( >= -O2 ) seem to be too motivated
+        ( found with gcc 5.3.1/6.2.1, gcc 7.1.1 is o.k. ).
+        A volatile local variable prevents those versions from creating wrong code.
+     */
+    const volatile qreal dummy = w;
+    (void)dummy;
+#endif
+#endif
 
     setupImplicitSizeConnections( false );
     setImplicitSize( w, h );
