@@ -34,11 +34,6 @@ QskTabBar::QskTabBar( Qt::Orientation orientation, QQuickItem* parent ):
     Inherited( parent ),
     m_data( new PrivateData() )
 {
-#if 0
-    setFlag( QQuickItem::ItemHasContents, false );
-    setFlag( QQuickItem::ItemIsFocusScope );
-#endif
-
     m_data->layoutBox = new QskLinearBox( orientation, this );
     m_data->layoutBox->setObjectName( QStringLiteral( "QskTabBarLayoutBox" ) );
     m_data->layoutBox->setSpacing( 0 );

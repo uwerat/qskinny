@@ -41,7 +41,6 @@ QskTabView::QskTabView( Qt::Orientation orientation, QQuickItem* parent ):
     Inherited( parent ),
     m_data( new PrivateData() )
 {
-    setFlag( ItemIsFocusScope );
     setPolishOnResize( true );
 
     m_data->tabBar = new QskTabBar( qskTransposed( orientation ), this );
