@@ -123,6 +123,31 @@ public:
     {
     }
 
+    inline void setupImplicitSizeConnections( bool on )
+    {
+        // in case of someone manipulating the implicit size from
+        // outside, we might need to adjust some layouts
+
+        Q_Q( QskControl );
+
+        if ( on )
+        {
+            QObject::connect( q, &QskControl::implicitWidthChanged,
+                q, &QskControl::onImplicitSizeChanged );
+
+            QObject::connect( q, &QskControl::implicitHeightChanged,
+                q, &QskControl::onImplicitSizeChanged );
+        }
+        else
+        {
+            QObject::disconnect( q, &QskControl::implicitWidthChanged,
+                q, &QskControl::onImplicitSizeChanged );
+
+            QObject::disconnect( q, &QskControl::implicitHeightChanged,
+                q, &QskControl::onImplicitSizeChanged );
+        }
+    }
+
     void mirrorChange() override
     {
         Q_Q( QskControl );
@@ -231,7 +256,7 @@ QskControl::QskControl( QQuickItemPrivate& dd, QQuickItem* parent ):
         qskResolveLocale( this );
     }
 
-    setupImplicitSizeConnections( true );
+    d->setupImplicitSizeConnections( true );
 
     connect( this, &QQuickItem::enabledChanged,
         [this] { setSkinStateFlag( Disabled, !isEnabled() ); } );
@@ -586,29 +611,6 @@ void QskControl::updateControlFlag( uint flag, bool on )
         }
         default:
             break;
-    }
-}
-
-void QskControl::setupImplicitSizeConnections( bool on )
-{
-    // in case of someone manipulating the implicit size from
-    // outside, we might need to adjust some layouts
-
-    if ( on )
-    {
-        QObject::connect( this, &QskControl::implicitWidthChanged,
-            this, &QskControl::onImplicitSizeChanged );
-
-        QObject::connect( this, &QskControl::implicitHeightChanged,
-            this, &QskControl::onImplicitSizeChanged );
-    }
-    else
-    {
-        QObject::disconnect( this, &QskControl::implicitWidthChanged,
-            this, &QskControl::onImplicitSizeChanged );
-
-        QObject::disconnect( this, &QskControl::implicitHeightChanged,
-            this, &QskControl::onImplicitSizeChanged );
     }
 }
 
@@ -1299,7 +1301,8 @@ void QskControl::updateLayout()
 
 void QskControl::updateImplicitSize()
 {
-    d_func()->blockedImplicitSize = false;
+    Q_D( QskControl );
+    d->blockedImplicitSize = false;
 
     const auto m = margins();
     const auto dw = m.left() + m.right();
@@ -1310,21 +1313,9 @@ void QskControl::updateImplicitSize()
     const qreal w = ( hint.width() >= 0 ) ? dw + hint.width() : 0.0;
     const qreal h = ( hint.height() >= 0 ) ? dh + hint.height() : 0.0;
 
-#ifdef __GNUC__
-#if ( __GNUC__ * 100 + __GNUC_MINOR__) <= 700
-    /*
-        Certain gcc optimizer ( >= -O2 ) seem to be too motivated
-        ( found with gcc 5.3.1/6.2.1, gcc 7.1.1 is o.k. ).
-        A volatile local variable prevents those versions from creating wrong code.
-     */
-    const volatile qreal dummy = w;
-    (void)dummy;
-#endif
-#endif
-
-    setupImplicitSizeConnections( false );
+    d->setupImplicitSizeConnections( false );
     setImplicitSize( w, h );
-    setupImplicitSizeConnections( true );
+    d->setupImplicitSizeConnections( true );
 }
 
 QSizeF QskControl::contentsSizeHint() const
