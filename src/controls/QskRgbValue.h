@@ -442,6 +442,11 @@ QSK_RGB_VALUES
         return QColor::fromRgba( ( c1.rgb() & ColorMask ) | ( ( alpha & 0xffu ) << 24 ) ); 
     }
 
+    inline QColor toTransparent( Qt::GlobalColor color, int alpha = 0 )
+    {
+        return toTransparent( QColor( color ), alpha );
+    }
+
     inline QRgb toTransparent( QRgb rgb, int alpha = 0 )
     {
         return ( rgb & ColorMask ) | ( ( alpha & 0xffu ) << 24 );
