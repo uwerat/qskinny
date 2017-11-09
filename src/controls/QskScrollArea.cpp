@@ -404,6 +404,7 @@ QskScrollArea::QskScrollArea( QQuickItem* parentItem ):
 
 QskScrollArea::~QskScrollArea()
 {
+    delete m_data->clipItem;
 }
 
 void QskScrollArea::updateLayout()
