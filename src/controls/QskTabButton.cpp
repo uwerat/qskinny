@@ -6,6 +6,7 @@
 #include "QskTabButton.h"
 #include "QskTabBar.h"
 #include "QskTextOptions.h"
+#include "QskSkinlet.h"
 
 #include <QFontMetricsF>
 #include <QPointer>
@@ -91,6 +92,11 @@ QSizeF QskTabButton::contentsSizeHint() const
     }
 
     return size;
+}
+
+QRectF QskTabButton::layoutRect() const
+{
+    return innerBox( Panel, effectiveSkinlet()->subControlRect( this, Panel ) );
 }
 
 QskAspect::Placement QskTabButton::effectivePlacement() const

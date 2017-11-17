@@ -12,6 +12,7 @@
 #include "QskTextOptions.h"
 #include "QskSkin.h"
 #include "QskSetup.h"
+#include "QskSkinlet.h"
 
 #include <QFontMetricsF>
 
@@ -206,6 +207,11 @@ void QskPushButton::updateLayout()
 
         m_data->isGraphicSourceDirty = false;
     }
+}
+
+QRectF QskPushButton::layoutRect() const
+{
+    return innerBox( Panel, effectiveSkinlet()->subControlRect( this, Panel ) );
 }
 
 QSizeF QskPushButton::contentsSizeHint() const

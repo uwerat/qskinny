@@ -63,6 +63,7 @@ public:
     QFont font() const;
 
     virtual QSizeF contentsSizeHint() const override;
+    virtual QRectF layoutRect() const override;
 
 Q_SIGNALS:
     void cornerChanged();
