@@ -194,11 +194,6 @@ void QskWindow::addItem( QQuickItem* item )
 
     item->setParent( contentItem() );
     item->setParentItem( contentItem() );
-
-#if 1
-    const QSizeF sz( contentItem()->width(), contentItem()->height() );
-    item->setSize( sz );
-#endif
 }
 
 void QskWindow::polishItems()
