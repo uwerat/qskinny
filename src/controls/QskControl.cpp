@@ -1086,6 +1086,13 @@ void QskControl::itemChange( QQuickItem::ItemChange change,
 
             break;
         }
+        case QQuickItem::ItemChildAddedChange:
+        {
+            if ( d->autoLayoutChildren && !isTransparentForPositioner( value.item ) )
+                polish();
+            
+            break;
+        }
         case QQuickItem::ItemVisibleHasChanged:
         {
             if ( value.boolValue )
