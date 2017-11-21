@@ -43,18 +43,13 @@ public:
     void setCorner( const QskCorner& );
     QskCorner corner() const;
 
-    void setText( const QString& text );
     QString text() const;
 
     void setTextOptions( const QskTextOptions& );
     QskTextOptions textOptions() const;
 
-    void setGraphicSource( const QUrl& url );
     QUrl graphicSource() const;
-
-    void setGraphic( const QskGraphic& );
     QskGraphic graphic() const;
-
     bool hasGraphic() const;
 
     void setFlat( bool );
@@ -65,6 +60,11 @@ public:
     virtual QSizeF contentsSizeHint() const override;
     virtual QRectF layoutRect() const override;
 
+public Q_SLOTS:
+    void setText( const QString& text );
+    void setGraphicSource( const QUrl& url );
+    void setGraphic( const QskGraphic& );
+    
 Q_SIGNALS:
     void cornerChanged();
     void borderWidthChanged();
