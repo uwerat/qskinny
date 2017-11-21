@@ -168,7 +168,10 @@ QSizeF QskListView::contentsSizeHint() const
 void QskListView::keyPressEvent( QKeyEvent* event )
 {
     if ( m_data->selectionMode == NoSelection )
+    {
+        Inherited::keyPressEvent( event );
         return;
+    }
 
     int row = selectedRow();
 
@@ -204,12 +207,12 @@ void QskListView::keyPressEvent( QKeyEvent* event )
         case Qt::Key_PageDown:
         {
             // TODO ...
-            return QskScrollView::keyPressEvent( event );
+            return Inherited::keyPressEvent( event );
             break;
         }
         default:
         {
-            return QskScrollView::keyPressEvent( event );
+            return Inherited::keyPressEvent( event );
         }
     }
 
