@@ -8,6 +8,7 @@
 #include "QskTextOptions.h"
 
 #include <QQuickWindow>
+#include <QGlobalStatic>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquicktext_p.h>
@@ -97,15 +98,12 @@ namespace
     better use different items as we might end up in events internally
     being sent, that leads to crashes because of it
  */
-static TextItem* qskRenderHelper = nullptr;
-static TextItem* qskLayoutHelper = nullptr;
+Q_GLOBAL_STATIC( TextItem, qskRenderHelper )
+Q_GLOBAL_STATIC( TextItem, qskLayoutHelper )
 
 QSizeF QskRichTextRenderer::textSize( const QString& text,
     const QFont& font, const QskTextOptions& options )
 {
-    if ( qskLayoutHelper == NULL )
-        qskLayoutHelper = new TextItem();
-
     auto& item = *qskLayoutHelper;
 
     item.begin();
@@ -124,9 +122,6 @@ QSizeF QskRichTextRenderer::textSize( const QString& text,
 QRectF QskRichTextRenderer::textRect( const QString& text,
     const QFont& font, const QskTextOptions& options, const QSizeF& size )
 {
-    if ( qskLayoutHelper == NULL )
-        qskLayoutHelper = new TextItem();
-
     auto& textItem = *qskLayoutHelper;
 
     textItem.begin();
@@ -153,9 +148,6 @@ void QskRichTextRenderer::updateNode( const QString& text,
 {
     // are we killing internal caches of QQuickText, when always using
     // the same item for the creation the text nodes. TODO ... 
-
-    if ( qskRenderHelper == NULL )
-        qskRenderHelper = new TextItem();
 
     auto& textItem = *qskRenderHelper;
 
