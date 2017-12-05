@@ -162,7 +162,7 @@ public:
     virtual void implicitWidthChanged();
     virtual void implicitHeightChanged();
 
-    virtual QSGTransformNode *createTransformNode();
+    virtual QSGTransformNode* createTransformNode();
 #endif
 
     bool maybeGesture( QQuickItem* child, QEvent* event )
@@ -199,24 +199,24 @@ public:
     }
 
     QLocale locale;
-        
+
     quint16 controlFlags;
     quint16 controlFlagsMask;
 
     bool explicitLocale : 1;
-        
+
     bool autoFillBackground : 1;
     bool autoLayoutChildren : 1;
     bool polishOnResize : 1;
-        
+
     bool blockedPolish : 1;
     bool blockedImplicitSize : 1;
     bool clearPreviousNodes : 1;
-        
+
     bool isInitiallyPainted : 1;
 
     uint focusPolicy : 4;
-    bool isWheelEnabled;
+    bool isWheelEnabled : 1;
 };
 
 QskControl::QskControl( QQuickItem* parent ):
@@ -469,6 +469,32 @@ void QskControl::setTabFence( bool on )
 bool QskControl::isTabFence() const
 {
     return d_func()->isTabFence;
+}
+
+bool QskControl::isTabFence( const QQuickItem* item )
+{
+    if ( item == nullptr )
+        return false;
+
+    return QQuickItemPrivate::get( item )->isTabFence;
+}
+
+bool QskControl::isShortcutScope( const QQuickItem* item )
+{
+    if ( item == nullptr )
+        return false;
+
+    /*
+        We might have something like CTRL+W to close a "window".
+        But in Qt/Quick a window is not necessarily a QQuickWindow
+        like we have f.e QskSubWindow.
+
+        Maybe it's worth to introduce a shortcutScope flag but for
+        the moment we simply use the isFocusScope/isTabFence combination,
+        that should usually be set for those "windows".
+     */
+
+    return item->isFocusScope() && QQuickItemPrivate::get( item )->isTabFence;
 }
 
 QskControl::Flags QskControl::controlFlags() const
@@ -821,7 +847,7 @@ void QskControl::resetLocale()
 // not static as being called from QskSetup.cpp
 bool qskInheritLocale( QskControl* control, const QLocale& locale )
 {
-    auto d = static_cast< QskControlPrivate *>( QQuickItemPrivate::get( control ) );
+    auto d = static_cast< QskControlPrivate* >( QQuickItemPrivate::get( control ) );
 
     if ( d->explicitLocale || d->locale == locale )
         return false;
@@ -836,7 +862,7 @@ void qskResolveLocale( QskControl* control )
 {
     const QLocale locale = qskSetup->inheritedLocale( control );
 
-    auto d = static_cast< QskControlPrivate *>( QQuickItemPrivate::get( control ) );
+    auto d = static_cast< QskControlPrivate* >( QQuickItemPrivate::get( control ) );
     if ( d->locale != locale )
     {
         d->locale = locale;
@@ -1090,7 +1116,7 @@ void QskControl::itemChange( QQuickItem::ItemChange change,
         {
             if ( d->autoLayoutChildren && !isTransparentForPositioner( value.item ) )
                 polish();
-            
+
             break;
         }
         case QQuickItem::ItemVisibleHasChanged:

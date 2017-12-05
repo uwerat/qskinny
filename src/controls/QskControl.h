@@ -134,6 +134,9 @@ public:
     void setTabFence( bool );
     bool isTabFence() const;
 
+    static bool isTabFence( const QQuickItem* );
+    static bool isShortcutScope( const QQuickItem* );
+
     void setControlFlags( Flags );
     void resetControlFlags();
     Flags controlFlags() const;
