@@ -14,16 +14,23 @@
 
 #include <map>
 
+static inline QShortcutMap& qskShortcutMap()
+{
+    return QGuiApplicationPrivate::instance()->shortcutMap;
+}
+
 class QskShortcutHandler final : public QObject
 {
 public:
     QskShortcutHandler();
 
-    int addShortcut( QQuickItem*, const QKeySequence&,
+    int add( QQuickItem*, const QKeySequence&,
         const QObject* receiver, const char* method );
 
-    int addShortcut( QQuickItem*, const QKeySequence&,
+    int add( QQuickItem*, const QKeySequence&,
         const QObject* receiver, QtPrivate::QSlotObjectBase* );
+
+    void remove( int id );
 
     void setEnabled( int id, bool );
     void setAutoRepeat( int id, bool repeat );
@@ -31,50 +38,46 @@ public:
     virtual bool eventFilter( QObject*, QEvent* ) override final;
 
 private:
-    int addShortcut( QQuickItem*, const QKeySequence&,
+    int insert( QQuickItem*, const QKeySequence&,
         const QObject* receiver, const QMetaMethod&, QtPrivate::QSlotObjectBase* );
 
     void cleanUp( QObject* );
 
     static bool contextMatcher( QObject*, Qt::ShortcutContext );
-    static QShortcutMap& map();
 
-    class Data
+    class InvokeData
     {
     public:
-        Data():
+        InvokeData():
             item( nullptr ),
             receiver( nullptr ),
-            slotObj( nullptr )
+            slotObject( nullptr )
         {
         }
 
-        ~Data()
+        ~InvokeData()
         {
-            if ( slotObj )
-                slotObj->destroyIfLastRef();
+            if ( slotObject )
+                slotObject->destroyIfLastRef();
         }
 
         QQuickItem* item;
         const QObject* receiver;
         QMetaMethod method;
-        QtPrivate::QSlotObjectBase* slotObj;
+        QtPrivate::QSlotObjectBase* slotObject;
     };
 
-    std::map< int, Data > m_invokeDataMap;
+    std::map< int, InvokeData > m_invokeDataMap;
 };
+
+Q_GLOBAL_STATIC( QskShortcutHandler, qskShortcutHandler )
 
 QskShortcutHandler::QskShortcutHandler()
 {
     installEventFilter( this );
 }
 
-inline QShortcutMap& QskShortcutHandler::map()
-{
-    return QGuiApplicationPrivate::instance()->shortcutMap;
-}
-
-int QskShortcutHandler::addShortcut(
+int QskShortcutHandler::add(
     QQuickItem* item, const QKeySequence& key,
     const QObject* receiver, const char* method )
 {
@@ -89,7 +92,7 @@ int QskShortcutHandler::addShortcut(
 
         if ( methodIndex >= 0 )
         {
-            id = addShortcut( item, key,
+            id = insert( item, key,
                 receiver, metaObject->method( methodIndex ), nullptr );
         }
     }
@@ -97,38 +100,40 @@ int QskShortcutHandler::addShortcut(
     return id;
 }
 
-int QskShortcutHandler::addShortcut( QQuickItem* item, const QKeySequence& key,
+int QskShortcutHandler::add( QQuickItem* item, const QKeySequence& key,
     const QObject* receiver, QtPrivate::QSlotObjectBase* slotObj )
 {
-    return addShortcut( item, key, receiver, QMetaMethod(), slotObj );
+    return insert( item, key, receiver, QMetaMethod(), slotObj );
 }
 
-int QskShortcutHandler::addShortcut(
+int QskShortcutHandler::insert(
     QQuickItem* item, const QKeySequence& key,
     const QObject* receiver, const QMetaMethod& method,
-    QtPrivate::QSlotObjectBase* slotObj )
+    QtPrivate::QSlotObjectBase* slotObject )
 {
-    if ( receiver == nullptr )
-        return 0;
-
-#if 1
-    // multiple connections ????
-    connect( receiver, &QObject::destroyed, this, &QskShortcutHandler::cleanUp );
-#endif
+    if ( receiver )
+    {
+        receiver->disconnect( this );
+        connect( receiver, &QObject::destroyed, this, &QskShortcutHandler::cleanUp );
+    }
 
     int id = 0;
 
+    auto& map = qskShortcutMap();
+
     if ( item )
     {
-        item->installEventFilter( this );
         if ( item != receiver )
+        {
+            item->disconnect( this );
             connect( item, &QObject::destroyed, this, &QskShortcutHandler::cleanUp );
+        }
 
-        id = map().addShortcut( item, key, Qt::WindowShortcut, contextMatcher );
+        id = map.addShortcut( item, key, Qt::WindowShortcut, contextMatcher );
     }
     else
     {
-        id = map().addShortcut( this, key, Qt::ApplicationShortcut, contextMatcher );
+        id = map.addShortcut( this, key, Qt::ApplicationShortcut, contextMatcher );
     }
 
     auto& data = m_invokeDataMap[ id ];
@@ -136,23 +141,66 @@ int QskShortcutHandler::addShortcut(
     data.item = item;
     data.receiver = receiver;
 
-    if ( slotObj )
-        data.slotObj = slotObj;
+    if ( slotObject )
+        data.slotObject = slotObject;
     else
         data.method = method;
 
     return id;
 }
 
+void QskShortcutHandler::remove( int id )
+{
+    auto it = m_invokeDataMap.find( id );
+    if ( it == m_invokeDataMap.end() )
+        return;
+
+    auto& map = qskShortcutMap();
+    map.removeShortcut( id, nullptr );
+
+    const QQuickItem* item = it->second.item;
+    const QObject* receiver = it->second.receiver;
+
+    m_invokeDataMap.erase( it );
+
+    /*
+        Finally let's check if we can disconnect
+        from the destroyed signals
+     */
+    for ( const auto& entry : qskAsConst( m_invokeDataMap ) )
+    {
+        if ( item == nullptr && receiver == nullptr )
+            break;
+
+        if ( entry.second.item == item )
+            item = nullptr;
+
+        if ( entry.second.receiver == receiver )
+            receiver = nullptr;
+    }
+
+    if ( item )
+        item->disconnect( this );
+
+    if ( receiver && receiver != item )
+        receiver->disconnect( this );
+}
+
 void QskShortcutHandler::cleanUp( QObject* object )
 {
+    /*
+        When item != receiver we might remain being connected
+        to destroyed signals we are not interested in.
+     */
+    auto& map = qskShortcutMap();
+
     for ( auto it = m_invokeDataMap.begin(); it != m_invokeDataMap.end(); )
     {
         const auto& data = it->second;
 
-        if ( data.receiver == object || data.item == object  )
+        if ( data.item == object || data.receiver == object )
         {
-            map().removeShortcut( it->first, this );
+            map.removeShortcut( it->first, nullptr );
             it = m_invokeDataMap.erase( it );
 
             continue;
@@ -190,9 +238,13 @@ bool QskShortcutHandler::contextMatcher( QObject* object, Qt::ShortcutContext co
                     if ( !item->hasFocus() )
                         return false;
                 }
+
+                item = item->parentItem();
             }
 
-            item = item->parentItem();
+            // we want to process the following QShortcutEvent
+            object->installEventFilter( qskShortcutHandler );
+            return true;
         }
     }
 
@@ -201,18 +253,23 @@ bool QskShortcutHandler::contextMatcher( QObject* object, Qt::ShortcutContext co
 
 void QskShortcutHandler::setEnabled( int id, bool enabled )
 {
-    map().setShortcutEnabled( enabled, id, this );
+    auto& map = qskShortcutMap();
+    map.setShortcutEnabled( enabled, id, this );
 }
 
 void QskShortcutHandler::setAutoRepeat( int id, bool repeat )
 {
-    map().setShortcutAutoRepeat( repeat, id, this );
+    auto& map = qskShortcutMap();
+    map.setShortcutAutoRepeat( repeat, id, this );
 }
 
 bool QskShortcutHandler::eventFilter( QObject* object, QEvent* event )
 {
     if ( event->type() != QEvent::Shortcut )
         return false;
+
+    if ( object != this )
+        object->removeEventFilter( this );
 
     const QShortcutEvent* se = static_cast< const QShortcutEvent* >( event );
 
@@ -225,29 +282,29 @@ bool QskShortcutHandler::eventFilter( QObject* object, QEvent* event )
     const auto it = m_invokeDataMap.find( se->shortcutId() );
     if ( it != m_invokeDataMap.end() )
     {
-        const Data& data = it->second;
+        const auto& invokeData = it->second;
 
-        Q_ASSERT( data.item == nullptr || data.item == object );
+        Q_ASSERT( invokeData.item == nullptr || invokeData.item == object );
 
-        auto receiver = const_cast< QObject* >( data.receiver );
+        auto receiver = const_cast< QObject* >( invokeData.receiver );
 
-        if ( data.slotObj )
+        if ( invokeData.slotObject )
         {
             void* args[] = { 0 };
 
             if ( receiver && receiver->thread() != thread() )
             {
                 QCoreApplication::postEvent( receiver,
-                    new QMetaCallEvent( data.slotObj, nullptr, 0, 0, nullptr, args ) );
+                    new QMetaCallEvent( invokeData.slotObject, nullptr, 0, 0, nullptr, args ) );
             }
             else
             {
-                data.slotObj->call( receiver, args );
+                invokeData.slotObject->call( receiver, args );
             }
         }
         else
         {
-            data.method.invoke( receiver, Qt::AutoConnection );
+            invokeData.method.invoke( receiver, Qt::AutoConnection );
         }
 
         return true;
@@ -257,41 +314,25 @@ bool QskShortcutHandler::eventFilter( QObject* object, QEvent* event )
     return false;
 }
 
-Q_GLOBAL_STATIC( QskShortcutHandler, qskShortcutHandler )
-
-int QskShortcut::addShortcut( const QKeySequence& key,
+int QskShortcut::addMethod( QQuickItem* item, const QKeySequence& key,
     bool autoRepeat, const QObject* receiver, const char* method )
 {
-    QQuickWindow* window = nullptr;
-    return addShortcut( window, key, autoRepeat, receiver, method );
-}
+    if ( receiver == nullptr )
+    {
+        return 0;
+    }
 
-int QskShortcut::addShortcut( QQuickWindow* window, const QKeySequence& key,
-    bool autoRepeat, const QObject* receiver, const char* method )
-{
-    auto item = window ? window->contentItem() : nullptr;
-
-    int id = qskShortcutHandler->addShortcut( item, key, receiver, method );
+    int id = qskShortcutHandler->add( item, key, receiver, method );
     if ( id && !autoRepeat )
         qskShortcutHandler->setAutoRepeat( id, false );
 
     return id;
 }
 
-int QskShortcut::addShortcut( QQuickItem* item, const QKeySequence& key,
-    bool autoRepeat, const QObject* receiver, const char* method )
+int QskShortcut::addSlotObject( QQuickItem* item, const QKeySequence& key,
+    bool autoRepeat, const QObject* receiver, QtPrivate::QSlotObjectBase* slotObject )
 {
-    int id = qskShortcutHandler->addShortcut( item, key, receiver, method );
-    if ( id && !autoRepeat )
-        qskShortcutHandler->setAutoRepeat( id, false );
-
-    return id;
-}
-
-int QskShortcut::addShortcutImpl( const QKeySequence& key,
-    bool autoRepeat, const QObject* receiver, QtPrivate::QSlotObjectBase* slotObj )
-{
-    int id = qskShortcutHandler->addShortcut( nullptr, key, receiver, slotObj );
+    int id = qskShortcutHandler->add( item, key, receiver, slotObject );
     if ( id && !autoRepeat )
         qskShortcutHandler->setAutoRepeat( id, false );
 
@@ -306,4 +347,9 @@ void QskShortcut::setAutoRepeat( int id, bool on )
 void QskShortcut::setEnabled( int id, bool on )
 {
     qskShortcutHandler->setEnabled( id, on );
+}
+
+void QskShortcut::removeShortcut( int id )
+{
+    qskShortcutHandler->remove( id );
 }

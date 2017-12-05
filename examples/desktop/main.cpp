@@ -13,8 +13,11 @@
 #include <QskGraphicLabel.h>
 #include <QskGradient.h>
 #include <QskAspect.h>
+#include <QskShortcut.h>
 
 #include <QGuiApplication>
+#include <QKeySequence>
+#include <QDebug>
 
 class SubWindow : public QskSubWindow
 {
@@ -30,6 +33,9 @@ public:
 
         setSizePolicy( QskSizePolicy::MinimumExpanding,
             QskSizePolicy::MinimumExpanding );
+
+        QskShortcut::addShortcut( this, QKeySequence( Qt::Key_P ), true,
+            [=] { qDebug() << graphicSource; } );
     }
 };
 
