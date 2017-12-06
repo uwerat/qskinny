@@ -1,7 +1,7 @@
 #include "MainWindow.h"
 #include "SkinFactory.h"
 
-#include <QskShortcut.h>
+#include <QskShortcutMap.h>
 #include <QskSetup.h>
 #include <SkinnyShortcut.h>
 
@@ -35,10 +35,10 @@ int main( int argc, char** argv )
     cout << "CTRL-S to change the skin." << endl;
     cout << "CTRL-T to change the color scheme, when the \"Default\" skin is active." << endl;
 
-    QskShortcut::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_T ),
+    QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_T ),
         false, &skinFactory, SLOT(toggleScheme()) );
 
-    QskShortcut::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_S ),
+    QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_S ),
         false, &skinFactory, SLOT(rotateSkin()) );
 
     // With CTRL-B you can rotate a couple of visual debug modes

@@ -24,6 +24,7 @@
 #include "QskScrollArea.h"
 #include "QskSeparator.h"
 #include "QskSimpleListBox.h"
+#include "QskShortcut.h"
 #include "QskSlider.h"
 #include "QskStackBox.h"
 #include "QskStandardSymbol.h"
@@ -239,6 +240,7 @@ void QskModule::registerTypes()
     qRegisterMetaType< QskSkin* >();
 
     QSK_REGISTER( QskMain, "Main" );
+    QSK_REGISTER( QskShortcut, "Shortcut" );
 
     QSK_REGISTER( QskWindow, "Window" );
 

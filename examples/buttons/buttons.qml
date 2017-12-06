@@ -12,6 +12,12 @@ Qsk.Window
     height: 600
     color: "Beige"
 
+    Qsk.Shortcut
+	{
+		sequence : "Ctrl+X"
+		onActivated: console.log( "Ctrl+X" )
+	}
+
     Qsk.LinearBox
     {
         orientation: Qt.Horizontal

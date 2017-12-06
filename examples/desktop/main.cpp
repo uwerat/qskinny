@@ -13,7 +13,7 @@
 #include <QskGraphicLabel.h>
 #include <QskGradient.h>
 #include <QskAspect.h>
-#include <QskShortcut.h>
+#include <QskShortcutMap.h>
 
 #include <QGuiApplication>
 #include <QKeySequence>
@@ -34,7 +34,7 @@ public:
         setSizePolicy( QskSizePolicy::MinimumExpanding,
             QskSizePolicy::MinimumExpanding );
 
-        QskShortcut::addShortcut( this, QKeySequence( Qt::Key_P ), true,
+        QskShortcutMap::addShortcut( this, QKeySequence( Qt::Key_P ), true,
             [=] { qDebug() << graphicSource; } );
     }
 };

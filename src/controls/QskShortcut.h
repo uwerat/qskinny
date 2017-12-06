@@ -7,219 +7,87 @@
 #define QSK_SHORTCUT_H
 
 #include "QskGlobal.h"
-#include <QQuickWindow>
 
-class QQuickItem;
+#include <QObject>
+#include <QQmlParserStatus>
+#include <Qt>
+#include <memory>
+
 class QKeySequence;
 
-class QSK_EXPORT QskShortcut
+/*
+    For QML, with C++ there is also QskShortcutMap that does
+    not need to create QObjects per shortcut
+ */
+class QSK_EXPORT QskShortcut : public QObject, public QQmlParserStatus
 {
+    Q_OBJECT
+    Q_INTERFACES( QQmlParserStatus )
+
+    Q_PROPERTY( QVariant sequence READ sequenceVariant
+        WRITE setSequenceVariant NOTIFY sequenceChanged FINAL)
+
+    Q_PROPERTY( Qt::ShortcutContext context READ context
+        WRITE setContext NOTIFY contextChanged )
+
+    Q_PROPERTY( bool enabled READ isEnabled
+        WRITE setEnabled NOTIFY enabledChanged )
+
+    Q_PROPERTY( bool autoRepeat READ autoRepeat
+        WRITE setAutoRepeat NOTIFY autoRepeatChanged )
+
+    Q_PROPERTY( int shortcutId READ shortcutId
+        NOTIFY shortcutIdChanged )
+
+    using Inherited = QObject;
+
 public:
-    static void setAutoRepeat( int, bool on );
-    static void setEnabled( int, bool on );
+    QskShortcut( QObject* parent = nullptr );
 
-    static void removeShortcut( int );
+    QskShortcut( const QKeySequence&, QObject* = nullptr );
+    QskShortcut( const QKeySequence&, Qt::ShortcutContext, QObject* = nullptr );
 
-    // -- traditional slots
-    static int addShortcut( const QKeySequence&, bool autoRepeat,
-        const QObject* receiver, const char* method );
+    virtual ~QskShortcut();
 
-    static int addShortcut( QQuickWindow*, const QKeySequence&, bool autoRepeat,
-        const QObject* receiver, const char* method );
+    int shortcutId() const;
 
-    static int addShortcut( QQuickItem*, const QKeySequence&, bool autoRepeat,
-        const QObject* receiver, const char* method );
+    void setSequence( const QKeySequence& );
+    QKeySequence sequence() const;
 
-    // -- calling a QObject method
-    template< typename Func1 >
-    static int addShortcut( const QKeySequence&, bool autoRepeat,
-        const typename QtPrivate::FunctionPointer< Func1 >::Object* receiver, Func1 slot );
+    // for QML
+    void setSequenceVariant( const QVariant& );
+    QVariant sequenceVariant() const;
 
-    template< typename Func1 >
-    static int addShortcut( QQuickWindow*, const QKeySequence&, bool autoRepeat,
-        const typename QtPrivate::FunctionPointer< Func1 >::Object* receiver, Func1 slot );
+    Qt::ShortcutContext context() const;
+    void setContext(Qt::ShortcutContext context);
 
-    template< typename Func1 >
-    static int addShortcut( QQuickItem*, const QKeySequence&, bool autoRepeat,
-        const typename QtPrivate::FunctionPointer< Func1 >::Object* receiver, Func1 slot );
+    void setEnabled( bool );
+    bool isEnabled() const;
 
-    // -- calling a functor or function pointer inside a thread context
-    template< typename Func1 >
-    static int addShortcut( const QKeySequence&, bool autoRepeat,
-        const QObject* context, Func1 slot );
+    void setAutoRepeat( bool );
+    bool autoRepeat() const;
 
-    template< typename Func1 >
-    static int addShortcut( QQuickWindow*, const QKeySequence&, bool autoRepeat,
-        const QObject* context, Func1 slot );
+    virtual bool isFocusInScope() const;
 
-    template< typename Func1 >
-    static int addShortcut( QQuickItem*, const QKeySequence&, bool autoRepeat,
-        const QObject* context, Func1 slot );
+Q_SIGNALS:
+    void sequenceChanged();
+    void contextChanged();
+    void enabledChanged();
+    void autoRepeatChanged();
 
-    // -- calling a functor or function pointer
-    template< typename Func1 >
-    static int addShortcut( const QKeySequence&, bool autoRepeat, Func1 slot );
+    void activated();
+    void activatedAmbiguously();
 
-    template< typename Func1 >
-    static int addShortcut( QQuickWindow*, const QKeySequence&, bool autoRepeat, Func1 slot );
+    int shortcutIdChanged( int ) const;
 
-    template< typename Func1 >
-    static int addShortcut( QQuickItem*, const QKeySequence&, bool autoRepeat, Func1 slot );
+protected:
+    virtual bool event( QEvent* ) override;
+    virtual void classBegin() override;
+    virtual void componentComplete() override;
 
 private:
-    QskShortcut() = delete;
-    ~QskShortcut() = delete;
-
-    static int addMethod( QQuickItem*, const QKeySequence&, bool autoRepeat,
-        const QObject* receiver, const char* method );
-
-    template< typename Func1 >
-    static int addMemberSlot( QQuickItem*, const QKeySequence&, bool autoRepeat,
-        const typename QtPrivate::FunctionPointer< Func1 >::Object* receiver, Func1 slot );
-
-    template< typename Func1 >
-    static int addFunctorSlot( QQuickItem*, const QKeySequence&,
-        bool autoRepeat, const QObject* context, Func1 slot );
-
-    static int addSlotObject(
-        QQuickItem* item, const QKeySequence&, bool autoRepeat,
-        const QObject* receiver, QtPrivate::QSlotObjectBase* );
+    class PrivateData;
+    std::unique_ptr< PrivateData > m_data;
 };
-
-template< typename Func1 >
-inline int QskShortcut::addMemberSlot(
-    QQuickItem* item, const QKeySequence& key, bool autoRepeat,
-    const typename QtPrivate::FunctionPointer< Func1 >::Object* receiver, Func1 slot )
-{
-    using namespace QtPrivate;
-    typedef FunctionPointer< Func1 > SlotType;
-
-    Q_STATIC_ASSERT_X( int( SlotType::ArgumentCount ) == 0,
-        "The slot must not have any arguments.");
-
-    return addSlotObject( item, key, autoRepeat, receiver, 
-        new QSlotObject< Func1, typename SlotType::Arguments, void >( slot ) );
-}
-
-template< typename Func1 >
-inline int QskShortcut::addFunctorSlot(
-    QQuickItem* item, const QKeySequence& key, bool autoRepeat,
-    const QObject* context, Func1 slot )
-{
-    using namespace QtPrivate;
-    typedef FunctionPointer< Func1 > SlotType;
-
-    Q_STATIC_ASSERT_X( int( SlotType::ArgumentCount ) <= 0,
-        "The slot must not have any arguments.");
-
-    Q_STATIC_ASSERT_X( !SlotType::IsPointerToMemberFunction,
-        "The slot must be no member function." );
-
-    using Args = List_Left< void, 0 >::Value;
-
-    return addSlotObject( item, key, autoRepeat, context, 
-        new QFunctorSlotObject< Func1, 0, Args, void >( slot ) );
-}
-
-// -- traditional slots
-
-inline int QskShortcut::addShortcut(
-    QQuickItem* item, const QKeySequence& key, bool autoRepeat,
-    const QObject* receiver, const char* method )
-{
-    return addMethod( item, key, autoRepeat, receiver, method );
-}
-
-inline int QskShortcut::addShortcut(
-    const QKeySequence& key, bool autoRepeat,
-    const QObject* receiver, const char* method )
-{
-    return addMethod( nullptr, key, autoRepeat, receiver, method );
-}
-
-inline int QskShortcut::addShortcut(
-    QQuickWindow* window, const QKeySequence& key, bool autoRepeat,
-    const QObject* receiver, const char* method )
-{
-    auto item = window ? window->contentItem() : nullptr;
-    return addMethod( item, key, autoRepeat, receiver, method );
-}
-
-// -- calling a QObject method
-
-template< typename Func1 >
-inline int QskShortcut::addShortcut(
-    QQuickItem* item, const QKeySequence& key, bool autoRepeat,
-    const typename QtPrivate::FunctionPointer< Func1 >::Object* receiver, Func1 slot )
-{
-    return addMemberSlot( item, key, autoRepeat, receiver, slot );
-}
-
-
-template< typename Func1 >
-inline int QskShortcut::addShortcut(
-    QQuickWindow* window, const QKeySequence& key, bool autoRepeat,
-    const typename QtPrivate::FunctionPointer< Func1 >::Object* receiver, Func1 slot )
-{
-    auto item = window ? window->contentItem() : nullptr;
-    return addMemberSlot( item, key, autoRepeat, receiver, slot );
-}
-
-template< typename Func1 >
-inline int QskShortcut::addShortcut(
-    const QKeySequence& key, bool autoRepeat,
-    const typename QtPrivate::FunctionPointer< Func1 >::Object* receiver, Func1 slot )
-{
-    return addMemberSlot( nullptr, key, autoRepeat, receiver, slot );
-}
-
-// -- calling a functor or function pointer with context
-
-template< typename Func1 >
-inline int QskShortcut::addShortcut(
-    QQuickItem* item, const QKeySequence& key, bool autoRepeat,
-    const QObject* context, Func1 slot )
-{
-    return addFunctorSlot( item, key, autoRepeat, context, slot );
-}
-
-template< typename Func1 >
-inline int QskShortcut::addShortcut(
-    QQuickWindow* window, const QKeySequence& key, bool autoRepeat,
-    const QObject* context, Func1 slot )
-{
-    auto item = window ? window->contentItem() : nullptr;
-    return addFunctorSlot( item, key, autoRepeat, context, slot );
-}
-
-template< typename Func1 >
-inline int QskShortcut::addShortcut( const QKeySequence& key, bool autoRepeat,
-    const QObject* context, Func1 slot )
-{
-    return addFunctorSlot( nullptr, key, autoRepeat, context, slot );
-}
-
-// -- calling a functor or function pointer
-
-template< typename Func1 >
-inline int QskShortcut::addShortcut(
-    QQuickItem* item, const QKeySequence& key, bool autoRepeat, Func1 slot )
-{
-    return addFunctorSlot( item, key, autoRepeat, nullptr, slot );
-}
-
-template< typename Func1 >
-inline int QskShortcut::addShortcut(
-    QQuickWindow* window, const QKeySequence& key, bool autoRepeat, Func1 slot )
-{
-    auto item = window ? window->contentItem() : nullptr;
-    return addFunctorSlot( item, key, autoRepeat, nullptr, autoRepeat, slot );
-}
-
-template< typename Func1 >
-int QskShortcut::addShortcut( const QKeySequence& key, bool autoRepeat, Func1 slot )
-{
-    return addFunctorSlot( nullptr, key, autoRepeat, nullptr, slot );
-}
 
 #endif

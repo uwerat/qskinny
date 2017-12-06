@@ -4,245 +4,221 @@
  *****************************************************************************/
 
 #include "QskShortcut.h"
-#include "QskControl.h"
-
+#include "QskShortcutMap.h"
+#include <QQuickItem>
 #include <QQuickWindow>
-#include <QMetaMethod>
-#include <QKeySequence>
-#include <QGlobalStatic>
 #include <QtGui/private/qguiapplication_p.h>
-
-#include <map>
 
 static inline QShortcutMap& qskShortcutMap()
 {
     return QGuiApplicationPrivate::instance()->shortcutMap;
 }
 
-class QskShortcutHandler final : public QObject
-{
-public:
-    QskShortcutHandler();
-
-    int add( QQuickItem*, const QKeySequence&,
-        const QObject* receiver, const char* method );
-
-    int add( QQuickItem*, const QKeySequence&,
-        const QObject* receiver, QtPrivate::QSlotObjectBase* );
-
-    void remove( int id );
-
-    void setEnabled( int id, bool );
-    void setAutoRepeat( int id, bool repeat );
-
-    virtual bool eventFilter( QObject*, QEvent* ) override final;
-
-private:
-    int insert( QQuickItem*, const QKeySequence&,
-        const QObject* receiver, const QMetaMethod&, QtPrivate::QSlotObjectBase* );
-
-    void cleanUp( QObject* );
-
-    static bool contextMatcher( QObject*, Qt::ShortcutContext );
-
-    class InvokeData
-    {
-    public:
-        InvokeData():
-            item( nullptr ),
-            receiver( nullptr ),
-            slotObject( nullptr )
-        {
-        }
-
-        ~InvokeData()
-        {
-            if ( slotObject )
-                slotObject->destroyIfLastRef();
-        }
-
-        QQuickItem* item;
-        const QObject* receiver;
-        QMetaMethod method;
-        QtPrivate::QSlotObjectBase* slotObject;
-    };
-
-    std::map< int, InvokeData > m_invokeDataMap;
-};
-
-Q_GLOBAL_STATIC( QskShortcutHandler, qskShortcutHandler )
-
-QskShortcutHandler::QskShortcutHandler()
-{
-    installEventFilter( this );
-}
-
-int QskShortcutHandler::add( QQuickItem* item, const QKeySequence& key,
-    const QObject* receiver, const char* method )
-{
-    int id = 0;
-
-    if ( receiver )
-    {
-        const QMetaObject* metaObject = receiver->metaObject();
-
-        const int methodIndex = metaObject->indexOfMethod(
-            QMetaObject::normalizedSignature( method ).constData() + 1 );
-
-        if ( methodIndex >= 0 )
-        {
-            id = insert( item, key,
-                receiver, metaObject->method( methodIndex ), nullptr );
-        }
-    }
-
-    return id;
-}
-
-int QskShortcutHandler::add( QQuickItem* item, const QKeySequence& key,
-    const QObject* receiver, QtPrivate::QSlotObjectBase* slotObj )
-{
-    return insert( item, key, receiver, QMetaMethod(), slotObj );
-}
-
-int QskShortcutHandler::insert(
-    QQuickItem* item, const QKeySequence& key,
-    const QObject* receiver, const QMetaMethod& method,
-    QtPrivate::QSlotObjectBase* slotObject )
-{
-    if ( receiver )
-    {
-        receiver->disconnect( this );
-        connect( receiver, &QObject::destroyed, this, &QskShortcutHandler::cleanUp );
-    }
-
-    int id = 0;
-
-    auto& map = qskShortcutMap();
-
-    if ( item )
-    {
-        if ( item != receiver )
-        {
-            item->disconnect( this );
-            connect( item, &QObject::destroyed, this, &QskShortcutHandler::cleanUp );
-        }
-
-        id = map.addShortcut( item, key, Qt::WindowShortcut, contextMatcher );
-    }
-    else
-    {
-        id = map.addShortcut( this, key, Qt::ApplicationShortcut, contextMatcher );
-    }
-
-    auto& data = m_invokeDataMap[ id ];
-
-    data.item = item;
-    data.receiver = receiver;
-
-    if ( slotObject )
-        data.slotObject = slotObject;
-    else
-        data.method = method;
-
-    return id;
-}
-
-void QskShortcutHandler::remove( int id )
-{
-    auto it = m_invokeDataMap.find( id );
-    if ( it == m_invokeDataMap.end() )
-        return;
-
-    auto& map = qskShortcutMap();
-    map.removeShortcut( id, nullptr );
-
-    const QQuickItem* item = it->second.item;
-    const QObject* receiver = it->second.receiver;
-
-    m_invokeDataMap.erase( it );
-
-    /*
-        Finally let's check if we can disconnect
-        from the destroyed signals
-     */
-    for ( const auto& entry : qskAsConst( m_invokeDataMap ) )
-    {
-        if ( item == nullptr && receiver == nullptr )
-            break;
-
-        if ( entry.second.item == item )
-            item = nullptr;
-
-        if ( entry.second.receiver == receiver )
-            receiver = nullptr;
-    }
-
-    if ( item )
-        item->disconnect( this );
-
-    if ( receiver && receiver != item )
-        receiver->disconnect( this );
-}
-
-void QskShortcutHandler::cleanUp( QObject* object )
-{
-    /*
-        When item != receiver we might remain being connected
-        to destroyed signals we are not interested in anymore. TODO ...
-     */
-    auto& map = qskShortcutMap();
-
-    for ( auto it = m_invokeDataMap.begin(); it != m_invokeDataMap.end(); )
-    {
-        const auto& data = it->second;
-
-        if ( data.item == object || data.receiver == object )
-        {
-            map.removeShortcut( it->first, nullptr );
-            it = m_invokeDataMap.erase( it );
-
-            continue;
-        }
-
-        ++it;
-    }
-}
-
-bool QskShortcutHandler::contextMatcher( QObject* object, Qt::ShortcutContext context )
+static bool qskContextMatcher( QObject* object, Qt::ShortcutContext context )
 {
     if ( context == Qt::ApplicationShortcut )
         return true;
 
     if ( context == Qt::WindowShortcut )
     {
-        const auto focusWindow = QGuiApplication::focusWindow();
+        if ( const auto shortcut = qobject_cast< const QskShortcut* >( object ) )
+            return shortcut->isFocusInScope();
+    }
 
-        if ( auto item = qobject_cast< const QQuickItem* >( object ) )
+    return false;
+}
+
+class QskShortcut::PrivateData
+{
+public:
+    PrivateData():
+        id( 0 ),
+        autoRepeat( true ),
+        enabled( true ),
+        isWindowContext( true ),
+        isComplete( true )
+    {
+    }
+
+    ~PrivateData()
+    {
+        if ( id != 0 )
+            qskShortcutMap().removeShortcut( id, nullptr );
+    }
+
+    void resetShortcut( QskShortcut* shortcut )
+    {
+        if ( !isComplete )
+            return;
+
+        auto& map = qskShortcutMap();
+
+        const int oldId = id;
+
+        if ( id != 0 )
         {
-            const auto window = item->window();
-            if ( window == nullptr || window != focusWindow )
-            {
-                return false;
-            }
+            map.removeShortcut( id, nullptr );
+            id = 0;
+        }
 
-            while ( item )
-            {
-                /*
-                    We have to find out if the active focus is inside
-                    the surronding shortcut scope.
-                 */
-                if ( QskControl::isShortcutScope( item ) )
-                {
-                    if ( !item->hasFocus() )
-                        return false;
-                }
+        if ( !sequence.isEmpty() )
+        {
+            id = map.addShortcut( shortcut, sequence,
+                shortcut->context(), qskContextMatcher );
 
-                item = item->parentItem();
-            }
+            if ( !autoRepeat )
+                map.setShortcutAutoRepeat( false, id, shortcut );
 
-            // we want to process the following QShortcutEvent
-            object->installEventFilter( qskShortcutHandler );
+            if ( !enabled )
+                map.setShortcutEnabled( false, id, shortcut );
+        }
+
+        if ( oldId != id )
+            shortcut->Q_EMIT shortcutIdChanged( id );
+    }
+
+public:
+    QKeySequence sequence;
+
+    int id;
+
+    bool autoRepeat : 1;
+    bool enabled : 1;
+    bool isWindowContext : 1;
+    bool isComplete : 1;
+};
+
+QskShortcut::QskShortcut( QObject* parent ):
+    Inherited( parent ),
+    m_data( new PrivateData )
+{
+}
+
+QskShortcut::QskShortcut( const QKeySequence& sequence, QObject* parent ):
+    QskShortcut( sequence, Qt::WindowShortcut, parent )
+{
+}
+
+QskShortcut::QskShortcut( const QKeySequence& sequence,
+        Qt::ShortcutContext context, QObject* parent ):
+    Inherited( parent ),
+    m_data( new PrivateData )
+{
+    m_data->sequence = sequence;
+    m_data->isWindowContext = ( context == Qt::WindowShortcut );
+    m_data->resetShortcut( this );
+}
+
+QskShortcut::~QskShortcut()
+{
+}
+
+int QskShortcut::shortcutId() const
+{
+    return m_data->id;
+}
+
+Qt::ShortcutContext QskShortcut::context() const
+{
+    return m_data->isWindowContext
+        ? Qt::WindowShortcut : Qt::ApplicationShortcut;
+}
+
+void QskShortcut::setContext( Qt::ShortcutContext context )
+{
+    if ( context == Qt::ApplicationShortcut
+        || context == Qt::WindowShortcut )
+    {
+        const bool isWindowContext = ( context == Qt::WindowShortcut );
+
+        if ( isWindowContext != m_data->isWindowContext )
+        {
+            m_data->isWindowContext = isWindowContext;
+            m_data->resetShortcut( this );
+
+            Q_EMIT contextChanged();
+        }
+    }
+}
+
+void QskShortcut::setSequence( const QKeySequence& sequence )
+{
+    if ( sequence != m_data->sequence )
+    {
+        m_data->sequence = sequence;
+        m_data->resetShortcut( this );
+
+        Q_EMIT sequenceChanged();
+    }
+}
+
+QKeySequence QskShortcut::sequence() const
+{
+    return m_data->sequence;
+}
+
+void QskShortcut::setSequenceVariant( const QVariant& sequence )
+{
+    if ( sequence.type() == QVariant::Int )
+        setSequence( static_cast<QKeySequence::StandardKey>( sequence.toInt() ) );
+    else
+        setSequence( QKeySequence::fromString( sequence.toString() ) );
+}
+
+QVariant QskShortcut::sequenceVariant() const
+{
+    return m_data->sequence.toString();
+}
+
+void QskShortcut::setEnabled( bool on )
+{
+    if ( on != m_data->enabled )
+    {
+        m_data->enabled = on;
+
+        if ( m_data->id != 0 )
+            qskShortcutMap().setShortcutEnabled( on, m_data->id, this );
+
+        Q_EMIT enabledChanged();
+    }
+}
+
+bool QskShortcut::isEnabled() const
+{
+    return m_data->enabled;
+}
+
+void QskShortcut::setAutoRepeat( bool on )
+{
+    if ( on != m_data->autoRepeat )
+    {
+        m_data->autoRepeat = on;
+
+        if ( m_data->id != 0 )
+            qskShortcutMap().setShortcutEnabled( on, m_data->id, this );
+
+        Q_EMIT autoRepeatChanged();
+    }
+}
+
+bool QskShortcut::autoRepeat() const
+{
+    return m_data->autoRepeat;
+}
+
+bool QskShortcut::event( QEvent* event )
+{
+    if ( event->type() == QEvent::Shortcut )
+    {
+        auto* shortcutEvent = static_cast< QShortcutEvent* >( event );
+
+        if ( shortcutEvent->shortcutId() == m_data->id )
+        {
+            if ( shortcutEvent->isAmbiguous() )
+                Q_EMIT activatedAmbiguously();
+            else
+                Q_EMIT activated();
+
             return true;
         }
     }
@@ -250,105 +226,46 @@ bool QskShortcutHandler::contextMatcher( QObject* object, Qt::ShortcutContext co
     return false;
 }
 
-void QskShortcutHandler::setEnabled( int id, bool enabled )
+bool QskShortcut::isFocusInScope() const
 {
-    auto& map = qskShortcutMap();
-    map.setShortcutEnabled( enabled, id, this );
-}
-
-void QskShortcutHandler::setAutoRepeat( int id, bool repeat )
-{
-    auto& map = qskShortcutMap();
-    map.setShortcutAutoRepeat( repeat, id, this );
-}
-
-bool QskShortcutHandler::eventFilter( QObject* object, QEvent* event )
-{
-    if ( event->type() != QEvent::Shortcut )
-        return false;
-
-    if ( object != this )
-        object->removeEventFilter( this );
-
-    const QShortcutEvent* se = static_cast< const QShortcutEvent* >( event );
-
-#if 0
-    // do we want to handle this ???
-    if ( se->isAmbiguous() )
-        ....
-#endif
-
-    const auto it = m_invokeDataMap.find( se->shortcutId() );
-    if ( it != m_invokeDataMap.end() )
-    {
-        const auto& invokeData = it->second;
-
-        Q_ASSERT( invokeData.item == nullptr || invokeData.item == object );
-
-        auto receiver = const_cast< QObject* >( invokeData.receiver );
-
-        if ( invokeData.slotObject )
-        {
-            void* args[] = { 0 };
-
-            if ( receiver && receiver->thread() != thread() )
-            {
-                QCoreApplication::postEvent( receiver,
-                    new QMetaCallEvent( invokeData.slotObject, nullptr, 0, 0, nullptr, args ) );
-            }
-            else
-            {
-                invokeData.slotObject->call( receiver, args );
-            }
-        }
-        else
-        {
-            invokeData.method.invoke( receiver, Qt::AutoConnection );
-        }
-
+    if ( !m_data->isWindowContext )
         return true;
-    }
 
-    // seems like someone else is also interested in shortcuts
-    return false;
-}
+    const QQuickItem* contextItem = nullptr;
 
-int QskShortcut::addMethod( QQuickItem* item, const QKeySequence& key,
-    bool autoRepeat, const QObject* receiver, const char* method )
-{
-    if ( receiver == nullptr )
+    if ( parent()->isWindowType() )
     {
-        return 0;
+        if ( auto window = qobject_cast< const QQuickWindow* >( parent() ) )
+            contextItem = window->contentItem();
+    }
+    else
+    {
+        contextItem = qobject_cast< const QQuickItem* >( parent() );
     }
 
-    int id = qskShortcutHandler->add( item, key, receiver, method );
-    if ( id && !autoRepeat )
-        qskShortcutHandler->setAutoRepeat( id, false );
-
-    return id;
+    if ( contextItem )
+    {
+        return QskShortcutMap::contextMatcher( contextItem, Qt::WindowShortcut );
+    }
+    else
+    {
+        qWarning( "QskShortcut has no valid parent for Qt::WindowShortcut" );
+        return false;
+    }
 }
 
-int QskShortcut::addSlotObject( QQuickItem* item, const QKeySequence& key,
-    bool autoRepeat, const QObject* receiver, QtPrivate::QSlotObjectBase* slotObject )
+void QskShortcut::classBegin()
 {
-    int id = qskShortcutHandler->add( item, key, receiver, slotObject );
-    if ( id && !autoRepeat )
-        qskShortcutHandler->setAutoRepeat( id, false );
-
-    return id;
+    m_data->isComplete = false;
 }
 
-void QskShortcut::setAutoRepeat( int id, bool on )
+void QskShortcut::componentComplete()
 {
-    qskShortcutHandler->setAutoRepeat( id, on );
+    if ( m_data->isComplete == false )
+    {
+        m_data->isComplete = true;
+        m_data->resetShortcut( this );
+    }
 }
 
-void QskShortcut::setEnabled( int id, bool on )
-{
-    qskShortcutHandler->setEnabled( id, on );
-}
-
-void QskShortcut::removeShortcut( int id )
-{
-    qskShortcutHandler->remove( id );
-}
+#include "moc_QskShortcut.cpp"

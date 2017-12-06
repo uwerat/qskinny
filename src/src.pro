@@ -152,6 +152,7 @@ HEADERS += \
     controls/QskSeparatorSkinlet.h \
     controls/QskSetup.h \
     controls/QskShortcut.h \
+    controls/QskShortcutMap.h \
     controls/QskSimpleListBox.h \
     controls/QskSkinFactory.h \
     controls/QskSkin.h \
@@ -215,6 +216,7 @@ SOURCES += \
     controls/QskSeparatorSkinlet.cpp \
     controls/QskSetup.cpp \
     controls/QskShortcut.cpp \
+    controls/QskShortcutMap.cpp \
     controls/QskSimpleListBox.cpp \
     controls/QskSkin.cpp \
     controls/QskSkinHintTable.cpp \

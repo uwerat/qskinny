@@ -1,7 +1,7 @@
 #include "SkinnyShortcut.h"
 
 #include <QskSkinFactory.h>
-#include <QskShortcut.h>
+#include <QskShortcutMap.h>
 #include <QskSetup.h>
 #include <QskWindow.h>
 #include <QskAspect.h>
@@ -31,21 +31,21 @@ void SkinnyShortcut::enable( Types types )
 
     if ( types & RotateSkin )
     {
-        QskShortcut::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_S ),
+        QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_S ),
             false, &s_shortcut, &SkinnyShortcut::rotateSkin );
         cout << "CTRL-S to change the skin." << endl;
     }
 
     if ( types & DebugBackground )
     {
-        QskShortcut::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_B ),
+        QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_B ),
             false, &s_shortcut, &SkinnyShortcut::showBackground );
         cout << "CTRL-B to enable visual debugging modes." << endl;
     }
 
     if ( types & DebugStatistics )
     {
-        QskShortcut::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_K ),
+        QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_K ),
             false, &s_shortcut, &SkinnyShortcut::debugStatistics );
         cout << "CTRL-K to dump statistics about the items/nodes being currently used." << endl;
     }
@@ -55,7 +55,7 @@ void SkinnyShortcut::enable( Types types )
         // QKeySequence::Quit crashes the application
         // when not being implemented by the platform !!
 
-        QskShortcut::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_Q ),
+        QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_Q ),
             false, QGuiApplication::instance(), &QGuiApplication::quit );
         cout << "CTRL-Q to terminate the application." << endl;
     }
