@@ -77,8 +77,7 @@ QskShortcutHandler::QskShortcutHandler()
     installEventFilter( this );
 }
 
-int QskShortcutHandler::add(
-    QQuickItem* item, const QKeySequence& key,
+int QskShortcutHandler::add( QQuickItem* item, const QKeySequence& key,
     const QObject* receiver, const char* method )
 {
     int id = 0;
@@ -190,7 +189,7 @@ void QskShortcutHandler::cleanUp( QObject* object )
 {
     /*
         When item != receiver we might remain being connected
-        to destroyed signals we are not interested in.
+        to destroyed signals we are not interested in anymore. TODO ...
      */
     auto& map = qskShortcutMap();
 
