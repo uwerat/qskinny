@@ -5,9 +5,10 @@ CONFIG           -= depend_includepath
 
 CONFIG           += debug
 CONFIG           += strict_c++
-#CONFIG           += c++14
 CONFIG           += c++11
 CONFIG           += pedantic
+
+debug: CONFIG           += sanitize
 
 MOC_DIR      = moc
 OBJECTS_DIR  = obj
@@ -38,11 +39,9 @@ linux {
 
 linux-g++ | linux-g++-64 {
 
-    # CONFIG           += separate_debug_info
-
-    # --- optional warnings
-
     pedantic {
+
+        # --- optional warnings
 
         QMAKE_CXXFLAGS *= -pedantic-errors
         QMAKE_CXXFLAGS *= -Wextra
@@ -61,21 +60,23 @@ linux-g++ | linux-g++-64 {
         }
         else {
             QMAKE_CXXFLAGS *= -Wsuggest-override
-            #QMAKE_CXXFLAGS *= -Wsuggest-final-types
-            #QMAKE_CXXFLAGS *= -Wsuggest-final-methods
+            QMAKE_CXXFLAGS *= -Wsuggest-final-types
+            QMAKE_CXXFLAGS *= -Wsuggest-final-methods
         }
     }
 
-    # --- optional debug options
-
-    QMAKE_CXXFLAGS_DEBUG   *= -fsanitize=address -fno-omit-frame-pointer
-    QMAKE_LFLAGS_DEBUG *= -fsanitize=address
+    sanitize {
+        QMAKE_CXXFLAGS   *= -fsanitize=address -fno-omit-frame-pointer
+        QMAKE_LFLAGS *= -fsanitize=address
+    }
 
     # --- optional optimzations
 
-    #QMAKE_CXXFLAGS_DEBUG  *= -Og
     QMAKE_CXXFLAGS_DEBUG  *= -O0
-    QMAKE_CXXFLAGS_RELEASE  *= -O3
+    #QMAKE_CXXFLAGS_DEBUG  *= -Og
+
+    QMAKE_CXXFLAGS_RELEASE  *= -O3 
+    QMAKE_CXXFLAGS_RELEASE  *= -ffast-math
 
     # QMAKE_CXXFLAGS_RELEASE  *= -Ofast
     # QMAKE_CXXFLAGS_RELEASE  *= -Os
