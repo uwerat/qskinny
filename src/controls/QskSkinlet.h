@@ -95,7 +95,7 @@ protected:
         const QskGraphic&, QskAspect::Subcontrol ) const;
 
     void insertRemoveNodes( QSGNode* parentNode,
-        QSGNode* oldNode, QSGNode* newNode, int nodeRole ) const;
+        QSGNode* oldNode, QSGNode* newNode, quint8 nodeRole ) const;
 
 private:
     void insertNodeSorted( QSGNode* node, QSGNode* parentNode ) const;

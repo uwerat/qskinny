@@ -114,7 +114,7 @@ void QskListViewSkinlet::updateBackgroundNodes(
 {
     QSGNode* backgroundNode = listViewNode->backgroundNode();
 
-    const int cellHeight = listView->rowHeight();
+    const qreal cellHeight = listView->rowHeight();
     const QRectF viewRect = listView->viewContentsRect();
 
     const QPointF scrolledPos = listView->scrollPos();

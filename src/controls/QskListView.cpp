@@ -208,7 +208,6 @@ void QskListView::keyPressEvent( QKeyEvent* event )
         {
             // TODO ...
             return Inherited::keyPressEvent( event );
-            break;
         }
         default:
         {
@@ -224,7 +223,7 @@ void QskListView::keyPressEvent( QKeyEvent* event )
 
     if ( row != r )
     {
-        const int rowPos = row * rowHeight();
+        const qreal rowPos = row * rowHeight();
         if ( rowPos < scrollPos().y() )
         {
             setScrollPos( QPointF( scrollPos().x(), rowPos ) );
@@ -275,13 +274,13 @@ void QskListView::updateScrollableSize()
 {
     const double h = rowCount() * rowHeight();
 
-    double w = 0.0;
+    qreal w = 0.0;
     for ( int col = 0; col < columnCount(); col++ )
         w += columnWidth( col );
 
     const QSizeF sz = scrollableSize();
 
-    setScrollableSize( QSize( w, h ) );
+    setScrollableSize( QSizeF( w, h ) );
 
     if ( m_data->preferredWidthFromColumns &&
         sz.width() != scrollableSize().width() )

@@ -29,17 +29,17 @@
 static const int qskBackgroundRole = 254;
 static const int qskDebugRole = 253;
 
-static inline QSGNode::Flags qskNodeFlags( int nodeRole )
+static inline QSGNode::Flags qskNodeFlags( quint8 nodeRole )
 {
     return static_cast< QSGNode::Flags >( ( nodeRole + 1 ) << 8 );
 }
 
-static inline int qskRole( const QSGNode* node )
+static inline quint8 qskRole( const QSGNode* node )
 {
-    return ( ( node->flags() & 0x0ffff ) >> 8 ) - 1;
+    return static_cast< quint8 >( ( ( node->flags() & 0x0ffff ) >> 8 ) - 1 );
 }
 
-static inline void qskSetRole( int nodeRole, QSGNode* node )
+static inline void qskSetRole( quint8 nodeRole, QSGNode* node )
 {
     const QSGNode::Flags flags = qskNodeFlags( nodeRole );
     node->setFlags( node->flags() | flags );
@@ -199,7 +199,7 @@ void QskSkinlet::updateNode( QskSkinnable* skinnable, QSGNode* parentNode ) cons
 
     for ( int i = 0; i < m_data->nodeRoles.size(); i++ )
     {
-        const int nodeRole = m_data->nodeRoles[i];
+        const auto nodeRole = m_data->nodeRoles[i];
 
         Q_ASSERT( nodeRole <= 245 ); // reserving 10 roles
 
@@ -269,7 +269,7 @@ QSGNode* QskSkinlet::updateDebugNode(
 }
 
 void QskSkinlet::insertRemoveNodes( QSGNode* parentNode,
-    QSGNode* oldNode, QSGNode* newNode, int nodeRole ) const
+    QSGNode* oldNode, QSGNode* newNode, quint8 nodeRole ) const
 {
     if ( newNode && newNode->parent() != parentNode )
     {
@@ -321,7 +321,7 @@ void QskSkinlet::insertNodeSorted( QSGNode* node, QSGNode* parentNode ) const
         for ( QSGNode* childNode = parentNode->lastChild();
             childNode != nullptr; childNode = childNode->previousSibling() )
         {
-            const quint8 childNodeRole = qskRole( childNode );
+            const auto childNodeRole = qskRole( childNode );
             if ( childNodeRole == qskBackgroundRole )
             {
                 sibling = childNode;
@@ -475,7 +475,7 @@ QSGNode* QskSkinlet::updateTextNode(
             break;
 
         case QskTextOptions::VerticalFit:
-            font.setPixelSize( rect.height() * 0.5 );
+            font.setPixelSize( static_cast<int>( rect.height() * 0.5 ) );
             break;
 
         case QskTextOptions::Fit:

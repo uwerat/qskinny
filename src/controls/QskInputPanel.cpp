@@ -933,7 +933,7 @@ void QskInputPanel::updateKeyData()
             auto& row = keyLayout.data[i];
             auto& keyDataRow = keyDataLayout.data[ i ];
 
-            const auto baseKeyWidth = 1.0f / qskRowStretch( row );
+            const auto baseKeyWidth = 1.0 / qskRowStretch( row );
 
             qreal xPos = 0;
             qreal keyWidth = baseKeyWidth;

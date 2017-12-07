@@ -117,14 +117,16 @@ QSize QskGraphicImageProvider::effectiveSize(
 
     if ( requestedSize.height() < 0 )
     {
-        const double f = requestedSize.width() / defaultSize.width();
-        return QSize( requestedSize.width(), f * defaultSize.height() );
+        const auto f = requestedSize.width() / defaultSize.width();
+        return QSize( requestedSize.width(),
+            static_cast<int>( f * defaultSize.height() ) );
     }
 
     if ( requestedSize.width() < 0 )
     {
-        const double f = requestedSize.height() / defaultSize.height();
-        return QSize( f * defaultSize.width(), requestedSize.height() );
+        const auto f = requestedSize.height() / defaultSize.height();
+        return QSize( f * defaultSize.width(),
+            static_cast< int >( requestedSize.height() ) );
     }
 
     return defaultSize.toSize();
