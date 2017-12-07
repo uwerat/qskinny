@@ -14,9 +14,9 @@
 
 #include <map>
 
-static inline QShortcutMap& qskShortcutMap()
+static inline QShortcutMap* qskShortcutMap()
 {
-    return QGuiApplicationPrivate::instance()->shortcutMap;
+    return qGuiApp ? &QGuiApplicationPrivate::instance()->shortcutMap : nullptr;
 }
 
 class QskShortcutHandler final : public QObject
@@ -142,7 +142,7 @@ int QskShortcutHandler::insert(
 
     int id = 0;
 
-    auto& map = qskShortcutMap();
+    auto map = qskShortcutMap();
 
     if ( item )
     {
@@ -152,11 +152,11 @@ int QskShortcutHandler::insert(
             connect( item, &QObject::destroyed, this, &QskShortcutHandler::cleanUp );
         }
 
-        id = map.addShortcut( item, sequence, Qt::WindowShortcut, qskContextMatcher );
+        id = map->addShortcut( item, sequence, Qt::WindowShortcut, qskContextMatcher );
     }
     else
     {
-        id = map.addShortcut( this, sequence, Qt::ApplicationShortcut, qskContextMatcher );
+        id = map->addShortcut( this, sequence, Qt::ApplicationShortcut, qskContextMatcher );
     }
 
     auto& data = m_invokeDataMap[ id ];
@@ -178,8 +178,8 @@ void QskShortcutHandler::remove( int id )
     if ( it == m_invokeDataMap.end() )
         return;
 
-    auto& map = qskShortcutMap();
-    map.removeShortcut( id, nullptr );
+    auto map = qskShortcutMap();
+    map->removeShortcut( id, nullptr );
 
     const QQuickItem* item = it->second.item;
     const QObject* receiver = it->second.receiver;
@@ -215,7 +215,7 @@ void QskShortcutHandler::cleanUp( QObject* object )
         When item != receiver we might remain being connected
         to destroyed signals we are not interested in anymore. TODO ...
      */
-    auto& map = qskShortcutMap();
+    auto map = qskShortcutMap();
 
     for ( auto it = m_invokeDataMap.begin(); it != m_invokeDataMap.end(); )
     {
@@ -223,7 +223,9 @@ void QskShortcutHandler::cleanUp( QObject* object )
 
         if ( data.item == object || data.receiver == object )
         {
-            map.removeShortcut( it->first, nullptr );
+            if ( map )
+                map->removeShortcut( it->first, nullptr );
+
             it = m_invokeDataMap.erase( it );
 
             continue;
@@ -235,14 +237,14 @@ void QskShortcutHandler::cleanUp( QObject* object )
 
 void QskShortcutHandler::setEnabled( int id, bool enabled )
 {
-    auto& map = qskShortcutMap();
-    map.setShortcutEnabled( enabled, id, this );
+    auto map = qskShortcutMap();
+    map->setShortcutEnabled( enabled, id, this );
 }
 
 void QskShortcutHandler::setAutoRepeat( int id, bool repeat )
 {
-    auto& map = qskShortcutMap();
-    map.setShortcutAutoRepeat( repeat, id, this );
+    auto map = qskShortcutMap();
+    map->setShortcutAutoRepeat( repeat, id, this );
 }
 
 bool QskShortcutHandler::eventFilter( QObject* object, QEvent* event )
