@@ -39,6 +39,10 @@ Q_CONSTRUCTOR_FUNCTION( qskRegisterInterpolator )
 #endif
 #endif
 
+#if !defined( QSK_DECL_INSANE )
+#define QSK_DECL_INSANE
+#endif
+
 QSK_DECL_INSANE static inline QVariant qskInterpolate (
     void( *interpolator )(), const QVariant& from, const QVariant& to, qreal progress )
 {
