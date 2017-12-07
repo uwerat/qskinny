@@ -82,7 +82,8 @@ MainWindow::MainWindow()
 
     for ( auto icon : icons )
     {
-        m_tabView->addTab( icon.replace( ".qvg", "" ),
+        auto title = icon;
+        m_tabView->addTab( title.replace( ".qvg", "" ),
             new GraphicLabel( QskGraphicIO::read( resourceDir + "/" + icon ) ) );
     }
 
