@@ -65,11 +65,6 @@ linux-g++ | linux-g++-64 {
         }
     }
 
-    sanitize {
-        QMAKE_CXXFLAGS   *= -fsanitize=address -fno-omit-frame-pointer
-        QMAKE_LFLAGS *= -fsanitize=address
-    }
-
     # --- optional optimzations
 
     QMAKE_CXXFLAGS_DEBUG  *= -O0
@@ -80,6 +75,19 @@ linux-g++ | linux-g++-64 {
 
     # QMAKE_CXXFLAGS_RELEASE  *= -Ofast
     # QMAKE_CXXFLAGS_RELEASE  *= -Os
+}
+
+sanitize {
+
+    CONFIG += sanitizer 
+    CONFIG += sanitize_address 
+    #CONFIG *= sanitize_memory 
+    CONFIG *= sanitize_undefined
+
+    linux-g++ | linux-g++-64 {
+        #QMAKE_CXXFLAGS *= -fsanitize-address-use-after-scope
+        #QMAKE_LFLAGS *= -fsanitize-address-use-after-scope
+    }
 }
 
 debug {
