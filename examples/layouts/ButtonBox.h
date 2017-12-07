@@ -3,8 +3,8 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef _BUTTON_BOX_
-#define _BUTTON_BOX_ 1
+#ifndef BUTTON_BOX
+#define BUTTON_BOX 1
 
 #include <QskLinearBox.h>
 #include <functional>

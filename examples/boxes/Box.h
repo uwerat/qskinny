@@ -1,5 +1,5 @@
-#ifndef _BOX_H_
-#define _BOX_H_
+#ifndef BOX_H
+#define BOX_H
 
 #include "Palette.h"
 #include <QskBox.h>

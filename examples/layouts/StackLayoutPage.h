@@ -3,8 +3,8 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef _STACK_LAYOUT_PAGE_
-#define _STACK_LAYOUT_PAGE_ 1
+#ifndef STACK_LAYOUT_PAGE
+#define STACK_LAYOUT_PAGE 1
 
 #include <QskLinearBox.h>
 

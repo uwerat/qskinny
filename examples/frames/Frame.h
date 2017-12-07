@@ -3,8 +3,8 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef _FRAME_H
-#define _FRAME_H
+#ifndef FRAME_H
+#define FRAME_H
 
 #include "QskControl.h"
 

@@ -3,8 +3,8 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef _TEST_RECTANGLE_
-#define _TEST_RECTANGLE_ 1
+#ifndef TEST_RECTANGLE
+#define TEST_RECTANGLE 1
 
 #include <QskTextLabel.h>
 

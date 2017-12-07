@@ -3,8 +3,8 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef _WINDOW_H_
-#define _WINDOW_H_ 1
+#ifndef WINDOW_H
+#define WINDOW_H 1
 
 #include <QskWindow.h>
 #include <QskDialog.h>

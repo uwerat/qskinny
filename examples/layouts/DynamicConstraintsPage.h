@@ -3,8 +3,8 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef _DYNAMIC_CONSTRAINTS_PAGE_
-#define _DYNAMIC_CONSTRAINTS_PAGE_ 1
+#ifndef DYNAMIC_CONSTRAINTS_PAGE
+#define DYNAMIC_CONSTRAINTS_PAGE 1
 
 #include <QskLinearBox.h>
 

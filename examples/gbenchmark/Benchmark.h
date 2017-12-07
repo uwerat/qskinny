@@ -3,8 +3,8 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef _BENCHMARK_
-#define _BENCHMARK_ 1
+#ifndef BENCHMARK_
+#define BENCHMARK_ 1
 
 class QString;
 

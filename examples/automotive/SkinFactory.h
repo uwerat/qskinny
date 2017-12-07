@@ -1,5 +1,5 @@
-#ifndef _SKIN_FACTORY_H_
-#define _SKIN_FACTORY_H_
+#ifndef SKIN_FACTORY_H
+#define SKIN_FACTORY_H
 
 #include <QskSkinFactory.h>
 

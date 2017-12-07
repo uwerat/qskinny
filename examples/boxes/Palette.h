@@ -1,5 +1,5 @@
-#ifndef _PALETTE_H_
-#define _PALETTE_H_ 1
+#ifndef PALETTE_H
+#define PALETTE_H 1
 
 #include <QColor>
 #include <QVector>
