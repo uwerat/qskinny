@@ -336,7 +336,7 @@ const char* QskAspect::Aspect::toPrintable() const
 
 QskAspect::State QskAspect::Aspect::topState() const
 {
-    if ( m_states == NoState )
+    if ( m_bits.states == NoState )
         return NoState;
 
     /*
@@ -344,7 +344,7 @@ QskAspect::State QskAspect::Aspect::topState() const
         _BitScanReverse - we can live with this.
      */
 
-    const auto n = qCountLeadingZeroBits( static_cast< quint16 >( m_states ) );
+    const auto n = qCountLeadingZeroBits( static_cast< quint16 >( m_bits.states ) );
     return static_cast< QskAspect::State >( 1 << ( 15 - n ) );
 }
 

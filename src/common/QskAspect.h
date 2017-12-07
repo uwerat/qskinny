@@ -183,18 +183,19 @@ namespace QskAspect
         {
             struct
             {
-                uint m_subControl : 12;
+                uint subControl : 12;
 
-                uint m_type : 3;
-                bool m_isAnimator : 1;
+                uint type : 3;
+                bool isAnimator : 1;
 
-                uint m_primitive : 7;
-                uint m_placement : 1;
-                uint m_reserved1 : 8;
+                uint primitive : 7;
+                uint placement : 1;
+                uint reserved1 : 8;
 
-                uint m_states : 16;
-                uint m_reserved2 : 16;
-            };
+                uint states : 16;
+                uint reserved2 : 16;
+
+            } m_bits;
 
             quint64 m_value;
         };
@@ -227,14 +228,7 @@ namespace QskAspect
 
     inline constexpr Aspect::Aspect( uint subControl, uint type, bool isAnimator,
             uint primitive, uint placement, uint states ):
-        m_subControl( subControl ),
-        m_type( type ),
-        m_isAnimator( isAnimator ),
-        m_primitive( primitive ),
-        m_placement( placement ),
-        m_reserved1( 0 ),
-        m_states( states ),
-        m_reserved2( 0 )
+        m_bits { subControl, type, isAnimator, primitive, placement, 0, states, 0 }
     {
     }
 
@@ -255,20 +249,20 @@ namespace QskAspect
 
     inline constexpr Aspect Aspect::operator|( Subcontrol subControl ) const
     {
-        return Aspect( subControl, m_type, m_isAnimator,
-            m_primitive, m_placement, m_states );
+        return Aspect( subControl, m_bits.type, m_bits.isAnimator,
+            m_bits.primitive, m_bits.placement, m_bits.states );
     }
 
     inline constexpr Aspect Aspect::operator|( Type type ) const
     {
-        return Aspect( m_subControl, type, m_isAnimator,
-            m_primitive, m_placement,  m_states );
+        return Aspect( m_bits.subControl, type, m_bits.isAnimator,
+            m_bits.primitive, m_bits.placement,  m_bits.states );
     }
 
     inline constexpr Aspect Aspect::operator|( FlagPrimitive primitive ) const
     {
-        return Aspect( m_subControl, m_type, m_isAnimator,
-            primitive, m_placement, m_states );
+        return Aspect( m_bits.subControl, m_bits.type, m_bits.isAnimator,
+            primitive, m_bits.placement, m_bits.states );
     }
 
     inline constexpr Aspect Aspect::operator|( MetricPrimitive primitive ) const
@@ -283,14 +277,14 @@ namespace QskAspect
 
     inline constexpr Aspect Aspect::operator|( Placement placement ) const
     {
-        return Aspect( m_subControl, m_type, m_isAnimator,
-            m_primitive, placement, m_states );
+        return Aspect( m_bits.subControl, m_bits.type, m_bits.isAnimator,
+            m_bits.primitive, placement, m_bits.states );
     }
 
     inline constexpr Aspect Aspect::operator|( State state ) const
     {
-        return Aspect( m_subControl, m_type, m_isAnimator,
-            m_primitive, m_placement, m_states | state );
+        return Aspect( m_bits.subControl, m_bits.type, m_bits.isAnimator,
+            m_bits.primitive, m_bits.placement, m_bits.states | state );
     }
 
     inline constexpr quint64 Aspect::value() const
@@ -300,102 +294,102 @@ namespace QskAspect
 
     inline bool Aspect::isAnimator() const
     {
-        return m_isAnimator;
+        return m_bits.isAnimator;
     }
 
     inline void Aspect::setAnimator( bool on )
     {
-        m_isAnimator = on;
+        m_bits.isAnimator = on;
     }
 
     inline Subcontrol Aspect::subControl() const
     {
-        return static_cast< Subcontrol >( m_subControl );
+        return static_cast< Subcontrol >( m_bits.subControl );
     }
 
     inline void Aspect::setSubControl( Subcontrol subControl )
     {
-        m_subControl = subControl;
+        m_bits.subControl = subControl;
     }
 
     inline Type Aspect::type() const
     {
-        return static_cast< Type >( m_type );
+        return static_cast< Type >( m_bits.type );
     }
 
     inline void Aspect::setType( Type type )
     {
-        m_type = type;
+        m_bits.type = type;
     }
 
     inline State Aspect::state() const
     {
-        return static_cast< State >( m_states );
+        return static_cast< State >( m_bits.states );
     }
 
     inline void Aspect::addState( State state )
     {
-        m_states |= state;
+        m_bits.states |= state;
     }
 
     inline void Aspect::clearState( State state )
     {
-        m_states &= ~state;
+        m_bits.states &= ~state;
     }
 
     inline void Aspect::clearStates()
     {
-        m_states = 0;
+        m_bits.states = 0;
     }
 
     inline FlagPrimitive Aspect::flagPrimitive() const
     {
-        if ( m_type != Flag )
+        if ( m_bits.type != Flag )
             return NoFlagPrimitive;
 
-        return static_cast< FlagPrimitive >( m_primitive );
+        return static_cast< FlagPrimitive >( m_bits.primitive );
     }
 
     inline ColorPrimitive Aspect::colorPrimitive() const
     {
-        if ( m_type != Color )
+        if ( m_bits.type != Color )
             return NoColorPrimitive;
 
-        return static_cast< ColorPrimitive >( m_primitive );
+        return static_cast< ColorPrimitive >( m_bits.primitive );
     }
 
     inline MetricPrimitive Aspect::metricPrimitive() const
     {
-        if ( m_type != Metric )
+        if ( m_bits.type != Metric )
             return NoMetricPrimitive;
 
-        return static_cast< MetricPrimitive >( m_primitive );
+        return static_cast< MetricPrimitive >( m_bits.primitive );
     }
 
     inline int Aspect::primitive() const
     {
-        return m_primitive;
+        return m_bits.primitive;
     }
 
     inline void Aspect::setPrimitive( Type type, int primitive )
     {
-        m_type = type;
-        m_primitive = primitive;
+        m_bits.type = type;
+        m_bits.primitive = primitive;
     }
 
     inline void Aspect::clearPrimitive()
     {
-        m_primitive = 0;
+        m_bits.primitive = 0;
     }
 
     inline Placement Aspect::placement() const
     {
-        return static_cast< Placement >( m_placement );
+        return static_cast< Placement >( m_bits.placement );
     }
 
     inline void Aspect::setPlacement( Placement placement )
     {
-        m_placement = placement;
+        m_bits.placement = placement;
     }
 
     inline constexpr Aspect operator|( State state, const Aspect& aspect )
