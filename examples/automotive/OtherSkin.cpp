@@ -42,10 +42,10 @@ public:
 
 namespace {
 
-    static inline QFont qskFont( int pointSize )
+    static inline QFont qskFont( qreal pointSize )
     {
         QFont font( "Roboto" );
-        font.setPointSize( pointSize / qskDpiScaled( 1.0 ) );
+        font.setPointSizeF( pointSize / qskDpiScaled( 1.0 ) );
         return font;
     }
 
