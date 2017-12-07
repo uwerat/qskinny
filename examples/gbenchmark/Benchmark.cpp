@@ -122,7 +122,7 @@ bool Benchmark::run( const QString& dirName )
 
         for ( int i = 0; i < qvgFiles.size(); i++ )
         {
-            int textureId = QskGraphicTextureFactory::createTexture(
+            const auto textureId = QskGraphicTextureFactory::createTexture(
                 QskGraphicTextureFactory::OpenGL, targetRect, Qt::KeepAspectRatio,
                 graphics[i], colorFilter );
 
@@ -146,7 +146,7 @@ bool Benchmark::run( const QString& dirName )
 
         for ( int i = 0; i < qvgFiles.size(); i++ )
         {
-            int textureId = QskGraphicTextureFactory::createTexture(
+            const auto textureId = QskGraphicTextureFactory::createTexture(
                 QskGraphicTextureFactory::Raster, targetRect, Qt::KeepAspectRatio,
                 graphics[i], colorFilter );
 

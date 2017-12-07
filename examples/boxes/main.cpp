@@ -51,7 +51,7 @@ public:
     }
 };
 
-void addTestRectangle( QskLinearBox* parent )
+static void addTestRectangle( QskLinearBox* parent )
 {
     auto box = new Box( parent );
     box->setMargins( 50 );

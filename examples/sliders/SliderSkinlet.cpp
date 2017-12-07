@@ -20,12 +20,12 @@
 
 #if 1
 // should be skin hints
-const qreal qskMinorTick = 20;
-const qreal qskMajorTick = 1.5 * qskMinorTick;
-const qreal qskMargin = 20;
-const qreal qskPeak = 10;
+static const qreal qskMinorTick = 20;
+static const qreal qskMajorTick = 1.5 * qskMinorTick;
+static const qreal qskMargin = 20;
+static const qreal qskPeak = 10;
 
-QFont qskLabelFont;
+static QFont qskLabelFont;
 #endif
 
 class TicksNode : public QSGGeometryNode

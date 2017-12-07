@@ -48,7 +48,7 @@ static QColor randomColor()
         "DarkSlateGray"
     };
 
-    const int index = qrand() % ( sizeof( colors ) / sizeof( colors[0] ) );
+    const int index = qrand() % int( ( sizeof( colors ) / sizeof( colors[0] ) ) );
     return QColor( colors[ index ] );
 }
 
