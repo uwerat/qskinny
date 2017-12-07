@@ -561,9 +561,12 @@ void QskControl::updateControlFlags( Flags flags )
 
     if ( oldFlags != newFlags )
     {
-        for ( uint i = 0; i <= LastFlag; ++i )
+        const auto numBits = qCountTrailingZeroBits(
+            static_cast< quint32 >( LastFlag ) );
+
+        for ( quint32 i = 0; i <= numBits; ++i )
         {
-            const uint flag = ( 1 << i );
+            const quint32 flag = ( 1 << i );
             updateControlFlag( flag, flags & flag );
         }
 

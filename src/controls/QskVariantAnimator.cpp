@@ -33,9 +33,22 @@ static void qskRegisterInterpolator()
 Q_CONSTRUCTOR_FUNCTION( qskRegisterInterpolator )
 #endif
 
-static inline QVariant qskInterpolate( void( *interpolator )(),
-    const QVariant& from, const QVariant& to, qreal progress )
+#if defined(Q_CC_CLANG) 
+#if __has_feature(address_sanitizer)
+#define QSK_DECL_INSANE __attribute__ ( ( no_sanitize ("undefined") ) )
+#endif
+#endif
+
+QSK_DECL_INSANE static inline QVariant qskInterpolate (
+    void( *interpolator )(), const QVariant& from, const QVariant& to, qreal progress )
 {
+#if 1
+    /*
+        how to get rid of the reported runtime error from the clang sanitizer,
+        when calling F( const T&, ... ) as G( const void* ... ); TODO ...
+     */
+#endif
+
     auto f = reinterpret_cast< QVariantAnimation::Interpolator >( interpolator );
     return f( from.constData(), to.constData(), progress );
 }

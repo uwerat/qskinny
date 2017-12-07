@@ -179,19 +179,26 @@ namespace QskAspect
         constexpr Aspect( uint subControl, uint type, bool isAnimator,
             uint primitive, uint placement, uint states );
 
-        uint m_subControl : 12;
+        union
+        {
+            struct
+            {
+                uint m_subControl : 12;
 
-        uint m_type : 3;
-        bool m_isAnimator : 1;
+                uint m_type : 3;
+                bool m_isAnimator : 1;
 
-        uint m_primitive : 7;
-        uint m_placement : 1;
-        uint m_reserved1 : 8;
+                uint m_primitive : 7;
+                uint m_placement : 1;
+                uint m_reserved1 : 8;
 
-        uint m_states : 16;
-        uint m_reserved2 : 16;
+                uint m_states : 16;
+                uint m_reserved2 : 16;
+            };
 
-    } Q_PACKED;
+            quint64 m_value;
+        };
+    };
 
     inline constexpr Aspect::Aspect():
         Aspect( Control, Flag, Preserved )
@@ -233,17 +240,17 @@ namespace QskAspect
 
     inline bool Aspect::operator==( const Aspect& other ) const
     {
-        return value() == other.value();
+        return m_value == other.m_value;
     }
 
     inline bool Aspect::operator!=( const Aspect& other ) const
     {
-        return value() != other.value();
+        return m_value != other.m_value;
     }
 
     inline bool Aspect::operator<( const Aspect& other ) const
     {
-        return value() < other.value();
+        return m_value < other.m_value;
     }
 
     inline constexpr Aspect Aspect::operator|( Subcontrol subControl ) const
@@ -288,7 +295,7 @@ namespace QskAspect
 
     inline constexpr quint64 Aspect::value() const
     {
-        return *( const quint64* ) this;
+        return m_value;
     }
 
     inline bool Aspect::isAnimator() const
@@ -426,7 +433,7 @@ namespace QskAspect
         return Aspect( subControl ) | state;
     }
 
-   inline constexpr Aspect operator|( Type type, Placement placement )
+    inline constexpr Aspect operator|( Type type, Placement placement )
     {
         return Aspect( type ) | placement;
     }
