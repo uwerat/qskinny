@@ -52,11 +52,11 @@ public:
 
     void setHorizontalSpacing( qreal spacing );
     void resetHorizontalSpacing();
-    int horizontalSpacing() const;
+    qreal horizontalSpacing() const;
 
     void setVerticalSpacing( qreal spacing );
     void resetVerticalSpacing();
-    int verticalSpacing() const;
+    qreal verticalSpacing() const;
 
     Q_INVOKABLE void setRowSpacing( int row, qreal spacing );
     Q_INVOKABLE qreal rowSpacing( int row ) const;

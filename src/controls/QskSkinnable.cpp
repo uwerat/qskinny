@@ -776,7 +776,7 @@ void QskSkinnable::setSkinStateFlag( QskAspect::State state, bool on )
                         Starting an animator for all primitives,
                         that differ between the states
                      */
-                    for ( int primitive = 0; primitive <= LastPrimitive; primitive++ )
+                    for ( uint primitive = 0; primitive <= LastPrimitive; primitive++ )
                     {
                         aspect.setPrimitive( type, primitive );
 

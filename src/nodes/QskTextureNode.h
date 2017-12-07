@@ -22,8 +22,8 @@ public:
     void setRect(const QRectF& rect);
     QRectF rect() const;
 
-    void setTextureId( int id );
-    int textureId() const;
+    void setTextureId( uint id );
+    uint textureId() const;
 
     void setMirrored( Qt::Orientations );
     Qt::Orientations mirrored() const;

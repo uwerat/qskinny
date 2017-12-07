@@ -159,8 +159,8 @@ static void qskInformationGraphic( QPainter* painter )
     const double w = 40;
     const double h = 50;
 
-    const QRect dotRect( 0.3 * w, 0.15 * h, 0.4 * w, 0.2 * h );
-    const QRect barRect( 0.3 * w, 0.4 * h, 0.4 * w, 0.5 * h );
+    const QRectF dotRect( 0.3 * w, 0.15 * h, 0.4 * w, 0.2 * h );
+    const QRectF barRect( 0.3 * w, 0.4 * h, 0.4 * w, 0.5 * h );
 
     QPainterPath path;
 

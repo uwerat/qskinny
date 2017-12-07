@@ -44,7 +44,7 @@ static const int qskDuration = 150;
 static inline QColor qskShadedColor( const QColor color, qreal opacity )
 {
     QColor c = color;
-    c.setAlpha( 255 * opacity );
+    c.setAlphaF( opacity );
 
     return c;
 }

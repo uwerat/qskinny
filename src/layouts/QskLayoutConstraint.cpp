@@ -26,7 +26,7 @@ static inline qreal qskHintFor( const QQuickItem* item,
     return -1;
 }
 
-static inline qreal qskHasHintFor( const QQuickItem* item, const char* method )
+static inline bool qskHasHintFor( const QQuickItem* item, const char* method )
 {
     if ( item->metaObject()->indexOfMethod( method ) >= 0 )
     {

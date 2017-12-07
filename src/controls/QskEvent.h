@@ -72,7 +72,7 @@ public:
     virtual ~QskGestureEvent();
 
     inline const QskGesture* gesture() const { return m_gesture; }
-    inline bool isGestureOwnedByEvent() const { return m_gestureOwnedByEvent; };
+    inline bool isGestureOwnedByEvent() const { return m_gestureOwnedByEvent; }
 
 private:
     const QskGesture* m_gesture;
@@ -92,7 +92,7 @@ public:
     virtual ~QskAnimatorEvent();
 
     inline QskAspect::Aspect aspect() const { return m_aspect; }
-    inline State state() const { return m_state; };
+    inline State state() const { return m_state; }
 
 private:
     const QskAspect::Aspect m_aspect;

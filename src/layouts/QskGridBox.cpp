@@ -195,7 +195,7 @@ void QskGridBox::setHorizontalSpacing( qreal spacing )
     }
 }
 
-int QskGridBox::horizontalSpacing() const
+qreal QskGridBox::horizontalSpacing() const
 {
     return engine().spacing( Qt::Horizontal );
 }
@@ -219,7 +219,7 @@ void QskGridBox::setVerticalSpacing( qreal spacing )
     }
 }
 
-int QskGridBox::verticalSpacing() const
+qreal QskGridBox::verticalSpacing() const
 {
     return engine().spacing( Qt::Vertical );
 }

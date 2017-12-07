@@ -32,7 +32,7 @@ public:
     explicit QskLinearBox( QQuickItem* parent = nullptr );
     explicit QskLinearBox( Qt::Orientation, QQuickItem* parent = nullptr );
 
-    QskLinearBox( Qt::Orientation, int dimension, QQuickItem* parent = nullptr );
+    QskLinearBox( Qt::Orientation, uint dimension, QQuickItem* parent = nullptr );
 
     virtual ~QskLinearBox();
 

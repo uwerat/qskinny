@@ -18,7 +18,7 @@ static inline QRgb qskSubstitutedRgb(
 
     const QRgb rgb = rgba | QskRgbValue::AlphaMask;
 
-    for ( const auto s : substitions )
+    for ( const auto& s : substitions )
     {
         if ( rgb == s.first )
         {
@@ -92,7 +92,7 @@ static inline QskColorFilter qskInterpolatedFilter(
 
     QskColorFilter interpolated;
 
-    for ( const auto pairTo : to.substitutions() )
+    for ( const auto& pairTo : to.substitutions() )
     {
         QRgb rgb = pairTo.first;
 
@@ -117,11 +117,11 @@ static inline QskColorFilter qskInterpolatedFilter(
         of the substitution in from.
      */
 
-    for ( const auto pairFrom : from.substitutions() )
+    for ( const auto& pairFrom : from.substitutions() )
     {
         bool hasRgb = false;
 
-        for ( const auto pairTo : to.substitutions() )
+        for ( const auto& pairTo : to.substitutions() )
         {
             if ( pairTo.first == pairFrom.first )
             {

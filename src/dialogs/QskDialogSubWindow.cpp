@@ -112,7 +112,7 @@ void QskDialogSubWindow::updateLayout()
 
         QRectF rect;
         rect.setSize( sizeHint() );
-        rect.moveCenter( QPoint( 0.5 * parentItem()->width(), 0.5 * parentItem()->height() ) );
+        rect.moveCenter( QPointF( 0.5 * parentItem()->width(), 0.5 * parentItem()->height() ) );
 
         setGeometry( rect );
     }

@@ -11,8 +11,10 @@
 #include <QOpenGLFunctions>
 
 // VS2012+ disable keyword macroizing unless _ALLOW_KEYWORD_MACROS is set
+#ifdef _MSC_VER
 #if ( _MSC_VER >= 1700 ) && !defined( _ALLOW_KEYWORD_MACROS )
 #define _ALLOW_KEYWORD_MACROS
+#endif
 #endif
 
 #define private public

@@ -17,6 +17,8 @@ namespace QskObjectTree
     class Visitor
     {
     public:
+        virtual ~Visitor() = default;
+
         virtual bool visitDown( QObject* object ) = 0;
         virtual bool visitUp( const QObject* object ) = 0;
     };

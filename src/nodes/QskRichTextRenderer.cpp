@@ -57,9 +57,6 @@ namespace
             setWrapMode( static_cast< QQuickText::WrapMode >( options.wrapMode() ) );
         }
 
-        void refWindow( QQuickWindow* window );
-        void derefWindow();
-
         void begin() { classBegin(); }
         void end() { componentComplete(); }
 

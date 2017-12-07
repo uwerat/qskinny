@@ -12,7 +12,7 @@
 class QskLinearBox::PrivateData
 {
 public:
-    PrivateData( Qt::Orientation orient, int dim ):
+    PrivateData( Qt::Orientation orient, uint dim ):
         dimension( dim ),
         orientation( orient ),
         transposeAlignments( false )
@@ -37,7 +37,7 @@ QskLinearBox::QskLinearBox( Qt::Orientation orientation, QQuickItem* parent ):
 }
 
 QskLinearBox::QskLinearBox( Qt::Orientation orientation,
-        int dimension, QQuickItem* parent ):
+        uint dimension, QQuickItem* parent ):
     Inherited( parent ),
     m_data ( new PrivateData( orientation, dimension ) )
 {

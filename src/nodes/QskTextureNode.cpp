@@ -35,13 +35,13 @@ namespace
         virtual QSGMaterialType* type() const override;
         virtual QSGMaterialShader* createShader() const override;
 
-        void setTextureId(int );
-        int textureId() const;
+        void setTextureId( uint );
+        uint textureId() const;
 
         virtual int compare(const QSGMaterial* ) const override;
 
     private:
-        int m_textureId;
+        uint m_textureId;
         const bool m_isOpaque : 1;
     };
 
@@ -101,12 +101,12 @@ namespace
         setFlag(Blending, true ); // alpha blending
     }
 
-    void Material::setTextureId( int id )
+    void Material::setTextureId( uint id )
     {
         m_textureId = id;
     }
 
-    int Material::textureId() const
+    uint Material::textureId() const
     {
         return m_textureId;
     }
@@ -133,11 +133,15 @@ namespace
     int Material::compare( const QSGMaterial* other ) const
     {
         const auto otherMaterial = static_cast< const Material* >( other );
-        return m_textureId - otherMaterial->m_textureId;
+
+        if ( m_textureId == otherMaterial->m_textureId )
+            return 0;
+
+        return ( m_textureId > otherMaterial->m_textureId ) ? 1 : -1;
     }
 }
 
-class QskTextureNodePrivate : public QSGGeometryNodePrivate
+class QskTextureNodePrivate final : public QSGGeometryNodePrivate
 {
 public:
     QskTextureNodePrivate():
@@ -199,7 +203,7 @@ QRectF QskTextureNode::rect() const
     return d->rect;
 }
 
-void QskTextureNode::setTextureId( int textureId )
+void QskTextureNode::setTextureId( uint textureId )
 {
     Q_D( QskTextureNode );
 
@@ -227,7 +231,7 @@ void QskTextureNode::setTextureId( int textureId )
     markDirty( dirty );
 }
 
-int QskTextureNode::textureId() const
+uint QskTextureNode::textureId() const
 {
     Q_D( const QskTextureNode );
     return d->material.textureId();

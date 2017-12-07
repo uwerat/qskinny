@@ -16,11 +16,6 @@ namespace
     class StatusData
     {
     public:
-        StatusData():
-            isDirty( false )
-        {
-        }
-
         StatusData( const QskGraphic& graphic ):
             graphic( graphic ),
             isDirty( false )

@@ -50,7 +50,7 @@ static Qt::Edges qskSelectedEdges( const QRectF& rect, const QPointF& pos )
     return edges;
 }
 
-void qskDragWindow( const QPointF& off, Qt::Edges edges, QskSubWindow* window )
+static void qskDragWindow( const QPointF& off, Qt::Edges edges, QskSubWindow* window )
 {
     if ( edges == 0 )
     {

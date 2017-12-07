@@ -38,7 +38,7 @@ QRectF QskPlainTextRenderer::textRect( const QString& text,
     const QFont& font, const QskTextOptions& options, const QSizeF& size )
 {
     const QFontMetricsF fm( font );
-    const QRect r( 0, 0, size.width(), size.height() );
+    const QRectF r( 0, 0, size.width(), size.height() );
 
     return fm.boundingRect( r, options.textFlags(), text );
 }

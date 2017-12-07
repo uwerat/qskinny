@@ -15,7 +15,7 @@ class QSK_EXPORT QskPageIndicator : public QskControl
     Q_OBJECT
 
     Q_PROPERTY ( int count READ count WRITE setCount NOTIFY countChanged FINAL )
-    Q_PROPERTY ( int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentIndexChanged FINAL )
+    Q_PROPERTY ( qreal currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentIndexChanged FINAL )
     Q_PROPERTY ( Qt::Orientation orientation READ orientation WRITE setOrientation NOTIFY orientationChanged FINAL )
 
     using Inherited = QskControl;

@@ -102,7 +102,7 @@ namespace
 
 Q_GLOBAL_STATIC( QskWindowStore, qskReleasedWindowCounter )
 
-class QskControlPrivate : public QQuickItemPrivate
+class QskControlPrivate final : public QQuickItemPrivate
 {
     Q_DECLARE_PUBLIC(QskControl)
 
