@@ -157,7 +157,7 @@ void Image::updatePolish()
         }
 
         if ( m_data->sourceSizeAdjustment )
-            setSourceSize( QSize( width(), height() ) );
+            setSourceSize( QSize( int( width() ), int( height() ) ) );
     }
 
     m_data->dirtyPolish = false;
