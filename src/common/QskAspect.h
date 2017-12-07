@@ -168,8 +168,8 @@ namespace QskAspect
         ColorPrimitive colorPrimitive() const;
         MetricPrimitive metricPrimitive() const;
 
-        void setPrimitive( Type, int primitive );
-        int primitive() const;
+        void setPrimitive( Type, uint primitive );
+        uint primitive() const;
         void clearPrimitive();
 
         const char* toPrintable() const;
@@ -179,24 +179,24 @@ namespace QskAspect
         constexpr Aspect( uint subControl, uint type, bool isAnimator,
             uint primitive, uint placement, uint states );
 
+        struct Bits
+        {
+            uint subControl : 12;
+
+            uint type : 3;
+            bool isAnimator : 1;
+
+            uint primitive : 7;
+            uint placement : 1;
+            uint reserved1 : 8;
+
+            uint states : 16;
+            uint reserved2 : 16;
+        };
+
         union
         {
-            struct
-            {
-                uint subControl : 12;
-
-                uint type : 3;
-                bool isAnimator : 1;
-
-                uint primitive : 7;
-                uint placement : 1;
-                uint reserved1 : 8;
-
-                uint states : 16;
-                uint reserved2 : 16;
-
-            } m_bits;
-
+            Bits m_bits;
             quint64 m_value;
         };
     };
@@ -366,12 +366,12 @@ namespace QskAspect
         return static_cast< MetricPrimitive >( m_bits.primitive );
     }
 
-    inline int Aspect::primitive() const
+    inline uint Aspect::primitive() const
     {
         return m_bits.primitive;
     }
 
-    inline void Aspect::setPrimitive( Type type, int primitive )
+    inline void Aspect::setPrimitive( Type type, uint primitive )
     {
         m_bits.type = type;
         m_bits.primitive = primitive;

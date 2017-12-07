@@ -127,7 +127,7 @@ static QByteArray qskEnumString( const char* name, int value )
     return key ? QByteArray( key ) : QString::number( value ).toLatin1();
 }
 
-QByteArray qskStateKey( const QMetaObject* metaObject, quint16 state )
+static QByteArray qskStateKey( const QMetaObject* metaObject, quint16 state )
 {
     const auto& stateTable = qskAspectRegistry->stateTable;
 
