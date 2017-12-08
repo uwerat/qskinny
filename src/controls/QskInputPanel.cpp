@@ -178,6 +178,9 @@ static qreal qskRowStretch( const QskInputPanel::KeyRow& keyRow )
         stretch += qskKeyStretch( key );
     }
 
+    if ( stretch == 0.0 )
+        stretch = QskInputPanel::KeyCount;
+
     return stretch;
 }
 

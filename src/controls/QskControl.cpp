@@ -1107,8 +1107,11 @@ void QskControl::itemChange( QQuickItem::ItemChange change,
     {
         case QQuickItem::ItemParentHasChanged:
         {
-            if ( !d->explicitLocale )
-                qskResolveLocale( this );
+            if ( value.item )
+            {
+                if ( !d->explicitLocale )
+                    qskResolveLocale( this );
+            }
 
             // not necessarily correct, when parent != parentItem ???
             qskSendEventTo( this, QEvent::ParentChange );

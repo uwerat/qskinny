@@ -117,8 +117,11 @@ public:
 
     ~PrivateData()
     {
-        if ( skinlet && skinlet->isOwnedBySkinnable() )
-            delete skinlet;
+        if ( hasLocalSkinlet )
+        {
+            if ( skinlet && skinlet->isOwnedBySkinnable() )
+                delete skinlet;
+        }
     }
 
     QskSkinHintTable hintTable;
