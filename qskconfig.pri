@@ -3,7 +3,7 @@ CONFIG           += no_keywords
 CONFIG           += silent
 CONFIG           -= depend_includepath
 
-CONFIG           += debug
+#CONFIG           += debug
 CONFIG           += strict_c++
 CONFIG           += c++11
 CONFIG           += pedantic
@@ -39,9 +39,21 @@ linux {
 
 linux-g++ | linux-g++-64 {
 
-    pedantic {
+    # --- optional optimzations
 
-        # --- optional warnings
+    QMAKE_CXXFLAGS_DEBUG  *= -O0
+    #QMAKE_CXXFLAGS_DEBUG  *= -Og
+
+    QMAKE_CXXFLAGS_RELEASE  *= -O3 
+    QMAKE_CXXFLAGS_RELEASE  *= -ffast-math
+
+    # QMAKE_CXXFLAGS_RELEASE  *= -Ofast
+    # QMAKE_CXXFLAGS_RELEASE  *= -Os
+}
+
+pedantic {
+
+    linux-g++ | linux-g++-64 {
 
         QMAKE_CXXFLAGS *= -pedantic-errors
         QMAKE_CXXFLAGS *= -Wextra
@@ -65,16 +77,29 @@ linux-g++ | linux-g++-64 {
         }
     }
 
-    # --- optional optimzations
+    linux-clang {
 
-    QMAKE_CXXFLAGS_DEBUG  *= -O0
-    #QMAKE_CXXFLAGS_DEBUG  *= -Og
+        QMAKE_CXXFLAGS *= -pedantic-errors
 
-    QMAKE_CXXFLAGS_RELEASE  *= -O3 
-    QMAKE_CXXFLAGS_RELEASE  *= -ffast-math
-
-    # QMAKE_CXXFLAGS_RELEASE  *= -Ofast
-    # QMAKE_CXXFLAGS_RELEASE  *= -Os
+        QMAKE_CXXFLAGS *= -Weverything
+        QMAKE_CXXFLAGS *= -Wno-c++98-compat-pedantic
+        QMAKE_CXXFLAGS *= -Wno-global-constructors
+        QMAKE_CXXFLAGS *= -Wno-exit-time-destructors
+        QMAKE_CXXFLAGS *= -Wno-padded
+        QMAKE_CXXFLAGS *= -Wno-float-equal
+        QMAKE_CXXFLAGS *= -Wno-undefined-reinterpret-cast
+        QMAKE_CXXFLAGS *= -Wno-deprecated
+        QMAKE_CXXFLAGS *= -Wno-switch-enum
+        QMAKE_CXXFLAGS *= -Wno-keyword-macro
+        QMAKE_CXXFLAGS *= -Wno-old-style-cast
+        QMAKE_CXXFLAGS *= -Wno-used-but-marked-unused
+        QMAKE_CXXFLAGS *= -Wno-weak-vtables
+        QMAKE_CXXFLAGS *= -Wno-shadow
+        QMAKE_CXXFLAGS *= -Wno-double-promotion
+        QMAKE_CXXFLAGS *= -Wno-conversion
+        QMAKE_CXXFLAGS *= -Wno-documentation-unknown-command
+        QMAKE_CXXFLAGS *= -Wno-unused-macros
+    }
 }
 
 sanitize {
