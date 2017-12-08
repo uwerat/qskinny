@@ -79,26 +79,26 @@ pedantic {
 
     linux-clang {
 
-        QMAKE_CXXFLAGS *= -pedantic-errors
+        #QMAKE_CXXFLAGS *= -pedantic-errors
 
-        QMAKE_CXXFLAGS *= -Weverything
-        QMAKE_CXXFLAGS *= -Wno-c++98-compat-pedantic
-        QMAKE_CXXFLAGS *= -Wno-global-constructors
-        QMAKE_CXXFLAGS *= -Wno-exit-time-destructors
-        QMAKE_CXXFLAGS *= -Wno-padded
-        QMAKE_CXXFLAGS *= -Wno-float-equal
-        QMAKE_CXXFLAGS *= -Wno-undefined-reinterpret-cast
-        QMAKE_CXXFLAGS *= -Wno-deprecated
-        QMAKE_CXXFLAGS *= -Wno-switch-enum
-        QMAKE_CXXFLAGS *= -Wno-keyword-macro
-        QMAKE_CXXFLAGS *= -Wno-old-style-cast
-        QMAKE_CXXFLAGS *= -Wno-used-but-marked-unused
-        QMAKE_CXXFLAGS *= -Wno-weak-vtables
-        QMAKE_CXXFLAGS *= -Wno-shadow
-        QMAKE_CXXFLAGS *= -Wno-double-promotion
-        QMAKE_CXXFLAGS *= -Wno-conversion
-        QMAKE_CXXFLAGS *= -Wno-documentation-unknown-command
-        QMAKE_CXXFLAGS *= -Wno-unused-macros
+        #QMAKE_CXXFLAGS *= -Weverything
+        #QMAKE_CXXFLAGS *= -Wno-c++98-compat-pedantic
+        #QMAKE_CXXFLAGS *= -Wno-global-constructors
+        #QMAKE_CXXFLAGS *= -Wno-exit-time-destructors
+        #QMAKE_CXXFLAGS *= -Wno-padded
+        #QMAKE_CXXFLAGS *= -Wno-float-equal
+        #QMAKE_CXXFLAGS *= -Wno-undefined-reinterpret-cast
+        #QMAKE_CXXFLAGS *= -Wno-deprecated
+        #QMAKE_CXXFLAGS *= -Wno-switch-enum
+        #QMAKE_CXXFLAGS *= -Wno-keyword-macro
+        #QMAKE_CXXFLAGS *= -Wno-old-style-cast
+        #QMAKE_CXXFLAGS *= -Wno-used-but-marked-unused
+        #QMAKE_CXXFLAGS *= -Wno-weak-vtables
+        #QMAKE_CXXFLAGS *= -Wno-shadow
+        #QMAKE_CXXFLAGS *= -Wno-double-promotion
+        #QMAKE_CXXFLAGS *= -Wno-conversion
+        #QMAKE_CXXFLAGS *= -Wno-documentation-unknown-command
+        #QMAKE_CXXFLAGS *= -Wno-unused-macros
     }
 }
 
