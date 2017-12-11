@@ -16,6 +16,16 @@ RCC_DIR      = rcc
 
 QSK_CONFIG += QskDll
 
+*-g++* {
+
+    GCC_VERSION = $$system("$$QMAKE_CXX -dumpversion")
+    equals(GCC_VERSION,4) || contains(GCC_VERSION, 4.* ) {
+
+        # gcc4 is too old for certain checks
+        CONFIG -= pedantic sanitize
+    }
+}
+
 linux {
 
     pedantic {
@@ -64,17 +74,9 @@ pedantic {
         # QMAKE_CXXFLAGS *= -Wfloat-equal
         # QMAKE_CXXFLAGS *= -Wshadow
 
-        GCC_VERSION = $$system("$$QMAKE_CXX -dumpversion")
-
-        equals(GCC_VERSION,4) || contains(GCC_VERSION, 4.* ) {
-
-            # gcc 4.x is too old for certain warning options
-        }
-        else {
-            QMAKE_CXXFLAGS *= -Wsuggest-override
-            QMAKE_CXXFLAGS *= -Wsuggest-final-types
-            QMAKE_CXXFLAGS *= -Wsuggest-final-methods
-        }
+        QMAKE_CXXFLAGS *= -Wsuggest-override
+        # QMAKE_CXXFLAGS *= -Wsuggest-final-types
+        # QMAKE_CXXFLAGS *= -Wsuggest-final-methods
     }
 
     linux-clang {
