@@ -55,4 +55,10 @@ void qskAsConst( const T && ) = delete;
 
 #endif
 
+#ifdef Q_FALLTHROUGH
+#define QSK_FALLTHROUGH Q_FALLTHROUGH
+#else
+#define QSK_FALLTHROUGH
+#endif
+
 #endif

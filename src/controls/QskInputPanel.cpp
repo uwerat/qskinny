@@ -338,8 +338,6 @@ QString QskInputPanel::displayLanguageName() const
                 default:
                     return QStringLiteral( "English (UK)" );
             }
-
-            break;
         }
 
         case QLocale::Spanish:
@@ -907,12 +905,14 @@ void QskInputPanel::updateLocale( const QLocale& locale )
             m_data->currentLayout = &qskInputPanelLayouts.zh;
             break;
 
-        default:
-            qWarning() << "QskInputPanel: unsupported locale:" << locale;
-
         case QLocale::C:
             m_data->currentLayout = &qskInputPanelLayouts.en_US;
             break;
+
+        default:
+            qWarning() << "QskInputPanel: unsupported locale:" << locale;
+            m_data->currentLayout = &qskInputPanelLayouts.en_US;
+
     }
 
     Q_EMIT displayLanguageNameChanged();
