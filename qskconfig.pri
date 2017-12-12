@@ -3,12 +3,12 @@ CONFIG           += no_keywords
 CONFIG           += silent
 CONFIG           -= depend_includepath
 
-#CONFIG           += debug
 CONFIG           += strict_c++
 CONFIG           += c++11
 CONFIG           += pedantic
 
-debug: CONFIG           += sanitize
+# CONFIG           += debug
+# CONFIG           += sanitize
 
 MOC_DIR      = moc
 OBJECTS_DIR  = obj
