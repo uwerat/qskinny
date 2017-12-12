@@ -33,19 +33,19 @@ typedef quint16 controlFlags_t;
 
 void qskResolveLocale( QskControl* );
 
-static void qskSendEventTo( QObject* object, QEvent::Type type )
+static inline void qskSendEventTo( QObject* object, QEvent::Type type )
 {
     QEvent event( type );
     QCoreApplication::sendEvent( object, &event );
 }
 
-static controlFlags_t qskControlFlags()
+static inline controlFlags_t qskControlFlags()
 {
     // we are only interested in the first 8 bits
     return static_cast< controlFlags_t >( qskSetup->controlFlags() );
 }
 
-static void qskFilterWindow( QQuickWindow* window )
+static inline void qskFilterWindow( QQuickWindow* window )
 {
     if ( window == nullptr )
         return;
@@ -117,34 +117,29 @@ public:
         blockedPolish( false ),
         blockedImplicitSize( true ),
         clearPreviousNodes( false ),
+        blockImplicitSizeNotification( false ),
         isInitiallyPainted( false ),
         focusPolicy( Qt::NoFocus ),
         isWheelEnabled( false )
     {
-    }
-
-    inline void setupImplicitSizeConnections( bool on )
-    {
-        // in case of someone manipulating the implicit size from
-        // outside, we might need to adjust some layouts
-
-        Q_Q( QskControl );
-
-        if ( on )
+        if ( controlFlags & QskControl::DeferredLayout )
         {
-            QObject::connect( q, &QskControl::implicitWidthChanged,
-                q, &QskControl::onImplicitSizeChanged );
+            /*
+                In general the geometry of an item should be the job of
+                the parent - unfortunatly not done by Qt Quick
+                probably in the spirit of "making things easier".
 
-            QObject::connect( q, &QskControl::implicitHeightChanged,
-                q, &QskControl::onImplicitSizeChanged );
-        }
-        else
-        {
-            QObject::disconnect( q, &QskControl::implicitWidthChanged,
-                q, &QskControl::onImplicitSizeChanged );
+                To avoid potentially expensive calculations happening
+                too often and early QskControl blocks updates of
+                the implicitSize and any auto resizing of the control
+                according to it.
 
-            QObject::disconnect( q, &QskControl::implicitHeightChanged,
-                q, &QskControl::onImplicitSizeChanged );
+                There should be no strong reason for using concepts
+                like Positioners, that rely on implicit resizing,
+                but to make it working: the DeferredLayout flag needs to be disabled.
+             */
+
+            widthValid = heightValid = true;
         }
     }
 
@@ -154,16 +149,42 @@ public:
         qskSendEventTo( q, QEvent::LayoutDirectionChange );
     }
 
+    inline void implicitSizeChanged()
+    {
+        Q_Q( QskControl );
+        if ( !q->QskResizable::sizeHint( Qt::PreferredSize ).isValid() )
+        {
+            // when we have no PreferredSize we fall back
+            // to the implicit size
+
+            q->layoutConstraintChanged();
+        }
+    }
+
 #if 0
     // can we do something useful with overloading those ???
 
     virtual qreal getImplicitWidth() const override final;
     virtual qreal getImplicitHeight() const override final;
-    virtual void implicitWidthChanged();
-    virtual void implicitHeightChanged();
 
     virtual QSGTransformNode* createTransformNode();
 #endif
+
+    virtual void implicitWidthChanged() override final
+    {
+        QQuickItemPrivate::implicitWidthChanged();
+
+        if ( !blockImplicitSizeNotification )
+            implicitSizeChanged();
+    }
+
+    virtual void implicitHeightChanged() override final
+    {
+        QQuickItemPrivate::implicitWidthChanged();
+
+        if ( !blockImplicitSizeNotification )
+            implicitSizeChanged();
+    }
 
     bool maybeGesture( QQuickItem* child, QEvent* event )
     {
@@ -213,6 +234,8 @@ public:
     bool blockedImplicitSize : 1;
     bool clearPreviousNodes : 1;
 
+    bool blockImplicitSizeNotification : 1;
+
     bool isInitiallyPainted : 1;
 
     uint focusPolicy : 4;
@@ -220,33 +243,8 @@ public:
 };
 
 QskControl::QskControl( QQuickItem* parent ):
-    QskControl( *( new QskControlPrivate() ), parent )
+    Inherited( *( new QskControlPrivate() ), parent )
 {
-}
-
-QskControl::QskControl( QQuickItemPrivate& dd, QQuickItem* parent ):
-    Inherited( dd, parent )
-{
-    Q_D( QskControl );
-
-    if ( d->controlFlags & QskControl::DeferredLayout )
-    {
-        // In general the geometry of an item should be the job of
-        // the parent - unfortunatly not done by Qt Quick
-        // probably in the spirit of "making things easier".
-
-        // To avoid potentially expensive calculations happening
-        // too often and early QskControl blocks updates of
-        // the implicitSize and any auto resizing of the control
-        // according to it.
-
-        // There should be no strong reason for using concepts
-        // like Positioners, that rely on implicit resizing,
-        // but to make it working: the DeferredLayout flag needs to be disabled.
-
-        d->widthValid = d->heightValid = true;
-    }
-
     setFlag( QQuickItem::ItemHasContents, true );
     QQuickItem::setActiveFocusOnTab( false );
 
@@ -256,17 +254,21 @@ QskControl::QskControl( QQuickItemPrivate& dd, QQuickItem* parent ):
         qskResolveLocale( this );
     }
 
-    d->setupImplicitSizeConnections( true );
-
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
     connect( this, &QQuickItem::enabledChanged,
         [this] { setSkinStateFlag( Disabled, !isEnabled() ); } );
+#endif
 
-    // using a conventional connection as being automatically
-    // removed by the destructor
+#if 1
+    /*
+        Would be good to get rid of this connection as it slows down
+        the constructor by ~25% ( when ignoring the locale )
+     */
+    connect( qskSetup, &QskSetup::controlFlagsChanged,
+        this, [this] { updateControlFlags( static_cast< Flags >( qskControlFlags() ) ); } );
+#endif
 
-    connect( qskSetup, SIGNAL( controlFlagsChanged() ),
-        this, SLOT( updateControlFlags() ) );
-
+    Q_D( QskControl );
     if ( d->controlFlags & QskControl::DeferredUpdate )
         qskFilterWindow( window() );
 }
@@ -547,11 +549,6 @@ void QskControl::resetControlFlag( Flag flag )
 bool QskControl::testControlFlag( Flag flag ) const
 {
     return d_func()->controlFlags & flag;
-}
-
-void QskControl::updateControlFlags()
-{
-    updateControlFlags( static_cast< Flags >( qskControlFlags() ) );
 }
 
 void QskControl::updateControlFlags( Flags flags )
@@ -918,7 +915,7 @@ void QskControl::resetImplicitSize()
         updateImplicitSize();
 
         if ( sz != implicitSize() )
-            onImplicitSizeChanged();
+            d->implicitSizeChanged();
     }
 }
 
@@ -1177,6 +1174,13 @@ void QskControl::itemChange( QQuickItem::ItemChange change,
             setSkinStateFlag( Focused, hasActiveFocus() );
             break;
         }
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+        case QQuickItem::QQuickItem::ItemEnabledHasChanged:
+        {
+            setSkinStateFlag( Disabled, !value.boolValue );
+            break;
+        }
+#endif
         default:
         {
             break;
@@ -1308,17 +1312,6 @@ void QskControl::cleanupNodes()
     }
 }
 
-void QskControl::onImplicitSizeChanged()
-{
-    if ( !QskResizable::sizeHint( Qt::PreferredSize ).isValid() )
-    {
-        // when we have no PreferredSize we fall back
-        // the constraint depends on the implicit size
-
-        layoutConstraintChanged();
-    }
-}
-
 QskControl* QskControl::owningControl() const
 {
     return const_cast< QskControl* >( this );
@@ -1352,9 +1345,9 @@ void QskControl::updateImplicitSize()
     const qreal w = ( hint.width() >= 0 ) ? dw + hint.width() : 0.0;
     const qreal h = ( hint.height() >= 0 ) ? dh + hint.height() : 0.0;
 
-    d->setupImplicitSizeConnections( false );
+    d->blockImplicitSizeNotification = false;
     setImplicitSize( w, h );
-    d->setupImplicitSizeConnections( true );
+    d->blockImplicitSizeNotification = true;
 }
 
 QSizeF QskControl::contentsSizeHint() const

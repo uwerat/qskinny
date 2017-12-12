@@ -187,8 +187,6 @@ public Q_SLOTS:
     void resetImplicitSize();
 
 protected:
-    QskControl( QQuickItemPrivate&, QQuickItem* parent = nullptr );
-
     virtual bool event( QEvent* ) override;
     virtual void changeEvent( QEvent* );
     virtual void geometryChangeEvent( QskGeometryChangeEvent* );
@@ -211,10 +209,6 @@ protected:
     void cleanupNodes();
 
     virtual void updateLayout(); // called in updatePolish
-
-private Q_SLOTS:
-    void onImplicitSizeChanged();
-    void updateControlFlags();
 
 private:
     void setActiveFocusOnTab( bool ) = delete; // use setFocusPolicy instead
