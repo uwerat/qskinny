@@ -107,11 +107,11 @@ StackLayoutPage::StackLayoutPage( QQuickItem* parent ):
     auto* box = new Box();
 
     auto* buttonBox = new ButtonBox();
-    buttonBox->addButton( "<<", [ = ]() { box->incrementScrolling( Qt::Horizontal, +1 ); } );
-    buttonBox->addButton( ">>", [ = ]() { box->incrementScrolling( Qt::Horizontal, -1 ); } );
-    buttonBox->addButton( "^", [ = ]() { box->incrementScrolling( Qt::Vertical, -1 ); } );
-    buttonBox->addButton( "v", [ = ]() { box->incrementScrolling( Qt::Vertical, +1 ); } );
-    buttonBox->addButton( "Fading", [ = ]() { box->incrementFading( +1 ); } );
+    buttonBox->addButton( "<<", [ box ]() { box->incrementScrolling( Qt::Horizontal, +1 ); } );
+    buttonBox->addButton( ">>", [ box ]() { box->incrementScrolling( Qt::Horizontal, -1 ); } );
+    buttonBox->addButton( "^", [ box ]() { box->incrementScrolling( Qt::Vertical, -1 ); } );
+    buttonBox->addButton( "v", [ box ]() { box->incrementScrolling( Qt::Vertical, +1 ); } );
+    buttonBox->addButton( "Fading", [ box ]() { box->incrementFading( +1 ); } );
 
     auto pageIndicator = new QskPageIndicator();
     pageIndicator->setCount( box->itemCount() );

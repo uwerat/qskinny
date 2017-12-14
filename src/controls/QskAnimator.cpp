@@ -140,13 +140,13 @@ void QskAnimatorDriver::registerAnimator( QskAnimator* animator )
             m_windows += window;
 
             connect( window, &QQuickWindow::afterAnimating,
-                this, [ = ]() { advanceAnimators( window ); } );
+                this, [ this, window ]() { advanceAnimators( window ); } );
 
             connect( window, &QQuickWindow::frameSwapped,
-                this, [ = ]() { scheduleUpdate( window ); } );
+                this, [ this, window ]() { scheduleUpdate( window ); } );
 
             connect( window, &QObject::destroyed,
-                this, [ = ]( QObject* ) { removeWindow( window ); } );
+                this, [ this, window ]( QObject* ) { removeWindow( window ); } );
 
             window->update();
         }

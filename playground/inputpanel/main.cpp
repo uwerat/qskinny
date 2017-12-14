@@ -98,10 +98,10 @@ public:
         // 2) QskInputPanel does not work properly in the threaded environment
 #if 1
         connect( this, &QskListView::selectedRowChanged,
-            this, [ = ] { qskSetup->inputPanel()->setLocale( m_values[selectedRow()].second ); } );
+            this, [ this ] { qskSetup->inputPanel()->setLocale( m_values[selectedRow()].second ); } );
 #else
         connect( this, &QskListView::selectedRowChanged,
-            this, [ = ] { QLocale::setDefault( m_values[selectedRow()].second ); } );
+            this, [ this ] { QLocale::setDefault( m_values[selectedRow()].second ); } );
 #endif
     }
 

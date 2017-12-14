@@ -90,11 +90,11 @@ LinearLayoutPage::LinearLayoutPage( QQuickItem* parent ):
     Box* box = new Box();
 
     ButtonBox* buttonBox = new ButtonBox();
-    buttonBox->addButton( "Flip", [ = ]() { box->transpose(); } );
-    buttonBox->addButton( "Mirror", [ = ]() { box->mirror(); } );
-    buttonBox->addButton( "Rotate", [ = ]() { box->rotate(); } );
-    buttonBox->addButton( "Spacing+", [ = ]() { box->incrementSpacing( +1 ); }, true );
-    buttonBox->addButton( "Spacing-", [ = ]() { box->incrementSpacing( -1 ); }, true );
+    buttonBox->addButton( "Flip", [ box ]() { box->transpose(); } );
+    buttonBox->addButton( "Mirror", [ box ]() { box->mirror(); } );
+    buttonBox->addButton( "Rotate", [ box ]() { box->rotate(); } );
+    buttonBox->addButton( "Spacing+", [ box ]() { box->incrementSpacing( +1 ); }, true );
+    buttonBox->addButton( "Spacing-", [ box ]() { box->incrementSpacing( -1 ); }, true );
 
     addItem( buttonBox, Qt::AlignTop | Qt::AlignLeft );
     addItem( box );

@@ -125,9 +125,9 @@ void QskSubWindowArea::itemChange( QQuickItem::ItemChange change,
         case QQuickItem::ItemChildAddedChange:
         {
             // the child is not fully constructed
-            // and we have delay checking for sub windows
+            // and we have to delay checking for sub windows
             QTimer::singleShot( 0, this,
-                [ = ] { qskUpdateEventFilter( this ); } );
+                [ this ] { qskUpdateEventFilter( this ); } );
 
             break;
         }

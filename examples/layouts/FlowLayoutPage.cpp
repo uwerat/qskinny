@@ -91,11 +91,11 @@ FlowLayoutPage::FlowLayoutPage( QQuickItem* parent ):
     Box* box = new Box();
 
     ButtonBox* buttonBox = new ButtonBox();
-    buttonBox->addButton( "Flip", [ = ]() { box->transpose(); } );
-    buttonBox->addButton( "Mirror", [ = ]() { box->mirror(); } );
-    buttonBox->addButton( "Rotate", [ = ]() { box->rotate(); } );
-    buttonBox->addButton( "Dim+", [ = ]() { box->incrementDimension( +1 ); } );
-    buttonBox->addButton( "Dim-", [ = ]() { box->incrementDimension( -1 ); } );
+    buttonBox->addButton( "Flip", [ box ]() { box->transpose(); } );
+    buttonBox->addButton( "Mirror", [ box ]() { box->mirror(); } );
+    buttonBox->addButton( "Rotate", [ box ]() { box->rotate(); } );
+    buttonBox->addButton( "Dim+", [ box ]() { box->incrementDimension( +1 ); } );
+    buttonBox->addButton( "Dim-", [ box ]() { box->incrementDimension( -1 ); } );
 
     addItem( buttonBox, Qt::AlignTop | Qt::AlignLeft );
     addItem( box );

@@ -133,11 +133,11 @@ int QskTabBar::insertTab( int index, QskTabButton* button )
         button->setTextOptions( m_data->textOptions );
 
     auto onTabSelected =
-        [ = ] ( bool on )
+        [ this, button ] ( bool on )
         {
             if ( on )
             {
-                int pos = indexOf( button );
+                const int pos = indexOf( button );
                 if ( pos >= 0 && pos != m_data->currentIndex )
                 {
                     m_data->currentIndex = pos;

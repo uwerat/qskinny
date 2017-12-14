@@ -370,7 +370,7 @@ public:
             setAlignment( button, Qt::AlignCenter );
 
             connect( button, &QskPushButton::pressed,
-                this, [ = ]() { shift( button->offset() ); } );
+                this, [ this, button ]() { shift( button->offset() ); } );
         }
     }
 

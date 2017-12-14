@@ -143,7 +143,7 @@ public:
                     0.5 * ( slider->maximum() - slider->minimum() ) );
 #if 0
                 connect( slider, &QskSlider::valueChanged,
-                    [ = ]( qreal value ) { qDebug() << value; } );
+                    []( qreal value ) { qDebug() << value; } );
 #endif
                 setAlignment( slider, Qt::AlignCenter );
             }

@@ -61,7 +61,7 @@ void QskDirtyItemFilter::addWindow( QQuickWindow* window )
      */
 
     connect( window, &QQuickWindow::beforeSynchronizing,
-        window, [ = ] { beforeSynchronizing( window ); },
+        window, [ this, window ] { beforeSynchronizing( window ); },
         Qt::DirectConnection );
 
     connect( window, &QObject::destroyed, this, &QskDirtyItemFilter::cleanUp );
