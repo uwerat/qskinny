@@ -21,9 +21,6 @@
 #include <QElapsedTimer>
 #include <QMarginsF>
 
-#include <unordered_map>
-#include <set>
-
 #define DEBUG_MAP 0
 #define DEBUG_ANIMATOR 0
 #define DEBUG_STATE 0
@@ -129,7 +126,6 @@ public:
 
     const QskSkinlet* skinlet;
 
-    QMetaObject::Connection connection;
     QskAspect::State skinState;
     bool hasLocalSkinlet : 1;
 };
@@ -137,23 +133,10 @@ public:
 QskSkinnable::QskSkinnable():
     m_data( new PrivateData() )
 {
-    auto skinChangedHandler =
-        [ this ]( QskSkin* )
-        {
-            if ( !m_data->hasLocalSkinlet )
-                setSkinlet( nullptr );
-
-            QEvent event( QEvent::StyleChange );
-            QCoreApplication::sendEvent( owningControl(), &event );
-        };
-
-    m_data->connection = QObject::connect(
-        qskSetup, &QskSetup::skinChanged, skinChangedHandler );
 }
 
 QskSkinnable::~QskSkinnable()
 {
-    QObject::disconnect( m_data->connection );
 }
 
 void QskSkinnable::setSkinlet( const QskSkinlet* skinlet )

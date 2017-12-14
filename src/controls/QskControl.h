@@ -222,7 +222,6 @@ private:
     void updateImplicitSize();
 
     void updateControlFlag( uint flag, bool on );
-    void updateControlFlags( Flags );
 
 private:
     Q_DECLARE_PRIVATE( QskControl )

@@ -7,6 +7,7 @@
 #include "QskAspect.h"
 #include "QskSetup.h"
 #include "QskSkinlet.h"
+#include "QskSkin.h"
 #include "QskEvent.h"
 #include "QskDirtyItemFilter.h"
 #include "QskSkinHintTable.h"
@@ -23,6 +24,7 @@ QSK_QT_PRIVATE_BEGIN
 QSK_QT_PRIVATE_END
 
 #include <limits>
+#include <unordered_set>
 #include <unordered_map>
 
 QSK_STATE( QskControl, Disabled, QskAspect::FirstSystemState )
@@ -31,7 +33,8 @@ QSK_STATE( QskControl, Focused, QskAspect::LastSystemState )
 
 typedef quint16 controlFlags_t;
 
-void qskResolveLocale( QskControl* );
+void qskResolveLocale( QskControl* ); // not static as being used from outside !
+static void qskUpdateControlFlags( QskControl::Flags, QskControl* );
 
 static inline void qskSendEventTo( QObject* object, QEvent::Type type )
 {
@@ -98,9 +101,59 @@ namespace
         int m_refCount;
         QQuickWindow* m_window;
     };
+
+    class QskControlRegistry
+    {
+    public:
+        QskControlRegistry()
+        {
+            /*
+                Its faster and saves some memory to have this registry instead
+                of setting up direct connections between qskSetup and each control
+             */
+            QObject::connect( qskSetup, &QskSetup::controlFlagsChanged,
+                [this] { updateControlFlags(); } );
+
+            QObject::connect( qskSetup, &QskSetup::skinChanged,
+                [this] { updateSkin(); } );
+        }
+
+        inline void insert( QskControl* control )
+        {
+            m_controls.insert( control );
+        }
+
+        inline void remove( QskControl* control )
+        {
+            m_controls.erase( control );
+        }
+
+        void updateControlFlags()
+        {
+            const auto flags = static_cast< QskControl::Flags >( qskControlFlags() );
+
+            for ( auto control : m_controls )
+                qskUpdateControlFlags( flags, control );
+        }
+
+        void updateSkin()
+        {
+            QEvent event( QEvent::StyleChange );
+
+            for ( auto control : m_controls )
+            {
+                event.setAccepted( true );
+                QCoreApplication::sendEvent( control, &event );
+            }
+        }
+
+    private:
+        std::unordered_set< QskControl* > m_controls;
+    };
 }
 
 Q_GLOBAL_STATIC( QskWindowStore, qskReleasedWindowCounter )
+Q_GLOBAL_STATIC( QskControlRegistry, qskRegistry )
 
 class QskControlPrivate final : public QQuickItemPrivate
 {
@@ -219,6 +272,28 @@ public:
         return q->gestureFilter( child, event );
     }
 
+    void updateControlFlags( QskControl::Flags flags )
+    {
+        Q_Q( QskControl );
+
+        const auto oldFlags = controlFlags;
+        const auto newFlags = static_cast< controlFlags_t >( flags );
+
+        if ( oldFlags != newFlags )
+        {
+            const auto numBits = qCountTrailingZeroBits(
+                static_cast< quint32 >( QskControl::LastFlag ) );
+
+            for ( quint32 i = 0; i <= numBits; ++i )
+            {
+                const quint32 flag = ( 1 << i );
+                q->updateControlFlag( flag, flags & flag );
+            }
+
+            Q_EMIT q->controlFlagsChanged();
+        }
+    }
+
     QLocale locale;
 
     quint16 controlFlags;
@@ -254,27 +329,34 @@ QskControl::QskControl( QQuickItem* parent ):
         qskResolveLocale( this );
     }
 
+    // since Qt 5.10 we have QQuickItem::ItemEnabledHasChanged
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+    /*
+        Setting up this connections slows down the time needed
+        for construction by almost 100%. Would be nice to
+        avoid this penalty also for earlier Qt versions.
+     */
     connect( this, &QQuickItem::enabledChanged,
         [this] { setSkinStateFlag( Disabled, !isEnabled() ); } );
-#endif
-
-#if 1
-    /*
-        Would be good to get rid of this connection as it slows down
-        the constructor by ~25% ( when ignoring the locale )
-     */
-    connect( qskSetup, &QskSetup::controlFlagsChanged,
-        this, [this] { updateControlFlags( static_cast< Flags >( qskControlFlags() ) ); } );
 #endif
 
     Q_D( QskControl );
     if ( d->controlFlags & QskControl::DeferredUpdate )
         qskFilterWindow( window() );
+
+    qskRegistry->insert( this );
+}
+
+static void qskUpdateControlFlags( QskControl::Flags flags, QskControl* control )
+{
+    auto d = static_cast< QskControlPrivate* >( QQuickItemPrivate::get( control ) );
+    d->updateControlFlags( flags );
 }
 
 QskControl::~QskControl()
 {
+    if ( qskRegistry )
+        qskRegistry->remove( this );
 }
 
 const char* QskControl::className() const
@@ -506,16 +588,20 @@ QskControl::Flags QskControl::controlFlags() const
 
 void QskControl::setControlFlags( Flags flags )
 {
+    Q_D( QskControl );
+
     // set all bits in the mask
-    d_func()->controlFlagsMask = std::numeric_limits< controlFlags_t >::max();
-    updateControlFlags( flags );
+    d->controlFlagsMask = std::numeric_limits< controlFlags_t >::max();
+    d->updateControlFlags( flags );
 }
 
 void QskControl::resetControlFlags()
 {
+    Q_D( QskControl );
+
     // clear all bits in the mask
-    d_func()->controlFlagsMask = 0;
-    updateControlFlags( static_cast< Flags >( qskControlFlags() ) );
+    d->controlFlagsMask = 0;
+    d->updateControlFlags( static_cast< Flags >( qskControlFlags() ) );
 }
 
 void QskControl::setControlFlag( Flag flag, bool on )
@@ -549,26 +635,6 @@ void QskControl::resetControlFlag( Flag flag )
 bool QskControl::testControlFlag( Flag flag ) const
 {
     return d_func()->controlFlags & flag;
-}
-
-void QskControl::updateControlFlags( Flags flags )
-{
-    const auto oldFlags = d_func()->controlFlags;
-    const auto newFlags = static_cast< controlFlags_t >( flags );
-
-    if ( oldFlags != newFlags )
-    {
-        const auto numBits = qCountTrailingZeroBits(
-            static_cast< quint32 >( LastFlag ) );
-
-        for ( quint32 i = 0; i <= numBits; ++i )
-        {
-            const quint32 flag = ( 1 << i );
-            updateControlFlag( flag, flags & flag );
-        }
-
-        Q_EMIT controlFlagsChanged();
-    }
 }
 
 void QskControl::updateControlFlag( uint flag, bool on )
@@ -954,13 +1020,40 @@ bool QskControl::event( QEvent* event )
 
     switch( eventType )
     {
+        case QEvent::StyleChange:
+        {
+            // The skin has changed
+
+            if ( skinlet() == nullptr )
+            {
+                /*
+                    When we don't have a local skinlet, the skinlet
+                    from the previous skin might be cached. 
+                 */
+                
+                setSkinlet( nullptr );
+            }
+
+            /*
+                We might have a totally different skinlet,
+                that can't deal with nodes created from other skinlets
+            */
+            d_func()->clearPreviousNodes = true;
+
+            resetImplicitSize();
+            polish();
+            update();
+
+            changeEvent( event );
+            return true;
+        }
+
         case QEvent::EnabledChange:
         case QEvent::FontChange:
         case QEvent::PaletteChange:
         case QEvent::LocaleChange:
         case QEvent::ReadOnlyChange:
         case QEvent::ParentChange:
-        case QEvent::StyleChange:
         case QEvent::ContentsRectChange:
         {
             changeEvent( event );
@@ -1175,7 +1268,7 @@ void QskControl::itemChange( QQuickItem::ItemChange change,
             break;
         }
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
-        case QQuickItem::QQuickItem::ItemEnabledHasChanged:
+        case QQuickItem::ItemEnabledHasChanged:
         {
             setSkinStateFlag( Disabled, !value.boolValue );
             break;
