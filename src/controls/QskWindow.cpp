@@ -11,6 +11,7 @@
 
 #include <QtMath>
 #include <QOpenGLFramebufferObject>
+#include <QPointer>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>
@@ -128,7 +129,7 @@ QskWindow::~QskWindow()
     // unefficient way, leading to lots of QQuickItem::ItemChildRemovedChange
     // depending operations. So let's remove the toplevel children manually.
 
-    QList< QQuickItem* > items;
+    QVector< QPointer< QQuickItem > > items;
 
     const auto children = contentItem()->childItems();
     for ( auto child : children )
