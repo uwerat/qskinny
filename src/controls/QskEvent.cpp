@@ -44,7 +44,7 @@ bool QskGeometryChangeEvent::isMoved() const
         ( m_rect.y() != m_oldRect.y() );
 }
 
-// -- QskGeometryChangeEvent
+// -- QskWindowChangeEvent
 
 QskWindowChangeEvent::QskWindowChangeEvent(
         QQuickWindow* oldWindow, QQuickWindow* window ):

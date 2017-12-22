@@ -54,8 +54,17 @@ public:
     };
 
     //! Attributes of a state change
-    struct StateData
+    class StateData
     {
+    public:
+        StateData():
+            backgroundMode( Qt::TransparentMode ),
+            clipOperation( Qt::NoClip ),
+            isClipEnabled( false ),
+            compositionMode( QPainter::CompositionMode_SourceOver )
+        {
+        }
+
         QPaintEngine::DirtyFlags flags;
 
         QPen pen;

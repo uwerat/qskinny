@@ -99,6 +99,9 @@ void QskVariantAnimator::advance( qreal progress )
 {
     if ( m_interpolator )
     {
+        if ( qFuzzyCompare( progress, 1.0 ) )
+            progress = 1.0;
+
         m_currentValue = qskInterpolate( m_interpolator,
             m_startValue, m_endValue, progress );
     }

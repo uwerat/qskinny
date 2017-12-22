@@ -37,7 +37,6 @@ public:
         WordWrap = QTextOption::WordWrap,
         WrapAnywhere = QTextOption::WrapAnywhere,
         Wrap = QTextOption::WrapAtWordBoundaryOrAnywhere
-
     };
     Q_ENUM( WrapMode )
 

@@ -278,6 +278,9 @@ void QskRangeControl::keyPressEvent( QKeyEvent* event )
 
 void QskRangeControl::wheelEvent( QWheelEvent* event )
 {
+    if( isReadOnly() )
+        return;
+
     const int steps = event->delta() / 120;
     setValue( m_data->value + steps * m_data->stepSize );
 }
