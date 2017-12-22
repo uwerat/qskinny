@@ -1,5 +1,5 @@
-#ifndef BUTTON_BAR
-#define BUTTON_BAR
+#ifndef BUTTON_BAR_H
+#define BUTTON_BAR_H
 
 #include <QskLinearBox.h>
 
