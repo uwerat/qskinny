@@ -1438,9 +1438,9 @@ void QskControl::updateImplicitSize()
     const qreal w = ( hint.width() >= 0 ) ? dw + hint.width() : 0.0;
     const qreal h = ( hint.height() >= 0 ) ? dh + hint.height() : 0.0;
 
-    d->blockImplicitSizeNotification = false;
-    setImplicitSize( w, h );
     d->blockImplicitSizeNotification = true;
+    setImplicitSize( w, h );
+    d->blockImplicitSizeNotification = false;
 }
 
 QSizeF QskControl::contentsSizeHint() const
