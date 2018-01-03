@@ -30,7 +30,6 @@ public:
         Qt::Alignment, Qsk::TextStyle );
 
 private:
-    QRectF m_rect;
     uint m_hash;
 };
 

@@ -44,30 +44,27 @@ void QskTextNode::setTextData( const QQuickItem* item,
     const QskTextOptions& options, const QskTextColors& colors,
     Qt::Alignment alignment, Qsk::TextStyle textStyle )
 {
-    if ( m_rect != rect )
-    {
-        QMatrix4x4 matrix;
-        matrix.translate( rect.left(), rect.top() );
+    QMatrix4x4 matrix;
+    matrix.translate( rect.left(), rect.top() );
 
-        if ( matrix != this->matrix() ) // avoid setting DirtyMatrix accidently
-            setMatrix( matrix );
-    }
+    if ( matrix != this->matrix() ) // avoid setting DirtyMatrix accidently
+        setMatrix( matrix );
 
     const uint hash = qskHash( text, rect.size(), font,
         options, colors, alignment, textStyle );
 
-    if ( hash == m_hash )
-        return;
+    if ( hash != m_hash )
+    {
+        m_hash = hash;
 
-    m_hash = hash;
+        const QRectF textRect( 0, 0, rect.width(), rect.height() );
 
-    const QRectF textRect( 0, 0, rect.width(), rect.height() );
-
-    /*
-        In case of having color changes only we would could
-        go a faster update path: see QskPlainTextRenderer::updateNodeColor.
-        TODO ...
-     */
-    QskTextRenderer::updateNode( text, font, options, textStyle,
-        colors, alignment, textRect, item, this );
+        /*
+            In case of having color changes only we would could
+            go a faster update path: see QskPlainTextRenderer::updateNodeColor.
+            TODO ...
+         */
+        QskTextRenderer::updateNode( text, font, options, textStyle,
+            colors, alignment, textRect, item, this );
+    }
 }
