@@ -42,7 +42,14 @@ void QskGraphicNode::setGraphic(
     const QskGraphic& graphic, const QskColorFilter& colorFilter,
     QskGraphicTextureFactory::RenderMode renderMode, const QRect& rect )
 {
-    bool isDirty = rect != QskTextureNode::rect();
+    bool isTextureDirty = ( QskTextureNode::textureId() == 0 );
+
+    if ( !isTextureDirty )
+    {
+        const auto oldRect = QskTextureNode::rect();
+        isTextureDirty = ( rect.width() != static_cast<int>( oldRect.width() ) )
+            || ( rect.height() != static_cast<int>( oldRect.height() ) );
+    }
 
     QskTextureNode::setRect( rect );
 
@@ -50,10 +57,10 @@ void QskGraphicNode::setGraphic(
     if ( hash != m_hash )
     {
         m_hash = hash;
-        isDirty = true;
+        isTextureDirty = true;
     }
 
-    if ( isDirty )
+    if ( isTextureDirty )
     {
         const QRect textureRect( 0, 0, rect.width(), rect.height() );
 
