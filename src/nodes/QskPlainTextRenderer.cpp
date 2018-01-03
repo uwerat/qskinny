@@ -43,14 +43,15 @@ QRectF QskPlainTextRenderer::textRect( const QString& text,
     return fm.boundingRect( r, options.textFlags(), text );
 }
 
-static qreal qskLayoutText( QTextLayout* layout, const QPointF& position, qreal lineWidth,
-    const QskTextOptions& options )
+static qreal qskLayoutText( QTextLayout* layout, qreal lineWidth, const QskTextOptions& options )
 {
-    const auto maxLineCount = options.wrapMode() == QskTextOptions::NoWrap
+    const auto maxLineCount =( options.wrapMode() == QskTextOptions::NoWrap )
         ? 1 : options.maximumLineCount();
+
     int lineNumber = 0;
     int characterPosition = 0;
     qreal y = 0;
+
     Q_FOREVER
     {
         if ( ++lineNumber > maxLineCount )
@@ -84,7 +85,7 @@ static qreal qskLayoutText( QTextLayout* layout, const QPointF& position, qreal 
         if ( !line.isValid() )
             break;
 
-        line.setPosition( position + QPointF( 0, y ) );
+        line.setPosition( QPointF( 0, y ) );
         line.setLineWidth( lineWidth );
         characterPosition = line.textStart() + line.textLength();
         y += line.leading() + line.height();
@@ -167,7 +168,7 @@ void QskPlainTextRenderer::updateNode( const QString& text,
 
     layout.beginLayout();
     QPointF position;
-    position.ry() += qskLayoutText( &layout, position, rect.width(), options );
+    position.ry() += qskLayoutText( &layout, rect.width(), options );
     layout.endLayout();
 
     position.setX( 0 );
