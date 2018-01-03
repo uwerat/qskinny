@@ -10,6 +10,7 @@ TARGET   = qsktestsupport
 DESTDIR  = $${QSK_OUT_ROOT}/lib
 
 QT += quick 
+CONFIG += ensure_skins
 
 contains(QSK_CONFIG, QskDll) {
 
@@ -24,11 +25,6 @@ QSK_DIRS = \
     $${QSK_ROOT}/src/common \
     $${QSK_ROOT}/src/controls \
     $${QSK_ROOT}/src/graphic 
-
-QSK_DIRS += $${QSK_ROOT}/skins
-
-DEFINES += PLUGIN_PATH=$$clean_path( $$QSK_PLUGIN_DIR )
-QSK_DIRS += $${QSK_ROOT}/skins
 
 INCLUDEPATH *= $${QSK_DIRS}
 DEPENDPATH  *= $${QSK_DIRS}
@@ -50,6 +46,19 @@ SOURCES += \
 RESOURCES += \
     fonts.qrc 
 
-QMAKE_RPATHDIR *= $${QSK_PLUGIN_DIR}/skins
-LIBS *= -L$${QSK_PLUGIN_DIR}/skins -lsquiekskin -lmaterialskin
+DEFINES += PLUGIN_PATH=$$clean_path( $$QSK_PLUGIN_DIR )
+
+ensure_skins {
+
+    # Enabling fall back code, that inserts some skin factories manually
+    # when not finding skin factories as plugins
+
+    INCLUDEPATH *= $${QSK_ROOT}/skins
+    DEPENDPATH *= $${QSK_ROOT}/skins
+
+    DEFINES += ENSURE_SKINS
+
+    QMAKE_RPATHDIR *= $${QSK_PLUGIN_DIR}/skins
+    LIBS *= -L$${QSK_PLUGIN_DIR}/skins -lsquiekskin -lmaterialskin
+}
 
