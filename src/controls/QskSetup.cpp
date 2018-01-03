@@ -5,7 +5,7 @@
 
 #include "QskSetup.h"
 #include "QskSkin.h"
-#include "QskSkinFactory.h"
+#include "QskSkinManager.h"
 #include "QskGraphicProviderMap.h"
 #include "QskControl.h"
 #include "QskInputPanel.h"
@@ -203,7 +203,7 @@ QskSkin* QskSetup::setSkin( const QString& skinName )
     if ( m_data->skin && ( skinName == m_data->skinName ) )
         return m_data->skin;
 
-    QskSkin* skin = Qsk::createSkin( skinName );
+    QskSkin* skin = QskSkinManager::instance()->createSkin( skinName );
     if ( skin == nullptr )
         return nullptr;
 
@@ -231,33 +231,13 @@ QString QskSetup::skinName() const
     return m_data->skinName;
 }
 
-void QskSetup::setSkin( QskSkin* skin, const QString& skinName )
-{
-    if ( skin == m_data->skin )
-        return;
-
-    if ( skin && skin->parent() == nullptr )
-        skin->setParent( this );
-
-    const QskSkin* oldSkin = m_data->skin;
-
-    m_data->skin = skin;
-    m_data->skinName = skinName;
-
-    if ( oldSkin )
-    {
-        Q_EMIT skinChanged( skin );
-
-        if ( oldSkin->parent() == this )
-            delete oldSkin;
-    }
-}
-
 QskSkin* QskSetup::skin()
 {
     if ( m_data->skin == nullptr )
     {
-        m_data->skin = Qsk::createSkin( nullptr );
+        m_data->skin = QskSkinManager::instance()->createSkin( QString::null );
+        Q_ASSERT( m_data->skin );
+
         m_data->skin->setParent( this );
         m_data->skinName = m_data->skin->objectName();
     }

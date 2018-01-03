@@ -36,7 +36,7 @@
 #if 1
 // should be defined in the public header, so that
 // application code can avoid conflicts
-static const int ButtonFontRole = QskSkin::HugeFont + 77; 
+static const int ButtonFontRole = QskSkin::HugeFont + 77;
 #endif
 
 static const int qskDuration = 150;
@@ -173,7 +173,7 @@ void QskMaterialSkin::initPopupHints()
 
     const QskGradient gradient( QskGradient::Vertical,
         qskShadedColor( pal.accentColor, 0.45 ), qskShadedColor( pal.accentColor, 0.7 ) );
-        
+
     setGradient( Q::Overlay, gradient );
 }
 
@@ -392,7 +392,7 @@ void QskMaterialSkin::initSliderHints()
     setBoxShape( Q::Panel, 0 );
     setBoxBorderMetrics( Q::Panel, 0 );
     setGradient( Q::Panel, QskGradient() );
-    
+
     setMargins( Q::Panel | Preserved | Padding, QskMargins( 0.5 * dim, 0 ) );
     setMargins( Q::Panel | Transposed | Padding, QskMargins( 0, 0.5 * dim ) );
 
@@ -417,7 +417,7 @@ void QskMaterialSkin::initSliderHints()
 
     setBoxShape( Q::Handle, 100, Qt::RelativeSize );
     setBoxBorderMetrics( Q::Handle, 4 );
-    
+
     // handle expanding, when being pressed
     setMetric( Q::Handle | Size, 0.6 * dim );
     setMetric( Q::Handle | Size | Q::Pressed, dim );
@@ -567,13 +567,13 @@ void QskMaterialSkin::initScrollViewHints()
     setBoxBorderMetrics( Q::Viewport, 1 );
     setGradient( Q::Viewport, QskRgbValue::White );
     setBoxBorderColors( Q::Viewport, Qt::black );
-    
+
     for ( auto subControl : { Q::HorizontalScrollBar, Q::VerticalScrollBar } )
     {
         setMetric( subControl | Size, 12 );
         setMargins( subControl | Padding, 0 );
-    }   
-    
+    }
+
     setMetric( Q::HorizontalScrollHandle | MinimumWidth, qskDpiScaled( 40.0 ) );
     setMetric( Q::VerticalScrollHandle | MinimumHeight, qskDpiScaled( 40.0 ) );
 
@@ -585,7 +585,7 @@ void QskMaterialSkin::initScrollViewHints()
         setBoxBorderColors( subControl, QskRgbValue::White );
 
         setAnimation( subControl | Color, qskDuration );
-    }   
+    }
 
     for ( auto subControl : {
         Q::HorizontalScrollHandle | Q::HorizontalHandlePressed,

@@ -326,7 +326,7 @@ void QskSquiekSkin::initPageIndicatorHints()
 
         setGradient( subControl,
             ( subControl == Q::Bullet ) ? pal.darker150 : pal.lighter150 );
-            
+
     }
 
     // no visible background panel
@@ -432,13 +432,13 @@ void QskSquiekSkin::initTabButtonHints()
 
     const QskMargins padding( 10, 4 );
 
-    for ( auto placement : { Preserved, Transposed } ) 
+    for ( auto placement : { Preserved, Transposed } )
     {
         const Aspect aspect = Q::Panel | placement;
 
         if ( placement == Preserved )
         {
-            setMargins( aspect | Margin , QskMargins( -1, 2, -1, -2 ) );
+            setMargins( aspect | Margin, QskMargins( -1, 2, -1, -2 ) );
 
             for ( const auto state : { Q::Checked, Q::Checked | Q::Pressed } )
                 setMargins( aspect | Margin | state, QskMargins( -1, 0, -1, -3 ) );
@@ -448,7 +448,7 @@ void QskSquiekSkin::initTabButtonHints()
         }
         else
         {
-            setMargins( aspect | Margin , QskMargins( 2, -1, -2, -1 ) );
+            setMargins( aspect | Margin, QskMargins( 2, -1, -2, -1 ) );
 
             for ( const auto state : { Q::Checked, Q::Checked | Q::Pressed } )
                 setMargins( aspect | Margin | state, QskMargins( 0, -1, -3, 0 ) );
@@ -484,7 +484,7 @@ void QskSquiekSkin::initSliderHints()
     {
         const auto aspect = Q::Panel | placement;
 
-        setMetric( aspect | Size, dim ); 
+        setMetric( aspect | Size, dim );
         setBoxBorderMetrics( aspect, 0 );
         setBoxShape( aspect, 0 );
         setGradient( aspect, QskGradient() );
@@ -564,12 +564,12 @@ void QskSquiekSkin::initInputPanelHints()
     setButton( Q::KeyPanel, Raised );
     setButton( Q::KeyPanel | Q::Pressed, Sunken );
 
-    setAnimation( Q::KeyPanel | Color, qskDuration ); 
+    setAnimation( Q::KeyPanel | Color, qskDuration );
 #if 0
     // crashes because animations are started from updateNode
     // TODO ...
 
-    setAnimation( Q::KeyPanel | Metric, qskDuration ); 
+    setAnimation( Q::KeyPanel | Metric, qskDuration );
 #endif
 
     // glyph

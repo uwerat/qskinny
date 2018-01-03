@@ -3,9 +3,9 @@ include( $${QSK_ROOT}/qskconfig.pri )
 
 QSK_OUT_ROOT = $${OUT_PWD}/../..
 
-QT += quick
+CONFIG         += plugin
 
-TEMPLATE     = app
+TEMPLATE     = lib
 
 QSK_DIRS = \
     $${QSK_ROOT}/src/common \
@@ -13,16 +13,15 @@ QSK_DIRS = \
     $${QSK_ROOT}/src/graphic \
     $${QSK_ROOT}/src/controls \
     $${QSK_ROOT}/src/layouts \
-    $${QSK_ROOT}/src/dialogs \
-    $${QSK_ROOT}/support
+    $${QSK_ROOT}/src/dialogs
 
 INCLUDEPATH *= $${QSK_DIRS}
-DEPENDPATH  *= $${QSK_DIRS}
+DEPENDPATH  += $${QSK_DIRS}
 
-DESTDIR      = $${QSK_OUT_ROOT}/examples/bin
+DESTDIR      = $${QSK_OUT_ROOT}/plugins/skins
 
 QMAKE_RPATHDIR *= $${QSK_OUT_ROOT}/lib
-LIBS *= -L$${QSK_OUT_ROOT}/lib -lqsktestsupport -lqskinny
+LIBS *= -L$${QSK_OUT_ROOT}/lib -lqskinny
 
 win32 {
     contains(QSK_CONFIG, QskDll) {

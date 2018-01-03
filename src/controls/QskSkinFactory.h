@@ -24,13 +24,7 @@ public:
     virtual QskSkin* createSkin( const QString& skinName ) = 0;
 };
 
-namespace Qsk
-{
-    QSK_EXPORT void registerSkinFactory( const QString& id, QskSkinFactory* );
-    QSK_EXPORT QskSkinFactory* skinFactory( const QString& id );
-
-    QSK_EXPORT QStringList skinNames();
-    QSK_EXPORT QskSkin* createSkin( const QString& skinName );
-}
+#define QskSkinFactoryIID "org.qskinny.Qsk.QskSkinFactory/1.0"
+Q_DECLARE_INTERFACE( QskSkinFactory, QskSkinFactoryIID )
 
 #endif

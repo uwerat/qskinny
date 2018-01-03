@@ -6,7 +6,8 @@
 #include "QskModule.h"
 
 #include "QskSetup.h"
-#include "QskSkinFactory.h"
+#include "QskSkinManager.h"
+#include "QskSkin.h"
 #include "QskPushButton.h"
 #include "QskCorner.h"
 #include "QskDialog.h"
@@ -41,9 +42,6 @@
 #include "QskMessageWindow.h"
 #include "QskSelectionWindow.h"
 #include "QskWindow.h"
-
-#include "skins/squiek/QskSquiekSkin.h"
-#include "skins/material/QskMaterialSkin.h"
 
 #include <QList>
 #include <QStringList>
@@ -187,7 +185,8 @@ public:
 
     QStringList skinList() const
     {
-        return Qsk::skinNames();
+        auto manager = QskSkinManager::instance();
+        return manager ? manager->skinNames() : QStringList();
     }
 
     QQmlListProperty< QObject > data()
@@ -277,8 +276,6 @@ void QskModule::registerTypes()
     QSK_REGISTER_SINGLETON( QskDialog, "Dialog", QskDialog::instance() );
 
     qmlRegisterUncreatableType< QskSkin >( "Skinny.Skins", 1, 0, "Skin", QString() );
-    qmlRegisterType< QskSquiekSkin >( "Skinny.Skins", 1, 0, "SquiekSkin" );
-    qmlRegisterType< QskMaterialSkin >( "Skinny.Skins", 1, 0, "MaterialSkin" );
 
     QSK_REGISTER_FLAGS( QskControl::Flag );
     QSK_REGISTER_FLAGS( QskControl::Flags );

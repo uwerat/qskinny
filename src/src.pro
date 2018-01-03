@@ -25,7 +25,7 @@ else {
     CONFIG += staticlib
 }
 
-QSK_SUBDIRS = common graphic nodes controls layouts dialogs skins
+QSK_SUBDIRS = common graphic nodes controls layouts dialogs
 INCLUDEPATH *= $${QSK_SUBDIRS}
 DEPENDPATH *= $${QSK_SUBDIRS}
 
@@ -154,12 +154,13 @@ HEADERS += \
     controls/QskShortcut.h \
     controls/QskShortcutMap.h \
     controls/QskSimpleListBox.h \
-    controls/QskSkinFactory.h \
     controls/QskSkin.h \
+    controls/QskSkinFactory.h \
     controls/QskSkinHintTable.h \
+    controls/QskSkinManager.h \
+    controls/QskSkinTransition.h \
     controls/QskSkinlet.h \
     controls/QskSkinnable.h \
-    controls/QskSkinTransition.h \
     controls/QskSlider.h \
     controls/QskSliderSkinlet.h \
     controls/QskStatusIndicator.h \
@@ -221,9 +222,10 @@ SOURCES += \
     controls/QskSkin.cpp \
     controls/QskSkinHintTable.cpp \
     controls/QskSkinFactory.cpp \
+    controls/QskSkinManager.cpp \
+    controls/QskSkinTransition.cpp \
     controls/QskSkinlet.cpp \
     controls/QskSkinnable.cpp \
-    controls/QskSkinTransition.cpp \
     controls/QskSlider.cpp \
     controls/QskSliderSkinlet.cpp \
     controls/QskStatusIndicator.cpp \
@@ -241,14 +243,6 @@ SOURCES += \
     controls/QskTextLabelSkinlet.cpp \
     controls/QskVariantAnimator.cpp \
     controls/QskWindow.cpp
-
-HEADERS += \
-    skins/material/QskMaterialSkin.h \
-    skins/squiek/QskSquiekSkin.h
-
-SOURCES += \
-    skins/material/QskMaterialSkin.cpp \
-    skins/squiek/QskSquiekSkin.cpp
 
 HEADERS += \
     layouts/QskGridBox.h \

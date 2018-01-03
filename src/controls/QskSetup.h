@@ -58,7 +58,6 @@ public:
     Q_INVOKABLE QskSkin* setSkin( const QString& );
     Q_INVOKABLE QString skinName() const;
 
-    void setSkin( QskSkin*, const QString& = QString::null );
     QskSkin* skin();
 
     void setInputPanel( QskInputPanel* );

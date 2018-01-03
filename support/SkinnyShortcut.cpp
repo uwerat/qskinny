@@ -1,8 +1,8 @@
 #include "SkinnyShortcut.h"
 
-#include <QskSkinFactory.h>
 #include <QskShortcutMap.h>
 #include <QskSetup.h>
+#include <QskSkinManager.h>
 #include <QskWindow.h>
 #include <QskAspect.h>
 #include <QskSkin.h>
@@ -63,7 +63,7 @@ void SkinnyShortcut::enable( Types types )
 
 void SkinnyShortcut::rotateSkin()
 {
-    const QStringList names = Qsk::skinNames();
+    const QStringList names = qskSkinManager->skinNames();
     if ( names.size() <= 1 )
         return;
 

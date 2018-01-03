@@ -2,6 +2,7 @@
 #include "SkinFactory.h"
 
 #include <QskShortcutMap.h>
+#include <QskSkinManager.h>
 #include <QskSetup.h>
 #include <SkinnyShortcut.h>
 
@@ -12,10 +13,12 @@ using namespace std;
 
 int main( int argc, char** argv )
 {
-    QGuiApplication app( argc, argv );
+    auto skinFactory = new SkinFactory();
 
-    SkinFactory skinFactory;
-    Qsk::registerSkinFactory( "SampleSkinFactory", &skinFactory );
+    qskSkinManager->setPluginPaths( QStringList() ); // no plugins
+    qskSkinManager->registerFactory( "SampleSkinFactory", skinFactory );
+
+    QGuiApplication app( argc, argv );
 
     /*
         When going over QPainter for the SVGs we prefer the raster paint
@@ -36,10 +39,10 @@ int main( int argc, char** argv )
     cout << "CTRL-T to change the color scheme, when the \"Default\" skin is active." << endl;
 
     QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_T ),
-        false, &skinFactory, SLOT(toggleScheme()) );
+        false, skinFactory, SLOT(toggleScheme()) );
 
     QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_S ),
-        false, &skinFactory, SLOT(rotateSkin()) );
+        false, skinFactory, SLOT(rotateSkin()) );
 
     // With CTRL-B you can rotate a couple of visual debug modes
     SkinnyShortcut::enable( SkinnyShortcut::DebugBackground |

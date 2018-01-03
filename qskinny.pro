@@ -4,6 +4,7 @@ TEMPLATE = subdirs
 
 SUBDIRS = \
     src \
+    skins \
     inputcontext \
     tools \
     support \
@@ -19,7 +20,8 @@ OTHER_FILES = \
     TODO
 
 inputcontext.depends = src
+skins.depends = src
 tools.depends = src
-support.depends = src
-examples.depends = tools support
-playground.depends = tools support
+support.depends = skins
+examples.depends = tools support skins
+playground.depends = tools support skins
