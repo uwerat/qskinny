@@ -338,8 +338,6 @@ QString QskInputPanel::displayLanguageName() const
                 default:
                     return QStringLiteral( "English (UK)" );
             }
-
-            break;
         }
 
         case QLocale::Spanish:
