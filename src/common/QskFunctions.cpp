@@ -26,7 +26,8 @@ static inline Rect qskAlignedRect( const Rect& outerRect,
         }
         default:
         {
-            r.moveLeft( outerRect.center().x() - width / 2 );
+            const auto dx = ( outerRect.width() - width ) / 2;
+            r.moveLeft( outerRect.left() + dx );
         }
     }
 
@@ -44,7 +45,8 @@ static inline Rect qskAlignedRect( const Rect& outerRect,
         }
         default:
         {
-            r.moveTop( outerRect.center().y() - height / 2 );
+            const auto dy = ( outerRect.height() - height ) / 2;
+            r.moveTop( outerRect.top() + dy );
         }
     }
 
