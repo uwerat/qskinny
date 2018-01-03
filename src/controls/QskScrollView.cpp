@@ -340,8 +340,48 @@ void QskScrollView::gestureEvent( QskGestureEvent* event )
 
 void QskScrollView::wheelEvent( QWheelEvent* event )
 {
-    const qreal dy = event->delta() / 120 * 20.0;
-    setScrollPos( m_data->scrollPos - QPointF( 0.0, dy ) );
+    const qreal stepSize = 20.0; // how to find this value
+
+    QPointF offset;
+
+    if ( subControlRect( Viewport ).contains( event->posF() ) )
+    {
+        /*
+             Not sure if that code makes sense, but I don't have an input device
+             that generates wheel events in both directions. TODO ...
+         */
+
+        //offset = event->pixelDelta();
+
+        if ( offset.isNull() )
+        {
+            offset = event->angleDelta();
+            offset *= stepSize / QWheelEvent::DefaultDeltasPerStep;
+        }
+    }
+    else
+    {
+        const qreal delta = stepSize * event->delta() / QWheelEvent::DefaultDeltasPerStep;
+
+        if ( subControlRect( VerticalScrollBar ).contains( event->posF() ) )
+        {
+            offset.setY( delta );
+        }
+        else if ( subControlRect( HorizontalScrollBar ).contains( event->posF() ) )
+        {
+            offset.setX( delta );
+        }
+    }
+
+    if ( !offset.isNull() )
+    {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+        if ( event->inverted() )
+            offset = -offset;
+#endif
+
+        setScrollPos( m_data->scrollPos - offset );
+    }
 }
 
 #endif
