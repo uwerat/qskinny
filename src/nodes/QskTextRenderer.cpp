@@ -10,6 +10,10 @@
 
 #include <QRectF>
 
+/*
+    Since Qt 5.7 QQuickTextNode is exported as Q_QUICK_PRIVATE_EXPORT
+    and could be used. TODO ...
+ */
 QSizeF QskTextRenderer::textSize( const QString& text,
     const QFont& font, const QskTextOptions& options )
 {

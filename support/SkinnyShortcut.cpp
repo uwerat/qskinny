@@ -36,6 +36,18 @@ void SkinnyShortcut::enable( Types types )
         cout << "CTRL-S to change the skin." << endl;
     }
 
+    if ( types & ChangeFonts )
+    {
+        QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_F ),
+            false, &s_shortcut, [] { s_shortcut.changeFonts( +1 ); } );
+
+        QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_G ),
+            false, &s_shortcut, [] { s_shortcut.changeFonts( -1 ); } );
+
+        cout << "CTRL-F to increase the font size." << endl;
+        cout << "CTRL-G to decrease the font size." << endl;
+    }
+
     if ( types & DebugBackground )
     {
         QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_B ),
@@ -132,6 +144,29 @@ void SkinnyShortcut::showBackground()
             }
         }
     }
+}
+
+void SkinnyShortcut::changeFonts( int increment )
+{
+    auto skin = qskSetup->skin();
+    
+    for ( int role = 0; role <= QskSkin::HugeFont; role++ )
+    {
+        auto font = skin->font( role );
+
+        if ( font.pixelSize() > 0 )
+        {
+            font.setPixelSize( font.pixelSize() + increment );
+        }
+        else
+        {
+            font.setPointSize( font.pointSize() + increment );
+        }
+
+        skin->setFont( role, font );
+    }
+
+    qskSetup->Q_EMIT skinChanged( skin );
 }
 
 static inline void countNodes( const QSGNode* node, int& counter )

@@ -150,6 +150,8 @@ void QskRichTextRenderer::updateNode( const QString& text,
 
     textItem.begin();
 
+    textItem.setBottomPadding( 0 );
+    textItem.setTopPadding( 0 );
     textItem.setFont( font );
     textItem.setOptions( options );
     textItem.setAlignment( alignment );
@@ -178,6 +180,28 @@ void QskRichTextRenderer::updateNode( const QString& text,
     textItem.setText( text );
 
     textItem.end();
+
+    if ( alignment & Qt::AlignVCenter )
+    {
+        /*
+            We need to have a stable algo for rounding the text base line,
+            so that texts don't start wobbling, when processing transitions
+            between margins/paddings. We manipulate the layout code
+            by adding some padding, so that the position of base line 
+            gets always floored.
+         */
+        auto d = QQuickTextPrivate::get( &textItem );
+
+        const qreal h = d->layedOutTextRect.height() + d->lineHeightOffset();
+
+        if ( static_cast< int >( rect.height() - h ) % 2 )
+        {
+            if ( static_cast<int>( h ) % 2 )
+                d->extra.value().bottomPadding = 1;
+            else
+                d->extra.value().topPadding = 1;
+        }
+    }
 
     textItem.updateTextNode( item->window(), node );
     textItem.setText( QString::null );

@@ -30,7 +30,7 @@ int main( int argc, char* argv[] )
 
     SkinnyFont::init( &app );
     SkinnyShortcut::enable( SkinnyShortcut::Quit |
-        SkinnyShortcut::DebugShortcuts );
+        SkinnyShortcut::ChangeFonts | SkinnyShortcut::DebugShortcuts );
 
     QQmlApplicationEngine engine( QUrl( "qrc:/qml/colorswitch.qml" ) );
 
