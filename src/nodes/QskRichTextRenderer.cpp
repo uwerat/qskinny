@@ -42,6 +42,28 @@ namespace
 #endif
         }
 
+        inline void setGeometry( const QRectF& rect )
+        {
+            auto d = QQuickTextPrivate::get( this );
+
+            d->heightValid = true;
+            d->widthValid = true;
+
+            if ( ( d->x != rect.x() ) || ( d->y != rect.y() ) )
+            {
+                d->x = rect.x();
+                d->y = rect.y();
+                d->dirty( QQuickItemPrivate::Position );
+            }
+
+            if ( ( d->width != rect.width() ) || ( d->height != rect.height() ) )
+            {
+                d->height = rect.height();
+                d->width = rect.width();
+                d->dirty( QQuickItemPrivate::Size );
+            }
+        }
+
         inline void setAlignment( Qt::Alignment alignment )
         {
             setHAlign( ( QQuickText::HAlignment ) ( int( alignment ) & 0x0f ) );
@@ -57,8 +79,16 @@ namespace
             setWrapMode( static_cast< QQuickText::WrapMode >( options.wrapMode() ) );
         }
 
-        void begin() { classBegin(); }
-        void end() { componentComplete(); }
+        void begin()
+        {
+            classBegin();
+            QQuickTextPrivate::get( this )->updateOnComponentComplete = true;
+        }
+
+        void end()
+        {
+            componentComplete();
+        }
 
         QRectF layedOutTextRect() const
         {
@@ -71,7 +101,7 @@ namespace
             QQuickItemPrivate::get( this )->refWindow( window );
 
             while ( parentNode->firstChild() )
-                delete parentNode->firstChild(); 
+                delete parentNode->firstChild();
 
             auto node = QQuickText::updatePaintNode( nullptr, nullptr );
             node->reparentChildNodesTo( parentNode );
@@ -144,33 +174,19 @@ void QskRichTextRenderer::updateNode( const QString& text,
     const QQuickItem* item, QSGTransformNode* node )
 {
     // are we killing internal caches of QQuickText, when always using
-    // the same item for the creation the text nodes. TODO ... 
+    // the same item for the creation the text nodes. TODO ...
 
     auto& textItem = *qskRenderHelper;
 
     textItem.begin();
+
+    textItem.setGeometry( rect );
 
     textItem.setBottomPadding( 0 );
     textItem.setTopPadding( 0 );
     textItem.setFont( font );
     textItem.setOptions( options );
     textItem.setAlignment( alignment );
-
-#if 0
-    // the position of textItem seems to have no effect
-    // on the position of the node. We do it by translation later.
-
-    textItem.setX( rect.x() );
-    textItem.setY( rect.y() );
-#endif
-
-    if ( rect.width() != item->width() ||
-        rect.height() != item->height() )
-    {
-        textItem.setWidth( rect.width() );
-        textItem.setHeight( rect.height() );
-        textItem.doLayout();
-    }
 
     textItem.setColor( colors.textColor );
     textItem.setStyle( static_cast< QQuickText::TextStyle >( style ) );
@@ -187,7 +203,7 @@ void QskRichTextRenderer::updateNode( const QString& text,
             We need to have a stable algo for rounding the text base line,
             so that texts don't start wobbling, when processing transitions
             between margins/paddings. We manipulate the layout code
-            by adding some padding, so that the position of base line 
+            by adding some padding, so that the position of base line
             gets always floored.
          */
         auto d = QQuickTextPrivate::get( &textItem );
@@ -196,7 +212,7 @@ void QskRichTextRenderer::updateNode( const QString& text,
 
         if ( static_cast< int >( rect.height() - h ) % 2 )
         {
-            if ( static_cast<int>( h ) % 2 )
+            if ( static_cast< int >( h ) % 2 )
                 d->extra.value().bottomPadding = 1;
             else
                 d->extra.value().topPadding = 1;
