@@ -156,11 +156,15 @@ void SkinnyShortcut::changeFonts( int increment )
 
         if ( font.pixelSize() > 0 )
         {
-            font.setPixelSize( font.pixelSize() + increment );
+            const auto newSize = font.pixelSize() + increment;
+            if ( newSize > 0 )
+                font.setPixelSize( newSize );
         }
         else
         {
-            font.setPointSize( font.pointSize() + increment );
+            const auto newSize = font.pointSize() + increment;
+            if ( newSize > 0 )
+                font.setPointSize( font.pointSize() + increment );
         }
 
         skin->setFont( role, font );
