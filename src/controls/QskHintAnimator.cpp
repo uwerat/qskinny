@@ -8,6 +8,8 @@
 #include "QskControl.h"
 #include "QskEvent.h"
 #include "QskMargins.h"
+#include "QskBoxBorderMetrics.h"
+#include "QskBoxShapeMetrics.h"
 
 #include <QObject>
 #include <QThread>
@@ -16,11 +18,67 @@
 #include <vector>
 #include <algorithm>
 
+#define ALIGN_VALUES 0
+
+#if ALIGN_VALUES
+
 static inline qreal qskAligned05( qreal value )
 {
     // aligned to 0.5
     return qRound( 2.0 * value ) / 2.0;
 }
+
+static inline QSizeF qskAligned05( const QSizeF& size )
+{
+    return QSizeF( qskAligned05( size.width() ), qskAligned05( size.height() ) );
+}
+
+static inline QskMargins qskAligned05( const QskMargins& margins )
+{
+    const qreal left = qskAligned05( margins.left() );
+    const qreal top = qskAligned05( margins.top() );
+    const qreal right = qskAligned05( margins.right() );
+    const qreal bottom = qskAligned05( margins.bottom() );
+
+    return QskMargins( left, top, right, bottom );
+}
+
+static inline QVariant qskAligned05( const QVariant& value )
+{
+    if( value.canConvert< QskBoxBorderMetrics >() )
+    {
+        auto metrics = value.value< QskBoxBorderMetrics >();
+
+        if ( metrics.sizeMode() == Qt::AbsoluteSize )
+        {
+            metrics.setWidths( qskAligned05( metrics.widths() ) );
+            return QVariant::fromValue( metrics );
+        }
+    }
+    else if ( value.canConvert< QskBoxShapeMetrics >() )
+    {
+        auto metrics = value.value< QskBoxShapeMetrics >();
+        if ( metrics.sizeMode() == Qt::AbsoluteSize )
+        {
+            for ( int i = Qt::TopLeftCorner; i <= Qt::BottomRightCorner; i++ )
+            {
+                const auto corner = static_cast<Qt::Corner>( i );
+                metrics.setRadius( corner, qskAligned05( metrics.radius( corner ) ) );
+            }
+                
+            return QVariant::fromValue( metrics );
+        }
+    }
+    else if ( value.canConvert< QskMargins >() )
+    {
+        const auto margins = value.value< QskMargins >();
+        return QVariant::fromValue( qskAligned05( margins ) );
+    }
+
+    return value;
+}
+
+#endif
 
 static inline bool qskCheckReceiverThread( const QObject *receiver )
 {
@@ -37,31 +95,6 @@ static inline bool qskCheckReceiverThread( const QObject *receiver )
 
     return ( thread == QThread::currentThread() );
 }   
-
-static inline QVariant qskAdjustedValue(
-    QskAspect::Aspect aspect, const QVariant& value )
-{
-    if( value.type() == QVariant::Double )
-    {
-        if ( aspect.metricPrimitive() != QskAspect::Position )
-        {
-            // all beside QskAspect::Position are real metrics,
-            // that will be aligned to the resolution of the paint device
-            // so we can avoid pointless operations by rounding
-            return qskAligned05( value.toReal() );
-        }
-    }
-    else if ( value.canConvert< QskMargins >() )
-    {
-        const QskMargins m = value.value< QskMargins >();
-
-        return QVariant::fromValue( 
-            QskMargins( qskAligned05( m.left() ), qskAligned05( m.top() ),
-                qskAligned05( m.right() ), qskAligned05( m.bottom() ) ) ); 
-    }
-
-    return value;
-}
 
 
 QskHintAnimator::QskHintAnimator()
@@ -88,7 +121,9 @@ void QskHintAnimator::advance( qreal progress )
 
     Inherited::advance( progress );
 
-    setCurrentValue( qskAdjustedValue( m_aspect, currentValue() ) );
+#if ALIGN_VALUES
+    setCurrentValue( qskAligned05( currentValue() ) );
+#endif
 
     if ( m_control && ( currentValue() != oldValue ) )
     {
