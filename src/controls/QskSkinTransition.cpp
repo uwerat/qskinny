@@ -87,9 +87,17 @@ static QVector< AnimatorCandidate > qskAnimatorCandidates(
                 {
                     if ( !( mask & QskSkinTransition::Color ) )
                         continue;
+                    
+                    int role1 = 0;
 
-                    const auto it1 = oldFilters.find( entry.second.toInt() );
-                    const auto it2 = newFilters.find( entry.second.toInt() );
+                    const auto value = oldTable.resolvedHint( aspect );
+                    if ( value )
+                        role1 = value->toInt();
+
+                    const int role2 = entry.second.toInt();
+
+                    const auto it1 = oldFilters.find( role1 );
+                    const auto it2 = newFilters.find( role2 );
 
                     if ( it1 != oldFilters.end() || it2 != newFilters.end() )
                     {
