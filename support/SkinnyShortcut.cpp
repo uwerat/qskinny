@@ -150,9 +150,12 @@ void SkinnyShortcut::changeFonts( int increment )
 {
     auto skin = qskSetup->skin();
     
-    for ( int role = 0; role <= QskSkin::HugeFont; role++ )
+    const auto fonts = skin->fonts();
+
+    for ( auto it = fonts.begin(); it != fonts.end(); ++it )
     {
-        auto font = skin->font( role );
+        auto role = it->first;
+        auto font = it->second;
 
         if ( font.pixelSize() > 0 )
         {
@@ -162,9 +165,9 @@ void SkinnyShortcut::changeFonts( int increment )
         }
         else
         {
-            const auto newSize = font.pointSize() + increment;
+            const auto newSize = font.pointSizeF() + increment;
             if ( newSize > 0 )
-                font.setPointSize( font.pointSize() + increment );
+                font.setPointSizeF( font.pointSizeF() + increment );
         }
 
         skin->setFont( role, font );
