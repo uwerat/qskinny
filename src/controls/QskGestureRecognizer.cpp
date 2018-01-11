@@ -82,6 +82,21 @@ namespace
         QBasicTimer m_timer;
         QskGestureRecognizer* m_recognizer;
     };
+
+    class PendingEvents : public QVector< QMouseEvent* >
+    {
+    public:
+        ~PendingEvents()
+        {
+            qDeleteAll( *this );
+        }
+
+        void reset()
+        {
+            qDeleteAll( *this );
+            clear();
+        }
+    };
 }
 
 class QskGestureRecognizer::PrivateData
@@ -89,7 +104,6 @@ class QskGestureRecognizer::PrivateData
 public:
     PrivateData():
         watchedItem( nullptr ),
-        pendingPress( nullptr ),
         timestamp( 0 ),
         timeout( -1 ),
         buttons( Qt::NoButton ),
@@ -98,14 +112,9 @@ public:
     {
     }
 
-    ~PrivateData()
-    {
-        delete pendingPress;
-    }
-
     QQuickItem* watchedItem;
 
-    QMouseEvent* pendingPress;
+    PendingEvents pendingEvents;
     ulong timestamp;
 
     int timeout; // ms
@@ -161,6 +170,11 @@ ulong QskGestureRecognizer::timestamp() const
     return m_data->timestamp;
 }
 
+bool QskGestureRecognizer::isReplaying() const
+{
+    return m_data->isReplayingEvents;
+}
+
 void QskGestureRecognizer::setState( State state )
 {
     if ( state != m_data->state )
@@ -177,9 +191,10 @@ QskGestureRecognizer::State QskGestureRecognizer::state() const
     return static_cast< QskGestureRecognizer::State >( m_data->state );
 }
 
-bool QskGestureRecognizer::processEvent( QQuickItem* item, QEvent* event )
+bool QskGestureRecognizer::processEvent(
+    QQuickItem* item, QEvent* event, bool blockReplayedEvents )
 {
-    if ( m_data->isReplayingEvents )
+    if ( m_data->isReplayingEvents && blockReplayedEvents )
     {
         /*
             This one is a replayed event after we had decided
@@ -261,8 +276,6 @@ bool QskGestureRecognizer::processEvent( QQuickItem* item, QEvent* event )
                 out, that we don't want to handle the mouse event sequence,
              */
 
-            m_data->pendingPress = qskClonedMouseEvent( mouseEvent );
-
             if ( m_data->timeout > 0 )
                 Timer::instance()->start( m_data->timeout, this );
 
@@ -280,42 +293,30 @@ bool QskGestureRecognizer::processEvent( QQuickItem* item, QEvent* event )
         {
             case QEvent::MouseButtonPress:
             {
-                pressEvent( static_cast< QMouseEvent* >( event ) );
+                auto mouseEvent = static_cast< QMouseEvent* >( event );
+                m_data->pendingEvents += qskClonedMouseEvent( mouseEvent );
+
+                pressEvent( mouseEvent );
                 return true;
             }
 
             case QEvent::MouseMove:
             {
-                moveEvent( static_cast< QMouseEvent* >( event ) );
+                auto mouseEvent = static_cast< QMouseEvent* >( event );
+                m_data->pendingEvents += qskClonedMouseEvent( mouseEvent );
+
+                moveEvent( mouseEvent );
                 return true;
             }
 
             case QEvent::MouseButtonRelease:
             {
                 auto mouseEvent = static_cast< QMouseEvent* >( event );
+                m_data->pendingEvents += qskClonedMouseEvent( mouseEvent );
 
                 if ( m_data->state == Pending )
                 {
-                    reject(); // sending the pending press
-
-                    auto mouseGrabber = watchedItem->window()->mouseGrabberItem();
-                    if ( mouseGrabber && ( mouseGrabber != watchedItem ) )
-                    {
-                        /*
-                            After resending the initial press someone else
-                            might be interested in this sequence. Then we
-                            also have to resend the release event, being translated
-                            into the coordinate system of the new grabber.
-                         */
-
-                        QScopedPointer< QMouseEvent > clonedRelease(
-                            qskClonedMouseEvent( mouseEvent, mouseGrabber ) );
-
-                        m_data->isReplayingEvents = true;
-                        QCoreApplication::sendEvent(
-                            watchedItem->window(), clonedRelease.data() );
-                        m_data->isReplayingEvents = false;
-                    }
+                    reject();
                 }
                 else
                 {
@@ -361,30 +362,42 @@ void QskGestureRecognizer::stateChanged( State from, State to )
 void QskGestureRecognizer::accept()
 {
     Timer::instance()->stop( this );
-
-    delete m_data->pendingPress;
-    m_data->pendingPress = nullptr;
+    m_data->pendingEvents.reset();
 
     setState( Accepted );
 }
 
 void QskGestureRecognizer::reject()
 {
-    QScopedPointer< QMouseEvent > mousePress( m_data->pendingPress );
-    m_data->pendingPress = nullptr;
+    const auto events = m_data->pendingEvents;
+    m_data->pendingEvents.clear();
 
     reset();
 
-    if ( mousePress.data() )
-    {
-        const auto window = m_data->watchedItem->window();
-        if ( window->mouseGrabberItem() == m_data->watchedItem )
-            m_data->watchedItem->ungrabMouse();
+    m_data->isReplayingEvents = true;
 
-        m_data->isReplayingEvents = true;
-        QCoreApplication::sendEvent( window, mousePress.data() );
-        m_data->isReplayingEvents = false;
+    const auto window = m_data->watchedItem->window();
+
+    if ( window->mouseGrabberItem() == m_data->watchedItem )
+        m_data->watchedItem->ungrabMouse();
+
+    if ( !events.isEmpty() && events[0]->type() == QEvent::MouseButtonPress )
+    {
+        QCoreApplication::sendEvent( window, events[0] );
+
+        /*
+            After resending the initial press someone else
+            might be interested in this sequence.
+         */
+
+        if ( window->mouseGrabberItem() )
+        {
+            for ( int i = 1; i < events.size(); i++ )
+                QCoreApplication::sendEvent( window, events[i] );
+        }
     }
+
+    m_data->isReplayingEvents = false;
 }
 
 void QskGestureRecognizer::abort()
@@ -396,9 +409,8 @@ void QskGestureRecognizer::reset()
 {
     Timer::instance()->stop( this );
     m_data->watchedItem->setKeepMouseGrab( false );
+    m_data->pendingEvents.reset();
 
-    delete m_data->pendingPress;
-    m_data->pendingPress = nullptr;
     m_data->timestamp = 0;
 
     setState( Idle );

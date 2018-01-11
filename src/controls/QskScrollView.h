@@ -44,6 +44,9 @@ public:
     void setFlickableOrientations( Qt::Orientations );
     Qt::Orientations flickableOrientations() const;
 
+    int flickRecognizerTimeout() const;
+    void setFlickRecognizerTimeout( int timeout );
+
     QPointF scrollPos() const;
     bool isScrolling( Qt::Orientation ) const;
 

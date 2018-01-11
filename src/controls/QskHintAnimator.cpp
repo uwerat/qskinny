@@ -96,7 +96,6 @@ static inline bool qskCheckReceiverThread( const QObject *receiver )
     return ( thread == QThread::currentThread() );
 }   
 
-
 QskHintAnimator::QskHintAnimator()
 {
 }

@@ -39,13 +39,15 @@ public:
 
     ulong timestamp() const;
 
-    bool processEvent( QQuickItem*, QEvent* );
+    bool processEvent( QQuickItem*, QEvent*, bool blockReplayedEvents = true );
 
     void reject();
     void accept();
     void abort();
 
     State state() const;
+
+    bool isReplaying() const;
 
 protected:
     virtual void pressEvent( const QMouseEvent* );

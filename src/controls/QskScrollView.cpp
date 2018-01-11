@@ -57,6 +57,7 @@ public:
         horizontalScrollBarPolicy( Qt::ScrollBarAsNeeded ),
         verticalScrollBarPolicy( Qt::ScrollBarAsNeeded ),
         scrollableSize( 0.0, 0.0 ),
+        panRecognizerTimeout( 100 ), // value coming from the platform ???
         isScrolling( 0 )
     {
     }
@@ -68,6 +69,8 @@ public:
     QSizeF scrollableSize;
 
     QskPanGestureRecognizer panRecognizer;
+    int panRecognizerTimeout;
+
     FlickAnimator flicker;
 
     qreal scrollPressPos;
@@ -91,6 +94,19 @@ QskScrollView::QskScrollView( QQuickItem* parent ):
 
 QskScrollView::~QskScrollView()
 {
+}
+
+void QskScrollView::setFlickRecognizerTimeout( int timeout )
+{
+    if ( timeout < 0 )
+        timeout = -1;
+
+    m_data->panRecognizerTimeout = timeout;
+}
+
+int QskScrollView::flickRecognizerTimeout() const
+{
+    return m_data->panRecognizerTimeout;
 }
 
 void QskScrollView::setFlickableOrientations( Qt::Orientations orientations )
@@ -388,28 +404,68 @@ void QskScrollView::wheelEvent( QWheelEvent* event )
 
 bool QskScrollView::gestureFilter( QQuickItem* item, QEvent* event )
 {
-    const auto o = m_data->panRecognizer.orientations();
-    if ( o )
+    if ( event->type() == QEvent::MouseButtonPress )
     {
-        bool maybeGesture = m_data->panRecognizer.state() > QskGestureRecognizer::Idle;
+        // Checking first if panning is possible at all
 
-        if ( !maybeGesture && ( event->type() == QEvent::MouseButtonPress ) )
+        bool maybeGesture = false;
+
+        const auto orientations = m_data->panRecognizer.orientations();
+        if ( orientations )
         {
-            const QRectF vr = viewContentsRect();
+            const QSizeF viewSize = viewContentsRect().size();
             const QSizeF& scrollableSize = m_data->scrollableSize;
 
-            if ( ( ( o & Qt::Vertical ) && ( vr.height() < scrollableSize.height() ) )
-                || ( ( o & Qt::Horizontal ) && ( vr.width() < scrollableSize.width() ) ) )
+            if ( orientations & Qt::Vertical )
             {
-                maybeGesture = true;
+                if ( viewSize.height() < scrollableSize.height() )
+                    maybeGesture = true;
+            }
+
+            if ( orientations & Qt::Horizontal )
+            {
+                if ( viewSize.width() < scrollableSize.width() )
+                    maybeGesture = true;
             }
         }
 
-        if ( maybeGesture )
-            return m_data->panRecognizer.processEvent( item, event );
+        if ( !maybeGesture )
+            return false;
     }
 
-    return false;
+    /*
+        This code is a bit tricky as the filter is called in different situations:
+
+        a) The press was on a child of the view
+        b) The press was on the view
+
+        In case of b) things are simple and we can let the recognizer
+        decide without timeout if it is was a gesture or not.
+
+        In case of a) we give the recognizer some time to decide - usually
+        based on the distances of the following mouse events. If no decision
+        could be made the recognizer aborts and replays the mouse events, so
+        that the children can process them.
+
+        But if a child does not accept a mouse event it will be sent to
+        its parent. So we might finally receive the reposted events, but then
+        we can proceed as in b).
+     */
+
+    auto& recognizer = m_data->panRecognizer;
+
+    if ( event->type() == QEvent::MouseButtonPress )
+    {
+        if ( recognizer.isReplaying() )
+        {
+            if ( ( item != this ) || ( recognizer.timeout() < 0 ) )
+                return false;
+        }
+
+        recognizer.setTimeout( ( item == this ) ? -1 : m_data->panRecognizerTimeout );
+    }
+
+    return m_data->panRecognizer.processEvent( item, event );
 }
 
 QPointF QskScrollView::boundedScrollPos( const QPointF& pos ) const
