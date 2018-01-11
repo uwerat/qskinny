@@ -22,7 +22,7 @@ static void qskSetupGeometryConnections(
 }
 
 QskFocusIndicator::QskFocusIndicator( QQuickItem* parent ):
-    Inherited( parent )
+    Inherited( parent ) // parentItem() might change, but parent() stays
 {
     setTransparentForPositioner( true );
     resetConnections();
@@ -43,30 +43,58 @@ void QskFocusIndicator::onFocusItemChanged()
 {
     disconnect( this, SLOT( onFocusItemGeometryChanged() ) );
 
-    const QQuickItem* focusItem = window() ? window()->activeFocusItem() : nullptr;
+    if ( window() == nullptr )
+        return;
 
-    if ( focusItem )
+    const QQuickItem* focusItem = window()->activeFocusItem();
+    if ( ( focusItem == nullptr ) || ( focusItem == window()->contentItem() ) )
     {
-        qskSetupGeometryConnections( focusItem,
-            this, SLOT(onFocusItemGeometryChanged()) );
+        /*
+            We might get here, when the previously focused item was destroyed.
+            Might happen in common situations, like when a subwindow
+            was closed. We put ourself below the root item then.
+         */
 
-        // we might have to raise on top, but the code below
-        // might not be good enough to cover all corner cases ??
-
-        const QQuickItem* item = focusItem;
-        while ( item->parentItem() )
+        if ( parentItem() != window()->contentItem() )
         {
-            if ( item->parentItem() == parentItem() )
-            {
-                setZ( item->z() + 10e-6 );
-                break;
-            }
-
-            item = item->parentItem();
-
-            qskSetupGeometryConnections( item,
-                this, SLOT(onFocusItemGeometryChanged()) );
+            setParentItem( window()->contentItem() );
+            updateFocusFrame();
         }
+
+        return;
+    }
+
+    qskSetupGeometryConnections( focusItem,
+        this, SLOT( onFocusItemGeometryChanged() ) );
+
+    const QQuickItem* item = focusItem;
+    while ( item->parentItem() )
+    {
+        auto itemParent = item->parentItem();
+
+        if ( itemParent == window()->contentItem() || itemParent->clip() )
+        {
+            /*
+                When the focus item is clipped - maybe because of being at the
+                border of a scrollarea - the focus indicator needs to be
+                clipped as well. The easiest way to have this is to put us
+                below the item having the clip.
+             */
+            setParentItem( itemParent );
+        }
+
+        if ( itemParent == parentItem() )
+        {
+            // We want to be on top, but do we cover all corner cases ???
+
+            setZ( item->z() + 10e-6 );
+            break;
+        }
+
+        item = itemParent;
+
+        qskSetupGeometryConnections( item,
+            this, SLOT( onFocusItemGeometryChanged() ) );
     }
 
     updateFocusFrame();
@@ -91,7 +119,7 @@ QRectF QskFocusIndicator::focusRect() const
     if ( window() && parentItem() )
     {
         const QQuickItem* focusItem = window()->activeFocusItem();
-        if ( focusItem )
+        if ( focusItem && ( focusItem != window()->contentItem() ) )
             return parentItem()->mapRectFromItem( focusItem, focusItem->boundingRect() );
     }
 
