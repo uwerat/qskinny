@@ -21,6 +21,8 @@ public:
     void setBox( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics& );
 
+    static QSGGeometry* translatedGeometry( const QSGGeometry*, const QPointF& );
+
 private:
     uint m_hash;
     QRectF m_rect;

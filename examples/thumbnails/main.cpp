@@ -8,13 +8,14 @@
 
 #include <QskScrollArea.h>
 #include <QskWindow.h>
-#include <QskGraphicLabel.h>
+#include <QskPushButton.h>
 #include <QskLinearBox.h>
 #include <QskObjectCounter.h>
 #include <QskGraphic.h>
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxShapeMetrics.h>
 #include <QskAspect.h>
+#include <QskFocusIndicator.h>
 
 #include <QGuiApplication>
 #include <QPainter>
@@ -57,11 +58,11 @@ static int randomShape()
     return qrand() % SkinnyShapeFactory::ShapeCount;
 }
 
-class Thumbnail : public QskGraphicLabel
+class Thumbnail : public QskPushButton
 {
 public:
     Thumbnail( const QColor& color, int shape, QQuickItem* parentItem ):
-        QskGraphicLabel( parentItem )
+        QskPushButton( parentItem )
     {
         using namespace SkinnyShapeFactory;
 
@@ -83,6 +84,8 @@ public:
 
         setGraphic( graphic );
         setFixedSize( size );
+
+        setFlat( true );
     }
 };
 
@@ -141,6 +144,9 @@ int main( int argc, char* argv[] )
         with QskScrollView using scene graph node composition - like done
         with QskListView.
 
+        The thumbnails are implemented as buttons, so that we can see if the gesture
+        recognition for the flicking works without stopping the buttons from being functional. 
+
         This example also shows, that blocking of the scene graph node creation
         ( QskControl::DeferredUpdate + QskControl::CleanupOnVisibility ) 
         could be improved to also respect being inside the window or a clip region.
@@ -156,6 +162,7 @@ int main( int argc, char* argv[] )
     window.resize( 600, 600 );
     window.setColor( "SteelBlue" );
     window.addItem( scrollArea );
+    window.addItem( new QskFocusIndicator() );
 
     window.show();
 

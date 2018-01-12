@@ -6,6 +6,7 @@
 #include "QskScrollArea.h"
 #include "QskScrollViewSkinlet.h"
 #include "QskLayoutConstraint.h"
+#include "QskBoxClipNode.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>
@@ -61,9 +62,11 @@ namespace
     {
     public:
         ViewportClipNode():
-            QQuickDefaultClipNode( QRectF() )
+            QQuickDefaultClipNode( QRectF() ),
+            m_otherGeometry( nullptr )
         {
             setGeometry( nullptr );
+            setFlag( QSGNode::OwnsGeometry, true );
 
             // clip nodes have no material, so this flag
             // is available to indicate our replaced clip node
@@ -71,52 +74,63 @@ namespace
             setFlag( QSGNode::OwnsMaterial, true );
         }
 
-        void copyFrom( const QSGClipNode* other )
+        void copyFrom( const QSGClipNode* other, const QPointF& offset )
         {
-            bool isDirty = false;
-
             if ( other == nullptr )
             {
-                if ( !isRectangular() && clipRect().isEmpty() )
+                if ( !( clipRect().isEmpty() && isRectangular() ) )
+                {
+                    setClipRect( QRectF() );
+                    setIsRectangular( true );
+
+                    setGeometry( nullptr );
+                    m_otherGeometry = nullptr;
+
+                    markDirty( QSGNode::DirtyGeometry );
+                }
+
+                return;
+            }
+
+            bool isDirty = false;
+
+            const auto newClipRect = other->clipRect().translated( offset );
+
+            if ( clipRect() != newClipRect )
+            {
+                setClipRect( newClipRect );
+                isDirty = true;
+            }
+
+            if ( other->isRectangular() )
+            {
+                if ( !isRectangular() )
                 {
                     setIsRectangular( true );
-                    setClipRect( QRectF() );
+
                     setGeometry( nullptr );
+                    m_otherGeometry = nullptr;
 
                     isDirty = true;
                 }
             }
             else
             {
-                const bool isRect = other->isRectangular();
-
-                if ( isRect != isRectangular() )
+                if ( isRectangular() )
                 {
-                    setIsRectangular( isRect );
+                    setIsRectangular( false );
                     isDirty = true;
                 }
 
-                if ( clipRect() != other->clipRect() )
+                if ( ( geometry() == nullptr )
+                    || ( geometry()->vertexCount() != other->geometry()->vertexCount() )
+                    || ( other->geometry() != m_otherGeometry ) )
                 {
-                    setClipRect( other->clipRect() );
-                    isDirty = true;
-                }
+                    setGeometry( QskBoxClipNode::translatedGeometry(
+                        other->geometry(), offset ) );
 
-                if ( isRect )
-                {
-                    setGeometry( nullptr );
-                }
-                else
-                {
-                    if ( geometry() != other->geometry() )
-                    {
-                        /*
-                            A deep copy would be less efficient, but avoids
-                            any further problems - let's see how stable it is.
-                         */
-                        setGeometry( const_cast< QSGGeometry* >( other->geometry() ) );
-                        isDirty = true;
-                    }
+                    m_otherGeometry = other->geometry();
+                    isDirty = true;
                 }
             }
 
@@ -133,6 +147,8 @@ namespace
                 into nops.
              */
         }
+
+        const QSGGeometry* m_otherGeometry;
     };
 }
 
@@ -155,7 +171,6 @@ public:
 
 protected:
     virtual bool event( QEvent* event ) override final;
-    virtual bool childMouseEventFilter( QQuickItem*, QEvent* ) override final;
 
     virtual void itemChange( ItemChange, const ItemChangeData& ) override final;
     virtual void geometryChanged( const QRectF&, const QRectF& ) override final;
@@ -169,7 +184,7 @@ protected:
     }
 
 #else
-    virtual void itemGeometryChanged( QQuickItem *,
+    virtual void itemGeometryChanged( QQuickItem*,
         const QRectF& newRect, const QRectF& oldRect ) override final
     {
         if ( oldRect.size() != newRect.size() )
@@ -197,9 +212,7 @@ QskScrollAreaClipItem::QskScrollAreaClipItem( QskScrollArea* scrollArea ):
     Inherited( scrollArea )
 {
     setObjectName( QStringLiteral( "QskScrollAreaClipItem" ) );
-
     setClip( true );
-    setFiltersChildMouseEvents( true );
 }
 
 QskScrollAreaClipItem::~QskScrollAreaClipItem()
@@ -236,6 +249,8 @@ void QskScrollAreaClipItem::updateNode( QSGNode* )
 
     if ( clipNode && !( clipNode->flags() & QSGNode::OwnsMaterial ) )
     {
+        // Replace the clip node being inserted from QQuickWindow
+
         auto parentNode = clipNode->parent();
 
         auto node = new ViewportClipNode();
@@ -253,8 +268,17 @@ void QskScrollAreaClipItem::updateNode( QSGNode* )
 
     if ( clipNode )
     {
+        /*
+            Update the clip node with the geometry of the clip node
+            of the viewport of the scrollview.
+
+            Maybe it would be better to ask the skinlet for translated clip node
+            but we would have a dependency for QskScrollViewSkinlet then.
+         */
         auto viewClipNode = static_cast< ViewportClipNode* >( clipNode );
-        viewClipNode->copyFrom( viewPortClipNode() );
+        viewClipNode->copyFrom( viewPortClipNode(), -position() );
+
+        Q_ASSERT( viewClipNode->isRectangular() || viewClipNode->geometry() );
     }
 }
 
@@ -285,27 +309,15 @@ void QskScrollAreaClipItem::geometryChanged(
 void QskScrollAreaClipItem::itemChange(
     QQuickItem::ItemChange change, const QQuickItem::ItemChangeData& value )
 {
-    /*
-        Unfortunately QT/Quick developers didn't use the well established
-        concept of events and introduced a proprietory and less powerful
-        notification system of hooks and optional listeners.
-        As we like to support items not being derived from QskControl we have
-        to use them.
-     */
-
-    if ( ( change == QQuickItem::ItemChildAddedChange ) ||
-        ( change == QQuickItem::ItemChildRemovedChange ) )
+    if ( change == QQuickItem::ItemChildAddedChange )
     {
-        /*
-           In case we are not adjusting the geometry of the scrolled item
-           we have to adjust the scrollview to the geometry changes indicated
-           from the scrolled item.
-         */
-
-        if ( !scrollArea()->isItemResizable() )
-            enableGeometryListener( change == QQuickItem::ItemChildAddedChange );
+        enableGeometryListener( true );
     }
-
+    else if ( change == QQuickItem::ItemChildRemovedChange )
+    {
+        enableGeometryListener( false );
+    }
+        
     Inherited::itemChange( change, value );
 }
 
@@ -336,35 +348,6 @@ bool QskScrollAreaClipItem::event( QEvent* event )
     return Inherited::event( event );
 }
 
-bool QskScrollAreaClipItem::childMouseEventFilter( QQuickItem* item, QEvent* event )
-{
-    if ( ( event->type() == QEvent::MouseButtonPress )
-        || ( event->type() == QEvent::MouseMove ) )
-    {
-        const auto mouseEvent = static_cast< const QMouseEvent* >( event );
-        const QPointF pos = mapFromScene( mouseEvent->windowPos() );
-
-        auto clipNode = QQuickItemPrivate::get( this )->clipNode();
-        if ( clipNode && !clipNode->clipRect().contains( pos ) )
-        {
-            if ( event->type() == QEvent::MouseButtonPress )
-            {
-                QCoreApplication::sendEvent( scrollArea(), event );
-                return true;
-            }
-            else if ( event->type() == QEvent::MouseMove )
-            {
-                if ( item == window()->mouseGrabberItem() )
-                    item->ungrabMouse();
-
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
 class QskScrollArea::PrivateData
 {
 public:
@@ -391,12 +374,46 @@ public:
     bool isItemResizable : 1;
 };
 
+/*
+    When doing scene graph composition it is quite easy to insert a clip node
+    somewhere below the paint node to have all items on the viewport being clipped.
+    This is how it is done f.e. for the list boxes.
+
+    But when having QQuickItems on the viewport we run into 2 fundamental
+    limitations of the Qt/Quick design.
+
+    a) The node subtrees for the children are in parallel to the paint node.
+    b) The default clipNode() is always rectangular and only for the
+       complete boundingRect() of the item.
+
+    Both limitations are hardcoded in QQuickWindow without offering ways
+    to customize the operations. Even worse: obviously the code was once started
+    with having more flexible APIs in mind, but for some reasons it was never
+    finalized and not even the existing APIs are internally used properly.
+
+    ( F.e there would be a virtual method QQuickItem::clipRect(), but QQuickWindow
+      uses erroneously QQuickItem::contains() to filter events - grmpf. )
+
+    --
+
+    This class works around those limitations, by inserting a clip item
+    that replaces its default clip node by copying out the geometry of clip node
+    for view port.
+
+    This clip item needs to have exactly the same position + size as the
+    viewport, so that clipping of the mouse/touch/hover/wheel in QQuickWindow
+    works properly.  Unfortunately we then have to copy + translate the geometry of
+    the view port instead of simply sharing it between the 2 clip nodes.
+
+    But even then, filtering of events does not yet work perfect for non rectangular
+    clip regions. Maybe it could be done by adding a childMouseEventFilter(). TODO ...
+ */
+
 QskScrollArea::QskScrollArea( QQuickItem* parentItem ):
     Inherited( parentItem ),
     m_data( new PrivateData() )
 {
     setPolishOnResize( true );
-    setFiltersChildMouseEvents( true );
 
     m_data->clipItem = new QskScrollAreaClipItem( this );
     m_data->enableAutoTranslation( this, true );
@@ -411,14 +428,14 @@ void QskScrollArea::updateLayout()
 {
     Inherited::updateLayout();
 
-    // the clipItem always has the same geometry as the scroll area
-    m_data->clipItem->setSize( size() );
+    m_data->clipItem->setGeometry( viewContentsRect() );
     adjustItem();
 }
 
 void QskScrollArea::adjustItem()
 {
     QQuickItem* item = m_data->clipItem->scrolledItem();
+
     if ( item == nullptr )
     {
         setScrollableSize( QSizeF() );
@@ -457,8 +474,6 @@ void QskScrollArea::setItemResizable( bool on )
     if ( on != m_data->isItemResizable )
     {
         m_data->isItemResizable = on;
-        m_data->clipItem->enableGeometryListener( !on );
-
         Q_EMIT itemResizableChanged();
 
         if ( m_data->isItemResizable )
@@ -503,12 +518,9 @@ QQuickItem* QskScrollArea::scrolledItem() const
 
 void QskScrollArea::translateItem()
 {
-    auto item = m_data->clipItem->scrolledItem();
+    auto item = scrolledItem();
     if ( item )
-    {
-        const QPointF pos = viewContentsRect().topLeft() - scrollPos();
-        item->setPosition( pos );
-    }
+        item->setPosition( -scrollPos() );
 }
 
 #include "moc_QskScrollArea.cpp"

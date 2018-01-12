@@ -85,9 +85,10 @@ QskScrollView::QskScrollView( QQuickItem* parent ):
 
     m_data->panRecognizer.setWatchedItem( this );
     m_data->panRecognizer.setOrientations( Qt::Horizontal | Qt::Vertical );
-    m_data->panRecognizer.setTimeout( 200 );
 
     setAcceptedMouseButtons( Qt::LeftButton );
+    setFiltersChildMouseEvents( true );
+
     setWheelEnabled( true );
     setFocusPolicy( Qt::StrongFocus );
 }
