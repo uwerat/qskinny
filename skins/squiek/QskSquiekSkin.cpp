@@ -634,6 +634,9 @@ void QskSquiekSkin::initScrollViewHints()
 
         setAnimation( subControl | Color, qskDuration );
     }
+
+    // when changing the position by QskScrollView::scrollTo
+    setAnimation( Q::Viewport | Metric, QskAnimationHint( 200, QEasingCurve::OutCubic ) );
 }
 
 void QskSquiekSkin::initListViewHints()

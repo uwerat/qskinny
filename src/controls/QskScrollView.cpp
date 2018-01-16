@@ -7,6 +7,7 @@
 #include "QskPanGestureRecognizer.h"
 #include "QskFlickAnimator.h"
 #include "QskBoxBorderMetrics.h"
+#include "QskAnimationHint.h"
 #include "QskGesture.h"
 #include "QskAspect.h"
 #include "QskEvent.h"
@@ -25,11 +26,12 @@ QSK_STATE( QskScrollView, HorizontalHandlePressed, QskAspect::FirstSystemState <
 
 namespace
 {
-    class FlickAnimator : public QskFlickAnimator
+    class FlickAnimator final : public QskFlickAnimator
     {
     public:
         FlickAnimator()
         {
+            // skin hints: TODO
             setDuration( 1000 );
             setEasingCurve( QEasingCurve::OutCubic );
         }
@@ -48,6 +50,61 @@ namespace
     private:
         QskScrollView* m_scrollView;
     };
+
+    class ScrollAnimator final : public QskAnimator
+    {
+    public:
+        ScrollAnimator():
+            m_scrollView( nullptr )
+        {
+        }
+
+        void setScrollView( QskScrollView* scrollView )
+        {
+            m_scrollView = scrollView;
+        }
+
+        void scroll( const QPointF& from, const QPointF& to )
+        {
+            if ( isRunning() )
+            {
+                m_to = to;
+                return;
+            }
+
+            if ( from == to || m_scrollView == nullptr )
+            {
+                return;
+            }
+
+            m_from = from;
+            m_to = to;
+
+            const auto hint = m_scrollView->effectiveAnimation(
+                QskAspect::Metric, QskScrollView::Viewport );
+
+            setDuration( hint.duration );
+            setEasingCurve( hint.type );
+            setWindow( m_scrollView->window() );
+
+            start();
+        }
+
+    protected:
+        virtual void advance( qreal value ) override final
+        {
+            qreal x = m_from.x() + ( m_to.x() - m_from.x() ) * value;
+            qreal y = m_from.y() + ( m_to.y() - m_from.y() ) * value;
+
+            m_scrollView->setScrollPos( QPointF( x, y ) );
+        }
+
+    private:
+        QskScrollView* m_scrollView;
+
+        QPointF m_from;
+        QPointF m_to;
+    };
 }
 
 class QskScrollView::PrivateData
@@ -58,6 +115,7 @@ public:
         verticalScrollBarPolicy( Qt::ScrollBarAsNeeded ),
         scrollableSize( 0.0, 0.0 ),
         panRecognizerTimeout( 100 ), // value coming from the platform ???
+        viewportPadding( 10 ),
         isScrolling( 0 )
     {
     }
@@ -72,6 +130,9 @@ public:
     int panRecognizerTimeout;
 
     FlickAnimator flicker;
+    ScrollAnimator scroller;
+
+    qreal viewportPadding;
 
     qreal scrollPressPos;
     int isScrolling;
@@ -82,6 +143,7 @@ QskScrollView::QskScrollView( QQuickItem* parent ):
     m_data( new PrivateData() )
 {
     m_data->flicker.setScrollView( this );
+    m_data->scroller.setScrollView( this );
 
     m_data->panRecognizer.setWatchedItem( this );
     m_data->panRecognizer.setOrientations( Qt::Horizontal | Qt::Vertical );
@@ -174,6 +236,11 @@ QPointF QskScrollView::scrollPos() const
     return m_data->scrollPos;
 }
 
+void QskScrollView::scrollTo( const QPointF& pos )
+{
+    m_data->scroller.scroll( scrollPos(), pos );
+}
+
 bool QskScrollView::isScrolling( Qt::Orientation orientation ) const
 {
     return m_data->isScrolling == orientation;
@@ -196,6 +263,86 @@ void QskScrollView::setScrollableSize( const QSizeF& size )
 QSizeF QskScrollView::scrollableSize() const
 {
     return m_data->scrollableSize;
+}
+
+void QskScrollView::ensureVisible( const QPointF& pos )
+{
+    const qreal margin = m_data->viewportPadding;
+
+    QRectF r( scrollPos(), viewContentsRect().size() );
+    r.adjust( margin, margin, -margin, -margin );
+
+    qreal x = r.x();
+    qreal y = r.y();
+
+    if ( pos.x() < r.left() )
+    {
+        x = pos.x();
+    }
+    else if ( pos.x() > r.right() )
+    {
+        x = pos.x() - r.width();
+    }
+
+    if ( pos.y() < r.top() )
+    {
+        y = pos.y();
+    }
+    else if ( y > r.right() )
+    {
+        y = pos.y() - r.height();
+    }
+
+    const QPoint newPos( x - margin, y - margin );
+
+    if ( isInitiallyPainted() )
+        scrollTo( newPos );
+    else
+        setScrollPos( newPos );
+}
+
+void QskScrollView::ensureVisible( const QRectF& itemRect )
+{
+    const qreal margin = m_data->viewportPadding;
+
+    QRectF r( scrollPos(), viewContentsRect().size() );
+    r.adjust( margin, margin, -margin, -margin );
+
+    qreal x = r.x();
+    qreal y = r.y();
+
+    if ( itemRect.width() > r.width() )
+    {
+        x = itemRect.left() + 0.5 * ( itemRect.width() - r.width() );
+    }
+    else if ( itemRect.right() > r.right() )
+    {
+        x = itemRect.right() - r.width();
+    }
+    else if ( itemRect.left() < r.left() )
+    {
+        x = itemRect.left();
+    }
+
+    if ( itemRect.height() > r.height() )
+    {
+        y = itemRect.top() + 0.5 * ( itemRect.height() - r.height() );
+    }
+    else if ( itemRect.bottom() > r.bottom() )
+    {
+        y = itemRect.bottom() - r.height();
+    }
+    else if ( itemRect.top() < r.top() )
+    {
+        y = itemRect.top();
+    }
+
+    const QPoint newPos( x - margin, y - margin );
+
+    if ( isInitiallyPainted() )
+        scrollTo( newPos );
+    else
+        setScrollPos( newPos );
 }
 
 QRectF QskScrollView::viewContentsRect() const

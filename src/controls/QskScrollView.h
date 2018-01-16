@@ -67,6 +67,10 @@ Q_SIGNALS:
 
 public Q_SLOTS:
     void setScrollPos( const QPointF& );
+    void scrollTo( const QPointF& );
+
+    void ensureVisible( const QPointF& );
+    void ensureVisible( const QRectF& );
 
 protected:
     virtual void mouseMoveEvent( QMouseEvent* ) override;

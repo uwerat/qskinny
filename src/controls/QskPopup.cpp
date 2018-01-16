@@ -215,7 +215,7 @@ QskPopup::QskPopup( QQuickItem* parent ):
     // we don't want to be resized by layout code
     setTransparentForPositioner( true );
 
-    setFlag( ItemIsFocusScope );
+    setFlag( ItemIsFocusScope, true );
     setTabFence( true );
     setFocusPolicy( Qt::ClickFocus );
 }

@@ -223,10 +223,12 @@ void QskListView::keyPressEvent( QKeyEvent* event )
 
     if ( row != r )
     {
+        auto pos = scrollPos();
+
         const qreal rowPos = row * rowHeight();
         if ( rowPos < scrollPos().y() )
         {
-            setScrollPos( QPointF( scrollPos().x(), rowPos ) );
+            pos.setY( rowPos );
         }
         else
         {
@@ -236,8 +238,16 @@ void QskListView::keyPressEvent( QKeyEvent* event )
             if ( rowPos + rowHeight() > scrolledBottom )
             {
                 const double y = rowPos + rowHeight() - vr.height();
-                setScrollPos( QPointF( scrollPos().x(), y ) );
+                pos.setY( y );
             }
+        }
+
+        if ( pos != scrollPos() )
+        {
+            if ( event->isAutoRepeat() )
+                setScrollPos( pos );
+            else
+                scrollTo( pos );
         }
     }
 }

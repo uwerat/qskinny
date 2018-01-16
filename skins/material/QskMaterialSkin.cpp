@@ -594,6 +594,9 @@ void QskMaterialSkin::initScrollViewHints()
         setGradient( subControl, pal.accentColor );
         setBoxBorderColors( subControl, pal.accentColor );
     }
+
+    // when changing the position by QskScrollView::scrollTo
+    setAnimation( Q::Viewport | Metric, QskAnimationHint( 200, QEasingCurve::InCubic ) );
 }
 
 void QskMaterialSkin::initListViewHints()
