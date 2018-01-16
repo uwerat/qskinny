@@ -15,6 +15,7 @@
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxShapeMetrics.h>
 #include <QskAspect.h>
+#include <QskBoxBorderColors.h>
 #include <QskFocusIndicator.h>
 
 #include <QGuiApplication>
@@ -154,15 +155,27 @@ int main( int argc, char* argv[] )
         But here we only want to demonstrate how QskScrollArea works.
      */
 
-    auto scrollArea = new ScrollArea();
+    auto box = new QskLinearBox( Qt::Vertical );
+    box->setMargins( 20 );
+
+    auto buttonBox = new QskLinearBox( Qt::Horizontal, box );
+    buttonBox->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
+
+    new QskPushButton( "Push Me", buttonBox ); 
+    new QskPushButton( "Push Me", buttonBox ); 
+
+    auto scrollArea = new ScrollArea( box );
     scrollArea->setMargins( QMarginsF( 25, 25, 5, 5 ) );
     scrollArea->setScrolledItem( new IconGrid() );
+
+    auto focusIndicator = new QskFocusIndicator();
+    focusIndicator->setBoxBorderColorsHint( QskFocusIndicator::Panel, Qt::darkRed );
 
     QskWindow window;
     window.resize( 600, 600 );
     window.setColor( "SteelBlue" );
-    window.addItem( scrollArea );
-    window.addItem( new QskFocusIndicator() );
+    window.addItem( box );
+    window.addItem( focusIndicator );
 
     window.show();
 
