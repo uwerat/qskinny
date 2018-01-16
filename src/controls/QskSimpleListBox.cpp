@@ -56,7 +56,7 @@ QString QskSimpleListBox::entryAt( int row ) const
     if ( row >= 0 && row < m_data->entries.size() )
         return m_data->entries[row];
 
-    return QString::null;
+    return QString();
 }
 
 QVariant QskSimpleListBox::valueAt( int row, int col ) const

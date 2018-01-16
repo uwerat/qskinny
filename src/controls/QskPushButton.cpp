@@ -171,7 +171,7 @@ void QskPushButton::setGraphic( const QskGraphic& graphic )
 
         if ( !m_data->graphicSource.isEmpty() )
         {
-            m_data->graphicSource = QString::null;
+            m_data->graphicSource = QString();
             m_data->isGraphicSourceDirty = false;
 
             Q_EMIT graphicSourceChanged();

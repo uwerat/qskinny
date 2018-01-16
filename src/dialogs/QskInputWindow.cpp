@@ -83,7 +83,7 @@ void QskInputWindow::setInfoText( const QString& text )
 
 QString QskInputWindow::infoText() const
 {
-    return m_subWindow ? m_subWindow->infoText() : QString::null;
+    return m_subWindow ? m_subWindow->infoText() : QString();
 }
 
 void QskInputWindow::setInfoTextOptions( const QskTextOptions& options )

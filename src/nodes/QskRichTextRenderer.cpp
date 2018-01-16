@@ -220,5 +220,5 @@ void QskRichTextRenderer::updateNode( const QString& text,
     }
 
     textItem.updateTextNode( item->window(), node );
-    textItem.setText( QString::null );
+    textItem.setText( QString() );
 }

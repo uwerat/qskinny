@@ -285,7 +285,7 @@ QString QskTabBar::buttonTextAt( int index ) const
     if ( const QskTabButton* btn = buttonAt( index ) )
         return btn->text();
 
-    return QString::null;
+    return QString();
 }
 
 int QskTabBar::indexOf( QskTabButton* button ) const

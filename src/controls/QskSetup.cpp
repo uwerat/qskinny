@@ -235,7 +235,7 @@ QskSkin* QskSetup::skin()
 {
     if ( m_data->skin == nullptr )
     {
-        m_data->skin = QskSkinManager::instance()->createSkin( QString::null );
+        m_data->skin = QskSkinManager::instance()->createSkin( QString() );
         Q_ASSERT( m_data->skin );
 
         m_data->skin->setParent( this );
