@@ -1049,6 +1049,23 @@ bool QskControl::event( QEvent* event )
 
             break;
         }
+        case QEvent::FocusIn:
+        {
+            if ( isFocusScope() && isTabFence() && ( scopedFocusItem() == nullptr ) )
+            {
+                /*
+                    When receiving the focus we need to have a focused
+                    item, so that the tab focus chain has a starting point.
+                 */
+
+                if ( auto focusItem = nextItemInFocusChain( true ) )
+                {
+                    if ( qskIsAncestorOf( this, focusItem ) )
+                        focusItem->setFocus( true );
+                }
+            }
+            break;
+        }   
     }
 
     switch( eventType )
