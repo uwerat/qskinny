@@ -19,8 +19,32 @@ static void qskSetupGeometryConnections(
     QObject::connect( sender, SIGNAL( yChanged() ), receiver, method );
     QObject::connect( sender, SIGNAL( widthChanged() ), receiver, method );
     QObject::connect( sender, SIGNAL( heightChanged() ), receiver, method );
+    
+    bool hasIndicatorSignal = ( qobject_cast< const QskControl* >( sender ) != nullptr );
+    if ( !hasIndicatorSignal )
+    {
+        const auto mo = sender->metaObject();
+        hasIndicatorSignal = ( mo->indexOfSignal( "focusIndicatorRectChanged()" ) >= 0 );
+    }
+        
+    if ( hasIndicatorSignal )
+    {
+        QObject::connect( sender, SIGNAL( focusIndicatorRectChanged() ), receiver, method );
+    }
 }
 
+static inline QRectF qskFocusIndicatorRect( const QQuickItem* item )
+{
+    if ( auto control = qobject_cast< const QskControl* >( item ) )
+        return control->focusIndicatorRect();
+
+    const QVariant v = item->property( "focusIndicatorRect" );
+    if ( v.canConvert( QMetaType::QRectF ) )
+        return v.toRectF();
+
+    return item->boundingRect();
+}
+        
 QskFocusIndicator::QskFocusIndicator( QQuickItem* parent ):
     Inherited( parent ) // parentItem() might change, but parent() stays
 {
@@ -120,7 +144,10 @@ QRectF QskFocusIndicator::focusRect() const
     {
         const QQuickItem* focusItem = window()->activeFocusItem();
         if ( focusItem && ( focusItem != window()->contentItem() ) )
-            return parentItem()->mapRectFromItem( focusItem, focusItem->boundingRect() );
+        {
+            const auto rect = qskFocusIndicatorRect( focusItem );
+            return parentItem()->mapRectFromItem( focusItem, rect );
+        }
     }
 
     return QRectF();
@@ -133,7 +160,7 @@ void QskFocusIndicator::resetConnections()
     QQuickItem* item = parentItem();
     if ( item )
     {
-        qskSetupGeometryConnections( item, this, SLOT(updateFocusFrame()) );
+        qskSetupGeometryConnections( item, this, SLOT( updateFocusFrame() ) );
     }
 }
 

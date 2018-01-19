@@ -43,6 +43,9 @@ Slider::Slider( QQuickItem* parentItem ):
     skinlet->setOwnedBySkinnable( true );
 
     setSkinlet( skinlet );
+
+    connect( this, &QskRangeControl::valueChanged,
+        this, &QskControl::focusIndicatorRectChanged );
 }
 
 QSizeF Slider::contentsSizeHint() const
@@ -51,3 +54,7 @@ QSizeF Slider::contentsSizeHint() const
     return Inherited::contentsSizeHint() + QSizeF( 0, extra );
 }
 
+QRectF Slider::focusIndicatorRect() const
+{
+    return subControlRect( QskSlider::Handle );
+}

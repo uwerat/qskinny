@@ -16,6 +16,8 @@ public:
     QSK_SUBCONTROLS( Scale, Decoration )
 
     Slider( QQuickItem* parent = nullptr );
+
+    virtual QRectF focusIndicatorRect() const override;
     virtual QSizeF contentsSizeHint() const override;
 };
 

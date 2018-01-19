@@ -107,6 +107,7 @@ public:
 
     virtual QRectF layoutRect() const;
     virtual QRectF gestureRect() const;
+    virtual QRectF focusIndicatorRect() const;
 
     void setAutoFillBackground( bool );
     bool autoFillBackground() const;
@@ -163,6 +164,7 @@ public:
 Q_SIGNALS:
     void backgroundChanged();
     void marginsChanged();
+    void focusIndicatorRectChanged();
     void localeChanged( const QLocale& );
     void controlFlagsChanged();
     void focusPolicyChanged();
