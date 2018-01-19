@@ -383,7 +383,7 @@ void QskWindow::layoutItems()
     const auto children = contentItem()->childItems();
     for ( auto child : children )
     {
-        if ( !QskControl::isTransparentForPositioner( child ) )
+        if ( !qskIsTransparentForPositioner( child ) )
         {
             child->setPosition( contentItem()->position() );
             child->setSize( sz );

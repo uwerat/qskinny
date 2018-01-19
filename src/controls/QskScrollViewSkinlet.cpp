@@ -166,7 +166,7 @@ QSGNode* QskScrollViewSkinlet::updateContentsNode(
 
 QSGNode* QskScrollViewSkinlet::contentsNode( const QskScrollView* scrollView )
 {
-    QSGNode* node = const_cast< QSGNode* >( QskControl::paintNode( scrollView ) );
+    QSGNode* node = const_cast< QSGNode* >( qskPaintNode( scrollView ) );
     if ( node )
     {
         node = findNodeByRole( node, ContentsRootRole );

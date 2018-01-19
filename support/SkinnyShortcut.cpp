@@ -192,11 +192,11 @@ static inline void countNodes( const QSGNode* node, int& counter )
 
 static void countNodes( const QQuickItem* item, int& counter )
 {
-    const auto itemNode = QskControl::itemNode( item );
+    const auto itemNode = qskItemNode( item );
 
     if ( itemNode )
     {
-        auto node = QskControl::paintNode( item );
+        auto node = qskPaintNode( item );
         if ( node )
         {
             countNodes( node, counter );

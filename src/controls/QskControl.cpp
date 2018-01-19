@@ -42,6 +42,73 @@ static inline void qskSendEventTo( QObject* object, QEvent::Type type )
     QCoreApplication::sendEvent( object, &event );
 }
 
+bool qskIsAncestorOf( const QQuickItem* item, const QQuickItem* child )
+{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+    return item->isAncestorOf( child );
+#else
+    while ( child )
+    {
+        if ( child == item )
+            return true;
+
+        child = child->parentItem();
+    }
+
+    return false;
+#endif
+}
+
+bool qskIsTabFence( const QQuickItem* item )
+{
+    if ( item == nullptr )
+        return false;
+
+    return QQuickItemPrivate::get( item )->isTabFence;
+}
+
+bool qskIsShortcutScope( const QQuickItem* item )
+{
+    if ( item == nullptr )
+        return false;
+
+    /*
+        We might have something like CTRL+W to close a "window".
+        But in Qt/Quick a window is not necessarily a QQuickWindow
+        like we have f.e QskSubWindow.
+
+        Maybe it's worth to introduce a shortcutScope flag but for
+        the moment we simply use the isFocusScope/isTabFence combination,
+        that should usually be set for those "windows".
+     */
+
+    return item->isFocusScope() && QQuickItemPrivate::get( item )->isTabFence;
+}
+
+bool qskIsTransparentForPositioner( const QQuickItem* item )
+{
+    if ( item == nullptr )
+        return true;
+
+    return QQuickItemPrivate::get( item )->isTransparentForPositioner();
+}
+
+const QSGNode* qskItemNode( const QQuickItem* item )
+{
+    if ( item == nullptr )
+        return nullptr;
+
+    return QQuickItemPrivate::get( item )->itemNodeInstance;
+}
+
+const QSGNode* qskPaintNode( const QQuickItem* item )
+{
+    if ( item == nullptr )
+        return nullptr;
+
+    return QQuickItemPrivate::get( item )->paintNode;
+}
+
 static inline controlFlags_t qskControlFlags()
 {
     // we are only interested in the first 8 bits
@@ -479,14 +546,6 @@ bool QskControl::isTransparentForPositioner() const
     return d_func()->isTransparentForPositioner();
 }
 
-bool QskControl::isTransparentForPositioner( const QQuickItem* item )
-{
-    if ( item == nullptr )
-        return true;
-
-    return QQuickItemPrivate::get( item )->isTransparentForPositioner();
-}
-
 void QskControl::setPolishOnResize( bool on )
 {
     Q_D( QskControl );
@@ -553,32 +612,6 @@ void QskControl::setTabFence( bool on )
 bool QskControl::isTabFence() const
 {
     return d_func()->isTabFence;
-}
-
-bool QskControl::isTabFence( const QQuickItem* item )
-{
-    if ( item == nullptr )
-        return false;
-
-    return QQuickItemPrivate::get( item )->isTabFence;
-}
-
-bool QskControl::isShortcutScope( const QQuickItem* item )
-{
-    if ( item == nullptr )
-        return false;
-
-    /*
-        We might have something like CTRL+W to close a "window".
-        But in Qt/Quick a window is not necessarily a QQuickWindow
-        like we have f.e QskSubWindow.
-
-        Maybe it's worth to introduce a shortcutScope flag but for
-        the moment we simply use the isFocusScope/isTabFence combination,
-        that should usually be set for those "windows".
-     */
-
-    return item->isFocusScope() && QQuickItemPrivate::get( item )->isTabFence;
 }
 
 QskControl::Flags QskControl::controlFlags() const
@@ -1170,22 +1203,6 @@ void QskControl::releaseResources()
     qskReleasedWindowCounter->setWindow( window() );
 }
 
-const QSGNode* QskControl::itemNode( const QQuickItem* item )
-{
-    if ( item == nullptr )
-        return nullptr;
-
-    return QQuickItemPrivate::get( item )->itemNodeInstance;
-}
-
-const QSGNode* QskControl::paintNode( const QQuickItem* item )
-{
-    if ( item == nullptr )
-        return nullptr;
-
-    return QQuickItemPrivate::get( item )->paintNode;
-}
-
 void QskControl::itemChange( QQuickItem::ItemChange change,
     const QQuickItem::ItemChangeData& value )
 {
@@ -1210,7 +1227,7 @@ void QskControl::itemChange( QQuickItem::ItemChange change,
         }
         case QQuickItem::ItemChildAddedChange:
         {
-            if ( d->autoLayoutChildren && !isTransparentForPositioner( value.item ) )
+            if ( d->autoLayoutChildren && !qskIsTransparentForPositioner( value.item ) )
                 polish();
 
             break;

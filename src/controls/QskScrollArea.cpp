@@ -15,19 +15,6 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitemchangelistener_p.h>
 QSK_QT_PRIVATE_END
 
-static inline bool qskIsAncestorOf( const QQuickItem* item, const QQuickItem* child )
-{
-    while ( child )
-    {
-        if ( child == item )
-            return true;
-
-        child = child->parentItem();
-    }
-
-    return false;
-}
-
 static QSizeF qskAdjustedSize( const QQuickItem* item, const QSizeF& targetSize )
 {
     using namespace QskLayoutConstraint;
@@ -312,7 +299,7 @@ void QskScrollAreaClipItem::updateNode( QSGNode* )
 
 const QSGClipNode* QskScrollAreaClipItem::viewPortClipNode() const
 {
-    auto node = const_cast< QSGNode* >( QskControl::paintNode( scrollArea() ) );
+    auto node = const_cast< QSGNode* >( qskPaintNode( scrollArea() ) );
     if ( node )
         node = QskSkinlet::findNodeByRole( node, QskScrollViewSkinlet::ContentsRootRole );
 

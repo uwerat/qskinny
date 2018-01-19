@@ -205,7 +205,7 @@ void QskIndexedLayoutBox::itemChange(
         {
             if ( m_data->autoAddChildren && !m_data->blockChildAdded )
             {
-                if ( !isTransparentForPositioner( value.item ) )
+                if ( !qskIsTransparentForPositioner( value.item ) )
                     addItem( value.item );
             }
 

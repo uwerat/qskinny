@@ -360,7 +360,7 @@ bool QskShortcutMap::contextMatcher(
                 We have to find out if the active focus is inside
                 the surronding shortcut scope.
              */
-            if ( QskControl::isShortcutScope( item ) )
+            if ( qskIsShortcutScope( item ) )
             {
                 if ( !item->hasFocus() )
                     return false;

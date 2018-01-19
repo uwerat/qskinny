@@ -144,7 +144,7 @@ QSizeF QskSubWindow::contentsSizeHint() const
     const auto children = childItems();
     for ( auto child : children )
     {
-        if ( isTransparentForPositioner( child ) )
+        if ( qskIsTransparentForPositioner( child ) )
             continue;
 
         const QskControl* control = qobject_cast< QskControl* >( child );
@@ -182,7 +182,7 @@ void QskSubWindow::itemChange( QQuickItem::ItemChange change,
         case QQuickItem::ItemChildAddedChange:
         case QQuickItem::ItemChildRemovedChange:
         {
-            if ( !isTransparentForPositioner( value.item ) )
+            if ( !qskIsTransparentForPositioner( value.item ) )
             {
                 resetImplicitSize();
                 polish();

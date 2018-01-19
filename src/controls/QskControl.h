@@ -120,11 +120,6 @@ public:
     void setTransparentForPositioner( bool );
     bool isTransparentForPositioner() const;
 
-    static bool isTransparentForPositioner( const QQuickItem* );
-
-    static const QSGNode* itemNode( const QQuickItem* );
-    static const QSGNode* paintNode( const QQuickItem* );
-
     void setWheelEnabled( bool );
     bool isWheelEnabled() const;
 
@@ -133,9 +128,6 @@ public:
 
     void setTabFence( bool );
     bool isTabFence() const;
-
-    static bool isTabFence( const QQuickItem* );
-    static bool isShortcutScope( const QQuickItem* );
 
     void setControlFlags( Flags );
     void resetControlFlags();
@@ -246,6 +238,14 @@ inline QSizeF QskControl::sizeHint() const
 {
     return effectiveConstraint( Qt::PreferredSize );
 }
+
+QSK_EXPORT bool qskIsAncestorOf( const QQuickItem* item, const QQuickItem *child );
+QSK_EXPORT bool qskIsTransparentForPositioner( const QQuickItem* );
+QSK_EXPORT bool qskIsTabFence( const QQuickItem* );
+QSK_EXPORT bool qskIsShortcutScope( const QQuickItem* );
+
+QSK_EXPORT const QSGNode* qskItemNode( const QQuickItem* );
+QSK_EXPORT const QSGNode* qskPaintNode( const QQuickItem* );
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( QskControl::Flags )
 Q_DECLARE_METATYPE( QskControl::Flags )

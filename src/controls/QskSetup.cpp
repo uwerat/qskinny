@@ -306,7 +306,7 @@ bool QskSetup::eventFilter( QObject* object, QEvent* event )
 
             But we also don't want to have how it is done in QC2 by adding
             the focus management in the event handler of the base class.
-            This implementatio reverts the expected default behaviour of when
+            This implementation reverts the expected default behaviour of when
             events are accepted/ignored + is an error prone nightmare, when it
             comes to overloading event handlers missing to call the base class.
 
