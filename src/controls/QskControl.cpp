@@ -93,6 +93,27 @@ bool qskIsTransparentForPositioner( const QQuickItem* item )
     return QQuickItemPrivate::get( item )->isTransparentForPositioner();
 }
 
+QQuickItem* qskNearestFocusScope( const QQuickItem* item )
+{
+    if ( item )
+    {
+        for ( QQuickItem* scope = item->parentItem();
+            scope != nullptr; scope = scope->parentItem() )
+        {
+            if ( scope->isFocusScope() )
+                return scope;
+        }
+
+        /*
+            As the default setting of the root item is to be a focus scope
+            we usually never get here - beside the flag has been explicitely
+            disabled in application code.
+         */
+    }
+
+    return nullptr;
+}
+
 const QSGNode* qskItemNode( const QQuickItem* item )
 {
     if ( item == nullptr )

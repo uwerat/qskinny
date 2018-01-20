@@ -246,6 +246,8 @@ QSK_EXPORT bool qskIsTransparentForPositioner( const QQuickItem* );
 QSK_EXPORT bool qskIsTabFence( const QQuickItem* );
 QSK_EXPORT bool qskIsShortcutScope( const QQuickItem* );
 
+QSK_EXPORT QQuickItem* qskNearestFocusScope( const QQuickItem* );
+
 QSK_EXPORT const QSGNode* qskItemNode( const QQuickItem* );
 QSK_EXPORT const QSGNode* qskPaintNode( const QQuickItem* );
 

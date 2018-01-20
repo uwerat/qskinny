@@ -108,9 +108,6 @@ int QskTabView::insertTab( int index, QskTabButton* button, QQuickItem* item )
     index = m_data->tabBar->insertTab( index, button );
     m_data->stackBox->insertItem( index, item, Qt::Alignment() );
 
-    if ( m_data->tabBar->count() == 1 )
-        button->setFocus( true );
-
     return index;
 }
 

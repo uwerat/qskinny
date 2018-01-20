@@ -19,6 +19,7 @@ static void qskSetupGeometryConnections(
     QObject::connect( sender, SIGNAL( yChanged() ), receiver, method );
     QObject::connect( sender, SIGNAL( widthChanged() ), receiver, method );
     QObject::connect( sender, SIGNAL( heightChanged() ), receiver, method );
+    QObject::connect( sender, SIGNAL( visibleChanged() ), receiver, method );
     
     bool hasIndicatorSignal = ( qobject_cast< const QskControl* >( sender ) != nullptr );
     if ( !hasIndicatorSignal )
@@ -143,7 +144,8 @@ QRectF QskFocusIndicator::focusRect() const
     if ( window() && parentItem() )
     {
         const QQuickItem* focusItem = window()->activeFocusItem();
-        if ( focusItem && ( focusItem != window()->contentItem() ) )
+        if ( focusItem && ( focusItem != this )
+            && ( focusItem != window()->contentItem() ) )
         {
             const auto rect = qskFocusIndicatorRect( focusItem );
             return parentItem()->mapRectFromItem( focusItem, rect );

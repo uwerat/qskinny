@@ -36,6 +36,8 @@ public:
     ButtonBox( QQuickItem* parent = nullptr ):
         QskLinearBox( Qt::Horizontal, 2, parent )
     {
+        setObjectName( "ButtonBox" );
+
         setMargins( 10 );
         setSpacing( 5 );
 
@@ -130,9 +132,19 @@ int main( int argc, char* argv[] )
     qskDialog->setPolicy( QskDialog::EmbeddedBox );
 
     ButtonBox* box = new ButtonBox();
-    box->itemAtIndex( 0 )->setFocus( true );
 
-    box->setObjectName( "ButtonBox" );
+    /*
+        To avoid losing the focus, when a message box is executed
+        we have to define the "main window" ( here a ButtonBox ) to
+        be a focusScope.
+     */
+    box->setFlag( QQuickItem::ItemIsFocusScope, true );
+    box->setTabFence( true );
+    box->setFocusPolicy( Qt::TabFocus );
+
+    // setting the initial focus
+    box->itemAtIndex( 0 )->setFocus( true );
+    box->setFocus( true );
 
     QskWindow window;
     window.addItem( box );

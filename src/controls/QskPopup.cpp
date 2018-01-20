@@ -6,7 +6,8 @@
 #include "QskPopup.h"
 #include "QskAspect.h"
 #include <QQuickWindow>
-#include <QPointer>
+#include <QGuiApplication>
+#include <QStyleHints>
 #include <QtMath>
 
 QSK_QT_PRIVATE_BEGIN
@@ -16,25 +17,7 @@ QSK_QT_PRIVATE_END
 
 QSK_SUBCONTROL( QskPopup, Overlay )
 
-static inline QQuickItem* qskNearestFocusScope( const QQuickItem* item )
-{
-    for ( QQuickItem* scope = item->parentItem();
-        scope != nullptr; scope = scope->parentItem() )
-    {
-        if ( scope->isFocusScope() )
-            return scope;
-    }
-
-    /*
-        As the default setting of the root item is to be a focus scope
-        we usually never get here - beside the flag has been explicitely
-        disabled in application code.
-     */
-
-    return nullptr;
-}
-
-static void qskSetFocus( QQuickItem* item, bool on )
+static void qskSetFocusInScope( QQuickItem* item, bool on )
 {
     if ( item->window() == nullptr )
         return;
@@ -45,8 +28,7 @@ static void qskSetFocus( QQuickItem* item, bool on )
         QQuickWindowPrivate::setFocusInScope/clearFocusInScope directly,
      */
 
-    const auto scope = qskNearestFocusScope( item );
-    if ( scope )
+    if ( const auto scope = qskNearestFocusScope( item ) )
     {
         auto dw = QQuickWindowPrivate::get( item->window() );
 
@@ -55,6 +37,71 @@ static void qskSetFocus( QQuickItem* item, bool on )
         else
             dw->clearFocusInScope( scope, item, Qt::PopupFocusReason );
     }
+}
+
+static QQuickItem* qskNextFocusItem( const QskPopup* popup )
+{
+    if ( popup == nullptr || popup->parentItem() == nullptr )
+        return nullptr;
+
+    const auto children = popup->parentItem()->childItems();
+    if ( children.count() <= 1 )
+        return nullptr;
+
+    QskPopup* modalPopup = nullptr;
+
+    for ( auto child : children )
+    {
+        if ( ( child != popup ) && child->isVisible() )
+        {
+            if ( auto otherPopup = qobject_cast< QskPopup* >( child ) )
+            {
+                if ( !otherPopup->isModal() || ( modalPopup != nullptr ) )
+                {
+                    /*
+                        We can't decide, wether to give the focus to
+                        one of the popups or the top level item
+                     */
+                    return nullptr;
+                }
+
+                modalPopup = otherPopup;
+            }
+        }
+    }
+
+    if ( modalPopup )
+    {
+        // Exactly one popup, that is modal.
+        return modalPopup;
+    }
+
+    const auto tabFocusBehavior = QGuiApplication::styleHints()->tabFocusBehavior();
+
+    int i = 0;
+    while( children[i] != popup )
+        i++;
+
+    for ( int j = i - 1; j != i; j-- )
+    {
+        auto item = children[j];
+        if ( item->isEnabled() && item->isVisible() )
+        {
+            if ( item->activeFocusOnTab() )
+            {
+                if ( ( tabFocusBehavior == Qt::TabFocusAllControls ) ||
+                    QQuickItemPrivate::canAcceptTabFocus( item ) )
+                {
+                    return item;
+                }
+            }
+        }
+
+        if ( j == 0 )
+            j = children.count();
+    }
+
+    return nullptr;
 }
 
 namespace
@@ -194,16 +241,17 @@ public:
         inputGrabber( nullptr ),
         isModal( false ),
         isOpen( false ),
-        autoGrabFocus( true )
+        autoGrabFocus( true ),
+        handoverFocus( true )
     {
     }
 
     InputGrabber* inputGrabber;
-    QPointer< QQuickItem > initialFocusItem;
 
     bool isModal : 1;
     bool isOpen : 1;
     bool autoGrabFocus : 1;
+    bool handoverFocus : 1;
 };
 
 QskPopup::QskPopup( QQuickItem* parent ):
@@ -217,7 +265,7 @@ QskPopup::QskPopup( QQuickItem* parent ):
 
     setFlag( ItemIsFocusScope, true );
     setTabFence( true );
-    setFocusPolicy( Qt::ClickFocus );
+    setFocusPolicy( Qt::StrongFocus );
 }
 
 QskPopup::~QskPopup()
@@ -286,35 +334,31 @@ bool QskPopup::hasOverlay() const
 
 void QskPopup::grabFocus( bool on )
 {
-    /*
-        Note, that we are grabbing the local focus, what only
-        has an effect on the active focus, when all surrounding
-        focus scopes already have the focus.
-     */
-
     if ( on == hasFocus() )
         return;
 
     if ( on )
     {
-        if ( auto scope = qskNearestFocusScope( this ) )
-        {
-            m_data->initialFocusItem = scope->scopedFocusItem();
-            qskSetFocus( this, true );
-        }
+        qskSetFocusInScope( this, true );
     }
     else
     {
-        QQuickItem* focusItem = m_data->initialFocusItem;
-        m_data->initialFocusItem = nullptr;
+        QQuickItem* focusItem = nullptr;
 
-        if ( focusItem == nullptr )
-            focusItem = nextItemInFocusChain( false );
+        if ( m_data->handoverFocus )
+        {
+            /*
+                Qt/Quick does not handover the focus to another item,
+                when the active focus gets lost. For the situation of
+                a popup being closed we try to do it.
+             */
+            focusItem = qskNextFocusItem( this );
+        }
 
         if ( focusItem )
-            qskSetFocus( focusItem, true );
+            qskSetFocusInScope( focusItem, true );
         else
-            qskSetFocus( this, false );
+            qskSetFocusInScope( this, false );
     }
 }
 
@@ -381,13 +425,6 @@ void QskPopup::itemChange( QQuickItem::ItemChange change,
             m_data->inputGrabber = nullptr;
 
             updateInputGrabber();
-
-            break;
-        }
-        case QQuickItem::ItemActiveFocusHasChanged:
-        {
-            if ( !hasFocus() )
-                m_data->initialFocusItem = nullptr;
 
             break;
         }
