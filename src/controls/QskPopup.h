@@ -43,6 +43,8 @@ protected:
     virtual void itemChange( QQuickItem::ItemChange,
         const QQuickItem::ItemChangeData& ) override;
 
+    virtual QQuickItem* focusSuccessor() const;
+
     void grabFocus( bool );
 
 private:

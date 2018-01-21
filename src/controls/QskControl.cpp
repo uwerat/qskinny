@@ -114,6 +114,14 @@ QQuickItem* qskNearestFocusScope( const QQuickItem* item )
     return nullptr;
 }
 
+QList<QQuickItem *> qskPaintOrderChildItems( const QQuickItem* item )
+{
+    if ( item )
+        return QQuickItemPrivate::get( item )->paintOrderChildItems();
+
+    return QList<QQuickItem *>();
+}
+
 const QSGNode* qskItemNode( const QQuickItem* item )
 {
     if ( item == nullptr )
