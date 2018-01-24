@@ -21,6 +21,23 @@ static inline bool qskIsUpdateBlocked( const QQuickItem* item )
         if ( const auto control = qobject_cast< const QskControl* >( item ) )
             return control->testControlFlag( QskControl::DeferredUpdate );
     }
+
+#if 0
+    /*
+        Blocking items, that are outside the window would be easy,
+        but we have not yet found a performant way to send update notifications
+        when an item enters/leaves the window. TODO ...
+     */
+    else if ( const auto control = qobject_cast< const QskControl* >( item ) )
+    {
+        const QRectF itemRect( item->mapToScene( QPointF() ), item->size() );
+        const QRectF sceneRect( 0, 0, item->window()->width(), item->window()->height() );
+
+        return !itemRect.intersects( sceneRect );
+    }
+}
+#endif
+    
     return false;
 }
 

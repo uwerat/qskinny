@@ -24,10 +24,27 @@ QSK_QT_PRIVATE_END
 static void qskResolveLocale( QskWindow* );
 static bool qskEnforcedSkin = false;
 
-static void qskSendEventTo( QObject* object, QEvent::Type type )
+static inline void qskSendEventTo( QObject* object, QEvent::Type type )
 {
     QEvent event( type );
     QCoreApplication::sendEvent( object, &event );
+}
+
+static QQuickItem* qskDefaultFocusItem( QQuickWindow* window )
+{
+    const auto children = qskPaintOrderChildItems( window->contentItem() );
+    for ( auto it = children.crbegin(); it != children.crend(); ++it)
+    {
+        auto child = *it;
+
+        if ( child->isFocusScope() && child->isVisible()
+            && child->isEnabled() && child->activeFocusOnTab() )
+        {
+            return child;
+        }
+    }
+
+    return window->contentItem()->nextItemInFocusChain( true );
 }
 
 namespace
@@ -187,7 +204,6 @@ bool QskWindow::autoLayoutChildren() const
     return d->autoLayoutChildren;
 }
 
-
 void QskWindow::addItem( QQuickItem* item )
 {
     if ( item == nullptr )
@@ -246,9 +262,49 @@ bool QskWindow::event( QEvent* event )
     return Inherited::event( event );
 }
 
+void QskWindow::keyPressEvent( QKeyEvent* event )
+{
+    if ( !( event->modifiers() & ( Qt::ControlModifier | Qt::AltModifier ) ) ) 
+    {
+        if ( ( event->key() == Qt::Key_Backtab ) || ( event->key() == Qt::Key_Tab ) )
+        {
+            auto focusItem = activeFocusItem();
+            if ( focusItem == nullptr || focusItem == contentItem() )
+            {
+                /*
+                    The Qt/Quick implementation for navigating along the
+                    focus tab chain gives unsufficient results, when the
+                    starting point is the root item. In this specific
+                    situation we also have to include all items being
+                    tab fences into consideration.
+
+                    In certain situations Qt/Quick gets even stuck in a non
+                    terminating loop: see Qt-Bug 65943
+
+                    So we better block the focus navigation and find the
+                    next focus item on our own.
+                 */
+                ensureFocus( Qt::TabFocusReason );
+                event->accept();
+
+                return;
+            }
+        }
+    }
+
+    Inherited::keyPressEvent( event );
+}
+
+void QskWindow::keyReleaseEvent( QKeyEvent* event )
+{
+    Inherited::keyReleaseEvent( event );
+}
+
 void QskWindow::exposeEvent( QExposeEvent* event )
 {
+    ensureFocus( Qt::OtherFocusReason );
     layoutItems();
+
     Inherited::exposeEvent( event );
 }
 
@@ -388,6 +444,18 @@ void QskWindow::layoutItems()
             child->setPosition( contentItem()->position() );
             child->setSize( sz );
         }
+    }
+}
+
+void QskWindow::ensureFocus( Qt::FocusReason reason )
+{
+    auto focusItem = contentItem()->scopedFocusItem();
+
+    if ( focusItem == nullptr )
+    {
+        focusItem = qskDefaultFocusItem( this );
+        if ( focusItem )
+            focusItem->setFocus( true, reason );
     }
 }
 

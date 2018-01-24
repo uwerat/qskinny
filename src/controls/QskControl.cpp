@@ -42,6 +42,11 @@ static inline void qskSendEventTo( QObject* object, QEvent::Type type )
     QCoreApplication::sendEvent( object, &event );
 }
 
+bool qskIsItemComplete( const QQuickItem* item )
+{
+    return QQuickItemPrivate::get( item )->componentComplete;
+}
+
 bool qskIsAncestorOf( const QQuickItem* item, const QQuickItem* child )
 {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
@@ -413,6 +418,12 @@ public:
     bool isWheelEnabled : 1;
 };
 
+static void qskUpdateControlFlags( QskControl::Flags flags, QskControl* control )
+{
+    auto d = static_cast< QskControlPrivate* >( QQuickItemPrivate::get( control ) );
+    d->updateControlFlags( flags );
+}
+
 QskControl::QskControl( QQuickItem* parent ):
     Inherited( *( new QskControlPrivate() ), parent )
 {
@@ -443,16 +454,18 @@ QskControl::QskControl( QQuickItem* parent ):
     qskRegistry->insert( this );
 }
 
-static void qskUpdateControlFlags( QskControl::Flags flags, QskControl* control )
-{
-    auto d = static_cast< QskControlPrivate* >( QQuickItemPrivate::get( control ) );
-    d->updateControlFlags( flags );
-}
-
 QskControl::~QskControl()
 {
     if ( qskRegistry )
         qskRegistry->remove( this );
+
+    /*
+        We set componentComplete to false, so that operations
+        that are triggered by detaching the item from its parent
+        can be aware of the about-to-delete state.
+     */
+    Q_D( QskControl );
+    d->componentComplete = false;
 }
 
 const char* QskControl::className() const
@@ -1089,8 +1102,11 @@ bool QskControl::event( QEvent* event )
 
                 if ( auto focusItem = nextItemInFocusChain( true ) )
                 {
-                    if ( qskIsAncestorOf( this, focusItem ) )
+                    if ( qskIsItemComplete( focusItem )
+                        && qskIsAncestorOf( this, focusItem ) )
+                    {
                         focusItem->setFocus( true );
+                    }
                 }
             }
             break;

@@ -82,8 +82,11 @@ protected:
     virtual bool event( QEvent* ) override;
     virtual void resizeEvent( QResizeEvent* ) override;
     virtual void exposeEvent( QExposeEvent* ) override;
+    virtual void keyPressEvent(QKeyEvent *) override;
+    virtual void keyReleaseEvent(QKeyEvent *) override;
 
     virtual void layoutItems();
+    virtual void ensureFocus( Qt::FocusReason );
 
 private:
     void resizeFramebuffer();

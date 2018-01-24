@@ -241,6 +241,7 @@ inline QSizeF QskControl::sizeHint() const
     return effectiveConstraint( Qt::PreferredSize );
 }
 
+QSK_EXPORT bool qskIsItemComplete( const QQuickItem* item );
 QSK_EXPORT bool qskIsAncestorOf( const QQuickItem* item, const QQuickItem *child );
 QSK_EXPORT bool qskIsTransparentForPositioner( const QQuickItem* );
 QSK_EXPORT bool qskIsTabFence( const QQuickItem* );

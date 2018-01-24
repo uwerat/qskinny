@@ -331,8 +331,11 @@ QQuickItem* QskPopup::focusSuccessor() const
         {
             auto child = *it;
 
-            if ( child != this && child->isFocusScope() )
+            if ( ( child != this ) && child->isFocusScope()
+                && child->activeFocusOnTab() && child->isVisible() )
+            {
                 return child;
+            }
         }
     }
 

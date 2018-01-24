@@ -143,12 +143,13 @@ QRectF QskFocusIndicator::focusRect() const
 {
     if ( window() && parentItem() )
     {
-        const QQuickItem* focusItem = window()->activeFocusItem();
-        if ( focusItem && ( focusItem != this )
-            && ( focusItem != window()->contentItem() ) )
+        const QQuickItem* item = window()->activeFocusItem();
+
+        if ( item && ( item != this ) && item->isVisible()
+            && ( item != window()->contentItem() ) )
         {
-            const auto rect = qskFocusIndicatorRect( focusItem );
-            return parentItem()->mapRectFromItem( focusItem, rect );
+            const auto rect = qskFocusIndicatorRect( item );
+            return parentItem()->mapRectFromItem( item, rect );
         }
     }
 
