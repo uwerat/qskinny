@@ -12,28 +12,6 @@
 
 QSK_SUBCONTROL( QskFocusIndicator, Panel )
 
-static void qskSetupGeometryConnections(
-    const QQuickItem* sender, QQuickItem* receiver, const char* method )
-{
-    QObject::connect( sender, SIGNAL( xChanged() ), receiver, method );
-    QObject::connect( sender, SIGNAL( yChanged() ), receiver, method );
-    QObject::connect( sender, SIGNAL( widthChanged() ), receiver, method );
-    QObject::connect( sender, SIGNAL( heightChanged() ), receiver, method );
-    QObject::connect( sender, SIGNAL( visibleChanged() ), receiver, method );
-    
-    bool hasIndicatorSignal = ( qobject_cast< const QskControl* >( sender ) != nullptr );
-    if ( !hasIndicatorSignal )
-    {
-        const auto mo = sender->metaObject();
-        hasIndicatorSignal = ( mo->indexOfSignal( "focusIndicatorRectChanged()" ) >= 0 );
-    }
-        
-    if ( hasIndicatorSignal )
-    {
-        QObject::connect( sender, SIGNAL( focusIndicatorRectChanged() ), receiver, method );
-    }
-}
-
 static inline QRectF qskFocusIndicatorRect( const QQuickItem* item )
 {
     if ( auto control = qobject_cast< const QskControl* >( item ) )
@@ -45,13 +23,26 @@ static inline QRectF qskFocusIndicatorRect( const QQuickItem* item )
 
     return item->boundingRect();
 }
-        
+
+class QskFocusIndicator::PrivateData
+{
+public:
+    void resetConnections()
+    {
+        for ( const auto connection : connections )
+            QObject::disconnect( connection );
+
+        connections.clear();
+    }
+
+    QVector< QMetaObject::Connection > connections;
+};
+
 QskFocusIndicator::QskFocusIndicator( QQuickItem* parent ):
-    Inherited( parent ) // parentItem() might change, but parent() stays
+    Inherited( parent ), // parentItem() might change, but parent() stays
+    m_data( new PrivateData() )
 {
     setTransparentForPositioner( true );
-    resetConnections();
-
     connectWindow( window(), true );
 }
 
@@ -64,9 +55,15 @@ void QskFocusIndicator::onFocusItemGeometryChanged()
     updateFocusFrame();
 }
 
+void QskFocusIndicator::onFocusItemDestroyed()
+{
+    m_data->resetConnections();
+    setVisible( false );
+}
+
 void QskFocusIndicator::onFocusItemChanged()
 {
-    disconnect( this, SLOT( onFocusItemGeometryChanged() ) );
+    m_data->resetConnections();
 
     if ( window() == nullptr )
         return;
@@ -89,8 +86,7 @@ void QskFocusIndicator::onFocusItemChanged()
         return;
     }
 
-    qskSetupGeometryConnections( focusItem,
-        this, SLOT( onFocusItemGeometryChanged() ) );
+    m_data->connections += connectItem( focusItem );
 
     const QQuickItem* item = focusItem;
     while ( item->parentItem() )
@@ -118,8 +114,7 @@ void QskFocusIndicator::onFocusItemChanged()
 
         item = itemParent;
 
-        qskSetupGeometryConnections( item,
-            this, SLOT( onFocusItemGeometryChanged() ) );
+        m_data->connections += connectItem( item );
     }
 
     updateFocusFrame();
@@ -156,23 +151,14 @@ QRectF QskFocusIndicator::focusRect() const
     return QRectF();
 }
 
-void QskFocusIndicator::resetConnections()
-{
-    disconnect( this, SLOT( updateFocusFrame() ) );
-
-    QQuickItem* item = parentItem();
-    if ( item )
-    {
-        qskSetupGeometryConnections( item, this, SLOT( updateFocusFrame() ) );
-    }
-}
-
 void QskFocusIndicator::windowChangeEvent( QskWindowChangeEvent* event )
 {
     Inherited::windowChangeEvent( event );
 
     connectWindow( event->oldWindow(), false );
     connectWindow( event->window(), true );
+
+    onFocusItemChanged();
 }
 
 void QskFocusIndicator::connectWindow( const QQuickWindow* window, bool on )
@@ -190,6 +176,38 @@ void QskFocusIndicator::connectWindow( const QQuickWindow* window, bool on )
         disconnect( window, &QQuickWindow::activeFocusItemChanged,
             this, &QskFocusIndicator::onFocusItemChanged );
     }
+}
+
+QVector< QMetaObject::Connection > QskFocusIndicator::connectItem( const QQuickItem* sender )
+{
+    QVector< QMetaObject::Connection > c;
+    c.reserve( 7 );
+
+    c += QObject::connect( sender, &QObject::destroyed,
+        this, &QskFocusIndicator::onFocusItemDestroyed );
+
+    const auto method = &QskFocusIndicator::onFocusItemGeometryChanged;
+
+    c += QObject::connect( sender, &QQuickItem::xChanged, this, method );
+    c += QObject::connect( sender, &QQuickItem::yChanged, this, method );
+    c += QObject::connect( sender, &QQuickItem::widthChanged, this, method );
+    c += QObject::connect( sender, &QQuickItem::heightChanged, this, method );
+    c += QObject::connect( sender, &QQuickItem::visibleChanged, this, method );
+
+    if ( const auto control = qobject_cast< const QskControl* >( sender ) )
+    {
+        c += QObject::connect( control, &QskControl::focusIndicatorRectChanged, this, method );
+    }
+    else
+    {
+        if ( sender->metaObject()->indexOfSignal( "focusIndicatorRectChanged()" ) >= 0 )
+        {
+            c += QObject::connect( sender, SIGNAL( focusIndicatorRectChanged() ),
+                this, SLOT( onFocusItemGeometryChanged() ) );
+        }
+    }
+
+    return c;
 }
 
 #include "moc_QskFocusIndicator.cpp"

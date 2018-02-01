@@ -8,6 +8,8 @@
 
 #include "QskControl.h"
 
+template class QVector< QMetaObject::Connection >;
+
 class QSK_EXPORT QskFocusIndicator : public QskControl
 {
     Q_OBJECT
@@ -22,17 +24,21 @@ public:
 
 protected:
     virtual void windowChangeEvent( QskWindowChangeEvent* ) override;
+    virtual QRectF focusRect() const;
 
 private Q_SLOTS:
-    void updateFocusFrame();
-    void onFocusItemChanged();
     void onFocusItemGeometryChanged();
 
 private:
-    QRectF focusRect() const;
+    void onFocusItemChanged();
+    void onFocusItemDestroyed();
+    void updateFocusFrame();
 
-    void resetConnections();
-    void connectWindow( const QQuickWindow*, bool );
+    void connectWindow( const QQuickWindow*, bool on );
+    QVector< QMetaObject::Connection > connectItem( const QQuickItem* );
+
+    class PrivateData;
+    std::unique_ptr< PrivateData > m_data;
 };
 
 #endif
