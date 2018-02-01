@@ -30,7 +30,6 @@ public:
 private:
     void beforeSynchronizing( QQuickWindow* );
     void resetBlockedDirty();
-    void cleanUp( QObject* );
 
     QSet< QObject* > m_windows;
 };

@@ -81,7 +81,8 @@ void QskDirtyItemFilter::addWindow( QQuickWindow* window )
         window, [ this, window ] { beforeSynchronizing( window ); },
         Qt::DirectConnection );
 
-    connect( window, &QObject::destroyed, this, &QskDirtyItemFilter::cleanUp );
+    connect( window, &QObject::destroyed,
+        this, [ this, window ] { m_windows.remove( window ); } );
 }
 
 void QskDirtyItemFilter::beforeSynchronizing( QQuickWindow* window )
@@ -110,12 +111,6 @@ void QskDirtyItemFilter::resetBlockedDirty()
     qskBlockDirty( window->contentItem(), false );
     disconnect( window, &QQuickWindow::afterSynchronizing,
         this, &QskDirtyItemFilter::resetBlockedDirty );
-}
-
-void QskDirtyItemFilter::cleanUp( QObject* window )
-{
-    disconnect( window );
-    m_windows.remove( window );
 }
 
 void QskDirtyItemFilter::filterDirtyList( QQuickWindow* window,
