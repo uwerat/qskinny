@@ -1501,7 +1501,7 @@ QRectF QskControl::gestureRect() const
 
 QRectF QskControl::focusIndicatorRect() const
 {
-    return boundingRect();
+    return contentsRect();
 }
 
 void QskControl::updateLayout()
