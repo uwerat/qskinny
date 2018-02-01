@@ -25,20 +25,9 @@ class QSK_EXPORT QskWindow : public QQuickWindow
     Q_PROPERTY( QLocale locale READ locale
         WRITE setLocale RESET resetLocale NOTIFY localeChanged FINAL )
 
-    Q_PROPERTY( FramebufferMode framebufferMode READ framebufferMode
-        WRITE setFramebufferMode NOTIFY framebufferModeChanged FINAL )
-
     using Inherited = QQuickWindow;
 
 public:
-    enum FramebufferMode
-    {
-        DefaultFramebufferMode = 0,
-        OffscreenFramebufferMode = 1
-    };
-
-    Q_ENUM( FramebufferMode )
-
     QskWindow( QWindow* parent = nullptr );
     virtual ~QskWindow();
 
@@ -60,9 +49,6 @@ public:
 
     Q_INVOKABLE void setFixedSize( const QSize& );
 
-    void setFramebufferMode( FramebufferMode );
-    FramebufferMode framebufferMode() const;
-
     void polishItems();
 
     void setCustomRenderMode( const char* mode );
@@ -70,7 +56,6 @@ public:
 
 Q_SIGNALS:
     void localeChanged( const QLocale& );
-    void framebufferModeChanged( FramebufferMode );
     void autoLayoutChildrenChanged();
     void deleteOnCloseChanged();
 
@@ -89,8 +74,6 @@ protected:
     virtual void ensureFocus( Qt::FocusReason );
 
 private:
-    void resizeFramebuffer();
-    void blitFramebuffer();
     void enforceSkin();
 
     Q_DECLARE_PRIVATE( QskWindow )

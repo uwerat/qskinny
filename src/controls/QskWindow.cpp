@@ -101,7 +101,6 @@ class QskWindowPrivate : public QQuickWindowPrivate
 public:
     QskWindowPrivate():
         preferredSize( -1, -1 ),
-        framebufferMode( QskWindow::DefaultFramebufferMode ),
         explicitLocale( false ),
         deleteOnClose( false ),
         autoLayoutChildren( true )
@@ -113,9 +112,7 @@ public:
 
     // minimum/maximum constraints are offered by QWindow
     QSize preferredSize;
-    QMetaObject::Connection renderTargetConnection;
 
-    QskWindow::FramebufferMode framebufferMode : 1;
     bool explicitLocale : 1;
     bool deleteOnClose : 1;
     bool autoLayoutChildren : 1;
@@ -314,10 +311,6 @@ void QskWindow::resizeEvent( QResizeEvent* event )
 
     if ( isExposed() )
         layoutItems();
-
-    Q_D( QskWindow );
-    if ( d->framebufferMode == OffscreenFramebufferMode )
-        d->renderTargetSize = size() * devicePixelRatio();
 }
 
 QLocale QskWindow::locale() const
@@ -518,86 +511,6 @@ const char* QskWindow::customRenderMode() const
 {
     Q_D( const QskWindow );
     return d->customRenderMode;
-}
-
-void QskWindow::setFramebufferMode( FramebufferMode framebufferMode )
-{
-    Q_D( QskWindow );
-
-    if ( d->framebufferMode == framebufferMode )
-        return;
-
-    d->framebufferMode = framebufferMode;
-    Q_EMIT framebufferModeChanged( d->framebufferMode );
-
-    connect( this, &QQuickWindow::beforeRendering,
-        this, &QskWindow::resizeFramebuffer );
-}
-
-QskWindow::FramebufferMode QskWindow::framebufferMode() const
-{
-    Q_D( const QskWindow );
-    return d->framebufferMode;
-}
-
-void QskWindow::resizeFramebuffer()
-{
-    Q_D( QskWindow );
-
-    QObject::disconnect( this, &QQuickWindow::beforeRendering,
-        this, &QskWindow::resizeFramebuffer );
-
-    if ( d->framebufferMode == DefaultFramebufferMode )
-    {
-        delete renderTarget();
-        setRenderTarget( nullptr );
-        if ( d->renderTargetConnection )
-            QObject::disconnect( d->renderTargetConnection );
-        return;
-    }
-
-    QOpenGLFramebufferObjectFormat renderTargetFormat;
-    renderTargetFormat.setAttachment( QOpenGLFramebufferObject::CombinedDepthStencil );
-
-    const auto samples = format().samples();
-    if ( samples && QOpenGLExtensions( openglContext() ).hasOpenGLExtension(
-        QOpenGLExtensions::FramebufferMultisample ) )
-    {
-        renderTargetFormat.setSamples( format().samples() );
-    }
-
-    delete renderTarget();
-
-    const auto framebufferSize = size() * devicePixelRatio();
-
-    setRenderTarget( new QOpenGLFramebufferObject(
-        framebufferSize, renderTargetFormat ) );
-
-    // Hack the size to render to a portion of the FBO
-    d->renderTargetSize = framebufferSize;
-
-    if ( !d->renderTargetConnection )
-    {
-        connect( this, &QQuickWindow::afterRendering,
-            this, &QskWindow::blitFramebuffer );
-    }
-}
-
-void QskWindow::blitFramebuffer()
-{
-    if ( clearBeforeRendering() )
-    {
-        QOpenGLFunctions gl( openglContext() );
-        QOpenGLFramebufferObject::bindDefault();
-        const auto c = color();
-        gl.glClearColor( c.redF(), c.greenF(), c.blueF(), c.alphaF() );
-        gl.glClear( GL_COLOR_BUFFER_BIT );
-    }
-
-    const QRect rect( QPoint(), renderTargetSize() );
-    QOpenGLFramebufferObject::blitFramebuffer(
-        nullptr, rect, renderTarget(), rect,
-        GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 }
 
 void QskWindow::enforceSkin()
