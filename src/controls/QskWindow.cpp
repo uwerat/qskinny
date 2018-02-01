@@ -10,14 +10,12 @@
 #include "QskSkin.h"
 
 #include <QtMath>
-#include <QOpenGLFramebufferObject>
 #include <QPointer>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>
 #include <private/qquickitemchangelistener_p.h>
 #include <private/qquickwindow_p.h>
-#include <private/qopenglextensions_p.h>
 #include <private/qsgrenderer_p.h>
 QSK_QT_PRIVATE_END
 
