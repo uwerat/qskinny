@@ -69,7 +69,6 @@ int main( int argc, char* argv[] )
     tabView->addTab( "Stack Layout", new StackLayoutPage() );
 
     tabView->setCurrentIndex( 4 );
-    tabView->setFocus( true );
 
     QSize size( 800, 600 );
     size = size.expandedTo( tabView->sizeHint().toSize() );
