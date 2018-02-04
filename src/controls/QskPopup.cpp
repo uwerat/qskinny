@@ -322,6 +322,42 @@ bool QskPopup::event( QEvent* event )
     return ok;
 }
 
+void QskPopup::focusInEvent( QFocusEvent* event )
+{
+    Inherited::focusInEvent( event );
+
+    if ( isFocusScope() && isTabFence() && ( scopedFocusItem() == nullptr ) )
+    {
+        if ( event->reason() == Qt::PopupFocusReason )
+        {
+            /*
+                When receiving the focus we need to have a focused
+                item, so that the tab focus chain has a starting point.
+
+                But we only do it when the reason is Qt::PopupFocusReason
+                as we also receive focus events during the process of reparenting
+                children and setting the focus there can leave the item tree
+                in an invalid state.
+             */
+
+            if ( auto focusItem = nextItemInFocusChain( true ) )
+            {
+                if ( qskIsItemComplete( focusItem )
+                    && qskIsAncestorOf( this, focusItem ) )
+                {
+                    focusItem->setFocus( true );
+                }
+            }
+        }
+    }
+
+}
+
+void QskPopup::focusOutEvent( QFocusEvent* event )
+{
+    Inherited::focusOutEvent( event );
+}
+
 QQuickItem* QskPopup::focusSuccessor() const
 {
     if ( const auto scope = qskNearestFocusScope( this ) )

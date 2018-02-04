@@ -38,7 +38,10 @@ Q_SIGNALS:
 
 protected:
     virtual void updateLayout() override;
+
     virtual bool event( QEvent* ) override;
+    virtual void focusInEvent( QFocusEvent * ) override;
+    virtual void focusOutEvent( QFocusEvent * ) override;
 
     virtual void itemChange( QQuickItem::ItemChange,
         const QQuickItem::ItemChangeData& ) override;
