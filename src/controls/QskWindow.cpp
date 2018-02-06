@@ -8,6 +8,7 @@
 #include "QskAspect.h"
 #include "QskSetup.h"
 #include "QskSkin.h"
+#include "QskEvent.h"
 
 #include <QtMath>
 #include <QPointer>
@@ -259,31 +260,28 @@ bool QskWindow::event( QEvent* event )
 
 void QskWindow::keyPressEvent( QKeyEvent* event )
 {
-    if ( !( event->modifiers() & ( Qt::ControlModifier | Qt::AltModifier ) ) ) 
+    if ( qskTabChainIncrement( event ) != 0 )
     {
-        if ( ( event->key() == Qt::Key_Backtab ) || ( event->key() == Qt::Key_Tab ) )
+        auto focusItem = activeFocusItem();
+        if ( focusItem == nullptr || focusItem == contentItem() )
         {
-            auto focusItem = activeFocusItem();
-            if ( focusItem == nullptr || focusItem == contentItem() )
-            {
-                /*
-                    The Qt/Quick implementation for navigating along the
-                    focus tab chain gives unsufficient results, when the
-                    starting point is the root item. In this specific
-                    situation we also have to include all items being
-                    tab fences into consideration.
+            /*
+                The Qt/Quick implementation for navigating along the
+                focus tab chain gives unsufficient results, when the
+                starting point is the root item. In this specific
+                situation we also have to include all items being
+                tab fences into consideration.
 
-                    In certain situations Qt/Quick gets even stuck in a non
-                    terminating loop: see Qt-Bug 65943
+                In certain situations Qt/Quick gets even stuck in a non
+                terminating loop: see Qt-Bug 65943
 
-                    So we better block the focus navigation and find the
-                    next focus item on our own.
-                 */
-                ensureFocus( Qt::TabFocusReason );
-                event->accept();
+                So we better block the focus navigation and find the
+                next focus item on our own.
+             */
+            ensureFocus( Qt::TabFocusReason );
+            event->accept();
 
-                return;
-            }
+            return;
         }
     }
 

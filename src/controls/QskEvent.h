@@ -99,4 +99,6 @@ private:
     const State m_state;
 };
 
+QSK_EXPORT int qskTabChainIncrement( const QEvent* );
+
 #endif

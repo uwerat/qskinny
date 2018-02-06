@@ -1,5 +1,6 @@
 #include "QskEvent.h"
 #include "QskGesture.h"
+#include <QKeyEvent>
 
 static void qskRegisterEventTypes()
 {
@@ -16,6 +17,27 @@ static void qskRegisterEventTypes()
 }
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterEventTypes )
+
+int qskTabChainIncrement( const QEvent* event )
+{
+    if ( event && event->type() == QEvent::KeyPress )
+    {
+        const auto keyEvent = static_cast< const QKeyEvent* >( event );
+        if ( !( keyEvent->modifiers() & ( Qt::ControlModifier | Qt::AltModifier ) ) )
+        {
+            switch( keyEvent->key() )
+            {
+                case Qt::Key_Tab:
+                    return 1;
+
+                case Qt::Key_Backtab:
+                    return -1;
+            }
+        }
+    }
+
+    return 0;
+}
 
 QskEvent::QskEvent( QskEvent::Type type ):
     QEvent( static_cast< QEvent::Type >( type ) )
