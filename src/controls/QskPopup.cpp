@@ -350,7 +350,6 @@ void QskPopup::focusInEvent( QFocusEvent* event )
             }
         }
     }
-
 }
 
 void QskPopup::focusOutEvent( QFocusEvent* event )
