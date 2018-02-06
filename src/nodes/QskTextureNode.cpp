@@ -177,10 +177,17 @@ QskTextureNode::~QskTextureNode()
 
     if ( d->material.textureId() > 0 )
     {
-        GLuint id = d->material.textureId();
+        /*
+            In certain environments we have the effect, that at
+            program termination the context is already gone
+         */
+        if ( auto context = QOpenGLContext::currentContext() )
+        {
+            GLuint id = d->material.textureId();
 
-        auto funcs = QOpenGLContext::currentContext()->functions();
-        funcs->glDeleteTextures( 1, &id );
+            auto funcs = context->functions();
+            funcs->glDeleteTextures( 1, &id );
+        }
     }
 }
 
