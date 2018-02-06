@@ -115,7 +115,7 @@ public:
     QskAnimationHint animation( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
     QskAnimationHint effectiveAnimation( QskAspect::Type, QskAspect::Subcontrol,
-        QskSkinHintStatus* status = nullptr ) const;
+        QskAspect::State, QskSkinHintStatus* status = nullptr ) const;
 
     QVariant effectiveHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
     virtual QskAspect::Placement effectivePlacement() const;

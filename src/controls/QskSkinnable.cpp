@@ -363,9 +363,9 @@ QskAnimationHint QskSkinnable::animation(
 
 QskAnimationHint QskSkinnable::effectiveAnimation(
     QskAspect::Type type, QskAspect::Subcontrol subControl, 
-    QskSkinHintStatus* status ) const
+    QskAspect::State state, QskSkinHintStatus* status ) const
 {
-    QskAspect::Aspect aspect = subControl | type;
+    QskAspect::Aspect aspect = subControl | type | state;
     aspect.setAnimator( true );
 
     QskAnimationHint hint;
@@ -711,7 +711,7 @@ void QskSkinnable::startTransition( QskAspect::Aspect aspect,
     aspect.setPlacement( effectivePlacement() );
 
 #if DEBUG_ANIMATOR
-    qDebug() << aspect;
+    qDebug() << aspect << animationHint.duration;
 #endif
 
     auto animator = m_data->animators.animator( aspect );
@@ -754,7 +754,7 @@ void QskSkinnable::setSkinStateFlag( QskAspect::State state, bool on )
             {
                 const auto type = static_cast< Type >( i );
 
-                const auto hint = effectiveAnimation( type, subControl );
+                const auto hint = effectiveAnimation( type, subControl, newState );
 
                 if ( hint.duration > 0 )
                 {

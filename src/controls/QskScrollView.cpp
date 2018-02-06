@@ -81,7 +81,7 @@ namespace
             m_to = to;
 
             const auto hint = m_scrollView->effectiveAnimation(
-                QskAspect::Metric, QskScrollView::Viewport );
+                QskAspect::Metric, QskScrollView::Viewport, QskAspect::NoState );
 
             setDuration( hint.duration );
             setEasingCurve( hint.type );
