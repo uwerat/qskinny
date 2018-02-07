@@ -29,7 +29,6 @@ QskLayout::QskLayout( QQuickItem* parent ):
     QskControl( parent ),
     m_data( new PrivateData() )
 {
-    // what about maintaining a tab chain for the children - TODO ...
 }
 
 QskLayout::~QskLayout()
