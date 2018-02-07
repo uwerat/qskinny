@@ -223,7 +223,22 @@ void QskPopup::updateInputGrabber()
     if ( parentItem() && isVisible() && m_data->isModal )
     {
         if ( m_data->inputGrabber == nullptr )
+        {
+            const auto children = childItems();
+
             m_data->inputGrabber = new InputGrabber( this );
+            if ( !children.isEmpty() )
+            {
+                /*
+                    Even if the input grabber has no content it has an effect
+                    on QQuickItem::childAt. Also tools like Squish struggle with
+                    sorting out items without content.
+                    So let's better avoid any problems let's move the grabber to
+                    the beginning of the children.
+                 */
+                m_data->inputGrabber->stackBefore( children.first() );
+            }
+        }
     }
     else
     {
