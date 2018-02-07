@@ -156,7 +156,7 @@ void QskLayoutItem::setGeometry( const QRectF& rect )
     if( m_updateMode == UpdateNone )
     {
         if ( !m_isGeometryDirty )
-            m_isGeometryDirty = ( rect != m_item->boundingRect() );
+            m_isGeometryDirty = ( rect != qskItemGeometry( m_item ) );
 
         return;
     }

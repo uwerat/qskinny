@@ -21,7 +21,7 @@ static inline QRectF qskFocusIndicatorRect( const QQuickItem* item )
     if ( v.canConvert( QMetaType::QRectF ) )
         return v.toRectF();
 
-    return item->boundingRect();
+    return qskItemRect( item );
 }
 
 class QskFocusIndicator::PrivateData

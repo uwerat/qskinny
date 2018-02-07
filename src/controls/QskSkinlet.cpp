@@ -213,7 +213,7 @@ void QskSkinlet::updateNode( QskSkinnable* skinnable, QSGNode* parentNode ) cons
 QSGNode* QskSkinlet::updateBackgroundNode(
     const QskControl* control, QSGNode* node ) const
 {
-    const QRectF rect = control->boundingRect();
+    const QRectF rect = control->rect();
     if ( rect.isEmpty() )
         return nullptr;
 
@@ -261,7 +261,7 @@ QSGNode* QskSkinlet::updateDebugNode(
         rectNode->setColor( color );
     }
 
-    const QRectF r = control->boundingRect();
+    const QRectF r = control->rect();
     if ( rectNode->rect() != r )
         rectNode->setRect( r );
 

@@ -64,6 +64,8 @@ class QSK_EXPORT QskControl : public QQuickItem, public QskResizable, public Qsk
     Q_PROPERTY( QSizeF maximumSize READ maximumSize WRITE setMaximumSize )
     Q_PROPERTY( QSizeF preferredSize READ preferredSize WRITE setPreferredSize )
 
+    Q_PROPERTY( QRectF geometry READ geometry WRITE setGeometry )
+
     using Inherited = QQuickItem;
 
 public:
@@ -103,6 +105,8 @@ public:
     QskGradient background() const;
 
     QRectF geometry() const;
+
+    QRectF rect() const;
     QRectF contentsRect() const;
 
     virtual QRectF layoutRect() const;
@@ -205,6 +209,9 @@ protected:
     virtual void updateLayout(); // called in updatePolish
 
 private:
+    // don't use boundingRect - it seems to be deprecated
+    virtual QRectF boundingRect() const override final { return rect(); }
+
     void setActiveFocusOnTab( bool ) = delete; // use setFocusPolicy instead
 
     virtual QSGNode* updatePaintNode( QSGNode*, UpdatePaintNodeData* ) override final;
@@ -246,6 +253,8 @@ QSK_EXPORT bool qskIsAncestorOf( const QQuickItem* item, const QQuickItem *child
 QSK_EXPORT bool qskIsTransparentForPositioner( const QQuickItem* );
 QSK_EXPORT bool qskIsTabFence( const QQuickItem* );
 QSK_EXPORT bool qskIsShortcutScope( const QQuickItem* );
+QSK_EXPORT QRectF qskItemRect( const QQuickItem* );
+QSK_EXPORT QRectF qskItemGeometry( const QQuickItem* );
 
 QSK_EXPORT QQuickItem* qskNearestFocusScope( const QQuickItem* );
 QSK_EXPORT QList<QQuickItem *> qskPaintOrderChildItems( const QQuickItem* );

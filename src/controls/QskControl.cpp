@@ -42,6 +42,18 @@ static inline void qskSendEventTo( QObject* object, QEvent::Type type )
     QCoreApplication::sendEvent( object, &event );
 }
 
+QRectF qskItemRect( const QQuickItem* item )
+{
+    auto d = QQuickItemPrivate::get( item );
+    return QRectF( 0, 0, d->width, d->height );
+}
+
+QRectF qskItemGeometry( const QQuickItem* item )
+{
+    auto d = QQuickItemPrivate::get( item );
+    return QRectF( d->x, d->y, d->width, d->height );
+}
+
 bool qskIsItemComplete( const QQuickItem* item )
 {
     return QQuickItemPrivate::get( item )->componentComplete;
@@ -532,6 +544,12 @@ void QskControl::setGeometry( qreal x, qreal y, qreal width, qreal height )
     }
 }
 
+QRectF QskControl::rect() const
+{
+    Q_D( const QskControl );
+    return QRectF( 0, 0, d->width, d->height );
+}
+
 QRectF QskControl::geometry() const
 {
     Q_D( const QskControl );
@@ -887,7 +905,7 @@ QMarginsF QskControl::margins() const
 
 QRectF QskControl::contentsRect() const
 {
-    const QRectF r = boundingRect();
+    const QRectF r = rect();
 
     const auto m = margins();
     qreal left = r.left() + m.left();
@@ -1476,7 +1494,7 @@ QRectF QskControl::layoutRect() const
 
 QRectF QskControl::gestureRect() const
 {
-    return boundingRect();
+    return rect();
 }
 
 QRectF QskControl::focusIndicatorRect() const

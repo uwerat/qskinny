@@ -21,7 +21,7 @@ QRectF QskFocusIndicatorSkinlet::subControlRect(
     
     if ( subControl == QskFocusIndicator::Panel )
     {
-        return indicator->boundingRect();
+        return indicator->rect();
     }
     
     return Inherited::subControlRect( skinnable, subControl );

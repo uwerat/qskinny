@@ -532,9 +532,11 @@ void QskInputPanel::setCandidateOffset( int candidateOffset )
 
 QRectF QskInputPanel::keyboardRect() const
 {
-    auto keyboardRect = boundingRect(); // ### margins? would eliminate this thing below
+    auto keyboardRect = rect(); // ### margins? would eliminate this thing below
+
     if ( QskDialog::instance()->policy() != QskDialog::TopLevelWindow )
         keyboardRect.adjust( 0, keyboardRect.height() * 0.5, 0, 0 );
+
     return keyboardRect;
 }
 

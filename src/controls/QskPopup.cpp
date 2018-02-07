@@ -127,7 +127,7 @@ namespace
                     }
 
                     QQuickItem* popup = parentItem();
-                    doSwallow = !popup->boundingRect().contains(
+                    doSwallow = !qskItemRect( popup ).contains(
                         popup->mapFromItem( this, pos ) );
 
                     break;
@@ -152,7 +152,7 @@ namespace
             if ( QskPopup* popup = qobject_cast< QskPopup* >( parentItem() ) )
             {
                 const QRectF r = popup->overlayRect();
-                if ( r != boundingRect() )
+                if ( r != qskItemGeometry( this ) )
                 {
                     setPosition( r.topLeft() );
                     setSize( r.size() );
