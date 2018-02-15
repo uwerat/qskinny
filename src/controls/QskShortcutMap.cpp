@@ -136,8 +136,8 @@ int QskShortcutHandler::insert(
 {
     if ( receiver )
     {
-        receiver->disconnect( this );
-        connect( receiver, &QObject::destroyed, this, &QskShortcutHandler::cleanUp );
+        connect( receiver, &QObject::destroyed,
+            this, &QskShortcutHandler::cleanUp, Qt::UniqueConnection );
     }
 
     int id = 0;
@@ -148,8 +148,8 @@ int QskShortcutHandler::insert(
     {
         if ( item != receiver )
         {
-            item->disconnect( this );
-            connect( item, &QObject::destroyed, this, &QskShortcutHandler::cleanUp );
+            connect( item, &QObject::destroyed,
+                this, &QskShortcutHandler::cleanUp, Qt::UniqueConnection );
         }
 
         id = map->addShortcut( item, sequence, Qt::WindowShortcut, qskContextMatcher );
