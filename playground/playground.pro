@@ -4,5 +4,6 @@ TEMPLATE = subdirs
 
 # qml
 SUBDIRS += \
+    invoker \
     inputpanel \
     images
