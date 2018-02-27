@@ -5,6 +5,8 @@ QSK_OUT_ROOT = $${OUT_PWD}/../..
 
 CONFIG         += plugin
 
+QT += quick
+
 TEMPLATE     = lib
 
 QSK_DIRS = \
