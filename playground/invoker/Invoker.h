@@ -20,7 +20,7 @@ public:
     void addCallback( const QskMetaFunction& );
     void addCallback( const QObject*, const QskMetaFunction& );
 
-    void invoke( qreal d, int i );
+    void invoke( qreal d, int i, Qt::ConnectionType );
 
 private:
     QVector< QskMetaCallback > m_callbacks;

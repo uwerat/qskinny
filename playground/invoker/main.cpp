@@ -4,7 +4,9 @@
  *****************************************************************************/
 
 #include "Invoker.h"
+#include <QCoreApplication>
 #include <QDebug>
+#include <QTimer>
 
 static void debugValueI( int i )
 {
@@ -47,8 +49,7 @@ public:
 
 int main( int argc, char* argv[] )
 {
-    Q_UNUSED( argc )
-    Q_UNUSED( argv )
+    QCoreApplication app( argc, argv );
 
     MyObject object;
 
@@ -69,5 +70,14 @@ int main( int argc, char* argv[] )
     invoker.addCallback( []( int i ) { qDebug() << i; } );
     invoker.addCallback( []( double d ) { qDebug() << d; } );
 
-    invoker.invoke( 3.14, 35 );
+    qDebug() << "== Direct Connections";
+    invoker.invoke( 3.14, 35, Qt::DirectConnection );
+
+    qDebug() << "== Queued Connections";
+
+    QTimer::singleShot( 0,
+        [&invoker] { invoker.invoke( 0.07, 42, Qt::QueuedConnection ); } );
+
+    QTimer::singleShot( 100, &app, QCoreApplication::quit );
+    return app.exec();
 }

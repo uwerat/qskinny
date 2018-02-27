@@ -68,10 +68,37 @@ QskMetaFunction& QskMetaFunction::operator=( const QskMetaFunction& other )
     return *this;
 }
 
+void QskMetaFunction::init( QskMetaCall::Invokable* invokable,
+    const int* parameterTypes )
+{
+    m_invokable = invokable;
+#if 0
+    if ( m_invokable )
+        m_invokable->ref();
+#endif
+
+    m_parameterTypes = parameterTypes;
+}
+
 const int* QskMetaFunction::parameterTypes() const
 {
     return m_parameterTypes;
 }
+
+size_t QskMetaFunction::parameterCount() const
+{
+    if ( m_parameterTypes )
+    {
+        for ( int i = 1; ; i++ )
+        {
+            if ( m_parameterTypes[ i ] == QMetaType::UnknownType )
+                return i + 1; // including the return type
+        }
+    }
+
+    return 1; // we always have a return type
+}
+
 
 QskMetaFunction::Type QskMetaFunction::functionType() const
 {
@@ -82,8 +109,11 @@ QskMetaFunction::Type QskMetaFunction::functionType() const
 }
 
 void QskMetaFunction::invoke(
-    QObject* object, void* args[], Qt::ConnectionType connectionType )
+    QObject* object, void* argv[], Qt::ConnectionType connectionType )
 {
     if ( m_invokable )
-        QskMetaCall::invoke( object, *m_invokable, args, connectionType );
+    {
+        QskMetaCall::invoke( object, *m_invokable,
+            parameterCount(), parameterTypes(), argv, connectionType );
+    }
 }

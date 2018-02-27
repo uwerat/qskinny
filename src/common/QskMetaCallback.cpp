@@ -4,82 +4,11 @@
  *****************************************************************************/
 
 #include "QskMetaCallback.h"
-#include <QCoreApplication>
-#include <QThread>
 #include <QObject>
-#include <QSemaphore>
-
-#include <private/qobject_p.h>
-
-static void qskInvoke( QObject* object,
-    const QMetaMethod& method, void* args[], Qt::ConnectionType connectionType )
-{
-    auto metaObject = method.enclosingMetaObject();
-
-    const int methodOffset = metaObject->methodOffset();
-    const int methodIndex  = method.methodIndex() - methodOffset;
-
-    if ( connectionType == Qt::AutoConnection )
-    {
-        connectionType = ( object->thread() == QThread::currentThread() )
-            ? Qt::DirectConnection : Qt::QueuedConnection;
-    }
-
-    if ( connectionType == Qt::DirectConnection )
-    {
-        if ( metaObject->d.static_metacall )
-        {
-            metaObject->d.static_metacall(object,
-                QMetaObject::InvokeMetaMethod, methodIndex, args );
-        }
-        else
-        {
-            QMetaObject::metacall( object,
-                QMetaObject::InvokeMetaMethod, methodIndex, args );
-        }
-    }
-    else
-    {
-        const int paramCount = method.parameterCount();
-
-        auto types = static_cast< int* >( malloc( paramCount * sizeof( int ) ) );
-
-        types[0] = QMetaType::UnknownType; // return type
-
-        for ( int i = 1; i < paramCount; i++ )
-        {
-            types[i] = method.parameterType( i );
-            Q_ASSERT( args[i] != nullptr );
-        }
-
-        Q_ASSERT( args[paramCount] == nullptr );
-
-        if ( connectionType == Qt::QueuedConnection )
-        {
-            QMetaCallEvent* event = new QMetaCallEvent(
-                    methodOffset, methodIndex, metaObject->d.static_metacall,
-                    nullptr, -1, paramCount + 1, types, args );
-
-            QCoreApplication::postEvent(object, event );
-        }
-        else
-        {
-            QSemaphore semaphore;
-
-            // what about argc + types ???
-            auto event = new QMetaCallEvent(
-                methodOffset, methodIndex, metaObject->d.static_metacall,
-                nullptr, -1, 0, 0, args, &semaphore );
-
-            QCoreApplication::postEvent( object, event );
-
-            semaphore.acquire();
-        }
-    }
-}
+#include <QVector>
 
 QskMetaCallback::QskMetaCallback( const QObject* object,
-    const QMetaMethod& method, Qt::ConnectionType connectionType ):
+        const QMetaMethod& method, Qt::ConnectionType connectionType ):
     m_object( const_cast< QObject* >( object ) ),
     m_method( method ),
     m_type( MetaMethod ),
@@ -156,6 +85,11 @@ QskMetaCallback& QskMetaCallback::operator=( const QskMetaCallback& other )
     return *this;
 }
 
+void QskMetaCallback::setConnectionType( Qt::ConnectionType connectionType )
+{
+    m_connectionType = connectionType;
+}
+
 void QskMetaCallback::reset()
 {
     switch( m_type )
@@ -218,7 +152,7 @@ void QskMetaCallback::invoke( void* args[] )
         case MetaMethod:
         {
             if ( object )
-                qskInvoke( object, m_method, args, connectionType() );
+                QskMetaCall::invoke( object, m_method, args, connectionType() );
             break;
         }
         case MetaFunction:

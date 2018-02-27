@@ -33,6 +33,46 @@ namespace QskMetaCall
     }
 }
 
+namespace
+{
+    using namespace QskMetaCall;
+
+    class FunctionCallEvent : public QMetaCallEvent
+    {
+    public:
+        FunctionCallEvent( Invokable* invokable,
+                int nargs, int* types, void* args[], QSemaphore* semaphore = nullptr ):
+            QMetaCallEvent( invokable, nullptr, 0, nargs, types, args, semaphore ),
+            m_invokable ( invokable )
+        {
+            invokable->ref();
+        }
+
+        virtual ~FunctionCallEvent()
+        {
+        }
+
+    private:
+        Invokable* m_invokable;
+    };
+
+    class MethodCallEvent : public QMetaCallEvent
+    {
+    public:
+        MethodCallEvent( const QMetaObject* mo, ushort methodIndex,
+                int nargs, int* types, void* args[], QSemaphore* semaphore = nullptr ):
+            QMetaCallEvent(
+                mo->methodOffset(), methodIndex, mo->d.static_metacall,
+                nullptr, -1, nargs, types, args, semaphore )
+        {
+        }
+
+        virtual ~MethodCallEvent()
+        {
+        }
+    };
+}
+
 void QskMetaCall::invoke( QObject* object,
     const QMetaMethod& method, void* args[],
     Qt::ConnectionType connectionType )
@@ -66,22 +106,33 @@ void QskMetaCall::invoke( QObject* object,
         const int paramCount = method.parameterCount();
 
         auto types = static_cast< int* >( malloc( paramCount * sizeof( int ) ) );
+        auto arguments = static_cast< void** >( malloc( paramCount * sizeof( void* ) ) );
 
-        types[0] = QMetaType::UnknownType; // return type
+        types[0] = QMetaType::UnknownType; // a return type is not possible
+        arguments[0] = nullptr;
 
         for ( int i = 1; i < paramCount; i++ )
         {
+            if ( arguments[i] == nullptr )
+            {
+                Q_ASSERT( arguments[i] != nullptr );
+
+                free( types );
+                free( arguments );
+
+                return;
+            }
+
             types[i] = method.parameterType( i );
-            Q_ASSERT( args[i] != nullptr );
+            arguments[i] = args[i - 1];
         }
 
         Q_ASSERT( args[paramCount] == nullptr );
 
         if ( connectionType == Qt::QueuedConnection )
         {
-            QMetaCallEvent* event = new QMetaCallEvent(
-                    methodOffset, methodIndex, metaObject->d.static_metacall,
-                    nullptr, -1, paramCount + 1, types, args );
+            auto event = new MethodCallEvent(
+                metaObject, methodIndex, paramCount + 1, types, args );
 
             QCoreApplication::postEvent(object, event );
         }
@@ -89,10 +140,8 @@ void QskMetaCall::invoke( QObject* object,
         {
             QSemaphore semaphore;
 
-            // what about argc + types ???
-            auto event = new QMetaCallEvent(
-                    methodOffset, methodIndex, metaObject->d.static_metacall,
-                    nullptr, -1, 0, 0, args, &semaphore );
+            auto event = new MethodCallEvent(
+                metaObject, methodIndex, paramCount + 1, types, args, &semaphore );
 
             QCoreApplication::postEvent( object, event );
 
@@ -102,7 +151,7 @@ void QskMetaCall::invoke( QObject* object,
 }
 
 void QskMetaCall::invoke( QObject* object,
-    const Invokable& invokable, void* args[],
+    const Invokable& invokable, int argc, const int argTypes[], void* argv[],
     Qt::ConnectionType connectionType )
 {
     //connectionType &= ~Qt::UniqueConnection;
@@ -117,14 +166,36 @@ void QskMetaCall::invoke( QObject* object,
 
     if ( connectionType == Qt::DirectConnection )
     {
-        invokablePtr->call( object, args );
+        invokablePtr->call( object, argv );
     }
     else
     {
+        auto types = static_cast< int* >( malloc( argc * sizeof( int ) ) );
+        auto arguments = static_cast< void** >( malloc( argc * sizeof( void* ) ) );
+
+        types[0] = QMetaType::UnknownType; // a return type is not possible
+        arguments[0] = nullptr;
+
+        for ( int i = 1; i < argc; i++ )
+        {
+            if ( argv[i] == nullptr )
+            {
+                Q_ASSERT( arguments[i] != nullptr );
+
+                free( types );
+                free( arguments );
+
+                return;
+            }
+
+            types[i] = argTypes[i - 1];
+            arguments[i] = QMetaType::create( argTypes[i - 1], argv[i] );
+        }
+
         if ( connectionType == Qt::QueuedConnection )
         {
-            auto event = new QMetaCallEvent(
-                invokablePtr, nullptr, 0, 0, nullptr, args, nullptr );
+            auto event = new FunctionCallEvent(
+                invokablePtr, argc, types, arguments, nullptr );
 
             QCoreApplication::postEvent( object, event );
         }

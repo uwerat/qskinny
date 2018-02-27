@@ -13,12 +13,13 @@ Invoker::Invoker( QObject* parent ):
 void Invoker::addCallback( const QObject* object,
     const QskMetaFunction& function )
 {
-    m_callbacks += QskMetaCallback( object, function, Qt::DirectConnection );
+    m_callbacks += QskMetaCallback( object, function );
 }
 
-void Invoker::invoke( qreal realValue, int intValue )
+void Invoker::invoke( qreal realValue, int intValue,
+    Qt::ConnectionType connectionType )
 {
-    for ( auto callback : qskAsConst( m_callbacks ) )
+    for ( auto& callback : m_callbacks )
     {
         void* args[3] = { nullptr };
 
@@ -44,6 +45,11 @@ void Invoker::invoke( qreal realValue, int intValue )
             }
         }
 
-        callback.invoke( args );
+        callback.setConnectionType( connectionType );
+
+        if ( connectionType == Qt::DirectConnection )
+            callback.invoke( args );
+        else if ( callback.object() )
+            callback.invoke( args );
     }
 }

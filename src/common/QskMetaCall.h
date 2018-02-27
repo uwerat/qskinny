@@ -18,7 +18,7 @@ namespace QskMetaCall
         Qt::ConnectionType = Qt::AutoConnection );
 
     QSK_EXPORT void invoke( QObject*,
-        const Invokable&, void* args[],
+        const Invokable&, int argc, const int argTypes[], void* args[],
         Qt::ConnectionType = Qt::AutoConnection );
 }
 

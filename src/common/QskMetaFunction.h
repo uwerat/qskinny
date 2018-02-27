@@ -53,12 +53,17 @@ public:
 
     const int* parameterTypes() const;
 
+    // including the return type !
+    size_t parameterCount() const;
+
     void invoke( QObject*, void* args[],
         Qt::ConnectionType = Qt::AutoConnection );
 
     Type functionType() const;
 
 private:
+    void init( QskMetaCall::Invokable*, const int* );
+
     QskMetaCall::Invokable* m_invokable;
     const int* m_parameterTypes;
 };
@@ -75,8 +80,8 @@ inline QskMetaFunction::QskMetaFunction( T function )
     const int Argc = Traits::ArgumentCount;
     using Args = typename List_Left< typename Traits::Arguments, Argc >::Value;
 
-    m_invokable = new MemberFunctionInvokable< T, Args, void >( function );
-    m_parameterTypes = ConnectionTypes< typename Traits::Arguments >::types();
+    init( new MemberFunctionInvokable< T, Args, void >( function ),
+        ConnectionTypes< typename Traits::Arguments >::types() );
 }
 
 template< typename T, QskMetaCall::IsFunction< T >* >
@@ -90,8 +95,8 @@ inline QskMetaFunction::QskMetaFunction( T function )
     const int Argc = Traits::ArgumentCount;
     using Args = typename List_Left< typename Traits::Arguments, Argc >::Value;
 
-    m_invokable = new FunctionInvokable< T, Args, void >( function );
-    m_parameterTypes = ConnectionTypes< typename Traits::Arguments >::types();
+    init( new FunctionInvokable< T, Args, void >( function ),
+        ConnectionTypes< typename Traits::Arguments >::types() );
 }
 
 template< typename T, QskMetaCall::IsFunctor< T >* >
@@ -104,8 +109,8 @@ inline QskMetaFunction::QskMetaFunction( T functor )
     const int Argc = Traits::ArgumentCount;
     using Args = typename List_Left< typename Traits::Arguments, Argc >::Value;
 
-    m_invokable = new QskMetaCall::FunctorInvokable< T, Argc, Args, void > ( functor );
-    m_parameterTypes = ConnectionTypes< typename Traits::Arguments >::types();
+    init( new QskMetaCall::FunctorInvokable< T, Argc, Args, void > ( functor ),
+        ConnectionTypes< typename Traits::Arguments >::types() );
 }
 
 Q_DECLARE_METATYPE( QskMetaFunction )

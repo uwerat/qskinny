@@ -12,6 +12,7 @@
 #include <QObject>
 #include <QPointer>
 #include <QMetaMethod>
+#include <QVector>
 
 class QskMetaCallback
 {
@@ -28,8 +29,13 @@ public:
     };
 
     QskMetaCallback();
-    QskMetaCallback( const QObject*, const QskMetaFunction&, Qt::ConnectionType );
-    QskMetaCallback( const QObject*, const QMetaMethod&, Qt::ConnectionType );
+
+    QskMetaCallback( const QObject*, const QskMetaFunction&,
+        Qt::ConnectionType = Qt::AutoConnection );
+
+    QskMetaCallback( const QObject*, const QMetaMethod&,
+        Qt::ConnectionType = Qt::AutoConnection );
+
     QskMetaCallback( const QskMetaCallback& );
 
     ~QskMetaCallback();
@@ -40,6 +46,8 @@ public:
     bool isValid() const;
 
     const QObject* object() const { return m_object; }
+
+    void setConnectionType( Qt::ConnectionType );
     Qt::ConnectionType connectionType() const;
 
     QVector< int > parameterTypes() const;
@@ -51,11 +59,17 @@ private:
 
     QPointer< const QObject > m_object;
 
+#if 1
+    /*
+        This union does not work - call of constructors
+        are missing
+     */
     union
     {
         QskMetaFunction m_function;
         QMetaMethod m_method;
     };
+#endif
 
     int m_type : 3;
     ushort m_connectionType : 3;
