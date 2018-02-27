@@ -64,7 +64,7 @@ private:
 };
 
 
-template< typename T, QskMetaCall::IsMemberFunction< T >* = nullptr >
+template< typename T, QskMetaCall::IsMemberFunction< T >* >
 inline QskMetaFunction::QskMetaFunction( T function )
 {
     using namespace QtPrivate;
@@ -79,7 +79,7 @@ inline QskMetaFunction::QskMetaFunction( T function )
     m_parameterTypes = ConnectionTypes< typename Traits::Arguments >::types();
 }
 
-template< typename T, QskMetaCall::IsFunction< T >* = nullptr >
+template< typename T, QskMetaCall::IsFunction< T >* >
 inline QskMetaFunction::QskMetaFunction( T function )
 {
     using namespace QtPrivate;
@@ -94,7 +94,7 @@ inline QskMetaFunction::QskMetaFunction( T function )
     m_parameterTypes = ConnectionTypes< typename Traits::Arguments >::types();
 }
 
-template< typename T, QskMetaCall::IsFunctor< T >* = nullptr >
+template< typename T, QskMetaCall::IsFunctor< T >* >
 inline QskMetaFunction::QskMetaFunction( T functor )
 {
     using namespace QtPrivate;
