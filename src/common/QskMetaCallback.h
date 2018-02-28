@@ -89,6 +89,10 @@ inline Qt::ConnectionType QskMetaCallback::connectionType() const
     return static_cast< Qt::ConnectionType >( m_connectionType );
 }
 
+QSK_EXPORT void qskInvokeMethod(
+     QObject* object, const QMetaMethod&, void* args[],
+     Qt::ConnectionType = Qt::AutoConnection );
+
 Q_DECLARE_METATYPE( QskMetaCallback )
 
 #endif

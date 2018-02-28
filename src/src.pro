@@ -40,9 +40,9 @@ HEADERS += \
     common/QskGlobal.h \
     common/QskGradient.h \
     common/QskMargins.h \
-    common/QskMetaCall.h \
     common/QskMetaCallback.h \
     common/QskMetaFunction.h \
+    common/QskMetaInvokable.cpp \
     common/QskModule.h \
     common/QskNamespace.h \
     common/QskObjectCounter.h \
@@ -59,9 +59,9 @@ SOURCES += \
     common/QskFunctions.cpp \
     common/QskGradient.cpp \
     common/QskMargins.cpp \
-    common/QskMetaCall.cpp \
     common/QskMetaCallback.cpp \
     common/QskMetaFunction.cpp \
+    common/QskMetaInvokable.cpp \
     common/QskModule.cpp \
     common/QskObjectCounter.cpp \
     common/QskSizePolicy.cpp \
