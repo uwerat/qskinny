@@ -10,7 +10,7 @@
 QskMetaCallback::QskMetaCallback( const QObject* object,
         const QMetaMethod& method, Qt::ConnectionType connectionType ):
     m_object( const_cast< QObject* >( object ) ),
-    m_method( method ),
+    m_method( new QMetaMethod( method ) ),
     m_type( MetaMethod ),
     m_connectionType( static_cast< ushort >( connectionType & ~Qt::UniqueConnection ) )
 {
@@ -19,7 +19,7 @@ QskMetaCallback::QskMetaCallback( const QObject* object,
 QskMetaCallback::QskMetaCallback( const QObject* object,
         const QskMetaFunction& function, Qt::ConnectionType connectionType ):
     m_object( const_cast< QObject* >( object ) ),
-    m_function( function ),
+    m_function( new QskMetaFunction( function ) ),
     m_type( MetaFunction ),
     m_connectionType( static_cast< ushort >( connectionType & ~Qt::UniqueConnection ) )
 {
@@ -40,11 +40,11 @@ QskMetaCallback::QskMetaCallback( const QskMetaCallback& other ):
     switch( m_type )
     {
         case MetaMethod:
-            m_method = other.m_method;
+            m_method = new QMetaMethod( *other.m_method );
             break;
 
         case MetaFunction:
-            m_function = other.m_function;
+            m_function = new QskMetaFunction( *other.m_function );
             break;
 
         default:
@@ -68,18 +68,12 @@ QskMetaCallback& QskMetaCallback::operator=( const QskMetaCallback& other )
         m_type = other.m_type;
     }
 
-    switch( m_type )
+    if ( other.m_type != Invalid )
     {
-        case MetaMethod:
-            m_method = other.m_method;
-            break;
-
-        case MetaFunction:
-            m_function = other.m_function;
-            break;
-
-        default:
-            break;
+        if ( other.m_type == MetaMethod )
+            m_method = new QMetaMethod( *other.m_method );
+        else
+            m_function = new QskMetaFunction( *other.m_function );
     }
 
     return *this;
@@ -95,11 +89,13 @@ void QskMetaCallback::reset()
     switch( m_type )
     {
         case MetaMethod:
-            m_method.~QMetaMethod();
+            delete m_method;
+            m_method = nullptr;
             break;
 
         case MetaFunction:
-            m_function.~QskMetaFunction();
+            delete m_function;
+            m_function = nullptr;
             break;
 
         default:
@@ -117,17 +113,17 @@ QVector< int > QskMetaCallback::parameterTypes() const
     {
         case MetaMethod:
         {
-            const int paramCount = m_method.parameterCount();
+            const int paramCount = m_method->parameterCount();
 
             paramTypes.reserve( paramCount );
             for ( int i = 0; i < paramCount; i++ )
-                paramTypes += m_method.parameterType( i );
+                paramTypes += m_method->parameterType( i );
 
             break;
         }
         case MetaFunction:
         {
-            auto types = m_function.parameterTypes();
+            auto types = m_function->parameterTypes();
             if ( types )
             {
                 while ( *types )
@@ -152,12 +148,12 @@ void QskMetaCallback::invoke( void* args[] )
         case MetaMethod:
         {
             if ( object )
-                QskMetaCall::invoke( object, m_method, args, connectionType() );
+                QskMetaCall::invoke( object, *m_method, args, connectionType() );
             break;
         }
         case MetaFunction:
         {
-            m_function.invoke( object, args, connectionType() );
+            m_function->invoke( object, args, connectionType() );
             break;
         }
 

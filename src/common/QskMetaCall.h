@@ -35,6 +35,7 @@ namespace QskMetaCall
         enum { TypeInfo = NumOperations + 1 };
 
         int typeInfo() const;
+        int refCount() const;
 
     protected:
         explicit Invokable( InvokeFunction f ):

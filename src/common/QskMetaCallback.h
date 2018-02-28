@@ -59,17 +59,11 @@ private:
 
     QPointer< const QObject > m_object;
 
-#if 1
-    /*
-        This union does not work - call of constructors
-        are missing
-     */
     union
     {
-        QskMetaFunction m_function;
-        QMetaMethod m_method;
+        QskMetaFunction* m_function;
+        QMetaMethod* m_method;
     };
-#endif
 
     int m_type : 3;
     ushort m_connectionType : 3;

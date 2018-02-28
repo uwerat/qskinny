@@ -12,12 +12,21 @@
 
 #include <private/qobject_p.h>
 
+namespace
+{
+    // to get access to the private section of QSlotObjectBase
+    struct SlotObject
+    {
+        QAtomicInt ref;
+        QskMetaCall::Invokable::InvokeFunction invoke;
+    };
+}
+
 namespace QskMetaCall
 {
     inline Invokable::InvokeFunction invokeCall( const Invokable* invokable )
     {
-        struct Data { QAtomicInt dummy; Invokable::InvokeFunction invoke; };
-        return ( ( Data* )( invokable ) )->invoke;
+        return ( ( SlotObject* )( invokable ) )->invoke;
     }
 
     int Invokable::typeInfo() const
@@ -30,6 +39,11 @@ namespace QskMetaCall
             nullptr, reinterpret_cast< void** >( &value ), nullptr );
 
         return value;
+    }
+
+    int Invokable::refCount() const
+    {
+        return ( ( SlotObject* )( this ) )->ref.load();
     }
 }
 
@@ -45,7 +59,6 @@ namespace
             QMetaCallEvent( invokable, nullptr, 0, nargs, types, args, semaphore ),
             m_invokable ( invokable )
         {
-            invokable->ref();
         }
 
         virtual ~FunctionCallEvent()
