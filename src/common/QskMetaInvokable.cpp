@@ -35,3 +35,28 @@ int QskMetaInvokable::refCount() const
     auto that = const_cast< QskMetaInvokable* >( this );
     return reinterpret_cast< SlotObject* >( that )->ref.load();
 }
+
+#if QSK_SHARED_META_INVOKABLE
+
+#include <unordered_map>
+#include <typeindex>
+
+static std::unordered_map< std::type_index, QskMetaInvokable* > qskInvokableTab;
+
+QskMetaInvokable* QskMetaInvokable::find( const std::type_info& info )
+{
+    const auto it = qskInvokableTab.find( info );
+    return ( it != qskInvokableTab.end() ) ? it->second : nullptr;
+}
+
+void QskMetaInvokable::insert( const std::type_info& info, QskMetaInvokable* invokable )
+{
+    qskInvokableTab.emplace( info, invokable );
+}
+
+void QskMetaInvokable::remove( const std::type_info& info )
+{
+    qskInvokableTab.erase( info );
+}
+
+#endif // QSK_SHARED_META_INVOKABLE

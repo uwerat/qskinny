@@ -4,11 +4,13 @@
  *****************************************************************************/
 
 #include "QskMetaCallback.h"
+#include "QskMetaFunction.h"
 
 #include <QObject>
 #include <QCoreApplication>
 #include <QThread>
 #include <QSemaphore>
+#include <QMetaMethod>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qobject_p.h>
@@ -31,42 +33,49 @@ static inline void qskInvokeMethodQueued( QObject* object,
 QskMetaCallback::QskMetaCallback( const QObject* object,
         const QMetaMethod& method, Qt::ConnectionType connectionType ):
     m_object( const_cast< QObject* >( object ) ),
-    m_method( new QMetaMethod( method ) ),
+    m_methodData { method.enclosingMetaObject(), method.methodIndex()  }, 
     m_type( MetaMethod ),
-    m_connectionType( static_cast< ushort >( connectionType & ~Qt::UniqueConnection ) )
+    m_hasObject( object != nullptr ),
+    m_connectionType( static_cast< ushort >( connectionType & 0x3 ) )
 {
 }
 
 QskMetaCallback::QskMetaCallback( const QObject* object,
         const QskMetaFunction& function, Qt::ConnectionType connectionType ):
     m_object( const_cast< QObject* >( object ) ),
-    m_function( new QskMetaFunction( function ) ),
+    m_functionData { function.invokable(), function.parameterTypes() },
     m_type( MetaFunction ),
+    m_hasObject( object != nullptr ),
     m_connectionType( static_cast< ushort >( connectionType & ~Qt::UniqueConnection ) )
 {
+    if ( m_functionData.invokable )
+        m_functionData.invokable->ref();
 }
 
 QskMetaCallback::QskMetaCallback( const QskMetaCallback& other ):
     m_object( other.m_object ),
-    m_function(),
-    m_type( Invalid ),
+    m_type( other.m_type ),
+    m_hasObject( other.m_hasObject ),
     m_connectionType( other.m_connectionType )
 {
-    if ( other.m_type != m_type )
-    {
-        reset();
-        m_type = other.m_type;
-    }
-
     switch( m_type )
     {
         case MetaMethod:
-            m_method = new QMetaMethod( *other.m_method );
-            break;
+        {
+            m_methodData.metaObject = other.m_methodData.metaObject;
+            m_methodData.methodIndex = other.m_methodData.methodIndex;
 
-        case MetaFunction:
-            m_function = new QskMetaFunction( *other.m_function );
             break;
+        }
+        case MetaFunction:
+        {
+            m_functionData.invokable = other.m_functionData.invokable;
+            if ( m_functionData.invokable )
+                m_functionData.invokable->ref();
+
+            m_functionData.parameterTypes = other.m_functionData.parameterTypes;
+            break;
+        }
 
         default:
             break;
@@ -75,29 +84,80 @@ QskMetaCallback::QskMetaCallback( const QskMetaCallback& other ):
 
 QskMetaCallback::~QskMetaCallback()
 {
-    reset();
+    if ( ( m_type == MetaFunction ) && m_functionData.invokable )
+        m_functionData.invokable->destroyIfLastRef();
 }
 
 QskMetaCallback& QskMetaCallback::operator=( const QskMetaCallback& other )
 {
     m_object = other.m_object;
+    m_hasObject = other.m_hasObject;
+
     m_connectionType = other.m_connectionType;
 
-    if ( other.m_type != m_type )
+    switch( other.m_type )
     {
-        reset();
-        m_type = other.m_type;
+        case MetaMethod:
+        {
+            if ( m_type == MetaFunction && m_functionData.invokable )
+                m_functionData.invokable->destroyIfLastRef();
+                
+            m_methodData.metaObject = other.m_methodData.metaObject;
+            m_methodData.methodIndex = other.m_methodData.methodIndex;
+
+            break;
+        }
+        case MetaFunction:
+        {
+            if ( ( m_type == MetaFunction ) && m_functionData.invokable )
+                m_functionData.invokable->destroyIfLastRef();
+
+            m_functionData.invokable = other.m_functionData.invokable;
+
+            if ( m_functionData.invokable )
+                m_functionData.invokable->ref();
+
+            m_functionData.parameterTypes = other.m_functionData.parameterTypes;
+            break;
+        }
+
+        default:
+            if ( ( m_type == MetaFunction ) && m_functionData.invokable )
+                m_functionData.invokable->destroyIfLastRef();
     }
 
-    if ( other.m_type != Invalid )
-    {
-        if ( other.m_type == MetaMethod )
-            m_method = new QMetaMethod( *other.m_method );
-        else
-            m_function = new QskMetaFunction( *other.m_function );
-    }
+    m_type = other.m_type;
 
     return *this;
+}
+
+bool QskMetaCallback::isValid() const
+{
+    if ( m_hasObject && m_object.isNull() )
+        return false;
+
+    switch( m_type )
+    {
+        case MetaMethod:
+        {
+            const auto& d = m_methodData;
+            if ( d.metaObject && ( d.methodIndex >= 0 )
+                && ( d.methodIndex < d.metaObject->methodCount() ) )
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        case MetaFunction:
+        {
+            return m_functionData.invokable != nullptr;
+        }
+
+        default:
+            return false;
+    }
 }
 
 void QskMetaCallback::setConnectionType( Qt::ConnectionType connectionType )
@@ -107,22 +167,13 @@ void QskMetaCallback::setConnectionType( Qt::ConnectionType connectionType )
 
 void QskMetaCallback::reset()
 {
-    switch( m_type )
-    {
-        case MetaMethod:
-            delete m_method;
-            m_method = nullptr;
-            break;
+    m_object = nullptr;
+    m_hasObject = false;
 
-        case MetaFunction:
-            delete m_function;
-            m_function = nullptr;
-            break;
+    if ( m_type == MetaFunction && m_functionData.invokable )
+        m_functionData.invokable->destroyIfLastRef();
 
-        default:
-            break;
-    }
-
+    m_functionData = { nullptr, nullptr }; // for the debugger
     m_type = Invalid;
 }
 
@@ -134,17 +185,25 @@ QVector< int > QskMetaCallback::parameterTypes() const
     {
         case MetaMethod:
         {
-            const int paramCount = m_method->parameterCount();
+            const auto& d = m_methodData;
+            if ( m_methodData.metaObject )
+            {
+#if 1
+                // should be doable without QMetaMethod. TODO ...
+                const auto method = d.metaObject->method( d.methodIndex );
+#endif
+                const int paramCount = method.parameterCount();
 
-            paramTypes.reserve( paramCount );
-            for ( int i = 0; i < paramCount; i++ )
-                paramTypes += m_method->parameterType( i );
+                paramTypes.reserve( paramCount );
+                for ( int i = 0; i < paramCount; i++ )
+                    paramTypes += method.parameterType( i );
+            }
 
             break;
         }
         case MetaFunction:
         {
-            auto types = m_function->parameterTypes();
+            auto types = m_functionData.parameterTypes;
             if ( types )
             {
                 while ( *types )
@@ -162,18 +221,25 @@ QVector< int > QskMetaCallback::parameterTypes() const
 
 void QskMetaCallback::invoke( void* args[] )
 {
+    if ( !isValid() )
+        return;
+
     auto object = const_cast< QObject* >( m_object.data() );
 
     switch( m_type )
     {
         case MetaMethod:
         {
-            qskInvokeMethod( object, *m_method, args, connectionType() );
+            qskInvokeMethod( object, m_methodData.metaObject,
+                m_methodData.methodIndex, args, connectionType() );
+
             break;
         }
         case MetaFunction:
         {
-            m_function->invoke( object, args, connectionType() );
+            QskMetaFunction function( m_functionData.invokable, m_functionData.parameterTypes );
+            function.invoke( object, args, connectionType() );
+
             break;
         }
 
@@ -182,30 +248,54 @@ void QskMetaCallback::invoke( void* args[] )
     }
 }
 
-
 void qskInvokeMethod( QObject* object,
     const QMetaMethod& method, void* args[],
     Qt::ConnectionType connectionType )
 {
-    if ( object == nullptr )
+    auto metaObject = method.enclosingMetaObject();
+    if ( metaObject == nullptr )
         return;
 
-    auto metaObject = method.enclosingMetaObject();
+    const int methodIndex = method.methodIndex() - metaObject->methodOffset();
+    qskInvokeMethod( object, metaObject, methodIndex, args, connectionType );
+}
 
-    const int methodOffset = metaObject->methodOffset();
-    const int methodIndex  = method.methodIndex() - methodOffset;
-
-    if ( connectionType == Qt::AutoConnection )
+void qskInvokeMethod( QObject* object,
+    const QMetaObject* metaObject, int methodIndex, void* args[],
+    Qt::ConnectionType connectionType )
+{
+    if ( ( metaObject == nullptr ) || ( methodIndex < 0 )
+        || ( methodIndex > metaObject->methodCount() ) )
     {
-        connectionType = ( object->thread() == QThread::currentThread() )
-            ? Qt::DirectConnection : Qt::QueuedConnection;
+        return;
     }
 
-    if ( connectionType == Qt::DirectConnection )
+    int invokeType = connectionType & 0x3;
+
+    if ( invokeType == Qt::AutoConnection )
     {
+        invokeType = ( object && object->thread() != QThread::currentThread() )
+            ? Qt::QueuedConnection : Qt::DirectConnection;
+    }
+    else if ( invokeType == Qt::BlockingQueuedConnection )
+    {
+        if ( ( object == nullptr ) || object->thread() == QThread::currentThread() )
+        {
+            // We would end up in a deadlock, better do nothing
+            return;
+        }
+    }
+
+    if ( invokeType == Qt::DirectConnection )
+    {
+#if 1
+        if ( object == nullptr )
+            return; // do we really need an object here ???
+#endif
+
         if ( metaObject->d.static_metacall )
         {
-            metaObject->d.static_metacall(object,
+            metaObject->d.static_metacall( object,
                 QMetaObject::InvokeMetaMethod, methodIndex, args );
         }
         else
@@ -216,6 +306,13 @@ void qskInvokeMethod( QObject* object,
     }
     else
     {
+        if ( object == nullptr )
+            return;
+
+#if 1
+        // should be doable without QMetaMethod. TODO ...
+        const auto method = metaObject->method( methodIndex );
+#endif
         const int paramCount = method.parameterCount();
 
         auto types = static_cast< int* >( malloc( paramCount * sizeof( int ) ) );

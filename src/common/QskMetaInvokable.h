@@ -11,7 +11,22 @@
 
 // helper classes for QskMetaFunction
 
-class QskMetaInvokable : public QtPrivate::QSlotObjectBase
+#ifndef QT_NO_RTTI // we rely on hashing type_info
+
+    /*
+        When being enabled the same instance of QskMetaInvokable is used
+        for all QskMetaFunctions having the same function/method/functor -
+        f.e. &QQuickItem::update.
+
+        Not sure, why QObject::connect does not do the same and always
+        creates unique QSlotObjectBase objects for each connection.
+     */
+    #ifndef QSK_SHARED_META_INVOKABLE
+        #define QSK_SHARED_META_INVOKABLE 1
+    #endif
+#endif
+
+class QSK_EXPORT QskMetaInvokable : public QtPrivate::QSlotObjectBase
 {
 public:
     typedef void (* InvokeFunction)(
@@ -23,39 +38,58 @@ public:
     int refCount() const;
 
 protected:
+    friend class QskMetaFunction;
+
     explicit QskMetaInvokable( InvokeFunction f ):
         QSlotObjectBase( f )
     {
     }
+
+#if QSK_SHARED_META_INVOKABLE
+    /*
+        To avoid having more QskMetaInvokables for the same
+        function we have a hash table, where they are registered
+     */
+    static QskMetaInvokable* find( const std::type_info& info );
+    static void insert( const std::type_info&, QskMetaInvokable* );
+    static void remove( const std::type_info& );
+#else
+    
+#endif
 };
 
-template< typename Func, typename Args, typename R >
+template< typename Function, typename Args, typename R >
 class QskMetaFunctionInvokable : public QskMetaInvokable
 {
 public:
-    typedef QtPrivate::FunctionPointer< Func > FuncType;
+    typedef QtPrivate::FunctionPointer< Function > FuncType;
 
-    explicit QskMetaFunctionInvokable( Func f ):
+    explicit QskMetaFunctionInvokable( Function function ):
         QskMetaInvokable( &invoke ),
-        function(f)
+        m_function( function )
     {
     }
 
     static void invoke(int which, QtPrivate::QSlotObjectBase* invokable,
         QObject* object, void** args, bool* )
     {
-        auto f = static_cast< QskMetaFunctionInvokable* >( invokable );
+        auto invokableFunction = static_cast< QskMetaFunctionInvokable* >( invokable );
 
         switch ( which )
         {
             case Destroy:
             {
-                delete f;
+#if QSK_SHARE_INVOKABLES
+                remove( typeid( Function ) );
+#endif
+                delete invokableFunction;
+
                 break;
             }
             case Call:
             {
-                FuncType::template call< Args, R >( f->function, object, args );
+                FuncType::template call< Args, R >(
+                    invokableFunction->m_function, object, args );
                 break;
             }
             case TypeInfo:
@@ -68,43 +102,49 @@ public:
         }
     }
 
-    Func function;
+    Function m_function;
 };
 
-template< typename Func, typename Args, typename R >
+template< typename Function, typename Args, typename R >
 class QskMetaMemberInvokable : public QskMetaInvokable
 {
 public:
-    explicit QskMetaMemberInvokable( Func f ):
+    explicit QskMetaMemberInvokable( Function function ):
         QskMetaInvokable( &invoke ),
-        function(f)
+        m_function( function )
     {
     }
 
     static void invoke( int which, QtPrivate::QSlotObjectBase* invokable,
         QObject* object, void** args, bool* ret )
     {
-        typedef QtPrivate::FunctionPointer< Func > FuncType;
+        typedef QtPrivate::FunctionPointer< Function > FuncType;
 
-        auto f = static_cast< QskMetaMemberInvokable* >( invokable );
+        auto invokableMember = static_cast< QskMetaMemberInvokable* >( invokable );
 
         switch (which)
         {
             case Destroy:
             {
-                delete f;
+#if QSK_SHARE_INVOKABLES
+                remove( typeid( Function ) );
+#endif
+                delete invokableMember;
+
                 break;
             }
             case Call:
             {
                 FuncType::template call< Args, R >(
-                    f->function, static_cast< typename FuncType::Object* >( object ), args );
+                    invokableMember->m_function,
+                    static_cast< typename FuncType::Object* >( object ), args );
 
                 break;
             }
             case Compare:
             {
-                *ret = *reinterpret_cast< Func* >( args ) == f->function;
+                const auto function = *reinterpret_cast< Function* >( args );
+                *ret = function == invokableMember->m_function;
                 break;
             }
             case TypeInfo:
@@ -118,36 +158,41 @@ public:
     }
 
 private:
-    Func function;
+    Function m_function;
 };
 
-template< typename Func, int N, typename Args, typename R >
+template< typename Function, int N, typename Args, typename R >
 class QskMetaFunctorInvokable : public QskMetaInvokable
 {
 public:
-    typedef QtPrivate::Functor< Func, N > FuncType;
+    typedef QtPrivate::Functor< Function, N > FuncType;
 
-    explicit QskMetaFunctorInvokable( Func f ):
+    explicit QskMetaFunctorInvokable( Function function ):
         QskMetaInvokable( &invoke ),
-        function( std::move( f ) )
+        m_function( std::move( function ) )
     {
     }
 
     static void invoke( int which, QSlotObjectBase* invokable,
         QObject* object, void** args, bool* )
     {
-        auto f = static_cast< QskMetaFunctorInvokable* >( invokable );
+        auto invokableFunctor = static_cast< QskMetaFunctorInvokable* >( invokable );
 
         switch (which)
         {
             case Destroy:
             {
-                delete f;
+#if QSK_SHARE_INVOKABLES
+                remove( typeid( Function ) );
+#endif
+                delete invokableFunctor;
+
                 break;
             }
             case Call:
             {
-                FuncType::template call< Args, R >( f->function, object, args );
+                FuncType::template call< Args, R >(
+                    invokableFunctor->m_function, object, args );
                 break;
             }
             case TypeInfo:
@@ -161,7 +206,7 @@ public:
     }
 
 private:
-    Func function;
+    Function m_function;
 };
 
 #endif

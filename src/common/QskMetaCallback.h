@@ -7,12 +7,13 @@
 #define QSK_META_CALLBACK_H 1
 
 #include "QskGlobal.h"
-#include "QskMetaFunction.h"
 
-#include <QObject>
 #include <QPointer>
-#include <QMetaMethod>
 #include <QVector>
+
+class QskMetaInvokable;
+class QskMetaFunction;
+class QMetaMethod;
 
 class QskMetaCallback
 {
@@ -59,24 +60,33 @@ private:
 
     QPointer< const QObject > m_object;
 
+    struct FunctionData
+    {
+        QskMetaInvokable* invokable;
+        const int* parameterTypes;
+    };
+
+    struct MethodData
+    {
+        const QMetaObject* metaObject;
+        int methodIndex;
+    };
+
     union
     {
-        QskMetaFunction* m_function;
-        QMetaMethod* m_method;
+        FunctionData m_functionData;
+        MethodData m_methodData;
     };
 
     int m_type : 3;
+    bool m_hasObject : 1;
     ushort m_connectionType : 3;
 };
 
 inline QskMetaCallback::QskMetaCallback():
-    m_type( Invalid )
+    m_type( Invalid ),
+    m_hasObject( false )
 {
-}
-
-inline bool QskMetaCallback::isValid() const
-{
-    return m_type > 0;
 }
 
 inline QskMetaCallback::Type QskMetaCallback::type() const
@@ -91,6 +101,10 @@ inline Qt::ConnectionType QskMetaCallback::connectionType() const
 
 QSK_EXPORT void qskInvokeMethod(
      QObject* object, const QMetaMethod&, void* args[],
+     Qt::ConnectionType = Qt::AutoConnection );
+
+QSK_EXPORT void qskInvokeMethod(
+     QObject* object, const QMetaObject*, int methodIndex, void* args[],
      Qt::ConnectionType = Qt::AutoConnection );
 
 Q_DECLARE_METATYPE( QskMetaCallback )

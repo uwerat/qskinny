@@ -34,6 +34,15 @@ QskMetaFunction::QskMetaFunction():
 {
 }
 
+QskMetaFunction::QskMetaFunction(
+        QskMetaInvokable* invokable, const int* parameterTypes ):
+    m_invokable( invokable ),
+    m_parameterTypes( parameterTypes )
+{
+    if ( m_invokable )
+        m_invokable->ref();
+}
+
 QskMetaFunction::QskMetaFunction( const QskMetaFunction& other ):
     m_invokable( other.m_invokable ),
     m_parameterTypes( other.m_parameterTypes )
@@ -96,11 +105,6 @@ void QskMetaFunction::init( QskMetaInvokable* invokable,
     m_parameterTypes = parameterTypes;
 }
 
-const int* QskMetaFunction::parameterTypes() const
-{
-    return m_parameterTypes;
-}
-
 size_t QskMetaFunction::parameterCount() const
 {
     if ( m_parameterTypes )
@@ -134,12 +138,12 @@ void QskMetaFunction::invoke(
 
     if ( invokeType == Qt::AutoConnection )
     {
-        invokeType = ( object->thread() == QThread::currentThread() )
-            ? Qt::DirectConnection : Qt::QueuedConnection;
+        invokeType = ( object && object->thread() != QThread::currentThread() )
+            ? Qt::QueuedConnection : Qt::DirectConnection;
     }
     else if ( invokeType == Qt::BlockingQueuedConnection )
     {
-        if ( object->thread() == QThread::currentThread() )
+        if ( ( object == nullptr ) || object->thread() == QThread::currentThread() )
         {
             // We would end up in a deadlock, better do nothing
             return;
@@ -202,3 +206,5 @@ void QskMetaFunction::invoke(
         }
     }
 }
+
+#include "moc_QskMetaFunction.cpp"
