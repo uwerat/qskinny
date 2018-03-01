@@ -78,10 +78,13 @@ int main( int argc, char* argv[] )
     MyObject object;
     MyObject2 object2;
 
+    int num = 111;
+    auto f = [&num]( int i, double d ) { qDebug() << i << d << (++num); };
+
     Invoker invoker;
 
-    invoker.addCallback( QskMetaFunction() );
 #if 1
+    invoker.addCallback( QskMetaFunction() );
     invoker.addCallback( debugValue );
     invoker.addCallback( debugValueI );
     invoker.addCallback( &object, &MyObject::print1 );
@@ -91,8 +94,6 @@ int main( int argc, char* argv[] )
     invoker.addCallback( &object, &MyObject::print4 );
     invoker.addCallback( &object, []( double d, int i ) { qDebug() << d << i; } );
 
-    int num = 111;
-    auto f = [&num]( int i, double d ) { qDebug() << i << d << (++num); };
     invoker.addCallback( &object, f );
     invoker.addCallback( &object2, f );
     invoker.addCallback( &object, fs );
@@ -109,41 +110,13 @@ int main( int argc, char* argv[] )
     qDebug() << "== Direct Connections";
     invoker.invoke( 3.14, 35, Qt::DirectConnection );
 
-    qDebug() << "== Queued Connections";
+    qDebug() << "\n\n== Queued Connections";
 
     QTimer::singleShot( 0,
         [&invoker] { invoker.invoke( 0.07, 42, Qt::QueuedConnection ); } );
 #endif
 
     QTimer::singleShot( 100, &app, QCoreApplication::quit );
-
-#if 0
-    QObject::connect( &object2, &MyObject2::done,
-        &object, &MyObject::print1 );
-
-    QObject::connect( &object2, &MyObject2::done, debugValue );
-    QObject::connect( &object2, &MyObject2::done, debugValueI );
-    QObject::connect( &object2, &MyObject2::done, &object, &MyObject::print1 );
-    QObject::connect( &object2, &MyObject2::done, &object2, &MyObject2::print1 );
-    QObject::connect( &object2, &MyObject2::done, &object, &MyObject::print2 );
-    QObject::connect( &object2, &MyObject2::done, &object, &MyObject::print3 );
-    QObject::connect( &object2, &MyObject2::done, &object, &MyObject::print4 );
-    QObject::connect( &object2, &MyObject2::done, &object, []( double d, int i ) { qDebug() << d << i; } );
-    
-    int num2 = 111;
-    auto f2 = [&num2]( int i, double d ) { qDebug() << i << d << (++num2); };
-    QObject::connect( &object2, &MyObject2::done, &object, f2 );
-    QObject::connect( &object2, &MyObject2::done, &object2, f2 );
-    QObject::connect( &object2, &MyObject2::done, &object, fs );
-    QObject::connect( &object2, &MyObject2::done, &object2, fs );
-    
-    QObject::connect( &object2, &MyObject2::done, &object, []( double d ) { qDebug() << d; } );
-    QObject::connect( &object2, &MyObject2::done, []() { qDebug() << "HERE"; } );
-    QObject::connect( &object2, &MyObject2::done, []( int i, double d ) { qDebug() << i << d; } );
-    QObject::connect( &object2, &MyObject2::done, []( int i ) { qDebug() << i; } ); 
-    QObject::connect( &object2, &MyObject2::done, []( double d ) { qDebug() << d; } );
-
-#endif
 
     return app.exec();
 }

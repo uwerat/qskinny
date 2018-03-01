@@ -13,7 +13,7 @@ Invoker::Invoker( QObject* parent ):
 void Invoker::addCallback( const QObject* object,
     const QskMetaFunction& function )
 {
-    m_callbacks += QskMetaCallback( object, function );
+    m_callbacks.append( QskMetaCallback( object, function ) );
 }
 
 void Invoker::invoke( qreal realValue, int intValue,

@@ -107,7 +107,7 @@ public:
     }
 
     static void invoke( int which, QtPrivate::QSlotObjectBase*,
-        QObject* object, void** args, bool* ret )
+        QObject* object, void** args, bool* )
     {
         static Invokable* invokable = nullptr;
 
@@ -140,12 +140,6 @@ public:
                     invokable->m_function,
                     static_cast< typename FuncType::Object* >( object ), args );
 
-                break;
-            }
-            case Compare:
-            {
-                const auto function = *reinterpret_cast< Function* >( args );
-                *ret = function == invokable->m_function;
                 break;
             }
             case TypeInfo:
