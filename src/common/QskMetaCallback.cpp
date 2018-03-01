@@ -33,7 +33,7 @@ static inline void qskInvokeMethodQueued( QObject* object,
 QskMetaCallback::QskMetaCallback( const QObject* object,
         const QMetaMethod& method, Qt::ConnectionType connectionType ):
     m_object( const_cast< QObject* >( object ) ),
-    m_methodData { method.enclosingMetaObject(), method.methodIndex()  }, 
+    m_methodData { method.enclosingMetaObject(), method.methodIndex()  },
     m_type( MetaMethod ),
     m_hasObject( object != nullptr ),
     m_connectionType( static_cast< ushort >( connectionType & 0x3 ) )
@@ -101,7 +101,7 @@ QskMetaCallback& QskMetaCallback::operator=( const QskMetaCallback& other )
         {
             if ( m_type == MetaFunction && m_functionData.invokable )
                 m_functionData.invokable->destroyIfLastRef();
-                
+
             m_methodData.metaObject = other.m_methodData.metaObject;
             m_methodData.methodIndex = other.m_methodData.methodIndex;
 
@@ -341,7 +341,7 @@ void qskInvokeMethod( QObject* object,
 
         if ( connectionType == Qt::QueuedConnection )
         {
-            qskInvokeMethodQueued( object, 
+            qskInvokeMethodQueued( object,
                 metaObject, methodIndex, paramCount + 1, types, args );
         }
         else

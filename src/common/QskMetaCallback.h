@@ -100,12 +100,12 @@ inline Qt::ConnectionType QskMetaCallback::connectionType() const
 }
 
 QSK_EXPORT void qskInvokeMethod(
-     QObject* object, const QMetaMethod&, void* args[],
-     Qt::ConnectionType = Qt::AutoConnection );
+    QObject* object, const QMetaMethod&, void* args[],
+    Qt::ConnectionType = Qt::AutoConnection );
 
 QSK_EXPORT void qskInvokeMethod(
-     QObject* object, const QMetaObject*, int methodIndex, void* args[],
-     Qt::ConnectionType = Qt::AutoConnection );
+    QObject* object, const QMetaObject*, int methodIndex, void* args[],
+    Qt::ConnectionType = Qt::AutoConnection );
 
 Q_DECLARE_METATYPE( QskMetaCallback )
 

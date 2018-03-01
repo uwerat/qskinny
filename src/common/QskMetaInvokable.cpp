@@ -18,6 +18,27 @@ namespace
         "Bad cast: QskMetaInvokable does not match" );
 }
 
+QskMetaInvokable* QskMetaInvokable::instance(
+    InvokeFunction invoke, void** functor )
+{
+    /*
+        In opposite to QObject::connect we share the Invokable for callbacks to the same
+        function/functor - like f.e QQuickItem::update(). But we have to pay an extra static
+        pointer inside of each callback instance.
+     */
+    QskMetaInvokable* invokable;
+    void* args[] = { &invokable, functor };
+
+    invoke( Find, nullptr, nullptr, args, nullptr );
+
+    if ( invokable )
+        invokable->ref();
+    else
+        invoke( Create, nullptr, nullptr, args, nullptr );
+
+    return invokable;
+}
+
 int QskMetaInvokable::typeInfo() const
 {
     auto that = const_cast< QskMetaInvokable* >( this );
@@ -35,28 +56,3 @@ int QskMetaInvokable::refCount() const
     auto that = const_cast< QskMetaInvokable* >( this );
     return reinterpret_cast< SlotObject* >( that )->ref.load();
 }
-
-#if QSK_SHARED_META_INVOKABLE
-
-#include <unordered_map>
-#include <typeindex>
-
-static std::unordered_map< std::type_index, QskMetaInvokable* > qskInvokableTab;
-
-QskMetaInvokable* QskMetaInvokable::find( const std::type_info& info )
-{
-    const auto it = qskInvokableTab.find( info );
-    return ( it != qskInvokableTab.end() ) ? it->second : nullptr;
-}
-
-void QskMetaInvokable::insert( const std::type_info& info, QskMetaInvokable* invokable )
-{
-    qskInvokableTab.emplace( info, invokable );
-}
-
-void QskMetaInvokable::remove( const std::type_info& info )
-{
-    qskInvokableTab.erase( info );
-}
-
-#endif // QSK_SHARED_META_INVOKABLE

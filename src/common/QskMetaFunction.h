@@ -87,29 +87,6 @@ protected:
     QskMetaInvokable* invokable() const;
 
 private:
-    template< typename T, typename F >
-    static inline QskMetaInvokable* findInvokable( F function )
-    {
-        QskMetaInvokable* invokable;
-
-#if QSK_SHARED_META_INVOKABLE
-        invokable = QskMetaInvokable::find( typeid( T ) );
-        if ( invokable )
-        {
-            invokable->ref();
-        }
-        else
-        {
-            invokable = new T( function );
-            QskMetaInvokable::insert( typeid( T ), invokable );
-        }
-#else
-        invokable = new T( function );
-#endif
-
-        return invokable;
-    }
-
     QskMetaInvokable* m_invokable;
     const int* m_parameterTypes;
 };
@@ -133,10 +110,12 @@ inline QskMetaFunction::QskMetaFunction( T function )
 
     const int Argc = Traits::ArgumentCount;
     using Args = typename List_Left< typename Traits::Arguments, Argc >::Value;
-    using Invokable = QskMetaMemberInvokable< T, Args, void >;
-    
-    init( findInvokable<Invokable>( function ),
-        ConnectionTypes< typename Traits::Arguments >::types() );
+
+    auto invokable = QskMetaInvokable::instance(
+            QskMetaMemberInvokable< T, Args, void >::invoke,
+            reinterpret_cast< void** >( &function ) );
+
+    init( invokable, ConnectionTypes< typename Traits::Arguments >::types() );
 }
 
 template< typename T, QskMetaFunctionTraits::IsFunction< T >* >
@@ -148,10 +127,12 @@ inline QskMetaFunction::QskMetaFunction( T function )
 
     const int Argc = Traits::ArgumentCount;
     using Args = typename List_Left< typename Traits::Arguments, Argc >::Value;
-    using Invokable = QskMetaFunctionInvokable< T, Args, void >;
 
-    init( findInvokable<Invokable>( function ),
-        ConnectionTypes< typename Traits::Arguments >::types() );
+    auto invokable = QskMetaInvokable::instance(
+            QskMetaFunctionInvokable< T, Args, void >::invoke,
+            reinterpret_cast< void** >( &function ) );
+
+    init( invokable, ConnectionTypes< typename Traits::Arguments >::types() );
 }
 
 template< typename T, QskMetaFunctionTraits::IsFunctor< T >* >
@@ -163,10 +144,12 @@ inline QskMetaFunction::QskMetaFunction( T functor )
 
     const int Argc = Traits::ArgumentCount;
     using Args = typename List_Left< typename Traits::Arguments, Argc >::Value;
-    using Invokable = QskMetaFunctorInvokable< T, Argc, Args, void >;
 
-    init( findInvokable<Invokable>( functor ),
-        ConnectionTypes< typename Traits::Arguments >::types() );
+    auto invokable = QskMetaInvokable::instance(
+            QskMetaFunctorInvokable< T, Argc, Args, void >::invoke,
+            reinterpret_cast< void** >( &functor ) );
+
+    init( invokable, ConnectionTypes< typename Traits::Arguments >::types() );
 }
 
 Q_DECLARE_METATYPE( QskMetaFunction )

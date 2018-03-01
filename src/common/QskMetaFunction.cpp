@@ -109,7 +109,7 @@ size_t QskMetaFunction::parameterCount() const
 {
     if ( m_parameterTypes )
     {
-        for ( int i = 1; ; i++ )
+        for ( int i = 1;; i++ )
         {
             if ( m_parameterTypes[ i ] == QMetaType::UnknownType )
                 return i + 1; // including the return type
