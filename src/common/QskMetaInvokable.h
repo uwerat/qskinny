@@ -30,7 +30,7 @@ public:
     static QskMetaInvokable* instance( InvokeFunction, void** function );
 
 protected:
-    explicit QskMetaInvokable( InvokeFunction f ):
+    explicit inline QskMetaInvokable( InvokeFunction f ):
         QSlotObjectBase( f )
     {
     }

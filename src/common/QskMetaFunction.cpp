@@ -98,13 +98,6 @@ QskMetaFunction& QskMetaFunction::operator=( const QskMetaFunction& other )
     return *this;
 }
 
-void QskMetaFunction::init( QskMetaInvokable* invokable,
-    const int* parameterTypes )
-{
-    m_invokable = invokable;
-    m_parameterTypes = parameterTypes;
-}
-
 size_t QskMetaFunction::parameterCount() const
 {
     if ( m_parameterTypes )
