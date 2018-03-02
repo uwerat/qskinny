@@ -47,6 +47,21 @@ private:
     const int* m_parameterTypes; // static array !
 };
 
+class QSK_EXPORT QskMetaFunctionInvokable0 : public QskMetaInvokable
+{
+    using Function = void(*)();
+    using Invokable = QskMetaFunctionInvokable0;
+
+public:
+    explicit QskMetaFunctionInvokable0( Function function );
+
+    static void invoke(int which, QtPrivate::QSlotObjectBase*,
+        QObject* object, void** args, bool* );
+
+private:
+    Function m_function;
+};
+
 template< typename Function, typename Args, typename R >
 class QskMetaFunctionInvokable : public QskMetaInvokable
 {

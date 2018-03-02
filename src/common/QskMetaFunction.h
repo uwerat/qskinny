@@ -26,6 +26,11 @@ namespace QskMetaFunctionTraits
     template< typename T >
     using IsFunction = typename std::enable_if< !FunctionPointer< T >::IsPointerToMemberFunction
         && FunctionPointer< T >::ArgumentCount >= 0, std::true_type >::type;
+
+    template< typename T >
+    using IsFunction0 = typename std::enable_if< !FunctionPointer< T >::IsPointerToMemberFunction
+        && FunctionPointer< T >::ArgumentCount == 0, std::true_type >::type;
+
 }
 
 class QSK_EXPORT QskMetaFunction
@@ -53,6 +58,8 @@ public:
 
     QskMetaFunction( const QskMetaFunction& );
     QskMetaFunction( QskMetaFunction&& );
+
+    QskMetaFunction( void(*function)() );
 
     template< typename T, QskMetaFunctionTraits::IsMemberFunction< T >* = nullptr >
     QskMetaFunction( T );

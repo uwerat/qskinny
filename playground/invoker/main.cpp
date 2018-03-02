@@ -8,9 +8,14 @@
 #include <QDebug>
 #include <QTimer>
 
-static void debugNone()
+static void debugNone1()
 {
-    qDebug() << "None";
+    qDebug() << "None 1";
+}
+
+static void debugNone2()
+{
+    qDebug() << "None 2";
 }
 
 static void debugValueI( int i )
@@ -95,7 +100,8 @@ int main( int argc, char* argv[] )
 
 #if 1
     invoker.addCallback( QskMetaFunction() );
-    invoker.addCallback( debugNone );
+    invoker.addCallback( debugNone1 );
+    invoker.addCallback( debugNone2 );
     invoker.addCallback( debugValue );
     invoker.addCallback( debugValueI );
     invoker.addCallback( debugValueD );

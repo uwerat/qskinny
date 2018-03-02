@@ -33,6 +33,13 @@ QskMetaFunction::QskMetaFunction():
 {
 }
 
+QskMetaFunction::QskMetaFunction( void(*function)() ):
+    m_invokable( QskMetaInvokable::instance(
+            QskMetaFunctionInvokable0::invoke, nullptr,
+            reinterpret_cast< void** >( &function ) ) )
+{
+}
+
 QskMetaFunction::QskMetaFunction( QskMetaInvokable* invokable ):
     m_invokable( invokable )
 {
