@@ -29,31 +29,26 @@ static inline void qskInvokeFunctionQueued( QObject* object,
 }
 
 QskMetaFunction::QskMetaFunction():
-    m_invokable( nullptr ),
-    m_parameterTypes( nullptr )
+    m_invokable( nullptr )
 {
 }
 
-QskMetaFunction::QskMetaFunction(
-        QskMetaInvokable* invokable, const int* parameterTypes ):
-    m_invokable( invokable ),
-    m_parameterTypes( parameterTypes )
+QskMetaFunction::QskMetaFunction( QskMetaInvokable* invokable ):
+    m_invokable( invokable )
 {
     if ( m_invokable )
         m_invokable->ref();
 }
 
 QskMetaFunction::QskMetaFunction( const QskMetaFunction& other ):
-    m_invokable( other.m_invokable ),
-    m_parameterTypes( other.m_parameterTypes )
+    m_invokable( other.m_invokable )
 {
     if ( m_invokable )
         m_invokable->ref();
 }
 
 QskMetaFunction::QskMetaFunction( QskMetaFunction&& other ):
-    m_invokable( other.m_invokable ),
-    m_parameterTypes( other.m_parameterTypes )
+    m_invokable( other.m_invokable )
 {
     other.m_invokable = nullptr;
 }
@@ -75,8 +70,6 @@ QskMetaFunction& QskMetaFunction::operator=( QskMetaFunction&& other )
         other.m_invokable = nullptr;
     }
 
-    m_parameterTypes = other.m_parameterTypes;
-
     return *this;
 }
 
@@ -93,18 +86,16 @@ QskMetaFunction& QskMetaFunction::operator=( const QskMetaFunction& other )
             m_invokable->ref();
     }
 
-    m_parameterTypes = other.m_parameterTypes;
-
     return *this;
 }
 
 size_t QskMetaFunction::parameterCount() const
 {
-    if ( m_parameterTypes )
+    if ( auto types = parameterTypes() )
     {
         for ( int i = 1;; i++ )
         {
-            if ( m_parameterTypes[ i ] == QMetaType::UnknownType )
+            if ( types[ i ] == QMetaType::UnknownType )
                 return i + 1; // including the return type
         }
     }
@@ -168,6 +159,7 @@ void QskMetaFunction::invoke(
         types[0] = QMetaType::UnknownType; // a return type is not possible
         arguments[0] = nullptr;
 
+        const int* parameterTypes = m_invokable->parameterTypes();
         for ( uint i = 1; i < argc; i++ )
         {
             if ( argv[i] == nullptr )
@@ -180,8 +172,8 @@ void QskMetaFunction::invoke(
                 return;
             }
 
-            types[i] = m_parameterTypes[i - 1];
-            arguments[i] = QMetaType::create( m_parameterTypes[i - 1], argv[i] );
+            types[i] = parameterTypes[i - 1];
+            arguments[i] = QMetaType::create( parameterTypes[i - 1], argv[i] );
         }
 
         if ( connectionType == Qt::QueuedConnection )

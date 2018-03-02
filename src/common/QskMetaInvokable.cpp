@@ -12,6 +12,7 @@ namespace
     {
         QAtomicInt ref;
         QskMetaInvokable::InvokeFunction invoke;
+        const int* parameterTypes;
     };
 
     static_assert( sizeof( SlotObject ) == sizeof( QskMetaInvokable ),
@@ -19,7 +20,7 @@ namespace
 }
 
 QskMetaInvokable* QskMetaInvokable::instance(
-    InvokeFunction invoke, void** functor )
+    InvokeFunction invoke, const int* parameterTypes, void** functor )
 {
     /*
         In opposite to QObject::connect we share the Invokable for callbacks to the same
@@ -35,6 +36,8 @@ QskMetaInvokable* QskMetaInvokable::instance(
         invokable->ref();
     else
         invoke( Create, nullptr, nullptr, args, nullptr );
+
+    invokable->m_parameterTypes = parameterTypes;
 
     return invokable;
 }

@@ -237,7 +237,7 @@ void QskMetaCallback::invoke( void* args[] )
         }
         case MetaFunction:
         {
-            QskMetaFunction function( m_functionData.invokable, m_functionData.parameterTypes );
+            QskMetaFunction function( m_functionData.invokable );
             function.invoke( object, args, connectionType() );
 
             break;

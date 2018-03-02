@@ -27,13 +27,24 @@ public:
     int typeInfo() const;
     int refCount() const;
 
-    static QskMetaInvokable* instance( InvokeFunction, void** function );
+    inline const int* parameterTypes() const
+    {
+        return m_parameterTypes;
+    }
+
+    static QskMetaInvokable* instance( InvokeFunction,
+        const int* parameterTypes, void** function );
 
 protected:
-    explicit inline QskMetaInvokable( InvokeFunction f ):
-        QSlotObjectBase( f )
+    explicit inline QskMetaInvokable( InvokeFunction f,
+            const int* m_parameterTypes = nullptr ):
+        QSlotObjectBase( f ),
+        m_parameterTypes( m_parameterTypes )
     {
     }
+
+private:
+    const int* m_parameterTypes; // static array !
 };
 
 template< typename Function, typename Args, typename R >

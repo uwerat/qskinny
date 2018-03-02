@@ -20,12 +20,12 @@ namespace QskMetaFunctionTraits
          std::true_type >::type;
 
     template< typename T >
-    using IsFunction = typename std::enable_if< !FunctionPointer< T >::IsPointerToMemberFunction
-        && FunctionPointer< T >::ArgumentCount >= 0, std::true_type >::type;
-
-    template< typename T >
     using IsFunctor = typename std::enable_if< !FunctionPointer< T >::IsPointerToMemberFunction
         && FunctionPointer< T >::ArgumentCount == -1, std::true_type >::type;
+
+    template< typename T >
+    using IsFunction = typename std::enable_if< !FunctionPointer< T >::IsPointerToMemberFunction
+        && FunctionPointer< T >::ArgumentCount >= 0, std::true_type >::type;
 }
 
 class QSK_EXPORT QskMetaFunction
@@ -57,10 +57,10 @@ public:
     template< typename T, QskMetaFunctionTraits::IsMemberFunction< T >* = nullptr >
     QskMetaFunction( T );
 
-    template< typename T, QskMetaFunctionTraits::IsFunction< T >* = nullptr >
+    template< typename T, QskMetaFunctionTraits::IsFunctor< T >* = nullptr >
     QskMetaFunction( T );
 
-    template< typename T, QskMetaFunctionTraits::IsFunctor< T >* = nullptr >
+    template< typename T, QskMetaFunctionTraits::IsFunction< T >* = nullptr >
     QskMetaFunction( T );
 
     ~QskMetaFunction();
@@ -81,12 +81,11 @@ public:
 protected:
     friend class QskMetaCallback;
 
-    QskMetaFunction( QskMetaInvokable*, const int* );
+    QskMetaFunction( QskMetaInvokable* );
     QskMetaInvokable* invokable() const;
 
 private:
     QskMetaInvokable* m_invokable;
-    const int* m_parameterTypes;
 };
 
 inline QskMetaInvokable* QskMetaFunction::invokable() const
@@ -96,7 +95,7 @@ inline QskMetaInvokable* QskMetaFunction::invokable() const
 
 inline const int* QskMetaFunction::parameterTypes() const
 {
-    return m_parameterTypes;
+    return m_invokable ? m_invokable->parameterTypes() : nullptr;
 }
 
 template< typename T, QskMetaFunctionTraits::IsMemberFunction< T >* >
@@ -111,26 +110,8 @@ inline QskMetaFunction::QskMetaFunction( T function )
 
     m_invokable = QskMetaInvokable::instance(
         QskMetaMemberInvokable< T, Args, void >::invoke,
+        ConnectionTypes< typename Traits::Arguments >::types(),
         reinterpret_cast< void** >( &function ) );
-
-    m_parameterTypes = ConnectionTypes< typename Traits::Arguments >::types();
-}
-
-template< typename T, QskMetaFunctionTraits::IsFunction< T >* >
-inline QskMetaFunction::QskMetaFunction( T function )
-{
-    using namespace QtPrivate;
-
-    using Traits = FunctionPointer< T >;
-
-    constexpr int Argc = Traits::ArgumentCount;
-    using Args = typename List_Left< typename Traits::Arguments, Argc >::Value;
-
-    m_invokable = QskMetaInvokable::instance(
-            QskMetaFunctionInvokable< T, Args, void >::invoke,
-            reinterpret_cast< void** >( &function ) );
-
-    m_parameterTypes = ConnectionTypes< typename Traits::Arguments >::types();
 }
 
 template< typename T, QskMetaFunctionTraits::IsFunctor< T >* >
@@ -144,10 +125,25 @@ inline QskMetaFunction::QskMetaFunction( T functor )
     using Args = typename List_Left< typename Traits::Arguments, Argc >::Value;
 
     m_invokable = QskMetaInvokable::instance(
-            QskMetaFunctorInvokable< T, Argc, Args, void >::invoke,
-            reinterpret_cast< void** >( &functor ) );
+        QskMetaFunctorInvokable< T, Argc, Args, void >::invoke,
+        ConnectionTypes< typename Traits::Arguments >::types(),
+        reinterpret_cast< void** >( &functor ) );
+}
 
-    m_parameterTypes = ConnectionTypes< typename Traits::Arguments >::types();
+template< typename T, QskMetaFunctionTraits::IsFunction< T >* >
+inline QskMetaFunction::QskMetaFunction( T function )
+{
+    using namespace QtPrivate;
+
+    using Traits = FunctionPointer< T >;
+
+    constexpr int Argc = Traits::ArgumentCount;
+    using Args = typename List_Left< typename Traits::Arguments, Argc >::Value;
+
+    m_invokable = QskMetaInvokable::instance(
+        QskMetaFunctionInvokable< T, Args, void >::invoke,
+        ConnectionTypes< typename Traits::Arguments >::types(),
+        reinterpret_cast< void** >( &function ) );
 }
 
 Q_DECLARE_METATYPE( QskMetaFunction )
