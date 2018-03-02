@@ -10,12 +10,14 @@
 
 #include <QPointer>
 #include <QVector>
+#include <QObject>
 
 class QskMetaInvokable;
 class QskMetaFunction;
+class QMetaObject;
 class QMetaMethod;
 
-class QskMetaCallback
+class QSK_EXPORT QskMetaCallback
 {
 public:
     enum Type
@@ -35,6 +37,9 @@ public:
         Qt::ConnectionType = Qt::AutoConnection );
 
     QskMetaCallback( const QObject*, const QMetaMethod&,
+        Qt::ConnectionType = Qt::AutoConnection );
+
+    QskMetaCallback( const QObject*, const char* methodName,
         Qt::ConnectionType = Qt::AutoConnection );
 
     QskMetaCallback( const QskMetaCallback& );
@@ -98,14 +103,6 @@ inline Qt::ConnectionType QskMetaCallback::connectionType() const
 {
     return static_cast< Qt::ConnectionType >( m_connectionType );
 }
-
-QSK_EXPORT void qskInvokeMethod(
-    QObject* object, const QMetaMethod&, void* args[],
-    Qt::ConnectionType = Qt::AutoConnection );
-
-QSK_EXPORT void qskInvokeMethod(
-    QObject* object, const QMetaObject*, int methodIndex, void* args[],
-    Qt::ConnectionType = Qt::AutoConnection );
 
 Q_DECLARE_METATYPE( QskMetaCallback )
 

@@ -117,7 +117,7 @@ void QskMetaFunction::invoke(
 {
     // code is not thread safe - TODO ...
 
-    QPointer<QObject> receiver( object );
+    QPointer< QObject > receiver( object );
 
     if ( m_invokable == nullptr )
         return;
@@ -189,6 +189,8 @@ void QskMetaFunction::invoke(
                 // object might have died in the meantime
                 free( types );
                 free( arguments );
+
+                return;
             }
 
             qskInvokeFunctionQueued( object, m_invokable, argc, types, arguments );

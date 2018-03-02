@@ -141,7 +141,7 @@ inline QskMetaFunction::QskMetaFunction( T function )
 
     constexpr int Argc = Traits::ArgumentCount;
     using Args = typename List_Left< typename Traits::Arguments, Argc >::Value;
-    
+
     m_invokable = new QskMetaFunctionInvokable< T, Args, void >( function );
     m_invokable->setParameterTypes(
         ConnectionTypes< typename Traits::Arguments >::types() );

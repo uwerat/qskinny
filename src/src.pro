@@ -43,6 +43,7 @@ HEADERS += \
     common/QskMetaCallback.h \
     common/QskMetaFunction.h \
     common/QskMetaInvokable.cpp \
+    common/QskMetaMethod.h \
     common/QskModule.h \
     common/QskNamespace.h \
     common/QskObjectCounter.h \
@@ -62,6 +63,7 @@ SOURCES += \
     common/QskMetaCallback.cpp \
     common/QskMetaFunction.cpp \
     common/QskMetaInvokable.cpp \
+    common/QskMetaMethod.cpp \
     common/QskModule.cpp \
     common/QskObjectCounter.cpp \
     common/QskSizePolicy.cpp \

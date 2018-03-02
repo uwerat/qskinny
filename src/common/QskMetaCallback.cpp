@@ -5,30 +5,9 @@
 
 #include "QskMetaCallback.h"
 #include "QskMetaFunction.h"
+#include "QskMetaMethod.h"
 
-#include <QObject>
-#include <QCoreApplication>
-#include <QThread>
-#include <QSemaphore>
 #include <QMetaMethod>
-
-QSK_QT_PRIVATE_BEGIN
-#include <private/qobject_p.h>
-QSK_QT_PRIVATE_END
-
-static inline void qskInvokeMethodQueued( QObject* object,
-    const QMetaObject* metaObject, ushort methodIndex,
-    int nargs, int* types, void* args[], QSemaphore* semaphore = nullptr )
-{
-    constexpr QObject* sender = nullptr;
-    constexpr int signalId = -1;
-
-    auto event = new QMetaCallEvent(
-        metaObject->methodOffset(), methodIndex, metaObject->d.static_metacall,
-        sender, signalId, nargs, types, args, semaphore );
-
-    QCoreApplication::postEvent( object, event );
-}
 
 QskMetaCallback::QskMetaCallback( const QObject* object,
         const QMetaMethod& method, Qt::ConnectionType connectionType ):
@@ -37,6 +16,12 @@ QskMetaCallback::QskMetaCallback( const QObject* object,
     m_type( MetaMethod ),
     m_hasObject( object != nullptr ),
     m_connectionType( static_cast< ushort >( connectionType & 0x3 ) )
+{
+}
+
+QskMetaCallback::QskMetaCallback( const QObject* object,
+        const char* methodName, Qt::ConnectionType connectionType ):
+    QskMetaCallback( object, QskMetaMethod::method( object, methodName ), connectionType )
 {
 }
 
@@ -230,7 +215,7 @@ void QskMetaCallback::invoke( void* args[] )
     {
         case MetaMethod:
         {
-            qskInvokeMethod( object, m_methodData.metaObject,
+            QskMetaMethod::invoke( object, m_methodData.metaObject,
                 m_methodData.methodIndex, args, connectionType() );
 
             break;
@@ -245,113 +230,5 @@ void QskMetaCallback::invoke( void* args[] )
 
         default:
             break;
-    }
-}
-
-void qskInvokeMethod( QObject* object,
-    const QMetaMethod& method, void* args[],
-    Qt::ConnectionType connectionType )
-{
-    auto metaObject = method.enclosingMetaObject();
-    if ( metaObject == nullptr )
-        return;
-
-    const int methodIndex = method.methodIndex() - metaObject->methodOffset();
-    qskInvokeMethod( object, metaObject, methodIndex, args, connectionType );
-}
-
-void qskInvokeMethod( QObject* object,
-    const QMetaObject* metaObject, int methodIndex, void* args[],
-    Qt::ConnectionType connectionType )
-{
-    if ( ( metaObject == nullptr ) || ( methodIndex < 0 )
-        || ( methodIndex > metaObject->methodCount() ) )
-    {
-        return;
-    }
-
-    int invokeType = connectionType & 0x3;
-
-    if ( invokeType == Qt::AutoConnection )
-    {
-        invokeType = ( object && object->thread() != QThread::currentThread() )
-            ? Qt::QueuedConnection : Qt::DirectConnection;
-    }
-    else if ( invokeType == Qt::BlockingQueuedConnection )
-    {
-        if ( ( object == nullptr ) || object->thread() == QThread::currentThread() )
-        {
-            // We would end up in a deadlock, better do nothing
-            return;
-        }
-    }
-
-    if ( invokeType == Qt::DirectConnection )
-    {
-#if 1
-        if ( object == nullptr )
-            return; // do we really need an object here ???
-#endif
-
-        if ( metaObject->d.static_metacall )
-        {
-            metaObject->d.static_metacall( object,
-                QMetaObject::InvokeMetaMethod, methodIndex, args );
-        }
-        else
-        {
-            QMetaObject::metacall( object,
-                QMetaObject::InvokeMetaMethod, methodIndex, args );
-        }
-    }
-    else
-    {
-        if ( object == nullptr )
-            return;
-
-#if 1
-        // should be doable without QMetaMethod. TODO ...
-        const auto method = metaObject->method( methodIndex );
-#endif
-        const int paramCount = method.parameterCount();
-
-        auto types = static_cast< int* >( malloc( paramCount * sizeof( int ) ) );
-        auto arguments = static_cast< void** >( malloc( paramCount * sizeof( void* ) ) );
-
-        types[0] = QMetaType::UnknownType; // a return type is not possible
-        arguments[0] = nullptr;
-
-        for ( int i = 1; i < paramCount; i++ )
-        {
-            if ( arguments[i] == nullptr )
-            {
-                Q_ASSERT( arguments[i] != nullptr );
-
-                free( types );
-                free( arguments );
-
-                return;
-            }
-
-            types[i] = method.parameterType( i );
-            arguments[i] = args[i - 1];
-        }
-
-        Q_ASSERT( args[paramCount] == nullptr );
-
-        if ( connectionType == Qt::QueuedConnection )
-        {
-            qskInvokeMethodQueued( object,
-                metaObject, methodIndex, paramCount + 1, types, args );
-        }
-        else
-        {
-            QSemaphore semaphore;
-
-            qskInvokeMethodQueued( object,
-                metaObject, methodIndex, paramCount + 1, types, args, &semaphore );
-
-            semaphore.acquire();
-        }
     }
 }

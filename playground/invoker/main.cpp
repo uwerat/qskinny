@@ -9,44 +9,52 @@
 #include <QTimer>
 #include <QThread>
 
-static void debugNone1()
+void debugNone1()
 {
     qDebug() << "None 1";
 }
 
-static void debugNone2()
+void debugNone2()
 {
     qDebug() << "None 2";
 }
 
-static void debugValueI1( int i )
+void debugValueI1( int i )
 {
     qDebug() << "I1" << i;
 }
 
-static void debugValueI2( int i )
+void debugValueI2( int i )
 {
     qDebug() << "I2" << i;
 }
 
-static void debugValueD( qreal d )
+void debugValueD( qreal d )
 {
     qDebug() << "D" << d;
 }
 
-static void debugValue( qreal d, int i )
+void debugValue( qreal d, int i )
 {
     qDebug() << d << i;
 }
 
 class MyObject : public QObject
 {
+    Q_OBJECT
+
 public:
     MyObject( QObject* parent = nullptr ):
         QObject( parent )
     {
     }
 
+    Q_INVOKABLE void printInvokable( double d, int i ) const
+    {
+        qDebug() << "invokable" << d << i;
+    }
+
+public Q_SLOTS:
     void print0( double d, int i ) const
     {
         qDebug() << "print0" << d << i;
@@ -71,19 +79,36 @@ public:
     {
         qDebug() << i;
     }
+
+    void printS( const QString& s ) const
+    {
+        qDebug() << s;
+    }
 };
 
 static auto fs = []( int i, double d ) { qDebug() << i << d; };
 
-class Application: public QCoreApplication
+class Application : public QCoreApplication
 {
 public:
-    Application( int &argc, char *argv[] ):
+    Application( int& argc, char* argv[] ):
         QCoreApplication( argc, argv ),
         m_object( new MyObject() ),
         m_thread( new QThread( this ) )
     {
-        auto f = [this]( int i, double d ) { qDebug() << i << d << (++m_num); };
+#if 1
+        m_invoker.addCallback( m_object, "print0(double,int)" );
+        m_invoker.addCallback( m_object, "print1(double,int)" );
+        m_invoker.addCallback( m_object, SLOT(print2(int,double)) );
+        m_invoker.addCallback( m_object, "print3(double)" );
+        m_invoker.addCallback( m_object, "print4(int)" );
+        m_invoker.addCallback( m_object, "print4(int)" );
+        m_invoker.addCallback( m_object, "printS(QString)" );
+        m_invoker.addCallback( m_object, "printInvokable(double,int)" );
+#endif
+
+#if 1
+        auto f = [this]( int i, double d ) { qDebug() << i << d << ( ++m_num ); };
 
         m_invoker.addCallback( m_object, &MyObject::print0 );
         m_invoker.addCallback( m_object, &MyObject::print1 );
@@ -99,11 +124,12 @@ public:
         m_invoker.addCallback( m_object, &MyObject::print2 );
         m_invoker.addCallback( m_object, &MyObject::print3 );
         m_invoker.addCallback( m_object, &MyObject::print4 );
+        m_invoker.addCallback( m_object, &MyObject::printS );
         m_invoker.addCallback( m_object, []( double d, int i ) { qDebug() << d << i; } );
-    
+
         m_invoker.addCallback( m_object, f );
         m_invoker.addCallback( m_object, fs );
-    
+
         m_invoker.addCallback( m_object, []( double d ) { qDebug() << d; } );
         m_invoker.addCallback( []() { qDebug() << "HERE"; } );
         m_invoker.addCallback( []( int i, double d ) { qDebug() << i << d; } );
@@ -111,7 +137,7 @@ public:
         m_invoker.addCallback( []( int i ) { qDebug() << "I2" << i; } );
         m_invoker.addCallback( []( double d ) { qDebug() << "V" << d; } );
         m_invoker.addCallback( []( const double& d ) { qDebug() << "R" << d; } );
-
+#endif
     }
 
     virtual ~Application()
@@ -134,7 +160,7 @@ public:
     void invokeBlockingQueued()
     {
         m_thread->start();
-            
+
         m_object->moveToThread( m_thread );
 
         qDebug() << "== Blocking Queued Connections";
@@ -164,3 +190,5 @@ int main( int argc, char* argv[] )
 
     return app.exec();
 }
+
+#include "main.moc"

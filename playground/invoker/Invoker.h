@@ -19,6 +19,7 @@ public:
 
     void addCallback( const QskMetaFunction& );
     void addCallback( const QObject*, const QskMetaFunction& );
+    void addCallback( const QObject*, const char* methodName );
 
     void invoke( qreal d, int i, Qt::ConnectionType );
 

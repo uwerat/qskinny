@@ -17,12 +17,20 @@ void Invoker::addCallback( const QObject* object,
     m_callbacks.append( QskMetaCallback( object, function ) );
 }
 
+void Invoker::addCallback( const QObject* object,
+    const char* methodName )
+{
+    m_callbacks.append( QskMetaCallback( object, methodName ) );
+}
+
 void Invoker::invoke( qreal realValue, int intValue,
     Qt::ConnectionType connectionType )
 {
+    QString s = QString( "S: %1 + %2" ).arg( realValue ).arg( intValue );
+
     for ( auto& callback : m_callbacks )
     {
-        void* args[3] = { nullptr };
+        void* args[4] = { nullptr };
 
         const auto types = callback.parameterTypes();
 
@@ -39,6 +47,11 @@ void Invoker::invoke( qreal realValue, int intValue,
                 case QMetaType::Double:
                 {
                     args[i++] = reinterpret_cast< void* >( &realValue );
+                    break;
+                }
+                case QMetaType::QString:
+                {
+                    args[i++] = reinterpret_cast< void* >( &s );
                     break;
                 }
                 default:
