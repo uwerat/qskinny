@@ -19,9 +19,7 @@ public:
 
     enum
     {
-        TypeInfo = NumOperations + 1,
-        Create,
-        Find
+        TypeInfo = NumOperations + 1
     };
 
     int typeInfo() const;
@@ -32,8 +30,10 @@ public:
         return m_parameterTypes;
     }
 
-    static QskMetaInvokable* instance( InvokeFunction,
-        const int* parameterTypes, void** function );
+    inline void setParameterTypes( const int* types )
+    {
+        m_parameterTypes = types;
+    }
 
 protected:
     explicit inline QskMetaInvokable( InvokeFunction f,
@@ -44,22 +44,7 @@ protected:
     }
 
 private:
-    const int* m_parameterTypes; // static array !
-};
-
-class QSK_EXPORT QskMetaFunctionInvokable0 : public QskMetaInvokable
-{
-    using Function = void(*)();
-    using Invokable = QskMetaFunctionInvokable0;
-
-public:
-    explicit QskMetaFunctionInvokable0( Function function );
-
-    static void invoke(int which, QtPrivate::QSlotObjectBase*,
-        QObject* object, void** args, bool* );
-
-private:
-    Function m_function;
+    const int* m_parameterTypes; // static array, only needed for Qt::QueuedConnection
 };
 
 template< typename Function, typename Args, typename R >
@@ -79,18 +64,6 @@ public:
     {
         switch ( which )
         {
-            case Find:
-            {
-                *reinterpret_cast< void** >( args[0] ) = nullptr;
-                break;
-            }
-            case Create:
-            {
-                *reinterpret_cast< void** >( args[0] ) =
-                    new Invokable( *reinterpret_cast< Function* >( args[1] ) );
-
-                break;
-            }
             case Destroy:
             {
                 delete static_cast< Invokable* >( invokable );
@@ -128,30 +101,14 @@ public:
     {
     }
 
-    static void invoke( int which, QtPrivate::QSlotObjectBase*,
+    static void invoke( int which, QtPrivate::QSlotObjectBase* slotObject,
         QObject* object, void** args, bool* )
     {
-        static Invokable* invokable = nullptr;
-
         switch (which)
         {
-            case Find:
-            {
-                *reinterpret_cast< void** >( args[0] ) = invokable;
-                break;
-            }
-            case Create:
-            {
-                invokable = new Invokable( *reinterpret_cast< Function* >( args[1] ) );
-                *reinterpret_cast< void** >( args[0] ) = invokable;
-
-                break;
-            }
             case Destroy:
             {
-                delete invokable;
-                invokable = nullptr;
-
+                delete static_cast< Invokable* >( slotObject );
                 break;
             }
             case Call:
@@ -159,7 +116,7 @@ public:
                 typedef QtPrivate::FunctionPointer< Function > FuncType;
 
                 FuncType::template call< Args, R >(
-                    invokable->m_function,
+                    static_cast< Invokable* >( slotObject )->m_function,
                     static_cast< typename FuncType::Object* >( object ), args );
 
                 break;
@@ -188,29 +145,14 @@ public:
     {
     }
 
-    static void invoke( int which, QSlotObjectBase*, QObject* object, void** args, bool* )
+    static void invoke( int which, QSlotObjectBase* slotObject,
+        QObject* object, void** args, bool* )
     {
-        static Invokable* invokable = nullptr;
-
         switch (which)
         {
-            case Find:
-            {
-                *reinterpret_cast< void** >( args[0] ) = invokable;
-                break;
-            }
-            case Create:
-            {
-                invokable = new Invokable( *reinterpret_cast< Function* >( args[1] ) );
-                *reinterpret_cast< void** >( args[0] ) = invokable;
-
-                break;
-            }
             case Destroy:
             {
-                delete invokable;
-                invokable = nullptr;
-
+                delete static_cast< Invokable* >( slotObject );
                 break;
             }
             case Call:
@@ -218,7 +160,7 @@ public:
                 typedef QtPrivate::Functor< Function, N > FuncType;
 
                 FuncType::template call< Args, R >(
-                    invokable->m_function, object, args );
+                    static_cast< Invokable* >( slotObject )->m_function, object, args );
 
                 break;
             }

@@ -30,7 +30,6 @@ namespace QskMetaFunctionTraits
     template< typename T >
     using IsFunction0 = typename std::enable_if< !FunctionPointer< T >::IsPointerToMemberFunction
         && FunctionPointer< T >::ArgumentCount == 0, std::true_type >::type;
-
 }
 
 class QSK_EXPORT QskMetaFunction
@@ -58,8 +57,6 @@ public:
 
     QskMetaFunction( const QskMetaFunction& );
     QskMetaFunction( QskMetaFunction&& );
-
-    QskMetaFunction( void(*function)() );
 
     template< typename T, QskMetaFunctionTraits::IsMemberFunction< T >* = nullptr >
     QskMetaFunction( T );
@@ -115,10 +112,9 @@ inline QskMetaFunction::QskMetaFunction( T function )
     constexpr int Argc = Traits::ArgumentCount;
     using Args = typename List_Left< typename Traits::Arguments, Argc >::Value;
 
-    m_invokable = QskMetaInvokable::instance(
-        QskMetaMemberInvokable< T, Args, void >::invoke,
-        ConnectionTypes< typename Traits::Arguments >::types(),
-        reinterpret_cast< void** >( &function ) );
+    m_invokable = new QskMetaMemberInvokable< T, Args, void >( function );
+    m_invokable->setParameterTypes(
+        ConnectionTypes< typename Traits::Arguments >::types() );
 }
 
 template< typename T, QskMetaFunctionTraits::IsFunctor< T >* >
@@ -131,10 +127,9 @@ inline QskMetaFunction::QskMetaFunction( T functor )
     constexpr int Argc = Traits::ArgumentCount;
     using Args = typename List_Left< typename Traits::Arguments, Argc >::Value;
 
-    m_invokable = QskMetaInvokable::instance(
-        QskMetaFunctorInvokable< T, Argc, Args, void >::invoke,
-        ConnectionTypes< typename Traits::Arguments >::types(),
-        reinterpret_cast< void** >( &functor ) );
+    m_invokable = new QskMetaFunctorInvokable< T, Argc, Args, void >( functor );
+    m_invokable->setParameterTypes(
+        ConnectionTypes< typename Traits::Arguments >::types() );
 }
 
 template< typename T, QskMetaFunctionTraits::IsFunction< T >* >
@@ -146,11 +141,10 @@ inline QskMetaFunction::QskMetaFunction( T function )
 
     constexpr int Argc = Traits::ArgumentCount;
     using Args = typename List_Left< typename Traits::Arguments, Argc >::Value;
-
-    m_invokable = QskMetaInvokable::instance(
-        QskMetaFunctionInvokable< T, Args, void >::invoke,
-        ConnectionTypes< typename Traits::Arguments >::types(),
-        reinterpret_cast< void** >( &function ) );
+    
+    m_invokable = new QskMetaFunctionInvokable< T, Args, void >( function );
+    m_invokable->setParameterTypes(
+        ConnectionTypes< typename Traits::Arguments >::types() );
 }
 
 Q_DECLARE_METATYPE( QskMetaFunction )

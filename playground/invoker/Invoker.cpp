@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "Invoker.h"
+#include <QThread>
 
 Invoker::Invoker( QObject* parent ):
     QObject( parent )
@@ -47,9 +48,28 @@ void Invoker::invoke( qreal realValue, int intValue,
 
         callback.setConnectionType( connectionType );
 
-        if ( connectionType == Qt::DirectConnection )
-            callback.invoke( args );
-        else if ( callback.object() )
-            callback.invoke( args );
+        const int callType = connectionType & 0x3;
+        switch( callType )
+        {
+            case Qt::DirectConnection:
+            {
+                callback.invoke( args );
+                break;
+            }
+            case Qt::QueuedConnection:
+            {
+                if ( callback.object() )
+                    callback.invoke( args );
+                break;
+            }
+            case Qt::BlockingQueuedConnection:
+            {
+                const auto receiver = callback.object();
+                if ( receiver && receiver->thread() != QThread::currentThread() )
+                    callback.invoke( args );
+
+                break;
+            }
+        }
     }
 }

@@ -33,13 +33,6 @@ QskMetaFunction::QskMetaFunction():
 {
 }
 
-QskMetaFunction::QskMetaFunction( void(*function)() ):
-    m_invokable( QskMetaInvokable::instance(
-            QskMetaFunctionInvokable0::invoke, nullptr,
-            reinterpret_cast< void** >( &function ) ) )
-{
-}
-
 QskMetaFunction::QskMetaFunction( QskMetaInvokable* invokable ):
     m_invokable( invokable )
 {
@@ -122,6 +115,10 @@ QskMetaFunction::Type QskMetaFunction::functionType() const
 void QskMetaFunction::invoke(
     QObject* object, void* argv[], Qt::ConnectionType connectionType )
 {
+    // code is not thread safe - TODO ...
+
+    QPointer<QObject> receiver( object );
+
     if ( m_invokable == nullptr )
         return;
 
@@ -129,72 +126,73 @@ void QskMetaFunction::invoke(
 
     if ( invokeType == Qt::AutoConnection )
     {
-        invokeType = ( object && object->thread() != QThread::currentThread() )
+        invokeType = ( receiver && receiver->thread() != QThread::currentThread() )
             ? Qt::QueuedConnection : Qt::DirectConnection;
     }
-    else if ( invokeType == Qt::BlockingQueuedConnection )
+
+    switch( invokeType )
     {
-        if ( ( object == nullptr ) || object->thread() == QThread::currentThread() )
+        case Qt::DirectConnection:
         {
-            // We would end up in a deadlock, better do nothing
-            return;
+            m_invokable->call( receiver, argv );
+            break;
         }
-    }
-
-    if ( invokeType == Qt::DirectConnection )
-    {
-        m_invokable->call( object, argv );
-    }
-    else
-    {
-        if ( object == nullptr )
+        case Qt::BlockingQueuedConnection:
         {
-#if 1
-            /*
-                object might be deleted in another thread
-                during this call - TODO ...
-             */
-#endif
-            return;
-        }
-
-        const auto argc = parameterCount();
-
-        auto types = static_cast< int* >( malloc( argc * sizeof( int ) ) );
-        auto arguments = static_cast< void** >( malloc( argc * sizeof( void* ) ) );
-
-        types[0] = QMetaType::UnknownType; // a return type is not possible
-        arguments[0] = nullptr;
-
-        const int* parameterTypes = m_invokable->parameterTypes();
-        for ( uint i = 1; i < argc; i++ )
-        {
-            if ( argv[i] == nullptr )
+            if ( receiver.isNull()
+                || ( receiver->thread() == QThread::currentThread() ) )
             {
-                Q_ASSERT( arguments[i] != nullptr );
-
-                free( types );
-                free( arguments );
-
+                // We would end up in a deadlock, better do nothing
                 return;
             }
 
-            types[i] = parameterTypes[i - 1];
-            arguments[i] = QMetaType::create( parameterTypes[i - 1], argv[i] );
-        }
-
-        if ( connectionType == Qt::QueuedConnection )
-        {
-            qskInvokeFunctionQueued( object, m_invokable, argc, types, arguments );
-        }
-        else // Qt::BlockingQueuedConnection ???
-        {
             QSemaphore semaphore;
 
-            qskInvokeFunctionQueued( object,
-                m_invokable, argc, types, arguments, &semaphore );
+            qskInvokeFunctionQueued( receiver, m_invokable,
+                0, nullptr, argv, &semaphore );
 
             semaphore.acquire();
+
+            break;
+        }
+        case Qt::QueuedConnection:
+        {
+            if ( receiver.isNull() )
+            {
+                return;
+            }
+
+            const auto argc = parameterCount();
+
+            auto types = static_cast< int* >( malloc( argc * sizeof( int ) ) );
+            auto arguments = static_cast< void** >( malloc( argc * sizeof( void* ) ) );
+
+            types[0] = QMetaType::UnknownType; // a return type is not possible
+            arguments[0] = nullptr;
+
+            const int* parameterTypes = m_invokable->parameterTypes();
+            for ( uint i = 1; i < argc; i++ )
+            {
+                if ( argv[i] == nullptr )
+                {
+                    Q_ASSERT( arguments[i] != nullptr );
+                    receiver = nullptr;
+                    break;
+                }
+
+                types[i] = parameterTypes[i - 1];
+                arguments[i] = QMetaType::create( parameterTypes[i - 1], argv[i] );
+            }
+
+            if ( receiver.isNull() )
+            {
+                // object might have died in the meantime
+                free( types );
+                free( arguments );
+            }
+
+            qskInvokeFunctionQueued( object, m_invokable, argc, types, arguments );
+            break;
         }
     }
 }
