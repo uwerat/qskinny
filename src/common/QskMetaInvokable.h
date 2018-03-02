@@ -74,30 +74,26 @@ public:
     {
     }
 
-    static void invoke(int which, QtPrivate::QSlotObjectBase*,
+    static void invoke(int which, QtPrivate::QSlotObjectBase* invokable,
         QObject* object, void** args, bool* )
     {
-        static Invokable* invokable = nullptr;
-
         switch ( which )
         {
             case Find:
             {
-                *reinterpret_cast< void** >( args[0] ) = invokable;
+                *reinterpret_cast< void** >( args[0] ) = nullptr;
                 break;
             }
             case Create:
             {
-                invokable = new Invokable( *reinterpret_cast< Function* >( args[1] ) );
-                *reinterpret_cast< void** >( args[0] ) = invokable;
+                *reinterpret_cast< void** >( args[0] ) =
+                    new Invokable( *reinterpret_cast< Function* >( args[1] ) );
 
                 break;
             }
             case Destroy:
             {
-                delete invokable;
-                invokable = nullptr;
-
+                delete static_cast< Invokable* >( invokable );
                 break;
             }
             case Call:
@@ -105,7 +101,7 @@ public:
                 typedef QtPrivate::FunctionPointer< Function > FuncType;
 
                 FuncType::template call< Args, R >(
-                    invokable->m_function, object, args );
+                    static_cast< Invokable* >( invokable )->m_function, object, args );
                 break;
             }
             case TypeInfo:

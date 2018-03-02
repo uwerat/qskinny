@@ -18,14 +18,19 @@ static void debugNone2()
     qDebug() << "None 2";
 }
 
-static void debugValueI( int i )
+static void debugValueI1( int i )
 {
-    qDebug() << i;
+    qDebug() << "I1" << i;
+}
+
+static void debugValueI2( int i )
+{
+    qDebug() << "I2" << i;
 }
 
 static void debugValueD( qreal d )
 {
-    qDebug() << d;
+    qDebug() << "D" << d;
 }
 
 static void debugValue( qreal d, int i )
@@ -103,7 +108,8 @@ int main( int argc, char* argv[] )
     invoker.addCallback( debugNone1 );
     invoker.addCallback( debugNone2 );
     invoker.addCallback( debugValue );
-    invoker.addCallback( debugValueI );
+    invoker.addCallback( debugValueI1 );
+    invoker.addCallback( debugValueI2 );
     invoker.addCallback( debugValueD );
     invoker.addCallback( &object, &MyObject::print1 );
     invoker.addCallback( &object2, &MyObject2::print1 );
@@ -120,7 +126,8 @@ int main( int argc, char* argv[] )
     invoker.addCallback( &object, []( double d ) { qDebug() << d; } );
     invoker.addCallback( []() { qDebug() << "HERE"; } );
     invoker.addCallback( []( int i, double d ) { qDebug() << i << d; } );
-    invoker.addCallback( []( int i ) { qDebug() << i; } );
+    invoker.addCallback( []( int i ) { qDebug() << "I1" << i; } );
+    invoker.addCallback( []( int i ) { qDebug() << "I2" << i; } );
     invoker.addCallback( []( double d ) { qDebug() << d; } );
 #endif
 
