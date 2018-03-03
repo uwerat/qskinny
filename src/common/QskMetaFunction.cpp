@@ -16,58 +16,92 @@ QSK_QT_PRIVATE_BEGIN
 QSK_QT_PRIVATE_END
 
 static inline void qskInvokeFunctionQueued( QObject* object,
-    QskMetaInvokable* invokable, int argc, int* types, void* argv[],
+    QskMetaFunction::FunctionCall* functionCall, int argc, int* types, void* argv[],
     QSemaphore* semaphore = nullptr )
 {
     constexpr QObject* sender = nullptr;
     constexpr int signalId = 0;
 
     auto event = new QMetaCallEvent(
-        invokable, sender, signalId, argc, types, argv, semaphore );
+        functionCall, sender, signalId, argc, types, argv, semaphore );
 
     QCoreApplication::postEvent( object, event );
 }
 
+namespace
+{
+    using FunctionCall = QskMetaFunction::FunctionCall;
+
+    // to have access to the private section of QSlotObjectBase
+    struct SlotObject
+    {
+        QAtomicInt ref;
+        FunctionCall::InvokeFunction invoke;
+        const int* parameterTypes;
+    };
+
+    static_assert( sizeof( SlotObject ) == sizeof( FunctionCall ),
+        "Bad cast: QskMetaFunction does not match" );
+}
+
+int QskMetaFunction::FunctionCall::typeInfo() const
+{
+    auto that = const_cast< FunctionCall* >( this );
+
+    int value;
+
+    reinterpret_cast< SlotObject* >( that )->invoke( TypeInfo, that,
+        nullptr, reinterpret_cast< void** >( &value ), nullptr );
+
+    return value;
+}
+
+int QskMetaFunction::FunctionCall::refCount() const
+{
+    auto that = const_cast< FunctionCall* >( this );
+    return reinterpret_cast< SlotObject* >( that )->ref.load();
+}
+
 QskMetaFunction::QskMetaFunction():
-    m_invokable( nullptr )
+    m_functionCall( nullptr )
 {
 }
 
-QskMetaFunction::QskMetaFunction( QskMetaInvokable* invokable ):
-    m_invokable( invokable )
+QskMetaFunction::QskMetaFunction( FunctionCall* functionCall ):
+    m_functionCall( functionCall )
 {
-    if ( m_invokable )
-        m_invokable->ref();
+    if ( m_functionCall )
+        m_functionCall->ref();
 }
 
 QskMetaFunction::QskMetaFunction( const QskMetaFunction& other ):
-    m_invokable( other.m_invokable )
+    m_functionCall( other.m_functionCall )
 {
-    if ( m_invokable )
-        m_invokable->ref();
+    if ( m_functionCall )
+        m_functionCall->ref();
 }
 
 QskMetaFunction::QskMetaFunction( QskMetaFunction&& other ):
-    m_invokable( other.m_invokable )
+    m_functionCall( other.m_functionCall )
 {
-    other.m_invokable = nullptr;
+    other.m_functionCall = nullptr;
 }
 
 QskMetaFunction::~QskMetaFunction()
 {
-    if ( m_invokable )
-        m_invokable->destroyIfLastRef();
+    if ( m_functionCall )
+        m_functionCall->destroyIfLastRef();
 }
 
 QskMetaFunction& QskMetaFunction::operator=( QskMetaFunction&& other )
 {
-    if ( m_invokable != other.m_invokable )
+    if ( m_functionCall != other.m_functionCall )
     {
-        if ( m_invokable )
-            m_invokable->destroyIfLastRef();
+        if ( m_functionCall )
+            m_functionCall->destroyIfLastRef();
 
-        m_invokable = other.m_invokable;
-        other.m_invokable = nullptr;
+        m_functionCall = other.m_functionCall;
+        other.m_functionCall = nullptr;
     }
 
     return *this;
@@ -75,15 +109,15 @@ QskMetaFunction& QskMetaFunction::operator=( QskMetaFunction&& other )
 
 QskMetaFunction& QskMetaFunction::operator=( const QskMetaFunction& other )
 {
-    if ( m_invokable != other.m_invokable )
+    if ( m_functionCall != other.m_functionCall )
     {
-        if ( m_invokable )
-            m_invokable->destroyIfLastRef();
+        if ( m_functionCall )
+            m_functionCall->destroyIfLastRef();
 
-        m_invokable = other.m_invokable;
+        m_functionCall = other.m_functionCall;
 
-        if ( m_invokable )
-            m_invokable->ref();
+        if ( m_functionCall )
+            m_functionCall->ref();
     }
 
     return *this;
@@ -106,10 +140,10 @@ size_t QskMetaFunction::parameterCount() const
 
 QskMetaFunction::Type QskMetaFunction::functionType() const
 {
-    if ( m_invokable == nullptr )
+    if ( m_functionCall == nullptr )
         return Invalid;
 
-    return static_cast< QskMetaFunction::Type >( m_invokable->typeInfo() );
+    return static_cast< QskMetaFunction::Type >( m_functionCall->typeInfo() );
 }
 
 void QskMetaFunction::invoke(
@@ -119,7 +153,7 @@ void QskMetaFunction::invoke(
 
     QPointer< QObject > receiver( object );
 
-    if ( m_invokable == nullptr )
+    if ( m_functionCall == nullptr )
         return;
 
     int invokeType = connectionType & 0x3;
@@ -134,7 +168,7 @@ void QskMetaFunction::invoke(
     {
         case Qt::DirectConnection:
         {
-            m_invokable->call( receiver, argv );
+            m_functionCall->call( receiver, argv );
             break;
         }
         case Qt::BlockingQueuedConnection:
@@ -148,7 +182,7 @@ void QskMetaFunction::invoke(
 
             QSemaphore semaphore;
 
-            qskInvokeFunctionQueued( receiver, m_invokable,
+            qskInvokeFunctionQueued( receiver, m_functionCall,
                 0, nullptr, argv, &semaphore );
 
             semaphore.acquire();
@@ -170,7 +204,7 @@ void QskMetaFunction::invoke(
             types[0] = QMetaType::UnknownType; // a return type is not possible
             arguments[0] = nullptr;
 
-            const int* parameterTypes = m_invokable->parameterTypes();
+            const int* parameterTypes = m_functionCall->parameterTypes();
             for ( uint i = 1; i < argc; i++ )
             {
                 if ( argv[i] == nullptr )
@@ -193,7 +227,7 @@ void QskMetaFunction::invoke(
                 return;
             }
 
-            qskInvokeFunctionQueued( object, m_invokable, argc, types, arguments );
+            qskInvokeFunctionQueued( object, m_functionCall, argc, types, arguments );
             break;
         }
     }

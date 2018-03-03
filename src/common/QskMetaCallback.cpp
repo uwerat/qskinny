@@ -9,6 +9,31 @@
 
 #include <QMetaMethod>
 
+namespace
+{
+    class Function: public QskMetaFunction
+    {
+    public:
+        inline Function( void* functionCall ):
+            QskMetaFunction( static_cast< FunctionCall* >( functionCall ) )
+        {
+        }
+
+        static inline void ref( void* functionCall )
+        {
+            if ( functionCall )
+                static_cast< FunctionCall* >( functionCall )->ref();
+        }
+
+        static inline void deref( void* functionCall )
+        {
+            if ( functionCall )
+                static_cast< FunctionCall* >( functionCall )->destroyIfLastRef();
+        }
+    };
+}
+
+
 QskMetaCallback::QskMetaCallback( const QObject* object,
         const QMetaMethod& method, Qt::ConnectionType connectionType ):
     m_object( const_cast< QObject* >( object ) ),
@@ -28,13 +53,12 @@ QskMetaCallback::QskMetaCallback( const QObject* object,
 QskMetaCallback::QskMetaCallback( const QObject* object,
         const QskMetaFunction& function, Qt::ConnectionType connectionType ):
     m_object( const_cast< QObject* >( object ) ),
-    m_functionData { function.invokable(), function.parameterTypes() },
+    m_functionData { function.functionCall(), function.parameterTypes() },
     m_type( MetaFunction ),
     m_hasObject( object != nullptr ),
     m_connectionType( static_cast< ushort >( connectionType & ~Qt::UniqueConnection ) )
 {
-    if ( m_functionData.invokable )
-        m_functionData.invokable->ref();
+    Function::ref( m_functionData.functionCall );
 }
 
 QskMetaCallback::QskMetaCallback( const QskMetaCallback& other ):
@@ -54,9 +78,8 @@ QskMetaCallback::QskMetaCallback( const QskMetaCallback& other ):
         }
         case MetaFunction:
         {
-            m_functionData.invokable = other.m_functionData.invokable;
-            if ( m_functionData.invokable )
-                m_functionData.invokable->ref();
+            m_functionData.functionCall = other.m_functionData.functionCall;
+            Function::ref( m_functionData.functionCall );
 
             m_functionData.parameterTypes = other.m_functionData.parameterTypes;
             break;
@@ -69,8 +92,8 @@ QskMetaCallback::QskMetaCallback( const QskMetaCallback& other ):
 
 QskMetaCallback::~QskMetaCallback()
 {
-    if ( ( m_type == MetaFunction ) && m_functionData.invokable )
-        m_functionData.invokable->destroyIfLastRef();
+    if ( m_type == MetaFunction )
+        Function::deref( m_functionData.functionCall );
 }
 
 QskMetaCallback& QskMetaCallback::operator=( const QskMetaCallback& other )
@@ -84,8 +107,8 @@ QskMetaCallback& QskMetaCallback::operator=( const QskMetaCallback& other )
     {
         case MetaMethod:
         {
-            if ( m_type == MetaFunction && m_functionData.invokable )
-                m_functionData.invokable->destroyIfLastRef();
+            if ( m_type == MetaFunction )
+                Function::deref( m_functionData.functionCall );
 
             m_methodData.metaObject = other.m_methodData.metaObject;
             m_methodData.methodIndex = other.m_methodData.methodIndex;
@@ -94,21 +117,19 @@ QskMetaCallback& QskMetaCallback::operator=( const QskMetaCallback& other )
         }
         case MetaFunction:
         {
-            if ( ( m_type == MetaFunction ) && m_functionData.invokable )
-                m_functionData.invokable->destroyIfLastRef();
+            if ( m_type == MetaFunction  )
+                Function::deref( m_functionData.functionCall );
 
-            m_functionData.invokable = other.m_functionData.invokable;
-
-            if ( m_functionData.invokable )
-                m_functionData.invokable->ref();
+            m_functionData.functionCall = other.m_functionData.functionCall;
+            Function::ref( m_functionData.functionCall );
 
             m_functionData.parameterTypes = other.m_functionData.parameterTypes;
             break;
         }
 
         default:
-            if ( ( m_type == MetaFunction ) && m_functionData.invokable )
-                m_functionData.invokable->destroyIfLastRef();
+            if ( m_type == MetaFunction )
+                Function::deref( m_functionData.functionCall );
     }
 
     m_type = other.m_type;
@@ -137,7 +158,7 @@ bool QskMetaCallback::isValid() const
 
         case MetaFunction:
         {
-            return m_functionData.invokable != nullptr;
+            return m_functionData.functionCall != nullptr;
         }
 
         default:
@@ -155,8 +176,8 @@ void QskMetaCallback::reset()
     m_object = nullptr;
     m_hasObject = false;
 
-    if ( m_type == MetaFunction && m_functionData.invokable )
-        m_functionData.invokable->destroyIfLastRef();
+    if ( m_type == MetaFunction )
+        Function::deref( m_functionData.functionCall );
 
     m_functionData = { nullptr, nullptr }; // for the debugger
     m_type = Invalid;
@@ -222,8 +243,11 @@ void QskMetaCallback::invoke( void* args[] )
         }
         case MetaFunction:
         {
-            QskMetaFunction function( m_functionData.invokable );
-            function.invoke( object, args, connectionType() );
+            if ( m_functionData.functionCall )
+            {
+                Function function( m_functionData.functionCall );
+                function.invoke( object, args, connectionType() );
+            }
 
             break;
         }

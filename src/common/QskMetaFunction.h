@@ -7,8 +7,6 @@
 #define QSK_META_FUNCTION_H 1
 
 #include "QskGlobal.h"
-#include "QskMetaInvokable.h"
-
 #include <QMetaType>
 
 namespace QskMetaFunctionTraits
@@ -82,38 +80,41 @@ public:
 
     Type functionType() const;
 
-protected:
-    friend class QskMetaCallback;
+    class FunctionCall;
+    FunctionCall* functionCall() const;
 
-    QskMetaFunction( QskMetaInvokable* );
-    QskMetaInvokable* invokable() const;
+protected:
+    QskMetaFunction( FunctionCall* );
 
 private:
-    QskMetaInvokable* m_invokable;
+    FunctionCall* m_functionCall;
 };
 
-inline QskMetaInvokable* QskMetaFunction::invokable() const
+#include "QskMetaFunction.hpp"
+
+inline QskMetaFunction::FunctionCall* QskMetaFunction::functionCall() const
 {
-    return m_invokable;
+    return m_functionCall;
 }
 
 inline const int* QskMetaFunction::parameterTypes() const
 {
-    return m_invokable ? m_invokable->parameterTypes() : nullptr;
+    return m_functionCall ? m_functionCall->parameterTypes() : nullptr;
 }
 
 template< typename T, QskMetaFunctionTraits::IsMemberFunction< T >* >
 inline QskMetaFunction::QskMetaFunction( T function )
 {
     using namespace QtPrivate;
+    using namespace QskMetaFunctionCall;
 
     using Traits = FunctionPointer< T >;
 
     constexpr int Argc = Traits::ArgumentCount;
     using Args = typename List_Left< typename Traits::Arguments, Argc >::Value;
 
-    m_invokable = new QskMetaMemberInvokable< T, Args, void >( function );
-    m_invokable->setParameterTypes(
+    m_functionCall = new MemberFunctionCall< T, Args, void >( function );
+    m_functionCall->setParameterTypes(
         ConnectionTypes< typename Traits::Arguments >::types() );
 }
 
@@ -121,14 +122,15 @@ template< typename T, QskMetaFunctionTraits::IsFunctor< T >* >
 inline QskMetaFunction::QskMetaFunction( T functor )
 {
     using namespace QtPrivate;
+    using namespace QskMetaFunctionCall;
 
     using Traits = FunctionPointer< decltype( &T::operator() ) >;
 
     constexpr int Argc = Traits::ArgumentCount;
     using Args = typename List_Left< typename Traits::Arguments, Argc >::Value;
 
-    m_invokable = new QskMetaFunctorInvokable< T, Argc, Args, void >( functor );
-    m_invokable->setParameterTypes(
+    m_functionCall = new FunctorFunctionCall< T, Argc, Args, void >( functor );
+    m_functionCall->setParameterTypes(
         ConnectionTypes< typename Traits::Arguments >::types() );
 }
 
@@ -136,14 +138,15 @@ template< typename T, QskMetaFunctionTraits::IsFunction< T >* >
 inline QskMetaFunction::QskMetaFunction( T function )
 {
     using namespace QtPrivate;
+    using namespace QskMetaFunctionCall;
 
     using Traits = FunctionPointer< T >;
 
     constexpr int Argc = Traits::ArgumentCount;
     using Args = typename List_Left< typename Traits::Arguments, Argc >::Value;
 
-    m_invokable = new QskMetaFunctionInvokable< T, Args, void >( function );
-    m_invokable->setParameterTypes(
+    m_functionCall = new StaticFunctionCall< T, Args, void >( function );
+    m_functionCall->setParameterTypes(
         ConnectionTypes< typename Traits::Arguments >::types() );
 }
 

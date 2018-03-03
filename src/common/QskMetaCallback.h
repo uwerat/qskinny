@@ -12,7 +12,6 @@
 #include <QVector>
 #include <QObject>
 
-class QskMetaInvokable;
 class QskMetaFunction;
 class QMetaObject;
 class QMetaMethod;
@@ -67,7 +66,7 @@ private:
 
     struct FunctionData
     {
-        QskMetaInvokable* invokable;
+        void* functionCall;
         const int* parameterTypes;
     };
 
