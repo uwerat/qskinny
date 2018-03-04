@@ -70,6 +70,11 @@ public:
     QskMetaFunction& operator=( const QskMetaFunction& );
     QskMetaFunction& operator=( QskMetaFunction&& );
 
+    bool operator==( const QskMetaFunction& ) const;
+    bool operator!=( const QskMetaFunction& ) const;
+
+    explicit operator bool() const;
+
     const int* parameterTypes() const;
 
     // including the return type !
@@ -79,6 +84,7 @@ public:
         Qt::ConnectionType = Qt::AutoConnection );
 
     Type functionType() const;
+    bool isNull() const;
 
     class FunctionCall;
     FunctionCall* functionCall() const;
@@ -90,12 +96,27 @@ private:
     FunctionCall* m_functionCall;
 };
 
-#include "QskMetaFunction.hpp"
+inline bool QskMetaFunction::operator!=( const QskMetaFunction& other ) const
+{
+    return !( *this == other );
+}
+
+inline QskMetaFunction::operator bool() const
+{
+    return !isNull();
+}
+
+inline bool QskMetaFunction::isNull() const
+{
+    return m_functionCall == nullptr;
+}
 
 inline QskMetaFunction::FunctionCall* QskMetaFunction::functionCall() const
 {
     return m_functionCall;
 }
+
+#include "QskMetaFunction.hpp"
 
 inline const int* QskMetaFunction::parameterTypes() const
 {

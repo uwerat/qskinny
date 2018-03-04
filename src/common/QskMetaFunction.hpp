@@ -63,7 +63,7 @@ namespace QskMetaFunctionCall
         }
 
         static void invoke(int which, QSlotObjectBase* functionCall,
-            QObject* object, void** args, bool* )
+            QObject* object, void** args, bool* ret )
         {
             switch ( which )
             {
@@ -78,6 +78,13 @@ namespace QskMetaFunctionCall
 
                     FuncType::template call< Args, R >(
                         static_cast< MetaCall* >( functionCall )->m_function, object, args );
+                    break;
+                }
+                case Compare:
+                {
+                    *ret = reinterpret_cast< MetaCall* >( args )->m_function
+                        == static_cast< MetaCall* >( functionCall )->m_function;
+
                     break;
                 }
                 case TypeInfo:
@@ -148,14 +155,14 @@ namespace QskMetaFunctionCall
         {
         }
 
-        static void invoke( int which, QSlotObjectBase* slotObject,
+        static void invoke( int which, QSlotObjectBase* functionCall,
             QObject* object, void** args, bool* )
         {
             switch (which)
             {
                 case Destroy:
                 {
-                    delete static_cast< MetaCall* >( slotObject );
+                    delete static_cast< MetaCall* >( functionCall );
                     break;
                 }
                 case Call:
@@ -163,7 +170,7 @@ namespace QskMetaFunctionCall
                     typedef Functor< Function, N > FuncType;
 
                     FuncType::template call< Args, R >(
-                        static_cast< MetaCall* >( slotObject )->m_function, object, args );
+                        static_cast< MetaCall* >( functionCall )->m_function, object, args );
 
                     break;
                 }

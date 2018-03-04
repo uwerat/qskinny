@@ -32,7 +32,7 @@ void Invoker::invoke( qreal realValue, int intValue,
     {
         void* args[4] = { nullptr };
 
-        const auto types = callback.parameterTypes();
+        const auto types = callback.invokable().parameterTypes();
 
         int i = 1;
         for ( auto type : types )

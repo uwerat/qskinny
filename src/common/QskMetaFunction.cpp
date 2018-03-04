@@ -123,6 +123,34 @@ QskMetaFunction& QskMetaFunction::operator=( const QskMetaFunction& other )
     return *this;
 }
 
+bool QskMetaFunction::operator==( const QskMetaFunction& other ) const
+{
+    if ( m_functionCall == other.m_functionCall )
+        return true;
+
+    /*
+        There is no way to compmare functors/members without
+        std::type_info, what we don't want to use as it is
+        another template creating symbols.
+
+        So this implementation can't do much more than finding
+        out if one instance is a copy from another.
+     */
+
+    if ( m_functionCall && other.m_functionCall )
+    {
+        if ( m_functionCall->typeInfo() == Function &&
+             other.m_functionCall->typeInfo() == Function )
+        {
+            // only static functions can be compared
+            return m_functionCall->compare(
+                reinterpret_cast< void** >( other.m_functionCall ) );
+        }
+    }
+
+    return false;
+}
+
 size_t QskMetaFunction::parameterCount() const
 {
     if ( auto types = parameterTypes() )
