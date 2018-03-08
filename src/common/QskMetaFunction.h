@@ -75,10 +75,10 @@ public:
 
     explicit operator bool() const;
 
-    const int* parameterTypes() const;
+    int returnType() const;
 
-    // including the return type !
     size_t parameterCount() const;
+    const int* parameterTypes() const;
 
     void invoke( QObject*, void* args[],
         Qt::ConnectionType = Qt::AutoConnection );

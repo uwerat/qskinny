@@ -176,7 +176,7 @@ QMetaMethod QskMetaMethod::method(
     }
     else if ( methodName[0] == slotIndicator )
     {
-        auto signature =  QMetaObject::normalizedSignature( methodName + 1 );
+        auto signature = QMetaObject::normalizedSignature( methodName + 1 );
         index = metaObject->indexOfSlot( signature );
     }
     else

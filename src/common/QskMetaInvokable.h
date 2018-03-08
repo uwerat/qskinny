@@ -54,11 +54,15 @@ public:
     bool isNull() const;
 
     QVector< int > parameterTypes() const;
+    int returnType() const;
 
     void invoke( QObject*, void* args[],
         Qt::ConnectionType = Qt::AutoConnection );
 
     void reset();
+
+    QMetaMethod method() const;    
+    QskMetaFunction function() const;    
 
 private:
     struct FunctionData

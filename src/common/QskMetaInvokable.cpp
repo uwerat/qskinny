@@ -185,16 +185,14 @@ QVector< int > QskMetaInvokable::parameterTypes() const
     {
         case MetaMethod:
         {
-            const auto& d = m_methodData;
-            if ( m_methodData.metaObject )
-            {
-#if 1
-                // should be doable without QMetaMethod. TODO ...
-                const auto method = d.metaObject->method( d.methodIndex );
-#endif
-                const int paramCount = method.parameterCount();
+            // should be doable without QMetaMethod. TODO ...
+            const auto method = QskMetaInvokable::method();
 
+            const int paramCount = method.parameterCount();
+            if ( paramCount > 0 )
+            {
                 paramTypes.reserve( paramCount );
+
                 for ( int i = 0; i < paramCount; i++ )
                     paramTypes += method.parameterType( i );
             }
@@ -203,7 +201,7 @@ QVector< int > QskMetaInvokable::parameterTypes() const
         }
         case MetaFunction:
         {
-            auto types = Function( m_functionData.functionCall ).parameterTypes();
+            auto types = function().parameterTypes();
             if ( types )
             {
                 while ( *types )
@@ -218,6 +216,43 @@ QVector< int > QskMetaInvokable::parameterTypes() const
     return paramTypes;
 }
 
+int QskMetaInvokable::returnType() const
+{
+    switch( m_type )
+    {
+        case MetaMethod:
+        {
+            return method().returnType();
+        }
+        case MetaFunction:
+        {
+            return function().returnType();
+        }
+        default:
+        {
+            return QMetaType::Void;
+        }
+    }
+}
+
+QMetaMethod QskMetaInvokable::method() const
+{
+    if ( m_type == MetaMethod )
+        return m_methodData.metaObject->method( m_methodData.methodIndex );
+
+    return QMetaMethod();
+}
+
+QskMetaFunction QskMetaInvokable::function() const
+{
+    if ( m_type == MetaFunction && m_functionData.functionCall )
+    {
+        Function function( m_functionData.functionCall );
+        return *static_cast< QskMetaFunction* >( &function );
+    }
+
+    return QskMetaFunction();
+}
 
 void QskMetaInvokable::invoke( QObject* object, void* args[],
     Qt::ConnectionType connectionType )

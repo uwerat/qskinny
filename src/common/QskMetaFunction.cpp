@@ -151,20 +151,23 @@ bool QskMetaFunction::operator==( const QskMetaFunction& other ) const
     return false;
 }
 
-size_t QskMetaFunction::parameterCount() const
+int QskMetaFunction::returnType() const
 {
-    if ( auto types = parameterTypes() )
-    {
-        for ( int i = 1;; i++ )
-        {
-            if ( types[ i ] == QMetaType::UnknownType )
-                return i + 1; // including the return type
-        }
-    }
-
-    return 1; // we always have a return type
+    return QMetaType::Void; // TODO ...
 }
 
+size_t QskMetaFunction::parameterCount() const
+{
+    int count = 0;
+
+    if ( auto types = parameterTypes() )
+    {
+        while ( types[ count ] != QMetaType::UnknownType )
+            count++;
+    }
+
+    return count;
+}
 
 QskMetaFunction::Type QskMetaFunction::functionType() const
 {
@@ -224,12 +227,12 @@ void QskMetaFunction::invoke(
                 return;
             }
 
-            const auto argc = parameterCount();
+            const auto argc = parameterCount() + 1; // return value + arguments
 
             auto types = static_cast< int* >( malloc( argc * sizeof( int ) ) );
             auto arguments = static_cast< void** >( malloc( argc * sizeof( void* ) ) );
 
-            types[0] = QMetaType::UnknownType; // a return type is not possible
+            types[0] = QMetaType::UnknownType;
             arguments[0] = nullptr;
 
             const int* parameterTypes = m_functionCall->parameterTypes();
@@ -243,7 +246,7 @@ void QskMetaFunction::invoke(
                 }
 
                 types[i] = parameterTypes[i - 1];
-                arguments[i] = QMetaType::create( parameterTypes[i - 1], argv[i] );
+                arguments[i] = QMetaType::create( types[i], argv[i] );
             }
 
             if ( receiver.isNull() )
