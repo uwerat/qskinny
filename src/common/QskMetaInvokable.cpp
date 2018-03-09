@@ -10,6 +10,7 @@
 #include <QMetaMethod>
 #include <QVector>
 #include <QObject>
+#include <QThread>
 
 namespace
 {
@@ -39,8 +40,16 @@ static void qskInvokeSetProperty( QObject* object,
     const QMetaObject* metaObject, int propertyIndex,
     void* args[], Qt::ConnectionType connectionType )
 {
+    int invokeType = connectionType & 0x3;
+
+    if ( invokeType == Qt::AutoConnection )
+    {
+        invokeType = ( object->thread() != QThread::currentThread() )
+            ? Qt::QueuedConnection : Qt::DirectConnection;
+    }
+
 #if 1
-    if ( connectionType != Qt::DirectConnection )
+    if ( invokeType != Qt::DirectConnection )
         return; // TODO ...
 #endif
 
@@ -48,14 +57,10 @@ static void qskInvokeSetProperty( QObject* object,
     {
         int status = -1;
         int flags = 0;
-        void *argv[] = { args[1], nullptr, &status, &flags };
+        void* argv[] = { args[1], nullptr, &status, &flags };
 
-#if 1
         QMetaObject::metacall( object,
             QMetaObject::WriteProperty, propertyIndex, argv );
-#else
-        metaObject->d.static_metacall(object, QMetaObject::WriteProperty, idx, argv);
-#endif
     }
 }
 
@@ -284,6 +289,31 @@ int QskMetaInvokable::returnType() const
             return QMetaType::Void;
         }
     }
+}
+
+QByteArray QskMetaInvokable::name() const
+{
+    switch( m_type )
+    {
+        case MetaMethod:
+        {
+            return method().name();
+        }
+        case MetaProperty:
+        {
+            return property().name();
+        }
+        case MetaFunction:
+        {
+            // what to do here ???
+            return QByteArray();
+        }
+        default:
+        {
+            return QByteArray();
+        }
+    }
+
 }
 
 QMetaMethod QskMetaInvokable::method() const

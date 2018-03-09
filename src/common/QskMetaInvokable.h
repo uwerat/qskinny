@@ -68,9 +68,11 @@ public:
 
     void reset();
 
-    QMetaMethod method() const;    
-    QMetaProperty property() const;    
-    QskMetaFunction function() const;    
+    QByteArray name() const;
+
+    QMetaMethod method() const;
+    QMetaProperty property() const;
+    QskMetaFunction function() const;
 
 private:
     struct FunctionData
