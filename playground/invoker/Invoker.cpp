@@ -4,23 +4,33 @@
  *****************************************************************************/
 
 #include "Invoker.h"
+
 #include <QThread>
+#include <QMetaProperty>
 
 Invoker::Invoker( QObject* parent ):
     QObject( parent )
 {
 }
 
-void Invoker::addCallback( const QObject* object,
+void Invoker::addFunctionCall( const QObject* object,
     const QskMetaFunction& function )
 {
     m_callbacks.append( QskMetaCallback( object, function ) );
 }
 
-void Invoker::addCallback( const QObject* object,
+void Invoker::addMethodCall( const QObject* object,
     const char* methodName )
 {
     m_callbacks.append( QskMetaCallback( object, methodName ) );
+}
+
+void Invoker::addPropertyCall( const QObject* object,
+    const char* property )
+{
+    const auto* mo = object->metaObject();
+    auto metaProperty = mo->property( mo->indexOfProperty( property ) );
+    m_callbacks.append( QskMetaCallback( object, metaProperty ) );
 }
 
 void Invoker::invoke( qreal realValue, int intValue,

@@ -35,9 +35,32 @@ namespace
     };
 }
 
+static void qskInvokeSetProperty( QObject* object,
+    const QMetaObject* metaObject, int propertyIndex,
+    void* args[], Qt::ConnectionType connectionType )
+{
+#if 1
+    if ( connectionType != Qt::DirectConnection )
+        return; // TODO ...
+#endif
+
+    if ( propertyIndex >= 0 && object->metaObject() == metaObject )
+    {
+        int status = -1;
+        int flags = 0;
+        void *argv[] = { args[1], nullptr, &status, &flags };
+
+#if 1
+        QMetaObject::metacall( object,
+            QMetaObject::WriteProperty, propertyIndex, argv );
+#else
+        metaObject->d.static_metacall(object, QMetaObject::WriteProperty, idx, argv);
+#endif
+    }
+}
 
 QskMetaInvokable::QskMetaInvokable( const QMetaMethod& method ):
-    m_methodData { method.enclosingMetaObject(), method.methodIndex()  },
+    m_metaData { method.enclosingMetaObject(), method.methodIndex()  },
     m_type( MetaMethod )
 {
 }
@@ -49,6 +72,12 @@ QskMetaInvokable::QskMetaInvokable( const QObject* object, const char* methodNam
 
 QskMetaInvokable::QskMetaInvokable( const QMetaObject* metaObject, const char* methodName ):
     QskMetaInvokable( QskMetaMethod::method( metaObject, methodName ) )
+{
+}
+
+QskMetaInvokable::QskMetaInvokable( const QMetaProperty& property ):
+    m_metaData { property.enclosingMetaObject(), property.propertyIndex() },
+    m_type( MetaProperty )
 {
 }
 
@@ -65,9 +94,10 @@ QskMetaInvokable::QskMetaInvokable( const QskMetaInvokable& other ):
     switch( m_type )
     {
         case MetaMethod:
+        case MetaProperty:
         {
-            m_methodData.metaObject = other.m_methodData.metaObject;
-            m_methodData.methodIndex = other.m_methodData.methodIndex;
+            m_metaData.metaObject = other.m_metaData.metaObject;
+            m_metaData.index = other.m_metaData.index;
 
             break;
         }
@@ -95,12 +125,13 @@ QskMetaInvokable& QskMetaInvokable::operator=( const QskMetaInvokable& other )
     switch( other.m_type )
     {
         case MetaMethod:
+        case MetaProperty:
         {
             if ( m_type == MetaFunction )
                 Function::deref( m_functionData.functionCall );
 
-            m_methodData.metaObject = other.m_methodData.metaObject;
-            m_methodData.methodIndex = other.m_methodData.methodIndex;
+            m_metaData.metaObject = other.m_metaData.metaObject;
+            m_metaData.index = other.m_metaData.index;
 
             break;
         }
@@ -127,20 +158,26 @@ QskMetaInvokable& QskMetaInvokable::operator=( const QskMetaInvokable& other )
 
 bool QskMetaInvokable::operator==( const QskMetaInvokable& other ) const
 {
-    if ( m_type == other.m_type )
+    if ( m_type != other.m_type )
+        return false;
+
+    switch( m_type )
     {
-        if ( m_type == MetaMethod )
+        case MetaMethod:
+        case MetaProperty:
         {
-            return ( m_methodData.metaObject == other.m_methodData.metaObject )
-                && ( m_methodData.methodIndex == other.m_methodData.methodIndex );
+            return ( m_metaData.metaObject == other.m_metaData.metaObject )
+                && ( m_metaData.index == other.m_metaData.index );
         }
-        if ( m_type == MetaFunction )
+        case MetaFunction:
         {
             return m_functionData.functionCall == other.m_functionData.functionCall;
         }
+        default:
+        {
+            return true;
+        }
     }
-
-    return true;
 }
 
 bool QskMetaInvokable::isNull() const
@@ -148,17 +185,18 @@ bool QskMetaInvokable::isNull() const
     switch( m_type )
     {
         case MetaMethod:
+        case MetaProperty:
         {
-            const auto& d = m_methodData;
-            if ( d.metaObject && ( d.methodIndex >= 0 )
-                && ( d.methodIndex < d.metaObject->methodCount() ) )
-            {
-                return false;
-            }
+            const auto& d = m_metaData;
 
-            return true;
+            if ( d.metaObject == nullptr || d.index < 0 )
+                return true;
+
+            const int count = ( m_type == MetaMethod )
+                ? d.metaObject->methodCount() : d.metaObject->propertyCount();
+
+            return d.index >= count;
         }
-
         case MetaFunction:
         {
             return m_functionData.functionCall == nullptr;
@@ -199,6 +237,18 @@ QVector< int > QskMetaInvokable::parameterTypes() const
 
             break;
         }
+        case MetaProperty:
+        {
+            // should be doable without QMetaProperty. TODO ...
+            const auto property = QskMetaInvokable::property();
+            if ( property.isWritable() )
+            {
+                paramTypes.reserve( 1 );
+                paramTypes += property.userType();
+            }
+
+            break;
+        }
         case MetaFunction:
         {
             auto types = function().parameterTypes();
@@ -228,6 +278,7 @@ int QskMetaInvokable::returnType() const
         {
             return function().returnType();
         }
+        case MetaProperty:
         default:
         {
             return QMetaType::Void;
@@ -237,10 +288,18 @@ int QskMetaInvokable::returnType() const
 
 QMetaMethod QskMetaInvokable::method() const
 {
-    if ( m_type == MetaMethod )
-        return m_methodData.metaObject->method( m_methodData.methodIndex );
+    if ( m_type == MetaMethod && m_metaData.metaObject )
+        return m_metaData.metaObject->method( m_metaData.index );
 
     return QMetaMethod();
+}
+
+QMetaProperty QskMetaInvokable::property() const
+{
+    if ( m_type == MetaProperty && m_metaData.metaObject )
+        return m_metaData.metaObject->property( m_metaData.index );
+
+    return QMetaProperty();
 }
 
 QskMetaFunction QskMetaInvokable::function() const
@@ -264,8 +323,16 @@ void QskMetaInvokable::invoke( QObject* object, void* args[],
     {
         case MetaMethod:
         {
-            QskMetaMethod::invoke( object, m_methodData.metaObject,
-                m_methodData.methodIndex, args, connectionType );
+            QskMetaMethod::invoke( object, m_metaData.metaObject,
+                m_metaData.index, args, connectionType );
+
+            break;
+        }
+        case MetaProperty:
+        {
+            qskInvokeSetProperty( object,
+                m_metaData.metaObject, m_metaData.index,
+                args, connectionType );
 
             break;
         }

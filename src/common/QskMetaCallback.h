@@ -23,6 +23,9 @@ public:
     QskMetaCallback( const QObject*, const QMetaMethod&,
         Qt::ConnectionType = Qt::AutoConnection );
 
+    QskMetaCallback( const QObject*, const QMetaProperty&,
+        Qt::ConnectionType = Qt::AutoConnection );
+
     QskMetaCallback( const QObject*, const char* methodName,
         Qt::ConnectionType = Qt::AutoConnection );
 

@@ -16,6 +16,7 @@ template< typename T > class QVector;
 class QskMetaFunction;
 class QMetaObject;
 class QMetaMethod;
+class QMetaProperty;
 class QObject;
 
 class QSK_EXPORT QskMetaInvokable
@@ -28,6 +29,9 @@ public:
         // A QMetaMethod
         MetaMethod,
 
+        // The WRITE accessor of a QMetaProperty
+        MetaProperty,
+
         // A function pointer, for what Qt calls "functor based" callbacks
         MetaFunction
     };
@@ -35,9 +39,12 @@ public:
     QskMetaInvokable();
 
     QskMetaInvokable( const QskMetaFunction& );
+
     QskMetaInvokable( const QMetaMethod& );
     QskMetaInvokable( const QObject*, const char* methodName );
     QskMetaInvokable( const QMetaObject*, const char* methodName );
+
+    QskMetaInvokable( const QMetaProperty& );
 
     QskMetaInvokable( const QskMetaInvokable& );
 
@@ -62,6 +69,7 @@ public:
     void reset();
 
     QMetaMethod method() const;    
+    QMetaProperty property() const;    
     QskMetaFunction function() const;    
 
 private:
@@ -70,16 +78,16 @@ private:
         void* functionCall;
     };
 
-    struct MethodData
+    struct MetaData
     {
         const QMetaObject* metaObject;
-        int methodIndex;
+        int index; // method or property index
     };
 
     union
     {
         FunctionData m_functionData;
-        MethodData m_methodData;
+        MetaData m_metaData;
     };
 
     int m_type : 3;

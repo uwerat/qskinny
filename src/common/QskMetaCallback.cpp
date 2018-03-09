@@ -22,6 +22,15 @@ QskMetaCallback::QskMetaCallback( const QObject* object,
 }
 
 QskMetaCallback::QskMetaCallback( const QObject* object,
+        const QMetaProperty& property, Qt::ConnectionType connectionType ):
+    m_object( const_cast< QObject* >( object ) ),
+    m_invokable( property ),
+    m_hasObject( object != nullptr ),
+    m_connectionType( static_cast< ushort >( connectionType & 0x3 ) )
+{
+}
+
+QskMetaCallback::QskMetaCallback( const QObject* object,
         const QskMetaFunction& function, Qt::ConnectionType connectionType ):
     m_object( const_cast< QObject* >( object ) ),
     m_invokable( function ),

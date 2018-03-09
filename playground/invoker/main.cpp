@@ -43,6 +43,10 @@ class MyObject : public QObject
 {
     Q_OBJECT
 
+    Q_PROPERTY( int number WRITE setNumber )
+    Q_PROPERTY( qreal value WRITE setValue )
+    Q_PROPERTY( QString valueString WRITE setValueString )
+
 public:
     MyObject( QObject* parent = nullptr ):
         QObject( parent )
@@ -52,6 +56,21 @@ public:
     Q_INVOKABLE void printInvokable( double d, int i ) const
     {
         qDebug() << "invokable" << d << i;
+    }
+
+    void setNumber( int number )
+    {
+        qDebug() << "setNumber" << number;
+    }
+
+    void setValue( qreal value )
+    {
+        qDebug() << "setValue" << value;
+    }
+
+    void setValueString( const QString& s )
+    {
+        qDebug() << "setValueString" << s;
     }
 
 public Q_SLOTS:
@@ -97,46 +116,52 @@ public:
         m_thread( new QThread( this ) )
     {
 #if 1
-        m_invoker.addCallback( m_object, "print0(double,int)" );
-        m_invoker.addCallback( m_object, "print1(double,int)" );
-        m_invoker.addCallback( m_object, SLOT(print2(int,double)) );
-        m_invoker.addCallback( m_object, "print3(double)" );
-        m_invoker.addCallback( m_object, "print4(int)" );
-        m_invoker.addCallback( m_object, "print4(int)" );
-        m_invoker.addCallback( m_object, "printS(QString)" );
-        m_invoker.addCallback( m_object, "printInvokable(double,int)" );
+        m_invoker.addPropertyCall( m_object, "number" );
+        m_invoker.addPropertyCall( m_object, "value" );
+        m_invoker.addPropertyCall( m_object, "valueString" );
+#endif
+
+#if 1
+        m_invoker.addMethodCall( m_object, "print0(double,int)" );
+        m_invoker.addMethodCall( m_object, "print1(double,int)" );
+        m_invoker.addMethodCall( m_object, SLOT(print2(int,double)) );
+        m_invoker.addMethodCall( m_object, "print3(double)" );
+        m_invoker.addMethodCall( m_object, "print4(int)" );
+        m_invoker.addMethodCall( m_object, "print4(int)" );
+        m_invoker.addMethodCall( m_object, "printS(QString)" );
+        m_invoker.addMethodCall( m_object, "printInvokable(double,int)" );
 #endif
 
 #if 1
         auto f = [this]( int i, double d ) { qDebug() << i << d << ( ++m_num ); };
 
-        m_invoker.addCallback( m_object, &MyObject::print0 );
-        m_invoker.addCallback( m_object, &MyObject::print1 );
-        m_invoker.addCallback( QskMetaFunction() );
-        m_invoker.addCallback( debugNone1 );
-        m_invoker.addCallback( debugNone2 );
-        m_invoker.addCallback( debugValue );
-        m_invoker.addCallback( debugValueI1 );
-        m_invoker.addCallback( debugValueI2 );
-        m_invoker.addCallback( debugValueD );
-        m_invoker.addCallback( m_object, &MyObject::print0 );
-        m_invoker.addCallback( m_object, &MyObject::print1 );
-        m_invoker.addCallback( m_object, &MyObject::print2 );
-        m_invoker.addCallback( m_object, &MyObject::print3 );
-        m_invoker.addCallback( m_object, &MyObject::print4 );
-        m_invoker.addCallback( m_object, &MyObject::printS );
-        m_invoker.addCallback( m_object, []( double d, int i ) { qDebug() << d << i; } );
+        m_invoker.addFunctionCall( m_object, &MyObject::print0 );
+        m_invoker.addFunctionCall( m_object, &MyObject::print1 );
+        m_invoker.addFunctionCall( QskMetaFunction() );
+        m_invoker.addFunctionCall( debugNone1 );
+        m_invoker.addFunctionCall( debugNone2 );
+        m_invoker.addFunctionCall( debugValue );
+        m_invoker.addFunctionCall( debugValueI1 );
+        m_invoker.addFunctionCall( debugValueI2 );
+        m_invoker.addFunctionCall( debugValueD );
+        m_invoker.addFunctionCall( m_object, &MyObject::print0 );
+        m_invoker.addFunctionCall( m_object, &MyObject::print1 );
+        m_invoker.addFunctionCall( m_object, &MyObject::print2 );
+        m_invoker.addFunctionCall( m_object, &MyObject::print3 );
+        m_invoker.addFunctionCall( m_object, &MyObject::print4 );
+        m_invoker.addFunctionCall( m_object, &MyObject::printS );
+        m_invoker.addFunctionCall( m_object, []( double d, int i ) { qDebug() << d << i; } );
 
-        m_invoker.addCallback( m_object, f );
-        m_invoker.addCallback( m_object, fs );
+        m_invoker.addFunctionCall( m_object, f );
+        m_invoker.addFunctionCall( m_object, fs );
 
-        m_invoker.addCallback( m_object, []( double d ) { qDebug() << d; } );
-        m_invoker.addCallback( []() { qDebug() << "HERE"; } );
-        m_invoker.addCallback( []( int i, double d ) { qDebug() << i << d; } );
-        m_invoker.addCallback( []( int i ) { qDebug() << "I1" << i; } );
-        m_invoker.addCallback( []( int i ) { qDebug() << "I2" << i; } );
-        m_invoker.addCallback( []( double d ) { qDebug() << "V" << d; } );
-        m_invoker.addCallback( []( const double& d ) { qDebug() << "R" << d; } );
+        m_invoker.addFunctionCall( m_object, []( double d ) { qDebug() << d; } );
+        m_invoker.addFunctionCall( []() { qDebug() << "HERE"; } );
+        m_invoker.addFunctionCall( []( int i, double d ) { qDebug() << i << d; } );
+        m_invoker.addFunctionCall( []( int i ) { qDebug() << "I1" << i; } );
+        m_invoker.addFunctionCall( []( int i ) { qDebug() << "I2" << i; } );
+        m_invoker.addFunctionCall( []( double d ) { qDebug() << "V" << d; } );
+        m_invoker.addFunctionCall( []( const double& d ) { qDebug() << "R" << d; } );
 #endif
     }
 

@@ -17,9 +17,11 @@ class Invoker : public QObject
 public:
     Invoker( QObject* parent = nullptr );
 
-    void addCallback( const QskMetaFunction& );
-    void addCallback( const QObject*, const QskMetaFunction& );
-    void addCallback( const QObject*, const char* methodName );
+    void addFunctionCall( const QskMetaFunction& );
+    void addFunctionCall( const QObject*, const QskMetaFunction& );
+
+    void addMethodCall( const QObject*, const char* methodName );
+    void addPropertyCall( const QObject*, const char* property );
 
     void invoke( qreal d, int i, Qt::ConnectionType );
 
@@ -27,9 +29,9 @@ private:
     QVector< QskMetaCallback > m_callbacks;
 };
 
-inline void Invoker::addCallback( const QskMetaFunction& function )
+inline void Invoker::addFunctionCall( const QskMetaFunction& function )
 {
-    addCallback( this, function );
+    addFunctionCall( this, function );
 }
 
 #endif
