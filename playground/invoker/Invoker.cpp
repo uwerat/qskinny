@@ -16,21 +16,22 @@ Invoker::Invoker( QObject* parent ):
 void Invoker::addFunctionCall( const QObject* object,
     const QskMetaFunction& function )
 {
-    m_callbacks.append( QskMetaCallback( object, function ) );
+    m_callbacks.append( Callback( object, function ) );
 }
 
 void Invoker::addMethodCall( const QObject* object,
     const char* methodName )
 {
-    m_callbacks.append( QskMetaCallback( object, methodName ) );
+    m_callbacks.append( Callback( object, methodName ) );
 }
 
 void Invoker::addPropertyCall( const QObject* object,
     const char* property )
 {
-    const auto* mo = object->metaObject();
-    auto metaProperty = mo->property( mo->indexOfProperty( property ) );
-    m_callbacks.append( QskMetaCallback( object, metaProperty ) );
+    const auto metaProperty = object->metaObject()->property(
+        object->metaObject()->indexOfProperty( property ) );
+
+    m_callbacks.append( Callback( object, metaProperty ) );
 }
 
 void Invoker::invoke( qreal realValue, int intValue,
@@ -69,27 +70,25 @@ void Invoker::invoke( qreal realValue, int intValue,
             }
         }
 
-        callback.setConnectionType( connectionType );
-
-        const int callType = connectionType & 0x3;
-        switch( callType )
+        switch( connectionType & 0x3 )
         {
             case Qt::DirectConnection:
             {
-                callback.invoke( args );
+                callback.invoke( args, connectionType );
                 break;
             }
             case Qt::QueuedConnection:
             {
-                if ( callback.object() )
-                    callback.invoke( args );
+                if ( callback.context() )
+                    callback.invoke( args, connectionType );
+
                 break;
             }
             case Qt::BlockingQueuedConnection:
             {
-                const auto receiver = callback.object();
+                const auto receiver = callback.context();
                 if ( receiver && receiver->thread() != QThread::currentThread() )
-                    callback.invoke( args );
+                    callback.invoke( args, connectionType );
 
                 break;
             }

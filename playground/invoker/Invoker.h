@@ -6,8 +6,8 @@
 #ifndef INVOKER_H
 #define INVOKER_H 1
 
+#include "Callback.h"
 #include <QskMetaFunction.h>
-#include <QskMetaCallback.h>
 
 #include <QObject>
 #include <QVector>
@@ -26,7 +26,7 @@ public:
     void invoke( qreal d, int i, Qt::ConnectionType );
 
 private:
-    QVector< QskMetaCallback > m_callbacks;
+    QVector< Callback > m_callbacks;
 };
 
 inline void Invoker::addFunctionCall( const QskMetaFunction& function )

@@ -5,15 +5,25 @@
 
 #include "QskMetaInvokable.h"
 #include "QskMetaFunction.h"
-#include "QskMetaMethod.h"
 
 #include <QMetaMethod>
+#include <QMetaProperty>
+
 #include <QVector>
 #include <QObject>
+
 #include <QThread>
+#include <QCoreApplication>
+#include <QSemaphore>
+
+QSK_QT_PRIVATE_BEGIN
+#include <private/qobject_p.h>
+QSK_QT_PRIVATE_END
 
 namespace
 {
+    using CallFunction = QObjectPrivate::StaticMetaCallFunction;
+
     class Function : public QskMetaFunction
     {
     public:
@@ -34,33 +44,270 @@ namespace
                 static_cast< FunctionCall* >( functionCall )->destroyIfLastRef();
         }
     };
+
+    class MetaCallEvent final : public QMetaCallEvent
+    {
+    public:
+        MetaCallEvent( QMetaObject::Call call, CallFunction callFunction,
+            ushort offset, ushort index,
+            int nargs, int* types, void* args[], QSemaphore* semaphore = nullptr ):
+            QMetaCallEvent( offset, index, callFunction, nullptr, -1,
+                nargs, types, args, semaphore ),
+            m_call( call ),
+            m_callFunction( callFunction ),
+            m_index( index )
+        {
+        }
+
+        virtual void placeMetaCall( QObject* object ) override final
+        {
+            m_callFunction( object, m_call, m_index, args() );
+        }
+
+    private:
+        const QMetaObject::Call m_call;
+
+        // as those members from QMetaCallEvent are not accessible
+        CallFunction m_callFunction;
+        const ushort m_index;
+    };
 }
 
-static void qskInvokeSetProperty( QObject* object,
-    const QMetaObject* metaObject, int propertyIndex,
-    void* args[], Qt::ConnectionType connectionType )
+static inline void qskInvokeMetaCallQueued( QObject* object,
+    QMetaObject::Call call, ushort offset, ushort index,
+    int nargs, int* types, void* args[], QSemaphore* semaphore = nullptr )
 {
+    const auto callFunction = object->metaObject()->d.static_metacall;
+
+    auto event = new MetaCallEvent( call, callFunction,
+        offset, index, nargs, types, args, semaphore );
+
+    QCoreApplication::postEvent( object, event );
+}
+
+QMetaMethod qskMetaMethod( const QObject* object, const char* methodName )
+{
+    return object ? qskMetaMethod( object->metaObject(), methodName ) : QMetaMethod();
+}
+
+QMetaMethod qskMetaMethod( const QMetaObject* metaObject, const char* methodName )
+{
+    if ( metaObject == nullptr || methodName == nullptr )
+        return QMetaMethod();
+
+    constexpr char signalIndicator = '0' + QSIGNAL_CODE;
+    constexpr char slotIndicator = '0' + QSLOT_CODE;
+
+    int index = -1;
+
+    if( methodName[0] == signalIndicator )
+    {
+        auto signature =  QMetaObject::normalizedSignature( methodName + 1 );
+        index = metaObject->indexOfSignal( signature );
+    }
+    else if ( methodName[0] == slotIndicator )
+    {
+        auto signature = QMetaObject::normalizedSignature( methodName + 1 );
+        index = metaObject->indexOfSlot( signature );
+    }
+    else
+    {
+        auto signature = QMetaObject::normalizedSignature( methodName );
+        index = metaObject->indexOfMethod( signature );
+    }
+
+    return ( index >= 0 ) ? metaObject->method( index ) : QMetaMethod();
+}
+
+QMetaMethod qskNotifySignal( const QObject* object, const char* propertyName )
+{
+    return object ? qskNotifySignal( object->metaObject(), propertyName ) : QMetaMethod();
+}
+
+QMetaMethod qskNotifySignal( const QMetaObject* metaObject, const char* propertyName )
+{
+    if ( metaObject == nullptr || propertyName == nullptr )
+        return QMetaMethod();
+
+    const int propertyIndex = metaObject->indexOfProperty( propertyName );
+    if ( propertyIndex )
+    {
+        const auto property = metaObject->property( propertyIndex );
+        return property.notifySignal();
+    }
+
+    return QMetaMethod();
+}
+
+static void qskInvokeMetaCall( QObject* object,
+    const QMetaObject* metaObject, QMetaObject::Call call,
+    int offset, int index, void* argv[], Qt::ConnectionType connectionType )
+{
+    QPointer< QObject > receiver( object );
+
     int invokeType = connectionType & 0x3;
 
     if ( invokeType == Qt::AutoConnection )
     {
-        invokeType = ( object->thread() != QThread::currentThread() )
+        invokeType = ( object && object->thread() != QThread::currentThread() )
             ? Qt::QueuedConnection : Qt::DirectConnection;
     }
 
-#if 1
-    if ( invokeType != Qt::DirectConnection )
-        return; // TODO ...
-#endif
-
-    if ( propertyIndex >= 0 && object->metaObject() == metaObject )
+    switch( invokeType )
     {
-        int status = -1;
-        int flags = 0;
-        void* argv[] = { args[1], nullptr, &status, &flags };
+        case Qt::DirectConnection:
+        {
+            if ( receiver.isNull() )
+            {
+#if 1
+                // do we really always need an object, what about Q_GADGET ???
+                return;
+#endif
+            }
 
-        QMetaObject::metacall( object,
-            QMetaObject::WriteProperty, propertyIndex, argv );
+            /*
+                QMetaObject::metacall seems to be made for situations we don't have.
+                Need to dive deeper into the Qt code to be 100% sure TODO ...
+             */
+
+            metaObject->d.static_metacall( receiver, call, index, argv );
+            break;
+        }
+        case Qt::BlockingQueuedConnection:
+        {
+            if ( receiver.isNull()
+                || ( receiver->thread() == QThread::currentThread() ) )
+            {
+                // We would end up in a deadlock, better do nothing
+                return;
+            }
+
+            QSemaphore semaphore;
+
+            qskInvokeMetaCallQueued( receiver, call, offset, index,
+                0, nullptr, argv, &semaphore );
+
+            semaphore.acquire();
+
+            break;
+        }
+        case Qt::QueuedConnection:
+        {
+            if ( receiver == nullptr )
+                return;
+
+            int* types = nullptr;
+            void** arguments = nullptr;
+            int argc = 0;
+
+            if ( call == QMetaObject::InvokeMetaMethod )
+            {
+#if 1
+                // should be doable without QMetaMethod. TODO ...
+                const auto method = metaObject->method( offset + index );
+#endif
+                argc = method.parameterCount() + 1;
+
+                types = static_cast< int* >( malloc( argc * sizeof( int ) ) );
+                arguments = static_cast< void** >( malloc( argc * sizeof( void* ) ) );
+
+                /*
+                    The first one is the return type, one that is always
+                    invalid for Queued Connections.
+                 */
+
+                types[0] = QMetaType::UnknownType;
+                arguments[0] = nullptr;
+
+                for ( int i = 1; i < argc; i++ )
+                {
+                    if ( argv[i] == nullptr )
+                    {
+                        Q_ASSERT( argv[i] != nullptr );
+                        receiver = nullptr;
+                        break;
+                    }
+
+                    types[i] = method.parameterType( i - 1 );
+                    arguments[i] = QMetaType::create( types[i], argv[i] );
+                }
+            }
+            else
+            {
+                // should be doable without QMetaMethod. TODO ...
+                const auto property = metaObject->property( offset + index );
+
+                argc = 1;
+
+                types = static_cast< int* >( malloc( argc * sizeof( int ) ) );
+                arguments = static_cast< void** >( malloc( argc * sizeof( void* ) ) );
+
+                types[0] = property.userType();
+                arguments[0] = QMetaType::create( types[0], argv[0] );
+            }
+
+            if ( receiver.isNull() )
+            {
+                // object might have died in the meantime
+                free( types );
+                free( arguments );
+
+                return;
+            }
+
+            qskInvokeMetaCallQueued( object, call,
+                offset, index, argc, types, arguments );
+
+            break;
+        }
+    }
+}
+
+void qskInvokeMetaPropertyWrite( QObject* context,
+    const QMetaProperty& property, void* args[], Qt::ConnectionType connectionType )
+{
+    qskInvokeMetaPropertyWrite( context, property.enclosingMetaObject(),
+        property.propertyIndex(), args, connectionType );
+}
+
+void qskInvokeMetaPropertyWrite( QObject* context,
+    const QMetaObject* metaObject, int propertyIndex,
+    void* args[], Qt::ConnectionType connectionType )
+{
+    // check for is writable ???
+
+    if ( metaObject && ( propertyIndex >= 0 )
+        && ( propertyIndex < metaObject->propertyCount() ) )
+    {
+        const auto offset = metaObject->propertyOffset();
+        const auto index = propertyIndex - offset;
+
+        qskInvokeMetaCall( context, metaObject, QMetaObject::WriteProperty,
+            offset, index, args + 1, connectionType );
+    }
+}
+
+void qskInvokeMetaMethod( QObject* object,
+    const QMetaMethod& method, void* args[],
+    Qt::ConnectionType connectionType )
+{
+    qskInvokeMetaMethod( object, method.enclosingMetaObject(),
+        method.methodIndex(), args, connectionType );
+}
+
+void qskInvokeMetaMethod( QObject* object,
+    const QMetaObject* metaObject, int methodIndex, void* argv[],
+    Qt::ConnectionType connectionType )
+{
+    if ( metaObject && ( methodIndex >= 0 )
+        && ( methodIndex < metaObject->methodCount() ) )
+    {
+
+        const auto offset = metaObject->methodOffset();
+        const auto index = methodIndex - offset;
+
+        qskInvokeMetaCall( object, metaObject, QMetaObject::InvokeMetaMethod,
+            offset, index, argv, connectionType );
     }
 }
 
@@ -71,12 +318,12 @@ QskMetaInvokable::QskMetaInvokable( const QMetaMethod& method ):
 }
 
 QskMetaInvokable::QskMetaInvokable( const QObject* object, const char* methodName ):
-    QskMetaInvokable( QskMetaMethod::method( object, methodName ) )
+    QskMetaInvokable( qskMetaMethod( object, methodName ) )
 {
 }
 
 QskMetaInvokable::QskMetaInvokable( const QMetaObject* metaObject, const char* methodName ):
-    QskMetaInvokable( QskMetaMethod::method( metaObject, methodName ) )
+    QskMetaInvokable( qskMetaMethod( metaObject, methodName ) )
 {
 }
 
@@ -353,14 +600,14 @@ void QskMetaInvokable::invoke( QObject* object, void* args[],
     {
         case MetaMethod:
         {
-            QskMetaMethod::invoke( object, m_metaData.metaObject,
+            qskInvokeMetaMethod( object, m_metaData.metaObject,
                 m_metaData.index, args, connectionType );
 
             break;
         }
         case MetaProperty:
         {
-            qskInvokeSetProperty( object,
+            qskInvokeMetaPropertyWrite( object,
                 m_metaData.metaObject, m_metaData.index,
                 args, connectionType );
 

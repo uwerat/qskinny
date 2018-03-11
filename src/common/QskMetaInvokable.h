@@ -115,6 +115,30 @@ inline QskMetaInvokable::Type QskMetaInvokable::type() const
     return static_cast< Type >( m_type );
 }
 
+QSK_EXPORT QMetaMethod qskMetaMethod( const QMetaObject*, const char* methodName );
+QSK_EXPORT QMetaMethod qskMetaMethod( const QObject*, const char* methodName );
+
+QSK_EXPORT void qskInvokeMetaMethod(
+    QObject*, const QMetaObject*, int methodIndex, void* args[],
+    Qt::ConnectionType = Qt::AutoConnection );
+
+QSK_EXPORT void qskInvokeMetaMethod(
+    QObject*, const QMetaMethod&, void* args[],
+    Qt::ConnectionType = Qt::AutoConnection );
+
+QSK_EXPORT void qskInvokeMetaPropertyWrite(
+    QObject*, const QMetaObject*, int propertyIndex,
+    void* args[], Qt::ConnectionType = Qt::AutoConnection );
+
+QSK_EXPORT void qskInvokeMetaPropertyWrite(
+    const QObject* object, const QMetaProperty&,
+    void* args[], Qt::ConnectionType = Qt::AutoConnection );
+
+
+QSK_EXPORT QMetaMethod qskNotifySignal( const QMetaObject*, const char* propertyName );
+QSK_EXPORT QMetaMethod qskNotifySignal( const QObject*, const char* propertyName );
+
+
 Q_DECLARE_METATYPE( QskMetaInvokable )
 
 #endif
