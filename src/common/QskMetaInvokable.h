@@ -11,8 +11,6 @@
 #include <QMetaType>
 #include <Qt>
 
-template< typename T > class QVector;
-
 class QskMetaFunction;
 class QMetaObject;
 class QMetaMethod;
@@ -60,7 +58,9 @@ public:
     Type type() const;
     bool isNull() const;
 
-    QVector< int > parameterTypes() const;
+    int parameterCount() const;
+    int parameterType( int index ) const;
+
     int returnType() const;
 
     void invoke( QObject*, void* args[],

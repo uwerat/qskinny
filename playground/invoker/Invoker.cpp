@@ -43,26 +43,26 @@ void Invoker::invoke( qreal realValue, int intValue,
     {
         void* args[4] = { nullptr };
 
-        const auto types = callback.invokable().parameterTypes();
+        void **a = args + 1;
+        const auto& invokable = callback.invokable();
 
-        int i = 1;
-        for ( auto type : types )
+        for ( int i = 0; i < invokable.parameterCount(); i++ )
         {
-            switch ( type )
+            switch ( invokable.parameterType( i ) )
             {
                 case QMetaType::Int:
                 {
-                    args[i++] = reinterpret_cast< void* >( &intValue );
+                    *a++ = reinterpret_cast< void* >( &intValue );
                     break;
                 }
                 case QMetaType::Double:
                 {
-                    args[i++] = reinterpret_cast< void* >( &realValue );
+                    *a++ = reinterpret_cast< void* >( &realValue );
                     break;
                 }
                 case QMetaType::QString:
                 {
-                    args[i++] = reinterpret_cast< void* >( &s );
+                    *a++ = reinterpret_cast< void* >( &s );
                     break;
                 }
                 default:

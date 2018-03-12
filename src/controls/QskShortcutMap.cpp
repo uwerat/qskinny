@@ -5,9 +5,9 @@
 
 #include "QskShortcutMap.h"
 #include "QskControl.h"
+#include "QskMetaInvokable.h"
 
 #include <QQuickWindow>
-#include <QMetaMethod>
 #include <QKeySequence>
 #include <QGlobalStatic>
 #include <QtGui/private/qguiapplication_p.h>
@@ -24,11 +24,8 @@ class QskShortcutHandler final : public QObject
 public:
     QskShortcutHandler();
 
-    int add( QQuickItem*, const QKeySequence&,
-        const QObject* receiver, const char* method );
-
-    int add( QQuickItem*, const QKeySequence&,
-        const QObject* receiver, QtPrivate::QSlotObjectBase* );
+    int insert( QQuickItem*, const QKeySequence&, bool autoRepeat,
+        const QObject*, const QskMetaInvokable& );
 
     void remove( int id );
 
@@ -38,8 +35,6 @@ public:
     virtual bool eventFilter( QObject*, QEvent* ) override final;
 
 private:
-    int insert( QQuickItem*, const QKeySequence&,
-        const QObject* receiver, const QMetaMethod&, QtPrivate::QSlotObjectBase* );
 
     void cleanUp( QObject* );
 
@@ -48,21 +43,13 @@ private:
     public:
         InvokeData():
             item( nullptr ),
-            receiver( nullptr ),
-            slotObject( nullptr )
+            receiver( nullptr )
         {
-        }
-
-        ~InvokeData()
-        {
-            if ( slotObject )
-                slotObject->destroyIfLastRef();
         }
 
         QQuickItem* item;
         const QObject* receiver;
-        QMetaMethod method;
-        QtPrivate::QSlotObjectBase* slotObject;
+        QskMetaInvokable invokable;
     };
 
     std::map< int, InvokeData > m_invokeDataMap;
@@ -82,7 +69,7 @@ static bool qskContextMatcher( QObject* object, Qt::ShortcutContext context )
         {
             /*
                 Unfortunatley there is no way to have to know about
-                the contextItem without making it the receiver of 
+                the contextItem without making it the receiver of
                 the following QShortcutEvent. So we have to install
                 an event handler to process and swallow it in QskShortcutHandler.
              */
@@ -101,39 +88,25 @@ QskShortcutHandler::QskShortcutHandler()
     installEventFilter( this );
 }
 
-int QskShortcutHandler::add( QQuickItem* item, const QKeySequence& sequence,
-    const QObject* receiver, const char* method )
+int QskShortcutHandler::insert(
+    QQuickItem* item, const QKeySequence& sequence, bool autoRepeat,
+    const QObject* receiver, const QskMetaInvokable& invokable )
 {
-    int id = 0;
-
-    if ( receiver )
+    if ( sequence.isEmpty() )
     {
-        const QMetaObject* metaObject = receiver->metaObject();
-
-        const int methodIndex = metaObject->indexOfMethod(
-            QMetaObject::normalizedSignature( method ).constData() + 1 );
-
-        if ( methodIndex >= 0 )
-        {
-            id = insert( item, sequence,
-                receiver, metaObject->method( methodIndex ), nullptr );
-        }
+        qDebug() << "QskShortcutMap: invalid shortcut key sequence";
+        return 0;
     }
 
-    return id;
-}
+#if 1
+    // should be a compile time check for functor based slots
+    if ( invokable.parameterCount() > 0 )
+    {
+        qDebug() << "QskShortcutMap: invalid slot parameter count";
+        return 0;
+    }
+#endif
 
-int QskShortcutHandler::add( QQuickItem* item, const QKeySequence& sequence,
-    const QObject* receiver, QtPrivate::QSlotObjectBase* slotObj )
-{
-    return insert( item, sequence, receiver, QMetaMethod(), slotObj );
-}
-
-int QskShortcutHandler::insert(
-    QQuickItem* item, const QKeySequence& sequence,
-    const QObject* receiver, const QMetaMethod& method,
-    QtPrivate::QSlotObjectBase* slotObject )
-{
     if ( receiver )
     {
         connect( receiver, &QObject::destroyed,
@@ -163,11 +136,10 @@ int QskShortcutHandler::insert(
 
     data.item = item;
     data.receiver = receiver;
+    data.invokable = invokable;
 
-    if ( slotObject )
-        data.slotObject = slotObject;
-    else
-        data.method = method;
+    if ( !autoRepeat )
+        setAutoRepeat( id, false );
 
     return id;
 }
@@ -266,30 +238,14 @@ bool QskShortcutHandler::eventFilter( QObject* object, QEvent* event )
     const auto it = m_invokeDataMap.find( se->shortcutId() );
     if ( it != m_invokeDataMap.end() )
     {
-        const auto& invokeData = it->second;
+        auto& data = it->second;
 
-        Q_ASSERT( invokeData.item == nullptr || invokeData.item == object );
+        Q_ASSERT( data.item == nullptr || data.item == object );
 
-        auto receiver = const_cast< QObject* >( invokeData.receiver );
+        auto receiver = const_cast< QObject* > ( data.receiver );
+        void* args[] = { nullptr };
 
-        if ( invokeData.slotObject )
-        {
-            void* args[] = { 0 };
-
-            if ( receiver && receiver->thread() != thread() )
-            {
-                QCoreApplication::postEvent( receiver,
-                    new QMetaCallEvent( invokeData.slotObject, nullptr, 0, 0, nullptr, args ) );
-            }
-            else
-            {
-                invokeData.slotObject->call( receiver, args );
-            }
-        }
-        else
-        {
-            invokeData.method.invoke( receiver, Qt::AutoConnection );
-        }
+        data.invokable.invoke( receiver, args, Qt::AutoConnection );
 
         return true;
     }
@@ -303,24 +259,26 @@ int QskShortcutMap::addMethod( QQuickItem* item, const QKeySequence& sequence,
 {
     if ( receiver == nullptr )
     {
+        qDebug() << "QskShortcutMap: bad receiver for shortcut:" << sequence;
         return 0;
     }
 
-    int id = qskShortcutHandler->add( item, sequence, receiver, method );
-    if ( id && !autoRepeat )
-        qskShortcutHandler->setAutoRepeat( id, false );
-
-    return id;
+    return qskShortcutHandler->insert(
+        item, sequence, autoRepeat, receiver, qskMetaMethod( receiver, method ) );
 }
 
-int QskShortcutMap::addSlotObject( QQuickItem* item, const QKeySequence& sequence,
-    bool autoRepeat, const QObject* receiver, QtPrivate::QSlotObjectBase* slotObject )
+int QskShortcutMap::addFunction( QQuickItem* item, const QKeySequence& sequence,
+    bool autoRepeat, const QObject* receiver, const QskMetaFunction& function )
 {
-    int id = qskShortcutHandler->add( item, sequence, receiver, slotObject );
-    if ( id && !autoRepeat )
-        qskShortcutHandler->setAutoRepeat( id, false );
+    if ( ( receiver == nullptr )
+        && ( function.functionType() == QskMetaFunction::Member ) )
+    {
+        qDebug() << "QskShortcutMap: bad receiver for shortcut:" << sequence;
+        return 0;
+    }
 
-    return id;
+    return qskShortcutHandler->insert(
+        item, sequence, autoRepeat, receiver, function );
 }
 
 void QskShortcutMap::setAutoRepeat( int id, bool on )

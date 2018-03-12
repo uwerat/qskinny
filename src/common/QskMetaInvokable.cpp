@@ -467,55 +467,55 @@ void QskMetaInvokable::reset()
     m_type = Invalid;
 }
 
-QVector< int > QskMetaInvokable::parameterTypes() const
+int QskMetaInvokable::parameterCount() const
 {
-    QVector< int > paramTypes;
-
     switch( m_type )
     {
         case MetaMethod:
         {
             // should be doable without QMetaMethod. TODO ...
             const auto method = QskMetaInvokable::method();
-
-            const int paramCount = method.parameterCount();
-            if ( paramCount > 0 )
-            {
-                paramTypes.reserve( paramCount );
-
-                for ( int i = 0; i < paramCount; i++ )
-                    paramTypes += method.parameterType( i );
-            }
-
-            break;
+            return method.parameterCount();
         }
         case MetaProperty:
         {
-            // should be doable without QMetaProperty. TODO ...
-            const auto property = QskMetaInvokable::property();
-            if ( property.isWritable() )
-            {
-                paramTypes.reserve( 1 );
-                paramTypes += property.userType();
-            }
-
-            break;
+            return 1;
         }
         case MetaFunction:
         {
-            auto types = function().parameterTypes();
-            if ( types )
-            {
-                while ( *types )
-                    paramTypes += *types++;
-            }
-            break;
+            return function().parameterCount();
         }
         default:
             break;
     }
 
-    return paramTypes;
+    return 0;
+}
+
+int QskMetaInvokable::parameterType( int index ) const
+{
+    switch( m_type )
+    {
+        case MetaMethod:
+        {
+            const auto method = QskMetaInvokable::method();
+            return method.parameterType( index );
+        }
+        case MetaProperty:
+        {
+            const auto property = QskMetaInvokable::property();
+            return property.userType();
+        }
+        case MetaFunction:
+        {
+            auto types = function().parameterTypes();
+            return types[index];
+        }
+        default:
+        {
+            return QMetaType::UnknownType;
+        }
+    }
 }
 
 int QskMetaInvokable::returnType() const
@@ -531,6 +531,9 @@ int QskMetaInvokable::returnType() const
             return function().returnType();
         }
         case MetaProperty:
+        {
+            return QMetaType::Void;
+        }
         default:
         {
             return QMetaType::Void;
@@ -560,7 +563,6 @@ QByteArray QskMetaInvokable::name() const
             return QByteArray();
         }
     }
-
 }
 
 QMetaMethod QskMetaInvokable::method() const
