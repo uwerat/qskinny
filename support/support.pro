@@ -73,14 +73,4 @@ fontconfig {
     write_file( $${QSK_FONTCONF_FILE}, QSK_FONTCONF_DATA )
 
     DEFINES += FONTCONFIG_FILE=$$clean_path( $$QSK_FONTCONF_FILE )
-
-    linux {
-        
-        fontcache.target = $${QSK_FONTCACHEDIR}/cache
-        fontcache.depends = $${QSK_FONTCONF_FILE}
-        fontcache.commands = FONTCONFIG_FILE=$${QSK_FONTCONF_FILE} fc-cache -v
-
-        QMAKE_EXTRA_TARGETS += fontcache
-        PRE_TARGETDEPS += $${QSK_FONTCACHEDIR}/cache
-    }
 }

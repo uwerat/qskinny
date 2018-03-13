@@ -30,8 +30,8 @@ void SkinnyFont::init( QGuiApplication* )
 
     if ( elapsed > 20 )
     {
-        qWarning() << "Loading fonts needed" << elapsed << "ms.";
-        qWarning() << "Probably because of creating a font cache.";
+        qWarning() << "Loading fonts needed" << elapsed << "ms"
+            << "- usually because of creating a font cache.";
     }
 
     /*
