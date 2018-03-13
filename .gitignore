@@ -6,5 +6,6 @@ rcc
 lib
 bin
 plugins
+fontconfig
 qvg
 *.swp

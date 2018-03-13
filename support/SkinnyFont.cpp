@@ -4,44 +4,35 @@
  *****************************************************************************/
 
 #include "SkinnyFont.h"
-#include <QtGlobal>
+
 #include <QFontDatabase>
-#include <QTemporaryDir>
-#include <QFile>
 #include <QGuiApplication>
+#include <QElapsedTimer>
+#include <QDebug>
 
-static void foolFontconfig()
-{
-    // as the examples are always using the same fonts, we can disable
-    // everything, that has to do with system fonts
-
-    static QTemporaryDir dir;
-
-    QString fontConfig =
-        "<?xml version=\"1.0\"?>\n"
-        "<!DOCTYPE fontconfig SYSTEM \"fonts.dtd\">\n"
-        "<fontconfig>\n"
-            "\t<dir>%1</dir>\n"
-            "\t<cachedir>%2/cache</cachedir>\n"
-        "</fontconfig>\n";
-    fontConfig = fontConfig.arg( dir.path(), dir.path() );
-
-    QFile f( dir.path() + "/fonts.conf" );
-    f.open( QIODevice::WriteOnly );
-    f.write( fontConfig.toUtf8() );
-    f.close();
-
-    qputenv( "FONTCONFIG_FILE", f.fileName().toUtf8() );
-
-    QFontDatabase();
-}
+#define STRINGIFY(x) #x
+#define STRING(x) STRINGIFY(x)
 
 void SkinnyFont::init( QGuiApplication* )
 {
-    foolFontconfig();
+#ifdef FONTCONFIG_FILE
+    const char env[] = "FONTCONFIG_FILE";
+    if ( !qEnvironmentVariableIsSet( env ) )
+        qputenv( env, STRING( FONTCONFIG_FILE ) );
+#endif
 
-    QFontDatabase::addApplicationFont( ":/fonts/Roboto-Regular.ttf" );
-    QFontDatabase::addApplicationFont( ":/fonts/DejaVuSans.ttf" );
+    QElapsedTimer timer;
+    timer.start();
+
+    QFontDatabase();
+
+    const auto elapsed = timer.elapsed();
+
+    if ( elapsed > 20 )
+    {
+        qWarning() << "Loading fonts needed" << elapsed << "ms.";
+        qWarning() << "Probably because of creating a font cache.";
+    }
 
     /*
         The default initialization in QskSkin sets up its font table
