@@ -98,14 +98,11 @@ int QskShortcutHandler::insert(
         return 0;
     }
 
-#if 1
-    // should be a compile time check for functor based slots
     if ( invokable.parameterCount() > 0 )
     {
         qDebug() << "QskShortcutMap: invalid slot parameter count";
         return 0;
     }
-#endif
 
     if ( receiver )
     {
@@ -271,7 +268,7 @@ int QskShortcutMap::addFunction( QQuickItem* item, const QKeySequence& sequence,
     bool autoRepeat, const QObject* receiver, const QskMetaFunction& function )
 {
     if ( ( receiver == nullptr )
-        && ( function.functionType() == QskMetaFunction::Member ) )
+        && ( function.functionType() == QskMetaFunction::MemberFunction ) )
     {
         qDebug() << "QskShortcutMap: bad receiver for shortcut:" << sequence;
         return 0;

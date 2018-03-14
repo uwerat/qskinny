@@ -139,8 +139,8 @@ bool QskMetaFunction::operator==( const QskMetaFunction& other ) const
 
     if ( m_functionCall && other.m_functionCall )
     {
-        if ( m_functionCall->typeInfo() == Function &&
-             other.m_functionCall->typeInfo() == Function )
+        if ( m_functionCall->typeInfo() == StaticFunction &&
+             other.m_functionCall->typeInfo() == StaticFunction )
         {
             // only static functions can be compared
             return m_functionCall->compare(

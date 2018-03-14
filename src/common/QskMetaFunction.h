@@ -8,26 +8,71 @@
 
 #include "QskGlobal.h"
 #include <QMetaType>
+#include <QObject>
 
 namespace QskMetaFunctionTraits
 {
     using namespace QtPrivate;
 
     template< typename T >
-    using IsMemberFunction = typename std::enable_if< FunctionPointer< T >::IsPointerToMemberFunction,
-         std::true_type >::type;
+    using IsMemberFunction = typename std::enable_if<
+        FunctionPointer< T >::IsPointerToMemberFunction, std::true_type >::type;
 
     template< typename T >
-    using IsFunctor = typename std::enable_if< !FunctionPointer< T >::IsPointerToMemberFunction
+    using IsFunctor = typename std::enable_if<
+        !FunctionPointer< T >::IsPointerToMemberFunction
         && FunctionPointer< T >::ArgumentCount == -1, std::true_type >::type;
 
     template< typename T >
-    using IsFunction = typename std::enable_if< !FunctionPointer< T >::IsPointerToMemberFunction
+    using IsStaticFunction = typename std::enable_if<
+        !FunctionPointer< T >::IsPointerToMemberFunction
         && FunctionPointer< T >::ArgumentCount >= 0, std::true_type >::type;
 
-    template< typename T >
-    using IsFunction0 = typename std::enable_if< !FunctionPointer< T >::IsPointerToMemberFunction
-        && FunctionPointer< T >::ArgumentCount == 0, std::true_type >::type;
+    template< typename T, IsMemberFunction< T >* = nullptr >
+    constexpr inline int argumentCount()
+    {
+        using Traits = FunctionPointer< T >;
+        return Traits::ArgumentCount;
+    }
+
+    template< typename T, IsStaticFunction< T >* = nullptr >
+    constexpr inline int argumentCount()
+    {
+        using Traits = FunctionPointer< T >;
+        return Traits::ArgumentCount;
+    }
+
+    template< typename T, IsFunctor< T >* = nullptr >
+    constexpr inline int argumentCount()
+    {
+        using Traits = FunctionPointer< decltype( &T::operator() ) >;
+        return Traits::ArgumentCount;
+    }
+
+    template< typename T, size_t i >
+    constexpr typename std::enable_if< i >= argumentCount< T >(), int >::type argumentType()
+    {
+        return QMetaType::UnknownType;
+    }
+
+    template< typename T, size_t i, IsMemberFunction< T >* = nullptr >
+    constexpr typename std::enable_if < i < argumentCount< T >(), int >::type argumentType()
+    {
+        return ConnectionTypes< typename FunctionPointer< T >::Arguments >::types()[i];
+    }
+
+    template< typename T, size_t i, IsStaticFunction< T >* = nullptr >
+    constexpr typename std::enable_if < i < argumentCount< T >(), int >::type argumentType()
+    {
+        return ConnectionTypes< typename FunctionPointer< T >::Arguments >::types()[i];
+    }
+
+    template< typename T, size_t i, IsFunctor< T >* = nullptr >
+    constexpr typename std::enable_if < i < argumentCount< T >(), int >::type argumentType()
+    {
+        using Traits = FunctionPointer< decltype( &T::operator() ) >;
+        return ConnectionTypes< typename Traits::Arguments >::types()[i];
+    }
 }
 
 class QSK_EXPORT QskMetaFunction
@@ -40,10 +85,10 @@ public:
         Invalid = -1,
 
         // a non static method of class
-        Member,
+        MemberFunction,
 
         // a static function, or static method of a class
-        Function,
+        StaticFunction,
 
         // a functor or lambda
         Functor
@@ -62,7 +107,7 @@ public:
     template< typename T, QskMetaFunctionTraits::IsFunctor< T >* = nullptr >
     QskMetaFunction( T );
 
-    template< typename T, QskMetaFunctionTraits::IsFunction< T >* = nullptr >
+    template< typename T, QskMetaFunctionTraits::IsStaticFunction< T >* = nullptr >
     QskMetaFunction( T );
 
     ~QskMetaFunction();
@@ -155,7 +200,7 @@ inline QskMetaFunction::QskMetaFunction( T functor )
         ConnectionTypes< typename Traits::Arguments >::types() );
 }
 
-template< typename T, QskMetaFunctionTraits::IsFunction< T >* >
+template< typename T, QskMetaFunctionTraits::IsStaticFunction< T >* >
 inline QskMetaFunction::QskMetaFunction( T function )
 {
     using namespace QtPrivate;

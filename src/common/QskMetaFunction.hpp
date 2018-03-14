@@ -89,7 +89,7 @@ namespace QskMetaFunctionCall
                 }
                 case TypeInfo:
                 {
-                    *reinterpret_cast< int* >( args ) = QskMetaFunction::Function;
+                    *reinterpret_cast< int* >( args ) = QskMetaFunction::StaticFunction;
                     break;
                 }
             }
@@ -133,7 +133,7 @@ namespace QskMetaFunctionCall
                 }
                 case TypeInfo:
                 {
-                    *reinterpret_cast< int* >( args ) = QskMetaFunction::Member;
+                    *reinterpret_cast< int* >( args ) = QskMetaFunction::MemberFunction;
                     break;
                 }
             }
