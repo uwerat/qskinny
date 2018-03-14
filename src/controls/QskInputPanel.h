@@ -14,7 +14,7 @@
 class QskInputCompositionModel;
 class QskInputPanel;
 
-class QskKeyButton : public QskPushButton
+class QskKeyButton : public QskPushButton // ### rename to QskInputButton or so?
 {
         Q_OBJECT
 
@@ -84,7 +84,7 @@ public:
     using KeyDataSet = KeyDataRow[RowCount];
 
     QskInputPanel( QQuickItem* parent = nullptr );
-    virtual ~QskInputPanel();
+    virtual ~QskInputPanel() override;
 
     void updateLocale( const QLocale& locale );
 

@@ -56,7 +56,7 @@ QskInputCompositionModel::QskInputCompositionModel():
 {
     m_data->groupIndex = 0;
 
-    m_data->preeditFormat.setFontUnderline(true);
+    m_data->preeditFormat.setFontUnderline( true );
     m_data->preeditAttributes.append( QInputMethodEvent::Attribute(
             QInputMethodEvent::TextFormat, 0, 0, m_data->preeditFormat ) );
 }

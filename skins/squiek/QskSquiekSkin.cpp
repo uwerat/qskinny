@@ -554,38 +554,36 @@ void QskSquiekSkin::initTabViewHints()
 void QskSquiekSkin::initInputPanelHints()
 {
     using namespace QskAspect;
-    using Q = QskInputPanel;
+    using Q = QskKeyButton;
 
     const ColorPalette& pal = m_data->palette;
 
-/*
     // key panel
-    setMargins( Q::KeyPanel | Margin, 2 ); // should be Panel | Spacing
+//    setMargins( Q::Panel | Margin, 2 ); // should be Panel | Spacing
 
-    setButton( Q::KeyPanel, Raised );
-    setButton( Q::KeyPanel | Q::Pressed, Sunken );
+    setButton( Q::Panel, Raised );
+    setButton( Q::Panel | Q::Pressed, Sunken );
 
-    setAnimation( Q::KeyPanel | Color, qskDuration );
+    setAnimation( Q::Panel | Color, qskDuration );
 #if 0
     // crashes because animations are started from updateNode
     // TODO ...
 
-    setAnimation( Q::KeyPanel | Metric, qskDuration );
+    setAnimation( Q::Panel | Metric, qskDuration );
 #endif
 
     // glyph
-    setSkinHint( Q::KeyGlyph | Alignment, Qt::AlignCenter );
-    setFontRole( Q::KeyGlyph, QskSkin::TinyFont );
+//    setSkinHint( Q::Text | Alignment, Qt::AlignCenter );
+//    setFontRole( Q::Text, QskSkin::TinyFont );
 
-    setColor( Q::KeyGlyph, pal.themeForeground );
-    setColor( Q::KeyGlyph | Q::Disabled, pal.darker200 );
+    setColor( Q::Text, pal.themeForeground );
+    setColor( Q::Text | Q::Disabled, pal.darker200 );
 
-    // panel
+//    // panel
 
-    setMargins( Q::Panel | Padding, 5 );
-    setMargins( Q::Panel | Spacing, 5 );
-    setPanel( Q::Panel, Raised );
-*/
+//    setMargins( Q::Panel | Padding, 5 );
+//    setMargins( Q::Panel | Spacing, 5 );
+//    setPanel( Q::Panel, Raised );
 }
 
 void QskSquiekSkin::initScrollViewHints()
