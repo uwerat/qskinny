@@ -558,6 +558,7 @@ void QskSquiekSkin::initInputPanelHints()
 
     const ColorPalette& pal = m_data->palette;
 
+/*
     // key panel
     setMargins( Q::KeyPanel | Margin, 2 ); // should be Panel | Spacing
 
@@ -584,6 +585,7 @@ void QskSquiekSkin::initInputPanelHints()
     setMargins( Q::Panel | Padding, 5 );
     setMargins( Q::Panel | Spacing, 5 );
     setPanel( Q::Panel, Raised );
+*/
 }
 
 void QskSquiekSkin::initScrollViewHints()

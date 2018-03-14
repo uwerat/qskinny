@@ -525,6 +525,7 @@ void QskMaterialSkin::initInputPanelHints()
 
     const ColorPalette& pal = m_data->palette;
 
+/*
     // key panel
     setMargins( Q::KeyPanel | Margin, 2 );
 
@@ -552,6 +553,7 @@ void QskMaterialSkin::initInputPanelHints()
     setBoxBorderMetrics( Q::Panel, 0 );
     setGradient( Q::Panel, pal.darker150 );
     setBoxBorderColors( Q::Panel, pal.baseColor );
+*/
 }
 
 void QskMaterialSkin::initScrollViewHints()

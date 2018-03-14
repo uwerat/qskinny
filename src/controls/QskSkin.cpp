@@ -39,9 +39,6 @@ QSK_QT_PRIVATE_END
 #include "QskGraphicLabel.h"
 #include "QskGraphicLabelSkinlet.h"
 
-#include "QskInputPanel.h"
-#include "QskInputPanelSkinlet.h"
-
 #include "QskListView.h"
 #include "QskListViewSkinlet.h"
 
@@ -130,7 +127,6 @@ QskSkin::QskSkin( QObject* parent ):
     declareSkinlet< QskBox, QskBoxSkinlet >();
     declareSkinlet< QskFocusIndicator, QskFocusIndicatorSkinlet >();
     declareSkinlet< QskGraphicLabel, QskGraphicLabelSkinlet >();
-    declareSkinlet< QskInputPanel, QskInputPanelSkinlet >();
     declareSkinlet< QskListView, QskListViewSkinlet >();
     declareSkinlet< QskPageIndicator, QskPageIndicatorSkinlet >();
     declareSkinlet< QskPopup, QskPopupSkinlet >();

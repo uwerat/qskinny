@@ -7,8 +7,34 @@
 #define QSK_INPUT_PANEL_H
 
 #include "QskControl.h"
+#include "QskPushButton.h"
 
 #include <QRectF>
+
+class QskInputCompositionModel;
+class QskInputPanel;
+
+class QskKeyButton : public QskPushButton
+{
+        Q_OBJECT
+
+        using Inherited = QskPushButton;
+
+    public:
+        QSK_SUBCONTROLS( Panel, Text, TextCancelButton )
+        QskKeyButton( int keyIndex, QskInputPanel* inputPanel, QQuickItem* parent = nullptr );
+
+        virtual QskAspect::Subcontrol effectiveSubcontrol( QskAspect::Subcontrol subControl ) const override;
+
+    public Q_SLOTS:
+        void updateText();
+
+    private:
+        bool isCancelButton() const;
+
+        const int m_keyIndex;
+        QskInputPanel* m_inputPanel;
+};
 
 class QSK_EXPORT QskInputPanel : public QskControl
 {
@@ -22,12 +48,10 @@ class QSK_EXPORT QskInputPanel : public QskControl
     using Inherited = QskControl;
 
 public:
-    QSK_SUBCONTROLS( Panel, KeyPanel, KeyGlyph )
-    QSK_STATES( Checked, Pressed )
-
     struct KeyData
     {
         Qt::Key key = Qt::Key( 0 );
+        bool isSuggestionKey = false;
         QRectF rect;
     };
 
@@ -74,6 +98,10 @@ public:
 
     QRectF keyboardRect() const;
 
+    // takes ownership:
+    void registerCompositionModelForLocale( const QLocale& locale,
+                                            QskInputCompositionModel* model );
+
 public Q_SLOTS:
     void setPreeditGroups( const QVector< Qt::Key >& );
     void setPreeditCandidates( const QVector< Qt::Key >& );
@@ -82,19 +110,19 @@ public Q_SLOTS:
     bool deactivateFocusKey();
     void clearFocusKey();
 
+    void handleKey( int keyIndex );
+    KeyData& keyDataAt( int ) const;
+    QString currentTextForKeyIndex( int keyIndex ) const;
+
 protected:
     virtual void geometryChanged( const QRectF&, const QRectF& ) override;
-
-    virtual void mousePressEvent( QMouseEvent* ) override;
-    virtual void mouseMoveEvent( QMouseEvent* ) override;
-    virtual void mouseReleaseEvent( QMouseEvent* ) override;
-    virtual void touchEvent( QTouchEvent* ) override;
     virtual void timerEvent( QTimerEvent* ) override;
+    virtual bool eventFilter( QObject* object, QEvent* event ) override;
 
 private:
-    KeyData& keyDataAt( int ) const;
+    void createUI();
+    void updateUI(); // e.g. called when updating Pinyin suggestions
 
-    void handleKey( int );
     void compose( Qt::Key );
     void selectGroup( int );
     void selectCandidate( int );
@@ -105,6 +133,11 @@ private:
 Q_SIGNALS:
     void keyboardRectChanged();
     void displayLanguageNameChanged();
+    void inputMethodRegistered( const QLocale& locale, QskInputCompositionModel* model );
+    void inputMethodEventReceived( QInputMethodEvent* inputMethodEvent );
+    void keyEventReceived( QKeyEvent* keyEvent );
+    void modeChanged( QskInputPanel::Mode mode );
+    void cancelPressed();
 
 public:
     class PrivateData;
