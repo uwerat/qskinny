@@ -10,3 +10,8 @@ TextInput::~TextInput()
 {
 
 }
+
+void TextInput::inputMethodEvent(QInputMethodEvent *event)
+{
+    QQuickTextInput::inputMethodEvent(event);
+}

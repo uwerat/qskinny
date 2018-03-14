@@ -148,8 +148,6 @@ QskKeyButton::QskKeyButton( int keyIndex, QskInputPanel* inputPanel, QQuickItem*
     m_keyIndex( keyIndex ),
     m_inputPanel( inputPanel )
 {
-    setFlag( QQuickItem::ItemAcceptsInputMethod );
-
     updateText();
 
     connect( this, &QskKeyButton::pressed, this, [ this ]()
@@ -248,6 +246,9 @@ QskInputPanel::QskInputPanel( QQuickItem* parent ):
 
     QObject::connect( this, &QskControl::localeChanged,
                       this, &QskInputPanel::updateLocale );
+
+    setFlag( ItemIsFocusScope, true );
+    setTabFence( true );
 }
 
 QskInputPanel::~QskInputPanel()

@@ -26,6 +26,8 @@ QskInputContext::QskInputContext():
     connect( qskSetup, &QskSetup::inputPanelChanged,
         this, &QskInputContext::setInputPanel );
     setInputPanel( qskSetup->inputPanel() );
+
+    m_inputCompositionModel.reset( new QskInputCompositionModel );
 }
 
 QskInputContext::~QskInputContext()
@@ -41,11 +43,11 @@ bool QskInputContext::isValid() const
 
 void QskInputContext::update( Qt::InputMethodQueries queries )
 {
-    if ( !m_focusObject )
+    if ( !m_inputItem )
         return;
 
     QInputMethodQueryEvent queryEvent( queries );
-    if ( !QCoreApplication::sendEvent( m_focusObject, &queryEvent ) )
+    if ( !QCoreApplication::sendEvent( m_inputItem, &queryEvent ) )
         return;
 
     // Qt::ImCursorRectangle
@@ -209,16 +211,37 @@ void QskInputContext::setFocusObject( QObject* focusObject )
 
     m_focusObject = focusObject;
     if ( !m_focusObject )
-        return;
-
-    QInputMethodQueryEvent queryEvent( Qt::ImEnabled );
-    if ( !QCoreApplication::sendEvent( m_focusObject, &queryEvent ) )
-        return;
-
-    if ( !queryEvent.value( Qt::ImEnabled ).toBool() )
     {
-        hideInputPanel();
+        m_inputItem = nullptr;
+        m_inputCompositionModel->setInputItem( nullptr );
         return;
+    }
+
+    bool inputItemChanged = false;
+
+    auto focusQuickItem = qobject_cast< QQuickItem* >( focusObject );
+    if( focusQuickItem )
+    {
+        // Do not change the input item when panel buttons get the focus:
+        if( qskNearestFocusScope( focusQuickItem ) != m_inputPanel )
+        {
+            m_inputItem = focusQuickItem;
+            m_inputCompositionModel->setInputItem( m_inputItem ); // ### use a signal/slot connection
+            inputItemChanged = true;
+        }
+    }
+
+    if( inputItemChanged )
+    {
+        QInputMethodQueryEvent queryEvent( Qt::ImEnabled );
+        if ( !QCoreApplication::sendEvent( m_inputItem, &queryEvent ) )
+            return;
+
+        if ( !queryEvent.value( Qt::ImEnabled ).toBool() )
+        {
+            hideInputPanel();
+            return;
+        }
     }
 
     m_focusObject->installEventFilter( this );

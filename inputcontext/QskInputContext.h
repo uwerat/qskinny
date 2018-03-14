@@ -8,6 +8,7 @@
 
 #include <qpa/qplatforminputcontext.h>
 #include <QPointer>
+#include <QQuickItem>
 
 #include <memory>
 
@@ -45,6 +46,7 @@ private Q_SLOTS:
 
 private:
     QPointer< QObject > m_focusObject;
+    QPointer< QQuickItem > m_inputItem;
     QPointer< QskInputPanel > m_inputPanel;
     std::unique_ptr< QskInputCompositionModel > m_inputCompositionModel;
 };
