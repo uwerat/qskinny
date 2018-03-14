@@ -71,8 +71,7 @@ void QskInputCompositionModel::composeKey( Qt::Key key )
     if ( !inputMethod )
         return;
 
-    auto focusObject = QGuiApplication::focusObject();
-    if ( !focusObject )
+    if ( !m_data->inputItem )
         return;
 
     QInputMethodQueryEvent queryEvent(
@@ -224,8 +223,7 @@ void QskInputCompositionModel::commitCandidate( int index )
 
 void QskInputCompositionModel::backspace()
 {
-    auto focusWindow = QGuiApplication::focusWindow();
-    if ( !focusWindow )
+    if ( !m_data->inputItem )
         return;
 
     if ( !m_data->preedit.isEmpty() )
@@ -253,8 +251,7 @@ void QskInputCompositionModel::moveCursor( Qt::Key key )
     if ( key != Qt::Key_Left && key != Qt::Key_Right )
         return;
 
-    auto focusWindow = QGuiApplication::focusWindow();
-    if ( !focusWindow )
+    if ( !m_data->inputItem )
         return;
 
     // Moving cursor is disabled when preedit is active.
@@ -263,8 +260,8 @@ void QskInputCompositionModel::moveCursor( Qt::Key key )
 
     QKeyEvent moveCursorPress( QEvent::KeyPress, key, Qt::NoModifier );
     QKeyEvent moveCursorRelease( QEvent::KeyRelease, key,  Qt::NoModifier );
-    QCoreApplication::sendEvent( focusWindow, &moveCursorPress );
-    QCoreApplication::sendEvent( focusWindow, &moveCursorRelease );
+    QCoreApplication::sendEvent( m_data->inputItem, &moveCursorPress );
+    QCoreApplication::sendEvent( m_data->inputItem, &moveCursorRelease );
 }
 
 void QskInputCompositionModel::sendCompositionEvent( QInputMethodEvent* e )

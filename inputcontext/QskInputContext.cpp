@@ -21,13 +21,15 @@
 #include <QRectF>
 
 QskInputContext::QskInputContext():
-    Inherited()
+    Inherited(),
+    m_inputCompositionModel( new QskInputCompositionModel )
 {
     connect( qskSetup, &QskSetup::inputPanelChanged,
         this, &QskInputContext::setInputPanel );
     setInputPanel( qskSetup->inputPanel() );
 
-    m_inputCompositionModel.reset( new QskInputCompositionModel );
+    // We could connect candidatesChanged() here, but we don't emit
+    // the signal in the normal composition model anyhow
 }
 
 QskInputContext::~QskInputContext()

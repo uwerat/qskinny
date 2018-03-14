@@ -23,7 +23,7 @@ class QskInputContext : public QPlatformInputContext
 
 public:
     QskInputContext();
-    ~QskInputContext();
+    ~QskInputContext() override;
 
     bool isValid() const override;
     void update( Qt::InputMethodQueries ) override;
