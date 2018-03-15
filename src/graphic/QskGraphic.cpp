@@ -17,18 +17,6 @@
 #include <QGuiApplication>
 #include <QtMath>
 
-#include <algorithm>
-
-static inline void qskInsertColor( const QColor& color,
-    QVector< QRgb >& colorTable )
-{
-    const QRgb rgb = color.rgb(); // dropping the alpha value
-
-    const auto it = std::lower_bound( colorTable.begin(), colorTable.end(), rgb );
-    if ( ( it == colorTable.end() ) || ( *it != rgb ) )
-        colorTable.insert( it, rgb );
-}
-
 static inline qreal qskDevicePixelRatio()
 {
     return qGuiApp ? qGuiApp->devicePixelRatio() : 1.0;
@@ -358,7 +346,6 @@ public:
         defaultSize( other.defaultSize ),
         commands( other.commands ),
         pathInfos( other.pathInfos ),
-        colorTable( other.colorTable ),
         boundingRect( other.boundingRect ),
         pointRect( other.pointRect ),
         hasRasterData( other.hasRasterData ),
@@ -379,7 +366,6 @@ public:
     QSizeF defaultSize;
     QVector< QskPainterCommand > commands;
     QVector< PathInfo > pathInfos;
-    QVector< QRgb > colorTable;
 
     QRectF boundingRect;
     QRectF pointRect;
@@ -551,11 +537,6 @@ QRectF QskGraphic::controlPointRect() const
         return QRectF();
 
     return m_data->pointRect;
-}
-
-QVector<QRgb> QskGraphic::colorTable() const
-{
-    return m_data->colorTable;
 }
 
 QRectF QskGraphic::scaledBoundingRect( qreal sx, qreal sy ) const
@@ -899,38 +880,6 @@ void QskGraphic::drawImage( const QRectF& rect, const QImage& image,
 void QskGraphic::updateState( const QPaintEngineState& state )
 {
     m_data->commands += QskPainterCommand( state );
-
-    if ( state.state() & QPaintEngine::DirtyPen )
-    {
-        const QPen pen = state.pen();
-
-        if ( pen.isSolid() )
-        {
-            qskInsertColor( pen.color(), m_data->colorTable );
-        }
-        else if ( auto gradient = pen.brush().gradient() )
-        {
-            const auto stops = gradient->stops();
-            for ( const auto& stop : stops )
-                qskInsertColor( stop.second, m_data->colorTable );
-        }
-    }
-
-    if ( state.state() & QPaintEngine::DirtyBrush )
-    {
-        const QBrush brush = state.brush();
-
-        if ( brush.style() == Qt::SolidPattern )
-        {
-            qskInsertColor( brush.color(), m_data->colorTable );
-        }
-        else if ( auto gradient = brush.gradient() )
-        {
-            const auto stops = gradient->stops();
-            for ( const auto& stop : stops )
-                qskInsertColor( stop.second, m_data->colorTable );
-        }
-    }
 }
 
 void QskGraphic::updateBoundingRect( const QRectF& rect )

@@ -80,8 +80,6 @@ public:
     QRectF boundingRect() const;
     QRectF controlPointRect() const;
 
-    QVector< QRgb > colorTable() const;
-
     const QVector< QskPainterCommand >& commands() const;
     void setCommands( const QVector< QskPainterCommand >& );
 
