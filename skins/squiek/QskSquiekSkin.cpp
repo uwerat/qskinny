@@ -559,7 +559,7 @@ void QskSquiekSkin::initInputPanelHints()
     const ColorPalette& pal = m_data->palette;
 
     // key panel
-//    setMargins( Q::Panel | Margin, 2 ); // should be Panel | Spacing
+    setMargins( QskInputPanel::Panel | Margin, 2 );
 
     setButton( Q::Panel, Raised );
     setButton( Q::Panel | Q::Pressed, Sunken );

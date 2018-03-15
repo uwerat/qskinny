@@ -139,6 +139,8 @@ namespace
     };
 }
 
+QSK_SUBCONTROL( QskInputPanel, Panel )
+
 QSK_SUBCONTROL( QskKeyButton, Panel )
 QSK_SUBCONTROL( QskKeyButton, Text )
 QSK_SUBCONTROL( QskKeyButton, TextCancelButton )
@@ -241,6 +243,9 @@ QskInputPanel::QskInputPanel( QQuickItem* parent ):
     setAcceptedMouseButtons( Qt::LeftButton );
 
     initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
+
+    auto margins = marginsHint( Panel | QskAspect::Margin );
+    setMargins( margins );
 
     updateLocale( locale() );
 

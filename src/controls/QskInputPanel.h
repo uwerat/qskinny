@@ -48,6 +48,9 @@ class QSK_EXPORT QskInputPanel : public QskControl
     using Inherited = QskControl;
 
 public:
+
+    QSK_SUBCONTROLS( Panel )
+
     struct KeyData
     {
         Qt::Key key = Qt::Key( 0 );
