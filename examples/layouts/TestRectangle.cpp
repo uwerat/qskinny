@@ -17,4 +17,5 @@ TestRectangle::TestRectangle( const char* colorName, QQuickItem* parent ):
 
     setPreferredSize( 10, 10 );
     setSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Minimum );
+    setFocusPolicy( Qt::TabFocus ); // for checking the focus tab chain
 }

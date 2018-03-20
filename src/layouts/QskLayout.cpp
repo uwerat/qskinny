@@ -104,16 +104,32 @@ void QskLayout::insertItemInternal( QskLayoutItem* layoutItem, int index )
         if ( item->parentItem() != this )
             item->setParentItem( this );
 
-        if ( index >= 0 )
-        {
-            // to have a proper focus tab chain
+        /*
+            Re-ordering the child items to have a a proper focus tab chain
+         */
 
+        bool reordered = false;
+
+        if ( ( index >= 0 ) && ( index < itemCount() - 1 ) )
+        {
             for ( int i = index; i < engine.itemCount(); i++ )
             {
-                QskLayoutItem* layoutItem = engine.layoutItemAt( index );
+                auto layoutItem = engine.layoutItemAt( i );
                 if ( layoutItem && layoutItem->item() )
+                {
                     item->stackBefore( layoutItem->item() );
+                    reordered = true;
+
+                    break;
+                }
             }
+        }
+
+        if ( !reordered )
+        {
+            const auto children = childItems();
+            if ( item != children.last() )
+                item->stackAfter( children.last() );
         }
     }
 
