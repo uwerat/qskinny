@@ -26,6 +26,8 @@ class QskKeyButton : public QskPushButton // ### rename to QskInputButton or so?
 
         virtual QskAspect::Subcontrol effectiveSubcontrol( QskAspect::Subcontrol subControl ) const override;
 
+        int keyIndex() const;
+
     public Q_SLOTS:
         void updateText();
 
@@ -43,7 +45,7 @@ class QSK_EXPORT QskInputPanel : public QskControl
     Q_PROPERTY( QRectF keyboardRect READ keyboardRect NOTIFY keyboardRectChanged )
 
     Q_PROPERTY( QString displayLanguageName READ displayLanguageName
-                NOTIFY displayLanguageNameChanged )
+            NOTIFY displayLanguageNameChanged )
 
     using Inherited = QskControl;
 
@@ -123,6 +125,7 @@ protected:
     virtual void geometryChanged( const QRectF&, const QRectF& ) override;
     virtual void timerEvent( QTimerEvent* ) override;
     virtual bool eventFilter( QObject* object, QEvent* event ) override;
+    virtual void updateLayout() override;
 
 private:
     void createUI();

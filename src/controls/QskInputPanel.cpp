@@ -176,6 +176,11 @@ QskAspect::Subcontrol QskKeyButton::effectiveSubcontrol( QskAspect::Subcontrol s
     return subControl;
 }
 
+int QskKeyButton::keyIndex() const
+{
+    return m_keyIndex;
+}
+
 void QskKeyButton::updateText()
 {
     QString text = m_inputPanel->currentTextForKeyIndex( m_keyIndex );
@@ -207,6 +212,7 @@ class QskInputPanel::PrivateData
             selectedGroup( -1 ),
             candidateOffset( 0 ),
             repeatKeyTimerId( -1 ),
+            buttonsBox( nullptr ),
             isUIInitialized( false )
         {
         }
@@ -229,6 +235,7 @@ class QskInputPanel::PrivateData
         std::unordered_map< int, KeyCounter > activeKeys;
         KeyTable keyTable[ ModeCount ];
 
+        QskLinearBox* buttonsBox;
         QList< QskKeyButton* > keyButtons;
         bool isUIInitialized;
 };
@@ -670,24 +677,47 @@ bool QskInputPanel::eventFilter( QObject* object, QEvent* event )
     }
 }
 
+void QskInputPanel::updateLayout()
+{
+    if( m_data->buttonsBox == nullptr )
+        return; // UI not initialized
+
+    QMarginsF margins = marginsHint( Panel | QskAspect::Margin );
+    QRectF rect = keyboardRect().marginsRemoved( margins );
+    qreal verticalSpacing = m_data->buttonsBox->spacing();
+
+    for( QQuickItem* rowItem : m_data->buttonsBox->childItems() )
+    {
+        QskLinearBox* rowBox = qobject_cast< QskLinearBox* >( rowItem );
+        qreal horizontalSpacing = rowBox->spacing();
+
+        for( QQuickItem* keyItem : rowBox->childItems() )
+        {
+            QskKeyButton* button = qobject_cast< QskKeyButton* >( keyItem );
+            QRectF keyRect = keyDataAt( button->keyIndex() ).rect;
+            qreal width = keyRect.width() * rect.width() - horizontalSpacing;
+            qreal height = keyRect.height() * rect.height() - verticalSpacing;
+
+            button->setFixedSize( width, height );
+        }
+    }
+}
+
 void QskInputPanel::createUI()
 {
+    // ### no need to defer:
     // deferring the UI creation until we are visible so that the contentsRect() returns the proper value
 
     setAutoLayoutChildren( true );
 
     auto& panelKeyData = keyData();
 
-    const auto contentsRect = keyboardRect();
-    const qreal sx = contentsRect.size().width();
-    const qreal sy = contentsRect.size().height();
-
-    QskLinearBox* outterBox = new QskLinearBox( Qt::Vertical, this );
-    outterBox->setAutoAddChildren( true );
+    m_data->buttonsBox = new QskLinearBox( Qt::Vertical, this );
+    m_data->buttonsBox->setAutoAddChildren( true );
 
     for( const auto& keyRow : panelKeyData )
     {
-        QskLinearBox* rowBox = new QskLinearBox( Qt::Horizontal, outterBox );
+        QskLinearBox* rowBox = new QskLinearBox( Qt::Horizontal, m_data->buttonsBox );
         rowBox->setAutoAddChildren( true );
 
         for( const auto& keyData : keyRow )
@@ -697,15 +727,11 @@ void QskInputPanel::createUI()
                 continue;
             }
 
-            const QSizeF buttonSize( keyData.rect.width() * sx, keyData.rect.height() * sy );
-
             int keyIndex = m_data->keyTable[ m_data->mode ].indexOf( &keyData );
             QskKeyButton* button = new QskKeyButton( keyIndex, this, rowBox );
 
             button->installEventFilter( this );
 
-            button->setMaximumWidth( buttonSize.width() ); // ### set min width as well?
-            button->setFixedHeight( buttonSize.height() );
             m_data->keyButtons.append( button );
         }
     }
@@ -713,7 +739,7 @@ void QskInputPanel::createUI()
 
 void QskInputPanel::updateUI()
 {
-    for( QskKeyButton* button : m_data->keyButtons )
+    for( QskKeyButton* button : qskAsConst( m_data->keyButtons ) )
     {
         button->updateText();
     }
