@@ -39,13 +39,14 @@ public:
 
     static bool isRunning();
     static QVariant animatedHint( QskAspect::Aspect );
+    static QVariant animatedGraphicFilter( int graphicRole );
 
 protected:
     virtual void updateSkin( QskSkin*, QskSkin* );
 
 private:
     QskSkin* m_skins[2];
-    QskAnimationHint m_animation;
+    QskAnimationHint m_animationHint;
     Type m_mask : 2;
 };
 

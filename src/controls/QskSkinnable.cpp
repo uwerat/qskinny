@@ -84,10 +84,10 @@ static inline bool qskCompareResolvedStates(
 
                     // clear the placement bit and restart with the initial state
                     aspect1 = a1;
-                    aspect1.setPlacement( static_cast< QskAspect::Placement>( 0 ) );
+                    aspect1.setPlacement( static_cast< QskAspect::Placement >( 0 ) );
 
                     aspect2 = a2;
-                    aspect2.setPlacement( static_cast< QskAspect::Placement>( 0 ) );
+                    aspect2.setPlacement( static_cast< QskAspect::Placement >( 0 ) );
                 }
             }
             else
@@ -176,12 +176,12 @@ const QskSkinlet* QskSkinnable::effectiveSkinlet() const
     return m_data->skinlet;
 }
 
-QskSkinHintTable &QskSkinnable::hintTable()
+QskSkinHintTable& QskSkinnable::hintTable()
 {
     return m_data->hintTable;
 }
 
-const QskSkinHintTable &QskSkinnable::hintTable() const
+const QskSkinHintTable& QskSkinnable::hintTable() const
 {
     return m_data->hintTable;
 }
@@ -288,7 +288,7 @@ void QskSkinnable::setBoxBorderColorsHint(
 
 QskBoxBorderColors QskSkinnable::boxBorderColorsHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
-{   
+{
     using namespace QskAspect;
     return effectiveHint( aspect | Color | Border, status ).value< QskBoxBorderColors >();
 }
@@ -325,7 +325,6 @@ QskColorFilter QskSkinnable::effectiveGraphicFilter(
     aspect.setPlacement( effectivePlacement() );
     aspect = aspect | QskAspect::GraphicRole;
 
-#if 1
     QskSkinHintStatus status;
 
     const QVariant hint = storedHint( aspect | skinState(), &status );
@@ -336,13 +335,32 @@ QskColorFilter QskSkinnable::effectiveGraphicFilter(
 
         aspect.setSubControl( status.aspect.subControl() );
     }
-#endif
 
     if ( !aspect.isAnimator() )
     {
-        const QVariant v = animatedValue( aspect, nullptr );
+        QVariant v = animatedValue( aspect, nullptr );
         if ( v.canConvert< QskColorFilter >() )
             return v.value< QskColorFilter >();
+
+        if ( QskSkinTransition::isRunning() )
+        {
+            v = QskSkinTransition::animatedGraphicFilter( hint.toInt() );
+
+            if ( v.canConvert< QskColorFilter >() )
+            {
+                if ( owningControl() )
+                {
+                    /*
+                        As it is hard to find out which controls depend
+                        on the animated graphic filters we reschedule
+                        our updates here.
+                     */
+                    owningControl()->update();
+                }
+
+                return v.value< QskColorFilter >();
+            }
+        }
     }
 
     return effectiveSkin()->graphicFilter( hint.toInt() );
@@ -362,7 +380,7 @@ QskAnimationHint QskSkinnable::animation(
 }
 
 QskAnimationHint QskSkinnable::effectiveAnimation(
-    QskAspect::Type type, QskAspect::Subcontrol subControl, 
+    QskAspect::Type type, QskAspect::Subcontrol subControl,
     QskAspect::State state, QskSkinHintStatus* status ) const
 {
     QskAspect::Aspect aspect = subControl | type | state;
@@ -526,7 +544,7 @@ const QVariant& QskSkinnable::storedHint(
             {
                 status->source = QskSkinHintStatus::Skin;
                 status->aspect = resolvedAspect;
-            }   
+            }
 
             return *value;
         }
@@ -732,7 +750,7 @@ void QskSkinnable::setSkinStateFlag( QskAspect::State state, bool on )
     QskControl* control = owningControl();
 
 #if DEBUG_STATE
-    qDebug() << control->className() << ":" 
+    qDebug() << control->className() << ":"
         << skinStateAsPrintable( m_data->skinState ) << "->"
         << skinStateAsPrintable( newState );
 #endif
@@ -780,7 +798,7 @@ void QskSkinnable::setSkinStateFlag( QskAspect::State state, bool on )
                                 we can stop as soon as the aspects have the same state bits.
                                 This way we can reduce the number of lookups significantly
                                 for skinnables with many state bits.
-        
+
                              */
                             doTransition = !qskCompareResolvedStates( a1, a2, skinTable );
                         }
