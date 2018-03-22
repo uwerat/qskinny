@@ -219,7 +219,7 @@ void QskSkin::setBoxShape( QskAspect::Aspect aspect,
 void QskSkin::setBoxShape( QskAspect::Aspect aspect, qreal topLeft, qreal topRight,
     qreal bottomLeft, qreal bottomRight, Qt::SizeMode sizeMode )
 {
-    m_data->hintTable.setBoxShape( aspect, 
+    m_data->hintTable.setBoxShape( aspect,
         QskBoxShapeMetrics( topLeft, topRight, bottomLeft, bottomRight, sizeMode ) );
 }
 
@@ -236,7 +236,7 @@ QskBoxShapeMetrics QskSkin::boxShape( QskAspect::Aspect aspect ) const
 void QskSkin::setBoxBorderMetrics( QskAspect::Aspect aspect,
     qreal left, qreal top, qreal right, qreal bottom, Qt::SizeMode sizeMode )
 {
-    m_data->hintTable.setBoxBorder( aspect, 
+    m_data->hintTable.setBoxBorder( aspect,
         QskBoxBorderMetrics( left, top, right, bottom, sizeMode ) );
 }
 
@@ -254,7 +254,7 @@ QskBoxBorderMetrics QskSkin::boxBorderMetrics( QskAspect::Aspect aspect ) const
 void QskSkin::setBoxBorderColors( QskAspect::Aspect aspect, const QskBoxBorderColors& colors )
 {
     m_data->hintTable.setBoxBorderColors( aspect, colors );
-}   
+}
 
 QskBoxBorderColors QskSkin::boxBorderColors( QskAspect::Aspect aspect ) const
 {
@@ -422,7 +422,7 @@ bool QskSkin::hasGraphicProvider() const
     return m_data->graphicProviders.size() > 0;
 }
 
-const int *QskSkin::dialogButtonLayout( Qt::Orientation orientation ) const
+const int* QskSkin::dialogButtonLayout( Qt::Orientation orientation ) const
 {
     //auto policy = QPlatformDialogHelper::UnknownLayout;
     auto policy = QPlatformDialogHelper::WinLayout;
@@ -430,7 +430,7 @@ const int *QskSkin::dialogButtonLayout( Qt::Orientation orientation ) const
     if ( const QPlatformTheme* theme = QGuiApplicationPrivate::platformTheme() )
     {
         const QVariant v = theme->themeHint( QPlatformTheme::DialogButtonBoxLayout );
-        policy = static_cast<QPlatformDialogHelper::ButtonLayout>( v.toInt() );
+        policy = static_cast< QPlatformDialogHelper::ButtonLayout >( v.toInt() );
     }
 
     return QPlatformDialogHelper::buttonLayout( orientation, policy );
