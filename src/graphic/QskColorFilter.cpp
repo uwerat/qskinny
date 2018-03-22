@@ -107,7 +107,7 @@ static inline QskColorFilter qskInterpolatedFilter(
 
         rgb = QskRgbValue::interpolated( rgb, pairTo.second, progress );
 
-        if ( rgb != pairTo.second )
+        if ( rgb != pairTo.first )
             interpolated.addColorSubstitution( pairTo.first, rgb );
     }
 
@@ -133,7 +133,7 @@ static inline QskColorFilter qskInterpolatedFilter(
         if ( !hasRgb )
         {
             const auto rgb = QskRgbValue::interpolated(
-                    pairFrom.second, pairFrom.first, progress );
+                pairFrom.second, pairFrom.first, progress );
 
             if ( rgb != pairFrom.first )
                 interpolated.addColorSubstitution( pairFrom.first, rgb );
