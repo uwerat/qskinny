@@ -263,6 +263,34 @@ QskInputPanel::QskInputPanel( QQuickItem* parent ):
 
     setFlag( ItemIsFocusScope, true );
     setTabFence( true );
+
+    setAutoLayoutChildren( true );
+
+    auto& panelKeyData = keyData();
+
+    m_data->buttonsBox = new QskLinearBox( Qt::Vertical, this );
+    m_data->buttonsBox->setAutoAddChildren( true );
+
+    for( const auto& keyRow : panelKeyData )
+    {
+        QskLinearBox* rowBox = new QskLinearBox( Qt::Horizontal, m_data->buttonsBox );
+        rowBox->setAutoAddChildren( true );
+
+        for( const auto& keyData : keyRow )
+        {
+            if( !keyData.key )
+            {
+                continue;
+            }
+
+            int keyIndex = m_data->keyTable[ m_data->mode ].indexOf( &keyData );
+            QskKeyButton* button = new QskKeyButton( keyIndex, this, rowBox );
+
+            button->installEventFilter( this );
+
+            m_data->keyButtons.append( button );
+        }
+    }
 }
 
 QskInputPanel::~QskInputPanel()
@@ -614,12 +642,6 @@ void QskInputPanel::geometryChanged(
 {
     Inherited::geometryChanged( newGeometry, oldGeometry );
 
-    if( newGeometry != oldGeometry && !newGeometry.size().isNull() && !m_data->isUIInitialized )
-    {
-        createUI();
-        m_data->isUIInitialized = true;
-    }
-
     Q_EMIT keyboardRectChanged();
 }
 
@@ -679,8 +701,8 @@ bool QskInputPanel::eventFilter( QObject* object, QEvent* event )
 
 void QskInputPanel::updateLayout()
 {
-    if( m_data->buttonsBox == nullptr )
-        return; // UI not initialized
+    if( geometry().isNull() )
+        return; // no need to calculate anything, will be called again
 
     QMarginsF margins = marginsHint( Panel | QskAspect::Margin );
     QRectF rect = keyboardRect().marginsRemoved( margins );
@@ -699,40 +721,6 @@ void QskInputPanel::updateLayout()
             qreal height = keyRect.height() * rect.height() - verticalSpacing;
 
             button->setFixedSize( width, height );
-        }
-    }
-}
-
-void QskInputPanel::createUI()
-{
-    // ### no need to defer:
-    // deferring the UI creation until we are visible so that the contentsRect() returns the proper value
-
-    setAutoLayoutChildren( true );
-
-    auto& panelKeyData = keyData();
-
-    m_data->buttonsBox = new QskLinearBox( Qt::Vertical, this );
-    m_data->buttonsBox->setAutoAddChildren( true );
-
-    for( const auto& keyRow : panelKeyData )
-    {
-        QskLinearBox* rowBox = new QskLinearBox( Qt::Horizontal, m_data->buttonsBox );
-        rowBox->setAutoAddChildren( true );
-
-        for( const auto& keyData : keyRow )
-        {
-            if( !keyData.key )
-            {
-                continue;
-            }
-
-            int keyIndex = m_data->keyTable[ m_data->mode ].indexOf( &keyData );
-            QskKeyButton* button = new QskKeyButton( keyIndex, this, rowBox );
-
-            button->installEventFilter( this );
-
-            m_data->keyButtons.append( button );
         }
     }
 }
