@@ -244,6 +244,8 @@ QskInputPanel::QskInputPanel( QQuickItem* parent ):
 
     initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
 
+    setAutoFillBackground( true );
+
     auto margins = marginsHint( Panel | QskAspect::Margin );
     setMargins( margins );
 
@@ -259,6 +261,18 @@ QskInputPanel::QskInputPanel( QQuickItem* parent ):
 QskInputPanel::~QskInputPanel()
 {
 }
+
+
+QskAspect::Subcontrol QskInputPanel::effectiveSubcontrol( QskAspect::Subcontrol subControl ) const
+{
+    if( subControl == QskAspect::Control )
+    {
+        return QskInputPanel::Panel;
+    }
+
+    return subControl;
+}
+
 
 QskInputPanel::Mode QskInputPanel::mode() const
 {

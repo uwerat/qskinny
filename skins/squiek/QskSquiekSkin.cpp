@@ -560,6 +560,7 @@ void QskSquiekSkin::initInputPanelHints()
 
     // key panel
     setMargins( QskInputPanel::Panel | Margin, 2 );
+    setButton( QskInputPanel::Panel, Raised );
 
     setButton( Q::Panel, Raised );
     setButton( Q::Panel | Q::Pressed, Sunken );

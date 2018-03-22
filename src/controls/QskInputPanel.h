@@ -89,6 +89,8 @@ public:
     QskInputPanel( QQuickItem* parent = nullptr );
     virtual ~QskInputPanel() override;
 
+    virtual QskAspect::Subcontrol effectiveSubcontrol( QskAspect::Subcontrol subControl ) const override;
+
     void updateLocale( const QLocale& locale );
 
     void setMode( QskInputPanel::Mode index );
