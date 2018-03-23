@@ -14,6 +14,7 @@
 #include <QGuiApplication>
 #include <QStyleHints>
 #include <QskLinearBox.h>
+#include <QskTextOptions.h>
 
 #include <QTimer>
 
@@ -150,6 +151,10 @@ QskKeyButton::QskKeyButton( int keyIndex, QskInputPanel* inputPanel, QQuickItem*
     m_keyIndex( keyIndex ),
     m_inputPanel( inputPanel )
 {
+    QskTextOptions options;
+    options.setFontSizeMode( QskTextOptions::VerticalFit );
+    setTextOptions( options );
+
     updateText();
 
     connect( this, &QskKeyButton::pressed, this, [ this ]()
