@@ -515,20 +515,20 @@ void QskSkinTransition::process()
 
     if ( !candidates.isEmpty() )
     {
-        bool firstWindow = true;
+        bool doGraphicFilter = m_mask & QskSkinTransition::Color;
 
         const auto windows = qGuiApp->topLevelWindows();
         for ( const auto window : windows )
         {
             if ( auto quickWindow = qobject_cast< QQuickWindow* >( window ) )
             {
-                if ( firstWindow )
+                if ( doGraphicFilter )
                 {
                     qskSkinAnimator->addGraphicFilterAnimators(
                         quickWindow, m_animationHint,
                         oldFilters, m_skins[1]->graphicFilters() );
 
-                    firstWindow = false;
+                    doGraphicFilter = false;
                 }
 
                 /*
