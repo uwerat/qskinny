@@ -1064,8 +1064,11 @@ void QskControl::resetImplicitSize()
 
     if ( d->controlFlags & QskControl::DeferredLayout )
     {
-        d->blockedImplicitSize = true;
-        layoutConstraintChanged();
+        if ( !d->blockedImplicitSize )
+        {
+            d->blockedImplicitSize = true;
+            layoutConstraintChanged();
+        }
     }
     else
     {
@@ -1294,6 +1297,14 @@ void QskControl::itemChange( QQuickItem::ItemChange change,
         }
         case QQuickItem::ItemVisibleHasChanged:
         {
+#if 1
+            /*      
+                ~QQuickItem sends QQuickItem::ItemVisibleHasChanged recursively
+                to all childItems. When being a child ( not only a childItem() )
+                we are short before being destructed too and any updates 
+                done here are totally pointless. TODO ...
+             */   
+#endif
             if ( value.boolValue )
             {
                 if ( d->blockedPolish )
@@ -1313,16 +1324,20 @@ void QskControl::itemChange( QQuickItem::ItemChange change,
                 d->isInitiallyPainted = false;
             }
 
-#if 1
-            // Layout code might consider the visiblility of the children
-            // and therefore needs to be updated. Posting a statement about
-            // changed layout constraints has this effect, but is not correct.
-            // The right way to go would be to create show/hide events and to
-            // handle them, where visibility of the children matters.
-            // TODO ...
+            if ( parentItem() && parentItem()->isVisible() )
+            {
+                /*
+                    Layout code might consider the visiblility of the children
+                    and therefore needs to be updated. Posting a statement about
+                    changed layout constraints has this effect, but is not correct.
+                    The right way to go would be to create show/hide events and to
+                    handle them, where visibility of the children matters.
+                    TODO ...
+                 */
 
-            layoutConstraintChanged();
-#endif
+                layoutConstraintChanged();
+            }
+
             break;
         }
         case QQuickItem::ItemSceneChange:
