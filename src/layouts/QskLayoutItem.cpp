@@ -168,8 +168,7 @@ void QskLayoutItem::setGeometry( const QRectF& rect )
     }
 
     m_isGeometryDirty = false;
-    m_item->setPosition( rect.topLeft() );
-    m_item->setSize( rect.size() );
+    qskSetItemGeometry( m_item, rect );
 }
 
 bool QskLayoutItem::hasDynamicConstraint() const

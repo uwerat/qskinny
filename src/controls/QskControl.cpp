@@ -54,6 +54,19 @@ QRectF qskItemGeometry( const QQuickItem* item )
     return QRectF( d->x, d->y, d->width, d->height );
 }
 
+void qskSetItemGeometry( QQuickItem* item, const QRectF& rect )
+{
+    if ( auto control = qobject_cast< QskControl* >( item ) )
+    {
+        control->setGeometry( rect );
+    }
+    else
+    {
+        item->setPosition( rect.topLeft() );
+        item->setSize( rect.size() );
+    }
+}
+
 bool qskIsItemComplete( const QQuickItem* item )
 {
     return QQuickItemPrivate::get( item )->componentComplete;
@@ -270,7 +283,7 @@ Q_GLOBAL_STATIC( QskControlRegistry, qskRegistry )
 
 class QskControlPrivate final : public QQuickItemPrivate
 {
-    Q_DECLARE_PUBLIC(QskControl)
+    Q_DECLARE_PUBLIC( QskControl )
 
 public:
     QskControlPrivate():
@@ -309,7 +322,7 @@ public:
         }
     }
 
-    void mirrorChange() override
+    virtual void mirrorChange() override final
     {
         Q_Q( QskControl );
         qskSendEventTo( q, QEvent::LayoutDirectionChange );
@@ -539,6 +552,11 @@ void QskControl::setGeometry( qreal x, qreal y, qreal width, qreal height )
 
         if ( dirtyType & QQuickItemPrivate::Size )
             d->dirty( QQuickItemPrivate::Size );
+
+        /*
+            Unfortunately geometryChanged is protected and we can't implement
+            this code as qskSetItemGeometry - further hacking required: TODO ...
+         */
 
         geometryChanged( QRectF( d->x, d->y, d->width, d->height ), oldRect );
     }
@@ -1419,10 +1437,7 @@ void QskControl::updatePolish()
         for ( auto child : children )
         {
             if ( !QQuickItemPrivate::get( child )->isTransparentForPositioner() )
-            {
-                child->setPosition( rect.topLeft() );
-                child->setSize( rect.size() );
-            }
+                qskSetItemGeometry( child, rect );
         }
     }
 

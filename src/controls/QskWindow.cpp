@@ -73,6 +73,7 @@ namespace
                 QCoreApplication::postEvent( window, new QEvent( QEvent::LayoutRequest ) );
             }
         }
+
     private:
         QQuickItem* m_item;
     };
@@ -423,16 +424,13 @@ void QskWindow::layoutItems()
     if ( !d->autoLayoutChildren )
         return;
 
-    const QSizeF sz( contentItem()->width(), contentItem()->height() );
+    const QRectF rect = qskItemGeometry( contentItem() );
 
     const auto children = contentItem()->childItems();
     for ( auto child : children )
     {
         if ( !qskIsTransparentForPositioner( child ) )
-        {
-            child->setPosition( contentItem()->position() );
-            child->setSize( sz );
-        }
+            qskSetItemGeometry( child, rect );
     }
 }
 
