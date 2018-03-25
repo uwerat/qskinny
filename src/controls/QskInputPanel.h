@@ -92,7 +92,7 @@ protected:
     virtual void timerEvent( QTimerEvent* ) override;
 
 private:
-    KeyData& keyDataAt( int );
+    KeyData& keyDataAt( int ) const;
 
     void handleKey( int );
     void compose( Qt::Key );

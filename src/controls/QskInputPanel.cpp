@@ -707,7 +707,7 @@ void QskInputPanel::timerEvent( QTimerEvent* e )
     }
 }
 
-QskInputPanel::KeyData& QskInputPanel::keyDataAt( int keyIndex )
+QskInputPanel::KeyData& QskInputPanel::keyDataAt( int keyIndex ) const
 {
     const auto row = keyIndex / KeyCount;
     const auto col = keyIndex % KeyCount;
@@ -912,7 +912,6 @@ void QskInputPanel::updateLocale( const QLocale& locale )
         default:
             qWarning() << "QskInputPanel: unsupported locale:" << locale;
             m_data->currentLayout = &qskInputPanelLayouts.en_US;
-
     }
 
     Q_EMIT displayLanguageNameChanged();
