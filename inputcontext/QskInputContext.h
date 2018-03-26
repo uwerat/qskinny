@@ -36,9 +36,6 @@ public:
     QLocale locale() const override;
     void setFocusObject( QObject* ) override;
 
-protected:
-    bool eventFilter( QObject*, QEvent* ) override;
-
 private Q_SLOTS:
     void emitAnimatingChanged();
     void handleCandidatesChanged();

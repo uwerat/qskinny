@@ -112,10 +112,6 @@ public:
 public Q_SLOTS:
     void setPreeditGroups( const QVector< Qt::Key >& );
     void setPreeditCandidates( const QVector< Qt::Key >& );
-    bool advanceFocus( bool = true );
-    bool activateFocusKey();
-    bool deactivateFocusKey();
-    void clearFocusKey();
 
     void handleKey( int keyIndex );
     KeyData& keyDataAt( int ) const;
@@ -123,7 +119,6 @@ public Q_SLOTS:
 
 protected:
     virtual void geometryChanged( const QRectF&, const QRectF& ) override;
-    virtual bool eventFilter( QObject* object, QEvent* event ) override;
     virtual void updateLayout() override;
 
 private:

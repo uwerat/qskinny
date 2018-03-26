@@ -208,9 +208,6 @@ QLocale QskInputContext::locale() const
 
 void QskInputContext::setFocusObject( QObject* focusObject )
 {
-    if ( m_focusObject )
-        m_focusObject->removeEventFilter( this );
-
     m_focusObject = focusObject;
     if ( !m_focusObject )
     {
@@ -229,7 +226,14 @@ void QskInputContext::setFocusObject( QObject* focusObject )
         {
             m_inputItem = focusQuickItem;
             m_inputCompositionModel->setInputItem( m_inputItem ); // ### use a signal/slot connection
+            if( m_inputPanel )
+                m_inputPanel->setTabFence( false );
             inputItemChanged = true;
+        }
+        else
+        {
+            if( m_inputPanel )
+                m_inputPanel->setTabFence( true );
         }
     }
 
@@ -246,56 +250,7 @@ void QskInputContext::setFocusObject( QObject* focusObject )
         }
     }
 
-    m_focusObject->installEventFilter( this );
     update( Qt::InputMethodQuery( Qt::ImQueryAll & ~Qt::ImEnabled ) );
-}
-
-bool QskInputContext::eventFilter( QObject* object, QEvent* event )
-{
-    if ( m_inputPanel && event->type() == QEvent::KeyPress )
-    {
-        auto keyEvent = static_cast< QKeyEvent* >( event );
-        const auto key = keyEvent->key();
-        switch ( key )
-        {
-            case Qt::Key_Tab:
-            case Qt::Key_Backtab:
-                if ( m_inputPanel->advanceFocus( key == Qt::Key_Tab ) )
-                {
-                    keyEvent->accept();
-                    return true;
-                }
-                break;
-            case Qt::Key_Select:
-            case Qt::Key_Space:
-                // if there is a focused key, treat the key like a push button
-                if ( m_inputPanel->activateFocusKey() )
-                {
-                    keyEvent->accept();
-                    return true;
-                }
-                break;
-        }
-    }
-
-    if ( m_inputPanel && event->type() == QEvent::KeyRelease )
-    {
-        auto keyEvent = static_cast< QKeyEvent* >( event );
-        const auto key = keyEvent->key();
-        switch ( key )
-        {
-            case Qt::Key_Select:
-            case Qt::Key_Space:
-                if ( m_inputPanel->deactivateFocusKey() )
-                {
-                    keyEvent->accept();
-                    return true;
-                }
-                break;
-        }
-    }
-
-    return Inherited::eventFilter( object, event );
 }
 
 void QskInputContext::invokeAction( QInputMethod::Action action, int cursorPosition )

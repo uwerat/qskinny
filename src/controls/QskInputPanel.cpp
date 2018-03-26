@@ -10,7 +10,6 @@
 #include <QskPushButton.h>
 #include <QskTextLabel.h>
 #include <QskDialog.h>
-#include <QFocusEvent>
 #include <QGuiApplication>
 #include <QStyleHints>
 #include <QskLinearBox.h>
@@ -81,9 +80,7 @@ static constexpr const QskInputPanelLayouts qskInputPanelLayouts =
 
 QSK_DECLARE_OPERATORS_FOR_FLAGS( Qt::Key ) // Must appear after the LOWER macro
 
-static const Qt::Key KeyPressed = static_cast< Qt::Key >( Qt::ShiftModifier );
 static const Qt::Key KeyLocked =  static_cast< Qt::Key >( Qt::ControlModifier );
-static const Qt::Key KeyFocused =  static_cast< Qt::Key >( Qt::MetaModifier );
 static const Qt::Key KeyStates =  static_cast< Qt::Key >( Qt::KeyboardModifierMask );
 
 static qreal qskKeyStretch( Qt::Key key )
@@ -231,7 +228,6 @@ class QskInputPanel::PrivateData
         PrivateData():
             currentLayout( nullptr ),
             mode( QskInputPanel::LowercaseMode ),
-            focusKeyIndex( -1 ),
             selectedGroup( -1 ),
             candidateOffset( 0 ),
             buttonsBox( nullptr ),
@@ -243,7 +239,6 @@ class QskInputPanel::PrivateData
         const QskInputPanelLayouts::Layout* currentLayout;
         QskInputPanel::Mode mode;
 
-        qint16 focusKeyIndex;
         qint16 selectedGroup;
         qint32 candidateOffset;
 
@@ -282,7 +277,9 @@ QskInputPanel::QskInputPanel( QQuickItem* parent ):
                       this, &QskInputPanel::updateLocale );
 
     setFlag( ItemIsFocusScope, true );
-    setTabFence( true );
+
+    // ### for some reason we never get focus when this is a tab fence:
+//    setTabFence( true );
 
     setAutoLayoutChildren( true );
 
@@ -305,8 +302,6 @@ QskInputPanel::QskInputPanel( QQuickItem* parent ):
 
             int keyIndex = m_data->keyTable[ m_data->mode ].indexOf( &keyData );
             QskKeyButton* button = new QskKeyButton( keyIndex, this, rowBox );
-
-            button->installEventFilter( this );
 
             m_data->keyButtons.append( button );
         }
@@ -512,94 +507,6 @@ void QskInputPanel::setPreeditCandidates( const QVector< Qt::Key >& candidates )
     setCandidateOffset( 0 );
 }
 
-bool QskInputPanel::advanceFocus( bool forward )
-{
-    deactivateFocusKey();
-    auto offset = forward ? 1 : -1;
-
-    auto focusKeyIndex = m_data->focusKeyIndex;
-
-    Q_FOREVER
-    {
-        focusKeyIndex += offset;
-
-        if( focusKeyIndex < 0 || focusKeyIndex >= RowCount * KeyCount )
-        {
-            clearFocusKey();
-            return false;
-        }
-
-        const auto key = keyDataAt( focusKeyIndex ).key;
-
-        if( key && key != Qt::Key_unknown )
-        {
-            break;
-        }
-    }
-
-    if( m_data->focusKeyIndex >= 0 )
-    {
-        keyDataAt( m_data->focusKeyIndex ).key &= ~KeyFocused;
-    }
-
-    m_data->focusKeyIndex = focusKeyIndex;
-    keyDataAt( m_data->focusKeyIndex ).key |= KeyFocused;
-    update();
-    return true;
-}
-
-bool QskInputPanel::activateFocusKey()
-{
-    if( m_data->focusKeyIndex > 0 && m_data->focusKeyIndex < RowCount * KeyCount )
-    {
-        auto& keyData = keyDataAt( m_data->focusKeyIndex );
-
-        if( keyData.key & KeyPressed )
-        {
-            handleKey( m_data->focusKeyIndex );
-        }
-        else
-        {
-            keyData.key |= KeyPressed;
-        }
-
-        update();
-        return true;
-    }
-
-    return false;
-}
-
-bool QskInputPanel::deactivateFocusKey()
-{
-    if( m_data->focusKeyIndex > 0 && m_data->focusKeyIndex < RowCount * KeyCount )
-    {
-        auto& keyData = keyDataAt( m_data->focusKeyIndex );
-
-        if( keyData.key & KeyPressed )
-        {
-            keyData.key &= ~KeyPressed;
-            handleKey( m_data->focusKeyIndex );
-        }
-
-        update();
-        return true;
-    }
-
-    return true;
-}
-
-void QskInputPanel::clearFocusKey()
-{
-    if( m_data->focusKeyIndex > 0 && m_data->focusKeyIndex < RowCount * KeyCount )
-    {
-        keyDataAt( m_data->focusKeyIndex ).key &= ~KeyFocused;
-        update();
-    }
-
-    m_data->focusKeyIndex = -1;
-}
-
 void QskInputPanel::setCandidateOffset( int candidateOffset )
 {
     m_data->candidateOffset = candidateOffset;
@@ -663,27 +570,6 @@ void QskInputPanel::geometryChanged(
     Inherited::geometryChanged( newGeometry, oldGeometry );
 
     Q_EMIT keyboardRectChanged();
-}
-
-bool QskInputPanel::eventFilter( QObject* object, QEvent* event )
-{
-    if( event->type() == QEvent::InputMethod )
-    {
-        QInputMethodEvent* inputMethodEvent = static_cast< QInputMethodEvent* >( event );
-        Q_EMIT inputMethodEventReceived( inputMethodEvent );
-        return true;
-    }
-    else if( event->type() == QEvent::KeyPress )
-    {
-        // Return, Backspace and others are covered here (maybe because they don't carry a 'commit string'):
-        QKeyEvent* keyEvent = static_cast< QKeyEvent* >( event );
-        Q_EMIT keyEventReceived( keyEvent );
-        return true;
-    }
-    else
-    {
-        return Inherited::eventFilter( object, event );
-    }
 }
 
 void QskInputPanel::updateLayout()
