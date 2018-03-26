@@ -123,7 +123,6 @@ public Q_SLOTS:
 
 protected:
     virtual void geometryChanged( const QRectF&, const QRectF& ) override;
-    virtual void timerEvent( QTimerEvent* ) override;
     virtual bool eventFilter( QObject* object, QEvent* event ) override;
     virtual void updateLayout() override;
 

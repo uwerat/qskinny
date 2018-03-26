@@ -131,6 +131,14 @@ static qreal qskRowStretch( const QskInputPanel::KeyRow& keyRow )
     return stretch;
 }
 
+static bool qskIsAutorepeat( Qt::Key key )
+{
+    return ( key != Qt::Key_Return && key != Qt::Key_Enter
+            && key != Qt::Key_Shift && key!= Qt::Key_CapsLock
+            && key != Qt::Key_Mode_switch );
+
+}
+
 namespace
 {
     struct KeyCounter
@@ -154,6 +162,16 @@ QskKeyButton::QskKeyButton( int keyIndex, QskInputPanel* inputPanel, QQuickItem*
     QskTextOptions options;
     options.setFontSizeMode( QskTextOptions::VerticalFit );
     setTextOptions( options );
+
+    auto keyData = m_inputPanel->keyDataAt( m_keyIndex );
+    const auto key = keyData.key & ~KeyStates;
+
+    if ( qskIsAutorepeat( key ) )
+    {
+        setAutoRepeat( true );
+        setAutoRepeatDelay( 500 );
+        setAutoRepeatInterval( 1000 / QGuiApplication::styleHints()->keyboardAutoRepeatRate() );
+    }
 
     updateText();
 
@@ -216,7 +234,6 @@ class QskInputPanel::PrivateData
             focusKeyIndex( -1 ),
             selectedGroup( -1 ),
             candidateOffset( 0 ),
-            repeatKeyTimerId( -1 ),
             buttonsBox( nullptr ),
             isUIInitialized( false )
         {
@@ -229,8 +246,6 @@ class QskInputPanel::PrivateData
         qint16 focusKeyIndex;
         qint16 selectedGroup;
         qint32 candidateOffset;
-
-        int repeatKeyTimerId;
 
         QLocale locale;
 
@@ -648,39 +663,6 @@ void QskInputPanel::geometryChanged(
     Inherited::geometryChanged( newGeometry, oldGeometry );
 
     Q_EMIT keyboardRectChanged();
-}
-
-void QskInputPanel::timerEvent( QTimerEvent* e )
-{
-    if( e->timerId() == m_data->repeatKeyTimerId )
-    {
-        for( auto it = m_data->activeKeys.begin(); it != m_data->activeKeys.end(); )
-        {
-            if( it->second.count >= 0 && it->second.count++ > 20 )  // ### use platform long-press hint
-            {
-                const auto key = keyDataAt( it->second.keyIndex ).key & ~KeyStates;
-
-                if( !key || key == Qt::Key_unknown )
-                {
-                    it = m_data->activeKeys.erase( it );
-                    continue;
-                }
-
-                if( key == Qt::Key_ApplicationLeft || key == Qt::Key_ApplicationRight )
-                {
-                    setCandidateOffset( m_data->candidateOffset
-                                        + ( key == Qt::Key_ApplicationLeft ? -1 : 1 ) );
-                }
-                else if( !( key & KeyLocked ) )  // do not repeat locked keys
-                {
-                    // long press events could be emitted from here
-                    compose( key & ~KeyStates );
-                }
-            }
-
-            ++it;
-        }
-    }
 }
 
 bool QskInputPanel::eventFilter( QObject* object, QEvent* event )
