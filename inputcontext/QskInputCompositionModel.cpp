@@ -258,8 +258,11 @@ void QskInputCompositionModel::moveCursor( Qt::Key key )
     if ( !m_data->preedit.isEmpty() )
         return;
 
+    // ### this should be in the panel:
     QKeyEvent moveCursorPress( QEvent::KeyPress, key, Qt::NoModifier );
     QKeyEvent moveCursorRelease( QEvent::KeyRelease, key,  Qt::NoModifier );
+    QFocusEvent focusIn( QEvent::FocusIn ); // hack to display the cursor
+    QCoreApplication::sendEvent( m_data->inputItem, &focusIn );
     QCoreApplication::sendEvent( m_data->inputItem, &moveCursorPress );
     QCoreApplication::sendEvent( m_data->inputItem, &moveCursorRelease );
 }

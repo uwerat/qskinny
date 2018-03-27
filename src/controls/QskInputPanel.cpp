@@ -160,6 +160,8 @@ QskKeyButton::QskKeyButton( int keyIndex, QskInputPanel* inputPanel, QQuickItem*
     options.setFontSizeMode( QskTextOptions::VerticalFit );
     setTextOptions( options );
 
+    setFocusPolicy( Qt::TabFocus );
+
     auto keyData = m_inputPanel->keyDataAt( m_keyIndex );
     const auto key = keyData.key & ~KeyStates;
 
