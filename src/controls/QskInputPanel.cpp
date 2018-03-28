@@ -559,14 +559,6 @@ void QskInputPanel::setCandidateOffset( int candidateOffset )
     }
 }
 
-QRectF QskInputPanel::keyboardRect() const
-{
-    auto keyboardRect = rect(); // ### margins? would eliminate this thing below
-    //    if ( QskDialog::instance()->policy() != QskDialog::TopLevelWindow )
-    //        keyboardRect.adjust( 0, keyboardRect.height() * 0.5, 0, 0 );
-    return keyboardRect;
-}
-
 void QskInputPanel::registerCompositionModelForLocale( const QLocale& locale,
                                                        QskInputCompositionModel* model )
 {
@@ -586,18 +578,19 @@ void QskInputPanel::updateLayout()
     if( geometry().isNull() )
         return; // no need to calculate anything, will be called again
 
-    QMarginsF margins = marginsHint( Panel | QskAspect::Margin );
-    QRectF rect = keyboardRect().marginsRemoved( margins );
+    QRectF rect = layoutRect();
     qreal verticalSpacing = m_data->buttonsBox->spacing();
 
-    for( QQuickItem* rowItem : m_data->buttonsBox->childItems() )
+    const auto& children = m_data->buttonsBox->childItems();
+    for( auto rowItem : children )
     {
-        QskLinearBox* rowBox = qobject_cast< QskLinearBox* >( rowItem );
-        qreal horizontalSpacing = rowBox->spacing();
+        auto rowBox = qobject_cast< QskLinearBox* >( rowItem );
+        const qreal horizontalSpacing = rowBox->spacing();
 
-        for( QQuickItem* keyItem : rowBox->childItems() )
+        const auto& rowChildren = rowBox->childItems();
+        for( auto keyItem : rowChildren )
         {
-            QskKeyButton* button = qobject_cast< QskKeyButton* >( keyItem );
+            auto button = qobject_cast< QskKeyButton* >( keyItem );
             QRectF keyRect = keyDataAt( button->keyIndex() ).rect;
             qreal width = keyRect.width() * rect.width() - horizontalSpacing;
             qreal height = keyRect.height() * rect.height() - verticalSpacing;

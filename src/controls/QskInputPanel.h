@@ -42,8 +42,6 @@ class QSK_EXPORT QskInputPanel : public QskBox
 {
     Q_OBJECT
 
-    Q_PROPERTY( QRectF keyboardRect READ keyboardRect NOTIFY keyboardRectChanged )
-
     Q_PROPERTY( QString displayLanguageName READ displayLanguageName
             NOTIFY displayLanguageNameChanged )
 
