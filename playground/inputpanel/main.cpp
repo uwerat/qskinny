@@ -3,6 +3,8 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
+#include "TextInput.h"
+
 #include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
 
@@ -20,8 +22,6 @@
 
 #include <QGuiApplication>
 #include <QFontMetricsF>
-
-#include <private/qquicktextinput_p.h>
 
 #define STRINGIFY(x) #x
 #define STRING(x) STRINGIFY(x)

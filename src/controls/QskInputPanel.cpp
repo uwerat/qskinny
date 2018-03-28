@@ -7,20 +7,18 @@
 
 #include "QskAspect.h"
 
+#include <QskPushButton.h>
+#include <QskTextLabel.h>
 #include <QskDialog.h>
-#include <QFocusEvent>
 #include <QGuiApplication>
 #include <QStyleHints>
+#include <QskLinearBox.h>
+#include <QskTextOptions.h>
+
+#include <QTimer>
 
 #include <cmath>
 #include <unordered_map>
-
-QSK_SUBCONTROL( QskInputPanel, Panel )
-QSK_SUBCONTROL( QskInputPanel, KeyPanel )
-QSK_SUBCONTROL( QskInputPanel, KeyGlyph )
-
-QSK_STATE( QskInputPanel, Checked, QskAspect::LastSystemState >> 3 )
-QSK_STATE( QskInputPanel, Pressed, QskAspect::LastSystemState >> 2 )
 
 namespace
 {
@@ -34,60 +32,6 @@ namespace
             return int( intptr_t( value - data[0] ) );
         }
     };
-
-    QskInputPanel::KeyData* qskKeyDataAt( KeyTable& table, qreal x, qreal y )
-    {
-        if ( x < 0 || x > 1 || y < 0 || y > 1 )
-            return nullptr;
-
-        auto rowIndex = size_t( std::floor( y * QskInputPanel::RowCount ) );
-        auto columnIndex = size_t( std::floor( x * QskInputPanel::KeyCount ) );
-
-        Q_FOREVER
-        {
-            const auto rect = table.data[ rowIndex ][ columnIndex ].rect;
-            if ( rect.contains( x, y ) )
-                return &table.data[ rowIndex ][ columnIndex ];
-
-            // Look up/down
-            if ( y < rect.top() )
-            {
-                if ( rowIndex == 0 )
-                    break;
-
-                rowIndex -= 1;
-                continue;
-            }
-            else if ( y > rect.bottom() )
-            {
-                if ( rowIndex == QskInputPanel::RowCount - 1 )
-                    break;
-
-                rowIndex += 1;
-                continue;
-            }
-
-            // Look left/right
-            if ( x < rect.left() )
-            {
-                if ( columnIndex == 0 )
-                    break;
-
-                columnIndex -= 1;
-                continue;
-            }
-            else if ( x > rect.right() )
-            {
-                if ( columnIndex == QskInputPanel::KeyCount - 1 )
-                    break;
-
-                columnIndex += 1;
-                continue;
-            }
-        }
-
-        return nullptr;
-    }
 }
 
 struct QskInputPanelLayouts
@@ -130,20 +74,18 @@ struct QskInputPanelLayouts
 #define LOWER(x) Qt::Key(x + 32) // Convert an uppercase key to lowercase
 static constexpr const QskInputPanelLayouts qskInputPanelLayouts =
 {
-    #include "QskInputPanelLayouts.cpp"
+#include "QskInputPanelLayouts.cpp"
 };
 #undef LOWER
 
 QSK_DECLARE_OPERATORS_FOR_FLAGS( Qt::Key ) // Must appear after the LOWER macro
 
-static const Qt::Key KeyPressed = static_cast< Qt::Key >( Qt::ShiftModifier );
-static const Qt::Key KeyLocked =  static_cast< Qt::Key >( Qt::ControlModifier );
-static const Qt::Key KeyFocused =  static_cast< Qt::Key >( Qt::MetaModifier );
-static const Qt::Key KeyStates =  static_cast< Qt::Key >( Qt::KeyboardModifierMask );
+static const int KeyLocked =  static_cast< int >( Qt::ControlModifier );
+static const int KeyStates =  static_cast< int >( Qt::KeyboardModifierMask );
 
 static qreal qskKeyStretch( Qt::Key key )
 {
-    switch ( key )
+    switch( key )
     {
         case Qt::Key_Backspace:
         case Qt::Key_Shift:
@@ -168,18 +110,30 @@ static qreal qskRowStretch( const QskInputPanel::KeyRow& keyRow )
 {
     qreal stretch = 0;
 
-    for ( const auto& key : keyRow )
+    for( const auto& key : keyRow )
     {
-        if ( !key )
+        if( !key )
+        {
             continue;
+        }
 
         stretch += qskKeyStretch( key );
     }
 
-    if ( stretch == 0.0 )
+    if( stretch == 0.0 )
+    {
         stretch = QskInputPanel::KeyCount;
+    }
 
     return stretch;
+}
+
+static bool qskIsAutorepeat( int key )
+{
+    return ( key != Qt::Key_Return && key != Qt::Key_Enter
+            && key != Qt::Key_Shift && key!= Qt::Key_CapsLock
+            && key != Qt::Key_Mode_switch );
+
 }
 
 namespace
@@ -191,56 +145,193 @@ namespace
     };
 }
 
-class QskInputPanel::PrivateData
+QSK_SUBCONTROL( QskInputPanel, Panel )
+
+QSK_SUBCONTROL( QskKeyButton, Panel )
+QSK_SUBCONTROL( QskKeyButton, Text )
+QSK_SUBCONTROL( QskKeyButton, TextCancelButton )
+
+QskKeyButton::QskKeyButton( int keyIndex, QskInputPanel* inputPanel, QQuickItem* parent ) :
+    Inherited( parent ),
+    m_keyIndex( keyIndex ),
+    m_inputPanel( inputPanel )
 {
-public:
-    PrivateData():
-        currentLayout( nullptr ),
-        mode( QskInputPanel::LowercaseMode ),
-        focusKeyIndex( -1 ),
-        selectedGroup( -1 ),
-        candidateOffset( 0 ),
-        repeatKeyTimerId( -1 )
+    QskTextOptions options;
+    options.setFontSizeMode( QskTextOptions::VerticalFit );
+    setTextOptions( options );
+
+    setFocusPolicy( Qt::TabFocus );
+
+    auto keyData = m_inputPanel->keyDataAt( m_keyIndex );
+    const auto key = keyData.key & ~KeyStates;
+
+    if ( qskIsAutorepeat( key ) )
     {
+        setAutoRepeat( true );
+        setAutoRepeatDelay( 500 );
+        setAutoRepeatInterval( 1000 / QGuiApplication::styleHints()->keyboardAutoRepeatRate() );
     }
 
-public:
-    const QskInputPanelLayouts::Layout* currentLayout;
-    QskInputPanel::Mode mode;
+    updateText();
 
-    qint16 focusKeyIndex;
-    qint16 selectedGroup;
-    qint32 candidateOffset;
+    connect( this, &QskKeyButton::pressed, this, [ this ]()
+    {
+        m_inputPanel->handleKey( m_keyIndex );
+    } );
 
-    int repeatKeyTimerId;
+    connect( m_inputPanel, &QskInputPanel::modeChanged, this, &QskKeyButton::updateText );
+}
 
-    QLocale locale;
+QskAspect::Subcontrol QskKeyButton::effectiveSubcontrol( QskAspect::Subcontrol subControl ) const
+{
+    if( subControl == QskPushButton::Panel )
+    {
+        return QskKeyButton::Panel;
+    }
 
-    QVector< Qt::Key > groups;
-    QVector< Qt::Key > candidates;
+    if( subControl == QskPushButton::Text )
+    {
+        // ### we could also introduce a state to not always query the button
+        return isCancelButton() ? QskKeyButton::TextCancelButton : QskKeyButton::Text;
+    }
 
-    std::unordered_map< int, KeyCounter > activeKeys;
-    KeyTable keyTable[ ModeCount ];
+    return subControl;
+}
+
+int QskKeyButton::keyIndex() const
+{
+    return m_keyIndex;
+}
+
+void QskKeyButton::updateText()
+{
+    QString text = m_inputPanel->currentTextForKeyIndex( m_keyIndex );
+
+    if( text.count() == 1 && text.at( 0 ) == QChar( 0 ) )
+    {
+        setVisible( false );
+    }
+    else
+    {
+        setVisible( true );
+        setText( text );
+    }
+}
+
+bool QskKeyButton::isCancelButton() const
+{
+    auto keyData = m_inputPanel->keyDataAt( m_keyIndex );
+    bool isCancel = ( keyData.key == 0x2716 );
+    return isCancel;
+}
+
+class QskInputPanel::PrivateData
+{
+    public:
+        PrivateData():
+            currentLayout( nullptr ),
+            mode( QskInputPanel::LowercaseMode ),
+            selectedGroup( -1 ),
+            candidateOffset( 0 ),
+            buttonsBox( nullptr ),
+            isUIInitialized( false )
+        {
+        }
+
+    public:
+        const QskInputPanelLayouts::Layout* currentLayout;
+        QskInputPanel::Mode mode;
+
+        qint16 selectedGroup;
+        qint32 candidateOffset;
+
+        QLocale locale;
+
+        QVector< Qt::Key > groups;
+        QVector< Qt::Key > candidates;
+
+        std::unordered_map< int, KeyCounter > activeKeys;
+        KeyTable keyTable[ ModeCount ];
+
+        QskLinearBox* buttonsBox;
+        QList< QskKeyButton* > keyButtons;
+        bool isUIInitialized;
 };
 
 QskInputPanel::QskInputPanel( QQuickItem* parent ):
-    QskControl( parent ),
+    Inherited( parent ),
     m_data( new PrivateData )
 {
+    qRegisterMetaType< Qt::Key >();
+
     setFlag( ItemHasContents );
     setAcceptedMouseButtons( Qt::LeftButton );
 
     initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
 
+    setAutoFillBackground( true );
+
+    auto margins = marginsHint( Panel | QskAspect::Margin );
+    setMargins( margins );
+
     updateLocale( locale() );
 
     QObject::connect( this, &QskControl::localeChanged,
-        this, &QskInputPanel::updateLocale );
+                      this, &QskInputPanel::updateLocale );
+
+    setFlag( ItemIsFocusScope, true );
+
+#if 0
+    setTabFence( true );
+#endif
+
+    setAutoLayoutChildren( true );
+
+    auto& panelKeyData = keyData();
+
+    m_data->buttonsBox = new QskLinearBox( Qt::Vertical, this );
+    m_data->buttonsBox->setAutoAddChildren( true );
+
+    for( const auto& keyRow : panelKeyData )
+    {
+        QskLinearBox* rowBox = new QskLinearBox( Qt::Horizontal, m_data->buttonsBox );
+        rowBox->setAutoAddChildren( true );
+
+        for( const auto& keyData : keyRow )
+        {
+            if( !keyData.key )
+            {
+                continue;
+            }
+
+            int keyIndex = m_data->keyTable[ m_data->mode ].indexOf( &keyData );
+            QskKeyButton* button = new QskKeyButton( keyIndex, this, rowBox );
+            rowBox->setRetainSizeWhenHidden( button, true );
+
+            m_data->keyButtons.append( button );
+        }
+    }
+
+    connect( this, &QskInputPanel::modeChanged, this, [ this ]() {
+        updateLayout();
+    });
 }
 
 QskInputPanel::~QskInputPanel()
 {
 }
+
+
+QskAspect::Subcontrol QskInputPanel::effectiveSubcontrol( QskAspect::Subcontrol subControl ) const
+{
+    if( subControl == QskBox::Panel )
+    {
+        return QskInputPanel::Panel;
+    }
+
+    return subControl;
+}
+
 
 QskInputPanel::Mode QskInputPanel::mode() const
 {
@@ -254,12 +345,12 @@ const QskInputPanel::KeyDataSet& QskInputPanel::keyData( Mode mode ) const
     return m_data->keyTable[ mode ].data;
 }
 
-QString QskInputPanel::textForKey( Qt::Key key ) const
+QString QskInputPanel::textForKey( int key ) const
 {
     key &= ~KeyStates;
 
     // Special cases
-    switch ( key )
+    switch( key )
     {
         case Qt::Key_Backspace:
         case Qt::Key_Muhenkan:
@@ -306,7 +397,7 @@ QString QskInputPanel::displayLanguageName() const
 {
     const auto locale = this->locale();
 
-    switch ( locale.language() )
+    switch( locale.language() )
     {
         case QLocale::Bulgarian:
             return QStringLiteral( "български език" );
@@ -324,19 +415,21 @@ QString QskInputPanel::displayLanguageName() const
             return QStringLiteral( "Eλληνικά" );
 
         case QLocale::English:
-        {
-            switch ( locale.country() )
             {
-                case QLocale::Canada:
-                case QLocale::UnitedStates:
-                case QLocale::UnitedStatesMinorOutlyingIslands:
-                case QLocale::UnitedStatesVirginIslands:
-                    return QStringLiteral( "English (US)" );
+                switch( locale.country() )
+                {
+                    case QLocale::Canada:
+                    case QLocale::UnitedStates:
+                    case QLocale::UnitedStatesMinorOutlyingIslands:
+                    case QLocale::UnitedStatesVirginIslands:
+                        return QStringLiteral( "English (US)" );
 
-                default:
-                    return QStringLiteral( "English (UK)" );
+                    default:
+                        return QStringLiteral( "English (UK)" );
+                }
+
+                break;
             }
-        }
 
         case QLocale::Spanish:
             return QStringLiteral( "Español" );
@@ -397,7 +490,7 @@ void QskInputPanel::setPreeditGroups( const QVector< Qt::Key >& groups )
 {
     auto& topRow = m_data->keyTable[ LowercaseMode ].data[ 0 ];
 
-    for ( const auto& group : groups )
+    for( const auto& group : groups )
     {
         auto& keyData = topRow[ &group - groups.data() ];
         keyData.key = group;
@@ -406,94 +499,21 @@ void QskInputPanel::setPreeditGroups( const QVector< Qt::Key >& groups )
     m_data->groups = groups;
     selectGroup( -1 );
 
-    if ( m_data->mode == LowercaseMode )
+    if( m_data->mode == LowercaseMode )
+    {
         update();
+    }
 }
 
 void QskInputPanel::setPreeditCandidates( const QVector< Qt::Key >& candidates )
 {
-    if ( m_data->candidates == candidates )
+    if( m_data->candidates == candidates )
+    {
         return;
+    }
 
     m_data->candidates = candidates;
     setCandidateOffset( 0 );
-}
-
-bool QskInputPanel::advanceFocus( bool forward )
-{
-    deactivateFocusKey();
-    auto offset = forward ? 1 : -1;
-
-    auto focusKeyIndex = m_data->focusKeyIndex;
-
-    Q_FOREVER
-    {
-        focusKeyIndex += offset;
-        if ( focusKeyIndex < 0 || focusKeyIndex >= RowCount * KeyCount )
-        {
-            clearFocusKey();
-            return false;
-        }
-
-        const auto key = keyDataAt( focusKeyIndex ).key;
-        if ( key && key != Qt::Key_unknown )
-            break;
-    }
-
-    if ( m_data->focusKeyIndex >= 0 )
-        keyDataAt( m_data->focusKeyIndex ).key &= ~KeyFocused;
-
-    m_data->focusKeyIndex = focusKeyIndex;
-    keyDataAt( m_data->focusKeyIndex ).key |= KeyFocused;
-    update();
-    return true;
-}
-
-bool QskInputPanel::activateFocusKey()
-{
-    if ( m_data->focusKeyIndex > 0 && m_data->focusKeyIndex < RowCount * KeyCount )
-    {
-        auto& keyData = keyDataAt( m_data->focusKeyIndex );
-
-        if ( keyData.key & KeyPressed )
-            handleKey( m_data->focusKeyIndex );
-        else
-            keyData.key |= KeyPressed;
-
-        update();
-        return true;
-    }
-
-    return false;
-}
-
-bool QskInputPanel::deactivateFocusKey()
-{
-    if ( m_data->focusKeyIndex > 0 && m_data->focusKeyIndex < RowCount * KeyCount )
-    {
-        auto& keyData = keyDataAt( m_data->focusKeyIndex );
-        if ( keyData.key & KeyPressed )
-        {
-            keyData.key &= ~KeyPressed;
-            handleKey( m_data->focusKeyIndex );
-        }
-
-        update();
-        return true;
-    }
-
-    return true;
-}
-
-void QskInputPanel::clearFocusKey()
-{
-    if ( m_data->focusKeyIndex > 0 && m_data->focusKeyIndex < RowCount * KeyCount )
-    {
-        keyDataAt( m_data->focusKeyIndex ).key &= ~KeyFocused;
-        update();
-    }
-
-    m_data->focusKeyIndex = -1;
 }
 
 void QskInputPanel::setCandidateOffset( int candidateOffset )
@@ -508,202 +528,83 @@ void QskInputPanel::setCandidateOffset( int candidateOffset )
     const bool continueLeft = m_data->candidateOffset > 0;
     const bool continueRight = ( candidateCount - m_data->candidateOffset ) > count;
 
-    for ( int i = 0; i < count; ++i )
+    for( int i = 0; i < count; ++i )
     {
         auto& keyData = topRow[ i + groupCount ];
 
-        if ( continueLeft && i == 0 )
+        if( continueLeft && i == 0 )
+        {
             keyData.key = Qt::Key_ApplicationLeft;
-        else if ( continueRight && ( i == KeyCount - groupCount - 1 ) )
+        }
+        else if( continueRight && ( i == KeyCount - groupCount - 1 ) )
+        {
             keyData.key = Qt::Key_ApplicationRight;
+        }
         else
+        {
+            keyData.isSuggestionKey = true; // ### reset when switching layouts etc.!
             keyData.key = m_data->candidates.at( i + m_data->candidateOffset );
+        }
     }
 
-    for ( int i = count; i < KeyCount - groupCount; ++i )
+    for( int i = count; i < KeyCount - groupCount; ++i )
     {
         auto& keyData = topRow[ i + groupCount ];
         keyData.key = Qt::Key_unknown;
     }
 
-    if ( m_data->mode == LowercaseMode )
-        update();
+    if( m_data->mode == LowercaseMode )
+    {
+        updateUI();
+    }
 }
 
-QRectF QskInputPanel::keyboardRect() const
+void QskInputPanel::registerCompositionModelForLocale( const QLocale& locale,
+                                                       QskInputCompositionModel* model )
 {
-    auto keyboardRect = rect(); // ### margins? would eliminate this thing below
-
-    if ( QskDialog::instance()->policy() != QskDialog::TopLevelWindow )
-        keyboardRect.adjust( 0, keyboardRect.height() * 0.5, 0, 0 );
-
-    return keyboardRect;
+    Q_EMIT inputMethodRegistered( locale, model );
 }
 
 void QskInputPanel::geometryChanged(
     const QRectF& newGeometry, const QRectF& oldGeometry )
 {
     Inherited::geometryChanged( newGeometry, oldGeometry );
+
     Q_EMIT keyboardRectChanged();
 }
 
-void QskInputPanel::mousePressEvent( QMouseEvent* e )
+void QskInputPanel::updateLayout()
 {
-    if ( !keyboardRect().contains( e->pos() ) )
+    if( geometry().isNull() )
+        return; // no need to calculate anything, will be called again
+
+    QRectF rect = layoutRect();
+    qreal verticalSpacing = m_data->buttonsBox->spacing();
+
+    const auto& children = m_data->buttonsBox->childItems();
+    for( auto rowItem : children )
     {
-        e->ignore();
-        return;
+        auto rowBox = qobject_cast< QskLinearBox* >( rowItem );
+        const qreal horizontalSpacing = rowBox->spacing();
+
+        const auto& rowChildren = rowBox->childItems();
+        for( auto keyItem : rowChildren )
+        {
+            auto button = qobject_cast< QskKeyButton* >( keyItem );
+            QRectF keyRect = keyDataAt( button->keyIndex() ).rect;
+            qreal width = keyRect.width() * rect.width() - horizontalSpacing;
+            qreal height = keyRect.height() * rect.height() - verticalSpacing;
+
+            button->setFixedSize( width, height );
+        }
     }
-
-    QTouchEvent::TouchPoint touchPoint( 0 );
-    touchPoint.setPos( e->pos() );
-    touchPoint.setState( Qt::TouchPointPressed );
-
-    QTouchEvent touchEvent( QTouchEvent::TouchBegin, nullptr,
-        e->modifiers(), Qt::TouchPointPressed, { touchPoint } );
-    QCoreApplication::sendEvent( this, &touchEvent );
-
-    e->setAccepted( touchEvent.isAccepted() );
 }
 
-void QskInputPanel::mouseMoveEvent( QMouseEvent* e )
+void QskInputPanel::updateUI()
 {
-    QTouchEvent::TouchPoint touchPoint( 0 );
-    touchPoint.setPos( e->pos() );
-    touchPoint.setState( Qt::TouchPointMoved );
-
-    QTouchEvent touchEvent( QTouchEvent::TouchUpdate, nullptr,
-        e->modifiers(), Qt::TouchPointMoved, { touchPoint } );
-    QCoreApplication::sendEvent( this, &touchEvent );
-
-    e->setAccepted( touchEvent.isAccepted() );
-}
-
-void QskInputPanel::mouseReleaseEvent( QMouseEvent* e )
-{
-    QTouchEvent::TouchPoint touchPoint( 0 );
-    touchPoint.setPos( e->pos() );
-    touchPoint.setState( Qt::TouchPointReleased );
-
-    QTouchEvent touchEvent( QTouchEvent::TouchEnd, nullptr,
-        e->modifiers(), Qt::TouchPointReleased, { touchPoint } );
-    QCoreApplication::sendEvent( this, &touchEvent );
-
-    e->setAccepted( touchEvent.isAccepted() );
-}
-
-// Try to handle touch-specific details here; once touch is resolved, send to handleKey()
-void QskInputPanel::touchEvent( QTouchEvent* e )
-{
-    if ( e->type() == QEvent::TouchCancel )
+    for( QskKeyButton* button : qskAsConst( m_data->keyButtons ) )
     {
-        for ( auto& it : m_data->activeKeys )
-            keyDataAt( it.second.keyIndex ).key &= ~KeyPressed;
-
-        m_data->activeKeys.clear();
-        return;
-    }
-
-    const auto rect = keyboardRect();
-    for ( const auto& tp : e->touchPoints() )
-    {
-        const auto pos = tp.pos();
-
-        const auto x = ( pos.x() - rect.x() ) / rect.width();
-        const auto y = ( pos.y() - rect.y() ) / rect.height();
-
-        auto keyData = qskKeyDataAt( m_data->keyTable[ m_data->mode ], x, y );
-        if ( !keyData || ( !keyData->key || keyData->key == Qt::Key_unknown ) )
-        {
-            auto it = m_data->activeKeys.find( tp.id() );
-            if ( it == m_data->activeKeys.cend() )
-                continue;
-
-            keyDataAt( it->second.keyIndex ).key &= ~KeyPressed;
-            m_data->activeKeys.erase( it );
-            continue;
-        }
-
-        const auto keyIndex = m_data->keyTable[ m_data->mode ].indexOf( keyData );
-        auto it = m_data->activeKeys.find( tp.id() );
-
-        if ( tp.state() == Qt::TouchPointReleased )
-        {
-            const int repeatCount = it->second.count;
-
-            auto it = m_data->activeKeys.find( tp.id() );
-            keyDataAt( it->second.keyIndex ).key &= ~KeyPressed;
-            m_data->activeKeys.erase( it );
-
-            if ( repeatCount < 0 )
-                continue; // Don't compose an accepted held key
-
-            handleKey( keyIndex );
-            continue;
-        }
-
-        if ( it == m_data->activeKeys.end() )
-        {
-            m_data->activeKeys.emplace( tp.id(), KeyCounter { keyIndex, 0 } );
-        }
-        else
-        {
-            if ( it->second.keyIndex != keyIndex )
-            {
-                keyDataAt( it->second.keyIndex ).key &= ~KeyPressed;
-                it->second.count = 0;
-            }
-
-            it->second.keyIndex = keyIndex;
-        }
-
-        keyDataAt( keyIndex ).key |= KeyPressed;
-    }
-
-    // Now start an update timer based on active keys
-    if ( m_data->activeKeys.empty() && m_data->repeatKeyTimerId >= 0 )
-    {
-        killTimer( m_data->repeatKeyTimerId );
-        m_data->repeatKeyTimerId = -1;
-    }
-    else if ( m_data->repeatKeyTimerId < 0 )
-    {
-        m_data->repeatKeyTimerId = startTimer( 1000
-                / QGuiApplication::styleHints()->keyboardAutoRepeatRate() );
-    } /* else timer is already running as it should be */
-
-    update();
-}
-
-void QskInputPanel::timerEvent( QTimerEvent* e )
-{
-    if ( e->timerId() == m_data->repeatKeyTimerId )
-    {
-        for ( auto it = m_data->activeKeys.begin(); it != m_data->activeKeys.end(); )
-        {
-            if ( it->second.count >= 0 && it->second.count++ > 20 ) // ### use platform long-press hint
-            {
-                const auto key = keyDataAt( it->second.keyIndex ).key & ~KeyStates;
-
-                if ( !key || key == Qt::Key_unknown )
-                {
-                    it = m_data->activeKeys.erase( it );
-                    continue;
-                }
-
-                if ( key == Qt::Key_ApplicationLeft || key == Qt::Key_ApplicationRight )
-                {
-                    setCandidateOffset( m_data->candidateOffset
-                        + ( key == Qt::Key_ApplicationLeft ? -1 : 1 ) );
-                }
-                else if ( !( key & KeyLocked ) ) // do not repeat locked keys
-                {
-                    // long press events could be emitted from here
-                    compose( key & ~KeyStates );
-                }
-            }
-            ++it;
-        }
+        button->updateText();
     }
 }
 
@@ -716,35 +617,43 @@ QskInputPanel::KeyData& QskInputPanel::keyDataAt( int keyIndex ) const
 
 void QskInputPanel::handleKey( int keyIndex )
 {
-    const auto key = keyDataAt( keyIndex ).key & ~KeyStates;
+    KeyData keyData = keyDataAt( keyIndex );
+    const auto key = keyData.key & ~KeyStates;
 
     // Preedit keys
     const auto row = keyIndex / KeyCount;
     const auto column = keyIndex % KeyCount;
 
-    if ( m_data->mode == LowercaseMode && !m_data->groups.isEmpty() && row == 0 )
+    if( m_data->mode == LowercaseMode && !m_data->groups.isEmpty() && row == 0 )
     {
-        if ( key == Qt::Key_ApplicationLeft
-             || key == Qt::Key_ApplicationRight )
+        if( key == Qt::Key_ApplicationLeft
+                || key == Qt::Key_ApplicationRight )
         {
             setCandidateOffset( m_data->candidateOffset
-                + ( key == Qt::Key_ApplicationLeft ? -1 : 1 ) );
+                                + ( key == Qt::Key_ApplicationLeft ? -1 : 1 ) );
             return;
         }
 
         const auto groupCount = m_data->groups.length();
-        if ( column < groupCount )
+
+        if( column < groupCount )
+        {
             selectGroup( column );
-        else if ( column < KeyCount )
+        }
+        else if( column < KeyCount )
+        {
             selectCandidate( column - groupCount + m_data->candidateOffset );
+        }
         else
-            Q_UNREACHABLE(); // Handle the final key...
+        {
+            Q_UNREACHABLE();    // Handle the final key...
+        }
 
         return;
     }
 
     // Mode-switching keys
-    switch ( key )
+    switch( key )
     {
         case Qt::Key_CapsLock:
         case Qt::Key_Kana_Lock:
@@ -758,19 +667,37 @@ void QskInputPanel::handleKey( int keyIndex )
 
         case Qt::Key_Mode_switch: // Cycle through modes, but skip caps
             setMode( static_cast< QskInputPanel::Mode >(
-                m_data->mode ? ( ( m_data->mode + 1 ) % QskInputPanel::ModeCount )
-                : SpecialCharacterMode ) );
+                         m_data->mode ? ( ( m_data->mode + 1 ) % QskInputPanel::ModeCount )
+                         : SpecialCharacterMode ) );
+            return;
+
+        // This is (one of) the cancel symbol, not Qt::Key_Cancel:
+        case Qt::Key( 10006 ):
+            Q_EMIT cancelPressed();
             return;
 
         default:
             break;
     }
 
-    // Normal keys
-    compose( key );
+    if( keyData.isSuggestionKey )
+    {
+        selectCandidate( keyIndex );
+    }
+    else
+    {
+        compose( key );
+    }
 }
 
-void QskInputPanel::compose( Qt::Key key )
+QString QskInputPanel::currentTextForKeyIndex( int keyIndex ) const
+{
+    auto keyData = keyDataAt( keyIndex );
+    QString text = textForKey( keyData.key );
+    return text;
+}
+
+void QskInputPanel::compose( int key )
 {
     QGuiApplication::inputMethod()->invokeAction(
         static_cast< QInputMethod::Action >( Compose ), key );
@@ -779,18 +706,26 @@ void QskInputPanel::compose( Qt::Key key )
 void QskInputPanel::selectGroup( int index )
 {
     auto& topRow = m_data->keyTable[ m_data->mode ].data[ 0 ];
-    if ( m_data->selectedGroup >= 0 )
-        topRow[ m_data->selectedGroup ].key &= ~KeyLocked;
 
-    if ( m_data->selectedGroup == index )
-        index = -1; // clear selection
+    if( m_data->selectedGroup >= 0 )
+    {
+        auto group = static_cast< int >( m_data->selectedGroup );
+        topRow[ group ].key &= ~KeyLocked;
+    }
+
+    if( m_data->selectedGroup == index )
+    {
+        index = -1;    // clear selection
+    }
 
     m_data->selectedGroup = index;
     QGuiApplication::inputMethod()->invokeAction(
         static_cast< QInputMethod::Action >( SelectGroup ), m_data->selectedGroup + 1 );
 
-    if ( m_data->selectedGroup < 0 )
+    if( m_data->selectedGroup < 0 )
+    {
         return;
+    }
 
     topRow[ m_data->selectedGroup ].key |= KeyLocked;
 }
@@ -803,7 +738,7 @@ void QskInputPanel::selectCandidate( int index )
 
 void QskInputPanel::updateLocale( const QLocale& locale )
 {
-    switch ( locale.language() )
+    switch( locale.language() )
     {
         case QLocale::Bulgarian:
             m_data->currentLayout = &qskInputPanelLayouts.bg;
@@ -826,21 +761,24 @@ void QskInputPanel::updateLocale( const QLocale& locale )
             break;
 
         case QLocale::English:
-        {
-            switch ( locale.country() )
             {
-                case QLocale::Canada:
-                case QLocale::UnitedStates:
-                case QLocale::UnitedStatesMinorOutlyingIslands:
-                case QLocale::UnitedStatesVirginIslands:
-                    m_data->currentLayout = &qskInputPanelLayouts.en_US;
-                    break;
-                default:
-                    m_data->currentLayout = &qskInputPanelLayouts.en_GB;
-                    break;
+                switch( locale.country() )
+                {
+                    case QLocale::Canada:
+                    case QLocale::UnitedStates:
+                    case QLocale::UnitedStatesMinorOutlyingIslands:
+                    case QLocale::UnitedStatesVirginIslands:
+                        m_data->currentLayout = &qskInputPanelLayouts.en_US;
+                        break;
+
+                    default:
+                        m_data->currentLayout = &qskInputPanelLayouts.en_GB;
+                        break;
+                }
+
+                break;
             }
-            break;
-        }
+
         case QLocale::Spanish:
             m_data->currentLayout = &qskInputPanelLayouts.es;
             break;
@@ -905,10 +843,6 @@ void QskInputPanel::updateLocale( const QLocale& locale )
             m_data->currentLayout = &qskInputPanelLayouts.zh;
             break;
 
-        case QLocale::C:
-            m_data->currentLayout = &qskInputPanelLayouts.en_US;
-            break;
-
         default:
             qWarning() << "QskInputPanel: unsupported locale:" << locale;
             m_data->currentLayout = &qskInputPanelLayouts.en_US;
@@ -925,12 +859,12 @@ void QskInputPanel::updateKeyData()
     // Key data is in normalized coordinates
     const auto keyHeight = 1.0f / RowCount;
 
-    for ( const auto& keyLayout : *m_data->currentLayout )
+    for( const auto& keyLayout : *m_data->currentLayout )
     {
         auto& keyDataLayout = m_data->keyTable[ &keyLayout - *m_data->currentLayout ];
         qreal yPos = 0;
 
-        for ( int i = 0; i < RowCount; i++ )
+        for( int i = 0; i < RowCount; i++ )
         {
             auto& row = keyLayout.data[i];
             auto& keyDataRow = keyDataLayout.data[ i ];
@@ -940,7 +874,7 @@ void QskInputPanel::updateKeyData()
             qreal xPos = 0;
             qreal keyWidth = baseKeyWidth;
 
-            for ( const auto& key : row )
+            for( const auto& key : row )
             {
                 auto& keyData = keyDataRow[ &key - row ];
                 keyData.key = key;
@@ -958,7 +892,7 @@ void QskInputPanel::updateKeyData()
 void QskInputPanel::setMode( QskInputPanel::Mode mode )
 {
     m_data->mode = mode;
-    update();
+    Q_EMIT modeChanged( m_data->mode );
 }
 
 #include "QskInputPanel.moc"

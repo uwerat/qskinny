@@ -521,31 +521,24 @@ void QskMaterialSkin::initTabViewHints()
 void QskMaterialSkin::initInputPanelHints()
 {
     using namespace QskAspect;
-    using Q = QskInputPanel;
+    using Q = QskKeyButton;
 
     const ColorPalette& pal = m_data->palette;
 
     // key panel
-    setMargins( Q::KeyPanel | Margin, 2 );
+    setMargins( QskInputPanel::Panel | Margin, 2 );
 
-    setBoxShape( Q::KeyPanel, 20.0, Qt::RelativeSize );
-    setBoxBorderMetrics( Q::KeyPanel, 2 );
+    setBoxShape( Q::Panel, 20.0, Qt::RelativeSize );
+    setBoxBorderMetrics( Q::Panel, 2 );
 
-    setGradient( Q::KeyPanel, pal.darker125 );
-    setBoxBorderColors( Q::KeyPanel, pal.baseColor );
+    setGradient( Q::Panel, pal.darker125 );
+    setBoxBorderColors( Q::Panel, pal.baseColor );
 
     for ( auto state : { NoState, Q::Focused } )
-        setBoxBorderColors( Q::KeyPanel | Q::Pressed | state, pal.accentColor );
+        setBoxBorderColors( Q::Panel | Q::Pressed | state, pal.accentColor );
 
-    setAnimation( Q::KeyPanel | Color, qskDuration );
-    setAnimation( Q::KeyPanel | Metric, qskDuration );
-
-    // glyph
-    setSkinHint( Q::KeyGlyph | Alignment, Qt::AlignCenter );
-    setFontRole( Q::KeyGlyph, QskSkin::TinyFont );
-
-    setColor( Q::KeyGlyph, pal.textColor );
-    setColor( Q::KeyGlyph | Q::Disabled, pal.darker200 );
+    setAnimation( Q::Panel | Color, qskDuration );
+    setAnimation( Q::Panel | Metric, qskDuration );
 
     // panel
     setBoxShape( Q::Panel, 0 );

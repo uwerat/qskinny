@@ -10,6 +10,7 @@
 
 #include <memory>
 
+class QInputMethodEvent;
 class QStringList;
 
 class QskInputCompositionModel : public QObject
@@ -37,6 +38,8 @@ public:
 
     virtual QVector< Qt::Key > groups() const;
 
+    void setInputItem( QObject* inputItem );
+
 protected:
     // Used for text composition
     virtual bool hasIntermediate() const;
@@ -50,6 +53,7 @@ Q_SIGNALS:
 private:
     void backspace();
     void moveCursor( Qt::Key key );
+    void sendCompositionEvent( QInputMethodEvent* e );
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

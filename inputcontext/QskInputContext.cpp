@@ -21,11 +21,15 @@
 #include <QRectF>
 
 QskInputContext::QskInputContext():
-    Inherited()
+    Inherited(),
+    m_inputCompositionModel( new QskInputCompositionModel )
 {
     connect( qskSetup, &QskSetup::inputPanelChanged,
         this, &QskInputContext::setInputPanel );
     setInputPanel( qskSetup->inputPanel() );
+
+    // We could connect candidatesChanged() here, but we don't emit
+    // the signal in the normal composition model anyhow
 }
 
 QskInputContext::~QskInputContext()
@@ -41,11 +45,11 @@ bool QskInputContext::isValid() const
 
 void QskInputContext::update( Qt::InputMethodQueries queries )
 {
-    if ( !m_focusObject )
+    if ( !m_inputItem )
         return;
 
     QInputMethodQueryEvent queryEvent( queries );
-    if ( !QCoreApplication::sendEvent( m_focusObject, &queryEvent ) )
+    if ( !QCoreApplication::sendEvent( m_inputItem, &queryEvent ) )
         return;
 
     // Qt::ImCursorRectangle
@@ -204,73 +208,42 @@ QLocale QskInputContext::locale() const
 
 void QskInputContext::setFocusObject( QObject* focusObject )
 {
-    if ( m_focusObject )
-        m_focusObject->removeEventFilter( this );
-
     m_focusObject = focusObject;
     if ( !m_focusObject )
-        return;
-
-    QInputMethodQueryEvent queryEvent( Qt::ImEnabled );
-    if ( !QCoreApplication::sendEvent( m_focusObject, &queryEvent ) )
-        return;
-
-    if ( !queryEvent.value( Qt::ImEnabled ).toBool() )
     {
-        hideInputPanel();
+        m_inputItem = nullptr;
+        m_inputCompositionModel->setInputItem( nullptr );
         return;
     }
 
-    m_focusObject->installEventFilter( this );
+    bool inputItemChanged = false;
+
+    auto focusQuickItem = qobject_cast< QQuickItem* >( focusObject );
+    if( focusQuickItem )
+    {
+        // Do not change the input item when panel buttons get the focus:
+        if( qskNearestFocusScope( focusQuickItem ) != m_inputPanel )
+        {
+            m_inputItem = focusQuickItem;
+            m_inputCompositionModel->setInputItem( m_inputItem ); // ### use a signal/slot connection
+            inputItemChanged = true;
+        }
+    }
+
+    if( inputItemChanged )
+    {
+        QInputMethodQueryEvent queryEvent( Qt::ImEnabled );
+        if ( !QCoreApplication::sendEvent( m_inputItem, &queryEvent ) )
+            return;
+
+        if ( !queryEvent.value( Qt::ImEnabled ).toBool() )
+        {
+            hideInputPanel();
+            return;
+        }
+    }
+
     update( Qt::InputMethodQuery( Qt::ImQueryAll & ~Qt::ImEnabled ) );
-}
-
-bool QskInputContext::eventFilter( QObject* object, QEvent* event )
-{
-    if ( m_inputPanel && event->type() == QEvent::KeyPress )
-    {
-        auto keyEvent = static_cast< QKeyEvent* >( event );
-        const auto key = keyEvent->key();
-        switch ( key )
-        {
-            case Qt::Key_Tab:
-            case Qt::Key_Backtab:
-                if ( m_inputPanel->advanceFocus( key == Qt::Key_Tab ) )
-                {
-                    keyEvent->accept();
-                    return true;
-                }
-                break;
-            case Qt::Key_Select:
-            case Qt::Key_Space:
-                // if there is a focused key, treat the key like a push button
-                if ( m_inputPanel->activateFocusKey() )
-                {
-                    keyEvent->accept();
-                    return true;
-                }
-                break;
-        }
-    }
-
-    if ( m_inputPanel && event->type() == QEvent::KeyRelease )
-    {
-        auto keyEvent = static_cast< QKeyEvent* >( event );
-        const auto key = keyEvent->key();
-        switch ( key )
-        {
-            case Qt::Key_Select:
-            case Qt::Key_Space:
-                if ( m_inputPanel->deactivateFocusKey() )
-                {
-                    keyEvent->accept();
-                    return true;
-                }
-                break;
-        }
-    }
-
-    return Inherited::eventFilter( object, event );
 }
 
 void QskInputContext::invokeAction( QInputMethod::Action action, int cursorPosition )

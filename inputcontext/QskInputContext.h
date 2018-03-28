@@ -8,6 +8,7 @@
 
 #include <qpa/qplatforminputcontext.h>
 #include <QPointer>
+#include <QQuickItem>
 
 #include <memory>
 
@@ -22,7 +23,7 @@ class QskInputContext : public QPlatformInputContext
 
 public:
     QskInputContext();
-    ~QskInputContext();
+    ~QskInputContext() override;
 
     bool isValid() const override;
     void update( Qt::InputMethodQueries ) override;
@@ -35,9 +36,6 @@ public:
     QLocale locale() const override;
     void setFocusObject( QObject* ) override;
 
-protected:
-    bool eventFilter( QObject*, QEvent* ) override;
-
 private Q_SLOTS:
     void emitAnimatingChanged();
     void handleCandidatesChanged();
@@ -45,6 +43,7 @@ private Q_SLOTS:
 
 private:
     QPointer< QObject > m_focusObject;
+    QPointer< QQuickItem > m_inputItem;
     QPointer< QskInputPanel > m_inputPanel;
     std::unique_ptr< QskInputCompositionModel > m_inputCompositionModel;
 };
