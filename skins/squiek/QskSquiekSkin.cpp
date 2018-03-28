@@ -566,25 +566,9 @@ void QskSquiekSkin::initInputPanelHints()
     setButton( Q::Panel | Q::Pressed, Sunken );
 
     setAnimation( Q::Panel | Color, qskDuration );
-#if 0
-    // crashes because animations are started from updateNode
-    // TODO ...
-
-    setAnimation( Q::Panel | Metric, qskDuration );
-#endif
-
-    // glyph
-//    setSkinHint( Q::Text | Alignment, Qt::AlignCenter );
-//    setFontRole( Q::Text, QskSkin::TinyFont );
 
     setColor( Q::Text, pal.themeForeground );
     setColor( Q::Text | Q::Disabled, pal.darker200 );
-
-//    // panel
-
-//    setMargins( Q::Panel | Padding, 5 );
-//    setMargins( Q::Panel | Spacing, 5 );
-//    setPanel( Q::Panel, Raised );
 }
 
 void QskSquiekSkin::initScrollViewHints()

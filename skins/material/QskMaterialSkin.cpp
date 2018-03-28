@@ -526,7 +526,7 @@ void QskMaterialSkin::initInputPanelHints()
     const ColorPalette& pal = m_data->palette;
 
     // key panel
-//    setMargins( Q::KeyPanel | Margin, 2 );
+    setMargins( QskInputPanel::Panel | Margin, 2 );
 
     setBoxShape( Q::Panel, 20.0, Qt::RelativeSize );
     setBoxBorderMetrics( Q::Panel, 2 );
@@ -539,13 +539,6 @@ void QskMaterialSkin::initInputPanelHints()
 
     setAnimation( Q::Panel | Color, qskDuration );
     setAnimation( Q::Panel | Metric, qskDuration );
-
-    // glyph
-//    setSkinHint( Q::KeyGlyph | Alignment, Qt::AlignCenter );
-//    setFontRole( Q::KeyGlyph, QskSkin::TinyFont );
-
-//    setColor( Q::KeyGlyph, pal.textColor );
-//    setColor( Q::KeyGlyph | Q::Disabled, pal.darker200 );
 
     // panel
     setBoxShape( Q::Panel, 0 );
