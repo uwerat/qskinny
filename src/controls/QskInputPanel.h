@@ -55,7 +55,7 @@ public:
 
     struct KeyData
     {
-        Qt::Key key = Qt::Key( 0 );
+        int key = 0;
         bool isSuggestionKey = false;
         QRectF rect;
     };
@@ -100,7 +100,7 @@ public:
 
     const KeyDataSet& keyData( QskInputPanel::Mode = CurrentMode ) const;
 
-    QString textForKey( Qt::Key ) const;
+    QString textForKey( int ) const;
     QString displayLanguageName() const;
 
     QRectF keyboardRect() const;
@@ -125,7 +125,7 @@ private:
     void createUI();
     void updateUI(); // e.g. called when updating Pinyin suggestions
 
-    void compose( Qt::Key );
+    void compose( int );
     void selectGroup( int );
     void selectCandidate( int );
     void setCandidateOffset( int );

@@ -80,8 +80,8 @@ static constexpr const QskInputPanelLayouts qskInputPanelLayouts =
 
 QSK_DECLARE_OPERATORS_FOR_FLAGS( Qt::Key ) // Must appear after the LOWER macro
 
-static const Qt::Key KeyLocked =  static_cast< Qt::Key >( Qt::ControlModifier );
-static const Qt::Key KeyStates =  static_cast< Qt::Key >( Qt::KeyboardModifierMask );
+static const int KeyLocked =  static_cast< int >( Qt::ControlModifier );
+static const int KeyStates =  static_cast< int >( Qt::KeyboardModifierMask );
 
 static qreal qskKeyStretch( Qt::Key key )
 {
@@ -128,7 +128,7 @@ static qreal qskRowStretch( const QskInputPanel::KeyRow& keyRow )
     return stretch;
 }
 
-static bool qskIsAutorepeat( Qt::Key key )
+static bool qskIsAutorepeat( int key )
 {
     return ( key != Qt::Key_Return && key != Qt::Key_Enter
             && key != Qt::Key_Shift && key!= Qt::Key_CapsLock
@@ -344,7 +344,7 @@ const QskInputPanel::KeyDataSet& QskInputPanel::keyData( Mode mode ) const
     return m_data->keyTable[ mode ].data;
 }
 
-QString QskInputPanel::textForKey( Qt::Key key ) const
+QString QskInputPanel::textForKey( int key ) const
 {
     key &= ~KeyStates;
 
@@ -703,7 +703,7 @@ QString QskInputPanel::currentTextForKeyIndex( int keyIndex ) const
     return text;
 }
 
-void QskInputPanel::compose( Qt::Key key )
+void QskInputPanel::compose( int key )
 {
     QGuiApplication::inputMethod()->invokeAction(
         static_cast< QInputMethod::Action >( Compose ), key );
@@ -715,7 +715,8 @@ void QskInputPanel::selectGroup( int index )
 
     if( m_data->selectedGroup >= 0 )
     {
-        topRow[ m_data->selectedGroup ].key &= ~KeyLocked;
+        auto group = static_cast< int >( m_data->selectedGroup );
+        topRow[ group ].key &= ~KeyLocked;
     }
 
     if( m_data->selectedGroup == index )
