@@ -11,7 +11,7 @@
 #include <qqml.h>
 #include <memory>
 
-class QskInputPanel;
+class QskVirtualKeyboard;
 class QskSkin;
 class QskSkinlet;
 class QskControl;
@@ -60,8 +60,8 @@ public:
 
     QskSkin* skin();
 
-    void setInputPanel( QskInputPanel* );
-    QskInputPanel* inputPanel();
+    void setInputPanel( QskVirtualKeyboard* );
+    QskVirtualKeyboard* inputPanel();
 
     void addGraphicProvider( const QString& providerId, QskGraphicProvider* );
     QskGraphicProvider* graphicProvider( const QString& providerId ) const;
@@ -76,7 +76,7 @@ public:
 
 Q_SIGNALS:
     void skinChanged( QskSkin* );
-    void inputPanelChanged( QskInputPanel* );
+    void inputPanelChanged( QskVirtualKeyboard* );
     void controlFlagsChanged();
 
 private:

@@ -3,8 +3,8 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef QSK_INPUT_PANEL_H
-#define QSK_INPUT_PANEL_H
+#ifndef QSK_VIRTUAL_KEYBOARD_H
+#define QSK_VIRTUAL_KEYBOARD_H
 
 #include "QskBox.h"
 #include "QskPushButton.h"
@@ -12,9 +12,9 @@
 #include <QRectF>
 
 class QskInputCompositionModel;
-class QskInputPanel;
+class QskVirtualKeyboard;
 
-class QskKeyButton : public QskPushButton // ### rename to QskInputButton or so?
+class QskVirtualKeyboardButton : public QskPushButton
 {
         Q_OBJECT
 
@@ -22,7 +22,7 @@ class QskKeyButton : public QskPushButton // ### rename to QskInputButton or so?
 
     public:
         QSK_SUBCONTROLS( Panel, Text, TextCancelButton )
-        QskKeyButton( int keyIndex, QskInputPanel* inputPanel, QQuickItem* parent = nullptr );
+        QskVirtualKeyboardButton( int keyIndex, QskVirtualKeyboard* inputPanel, QQuickItem* parent = nullptr );
 
         virtual QskAspect::Subcontrol effectiveSubcontrol( QskAspect::Subcontrol subControl ) const override;
 
@@ -35,10 +35,10 @@ class QskKeyButton : public QskPushButton // ### rename to QskInputButton or so?
         bool isCancelButton() const;
 
         const int m_keyIndex;
-        QskInputPanel* m_inputPanel;
+        QskVirtualKeyboard* m_inputPanel;
 };
 
-class QSK_EXPORT QskInputPanel : public QskBox
+class QSK_EXPORT QskVirtualKeyboard : public QskBox
 {
     Q_OBJECT
 
@@ -86,17 +86,17 @@ public:
     using KeyDataRow = KeyData[KeyCount];
     using KeyDataSet = KeyDataRow[RowCount];
 
-    QskInputPanel( QQuickItem* parent = nullptr );
-    virtual ~QskInputPanel() override;
+    QskVirtualKeyboard( QQuickItem* parent = nullptr );
+    virtual ~QskVirtualKeyboard() override;
 
     virtual QskAspect::Subcontrol effectiveSubcontrol( QskAspect::Subcontrol subControl ) const override;
 
     void updateLocale( const QLocale& locale );
 
-    void setMode( QskInputPanel::Mode index );
+    void setMode( QskVirtualKeyboard::Mode index );
     Mode mode() const;
 
-    const KeyDataSet& keyData( QskInputPanel::Mode = CurrentMode ) const;
+    const KeyDataSet& keyData( QskVirtualKeyboard::Mode = CurrentMode ) const;
 
     QString textForKey( int ) const;
     QString displayLanguageName() const;
@@ -136,7 +136,7 @@ Q_SIGNALS:
     void inputMethodRegistered( const QLocale& locale, QskInputCompositionModel* model );
     void inputMethodEventReceived( QInputMethodEvent* inputMethodEvent );
     void keyEventReceived( QKeyEvent* keyEvent );
-    void modeChanged( QskInputPanel::Mode mode );
+    void modeChanged( QskVirtualKeyboard::Mode mode );
     void cancelPressed();
 
 public:
@@ -144,6 +144,6 @@ public:
     std::unique_ptr< PrivateData > m_data;
 };
 
-Q_DECLARE_TYPEINFO( QskInputPanel::KeyData, Q_PRIMITIVE_TYPE );
+Q_DECLARE_TYPEINFO( QskVirtualKeyboard::KeyData, Q_PRIMITIVE_TYPE );
 
 #endif

@@ -19,7 +19,7 @@
 #include "QskGradient.h"
 #include "QskGraphicLabel.h"
 #include "QskGridBox.h"
-#include "QskInputPanel.h"
+#include "QskVirtualKeyboard.h"
 #include "QskRgbValue.h"
 #include "QskScrollView.h"
 #include "QskScrollArea.h"
@@ -159,7 +159,7 @@ public:
 
     Q_PROPERTY( QStringList skinList READ skinList NOTIFY skinListChanged )
 
-    Q_PRIVATE_PROPERTY( setup(), QskInputPanel* inputPanel READ inputPanel
+    Q_PRIVATE_PROPERTY( setup(), QskVirtualKeyboard* inputPanel READ inputPanel
         WRITE setInputPanel NOTIFY inputPanelChanged )
 
     Q_PRIVATE_PROPERTY( setup(), QskSetupFlagsProvider controlFlags
@@ -253,7 +253,7 @@ void QskModule::registerTypes()
 
     QSK_REGISTER( QskControl, "Control" );
     QSK_REGISTER( QskGraphicLabel, "GraphicLabel" );
-    QSK_REGISTER( QskInputPanel, "InputPanel" );
+    QSK_REGISTER( QskVirtualKeyboard, "InputPanel" );
     QSK_REGISTER( QskTextLabel, "TextLabel" );
     QSK_REGISTER( QskTabButton, "TabButton" );
     QSK_REGISTER( QskTabBar, "TabBar" );

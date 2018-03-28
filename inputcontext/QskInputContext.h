@@ -12,7 +12,7 @@
 
 #include <memory>
 
-class QskInputPanel;
+class QskVirtualKeyboard;
 class QskInputCompositionModel;
 
 class QskInputContext : public QPlatformInputContext
@@ -39,12 +39,12 @@ public:
 private Q_SLOTS:
     void emitAnimatingChanged();
     void handleCandidatesChanged();
-    void setInputPanel( QskInputPanel* );
+    void setInputPanel( QskVirtualKeyboard* );
 
 private:
     QPointer< QObject > m_focusObject;
     QPointer< QQuickItem > m_inputItem;
-    QPointer< QskInputPanel > m_inputPanel;
+    QPointer< QskVirtualKeyboard > m_inputPanel;
     std::unique_ptr< QskInputCompositionModel > m_inputCompositionModel;
 };
 

@@ -8,7 +8,7 @@
 #include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
 
-#include <QskInputPanel.h>
+#include <QskVirtualKeyboard.h>
 #include <QskDialog.h>
 #include <QskFocusIndicator.h>
 #include <QskLinearBox.h>
@@ -44,7 +44,7 @@ public:
         textInput->setText( "I am a line edit. Press and edit Me." );
 
 #if LOCAL_PANEL
-        auto* inputPanel = new QskInputPanel( this );
+        auto* inputPanel = new QskVirtualKeyboard( this );
 
         /*
             QskInputContext is connected to QskSetup::inputPanelChanged,
