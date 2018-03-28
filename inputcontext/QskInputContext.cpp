@@ -226,14 +226,7 @@ void QskInputContext::setFocusObject( QObject* focusObject )
         {
             m_inputItem = focusQuickItem;
             m_inputCompositionModel->setInputItem( m_inputItem ); // ### use a signal/slot connection
-            if( m_inputPanel )
-                m_inputPanel->setTabFence( false );
             inputItemChanged = true;
-        }
-        else
-        {
-            if( m_inputPanel )
-                m_inputPanel->setTabFence( true );
         }
     }
 

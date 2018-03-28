@@ -281,8 +281,9 @@ QskInputPanel::QskInputPanel( QQuickItem* parent ):
 
     setFlag( ItemIsFocusScope, true );
 
-    // ### for some reason we never get focus when this is a tab fence:
-//    setTabFence( true );
+#if 0
+    setTabFence( true );
+#endif
 
     setAutoLayoutChildren( true );
 
