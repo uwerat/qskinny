@@ -139,7 +139,7 @@ QRectF QskInputContext::keyboardRect() const
     if ( m_inputPanel
          && QskDialog::instance()->policy() != QskDialog::TopLevelWindow )
     {
-        return m_inputPanel->keyboardRect();
+        return m_inputPanel->geometry();
     }
 
     return Inherited::keyboardRect();
@@ -290,12 +290,12 @@ void QskInputContext::setInputPanel( QskVirtualKeyboard* inputPanel )
 
     if ( m_inputPanel )
     {
-        QObject::disconnect( m_inputPanel.data(), &QskVirtualKeyboard::visibleChanged,
-            this, &QskInputContext::emitInputPanelVisibleChanged );
-        QObject::disconnect( m_inputPanel.data(), &QskVirtualKeyboard::keyboardRectChanged,
-            this, &QskInputContext::emitKeyboardRectChanged );
-        QObject::disconnect( m_inputPanel.data(), &QskVirtualKeyboard::localeChanged,
-            this, &QskInputContext::emitLocaleChanged );
+        QObject::disconnect( m_inputPanel, &QskVirtualKeyboard::visibleChanged,
+            this, &QPlatformInputContext::emitInputPanelVisibleChanged );
+        QObject::disconnect( m_inputPanel, &QskVirtualKeyboard::keyboardRectChanged,
+            this, &QPlatformInputContext::emitKeyboardRectChanged );
+        QObject::disconnect( m_inputPanel, &QskVirtualKeyboard::localeChanged,
+            this, &QPlatformInputContext::emitLocaleChanged );
         if ( m_inputCompositionModel )
             m_inputPanel->disconnect( m_inputCompositionModel.get() );
     }
@@ -304,12 +304,12 @@ void QskInputContext::setInputPanel( QskVirtualKeyboard* inputPanel )
     if ( !m_inputPanel )
         return;
 
-    QObject::connect( m_inputPanel.data(), &QskVirtualKeyboard::visibleChanged,
-        this, &QskInputContext::emitInputPanelVisibleChanged );
-    QObject::connect( m_inputPanel.data(), &QskVirtualKeyboard::keyboardRectChanged,
-        this, &QskInputContext::emitKeyboardRectChanged );
-    QObject::connect( m_inputPanel.data(), &QskVirtualKeyboard::localeChanged,
-        this, &QskInputContext::emitLocaleChanged );
+    QObject::connect( m_inputPanel, &QskVirtualKeyboard::visibleChanged,
+        this, &QPlatformInputContext::emitInputPanelVisibleChanged );
+    QObject::connect( m_inputPanel, &QskVirtualKeyboard::keyboardRectChanged,
+        this, &QPlatformInputContext::emitKeyboardRectChanged );
+    QObject::connect( m_inputPanel, &QskVirtualKeyboard::localeChanged,
+        this, &QPlatformInputContext::emitLocaleChanged );
     if ( m_inputCompositionModel )
     {
         QObject::connect(
