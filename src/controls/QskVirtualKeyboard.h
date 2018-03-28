@@ -101,8 +101,6 @@ public:
     QString textForKey( int ) const;
     QString displayLanguageName() const;
 
-    QRectF keyboardRect() const;
-
     // takes ownership:
     void registerCompositionModelForLocale( const QLocale& locale,
                                             QskInputCompositionModel* model );
