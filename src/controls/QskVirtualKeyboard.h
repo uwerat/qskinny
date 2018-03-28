@@ -14,7 +14,7 @@
 class QskInputCompositionModel;
 class QskVirtualKeyboard;
 
-class QskVirtualKeyboardButton : public QskPushButton
+class QSK_EXPORT QskVirtualKeyboardButton : public QskPushButton
 {
         Q_OBJECT
 
@@ -107,13 +107,13 @@ public:
     void registerCompositionModelForLocale( const QLocale& locale,
                                             QskInputCompositionModel* model );
 
-public Q_SLOTS:
-    void setPreeditGroups( const QVector< Qt::Key >& );
-    void setPreeditCandidates( const QVector< Qt::Key >& );
-
     void handleKey( int keyIndex );
     KeyData& keyDataAt( int ) const;
     QString currentTextForKeyIndex( int keyIndex ) const;
+
+public Q_SLOTS:
+    void setPreeditGroups( const QVector< Qt::Key >& );
+    void setPreeditCandidates( const QVector<Qt::Key> & );
 
 protected:
     virtual void geometryChanged( const QRectF&, const QRectF& ) override;
@@ -139,7 +139,7 @@ Q_SIGNALS:
     void modeChanged( QskVirtualKeyboard::Mode mode );
     void cancelPressed();
 
-public:
+private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

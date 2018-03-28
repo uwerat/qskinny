@@ -48,8 +48,7 @@ HEADERS += \
     common/QskObjectCounter.h \
     common/QskSizePolicy.h \
     common/QskTextColors.h \
-    common/QskTextOptions.h \
-    controls/QskVirtualKeyboard.h
+    common/QskTextOptions.h
 
 SOURCES += \
     common/QskAspect.cpp \
@@ -66,8 +65,7 @@ SOURCES += \
     common/QskObjectCounter.cpp \
     common/QskSizePolicy.cpp \
     common/QskTextColors.cpp \
-    common/QskTextOptions.cpp \
-    controls/QskVirtualKeyboard.cpp
+    common/QskTextOptions.cpp
 
 HEADERS += \
     graphic/QskColorFilter.h \
@@ -182,6 +180,7 @@ HEADERS += \
     controls/QskTextLabel.h \
     controls/QskTextLabelSkinlet.h \
     controls/QskVariantAnimator.h \
+    controls/QskVirtualKeyboard.h \
     controls/QskWindow.h
 
 SOURCES += \
@@ -245,6 +244,7 @@ SOURCES += \
     controls/QskTextLabel.cpp \
     controls/QskTextLabelSkinlet.cpp \
     controls/QskVariantAnimator.cpp \
+    controls/QskVirtualKeyboard.cpp \
     controls/QskWindow.cpp
 
 HEADERS += \

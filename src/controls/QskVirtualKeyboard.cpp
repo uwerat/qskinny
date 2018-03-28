@@ -34,7 +34,7 @@ namespace
     };
 }
 
-struct QskInputPanelLayouts
+struct QskVirtualKeyboardLayouts
 {
     struct KeyCodes
     {
@@ -72,9 +72,9 @@ struct QskInputPanelLayouts
 };
 
 #define LOWER(x) Qt::Key(x + 32) // Convert an uppercase key to lowercase
-static constexpr const QskInputPanelLayouts qskInputPanelLayouts =
+static constexpr const QskVirtualKeyboardLayouts qskKeyboardLayouts =
 {
-#include "QskInputPanelLayouts.cpp"
+#include "QskVirtualKeyboardLayouts.cpp"
 };
 #undef LOWER
 
@@ -239,7 +239,7 @@ class QskVirtualKeyboard::PrivateData
         }
 
     public:
-        const QskInputPanelLayouts::Layout* currentLayout;
+        const QskVirtualKeyboardLayouts::Layout* currentLayout;
         QskVirtualKeyboard::Mode mode;
 
         qint16 selectedGroup;
@@ -268,11 +268,6 @@ QskVirtualKeyboard::QskVirtualKeyboard( QQuickItem* parent ):
     setAcceptedMouseButtons( Qt::LeftButton );
 
     initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
-
-    setAutoFillBackground( true );
-
-    auto margins = marginsHint( Panel | QskAspect::Margin );
-    setMargins( margins );
 
     updateLocale( locale() );
 
@@ -741,23 +736,23 @@ void QskVirtualKeyboard::updateLocale( const QLocale& locale )
     switch( locale.language() )
     {
         case QLocale::Bulgarian:
-            m_data->currentLayout = &qskInputPanelLayouts.bg;
+            m_data->currentLayout = &qskKeyboardLayouts.bg;
             break;
 
         case QLocale::Czech:
-            m_data->currentLayout = &qskInputPanelLayouts.cs;
+            m_data->currentLayout = &qskKeyboardLayouts.cs;
             break;
 
         case QLocale::German:
-            m_data->currentLayout = &qskInputPanelLayouts.de;
+            m_data->currentLayout = &qskKeyboardLayouts.de;
             break;
 
         case QLocale::Danish:
-            m_data->currentLayout = &qskInputPanelLayouts.da;
+            m_data->currentLayout = &qskKeyboardLayouts.da;
             break;
 
         case QLocale::Greek:
-            m_data->currentLayout = &qskInputPanelLayouts.el;
+            m_data->currentLayout = &qskKeyboardLayouts.el;
             break;
 
         case QLocale::English:
@@ -768,11 +763,11 @@ void QskVirtualKeyboard::updateLocale( const QLocale& locale )
                     case QLocale::UnitedStates:
                     case QLocale::UnitedStatesMinorOutlyingIslands:
                     case QLocale::UnitedStatesVirginIslands:
-                        m_data->currentLayout = &qskInputPanelLayouts.en_US;
+                        m_data->currentLayout = &qskKeyboardLayouts.en_US;
                         break;
 
                     default:
-                        m_data->currentLayout = &qskInputPanelLayouts.en_GB;
+                        m_data->currentLayout = &qskKeyboardLayouts.en_GB;
                         break;
                 }
 
@@ -780,72 +775,77 @@ void QskVirtualKeyboard::updateLocale( const QLocale& locale )
             }
 
         case QLocale::Spanish:
-            m_data->currentLayout = &qskInputPanelLayouts.es;
+            m_data->currentLayout = &qskKeyboardLayouts.es;
             break;
 
         case QLocale::Finnish:
-            m_data->currentLayout = &qskInputPanelLayouts.fi;
+            m_data->currentLayout = &qskKeyboardLayouts.fi;
             break;
 
         case QLocale::French:
-            m_data->currentLayout = &qskInputPanelLayouts.fr;
+            m_data->currentLayout = &qskKeyboardLayouts.fr;
             break;
 
         case QLocale::Hungarian:
-            m_data->currentLayout = &qskInputPanelLayouts.hu;
+            m_data->currentLayout = &qskKeyboardLayouts.hu;
             break;
 
         case QLocale::Italian:
-            m_data->currentLayout = &qskInputPanelLayouts.it;
+            m_data->currentLayout = &qskKeyboardLayouts.it;
             break;
 
         case QLocale::Japanese:
-            m_data->currentLayout = &qskInputPanelLayouts.ja;
+            m_data->currentLayout = &qskKeyboardLayouts.ja;
             break;
 
         case QLocale::Latvian:
-            m_data->currentLayout = &qskInputPanelLayouts.lv;
+            m_data->currentLayout = &qskKeyboardLayouts.lv;
             break;
 
         case QLocale::Lithuanian:
-            m_data->currentLayout = &qskInputPanelLayouts.lt;
+            m_data->currentLayout = &qskKeyboardLayouts.lt;
             break;
 
         case QLocale::Dutch:
-            m_data->currentLayout = &qskInputPanelLayouts.nl;
+            m_data->currentLayout = &qskKeyboardLayouts.nl;
             break;
 
         case QLocale::Portuguese:
-            m_data->currentLayout = &qskInputPanelLayouts.pt;
+            m_data->currentLayout = &qskKeyboardLayouts.pt;
             break;
 
         case QLocale::Romanian:
-            m_data->currentLayout = &qskInputPanelLayouts.ro;
+            m_data->currentLayout = &qskKeyboardLayouts.ro;
             break;
 
         case QLocale::Russia:
-            m_data->currentLayout = &qskInputPanelLayouts.ru;
+            m_data->currentLayout = &qskKeyboardLayouts.ru;
             break;
 
         case QLocale::Slovenian:
-            m_data->currentLayout = &qskInputPanelLayouts.sl;
+            m_data->currentLayout = &qskKeyboardLayouts.sl;
             break;
 
         case QLocale::Slovak:
-            m_data->currentLayout = &qskInputPanelLayouts.sk;
+            m_data->currentLayout = &qskKeyboardLayouts.sk;
             break;
 
         case QLocale::Turkish:
-            m_data->currentLayout = &qskInputPanelLayouts.tr;
+            m_data->currentLayout = &qskKeyboardLayouts.tr;
             break;
 
         case QLocale::Chinese:
-            m_data->currentLayout = &qskInputPanelLayouts.zh;
+            m_data->currentLayout = &qskKeyboardLayouts.zh;
             break;
-
+#if 1
+        case QLocale::C:
+            m_data->currentLayout = &qskKeyboardLayouts.en_US;
+            break;
+#endif
         default:
             qWarning() << "QskInputPanel: unsupported locale:" << locale;
-            m_data->currentLayout = &qskInputPanelLayouts.en_US;
+            m_data->currentLayout = &qskKeyboardLayouts.en_US;
+
     }
 
     Q_EMIT displayLanguageNameChanged();
