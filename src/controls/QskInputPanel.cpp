@@ -207,12 +207,13 @@ void QskKeyButton::updateText()
 {
     QString text = m_inputPanel->currentTextForKeyIndex( m_keyIndex );
 
-    if( text.count() == 1 && text.at( 0 ) == Qt::Key_unknown )
+    if( text.count() == 1 && text.at( 0 ) == QChar( 0 ) )
     {
-        setText( QStringLiteral( "" ) );
+        setVisible( false );
     }
     else
     {
+        setVisible( true );
         setText( text );
     }
 }
@@ -304,10 +305,15 @@ QskInputPanel::QskInputPanel( QQuickItem* parent ):
 
             int keyIndex = m_data->keyTable[ m_data->mode ].indexOf( &keyData );
             QskKeyButton* button = new QskKeyButton( keyIndex, this, rowBox );
+            rowBox->setRetainSizeWhenHidden( button, true );
 
             m_data->keyButtons.append( button );
         }
     }
+
+    connect( this, &QskInputPanel::modeChanged, this, [ this ]() {
+        updateLayout();
+    });
 }
 
 QskInputPanel::~QskInputPanel()
