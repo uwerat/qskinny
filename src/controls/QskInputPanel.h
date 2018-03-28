@@ -6,7 +6,7 @@
 #ifndef QSK_INPUT_PANEL_H
 #define QSK_INPUT_PANEL_H
 
-#include "QskControl.h"
+#include "QskBox.h"
 #include "QskPushButton.h"
 
 #include <QRectF>
@@ -38,7 +38,7 @@ class QskKeyButton : public QskPushButton // ### rename to QskInputButton or so?
         QskInputPanel* m_inputPanel;
 };
 
-class QSK_EXPORT QskInputPanel : public QskControl
+class QSK_EXPORT QskInputPanel : public QskBox
 {
     Q_OBJECT
 
@@ -47,7 +47,7 @@ class QSK_EXPORT QskInputPanel : public QskControl
     Q_PROPERTY( QString displayLanguageName READ displayLanguageName
             NOTIFY displayLanguageNameChanged )
 
-    using Inherited = QskControl;
+    using Inherited = QskBox;
 
 public:
 

@@ -259,7 +259,7 @@ class QskInputPanel::PrivateData
 };
 
 QskInputPanel::QskInputPanel( QQuickItem* parent ):
-    QskControl( parent ),
+    Inherited( parent ),
     m_data( new PrivateData )
 {
     qRegisterMetaType< Qt::Key >();
@@ -324,7 +324,7 @@ QskInputPanel::~QskInputPanel()
 
 QskAspect::Subcontrol QskInputPanel::effectiveSubcontrol( QskAspect::Subcontrol subControl ) const
 {
-    if( subControl == QskAspect::Control )
+    if( subControl == QskBox::Panel )
     {
         return QskInputPanel::Panel;
     }
