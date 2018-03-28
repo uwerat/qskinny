@@ -3,7 +3,7 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#include "QskInputPanel.h"
+#include "QskVirtualKeyboard.h"
 
 #include "QskAspect.h"
 
@@ -24,25 +24,25 @@ namespace
 {
     struct KeyTable
     {
-        using Row = QskInputPanel::KeyData[ QskInputPanel::KeyCount ];
-        Row data[ QskInputPanel::RowCount ];
+        using Row = QskVirtualKeyboard::KeyData[ QskVirtualKeyboard::KeyCount ];
+        Row data[ QskVirtualKeyboard::RowCount ];
 
-        int indexOf( const QskInputPanel::KeyData* value ) const
+        int indexOf( const QskVirtualKeyboard::KeyData* value ) const
         {
             return int( intptr_t( value - data[0] ) );
         }
     };
 }
 
-struct QskInputPanelLayouts
+struct QskVirtualKeyboardLayouts
 {
     struct KeyCodes
     {
-        using Row = Qt::Key[ QskInputPanel::KeyCount ];
-        Row data[ QskInputPanel::RowCount ];
+        using Row = Qt::Key[ QskVirtualKeyboard::KeyCount ];
+        Row data[ QskVirtualKeyboard::RowCount ];
     };
 
-    using Layout = KeyCodes[ QskInputPanel::ModeCount ];
+    using Layout = KeyCodes[ QskVirtualKeyboard::ModeCount ];
 
     Layout bg; // Bulgarian
     Layout cs; // Czech
@@ -72,9 +72,9 @@ struct QskInputPanelLayouts
 };
 
 #define LOWER(x) Qt::Key(x + 32) // Convert an uppercase key to lowercase
-static constexpr const QskInputPanelLayouts qskInputPanelLayouts =
+static constexpr const QskVirtualKeyboardLayouts qskKeyboardLayouts =
 {
-#include "QskInputPanelLayouts.cpp"
+#include "QskVirtualKeyboardLayouts.cpp"
 };
 #undef LOWER
 
@@ -106,7 +106,7 @@ static qreal qskKeyStretch( Qt::Key key )
     return 1.0;
 }
 
-static qreal qskRowStretch( const QskInputPanel::KeyRow& keyRow )
+static qreal qskRowStretch( const QskVirtualKeyboard::KeyRow& keyRow )
 {
     qreal stretch = 0;
 
@@ -122,7 +122,7 @@ static qreal qskRowStretch( const QskInputPanel::KeyRow& keyRow )
 
     if( stretch == 0.0 )
     {
-        stretch = QskInputPanel::KeyCount;
+        stretch = QskVirtualKeyboard::KeyCount;
     }
 
     return stretch;
@@ -145,13 +145,13 @@ namespace
     };
 }
 
-QSK_SUBCONTROL( QskInputPanel, Panel )
+QSK_SUBCONTROL( QskVirtualKeyboard, Panel )
 
-QSK_SUBCONTROL( QskKeyButton, Panel )
-QSK_SUBCONTROL( QskKeyButton, Text )
-QSK_SUBCONTROL( QskKeyButton, TextCancelButton )
+QSK_SUBCONTROL( QskVirtualKeyboardButton, Panel )
+QSK_SUBCONTROL( QskVirtualKeyboardButton, Text )
+QSK_SUBCONTROL( QskVirtualKeyboardButton, TextCancelButton )
 
-QskKeyButton::QskKeyButton( int keyIndex, QskInputPanel* inputPanel, QQuickItem* parent ) :
+QskVirtualKeyboardButton::QskVirtualKeyboardButton( int keyIndex, QskVirtualKeyboard* inputPanel, QQuickItem* parent ) :
     Inherited( parent ),
     m_keyIndex( keyIndex ),
     m_inputPanel( inputPanel )
@@ -174,36 +174,36 @@ QskKeyButton::QskKeyButton( int keyIndex, QskInputPanel* inputPanel, QQuickItem*
 
     updateText();
 
-    connect( this, &QskKeyButton::pressed, this, [ this ]()
+    connect( this, &QskVirtualKeyboardButton::pressed, this, [ this ]()
     {
         m_inputPanel->handleKey( m_keyIndex );
     } );
 
-    connect( m_inputPanel, &QskInputPanel::modeChanged, this, &QskKeyButton::updateText );
+    connect( m_inputPanel, &QskVirtualKeyboard::modeChanged, this, &QskVirtualKeyboardButton::updateText );
 }
 
-QskAspect::Subcontrol QskKeyButton::effectiveSubcontrol( QskAspect::Subcontrol subControl ) const
+QskAspect::Subcontrol QskVirtualKeyboardButton::effectiveSubcontrol( QskAspect::Subcontrol subControl ) const
 {
     if( subControl == QskPushButton::Panel )
     {
-        return QskKeyButton::Panel;
+        return QskVirtualKeyboardButton::Panel;
     }
 
     if( subControl == QskPushButton::Text )
     {
         // ### we could also introduce a state to not always query the button
-        return isCancelButton() ? QskKeyButton::TextCancelButton : QskKeyButton::Text;
+        return isCancelButton() ? QskVirtualKeyboardButton::TextCancelButton : QskVirtualKeyboardButton::Text;
     }
 
     return subControl;
 }
 
-int QskKeyButton::keyIndex() const
+int QskVirtualKeyboardButton::keyIndex() const
 {
     return m_keyIndex;
 }
 
-void QskKeyButton::updateText()
+void QskVirtualKeyboardButton::updateText()
 {
     QString text = m_inputPanel->currentTextForKeyIndex( m_keyIndex );
 
@@ -218,19 +218,19 @@ void QskKeyButton::updateText()
     }
 }
 
-bool QskKeyButton::isCancelButton() const
+bool QskVirtualKeyboardButton::isCancelButton() const
 {
     auto keyData = m_inputPanel->keyDataAt( m_keyIndex );
     bool isCancel = ( keyData.key == 0x2716 );
     return isCancel;
 }
 
-class QskInputPanel::PrivateData
+class QskVirtualKeyboard::PrivateData
 {
     public:
         PrivateData():
             currentLayout( nullptr ),
-            mode( QskInputPanel::LowercaseMode ),
+            mode( QskVirtualKeyboard::LowercaseMode ),
             selectedGroup( -1 ),
             candidateOffset( 0 ),
             buttonsBox( nullptr ),
@@ -239,8 +239,8 @@ class QskInputPanel::PrivateData
         }
 
     public:
-        const QskInputPanelLayouts::Layout* currentLayout;
-        QskInputPanel::Mode mode;
+        const QskVirtualKeyboardLayouts::Layout* currentLayout;
+        QskVirtualKeyboard::Mode mode;
 
         qint16 selectedGroup;
         qint32 candidateOffset;
@@ -254,11 +254,11 @@ class QskInputPanel::PrivateData
         KeyTable keyTable[ ModeCount ];
 
         QskLinearBox* buttonsBox;
-        QList< QskKeyButton* > keyButtons;
+        QList< QskVirtualKeyboardButton* > keyButtons;
         bool isUIInitialized;
 };
 
-QskInputPanel::QskInputPanel( QQuickItem* parent ):
+QskVirtualKeyboard::QskVirtualKeyboard( QQuickItem* parent ):
     Inherited( parent ),
     m_data( new PrivateData )
 {
@@ -269,15 +269,10 @@ QskInputPanel::QskInputPanel( QQuickItem* parent ):
 
     initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
 
-    setAutoFillBackground( true );
-
-    auto margins = marginsHint( Panel | QskAspect::Margin );
-    setMargins( margins );
-
     updateLocale( locale() );
 
     QObject::connect( this, &QskControl::localeChanged,
-                      this, &QskInputPanel::updateLocale );
+                      this, &QskVirtualKeyboard::updateLocale );
 
     setFlag( ItemIsFocusScope, true );
 
@@ -305,47 +300,47 @@ QskInputPanel::QskInputPanel( QQuickItem* parent ):
             }
 
             int keyIndex = m_data->keyTable[ m_data->mode ].indexOf( &keyData );
-            QskKeyButton* button = new QskKeyButton( keyIndex, this, rowBox );
+            QskVirtualKeyboardButton* button = new QskVirtualKeyboardButton( keyIndex, this, rowBox );
             rowBox->setRetainSizeWhenHidden( button, true );
 
             m_data->keyButtons.append( button );
         }
     }
 
-    connect( this, &QskInputPanel::modeChanged, this, [ this ]() {
+    connect( this, &QskVirtualKeyboard::modeChanged, this, [ this ]() {
         updateLayout();
     });
 }
 
-QskInputPanel::~QskInputPanel()
+QskVirtualKeyboard::~QskVirtualKeyboard()
 {
 }
 
 
-QskAspect::Subcontrol QskInputPanel::effectiveSubcontrol( QskAspect::Subcontrol subControl ) const
+QskAspect::Subcontrol QskVirtualKeyboard::effectiveSubcontrol( QskAspect::Subcontrol subControl ) const
 {
     if( subControl == QskBox::Panel )
     {
-        return QskInputPanel::Panel;
+        return QskVirtualKeyboard::Panel;
     }
 
     return subControl;
 }
 
 
-QskInputPanel::Mode QskInputPanel::mode() const
+QskVirtualKeyboard::Mode QskVirtualKeyboard::mode() const
 {
     return m_data->mode;
 }
 
-const QskInputPanel::KeyDataSet& QskInputPanel::keyData( Mode mode ) const
+const QskVirtualKeyboard::KeyDataSet& QskVirtualKeyboard::keyData( Mode mode ) const
 {
     mode = mode == CurrentMode ? m_data->mode : mode;
     Q_ASSERT( mode >= 0 && mode < ModeCount );
     return m_data->keyTable[ mode ].data;
 }
 
-QString QskInputPanel::textForKey( int key ) const
+QString QskVirtualKeyboard::textForKey( int key ) const
 {
     key &= ~KeyStates;
 
@@ -393,7 +388,7 @@ QString QskInputPanel::textForKey( int key ) const
     return QChar( key );
 }
 
-QString QskInputPanel::displayLanguageName() const
+QString QskVirtualKeyboard::displayLanguageName() const
 {
     const auto locale = this->locale();
 
@@ -486,7 +481,7 @@ QString QskInputPanel::displayLanguageName() const
     return QLocale::languageToString( locale.language() );
 }
 
-void QskInputPanel::setPreeditGroups( const QVector< Qt::Key >& groups )
+void QskVirtualKeyboard::setPreeditGroups( const QVector< Qt::Key >& groups )
 {
     auto& topRow = m_data->keyTable[ LowercaseMode ].data[ 0 ];
 
@@ -505,7 +500,7 @@ void QskInputPanel::setPreeditGroups( const QVector< Qt::Key >& groups )
     }
 }
 
-void QskInputPanel::setPreeditCandidates( const QVector< Qt::Key >& candidates )
+void QskVirtualKeyboard::setPreeditCandidates( const QVector< Qt::Key >& candidates )
 {
     if( m_data->candidates == candidates )
     {
@@ -516,7 +511,7 @@ void QskInputPanel::setPreeditCandidates( const QVector< Qt::Key >& candidates )
     setCandidateOffset( 0 );
 }
 
-void QskInputPanel::setCandidateOffset( int candidateOffset )
+void QskVirtualKeyboard::setCandidateOffset( int candidateOffset )
 {
     m_data->candidateOffset = candidateOffset;
 
@@ -559,13 +554,13 @@ void QskInputPanel::setCandidateOffset( int candidateOffset )
     }
 }
 
-void QskInputPanel::registerCompositionModelForLocale( const QLocale& locale,
+void QskVirtualKeyboard::registerCompositionModelForLocale( const QLocale& locale,
                                                        QskInputCompositionModel* model )
 {
     Q_EMIT inputMethodRegistered( locale, model );
 }
 
-void QskInputPanel::geometryChanged(
+void QskVirtualKeyboard::geometryChanged(
     const QRectF& newGeometry, const QRectF& oldGeometry )
 {
     Inherited::geometryChanged( newGeometry, oldGeometry );
@@ -573,7 +568,7 @@ void QskInputPanel::geometryChanged(
     Q_EMIT keyboardRectChanged();
 }
 
-void QskInputPanel::updateLayout()
+void QskVirtualKeyboard::updateLayout()
 {
     if( geometry().isNull() )
         return; // no need to calculate anything, will be called again
@@ -590,7 +585,7 @@ void QskInputPanel::updateLayout()
         const auto& rowChildren = rowBox->childItems();
         for( auto keyItem : rowChildren )
         {
-            auto button = qobject_cast< QskKeyButton* >( keyItem );
+            auto button = qobject_cast< QskVirtualKeyboardButton* >( keyItem );
             QRectF keyRect = keyDataAt( button->keyIndex() ).rect;
             qreal width = keyRect.width() * rect.width() - horizontalSpacing;
             qreal height = keyRect.height() * rect.height() - verticalSpacing;
@@ -600,22 +595,22 @@ void QskInputPanel::updateLayout()
     }
 }
 
-void QskInputPanel::updateUI()
+void QskVirtualKeyboard::updateUI()
 {
-    for( QskKeyButton* button : qskAsConst( m_data->keyButtons ) )
+    for( QskVirtualKeyboardButton* button : qskAsConst( m_data->keyButtons ) )
     {
         button->updateText();
     }
 }
 
-QskInputPanel::KeyData& QskInputPanel::keyDataAt( int keyIndex ) const
+QskVirtualKeyboard::KeyData& QskVirtualKeyboard::keyDataAt( int keyIndex ) const
 {
     const auto row = keyIndex / KeyCount;
     const auto col = keyIndex % KeyCount;
     return m_data->keyTable[ m_data->mode ].data[ row ][ col ];
 }
 
-void QskInputPanel::handleKey( int keyIndex )
+void QskVirtualKeyboard::handleKey( int keyIndex )
 {
     KeyData keyData = keyDataAt( keyIndex );
     const auto key = keyData.key & ~KeyStates;
@@ -666,8 +661,8 @@ void QskInputPanel::handleKey( int keyIndex )
             return;
 
         case Qt::Key_Mode_switch: // Cycle through modes, but skip caps
-            setMode( static_cast< QskInputPanel::Mode >(
-                         m_data->mode ? ( ( m_data->mode + 1 ) % QskInputPanel::ModeCount )
+            setMode( static_cast< QskVirtualKeyboard::Mode >(
+                         m_data->mode ? ( ( m_data->mode + 1 ) % QskVirtualKeyboard::ModeCount )
                          : SpecialCharacterMode ) );
             return;
 
@@ -690,20 +685,20 @@ void QskInputPanel::handleKey( int keyIndex )
     }
 }
 
-QString QskInputPanel::currentTextForKeyIndex( int keyIndex ) const
+QString QskVirtualKeyboard::currentTextForKeyIndex( int keyIndex ) const
 {
     auto keyData = keyDataAt( keyIndex );
     QString text = textForKey( keyData.key );
     return text;
 }
 
-void QskInputPanel::compose( int key )
+void QskVirtualKeyboard::compose( int key )
 {
     QGuiApplication::inputMethod()->invokeAction(
         static_cast< QInputMethod::Action >( Compose ), key );
 }
 
-void QskInputPanel::selectGroup( int index )
+void QskVirtualKeyboard::selectGroup( int index )
 {
     auto& topRow = m_data->keyTable[ m_data->mode ].data[ 0 ];
 
@@ -730,34 +725,34 @@ void QskInputPanel::selectGroup( int index )
     topRow[ m_data->selectedGroup ].key |= KeyLocked;
 }
 
-void QskInputPanel::selectCandidate( int index )
+void QskVirtualKeyboard::selectCandidate( int index )
 {
     QGuiApplication::inputMethod()->invokeAction(
         static_cast< QInputMethod::Action >( SelectCandidate ), index );
 }
 
-void QskInputPanel::updateLocale( const QLocale& locale )
+void QskVirtualKeyboard::updateLocale( const QLocale& locale )
 {
     switch( locale.language() )
     {
         case QLocale::Bulgarian:
-            m_data->currentLayout = &qskInputPanelLayouts.bg;
+            m_data->currentLayout = &qskKeyboardLayouts.bg;
             break;
 
         case QLocale::Czech:
-            m_data->currentLayout = &qskInputPanelLayouts.cs;
+            m_data->currentLayout = &qskKeyboardLayouts.cs;
             break;
 
         case QLocale::German:
-            m_data->currentLayout = &qskInputPanelLayouts.de;
+            m_data->currentLayout = &qskKeyboardLayouts.de;
             break;
 
         case QLocale::Danish:
-            m_data->currentLayout = &qskInputPanelLayouts.da;
+            m_data->currentLayout = &qskKeyboardLayouts.da;
             break;
 
         case QLocale::Greek:
-            m_data->currentLayout = &qskInputPanelLayouts.el;
+            m_data->currentLayout = &qskKeyboardLayouts.el;
             break;
 
         case QLocale::English:
@@ -768,11 +763,11 @@ void QskInputPanel::updateLocale( const QLocale& locale )
                     case QLocale::UnitedStates:
                     case QLocale::UnitedStatesMinorOutlyingIslands:
                     case QLocale::UnitedStatesVirginIslands:
-                        m_data->currentLayout = &qskInputPanelLayouts.en_US;
+                        m_data->currentLayout = &qskKeyboardLayouts.en_US;
                         break;
 
                     default:
-                        m_data->currentLayout = &qskInputPanelLayouts.en_GB;
+                        m_data->currentLayout = &qskKeyboardLayouts.en_GB;
                         break;
                 }
 
@@ -780,72 +775,77 @@ void QskInputPanel::updateLocale( const QLocale& locale )
             }
 
         case QLocale::Spanish:
-            m_data->currentLayout = &qskInputPanelLayouts.es;
+            m_data->currentLayout = &qskKeyboardLayouts.es;
             break;
 
         case QLocale::Finnish:
-            m_data->currentLayout = &qskInputPanelLayouts.fi;
+            m_data->currentLayout = &qskKeyboardLayouts.fi;
             break;
 
         case QLocale::French:
-            m_data->currentLayout = &qskInputPanelLayouts.fr;
+            m_data->currentLayout = &qskKeyboardLayouts.fr;
             break;
 
         case QLocale::Hungarian:
-            m_data->currentLayout = &qskInputPanelLayouts.hu;
+            m_data->currentLayout = &qskKeyboardLayouts.hu;
             break;
 
         case QLocale::Italian:
-            m_data->currentLayout = &qskInputPanelLayouts.it;
+            m_data->currentLayout = &qskKeyboardLayouts.it;
             break;
 
         case QLocale::Japanese:
-            m_data->currentLayout = &qskInputPanelLayouts.ja;
+            m_data->currentLayout = &qskKeyboardLayouts.ja;
             break;
 
         case QLocale::Latvian:
-            m_data->currentLayout = &qskInputPanelLayouts.lv;
+            m_data->currentLayout = &qskKeyboardLayouts.lv;
             break;
 
         case QLocale::Lithuanian:
-            m_data->currentLayout = &qskInputPanelLayouts.lt;
+            m_data->currentLayout = &qskKeyboardLayouts.lt;
             break;
 
         case QLocale::Dutch:
-            m_data->currentLayout = &qskInputPanelLayouts.nl;
+            m_data->currentLayout = &qskKeyboardLayouts.nl;
             break;
 
         case QLocale::Portuguese:
-            m_data->currentLayout = &qskInputPanelLayouts.pt;
+            m_data->currentLayout = &qskKeyboardLayouts.pt;
             break;
 
         case QLocale::Romanian:
-            m_data->currentLayout = &qskInputPanelLayouts.ro;
+            m_data->currentLayout = &qskKeyboardLayouts.ro;
             break;
 
         case QLocale::Russia:
-            m_data->currentLayout = &qskInputPanelLayouts.ru;
+            m_data->currentLayout = &qskKeyboardLayouts.ru;
             break;
 
         case QLocale::Slovenian:
-            m_data->currentLayout = &qskInputPanelLayouts.sl;
+            m_data->currentLayout = &qskKeyboardLayouts.sl;
             break;
 
         case QLocale::Slovak:
-            m_data->currentLayout = &qskInputPanelLayouts.sk;
+            m_data->currentLayout = &qskKeyboardLayouts.sk;
             break;
 
         case QLocale::Turkish:
-            m_data->currentLayout = &qskInputPanelLayouts.tr;
+            m_data->currentLayout = &qskKeyboardLayouts.tr;
             break;
 
         case QLocale::Chinese:
-            m_data->currentLayout = &qskInputPanelLayouts.zh;
+            m_data->currentLayout = &qskKeyboardLayouts.zh;
             break;
-
+#if 1
+        case QLocale::C:
+            m_data->currentLayout = &qskKeyboardLayouts.en_US;
+            break;
+#endif
         default:
             qWarning() << "QskInputPanel: unsupported locale:" << locale;
-            m_data->currentLayout = &qskInputPanelLayouts.en_US;
+            m_data->currentLayout = &qskKeyboardLayouts.en_US;
+
     }
 
     Q_EMIT displayLanguageNameChanged();
@@ -854,7 +854,7 @@ void QskInputPanel::updateLocale( const QLocale& locale )
     setMode( LowercaseMode );
 }
 
-void QskInputPanel::updateKeyData()
+void QskVirtualKeyboard::updateKeyData()
 {
     // Key data is in normalized coordinates
     const auto keyHeight = 1.0f / RowCount;
@@ -889,11 +889,10 @@ void QskInputPanel::updateKeyData()
     }
 }
 
-void QskInputPanel::setMode( QskInputPanel::Mode mode )
+void QskVirtualKeyboard::setMode( QskVirtualKeyboard::Mode mode )
 {
     m_data->mode = mode;
     Q_EMIT modeChanged( m_data->mode );
 }
 
-#include "QskInputPanel.moc"
-#include "moc_QskInputPanel.cpp"
+#include "moc_QskVirtualKeyboard.cpp"

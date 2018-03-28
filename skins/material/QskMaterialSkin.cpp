@@ -16,7 +16,7 @@
 #include <QskTabButton.h>
 #include <QskTabBar.h>
 #include <QskTabView.h>
-#include <QskInputPanel.h>
+#include <QskVirtualKeyboard.h>
 #include <QskScrollView.h>
 #include <QskListView.h>
 #include <QskSubWindow.h>
@@ -521,12 +521,12 @@ void QskMaterialSkin::initTabViewHints()
 void QskMaterialSkin::initInputPanelHints()
 {
     using namespace QskAspect;
-    using Q = QskKeyButton;
+    using Q = QskVirtualKeyboardButton;
 
     const ColorPalette& pal = m_data->palette;
 
     // key panel
-    setMargins( QskInputPanel::Panel | Margin, 2 );
+    setMargins( QskVirtualKeyboard::Panel | Margin, 2 );
 
     setBoxShape( Q::Panel, 20.0, Qt::RelativeSize );
     setBoxBorderMetrics( Q::Panel, 2 );

@@ -8,7 +8,7 @@
 #include "QskInputCompositionModel.h"
 #include "QskPinyinCompositionModel.h"
 
-#include <QskInputPanel.h>
+#include <QskVirtualKeyboard.h>
 #include <QskDialog.h>
 #include <QskWindow.h>
 #include <QskSetup.h>
@@ -121,7 +121,7 @@ void QskInputContext::update( Qt::InputMethodQueries queries )
         {
             QObject::connect(
                 m_inputCompositionModel.get(), &QskInputCompositionModel::groupsChanged,
-                m_inputPanel.data(), &QskInputPanel::setPreeditGroups );
+                m_inputPanel.data(), &QskVirtualKeyboard::setPreeditGroups );
             QObject::connect(
                 m_inputCompositionModel.get(), &QskInputCompositionModel::candidatesChanged,
                 this, &QskInputContext::handleCandidatesChanged );
@@ -154,7 +154,7 @@ void QskInputContext::showInputPanel()
 {
     if ( !m_inputPanel )
     {
-        setInputPanel( new QskInputPanel );
+        setInputPanel( new QskVirtualKeyboard );
 
         if ( QskDialog::instance()->policy() == QskDialog::TopLevelWindow )
         {
@@ -253,15 +253,15 @@ void QskInputContext::invokeAction( QInputMethod::Action action, int cursorPosit
     if ( !m_inputPanel )
         return;
 
-    switch ( static_cast< QskInputPanel::Action >( action ) )
+    switch ( static_cast< QskVirtualKeyboard::Action >( action ) )
     {
-        case QskInputPanel::Compose:
+        case QskVirtualKeyboard::Compose:
             m_inputCompositionModel->composeKey( static_cast< Qt::Key >( cursorPosition ) );
             break;
-        case QskInputPanel::SelectGroup:
+        case QskVirtualKeyboard::SelectGroup:
             m_inputCompositionModel->setGroupIndex( cursorPosition );
             break;
-        case QskInputPanel::SelectCandidate:
+        case QskVirtualKeyboard::SelectCandidate:
             m_inputCompositionModel->commitCandidate( cursorPosition );
             break;
     }
@@ -283,18 +283,18 @@ void QskInputContext::handleCandidatesChanged()
     m_inputPanel->setPreeditCandidates( candidates );
 }
 
-void QskInputContext::setInputPanel( QskInputPanel* inputPanel )
+void QskInputContext::setInputPanel( QskVirtualKeyboard* inputPanel )
 {
     if ( m_inputPanel == inputPanel )
         return;
 
     if ( m_inputPanel )
     {
-        QObject::disconnect( m_inputPanel.data(), &QskInputPanel::visibleChanged,
+        QObject::disconnect( m_inputPanel.data(), &QskVirtualKeyboard::visibleChanged,
             this, &QskInputContext::emitInputPanelVisibleChanged );
-        QObject::disconnect( m_inputPanel.data(), &QskInputPanel::keyboardRectChanged,
+        QObject::disconnect( m_inputPanel.data(), &QskVirtualKeyboard::keyboardRectChanged,
             this, &QskInputContext::emitKeyboardRectChanged );
-        QObject::disconnect( m_inputPanel.data(), &QskInputPanel::localeChanged,
+        QObject::disconnect( m_inputPanel.data(), &QskVirtualKeyboard::localeChanged,
             this, &QskInputContext::emitLocaleChanged );
         if ( m_inputCompositionModel )
             m_inputPanel->disconnect( m_inputCompositionModel.get() );
@@ -304,17 +304,17 @@ void QskInputContext::setInputPanel( QskInputPanel* inputPanel )
     if ( !m_inputPanel )
         return;
 
-    QObject::connect( m_inputPanel.data(), &QskInputPanel::visibleChanged,
+    QObject::connect( m_inputPanel.data(), &QskVirtualKeyboard::visibleChanged,
         this, &QskInputContext::emitInputPanelVisibleChanged );
-    QObject::connect( m_inputPanel.data(), &QskInputPanel::keyboardRectChanged,
+    QObject::connect( m_inputPanel.data(), &QskVirtualKeyboard::keyboardRectChanged,
         this, &QskInputContext::emitKeyboardRectChanged );
-    QObject::connect( m_inputPanel.data(), &QskInputPanel::localeChanged,
+    QObject::connect( m_inputPanel.data(), &QskVirtualKeyboard::localeChanged,
         this, &QskInputContext::emitLocaleChanged );
     if ( m_inputCompositionModel )
     {
         QObject::connect(
             m_inputCompositionModel.get(), &QskInputCompositionModel::groupsChanged,
-            m_inputPanel.data(), &QskInputPanel::setPreeditGroups );
+            m_inputPanel.data(), &QskVirtualKeyboard::setPreeditGroups );
     }
 }
 
