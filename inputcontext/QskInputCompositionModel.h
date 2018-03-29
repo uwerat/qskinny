@@ -24,7 +24,7 @@ public:
     virtual ~QskInputCompositionModel();
 
     void commit( const QString& );
-    void commitCandidate( int );
+    virtual void commitCandidate( int );
     void composeKey( Qt::Key );
 
     void clearPreedit();
@@ -33,7 +33,7 @@ public:
     virtual Qt::Key candidate( int ) const;
 
     int groupIndex() const;
-    void setGroupIndex(int groupIndex);
+    void setGroupIndex( int groupIndex );
     virtual bool nextGroupIndex( int&, bool = true ) const;
 
     virtual QVector< Qt::Key > groups() const;

@@ -14,19 +14,18 @@
 #include <QskSetup.h>
 
 #include <QGuiApplication>
-#include <QQmlContext>
-#include <QQmlEngine>
-#include <QQuickItem>
-#include <QQuickWindow>
-#include <QRectF>
 
 QskInputContext::QskInputContext():
     Inherited(),
-    m_inputCompositionModel( new QskInputCompositionModel )
+    m_defaultInputCompositionModel( new QskInputCompositionModel )
 {
     connect( qskSetup, &QskSetup::inputPanelChanged,
         this, &QskInputContext::setInputPanel );
     setInputPanel( qskSetup->inputPanel() );
+
+    QskPinyinCompositionModel* pinyinModel = new QskPinyinCompositionModel;
+    // For input methods outside skinny, call QskInputPanel::registerCompositionModelForLocale()
+    inputMethodRegistered( QLocale::Chinese, pinyinModel );
 
     // We could connect candidatesChanged() here, but we don't emit
     // the signal in the normal composition model anyhow
@@ -36,6 +35,11 @@ QskInputContext::~QskInputContext()
 {
     if ( m_inputPanel )
         delete m_inputPanel;
+
+    for( int a = 0; a < m_inputModels.values().count(); a++ )
+    {
+        delete m_inputModels.values()[a];
+    }
 }
 
 bool QskInputContext::isValid() const
@@ -64,7 +68,7 @@ void QskInputContext::update( Qt::InputMethodQueries queries )
     {
         const Qt::InputMethodHints hints =
             static_cast< Qt::InputMethodHints >( queryEvent.value( Qt::ImHints ).toInt() );
-        Q_UNUSED(hints);
+        Q_UNUSED( hints );
         //ImhHiddenText = 0x1,          // might need to disable certain checks
         //ImhSensitiveData = 0x2,       // shouldn't change anything
         //ImhNoAutoUppercase = 0x4,     // if we support auto uppercase, disable it
@@ -93,38 +97,28 @@ void QskInputContext::update( Qt::InputMethodQueries queries )
     if ( queries & Qt::ImPreferredLanguage )
     {
         const auto locale = queryEvent.value( Qt::ImPreferredLanguage ).toLocale();
-        if ( m_inputPanel )
+
+        auto oldModel = currentInputCompositionModel();
+
+        if( m_inputPanel )
             m_inputPanel->setLocale( locale );
 
-        auto modelChanged = false;
-        const bool currentModelIsPinyin =
-            dynamic_cast< QskPinyinCompositionModel* >( m_inputCompositionModel.get() );
-        const bool localeIsChinese = locale.language() == QLocale::Chinese;
-        if ( localeIsChinese && !currentModelIsPinyin )
-        {
-            if ( m_inputPanel )
-                m_inputPanel->disconnect( m_inputCompositionModel.get() );
+        auto newModel = currentInputCompositionModel();
 
-            m_inputCompositionModel.reset( new QskPinyinCompositionModel );
-            modelChanged = true;
-        }
-        else if ( !m_inputCompositionModel || ( !localeIsChinese && currentModelIsPinyin ) )  // Install default
-        {
-            if ( m_inputPanel )
-                m_inputPanel->disconnect( m_inputCompositionModel.get() );
+        bool modelChanged = ( oldModel != newModel );
 
-            m_inputCompositionModel.reset( new QskInputCompositionModel );
-            modelChanged = true;
-        }
-
-        if ( modelChanged && m_inputPanel )
+        if( modelChanged )
         {
-            QObject::connect(
-                m_inputCompositionModel.get(), &QskInputCompositionModel::groupsChanged,
-                m_inputPanel.data(), &QskVirtualKeyboard::setPreeditGroups );
-            QObject::connect(
-                m_inputCompositionModel.get(), &QskInputCompositionModel::candidatesChanged,
-                this, &QskInputContext::handleCandidatesChanged );
+            if( m_inputPanel )
+            {
+                m_inputPanel->disconnect( oldModel );
+                QObject::connect(
+                    newModel, &QskInputCompositionModel::groupsChanged,
+                    m_inputPanel.data(), &QskVirtualKeyboard::setPreeditGroups );
+                QObject::connect(
+                    newModel, &QskInputCompositionModel::candidatesChanged,
+                    this, &QskInputContext::handleCandidatesChanged );
+            }
         }
     }
 
@@ -212,7 +206,7 @@ void QskInputContext::setFocusObject( QObject* focusObject )
     if ( !m_focusObject )
     {
         m_inputItem = nullptr;
-        m_inputCompositionModel->setInputItem( nullptr );
+        currentInputCompositionModel()->setInputItem( nullptr );
         return;
     }
 
@@ -225,7 +219,7 @@ void QskInputContext::setFocusObject( QObject* focusObject )
         if( qskNearestFocusScope( focusQuickItem ) != m_inputPanel )
         {
             m_inputItem = focusQuickItem;
-            m_inputCompositionModel->setInputItem( m_inputItem ); // ### use a signal/slot connection
+            currentInputCompositionModel()->setInputItem( m_inputItem ); // ### use a signal/slot connection
             inputItemChanged = true;
         }
     }
@@ -246,9 +240,31 @@ void QskInputContext::setFocusObject( QObject* focusObject )
     update( Qt::InputMethodQuery( Qt::ImQueryAll & ~Qt::ImEnabled ) );
 }
 
+void QskInputContext::inputMethodRegistered( const QLocale& locale, QskInputCompositionModel* model )
+{
+    auto oldModel = m_inputModels.value( locale, nullptr );
+
+    if( oldModel != nullptr )
+    {
+        oldModel->deleteLater();
+    }
+
+    m_inputModels.insert( locale, model );
+}
+
+QskInputCompositionModel* QskInputContext::compositionModelForLocale( const QLocale& locale ) const
+{
+    return m_inputModels.value( locale, m_defaultInputCompositionModel );
+}
+
+QskInputCompositionModel* QskInputContext::currentInputCompositionModel() const
+{
+    return m_inputModels.value( locale(), m_defaultInputCompositionModel );
+}
+
 void QskInputContext::invokeAction( QInputMethod::Action action, int cursorPosition )
 {
-    Q_UNUSED(cursorPosition);
+    Q_UNUSED( cursorPosition );
 
     if ( !m_inputPanel )
         return;
@@ -256,13 +272,15 @@ void QskInputContext::invokeAction( QInputMethod::Action action, int cursorPosit
     switch ( static_cast< QskVirtualKeyboard::Action >( action ) )
     {
         case QskVirtualKeyboard::Compose:
-            m_inputCompositionModel->composeKey( static_cast< Qt::Key >( cursorPosition ) );
+            currentInputCompositionModel()->composeKey( static_cast< Qt::Key >( cursorPosition ) );
             break;
+
         case QskVirtualKeyboard::SelectGroup:
-            m_inputCompositionModel->setGroupIndex( cursorPosition );
+            currentInputCompositionModel()->setGroupIndex( cursorPosition );
             break;
+
         case QskVirtualKeyboard::SelectCandidate:
-            m_inputCompositionModel->commitCandidate( cursorPosition );
+            currentInputCompositionModel()->commitCandidate( cursorPosition );
             break;
     }
 }
@@ -274,10 +292,11 @@ void QskInputContext::emitAnimatingChanged()
 
 void QskInputContext::handleCandidatesChanged()
 {
-    QVector< Qt::Key > candidates( m_inputCompositionModel->candidateCount() );
-    for ( int i = 0; i < candidates.length(); ++i )
+    QVector< Qt::Key > candidates( currentInputCompositionModel()->candidateCount() );
+
+    for( int i = 0; i < candidates.length(); ++i )
     {
-        candidates[i] = static_cast< Qt::Key >( m_inputCompositionModel->candidate( i ) );
+        candidates[i] = currentInputCompositionModel()->candidate( i );
     }
 
     m_inputPanel->setPreeditCandidates( candidates );
@@ -296,8 +315,8 @@ void QskInputContext::setInputPanel( QskVirtualKeyboard* inputPanel )
             this, &QPlatformInputContext::emitKeyboardRectChanged );
         QObject::disconnect( m_inputPanel, &QskVirtualKeyboard::localeChanged,
             this, &QPlatformInputContext::emitLocaleChanged );
-        if ( m_inputCompositionModel )
-            m_inputPanel->disconnect( m_inputCompositionModel.get() );
+        if ( currentInputCompositionModel() )
+            m_inputPanel->disconnect( currentInputCompositionModel() );
     }
 
     m_inputPanel = inputPanel;
@@ -310,10 +329,10 @@ void QskInputContext::setInputPanel( QskVirtualKeyboard* inputPanel )
         this, &QPlatformInputContext::emitKeyboardRectChanged );
     QObject::connect( m_inputPanel, &QskVirtualKeyboard::localeChanged,
         this, &QPlatformInputContext::emitLocaleChanged );
-    if ( m_inputCompositionModel )
+    if ( currentInputCompositionModel() )
     {
         QObject::connect(
-            m_inputCompositionModel.get(), &QskInputCompositionModel::groupsChanged,
+            currentInputCompositionModel(), &QskInputCompositionModel::groupsChanged,
             m_inputPanel.data(), &QskVirtualKeyboard::setPreeditGroups );
     }
 }

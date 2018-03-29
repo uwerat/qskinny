@@ -23,15 +23,19 @@ static QString qskKeyString( int code )
         case Qt::Key_Backspace:
         case Qt::Key_Muhenkan:
             return QString();
+
         case Qt::Key_Return:
         case Qt::Key_Kanji:
-            return QChar(QChar::CarriageReturn);
+            return QChar( QChar::CarriageReturn );
+
         case Qt::Key_Space:
-            return QChar(QChar::Space);
+            return QChar( QChar::Space );
+
         default:
             break;
     }
-    return QChar(code);
+
+    return QChar( code );
 }
 
 class QskInputCompositionModel::PrivateData
@@ -51,6 +55,14 @@ public:
     int groupIndex;
 };
 
+static inline void sendCompositionEvent( QInputMethodEvent* e )
+{
+    if( auto focusObject = QGuiApplication::focusObject() )
+    {
+        QCoreApplication::sendEvent( focusObject, e );
+    }
+}
+
 QskInputCompositionModel::QskInputCompositionModel():
     m_data( new PrivateData )
 {
@@ -67,6 +79,13 @@ QskInputCompositionModel::~QskInputCompositionModel()
 
 void QskInputCompositionModel::composeKey( Qt::Key key )
 {
+    /*
+     * This operation might be expensive (e.g. for Hunspell) and
+     * should be done asynchronously to be able to run e.g. suggestions
+     * in a separate thread to not block the UI.
+     * TODO
+     */
+
     auto inputMethod = QGuiApplication::inputMethod();
     if ( !inputMethod )
         return;
@@ -96,35 +115,51 @@ void QskInputCompositionModel::composeKey( Qt::Key key )
         }
         case Qt::Key_Space:
         {
-            if ( !spaceLeft )
+            if( !spaceLeft )
+            {
                 return;
+            }
 
-            if ( !m_data->preedit.isEmpty() )
+            if( !m_data->preedit.isEmpty() )
             {
-                if ( candidateCount() > 0 ) // Commit first candidate
-                    commit( QChar( candidate( 0 ) ) );
-                else // Commit what is in the buffer
-                    commit( m_data->preedit.left( spaceLeft ) );
+                commit( m_data->preedit.left( spaceLeft ) );
             }
-            else
-            {
-                commit( qskKeyString(key) );
-            }
+
+            commit( qskKeyString( key ) );
             return;
         }
+
         case Qt::Key_Return:
         {
             if ( !spaceLeft )
                 return;
 
             // Commit what is in the buffer
-            if ( !m_data->preedit.isEmpty() )
+            if( !m_data->preedit.isEmpty() )
+            {
                 commit( m_data->preedit.left( spaceLeft ) );
-            else if ( hints & Qt::ImhMultiLine )
-                commit( qskKeyString( key ) );
+            }
+            else if( hints & Qt::ImhMultiLine )
+            {
+                 commit( qskKeyString( key ) );
+            }
+#if 0
+            else
+            {
+                auto focusWindow = QGuiApplication::focusWindow();
 
-            return;
+                if( focusWindow )
+                {
+                    QKeyEvent keyPress( QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier );
+                    QKeyEvent keyRelease( QEvent::KeyRelease, Qt::Key_Return, Qt::NoModifier );                     QCoreApplication::sendEvent( focusWindow, &keyPress );
+                    QCoreApplication::sendEvent( focusWindow, &keyRelease );
+                }
+
+                return;
+            }
+#endif
         }
+
         case Qt::Key_Left:
         case Qt::Key_Right:
         {
@@ -169,16 +204,17 @@ void QskInputCompositionModel::composeKey( Qt::Key key )
 
         m_data->preedit = qskKeyString( key );
         displayPreedit = polishPreedit( m_data->preedit );
+
         if ( !hasIntermediate() )
         {
-            commit(m_data->preedit);
+            commit( m_data->preedit );
             return;
         }
     }
 
     m_data->preeditAttributes.first().length = displayPreedit.length();
-    QInputMethodEvent e(displayPreedit, m_data->preeditAttributes);
-    sendCompositionEvent(&e);
+    QInputMethodEvent e( displayPreedit, m_data->preeditAttributes );
+    sendCompositionEvent( &e );
 }
 
 void QskInputCompositionModel::clearPreedit()
@@ -228,7 +264,7 @@ void QskInputCompositionModel::backspace()
 
     if ( !m_data->preedit.isEmpty() )
     {
-        m_data->preedit.chop(1);
+        m_data->preedit.chop( 1 );
     }
     else
     {
@@ -258,7 +294,6 @@ void QskInputCompositionModel::moveCursor( Qt::Key key )
     if ( !m_data->preedit.isEmpty() )
         return;
 
-    // ### this should be in the panel:
     QKeyEvent moveCursorPress( QEvent::KeyPress, key, Qt::NoModifier );
     QKeyEvent moveCursorRelease( QEvent::KeyRelease, key,  Qt::NoModifier );
 #if 1
@@ -280,9 +315,9 @@ bool QskInputCompositionModel::hasIntermediate() const
     return false;
 }
 
-bool QskInputCompositionModel::isComposable(const QStringRef& preedit) const
+bool QskInputCompositionModel::isComposable( const QStringRef& preedit ) const
 {
-    Q_UNUSED(preedit);
+    Q_UNUSED( preedit );
     return false;
 }
 
@@ -313,10 +348,10 @@ void QskInputCompositionModel::setInputItem( QObject *inputItem )
     m_data->inputItem = inputItem;
 }
 
-bool QskInputCompositionModel::nextGroupIndex(int& index, bool forward) const
+bool QskInputCompositionModel::nextGroupIndex( int& index, bool forward ) const
 {
-    Q_UNUSED(index);
-    Q_UNUSED(forward);
+    Q_UNUSED( index );
+    Q_UNUSED( forward );
     return false;
 }
 

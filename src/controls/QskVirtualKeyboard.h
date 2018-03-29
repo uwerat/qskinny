@@ -22,6 +22,7 @@ class QSK_EXPORT QskVirtualKeyboardButton : public QskPushButton
 
     public:
         QSK_SUBCONTROLS( Panel, Text, TextCancelButton )
+
         QskVirtualKeyboardButton( int keyIndex, QskVirtualKeyboard* inputPanel, QQuickItem* parent = nullptr );
 
         virtual QskAspect::Subcontrol effectiveSubcontrol( QskAspect::Subcontrol subControl ) const override;
@@ -48,7 +49,6 @@ class QSK_EXPORT QskVirtualKeyboard : public QskBox
     using Inherited = QskBox;
 
 public:
-
     QSK_SUBCONTROLS( Panel )
 
     struct KeyData
