@@ -10,3 +10,4 @@ fontconfig
 qvg
 *.swp
 qskinny.pro.user
+*.o
