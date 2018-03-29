@@ -77,6 +77,11 @@ QskInputCompositionModel::~QskInputCompositionModel()
 {
 }
 
+bool QskInputCompositionModel::supportsSuggestions() const
+{
+    return false;
+}
+
 void QskInputCompositionModel::composeKey( Qt::Key key )
 {
     /*
@@ -179,7 +184,7 @@ void QskInputCompositionModel::composeKey( Qt::Key key )
         return;
     }
 
-    const auto firstCandidate = candidateCount() > 0 ? QChar( candidate( 0 ) ) : QString();
+    const auto firstCandidate = candidateCount() > 0 ? candidate( 0 ) : QString();
     const auto oldPreedit = m_data->preedit;
     m_data->preedit += qskKeyString( key );
     auto displayPreedit = polishPreedit( m_data->preedit );
@@ -228,9 +233,9 @@ int QskInputCompositionModel::candidateCount() const
     return 0;
 }
 
-Qt::Key QskInputCompositionModel::candidate( int ) const
+QString QskInputCompositionModel::candidate( int ) const
 {
-    return Qt::Key( 0 );
+    return QString();
 }
 
 // This method is called before displaying a new preedit string. It can be used
@@ -254,7 +259,7 @@ void QskInputCompositionModel::commit( const QString& text )
 
 void QskInputCompositionModel::commitCandidate( int index )
 {
-    commit( qskKeyString( candidate( index ) ) );
+    commit( candidate( index ) );
 }
 
 void QskInputCompositionModel::backspace()

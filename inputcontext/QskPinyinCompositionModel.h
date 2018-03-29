@@ -16,8 +16,10 @@ public:
     QskPinyinCompositionModel();
     virtual ~QskPinyinCompositionModel() override;
 
+    virtual bool supportsSuggestions() const override final;
+
     int candidateCount() const override;
-    Qt::Key candidate( int ) const override;
+    QString candidate( int ) const override;
 
     QVector< Qt::Key > groups() const override;
 

@@ -111,6 +111,7 @@ void QskInputContext::update( Qt::InputMethodQueries queries )
         {
             if( m_inputPanel )
             {
+                m_inputPanel->setCandidateBarVisible( newModel->supportsSuggestions() );
                 m_inputPanel->disconnect( oldModel );
                 QObject::connect(
                     newModel, &QskInputCompositionModel::groupsChanged,
@@ -262,6 +263,11 @@ QskInputCompositionModel* QskInputContext::currentInputCompositionModel() const
     return m_inputModels.value( locale(), m_defaultInputCompositionModel );
 }
 
+void QskInputContext::resetCandidates()
+{
+    m_inputPanel->setPreeditCandidates( {} );
+}
+
 void QskInputContext::invokeAction( QInputMethod::Action action, int cursorPosition )
 {
     Q_UNUSED( cursorPosition );
@@ -281,6 +287,7 @@ void QskInputContext::invokeAction( QInputMethod::Action action, int cursorPosit
 
         case QskVirtualKeyboard::SelectCandidate:
             currentInputCompositionModel()->commitCandidate( cursorPosition );
+            resetCandidates();
             break;
     }
 }
@@ -292,7 +299,7 @@ void QskInputContext::emitAnimatingChanged()
 
 void QskInputContext::handleCandidatesChanged()
 {
-    QVector< Qt::Key > candidates( currentInputCompositionModel()->candidateCount() );
+    QVector< QString > candidates( currentInputCompositionModel()->candidateCount() );
 
     for( int i = 0; i < candidates.length(); ++i )
     {
@@ -323,6 +330,11 @@ void QskInputContext::setInputPanel( QskVirtualKeyboard* inputPanel )
     if ( !m_inputPanel )
         return;
 
+    // call it once when it has been set:
+    if( currentInputCompositionModel() )
+    {
+        m_inputPanel->setCandidateBarVisible( currentInputCompositionModel()->supportsSuggestions() );
+    }
     QObject::connect( m_inputPanel, &QskVirtualKeyboard::visibleChanged,
         this, &QPlatformInputContext::emitInputPanelVisibleChanged );
     QObject::connect( m_inputPanel, &QskVirtualKeyboard::keyboardRectChanged,

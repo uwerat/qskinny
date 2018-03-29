@@ -47,6 +47,7 @@ private Q_SLOTS:
 
 private:
     QskInputCompositionModel* currentInputCompositionModel() const;
+    void resetCandidates();
 
     QPointer< QObject > m_focusObject;
     QPointer< QQuickItem > m_inputItem;
