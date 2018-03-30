@@ -7,8 +7,9 @@
 #define QSK_INPUT_CONTEXT_H
 
 #include <qpa/qplatforminputcontext.h>
-#include <QPointer>
+#include <QHash>
 #include <QQuickItem>
+#include <QPointer>
 
 #include <memory>
 
@@ -36,16 +37,23 @@ public:
     QLocale locale() const override;
     void setFocusObject( QObject* ) override;
 
+    QskInputCompositionModel* compositionModelForLocale( const QLocale& locale ) const;
+
 private Q_SLOTS:
     void emitAnimatingChanged();
     void handleCandidatesChanged();
     void setInputPanel( QskVirtualKeyboard* );
+    void inputMethodRegistered( const QLocale& locale, QskInputCompositionModel* model );
 
 private:
+    QskInputCompositionModel* currentInputCompositionModel() const;
+    void resetCandidates();
+
     QPointer< QObject > m_focusObject;
     QPointer< QQuickItem > m_inputItem;
     QPointer< QskVirtualKeyboard > m_inputPanel;
-    std::unique_ptr< QskInputCompositionModel > m_inputCompositionModel;
+    QskInputCompositionModel* m_defaultInputCompositionModel;
+    QHash< QLocale, QskInputCompositionModel* > m_inputModels;
 };
 
 #endif // QSK_INPUT_CONTEXT_H

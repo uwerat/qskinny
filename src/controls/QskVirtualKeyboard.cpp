@@ -145,6 +145,50 @@ namespace
     };
 }
 
+QSK_SUBCONTROL( QskVirtualKeyboardCandidateButton, Panel )
+QSK_SUBCONTROL( QskVirtualKeyboardCandidateButton, Text )
+
+QskVirtualKeyboardCandidateButton::QskVirtualKeyboardCandidateButton(QskVirtualKeyboard* inputPanel, QQuickItem* parent ) :
+    Inherited( parent ),
+    m_inputPanel( inputPanel ),
+    m_index( -1 )
+{
+    setFlag( QQuickItem::ItemAcceptsInputMethod );
+    setText( QStringLiteral( " " ) ); // ###
+
+    connect( this, &QskVirtualKeyboardButton::pressed, this, [ this ]()
+    {
+        m_inputPanel->handleCandidateKey( m_index, m_text );
+    } );
+}
+
+void QskVirtualKeyboardCandidateButton::setIndexAndText(int index, const QString& text )
+{
+    m_index = index;
+    m_text = text;
+    setText( m_text );
+}
+
+QskAspect::Subcontrol QskVirtualKeyboardCandidateButton::effectiveSubcontrol( QskAspect::Subcontrol subControl ) const
+{
+    if( subControl == QskPushButton::Panel )
+    {
+        return QskVirtualKeyboardCandidateButton::Panel;
+    }
+
+    if( subControl == QskPushButton::Text )
+    {
+        return QskVirtualKeyboardCandidateButton::Text;
+    }
+
+    return subControl;
+}
+
+int QskVirtualKeyboardCandidateButton::maxCandidates()
+{
+    return 12;
+}
+
 QSK_SUBCONTROL( QskVirtualKeyboard, Panel )
 
 QSK_SUBCONTROL( QskVirtualKeyboardButton, Panel )
@@ -233,8 +277,10 @@ class QskVirtualKeyboard::PrivateData
             mode( QskVirtualKeyboard::LowercaseMode ),
             selectedGroup( -1 ),
             candidateOffset( 0 ),
+            candidateBox( nullptr ),
             buttonsBox( nullptr ),
-            isUIInitialized( false )
+            isUIInitialized( false ),
+            candidateBoxVisible( false )
         {
         }
 
@@ -248,14 +294,17 @@ class QskVirtualKeyboard::PrivateData
         QLocale locale;
 
         QVector< Qt::Key > groups;
-        QVector< Qt::Key > candidates;
+        QVector< QString > candidates;
 
         std::unordered_map< int, KeyCounter > activeKeys;
         KeyTable keyTable[ ModeCount ];
 
+        QList< QskVirtualKeyboardCandidateButton* > candidateButtons;
+        QskLinearBox* candidateBox;
         QskLinearBox* buttonsBox;
         QList< QskVirtualKeyboardButton* > keyButtons;
         bool isUIInitialized;
+        bool candidateBoxVisible;
 };
 
 QskVirtualKeyboard::QskVirtualKeyboard( QQuickItem* parent ):
@@ -500,7 +549,7 @@ void QskVirtualKeyboard::setPreeditGroups( const QVector< Qt::Key >& groups )
     }
 }
 
-void QskVirtualKeyboard::setPreeditCandidates( const QVector< Qt::Key >& candidates )
+void QskVirtualKeyboard::setPreeditCandidates( const QVector< QString >& candidates )
 {
     if( m_data->candidates == candidates )
     {
@@ -515,42 +564,33 @@ void QskVirtualKeyboard::setCandidateOffset( int candidateOffset )
 {
     m_data->candidateOffset = candidateOffset;
 
-    auto& topRow = m_data->keyTable[ LowercaseMode ].data[ 0 ];
-
     const auto groupCount = m_data->groups.length();
     const auto candidateCount = m_data->candidates.length();
-    const auto count = std::min( candidateCount, KeyCount - groupCount );
+    const auto count = std::min( candidateCount, QskVirtualKeyboardCandidateButton::maxCandidates() );
     const bool continueLeft = m_data->candidateOffset > 0;
     const bool continueRight = ( candidateCount - m_data->candidateOffset ) > count;
 
     for( int i = 0; i < count; ++i )
     {
-        auto& keyData = topRow[ i + groupCount ];
-
         if( continueLeft && i == 0 )
         {
-            keyData.key = Qt::Key_ApplicationLeft;
+            m_data->candidateButtons.at( i )->setIndexAndText( i, textForKey( Qt::Key_ApplicationLeft ) );
         }
         else if( continueRight && ( i == KeyCount - groupCount - 1 ) )
         {
-            keyData.key = Qt::Key_ApplicationRight;
+            m_data->candidateButtons.at( i )->setIndexAndText( i, textForKey( Qt::Key_ApplicationRight ) );
         }
         else
         {
-            keyData.isSuggestionKey = true; // ### reset when switching layouts etc.!
-            keyData.key = m_data->candidates.at( i + m_data->candidateOffset );
+            int index = i + m_data->candidateOffset;
+            QString text = m_data->candidates.at( index );
+            m_data->candidateButtons.at( i )->setIndexAndText( index, text );
         }
     }
 
-    for( int i = count; i < KeyCount - groupCount; ++i )
+    for( int i = count; i < QskVirtualKeyboardCandidateButton::maxCandidates(); ++i )
     {
-        auto& keyData = topRow[ i + groupCount ];
-        keyData.key = Qt::Key_unknown;
-    }
-
-    if( m_data->mode == LowercaseMode )
-    {
-        updateUI();
+        m_data->candidateButtons.at( i )->setIndexAndText( -1, QStringLiteral( "" ) );
     }
 }
 
@@ -595,6 +635,50 @@ void QskVirtualKeyboard::updateLayout()
     }
 }
 
+void QskVirtualKeyboard::createUI()
+{
+    // deferring the UI creation until we are visible so that the contentsRect() returns the proper value
+
+    setAutoLayoutChildren( true );
+
+    auto& panelKeyData = keyData();
+
+    QskLinearBox* outterBox = new QskLinearBox( Qt::Vertical, this );
+    outterBox->setAutoAddChildren( true );
+
+    m_data->candidateBox = new QskLinearBox( Qt::Horizontal, outterBox );
+    QMarginsF margins( 0, 10, 0, 20 ); // ###
+    m_data->candidateBox->setMargins( margins );
+
+    // to determine suggestions buttons width
+    // (otherwise empty buttons would be too small when there are only a few suggestions):
+    // ### Can this be done with the layout engine or so?
+    QRectF rect = layoutRect();
+    auto candidateButtonWidth = rect.width() / QskVirtualKeyboardCandidateButton::maxCandidates()
+            - m_data->candidateBox->spacing() * QskVirtualKeyboardCandidateButton::maxCandidates();
+
+    for( int a = 0; a < QskVirtualKeyboardCandidateButton::maxCandidates(); ++a )
+    {
+        QskVirtualKeyboardCandidateButton* candidateButton = new QskVirtualKeyboardCandidateButton( this, m_data->candidateBox );
+        qreal height = candidateButton->sizeHint().height();
+        candidateButton->setPreferredHeight( height + 10 ); // ### propper padding by adding Panel subcontrol
+        candidateButton->setPreferredWidth( candidateButtonWidth );
+        candidateButton->installEventFilter( this );
+
+        m_data->candidateBox->setRetainSizeWhenHidden( candidateButton, true );
+        m_data->candidateButtons.append( candidateButton );
+    }
+
+    m_data->candidateBox->setVisible( m_data->candidateBoxVisible );
+    outterBox->setRetainSizeWhenHidden( m_data->candidateBox, true );
+
+    qreal candidatesHeight = m_data->candidateBox->sizeHint().height();
+
+    const auto contentsRect = layoutRect();
+    const qreal sx = contentsRect.size().width();
+    const qreal sy = contentsRect.size().height() - candidatesHeight;
+}
+
 void QskVirtualKeyboard::updateUI()
 {
     for( QskVirtualKeyboardButton* button : qskAsConst( m_data->keyButtons ) )
@@ -614,38 +698,6 @@ void QskVirtualKeyboard::handleKey( int keyIndex )
 {
     KeyData keyData = keyDataAt( keyIndex );
     const auto key = keyData.key & ~KeyStates;
-
-    // Preedit keys
-    const auto row = keyIndex / KeyCount;
-    const auto column = keyIndex % KeyCount;
-
-    if( m_data->mode == LowercaseMode && !m_data->groups.isEmpty() && row == 0 )
-    {
-        if( key == Qt::Key_ApplicationLeft
-                || key == Qt::Key_ApplicationRight )
-        {
-            setCandidateOffset( m_data->candidateOffset
-                                + ( key == Qt::Key_ApplicationLeft ? -1 : 1 ) );
-            return;
-        }
-
-        const auto groupCount = m_data->groups.length();
-
-        if( column < groupCount )
-        {
-            selectGroup( column );
-        }
-        else if( column < KeyCount )
-        {
-            selectCandidate( column - groupCount + m_data->candidateOffset );
-        }
-        else
-        {
-            Q_UNREACHABLE();    // Handle the final key...
-        }
-
-        return;
-    }
 
     // Mode-switching keys
     switch( key )
@@ -675,14 +727,31 @@ void QskVirtualKeyboard::handleKey( int keyIndex )
             break;
     }
 
-    if( keyData.isSuggestionKey )
+    compose( key );
+}
+
+void QskVirtualKeyboard::handleCandidateKey( int index, const QString& text )
+{
+    if( text == textForKey( Qt::Key_ApplicationLeft ) )
     {
-        selectCandidate( keyIndex );
+        setCandidateOffset( m_data->candidateOffset - 1 );
+    }
+    else if( text == textForKey( Qt::Key_ApplicationRight ) )
+    {
+        setCandidateOffset( m_data->candidateOffset + 1 );
     }
     else
     {
-        compose( key );
+        selectCandidate( index );
     }
+}
+
+void QskVirtualKeyboard::setCandidateBarVisible( bool visible )
+{
+    // need to cache it until we have created the UI
+    m_data->candidateBoxVisible = visible;
+    if( m_data->isUIInitialized )
+        m_data->candidateBox->setVisible( m_data->candidateBoxVisible );
 }
 
 QString QskVirtualKeyboard::currentTextForKeyIndex( int keyIndex ) const

@@ -5,52 +5,55 @@
 
 #include "QskPinyinCompositionModel.h"
 
-#include "pinyin/zh.h"
+#include "pinyinime.h"
 
+#include <QDebug>
 #include <QVector>
 
 class QskPinyinCompositionModel::PrivateData
 {
 public:
-    PrivateData():
-        groups( 5 )
+    PrivateData()
     {
     }
 
+    QList< QString > candidates; // ### put that into input composition model and add protected accessors
     QVector< Qt::Key > groups;
-
-    char currentVowel;
-    uchar currentSubtones;
-
-    int candidateCount;
-    const PinyinCandidateSection* candidates; // pointer to 6 values, unless null
 };
 
 QskPinyinCompositionModel::QskPinyinCompositionModel():
     QskInputCompositionModel(),
     m_data( new PrivateData )
 {
-    m_data->candidateCount = 0;
-    m_data->candidates = nullptr;
-    m_data->currentVowel = -1;
-    m_data->currentSubtones = NoTone;
+    QString dictionary = QString::fromLocal8Bit( qgetenv( "DCU_DATA_ROOT" ) )
+            + QStringLiteral( "/3rdparty/pinyin/data/dict_pinyin.dat" );
+    // ### prevent having 2 calls to im_open_decoder by using a singleton or so
+    bool opened = ime_pinyin::im_open_decoder( dictionary.toUtf8().constData(), "" );
+
+    if( !opened )
+    {
+        qWarning() << "could not open pinyin decoder dictionary at" << dictionary;
+    }
 }
 
 QskPinyinCompositionModel::~QskPinyinCompositionModel()
 {
+    ime_pinyin::im_close_decoder();
+}
+
+bool QskPinyinCompositionModel::supportsSuggestions() const
+{
+    return true;
 }
 
 int QskPinyinCompositionModel::candidateCount() const
 {
-    return qMax( 0, m_data->candidateCount );
+    return qMax( 0, m_data->candidates.count() );
 }
 
-Qt::Key QskPinyinCompositionModel::candidate( int index ) const
+QString QskPinyinCompositionModel::candidate( int index ) const
 {
-    Q_ASSERT( m_data->candidates[ groupIndex() ].data
-        && m_data->candidates[ groupIndex() ].size > index );
-
-    return static_cast< Qt::Key >( m_data->candidates[ groupIndex() ].data[ index ] );
+    return m_data->candidates.at( index );
 }
 
 QVector< Qt::Key > QskPinyinCompositionModel::groups() const
@@ -60,97 +63,63 @@ QVector< Qt::Key > QskPinyinCompositionModel::groups() const
 
 bool QskPinyinCompositionModel::hasIntermediate() const
 {
-    return m_data->currentVowel == 0
-           || ( m_data->currentVowel > 0 && m_data->candidates
-                && m_data->candidates[0].data );
+    return m_data->candidates.count() > 0;
 }
 
 QString QskPinyinCompositionModel::polishPreedit( const QString& preedit )
 {
-    if ( preedit.isEmpty() )
+    if( preedit.isEmpty() )
     {
-        m_data->candidates = nullptr;
-        m_data->candidateCount = 0;
+        ime_pinyin::im_reset_search();
+    }
+
+    QByteArray preeditBuffer = preedit.toLatin1();
+    size_t numSearchResults = ime_pinyin::im_search( preeditBuffer.constData(), size_t( preeditBuffer.length() ) );
+
+    if( numSearchResults > 0 )
+    {
+        QList< QString > newCandidates;
+        newCandidates.reserve( 1 );
+
+        QVector< QChar > candidateBuffer;
+        candidateBuffer.resize( ime_pinyin::kMaxSearchSteps + 1 );
+
+        // ### numSearchResults is way too big, we should only do this for the first ten results or so
+        for( unsigned int a = 0; a < numSearchResults; a++ )
+        {
+            size_t length = static_cast< size_t >( candidateBuffer.length() - 1 );
+            bool getCandidate = ime_pinyin::im_get_candidate( a, reinterpret_cast< ime_pinyin::char16* >( candidateBuffer.data() ), length );
+
+            QString candidate;
+
+            if( getCandidate )
+            {
+                candidateBuffer.last() = 0;
+                candidate = QString( candidateBuffer.data() );
+            }
+
+            Qt::Key key = Qt::Key( candidate.at( 0 ).unicode() );
+            QString string = QChar( key );
+
+            newCandidates.append( string );
+        }
+
+        m_data->candidates = newCandidates;
         Q_EMIT candidatesChanged();
-
-        std::fill( m_data->groups.begin(), m_data->groups.end(), Qt::Key( 0 ) );
-        Q_EMIT groupsChanged( m_data->groups );
-
-        return QString();
     }
 
-    const PinyinCandidates candidates = pinyinCandidates( preedit.toUtf8() );
-
-    QString displayText = preedit;
-    displayText.replace( 'v', QChar(0x00FC), Qt::CaseInsensitive );
-
-    if ( candidates.vowel > 0 && groupIndex() != 0
-         && ( candidates.subtones & ( 1 << ( groupIndex() - 1 ) ) ) )
-    {
-        const int vowelIndex = preedit.indexOf(candidates.vowel);
-        Q_ASSERT(vowelIndex >= 0);
-        QChar replacement = vowelWithTone(candidates.vowel, groupIndex() );
-
-        displayText.replace(vowelIndex, 1, replacement);
-    }
-    else if ( groupIndex() != 0 )
-    {
-        setGroupIndex( 0 );
-    }
-
-    m_data->candidates = candidates.sections;
-    m_data->candidateCount = m_data->candidates[ groupIndex() ].size;
-    Q_EMIT candidatesChanged();
-
-    if ( candidates.vowel == m_data->currentVowel
-         && candidates.subtones == m_data->currentSubtones )
-    {
-        return displayText;
-    }
-
-    m_data->currentVowel = candidates.vowel;
-    m_data->currentSubtones = candidates.subtones;
-
-    QVector< Qt::Key > groups =
-    {
-        ( m_data->currentSubtones & FlatTone )
-        ? vowelWithTone( m_data->currentVowel, 1 ) : Qt::Key( 0 ),
-        ( m_data->currentSubtones & RisingTone )
-        ? vowelWithTone( m_data->currentVowel, 2 ) : Qt::Key( 0 ),
-        ( m_data->currentSubtones & LowTone )
-        ? vowelWithTone( m_data->currentVowel, 3 ) : Qt::Key( 0 ),
-        m_data->groups[4] = ( m_data->currentSubtones & FallingTone )
-            ? vowelWithTone( m_data->currentVowel, 4 ) : Qt::Key( 0 ),
-        ( m_data->currentSubtones & NeutralTone )
-        ? vowelWithTone( m_data->currentVowel, 0 ) : Qt::Key( 0 )
-    };
-
-    if ( groups != m_data->groups )
-    {
-        m_data->groups = groups;
-        Q_EMIT groupsChanged( m_data->groups );
-    }
-
-    return displayText;
+    return preedit;
 }
 
-bool QskPinyinCompositionModel::isComposable(const QStringRef& preedit) const
+bool QskPinyinCompositionModel::isComposable( const QStringRef& preedit ) const
 {
-    const QByteArray text = preedit.toUtf8();
-    PinyinCandidates candidates = pinyinCandidates( text );
-
-    if ( candidates.vowel < 0 )
-        return false;
-
-    if ( candidates.vowel == 0 )
-        return true;
-
-    return candidates.sections[ 0 ].data;
+    Q_UNUSED( preedit );
+    return false; // ### implement
 }
 
 void QskPinyinCompositionModel::handleGroupIndexChanged()
 {
-    m_data->candidateCount = m_data->candidates[ groupIndex() ].size;
+    // ### implement
 }
 
 #include "moc_QskPinyinCompositionModel.cpp"

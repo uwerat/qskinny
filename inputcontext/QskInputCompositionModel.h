@@ -23,17 +23,20 @@ public:
     QskInputCompositionModel();
     virtual ~QskInputCompositionModel();
 
+    // to determine whether to show the suggestion bar:
+    virtual bool supportsSuggestions() const;
+
     void commit( const QString& );
-    void commitCandidate( int );
+    virtual void commitCandidate( int );
     void composeKey( Qt::Key );
 
     void clearPreedit();
 
     virtual int candidateCount() const;
-    virtual Qt::Key candidate( int ) const;
+    virtual QString candidate( int ) const;
 
     int groupIndex() const;
-    void setGroupIndex(int groupIndex);
+    void setGroupIndex( int groupIndex );
     virtual bool nextGroupIndex( int&, bool = true ) const;
 
     virtual QVector< Qt::Key > groups() const;

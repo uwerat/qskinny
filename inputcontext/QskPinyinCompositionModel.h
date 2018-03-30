@@ -14,18 +14,20 @@ class QskPinyinCompositionModel : public QskInputCompositionModel
 
 public:
     QskPinyinCompositionModel();
-    ~QskPinyinCompositionModel();
+    virtual ~QskPinyinCompositionModel() override;
+
+    virtual bool supportsSuggestions() const override final;
 
     int candidateCount() const override;
-    Qt::Key candidate( int ) const override;
+    QString candidate( int ) const override;
 
     QVector< Qt::Key > groups() const override;
 
 protected:
     // Used for text composition
     bool hasIntermediate() const override;
-    QString polishPreedit(const QString& preedit) override;
-    bool isComposable(const QStringRef& preedit) const override;
+    QString polishPreedit( const QString& preedit ) override;
+    bool isComposable( const QStringRef& preedit ) const override;
 
 private:
     void handleGroupIndexChanged();

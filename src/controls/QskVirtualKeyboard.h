@@ -14,6 +14,29 @@
 class QskInputCompositionModel;
 class QskVirtualKeyboard;
 
+class QSK_EXPORT QskVirtualKeyboardCandidateButton : public QskPushButton
+{
+    Q_OBJECT
+
+    using Inherited = QskPushButton;
+
+public:
+    QSK_SUBCONTROLS( Panel, Text )
+
+    QskVirtualKeyboardCandidateButton( QskVirtualKeyboard* inputPanel, QQuickItem* parent = nullptr );
+    void setIndexAndText( int index, const QString& text );
+
+    virtual QskAspect::Subcontrol effectiveSubcontrol( QskAspect::Subcontrol subControl ) const override;
+
+    static int maxCandidates();
+    // add a setter here as well if needed
+
+private:
+    QskVirtualKeyboard* m_inputPanel;
+    int m_index;
+    QString m_text;
+};
+
 class QSK_EXPORT QskVirtualKeyboardButton : public QskPushButton
 {
         Q_OBJECT
@@ -22,6 +45,7 @@ class QSK_EXPORT QskVirtualKeyboardButton : public QskPushButton
 
     public:
         QSK_SUBCONTROLS( Panel, Text, TextCancelButton )
+
         QskVirtualKeyboardButton( int keyIndex, QskVirtualKeyboard* inputPanel, QQuickItem* parent = nullptr );
 
         virtual QskAspect::Subcontrol effectiveSubcontrol( QskAspect::Subcontrol subControl ) const override;
@@ -48,7 +72,6 @@ class QSK_EXPORT QskVirtualKeyboard : public QskBox
     using Inherited = QskBox;
 
 public:
-
     QSK_SUBCONTROLS( Panel )
 
     struct KeyData
@@ -109,9 +132,12 @@ public:
     KeyData& keyDataAt( int ) const;
     QString currentTextForKeyIndex( int keyIndex ) const;
 
+    void handleCandidateKey( int index, const QString &text );
+    void setCandidateBarVisible( bool visible );
+
 public Q_SLOTS:
     void setPreeditGroups( const QVector< Qt::Key >& );
-    void setPreeditCandidates( const QVector<Qt::Key> & );
+    void setPreeditCandidates(const QVector< QString > & );
 
 protected:
     virtual void geometryChanged( const QRectF&, const QRectF& ) override;

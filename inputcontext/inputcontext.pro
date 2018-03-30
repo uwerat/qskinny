@@ -18,12 +18,13 @@ QSK_SUBDIRS = \
     $${QSK_ROOT}/src/dialogs
 
 INCLUDEPATH *= $${QSK_SUBDIRS}
+INCLUDEPATH += ../3rdparty/pinyin/include
 DEPENDPATH  += $${QSK_SUBDIRS}
 
 DESTDIR      = $${QSK_OUT_ROOT}/plugins/platforminputcontexts
 
 QMAKE_RPATHDIR *= $${QSK_OUT_ROOT}/lib
-LIBS *= -L$${QSK_OUT_ROOT}/lib -lqskinny
+LIBS *= -L$${QSK_OUT_ROOT}/lib -lqskinny -Wl,-Bstatic -L$${DESTDIR} -lqskinputcontext_pinyin -lqskinputcontext_hunspell -Wl,-Bdynamic
 
 win32 {
     contains(QSK_CONFIG, QskDll) {
@@ -36,12 +37,12 @@ SOURCES += \
     QskInputContextPlugin.cpp \
     QskInputCompositionModel.cpp \
     QskPinyinCompositionModel.cpp \
-    pinyin/zh.cpp
+    QskHunspellCompositionModel.cpp
 
 HEADERS += \
     QskInputContext.h \
     QskInputCompositionModel.h \
     QskPinyinCompositionModel.h \
-    pinyin/zh.h
+    QskHunspellCompositionModel.h
 
 OTHER_FILES += metadata.json
