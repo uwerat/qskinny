@@ -160,9 +160,9 @@ void QskInputCompositionModel::composeKey( Qt::Key key )
                     QCoreApplication::sendEvent( focusWindow, &keyRelease );
                 }
 
-                return;
             }
 #endif
+            return;
         }
 
         case Qt::Key_Left:

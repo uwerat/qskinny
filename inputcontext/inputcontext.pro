@@ -18,13 +18,26 @@ QSK_SUBDIRS = \
     $${QSK_ROOT}/src/dialogs
 
 INCLUDEPATH *= $${QSK_SUBDIRS}
-INCLUDEPATH += ../3rdparty/pinyin/include
-DEPENDPATH  += $${QSK_SUBDIRS}
+DEPENDPATH  *= $${QSK_SUBDIRS}
 
 DESTDIR      = $${QSK_OUT_ROOT}/plugins/platforminputcontexts
 
 QMAKE_RPATHDIR *= $${QSK_OUT_ROOT}/lib
-LIBS *= -L$${QSK_OUT_ROOT}/lib -lqskinny -Wl,-Bstatic -L$${DESTDIR} -lqskinputcontext_pinyin -lqskinputcontext_hunspell -Wl,-Bdynamic
+LIBS *= -L$${QSK_OUT_ROOT}/lib -lqskinny 
+
+# we need to write the lines below in a platform independent way: TODO ...
+
+pinyin {
+    INCLUDEPATH *= $${QSK_ROOT}/3rdparty/pinyin/include
+    LIBS *= -Wl,-Bstatic -L$${DESTDIR} -lqskinputcontext_pinyin
+}
+
+hunspell {
+    INCLUDEPATH *= $${QSK_ROOT}/3rdparty/hunspell/src
+    LIBS *= -Wl,-Bstatic -L$${DESTDIR} -lqskinputcontext_hunspell
+}
+
+LIBS *= -Wl,-Bdynamic
 
 win32 {
     contains(QSK_CONFIG, QskDll) {

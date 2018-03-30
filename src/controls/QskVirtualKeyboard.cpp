@@ -641,14 +641,14 @@ void QskVirtualKeyboard::createUI()
 
     setAutoLayoutChildren( true );
 
-    auto& panelKeyData = keyData();
+    auto outerBox = new QskLinearBox( Qt::Vertical, this );
 
-    QskLinearBox* outterBox = new QskLinearBox( Qt::Vertical, this );
-    outterBox->setAutoAddChildren( true );
-
-    m_data->candidateBox = new QskLinearBox( Qt::Horizontal, outterBox );
+    m_data->candidateBox = new QskLinearBox( Qt::Horizontal, outerBox );
+#if 1
+    // should be skin hints TODO ...
     QMarginsF margins( 0, 10, 0, 20 ); // ###
     m_data->candidateBox->setMargins( margins );
+#endif
 
     // to determine suggestions buttons width
     // (otherwise empty buttons would be too small when there are only a few suggestions):
@@ -659,9 +659,12 @@ void QskVirtualKeyboard::createUI()
 
     for( int a = 0; a < QskVirtualKeyboardCandidateButton::maxCandidates(); ++a )
     {
-        QskVirtualKeyboardCandidateButton* candidateButton = new QskVirtualKeyboardCandidateButton( this, m_data->candidateBox );
+        auto candidateButton = new QskVirtualKeyboardCandidateButton( this, m_data->candidateBox );
         qreal height = candidateButton->sizeHint().height();
-        candidateButton->setPreferredHeight( height + 10 ); // ### propper padding by adding Panel subcontrol
+#if 1
+         // should be done by margins/paddings
+        candidateButton->setPreferredHeight( height + 10 );
+#endif
         candidateButton->setPreferredWidth( candidateButtonWidth );
         candidateButton->installEventFilter( this );
 
@@ -670,13 +673,7 @@ void QskVirtualKeyboard::createUI()
     }
 
     m_data->candidateBox->setVisible( m_data->candidateBoxVisible );
-    outterBox->setRetainSizeWhenHidden( m_data->candidateBox, true );
-
-    qreal candidatesHeight = m_data->candidateBox->sizeHint().height();
-
-    const auto contentsRect = layoutRect();
-    const qreal sx = contentsRect.size().width();
-    const qreal sy = contentsRect.size().height() - candidatesHeight;
+    outerBox->setRetainSizeWhenHidden( m_data->candidateBox, true );
 }
 
 void QskVirtualKeyboard::updateUI()
