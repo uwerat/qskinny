@@ -1,21 +1,32 @@
 #include "QskHunspellCompositionModel.h"
+#include <QVector>
 
-#include "hunspell/hunspell.h"
+#include "hunspell.h"
 
-#include <QDebug>
-
-QskHunspellCompositionModel::QskHunspellCompositionModel()
-    : QskInputCompositionModel(),
-      // ### ship with code if license allows:
-      // ### load the language specific one depending on the locale
-      m_hunspellHandle( Hunspell_create( "/usr/share/hunspell/en_US.aff",
-                                         "/usr/share/hunspell/en_US.dic" ) )
+class QskHunspellCompositionModel::PrivateData
 {
+public:
+    Hunhandle* hunspellHandle;
+    QVector< QString > candidates;
+};
+
+QskHunspellCompositionModel::QskHunspellCompositionModel() :
+    QskInputCompositionModel(),
+    m_data( new PrivateData() )
+{
+#if 1
+    //  ship with code if license allows:
+    // loading the language specific one depending on the locale
+
+    m_data->hunspellHandle = Hunspell_create(
+        "/usr/share/hunspell/en_US.aff",
+        "/usr/share/hunspell/en_US.dic" );
+#endif
 }
 
 QskHunspellCompositionModel::~QskHunspellCompositionModel()
 {
-    Hunspell_destroy( m_hunspellHandle );
+    Hunspell_destroy( m_data->hunspellHandle );
 }
 
 bool QskHunspellCompositionModel::supportsSuggestions() const
@@ -25,7 +36,7 @@ bool QskHunspellCompositionModel::supportsSuggestions() const
 
 void QskHunspellCompositionModel::commitCandidate( int index )
 {
-    if( index < m_candidates.count() )
+    if( index < m_data->candidates.count() )
     {
         // The user usually selects a full word, so we can add the space
         QString commitString = candidate( index ) + " ";
@@ -35,12 +46,12 @@ void QskHunspellCompositionModel::commitCandidate( int index )
 
 int QskHunspellCompositionModel::candidateCount() const
 {
-    return m_candidates.count();
+    return m_data->candidates.count();
 }
 
 QString QskHunspellCompositionModel::candidate( int pos ) const
 {
-    return m_candidates.at( pos );
+    return m_data->candidates[ pos ];
 }
 
 QString QskHunspellCompositionModel::polishPreedit( const QString& preedit )
@@ -48,20 +59,21 @@ QString QskHunspellCompositionModel::polishPreedit( const QString& preedit )
     if( preedit.isEmpty() )
     {
         // new word: delete suggestions
-        m_candidates.clear();
+        m_data->candidates.clear();
     }
     else
     {
         char** suggestions;
         QByteArray word = preedit.toUtf8(); // ### do we need to check the encoding (see qtvirtualkeyboard)?
-        int suggestionCount = Hunspell_suggest( m_hunspellHandle, &suggestions, word.constData() );
+        int suggestionCount = Hunspell_suggest(
+            m_data->hunspellHandle, &suggestions, word.constData() );
 
         QVector< QString > candidates;
         candidates.reserve( suggestionCount );
 
         for( int a = 0; a < suggestionCount; ++a )
         {
-            QString suggestion = QString::fromUtf8( suggestions[a] ); // ### encoding?
+            const QString suggestion = QString::fromUtf8( suggestions[a] ); // ### encoding?
 
             if( suggestion.startsWith( preedit ) )
             {
@@ -72,9 +84,9 @@ QString QskHunspellCompositionModel::polishPreedit( const QString& preedit )
                 candidates.append( suggestion );
             }
         }
-        Hunspell_free_list( m_hunspellHandle, &suggestions, suggestionCount );
+        Hunspell_free_list( m_data->hunspellHandle, &suggestions, suggestionCount );
 
-        m_candidates = candidates;
+        m_data->candidates = candidates;
     }
 
     Q_EMIT candidatesChanged();

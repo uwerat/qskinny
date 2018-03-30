@@ -56,4 +56,4 @@ private:
     QHash< QLocale, QskInputCompositionModel* > m_inputModels;
 };
 
-#endif // QSK_INPUT_CONTEXT_H
+#endif

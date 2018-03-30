@@ -62,4 +62,4 @@ private:
     std::unique_ptr< PrivateData > m_data;
 };
 
-#endif // QSK_INPUT_COMPOSITION_MODEL_H
+#endif

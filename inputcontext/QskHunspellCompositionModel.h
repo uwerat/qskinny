@@ -1,32 +1,33 @@
-#ifndef QSKHUNSPELLCOMPOSITIONMODEL_H
-#define QSKHUNSPELLCOMPOSITIONMODEL_H
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * This file may be used under the terms of the QSkinny License, Version 1.0
+ *****************************************************************************/
+
+#ifndef QSK_HUNSPELL_COMPOSITION_MODEL_H
+#define QSK_HUNSPELL_COMPOSITION_MODEL_H
 
 #include "QskInputCompositionModel.h"
-
-#include <QVector>
-
-class Hunhandle;
 
 class QskHunspellCompositionModel : public QskInputCompositionModel
 {
 public:
     QskHunspellCompositionModel();
-    ~QskHunspellCompositionModel() override;
+    virtual ~QskHunspellCompositionModel() override;
 
     virtual bool supportsSuggestions() const override final;
 
     virtual void commitCandidate( int index ) override;
-    int candidateCount() const override;
-    QString candidate( int pos ) const override;
+    virtual int candidateCount() const override;
+    virtual QString candidate( int pos ) const override;
 
 protected:
-    bool hasIntermediate() const override;
+    virtual bool hasIntermediate() const override;
     virtual QString polishPreedit( const QString& preedit ) override;
-    bool isComposable( const QStringRef& preedit ) const override;
+    virtual bool isComposable( const QStringRef& preedit ) const override;
 
 private:
-    Hunhandle* m_hunspellHandle;
-    QVector< QString > m_candidates;
+    class PrivateData;
+    std::unique_ptr< PrivateData > m_data;
 };
 
-#endif // QSKHUNSPELLCOMPOSITIONMODEL_H
+#endif

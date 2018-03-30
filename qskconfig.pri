@@ -10,9 +10,6 @@ CONFIG           += pedantic
 # CONFIG           += debug
 # CONFIG           += sanitize
 
-CONFIG += pinyin
-CONFIG += hunspell
-
 MOC_DIR      = moc
 OBJECTS_DIR  = obj
 RCC_DIR      = rcc

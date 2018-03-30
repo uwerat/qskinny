@@ -18,16 +18,16 @@ public:
 
     virtual bool supportsSuggestions() const override final;
 
-    int candidateCount() const override;
-    QString candidate( int ) const override;
+    virtual int candidateCount() const override;
+    virtual QString candidate( int ) const override;
 
-    QVector< Qt::Key > groups() const override;
+    virtual QVector< Qt::Key > groups() const override;
 
 protected:
     // Used for text composition
-    bool hasIntermediate() const override;
-    QString polishPreedit( const QString& preedit ) override;
-    bool isComposable( const QStringRef& preedit ) const override;
+    virtual bool hasIntermediate() const override;
+    virtual QString polishPreedit( const QString& preedit ) override;
+    virtual bool isComposable( const QStringRef& preedit ) const override;
 
 private:
     void handleGroupIndexChanged();
@@ -36,4 +36,4 @@ private:
     std::unique_ptr< PrivateData > m_data;
 };
 
-#endif // QSK_PINYIN_COMPOSITION_MODEL_H
+#endif

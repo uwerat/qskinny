@@ -13,11 +13,7 @@
 class QskPinyinCompositionModel::PrivateData
 {
 public:
-    PrivateData()
-    {
-    }
-
-    QList< QString > candidates; // ### put that into input composition model and add protected accessors
+    QList< QString > candidates;
     QVector< Qt::Key > groups;
 };
 
@@ -25,10 +21,12 @@ QskPinyinCompositionModel::QskPinyinCompositionModel():
     QskInputCompositionModel(),
     m_data( new PrivateData )
 {
-    QString dictionary = QString::fromLocal8Bit( qgetenv( "DCU_DATA_ROOT" ) )
-            + QStringLiteral( "/3rdparty/pinyin/data/dict_pinyin.dat" );
+#if 1
+    const char dictionary[] = "XXX/3rdparty/pinyin/data/dict_pinyin.dat";
+#endif
+
     // ### prevent having 2 calls to im_open_decoder by using a singleton or so
-    bool opened = ime_pinyin::im_open_decoder( dictionary.toUtf8().constData(), "" );
+    bool opened = ime_pinyin::im_open_decoder( dictionary, "" );
 
     if( !opened )
     {
@@ -74,7 +72,8 @@ QString QskPinyinCompositionModel::polishPreedit( const QString& preedit )
     }
 
     QByteArray preeditBuffer = preedit.toLatin1();
-    size_t numSearchResults = ime_pinyin::im_search( preeditBuffer.constData(), size_t( preeditBuffer.length() ) );
+    size_t numSearchResults = ime_pinyin::im_search(
+        preeditBuffer.constData(), size_t( preeditBuffer.length() ) );
 
     if( numSearchResults > 0 )
     {

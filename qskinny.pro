@@ -9,8 +9,7 @@ SUBDIRS = \
     tools \
     support \
     examples \
-    playground \
-    3rdparty
+    playground
 
 OTHER_FILES = \
     doc/Doxyfile \
@@ -20,7 +19,7 @@ OTHER_FILES = \
     doc/classes/*.metadox \
     TODO
 
-inputcontext.depends = src 3rdparty
+inputcontext.depends = src
 skins.depends = src
 tools.depends = src
 support.depends = skins
