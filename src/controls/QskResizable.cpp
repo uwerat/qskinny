@@ -5,12 +5,13 @@
 
 #include "QskResizable.h"
 
+// QGridLayoutEngine internally uses FLT_MAX
+static constexpr qreal c_max = std::numeric_limits< float >::max();
+
 QskResizable::QskResizable():
-    m_sizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Preferred )
+    m_sizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Preferred ),
+    m_sizeHints{ { 0, 0 }, { -1, -1 }, { c_max, c_max } }
 {
-    resetSizeHint( Qt::MinimumSize );
-    resetSizeHint( Qt::PreferredSize );
-    resetSizeHint( Qt::MaximumSize );
 }
 
 QskResizable::~QskResizable()
@@ -206,9 +207,7 @@ void QskResizable::resetSizeHint( Qt::SizeHint whichHint )
         }
         case Qt::MaximumSize:
         {
-            // QGridLayoutEngine internally uses FLT_MAX
-            const qreal max = std::numeric_limits< float >::max();
-            hint = QSizeF( max, max );
+            hint = QSizeF( c_max, c_max );
             break;
         }
         case Qt::PreferredSize:
