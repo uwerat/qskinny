@@ -314,38 +314,37 @@ void QskInputContext::setInputPanel( QskVirtualKeyboard* inputPanel )
     if ( m_inputPanel == inputPanel )
         return;
 
+    auto compositionModel = currentInputCompositionModel();
+
     if ( m_inputPanel )
     {
-        QObject::disconnect( m_inputPanel, &QskVirtualKeyboard::visibleChanged,
-            this, &QPlatformInputContext::emitInputPanelVisibleChanged );
-        QObject::disconnect( m_inputPanel, &QskVirtualKeyboard::keyboardRectChanged,
-            this, &QPlatformInputContext::emitKeyboardRectChanged );
-        QObject::disconnect( m_inputPanel, &QskVirtualKeyboard::localeChanged,
-            this, &QPlatformInputContext::emitLocaleChanged );
-        if ( currentInputCompositionModel() )
-            m_inputPanel->disconnect( currentInputCompositionModel() );
+        m_inputPanel->disconnect( this );
+
+        if ( compositionModel )
+            compositionModel->disconnect( m_inputPanel );
     }
 
     m_inputPanel = inputPanel;
-    if ( !m_inputPanel )
-        return;
 
-    // call it once when it has been set:
-    if( currentInputCompositionModel() )
+    if ( inputPanel )
     {
-        m_inputPanel->setCandidateBarVisible( currentInputCompositionModel()->supportsSuggestions() );
-    }
-    QObject::connect( m_inputPanel, &QskVirtualKeyboard::visibleChanged,
-        this, &QPlatformInputContext::emitInputPanelVisibleChanged );
-    QObject::connect( m_inputPanel, &QskVirtualKeyboard::keyboardRectChanged,
-        this, &QPlatformInputContext::emitKeyboardRectChanged );
-    QObject::connect( m_inputPanel, &QskVirtualKeyboard::localeChanged,
-        this, &QPlatformInputContext::emitLocaleChanged );
-    if ( currentInputCompositionModel() )
-    {
-        QObject::connect(
-            currentInputCompositionModel(), &QskInputCompositionModel::groupsChanged,
-            m_inputPanel.data(), &QskVirtualKeyboard::setPreeditGroups );
+        connect( inputPanel, &QskVirtualKeyboard::visibleChanged,
+            this, &QPlatformInputContext::emitInputPanelVisibleChanged );
+
+        connect( inputPanel, &QskVirtualKeyboard::keyboardRectChanged,
+            this, &QPlatformInputContext::emitKeyboardRectChanged );
+
+        connect( inputPanel, &QskVirtualKeyboard::localeChanged,
+            this, &QPlatformInputContext::emitLocaleChanged );
+
+        if ( compositionModel )
+        {
+            inputPanel->setCandidateBarVisible(
+                compositionModel->supportsSuggestions() );
+
+            connect( compositionModel, &QskInputCompositionModel::groupsChanged,
+                inputPanel, &QskVirtualKeyboard::setPreeditGroups );
+        }
     }
 }
 
