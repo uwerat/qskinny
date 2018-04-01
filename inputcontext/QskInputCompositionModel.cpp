@@ -146,7 +146,7 @@ void QskInputCompositionModel::composeKey( Qt::Key key )
             }
             else if( hints & Qt::ImhMultiLine )
             {
-                 commit( qskKeyString( key ) );
+                commit( qskKeyString( key ) );
             }
 #if 0
             else
@@ -348,7 +348,7 @@ QVector< Qt::Key > QskInputCompositionModel::groups() const
     return QVector< Qt::Key >();
 }
 
-void QskInputCompositionModel::setInputItem( QObject *inputItem )
+void QskInputCompositionModel::setInputItem( QObject* inputItem )
 {
     m_data->inputItem = inputItem;
 }

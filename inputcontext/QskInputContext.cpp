@@ -14,17 +14,30 @@
 #include <QskSetup.h>
 
 #include <QGuiApplication>
+#include <QHash>
+#include <QPointer>
 
-QskInputContext::QskInputContext():
-    Inherited(),
-    m_defaultInputCompositionModel( new QskInputCompositionModel )
+class QskInputContext::PrivateData
 {
+public:
+    QPointer< QQuickItem > inputItem;
+    QPointer< QskVirtualKeyboard > inputPanel;
+    QskInputCompositionModel* compositionModel;
+    QHash< QLocale, QskInputCompositionModel* > inputModels;
+};
+
+QskInputContext::QskInputContext() :
+    m_data( new PrivateData() )
+{
+    m_data->compositionModel = new QskInputCompositionModel();
+
     connect( qskSetup, &QskSetup::inputPanelChanged,
         this, &QskInputContext::setInputPanel );
+
     setInputPanel( qskSetup->inputPanel() );
 
     QskPinyinCompositionModel* pinyinModel = new QskPinyinCompositionModel;
-    // For input methods outside skinny, call QskInputPanel::registerCompositionModelForLocale()
+    // see also: QskVirtualKeyboard::registerCompositionModelForLocale()
     inputMethodRegistered( QLocale::Chinese, pinyinModel );
 
     // We could connect candidatesChanged() here, but we don't emit
@@ -33,13 +46,10 @@ QskInputContext::QskInputContext():
 
 QskInputContext::~QskInputContext()
 {
-    if ( m_inputPanel )
-        delete m_inputPanel;
+    if ( m_data->inputPanel )
+        delete m_data->inputPanel;
 
-    for( int a = 0; a < m_inputModels.values().count(); a++ )
-    {
-        delete m_inputModels.values()[a];
-    }
+    qDeleteAll( m_data->inputModels );
 }
 
 bool QskInputContext::isValid() const
@@ -49,11 +59,11 @@ bool QskInputContext::isValid() const
 
 void QskInputContext::update( Qt::InputMethodQueries queries )
 {
-    if ( !m_inputItem )
+    if ( !m_data->inputItem )
         return;
 
     QInputMethodQueryEvent queryEvent( queries );
-    if ( !QCoreApplication::sendEvent( m_inputItem, &queryEvent ) )
+    if ( !QCoreApplication::sendEvent( m_data->inputItem, &queryEvent ) )
         return;
 
     // Qt::ImCursorRectangle
@@ -98,26 +108,24 @@ void QskInputContext::update( Qt::InputMethodQueries queries )
     {
         const auto locale = queryEvent.value( Qt::ImPreferredLanguage ).toLocale();
 
-        auto oldModel = currentInputCompositionModel();
+        auto oldModel = compositionModel();
 
-        if( m_inputPanel )
-            m_inputPanel->setLocale( locale );
+        if( m_data->inputPanel )
+            m_data->inputPanel->setLocale( locale );
 
-        auto newModel = currentInputCompositionModel();
+        auto newModel = compositionModel();
 
-        bool modelChanged = ( oldModel != newModel );
-
-        if( modelChanged )
+        if( oldModel != newModel )
         {
-            if( m_inputPanel )
+            if( m_data->inputPanel )
             {
-                m_inputPanel->setCandidateBarVisible( newModel->supportsSuggestions() );
-                m_inputPanel->disconnect( oldModel );
-                QObject::connect(
-                    newModel, &QskInputCompositionModel::groupsChanged,
-                    m_inputPanel.data(), &QskVirtualKeyboard::setPreeditGroups );
-                QObject::connect(
-                    newModel, &QskInputCompositionModel::candidatesChanged,
+                m_data->inputPanel->setCandidateBarVisible( newModel->supportsSuggestions() );
+                m_data->inputPanel->disconnect( oldModel );
+
+                connect( newModel, &QskInputCompositionModel::groupsChanged,
+                    m_data->inputPanel.data(), &QskVirtualKeyboard::setPreeditGroups );
+
+                connect( newModel, &QskInputCompositionModel::candidatesChanged,
                     this, &QskInputContext::handleCandidatesChanged );
             }
         }
@@ -131,10 +139,10 @@ void QskInputContext::update( Qt::InputMethodQueries queries )
 
 QRectF QskInputContext::keyboardRect() const
 {
-    if ( m_inputPanel
+    if ( m_data->inputPanel
          && QskDialog::instance()->policy() != QskDialog::TopLevelWindow )
     {
-        return m_inputPanel->geometry();
+        return m_data->inputPanel->geometry();
     }
 
     return Inherited::keyboardRect();
@@ -147,16 +155,16 @@ bool QskInputContext::isAnimating() const
 
 void QskInputContext::showInputPanel()
 {
-    if ( !m_inputPanel )
+    if ( !m_data->inputPanel )
     {
-        setInputPanel( new QskVirtualKeyboard );
+        setInputPanel( new QskVirtualKeyboard() );
 
         if ( QskDialog::instance()->policy() == QskDialog::TopLevelWindow )
         {
             auto window = new QskWindow;
             window->setFlags( Qt::Tool | Qt::WindowDoesNotAcceptFocus );
             window->resize( 800, 240 ); // ### what size?
-            m_inputPanel->setParentItem( window->contentItem() );
+            m_data->inputPanel->setParentItem( window->contentItem() );
             connect( window, &QskWindow::visibleChanged,
                 this, &QskInputContext::emitInputPanelVisibleChanged );
         }
@@ -165,62 +173,62 @@ void QskInputContext::showInputPanel()
             auto window = qobject_cast< QQuickWindow* >( QGuiApplication::focusWindow() );
             if ( window )
             {
-                m_inputPanel->setParentItem( window->contentItem() );
-                m_inputPanel->setSize( window->size() );
+                m_data->inputPanel->setParentItem( window->contentItem() );
+                m_data->inputPanel->setSize( window->size() );
             }
         }
     }
 
-    auto window = m_inputPanel->window();
+    auto window = m_data->inputPanel->window();
     if ( window && window != QGuiApplication::focusWindow() )
         window->show();
     else
-        m_inputPanel->setVisible( true );
+        m_data->inputPanel->setVisible( true );
 }
 
 void QskInputContext::hideInputPanel()
 {
-    if ( !m_inputPanel )
+    if ( !m_data->inputPanel )
         return;
 
-    auto window = m_inputPanel->window();
+    auto window = m_data->inputPanel->window();
     if ( window && window != QGuiApplication::focusWindow() )
         window->hide();
     else
-        m_inputPanel->setVisible( false );
+        m_data->inputPanel->setVisible( false );
 }
 
 bool QskInputContext::isInputPanelVisible() const
 {
-    return m_inputPanel && m_inputPanel->isVisible()
-           && m_inputPanel->window() && m_inputPanel->window()->isVisible();
+    auto panel = m_data->inputPanel;
+    return panel && panel->isVisible()
+           && panel->window() && panel->window()->isVisible();
 }
 
 QLocale QskInputContext::locale() const
 {
-    return m_inputPanel ? m_inputPanel->locale() : QLocale();
+    return m_data->inputPanel ? m_data->inputPanel->locale() : QLocale();
 }
 
 void QskInputContext::setFocusObject( QObject* focusObject )
 {
-    m_focusObject = focusObject;
-    if ( !m_focusObject )
+    if ( focusObject == nullptr )
     {
-        m_inputItem = nullptr;
-        currentInputCompositionModel()->setInputItem( nullptr );
+        m_data->inputItem = nullptr;
+        compositionModel()->setInputItem( nullptr );
         return;
     }
 
     bool inputItemChanged = false;
 
-    auto focusQuickItem = qobject_cast< QQuickItem* >( focusObject );
-    if( focusQuickItem )
+    auto focusItem = qobject_cast< QQuickItem* >( focusObject );
+    if( focusItem )
     {
         // Do not change the input item when panel buttons get the focus:
-        if( qskNearestFocusScope( focusQuickItem ) != m_inputPanel )
+        if( qskNearestFocusScope( focusItem ) != m_data->inputPanel )
         {
-            m_inputItem = focusQuickItem;
-            currentInputCompositionModel()->setInputItem( m_inputItem ); // ### use a signal/slot connection
+            m_data->inputItem = focusItem;
+            compositionModel()->setInputItem( focusItem );
             inputItemChanged = true;
         }
     }
@@ -228,7 +236,7 @@ void QskInputContext::setFocusObject( QObject* focusObject )
     if( inputItemChanged )
     {
         QInputMethodQueryEvent queryEvent( Qt::ImEnabled );
-        if ( !QCoreApplication::sendEvent( m_inputItem, &queryEvent ) )
+        if ( !QCoreApplication::sendEvent( m_data->inputItem, &queryEvent ) )
             return;
 
         if ( !queryEvent.value( Qt::ImEnabled ).toBool() )
@@ -241,54 +249,44 @@ void QskInputContext::setFocusObject( QObject* focusObject )
     update( Qt::InputMethodQuery( Qt::ImQueryAll & ~Qt::ImEnabled ) );
 }
 
-void QskInputContext::inputMethodRegistered( const QLocale& locale, QskInputCompositionModel* model )
+void QskInputContext::inputMethodRegistered(
+    const QLocale& locale, QskInputCompositionModel* model )
 {
-    auto oldModel = m_inputModels.value( locale, nullptr );
-
-    if( oldModel != nullptr )
-    {
+    if ( auto oldModel = m_data->inputModels.value( locale, nullptr ) )
         oldModel->deleteLater();
-    }
 
-    m_inputModels.insert( locale, model );
+    m_data->inputModels.insert( locale, model );
 }
 
-QskInputCompositionModel* QskInputContext::compositionModelForLocale( const QLocale& locale ) const
+QskInputCompositionModel* QskInputContext::compositionModel() const
 {
-    return m_inputModels.value( locale, m_defaultInputCompositionModel );
-}
-
-QskInputCompositionModel* QskInputContext::currentInputCompositionModel() const
-{
-    return m_inputModels.value( locale(), m_defaultInputCompositionModel );
-}
-
-void QskInputContext::resetCandidates()
-{
-    m_inputPanel->setPreeditCandidates( {} );
+    return m_data->inputModels.value( locale(), m_data->compositionModel );
 }
 
 void QskInputContext::invokeAction( QInputMethod::Action action, int cursorPosition )
 {
-    Q_UNUSED( cursorPosition );
-
-    if ( !m_inputPanel )
-        return;
+    auto model = compositionModel();
 
     switch ( static_cast< QskVirtualKeyboard::Action >( action ) )
     {
         case QskVirtualKeyboard::Compose:
-            currentInputCompositionModel()->composeKey( static_cast< Qt::Key >( cursorPosition ) );
+        {
+            model->composeKey( static_cast< Qt::Key >( cursorPosition ) );
             break;
-
+        }
         case QskVirtualKeyboard::SelectGroup:
-            currentInputCompositionModel()->setGroupIndex( cursorPosition );
+        {
+            model->setGroupIndex( cursorPosition );
             break;
-
+        }
         case QskVirtualKeyboard::SelectCandidate:
-            currentInputCompositionModel()->commitCandidate( cursorPosition );
-            resetCandidates();
+        {
+            model->commitCandidate( cursorPosition );
+            if ( m_data->inputPanel )
+                m_data->inputPanel->setPreeditCandidates( QVector< QString >() );
+
             break;
+        }
     }
 }
 
@@ -299,32 +297,32 @@ void QskInputContext::emitAnimatingChanged()
 
 void QskInputContext::handleCandidatesChanged()
 {
-    QVector< QString > candidates( currentInputCompositionModel()->candidateCount() );
+    const auto model = compositionModel();
+
+    QVector< QString > candidates( model->candidateCount() );
 
     for( int i = 0; i < candidates.length(); ++i )
-    {
-        candidates[i] = currentInputCompositionModel()->candidate( i );
-    }
+        candidates[i] = model->candidate( i );
 
-    m_inputPanel->setPreeditCandidates( candidates );
+    m_data->inputPanel->setPreeditCandidates( candidates );
 }
 
 void QskInputContext::setInputPanel( QskVirtualKeyboard* inputPanel )
 {
-    if ( m_inputPanel == inputPanel )
+    if ( m_data->inputPanel == inputPanel )
         return;
 
-    auto compositionModel = currentInputCompositionModel();
+    auto model = compositionModel();
 
-    if ( m_inputPanel )
+    if ( m_data->inputPanel )
     {
-        m_inputPanel->disconnect( this );
+        m_data->inputPanel->disconnect( this );
 
-        if ( compositionModel )
-            compositionModel->disconnect( m_inputPanel );
+        if ( model )
+            model->disconnect( m_data->inputPanel );
     }
 
-    m_inputPanel = inputPanel;
+    m_data->inputPanel = inputPanel;
 
     if ( inputPanel )
     {
@@ -337,12 +335,12 @@ void QskInputContext::setInputPanel( QskVirtualKeyboard* inputPanel )
         connect( inputPanel, &QskVirtualKeyboard::localeChanged,
             this, &QPlatformInputContext::emitLocaleChanged );
 
-        if ( compositionModel )
+        if ( model )
         {
             inputPanel->setCandidateBarVisible(
-                compositionModel->supportsSuggestions() );
+                model->supportsSuggestions() );
 
-            connect( compositionModel, &QskInputCompositionModel::groupsChanged,
+            connect( model, &QskInputCompositionModel::groupsChanged,
                 inputPanel, &QskVirtualKeyboard::setPreeditGroups );
         }
     }

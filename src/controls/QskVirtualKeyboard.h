@@ -39,27 +39,27 @@ private:
 
 class QSK_EXPORT QskVirtualKeyboardButton : public QskPushButton
 {
-        Q_OBJECT
+    Q_OBJECT
 
-        using Inherited = QskPushButton;
+    using Inherited = QskPushButton;
 
-    public:
-        QSK_SUBCONTROLS( Panel, Text, TextCancelButton )
+public:
+    QSK_SUBCONTROLS( Panel, Text, TextCancelButton )
 
-        QskVirtualKeyboardButton( int keyIndex, QskVirtualKeyboard* inputPanel, QQuickItem* parent = nullptr );
+    QskVirtualKeyboardButton( int keyIndex, QskVirtualKeyboard* inputPanel, QQuickItem* parent = nullptr );
 
-        virtual QskAspect::Subcontrol effectiveSubcontrol( QskAspect::Subcontrol subControl ) const override;
+    virtual QskAspect::Subcontrol effectiveSubcontrol( QskAspect::Subcontrol subControl ) const override;
 
-        int keyIndex() const;
+    int keyIndex() const;
 
-    public Q_SLOTS:
-        void updateText();
+public Q_SLOTS:
+    void updateText();
 
-    private:
-        bool isCancelButton() const;
+private:
+    bool isCancelButton() const;
 
-        const int m_keyIndex;
-        QskVirtualKeyboard* m_inputPanel;
+    const int m_keyIndex;
+    QskVirtualKeyboard* m_inputPanel;
 };
 
 class QSK_EXPORT QskVirtualKeyboard : public QskBox
@@ -67,7 +67,7 @@ class QSK_EXPORT QskVirtualKeyboard : public QskBox
     Q_OBJECT
 
     Q_PROPERTY( QString displayLanguageName READ displayLanguageName
-            NOTIFY displayLanguageNameChanged )
+        NOTIFY displayLanguageNameChanged )
 
     using Inherited = QskBox;
 
@@ -125,19 +125,18 @@ public:
     QString displayLanguageName() const;
 
     // takes ownership:
-    void registerCompositionModelForLocale( const QLocale& locale,
-                                            QskInputCompositionModel* model );
+    void registerCompositionModelForLocale( const QLocale&, QskInputCompositionModel* );
 
     void handleKey( int keyIndex );
     KeyData& keyDataAt( int ) const;
     QString currentTextForKeyIndex( int keyIndex ) const;
 
-    void handleCandidateKey( int index, const QString &text );
+    void handleCandidateKey( int index, const QString& text );
     void setCandidateBarVisible( bool visible );
 
 public Q_SLOTS:
     void setPreeditGroups( const QVector< Qt::Key >& );
-    void setPreeditCandidates(const QVector< QString > & );
+    void setPreeditCandidates(const QVector< QString >& );
 
 protected:
     virtual void geometryChanged( const QRectF&, const QRectF& ) override;

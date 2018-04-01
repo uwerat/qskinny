@@ -7,10 +7,6 @@
 #define QSK_INPUT_CONTEXT_H
 
 #include <qpa/qplatforminputcontext.h>
-#include <QHash>
-#include <QQuickItem>
-#include <QPointer>
-
 #include <memory>
 
 class QskVirtualKeyboard;
@@ -24,36 +20,35 @@ class QskInputContext : public QPlatformInputContext
 
 public:
     QskInputContext();
-    ~QskInputContext() override;
+    virtual ~QskInputContext();
 
-    bool isValid() const override;
-    void update( Qt::InputMethodQueries ) override;
-    void invokeAction( QInputMethod::Action, int ) override;
-    QRectF keyboardRect() const override;
-    bool isAnimating() const override;
-    void showInputPanel() override;
-    void hideInputPanel() override;
-    bool isInputPanelVisible() const override;
-    QLocale locale() const override;
-    void setFocusObject( QObject* ) override;
+    virtual bool isValid() const override;
 
-    QskInputCompositionModel* compositionModelForLocale( const QLocale& locale ) const;
+    virtual void update( Qt::InputMethodQueries ) override;
+    virtual void invokeAction( QInputMethod::Action, int ) override;
+
+    virtual QRectF keyboardRect() const override;
+    virtual bool isAnimating() const override;
+
+    virtual void showInputPanel() override;
+    virtual void hideInputPanel() override;
+    virtual bool isInputPanelVisible() const override;
+
+    virtual void setFocusObject( QObject* ) override;
+
+    virtual QLocale locale() const override;
 
 private Q_SLOTS:
     void emitAnimatingChanged();
     void handleCandidatesChanged();
     void setInputPanel( QskVirtualKeyboard* );
-    void inputMethodRegistered( const QLocale& locale, QskInputCompositionModel* model );
+    void inputMethodRegistered( const QLocale&, QskInputCompositionModel* );
 
 private:
-    QskInputCompositionModel* currentInputCompositionModel() const;
-    void resetCandidates();
+    QskInputCompositionModel* compositionModel() const;
 
-    QPointer< QObject > m_focusObject;
-    QPointer< QQuickItem > m_inputItem;
-    QPointer< QskVirtualKeyboard > m_inputPanel;
-    QskInputCompositionModel* m_defaultInputCompositionModel;
-    QHash< QLocale, QskInputCompositionModel* > m_inputModels;
+    class PrivateData;
+    std::unique_ptr< PrivateData > m_data;
 };
 
 #endif

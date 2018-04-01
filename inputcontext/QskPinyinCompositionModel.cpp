@@ -9,11 +9,12 @@
 
 #include <QDebug>
 #include <QVector>
+#include <QStringList>
 
 class QskPinyinCompositionModel::PrivateData
 {
 public:
-    QList< QString > candidates;
+    QStringList candidates;
     QVector< Qt::Key > groups;
 };
 
@@ -46,12 +47,15 @@ bool QskPinyinCompositionModel::supportsSuggestions() const
 
 int QskPinyinCompositionModel::candidateCount() const
 {
-    return qMax( 0, m_data->candidates.count() );
+    return m_data->candidates.count();
 }
 
 QString QskPinyinCompositionModel::candidate( int index ) const
 {
-    return m_data->candidates.at( index );
+    if ( ( index >= 0 ) && ( index < m_data->candidates.count() ) )
+        return m_data->candidates[ index ];
+
+    return QString();
 }
 
 QVector< Qt::Key > QskPinyinCompositionModel::groups() const
@@ -77,7 +81,7 @@ QString QskPinyinCompositionModel::polishPreedit( const QString& preedit )
 
     if( numSearchResults > 0 )
     {
-        QList< QString > newCandidates;
+        QStringList newCandidates;
         newCandidates.reserve( 1 );
 
         QVector< QChar > candidateBuffer;
