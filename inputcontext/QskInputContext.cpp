@@ -23,7 +23,7 @@ public:
     QPointer< QQuickItem > inputItem;
     QPointer< QskVirtualKeyboard > inputPanel;
     QskInputCompositionModel* compositionModel;
-    QHash< QLocale, QskInputCompositionModel* > inputModels;
+    QHash< QLocale, QskInputCompositionModel* > compositionModels;
 };
 
 QskInputContext::QskInputContext() :
@@ -31,17 +31,17 @@ QskInputContext::QskInputContext() :
 {
     m_data->compositionModel = new QskInputCompositionModel();
 
+    connect( m_data->compositionModel, &QskInputCompositionModel::candidatesChanged,
+        this, &QskInputContext::handleCandidatesChanged );
+
     connect( qskSetup, &QskSetup::inputPanelChanged,
         this, &QskInputContext::setInputPanel );
 
+#if 1
+    setCompositionModel( QLocale::Chinese, new QskPinyinCompositionModel() );
+#endif
+
     setInputPanel( qskSetup->inputPanel() );
-
-    QskPinyinCompositionModel* pinyinModel = new QskPinyinCompositionModel;
-    // see also: QskVirtualKeyboard::registerCompositionModelForLocale()
-    inputMethodRegistered( QLocale::Chinese, pinyinModel );
-
-    // We could connect candidatesChanged() here, but we don't emit
-    // the signal in the normal composition model anyhow
 }
 
 QskInputContext::~QskInputContext()
@@ -49,7 +49,7 @@ QskInputContext::~QskInputContext()
     if ( m_data->inputPanel )
         delete m_data->inputPanel;
 
-    qDeleteAll( m_data->inputModels );
+    qDeleteAll( m_data->compositionModels );
 }
 
 bool QskInputContext::isValid() const
@@ -249,18 +249,44 @@ void QskInputContext::setFocusObject( QObject* focusObject )
     update( Qt::InputMethodQuery( Qt::ImQueryAll & ~Qt::ImEnabled ) );
 }
 
-void QskInputContext::inputMethodRegistered(
+void QskInputContext::setCompositionModel(
     const QLocale& locale, QskInputCompositionModel* model )
 {
-    if ( auto oldModel = m_data->inputModels.value( locale, nullptr ) )
-        oldModel->deleteLater();
+    auto& models = m_data->compositionModels;
 
-    m_data->inputModels.insert( locale, model );
+    if ( model )
+    {
+        const auto it = models.find( locale );
+        if ( it != models.end() )
+        {
+            if ( it.value() == model )
+                return;
+
+            delete it.value();
+            *it = model;
+        }
+        else
+        {
+            models.insert( locale, model );
+        }
+
+        connect( model, &QskInputCompositionModel::candidatesChanged,
+            this, &QskInputContext::handleCandidatesChanged );
+    }
+    else
+    {
+        const auto it = models.find( locale );
+        if ( it != models.end() )
+        {
+            delete it.value();
+            models.erase( it );
+        }
+    }
 }
 
 QskInputCompositionModel* QskInputContext::compositionModel() const
 {
-    return m_data->inputModels.value( locale(), m_data->compositionModel );
+    return m_data->compositionModels.value( locale(), m_data->compositionModel );
 }
 
 void QskInputContext::invokeAction( QInputMethod::Action action, int cursorPosition )
@@ -282,6 +308,7 @@ void QskInputContext::invokeAction( QInputMethod::Action action, int cursorPosit
         case QskVirtualKeyboard::SelectCandidate:
         {
             model->commitCandidate( cursorPosition );
+
             if ( m_data->inputPanel )
                 m_data->inputPanel->setPreeditCandidates( QVector< QString >() );
 
@@ -290,19 +317,19 @@ void QskInputContext::invokeAction( QInputMethod::Action action, int cursorPosit
     }
 }
 
-void QskInputContext::emitAnimatingChanged()
-{
-    QPlatformInputContext::emitAnimatingChanged();
-}
-
 void QskInputContext::handleCandidatesChanged()
 {
     const auto model = compositionModel();
+    if ( model == nullptr || m_data->inputPanel == nullptr )
+        return;
 
-    QVector< QString > candidates( model->candidateCount() );
+    const auto count = model->candidateCount();
 
-    for( int i = 0; i < candidates.length(); ++i )
-        candidates[i] = model->candidate( i );
+    QVector< QString > candidates;
+    candidates.reserve( count );
+
+    for( int i = 0; i < count; i++ )
+        candidates += model->candidate( i );
 
     m_data->inputPanel->setPreeditCandidates( candidates );
 }

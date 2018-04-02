@@ -38,11 +38,11 @@ public:
 
     virtual QLocale locale() const override;
 
+    void setCompositionModel( const QLocale&, QskInputCompositionModel* );
+
 private Q_SLOTS:
-    void emitAnimatingChanged();
     void handleCandidatesChanged();
     void setInputPanel( QskVirtualKeyboard* );
-    void inputMethodRegistered( const QLocale&, QskInputCompositionModel* );
 
 private:
     QskInputCompositionModel* compositionModel() const;

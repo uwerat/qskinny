@@ -10,9 +10,7 @@
 #include <QTextCharFormat>
 #include <QWindow>
 
-#include <unordered_map>
-
-static QString qskKeyString( int code )
+static inline QString qskKeyString( int code )
 {
     // Special case entry codes here, else default to the symbol
     switch ( code )
@@ -38,6 +36,15 @@ static QString qskKeyString( int code )
     return QChar( code );
 }
 
+static inline void qskSendKeyEvents( QObject* receiver, int key )
+{
+    QKeyEvent keyPress( QEvent::KeyPress, key, Qt::NoModifier );
+    QCoreApplication::sendEvent( receiver, &keyPress );
+
+    QKeyEvent keyRelease( QEvent::KeyRelease, key, Qt::NoModifier );
+    QCoreApplication::sendEvent( receiver, &keyRelease );
+}
+
 class QskInputCompositionModel::PrivateData
 {
 public:
@@ -54,14 +61,6 @@ public:
     QObject* inputItem;
     int groupIndex;
 };
-
-static inline void sendCompositionEvent( QInputMethodEvent* e )
-{
-    if( auto focusObject = QGuiApplication::focusObject() )
-    {
-        QCoreApplication::sendEvent( focusObject, e );
-    }
-}
 
 QskInputCompositionModel::QskInputCompositionModel():
     m_data( new PrivateData )
@@ -148,20 +147,12 @@ void QskInputCompositionModel::composeKey( Qt::Key key )
             {
                 commit( qskKeyString( key ) );
             }
-#if 0
             else
             {
-                auto focusWindow = QGuiApplication::focusWindow();
-
-                if( focusWindow )
-                {
-                    QKeyEvent keyPress( QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier );
-                    QKeyEvent keyRelease( QEvent::KeyRelease, Qt::Key_Return, Qt::NoModifier );                     QCoreApplication::sendEvent( focusWindow, &keyPress );
-                    QCoreApplication::sendEvent( focusWindow, &keyRelease );
-                }
-
+                if( auto focusWindow = QGuiApplication::focusWindow() )
+                    qskSendKeyEvents( focusWindow, Qt::Key_Return );
             }
-#endif
+
             return;
         }
 
@@ -218,8 +209,9 @@ void QskInputCompositionModel::composeKey( Qt::Key key )
     }
 
     m_data->preeditAttributes.first().length = displayPreedit.length();
-    QInputMethodEvent e( displayPreedit, m_data->preeditAttributes );
-    sendCompositionEvent( &e );
+
+    QInputMethodEvent event( displayPreedit, m_data->preeditAttributes );
+    sendCompositionEvent( &event );
 }
 
 void QskInputCompositionModel::clearPreedit()
@@ -250,9 +242,10 @@ QString QskInputCompositionModel::polishPreedit( const QString& preedit )
 
 void QskInputCompositionModel::commit( const QString& text )
 {
-    QInputMethodEvent e( QString(), { } );
-    e.setCommitString( text );
-    sendCompositionEvent( &e );
+    QInputMethodEvent event( QString(), { } );
+    event.setCommitString( text );
+    sendCompositionEvent( &event );
+
     m_data->preedit.clear();
     polishPreedit( m_data->preedit );
 }
@@ -264,27 +257,24 @@ void QskInputCompositionModel::commitCandidate( int index )
 
 void QskInputCompositionModel::backspace()
 {
-    if ( !m_data->inputItem )
+    if ( m_data->inputItem == nullptr )
         return;
 
     if ( !m_data->preedit.isEmpty() )
     {
         m_data->preedit.chop( 1 );
+
+        const QString displayText = polishPreedit( m_data->preedit );
+        m_data->preeditAttributes.first().length = displayText.length();
+
+        QInputMethodEvent event( displayText, m_data->preeditAttributes );
+        sendCompositionEvent( &event );
     }
     else
     {
         // Backspace one character only if preedit was inactive
-        QKeyEvent keyPress( QEvent::KeyPress, Qt::Key_Backspace, Qt::NoModifier );
-        QKeyEvent keyRelease( QEvent::KeyRelease, Qt::Key_Backspace, Qt::NoModifier );
-        QCoreApplication::sendEvent( m_data->inputItem, &keyPress );
-        QCoreApplication::sendEvent( m_data->inputItem, &keyRelease );
-        return;
+        qskSendKeyEvents( m_data->inputItem, Qt::Key_Backspace );
     }
-
-    const QString displayText = polishPreedit( m_data->preedit );
-    m_data->preeditAttributes.first().length = displayText.length();
-    QInputMethodEvent e( displayText, m_data->preeditAttributes );
-    sendCompositionEvent( &e );
 }
 
 void QskInputCompositionModel::moveCursor( Qt::Key key )
@@ -339,8 +329,9 @@ void QskInputCompositionModel::setGroupIndex( int groupIndex )
     m_data->groupIndex = groupIndex;
     const QString displayText = polishPreedit( m_data->preedit );
     m_data->preeditAttributes.first().length = displayText.length();
-    QInputMethodEvent e( displayText, m_data->preeditAttributes );
-    sendCompositionEvent( &e );
+
+    QInputMethodEvent event( displayText, m_data->preeditAttributes );
+    sendCompositionEvent( &event );
 }
 
 QVector< Qt::Key > QskInputCompositionModel::groups() const

@@ -174,7 +174,6 @@ QSK_SUBCONTROL( QskVirtualKeyboard, Panel )
 
 QSK_SUBCONTROL( QskVirtualKeyboardButton, Panel )
 QSK_SUBCONTROL( QskVirtualKeyboardButton, Text )
-QSK_SUBCONTROL( QskVirtualKeyboardButton, TextCancelButton )
 
 QskVirtualKeyboardButton::QskVirtualKeyboardButton(
         int keyIndex, QskVirtualKeyboard* inputPanel, QQuickItem* parent ) :
@@ -214,7 +213,7 @@ QskAspect::Subcontrol QskVirtualKeyboardButton::effectiveSubcontrol(
         return QskVirtualKeyboardButton::Panel;
 
     if( subControl == QskPushButton::Text )
-        return isCancelButton() ? TextCancelButton : Text;
+        return QskVirtualKeyboardButton::Text;
 
     return subControl;
 }
@@ -237,13 +236,6 @@ void QskVirtualKeyboardButton::updateText()
         setVisible( true );
         setText( text );
     }
-}
-
-bool QskVirtualKeyboardButton::isCancelButton() const
-{
-    auto keyData = m_inputPanel->keyDataAt( m_keyIndex );
-    bool isCancel = ( keyData.key == 0x2716 );
-    return isCancel;
 }
 
 class QskVirtualKeyboard::PrivateData
@@ -567,12 +559,6 @@ void QskVirtualKeyboard::setCandidateOffset( int candidateOffset )
     }
 }
 
-void QskVirtualKeyboard::registerCompositionModelForLocale(
-    const QLocale& locale, QskInputCompositionModel* model )
-{
-    Q_EMIT inputMethodRegistered( locale, model );
-}
-
 void QskVirtualKeyboard::geometryChanged(
     const QRectF& newGeometry, const QRectF& oldGeometry )
 {
@@ -683,11 +669,6 @@ void QskVirtualKeyboard::handleKey( int keyIndex )
             setMode( static_cast< QskVirtualKeyboard::Mode >(
                 m_data->mode ? ( ( m_data->mode + 1 ) % QskVirtualKeyboard::ModeCount )
                 : SpecialCharacterMode ) );
-            return;
-
-        // This is (one of) the cancel symbol, not Qt::Key_Cancel:
-        case Qt::Key( 10006 ):
-            Q_EMIT cancelPressed();
             return;
 
         default:

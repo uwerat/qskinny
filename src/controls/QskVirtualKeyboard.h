@@ -44,11 +44,13 @@ class QSK_EXPORT QskVirtualKeyboardButton : public QskPushButton
     using Inherited = QskPushButton;
 
 public:
-    QSK_SUBCONTROLS( Panel, Text, TextCancelButton )
+    QSK_SUBCONTROLS( Panel, Text )
 
-    QskVirtualKeyboardButton( int keyIndex, QskVirtualKeyboard* inputPanel, QQuickItem* parent = nullptr );
+    QskVirtualKeyboardButton( int keyIndex,
+        QskVirtualKeyboard*, QQuickItem* parent = nullptr );
 
-    virtual QskAspect::Subcontrol effectiveSubcontrol( QskAspect::Subcontrol subControl ) const override;
+    virtual QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol ) const override;
 
     int keyIndex() const;
 
@@ -56,8 +58,6 @@ public Q_SLOTS:
     void updateText();
 
 private:
-    bool isCancelButton() const;
-
     const int m_keyIndex;
     QskVirtualKeyboard* m_inputPanel;
 };
@@ -112,20 +112,18 @@ public:
     QskVirtualKeyboard( QQuickItem* parent = nullptr );
     virtual ~QskVirtualKeyboard() override;
 
-    virtual QskAspect::Subcontrol effectiveSubcontrol( QskAspect::Subcontrol subControl ) const override;
+    virtual QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol ) const override;
 
-    void updateLocale( const QLocale& locale );
+    void updateLocale( const QLocale& );
 
-    void setMode( QskVirtualKeyboard::Mode index );
+    void setMode( QskVirtualKeyboard::Mode );
     Mode mode() const;
 
     const KeyDataSet& keyData( QskVirtualKeyboard::Mode = CurrentMode ) const;
 
     QString textForKey( int ) const;
     QString displayLanguageName() const;
-
-    // takes ownership:
-    void registerCompositionModelForLocale( const QLocale&, QskInputCompositionModel* );
 
     void handleKey( int keyIndex );
     KeyData& keyDataAt( int ) const;
@@ -136,7 +134,7 @@ public:
 
 public Q_SLOTS:
     void setPreeditGroups( const QVector< Qt::Key >& );
-    void setPreeditCandidates(const QVector< QString >& );
+    void setPreeditCandidates( const QVector< QString >& );
 
 protected:
     virtual void geometryChanged( const QRectF&, const QRectF& ) override;
@@ -156,11 +154,7 @@ private:
 Q_SIGNALS:
     void keyboardRectChanged();
     void displayLanguageNameChanged();
-    void inputMethodRegistered( const QLocale& locale, QskInputCompositionModel* model );
-    void inputMethodEventReceived( QInputMethodEvent* inputMethodEvent );
-    void keyEventReceived( QKeyEvent* keyEvent );
-    void modeChanged( QskVirtualKeyboard::Mode mode );
-    void cancelPressed();
+    void modeChanged( QskVirtualKeyboard::Mode );
 
 private:
     class PrivateData;
