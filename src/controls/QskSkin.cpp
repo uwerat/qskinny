@@ -427,7 +427,7 @@ const int* QskSkin::dialogButtonLayout( Qt::Orientation orientation ) const
     //auto policy = QPlatformDialogHelper::UnknownLayout;
     auto policy = QPlatformDialogHelper::WinLayout;
 
-    if ( const QPlatformTheme* theme = QGuiApplicationPrivate::platformTheme() )
+    if ( const auto theme = QGuiApplicationPrivate::platformTheme() )
     {
         const QVariant v = theme->themeHint( QPlatformTheme::DialogButtonBoxLayout );
         policy = static_cast< QPlatformDialogHelper::ButtonLayout >( v.toInt() );

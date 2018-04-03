@@ -153,6 +153,13 @@ Q_SIGNALS:
     void inputMaskChanged( const QString& );
 
 protected:
+    virtual bool event( QEvent* ) override;
+    virtual void keyPressEvent( QKeyEvent* ) override;
+    virtual void keyReleaseEvent( QKeyEvent* ) override;
+    virtual void inputMethodEvent( QInputMethodEvent* ) override;
+    virtual void focusInEvent( QFocusEvent* ) override;
+    virtual void focusOutEvent( QFocusEvent* ) override;
+
     virtual void updateLayout() override;
 
 private:

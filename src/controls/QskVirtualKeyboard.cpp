@@ -10,6 +10,13 @@
 #include <QGuiApplication>
 #include <QStyleHints>
 
+QSK_QT_PRIVATE_BEGIN
+#include <private/qguiapplication_p.h>
+QSK_QT_PRIVATE_END
+
+#include <qpa/qplatformintegration.h>
+#include <qpa/qplatforminputcontext.h>
+
 namespace
 {
     struct KeyTable
@@ -137,10 +144,8 @@ QskVirtualKeyboardCandidateButton::QskVirtualKeyboardCandidateButton(
     setFlag( QQuickItem::ItemAcceptsInputMethod );
     setText( QStringLiteral( " " ) ); // ###
 
-    connect( this, &QskVirtualKeyboardButton::pressed, this, [ this ]()
-    {
-        m_inputPanel->handleCandidateKey( m_index, m_text );
-    } );
+    connect( this, &QskVirtualKeyboardButton::pressed,
+        this, [ this ]() { m_inputPanel->handleCandidateKey( m_index, m_text ); } );
 }
 
 void QskVirtualKeyboardCandidateButton::setIndexAndText(int index, const QString& text )
@@ -150,7 +155,8 @@ void QskVirtualKeyboardCandidateButton::setIndexAndText(int index, const QString
     setText( m_text );
 }
 
-QskAspect::Subcontrol QskVirtualKeyboardCandidateButton::effectiveSubcontrol( QskAspect::Subcontrol subControl ) const
+QskAspect::Subcontrol QskVirtualKeyboardCandidateButton::effectiveSubcontrol(
+    QskAspect::Subcontrol subControl ) const
 {
     if( subControl == QskPushButton::Panel )
     {
@@ -317,6 +323,7 @@ QskVirtualKeyboard::QskVirtualKeyboard( QQuickItem* parent ):
             const int keyIndex = m_data->keyTable[ m_data->mode ].indexOf( &keyData );
 
             auto button = new QskVirtualKeyboardButton( keyIndex, this, rowBox );
+            button->installEventFilter( this );
             rowBox->setRetainSizeWhenHidden( button, true );
 
             m_data->keyButtons.append( button );
@@ -910,6 +917,37 @@ void QskVirtualKeyboard::setMode( QskVirtualKeyboard::Mode mode )
 {
     m_data->mode = mode;
     Q_EMIT modeChanged( m_data->mode );
+}
+
+bool QskVirtualKeyboard::eventFilter( QObject* object, QEvent* event )
+{
+    if ( event->type() == QEvent::InputMethodQuery )
+    {
+        /*
+            Qt/Quick expects that the item associated with the virtual keyboard
+            always has the focus. But you also find systems, where you have to
+            navigate and select inside the virtual keyboard.
+            So we have to fix the receiver.
+         */
+
+        const auto platformIntegration = QGuiApplicationPrivate::platformIntegration();
+
+        if ( const auto inputContext = platformIntegration->inputContext() )
+        {
+            QQuickItem* item = nullptr;
+
+            if ( QMetaObject::invokeMethod( inputContext, "inputItem",
+                Qt::DirectConnection, Q_RETURN_ARG( QQuickItem*, item ) ) )
+            {
+                if ( item )
+                    QGuiApplication::sendEvent( item, event );
+            }
+        }
+
+        return true;
+    }
+
+    return Inherited::eventFilter( object, event );
 }
 
 #include "moc_QskVirtualKeyboard.cpp"

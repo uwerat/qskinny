@@ -8,9 +8,64 @@
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquicktextinput_p.h>
+#include <private/qquicktextinput_p_p.h>
 QSK_QT_PRIVATE_END
 
-#include <QDebug>
+static inline void qskUpdateInputMethod(
+    const QskTextInput*, Qt::InputMethodQueries queries )
+{
+    auto inputMethod = QGuiApplication::inputMethod();
+    inputMethod->update( queries );
+}
+
+static inline void qskBindSignals( const QQuickTextInput* wrappedInput,
+    QskTextInput* input )
+{
+    QObject::connect( wrappedInput, &QQuickTextInput::textChanged,
+        input, [ input ] { input->Q_EMIT textChanged( input->text() ); } );
+
+    QObject::connect( wrappedInput, &QQuickTextInput::textEdited,
+        input, [ input ] { input->Q_EMIT textEdited( input->text() ); } );
+
+    QObject::connect( wrappedInput, &QQuickTextInput::textChanged,
+        input, [ input ] { input->Q_EMIT textChanged( input->text() ); } );
+
+    QObject::connect( wrappedInput, &QQuickTextInput::selectedTextChanged,
+        input, [ input ] { input->Q_EMIT selectedTextChanged( input->selectedText() ); } );
+
+    QObject::connect( wrappedInput, &QQuickTextInput::validatorChanged,
+        input, &QskTextInput::validatorChanged );
+
+    QObject::connect( wrappedInput, &QQuickTextInput::inputMaskChanged,
+        input, &QskTextInput::inputMaskChanged );
+
+    QObject::connect( wrappedInput, &QQuickTextInput::readOnlyChanged,
+        input, &QskTextInput::readOnlyChanged );
+
+    QObject::connect( wrappedInput, &QQuickTextInput::overwriteModeChanged,
+        input, &QskTextInput::overwriteModeChanged );
+
+    QObject::connect( wrappedInput, &QQuickTextInput::maximumLengthChanged,
+        input, &QskTextInput::maximumLengthChanged );
+
+    QObject::connect( wrappedInput, &QQuickTextInput::echoModeChanged,
+        input, [ input ] { input->Q_EMIT echoModeChanged( input->echoMode() ); } );
+
+    QObject::connect( wrappedInput, &QQuickTextInput::autoScrollChanged,
+        input, &QskTextInput::autoScrollChanged );
+
+    QObject::connect( wrappedInput, &QQuickTextInput::selectByMouseChanged,
+        input, &QskTextInput::selectByMouseChanged );
+
+    QObject::connect( wrappedInput, &QQuickTextInput::persistentSelectionChanged,
+        input, &QskTextInput::persistentSelectionChanged );
+
+    QObject::connect( wrappedInput, &QQuickItem::implicitWidthChanged,
+        input, &QskControl::resetImplicitSize );
+
+    QObject::connect( wrappedInput, &QQuickItem::implicitHeightChanged,
+        input, &QskControl::resetImplicitSize );
+}
 
 namespace
 {
@@ -20,6 +75,8 @@ namespace
         TextInput( QQuickItem* parent ) :
             QQuickTextInput( parent )
         {
+            setActiveFocusOnTab( false );
+            setFlag( ItemAcceptsInputMethod, false );
         }
 
         void setAlignment( Qt::Alignment alignment )
@@ -28,10 +85,26 @@ namespace
             setVAlign( ( VAlignment ) ( int( alignment ) & 0xf0 ) );
         }
 
-    protected:
-        virtual void inputMethodEvent( QInputMethodEvent* event ) override
+        inline bool handleEvent( QEvent* event )
         {
-            QQuickTextInput::inputMethodEvent( event );
+            switch( event->type() )
+            {
+                case QEvent::FocusIn:
+                case QEvent::FocusOut:
+                {
+
+
+                    auto d = QQuickTextInputPrivate::get( this );
+                    d->focusOnPress = true;
+                    d->handleFocusEvent( static_cast< QFocusEvent* >( event ) );
+                    d->focusOnPress = false;
+
+                    return true;
+                }
+
+                default:
+                    return QQuickTextInput::event( event );
+            }
         }
     };
 }
@@ -46,79 +119,68 @@ public:
 };
 
 QskTextInput::QskTextInput( QQuickItem* parent ):
-    QskTextInput( QString(), parent )
-{
-}
-
-QskTextInput::QskTextInput( const QString& text, QQuickItem* parent ):
     Inherited( parent ),
     m_data( new PrivateData() )
 {
-    auto input = new TextInput( this );
-
-    connect( input, &QQuickTextInput::textChanged,
-        this, [ this ] { Q_EMIT textChanged( this->text() ); } );
-
-    connect( input, &QQuickTextInput::textEdited,
-        this, [ this ] { Q_EMIT textEdited( this->text() ); } );
-
-    connect( input, &QQuickTextInput::textChanged,
-        this, [ this ] { Q_EMIT textChanged( this->text() ); } );
-
-    connect( input, &QQuickTextInput::selectedTextChanged,
-        this, [ this ] { Q_EMIT selectedTextChanged( selectedText() ); } );
-
-    connect( input, &QQuickTextInput::validatorChanged,
-        this, &QskTextInput::validatorChanged );
-
-    connect( input, &QQuickTextInput::inputMaskChanged,
-        this, &QskTextInput::inputMaskChanged );
-
-    connect( input, &QQuickTextInput::readOnlyChanged,
-        this, &QskTextInput::readOnlyChanged );
-
-    connect( input, &QQuickTextInput::overwriteModeChanged,
-        this, &QskTextInput::overwriteModeChanged );
-
-    connect( input, &QQuickTextInput::maximumLengthChanged,
-        this, &QskTextInput::maximumLengthChanged );
-
-    connect( input, &QQuickTextInput::echoModeChanged,
-        this, [ this ] { Q_EMIT echoModeChanged( echoMode() ); } );
-
-    connect( input, &QQuickTextInput::autoScrollChanged,
-        this, &QskTextInput::autoScrollChanged );
-
-    connect( input, &QQuickTextInput::selectByMouseChanged,
-        this, &QskTextInput::selectByMouseChanged );
-
-    connect( input, &QQuickTextInput::persistentSelectionChanged,
-        this, &QskTextInput::persistentSelectionChanged );
-
-    connect( input, &QQuickItem::implicitWidthChanged,
-        this, &QskControl::resetImplicitSize );
-
-    connect( input, &QQuickItem::implicitHeightChanged,
-        this, &QskControl::resetImplicitSize );
-
-    input->setAlignment( alignment() );
-    input->setFont( font() );
-    input->setText( text );
-
-    m_data->textInput = input;
-
     setPolishOnResize( true );
     setFocusPolicy( Qt::StrongFocus );
-#if 1
-    input->setActiveFocusOnTab( true );
-#endif
-    setAcceptedMouseButtons( Qt::LeftButton );
+
+    setFlag( QQuickItem::ItemAcceptsInputMethod );
+
+    m_data->textInput = new TextInput( this );
+    qskBindSignals( m_data->textInput, this );
+
+    setAcceptedMouseButtons( m_data->textInput->acceptedMouseButtons() );
+    m_data->textInput->setAcceptedMouseButtons( Qt::NoButton );
 
     initSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Fixed );
 }
 
+QskTextInput::QskTextInput( const QString& text, QQuickItem* parent ):
+    QskTextInput( parent )
+{
+    m_data->textInput->setText( text );
+}
+
 QskTextInput::~QskTextInput()
 {
+}
+
+bool QskTextInput::event( QEvent* event )
+{
+    if ( event->type() == QEvent::ShortcutOverride )
+    {
+        return m_data->textInput->handleEvent( event );
+    }
+
+    return Inherited::event( event );
+}
+
+void QskTextInput::keyPressEvent( QKeyEvent* event )
+{
+    m_data->textInput->handleEvent( event );
+}
+
+void QskTextInput::keyReleaseEvent( QKeyEvent* event )
+{
+    Inherited::keyReleaseEvent( event );
+}
+
+void QskTextInput::inputMethodEvent( QInputMethodEvent* event )
+{
+    m_data->textInput->handleEvent( event );
+}
+
+void QskTextInput::focusInEvent( QFocusEvent* event )
+{
+    m_data->textInput->handleEvent( event );
+    Inherited::focusInEvent( event );
+}
+
+void QskTextInput::focusOutEvent( QFocusEvent* event )
+{
+    m_data->textInput->handleEvent( event );
+    Inherited::focusOutEvent( event );
 }
 
 QSizeF QskTextInput::contentsSizeHint() const
@@ -136,7 +198,12 @@ QSizeF QskTextInput::contentsSizeHint() const
 
 void QskTextInput::updateLayout()
 {
-    qskSetItemGeometry( m_data->textInput, subControlRect( Text ) );
+    auto input = m_data->textInput;
+
+    input->setAlignment( alignment() );
+    input->setFont( font() );
+
+    qskSetItemGeometry( input, subControlRect( Text ) );
 }
 
 QString QskTextInput::text() const
@@ -162,9 +229,12 @@ void QskTextInput::setFontRole( int role )
 
     if ( oldRole != role )
     {
-#if 1
-        m_data->textInput->setFont( font() );
-#endif
+        polish();
+        resetImplicitSize();
+
+        qskUpdateInputMethod( this,
+            Qt::ImCursorRectangle | Qt::ImFont | Qt::ImAnchorRectangle );
+
         Q_EMIT fontRoleChanged();
     }
 }
@@ -187,6 +257,8 @@ void QskTextInput::setAlignment( Qt::Alignment alignment )
         setFlagHint( subControl | QskAspect::Alignment, alignment );
 
         m_data->textInput->setAlignment( alignment );
+
+        polish();
 
         Q_EMIT alignmentChanged();
     }
@@ -211,6 +283,9 @@ bool QskTextInput::isReadOnly() const
 void QskTextInput::setReadOnly( bool on )
 {
     m_data->textInput->setReadOnly( on );
+    m_data->textInput->setFlag( QQuickItem::ItemAcceptsInputMethod, false );
+
+    qskUpdateInputMethod( this, Qt::ImEnabled );
 }
 
 bool QskTextInput::isCursorVisible() const
@@ -288,6 +363,8 @@ void QskTextInput::setEchoMode( EchoMode mode )
 {
     m_data->textInput->setEchoMode(
         static_cast< QQuickTextInput::EchoMode >( mode ) );
+
+    qskUpdateInputMethod( this, Qt::ImHints );
 }
 
 QString QskTextInput::displayText() const
@@ -360,13 +437,36 @@ bool QskTextInput::hasAcceptableInput() const
 QVariant QskTextInput::inputMethodQuery(
     Qt::InputMethodQuery property) const
 {
-    return m_data->textInput->inputMethodQuery( property );
+    return inputMethodQuery( property, QVariant() );
 }
 
 QVariant QskTextInput::inputMethodQuery(
     Qt::InputMethodQuery query, QVariant argument) const
 {
-    return m_data->textInput->inputMethodQuery( query, argument );
+    switch( query )
+    {
+        case Qt::ImEnabled:
+        {
+            return QVariant( (bool)( flags() & ItemAcceptsInputMethod ) );
+        }
+        case Qt::ImFont:
+        {
+            return font();
+        }
+        case Qt::ImCursorPosition:
+        {
+            QVariant v = m_data->textInput->inputMethodQuery( query, argument );
+#if 1
+            if ( v.canConvert< QPointF >() )
+                v.setValue( v.toPointF() + m_data->textInput->position() );
+#endif
+            return v;
+        }
+        default:
+        {
+            return m_data->textInput->inputMethodQuery( query, argument );
+        }
+    }
 }
 
 bool QskTextInput::canUndo() const
@@ -391,7 +491,11 @@ Qt::InputMethodHints QskTextInput::inputMethodHints() const
 
 void QskTextInput::setInputMethodHints(Qt::InputMethodHints hints )
 {
-    m_data->textInput->setInputMethodHints( hints );
+    if ( m_data->textInput->inputMethodHints() != hints )
+    {
+        m_data->textInput->setInputMethodHints( hints );
+        qskUpdateInputMethod( this, Qt::ImHints );
+    }
 }
 
 #include "moc_QskTextInput.cpp"

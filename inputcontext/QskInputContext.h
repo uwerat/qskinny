@@ -11,6 +11,7 @@
 
 class QskVirtualKeyboard;
 class QskInputCompositionModel;
+class QQuickItem;
 
 class QskInputContext : public QPlatformInputContext
 {
@@ -39,6 +40,8 @@ public:
     virtual QLocale locale() const override;
 
     void setCompositionModel( const QLocale&, QskInputCompositionModel* );
+
+    Q_INVOKABLE QQuickItem* inputItem();
 
 private Q_SLOTS:
     void handleCandidatesChanged();

@@ -29,6 +29,8 @@ public:
 QskInputContext::QskInputContext() :
     m_data( new PrivateData() )
 {
+    setObjectName( "InputContext" );
+
     m_data->compositionModel = new QskInputCompositionModel();
 
     connect( m_data->compositionModel, &QskInputCompositionModel::candidatesChanged,
@@ -50,6 +52,7 @@ QskInputContext::~QskInputContext()
         delete m_data->inputPanel;
 
     qDeleteAll( m_data->compositionModels );
+    delete m_data->compositionModel;
 }
 
 bool QskInputContext::isValid() const
@@ -137,6 +140,11 @@ void QskInputContext::update( Qt::InputMethodQueries queries )
     // Qt::ImPlatformData     // hard to say...
 }
 
+QQuickItem* QskInputContext::inputItem()
+{
+    return m_data->inputItem;
+}
+
 QRectF QskInputContext::keyboardRect() const
 {
     if ( m_data->inputPanel
@@ -188,7 +196,7 @@ void QskInputContext::showInputPanel()
 
 void QskInputContext::hideInputPanel()
 {
-    if ( !m_data->inputPanel )
+    if ( m_data->inputPanel == nullptr )
         return;
 
     auto window = m_data->inputPanel->window();
@@ -201,8 +209,9 @@ void QskInputContext::hideInputPanel()
 bool QskInputContext::isInputPanelVisible() const
 {
     auto panel = m_data->inputPanel;
+
     return panel && panel->isVisible()
-           && panel->window() && panel->window()->isVisible();
+        && panel->window() && panel->window()->isVisible();
 }
 
 QLocale QskInputContext::locale() const

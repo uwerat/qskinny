@@ -137,6 +137,7 @@ public Q_SLOTS:
     void setPreeditCandidates( const QVector< QString >& );
 
 protected:
+    virtual bool eventFilter( QObject*, QEvent* ) override;
     virtual void geometryChanged( const QRectF&, const QRectF& ) override;
     virtual void updateLayout() override;
 
