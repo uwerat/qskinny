@@ -6,6 +6,7 @@
 #include "QskSquiekSkin.h"
 
 #include <QskTextLabel.h>
+#include <QskTextInput.h>
 #include <QskFocusIndicator.h>
 #include <QskSeparator.h>
 #include <QskDialogButton.h>
@@ -227,22 +228,24 @@ void QskSquiekSkin::setTab( QskAspect::Aspect aspect,
 void QskSquiekSkin::initHints()
 {
     initCommonHints();
-    initTextLabelHints();
-    initFocusIndicatorHints();
-    initSeparatorHints();
-    initPageIndicatorHints();
-    initPushButtonHints();
-    initPopupHints();
-    initDialogButtonHints();
+
     initDialogButtonBoxHints();
+    initDialogButtonHints();
+    initFocusIndicatorHints();
+    initInputPanelHints();
+    initListViewHints();
+    initPageIndicatorHints();
+    initPopupHints();
+    initPushButtonHints();
+    initScrollViewHints();
+    initSeparatorHints();
     initSliderHints();
+    initSubWindowHints();
     initTabButtonHints();
     initTabBarHints();
     initTabViewHints();
-    initInputPanelHints();
-    initScrollViewHints();
-    initListViewHints();
-    initSubWindowHints();
+    initTextLabelHints();
+    initTextInputHints();
 }
 
 void QskSquiekSkin::resetColors( const QColor& accent )
@@ -283,6 +286,32 @@ void QskSquiekSkin::initTextLabelHints()
 
     setSkinHint( Q::Text | Alignment, Qt::AlignCenter );
     setColor( Q::Text, pal.themeForeground  );
+}
+
+void QskSquiekSkin::initTextInputHints()
+{
+    using namespace QskAspect;
+    using Q = QskTextInput;
+
+    const ColorPalette& pal = m_data->palette;
+
+    setSkinHint( Q::Text | Alignment,
+        static_cast<int>( Qt::AlignLeft | Qt::AlignTop ) );
+
+    setColor( Q::Text, pal.themeForeground  );
+
+    setMargins( Q::Panel | Padding, 5 );
+    setBoxBorderMetrics( Q::Panel, 2 );
+    setBoxShape( Q::Panel, 4 );
+
+    QColor fillColor( Qt::white );
+
+    const QskBoxBorderColors borderColors(
+        fillColor.darker( 170 ), fillColor.darker( 170 ),
+        fillColor.darker( 105 ), fillColor.darker( 105 ) );
+
+    setBoxBorderColors( Q::Panel, borderColors );
+    setGradient( Q::Panel, fillColor );
 }
 
 void QskSquiekSkin::initFocusIndicatorHints()

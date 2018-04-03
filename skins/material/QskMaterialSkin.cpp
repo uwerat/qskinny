@@ -5,21 +5,22 @@
 
 #include "QskMaterialSkin.h"
 
-#include <QskTextLabel.h>
-#include <QskFocusIndicator.h>
-#include <QskSeparator.h>
-#include <QskDialogButton.h>
 #include <QskDialogButtonBox.h>
+#include <QskDialogButton.h>
+#include <QskFocusIndicator.h>
+#include <QskListView.h>
 #include <QskPageIndicator.h>
 #include <QskPushButton.h>
+#include <QskScrollView.h>
+#include <QskSeparator.h>
 #include <QskSlider.h>
+#include <QskSubWindow.h>
 #include <QskTabButton.h>
 #include <QskTabBar.h>
 #include <QskTabView.h>
+#include <QskTextLabel.h>
+#include <QskTextInput.h>
 #include <QskVirtualKeyboard.h>
-#include <QskScrollView.h>
-#include <QskListView.h>
-#include <QskSubWindow.h>
 
 #include <QskSkinlet.h>
 
@@ -121,22 +122,24 @@ QskMaterialSkin::~QskMaterialSkin()
 void QskMaterialSkin::initHints()
 {
     initCommonHints();
-    initTextLabelHints();
-    initFocusIndicatorHints();
-    initSeparatorHints();
-    initPageIndicatorHints();
-    initPushButtonHints();
-    initPopupHints();
-    initDialogButtonHints();
+
     initDialogButtonBoxHints();
+    initDialogButtonHints();
+    initFocusIndicatorHints();
+    initInputPanelHints();
+    initListViewHints();
+    initPageIndicatorHints();
+    initPopupHints();
+    initPushButtonHints();
+    initScrollViewHints();
+    initSeparatorHints();
     initSliderHints();
+    initSubWindowHints();
     initTabButtonHints();
     initTabBarHints();
     initTabViewHints();
-    initInputPanelHints();
-    initScrollViewHints();
-    initListViewHints();
-    initSubWindowHints();
+    initTextLabelHints();
+    initTextInputHints();
 }
 
 void QskMaterialSkin::resetColors( const QColor& accent )
@@ -186,6 +189,25 @@ void QskMaterialSkin::initTextLabelHints()
 
     setSkinHint( Q::Text | Alignment, Qt::AlignCenter );
     setColor( Q::Text, pal.textColor  );
+}
+
+void QskMaterialSkin::initTextInputHints()
+{
+    using namespace QskAspect;
+    using Q = QskTextInput;
+
+    setSkinHint( Q::Text | Alignment,
+        static_cast<int>( Qt::AlignLeft | Qt::AlignTop ) );
+
+    const ColorPalette& pal = m_data->palette;
+
+    setColor( Q::Text, pal.textColor  );
+
+    setMargins( Q::Panel | Padding, 5 );
+    setBoxShape( Q::Panel, 4 );
+    setBoxBorderMetrics( Q::Panel, 2 );
+    setBoxBorderColors( Q::Panel, pal.darker125 );
+    setGradient( Q::Panel, pal.baseColor );
 }
 
 void QskMaterialSkin::initFocusIndicatorHints()

@@ -25,22 +25,24 @@ private:
     void initHints();
 
     void initCommonHints();
-    void initTextLabelHints();
-    void initFocusIndicatorHints();
-    void initSeparatorHints();
-    void initPageIndicatorHints();
-    void initPushButtonHints();
-    void initPopupHints();
+
     void initDialogButtonHints();
     void initDialogButtonBoxHints();
+    void initFocusIndicatorHints();
+    void initInputPanelHints();
+    void initListViewHints();
+    void initPageIndicatorHints();
+    void initPopupHints();
+    void initPushButtonHints();
+    void initScrollViewHints();
+    void initSeparatorHints();
     void initSliderHints();
+    void initSubWindowHints();
     void initTabButtonHints();
     void initTabBarHints();
     void initTabViewHints();
-    void initInputPanelHints();
-    void initScrollViewHints();
-    void initListViewHints();
-    void initSubWindowHints();
+    void initTextLabelHints();
+    void initTextInputHints();
 
     enum PanelStyle
     {

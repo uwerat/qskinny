@@ -177,6 +177,8 @@ HEADERS += \
     controls/QskTabButtonSkinlet.h \
     controls/QskTabView.h \
     controls/QskTabViewSkinlet.h \
+    controls/QskTextInput.h \
+    controls/QskTextInputSkinlet.h \
     controls/QskTextLabel.h \
     controls/QskTextLabelSkinlet.h \
     controls/QskVariantAnimator.h \
@@ -241,6 +243,8 @@ SOURCES += \
     controls/QskTabButtonSkinlet.cpp \
     controls/QskTabView.cpp \
     controls/QskTabViewSkinlet.cpp \
+    controls/QskTextInput.cpp \
+    controls/QskTextInputSkinlet.cpp \
     controls/QskTextLabel.cpp \
     controls/QskTextLabelSkinlet.cpp \
     controls/QskVariantAnimator.cpp \

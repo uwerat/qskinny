@@ -3,8 +3,6 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#include "TextInput.h"
-
 #include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
 
@@ -13,6 +11,7 @@
 #include <QskFocusIndicator.h>
 #include <QskLinearBox.h>
 #include <QskListView.h>
+#include <QskTextInput.h>
 
 #include <QskWindow.h>
 #include <QskSetup.h>
@@ -39,8 +38,7 @@ public:
         setMargins( 10 );
         setSpacing( 10 );
 
-        auto* textInput = new QQuickTextInput( this );
-        textInput->setActiveFocusOnTab( true );
+        auto* textInput = new QskTextInput( this );
         textInput->setText( "I am a line edit. Press and edit Me." );
 
 #if LOCAL_PANEL

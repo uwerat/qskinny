@@ -63,6 +63,9 @@ QSK_QT_PRIVATE_END
 #include "QskTextLabel.h"
 #include "QskTextLabelSkinlet.h"
 
+#include "QskTextInput.h"
+#include "QskTextInputSkinlet.h"
+
 #include "QskSeparator.h"
 #include "QskSeparatorSkinlet.h"
 
@@ -140,6 +143,7 @@ QskSkin::QskSkin( QObject* parent ):
     declareSkinlet< QskTabButton, QskTabButtonSkinlet >();
     declareSkinlet< QskTabView, QskTabViewSkinlet >();
     declareSkinlet< QskTextLabel, QskTextLabelSkinlet >();
+    declareSkinlet< QskTextInput, QskTextInputSkinlet >();
 
     const QFont font = QGuiApplication::font();
     setupFonts( font.family(), font.weight(), font.italic() );
