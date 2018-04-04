@@ -271,9 +271,6 @@ public:
     qint16 selectedGroup;
     qint32 candidateOffset;
 
-    QLocale locale;
-
-    QVector< Qt::Key > groups;
     QVector< QString > candidates;
 
     KeyTable keyTable[ ModeCount ];
@@ -506,25 +503,6 @@ QString QskVirtualKeyboard::displayLanguageName() const
     return QLocale::languageToString( locale.language() );
 }
 
-void QskVirtualKeyboard::setPreeditGroups( const QVector< Qt::Key >& groups )
-{
-    auto& topRow = m_data->keyTable[ LowercaseMode ].data[ 0 ];
-
-    for( const auto& group : groups )
-    {
-        auto& keyData = topRow[ &group - groups.data() ];
-        keyData.key = group;
-    }
-
-    m_data->groups = groups;
-    selectGroup( -1 );
-
-    if( m_data->mode == LowercaseMode )
-    {
-        update();
-    }
-}
-
 void QskVirtualKeyboard::setPreeditCandidates( const QVector< QString >& candidates )
 {
     if( m_data->candidates == candidates )
@@ -540,7 +518,6 @@ void QskVirtualKeyboard::setCandidateOffset( int candidateOffset )
 {
     m_data->candidateOffset = candidateOffset;
 
-    const auto groupCount = m_data->groups.length();
     const auto candidateCount = m_data->candidates.length();
     const auto count = std::min( candidateCount, QskVirtualKeyboardCandidateButton::maxCandidates() );
     const bool continueLeft = m_data->candidateOffset > 0;
@@ -554,7 +531,7 @@ void QskVirtualKeyboard::setCandidateOffset( int candidateOffset )
         {
             button->setIndexAndText( i, textForKey( Qt::Key_ApplicationLeft ) );
         }
-        else if( continueRight && ( i == KeyCount - groupCount - 1 ) )
+        else if( continueRight && ( i == KeyCount - 1 ) )
         {
             button->setIndexAndText( i, textForKey( Qt::Key_ApplicationRight ) );
         }
@@ -725,33 +702,6 @@ void QskVirtualKeyboard::compose( int key )
 {
     QGuiApplication::inputMethod()->invokeAction(
         static_cast< QInputMethod::Action >( Compose ), key );
-}
-
-void QskVirtualKeyboard::selectGroup( int index )
-{
-    auto& topRow = m_data->keyTable[ m_data->mode ].data[ 0 ];
-
-    if( m_data->selectedGroup >= 0 )
-    {
-        auto group = static_cast< int >( m_data->selectedGroup );
-        topRow[ group ].key &= ~KeyLocked;
-    }
-
-    if( m_data->selectedGroup == index )
-    {
-        index = -1;    // clear selection
-    }
-
-    m_data->selectedGroup = index;
-    QGuiApplication::inputMethod()->invokeAction(
-        static_cast< QInputMethod::Action >( SelectGroup ), m_data->selectedGroup + 1 );
-
-    if( m_data->selectedGroup < 0 )
-    {
-        return;
-    }
-
-    topRow[ m_data->selectedGroup ].key |= KeyLocked;
 }
 
 void QskVirtualKeyboard::selectCandidate( int index )

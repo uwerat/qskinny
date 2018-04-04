@@ -93,13 +93,6 @@ QString QskHunspellCompositionModel::polishPreedit( const QString& preedit )
     return preedit;
 }
 
-bool QskHunspellCompositionModel::isComposable( const QStringRef& preedit ) const
-{
-    // ### What is this function even supposed do?
-    Q_UNUSED( preedit );
-    return false;
-}
-
 bool QskHunspellCompositionModel::hasIntermediate() const
 {
     return true;

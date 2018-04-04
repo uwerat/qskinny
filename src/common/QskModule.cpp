@@ -159,7 +159,7 @@ public:
 
     Q_PROPERTY( QStringList skinList READ skinList NOTIFY skinListChanged )
 
-    Q_PRIVATE_PROPERTY( setup(), QskVirtualKeyboard* inputPanel READ inputPanel
+    Q_PRIVATE_PROPERTY( setup(), QQuickItem* inputPanel READ inputPanel
         WRITE setInputPanel NOTIFY inputPanelChanged )
 
     Q_PRIVATE_PROPERTY( setup(), QskSetupFlagsProvider controlFlags

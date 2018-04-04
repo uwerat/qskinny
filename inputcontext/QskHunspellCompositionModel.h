@@ -25,7 +25,6 @@ public:
 protected:
     virtual bool hasIntermediate() const override;
     virtual QString polishPreedit( const QString& ) override;
-    virtual bool isComposable( const QStringRef& ) const override;
 
 private:
     class PrivateData;

@@ -8,15 +8,13 @@
 
 #include "pinyinime.h"
 
-#include <QDebug>
-#include <QVector>
 #include <QStringList>
+#include <QDebug>
 
 class QskPinyinCompositionModel::PrivateData
 {
 public:
     QStringList candidates;
-    QVector< Qt::Key > groups;
 };
 
 QskPinyinCompositionModel::QskPinyinCompositionModel( QskInputContext* context ):
@@ -57,11 +55,6 @@ QString QskPinyinCompositionModel::candidate( int index ) const
         return m_data->candidates[ index ];
 
     return QString();
-}
-
-QVector< Qt::Key > QskPinyinCompositionModel::groups() const
-{
-    return m_data->groups;
 }
 
 bool QskPinyinCompositionModel::hasIntermediate() const
@@ -113,15 +106,4 @@ QString QskPinyinCompositionModel::polishPreedit( const QString& preedit )
     }
 
     return preedit;
-}
-
-bool QskPinyinCompositionModel::isComposable( const QStringRef& preedit ) const
-{
-    Q_UNUSED( preedit );
-    return false; // ### implement
-}
-
-void QskPinyinCompositionModel::handleGroupIndexChanged()
-{
-    // ### implement
 }

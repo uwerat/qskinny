@@ -21,17 +21,12 @@ public:
     virtual int candidateCount() const override;
     virtual QString candidate( int ) const override;
 
-    virtual QVector< Qt::Key > groups() const override;
-
 protected:
     // Used for text composition
     virtual bool hasIntermediate() const override;
     virtual QString polishPreedit( const QString& preedit ) override;
-    virtual bool isComposable( const QStringRef& preedit ) const override;
 
 private:
-    void handleGroupIndexChanged();
-
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

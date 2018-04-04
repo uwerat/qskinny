@@ -90,17 +90,6 @@ public:
         setPreferredWidth( columnWidth( 0 ) + 20 );
 
         setScrollableSize( QSizeF( columnWidth( 0 ), rowCount() * rowHeight() ) );
-
-        // TODO:
-        // 1) changing the keyboard layouts does not yet work
-        // 2) QskInputPanel does not work properly in the threaded environment
-#if 1
-        connect( this, &QskListView::selectedRowChanged,
-            this, [ this ] { qskSetup->inputPanel()->setLocale( m_values[selectedRow()].second ); } );
-#else
-        connect( this, &QskListView::selectedRowChanged,
-            this, [ this ] { QLocale::setDefault( m_values[selectedRow()].second ); } );
-#endif
     }
 
     virtual int rowCount() const override final
@@ -146,6 +135,14 @@ public:
         return m_values[row].first;
     }
 
+    QLocale localeAt( int row ) const
+    {
+        if ( row >= 0 && row < m_values.size() )
+            return m_values[row].second;
+
+        return QLocale();
+    }
+
 private:
     inline void append( QLocale locale, const QString& name )
     {
@@ -179,8 +176,11 @@ int main( int argc, char* argv[] )
     box->setSpacing( 10 );
     box->setMargins( 20 );
 
-    (void) new LocaleListView( box );
-    (void) new InputBox( box );
+    auto listView = new LocaleListView( box );
+    auto inputBox =  new InputBox( box );
+
+    QObject::connect( listView, &QskListView::selectedRowChanged,
+        inputBox, [ = ]( int row ) { inputBox->setLocale( listView->localeAt( row ) ); } );
 
     QskWindow window;
     window.setColor( "PapayaWhip" );

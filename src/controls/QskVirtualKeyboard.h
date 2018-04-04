@@ -84,8 +84,7 @@ public:
     enum Action
     {
         Compose = 0x10,
-        SelectGroup = 0x11,
-        SelectCandidate = 0x12,
+        SelectCandidate = 0x11,
     };
     Q_ENUM( Action )
 
@@ -133,7 +132,6 @@ public:
     void setCandidateBarVisible( bool visible );
 
 public Q_SLOTS:
-    void setPreeditGroups( const QVector< Qt::Key >& );
     void setPreeditCandidates( const QVector< QString >& );
 
 protected:

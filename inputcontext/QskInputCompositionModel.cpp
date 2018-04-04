@@ -42,8 +42,6 @@ public:
     QString preedit;
     QTextCharFormat preeditFormat;
     QList< QInputMethodEvent::Attribute > preeditAttributes;
-
-    int groupIndex = 0;
 };
 
 QskInputCompositionModel::QskInputCompositionModel( QskInputContext* context ):
@@ -269,42 +267,6 @@ void QskInputCompositionModel::sendKeyEvents( int key )
 
 bool QskInputCompositionModel::hasIntermediate() const
 {
-    return false;
-}
-
-bool QskInputCompositionModel::isComposable( const QStringRef& preedit ) const
-{
-    Q_UNUSED( preedit );
-    return false;
-}
-
-int QskInputCompositionModel::groupIndex() const
-{
-    return m_data->groupIndex;
-}
-
-void QskInputCompositionModel::setGroupIndex( int groupIndex )
-{
-    if ( groupIndex == m_data->groupIndex )
-        return;
-
-    m_data->groupIndex = groupIndex;
-    const QString displayText = polishPreedit( m_data->preedit );
-    m_data->preeditAttributes.first().length = displayText.length();
-
-    QInputMethodEvent event( displayText, m_data->preeditAttributes );
-    sendCompositionEvent( &event );
-}
-
-QVector< Qt::Key > QskInputCompositionModel::groups() const
-{
-    return QVector< Qt::Key >();
-}
-
-bool QskInputCompositionModel::nextGroupIndex( int& index, bool forward ) const
-{
-    Q_UNUSED( index );
-    Q_UNUSED( forward );
     return false;
 }
 

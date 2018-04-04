@@ -11,10 +11,8 @@
 #include <qqml.h>
 #include <memory>
 
-class QskVirtualKeyboard;
 class QskSkin;
-class QskSkinlet;
-class QskControl;
+class QQuickItem;
 class QskGraphicProvider;
 
 class QLocale;
@@ -60,8 +58,8 @@ public:
 
     QskSkin* skin();
 
-    void setInputPanel( QskVirtualKeyboard* );
-    QskVirtualKeyboard* inputPanel();
+    void setInputPanel( QQuickItem* );
+    QQuickItem* inputPanel();
 
     void addGraphicProvider( const QString& providerId, QskGraphicProvider* );
     QskGraphicProvider* graphicProvider( const QString& providerId ) const;
@@ -76,7 +74,7 @@ public:
 
 Q_SIGNALS:
     void skinChanged( QskSkin* );
-    void inputPanelChanged( QskVirtualKeyboard* );
+    void inputPanelChanged( QQuickItem* );
     void controlFlagsChanged();
 
 private:

@@ -9,7 +9,6 @@
 #include <qpa/qplatforminputcontext.h>
 #include <memory>
 
-class QskVirtualKeyboard;
 class QskInputCompositionModel;
 class QQuickItem;
 class QInputMethodQueryEvent;
@@ -56,7 +55,7 @@ public:
 
 private Q_SLOTS:
     void handleCandidatesChanged();
-    void setInputPanel( QskVirtualKeyboard* );
+    void setInputPanel( QQuickItem* );
 
 private:
     void setInputItem( QQuickItem* );

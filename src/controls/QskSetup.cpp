@@ -8,7 +8,6 @@
 #include "QskSkinManager.h"
 #include "QskGraphicProviderMap.h"
 #include "QskControl.h"
-#include "QskVirtualKeyboard.h"
 #include "QskWindow.h"
 #include "QskObjectTree.h"
 
@@ -127,7 +126,7 @@ public:
 
     QskGraphicProviderMap graphicProviders;
 
-    QPointer< QskVirtualKeyboard > inputPanel;
+    QPointer< QQuickItem > inputPanel;
     QskSetup::Flags controlFlags;
 };
 
@@ -262,7 +261,7 @@ QskGraphicProvider* QskSetup::graphicProvider( const QString& providerId ) const
     return m_data->graphicProviders.provider( providerId );
 }
 
-void QskSetup::setInputPanel( QskVirtualKeyboard* inputPanel )
+void QskSetup::setInputPanel( QQuickItem* inputPanel )
 {
     if ( m_data->inputPanel == inputPanel )
         return;
@@ -271,7 +270,7 @@ void QskSetup::setInputPanel( QskVirtualKeyboard* inputPanel )
     Q_EMIT inputPanelChanged( m_data->inputPanel );
 }
 
-QskVirtualKeyboard* QskSetup::inputPanel()
+QQuickItem* QskSetup::inputPanel()
 {
     return m_data->inputPanel;
 }

@@ -17,8 +17,6 @@ class QskInputCompositionModel : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY( QVector< Qt::Key > groups READ groups NOTIFY groupsChanged )
-
 public:
     QskInputCompositionModel( QskInputContext* context );
     virtual ~QskInputCompositionModel();
@@ -35,22 +33,14 @@ public:
     virtual int candidateCount() const;
     virtual QString candidate( int ) const;
 
-    int groupIndex() const;
-    void setGroupIndex( int groupIndex );
-    virtual bool nextGroupIndex( int&, bool = true ) const;
-
-    virtual QVector< Qt::Key > groups() const;
-
 protected:
     // Used for text composition
     virtual bool hasIntermediate() const;
     virtual QString polishPreedit( const QString& preedit );
-    virtual bool isComposable( const QStringRef& preedit ) const;
 
     QskInputContext* context() const;
 
 Q_SIGNALS:
-    void groupsChanged( const QVector< Qt::Key >& );
     void candidatesChanged();
 
 private:
