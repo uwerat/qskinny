@@ -12,6 +12,7 @@
 class QskVirtualKeyboard;
 class QskInputCompositionModel;
 class QQuickItem;
+class QInputMethodQueryEvent;
 
 class QskInputContext : public QPlatformInputContext
 {
@@ -48,14 +49,17 @@ public:
 
     Q_INVOKABLE QQuickItem* inputItem();
 
-    virtual bool eventFilter( QObject*, QEvent * ) override;
     virtual bool filterEvent( const QEvent* ) override;
+
+    QInputMethodQueryEvent queryInputMethod( Qt::InputMethodQueries ) const;
+    void sendEventToInputItem( QEvent* ) const;
 
 private Q_SLOTS:
     void handleCandidatesChanged();
     void setInputPanel( QskVirtualKeyboard* );
 
 private:
+    void setInputItem( QQuickItem* );
     QskInputCompositionModel* compositionModel() const;
 
     class PrivateData;

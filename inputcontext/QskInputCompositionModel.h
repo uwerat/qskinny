@@ -11,7 +11,7 @@
 #include <memory>
 
 class QInputMethodEvent;
-class QStringList;
+class QskInputContext;
 
 class QskInputCompositionModel : public QObject
 {
@@ -20,7 +20,7 @@ class QskInputCompositionModel : public QObject
     Q_PROPERTY( QVector< Qt::Key > groups READ groups NOTIFY groupsChanged )
 
 public:
-    QskInputCompositionModel( QObject* parent = nullptr );
+    QskInputCompositionModel( QskInputContext* context );
     virtual ~QskInputCompositionModel();
 
     // to determine whether to show the suggestion bar:
@@ -41,22 +41,21 @@ public:
 
     virtual QVector< Qt::Key > groups() const;
 
-    void setInputItem( QObject* inputItem );
-
 protected:
     // Used for text composition
     virtual bool hasIntermediate() const;
     virtual QString polishPreedit( const QString& preedit );
     virtual bool isComposable( const QStringRef& preedit ) const;
 
+    QskInputContext* context() const;
+
 Q_SIGNALS:
     void groupsChanged( const QVector< Qt::Key >& );
     void candidatesChanged();
 
 private:
-    void backspace();
-    void moveCursor( Qt::Key key );
     void sendCompositionEvent( QInputMethodEvent* e );
+    void sendKeyEvents( int key );
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

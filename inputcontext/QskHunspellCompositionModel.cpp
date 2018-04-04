@@ -10,13 +10,12 @@ public:
     QVector< QString > candidates;
 };
 
-QskHunspellCompositionModel::QskHunspellCompositionModel( QObject* parent ):
-    Inherited( parent ),
+QskHunspellCompositionModel::QskHunspellCompositionModel( QskInputContext* context ):
+    Inherited( context ),
     m_data( new PrivateData() )
 {
 #if 1
-    //  ship with code if license allows:
-    // loading the language specific one depending on the locale
+    // TODO: loading the language specific one depending on the locale
 
     m_data->hunspellHandle = Hunspell_create(
         "/usr/share/hunspell/en_US.aff",

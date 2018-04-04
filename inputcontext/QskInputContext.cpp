@@ -26,7 +26,7 @@ public:
     QHash< QLocale, QskInputCompositionModel* > compositionModels;
 };
 
-QskInputContext::QskInputContext() :
+QskInputContext::QskInputContext():
     m_data( new PrivateData() )
 {
     setObjectName( "InputContext" );
@@ -70,8 +70,7 @@ void QskInputContext::update( Qt::InputMethodQueries queries )
     if ( m_data->inputItem == nullptr )
         return;
 
-    QInputMethodQueryEvent queryEvent( queries );
-    QCoreApplication::sendEvent( m_data->inputItem, &queryEvent );
+    const auto queryEvent = queryInputMethod( queries );
 
     // Qt::ImCursorRectangle
     // Qt::ImFont
@@ -83,9 +82,10 @@ void QskInputContext::update( Qt::InputMethodQueries queries )
 
     if ( queries & Qt::ImHints )
     {
-        const Qt::InputMethodHints hints =
-            static_cast< Qt::InputMethodHints >( queryEvent.value( Qt::ImHints ).toInt() );
-        Q_UNUSED( hints );
+#if 0
+        const auto hints = static_cast< Qt::InputMethodHints >(
+            queryEvent.value( Qt::ImHints ).toInt() );
+
         //ImhHiddenText = 0x1,          // might need to disable certain checks
         //ImhSensitiveData = 0x2,       // shouldn't change anything
         //ImhNoAutoUppercase = 0x4,     // if we support auto uppercase, disable it
@@ -109,6 +109,7 @@ void QskInputContext::update( Qt::InputMethodQueries queries )
         //ImhEmailCharactersOnly        // disable certain symbols (email-only kb?)
         //ImhUrlCharactersOnly          // disable certain symbols (url-only kb?)
         //ImhLatinOnly                  // disable chinese input
+#endif
     }
 
     if ( queries & Qt::ImPreferredLanguage )
@@ -147,6 +148,11 @@ void QskInputContext::update( Qt::InputMethodQueries queries )
 QQuickItem* QskInputContext::inputItem()
 {
     return m_data->inputItem;
+}
+
+void QskInputContext::setInputItem( QQuickItem* item )
+{
+    m_data->inputItem = item;
 }
 
 QRectF QskInputContext::keyboardRect() const
@@ -232,8 +238,7 @@ void QskInputContext::setFocusObject( QObject* focusObject )
 {
     if ( focusObject == nullptr )
     {
-        m_data->inputItem = nullptr;
-        compositionModel()->setInputItem( nullptr );
+        setInputItem( nullptr );
         return;
     }
 
@@ -245,17 +250,14 @@ void QskInputContext::setFocusObject( QObject* focusObject )
         // Do not change the input item when panel buttons get the focus:
         if( qskNearestFocusScope( focusItem ) != m_data->inputPanel )
         {
-            m_data->inputItem = focusItem;
-            compositionModel()->setInputItem( focusItem );
+            setInputItem( focusItem );
             inputItemChanged = true;
         }
     }
 
     if( inputItemChanged )
     {
-        QInputMethodQueryEvent queryEvent( Qt::ImEnabled );
-        QCoreApplication::sendEvent( m_data->inputItem, &queryEvent );
-
+        const auto queryEvent = queryInputMethod( Qt::ImEnabled );
         if ( !queryEvent.value( Qt::ImEnabled ).toBool() )
         {
             hideInputPanel();
@@ -403,17 +405,26 @@ void QskInputContext::commit()
 {
 }
 
-bool QskInputContext::eventFilter( QObject* object, QEvent* event )
+bool QskInputContext::filterEvent( const QEvent* event )
 {
-    if ( object == m_data->inputItem )
-        return filterEvent( event );
-
+    // called from QXcbKeyboard, but what about other platforms
+    Q_UNUSED( event )
     return false;
 }
 
-bool QskInputContext::filterEvent( const QEvent* )
+QInputMethodQueryEvent QskInputContext::queryInputMethod(
+    Qt::InputMethodQueries queries ) const
 {
-    return false;
+    QInputMethodQueryEvent event( queries );
+    sendEventToInputItem( &event );
+
+    return event;
+}
+
+void QskInputContext::sendEventToInputItem( QEvent* event ) const
+{
+    if ( m_data->inputItem && event )
+        QCoreApplication::sendEvent( m_data->inputItem, event );
 }
 
 #include "moc_QskInputContext.cpp"

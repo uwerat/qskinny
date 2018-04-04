@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskPinyinCompositionModel.h"
+#include "QskInputContext.h"
 
 #include "pinyinime.h"
 
@@ -18,8 +19,8 @@ public:
     QVector< Qt::Key > groups;
 };
 
-QskPinyinCompositionModel::QskPinyinCompositionModel( QObject* parent ):
-    Inherited( parent ),
+QskPinyinCompositionModel::QskPinyinCompositionModel( QskInputContext* context ):
+    Inherited( context ),
     m_data( new PrivateData )
 {
 #if 1

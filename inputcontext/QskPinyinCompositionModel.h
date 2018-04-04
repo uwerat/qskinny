@@ -13,7 +13,7 @@ class QskPinyinCompositionModel : public QskInputCompositionModel
     using Inherited = QskInputCompositionModel;
 
 public:
-    QskPinyinCompositionModel( QObject* parent = nullptr );
+    QskPinyinCompositionModel( QskInputContext* );
     virtual ~QskPinyinCompositionModel() override;
 
     virtual bool supportsSuggestions() const override final;

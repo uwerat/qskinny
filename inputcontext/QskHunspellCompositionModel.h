@@ -13,7 +13,7 @@ class QskHunspellCompositionModel : public QskInputCompositionModel
     using Inherited = QskInputCompositionModel;
 
 public:
-    QskHunspellCompositionModel( QObject* parent = nullptr );
+    QskHunspellCompositionModel( QskInputContext* context );
     virtual ~QskHunspellCompositionModel() override;
 
     virtual bool supportsSuggestions() const override final;
@@ -24,8 +24,8 @@ public:
 
 protected:
     virtual bool hasIntermediate() const override;
-    virtual QString polishPreedit( const QString& preedit ) override;
-    virtual bool isComposable( const QStringRef& preedit ) const override;
+    virtual QString polishPreedit( const QString& ) override;
+    virtual bool isComposable( const QStringRef& ) const override;
 
 private:
     class PrivateData;
