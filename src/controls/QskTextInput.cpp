@@ -24,8 +24,10 @@ static inline void qskBindSignals( const QQuickTextInput* wrappedInput,
     QObject::connect( wrappedInput, &QQuickTextInput::textChanged,
         input, [ input ] { input->Q_EMIT textChanged( input->text() ); } );
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
     QObject::connect( wrappedInput, &QQuickTextInput::textEdited,
         input, [ input ] { input->Q_EMIT textEdited( input->text() ); } );
+#endif
 
     QObject::connect( wrappedInput, &QQuickTextInput::textChanged,
         input, [ input ] { input->Q_EMIT textChanged( input->text() ); } );
@@ -42,8 +44,10 @@ static inline void qskBindSignals( const QQuickTextInput* wrappedInput,
     QObject::connect( wrappedInput, &QQuickTextInput::readOnlyChanged,
         input, &QskTextInput::readOnlyChanged );
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
     QObject::connect( wrappedInput, &QQuickTextInput::overwriteModeChanged,
         input, &QskTextInput::overwriteModeChanged );
+#endif
 
     QObject::connect( wrappedInput, &QQuickTextInput::maximumLengthChanged,
         input, &QskTextInput::maximumLengthChanged );
@@ -232,9 +236,12 @@ void QskTextInput::setFontRole( int role )
         polish();
         resetImplicitSize();
 
-        qskUpdateInputMethod( this,
-            Qt::ImCursorRectangle | Qt::ImFont | Qt::ImAnchorRectangle );
+        Qt::InputMethodQueries queries = Qt::ImCursorRectangle | Qt::ImFont;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+        queries |= Qt::ImAnchorRectangle;
+#endif
 
+        qskUpdateInputMethod( this, queries );
         Q_EMIT fontRoleChanged();
     }
 }
@@ -374,17 +381,29 @@ QString QskTextInput::displayText() const
 
 QString QskTextInput::preeditText() const
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
     return m_data->textInput->preeditText();
+#else
+    return QString();
+#endif
 }
 
 bool QskTextInput::overwriteMode() const
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
     return m_data->textInput->overwriteMode();
+#else
+    return false;
+#endif
 }
 
 void QskTextInput::setOverwriteMode( bool overwrite )
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
     m_data->textInput->setOverwriteMode( overwrite );
+#else
+    Q_UNUSED( overwrite )
+#endif
 }
 
 bool QskTextInput::autoScroll() const

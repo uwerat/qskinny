@@ -62,7 +62,8 @@ public:
     int groupIndex;
 };
 
-QskInputCompositionModel::QskInputCompositionModel():
+QskInputCompositionModel::QskInputCompositionModel( QObject* parent ):
+    QObject( parent ),
     m_data( new PrivateData )
 {
     m_data->groupIndex = 0;

@@ -10,8 +10,8 @@ public:
     QVector< QString > candidates;
 };
 
-QskHunspellCompositionModel::QskHunspellCompositionModel() :
-    QskInputCompositionModel(),
+QskHunspellCompositionModel::QskHunspellCompositionModel( QObject* parent ):
+    Inherited( parent ),
     m_data( new PrivateData() )
 {
 #if 1

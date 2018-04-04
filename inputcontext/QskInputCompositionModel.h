@@ -20,7 +20,7 @@ class QskInputCompositionModel : public QObject
     Q_PROPERTY( QVector< Qt::Key > groups READ groups NOTIFY groupsChanged )
 
 public:
-    QskInputCompositionModel();
+    QskInputCompositionModel( QObject* parent = nullptr );
     virtual ~QskInputCompositionModel();
 
     // to determine whether to show the suggestion bar:

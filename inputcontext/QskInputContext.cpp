@@ -31,7 +31,7 @@ QskInputContext::QskInputContext() :
 {
     setObjectName( "InputContext" );
 
-    m_data->compositionModel = new QskInputCompositionModel();
+    m_data->compositionModel = new QskInputCompositionModel( this );
 
     connect( m_data->compositionModel, &QskInputCompositionModel::candidatesChanged,
         this, &QskInputContext::handleCandidatesChanged );
@@ -40,7 +40,7 @@ QskInputContext::QskInputContext() :
         this, &QskInputContext::setInputPanel );
 
 #if 1
-    setCompositionModel( QLocale::Chinese, new QskPinyinCompositionModel() );
+    setCompositionModel( QLocale::Chinese, new QskPinyinCompositionModel( this ) );
 #endif
 
     setInputPanel( qskSetup->inputPanel() );
@@ -48,11 +48,10 @@ QskInputContext::QskInputContext() :
 
 QskInputContext::~QskInputContext()
 {
+#if 1
     if ( m_data->inputPanel )
         delete m_data->inputPanel;
-
-    qDeleteAll( m_data->compositionModels );
-    delete m_data->compositionModel;
+#endif
 }
 
 bool QskInputContext::isValid() const
@@ -60,14 +59,19 @@ bool QskInputContext::isValid() const
     return true;
 }
 
+bool QskInputContext::hasCapability( Capability ) const
+{
+    // what is QPlatformInputContext::HiddenTextCapability ???
+    return true;
+}
+
 void QskInputContext::update( Qt::InputMethodQueries queries )
 {
-    if ( !m_data->inputItem )
+    if ( m_data->inputItem == nullptr )
         return;
 
     QInputMethodQueryEvent queryEvent( queries );
-    if ( !QCoreApplication::sendEvent( m_data->inputItem, &queryEvent ) )
-        return;
+    QCoreApplication::sendEvent( m_data->inputItem, &queryEvent );
 
     // Qt::ImCursorRectangle
     // Qt::ImFont
@@ -219,6 +223,11 @@ QLocale QskInputContext::locale() const
     return m_data->inputPanel ? m_data->inputPanel->locale() : QLocale();
 }
 
+Qt::LayoutDirection QskInputContext::inputDirection() const
+{
+    return Inherited::inputDirection();
+}
+
 void QskInputContext::setFocusObject( QObject* focusObject )
 {
     if ( focusObject == nullptr )
@@ -245,8 +254,7 @@ void QskInputContext::setFocusObject( QObject* focusObject )
     if( inputItemChanged )
     {
         QInputMethodQueryEvent queryEvent( Qt::ImEnabled );
-        if ( !QCoreApplication::sendEvent( m_data->inputItem, &queryEvent ) )
-            return;
+        QCoreApplication::sendEvent( m_data->inputItem, &queryEvent );
 
         if ( !queryEvent.value( Qt::ImEnabled ).toBool() )
         {
@@ -302,7 +310,7 @@ void QskInputContext::invokeAction( QInputMethod::Action action, int cursorPosit
 {
     auto model = compositionModel();
 
-    switch ( static_cast< QskVirtualKeyboard::Action >( action ) )
+    switch ( static_cast< int >( action ) )
     {
         case QskVirtualKeyboard::Compose:
         {
@@ -321,6 +329,11 @@ void QskInputContext::invokeAction( QInputMethod::Action action, int cursorPosit
             if ( m_data->inputPanel )
                 m_data->inputPanel->setPreeditCandidates( QVector< QString >() );
 
+            break;
+        }
+        case QInputMethod::Click:
+        case QInputMethod::ContextMenu:
+        {
             break;
         }
     }
@@ -380,6 +393,27 @@ void QskInputContext::setInputPanel( QskVirtualKeyboard* inputPanel )
                 inputPanel, &QskVirtualKeyboard::setPreeditGroups );
         }
     }
+}
+
+void QskInputContext::reset()
+{
+}
+
+void QskInputContext::commit()
+{
+}
+
+bool QskInputContext::eventFilter( QObject* object, QEvent* event )
+{
+    if ( object == m_data->inputItem )
+        return filterEvent( event );
+
+    return false;
+}
+
+bool QskInputContext::filterEvent( const QEvent* )
+{
+    return false;
 }
 
 #include "moc_QskInputContext.cpp"

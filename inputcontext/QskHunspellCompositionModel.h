@@ -10,8 +10,10 @@
 
 class QskHunspellCompositionModel : public QskInputCompositionModel
 {
+    using Inherited = QskInputCompositionModel;
+
 public:
-    QskHunspellCompositionModel();
+    QskHunspellCompositionModel( QObject* parent = nullptr );
     virtual ~QskHunspellCompositionModel() override;
 
     virtual bool supportsSuggestions() const override final;

@@ -18,8 +18,8 @@ public:
     QVector< Qt::Key > groups;
 };
 
-QskPinyinCompositionModel::QskPinyinCompositionModel():
-    QskInputCompositionModel(),
+QskPinyinCompositionModel::QskPinyinCompositionModel( QObject* parent ):
+    Inherited( parent ),
     m_data( new PrivateData )
 {
 #if 1
@@ -124,5 +124,3 @@ void QskPinyinCompositionModel::handleGroupIndexChanged()
 {
     // ### implement
 }
-
-#include "moc_QskPinyinCompositionModel.cpp"
