@@ -132,6 +132,11 @@ static bool qskIsAutorepeat( int key )
         && key != Qt::Key_Mode_switch );
 }
 
+static inline QPlatformInputContext* qskInputContext()
+{
+    return QGuiApplicationPrivate::platformIntegration()->inputContext();
+}
+
 QSK_SUBCONTROL( QskVirtualKeyboardCandidateButton, Panel )
 QSK_SUBCONTROL( QskVirtualKeyboardCandidateButton, Text )
 
@@ -930,9 +935,7 @@ bool QskVirtualKeyboard::eventFilter( QObject* object, QEvent* event )
             So we have to fix the receiver.
          */
 
-        const auto platformIntegration = QGuiApplicationPrivate::platformIntegration();
-
-        if ( const auto inputContext = platformIntegration->inputContext() )
+        if ( const auto inputContext = qskInputContext() )
         {
             QQuickItem* item = nullptr;
 

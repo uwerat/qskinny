@@ -253,7 +253,7 @@ void QskModule::registerTypes()
 
     QSK_REGISTER( QskControl, "Control" );
     QSK_REGISTER( QskGraphicLabel, "GraphicLabel" );
-    QSK_REGISTER( QskVirtualKeyboard, "InputPanel" );
+    QSK_REGISTER( QskVirtualKeyboard, "VirtualKeyboard" );
     QSK_REGISTER( QskTextLabel, "TextLabel" );
     QSK_REGISTER( QskTabButton, "TabButton" );
     QSK_REGISTER( QskTabBar, "TabBar" );
