@@ -2,6 +2,7 @@
 #include "ButtonBar.h"
 #include "SoundControl.h"
 #include "SkinFactory.h"
+#include "SpeedometerDisplay.h"
 
 #include <QskGraphic.h>
 #include <QskGraphicIO.h>
@@ -14,7 +15,7 @@
 
 MainWindow::MainWindow()
 {
-    const QImage image( ":/images/background.jpg" );
+    const QImage image( QStringLiteral( ":/images/background.jpg" ) );
 
     auto backgroundImage = new QskGraphicLabel( contentItem() );
     backgroundImage->setGraphic( QskGraphic::fromImage( image ) );
@@ -56,7 +57,8 @@ QQuickItem* MainWindow::headerBar() const
 
 QQuickItem* MainWindow::mainContent() const
 {
-    return new SoundControl();
+    return new SpeedometerDisplay();
+    //return new SoundControl(); ###
 }
 
 QQuickItem* MainWindow::footerBar() const

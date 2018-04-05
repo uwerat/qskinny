@@ -16,7 +16,8 @@ int main( int argc, char** argv )
     auto skinFactory = new SkinFactory();
 
     qskSkinManager->setPluginPaths( QStringList() ); // no plugins
-    qskSkinManager->registerFactory( "SampleSkinFactory", skinFactory );
+    qskSkinManager->registerFactory( QStringLiteral( "SampleSkinFactory" ),
+                                     skinFactory );
 
     QGuiApplication app( argc, argv );
 
@@ -33,7 +34,7 @@ int main( int argc, char** argv )
     // CTRL-S allow to rotate through the registered skins and CTRL-T
     // changes the colors, when the DefaultSkin is active.
 
-    qskSetup->setSkin( "DefaultSkin" );
+    qskSetup->setSkin( QStringLiteral( "DefaultSkin" ) );
 
     cout << "CTRL-S to change the skin." << endl;
     cout << "CTRL-T to change the color scheme, when the \"Default\" skin is active." << endl;

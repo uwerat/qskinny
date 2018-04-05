@@ -23,7 +23,7 @@ public:
     };
 
     SliderSkinlet();
-    virtual ~SliderSkinlet();
+    virtual ~SliderSkinlet() override;
 
     virtual QRectF subControlRect( const QskSkinnable*,
         QskAspect::Subcontrol ) const override;
