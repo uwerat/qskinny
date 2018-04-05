@@ -243,7 +243,7 @@ QSGNode* SpeedometerSkinlet::updateNeedleNode( const Speedometer* speedometer, Q
     float xStart = center.x() - needleWidth ;
     float yStart = center.y();
 
-    float angle = 315; // ### API
+    float angle = speedometer->value();
     qreal cosine = qCos( qDegreesToRadians( angle ) );
     qreal sine = qSin( qDegreesToRadians( angle ) );
 

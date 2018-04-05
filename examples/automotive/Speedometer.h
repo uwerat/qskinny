@@ -13,6 +13,12 @@ public:
     Speedometer( QQuickItem* parent = nullptr );
 
     virtual QSizeF contentsSizeHint() const override;
+
+    float value() const;
+    void setValue( float value ); // angle; should be within a set range
+
+private:
+    float m_value;
 };
 
 #endif // SPEEDOMETER_H
