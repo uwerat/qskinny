@@ -14,8 +14,7 @@ public:
     enum NodeRole
     {
         PanelRole,
-        TicksRole,
-        NumbersRole,
+        LabelsRole,
         NeedleRole
     };
 
@@ -30,8 +29,7 @@ protected:
 
 private:
     QSGNode* updatePanelNode( const Speedometer*, QSGNode* ) const;
-    QSGNode* updateTicksNode( const Speedometer*, QSGNode* ) const;
-    QSGNode* updateNumbersNode( const Speedometer*, QSGNode* ) const;
+    QSGNode* updateLabelsNode( const Speedometer*, QSGNode* ) const;
     QSGNode* updateNeedleNode( const Speedometer*, QSGNode* ) const;
 };
 

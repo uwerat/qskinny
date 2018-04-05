@@ -1,7 +1,7 @@
 #include "MainWindow.h"
 #include "ButtonBar.h"
-#include "SoundControl.h"
 #include "SkinFactory.h"
+#include "SoundControl.h"
 #include "SpeedometerDisplay.h"
 
 #include <QskGraphic.h>
