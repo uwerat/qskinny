@@ -11,13 +11,6 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qquicktextinput_p_p.h>
 QSK_QT_PRIVATE_END
 
-static inline void qskUpdateInputMethod(
-    const QskTextInput*, Qt::InputMethodQueries queries )
-{
-    auto inputMethod = QGuiApplication::inputMethod();
-    inputMethod->update( queries );
-}
-
 static inline void qskBindSignals( const QQuickTextInput* wrappedInput,
     QskTextInput* input )
 {
@@ -81,6 +74,7 @@ namespace
         {
             setActiveFocusOnTab( false );
             setFlag( ItemAcceptsInputMethod, false );
+            setFocusOnPress( false );
         }
 
         void setAlignment( Qt::Alignment alignment )
@@ -96,9 +90,8 @@ namespace
                 case QEvent::FocusIn:
                 case QEvent::FocusOut:
                 {
-
-
                     auto d = QQuickTextInputPrivate::get( this );
+
                     d->focusOnPress = true;
                     d->handleFocusEvent( static_cast< QFocusEvent* >( event ) );
                     d->focusOnPress = false;
@@ -131,6 +124,13 @@ QskTextInput::QskTextInput( QQuickItem* parent ):
 
     setFlag( QQuickItem::ItemAcceptsInputMethod );
 
+    /*
+        QQuickTextInput is a beast of almost 5k lines of code, we don't
+        want to reimplement that - at least not now.
+        So this is more or less a simple wrapper making everything
+        conforming to qskinny.
+     */
+
     m_data->textInput = new TextInput( this );
     qskBindSignals( m_data->textInput, this );
 
@@ -156,6 +156,10 @@ bool QskTextInput::event( QEvent* event )
     {
         return m_data->textInput->handleEvent( event );
     }
+    else if ( event->type() == QEvent::LocaleChange )
+    {
+        qskUpdateInputMethod( this, Qt::ImPreferredLanguage );
+    }
 
     return Inherited::event( event );
 }
@@ -168,6 +172,32 @@ void QskTextInput::keyPressEvent( QKeyEvent* event )
 void QskTextInput::keyReleaseEvent( QKeyEvent* event )
 {
     Inherited::keyReleaseEvent( event );
+}
+
+void QskTextInput::mousePressEvent( QMouseEvent* event )
+{
+    m_data->textInput->handleEvent( event );
+
+    if ( !isReadOnly() && !qGuiApp->styleHints()->setFocusOnTouchRelease() )
+        qGuiApp->inputMethod()->show();
+}
+
+void QskTextInput::mouseMoveEvent( QMouseEvent* event )
+{
+    m_data->textInput->handleEvent( event );
+}
+
+void QskTextInput::mouseReleaseEvent( QMouseEvent* event )
+{
+    m_data->textInput->handleEvent( event );
+
+    if ( !isReadOnly() && qGuiApp->styleHints()->setFocusOnTouchRelease() )
+        qGuiApp->inputMethod()->show();
+}
+
+void QskTextInput::mouseDoubleClickEvent( QMouseEvent* event )
+{
+    m_data->textInput->handleEvent( event );
 }
 
 void QskTextInput::inputMethodEvent( QInputMethodEvent* event )
@@ -472,12 +502,17 @@ QVariant QskTextInput::inputMethodQuery(
         {
             return font();
         }
-        case Qt::ImCursorPosition:
+        case Qt::ImPreferredLanguage:
+        {
+            return locale();
+        }
+        case Qt::ImCursorRectangle:
+        case Qt::ImInputItemClipRectangle:
         {
             QVariant v = m_data->textInput->inputMethodQuery( query, argument );
 #if 1
-            if ( v.canConvert< QPointF >() )
-                v.setValue( v.toPointF() + m_data->textInput->position() );
+            if ( v.canConvert< QRectF >() )
+                v.setValue( v.toRectF().translated( m_data->textInput->position() ) );
 #endif
             return v;
         }

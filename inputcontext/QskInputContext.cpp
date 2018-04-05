@@ -58,11 +58,19 @@ QskVirtualKeyboard* qskVirtualKeyboard( QQuickItem* inputPanel )
 class QskInputContext::PrivateData
 {
 public:
+    PrivateData():
+        ownsInputPanelWindow( false )
+    {
+    }
+
     QPointer< QQuickItem > inputItem;
     QPointer< QQuickItem > inputPanel;
 
     QskInputCompositionModel* compositionModel;
     QHash< QLocale, QskInputCompositionModel* > compositionModels;
+
+    // the input panel is embedded in a window
+    bool ownsInputPanelWindow : 1;
 };
 
 QskInputContext::QskInputContext():
@@ -104,54 +112,79 @@ bool QskInputContext::hasCapability( Capability ) const
     return true;
 }
 
+QQuickItem* QskInputContext::inputItem()
+{
+    return m_data->inputItem;
+}
+
+void QskInputContext::setInputItem( QQuickItem* item )
+{
+    if ( m_data->inputItem == item )
+        return;
+
+    m_data->inputItem = item;
+
+    if ( m_data->inputItem == nullptr )
+    {
+        hideInputPanel();
+        return;
+    }
+
+    update( Qt::ImQueryAll );
+}
+
 void QskInputContext::update( Qt::InputMethodQueries queries )
 {
-    if ( m_data->inputItem == nullptr )
+    if ( m_data->inputItem == nullptr || m_data->inputPanel == nullptr )
         return;
 
     const auto queryEvent = queryInputMethod( queries );
 
-    // Qt::ImCursorRectangle
-    // Qt::ImFont
-    // Qt::ImCursorPosition
-    // Qt::ImSurroundingText // important for chinese input
-    // Qt::ImCurrentSelection // important for prediction
-    // Qt::ImMaximumTextLength // should be monitored
-    // Qt::ImAnchorPosition
-
-    if ( queries & Qt::ImHints )
+    if ( queryEvent.queries() & Qt::ImEnabled )
     {
+        if ( !queryEvent.value( Qt::ImEnabled ).toBool() )
+        {
+            hideInputPanel();
+            return;
+        }
+    }
+
+    if ( queryEvent.queries() & Qt::ImHints )
+    {
+        /*
+            ImhHiddenText = 0x1,          // might need to disable certain checks
+            ImhSensitiveData = 0x2,       // shouldn't change anything
+            ImhNoAutoUppercase = 0x4,     // if we support auto uppercase, disable it
+            ImhPreferNumbers = 0x8,       // default to number keyboard
+            ImhPreferUppercase = 0x10,    // start with shift on
+            ImhPreferLowercase = 0x20,    // start with shift off
+            ImhNoPredictiveText = 0x40,   // ignored for now
+
+            ImhDate = 0x80,               // ignored for now (no date keyboard)
+            ImhTime = 0x100,              // ignored for know (no time keyboard)
+
+            ImhPreferLatin = 0x200,       // can be used to launch chinese kb in english mode
+
+            ImhMultiLine = 0x400,         // not useful?
+
+            ImhDigitsOnly                 // default to number keyboard, disable other keys
+            ImhFormattedNumbersOnly       // hard to say
+            ImhUppercaseOnly              // caps-lock, disable shift
+            ImhLowercaseOnly              // disable shift
+            ImhDialableCharactersOnly     // dial pad (calculator?)
+            ImhEmailCharactersOnly        // disable certain symbols (email-only kb?)
+            ImhUrlCharactersOnly          // disable certain symbols (url-only kb?)
+            ImhLatinOnly                  // disable chinese input
+         */
+
 #if 0
         const auto hints = static_cast< Qt::InputMethodHints >(
             queryEvent.value( Qt::ImHints ).toInt() );
 
-        //ImhHiddenText = 0x1,          // might need to disable certain checks
-        //ImhSensitiveData = 0x2,       // shouldn't change anything
-        //ImhNoAutoUppercase = 0x4,     // if we support auto uppercase, disable it
-        //ImhPreferNumbers = 0x8,       // default to number keyboard
-        //ImhPreferUppercase = 0x10,    // start with shift on
-        //ImhPreferLowercase = 0x20,    // start with shift off
-        //ImhNoPredictiveText = 0x40,   // ignored for now
-
-        //ImhDate = 0x80,               // ignored for now (no date keyboard)
-        //ImhTime = 0x100,              // ignored for know (no time keyboard)
-
-        //ImhPreferLatin = 0x200,       // can be used to launch chinese kb in english mode
-
-        //ImhMultiLine = 0x400,         // not useful?
-
-        //ImhDigitsOnly                 // default to number keyboard, disable other keys
-        //ImhFormattedNumbersOnly       // hard to say
-        //ImhUppercaseOnly              // caps-lock, disable shift
-        //ImhLowercaseOnly              // disable shift
-        //ImhDialableCharactersOnly     // dial pad (calculator?)
-        //ImhEmailCharactersOnly        // disable certain symbols (email-only kb?)
-        //ImhUrlCharactersOnly          // disable certain symbols (url-only kb?)
-        //ImhLatinOnly                  // disable chinese input
 #endif
     }
 
-    if ( queries & Qt::ImPreferredLanguage )
+    if ( queryEvent.queries() & Qt::ImPreferredLanguage )
     {
         const auto locale = queryEvent.value( Qt::ImPreferredLanguage ).toLocale();
 
@@ -172,20 +205,24 @@ void QskInputContext::update( Qt::InputMethodQueries queries )
         }
     }
 
-    // Qt::ImAbsolutePosition
-    // Qt::ImTextBeforeCursor // important for chinese
-    // Qt::ImTextAfterCursor  // important for chinese
-    // Qt::ImPlatformData     // hard to say...
-}
+    /*
+        Qt::ImMicroFocus
+        Qt::ImCursorRectangle
+        Qt::ImFont
+        Qt::ImCursorPosition
+        Qt::ImSurroundingText // important for chinese input
+        Qt::ImCurrentSelection // important for prediction
+        Qt::ImMaximumTextLength // should be monitored
+        Qt::ImAnchorPosition
 
-QQuickItem* QskInputContext::inputItem()
-{
-    return m_data->inputItem;
-}
-
-void QskInputContext::setInputItem( QQuickItem* item )
-{
-    m_data->inputItem = item;
+        Qt::ImAbsolutePosition
+        Qt::ImTextBeforeCursor // important for chinese
+        Qt::ImTextAfterCursor  // important for chinese
+        Qt::ImPlatformData     // hard to say...
+        Qt::ImEnterKeyType
+        Qt::ImAnchorRectangle
+        Qt::ImInputItemClipRectangle // could be used for the geometry of the panel
+     */
 }
 
 QRectF QskInputContext::keyboardRect() const
@@ -212,9 +249,12 @@ void QskInputContext::showInputPanel()
 
         if ( QskDialog::instance()->policy() == QskDialog::TopLevelWindow )
         {
+            m_data->ownsInputPanelWindow = true;
+
             auto window = new QskWindow;
             window->setFlags( Qt::Tool | Qt::WindowDoesNotAcceptFocus );
             window->resize( 800, 240 ); // ### what size?
+
             m_data->inputPanel->setParentItem( window->contentItem() );
             connect( window, &QskWindow::visibleChanged,
                 this, &QskInputContext::emitInputPanelVisibleChanged );
@@ -230,11 +270,15 @@ void QskInputContext::showInputPanel()
         }
     }
 
-    auto window = m_data->inputPanel->window();
-    if ( window && window != QGuiApplication::focusWindow() )
-        window->show();
+    if ( m_data->ownsInputPanelWindow )
+    {
+        if ( m_data->inputPanel->window() )
+            m_data->inputPanel->window()->show();
+    }
     else
+    {
         m_data->inputPanel->setVisible( true );
+    }
 }
 
 void QskInputContext::hideInputPanel()
@@ -242,11 +286,15 @@ void QskInputContext::hideInputPanel()
     if ( m_data->inputPanel == nullptr )
         return;
 
-    auto window = m_data->inputPanel->window();
-    if ( window && window != QGuiApplication::focusWindow() )
-        window->hide();
+    if ( m_data->ownsInputPanelWindow )
+    {
+        if ( auto window = m_data->inputPanel->window() )
+            window->hide();
+    }
     else
+    {
         m_data->inputPanel->setVisible( false );
+    }
 }
 
 bool QskInputContext::isInputPanelVisible() const
@@ -269,36 +317,26 @@ Qt::LayoutDirection QskInputContext::inputDirection() const
 
 void QskInputContext::setFocusObject( QObject* focusObject )
 {
-    if ( focusObject == nullptr )
-    {
-        setInputItem( nullptr );
-        return;
-    }
-
-    bool inputItemChanged = false;
-
     auto focusItem = qobject_cast< QQuickItem* >( focusObject );
-    if( focusItem )
+
+    if ( focusItem == nullptr )
     {
-        // Do not change the input item when panel buttons get the focus:
+        if ( m_data->inputItem )
+        {
+            if ( m_data->inputItem->window() == QGuiApplication::focusWindow() )
+                setInputItem( nullptr );
+        }
+    }
+    else
+    {
+        /*
+            Do not change the input item when
+            navigating on or into the panel
+         */
+
         if( qskNearestFocusScope( focusItem ) != m_data->inputPanel )
-        {
             setInputItem( focusItem );
-            inputItemChanged = true;
-        }
     }
-
-    if( inputItemChanged )
-    {
-        const auto queryEvent = queryInputMethod( Qt::ImEnabled );
-        if ( !queryEvent.value( Qt::ImEnabled ).toBool() )
-        {
-            hideInputPanel();
-            return;
-        }
-    }
-
-    update( Qt::InputMethodQuery( Qt::ImQueryAll & ~Qt::ImEnabled ) );
 }
 
 void QskInputContext::setCompositionModel(
@@ -355,10 +393,6 @@ void QskInputContext::invokeAction( QInputMethod::Action action, int value )
         case QskVirtualKeyboard::SelectCandidate:
         {
             model->commitCandidate( value );
-
-            if ( auto keyboard = qskVirtualKeyboard( m_data->inputPanel ) )
-                keyboard->setPreeditCandidates( QVector< QString >() );
-
             break;
         }
         case QInputMethod::Click:
@@ -403,6 +437,7 @@ void QskInputContext::setInputPanel( QQuickItem* inputPanel )
     }
 
     m_data->inputPanel = inputPanel;
+    m_data->ownsInputPanelWindow = false;
 
     if ( inputPanel )
     {

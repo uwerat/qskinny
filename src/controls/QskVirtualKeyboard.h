@@ -136,7 +136,6 @@ public Q_SLOTS:
 
 protected:
     virtual bool eventFilter( QObject*, QEvent* ) override;
-    virtual void geometryChanged( const QRectF&, const QRectF& ) override;
     virtual void updateLayout() override;
 
 private:
@@ -151,7 +150,6 @@ private:
     void updateKeyData();
 
 Q_SIGNALS:
-    void keyboardRectChanged();
     void displayLanguageNameChanged();
     void modeChanged( QskVirtualKeyboard::Mode );
 

@@ -11,7 +11,7 @@
 #include <QStyleHints>
 
 QSK_QT_PRIVATE_BEGIN
-#include <private/qguiapplication_p.h>
+#include <private/qinputmethod_p.h>
 QSK_QT_PRIVATE_END
 
 #include <qpa/qplatformintegration.h>
@@ -134,7 +134,8 @@ static bool qskIsAutorepeat( int key )
 
 static inline QPlatformInputContext* qskInputContext()
 {
-    return QGuiApplicationPrivate::platformIntegration()->inputContext();
+    auto inputMethod = QGuiApplication::inputMethod();
+    return QInputMethodPrivate::get( inputMethod )->platformInputContext();
 }
 
 QSK_SUBCONTROL( QskVirtualKeyboardCandidateButton, Panel )
@@ -505,13 +506,11 @@ QString QskVirtualKeyboard::displayLanguageName() const
 
 void QskVirtualKeyboard::setPreeditCandidates( const QVector< QString >& candidates )
 {
-    if( m_data->candidates == candidates )
+    if( m_data->candidates != candidates )
     {
-        return;
+        m_data->candidates = candidates;
+        setCandidateOffset( 0 );
     }
-
-    m_data->candidates = candidates;
-    setCandidateOffset( 0 );
 }
 
 void QskVirtualKeyboard::setCandidateOffset( int candidateOffset )
@@ -546,13 +545,6 @@ void QskVirtualKeyboard::setCandidateOffset( int candidateOffset )
     {
         m_data->candidateButtons[i]->setIndexAndText( -1, QString() );
     }
-}
-
-void QskVirtualKeyboard::geometryChanged(
-    const QRectF& newGeometry, const QRectF& oldGeometry )
-{
-    Inherited::geometryChanged( newGeometry, oldGeometry );
-    Q_EMIT keyboardRectChanged();
 }
 
 void QskVirtualKeyboard::updateLayout()
@@ -680,6 +672,7 @@ void QskVirtualKeyboard::handleCandidateKey( int index, const QString& text )
     else
     {
         selectCandidate( index );
+        setPreeditCandidates( QVector< QString >() );
     }
 }
 
@@ -879,9 +872,9 @@ bool QskVirtualKeyboard::eventFilter( QObject* object, QEvent* event )
     if ( event->type() == QEvent::InputMethodQuery )
     {
         /*
-            Qt/Quick expects that the item associated with the virtual keyboard
-            always has the focus. But you also find systems, where you have to
-            navigate and select inside the virtual keyboard.
+            Qt/Quick expects that the item associated with the input context
+            always has the focus. But this does not work, when a virtual
+            keyboard is used, where you can navigate and select inside.
             So we have to fix the receiver.
          */
 

@@ -40,6 +40,7 @@ public:
 
         auto* textInput = new QskTextInput( this );
         textInput->setText( "I am a line edit. Press and edit Me." );
+        textInput->setSelectByMouse( true );
 
 #if LOCAL_PANEL
         auto* inputPanel = new QskVirtualKeyboard( this );
@@ -178,6 +179,12 @@ int main( int argc, char* argv[] )
 
     auto listView = new LocaleListView( box );
     auto inputBox =  new InputBox( box );
+
+    /*
+        Disable Qt::ClickFocus, so that the input panel stays open
+        when selecting a different locale
+     */
+    listView->setFocusPolicy( Qt::TabFocus );
 
     QObject::connect( listView, &QskListView::selectedRowChanged,
         inputBox, [ = ]( int row ) { inputBox->setLocale( listView->localeAt( row ) ); } );

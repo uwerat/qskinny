@@ -212,7 +212,8 @@ private:
     // don't use boundingRect - it seems to be deprecated
     virtual QRectF boundingRect() const override final { return rect(); }
 
-    void setActiveFocusOnTab( bool ) = delete; // use setFocusPolicy instead
+    void setActiveFocusOnTab( bool ) = delete; // use setFocusPolicy
+    void updateInputMethod( Qt::InputMethodQueries ) = delete; // use qskUpdateInputMethod
 
     virtual QSGNode* updatePaintNode( QSGNode*, UpdatePaintNodeData* ) override final;
     virtual void updatePolish() override final;
@@ -249,7 +250,7 @@ inline QSizeF QskControl::sizeHint() const
 }
 
 QSK_EXPORT bool qskIsItemComplete( const QQuickItem* item );
-QSK_EXPORT bool qskIsAncestorOf( const QQuickItem* item, const QQuickItem *child );
+QSK_EXPORT bool qskIsAncestorOf( const QQuickItem* item, const QQuickItem* child );
 QSK_EXPORT bool qskIsTransparentForPositioner( const QQuickItem* );
 QSK_EXPORT bool qskIsTabFence( const QQuickItem* );
 QSK_EXPORT bool qskIsShortcutScope( const QQuickItem* );
@@ -259,7 +260,9 @@ QSK_EXPORT QRectF qskItemGeometry( const QQuickItem* );
 QSK_EXPORT void qskSetItemGeometry( QQuickItem*, const QRectF& );
 
 QSK_EXPORT QQuickItem* qskNearestFocusScope( const QQuickItem* );
-QSK_EXPORT QList<QQuickItem *> qskPaintOrderChildItems( const QQuickItem* );
+QSK_EXPORT QList< QQuickItem* > qskPaintOrderChildItems( const QQuickItem* );
+
+QSK_EXPORT void qskUpdateInputMethod( const QQuickItem*, Qt::InputMethodQueries );
 
 QSK_EXPORT const QSGNode* qskItemNode( const QQuickItem* );
 QSK_EXPORT const QSGNode* qskPaintNode( const QQuickItem* );

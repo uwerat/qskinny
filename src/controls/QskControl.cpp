@@ -18,6 +18,7 @@
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>
+#include <private/qinputmethod_p.h>
 #if defined( QT_DEBUG )
 #include <private/qquickpositioners_p.h>
 #endif
@@ -144,12 +145,44 @@ QQuickItem* qskNearestFocusScope( const QQuickItem* item )
     return nullptr;
 }
 
-QList<QQuickItem *> qskPaintOrderChildItems( const QQuickItem* item )
+void qskUpdateInputMethod( const QQuickItem* item, Qt::InputMethodQueries queries )
+{
+    auto inputMethod = QGuiApplication::inputMethod();
+
+    bool doUpdate = item->hasActiveFocus();
+
+    if ( !doUpdate )
+    {
+        const auto inputContext =
+            QInputMethodPrivate::get( inputMethod )->platformInputContext();
+
+        if ( inputContext && inputContext->isInputPanelVisible() )
+        {
+            /*
+                QskInputContext allows to navigate inside the input panel
+                without losing the connected input item
+             */
+
+            QQuickItem* inputItem = nullptr;
+
+            if ( QMetaObject::invokeMethod( inputContext, "inputItem",
+                Qt::DirectConnection, Q_RETURN_ARG( QQuickItem*, inputItem ) ) )
+            {
+                doUpdate = ( item == inputItem );
+            }
+        }
+    }
+
+    if ( doUpdate )
+        inputMethod->update( queries );
+}
+
+QList< QQuickItem* > qskPaintOrderChildItems( const QQuickItem* item )
 {
     if ( item )
         return QQuickItemPrivate::get( item )->paintOrderChildItems();
 
-    return QList<QQuickItem *>();
+    return QList< QQuickItem* >();
 }
 
 const QSGNode* qskItemNode( const QQuickItem* item )
@@ -1142,16 +1175,16 @@ bool QskControl::event( QEvent* event )
             {
                 /*
                     When we don't have a local skinlet, the skinlet
-                    from the previous skin might be cached. 
+                    from the previous skin might be cached.
                  */
-                
+
                 setSkinlet( nullptr );
             }
 
             /*
                 We might have a totally different skinlet,
                 that can't deal with nodes created from other skinlets
-            */
+             */
             d_func()->clearPreviousNodes = true;
 
             resetImplicitSize();
@@ -1316,12 +1349,12 @@ void QskControl::itemChange( QQuickItem::ItemChange change,
         case QQuickItem::ItemVisibleHasChanged:
         {
 #if 1
-            /*      
+            /*
                 ~QQuickItem sends QQuickItem::ItemVisibleHasChanged recursively
                 to all childItems. When being a child ( not only a childItem() )
-                we are short before being destructed too and any updates 
+                we are short before being destructed too and any updates
                 done here are totally pointless. TODO ...
-             */   
+             */
 #endif
             if ( value.boolValue )
             {

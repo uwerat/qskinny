@@ -154,11 +154,19 @@ Q_SIGNALS:
 
 protected:
     virtual bool event( QEvent* ) override;
-    virtual void keyPressEvent( QKeyEvent* ) override;
-    virtual void keyReleaseEvent( QKeyEvent* ) override;
+
     virtual void inputMethodEvent( QInputMethodEvent* ) override;
+
     virtual void focusInEvent( QFocusEvent* ) override;
     virtual void focusOutEvent( QFocusEvent* ) override;
+
+    virtual void mousePressEvent( QMouseEvent* ) override;
+    virtual void mouseMoveEvent( QMouseEvent* ) override;
+    virtual void mouseReleaseEvent( QMouseEvent* ) override;
+    virtual void mouseDoubleClickEvent( QMouseEvent* ) override;
+
+    virtual void keyPressEvent( QKeyEvent* ) override;
+    virtual void keyReleaseEvent( QKeyEvent* ) override;
 
     virtual void updateLayout() override;
 
