@@ -299,23 +299,33 @@ void QskVirtualKeyboard::updateLayout()
     if( r.isEmpty() )
         return;
 
-    QTransform transform;
-    transform.translate( r.top(), r.left() );
-    transform.scale( r.width(), r.height() );
+    const auto spacing = metric( Panel | QskAspect::Spacing );
+    const auto totalVSpacing = ( RowCount - 1 ) * spacing;
 
-    const auto keyHeight = 1.0f / RowCount;
+    const auto keyHeight = ( r.height() - totalVSpacing ) / RowCount; 
 
     const auto& keyCodes = ( *m_data->currentLayout )[ m_data->mode ];
 
-    qreal yPos = 0;
+    qreal yPos = r.top();
 
     for( int row = 0; row < RowCount; row++ )
     {
         const auto& keys = keyCodes.data[ row ];
 
-        const auto baseKeyWidth = 1.0 / qskRowStretch( keys );
-
-        qreal xPos = 0;
+#if 1
+        // there should be a better way
+        auto totalHSpacing = -spacing;
+        if ( spacing )
+        {
+            for ( int col = 0; col < KeyCount; col++ )
+            {
+                if ( keys[ col ] != Qt::Key( 0 ) )
+                    totalHSpacing += spacing;
+            }
+        }
+#endif
+        const auto baseKeyWidth = ( r.width() - totalHSpacing ) / qskRowStretch( keys );
+        qreal xPos = r.left();
 
         for ( int col = 0; col < KeyCount; col++ )
         {
@@ -330,15 +340,15 @@ void QskVirtualKeyboard::updateLayout()
 
                 const QRectF rect( xPos, yPos, keyWidth, keyHeight );
 
-                button->setGeometry( transform.mapRect( rect ) );
+                button->setGeometry( rect );
                 button->setAutoRepeat( qskIsAutorepeat( key ) );
                 button->setText( qskTextForKey( key ) );
 
-                xPos += keyWidth;
+                xPos += keyWidth + spacing;
             }
         }
 
-        yPos += keyHeight;
+        yPos += keyHeight + spacing;
     }
 }
 
