@@ -4,8 +4,8 @@
  *****************************************************************************/
 
 #include "QskVirtualKeyboard.h"
+#include "QskPushButton.h"
 #include "QskTextOptions.h"
-#include "QskLinearBox.h"
 
 #include <QGuiApplication>
 #include <QStyleHints>
@@ -19,15 +19,47 @@ QSK_QT_PRIVATE_END
 
 namespace
 {
-    struct KeyTable
+    enum
     {
-        using Row = QskVirtualKeyboard::KeyData[ QskVirtualKeyboard::KeyCount ];
-        Row data[ QskVirtualKeyboard::RowCount ];
+        RowCount = 5,
+        KeyCount = 12
+    };
 
-        int indexOf( const QskVirtualKeyboard::KeyData* value ) const
+    using KeyRow = Qt::Key[KeyCount];
+
+    class Button final : public QskPushButton
+    {
+    public:
+        Button( int row, int column, QQuickItem* parent ):
+            QskPushButton( parent ),
+            m_row( row ),
+            m_column( column )
         {
-            return int( intptr_t( value - data[0] ) );
+            QskTextOptions options;
+            options.setFontSizeMode( QskTextOptions::VerticalFit );
+            setTextOptions( options );
+
+            setFocusPolicy( Qt::TabFocus );
         }
+
+        virtual QskAspect::Subcontrol effectiveSubcontrol(
+            QskAspect::Subcontrol subControl ) const override
+        {
+            if( subControl == QskPushButton::Panel )
+                return QskVirtualKeyboard::ButtonPanel;
+
+            if( subControl == QskPushButton::Text )
+                return QskVirtualKeyboard::ButtonText;
+
+            return subControl;
+        }
+
+        int row() const { return m_row; }
+        int column() const { return m_column; }
+
+    private:
+        const int m_row;
+        const int m_column;
     };
 }
 
@@ -35,8 +67,8 @@ struct QskVirtualKeyboardLayouts
 {
     struct KeyCodes
     {
-        using Row = Qt::Key[ QskVirtualKeyboard::KeyCount ];
-        Row data[ QskVirtualKeyboard::RowCount ];
+        using Row = Qt::Key[ KeyCount ];
+        Row data[ RowCount ];
     };
 
     using Layout = KeyCodes[ QskVirtualKeyboard::ModeCount ];
@@ -64,8 +96,6 @@ struct QskVirtualKeyboardLayouts
     Layout sk; // Slovak
     Layout tr; // Turkish
     Layout zh; // Chinese
-
-    Q_GADGET
 };
 
 #define LOWER(x) Qt::Key(x + 32) // Convert an uppercase key to lowercase
@@ -74,11 +104,6 @@ static constexpr const QskVirtualKeyboardLayouts qskKeyboardLayouts =
 #include "QskVirtualKeyboardLayouts.cpp"
 };
 #undef LOWER
-
-QSK_DECLARE_OPERATORS_FOR_FLAGS( Qt::Key ) // Must appear after the LOWER macro
-
-static const int KeyLocked =  static_cast< int >( Qt::ControlModifier );
-static const int KeyStates =  static_cast< int >( Qt::KeyboardModifierMask );
 
 static qreal qskKeyStretch( Qt::Key key )
 {
@@ -103,7 +128,7 @@ static qreal qskKeyStretch( Qt::Key key )
     return 1.0;
 }
 
-static qreal qskRowStretch( const QskVirtualKeyboard::KeyRow& keyRow )
+static qreal qskRowStretch( const KeyRow& keyRow )
 {
     qreal stretch = 0;
 
@@ -119,249 +144,14 @@ static qreal qskRowStretch( const QskVirtualKeyboard::KeyRow& keyRow )
 
     if( stretch == 0.0 )
     {
-        stretch = QskVirtualKeyboard::KeyCount;
+        stretch = KeyCount;
     }
 
     return stretch;
 }
 
-static bool qskIsAutorepeat( int key )
+static QString qskTextForKey( Qt::Key key )
 {
-    return ( key != Qt::Key_Return && key != Qt::Key_Enter
-        && key != Qt::Key_Shift && key != Qt::Key_CapsLock
-        && key != Qt::Key_Mode_switch );
-}
-
-static inline QPlatformInputContext* qskInputContext()
-{
-    auto inputMethod = QGuiApplication::inputMethod();
-    return QInputMethodPrivate::get( inputMethod )->platformInputContext();
-}
-
-QSK_SUBCONTROL( QskVirtualKeyboardCandidateButton, Panel )
-QSK_SUBCONTROL( QskVirtualKeyboardCandidateButton, Text )
-
-QskVirtualKeyboardCandidateButton::QskVirtualKeyboardCandidateButton(
-        QskVirtualKeyboard* inputPanel, QQuickItem* parent ) :
-    Inherited( parent ),
-    m_inputPanel( inputPanel ),
-    m_index( -1 )
-{
-    setFlag( QQuickItem::ItemAcceptsInputMethod );
-    setText( QStringLiteral( " " ) ); // ###
-
-    connect( this, &QskVirtualKeyboardButton::pressed,
-        this, [ this ]() { m_inputPanel->handleCandidateKey( m_index, m_text ); } );
-}
-
-void QskVirtualKeyboardCandidateButton::setIndexAndText(int index, const QString& text )
-{
-    m_index = index;
-    m_text = text;
-    setText( m_text );
-}
-
-QskAspect::Subcontrol QskVirtualKeyboardCandidateButton::effectiveSubcontrol(
-    QskAspect::Subcontrol subControl ) const
-{
-    if( subControl == QskPushButton::Panel )
-    {
-        return QskVirtualKeyboardCandidateButton::Panel;
-    }
-
-    if( subControl == QskPushButton::Text )
-    {
-        return QskVirtualKeyboardCandidateButton::Text;
-    }
-
-    return subControl;
-}
-
-int QskVirtualKeyboardCandidateButton::maxCandidates()
-{
-    return 12;
-}
-
-QSK_SUBCONTROL( QskVirtualKeyboard, Panel )
-
-QSK_SUBCONTROL( QskVirtualKeyboardButton, Panel )
-QSK_SUBCONTROL( QskVirtualKeyboardButton, Text )
-
-QskVirtualKeyboardButton::QskVirtualKeyboardButton(
-        int keyIndex, QskVirtualKeyboard* inputPanel, QQuickItem* parent ) :
-    Inherited( parent ),
-    m_keyIndex( keyIndex ),
-    m_inputPanel( inputPanel )
-{
-    QskTextOptions options;
-    options.setFontSizeMode( QskTextOptions::VerticalFit );
-    setTextOptions( options );
-
-    setFocusPolicy( Qt::TabFocus );
-
-    auto keyData = m_inputPanel->keyDataAt( m_keyIndex );
-    const auto key = keyData.key & ~KeyStates;
-
-    if ( qskIsAutorepeat( key ) )
-    {
-        setAutoRepeat( true );
-        setAutoRepeatDelay( 500 );
-        setAutoRepeatInterval( 1000 / QGuiApplication::styleHints()->keyboardAutoRepeatRate() );
-    }
-
-    updateText();
-
-    connect( this, &QskVirtualKeyboardButton::pressed, this,
-        [ this ]() { m_inputPanel->handleKey( m_keyIndex ); } );
-
-    connect( m_inputPanel, &QskVirtualKeyboard::modeChanged,
-        this, &QskVirtualKeyboardButton::updateText );
-}
-
-QskAspect::Subcontrol QskVirtualKeyboardButton::effectiveSubcontrol(
-    QskAspect::Subcontrol subControl ) const
-{
-    if( subControl == QskPushButton::Panel )
-        return QskVirtualKeyboardButton::Panel;
-
-    if( subControl == QskPushButton::Text )
-        return QskVirtualKeyboardButton::Text;
-
-    return subControl;
-}
-
-int QskVirtualKeyboardButton::keyIndex() const
-{
-    return m_keyIndex;
-}
-
-void QskVirtualKeyboardButton::updateText()
-{
-    QString text = m_inputPanel->currentTextForKeyIndex( m_keyIndex );
-
-    if( text.count() == 1 && text.at( 0 ) == QChar( 0 ) )
-    {
-        setVisible( false );
-    }
-    else
-    {
-        setVisible( true );
-        setText( text );
-    }
-}
-
-class QskVirtualKeyboard::PrivateData
-{
-public:
-    PrivateData():
-        currentLayout( nullptr ),
-        mode( QskVirtualKeyboard::LowercaseMode ),
-        selectedGroup( -1 ),
-        candidateOffset( 0 ),
-        candidateBox( nullptr ),
-        buttonsBox( nullptr ),
-        isUIInitialized( false ),
-        candidateBoxVisible( false )
-    {
-    }
-
-public:
-    const QskVirtualKeyboardLayouts::Layout* currentLayout;
-    QskVirtualKeyboard::Mode mode;
-
-    qint16 selectedGroup;
-    qint32 candidateOffset;
-
-    QVector< QString > candidates;
-
-    KeyTable keyTable[ ModeCount ];
-
-    QList< QskVirtualKeyboardCandidateButton* > candidateButtons;
-    QskLinearBox* candidateBox;
-    QskLinearBox* buttonsBox;
-    QList< QskVirtualKeyboardButton* > keyButtons;
-    bool isUIInitialized;
-    bool candidateBoxVisible;
-};
-
-QskVirtualKeyboard::QskVirtualKeyboard( QQuickItem* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData )
-{
-    qRegisterMetaType< Qt::Key >();
-
-    setFlag( ItemHasContents );
-    setFlag( ItemIsFocusScope, true );
-#if 0
-    // TODO ...
-    setTabFence( true );
-#endif
-
-    initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
-
-    updateLocale( locale() );
-
-    connect( this, &QskControl::localeChanged,
-        this, &QskVirtualKeyboard::updateLocale );
-
-    setAutoLayoutChildren( true );
-
-    m_data->buttonsBox = new QskLinearBox( Qt::Vertical, this );
-    m_data->buttonsBox->setAutoAddChildren( true );
-
-    const auto& panelKeyData = keyData();
-
-    for( const auto& keyRow : panelKeyData )
-    {
-        auto rowBox = new QskLinearBox( Qt::Horizontal, m_data->buttonsBox );
-        rowBox->setAutoAddChildren( true );
-
-        for( const auto& keyData : keyRow )
-        {
-            if( !keyData.key )
-                continue;
-
-            const int keyIndex = m_data->keyTable[ m_data->mode ].indexOf( &keyData );
-
-            auto button = new QskVirtualKeyboardButton( keyIndex, this, rowBox );
-            button->installEventFilter( this );
-            rowBox->setRetainSizeWhenHidden( button, true );
-
-            m_data->keyButtons.append( button );
-        }
-    }
-}
-
-QskVirtualKeyboard::~QskVirtualKeyboard()
-{
-}
-
-QskAspect::Subcontrol QskVirtualKeyboard::effectiveSubcontrol(
-    QskAspect::Subcontrol subControl ) const
-{
-    if( subControl == QskBox::Panel )
-        return QskVirtualKeyboard::Panel;
-
-    return subControl;
-}
-
-
-QskVirtualKeyboard::Mode QskVirtualKeyboard::mode() const
-{
-    return m_data->mode;
-}
-
-const QskVirtualKeyboard::KeyDataSet& QskVirtualKeyboard::keyData( Mode mode ) const
-{
-    mode = mode == CurrentMode ? m_data->mode : mode;
-    Q_ASSERT( mode >= 0 && mode < ModeCount );
-    return m_data->keyTable[ mode ].data;
-}
-
-QString QskVirtualKeyboard::textForKey( int key ) const
-{
-    key &= ~KeyStates;
-
     // Special cases
     switch( key )
     {
@@ -397,236 +187,169 @@ QString QskVirtualKeyboard::textForKey( int key ) const
             return QChar( 0x27A1 );
 
         default:
-            break;
-    }
-
-    // TODO: possibly route through locale for custom strings
-
-    // Default to direct key mapping
-    return QChar( key );
-}
-
-QString QskVirtualKeyboard::displayLanguageName() const
-{
-    const auto locale = this->locale();
-
-    switch( locale.language() )
-    {
-        case QLocale::Bulgarian:
-            return QStringLiteral( "български език" );
-
-        case QLocale::Czech:
-            return QStringLiteral( "Čeština" );
-
-        case QLocale::German:
-            return QStringLiteral( "Deutsch" );
-
-        case QLocale::Danish:
-            return QStringLiteral( "Dansk" );
-
-        case QLocale::Greek:
-            return QStringLiteral( "Eλληνικά" );
-
-        case QLocale::English:
-        {
-            switch( locale.country() )
-            {
-                case QLocale::Canada:
-                case QLocale::UnitedStates:
-                case QLocale::UnitedStatesMinorOutlyingIslands:
-                case QLocale::UnitedStatesVirginIslands:
-                    return QStringLiteral( "English (US)" );
-
-                default:
-                    return QStringLiteral( "English (UK)" );
-            }
-
-            break;
-        }
-
-        case QLocale::Spanish:
-            return QStringLiteral( "Español" );
-
-        case QLocale::Finnish:
-            return QStringLiteral( "Suomi" );
-
-        case QLocale::French:
-            return QStringLiteral( "Français" );
-
-        case QLocale::Hungarian:
-            return QStringLiteral( "Magyar" );
-
-        case QLocale::Italian:
-            return QStringLiteral( "Italiano" );
-
-        case QLocale::Japanese:
-            return QStringLiteral( "日本語" );
-
-        case QLocale::Latvian:
-            return QStringLiteral( "Latviešu" );
-
-        case QLocale::Lithuanian:
-            return QStringLiteral( "Lietuvių" );
-
-        case QLocale::Dutch:
-            return QStringLiteral( "Nederlands" );
-
-        case QLocale::Portuguese:
-            return QStringLiteral( "Português" );
-
-        case QLocale::Romanian:
-            return QStringLiteral( "Română" );
-
-        case QLocale::Russia:
-            return QStringLiteral( "Русский" );
-
-        case QLocale::Slovenian:
-            return QStringLiteral( "Slovenščina" );
-
-        case QLocale::Slovak:
-            return QStringLiteral( "Slovenčina" );
-
-        case QLocale::Turkish:
-            return QStringLiteral( "Türkçe" );
-
-        case QLocale::Chinese:
-            return QStringLiteral( "中文" );
-
-        default:
-            break;
-    }
-
-    return QLocale::languageToString( locale.language() );
-}
-
-void QskVirtualKeyboard::setPreeditCandidates( const QVector< QString >& candidates )
-{
-    if( m_data->candidates != candidates )
-    {
-        m_data->candidates = candidates;
-        setCandidateOffset( 0 );
+            return QChar( key );
     }
 }
 
-void QskVirtualKeyboard::setCandidateOffset( int candidateOffset )
+static bool qskIsAutorepeat( int key )
 {
-    m_data->candidateOffset = candidateOffset;
+    return ( key != Qt::Key_Return && key != Qt::Key_Enter
+        && key != Qt::Key_Shift && key != Qt::Key_CapsLock
+        && key != Qt::Key_Mode_switch );
+}
 
-    const auto candidateCount = m_data->candidates.length();
-    const auto count = std::min( candidateCount, QskVirtualKeyboardCandidateButton::maxCandidates() );
-    const bool continueLeft = m_data->candidateOffset > 0;
-    const bool continueRight = ( candidateCount - m_data->candidateOffset ) > count;
+static inline QPlatformInputContext* qskInputContext()
+{
+    auto inputMethod = QGuiApplication::inputMethod();
+    return QInputMethodPrivate::get( inputMethod )->platformInputContext();
+}
 
-    for( int i = 0; i < count; ++i )
+QSK_SUBCONTROL( QskVirtualKeyboard, Panel )
+QSK_SUBCONTROL( QskVirtualKeyboard, ButtonPanel )
+QSK_SUBCONTROL( QskVirtualKeyboard, ButtonText )
+
+class QskVirtualKeyboard::PrivateData
+{
+public:
+    PrivateData():
+        currentLayout( nullptr ),
+        mode( QskVirtualKeyboard::LowercaseMode )
     {
-        auto button = m_data->candidateButtons[i];
+    }
 
-        if( continueLeft && i == 0 )
+public:
+    const QskVirtualKeyboardLayouts::Layout* currentLayout;
+    QskVirtualKeyboard::Mode mode;
+
+    QVector< Button* > keyButtons;
+};
+
+QskVirtualKeyboard::QskVirtualKeyboard( QQuickItem* parent ):
+    Inherited( parent ),
+    m_data( new PrivateData )
+{
+    setFlag( ItemHasContents );
+    setFlag( ItemIsFocusScope, true );
+#if 0
+    // TODO ...
+    setTabFence( true );
+#endif
+
+    setPolishOnResize( true );
+    initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
+
+    m_data->keyButtons.reserve( RowCount * KeyCount );
+
+    const auto autoRepeatInterval =
+        1000 / QGuiApplication::styleHints()->keyboardAutoRepeatRate();
+
+    for ( int row = 0; row < RowCount; row++ )
+    {
+        for ( int col = 0; col < KeyCount; col++ )
         {
-            button->setIndexAndText( i, textForKey( Qt::Key_ApplicationLeft ) );
-        }
-        else if( continueRight && ( i == KeyCount - 1 ) )
-        {
-            button->setIndexAndText( i, textForKey( Qt::Key_ApplicationRight ) );
-        }
-        else
-        {
-            const int index = i + m_data->candidateOffset;
-            button->setIndexAndText( index, m_data->candidates[index] );
+            auto button = new Button( row, col, this );
+            button->installEventFilter( this );
+
+            button->setAutoRepeat( false );
+            button->setAutoRepeatDelay( 500 );
+            button->setAutoRepeatInterval( autoRepeatInterval );
+
+            connect( button, &QskPushButton::pressed,
+                this, &QskVirtualKeyboard::buttonPressed );
+
+            m_data->keyButtons += button;
         }
     }
 
-    for( int i = count; i < QskVirtualKeyboardCandidateButton::maxCandidates(); ++i )
-    {
-        m_data->candidateButtons[i]->setIndexAndText( -1, QString() );
-    }
+    connect( this, &QskControl::localeChanged,
+        this, &QskVirtualKeyboard::updateLocale );
+
+    updateLocale( locale() );
+}
+
+QskVirtualKeyboard::~QskVirtualKeyboard()
+{
+}
+
+QskAspect::Subcontrol QskVirtualKeyboard::effectiveSubcontrol(
+    QskAspect::Subcontrol subControl ) const
+{
+    if( subControl == QskBox::Panel )
+        return QskVirtualKeyboard::Panel;
+
+    return subControl;
+}
+
+
+QskVirtualKeyboard::Mode QskVirtualKeyboard::mode() const
+{
+    return m_data->mode;
+}
+
+void QskVirtualKeyboard::setPreeditCandidates( const QVector< QString >& )
+{
+#if 0
+    m_suggestionBar->setCandidates( candidates );
+#endif
 }
 
 void QskVirtualKeyboard::updateLayout()
 {
-    if( geometry().isNull() )
-        return; // no need to calculate anything, will be called again
+    const auto r = layoutRect();
+    if( r.isEmpty() )
+        return;
 
-    QRectF rect = layoutRect();
-    qreal verticalSpacing = m_data->buttonsBox->spacing();
+    QTransform transform;
+    transform.translate( r.top(), r.left() );
+    transform.scale( r.width(), r.height() );
 
-    const auto& children = m_data->buttonsBox->childItems();
-    for( auto rowItem : children )
+    const auto keyHeight = 1.0f / RowCount;
+
+    const auto& keyCodes = ( *m_data->currentLayout )[ m_data->mode ];
+
+    qreal yPos = 0;
+
+    for( int row = 0; row < RowCount; row++ )
     {
-        auto rowBox = qobject_cast< QskLinearBox* >( rowItem );
-        const qreal horizontalSpacing = rowBox->spacing();
+        const auto& keys = keyCodes.data[ row ];
 
-        const auto& rowChildren = rowBox->childItems();
-        for( auto keyItem : rowChildren )
+        const auto baseKeyWidth = 1.0 / qskRowStretch( keys );
+
+        qreal xPos = 0;
+
+        for ( int col = 0; col < KeyCount; col++ )
         {
-            auto button = qobject_cast< QskVirtualKeyboardButton* >( keyItem );
-            QRectF keyRect = keyDataAt( button->keyIndex() ).rect;
-            qreal width = keyRect.width() * rect.width() - horizontalSpacing;
-            qreal height = keyRect.height() * rect.height() - verticalSpacing;
+            const Qt::Key key = keys[ col ];
+            auto button = m_data->keyButtons[ row * KeyCount + col ];
 
-            button->setFixedSize( width, height );
+            button->setVisible( key != Qt::Key( 0 ) );
+
+            if ( button->isVisible() )
+            {
+                const qreal keyWidth = baseKeyWidth * qskKeyStretch( key );
+
+                const QRectF rect( xPos, yPos, keyWidth, keyHeight );
+
+                button->setGeometry( transform.mapRect( rect ) );
+                button->setAutoRepeat( qskIsAutorepeat( key ) );
+                button->setText( qskTextForKey( key ) );
+
+                xPos += keyWidth;
+            }
         }
+
+        yPos += keyHeight;
     }
 }
 
-void QskVirtualKeyboard::createUI()
+void QskVirtualKeyboard::buttonPressed()
 {
-    setAutoLayoutChildren( true );
+    const auto button = static_cast< const Button* >( sender() );
+    if ( button == nullptr )
+        return;
 
-    auto outerBox = new QskLinearBox( Qt::Vertical, this );
-
-    m_data->candidateBox = new QskLinearBox( Qt::Horizontal, outerBox );
-#if 1
-    // should be skin hints TODO ...
-    QMarginsF margins( 0, 10, 0, 20 ); // ###
-    m_data->candidateBox->setMargins( margins );
-#endif
-
-    // to determine suggestions buttons width
-    // (otherwise empty buttons would be too small when there are only a few suggestions):
-    // ### Can this be done with the layout engine or so?
-    QRectF rect = layoutRect();
-    auto candidateButtonWidth = rect.width() / QskVirtualKeyboardCandidateButton::maxCandidates()
-        - m_data->candidateBox->spacing() * QskVirtualKeyboardCandidateButton::maxCandidates();
-
-    for( int a = 0; a < QskVirtualKeyboardCandidateButton::maxCandidates(); ++a )
-    {
-        auto button = new QskVirtualKeyboardCandidateButton( this, m_data->candidateBox );
-
-        qreal height = button->sizeHint().height();
-#if 1
-        // should be done by margins/paddings
-        button->setPreferredHeight( height + 10 );
-#endif
-        button->setPreferredWidth( candidateButtonWidth );
-        button->installEventFilter( this );
-
-        m_data->candidateBox->setRetainSizeWhenHidden( button, true );
-        m_data->candidateButtons.append( button );
-    }
-
-    m_data->candidateBox->setVisible( m_data->candidateBoxVisible );
-    outerBox->setRetainSizeWhenHidden( m_data->candidateBox, true );
-}
-
-void QskVirtualKeyboard::updateUI()
-{
-    for( auto button : qskAsConst( m_data->keyButtons ) )
-        button->updateText();
-}
-
-QskVirtualKeyboard::KeyData& QskVirtualKeyboard::keyDataAt( int keyIndex ) const
-{
-    const auto row = keyIndex / KeyCount;
-    const auto col = keyIndex % KeyCount;
-
-    return m_data->keyTable[ m_data->mode ].data[ row ][ col ];
-}
-
-void QskVirtualKeyboard::handleKey( int keyIndex )
-{
-    KeyData keyData = keyDataAt( keyIndex );
-    const auto key = keyData.key & ~KeyStates;
+    const auto& keyCodes = ( *m_data->currentLayout )[ m_data->mode ];
+    const Qt::Key key = keyCodes.data[ button->row() ][ button->column() ];
 
     // Mode-switching keys
     switch( key )
@@ -653,7 +376,6 @@ void QskVirtualKeyboard::handleKey( int keyIndex )
 
             break;
         }
-
         default:
         {
             QGuiApplication::inputMethod()->invokeAction(
@@ -662,38 +384,8 @@ void QskVirtualKeyboard::handleKey( int keyIndex )
     }
 }
 
-void QskVirtualKeyboard::handleCandidateKey( int index, const QString& text )
+void QskVirtualKeyboard::setCandidateBarVisible( bool )
 {
-    if( text == textForKey( Qt::Key_ApplicationLeft ) )
-    {
-        setCandidateOffset( m_data->candidateOffset - 1 );
-    }
-    else if( text == textForKey( Qt::Key_ApplicationRight ) )
-    {
-        setCandidateOffset( m_data->candidateOffset + 1 );
-    }
-    else
-    {
-        QGuiApplication::inputMethod()->invokeAction(
-            static_cast< QInputMethod::Action >( SelectCandidate ), index );
-
-        setPreeditCandidates( QVector< QString >() );
-    }
-}
-
-void QskVirtualKeyboard::setCandidateBarVisible( bool visible )
-{
-    // need to cache it until we have created the UI
-    m_data->candidateBoxVisible = visible;
-    if( m_data->isUIInitialized )
-        m_data->candidateBox->setVisible( m_data->candidateBoxVisible );
-}
-
-QString QskVirtualKeyboard::currentTextForKeyIndex( int keyIndex ) const
-{
-    auto keyData = keyDataAt( keyIndex );
-    QString text = textForKey( keyData.key );
-    return text;
 }
 
 void QskVirtualKeyboard::updateLocale( const QLocale& locale )
@@ -813,45 +505,8 @@ void QskVirtualKeyboard::updateLocale( const QLocale& locale )
 
     }
 
-    Q_EMIT displayLanguageNameChanged();
-
-    updateKeyData();
     setMode( LowercaseMode );
-}
-
-void QskVirtualKeyboard::updateKeyData()
-{
-    // Key data is in normalized coordinates
-    const auto keyHeight = 1.0f / RowCount;
-
-    for( const auto& keyLayout : *m_data->currentLayout )
-    {
-        auto& keyDataLayout = m_data->keyTable[ &keyLayout - *m_data->currentLayout ];
-        qreal yPos = 0;
-
-        for( int i = 0; i < RowCount; i++ )
-        {
-            auto& row = keyLayout.data[i];
-            auto& keyDataRow = keyDataLayout.data[ i ];
-
-            const auto baseKeyWidth = 1.0 / qskRowStretch( row );
-
-            qreal xPos = 0;
-            qreal keyWidth = baseKeyWidth;
-
-            for( const auto& key : row )
-            {
-                auto& keyData = keyDataRow[ &key - row ];
-                keyData.key = key;
-
-                keyWidth = baseKeyWidth * qskKeyStretch( key );
-                keyData.rect = { xPos, yPos, keyWidth, keyHeight };
-                xPos += keyWidth;
-            }
-
-            yPos += keyHeight;
-        }
-    }
+    polish();
 }
 
 void QskVirtualKeyboard::setMode( QskVirtualKeyboard::Mode mode )

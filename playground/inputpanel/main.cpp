@@ -12,6 +12,7 @@
 #include <QskLinearBox.h>
 #include <QskListView.h>
 #include <QskTextInput.h>
+#include <QskInputPanel.h>
 
 #include <QskWindow.h>
 #include <QskSetup.h>
@@ -62,30 +63,28 @@ public:
         QskListView( parentItem ),
         m_maxWidth( 0.0 )
     {
-        append( QLocale::Bulgarian, QStringLiteral( "български език" ) );
-        append( QLocale::Czech, QStringLiteral( "Čeština" ) );
-        append( QLocale::German, QStringLiteral( "Deutsch" ) );
-        append( QLocale::Danish, QStringLiteral( "Dansk" ) );
+        for ( auto language :
+            {
+                QLocale::Bulgarian, QLocale::Czech, QLocale::German,
+                QLocale::Danish, QLocale::English, QLocale::Spanish,
+                QLocale::Finnish, QLocale::French, QLocale::Hungarian,
+                QLocale::Italian, QLocale::Japanese, QLocale::Latvian,
+                QLocale::Lithuanian, QLocale::Dutch, QLocale::Portuguese,
+                QLocale::Romanian, QLocale::Russian, QLocale::Slovenian,
+                QLocale::Slovak, QLocale::Turkish, QLocale::Chinese
+            } )
+        {
 
-        append( QLocale( QLocale::English, QLocale::UnitedStates ), QStringLiteral( "English (US)" ) );
-        append( QLocale( QLocale::English, QLocale::UnitedKingdom ), QStringLiteral( "English (UK)" ) );
-
-        append( QLocale::Spanish, QStringLiteral( "Español" ) );
-        append( QLocale::Finnish, QStringLiteral( "Suomi" ) );
-        append( QLocale::French, QStringLiteral( "Français" ) );
-        append( QLocale::Hungarian, QStringLiteral( "Magyar" ) );
-        append( QLocale::Italian, QStringLiteral( "Italiano" ) );
-        append( QLocale::Japanese, QStringLiteral( "日本語" ) );
-        append( QLocale::Latvian, QStringLiteral( "Latviešu" ) );
-        append( QLocale::Lithuanian, QStringLiteral( "Lietuvių") );
-        append( QLocale::Dutch, QStringLiteral( "Nederlands" ) );
-        append( QLocale::Portuguese, QStringLiteral( "Português" ) );
-        append( QLocale::Romanian, QStringLiteral( "Română" ) );
-        append( QLocale::Russian, QStringLiteral( "Русский" ) );
-        append( QLocale::Slovenian, QStringLiteral( "Slovenščina" ) );
-        append( QLocale::Slovak, QStringLiteral( "Slovenčina" ) );
-        append( QLocale::Turkish, QStringLiteral( "Türkçe" ) );
-        append( QLocale::Chinese, QStringLiteral( "中文" ) );
+            if ( language == QLocale::English )
+            {
+                append( QLocale( QLocale::English, QLocale::UnitedStates ) );
+                append( QLocale( QLocale::English, QLocale::UnitedKingdom ) );
+            }
+            else
+            {
+                append( QLocale( language ) );
+            }
+        }
 
         setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
         setPreferredWidth( columnWidth( 0 ) + 20 );
@@ -145,9 +144,9 @@ public:
     }
 
 private:
-    inline void append( QLocale locale, const QString& name )
+    inline void append( const QLocale& locale )
     {
-        m_values += qMakePair( QString( name ), locale );
+        m_values += qMakePair( qskNativeLocaleString( locale ), locale );
     }
 
     QVector< QPair< QString, QLocale > > m_values;

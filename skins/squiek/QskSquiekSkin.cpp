@@ -583,21 +583,21 @@ void QskSquiekSkin::initTabViewHints()
 void QskSquiekSkin::initInputPanelHints()
 {
     using namespace QskAspect;
-    using Q = QskVirtualKeyboardButton;
+    using Q = QskVirtualKeyboard;
 
     const ColorPalette& pal = m_data->palette;
 
     // key panel
-    setMargins( QskVirtualKeyboard::Panel | Padding, 5 );
-    setPanel( QskVirtualKeyboard::Panel, Raised );
+    setMargins( Q::Panel | Padding, 5 );
+    setPanel( Q::Panel, Raised );
 
-    setButton( Q::Panel, Raised );
-    setButton( Q::Panel | Q::Pressed, Sunken );
+    setButton( Q::ButtonPanel, Raised );
+    setButton( Q::ButtonPanel | QskPushButton::Pressed, Sunken );
 
-    setAnimation( Q::Panel | Color, qskDuration );
+    setAnimation( Q::ButtonPanel | Color, qskDuration );
 
-    setColor( Q::Text, pal.themeForeground );
-    setColor( Q::Text | Q::Disabled, pal.darker200 );
+    setColor( Q::ButtonText, pal.themeForeground );
+    setColor( Q::ButtonText | QskPushButton::Disabled, pal.darker200 );
 }
 
 void QskSquiekSkin::initScrollViewHints()

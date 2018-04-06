@@ -7,79 +7,15 @@
 #define QSK_VIRTUAL_KEYBOARD_H
 
 #include "QskBox.h"
-#include "QskPushButton.h"
-
-#include <QRectF>
-
-class QskInputCompositionModel;
-class QskVirtualKeyboard;
-
-class QSK_EXPORT QskVirtualKeyboardCandidateButton : public QskPushButton
-{
-    Q_OBJECT
-
-    using Inherited = QskPushButton;
-
-public:
-    QSK_SUBCONTROLS( Panel, Text )
-
-    QskVirtualKeyboardCandidateButton( QskVirtualKeyboard* inputPanel, QQuickItem* parent = nullptr );
-    void setIndexAndText( int index, const QString& text );
-
-    virtual QskAspect::Subcontrol effectiveSubcontrol( QskAspect::Subcontrol subControl ) const override;
-
-    static int maxCandidates();
-    // add a setter here as well if needed
-
-private:
-    QskVirtualKeyboard* m_inputPanel;
-    int m_index;
-    QString m_text;
-};
-
-class QSK_EXPORT QskVirtualKeyboardButton : public QskPushButton
-{
-    Q_OBJECT
-
-    using Inherited = QskPushButton;
-
-public:
-    QSK_SUBCONTROLS( Panel, Text )
-
-    QskVirtualKeyboardButton( int keyIndex,
-        QskVirtualKeyboard*, QQuickItem* parent = nullptr );
-
-    virtual QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol ) const override;
-
-    int keyIndex() const;
-
-public Q_SLOTS:
-    void updateText();
-
-private:
-    const int m_keyIndex;
-    QskVirtualKeyboard* m_inputPanel;
-};
 
 class QSK_EXPORT QskVirtualKeyboard : public QskBox
 {
     Q_OBJECT
 
-    Q_PROPERTY( QString displayLanguageName READ displayLanguageName
-        NOTIFY displayLanguageNameChanged )
-
     using Inherited = QskBox;
 
 public:
-    QSK_SUBCONTROLS( Panel )
-
-    struct KeyData
-    {
-        int key = 0;
-        bool isSuggestionKey = false;
-        QRectF rect;
-    };
+    QSK_SUBCONTROLS( Panel, ButtonPanel, ButtonText )
 
     enum Action
     {
@@ -98,16 +34,6 @@ public:
     };
     Q_ENUM( Mode )
 
-    enum
-    {
-        RowCount = 5,
-        KeyCount = 12
-    };
-
-    using KeyRow = Qt::Key[KeyCount];
-    using KeyDataRow = KeyData[KeyCount];
-    using KeyDataSet = KeyDataRow[RowCount];
-
     QskVirtualKeyboard( QQuickItem* parent = nullptr );
     virtual ~QskVirtualKeyboard() override;
 
@@ -116,19 +42,11 @@ public:
 
     void updateLocale( const QLocale& );
 
-    void setMode( QskVirtualKeyboard::Mode );
+    void setMode( Mode );
     Mode mode() const;
 
-    const KeyDataSet& keyData( QskVirtualKeyboard::Mode = CurrentMode ) const;
-
-    QString textForKey( int ) const;
-    QString displayLanguageName() const;
-
-    void handleKey( int keyIndex );
-    KeyData& keyDataAt( int ) const;
-    QString currentTextForKeyIndex( int keyIndex ) const;
-
-    void handleCandidateKey( int index, const QString& text );
+Q_SIGNALS:
+    void modeChanged( Mode );
 
 public Q_SLOTS:
     void setPreeditCandidates( const QVector< QString >& );
@@ -138,23 +56,12 @@ protected:
     virtual bool eventFilter( QObject*, QEvent* ) override;
     virtual void updateLayout() override;
 
-private:
-    void createUI();
-    void updateUI(); // e.g. called when updating Pinyin suggestions
-
-    void setCandidateOffset( int );
-
-    void updateKeyData();
-
-Q_SIGNALS:
-    void displayLanguageNameChanged();
-    void modeChanged( QskVirtualKeyboard::Mode );
+private Q_SLOTS:
+    void buttonPressed();
 
 private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
-
-Q_DECLARE_TYPEINFO( QskVirtualKeyboard::KeyData, Q_PRIMITIVE_TYPE );
 
 #endif

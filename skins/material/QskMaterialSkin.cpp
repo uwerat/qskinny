@@ -543,24 +543,24 @@ void QskMaterialSkin::initTabViewHints()
 void QskMaterialSkin::initInputPanelHints()
 {
     using namespace QskAspect;
-    using Q = QskVirtualKeyboardButton;
+    using Q = QskVirtualKeyboard;
 
     const ColorPalette& pal = m_data->palette;
 
     // key panel
-    setMargins( QskVirtualKeyboard::Panel | Margin, 2 );
+    setMargins( Q::ButtonPanel | Margin, 2 );
 
-    setBoxShape( Q::Panel, 20.0, Qt::RelativeSize );
-    setBoxBorderMetrics( Q::Panel, 2 );
+    setBoxShape( Q::ButtonPanel, 20.0, Qt::RelativeSize );
+    setBoxBorderMetrics( Q::ButtonPanel, 2 );
 
-    setGradient( Q::Panel, pal.darker125 );
-    setBoxBorderColors( Q::Panel, pal.baseColor );
+    setGradient( Q::ButtonPanel, pal.darker125 );
+    setBoxBorderColors( Q::ButtonPanel, pal.baseColor );
 
     for ( auto state : { NoState, Q::Focused } )
-        setBoxBorderColors( Q::Panel | Q::Pressed | state, pal.accentColor );
+        setBoxBorderColors( Q::ButtonPanel | QskPushButton::Pressed | state, pal.accentColor );
 
-    setAnimation( Q::Panel | Color, qskDuration );
-    setAnimation( Q::Panel | Metric, qskDuration );
+    setAnimation( Q::ButtonPanel | Color, qskDuration );
+    setAnimation( Q::ButtonPanel | Metric, qskDuration );
 
     // panel
     setBoxShape( Q::Panel, 0 );
