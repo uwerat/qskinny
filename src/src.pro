@@ -25,7 +25,7 @@ else {
     CONFIG += staticlib
 }
 
-QSK_SUBDIRS = common graphic nodes controls layouts dialogs
+QSK_SUBDIRS = common graphic nodes controls layouts dialogs inputpanel
 INCLUDEPATH *= $${QSK_SUBDIRS}
 DEPENDPATH *= $${QSK_SUBDIRS}
 
@@ -182,7 +182,6 @@ HEADERS += \
     controls/QskTextLabel.h \
     controls/QskTextLabelSkinlet.h \
     controls/QskVariantAnimator.h \
-    controls/QskVirtualKeyboard.h \
     controls/QskWindow.h
 
 SOURCES += \
@@ -248,7 +247,6 @@ SOURCES += \
     controls/QskTextLabel.cpp \
     controls/QskTextLabelSkinlet.cpp \
     controls/QskVariantAnimator.cpp \
-    controls/QskVirtualKeyboard.cpp \
     controls/QskWindow.cpp
 
 HEADERS += \
@@ -298,3 +296,9 @@ SOURCES += \
     dialogs/QskMessageWindow.cpp \
     dialogs/QskSelectionSubWindow.cpp \
     dialogs/QskSelectionWindow.cpp
+
+SOURCES += \
+    inputpanel/QskVirtualKeyboard.cpp
+
+HEADERS += \
+    inputpanel/QskVirtualKeyboard.h

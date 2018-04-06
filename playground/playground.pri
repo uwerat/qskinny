@@ -16,6 +16,7 @@ QSK_DIRS = \
     $${QSK_ROOT}/src/controls \
     $${QSK_ROOT}/src/layouts \
     $${QSK_ROOT}/src/dialogs \
+    $${QSK_ROOT}/src/inputpanel \
     $${QSK_ROOT}/support
 
 INCLUDEPATH *= $${QSK_DIRS}
