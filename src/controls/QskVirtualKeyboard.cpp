@@ -291,7 +291,11 @@ QskVirtualKeyboard::QskVirtualKeyboard( QQuickItem* parent ):
     qRegisterMetaType< Qt::Key >();
 
     setFlag( ItemHasContents );
-    setAcceptedMouseButtons( Qt::LeftButton );
+    setFlag( ItemIsFocusScope, true );
+#if 0
+    // TODO ...
+    setTabFence( true );
+#endif
 
     initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
 
@@ -299,12 +303,6 @@ QskVirtualKeyboard::QskVirtualKeyboard( QQuickItem* parent ):
 
     connect( this, &QskControl::localeChanged,
         this, &QskVirtualKeyboard::updateLocale );
-
-    setFlag( ItemIsFocusScope, true );
-
-#if 0
-    setTabFence( true );
-#endif
 
     setAutoLayoutChildren( true );
 
@@ -332,9 +330,6 @@ QskVirtualKeyboard::QskVirtualKeyboard( QQuickItem* parent ):
             m_data->keyButtons.append( button );
         }
     }
-
-    connect( this, &QskVirtualKeyboard::modeChanged,
-        this, [ this ]() { updateLayout(); } );
 }
 
 QskVirtualKeyboard::~QskVirtualKeyboard()
@@ -638,25 +633,33 @@ void QskVirtualKeyboard::handleKey( int keyIndex )
     {
         case Qt::Key_CapsLock:
         case Qt::Key_Kana_Lock:
+        {
             setMode( UppercaseMode ); // Lock caps
-            return;
+            break;
+        }
 
         case Qt::Key_Shift:
         case Qt::Key_Kana_Shift:
+        {
             setMode( LowercaseMode ); // Unlock caps
-            return;
+            break;
+        }
 
         case Qt::Key_Mode_switch: // Cycle through modes, but skip caps
+        {
             setMode( static_cast< QskVirtualKeyboard::Mode >(
                 m_data->mode ? ( ( m_data->mode + 1 ) % QskVirtualKeyboard::ModeCount )
                 : SpecialCharacterMode ) );
-            return;
+
+            break;
+        }
 
         default:
-            break;
+        {
+            QGuiApplication::inputMethod()->invokeAction(
+                static_cast< QInputMethod::Action >( Compose ), key );
+        }
     }
-
-    compose( key );
 }
 
 void QskVirtualKeyboard::handleCandidateKey( int index, const QString& text )
@@ -671,7 +674,9 @@ void QskVirtualKeyboard::handleCandidateKey( int index, const QString& text )
     }
     else
     {
-        selectCandidate( index );
+        QGuiApplication::inputMethod()->invokeAction(
+            static_cast< QInputMethod::Action >( SelectCandidate ), index );
+
         setPreeditCandidates( QVector< QString >() );
     }
 }
@@ -689,18 +694,6 @@ QString QskVirtualKeyboard::currentTextForKeyIndex( int keyIndex ) const
     auto keyData = keyDataAt( keyIndex );
     QString text = textForKey( keyData.key );
     return text;
-}
-
-void QskVirtualKeyboard::compose( int key )
-{
-    QGuiApplication::inputMethod()->invokeAction(
-        static_cast< QInputMethod::Action >( Compose ), key );
-}
-
-void QskVirtualKeyboard::selectCandidate( int index )
-{
-    QGuiApplication::inputMethod()->invokeAction(
-        static_cast< QInputMethod::Action >( SelectCandidate ), index );
 }
 
 void QskVirtualKeyboard::updateLocale( const QLocale& locale )
@@ -864,6 +857,8 @@ void QskVirtualKeyboard::updateKeyData()
 void QskVirtualKeyboard::setMode( QskVirtualKeyboard::Mode mode )
 {
     m_data->mode = mode;
+    polish();
+
     Q_EMIT modeChanged( m_data->mode );
 }
 

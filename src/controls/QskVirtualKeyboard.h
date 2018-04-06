@@ -129,10 +129,10 @@ public:
     QString currentTextForKeyIndex( int keyIndex ) const;
 
     void handleCandidateKey( int index, const QString& text );
-    void setCandidateBarVisible( bool visible );
 
 public Q_SLOTS:
     void setPreeditCandidates( const QVector< QString >& );
+    void setCandidateBarVisible( bool visible );
 
 protected:
     virtual bool eventFilter( QObject*, QEvent* ) override;
@@ -142,9 +142,6 @@ private:
     void createUI();
     void updateUI(); // e.g. called when updating Pinyin suggestions
 
-    void compose( int );
-    void selectGroup( int );
-    void selectCandidate( int );
     void setCandidateOffset( int );
 
     void updateKeyData();
