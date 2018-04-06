@@ -18,11 +18,14 @@
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>
-#include <private/qinputmethod_p.h>
+#include <private/qguiapplication_p.h>
 #if defined( QT_DEBUG )
 #include <private/qquickpositioners_p.h>
 #endif
 QSK_QT_PRIVATE_END
+
+#include <qpa/qplatformintegration.h>
+#include <qpa/qplatforminputcontext.h>
 
 #include <limits>
 #include <unordered_set>
@@ -153,8 +156,13 @@ void qskUpdateInputMethod( const QQuickItem* item, Qt::InputMethodQueries querie
 
     if ( !doUpdate )
     {
+        /*
+            We could also get the inputContext from QInputMethodPrivate
+            but for some reason the gcc sanitizer reports errors
+            when using it. So let's go with QGuiApplicationPrivate.
+         */
         const auto inputContext =
-            QInputMethodPrivate::get( inputMethod )->platformInputContext();
+            QGuiApplicationPrivate::platformIntegration()->inputContext();
 
         if ( inputContext && inputContext->isInputPanelVisible() )
         {
