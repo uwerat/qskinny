@@ -54,6 +54,8 @@ public Q_SLOTS:
 
 protected:
     virtual bool eventFilter( QObject*, QEvent* ) override;
+    virtual bool event( QEvent* ) override;
+
     virtual void updateLayout() override;
 
 private Q_SLOTS:

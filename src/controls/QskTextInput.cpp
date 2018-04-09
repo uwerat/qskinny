@@ -4,11 +4,19 @@
  *****************************************************************************/
 
 #include "QskTextInput.h"
-#include "QskTextOptions.h"
+
+// VS2012+ disable keyword macroizing unless _ALLOW_KEYWORD_MACROS is set
+#ifdef _MSC_VER
+#if ( _MSC_VER >= 1700 ) && !defined( _ALLOW_KEYWORD_MACROS )
+#define _ALLOW_KEYWORD_MACROS
+#endif
+#endif
 
 QSK_QT_PRIVATE_BEGIN
+#define private public
 #include <private/qquicktextinput_p.h>
 #include <private/qquicktextinput_p_p.h>
+#undef private
 QSK_QT_PRIVATE_END
 
 static inline void qskBindSignals( const QQuickTextInput* wrappedInput,
@@ -69,12 +77,19 @@ namespace
     class TextInput final : public QQuickTextInput
     {
     public:
-        TextInput( QQuickItem* parent ) :
+        TextInput( QQuickItem* parent ):
             QQuickTextInput( parent )
         {
+            classBegin();
+
             setActiveFocusOnTab( false );
             setFlag( ItemAcceptsInputMethod, false );
             setFocusOnPress( false );
+
+            connect( this, &TextInput::contentSizeChanged,
+                this, &TextInput::updateClip );
+
+            componentComplete();
         }
 
         void setAlignment( Qt::Alignment alignment )
@@ -85,23 +100,90 @@ namespace
 
         inline bool handleEvent( QEvent* event )
         {
-            switch( event->type() )
+            return QQuickTextInput::event( event );
+        }
+
+        virtual void focusInEvent( QFocusEvent* ) override
+        {
+            auto d = QQuickTextInputPrivate::get( this );
+
+            if ( d->m_readOnly )
+                return;
+
+            d->cursorVisible = true;
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+            d->updateCursorBlinking();
+            d->setBlinkingCursorEnabled( true );
+#endif
+
+            if ( d->determineHorizontalAlignment() )
             {
-                case QEvent::FocusIn:
-                case QEvent::FocusOut:
-                {
-                    auto d = QQuickTextInputPrivate::get( this );
+                d->updateLayout();
+                d->updateHorizontalScroll();
+                d->updateVerticalScroll();
 
-                    d->focusOnPress = true;
-                    d->handleFocusEvent( static_cast< QFocusEvent* >( event ) );
-                    d->focusOnPress = false;
-
-                    return true;
-                }
-
-                default:
-                    return QQuickTextInput::event( event );
+#if 0
+                updateInputMethod(Qt::ImCursorRectangle | Qt::ImAnchorRectangle);
+#endif
             }
+
+            connect( QGuiApplication::inputMethod(),
+                SIGNAL(inputDirectionChanged(Qt::LayoutDirection)),
+                this, SLOT(q_updateAlignment()) );
+
+            qGuiApp->inputMethod()->show();
+        }
+
+        virtual void focusOutEvent( QFocusEvent* event ) override
+        {
+            auto d = QQuickTextInputPrivate::get( this );
+
+            if (d->m_readOnly)
+                return;
+
+            d->cursorVisible = false;
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+            d->updateCursorBlinking();
+            d->setBlinkingCursorEnabled( false );
+#endif
+
+            if ( d->m_passwordEchoEditing || d->m_passwordEchoTimer.isActive() )
+            {
+                d->updatePasswordEchoEditing( false );
+            }
+
+            if ( event->reason() != Qt::ActiveWindowFocusReason
+                && event->reason() != Qt::PopupFocusReason )
+            {
+                if ( d->hasSelectedText() && !d->persistentSelection )
+                    deselect();
+            }
+
+            const auto status = d->hasAcceptableInput( d->m_text );
+            if ( status == QQuickTextInputPrivate::AcceptableInput )
+            {
+                if ( d->fixup() )
+                    Q_EMIT editingFinished();
+            }
+
+            disconnect( QGuiApplication::inputMethod(),
+                SIGNAL(inputDirectionChanged(Qt::LayoutDirection)),
+                this, SLOT(q_updateAlignment()) );
+        }
+
+        virtual void geometryChanged(
+            const QRectF& newGeometry, const QRectF& oldGeometry ) override
+        {
+            QQuickTextInput::geometryChanged( newGeometry, oldGeometry );
+            updateClip();
+        }
+
+        void updateClip()
+        {
+            setClip( ( contentWidth() > width() ) ||
+                ( contentHeight() > height() ) );
         }
     };
 }
@@ -276,16 +358,6 @@ void QskTextInput::setFontRole( int role )
     }
 }
 
-QskTextOptions QskTextInput::textOptions() const
-{
-    return QskTextOptions();
-}
-
-void QskTextInput::setTextOptions( const QskTextOptions& options )
-{
-    Q_UNUSED( options )
-}
-
 void QskTextInput::setAlignment( Qt::Alignment alignment )
 {
     if ( alignment != this->alignment() )
@@ -323,6 +395,11 @@ void QskTextInput::setReadOnly( bool on )
     m_data->textInput->setFlag( QQuickItem::ItemAcceptsInputMethod, false );
 
     qskUpdateInputMethod( this, Qt::ImEnabled );
+}
+
+void QskTextInput::ensureVisible( int position )
+{
+    m_data->textInput->ensureVisible( position );
 }
 
 bool QskTextInput::isCursorVisible() const
@@ -507,7 +584,9 @@ QVariant QskTextInput::inputMethodQuery(
             return locale();
         }
         case Qt::ImCursorRectangle:
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
         case Qt::ImInputItemClipRectangle:
+#endif
         {
             QVariant v = m_data->textInput->inputMethodQuery( query, argument );
 #if 1

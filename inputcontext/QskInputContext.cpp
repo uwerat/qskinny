@@ -8,6 +8,7 @@
 
 #include "QskInputCompositionModel.h"
 #include "QskPinyinCompositionModel.h"
+#include "QskHunspellCompositionModel.h"
 
 #include <QskDialog.h>
 #include <QskWindow.h>
@@ -78,7 +79,11 @@ QskInputContext::QskInputContext():
 {
     setObjectName( "InputContext" );
 
+#if 1
     m_data->compositionModel = new QskInputCompositionModel( this );
+#else
+    m_data->compositionModel = new QskHunspellCompositionModel( this );
+#endif
 
     connect( m_data->compositionModel, &QskInputCompositionModel::candidatesChanged,
         this, &QskInputContext::handleCandidatesChanged );

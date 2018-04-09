@@ -198,10 +198,22 @@ static bool qskIsAutorepeat( int key )
         && key != Qt::Key_Mode_switch );
 }
 
-static inline QPlatformInputContext* qskInputContext()
+static inline QQuickItem* qskInputItem()
 {
-    auto inputMethod = QGuiApplication::inputMethod();
-    return QInputMethodPrivate::get( inputMethod )->platformInputContext();
+    QPlatformInputContext* inputContext;
+#if 1
+    inputContext = QGuiApplicationPrivate::platformIntegration()->inputContext();
+#else
+    // for some reason the gcc sanitizer does not like this one
+    inputContext = QInputMethodPrivate::get( inputMethod )->platformInputContext();
+#endif
+
+    QQuickItem* item = nullptr;
+
+    QMetaObject::invokeMethod( inputContext, "inputItem",
+        Qt::DirectConnection, Q_RETURN_ARG( QQuickItem*, item ) );
+
+    return item;
 }
 
 QSK_SUBCONTROL( QskVirtualKeyboard, Panel )
@@ -536,24 +548,26 @@ bool QskVirtualKeyboard::eventFilter( QObject* object, QEvent* event )
             always has the focus. But this does not work, when a virtual
             keyboard is used, where you can navigate and select inside.
             So we have to fix the receiver.
+
+            Maybe QEvent::EnterEditFocus is good for something ??
          */
 
-        if ( const auto inputContext = qskInputContext() )
-        {
-            QQuickItem* item = nullptr;
-
-            if ( QMetaObject::invokeMethod( inputContext, "inputItem",
-                Qt::DirectConnection, Q_RETURN_ARG( QQuickItem*, item ) ) )
-            {
-                if ( item )
-                    QGuiApplication::sendEvent( item, event );
-            }
-        }
+        if ( auto item = qskInputItem() )
+            QGuiApplication::sendEvent( item, event );
 
         return true;
     }
 
     return Inherited::eventFilter( object, event );
+}
+
+bool QskVirtualKeyboard::event( QEvent* event )
+{
+    /*
+        Handling Qt::Key_Return/Qt::KeyEscape here
+        and forward everything else to the input item TODO ...
+     */
+    return Inherited::event( event );
 }
 
 #include "moc_QskVirtualKeyboard.cpp"

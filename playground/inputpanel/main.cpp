@@ -42,6 +42,7 @@ public:
         auto* textInput = new QskTextInput( this );
         textInput->setText( "I am a line edit. Press and edit Me." );
         textInput->setSelectByMouse( true );
+        textInput->setSizePolicy( Qt::Horizontal, QskSizePolicy::Preferred );
 
 #if LOCAL_PANEL
         auto* inputPanel = new QskVirtualKeyboard( this );

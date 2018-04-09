@@ -8,7 +8,6 @@
 
 #include "QskControl.h"
 
-class QskTextOptions;
 class QValidator;
 
 class QSK_EXPORT QskTextInput : public QskControl
@@ -19,9 +18,6 @@ class QSK_EXPORT QskTextInput : public QskControl
 
     Q_PROPERTY( int fontRole READ fontRole
         WRITE setFontRole NOTIFY fontRoleChanged )
-
-    Q_PROPERTY( QskTextOptions textOptions READ textOptions
-        WRITE setTextOptions NOTIFY textOptionsChanged )
 
     Q_PROPERTY( Qt::Alignment alignment READ alignment
         WRITE setAlignment NOTIFY alignmentChanged )
@@ -56,9 +52,6 @@ public:
 
     void setFontRole( int role );
     int fontRole() const;
-
-    void setTextOptions( const QskTextOptions& );
-    QskTextOptions textOptions() const;
 
     void setAlignment( Qt::Alignment );
     Qt::Alignment alignment() const;
@@ -123,6 +116,8 @@ public:
 
     Qt::InputMethodHints inputMethodHints() const;
     void setInputMethodHints( Qt::InputMethodHints );
+
+    void ensureVisible( int position );
 
 public Q_SLOTS:
     void setText( const QString& );
