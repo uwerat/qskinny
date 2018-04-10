@@ -4,6 +4,9 @@
 #include "SoundControl.h"
 #include "ButtonBar.h"
 
+#include "Speedometer.h"
+#include "SpeedometerSkinlet.h"
+
 #include <QskBox.h>
 #include <QskFunctions.h>
 #include <QskPushButton.h>
@@ -57,6 +60,7 @@ OtherSkin::OtherSkin( const QString& name, QObject* parent ):
     m_palette( new Palette )
 {
     setObjectName( "OtherSkin" );
+    declareSkinlet< Speedometer, SpeedometerSkinlet >();
     initHints();
     initGraphicFilters();
 }

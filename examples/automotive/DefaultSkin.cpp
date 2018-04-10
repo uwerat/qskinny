@@ -4,6 +4,9 @@
 #include "SoundControl.h"
 #include "ButtonBar.h"
 
+#include "Speedometer.h"
+#include "SpeedometerSkinlet.h"
+
 #include <QskBox.h>
 #include <QskFunctions.h>
 #include <QskPushButton.h>
@@ -80,6 +83,7 @@ DefaultSkin::DefaultSkin( const QString& name, QObject* parent ):
     m_scheme( Daylight )
 {
     setObjectName( "DefaultSkin" );
+    declareSkinlet< Speedometer, SpeedometerSkinlet >();
     initHints();
 }
 

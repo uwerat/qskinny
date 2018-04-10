@@ -18,7 +18,10 @@ HEADERS += \
     SkinFactory.h \
     DefaultSkin.h \
     OtherSkin.h \
-    MainWindow.h
+    MainWindow.h \
+    Speedometer.h \
+    SpeedometerSkinlet.h \
+    SpeedometerDisplay.h
 
 SOURCES += \
     ButtonBar.cpp \
@@ -27,7 +30,10 @@ SOURCES += \
     DefaultSkin.cpp \
     OtherSkin.cpp \
     MainWindow.cpp \
-    main.cpp
+    main.cpp \
+    Speedometer.cpp \
+    SpeedometerSkinlet.cpp \
+    SpeedometerDisplay.cpp
 
 QRCFILES += \
     images.qrc

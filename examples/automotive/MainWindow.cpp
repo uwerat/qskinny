@@ -1,7 +1,8 @@
 #include "MainWindow.h"
 #include "ButtonBar.h"
-#include "SoundControl.h"
 #include "SkinFactory.h"
+#include "SoundControl.h"
+#include "SpeedometerDisplay.h"
 
 #include <QskGraphic.h>
 #include <QskGraphicIO.h>
@@ -12,35 +13,36 @@
 #include <QDate>
 #include <QImage>
 
-MainWindow::MainWindow()
+MainWindow::MainWindow() :
+    m_layout( nullptr )
 {
-    const QImage image( ":/images/background.jpg" );
+    const QImage image( QStringLiteral( ":/images/background.jpg" ) );
 
     auto backgroundImage = new QskGraphicLabel( contentItem() );
     backgroundImage->setGraphic( QskGraphic::fromImage( image ) );
     backgroundImage->setFillMode( QskGraphicLabel::Stretch );
 
+    m_layout = new QskLinearBox( Qt::Vertical, contentItem() );
+
     auto header = headerBar();
     auto content = mainContent();
     auto footer = footerBar();
 
-    auto layout = new QskLinearBox( Qt::Vertical, contentItem() );
+    m_layout->addItem( header );
+    m_layout->setStretchFactor( header, 1 );
 
-    layout->addItem( header );
-    layout->setStretchFactor( header, 1 );
+    m_layout->addItem( content );
+    m_layout->setStretchFactor( content, 10 );
 
-    layout->addItem( content );
-    layout->setStretchFactor( content, 10 );
-
-    layout->addItem( footer );
-    layout->setStretchFactor( footer, 1 );
+    m_layout->addItem( footer );
+    m_layout->setStretchFactor( footer, 1 );
 
     setAutoLayoutChildren( true );
 }
 
 QQuickItem* MainWindow::headerBar() const
 {
-    auto* header = new ButtonBar();
+    auto* header = new ButtonBar( m_layout );
     header->addIndicator( "bluetooth" );
     header->addIndicator( "location" );
     header->addIndicator( "phone" );
@@ -56,12 +58,13 @@ QQuickItem* MainWindow::headerBar() const
 
 QQuickItem* MainWindow::mainContent() const
 {
-    return new SoundControl();
+    return new SpeedometerDisplay( m_layout );
+    //return new SoundControl(); ###
 }
 
 QQuickItem* MainWindow::footerBar() const
 {
-    auto* footer = new ButtonBar();
+    auto* footer = new ButtonBar( m_layout );
 
     footer->addIndicator( "cloud" );
     footer->addIndicator( "man" );
