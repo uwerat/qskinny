@@ -50,8 +50,6 @@ QString qskNativeLocaleString( const QLocale& locale )
                 default:
                     return QStringLiteral( "English (UK)" );
             }
-
-            break;
         }
 
         case QLocale::Spanish:

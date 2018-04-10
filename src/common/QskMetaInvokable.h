@@ -12,7 +12,7 @@
 #include <Qt>
 
 class QskMetaFunction;
-class QMetaObject;
+struct QMetaObject;
 class QMetaMethod;
 class QMetaProperty;
 class QObject;

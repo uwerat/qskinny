@@ -58,12 +58,12 @@ namespace
                 without having to load the plugin itself
              */
 
-            constexpr QLatin1String TokenInterfaceId( "IID" );
-            constexpr QLatin1String TokenData( "MetaData" );
-            constexpr QLatin1String TokenFactoryId( "FactoryId" );
-            constexpr QLatin1String TokenSkins( "Skins" );
+            const QLatin1String TokenInterfaceId( "IID" );
+            const QLatin1String TokenData( "MetaData" );
+            const QLatin1String TokenFactoryId( "FactoryId" );
+            const QLatin1String TokenSkins( "Skins" );
 
-            constexpr QLatin1String InterfaceId( QskSkinFactoryIID );
+            const QLatin1String InterfaceId( QskSkinFactoryIID );
 
             const auto pluginData = metaData();
             if ( pluginData.value( TokenInterfaceId ) == InterfaceId )
