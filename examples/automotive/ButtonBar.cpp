@@ -58,5 +58,5 @@ void ButtonBar::addIndicator( const char* name )
 
 QSizeF ButtonBar::contentsSizeHint() const
 {
-    return { -1, 20 };
+    return QSizeF( -1, 20 );
 }

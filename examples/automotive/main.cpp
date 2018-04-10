@@ -16,8 +16,8 @@ int main( int argc, char** argv )
     auto skinFactory = new SkinFactory();
 
     qskSkinManager->setPluginPaths( QStringList() ); // no plugins
-    qskSkinManager->registerFactory( QStringLiteral( "SampleSkinFactory" ),
-                                     skinFactory );
+    qskSkinManager->registerFactory(
+        QStringLiteral( "SampleSkinFactory" ), skinFactory );
 
     QGuiApplication app( argc, argv );
 

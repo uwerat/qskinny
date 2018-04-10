@@ -13,8 +13,9 @@
 #include <QDate>
 #include <QImage>
 
-MainWindow::MainWindow() :
-    m_layout( nullptr )
+#define SPEEDO 0
+
+MainWindow::MainWindow()
 {
     const QImage image( QStringLiteral( ":/images/background.jpg" ) );
 
@@ -22,27 +23,27 @@ MainWindow::MainWindow() :
     backgroundImage->setGraphic( QskGraphic::fromImage( image ) );
     backgroundImage->setFillMode( QskGraphicLabel::Stretch );
 
-    m_layout = new QskLinearBox( Qt::Vertical, contentItem() );
-
     auto header = headerBar();
     auto content = mainContent();
     auto footer = footerBar();
 
-    m_layout->addItem( header );
-    m_layout->setStretchFactor( header, 1 );
+    auto layout = new QskLinearBox( Qt::Vertical, contentItem() );
 
-    m_layout->addItem( content );
-    m_layout->setStretchFactor( content, 10 );
+    layout->addItem( header );
+    layout->setStretchFactor( header, 1 );
 
-    m_layout->addItem( footer );
-    m_layout->setStretchFactor( footer, 1 );
+    layout->addItem( content );
+    layout->setStretchFactor( content, 10 );
+
+    layout->addItem( footer );
+    layout->setStretchFactor( footer, 1 );
 
     setAutoLayoutChildren( true );
 }
 
 QQuickItem* MainWindow::headerBar() const
 {
-    auto* header = new ButtonBar( m_layout );
+    auto* header = new ButtonBar();
     header->addIndicator( "bluetooth" );
     header->addIndicator( "location" );
     header->addIndicator( "phone" );
@@ -58,13 +59,16 @@ QQuickItem* MainWindow::headerBar() const
 
 QQuickItem* MainWindow::mainContent() const
 {
-    return new SpeedometerDisplay( m_layout );
-    //return new SoundControl(); ###
+#if SPEEDO
+    return new SpeedometerDisplay();
+#else
+    return new SoundControl();
+#endif
 }
 
 QQuickItem* MainWindow::footerBar() const
 {
-    auto* footer = new ButtonBar( m_layout );
+    auto* footer = new ButtonBar();
 
     footer->addIndicator( "cloud" );
     footer->addIndicator( "man" );
