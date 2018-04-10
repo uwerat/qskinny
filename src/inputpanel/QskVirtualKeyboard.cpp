@@ -10,13 +10,6 @@
 #include <QGuiApplication>
 #include <QStyleHints>
 
-QSK_QT_PRIVATE_BEGIN
-#include <private/qinputmethod_p.h>
-QSK_QT_PRIVATE_END
-
-#include <qpa/qplatformintegration.h>
-#include <qpa/qplatforminputcontext.h>
-
 namespace
 {
     enum
@@ -198,24 +191,6 @@ static bool qskIsAutorepeat( int key )
         && key != Qt::Key_Mode_switch );
 }
 
-static inline QQuickItem* qskInputItem()
-{
-    QPlatformInputContext* inputContext;
-#if 1
-    inputContext = QGuiApplicationPrivate::platformIntegration()->inputContext();
-#else
-    // for some reason the gcc sanitizer does not like this one
-    inputContext = QInputMethodPrivate::get( inputMethod )->platformInputContext();
-#endif
-
-    QQuickItem* item = nullptr;
-
-    QMetaObject::invokeMethod( inputContext, "inputItem",
-        Qt::DirectConnection, Q_RETURN_ARG( QQuickItem*, item ) );
-
-    return item;
-}
-
 QSK_SUBCONTROL( QskVirtualKeyboard, Panel )
 QSK_SUBCONTROL( QskVirtualKeyboard, ButtonPanel )
 QSK_SUBCONTROL( QskVirtualKeyboard, ButtonText )
@@ -240,13 +215,6 @@ QskVirtualKeyboard::QskVirtualKeyboard( QQuickItem* parent ):
     Inherited( parent ),
     m_data( new PrivateData )
 {
-    setFlag( ItemHasContents );
-    setFlag( ItemIsFocusScope, true );
-#if 0
-    // TODO ...
-    setTabFence( true );
-#endif
-
     setPolishOnResize( true );
     initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
 
@@ -298,13 +266,6 @@ QskVirtualKeyboard::Mode QskVirtualKeyboard::mode() const
     return m_data->mode;
 }
 
-void QskVirtualKeyboard::setPreeditCandidates( const QVector< QString >& )
-{
-#if 0
-    m_suggestionBar->setCandidates( candidates );
-#endif
-}
-
 void QskVirtualKeyboard::updateLayout()
 {
     const auto r = layoutRect();
@@ -314,7 +275,7 @@ void QskVirtualKeyboard::updateLayout()
     const auto spacing = metric( Panel | QskAspect::Spacing );
     const auto totalVSpacing = ( RowCount - 1 ) * spacing;
 
-    const auto keyHeight = ( r.height() - totalVSpacing ) / RowCount; 
+    const auto keyHeight = ( r.height() - totalVSpacing ) / RowCount;
 
     const auto& keyCodes = ( *m_data->currentLayout )[ m_data->mode ];
 
@@ -400,14 +361,9 @@ void QskVirtualKeyboard::buttonPressed()
         }
         default:
         {
-            QGuiApplication::inputMethod()->invokeAction(
-                static_cast< QInputMethod::Action >( Compose ), key );
+            Q_EMIT keySelected( key );
         }
     }
-}
-
-void QskVirtualKeyboard::setCandidateBarVisible( bool )
-{
 }
 
 void QskVirtualKeyboard::updateLocale( const QLocale& locale )
@@ -537,28 +493,6 @@ void QskVirtualKeyboard::setMode( QskVirtualKeyboard::Mode mode )
     polish();
 
     Q_EMIT modeChanged( m_data->mode );
-}
-
-bool QskVirtualKeyboard::eventFilter( QObject* object, QEvent* event )
-{
-    if ( event->type() == QEvent::InputMethodQuery )
-    {
-        /*
-            Qt/Quick expects that the item associated with the input context
-            always has the focus. But this does not work, when a virtual
-            keyboard is used, where you can navigate and select inside.
-            So we have to fix the receiver.
-
-            Maybe QEvent::EnterEditFocus is good for something ??
-         */
-
-        if ( auto item = qskInputItem() )
-            QGuiApplication::sendEvent( item, event );
-
-        return true;
-    }
-
-    return Inherited::eventFilter( object, event );
 }
 
 bool QskVirtualKeyboard::event( QEvent* event )

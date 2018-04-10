@@ -17,13 +17,6 @@ class QSK_EXPORT QskVirtualKeyboard : public QskBox
 public:
     QSK_SUBCONTROLS( Panel, ButtonPanel, ButtonText )
 
-    enum Action
-    {
-        Compose = 0x10,
-        SelectCandidate = 0x11,
-    };
-    Q_ENUM( Action )
-
     enum Mode
     {
         CurrentMode = -1,
@@ -47,15 +40,10 @@ public:
 
 Q_SIGNALS:
     void modeChanged( Mode );
-
-public Q_SLOTS:
-    void setPreeditCandidates( const QVector< QString >& );
-    void setCandidateBarVisible( bool visible );
+    void keySelected( Qt::Key );
 
 protected:
-    virtual bool eventFilter( QObject*, QEvent* ) override;
     virtual bool event( QEvent* ) override;
-
     virtual void updateLayout() override;
 
 private Q_SLOTS:

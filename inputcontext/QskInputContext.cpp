@@ -4,12 +4,12 @@
  *****************************************************************************/
 
 #include "QskInputContext.h"
-#include "QskVirtualKeyboard.h"
 
 #include "QskInputCompositionModel.h"
 #include "QskPinyinCompositionModel.h"
 #include "QskHunspellCompositionModel.h"
 
+#include "QskInputPanel.h"
 #include <QskDialog.h>
 #include <QskWindow.h>
 #include <QskControl.h>
@@ -19,7 +19,7 @@
 #include <QHash>
 #include <QPointer>
 
-void qskSetLocale( QQuickItem* inputPanel, const QLocale& locale )
+static void qskSetLocale( QQuickItem* inputPanel, const QLocale& locale )
 {
     if ( auto control = qobject_cast< QskControl* >( inputPanel ) )
     {
@@ -35,7 +35,7 @@ void qskSetLocale( QQuickItem* inputPanel, const QLocale& locale )
     }
 }
 
-QLocale qskLocale( const QQuickItem* inputPanel )
+static QLocale qskLocale( const QQuickItem* inputPanel )
 {
     if ( inputPanel == nullptr )
         return QLocale();
@@ -46,14 +46,37 @@ QLocale qskLocale( const QQuickItem* inputPanel )
     return inputPanel->property( "locale" ).toLocale();
 }
 
-QskVirtualKeyboard* qskVirtualKeyboard( QQuickItem* inputPanel )
+static void qskSetCandidatesEnabled( QQuickItem* inputPanel, bool on )
 {
-    // we should not depend on QskVirtualKeyboard TODO ...
+    if ( inputPanel == nullptr )
+        return;
 
-    if ( inputPanel )
-        return inputPanel->findChild< QskVirtualKeyboard* >();
+    if ( auto panel = qobject_cast< QskInputPanel* >( inputPanel ) )
+    {
+        panel->setCandidatesEnabled( on );
+    }
+    else
+    {
+        QMetaObject::invokeMethod( inputPanel, "setCandidatesEnabled",
+            Qt::DirectConnection, Q_ARG( bool, on ) );
+    }
+}
 
-    return nullptr;
+static void qskSetCandidates( QQuickItem* inputPanel,
+    const QVector< QString >& candidates )
+{
+    if ( inputPanel == nullptr )
+        return;
+
+    if ( auto panel = qobject_cast< QskInputPanel* >( inputPanel ) )
+    {
+        panel->setCandidates( candidates );
+    }
+    else
+    {
+        QMetaObject::invokeMethod( inputPanel, "setCandidates",
+            Qt::DirectConnection, Q_ARG( QVector< QString >, candidates ) );
+    }
 }
 
 class QskInputContext::PrivateData
@@ -205,8 +228,8 @@ void QskInputContext::update( Qt::InputMethodQueries queries )
             connect( newModel, &QskInputCompositionModel::candidatesChanged,
                 this, &QskInputContext::handleCandidatesChanged );
 
-            if ( auto keyboard = qskVirtualKeyboard( m_data->inputPanel ) )
-                keyboard->setCandidateBarVisible( newModel->supportsSuggestions() );
+            qskSetCandidatesEnabled( m_data->inputPanel,
+                newModel->supportsSuggestions() );
         }
     }
 
@@ -250,7 +273,7 @@ void QskInputContext::showInputPanel()
 {
     if ( !m_data->inputPanel )
     {
-        setInputPanel( new QskVirtualKeyboard() );
+        setInputPanel( new QskInputPanel() );
 
         if ( QskDialog::instance()->policy() == QskDialog::TopLevelWindow )
         {
@@ -390,12 +413,12 @@ void QskInputContext::invokeAction( QInputMethod::Action action, int value )
 
     switch ( static_cast< int >( action ) )
     {
-        case QskVirtualKeyboard::Compose:
+        case QskInputPanel::Compose:
         {
             model->composeKey( static_cast< Qt::Key >( value ) );
             break;
         }
-        case QskVirtualKeyboard::SelectCandidate:
+        case QskInputPanel::SelectCandidate:
         {
             model->commitCandidate( value );
             break;
@@ -422,8 +445,7 @@ void QskInputContext::handleCandidatesChanged()
     for( int i = 0; i < count; i++ )
         candidates += model->candidate( i );
 
-    if ( auto keyboard = qskVirtualKeyboard( m_data->inputPanel ) )
-        keyboard->setPreeditCandidates( candidates );
+    qskSetCandidates( m_data->inputPanel, candidates );
 }
 
 void QskInputContext::setInputPanel( QQuickItem* inputPanel )
@@ -472,8 +494,8 @@ void QskInputContext::setInputPanel( QQuickItem* inputPanel )
 
         if ( model )
         {
-            if ( auto keyboard = qskVirtualKeyboard( inputPanel ) )
-                keyboard->setCandidateBarVisible( model->supportsSuggestions() );
+            qskSetCandidatesEnabled( m_data->inputPanel,
+                model->supportsSuggestions() );
         }
     }
 }

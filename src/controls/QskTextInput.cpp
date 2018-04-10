@@ -86,10 +86,10 @@ namespace
             setFlag( ItemAcceptsInputMethod, false );
             setFocusOnPress( false );
 
+            componentComplete();
+
             connect( this, &TextInput::contentSizeChanged,
                 this, &TextInput::updateClip );
-
-            componentComplete();
         }
 
         void setAlignment( Qt::Alignment alignment )
@@ -100,7 +100,7 @@ namespace
 
         inline bool handleEvent( QEvent* event )
         {
-            return QQuickTextInput::event( event );
+            return this->event( event );
         }
 
         virtual void focusInEvent( QFocusEvent* ) override
@@ -115,6 +115,9 @@ namespace
 #if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
             d->updateCursorBlinking();
             d->setBlinkingCursorEnabled( true );
+#else
+            d->setCursorBlinkPeriod(
+                QGuiApplication::styleHints()->cursorFlashTime() );
 #endif
 
             if ( d->determineHorizontalAlignment() )
@@ -133,6 +136,9 @@ namespace
                 this, SLOT(q_updateAlignment()) );
 
             qGuiApp->inputMethod()->show();
+
+            polish();
+            update();
         }
 
         virtual void focusOutEvent( QFocusEvent* event ) override
@@ -147,6 +153,8 @@ namespace
 #if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
             d->updateCursorBlinking();
             d->setBlinkingCursorEnabled( false );
+#else
+            d->setCursorBlinkPeriod( 0 );
 #endif
 
             if ( d->m_passwordEchoEditing || d->m_passwordEchoTimer.isActive() )
@@ -171,6 +179,9 @@ namespace
             disconnect( QGuiApplication::inputMethod(),
                 SIGNAL(inputDirectionChanged(Qt::LayoutDirection)),
                 this, SLOT(q_updateAlignment()) );
+
+            polish();
+            update();
         }
 
         virtual void geometryChanged(

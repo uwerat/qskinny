@@ -8,6 +8,7 @@
 #include "QskLinearBox.h"
 #include "QskTextOptions.h"
 
+#include <QFontMetricsF>
 #include <QVector>
 
 QSK_SUBCONTROL( QskInputSuggestionBar, Panel )
@@ -26,6 +27,19 @@ namespace
             options.setElideMode( Qt::ElideRight );
 
             setTextOptions( options );
+        }
+
+        virtual QSizeF contentsSizeHint() const override
+        {
+            auto size = QFontMetricsF( font() ).size( Qt::TextSingleLine, text() );
+
+            const QSizeF minSize( metric( Panel | QskAspect::MinimumWidth ),
+                metric( Panel | QskAspect::MinimumHeight ) );
+
+            size = size.expandedTo( minSize );
+            size = outerBoxSize( Panel, size );
+
+            return size;
         }
 
         virtual QskAspect::Subcontrol effectiveSubcontrol(
@@ -57,16 +71,26 @@ QskInputSuggestionBar::QskInputSuggestionBar( QQuickItem* parent ):
     m_data( new PrivateData )
 {
     setAutoLayoutChildren( true );
-    initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Expanding );
+    initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Fixed );
 
     m_data->layoutBox = new QskLinearBox( Qt::Horizontal, this );
 
     for( int i = 0; i < m_data->buttonCount; i++ )
     {
         auto button = new Button( m_data->layoutBox );
+        button->setVisible( false );
+        button->setSizePolicy( Qt::Horizontal, QskSizePolicy::Maximum );
+
         connect( button, &QskPushButton::clicked,
             this, &QskInputSuggestionBar::candidateClicked );
+
+        if ( i == 0 )
+        {
+            // to keep the height
+            m_data->layoutBox->setRetainSizeWhenHidden( button, true );
+        }
     }
+
 }
 
 QskInputSuggestionBar::~QskInputSuggestionBar()
@@ -89,6 +113,11 @@ void QskInputSuggestionBar::setCandidates( const QVector< QString >& candidates 
         m_data->candidates = candidates;
         setCandidateOffset( 0 );
     }
+}
+
+QVector< QString > QskInputSuggestionBar::candidates() const
+{
+    return m_data->candidates;
 }
 
 void QskInputSuggestionBar::setCandidateOffset( int offset )
@@ -129,7 +158,7 @@ void QskInputSuggestionBar::setCandidateOffset( int offset )
 void QskInputSuggestionBar::candidateClicked()
 {
     const int index = m_data->layoutBox->indexOf(
-        qobject_cast< QQuickItem*> ( sender() ) );
+        qobject_cast< QQuickItem* > ( sender() ) );
 
     const int offset = m_data->candidateOffset;
 
@@ -143,20 +172,14 @@ void QskInputSuggestionBar::candidateClicked()
     }
     else if ( index == m_data->buttonCount - 1 )
     {
-        if ( m_data->candidates.count() - offset >= m_data->buttonCount )
+        if ( m_data->candidates.count() - offset > m_data->buttonCount )
         {
             setCandidateOffset( offset + 1 );
             return;
         }
     }
 
-#if 0
-    QGuiApplication::inputMethod()->invokeAction(
-        static_cast< QInputMethod::Action >( SelectCandidate ), index );
-
-    setPreeditCandidates( QVector< QString >() );
-#endif
-    Q_EMIT suggested( m_data->candidates[ index - offset ] );
+    Q_EMIT suggested( offset + index );
 }
 
 #include "moc_QskInputSuggestionBar.cpp"

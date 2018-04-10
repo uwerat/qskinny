@@ -6,7 +6,7 @@
 #include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
 
-#include <QskVirtualKeyboard.h>
+#include <QskInputPanel.h>
 #include <QskDialog.h>
 #include <QskFocusIndicator.h>
 #include <QskLinearBox.h>
@@ -45,7 +45,8 @@ public:
         textInput->setSizePolicy( Qt::Horizontal, QskSizePolicy::Preferred );
 
 #if LOCAL_PANEL
-        auto* inputPanel = new QskVirtualKeyboard( this );
+        auto* inputPanel = new QskInputPanel( this );
+        inputPanel->setVisible( false );
 
         /*
             QskInputContext is connected to QskSetup::inputPanelChanged,

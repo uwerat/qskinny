@@ -23,8 +23,10 @@ public:
     virtual QskAspect::Subcontrol effectiveSubcontrol(
         QskAspect::Subcontrol subControl ) const override;
 
+    QVector< QString > candidates() const;
+
 Q_SIGNALS:
-    void suggested( const QString& );
+    void suggested( int );
 
 public Q_SLOTS:
     void setCandidates( const QVector< QString >& );
