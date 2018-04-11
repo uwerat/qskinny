@@ -7,10 +7,8 @@
 #define QSK_INPUT_COMPOSITION_MODEL_H
 
 #include <QObject>
-
 #include <memory>
 
-class QInputMethodEvent;
 class QskInputContext;
 
 class QskInputCompositionModel : public QObject
@@ -26,25 +24,24 @@ public:
 
     void commit( const QString& );
     virtual void commitCandidate( int );
-    void composeKey( Qt::Key );
 
-    void clearPreedit();
+    void composeKey( Qt::Key );
 
     virtual int candidateCount() const;
     virtual QString candidate( int ) const;
 
 protected:
-    // Used for text composition
     virtual bool hasIntermediate() const;
     virtual QString polishPreedit( const QString& preedit );
-
-    QskInputContext* context() const;
 
 Q_SIGNALS:
     void candidatesChanged();
 
 private:
-    void sendCompositionEvent( QInputMethodEvent* e );
+    void clearPreedit();
+    QskInputContext* context() const;
+
+    void sendPreeditTextEvent( const QString& );
     void sendKeyEvents( int key );
 
     class PrivateData;

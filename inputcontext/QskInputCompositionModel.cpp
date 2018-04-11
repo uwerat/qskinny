@@ -40,17 +40,12 @@ class QskInputCompositionModel::PrivateData
 {
 public:
     QString preedit;
-    QTextCharFormat preeditFormat;
-    QList< QInputMethodEvent::Attribute > preeditAttributes;
 };
 
 QskInputCompositionModel::QskInputCompositionModel( QskInputContext* context ):
     QObject( context ),
     m_data( new PrivateData )
 {
-    m_data->preeditFormat.setFontUnderline( true );
-    m_data->preeditAttributes.append( QInputMethodEvent::Attribute(
-            QInputMethodEvent::TextFormat, 0, 0, m_data->preeditFormat ) );
 }
 
 QskInputCompositionModel::~QskInputCompositionModel()
@@ -96,12 +91,7 @@ void QskInputCompositionModel::composeKey( Qt::Key key )
             if ( !m_data->preedit.isEmpty() )
             {
                 m_data->preedit.chop( 1 );
-
-                const QString displayText = polishPreedit( m_data->preedit );
-                m_data->preeditAttributes.first().length = displayText.length();
-
-                QInputMethodEvent event( displayText, m_data->preeditAttributes );
-                sendCompositionEvent( &event );
+                sendPreeditTextEvent( polishPreedit( m_data->preedit ) );
             }
             else
             {
@@ -171,6 +161,7 @@ void QskInputCompositionModel::composeKey( Qt::Key key )
 
     const auto firstCandidate = candidateCount() > 0 ? candidate( 0 ) : QString();
     const auto oldPreedit = m_data->preedit;
+
     m_data->preedit += qskKeyString( key );
     auto displayPreedit = polishPreedit( m_data->preedit );
 
@@ -202,10 +193,7 @@ void QskInputCompositionModel::composeKey( Qt::Key key )
         }
     }
 
-    m_data->preeditAttributes.first().length = displayPreedit.length();
-
-    QInputMethodEvent event( displayPreedit, m_data->preeditAttributes );
-    sendCompositionEvent( &event );
+    sendPreeditTextEvent( displayPreedit );
 }
 
 void QskInputCompositionModel::clearPreedit()
@@ -224,11 +212,6 @@ QString QskInputCompositionModel::candidate( int ) const
     return QString();
 }
 
-// This method is called before displaying a new preedit string. It can be used
-// to return a modified preedit string which is not stored as the underlying
-// preedit text. This allows for marking up the preedit text without changing the
-// data model. If the actual text needs to be modified, it is safe to call
-// setPreeditText() here.
 QString QskInputCompositionModel::polishPreedit( const QString& preedit )
 {
     return preedit;
@@ -236,12 +219,11 @@ QString QskInputCompositionModel::polishPreedit( const QString& preedit )
 
 void QskInputCompositionModel::commit( const QString& text )
 {
-    QInputMethodEvent event( QString(), { } );
+    QInputMethodEvent event;
     event.setCommitString( text );
-    sendCompositionEvent( &event );
+    context()->sendEventToInputItem( &event );
 
-    m_data->preedit.clear();
-    polishPreedit( m_data->preedit );
+    clearPreedit();
 }
 
 void QskInputCompositionModel::commitCandidate( int index )
@@ -249,9 +231,16 @@ void QskInputCompositionModel::commitCandidate( int index )
     commit( candidate( index ) );
 }
 
-void QskInputCompositionModel::sendCompositionEvent( QInputMethodEvent* event )
+void QskInputCompositionModel::sendPreeditTextEvent( const QString& text )
 {
-    context()->sendEventToInputItem( event );
+    QTextCharFormat format;
+    format.setFontUnderline( true );
+
+    const QInputMethodEvent::Attribute attribute(
+        QInputMethodEvent::TextFormat, 0, text.length(), format );
+    
+    QInputMethodEvent event( text, { attribute } );
+    context()->sendEventToInputItem( &event );
 }
 
 void QskInputCompositionModel::sendKeyEvents( int key )
