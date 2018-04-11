@@ -38,11 +38,6 @@ public Q_SLOTS:
     void setCandidatesEnabled( bool );
     void setCandidates( const QVector< QString >& );
 
-protected:
-    virtual void updateLayout() override;
-    virtual void itemChange( ItemChange, const ItemChangeData& ) override;
-    virtual bool eventFilter( QObject*, QEvent* ) override;
-
 private:
     void commitKey( Qt::Key );
     void commitCandidate( int );

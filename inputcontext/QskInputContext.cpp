@@ -323,6 +323,8 @@ void QskInputContext::hideInputPanel()
     {
         m_data->inputPanel->setVisible( false );
     }
+
+    qGuiApp->removeEventFilter( this );
 }
 
 bool QskInputContext::isInputPanelVisible() const
@@ -364,6 +366,14 @@ void QskInputContext::setFocusObject( QObject* focusObject )
 
         if( qskNearestFocusScope( focusItem ) != m_data->inputPanel )
             setInputItem( focusItem );
+    }
+
+    if ( m_data->inputPanel && m_data->inputPanel->isVisible() )
+    {
+        if ( m_data->inputItem && focusItem != m_data->inputItem )
+            qGuiApp->installEventFilter( this );
+        else
+            qGuiApp->removeEventFilter( this );
     }
 }
 
@@ -468,10 +478,11 @@ void QskInputContext::setInputPanel( QQuickItem* inputPanel )
 
     if ( inputPanel )
     {
-        // maybe using a QQuickItemChangeListener instead
-#if 1
         connect( inputPanel, &QQuickItem::visibleChanged,
             this, &QPlatformInputContext::emitInputPanelVisibleChanged );
+
+        // maybe using a QQuickItemChangeListener instead
+#if 1
 
         connect( inputPanel, &QQuickItem::xChanged,
             this, &QPlatformInputContext::emitKeyboardRectChanged );
@@ -506,6 +517,28 @@ void QskInputContext::reset()
 
 void QskInputContext::commit()
 {
+}
+
+bool QskInputContext::eventFilter( QObject* object, QEvent* event )
+{   
+    if ( event->type() == QEvent::InputMethodQuery )
+    {
+        /*
+            Qt/Quick expects that the item associated with the input context
+            holds the focus. But this does not work, when a virtual
+            keyboard is used, where you can navigate and select inside.
+            So we have to fix the receiver.
+         */
+
+        if ( ( object != m_data->inputItem )
+            && qskIsAncestorOf( m_data->inputPanel, m_data->inputItem ) )
+        {
+            sendEventToInputItem( event );
+            return true;
+        }
+    }
+
+    return Inherited::eventFilter( object, event );
 }
 
 bool QskInputContext::filterEvent( const QEvent* event )

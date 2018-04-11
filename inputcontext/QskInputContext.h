@@ -57,6 +57,8 @@ private Q_SLOTS:
     void handleCandidatesChanged();
     void setInputPanel( QQuickItem* );
 
+    virtual bool eventFilter( QObject*, QEvent* ) override;
+
 private:
     void setInputItem( QQuickItem* );
     QskInputCompositionModel* compositionModel() const;

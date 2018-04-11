@@ -78,6 +78,9 @@ bool qskIsItemComplete( const QQuickItem* item )
 
 bool qskIsAncestorOf( const QQuickItem* item, const QQuickItem* child )
 {
+    if ( item == nullptr || child == nullptr )
+        return false;
+
 #if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
     return item->isAncestorOf( child );
 #else
