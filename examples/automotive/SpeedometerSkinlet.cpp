@@ -112,8 +112,8 @@ QSGNode* SpeedometerSkinlet::updateLabelsNode( const Speedometer* speedometer, Q
         ticksNode = new TicksNode( Qt::white );
     }
 
-    const float startAngle = speedometer->startAngle();
-    const float endAngle = speedometer->endAngle();
+    const auto startAngle = speedometer->minimum();
+    const auto endAngle = speedometer->maximum();
     const auto step = ( endAngle - startAngle ) / ( labelsCount - 1 );
 
     auto geometry = ticksNode->geometry();
@@ -133,7 +133,7 @@ QSGNode* SpeedometerSkinlet::updateLabelsNode( const Speedometer* speedometer, Q
     const QMarginsF numbersMargins = speedometer->marginsHint( Speedometer::Labels | QskAspect::Margin );
     QFontMetrics fontMetrics( speedometer->effectiveFont( Speedometer::Labels ) );
 
-    float angle = startAngle;
+    auto angle = startAngle;
 
     // Create a series of tickmarks from minimum to maximum
     for( int i = 0; i < labelsCount; ++i, angle += step )
@@ -141,13 +141,13 @@ QSGNode* SpeedometerSkinlet::updateLabelsNode( const Speedometer* speedometer, Q
         qreal cosine = qCos( qDegreesToRadians( angle ) );
         qreal sine = qSin( qDegreesToRadians( angle ) );
 
-        float xStart = center.x() + radius * cosine;
-        float yStart = center.y() + radius * sine;
+        auto xStart = center.x() + radius * cosine;
+        auto yStart = center.y() + radius * sine;
 
         // ### skin hint for each of highlighted / normal marks
         qreal length = 15;
-        float xEnd = center.x() + ( radius - length ) * cosine;
-        float yEnd = center.y() + ( radius - length ) * sine;
+        auto xEnd = center.x() + ( radius - length ) * cosine;
+        auto yEnd = center.y() + ( radius - length ) * sine;
 
         vertexData[0].set( xStart, yStart );
         vertexData[1].set( xEnd, yEnd );
@@ -161,13 +161,13 @@ QSGNode* SpeedometerSkinlet::updateLabelsNode( const Speedometer* speedometer, Q
         {
             const QString& text = labels.at( i );
 
-            float w = fontMetrics.width( text );
-            float h = fontMetrics.height();
-            float adjustX = ( -0.5 * cosine - 0.5 ) * w;
-            float adjustY = ( -0.5 * sine - 0.5 ) * h;
+            auto w = fontMetrics.width( text );
+            auto h = fontMetrics.height();
+            auto adjustX = ( -0.5 * cosine - 0.5 ) * w;
+            auto adjustY = ( -0.5 * sine - 0.5 ) * h;
 
-            float numbersX = xEnd + ( -1 * numbersMargins.left() * cosine ) + adjustX;
-            float numbersY = yEnd + ( -1 * numbersMargins.top() * sine ) + adjustY;
+            auto numbersX = xEnd + ( -1 * numbersMargins.left() * cosine ) + adjustX;
+            auto numbersY = yEnd + ( -1 * numbersMargins.top() * sine ) + adjustY;
 
             QRectF numbersRect( numbersX, numbersY, w, h );
 
