@@ -26,35 +26,26 @@
 #define STRINGIFY(x) #x
 #define STRING(x) STRINGIFY(x)
 
-#define LOCAL_PANEL 1
-
 class InputBox : public QskLinearBox
 {
 public:
     InputBox( QQuickItem* parentItem = nullptr ):
         QskLinearBox( Qt::Vertical, parentItem )
     {
-        setDefaultAlignment( Qt::AlignHCenter | Qt::AlignTop );
+        setExtraSpacingAt( Qt::BottomEdge | Qt::RightEdge );
 
         setMargins( 10 );
         setSpacing( 10 );
 
-        auto* textInput = new QskTextInput( this );
-        textInput->setText( "I am a line edit. Press and edit Me." );
-        textInput->setSelectByMouse( true );
-        textInput->setSizePolicy( Qt::Horizontal, QskSizePolicy::Preferred );
+        auto* textInput1 = new QskTextInput( this );
+        textInput1->setText( "I am a line edit. Press and edit Me." );
+        textInput1->setSelectByMouse( true );
+        textInput1->setSizePolicy( Qt::Horizontal, QskSizePolicy::Preferred );
 
-#if LOCAL_PANEL
-        auto* inputPanel = new QskInputPanel( this );
-        inputPanel->setVisible( false );
-
-        /*
-            QskInputContext is connected to QskSetup::inputPanelChanged,
-            making it the system input. If no input panel has been assigned
-            QskInputContext would create a window or subwindow on the fly.
-         */
-        qskSetup->setInputPanel( inputPanel );
-#endif
+        auto* textInput2 = new QskTextInput( this );
+        textInput2->setText( "Another text" );
+        textInput2->setSelectByMouse( true );
+        textInput2->setSizePolicy( Qt::Horizontal, QskSizePolicy::Preferred );
     }
 };
 
@@ -169,9 +160,18 @@ int main( int argc, char* argv[] )
     SkinnyFont::init( &app );
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
-#if !LOCAL_PANEL
+#if 0
     // We don't want to have a top level window.
     qskDialog->setPolicy( QskDialog::EmbeddedBox );
+#endif
+
+#if 0
+    /*
+        QskInputContext is connected to QskSetup::inputPanelChanged,
+        making it the system input. If no input panel has been assigned
+        QskInputContext would create a window or subwindow on the fly.
+     */
+     qskSetup->setInputPanel( new QskInputPanel() );
 #endif
 
     auto box = new QskLinearBox( Qt::Horizontal );

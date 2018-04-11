@@ -111,11 +111,6 @@ QskInputPanel::QskInputPanel( QQuickItem* parent ):
     m_data( new PrivateData() )
 {
     setAutoLayoutChildren( true );
-    setFlag( ItemIsFocusScope, true );
-#if 0
-    // TODO ...
-    setTabFence( true );
-#endif
 
     auto layout = new QskLinearBox( Qt::Vertical, this );
 

@@ -11,9 +11,11 @@
 
 #include "QskInputPanel.h"
 #include <QskDialog.h>
+#include <QskPopup.h>
 #include <QskWindow.h>
 #include <QskControl.h>
 #include <QskSetup.h>
+#include <QskEvent.h>
 
 #include <QGuiApplication>
 #include <QHash>
@@ -82,13 +84,15 @@ static void qskSetCandidates( QQuickItem* inputPanel,
 class QskInputContext::PrivateData
 {
 public:
-    PrivateData():
-        ownsInputPanelWindow( false )
-    {
-    }
-
+    // item receiving the input
     QPointer< QQuickItem > inputItem;
-    QPointer< QQuickItem > inputPanel;
+
+    // item, wher the user enters texts/keys
+    QPointer< QQuickItem > inputPanel; 
+
+    // popup or window embedding the inputPanel
+    QPointer< QskPopup > inputPopup;
+    QPointer< QskWindow > inputWindow;
 
     QskInputCompositionModel* compositionModel;
     QHash< QLocale, QskInputCompositionModel* > compositionModels;
@@ -123,10 +127,6 @@ QskInputContext::QskInputContext():
 
 QskInputContext::~QskInputContext()
 {
-#if 1
-    if ( m_data->inputPanel )
-        delete m_data->inputPanel;
-#endif
 }
 
 bool QskInputContext::isValid() const
@@ -152,13 +152,10 @@ void QskInputContext::setInputItem( QQuickItem* item )
 
     m_data->inputItem = item;
 
-    if ( m_data->inputItem == nullptr )
-    {
+    if ( item )
+        update( Qt::ImQueryAll );
+    else
         hideInputPanel();
-        return;
-    }
-
-    update( Qt::ImQueryAll );
 }
 
 void QskInputContext::update( Qt::InputMethodQueries queries )
@@ -271,57 +268,123 @@ bool QskInputContext::isAnimating() const
 
 void QskInputContext::showInputPanel()
 {
-    if ( !m_data->inputPanel )
+    auto& inputPanel = m_data->inputPanel;
+    auto& inputPopup = m_data->inputPopup;
+    auto& inputWindow = m_data->inputWindow;
+
+    if ( inputPanel == nullptr )
     {
-        setInputPanel( new QskInputPanel() );
+        auto panel = new QskInputPanel();
+        panel->setParent( this );
 
-        if ( QskDialog::instance()->policy() == QskDialog::TopLevelWindow )
-        {
-            m_data->ownsInputPanelWindow = true;
-
-            auto window = new QskWindow;
-            window->setFlags( Qt::Tool | Qt::WindowDoesNotAcceptFocus );
-            window->resize( 800, 240 ); // ### what size?
-
-            m_data->inputPanel->setParentItem( window->contentItem() );
-            connect( window, &QskWindow::visibleChanged,
-                this, &QskInputContext::emitInputPanelVisibleChanged );
-        }
-        else
-        {
-            auto window = qobject_cast< QQuickWindow* >( QGuiApplication::focusWindow() );
-            if ( window )
-            {
-                m_data->inputPanel->setParentItem( window->contentItem() );
-                m_data->inputPanel->setSize( window->size() );
-            }
-        }
+        setInputPanel( panel );
     }
 
-    if ( m_data->ownsInputPanelWindow )
+    const bool isPopupPanel = qobject_cast< QskPopup* >( inputPanel );
+
+    bool useWindow = false;
+    if ( !isPopupPanel )
     {
-        if ( m_data->inputPanel->window() )
-            m_data->inputPanel->window()->show();
+        useWindow = ( QskDialog::instance()->policy() == QskDialog::TopLevelWindow );
+    }
+
+    if ( useWindow )
+    {
+        delete inputPopup;
+
+        if ( inputWindow == nullptr )
+        {
+            inputWindow = new QskWindow();
+            inputWindow->setDeleteOnClose( true );
+            inputWindow->setFlags( Qt::Tool | Qt::WindowDoesNotAcceptFocus );
+
+            inputPanel->setParentItem( inputWindow->contentItem() );
+
+            inputWindow->resize( 800, 240 ); // ### what size?
+            inputWindow->show();
+
+            inputWindow->installEventFilter( this );
+        }
     }
     else
     {
-        m_data->inputPanel->setVisible( true );
+        delete inputWindow;
+
+        if ( inputPopup == nullptr )
+        {
+            if ( isPopupPanel )
+            {
+                inputPopup = qobject_cast< QskPopup* >( inputPanel );
+            }
+            else
+            {
+                auto popup = new QskPopup( m_data->inputItem->window()->contentItem() );
+                popup->setAutoLayoutChildren( true );
+                popup->setModal( true );
+
+                inputPanel->setParentItem( popup );
+                inputPopup = popup;
+            }
+
+            inputPopup->installEventFilter( this );
+        }
+
+        if ( inputPopup->window() == nullptr )
+        {
+            QQuickWindow* window = nullptr;
+            if ( m_data->inputItem )
+                window = m_data->inputItem->window();
+            else
+                window = qobject_cast< QQuickWindow* >( QGuiApplication::focusWindow() );
+
+            if ( window )
+            {
+                inputPopup->setParentItem( window->contentItem() );
+            }
+        }
+
+        inputPopup->setGeometry( qskItemGeometry( inputPopup->parentItem() ) );
+        inputPopup->setVisible( true );
     }
+
+    inputPanel->setVisible( true );
+
+    connect( inputPanel->window(), &QskWindow::visibleChanged,
+        this, &QskInputContext::emitInputPanelVisibleChanged );
 }
 
 void QskInputContext::hideInputPanel()
 {
-    if ( m_data->inputPanel == nullptr )
-        return;
-
-    if ( m_data->ownsInputPanelWindow )
+    if ( m_data->inputPanel )
     {
-        if ( auto window = m_data->inputPanel->window() )
-            window->hide();
+        // to get rid of the scene graph nodes
+        m_data->inputPanel->setVisible( false );
+    }
+
+    if ( m_data->inputPopup == m_data->inputPanel )
+    {
+
+        m_data->inputPopup->removeEventFilter( this );
+        m_data->inputPopup = nullptr;
     }
     else
     {
-        m_data->inputPanel->setVisible( false );
+        if ( m_data->inputPopup )
+        {
+            auto popup = m_data->inputPopup.data();
+            m_data->inputPopup = nullptr;
+
+            popup->deleteLater();
+        }
+    }
+
+    QskWindow* window = m_data->inputWindow;
+    m_data->inputWindow = nullptr;
+
+    if ( window )
+    {
+        window->removeEventFilter( this );
+        window->close(); // deleteOnClose is set
     }
 
     qGuiApp->removeEventFilter( this );
@@ -361,10 +424,29 @@ void QskInputContext::setFocusObject( QObject* focusObject )
     {
         /*
             Do not change the input item when
-            navigating on or into the panel
+            navigating to or inside the input popup/window
          */
 
-        if( qskNearestFocusScope( focusItem ) != m_data->inputPanel )
+        bool isAccepted = ( m_data->inputItem == nullptr );
+
+        if ( !isAccepted )
+        {
+            if ( m_data->inputWindow )
+            {
+                if ( focusItem->window() != m_data->inputWindow )
+                    isAccepted = true;
+            }
+            else if ( m_data->inputPopup )
+            {
+                if ( ( focusItem != m_data->inputPopup )
+                    && !qskIsAncestorOf( m_data->inputPopup, focusItem ) )
+                {
+                    isAccepted = true;
+                }
+            }
+        }
+
+        if ( isAccepted )
             setInputItem( focusItem );
     }
 
@@ -469,6 +551,15 @@ void QskInputContext::setInputPanel( QQuickItem* inputPanel )
     {
         m_data->inputPanel->disconnect( this );
 
+        if ( m_data->inputPanel->parent() == this )
+        {
+            delete m_data->inputPanel;
+        }
+        else
+        {
+            m_data->inputPanel->setParentItem( nullptr );
+        }
+
         if ( model )
             model->disconnect( m_data->inputPanel );
     }
@@ -478,24 +569,11 @@ void QskInputContext::setInputPanel( QQuickItem* inputPanel )
 
     if ( inputPanel )
     {
+        if ( inputPanel->parent() == nullptr )
+            inputPanel->setParent( this );
+
         connect( inputPanel, &QQuickItem::visibleChanged,
             this, &QPlatformInputContext::emitInputPanelVisibleChanged );
-
-        // maybe using a QQuickItemChangeListener instead
-#if 1
-
-        connect( inputPanel, &QQuickItem::xChanged,
-            this, &QPlatformInputContext::emitKeyboardRectChanged );
-
-        connect( inputPanel, &QQuickItem::yChanged,
-            this, &QPlatformInputContext::emitKeyboardRectChanged );
-
-        connect( inputPanel, &QQuickItem::widthChanged,
-            this, &QPlatformInputContext::emitKeyboardRectChanged );
-
-        connect( inputPanel, &QQuickItem::heightChanged,
-            this, &QPlatformInputContext::emitKeyboardRectChanged );
-#endif
 
         if ( auto control = qobject_cast< QskControl* >( inputPanel ) )
         {
@@ -520,21 +598,41 @@ void QskInputContext::commit()
 }
 
 bool QskInputContext::eventFilter( QObject* object, QEvent* event )
-{   
-    if ( event->type() == QEvent::InputMethodQuery )
+{
+    switch( static_cast< int >( event->type() ) )
     {
-        /*
-            Qt/Quick expects that the item associated with the input context
-            holds the focus. But this does not work, when a virtual
-            keyboard is used, where you can navigate and select inside.
-            So we have to fix the receiver.
-         */
-
-        if ( ( object != m_data->inputItem )
-            && qskIsAncestorOf( m_data->inputPanel, m_data->inputItem ) )
+        case QEvent::Move:
+        case QEvent::Resize:
         {
-            sendEventToInputItem( event );
-            return true;
+            if ( m_data->inputPanel && object == m_data->inputPanel->window() )
+                emitKeyboardRectChanged();
+
+            break;
+        }
+        case QskEvent::GeometryChange:
+        {
+            if ( object == m_data->inputPopup )
+                emitKeyboardRectChanged();
+
+            break;
+        }
+        case QEvent::InputMethodQuery:
+        {
+            /*
+                Qt/Quick expects that the item associated with the input context
+                holds the focus. But this does not work, when a virtual
+                keyboard is used, where you can navigate and select inside.
+                So we have to fix the receiver.
+             */
+
+            if ( ( object != m_data->inputItem )
+                && qskIsAncestorOf( m_data->inputPanel, m_data->inputItem ) )
+            {
+                sendEventToInputItem( event );
+                return true;
+            }
+
+            break;
         }
     }
 

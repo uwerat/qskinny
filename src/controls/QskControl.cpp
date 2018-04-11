@@ -1538,10 +1538,13 @@ void QskControl::cleanupNodes()
             d->dirtyAttributes |= QQuickItemPrivate::EffectReference;
     }
 
-    // putting the nodes on the cleanup list of the window to be deleteted
-    // in the next cycle of the scene graph
+    if ( d->window )
+    {
+        // putting the nodes on the cleanup list of the window to be deleteted
+        // in the next cycle of the scene graph
 
-    QQuickWindowPrivate::get( window() )->cleanup( d->itemNodeInstance );
+        QQuickWindowPrivate::get( d->window )->cleanup( d->itemNodeInstance );
+    }
 
     // now we can forget about the nodes
 
