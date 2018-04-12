@@ -238,7 +238,7 @@ void QskInputCompositionModel::sendPreeditTextEvent( const QString& text )
 
     const QInputMethodEvent::Attribute attribute(
         QInputMethodEvent::TextFormat, 0, text.length(), format );
-    
+
     QInputMethodEvent event( text, { attribute } );
     context()->sendEventToInputItem( &event );
 }

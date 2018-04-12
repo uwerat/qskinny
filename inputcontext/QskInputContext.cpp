@@ -89,7 +89,7 @@ public:
     QPointer< QQuickItem > inputItem;
 
     // item, wher the user enters texts/keys
-    QPointer< QQuickItem > inputPanel; 
+    QPointer< QQuickItem > inputPanel;
 
     // popup or window embedding the inputPanel
     QskPopup* inputPopup = nullptr;
@@ -352,6 +352,7 @@ void QskInputContext::showInputPanel()
         inputPopup->setVisible( true );
     }
 
+    update( Qt::ImQueryAll );
     inputPanel->setVisible( true );
 
     connect( inputPanel->window(), &QskWindow::visibleChanged,
@@ -631,7 +632,7 @@ bool QskInputContext::eventFilter( QObject* object, QEvent* event )
     }
     else
     {
-        switch( static_cast<int>( event->type() ) )
+        switch( static_cast< int >( event->type() ) )
         {
             case QskEvent::GeometryChange:
             {
