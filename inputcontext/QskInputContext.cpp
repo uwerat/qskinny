@@ -10,6 +10,7 @@
 #include "QskHunspellCompositionModel.h"
 
 #include "QskInputPanel.h"
+#include "QskLinearBox.h"
 #include <QskDialog.h>
 #include <QskPopup.h>
 #include <QskWindow.h>
@@ -91,8 +92,8 @@ public:
     QPointer< QQuickItem > inputPanel; 
 
     // popup or window embedding the inputPanel
-    QPointer< QskPopup > inputPopup;
-    QPointer< QskWindow > inputWindow;
+    QskPopup* inputPopup = nullptr;
+    QskWindow* inputWindow = nullptr;
 
     QskInputCompositionModel* compositionModel;
     QHash< QLocale, QskInputCompositionModel* > compositionModels;
@@ -320,9 +321,14 @@ void QskInputContext::showInputPanel()
             {
                 auto popup = new QskPopup( m_data->inputItem->window()->contentItem() );
                 popup->setAutoLayoutChildren( true );
+                popup->setTransparentForPositioner( false );
+                popup->setOverlay( false );
                 popup->setModal( true );
 
-                inputPanel->setParentItem( popup );
+                auto box = new QskLinearBox( popup );
+                box->setExtraSpacingAt( Qt::TopEdge | Qt::LeftEdge | Qt::RightEdge );
+                box->addItem( inputPanel );
+
                 inputPopup = popup;
             }
 
@@ -343,7 +349,6 @@ void QskInputContext::showInputPanel()
             }
         }
 
-        inputPopup->setGeometry( qskItemGeometry( inputPopup->parentItem() ) );
         inputPopup->setVisible( true );
     }
 
@@ -363,19 +368,13 @@ void QskInputContext::hideInputPanel()
 
     if ( m_data->inputPopup == m_data->inputPanel )
     {
-
         m_data->inputPopup->removeEventFilter( this );
         m_data->inputPopup = nullptr;
     }
     else
     {
         if ( m_data->inputPopup )
-        {
-            auto popup = m_data->inputPopup.data();
-            m_data->inputPopup = nullptr;
-
-            popup->deleteLater();
-        }
+            m_data->inputPopup->deleteLater();
     }
 
     QskWindow* window = m_data->inputWindow;
@@ -599,40 +598,78 @@ void QskInputContext::commit()
 
 bool QskInputContext::eventFilter( QObject* object, QEvent* event )
 {
-    switch( static_cast< int >( event->type() ) )
+    if ( object == m_data->inputWindow )
     {
-        case QEvent::Move:
-        case QEvent::Resize:
+        switch( event->type() )
         {
-            if ( m_data->inputPanel && object == m_data->inputPanel->window() )
-                emitKeyboardRectChanged();
-
-            break;
-        }
-        case QskEvent::GeometryChange:
-        {
-            if ( object == m_data->inputPopup )
-                emitKeyboardRectChanged();
-
-            break;
-        }
-        case QEvent::InputMethodQuery:
-        {
-            /*
-                Qt/Quick expects that the item associated with the input context
-                holds the focus. But this does not work, when a virtual
-                keyboard is used, where you can navigate and select inside.
-                So we have to fix the receiver.
-             */
-
-            if ( ( object != m_data->inputItem )
-                && qskIsAncestorOf( m_data->inputPanel, m_data->inputItem ) )
+            case QEvent::Move:
             {
-                sendEventToInputItem( event );
-                return true;
-            }
+                if ( m_data->inputPanel )
+                    emitKeyboardRectChanged();
 
-            break;
+                break;
+            }
+            case QEvent::Resize:
+            {
+                QQuickItem* panel = m_data->inputPanel;
+
+                if ( m_data->inputPanel )
+                    m_data->inputPanel->setSize( m_data->inputWindow->size() );
+
+                break;
+            }
+            case QEvent::DeferredDelete:
+            {
+                object->removeEventFilter( this );
+                qGuiApp->removeEventFilter( this );
+                m_data->inputWindow = nullptr;
+                break;
+            }
+            default:
+                break;
+        }
+    }
+    else
+    {
+        switch( static_cast<int>( event->type() ) )
+        {
+            case QskEvent::GeometryChange:
+            {
+                if ( object == m_data->inputPanel )
+                {
+                    if ( event->type() == QskEvent::GeometryChange )
+                        emitKeyboardRectChanged();
+                }
+
+                break;
+            }
+            case QEvent::InputMethodQuery:
+            {
+                /*
+                    Qt/Quick expects that the item associated with the input context
+                    holds the focus. But this does not work, when a virtual
+                    keyboard is used, where you can navigate and select inside.
+                    So we have to fix the receiver.
+                 */
+
+                if ( ( object != m_data->inputItem )
+                    && qskIsAncestorOf( m_data->inputPanel, m_data->inputItem ) )
+                {
+                    sendEventToInputItem( event );
+                    return true;
+                }
+                break;
+            }
+            case QEvent::DeferredDelete:
+            {
+                if ( object == m_data->inputPopup )
+                {
+                    object->removeEventFilter( this );
+                    qGuiApp->removeEventFilter( this );
+                    m_data->inputPopup = nullptr;
+                }
+                break;
+            }
         }
     }
 

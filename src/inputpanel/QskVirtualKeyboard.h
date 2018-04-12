@@ -38,6 +38,9 @@ public:
     void setMode( Mode );
     Mode mode() const;
 
+    virtual qreal heightForWidth( qreal width ) const override;
+    virtual qreal widthForHeight( qreal height ) const override;
+
 Q_SIGNALS:
     void modeChanged( Mode );
     void keySelected( Qt::Key );

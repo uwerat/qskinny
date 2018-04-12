@@ -102,6 +102,7 @@ QString qskNativeLocaleString( const QLocale& locale )
 class QskInputPanel::PrivateData
 {
 public:
+    QskLinearBox* layout;
     QskInputSuggestionBar* suggestionBar;
     QskVirtualKeyboard* keyboard;
 };
@@ -111,16 +112,17 @@ QskInputPanel::QskInputPanel( QQuickItem* parent ):
     m_data( new PrivateData() )
 {
     setAutoLayoutChildren( true );
+    initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Constrained );
 
-    auto layout = new QskLinearBox( Qt::Vertical, this );
+    m_data->layout = new QskLinearBox( Qt::Vertical, this );
 
-    m_data->suggestionBar = new QskInputSuggestionBar( layout );
+    m_data->suggestionBar = new QskInputSuggestionBar( m_data->layout );
     m_data->suggestionBar->setVisible( false );
 
     connect( m_data->suggestionBar, &QskInputSuggestionBar::suggested,
         this, &QskInputPanel::commitCandidate );
 
-    m_data->keyboard = new QskVirtualKeyboard( layout );
+    m_data->keyboard = new QskVirtualKeyboard( m_data->layout );
 
     connect( m_data->keyboard, &QskVirtualKeyboard::keySelected,
         this, &QskInputPanel::commitKey );
@@ -128,6 +130,48 @@ QskInputPanel::QskInputPanel( QQuickItem* parent ):
 
 QskInputPanel::~QskInputPanel()
 {
+}
+
+qreal QskInputPanel::heightForWidth( qreal width ) const
+{
+    /*
+        This code looks like as it could be generalized
+        and moved to QskLinearBox. TODO ...
+     */
+
+    const auto margins = this->margins();
+
+    width -= margins.left() + margins.right();
+
+    qreal height = m_data->keyboard->heightForWidth( width );
+
+    if ( m_data->suggestionBar->isVisible() )
+    {
+        height += m_data->layout->spacing();
+        height += m_data->suggestionBar->sizeHint().height();
+    }
+
+    height += margins.top() + margins.bottom();
+
+    return height;
+}
+
+qreal QskInputPanel::widthForHeight( qreal height ) const
+{
+    const auto margins = this->margins();
+
+    height -= margins.top() + margins.bottom();
+
+    if ( m_data->suggestionBar->isVisible() )
+    {
+        height -= m_data->layout->spacing();
+        height -= m_data->suggestionBar->sizeHint().height();
+    }
+
+    qreal width = m_data->keyboard->widthForHeight( height );
+    width += margins.left() + margins.right();
+
+    return width;
 }
 
 bool QskInputPanel::isCandidatesEnabled() const

@@ -34,6 +34,9 @@ public:
     bool isCandidatesEnabled() const;
     QVector< QString > candidates() const;
 
+    virtual qreal heightForWidth( qreal width ) const override;
+    virtual qreal widthForHeight( qreal height ) const override;
+
 public Q_SLOTS:
     void setCandidatesEnabled( bool );
     void setCandidates( const QVector< QString >& );

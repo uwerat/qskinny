@@ -160,7 +160,7 @@ int main( int argc, char* argv[] )
     SkinnyFont::init( &app );
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
-#if 0
+#if 1
     // We don't want to have a top level window.
     qskDialog->setPolicy( QskDialog::EmbeddedBox );
 #endif
@@ -195,7 +195,7 @@ int main( int argc, char* argv[] )
     window.addItem( box );
     window.addItem( new QskFocusIndicator() );
 
-    window.resize( 800, 300 );
+    window.resize( 600, 600 );
     window.show();
 
     return app.exec();

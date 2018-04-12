@@ -15,10 +15,10 @@ namespace
     enum
     {
         RowCount = 5,
-        KeyCount = 12
+        ColumnCount = 12
     };
 
-    using KeyRow = Qt::Key[KeyCount];
+    using KeyRow = Qt::Key[ ColumnCount ];
 
     class Button final : public QskPushButton
     {
@@ -60,7 +60,7 @@ struct QskVirtualKeyboardLayouts
 {
     struct KeyCodes
     {
-        using Row = Qt::Key[ KeyCount ];
+        using Row = Qt::Key[ ColumnCount ];
         Row data[ RowCount ];
     };
 
@@ -137,7 +137,7 @@ static qreal qskRowStretch( const KeyRow& keyRow )
 
     if( stretch == 0.0 )
     {
-        stretch = KeyCount;
+        stretch = ColumnCount;
     }
 
     return stretch;
@@ -216,16 +216,16 @@ QskVirtualKeyboard::QskVirtualKeyboard( QQuickItem* parent ):
     m_data( new PrivateData )
 {
     setPolishOnResize( true );
-    initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
+    initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Constrained );
 
-    m_data->keyButtons.reserve( RowCount * KeyCount );
+    m_data->keyButtons.reserve( RowCount * ColumnCount );
 
     const auto autoRepeatInterval =
         1000 / QGuiApplication::styleHints()->keyboardAutoRepeatRate();
 
     for ( int row = 0; row < RowCount; row++ )
     {
-        for ( int col = 0; col < KeyCount; col++ )
+        for ( int col = 0; col < ColumnCount; col++ )
         {
             auto button = new Button( row, col, this );
             button->installEventFilter( this );
@@ -266,6 +266,32 @@ QskVirtualKeyboard::Mode QskVirtualKeyboard::mode() const
     return m_data->mode;
 }
 
+qreal QskVirtualKeyboard::heightForWidth( qreal width ) const
+{
+    constexpr qreal ratio = qreal( RowCount ) / ColumnCount;
+    const auto margins = this->margins();
+
+    width -= margins.left() + margins.right();
+
+    qreal height = width * ratio;
+    height += margins.top() + margins.bottom();
+
+    return height;
+}
+
+qreal QskVirtualKeyboard::widthForHeight( qreal height ) const
+{
+    constexpr qreal ratio = qreal( RowCount ) / ColumnCount;
+    const auto margins = this->margins();
+
+    height -= margins.top() + margins.bottom();
+
+    qreal width = height / ratio;
+    width += margins.left() + margins.right();
+    
+    return height;
+}
+
 void QskVirtualKeyboard::updateLayout()
 {
     const auto r = layoutRect();
@@ -290,7 +316,7 @@ void QskVirtualKeyboard::updateLayout()
         auto totalHSpacing = -spacing;
         if ( spacing )
         {
-            for ( int col = 0; col < KeyCount; col++ )
+            for ( int col = 0; col < ColumnCount; col++ )
             {
                 if ( keys[ col ] != Qt::Key( 0 ) )
                     totalHSpacing += spacing;
@@ -300,10 +326,10 @@ void QskVirtualKeyboard::updateLayout()
         const auto baseKeyWidth = ( r.width() - totalHSpacing ) / qskRowStretch( keys );
         qreal xPos = r.left();
 
-        for ( int col = 0; col < KeyCount; col++ )
+        for ( int col = 0; col < ColumnCount; col++ )
         {
             const Qt::Key key = keys[ col ];
-            auto button = m_data->keyButtons[ row * KeyCount + col ];
+            auto button = m_data->keyButtons[ row * ColumnCount + col ];
 
             button->setVisible( key != Qt::Key( 0 ) );
 
