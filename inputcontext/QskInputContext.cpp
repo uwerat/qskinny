@@ -119,7 +119,7 @@ QskInputContext::QskInputContext():
     connect( qskSetup, &QskSetup::inputPanelChanged,
         this, &QskInputContext::setInputPanel );
 
-#if 1
+#if 0
     setCompositionModel( QLocale::Chinese, new QskPinyinCompositionModel( this ) );
 #endif
 
