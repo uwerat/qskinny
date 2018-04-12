@@ -1071,12 +1071,12 @@ bool qskInheritLocale( QskControl* control, const QLocale& locale )
     auto d = static_cast< QskControlPrivate* >( QQuickItemPrivate::get( control ) );
 
     if ( d->explicitLocale || d->locale == locale )
-        return false;
+        return true;
 
     d->locale = locale;
     qskSendEventTo( control, QEvent::LocaleChange );
 
-    return true;
+    return false;
 }
 
 void qskResolveLocale( QskControl* control )
