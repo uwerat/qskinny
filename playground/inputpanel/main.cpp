@@ -38,14 +38,23 @@ public:
         setSpacing( 10 );
 
         auto* textInput1 = new QskTextInput( this );
-        textInput1->setText( "I am a line edit. Press and edit Me." );
-        textInput1->setSelectByMouse( true );
+        textInput1->setText( "Press and edit Me." );
         textInput1->setSizePolicy( Qt::Horizontal, QskSizePolicy::Preferred );
 
         auto* textInput2 = new QskTextInput( this );
-        textInput2->setText( "Another text" );
-        textInput2->setSelectByMouse( true );
+        textInput2->setText( "Press and edit Me." );
         textInput2->setSizePolicy( Qt::Horizontal, QskSizePolicy::Preferred );
+
+        auto* textInput3 = new QskTextInput( this );
+        textInput3->setReadOnly( true );
+        textInput3->setText( "Read Only information." );
+        textInput3->setSizePolicy( Qt::Horizontal, QskSizePolicy::Preferred );
+
+        auto* textInput4 = new QskTextInput( this );
+        textInput4->setEchoMode( QskTextInput::PasswordEchoOnEdit );
+        textInput4->setMaxLength( 8 );
+        textInput4->setText( "12345678" );
+        textInput4->setSizePolicy( Qt::Horizontal, QskSizePolicy::Preferred );
     }
 };
 
