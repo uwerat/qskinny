@@ -444,6 +444,10 @@ void QskInputContext::setFocusObject( QObject* focusObject )
                     isAccepted = true;
                 }
             }
+            else
+            {
+                isAccepted = true;
+            }
         }
 
         if ( isAccepted )
@@ -507,7 +511,7 @@ void QskInputContext::invokeAction( QInputMethod::Action action, int value )
     {
         case QskInputPanel::Compose:
         {
-            model->composeKey( static_cast< Qt::Key >( value ) );
+            model->composeKey( value );
             break;
         }
         case QskInputPanel::SelectCandidate:

@@ -43,7 +43,7 @@ public:
 
 Q_SIGNALS:
     void modeChanged( Mode );
-    void keySelected( Qt::Key );
+    void keySelected( int keyCode );
 
 protected:
     virtual bool event( QEvent* ) override;

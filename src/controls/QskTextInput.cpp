@@ -19,6 +19,12 @@ QSK_QT_PRIVATE_BEGIN
 #undef private
 QSK_QT_PRIVATE_END
 
+QSK_SUBCONTROL( QskTextInput, Panel )
+QSK_SUBCONTROL( QskTextInput, Text )
+
+QSK_STATE( QskTextInput, ReadOnly, QskAspect::FirstSystemState << 1 )
+QSK_STATE( QskTextInput, Editing, QskAspect::FirstSystemState << 2 )
+
 static inline void qskBindSignals( const QQuickTextInput* wrappedInput,
     QskTextInput* input )
 {
@@ -32,9 +38,6 @@ static inline void qskBindSignals( const QQuickTextInput* wrappedInput,
 
     QObject::connect( wrappedInput, &QQuickTextInput::textChanged,
         input, [ input ] { input->Q_EMIT textChanged( input->text() ); } );
-
-    QObject::connect( wrappedInput, &QQuickTextInput::selectedTextChanged,
-        input, [ input ] { input->Q_EMIT selectedTextChanged( input->selectedText() ); } );
 
     QObject::connect( wrappedInput, &QQuickTextInput::validatorChanged,
         input, &QskTextInput::validatorChanged );
@@ -56,15 +59,6 @@ static inline void qskBindSignals( const QQuickTextInput* wrappedInput,
     QObject::connect( wrappedInput, &QQuickTextInput::echoModeChanged,
         input, [ input ] { input->Q_EMIT echoModeChanged( input->echoMode() ); } );
 
-    QObject::connect( wrappedInput, &QQuickTextInput::autoScrollChanged,
-        input, &QskTextInput::autoScrollChanged );
-
-    QObject::connect( wrappedInput, &QQuickTextInput::selectByMouseChanged,
-        input, &QskTextInput::selectByMouseChanged );
-
-    QObject::connect( wrappedInput, &QQuickTextInput::persistentSelectionChanged,
-        input, &QskTextInput::persistentSelectionChanged );
-
     QObject::connect( wrappedInput, &QQuickItem::implicitWidthChanged,
         input, &QskControl::resetImplicitSize );
 
@@ -77,113 +71,32 @@ namespace
     class TextInput final : public QQuickTextInput
     {
     public:
-        TextInput( QQuickItem* parent ):
-            QQuickTextInput( parent )
-        {
-            classBegin();
+        TextInput( QskTextInput* );
 
-            setActiveFocusOnTab( false );
-            setFlag( ItemAcceptsInputMethod, false );
-            setFocusOnPress( false );
+        void setEditing( bool on );
 
-            componentComplete();
-
-            connect( this, &TextInput::contentSizeChanged,
-                this, &TextInput::updateClip );
-        }
-
-        void setAlignment( Qt::Alignment alignment )
+        inline void setAlignment( Qt::Alignment alignment )
         {
             setHAlign( ( HAlignment ) ( int( alignment ) & 0x0f ) );
             setVAlign( ( VAlignment ) ( int( alignment ) & 0xf0 ) );
         }
 
-        inline bool handleEvent( QEvent* event )
-        {
-            return this->event( event );
-        }
-
-        virtual void focusInEvent( QFocusEvent* ) override
+        bool fixup()
         {
             auto d = QQuickTextInputPrivate::get( this );
 
-            if ( d->m_readOnly )
-                return;
+            const auto state = static_cast< int >( d->hasAcceptableInput( d->m_text ) );
 
-            d->cursorVisible = true;
+            bool isAcceptable = ( state == QValidator::Acceptable );
+            if ( !isAcceptable )
+                isAcceptable = d->fixup();
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-            d->updateCursorBlinking();
-            d->setBlinkingCursorEnabled( true );
-#else
-            d->setCursorBlinkPeriod(
-                QGuiApplication::styleHints()->cursorFlashTime() );
-#endif
-
-            if ( d->determineHorizontalAlignment() )
-            {
-                d->updateLayout();
-                d->updateHorizontalScroll();
-                d->updateVerticalScroll();
-
-#if 0
-                updateInputMethod(Qt::ImCursorRectangle | Qt::ImAnchorRectangle);
-#endif
-            }
-
-            connect( QGuiApplication::inputMethod(),
-                SIGNAL(inputDirectionChanged(Qt::LayoutDirection)),
-                this, SLOT(q_updateAlignment()) );
-
-            qGuiApp->inputMethod()->show();
-
-            polish();
-            update();
+            return isAcceptable;
         }
 
-        virtual void focusOutEvent( QFocusEvent* event ) override
-        {
-            auto d = QQuickTextInputPrivate::get( this );
+        inline bool handleEvent( QEvent* event ) { return this->event( event ); }
 
-            if (d->m_readOnly)
-                return;
-
-            d->cursorVisible = false;
-
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-            d->updateCursorBlinking();
-            d->setBlinkingCursorEnabled( false );
-#else
-            d->setCursorBlinkPeriod( 0 );
-#endif
-
-            if ( d->m_passwordEchoEditing || d->m_passwordEchoTimer.isActive() )
-            {
-                d->updatePasswordEchoEditing( false );
-            }
-
-            if ( event->reason() != Qt::ActiveWindowFocusReason
-                && event->reason() != Qt::PopupFocusReason )
-            {
-                if ( d->hasSelectedText() && !d->persistentSelection )
-                    deselect();
-            }
-
-            const auto status = d->hasAcceptableInput( d->m_text );
-            if ( status == QQuickTextInputPrivate::AcceptableInput )
-            {
-                if ( d->fixup() )
-                    Q_EMIT editingFinished();
-            }
-
-            disconnect( QGuiApplication::inputMethod(),
-                SIGNAL(inputDirectionChanged(Qt::LayoutDirection)),
-                this, SLOT(q_updateAlignment()) );
-
-            polish();
-            update();
-        }
-
+    protected:
         virtual void geometryChanged(
             const QRectF& newGeometry, const QRectF& oldGeometry ) override
         {
@@ -197,21 +110,63 @@ namespace
                 ( contentHeight() > height() ) );
         }
     };
-}
 
-QSK_SUBCONTROL( QskTextInput, Panel )
-QSK_SUBCONTROL( QskTextInput, Text )
+    TextInput::TextInput( QskTextInput* textInput ):
+        QQuickTextInput( textInput )
+    {
+        classBegin();
+
+        setActiveFocusOnTab( false );
+        setFlag( ItemAcceptsInputMethod, false );
+        setFocusOnPress( false );
+
+        componentComplete();
+
+        connect( this, &TextInput::contentSizeChanged,
+            this, &TextInput::updateClip );
+    }
+
+    void TextInput::setEditing( bool on )
+    {
+        auto d = QQuickTextInputPrivate::get( this );
+    
+        if ( d->cursorVisible == on )
+            return;
+
+        setCursorVisible( on );
+
+        if ( !on )
+        {
+            if ( d->m_passwordEchoEditing || d->m_passwordEchoTimer.isActive() )
+                d->updatePasswordEchoEditing( false );
+
+            const auto status = d->hasAcceptableInput( d->m_text );
+            if ( status == QQuickTextInputPrivate::AcceptableInput )
+            {
+                if ( d->fixup() )
+                    Q_EMIT editingFinished();
+            }
+        }
+
+        polish();
+        update();
+    }
+}
 
 class QskTextInput::PrivateData
 {
 public:
     TextInput* textInput;
+
+    unsigned int activationModes : 3;
 };
 
 QskTextInput::QskTextInput( QQuickItem* parent ):
     Inherited( parent ),
     m_data( new PrivateData() )
 {
+    m_data->activationModes = ActivationOnMouse | ActivationOnKey;
+
     setPolishOnResize( true );
     setFocusPolicy( Qt::StrongFocus );
 
@@ -259,7 +214,37 @@ bool QskTextInput::event( QEvent* event )
 
 void QskTextInput::keyPressEvent( QKeyEvent* event )
 {
-    m_data->textInput->handleEvent( event );
+    if ( isEditing()  )
+    {
+        if ( event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return )
+        {
+            if ( m_data->textInput->fixup() )
+            {
+                auto inputMethod = QGuiApplication::inputMethod();
+                inputMethod->commit();
+                
+                if ( !( inputMethodHints() & Qt::ImhMultiLine) )
+                    setEditing( false );
+            }       
+        }
+        else
+        {
+            m_data->textInput->handleEvent( event );
+        }
+
+        return;
+    }    
+
+    if ( ( m_data->activationModes & ActivationOnKey ) && !event->isAutoRepeat() )
+    {
+        if ( event->key() == Qt::Key_Select || event->key() == Qt::Key_Space )
+        {
+            setEditing( true );
+            return;
+        }
+    }
+
+    Inherited::keyPressEvent( event );
 }
 
 void QskTextInput::keyReleaseEvent( QKeyEvent* event )
@@ -272,7 +257,7 @@ void QskTextInput::mousePressEvent( QMouseEvent* event )
     m_data->textInput->handleEvent( event );
 
     if ( !isReadOnly() && !qGuiApp->styleHints()->setFocusOnTouchRelease() )
-        qGuiApp->inputMethod()->show();
+        setEditing( true );
 }
 
 void QskTextInput::mouseMoveEvent( QMouseEvent* event )
@@ -285,7 +270,7 @@ void QskTextInput::mouseReleaseEvent( QMouseEvent* event )
     m_data->textInput->handleEvent( event );
 
     if ( !isReadOnly() && qGuiApp->styleHints()->setFocusOnTouchRelease() )
-        qGuiApp->inputMethod()->show();
+        setEditing( true );
 }
 
 void QskTextInput::mouseDoubleClickEvent( QMouseEvent* event )
@@ -300,13 +285,29 @@ void QskTextInput::inputMethodEvent( QInputMethodEvent* event )
 
 void QskTextInput::focusInEvent( QFocusEvent* event )
 {
-    m_data->textInput->handleEvent( event );
     Inherited::focusInEvent( event );
 }
 
 void QskTextInput::focusOutEvent( QFocusEvent* event )
 {
-    m_data->textInput->handleEvent( event );
+#if 1
+    if ( event->reason() != Qt::ActiveWindowFocusReason
+        && event->reason() != Qt::PopupFocusReason )
+    {   
+        m_data->textInput->deselect();
+    }      
+#endif
+
+    if ( m_data->activationModes & ActivationOnFocus )
+    {
+#if 0
+        if ( !hasFocus() )
+        {
+            setEditing( false );
+        }
+#endif
+    }
+
     Inherited::focusOutEvent( event );
 }
 
@@ -341,6 +342,20 @@ QString QskTextInput::text() const
 void QskTextInput::setText( const QString& text )
 {
     m_data->textInput->setText( text );
+}
+
+QskTextInput::ActivationModes QskTextInput::activationModes() const
+{
+    return static_cast< QskTextInput::ActivationModes >( m_data->activationModes );
+}
+
+void QskTextInput::setActivationModes( ActivationModes modes )
+{
+    if ( m_data->activationModes != modes )
+    {
+        m_data->activationModes = modes;
+        Q_EMIT activationModesChanged();
+    }
 }
 
 int QskTextInput::fontRole() const
@@ -402,25 +417,62 @@ bool QskTextInput::isReadOnly() const
 
 void QskTextInput::setReadOnly( bool on )
 {
-    m_data->textInput->setReadOnly( on );
-    m_data->textInput->setFlag( QQuickItem::ItemAcceptsInputMethod, false );
+    if ( m_data->textInput->isReadOnly() == on )
+        return;
 
+#if 1
+    // do we want to be able to restore the previous policy ?
+    setFocusPolicy( Qt::NoFocus );
+#endif
+
+    m_data->textInput->setReadOnly( on );
+
+    m_data->textInput->setFlag( QQuickItem::ItemAcceptsInputMethod, !on );
     qskUpdateInputMethod( this, Qt::ImEnabled );
+
+    setSkinStateFlag( ReadOnly, true );
+}
+
+void QskTextInput::setEditing( bool on )
+{
+    if ( isReadOnly() || on == ( skinState() & Editing ) )
+        return;
+
+    setSkinStateFlag( Editing, on );
+    m_data->textInput->setEditing( on );
+
+    auto inputMethod = QGuiApplication::inputMethod();
+
+    if ( on )
+    {
+#if 0
+        updateInputMethod(Qt::ImCursorRectangle | Qt::ImAnchorRectangle);
+        QGuiApplication::inputMethod()->inputDirection
+#endif
+        inputMethod->show();
+    }
+    else
+    {
+#if 0
+        inputMethod->reset();
+#endif
+        inputMethod->hide();
+#if 1
+        qskForceActiveFocus( this, Qt::PopupFocusReason );
+#endif
+    }
+
+    Q_EMIT editingChanged( on );
+}
+
+bool QskTextInput::isEditing() const
+{
+    return skinState() & Editing;
 }
 
 void QskTextInput::ensureVisible( int position )
 {
     m_data->textInput->ensureVisible( position );
-}
-
-bool QskTextInput::isCursorVisible() const
-{
-    return m_data->textInput->isCursorVisible();
-}
-
-void QskTextInput::setCursorVisible( bool on )
-{
-    m_data->textInput->setCursorVisible( on );
 }
 
 int QskTextInput::cursorPosition() const
@@ -431,21 +483,6 @@ int QskTextInput::cursorPosition() const
 void QskTextInput::setCursorPosition(int pos)
 {
     m_data->textInput->setCursorPosition( pos );
-}
-
-int QskTextInput::selectionStart() const
-{
-    return m_data->textInput->selectionStart();
-}
-
-int QskTextInput::selectionEnd() const
-{
-    return m_data->textInput->selectionEnd();
-}
-
-QString QskTextInput::selectedText() const
-{
-    return m_data->textInput->selectedText();
 }
 
 int QskTextInput::maxLength() const
@@ -524,48 +561,6 @@ void QskTextInput::setOverwriteMode( bool overwrite )
 #endif
 }
 
-bool QskTextInput::autoScroll() const
-{
-    return m_data->textInput->autoScroll();
-}
-
-void QskTextInput::setAutoScroll(bool on)
-{
-    m_data->textInput->setAutoScroll( on );
-}
-
-bool QskTextInput::selectByMouse() const
-{
-    return m_data->textInput->selectByMouse();
-}
-
-void QskTextInput::setSelectByMouse(bool on)
-{
-    m_data->textInput->setSelectByMouse( on );
-}
-
-QskTextInput::SelectionMode QskTextInput::mouseSelectionMode() const
-{
-    const auto mode = m_data->textInput->mouseSelectionMode();
-    return static_cast< SelectionMode >( mode );
-}
-
-void QskTextInput::setMouseSelectionMode( SelectionMode mode )
-{
-    m_data->textInput->setMouseSelectionMode(
-        static_cast< QQuickTextInput::SelectionMode >( mode ) );
-}
-
-bool QskTextInput::persistentSelection() const
-{
-    return m_data->textInput->persistentSelection();
-}
-
-void QskTextInput::setPersistentSelection(bool persist)
-{
-    m_data->textInput->setPersistentSelection( persist );
-}
-
 bool QskTextInput::hasAcceptableInput() const
 {
     return m_data->textInput->hasAcceptableInput();
@@ -621,11 +616,6 @@ bool QskTextInput::canUndo() const
 bool QskTextInput::canRedo() const
 {
     return m_data->textInput->canRedo();
-}
-
-bool QskTextInput::isInputMethodComposing() const
-{
-    return m_data->textInput->isInputMethodComposing();
 }
 
 Qt::InputMethodHints QskTextInput::inputMethodHints() const

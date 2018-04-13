@@ -66,6 +66,9 @@ namespace
 
                 highlighted = QskRgbValue::RoyalBlue;
                 highlightedText = QskRgbValue::White;
+
+                base = QskRgbValue::White;
+                baseActive = QskRgbValue::Beige;
             }
             else
             {
@@ -76,6 +79,9 @@ namespace
 
                 highlighted = QskRgbValue::BlueGrey500;
                 highlightedText = QskRgbValue::White;
+
+                base = QskRgbValue::Black;
+                baseActive = base.lighter( 110 );
             }
         }
 
@@ -90,6 +96,9 @@ namespace
         QColor darker125;
         QColor darker150;
         QColor darker200;
+
+        QColor base;
+        QColor baseActive;
 
         QColor contrasted;
         QColor contrastedText;
@@ -304,14 +313,34 @@ void QskSquiekSkin::initTextInputHints()
     setBoxBorderMetrics( Q::Panel, 2 );
     setBoxShape( Q::Panel, 4 );
 
-    QColor fillColor( Qt::white );
+    for ( auto state : { NoState, Q::ReadOnly, Q::Editing } )
+    {
+        QColor c;
 
-    const QskBoxBorderColors borderColors(
-        fillColor.darker( 170 ), fillColor.darker( 170 ),
-        fillColor.darker( 105 ), fillColor.darker( 105 ) );
+        if ( state == Q::ReadOnly )
+        {
+            c = pal.theme.lighter( 120 );
+        }
+        else if ( state == Q::Editing )
+        {
+            c = pal.baseActive;
+        }
+        else
+        {
+            c = pal.base;
+        }
 
-    setBoxBorderColors( Q::Panel, borderColors );
-    setGradient( Q::Panel, fillColor );
+        const auto aspect = Q::Panel | state;
+
+        const QskBoxBorderColors borderColors(
+            c.darker( 170 ), c.darker( 170 ),
+            c.darker( 105 ), c.darker( 105 ) );
+
+        setBoxBorderColors( aspect, borderColors );
+        setGradient( aspect, c );
+    }
+
+    setAnimation( Q::Panel | Color, qskDuration );
 }
 
 void QskSquiekSkin::initFocusIndicatorHints()

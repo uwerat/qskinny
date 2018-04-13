@@ -41,8 +41,12 @@ public Q_SLOTS:
     void setCandidatesEnabled( bool );
     void setCandidates( const QVector< QString >& );
 
+protected:
+    virtual void keyPressEvent( QKeyEvent* ) override;
+    virtual void keyReleaseEvent( QKeyEvent* ) override;
+
 private:
-    void commitKey( Qt::Key );
+    void commitKey( int key );
     void commitCandidate( int );
 
     class PrivateData;

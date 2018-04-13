@@ -18,7 +18,7 @@ namespace
         ColumnCount = 12
     };
 
-    using KeyRow = Qt::Key[ ColumnCount ];
+    using KeyRow = int[ ColumnCount ];
 
     class Button final : public QskPushButton
     {
@@ -60,7 +60,7 @@ struct QskVirtualKeyboardLayouts
 {
     struct KeyCodes
     {
-        using Row = Qt::Key[ ColumnCount ];
+        using Row = int[ ColumnCount ];
         Row data[ RowCount ];
     };
 
@@ -91,14 +91,14 @@ struct QskVirtualKeyboardLayouts
     Layout zh; // Chinese
 };
 
-#define LOWER(x) Qt::Key(x + 32) // Convert an uppercase key to lowercase
+#define LOWER(x) int(x + 32) // Convert an uppercase key to lowercase
 static constexpr const QskVirtualKeyboardLayouts qskKeyboardLayouts =
 {
 #include "QskVirtualKeyboardLayouts.cpp"
 };
 #undef LOWER
 
-static qreal qskKeyStretch( Qt::Key key )
+static qreal qskKeyStretch( int key )
 {
     switch( key )
     {
@@ -143,7 +143,7 @@ static qreal qskRowStretch( const KeyRow& keyRow )
     return stretch;
 }
 
-static QString qskTextForKey( Qt::Key key )
+static QString qskTextForKey( int key )
 {
     // Special cases
     switch( key )
@@ -318,7 +318,7 @@ void QskVirtualKeyboard::updateLayout()
         {
             for ( int col = 0; col < ColumnCount; col++ )
             {
-                if ( keys[ col ] != Qt::Key( 0 ) )
+                if ( keys[ col ] != 0 )
                     totalHSpacing += spacing;
             }
         }
@@ -328,7 +328,7 @@ void QskVirtualKeyboard::updateLayout()
 
         for ( int col = 0; col < ColumnCount; col++ )
         {
-            const Qt::Key key = keys[ col ];
+            const int key = keys[ col ];
             auto button = m_data->keyButtons[ row * ColumnCount + col ];
 
             button->setVisible( key != Qt::Key( 0 ) );
@@ -358,7 +358,7 @@ void QskVirtualKeyboard::buttonPressed()
         return;
 
     const auto& keyCodes = ( *m_data->currentLayout )[ m_data->mode ];
-    const Qt::Key key = keyCodes.data[ button->row() ][ button->column() ];
+    const int key = keyCodes.data[ button->row() ][ button->column() ];
 
     // Mode-switching keys
     switch( key )

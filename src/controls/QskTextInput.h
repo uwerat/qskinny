@@ -22,10 +22,29 @@ class QSK_EXPORT QskTextInput : public QskControl
     Q_PROPERTY( Qt::Alignment alignment READ alignment
         WRITE setAlignment NOTIFY alignmentChanged )
 
+    Q_PROPERTY( ActivationModes activationModes READ activationModes
+        WRITE setActivationModes NOTIFY activationModesChanged )
+
+    Q_PROPERTY( bool editing READ isEditing
+        WRITE setEditing NOTIFY editingChanged )
+
     using Inherited = QskControl;
 
 public:
     QSK_SUBCONTROLS( Panel, Text )
+    QSK_STATES( ReadOnly, Editing )
+
+    enum ActivationMode
+    {
+        NoActivation,
+
+        ActivationOnFocus = 1 << 0 ,
+        ActivationOnMouse = 1 << 1,
+        ActivationOnKey = 1 << 2
+    };
+
+    Q_ENUM( ActivationMode )
+    Q_DECLARE_FLAGS( ActivationModes, ActivationMode )
 
     enum EchoMode
     {
@@ -34,14 +53,8 @@ public:
         Password,
         PasswordEchoOnEdit
     };
-    Q_ENUM(EchoMode)
 
-    enum SelectionMode
-    {
-        SelectCharacters,
-        SelectWords
-    };
-    Q_ENUM(SelectionMode)
+    Q_ENUM(EchoMode)
 
     QskTextInput( QQuickItem* parent = nullptr );
     QskTextInput( const QString& text, QQuickItem* parent = nullptr );
@@ -56,23 +69,18 @@ public:
     void setAlignment( Qt::Alignment );
     Qt::Alignment alignment() const;
 
-    virtual QSizeF contentsSizeHint() const override;
+    void setActivationModes( ActivationModes );
+    ActivationModes activationModes() const;
+
+    bool isEditing() const;
 
     QFont font() const;
 
     bool isReadOnly() const;
     void setReadOnly(bool);
 
-    bool isCursorVisible() const;
-    void setCursorVisible( bool );
-
     int cursorPosition() const;
     void setCursorPosition( int );
-
-    int selectionStart() const;
-    int selectionEnd() const;
-
-    QString selectedText() const;
 
     int maxLength() const;
     void setMaxLength( int );
@@ -92,18 +100,6 @@ public:
     bool overwriteMode() const;
     void setOverwriteMode( bool );
 
-    bool autoScroll() const;
-    void setAutoScroll(bool);
-
-    bool selectByMouse() const;
-    void setSelectByMouse(bool);
-
-    SelectionMode mouseSelectionMode() const;
-    void setMouseSelectionMode( SelectionMode );
-
-    bool persistentSelection() const;
-    void setPersistentSelection( bool );
-
     bool hasAcceptableInput() const;
 
     virtual QVariant inputMethodQuery( Qt::InputMethodQuery ) const override;
@@ -112,17 +108,23 @@ public:
     bool canUndo() const;
     bool canRedo() const;
 
-    bool isInputMethodComposing() const;
-
     Qt::InputMethodHints inputMethodHints() const;
     void setInputMethodHints( Qt::InputMethodHints );
 
     void ensureVisible( int position );
 
+    virtual QSizeF contentsSizeHint() const override;
+
 public Q_SLOTS:
     void setText( const QString& );
+    void setEditing( bool );
 
 Q_SIGNALS:
+    void editingChanged( bool );
+
+    void activationModesChanged();
+    void readOnlyChanged( bool );
+
     void textChanged( const QString& );
     void textEdited( const QString& );
 
@@ -130,19 +132,9 @@ Q_SIGNALS:
     void fontRoleChanged();
     void alignmentChanged();
 
-    void readOnlyChanged( bool );
-
-    void accepted();
-    void editingFinished();
-
-    void selectedTextChanged( const QString& );
-
     void overwriteModeChanged( bool );
     void maximumLengthChanged( int );
     void echoModeChanged( EchoMode );
-    void autoScrollChanged( bool );
-    void selectByMouseChanged( bool );
-    void persistentSelectionChanged();
 
     void validatorChanged();
     void inputMaskChanged( const QString& );
@@ -169,5 +161,8 @@ private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS( QskTextInput::ActivationModes )
+Q_DECLARE_METATYPE( QskTextInput::ActivationModes )
 
 #endif

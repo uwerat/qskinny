@@ -62,7 +62,7 @@ bool QskInputCompositionModel::supportsSuggestions() const
     return false;
 }
 
-void QskInputCompositionModel::composeKey( Qt::Key key )
+void QskInputCompositionModel::composeKey( int key )
 {
     /*
      * This operation might be expensive (e.g. for Hunspell) and

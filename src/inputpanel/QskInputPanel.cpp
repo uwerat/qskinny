@@ -202,10 +202,39 @@ void QskInputPanel::commitCandidate( int index )
         static_cast< QInputMethod::Action >( SelectCandidate ), index );
 }
 
-void QskInputPanel::commitKey( Qt::Key key )
+void QskInputPanel::commitKey( int key )
 {
     QGuiApplication::inputMethod()->invokeAction(
         static_cast< QInputMethod::Action >( Compose ), key );
+}
+
+void QskInputPanel::keyPressEvent( QKeyEvent* event )
+{
+    // animate the corresponding key button TODO
+
+    switch( event->key() )
+    {
+        case Qt::Key_Return:
+        case Qt::Key_Escape:
+        {
+            commitKey( event->key() );
+            break;
+        }
+
+        default:
+        {
+            const auto text = event->text();
+            if ( !text.isEmpty() )
+                commitKey( text[0].unicode() );
+            else
+                commitKey( event->key() );
+        }
+    }
+}
+
+void QskInputPanel::keyReleaseEvent( QKeyEvent* event )
+{
+    return Inherited::keyReleaseEvent( event );
 }
 
 #include "moc_QskInputPanel.cpp"

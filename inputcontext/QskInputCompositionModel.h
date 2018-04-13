@@ -25,7 +25,7 @@ public:
     void commit( const QString& );
     virtual void commitCandidate( int );
 
-    void composeKey( Qt::Key );
+    void composeKey( int key );
 
     virtual int candidateCount() const;
     virtual QString candidate( int ) const;
