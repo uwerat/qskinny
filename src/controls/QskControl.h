@@ -260,6 +260,8 @@ QSK_EXPORT QRectF qskItemGeometry( const QQuickItem* );
 QSK_EXPORT void qskSetItemGeometry( QQuickItem*, const QRectF& );
 
 QSK_EXPORT QQuickItem* qskNearestFocusScope( const QQuickItem* );
+QSK_EXPORT void qskForceActiveFocus( QQuickItem*, Qt::FocusReason );
+
 QSK_EXPORT QList< QQuickItem* > qskPaintOrderChildItems( const QQuickItem* );
 
 QSK_EXPORT void qskUpdateInputMethod( const QQuickItem*, Qt::InputMethodQueries );

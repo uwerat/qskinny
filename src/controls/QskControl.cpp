@@ -151,6 +151,25 @@ QQuickItem* qskNearestFocusScope( const QQuickItem* item )
     return nullptr;
 }
 
+void qskForceActiveFocus( QQuickItem* item, Qt::FocusReason reason )
+{
+    /*
+        For unknown reasons Qt::PopupFocusReason is blocked inside of
+        QQuickItem::setFocus and so we can't use QQuickItem::forceActiveFocus
+     */
+
+    if ( item == nullptr || item->window() == nullptr )
+        return;
+
+    auto wp = QQuickWindowPrivate::get( item->window() );
+
+    while ( const auto scope = qskNearestFocusScope( item ) )
+    {
+        wp->setFocusInScope( scope, item, reason );
+        item = scope;
+    }
+}
+
 void qskUpdateInputMethod( const QQuickItem* item, Qt::InputMethodQueries queries )
 {
     auto inputMethod = QGuiApplication::inputMethod();
