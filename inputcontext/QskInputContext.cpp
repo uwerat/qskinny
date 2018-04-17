@@ -355,6 +355,11 @@ void QskInputContext::showInputPanel()
     update( Qt::ImQueryAll );
     inputPanel->setVisible( true );
 
+#if 0
+    if ( auto focusItem = inputPanel->nextItemInFocusChain( true ) )
+        qskForceActiveFocus( focusItem, Qt::OtherFocusReason );
+#endif
+
     connect( inputPanel->window(), &QskWindow::visibleChanged,
         this, &QskInputContext::emitInputPanelVisibleChanged );
 }
@@ -375,7 +380,23 @@ void QskInputContext::hideInputPanel()
     else
     {
         if ( m_data->inputPopup )
+        {
+#if 1
+            if ( auto focusItem = m_data->inputPopup->scopedFocusItem() )
+            {
+                /*
+                    Qt bug: QQuickItem::hasFocus() is not cleared
+                    when the corresponding focusScope gets deleted.
+                    Usually no problem, but here the focusItem is no
+                    child and will be reused with a different parent
+                    later.
+                 */
+                focusItem->setFocus( false );
+            }
+#endif
+
             m_data->inputPopup->deleteLater();
+        }
     }
 
     QskWindow* window = m_data->inputWindow;
