@@ -9,6 +9,9 @@
 
 #include <QQuickWindow>
 #include <QGlobalStatic>
+#include <QThread>
+#include <QMutexLocker>
+#include <QHash>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquicktext_p.h>
@@ -79,18 +82,23 @@ namespace
             setWrapMode( static_cast< QQuickText::WrapMode >( options.wrapMode() ) );
         }
 
-        void begin()
+        inline void begin()
         {
             classBegin();
             QQuickTextPrivate::get( this )->updateOnComponentComplete = true;
         }
 
-        void end()
+        inline void end()
         {
             componentComplete();
         }
 
-        QRectF layedOutTextRect() const
+        inline void reset()
+        {
+            setText( QString() );
+        }
+
+        inline QRectF layedOutTextRect() const
         {
             auto that = const_cast< TextItem* >( this );
             return QQuickTextPrivate::get( that )->layedOutTextRect;
@@ -118,6 +126,46 @@ namespace
             return nullptr;
         }
     };
+
+    class TextItemMap
+    {
+    public:
+        ~TextItemMap()
+        {
+            qDeleteAll( m_hash );
+        }
+
+        inline TextItem* item()
+        {
+            const auto thread = QThread::currentThread();
+
+            QMutexLocker locker( &m_mutex );
+
+            auto it = m_hash.constFind( thread );
+            if ( it == m_hash.constEnd() )
+            {
+                auto textItem = new TextItem();
+                QObject::connect( thread, &QThread::finished,
+                    textItem, [this, thread] { removeItem( thread ); } );
+
+                m_hash.insert( thread, textItem );
+                return textItem;
+            }
+
+            return it.value();
+        }
+
+    private:
+        void removeItem( const QThread* thread )
+        {
+            auto textItem = m_hash.take( thread );
+            if ( textItem )
+                textItem->deleteLater();
+        }
+
+        QMutex m_mutex;
+        QHash< const QThread*, TextItem* > m_hash;
+    };
 }
 
 /*
@@ -125,31 +173,34 @@ namespace
     better use different items as we might end up in events internally
     being sent, that leads to crashes because of it
  */
-Q_GLOBAL_STATIC( TextItem, qskRenderHelper )
-Q_GLOBAL_STATIC( TextItem, qskLayoutHelper )
+Q_GLOBAL_STATIC( TextItemMap, qskTextItemMap )
 
 QSizeF QskRichTextRenderer::textSize( const QString& text,
     const QFont& font, const QskTextOptions& options )
 {
-    auto& item = *qskLayoutHelper;
+    auto& textItem = *qskTextItemMap->item();
 
-    item.begin();
+    textItem.begin();
 
-    item.setFont( font );
-    item.setOptions( options );
+    textItem.setFont( font );
+    textItem.setOptions( options );
 
-    item.setWidth( -1 );
-    item.setText( text );
+    textItem.setWidth( -1 );
+    textItem.setText( text );
 
-    item.end();
+    textItem.end();
 
-    return QSizeF( item.implicitWidth(), item.implicitHeight() );
+    const QSizeF sz( textItem.implicitWidth(), textItem.implicitHeight() );
+
+    textItem.reset();
+
+    return sz;
 }
 
 QRectF QskRichTextRenderer::textRect( const QString& text,
     const QFont& font, const QskTextOptions& options, const QSizeF& size )
 {
-    auto& textItem = *qskLayoutHelper;
+    auto& textItem = *qskTextItemMap->item();
 
     textItem.begin();
 
@@ -164,7 +215,11 @@ QRectF QskRichTextRenderer::textRect( const QString& text,
 
     textItem.end();
 
-    return textItem.layedOutTextRect();
+    const auto rect = textItem.layedOutTextRect();
+
+    textItem.reset();
+
+    return rect;
 }
 
 void QskRichTextRenderer::updateNode( const QString& text,
@@ -176,7 +231,7 @@ void QskRichTextRenderer::updateNode( const QString& text,
     // are we killing internal caches of QQuickText, when always using
     // the same item for the creation the text nodes. TODO ...
 
-    auto& textItem = *qskRenderHelper;
+    auto& textItem = *qskTextItemMap->item();
 
     textItem.begin();
 
@@ -220,5 +275,5 @@ void QskRichTextRenderer::updateNode( const QString& text,
     }
 
     textItem.updateTextNode( item->window(), node );
-    textItem.setText( QString() );
+    textItem.reset();
 }
