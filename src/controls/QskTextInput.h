@@ -16,6 +16,9 @@ class QSK_EXPORT QskTextInput : public QskControl
 
     Q_PROPERTY( QString text READ text WRITE setText NOTIFY textChanged )
 
+    Q_PROPERTY( QString description READ description
+        WRITE setDescription NOTIFY descriptionChanged )
+
     Q_PROPERTY( int fontRole READ fontRole
         WRITE setFontRole NOTIFY fontRoleChanged )
 
@@ -38,7 +41,7 @@ public:
     {
         NoActivation,
 
-        ActivationOnFocus = 1 << 0 ,
+        ActivationOnFocus = 1 << 0,
         ActivationOnMouse = 1 << 1,
         ActivationOnKey = 1 << 2,
 
@@ -65,6 +68,9 @@ public:
     virtual ~QskTextInput();
 
     QString text() const;
+
+    void setDescription( const QString& );
+    QString description() const;
 
     void setFontRole( int role );
     int fontRole() const;
@@ -98,12 +104,16 @@ public:
     void setEchoMode( EchoMode );
 
     QString displayText() const;
+
     QString preeditText() const;
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
     bool overwriteMode() const;
     void setOverwriteMode( bool );
+#endif
 
-    bool hasAcceptableInput() const;
+    virtual bool hasAcceptableInput() const;
+    virtual bool fixup();
 
     virtual QVariant inputMethodQuery( Qt::InputMethodQuery ) const override;
     QVariant inputMethodQuery( Qt::InputMethodQuery, QVariant argument) const;
@@ -131,11 +141,16 @@ Q_SIGNALS:
     void textChanged( const QString& );
     void textEdited( const QString& );
 
+    void descriptionChanged( const QString& );
+
     void textOptionsChanged();
     void fontRoleChanged();
     void alignmentChanged();
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
     void overwriteModeChanged( bool );
+#endif
+
     void maximumLengthChanged( int );
     void echoModeChanged( EchoMode );
 

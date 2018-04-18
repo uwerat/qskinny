@@ -276,7 +276,9 @@ void QskInputContext::showInputPanel()
     if ( inputPanel == nullptr )
     {
         auto panel = new QskInputPanel();
+
         panel->setParent( this );
+        panel->setInputProxy( true );
 
         setInputPanel( panel );
     }
@@ -301,7 +303,14 @@ void QskInputContext::showInputPanel()
 
             inputPanel->setParentItem( inputWindow->contentItem() );
 
-            inputWindow->resize( 800, 240 ); // ### what size?
+            QSizeF size;
+            if ( auto control = qobject_cast< const QskControl* >( inputPanel ) )
+                size = control->sizeHint();
+
+            if ( size.isEmpty() )
+                size = QSizeF( 800, 240 ); // ### what size?
+
+            inputWindow->resize( size.toSize() );
             inputWindow->show();
 
             inputWindow->installEventFilter( this );
@@ -320,14 +329,27 @@ void QskInputContext::showInputPanel()
             else
             {
                 auto popup = new QskPopup( m_data->inputItem->window()->contentItem() );
+
                 popup->setAutoLayoutChildren( true );
                 popup->setTransparentForPositioner( false );
                 popup->setOverlay( false );
                 popup->setModal( true );
 
                 auto box = new QskLinearBox( popup );
-                box->setExtraSpacingAt( Qt::TopEdge | Qt::LeftEdge | Qt::RightEdge );
                 box->addItem( inputPanel );
+
+                if ( auto panel = qobject_cast< QskInputPanel* >( inputPanel ) )
+                {
+                    if ( panel->hasInputProxy() )
+                    {
+                        popup->setOverlay( true );
+                    }
+                }
+
+                if ( !popup->hasOverlay() )
+                {
+                    box->setExtraSpacingAt( Qt::TopEdge | Qt::LeftEdge | Qt::RightEdge );
+                }
 
                 inputPopup = popup;
             }

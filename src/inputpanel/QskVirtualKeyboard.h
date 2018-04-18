@@ -40,6 +40,7 @@ public:
 
     virtual qreal heightForWidth( qreal width ) const override;
     virtual qreal widthForHeight( qreal height ) const override;
+    virtual QSizeF contentsSizeHint() const override;
 
 Q_SIGNALS:
     void modeChanged( Mode );

@@ -30,6 +30,7 @@ private:
     void initDialogButtonBoxHints();
     void initFocusIndicatorHints();
     void initInputPanelHints();
+    void initVirtualKeyboardHints();
     void initListViewHints();
     void initPageIndicatorHints();
     void initPopupHints();

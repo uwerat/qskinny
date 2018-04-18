@@ -657,6 +657,12 @@ static inline QMarginsF qskEffectivePadding( const QskSkinnable* skinnable,
     );
 }
 
+QMarginsF QskSkinnable::innerPadding(
+    QskAspect::Aspect aspect, const QSizeF& outerBoxSize ) const
+{
+    return qskEffectivePadding( this, aspect, outerBoxSize, true );
+}
+
 QSizeF QskSkinnable::innerBoxSize(
     QskAspect::Aspect aspect, const QSizeF& outerBoxSize ) const
 {

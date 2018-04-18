@@ -8,6 +8,7 @@
 #include <QskDialogButtonBox.h>
 #include <QskDialogButton.h>
 #include <QskFocusIndicator.h>
+#include <QskInputPanel.h>
 #include <QskListView.h>
 #include <QskPageIndicator.h>
 #include <QskPushButton.h>
@@ -127,6 +128,7 @@ void QskMaterialSkin::initHints()
     initDialogButtonHints();
     initFocusIndicatorHints();
     initInputPanelHints();
+    initVirtualKeyboardHints();
     initListViewHints();
     initPageIndicatorHints();
     initPopupHints();
@@ -543,6 +545,19 @@ void QskMaterialSkin::initTabViewHints()
 }
 
 void QskMaterialSkin::initInputPanelHints()
+{
+    using namespace QskAspect;
+    using Q = QskInputPanel;
+
+    const ColorPalette& pal = m_data->palette;
+
+    setBoxShape( Q::Panel, 0 );
+    setBoxBorderMetrics( Q::Panel, 0 );
+    setGradient( Q::Panel, pal.darker150 );
+    setBoxBorderColors( Q::Panel, pal.baseColor );
+}
+
+void QskMaterialSkin::initVirtualKeyboardHints()
 {
     using namespace QskAspect;
     using Q = QskVirtualKeyboard;

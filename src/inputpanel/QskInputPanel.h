@@ -7,29 +7,41 @@
 #define QSK_INPUT_PANEL_H
 
 #include "QskGlobal.h"
-#include "QskControl.h"
+#include "QskBox.h"
 
 class QString;
 class QLocale;
 
 template class QVector< QString >;
 
-class QSK_EXPORT QskInputPanel: public QskControl
+class QSK_EXPORT QskInputPanel: public QskBox
 {
     Q_OBJECT
 
-    using Inherited = QskControl;
+    using Inherited = QskBox;
+
+    Q_PROPERTY( bool inputProxy READ hasInputProxy
+        WRITE setInputProxy NOTIFY inputProxyChanged )
+
+    Q_PROPERTY( QString inputPrompt READ inputPrompt
+        WRITE setInputPrompt NOTIFY inputPromptChanged )
+
 
 public:
+    QSK_SUBCONTROLS( Panel )
+
     enum Action
     {
         Compose = 0x10,
-        SelectCandidate = 0x11,
+        SelectCandidate = 0x11
     };
     Q_ENUM( Action )
 
     QskInputPanel( QQuickItem* parent = nullptr );
     virtual ~QskInputPanel() override;
+
+    bool hasInputProxy() const;
+    QString inputPrompt() const;
 
     bool isCandidatesEnabled() const;
     QVector< QString > candidates() const;
@@ -37,7 +49,16 @@ public:
     virtual qreal heightForWidth( qreal width ) const override;
     virtual qreal widthForHeight( qreal height ) const override;
 
+    virtual QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol ) const override;
+
+Q_SIGNALS:
+    void inputProxyChanged( bool );
+    void inputPromptChanged( const QString& );
+
 public Q_SLOTS:
+    void setInputPrompt( const QString& );
+    void setInputProxy( bool );
     void setCandidatesEnabled( bool );
     void setCandidates( const QVector< QString >& );
 

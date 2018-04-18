@@ -132,6 +132,8 @@ public:
     QRectF innerBox( QskAspect::Aspect, const QRectF& outerBox ) const;
     QRectF outerBox( QskAspect::Aspect, const QRectF& innerBox ) const;
 
+    QMarginsF innerPadding( QskAspect::Aspect, const QSizeF& ) const;
+
     QRectF subControlRect( QskAspect::Subcontrol ) const;
 
     virtual const QskSkinlet* effectiveSkinlet() const;
@@ -157,8 +159,8 @@ protected:
     void setSkinStateFlag( QskAspect::State, bool = true );
     virtual void updateNode( QSGNode* );
 
-    QskSkinHintTable &hintTable();
-    const QskSkinHintTable &hintTable() const;
+    QskSkinHintTable& hintTable();
+    const QskSkinHintTable& hintTable() const;
 
 private:
     QVariant animatedValue( QskAspect::Aspect, QskSkinHintStatus* ) const;

@@ -13,6 +13,7 @@
 #endif
 
 QSK_QT_PRIVATE_BEGIN
+// we need to access QQuickTextInputPrivate::hasAcceptableInput
 #define private public
 #include <private/qquicktextinput_p.h>
 #include <private/qquicktextinput_p_p.h>
@@ -89,6 +90,7 @@ namespace
         {
             auto d = QQuickTextInputPrivate::get( this );
 
+            // QQuickTextInputPrivate::checkIsValid ???
             const auto state = static_cast< int >( d->hasAcceptableInput( d->m_text ) );
 
             bool isAcceptable = ( state == QValidator::Acceptable );
@@ -121,7 +123,7 @@ namespace
         }
 
         virtual QSGNode* updatePaintNode(
-            QSGNode *oldNode, UpdatePaintNodeData* data ) override
+            QSGNode* oldNode, UpdatePaintNodeData* data ) override
         {
             updateColors();
             return Inherited::updatePaintNode( oldNode, data );
@@ -146,7 +148,7 @@ namespace
     void TextInput::setEditing( bool on )
     {
         auto d = QQuickTextInputPrivate::get( this );
-    
+
         if ( d->cursorVisible == on )
             return;
 
@@ -157,13 +159,6 @@ namespace
         {
             if ( d->m_passwordEchoEditing || d->m_passwordEchoTimer.isActive() )
                 d->updatePasswordEchoEditing( false );
-
-            const auto status = d->hasAcceptableInput( d->m_text );
-            if ( status == QQuickTextInputPrivate::AcceptableInput )
-            {
-                if ( d->fixup() )
-                    Q_EMIT editingFinished();
-            }
         }
 
         polish();
@@ -224,6 +219,7 @@ class QskTextInput::PrivateData
 {
 public:
     TextInput* textInput;
+    QString description; // f.e. used as prompt in QskInputPanel
 
     unsigned int activationModes : 3;
 };
@@ -281,20 +277,20 @@ bool QskTextInput::event( QEvent* event )
 
 void QskTextInput::keyPressEvent( QKeyEvent* event )
 {
-    if ( isEditing()  )
+    if ( isEditing() )
     {
         switch( event->key() )
         {
             case Qt::Key_Enter:
             case Qt::Key_Return:
             {
-                if ( m_data->textInput->fixup() )
+                if ( fixup() )
                 {
                     QGuiApplication::inputMethod()->commit();
-                    
-                    if ( !( inputMethodHints() & Qt::ImhMultiLine) )
+
+                    if ( !( inputMethodHints() & Qt::ImhMultiLine ) )
                         setEditing( false );
-                }       
+                }
                 break;
             }
 #if 1
@@ -302,6 +298,7 @@ void QskTextInput::keyPressEvent( QKeyEvent* event )
             {
                 QGuiApplication::inputMethod()->hide();
                 setEditing( false );
+
                 break;
             }
 #endif
@@ -312,7 +309,7 @@ void QskTextInput::keyPressEvent( QKeyEvent* event )
         }
 
         return;
-    }    
+    }
 
     if ( ( m_data->activationModes & ActivationOnKey ) && !event->isAutoRepeat() )
     {
@@ -385,9 +382,9 @@ void QskTextInput::focusOutEvent( QFocusEvent* event )
 #if 1
     if ( event->reason() != Qt::ActiveWindowFocusReason
         && event->reason() != Qt::PopupFocusReason )
-    {   
+    {
         m_data->textInput->deselect();
-    }      
+    }
 #endif
 
     if ( m_data->activationModes & ActivationOnFocus )
@@ -442,6 +439,20 @@ QString QskTextInput::text() const
 void QskTextInput::setText( const QString& text )
 {
     m_data->textInput->setText( text );
+}
+
+void QskTextInput::setDescription( const QString& text )
+{
+    if ( m_data->description != text )
+    {
+        m_data->description = text;
+        Q_EMIT descriptionChanged( text );
+    }
+}
+
+QString QskTextInput::description() const
+{
+    return m_data->description;
 }
 
 QskTextInput::ActivationModes QskTextInput::activationModes() const
@@ -553,6 +564,15 @@ void QskTextInput::setEditing( bool on )
     }
     else
     {
+        auto d = QQuickTextInputPrivate::get( m_data->textInput );
+
+        const auto status = d->hasAcceptableInput( d->m_text );
+        if ( status == QQuickTextInputPrivate::AcceptableInput )
+        {
+            if ( fixup() )
+                m_data->textInput->Q_EMIT editingFinished();
+        }
+
 #if 0
         inputMethod->reset();
 #endif
@@ -636,34 +656,34 @@ QString QskTextInput::displayText() const
 
 QString QskTextInput::preeditText() const
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+    auto d = QQuickTextInputPrivate::get( m_data->textInput );
+    return d->m_textLayout.preeditAreaText();
+
     return m_data->textInput->preeditText();
-#else
-    return QString();
-#endif
 }
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
 
 bool QskTextInput::overwriteMode() const
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
     return m_data->textInput->overwriteMode();
-#else
-    return false;
-#endif
 }
 
 void QskTextInput::setOverwriteMode( bool overwrite )
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
     m_data->textInput->setOverwriteMode( overwrite );
-#else
-    Q_UNUSED( overwrite )
-#endif
 }
+
+#endif
 
 bool QskTextInput::hasAcceptableInput() const
 {
     return m_data->textInput->hasAcceptableInput();
+}
+
+bool QskTextInput::fixup()
+{
+    return m_data->textInput->fixup();
 }
 
 QVariant QskTextInput::inputMethodQuery(

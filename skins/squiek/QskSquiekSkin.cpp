@@ -17,6 +17,7 @@
 #include <QskTabButton.h>
 #include <QskTabBar.h>
 #include <QskTabView.h>
+#include <QskInputPanel.h>
 #include <QskVirtualKeyboard.h>
 #include <QskScrollView.h>
 #include <QskListView.h>
@@ -242,6 +243,7 @@ void QskSquiekSkin::initHints()
     initDialogButtonHints();
     initFocusIndicatorHints();
     initInputPanelHints();
+    initVirtualKeyboardHints();
     initListViewHints();
     initPageIndicatorHints();
     initPopupHints();
@@ -612,6 +614,15 @@ void QskSquiekSkin::initTabViewHints()
 }
 
 void QskSquiekSkin::initInputPanelHints()
+{
+    using namespace QskAspect;
+    using Q = QskInputPanel;
+
+    setMargins( Q::Panel | Padding, 5 );
+    setPanel( Q::Panel, Raised );
+}
+
+void QskSquiekSkin::initVirtualKeyboardHints()
 {
     using namespace QskAspect;
     using Q = QskVirtualKeyboard;

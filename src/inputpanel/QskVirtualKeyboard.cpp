@@ -260,20 +260,38 @@ QskAspect::Subcontrol QskVirtualKeyboard::effectiveSubcontrol(
     return subControl;
 }
 
-
 QskVirtualKeyboard::Mode QskVirtualKeyboard::mode() const
 {
     return m_data->mode;
 }
 
+QSizeF QskVirtualKeyboard::contentsSizeHint() const
+{
+    constexpr qreal ratio = qreal( RowCount ) / ColumnCount;
+
+    const qreal w = 600;
+    return QSizeF( w, ratio * w );
+}
+
 qreal QskVirtualKeyboard::heightForWidth( qreal width ) const
 {
+    /*
+        Not necessarily correct, when
+        subControlRect( Panel ) != contentsRect: TODO ...
+     */
     constexpr qreal ratio = qreal( RowCount ) / ColumnCount;
     const auto margins = this->margins();
 
     width -= margins.left() + margins.right();
 
+    const auto padding = innerPadding(
+        Panel, QSizeF( width, width ) );
+
+    width -= padding.left() + padding.right();
+
     qreal height = width * ratio;
+
+    height += padding.top() + padding.bottom();
     height += margins.top() + margins.bottom();
 
     return height;
@@ -286,10 +304,17 @@ qreal QskVirtualKeyboard::widthForHeight( qreal height ) const
 
     height -= margins.top() + margins.bottom();
 
-    qreal width = height / ratio;
-    width += margins.left() + margins.right();
+    const auto padding = innerPadding(
+        Panel, QSizeF( height, height ) );
 
-    return height;
+    height -= padding.top() + padding.bottom();
+
+    qreal width = height / ratio;
+
+    width += padding.left() + padding.right();
+    width += padding.left() + padding.right();
+
+    return width;
 }
 
 void QskVirtualKeyboard::updateLayout()

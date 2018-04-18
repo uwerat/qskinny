@@ -6,6 +6,8 @@
 #include "QskInputPanel.h"
 #include "QskVirtualKeyboard.h"
 #include "QskInputSuggestionBar.h"
+#include "QskTextInput.h"
+#include "QskTextLabel.h"
 #include "QskLinearBox.h"
 
 #include <QString>
@@ -99,30 +101,67 @@ QString qskNativeLocaleString( const QLocale& locale )
     }
 }
 
+namespace
+{
+    class TextInput : public QskTextInput
+    {
+    public:
+        TextInput( QQuickItem* parentItem = nullptr ):
+            QskTextInput( parentItem )
+        {
+        }
+    };
+}
+
+QSK_SUBCONTROL( QskInputPanel, Panel )
+
 class QskInputPanel::PrivateData
 {
 public:
+    PrivateData():
+        hasInputProxy( true )
+    {
+    }
+
     QskLinearBox* layout;
+    QskTextLabel* prompt;
+    TextInput* textInput;
     QskInputSuggestionBar* suggestionBar;
     QskVirtualKeyboard* keyboard;
+
+    bool hasInputProxy : 1;
 };
 
 QskInputPanel::QskInputPanel( QQuickItem* parent ):
-    QskControl( parent ),
+    Inherited( parent ),
     m_data( new PrivateData() )
 {
     setAutoLayoutChildren( true );
     initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Constrained );
 
-    m_data->layout = new QskLinearBox( Qt::Vertical, this );
+    m_data->prompt = new QskTextLabel();
+    m_data->prompt->setVisible( false );
 
-    m_data->suggestionBar = new QskInputSuggestionBar( m_data->layout );
+    m_data->textInput = new TextInput();
+    m_data->textInput->setVisible( m_data->hasInputProxy );
+
+    m_data->suggestionBar = new QskInputSuggestionBar();
     m_data->suggestionBar->setVisible( false );
+
+    m_data->keyboard = new QskVirtualKeyboard();
+
+    auto layout = new QskLinearBox( Qt::Vertical, this );
+
+    layout->addItem( m_data->prompt, Qt::AlignLeft | Qt::AlignHCenter );
+    layout->addItem( m_data->textInput, Qt::AlignLeft | Qt::AlignHCenter );
+    layout->addStretch( 10 );
+    layout->addItem( m_data->suggestionBar );
+    layout->addItem( m_data->keyboard );
+
+    m_data->layout = layout;
 
     connect( m_data->suggestionBar, &QskInputSuggestionBar::suggested,
         this, &QskInputPanel::commitCandidate );
-
-    m_data->keyboard = new QskVirtualKeyboard( m_data->layout );
 
     connect( m_data->keyboard, &QskVirtualKeyboard::keySelected,
         this, &QskInputPanel::commitKey );
@@ -130,6 +169,15 @@ QskInputPanel::QskInputPanel( QQuickItem* parent ):
 
 QskInputPanel::~QskInputPanel()
 {
+}
+
+QskAspect::Subcontrol QskInputPanel::effectiveSubcontrol(
+    QskAspect::Subcontrol subControl ) const
+{
+    if( subControl == QskBox::Panel )
+        return QskInputPanel::Panel;
+
+    return subControl;
 }
 
 qreal QskInputPanel::heightForWidth( qreal width ) const
@@ -143,14 +191,26 @@ qreal QskInputPanel::heightForWidth( qreal width ) const
 
     width -= margins.left() + margins.right();
 
+    const auto padding = innerPadding(
+        Panel, QSizeF( width, width ) );
+
+    width -= padding.left() + padding.right();
+
     qreal height = m_data->keyboard->heightForWidth( width );
 
-    if ( m_data->suggestionBar->isVisible() )
+    const QskControl* controls[] =
+        { m_data->prompt, m_data->textInput, m_data->suggestionBar };
+
+    for ( auto control : controls )
     {
-        height += m_data->layout->spacing();
-        height += m_data->suggestionBar->sizeHint().height();
+        if ( control->isVisible() )
+        {
+            height += m_data->layout->spacing();
+            height += control->sizeHint().height();
+        }
     }
 
+    height += padding.top() + padding.bottom();
     height += margins.top() + margins.bottom();
 
     return height;
@@ -162,16 +222,70 @@ qreal QskInputPanel::widthForHeight( qreal height ) const
 
     height -= margins.top() + margins.bottom();
 
-    if ( m_data->suggestionBar->isVisible() )
+    const auto padding = innerPadding(
+        Panel, QSizeF( height, height ) );
+
+    height -= padding.top() + padding.bottom();
+
+    const QskControl* controls[] =
+        { m_data->prompt, m_data->textInput, m_data->suggestionBar };
+
+    for ( auto control : controls )
     {
-        height -= m_data->layout->spacing();
-        height -= m_data->suggestionBar->sizeHint().height();
+        if ( control->isVisible() )
+        {
+            height -= m_data->layout->spacing();
+            height -= control->sizeHint().height();
+        }
     }
 
     qreal width = m_data->keyboard->widthForHeight( height );
+
+    width += padding.left() + padding.right();
     width += margins.left() + margins.right();
 
     return width;
+}
+
+QString QskInputPanel::inputPrompt() const
+{
+    return m_data->prompt->text();
+}
+
+void QskInputPanel::setInputPrompt( const QString& text )
+{
+    auto prompt = m_data->prompt;
+
+    if ( text != prompt->text() )
+    {
+        prompt->setText( text );
+
+        if ( m_data->hasInputProxy )
+            prompt->setVisible( !text.isEmpty() );
+
+        Q_EMIT inputPromptChanged( text );
+    }
+}
+
+bool QskInputPanel::hasInputProxy() const
+{
+    return m_data->hasInputProxy;
+}
+
+void QskInputPanel::setInputProxy( bool on )
+{
+    if ( m_data->hasInputProxy == on )
+        return;
+
+    m_data->hasInputProxy = on;
+    m_data->textInput->setVisible( on );
+
+    auto prompt = m_data->prompt;
+
+    if ( on )
+        prompt->setVisible( !prompt->text().isEmpty() );
+    else
+        prompt->setVisible( false );
 }
 
 bool QskInputPanel::isCandidatesEnabled() const
