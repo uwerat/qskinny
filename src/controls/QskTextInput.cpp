@@ -21,6 +21,8 @@ QSK_QT_PRIVATE_END
 
 QSK_SUBCONTROL( QskTextInput, Panel )
 QSK_SUBCONTROL( QskTextInput, Text )
+QSK_SUBCONTROL( QskTextInput, PanelSelected )
+QSK_SUBCONTROL( QskTextInput, TextSelected )
 
 QSK_STATE( QskTextInput, ReadOnly, QskAspect::FirstSystemState << 1 )
 QSK_STATE( QskTextInput, Editing, QskAspect::FirstSystemState << 2 )
@@ -70,6 +72,8 @@ namespace
 {
     class TextInput final : public QQuickTextInput
     {
+        using Inherited = QQuickTextInput;
+
     public:
         TextInput( QskTextInput* );
 
@@ -94,13 +98,19 @@ namespace
             return isAcceptable;
         }
 
-        inline bool handleEvent( QEvent* event ) { return this->event( event ); }
+        void updateColors();
+        void updateMetrics();
+
+        inline bool handleEvent( QEvent* event )
+        {
+            return this->event( event );
+        }
 
     protected:
         virtual void geometryChanged(
             const QRectF& newGeometry, const QRectF& oldGeometry ) override
         {
-            QQuickTextInput::geometryChanged( newGeometry, oldGeometry );
+            Inherited::geometryChanged( newGeometry, oldGeometry );
             updateClip();
         }
 
@@ -108,6 +118,13 @@ namespace
         {
             setClip( ( contentWidth() > width() ) ||
                 ( contentHeight() > height() ) );
+        }
+
+        virtual QSGNode* updatePaintNode(
+            QSGNode *oldNode, UpdatePaintNodeData* data ) override
+        {
+            updateColors();
+            return Inherited::updatePaintNode( oldNode, data );
         }
     };
 
@@ -134,6 +151,7 @@ namespace
             return;
 
         setCursorVisible( on );
+        d->setBlinkingCursorEnabled( on );
 
         if ( !on )
         {
@@ -150,6 +168,55 @@ namespace
 
         polish();
         update();
+    }
+
+    void TextInput::updateMetrics()
+    {
+        auto input = static_cast< const QskTextInput* >( parentItem() );
+
+        setAlignment( input->alignment() );
+        setFont( input->font() );
+    }
+
+    void TextInput::updateColors()
+    {
+        auto input = static_cast< const QskTextInput* >( parentItem() );
+        auto d = QQuickTextInputPrivate::get( this );
+
+        bool isDirty = false;
+
+        QColor color;
+
+        color = input->color( QskTextInput::Text );
+        if ( d->color != color )
+        {
+            d->color = color;
+            isDirty = true;
+        }
+
+        if ( d->hasSelectedText() )
+        {
+            color = input->color( QskTextInput::PanelSelected );
+            if ( d->selectionColor != color )
+            {
+                d->selectionColor = color;
+                isDirty = true;
+            }
+
+            color = input->color( QskTextInput::TextSelected );
+            if ( d->selectedTextColor != color )
+            {
+                d->selectedTextColor = color;
+                isDirty = true;
+            }
+        }
+
+        if ( isDirty )
+        {
+            d->textLayoutDirty = true;
+            d->updateType = QQuickTextInputPrivate::UpdatePaintNode;
+            update();
+        }
     }
 }
 
@@ -216,20 +283,32 @@ void QskTextInput::keyPressEvent( QKeyEvent* event )
 {
     if ( isEditing()  )
     {
-        if ( event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return )
+        switch( event->key() )
         {
-            if ( m_data->textInput->fixup() )
+            case Qt::Key_Enter:
+            case Qt::Key_Return:
             {
-                auto inputMethod = QGuiApplication::inputMethod();
-                inputMethod->commit();
-                
-                if ( !( inputMethodHints() & Qt::ImhMultiLine) )
-                    setEditing( false );
-            }       
-        }
-        else
-        {
-            m_data->textInput->handleEvent( event );
+                if ( m_data->textInput->fixup() )
+                {
+                    QGuiApplication::inputMethod()->commit();
+                    
+                    if ( !( inputMethodHints() & Qt::ImhMultiLine) )
+                        setEditing( false );
+                }       
+                break;
+            }
+#if 1
+            case Qt::Key_Escape:
+            {
+                QGuiApplication::inputMethod()->hide();
+                setEditing( false );
+                break;
+            }
+#endif
+            default:
+            {
+                m_data->textInput->handleEvent( event );
+            }
         }
 
         return;
@@ -285,6 +364,19 @@ void QskTextInput::inputMethodEvent( QInputMethodEvent* event )
 
 void QskTextInput::focusInEvent( QFocusEvent* event )
 {
+    if ( m_data->activationModes & ActivationOnFocus )
+    {
+        switch( event->reason() )
+        {
+            case Qt::ActiveWindowFocusReason:
+            case Qt::PopupFocusReason:
+                break;
+
+            default:
+                setEditing( true );
+        }
+    }
+
     Inherited::focusInEvent( event );
 }
 
@@ -315,8 +407,12 @@ QSizeF QskTextInput::contentsSizeHint() const
 {
     using namespace QskAspect;
 
-    const qreal w = m_data->textInput->implicitWidth();
-    const qreal h = m_data->textInput->implicitHeight();
+    auto input = m_data->textInput;
+
+    input->updateMetrics();
+
+    const qreal w = input->implicitWidth();
+    const qreal h = input->implicitHeight();
 
     const QSizeF minSize( metric( Panel | MinimumWidth ),
         metric( Panel | MinimumHeight ) );
@@ -328,10 +424,14 @@ void QskTextInput::updateLayout()
 {
     auto input = m_data->textInput;
 
-    input->setAlignment( alignment() );
-    input->setFont( font() );
-
+    input->updateMetrics();
     qskSetItemGeometry( input, subControlRect( Text ) );
+}
+
+void QskTextInput::updateNode( QSGNode* node )
+{
+    m_data->textInput->updateColors();
+    Inherited::updateNode( node );
 }
 
 QString QskTextInput::text() const

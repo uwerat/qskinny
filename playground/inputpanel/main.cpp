@@ -44,6 +44,7 @@ public:
         auto* textInput2 = new QskTextInput( this );
         textInput2->setText( "Press and edit Me." );
         textInput2->setSizePolicy( Qt::Horizontal, QskSizePolicy::Preferred );
+        textInput2->setActivationModes( QskTextInput::ActivationOnAll );
 
         auto* textInput3 = new QskTextInput( this );
         textInput3->setReadOnly( true );

@@ -146,6 +146,11 @@ void QskInputCompositionModel::composeKey( int key )
 
             return;
         }
+        case Qt::Key_Escape:
+        {
+            sendKeyEvents( Qt::Key_Escape );
+            return;
+        }
         default:
         {
             if ( !spaceLeft )

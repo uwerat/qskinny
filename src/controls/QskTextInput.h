@@ -31,7 +31,7 @@ class QSK_EXPORT QskTextInput : public QskControl
     using Inherited = QskControl;
 
 public:
-    QSK_SUBCONTROLS( Panel, Text )
+    QSK_SUBCONTROLS( Panel, Text, PanelSelected, TextSelected )
     QSK_STATES( ReadOnly, Editing )
 
     enum ActivationMode
@@ -40,7 +40,10 @@ public:
 
         ActivationOnFocus = 1 << 0 ,
         ActivationOnMouse = 1 << 1,
-        ActivationOnKey = 1 << 2
+        ActivationOnKey = 1 << 2,
+
+        ActivationOnInput = ActivationOnMouse | ActivationOnKey,
+        ActivationOnAll = ActivationOnFocus | ActivationOnMouse | ActivationOnKey
     };
 
     Q_ENUM( ActivationMode )
@@ -156,6 +159,7 @@ protected:
     virtual void keyReleaseEvent( QKeyEvent* ) override;
 
     virtual void updateLayout() override;
+    virtual void updateNode( QSGNode*) override;
 
 private:
     class PrivateData;

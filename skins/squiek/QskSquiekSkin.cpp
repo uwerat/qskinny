@@ -308,6 +308,8 @@ void QskSquiekSkin::initTextInputHints()
         static_cast<int>( Qt::AlignLeft | Qt::AlignTop ) );
 
     setColor( Q::Text, pal.themeForeground  );
+    setColor( Q::PanelSelected, pal.highlighted  );
+    setColor( Q::TextSelected, pal.highlightedText  );
 
     setMargins( Q::Panel | Padding, 5 );
     setBoxBorderMetrics( Q::Panel, 2 );

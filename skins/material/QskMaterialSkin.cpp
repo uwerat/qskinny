@@ -202,6 +202,8 @@ void QskMaterialSkin::initTextInputHints()
     const ColorPalette& pal = m_data->palette;
 
     setColor( Q::Text, pal.textColor  );
+    setColor( Q::PanelSelected, pal.accentColor  );
+    setColor( Q::TextSelected, pal.contrastColor  );
 
     setMargins( Q::Panel | Padding, 5 );
     setBoxShape( Q::Panel, 4 );
