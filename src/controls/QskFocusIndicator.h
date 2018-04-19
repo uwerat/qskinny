@@ -26,10 +26,10 @@ protected:
     virtual void windowChangeEvent( QskWindowChangeEvent* ) override;
     virtual QRectF focusRect() const;
 
-private Q_SLOTS:
-    void onFocusItemGeometryChanged();
-
 private:
+    void onFocusItemGeometryChanged();
+    void onWindowSizeChanged( int );
+
     void onFocusItemChanged();
     void onFocusItemDestroyed();
     void updateFocusFrame();

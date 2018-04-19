@@ -55,6 +55,11 @@ void QskFocusIndicator::onFocusItemGeometryChanged()
     updateFocusFrame();
 }
 
+void QskFocusIndicator::onWindowSizeChanged( int )
+{
+    updateFocusFrame();
+}
+
 void QskFocusIndicator::onFocusItemDestroyed()
 {
     m_data->resetConnections();
@@ -170,11 +175,23 @@ void QskFocusIndicator::connectWindow( const QQuickWindow* window, bool on )
     {
         connect( window, &QQuickWindow::activeFocusItemChanged,
             this, &QskFocusIndicator::onFocusItemChanged );
+
+        connect( window, &QQuickWindow::widthChanged,
+            this, &QskFocusIndicator::onWindowSizeChanged );
+
+        connect( window, &QQuickWindow::heightChanged,
+            this, &QskFocusIndicator::onWindowSizeChanged );
     }
     else
     {
         disconnect( window, &QQuickWindow::activeFocusItemChanged,
             this, &QskFocusIndicator::onFocusItemChanged );
+
+        disconnect( window, &QQuickWindow::widthChanged,
+            this, &QskFocusIndicator::onWindowSizeChanged );
+
+        disconnect( window, &QQuickWindow::heightChanged,
+            this, &QskFocusIndicator::onWindowSizeChanged );
     }
 }
 
