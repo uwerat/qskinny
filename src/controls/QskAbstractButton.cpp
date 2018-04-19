@@ -250,18 +250,16 @@ bool QskAbstractButton::event( QEvent* event )
 
 void QskAbstractButton::keyPressEvent( QKeyEvent* event )
 {
-    if ( !event->isAutoRepeat() )
+    switch ( event->key() )
     {
-        switch ( event->key() )
+        case Qt::Key_Select:
+        case Qt::Key_Space:
         {
-            case Qt::Key_Select:
-            case Qt::Key_Space:
-            {
+            if ( !event->isAutoRepeat() )
                 setPressed( true );
-                return;
-            }
-            default:
-                break;
+
+            // always accepting
+            return;
         }
     }
 
