@@ -51,6 +51,26 @@ static inline void qskBlockDirty( QQuickItem* item, bool on )
         qskBlockDirty( child, on );
 }
 
+namespace
+{
+    class ResetBlockedDirtyJob final : public QRunnable
+    {
+    public:
+        inline ResetBlockedDirtyJob( QQuickWindow* window ):
+            m_window( window )
+        {
+        }
+
+        virtual void run() override final
+        {
+            qskBlockDirty( m_window->contentItem(), false );
+        }
+
+    private:
+        const QQuickWindow* m_window;
+    };
+}
+
 QskDirtyItemFilter::QskDirtyItemFilter( QObject* parent ):
     QObject( parent )
 {
@@ -98,19 +118,10 @@ void QskDirtyItemFilter::beforeSynchronizing( QQuickWindow* window )
             to avoid having all items in the dirtyList.
          */
         qskBlockDirty( window->contentItem(), true );
-        connect( window, &QQuickWindow::afterSynchronizing,
-            this, &QskDirtyItemFilter::resetBlockedDirty );
+
+        window->scheduleRenderJob( new ResetBlockedDirtyJob( window ),
+            QQuickWindow::AfterSynchronizingStage );
     }
-}
-
-void QskDirtyItemFilter::resetBlockedDirty()
-{
-    auto window = qobject_cast< QQuickWindow* >( sender() );
-    Q_ASSERT( window );
-
-    qskBlockDirty( window->contentItem(), false );
-    disconnect( window, &QQuickWindow::afterSynchronizing,
-        this, &QskDirtyItemFilter::resetBlockedDirty );
 }
 
 void QskDirtyItemFilter::filterDirtyList( QQuickWindow* window,

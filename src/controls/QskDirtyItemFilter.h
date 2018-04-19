@@ -29,7 +29,6 @@ public:
 
 private:
     void beforeSynchronizing( QQuickWindow* );
-    void resetBlockedDirty();
 
     QSet< QObject* > m_windows;
 };
