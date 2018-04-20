@@ -10,8 +10,12 @@
 #include <memory>
 
 class QskInputCompositionModel;
+
 class QQuickItem;
+
 class QInputMethodQueryEvent;
+class QInputMethodEvent;
+class QKeyEvent;
 
 class QskInputContext : public QPlatformInputContext
 {
@@ -51,7 +55,12 @@ public:
     virtual bool filterEvent( const QEvent* ) override;
 
     QInputMethodQueryEvent queryInputMethod( Qt::InputMethodQueries ) const;
-    void sendEventToInputItem( QEvent* ) const;
+
+    void sendKey( int key ) const;
+    void sendText( const QString& text, bool isFinal ) const;
+
+    Qt::InputMethodHints inputHints() const;
+    int keysLeft() const;
 
 private Q_SLOTS:
     void handleCandidatesChanged();
@@ -60,6 +69,8 @@ private Q_SLOTS:
     virtual bool eventFilter( QObject*, QEvent* ) override;
 
 private:
+    void processKey( int key );
+
     void setInputItem( QQuickItem* );
     QskInputCompositionModel* compositionModel() const;
 

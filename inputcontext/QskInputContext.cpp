@@ -18,9 +18,52 @@
 #include <QskSetup.h>
 #include <QskEvent.h>
 
-#include <QGuiApplication>
+#include <QTextCharFormat>
 #include <QHash>
 #include <QPointer>
+#include <QGuiApplication>
+
+static inline QString qskKeyString( int keyCode )
+{
+    // Special case entry codes here, else default to the symbol
+    switch ( keyCode )
+    {
+        case Qt::Key_Shift:
+        case Qt::Key_CapsLock:
+        case Qt::Key_Mode_switch:
+        case Qt::Key_Backspace:
+        case Qt::Key_Muhenkan:
+            return QString();
+
+        case Qt::Key_Return:
+        case Qt::Key_Kanji:
+            return QChar( QChar::CarriageReturn );
+
+        case Qt::Key_Space:
+            return QChar( QChar::Space );
+
+        default:
+            break;
+    }
+
+    return QChar( keyCode );
+}
+
+static inline bool qskIsControlKey( int keyCode )
+{
+    switch ( keyCode )
+    {
+        case Qt::Key_Backspace:
+        case Qt::Key_Muhenkan:
+        case Qt::Key_Return:
+        case Qt::Key_Left:
+        case Qt::Key_Right:
+        case Qt::Key_Escape:
+            return true;
+    }
+
+    return false;
+}
 
 static void qskSetLocale( QQuickItem* inputPanel, const QLocale& locale )
 {
@@ -82,6 +125,11 @@ static void qskSetCandidates( QQuickItem* inputPanel,
     }
 }
 
+static inline uint qskHashLocale( const QLocale& locale )
+{
+    return uint( locale.language() + uint( locale.country() ) << 16 );
+}
+
 class QskInputContext::PrivateData
 {
 public:
@@ -95,8 +143,7 @@ public:
     QskPopup* inputPopup = nullptr;
     QskWindow* inputWindow = nullptr;
 
-    QskInputCompositionModel* compositionModel;
-    QHash< QLocale, QskInputCompositionModel* > compositionModels;
+    QHash< uint, QskInputCompositionModel* > compositionModels;
 
     // the input panel is embedded in a window
     bool ownsInputPanelWindow : 1;
@@ -108,20 +155,14 @@ QskInputContext::QskInputContext():
     setObjectName( "InputContext" );
 
 #if 1
-    m_data->compositionModel = new QskInputCompositionModel( this );
-#else
-    m_data->compositionModel = new QskHunspellCompositionModel( this );
+    setCompositionModel( locale(), new QskHunspellCompositionModel( this ) );
 #endif
-
-    connect( m_data->compositionModel, &QskInputCompositionModel::candidatesChanged,
-        this, &QskInputContext::handleCandidatesChanged );
-
-    connect( qskSetup, &QskSetup::inputPanelChanged,
-        this, &QskInputContext::setInputPanel );
-
 #if 0
     setCompositionModel( QLocale::Chinese, new QskPinyinCompositionModel( this ) );
 #endif
+
+    connect( qskSetup, &QskSetup::inputPanelChanged,
+        this, &QskInputContext::setInputPanel );
 
     setInputPanel( qskSetup->inputPanel() );
 }
@@ -214,22 +255,32 @@ void QskInputContext::update( Qt::InputMethodQueries queries )
     {
         const auto locale = queryEvent.value( Qt::ImPreferredLanguage ).toLocale();
 
-        auto oldModel = compositionModel();
+        const auto oldModel = compositionModel();
 
         if( m_data->inputPanel )
             qskSetLocale( m_data->inputPanel, locale );
 
         auto newModel = compositionModel();
 
-        if( oldModel != newModel )
+        if( newModel && ( oldModel != newModel ) )
         {
             connect( newModel, &QskInputCompositionModel::candidatesChanged,
                 this, &QskInputContext::handleCandidatesChanged );
-
-            qskSetCandidatesEnabled( m_data->inputPanel,
-                newModel->supportsSuggestions() );
         }
+
+        qskSetCandidatesEnabled( m_data->inputPanel, newModel != nullptr );
     }
+
+#if 0
+    if ( queryEvent.queries() & Qt::ImTextBeforeCursor 
+        && queryEvent.queries() & Qt::ImTextAfterCursor )
+    {
+        const auto text1 = queryEvent.value( Qt::ImTextBeforeCursor ).toString();
+        const auto text2 = queryEvent.value( Qt::ImTextAfterCursor ).toString();
+
+        qDebug() << text1 << text2;
+    }
+#endif
 
     /*
         Qt::ImMicroFocus
@@ -496,14 +547,6 @@ void QskInputContext::setFocusObject( QObject* focusObject )
         if ( isAccepted )
             setInputItem( focusItem );
     }
-
-    if ( m_data->inputPanel && m_data->inputPanel->isVisible() )
-    {
-        if ( m_data->inputItem && focusItem != m_data->inputItem )
-            qGuiApp->installEventFilter( this );
-        else
-            qGuiApp->removeEventFilter( this );
-    }
 }
 
 void QskInputContext::setCompositionModel(
@@ -511,9 +554,11 @@ void QskInputContext::setCompositionModel(
 {
     auto& models = m_data->compositionModels;
 
+    const auto key = qskHashLocale( locale );
+
     if ( model )
     {
-        const auto it = models.find( locale );
+        const auto it = models.find( key );
         if ( it != models.end() )
         {
             if ( it.value() == model )
@@ -524,7 +569,7 @@ void QskInputContext::setCompositionModel(
         }
         else
         {
-            models.insert( locale, model );
+            models.insert( key, model );
         }
 
         connect( model, &QskInputCompositionModel::candidatesChanged,
@@ -532,7 +577,7 @@ void QskInputContext::setCompositionModel(
     }
     else
     {
-        const auto it = models.find( locale );
+        const auto it = models.find( key );
         if ( it != models.end() )
         {
             delete it.value();
@@ -543,23 +588,33 @@ void QskInputContext::setCompositionModel(
 
 QskInputCompositionModel* QskInputContext::compositionModel() const
 {
-    return m_data->compositionModels.value( locale(), m_data->compositionModel );
+    const auto key = qskHashLocale( locale() );
+    return m_data->compositionModels.value( key, nullptr );
 }
 
 void QskInputContext::invokeAction( QInputMethod::Action action, int value )
 {
-    auto model = compositionModel();
-
     switch ( static_cast< int >( action ) )
     {
         case QskInputPanel::Compose:
         {
-            model->composeKey( value );
+            processKey( value );
             break;
         }
         case QskInputPanel::SelectCandidate:
         {
-            model->commitCandidate( value );
+            if ( auto model = compositionModel() )
+            {
+                auto text = model->candidate( value );
+
+                if ( model->attributes() & QskInputCompositionModel::Words )
+                    text += " ";
+
+                sendText( text, true );
+
+                model->reset();
+            }
+
             break;
         }
         case QInputMethod::Click:
@@ -567,6 +622,130 @@ void QskInputContext::invokeAction( QInputMethod::Action action, int value )
         {
             break;
         }
+    }
+}
+
+int QskInputContext::keysLeft() const
+{
+    const auto event = queryInputMethod(
+        Qt::ImSurroundingText | Qt::ImMaximumTextLength | Qt::ImHints );
+
+    const auto hints = static_cast< Qt::InputMethodHints >(
+            event.value( Qt::ImHints ).toInt() );
+
+    if ( !( hints & Qt::ImhMultiLine ) )
+    {
+        const int max = event.value( Qt::ImMaximumTextLength ).toInt();
+
+        if ( max > 0 )
+        {
+            const auto text = event.value( Qt::ImSurroundingText ).toString();
+            return max - text.length();
+        }
+    }
+
+    return -1; // unlimited
+}
+
+Qt::InputMethodHints QskInputContext::inputHints() const
+{
+    const auto e = queryInputMethod( Qt::ImHints );
+    return static_cast< Qt::InputMethodHints >( e.value( Qt::ImHints ).toInt() );
+}
+
+void QskInputContext::processKey( int key )
+{
+    const auto hints = inputHints();
+
+    auto spaceLeft = keysLeft();
+
+    QskInputCompositionModel* model = nullptr;
+
+    if ( !( hints & Qt::ImhHiddenText ) )
+        model = compositionModel();
+
+    /*
+        First we have to handle the control keys
+     */
+    switch ( key )
+    {
+        case Qt::Key_Backspace:
+        case Qt::Key_Muhenkan:
+        {
+            if ( model )
+            {
+                auto preeditText = model->preeditText();
+                if ( !preeditText.isEmpty() )
+                {
+                    preeditText.chop( 1 );
+                    sendText( preeditText, false );
+
+                    model->setPreeditText( preeditText );
+                    return;
+                }
+            }
+
+            sendKey( Qt::Key_Backspace );
+            return;
+        }
+        case Qt::Key_Return:
+        {
+            if ( model )
+            {
+                const auto preeditText = model->preeditText();
+                if ( !preeditText.isEmpty() )
+                {
+                    if ( spaceLeft )
+                        sendText( preeditText.left( spaceLeft ), true );
+
+                    model->reset();
+                    return;
+                }
+            }
+
+            if( !( hints & Qt::ImhMultiLine ) )
+            {
+                sendKey( Qt::Key_Return );
+                return;
+            }
+
+            break;
+        }
+        case Qt::Key_Space:
+        {
+            if ( model )
+            {
+                auto preeditText = model->preeditText();
+                if ( !preeditText.isEmpty() && spaceLeft)
+                {
+                    preeditText = preeditText.left( spaceLeft );
+                    sendText( preeditText, true );
+                    spaceLeft -= preeditText.length();
+
+                    model->reset();
+                }
+            }
+
+            break;
+        }
+        case Qt::Key_Left:
+        case Qt::Key_Right:
+        case Qt::Key_Escape:
+        {
+            sendKey( key );
+            return;
+        }
+    }
+
+    const QString text = qskKeyString( key );
+
+    if ( model )
+    {
+        model->composeKey( text, spaceLeft );
+    }
+    else
+    {
+        sendText( text, true );
     }
 }
 
@@ -628,11 +807,7 @@ void QskInputContext::setInputPanel( QQuickItem* inputPanel )
                 this, &QPlatformInputContext::emitLocaleChanged );
         }
 
-        if ( model )
-        {
-            qskSetCandidatesEnabled( m_data->inputPanel,
-                model->supportsSuggestions() );
-        }
+        qskSetCandidatesEnabled( inputPanel, model != nullptr );
     }
 }
 
@@ -668,8 +843,6 @@ bool QskInputContext::eventFilter( QObject* object, QEvent* event )
             }
             case QEvent::DeferredDelete:
             {
-                object->removeEventFilter( this );
-                qGuiApp->removeEventFilter( this );
                 m_data->inputWindow = nullptr;
                 break;
             }
@@ -677,45 +850,20 @@ bool QskInputContext::eventFilter( QObject* object, QEvent* event )
                 break;
         }
     }
-    else
+    else if ( object == m_data->inputPopup )
     {
         switch( static_cast< int >( event->type() ) )
         {
             case QskEvent::GeometryChange:
             {
-                if ( object == m_data->inputPanel )
-                {
-                    if ( event->type() == QskEvent::GeometryChange )
-                        emitKeyboardRectChanged();
-                }
+                if ( event->type() == QskEvent::GeometryChange )
+                    emitKeyboardRectChanged();
 
-                break;
-            }
-            case QEvent::InputMethodQuery:
-            {
-                /*
-                    Qt/Quick expects that the item associated with the input context
-                    holds the focus. But this does not work, when a virtual
-                    keyboard is used, where you can navigate and select inside.
-                    So we have to fix the receiver.
-                 */
-
-                if ( ( object != m_data->inputItem )
-                    && qskIsAncestorOf( m_data->inputPanel, m_data->inputItem ) )
-                {
-                    sendEventToInputItem( event );
-                    return true;
-                }
                 break;
             }
             case QEvent::DeferredDelete:
             {
-                if ( object == m_data->inputPopup )
-                {
-                    object->removeEventFilter( this );
-                    qGuiApp->removeEventFilter( this );
-                    m_data->inputPopup = nullptr;
-                }
+                m_data->inputPopup = nullptr;
                 break;
             }
         }
@@ -724,10 +872,9 @@ bool QskInputContext::eventFilter( QObject* object, QEvent* event )
     return Inherited::eventFilter( object, event );
 }
 
-bool QskInputContext::filterEvent( const QEvent* event )
+bool QskInputContext::filterEvent( const QEvent* )
 {
     // called from QXcbKeyboard, but what about other platforms
-    Q_UNUSED( event )
     return false;
 }
 
@@ -735,15 +882,51 @@ QInputMethodQueryEvent QskInputContext::queryInputMethod(
     Qt::InputMethodQueries queries ) const
 {
     QInputMethodQueryEvent event( queries );
-    sendEventToInputItem( &event );
+
+    if ( m_data->inputItem )
+        QCoreApplication::sendEvent( m_data->inputItem, &event );
 
     return event;
 }
 
-void QskInputContext::sendEventToInputItem( QEvent* event ) const
+void QskInputContext::sendText(
+    const QString& text, bool isFinal ) const
 {
-    if ( m_data->inputItem && event )
-        QCoreApplication::sendEvent( m_data->inputItem, event );
+    if ( m_data->inputItem == nullptr )
+        return;
+
+    if ( isFinal )
+    {
+        QInputMethodEvent event;
+        event.setCommitString( text );
+
+        QCoreApplication::sendEvent( m_data->inputItem, &event );
+    }
+    else
+    {
+        QTextCharFormat format;
+        format.setFontUnderline( true );
+
+        const QInputMethodEvent::Attribute attribute(
+            QInputMethodEvent::TextFormat, 0, text.length(), format );
+
+        QInputMethodEvent event( text, { attribute } );
+
+        QCoreApplication::sendEvent( m_data->inputItem, &event );
+    }
+}
+
+
+void QskInputContext::sendKey( int key ) const
+{
+    if ( m_data->inputItem == nullptr )
+        return;
+
+    QKeyEvent keyPress( QEvent::KeyPress, key, Qt::NoModifier );
+    QCoreApplication::sendEvent( m_data->inputItem, &keyPress );
+
+    QKeyEvent keyRelease( QEvent::KeyRelease, key, Qt::NoModifier );
+    QCoreApplication::sendEvent( m_data->inputItem, &keyRelease );
 }
 
 #include "moc_QskInputContext.cpp"

@@ -6,45 +6,12 @@
 #include "QskInputCompositionModel.h"
 #include "QskInputContext.h"
 
-#include <QGuiApplication>
-#include <QInputMethodEvent>
-#include <QTextCharFormat>
+#include <QInputMethodQueryEvent>
 
-static inline QString qskKeyString( int code )
-{
-    // Special case entry codes here, else default to the symbol
-    switch ( code )
-    {
-        case Qt::Key_Shift:
-        case Qt::Key_CapsLock:
-        case Qt::Key_Mode_switch:
-        case Qt::Key_Backspace:
-        case Qt::Key_Muhenkan:
-            return QString();
-
-        case Qt::Key_Return:
-        case Qt::Key_Kanji:
-            return QChar( QChar::CarriageReturn );
-
-        case Qt::Key_Space:
-            return QChar( QChar::Space );
-
-        default:
-            break;
-    }
-
-    return QChar( code );
-}
-
-class QskInputCompositionModel::PrivateData
-{
-public:
-    QString preedit;
-};
-
-QskInputCompositionModel::QskInputCompositionModel( QskInputContext* context ):
+QskInputCompositionModel::QskInputCompositionModel(
+        Attributes attributes, QskInputContext* context ):
     QObject( context ),
-    m_data( new PrivateData )
+    m_attributes( attributes )
 {
 }
 
@@ -57,211 +24,67 @@ QskInputContext* QskInputCompositionModel::context() const
     return qobject_cast< QskInputContext* >( parent() );
 }
 
-bool QskInputCompositionModel::supportsSuggestions() const
+void QskInputCompositionModel::composeKey( const QString& text, int spaceLeft )
 {
-    return false;
-}
-
-void QskInputCompositionModel::composeKey( int key )
-{
-    /*
-     * This operation might be expensive (e.g. for Hunspell) and
-     * should be done asynchronously to be able to run e.g. suggestions
-     * in a separate thread to not block the UI.
-     * TODO
-     */
-
-    const auto queryEvent = context()->queryInputMethod(
-        Qt::ImSurroundingText | Qt::ImMaximumTextLength | Qt::ImHints );
-
-    const auto hints = static_cast< Qt::InputMethodHints >(
-            queryEvent.value( Qt::ImHints ).toInt() );
-    const int maxLength = queryEvent.value( Qt::ImMaximumTextLength ).toInt();
-    const int currentLength = queryEvent.value( Qt::ImSurroundingText ).toString().length();
-
-    int spaceLeft = -1;
-    if ( !( hints & Qt::ImhMultiLine ) && maxLength > 0 )
-        spaceLeft = maxLength - currentLength;
-
-    switch ( key )
+    if ( candidateCount() > 0 )
     {
-        case Qt::Key_Backspace:
-        case Qt::Key_Muhenkan:
-        {
-            if ( !m_data->preedit.isEmpty() )
-            {
-                m_data->preedit.chop( 1 );
-                sendPreeditTextEvent( polishPreedit( m_data->preedit ) );
-            }
-            else
-            {
-                // Backspace one character only if preedit was inactive
-                sendKeyEvents( Qt::Key_Backspace );
-            }
-            return;
-        }
-        case Qt::Key_Space:
-        {
-            if( !spaceLeft )
-            {
-                return;
-            }
+        m_preedit += text;
 
-            if( !m_data->preedit.isEmpty() )
-            {
-                commit( m_data->preedit.left( spaceLeft ) );
-            }
+        requestCandidates( m_preedit );
+        context()->sendText( m_preedit, false );
 
-            commit( qskKeyString( key ) );
-            return;
-        }
-
-        case Qt::Key_Return:
-        {
-            if ( !spaceLeft )
-                return;
-
-            // Commit what is in the buffer
-            if( !m_data->preedit.isEmpty() )
-            {
-                commit( m_data->preedit.left( spaceLeft ) );
-            }
-            else if( hints & Qt::ImhMultiLine )
-            {
-                commit( qskKeyString( key ) );
-            }
-            else
-            {
-                sendKeyEvents( Qt::Key_Return );
-            }
-
-            return;
-        }
-
-        case Qt::Key_Left:
-        case Qt::Key_Right:
-        {
-            if ( m_data->preedit.isEmpty() )
-                sendKeyEvents( key );
-
-            return;
-        }
-        case Qt::Key_Escape:
-        {
-            sendKeyEvents( Qt::Key_Escape );
-            return;
-        }
-        default:
-        {
-            if ( !spaceLeft )
-                return;
-        }
-    }
-
-    if ( hints & Qt::ImhHiddenText )
-    {
-        commit( qskKeyString( key ) );
         return;
     }
 
-    const auto firstCandidate = candidateCount() > 0 ? candidate( 0 ) : QString();
-    const auto oldPreedit = m_data->preedit;
+    requestCandidates( m_preedit );
 
-    m_data->preedit += qskKeyString( key );
-    auto displayPreedit = polishPreedit( m_data->preedit );
-
-    // If there is no intermediate, decide between committing the first candidate and skipping
-    if ( !hasIntermediate() )
+    QString txt;
+    if ( candidateCount() == 0 )
     {
-        // Skip preedit phase if there are no candidates/intermediates
-        if ( firstCandidate.isEmpty() )
+        txt = m_preedit.left( spaceLeft );
+        spaceLeft -= txt.length();
+    }
+    else
+    {
+        txt = candidate( 0 );
+        --spaceLeft;
+    }
+
+    context()->sendText( txt, true );
+    m_preedit.clear();
+    resetCandidates();
+
+    if ( spaceLeft )
+    {
+        m_preedit = text;
+        requestCandidates( m_preedit );
+
+        if ( candidateCount() > 0 )
         {
-            commit( oldPreedit.left( spaceLeft ) );
-            spaceLeft -= oldPreedit.leftRef( spaceLeft ).length();
+            context()->sendText( m_preedit, false );
         }
         else
         {
-            commit( firstCandidate );
-            --spaceLeft;
-        }
-
-        if ( !spaceLeft )
-            return;
-
-        m_data->preedit = qskKeyString( key );
-        displayPreedit = polishPreedit( m_data->preedit );
-
-        if ( !hasIntermediate() )
-        {
-            commit( m_data->preedit );
-            return;
+            context()->sendText( m_preedit, true );
+            m_preedit.clear();
+            resetCandidates();
         }
     }
-
-    sendPreeditTextEvent( displayPreedit );
 }
 
-void QskInputCompositionModel::clearPreedit()
+void QskInputCompositionModel::setPreeditText( const QString& text )
 {
-    m_data->preedit.clear();
-    polishPreedit( m_data->preedit );
+    if ( text != m_preedit )
+    {
+        m_preedit = text;
+        requestCandidates( m_preedit );
+    }
 }
 
-int QskInputCompositionModel::candidateCount() const
+void QskInputCompositionModel::reset()
 {
-    return 0;
-}
-
-QString QskInputCompositionModel::candidate( int ) const
-{
-    return QString();
-}
-
-QString QskInputCompositionModel::polishPreedit( const QString& preedit )
-{
-    return preedit;
-}
-
-void QskInputCompositionModel::commit( const QString& text )
-{
-    QInputMethodEvent event;
-    event.setCommitString( text );
-    context()->sendEventToInputItem( &event );
-
-    clearPreedit();
-}
-
-void QskInputCompositionModel::commitCandidate( int index )
-{
-    commit( candidate( index ) );
-}
-
-void QskInputCompositionModel::sendPreeditTextEvent( const QString& text )
-{
-    QTextCharFormat format;
-    format.setFontUnderline( true );
-
-    const QInputMethodEvent::Attribute attribute(
-        QInputMethodEvent::TextFormat, 0, text.length(), format );
-
-    QInputMethodEvent event( text, { attribute } );
-    context()->sendEventToInputItem( &event );
-}
-
-void QskInputCompositionModel::sendKeyEvents( int key )
-{
-    auto context = this->context();
-
-    QKeyEvent keyPress( QEvent::KeyPress, key, Qt::NoModifier );
-    context->sendEventToInputItem( &keyPress );
-
-    QKeyEvent keyRelease( QEvent::KeyRelease, key, Qt::NoModifier );
-    context->sendEventToInputItem( &keyRelease );
-}
-
-bool QskInputCompositionModel::hasIntermediate() const
-{
-    return false;
+    m_preedit.clear();
+    resetCandidates();
 }
 
 #include "moc_QskInputCompositionModel.cpp"

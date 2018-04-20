@@ -7,6 +7,7 @@
 #define QSK_PINYIN_COMPOSITION_MODEL_H
 
 #include "QskInputCompositionModel.h"
+#include <memory>
 
 class QskPinyinCompositionModel : public QskInputCompositionModel
 {
@@ -16,15 +17,12 @@ public:
     QskPinyinCompositionModel( QskInputContext* );
     virtual ~QskPinyinCompositionModel() override;
 
-    virtual bool supportsSuggestions() const override final;
-
     virtual int candidateCount() const override;
     virtual QString candidate( int ) const override;
 
 protected:
-    // Used for text composition
-    virtual bool hasIntermediate() const override;
-    virtual QString polishPreedit( const QString& preedit ) override;
+    virtual void requestCandidates( const QString& ) override;
+    virtual void resetCandidates() override;
 
 private:
     class PrivateData;

@@ -7,6 +7,7 @@
 #define QSK_HUNSPELL_COMPOSITION_MODEL_H
 
 #include "QskInputCompositionModel.h"
+#include <memory>
 
 class QskHunspellCompositionModel : public QskInputCompositionModel
 {
@@ -16,15 +17,12 @@ public:
     QskHunspellCompositionModel( QskInputContext* context );
     virtual ~QskHunspellCompositionModel() override;
 
-    virtual bool supportsSuggestions() const override final;
-
-    virtual void commitCandidate( int index ) override;
     virtual int candidateCount() const override;
     virtual QString candidate( int pos ) const override;
 
 protected:
-    virtual bool hasIntermediate() const override;
-    virtual QString polishPreedit( const QString& ) override;
+    virtual void requestCandidates( const QString& ) override;
+    virtual void resetCandidates() override;
 
 private:
     class PrivateData;

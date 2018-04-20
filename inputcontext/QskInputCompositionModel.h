@@ -7,7 +7,6 @@
 #define QSK_INPUT_COMPOSITION_MODEL_H
 
 #include <QObject>
-#include <memory>
 
 class QskInputContext;
 
@@ -16,36 +15,53 @@ class QskInputCompositionModel : public QObject
     Q_OBJECT
 
 public:
-    QskInputCompositionModel( QskInputContext* context );
+    enum Attribute
+    {
+        Words = 1 << 0
+    };
+
+    Q_ENUM( Attribute )
+    Q_DECLARE_FLAGS( Attributes, Attribute )
+
     virtual ~QskInputCompositionModel();
 
-    // to determine whether to show the suggestion bar:
-    virtual bool supportsSuggestions() const;
+    void composeKey( const QString& text, int spaceLeft );
 
-    void commit( const QString& );
-    virtual void commitCandidate( int );
+    virtual int candidateCount() const = 0;
+    virtual QString candidate( int ) const = 0;
 
-    void composeKey( int key );
+    void reset();
 
-    virtual int candidateCount() const;
-    virtual QString candidate( int ) const;
+    QString preeditText() const;
+    void setPreeditText( const QString& );
+
+    Attributes attributes() const;
 
 protected:
-    virtual bool hasIntermediate() const;
-    virtual QString polishPreedit( const QString& preedit );
+    QskInputCompositionModel( Attributes, QskInputContext* );
+
+    virtual void requestCandidates( const QString& preedit ) = 0;
+    virtual void resetCandidates() = 0;
+
+    QskInputContext* context() const;
 
 Q_SIGNALS:
     void candidatesChanged();
 
 private:
-    void clearPreedit();
-    QskInputContext* context() const;
-
-    void sendPreeditTextEvent( const QString& );
-    void sendKeyEvents( int key );
-
-    class PrivateData;
-    std::unique_ptr< PrivateData > m_data;
+    QString m_preedit;
+    const Attributes m_attributes;
 };
+
+inline QString QskInputCompositionModel::preeditText() const
+{
+    return m_preedit;
+}
+
+inline QskInputCompositionModel::Attributes
+QskInputCompositionModel::attributes() const
+{
+    return m_attributes;
+}
 
 #endif

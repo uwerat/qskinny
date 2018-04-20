@@ -18,7 +18,7 @@ public:
 };
 
 QskPinyinCompositionModel::QskPinyinCompositionModel( QskInputContext* context ):
-    Inherited( context ),
+    Inherited( Attributes(), context ),
     m_data( new PrivateData )
 {
 #if 1
@@ -39,11 +39,6 @@ QskPinyinCompositionModel::~QskPinyinCompositionModel()
     ime_pinyin::im_close_decoder();
 }
 
-bool QskPinyinCompositionModel::supportsSuggestions() const
-{
-    return true;
-}
-
 int QskPinyinCompositionModel::candidateCount() const
 {
     return m_data->candidates.count();
@@ -57,53 +52,54 @@ QString QskPinyinCompositionModel::candidate( int index ) const
     return QString();
 }
 
-bool QskPinyinCompositionModel::hasIntermediate() const
+void QskPinyinCompositionModel::resetCandidates()
 {
-    return m_data->candidates.count() > 0;
-}
+    ime_pinyin::im_reset_search();
 
-QString QskPinyinCompositionModel::polishPreedit( const QString& preedit )
-{
-    if( preedit.isEmpty() )
+    if ( !m_data->candidates.isEmpty() )
     {
-        ime_pinyin::im_reset_search();
-    }
-
-    QByteArray preeditBuffer = preedit.toLatin1();
-    size_t numSearchResults = ime_pinyin::im_search(
-        preeditBuffer.constData(), size_t( preeditBuffer.length() ) );
-
-    if( numSearchResults > 0 )
-    {
-        QStringList newCandidates;
-        newCandidates.reserve( 1 );
-
-        QVector< QChar > candidateBuffer;
-        candidateBuffer.resize( ime_pinyin::kMaxSearchSteps + 1 );
-
-        // ### numSearchResults is way too big, we should only do this for the first ten results or so
-        for( unsigned int a = 0; a < numSearchResults; a++ )
-        {
-            size_t length = static_cast< size_t >( candidateBuffer.length() - 1 );
-            bool getCandidate = ime_pinyin::im_get_candidate( a, reinterpret_cast< ime_pinyin::char16* >( candidateBuffer.data() ), length );
-
-            QString candidate;
-
-            if( getCandidate )
-            {
-                candidateBuffer.last() = 0;
-                candidate = QString( candidateBuffer.data() );
-            }
-
-            Qt::Key key = Qt::Key( candidate.at( 0 ).unicode() );
-            QString string = QChar( key );
-
-            newCandidates.append( string );
-        }
-
-        m_data->candidates = newCandidates;
+        m_data->candidates.clear();
         Q_EMIT candidatesChanged();
     }
+}
 
-    return preedit;
+void QskPinyinCompositionModel::requestCandidates( const QString& text )
+{
+    const QByteArray bytes = text.toLatin1();
+
+    size_t count = ime_pinyin::im_search(
+        bytes.constData(), size_t( bytes.length() ) );
+
+    if( count <= 0 )
+        return;
+
+    const size_t maxCount = 20;
+    if ( count > maxCount  )
+        count = maxCount;
+
+    QVector< QChar > candidateBuffer;
+    candidateBuffer.resize( ime_pinyin::kMaxSearchSteps + 1 );
+
+
+    QStringList candidates;
+    candidates.reserve( count );
+
+    for( unsigned int i = 0; i < count; i++ )
+    {
+        size_t length = static_cast< size_t >( candidateBuffer.length() - 1 );
+        const auto buf = reinterpret_cast< ime_pinyin::char16* >( candidateBuffer.data() );
+
+        const bool found = ime_pinyin::im_get_candidate( i, buf, length );
+        Q_ASSERT( found );
+
+        candidateBuffer.last() = 0;
+
+        auto candidate = QString( candidateBuffer.data() );
+        candidate = QChar( Qt::Key( candidate[0].unicode() ) );
+
+        candidates += candidate;
+    }
+
+    m_data->candidates = candidates;
+    Q_EMIT candidatesChanged();
 }
