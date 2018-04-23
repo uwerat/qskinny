@@ -153,7 +153,9 @@ namespace
             return;
 
         setCursorVisible( on );
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
         d->setBlinkingCursorEnabled( on );
+#endif
 
         if ( !on )
         {
@@ -462,7 +464,7 @@ QskTextInput::ActivationModes QskTextInput::activationModes() const
 
 void QskTextInput::setActivationModes( ActivationModes modes )
 {
-    if ( m_data->activationModes != modes )
+    if ( static_cast< ActivationModes >( m_data->activationModes ) != modes )
     {
         m_data->activationModes = modes;
         Q_EMIT activationModesChanged();
@@ -658,8 +660,6 @@ QString QskTextInput::preeditText() const
 {
     auto d = QQuickTextInputPrivate::get( m_data->textInput );
     return d->m_textLayout.preeditAreaText();
-
-    return m_data->textInput->preeditText();
 }
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
