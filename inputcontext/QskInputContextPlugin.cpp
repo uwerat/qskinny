@@ -24,7 +24,7 @@ public:
         {
             auto context = new QskInputContext();
 
-#if 1
+#if 0
             context->setCompositionModel( QLocale(),
                 new QskHunspellCompositionModel( this ) );
 #endif
