@@ -17,8 +17,8 @@ public:
     QStringList candidates;
 };
 
-QskPinyinCompositionModel::QskPinyinCompositionModel( QskInputContext* context ):
-    Inherited( Attributes(), context ),
+QskPinyinCompositionModel::QskPinyinCompositionModel( QObject* parent ):
+    Inherited( Attributes(), parent ),
     m_data( new PrivateData )
 {
 #if 1

@@ -52,6 +52,8 @@ public:
     virtual QskAspect::Subcontrol effectiveSubcontrol(
         QskAspect::Subcontrol ) const override;
 
+    void updateInputProxy( const QQuickItem* );
+
 Q_SIGNALS:
     void inputProxyChanged( bool );
     void inputPromptChanged( const QString& );

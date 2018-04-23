@@ -14,7 +14,7 @@ class QskHunspellCompositionModel : public QskInputCompositionModel
     using Inherited = QskInputCompositionModel;
 
 public:
-    QskHunspellCompositionModel( QskInputContext* context );
+    QskHunspellCompositionModel( QObject* );
     virtual ~QskHunspellCompositionModel() override;
 
     virtual int candidateCount() const override;

@@ -8,8 +8,6 @@
 
 #include <QObject>
 
-class QskInputContext;
-
 class QskInputCompositionModel : public QObject
 {
     Q_OBJECT
@@ -25,43 +23,22 @@ public:
 
     virtual ~QskInputCompositionModel();
 
-    void composeKey( const QString& text, int spaceLeft );
+    virtual void requestCandidates( const QString& preedit ) = 0;
+    virtual void resetCandidates() = 0;
 
     virtual int candidateCount() const = 0;
     virtual QString candidate( int ) const = 0;
 
-    void reset();
-
-    QString preeditText() const;
-    void setPreeditText( const QString& );
-
     Attributes attributes() const;
-
-protected:
-    QskInputCompositionModel( Attributes, QskInputContext* );
-
-    virtual void requestCandidates( const QString& preedit ) = 0;
-    virtual void resetCandidates() = 0;
-
-    QskInputContext* context() const;
 
 Q_SIGNALS:
     void candidatesChanged();
 
+protected:
+    QskInputCompositionModel( Attributes, QObject* );
+
 private:
-    QString m_preedit;
     const Attributes m_attributes;
 };
-
-inline QString QskInputCompositionModel::preeditText() const
-{
-    return m_preedit;
-}
-
-inline QskInputCompositionModel::Attributes
-QskInputCompositionModel::attributes() const
-{
-    return m_attributes;
-}
 
 #endif

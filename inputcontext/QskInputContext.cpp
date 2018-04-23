@@ -49,22 +49,6 @@ static inline QString qskKeyString( int keyCode )
     return QChar( keyCode );
 }
 
-static inline bool qskIsControlKey( int keyCode )
-{
-    switch ( keyCode )
-    {
-        case Qt::Key_Backspace:
-        case Qt::Key_Muhenkan:
-        case Qt::Key_Return:
-        case Qt::Key_Left:
-        case Qt::Key_Right:
-        case Qt::Key_Escape:
-            return true;
-    }
-
-    return false;
-}
-
 static void qskSetLocale( QQuickItem* inputPanel, const QLocale& locale )
 {
     if ( auto control = qobject_cast< QskControl* >( inputPanel ) )
@@ -144,6 +128,8 @@ public:
     QskWindow* inputWindow = nullptr;
 
     QHash< uint, QskInputCompositionModel* > compositionModels;
+
+    QString preedit;
 
     // the input panel is embedded in a window
     bool ownsInputPanelWindow : 1;
@@ -225,7 +211,7 @@ void QskInputContext::update( Qt::InputMethodQueries queries )
             ImhPreferNumbers = 0x8,       // default to number keyboard
             ImhPreferUppercase = 0x10,    // start with shift on
             ImhPreferLowercase = 0x20,    // start with shift off
-            ImhNoPredictiveText = 0x40,   // ignored for now
+            ImhNoPredictiveText = 0x40,   // not use predictive text 
 
             ImhDate = 0x80,               // ignored for now (no date keyboard)
             ImhTime = 0x100,              // ignored for know (no time keyboard)
@@ -426,6 +412,12 @@ void QskInputContext::showInputPanel()
     }
 
     update( Qt::ImQueryAll );
+
+#if 1
+    if ( auto panel = qobject_cast< QskInputPanel* >( m_data->inputPanel ) )
+        panel->updateInputProxy( m_data->inputItem );
+#endif
+
     inputPanel->setVisible( true );
 
 #if 0
@@ -482,6 +474,10 @@ void QskInputContext::hideInputPanel()
     }
 
     qGuiApp->removeEventFilter( this );
+
+    m_data->preedit.clear();
+    if ( auto model = compositionModel() )
+        model->resetCandidates();
 }
 
 bool QskInputContext::isInputPanelVisible() const
@@ -612,7 +608,8 @@ void QskInputContext::invokeAction( QInputMethod::Action action, int value )
 
                 sendText( text, true );
 
-                model->reset();
+                m_data->preedit.clear();
+                model->resetCandidates();
             }
 
             break;
@@ -664,6 +661,7 @@ void QskInputContext::processKey( int key )
     if ( !( hints & Qt::ImhHiddenText ) )
         model = compositionModel();
 
+    auto& preedit = m_data->preedit;
     /*
         First we have to handle the control keys
      */
@@ -674,13 +672,12 @@ void QskInputContext::processKey( int key )
         {
             if ( model )
             {
-                auto preeditText = model->preeditText();
-                if ( !preeditText.isEmpty() )
+                if ( !preedit.isEmpty() )
                 {
-                    preeditText.chop( 1 );
-                    sendText( preeditText, false );
+                    preedit.chop( 1 );
+                    sendText( preedit, false );
 
-                    model->setPreeditText( preeditText );
+                    model->requestCandidates( preedit );
                     return;
                 }
             }
@@ -692,13 +689,14 @@ void QskInputContext::processKey( int key )
         {
             if ( model )
             {
-                const auto preeditText = model->preeditText();
-                if ( !preeditText.isEmpty() )
+                if ( !preedit.isEmpty() )
                 {
                     if ( spaceLeft )
-                        sendText( preeditText.left( spaceLeft ), true );
+                        sendText( preedit.left( spaceLeft ), true );
 
-                    model->reset();
+                    preedit.clear();
+                    model->resetCandidates();
+
                     return;
                 }
             }
@@ -715,14 +713,14 @@ void QskInputContext::processKey( int key )
         {
             if ( model )
             {
-                auto preeditText = model->preeditText();
-                if ( !preeditText.isEmpty() && spaceLeft)
+                if ( !preedit.isEmpty() && spaceLeft)
                 {
-                    preeditText = preeditText.left( spaceLeft );
-                    sendText( preeditText, true );
-                    spaceLeft -= preeditText.length();
+                    preedit = preedit.left( spaceLeft );
+                    sendText( preedit, true );
+                    spaceLeft -= preedit.length();
 
-                    model->reset();
+                    preedit.clear();
+                    model->resetCandidates();
                 }
             }
 
@@ -741,7 +739,19 @@ void QskInputContext::processKey( int key )
 
     if ( model )
     {
-        model->composeKey( text, spaceLeft );
+        preedit += text;
+
+        model->requestCandidates( preedit );
+
+        if ( model->candidateCount() > 0 )
+        {
+            sendText( preedit, false );
+        }
+        else
+        {
+            sendText( preedit.left( spaceLeft ), true );
+            preedit.clear();
+        }
     }
     else
     {

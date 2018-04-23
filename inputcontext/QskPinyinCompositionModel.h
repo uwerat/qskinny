@@ -14,7 +14,7 @@ class QskPinyinCompositionModel : public QskInputCompositionModel
     using Inherited = QskInputCompositionModel;
 
 public:
-    QskPinyinCompositionModel( QskInputContext* );
+    QskPinyinCompositionModel( QObject* );
     virtual ~QskPinyinCompositionModel() override;
 
     virtual int candidateCount() const override;

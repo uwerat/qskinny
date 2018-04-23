@@ -125,7 +125,7 @@ public:
 
     QskLinearBox* layout;
     QskTextLabel* prompt;
-    TextInput* textInput;
+    TextInput* inputProxy;
     QskInputSuggestionBar* suggestionBar;
     QskVirtualKeyboard* keyboard;
 
@@ -142,8 +142,8 @@ QskInputPanel::QskInputPanel( QQuickItem* parent ):
     m_data->prompt = new QskTextLabel();
     m_data->prompt->setVisible( false );
 
-    m_data->textInput = new TextInput();
-    m_data->textInput->setVisible( m_data->hasInputProxy );
+    m_data->inputProxy = new TextInput();
+    m_data->inputProxy->setVisible( m_data->hasInputProxy );
 
     m_data->suggestionBar = new QskInputSuggestionBar();
     m_data->suggestionBar->setVisible( false );
@@ -153,7 +153,7 @@ QskInputPanel::QskInputPanel( QQuickItem* parent ):
     auto layout = new QskLinearBox( Qt::Vertical, this );
 
     layout->addItem( m_data->prompt, Qt::AlignLeft | Qt::AlignHCenter );
-    layout->addItem( m_data->textInput, Qt::AlignLeft | Qt::AlignHCenter );
+    layout->addItem( m_data->inputProxy, Qt::AlignLeft | Qt::AlignHCenter );
     layout->addStretch( 10 );
     layout->addItem( m_data->suggestionBar );
     layout->addItem( m_data->keyboard );
@@ -199,7 +199,7 @@ qreal QskInputPanel::heightForWidth( qreal width ) const
     qreal height = m_data->keyboard->heightForWidth( width );
 
     const QskControl* controls[] =
-        { m_data->prompt, m_data->textInput, m_data->suggestionBar };
+        { m_data->prompt, m_data->inputProxy, m_data->suggestionBar };
 
     for ( auto control : controls )
     {
@@ -228,7 +228,7 @@ qreal QskInputPanel::widthForHeight( qreal height ) const
     height -= padding.top() + padding.bottom();
 
     const QskControl* controls[] =
-        { m_data->prompt, m_data->textInput, m_data->suggestionBar };
+        { m_data->prompt, m_data->inputProxy, m_data->suggestionBar };
 
     for ( auto control : controls )
     {
@@ -278,7 +278,7 @@ void QskInputPanel::setInputProxy( bool on )
         return;
 
     m_data->hasInputProxy = on;
-    m_data->textInput->setVisible( on );
+    m_data->inputProxy->setVisible( on );
 
     auto prompt = m_data->prompt;
 
@@ -286,6 +286,56 @@ void QskInputPanel::setInputProxy( bool on )
         prompt->setVisible( !prompt->text().isEmpty() );
     else
         prompt->setVisible( false );
+}
+
+void QskInputPanel::updateInputProxy( const QQuickItem* inputItem )
+{
+    if ( inputItem == nullptr )
+        return;
+
+    QInputMethodQueryEvent event( Qt::ImQueryAll );
+    QCoreApplication::sendEvent( const_cast< QQuickItem* >( inputItem ), &event );
+
+    const auto proxy = m_data->inputProxy;
+
+    if ( event.queries() & Qt::ImHints )
+    {
+        const auto hints = static_cast< Qt::InputMethodHints >(
+            event.value( Qt::ImHints ).toInt() );
+
+        const auto echoMode = ( hints & Qt::ImhHiddenText )
+            ? QskTextInput::PasswordEchoOnEdit : QskTextInput::Normal;
+
+        proxy->setEchoMode( echoMode );
+    }
+
+    if ( event.queries() & Qt::ImSurroundingText )
+    {
+        const auto text = event.value( Qt::ImSurroundingText ).toString();
+        proxy->setText( text );
+    }
+
+    if ( event.queries() & Qt::ImCursorPosition )
+    {
+        const auto pos = event.value( Qt::ImCursorPosition ).toInt();
+        proxy->setCursorPosition( pos );
+    }
+
+#if 0
+    if ( event.queries() & Qt::ImCurrentSelection )
+    {
+        const auto text = event.value( Qt::ImCursorPosition ).toString();
+        if ( !text.isEmpty() )
+        {
+        }
+    }
+#endif
+
+    if ( event.queries() & Qt::ImMaximumTextLength )
+    {
+        const auto length = event.value( Qt::ImMaximumTextLength ).toInt();
+        proxy->setMaxLength( length );
+    }
 }
 
 bool QskInputPanel::isCandidatesEnabled() const
