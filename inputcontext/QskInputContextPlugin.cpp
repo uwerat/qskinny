@@ -6,6 +6,10 @@
 #include <qpa/qplatforminputcontextplugin_p.h>
 
 #include "QskInputContext.h"
+#include "QskPinyinCompositionModel.h"
+#include "QskHunspellCompositionModel.h"
+
+#include <QLocale>
 
 class QskInputContextPlugin final : public QPlatformInputContextPlugin
 {
@@ -17,7 +21,21 @@ public:
         const QString& system, const QStringList& ) override
     {
         if ( system.compare( QStringLiteral( "skinny" ), Qt::CaseInsensitive ) == 0 )
-            return new QskInputContext;
+        {
+            auto context = new QskInputContext();
+
+#if 1
+            context->setCompositionModel( QLocale(),
+                new QskHunspellCompositionModel( this ) );
+#endif
+
+#if 0
+            context->setCompositionModel(
+                QLocale::Chinese, new QskPinyinCompositionModel( this ) );
+#endif
+            
+            return context;
+        }
 
         return nullptr;
     }

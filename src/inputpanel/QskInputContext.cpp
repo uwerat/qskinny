@@ -4,12 +4,9 @@
  *****************************************************************************/
 
 #include "QskInputContext.h"
-
 #include "QskInputCompositionModel.h"
-#include "QskPinyinCompositionModel.h"
-#include "QskHunspellCompositionModel.h"
-
 #include "QskInputPanel.h"
+
 #include "QskLinearBox.h"
 #include <QskDialog.h>
 #include <QskPopup.h>
@@ -111,7 +108,7 @@ static void qskSetCandidates( QQuickItem* inputPanel,
 
 static inline uint qskHashLocale( const QLocale& locale )
 {
-    return uint( locale.language() + uint( locale.country() ) << 16 );
+    return uint( locale.language() + ( uint( locale.country() ) << 16 ) );
 }
 
 class QskInputContext::PrivateData
@@ -139,13 +136,6 @@ QskInputContext::QskInputContext():
     m_data( new PrivateData() )
 {
     setObjectName( "InputContext" );
-
-#if 1
-    setCompositionModel( locale(), new QskHunspellCompositionModel( this ) );
-#endif
-#if 0
-    setCompositionModel( QLocale::Chinese, new QskPinyinCompositionModel( this ) );
-#endif
 
     connect( qskSetup, &QskSetup::inputPanelChanged,
         this, &QskInputContext::setInputPanel );
@@ -844,8 +834,6 @@ bool QskInputContext::eventFilter( QObject* object, QEvent* event )
             }
             case QEvent::Resize:
             {
-                QQuickItem* panel = m_data->inputPanel;
-
                 if ( m_data->inputPanel )
                     m_data->inputPanel->setSize( m_data->inputWindow->size() );
 
@@ -866,9 +854,7 @@ bool QskInputContext::eventFilter( QObject* object, QEvent* event )
         {
             case QskEvent::GeometryChange:
             {
-                if ( event->type() == QskEvent::GeometryChange )
-                    emitKeyboardRectChanged();
-
+                emitKeyboardRectChanged();
                 break;
             }
             case QEvent::DeferredDelete:
@@ -925,7 +911,6 @@ void QskInputContext::sendText(
         QCoreApplication::sendEvent( m_data->inputItem, &event );
     }
 }
-
 
 void QskInputContext::sendKey( int key ) const
 {

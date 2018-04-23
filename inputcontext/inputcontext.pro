@@ -33,13 +33,7 @@ QMAKE_RPATHDIR *= $${QSK_OUT_ROOT}/lib
 LIBS *= -L$${QSK_OUT_ROOT}/lib -lqskinny 
 
 SOURCES += \
-    QskInputContext.cpp \
-    QskInputContextPlugin.cpp \
-    QskInputCompositionModel.cpp
-
-HEADERS += \
-    QskInputContext.h \
-    QskInputCompositionModel.h
+    QskInputContextPlugin.cpp
 
 OTHER_FILES += metadata.json
 
