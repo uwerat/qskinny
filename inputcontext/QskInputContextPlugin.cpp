@@ -6,8 +6,8 @@
 #include <qpa/qplatforminputcontextplugin_p.h>
 
 #include "QskInputContext.h"
-#include "QskPinyinCompositionModel.h"
-#include "QskHunspellCompositionModel.h"
+#include "QskPinyinTextPredictor.h"
+#include "QskHunspellTextPredictor.h"
 
 #include <QLocale>
 
@@ -25,13 +25,13 @@ public:
             auto context = new QskInputContext();
 
 #if 0
-            context->setCompositionModel( QLocale(),
-                new QskHunspellCompositionModel( this ) );
+            context->registerPredictor( QLocale(),
+                new QskHunspellTextPredictor( this ) );
 #endif
 
 #if 0
-            context->setCompositionModel(
-                QLocale::Chinese, new QskPinyinCompositionModel( this ) );
+            context->registerPredictor(
+                QLocale::Chinese, new QskPinyinTextPredictor( this ) );
 #endif
             
             return context;

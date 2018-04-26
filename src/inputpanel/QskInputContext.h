@@ -6,18 +6,14 @@
 #ifndef QSK_INPUT_CONTEXT_H
 #define QSK_INPUT_CONTEXT_H
 
+#include "QskGlobal.h"
 #include <qpa/qplatforminputcontext.h>
 #include <memory>
 
-class QskInputCompositionModel;
-
+class QskTextPredictor;
 class QQuickItem;
 
-class QInputMethodQueryEvent;
-class QInputMethodEvent;
-class QKeyEvent;
-
-class QskInputContext : public QPlatformInputContext
+class QSK_EXPORT QskInputContext : public QPlatformInputContext
 {
     Q_OBJECT
 
@@ -48,31 +44,23 @@ public:
     virtual QLocale locale() const override;
     virtual Qt::LayoutDirection inputDirection() const override;
 
-    void setCompositionModel( const QLocale&, QskInputCompositionModel* );
+    void registerPredictor( const QLocale&, QskTextPredictor* );
+    QskTextPredictor* registeredPredictor( const QLocale& );
 
     Q_INVOKABLE QQuickItem* inputItem();
 
     virtual bool filterEvent( const QEvent* ) override;
 
-    QInputMethodQueryEvent queryInputMethod( Qt::InputMethodQueries ) const;
-
-    void sendKey( int key ) const;
-    void sendText( const QString& text, bool isFinal ) const;
-
-    Qt::InputMethodHints inputHints() const;
-    int keysLeft() const;
+protected:
+    virtual void updateInputPanel( QQuickItem* inputItem );
 
 private Q_SLOTS:
-    void handleCandidatesChanged();
     void setInputPanel( QQuickItem* );
 
     virtual bool eventFilter( QObject*, QEvent* ) override;
 
 private:
-    void processKey( int key );
-
     void setInputItem( QQuickItem* );
-    QskInputCompositionModel* compositionModel() const;
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

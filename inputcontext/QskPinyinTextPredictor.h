@@ -3,26 +3,26 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef QSK_PINYIN_COMPOSITION_MODEL_H
-#define QSK_PINYIN_COMPOSITION_MODEL_H
+#ifndef QSK_PINYIN_TEXT_PREDICTOR_H
+#define QSK_PINYIN_TEXT_PREDICTOR_H
 
-#include "QskInputCompositionModel.h"
+#include "QskTextPredictor.h"
 #include <memory>
 
-class QskPinyinCompositionModel : public QskInputCompositionModel
+class QSK_EXPORT QskPinyinTextPredictor : public QskTextPredictor
 {
-    using Inherited = QskInputCompositionModel;
+    using Inherited = QskTextPredictor;
 
 public:
-    QskPinyinCompositionModel( QObject* );
-    virtual ~QskPinyinCompositionModel() override;
+    QskPinyinTextPredictor( QObject* );
+    virtual ~QskPinyinTextPredictor() override;
 
     virtual int candidateCount() const override;
     virtual QString candidate( int ) const override;
 
 protected:
-    virtual void requestCandidates( const QString& ) override;
-    virtual void resetCandidates() override;
+    virtual void request( const QString& ) override;
+    virtual void reset() override;
 
 private:
     class PrivateData;

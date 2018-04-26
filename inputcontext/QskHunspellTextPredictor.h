@@ -3,26 +3,26 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef QSK_HUNSPELL_COMPOSITION_MODEL_H
-#define QSK_HUNSPELL_COMPOSITION_MODEL_H
+#ifndef QSK_HUNSPELL_TEXT_PREDICTOR_H
+#define QSK_HUNSPELL_TEXT_PREDICTOR_H
 
-#include "QskInputCompositionModel.h"
+#include "QskTextPredictor.h"
 #include <memory>
 
-class QskHunspellCompositionModel : public QskInputCompositionModel
+class QSK_EXPORT QskHunspellTextPredictor : public QskTextPredictor
 {
-    using Inherited = QskInputCompositionModel;
+    using Inherited = QskTextPredictor;
 
 public:
-    QskHunspellCompositionModel( QObject* );
-    virtual ~QskHunspellCompositionModel() override;
+    QskHunspellTextPredictor( QObject* );
+    virtual ~QskHunspellTextPredictor() override;
 
     virtual int candidateCount() const override;
     virtual QString candidate( int pos ) const override;
 
 protected:
-    virtual void requestCandidates( const QString& ) override;
-    virtual void resetCandidates() override;
+    virtual void request( const QString& ) override;
+    virtual void reset() override;
 
 private:
     class PrivateData;

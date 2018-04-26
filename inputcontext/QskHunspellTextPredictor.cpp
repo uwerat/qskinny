@@ -1,16 +1,16 @@
-#include "QskHunspellCompositionModel.h"
+#include "QskHunspellTextPredictor.h"
 #include <QVector>
 
 #include "hunspell.h"
 
-class QskHunspellCompositionModel::PrivateData
+class QskHunspellTextPredictor::PrivateData
 {
 public:
     Hunhandle* hunspellHandle;
     QVector< QString > candidates;
 };
 
-QskHunspellCompositionModel::QskHunspellCompositionModel( QObject* object ):
+QskHunspellTextPredictor::QskHunspellTextPredictor( QObject* object ):
     Inherited( Words, object ),
     m_data( new PrivateData() )
 {
@@ -23,31 +23,31 @@ QskHunspellCompositionModel::QskHunspellCompositionModel( QObject* object ):
 #endif
 }
 
-QskHunspellCompositionModel::~QskHunspellCompositionModel()
+QskHunspellTextPredictor::~QskHunspellTextPredictor()
 {
     Hunspell_destroy( m_data->hunspellHandle );
 }
 
-int QskHunspellCompositionModel::candidateCount() const
+int QskHunspellTextPredictor::candidateCount() const
 {
     return m_data->candidates.count();
 }
 
-QString QskHunspellCompositionModel::candidate( int pos ) const
+QString QskHunspellTextPredictor::candidate( int pos ) const
 {
     return m_data->candidates[ pos ];
 }
 
-void QskHunspellCompositionModel::resetCandidates()
+void QskHunspellTextPredictor::reset()
 {
     if ( !m_data->candidates.isEmpty() )
     {
         m_data->candidates.clear();
-        Q_EMIT candidatesChanged();
+        Q_EMIT predictionChanged();
     }
 }
 
-void QskHunspellCompositionModel::requestCandidates( const QString& text )
+void QskHunspellTextPredictor::request( const QString& text )
 {
     char** suggestions;
     const QByteArray word = text.toUtf8(); // ### do we need to check the encoding
@@ -71,5 +71,5 @@ void QskHunspellCompositionModel::requestCandidates( const QString& text )
     Hunspell_free_list( m_data->hunspellHandle, &suggestions, count );
 
     m_data->candidates = candidates;
-    Q_EMIT candidatesChanged();
+    Q_EMIT predictionChanged();
 }

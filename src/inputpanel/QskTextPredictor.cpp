@@ -3,22 +3,22 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#include "QskInputCompositionModel.h"
+#include "QskTextPredictor.h"
 
-QskInputCompositionModel::QskInputCompositionModel(
+QskTextPredictor::QskTextPredictor(
         Attributes attributes, QObject* parent ):
     QObject( parent ),
     m_attributes( attributes )
 {
 }
 
-QskInputCompositionModel::~QskInputCompositionModel()
+QskTextPredictor::~QskTextPredictor()
 {
 }
 
-QskInputCompositionModel::Attributes QskInputCompositionModel::attributes() const
+QskTextPredictor::Attributes QskTextPredictor::attributes() const
 {
     return m_attributes;
 }
 
-#include "moc_QskInputCompositionModel.cpp"
+#include "moc_QskTextPredictor.cpp"

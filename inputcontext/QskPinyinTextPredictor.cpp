@@ -3,7 +3,7 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#include "QskPinyinCompositionModel.h"
+#include "QskPinyinTextPredictor.h"
 #include "QskInputContext.h"
 
 #include "pinyinime.h"
@@ -11,13 +11,13 @@
 #include <QStringList>
 #include <QDebug>
 
-class QskPinyinCompositionModel::PrivateData
+class QskPinyinTextPredictor::PrivateData
 {
 public:
     QStringList candidates;
 };
 
-QskPinyinCompositionModel::QskPinyinCompositionModel( QObject* parent ):
+QskPinyinTextPredictor::QskPinyinTextPredictor( QObject* parent ):
     Inherited( Attributes(), parent ),
     m_data( new PrivateData )
 {
@@ -34,17 +34,17 @@ QskPinyinCompositionModel::QskPinyinCompositionModel( QObject* parent ):
     }
 }
 
-QskPinyinCompositionModel::~QskPinyinCompositionModel()
+QskPinyinTextPredictor::~QskPinyinTextPredictor()
 {
     ime_pinyin::im_close_decoder();
 }
 
-int QskPinyinCompositionModel::candidateCount() const
+int QskPinyinTextPredictor::candidateCount() const
 {
     return m_data->candidates.count();
 }
 
-QString QskPinyinCompositionModel::candidate( int index ) const
+QString QskPinyinTextPredictor::candidate( int index ) const
 {
     if ( ( index >= 0 ) && ( index < m_data->candidates.count() ) )
         return m_data->candidates[ index ];
@@ -52,18 +52,18 @@ QString QskPinyinCompositionModel::candidate( int index ) const
     return QString();
 }
 
-void QskPinyinCompositionModel::resetCandidates()
+void QskPinyinTextPredictor::reset()
 {
     ime_pinyin::im_reset_search();
 
     if ( !m_data->candidates.isEmpty() )
     {
         m_data->candidates.clear();
-        Q_EMIT candidatesChanged();
+        Q_EMIT predictionChanged();
     }
 }
 
-void QskPinyinCompositionModel::requestCandidates( const QString& text )
+void QskPinyinTextPredictor::request( const QString& text )
 {
     const QByteArray bytes = text.toLatin1();
 
@@ -101,5 +101,5 @@ void QskPinyinCompositionModel::requestCandidates( const QString& text )
     }
 
     m_data->candidates = candidates;
-    Q_EMIT candidatesChanged();
+    Q_EMIT predictionChanged();
 }

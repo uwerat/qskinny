@@ -3,7 +3,7 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#include "QskInputSuggestionBar.h"
+#include "QskInputPredictionBar.h"
 #include "QskPushButton.h"
 #include "QskLinearBox.h"
 #include "QskTextOptions.h"
@@ -11,9 +11,9 @@
 #include <QFontMetricsF>
 #include <QVector>
 
-QSK_SUBCONTROL( QskInputSuggestionBar, Panel )
-QSK_SUBCONTROL( QskInputSuggestionBar, ButtonPanel )
-QSK_SUBCONTROL( QskInputSuggestionBar, ButtonText )
+QSK_SUBCONTROL( QskInputPredictionBar, Panel )
+QSK_SUBCONTROL( QskInputPredictionBar, ButtonPanel )
+QSK_SUBCONTROL( QskInputPredictionBar, ButtonText )
 
 namespace
 {
@@ -46,27 +46,27 @@ namespace
             QskAspect::Subcontrol subControl ) const override final
         {
             if( subControl == QskPushButton::Panel )
-                return QskInputSuggestionBar::ButtonPanel;
+                return QskInputPredictionBar::ButtonPanel;
 
             if( subControl == QskPushButton::Text )
-                return QskInputSuggestionBar::ButtonText;
+                return QskInputPredictionBar::ButtonText;
 
             return subControl;
         }
     };
 }
 
-class QskInputSuggestionBar::PrivateData
+class QskInputPredictionBar::PrivateData
 {
 public:
     QskLinearBox* layoutBox;
     QVector< QString > candidates;
 
-    int candidateOffset = 0;
+    int scrollOffset = 0;
     const int buttonCount = 12;
 };
 
-QskInputSuggestionBar::QskInputSuggestionBar( QQuickItem* parent ):
+QskInputPredictionBar::QskInputPredictionBar( QQuickItem* parent ):
     Inherited( parent ),
     m_data( new PrivateData )
 {
@@ -82,7 +82,7 @@ QskInputSuggestionBar::QskInputSuggestionBar( QQuickItem* parent ):
         button->setSizePolicy( Qt::Horizontal, QskSizePolicy::Maximum );
 
         connect( button, &QskPushButton::clicked,
-            this, &QskInputSuggestionBar::candidateClicked );
+            this, &QskInputPredictionBar::buttonClicked );
 
         if ( i == 0 )
         {
@@ -90,44 +90,43 @@ QskInputSuggestionBar::QskInputSuggestionBar( QQuickItem* parent ):
             m_data->layoutBox->setRetainSizeWhenHidden( button, true );
         }
     }
-
 }
 
-QskInputSuggestionBar::~QskInputSuggestionBar()
+QskInputPredictionBar::~QskInputPredictionBar()
 {
 }
 
-QskAspect::Subcontrol QskInputSuggestionBar::effectiveSubcontrol(
+QskAspect::Subcontrol QskInputPredictionBar::effectiveSubcontrol(
     QskAspect::Subcontrol subControl ) const
 {
     if( subControl == QskBox::Panel )
-        return QskInputSuggestionBar::Panel;
+        return QskInputPredictionBar::Panel;
 
     return subControl;
 }
 
-void QskInputSuggestionBar::setCandidates( const QVector< QString >& candidates )
+void QskInputPredictionBar::setPrediction( const QVector< QString >& candidates )
 {
     if( m_data->candidates != candidates )
     {
         m_data->candidates = candidates;
-        setCandidateOffset( 0 );
+        setScrollOffset( 0 );
     }
 }
 
-QVector< QString > QskInputSuggestionBar::candidates() const
+QVector< QString > QskInputPredictionBar::candidates() const
 {
     return m_data->candidates;
 }
 
-void QskInputSuggestionBar::setCandidateOffset( int offset )
+void QskInputPredictionBar::setScrollOffset( int offset )
 {
-    m_data->candidateOffset = offset;
+    m_data->scrollOffset = offset;
 
     const auto candidateCount = m_data->candidates.length();
     const auto count = std::min( candidateCount, m_data->buttonCount );
-    const bool continueLeft = m_data->candidateOffset > 0;
-    const bool continueRight = ( candidateCount - m_data->candidateOffset ) > count;
+    const bool continueLeft = m_data->scrollOffset > 0;
+    const bool continueRight = ( candidateCount - m_data->scrollOffset ) > count;
 
     for( int i = 0; i < count; i++ )
     {
@@ -144,7 +143,7 @@ void QskInputSuggestionBar::setCandidateOffset( int offset )
         }
         else
         {
-            const int index = i + m_data->candidateOffset;
+            const int index = i + m_data->scrollOffset;
             button->setText( m_data->candidates[index] );
         }
 
@@ -155,18 +154,18 @@ void QskInputSuggestionBar::setCandidateOffset( int offset )
         m_data->layoutBox->itemAtIndex( i )->setVisible( false );
 }
 
-void QskInputSuggestionBar::candidateClicked()
+void QskInputPredictionBar::buttonClicked()
 {
     const int index = m_data->layoutBox->indexOf(
         qobject_cast< QQuickItem* > ( sender() ) );
 
-    const int offset = m_data->candidateOffset;
+    const int offset = m_data->scrollOffset;
 
     if ( index == 0 )
     {
         if ( offset > 0 )
         {
-            setCandidateOffset( offset - 1 );
+            setScrollOffset( offset - 1 );
             return;
         }
     }
@@ -174,12 +173,12 @@ void QskInputSuggestionBar::candidateClicked()
     {
         if ( m_data->candidates.count() - offset > m_data->buttonCount )
         {
-            setCandidateOffset( offset + 1 );
+            setScrollOffset( offset + 1 );
             return;
         }
     }
 
-    Q_EMIT suggested( offset + index );
+    Q_EMIT predictiveTextSelected( offset + index );
 }
 
-#include "moc_QskInputSuggestionBar.cpp"
+#include "moc_QskInputPredictionBar.cpp"

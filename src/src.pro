@@ -298,15 +298,17 @@ SOURCES += \
     dialogs/QskSelectionWindow.cpp
 
 SOURCES += \
-    inputpanel/QskInputCompositionModel.cpp \
+    inputpanel/QskTextPredictor.cpp \
     inputpanel/QskInputContext.cpp \
+    inputpanel/QskInputEngine.cpp \
     inputpanel/QskInputPanel.cpp \
-    inputpanel/QskInputSuggestionBar.cpp \
+    inputpanel/QskInputPredictionBar.cpp \
     inputpanel/QskVirtualKeyboard.cpp
 
 HEADERS += \
-    inputpanel/QskInputCompositionModel.h \
+    inputpanel/QskTextPredictor.h \
     inputpanel/QskInputContext.h \
+    inputpanel/QskInputEngine.h \
     inputpanel/QskInputPanel.h \
-    inputpanel/QskInputSuggestionBar.h \
+    inputpanel/QskInputPredictionBar.h \
     inputpanel/QskVirtualKeyboard.h

@@ -3,12 +3,12 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef QSK_INPUT_SUGGESTION_BAR_H
-#define QSK_INPUT_SUGGESTION_BAR_H
+#ifndef QSK_INPUT_PREDICTION_BAR_H
+#define QSK_INPUT_PREDICTION_BAR_H
 
 #include "QskBox.h"
 
-class QSK_EXPORT QskInputSuggestionBar : public QskBox
+class QSK_EXPORT QskInputPredictionBar : public QskBox
 {
     Q_OBJECT
 
@@ -17,8 +17,8 @@ class QSK_EXPORT QskInputSuggestionBar : public QskBox
 public:
     QSK_SUBCONTROLS( Panel, ButtonPanel, ButtonText )
 
-    QskInputSuggestionBar( QQuickItem* parent = nullptr );
-    virtual ~QskInputSuggestionBar();
+    QskInputPredictionBar( QQuickItem* parent = nullptr );
+    virtual ~QskInputPredictionBar();
 
     virtual QskAspect::Subcontrol effectiveSubcontrol(
         QskAspect::Subcontrol subControl ) const override;
@@ -26,14 +26,14 @@ public:
     QVector< QString > candidates() const;
 
 Q_SIGNALS:
-    void suggested( int );
+    void predictiveTextSelected( int );
 
 public Q_SLOTS:
-    void setCandidates( const QVector< QString >& );
+    void setPrediction( const QVector< QString >& );
 
 private:
-    void candidateClicked();
-    void setCandidateOffset( int );
+    void buttonClicked();
+    void setScrollOffset( int );
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

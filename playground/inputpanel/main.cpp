@@ -26,6 +26,93 @@
 #define STRINGIFY(x) #x
 #define STRING(x) STRINGIFY(x)
 
+static inline QString nativeLocaleString( const QLocale& locale )
+{
+    switch( locale.language() )
+    {
+        case QLocale::Bulgarian:
+            return QStringLiteral( "български език" );
+
+        case QLocale::Czech:
+            return QStringLiteral( "Čeština" );
+
+        case QLocale::German:
+            return QStringLiteral( "Deutsch" );
+
+        case QLocale::Danish:
+            return QStringLiteral( "Dansk" );
+
+        case QLocale::Greek:
+            return QStringLiteral( "Eλληνικά" );
+
+        case QLocale::English:
+        {
+            switch( locale.country() )
+            {
+                case QLocale::Canada:
+                case QLocale::UnitedStates:
+                case QLocale::UnitedStatesMinorOutlyingIslands:
+                case QLocale::UnitedStatesVirginIslands:
+                    return QStringLiteral( "English (US)" );
+
+                default:
+                    return QStringLiteral( "English (UK)" );
+            }
+        }
+
+        case QLocale::Spanish:
+            return QStringLiteral( "Español" );
+
+        case QLocale::Finnish:
+            return QStringLiteral( "Suomi" );
+
+        case QLocale::French:
+            return QStringLiteral( "Français" );
+
+        case QLocale::Hungarian:
+            return QStringLiteral( "Magyar" );
+
+        case QLocale::Italian:
+            return QStringLiteral( "Italiano" );
+
+        case QLocale::Japanese:
+            return QStringLiteral( "日本語" );
+
+        case QLocale::Latvian:
+            return QStringLiteral( "Latviešu" );
+
+        case QLocale::Lithuanian:
+            return QStringLiteral( "Lietuvių" );
+
+        case QLocale::Dutch:
+            return QStringLiteral( "Nederlands" );
+
+        case QLocale::Portuguese:
+            return QStringLiteral( "Português" );
+
+        case QLocale::Romanian:
+            return QStringLiteral( "Română" );
+
+        case QLocale::Russia:
+            return QStringLiteral( "Русский" );
+
+        case QLocale::Slovenian:
+            return QStringLiteral( "Slovenščina" );
+
+        case QLocale::Slovak:
+            return QStringLiteral( "Slovenčina" );
+
+        case QLocale::Turkish:
+            return QStringLiteral( "Türkçe" );
+
+        case QLocale::Chinese:
+            return QStringLiteral( "中文" );
+
+        default:
+            return QLocale::languageToString( locale.language() );
+    }
+}
+
 class InputBox : public QskLinearBox
 {
 public:
@@ -149,7 +236,7 @@ public:
 private:
     inline void append( const QLocale& locale )
     {
-        m_values += qMakePair( qskNativeLocaleString( locale ), locale );
+        m_values += qMakePair( nativeLocaleString( locale ), locale );
     }
 
     QVector< QPair< QString, QLocale > > m_values;

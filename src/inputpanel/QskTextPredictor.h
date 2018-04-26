@@ -3,12 +3,15 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef QSK_INPUT_COMPOSITION_MODEL_H
-#define QSK_INPUT_COMPOSITION_MODEL_H
+#ifndef QSK_TEXT_PREDICTOR_H
+#define QSK_TEXT_PREDICTOR_H
 
+#include <QskGlobal.h>
 #include <QObject>
 
-class QskInputCompositionModel : public QObject
+// abstract base class for input methods for retrieving predictive text
+
+class QSK_EXPORT QskTextPredictor : public QObject
 {
     Q_OBJECT
 
@@ -21,10 +24,10 @@ public:
     Q_ENUM( Attribute )
     Q_DECLARE_FLAGS( Attributes, Attribute )
 
-    virtual ~QskInputCompositionModel();
+    virtual ~QskTextPredictor();
 
-    virtual void requestCandidates( const QString& preedit ) = 0;
-    virtual void resetCandidates() = 0;
+    virtual void request( const QString& text ) = 0;
+    virtual void reset() = 0;
 
     virtual int candidateCount() const = 0;
     virtual QString candidate( int ) const = 0;
@@ -32,10 +35,10 @@ public:
     Attributes attributes() const;
 
 Q_SIGNALS:
-    void candidatesChanged();
+    void predictionChanged();
 
 protected:
-    QskInputCompositionModel( Attributes, QObject* );
+    QskTextPredictor( Attributes, QObject* );
 
 private:
     const Attributes m_attributes;

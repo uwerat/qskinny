@@ -81,10 +81,10 @@ pinyin {
         $${QSK_PINYIN_DIR}/include/utf16reader.h
 
     HEADERS += \
-         QskPinyinCompositionModel.h
+         QskPinyinTextPredictor.h
 
     SOURCES += \
-         QskPinyinCompositionModel.cpp
+         QskPinyinTextPredictor.cpp
 }
 
 hunspell {
@@ -124,10 +124,10 @@ hunspell {
         $${QSK_HUNSPELL_DIR}/suggestmgr.cxx
 
     HEADERS += \
-        QskHunspellCompositionModel.h
+        QskHunspellTextPredictor.h
 
     SOURCES += \
-        QskHunspellCompositionModel.cpp
+        QskHunspellTextPredictor.cpp
 
     OTHER_FILES +=\
         $${QSK_HUNSPELL_DIR}/license.hunspell \

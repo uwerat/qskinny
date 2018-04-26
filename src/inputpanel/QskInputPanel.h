@@ -9,6 +9,8 @@
 #include "QskGlobal.h"
 #include "QskBox.h"
 
+class QskInputEngine;
+
 class QString;
 class QLocale;
 
@@ -26,25 +28,20 @@ class QSK_EXPORT QskInputPanel: public QskBox
     Q_PROPERTY( QString inputPrompt READ inputPrompt
         WRITE setInputPrompt NOTIFY inputPromptChanged )
 
-
 public:
     QSK_SUBCONTROLS( Panel )
-
-    enum Action
-    {
-        Compose = 0x10,
-        SelectCandidate = 0x11
-    };
-    Q_ENUM( Action )
 
     QskInputPanel( QQuickItem* parent = nullptr );
     virtual ~QskInputPanel() override;
 
+    void attachInputItem( QQuickItem* );
+    QQuickItem* attachedInputItem() const;
+
+    void setEngine( QskInputEngine* );
+    QskInputEngine* engine();
+
     bool hasInputProxy() const;
     QString inputPrompt() const;
-
-    bool isCandidatesEnabled() const;
-    QVector< QString > candidates() const;
 
     virtual qreal heightForWidth( qreal width ) const override;
     virtual qreal widthForHeight( qreal height ) const override;
@@ -53,6 +50,7 @@ public:
         QskAspect::Subcontrol ) const override;
 
     void updateInputProxy( const QQuickItem* );
+    virtual void processInputMethodQueries( Qt::InputMethodQueries );
 
 Q_SIGNALS:
     void inputProxyChanged( bool );
@@ -61,21 +59,21 @@ Q_SIGNALS:
 public Q_SLOTS:
     void setInputPrompt( const QString& );
     void setInputProxy( bool );
-    void setCandidatesEnabled( bool );
-    void setCandidates( const QVector< QString >& );
 
 protected:
     virtual void keyPressEvent( QKeyEvent* ) override;
     virtual void keyReleaseEvent( QKeyEvent* ) override;
 
+    virtual void processKey( int key,
+        Qt::InputMethodHints, int spaceLeft );
+
 private:
+    void updatePredictionBar();
     void commitKey( int key );
-    void commitCandidate( int );
+    void commitPredictiveText( int );
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
-
-QSK_EXPORT QString qskNativeLocaleString( const QLocale& );
 
 #endif
