@@ -74,15 +74,59 @@ static inline void qskSendKey( QQuickItem* receiver, int key )
     QCoreApplication::sendEvent( receiver, &keyRelease );
 }
 
+static inline void qskSyncInputProxy(
+    QQuickItem* inputItem, QskTextInput* inputProxy )
+{
+    int passwordMaskDelay = -1;
+    QString passwordCharacter;
+
+    if ( auto textInput = qobject_cast< QskTextInput* >( inputItem ) )
+    {
+        passwordMaskDelay = textInput->passwordMaskDelay();
+        passwordCharacter = textInput->passwordCharacter();
+
+        if ( inputProxy->echoMode() == QskTextInput::NoEcho )
+        {
+            /*
+                Qt::ImhHiddenText does not provide information
+                to decide between NoEcho/Password
+             */
+            auto mode = textInput->echoMode();
+            if ( mode == QskTextInput::Password )
+                inputProxy->setEchoMode( mode );
+        }
+    }
+
+    if ( passwordMaskDelay >= 0 )
+        inputProxy->setPasswordMaskDelay( passwordMaskDelay );
+    else
+        inputProxy->resetPasswordMaskDelay();
+
+    if ( !passwordCharacter.isEmpty() )
+        inputProxy->setPasswordCharacter( passwordCharacter );
+    else
+        inputProxy->resetPasswordCharacter();
+}
+
 namespace
 {
-    class TextInput : public QskTextInput
+    class TextInput final : public QskTextInput
     {
     public:
         TextInput( QQuickItem* parentItem = nullptr ):
             QskTextInput( parentItem )
         {
             setObjectName( "InputPanelInputProxy" );
+            setFocusPolicy( Qt::NoFocus );
+        }
+
+    protected:
+        virtual void focusInEvent( QFocusEvent* ) override final
+        {
+        }
+
+        virtual void focusOutEvent( QFocusEvent* ) override final
+        {
         }
     };
 }
@@ -198,7 +242,19 @@ void QskInputPanel::attachInputItem( QQuickItem* item )
         processInputMethodQueries( queries );
 
         if ( m_data->hasInputProxy )
+        {
             m_data->inputProxy->setEditing( true );
+
+            // hiding the cursor in the real input item
+            const QInputMethodEvent::Attribute attribute(
+                QInputMethodEvent::Cursor, 0, 0, QVariant() );
+
+            QInputMethodEvent event( QString(), { attribute } );
+            QCoreApplication::sendEvent( item, &event );
+
+            // not all information is available from the input method query
+            qskSyncInputProxy( item, m_data->inputProxy );
+        }
     }
 }
 
@@ -351,17 +407,17 @@ void QskInputPanel::processInputMethodQueries( Qt::InputMethodQueries queries )
     QInputMethodQueryEvent event( queries );
     QCoreApplication::sendEvent( m_data->inputItem, &event );
 
-    if ( queries & Qt::ImHints )
+    if ( event.queries() & Qt::ImHints )
     {
         bool hasPrediction = true;
-        bool hasEchoMode = false;
+        QskTextInput::EchoMode echoMode = QskTextInput::Normal;
 
         const auto hints = static_cast< Qt::InputMethodHints >(
             event.value( Qt::ImHints ).toInt() );
 
         if ( hints & Qt::ImhHiddenText )
         {
-            hasEchoMode = true;
+            echoMode = QskTextInput::NoEcho;
         }
 
         if ( hints & Qt::ImhSensitiveData )
@@ -415,11 +471,13 @@ void QskInputPanel::processInputMethodQueries( Qt::InputMethodQueries queries )
         if ( hints & Qt::ImhDigitsOnly )
         {
             // using a numpad instead of our virtual keyboard
+            hasPrediction = false;
         }
 
         if ( hints & Qt::ImhFormattedNumbersOnly )
         {
             // a numpad with decimal point and minus sign
+            hasPrediction = false;
         }
 
         if ( hints & Qt::ImhUppercaseOnly )
@@ -435,16 +493,19 @@ void QskInputPanel::processInputMethodQueries( Qt::InputMethodQueries queries )
         if ( hints & Qt::ImhDialableCharactersOnly )
         {
             // characters suitable for phone dialing
+            hasPrediction = false;
         }
 
         if ( hints & Qt::ImhEmailCharactersOnly )
         {
             // characters suitable for email addresses
+            hasPrediction = false;
         }
 
         if ( hints & Qt::ImhUrlCharactersOnly )
         {
             // characters suitable for URLs
+            hasPrediction = false;
         }
 
         if ( hints & Qt::ImhLatinOnly )
@@ -457,18 +518,17 @@ void QskInputPanel::processInputMethodQueries( Qt::InputMethodQueries queries )
         m_data->predictionBar->setVisible(
             hasPrediction && m_data->engine && m_data->engine->predictor() );
 
-        m_data->inputProxy->setEchoMode(
-            hasEchoMode ? QskTextInput::PasswordEchoOnEdit : QskTextInput::Normal );
+        m_data->inputProxy->setEchoMode( echoMode );
 
         m_data->inputHints = hints;
     }
 
-    if ( queries & Qt::ImPreferredLanguage )
+    if ( event.queries() & Qt::ImPreferredLanguage )
     {
         // already handled by the input context
     }
 
-    if ( queries & Qt::ImMaximumTextLength )
+    if ( event.queries() & Qt::ImMaximumTextLength )
     {
         // needs to be handled before Qt::ImCursorPosition !
 
@@ -483,7 +543,7 @@ void QskInputPanel::processInputMethodQueries( Qt::InputMethodQueries queries )
     }
 
 
-    if ( queries & Qt::ImSurroundingText )
+    if ( event.queries() & Qt::ImSurroundingText )
     {
         if ( m_data->hasInputProxy )
         {
@@ -492,7 +552,7 @@ void QskInputPanel::processInputMethodQueries( Qt::InputMethodQueries queries )
         }
     }
 
-    if ( queries & Qt::ImCursorPosition )
+    if ( event.queries() & Qt::ImCursorPosition )
     {
         if ( m_data->hasInputProxy )
         {
@@ -501,7 +561,7 @@ void QskInputPanel::processInputMethodQueries( Qt::InputMethodQueries queries )
         }
     }
 
-    if ( queries & Qt::ImCurrentSelection )
+    if ( event.queries() & Qt::ImCurrentSelection )
     {
 #if 0
         const auto text = event.value( Qt::ImCurrentSelection ).toString();

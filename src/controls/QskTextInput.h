@@ -31,6 +31,14 @@ class QSK_EXPORT QskTextInput : public QskControl
     Q_PROPERTY( bool editing READ isEditing
         WRITE setEditing NOTIFY editingChanged )
 
+    Q_PROPERTY( QString passwordCharacter READ passwordCharacter
+        WRITE setPasswordCharacter RESET resetPasswordCharacter
+        NOTIFY passwordCharacterChanged )
+
+    Q_PROPERTY( int passwordMaskDelay READ passwordMaskDelay
+        WRITE setPasswordMaskDelay RESET resetPasswordMaskDelay
+        NOTIFY passwordMaskDelayChanged )
+
     using Inherited = QskControl;
 
 public:
@@ -103,8 +111,15 @@ public:
     EchoMode echoMode() const;
     void setEchoMode( EchoMode );
 
-    QString displayText() const;
+    QString passwordCharacter() const;
+    void setPasswordCharacter( const QString& );
+    void resetPasswordCharacter();
 
+    int passwordMaskDelay() const;
+    void setPasswordMaskDelay( int );
+    void resetPasswordMaskDelay();
+
+    QString displayText() const;
     QString preeditText() const;
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
@@ -152,7 +167,10 @@ Q_SIGNALS:
 #endif
 
     void maximumLengthChanged( int );
+
     void echoModeChanged( EchoMode );
+    void passwordMaskDelayChanged();
+    void passwordCharacterChanged();
 
     void validatorChanged();
     void inputMaskChanged( const QString& );

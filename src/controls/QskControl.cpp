@@ -170,17 +170,14 @@ void qskForceActiveFocus( QQuickItem* item, Qt::FocusReason reason )
     }
 }
 
-void qskUpdateInputMethod( const QQuickItem* item, Qt::InputMethodQueries queries )
+QQuickItem* qskInputContextItem()
 {
-    if ( ( item == nullptr ) || 
-        !( item->flags() & QQuickItem::ItemAcceptsInputMethod ) )
-    {
-        return;
-    }
+    /*
+        The item that is connected to the input context.
+        - often the item having the active focus.
+     */
 
-    auto inputMethod = QGuiApplication::inputMethod();
-
-    bool doUpdate = item->hasActiveFocus();
+    QQuickItem* inputItem = nullptr;
 
     /*
         We could also get the inputContext from QInputMethodPrivate
@@ -197,17 +194,32 @@ void qskUpdateInputMethod( const QQuickItem* item, Qt::InputMethodQueries querie
             without losing the connected input item
          */
 
-        QQuickItem* inputItem = nullptr;
-
-        if ( QMetaObject::invokeMethod( inputContext, "inputItem",
-            Qt::DirectConnection, Q_RETURN_ARG( QQuickItem*, inputItem ) ) )
-        {
-            doUpdate = ( item == inputItem );
-        }
+        QMetaObject::invokeMethod( inputContext, "inputItem",
+            Qt::DirectConnection, Q_RETURN_ARG( QQuickItem*, inputItem ) );
     }
 
+    return inputItem;
+}
+
+void qskUpdateInputMethod( const QQuickItem* item, Qt::InputMethodQueries queries )
+{
+    if ( item == nullptr )
+        return;
+
+#if 1
+    if ( !( item->flags() & QQuickItem::ItemAcceptsInputMethod ) )
+        return;
+#endif
+
+    bool doUpdate;
+
+    if ( const QQuickItem* inputItem = qskInputContextItem() )
+        doUpdate = ( item == inputItem );
+    else
+        doUpdate = item->hasActiveFocus();
+
     if ( doUpdate )
-        inputMethod->update( queries );
+        QGuiApplication::inputMethod()->update( queries );
 }
 
 QList< QQuickItem* > qskPaintOrderChildItems( const QQuickItem* item )

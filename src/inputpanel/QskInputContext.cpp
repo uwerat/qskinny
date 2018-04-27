@@ -278,7 +278,9 @@ void QskInputContext::showInputPanel()
 
             inputPopup->setOverlay( hasInputProxy );
 
-            if ( !hasInputProxy )
+            if ( hasInputProxy )
+                box->setMargins( QMarginsF( 5, 5, 5, 5 ) );
+            else
                 box->setExtraSpacingAt( Qt::TopEdge | Qt::LeftEdge | Qt::RightEdge );
         }
 

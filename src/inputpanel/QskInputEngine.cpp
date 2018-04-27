@@ -36,6 +36,16 @@ static inline QString qskKeyString( int keyCode )
     return QChar( keyCode );
 }
 
+static inline bool qskUsePrediction( Qt::InputMethodHints hints )
+{
+    constexpr Qt::InputMethodHints mask =
+        Qt::ImhNoPredictiveText | Qt::ImhHiddenText
+        | Qt::ImhDialableCharactersOnly | Qt::ImhEmailCharactersOnly
+        | Qt::ImhUrlCharactersOnly;
+
+    return ( hints & mask ) == 0;
+}
+
 class QskInputEngine::PrivateData
 {
 public:
@@ -114,7 +124,7 @@ QskInputEngine::Result QskInputEngine::processKey( int key,
     auto& preedit = m_data->preedit;
 
     QskTextPredictor* predictor = nullptr;
-    if ( !( inputHints & Qt::ImhHiddenText ) )
+    if ( qskUsePrediction( inputHints ) )
         predictor = m_data->predictor;
 
     /*
@@ -175,6 +185,7 @@ QskInputEngine::Result QskInputEngine::processKey( int key,
             {
                 if ( !preedit.isEmpty() && spaceLeft)
                 {
+                    preedit += qskKeyString( key );
                     preedit = preedit.left( spaceLeft );
 
                     result.text = preedit;

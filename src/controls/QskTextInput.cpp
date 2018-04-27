@@ -62,6 +62,12 @@ static inline void qskBindSignals( const QQuickTextInput* wrappedInput,
     QObject::connect( wrappedInput, &QQuickTextInput::echoModeChanged,
         input, [ input ] { input->Q_EMIT echoModeChanged( input->echoMode() ); } );
 
+    QObject::connect( wrappedInput, &QQuickTextInput::passwordCharacterChanged,
+        input, &QskTextInput::passwordCharacterChanged );
+
+    QObject::connect( wrappedInput, &QQuickTextInput::passwordMaskDelayChanged,
+        input, &QskTextInput::passwordMaskDelayChanged );
+
     QObject::connect( wrappedInput, &QQuickItem::implicitWidthChanged,
         input, &QskControl::resetImplicitSize );
 
@@ -381,22 +387,18 @@ void QskTextInput::focusInEvent( QFocusEvent* event )
 
 void QskTextInput::focusOutEvent( QFocusEvent* event )
 {
-#if 1
-    if ( event->reason() != Qt::ActiveWindowFocusReason
-        && event->reason() != Qt::PopupFocusReason )
+    switch( event->reason() )
     {
-        m_data->textInput->deselect();
-    }
-#endif
-
-    if ( m_data->activationModes & ActivationOnFocus )
-    {
-#if 0
-        if ( !hasFocus() )
+        case Qt::ActiveWindowFocusReason:
+        case Qt::PopupFocusReason:
         {
+            break;
+        }
+        default:
+        {
+            m_data->textInput->deselect();
             setEditing( false );
         }
-#endif
     }
 
     Inherited::focusOutEvent( event );
@@ -653,6 +655,37 @@ void QskTextInput::setEchoMode( EchoMode mode )
 
         qskUpdateInputMethod( this, Qt::ImHints );
     }
+}
+
+QString QskTextInput::passwordCharacter() const
+{
+    return m_data->textInput->passwordCharacter();
+}
+
+void QskTextInput::setPasswordCharacter( const QString& text )
+{
+    m_data->textInput->setPasswordCharacter( text );
+}
+
+void QskTextInput::resetPasswordCharacter()
+{
+    m_data->textInput->setPasswordCharacter(
+        QGuiApplication::styleHints()->passwordMaskCharacter() );
+}
+
+int QskTextInput::passwordMaskDelay() const
+{
+    return m_data->textInput->passwordMaskDelay();
+}
+
+void QskTextInput::setPasswordMaskDelay( int ms )
+{
+    return m_data->textInput->setPasswordMaskDelay( ms );
+}
+
+void QskTextInput::resetPasswordMaskDelay()
+{
+    return m_data->textInput->resetPasswordMaskDelay();
 }
 
 QString QskTextInput::displayText() const

@@ -138,7 +138,8 @@ public:
         textInput3->setSizePolicy( Qt::Horizontal, QskSizePolicy::Preferred );
 
         auto* textInput4 = new QskTextInput( this );
-        textInput4->setEchoMode( QskTextInput::PasswordEchoOnEdit );
+        textInput4->setEchoMode( QskTextInput::Password );
+        textInput4->setPasswordMaskDelay( 1000 );
         textInput4->setMaxLength( 8 );
         textInput4->setText( "12345678" );
         textInput4->setSizePolicy( Qt::Horizontal, QskSizePolicy::Preferred );
@@ -248,8 +249,10 @@ int main( int argc, char* argv[] )
     QskObjectCounter counter( true );
 #endif
 
+#if 1
     qputenv( "QT_IM_MODULE", "skinny" );
     qputenv( "QT_PLUGIN_PATH", STRING( PLUGIN_PATH ) );
+#endif
 
     QGuiApplication app( argc, argv );
 
