@@ -126,7 +126,6 @@ public:
 
     QskGraphicProviderMap graphicProviders;
 
-    QPointer< QQuickItem > inputPanel;
     QskSetup::Flags controlFlags;
 };
 
@@ -259,20 +258,6 @@ QskGraphicProvider* QskSetup::graphicProvider( const QString& providerId ) const
     }
 
     return m_data->graphicProviders.provider( providerId );
-}
-
-void QskSetup::setInputPanel( QQuickItem* inputPanel )
-{
-    if ( m_data->inputPanel == inputPanel )
-        return;
-
-    m_data->inputPanel = inputPanel;
-    Q_EMIT inputPanelChanged( m_data->inputPanel );
-}
-
-QQuickItem* QskSetup::inputPanel()
-{
-    return m_data->inputPanel;
 }
 
 QLocale QskSetup::inheritedLocale( const QObject* object )

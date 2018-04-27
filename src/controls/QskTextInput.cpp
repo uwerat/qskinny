@@ -540,6 +540,7 @@ void QskTextInput::setReadOnly( bool on )
 
     m_data->textInput->setReadOnly( on );
 
+    // we are killing user settings here ?
     m_data->textInput->setFlag( QQuickItem::ItemAcceptsInputMethod, !on );
     qskUpdateInputMethod( this, Qt::ImEnabled );
 
@@ -645,10 +646,13 @@ QskTextInput::EchoMode QskTextInput::echoMode() const
 
 void QskTextInput::setEchoMode( EchoMode mode )
 {
-    m_data->textInput->setEchoMode(
-        static_cast< QQuickTextInput::EchoMode >( mode ) );
+    if ( mode != echoMode() )
+    {
+        m_data->textInput->setEchoMode(
+            static_cast< QQuickTextInput::EchoMode >( mode ) );
 
-    qskUpdateInputMethod( this, Qt::ImHints );
+        qskUpdateInputMethod( this, Qt::ImHints );
+    }
 }
 
 QString QskTextInput::displayText() const

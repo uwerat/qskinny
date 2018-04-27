@@ -172,34 +172,37 @@ void qskForceActiveFocus( QQuickItem* item, Qt::FocusReason reason )
 
 void qskUpdateInputMethod( const QQuickItem* item, Qt::InputMethodQueries queries )
 {
+    if ( ( item == nullptr ) || 
+        !( item->flags() & QQuickItem::ItemAcceptsInputMethod ) )
+    {
+        return;
+    }
+
     auto inputMethod = QGuiApplication::inputMethod();
 
     bool doUpdate = item->hasActiveFocus();
 
-    if ( !doUpdate )
+    /*
+        We could also get the inputContext from QInputMethodPrivate
+        but for some reason the gcc sanitizer reports errors
+        when using it. So let's go with QGuiApplicationPrivate.
+     */
+    const auto inputContext =
+        QGuiApplicationPrivate::platformIntegration()->inputContext();
+
+    if ( inputContext && inputContext->isInputPanelVisible() )
     {
         /*
-            We could also get the inputContext from QInputMethodPrivate
-            but for some reason the gcc sanitizer reports errors
-            when using it. So let's go with QGuiApplicationPrivate.
+            QskInputContext allows to navigate inside the input panel
+            without losing the connected input item
          */
-        const auto inputContext =
-            QGuiApplicationPrivate::platformIntegration()->inputContext();
 
-        if ( inputContext && inputContext->isInputPanelVisible() )
+        QQuickItem* inputItem = nullptr;
+
+        if ( QMetaObject::invokeMethod( inputContext, "inputItem",
+            Qt::DirectConnection, Q_RETURN_ARG( QQuickItem*, inputItem ) ) )
         {
-            /*
-                QskInputContext allows to navigate inside the input panel
-                without losing the connected input item
-             */
-
-            QQuickItem* inputItem = nullptr;
-
-            if ( QMetaObject::invokeMethod( inputContext, "inputItem",
-                Qt::DirectConnection, Q_RETURN_ARG( QQuickItem*, inputItem ) ) )
-            {
-                doUpdate = ( item == inputItem );
-            }
+            doUpdate = ( item == inputItem );
         }
     }
 

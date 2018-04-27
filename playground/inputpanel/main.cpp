@@ -6,16 +6,15 @@
 #include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
 
-#include <QskInputPanel.h>
 #include <QskDialog.h>
 #include <QskFocusIndicator.h>
 #include <QskLinearBox.h>
 #include <QskListView.h>
 #include <QskTextInput.h>
 #include <QskInputPanel.h>
+#include <QskInputContext.h>
 
 #include <QskWindow.h>
-#include <QskSetup.h>
 #include <QskAspect.h>
 
 #include <QskObjectCounter.h>
@@ -258,17 +257,16 @@ int main( int argc, char* argv[] )
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
 #if 1
-    // We don't want to have a top level window.
+    // We don't want to have the input panel in a top level window.
     qskDialog->setPolicy( QskDialog::EmbeddedBox );
 #endif
 
 #if 0
     /*
-        QskInputContext is connected to QskSetup::inputPanelChanged,
-        making it the system input. If no input panel has been assigned
-        QskInputContext would create a window or subwindow on the fly.
+        If no input panel has been assigned QskInputContext creates
+        default panel if none has been assigned
      */
-     qskSetup->setInputPanel( new QskInputPanel() );
+     QskInputContext::setInputPanel( new QskInputPanel() );
 #endif
 
     auto box = new QskLinearBox( Qt::Horizontal );

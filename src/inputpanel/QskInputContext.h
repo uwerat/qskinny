@@ -11,6 +11,7 @@
 #include <memory>
 
 class QskTextPredictor;
+class QskInputPanel;
 class QQuickItem;
 
 class QSK_EXPORT QskInputContext : public QPlatformInputContext
@@ -51,19 +52,16 @@ public:
 
     virtual bool filterEvent( const QEvent* ) override;
 
+    static void setInputPanel( QskInputPanel* );
+    static QskInputPanel* inputPanel();
+
 protected:
-    virtual void updateInputPanel( QQuickItem* inputItem );
-
-private Q_SLOTS:
-    void setInputPanel( QQuickItem* );
-
     virtual bool eventFilter( QObject*, QEvent* ) override;
 
 private:
-    void setInputItem( QQuickItem* );
-
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
+
 
 #endif

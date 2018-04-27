@@ -16,7 +16,7 @@ class QLocale;
 
 template class QVector< QString >;
 
-class QSK_EXPORT QskInputPanel: public QskBox
+class QSK_EXPORT QskInputPanel : public QskBox
 {
     Q_OBJECT
 
@@ -49,7 +49,6 @@ public:
     virtual QskAspect::Subcontrol effectiveSubcontrol(
         QskAspect::Subcontrol ) const override;
 
-    void updateInputProxy( const QQuickItem* );
     virtual void processInputMethodQueries( Qt::InputMethodQueries );
 
 Q_SIGNALS:

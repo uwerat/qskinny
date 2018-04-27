@@ -18,10 +18,27 @@
 #include <QInputMethodQueryEvent>
 #include <QTextCharFormat>
 
-static inline void qskSendText( QQuickItem* inputItem,
+static inline void qskSendReplaceText( QQuickItem* receiver, const QString& text )
+{
+    if ( receiver == nullptr )
+        return;
+
+    QInputMethodEvent::Attribute attribute(
+        QInputMethodEvent::Selection, 0, 32767, QVariant() );
+
+    QInputMethodEvent event1( QString(), { attribute } );
+    QCoreApplication::sendEvent( receiver, &event1 );
+
+    QInputMethodEvent event2;
+    event2.setCommitString( text );
+
+    QCoreApplication::sendEvent( receiver, &event2 );
+}
+
+static inline void qskSendText( QQuickItem* receiver,
     const QString& text, bool isFinal )
 {
-    if ( inputItem == nullptr )
+    if ( receiver == nullptr )
         return;
 
     if ( isFinal )
@@ -29,7 +46,7 @@ static inline void qskSendText( QQuickItem* inputItem,
         QInputMethodEvent event;
         event.setCommitString( text );
 
-        QCoreApplication::sendEvent( inputItem, &event );
+        QCoreApplication::sendEvent( receiver, &event );
     }
     else
     {
@@ -41,20 +58,20 @@ static inline void qskSendText( QQuickItem* inputItem,
 
         QInputMethodEvent event( text, { attribute } );
 
-        QCoreApplication::sendEvent( inputItem, &event );
+        QCoreApplication::sendEvent( receiver, &event );
     }
 }
 
-static inline void qskSendKey( QQuickItem* inputItem, int key )
+static inline void qskSendKey( QQuickItem* receiver, int key )
 {
-    if ( inputItem == nullptr )
+    if ( receiver == nullptr )
         return;
 
     QKeyEvent keyPress( QEvent::KeyPress, key, Qt::NoModifier );
-    QCoreApplication::sendEvent( inputItem, &keyPress );
+    QCoreApplication::sendEvent( receiver, &keyPress );
 
     QKeyEvent keyRelease( QEvent::KeyRelease, key, Qt::NoModifier );
-    QCoreApplication::sendEvent( inputItem, &keyRelease );
+    QCoreApplication::sendEvent( receiver, &keyRelease );
 }
 
 namespace
@@ -65,6 +82,7 @@ namespace
         TextInput( QQuickItem* parentItem = nullptr ):
             QskTextInput( parentItem )
         {
+            setObjectName( "InputPanelInputProxy" );
         }
     };
 }
@@ -75,8 +93,16 @@ class QskInputPanel::PrivateData
 {
 public:
     PrivateData():
+        inputHints( 0 ),
+        maxChars( -1 ),
+        hasPrediction( true ),
         hasInputProxy( true )
     {
+    }
+
+    QQuickItem* receiverItem()
+    {
+        return hasInputProxy ? inputProxy : inputItem;
     }
 
     QPointer< QskInputEngine > engine;
@@ -88,6 +114,10 @@ public:
     QskInputPredictionBar* predictionBar;
     QskVirtualKeyboard* keyboard;
 
+    Qt::InputMethodHints inputHints;
+    int maxChars;
+
+    bool hasPrediction : 1;
     bool hasInputProxy : 1;
 };
 
@@ -146,7 +176,8 @@ void QskInputPanel::setEngine( QskInputEngine* engine )
             this, &QskInputPanel::updatePredictionBar );
     }
 
-    m_data->predictionBar->setVisible( engine && engine->predictor() );
+    m_data->predictionBar->setVisible(
+        m_data->hasPrediction && engine && engine->predictor() );
 }
 
 void QskInputPanel::attachInputItem( QQuickItem* item )
@@ -165,6 +196,9 @@ void QskInputPanel::attachInputItem( QQuickItem* item )
         queries &= ~Qt::ImEnabled;
 
         processInputMethodQueries( queries );
+
+        if ( m_data->hasInputProxy )
+            m_data->inputProxy->setEditing( true );
     }
 }
 
@@ -234,56 +268,6 @@ void QskInputPanel::setInputProxy( bool on )
         prompt->setVisible( false );
 }
 
-void QskInputPanel::updateInputProxy( const QQuickItem* inputItem )
-{
-    if ( inputItem == nullptr )
-        return;
-
-    QInputMethodQueryEvent event( Qt::ImQueryAll );
-    QCoreApplication::sendEvent( const_cast< QQuickItem* >( inputItem ), &event );
-
-    const auto proxy = m_data->inputProxy;
-
-    if ( event.queries() & Qt::ImHints )
-    {
-        const auto hints = static_cast< Qt::InputMethodHints >(
-            event.value( Qt::ImHints ).toInt() );
-
-        const auto echoMode = ( hints & Qt::ImhHiddenText )
-            ? QskTextInput::PasswordEchoOnEdit : QskTextInput::Normal;
-
-        proxy->setEchoMode( echoMode );
-    }
-
-    if ( event.queries() & Qt::ImSurroundingText )
-    {
-        const auto text = event.value( Qt::ImSurroundingText ).toString();
-        proxy->setText( text );
-    }
-
-    if ( event.queries() & Qt::ImCursorPosition )
-    {
-        const auto pos = event.value( Qt::ImCursorPosition ).toInt();
-        proxy->setCursorPosition( pos );
-    }
-
-#if 0
-    if ( event.queries() & Qt::ImCurrentSelection )
-    {
-        const auto text = event.value( Qt::ImCursorPosition ).toString();
-        if ( !text.isEmpty() )
-        {
-        }
-    }
-#endif
-
-    if ( event.queries() & Qt::ImMaximumTextLength )
-    {
-        const auto length = event.value( Qt::ImMaximumTextLength ).toInt();
-        proxy->setMaxLength( length );
-    }
-}
-
 void QskInputPanel::commitPredictiveText( int index )
 {
     m_data->predictionBar->setPrediction( QVector< QString >() );
@@ -302,34 +286,23 @@ void QskInputPanel::commitKey( int key )
     if ( m_data->engine == nullptr || m_data->inputItem == nullptr )
         return;
 
-    auto engine = m_data->engine;
-    auto inputItem = m_data->inputItem;
-
-    QInputMethodQueryEvent event( Qt::ImHints );
-    QCoreApplication::sendEvent( inputItem, &event );
-
-    const auto inputHints = static_cast< Qt::InputMethodHints >(
-        event.value( Qt::ImHints ).toInt() );
-
     int spaceLeft = -1;
 
-    if ( !( inputHints & Qt::ImhMultiLine ) )
+    if ( !( m_data->inputHints & Qt::ImhMultiLine ) )
     {
-        QInputMethodQueryEvent event(
-            Qt::ImSurroundingText | Qt::ImMaximumTextLength );
+        auto receiver = m_data->receiverItem();
 
-        QCoreApplication::sendEvent( inputItem, &event );
-
-        const int max = event.value( Qt::ImMaximumTextLength ).toInt();
-
-        if ( max > 0 )
+        if ( m_data->maxChars >= 0 )
         {
+            QInputMethodQueryEvent event( Qt::ImSurroundingText );
+            QCoreApplication::sendEvent( receiver, &event );
+
             const auto text = event.value( Qt::ImSurroundingText ).toString();
-            spaceLeft = max - text.length();
+            spaceLeft = m_data->maxChars - text.length();
         }
     }
 
-    processKey( key, inputHints, spaceLeft );
+    processKey( key, m_data->inputHints, spaceLeft );
 }
 
 void QskInputPanel::processKey( int key,
@@ -338,16 +311,35 @@ void QskInputPanel::processKey( int key,
     const auto result = m_data->engine->processKey( key, inputHints, spaceLeft );
 
     auto inputItem = m_data->inputItem;
+    auto inputProxy = m_data->inputProxy;
 
     if ( result.key )
     {
-        // sending a control key
-        qskSendKey( inputItem, result.key );
+        switch( result.key )
+        {
+            case Qt::Key_Return:
+            {
+                if ( m_data->hasInputProxy )
+                    qskSendReplaceText( inputItem, inputProxy->text() );
+
+                qskSendKey( inputItem, result.key );
+                break;
+            }
+            case Qt::Key_Escape:
+            {
+                qskSendKey( inputItem, result.key );
+                break;
+            }
+            default:
+            {
+                qskSendKey( m_data->receiverItem(), result.key );
+            }
+        }
     }
     else if ( !result.text.isEmpty() )
     {
         // changing the current text
-        qskSendText( inputItem, result.text, result.isFinal );
+        qskSendText( m_data->receiverItem(), result.text, result.isFinal );
     }
 }
 
@@ -356,73 +348,182 @@ void QskInputPanel::processInputMethodQueries( Qt::InputMethodQueries queries )
     if ( m_data->inputItem == nullptr )
         return;
 
-    /*
-        adjust the input panel to information provided from the input item
-     */
+    QInputMethodQueryEvent event( queries );
+    QCoreApplication::sendEvent( m_data->inputItem, &event );
 
-    QInputMethodQueryEvent queryEvent( queries );
-    QCoreApplication::sendEvent( m_data->inputItem, &queryEvent );
-
-    if ( queryEvent.queries() & Qt::ImHints )
+    if ( queries & Qt::ImHints )
     {
-        /*
-            ImhHiddenText = 0x1,          // might need to disable certain checks
-            ImhSensitiveData = 0x2,       // shouldn't change anything
-            ImhNoAutoUppercase = 0x4,     // if we support auto uppercase, disable it
-            ImhPreferNumbers = 0x8,       // default to number keyboard
-            ImhPreferUppercase = 0x10,    // start with shift on
-            ImhPreferLowercase = 0x20,    // start with shift off
-            ImhNoPredictiveText = 0x40,   // not use predictive text
+        bool hasPrediction = true;
+        bool hasEchoMode = false;
 
-            ImhDate = 0x80,               // ignored for now (no date keyboard)
-            ImhTime = 0x100,              // ignored for know (no time keyboard)
-
-            ImhPreferLatin = 0x200,       // can be used to launch chinese kb in english mode
-
-            ImhMultiLine = 0x400,         // not useful?
-
-            ImhDigitsOnly                 // default to number keyboard, disable other keys
-            ImhFormattedNumbersOnly       // hard to say
-            ImhUppercaseOnly              // caps-lock, disable shift
-            ImhLowercaseOnly              // disable shift
-            ImhDialableCharactersOnly     // dial pad (calculator?)
-            ImhEmailCharactersOnly        // disable certain symbols (email-only kb?)
-            ImhUrlCharactersOnly          // disable certain symbols (url-only kb?)
-            ImhLatinOnly                  // disable chinese input
-         */
-
-#if 0
         const auto hints = static_cast< Qt::InputMethodHints >(
-            queryEvent.value( Qt::ImHints ).toInt() );
+            event.value( Qt::ImHints ).toInt() );
 
-#endif
+        if ( hints & Qt::ImhHiddenText )
+        {
+            hasEchoMode = true;
+        }
+
+        if ( hints & Qt::ImhSensitiveData )
+        {
+        }
+
+        if ( hints & Qt::ImhNoAutoUppercase )
+        {
+        }
+
+        if ( hints & Qt::ImhPreferNumbers )
+        {
+            // we should start with having the number keys being visible
+        }
+
+        if ( hints & Qt::ImhPreferUppercase )
+        {
+            // we should start with having the upper keys being visible
+        }
+
+        if ( hints & Qt::ImhPreferLowercase )
+        {
+            // we should start with having the upper keys being visible
+        }
+
+        if ( hints & Qt::ImhNoPredictiveText )
+        {
+            hasPrediction = false;
+        }
+
+        if ( hints & Qt::ImhDate )
+        {
+            // we should have a date/time input
+        }
+
+        if ( hints & Qt::ImhTime )
+        {
+            // we should have a date/time input
+        }
+
+        if ( hints & Qt::ImhPreferLatin )
+        {
+            // conflicts with our concept of using the locale
+        }
+
+        if ( hints & Qt::ImhMultiLine )
+        {
+            // we need an implementation of QskTextEdit for this
+        }
+
+        if ( hints & Qt::ImhDigitsOnly )
+        {
+            // using a numpad instead of our virtual keyboard
+        }
+
+        if ( hints & Qt::ImhFormattedNumbersOnly )
+        {
+            // a numpad with decimal point and minus sign
+        }
+
+        if ( hints & Qt::ImhUppercaseOnly )
+        {
+            // locking all other keys
+        }
+
+        if ( hints & Qt::ImhLowercaseOnly )
+        {
+            // locking all other keys
+        }
+
+        if ( hints & Qt::ImhDialableCharactersOnly )
+        {
+            // characters suitable for phone dialing
+        }
+
+        if ( hints & Qt::ImhEmailCharactersOnly )
+        {
+            // characters suitable for email addresses
+        }
+
+        if ( hints & Qt::ImhUrlCharactersOnly )
+        {
+            // characters suitable for URLs
+        }
+
+        if ( hints & Qt::ImhLatinOnly )
+        {
+            // locking all other keys
+        }
+
+        m_data->hasPrediction = hasPrediction;
+
+        m_data->predictionBar->setVisible(
+            hasPrediction && m_data->engine && m_data->engine->predictor() );
+
+        m_data->inputProxy->setEchoMode(
+            hasEchoMode ? QskTextInput::PasswordEchoOnEdit : QskTextInput::Normal );
+
+        m_data->inputHints = hints;
     }
 
-#if 0
-    if ( queryEvent.queries() & Qt::ImPreferredLanguage )
+    if ( queries & Qt::ImPreferredLanguage )
     {
+        // already handled by the input context
     }
+
+    if ( queries & Qt::ImMaximumTextLength )
+    {
+        // needs to be handled before Qt::ImCursorPosition !
+
+        m_data->maxChars = event.value( Qt::ImMaximumTextLength ).toInt();
+#if 1
+        if ( m_data->maxChars >= 32767 )
+            m_data->maxChars = -1;
 #endif
 
+        if ( m_data->hasInputProxy )
+            m_data->inputProxy->setMaxLength( m_data->maxChars );
+    }
+
+
+    if ( queries & Qt::ImSurroundingText )
+    {
+        if ( m_data->hasInputProxy )
+        {
+            const auto text = event.value( Qt::ImSurroundingText ).toString();
+            m_data->inputProxy->setText( text );
+        }
+    }
+
+    if ( queries & Qt::ImCursorPosition )
+    {
+        if ( m_data->hasInputProxy )
+        {
+            const auto pos = event.value( Qt::ImCursorPosition ).toInt();
+            m_data->inputProxy->setCursorPosition( pos );
+        }
+    }
+
+    if ( queries & Qt::ImCurrentSelection )
+    {
+#if 0
+        const auto text = event.value( Qt::ImCurrentSelection ).toString();
+        if ( !text.isEmpty() )
+        {
+        }
+#endif
+    }
     /*
         Qt::ImMicroFocus
         Qt::ImCursorRectangle
         Qt::ImFont
-        Qt::ImCursorPosition
-        Qt::ImSurroundingText // important for chinese input
-        Qt::ImCurrentSelection // important for prediction
-        Qt::ImMaximumTextLength // should be monitored
         Qt::ImAnchorPosition
 
         Qt::ImAbsolutePosition
-        Qt::ImTextBeforeCursor // important for chinese
-        Qt::ImTextAfterCursor  // important for chinese
+        Qt::ImTextBeforeCursor
+        Qt::ImTextAfterCursor
         Qt::ImPlatformData     // hard to say...
         Qt::ImEnterKeyType
         Qt::ImAnchorRectangle
-        Qt::ImInputItemClipRectangle // could be used for the geometry of the panel
+        Qt::ImInputItemClipRectangle
      */
-
 }
 
 void QskInputPanel::keyPressEvent( QKeyEvent* event )

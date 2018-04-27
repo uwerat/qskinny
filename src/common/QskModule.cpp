@@ -159,9 +159,6 @@ public:
 
     Q_PROPERTY( QStringList skinList READ skinList NOTIFY skinListChanged )
 
-    Q_PRIVATE_PROPERTY( setup(), QQuickItem* inputPanel READ inputPanel
-        WRITE setInputPanel NOTIFY inputPanelChanged )
-
     Q_PRIVATE_PROPERTY( setup(), QskSetupFlagsProvider controlFlags
         READ controlFlags WRITE setControlFlags NOTIFY controlFlagsChanged )
 
@@ -177,8 +174,7 @@ public:
 
         connect( setup(), &QskSetup::skinChanged,
             this, &QskMain::skinChanged, Qt::QueuedConnection );
-        connect( setup(), &QskSetup::inputPanelChanged,
-            this, &QskMain::inputPanelChanged );
+
         connect( setup(), &QskSetup::controlFlagsChanged,
             this, &QskMain::controlFlagsChanged, Qt::QueuedConnection );
     }

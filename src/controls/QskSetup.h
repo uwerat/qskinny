@@ -58,9 +58,6 @@ public:
 
     QskSkin* skin();
 
-    void setInputPanel( QQuickItem* );
-    QQuickItem* inputPanel();
-
     void addGraphicProvider( const QString& providerId, QskGraphicProvider* );
     QskGraphicProvider* graphicProvider( const QString& providerId ) const;
 
@@ -74,7 +71,6 @@ public:
 
 Q_SIGNALS:
     void skinChanged( QskSkin* );
-    void inputPanelChanged( QQuickItem* );
     void controlFlagsChanged();
 
 private:
