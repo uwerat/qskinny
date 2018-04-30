@@ -18,6 +18,7 @@
 #include <QskTabBar.h>
 #include <QskTabView.h>
 #include <QskInputPanel.h>
+#include <QskInputPredictionBar.h>
 #include <QskVirtualKeyboard.h>
 #include <QskScrollView.h>
 #include <QskListView.h>
@@ -243,6 +244,7 @@ void QskSquiekSkin::initHints()
     initDialogButtonHints();
     initFocusIndicatorHints();
     initInputPanelHints();
+    initInputPredictionBar();
     initVirtualKeyboardHints();
     initListViewHints();
     initPageIndicatorHints();
@@ -620,6 +622,24 @@ void QskSquiekSkin::initInputPanelHints()
 
     setMargins( Q::Panel | Padding, 5 );
     setPanel( Q::Panel, Raised );
+}
+
+void QskSquiekSkin::initInputPredictionBar()
+{
+    using namespace QskAspect;
+    using Q = QskInputPredictionBar;
+
+    const ColorPalette& pal = m_data->palette;
+
+    setMargins( Q::Panel | Padding, 5 );
+    setPanel( Q::Panel, Flat );
+
+    setButton( Q::ButtonPanel, Flat );
+    setButton( Q::ButtonPanel | QskPushButton::Pressed, Sunken );
+    setMetric( Q::ButtonPanel | MinimumWidth, qskDpiScaled( 30.0 ) );
+
+    setColor( Q::ButtonText, pal.themeForeground );
+    setColor( Q::ButtonText | QskPushButton::Disabled, pal.darker200 );
 }
 
 void QskSquiekSkin::initVirtualKeyboardHints()

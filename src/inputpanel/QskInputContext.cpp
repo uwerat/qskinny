@@ -193,6 +193,50 @@ bool QskInputContext::isAnimating() const
     return false;
 }
 
+QskPopup* QskInputContext::createEmbeddingPopup( QskInputPanel* panel )
+{
+    auto popup = new QskPopup();
+
+    popup->setAutoLayoutChildren( true );
+    popup->setTransparentForPositioner( false );
+    popup->setModal( true );
+
+    auto box = new QskLinearBox( popup );
+    box->addItem( panel );
+
+    /*
+        When the panel has an input proxy ( usually a local text input )
+        we don't need to see the input item and display the overlay
+        and align in the center of the window.
+     */
+    const bool hasInputProxy = panel->hasInputProxy();
+
+    popup->setOverlay( hasInputProxy );
+
+    if ( hasInputProxy )
+        box->setMargins( QMarginsF( 5, 5, 5, 5 ) );
+    else
+        box->setExtraSpacingAt( Qt::TopEdge | Qt::LeftEdge | Qt::RightEdge );
+
+    return popup;
+}
+
+QskWindow* QskInputContext::createEmbeddingWindow( QskInputPanel* panel )
+{
+    auto window = new QskWindow();
+
+    window->setFlags( window->flags() & Qt::Dialog );
+    //window->setModality( Qt::ApplicationModal );
+    window->setAutoLayoutChildren( true );
+#if 0
+    window->setFlags( Qt::Tool | Qt::WindowDoesNotAcceptFocus );
+#endif
+
+    panel->setParentItem( window->contentItem() );
+
+    return window;
+}
+
 void QskInputContext::showInputPanel()
 {
     auto focusItem = qobject_cast< QQuickItem* >( qGuiApp->focusObject() );
@@ -209,9 +253,6 @@ void QskInputContext::showInputPanel()
 
     m_data->inputItem = focusItem;
 
-    auto& inputPopup = m_data->inputPopup;
-    auto& inputWindow = m_data->inputWindow;
-
     if ( qskInputPanel == nullptr )
         qskSetInputPanel( new QskInputPanel() );
 
@@ -227,66 +268,53 @@ void QskInputContext::showInputPanel()
     {
         // The input panel is embedded in a top level window
 
-        delete inputPopup;
+        delete m_data->inputPopup;
 
-        if ( inputWindow == nullptr )
+        if ( m_data->inputWindow == nullptr )
         {
-            inputWindow = new QskWindow();
-            inputWindow->setDeleteOnClose( true );
-#if 0
-            inputWindow->setFlags( Qt::Tool | Qt::WindowDoesNotAcceptFocus );
-#endif
+            auto window = createEmbeddingWindow( qskInputPanel );
 
-            qskInputPanel->setParentItem( inputWindow->contentItem() );
+            if ( window )
+            {
+                QSize size = window->effectivePreferredSize();
+                if ( size.isEmpty() )
+                {
+                    // no idea, may be something based on the screen size
+                    size = QSize( 800, 240 );
+                }
+
+                window->resize( size );
+                window->show();
+
+                window->setDeleteOnClose( true );
+                window->installEventFilter( this );
+            }
+
+            m_data->inputWindow = window;
         }
-
-        QSize size = qskInputPanel->sizeHint().toSize();
-        if ( size.isEmpty() )
-        {
-            // no idea, may be something based on the screen size
-            size = QSize( 800, 240 );
-        }
-
-        inputWindow->resize( size );
-        inputWindow->show();
-
-        inputWindow->installEventFilter( this );
     }
     else
     {
         // The input panel is embedded in a popup
 
-        delete inputWindow;
+        delete m_data->inputWindow;
 
-        if ( inputPopup == nullptr )
+        if ( m_data->inputPopup == nullptr )
         {
-            inputPopup = new QskPopup( m_data->inputItem->window()->contentItem() );
+            auto popup = createEmbeddingPopup( qskInputPanel );
 
-            inputPopup->setAutoLayoutChildren( true );
-            inputPopup->setTransparentForPositioner( false );
-            inputPopup->setModal( true );
+            if ( popup )
+            {
+                popup->setParentItem( m_data->inputItem->window()->contentItem() );
+                if ( popup->parent() == nullptr )
+                    popup->setParent( this );
 
-            auto box = new QskLinearBox( inputPopup );
-            box->addItem( qskInputPanel );
-
-            /*
-                When the panel has an input proxy ( usually a local text input )
-                we don't need to see the input item and display the overlay
-                and align in the center of the window.
-             */
-            const bool hasInputProxy = qskInputPanel->hasInputProxy();
-
-            inputPopup->setOverlay( hasInputProxy );
-
-            if ( hasInputProxy )
-                box->setMargins( QMarginsF( 5, 5, 5, 5 ) );
-            else
-                box->setExtraSpacingAt( Qt::TopEdge | Qt::LeftEdge | Qt::RightEdge );
+                popup->setVisible( true );
+                popup->installEventFilter( this );
+            }
+    
+            m_data->inputPopup = popup;
         }
-
-        inputPopup->setParentItem( m_data->inputItem->window()->contentItem() );
-        inputPopup->setVisible( true );
-        inputPopup->installEventFilter( this );
     }
 
     m_data->engine->setPredictor(
@@ -314,7 +342,17 @@ void QskInputContext::hideInputPanel()
             focusItem->setFocus( false );
         }
 #endif
+    }
 
+    if ( qskInputPanel )
+    {
+        qskInputPanel->setParentItem( nullptr );
+        qskInputPanel->attachInputItem( nullptr );
+        qskInputPanel->setEngine( nullptr );
+    }
+
+    if ( m_data->inputPopup )
+    {
         m_data->inputPopup->deleteLater();
     }
 
@@ -325,14 +363,6 @@ void QskInputContext::hideInputPanel()
 
         window->removeEventFilter( this );
         window->close(); // deleteOnClose is set
-    }
-
-    if ( qskInputPanel )
-    {
-        //qskInputPanel->setVisible( false );
-        qskInputPanel->setParentItem( nullptr );
-        qskInputPanel->attachInputItem( nullptr );
-        qskInputPanel->setEngine( nullptr );
     }
 
     m_data->inputItem = nullptr;
@@ -370,47 +400,46 @@ void QskInputContext::setFocusObject( QObject* focusObject )
         return;
     }
 
-    bool doTerminate = true;
+    const auto w = m_data->inputItem->window();
+    if ( w == nullptr )
+        return;
 
-    if ( focusObject == nullptr && m_data->inputPopup )
+    if ( m_data->inputWindow )
     {
-        if ( const auto window = m_data->inputItem->window() )
+        if ( focusObject == nullptr )
         {
-            auto focusItem = window->contentItem()->scopedFocusItem();
-            if ( focusItem == m_data->inputPopup )
-                doTerminate = false;
-        }
-    }
-
-    if ( doTerminate )
-    {
-        if ( m_data->inputWindow )
-        {
-            auto focusWindow = QGuiApplication::focusWindow();
-
-            if ( focusWindow == nullptr ||
-                QGuiApplication::focusWindow() == m_data->inputWindow )
+            if ( m_data->inputItem->hasFocus() )
             {
-                doTerminate = false;
+                /*
+                    As long as the focus is noewhere and
+                    the local focus stay on the input item
+                    we don't care
+                 */
+
+                return;
             }
         }
-        else if ( m_data->inputPopup )
+        else
         {
-            auto focusItem = qobject_cast< QQuickItem* >( focusObject );
-
-            if ( ( focusItem == m_data->inputPopup )
-                || qskIsAncestorOf( m_data->inputPopup, focusItem ) )
-            {
-                doTerminate = false;
-            }
+            const auto focusItem = qobject_cast< QQuickItem* >( focusObject );
+            if ( focusItem && focusItem->window() == m_data->inputWindow )
+                return;
+        }
+    }
+    else if ( m_data->inputPopup )
+    {
+        if ( w->contentItem()->scopedFocusItem() == m_data->inputPopup )
+        {
+            /*
+                As long as the focus stays inside the inputPopup
+                we don't care
+             */
+            return;
         }
     }
 
-    if ( doTerminate )
-    {
-        hideInputPanel();
-        m_data->inputItem = nullptr;
-    }
+    hideInputPanel();
+    m_data->inputItem = nullptr;
 }
 
 void QskInputContext::registerPredictor(

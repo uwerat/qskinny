@@ -110,14 +110,16 @@ static inline void qskSyncInputProxy(
 
 namespace
 {
-    class TextInput final : public QskTextInput
+    class TextInputProxy final : public QskTextInput
     {
     public:
-        TextInput( QQuickItem* parentItem = nullptr ):
+        TextInputProxy( QQuickItem* parentItem = nullptr ):
             QskTextInput( parentItem )
         {
             setObjectName( "InputPanelInputProxy" );
+#if 1
             setFocusPolicy( Qt::NoFocus );
+#endif
         }
 
     protected:
@@ -154,7 +156,7 @@ public:
 
     QskLinearBox* layout;
     QskTextLabel* prompt;
-    TextInput* inputProxy;
+    TextInputProxy* inputProxy;
     QskInputPredictionBar* predictionBar;
     QskVirtualKeyboard* keyboard;
 
@@ -175,7 +177,7 @@ QskInputPanel::QskInputPanel( QQuickItem* parent ):
     m_data->prompt = new QskTextLabel();
     m_data->prompt->setVisible( false );
 
-    m_data->inputProxy = new TextInput();
+    m_data->inputProxy = new TextInputProxy();
     m_data->inputProxy->setVisible( m_data->hasInputProxy );
 
     m_data->predictionBar = new QskInputPredictionBar();
@@ -331,9 +333,11 @@ void QskInputPanel::commitPredictiveText( int index )
     if ( m_data->engine )
     {
         const QString text = m_data->engine->predictiveText( index );
-        m_data->engine->reset();
 
-        qskSendText( m_data->inputItem, text, true );
+        m_data->engine->reset();
+        m_data->predictionBar->setPrediction( QVector< QString >() );
+
+        qskSendText( m_data->receiverItem(), text, true );
     }
 }
 
@@ -596,6 +600,18 @@ void QskInputPanel::keyPressEvent( QKeyEvent* event )
         case Qt::Key_Escape:
         {
             commitKey( event->key() );
+            break;
+        }
+
+        case Qt::Key_Shift:
+        case Qt::Key_Control:
+        case Qt::Key_Meta:
+        case Qt::Key_Alt:
+        case Qt::Key_AltGr:
+        case Qt::Key_CapsLock:
+        case Qt::Key_NumLock:
+        case Qt::Key_ScrollLock:
+        {
             break;
         }
 

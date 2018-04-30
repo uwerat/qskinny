@@ -12,6 +12,8 @@
 
 class QskTextPredictor;
 class QskInputPanel;
+class QskPopup;
+class QskWindow;
 class QQuickItem;
 
 class QSK_EXPORT QskInputContext : public QPlatformInputContext
@@ -57,6 +59,9 @@ public:
 
 protected:
     virtual bool eventFilter( QObject*, QEvent* ) override;
+
+    virtual QskPopup* createEmbeddingPopup( QskInputPanel* );
+    virtual QskWindow* createEmbeddingWindow( QskInputPanel* );
 
 private:
     class PrivateData;

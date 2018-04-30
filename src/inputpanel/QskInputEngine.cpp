@@ -240,8 +240,11 @@ QskInputEngine::Result QskInputEngine::processKey( int key,
 
 QString QskInputEngine::predictiveText( int index ) const
 {
-    if ( m_data->predictor )
-        return m_data->predictor->candidate( index );
+    if ( const QskTextPredictor* predictor = m_data->predictor )
+    {
+        if ( index >= 0 && index < predictor->candidateCount() )
+            return predictor->candidate( index );
+    }
 
     return QString();
 }
