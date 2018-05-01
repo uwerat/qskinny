@@ -5,9 +5,8 @@
 
 #include "QskLayoutItem.h"
 #include "QskControl.h"
+#include "QskQuick.h"
 #include "QskLayoutConstraint.h"
-
-#include <QQuickItem>
 
 QskLayoutItem::QskLayoutItem( QQuickItem* item,
         int row, int column, int rowSpan, int columnSpan ):

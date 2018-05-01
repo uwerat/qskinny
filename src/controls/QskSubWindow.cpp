@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskSubWindow.h"
+#include "QskQuick.h"
 #include "QskAspect.h"
 #include "QskSkin.h"
 #include "QskFunctions.h"

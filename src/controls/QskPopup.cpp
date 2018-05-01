@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskPopup.h"
+#include "QskQuick.h"
 #include "QskAspect.h"
 #include <QQuickWindow>
 #include <QtMath>

@@ -5,6 +5,7 @@
 
 #include "QskShortcutMap.h"
 #include "QskControl.h"
+#include "QskQuick.h"
 #include "QskMetaInvokable.h"
 
 #include <QQuickWindow>

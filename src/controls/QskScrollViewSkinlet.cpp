@@ -5,6 +5,7 @@
 
 #include "QskScrollViewSkinlet.h"
 #include "QskScrollView.h"
+#include "QskQuick.h"
 #include "QskAspect.h"
 #include "QskFunctions.h"
 

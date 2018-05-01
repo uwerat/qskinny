@@ -4,8 +4,10 @@
  *****************************************************************************/
 
 #include "QskIndexedLayoutBox.h"
+#include "QskQuick.h"
 #include "QskLayoutEngine.h"
 #include "QskLayoutItem.h"
+
 #include <limits>
 
 class QskIndexedLayoutBox::PrivateData

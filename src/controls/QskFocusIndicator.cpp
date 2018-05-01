@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskFocusIndicator.h"
+#include "QskQuick.h"
 #include "QskBoxNode.h"
 #include "QskAspect.h"
 #include "QskEvent.h"

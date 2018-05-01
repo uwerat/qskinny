@@ -7,6 +7,7 @@
 #include <QskAspect.h>
 #include <QskSkin.h>
 #include <QskControl.h>
+#include <QskQuick.h>
 #include <QskSkinTransition.h>
 
 #include <QQuickItem>

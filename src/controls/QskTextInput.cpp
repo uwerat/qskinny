@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskTextInput.h"
+#include "QskQuick.h"
 
 // VS2012+ disable keyword macroizing unless _ALLOW_KEYWORD_MACROS is set
 #ifdef _MSC_VER

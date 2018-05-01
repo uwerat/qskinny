@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskScrollArea.h"
+#include "QskQuick.h"
 #include "QskScrollViewSkinlet.h"
 #include "QskLayoutConstraint.h"
 #include "QskEvent.h"

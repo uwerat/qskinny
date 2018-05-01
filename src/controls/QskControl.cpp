@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskControl.h"
+#include "QskQuick.h"
 #include "QskAspect.h"
 #include "QskSetup.h"
 #include "QskSkinlet.h"

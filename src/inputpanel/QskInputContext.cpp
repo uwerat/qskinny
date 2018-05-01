@@ -9,11 +9,12 @@
 #include "QskInputPanel.h"
 #include "QskInputEngine.h"
 
-#include <QskLinearBox.h>
-#include <QskDialog.h>
-#include <QskPopup.h>
-#include <QskWindow.h>
-#include <QskEvent.h>
+#include "QskLinearBox.h"
+#include "QskDialog.h"
+#include "QskPopup.h"
+#include "QskWindow.h"
+#include "QskEvent.h"
+#include "QskQuick.h"
 
 #include <QPointer>
 #include <QGuiApplication>
