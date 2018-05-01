@@ -13,13 +13,6 @@
 class QSK_EXPORT QskResizable
 {
 public:
-    enum SizeConstraint
-    {
-        NoConstraint,
-        HeightForWidth,
-        WidthForHeight
-    };
-
     QskResizable();
     virtual ~QskResizable();
 
