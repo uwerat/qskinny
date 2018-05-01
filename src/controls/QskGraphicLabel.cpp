@@ -80,6 +80,11 @@ QUrl QskGraphicLabel::source() const
     return m_data->source;
 }
 
+void QskGraphicLabel::setSource( const QString& source )
+{
+    setSource( QUrl( source ) );
+}
+
 void QskGraphicLabel::setSource( const QUrl& url )
 {
     if ( url == m_data->source )

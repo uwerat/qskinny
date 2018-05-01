@@ -60,6 +60,7 @@ public:
     virtual QskColorFilter graphicFilter() const;
 
     QUrl source() const;
+    void setSource( const QString& source );
     void setSource( const QUrl& url );
 
     void setSourceSize( const QSize& size );
