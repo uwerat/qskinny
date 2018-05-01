@@ -100,9 +100,9 @@ QskTextPredictor* QskInputEngine::predictor() const
     return m_data->predictor;
 }
 
-QVector< QString > QskInputEngine::prediction() const
+QStringList QskInputEngine::prediction() const
 {
-    QVector< QString > candidates;
+    QStringList candidates;
 
     if ( const auto predictor = m_data->predictor )
     {

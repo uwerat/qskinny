@@ -9,7 +9,7 @@
 #include "QskTextOptions.h"
 
 #include <QFontMetricsF>
-#include <QVector>
+#include <QStringList>
 
 QSK_SUBCONTROL( QskInputPredictionBar, Panel )
 QSK_SUBCONTROL( QskInputPredictionBar, ButtonPanel )
@@ -60,7 +60,7 @@ class QskInputPredictionBar::PrivateData
 {
 public:
     QskLinearBox* layoutBox;
-    QVector< QString > candidates;
+    QStringList candidates;
 
     int scrollOffset = 0;
     const int buttonCount = 12;
@@ -105,7 +105,7 @@ QskAspect::Subcontrol QskInputPredictionBar::effectiveSubcontrol(
     return subControl;
 }
 
-void QskInputPredictionBar::setPrediction( const QVector< QString >& candidates )
+void QskInputPredictionBar::setPrediction( const QStringList& candidates )
 {
     if( m_data->candidates != candidates )
     {
@@ -114,7 +114,7 @@ void QskInputPredictionBar::setPrediction( const QVector< QString >& candidates 
     }
 }
 
-QVector< QString > QskInputPredictionBar::candidates() const
+QStringList QskInputPredictionBar::candidates() const
 {
     return m_data->candidates;
 }

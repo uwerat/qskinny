@@ -12,6 +12,7 @@
 
 class QskTextPredictor;
 class QQuickItem;
+class QStringList;
 
 class QSK_EXPORT QskInputEngine : public QObject
 {
@@ -39,7 +40,7 @@ public:
         Qt::InputMethodHints, int spaceLeft = -1 );
 
     QString predictiveText( int ) const;
-    QVector< QString > prediction() const;
+    QStringList prediction() const;
 
     void reset();
 

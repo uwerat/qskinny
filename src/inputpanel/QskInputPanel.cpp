@@ -219,7 +219,7 @@ void QskInputPanel::setEngine( QskInputEngine* engine )
     if ( engine )
     {
         connect( engine, &QskInputEngine::predictionChanged,
-            this, &QskInputPanel::updatePredictionBar );
+            this, &QskInputPanel::updatePrediction );
     }
 
     m_data->predictionBar->setVisible(
@@ -265,7 +265,7 @@ QQuickItem* QskInputPanel::attachedInputItem() const
     return m_data->inputItem;
 }
 
-void QskInputPanel::updatePredictionBar()
+void QskInputPanel::updatePrediction()
 {
     m_data->predictionBar->setPrediction(
         m_data->engine->prediction() );
@@ -328,15 +328,13 @@ void QskInputPanel::setInputProxy( bool on )
 
 void QskInputPanel::commitPredictiveText( int index )
 {
-    m_data->predictionBar->setPrediction( QVector< QString >() );
+    m_data->predictionBar->setPrediction( QStringList() );
 
     if ( m_data->engine )
     {
         const QString text = m_data->engine->predictiveText( index );
 
         m_data->engine->reset();
-        m_data->predictionBar->setPrediction( QVector< QString >() );
-
         qskSendText( m_data->receiverItem(), text, true );
     }
 }

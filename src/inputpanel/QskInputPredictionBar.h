@@ -23,13 +23,13 @@ public:
     virtual QskAspect::Subcontrol effectiveSubcontrol(
         QskAspect::Subcontrol subControl ) const override;
 
-    QVector< QString > candidates() const;
+    QStringList candidates() const;
 
 Q_SIGNALS:
     void predictiveTextSelected( int );
 
 public Q_SLOTS:
-    void setPrediction( const QVector< QString >& );
+    void setPrediction( const QStringList& );
 
 private:
     void buttonClicked();

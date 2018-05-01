@@ -14,8 +14,6 @@ class QskInputEngine;
 class QString;
 class QLocale;
 
-template class QVector< QString >;
-
 class QSK_EXPORT QskInputPanel : public QskBox
 {
     Q_OBJECT
@@ -66,8 +64,9 @@ protected:
     virtual void processKey( int key,
         Qt::InputMethodHints, int spaceLeft );
 
+    virtual void updatePrediction();
+
 private:
-    void updatePredictionBar();
     void commitKey( int key );
     void commitPredictiveText( int );
 
