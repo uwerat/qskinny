@@ -71,12 +71,12 @@ QskSizePolicy::Policy QskResizable::sizePolicy( Qt::Orientation orientation ) co
 
 QSizeF QskResizable::preferredSize() const
 {
-    return sizeHint( Qt::PreferredSize );
+    return explicitSizeHint( Qt::PreferredSize );
 }
 
 void QskResizable::setPreferredSize( const QSizeF& size )
 {
-    setSizeHint( Qt::PreferredSize, size );
+    setExplicitSizeHint( Qt::PreferredSize, size );
 }
 
 void QskResizable::setPreferredSize( qreal width, qreal height )
@@ -96,12 +96,12 @@ void QskResizable::setPreferredHeight( qreal height )
 
 QSizeF QskResizable::minimumSize() const
 {
-    return sizeHint( Qt::MinimumSize );
+    return explicitSizeHint( Qt::MinimumSize );
 }
 
 void QskResizable::setMinimumSize( const QSizeF& size )
 {
-    setSizeHint( Qt::MinimumSize, size );
+    setExplicitSizeHint( Qt::MinimumSize, size );
 }
 
 void QskResizable::setMinimumSize( qreal width, qreal height )
@@ -121,12 +121,12 @@ void QskResizable::setMinimumHeight( qreal height )
 
 QSizeF QskResizable::maximumSize() const
 {
-    return sizeHint( Qt::MaximumSize );
+    return explicitSizeHint( Qt::MaximumSize );
 }
 
 void QskResizable::setMaximumSize( const QSizeF& size )
 {
-    setSizeHint( Qt::MaximumSize, size );
+    setExplicitSizeHint( Qt::MaximumSize, size );
 }
 
 void QskResizable::setMaximumSize( qreal width, qreal height )
@@ -194,7 +194,7 @@ void QskResizable::setFixedHeight( qreal height )
     }
 }
 
-void QskResizable::resetSizeHint( Qt::SizeHint whichHint )
+void QskResizable::resetExplicitSizeHint( Qt::SizeHint whichHint )
 {
     QSizeF hint;
 
@@ -226,7 +226,7 @@ void QskResizable::resetSizeHint( Qt::SizeHint whichHint )
     }
 }
 
-void QskResizable::setSizeHint( Qt::SizeHint whichHint, const QSizeF& size )
+void QskResizable::setExplicitSizeHint( Qt::SizeHint whichHint, const QSizeF& size )
 {
     if ( whichHint >= Qt::MinimumSize && whichHint <= Qt::MaximumSize )
     {
@@ -241,30 +241,18 @@ void QskResizable::setSizeHint( Qt::SizeHint whichHint, const QSizeF& size )
     }
 }
 
-void QskResizable::setSizeHint( Qt::SizeHint whichHint, qreal width, qreal height )
+void QskResizable::setExplicitSizeHint( Qt::SizeHint whichHint, qreal width, qreal height )
 {
-    setSizeHint( whichHint, QSizeF( width, height ) );
+    setExplicitSizeHint( whichHint, QSizeF( width, height ) );
 }
 
-QSizeF QskResizable::sizeHint( Qt::SizeHint whichHint ) const
+QSizeF QskResizable::explicitSizeHint( Qt::SizeHint whichHint ) const
 {
     if ( whichHint >= Qt::MinimumSize && whichHint <= Qt::MaximumSize )
         return m_sizeHints[whichHint];
 
     // Qt::MinimumDescent ???
     return QSizeF( -1, -1 );
-}
-
-qreal QskResizable::heightForWidth( qreal width ) const
-{
-    Q_UNUSED( width )
-    return -1;
-}
-
-qreal QskResizable::widthForHeight( qreal height ) const
-{
-    Q_UNUSED( height )
-    return -1;
 }
 
 void QskResizable::layoutConstraintChanged()

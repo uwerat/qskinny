@@ -183,8 +183,8 @@ QSizeF QskTabView::contentsSizeHint() const
     if ( m_data->tabBar == nullptr || m_data->tabBar->count() == 0 )
         return Inherited::contentsSizeHint();
 
-    const QSizeF barHint = m_data->tabBar->effectiveConstraint( Qt::PreferredSize );
-    const QSizeF itemHint = m_data->stackBox->effectiveConstraint( Qt::PreferredSize );
+    const QSizeF barHint = m_data->tabBar->sizeHint();
+    const QSizeF itemHint = m_data->stackBox->sizeHint();
 
     const qreal w = qMax( barHint.width(), itemHint.width() );
     const qreal h = barHint.height() + itemHint.height();

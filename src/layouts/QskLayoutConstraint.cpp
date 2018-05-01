@@ -74,7 +74,7 @@ QSizeF QskLayoutConstraint::effectiveConstraint(
     const QQuickItem* item, Qt::SizeHint whichHint )
 {
     if ( const QskControl* control = qobject_cast< const QskControl* >( item ) )
-        return control->effectiveConstraint( whichHint );
+        return control->effectiveSizeHint( whichHint );
 
     QSizeF constraint( -1.0, -1.0 ); // no hint
 

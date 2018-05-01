@@ -143,7 +143,10 @@ public:
     Q_INVOKABLE bool testControlFlag( Flag ) const;
 
     QSizeF sizeHint() const;
-    QSizeF effectiveConstraint( Qt::SizeHint ) const;
+    QSizeF effectiveSizeHint( Qt::SizeHint ) const;
+
+    virtual qreal heightForWidth( qreal width ) const;
+    virtual qreal widthForHeight( qreal height ) const;
 
     virtual QSizeF contentsSizeHint() const;
 
@@ -246,7 +249,7 @@ inline QSizeF QskControl::implicitSize() const
 
 inline QSizeF QskControl::sizeHint() const
 {
-    return effectiveConstraint( Qt::PreferredSize );
+    return effectiveSizeHint( Qt::PreferredSize );
 }
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( QskControl::Flags )

@@ -43,18 +43,15 @@ public:
     void setFixedWidth( qreal width );
     void setFixedHeight( qreal height );
 
-    void setSizeHint( Qt::SizeHint, const QSizeF& );
-    void setSizeHint( Qt::SizeHint, qreal width, qreal height );
-    void resetSizeHint( Qt::SizeHint );
+    void setExplicitSizeHint( Qt::SizeHint, const QSizeF& );
+    void setExplicitSizeHint( Qt::SizeHint, qreal width, qreal height );
+    void resetExplicitSizeHint( Qt::SizeHint );
 
     QSizeF minimumSize() const;
     QSizeF maximumSize() const;
     QSizeF preferredSize() const;
 
-    QSizeF sizeHint( Qt::SizeHint ) const;
-
-    virtual qreal heightForWidth( qreal width ) const;
-    virtual qreal widthForHeight( qreal height ) const;
+    QSizeF explicitSizeHint( Qt::SizeHint ) const;
 
 protected:
     void initSizePolicy( QskSizePolicy::Policy, QskSizePolicy::Policy );

@@ -206,7 +206,7 @@ public:
     inline void implicitSizeChanged()
     {
         Q_Q( QskControl );
-        if ( !q->QskResizable::sizeHint( Qt::PreferredSize ).isValid() )
+        if ( !q->explicitSizeHint( Qt::PreferredSize ).isValid() )
         {
             // when we have no PreferredSize we fall back
             // to the implicit size
@@ -924,15 +924,16 @@ void qskResolveLocale( QskControl* control )
     }
 }
 
-QSizeF QskControl::effectiveConstraint( Qt::SizeHint whichHint ) const
+QSizeF QskControl::effectiveSizeHint( Qt::SizeHint whichHint ) const
 {
     if ( whichHint < Qt::MinimumSize || whichHint > Qt::MaximumSize )
         return QSizeF( 0, 0 );
 
-    QSizeF constraint = QskResizable::sizeHint( whichHint );
-    if ( whichHint == Qt::PreferredSize && !constraint.isValid() )
+    QSizeF size = explicitSizeHint( whichHint );
+
+    if ( whichHint == Qt::PreferredSize && !size.isValid() )
     {
-        // in most cases we don't have a preferred width or height
+        // in most cases we don't have a preferred width/height
         // and fall back to the implicit size.
 
         if ( d_func()->blockedImplicitSize )
@@ -941,14 +942,14 @@ QSizeF QskControl::effectiveConstraint( Qt::SizeHint whichHint ) const
             that->updateImplicitSize();
         }
 
-        if ( constraint.width() < 0 )
-            constraint.setWidth( implicitWidth() );
+        if ( size.width() < 0 )
+            size.setWidth( implicitWidth() );
 
-        if ( constraint.height() < 0 )
-            constraint.setHeight( implicitHeight() );
+        if ( size.height() < 0 )
+            size.setHeight( implicitHeight() );
     }
 
-    return constraint;
+    return size;
 }
 
 void QskControl::resetImplicitSize()
@@ -972,6 +973,18 @@ void QskControl::resetImplicitSize()
         if ( sz != implicitSize() )
             d->implicitSizeChanged();
     }
+}
+
+qreal QskControl::heightForWidth( qreal width ) const
+{
+    Q_UNUSED( width )
+    return -1;
+}
+
+qreal QskControl::widthForHeight( qreal height ) const
+{
+    Q_UNUSED( height )
+    return -1;
 }
 
 bool QskControl::event( QEvent* event )

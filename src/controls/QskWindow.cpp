@@ -395,7 +395,7 @@ QSize QskWindow::effectivePreferredSize() const
         {
             if ( QskControl* control = qobject_cast< QskControl* >( child ) )
             {
-                const QSizeF itemConstraint = control->effectiveConstraint( Qt::PreferredSize );
+                const QSizeF itemConstraint = control->sizeHint();
                 if ( doWidth )
                     constraint.setWidth( qMax( constraint.width(), itemConstraint.width() ) );
 
