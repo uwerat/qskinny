@@ -47,7 +47,6 @@ Q_SIGNALS:
     void keySelected( int keyCode );
 
 protected:
-    virtual bool event( QEvent* ) override;
     virtual void updateLayout() override;
 
 private Q_SLOTS:

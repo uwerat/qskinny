@@ -546,13 +546,4 @@ void QskVirtualKeyboard::setMode( QskVirtualKeyboard::Mode mode )
     Q_EMIT modeChanged( m_data->mode );
 }
 
-bool QskVirtualKeyboard::event( QEvent* event )
-{
-    /*
-        Handling Qt::Key_Return/Qt::KeyEscape here
-        and forward everything else to the input item TODO ...
-     */
-    return Inherited::event( event );
-}
-
 #include "moc_QskVirtualKeyboard.cpp"
