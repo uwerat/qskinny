@@ -8,7 +8,7 @@ class Speedometer : public QskRangeControl
     Q_OBJECT
 
 public:
-    QSK_SUBCONTROLS( Panel, Labels, Needle )
+    QSK_SUBCONTROLS( Panel, Labels, NeedleHead, Needle )
 
     Speedometer( QQuickItem* parent = nullptr );
 
