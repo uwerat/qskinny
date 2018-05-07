@@ -16,7 +16,7 @@
 
 QStringList SkinFactory::skinNames() const
 {
-    return { "DefaultSkin", "OtherSkin", "SquiekSkin", "MaterialSkin" };
+    return { "DefaultSkin", "OtherSkin" };
 }
 
 QskSkin* SkinFactory::createSkin( const QString& skinName )
