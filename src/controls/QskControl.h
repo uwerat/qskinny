@@ -7,9 +7,9 @@
 #define QSK_CONTROL_H 1
 
 #include "QskGlobal.h"
-#include "QskResizable.h"
 #include "QskSkinnable.h"
 #include "QskGradient.h"
+#include "QskSizePolicy.h"
 #include "QskAspect.h"
 
 #include <QQuickItem>
@@ -25,7 +25,7 @@ class QskGestureEvent;
 
 template class QVector< QskAspect::Aspect >;
 
-class QSK_EXPORT QskControl : public QQuickItem, public QskResizable, public QskSkinnable
+class QSK_EXPORT QskControl : public QQuickItem, public QskSkinnable
 {
     Q_OBJECT
 
@@ -142,6 +142,43 @@ public:
     Q_INVOKABLE void resetControlFlag( Flag );
     Q_INVOKABLE bool testControlFlag( Flag ) const;
 
+    void setSizePolicy( QskSizePolicy::Policy, QskSizePolicy::Policy );
+    void setSizePolicy( const QskSizePolicy& );
+    void setSizePolicy( Qt::Orientation, QskSizePolicy::Policy );
+
+    const QskSizePolicy& sizePolicy() const;
+    QskSizePolicy::Policy sizePolicy( Qt::Orientation ) const;
+
+    void setMinimumSize( const QSizeF& );
+    void setMinimumSize( qreal width, qreal height );
+    void setMinimumWidth( qreal width );
+    void setMinimumHeight( qreal height );
+
+    void setMaximumSize( const QSizeF& );
+    void setMaximumSize( qreal width, qreal height );
+    void setMaximumWidth( qreal width );
+    void setMaximumHeight( qreal height );
+
+    void setPreferredSize( const QSizeF& );
+    void setPreferredSize( qreal width, qreal height );
+    void setPreferredWidth( qreal width );
+    void setPreferredHeight( qreal height );
+
+    void setFixedSize( const QSizeF& );
+    void setFixedSize( qreal width, qreal height );
+    void setFixedWidth( qreal width );
+    void setFixedHeight( qreal height );
+
+    void setExplicitSizeHint( Qt::SizeHint, const QSizeF& );
+    void setExplicitSizeHint( Qt::SizeHint, qreal width, qreal height );
+    void resetExplicitSizeHint( Qt::SizeHint );
+
+    QSizeF minimumSize() const;
+    QSizeF maximumSize() const;
+    QSizeF preferredSize() const;
+
+    QSizeF explicitSizeHint( Qt::SizeHint ) const;
+
     QSizeF sizeHint() const;
     QSizeF effectiveSizeHint( Qt::SizeHint ) const;
 
@@ -201,11 +238,12 @@ protected:
     virtual bool gestureFilter( QQuickItem*, QEvent* );
 
     virtual void itemChange( ItemChange, const ItemChangeData& ) override;
+    virtual void geometryChanged( const QRectF&, const QRectF& ) override;
     virtual void classBegin() override;
     virtual void componentComplete() override;
     virtual void releaseResources() override;
 
-    virtual void geometryChanged( const QRectF&, const QRectF& ) override;
+    void initSizePolicy( QskSizePolicy::Policy, QskSizePolicy::Policy );
 
     void cleanupNodes();
 
@@ -222,8 +260,8 @@ private:
     virtual void updatePolish() override final;
 
     virtual QskControl* owningControl() const override final;
-    virtual void layoutConstraintChanged() override final;
 
+    void layoutConstraintChanged();
     void updateImplicitSize();
 
     void updateControlFlag( uint flag, bool on );
@@ -250,6 +288,21 @@ inline QSizeF QskControl::implicitSize() const
 inline QSizeF QskControl::sizeHint() const
 {
     return effectiveSizeHint( Qt::PreferredSize );
+}
+
+inline QSizeF QskControl::minimumSize() const
+{
+    return explicitSizeHint( Qt::MinimumSize );
+}
+
+inline QSizeF QskControl::maximumSize() const
+{
+    return explicitSizeHint( Qt::MaximumSize );
+}
+
+inline QSizeF QskControl::preferredSize() const
+{
+    return explicitSizeHint( Qt::PreferredSize );
 }
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( QskControl::Flags )

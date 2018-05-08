@@ -32,6 +32,11 @@ QSK_STATE( QskControl, Disabled, QskAspect::FirstSystemState )
 QSK_STATE( QskControl, Hovered, QskAspect::LastSystemState >> 1 )
 QSK_STATE( QskControl, Focused, QskAspect::LastSystemState )
 
+// QGridLayoutEngine internally uses FLT_MAX
+static constexpr qreal qskSizeHintMax = std::numeric_limits< float >::max();
+static QSizeF qskDefaultSizeHints[3] =
+    { { 0, 0 }, { -1, -1 }, { qskSizeHintMax, qskSizeHintMax } };
+
 typedef quint16 controlFlags_t;
 
 void qskResolveLocale( QskControl* ); // not static as being used from outside !
@@ -161,7 +166,16 @@ class QskControlPrivate final : public QQuickItemPrivate
     Q_DECLARE_PUBLIC( QskControl )
 
 public:
+    class ExplicitSizeData
+    {
+    public:
+        QSizeF sizeHints[3] =
+            { qskDefaultSizeHints[0], qskDefaultSizeHints[1], qskDefaultSizeHints[2] };
+    };
+
     QskControlPrivate():
+        explicitSizeData( nullptr ),
+        sizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Preferred ),
         controlFlags( qskControlFlags() ),
         controlFlagsMask( 0 ),
         explicitLocale( false ),
@@ -195,6 +209,11 @@ public:
 
             widthValid = heightValid = true;
         }
+    }
+
+    virtual ~QskControlPrivate()
+    {
+        delete explicitSizeData;
     }
 
     virtual void mirrorChange() override final
@@ -240,6 +259,23 @@ public:
             implicitSizeChanged();
     }
 
+    inline void setExplicitSizeHint( Qt::SizeHint whichHint, const QSizeF& size )
+    {
+        if ( explicitSizeData == nullptr )
+            explicitSizeData = new ExplicitSizeData;
+
+        explicitSizeData->sizeHints[ whichHint ] = size;
+    }
+
+    inline QSizeF explicitSizeHint( Qt::SizeHint whichHint ) const
+    {
+        if ( explicitSizeData )
+            return explicitSizeData->sizeHints[ whichHint ];
+
+        return qskDefaultSizeHints[ whichHint ];
+    }
+
+    
     bool maybeGesture( QQuickItem* child, QEvent* event )
     {
         Q_Q( QskControl );
@@ -295,7 +331,13 @@ public:
         }
     }
 
+private:
+    ExplicitSizeData* explicitSizeData;
+
+public:
     QLocale locale;
+
+    QskSizePolicy sizePolicy;
 
     quint16 controlFlags;
     quint16 controlFlagsMask;
@@ -922,6 +964,224 @@ void qskResolveLocale( QskControl* control )
         qskSendEventTo( control, QEvent::LocaleChange );
         qskSetup->inheritLocale( control, locale );
     }
+}
+
+void QskControl::initSizePolicy(
+    QskSizePolicy::Policy horizontalPolicy,
+    QskSizePolicy::Policy verticalPolicy )
+{
+    Q_D( QskControl );
+
+    /*
+       In constructors of derived classes you don't need
+       to propagate changes by layoutConstraintChanged.
+       Sometimes it is even worse as the parent might not be
+       even prepared to handle the LayouRequest event.
+     */
+    
+    d->sizePolicy.setHorizontalPolicy( horizontalPolicy );
+    d->sizePolicy.setVerticalPolicy( verticalPolicy );
+}
+
+void QskControl::setSizePolicy( const QskSizePolicy& policy )
+{
+    Q_D( QskControl );
+
+    if ( policy != d->sizePolicy )
+    {
+        d->sizePolicy = policy;
+        layoutConstraintChanged();
+    }
+}
+
+void QskControl::setSizePolicy(
+    QskSizePolicy::Policy horizontalPolicy,
+    QskSizePolicy::Policy verticalPolicy )
+{
+    setSizePolicy( QskSizePolicy( horizontalPolicy, verticalPolicy ) );
+}
+
+void QskControl::setSizePolicy(
+    Qt::Orientation orientation, QskSizePolicy::Policy policy )
+{
+    Q_D( QskControl );
+
+    if ( d->sizePolicy.policy( orientation ) != policy )
+    {
+        d->sizePolicy.setPolicy( orientation, policy );
+        layoutConstraintChanged();
+    }
+}
+
+const QskSizePolicy& QskControl::sizePolicy() const
+{
+    return d_func()->sizePolicy;
+}
+
+QskSizePolicy::Policy QskControl::sizePolicy( Qt::Orientation orientation ) const
+{
+    return d_func()->sizePolicy.policy( orientation );
+}
+
+void QskControl::setPreferredSize( const QSizeF& size )
+{
+    setExplicitSizeHint( Qt::PreferredSize, size );
+}
+
+void QskControl::setPreferredSize( qreal width, qreal height )
+{
+    setPreferredSize( QSizeF( width, height ) );
+}
+
+void QskControl::setPreferredWidth( qreal width )
+{
+    setPreferredSize( QSizeF( width, preferredSize().height() ) );
+}
+
+void QskControl::setPreferredHeight( qreal height )
+{
+    setPreferredSize( QSizeF( preferredSize().width(), height ) );
+}
+
+void QskControl::setMinimumSize( const QSizeF& size )
+{
+    setExplicitSizeHint( Qt::MinimumSize, size );
+}
+
+void QskControl::setMinimumSize( qreal width, qreal height )
+{
+    setMinimumSize( QSizeF( width, height ) );
+}
+
+void QskControl::setMinimumWidth( qreal width )
+{
+    setMinimumSize( QSizeF( width, minimumSize().height() ) );
+}
+
+void QskControl::setMinimumHeight( qreal height )
+{
+    setMinimumSize( QSizeF( minimumSize().width(), height ) );
+}
+
+void QskControl::setMaximumSize( const QSizeF& size )
+{
+    setExplicitSizeHint( Qt::MaximumSize, size );
+}
+
+void QskControl::setMaximumSize( qreal width, qreal height )
+{
+    setMaximumSize( QSizeF( width, height ) );
+}
+
+void QskControl::setMaximumWidth( qreal width )
+{
+    setMaximumSize( QSizeF( width, maximumSize().height() ) );
+}
+
+void QskControl::setMaximumHeight( qreal height )
+{
+    setMaximumSize( QSizeF( maximumSize().width(), height ) );
+}
+
+void QskControl::setFixedSize( const QSizeF& size )
+{
+    const QSizeF newSize = size.expandedTo( QSizeF( 0, 0 ) );
+
+    const QskSizePolicy policy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
+
+    Q_D( QskControl );
+
+    if ( policy != d->sizePolicy ||
+        d->explicitSizeHint( Qt::PreferredSize ) != newSize )
+    {
+        d->sizePolicy = policy;
+        d->setExplicitSizeHint( Qt::PreferredSize, newSize );
+
+        layoutConstraintChanged();
+    }
+}
+
+void QskControl::setFixedSize( qreal width, qreal height )
+{
+    setFixedSize( QSizeF( width, height ) );
+}
+
+void QskControl::setFixedWidth( qreal width )
+{
+    if ( width < 0 )
+        width = 0;
+
+    Q_D( QskControl );
+
+    auto size = d->explicitSizeHint( Qt::PreferredSize );
+
+    if ( ( d->sizePolicy.horizontalPolicy() != QskSizePolicy::Fixed )
+         || ( size.width() != width ) )
+    {
+        size.setWidth( width );
+
+        d->sizePolicy.setHorizontalPolicy( QskSizePolicy::Fixed );
+        d->setExplicitSizeHint( Qt::PreferredSize, size );
+
+        layoutConstraintChanged();
+    }
+}
+
+void QskControl::setFixedHeight( qreal height )
+{
+    if ( height < 0 )
+        height = 0;
+
+    Q_D( QskControl );
+
+    auto size = d->explicitSizeHint( Qt::PreferredSize );
+
+    if ( ( d->sizePolicy.verticalPolicy() != QskSizePolicy::Fixed )
+         || ( size.height() != height ) )
+    {
+        size.setHeight( height );
+
+        d->sizePolicy.setVerticalPolicy( QskSizePolicy::Fixed );
+        d->setExplicitSizeHint( Qt::PreferredSize, size );
+
+        layoutConstraintChanged();
+    }
+}
+
+void QskControl::resetExplicitSizeHint( Qt::SizeHint whichHint )
+{
+    if ( whichHint >= Qt::MinimumSize && whichHint <= Qt::MaximumSize )
+        setExplicitSizeHint( whichHint, qskDefaultSizeHints[ whichHint ] );
+}
+
+void QskControl::setExplicitSizeHint( Qt::SizeHint whichHint, const QSizeF& size )
+{
+    if ( whichHint >= Qt::MinimumSize && whichHint <= Qt::MaximumSize )
+    {
+        const QSizeF newSize( ( size.width() < 0 ) ? -1.0 : size.width(),
+            ( size.width() < 0 ) ? -1.0 : size.width() );
+
+        Q_D( QskControl );
+
+        if ( newSize != d->explicitSizeHint( whichHint ) )
+        {
+            d->setExplicitSizeHint( whichHint, newSize );
+            layoutConstraintChanged();
+        }
+    }
+}
+
+void QskControl::setExplicitSizeHint( Qt::SizeHint whichHint, qreal width, qreal height )
+{
+    setExplicitSizeHint( whichHint, QSizeF( width, height ) );
+}
+
+QSizeF QskControl::explicitSizeHint( Qt::SizeHint whichHint ) const
+{
+    if ( whichHint >= Qt::MinimumSize && whichHint <= Qt::MaximumSize )
+        return d_func()->explicitSizeHint( whichHint );
+
+    return QSizeF( -1, -1 );
 }
 
 QSizeF QskControl::effectiveSizeHint( Qt::SizeHint whichHint ) const

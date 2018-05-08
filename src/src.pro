@@ -147,7 +147,6 @@ HEADERS += \
     controls/QskPushButtonSkinlet.h \
     controls/QskQuick.h \
     controls/QskRangeControl.h \
-    controls/QskResizable.h \
     controls/QskRgbValue.h \
     controls/QskScrollArea.h \
     controls/QskScrollView.h \
@@ -213,7 +212,6 @@ SOURCES += \
     controls/QskPushButtonSkinlet.cpp \
     controls/QskQuick.cpp \
     controls/QskRangeControl.cpp \
-    controls/QskResizable.cpp \
     controls/QskRgbValue.cpp \
     controls/QskScrollArea.cpp \
     controls/QskScrollView.cpp \
