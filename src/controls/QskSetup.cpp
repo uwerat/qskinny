@@ -125,7 +125,6 @@ public:
     QPointer< QskSkin > skin;
 
     QskGraphicProviderMap graphicProviders;
-
     QskSetup::Flags controlFlags;
 };
 
