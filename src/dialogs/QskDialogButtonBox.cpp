@@ -90,17 +90,6 @@ void QskDialogButtonBox::setOrientation( Qt::Orientation orientation )
     if ( m_data->layoutBox && m_data->layoutBox->orientation() == orientation )
         return;
 
-    for ( int i = 0; i < QskDialog::NButtonRoles; i++ )
-    {
-        for ( QskPushButton* button : qskAsConst( m_data->buttonLists[i] ) )
-        {
-            // avoid that buttons get deleted
-            // together with the layout
-
-            button->setParent( nullptr );
-        }
-    }
-
     delete m_data->layoutBox;
 
     m_data->layoutBox = new QskLinearBox( orientation, this );
@@ -263,10 +252,17 @@ void QskDialogButtonBox::addButton( QskPushButton* button, QskDialog::ButtonRole
     if ( role < 0 || role >= QskDialog::NButtonRoles )
         return;
 
-    connect( button, &QskPushButton::clicked, this, &QskDialogButtonBox::onButtonClicked );
+    if ( button )
+    {
+        if ( button->parent() == nullptr )
+            button->setParent( this );
 
-    m_data->buttonLists[role] += button;
-    invalidateLayout();
+        connect( button, &QskPushButton::clicked, this,
+            &QskDialogButtonBox::onButtonClicked );
+
+        m_data->buttonLists[role] += button;
+        invalidateLayout();
+    }
 }
 
 void QskDialogButtonBox::addButton( QskDialog::StandardButton standardButton )
