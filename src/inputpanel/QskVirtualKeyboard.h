@@ -30,17 +30,17 @@ public:
     QskVirtualKeyboard( QQuickItem* parent = nullptr );
     virtual ~QskVirtualKeyboard() override;
 
-    virtual QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol ) const override;
-
-    void updateLocale( const QLocale& );
-
     void setMode( Mode );
     Mode mode() const;
+
+    void updateLocale( const QLocale& );
 
     virtual qreal heightForWidth( qreal width ) const override;
     virtual qreal widthForHeight( qreal height ) const override;
     virtual QSizeF contentsSizeHint() const override;
+
+    virtual QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol ) const override;
 
 Q_SIGNALS:
     void modeChanged( Mode );

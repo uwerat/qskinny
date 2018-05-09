@@ -65,6 +65,7 @@ protected:
         Qt::InputMethodHints, int spaceLeft );
 
     virtual void updatePrediction();
+    virtual void done( bool success );
 
 private:
     void commitKey( int key );

@@ -327,7 +327,7 @@
             { LOWER( Qt::Key_Q ), LOWER( Qt::Key_W ), LOWER( Qt::Key_E ), LOWER( Qt::Key_R ), LOWER( Qt::Key_T ), LOWER( Qt::Key_Z ), LOWER( Qt::Key_U ), LOWER( Qt::Key_I ), LOWER( Qt::Key_O ), LOWER( Qt::Key_P ), 0x0151 /*o double acute*/ },
             { LOWER( Qt::Key_A ), LOWER( Qt::Key_S ), LOWER( Qt::Key_D ), LOWER( Qt::Key_F ), LOWER( Qt::Key_G ), LOWER( Qt::Key_H ), LOWER( Qt::Key_J ), LOWER( Qt::Key_K ), LOWER( Qt::Key_L ), LOWER( Qt::Key_Eacute ), LOWER( Qt::Key_Aacute ) },
             { Qt::Key_CapsLock, LOWER( Qt::Key_Y ), LOWER( Qt::Key_X ), LOWER( Qt::Key_C ), LOWER( Qt::Key_V ), LOWER( Qt::Key_B ), LOWER( Qt::Key_N ), LOWER( Qt::Key_M ), Qt::Key_Backspace },
-            { Qt::Key_Mode_switch, Qt::Key_0, LOWER( Qt::Key_Icircumflex), LOWER( Qt::Key_Acircumflex ), Qt::Key_Space, Qt::Key_Comma, Qt::Key_Period, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
+            { Qt::Key_Mode_switch, Qt::Key_0, LOWER( Qt::Key_Icircumflex ), LOWER( Qt::Key_Acircumflex ), Qt::Key_Space, Qt::Key_Comma, Qt::Key_Period, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
         }
     },
     {
@@ -550,7 +550,7 @@
             { LOWER( Qt::Key_Q ), LOWER( Qt::Key_W ), LOWER( Qt::Key_E ), LOWER( Qt::Key_R ), LOWER( Qt::Key_T ), LOWER( Qt::Key_Z ), LOWER( Qt::Key_U ), LOWER( Qt::Key_I ), LOWER( Qt::Key_O ), LOWER( Qt::Key_P ), 0x017C /*z dot*/ },
             { LOWER( Qt::Key_A ), LOWER( Qt::Key_S ), LOWER( Qt::Key_D ), LOWER( Qt::Key_F ), LOWER( Qt::Key_G ), LOWER( Qt::Key_H ), LOWER( Qt::Key_J ), LOWER( Qt::Key_K ), LOWER( Qt::Key_L ), 0x0142 /*l stroke*/, 0x0105 /*a ogonek*/ },
             { Qt::Key_CapsLock, LOWER( Qt::Key_Y ), LOWER( Qt::Key_X ), LOWER( Qt::Key_C ), LOWER( Qt::Key_V ), LOWER( Qt::Key_B ), LOWER( Qt::Key_N ), LOWER( Qt::Key_M ), Qt::Key_Backspace },
-            { Qt::Key_Mode_switch, LOWER( Qt::Key_Oacute), 0x015B /*s acute*/, Qt::Key_Minus, Qt::Key_Space, Qt::Key_Comma, Qt::Key_Period, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
+            { Qt::Key_Mode_switch, LOWER( Qt::Key_Oacute ), 0x015B /*s acute*/, Qt::Key_Minus, Qt::Key_Space, Qt::Key_Comma, Qt::Key_Period, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
         }
     },
     {
@@ -613,7 +613,7 @@
             { LOWER( Qt::Key_Q ), LOWER( Qt::Key_W ), LOWER( Qt::Key_E ), LOWER( Qt::Key_R ), LOWER( Qt::Key_T ), LOWER( Qt::Key_Z ), LOWER( Qt::Key_U ), LOWER( Qt::Key_I ), LOWER( Qt::Key_O ), LOWER( Qt::Key_P ), 0x0103 /*a breve*/ },
             { LOWER( Qt::Key_A ), LOWER( Qt::Key_S ), LOWER( Qt::Key_D ), LOWER( Qt::Key_F ), LOWER( Qt::Key_G ), LOWER( Qt::Key_H ), LOWER( Qt::Key_J ), LOWER( Qt::Key_K ), LOWER( Qt::Key_L ), 0x015F /*s cedilla*/, 0x0163 /*t cedilla*/ },
             { Qt::Key_CapsLock, LOWER( Qt::Key_Y ), LOWER( Qt::Key_X ), LOWER( Qt::Key_C ), LOWER( Qt::Key_V ), LOWER( Qt::Key_B ), LOWER( Qt::Key_N ), LOWER( Qt::Key_M ), Qt::Key_Backspace },
-            { Qt::Key_Mode_switch, Qt::Key_BracketRight, LOWER( Qt::Key_Icircumflex), LOWER( Qt::Key_Acircumflex), Qt::Key_Space, Qt::Key_Comma, Qt::Key_Period, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
+            { Qt::Key_Mode_switch, Qt::Key_BracketRight, LOWER( Qt::Key_Icircumflex ), LOWER( Qt::Key_Acircumflex ), Qt::Key_Space, Qt::Key_Comma, Qt::Key_Period, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
         }
     },
     {
@@ -708,7 +708,7 @@
             { LOWER( Qt::Key_Q ), LOWER( Qt::Key_W ), LOWER( Qt::Key_E ), LOWER( Qt::Key_R ), LOWER( Qt::Key_T ), LOWER( Qt::Key_Z ), LOWER( Qt::Key_U ), LOWER( Qt::Key_I ), LOWER( Qt::Key_O ), LOWER( Qt::Key_P ), LOWER( Qt::Key_Uacute ) },
             { LOWER( Qt::Key_A ), LOWER( Qt::Key_S ), LOWER( Qt::Key_D ), LOWER( Qt::Key_F ), LOWER( Qt::Key_G ), LOWER( Qt::Key_H ), LOWER( Qt::Key_J ), LOWER( Qt::Key_K ), LOWER( Qt::Key_L ), LOWER( Qt::Key_Ocircumflex ), Qt::Key_section },
             { Qt::Key_CapsLock, LOWER( Qt::Key_Y ), LOWER( Qt::Key_X ), LOWER( Qt::Key_C ), LOWER( Qt::Key_V ), LOWER( Qt::Key_B ), LOWER( Qt::Key_N ), LOWER( Qt::Key_M ), Qt::Key_Backspace },
-            { Qt::Key_Mode_switch, Qt::Key_Semicolon, LOWER( Qt::Key_Adiaeresis), Qt::Key_Minus, Qt::Key_Space, Qt::Key_Comma, Qt::Key_Period, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
+            { Qt::Key_Mode_switch, Qt::Key_Semicolon, LOWER( Qt::Key_Adiaeresis ), Qt::Key_Minus, Qt::Key_Space, Qt::Key_Comma, Qt::Key_Period, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
         }
     },
     {
@@ -739,7 +739,7 @@
             { LOWER( Qt::Key_Q ), LOWER( Qt::Key_W ), LOWER( Qt::Key_E ), LOWER( Qt::Key_R ), LOWER( Qt::Key_T ), LOWER( Qt::Key_Y ), LOWER( Qt::Key_U ), 0x0131 /*dotless i*/, LOWER( Qt::Key_O ), LOWER( Qt::Key_P ), 0x011F /*g breve*/ },
             { LOWER( Qt::Key_A ), LOWER( Qt::Key_S ), LOWER( Qt::Key_D ), LOWER( Qt::Key_F ), LOWER( Qt::Key_G ), LOWER( Qt::Key_H ), LOWER( Qt::Key_J ), LOWER( Qt::Key_K ), LOWER( Qt::Key_L ), 0x015F /*s cedilla*/, LOWER( Qt::Key_I ) },
             { Qt::Key_CapsLock, LOWER( Qt::Key_Z ), LOWER( Qt::Key_X ), LOWER( Qt::Key_C ), LOWER( Qt::Key_V ), LOWER( Qt::Key_B ), LOWER( Qt::Key_N ), LOWER( Qt::Key_M ), LOWER( Qt::Key_Odiaeresis ), 0x00E7 /*c cedilla*/, Qt::Key_Backspace },
-            { Qt::Key_Mode_switch, LOWER( Qt::Key_Udiaeresis), Qt::Key_Space, Qt::Key_Comma, Qt::Key_Period, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
+            { Qt::Key_Mode_switch, LOWER( Qt::Key_Udiaeresis ), Qt::Key_Space, Qt::Key_Comma, Qt::Key_Period, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
         }
     },
     {

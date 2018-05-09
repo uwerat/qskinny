@@ -369,7 +369,6 @@ void QskInputPanel::processKey( int key,
     const auto result = m_data->engine->processKey( key, inputHints, spaceLeft );
 
     auto inputItem = m_data->inputItem;
-    auto inputProxy = m_data->inputProxy;
 
     if ( result.key )
     {
@@ -377,15 +376,12 @@ void QskInputPanel::processKey( int key,
         {
             case Qt::Key_Return:
             {
-                if ( m_data->hasInputProxy )
-                    qskSendReplaceText( inputItem, inputProxy->text() );
-
-                qskSendKey( inputItem, result.key );
+                done( true );
                 break;
             }
             case Qt::Key_Escape:
             {
-                qskSendKey( inputItem, result.key );
+                done( false );
                 break;
             }
             default:
@@ -399,6 +395,18 @@ void QskInputPanel::processKey( int key,
         // changing the current text
         qskSendText( m_data->receiverItem(), result.text, result.isFinal );
     }
+}
+
+void QskInputPanel::done( bool success )
+{
+    if ( success )
+    {
+        if ( m_data->hasInputProxy )
+            qskSendReplaceText( m_data->inputItem, m_data->inputProxy->text() );
+    }
+
+    qskSendKey( m_data->inputItem,
+        success ? Qt::Key_Return : Qt::Key_Escape );
 }
 
 void QskInputPanel::processInputMethodQueries( Qt::InputMethodQueries queries )

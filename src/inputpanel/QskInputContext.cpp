@@ -265,6 +265,15 @@ void QskInputContext::showInputPanel()
         this, &QPlatformInputContext::emitLocaleChanged,
         Qt::UniqueConnection );
 
+    if ( qskInputPanel->parent() == nullptr )
+    {
+        /*
+            Take ownership to avoid, that the panel gets 
+            destroyed together with the popup/window
+         */
+        qskInputPanel->setParent( this );
+    }
+
     if ( QskDialog::instance()->policy() == QskDialog::TopLevelWindow )
     {
         // The input panel is embedded in a top level window
