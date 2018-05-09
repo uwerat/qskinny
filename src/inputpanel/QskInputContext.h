@@ -7,7 +7,8 @@
 #define QSK_INPUT_CONTEXT_H
 
 #include "QskGlobal.h"
-#include <qpa/qplatforminputcontext.h>
+#include <QObject>
+#include <Qt>
 #include <memory>
 
 class QskTextPredictor;
@@ -16,46 +17,35 @@ class QskPopup;
 class QskWindow;
 class QQuickItem;
 
-class QSK_EXPORT QskInputContext : public QPlatformInputContext
+class QSK_EXPORT QskInputContext : public QObject
 {
     Q_OBJECT
 
-    using Inherited = QPlatformInputContext;
+    using Inherited = QObject;
 
 public:
     QskInputContext();
     virtual ~QskInputContext();
 
-    virtual bool isValid() const override;
-    virtual bool hasCapability( Capability ) const override;
+    virtual QRectF panelRect() const;
 
-    virtual void update( Qt::InputMethodQueries ) override;
-    virtual void invokeAction( QInputMethod::Action, int ) override;
+    virtual void setActive( bool );
+    virtual bool isActive() const;
 
-    virtual QRectF keyboardRect() const override;
-    virtual bool isAnimating() const override;
-
-    virtual void showInputPanel() override;
-    virtual void hideInputPanel() override;
-    virtual bool isInputPanelVisible() const override;
-
-    virtual void reset() override;
-    virtual void commit() override;
-
-    virtual void setFocusObject( QObject* ) override;
-
-    virtual QLocale locale() const override;
-    virtual Qt::LayoutDirection inputDirection() const override;
+    virtual QLocale locale() const;
 
     void registerPredictor( const QLocale&, QskTextPredictor* );
     QskTextPredictor* registeredPredictor( const QLocale& );
 
-    Q_INVOKABLE QQuickItem* inputItem();
+    virtual QQuickItem* inputItem() const;
+    virtual QskInputPanel* inputPanel() const;
 
-    virtual bool filterEvent( const QEvent* ) override;
+    static QskInputContext* instance();
+    static void setInstance( QskInputContext* );
 
-    static void setInputPanel( QskInputPanel* );
-    static QskInputPanel* inputPanel();
+Q_SIGNALS:
+    void activeChanged();
+    void panelRectChanged();
 
 protected:
     virtual bool eventFilter( QObject*, QEvent* ) override;
@@ -63,7 +53,18 @@ protected:
     virtual QskPopup* createEmbeddingPopup( QskInputPanel* );
     virtual QskWindow* createEmbeddingWindow( QskInputPanel* );
 
+    virtual void showPanel();
+    virtual void hidePanel();
+
 private:
+    friend class QskPlatformInputContext;
+
+    // called from QskPlatformInputContext
+    virtual void setFocusObject( QObject* );
+    virtual void update( Qt::InputMethodQueries );
+    virtual void processClickAt( int cursorPosition );
+    virtual void commitPrediction( bool );
+
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

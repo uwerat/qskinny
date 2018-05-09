@@ -24,47 +24,46 @@ QSK_QT_PRIVATE_BEGIN
 QSK_QT_PRIVATE_END
 
 #include <qpa/qplatformintegration.h>
+#include <qpa/qplatforminputcontext.h>
 
-static QPointer< QskInputPanel > qskInputPanel = nullptr;
+static QPointer< QskInputContext > qskInputContext = nullptr;
 
-static void qskDeletePanel()
+static void qskSendToPlatformContext( QEvent::Type type )
 {
-    delete qskInputPanel;
-}
-
-static void qskInputPanelHook()
-{
-    qAddPostRoutine( qskDeletePanel );
-}
-
-Q_COREAPP_STARTUP_FUNCTION( qskInputPanelHook )
-
-static void qskSetInputPanel( QskInputPanel* inputPanel )
-{
-    if ( inputPanel == qskInputPanel )
-        return;
-
-    delete qskInputPanel;
-    qskInputPanel = inputPanel;
-}
-
-void QskInputContext::setInputPanel( QskInputPanel* inputPanel )
-{
-    if ( inputPanel == qskInputPanel )
-        return;
-
-    qskSetInputPanel( inputPanel );
-
-    const auto inputContext =
+    const auto platformInputContext =
         QGuiApplicationPrivate::platformIntegration()->inputContext();
 
-    if ( auto context = qobject_cast< QskInputContext* >( inputContext ) )
-        context->hideInputPanel();
+    if ( platformInputContext )
+    {
+        QEvent event( type );
+        QCoreApplication::sendEvent( platformInputContext, &event );
+    }
 }
 
-QskInputPanel* QskInputContext::inputPanel()
+static void qskInputContextHook()
 {
-    return qskInputPanel;
+    qAddPostRoutine( []{ delete qskInputContext; } );
+}
+
+Q_COREAPP_STARTUP_FUNCTION( qskInputContextHook )
+
+void QskInputContext::setInstance( QskInputContext* inputContext )
+{
+    if ( inputContext != qskInputContext )
+    {
+        const auto oldContext = qskInputContext;
+        qskInputContext = inputContext;
+
+        if ( oldContext && oldContext->parent() == nullptr )
+            delete oldContext;
+
+        qskSendToPlatformContext( QEvent::PlatformPanel );
+    }
+}
+
+QskInputContext* QskInputContext::instance()
+{
+    return qskInputContext;
 }
 
 static inline uint qskHashLocale( const QLocale& locale )
@@ -124,8 +123,9 @@ class QskInputContext::PrivateData
 public:
     // item receiving the input
     QPointer< QQuickItem > inputItem;
+    QPointer< QskInputPanel > inputPanel;
 
-    // popup or window embedding qskInputPanel
+    // popup or window embedding the panel
     QskPopup* inputPopup = nullptr;
     QskWindow* inputWindow = nullptr;
 
@@ -145,20 +145,30 @@ QskInputContext::~QskInputContext()
 {
 }
 
-bool QskInputContext::isValid() const
-{
-    return true;
-}
-
-bool QskInputContext::hasCapability( Capability ) const
-{
-    // what is QPlatformInputContext::HiddenTextCapability ???
-    return true;
-}
-
-QQuickItem* QskInputContext::inputItem()
+QQuickItem* QskInputContext::inputItem() const
 {
     return m_data->inputItem;
+}
+
+QskInputPanel* QskInputContext::inputPanel() const
+{
+    if ( m_data->inputPanel == nullptr )
+    {
+        auto that = const_cast< QskInputContext* >( this );
+
+        auto panel = new QskInputPanel();
+        panel->setParent( that );
+
+        connect( panel, &QQuickItem::visibleChanged,
+            this, &QskInputContext::activeChanged );
+        
+        connect( panel, &QskControl::localeChanged,
+            this, []{ qskSendToPlatformContext( QEvent::LocaleChange ); } );
+
+        m_data->inputPanel = panel;
+    }
+
+    return m_data->inputPanel;
 }
 
 void QskInputContext::update( Qt::InputMethodQueries queries )
@@ -170,28 +180,21 @@ void QskInputContext::update( Qt::InputMethodQueries queries )
 
         if ( !event.value( Qt::ImEnabled ).toBool() )
         {
-            hideInputPanel();
+            hidePanel();
             return;
         }
     }
 
-    if ( qskInputPanel )
-        qskInputPanel->processInputMethodQueries( queries );
+    if ( auto panel = inputPanel() )
+        panel->processInputMethodQueries( queries );
 }
 
-QRectF QskInputContext::keyboardRect() const
+QRectF QskInputContext::panelRect() const
 {
-    // is this correct and what is this good for ?
     if ( m_data->inputPopup )
         return m_data->inputPopup->geometry();
 
-    return Inherited::keyboardRect();
-}
-
-bool QskInputContext::isAnimating() const
-{
-    // can be implemented once we have some sliding/fading effects
-    return false;
+    return QRectF();
 }
 
 QskPopup* QskInputContext::createEmbeddingPopup( QskInputPanel* panel )
@@ -238,41 +241,24 @@ QskWindow* QskInputContext::createEmbeddingWindow( QskInputPanel* panel )
     return window;
 }
 
-void QskInputContext::showInputPanel()
+void QskInputContext::showPanel()
 {
     auto focusItem = qobject_cast< QQuickItem* >( qGuiApp->focusObject() );
-
     if ( focusItem == nullptr )
         return;
 
-    if ( ( focusItem == qskInputPanel )
-        || qskIsAncestorOf( qskInputPanel, focusItem ) )
+    auto panel = inputPanel();
+    if ( panel == nullptr )
+        return;
+
+    if ( ( focusItem == panel )
+        || qskIsAncestorOf( panel, focusItem ) )
     {
         // ignore: usually the input proxy of the panel
         return;
     }
 
     m_data->inputItem = focusItem;
-
-    if ( qskInputPanel == nullptr )
-        qskSetInputPanel( new QskInputPanel() );
-
-    connect( qskInputPanel, &QQuickItem::visibleChanged,
-        this, &QPlatformInputContext::emitInputPanelVisibleChanged,
-        Qt::UniqueConnection );
-
-    connect( qskInputPanel, &QskControl::localeChanged,
-        this, &QPlatformInputContext::emitLocaleChanged,
-        Qt::UniqueConnection );
-
-    if ( qskInputPanel->parent() == nullptr )
-    {
-        /*
-            Take ownership to avoid, that the panel gets 
-            destroyed together with the popup/window
-         */
-        qskInputPanel->setParent( this );
-    }
 
     if ( QskDialog::instance()->policy() == QskDialog::TopLevelWindow )
     {
@@ -282,7 +268,7 @@ void QskInputContext::showInputPanel()
 
         if ( m_data->inputWindow == nullptr )
         {
-            auto window = createEmbeddingWindow( qskInputPanel );
+            auto window = createEmbeddingWindow( panel );
 
             if ( window )
             {
@@ -311,7 +297,7 @@ void QskInputContext::showInputPanel()
 
         if ( m_data->inputPopup == nullptr )
         {
-            auto popup = createEmbeddingPopup( qskInputPanel );
+            auto popup = createEmbeddingPopup( panel );
 
             if ( popup )
             {
@@ -330,12 +316,12 @@ void QskInputContext::showInputPanel()
     m_data->engine->setPredictor(
         m_data->predictorTable.find( locale() ) );
 
-    qskInputPanel->setLocale( locale() );
-    qskInputPanel->attachInputItem( m_data->inputItem );
-    qskInputPanel->setEngine( m_data->engine );
+    panel->setLocale( locale() );
+    panel->attachInputItem( m_data->inputItem );
+    panel->setEngine( m_data->engine );
 }
 
-void QskInputContext::hideInputPanel()
+void QskInputContext::hidePanel()
 {
     if ( m_data->inputPopup )
     {
@@ -354,11 +340,11 @@ void QskInputContext::hideInputPanel()
 #endif
     }
 
-    if ( qskInputPanel )
+    if ( auto panel = inputPanel() )
     {
-        qskInputPanel->setParentItem( nullptr );
-        qskInputPanel->attachInputItem( nullptr );
-        qskInputPanel->setEngine( nullptr );
+        panel->setParentItem( nullptr );
+        panel->attachInputItem( nullptr );
+        panel->setEngine( nullptr );
     }
 
     if ( m_data->inputPopup )
@@ -378,10 +364,23 @@ void QskInputContext::hideInputPanel()
     m_data->inputItem = nullptr;
 }
 
-bool QskInputContext::isInputPanelVisible() const
+void QskInputContext::setActive( bool on )
 {
-    return qskInputPanel && qskInputPanel->isVisible()
-        && qskInputPanel->window() && qskInputPanel->window()->isVisible();
+    if ( on )
+        showPanel();
+    else
+        hidePanel();
+}
+
+bool QskInputContext::isActive() const
+{
+    if ( auto panel = inputPanel() )
+    {
+        return panel && panel->isVisible()
+            && panel->window() && panel->window()->isVisible();
+    }
+
+    return false;
 }
 
 QLocale QskInputContext::locale() const
@@ -395,11 +394,6 @@ QLocale QskInputContext::locale() const
     }
 
     return QLocale();
-}
-
-Qt::LayoutDirection QskInputContext::inputDirection() const
-{
-    return Inherited::inputDirection();
 }
 
 void QskInputContext::setFocusObject( QObject* focusObject )
@@ -421,7 +415,7 @@ void QskInputContext::setFocusObject( QObject* focusObject )
             if ( m_data->inputItem->hasFocus() )
             {
                 /*
-                    As long as the focus is noewhere and
+                    As long as the focus is nowhere and
                     the local focus stay on the input item
                     we don't care
                  */
@@ -448,7 +442,7 @@ void QskInputContext::setFocusObject( QObject* focusObject )
         }
     }
 
-    hideInputPanel();
+    hidePanel();
     m_data->inputItem = nullptr;
 }
 
@@ -476,20 +470,17 @@ QskTextPredictor* QskInputContext::registeredPredictor( const QLocale& locale )
     return m_data->predictorTable.find( locale );
 }
 
-void QskInputContext::invokeAction( QInputMethod::Action, int )
+void QskInputContext::processClickAt( int cursorPosition )
 {
+    Q_UNUSED( cursorPosition );
 }
 
-void QskInputContext::reset()
-{
-}
-
-void QskInputContext::commit()
+void QskInputContext::commitPrediction( bool )
 {
     /*
-        commit is called, when the input item loses the focus.
+        called, when the input item loses the focus.
         As it it should be possible to navigate inside of the
-        inputPanel this is no valid reason to hide the panel.
+        inputPanel what should we do here ?
      */
 }
 
@@ -501,15 +492,13 @@ bool QskInputContext::eventFilter( QObject* object, QEvent* event )
         {
             case QEvent::Move:
             {
-                if ( qskInputPanel )
-                    emitKeyboardRectChanged();
-
+                Q_EMIT panelRectChanged();
                 break;
             }
             case QEvent::Resize:
             {
-                if ( qskInputPanel )
-                    qskInputPanel->setSize( m_data->inputWindow->size() );
+                if ( auto panel = inputPanel() )
+                    panel->setSize( m_data->inputWindow->size() );
 
                 break;
             }
@@ -528,7 +517,7 @@ bool QskInputContext::eventFilter( QObject* object, QEvent* event )
         {
             case QskEvent::GeometryChange:
             {
-                emitKeyboardRectChanged();
+                Q_EMIT panelRectChanged();
                 break;
             }
             case QEvent::DeferredDelete:
@@ -540,12 +529,6 @@ bool QskInputContext::eventFilter( QObject* object, QEvent* event )
     }
 
     return Inherited::eventFilter( object, event );
-}
-
-bool QskInputContext::filterEvent( const QEvent* )
-{
-    // called from QXcbKeyboard, but what about other platforms
-    return false;
 }
 
 #include "moc_QskInputContext.cpp"
