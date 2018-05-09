@@ -180,6 +180,13 @@ QskMetaFunction::Type QskMetaFunction::functionType() const
 void QskMetaFunction::invoke(
     QObject* object, void* argv[], Qt::ConnectionType connectionType )
 {
+#if 1
+    /*
+        Since Qt 5.10 we also have QMetaObject::invokeMethod
+        with functor based callbacks. TODO ...
+     */
+#endif
+
     // code is not thread safe - TODO ...
 
     QPointer< QObject > receiver( object );
