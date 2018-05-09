@@ -208,20 +208,30 @@ QSGNode* SpeedometerSkinlet::updateLabelsNode( const Speedometer* speedometer, Q
     return ticksNode;
 }
 
-QSGNode* SpeedometerSkinlet::updateNeedleNode( const Speedometer* speedometer, QSGNode* node ) const
+QSGNode* SpeedometerSkinlet::updateNeedleNode(
+    const Speedometer* speedometer, QSGNode* node ) const
 {
+    auto needleNode = static_cast< TicksNode* >( node );
+    if ( needleNode == nullptr )
+        needleNode = new TicksNode();
+
+    QskBoxNode* boxNode;
+
+    if ( needleNode->childCount() == 0 )
+    {
+        boxNode = new QskBoxNode();
+        needleNode->appendChildNode( boxNode );
+    }
+    else
+    {
+        boxNode = static_cast< QskBoxNode* >( needleNode->childAtIndex( 0 ) );
+    }
+
     QMarginsF margins = speedometer->marginsHint( Speedometer::Panel | QskAspect::Margin );
     const QRectF panelRect = subControlRect( speedometer, Speedometer::Panel ).marginsRemoved( margins );
     auto radius = speedometer->metric( Speedometer::NeedleHead | QskAspect::Size );
     QPointF center = QPointF( panelRect.x() + panelRect.width() / 2,
         panelRect.y() + panelRect.height() / 2 );
-
-    auto boxNode = static_cast< QskBoxNode* >( node );
-
-    if( boxNode == nullptr )
-    {
-        boxNode = new QskBoxNode;
-    }
 
     QskBoxShapeMetrics shapeMetrics( radius, radius, radius, radius );
     QskBoxBorderMetrics borderMetrics = speedometer->boxBorderMetricsHint( Speedometer::NeedleHead );
@@ -230,17 +240,6 @@ QSGNode* SpeedometerSkinlet::updateNeedleNode( const Speedometer* speedometer, Q
     QRectF centerNodeRect( center.x() - radius, center.y() - radius,
                            2 * radius, 2 * radius );
     boxNode->setBoxData( centerNodeRect, shapeMetrics, borderMetrics, borderColors, gradient );
-
-    TicksNode* needleNode;
-
-    if ( boxNode->childCount() == 0 )
-    {
-        needleNode = new TicksNode();
-    }
-    else
-    {
-        needleNode = static_cast< TicksNode* >( boxNode->childAtIndex( 0 ) );
-    }
 
     QColor color = speedometer->color( Speedometer::Needle );
     needleNode->setColor( color );
@@ -277,12 +276,7 @@ QSGNode* SpeedometerSkinlet::updateNeedleNode( const Speedometer* speedometer, Q
 
     needleNode->markDirty( QSGNode::DirtyGeometry );
 
-    if ( boxNode->childCount() == 0 )
-    {
-        boxNode->appendChildNode( needleNode );
-    }
-
-    return boxNode;
+    return needleNode;
 }
 
 #include "moc_SpeedometerSkinlet.cpp"
