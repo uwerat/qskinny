@@ -34,9 +34,6 @@ public:
 
     virtual QLocale locale() const;
 
-    void registerPredictor( const QLocale&, QskTextPredictor* );
-    QskTextPredictor* registeredPredictor( const QLocale& );
-
     virtual QQuickItem* inputItem() const;
     virtual QskInputPanel* inputPanel() const;
 
@@ -56,6 +53,8 @@ protected:
     virtual void showPanel();
     virtual void hidePanel();
 
+    virtual QskTextPredictor* textPredictor( const QLocale& ) const;
+
 private:
     friend class QskPlatformInputContext;
 
@@ -64,6 +63,9 @@ private:
     virtual void update( Qt::InputMethodQueries );
     virtual void processClickAt( int cursorPosition );
     virtual void commitPrediction( bool );
+
+    void updateLocale();
+    void updatePredictor();
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

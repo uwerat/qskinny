@@ -7,12 +7,37 @@
 #include <qpa/qplatforminputcontext.h>
 
 #include "QskInputContext.h"
-#include "QskPinyinTextPredictor.h"
+
+#define HUNSPELL 0
+
+#if HUNSPELL
 #include "QskHunspellTextPredictor.h"
+#endif
 
 #include <QLocale>
 #include <QRectF>
 #include <QEvent>
+
+namespace
+{
+    class InputContext : public QskInputContext
+    {
+    public:
+        virtual QskTextPredictor* textPredictor( const QLocale& locale ) const
+        {
+#if HUNSPELL
+            /*
+                For the moment we manage the text prediction in the context
+                plugin - but of course it has to be moved somewhere else
+             */
+            if ( locale.language() == QLocale::English )
+                return new QskHunspellTextPredictor();
+#endif
+
+            return QskInputContext::textPredictor( locale );
+        }
+    };
+}
 
 /*
     QPlatformInputContext is no stable public API.
@@ -20,6 +45,8 @@
  */
 class QskPlatformInputContext final : public QPlatformInputContext
 {
+    Q_OBJECT
+
     using Inherited = QPlatformInputContext;
 
 public:
@@ -67,7 +94,7 @@ QskPlatformInputContext::QskPlatformInputContext()
     auto context = QskInputContext::instance();
     if ( context == nullptr )
     {
-        context = new QskInputContext();
+        context = new InputContext();
         QskInputContext::setInstance( context );
     }
 
@@ -89,16 +116,6 @@ void QskPlatformInputContext::updateContext()
 
         connect( m_context, &QskInputContext::panelRectChanged,
             this, &QPlatformInputContext::emitKeyboardRectChanged );
-
-#if 1
-        m_context->registerPredictor( QLocale(),
-            new QskHunspellTextPredictor() );
-#endif
-
-#if 0
-        m_context->registerPredictor(
-            QLocale::Chinese, new QskPinyinTextPredictor() );
-#endif
     }
 }
 

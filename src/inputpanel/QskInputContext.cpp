@@ -5,7 +5,6 @@
 
 #include "QskInputContext.h"
 #include "QskInputPanel.h"
-#include "QskTextPredictor.h"
 #include "QskInputPanel.h"
 #include "QskInputEngine.h"
 
@@ -66,58 +65,6 @@ QskInputContext* QskInputContext::instance()
     return qskInputContext;
 }
 
-static inline uint qskHashLocale( const QLocale& locale )
-{
-    return uint( locale.language() + ( uint( locale.country() ) << 16 ) );
-}
-
-namespace
-{
-    class PredictorTable
-    {
-    public:
-        void replace( const QLocale& locale, QskTextPredictor* predictor )
-        {
-            const auto key = qskHashLocale( locale );
-
-            if ( predictor )
-            {
-                const auto it = hashTab.find( key );
-                if ( it != hashTab.end() )
-                {
-                    if ( it.value() == predictor )
-                        return;
-
-                    delete it.value();
-                    *it = predictor;
-                }
-                else
-                {
-                    hashTab.insert( key, predictor );
-                }
-            }
-            else
-            {
-                const auto it = hashTab.find( key );
-                if ( it != hashTab.end() )
-                {
-                    delete it.value();
-                    hashTab.erase( it );
-                }
-            }
-        }
-
-        QskTextPredictor* find( const QLocale& locale )
-        {
-            const auto key = qskHashLocale( locale );
-            return hashTab.value( key, nullptr );
-        }
-
-    private:
-        QHash< uint, QskTextPredictor* > hashTab;
-    };
-}
-
 class QskInputContext::PrivateData
 {
 public:
@@ -129,9 +76,9 @@ public:
     QskPopup* inputPopup = nullptr;
     QskWindow* inputWindow = nullptr;
 
-    PredictorTable predictorTable;
-
     QskInputEngine* engine = nullptr;
+
+    bool isPredictorDirty = true;
 };
 
 QskInputContext::QskInputContext():
@@ -163,7 +110,7 @@ QskInputPanel* QskInputContext::inputPanel() const
             this, &QskInputContext::activeChanged );
         
         connect( panel, &QskControl::localeChanged,
-            this, []{ qskSendToPlatformContext( QEvent::LocaleChange ); } );
+            this, &QskInputContext::updateLocale );
 
         m_data->inputPanel = panel;
     }
@@ -313,8 +260,7 @@ void QskInputContext::showPanel()
         }
     }
 
-    m_data->engine->setPredictor(
-        m_data->predictorTable.find( locale() ) );
+    updatePredictor();
 
     panel->setLocale( locale() );
     panel->attachInputItem( m_data->inputItem );
@@ -396,6 +342,28 @@ QLocale QskInputContext::locale() const
     return QLocale();
 }
 
+void QskInputContext::updateLocale()
+{
+    m_data->isPredictorDirty = true;
+
+    if ( isActive() )
+        updatePredictor();
+
+    qskSendToPlatformContext( QEvent::LocaleChange );
+}
+
+void QskInputContext::updatePredictor()
+{
+    if ( m_data->isPredictorDirty )
+    {
+        if ( m_data->engine )
+        {
+            m_data->engine->setPredictor( textPredictor( locale() ) );
+            m_data->isPredictorDirty = false;
+        }
+    }
+}
+
 void QskInputContext::setFocusObject( QObject* focusObject )
 {
     if ( m_data->inputItem == nullptr || m_data->inputItem == focusObject )
@@ -446,28 +414,9 @@ void QskInputContext::setFocusObject( QObject* focusObject )
     m_data->inputItem = nullptr;
 }
 
-void QskInputContext::registerPredictor(
-    const QLocale& locale, QskTextPredictor* predictor )
+QskTextPredictor* QskInputContext::textPredictor( const QLocale& ) const
 {
-    auto oldPredictor = m_data->predictorTable.find( locale );
-    if ( predictor == oldPredictor )
-        return;
-
-    if ( predictor )
-        predictor->setParent( this );
-
-    m_data->predictorTable.replace( locale, predictor );
-
-    if ( oldPredictor )
-        delete oldPredictor;
-
-    if ( qskHashLocale( locale ) == qskHashLocale( this->locale() ) )
-        m_data->engine->setPredictor( predictor );
-}
-
-QskTextPredictor* QskInputContext::registeredPredictor( const QLocale& locale )
-{
-    return m_data->predictorTable.find( locale );
+    return nullptr;
 }
 
 void QskInputContext::processClickAt( int cursorPosition )
