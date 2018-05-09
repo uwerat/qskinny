@@ -29,11 +29,12 @@ SpeedometerDisplay::SpeedometerDisplay( QQuickItem *parent ) :
     m_box->setSpacing( 20 );
 
     m_revCounter->setObjectName( QStringLiteral( "RevCounter" ) );
-    int startAngle = 145, endAngle = 305, value = 200, numberLabels = 8;
-    m_revCounter->setStartAngle( startAngle );
-    m_revCounter->setEndAngle( endAngle );
-    m_revCounter->setValue( value );
+    m_revCounter->setMinimum( 145 );
+    m_revCounter->setMaximum( 305 );
+    m_revCounter->setValue( 200 );
     QVector< QString > revCounterLabels;
+    int numberLabels = 8;
+    revCounterLabels.reserve( numberLabels );
 
     for ( int i = 0; i < numberLabels; ++i )
     {
@@ -43,14 +44,11 @@ SpeedometerDisplay::SpeedometerDisplay( QQuickItem *parent ) :
     m_revCounter->setLabels( revCounterLabels );
 
     m_speedometer->setObjectName( QStringLiteral( "Speedometer" ) );
-    value = 280;
-    numberLabels = 23;
-    startAngle = -215;
-    endAngle = 35;
-    m_speedometer->setStartAngle( startAngle );
-    m_speedometer->setEndAngle( endAngle );
-    m_speedometer->setValue( value );
+    m_speedometer->setMinimum( -215 );
+    m_speedometer->setMaximum( 35 );
+    m_speedometer->setValue( -90 );
     QVector< QString > speedometerLabels;
+    numberLabels = 23;
     speedometerLabels.reserve( numberLabels );
 
     for ( int i = 0; i < numberLabels; ++i )
@@ -76,8 +74,8 @@ SpeedometerDisplay::SpeedometerDisplay( QQuickItem *parent ) :
 
 
     m_fuelGauge->setObjectName( QStringLiteral( "Fuel Gauge" ) );
-    m_fuelGauge->setStartAngle( 195 );
-    m_fuelGauge->setEndAngle( 345 );
+    m_fuelGauge->setMinimum( 195 );
+    m_fuelGauge->setMaximum( 345 );
     m_fuelGauge->setValue( 330 );
 
     QVector< QString > fuelGaugeLabels;

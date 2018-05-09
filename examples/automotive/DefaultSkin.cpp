@@ -74,7 +74,7 @@ namespace {
         return font;
     }
 
-}
+} // namespace
 
 DefaultSkin::DefaultSkin( const QString& name, QObject* parent ):
     QskSkin( parent ),
@@ -101,7 +101,8 @@ void DefaultSkin::initHints()
 
     setColor( QskTextLabel::Text, m_palette->color4 );
 
-    // - sound control
+    // -- sound control
+
     setGradient( SoundControl::Overlay, 0 );
     setGradient( SoundControl::CrossHair, m_palette->color3 );
     setGradient( SoundControl::Marker, m_palette->color5 );
@@ -145,6 +146,30 @@ void DefaultSkin::initHints()
     setBoxBorderMetrics( QskSlider::Handle, 0 );
     setBoxShape( QskSlider::Handle, 100.0, Qt::RelativeSize );
     setGradient( QskSlider::Handle, m_palette->color5 );
+
+    // -- speedometers
+
+    setBoxBorderMetrics( Speedometer::Panel, 2 );
+    setGradient( Speedometer::Panel, m_palette->color1 );
+    setBoxBorderColors( Speedometer::Panel, m_palette->color3 );
+
+    setBoxBorderMetrics( Speedometer::NeedleHead, 2 );
+    setMetric( Speedometer::NeedleHead | QskAspect::Size, 15 );
+    setGradient( Speedometer::NeedleHead, QskGradient( QskGradient::Diagonal,
+                                                       m_palette->color2, m_palette->color1 ) );
+//    setBoxBorderColors( Speedometer::NeedleHead, m_palette->color4 );
+
+    setMetric( Speedometer::Needle | QskAspect::MinimumWidth, 2 );
+    setMetric( Speedometer::Needle | QskAspect::Margin, 10 );
+    setColor( Speedometer::Needle, m_palette->color2 );
+
+    // margins between numbers and ticks:
+    setMargins( Speedometer::Labels, QskMargins( 4, 4, 4, 4 ) );
+    setMetric( Speedometer::Labels | QskAspect::MinimumWidth, 2 );
+    setMetric( Speedometer::Labels | QskAspect::Size, 15 ); // ticks size
+    setColor( Speedometer::Labels, m_palette->color4 );
+    setFontRole( Speedometer::Labels, QskSkin::SmallFont );
+
 
     // handle expanding, when being pressed
     for ( auto state : { QskAspect::NoState, QskSlider::Pressed } )

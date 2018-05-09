@@ -140,6 +140,29 @@ void OtherSkin::initHints()
     setBoxBorderMetrics( QskSlider::Handle, 0 );
     setBoxShape( QskSlider::Handle, 6 );
     setGradient( QskSlider::Handle, m_palette->color3 );
+
+    // -- speedometers
+
+    setBoxBorderMetrics( Speedometer::Panel, 5 );
+    setGradient( Speedometer::Panel, QskGradient( QskGradient::Vertical,
+                                                  m_palette->color2, m_palette->color4 ) );
+    setBoxBorderColors( Speedometer::Panel, m_palette->color3 );
+
+    setBoxBorderMetrics( Speedometer::NeedleHead, 5 );
+    setMetric( Speedometer::NeedleHead | QskAspect::Size, 10 );
+    setGradient( Speedometer::NeedleHead, m_palette->color2 );
+    setBoxBorderColors( Speedometer::NeedleHead, m_palette->color4 );
+
+    setMetric( Speedometer::Needle | QskAspect::MinimumWidth, 4 );
+    setMetric( Speedometer::Needle | QskAspect::Margin, 15 );
+    setColor( Speedometer::Needle, m_palette->color4 );
+
+    // margins between numbers and ticks:
+    setMargins( Speedometer::Labels, QskMargins( 3, 3, 3, 3 ) );
+    setMetric( Speedometer::Labels | QskAspect::MinimumWidth, 3 );
+    setMetric( Speedometer::Labels | QskAspect::Size, 25 ); // ticks size
+    setColor( Speedometer::Labels, m_palette->color4 );
+    setFontRole( Speedometer::Labels, QskSkin::SmallFont );
 }
 
 void OtherSkin::initGraphicFilters()
