@@ -1159,7 +1159,7 @@ void QskControl::setExplicitSizeHint( Qt::SizeHint whichHint, const QSizeF& size
     if ( whichHint >= Qt::MinimumSize && whichHint <= Qt::MaximumSize )
     {
         const QSizeF newSize( ( size.width() < 0 ) ? -1.0 : size.width(),
-            ( size.width() < 0 ) ? -1.0 : size.width() );
+            ( size.height() < 0 ) ? -1.0 : size.height() );
 
         Q_D( QskControl );
 
