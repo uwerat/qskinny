@@ -5,6 +5,8 @@
 
 #include "QskAbstractButton.h"
 #include "QskAspect.h"
+#include "QskEvent.h"
+#include "QskQuick.h"
 
 #include <QBasicTimer>
 
@@ -239,10 +241,28 @@ bool QskAbstractButton::exclusive() const
 
 bool QskAbstractButton::event( QEvent* event )
 {
-    if ( event->type() == QEvent::Shortcut )
+    const auto eventType = static_cast< int >( event->type() );
+    switch( eventType )
     {
-        // TODO
-        // setFocus( true, Qt::ShortcutFocusReason );
+        case QEvent::Shortcut:
+        {
+            // TODO
+            // setFocus( true, Qt::ShortcutFocusReason );
+            break;
+        }
+        case QskEvent::WindowChange:
+        {
+            if ( qskIsItemComplete( this ) && isPressed() )
+            {
+                /*
+                    When the window change happens on pressed() we won't get
+                    the corrsponding release.
+                 */
+                setPressed( false );
+            }
+
+            break;
+        }
     }
 
     return Inherited::event( event );
