@@ -14,7 +14,7 @@ class QSK_EXPORT QskPinyinTextPredictor : public QskTextPredictor
     using Inherited = QskTextPredictor;
 
 public:
-    QskPinyinTextPredictor( QObject* );
+    QskPinyinTextPredictor( QObject* = nullptr );
     virtual ~QskPinyinTextPredictor() override;
 
     virtual int candidateCount() const override;

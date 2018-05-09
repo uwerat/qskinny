@@ -14,7 +14,7 @@ class QSK_EXPORT QskHunspellTextPredictor : public QskTextPredictor
     using Inherited = QskTextPredictor;
 
 public:
-    QskHunspellTextPredictor( QObject* );
+    QskHunspellTextPredictor( QObject* = nullptr );
     virtual ~QskHunspellTextPredictor() override;
 
     virtual int candidateCount() const override;
