@@ -37,6 +37,7 @@ public:
     void setTimeout( int );
     int timeout() const;
 
+    // timestamp, when the Idle state had been left
     ulong timestamp() const;
 
     bool processEvent( QQuickItem*, QEvent*, bool blockReplayedEvents = true );
@@ -48,6 +49,7 @@ public:
     State state() const;
 
     bool isReplaying() const;
+    bool hasProcessedBefore( const QMouseEvent* ) const;
 
 protected:
     virtual void pressEvent( const QMouseEvent* );

@@ -604,9 +604,11 @@ bool QskScrollView::gestureFilter( QQuickItem* item, QEvent* event )
 
     if ( event->type() == QEvent::MouseButtonPress )
     {
-        if ( recognizer.isReplaying() )
+        if ( ( item != this ) && ( recognizer.timeout() < 0 ) )
         {
-            if ( ( item != this ) || ( recognizer.timeout() < 0 ) )
+            const auto mouseEvent = static_cast< QMouseEvent* >( event );
+
+            if ( recognizer.hasProcessedBefore( mouseEvent ) )
                 return false;
         }
 

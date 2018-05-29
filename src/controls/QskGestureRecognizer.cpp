@@ -74,8 +74,10 @@ namespace
 
             if ( m_recognizer )
             {
-                m_recognizer->reject();
+                auto recognizer = m_recognizer;
                 m_recognizer = nullptr;
+
+                recognizer->reject();
             }
         }
 
@@ -105,6 +107,7 @@ public:
     PrivateData():
         watchedItem( nullptr ),
         timestamp( 0 ),
+        timestampProcessed( 0 ),
         timeout( -1 ),
         buttons( Qt::NoButton ),
         state( QskGestureRecognizer::Idle ),
@@ -116,6 +119,7 @@ public:
 
     PendingEvents pendingEvents;
     ulong timestamp;
+    ulong timestampProcessed;
 
     int timeout; // ms
 
@@ -168,6 +172,11 @@ int QskGestureRecognizer::timeout() const
 ulong QskGestureRecognizer::timestamp() const
 {
     return m_data->timestamp;
+}
+
+bool QskGestureRecognizer::hasProcessedBefore( const QMouseEvent* event ) const
+{
+    return event && ( event->timestamp() <= m_data->timestampProcessed );
 }
 
 bool QskGestureRecognizer::isReplaying() const
@@ -383,6 +392,16 @@ void QskGestureRecognizer::reject()
 
     if ( !events.isEmpty() && events[0]->type() == QEvent::MouseButtonPress )
     {
+        /*
+            In a situation of several recognizers ( f.e a vertical
+            scroll view inside a horizontal swipe view ), we might receive
+            cloned events from another recognizer.
+            To avoid to process them twice we store the most recent timestamp
+            of the cloned events we have already processed, but reposted.
+         */
+
+        m_data->timestampProcessed = events.last()->timestamp();
+
         QCoreApplication::sendEvent( window, events[0] );
 
         /*
