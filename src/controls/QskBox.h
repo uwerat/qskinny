@@ -22,6 +22,9 @@ public:
 
     virtual QRectF layoutRect() const override;
     virtual QSizeF contentsSizeHint() const override;
+
+    virtual qreal heightForWidth( qreal width ) const override;
+    virtual qreal widthForHeight( qreal height ) const override;
 };
 
 #endif

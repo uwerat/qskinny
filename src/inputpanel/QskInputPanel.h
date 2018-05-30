@@ -41,9 +41,6 @@ public:
     bool hasInputProxy() const;
     QString inputPrompt() const;
 
-    virtual qreal heightForWidth( qreal width ) const override;
-    virtual qreal widthForHeight( qreal height ) const override;
-
     virtual QskAspect::Subcontrol effectiveSubcontrol(
         QskAspect::Subcontrol ) const override;
 

@@ -637,36 +637,4 @@ void QskInputPanel::keyReleaseEvent( QKeyEvent* event )
     return Inherited::keyReleaseEvent( event );
 }
 
-qreal QskInputPanel::heightForWidth( qreal width ) const
-{
-    const auto margins = this->margins();
-    width -= margins.left() + margins.right();
-
-    const auto padding = innerPadding( Panel, QSizeF( width, width ) );
-    width -= padding.left() + padding.right();
-
-    qreal height = m_data->layout->heightForWidth( width );
-
-    height += padding.top() + padding.bottom();
-    height += margins.top() + margins.bottom();
-
-    return height;
-}
-
-qreal QskInputPanel::widthForHeight( qreal height ) const
-{
-    const auto margins = this->margins();
-    height -= margins.top() + margins.bottom();
-
-    const auto padding = innerPadding( Panel, QSizeF( height, height ) );
-    height -= padding.top() + padding.bottom();
-
-    qreal width = m_data->keyboard->widthForHeight( height );
-
-    width += padding.left() + padding.right();
-    width += margins.left() + margins.right();
-
-    return width;
-}
-
 #include "moc_QskInputPanel.cpp"

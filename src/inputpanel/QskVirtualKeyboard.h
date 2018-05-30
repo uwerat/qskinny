@@ -37,6 +37,7 @@ public:
 
     virtual qreal heightForWidth( qreal width ) const override;
     virtual qreal widthForHeight( qreal height ) const override;
+
     virtual QSizeF contentsSizeHint() const override;
 
     virtual QskAspect::Subcontrol effectiveSubcontrol(
@@ -49,10 +50,9 @@ Q_SIGNALS:
 protected:
     virtual void updateLayout() override;
 
-private Q_SLOTS:
+private:
     void buttonPressed();
 
-private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
