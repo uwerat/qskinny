@@ -639,33 +639,13 @@ void QskInputPanel::keyReleaseEvent( QKeyEvent* event )
 
 qreal QskInputPanel::heightForWidth( qreal width ) const
 {
-    /*
-        This code looks like as it could be generalized
-        and moved to QskLinearBox. TODO ...
-     */
-
     const auto margins = this->margins();
-
     width -= margins.left() + margins.right();
 
-    const auto padding = innerPadding(
-        Panel, QSizeF( width, width ) );
-
+    const auto padding = innerPadding( Panel, QSizeF( width, width ) );
     width -= padding.left() + padding.right();
 
-    qreal height = m_data->keyboard->heightForWidth( width );
-
-    const QskControl* controls[] =
-        { m_data->prompt, m_data->inputProxy, m_data->predictionBar };
-
-    for ( auto control : controls )
-    {
-        if ( control->isVisible() )
-        {
-            height += m_data->layout->spacing();
-            height += control->sizeHint().height();
-        }
-    }
+    qreal height = m_data->layout->heightForWidth( width );
 
     height += padding.top() + padding.bottom();
     height += margins.top() + margins.bottom();
@@ -676,25 +656,10 @@ qreal QskInputPanel::heightForWidth( qreal width ) const
 qreal QskInputPanel::widthForHeight( qreal height ) const
 {
     const auto margins = this->margins();
-
     height -= margins.top() + margins.bottom();
 
-    const auto padding = innerPadding(
-        Panel, QSizeF( height, height ) );
-
+    const auto padding = innerPadding( Panel, QSizeF( height, height ) );
     height -= padding.top() + padding.bottom();
-
-    const QskControl* controls[] =
-        { m_data->prompt, m_data->inputProxy, m_data->predictionBar };
-
-    for ( auto control : controls )
-    {
-        if ( control->isVisible() )
-        {
-            height -= m_data->layout->spacing();
-            height -= control->sizeHint().height();
-        }
-    }
 
     qreal width = m_data->keyboard->widthForHeight( height );
 
