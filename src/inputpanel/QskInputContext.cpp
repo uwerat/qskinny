@@ -5,7 +5,6 @@
 
 #include "QskInputContext.h"
 #include "QskInputPanel.h"
-#include "QskInputPanel.h"
 #include "QskInputEngine.h"
 
 #include "QskLinearBox.h"

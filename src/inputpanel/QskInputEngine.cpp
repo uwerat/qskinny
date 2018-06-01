@@ -39,9 +39,7 @@ static inline QString qskKeyString( int keyCode )
 static inline bool qskUsePrediction( Qt::InputMethodHints hints )
 {
     constexpr Qt::InputMethodHints mask =
-        Qt::ImhNoPredictiveText | Qt::ImhHiddenText
-        | Qt::ImhDialableCharactersOnly | Qt::ImhEmailCharactersOnly
-        | Qt::ImhUrlCharactersOnly;
+        Qt::ImhNoPredictiveText | Qt::ImhExclusiveInputMask;
 
     return ( hints & mask ) == 0;
 }

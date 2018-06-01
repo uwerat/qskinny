@@ -430,100 +430,37 @@ void QskInputPanel::processInputMethodQueries( Qt::InputMethodQueries queries )
             echoMode = QskTextInput::NoEcho;
         }
 
-        if ( hints & Qt::ImhSensitiveData )
-        {
-        }
+        /*
+            - Qt::ImhSensitiveData
+            - Qt::ImhNoAutoUppercase
+            - Qt::ImhMultiLine
 
-        if ( hints & Qt::ImhNoAutoUppercase )
-        {
-        }
+            // we should start in a specific mode
 
-        if ( hints & Qt::ImhPreferNumbers )
-        {
-            // we should start with having the number keys being visible
-        }
+            - Qt::ImhPreferNumbers
+            - Qt::ImhPreferUppercase
+            - Qt::ImhPreferLowercase
+            - Qt::ImhPreferLatin
 
-        if ( hints & Qt::ImhPreferUppercase )
-        {
-            // we should start with having the upper keys being visible
-        }
+            // we should lock all other modes
 
-        if ( hints & Qt::ImhPreferLowercase )
-        {
-            // we should start with having the upper keys being visible
-        }
+            - Qt::ImhFormattedNumbersOnly
+            - Qt::ImhUppercaseOnly
+            - Qt::ImhDialableCharactersOnly
+            - Qt::ImhEmailCharactersOnly
+            - Qt::ImhUrlCharactersOnly
+            - Qt::ImhLatinOnly
 
-        if ( hints & Qt::ImhNoPredictiveText )
-        {
-            hasPrediction = false;
-        }
+            // we should have specific input panels
 
-        if ( hints & Qt::ImhDate )
-        {
-            // we should have a date/time input
-        }
+            - Qt::ImhDate
+            - Qt::ImhTime
+            - Qt::ImhDigitsOnly
+            - Qt::ImhFormattedNumbersOnly
+         */
 
-        if ( hints & Qt::ImhTime )
-        {
-            // we should have a date/time input
-        }
-
-        if ( hints & Qt::ImhPreferLatin )
-        {
-            // conflicts with our concept of using the locale
-        }
-
-        if ( hints & Qt::ImhMultiLine )
-        {
-            // we need an implementation of QskTextEdit for this
-        }
-
-        if ( hints & Qt::ImhDigitsOnly )
-        {
-            // using a numpad instead of our virtual keyboard
-            hasPrediction = false;
-        }
-
-        if ( hints & Qt::ImhFormattedNumbersOnly )
-        {
-            // a numpad with decimal point and minus sign
-            hasPrediction = false;
-        }
-
-        if ( hints & Qt::ImhUppercaseOnly )
-        {
-            // locking all other keys
-        }
-
-        if ( hints & Qt::ImhLowercaseOnly )
-        {
-            // locking all other keys
-        }
-
-        if ( hints & Qt::ImhDialableCharactersOnly )
-        {
-            // characters suitable for phone dialing
-            hasPrediction = false;
-        }
-
-        if ( hints & Qt::ImhEmailCharactersOnly )
-        {
-            // characters suitable for email addresses
-            hasPrediction = false;
-        }
-
-        if ( hints & Qt::ImhUrlCharactersOnly )
-        {
-            // characters suitable for URLs
-            hasPrediction = false;
-        }
-
-        if ( hints & Qt::ImhLatinOnly )
-        {
-            // locking all other keys
-        }
-
-        m_data->hasPrediction = hasPrediction;
+        m_data->hasPrediction = 
+            !( hints & ( Qt::ImhNoPredictiveText | Qt::ImhExclusiveInputMask ) );
 
         m_data->predictionBar->setVisible(
             hasPrediction && m_data->engine && m_data->engine->predictor() );
