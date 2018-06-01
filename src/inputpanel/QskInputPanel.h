@@ -39,6 +39,8 @@ public:
     QskInputEngine* engine();
 
     bool hasInputProxy() const;
+    QQuickItem* inputProxy() const;
+
     QString inputPrompt() const;
 
     virtual QskAspect::Subcontrol effectiveSubcontrol(
@@ -49,6 +51,10 @@ public:
 Q_SIGNALS:
     void inputProxyChanged( bool );
     void inputPromptChanged( const QString& );
+
+    void textEntered( const QString&, bool isFinal );
+    void keyEntered( int keyCode );
+    void done( bool success );
 
 public Q_SLOTS:
     void setInputPrompt( const QString& );
@@ -62,7 +68,6 @@ protected:
         Qt::InputMethodHints, int spaceLeft );
 
     virtual void updatePrediction();
-    virtual void done( bool success );
 
 private:
     void commitKey( int key );

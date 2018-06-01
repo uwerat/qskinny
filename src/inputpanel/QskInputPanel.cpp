@@ -13,100 +13,8 @@
 
 #include <QString>
 #include <QLocale>
-#include <QGuiApplication>
 #include <QPointer>
 #include <QInputMethodQueryEvent>
-#include <QTextCharFormat>
-
-static inline void qskSendReplaceText( QQuickItem* receiver, const QString& text )
-{
-    if ( receiver == nullptr )
-        return;
-
-    QInputMethodEvent::Attribute attribute(
-        QInputMethodEvent::Selection, 0, 32767, QVariant() );
-
-    QInputMethodEvent event1( QString(), { attribute } );
-    QCoreApplication::sendEvent( receiver, &event1 );
-
-    QInputMethodEvent event2;
-    event2.setCommitString( text );
-
-    QCoreApplication::sendEvent( receiver, &event2 );
-}
-
-static inline void qskSendText( QQuickItem* receiver,
-    const QString& text, bool isFinal )
-{
-    if ( receiver == nullptr )
-        return;
-
-    if ( isFinal )
-    {
-        QInputMethodEvent event;
-        event.setCommitString( text );
-
-        QCoreApplication::sendEvent( receiver, &event );
-    }
-    else
-    {
-        QTextCharFormat format;
-        format.setFontUnderline( true );
-
-        const QInputMethodEvent::Attribute attribute(
-            QInputMethodEvent::TextFormat, 0, text.length(), format );
-
-        QInputMethodEvent event( text, { attribute } );
-
-        QCoreApplication::sendEvent( receiver, &event );
-    }
-}
-
-static inline void qskSendKey( QQuickItem* receiver, int key )
-{
-    if ( receiver == nullptr )
-        return;
-
-    QKeyEvent keyPress( QEvent::KeyPress, key, Qt::NoModifier );
-    QCoreApplication::sendEvent( receiver, &keyPress );
-
-    QKeyEvent keyRelease( QEvent::KeyRelease, key, Qt::NoModifier );
-    QCoreApplication::sendEvent( receiver, &keyRelease );
-}
-
-static inline void qskSyncInputProxy(
-    QQuickItem* inputItem, QskTextInput* inputProxy )
-{
-    int passwordMaskDelay = -1;
-    QString passwordCharacter;
-
-    if ( auto textInput = qobject_cast< QskTextInput* >( inputItem ) )
-    {
-        passwordMaskDelay = textInput->passwordMaskDelay();
-        passwordCharacter = textInput->passwordCharacter();
-
-        if ( inputProxy->echoMode() == QskTextInput::NoEcho )
-        {
-            /*
-                Qt::ImhHiddenText does not provide information
-                to decide between NoEcho/Password
-             */
-            auto mode = textInput->echoMode();
-            if ( mode == QskTextInput::Password )
-                inputProxy->setEchoMode( mode );
-        }
-    }
-
-    if ( passwordMaskDelay >= 0 )
-        inputProxy->setPasswordMaskDelay( passwordMaskDelay );
-    else
-        inputProxy->resetPasswordMaskDelay();
-
-    if ( !passwordCharacter.isEmpty() )
-        inputProxy->setPasswordCharacter( passwordCharacter );
-    else
-        inputProxy->resetPasswordCharacter();
-}
 
 namespace
 {
@@ -117,9 +25,40 @@ namespace
             QskTextInput( parentItem )
         {
             setObjectName( "InputPanelInputProxy" );
-#if 1
             setFocusPolicy( Qt::NoFocus );
-#endif
+        }
+
+        void setup( QQuickItem* inputItem )
+        {
+            int passwordMaskDelay = -1;
+            QString passwordCharacter;
+
+            if ( auto textInput = qobject_cast< QskTextInput* >( inputItem ) )
+            {
+                passwordMaskDelay = textInput->passwordMaskDelay();
+                passwordCharacter = textInput->passwordCharacter();
+
+                if ( echoMode() == QskTextInput::NoEcho )
+                {
+                    /*
+                        Qt::ImhHiddenText does not provide information
+                        to decide between NoEcho/Password
+                     */
+                    auto mode = textInput->echoMode();
+                    if ( mode == QskTextInput::Password )
+                        setEchoMode( mode );
+                }
+            }
+
+            if ( passwordMaskDelay >= 0 )
+                setPasswordMaskDelay( passwordMaskDelay );
+            else
+                resetPasswordMaskDelay();
+
+            if ( !passwordCharacter.isEmpty() )
+                setPasswordCharacter( passwordCharacter );
+            else
+                resetPasswordCharacter();
         }
 
     protected:
@@ -255,7 +194,7 @@ void QskInputPanel::attachInputItem( QQuickItem* item )
             QCoreApplication::sendEvent( item, &event );
 
             // not all information is available from the input method query
-            qskSyncInputProxy( item, m_data->inputProxy );
+            m_data->inputProxy->setup( item );
         }
     }
 }
@@ -263,6 +202,11 @@ void QskInputPanel::attachInputItem( QQuickItem* item )
 QQuickItem* QskInputPanel::attachedInputItem() const
 {
     return m_data->inputItem;
+}
+
+QQuickItem* QskInputPanel::inputProxy() const
+{
+    return m_data->inputProxy;
 }
 
 void QskInputPanel::updatePrediction()
@@ -335,7 +279,7 @@ void QskInputPanel::commitPredictiveText( int index )
         const QString text = m_data->engine->predictiveText( index );
 
         m_data->engine->reset();
-        qskSendText( m_data->receiverItem(), text, true );
+        Q_EMIT textEntered( text, true );
     }
 }
 
@@ -376,37 +320,24 @@ void QskInputPanel::processKey( int key,
         {
             case Qt::Key_Return:
             {
-                done( true );
+                Q_EMIT done( true );
                 break;
             }
             case Qt::Key_Escape:
             {
-                done( false );
+                Q_EMIT done( false );
                 break;
             }
             default:
             {
-                qskSendKey( m_data->receiverItem(), result.key );
+                Q_EMIT keyEntered( result.key );
             }
         }
     }
     else if ( !result.text.isEmpty() )
     {
-        // changing the current text
-        qskSendText( m_data->receiverItem(), result.text, result.isFinal );
+        Q_EMIT textEntered( result.text, result.isFinal );
     }
-}
-
-void QskInputPanel::done( bool success )
-{
-    if ( success )
-    {
-        if ( m_data->hasInputProxy )
-            qskSendReplaceText( m_data->inputItem, m_data->inputProxy->text() );
-    }
-
-    qskSendKey( m_data->inputItem,
-        success ? Qt::Key_Return : Qt::Key_Escape );
 }
 
 void QskInputPanel::processInputMethodQueries( Qt::InputMethodQueries queries )

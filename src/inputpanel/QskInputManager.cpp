@@ -7,7 +7,65 @@
 #include "QskInputPanel.h"
 #include "QskInputEngine.h"
 #include "QskInputContext.h"
+
 #include <QPointer>
+#include <QTextCharFormat>
+
+static inline void qskSendReplaceText( QQuickItem* receiver, const QString& text )
+{
+    if ( receiver == nullptr )
+        return;
+
+    QInputMethodEvent::Attribute attribute(
+        QInputMethodEvent::Selection, 0, 32767, QVariant() );
+
+    QInputMethodEvent event1( QString(), { attribute } );
+    QCoreApplication::sendEvent( receiver, &event1 );
+
+    QInputMethodEvent event2;
+    event2.setCommitString( text );
+
+    QCoreApplication::sendEvent( receiver, &event2 );
+}
+
+static inline void qskSendText( QQuickItem* receiver,
+    const QString& text, bool isFinal )
+{
+    if ( receiver == nullptr )
+        return;
+
+    if ( isFinal )
+    {
+        QInputMethodEvent event;
+        event.setCommitString( text );
+
+        QCoreApplication::sendEvent( receiver, &event );
+    }
+    else
+    {
+        QTextCharFormat format;
+        format.setFontUnderline( true );
+
+        const QInputMethodEvent::Attribute attribute(
+            QInputMethodEvent::TextFormat, 0, text.length(), format );
+
+        QInputMethodEvent event( text, { attribute } );
+
+        QCoreApplication::sendEvent( receiver, &event );
+    }
+}
+
+static inline void qskSendKey( QQuickItem* receiver, int key )
+{
+    if ( receiver == nullptr )
+        return;
+
+    QKeyEvent keyPress( QEvent::KeyPress, key, Qt::NoModifier );
+    QCoreApplication::sendEvent( receiver, &keyPress );
+
+    QKeyEvent keyRelease( QEvent::KeyRelease, key, Qt::NoModifier );
+    QCoreApplication::sendEvent( receiver, &keyRelease );
+}
 
 class QskInputManager::PrivateData
 {
@@ -92,7 +150,18 @@ Qt::Alignment QskInputManager::panelAlignment() const
 
 QskControl* QskInputManager::createPanel()
 {
-    return new QskInputPanel();
+    auto panel = new QskInputPanel();
+
+    connect( panel, &QskInputPanel::done,
+        this, &QskInputManager::applyInput, Qt::UniqueConnection );
+
+    connect( panel, &QskInputPanel::textEntered,
+        this, &QskInputManager::applyText, Qt::UniqueConnection );
+
+    connect( panel, &QskInputPanel::keyEntered,
+        this, &QskInputManager::applyKey, Qt::UniqueConnection );
+
+    return panel;
 }
 
 QskInputEngine* QskInputManager::createEngine()
@@ -136,3 +205,63 @@ void QskInputManager::updatePredictor()
             m_data->engine->setPredictor( context->textPredictor( locale ) );
     }
 }
+
+QQuickItem* QskInputManager::inputItem() const
+{
+    if ( auto panel = qobject_cast< QskInputPanel* >( m_data->panel ) )
+        return panel->attachedInputItem();
+
+    return nullptr;
+}
+
+QQuickItem* QskInputManager::inputProxy() const
+{
+    if ( auto panel = qobject_cast< QskInputPanel* >( m_data->panel ) )
+    {
+        if ( panel->hasInputProxy() )
+            return panel->inputProxy();
+    }
+
+    return nullptr;
+}
+
+void QskInputManager::applyInput( bool success )
+{
+    auto item = inputItem();
+    if ( item == nullptr )
+        return;
+
+    if ( success )
+    {
+        if ( auto proxy = inputProxy() )
+        {
+            const auto value = proxy->property( "text" );
+            if ( value.canConvert<QString>() )
+                qskSendReplaceText( item, value.toString() );
+        }
+    }
+
+    qskSendKey( item, success ? Qt::Key_Return : Qt::Key_Escape );
+}
+
+void QskInputManager::applyText( const QString& text, bool isFinal )
+{
+    auto item = inputProxy();
+    if ( item == nullptr )
+        item = inputItem();
+
+    qskSendText( item, text, isFinal );
+}
+
+void QskInputManager::applyKey( int key )
+{
+    // control keys like left/right
+
+    auto item = inputProxy();
+    if ( item == nullptr )
+        item = inputItem();
+
+    qskSendKey( item, key );
+}
+
+#include "moc_QskInputManager.cpp"

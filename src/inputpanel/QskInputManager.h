@@ -31,6 +31,9 @@ public:
     QskControl* panel( bool doCreate );
     virtual Qt::Alignment panelAlignment() const;
 
+    virtual QQuickItem* inputProxy() const;
+    virtual QQuickItem* inputItem() const;
+
 protected:
     virtual QskControl* createPanel();
     virtual QskInputEngine* createEngine();
@@ -39,6 +42,10 @@ protected:
     void updateEngine( const QLocale& );
 
 private:
+    void applyInput( bool success );
+    void applyText( const QString&, bool isFinal );
+    void applyKey( int keyCode );
+
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
