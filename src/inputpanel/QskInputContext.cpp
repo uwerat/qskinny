@@ -4,8 +4,7 @@
  *****************************************************************************/
 
 #include "QskInputContext.h"
-#include "QskInputPanel.h"
-#include "QskInputEngine.h"
+#include "QskInputManager.h"
 
 #include "QskLinearBox.h"
 #include "QskDialog.h"
@@ -69,22 +68,19 @@ class QskInputContext::PrivateData
 public:
     // item receiving the input
     QPointer< QQuickItem > inputItem;
-    QPointer< QskInputPanel > inputPanel;
 
     // popup or window embedding the panel
     QskPopup* inputPopup = nullptr;
     QskWindow* inputWindow = nullptr;
 
-    QskInputEngine* engine = nullptr;
-
-    bool isPredictorDirty = true;
+    QskInputManager* inputManager = nullptr;
 };
 
 QskInputContext::QskInputContext():
     m_data( new PrivateData() )
 {
     setObjectName( "InputContext" );
-    m_data->engine = new QskInputEngine( this );
+    m_data->inputManager = new QskInputManager( this );
 }
 
 QskInputContext::~QskInputContext()
@@ -96,25 +92,22 @@ QQuickItem* QskInputContext::inputItem() const
     return m_data->inputItem;
 }
 
-QskInputPanel* QskInputContext::inputPanel() const
+QskControl* QskInputContext::inputPanel() const
 {
-    if ( m_data->inputPanel == nullptr )
-    {
-        auto that = const_cast< QskInputContext* >( this );
+    auto panel = m_data->inputManager->panel( true );
 
-        auto panel = new QskInputPanel();
-        panel->setParent( that );
+    if ( panel->parent() != this )
+    {
+        panel->setParent( const_cast< QskInputContext* >( this ) );
 
         connect( panel, &QQuickItem::visibleChanged,
-            this, &QskInputContext::activeChanged );
-        
-        connect( panel, &QskControl::localeChanged,
-            this, &QskInputContext::updateLocale );
+            this, &QskInputContext::activeChanged, Qt::UniqueConnection );
 
-        m_data->inputPanel = panel;
+        connect( panel, &QskControl::localeChanged,
+            this, [] { qskSendToPlatformContext( QEvent::LocaleChange ); } );
     }
 
-    return m_data->inputPanel;
+    return panel;
 }
 
 void QskInputContext::update( Qt::InputMethodQueries queries )
@@ -131,8 +124,7 @@ void QskInputContext::update( Qt::InputMethodQueries queries )
         }
     }
 
-    if ( auto panel = inputPanel() )
-        panel->processInputMethodQueries( queries );
+    m_data->inputManager->processInputMethodQueries( queries );
 }
 
 QRectF QskInputContext::panelRect() const
@@ -143,7 +135,7 @@ QRectF QskInputContext::panelRect() const
     return QRectF();
 }
 
-QskPopup* QskInputContext::createEmbeddingPopup( QskInputPanel* panel )
+QskPopup* QskInputContext::createEmbeddingPopup( QskControl* panel )
 {
     auto popup = new QskPopup();
 
@@ -154,24 +146,35 @@ QskPopup* QskInputContext::createEmbeddingPopup( QskInputPanel* panel )
     auto box = new QskLinearBox( popup );
     box->addItem( panel );
 
-    /*
-        When the panel has an input proxy ( usually a local text input )
-        we don't need to see the input item and display the overlay
-        and align in the center of the window.
-     */
-    const bool hasInputProxy = panel->hasInputProxy();
+    const auto alignment =
+        m_data->inputManager->panelAlignment() & Qt::AlignVertical_Mask;
 
-    popup->setOverlay( hasInputProxy );
+    popup->setOverlay( alignment == Qt::AlignVCenter );
 
-    if ( hasInputProxy )
-        box->setMargins( QMarginsF( 5, 5, 5, 5 ) );
-    else
-        box->setExtraSpacingAt( Qt::TopEdge | Qt::LeftEdge | Qt::RightEdge );
+    switch( alignment )
+    {
+        case Qt::AlignTop:
+        {
+            box->setExtraSpacingAt( Qt::BottomEdge | Qt::LeftEdge | Qt::RightEdge );
+            break;
+        }
+        case Qt::AlignVCenter:
+        {
+            box->setMargins( QMarginsF( 5, 5, 5, 5 ) );
+            break;
+        }
+
+        case Qt::AlignBottom:
+        default:
+        {
+            box->setExtraSpacingAt( Qt::TopEdge | Qt::LeftEdge | Qt::RightEdge );
+        }
+    }
 
     return popup;
 }
 
-QskWindow* QskInputContext::createEmbeddingWindow( QskInputPanel* panel )
+QskWindow* QskInputContext::createEmbeddingWindow( QskControl* panel )
 {
     auto window = new QskWindow();
 
@@ -254,16 +257,12 @@ void QskInputContext::showPanel()
                 popup->setVisible( true );
                 popup->installEventFilter( this );
             }
-    
+
             m_data->inputPopup = popup;
         }
     }
 
-    updatePredictor();
-
-    panel->setLocale( locale() );
-    panel->attachInputItem( m_data->inputItem );
-    panel->setEngine( m_data->engine );
+    m_data->inputManager->attachInputItem( m_data->inputItem );
 }
 
 void QskInputContext::hidePanel()
@@ -285,17 +284,13 @@ void QskInputContext::hidePanel()
 #endif
     }
 
-    if ( auto panel = inputPanel() )
-    {
+    if ( auto panel = m_data->inputManager->panel( false ) )
         panel->setParentItem( nullptr );
-        panel->attachInputItem( nullptr );
-        panel->setEngine( nullptr );
-    }
+
+    m_data->inputManager->attachInputItem( nullptr );
 
     if ( m_data->inputPopup )
-    {
         m_data->inputPopup->deleteLater();
-    }
 
     if ( m_data->inputWindow )
     {
@@ -339,28 +334,6 @@ QLocale QskInputContext::locale() const
     }
 
     return QLocale();
-}
-
-void QskInputContext::updateLocale()
-{
-    m_data->isPredictorDirty = true;
-
-    if ( isActive() )
-        updatePredictor();
-
-    qskSendToPlatformContext( QEvent::LocaleChange );
-}
-
-void QskInputContext::updatePredictor()
-{
-    if ( m_data->isPredictorDirty )
-    {
-        if ( m_data->engine )
-        {
-            m_data->engine->setPredictor( textPredictor( locale() ) );
-            m_data->isPredictorDirty = false;
-        }
-    }
 }
 
 void QskInputContext::setFocusObject( QObject* focusObject )
