@@ -20,8 +20,8 @@ class QSK_EXPORT QskInputPanel : public QskBox
 
     using Inherited = QskBox;
 
-    Q_PROPERTY( bool inputProxy READ hasInputProxy
-        WRITE setInputProxy NOTIFY inputProxyChanged )
+    Q_PROPERTY( PanelHints panelHints READ panelHints
+        WRITE setPanelHints NOTIFY panelHintsChanged )
 
     Q_PROPERTY( QString inputPrompt READ inputPrompt
         WRITE setInputPrompt NOTIFY inputPromptChanged )
@@ -29,16 +29,26 @@ class QSK_EXPORT QskInputPanel : public QskBox
 public:
     QSK_SUBCONTROLS( Panel )
 
+    enum PanelHint
+    {
+        InputProxy = 1 << 0,
+        Prediction = 1 << 1
+    };
+
+    Q_ENUM( PanelHint )
+    Q_DECLARE_FLAGS( PanelHints, PanelHint )
+
     QskInputPanel( QQuickItem* parent = nullptr );
     virtual ~QskInputPanel() override;
 
     void attachInputItem( QQuickItem* );
     QQuickItem* attachedInputItem() const;
 
-    void setEngine( QskInputEngine* );
-    QskInputEngine* engine();
+    void setPanelHint( PanelHint, bool on );
 
-    bool hasInputProxy() const;
+    void setPanelHints( PanelHints );
+    PanelHints panelHints() const;
+
     QQuickItem* inputProxy() const;
 
     QString inputPrompt() const;
@@ -46,35 +56,26 @@ public:
     virtual QskAspect::Subcontrol effectiveSubcontrol(
         QskAspect::Subcontrol ) const override;
 
-    virtual void processInputMethodQueries( Qt::InputMethodQueries );
-
 Q_SIGNALS:
-    void inputProxyChanged( bool );
+    void panelHintsChanged();
     void inputPromptChanged( const QString& );
 
-    void textEntered( const QString&, bool isFinal );
-    void keyEntered( int keyCode );
-    void done( bool success );
+    void keySelected( int keyCode );
+    void predictiveTextSelected( int );
 
 public Q_SLOTS:
     void setInputPrompt( const QString& );
-    void setInputProxy( bool );
+    void setPrediction( const QStringList& );
 
 protected:
     virtual void keyPressEvent( QKeyEvent* ) override;
-    virtual void keyReleaseEvent( QKeyEvent* ) override;
-
-    virtual void processKey( int key,
-        Qt::InputMethodHints, int spaceLeft );
-
-    virtual void updatePrediction();
 
 private:
-    void commitKey( int key );
-    void commitPredictiveText( int );
-
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS( QskInputPanel::PanelHints )
+Q_DECLARE_METATYPE( QskInputPanel::PanelHints )
 
 #endif

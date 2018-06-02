@@ -31,6 +31,9 @@ class QSK_EXPORT QskTextInput : public QskControl
     Q_PROPERTY( bool editing READ isEditing
         WRITE setEditing NOTIFY editingChanged )
 
+    Q_PROPERTY( EchoMode echoMode READ echoMode
+        WRITE setEchoMode NOTIFY echoModeChanged )
+
     Q_PROPERTY( QString passwordCharacter READ passwordCharacter
         WRITE setPasswordCharacter RESET resetPasswordCharacter
         NOTIFY passwordCharacterChanged )
@@ -74,6 +77,8 @@ public:
     QskTextInput( const QString& text, QQuickItem* parent = nullptr );
 
     virtual ~QskTextInput();
+
+    void setupFrom( const QQuickItem* );
 
     QString text() const;
 

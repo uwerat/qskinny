@@ -265,11 +265,7 @@ int main( int argc, char* argv[] )
 #endif
 
 #if 0
-    /*
-        If no input panel has been assigned QskInputContext creates
-        default panel if none has been assigned
-     */
-     QskInputContext::setInputPanel( new QskInputPanel() );
+     QskInputContext::setInputManager( ... );
 #endif
 
     auto box = new QskLinearBox( Qt::Horizontal );

@@ -11,6 +11,12 @@
 #include <QPointer>
 #include <QTextCharFormat>
 
+static inline QQuickItem* qskReceiverItem( const QskInputManager* manager )
+{
+    auto item = manager->inputProxy();
+    return item ? item : manager->inputItem();
+}
+
 static inline void qskSendReplaceText( QQuickItem* receiver, const QString& text )
 {
     if ( receiver == nullptr )
@@ -74,6 +80,7 @@ public:
     QPointer< QskControl > panel;
 
     QLocale predictorLocale;
+    Qt::InputMethodHints inputHints = 0;
 };
 
 QskInputManager::QskInputManager( QObject* parent ):
@@ -98,14 +105,18 @@ void QskInputManager::attachInputItem( QQuickItem* item )
         const auto locale = context->locale();
 
         updateEngine( locale );
+        m_data->engine->reset();
 
-        panel->setEngine( m_data->engine );
         panel->setLocale( locale );
         panel->attachInputItem( item );
+
+        Qt::InputMethodQueries queries = Qt::ImQueryAll;
+        queries &= ~Qt::ImEnabled;
+
+        processInputMethodQueries( queries );
     }
     else
     {
-        panel->setEngine( nullptr );
         panel->attachInputItem( nullptr );
     }
 }
@@ -113,8 +124,21 @@ void QskInputManager::attachInputItem( QQuickItem* item )
 void QskInputManager::processInputMethodQueries(
     Qt::InputMethodQueries queries )
 {
-    if ( auto panel = qobject_cast< QskInputPanel* >( m_data->panel ) )
-        panel->processInputMethodQueries( queries );
+    if ( queries & Qt::ImHints )
+    {
+        m_data->inputHints = 0;
+
+        if ( auto item = inputItem() )
+        {
+            QInputMethodQueryEvent event( Qt::ImHints );
+            QCoreApplication::sendEvent( item, &event );
+
+            m_data->inputHints = static_cast< Qt::InputMethodHints >(
+                event.value( Qt::ImHints ).toInt() );
+        }
+
+        updatePanel();
+    }
 }
 
 QskControl* QskInputManager::panel( bool doCreate )
@@ -134,7 +158,7 @@ Qt::Alignment QskInputManager::panelAlignment() const
 {
     if ( auto panel = qobject_cast< QskInputPanel* >( m_data->panel ) )
     {
-        if ( panel->hasInputProxy() )
+        if ( panel->panelHints() & QskInputPanel::InputProxy )
         {
             /*
                 When the panel has an input proxy we don't need to see
@@ -152,14 +176,11 @@ QskControl* QskInputManager::createPanel()
 {
     auto panel = new QskInputPanel();
 
-    connect( panel, &QskInputPanel::done,
-        this, &QskInputManager::applyInput, Qt::UniqueConnection );
+    connect( panel, &QskInputPanel::keySelected,
+        this, &QskInputManager::commitKey, Qt::UniqueConnection );
 
-    connect( panel, &QskInputPanel::textEntered,
-        this, &QskInputManager::applyText, Qt::UniqueConnection );
-
-    connect( panel, &QskInputPanel::keyEntered,
-        this, &QskInputManager::applyKey, Qt::UniqueConnection );
+    connect( panel, &QskInputPanel::predictiveTextSelected,
+        this, &QskInputManager::commitPredictiveText, Qt::UniqueConnection );
 
     return panel;
 }
@@ -171,7 +192,7 @@ QskInputEngine* QskInputManager::createEngine()
 
 void QskInputManager::updateEngine( const QLocale& locale )
 {
-    auto context = QskInputContext::instance();
+    bool updatePredictor;
 
     if ( m_data->engine == nullptr)
     {
@@ -179,18 +200,24 @@ void QskInputManager::updateEngine( const QLocale& locale )
         if ( engine->parent() == nullptr )
             engine->setParent( this );
 
-        m_data->predictorLocale = locale;
-        engine->setPredictor( context->textPredictor( locale ) );
+        connect( engine, &QskInputEngine::predictionChanged,
+            this, &QskInputManager::updatePrediction );
 
         m_data->engine = engine;
+        updatePredictor = true;
     }
     else
     {
-        if ( m_data->predictorLocale != locale )
-        {
-            m_data->predictorLocale = locale;
-            m_data->engine->setPredictor( context->textPredictor( locale ) );
-        }
+        updatePredictor = ( locale != m_data->predictorLocale );
+    }
+
+    if ( updatePredictor )
+    {
+        auto context = QskInputContext::instance();
+
+        m_data->predictorLocale = locale;
+        m_data->engine->setPredictor( context->textPredictor( locale ) );
+        updatePanel();
     }
 }
 
@@ -206,6 +233,18 @@ void QskInputManager::updatePredictor()
     }
 }
 
+void QskInputManager::updatePanel()
+{
+    if ( auto panel = qobject_cast< QskInputPanel* >( m_data->panel ) )
+    {
+        const auto mask = Qt::ImhNoPredictiveText
+            | Qt::ImhExclusiveInputMask | Qt::ImhHiddenText;
+
+        panel->setPanelHint( QskInputPanel::Prediction,
+            m_data->engine->predictor() && !( m_data->inputHints & mask ) );
+    }
+}
+
 QQuickItem* QskInputManager::inputItem() const
 {
     if ( auto panel = qobject_cast< QskInputPanel* >( m_data->panel ) )
@@ -218,7 +257,7 @@ QQuickItem* QskInputManager::inputProxy() const
 {
     if ( auto panel = qobject_cast< QskInputPanel* >( m_data->panel ) )
     {
-        if ( panel->hasInputProxy() )
+        if ( panel->panelHints() & QskInputPanel::InputProxy )
             return panel->inputProxy();
     }
 
@@ -246,22 +285,85 @@ void QskInputManager::applyInput( bool success )
 
 void QskInputManager::applyText( const QString& text, bool isFinal )
 {
-    auto item = inputProxy();
-    if ( item == nullptr )
-        item = inputItem();
-
-    qskSendText( item, text, isFinal );
+    qskSendText( qskReceiverItem( this ), text, isFinal );
 }
 
 void QskInputManager::applyKey( int key )
 {
     // control keys like left/right
+    qskSendKey( qskReceiverItem( this ), key );
+}
 
-    auto item = inputProxy();
-    if ( item == nullptr )
-        item = inputItem();
+void QskInputManager::commitPredictiveText( int index )
+{
+    if ( auto panel = qobject_cast< QskInputPanel* >( m_data->panel ) )
+    {
+        panel->setPrediction( QStringList() );
 
-    qskSendKey( item, key );
+        const QString text = m_data->engine->predictiveText( index );
+
+        m_data->engine->reset();
+        applyText( text, true );
+    }
+}
+
+void QskInputManager::updatePrediction()
+{
+    if ( auto panel = qobject_cast< QskInputPanel* >( m_data->panel ) )
+        panel->setPrediction( m_data->engine->prediction() );
+}
+
+void QskInputManager::commitKey( int key )
+{
+    auto panel = qobject_cast< QskInputPanel* >( m_data->panel );
+    if ( panel == nullptr )
+        return;
+
+    int spaceLeft = -1;
+
+    if ( !( m_data->inputHints & Qt::ImhMultiLine ) )
+    {
+        QInputMethodQueryEvent event1( Qt::ImMaximumTextLength );
+        QCoreApplication::sendEvent( panel->attachedInputItem(), &event1 );
+
+        const int maxChars = event1.value( Qt::ImMaximumTextLength ).toInt();
+        if ( maxChars >= 0 )
+        {
+            QInputMethodQueryEvent event2( Qt::ImSurroundingText );
+            QCoreApplication::sendEvent( qskReceiverItem( this ), &event2 );
+
+            const auto text = event2.value( Qt::ImSurroundingText ).toString();
+            spaceLeft = maxChars - text.length();
+        }
+    }
+
+    const auto result = m_data->engine->processKey(
+        key, m_data->inputHints, spaceLeft );
+
+    if ( result.key )
+    {
+        switch( result.key )
+        {
+            case Qt::Key_Return:
+            {
+                applyInput( true );
+                break;
+            }
+            case Qt::Key_Escape:
+            {
+                applyInput( false );
+                break;
+            }
+            default:
+            {
+                applyKey( result.key );
+            }
+        }
+    }
+    else if ( !result.text.isEmpty() )
+    {
+        applyText( result.text, result.isFinal );
+    }
 }
 
 #include "moc_QskInputManager.cpp"

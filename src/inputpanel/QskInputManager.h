@@ -46,6 +46,12 @@ private:
     void applyText( const QString&, bool isFinal );
     void applyKey( int keyCode );
 
+    void commitKey( int keyCode );
+    void commitPredictiveText( int index );
+
+    void updatePrediction();
+    void updatePanel();
+
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
