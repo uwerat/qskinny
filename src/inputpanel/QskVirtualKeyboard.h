@@ -43,6 +43,8 @@ public:
     virtual QskAspect::Subcontrol effectiveSubcontrol(
         QskAspect::Subcontrol ) const override;
 
+    bool hasKey( int keyCode ) const;
+
 Q_SIGNALS:
     void modeChanged( Mode );
     void keySelected( int keyCode );

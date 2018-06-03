@@ -198,26 +198,14 @@ void QskInputPanel::setPrediction( const QStringList& prediction )
 
 void QskInputPanel::keyPressEvent( QKeyEvent* event )
 {
-    // animate the corresponding key button TODO
+    int keyCode = -1;
 
     switch( event->key() )
     {
         case Qt::Key_Return:
         case Qt::Key_Escape:
         {
-            Q_EMIT keySelected( event->key() );
-            break;
-        }
-
-        case Qt::Key_Shift:
-        case Qt::Key_Control:
-        case Qt::Key_Meta:
-        case Qt::Key_Alt:
-        case Qt::Key_AltGr:
-        case Qt::Key_CapsLock:
-        case Qt::Key_NumLock:
-        case Qt::Key_ScrollLock:
-        {
+            keyCode = event->key();
             break;
         }
 
@@ -226,10 +214,16 @@ void QskInputPanel::keyPressEvent( QKeyEvent* event )
             const auto text = event->text();
 
             if ( !text.isEmpty() )
-                Q_EMIT keySelected( text[0].unicode() );
+                keyCode = text[0].unicode();
             else
-                Q_EMIT keySelected( event->key() );
+                keyCode = event->key();
         }
+    }
+
+    if ( m_data->keyboard->hasKey( keyCode ) )
+    {
+        // animating the corresponding key button ???
+        Q_EMIT keySelected( keyCode );
     }
 }
 
