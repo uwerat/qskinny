@@ -412,8 +412,11 @@ bool QskInputContext::isActive() const
 
 QLocale QskInputContext::locale() const
 {
-    if ( auto panel = inputPanel() )
-        return panel->locale();
+    if ( m_data->inputEngine )
+    {
+        if ( auto panel = m_data->inputEngine->panel( false ) )
+            return panel->locale();
+    }
 
     return QLocale();
 }
