@@ -4,7 +4,8 @@
  *****************************************************************************/
 
 #include "QskInputContext.h"
-#include "QskInputManager.h"
+#include "QskInputEngine.h"
+#include "QskInputPanel.h"
 
 #include "QskLinearBox.h"
 #include "QskDialog.h"
@@ -23,6 +24,58 @@ QSK_QT_PRIVATE_END
 #include <qpa/qplatformintegration.h>
 #include <qpa/qplatforminputcontext.h>
 
+namespace
+{
+    class InputEngine final : public QskInputEngine
+    {
+    public:
+        virtual void attachToPanel( QQuickItem* item ) override
+        {
+            if ( m_panel )
+                m_panel->attachInputItem( item );
+        }
+
+        virtual QskControl* createPanel() override
+        {
+            m_panel = new QskInputPanel();
+
+            connect( m_panel, &QskInputPanel::keySelected,
+                this, &QskInputEngine::commitKey, Qt::UniqueConnection );
+
+            connect( m_panel, &QskInputPanel::predictiveTextSelected,
+                this, &QskInputEngine::commitPredictiveText, Qt::UniqueConnection );
+
+            return m_panel;
+        }
+
+        virtual QQuickItem* inputProxy() const override
+        {
+            if ( m_panel )
+            {
+                if ( m_panel->panelHints() & QskInputPanel::InputProxy )
+                    return m_panel->inputProxy();
+            }
+
+            return nullptr;
+        }
+        virtual void setPredictionEnabled( bool on ) override
+        {
+            if ( m_panel )
+                m_panel->setPanelHint( QskInputPanel::Prediction, on );
+        }
+
+        virtual void showPrediction( const QStringList& prediction ) override
+        {
+            if ( m_panel )
+                m_panel->setPrediction( prediction );
+        }
+
+    private:
+        QPointer< QskInputPanel > m_panel;
+    };
+
+}
+
 static QPointer< QskInputContext > qskInputContext = nullptr;
 
 static void qskSendToPlatformContext( QEvent::Type type )
@@ -39,7 +92,7 @@ static void qskSendToPlatformContext( QEvent::Type type )
 
 static void qskInputContextHook()
 {
-    qAddPostRoutine( []{ delete qskInputContext; } );
+    qAddPostRoutine( [] { delete qskInputContext; } );
 }
 
 Q_COREAPP_STARTUP_FUNCTION( qskInputContextHook )
@@ -73,18 +126,51 @@ public:
     QskPopup* inputPopup = nullptr;
     QskWindow* inputWindow = nullptr;
 
-    QskInputManager* inputManager = nullptr;
+    QPointer< QskInputEngine > inputEngine;
 };
 
 QskInputContext::QskInputContext():
     m_data( new PrivateData() )
 {
     setObjectName( "InputContext" );
-    m_data->inputManager = new QskInputManager( this );
+    setEngine( new InputEngine() );
 }
 
 QskInputContext::~QskInputContext()
 {
+}
+
+void QskInputContext::setEngine( QskInputEngine* engine )
+{
+    if ( m_data->inputEngine == engine )
+        return;
+
+    if ( m_data->inputEngine && m_data->inputEngine->parent() == this )
+    {
+        m_data->inputEngine->disconnect( this );
+
+        if ( m_data->inputEngine->parent() == this )
+            delete m_data->inputEngine;
+    }
+
+    m_data->inputEngine = engine;
+
+    if ( engine )
+    {
+        if ( engine->parent() == nullptr )
+            engine->setParent( this );
+
+        connect( engine, &QskInputEngine::activeChanged,
+            this, &QskInputContext::activeChanged );
+
+        connect( engine, &QskInputEngine::localeChanged,
+            this, [] { qskSendToPlatformContext( QEvent::LocaleChange ); } );
+    }
+}
+
+QskInputEngine* QskInputContext::engine() const
+{
+    return m_data->inputEngine;
 }
 
 QQuickItem* QskInputContext::inputItem() const
@@ -94,18 +180,13 @@ QQuickItem* QskInputContext::inputItem() const
 
 QskControl* QskInputContext::inputPanel() const
 {
-    auto panel = m_data->inputManager->panel( true );
+    if ( m_data->inputEngine == nullptr )
+        return nullptr;
 
-    if ( panel->parent() != this )
-    {
+    auto panel = m_data->inputEngine->panel( true );
+
+    if ( panel && panel->parent() != this )
         panel->setParent( const_cast< QskInputContext* >( this ) );
-
-        connect( panel, &QQuickItem::visibleChanged,
-            this, &QskInputContext::activeChanged, Qt::UniqueConnection );
-
-        connect( panel, &QskControl::localeChanged,
-            this, [] { qskSendToPlatformContext( QEvent::LocaleChange ); } );
-    }
 
     return panel;
 }
@@ -124,7 +205,8 @@ void QskInputContext::update( Qt::InputMethodQueries queries )
         }
     }
 
-    m_data->inputManager->processInputMethodQueries( queries );
+    if ( m_data->inputEngine )
+        m_data->inputEngine->updateInputPanel( queries );
 }
 
 QRectF QskInputContext::panelRect() const
@@ -146,8 +228,9 @@ QskPopup* QskInputContext::createEmbeddingPopup( QskControl* panel )
     auto box = new QskLinearBox( popup );
     box->addItem( panel );
 
-    const auto alignment =
-        m_data->inputManager->panelAlignment() & Qt::AlignVertical_Mask;
+    Qt::Alignment alignment = Qt::AlignVCenter;
+    if ( m_data->inputEngine )
+        alignment = m_data->inputEngine->panelAlignment() & Qt::AlignVertical_Mask;
 
     popup->setOverlay( alignment == Qt::AlignVCenter );
 
@@ -262,7 +345,8 @@ void QskInputContext::showPanel()
         }
     }
 
-    m_data->inputManager->attachInputItem( m_data->inputItem );
+    if ( m_data->inputEngine )
+        m_data->inputEngine->attachInputItem( m_data->inputItem );
 }
 
 void QskInputContext::hidePanel()
@@ -284,10 +368,13 @@ void QskInputContext::hidePanel()
 #endif
     }
 
-    if ( auto panel = m_data->inputManager->panel( false ) )
-        panel->setParentItem( nullptr );
+    if ( m_data->inputEngine )
+    {
+        if ( auto panel = m_data->inputEngine->panel( false ) )
+            panel->setParentItem( nullptr );
 
-    m_data->inputManager->attachInputItem( nullptr );
+        m_data->inputEngine->attachInputItem( nullptr );
+    }
 
     if ( m_data->inputPopup )
         m_data->inputPopup->deleteLater();
@@ -325,13 +412,8 @@ bool QskInputContext::isActive() const
 
 QLocale QskInputContext::locale() const
 {
-    if ( m_data->inputItem )
-    {
-        QInputMethodQueryEvent event( Qt::ImPreferredLanguage );
-        QCoreApplication::sendEvent( m_data->inputItem, &event );
-
-        return event.value( Qt::ImPreferredLanguage ).toLocale();
-    }
+    if ( auto panel = inputPanel() )
+        return panel->locale();
 
     return QLocale();
 }

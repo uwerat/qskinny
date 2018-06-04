@@ -11,8 +11,9 @@
 #include <memory>
 
 class QskTextPredictor;
+class QskControl;
 class QQuickItem;
-class QStringList;
+class QLocale;
 
 class QSK_EXPORT QskInputEngine : public QObject
 {
@@ -21,33 +22,47 @@ class QSK_EXPORT QskInputEngine : public QObject
     using Inherited = QObject;
 
 public:
-    class Result
-    {
-    public:
-        int key = 0;
-
-        QString text;
-        bool isFinal = true;
-    };
-
     QskInputEngine( QObject* parent = nullptr );
-    virtual ~QskInputEngine();
+    virtual ~QskInputEngine() override;
 
-    void setPredictor( QskTextPredictor* );
-    QskTextPredictor* predictor() const;
+    virtual void attachInputItem( QQuickItem* );
+    virtual void updateInputPanel( Qt::InputMethodQueries );
 
-    virtual Result processKey( int key,
-        Qt::InputMethodHints, int spaceLeft = -1 );
+    QskControl* panel( bool doCreate );
+    virtual Qt::Alignment panelAlignment() const;
 
-    QString predictiveText( int ) const;
-    QStringList prediction() const;
+    virtual QQuickItem* inputProxy() const;
+    virtual QQuickItem* inputItem() const;
 
-    void reset();
+    QLocale locale() const;
+
+public Q_SLOTS:
+    void commitKey( int keyCode );
+    void commitPredictiveText( int index );
 
 Q_SIGNALS:
-    void predictionChanged();
+    void activeChanged();
+    void localeChanged();
+
+protected:
+    virtual QskControl* createPanel() = 0;
+    virtual void attachToPanel( QQuickItem* ) = 0;
+
+    virtual void setPredictionEnabled( bool on );
+    virtual void showPrediction( const QStringList& );
 
 private:
+    void applyInput( bool success );
+    void applyText( const QString&, bool isFinal );
+    void applyKey( int keyCode );
+
+    void resetPredictor( const QLocale& );
+    void updatePrediction();
+
+    void updatePanel();
+
+    void updateLocale( const QLocale& );
+
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

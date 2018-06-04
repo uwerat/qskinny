@@ -13,7 +13,7 @@
 
 class QskTextPredictor;
 class QskControl;
-class QskInputManager;
+class QskInputEngine;
 class QskPopup;
 class QskWindow;
 class QQuickItem;
@@ -28,8 +28,8 @@ public:
     QskInputContext();
     virtual ~QskInputContext();
 
-    void setManager( QskInputManager* );
-    QskInputManager manager();
+    void setEngine( QskInputEngine* );
+    QskInputEngine* engine() const;
 
     QRectF panelRect() const;
 

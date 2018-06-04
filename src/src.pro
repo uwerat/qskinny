@@ -300,7 +300,6 @@ SOURCES += \
 SOURCES += \
     inputpanel/QskTextPredictor.cpp \
     inputpanel/QskInputContext.cpp \
-    inputpanel/QskInputManager.cpp \
     inputpanel/QskInputEngine.cpp \
     inputpanel/QskInputPanel.cpp \
     inputpanel/QskInputPredictionBar.cpp \
@@ -309,7 +308,6 @@ SOURCES += \
 HEADERS += \
     inputpanel/QskTextPredictor.h \
     inputpanel/QskInputContext.h \
-    inputpanel/QskInputManager.h \
     inputpanel/QskInputEngine.h \
     inputpanel/QskInputPanel.h \
     inputpanel/QskInputPredictionBar.h \

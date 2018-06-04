@@ -21,4 +21,17 @@ QskTextPredictor::Attributes QskTextPredictor::attributes() const
     return m_attributes;
 }
 
+QStringList QskTextPredictor::candidates() const
+{
+    const auto count = candidateCount();
+
+    QStringList candidates;
+    candidates.reserve( count );
+
+    for( int i = 0; i < count; i++ )
+        candidates += candidate( i );
+
+    return candidates;
+}
+
 #include "moc_QskTextPredictor.cpp"

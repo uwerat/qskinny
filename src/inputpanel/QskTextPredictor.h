@@ -9,6 +9,8 @@
 #include <QskGlobal.h>
 #include <QObject>
 
+class QStringList;
+
 // abstract base class for input methods for retrieving predictive text
 
 class QSK_EXPORT QskTextPredictor : public QObject
@@ -31,6 +33,8 @@ public:
 
     virtual int candidateCount() const = 0;
     virtual QString candidate( int ) const = 0;
+
+    virtual QStringList candidates() const;
 
     Attributes attributes() const;
 
