@@ -24,7 +24,7 @@ namespace
     class Button final : public QskPushButton
     {
     public:
-        Button( int row, int column, QQuickItem* parent ):
+        Button( int row, int column, QskVirtualKeyboard* parent ):
             QskPushButton( parent ),
             m_row( row ),
             m_column( column )
@@ -39,13 +39,15 @@ namespace
         virtual QskAspect::Subcontrol effectiveSubcontrol(
             QskAspect::Subcontrol subControl ) const override
         {
-            if( subControl == QskPushButton::Panel )
-                return QskVirtualKeyboard::ButtonPanel;
+            auto keyBoard = static_cast< const QskVirtualKeyboard*>( parent() );
 
-            if( subControl == QskPushButton::Text )
-                return QskVirtualKeyboard::ButtonText;
+            if ( subControl == QskPushButton::Panel )
+                return keyBoard->effectiveSubcontrol( QskVirtualKeyboard::ButtonPanel );
 
-            return subControl;
+            if ( subControl == QskPushButton::Text )
+                return keyBoard->effectiveSubcontrol( QskVirtualKeyboard::ButtonText );
+
+            return QskPushButton::effectiveSubcontrol( subControl );
         }
 
         int row() const { return m_row; }
@@ -272,6 +274,15 @@ QskAspect::Subcontrol QskVirtualKeyboard::effectiveSubcontrol(
 {
     if( subControl == QskBox::Panel )
         return QskVirtualKeyboard::Panel;
+
+#if 1
+    // TODO ...
+    if( subControl == QskVirtualKeyboard::ButtonPanel )
+        return QskPushButton::Panel;
+
+    if( subControl == QskVirtualKeyboard::ButtonText )
+        return QskPushButton::Text;
+#endif
 
     return subControl;
 }

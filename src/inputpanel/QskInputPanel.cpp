@@ -20,12 +20,24 @@ namespace
     class TextInputProxy final : public QskTextInput
     {
     public:
-        TextInputProxy( QQuickItem* parentItem = nullptr ):
-            QskTextInput( parentItem )
+        TextInputProxy( QskInputPanel* panel, QQuickItem* parentItem = nullptr ):
+            QskTextInput( parentItem ),
+            m_panel( panel )
         {
             setObjectName( "InputPanelInputProxy" );
             setFocusPolicy( Qt::NoFocus );
-            setSizePolicy( QskSizePolicy::Ignored, QskSizePolicy::Fixed );
+        }
+
+        virtual QskAspect::Subcontrol effectiveSubcontrol(
+            QskAspect::Subcontrol subControl ) const override
+        {
+            if ( subControl == QskTextInput::Panel )
+                return m_panel->effectiveSubcontrol( QskInputPanel::ProxyPanel );
+
+            if ( subControl == QskTextInput::Text )
+                return m_panel->effectiveSubcontrol( QskInputPanel::ProxyText );
+
+            return subControl;
         }
 
     protected:
@@ -36,10 +48,15 @@ namespace
         virtual void focusOutEvent( QFocusEvent* ) override final
         {
         }
+
+    private:
+        QskInputPanel* m_panel;
     };
 }
 
 QSK_SUBCONTROL( QskInputPanel, Panel )
+QSK_SUBCONTROL( QskInputPanel, ProxyPanel )
+QSK_SUBCONTROL( QskInputPanel, ProxyText )
 
 class QskInputPanel::PrivateData
 {
@@ -67,7 +84,7 @@ QskInputPanel::QskInputPanel( QQuickItem* parent ):
     m_data->prompt = new QskTextLabel();
     m_data->prompt->setVisible( false );
 
-    m_data->inputProxy = new TextInputProxy();
+    m_data->inputProxy = new TextInputProxy( this, nullptr );
     m_data->inputProxy->setVisible(
         m_data->panelHints & QskInputPanel::InputProxy );
 
@@ -168,6 +185,15 @@ QskAspect::Subcontrol QskInputPanel::effectiveSubcontrol(
 {
     if( subControl == QskBox::Panel )
         return QskInputPanel::Panel;
+
+#if 1
+    // TODO ...
+    if( subControl == QskInputPanel::ProxyPanel )
+        return QskTextInput::Panel;
+
+    if( subControl == QskInputPanel::ProxyText )
+        return QskTextInput::Text;
+#endif
 
     return subControl;
 }

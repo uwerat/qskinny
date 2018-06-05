@@ -27,7 +27,7 @@ class QSK_EXPORT QskInputPanel : public QskBox
         WRITE setInputPrompt NOTIFY inputPromptChanged )
 
 public:
-    QSK_SUBCONTROLS( Panel )
+    QSK_SUBCONTROLS( Panel, ProxyPanel, ProxyText )
 
     enum PanelHint
     {
