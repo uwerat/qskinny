@@ -401,10 +401,13 @@ void QskInputContext::setActive( bool on )
 
 bool QskInputContext::isActive() const
 {
-    if ( auto panel = inputPanel() )
+    if ( m_data->inputEngine )
     {
-        return panel && panel->isVisible()
-            && panel->window() && panel->window()->isVisible();
+        if ( auto panel = m_data->inputEngine->panel( false ) )
+        {
+            return panel->isVisible()
+                && panel->window() && panel->window()->isVisible();
+        }
     }
 
     return false;

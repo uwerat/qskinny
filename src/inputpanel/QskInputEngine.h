@@ -51,11 +51,11 @@ protected:
     virtual void setPredictionEnabled( bool on );
     virtual void showPrediction( const QStringList& );
 
-private:
     void applyInput( bool success );
     void applyText( const QString&, bool isFinal );
     void applyKey( int keyCode );
 
+private:
     void resetPredictor( const QLocale& );
     void updatePrediction();
 

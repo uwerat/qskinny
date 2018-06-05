@@ -162,8 +162,11 @@ QQuickItem* qskInputContextItem()
             without losing the connected input item
          */
 
-        QMetaObject::invokeMethod( inputContext, "inputItem",
-            Qt::DirectConnection, Q_RETURN_ARG( QQuickItem*, inputItem ) );
+        if ( inputContext->metaObject()->indexOfMethod( "inputItem()" ) >= 0 )
+        {
+            QMetaObject::invokeMethod( inputContext, "inputItem",
+                Qt::DirectConnection, Q_RETURN_ARG( QQuickItem*, inputItem ) );
+        }
     }
 
     return inputItem;
