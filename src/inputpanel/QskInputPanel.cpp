@@ -25,6 +25,7 @@ namespace
         {
             setObjectName( "InputPanelInputProxy" );
             setFocusPolicy( Qt::NoFocus );
+            setSizePolicy( QskSizePolicy::Ignored, QskSizePolicy::Fixed );
         }
 
     protected:
