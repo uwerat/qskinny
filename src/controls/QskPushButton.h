@@ -63,6 +63,7 @@ public:
 public Q_SLOTS:
     void setText( const QString& text );
     void setGraphicSource( const QUrl& url );
+    void setGraphicSource( const QString& source );
     void setGraphic( const QskGraphic& );
 
 Q_SIGNALS:

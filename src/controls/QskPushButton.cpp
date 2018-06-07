@@ -158,6 +158,11 @@ void QskPushButton::setGraphicSource( const QUrl& url )
     Q_EMIT graphicSourceChanged();
 }
 
+void QskPushButton::setGraphicSource(const QString &source)
+{
+    setGraphicSource( QUrl( source ) );
+}
+
 QUrl QskPushButton::graphicSource() const
 {
     return m_data->graphicSource;
