@@ -148,6 +148,8 @@ public:
 
 class LocaleListView : public QskListView
 {
+    Q_OBJECT
+
 public:
     LocaleListView( QQuickItem* parentItem = nullptr ):
         QskListView( parentItem ),
@@ -180,6 +182,9 @@ public:
         setPreferredWidth( columnWidth( 0 ) + 20 );
 
         setScrollableSize( QSizeF( columnWidth( 0 ), rowCount() * rowHeight() ) );
+
+        connect( this, &QskListView::selectedRowChanged,
+            [ this ]( int row ) { Q_EMIT selected( localeAt( row ) ); } );
     }
 
     virtual int rowCount() const override final
@@ -233,6 +238,9 @@ public:
         return QLocale();
     }
 
+Q_SIGNALS:
+    void selected( const QLocale& );
+
 private:
     inline void append( const QLocale& locale )
     {
@@ -241,6 +249,37 @@ private:
 
     QVector< QPair< QString, QLocale > > m_values;
     mutable qreal m_maxWidth;
+};
+
+class Window : public QskWindow
+{
+public:
+    Window()
+    {
+        populate();
+    }
+
+    void populate()
+    {
+        auto box = new QskLinearBox( Qt::Horizontal );
+        box->setSpacing( 10 );
+        box->setMargins( 20 );
+
+        auto listView = new LocaleListView( box );
+        auto inputBox =  new InputBox( box );
+
+        /*
+            Disable Qt::ClickFocus, so that the input panel stays open
+            when selecting a different locale
+         */
+        listView->setFocusPolicy( Qt::TabFocus );
+
+        connect( listView, &LocaleListView::selected,
+            inputBox, &InputBox::setLocale );
+
+        addItem( box );
+        addItem( new QskFocusIndicator() );
+    }
 };
 
 int main( int argc, char* argv[] )
@@ -265,32 +304,23 @@ int main( int argc, char* argv[] )
 #endif
 
 #if 0
-     QskInputContext::setInputManager( ... );
+    QskInputContext::setInputEngine( ... );
 #endif
 
-    auto box = new QskLinearBox( Qt::Horizontal );
-    box->setSpacing( 10 );
-    box->setMargins( 20 );
-
-    auto listView = new LocaleListView( box );
-    auto inputBox =  new InputBox( box );
-
-    /*
-        Disable Qt::ClickFocus, so that the input panel stays open
-        when selecting a different locale
-     */
-    listView->setFocusPolicy( Qt::TabFocus );
-
-    QObject::connect( listView, &QskListView::selectedRowChanged,
-        inputBox, [ = ]( int row ) { inputBox->setLocale( listView->localeAt( row ) ); } );
-
-    QskWindow window;
+    Window window;
     window.setColor( "PapayaWhip" );
-    window.addItem( box );
-    window.addItem( new QskFocusIndicator() );
-
     window.resize( 600, 600 );
     window.show();
 
+#if 0
+    Window window2;
+    window2.setColor( "Pink" );
+    window2.setX( window.x() + 100 );
+    window2.resize( 600, 600 );
+    window2.show();
+#endif
+
     return app.exec();
 }
+
+#include "main.moc"
