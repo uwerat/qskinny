@@ -40,9 +40,6 @@ static inline void qskBindSignals( const QQuickTextInput* wrappedInput,
         input, [ input ] { input->Q_EMIT textEdited( input->text() ); } );
 #endif
 
-    QObject::connect( wrappedInput, &QQuickTextInput::textChanged,
-        input, [ input ] { input->Q_EMIT textChanged( input->text() ); } );
-
     QObject::connect( wrappedInput, &QQuickTextInput::validatorChanged,
         input, &QskTextInput::validatorChanged );
 

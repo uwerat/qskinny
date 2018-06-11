@@ -159,7 +159,10 @@ Q_SIGNALS:
     void readOnlyChanged( bool );
 
     void textChanged( const QString& );
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
     void textEdited( const QString& );
+#endif
 
     void descriptionChanged( const QString& );
 
