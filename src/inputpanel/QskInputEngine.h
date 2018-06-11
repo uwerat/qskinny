@@ -34,8 +34,6 @@ public:
     virtual QQuickItem* inputProxy() const;
     virtual QQuickItem* inputItem() const;
 
-    QLocale locale() const;
-
 public Q_SLOTS:
     void commitKey( int keyCode );
     void commitPredictiveText( int index );

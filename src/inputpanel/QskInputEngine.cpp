@@ -358,14 +358,6 @@ Qt::Alignment QskInputEngine::panelAlignment() const
     return inputProxy() ? Qt::AlignVCenter : Qt::AlignBottom;
 }
 
-QLocale QskInputEngine::locale() const
-{
-    if ( m_data->panel )
-        return m_data->panel->locale();
-
-    return QLocale();
-}
-
 void QskInputEngine::updateLocale( const QLocale& locale )
 {
     if ( !m_data->hasPredictorLocale || locale != m_data->predictorLocale )

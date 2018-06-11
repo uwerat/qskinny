@@ -401,16 +401,11 @@ void QskInputContext::setActive( bool on )
 
 bool QskInputContext::isActive() const
 {
-    if ( m_data->inputEngine )
-    {
-        if ( auto panel = m_data->inputEngine->panel( false ) )
-        {
-            return panel->isVisible()
-                && panel->window() && panel->window()->isVisible();
-        }
-    }
+    const QQuickWindow* window = m_data->inputWindow;
+    if ( window == nullptr && m_data->inputPopup )
+        window = m_data->inputPopup->window();
 
-    return false;
+    return window && window->isVisible();
 }
 
 QLocale QskInputContext::locale() const
