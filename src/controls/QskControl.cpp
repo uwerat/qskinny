@@ -1237,14 +1237,58 @@ void QskControl::resetImplicitSize()
 
 qreal QskControl::heightForWidth( qreal width ) const
 {
-    Q_UNUSED( width )
-    return -1;
+    qreal h = -1;
+
+    if ( d_func()->autoLayoutChildren )
+    {
+        const auto innerSize = layoutRect().size();
+        const auto outerSize = size();
+
+        width -= outerSize.width() - innerSize.width();
+
+        const auto children = childItems();
+        for ( auto child : children )
+        {
+            if ( auto control = qobject_cast< const QskControl* >( child ) )
+            {
+                if ( !control->isTransparentForPositioner() )
+                    h = qMax( h, control->heightForWidth( width ) );
+            }
+        }
+
+        if ( h >= 0 )
+            h += outerSize.height() - innerSize.height();
+    }
+
+    return h;
 }
 
 qreal QskControl::widthForHeight( qreal height ) const
 {
-    Q_UNUSED( height )
-    return -1;
+    qreal w = -1;
+        
+    if ( d_func()->autoLayoutChildren )
+    {
+        const auto innerSize = layoutRect().size();
+        const auto outerSize = size();
+        
+        height -= outerSize.height() - innerSize.height();
+        
+        const auto children = childItems();
+        for ( auto child : children )
+        {   
+            if ( auto control = qobject_cast< const QskControl* >( child ) )
+            {   
+                if ( !control->isTransparentForPositioner() )
+                    w = qMax( w, control->widthForHeight( height ) );
+            }
+        }
+        
+        if ( w >= 0 )
+            w += outerSize.width() - innerSize.width();
+    }
+    
+    return w;
 }
 
 bool QskControl::event( QEvent* event )
