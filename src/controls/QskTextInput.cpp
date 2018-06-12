@@ -553,8 +553,6 @@ void QskTextInput::setEditing( bool on )
     setSkinStateFlag( Editing, on );
     m_data->textInput->setEditing( on );
 
-    auto inputMethod = QGuiApplication::inputMethod();
-
     if ( on )
     {
 #if 0
