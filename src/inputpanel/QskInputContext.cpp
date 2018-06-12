@@ -166,6 +166,9 @@ QskTextPredictor* QskInputContext::textPredictor( const QLocale& locale )
 
 void QskInputContext::update( const QQuickItem* item, Qt::InputMethodQueries queries )
 {
+    if ( m_data->inputItem == nullptr )
+        return;
+
     if ( item == nullptr )
     {
         item = qobject_cast< QQuickItem* >( QGuiApplication::focusObject() );
