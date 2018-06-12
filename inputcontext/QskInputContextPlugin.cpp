@@ -76,7 +76,7 @@ public:
 
     virtual bool filterEvent( const QEvent* ) override;
 
-    Q_INVOKABLE QQuickItem* inputItem();
+    Q_INVOKABLE void update( const QQuickItem*, Qt::InputMethodQueries );
 
 protected:
     virtual bool event( QEvent* ) override;
@@ -150,7 +150,14 @@ bool QskPlatformInputContext::hasCapability( Capability ) const
 void QskPlatformInputContext::update( Qt::InputMethodQueries queries )
 {
     if ( m_context )
-        m_context->update( queries );
+        m_context->update( nullptr, queries );
+}
+
+void QskPlatformInputContext::update(
+    const QQuickItem* item, Qt::InputMethodQueries queries )
+{
+    if ( m_context )
+        m_context->update( item, queries );
 }
 
 void QskPlatformInputContext::invokeAction(
@@ -231,14 +238,6 @@ bool QskPlatformInputContext::filterEvent( const QEvent* )
 {
     // called from QXcbKeyboard, but what about other platforms
     return false;
-}
-
-QQuickItem* QskPlatformInputContext::inputItem()
-{
-    if ( m_context )
-        return m_context->inputItem();
-
-    return nullptr;
 }
 
 bool QskPlatformInputContext::event( QEvent* event )

@@ -164,13 +164,17 @@ QskTextPredictor* QskInputContext::textPredictor( const QLocale& locale )
     return nullptr;
 }
 
-QQuickItem* QskInputContext::inputItem() const
+void QskInputContext::update( const QQuickItem* item, Qt::InputMethodQueries queries )
 {
-    return m_data->inputItem;
-}
+    if ( item == nullptr )
+    {
+        item = qobject_cast< QQuickItem* >( QGuiApplication::focusObject() );
+#if 1
+        // those are coming from QQuickWindow based on focus changes
+        return;
+#endif
+    }
 
-void QskInputContext::update( Qt::InputMethodQueries queries )
-{
     if ( queries & Qt::ImEnabled )
     {
         QInputMethodQueryEvent event( Qt::ImEnabled );

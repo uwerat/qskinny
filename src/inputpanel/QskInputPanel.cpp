@@ -345,6 +345,14 @@ void QskInputPanel::updateInputPanel( Qt::InputMethodQueries queries )
     {
         setLocale( event.value( Qt::ImPreferredLanguage ).toLocale() );
     }
+
+    if ( queries & Qt::ImInputItemClipRectangle )
+    {
+        /*
+            Could be used to move the panel,
+            so that it does not hide the item.
+         */ 
+    }
 }
 
 void QskInputPanel::updateLocale( const QLocale& locale )

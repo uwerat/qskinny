@@ -138,59 +138,54 @@ void qskForceActiveFocus( QQuickItem* item, Qt::FocusReason reason )
     }
 }
 
-QQuickItem* qskInputContextItem()
+void qskUpdateInputMethod( const QQuickItem* item, Qt::InputMethodQueries queries )
 {
-    /*
-        The item that is connected to the input context.
-        - often the item having the active focus.
-     */
+    if ( item == nullptr || !( item->flags() & QQuickItem::ItemAcceptsInputMethod ) )
+        return;
 
-    QQuickItem* inputItem = nullptr;
+    static QPlatformInputContext* context = nullptr;
+    static int methodId = -1;
 
     /*
         We could also get the inputContext from QInputMethodPrivate
         but for some reason the gcc sanitizer reports errors
         when using it. So let's go with QGuiApplicationPrivate.
      */
-    const auto inputContext =
-        QGuiApplicationPrivate::platformIntegration()->inputContext();
 
-    if ( inputContext && inputContext->isInputPanelVisible() )
+    auto inputContext = QGuiApplicationPrivate::platformIntegration()->inputContext();
+    if ( inputContext == nullptr )
     {
-        /*
-            QskInputContext allows to navigate inside the input panel
-            without losing the connected input item
-         */
+        context = nullptr;
+        methodId = -1;
 
-        if ( inputContext->metaObject()->indexOfMethod( "inputItem()" ) >= 0 )
-        {
-            QMetaObject::invokeMethod( inputContext, "inputItem",
-                Qt::DirectConnection, Q_RETURN_ARG( QQuickItem*, inputItem ) );
-        }
+        return;
     }
 
-    return inputItem;
-}
+    if ( inputContext != context )
+    {
+        context = inputContext;
+        methodId = inputContext->metaObject()->indexOfMethod(
+            "update(const QQuickItem*,Qt::InputMethodQueries)" );
+    }
 
-void qskUpdateInputMethod( const QQuickItem* item, Qt::InputMethodQueries queries )
-{
-    if ( item == nullptr )
-        return;
+    if ( methodId >= 0 )
+    {
+        /*
+            The protocol for input methods does not fit well for a
+            virtual keyboard as it is tied to the focus.
+            So we try to bypass QInputMethod calling the
+            inputContext directly.
+         */
 
-#if 1
-    if ( !( item->flags() & QQuickItem::ItemAcceptsInputMethod ) )
-        return;
-#endif
-
-    bool doUpdate;
-
-    if ( const QQuickItem* inputItem = qskInputContextItem() )
-        doUpdate = ( item == inputItem );
+        inputContext->metaObject()->method( methodId ).invoke(
+            inputContext, Qt::DirectConnection,
+            Q_ARG( const QQuickItem*, item ),
+            Q_ARG( Qt::InputMethodQueries, queries ) );
+    }
     else
-        doUpdate = item->hasActiveFocus();
-
-    if ( doUpdate )
+    {
         QGuiApplication::inputMethod()->update( queries );
+    }
 }
 
 QList< QQuickItem* > qskPaintOrderChildItems( const QQuickItem* item )

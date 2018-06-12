@@ -74,10 +74,10 @@ private:
     friend class QskPlatformInputContext;
 
     // called from QskPlatformInputContext
-    virtual void setFocusObject( QObject* );
-    virtual void update( Qt::InputMethodQueries );
-    virtual void processClickAt( int cursorPosition );
-    virtual void commitPrediction( bool );
+    void setFocusObject( QObject* );
+    void update( const QQuickItem*, Qt::InputMethodQueries );
+    void processClickAt( int cursorPosition );
+    void commitPrediction( bool );
 
     void ensurePanel();
 
