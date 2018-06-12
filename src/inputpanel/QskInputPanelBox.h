@@ -3,8 +3,8 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef QSK_INPUT_PANEL_H
-#define QSK_INPUT_PANEL_H
+#ifndef QSK_INPUT_PANEL_BOX_H
+#define QSK_INPUT_PANEL_BOX_H
 
 #include "QskGlobal.h"
 #include "QskBox.h"
@@ -14,7 +14,7 @@ class QskInputEngine;
 class QString;
 class QLocale;
 
-class QSK_EXPORT QskInputPanel : public QskBox
+class QSK_EXPORT QskInputPanelBox : public QskBox
 {
     Q_OBJECT
 
@@ -38,8 +38,8 @@ public:
     Q_ENUM( PanelHint )
     Q_DECLARE_FLAGS( PanelHints, PanelHint )
 
-    QskInputPanel( QQuickItem* parent = nullptr );
-    virtual ~QskInputPanel() override;
+    QskInputPanelBox( QQuickItem* parent = nullptr );
+    virtual ~QskInputPanelBox() override;
 
     void attachInputItem( QQuickItem* );
     QQuickItem* attachedInputItem() const;
@@ -75,7 +75,7 @@ private:
     std::unique_ptr< PrivateData > m_data;
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS( QskInputPanel::PanelHints )
-Q_DECLARE_METATYPE( QskInputPanel::PanelHints )
+Q_DECLARE_OPERATORS_FOR_FLAGS( QskInputPanelBox::PanelHints )
+Q_DECLARE_METATYPE( QskInputPanelBox::PanelHints )
 
 #endif

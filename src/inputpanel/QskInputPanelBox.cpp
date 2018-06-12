@@ -3,7 +3,7 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#include "QskInputPanel.h"
+#include "QskInputPanelBox.h"
 #include "QskVirtualKeyboard.h"
 #include "QskInputPredictionBar.h"
 #include "QskTextInput.h"
@@ -13,18 +13,17 @@
 #include <QString>
 #include <QLocale>
 #include <QPointer>
-#include <QInputMethodQueryEvent>
 
 namespace
 {
     class TextInputProxy final : public QskTextInput
     {
     public:
-        TextInputProxy( QskInputPanel* panel, QQuickItem* parentItem = nullptr ):
+        TextInputProxy( QskInputPanelBox* panelBox, QQuickItem* parentItem = nullptr ):
             QskTextInput( parentItem ),
-            m_panel( panel )
+            m_panelBox( panelBox )
         {
-            setObjectName( "InputPanelInputProxy" );
+            setObjectName( "InputBoxProxy" );
             setFocusPolicy( Qt::NoFocus );
         }
 
@@ -32,10 +31,10 @@ namespace
             QskAspect::Subcontrol subControl ) const override
         {
             if ( subControl == QskTextInput::Panel )
-                return m_panel->effectiveSubcontrol( QskInputPanel::ProxyPanel );
+                return m_panelBox->effectiveSubcontrol( QskInputPanelBox::ProxyPanel );
 
             if ( subControl == QskTextInput::Text )
-                return m_panel->effectiveSubcontrol( QskInputPanel::ProxyText );
+                return m_panelBox->effectiveSubcontrol( QskInputPanelBox::ProxyText );
 
             return subControl;
         }
@@ -50,15 +49,15 @@ namespace
         }
 
     private:
-        QskInputPanel* m_panel;
+        QskInputPanelBox* m_panelBox;
     };
 }
 
-QSK_SUBCONTROL( QskInputPanel, Panel )
-QSK_SUBCONTROL( QskInputPanel, ProxyPanel )
-QSK_SUBCONTROL( QskInputPanel, ProxyText )
+QSK_SUBCONTROL( QskInputPanelBox, Panel )
+QSK_SUBCONTROL( QskInputPanelBox, ProxyPanel )
+QSK_SUBCONTROL( QskInputPanelBox, ProxyText )
 
-class QskInputPanel::PrivateData
+class QskInputPanelBox::PrivateData
 {
 public:
     QPointer< QQuickItem > inputItem;
@@ -69,28 +68,25 @@ public:
     QskInputPredictionBar* predictionBar;
     QskVirtualKeyboard* keyboard;
 
-    int maxChars = -1;
-
-    QskInputPanel::PanelHints panelHints = QskInputPanel::InputProxy;
+    QskInputPanelBox::PanelHints panelHints = QskInputPanelBox::InputProxy;
 };
 
-QskInputPanel::QskInputPanel( QQuickItem* parent ):
+QskInputPanelBox::QskInputPanelBox( QQuickItem* parent ):
     Inherited( parent ),
     m_data( new PrivateData() )
 {
     setAutoLayoutChildren( true );
-    initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Constrained );
 
     m_data->prompt = new QskTextLabel();
     m_data->prompt->setVisible( false );
 
     m_data->inputProxy = new TextInputProxy( this, nullptr );
     m_data->inputProxy->setVisible(
-        m_data->panelHints & QskInputPanel::InputProxy );
+        m_data->panelHints & QskInputPanelBox::InputProxy );
 
     m_data->predictionBar = new QskInputPredictionBar();
     m_data->predictionBar->setVisible(
-        m_data->panelHints & QskInputPanel::Prediction );
+        m_data->panelHints & QskInputPanelBox::Prediction );
 
     m_data->keyboard = new QskVirtualKeyboard();
 
@@ -105,17 +101,17 @@ QskInputPanel::QskInputPanel( QQuickItem* parent ):
     m_data->layout = layout;
 
     connect( m_data->predictionBar, &QskInputPredictionBar::predictiveTextSelected,
-        this, &QskInputPanel::predictiveTextSelected );
+        this, &QskInputPanelBox::predictiveTextSelected );
 
     connect( m_data->keyboard, &QskVirtualKeyboard::keySelected,
-        this, &QskInputPanel::keySelected );
+        this, &QskInputPanelBox::keySelected );
 }
 
-QskInputPanel::~QskInputPanel()
+QskInputPanelBox::~QskInputPanelBox()
 {
 }
 
-void QskInputPanel::setPanelHint( PanelHint hint, bool on )
+void QskInputPanelBox::setPanelHint( PanelHint hint, bool on )
 {
     if ( on )
         setPanelHints( m_data->panelHints | hint );
@@ -123,17 +119,17 @@ void QskInputPanel::setPanelHint( PanelHint hint, bool on )
         setPanelHints( m_data->panelHints & ~hint );
 }
 
-void QskInputPanel::setPanelHints( PanelHints hints )
+void QskInputPanelBox::setPanelHints( PanelHints hints )
 {
     if ( hints == m_data->panelHints )
         return;
 
     m_data->panelHints = hints;
 
-    m_data->inputProxy->setVisible( hints & QskInputPanel::InputProxy );
-    m_data->predictionBar->setVisible( hints & QskInputPanel::Prediction );
+    m_data->inputProxy->setVisible( hints & QskInputPanelBox::InputProxy );
+    m_data->predictionBar->setVisible( hints & QskInputPanelBox::Prediction );
 
-    const bool showPrompt = ( hints & QskInputPanel::InputProxy )
+    const bool showPrompt = ( hints & QskInputPanelBox::InputProxy )
         && !m_data->prompt->text().isEmpty();
 
     m_data->prompt->setVisible( showPrompt );
@@ -141,12 +137,12 @@ void QskInputPanel::setPanelHints( PanelHints hints )
     Q_EMIT panelHintsChanged();
 }
 
-QskInputPanel::PanelHints QskInputPanel::panelHints() const
+QskInputPanelBox::PanelHints QskInputPanelBox::panelHints() const
 {
     return m_data->panelHints;
 }
 
-void QskInputPanel::attachInputItem( QQuickItem* item )
+void QskInputPanelBox::attachInputItem( QQuickItem* item )
 {
     if ( item == m_data->inputItem )
         return;
@@ -155,55 +151,51 @@ void QskInputPanel::attachInputItem( QQuickItem* item )
 
     if ( item )
     {
-        if ( m_data->panelHints & QskInputPanel::InputProxy )
+        if ( m_data->panelHints & QskInputPanelBox::InputProxy )
         {
             m_data->inputProxy->setupFrom( item );
             m_data->inputProxy->setEditing( true );
-
-            // hiding the cursor in item
-            const QInputMethodEvent::Attribute attribute(
-                QInputMethodEvent::Cursor, 0, 0, QVariant() );
-
-            QInputMethodEvent event( QString(), { attribute } );
-            QCoreApplication::sendEvent( item, &event );
         }
     }
 }
 
-QQuickItem* QskInputPanel::attachedInputItem() const
+QQuickItem* QskInputPanelBox::attachedInputItem() const
 {
     return m_data->inputItem;
 }
 
-QQuickItem* QskInputPanel::inputProxy() const
+QQuickItem* QskInputPanelBox::inputProxy() const
 {
-    return m_data->inputProxy;
+    if ( m_data->panelHints & QskInputPanelBox::InputProxy )
+        return m_data->inputProxy;
+
+    return nullptr;
 }
 
-QskAspect::Subcontrol QskInputPanel::effectiveSubcontrol(
+QskAspect::Subcontrol QskInputPanelBox::effectiveSubcontrol(
     QskAspect::Subcontrol subControl ) const
 {
     if( subControl == QskBox::Panel )
-        return QskInputPanel::Panel;
+        return QskInputPanelBox::Panel;
 
 #if 1
     // TODO ...
-    if( subControl == QskInputPanel::ProxyPanel )
+    if( subControl == QskInputPanelBox::ProxyPanel )
         return QskTextInput::Panel;
 
-    if( subControl == QskInputPanel::ProxyText )
+    if( subControl == QskInputPanelBox::ProxyText )
         return QskTextInput::Text;
 #endif
 
     return subControl;
 }
 
-QString QskInputPanel::inputPrompt() const
+QString QskInputPanelBox::inputPrompt() const
 {
     return m_data->prompt->text();
 }
 
-void QskInputPanel::setInputPrompt( const QString& text )
+void QskInputPanelBox::setInputPrompt( const QString& text )
 {
     auto prompt = m_data->prompt;
 
@@ -211,19 +203,19 @@ void QskInputPanel::setInputPrompt( const QString& text )
     {
         prompt->setText( text );
 
-        if ( m_data->panelHints & QskInputPanel::InputProxy )
+        if ( m_data->panelHints & QskInputPanelBox::InputProxy )
             prompt->setVisible( !text.isEmpty() );
 
         Q_EMIT inputPromptChanged( text );
     }
 }
 
-void QskInputPanel::setPrediction( const QStringList& prediction )
+void QskInputPanelBox::setPrediction( const QStringList& prediction )
 {
     m_data->predictionBar->setPrediction( prediction );
 }
 
-void QskInputPanel::keyPressEvent( QKeyEvent* event )
+void QskInputPanelBox::keyPressEvent( QKeyEvent* event )
 {
     int keyCode = -1;
 
@@ -254,4 +246,4 @@ void QskInputPanel::keyPressEvent( QKeyEvent* event )
     }
 }
 
-#include "moc_QskInputPanel.cpp"
+#include "moc_QskInputPanelBox.cpp"

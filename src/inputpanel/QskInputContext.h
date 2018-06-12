@@ -12,11 +12,23 @@
 #include <memory>
 
 class QskTextPredictor;
-class QskControl;
+class QskInputPanel;
 class QskInputEngine;
 class QskPopup;
 class QskWindow;
 class QQuickItem;
+
+class QSK_EXPORT QskInputContextFactory : public QObject
+{
+    Q_OBJECT
+
+public:
+    QskInputContextFactory( QObject* parent = nullptr );
+    virtual ~QskInputContextFactory();
+
+    virtual QskTextPredictor* createPredictor( const QLocale& ) const;
+    virtual QskInputPanel* createPanel() const;
+};
 
 class QSK_EXPORT QskInputContext : public QObject
 {
@@ -28,8 +40,8 @@ public:
     QskInputContext();
     virtual ~QskInputContext();
 
-    void setEngine( QskInputEngine* );
-    QskInputEngine* engine() const;
+    void setFactory( QskInputContextFactory* );
+    QskInputContextFactory* factory() const;
 
     QRectF panelRect() const;
 
@@ -43,7 +55,7 @@ public:
     static QskInputContext* instance();
     static void setInstance( QskInputContext* );
 
-    virtual QskTextPredictor* textPredictor( const QLocale& ) const;
+    QskTextPredictor* textPredictor( const QLocale& locale );
 
 Q_SIGNALS:
     void activeChanged();
@@ -52,13 +64,11 @@ Q_SIGNALS:
 protected:
     virtual bool eventFilter( QObject*, QEvent* ) override;
 
-    virtual QskPopup* createEmbeddingPopup( QskControl* );
-    virtual QskWindow* createEmbeddingWindow( QskControl* );
+    virtual QskPopup* createEmbeddingPopup( QskInputPanel* );
+    virtual QskWindow* createEmbeddingWindow( QskInputPanel* );
 
     virtual void showPanel();
     virtual void hidePanel();
-
-    QskControl* inputPanel() const;
 
 private:
     friend class QskPlatformInputContext;
@@ -68,6 +78,8 @@ private:
     virtual void update( Qt::InputMethodQueries );
     virtual void processClickAt( int cursorPosition );
     virtual void commitPrediction( bool );
+
+    void ensurePanel();
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

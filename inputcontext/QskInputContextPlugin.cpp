@@ -20,10 +20,10 @@
 
 namespace
 {
-    class InputContext : public QskInputContext
+    class InputContextFactory : public QskInputContextFactory
     {
     public:
-        virtual QskTextPredictor* textPredictor( const QLocale& locale ) const
+        virtual QskTextPredictor* createPredictor( const QLocale& locale ) const
         {
 #if HUNSPELL
             /*
@@ -34,7 +34,7 @@ namespace
                 return new QskHunspellTextPredictor();
 #endif
 
-            return QskInputContext::textPredictor( locale );
+            return QskInputContextFactory::createPredictor( locale );
         }
     };
 }
@@ -94,7 +94,9 @@ QskPlatformInputContext::QskPlatformInputContext()
     auto context = QskInputContext::instance();
     if ( context == nullptr )
     {
-        context = new InputContext();
+        context = new QskInputContext();
+        context->setFactory( new InputContextFactory() );
+
         QskInputContext::setInstance( context );
     }
 

@@ -8,7 +8,7 @@
 #include <QskDialogButtonBox.h>
 #include <QskDialogButton.h>
 #include <QskFocusIndicator.h>
-#include <QskInputPanel.h>
+#include <QskInputPanelBox.h>
 #include <QskListView.h>
 #include <QskPageIndicator.h>
 #include <QskPushButton.h>
@@ -547,7 +547,7 @@ void QskMaterialSkin::initTabViewHints()
 void QskMaterialSkin::initInputPanelHints()
 {
     using namespace QskAspect;
-    using Q = QskInputPanel;
+    using Q = QskInputPanelBox;
 
     const ColorPalette& pal = m_data->palette;
 

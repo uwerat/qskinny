@@ -17,7 +17,7 @@
 #include <QskTabButton.h>
 #include <QskTabBar.h>
 #include <QskTabView.h>
-#include <QskInputPanel.h>
+#include <QskInputPanelBox.h>
 #include <QskInputPredictionBar.h>
 #include <QskVirtualKeyboard.h>
 #include <QskScrollView.h>
@@ -618,7 +618,7 @@ void QskSquiekSkin::initTabViewHints()
 void QskSquiekSkin::initInputPanelHints()
 {
     using namespace QskAspect;
-    using Q = QskInputPanel;
+    using Q = QskInputPanelBox;
 
     setMargins( Q::Panel | Padding, 5 );
     setPanel( Q::Panel, Raised );

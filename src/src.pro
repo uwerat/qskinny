@@ -300,15 +300,15 @@ SOURCES += \
 SOURCES += \
     inputpanel/QskTextPredictor.cpp \
     inputpanel/QskInputContext.cpp \
-    inputpanel/QskInputEngine.cpp \
     inputpanel/QskInputPanel.cpp \
+    inputpanel/QskInputPanelBox.cpp \
     inputpanel/QskInputPredictionBar.cpp \
     inputpanel/QskVirtualKeyboard.cpp
 
 HEADERS += \
     inputpanel/QskTextPredictor.h \
     inputpanel/QskInputContext.h \
-    inputpanel/QskInputEngine.h \
     inputpanel/QskInputPanel.h \
+    inputpanel/QskInputPanelBox.h \
     inputpanel/QskInputPredictionBar.h \
     inputpanel/QskVirtualKeyboard.h

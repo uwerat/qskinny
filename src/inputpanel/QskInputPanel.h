@@ -3,61 +3,54 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef QSK_INPUT_ENGINE_H
-#define QSK_INPUT_ENGINE_H
+#ifndef QSK_INPUT_PANEL_H
+#define QSK_INPUT_PANEL_H
 
 #include "QskGlobal.h"
-#include <QObject>
+#include "QskControl.h"
 #include <memory>
 
 class QskTextPredictor;
-class QskControl;
-class QQuickItem;
-class QLocale;
+class QString;
+class QStringList;
 
-class QSK_EXPORT QskInputEngine : public QObject
+class QSK_EXPORT QskInputPanel : public QskControl
 {
     Q_OBJECT
 
-    using Inherited = QObject;
+    using Inherited = QskControl;
 
 public:
-    QskInputEngine( QObject* parent = nullptr );
-    virtual ~QskInputEngine() override;
+    QskInputPanel( QQuickItem* parent = nullptr );
+    virtual ~QskInputPanel() override;
 
-    virtual void attachInputItem( QQuickItem* );
-    virtual void updateInputPanel( Qt::InputMethodQueries );
-
-    QskControl* panel( bool doCreate );
-    virtual Qt::Alignment panelAlignment() const;
+    void attachInputItem( QQuickItem* );
+    void updateInputPanel( Qt::InputMethodQueries );
 
     virtual QQuickItem* inputProxy() const;
-    virtual QQuickItem* inputItem() const;
+    QQuickItem* inputItem() const;
+
+    virtual Qt::Alignment alignment() const;
 
 public Q_SLOTS:
     void commitKey( int keyCode );
     void commitPredictiveText( int index );
 
 Q_SIGNALS:
-    void activeChanged();
-    void localeChanged();
+    void keySelected( int keyCode );
+    void predictiveTextSelected( int );
+
+public Q_SLOTS:
+    virtual void setPrompt( const QString& );
+    virtual void setPrediction( const QStringList& );
+    virtual void setPredictionEnabled( bool );
 
 protected:
-    virtual QskControl* createPanel() = 0;
-    virtual void attachToPanel( QQuickItem* ) = 0;
-
-    virtual void setPredictionEnabled( bool on );
-    virtual void showPrediction( const QStringList& );
-
-    void applyInput( bool success );
-    void applyText( const QString&, bool isFinal );
-    void applyKey( int keyCode );
+    virtual void attachItem( QQuickItem* ) = 0;
 
 private:
     void resetPredictor( const QLocale& );
     void updatePrediction();
-
-    void updatePanel();
 
     void updateLocale( const QLocale& );
 
