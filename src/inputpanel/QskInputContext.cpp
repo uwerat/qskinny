@@ -16,6 +16,7 @@
 
 #include <QPointer>
 #include <QGuiApplication>
+#include <QMap>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qguiapplication_p.h>
@@ -71,6 +72,85 @@ namespace
     private:
         QskInputPanelBox* m_box;
     };
+
+    class Channel
+    {
+    public:
+        // item receiving the input
+        QPointer< QQuickItem > item;
+
+        // panel for inserting the input
+        QPointer< QskInputPanel > panel;
+
+        // popup or window embedding the panel
+        QPointer< QskPopup > popup;
+        QPointer< QskWindow > window;
+    };
+
+    class ChannelTable
+    {
+    public:
+        inline Channel* currentChannel() const
+        {
+            const auto object = QGuiApplication::focusObject();
+            return channel( qobject_cast< const QQuickItem* >( object ) );
+        }
+
+        inline Channel* channel( const QQuickWindow* window ) const
+        {
+            if ( window )
+            {
+                auto it = m_map.constFind( window );
+                if ( it != m_map.constEnd() )
+                    return const_cast< Channel* >( &it.value() );
+            }
+
+            return nullptr;
+        }
+
+        inline Channel* channel( const QQuickItem* item ) const
+        {
+            if ( item )
+            {
+                auto channel = this->channel( item->window() );
+                if ( channel && channel->item == item )
+                    return channel;
+            }
+
+            return nullptr;
+        }
+
+        inline Channel* ancestorChannel( const QQuickItem* item ) const
+        {
+            for ( auto it = m_map.constBegin();
+                it != m_map.constEnd(); ++it )
+            {
+                if ( const auto panel = it.value().panel )
+                {
+                    if ( ( item == panel )
+                        || qskIsAncestorOf( panel, item ) )
+                    {
+                        return const_cast< Channel*>( &it.value() );
+                    }
+                }
+            }
+
+            return nullptr;
+        }
+
+        inline Channel* insert( const QQuickWindow* window )
+        {
+            return &m_map[ window ];
+        }
+
+        inline void remove( const QQuickWindow* window )
+        {
+            m_map.remove( window );
+        }
+
+    private:
+        QMap< const QQuickWindow*, Channel > m_map;
+    };
 }
 
 static QPointer< QskInputContext > qskInputContext = nullptr;
@@ -116,14 +196,80 @@ QskInputContext* QskInputContext::instance()
 class QskInputContext::PrivateData
 {
 public:
-    // item receiving the input
-    QPointer< QQuickItem > inputItem;
-    QPointer< QskInputPanel > panel;
 
-    // popup or window embedding the panel
-    QskPopup* inputPopup = nullptr;
-    QskWindow* inputWindow = nullptr;
+    inline QskInputPanel* createPanel( QskInputContext* context ) const
+    {
+        QskInputPanel* panel = nullptr;
 
+        if ( this->factory )
+            panel = this->factory->createPanel();
+
+        if ( panel == nullptr )
+            panel = new Panel();
+
+        connect( panel, &QskInputPanel::visibleChanged,
+            context, &QskInputContext::activeChanged );
+            
+        connect( panel, &QskInputPanel::localeChanged,
+            context, [] { qskSendToPlatformContext( QEvent::LocaleChange ); } );
+
+        return panel;
+    }
+
+    inline QskPopup* createPopup( QskInputPanel* panel ) const
+    {
+        auto popup = new QskPopup();
+
+        popup->setAutoLayoutChildren( true );
+        popup->setTransparentForPositioner( false );
+        popup->setModal( true );
+
+        auto box = new QskLinearBox( popup );
+        box->addItem( panel );
+
+        const auto alignment = panel->alignment() & Qt::AlignVertical_Mask;
+        popup->setOverlay( alignment == Qt::AlignVCenter );
+
+        switch( alignment )
+        {
+            case Qt::AlignTop:
+            {
+                box->setExtraSpacingAt( Qt::BottomEdge | Qt::LeftEdge | Qt::RightEdge );
+                break;
+            }
+            case Qt::AlignVCenter:
+            {
+                box->setMargins( QMarginsF( 5, 5, 5, 5 ) );
+                break;
+            }
+
+            case Qt::AlignBottom:
+            default:
+            {
+                box->setExtraSpacingAt( Qt::TopEdge | Qt::LeftEdge | Qt::RightEdge );
+            }
+        }
+
+        return popup;
+    }
+
+    inline QskWindow* createWindow( QskInputPanel* panel ) const
+    {
+        auto window = new QskWindow();
+
+        window->setFlags( window->flags() & Qt::Dialog );
+        //window->setModality( Qt::ApplicationModal );
+        window->setAutoLayoutChildren( true );
+    #if 0
+        window->setFlags( Qt::Tool | Qt::WindowDoesNotAcceptFocus );
+    #endif
+
+        panel->setParentItem( window->contentItem() );
+
+        return window;
+    }
+
+    ChannelTable channels;
     QPointer< QskInputContextFactory > factory;
 };
 
@@ -166,313 +312,161 @@ QskTextPredictor* QskInputContext::textPredictor( const QLocale& locale )
 
 void QskInputContext::update( const QQuickItem* item, Qt::InputMethodQueries queries )
 {
-    if ( m_data->inputItem == nullptr )
-        return;
-
     if ( item == nullptr )
     {
-        item = qobject_cast< QQuickItem* >( QGuiApplication::focusObject() );
-#if 1
         // those are coming from QQuickWindow based on focus changes
-        return;
-#endif
+        item = qobject_cast< QQuickItem* >( QGuiApplication::focusObject() );
     }
+
+    auto channel = m_data->channels.channel( item );
+    if ( channel == nullptr )
+        return;
 
     if ( queries & Qt::ImEnabled )
     {
         QInputMethodQueryEvent event( Qt::ImEnabled );
-        QCoreApplication::sendEvent( m_data->inputItem, &event );
+        QCoreApplication::sendEvent( channel->item, &event );
 
         if ( !event.value( Qt::ImEnabled ).toBool() )
         {
-            hidePanel();
+            hidePanel( item );
             return;
         }
     }
 
-    if ( m_data->panel )
-        m_data->panel->updateInputPanel( queries );
+    channel->panel->updateInputPanel( queries );
 }
 
 QRectF QskInputContext::panelRect() const
 {
-    if ( m_data->inputPopup )
-        return m_data->inputPopup->geometry();
-
+    /*
+        As we can have more than panel at the same time we
+        better don't return any geometry
+     */
+    
     return QRectF();
 }
 
-QskPopup* QskInputContext::createEmbeddingPopup( QskInputPanel* panel )
+void QskInputContext::showPanel( const QQuickItem* item )
 {
-    auto popup = new QskPopup();
-
-    popup->setAutoLayoutChildren( true );
-    popup->setTransparentForPositioner( false );
-    popup->setModal( true );
-
-    auto box = new QskLinearBox( popup );
-    box->addItem( panel );
-
-    const auto alignment = panel->alignment() & Qt::AlignVertical_Mask;
-    popup->setOverlay( alignment == Qt::AlignVCenter );
-
-    switch( alignment )
-    {
-        case Qt::AlignTop:
-        {
-            box->setExtraSpacingAt( Qt::BottomEdge | Qt::LeftEdge | Qt::RightEdge );
-            break;
-        }
-        case Qt::AlignVCenter:
-        {
-            box->setMargins( QMarginsF( 5, 5, 5, 5 ) );
-            break;
-        }
-
-        case Qt::AlignBottom:
-        default:
-        {
-            box->setExtraSpacingAt( Qt::TopEdge | Qt::LeftEdge | Qt::RightEdge );
-        }
-    }
-
-    return popup;
-}
-
-QskWindow* QskInputContext::createEmbeddingWindow( QskInputPanel* panel )
-{
-    auto window = new QskWindow();
-
-    window->setFlags( window->flags() & Qt::Dialog );
-    //window->setModality( Qt::ApplicationModal );
-    window->setAutoLayoutChildren( true );
-#if 0
-    window->setFlags( Qt::Tool | Qt::WindowDoesNotAcceptFocus );
-#endif
-
-    panel->setParentItem( window->contentItem() );
-
-    return window;
-}
-
-void QskInputContext::ensurePanel()
-{
-    if ( m_data->panel )
+    if ( item == nullptr )
         return;
 
-    QskInputPanel* panel = nullptr;
-
-    if ( m_data->factory )
-        panel = m_data->factory->createPanel();
-
-    if ( panel == nullptr )
-        panel = new Panel();
-
-    panel->setParent( const_cast< QskInputContext* >( this ) );
-
-    connect( panel, &QskInputPanel::visibleChanged,
-        this, &QskInputContext::activeChanged,
-        Qt::UniqueConnection );
-
-    connect( panel, &QskInputPanel::localeChanged,
-        this, [] { qskSendToPlatformContext( QEvent::LocaleChange ); },
-        Qt::UniqueConnection );
-
-    m_data->panel = panel;
-}
-
-void QskInputContext::showPanel()
-{
-    auto focusItem = qobject_cast< QQuickItem* >( qGuiApp->focusObject() );
-    if ( focusItem == nullptr )
-        return;
-
-    ensurePanel();
-
-    if ( ( focusItem == m_data->panel )
-        || qskIsAncestorOf( m_data->panel, focusItem ) )
+    if ( m_data->channels.ancestorChannel( item ) )
     {
-        // ignore: usually the input proxy of the panel
+        // We are inside of an existing panel
         return;
     }
 
-    m_data->inputItem = focusItem;
+    if ( auto channel = m_data->channels.channel( item->window() ) )
+    {
+        if ( channel->item == item )
+            return;
+
+        hidePanel( channel->item );
+    }
+
+    auto panel = m_data->createPanel( this );
+
+    auto channel = m_data->channels.insert( item->window() );
+    channel->item = const_cast< QQuickItem*>( item );
+    channel->panel = panel;
 
     if ( QskDialog::instance()->policy() == QskDialog::TopLevelWindow )
     {
         // The input panel is embedded in a top level window
 
-        delete m_data->inputPopup;
+        auto window = m_data->createWindow( panel );
 
-        if ( m_data->inputWindow == nullptr )
+        QSize size = window->effectivePreferredSize();
+        if ( size.isEmpty() )
         {
-            auto window = createEmbeddingWindow( m_data->panel );
-
-            if ( window )
-            {
-                QSize size = window->effectivePreferredSize();
-                if ( size.isEmpty() )
-                {
-                    // no idea, may be something based on the screen size
-                    size = QSize( 800, 240 );
-                }
-
-                window->resize( size );
-                window->show();
-
-                window->setDeleteOnClose( true );
-                window->installEventFilter( this );
-            }
-
-            m_data->inputWindow = window;
+            // no idea, may be something based on the screen size
+            size = QSize( 800, 240 );
         }
+
+        window->resize( size );
+        window->show();
+
+        window->setDeleteOnClose( true );
+
+        channel->window = window;
     }
     else
     {
         // The input panel is embedded in a popup
 
-        delete m_data->inputWindow;
+        auto popup = m_data->createPopup( panel );
 
-        if ( m_data->inputPopup == nullptr )
-        {
-            auto popup = createEmbeddingPopup( m_data->panel );
-
-            if ( popup )
-            {
-                popup->setParentItem( m_data->inputItem->window()->contentItem() );
-                if ( popup->parent() == nullptr )
-                    popup->setParent( this );
-
-                popup->setVisible( true );
-                popup->installEventFilter( this );
-            }
-
-            m_data->inputPopup = popup;
-        }
-    }
-
-    m_data->panel->attachInputItem( m_data->inputItem );
-}
-
-void QskInputContext::hidePanel()
-{
-    if ( m_data->inputPopup )
-    {
+        popup->setParentItem( item->window()->contentItem() );
+        popup->setParent( this );
 #if 1
-        if ( auto focusItem = m_data->inputPopup->scopedFocusItem() )
-        {
-            /*
-                Qt bug: QQuickItem::hasFocus() is not cleared
-                when the corresponding focusScope gets deleted.
-                Usually no problem, but here the focusItem is no
-                child and will be reused with a different parent
-                later.
-             */
-            focusItem->setFocus( false );
-        }
+        popup->setVisible( true );
 #endif
+
+        channel->popup = popup;
     }
 
-    if ( m_data->panel )
-    {
-        m_data->panel->setParentItem( nullptr );
-        m_data->panel->disconnect( this );
-
-        m_data->panel->attachInputItem( nullptr );
-    }
-
-    if ( m_data->inputPopup )
-        m_data->inputPopup->deleteLater();
-
-    if ( m_data->inputWindow )
-    {
-        QskWindow* window = m_data->inputWindow;
-        m_data->inputWindow = nullptr;
-
-        window->removeEventFilter( this );
-        window->close(); // deleteOnClose is set
-    }
-
-    m_data->inputItem = nullptr;
+    panel->attachInputItem( const_cast< QQuickItem* >( item ) );
 }
 
-void QskInputContext::setActive( bool on )
+void QskInputContext::hidePanel( const QQuickItem* item )
 {
-    if ( on )
-        showPanel();
-    else
-        hidePanel();
+    if ( item == nullptr )
+        return;
+
+    if ( auto channel = m_data->channels.channel( item ) )
+    {
+        if ( channel->popup )
+            channel->popup->deleteLater();
+
+        if ( channel->window )
+            channel->window->close(); // deleteOnClose is set
+
+        m_data->channels.remove( item->window() );
+    }
 }
 
-bool QskInputContext::isActive() const
+void QskInputContext::setInputPanelVisible( const QQuickItem* item, bool on )
 {
-    const QQuickWindow* window = m_data->inputWindow;
-    if ( window == nullptr && m_data->inputPopup )
-        window = m_data->inputPopup->window();
+    // called from inside the controls
 
-    return window && window->isVisible();
+    if ( item == nullptr )
+        item = qobject_cast< QQuickItem* >( QGuiApplication::focusObject() );
+
+    if ( item )
+    {
+        if ( on )
+            showPanel( item );
+        else
+            hidePanel( item );
+    }
+}
+
+bool QskInputContext::isInputPanelVisible() const
+{
+    return m_data->channels.currentChannel() != nullptr;
 }
 
 QLocale QskInputContext::locale() const
 {
-    if ( m_data->panel )
-        return m_data->panel->locale();
+    if ( auto channel = m_data->channels.currentChannel() )
+    {
+        if ( channel->panel )
+            return channel->panel->locale();
+    }
 
     return QLocale();
 }
 
-void QskInputContext::setFocusObject( QObject* focusObject )
+void QskInputContext::setFocusObject( QObject* )
 {
-    if ( m_data->inputItem == nullptr || m_data->inputItem == focusObject )
-    {
-        // we don't care
-        return;
-    }
-
-    const auto w = m_data->inputItem->window();
-    if ( w == nullptr )
-        return;
-
-    if ( m_data->inputWindow )
-    {
-        if ( focusObject == nullptr )
-        {
-            if ( m_data->inputItem->hasFocus() )
-            {
-                /*
-                    As long as the focus is nowhere and
-                    the local focus stay on the input item
-                    we don't care
-                 */
-
-                return;
-            }
-        }
-        else
-        {
-            const auto focusItem = qobject_cast< QQuickItem* >( focusObject );
-            if ( focusItem && focusItem->window() == m_data->inputWindow )
-                return;
-        }
-    }
-    else if ( m_data->inputPopup )
-    {
-        if ( w->contentItem()->scopedFocusItem() == m_data->inputPopup )
-        {
-            /*
-                As long as the focus stays inside the inputPopup
-                we don't care
-             */
-            return;
-        }
-    }
-
-    hidePanel();
-    m_data->inputItem = nullptr;
 }
 
-void QskInputContext::processClickAt( int cursorPosition )
+void QskInputContext::invokeAction(
+    QInputMethod::Action, int cursorPosition )
 {
+    // called from qquicktextinput/qquicktextedit
     Q_UNUSED( cursorPosition );
 }
 
@@ -483,53 +477,6 @@ void QskInputContext::commitPrediction( bool )
         As it it should be possible to navigate inside of the
         panel what should we do here ?
      */
-}
-
-bool QskInputContext::eventFilter( QObject* object, QEvent* event )
-{
-    if ( object == m_data->inputWindow )
-    {
-        switch( event->type() )
-        {
-            case QEvent::Move:
-            {
-                Q_EMIT panelRectChanged();
-                break;
-            }
-            case QEvent::Resize:
-            {
-                if ( m_data->panel )
-                    m_data->panel->setSize( m_data->inputWindow->size() );
-
-                break;
-            }
-            case QEvent::DeferredDelete:
-            {
-                m_data->inputWindow = nullptr;
-                break;
-            }
-            default:
-                break;
-        }
-    }
-    else if ( object == m_data->inputPopup )
-    {
-        switch( static_cast< int >( event->type() ) )
-        {
-            case QskEvent::GeometryChange:
-            {
-                Q_EMIT panelRectChanged();
-                break;
-            }
-            case QEvent::DeferredDelete:
-            {
-                m_data->inputPopup = nullptr;
-                break;
-            }
-        }
-    }
-
-    return Inherited::eventFilter( object, event );
 }
 
 QskInputContextFactory::QskInputContextFactory( QObject* parent ):

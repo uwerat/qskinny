@@ -188,6 +188,43 @@ void qskUpdateInputMethod( const QQuickItem* item, Qt::InputMethodQueries querie
     }
 }
 
+void qskInputMethodSetVisible( const QQuickItem* item, bool on )
+{
+    static QPlatformInputContext* context = nullptr;
+    static int methodId = -1;
+
+    auto inputContext = QGuiApplicationPrivate::platformIntegration()->inputContext();
+    if ( inputContext == nullptr )
+    {
+        context = nullptr;
+        methodId = -1;
+
+        return;
+    }
+
+    if ( inputContext != context )
+    {
+        context = inputContext;
+        methodId = inputContext->metaObject()->indexOfMethod(
+            "setInputPanelVisible(const QQuickItem*,bool)" );
+    }
+
+    if ( methodId >= 0 )
+    {
+        inputContext->metaObject()->method( methodId ).invoke(
+            inputContext, Qt::DirectConnection,
+            Q_ARG( const QQuickItem*, item ),
+            Q_ARG( bool, on ) );
+    }
+    else
+    {
+        if ( on )
+            QGuiApplication::inputMethod()->show();
+        else
+            QGuiApplication::inputMethod()->hide();
+    }
+}
+
 QList< QQuickItem* > qskPaintOrderChildItems( const QQuickItem* item )
 {
     if ( item )

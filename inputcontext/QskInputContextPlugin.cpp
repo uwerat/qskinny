@@ -57,6 +57,8 @@ public:
     virtual bool hasCapability( Capability ) const override;
 
     virtual void update( Qt::InputMethodQueries ) override;
+    Q_INVOKABLE void update( const QQuickItem*, Qt::InputMethodQueries );
+
     virtual void invokeAction( QInputMethod::Action, int ) override;
 
     virtual QRectF keyboardRect() const override;
@@ -64,6 +66,8 @@ public:
 
     virtual void showInputPanel() override;
     virtual void hideInputPanel() override;
+    Q_INVOKABLE void setInputPanelVisible( const QQuickItem*, bool );
+
     virtual bool isInputPanelVisible() const override;
 
     virtual void reset() override;
@@ -75,8 +79,6 @@ public:
     virtual Qt::LayoutDirection inputDirection() const override;
 
     virtual bool filterEvent( const QEvent* ) override;
-
-    Q_INVOKABLE void update( const QQuickItem*, Qt::InputMethodQueries );
 
 protected:
     virtual bool event( QEvent* ) override;
@@ -164,10 +166,7 @@ void QskPlatformInputContext::invokeAction(
     QInputMethod::Action action, int cursorPosition )
 {
     if ( m_context ) 
-    {
-        if ( action == QInputMethod::Click )
-            m_context->processClickAt( cursorPosition );
-    }
+        m_context->invokeAction( action, cursorPosition );
 }
 
 QRectF QskPlatformInputContext::keyboardRect() const
@@ -188,20 +187,25 @@ bool QskPlatformInputContext::isAnimating() const
 
 void QskPlatformInputContext::showInputPanel()
 {
-    if ( m_context )
-        m_context->setActive( true );
+    setInputPanelVisible( nullptr, true );
 }
 
 void QskPlatformInputContext::hideInputPanel()
 {
+    setInputPanelVisible( nullptr, false );
+}
+
+void QskPlatformInputContext::setInputPanelVisible(
+    const QQuickItem* item, bool on )
+{
     if ( m_context )
-        m_context->setActive( false );
+        m_context->setInputPanelVisible( item, on );
 }
 
 bool QskPlatformInputContext::isInputPanelVisible() const
 {
     if ( m_context )
-        return m_context->isActive();
+        return m_context->isInputPanelVisible();
 
     return false;
 }

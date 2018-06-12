@@ -9,6 +9,7 @@
 #include "QskGlobal.h"
 #include <QObject>
 #include <Qt>
+#include <QInputMethod>
 #include <memory>
 
 class QskTextPredictor;
@@ -45,8 +46,8 @@ public:
 
     QRectF panelRect() const;
 
-    void setActive( bool );
-    bool isActive() const;
+    void setInputPanelVisible( const QQuickItem*, bool );
+    bool isInputPanelVisible() const;
 
     QLocale locale() const;
 
@@ -62,24 +63,18 @@ Q_SIGNALS:
     void panelRectChanged();
 
 protected:
-    virtual bool eventFilter( QObject*, QEvent* ) override;
-
-    virtual QskPopup* createEmbeddingPopup( QskInputPanel* );
-    virtual QskWindow* createEmbeddingWindow( QskInputPanel* );
-
-    virtual void showPanel();
-    virtual void hidePanel();
+    virtual void showPanel( const QQuickItem* );
+    virtual void hidePanel( const QQuickItem* );
 
 private:
     friend class QskPlatformInputContext;
 
     // called from QskPlatformInputContext
-    void setFocusObject( QObject* );
-    void update( const QQuickItem*, Qt::InputMethodQueries );
-    void processClickAt( int cursorPosition );
-    void commitPrediction( bool );
+    virtual void setFocusObject( QObject* );
+    virtual void update( const QQuickItem*, Qt::InputMethodQueries );
+    virtual void invokeAction( QInputMethod::Action, int cursorPosition );
 
-    void ensurePanel();
+    void commitPrediction( bool );
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

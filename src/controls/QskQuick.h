@@ -31,6 +31,7 @@ QSK_EXPORT void qskForceActiveFocus( QQuickItem*, Qt::FocusReason );
 QSK_EXPORT QList< QQuickItem* > qskPaintOrderChildItems( const QQuickItem* );
 
 QSK_EXPORT void qskUpdateInputMethod( const QQuickItem*, Qt::InputMethodQueries );
+QSK_EXPORT void qskInputMethodSetVisible( const QQuickItem*, bool );
 
 QSK_EXPORT const QSGNode* qskItemNode( const QQuickItem* );
 QSK_EXPORT const QSGNode* qskPaintNode( const QQuickItem* );

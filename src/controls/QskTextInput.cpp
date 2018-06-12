@@ -302,9 +302,7 @@ void QskTextInput::keyPressEvent( QKeyEvent* event )
 #if 1
             case Qt::Key_Escape:
             {
-                QGuiApplication::inputMethod()->hide();
                 setEditing( false );
-
                 break;
             }
 #endif
@@ -563,7 +561,7 @@ void QskTextInput::setEditing( bool on )
         updateInputMethod(Qt::ImCursorRectangle | Qt::ImAnchorRectangle);
         QGuiApplication::inputMethod()->inputDirection
 #endif
-        inputMethod->show();
+        qskInputMethodSetVisible( this, true );
     }
     else
     {
@@ -579,7 +577,7 @@ void QskTextInput::setEditing( bool on )
 #if 0
         inputMethod->reset();
 #endif
-        inputMethod->hide();
+        qskInputMethodSetVisible( this, false );
 #if 1
         qskForceActiveFocus( this, Qt::PopupFocusReason );
 #endif
