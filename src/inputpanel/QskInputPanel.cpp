@@ -317,12 +317,16 @@ void QskInputPanel::attachInputItem( QQuickItem* item )
 
         if ( inputProxy() )
         {
-            // hiding the cursor in item
+            /* 
+                Hiding the cursor in item. We use postEvent
+                so that everything on the item is done,
+                when receiving the event.
+             */
             const QInputMethodEvent::Attribute attribute(
                 QInputMethodEvent::Cursor, 0, 0, QVariant() );
 
-            QInputMethodEvent event( QString(), { attribute } );
-            QCoreApplication::sendEvent( item, &event );
+            QCoreApplication::postEvent( item, 
+                new QInputMethodEvent( QString(), { attribute } ) );
         }
     }
     else
