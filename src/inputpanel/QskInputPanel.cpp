@@ -26,23 +26,6 @@ static inline bool qskUsePrediction( Qt::InputMethodHints hints )
     return ( hints & mask ) == 0;
 }
 
-static inline void qskSendReplaceText( QQuickItem* receiver, const QString& text )
-{
-    if ( receiver == nullptr )
-        return;
-
-    QInputMethodEvent::Attribute attribute(
-        QInputMethodEvent::Selection, 0, 32767, QVariant() );
-
-    QInputMethodEvent event1( QString(), { attribute } );
-    QCoreApplication::sendEvent( receiver, &event1 );
-
-    QInputMethodEvent event2;
-    event2.setCommitString( text );
-
-    QCoreApplication::sendEvent( receiver, &event2 );
-}
-
 static inline void qskSendText( QQuickItem* receiver,
     const QString& text, bool isFinal )
 {
@@ -52,7 +35,16 @@ static inline void qskSendText( QQuickItem* receiver,
     if ( isFinal )
     {
         QInputMethodEvent event;
-        event.setCommitString( text );
+
+        /*
+            QQuickTextInput is buggy when receiving empty
+            empty commit strings. We need to send a wrong
+            replaceLength to work around it. See QTBUG: 68874
+         */
+        if ( text.isEmpty() )
+            event.setCommitString( text, 0, 1 );
+        else
+            event.setCommitString( text );
 
         QCoreApplication::sendEvent( receiver, &event );
     }
@@ -69,6 +61,21 @@ static inline void qskSendText( QQuickItem* receiver,
         QCoreApplication::sendEvent( receiver, &event );
     }
 }
+
+static inline void qskSendReplaceText( QQuickItem* receiver, const QString& text )
+{
+    if ( receiver == nullptr )
+        return;
+
+    QInputMethodEvent::Attribute attribute(
+        QInputMethodEvent::Selection, 0, 32767, QVariant() );
+
+    QInputMethodEvent event( QString(), { attribute } );
+    QCoreApplication::sendEvent( receiver, &event );
+
+    qskSendText( receiver, text, true );
+}
+
 
 static inline void qskSendKey( QQuickItem* receiver, int key )
 {
