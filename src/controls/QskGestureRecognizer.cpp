@@ -6,6 +6,7 @@
 #include <QBasicTimer>
 #include <QScopedPointer>
 #include <QMouseEvent>
+#include <QVector>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickwindow_p.h>
@@ -33,38 +34,37 @@ static inline QMouseEvent* qskClonedMouseEvent(
 
 namespace
 {
-    // again we try to avoid creating unnecessary QObjects by
-    // using the same timer Object for all gesture recognizers
+    /*
+        As we don't want QskGestureRecognizer being a QObject
+        we need some extra timers - usually one per screen.
+     */
 
     class Timer final : public QObject
     {
     public:
-        static Timer* instance()
+        Timer():
+            m_recognizer( nullptr )
         {
-            // ther should be only one mouse being pressed at the same time
-            static Timer timer;
-            return &timer;
         }
 
         void start( int ms, QskGestureRecognizer* recognizer )
         {
-            if ( m_recognizer && m_recognizer != recognizer )
-            {
-                qWarning() << "QskGestureRecognizer: running more than one recognizer at the same time";
-                m_recognizer->reject(); // should never happen
-            }
+            if ( m_timer.isActive() )
+                qWarning() << "QskGestureRecognizer: resetting an active timer";
 
             m_recognizer = recognizer;
             m_timer.start( ms, this );
         }
 
-        void stop( const QskGestureRecognizer* recognizer )
+        void stop()
         {
-            if ( recognizer == m_recognizer )
-            {
-                m_timer.stop();
-                m_recognizer = nullptr;
-            }
+            m_timer.stop();
+            m_recognizer = nullptr;
+        }
+
+        const QskGestureRecognizer* recognizer() const
+        {
+            return m_recognizer;
         }
 
     protected:
@@ -85,6 +85,60 @@ namespace
         QskGestureRecognizer* m_recognizer;
     };
 
+    class TimerTable
+    {
+    public:
+        ~TimerTable()
+        {
+            qDeleteAll( m_table );
+        }
+
+        void startTimer( int ms, QskGestureRecognizer* recognizer )
+        {
+            Timer* timer = nullptr;
+
+            for ( auto t : qskAsConst( m_table ) )
+            {
+                if ( t->recognizer() == nullptr
+                    || t->recognizer() == recognizer )
+                {
+                    timer = t;
+                    break;
+                }
+            }
+
+            if ( timer == nullptr )
+            {
+                timer = new Timer();
+                m_table += timer;
+            }
+
+            timer->start( ms, recognizer );
+        }
+
+        void stopTimer( const QskGestureRecognizer* recognizer )
+        {
+            for ( auto timer : qskAsConst( m_table ) )
+            {
+                if ( timer->recognizer() == recognizer )
+                {
+                    // we keep the timer to be used later again
+                    timer->stop();
+                    return;
+                }
+            }
+        }
+
+    private:
+        /*
+            Usually we have not more than one entry.
+            Only when having more than one screen we
+            might have mouse events to be processed
+            simultaneously.
+         */
+        QVector< Timer* > m_table;
+    };
+
     class PendingEvents : public QVector< QMouseEvent* >
     {
     public:
@@ -100,6 +154,8 @@ namespace
         }
     };
 }
+
+Q_GLOBAL_STATIC( TimerTable, qskTimerTable )
 
 class QskGestureRecognizer::PrivateData
 {
@@ -136,7 +192,7 @@ QskGestureRecognizer::QskGestureRecognizer():
 
 QskGestureRecognizer::~QskGestureRecognizer()
 {
-    Timer::instance()->stop( this );
+    qskTimerTable->stopTimer( this );
 }
 
 void QskGestureRecognizer::setWatchedItem( QQuickItem* item )
@@ -286,7 +342,7 @@ bool QskGestureRecognizer::processEvent(
              */
 
             if ( m_data->timeout > 0 )
-                Timer::instance()->start( m_data->timeout, this );
+                qskTimerTable->startTimer( m_data->timeout, this );
 
             setState( Pending );
         }
@@ -370,7 +426,7 @@ void QskGestureRecognizer::stateChanged( State from, State to )
 
 void QskGestureRecognizer::accept()
 {
-    Timer::instance()->stop( this );
+    qskTimerTable->stopTimer( this );
     m_data->pendingEvents.reset();
 
     setState( Accepted );
@@ -426,7 +482,8 @@ void QskGestureRecognizer::abort()
 
 void QskGestureRecognizer::reset()
 {
-    Timer::instance()->stop( this );
+    qskTimerTable->stopTimer( this );
+
     m_data->watchedItem->setKeepMouseGrab( false );
     m_data->pendingEvents.reset();
 
