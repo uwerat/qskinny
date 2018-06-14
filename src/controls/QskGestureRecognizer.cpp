@@ -285,6 +285,7 @@ bool QskGestureRecognizer::processEvent(
         {
             // should not happen, when using the recognizer correctly
             qWarning() << "QskGestureRecognizer: pressed, while not being idle";
+            abort();
             return false;
         }
 

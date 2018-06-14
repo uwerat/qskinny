@@ -37,9 +37,9 @@ static inline void qskSendText( QQuickItem* receiver,
         QInputMethodEvent event;
 
         /*
-            QQuickTextInput is buggy when receiving empty
-            empty commit strings. We need to send a wrong
-            replaceLength to work around it. See QTBUG: 68874
+            QQuickTextInput is buggy when receiving empty commit strings.
+            We need to send a wrong replaceLength to work around it.
+            See QTBUG: 68874
          */
         if ( text.isEmpty() )
             event.setCommitString( text, 0, 1 );
