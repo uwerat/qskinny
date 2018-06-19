@@ -486,6 +486,13 @@ void QskGestureRecognizer::reset()
     qskTimerTable->stopTimer( this );
 
     m_data->watchedItem->setKeepMouseGrab( false );
+
+    if ( auto window = m_data->watchedItem->window() )
+    {
+        if ( window->mouseGrabberItem() == m_data->watchedItem )
+            m_data->watchedItem->ungrabMouse();
+    }
+
     m_data->pendingEvents.reset();
 
     m_data->timestamp = 0;
