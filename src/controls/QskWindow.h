@@ -30,10 +30,6 @@ class QSK_EXPORT QskWindow : public QQuickWindow
 public:
     enum EventAcceptance
     {
-        /*
-            Qt/Quick has no way to stop propagating input events
-            beside accepting it ( like NoMousePropagation
-         */
         EventProcessed = 0,
         EventPropagationStopped = 1
     };
