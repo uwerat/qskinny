@@ -6,7 +6,7 @@
 #include "QskPopup.h"
 #include "QskQuick.h"
 #include "QskAspect.h"
-#include <QQuickWindow>
+#include "QskWindow.h"
 #include <QtMath>
 
 QSK_QT_PRIVATE_BEGIN
@@ -141,6 +141,10 @@ namespace
             if ( doSwallow )
             {
                 event->accept();
+
+                if ( auto w = qobject_cast< QskWindow* >( window() ) )
+                    w->setEventAcceptance( QskWindow::EventPropagationStopped );
+
                 return true;
             }
 
@@ -192,7 +196,9 @@ QskPopup::QskPopup( QQuickItem* parent ):
     Inherited( parent ),
     m_data( new PrivateData() )
 {
+    // we need to stop event propagation
     setAcceptedMouseButtons( Qt::AllButtons );
+    setWheelEnabled( true );
 
     // we don't want to be resized by layout code
     setTransparentForPositioner( true );
@@ -323,9 +329,14 @@ bool QskPopup::event( QEvent* event )
         case QEvent::MouseButtonRelease:
         case QEvent::KeyPress:
         case QEvent::KeyRelease:
+        case QEvent::HoverEnter:
+        case QEvent::HoverLeave:
         {
             // swallow the event
             event->accept();
+            if ( auto w = qobject_cast< QskWindow* >( window() ) )
+                w->setEventAcceptance( QskWindow::EventPropagationStopped );
+
             break;
         }
         default:

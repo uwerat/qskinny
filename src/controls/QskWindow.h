@@ -28,6 +28,16 @@ class QSK_EXPORT QskWindow : public QQuickWindow
     using Inherited = QQuickWindow;
 
 public:
+    enum EventAcceptance
+    {
+        /*
+            Qt/Quick has no way to stop propagating input events
+            beside accepting it ( like NoMousePropagation
+         */
+        EventProcessed = 0,
+        EventPropagationStopped = 1
+    };
+
     QskWindow( QWindow* parent = nullptr );
     virtual ~QskWindow();
 
@@ -53,6 +63,10 @@ public:
 
     void setCustomRenderMode( const char* mode );
     const char* customRenderMode() const;
+
+    // extra flag to interprete accepted events
+    void setEventAcceptance( EventAcceptance );
+    EventAcceptance eventAcceptance() const;
 
 Q_SIGNALS:
     void localeChanged( const QLocale& );

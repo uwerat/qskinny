@@ -102,6 +102,7 @@ class QskWindowPrivate : public QQuickWindowPrivate
 public:
     QskWindowPrivate():
         preferredSize( -1, -1 ),
+        eventAcceptance( QskWindow::EventProcessed ),
         explicitLocale( false ),
         deleteOnClose( false ),
         autoLayoutChildren( true )
@@ -113,6 +114,8 @@ public:
 
     // minimum/maximum constraints are offered by QWindow
     QSize preferredSize;
+
+    QskWindow::EventAcceptance eventAcceptance;
 
     bool explicitLocale : 1;
     bool deleteOnClose : 1;
@@ -219,6 +222,18 @@ void QskWindow::polishItems()
 
 bool QskWindow::event( QEvent* event )
 {
+    /*
+        Qt/Quick is lacking a flag like Qt::WA_NoMousePropagation, so
+        the only way to stop propagating of input events is to accept
+        the event. Then the window can't decide anymore if someone was
+        interested and when to do some fallback handling.
+        To improve the situation we add an extra flag in QskWindow,
+        while the right class to solve this shortcoming would be QQuickWindow.
+     */ 
+
+    Q_D( QskWindow );
+    d->eventAcceptance = EventProcessed;
+
     switch( event->type() )
     {
         case QEvent::Show:
@@ -521,6 +536,17 @@ void QskWindow::enforceSkin()
     }
 
     disconnect( this, &QQuickWindow::afterAnimating, this, &QskWindow::enforceSkin );
+}
+
+void QskWindow::setEventAcceptance( EventAcceptance acceptance )
+{
+    d_func()->eventAcceptance = acceptance;
+    
+}
+
+QskWindow::EventAcceptance QskWindow::eventAcceptance() const
+{
+    return d_func()->eventAcceptance;
 }
 
 #include "moc_QskWindow.cpp"
