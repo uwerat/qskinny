@@ -35,7 +35,6 @@ static inline bool qskIsUpdateBlocked( const QQuickItem* item )
 
         return !itemRect.intersects( sceneRect );
     }
-}
 #endif
     
     return false;
