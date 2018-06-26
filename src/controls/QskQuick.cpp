@@ -72,13 +72,13 @@ bool qskIsVisibleTo( const QQuickItem* item, const QQuickItem* ancestor )
     if ( ancestor == nullptr )
         return item->isVisible(); // like QWidget::isVisibleTo
 
-    for ( item = item->parentItem();
-        item = item->parentItem(); item != ancestor )
+    for ( auto it = item->parentItem();
+        it != ancestor; it = it->parentItem() )
     {
-        if ( item == nullptr )
+        if ( it == nullptr )
             return false; // ancestor is no parent
 
-        if ( !QQuickItemPrivate::get( item )->explicitVisible )
+        if ( !QQuickItemPrivate::get( it )->explicitVisible )
             return false;
     }
 
