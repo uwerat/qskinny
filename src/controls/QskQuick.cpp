@@ -64,6 +64,27 @@ bool qskIsAncestorOf( const QQuickItem* item, const QQuickItem* child )
 #endif
 }
 
+bool qskIsVisibleTo( const QQuickItem* item, const QQuickItem* ancestor )
+{
+    if ( item == nullptr )
+        return false;
+
+    if ( ancestor == nullptr )
+        return item->isVisible(); // like QWidget::isVisibleTo
+
+    for ( item = item->parentItem();
+        item = item->parentItem(); item != ancestor )
+    {
+        if ( item == nullptr )
+            return false; // ancestor is no parent
+
+        if ( !QQuickItemPrivate::get( item )->explicitVisible )
+            return false;
+    }
+
+    return true;
+}
+
 bool qskIsTabFence( const QQuickItem* item )
 {
     if ( item == nullptr )

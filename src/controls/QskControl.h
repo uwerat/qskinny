@@ -187,6 +187,8 @@ public:
 
     virtual QSizeF contentsSizeHint() const;
 
+    bool isVisibleTo( const QQuickItem* ) const;
+
     QLocale locale() const;
     void resetLocale();
 
@@ -247,6 +249,7 @@ protected:
 
     void cleanupNodes();
 
+    virtual void aboutToShow(); // called in updatePolish
     virtual void updateLayout(); // called in updatePolish
 
 private:

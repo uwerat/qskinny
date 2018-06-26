@@ -431,6 +431,11 @@ void QskControl::hide()
     Inherited::setVisible( false );
 }
 
+bool QskControl::isVisibleTo( const QQuickItem* ancestor ) const
+{
+    return qskIsVisibleTo( this, ancestor );
+}
+
 void QskControl::setGeometry( qreal x, qreal y, qreal width, qreal height )
 {
     // QQuickItem does not even offer changing the geometry
@@ -1633,6 +1638,9 @@ void QskControl::updatePolish()
         }
     }
 
+    if ( !d->isInitiallyPainted )
+        aboutToShow();
+
     updateLayout();
 }
 
@@ -1725,6 +1733,10 @@ QRectF QskControl::gestureRect() const
 QRectF QskControl::focusIndicatorRect() const
 {
     return contentsRect();
+}
+
+void QskControl::aboutToShow()
+{
 }
 
 void QskControl::updateLayout()
