@@ -251,9 +251,9 @@ void QskPopup::updateInputGrabber()
     {
         if ( m_data->inputGrabber == nullptr )
         {
+            const auto children = childItems();
             m_data->inputGrabber = new InputGrabber( this );
 
-            const auto children = childItems();
             if ( !children.isEmpty() )
             {
                 /*
