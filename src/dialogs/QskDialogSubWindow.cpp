@@ -104,9 +104,9 @@ void QskDialogSubWindow::keyPressEvent( QKeyEvent* event )
     Inherited::keyPressEvent( event );
 }
 
-void QskDialogSubWindow::updateLayout()
+void QskDialogSubWindow::aboutToShow()
 {
-    if ( !isInitiallyPainted() && size().isEmpty() )
+    if ( size().isEmpty() )
     {
         // setting an initial size from the hint, centered inside the window
 
@@ -117,7 +117,7 @@ void QskDialogSubWindow::updateLayout()
         setGeometry( rect );
     }
 
-    Inherited::updateLayout();
+    Inherited::aboutToShow();
 }
 
 #include "moc_QskDialogSubWindow.cpp"

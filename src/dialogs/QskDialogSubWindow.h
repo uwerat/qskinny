@@ -40,7 +40,7 @@ protected:
     void setResult( QskDialog::DialogCode r );
     virtual void keyPressEvent( QKeyEvent* ) override;
 
-    virtual void updateLayout() override;
+    virtual void aboutToShow() override;
 
 private:
     QskDialog::DialogCode m_result;

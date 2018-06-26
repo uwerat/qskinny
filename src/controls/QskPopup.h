@@ -24,20 +24,22 @@ public:
     QskPopup( QQuickItem* parent = nullptr );
     virtual ~QskPopup();
 
-    Q_INVOKABLE void setModal( bool on = true );
-    Q_INVOKABLE bool isModal() const;
+    void setModal( bool on = true );
+    bool isModal() const;
 
     void setOverlay( bool on = true );
     bool hasOverlay() const;
 
     virtual QRectF overlayRect() const;
+    virtual QRectF grabberRect() const;
+
 
 Q_SIGNALS:
-    void modalChanged();
-    void overlayChanged();
+    void modalChanged( bool );
+    void overlayChanged( bool );
 
 protected:
-    virtual void updateLayout() override;
+    virtual void aboutToShow() override;
 
     virtual bool event( QEvent* ) override;
     virtual void focusInEvent( QFocusEvent * ) override;

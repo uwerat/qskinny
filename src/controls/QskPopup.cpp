@@ -50,43 +50,44 @@ namespace
         {
             setObjectName( QStringLiteral( "QskPopupInputGrabber" ) );
 
+            /*
+                We want to receive those events to stop them
+                from being propagated any further
+             */
             setAcceptedMouseButtons( Qt::AllButtons );
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+            setAcceptTouchEvents( true );
+#endif
             setAcceptHoverEvents( true );
+
             QQuickItemPrivate::get( this )->setTransparentForPositioner( true );
 
             setFlag( QQuickItem::ItemHasContents, false );
 
             /*
                The grabber has to be adjusted to the geometry of
-               the layoutItem, but being a child of he popup its
+               the parent of the popup, but being a child of the popup its
                coordinate system is relative to it and needs to be adjusted
-               when the position of the popup changes.
+               when the position of the popup changes too.
+               Using a QQuickItemChangeListener instead of connections
+               doesn't make the code much better as we need to deal with
+               how to remove the listener when the grand parent has changed then.
              */
 
             auto method = &InputGrabber::updateGeometry;
+
             connect( popup, &QQuickItem::xChanged, this, method );
             connect( popup, &QQuickItem::yChanged, this, method );
 
-            resetGeometryConnection();
-            updateGeometry();
-        }
-
-        void resetGeometryConnection()
-        {
-            // maybe using QQuickItemChangeListener instead ???
-
-            for ( int i = 0; i < 4; i++ )
-                disconnect( m_connections[i] );
-
             if ( QQuickItem* item = parentItem()->parentItem() )
             {
-                auto method = &InputGrabber::updateGeometry;
-
-                m_connections[0] = connect( item, &QQuickItem::xChanged, this, method );
-                m_connections[1] = connect( item, &QQuickItem::yChanged, this, method );
-                m_connections[2] = connect( item, &QQuickItem::widthChanged, this, method );
-                m_connections[3] = connect( item, &QQuickItem::heightChanged, this, method );
+                connect( item, &QQuickItem::xChanged, this, method );
+                connect( item, &QQuickItem::yChanged, this, method );
+                connect( item, &QQuickItem::widthChanged, this, method );
+                connect( item, &QQuickItem::heightChanged, this, method );
             }
+
+            updateGeometry();
         }
 
     protected:
@@ -94,48 +95,33 @@ namespace
         {
             bool doSwallow = false;
 
-            switch ( event->type() )
+            switch ( static_cast<int>( event->type() ) )
             {
-                case QEvent::KeyPress:
-                case QEvent::KeyRelease:
+                case QEvent::MouseButtonPress:
+                case QEvent::MouseMove:
+                case QEvent::MouseButtonRelease:
                 {
-                    doSwallow = true;
+                    doSwallow = handleMouseEvent( static_cast< QMouseEvent* > ( event ) );
                     break;
                 }
-                case QEvent::MouseButtonPress:
-                case QEvent::MouseButtonRelease:
-                case QEvent::MouseMove:
+                case QEvent::TouchBegin:
+                case QEvent::TouchUpdate:
+                case QEvent::TouchCancel:
+                {
+                    doSwallow = handleTouchEvent( static_cast< QTouchEvent* > ( event ) );
+                    break;
+                }
                 case QEvent::Wheel:
+                {
+                    doSwallow = handleWheelEvent( static_cast< QWheelEvent* > ( event ) );
+                    break;
+                }
                 case QEvent::HoverEnter:
                 case QEvent::HoverLeave:
                 {
-                    // swallow all events of the parent of the popup
-                    // but not being seen by the popup itself
-
-                    QPointF pos;
-                    if ( event->type() == QEvent::Wheel )
-                    {
-                        pos = static_cast< QWheelEvent* >( event )->pos();
-                    }
-                    else if ( ( event->type() == QEvent::HoverEnter ) ||
-                        ( event->type() == QEvent::HoverLeave ) )
-                    {
-                        pos = static_cast< QHoverEvent* >( event )->posF();
-                    }
-                    else
-                    {
-                        pos = static_cast< QMouseEvent* >( event )->localPos();
-                    }
-
-                    QQuickItem* popup = parentItem();
-                    doSwallow = !qskItemRect( popup ).contains(
-                        popup->mapFromItem( this, pos ) );
-
+                    doSwallow = handleHoverEvent( static_cast< QHoverEvent* > ( event ) );
                     break;
                 }
-
-                default:
-                    ;
             }
 
             if ( doSwallow )
@@ -152,23 +138,50 @@ namespace
         }
 
     private:
+        inline bool handleMouseEvent( const QMouseEvent* event )
+        {
+            return !isInsidePopup( event->localPos() );
+        }
+
+        inline bool handleWheelEvent( const QWheelEvent* event )
+        {
+            return !isInsidePopup( event->posF() );
+        }
+
+        inline bool handleTouchEvent( const QTouchEvent* )
+        {
+#if 1
+            return true; // TODO
+#endif
+        }
+
+        inline bool handleHoverEvent( const QHoverEvent* event )
+        {
+            return !isInsidePopup( event->posF() );
+        }
+
+        inline bool isInsidePopup( const QPointF& pos ) const
+        {
+            if ( const auto item = parentItem() )
+                return item->contains( position() + pos );
+
+            return false;
+        }
+
         void updateGeometry()
         {
-            if ( QskPopup* popup = qobject_cast< QskPopup* >( parentItem() ) )
+            if ( auto popup = static_cast< QskPopup* >( parentItem() ) )
             {
-                const QRectF r = popup->overlayRect();
-                if ( r != qskItemGeometry( this ) )
+                const QRectF rect = popup->grabberRect();
+                if ( rect != qskItemGeometry( this ) )
                 {
-                    setPosition( r.topLeft() );
-                    setSize( r.size() );
+                    qskSetItemGeometry( this, rect );
 
-                    // the overlay needs to be repainted
-                    popup->update();
+                    if ( popup->hasOverlay() )
+                        popup->update();
                 }
             }
         }
-
-        QMetaObject::Connection m_connections[4];
     };
 }
 
@@ -187,9 +200,10 @@ public:
     InputGrabber* inputGrabber;
 
     bool isModal : 1;
-    bool isOpen : 1;
-    bool autoGrabFocus : 1;
-    bool handoverFocus : 1;
+    bool isOpen  : 1;
+
+    const bool autoGrabFocus : 1;
+    const bool handoverFocus : 1;
 };
 
 QskPopup::QskPopup( QQuickItem* parent ):
@@ -214,12 +228,18 @@ QskPopup::~QskPopup()
 
 QRectF QskPopup::overlayRect() const
 {
-    const auto item = parentItem();
+    if ( hasOverlay() )
+        return grabberRect();
 
-    if ( item && isVisible() && m_data->isModal && hasOverlay() )
+    return QRectF();
+}
+
+QRectF QskPopup::grabberRect() const
+{
+    if ( const auto item = parentItem() )
     {
-        const QPointF pos = mapFromItem( item, QPointF() );
-        return QRectF( pos, QSizeF( item->width(), item->height() ) );
+        if ( isVisible() && m_data->isModal )
+            return QRectF( -position(), QSizeF( item->width(), item->height() ) );
     }
 
     return QRectF();
@@ -227,13 +247,13 @@ QRectF QskPopup::overlayRect() const
 
 void QskPopup::updateInputGrabber()
 {
-    if ( parentItem() && isVisible() && m_data->isModal )
+    if ( window() && parentItem() && isVisible() && isModal() )
     {
         if ( m_data->inputGrabber == nullptr )
         {
-            const auto children = childItems();
-
             m_data->inputGrabber = new InputGrabber( this );
+
+            const auto children = childItems();
             if ( !children.isEmpty() )
             {
                 /*
@@ -261,7 +281,7 @@ void QskPopup::setModal( bool on )
     m_data->isModal = on;
     updateInputGrabber();
 
-    Q_EMIT modalChanged();
+    Q_EMIT modalChanged( on );
 }
 
 bool QskPopup::isModal() const
@@ -277,7 +297,7 @@ void QskPopup::setOverlay( bool on )
         setFlagHint( subControl | QskAspect::Style, on );
 
         update();
-        Q_EMIT overlayChanged();
+        Q_EMIT overlayChanged( on );
     }
 }
 
@@ -323,12 +343,19 @@ bool QskPopup::event( QEvent* event )
 
     switch( event->type() )
     {
+        case QEvent::KeyPress:
+        case QEvent::KeyRelease:
+
         case QEvent::Wheel:
+
         case QEvent::MouseButtonPress:
         case QEvent::MouseMove:
         case QEvent::MouseButtonRelease:
-        case QEvent::KeyPress:
-        case QEvent::KeyRelease:
+
+        case QEvent::TouchBegin:
+        case QEvent::TouchCancel:
+        case QEvent::TouchUpdate:
+
         case QEvent::HoverEnter:
         case QEvent::HoverLeave:
         {
@@ -403,7 +430,7 @@ QQuickItem* QskPopup::focusSuccessor() const
     return nullptr;
 }
 
-void QskPopup::updateLayout()
+void QskPopup::aboutToShow()
 {
     if ( !m_data->isOpen )
     {
@@ -413,7 +440,7 @@ void QskPopup::updateLayout()
         m_data->isOpen = true;
     }
 
-    Inherited::updateLayout();
+    Inherited::aboutToShow();
 }
 
 void QskPopup::itemChange( QQuickItem::ItemChange change,
@@ -426,6 +453,7 @@ void QskPopup::itemChange( QQuickItem::ItemChange change,
         case QQuickItem::ItemVisibleHasChanged:
         {
             updateInputGrabber();
+
             if ( !value.boolValue )
             {
                 m_data->isOpen = false;
@@ -435,6 +463,7 @@ void QskPopup::itemChange( QQuickItem::ItemChange change,
             break;
         }
         case QQuickItem::ItemParentHasChanged:
+        case QQuickItem::ItemSceneChange:
         {
             delete m_data->inputGrabber;
             m_data->inputGrabber = nullptr;
