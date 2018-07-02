@@ -21,8 +21,24 @@ class QSK_EXPORT QskPopup : public QskControl
 public:
     QSK_SUBCONTROLS( Overlay )
 
+    enum PopupFlag
+    {
+        CloseOnHide         = 1 << 0,
+        DeleteOnClose       = 1 << 1,
+        CloseOnPressOutside = 1 << 2
+    };
+
+    Q_ENUM( PopupFlag )
+    Q_DECLARE_FLAGS( PopupFlags, PopupFlag )
+
     QskPopup( QQuickItem* parent = nullptr );
     virtual ~QskPopup();
+
+    void setPopupFlags( PopupFlags );
+    PopupFlags popupFlags() const;
+
+    void setPopupFlag( PopupFlag, bool on = true );
+    bool testPopupFlag( PopupFlag ) const;
 
     void setModal( bool on = true );
     bool isModal() const;
@@ -31,15 +47,21 @@ public:
     bool hasOverlay() const;
 
     virtual QRectF overlayRect() const;
-    virtual QRectF grabberRect() const;
 
+    bool isOpen() const;
+
+public Q_SLOTS:
+    void open();
+    void close();
 
 Q_SIGNALS:
+    void closed();
     void modalChanged( bool );
     void overlayChanged( bool );
 
 protected:
     virtual void aboutToShow() override;
+    virtual void setFading( bool on );
 
     virtual bool event( QEvent* ) override;
     virtual void focusInEvent( QFocusEvent * ) override;

@@ -7,25 +7,29 @@
 #include <QEventLoop>
 #include <QQuickWindow>
 
+static inline void qskSetRejectOnClose( QskDialogSubWindow* subWindow, bool on )
+{
+    if ( on )
+    {
+        QObject::connect( subWindow, &QskPopup::closed,
+            subWindow, &QskDialogSubWindow::reject );
+    }
+    else
+    {
+        QObject::disconnect( subWindow, &QskPopup::closed,
+            subWindow, &QskDialogSubWindow::reject );
+    }
+}
+
 QskDialogSubWindow::QskDialogSubWindow( QQuickItem* parent ):
     Inherited( parent ),
-    m_result( QskDialog::Rejected ),
-    m_deleteOnDone( false )
+    m_result( QskDialog::Rejected )
 {
+    qskSetRejectOnClose( this, true );
 }
 
 QskDialogSubWindow::~QskDialogSubWindow()
 {
-}
-
-void QskDialogSubWindow::setDeleteOnDone( bool on )
-{
-    m_deleteOnDone = on;
-}
-
-bool QskDialogSubWindow::deleteOnDone() const
-{
-    return m_deleteOnDone;
 }
 
 void QskDialogSubWindow::setResult( QskDialog::DialogCode result )
@@ -68,17 +72,18 @@ void QskDialogSubWindow::done( QskDialog::DialogCode result )
 {
     m_result = result;
 
+    if ( !isOpen() )
+        return;
+
+    qskSetRejectOnClose( this, false );
+    close();
+
     Q_EMIT finished( result );
 
     if ( result == QskDialog::Accepted )
         Q_EMIT accepted();
     else
         Q_EMIT rejected();
-
-    hide();
-
-    if ( m_deleteOnDone )
-        deleteLater();
 }
 
 void QskDialogSubWindow::accept()

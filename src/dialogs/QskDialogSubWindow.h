@@ -20,9 +20,6 @@ public:
     QskDialogSubWindow( QQuickItem* parent = nullptr );
     virtual ~QskDialogSubWindow();
 
-    void setDeleteOnDone( bool on );
-    bool deleteOnDone() const;
-
     Q_INVOKABLE QskDialog::DialogCode result() const;
     Q_INVOKABLE QskDialog::DialogCode exec();
 
@@ -44,7 +41,6 @@ protected:
 
 private:
     QskDialog::DialogCode m_result;
-    bool m_deleteOnDone : 1;
 };
 
 #endif
