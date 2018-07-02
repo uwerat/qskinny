@@ -821,7 +821,9 @@ void QskSkinnable::setSkinStateFlag( QskAspect::State state, bool on )
     }
 
     m_data->skinState = newState;
-    control->update();
+
+    if ( control->flags() & QQuickItem::ItemHasContents )
+        control->update();
 }
 
 QskSkin* QskSkinnable::effectiveSkin() const
