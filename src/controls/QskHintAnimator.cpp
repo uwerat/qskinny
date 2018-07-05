@@ -62,10 +62,10 @@ static inline QVariant qskAligned05( const QVariant& value )
         {
             for ( int i = Qt::TopLeftCorner; i <= Qt::BottomRightCorner; i++ )
             {
-                const auto corner = static_cast<Qt::Corner>( i );
+                const auto corner = static_cast< Qt::Corner >( i );
                 metrics.setRadius( corner, qskAligned05( metrics.radius( corner ) ) );
             }
-                
+
             return QVariant::fromValue( metrics );
         }
     }
@@ -80,7 +80,7 @@ static inline QVariant qskAligned05( const QVariant& value )
 
 #endif
 
-static inline bool qskCheckReceiverThread( const QObject *receiver )
+static inline bool qskCheckReceiverThread( const QObject* receiver )
 {
     /*
         QskInputPanelSkinlet changes the skin state, what leads to
@@ -89,12 +89,12 @@ static inline bool qskCheckReceiverThread( const QObject *receiver )
         in QCoreApplication::sendEvent
      */
 
-    const QThread *thread = receiver->thread();
+    const QThread* thread = receiver->thread();
     if ( thread == nullptr )
         return true;
 
     return ( thread == QThread::currentThread() );
-}   
+}
 
 QskHintAnimator::QskHintAnimator()
 {
@@ -146,7 +146,7 @@ namespace
         AnimatorGuard()
         {
             QskAnimator::addCleanupHandler( this,
-                SLOT( cleanup() ), Qt::QueuedConnection );
+                SLOT(cleanup()), Qt::QueuedConnection );
         }
 
         void registerTable( QskHintAnimatorTable* table )
