@@ -22,6 +22,8 @@
 #include "QskGraphicTextureFactory.h"
 #include "QskFunctions.h"
 
+#include <QQuickWindow>
+#include <QGuiApplication>
 #include <QSGSimpleRectNode>
 
 #include <unordered_map>
@@ -59,6 +61,17 @@ static inline QSGNode* qskFindNodeByFlag( QSGNode* parent, int nodeRole )
     return nullptr;
 }
 
+static qreal qskDevicePixelRatio( const QskSkinnable* skinnable )
+{
+    if ( auto control = skinnable->owningControl() )
+    {
+        if ( auto window = control->window() )
+            return window->effectiveDevicePixelRatio();
+    }
+
+    return qGuiApp->devicePixelRatio(); 
+}
+
 static inline QSGNode* qskUpdateGraphicNode(
     const QskSkinnable* skinnable, QSGNode* node,
     const QskGraphic& graphic, const QskColorFilter& colorFilter,
@@ -69,7 +82,7 @@ static inline QSGNode* qskUpdateGraphicNode(
 
     auto mode = QskGraphicTextureFactory::OpenGL;
 
-    const QskControl* control = skinnable->owningControl();
+    const auto control = skinnable->owningControl();
     if ( control && control->testControlFlag( QskControl::PreferRasterForTextures ) )
         mode = QskGraphicTextureFactory::Raster;
 
@@ -77,7 +90,11 @@ static inline QSGNode* qskUpdateGraphicNode(
     if ( graphicNode == nullptr )
         graphicNode = new QskGraphicNode();
 
-    graphicNode->setGraphic( graphic, colorFilter, mode, rect );
+    const qreal ratio = qskDevicePixelRatio( skinnable );
+    const QRect r( rect.x(), rect.y(), ratio * rect.width(), ratio * rect.height() );
+
+    graphicNode->setGraphic( graphic, colorFilter, mode, r );
+
     return graphicNode;
 }
 

@@ -7,6 +7,42 @@
 
 #include <private/qsgnode_p.h>
 
+#if 1
+
+#include <QSurface>
+#include <QWindow>
+#include <QQuickWindow>
+#include <QGuiApplication>
+#include <QScreen>
+
+static inline qreal qskDevicePixelRatio()
+{
+    qreal ratio = 1.0;
+
+    const auto context = QOpenGLContext::currentContext();
+
+    if ( context->surface()->surfaceClass() == QSurface::Window )
+    {
+        auto *window = static_cast< QWindow* >( context->surface() );
+
+        if ( auto* quickWindow = qobject_cast< QQuickWindow *>( window ) )
+            ratio = quickWindow->effectiveDevicePixelRatio();
+        else
+            ratio = window->devicePixelRatio();
+    }
+    else
+    {
+        if ( context->screen() )
+            ratio = context->screen()->devicePixelRatio();
+        else
+            ratio = qGuiApp->devicePixelRatio();
+    }
+
+    return ratio;
+}
+
+#endif
+
 namespace
 {
     class MaterialShader final : public QSGMaterialShader
@@ -76,7 +112,8 @@ namespace
         auto* materialOld = static_cast< Material* >( oldMaterial );
         auto* materialNew = static_cast< Material* >( newMaterial );
 
-        if ( ( materialOld == nullptr ) || ( materialOld->textureId() != materialNew->textureId() ) )
+        if ( ( materialOld == nullptr )
+            || ( materialOld->textureId() != materialNew->textureId() ) )
         {
             auto funcs = QOpenGLContext::currentContext()->functions();
             funcs->glBindTexture( GL_TEXTURE_2D, materialNew->textureId() );
@@ -281,5 +318,11 @@ void QskTextureNode::updateTexture()
         r.setBottom( 0 );
     }
 
-    QSGGeometry::updateTexturedRectGeometry( &d->geometry, d->rect, r );
+#if 1
+    const qreal ratio = qskDevicePixelRatio();
+    const QRect rect( d->rect.x(), d->rect.y(),
+        d->rect.width() / ratio, d->rect.height() / ratio );
+#endif
+
+    QSGGeometry::updateTexturedRectGeometry( &d->geometry, rect, r );
 }

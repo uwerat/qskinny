@@ -24,7 +24,6 @@
 #include <private/qopengltexture_p.h>
 
 #include <QPainter>
-#include <QGuiApplication>
 #include <QQuickWindow>
 
 static uint qskTextureFBO(
@@ -36,17 +35,15 @@ static uint qskTextureFBO(
     // ### TODO: get samples from window instead
     format1.setSamples( QOpenGLContext::currentContext()->format().samples() );
 
-    const auto dpr = qGuiApp->devicePixelRatio();
-    const QRect sourceRect( QPoint(), rect.size() * dpr );
+    const QRect sourceRect( QPoint(), rect.size() );
 
     QOpenGLFramebufferObject multisampledFbo( sourceRect.size(), format1 );
 
     QOpenGLPaintDevice pd( sourceRect.size() );
-    pd.setDevicePixelRatio( dpr );
 
     QPainter painter( &pd );
 
-    graphic.render( &painter, rect, filter, scalingMode );
+    graphic.render( &painter, sourceRect, filter, scalingMode );
 
 #if 1
     if ( format1.samples() > 0 )
@@ -81,11 +78,9 @@ static uint qskTextureRaster(
     const QRect& rect, Qt::AspectRatioMode scalingMode,
     const QskGraphic& graphic, const QskColorFilter& filter )
 {
-    QImage image( rect.size() * qGuiApp->devicePixelRatio(),
-        QImage::Format_RGBA8888_Premultiplied );
-
-    image.setDevicePixelRatio( qGuiApp->devicePixelRatio() );
+    QImage image( rect.size(), QImage::Format_RGBA8888_Premultiplied );
     image.fill( Qt::transparent );
+
     {
         QPainter painter( &image );
         graphic.render( &painter, rect, filter, scalingMode );
@@ -148,7 +143,7 @@ QImage QskGraphicTextureFactory::image() const
     return m_graphic.toImage( m_size, Qt::KeepAspectRatio );
 }
 
-// ### TODO: pass in window and get the DPR and FBO samples from it
+// ### TODO: get the FBO samples from the window
 uint QskGraphicTextureFactory::createTexture(
     RenderMode mode, const QRect& rect, Qt::AspectRatioMode scalingMode,
     const QskGraphic& graphic, const QskColorFilter& filter )
