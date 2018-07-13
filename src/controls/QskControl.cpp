@@ -731,7 +731,8 @@ void QskControl::updateControlFlag( uint flag, bool on )
         case QskControl::DebugForceBackground:
         {
             // no need to mark it dirty
-            update();
+            if ( flags() & QQuickItem::ItemHasContents )
+                update();
             break;
         }
         default:
@@ -1353,7 +1354,9 @@ bool QskControl::event( QEvent* event )
 
             resetImplicitSize();
             polish();
-            update();
+
+            if ( flags() & QQuickItem::ItemHasContents )
+                update();
 
             changeEvent( event );
             return true;
@@ -1441,7 +1444,9 @@ void QskControl::changeEvent( QEvent* event )
 
         resetImplicitSize();
         polish();
-        update();
+
+        if ( flags() & QQuickItem::ItemHasContents )
+            update();
     }
 }
 
@@ -1639,7 +1644,14 @@ void QskControl::updatePolish()
     }
 
     if ( !d->isInitiallyPainted )
+    {
+        /*
+            We should find a better way for identifying, when
+            an item is about to be shown, than making it dependend
+            from polishing and the existence of scene graph nodes. TODO ...
+         */
         aboutToShow();
+    }
 
     updateLayout();
 }
