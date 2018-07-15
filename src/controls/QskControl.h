@@ -23,7 +23,7 @@ class QskGeometryChangeEvent;
 class QskWindowChangeEvent;
 class QskGestureEvent;
 
-template class QVector< QskAspect::Aspect >;
+template <typename T> class QVector;
 
 class QSK_EXPORT QskControl : public QQuickItem, public QskSkinnable
 {

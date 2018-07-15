@@ -8,7 +8,7 @@
 
 #include "QskControl.h"
 
-template class QVector< QMetaObject::Connection >;
+template <typename T> class QVector;
 
 class QSK_EXPORT QskFocusIndicator : public QskControl
 {
