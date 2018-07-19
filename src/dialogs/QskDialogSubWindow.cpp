@@ -4,8 +4,9 @@
  *****************************************************************************/
 
 #include "QskDialogSubWindow.h"
-#include <QEventLoop>
-#include <QQuickWindow>
+
+#include <qeventloop.h>
+#include <qquickwindow.h>
 
 static inline void qskSetRejectOnClose( QskDialogSubWindow* subWindow, bool on )
 {

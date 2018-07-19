@@ -7,7 +7,8 @@
 #include "QskGraphic.h"
 #include "QskColorFilter.h"
 #include "QskGraphicProvider.h"
-#include <QDebug>
+
+#include <qdebug.h>
 
 QSK_SUBCONTROL( QskStatusIndicator, Graphic )
 

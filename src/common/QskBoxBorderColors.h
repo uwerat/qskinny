@@ -8,10 +8,9 @@
 
 #include "QskGlobal.h"
 #include "QskNamespace.h"
-#include "QskRgbValue.h"
 
-#include <QColor>
-#include <QMetaType>
+#include <qcolor.h>
+#include <qmetatype.h>
 
 class QDebug;
 

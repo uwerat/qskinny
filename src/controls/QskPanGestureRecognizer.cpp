@@ -2,10 +2,10 @@
 #include "QskGesture.h"
 #include "QskEvent.h"
 
-#include <QQuickItem>
-#include <QCoreApplication>
-#include <QtMath>
-#include <QLineF>
+#include <qquickitem.h>
+#include <qcoreapplication.h>
+#include <qmath.h>
+#include <qline.h>
 
 static inline qreal qskDistance( const QPointF& from, const QPointF& to,
     Qt::Orientations orientations )

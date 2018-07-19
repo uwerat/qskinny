@@ -7,17 +7,19 @@
 #define QSK_GRAPHIC_H
 
 #include "QskGlobal.h"
-#include <QPaintDevice>
-#include <QPaintEngine>
-#include <QMetaType>
-#include <memory>
+
+#include <qpaintdevice.h>
+#include <qmetatype.h>
+#include <qshareddata.h>
 
 class QskPainterCommand;
 class QskColorFilter;
+class QskGraphicPaintEngine;
 class QImage;
 class QPixmap;
 class QPainterPath;
-class QskGraphicPaintEngine;
+class QPaintEngine;
+class QPaintEngineState;
 
 class QSK_EXPORT QskGraphic : public QPaintDevice
 {

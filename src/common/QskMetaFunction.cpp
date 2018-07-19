@@ -6,10 +6,10 @@
 #include "QskGlobal.h"
 #include "QskMetaFunction.h"
 
-#include <QCoreApplication>
-#include <QThread>
-#include <QObject>
-#include <QSemaphore>
+#include <qcoreapplication.h>
+#include <qthread.h>
+#include <qobject.h>
+#include <qsemaphore.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qobject_p.h>

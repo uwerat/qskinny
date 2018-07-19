@@ -5,14 +5,11 @@
 
 #include "QskBoxRenderer.h"
 #include "QskBoxRendererColorMap.h"
-#include "QskBoxShapeMetrics.h"
 #include "QskBoxBorderMetrics.h"
 #include "QskBoxBorderColors.h"
 #include "QskGradient.h"
 #include "QskFunctions.h"
 #include "QskVertex.h"
-
-#include <QSGGeometry>
 
 using namespace QskVertex;
 

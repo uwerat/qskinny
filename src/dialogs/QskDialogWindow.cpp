@@ -4,8 +4,8 @@
  *****************************************************************************/
 
 #include "QskDialogWindow.h"
-#include <QEventLoop>
-#include <QPointer>
+#include <qeventloop.h>
+#include <qpointer.h>
 
 class QskDialogWindow::PrivateData
 {

@@ -6,13 +6,11 @@
 #include "QskWindow.h"
 #include "QskControl.h"
 #include "QskQuick.h"
-#include "QskAspect.h"
 #include "QskSetup.h"
-#include "QskSkin.h"
 #include "QskEvent.h"
 
-#include <QtMath>
-#include <QPointer>
+#include <qmath.h>
+#include <qpointer.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>

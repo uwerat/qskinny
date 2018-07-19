@@ -5,7 +5,8 @@
 
 #include "QskSimpleListBox.h"
 #include "QskAspect.h"
-#include <QFontMetricsF>
+
+#include <qfontmetrics.h>
 
 static inline qreal qskMaxWidth(
     const QFont& font, const QStringList& list )

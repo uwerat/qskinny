@@ -8,7 +8,7 @@
 
 #include "QskGlobal.h"
 #include "QskNamespace.h"
-#include <Qt>
+#include <qnamespace.h>
 
 class QskTextColors;
 class QskTextOptions;

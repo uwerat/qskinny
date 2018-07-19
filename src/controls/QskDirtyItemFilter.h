@@ -8,8 +8,8 @@
 
 #include "QskGlobal.h"
 
-#include <QObject>
-#include <QSet>
+#include <qobject.h>
+#include <qset.h>
 
 class QQuickWindow;
 class QQuickItem;

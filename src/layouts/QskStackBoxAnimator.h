@@ -9,7 +9,7 @@
 #include "QskGlobal.h"
 #include "QskNamespace.h"
 #include "QskAnimator.h"
-#include <QObject>
+#include <qobject.h>
 
 class QskStackBox;
 class QskLayoutItem;

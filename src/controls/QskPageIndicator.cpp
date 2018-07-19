@@ -4,7 +4,6 @@
  *****************************************************************************/
 
 #include "QskPageIndicator.h"
-#include "QskPageIndicatorSkinlet.h"
 #include "QskAspect.h"
 
 QSK_SUBCONTROL( QskPageIndicator, Panel )

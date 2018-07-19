@@ -7,7 +7,7 @@
 #define QSK_SKIN_FACTORY_H
 
 #include "QskGlobal.h"
-#include <QObject>
+#include <qobject.h>
 
 class QskSkin;
 class QStringList;

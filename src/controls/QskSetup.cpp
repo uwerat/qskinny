@@ -11,11 +11,9 @@
 #include "QskWindow.h"
 #include "QskObjectTree.h"
 
-#include <QGuiApplication>
-#include <QStyleHints>
-
-#include <QPointer>
-#include <QDebug>
+#include <qpointer.h>
+#include <qguiapplication.h>
+#include <qstylehints.h>
 
 QskSetup* QskSetup::s_instance = nullptr;
 

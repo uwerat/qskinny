@@ -9,7 +9,7 @@
 #include "QskGlobal.h"
 #include "QskMetaFunction.h"
 
-#include <QQuickWindow>
+#include <qquickwindow.h>
 
 class QQuickItem;
 class QKeySequence;

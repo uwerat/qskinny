@@ -7,7 +7,7 @@
 #define QSK_TEXT_PREDICTOR_H
 
 #include <QskGlobal.h>
-#include <QObject>
+#include <qobject.h>
 
 class QStringList;
 

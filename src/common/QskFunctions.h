@@ -8,8 +8,8 @@
 
 #include "QskGlobal.h"
 
-#include <QMargins>
-#include <QRectF>
+#include <qmargins.h>
+#include <qrect.h>
 
 QSK_EXPORT qreal qskDpiScaled( qreal value );
 

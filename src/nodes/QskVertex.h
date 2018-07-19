@@ -8,9 +8,8 @@
 
 #include "QskGlobal.h"
 
-#include <QSGGeometry>
-#include <QColor>
-#include <QDebug>
+#include <qsggeometry.h>
+#include <qcolor.h>
 
 namespace QskVertex
 {

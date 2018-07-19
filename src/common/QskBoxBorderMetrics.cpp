@@ -6,7 +6,7 @@
 #include "QskBoxBorderMetrics.h"
 
 #include <qhashfunctions.h>
-#include <QDebug>
+#include <qvariant.h>
 
 static void qskRegisterBoxBorderMetrics()
 {
@@ -103,6 +103,8 @@ uint QskBoxBorderMetrics::hash( uint seed ) const
 }
 
 #ifndef QT_NO_DEBUG_STREAM
+
+#include <qdebug.h>
 
 QDebug operator<<( QDebug debug, const QskBoxBorderMetrics& metrics )
 {

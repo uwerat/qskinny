@@ -7,7 +7,7 @@
 #define QSK_BOX_CLIP_NODE_H
 
 #include "QskGlobal.h"
-#include <QSGClipNode>
+#include <qsgnode.h>
 
 class QskBoxShapeMetrics;
 class QskBoxBorderMetrics;

@@ -9,7 +9,7 @@
 #include "QskLayoutEngine.h"
 #include "QskLayoutConstraint.h"
 
-#include <QPointer>
+#include <qpointer.h>
 
 class QskStackBox::PrivateData
 {

@@ -11,12 +11,11 @@
 #include "QskDialog.h"
 #include "QskPopup.h"
 #include "QskWindow.h"
-#include "QskEvent.h"
 #include "QskQuick.h"
 
-#include <QPointer>
-#include <QGuiApplication>
-#include <QMap>
+#include <qpointer.h>
+#include <qguiapplication.h>
+#include <qmap.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qguiapplication_p.h>

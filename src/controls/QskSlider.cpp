@@ -7,8 +7,6 @@
 #include "QskAspect.h"
 #include "QskAnimationHint.h"
 
-#include <QtMath>
-
 QSK_SUBCONTROL( QskSlider, Panel )
 QSK_SUBCONTROL( QskSlider, Groove )
 QSK_SUBCONTROL( QskSlider, Fill )

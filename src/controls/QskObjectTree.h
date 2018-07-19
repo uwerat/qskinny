@@ -10,7 +10,7 @@
 #include "QskControl.h"
 #include "QskWindow.h"
 
-#include <QVariant>
+#include <qvariant.h>
 
 namespace QskObjectTree
 {

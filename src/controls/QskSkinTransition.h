@@ -5,7 +5,6 @@
 #include "QskAspect.h"
 #include "QskAnimationHint.h"
 
-class QskAnimatorHint;
 class QskSkin;
 class QVariant;
 

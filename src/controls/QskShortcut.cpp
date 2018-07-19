@@ -5,9 +5,13 @@
 
 #include "QskShortcut.h"
 #include "QskShortcutMap.h"
-#include <QQuickItem>
-#include <QQuickWindow>
+
+#include <qquickitem.h>
+#include <qquickwindow.h>
+
+QSK_QT_PRIVATE_BEGIN
 #include <QtGui/private/qguiapplication_p.h>
+QSK_QT_PRIVATE_END
 
 static inline QShortcutMap& qskShortcutMap()
 {

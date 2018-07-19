@@ -1,19 +1,17 @@
 #include "QskTextureNode.h"
 
-#include <QSGGeometry>
-#include <QSGMaterial>
-#include <QSGMaterialShader>
-#include <QOpenGLFunctions>
+#include <qsggeometry.h>
+#include <qsgmaterial.h>
+#include <qopenglfunctions.h>
 
 #include <private/qsgnode_p.h>
 
 #if 1
 
-#include <QSurface>
-#include <QWindow>
-#include <QQuickWindow>
-#include <QGuiApplication>
-#include <QScreen>
+#include <qsurface.h>
+#include <qquickwindow.h>
+#include <qguiapplication.h>
+#include <qscreen.h>
 
 static inline qreal qskDevicePixelRatio()
 {

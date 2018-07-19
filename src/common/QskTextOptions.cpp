@@ -4,8 +4,7 @@
  *****************************************************************************/
 
 #include "QskTextOptions.h"
-#include <QTextDocument>
-#include <QDebug>
+#include <qtextdocument.h>
 #include <limits>
 
 QskTextOptions::QskTextOptions():
@@ -134,6 +133,8 @@ uint qHash( const QskTextOptions &options, uint seed ) noexcept
 }
 
 #ifndef QT_NO_DEBUG_STREAM
+
+#include <qdebug.h>
 
 QDebug operator<<( QDebug debug, const QskTextOptions& options )
 {

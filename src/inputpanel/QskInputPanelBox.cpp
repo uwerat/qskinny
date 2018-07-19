@@ -10,9 +10,8 @@
 #include "QskTextLabel.h"
 #include "QskLinearBox.h"
 
-#include <QString>
-#include <QLocale>
-#include <QPointer>
+#include <qstring.h>
+#include <qpointer.h>
 
 namespace
 {

@@ -9,9 +9,9 @@
 #include "QskGlobal.h"
 #include "QskMargins.h"
 
-#include <Qt>
-#include <QMetaType>
-#include <QSizeF>
+#include <qnamespace.h>
+#include <qmetatype.h>
+#include <qsize.h>
 
 class QDebug;
 class QVariant;

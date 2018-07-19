@@ -4,14 +4,15 @@
  *****************************************************************************/
 
 #include "QskShortcutMap.h"
-#include "QskControl.h"
 #include "QskQuick.h"
 #include "QskMetaInvokable.h"
 
-#include <QQuickWindow>
-#include <QKeySequence>
-#include <QGlobalStatic>
+#include <qquickitem.h>
+#include <qkeysequence.h>
+
+QSK_QT_PRIVATE_BEGIN
 #include <QtGui/private/qguiapplication_p.h>
+QSK_QT_PRIVATE_END
 
 #include <map>
 

@@ -7,8 +7,8 @@
 #define QSK_TEXT_COLORS_H
 
 #include "QskGlobal.h"
-#include <QColor>
-#include <QMetaType>
+#include <qcolor.h>
+#include <qmetatype.h>
 
 class QDebug;
 class QVariant;

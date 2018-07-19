@@ -4,7 +4,6 @@
  *****************************************************************************/
 
 #include "QskRangeControl.h"
-#include "QskAspect.h"
 #include "QskFunctions.h"
 
 class QskRangeControl::PrivateData

@@ -16,6 +16,7 @@
 #include <QDebug>
 #include <QElapsedTimer>
 #include <QQuickWindow>
+#include <QPainter>
 
 bool Benchmark::run( const QString& dirName )
 {

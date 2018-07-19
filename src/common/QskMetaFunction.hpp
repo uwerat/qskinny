@@ -7,7 +7,7 @@
 #define QSK_META_FUNCTION_HPP 1
 
 #include "QskGlobal.h"
-#include <QObject>
+#include <qobject.h>
 
 class QskMetaFunction::FunctionCall : public QtPrivate::QSlotObjectBase
 {

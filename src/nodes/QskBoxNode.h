@@ -7,14 +7,12 @@
 #define QSK_BOX_NODE_H
 
 #include "QskGlobal.h"
+#include <qsgnode.h>
 
 class QskBoxShapeMetrics;
 class QskBoxBorderMetrics;
 class QskBoxBorderColors;
 class QskGradient;
-class QRectF;
-
-#include <QSGNode>
 
 class QSK_EXPORT QskBoxNode : public QSGGeometryNode
 {

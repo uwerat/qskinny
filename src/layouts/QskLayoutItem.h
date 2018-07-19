@@ -7,7 +7,6 @@
 #define QSK_LAYOUT_ITEM_H
 
 #include "QskGlobal.h"
-#include "QskSizePolicy.h"
 
 QSK_QT_PRIVATE_BEGIN
 /*

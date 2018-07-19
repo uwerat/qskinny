@@ -7,8 +7,6 @@
 #include "QskControl.h"
 #include "QskSizePolicy.h"
 
-#include <limits>
-
 static inline qreal qskHintFor( const QQuickItem* item,
     const char* method, qreal widthOrHeight )
 {

@@ -8,7 +8,7 @@
 #include "QskFunctions.h"
 #include "QskEvent.h"
 
-#include <QTimer>
+#include <qtimer.h>
 
 QSK_SUBCONTROL( QskSubWindowArea, Panel )
 

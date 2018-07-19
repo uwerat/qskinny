@@ -8,8 +8,8 @@
 #include "QskLinearBox.h"
 #include "QskTextOptions.h"
 
-#include <QFontMetricsF>
-#include <QStringList>
+#include <qfontmetrics.h>
+#include <qstringlist.h>
 
 QSK_SUBCONTROL( QskInputPredictionBar, Panel )
 QSK_SUBCONTROL( QskInputPredictionBar, ButtonPanel )

@@ -1,6 +1,7 @@
 #include "QskEvent.h"
 #include "QskGesture.h"
-#include <QKeyEvent>
+
+#include <qevent.h>
 
 static void qskRegisterEventTypes()
 {

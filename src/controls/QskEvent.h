@@ -9,8 +9,8 @@
 #include "QskGlobal.h"
 #include "QskAspect.h"
 
-#include <QEvent>
-#include <QRectF>
+#include <qcoreevent.h>
+#include <qrect.h>
 
 class QskGesture;
 class QQuickWindow;

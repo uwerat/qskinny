@@ -5,12 +5,15 @@
 
 #include "QskAnimator.h"
 
-#include <QObject>
-#include <QVector>
-#include <QQuickWindow>
-#include <QElapsedTimer>
-#include <QGlobalStatic>
-#include <QDebug>
+#include <qobject.h>
+#include <qvector.h>
+#include <qquickwindow.h>
+#include <qelapsedtimer.h>
+#include <qglobalstatic.h>
+
+#ifndef QT_NO_DEBUG_STREAM
+#include <qdebug.h>
+#endif
 
 namespace
 {

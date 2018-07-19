@@ -7,7 +7,7 @@
 #define QSK_RGB_VALUE_H
 
 #include "QskGlobal.h"
-#include <QColor>
+#include <qcolor.h>
 
 #define QSK_RGB_VALUES \
     /* Web colors */ \

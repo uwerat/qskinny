@@ -6,10 +6,8 @@
 #include "QskStatusIndicatorSkinlet.h"
 #include "QskStatusIndicator.h"
 #include "QskGraphic.h"
-#include "QskGraphicTextureFactory.h"
+#include "QskColorFilter.h"
 #include "QskAspect.h"
-#include "QskSkin.h"
-#include "QskTextureNode.h"
 #include "QskFunctions.h"
 
 QskStatusIndicatorSkinlet::QskStatusIndicatorSkinlet( QskSkin* skin ):

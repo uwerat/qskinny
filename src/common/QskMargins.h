@@ -8,9 +8,9 @@
 
 #include "QskGlobal.h"
 
-#include <QMarginsF>
-#include <Qt>
-#include <QMetaType>
+#include <qmargins.h>
+#include <qnamespace.h>
+#include <qmetatype.h>
 
 class QVariant;
 

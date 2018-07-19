@@ -7,18 +7,16 @@
 #include "QskTextColors.h"
 #include "QskTextOptions.h"
 
-#include <QQuickWindow>
-#include <QGlobalStatic>
-#include <QThread>
-#include <QMutexLocker>
-#include <QHash>
+#include <qglobalstatic.h>
+#include <qthread.h>
+#include <qmutex.h>
+
+class QQuickWindow;
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquicktext_p.h>
 #include <private/qquicktext_p_p.h>
 QSK_QT_PRIVATE_END
-
-#include <limits>
 
 namespace
 {

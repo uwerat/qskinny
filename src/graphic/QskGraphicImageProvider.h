@@ -7,7 +7,7 @@
 #define QSK_GRAPHIC_IMAGE_PROVIDER_H
 
 #include "QskGlobal.h"
-#include <QQuickImageProvider>
+#include <qquickimageprovider.h>
 
 class QskGraphic;
 

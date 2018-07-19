@@ -6,11 +6,12 @@
 #include <QskGraphicIO.h>
 #include <QskGraphic.h>
 #include <QSvgRenderer>
+#include <QPainter>
 #include <QDebug>
 
 static void usage( const char* appName )
 {
-    qDebug() << "usage: " << appName << "svgfile qvgfile";
+    qWarning() << "usage: " << appName << "svgfile qvgfile";
 }
 
 int main( int argc, char* argv[] )

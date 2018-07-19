@@ -6,15 +6,12 @@
 #include "QskMetaInvokable.h"
 #include "QskMetaFunction.h"
 
-#include <QMetaMethod>
-#include <QMetaProperty>
+#include <qmetaobject.h>
+#include <qobject.h>
 
-#include <QVector>
-#include <QObject>
-
-#include <QThread>
-#include <QCoreApplication>
-#include <QSemaphore>
+#include <qthread.h>
+#include <qcoreapplication.h>
+#include <qsemaphore.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qobject_p.h>

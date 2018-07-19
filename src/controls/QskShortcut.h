@@ -8,9 +8,10 @@
 
 #include "QskGlobal.h"
 
-#include <QObject>
-#include <QQmlParserStatus>
-#include <Qt>
+#include <qobject.h>
+#include <qqmlparserstatus.h>
+#include <qnamespace.h>
+
 #include <memory>
 
 class QKeySequence;

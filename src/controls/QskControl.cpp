@@ -7,15 +7,14 @@
 #include "QskQuick.h"
 #include "QskAspect.h"
 #include "QskSetup.h"
-#include "QskSkinlet.h"
-#include "QskSkin.h"
 #include "QskEvent.h"
 #include "QskDirtyItemFilter.h"
 #include "QskSkinHintTable.h"
+#include "QskSkin.h"
 
-#include <QLocale>
-#include <QVector>
-#include <QGlobalStatic>
+#include <qlocale.h>
+#include <qvector.h>
+#include <qglobalstatic.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>
@@ -26,7 +25,6 @@ QSK_QT_PRIVATE_END
 
 #include <limits>
 #include <unordered_set>
-#include <unordered_map>
 
 QSK_STATE( QskControl, Disabled, QskAspect::FirstSystemState )
 QSK_STATE( QskControl, Hovered, QskAspect::LastSystemState >> 1 )

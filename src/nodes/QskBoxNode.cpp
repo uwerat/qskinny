@@ -10,9 +10,9 @@
 #include "QskBoxBorderColors.h"
 #include "QskGradient.h"
 
-#include <QSGVertexColorMaterial>
-#include <QSGFlatColorMaterial>
-#include <QGlobalStatic>
+#include <qsgvertexcolormaterial.h>
+#include <qsgflatcolormaterial.h>
+#include <qglobalstatic.h>
 
 Q_GLOBAL_STATIC( QSGVertexColorMaterial, qskMaterialVertex )
 

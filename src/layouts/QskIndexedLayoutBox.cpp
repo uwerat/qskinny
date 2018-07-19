@@ -8,8 +8,6 @@
 #include "QskLayoutEngine.h"
 #include "QskLayoutItem.h"
 
-#include <limits>
-
 class QskIndexedLayoutBox::PrivateData
 {
 public:

@@ -7,7 +7,8 @@
 #define QSK_GESTURE_RECOGNIZER_H
 
 #include "QskGlobal.h"
-#include <Qt>
+
+#include <qnamespace.h>
 #include <memory>
 
 class QQuickItem;

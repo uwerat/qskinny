@@ -1,5 +1,5 @@
 #include "QskMargins.h"
-#include <QVariant>
+#include <qvariant.h>
 
 static inline qreal qskInterpolated( qreal from, qreal to, qreal ratio )
 {

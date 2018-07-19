@@ -16,7 +16,6 @@ public:
     void setLabels( const QVector< QString >& labels );
 
 private:
-    float m_labelsStep;
     QVector< QString > m_labels;
 };
 

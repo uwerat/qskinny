@@ -8,8 +8,8 @@
 
 #include "QskGlobal.h"
 
-#include <QEasingCurve>
-#include <QMetaType>
+#include <qeasingcurve.h>
+#include <qmetatype.h>
 
 class QSK_EXPORT QskAnimationHint
 {

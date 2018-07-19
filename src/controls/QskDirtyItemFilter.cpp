@@ -4,10 +4,7 @@
  *****************************************************************************/
 
 #include "QskDirtyItemFilter.h"
-#include "QskWindow.h"
 #include "QskControl.h"
-
-#include <QQuickWindow>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickwindow_p.h>

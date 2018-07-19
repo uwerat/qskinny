@@ -15,8 +15,11 @@
 // Even if we don't use the standard Qt animation system we
 // use its registry of interpolators: why adding our own ...
 
-#include <QVariantAnimation>
+#include <qvariantanimation.h>
+
+QSK_QT_PRIVATE_BEGIN
 #include <private/qvariantanimation_p.h>
+QSK_QT_PRIVATE_END
 
 #if 1
 static void qskRegisterInterpolator()

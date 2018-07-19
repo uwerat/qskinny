@@ -13,7 +13,8 @@
 #include "QskLinearBox.h"
 #include "QskSkin.h"
 
-#include <QPointer>
+#include <qpointer.h>
+#include <qfontmetrics.h>
 
 namespace
 {

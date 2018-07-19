@@ -9,7 +9,7 @@
 #include "QskGlobal.h"
 #include "QskBoxShapeMetrics.h"
 
-#include <QRectF>
+#include <qrect.h>
 
 class QskBoxBorderMetrics;
 class QskBoxBorderColors;

@@ -7,7 +7,7 @@
 #define QSK_WINDOW_H 1
 
 #include "QskGlobal.h"
-#include <QQuickWindow>
+#include <qquickwindow.h>
 
 class QskWindowPrivate;
 class QskObjectAttributes;

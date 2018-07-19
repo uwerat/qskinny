@@ -9,8 +9,9 @@
 #include "QskGlobal.h"
 #include "QskAspect.h"
 
-#include <Qt>
-#include <QRectF>
+#include <qnamespace.h>
+#include <qrect.h>
+
 #include <memory>
 
 class QskSkin;

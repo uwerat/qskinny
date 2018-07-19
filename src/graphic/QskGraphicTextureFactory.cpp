@@ -5,10 +5,10 @@
 
 #include "QskGraphicTextureFactory.h"
 
-#include <QOpenGLContext>
-#include <QOpenGLFramebufferObject>
-#include <QOpenGLPaintDevice>
-#include <QOpenGLFunctions>
+#include <qopenglcontext.h>
+#include <qopenglframebufferobject.h>
+#include <qopenglpaintdevice.h>
+#include <qopenglfunctions.h>
 
 // VS2012+ disable keyword macroizing unless _ALLOW_KEYWORD_MACROS is set
 #ifdef _MSC_VER
@@ -18,13 +18,13 @@
 #endif
 
 #define private public
-#include <QOpenGLTexture>
+#include <qopengltexture.h>
 #undef private
 
 #include <private/qopengltexture_p.h>
 
-#include <QPainter>
-#include <QQuickWindow>
+#include <qpainter.h>
+#include <qquickwindow.h>
 
 static uint qskTextureFBO(
     const QRect& rect, Qt::AspectRatioMode scalingMode,

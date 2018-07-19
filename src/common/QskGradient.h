@@ -8,9 +8,9 @@
 
 #include "QskGlobal.h"
 
-#include <QMetaType>
-#include <QColor>
-#include <QVector>
+#include <qmetatype.h>
+#include <qcolor.h>
+#include <qvector.h>
 
 class QDebug;
 class QVariant;

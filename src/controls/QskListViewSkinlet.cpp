@@ -5,17 +5,13 @@
 
 #include "QskListViewSkinlet.h"
 #include "QskListView.h"
-#include "QskAspect.h"
-#include "QskTextOptions.h"
-#include "QskTextNode.h"
-#include "QskGraphic.h"
-#include "QskGraphicNode.h"
 #include "QskColorFilter.h"
+#include "QskGraphic.h"
 
-#include <QSGSimpleRectNode>
-#include <QSGTransformNode>
-#include <QTransform>
-#include <QtMath>
+#include <qsgnode.h>
+#include <qsgsimplerectnode.h>
+#include <qtransform.h>
+#include <qmath.h>
 
 class QskListViewNode final : public QSGTransformNode
 {

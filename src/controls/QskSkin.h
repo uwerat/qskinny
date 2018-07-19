@@ -9,8 +9,8 @@
 #include "QskGlobal.h"
 #include "QskAspect.h"
 
-#include <QObject>
-#include <QColor>
+#include <qobject.h>
+#include <qcolor.h>
 
 #include <unordered_map>
 #include <memory>

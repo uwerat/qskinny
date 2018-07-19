@@ -9,12 +9,9 @@
 #include "QskGraphic.h"
 #include "QskColorFilter.h"
 #include "QskGraphicProviderMap.h"
-#include "QskSetup.h"
 #include "QskAnimationHint.h"
 #include "QskStandardSymbol.h"
 #include "QskSkinHintTable.h"
-
-#include "QskFocusIndicator.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qguiapplication_p.h>
@@ -23,11 +20,7 @@ QSK_QT_PRIVATE_END
 #include <qpa/qplatformtheme.h>
 #include <qpa/qplatformdialoghelper.h>
 
-#include <QtAlgorithms>
-
-#include <algorithm>
 #include <unordered_map>
-#include <unordered_set>
 #include <cmath>
 
 #include "QskBox.h"

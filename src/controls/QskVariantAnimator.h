@@ -8,7 +8,7 @@
 
 #include "QskGlobal.h"
 #include "QskAnimator.h"
-#include <QVariant>
+#include <qvariant.h>
 
 class QSK_EXPORT QskVariantAnimator : public QskAnimator
 {

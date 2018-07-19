@@ -8,7 +8,7 @@
 #include "QskPlainTextRenderer.h"
 #include "QskTextOptions.h"
 
-#include <QRectF>
+#include <qrect.h>
 
 /*
     Since Qt 5.7 QQuickTextNode is exported as Q_QUICK_PRIVATE_EXPORT

@@ -7,8 +7,9 @@
 #define QSK_META_FUNCTION_H 1
 
 #include "QskGlobal.h"
-#include <QMetaType>
-#include <QObject>
+
+#include <qmetatype.h>
+#include <qobject.h>
 
 namespace QskMetaFunctionTraits
 {

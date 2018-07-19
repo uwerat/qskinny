@@ -4,9 +4,9 @@
  *****************************************************************************/
 
 #include "QskObjectCounter.h"
-#include <QQuickItem>
-#include <QSet>
-#include <QDebug>
+
+#include <qset.h>
+#include <qdebug.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qhooks_p.h>

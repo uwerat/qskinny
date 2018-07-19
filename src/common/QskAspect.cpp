@@ -5,12 +5,11 @@
 
 #include "QskAspect.h"
 
-#include <QDebug>
-#include <QMetaEnum>
-#include <QtAlgorithms>
-#include <QVector>
+#include <qdebug.h>
+#include <qmetaobject.h>
+#include <qalgorithms.h>
+#include <qvector.h>
 
-#include <limits>
 #include <bitset>
 #include <string>
 #include <unordered_map>

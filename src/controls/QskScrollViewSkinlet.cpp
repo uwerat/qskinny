@@ -7,10 +7,8 @@
 #include "QskScrollView.h"
 #include "QskQuick.h"
 #include "QskAspect.h"
-#include "QskFunctions.h"
 
-#include <QTransform>
-#include <QSGNode>
+#include <qsgnode.h>
 
 static void qskAlignedHandle( qreal start, qreal end,
     qreal scrollBarLength, qreal minHandleLength,

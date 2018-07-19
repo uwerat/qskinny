@@ -4,9 +4,10 @@
  *****************************************************************************/
 
 #include "QskObjectTree.h"
-#include <QQuickWindow>
-#include <QQuickItem>
-#include <QGuiApplication>
+
+#include <qquickwindow.h>
+#include <qquickitem.h>
+#include <qguiapplication.h>
 
 bool QskObjectTree::isRoot( const QObject* object )
 {

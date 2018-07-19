@@ -17,9 +17,7 @@
 #include "QskColorFilter.h"
 #include "QskSkinTransition.h"
 
-#include <QFont>
-#include <QElapsedTimer>
-#include <QMarginsF>
+#include <qfont.h>
 
 #define DEBUG_MAP 0
 #define DEBUG_ANIMATOR 0

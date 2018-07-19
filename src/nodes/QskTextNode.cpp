@@ -8,9 +8,8 @@
 #include "QskTextColors.h"
 #include "QskTextRenderer.h"
 
-#include <QFont>
-#include <QColor>
-#include <QString>
+#include <qfont.h>
+#include <qstring.h>
 
 static inline uint qskHash( 
     const QString& text, const QSizeF& size, const QFont& font,

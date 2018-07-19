@@ -5,8 +5,8 @@
 
 #include "QskInputGrabber.h"
 #include "QskWindow.h"
-#include "QskQuick.h"
-#include <QPointer>
+
+#include <qpointer.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>

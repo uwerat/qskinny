@@ -7,9 +7,11 @@
 #define QSK_INPUT_CONTEXT_H
 
 #include "QskGlobal.h"
-#include <QObject>
-#include <Qt>
-#include <QInputMethod>
+
+#include <qobject.h>
+#include <qnamespace.h>
+#include <qinputmethod.h>
+
 #include <memory>
 
 class QskTextPredictor;

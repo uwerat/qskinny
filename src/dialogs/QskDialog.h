@@ -7,7 +7,7 @@
 #define QSK_DIALOG_H 1
 
 #include "QskGlobal.h"
-#include <QObject>
+#include <qobject.h>
 #include <memory>
 
 class QString;

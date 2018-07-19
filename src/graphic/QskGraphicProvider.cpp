@@ -7,11 +7,9 @@
 #include "QskGraphic.h"
 #include "QskSetup.h"
 
-#include <QCache>
-#include <QHash>
-#include <QSharedPointer>
-#include <QUrl>
-#include <QDebug>
+#include <qcache.h>
+#include <qurl.h>
+#include <qdebug.h>
 
 class QskGraphicProvider::PrivateData
 {

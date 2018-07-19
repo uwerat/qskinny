@@ -8,8 +8,8 @@
 #include "QskTextOptions.h"
 #include "QskTextRenderer.h"
 
-#include <QFontMetricsF>
-#include <QtMath>
+#include <qfontmetrics.h>
+#include <qmath.h>
 
 QSK_SUBCONTROL( QskTextLabel, Text )
 

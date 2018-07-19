@@ -8,11 +8,10 @@
 
 #include "QskGlobal.h"
 
-#include <Qt>
-#include <QMetaType>
-#include <QSizeF>
+#include <qnamespace.h>
+#include <qmetatype.h>
+#include <qsize.h>
 
-class QDebug;
 class QVariant;
 class QMarginsF;
 

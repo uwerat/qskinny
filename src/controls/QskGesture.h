@@ -8,8 +8,8 @@
 
 #include "QskGlobal.h"
 
-#include <QPointF>
-#include <QMetaType>
+#include <qpoint.h>
+#include <qmetatype.h>
 
 class QSK_EXPORT QskGesture
 {

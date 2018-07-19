@@ -7,7 +7,7 @@
 #define QSK_LAYOUT_CONSTRAINT_H
 
 #include "QskGlobal.h"
-#include <Qt>
+#include <qnamespace.h>
 #include <limits>
 
 class QskSizePolicy;

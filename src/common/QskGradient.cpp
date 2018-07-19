@@ -5,9 +5,8 @@
 
 #include "QskGradient.h"
 #include "QskRgbValue.h"
-#include <QVariant>
-#include <QDebug>
 
+#include <qvariant.h>
 #include <qhashfunctions.h>
 
 static void qskRegisterGradient()
@@ -470,6 +469,8 @@ QVariant QskGradient::interpolate(
 
 
 #ifndef QT_NO_DEBUG_STREAM
+
+#include <qdebug.h>
 
 QDebug operator<<( QDebug debug, const QskGradientStop& stop )
 {

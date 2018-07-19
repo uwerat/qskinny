@@ -5,6 +5,7 @@
 
 #include "QskQuick.h"
 #include "QskControl.h"
+#include <qquickitem.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>

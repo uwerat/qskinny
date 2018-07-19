@@ -7,7 +7,8 @@
 #define QSK_ASPECT_H
 
 #include "QskFlags.h"
-#include <QMetaObject>
+
+#include <qmetaobject.h>
 #include <functional>
 
 #ifdef Q_MOC_RUN

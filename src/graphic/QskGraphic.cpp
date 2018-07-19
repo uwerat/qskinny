@@ -8,14 +8,13 @@
 #include "QskColorFilter.h"
 #include "QskPainterCommand.h"
 
-#include <QVector>
-#include <QPainter>
-#include <QPaintEngine>
-#include <QImage>
-#include <QPixmap>
-#include <QPainterPath>
-#include <QGuiApplication>
-#include <QtMath>
+#include <qpainter.h>
+#include <qpaintengine.h>
+#include <qimage.h>
+#include <qpixmap.h>
+#include <qpainterpath.h>
+#include <qguiapplication.h>
+#include <qmath.h>
 
 static inline qreal qskDevicePixelRatio()
 {

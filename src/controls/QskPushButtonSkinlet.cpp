@@ -8,8 +8,8 @@
 #include "QskGraphic.h"
 #include "QskTextOptions.h"
 
-#include <QFontMetrics>
-#include <QtMath>
+#include <qfontmetrics.h>
+#include <qmath.h>
 
 QskPushButtonSkinlet::QskPushButtonSkinlet( QskSkin* skin ):
     Inherited( skin )

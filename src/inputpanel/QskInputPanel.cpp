@@ -7,8 +7,8 @@
 #include "QskInputContext.h"
 #include "QskTextPredictor.h"
 
-#include <QPointer>
-#include <QTextCharFormat>
+#include <qpointer.h>
+#include <qtextformat.h>
 
 static inline QQuickItem* qskReceiverItem( const QskInputPanel* panel )
 {

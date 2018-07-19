@@ -8,10 +8,8 @@
 #include "QskAspect.h"
 #include "QskWindow.h"
 #include "QskQuick.h"
-#include <QtMath>
 
 QSK_QT_PRIVATE_BEGIN
-#include <private/qquickitem_p.h>
 #include <private/qquickwindow_p.h>
 QSK_QT_PRIVATE_END
 

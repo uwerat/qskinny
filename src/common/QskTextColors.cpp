@@ -6,9 +6,8 @@
 #include "QskTextColors.h"
 #include "QskRgbValue.h"
 
-#include <QVariant>
+#include <qvariant.h>
 #include <qhashfunctions.h>
-#include <QDebug>
 
 uint QskTextColors::hash( uint seed ) const
 {
@@ -41,6 +40,8 @@ QVariant QskTextColors::interpolate( const QskTextColors& from,
 }
 
 #ifndef QT_NO_DEBUG_STREAM
+
+#include <qdebug.h>
 
 static inline void qskDebugColor( QDebug debug, const QColor& c )
 {

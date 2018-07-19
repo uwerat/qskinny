@@ -6,11 +6,7 @@
 #include "QskSubWindow.h"
 #include "QskQuick.h"
 #include "QskAspect.h"
-#include "QskSkin.h"
 #include "QskFunctions.h"
-
-#include <QQuickWindow>
-#include <QtMath>
 
 QSK_SUBCONTROL( QskSubWindow, Panel )
 QSK_SUBCONTROL( QskSubWindow, TitleBar )

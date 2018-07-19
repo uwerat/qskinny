@@ -5,7 +5,6 @@
 
 #include "QskLayoutEngine.h"
 #include "QskLayoutItem.h"
-#include <QDebug>
 
 static inline bool qskIsColliding(
     const QskLayoutEngine* engine, QskLayoutItem* item )

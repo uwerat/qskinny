@@ -11,8 +11,8 @@
 #include "QskBoxBorderColors.h"
 #include "QskBoxShapeMetrics.h"
 
-#include <QSGGeometry>
-#include <QtMath>
+#include <qsggeometry.h>
+#include <qmath.h>
 
 using namespace QskVertex;
 

@@ -8,10 +8,13 @@
 #include "QskLinearBox.h"
 #include "QskSkin.h"
 
-#include <QKeyEvent>
-#include <private/qguiapplication_p.h>
+#include <qevent.h>
 #include <qpa/qplatformtheme.h>
 #include <qpa/qplatformdialoghelper.h>
+
+QSK_QT_PRIVATE_BEGIN
+#include <private/qguiapplication_p.h>
+QSK_QT_PRIVATE_END
 
 QSK_SUBCONTROL( QskDialogButtonBox, Panel )
 

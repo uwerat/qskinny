@@ -7,7 +7,7 @@
 #include "QskLayoutItem.h"
 #include "QskLayoutEngine.h"
 
-#include <QtEndian>
+#include <qendian.h>
 
 class QskLinearBox::PrivateData
 {

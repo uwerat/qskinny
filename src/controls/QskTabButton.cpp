@@ -8,8 +8,8 @@
 #include "QskTextOptions.h"
 #include "QskSkinlet.h"
 
-#include <QFontMetricsF>
-#include <QPointer>
+#include <qfontmetrics.h>
+#include <qpointer.h>
 
 QSK_SUBCONTROL( QskTabButton, Panel )
 QSK_SUBCONTROL( QskTabButton, Text )

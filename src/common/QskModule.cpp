@@ -43,17 +43,14 @@
 #include "QskSelectionWindow.h"
 #include "QskWindow.h"
 
-#include <QList>
-#include <QStringList>
-#include <QMarginsF>
-#include <QJSValueIterator>
-#include <QQmlEngine>
+#include <qstringlist.h>
+#include <qmargins.h>
+#include <qjsvalueiterator.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qqmlmetatype_p.h>
 #include <private/qqmlglobal_p.h>
 #include <private/qvariantanimation_p.h>
-#include <private/qmetaobjectbuilder_p.h>
 QSK_QT_PRIVATE_END
 
 #define QSK_MODULE_NAME "Skinny"

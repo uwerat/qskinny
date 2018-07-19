@@ -8,10 +8,10 @@
 
 #include "QskGlobal.h"
 
-#include <QColor>
-#include <QVector>
-#include <QPair>
-#include <QMetaType>
+#include <qcolor.h>
+#include <qvector.h>
+#include <qpair.h>
+#include <qmetatype.h>
 
 class QPen;
 class QBrush;

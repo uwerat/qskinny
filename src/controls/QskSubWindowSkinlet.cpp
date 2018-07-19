@@ -8,7 +8,7 @@
 #include "QskAspect.h"
 #include "QskBoxBorderMetrics.h"
 
-#include <QFontMetricsF>
+#include <qfontmetrics.h>
 
 QskSubWindowSkinlet::QskSubWindowSkinlet( QskSkin* skin ):
     Inherited( skin )

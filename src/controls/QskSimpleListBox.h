@@ -8,7 +8,8 @@
 
 #include "QskGlobal.h"
 #include "QskListView.h"
-#include <QStringList>
+
+#include <qstringlist.h>
 
 class QSK_EXPORT QskSimpleListBox : public QskListView
 {

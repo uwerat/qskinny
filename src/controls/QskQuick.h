@@ -7,7 +7,12 @@
 #define QSK_QUICK_H 1
 
 #include "QskGlobal.h"
-#include <QQuickItem>
+#include <qnamespace.h>
+
+class QQuickItem;
+class QSGNode;
+class QRectF;
+template <typename T> class QList;
 
 /*
     Exporting methods from QQuickItemPrivate, that should be part

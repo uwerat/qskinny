@@ -7,12 +7,9 @@
 #include "QskAnimationHint.h"
 #include "QskControl.h"
 #include "QskEvent.h"
-#include "QskMargins.h"
-#include "QskBoxBorderMetrics.h"
-#include "QskBoxShapeMetrics.h"
 
-#include <QObject>
-#include <QThread>
+#include <qobject.h>
+#include <qthread.h>
 
 #include <map>
 #include <vector>

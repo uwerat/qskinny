@@ -5,9 +5,6 @@
 
 #include "QskTabButtonSkinlet.h"
 #include "QskTabButton.h"
-#include "QskTextRenderer.h"
-#include "QskTabBar.h"
-#include "QskTabButton.h"
 #include "QskTextOptions.h"
 
 QskTabButtonSkinlet::QskTabButtonSkinlet( QskSkin* skin ):

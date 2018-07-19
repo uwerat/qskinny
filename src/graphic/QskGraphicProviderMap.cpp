@@ -6,11 +6,9 @@
 #include "QskGraphicProviderMap.h"
 #include "QskGraphicProvider.h"
 
-#include <QString>
-#include <QHash>
-#include <QPointer>
-
-#include <QDebug>
+#include <qstring.h>
+#include <qhash.h>
+#include <qpointer.h>
 
 static inline QString qskKey( const QString& providerId )
 {

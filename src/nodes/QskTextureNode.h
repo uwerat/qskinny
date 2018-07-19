@@ -8,8 +8,8 @@
 
 #include "QskGlobal.h"
 
-#include <QSGGeometryNode>
-#include <Qt>
+#include <qsgnode.h>
+#include <qnamespace.h>
 
 class QskTextureNodePrivate;
 

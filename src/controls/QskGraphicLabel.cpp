@@ -6,12 +6,10 @@
 #include "QskGraphicLabel.h"
 #include "QskGraphic.h"
 #include "QskGraphicProvider.h"
-#include "QskGraphicTextureFactory.h"
 #include "QskAspect.h"
 #include "QskSetup.h"
 #include "QskSkin.h"
-
-#include <QtMath>
+#include "QskColorFilter.h"
 
 QSK_SUBCONTROL( QskGraphicLabel, Graphic )
 

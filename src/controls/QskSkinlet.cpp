@@ -6,8 +6,6 @@
 #include "QskSkinlet.h"
 
 #include "QskAspect.h"
-#include "QskSetup.h"
-#include "QskSkin.h"
 #include "QskControl.h"
 #include "QskBoxShapeMetrics.h"
 #include "QskBoxBorderMetrics.h"
@@ -22,11 +20,9 @@
 #include "QskGraphicTextureFactory.h"
 #include "QskFunctions.h"
 
-#include <QQuickWindow>
-#include <QGuiApplication>
-#include <QSGSimpleRectNode>
-
-#include <unordered_map>
+#include <qquickwindow.h>
+#include <qguiapplication.h>
+#include <qsgsimplerectnode.h>
 
 static const int qskBackgroundRole = 254;
 static const int qskDebugRole = 253;

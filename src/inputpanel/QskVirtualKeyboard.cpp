@@ -7,9 +7,9 @@
 #include "QskPushButton.h"
 #include "QskTextOptions.h"
 
-#include <QGuiApplication>
-#include <QStyleHints>
-#include <QSet>
+#include <qguiapplication.h>
+#include <qstylehints.h>
+#include <qset.h>
 
 namespace
 {

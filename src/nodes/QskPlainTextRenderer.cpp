@@ -7,11 +7,9 @@
 #include "QskTextColors.h"
 #include "QskTextOptions.h"
 
-#include <QFontMetrics>
-#include <QGuiApplication>
-#include <QSGTransformNode>
-#include <QQuickWindow>
-#include <QtMath>
+#include <qfontmetrics.h>
+#include <qsgnode.h>
+#include <qmath.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qsgadaptationlayer_p.h>

@@ -9,8 +9,8 @@
 #include "QskGlobal.h"
 #include "QskBoxShapeMetrics.h"
 
-#include <QMetaType>
-#include <Qt>
+#include <qmetatype.h>
+#include <qnamespace.h>
 
 class QDebug;
 class QSizeF;

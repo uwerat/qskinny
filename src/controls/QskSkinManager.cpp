@@ -6,14 +6,14 @@
 #include "QskSkinManager.h"
 #include "QskSkinFactory.h"
 
-#include <QGlobalStatic>
-#include <QDir>
-#include <QPluginLoader>
-#include <QJsonObject>
-#include <QJsonArray>
-#include <QMap>
-#include <QSet>
-#include <QPointer>
+#include <qglobalstatic.h>
+#include <qdir.h>
+#include <qpluginloader.h>
+#include <qjsonobject.h>
+#include <qjsonarray.h>
+#include <qmap.h>
+#include <qset.h>
+#include <qpointer.h>
 
 /*
     We could use QFactoryLoader, but as it is again a "private" class

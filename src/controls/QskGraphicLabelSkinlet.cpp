@@ -5,10 +5,9 @@
 
 #include "QskGraphicLabelSkinlet.h"
 #include "QskGraphicLabel.h"
-#include "QskGraphic.h"
-#include "QskGraphicTextureFactory.h"
 #include "QskAspect.h"
-#include "QskSkin.h"
+#include "QskGraphic.h"
+#include "QskColorFilter.h"
 #include "QskTextureNode.h"
 #include "QskFunctions.h"
 

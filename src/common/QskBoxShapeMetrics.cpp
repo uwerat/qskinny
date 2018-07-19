@@ -6,7 +6,7 @@
 #include "QskBoxShapeMetrics.h"
 
 #include <qhashfunctions.h>
-#include <QDebug>
+#include <qvariant.h>
 
 static void qskRegisterBoxShapeMetrics()
 {
@@ -209,6 +209,8 @@ uint QskBoxShapeMetrics::hash( uint seed ) const
 }
 
 #ifndef QT_NO_DEBUG_STREAM
+
+#include <qdebug.h>
 
 QDebug operator<<( QDebug debug, const QskBoxShapeMetrics& metrics )
 {

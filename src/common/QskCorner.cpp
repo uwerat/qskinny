@@ -4,8 +4,6 @@
  *****************************************************************************/
 
 #include "QskCorner.h"
-#include <QSizeF>
-#include <QDebug>
 
 QskCorner::QskCorner()
 {

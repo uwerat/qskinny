@@ -15,11 +15,10 @@
 #include "QskBoxBorderColors.h"
 #include "QskAnimationHint.h"
 
-#include <QVariant>
-#include <QColor>
+#include <qvariant.h>
+#include <qcolor.h>
 
 #include <unordered_map>
-#include <set>
 
 class QSK_EXPORT QskSkinHintTable
 {

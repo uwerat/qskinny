@@ -10,7 +10,7 @@
 #include "QskVariantAnimator.h"
 #include "QskAspect.h"
 
-#include <QPointer>
+#include <qpointer.h>
 
 class QskControl;
 class QskAnimationHint;
@@ -26,7 +26,7 @@ public:
     void setAspect( QskAspect::Aspect );
     QskAspect::Aspect aspect() const;
 
-    void setControl( QskControl* control );
+    void setControl( QskControl* );
     QskControl* control() const;
 
     virtual void advance( qreal value ) override;

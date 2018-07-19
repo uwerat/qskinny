@@ -9,8 +9,8 @@
 #include "QskGlobal.h"
 #include "QskNamespace.h"
 
-#include <QSGTransformNode>
-#include <QRectF>
+#include <qsgnode.h>
+#include <qrect.h>
 
 class QskTextOptions;
 class QskTextColors;

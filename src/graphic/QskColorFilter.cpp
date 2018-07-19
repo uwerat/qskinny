@@ -6,9 +6,9 @@
 #include "QskColorFilter.h"
 #include "QskRgbValue.h"
 
-#include <QPen>
-#include <QBrush>
-#include <QDebug>
+#include <qpen.h>
+#include <qbrush.h>
+#include <qvariant.h>
 
 static inline QRgb qskSubstitutedRgb(
     const QVector< QPair< QRgb, QRgb > >& substitions, QRgb rgba )
@@ -222,6 +222,8 @@ QVariant QskColorFilter::interpolate( const QskColorFilter &from,
 }
 
 #ifndef QT_NO_DEBUG_STREAM
+
+#include <qdebug.h>
 
 QDebug operator<<( QDebug debug, const QskColorFilter& filter )
 {

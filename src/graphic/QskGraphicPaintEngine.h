@@ -7,7 +7,7 @@
 #define QSK_PAINT_ENGINE_H
 
 #include "QskGlobal.h"
-#include <QPaintEngine>
+#include <qpaintengine.h>
 
 class QSK_EXPORT QskGraphicPaintEngine : public QPaintEngine
 {

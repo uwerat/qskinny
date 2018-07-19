@@ -9,9 +9,7 @@
 #include "QskGlobal.h"
 #include "QskGraphic.h"
 #include "QskColorFilter.h"
-#include <QQuickTextureFactory>
-
-class QskGraphic;
+#include <qquickimageprovider.h>
 
 class QSK_EXPORT QskGraphicTextureFactory : public QQuickTextureFactory
 {

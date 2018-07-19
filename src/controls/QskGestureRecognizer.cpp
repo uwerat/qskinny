@@ -1,12 +1,12 @@
 #include "QskGestureRecognizer.h"
 
-#include <QQuickWindow>
-#include <QQuickItem>
-#include <QCoreApplication>
-#include <QBasicTimer>
-#include <QScopedPointer>
-#include <QMouseEvent>
-#include <QVector>
+#include <qquickwindow.h>
+#include <qquickitem.h>
+#include <qcoreapplication.h>
+#include <qcoreevent.h>
+#include <qbasictimer.h>
+#include <qscopedpointer.h>
+#include <qvector.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickwindow_p.h>

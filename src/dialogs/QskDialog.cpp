@@ -14,11 +14,10 @@
 
 #include "QskFocusIndicator.h"
 #include "QskStandardSymbol.h"
-#include "QskAspect.h"
 
-#include <QPointer>
-#include <QQuickWindow>
-#include <QGuiApplication>
+#include <qpointer.h>
+#include <qquickwindow.h>
+#include <qguiapplication.h>
 
 static QskDialog::DialogCode qskExec( QskDialogWindow* dialogWindow )
 {

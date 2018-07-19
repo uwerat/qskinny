@@ -14,7 +14,7 @@
 #include "QskSetup.h"
 #include "QskSkinlet.h"
 
-#include <QFontMetricsF>
+#include <qfontmetrics.h>
 
 QSK_SUBCONTROL( QskPushButton, Panel )
 QSK_SUBCONTROL( QskPushButton, Text )

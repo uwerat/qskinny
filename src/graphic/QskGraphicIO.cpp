@@ -6,10 +6,10 @@
 #include "QskGraphicIO.h"
 #include "QskGraphic.h"
 #include "QskPainterCommand.h"
-#include <QFile>
-#include <QBuffer>
-#include <QDataStream>
-#include <QVector>
+#include <qfile.h>
+#include <qbuffer.h>
+#include <qdatastream.h>
+#include <qvector.h>
 #include <cstring>
 
 static const char qskMagicNumber[] = "QSKG";

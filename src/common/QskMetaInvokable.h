@@ -8,14 +8,15 @@
 
 #include "QskGlobal.h"
 
-#include <QMetaType>
-#include <Qt>
+#include <qmetatype.h>
+#include <qnamespace.h>
 
 class QskMetaFunction;
 struct QMetaObject;
 class QMetaMethod;
 class QMetaProperty;
 class QObject;
+class QByteArray;
 
 class QSK_EXPORT QskMetaInvokable
 {

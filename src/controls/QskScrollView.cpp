@@ -12,8 +12,6 @@
 #include "QskAspect.h"
 #include "QskEvent.h"
 
-#include <QSGNode>
-
 QSK_SUBCONTROL( QskScrollView, Panel )
 QSK_SUBCONTROL( QskScrollView, Viewport )
 QSK_SUBCONTROL( QskScrollView, HorizontalScrollBar )

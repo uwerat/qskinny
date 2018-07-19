@@ -7,7 +7,7 @@
 #define QSK_STANDARD_SYMBOL_H 1
 
 #include "QskGlobal.h"
-#include <QMetaType>
+#include <qmetatype.h>
 
 class QskGraphic;
 

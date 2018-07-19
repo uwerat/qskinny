@@ -6,8 +6,6 @@
 #include "QskGridBox.h"
 #include "QskLayoutItem.h"
 #include "QskLayoutEngine.h"
-#include <private/qabstractlayoutstyleinfo_p.h>
-#include <private/qgridlayoutengine_p.h>
 
 class QskGridBox::PrivateData
 {

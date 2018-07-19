@@ -4,7 +4,6 @@
  *****************************************************************************/
 
 #include "QskSizePolicy.h"
-#include <QDebug>
 
 QskSizePolicy::Policy QskSizePolicy::policy( Qt::Orientation orientation ) const
 {
@@ -21,6 +20,8 @@ void QskSizePolicy::setPolicy( Qt::Orientation orientation, Policy policy )
 }
 
 #ifndef QT_NO_DEBUG_STREAM
+
+#include <qdebug.h>
 
 QDebug operator<<( QDebug debug, const QskSizePolicy& policy )
 {

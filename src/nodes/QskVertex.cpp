@@ -9,6 +9,8 @@ using namespace QskVertex;
 
 #ifndef QT_NO_DEBUG_STREAM
 
+#include <qdebug.h>
+
 QDebug operator<<( QDebug debug, Color color )
 {
     QDebugStateSaver saver( debug );

@@ -1,8 +1,8 @@
 #include "QskFunctions.h"
 
-#include <QGuiApplication>
-#include <QScreen>
-#include <QtMath>
+#include <qguiapplication.h>
+#include <qscreen.h>
+#include <qmath.h>
 
 template< class Rect, class Value >
 static inline Rect qskAlignedRect( const Rect& outerRect,

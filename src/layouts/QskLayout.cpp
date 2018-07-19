@@ -6,11 +6,7 @@
 #include "QskLayout.h"
 #include "QskLayoutItem.h"
 #include "QskLayoutEngine.h"
-#include "QskSizePolicy.h"
-#include "QskWindow.h"
 #include "QskEvent.h"
-
-#include <limits>
 
 class QskLayout::PrivateData
 {

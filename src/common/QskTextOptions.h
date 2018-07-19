@@ -7,8 +7,8 @@
 #define QSK_TEXT_OPTIONS_H
 
 #include "QskGlobal.h"
-#include <QMetaType>
-#include <QTextOption>
+#include <qmetatype.h>
+#include <qtextoption.h>
 
 class QDebug;
 

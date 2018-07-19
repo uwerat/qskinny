@@ -5,12 +5,12 @@
 #include "QskColorFilter.h"
 #include "QskHintAnimator.h"
 
-#include <QGuiApplication>
-#include <QQuickWindow>
-#include <QVector>
-#include <QObject>
-#include <QPointer>
-#include <QGlobalStatic>
+#include <qguiapplication.h>
+#include <qquickwindow.h>
+#include <qvector.h>
+#include <qobject.h>
+#include <qvector.h>
+#include <qglobalstatic.h>
 
 #include <unordered_map>
 #include <vector>

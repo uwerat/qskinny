@@ -8,7 +8,7 @@
 #include "QskBoxRendererColorMap.h"
 #include "QskGradient.h"
 
-#include <QtMath>
+#include <qmath.h>
 
 namespace
 {

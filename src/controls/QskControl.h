@@ -12,8 +12,8 @@
 #include "QskSizePolicy.h"
 #include "QskAspect.h"
 
-#include <QQuickItem>
-#include <QLocale>
+#include <qquickitem.h>
+#include <qlocale.h>
 
 #include <memory>
 

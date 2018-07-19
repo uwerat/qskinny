@@ -7,7 +7,7 @@
 #define QSK_SKIN_MANAGER_H
 
 #include "QskGlobal.h"
-#include <QObject>
+#include <qobject.h>
 #include <memory>
 
 class QskSkin;

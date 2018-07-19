@@ -7,8 +7,8 @@
 #define QSK_ANIMATOR_H
 
 #include "QskGlobal.h"
-#include <QEasingCurve>
-#include <QMetaObject>
+#include <qeasingcurve.h>
+#include <qobjectdefs.h>
 
 class QQuickWindow;
 class QObject;

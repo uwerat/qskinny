@@ -12,7 +12,7 @@
 class QskGraphicProvider;
 class QString;
 
-class QskGraphicProviderMap
+class QSK_EXPORT QskGraphicProviderMap
 {
 public:
     QskGraphicProviderMap();

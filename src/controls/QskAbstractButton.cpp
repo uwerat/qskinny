@@ -8,7 +8,7 @@
 #include "QskEvent.h"
 #include "QskQuick.h"
 
-#include <QBasicTimer>
+#include <qbasictimer.h>
 
 QSK_STATE( QskAbstractButton, Flat, QskAspect::FirstSystemState << 1 )
 QSK_STATE( QskAbstractButton, Checked, QskAspect::LastSystemState >> 4 )

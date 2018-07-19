@@ -7,12 +7,10 @@
 #define QSK_PAINTER_COMMAND_H
 
 #include "QskGlobal.h"
-#include <QPaintEngine>
-#include <QPixmap>
-#include <QImage>
-#include <QPainterPath>
-
-class QPainterPath;
+#include <qpaintengine.h>
+#include <qpixmap.h>
+#include <qimage.h>
+#include <qpainterpath.h>
 
 class QSK_EXPORT QskPainterCommand
 {
