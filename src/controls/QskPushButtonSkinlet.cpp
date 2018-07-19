@@ -78,7 +78,7 @@ QRectF QskPushButtonSkinlet::textRect( const QskPushButton* button ) const
     {
         // in case of having text + graphic we put the text at the bottom
 
-        qreal h = QFontMetrics( button->effectiveFont( QskPushButton::Text ) ).height();
+        qreal h = QFontMetricsF( button->effectiveFont( QskPushButton::Text ) ).height();
         if ( h < r.height() )
             r.setTop( r.bottom() - h );
     }
