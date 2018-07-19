@@ -9,7 +9,6 @@
 #include "QskGlobal.h"
 #include "QskAspect.h"
 
-#include <qvariant.h>
 #include <memory>
 
 typedef unsigned int QRgb;
@@ -19,6 +18,7 @@ class QColor;
 class QFont;
 class QMarginsF;
 struct QMetaObject;
+class QVariant;
 class QDebug;
 
 class QSGNode;
