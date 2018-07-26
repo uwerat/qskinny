@@ -65,8 +65,7 @@ namespace
         {
             bool ok = Inherited::event( event );
 
-            if ( event->type() == QEvent::MouseButtonPress
-                || event->type() == QEvent::TouchBegin )
+            if ( event->type() == QEvent::MouseButtonPress )
             {
                 if ( auto popup = static_cast< QskPopup* >( parentItem() ) )
                 {
@@ -167,7 +166,8 @@ QRectF QskPopup::overlayRect() const
 
 void QskPopup::updateInputGrabber()
 {
-    if ( isVisible() && ( isModal() || testPopupFlag( CloseOnPressOutside ) ) )
+    if ( parentItem() && isVisible()
+        && ( isModal() || testPopupFlag( CloseOnPressOutside ) ) )
     {
         if ( m_data->inputGrabber == nullptr )
         {
@@ -303,10 +303,6 @@ bool QskPopup::event( QEvent* event )
         case QEvent::MouseMove:
         case QEvent::MouseButtonRelease:
 
-        case QEvent::TouchBegin:
-        case QEvent::TouchCancel:
-        case QEvent::TouchUpdate:
-
         case QEvent::HoverEnter:
         case QEvent::HoverLeave:
         {
@@ -319,6 +315,14 @@ bool QskPopup::event( QEvent* event )
         }
         default:
         {
+            /*
+                Don't accept touch events otherwise we don't receive the
+                synthesized mouse events and need to handle both type of
+                events from now on.
+                But by accepting the mouse event propagation of the touch
+                events also stops.
+             */
+
             break;
         }
     }

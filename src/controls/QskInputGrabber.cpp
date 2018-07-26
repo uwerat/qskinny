@@ -157,16 +157,6 @@ bool QskInputGrabber::event( QEvent* event )
             doBlock = isBlocking( ev->localPos() );
             break;
         }
-        case QEvent::TouchBegin:
-        case QEvent::TouchUpdate:
-        case QEvent::TouchCancel:
-        {
-#if 1
-            // TODO
-            doBlock = true;
-#endif
-            break;
-        }
         case QEvent::Wheel:
         {
             const auto ev = static_cast< QWheelEvent* > ( event );
