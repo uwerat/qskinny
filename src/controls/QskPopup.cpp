@@ -65,7 +65,8 @@ namespace
         {
             bool ok = Inherited::event( event );
 
-            if ( event->type() == QEvent::MouseButtonPress )
+            if ( event->type() == QEvent::MouseButtonPress
+                || event->type() == QEvent::TouchBegin )
             {
                 if ( auto popup = static_cast< QskPopup* >( parentItem() ) )
                 {
