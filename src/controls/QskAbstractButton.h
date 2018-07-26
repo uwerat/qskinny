@@ -67,15 +67,15 @@ Q_SIGNALS:
     void clicked();
     void toggled( bool );
 
-    void pressedChanged();
-    void checkedChanged();
-    void checkableChanged();
+    void pressedChanged( bool );
+    void checkedChanged( bool );
+    void checkableChanged( bool );
 
-    void autoRepeatChanged();
+    void autoRepeatChanged( bool );
     void autoRepeatDelayChanged();
     void autoRepeatIntervalChanged();
 
-    void exclusiveChanged();
+    void exclusiveChanged( bool );
 
 protected:
     virtual bool event( QEvent* ) override;
@@ -92,6 +92,8 @@ protected:
     virtual void focusOutEvent( QFocusEvent* ) override;
 
     virtual void timerEvent( QTimerEvent* ) override;
+
+    virtual void setCheckedState( bool on );
 
 private:
     void releaseButton();

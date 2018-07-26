@@ -84,11 +84,16 @@ void QskAbstractButton::releaseButton()
         // maybe there is more work to have the signals coming
         // in a logical order. TODO ...
 
-        setChecked( !( skinState() & Checked ) );
+        setCheckedState( !( skinState() & Checked ) );
     }
 
     setPressed( false );
     Q_EMIT clicked();
+}
+
+void QskAbstractButton::setCheckedState( bool on )
+{
+    setChecked( on );
 }
 
 void QskAbstractButton::toggle()
@@ -107,7 +112,7 @@ void QskAbstractButton::setPressed( bool on )
         return;
 
     setSkinStateFlag( Pressed, on );
-    Q_EMIT pressedChanged();
+    Q_EMIT pressedChanged( on );
 
     if ( on )
         Q_EMIT pressed();
@@ -133,7 +138,7 @@ void QskAbstractButton::setCheckable( bool on )
         return;
 
     setSkinStateFlag( Checkable, on );
-    Q_EMIT checkableChanged();
+    Q_EMIT checkableChanged( on );
 }
 
 bool QskAbstractButton::isCheckable() const
@@ -162,12 +167,12 @@ void QskAbstractButton::setChecked( bool on )
     }
 
     setSkinStateFlag( Checked, on );
-    Q_EMIT checkedChanged();
+    Q_EMIT checkedChanged( on );
     Q_EMIT toggled( on );
 
     if ( checkedButton )
     {
-        Q_EMIT checkedButton->checkedChanged();
+        Q_EMIT checkedButton->checkedChanged( false );
         Q_EMIT checkedButton->toggled( false );
     }
 }
@@ -188,7 +193,7 @@ void QskAbstractButton::setAutoRepeat( bool on )
         else
             m_data->repeatTimer.stop();
 
-        Q_EMIT autoRepeatChanged();
+        Q_EMIT autoRepeatChanged( on );
     }
 }
 
@@ -230,7 +235,7 @@ void QskAbstractButton::setExclusive( bool on )
     if ( on != m_data->exclusive )
     {
         m_data->exclusive = on;
-        Q_EMIT exclusiveChanged();
+        Q_EMIT exclusiveChanged( on );
     }
 }
 
