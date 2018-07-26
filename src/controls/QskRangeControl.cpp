@@ -223,7 +223,7 @@ void QskRangeControl::setReadOnly( bool readOnly )
     // we are killing user settings here !!
     setFocusPolicy( readOnly ? Qt::NoFocus : Qt::StrongFocus );
     setAcceptedMouseButtons( readOnly ? Qt::NoButton : Qt::LeftButton );
-    setWheelEnabled( m_data->readOnly );
+    setWheelEnabled( !m_data->readOnly );
 
     Q_EMIT readOnlyChanged( readOnly );
 }
