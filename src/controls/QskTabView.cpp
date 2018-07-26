@@ -66,6 +66,9 @@ QskTabView::QskTabView( Qt::Orientation orientation, QQuickItem* parent ):
 
     connect( m_data->tabBar, &QskTabBar::currentIndexChanged,
         m_data->stackBox, &QskStackBox::setCurrentIndex );
+
+    connect( m_data->tabBar, &QskTabBar::currentIndexChanged,
+        this, &QskTabView::currentIndexChanged );
 }
 
 QskTabView::~QskTabView()
