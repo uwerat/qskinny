@@ -16,7 +16,7 @@ class QSK_EXPORT QskBoxClipNode : public QSGClipNode
 {
 public:
     QskBoxClipNode();
-    virtual ~QskBoxClipNode();
+    ~QskBoxClipNode() override;
 
     void setBox( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics& );

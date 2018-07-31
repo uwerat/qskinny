@@ -33,7 +33,7 @@ public:
     QSK_STATES( VerticalHandlePressed, HorizontalHandlePressed )
 
     QskScrollView( QQuickItem* parent = nullptr );
-    virtual ~QskScrollView();
+    ~QskScrollView() override;
 
     void setVerticalScrollBarPolicy( Qt::ScrollBarPolicy );
     Qt::ScrollBarPolicy verticalScrollBarPolicy() const;
@@ -54,7 +54,7 @@ public:
     QSizeF scrollableSize() const;
 
     QRectF viewContentsRect() const;
-    virtual QRectF gestureRect() const override;
+    QRectF gestureRect() const override;
 
 Q_SIGNALS:
     void scrolledTo( const QPointF& );
@@ -73,17 +73,17 @@ public Q_SLOTS:
     void ensureVisible( const QRectF& );
 
 protected:
-    virtual void mouseMoveEvent( QMouseEvent* ) override;
-    virtual void mousePressEvent( QMouseEvent* ) override;
-    virtual void mouseReleaseEvent( QMouseEvent* ) override;
-    virtual void geometryChangeEvent( QskGeometryChangeEvent* ) override;
-    virtual void gestureEvent( QskGestureEvent* ) override;
+    void mouseMoveEvent( QMouseEvent* ) override;
+    void mousePressEvent( QMouseEvent* ) override;
+    void mouseReleaseEvent( QMouseEvent* ) override;
+    void geometryChangeEvent( QskGeometryChangeEvent* ) override;
+    void gestureEvent( QskGestureEvent* ) override;
 
 #ifndef QT_NO_WHEELEVENT
-    virtual void wheelEvent( QWheelEvent* ) override;
+    void wheelEvent( QWheelEvent* ) override;
 #endif
 
-    virtual bool gestureFilter( QQuickItem*, QEvent* ) override;
+    bool gestureFilter( QQuickItem*, QEvent* ) override;
 
     void setScrollableSize( const QSizeF& );
 

@@ -17,10 +17,10 @@ class QSK_EXPORT QskMaterialSkinFactory : public QskSkinFactory
 
 public:
     QskMaterialSkinFactory( QObject* parent = nullptr );
-    virtual ~QskMaterialSkinFactory();
+    ~QskMaterialSkinFactory() override;
 
-    virtual QStringList skinNames() const override;
-    virtual QskSkin* createSkin( const QString& skinName ) override;
+    QStringList skinNames() const override;
+    QskSkin* createSkin( const QString& skinName ) override;
 };
 
 #endif

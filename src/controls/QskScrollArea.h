@@ -25,7 +25,7 @@ class QSK_EXPORT QskScrollArea : public QskScrollView
 
 public:
     QskScrollArea( QQuickItem* parent = nullptr );
-    virtual ~QskScrollArea();
+    ~QskScrollArea() override;
 
     void setScrolledItem( QQuickItem* );
     QQuickItem* scrolledItem() const;
@@ -44,7 +44,7 @@ Q_SIGNALS:
     void autoScrollFocusedItemChanged();
 
 protected:
-    virtual void updateLayout() override;
+    void updateLayout() override;
 
 private:
     void translateItem();

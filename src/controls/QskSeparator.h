@@ -27,7 +27,7 @@ public:
     QskSeparator( QQuickItem* parent = nullptr );
     QskSeparator( Qt::Orientation, QQuickItem* parent = nullptr );
 
-    virtual ~QskSeparator();
+    ~QskSeparator() override;
 
     void setOrientation( Qt::Orientation );
     Qt::Orientation orientation() const;
@@ -35,8 +35,8 @@ public:
     void setThickness( qreal thickness );
     qreal thickness() const;
 
-    virtual QSizeF contentsSizeHint() const override;
-    virtual QskAspect::Placement effectivePlacement() const override;
+    QSizeF contentsSizeHint() const override;
+    QskAspect::Placement effectivePlacement() const override;
 
 Q_SIGNALS:
     void orientationChanged( Qt::Orientation );

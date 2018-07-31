@@ -43,27 +43,27 @@ namespace
                 this, &QskInputPanel::predictiveTextSelected );
         }
 
-        virtual void attachItem( QQuickItem* item ) override
+        void attachItem( QQuickItem* item ) override
         {
             m_box->attachInputItem( item );
         }
 
-        virtual QQuickItem* inputProxy() const override
+        QQuickItem* inputProxy() const override
         {
             return m_box->inputProxy();
         }
 
-        virtual void setPrompt( const QString& prompt ) override
+        void setPrompt( const QString& prompt ) override
         {
             m_box->setInputPrompt( prompt );
         }
 
-        virtual void setPredictionEnabled( bool on ) override
+        void setPredictionEnabled( bool on ) override
         {
             m_box->setPanelHint( QskInputPanelBox::Prediction, on );
         }
 
-        virtual void setPrediction( const QStringList& prediction ) override
+        void setPrediction( const QStringList& prediction ) override
         {
             m_box->setPrediction( prediction );
         }

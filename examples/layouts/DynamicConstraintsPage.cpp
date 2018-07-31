@@ -13,14 +13,14 @@
 
 namespace
 {
-    class Control : public QskControl
+    class Control final : public QskControl
     {
     public:
         Control( const char* colorName, QQuickItem* parent = nullptr );
         Control( const char* colorName, qreal aspectRatio, QQuickItem* parent = nullptr );
 
-        virtual qreal heightForWidth( qreal width ) const override final;
-        virtual qreal widthForHeight( qreal height ) const override final;
+        qreal heightForWidth( qreal width ) const override;
+        qreal widthForHeight( qreal height ) const override;
 
         void transpose();
 

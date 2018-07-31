@@ -18,10 +18,10 @@ public:
     QSK_SUBCONTROLS( Panel )
 
     QskBox( QQuickItem* parent = nullptr );
-    virtual ~QskBox();
+    ~QskBox() override;
 
-    virtual QRectF layoutRect() const override;
-    virtual QSizeF contentsSizeHint() const override;
+    QRectF layoutRect() const override;
+    QSizeF contentsSizeHint() const override;
 };
 
 #endif

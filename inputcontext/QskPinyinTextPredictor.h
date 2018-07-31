@@ -15,14 +15,14 @@ class QSK_EXPORT QskPinyinTextPredictor : public QskTextPredictor
 
 public:
     QskPinyinTextPredictor( QObject* = nullptr );
-    virtual ~QskPinyinTextPredictor() override;
+    ~QskPinyinTextPredictor() override;
 
-    virtual int candidateCount() const override;
-    virtual QString candidate( int ) const override;
+    int candidateCount() const override;
+    QString candidate( int ) const override;
 
 protected:
-    virtual void request( const QString& ) override;
-    virtual void reset() override;
+    void request( const QString& ) override;
+    void reset() override;
 
 private:
     class PrivateData;

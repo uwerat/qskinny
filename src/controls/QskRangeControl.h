@@ -26,7 +26,7 @@ class QSK_EXPORT QskRangeControl : public QskControl
 
 public:
     QskRangeControl( QQuickItem* parent = nullptr );
-    virtual ~QskRangeControl();
+    ~QskRangeControl() override;
 
     bool pressed() const;
 
@@ -71,13 +71,13 @@ Q_SIGNALS:
 
 protected:
     virtual qreal fixupValue( qreal value ) const;
-    virtual void keyPressEvent( QKeyEvent* event ) override;
+    void keyPressEvent( QKeyEvent* event ) override;
 
 #ifndef QT_NO_WHEELEVENT
-    virtual void wheelEvent( QWheelEvent* ) override;
+    void wheelEvent( QWheelEvent* ) override;
 #endif
 
-    virtual void componentComplete() override;
+    void componentComplete() override;
 
 private:
     void adjustRangeAndValue( bool );

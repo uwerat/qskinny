@@ -21,7 +21,7 @@ class QSK_EXPORT QskHintAnimator : public QskVariantAnimator
 
 public:
     QskHintAnimator();
-    virtual ~QskHintAnimator();
+    ~QskHintAnimator() override;
 
     void setAspect( QskAspect::Aspect );
     QskAspect::Aspect aspect() const;
@@ -29,7 +29,7 @@ public:
     void setControl( QskControl* );
     QskControl* control() const;
 
-    virtual void advance( qreal value ) override;
+    void advance( qreal value ) override;
 
 private:
     QskAspect::Aspect m_aspect;

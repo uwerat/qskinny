@@ -33,7 +33,7 @@ public:
     QSK_STATES( Flat, Checked, Pressed, Checkable )
 
     QskAbstractButton( QQuickItem* parent = nullptr );
-    virtual ~QskAbstractButton();
+    ~QskAbstractButton() override;
 
     void setCheckable( bool );
     bool isCheckable() const;
@@ -78,20 +78,20 @@ Q_SIGNALS:
     void exclusiveChanged( bool );
 
 protected:
-    virtual bool event( QEvent* ) override;
+    bool event( QEvent* ) override;
 
-    virtual void keyPressEvent( QKeyEvent* ) override;
-    virtual void keyReleaseEvent( QKeyEvent* ) override;
+    void keyPressEvent( QKeyEvent* ) override;
+    void keyReleaseEvent( QKeyEvent* ) override;
 
-    virtual void mouseMoveEvent( QMouseEvent* ) override;
-    virtual void mousePressEvent( QMouseEvent* ) override;
-    virtual void mouseReleaseEvent( QMouseEvent* ) override;
-    virtual void mouseUngrabEvent() override;
+    void mouseMoveEvent( QMouseEvent* ) override;
+    void mousePressEvent( QMouseEvent* ) override;
+    void mouseReleaseEvent( QMouseEvent* ) override;
+    void mouseUngrabEvent() override;
 
-    virtual void focusInEvent( QFocusEvent* ) override;
-    virtual void focusOutEvent( QFocusEvent* ) override;
+    void focusInEvent( QFocusEvent* ) override;
+    void focusOutEvent( QFocusEvent* ) override;
 
-    virtual void timerEvent( QTimerEvent* ) override;
+    void timerEvent( QTimerEvent* ) override;
 
     virtual void setCheckedState( bool on );
 

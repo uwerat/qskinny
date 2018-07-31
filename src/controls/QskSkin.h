@@ -55,7 +55,7 @@ public:
     Q_ENUM( SkinFontRole )
 
     QskSkin( QObject* parent = nullptr );
-    virtual ~QskSkin();
+    ~QskSkin() override;
 
     template<typename Control, typename Skinlet> void declareSkinlet();
 

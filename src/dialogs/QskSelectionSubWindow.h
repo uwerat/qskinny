@@ -25,7 +25,7 @@ class QSK_EXPORT QskSelectionSubWindow : public QskInputSubWindow
 
 public:
     QskSelectionSubWindow( QQuickItem* parent = nullptr );
-    virtual ~QskSelectionSubWindow();
+    ~QskSelectionSubWindow() override;
 
     Q_INVOKABLE QStringList entries() const;
     Q_INVOKABLE int selectedRow() const;

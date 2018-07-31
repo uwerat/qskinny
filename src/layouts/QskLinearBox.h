@@ -34,7 +34,7 @@ public:
 
     QskLinearBox( Qt::Orientation, uint dimension, QQuickItem* parent = nullptr );
 
-    virtual ~QskLinearBox();
+    ~QskLinearBox() override;
 
     Qt::Orientation orientation() const;
     void setOrientation( Qt::Orientation );
@@ -73,10 +73,10 @@ public:
     Q_INVOKABLE bool retainSizeWhenHidden( QQuickItem* ) const;
     Q_INVOKABLE void setRetainSizeWhenHidden( QQuickItem*, bool on );
 
-    virtual QSizeF contentsSizeHint() const override;
+    QSizeF contentsSizeHint() const override;
 
-    virtual qreal heightForWidth( qreal width ) const override;
-    virtual qreal widthForHeight( qreal height ) const override;
+    qreal heightForWidth( qreal width ) const override;
+    qreal widthForHeight( qreal height ) const override;
 
 #if 1
     Q_INVOKABLE void setRowSpacing( int row, qreal spacing );
@@ -102,12 +102,12 @@ Q_SIGNALS:
     void extraSpacingAtChanged();
 
 protected:
-    virtual QRectF alignedLayoutRect( const QRectF& ) const override;
+    QRectF alignedLayoutRect( const QRectF& ) const override;
 
 private:
-    virtual void setupLayoutItem( QskLayoutItem*, int index ) override;
-    virtual void layoutItemInserted( QskLayoutItem*, int index ) override;
-    virtual void layoutItemRemoved( QskLayoutItem*, int index ) override;
+    void setupLayoutItem( QskLayoutItem*, int index ) override;
+    void layoutItemInserted( QskLayoutItem*, int index ) override;
+    void layoutItemRemoved( QskLayoutItem*, int index ) override;
 
     void rearrange();
 

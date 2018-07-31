@@ -89,7 +89,7 @@ public:
     Q_DECLARE_FLAGS( Flags, Flag )
 
     QskControl( QQuickItem* parent = nullptr );
-    virtual ~QskControl();
+    ~QskControl() override;
 
     const char* className() const;
 
@@ -227,23 +227,24 @@ public Q_SLOTS:
     void resetImplicitSize();
 
 protected:
-    virtual bool event( QEvent* ) override;
+    bool event( QEvent* ) override;
+
     virtual void changeEvent( QEvent* );
     virtual void geometryChangeEvent( QskGeometryChangeEvent* );
     virtual void windowChangeEvent( QskWindowChangeEvent* );
     virtual void gestureEvent( QskGestureEvent* );
 
-    virtual void hoverEnterEvent( QHoverEvent* ) override;
-    virtual void hoverLeaveEvent( QHoverEvent* ) override;
+    void hoverEnterEvent( QHoverEvent* ) override;
+    void hoverLeaveEvent( QHoverEvent* ) override;
 
-    virtual bool childMouseEventFilter( QQuickItem*, QEvent* ) override;
+    bool childMouseEventFilter( QQuickItem*, QEvent* ) override;
     virtual bool gestureFilter( QQuickItem*, QEvent* );
 
-    virtual void itemChange( ItemChange, const ItemChangeData& ) override;
-    virtual void geometryChanged( const QRectF&, const QRectF& ) override;
-    virtual void classBegin() override;
-    virtual void componentComplete() override;
-    virtual void releaseResources() override;
+    void itemChange( ItemChange, const ItemChangeData& ) override;
+    void geometryChanged( const QRectF&, const QRectF& ) override;
+    void classBegin() override;
+    void componentComplete() override;
+    void releaseResources() override;
 
     void initSizePolicy( QskSizePolicy::Policy, QskSizePolicy::Policy );
 
@@ -254,15 +255,15 @@ protected:
 
 private:
     // don't use boundingRect - it seems to be deprecated
-    virtual QRectF boundingRect() const override final { return rect(); }
+    QRectF boundingRect() const override final { return rect(); }
 
     void setActiveFocusOnTab( bool ) = delete; // use setFocusPolicy
     void updateInputMethod( Qt::InputMethodQueries ) = delete; // use qskUpdateInputMethod
 
-    virtual QSGNode* updatePaintNode( QSGNode*, UpdatePaintNodeData* ) override final;
-    virtual void updatePolish() override final;
+    QSGNode* updatePaintNode( QSGNode*, UpdatePaintNodeData* ) override final;
+    void updatePolish() override final;
 
-    virtual QskControl* owningControl() const override final;
+    QskControl* owningControl() const override final;
 
     void layoutConstraintChanged();
     void updateImplicitSize();

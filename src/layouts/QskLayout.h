@@ -21,7 +21,7 @@ class QSK_EXPORT QskLayout : public QskControl
 
 public:
     explicit QskLayout( QQuickItem* parent = 0 );
-    virtual ~QskLayout();
+    ~QskLayout() override;
 
     Q_INVOKABLE bool isEmpty() const;
 
@@ -45,11 +45,11 @@ public Q_SLOTS:
     void invalidate();
 
 protected:
-    virtual bool event( QEvent* ) override;
-    virtual void geometryChangeEvent( QskGeometryChangeEvent* ) override;
+    bool event( QEvent* ) override;
+    void geometryChangeEvent( QskGeometryChangeEvent* ) override;
 
-    virtual void itemChange( ItemChange, const ItemChangeData& ) override;
-    virtual void updateLayout() override;
+    void itemChange( ItemChange, const ItemChangeData& ) override;
+    void updateLayout() override;
 
     QskLayoutEngine& engine();
     const QskLayoutEngine& engine() const;

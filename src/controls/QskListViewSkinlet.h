@@ -26,7 +26,7 @@ class QSK_EXPORT QskListViewSkinlet : public QskScrollViewSkinlet
 
 public:
     Q_INVOKABLE QskListViewSkinlet( QskSkin* = nullptr );
-    virtual ~QskListViewSkinlet();
+    ~QskListViewSkinlet() override;
 
 protected:
     enum NodeRole
@@ -35,7 +35,7 @@ protected:
         GraphicRole
     };
 
-    virtual QSGNode* updateContentsNode(
+    QSGNode* updateContentsNode(
         const QskScrollView*, QSGNode* ) const override;
 
     virtual QSGNode* updateCellNode( const QskListView*,

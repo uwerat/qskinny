@@ -25,4 +25,4 @@ private:
     QskTextLabel* m_fuelGaugeText;
 };
 
-#endif // SPEEDOMETERDISPLAY_H
+#endif

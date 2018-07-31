@@ -42,11 +42,6 @@ namespace
     class Timer final : public QObject
     {
     public:
-        Timer():
-            m_recognizer( nullptr )
-        {
-        }
-
         void start( int ms, QskGestureRecognizer* recognizer )
         {
             if ( m_timer.isActive() )
@@ -68,7 +63,7 @@ namespace
         }
 
     protected:
-        virtual void timerEvent( QTimerEvent* ) override final
+        void timerEvent( QTimerEvent* ) override
         {
             m_timer.stop();
 
@@ -82,7 +77,7 @@ namespace
         }
 
         QBasicTimer m_timer;
-        QskGestureRecognizer* m_recognizer;
+        QskGestureRecognizer* m_recognizer = nullptr;
     };
 
     class TimerTable

@@ -18,7 +18,7 @@ class QSK_EXPORT QskDialogSubWindow : public QskSubWindow
 
 public:
     QskDialogSubWindow( QQuickItem* parent = nullptr );
-    virtual ~QskDialogSubWindow();
+    ~QskDialogSubWindow() override;
 
     Q_INVOKABLE QskDialog::DialogCode result() const;
     Q_INVOKABLE QskDialog::DialogCode exec();
@@ -35,9 +35,9 @@ public Q_SLOTS:
 
 protected:
     void setResult( QskDialog::DialogCode r );
-    virtual void keyPressEvent( QKeyEvent* ) override;
+    void keyPressEvent( QKeyEvent* ) override;
 
-    virtual void aboutToShow() override;
+    void aboutToShow() override;
 
 private:
     QskDialog::DialogCode m_result;

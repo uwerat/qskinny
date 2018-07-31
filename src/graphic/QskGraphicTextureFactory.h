@@ -23,7 +23,7 @@ public:
     QskGraphicTextureFactory();
     QskGraphicTextureFactory( const QskGraphic&, const QSize& size );
 
-    virtual ~QskGraphicTextureFactory();
+    ~QskGraphicTextureFactory() override;
 
     void setGraphic( const QskGraphic& );
     QskGraphic graphic() const;
@@ -34,11 +34,11 @@ public:
     void setSize( const QSize& size );
     QSize size() const;
 
-    virtual QSGTexture* createTexture( QQuickWindow* ) const override;
-    virtual QSize textureSize() const override;
-    virtual int textureByteCount() const override;
+    QSGTexture* createTexture( QQuickWindow* ) const override;
+    QSize textureSize() const override;
+    int textureByteCount() const override;
 
-    virtual QImage image() const override;
+    QImage image() const override;
 
     static uint createTexture(
         RenderMode, const QRect& rect, Qt::AspectRatioMode,

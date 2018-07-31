@@ -17,7 +17,7 @@ class QskInputGrabber: public QskControl
 
 public:
     QskInputGrabber( QQuickItem* parent = nullptr );
-    virtual ~QskInputGrabber();
+    ~QskInputGrabber() override;
 
     virtual QRectF grabberRect() const;
     virtual bool isBlocking( const QPointF& ) const;
@@ -26,7 +26,7 @@ public Q_SLOTS:
     void updateGeometry();
 
 protected:
-    virtual bool event( QEvent* ) override;
+    bool event( QEvent* ) override;
 
 private:
     class PrivateData;

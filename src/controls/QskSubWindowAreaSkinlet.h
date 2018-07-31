@@ -24,13 +24,13 @@ public:
     };
 
     Q_INVOKABLE QskSubWindowAreaSkinlet( QskSkin* = nullptr );
-    virtual ~QskSubWindowAreaSkinlet();
+    ~QskSubWindowAreaSkinlet() override;
 
-    virtual QRectF subControlRect( const QskSkinnable*,
+    QRectF subControlRect( const QskSkinnable*,
         QskAspect::Subcontrol ) const override;
 
 protected:
-    virtual QSGNode* updateSubNode( const QskSkinnable*,
+    QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 
 private:

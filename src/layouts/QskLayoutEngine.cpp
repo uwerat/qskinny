@@ -59,19 +59,19 @@ namespace
         {
         }
 
-        virtual qreal spacing( Qt::Orientation ) const override
+        qreal spacing( Qt::Orientation ) const override
         {
             // later from the theme !!
             return 5.0;
         }
 
-        virtual qreal windowMargin( Qt::Orientation ) const override
+        qreal windowMargin( Qt::Orientation ) const override
         {
             // later from the theme !!
             return 0;
         }
 
-        virtual bool hasChangedCore() const override
+        bool hasChangedCore() const override
         {
             return false; // never changes
         }

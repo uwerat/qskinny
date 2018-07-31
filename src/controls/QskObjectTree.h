@@ -49,7 +49,7 @@ namespace QskObjectTree
             m_value = value;
         }
 
-        virtual bool visitDown( QObject* object ) override final
+        bool visitDown( QObject* object ) override final
         {
             if ( QskControl* control = qobject_cast< QskControl* >( object ) )
                 return setImplicitValue( control, m_value );
@@ -60,7 +60,7 @@ namespace QskObjectTree
             return !setProperty( object, m_propertyName.constData(), m_value );
         }
 
-        virtual bool visitUp( const QObject* object ) override final
+        bool visitUp( const QObject* object ) override final
         {
             if ( isRoot( object ) )
                 return true;

@@ -35,7 +35,7 @@ public:
     };
 
     QskWindow( QWindow* parent = nullptr );
-    virtual ~QskWindow();
+    ~QskWindow() override;
 
     bool deleteOnClose() const;
     void setDeleteOnClose( bool );
@@ -74,11 +74,11 @@ public Q_SLOTS:
     void resizeF( const QSizeF& );
 
 protected:
-    virtual bool event( QEvent* ) override;
-    virtual void resizeEvent( QResizeEvent* ) override;
-    virtual void exposeEvent( QExposeEvent* ) override;
-    virtual void keyPressEvent(QKeyEvent *) override;
-    virtual void keyReleaseEvent(QKeyEvent *) override;
+    bool event( QEvent* ) override;
+    void resizeEvent( QResizeEvent* ) override;
+    void exposeEvent( QExposeEvent* ) override;
+    void keyPressEvent(QKeyEvent *) override;
+    void keyReleaseEvent(QKeyEvent *) override;
 
     virtual void layoutItems();
     virtual void ensureFocus( Qt::FocusReason );

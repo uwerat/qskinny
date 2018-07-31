@@ -31,7 +31,7 @@ public:
     explicit QskSlider( QQuickItem* parent = nullptr );
     explicit QskSlider( Qt::Orientation, QQuickItem* parent = nullptr );
 
-    virtual ~QskSlider();
+    ~QskSlider() override;
 
     bool isPressed() const;
 
@@ -41,8 +41,8 @@ public:
     void setTracking( bool );
     bool isTracking() const;
 
-    virtual QSizeF contentsSizeHint() const override;
-    virtual QskAspect::Placement effectivePlacement() const override;
+    QSizeF contentsSizeHint() const override;
+    QskAspect::Placement effectivePlacement() const override;
 
 Q_SIGNALS:
     void pressedChanged( bool );
@@ -50,9 +50,9 @@ Q_SIGNALS:
     void trackingChanged( bool );
 
 protected:
-    virtual void mousePressEvent( QMouseEvent* e ) override;
-    virtual void mouseMoveEvent( QMouseEvent* e ) override;
-    virtual void mouseReleaseEvent( QMouseEvent* e ) override;
+    void mousePressEvent( QMouseEvent* e ) override;
+    void mouseMoveEvent( QMouseEvent* e ) override;
+    void mouseReleaseEvent( QMouseEvent* e ) override;
 
     QSizeF handleSize() const;
     QRectF handleRect() const;

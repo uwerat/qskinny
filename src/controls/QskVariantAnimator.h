@@ -14,7 +14,7 @@ class QSK_EXPORT QskVariantAnimator : public QskAnimator
 {
 public:
     QskVariantAnimator();
-    virtual ~QskVariantAnimator();
+    ~QskVariantAnimator() override;
 
     void setCurrentValue( const QVariant& );
     QVariant currentValue() const;
@@ -26,9 +26,9 @@ public:
     QVariant endValue() const;
 
 protected:
-    virtual void setup() override;
-    virtual void advance( qreal value ) override;
-    virtual void done() override;
+    void setup() override;
+    void advance( qreal value ) override;
+    void done() override;
 
 private:
     QVariant m_startValue;

@@ -32,7 +32,7 @@ public:
     Q_DECLARE_FLAGS( PopupFlags, PopupFlag )
 
     QskPopup( QQuickItem* parent = nullptr );
-    virtual ~QskPopup();
+    ~QskPopup() override;
 
     void setPopupFlags( PopupFlags );
     PopupFlags popupFlags() const;
@@ -60,14 +60,14 @@ Q_SIGNALS:
     void overlayChanged( bool );
 
 protected:
-    virtual void aboutToShow() override;
+    void aboutToShow() override;
     virtual void setFading( bool on );
 
-    virtual bool event( QEvent* ) override;
-    virtual void focusInEvent( QFocusEvent * ) override;
-    virtual void focusOutEvent( QFocusEvent * ) override;
+    bool event( QEvent* ) override;
+    void focusInEvent( QFocusEvent * ) override;
+    void focusOutEvent( QFocusEvent * ) override;
 
-    virtual void itemChange( QQuickItem::ItemChange,
+    void itemChange( QQuickItem::ItemChange,
         const QQuickItem::ItemChangeData& ) override;
 
     virtual QQuickItem* focusSuccessor() const;

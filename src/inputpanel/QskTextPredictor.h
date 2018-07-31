@@ -26,7 +26,7 @@ public:
     Q_ENUM( Attribute )
     Q_DECLARE_FLAGS( Attributes, Attribute )
 
-    virtual ~QskTextPredictor();
+    ~QskTextPredictor() override;
 
     virtual void request( const QString& text ) = 0;
     virtual void reset() = 0;

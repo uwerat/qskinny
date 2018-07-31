@@ -34,7 +34,7 @@ public:
     void setEnabled( int id, bool );
     void setAutoRepeat( int id, bool repeat );
 
-    virtual bool eventFilter( QObject*, QEvent* ) override final;
+    bool eventFilter( QObject*, QEvent* ) override;
 
 private:
 

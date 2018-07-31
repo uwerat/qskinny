@@ -17,8 +17,8 @@ public:
 
     Slider( QQuickItem* parent = nullptr );
 
-    virtual QRectF focusIndicatorRect() const override;
-    virtual QSizeF contentsSizeHint() const override;
+    QRectF focusIndicatorRect() const override;
+    QSizeF contentsSizeHint() const override;
 };
 
 #endif

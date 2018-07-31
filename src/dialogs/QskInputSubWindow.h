@@ -30,7 +30,7 @@ class QSK_EXPORT QskInputSubWindow : public QskDialogSubWindow
 
 public:
     QskInputSubWindow( QQuickItem* parent = nullptr );
-    virtual ~QskInputSubWindow();
+    ~QskInputSubWindow() override;
 
     QskDialog::StandardButtons standardButtons() const;
     void setStandardButtons( QskDialog::StandardButtons );
@@ -68,7 +68,7 @@ protected:
     void setInputControl( QskControl* );
     QskControl* inputControl() const;
 
-    virtual void keyPressEvent( QKeyEvent* ) override;
+    void keyPressEvent( QKeyEvent* ) override;
 
 private:
     void updateTitleBox();

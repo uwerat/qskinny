@@ -22,15 +22,15 @@ public:
     QSK_SUBCONTROLS( Panel )
 
     QskSubWindowArea( QQuickItem* parent = nullptr );
-    virtual ~QskSubWindowArea();
+    ~QskSubWindowArea() override;
 
 protected:
-    virtual void geometryChangeEvent( QskGeometryChangeEvent* ) override;
+    void geometryChangeEvent( QskGeometryChangeEvent* ) override;
 
-    virtual bool eventFilter( QObject*, QEvent* ) override;
+    bool eventFilter( QObject*, QEvent* ) override;
     virtual bool mouseEventFilter( QskSubWindow*, const QMouseEvent* );
 
-    virtual void itemChange( ItemChange, const ItemChangeData& ) override;
+    void itemChange( ItemChange, const ItemChangeData& ) override;
 
 private:
     virtual void setDragging( QskSubWindow*, bool );

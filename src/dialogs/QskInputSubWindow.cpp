@@ -48,7 +48,7 @@ namespace
         }
 
     protected:
-        virtual void changeEvent( QEvent* event ) override final
+        void changeEvent( QEvent* event ) override
         {
             if ( event->type() == QEvent::FontChange )
                 updateSourceSize();

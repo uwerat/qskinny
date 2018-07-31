@@ -26,7 +26,7 @@ namespace
             setFocusPolicy( Qt::NoFocus );
         }
 
-        virtual QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol effectiveSubcontrol(
             QskAspect::Subcontrol subControl ) const override
         {
             if ( subControl == QskTextInput::Panel )
@@ -39,11 +39,11 @@ namespace
         }
 
     protected:
-        virtual void focusInEvent( QFocusEvent* ) override final
+        void focusInEvent( QFocusEvent* ) override
         {
         }
 
-        virtual void focusOutEvent( QFocusEvent* ) override final
+        void focusOutEvent( QFocusEvent* ) override
         {
         }
 

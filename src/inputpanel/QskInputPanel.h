@@ -22,7 +22,7 @@ class QSK_EXPORT QskInputPanel : public QskControl
 
 public:
     QskInputPanel( QQuickItem* parent = nullptr );
-    virtual ~QskInputPanel() override;
+    ~QskInputPanel() override;
 
     void attachInputItem( QQuickItem* );
     void updateInputPanel( Qt::InputMethodQueries );

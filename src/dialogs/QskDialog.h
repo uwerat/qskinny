@@ -140,7 +140,7 @@ Q_SIGNALS:
 
 private:
     QskDialog();
-    virtual ~QskDialog();
+    ~QskDialog() override;
 
     static QskDialog* s_instance;
 

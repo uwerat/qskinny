@@ -20,7 +20,7 @@ class QSK_EXPORT QskDirtyItemFilter : public QObject
 
 public:
     QskDirtyItemFilter( QObject* parent = nullptr );
-    virtual ~QskDirtyItemFilter();
+    ~QskDirtyItemFilter() override;
 
     void addWindow( QQuickWindow* window );
 

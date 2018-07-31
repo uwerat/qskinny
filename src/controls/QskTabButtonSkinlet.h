@@ -23,13 +23,13 @@ public:
     };
 
     Q_INVOKABLE QskTabButtonSkinlet( QskSkin* = nullptr );
-    virtual ~QskTabButtonSkinlet();
+    ~QskTabButtonSkinlet() override;
 
-    virtual QRectF subControlRect(
+    QRectF subControlRect(
         const QskSkinnable*, QskAspect::Subcontrol ) const override;
 
 protected:
-    virtual QSGNode* updateSubNode(
+    QSGNode* updateSubNode(
         const QskSkinnable*, quint8 nodeRole, QSGNode* ) const override;
 };
 

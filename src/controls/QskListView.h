@@ -50,7 +50,7 @@ public:
     Q_ENUM( SelectionMode )
 
     QskListView( QQuickItem* parent = nullptr );
-    virtual ~QskListView();
+    ~QskListView() override;
 
     void setPreferredWidthFromColumns( bool );
     bool preferredWidthFromColumns() const;
@@ -79,7 +79,7 @@ public:
     virtual QskAspect::Subcontrol textSubControlAt( int row, int col ) const;
 #endif
 
-    virtual QSizeF contentsSizeHint() const override;
+    QSizeF contentsSizeHint() const override;
 
 public Q_SLOTS:
     void setSelectedRow( int row );
@@ -93,15 +93,15 @@ Q_SIGNALS:
     void textOptionsChanged();
 
 protected:
-    virtual void keyPressEvent( QKeyEvent* ) override;
-    virtual void keyReleaseEvent( QKeyEvent* ) override;
+    void keyPressEvent( QKeyEvent* ) override;
+    void keyReleaseEvent( QKeyEvent* ) override;
 
-    virtual void mousePressEvent( QMouseEvent* ) override;
-    virtual void mouseReleaseEvent( QMouseEvent* ) override;
+    void mousePressEvent( QMouseEvent* ) override;
+    void mouseReleaseEvent( QMouseEvent* ) override;
 
     void updateScrollableSize();
 
-    virtual void componentComplete() override;
+    void componentComplete() override;
 
 private:
     class PrivateData;

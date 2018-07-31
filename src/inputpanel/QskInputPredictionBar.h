@@ -18,9 +18,9 @@ public:
     QSK_SUBCONTROLS( Panel, ButtonPanel, ButtonText )
 
     QskInputPredictionBar( QQuickItem* parent = nullptr );
-    virtual ~QskInputPredictionBar();
+    ~QskInputPredictionBar() override;
 
-    virtual QskAspect::Subcontrol effectiveSubcontrol(
+    QskAspect::Subcontrol effectiveSubcontrol(
         QskAspect::Subcontrol subControl ) const override;
 
     QStringList candidates() const;

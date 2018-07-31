@@ -34,7 +34,8 @@ public:
 
     QskTabBar( QQuickItem* parent = nullptr );
     QskTabBar( Qt::Orientation, QQuickItem* parent = nullptr );
-    virtual ~QskTabBar();
+
+    ~QskTabBar() override;
 
     void setOrientation( Qt::Orientation );
     Qt::Orientation orientation() const;
@@ -69,7 +70,7 @@ public:
     int indexOf( const QskTabButton* ) const;
     Q_INVOKABLE int indexOf( QskTabButton* ) const;
 
-    virtual QskAspect::Subcontrol effectiveSubcontrol(
+    QskAspect::Subcontrol effectiveSubcontrol(
         QskAspect::Subcontrol ) const override;
 
 public Q_SLOTS:
@@ -82,7 +83,7 @@ Q_SIGNALS:
     void orientationChanged();
 
 protected:
-    virtual void componentComplete() override;
+    void componentComplete() override;
 
 private:
     void restack();

@@ -10,8 +10,8 @@ public:
 
     SoundControl( QQuickItem* parent = nullptr );
 
-    virtual QskAspect::Subcontrol effectiveSubcontrol(
+    QskAspect::Subcontrol effectiveSubcontrol(
         QskAspect::Subcontrol subControl ) const override final;
 };
 
-#endif // SOUNDCONTROL_H
+#endif

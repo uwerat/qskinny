@@ -32,7 +32,7 @@ class QSK_EXPORT QskInputWindow : public QskDialogWindow
 
 public:
     QskInputWindow( QWindow* parent = nullptr );
-    virtual ~QskInputWindow();
+    ~QskInputWindow() override;
 
     QskDialog::StandardButtons standardButtons() const;
     void setStandardButtons( QskDialog::StandardButtons );

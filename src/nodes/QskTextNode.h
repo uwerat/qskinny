@@ -22,7 +22,7 @@ class QSK_EXPORT QskTextNode : public QSGTransformNode
 {
 public:
     QskTextNode();
-    virtual ~QskTextNode();
+    ~QskTextNode() override;
 
     void setTextData( const QQuickItem* item,
         const QString& text, const QRectF&, const QFont&,

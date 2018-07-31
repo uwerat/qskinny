@@ -28,19 +28,19 @@ public:
     Q_ENUM( Mode )
 
     QskVirtualKeyboard( QQuickItem* parent = nullptr );
-    virtual ~QskVirtualKeyboard() override;
+    ~QskVirtualKeyboard() override;
 
     void setMode( Mode );
     Mode mode() const;
 
     void updateLocale( const QLocale& );
 
-    virtual qreal heightForWidth( qreal width ) const override;
-    virtual qreal widthForHeight( qreal height ) const override;
+    qreal heightForWidth( qreal width ) const override;
+    qreal widthForHeight( qreal height ) const override;
 
-    virtual QSizeF contentsSizeHint() const override;
+    QSizeF contentsSizeHint() const override;
 
-    virtual QskAspect::Subcontrol effectiveSubcontrol(
+    QskAspect::Subcontrol effectiveSubcontrol(
         QskAspect::Subcontrol ) const override;
 
     bool hasKey( int keyCode ) const;
@@ -50,7 +50,7 @@ Q_SIGNALS:
     void keySelected( int keyCode );
 
 protected:
-    virtual void updateLayout() override;
+    void updateLayout() override;
 
 private:
     void buttonPressed();

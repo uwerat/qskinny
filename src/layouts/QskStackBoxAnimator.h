@@ -20,7 +20,7 @@ class QSK_EXPORT QskStackBoxAnimator : public QObject, public QskAnimator
 
 public:
     QskStackBoxAnimator( QskStackBox* parent );
-    virtual ~QskStackBoxAnimator();
+    ~QskStackBoxAnimator() override;
 
     void setStartIndex( int index );
     void setEndIndex( int index );
@@ -44,15 +44,15 @@ class QSK_EXPORT QskStackBoxAnimator1 : public QskStackBoxAnimator
 
 public:
     QskStackBoxAnimator1( QskStackBox* parent );
-    virtual ~QskStackBoxAnimator1();
+    ~QskStackBoxAnimator1() override;
 
     void setOrientation( Qt::Orientation );
     Qt::Orientation orientation() const;
 
 protected:
-    virtual void setup() override;
-    virtual void advance( qreal value ) override;
-    virtual void done() override;
+    void setup() override;
+    void advance( qreal value ) override;
+    void done() override;
 
 private:
     qreal m_itemOffset[2];
@@ -68,12 +68,12 @@ class QSK_EXPORT QskStackBoxAnimator3 : public QskStackBoxAnimator
 
 public:
     QskStackBoxAnimator3( QskStackBox* parent );
-    virtual ~QskStackBoxAnimator3();
+    ~QskStackBoxAnimator3() override;
 
 protected:
-    virtual void setup() override;
-    virtual void advance( qreal value ) override;
-    virtual void done() override;
+    void setup() override;
+    void advance( qreal value ) override;
+    void done() override;
 };
 
 #endif

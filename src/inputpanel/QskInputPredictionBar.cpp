@@ -29,7 +29,7 @@ namespace
             setTextOptions( options );
         }
 
-        virtual QSizeF contentsSizeHint() const override
+        QSizeF contentsSizeHint() const override
         {
             auto size = QFontMetricsF( font() ).size( Qt::TextSingleLine, text() );
 
@@ -42,8 +42,8 @@ namespace
             return size;
         }
 
-        virtual QskAspect::Subcontrol effectiveSubcontrol(
-            QskAspect::Subcontrol subControl ) const override final
+        QskAspect::Subcontrol effectiveSubcontrol(
+            QskAspect::Subcontrol subControl ) const override
         {
             if( subControl == QskPushButton::Panel )
                 return QskInputPredictionBar::ButtonPanel;

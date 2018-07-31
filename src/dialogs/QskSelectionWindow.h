@@ -25,7 +25,7 @@ class QSK_EXPORT QskSelectionWindow : public QskInputWindow
 
 public:
     QskSelectionWindow( QWindow* parent = nullptr );
-    virtual ~QskSelectionWindow();
+    ~QskSelectionWindow() override;
 
     Q_INVOKABLE QStringList entries() const;
     Q_INVOKABLE int selectedRow() const;

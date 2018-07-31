@@ -13,7 +13,7 @@ class QSK_EXPORT QskFlickAnimator : public QskAnimator
 {
 public:
     QskFlickAnimator();
-    virtual ~QskFlickAnimator();
+    ~QskFlickAnimator() override;
 
     void setAngle( qreal degrees );
     qreal angle() const;
@@ -27,9 +27,9 @@ public:
     void accelerate( qreal degrees, qreal velocity );
 
 protected:
-    virtual void setup() override;
-    virtual void advance( qreal value ) override final;
-    virtual void done() override;
+    void setup() override;
+    void advance( qreal value ) override final;
+    void done() override;
 
     virtual void translate( qreal dx, qreal dy ) = 0;
 

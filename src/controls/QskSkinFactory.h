@@ -18,7 +18,7 @@ class QSK_EXPORT QskSkinFactory : public QObject
 
 public:
     QskSkinFactory( QObject* parent = nullptr );
-    virtual ~QskSkinFactory();
+    ~QskSkinFactory() override;
 
     virtual QStringList skinNames() const = 0;
     virtual QskSkin* createSkin( const QString& skinName ) = 0;

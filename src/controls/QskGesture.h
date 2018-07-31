@@ -64,7 +64,7 @@ class QSK_EXPORT QskTapGesture : public QskGesture
 
 public:
     QskTapGesture();
-    virtual ~QskTapGesture();
+    ~QskTapGesture() override;
 
     void setPosition( const QPointF& pos );
     inline QPointF position() const { return m_position; }
@@ -79,7 +79,7 @@ class QSK_EXPORT QskTapAndHoldGesture : public QskGesture
 
 public:
     QskTapAndHoldGesture();
-    virtual ~QskTapAndHoldGesture();
+    ~QskTapAndHoldGesture() override;
 
     void setPosition( const QPointF& pos );
     inline QPointF position() const { return m_position; }
@@ -98,7 +98,7 @@ class QskPanGesture : public QskGesture
 
 public:
     QskPanGesture();
-    virtual ~QskPanGesture();
+    ~QskPanGesture() override;
 
     void setVelocity( qreal );
     inline qreal velocity() const { return m_velocity; }
@@ -132,7 +132,7 @@ class QskSwipeGesture : public QskGesture
 
 public:
     QskSwipeGesture();
-    virtual ~QskSwipeGesture();
+    ~QskSwipeGesture() override;
 
     void setVelocity( qreal velocity );
     inline qreal velocity() const { return m_velocity; }

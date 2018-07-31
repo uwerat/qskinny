@@ -48,11 +48,11 @@ namespace
     public:
         MaterialShader( bool isOpaque );
 
-        virtual char const* const* attributeNames() const override final;
-        virtual void updateState( const RenderState&, QSGMaterial*, QSGMaterial* ) override final;
+        char const* const* attributeNames() const override;
+        void updateState( const RenderState&, QSGMaterial*, QSGMaterial* ) override;
 
     protected:
-        virtual void initialize() override final;
+        void initialize() override;
 
     private:
         int m_matrixId;
@@ -66,13 +66,13 @@ namespace
     public:
         Material( bool isOpaque );
 
-        virtual QSGMaterialType* type() const override;
-        virtual QSGMaterialShader* createShader() const override;
+        QSGMaterialType* type() const override;
+        QSGMaterialShader* createShader() const override;
 
         void setTextureId( uint );
         uint textureId() const;
 
-        virtual int compare(const QSGMaterial* ) const override;
+        int compare(const QSGMaterial* ) const override;
 
     private:
         uint m_textureId;

@@ -128,7 +128,7 @@ namespace
                 markDirty( QSGNode::DirtyGeometry );
         }
 
-        virtual void update() override final
+        void update() override
         {
             /*
                 The Qt-Quick framework is limited to setting clipNodes from
@@ -157,41 +157,41 @@ public:
         return children.isEmpty() ? nullptr : children.first();
     }
 
-    virtual bool contains( const QPointF& pos ) const override final
+    bool contains( const QPointF& pos ) const override
     {
         return clipRect().contains( pos );
     }
 
-    virtual QRectF clipRect() const override final
+    QRectF clipRect() const override
     {
         return scrollArea()->subControlRect( QskScrollView::Viewport );
     }
 
 protected:
-    virtual bool event( QEvent* event ) override final;
-    virtual void windowChangeEvent( QskWindowChangeEvent* ) override final;
+    bool event( QEvent* event ) override;
+    void windowChangeEvent( QskWindowChangeEvent* ) override;
 
-    virtual void itemChange( ItemChange, const ItemChangeData& ) override final;
-    virtual void geometryChanged( const QRectF&, const QRectF& ) override final;
+    void itemChange( ItemChange, const ItemChangeData& ) override;
+    void geometryChanged( const QRectF&, const QRectF& ) override;
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
-    virtual void itemGeometryChanged( QQuickItem*,
-        QQuickGeometryChange change, const QRectF& ) override final
+    void itemGeometryChanged( QQuickItem*,
+        QQuickGeometryChange change, const QRectF& ) override
     {
         if ( change.sizeChange() )
             scrollArea()->polish();
     }
 
 #else
-    virtual void itemGeometryChanged( QQuickItem*,
-        const QRectF& newRect, const QRectF& oldRect ) override final
+    void itemGeometryChanged( QQuickItem*,
+        const QRectF& newRect, const QRectF& oldRect ) override
     {
         if ( oldRect.size() != newRect.size() )
             scrollArea()->polish();
     }
 #endif
 
-    virtual void updateNode( QSGNode* ) override final;
+    void updateNode( QSGNode* ) override;
 
 private:
     void connectWindow( const QQuickWindow*, bool on );

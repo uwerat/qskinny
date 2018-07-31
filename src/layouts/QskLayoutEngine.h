@@ -25,7 +25,7 @@ class QskLayoutEngine : public QGridLayoutEngine
 {
 public:
     QskLayoutEngine();
-    virtual ~QskLayoutEngine();
+    ~QskLayoutEngine();
 
     void setGeometries( const QRectF );
 

@@ -27,7 +27,7 @@ namespace
 
 #if 1
         // how to find a reasonable default size ???
-        virtual QSizeF contentsSizeHint() const override final
+        QSizeF contentsSizeHint() const override
         {
             return QSizeF( 500, 500 );
         }

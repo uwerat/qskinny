@@ -38,7 +38,7 @@ public:
     Q_ENUM( Style )
 
     Frame( QQuickItem* parent = nullptr );
-    virtual ~Frame();
+    ~Frame() override;
 
     void setStyle( Style );
     Style style() const;
@@ -60,7 +60,7 @@ Q_SIGNALS:
     void colorChanged();
 
 protected:
-    virtual void updateNode( QSGNode* ) override;
+    void updateNode( QSGNode* ) override;
 
 private:
     void updateFrameNode( const QRectF&, QskBoxNode* );

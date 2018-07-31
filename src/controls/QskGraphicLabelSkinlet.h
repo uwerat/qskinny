@@ -24,13 +24,13 @@ public:
     };
 
     Q_INVOKABLE QskGraphicLabelSkinlet( QskSkin* = nullptr );
-    virtual ~QskGraphicLabelSkinlet();
+    ~QskGraphicLabelSkinlet() override;
 
-    virtual QRectF subControlRect( const QskSkinnable*,
+    QRectF subControlRect( const QskSkinnable*,
         QskAspect::Subcontrol ) const override;
 
 protected:
-    virtual QSGNode* updateSubNode(
+    QSGNode* updateSubNode(
         const QskSkinnable*, quint8 nodeRole, QSGNode* ) const override;
 
 private:

@@ -39,7 +39,7 @@ public:
     Q_DECLARE_FLAGS( PanelHints, PanelHint )
 
     QskInputPanelBox( QQuickItem* parent = nullptr );
-    virtual ~QskInputPanelBox() override;
+    ~QskInputPanelBox() override;
 
     void attachInputItem( QQuickItem* );
     QQuickItem* attachedInputItem() const;
@@ -53,7 +53,7 @@ public:
 
     QString inputPrompt() const;
 
-    virtual QskAspect::Subcontrol effectiveSubcontrol(
+    QskAspect::Subcontrol effectiveSubcontrol(
         QskAspect::Subcontrol ) const override;
 
 Q_SIGNALS:
@@ -68,7 +68,7 @@ public Q_SLOTS:
     void setPrediction( const QStringList& );
 
 protected:
-    virtual void keyPressEvent( QKeyEvent* ) override;
+    void keyPressEvent( QKeyEvent* ) override;
 
 private:
     class PrivateData;

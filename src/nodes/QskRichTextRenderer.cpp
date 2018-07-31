@@ -117,8 +117,7 @@ namespace
         }
 
     protected:
-        virtual QSGNode* updatePaintNode(
-            QSGNode*, UpdatePaintNodeData* ) override final
+        QSGNode* updatePaintNode( QSGNode*, UpdatePaintNodeData* ) override
         {
             Q_ASSERT( false );
             return nullptr;

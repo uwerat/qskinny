@@ -27,7 +27,7 @@ class QSK_EXPORT QskInputContextFactory : public QObject
 
 public:
     QskInputContextFactory( QObject* parent = nullptr );
-    virtual ~QskInputContextFactory();
+    ~QskInputContextFactory() override;
 
     virtual QskTextPredictor* createPredictor( const QLocale& ) const;
     virtual QskInputPanel* createPanel() const;

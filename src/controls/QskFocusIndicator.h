@@ -20,10 +20,10 @@ public:
     QSK_SUBCONTROLS( Panel )
 
     QskFocusIndicator( QQuickItem* parent = nullptr );
-    virtual ~QskFocusIndicator();
+    ~QskFocusIndicator() override;
 
 protected:
-    virtual void windowChangeEvent( QskWindowChangeEvent* ) override;
+    void windowChangeEvent( QskWindowChangeEvent* ) override;
     virtual QRectF focusRect() const;
 
 private:

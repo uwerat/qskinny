@@ -31,13 +31,13 @@ public:
     };
 
     Q_INVOKABLE QskScrollViewSkinlet( QskSkin* = nullptr );
-    virtual ~QskScrollViewSkinlet();
+    ~QskScrollViewSkinlet() override;
 
-    virtual QRectF subControlRect(
+    QRectF subControlRect(
         const QskSkinnable*, QskAspect::Subcontrol ) const override;
 
 protected:
-    virtual QSGNode* updateSubNode( const QskSkinnable*,
+    QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 
     virtual QSGNode* updateContentsNode( const QskScrollView*, QSGNode* ) const;

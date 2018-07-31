@@ -15,14 +15,14 @@ class QSK_EXPORT QskHunspellTextPredictor : public QskTextPredictor
 
 public:
     QskHunspellTextPredictor( QObject* = nullptr );
-    virtual ~QskHunspellTextPredictor() override;
+    ~QskHunspellTextPredictor() override;
 
-    virtual int candidateCount() const override;
-    virtual QString candidate( int pos ) const override;
+    int candidateCount() const override;
+    QString candidate( int pos ) const override;
 
 protected:
-    virtual void request( const QString& ) override;
-    virtual void reset() override;
+    void request( const QString& ) override;
+    void reset() override;
 
 private:
     class PrivateData;

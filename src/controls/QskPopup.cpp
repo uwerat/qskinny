@@ -49,8 +49,8 @@ namespace
         {
         }
 
-        virtual void geometryChanged(
-            const QRectF& newGeometry, const QRectF& oldGeometry ) override final
+        void geometryChanged(
+            const QRectF& newGeometry, const QRectF& oldGeometry ) override
         {
             Inherited::geometryChanged( newGeometry, oldGeometry );
 
@@ -61,7 +61,7 @@ namespace
             }
         }
 
-        virtual bool event( QEvent* event ) override final
+        bool event( QEvent* event ) override
         {
             bool ok = Inherited::event( event );
 

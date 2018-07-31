@@ -30,7 +30,7 @@ public:
     QskTabView( QQuickItem* parent = nullptr );
     QskTabView( Qt::Orientation, QQuickItem* parent = nullptr );
 
-    virtual ~QskTabView();
+    ~QskTabView() override;
 
     const QskTabBar* tabBar() const;
 
@@ -60,7 +60,7 @@ public:
 
     QRectF tabRect() const;
 
-    virtual QSizeF contentsSizeHint() const override;
+    QSizeF contentsSizeHint() const override;
 
 public Q_SLOTS:
     void setCurrentIndex( int index );
@@ -71,8 +71,8 @@ Q_SIGNALS:
     void orientationChanged();
 
 protected:
-    virtual bool event( QEvent* event ) override;
-    virtual void updateLayout() override;
+    bool event( QEvent* event ) override;
+    void updateLayout() override;
 
 private:
     class PrivateData;

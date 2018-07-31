@@ -36,7 +36,7 @@ namespace
             setFocusPolicy( Qt::TabFocus );
         }
 
-        virtual QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol effectiveSubcontrol(
             QskAspect::Subcontrol subControl ) const override
         {
             auto keyBoard = static_cast< const QskVirtualKeyboard*>( parent() );

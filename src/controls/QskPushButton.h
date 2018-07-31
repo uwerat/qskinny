@@ -38,7 +38,7 @@ public:
     QskPushButton( QQuickItem* parent = nullptr );
     QskPushButton( const QString& text, QQuickItem* parent = nullptr );
 
-    virtual ~QskPushButton();
+    ~QskPushButton() override;
 
     void setCorner( const QskCorner& );
     QskCorner corner() const;
@@ -57,8 +57,8 @@ public:
 
     QFont font() const;
 
-    virtual QSizeF contentsSizeHint() const override;
-    virtual QRectF layoutRect() const override;
+    QSizeF contentsSizeHint() const override;
+    QRectF layoutRect() const override;
 
 public Q_SLOTS:
     void setText( const QString& text );
@@ -78,11 +78,11 @@ Q_SIGNALS:
     void hovered( bool );
 
 protected:
-    virtual void hoverEnterEvent( QHoverEvent* ) override;
-    virtual void hoverLeaveEvent( QHoverEvent* ) override;
-    virtual void changeEvent( QEvent* ) override;
+    void hoverEnterEvent( QHoverEvent* ) override;
+    void hoverLeaveEvent( QHoverEvent* ) override;
+    void changeEvent( QEvent* ) override;
 
-    virtual void updateLayout() override;
+    void updateLayout() override;
     virtual QskGraphic loadGraphic( const QUrl& ) const;
 
 private:

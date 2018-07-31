@@ -25,19 +25,19 @@ public:
     QskDialogButton( QskDialog::StandardButton, QQuickItem* parent = nullptr );
     QskDialogButton( QQuickItem* parent = nullptr );
 
-    virtual ~QskDialogButton();
+    ~QskDialogButton() override;
 
     void setStandardButton( QskDialog::StandardButton );
     QskDialog::StandardButton standardButton() const;
 
-    virtual QskAspect::Subcontrol effectiveSubcontrol(
+    QskAspect::Subcontrol effectiveSubcontrol(
         QskAspect::Subcontrol ) const override;
 
 Q_SIGNALS:
     void standardButtonChanged();
 
 protected:
-    virtual void changeEvent( QEvent* ) override;
+    void changeEvent( QEvent* ) override;
 
 private:
     QskDialog::StandardButton m_buttonType;

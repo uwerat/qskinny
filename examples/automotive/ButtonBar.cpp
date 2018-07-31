@@ -6,7 +6,7 @@
 
 QSK_SUBCONTROL( ButtonBar, Indicator )
 
-class IndicatorLabel : public QskGraphicLabel
+class IndicatorLabel final : public QskGraphicLabel
 {
 public:
     IndicatorLabel( QQuickItem* parentItem = nullptr ):
@@ -16,8 +16,8 @@ public:
         setGraphicRole( SkinFactory::Indicator );
     }
 
-    virtual QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override final
+    QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol subControl ) const override
     {
         // so that we can set specific colors in the skin
 

@@ -17,7 +17,7 @@ class QSK_EXPORT QskGraphicProvider: public QObject
 {
 public:
     QskGraphicProvider( QObject* parent = nullptr );
-    virtual ~QskGraphicProvider();
+    ~QskGraphicProvider() override;
 
     void setCacheSize( int );
     int cacheSize() const;

@@ -53,7 +53,7 @@ public:
 
     QskGraphicLabel( const QskGraphic&, QQuickItem* parent = nullptr );
 
-    virtual ~QskGraphicLabel();
+    ~QskGraphicLabel() override;
 
     QskGraphic graphic() const;
 
@@ -77,10 +77,10 @@ public:
     void setFillMode( FillMode );
     FillMode fillMode() const;
 
-    virtual qreal heightForWidth( qreal width ) const override;
-    virtual qreal widthForHeight( qreal height ) const override;
+    qreal heightForWidth( qreal width ) const override;
+    qreal widthForHeight( qreal height ) const override;
 
-    virtual QSizeF contentsSizeHint() const override;
+    QSizeF contentsSizeHint() const override;
 
     bool isEmpty() const;
 
@@ -99,8 +99,8 @@ public Q_SLOTS:
     void setGraphic( const QskGraphic& );
 
 protected:
-    virtual void changeEvent( QEvent* ) override;
-    virtual void updateLayout() override;
+    void changeEvent( QEvent* ) override;
+    void updateLayout() override;
     virtual QskGraphic loadSource( const QUrl& ) const;
 
 private:

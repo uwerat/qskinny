@@ -209,12 +209,12 @@ public:
         }
     }
 
-    virtual ~QskControlPrivate()
+    ~QskControlPrivate() override
     {
         delete explicitSizeData;
     }
 
-    virtual void mirrorChange() override final
+    void mirrorChange() override
     {
         Q_Q( QskControl );
         qskSendEventTo( q, QEvent::LayoutDirectionChange );
@@ -235,13 +235,13 @@ public:
 #if 0
     // can we do something useful with overloading those ???
 
-    virtual qreal getImplicitWidth() const override final;
-    virtual qreal getImplicitHeight() const override final;
+    qreal getImplicitWidth() const override;
+    qreal getImplicitHeight() const override;
 
-    virtual QSGTransformNode* createTransformNode();
+    QSGTransformNode* createTransformNode() override;
 #endif
 
-    virtual void implicitWidthChanged() override final
+    void implicitWidthChanged() override
     {
         QQuickItemPrivate::implicitWidthChanged();
 
@@ -249,7 +249,7 @@ public:
             implicitSizeChanged();
     }
 
-    virtual void implicitHeightChanged() override final
+    void implicitHeightChanged() override
     {
         QQuickItemPrivate::implicitWidthChanged();
 

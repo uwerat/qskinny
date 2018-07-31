@@ -27,7 +27,7 @@ public:
     QskTabButton( QQuickItem* parent = nullptr );
     QskTabButton( const QString& text, QQuickItem* parent = nullptr );
 
-    virtual ~QskTabButton();
+    ~QskTabButton() override;
 
     void setText( const QString& text );
     QString text() const;
@@ -35,9 +35,9 @@ public:
     void setTextOptions( const QskTextOptions& );
     QskTextOptions textOptions() const;
 
-    virtual QSizeF contentsSizeHint() const override;
-    virtual QRectF layoutRect() const override;
-    virtual QskAspect::Placement effectivePlacement() const override;
+    QSizeF contentsSizeHint() const override;
+    QRectF layoutRect() const override;
+    QskAspect::Placement effectivePlacement() const override;
 
     QskTabBar* tabBar() const;
 
@@ -46,7 +46,7 @@ Q_SIGNALS:
     void textOptionsChanged();
 
 protected:
-    virtual void changeEvent( QEvent* ) override;
+    void changeEvent( QEvent* ) override;
 
 private:
     void resolveTabBar();

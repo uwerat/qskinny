@@ -57,7 +57,7 @@ namespace
         {
         }
 
-        virtual void run() override final
+        void run() override
         {
             qskBlockDirty( m_window->contentItem(), false );
         }

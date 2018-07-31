@@ -19,7 +19,7 @@ class QSK_EXPORT QskMessageWindow : public QskInputWindow
 
 public:
     QskMessageWindow( QWindow* parent = nullptr );
-    virtual ~QskMessageWindow();
+    ~QskMessageWindow() override;
 };
 
 #endif

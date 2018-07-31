@@ -20,8 +20,8 @@ public:
         Vehicle
     };
 
-    virtual QStringList skinNames() const override;
-    virtual QskSkin* createSkin( const QString& skinName ) override;
+    QStringList skinNames() const override;
+    QskSkin* createSkin( const QString& skinName ) override;
 
 public Q_SLOTS:
     void rotateSkin();

@@ -19,7 +19,7 @@ class QSK_EXPORT QskDialogWindow : public QskWindow
 
 public:
     QskDialogWindow( QWindow* parent = nullptr );
-    virtual ~QskDialogWindow();
+    ~QskDialogWindow() override;
 
     Q_INVOKABLE QskDialog::DialogCode result() const;
     Q_INVOKABLE QskDialog::DialogCode exec();
@@ -37,8 +37,8 @@ public Q_SLOTS:
 protected:
     void setResult( QskDialog::DialogCode r );
 
-    virtual bool event( QEvent* ) override;
-    virtual void keyPressEvent( QKeyEvent* ) override;
+    bool event( QEvent* ) override;
+    void keyPressEvent( QKeyEvent* ) override;
 
 private:
     class PrivateData;

@@ -69,7 +69,7 @@ class QSK_EXPORT QskGestureEvent : public QskEvent
 {
 public:
     QskGestureEvent( const QskGesture* gesture, bool ownedByEvent = true );
-    virtual ~QskGestureEvent();
+    ~QskGestureEvent() override;
 
     inline const QskGesture* gesture() const { return m_gesture; }
     inline bool isGestureOwnedByEvent() const { return m_gestureOwnedByEvent; }
@@ -89,7 +89,7 @@ public:
     };
 
     QskAnimatorEvent( QskAspect::Aspect aspect, State state );
-    virtual ~QskAnimatorEvent();
+    ~QskAnimatorEvent() override;
 
     inline QskAspect::Aspect aspect() const { return m_aspect; }
     inline State state() const { return m_state; }

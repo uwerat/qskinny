@@ -28,7 +28,7 @@ static void qskResetColors( QskSkin* skin, const QColor& accent )
 
 namespace
 {
-    class SkinTransition : public QskSkinTransition
+    class SkinTransition final : public QskSkinTransition
     {
     public:
         SkinTransition( const QColor& accent ):
@@ -37,7 +37,7 @@ namespace
         }
 
     protected:
-        virtual void updateSkin( QskSkin*, QskSkin* newSkin ) override final
+        void updateSkin( QskSkin*, QskSkin* newSkin ) override
         {
             qskResetColors( newSkin, m_accent );
         }

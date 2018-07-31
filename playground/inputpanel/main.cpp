@@ -146,7 +146,7 @@ public:
     }
 };
 
-class LocaleListView : public QskListView
+class LocaleListView final : public QskListView
 {
     Q_OBJECT
 
@@ -187,17 +187,17 @@ public:
             [ this ]( int row ) { Q_EMIT selected( localeAt( row ) ); } );
     }
 
-    virtual int rowCount() const override final
+    int rowCount() const override
     {
         return m_values.count();
     }
 
-    virtual int columnCount() const override final
+    int columnCount() const override
     {
         return 1;
     }
 
-    virtual qreal columnWidth( int ) const override
+    qreal columnWidth( int ) const override
     {
         if ( m_maxWidth == 0.0 )
         {
@@ -215,7 +215,7 @@ public:
         return m_maxWidth;
     }
 
-    virtual qreal rowHeight() const override
+    qreal rowHeight() const override
     {
         using namespace QskAspect;
 
@@ -225,7 +225,7 @@ public:
         return fm.height() + padding.top() + padding.bottom();
     }
 
-    virtual QVariant valueAt( int row, int ) const override final
+    QVariant valueAt( int row, int ) const override
     {
         return m_values[row].first;
     }

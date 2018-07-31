@@ -113,7 +113,7 @@ namespace
         }
 
     protected:
-        virtual void geometryChanged(
+        void geometryChanged(
             const QRectF& newGeometry, const QRectF& oldGeometry ) override
         {
             Inherited::geometryChanged( newGeometry, oldGeometry );
@@ -126,7 +126,7 @@ namespace
                 ( contentHeight() > height() ) );
         }
 
-        virtual QSGNode* updatePaintNode(
+        QSGNode* updatePaintNode(
             QSGNode* oldNode, UpdatePaintNodeData* data ) override
         {
             updateColors();

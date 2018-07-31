@@ -25,7 +25,7 @@ class QSK_EXPORT QskGridBox : public QskLayout
 
 public:
     explicit QskGridBox( QQuickItem* parent = nullptr );
-    virtual ~QskGridBox();
+    ~QskGridBox() override;
 
     Q_INVOKABLE void addItem(
         QQuickItem*, int row, int column, int rowSpan, int columnSpan,
@@ -114,19 +114,19 @@ public:
     Q_INVOKABLE bool retainSizeWhenHidden( QQuickItem* ) const;
     Q_INVOKABLE void setRetainSizeWhenHidden( QQuickItem*, bool on );
 
-    virtual qreal heightForWidth( qreal width ) const override;
-    virtual qreal widthForHeight( qreal height ) const override;
+    qreal heightForWidth( qreal width ) const override;
+    qreal widthForHeight( qreal height ) const override;
 
-    virtual QSizeF contentsSizeHint() const override;
+    QSizeF contentsSizeHint() const override;
 
 Q_SIGNALS:
     void verticalSpacingChanged();
     void horizontalSpacingChanged();
 
 protected:
-    virtual void setupLayoutItem( QskLayoutItem*, int index ) override;
-    virtual void layoutItemInserted( QskLayoutItem*, int index ) override;
-    virtual void layoutItemRemoved( QskLayoutItem*, int index ) override;
+    void setupLayoutItem( QskLayoutItem*, int index ) override;
+    void layoutItemInserted( QskLayoutItem*, int index ) override;
+    void layoutItemRemoved( QskLayoutItem*, int index ) override;
 
 private:
     void setRowSizeHint(

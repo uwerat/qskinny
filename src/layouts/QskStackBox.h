@@ -27,15 +27,15 @@ public:
     explicit QskStackBox( QQuickItem* parent = nullptr );
     QskStackBox( bool autoAddChildren, QQuickItem* parent = nullptr );
 
-    virtual ~QskStackBox();
+    ~QskStackBox() override;
 
     QQuickItem* currentItem() const;
     int currentIndex() const;
 
-    virtual QSizeF contentsSizeHint() const override;
+    QSizeF contentsSizeHint() const override;
 
-    virtual qreal heightForWidth( qreal width ) const override;
-    virtual qreal widthForHeight( qreal height ) const override;
+    qreal heightForWidth( qreal width ) const override;
+    qreal widthForHeight( qreal height ) const override;
 
     void setAnimator( QskStackBoxAnimator* );
     const QskStackBoxAnimator* animator() const;
@@ -55,8 +55,8 @@ protected:
 private:
     friend class QskStackBoxAnimator;
 
-    virtual void layoutItemInserted( QskLayoutItem*, int index ) override;
-    virtual void layoutItemRemoved( QskLayoutItem*, int index ) override;
+    void layoutItemInserted( QskLayoutItem*, int index ) override;
+    void layoutItemRemoved( QskLayoutItem*, int index ) override;
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

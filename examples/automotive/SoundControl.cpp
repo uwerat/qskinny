@@ -20,7 +20,7 @@ QSK_SUBCONTROL( SoundControl, MarkerControl )
 QSK_SUBCONTROL( SoundControl, Vehicle )
 QSK_SUBCONTROL( SoundControl, SliderControl )
 
-class VehicleLabel : public QskGraphicLabel
+class VehicleLabel final : public QskGraphicLabel
 {
 public:
     VehicleLabel( QQuickItem* parentItem = nullptr ):
@@ -29,8 +29,8 @@ public:
         setGraphic( QskGraphicIO::read( QString( ":/qvg/car.qvg" ) ) );
     }
 
-    virtual QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override final
+    QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol subControl ) const override
     {
         // so that we can set specific colors in the skin
 
@@ -41,7 +41,7 @@ public:
     }
 };
 
-class CrossHairLine : public QskBox
+class CrossHairLine final : public QskBox
 {
 public:
     CrossHairLine( QQuickItem* parent ):
@@ -49,8 +49,8 @@ public:
     {
     }
 
-    virtual QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override final
+    QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol subControl ) const override
     {
         if ( subControl == QskBox::Panel )
             return SoundControl::CrossHair;
@@ -59,7 +59,7 @@ public:
     }
 };
 
-class BalanceFadeMarker : public QskBox
+class BalanceFadeMarker final : public QskBox
 {
 public:
     BalanceFadeMarker( QQuickItem* parent ):
@@ -67,8 +67,8 @@ public:
     {
     }
 
-    virtual QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override final
+    QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol subControl ) const override
     {
         if ( subControl == QskBox::Panel )
             return SoundControl::Marker;
@@ -77,7 +77,7 @@ public:
     }
 };
 
-class MarkerControlButton : public QskPushButton
+class MarkerControlButton final : public QskPushButton
 {
 public:
     MarkerControlButton( Qsk::Direction direction, QQuickItem* parentItem = nullptr ):
@@ -115,8 +115,8 @@ public:
         return QPointF();
     }
 
-    virtual QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override final
+    QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol subControl ) const override
     {
         // so that we can set specific colors in the skin
 
@@ -127,7 +127,7 @@ public:
     }
 
 protected:
-    virtual QSizeF contentsSizeHint() const override final
+    QSizeF contentsSizeHint() const override
     {
         const qreal dim = 100;
 
@@ -141,7 +141,7 @@ private:
     const Qsk::Direction m_direction;
 };
 
-class ControlButton : public QskPushButton
+class ControlButton final : public QskPushButton
 {
 public:
     ControlButton( const char symbol, QQuickItem* parentItem = nullptr ):
@@ -153,7 +153,7 @@ public:
         setAutoRepeat( true );
     }
 
-    virtual QskAspect::Subcontrol effectiveSubcontrol(
+    QskAspect::Subcontrol effectiveSubcontrol(
         QskAspect::Subcontrol subControl ) const override
     {
         if ( subControl == QskPushButton::Panel )
@@ -162,14 +162,14 @@ public:
         return QskPushButton::effectiveSubcontrol( subControl );
     }
 
-    virtual QSizeF contentsSizeHint() const override final
+    QSizeF contentsSizeHint() const override
     {
         qreal h = QskPushButton::contentsSizeHint().height();
         return QSizeF( h, h );
     }
 };
 
-class StackedControl : public QskControl
+class StackedControl final : public QskControl
 {
 public:
     StackedControl( QQuickItem* parent = nullptr ):
@@ -203,7 +203,7 @@ public:
     }
 
 protected:
-    virtual void updateLayout() override final
+    void updateLayout() override
     {
         const QRectF cr = contentsRect();
         const qreal crossHairSize = 3;
@@ -242,7 +242,7 @@ private:
     QPointF m_offset;
 };
 
-class SectionTitleBar : public QskLinearBox
+class SectionTitleBar final : public QskLinearBox
 {
 public:
     SectionTitleBar( const char* title, QQuickItem* parentItem = nullptr ):
@@ -262,7 +262,7 @@ public:
     }
 };
 
-class SliderBox : public QskLinearBox
+class SliderBox final : public QskLinearBox
 {
 public:
     SliderBox( const char* title, qreal min, qreal max, QQuickItem* parentItem = nullptr ):
@@ -328,7 +328,7 @@ private:
     QskSlider* m_slider;
 };
 
-class ToneControlBox : public QskLinearBox
+class ToneControlBox final : public QskLinearBox
 {
 public:
     ToneControlBox( QQuickItem* parentItem = nullptr ):
@@ -344,7 +344,7 @@ public:
     }
 };
 
-class BalanceFadeControlBox : public QskGridBox
+class BalanceFadeControlBox final : public QskGridBox
 {
 public:
     BalanceFadeControlBox( QQuickItem* parentItem = nullptr ):

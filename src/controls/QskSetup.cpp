@@ -87,24 +87,24 @@ namespace
         }
 
     private:
-        virtual bool setImplicitValue(
-            QskControl* control, const QLocale& locale ) override final
+        bool setImplicitValue(
+            QskControl* control, const QLocale& locale ) override
         {
             return qskInheritLocale( control, locale );
         }
 
-        virtual bool setImplicitValue(
-            QskWindow* window, const QLocale& locale ) override final
+        bool setImplicitValue(
+            QskWindow* window, const QLocale& locale ) override
         {
             return qskInheritLocale( window, locale );
         }
 
-        virtual QLocale value( const QskControl* control ) const override final
+        QLocale value( const QskControl* control ) const override
         {
             return control->locale();
         }
 
-        virtual QLocale value( const QskWindow* window ) const override final
+        QLocale value( const QskWindow* window ) const override
         {
             return window->locale();
         }

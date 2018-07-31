@@ -23,7 +23,7 @@ class QSK_EXPORT QskIndexedLayoutBox : public QskLayout
 
 public:
     explicit QskIndexedLayoutBox( QQuickItem* parent = nullptr );
-    virtual ~QskIndexedLayoutBox();
+    ~QskIndexedLayoutBox() override;
 
     void setAutoAddChildren( bool );
     bool autoAddChildren() const;
@@ -50,7 +50,7 @@ Q_SIGNALS:
     void defaultAlignmentChanged();
 
 protected:
-    virtual void itemChange( ItemChange, const ItemChangeData& ) override;
+    void itemChange( ItemChange, const ItemChangeData& ) override;
     void insertLayoutItem( QskLayoutItem*, int index );
 
 private:

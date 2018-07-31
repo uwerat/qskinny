@@ -35,7 +35,7 @@ public:
     QskGraphic( const QskGraphic& );
     QskGraphic( QskGraphic&& );
 
-    virtual ~QskGraphic();
+    ~QskGraphic() override;
 
     QskGraphic& operator=( const QskGraphic& );
     QskGraphic& operator=( QskGraphic&& );
@@ -93,14 +93,15 @@ public:
 
     RenderHints renderHints() const;
 
-    virtual QPaintEngine* paintEngine() const override;
-    virtual int metric( PaintDeviceMetric metric ) const override;
+    QPaintEngine* paintEngine() const override;
+    int metric( PaintDeviceMetric metric ) const override;
 
     static QskGraphic fromImage( const QImage& );
     static QskGraphic fromPixmap( const QPixmap& );
 
 protected:
     friend class QskGraphicPaintEngine;
+
     virtual QSize sizeMetrics() const;
 
     virtual void drawPath( const QPainterPath& );

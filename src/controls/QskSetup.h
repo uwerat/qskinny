@@ -75,9 +75,9 @@ Q_SIGNALS:
 
 private:
     QskSetup();
-    virtual ~QskSetup();
+    ~QskSetup() override;
 
-    virtual bool eventFilter( QObject*, QEvent* ) override final;
+    bool eventFilter( QObject*, QEvent* ) override final;
 
     static QskSetup* s_instance;
 

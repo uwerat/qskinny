@@ -22,7 +22,7 @@ class QSK_EXPORT QskSimpleListBox : public QskListView
 
 public:
     QskSimpleListBox( QQuickItem* parent = nullptr );
-    virtual ~QskSimpleListBox();
+    ~QskSimpleListBox() override;
 
     void setColumnWidthHint( int column, qreal width );
     qreal columnWidthHint( int column ) const;
@@ -39,17 +39,17 @@ public:
     void removeAt( int index );
     void removeBulk( int from, int to = -1 );
 
-    virtual int rowCount() const override final;
-    virtual int columnCount() const override final;
+    int rowCount() const override final;
+    int columnCount() const override final;
 
-    virtual qreal columnWidth( int col ) const override;
-    virtual qreal rowHeight() const override;
+    qreal columnWidth( int col ) const override;
+    qreal rowHeight() const override;
 
     QString entryAt( int row ) const;
     QString selectedEntry() const;
     QStringList entries() const;
 
-    virtual QVariant valueAt( int row, int col ) const override final;
+    QVariant valueAt( int row, int col ) const override final;
 
 public Q_SLOTS:
     void setEntries( const QStringList& );

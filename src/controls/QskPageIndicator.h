@@ -25,7 +25,8 @@ public:
 
     QskPageIndicator( QQuickItem* parent = nullptr );
     QskPageIndicator( int count, QQuickItem* parent = nullptr );
-    virtual ~QskPageIndicator();
+
+    ~QskPageIndicator() override;
 
     int count() const;
 
@@ -34,7 +35,7 @@ public:
     Qt::Orientation orientation() const;
     void setOrientation( Qt::Orientation );
 
-    virtual QSizeF contentsSizeHint() const override;
+    QSizeF contentsSizeHint() const override;
 
 Q_SIGNALS:
     void countChanged();

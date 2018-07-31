@@ -42,7 +42,7 @@ public:
 
 protected:
     QskSkinManager();
-    virtual ~QskSkinManager();
+    ~QskSkinManager() override;
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

@@ -53,35 +53,35 @@ public:
     QskPlatformInputContext();
     virtual ~QskPlatformInputContext() = default;
 
-    virtual bool isValid() const override;
-    virtual bool hasCapability( Capability ) const override;
+    bool isValid() const override;
+    bool hasCapability( Capability ) const override;
 
-    virtual void update( Qt::InputMethodQueries ) override;
+    void update( Qt::InputMethodQueries ) override;
     Q_INVOKABLE void update( const QQuickItem*, Qt::InputMethodQueries );
 
-    virtual void invokeAction( QInputMethod::Action, int ) override;
+    void invokeAction( QInputMethod::Action, int ) override;
 
-    virtual QRectF keyboardRect() const override;
-    virtual bool isAnimating() const override;
+    QRectF keyboardRect() const override;
+    bool isAnimating() const override;
 
-    virtual void showInputPanel() override;
-    virtual void hideInputPanel() override;
+    void showInputPanel() override;
+    void hideInputPanel() override;
     Q_INVOKABLE void setInputPanelVisible( const QQuickItem*, bool );
 
-    virtual bool isInputPanelVisible() const override;
+    bool isInputPanelVisible() const override;
 
-    virtual void reset() override;
-    virtual void commit() override;
+    void reset() override;
+    void commit() override;
 
-    virtual void setFocusObject( QObject* ) override;
+    void setFocusObject( QObject* ) override;
 
-    virtual QLocale locale() const override;
-    virtual Qt::LayoutDirection inputDirection() const override;
+    QLocale locale() const override;
+    Qt::LayoutDirection inputDirection() const override;
 
-    virtual bool filterEvent( const QEvent* ) override;
+    bool filterEvent( const QEvent* ) override;
 
 protected:
-    virtual bool event( QEvent* ) override;
+    bool event( QEvent* ) override;
 
 private:
     void updateContext();
@@ -271,7 +271,7 @@ class QskInputContextPlugin final : public QPlatformInputContextPlugin
     Q_PLUGIN_METADATA( IID QPlatformInputContextFactoryInterface_iid FILE "metadata.json" )
 
 public:
-    virtual QPlatformInputContext* create(
+    QPlatformInputContext* create(
         const QString& system, const QStringList& ) override
     {
         if ( system.compare( QStringLiteral( "skinny" ), Qt::CaseInsensitive ) == 0 )

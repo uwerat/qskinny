@@ -36,20 +36,20 @@ public:
 
     QskLayoutItem( const QSizeF& size, int stretch, int row, int column );
 
-    virtual ~QskLayoutItem();
+    ~QskLayoutItem() override;
 
     QQuickItem* item();
     const QQuickItem* item() const;
 
-    virtual QLayoutPolicy::Policy sizePolicy( Qt::Orientation ) const override final;
-    virtual QSizeF sizeHint( Qt::SizeHint, const QSizeF& ) const override final;
-    virtual void setGeometry( const QRectF& ) override final;
+    QLayoutPolicy::Policy sizePolicy( Qt::Orientation ) const override final;
+    QSizeF sizeHint( Qt::SizeHint, const QSizeF& ) const override final;
+    void setGeometry( const QRectF& ) override final;
 
-    virtual bool hasDynamicConstraint() const override final;
-    virtual Qt::Orientation dynamicConstraintOrientation() const override final;
+    bool hasDynamicConstraint() const override final;
+    Qt::Orientation dynamicConstraintOrientation() const override final;
 
-    virtual bool isIgnored() const override final;
-    virtual QLayoutPolicy::ControlTypes controlTypes( LayoutSide side ) const override final;
+    bool isIgnored() const override final;
+    QLayoutPolicy::ControlTypes controlTypes( LayoutSide side ) const override final;
 
     bool retainSizeWhenHidden() const;
     void setRetainSizeWhenHidden( bool on );

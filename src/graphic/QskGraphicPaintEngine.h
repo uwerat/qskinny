@@ -9,33 +9,33 @@
 #include "QskGlobal.h"
 #include <qpaintengine.h>
 
-class QSK_EXPORT QskGraphicPaintEngine : public QPaintEngine
+class QSK_EXPORT QskGraphicPaintEngine final : public QPaintEngine
 {
 public:
     QskGraphicPaintEngine();
-    virtual ~QskGraphicPaintEngine();
+    ~QskGraphicPaintEngine() override;
 
-    virtual bool begin( QPaintDevice* ) override final;
-    virtual bool end() override final;
+    bool begin( QPaintDevice* ) override;
+    bool end() override;
 
-    virtual Type type () const override final;
+    Type type () const override;
 
-    virtual void updateState( const QPaintEngineState& state ) override final;
+    void updateState( const QPaintEngineState& state ) override;
 
-    virtual void drawPath( const QPainterPath& path ) override final;
+    void drawPath( const QPainterPath& path ) override;
 
-    virtual void drawPolygon( const QPointF* points,
-        int pointCount, PolygonDrawMode mode ) override final;
+    void drawPolygon( const QPointF* points,
+        int pointCount, PolygonDrawMode mode ) override;
 
-    virtual void drawPolygon( const QPoint* points,
-        int pointCount, PolygonDrawMode mode ) override final;
+    void drawPolygon( const QPoint* points,
+        int pointCount, PolygonDrawMode mode ) override;
 
-    virtual void drawPixmap( const QRectF& rect,
-        const QPixmap& pixmap, const QRectF& subRect ) override final;
+    void drawPixmap( const QRectF& rect,
+        const QPixmap& pixmap, const QRectF& subRect ) override;
 
-    virtual void drawImage( const QRectF& rect,
+    void drawImage( const QRectF& rect,
         const QImage& image, const QRectF& subRect,
-        Qt::ImageConversionFlags flags ) override final;
+        Qt::ImageConversionFlags flags ) override;
 };
 
 #endif

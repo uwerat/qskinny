@@ -39,7 +39,7 @@ namespace
             m_scrollView = scrollView;
         }
 
-        virtual void translate( qreal dx, qreal dy ) override final
+        void translate( qreal dx, qreal dy ) override
         {
             const QPointF pos = m_scrollView->scrollPos();
             m_scrollView->setScrollPos( pos - QPointF( dx, -dy ) );
@@ -89,7 +89,7 @@ namespace
         }
 
     protected:
-        virtual void advance( qreal value ) override final
+        void advance( qreal value ) override
         {
             qreal x = m_from.x() + ( m_to.x() - m_from.x() ) * value;
             qreal y = m_from.y() + ( m_to.y() - m_from.y() ) * value;

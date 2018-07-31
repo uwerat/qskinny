@@ -30,7 +30,7 @@ public:
     QskDialogButtonBox( QQuickItem* parent = nullptr );
     QskDialogButtonBox( Qt::Orientation orientation, QQuickItem* parent = nullptr );
 
-    virtual ~QskDialogButtonBox();
+    ~QskDialogButtonBox() override;
 
     void setOrientation( Qt::Orientation );
     Qt::Orientation orientation() const;
@@ -57,9 +57,9 @@ public:
 
     QskDialog::StandardButton clickedButton() const;
 
-    virtual QSizeF contentsSizeHint() const override;
+    QSizeF contentsSizeHint() const override;
 
-    virtual QskAspect::Subcontrol effectiveSubcontrol(
+    QskAspect::Subcontrol effectiveSubcontrol(
         QskAspect::Subcontrol ) const override;
 
     static bool isDefaultButtonKeyEvent( const QKeyEvent* );
@@ -74,8 +74,8 @@ Q_SIGNALS:
     void orientationChanged();
 
 protected:
-    virtual bool event( QEvent* event ) override;
-    virtual void updateLayout() override;
+    bool event( QEvent* event ) override;
+    void updateLayout() override;
 
     virtual QskPushButton* createButton( QskDialog::StandardButton ) const;
 

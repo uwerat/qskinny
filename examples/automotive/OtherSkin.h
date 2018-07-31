@@ -9,7 +9,7 @@ class OtherSkin : public QskSkin
 {
 public:
     OtherSkin( const QString& name, QObject* parent = nullptr );
-    virtual ~OtherSkin();
+    ~OtherSkin() override;
 
 private:
     void initHints();

@@ -18,7 +18,7 @@ class QSK_EXPORT QskBoxNode : public QSGGeometryNode
 {
 public:
     QskBoxNode();
-    virtual ~QskBoxNode();
+    ~QskBoxNode() override;
 
     void setBoxData( const QRectF& rect, 
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,

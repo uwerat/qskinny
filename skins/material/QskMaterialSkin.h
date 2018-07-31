@@ -17,10 +17,10 @@ class QSK_EXPORT QskMaterialSkin : public QskSkin
 
 public:
     QskMaterialSkin( QObject* parent = nullptr );
-    virtual ~QskMaterialSkin();
+    ~QskMaterialSkin() override;
 
 private:
-    virtual void resetColors( const QColor& accent ) override;
+    void resetColors( const QColor& accent ) override;
 
     void initHints();
 

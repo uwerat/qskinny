@@ -21,10 +21,10 @@
 
 #include <QDebug>
 
-class Transition : public QskSkinTransition
+class Transition final : public QskSkinTransition
 {
 protected:
-    virtual void updateSkin( QskSkin*, QskSkin* newSkin ) override final
+    void updateSkin( QskSkin*, QskSkin* newSkin ) override
     {
         DefaultSkin* skin = static_cast< DefaultSkin* >( newSkin );
         skin->resetHints();

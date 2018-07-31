@@ -48,7 +48,7 @@ public:
     QskShortcut( const QKeySequence&, QObject* = nullptr );
     QskShortcut( const QKeySequence&, Qt::ShortcutContext, QObject* = nullptr );
 
-    virtual ~QskShortcut();
+    ~QskShortcut() override;
 
     int shortcutId() const;
 
@@ -82,9 +82,9 @@ Q_SIGNALS:
     int shortcutIdChanged( int ) const;
 
 protected:
-    virtual bool event( QEvent* ) override;
-    virtual void classBegin() override;
-    virtual void componentComplete() override;
+    bool event( QEvent* ) override;
+    void classBegin() override;
+    void componentComplete() override;
 
 private:
     class PrivateData;

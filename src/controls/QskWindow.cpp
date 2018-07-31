@@ -63,7 +63,7 @@ namespace
                 p->removeItemChangeListener( this, types );
         }
 
-        virtual void itemChildAdded( QQuickItem*, QQuickItem* ) override final
+        void itemChildAdded( QQuickItem*, QQuickItem* ) override
         {
             QskWindow* window = static_cast< QskWindow* >( m_item->window() );
             if ( window->isExposed() )
@@ -471,7 +471,7 @@ void QskWindow::setCustomRenderMode( const char* mode )
         {
         }
 
-        virtual void run() override final
+        void run() override
         {
             auto* d = QQuickWindowPrivate::get( m_window );
 

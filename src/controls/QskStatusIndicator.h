@@ -25,7 +25,7 @@ public:
     QSK_SUBCONTROLS( Graphic )
 
     QskStatusIndicator( QQuickItem* parent = nullptr );
-    virtual ~QskStatusIndicator();
+    ~QskStatusIndicator() override;
 
     Q_INVOKABLE QUrl source( int status ) const;
     Q_INVOKABLE void setSource( int status, const QUrl& url );
@@ -36,10 +36,10 @@ public:
     virtual QskColorFilter graphicFilter( int status ) const;
     virtual QskGraphic loadSource( const QUrl& ) const;
 
-    virtual qreal heightForWidth( qreal width ) const override;
-    virtual qreal widthForHeight( qreal height ) const override;
+    qreal heightForWidth( qreal width ) const override;
+    qreal widthForHeight( qreal height ) const override;
 
-    virtual QSizeF contentsSizeHint() const override;
+    QSizeF contentsSizeHint() const override;
 
     int status() const;
     bool hasStatus( int status ) const;
@@ -51,8 +51,8 @@ Q_SIGNALS:
     void statusChanged( int status );
 
 protected:
-    virtual void changeEvent( QEvent* ) override;
-    virtual void updateLayout() override;
+    void changeEvent( QEvent* ) override;
+    void updateLayout() override;
 
 private:
     qreal sizeConstraint( Qt::Orientation, qreal ) const;

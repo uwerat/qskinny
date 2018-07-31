@@ -36,7 +36,7 @@ public:
     QSK_SUBCONTROLS( Panel, TitleBar )
 
     QskSubWindow( QQuickItem* parent = nullptr );
-    virtual ~QskSubWindow();
+    ~QskSubWindow() override;
 
     Q_INVOKABLE void setTitle( const QString& );
     Q_INVOKABLE QString title() const;
@@ -52,8 +52,8 @@ public:
 
     QRectF titleBarRect() const;
 
-    virtual QSizeF contentsSizeHint() const override;
-    virtual QRectF layoutRect() const override;
+    QSizeF contentsSizeHint() const override;
+    QRectF layoutRect() const override;
 
 Q_SIGNALS:
     void titleChanged();
@@ -61,9 +61,9 @@ Q_SIGNALS:
     void windowButtonsChanged();
 
 protected:
-    virtual bool event( QEvent* ) override;
+    bool event( QEvent* ) override;
 
-    virtual void itemChange( QQuickItem::ItemChange,
+    void itemChange( QQuickItem::ItemChange,
         const QQuickItem::ItemChangeData& ) override;
 
 private:

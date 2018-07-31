@@ -15,18 +15,18 @@ class QSK_EXPORT QskGraphicImageProvider : public QQuickImageProvider
 {
 public:
     QskGraphicImageProvider( const QString& providerId, ImageType );
-    virtual ~QskGraphicImageProvider();
+    ~QskGraphicImageProvider() override;
 
     void setCacheSize( int );
     int cacheSize() const;
 
-    virtual QImage requestImage( const QString& id,
+    QImage requestImage( const QString& id,
         QSize* size, const QSize& requestedSize ) override;
 
-    virtual QPixmap requestPixmap( const QString& id,
+    QPixmap requestPixmap( const QString& id,
         QSize* size, const QSize& requestedSize ) override;
 
-    virtual QQuickTextureFactory* requestTexture( const QString& id,
+    QQuickTextureFactory* requestTexture( const QString& id,
         QSize* size, const QSize& requestedSize ) override;
 
     QString graphicProviderId() const;

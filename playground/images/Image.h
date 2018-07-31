@@ -35,7 +35,7 @@ class Image : public QQuickImage
 
 public:
     Image( QQuickItem* parent = nullptr );
-    virtual ~Image();
+    ~Image() override;
 
     void setSourceSizeAdjustment( bool );
     bool sourceSizeAdjustment() const;
@@ -59,12 +59,12 @@ Q_SIGNALS:
     void deferredUpdatesChanged();
 
 protected:
-    virtual void geometryChanged( const QRectF&, const QRectF& ) override;
-    virtual void itemChange( ItemChange, const ItemChangeData& ) override;
-    virtual void componentComplete() override;
+    void geometryChanged( const QRectF&, const QRectF& ) override;
+    void itemChange( ItemChange, const ItemChangeData& ) override;
+    void componentComplete() override;
 
-    virtual QSGNode* updatePaintNode( QSGNode*, UpdatePaintNodeData* ) override;
-    virtual void updatePolish() override;
+    QSGNode* updatePaintNode( QSGNode*, UpdatePaintNodeData* ) override;
+    void updatePolish() override;
 
 private:
     class PrivateData;

@@ -76,7 +76,7 @@ public:
     QskTextInput( QQuickItem* parent = nullptr );
     QskTextInput( const QString& text, QQuickItem* parent = nullptr );
 
-    virtual ~QskTextInput();
+    ~QskTextInput() override;
 
     void setupFrom( const QQuickItem* );
 
@@ -135,7 +135,7 @@ public:
     virtual bool hasAcceptableInput() const;
     virtual bool fixup();
 
-    virtual QVariant inputMethodQuery( Qt::InputMethodQuery ) const override;
+    QVariant inputMethodQuery( Qt::InputMethodQuery ) const override;
     QVariant inputMethodQuery( Qt::InputMethodQuery, QVariant argument) const;
 
     bool canUndo() const;
@@ -146,7 +146,7 @@ public:
 
     void ensureVisible( int position );
 
-    virtual QSizeF contentsSizeHint() const override;
+    QSizeF contentsSizeHint() const override;
 
 public Q_SLOTS:
     void setText( const QString& );
@@ -184,23 +184,23 @@ Q_SIGNALS:
     void inputMaskChanged( const QString& );
 
 protected:
-    virtual bool event( QEvent* ) override;
+    bool event( QEvent* ) override;
 
-    virtual void inputMethodEvent( QInputMethodEvent* ) override;
+    void inputMethodEvent( QInputMethodEvent* ) override;
 
-    virtual void focusInEvent( QFocusEvent* ) override;
-    virtual void focusOutEvent( QFocusEvent* ) override;
+    void focusInEvent( QFocusEvent* ) override;
+    void focusOutEvent( QFocusEvent* ) override;
 
-    virtual void mousePressEvent( QMouseEvent* ) override;
-    virtual void mouseMoveEvent( QMouseEvent* ) override;
-    virtual void mouseReleaseEvent( QMouseEvent* ) override;
-    virtual void mouseDoubleClickEvent( QMouseEvent* ) override;
+    void mousePressEvent( QMouseEvent* ) override;
+    void mouseMoveEvent( QMouseEvent* ) override;
+    void mouseReleaseEvent( QMouseEvent* ) override;
+    void mouseDoubleClickEvent( QMouseEvent* ) override;
 
-    virtual void keyPressEvent( QKeyEvent* ) override;
-    virtual void keyReleaseEvent( QKeyEvent* ) override;
+    void keyPressEvent( QKeyEvent* ) override;
+    void keyReleaseEvent( QKeyEvent* ) override;
 
-    virtual void updateLayout() override;
-    virtual void updateNode( QSGNode*) override;
+    void updateLayout() override;
+    void updateNode( QSGNode*) override;
 
 private:
     class PrivateData;

@@ -17,7 +17,7 @@ class QSK_EXPORT QskGraphicNode : public QskTextureNode
 {
 public:
     QskGraphicNode();
-    virtual ~QskGraphicNode();
+    ~QskGraphicNode() override;
 
     void setGraphic( const QskGraphic&, const QskColorFilter&,
         QskGraphicTextureFactory::RenderMode, const QRect& );

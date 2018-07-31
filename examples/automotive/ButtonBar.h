@@ -12,7 +12,7 @@ public:
     void addIndicator( const char* name );
 
 protected:
-    virtual QSizeF contentsSizeHint() const override;
+    QSizeF contentsSizeHint() const override;
 };
 
 #endif

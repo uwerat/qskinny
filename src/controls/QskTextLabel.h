@@ -36,7 +36,7 @@ public:
     QskTextLabel( QQuickItem* parent = nullptr );
     QskTextLabel( const QString& text, QQuickItem* parent = nullptr );
 
-    virtual ~QskTextLabel();
+    ~QskTextLabel() override;
 
     QString text() const;
 
@@ -52,10 +52,10 @@ public:
     void setAlignment( Qt::Alignment );
     Qt::Alignment alignment() const;
 
-    virtual QSizeF contentsSizeHint() const override;
+    QSizeF contentsSizeHint() const override;
 
-    virtual qreal heightForWidth( qreal width ) const override;
-    virtual qreal widthForHeight( qreal height ) const override;
+    qreal heightForWidth( qreal width ) const override;
+    qreal widthForHeight( qreal height ) const override;
 
     QFont font() const;
 
@@ -70,7 +70,7 @@ public Q_SLOTS:
     void setText( const QString& );
 
 protected:
-    virtual void changeEvent( QEvent* ) override;
+    void changeEvent( QEvent* ) override;
 
 private:
     class PrivateData;

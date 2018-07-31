@@ -13,7 +13,7 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitemchangelistener_p.h>
 QSK_QT_PRIVATE_END
 
-class QskInputGrabber::PrivateData : public QQuickItemChangeListener
+class QskInputGrabber::PrivateData final : public QQuickItemChangeListener
 {
 public:
     PrivateData( QskInputGrabber* grabber ):
@@ -75,8 +75,8 @@ public:
 private:
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
-    virtual void itemGeometryChanged( QQuickItem* item,
-        QQuickGeometryChange change, const QRectF& ) override final
+    void itemGeometryChanged( QQuickItem* item,
+        QQuickGeometryChange change, const QRectF& ) override
     {
         bool doUpdate = false;
 
@@ -90,7 +90,7 @@ private:
         
     }
 #else
-    virtual void itemGeometryChanged(
+    void itemGeometryChanged(
         QQuickItem* item, const QRectF& newRect, const QRectF& oldRect ) override
     {
         bool doUpdate = false;
@@ -105,7 +105,7 @@ private:
     }
 #endif
 
-    virtual void itemParentChanged( QQuickItem* item, QQuickItem* parentItem ) override
+    void itemParentChanged( QQuickItem* item, QQuickItem* parentItem ) override
     {
         if ( item == m_grabber && parentItem )
         {

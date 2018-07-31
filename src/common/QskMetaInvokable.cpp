@@ -56,7 +56,7 @@ namespace
         {
         }
 
-        virtual void placeMetaCall( QObject* object ) override final
+        void placeMetaCall( QObject* object ) override
         {
             m_callFunction( object, m_call, m_index, args() );
         }

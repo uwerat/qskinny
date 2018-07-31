@@ -9,7 +9,7 @@ class DefaultSkin : public QskSkin
 {
 public:
     DefaultSkin( const QString& name, QObject* parent = nullptr );
-    virtual ~DefaultSkin();
+    ~DefaultSkin() override;
 
     void toggleScheme();
     void resetHints();
