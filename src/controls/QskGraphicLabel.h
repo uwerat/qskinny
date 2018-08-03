@@ -6,7 +6,6 @@
 #ifndef QSK_GRAPHIC_LABEL_H
 #define QSK_GRAPHIC_LABEL_H
 
-#include "QskGlobal.h"
 #include "QskControl.h"
 
 class QskGraphic;

@@ -6,7 +6,6 @@
 #ifndef QSK_GRAPHIC_NODE_H
 #define QSK_GRAPHIC_NODE_H
 
-#include "QskGlobal.h"
 #include "QskGraphicTextureFactory.h"
 #include "QskTextureNode.h"
 

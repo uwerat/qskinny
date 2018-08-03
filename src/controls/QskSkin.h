@@ -6,7 +6,6 @@
 #ifndef QSK_SKIN_H
 #define QSK_SKIN_H
 
-#include "QskGlobal.h"
 #include "QskAspect.h"
 
 #include <qcolor.h>

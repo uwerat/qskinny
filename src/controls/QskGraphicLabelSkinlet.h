@@ -6,7 +6,6 @@
 #ifndef QSK_GRAPHIC_LABEL_SKINLET_H
 #define QSK_GRAPHIC_LABEL_SKINLET_H
 
-#include "QskGlobal.h"
 #include "QskSkinlet.h"
 
 class QskGraphicLabel;

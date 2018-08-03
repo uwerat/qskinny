@@ -4,11 +4,12 @@
  *****************************************************************************/
 
 #include "QskStatusIndicatorSkinlet.h"
+#include "QskStatusIndicator.h"
+
 #include "QskAspect.h"
 #include "QskColorFilter.h"
 #include "QskFunctions.h"
 #include "QskGraphic.h"
-#include "QskStatusIndicator.h"
 
 QskStatusIndicatorSkinlet::QskStatusIndicatorSkinlet( QskSkin* skin )
     : Inherited( skin )

@@ -6,7 +6,6 @@
 #ifndef QSK_POPUP_H
 #define QSK_POPUP_H 1
 
-#include "QskGlobal.h"
 #include "QskControl.h"
 
 class QSK_EXPORT QskPopup : public QskControl

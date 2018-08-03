@@ -6,7 +6,6 @@
 #ifndef QSK_SUB_WINDOW_AREA_H
 #define QSK_SUB_WINDOW_AREA_H 1
 
-#include "QskGlobal.h"
 #include "QskControl.h"
 
 class QskGradient;

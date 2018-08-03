@@ -4,9 +4,10 @@
  *****************************************************************************/
 
 #include "QskSubWindowSkinlet.h"
+#include "QskSubWindow.h"
+
 #include "QskAspect.h"
 #include "QskBoxBorderMetrics.h"
-#include "QskSubWindow.h"
 
 #include <qfontmetrics.h>
 

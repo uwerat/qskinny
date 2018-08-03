@@ -7,8 +7,8 @@
 #define QSK_STACK_BOX_ANIMATOR_H
 
 #include "QskAnimator.h"
-#include "QskGlobal.h"
 #include "QskNamespace.h"
+
 #include <qobject.h>
 
 class QskStackBox;

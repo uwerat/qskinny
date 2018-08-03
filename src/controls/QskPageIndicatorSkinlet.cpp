@@ -4,8 +4,9 @@
  *****************************************************************************/
 
 #include "QskPageIndicatorSkinlet.h"
-#include "QskBoxNode.h"
 #include "QskPageIndicator.h"
+
+#include "QskBoxNode.h"
 
 QskPageIndicatorSkinlet::QskPageIndicatorSkinlet( QskSkin* skin )
     : QskSkinlet( skin )

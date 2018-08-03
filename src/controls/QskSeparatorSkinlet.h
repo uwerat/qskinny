@@ -6,7 +6,6 @@
 #ifndef QSK_SEPARATOR_SKINLET_H
 #define QSK_SEPARATOR_SKINLET_H
 
-#include "QskGlobal.h"
 #include "QskSkinlet.h"
 
 class QskSeparator;

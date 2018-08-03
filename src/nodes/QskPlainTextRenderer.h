@@ -6,7 +6,6 @@
 #ifndef QSK_PLAIN_TEXT_RENDERER_H
 #define QSK_PLAIN_TEXT_RENDERER_H
 
-#include "QskGlobal.h"
 #include "QskNamespace.h"
 #include <qnamespace.h>
 

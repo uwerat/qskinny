@@ -6,7 +6,6 @@
 #ifndef QSK_INPUT_PANEL_BOX_H
 #define QSK_INPUT_PANEL_BOX_H
 
-#include "QskGlobal.h"
 #include "QskBox.h"
 
 class QskInputEngine;

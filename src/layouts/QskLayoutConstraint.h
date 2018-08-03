@@ -7,6 +7,7 @@
 #define QSK_LAYOUT_CONSTRAINT_H
 
 #include "QskGlobal.h"
+
 #include <qnamespace.h>
 #include <limits>
 

@@ -6,9 +6,7 @@
 #ifndef QSK_LIST_BOX_H
 #define QSK_LIST_BOX_H
 
-#include "QskGlobal.h"
 #include "QskListView.h"
-
 #include <qstringlist.h>
 
 class QSK_EXPORT QskSimpleListBox : public QskListView

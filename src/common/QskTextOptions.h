@@ -7,6 +7,7 @@
 #define QSK_TEXT_OPTIONS_H
 
 #include "QskGlobal.h"
+
 #include <qmetatype.h>
 #include <qtextoption.h>
 

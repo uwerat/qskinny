@@ -8,7 +8,6 @@
 
 #include "QskBox.h"
 #include "QskDialog.h"
-#include "QskGlobal.h"
 
 class QskPushButton;
 

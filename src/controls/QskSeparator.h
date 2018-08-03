@@ -6,7 +6,6 @@
 #ifndef QSK_SEPARATOR_H
 #define QSK_SEPARATOR_H
 
-#include "QskGlobal.h"
 #include "QskControl.h"
 
 class QSK_EXPORT QskSeparator : public QskControl

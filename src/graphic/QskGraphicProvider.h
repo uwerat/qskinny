@@ -7,6 +7,7 @@
 #define QSK_GRAPHIC_PROVIDER_H
 
 #include "QskGlobal.h"
+
 #include <qobject.h>
 #include <memory>
 

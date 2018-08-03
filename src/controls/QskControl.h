@@ -6,7 +6,6 @@
 #ifndef QSK_CONTROL_H
 #define QSK_CONTROL_H 1
 
-#include "QskGlobal.h"
 #include "QskAspect.h"
 #include "QskGradient.h"
 #include "QskSizePolicy.h"

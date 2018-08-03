@@ -6,7 +6,6 @@
 #ifndef QSK_STACK_BOX_H
 #define QSK_STACK_BOX_H
 
-#include "QskGlobal.h"
 #include "QskIndexedLayoutBox.h"
 
 class QskStackBoxAnimator;

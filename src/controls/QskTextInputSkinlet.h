@@ -6,7 +6,6 @@
 #ifndef QSK_TEXT_INPUT_SKINLET_H
 #define QSK_TEXT_INPUT_SKINLET_H
 
-#include "QskGlobal.h"
 #include "QskSkinlet.h"
 
 class QSK_EXPORT QskTextInputSkinlet : public QskSkinlet

@@ -6,7 +6,6 @@
 #ifndef QSK_SUB_WINDOW_H
 #define QSK_SUB_WINDOW_H 1
 
-#include "QskGlobal.h"
 #include "QskPopup.h"
 
 class QSK_EXPORT QskSubWindow : public QskPopup

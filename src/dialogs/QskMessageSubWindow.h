@@ -6,7 +6,6 @@
 #ifndef QSK_MESSAGE_SUB_WINDOW_H
 #define QSK_MESSAGE_SUB_WINDOW_H 1
 
-#include "QskGlobal.h"
 #include "QskInputSubWindow.h"
 
 class QSK_EXPORT QskMessageSubWindow : public QskInputSubWindow

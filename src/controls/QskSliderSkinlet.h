@@ -6,7 +6,6 @@
 #ifndef QSK_SLIDER_SKINLET_H
 #define QSK_SLIDER_SKINLET_H
 
-#include "QskGlobal.h"
 #include "QskSkinlet.h"
 
 class QskSlider;

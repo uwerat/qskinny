@@ -6,7 +6,6 @@
 #ifndef QSK_TAB_BAR_H
 #define QSK_TAB_BAR_H
 
-#include "QskGlobal.h"
 #include "QskBox.h"
 
 class QskTabButton;

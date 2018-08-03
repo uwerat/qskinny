@@ -6,7 +6,6 @@
 #ifndef QSK_TEXT_NODE_H
 #define QSK_TEXT_NODE_H
 
-#include "QskGlobal.h"
 #include "QskNamespace.h"
 
 #include <qrect.h>

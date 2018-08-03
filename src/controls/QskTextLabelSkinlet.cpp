@@ -5,6 +5,7 @@
 
 #include "QskTextLabelSkinlet.h"
 #include "QskTextLabel.h"
+
 #include "QskTextOptions.h"
 
 QskTextLabelSkinlet::QskTextLabelSkinlet( QskSkin* skin )

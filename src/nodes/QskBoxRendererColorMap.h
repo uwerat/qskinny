@@ -6,7 +6,6 @@
 #ifndef QSK_BOX_RENDERER_COLOR_MAP_H
 #define QSK_BOX_RENDERER_COLOR_MAP_H
 
-#include <QskGlobal.h>
 #include <QskGradient.h>
 #include <QskVertex.h>
 

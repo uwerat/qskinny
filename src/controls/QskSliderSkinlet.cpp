@@ -4,10 +4,11 @@
  *****************************************************************************/
 
 #include "QskSliderSkinlet.h"
+#include "QskSlider.h"
+
 #include "QskAspect.h"
 #include "QskBoxBorderMetrics.h"
 #include "QskFunctions.h"
-#include "QskSlider.h"
 
 static QMarginsF qskPadding(
     const QskSlider* slider, QskAspect::Subcontrol subControl )

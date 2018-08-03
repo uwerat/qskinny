@@ -6,7 +6,6 @@
 #ifndef QSK_EVENT_H
 #define QSK_EVENT_H
 
-#include "QskGlobal.h"
 #include "QskAspect.h"
 
 #include <qcoreevent.h>

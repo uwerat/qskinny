@@ -4,11 +4,12 @@
  *****************************************************************************/
 
 #include "QskGraphicLabelSkinlet.h"
+#include "QskGraphicLabel.h"
+
 #include "QskAspect.h"
 #include "QskColorFilter.h"
 #include "QskFunctions.h"
 #include "QskGraphic.h"
-#include "QskGraphicLabel.h"
 #include "QskTextureNode.h"
 
 QskGraphicLabelSkinlet::QskGraphicLabelSkinlet( QskSkin* skin )

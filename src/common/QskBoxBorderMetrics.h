@@ -6,7 +6,6 @@
 #ifndef QSK_BOX_BORDER_METRICS_H
 #define QSK_BOX_BORDER_METRICS_H
 
-#include "QskGlobal.h"
 #include "QskMargins.h"
 
 #include <qmetatype.h>

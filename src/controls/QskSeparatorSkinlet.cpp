@@ -4,8 +4,9 @@
  *****************************************************************************/
 
 #include "QskSeparatorSkinlet.h"
-#include "QskAspect.h"
 #include "QskSeparator.h"
+
+#include "QskAspect.h"
 
 QskSeparatorSkinlet::QskSeparatorSkinlet( QskSkin* skin )
     : Inherited( skin )

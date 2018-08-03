@@ -6,7 +6,6 @@
 #ifndef QSK_FLICK_ANIMATOR_H
 #define QSK_FLICK_ANIMATOR_H 1
 
-#include "QskGlobal.h"
 #include "QskAnimator.h"
 
 class QSK_EXPORT QskFlickAnimator : public QskAnimator

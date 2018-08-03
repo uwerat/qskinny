@@ -6,9 +6,7 @@
 #ifndef QSK_SKINNABLE_H
 #define QSK_SKINNABLE_H
 
-#include "QskGlobal.h"
 #include "QskAspect.h"
-
 #include <memory>
 
 typedef unsigned int QRgb;

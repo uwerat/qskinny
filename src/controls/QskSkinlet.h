@@ -6,7 +6,6 @@
 #ifndef QSK_SKINLET_H
 #define QSK_SKINLET_H 1
 
-#include "QskGlobal.h"
 #include "QskAspect.h"
 
 #include <qnamespace.h>

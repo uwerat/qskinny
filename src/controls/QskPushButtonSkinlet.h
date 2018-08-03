@@ -6,7 +6,6 @@
 #ifndef QSK_PUSH_BUTTON_SKINLET_H
 #define QSK_PUSH_BUTTON_SKINLET_H
 
-#include "QskGlobal.h"
 #include "QskSkinlet.h"
 
 class QskPushButton;

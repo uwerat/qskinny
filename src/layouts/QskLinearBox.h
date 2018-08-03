@@ -6,7 +6,6 @@
 #ifndef QSK_LINEAR_BOX_H
 #define QSK_LINEAR_BOX_H
 
-#include "QskGlobal.h"
 #include "QskIndexedLayoutBox.h"
 
 class QSK_EXPORT QskLinearBox : public QskIndexedLayoutBox

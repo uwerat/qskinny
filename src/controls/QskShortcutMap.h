@@ -6,9 +6,7 @@
 #ifndef QSK_SHORTCUT_MAP_H
 #define QSK_SHORTCUT_MAP_H
 
-#include "QskGlobal.h"
 #include "QskMetaFunction.h"
-
 #include <qquickwindow.h>
 
 class QQuickItem;

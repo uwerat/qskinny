@@ -4,8 +4,9 @@
  *****************************************************************************/
 
 #include "QskTabViewSkinlet.h"
-#include "QskTabBar.h"
 #include "QskTabView.h"
+
+#include "QskTabBar.h"
 
 QskTabViewSkinlet::QskTabViewSkinlet( QskSkin* skin )
     : Inherited( skin )

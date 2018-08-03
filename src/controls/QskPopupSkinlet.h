@@ -6,7 +6,6 @@
 #ifndef QSK_POPUP_SKINLET_H
 #define QSK_POPUP_SKINLET_H
 
-#include "QskGlobal.h"
 #include "QskSkinlet.h"
 
 class QskPopup;

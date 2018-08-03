@@ -6,7 +6,6 @@
 #ifndef QSK_INPUT_GRABBER_H
 #define QSK_INPUT_GRABBER_H 1
 
-#include "QskGlobal.h"
 #include "QskControl.h"
 
 class QskInputGrabber : public QskControl

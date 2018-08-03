@@ -6,9 +6,7 @@
 #ifndef QSK_PAN_GESTURE_RECOGNIZER_H
 #define QSK_PAN_GESTURE_RECOGNIZER_H
 
-#include "QskGlobal.h"
 #include "QskGestureRecognizer.h"
-
 #include <memory>
 
 class QSK_EXPORT QskPanGestureRecognizer : public QskGestureRecognizer

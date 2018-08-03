@@ -1,7 +1,6 @@
 #ifndef QSK_SKIN_TRANSITION_H
 #define QSK_SKIN_TRANSITION_H
 
-#include "QskGlobal.h"
 #include "QskAnimationHint.h"
 #include "QskAspect.h"
 

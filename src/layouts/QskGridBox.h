@@ -6,7 +6,6 @@
 #ifndef QSK_GRID_BOX_H
 #define QSK_GRID_BOX_H
 
-#include "QskGlobal.h"
 #include "QskLayout.h"
 
 class QSK_EXPORT QskGridBox : public QskLayout

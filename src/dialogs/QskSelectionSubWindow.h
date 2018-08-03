@@ -6,7 +6,6 @@
 #ifndef QSK_SELECTION_SUB_WINDOW_H
 #define QSK_SELECTION_SUB_WINDOW_H 1
 
-#include "QskGlobal.h"
 #include "QskInputSubWindow.h"
 
 class QskSelectionDialogBox;

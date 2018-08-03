@@ -6,7 +6,6 @@
 #ifndef QSK_ABSTRACT_BUTTON_H
 #define QSK_ABSTRACT_BUTTON_H
 
-#include "QskGlobal.h"
 #include "QskControl.h"
 
 class QSK_EXPORT QskAbstractButton : public QskControl

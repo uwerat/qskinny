@@ -6,7 +6,6 @@
 #ifndef QSK_CORNER_H
 #define QSK_CORNER_H
 
-#include "QskGlobal.h"
 #include "QskBoxShapeMetrics.h"
 
 #include <qmetatype.h>

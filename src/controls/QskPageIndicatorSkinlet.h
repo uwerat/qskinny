@@ -6,7 +6,6 @@
 #ifndef QSK_PAGE_INDICATOR_SKINLET_H
 #define QSK_PAGE_INDICATOR_SKINLET_H
 
-#include "QskGlobal.h"
 #include "QskSkinlet.h"
 
 class QskPageIndicator;

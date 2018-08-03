@@ -7,7 +7,6 @@
 #define QSK_SIZE_POLICY_H_
 
 #include "QskGlobal.h"
-
 #include <qmetatype.h>
 
 class QDebug;

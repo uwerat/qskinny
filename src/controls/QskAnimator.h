@@ -7,6 +7,7 @@
 #define QSK_ANIMATOR_H
 
 #include "QskGlobal.h"
+
 #include <qeasingcurve.h>
 #include <qobjectdefs.h>
 

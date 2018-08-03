@@ -6,7 +6,6 @@
 #ifndef QSK_SKIN_HINT_TABLE_H
 #define QSK_SKIN_HINT_TABLE_H
 
-#include "QskGlobal.h"
 #include "QskAnimationHint.h"
 #include "QskAspect.h"
 #include "QskBoxBorderColors.h"

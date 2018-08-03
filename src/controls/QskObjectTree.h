@@ -6,7 +6,6 @@
 #ifndef QSK_OBJECT_TREE_H
 #define QSK_OBJECT_TREE_H 1
 
-#include "QskGlobal.h"
 #include "QskControl.h"
 #include "QskWindow.h"
 

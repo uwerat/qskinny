@@ -6,7 +6,6 @@
 #ifndef QSK_STATUS_INDICATOR_H
 #define QSK_STATUS_INDICATOR_H
 
-#include "QskGlobal.h"
 #include "QskControl.h"
 
 class QskGraphic;

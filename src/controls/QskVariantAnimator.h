@@ -6,7 +6,6 @@
 #ifndef QSK_VARIANT_ANIMATOR_H
 #define QSK_VARIANT_ANIMATOR_H
 
-#include "QskGlobal.h"
 #include "QskAnimator.h"
 #include <qvariant.h>
 

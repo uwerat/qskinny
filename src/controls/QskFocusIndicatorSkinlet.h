@@ -6,7 +6,6 @@
 #ifndef QSK_FOCUS_INDICATOR_SKINLET_H
 #define QSK_FOCUS_INDICATOR_SKINLET_H
 
-#include "QskGlobal.h"
 #include "QskSkinlet.h"
 
 class QskFocusIndicator;

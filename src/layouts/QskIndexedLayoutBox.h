@@ -6,7 +6,6 @@
 #ifndef QSK_INDEXED_LAYOUT_BOX_H
 #define QSK_INDEXED_LAYOUT_BOX_H
 
-#include "QskGlobal.h"
 #include "QskLayout.h"
 
 class QSK_EXPORT QskIndexedLayoutBox : public QskLayout

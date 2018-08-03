@@ -6,7 +6,6 @@
 #ifndef QSK_MESSAGE_WINDOW_H
 #define QSK_MESSAGE_WINDOW_H 1
 
-#include "QskGlobal.h"
 #include "QskInputWindow.h"
 
 class QskMessageDialogBox;

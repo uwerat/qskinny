@@ -6,7 +6,6 @@
 #ifndef QSK_BOX_SKINLET_H
 #define QSK_BOX_SKINLET_H
 
-#include "QskGlobal.h"
 #include "QskSkinlet.h"
 
 class QSK_EXPORT QskBoxSkinlet : public QskSkinlet

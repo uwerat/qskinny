@@ -6,7 +6,6 @@
 #ifndef QSK_BOX_BORDER_COLORS_H
 #define QSK_BOX_BORDER_COLORS_H
 
-#include "QskGlobal.h"
 #include "QskNamespace.h"
 
 #include <qcolor.h>

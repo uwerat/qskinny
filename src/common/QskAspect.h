@@ -6,11 +6,9 @@
 #ifndef QSK_ASPECT_H
 #define QSK_ASPECT_H
 
-#include "QskGlobal.h"
 #include "QskFlags.h"
 
 #include <qmetaobject.h>
-
 #include <functional>
 
 #ifdef Q_MOC_RUN
