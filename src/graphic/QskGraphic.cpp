@@ -550,8 +550,8 @@ QRectF QskGraphic::scaledBoundingRect( qreal sx, qreal sy ) const
 
     QRectF rect = transform.mapRect( m_data->pointRect );
 
-    for ( int i = 0; i < m_data->pathInfos.size(); i++ )
-        rect |= m_data->pathInfos[ i ].scaledBoundingRect( sx, sy, scalePens );
+    for ( const auto& info : qskAsConst( m_data->pathInfos ) )
+        rect |= info.scaledBoundingRect( sx, sy, scalePens );
 
     return rect;
 }
@@ -636,10 +636,8 @@ void QskGraphic::render( QPainter* painter, const QRectF& rect,
 
     const bool scalePens = !( m_data->renderHints & RenderPensUnscaled );
 
-    for ( int i = 0; i < m_data->pathInfos.size(); i++ )
+    for ( const auto& info : qskAsConst( m_data->pathInfos ) )
     {
-        const PathInfo info = m_data->pathInfos[ i ];
-
         const double ssx = info.scaleFactorX(
             m_data->pointRect, rect, scalePens );
 

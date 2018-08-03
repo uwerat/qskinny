@@ -47,12 +47,12 @@ static inline QBrush qskSubstitutedBrush(
         bool isModified = false;
 
         QGradientStops stops = gradient->stops();
-        for ( int i = 0; i < stops.size(); i++ )
+        for ( auto& stop : stops )
         {
-            const QColor c = qskSubstitutedColor( substitions, stops[ i ].second );
-            if ( c != stops[ i ].second )
+            const QColor c = qskSubstitutedColor( substitions, stop.second );
+            if ( c != stop.second )
             {
-                stops[ i ].second = c;
+                stop.second = c;
                 isModified = true;
             }
         }
@@ -153,11 +153,11 @@ QskColorFilter::~QskColorFilter()
 
 void QskColorFilter::addColorSubstitution( QRgb from, QRgb to )
 {
-    for ( int i = 0; i < m_substitutions.size(); i++ )
+    for ( auto& substitution : m_substitutions )
     {
-        if ( m_substitutions[ i ].first == from )
+        if ( substitution.first == from )
         {
-            m_substitutions[ i ].second = to;
+            substitution.second = to;
             return;
         }
     }
@@ -227,14 +227,12 @@ QVariant QskColorFilter::interpolate(
 
 QDebug operator<<( QDebug debug, const QskColorFilter& filter )
 {
-    const QVector< QPair< QRgb, QRgb > >& s = filter.substitutions();
-
     QDebugStateSaver saver( debug );
     debug.nospace();
 
     debug << "Filter" << '(';
-    for ( int i = 0; i < s.count(); i++ )
-        debug << '[' << s[ i ].first << "->" << s[ i ].second << "]";
+    for ( const auto& s : filter.substitutions() )
+        debug << '[' << s.first << "->" << s.second << "]";
     debug << ')';
 
     return debug;
