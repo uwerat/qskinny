@@ -16,13 +16,15 @@ class QSK_EXPORT QskSubWindow : public QskPopup
     Q_PROPERTY( bool decorated READ isDecorated
         WRITE setDecorated NOTIFY decoratedChanged )
 
-    Q_PROPERTY( QString title READ title WRITE setTitle NOTIFY titleChanged )
+    Q_PROPERTY( QString title READ title
+        WRITE setTitle NOTIFY titleChanged )
+
     Q_PROPERTY( WindowButtons windowButtons READ windowButtons
         WRITE setWindowButtons NOTIFY windowButtonsChanged )
 
     using Inherited = QskPopup;
 
-public:
+  public:
     enum WindowButton
     {
         MinimizeButton = 0x1,
@@ -55,18 +57,18 @@ public:
     QSizeF contentsSizeHint() const override;
     QRectF layoutRect() const override;
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void titleChanged();
     void decoratedChanged();
     void windowButtonsChanged();
 
-protected:
+  protected:
     bool event( QEvent* ) override;
 
     void itemChange( QQuickItem::ItemChange,
         const QQuickItem::ItemChangeData& ) override;
 
-private:
+  private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

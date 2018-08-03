@@ -4,13 +4,13 @@
  *****************************************************************************/
 
 #include "QskBoxClipNode.h"
+#include "QskBoxBorderMetrics.h"
 #include "QskBoxRenderer.h"
 #include "QskBoxShapeMetrics.h"
-#include "QskBoxBorderMetrics.h"
 #include "QskFunctions.h"
 
-static inline uint qskMetricsHash( const QskBoxShapeMetrics& shape,
-    const QskBoxBorderMetrics& border )
+static inline uint qskMetricsHash(
+    const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& border )
 {
     uint hash = 13000;
 
@@ -18,9 +18,9 @@ static inline uint qskMetricsHash( const QskBoxShapeMetrics& shape,
     return border.hash( hash );
 }
 
-QskBoxClipNode::QskBoxClipNode():
-    m_hash( 0 ),
-    m_geometry( QSGGeometry::defaultAttributes_Point2D(), 0 )
+QskBoxClipNode::QskBoxClipNode()
+    : m_hash( 0 )
+    , m_geometry( QSGGeometry::defaultAttributes_Point2D(), 0 )
 {
     setGeometry( &m_geometry );
 }

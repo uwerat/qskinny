@@ -4,14 +4,14 @@
  *****************************************************************************/
 
 #include "QskGraphicImageProvider.h"
-#include "QskGraphicTextureFactory.h"
-#include "QskGraphicProvider.h"
 #include "QskGraphic.h"
+#include "QskGraphicProvider.h"
+#include "QskGraphicTextureFactory.h"
 
 QskGraphicImageProvider::QskGraphicImageProvider(
-        const QString& providerId, ImageType type ):
-    QQuickImageProvider( type, 0 ),
-    m_providerId( providerId )
+        const QString& providerId, ImageType type )
+    : QQuickImageProvider( type, 0 )
+    , m_providerId( providerId )
 {
 }
 
@@ -24,8 +24,8 @@ QString QskGraphicImageProvider::graphicProviderId() const
     return m_providerId;
 }
 
-QImage QskGraphicImageProvider::requestImage( const QString& id,
-    QSize* size, const QSize& requestedSize )
+QImage QskGraphicImageProvider::requestImage(
+    const QString& id, QSize* size, const QSize& requestedSize )
 {
     // mutex ???
 
@@ -39,7 +39,7 @@ QImage QskGraphicImageProvider::requestImage( const QString& id,
         return dummy;
     }
 
-    const QskGraphic* graphic = requestGraphic( id  );
+    const QskGraphic* graphic = requestGraphic( id );
     if ( graphic == nullptr )
         return QImage();
 
@@ -51,8 +51,8 @@ QImage QskGraphicImageProvider::requestImage( const QString& id,
     return graphic->toImage( sz, Qt::KeepAspectRatio );
 }
 
-QPixmap QskGraphicImageProvider::requestPixmap( const QString& id,
-    QSize* size, const QSize& requestedSize )
+QPixmap QskGraphicImageProvider::requestPixmap(
+    const QString& id, QSize* size, const QSize& requestedSize )
 {
     if ( requestedSize.width() == 0 || requestedSize.height() == 0 )
     {
@@ -64,7 +64,7 @@ QPixmap QskGraphicImageProvider::requestPixmap( const QString& id,
         return dummy;
     }
 
-    const QskGraphic* graphic = requestGraphic( id  );
+    const QskGraphic* graphic = requestGraphic( id );
     if ( graphic == nullptr )
         return QPixmap();
 
@@ -82,7 +82,7 @@ QQuickTextureFactory* QskGraphicImageProvider::requestTexture(
     if ( requestedSize.width() == 0 || requestedSize.height() == 0 )
         return nullptr;
 
-    const QskGraphic* graphic = requestGraphic( id  );
+    const QskGraphic* graphic = requestGraphic( id );
     if ( graphic == nullptr )
         return nullptr;
 
@@ -119,7 +119,7 @@ QSize QskGraphicImageProvider::effectiveSize(
     {
         const auto f = requestedSize.width() / defaultSize.width();
         return QSize( requestedSize.width(),
-            static_cast<int>( f * defaultSize.height() ) );
+            static_cast< int >( f * defaultSize.height() ) );
     }
 
     if ( requestedSize.width() < 0 )
@@ -131,4 +131,3 @@ QSize QskGraphicImageProvider::effectiveSize(
 
     return defaultSize.toSize();
 }
-

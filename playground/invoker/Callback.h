@@ -12,7 +12,7 @@ class QObject;
 
 class Callback
 {
-public:
+  public:
     Callback();
 
     Callback( const QObject*, const QskMetaFunction& );
@@ -26,7 +26,7 @@ public:
     const QObject* context() const;
     const QskMetaInvokable& invokable() const;
 
-private:
+  private:
     QObject* m_context;
     QskMetaInvokable m_invokable;
 };

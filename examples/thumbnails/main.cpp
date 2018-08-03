@@ -3,20 +3,20 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#include <SkinnyShortcut.h>
 #include <SkinnyShapeFactory.h>
+#include <SkinnyShortcut.h>
 
-#include <QskScrollArea.h>
-#include <QskWindow.h>
-#include <QskPushButton.h>
-#include <QskLinearBox.h>
-#include <QskObjectCounter.h>
-#include <QskGraphic.h>
-#include <QskBoxBorderMetrics.h>
-#include <QskBoxShapeMetrics.h>
 #include <QskAspect.h>
 #include <QskBoxBorderColors.h>
+#include <QskBoxBorderMetrics.h>
+#include <QskBoxShapeMetrics.h>
 #include <QskFocusIndicator.h>
+#include <QskGraphic.h>
+#include <QskLinearBox.h>
+#include <QskObjectCounter.h>
+#include <QskPushButton.h>
+#include <QskScrollArea.h>
+#include <QskWindow.h>
 
 #include <QGuiApplication>
 #include <QPainter>
@@ -50,7 +50,7 @@ static QColor randomColor()
         "DarkSlateGray"
     };
 
-    const int index = qrand() % int( ( sizeof( colors ) / sizeof( colors[0] ) ) );
+    const int index = qrand() % int( ( sizeof( colors ) / sizeof( colors[ 0 ] ) ) );
     return QColor( colors[ index ] );
 }
 
@@ -61,9 +61,9 @@ static int randomShape()
 
 class Thumbnail : public QskPushButton
 {
-public:
-    Thumbnail( const QColor& color, int shape, QQuickItem* parentItem ):
-        QskPushButton( parentItem )
+  public:
+    Thumbnail( const QColor& color, int shape, QQuickItem* parentItem )
+        : QskPushButton( parentItem )
     {
         using namespace SkinnyShapeFactory;
 
@@ -92,9 +92,9 @@ public:
 
 class IconGrid : public QskLinearBox
 {
-public:
-    IconGrid( QQuickItem* parentItem = nullptr ):
-        QskLinearBox( Qt::Horizontal, gridSize, parentItem )
+  public:
+    IconGrid( QQuickItem* parentItem = nullptr )
+        : QskLinearBox( Qt::Horizontal, gridSize, parentItem )
     {
         setMargins( 20 );
         setSpacing( 20 );
@@ -102,16 +102,16 @@ public:
         for ( int col = 0; col < gridSize; col++ )
         {
             for ( int row = 0; row < gridSize; row++ )
-                (void) new Thumbnail( randomColor(), randomShape(), this );
+                ( void ) new Thumbnail( randomColor(), randomShape(), this );
         }
     }
 };
 
 class ScrollArea : public QskScrollArea
 {
-public:
-    ScrollArea( QQuickItem* parentItem = nullptr ) :
-        QskScrollArea( parentItem )
+  public:
+    ScrollArea( QQuickItem* parentItem = nullptr )
+        : QskScrollArea( parentItem )
     {
         using namespace QskAspect;
 
@@ -146,10 +146,10 @@ int main( int argc, char* argv[] )
         with QskListView.
 
         The thumbnails are implemented as buttons, so that we can see if the gesture
-        recognition for the flicking works without stopping the buttons from being functional. 
+        recognition for the flicking works without stopping the buttons from being functional.
 
         This example also shows, that blocking of the scene graph node creation
-        ( QskControl::DeferredUpdate + QskControl::CleanupOnVisibility ) 
+        ( QskControl::DeferredUpdate + QskControl::CleanupOnVisibility )
         could be improved to also respect being inside the window or a clip region.
 
         But here we only want to demonstrate how QskScrollArea works.
@@ -161,8 +161,8 @@ int main( int argc, char* argv[] )
     auto buttonBox = new QskLinearBox( Qt::Horizontal, box );
     buttonBox->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
 
-    new QskPushButton( "Push Me", buttonBox ); 
-    new QskPushButton( "Push Me", buttonBox ); 
+    new QskPushButton( "Push Me", buttonBox );
+    new QskPushButton( "Push Me", buttonBox );
 
     auto scrollArea = new ScrollArea( box );
     scrollArea->setMargins( QMarginsF( 25, 25, 5, 5 ) );

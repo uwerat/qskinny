@@ -9,31 +9,31 @@
 #include <SkinnyShortcut.h>
 
 #include <QskAspect.h>
-#include <QskRgbValue.h>
-#include <QskObjectCounter.h>
-#include <QskWindow.h>
+#include <QskBoxBorderColors.h>
+#include <QskBoxBorderMetrics.h>
+#include <QskBoxShapeMetrics.h>
 #include <QskFocusIndicator.h>
 #include <QskLinearBox.h>
-#include <QskSlider.h>
-#include <QskSeparator.h>
+#include <QskObjectCounter.h>
 #include <QskPushButton.h>
-#include <QskBoxBorderMetrics.h>
-#include <QskBoxBorderColors.h>
-#include <QskBoxShapeMetrics.h>
+#include <QskRgbValue.h>
+#include <QskSeparator.h>
+#include <QskSlider.h>
+#include <QskWindow.h>
 
 #include <QGuiApplication>
 #include <QtMath>
 
 class OtherSlider : public QskSlider
 {
-public:
+  public:
     /*
         Slider overriding many hints from the skin.
         "Preserved" is for horizontal, "Transposed" for vertical orientation
      */
 
-    OtherSlider( QQuickItem* parentItem = nullptr ):
-        QskSlider( parentItem )
+    OtherSlider( QQuickItem* parentItem = nullptr )
+        : QskSlider( parentItem )
     {
         using namespace QskAspect;
         using namespace QskRgbValue;
@@ -79,13 +79,13 @@ public:
             const Aspect aspect = Fill | placement;
             setMetric( aspect | Size, 0 );
         }
-    
+
         // Handle
 
         for ( auto placement : { Preserved, Transposed } )
         {
             const Aspect aspect = Handle | placement;
-        
+
             setBoxBorderMetricsHint( aspect, 1 );
             setBoxShapeHint( aspect, 4 );
 
@@ -107,9 +107,9 @@ public:
 
 class SliderBox : public QskLinearBox
 {
-public:
-    SliderBox( QQuickItem* parentItem = nullptr ):
-        QskLinearBox( Qt::Vertical, parentItem )
+  public:
+    SliderBox( QQuickItem* parentItem = nullptr )
+        : QskLinearBox( Qt::Vertical, parentItem )
     {
         auto slider = new QskSlider( this );
         slider->setMinimum( 0 );
@@ -118,7 +118,7 @@ public:
         slider->setStepSize( 10 );
         slider->setSnap( true );
 
-        (void) new QskSeparator( Qt::Horizontal, this );
+        ( void ) new QskSeparator( Qt::Horizontal, this );
 
         auto otherSlider = new OtherSlider( this );
 
@@ -138,7 +138,7 @@ public:
         {
             if ( QskSlider* slider = qobject_cast< QskSlider* >( itemAtIndex( i ) ) )
             {
-                slider->setObjectName( "Slider " + QString::number(i + 1) );
+                slider->setObjectName( "Slider " + QString::number( i + 1 ) );
                 slider->setValue( slider->minimum() +
                     0.5 * ( slider->maximum() - slider->minimum() ) );
 #if 0
@@ -177,7 +177,7 @@ public:
         }
     }
 
-private:
+  private:
     Qt::Orientation inverted( Qt::Orientation orientation ) const
     {
         return ( orientation == Qt::Horizontal ) ? Qt::Vertical : Qt::Horizontal;

@@ -6,7 +6,7 @@
 
 class Box : public QskBox
 {
-public:
+  public:
     enum FillType
     {
         Unfilled,

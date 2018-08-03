@@ -30,7 +30,7 @@ class QSK_EXPORT QskTextLabel : public QskControl
 
     using Inherited = QskControl;
 
-public:
+  public:
     QSK_SUBCONTROLS( Text )
 
     QskTextLabel( QQuickItem* parent = nullptr );
@@ -59,20 +59,20 @@ public:
 
     QFont font() const;
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void textChanged( const QString& );
     void textColorChanged();
     void textOptionsChanged();
     void fontRoleChanged();
     void alignmentChanged();
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void setText( const QString& );
 
-protected:
+  protected:
     void changeEvent( QEvent* ) override;
 
-private:
+  private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

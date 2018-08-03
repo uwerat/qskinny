@@ -21,7 +21,7 @@ class QSK_EXPORT QskIndexedLayoutBox : public QskLayout
 
     using Inherited = QskLayout;
 
-public:
+  public:
     explicit QskIndexedLayoutBox( QQuickItem* parent = nullptr );
     ~QskIndexedLayoutBox() override;
 
@@ -31,10 +31,11 @@ public:
     void setDefaultAlignment( Qt::Alignment );
     Qt::Alignment defaultAlignment() const;
 
-    Q_INVOKABLE void addItem( QQuickItem*, Qt::Alignment alignment = Qt::Alignment() );
+    Q_INVOKABLE void addItem(
+        QQuickItem*, Qt::Alignment alignment = Qt::Alignment() );
 
-    Q_INVOKABLE void insertItem( int index, QQuickItem*,
-        Qt::Alignment alignment = Qt::Alignment() );
+    Q_INVOKABLE void insertItem(
+        int index, QQuickItem*, Qt::Alignment alignment = Qt::Alignment() );
 
     Q_INVOKABLE void setAlignment( int index, Qt::Alignment );
     Q_INVOKABLE Qt::Alignment alignment( int index ) const;
@@ -45,15 +46,15 @@ public:
     Q_INVOKABLE void setAlignment( QQuickItem*, Qt::Alignment );
     Q_INVOKABLE Qt::Alignment alignment( QQuickItem* ) const;
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void autoAddChildrenChanged();
     void defaultAlignmentChanged();
 
-protected:
+  protected:
     void itemChange( ItemChange, const ItemChangeData& ) override;
     void insertLayoutItem( QskLayoutItem*, int index );
 
-private:
+  private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

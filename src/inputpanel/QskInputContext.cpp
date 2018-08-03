@@ -7,30 +7,30 @@
 #include "QskInputPanel.h"
 #include "QskInputPanelBox.h"
 
-#include "QskLinearBox.h"
 #include "QskDialog.h"
+#include "QskLinearBox.h"
 #include "QskPopup.h"
-#include "QskWindow.h"
 #include "QskQuick.h"
+#include "QskWindow.h"
 
-#include <qpointer.h>
 #include <qguiapplication.h>
 #include <qmap.h>
+#include <qpointer.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qguiapplication_p.h>
 QSK_QT_PRIVATE_END
 
-#include <qpa/qplatformintegration.h>
 #include <qpa/qplatforminputcontext.h>
+#include <qpa/qplatformintegration.h>
 
 namespace
 {
     class Panel final : public QskInputPanel
     {
-    public:
-        Panel( QQuickItem* parent = nullptr ):
-            QskInputPanel( parent )
+      public:
+        Panel( QQuickItem* parent = nullptr )
+            : QskInputPanel( parent )
         {
             setAutoLayoutChildren( true );
 
@@ -68,13 +68,13 @@ namespace
             m_box->setPrediction( prediction );
         }
 
-    private:
+      private:
         QskInputPanelBox* m_box;
     };
 
     class Channel
     {
-    public:
+      public:
         // item receiving the input
         QPointer< QQuickItem > item;
 
@@ -88,7 +88,7 @@ namespace
 
     class ChannelTable
     {
-    public:
+      public:
         inline Channel* currentChannel() const
         {
             const auto object = QGuiApplication::focusObject();
@@ -126,10 +126,9 @@ namespace
             {
                 if ( const auto panel = it.value().panel )
                 {
-                    if ( ( item == panel )
-                        || qskIsAncestorOf( panel, item ) )
+                    if ( ( item == panel ) || qskIsAncestorOf( panel, item ) )
                     {
-                        return const_cast< Channel*>( &it.value() );
+                        return const_cast< Channel* >( &it.value() );
                     }
                 }
             }
@@ -147,7 +146,7 @@ namespace
             m_map.remove( window );
         }
 
-    private:
+      private:
         QMap< const QQuickWindow*, Channel > m_map;
     };
 }
@@ -194,8 +193,7 @@ QskInputContext* QskInputContext::instance()
 
 class QskInputContext::PrivateData
 {
-public:
-
+  public:
     inline QskInputPanel* createPanel( QskInputContext* context ) const
     {
         QskInputPanel* panel = nullptr;
@@ -229,7 +227,7 @@ public:
         const auto alignment = panel->alignment() & Qt::AlignVertical_Mask;
         popup->setOverlay( alignment == Qt::AlignVCenter );
 
-        switch( alignment )
+        switch ( alignment )
         {
             case Qt::AlignTop:
             {
@@ -257,11 +255,11 @@ public:
         auto window = new QskWindow();
 
         window->setFlags( window->flags() & Qt::Dialog );
-        //window->setModality( Qt::ApplicationModal );
+        // window->setModality( Qt::ApplicationModal );
         window->setAutoLayoutChildren( true );
-    #if 0
+#if 0
         window->setFlags( Qt::Tool | Qt::WindowDoesNotAcceptFocus );
-    #endif
+#endif
 
         panel->setParentItem( window->contentItem() );
 
@@ -272,8 +270,8 @@ public:
     QPointer< QskInputContextFactory > factory;
 };
 
-QskInputContext::QskInputContext():
-    m_data( new PrivateData() )
+QskInputContext::QskInputContext()
+    : m_data( new PrivateData() )
 {
     setObjectName( "InputContext" );
 }
@@ -342,7 +340,7 @@ QRectF QskInputContext::panelRect() const
         As we can have more than panel at the same time we
         better don't return any geometry
      */
-    
+
     return QRectF();
 }
 
@@ -368,7 +366,7 @@ void QskInputContext::showPanel( const QQuickItem* item )
     auto panel = m_data->createPanel( this );
 
     auto channel = m_data->channels.insert( item->window() );
-    channel->item = const_cast< QQuickItem*>( item );
+    channel->item = const_cast< QQuickItem* >( item );
     channel->panel = panel;
 
     if ( QskDialog::instance()->policy() == QskDialog::TopLevelWindow )
@@ -478,8 +476,8 @@ void QskInputContext::commitPrediction( bool )
      */
 }
 
-QskInputContextFactory::QskInputContextFactory( QObject* parent ):
-    QObject( parent )
+QskInputContextFactory::QskInputContextFactory( QObject* parent )
+    : QObject( parent )
 {
 }
 

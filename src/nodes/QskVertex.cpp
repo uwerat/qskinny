@@ -65,4 +65,3 @@ void QskVertex::debugGeometry( const QSGGeometry& geometry )
         qskDebugGeometry( lines, lineCount );
     }
 }
-

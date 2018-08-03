@@ -15,7 +15,7 @@ class QskStandardSymbol
 {
     Q_GADGET
 
-public:
+  public:
     enum Type
     {
         NoSymbol = -1,

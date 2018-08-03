@@ -19,12 +19,13 @@ class QSK_EXPORT QskTabView : public QskControl
         WRITE setOrientation NOTIFY orientationChanged )
 
     Q_PROPERTY( int count READ count NOTIFY countChanged FINAL )
+
     Q_PROPERTY( int currentIndex READ currentIndex
         WRITE setCurrentIndex NOTIFY currentIndexChanged FINAL )
 
     typedef QskControl Inherited;
 
-public:
+  public:
     QSK_SUBCONTROLS( TabBar, Page )
 
     QskTabView( QQuickItem* parent = nullptr );
@@ -62,19 +63,19 @@ public:
 
     QSizeF contentsSizeHint() const override;
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void setCurrentIndex( int index );
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void currentIndexChanged( int index );
     void countChanged();
     void orientationChanged();
 
-protected:
+  protected:
     bool event( QEvent* event ) override;
     void updateLayout() override;
 
-private:
+  private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

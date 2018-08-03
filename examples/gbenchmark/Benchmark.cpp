@@ -9,14 +9,13 @@
 #include <QskGraphicIO.h>
 #include <QskGraphicTextureFactory.h>
 
+#include <QDebug>
 #include <QDir>
+#include <QElapsedTimer>
+#include <QPainter>
+#include <QQuickWindow>
 #include <QStringList>
 #include <QSvgRenderer>
-#include <QSvgRenderer>
-#include <QDebug>
-#include <QElapsedTimer>
-#include <QQuickWindow>
-#include <QPainter>
 
 bool Benchmark::run( const QString& dirName )
 {
@@ -33,18 +32,18 @@ bool Benchmark::run( const QString& dirName )
     QStringList qvgFiles = svgFiles;
     for ( int i = 0; i < qvgFiles.size(); i++ )
     {
-        svgFiles[i].prepend( "/" );
-        svgFiles[i].prepend( dirName );
+        svgFiles[ i ].prepend( "/" );
+        svgFiles[ i ].prepend( dirName );
 
-        qvgFiles[i].replace( ".svg", ".qvg" );
-        qvgFiles[i].prepend( "/" );
-        qvgFiles[i].prepend( qvgPath );
+        qvgFiles[ i ].replace( ".svg", ".qvg" );
+        qvgFiles[ i ].prepend( "/" );
+        qvgFiles[ i ].prepend( qvgPath );
     }
 
     QVector< QskGraphic > graphics( qvgFiles.size() );
     QVector< QSvgRenderer* > renderers( svgFiles.size() );
 
-    qint64 msElapsed[6];
+    qint64 msElapsed[ 6 ];
 
     QElapsedTimer timer;
 
@@ -55,15 +54,15 @@ bool Benchmark::run( const QString& dirName )
 
         for ( int i = 0; i < svgFiles.size(); i++ )
         {
-            renderers[i] = new QSvgRenderer();
-            if ( !renderers[i]->load( svgFiles[i] ) )
+            renderers[ i ] = new QSvgRenderer();
+            if ( !renderers[ i ]->load( svgFiles[ i ] ) )
             {
-                qCritical() << "Can't load" << svgFiles[i];
+                qCritical() << "Can't load" << svgFiles[ i ];
                 return false;
             }
         }
 
-        msElapsed[0] = timer.elapsed();
+        msElapsed[ 0 ] = timer.elapsed();
     }
 
     {
@@ -73,13 +72,12 @@ bool Benchmark::run( const QString& dirName )
 
         for ( int i = 0; i < renderers.size(); i++ )
         {
-            QPainter painter( &graphics[i] );
-            renderers[i]->render( &painter );
+            QPainter painter( &graphics[ i ] );
+            renderers[ i ]->render( &painter );
             painter.end();
         }
 
-
-        msElapsed[1] = timer.elapsed();
+        msElapsed[ 1 ] = timer.elapsed();
     }
 
     {
@@ -89,10 +87,10 @@ bool Benchmark::run( const QString& dirName )
 
         for ( int i = 0; i < graphics.size(); i++ )
         {
-            QskGraphicIO::write( graphics[i], qvgFiles[i] );
+            QskGraphicIO::write( graphics[ i ], qvgFiles[ i ] );
         }
 
-        msElapsed[2] = timer.elapsed();
+        msElapsed[ 2 ] = timer.elapsed();
     }
 
     {
@@ -102,15 +100,15 @@ bool Benchmark::run( const QString& dirName )
 
         for ( int i = 0; i < qvgFiles.size(); i++ )
         {
-            graphics[i] = QskGraphicIO::read( qvgFiles[i] );
-            if ( graphics[i].isNull() )
+            graphics[ i ] = QskGraphicIO::read( qvgFiles[ i ] );
+            if ( graphics[ i ].isNull() )
             {
-                qCritical() << "Can't load" << qvgFiles[i];
+                qCritical() << "Can't load" << qvgFiles[ i ];
                 return false;
             }
         }
 
-        msElapsed[3] = timer.elapsed();
+        msElapsed[ 3 ] = timer.elapsed();
     }
 
     {
@@ -125,16 +123,16 @@ bool Benchmark::run( const QString& dirName )
         {
             const auto textureId = QskGraphicTextureFactory::createTexture(
                 QskGraphicTextureFactory::OpenGL, targetRect, Qt::KeepAspectRatio,
-                graphics[i], colorFilter );
+                graphics[ i ], colorFilter );
 
             if ( textureId == 0 )
             {
-                qCritical() << "Can't render texture for" << qvgFiles[i];
+                qCritical() << "Can't render texture for" << qvgFiles[ i ];
                 return false;
             }
         }
 
-        msElapsed[4] = timer.elapsed();
+        msElapsed[ 4 ] = timer.elapsed();
     }
 
     {
@@ -149,25 +147,25 @@ bool Benchmark::run( const QString& dirName )
         {
             const auto textureId = QskGraphicTextureFactory::createTexture(
                 QskGraphicTextureFactory::Raster, targetRect, Qt::KeepAspectRatio,
-                graphics[i], colorFilter );
+                graphics[ i ], colorFilter );
 
             if ( textureId == 0 )
             {
-                qCritical() << "Can't render texture for" << qvgFiles[i];
+                qCritical() << "Can't render texture for" << qvgFiles[ i ];
                 return false;
             }
         }
 
-        msElapsed[5] = timer.elapsed();
+        msElapsed[ 5 ] = timer.elapsed();
     }
 
     qDebug() << "#Icons:" << svgFiles.count() <<
-        "Compiled:" << msElapsed[0] <<
-        "Converted:" << msElapsed[1] <<
-        "Stored:" << msElapsed[2] <<
-        "Loaded:" << msElapsed[3] <<
-        "Rendered OpenGL:" << msElapsed[4] <<
-        "Rendered Raster:" << msElapsed[5];
+        "Compiled:" << msElapsed[ 0 ] <<
+        "Converted:" << msElapsed[ 1 ] <<
+        "Stored:" << msElapsed[ 2 ] <<
+        "Loaded:" << msElapsed[ 3 ] <<
+        "Rendered OpenGL:" << msElapsed[ 4 ] <<
+        "Rendered Raster:" << msElapsed[ 5 ];
 
     svgDir.rmdir( qvgPath );
 

@@ -22,9 +22,9 @@ class QSK_EXPORT QskTextOptions
     Q_PROPERTY( FontSizeMode fontSizeMode READ fontSizeMode WRITE setFontSizeMode )
     Q_PROPERTY( int maximumLineCount READ maximumLineCount WRITE setMaximumLineCount )
 
-public:
+  public:
     enum FontSizeMode
-    {   
+    {
         FixedSize,
         HorizontalFit,
         VerticalFit,
@@ -73,7 +73,7 @@ public:
 
     int textFlags() const;
 
-private:
+  private:
     int m_maximumLineCount;
     FontSizeMode m_fontSizeMode : 2;
     WrapMode m_wrapMode : 4;
@@ -86,7 +86,7 @@ inline bool QskTextOptions::operator!=( const QskTextOptions& other ) const
     return !( *this == other );
 }
 
-QSK_EXPORT uint qHash( const QskTextOptions &, uint seed = 0) noexcept;
+QSK_EXPORT uint qHash( const QskTextOptions&, uint seed = 0 ) noexcept;
 
 #ifndef QT_NO_DEBUG_STREAM
 QSK_EXPORT QDebug operator<<( QDebug, const QskTextOptions& );

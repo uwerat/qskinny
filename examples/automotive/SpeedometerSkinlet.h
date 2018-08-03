@@ -9,8 +9,7 @@ class SpeedometerSkinlet : public QskSkinlet
 {
     Q_GADGET
 
-public:
-
+  public:
     enum NodeRole
     {
         PanelRole,
@@ -24,10 +23,11 @@ public:
     QRectF subControlRect( const QskSkinnable* skinnable,
         QskAspect::Subcontrol ) const override;
 
-protected:
-    virtual QSGNode* updateSubNode( const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const override;
+  protected:
+    virtual QSGNode* updateSubNode( const QskSkinnable*,
+        quint8 nodeRole, QSGNode* node ) const override;
 
-private:
+  private:
     QSGNode* updatePanelNode( const Speedometer*, QSGNode* ) const;
     QSGNode* updateLabelsNode( const Speedometer*, QSGNode* ) const;
     QSGNode* updateNeedleNode( const Speedometer*, QSGNode* ) const;

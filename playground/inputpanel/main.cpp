@@ -8,26 +8,26 @@
 
 #include <QskDialog.h>
 #include <QskFocusIndicator.h>
+#include <QskInputContext.h>
+#include <QskInputPanel.h>
 #include <QskLinearBox.h>
 #include <QskListView.h>
 #include <QskTextInput.h>
-#include <QskInputPanel.h>
-#include <QskInputContext.h>
 
-#include <QskWindow.h>
 #include <QskAspect.h>
+#include <QskWindow.h>
 
 #include <QskObjectCounter.h>
 
-#include <QGuiApplication>
 #include <QFontMetricsF>
+#include <QGuiApplication>
 
-#define STRINGIFY(x) #x
-#define STRING(x) STRINGIFY(x)
+#define STRINGIFY( x ) #x
+#define STRING( x ) STRINGIFY( x )
 
 static inline QString nativeLocaleString( const QLocale& locale )
 {
-    switch( locale.language() )
+    switch ( locale.language() )
     {
         case QLocale::Bulgarian:
             return QStringLiteral( "български език" );
@@ -46,7 +46,7 @@ static inline QString nativeLocaleString( const QLocale& locale )
 
         case QLocale::English:
         {
-            switch( locale.country() )
+            switch ( locale.country() )
             {
                 case QLocale::Canada:
                 case QLocale::UnitedStates:
@@ -92,7 +92,7 @@ static inline QString nativeLocaleString( const QLocale& locale )
         case QLocale::Romanian:
             return QStringLiteral( "Română" );
 
-        case QLocale::Russia:
+        case QLocale::Russian:
             return QStringLiteral( "Русский" );
 
         case QLocale::Slovenian:
@@ -114,9 +114,9 @@ static inline QString nativeLocaleString( const QLocale& locale )
 
 class InputBox : public QskLinearBox
 {
-public:
-    InputBox( QQuickItem* parentItem = nullptr ):
-        QskLinearBox( Qt::Vertical, parentItem )
+  public:
+    InputBox( QQuickItem* parentItem = nullptr )
+        : QskLinearBox( Qt::Vertical, parentItem )
     {
         setExtraSpacingAt( Qt::BottomEdge | Qt::RightEdge );
 
@@ -150,10 +150,10 @@ class LocaleListView final : public QskListView
 {
     Q_OBJECT
 
-public:
-    LocaleListView( QQuickItem* parentItem = nullptr ):
-        QskListView( parentItem ),
-        m_maxWidth( 0.0 )
+  public:
+    LocaleListView( QQuickItem* parentItem = nullptr )
+        : QskListView( parentItem )
+        , m_maxWidth( 0.0 )
     {
         for ( auto language :
             {
@@ -166,7 +166,6 @@ public:
                 QLocale::Slovak, QLocale::Turkish, QLocale::Chinese
             } )
         {
-
             if ( language == QLocale::English )
             {
                 append( QLocale( QLocale::English, QLocale::UnitedStates ) );
@@ -227,21 +226,21 @@ public:
 
     QVariant valueAt( int row, int ) const override
     {
-        return m_values[row].first;
+        return m_values[ row ].first;
     }
 
     QLocale localeAt( int row ) const
     {
         if ( row >= 0 && row < m_values.size() )
-            return m_values[row].second;
+            return m_values[ row ].second;
 
         return QLocale();
     }
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void selected( const QLocale& );
 
-private:
+  private:
     inline void append( const QLocale& locale )
     {
         m_values += qMakePair( nativeLocaleString( locale ), locale );
@@ -253,7 +252,7 @@ private:
 
 class Window : public QskWindow
 {
-public:
+  public:
     Window()
     {
         populate();
@@ -266,7 +265,7 @@ public:
         box->setMargins( 20 );
 
         auto listView = new LocaleListView( box );
-        auto inputBox =  new InputBox( box );
+        auto inputBox = new InputBox( box );
 
         /*
             Disable Qt::ClickFocus, so that the input panel stays open

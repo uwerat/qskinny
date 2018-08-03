@@ -430,8 +430,8 @@
 
 namespace QskRgbValue
 {
-#define RGB(name, value) static constexpr const unsigned int name = value;
-QSK_RGB_VALUES
+#define RGB( name, value ) static constexpr const unsigned int name = value;
+    QSK_RGB_VALUES
 #undef RGB
 
     QSK_EXPORT QRgb interpolated( QRgb rgb1, QRgb rgb2, qreal ratio );
@@ -440,7 +440,7 @@ QSK_RGB_VALUES
     inline QColor toTransparent( const QColor& c1, int alpha = 0 )
     {
         const auto alphaU = static_cast< uint >( alpha );
-        return QColor::fromRgba( ( c1.rgb() & ColorMask ) | ( ( alphaU & 0xffu ) << 24 ) ); 
+        return QColor::fromRgba( ( c1.rgb() & ColorMask ) | ( ( alphaU & 0xffu ) << 24 ) );
     }
 
     inline QColor toTransparent( Qt::GlobalColor color, int alpha = 0 )

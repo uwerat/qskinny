@@ -4,15 +4,15 @@
  *****************************************************************************/
 
 #include "QskGridBox.h"
-#include "QskLayoutItem.h"
 #include "QskLayoutEngine.h"
+#include "QskLayoutItem.h"
 
 class QskGridBox::PrivateData
 {
-public:
-    PrivateData():
-        isExpanding( false ),
-        unlimitedSpanned( 0 )
+  public:
+    PrivateData()
+        : isExpanding( false )
+        , unlimitedSpanned( 0 )
     {
     }
 
@@ -20,9 +20,9 @@ public:
     unsigned int unlimitedSpanned;
 };
 
-QskGridBox::QskGridBox( QQuickItem* parent ):
-    QskLayout( parent ),
-    m_data( new PrivateData() )
+QskGridBox::QskGridBox( QQuickItem* parent )
+    : QskLayout( parent )
+    , m_data( new PrivateData() )
 {
 }
 
@@ -34,8 +34,7 @@ void QskGridBox::addItem( QQuickItem* item,
     int row, int column, int rowSpan, int columnSpan,
     Qt::Alignment alignment )
 {
-    QskLayoutItem* layoutItem =
-        new QskLayoutItem( item, row, column, rowSpan, columnSpan );
+    auto layoutItem = new QskLayoutItem( item, row, column, rowSpan, columnSpan );
     layoutItem->setAlignment( alignment );
 
     const int index = itemCount(); // position and index doesn't match
@@ -169,8 +168,8 @@ void QskGridBox::layoutItemRemoved( QskLayoutItem* layoutItem, int index )
         if ( m_data->unlimitedSpanned > 0 )
             engine.adjustSpans( cells.height(), cells.width() );
 
-        engine.removeRows( cells.width(), numPendingColumns,  Qt::Horizontal );
-        engine.removeRows( cells.height(), numPendingRows,  Qt::Vertical );
+        engine.removeRows( cells.width(), numPendingColumns, Qt::Horizontal );
+        engine.removeRows( cells.height(), numPendingRows, Qt::Vertical );
     }
 }
 
@@ -431,13 +430,13 @@ QSizeF QskGridBox::contentsSizeHint() const
     if ( !isActive() )
         return QSizeF( -1, -1 );
 
-    if ( itemCount() == 0 ) 
+    if ( itemCount() == 0 )
         return QSizeF( 0, 0 );
-    
+
     return engine().sizeHint( Qt::PreferredSize );
 }
 
-qreal QskGridBox::heightForWidth( qreal width ) const 
+qreal QskGridBox::heightForWidth( qreal width ) const
 {
     const QSizeF constraint( width, -1 );
     return engine().sizeHint( Qt::PreferredSize, constraint ).height();

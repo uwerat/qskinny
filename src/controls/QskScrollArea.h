@@ -23,7 +23,7 @@ class QSK_EXPORT QskScrollArea : public QskScrollView
 
     using Inherited = QskScrollView;
 
-public:
+  public:
     QskScrollArea( QQuickItem* parent = nullptr );
     ~QskScrollArea() override;
 
@@ -36,17 +36,17 @@ public:
     void setAutoScrollFocusedItem( bool on );
     bool autoScrollFocusItem() const;
 
-    void ensureItemVisible( const QQuickItem * );
+    void ensureItemVisible( const QQuickItem* );
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void itemResizableChanged();
     void scrolledItemChanged();
     void autoScrollFocusedItemChanged();
 
-protected:
+  protected:
     void updateLayout() override;
 
-private:
+  private:
     void translateItem();
     void adjustItem();
 

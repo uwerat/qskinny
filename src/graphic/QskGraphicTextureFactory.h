@@ -6,14 +6,13 @@
 #ifndef QSK_GRAPHIC_TEXTURE_FACTORY_H
 #define QSK_GRAPHIC_TEXTURE_FACTORY_H
 
-#include "QskGlobal.h"
-#include "QskGraphic.h"
 #include "QskColorFilter.h"
+#include "QskGraphic.h"
 #include <qquickimageprovider.h>
 
 class QSK_EXPORT QskGraphicTextureFactory : public QQuickTextureFactory
 {
-public:
+  public:
     enum RenderMode
     {
         Raster,
@@ -40,11 +39,10 @@ public:
 
     QImage image() const override;
 
-    static uint createTexture(
-        RenderMode, const QRect& rect, Qt::AspectRatioMode,
-        const QskGraphic& , const QskColorFilter& );
+    static uint createTexture( RenderMode, const QRect& rect,
+        Qt::AspectRatioMode, const QskGraphic&, const QskColorFilter& );
 
-private:
+  private:
     QskGraphic m_graphic;
     QskColorFilter m_colorFilter;
     QSize m_size;
@@ -70,7 +68,6 @@ inline const QskColorFilter& QskGraphicTextureFactory::colorFilter() const
 {
     return m_colorFilter;
 }
-
 
 inline void QskGraphicTextureFactory::setSize( const QSize& size )
 {

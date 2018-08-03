@@ -14,7 +14,7 @@ class QSK_EXPORT QskBox : public QskControl
 
     using Inherited = QskControl;
 
-public:
+  public:
     QSK_SUBCONTROLS( Panel )
 
     QskBox( QQuickItem* parent = nullptr );

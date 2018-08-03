@@ -4,21 +4,21 @@
  *****************************************************************************/
 
 #include "FlowLayoutPage.h"
-#include "TestRectangle.h"
 #include "ButtonBox.h"
+#include "TestRectangle.h"
 
 #include <QskAspect.h>
-#include <QskTextLabel.h>
 #include <QskLinearBox.h>
 #include <QskRgbValue.h>
+#include <QskTextLabel.h>
 
 namespace
 {
     class Box : public QskLinearBox
     {
-    public:
-        Box( QQuickItem* parent = nullptr ):
-            QskLinearBox( Qt::Horizontal, 5, parent )
+      public:
+        Box( QQuickItem* parent = nullptr )
+            : QskLinearBox( Qt::Horizontal, 5, parent )
         {
             setObjectName( "Box" );
 
@@ -72,7 +72,7 @@ namespace
             setDimension( dimension() + count );
         }
 
-    private:
+      private:
         void addRectangle( const char* colorName )
         {
             TestRectangle* rect = new TestRectangle( colorName );
@@ -82,8 +82,8 @@ namespace
     };
 }
 
-FlowLayoutPage::FlowLayoutPage( QQuickItem* parent ):
-    QskLinearBox( Qt::Vertical, parent )
+FlowLayoutPage::FlowLayoutPage( QQuickItem* parent )
+    : QskLinearBox( Qt::Vertical, parent )
 {
     setMargins( 10 );
     setBackgroundColor( QskRgbValue::LightSteelBlue );

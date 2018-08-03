@@ -4,11 +4,11 @@
  *****************************************************************************/
 
 #include "QskPageIndicatorSkinlet.h"
-#include "QskPageIndicator.h"
 #include "QskBoxNode.h"
+#include "QskPageIndicator.h"
 
-QskPageIndicatorSkinlet::QskPageIndicatorSkinlet( QskSkin* skin ):
-    QskSkinlet(skin)
+QskPageIndicatorSkinlet::QskPageIndicatorSkinlet( QskSkin* skin )
+    : QskSkinlet( skin )
 {
     setNodeRoles( { PanelRole, BulletsRole } );
 }
@@ -30,12 +30,12 @@ QRectF QskPageIndicatorSkinlet::subControlRect(
     return Inherited::subControlRect( skinnable, subControl );
 }
 
-QSGNode* QskPageIndicatorSkinlet::updateSubNode( const QskSkinnable* skinnable,
-    quint8 nodeRole, QSGNode* node ) const
+QSGNode* QskPageIndicatorSkinlet::updateSubNode(
+    const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
     const auto indicator = static_cast< const QskPageIndicator* >( skinnable );
 
-    switch( nodeRole )
+    switch ( nodeRole )
     {
         case PanelRole:
         {
@@ -54,12 +54,15 @@ QSGNode* QskPageIndicatorSkinlet::updateSubNode( const QskSkinnable* skinnable,
 QRectF QskPageIndicatorSkinlet::bulletRect(
     const QskPageIndicator* indicator, const QRectF& rect, int index ) const
 {
-    const qreal szNormal = indicator->metric( QskPageIndicator::Bullet | QskAspect::Size );
-    const qreal szHighlighted = indicator->metric( QskPageIndicator::Highlighted | QskAspect::Size );
+    const qreal szNormal =
+        indicator->metric( QskPageIndicator::Bullet | QskAspect::Size );
+
+    const qreal szHighlighted =
+        indicator->metric( QskPageIndicator::Highlighted | QskAspect::Size );
 
     // scale bullet size if we are in between a transition:
     qreal indexDiff = qAbs( indicator->currentIndex() - index );
-    if (indexDiff > ( indicator->count() - 1 ) )
+    if ( indexDiff > ( indicator->count() - 1 ) )
         indexDiff = ( indicator->count() - indicator->currentIndex() ); // wrapping
 
     const qreal sz =  ( indexDiff < 1 ) ?
@@ -92,7 +95,7 @@ QRectF QskPageIndicatorSkinlet::bulletRect(
         s2 = szNormal + qAbs( szHighlighted - szNormal ) * indexDiff;
     }
     else if ( ( indicator->currentIndex() > ( indicator->count() - 1 ) &&
-                index > ( indicator->currentIndex() - indicator->count() + 1 ) ) )
+        index > ( indicator->currentIndex() - indicator->count() + 1 ) ) )
     {
         // wrapping case:
         qreal wrappingDiff = indexDiff;
@@ -125,7 +128,7 @@ QRectF QskPageIndicatorSkinlet::bulletRect(
 }
 
 QSGNode* QskPageIndicatorSkinlet::updateBulletsNode(
-    const QskPageIndicator* indicator, QSGNode* node) const
+    const QskPageIndicator* indicator, QSGNode* node ) const
 {
     if ( indicator->count() == 0 )
         return nullptr;

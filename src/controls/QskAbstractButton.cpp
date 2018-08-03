@@ -36,27 +36,27 @@ static QskAbstractButton* qskCheckedSibling( const QskAbstractButton* button )
 
 class QskAbstractButton::PrivateData
 {
-public:
-    PrivateData():
-        autoRepeatDelay( 300 ),
-        autoRepeatInterval( 100 ),
-        exclusive( false ),
-        autoRepeat( false )
+  public:
+    PrivateData()
+        : autoRepeatDelay( 300 )
+        , autoRepeatInterval( 100 )
+        , exclusive( false )
+        , autoRepeat( false )
     {
     }
 
     QBasicTimer repeatTimer;
 
-    int autoRepeatDelay; // milliseconds
+    int autoRepeatDelay;    // milliseconds
     int autoRepeatInterval; // milliseconds
 
     bool exclusive : 1;
     bool autoRepeat : 1;
 };
 
-QskAbstractButton::QskAbstractButton( QQuickItem* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData() )
+QskAbstractButton::QskAbstractButton( QQuickItem* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData() )
 {
     setFocusPolicy( Qt::StrongFocus );
     setAcceptedMouseButtons( Qt::LeftButton );
@@ -247,7 +247,7 @@ bool QskAbstractButton::exclusive() const
 bool QskAbstractButton::event( QEvent* event )
 {
     const auto eventType = static_cast< int >( event->type() );
-    switch( eventType )
+    switch ( eventType )
     {
         case QEvent::Shortcut:
         {

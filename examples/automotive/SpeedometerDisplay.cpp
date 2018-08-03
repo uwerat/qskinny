@@ -10,15 +10,15 @@
 #include <QTimer>
 #include <QtGlobal>
 
-SpeedometerDisplay::SpeedometerDisplay( QQuickItem *parent ) :
-    QskControl( parent ),
-    m_box( new QskLinearBox( Qt::Horizontal, this ) ),
-    m_revCounter( new Speedometer( m_box ) ),
-    m_revCounterText( new QskTextLabel( QStringLiteral( "x 1000 min^-1" ), m_revCounter ) ),
-    m_speedometer( new Speedometer( m_box ) ),
-    m_speedometerText( new QskTextLabel( QStringLiteral( "km/h" ), m_speedometer ) ),
-    m_fuelGauge( new Speedometer( m_box ) ),
-    m_fuelGaugeText( new QskTextLabel( QStringLiteral( "fuel" ), m_fuelGauge ) )
+SpeedometerDisplay::SpeedometerDisplay( QQuickItem* parent )
+    : QskControl( parent )
+    , m_box( new QskLinearBox( Qt::Horizontal, this ) )
+    , m_revCounter( new Speedometer( m_box ) )
+    , m_revCounterText( new QskTextLabel( QStringLiteral( "x 1000 min^-1" ), m_revCounter ) )
+    , m_speedometer( new Speedometer( m_box ) )
+    , m_speedometerText( new QskTextLabel( QStringLiteral( "km/h" ), m_speedometer ) )
+    , m_fuelGauge( new Speedometer( m_box ) )
+    , m_fuelGaugeText( new QskTextLabel( QStringLiteral( "fuel" ), m_fuelGauge ) )
 {
     qsrand( static_cast< uint >( QTime::currentTime().msec() ) );
 
@@ -72,7 +72,6 @@ SpeedometerDisplay::SpeedometerDisplay( QQuickItem *parent ) :
     timer->setInterval( 16 );
     timer->start();
 
-
     m_fuelGauge->setObjectName( QStringLiteral( "Fuel Gauge" ) );
     m_fuelGauge->setMinimum( 195 );
     m_fuelGauge->setMaximum( 345 );
@@ -82,7 +81,6 @@ SpeedometerDisplay::SpeedometerDisplay( QQuickItem *parent ) :
     fuelGaugeLabels.append( { "0", "", "1/2", "", "1/1" } );
 
     m_fuelGauge->setLabels( fuelGaugeLabels );
-
 
     m_revCounterText->setMargins( 50 );
     m_speedometerText->setMargins( 50 );

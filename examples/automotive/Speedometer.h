@@ -7,7 +7,7 @@ class Speedometer : public QskRangeControl
 {
     Q_OBJECT
 
-public:
+  public:
     QSK_SUBCONTROLS( Panel, Labels, NeedleHead, Needle )
 
     Speedometer( QQuickItem* parent = nullptr );
@@ -15,7 +15,7 @@ public:
     QVector< QString > labels() const;
     void setLabels( const QVector< QString >& labels );
 
-private:
+  private:
     QVector< QString > m_labels;
 };
 

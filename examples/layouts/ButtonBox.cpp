@@ -6,15 +6,15 @@
 #include "ButtonBox.h"
 #include <QskPushButton.h>
 
-ButtonBox::ButtonBox( QQuickItem* parent ):
-    QskLinearBox( Qt::Horizontal, parent )
+ButtonBox::ButtonBox( QQuickItem* parent )
+    : QskLinearBox( Qt::Horizontal, parent )
 {
     setObjectName( "ButtonBox" );
     setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 }
 
-void ButtonBox::addButton( const QString& text,
-    std::function< void() > func, bool autoRepeat )
+void ButtonBox::addButton(
+    const QString& text, std::function< void() > func, bool autoRepeat )
 {
     QskPushButton* button = new QskPushButton( text );
     button->setAutoRepeat( autoRepeat );

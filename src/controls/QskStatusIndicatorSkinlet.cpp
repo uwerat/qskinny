@@ -4,14 +4,14 @@
  *****************************************************************************/
 
 #include "QskStatusIndicatorSkinlet.h"
-#include "QskStatusIndicator.h"
-#include "QskGraphic.h"
-#include "QskColorFilter.h"
 #include "QskAspect.h"
+#include "QskColorFilter.h"
 #include "QskFunctions.h"
+#include "QskGraphic.h"
+#include "QskStatusIndicator.h"
 
-QskStatusIndicatorSkinlet::QskStatusIndicatorSkinlet( QskSkin* skin ):
-    Inherited( skin )
+QskStatusIndicatorSkinlet::QskStatusIndicatorSkinlet( QskSkin* skin )
+    : Inherited( skin )
 {
     setNodeRoles( { GraphicRole } );
 }
@@ -36,7 +36,7 @@ QSGNode* QskStatusIndicatorSkinlet::updateSubNode(
 {
     const auto indicator = static_cast< const QskStatusIndicator* >( skinnable );
 
-    switch( nodeRole )
+    switch ( nodeRole )
     {
         case GraphicRole:
         {
@@ -61,7 +61,7 @@ QRect QskStatusIndicatorSkinlet::graphicRect(
     sz.scale( graphicRect.size(), Qt::KeepAspectRatio );
 
     return qskAlignedRect( graphicRect,
-        ( int )sz.width(), ( int )sz.height(), Qt::AlignCenter );
+        ( int ) sz.width(), ( int ) sz.height(), Qt::AlignCenter );
 }
 
 QSGNode* QskStatusIndicatorSkinlet::updateGraphicNode(

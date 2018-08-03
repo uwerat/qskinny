@@ -17,7 +17,7 @@ class QSK_EXPORT QskPopupSkinlet : public QskSkinlet
 
     using Inherited = QskSkinlet;
 
-public:
+  public:
     enum NodeRole
     {
         OverlayRole
@@ -29,11 +29,11 @@ public:
     QRectF subControlRect( const QskSkinnable*,
         QskAspect::Subcontrol ) const override;
 
-protected:
+  protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 
-private:
+  private:
     QSGNode* updateOverlayNode( const QskPopup*, QSGNode* ) const;
 };
 

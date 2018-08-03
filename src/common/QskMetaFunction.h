@@ -59,20 +59,20 @@ namespace QskMetaFunctionTraits
     template< typename T, size_t i, IsMemberFunction< T >* = nullptr >
     constexpr typename std::enable_if < i < argumentCount< T >(), int >::type argumentType()
     {
-        return ConnectionTypes< typename FunctionPointer< T >::Arguments >::types()[i];
+        return ConnectionTypes< typename FunctionPointer< T >::Arguments >::types()[ i ];
     }
 
     template< typename T, size_t i, IsStaticFunction< T >* = nullptr >
     constexpr typename std::enable_if < i < argumentCount< T >(), int >::type argumentType()
     {
-        return ConnectionTypes< typename FunctionPointer< T >::Arguments >::types()[i];
+        return ConnectionTypes< typename FunctionPointer< T >::Arguments >::types()[ i ];
     }
 
     template< typename T, size_t i, IsFunctor< T >* = nullptr >
     constexpr typename std::enable_if < i < argumentCount< T >(), int >::type argumentType()
     {
         using Traits = FunctionPointer< decltype( &T::operator() ) >;
-        return ConnectionTypes< typename Traits::Arguments >::types()[i];
+        return ConnectionTypes< typename Traits::Arguments >::types()[ i ];
     }
 }
 
@@ -80,7 +80,7 @@ class QSK_EXPORT QskMetaFunction
 {
     Q_GADGET
 
-public:
+  public:
     enum Type
     {
         Invalid = -1,
@@ -135,10 +135,10 @@ public:
     class FunctionCall;
     FunctionCall* functionCall() const;
 
-protected:
+  protected:
     QskMetaFunction( FunctionCall* );
 
-private:
+  private:
     FunctionCall* m_functionCall;
 };
 

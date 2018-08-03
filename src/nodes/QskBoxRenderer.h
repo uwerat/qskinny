@@ -6,7 +6,6 @@
 #ifndef QSK_BOX_RENDERER_H
 #define QSK_BOX_RENDERER_H
 
-#include "QskGlobal.h"
 #include "QskBoxShapeMetrics.h"
 
 #include <qrect.h>
@@ -24,7 +23,7 @@ namespace QskVertex
 
 class QSK_EXPORT QskBoxRenderer
 {
-public:
+  public:
     void renderBorder( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&, QSGGeometry& );
 
@@ -37,31 +36,34 @@ public:
 
     class Quad
     {
-    public:
-        inline constexpr Quad():
-            left( 0.0 ),
-            top( 0.0 ),
-            right( 0.0 ),
-            bottom( 0.0 ),
-            width( 0.0 ),
-            height( 0.0 )
+      public:
+        inline constexpr Quad()
+            : left( 0.0 )
+            , top( 0.0 )
+            , right( 0.0 )
+            , bottom( 0.0 )
+            , width( 0.0 )
+            , height( 0.0 )
         {
         }
 
-        inline Quad( const QRectF& rect ):
-            left( rect.left() ),
-            top( rect.top() ),
-            right( rect.right() ),
-            bottom( rect.bottom() ),
-            width( rect.width() ),
-            height( rect.height() )
+        inline Quad( const QRectF& rect )
+            : left( rect.left() )
+            , top( rect.top() )
+            , right( rect.right() )
+            , bottom( rect.bottom() )
+            , width( rect.width() )
+            , height( rect.height() )
         {
         }
 
         inline bool operator==( const Quad& other ) const
         {
-            return ( left == other.left ) && ( right == other.right )
-                && ( top == other.top ) && ( bottom == other.bottom );
+            return
+               ( left == other.left ) &&
+               ( right == other.right ) &&
+               ( top == other.top ) &&
+               ( bottom == other.bottom );
         }
 
         inline bool operator!=( const Quad& other ) const
@@ -79,7 +81,7 @@ public:
 
     class Metrics
     {
-    public:
+      public:
         Metrics( const QRectF&, const QskBoxShapeMetrics&, const QskBoxBorderMetrics& );
 
         Quad outerQuad;
@@ -97,14 +99,14 @@ public:
 
             int stepCount;
 
-        } corner[4];
+        } corner[ 4 ];
 
         bool isBorderRegular;
         bool isRadiusRegular;
         bool isTotallyCropped;
     };
 
-private:
+  private:
     void renderRectFill( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&, QSGGeometry& );
 

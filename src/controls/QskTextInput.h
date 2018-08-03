@@ -44,7 +44,7 @@ class QSK_EXPORT QskTextInput : public QskControl
 
     using Inherited = QskControl;
 
-public:
+  public:
     QSK_SUBCONTROLS( Panel, Text, PanelSelected, TextSelected )
     QSK_STATES( ReadOnly, Editing )
 
@@ -71,7 +71,7 @@ public:
         PasswordEchoOnEdit
     };
 
-    Q_ENUM(EchoMode)
+    Q_ENUM( EchoMode )
 
     QskTextInput( QQuickItem* parent = nullptr );
     QskTextInput( const QString& text, QQuickItem* parent = nullptr );
@@ -99,7 +99,7 @@ public:
     QFont font() const;
 
     bool isReadOnly() const;
-    void setReadOnly(bool);
+    void setReadOnly( bool );
 
     int cursorPosition() const;
     void setCursorPosition( int );
@@ -127,7 +127,7 @@ public:
     QString displayText() const;
     QString preeditText() const;
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 )
     bool overwriteMode() const;
     void setOverwriteMode( bool );
 #endif
@@ -136,7 +136,7 @@ public:
     virtual bool fixup();
 
     QVariant inputMethodQuery( Qt::InputMethodQuery ) const override;
-    QVariant inputMethodQuery( Qt::InputMethodQuery, QVariant argument) const;
+    QVariant inputMethodQuery( Qt::InputMethodQuery, QVariant argument ) const;
 
     bool canUndo() const;
     bool canRedo() const;
@@ -148,11 +148,11 @@ public:
 
     QSizeF contentsSizeHint() const override;
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void setText( const QString& );
     void setEditing( bool );
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void editingChanged( bool );
 
     void activationModesChanged();
@@ -160,7 +160,7 @@ Q_SIGNALS:
 
     void textChanged( const QString& );
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 9, 0 )
     void textEdited( const QString& );
 #endif
 
@@ -170,7 +170,7 @@ Q_SIGNALS:
     void fontRoleChanged();
     void alignmentChanged();
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 )
     void overwriteModeChanged( bool );
 #endif
 
@@ -183,7 +183,7 @@ Q_SIGNALS:
     void validatorChanged();
     void inputMaskChanged( const QString& );
 
-protected:
+  protected:
     bool event( QEvent* ) override;
 
     void inputMethodEvent( QInputMethodEvent* ) override;
@@ -200,9 +200,9 @@ protected:
     void keyReleaseEvent( QKeyEvent* ) override;
 
     void updateLayout() override;
-    void updateNode( QSGNode*) override;
+    void updateNode( QSGNode* ) override;
 
-private:
+  private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

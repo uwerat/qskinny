@@ -22,9 +22,9 @@ static inline void qskSetRejectOnClose( QskDialogSubWindow* subWindow, bool on )
     }
 }
 
-QskDialogSubWindow::QskDialogSubWindow( QQuickItem* parent ):
-    Inherited( parent ),
-    m_result( QskDialog::Rejected )
+QskDialogSubWindow::QskDialogSubWindow( QQuickItem* parent )
+    : Inherited( parent )
+    , m_result( QskDialog::Rejected )
 {
     qskSetRejectOnClose( this, true );
 }

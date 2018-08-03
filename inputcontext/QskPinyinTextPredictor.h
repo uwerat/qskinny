@@ -13,18 +13,18 @@ class QSK_EXPORT QskPinyinTextPredictor : public QskTextPredictor
 {
     using Inherited = QskTextPredictor;
 
-public:
+  public:
     QskPinyinTextPredictor( QObject* = nullptr );
     ~QskPinyinTextPredictor() override;
 
     int candidateCount() const override;
     QString candidate( int ) const override;
 
-protected:
+  protected:
     void request( const QString& ) override;
     void reset() override;
 
-private:
+  private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

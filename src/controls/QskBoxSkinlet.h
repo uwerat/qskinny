@@ -15,7 +15,7 @@ class QSK_EXPORT QskBoxSkinlet : public QskSkinlet
 
     using Inherited = QskSkinlet;
 
-public:
+  public:
     enum NodeRole
     {
         PanelRole,
@@ -33,4 +33,3 @@ protected:
 };
 
 #endif
-

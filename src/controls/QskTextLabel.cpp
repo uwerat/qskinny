@@ -15,9 +15,9 @@ QSK_SUBCONTROL( QskTextLabel, Text )
 
 class QskTextLabel::PrivateData
 {
-public:
-    PrivateData( const QString& txt ):
-        text( txt )
+  public:
+    PrivateData( const QString& txt )
+        : text( txt )
     {
         effectiveTextFormat = textOptions.format();
     }
@@ -42,14 +42,14 @@ public:
     mutable QskTextOptions::TextFormat effectiveTextFormat;
 };
 
-QskTextLabel::QskTextLabel( QQuickItem* parent ):
-    QskTextLabel( QString(), parent )
+QskTextLabel::QskTextLabel( QQuickItem* parent )
+    : QskTextLabel( QString(), parent )
 {
 }
 
-QskTextLabel::QskTextLabel( const QString& text, QQuickItem* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData( text ) )
+QskTextLabel::QskTextLabel( const QString& text, QQuickItem* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData( text ) )
 {
     initSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Fixed );
 }
@@ -163,7 +163,7 @@ void QskTextLabel::setAlignment( Qt::Alignment alignment )
     Q_EMIT alignmentChanged();
 }
 
-QFont QskTextLabel::font() const 
+QFont QskTextLabel::font() const
 {
     return effectiveFont( QskTextLabel::Text );
 }
@@ -199,8 +199,8 @@ qreal QskTextLabel::heightForWidth( qreal width ) const
     }
 
     QSizeF size( width, maxHeight );
-    size = QskTextRenderer::textSize( m_data->text, font,
-        m_data->effectiveOptions(), size );
+    size = QskTextRenderer::textSize(
+        m_data->text, font, m_data->effectiveOptions(), size );
 
     return qCeil( size.height() );
 }
@@ -225,7 +225,7 @@ qreal QskTextLabel::widthForHeight( qreal height ) const
 
 void QskTextLabel::changeEvent( QEvent* event )
 {
-    switch( event->type() )
+    switch ( event->type() )
     {
         case QEvent::LocaleChange:
         {

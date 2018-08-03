@@ -26,7 +26,7 @@ class QSK_EXPORT QskInputPanelBox : public QskBox
     Q_PROPERTY( QString inputPrompt READ inputPrompt
         WRITE setInputPrompt NOTIFY inputPromptChanged )
 
-public:
+  public:
     QSK_SUBCONTROLS( Panel, ProxyPanel, ProxyText )
 
     enum PanelHint
@@ -56,21 +56,21 @@ public:
     QskAspect::Subcontrol effectiveSubcontrol(
         QskAspect::Subcontrol ) const override;
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void panelHintsChanged();
     void inputPromptChanged( const QString& );
 
     void keySelected( int keyCode );
     void predictiveTextSelected( int );
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void setInputPrompt( const QString& );
     void setPrediction( const QStringList& );
 
-protected:
+  protected:
     void keyPressEvent( QKeyEvent* ) override;
 
-private:
+  private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

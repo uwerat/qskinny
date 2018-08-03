@@ -7,8 +7,8 @@
 #include "QskControl.h"
 #include "QskSizePolicy.h"
 
-static inline qreal qskHintFor( const QQuickItem* item,
-    const char* method, qreal widthOrHeight )
+static inline qreal qskHintFor(
+    const QQuickItem* item, const char* method, qreal widthOrHeight )
 {
     if ( item->metaObject()->indexOfMethod( method ) >= 0 )
     {
@@ -83,11 +83,11 @@ QSizeF QskLayoutConstraint::effectiveConstraint(
         "maximumSize"
     };
 
-    const QVariant v = item->property( properties[whichHint] );
+    const QVariant v = item->property( properties[ whichHint ] );
     if ( v.canConvert( QMetaType::QSizeF ) )
         constraint = v.toSizeF();
 
-    switch( whichHint )
+    switch ( whichHint )
     {
         case Qt::MinimumSize:
         {
@@ -141,5 +141,3 @@ QskSizePolicy QskLayoutConstraint::sizePolicy( const QQuickItem* item )
 
     return QskSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Preferred );
 }
-
-

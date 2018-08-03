@@ -2,15 +2,15 @@
 #define QSK_SKIN_TRANSITION_H
 
 #include "QskGlobal.h"
-#include "QskAspect.h"
 #include "QskAnimationHint.h"
+#include "QskAspect.h"
 
 class QskSkin;
 class QVariant;
 
 class QSK_EXPORT QskSkinTransition
 {
-public:
+  public:
     enum Type
     {
         Color = 1,
@@ -40,11 +40,11 @@ public:
     static QVariant animatedHint( QskAspect::Aspect );
     static QVariant animatedGraphicFilter( int graphicRole );
 
-protected:
+  protected:
     virtual void updateSkin( QskSkin*, QskSkin* );
 
-private:
-    QskSkin* m_skins[2];
+  private:
+    QskSkin* m_skins[ 2 ];
     QskAnimationHint m_animationHint;
     Type m_mask : 2;
 };

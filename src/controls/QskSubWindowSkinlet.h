@@ -17,7 +17,7 @@ class QSK_EXPORT QskSubWindowSkinlet : public QskPopupSkinlet
 
     using Inherited = QskPopupSkinlet;
 
-public:
+  public:
     enum NodeRole
     {
         PanelRole = QskPopupSkinlet::OverlayRole + 1,
@@ -27,18 +27,16 @@ public:
     Q_INVOKABLE QskSubWindowSkinlet( QskSkin* = nullptr );
     ~QskSubWindowSkinlet() override;
 
-    QRectF subControlRect(
-        const QskSkinnable*, QskAspect::Subcontrol ) const override;
+    QRectF subControlRect( const QskSkinnable*,
+        QskAspect::Subcontrol ) const override;
 
-protected:
+  protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 
-private:
+  private:
     qreal titleBarHeight( const QskSubWindow* ) const;
     QRectF titleBarRect( const QskSubWindow* ) const;
-
 };
 
 #endif
-

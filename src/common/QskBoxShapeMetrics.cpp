@@ -29,9 +29,9 @@ static inline qreal qskAbsoluted( qreal length, qreal percentage )
 }
 
 QskBoxShapeMetrics::QskBoxShapeMetrics(
-        qreal radiusX, qreal radiusY, Qt::SizeMode sizeMode ):
-    m_sizeMode( sizeMode ),
-    m_aspectRatioMode( Qt::KeepAspectRatio )
+        qreal radiusX, qreal radiusY, Qt::SizeMode sizeMode )
+    : m_sizeMode( sizeMode )
+    , m_aspectRatioMode( Qt::KeepAspectRatio )
 {
     setRadius( radiusX, radiusY );
 }
@@ -50,7 +50,7 @@ bool QskBoxShapeMetrics::operator==( const QskBoxShapeMetrics& other ) const
 
     for ( size_t i = 0; i < 4; i++ )
     {
-        if ( m_radii[i] != other.m_radii[i] )
+        if ( m_radii[ i ] != other.m_radii[ i ] )
             return false;
     }
 
@@ -68,8 +68,10 @@ void QskBoxShapeMetrics::setAspectRatioMode( Qt::AspectRatioMode aspectRatioMode
 }
 
 void QskBoxShapeMetrics::setRadius(
-    qreal topLeftX, qreal topLeftY, qreal topRightX, qreal topRightY,
-    qreal bottomLeftX, qreal bottomLeftY, qreal bottomRightX, qreal bottomRightY )
+    qreal topLeftX, qreal topLeftY,
+    qreal topRightX, qreal topRightY,
+    qreal bottomLeftX, qreal bottomLeftY,
+    qreal bottomRightX, qreal bottomRightY )
 {
     m_radii[ Qt::TopLeftCorner ].setWidth( qMax( topLeftX, 0.0 ) );
     m_radii[ Qt::TopLeftCorner ].setHeight( qMax( topLeftY, 0.0 ) );
@@ -96,23 +98,23 @@ void QskBoxShapeMetrics::setRadius( Qt::Corner corner, qreal radiusX, qreal radi
 bool QskBoxShapeMetrics::isRectellipse() const
 {
     const QSizeF* r = m_radii;
-    return ( r[1] == r[0] ) && ( r[2] == r[1] ) && ( r[3] == r[2] );
+    return ( r[ 1 ] == r[ 0 ] ) && ( r[ 2 ] == r[ 1 ] ) && ( r[ 3 ] == r[ 2 ] );
 }
 
 bool QskBoxShapeMetrics::isRectangle() const
 {
     const QSizeF* r = m_radii;
 
-    if ( ( r[0].width() > 0.0 ) || ( r[0].height() > 0.0 ) )
+    if ( ( r[ 0 ].width() > 0.0 ) || ( r[ 0 ].height() > 0.0 ) )
         return false;
 
-    if ( ( r[1].width() > 0.0 ) || ( r[1].height() > 0.0 ) )
+    if ( ( r[ 1 ].width() > 0.0 ) || ( r[ 1 ].height() > 0.0 ) )
         return false;
 
-    if ( ( r[2].width() > 0.0 ) || ( r[2].height() > 0.0 ) )
+    if ( ( r[ 2 ].width() > 0.0 ) || ( r[ 2 ].height() > 0.0 ) )
         return false;
 
-    if ( ( r[3].width() > 0.0 ) || ( r[3].height() > 0.0 ) )
+    if ( ( r[ 3 ].width() > 0.0 ) || ( r[ 3 ].height() > 0.0 ) )
         return false;
 
     return true;
@@ -123,7 +125,7 @@ QskBoxShapeMetrics QskBoxShapeMetrics::rotated() const
     QskBoxShapeMetrics other;
 
     for ( int i = 0; i < 4; i++ )
-        other.m_radii[i] = m_radii[i].transposed();
+        other.m_radii[ i ] = m_radii[ i ].transposed();
 
     other.m_sizeMode = m_sizeMode;
 
@@ -151,7 +153,7 @@ QskBoxShapeMetrics QskBoxShapeMetrics::toAbsolute( const QSizeF& size ) const
             const qreal rx = qskAbsoluted( size.width(), radii.width() );
             const qreal ry = qskAbsoluted( size.height(), radii.height() );
 
-            switch( m_aspectRatioMode )
+            switch ( m_aspectRatioMode )
             {
                 case Qt::IgnoreAspectRatio:
                 {
@@ -185,17 +187,17 @@ QskBoxShapeMetrics QskBoxShapeMetrics::interpolated(
     if ( ( *this == to ) || ( m_sizeMode != to.m_sizeMode ) )
         return to;
 
-    QSizeF radii[4];
-    radii[0] = qskInterpolatedSize( m_radii[0], to.m_radii[0], ratio );
-    radii[1] = qskInterpolatedSize( m_radii[1], to.m_radii[1], ratio );
-    radii[2] = qskInterpolatedSize( m_radii[2], to.m_radii[2], ratio );
-    radii[3] = qskInterpolatedSize( m_radii[3], to.m_radii[3], ratio );
+    QSizeF radii[ 4 ];
+    radii[ 0 ] = qskInterpolatedSize( m_radii[ 0 ], to.m_radii[ 0 ], ratio );
+    radii[ 1 ] = qskInterpolatedSize( m_radii[ 1 ], to.m_radii[ 1 ], ratio );
+    radii[ 2 ] = qskInterpolatedSize( m_radii[ 2 ], to.m_radii[ 2 ], ratio );
+    radii[ 3 ] = qskInterpolatedSize( m_radii[ 3 ], to.m_radii[ 3 ], ratio );
 
     return QskBoxShapeMetrics( to.m_sizeMode, radii );
 }
 
-QVariant QskBoxShapeMetrics::interpolate( const QskBoxShapeMetrics& from,
-    const QskBoxShapeMetrics& to, qreal progress )
+QVariant QskBoxShapeMetrics::interpolate(
+    const QskBoxShapeMetrics& from, const QskBoxShapeMetrics& to, qreal progress )
 {
     return QVariant::fromValue( from.interpolated( to, progress ) );
 }
@@ -232,4 +234,3 @@ QDebug operator<<( QDebug debug, const QskBoxShapeMetrics& metrics )
 }
 
 #endif
-

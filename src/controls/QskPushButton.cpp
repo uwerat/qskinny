@@ -5,14 +5,14 @@
 
 #include "QskPushButton.h"
 #include "QskAspect.h"
-#include "QskCorner.h"
 #include "QskBoxShapeMetrics.h"
+#include "QskCorner.h"
 #include "QskGraphic.h"
 #include "QskGraphicProvider.h"
-#include "QskTextOptions.h"
-#include "QskSkin.h"
 #include "QskSetup.h"
+#include "QskSkin.h"
 #include "QskSkinlet.h"
+#include "QskTextOptions.h"
 
 #include <qfontmetrics.h>
 
@@ -22,10 +22,10 @@ QSK_SUBCONTROL( QskPushButton, Graphic )
 
 class QskPushButton::PrivateData
 {
-public:
-    PrivateData( const QString& txt ):
-        text( txt ),
-        isGraphicSourceDirty( false )
+  public:
+    PrivateData( const QString& txt )
+        : text( txt )
+        , isGraphicSourceDirty( false )
     {
         textOptions.setElideMode( Qt::ElideMiddle );
     }
@@ -39,14 +39,14 @@ public:
     bool isGraphicSourceDirty : 1;
 };
 
-QskPushButton::QskPushButton( QQuickItem* parent ):
-    QskPushButton( QString(), parent )
+QskPushButton::QskPushButton( QQuickItem* parent )
+    : QskPushButton( QString(), parent )
 {
 }
 
-QskPushButton::QskPushButton( const QString& text, QQuickItem* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData( text ) )
+QskPushButton::QskPushButton( const QString& text, QQuickItem* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData( text ) )
 {
     initSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Fixed );
 }
@@ -158,7 +158,7 @@ void QskPushButton::setGraphicSource( const QUrl& url )
     Q_EMIT graphicSourceChanged();
 }
 
-void QskPushButton::setGraphicSource(const QString &source)
+void QskPushButton::setGraphicSource( const QString& source )
 {
     setGraphicSource( QUrl( source ) );
 }
@@ -250,12 +250,12 @@ QSizeF QskPushButton::contentsSizeHint() const
 
 void QskPushButton::changeEvent( QEvent* event )
 {
-    switch( event->type() )
+    switch ( event->type() )
     {
         case QEvent::StyleChange:
         {
-            if ( !m_data->graphicSource.isEmpty()
-                && qskSetup->skin()->hasGraphicProvider() )
+            if ( !m_data->graphicSource.isEmpty() &&
+                qskSetup->skin()->hasGraphicProvider() )
             {
                 // we might need to reload from a different skin
                 m_data->isGraphicSourceDirty = true;

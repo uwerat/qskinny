@@ -1,3 +1,8 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * This file may be used under the terms of the QSkinny License, Version 1.0
+ *****************************************************************************/
+
 #include "QskGraphicNode.h"
 
 static inline uint qskHash(
@@ -10,7 +15,7 @@ static inline uint qskHash(
     if ( substitutions.size() > 0 )
     {
         hash = qHashBits( substitutions.constData(),
-            substitutions.size() * sizeof( substitutions[0] ), hash );
+            substitutions.size() * sizeof( substitutions[ 0 ] ), hash );
     }
 
     const auto& commands = graphic.commands();
@@ -29,8 +34,8 @@ static inline uint qskHash(
     return hash;
 }
 
-QskGraphicNode::QskGraphicNode():
-    m_hash( 0 )
+QskGraphicNode::QskGraphicNode()
+    : m_hash( 0 )
 {
 }
 
@@ -47,8 +52,8 @@ void QskGraphicNode::setGraphic(
     if ( !isTextureDirty )
     {
         const auto oldRect = QskTextureNode::rect();
-        isTextureDirty = ( rect.width() != static_cast<int>( oldRect.width() ) )
-            || ( rect.height() != static_cast<int>( oldRect.height() ) );
+        isTextureDirty = ( rect.width() != static_cast< int >( oldRect.width() ) ) ||
+                         ( rect.height() != static_cast< int >( oldRect.height() ) );
     }
 
     QskTextureNode::setRect( rect );
@@ -64,8 +69,8 @@ void QskGraphicNode::setGraphic(
     {
         const QRect textureRect( 0, 0, rect.width(), rect.height() );
 
-        uint textureId = QskGraphicTextureFactory::createTexture( renderMode,
-            textureRect, Qt::IgnoreAspectRatio, graphic, colorFilter );
+        uint textureId = QskGraphicTextureFactory::createTexture(
+            renderMode, textureRect, Qt::IgnoreAspectRatio, graphic, colorFilter );
 
         QskTextureNode::setTextureId( textureId );
     }

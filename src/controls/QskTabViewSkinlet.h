@@ -17,7 +17,7 @@ class QSK_EXPORT QskTabViewSkinlet : public QskSkinlet
 
     using Inherited = QskSkinlet;
 
-public:
+  public:
     enum NodeRole
     {
         PageRole
@@ -26,14 +26,14 @@ public:
     Q_INVOKABLE QskTabViewSkinlet( QskSkin* = nullptr );
     ~QskTabViewSkinlet() override;
 
-    QRectF subControlRect(
-        const QskSkinnable*, QskAspect::Subcontrol ) const override;
+    QRectF subControlRect( const QskSkinnable*,
+        QskAspect::Subcontrol ) const override;
 
-protected:
+  protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 
-private:
+  private:
     QRectF pageRect( const QskTabView* ) const;
     QRectF tabBarRect( const QskTabView* ) const;
 };

@@ -15,7 +15,7 @@ class QSK_EXPORT QskTabButtonSkinlet : public QskSkinlet
 
     using Inherited = QskSkinlet;
 
-public:
+  public:
     enum NodeRole
     {
         PanelRole,
@@ -25,12 +25,12 @@ public:
     Q_INVOKABLE QskTabButtonSkinlet( QskSkin* = nullptr );
     ~QskTabButtonSkinlet() override;
 
-    QRectF subControlRect(
-        const QskSkinnable*, QskAspect::Subcontrol ) const override;
+    QRectF subControlRect( const QskSkinnable*,
+        QskAspect::Subcontrol ) const override;
 
-protected:
-    QSGNode* updateSubNode(
-        const QskSkinnable*, quint8 nodeRole, QSGNode* ) const override;
+  protected:
+    QSGNode* updateSubNode( const QskSkinnable*,
+        quint8 nodeRole, QSGNode* ) const override;
 };
 
 #endif

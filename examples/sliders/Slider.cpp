@@ -1,17 +1,17 @@
 #include "Slider.h"
 #include "SliderSkinlet.h"
 
+#include <QskAnimationHint.h>
 #include <QskAspect.h>
-#include <QskRgbValue.h>
 #include <QskBoxShapeMetrics.h>
 #include <QskGradient.h>
-#include <QskAnimationHint.h>
+#include <QskRgbValue.h>
 
 QSK_SUBCONTROL( Slider, Scale )
 QSK_SUBCONTROL( Slider, Decoration )
 
-Slider::Slider( QQuickItem* parentItem ):
-    QskSlider( parentItem )
+Slider::Slider( QQuickItem* parentItem )
+    : QskSlider( parentItem )
 {
     using namespace QskAspect;
 

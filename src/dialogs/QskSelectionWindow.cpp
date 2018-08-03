@@ -6,8 +6,8 @@
 #include "QskSelectionWindow.h"
 #include "QskSelectionSubWindow.h"
 
-QskSelectionWindow::QskSelectionWindow( QWindow* parent ):
-    Inherited( parent )
+QskSelectionWindow::QskSelectionWindow( QWindow* parent )
+    : Inherited( parent )
 {
     auto subWindow = new QskSelectionSubWindow();
 

@@ -18,7 +18,7 @@ class QSK_EXPORT QskDirtyItemFilter : public QObject
 {
     using Inherited = QObject;
 
-public:
+  public:
     QskDirtyItemFilter( QObject* parent = nullptr );
     ~QskDirtyItemFilter() override;
 
@@ -27,7 +27,7 @@ public:
     static void filterDirtyList( QQuickWindow*,
         bool ( *isBlocked )( const QQuickItem* ) );
 
-private:
+  private:
     void beforeSynchronizing( QQuickWindow* );
 
     QSet< QObject* > m_windows;

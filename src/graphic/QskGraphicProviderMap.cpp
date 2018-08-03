@@ -6,9 +6,9 @@
 #include "QskGraphicProviderMap.h"
 #include "QskGraphicProvider.h"
 
-#include <qstring.h>
 #include <qhash.h>
 #include <qpointer.h>
+#include <qstring.h>
 
 static inline QString qskKey( const QString& providerId )
 {
@@ -17,12 +17,12 @@ static inline QString qskKey( const QString& providerId )
 
 class QskGraphicProviderMap::PrivateData
 {
-public:
+  public:
     QHash< QString, QPointer< QskGraphicProvider > > hashTab;
 };
 
-QskGraphicProviderMap::QskGraphicProviderMap():
-    m_data( new PrivateData() )
+QskGraphicProviderMap::QskGraphicProviderMap()
+    : m_data( new PrivateData() )
 {
 }
 

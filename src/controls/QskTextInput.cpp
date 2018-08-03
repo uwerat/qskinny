@@ -29,13 +29,13 @@ QSK_SUBCONTROL( QskTextInput, TextSelected )
 QSK_STATE( QskTextInput, ReadOnly, QskAspect::FirstSystemState << 1 )
 QSK_STATE( QskTextInput, Editing, QskAspect::FirstSystemState << 2 )
 
-static inline void qskBindSignals( const QQuickTextInput* wrappedInput,
-    QskTextInput* input )
+static inline void qskBindSignals(
+    const QQuickTextInput* wrappedInput, QskTextInput* input )
 {
     QObject::connect( wrappedInput, &QQuickTextInput::textChanged,
         input, [ input ] { input->Q_EMIT textChanged( input->text() ); } );
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 9, 0 )
     QObject::connect( wrappedInput, &QQuickTextInput::textEdited,
         input, [ input ] { input->Q_EMIT textEdited( input->text() ); } );
 #endif
@@ -49,7 +49,7 @@ static inline void qskBindSignals( const QQuickTextInput* wrappedInput,
     QObject::connect( wrappedInput, &QQuickTextInput::readOnlyChanged,
         input, &QskTextInput::readOnlyChanged );
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 )
     QObject::connect( wrappedInput, &QQuickTextInput::overwriteModeChanged,
         input, &QskTextInput::overwriteModeChanged );
 #endif
@@ -79,7 +79,7 @@ namespace
     {
         using Inherited = QQuickTextInput;
 
-    public:
+      public:
         TextInput( QskTextInput* );
 
         void setEditing( bool on );
@@ -134,8 +134,8 @@ namespace
         }
     };
 
-    TextInput::TextInput( QskTextInput* textInput ):
-        QQuickTextInput( textInput )
+    TextInput::TextInput( QskTextInput* textInput )
+        : QQuickTextInput( textInput )
     {
         classBegin();
 
@@ -157,7 +157,7 @@ namespace
             return;
 
         setCursorVisible( on );
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
         d->setBlinkingCursorEnabled( on );
 #endif
 
@@ -223,16 +223,16 @@ namespace
 
 class QskTextInput::PrivateData
 {
-public:
+  public:
     TextInput* textInput;
     QString description; // f.e. used as prompt in QskInputPanel
 
     unsigned int activationModes : 3;
 };
 
-QskTextInput::QskTextInput( QQuickItem* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData() )
+QskTextInput::QskTextInput( QQuickItem* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData() )
 {
     m_data->activationModes = ActivationOnMouse | ActivationOnKey;
 
@@ -257,8 +257,8 @@ QskTextInput::QskTextInput( QQuickItem* parent ):
     initSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Fixed );
 }
 
-QskTextInput::QskTextInput( const QString& text, QQuickItem* parent ):
-    QskTextInput( parent )
+QskTextInput::QskTextInput( const QString& text, QQuickItem* parent )
+    : QskTextInput( parent )
 {
     m_data->textInput->setText( text );
 }
@@ -285,7 +285,7 @@ void QskTextInput::keyPressEvent( QKeyEvent* event )
 {
     if ( isEditing() )
     {
-        switch( event->key() )
+        switch ( event->key() )
         {
             case Qt::Key_Enter:
             case Qt::Key_Return:
@@ -367,7 +367,7 @@ void QskTextInput::focusInEvent( QFocusEvent* event )
 {
     if ( m_data->activationModes & ActivationOnFocus )
     {
-        switch( event->reason() )
+        switch ( event->reason() )
         {
             case Qt::ActiveWindowFocusReason:
             case Qt::PopupFocusReason:
@@ -383,7 +383,7 @@ void QskTextInput::focusInEvent( QFocusEvent* event )
 
 void QskTextInput::focusOutEvent( QFocusEvent* event )
 {
-    switch( event->reason() )
+    switch ( event->reason() )
     {
         case Qt::ActiveWindowFocusReason:
         case Qt::PopupFocusReason:
@@ -486,7 +486,7 @@ void QskTextInput::setFontRole( int role )
         resetImplicitSize();
 
         Qt::InputMethodQueries queries = Qt::ImCursorRectangle | Qt::ImFont;
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
         queries |= Qt::ImAnchorRectangle;
 #endif
 
@@ -599,7 +599,7 @@ int QskTextInput::cursorPosition() const
     return m_data->textInput->cursorPosition();
 }
 
-void QskTextInput::setCursorPosition(int pos)
+void QskTextInput::setCursorPosition( int pos )
 {
     m_data->textInput->setCursorPosition( pos );
 }
@@ -609,7 +609,7 @@ int QskTextInput::maxLength() const
     return m_data->textInput->maxLength();
 }
 
-void QskTextInput::setMaxLength(int length)
+void QskTextInput::setMaxLength( int length )
 {
     m_data->textInput->setMaxLength( length );
 }
@@ -693,7 +693,7 @@ QString QskTextInput::preeditText() const
     return d->m_textLayout.preeditAreaText();
 }
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 )
 
 bool QskTextInput::overwriteMode() const
 {
@@ -718,19 +718,19 @@ bool QskTextInput::fixup()
 }
 
 QVariant QskTextInput::inputMethodQuery(
-    Qt::InputMethodQuery property) const
+    Qt::InputMethodQuery property ) const
 {
     return inputMethodQuery( property, QVariant() );
 }
 
 QVariant QskTextInput::inputMethodQuery(
-    Qt::InputMethodQuery query, QVariant argument) const
+    Qt::InputMethodQuery query, QVariant argument ) const
 {
-    switch( query )
+    switch ( query )
     {
         case Qt::ImEnabled:
         {
-            return QVariant( (bool)( flags() & ItemAcceptsInputMethod ) );
+            return QVariant( ( bool ) ( flags() & ItemAcceptsInputMethod ) );
         }
         case Qt::ImFont:
         {
@@ -741,7 +741,7 @@ QVariant QskTextInput::inputMethodQuery(
             return locale();
         }
         case Qt::ImCursorRectangle:
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
         case Qt::ImInputItemClipRectangle:
 #endif
         {
@@ -774,7 +774,7 @@ Qt::InputMethodHints QskTextInput::inputMethodHints() const
     return m_data->textInput->inputMethodHints();
 }
 
-void QskTextInput::setInputMethodHints(Qt::InputMethodHints hints )
+void QskTextInput::setInputMethodHints( Qt::InputMethodHints hints )
 {
     if ( m_data->textInput->inputMethodHints() != hints )
     {

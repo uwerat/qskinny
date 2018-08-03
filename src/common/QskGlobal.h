@@ -6,8 +6,8 @@
 #ifndef QSK_GLOBAL_H
 #define QSK_GLOBAL_H
 
-#include <qglobal.h>
 #include <qcompilerdetection.h>
+#include <qglobal.h>
 
 // QSK_VERSION is (major << 16) + (minor << 8) + patch.
 
@@ -39,19 +39,20 @@
 #define QSK_QT_PRIVATE_END \
     QT_WARNING_POP
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
 
 #define qskAsConst qAsConst
 
 #else
 
-template <typename T> struct QskAddConst { typedef const T Type; };
+template < typename T >
+struct QskAddConst { typedef const T Type; };
 
-template <typename T>
-constexpr typename QskAddConst<T>::Type &qskAsConst( T &t ) noexcept { return t; }
+template < typename T >
+constexpr typename QskAddConst< T >::Type& qskAsConst( T& t ) noexcept { return t; }
 
-template <typename T>
-void qskAsConst( const T && ) = delete;
+template< typename T >
+void qskAsConst( const T&& ) = delete;
 
 #endif
 

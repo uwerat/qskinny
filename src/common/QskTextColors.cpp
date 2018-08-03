@@ -6,18 +6,12 @@
 #include "QskTextColors.h"
 #include "QskRgbValue.h"
 
-#include <qvariant.h>
 #include <qhashfunctions.h>
+#include <qvariant.h>
 
 uint QskTextColors::hash( uint seed ) const
 {
-    const QRgb rgb[] =
-    {
-        textColor.rgba(),
-        styleColor.rgba(),
-        linkColor.rgba()
-    };
-
+    const QRgb rgb[] = { textColor.rgba(), styleColor.rgba(), linkColor.rgba() };
     return qHashBits( rgb, sizeof( rgb ), seed );
 }
 
@@ -30,11 +24,10 @@ QskTextColors QskTextColors::interpolated(
     colors.linkColor = QskRgbValue::interpolated( linkColor, to.linkColor, ratio );
 
     return colors;
-
 }
 
-QVariant QskTextColors::interpolate( const QskTextColors& from,
-    const QskTextColors& to, qreal ratio )
+QVariant QskTextColors::interpolate(
+    const QskTextColors& from, const QskTextColors& to, qreal ratio )
 {
     return QVariant::fromValue( from.interpolated( to, ratio ) );
 }
@@ -74,5 +67,3 @@ QDebug operator<<( QDebug debug, const QskTextColors& colors )
 }
 
 #endif
-
-

@@ -7,24 +7,24 @@
 #define QSK_GRAPHIC_NODE_H
 
 #include "QskGlobal.h"
-#include "QskTextureNode.h"
 #include "QskGraphicTextureFactory.h"
+#include "QskTextureNode.h"
 
 class QskGraphic;
 class QskColorFilter;
 
 class QSK_EXPORT QskGraphicNode : public QskTextureNode
 {
-public:
+  public:
     QskGraphicNode();
     ~QskGraphicNode() override;
 
     void setGraphic( const QskGraphic&, const QskColorFilter&,
         QskGraphicTextureFactory::RenderMode, const QRect& );
 
-private:
+  private:
     void setTextureId( int ) = delete;
-    void setRect(const QRectF& ) = delete;
+    void setRect( const QRectF& ) = delete;
 
     uint m_hash;
 };

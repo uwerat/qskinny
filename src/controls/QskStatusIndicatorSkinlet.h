@@ -17,7 +17,7 @@ class QSK_EXPORT QskStatusIndicatorSkinlet : public QskSkinlet
 
     using Inherited = QskSkinlet;
 
-public:
+  public:
     enum NodeRole
     {
         GraphicRole
@@ -29,14 +29,13 @@ public:
     QRectF subControlRect( const QskSkinnable*,
         QskAspect::Subcontrol ) const override;
 
-protected:
-    QSGNode* updateSubNode(
-        const QskSkinnable*, quint8 nodeRole, QSGNode* ) const override;
+  protected:
+    QSGNode* updateSubNode( const QskSkinnable*,
+        quint8 nodeRole, QSGNode* ) const override;
 
-private:
+  private:
     QRect graphicRect( const QskStatusIndicator* ) const;
     QSGNode* updateGraphicNode( const QskStatusIndicator*, QSGNode* ) const;
 };
 
 #endif
-

@@ -4,16 +4,16 @@
  *****************************************************************************/
 
 #include "QskInputWindow.h"
+#include "QskGraphic.h"
 #include "QskInputSubWindow.h"
 #include "QskTextOptions.h"
-#include "QskGraphic.h"
 
-QskInputWindow::QskInputWindow( QWindow* parent ):
-    QskDialogWindow( parent ),
-    m_subWindow( nullptr )
+QskInputWindow::QskInputWindow( QWindow* parent )
+    : QskDialogWindow( parent )
+    , m_subWindow( nullptr )
 {
-    setFlags( Qt::Dialog | Qt::WindowTitleHint
-        | Qt::WindowCloseButtonHint | Qt::WindowSystemMenuHint );
+    setFlags( Qt::Dialog | Qt::WindowTitleHint |
+        Qt::WindowCloseButtonHint | Qt::WindowSystemMenuHint );
 
     setAutoLayoutChildren( true );
 }

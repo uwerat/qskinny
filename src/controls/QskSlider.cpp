@@ -4,8 +4,8 @@
  *****************************************************************************/
 
 #include "QskSlider.h"
-#include "QskAspect.h"
 #include "QskAnimationHint.h"
+#include "QskAspect.h"
 
 QSK_SUBCONTROL( QskSlider, Panel )
 QSK_SUBCONTROL( QskSlider, Groove )
@@ -19,11 +19,11 @@ QSK_STATE( QskSlider, Maximum, QskAspect::FirstSystemState << 3 )
 
 class QskSlider::PrivateData
 {
-public:
-    PrivateData( Qt::Orientation orientation ):
-        pressedValue( 0 ),
-        tracking( true ),
-        orientation( orientation )
+  public:
+    PrivateData( Qt::Orientation orientation )
+        : pressedValue( 0 )
+        , tracking( true )
+        , orientation( orientation )
     {
     }
 
@@ -33,17 +33,17 @@ public:
     Qt::Orientation orientation : 2;
 };
 
-QskSlider::QskSlider( QQuickItem* parent ):
-    QskSlider( Qt::Horizontal, parent )
+QskSlider::QskSlider( QQuickItem* parent )
+    : QskSlider( Qt::Horizontal, parent )
 {
 }
 
-QskSlider::QskSlider( Qt::Orientation orientation, QQuickItem* parent ):
-    Inherited ( parent ),
-    m_data( new PrivateData( orientation ) )
+QskSlider::QskSlider( Qt::Orientation orientation, QQuickItem* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData( orientation ) )
 {
     setAcceptHoverEvents( true );
-    setFocusPolicy(Qt::StrongFocus);
+    setFocusPolicy( Qt::StrongFocus );
 
     if ( orientation == Qt::Horizontal )
         initSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Fixed );
@@ -53,10 +53,10 @@ QskSlider::QskSlider( Qt::Orientation orientation, QQuickItem* parent ):
     setMetric( QskSlider::Handle | QskAspect::Position, position() );
 
     connect( this, &QskRangeControl::rangeChanged,
-        [this] ( qreal ) { updatePosition(); } );
+        [ this ]( qreal ) { updatePosition(); } );
 
     connect( this, &QskRangeControl::valueChanged,
-        [this] ( qreal ) { updatePosition(); } );
+        [ this ]( qreal ) { updatePosition(); } );
 }
 
 QskSlider::~QskSlider()

@@ -1,16 +1,15 @@
 #include "QskSkinTransition.h"
+#include "QskColorFilter.h"
 #include "QskControl.h"
+#include "QskHintAnimator.h"
 #include "QskSkin.h"
 #include "QskSkinHintTable.h"
-#include "QskColorFilter.h"
-#include "QskHintAnimator.h"
 
+#include <qglobalstatic.h>
 #include <qguiapplication.h>
+#include <qobject.h>
 #include <qquickwindow.h>
 #include <qvector.h>
-#include <qobject.h>
-#include <qvector.h>
-#include <qglobalstatic.h>
 
 #include <unordered_map>
 #include <vector>
@@ -19,7 +18,7 @@ namespace
 {
     class UpdateInfo
     {
-    public:
+      public:
         enum UpdateMode
         {
             Polish = 1,
@@ -37,14 +36,13 @@ namespace
 
     class AnimatorCandidate
     {
-    public:
+      public:
         AnimatorCandidate() = default;
 
-        inline AnimatorCandidate( QskAspect::Aspect aspect,
-                QVariant from, QVariant to ):
-            aspect( aspect ),
-            from( from ),
-            to( to )
+        inline AnimatorCandidate( QskAspect::Aspect aspect, QVariant from, QVariant to )
+            : aspect( aspect )
+            , from( from )
+            , to( to )
         {
         }
 
@@ -81,7 +79,7 @@ static QVector< AnimatorCandidate > qskAnimatorCandidates(
 
         if ( type == QskAspect::Flag )
         {
-            switch( aspect.flagPrimitive() )
+            switch ( aspect.flagPrimitive() )
             {
                 case QskAspect::GraphicRole:
                 {
@@ -113,8 +111,7 @@ static QVector< AnimatorCandidate > qskAnimatorCandidates(
                             if ( f1 != f2 )
                             {
                                 candidates += AnimatorCandidate( aspect,
-                                    QVariant::fromValue( f1 ),
-                                    QVariant::fromValue( f2 ) );
+                                    QVariant::fromValue( f1 ), QVariant::fromValue( f2 ) );
                             }
                         }
                     }
@@ -164,15 +161,15 @@ namespace
     {
         Q_OBJECT
 
-    public:
+      public:
         AnimatorGroup()
         {
         }
 
         void start()
         {
-            m_notifyConnection = QskAnimator::addAdvanceHandler( this,
-                SLOT( notify( QQuickWindow* ) ) );
+            m_notifyConnection =
+                QskAnimator::addAdvanceHandler( this, SLOT( notify( QQuickWindow* ) ) );
 
             for ( auto& it : m_hintAnimatorMap )
                 it.second.start();
@@ -251,8 +248,7 @@ namespace
             }
         }
 
-        void addAnimators( QQuickItem* item,
-            const QskAnimationHint& animatorHint,
+        void addAnimators( QQuickItem* item, const QskAnimationHint& animatorHint,
             const QVector< AnimatorCandidate >& candidates, QskSkin* skin )
         {
             if ( !item->isVisible() )
@@ -279,7 +275,7 @@ namespace
                 addAnimators( child, animatorHint, candidates, skin );
         }
 
-    private Q_SLOTS:
+      private Q_SLOTS:
         void notify( QQuickWindow* window )
         {
             if ( m_updateInfos.empty() )
@@ -308,7 +304,7 @@ namespace
             }
         }
 
-    private:
+      private:
         void addControlAnimators( QskControl* control, const QskAnimationHint& animatorHint,
             const QVector< AnimatorCandidate >& candidates )
         {
@@ -425,10 +421,10 @@ namespace
 
 Q_GLOBAL_STATIC( AnimatorGroup, qskSkinAnimator )
 
-QskSkinTransition::QskSkinTransition():
-    m_mask( QskSkinTransition::AllTypes )
+QskSkinTransition::QskSkinTransition()
+    : m_mask( QskSkinTransition::AllTypes )
 {
-    m_skins[0] = m_skins[1] = nullptr;
+    m_skins[ 0 ] = m_skins[ 1 ] = nullptr;
 }
 
 QskSkinTransition::~QskSkinTransition()
@@ -447,22 +443,22 @@ QskSkinTransition::Type QskSkinTransition::mask() const
 
 void QskSkinTransition::setSourceSkin( QskSkin* skin )
 {
-    m_skins[0] = skin;
+    m_skins[ 0 ] = skin;
 }
 
 QskSkin* QskSkinTransition::sourceSkin() const
 {
-    return m_skins[0];
+    return m_skins[ 0 ];
 }
 
 void QskSkinTransition::setTargetSkin( QskSkin* skin )
 {
-    m_skins[1] = skin;
+    m_skins[ 1 ] = skin;
 }
 
 QskSkin* QskSkinTransition::targetSkin() const
 {
-    return m_skins[1];
+    return m_skins[ 1 ];
 }
 
 void QskSkinTransition::setAnimation( QskAnimationHint animationHint )
@@ -482,7 +478,7 @@ void QskSkinTransition::updateSkin( QskSkin*, QskSkin* )
 
 void QskSkinTransition::process()
 {
-    if ( ( m_skins[0] == nullptr ) || ( m_skins[1] == nullptr ) )
+    if ( ( m_skins[ 0 ] == nullptr ) || ( m_skins[ 1 ] == nullptr ) )
     {
         // do nothing
         return;
@@ -493,24 +489,24 @@ void QskSkinTransition::process()
     if ( ( m_animationHint.duration <= 0 ) || ( m_mask == 0 ) )
     {
         // no animations, we can apply the changes
-        updateSkin( m_skins[0], m_skins[1] );
+        updateSkin( m_skins[ 0 ], m_skins[ 1 ] );
         return;
     }
 
     QVector< AnimatorCandidate > candidates;
-    const auto oldFilters = m_skins[0]->graphicFilters();
+    const auto oldFilters = m_skins[ 0 ]->graphicFilters();
 
     {
         // copy out all hints before updating the skin
         // - would be good to have Copy on Write here
 
-        const auto oldTable = m_skins[0]->hintTable();
+        const auto oldTable = m_skins[ 0 ]->hintTable();
 
         // apply the changes
-        updateSkin( m_skins[0], m_skins[1] );
+        updateSkin( m_skins[ 0 ], m_skins[ 1 ] );
 
         candidates = qskAnimatorCandidates( m_mask, oldTable, oldFilters,
-            m_skins[1]->hintTable(), m_skins[1]->graphicFilters() );
+            m_skins[ 1 ]->hintTable(), m_skins[ 1 ]->graphicFilters() );
     }
 
     if ( !candidates.isEmpty() )
@@ -525,8 +521,8 @@ void QskSkinTransition::process()
                 if ( doGraphicFilter )
                 {
                     qskSkinAnimator->addGraphicFilterAnimators(
-                        quickWindow, m_animationHint,
-                        oldFilters, m_skins[1]->graphicFilters() );
+                        quickWindow, m_animationHint, oldFilters,
+                        m_skins[ 1 ]->graphicFilters() );
 
                     doGraphicFilter = false;
                 }
@@ -537,7 +533,7 @@ void QskSkinTransition::process()
                  */
 
                 qskSkinAnimator->addAnimators( quickWindow->contentItem(),
-                    m_animationHint, candidates, m_skins[1] );
+                    m_animationHint, candidates, m_skins[ 1 ] );
             }
         }
 

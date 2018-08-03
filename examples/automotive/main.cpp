@@ -1,9 +1,9 @@
 #include "MainWindow.h"
 #include "SkinFactory.h"
 
+#include <QskSetup.h>
 #include <QskShortcutMap.h>
 #include <QskSkinManager.h>
-#include <QskSetup.h>
 #include <SkinnyShortcut.h>
 
 #include <QGuiApplication>

@@ -7,8 +7,10 @@
 #define QSK_SETUP_H 1
 
 #include "QskGlobal.h"
-#include <QObject>
+
+#include <qobject.h>
 #include <qqml.h>
+
 #include <memory>
 
 class QskSkin;
@@ -27,7 +29,7 @@ class QSK_EXPORT QskSetup : public QObject
 {
     Q_OBJECT
 
-public:
+  public:
     enum Flag
     {
         DeferredUpdate          =  1 << 0,
@@ -43,7 +45,7 @@ public:
     Q_ENUM( Flag )
     Q_DECLARE_FLAGS( Flags, Flag )
 
-    static QskSetup * instance();
+    static QskSetup* instance();
 
     Q_INVOKABLE void setControlFlags( Flags );
     Q_INVOKABLE void resetControlFlags();
@@ -69,11 +71,11 @@ public:
 
     static QskSetup* qmlAttachedProperties( QObject* );
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void skinChanged( QskSkin* );
     void controlFlagsChanged();
 
-private:
+  private:
     QskSetup();
     ~QskSetup() override;
 
@@ -87,7 +89,7 @@ private:
 
 QML_DECLARE_TYPEINFO( QskSetup, QML_HAS_ATTACHED_PROPERTIES )
 
-inline QskSetup * QskSetup::instance()
+inline QskSetup* QskSetup::instance()
 {
     Q_ASSERT( s_instance );
     return s_instance;

@@ -32,7 +32,7 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
 
     using Inherited = QskAbstractButton;
 
-public:
+  public:
     QSK_SUBCONTROLS( Panel, Text, Graphic )
 
     QskPushButton( QQuickItem* parent = nullptr );
@@ -60,13 +60,13 @@ public:
     QSizeF contentsSizeHint() const override;
     QRectF layoutRect() const override;
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void setText( const QString& text );
     void setGraphicSource( const QUrl& url );
     void setGraphicSource( const QString& source );
     void setGraphic( const QskGraphic& );
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void cornerChanged();
     void borderWidthChanged();
     void textChanged();
@@ -77,7 +77,7 @@ Q_SIGNALS:
 
     void hovered( bool );
 
-protected:
+  protected:
     void hoverEnterEvent( QHoverEvent* ) override;
     void hoverLeaveEvent( QHoverEvent* ) override;
     void changeEvent( QEvent* ) override;
@@ -85,7 +85,7 @@ protected:
     void updateLayout() override;
     virtual QskGraphic loadGraphic( const QUrl& ) const;
 
-private:
+  private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

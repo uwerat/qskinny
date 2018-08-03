@@ -32,7 +32,7 @@ class QSK_EXPORT QskSkinlet
 {
     Q_GADGET
 
-public:
+  public:
     Q_INVOKABLE QskSkinlet( QskSkin* = nullptr );
     virtual ~QskSkinlet();
 
@@ -47,7 +47,7 @@ public:
     bool isOwnedBySkinnable() const;
 
     static void setNodeRole( QSGNode* node, quint8 nodeRole );
-    static quint8 nodeRole( const QSGNode* node);
+    static quint8 nodeRole( const QSGNode* node );
 
     static QSGNode* findNodeByRole( QSGNode* parent, quint8 nodeRole );
 
@@ -70,7 +70,7 @@ public:
     static QSGNode* updateBoxClipNode( const QskSkinnable*, QSGNode*,
         const QRectF&, QskAspect::Subcontrol );
 
-protected:
+  protected:
     void setNodeRoles( const QVector< quint8 >& );
     void appendNodeRoles( const QVector< quint8 >& );
 
@@ -98,7 +98,7 @@ protected:
     void insertRemoveNodes( QSGNode* parentNode,
         QSGNode* oldNode, QSGNode* newNode, quint8 nodeRole ) const;
 
-private:
+  private:
     void insertNodeSorted( QSGNode* node, QSGNode* parentNode ) const;
 
     class PrivateData;

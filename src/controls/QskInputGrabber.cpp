@@ -15,9 +15,9 @@ QSK_QT_PRIVATE_END
 
 class QskInputGrabber::PrivateData final : public QQuickItemChangeListener
 {
-public:
-    PrivateData( QskInputGrabber* grabber ):
-        m_grabber( grabber )
+  public:
+    PrivateData( QskInputGrabber* grabber )
+        : m_grabber( grabber )
     {
     }
 
@@ -72,9 +72,8 @@ public:
         }
     }
 
-private:
-
-#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+  private:
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 )
     void itemGeometryChanged( QQuickItem* item,
         QQuickGeometryChange change, const QRectF& ) override
     {
@@ -87,7 +86,6 @@ private:
 
         if ( doUpdate )
             m_grabber->updateGeometry();
-        
     }
 #else
     void itemGeometryChanged(
@@ -99,7 +97,7 @@ private:
             doUpdate = newRect.size() != oldRect.size();
         else
             doUpdate = newRect.topLeft() != oldRect.topLeft();
-        
+
         if ( doUpdate )
             m_grabber->updateGeometry();
     }
@@ -116,17 +114,17 @@ private:
 
     QskInputGrabber* m_grabber;
 
-public:
+  public:
     QPointer< QQuickItem > itemAbove;
     QPointer< QQuickItem > itemBelow;
 };
 
-QskInputGrabber::QskInputGrabber( QQuickItem* parent ) :
-    Inherited( parent ),
-    m_data( new PrivateData( this ) )
+QskInputGrabber::QskInputGrabber( QQuickItem* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData( this ) )
 {
     setAcceptedMouseButtons( Qt::AllButtons );
-#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 10, 0 )
     setAcceptTouchEvents( true );
 #endif
     setAcceptHoverEvents( true );
@@ -153,20 +151,20 @@ bool QskInputGrabber::event( QEvent* event )
         case QEvent::MouseMove:
         case QEvent::MouseButtonRelease:
         {
-            const auto ev = static_cast< QMouseEvent* > ( event );
+            const auto ev = static_cast< QMouseEvent* >( event );
             doBlock = isBlocking( ev->localPos() );
             break;
         }
         case QEvent::Wheel:
         {
-            const auto ev = static_cast< QWheelEvent* > ( event );
+            const auto ev = static_cast< QWheelEvent* >( event );
             doBlock = isBlocking( ev->posF() );
             break;
         }
         case QEvent::HoverEnter:
         case QEvent::HoverLeave:
         {
-            const auto ev = static_cast< QHoverEvent* > ( event );
+            const auto ev = static_cast< QHoverEvent* >( event );
             doBlock = isBlocking( ev->posF() );
             break;
         }

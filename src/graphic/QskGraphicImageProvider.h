@@ -13,7 +13,7 @@ class QskGraphic;
 
 class QSK_EXPORT QskGraphicImageProvider : public QQuickImageProvider
 {
-public:
+  public:
     QskGraphicImageProvider( const QString& providerId, ImageType );
     ~QskGraphicImageProvider() override;
 
@@ -31,7 +31,7 @@ public:
 
     QString graphicProviderId() const;
 
-protected:
+  protected:
     const QskGraphic* requestGraphic( const QString& id ) const;
     QSize effectiveSize( const QSize& requestedSize, const QSizeF& defaultSize ) const;
 

@@ -8,18 +8,18 @@
 
 #include "pinyinime.h"
 
-#include <QStringList>
 #include <QDebug>
+#include <QStringList>
 
 class QskPinyinTextPredictor::PrivateData
 {
-public:
+  public:
     QStringList candidates;
 };
 
-QskPinyinTextPredictor::QskPinyinTextPredictor( QObject* parent ):
-    Inherited( Attributes(), parent ),
-    m_data( new PrivateData )
+QskPinyinTextPredictor::QskPinyinTextPredictor( QObject* parent )
+    : Inherited( Attributes(), parent )
+    , m_data( new PrivateData )
 {
 #if 1
     const char dictionary[] = "XXX/3rdparty/pinyin/data/dict_pinyin.dat";
@@ -28,7 +28,7 @@ QskPinyinTextPredictor::QskPinyinTextPredictor( QObject* parent ):
     // ### prevent having 2 calls to im_open_decoder by using a singleton or so
     bool opened = ime_pinyin::im_open_decoder( dictionary, "" );
 
-    if( !opened )
+    if ( !opened )
     {
         qWarning() << "could not open pinyin decoder dictionary at" << dictionary;
     }
@@ -70,21 +70,20 @@ void QskPinyinTextPredictor::request( const QString& text )
     size_t count = ime_pinyin::im_search(
         bytes.constData(), size_t( bytes.length() ) );
 
-    if( count <= 0 )
+    if ( count <= 0 )
         return;
 
     const size_t maxCount = 20;
-    if ( count > maxCount  )
+    if ( count > maxCount )
         count = maxCount;
 
     QVector< QChar > candidateBuffer;
     candidateBuffer.resize( ime_pinyin::kMaxSearchSteps + 1 );
 
-
     QStringList candidates;
     candidates.reserve( count );
 
-    for( unsigned int i = 0; i < count; i++ )
+    for ( unsigned int i = 0; i < count; i++ )
     {
         size_t length = static_cast< size_t >( candidateBuffer.length() - 1 );
         const auto buf = reinterpret_cast< ime_pinyin::char16* >( candidateBuffer.data() );
@@ -95,7 +94,7 @@ void QskPinyinTextPredictor::request( const QString& text )
         candidateBuffer.last() = 0;
 
         auto candidate = QString( candidateBuffer.data() );
-        candidate = QChar( Qt::Key( candidate[0].unicode() ) );
+        candidate = QChar( Qt::Key( candidate[ 0 ].unicode() ) );
 
         candidates += candidate;
     }

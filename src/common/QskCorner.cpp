@@ -32,7 +32,7 @@ Qt::SizeMode QskCorner::sizeMode() const
 void QskCorner::setAspectRatioMode( Qt::AspectRatioMode mode )
 {
     m_metrics.setAspectRatioMode( mode );
-}   
+}
 
 Qt::AspectRatioMode QskCorner::aspectRatioMode() const
 {

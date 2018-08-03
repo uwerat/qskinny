@@ -15,7 +15,7 @@ class QSK_EXPORT QskMessageSubWindow : public QskInputSubWindow
 
     using Inherited = QskInputSubWindow;
 
-public:
+  public:
     QskMessageSubWindow( QQuickItem* parent = nullptr );
     ~QskMessageSubWindow() override;
 };

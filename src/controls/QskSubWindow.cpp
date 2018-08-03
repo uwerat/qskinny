@@ -4,16 +4,16 @@
  *****************************************************************************/
 
 #include "QskSubWindow.h"
-#include "QskQuick.h"
 #include "QskAspect.h"
 #include "QskFunctions.h"
+#include "QskQuick.h"
 
 QSK_SUBCONTROL( QskSubWindow, Panel )
 QSK_SUBCONTROL( QskSubWindow, TitleBar )
 
 class QskSubWindow::PrivateData
 {
-public:
+  public:
     PrivateData()
     {
         // should be available from the platform somehow. TODO ...
@@ -26,9 +26,9 @@ public:
     QString title;
 };
 
-QskSubWindow::QskSubWindow( QQuickItem* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData() )
+QskSubWindow::QskSubWindow( QQuickItem* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData() )
 {
     setMargins( 0 );
     initSizePolicy( QskSizePolicy::MinimumExpanding, QskSizePolicy::MinimumExpanding );
@@ -174,7 +174,7 @@ void QskSubWindow::itemChange( QQuickItem::ItemChange change,
 {
     Inherited::itemChange( change, value );
 
-    switch( change )
+    switch ( change )
     {
         case QQuickItem::ItemChildAddedChange:
         case QQuickItem::ItemChildRemovedChange:

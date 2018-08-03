@@ -4,13 +4,13 @@
  *****************************************************************************/
 
 #include "QskScrollView.h"
-#include "QskPanGestureRecognizer.h"
-#include "QskFlickAnimator.h"
-#include "QskBoxBorderMetrics.h"
 #include "QskAnimationHint.h"
-#include "QskGesture.h"
 #include "QskAspect.h"
+#include "QskBoxBorderMetrics.h"
 #include "QskEvent.h"
+#include "QskFlickAnimator.h"
+#include "QskGesture.h"
+#include "QskPanGestureRecognizer.h"
 
 QSK_SUBCONTROL( QskScrollView, Panel )
 QSK_SUBCONTROL( QskScrollView, Viewport )
@@ -26,7 +26,7 @@ namespace
 {
     class FlickAnimator final : public QskFlickAnimator
     {
-    public:
+      public:
         FlickAnimator()
         {
             // skin hints: TODO
@@ -45,15 +45,15 @@ namespace
             m_scrollView->setScrollPos( pos - QPointF( dx, -dy ) );
         }
 
-    private:
+      private:
         QskScrollView* m_scrollView;
     };
 
     class ScrollAnimator final : public QskAnimator
     {
-    public:
-        ScrollAnimator():
-            m_scrollView( nullptr )
+      public:
+        ScrollAnimator()
+            : m_scrollView( nullptr )
         {
         }
 
@@ -88,7 +88,7 @@ namespace
             start();
         }
 
-    protected:
+      protected:
         void advance( qreal value ) override
         {
             qreal x = m_from.x() + ( m_to.x() - m_from.x() ) * value;
@@ -97,7 +97,7 @@ namespace
             m_scrollView->setScrollPos( QPointF( x, y ) );
         }
 
-    private:
+      private:
         QskScrollView* m_scrollView;
 
         QPointF m_from;
@@ -107,14 +107,14 @@ namespace
 
 class QskScrollView::PrivateData
 {
-public:
-    PrivateData():
-        horizontalScrollBarPolicy( Qt::ScrollBarAsNeeded ),
-        verticalScrollBarPolicy( Qt::ScrollBarAsNeeded ),
-        scrollableSize( 0.0, 0.0 ),
-        panRecognizerTimeout( 100 ), // value coming from the platform ???
-        viewportPadding( 10 ),
-        isScrolling( 0 )
+  public:
+    PrivateData()
+        : horizontalScrollBarPolicy( Qt::ScrollBarAsNeeded )
+        , verticalScrollBarPolicy( Qt::ScrollBarAsNeeded )
+        , scrollableSize( 0.0, 0.0 )
+        , panRecognizerTimeout( 100 ) // value coming from the platform ???
+        , viewportPadding( 10 )
+        , isScrolling( 0 )
     {
     }
 
@@ -136,9 +136,9 @@ public:
     int isScrolling;
 };
 
-QskScrollView::QskScrollView( QQuickItem* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData() )
+QskScrollView::QskScrollView( QQuickItem* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData() )
 {
     m_data->flicker.setScrollView( this );
     m_data->scroller.setScrollView( this );
@@ -470,7 +470,7 @@ void QskScrollView::gestureEvent( QskGestureEvent* event )
     if ( event->gesture()->type() == QskGesture::Pan )
     {
         const auto gesture = static_cast< const QskPanGesture* >( event->gesture() );
-        switch( gesture->state() )
+        switch ( gesture->state() )
         {
             case QskGesture::Updated:
             {
@@ -513,7 +513,7 @@ void QskScrollView::wheelEvent( QWheelEvent* event )
              that generates wheel events in both directions. TODO ...
          */
 
-        //offset = event->pixelDelta();
+        // offset = event->pixelDelta();
 
         if ( offset.isNull() )
         {
@@ -537,7 +537,7 @@ void QskScrollView::wheelEvent( QWheelEvent* event )
 
     if ( !offset.isNull() )
     {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
         if ( event->inverted() )
             offset = -offset;
 #endif
@@ -656,7 +656,8 @@ Qt::Orientations QskScrollView::scrollableOrientations() const
             // we have to check the vertical once more
 
             if ( ( policyV == Qt::ScrollBarAsNeeded ) &&
-                 ( m_data->scrollableSize.height() > vr.height() - metric( HorizontalScrollBar | QskAspect::Size ) ) )
+                 ( m_data->scrollableSize.height() >
+                     vr.height() - metric( HorizontalScrollBar | QskAspect::Size ) ) )
             {
                 policyV = Qt::ScrollBarAlwaysOn;
             }

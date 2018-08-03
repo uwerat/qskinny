@@ -21,7 +21,7 @@ class QSK_EXPORT QskStatusIndicator : public QskControl
 
     using Inherited = QskControl;
 
-public:
+  public:
     QSK_SUBCONTROLS( Graphic )
 
     QskStatusIndicator( QQuickItem* parent = nullptr );
@@ -44,17 +44,17 @@ public:
     int status() const;
     bool hasStatus( int status ) const;
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void setStatus( int status );
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void statusChanged( int status );
 
-protected:
+  protected:
     void changeEvent( QEvent* ) override;
     void updateLayout() override;
 
-private:
+  private:
     qreal sizeConstraint( Qt::Orientation, qreal ) const;
 
     class PrivateData;

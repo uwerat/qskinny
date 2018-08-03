@@ -8,8 +8,8 @@
 
 #include "QskGlobal.h"
 
-#include <qnamespace.h>
 #include <qmetatype.h>
+#include <qnamespace.h>
 #include <qsize.h>
 
 class QVariant;
@@ -17,8 +17,9 @@ class QMarginsF;
 
 class QSK_EXPORT QskBoxShapeMetrics
 {
-public:
+  public:
     constexpr QskBoxShapeMetrics();
+
     constexpr QskBoxShapeMetrics( qreal topLeft, qreal topRight,
         qreal bottomLeft, qreal bottomRight, Qt::SizeMode = Qt::AbsoluteSize );
 
@@ -62,8 +63,11 @@ public:
     void setAspectRatioMode( Qt::AspectRatioMode );
     Qt::AspectRatioMode aspectRatioMode() const;
 
-    QskBoxShapeMetrics interpolated( const QskBoxShapeMetrics&, qreal value ) const;
-    QskBoxShapeMetrics toAbsolute ( const QSizeF& ) const;
+    QskBoxShapeMetrics interpolated(
+        const QskBoxShapeMetrics&, qreal value ) const;
+
+    QskBoxShapeMetrics toAbsolute( const QSizeF& ) const;
+
     QskBoxShapeMetrics rotated() const;
 
     QMarginsF padding( const QSizeF& ) const;
@@ -73,11 +77,11 @@ public:
     static QVariant interpolate( const QskBoxShapeMetrics&,
         const QskBoxShapeMetrics&, qreal progress );
 
-private:
-    inline constexpr QskBoxShapeMetrics( Qt::SizeMode sizeMode, const QSizeF radii[4] ):
-        m_radii{ radii[0], radii[1], radii[2], radii[3] },
-        m_sizeMode( sizeMode ),
-        m_aspectRatioMode( Qt::KeepAspectRatio )
+  private:
+    inline constexpr QskBoxShapeMetrics( Qt::SizeMode sizeMode, const QSizeF radii[ 4 ] )
+        : m_radii{ radii[ 0 ], radii[ 1 ], radii[ 2 ], radii[ 3 ] }
+        , m_sizeMode( sizeMode )
+        , m_aspectRatioMode( Qt::KeepAspectRatio )
     {
     }
 
@@ -86,24 +90,24 @@ private:
     Qt::AspectRatioMode m_aspectRatioMode : 2;
 };
 
-inline constexpr QskBoxShapeMetrics::QskBoxShapeMetrics():
-    m_radii{ { 0.0, 0.0 }, { 0.0, 0.0 }, { 0.0, 0.0 }, { 0.0, 0.0 } },
-    m_sizeMode( Qt::AbsoluteSize ),
-    m_aspectRatioMode( Qt::KeepAspectRatio )
+inline constexpr QskBoxShapeMetrics::QskBoxShapeMetrics()
+    : m_radii{ { 0.0, 0.0 }, { 0.0, 0.0 }, { 0.0, 0.0 }, { 0.0, 0.0 } }
+    , m_sizeMode( Qt::AbsoluteSize )
+    , m_aspectRatioMode( Qt::KeepAspectRatio )
 {
 }
 
-inline QskBoxShapeMetrics::QskBoxShapeMetrics( qreal radius, Qt::SizeMode sizeMode ):
-    QskBoxShapeMetrics( radius, radius, sizeMode )
+inline QskBoxShapeMetrics::QskBoxShapeMetrics( qreal radius, Qt::SizeMode sizeMode )
+    : QskBoxShapeMetrics( radius, radius, sizeMode )
 {
 }
 
 inline constexpr QskBoxShapeMetrics::QskBoxShapeMetrics( qreal topLeft, qreal topRight,
-        qreal bottomLeft, qreal bottomRight, Qt::SizeMode sizeMode ):
-    m_radii{ { topLeft, topLeft }, { topRight, topRight },
-        { bottomLeft, bottomLeft }, { bottomRight, bottomRight } },
-    m_sizeMode( sizeMode ),
-    m_aspectRatioMode( Qt::KeepAspectRatio )
+        qreal bottomLeft, qreal bottomRight, Qt::SizeMode sizeMode )
+    : m_radii{ { topLeft, topLeft }, { topRight, topRight },
+        { bottomLeft, bottomLeft }, { bottomRight, bottomRight } }
+    , m_sizeMode( sizeMode )
+    , m_aspectRatioMode( Qt::KeepAspectRatio )
 {
 }
 
@@ -145,8 +149,7 @@ inline void QskBoxShapeMetrics::setRadius( Qt::Corner corner, const QSizeF& radi
 }
 
 inline void QskBoxShapeMetrics::setRadius(
-    qreal topLeft, qreal topRight,
-    qreal bottomLeft, qreal bottomRight )
+    qreal topLeft, qreal topRight, qreal bottomLeft, qreal bottomRight )
 {
     setRadius( topLeft, topLeft, topRight, topRight,
         bottomLeft, bottomLeft, bottomRight, bottomRight );

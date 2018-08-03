@@ -20,7 +20,7 @@ class QSK_EXPORT QskSimpleListBox : public QskListView
 
     using Inherited = QskListView;
 
-public:
+  public:
     QskSimpleListBox( QQuickItem* parent = nullptr );
     ~QskSimpleListBox() override;
 
@@ -51,15 +51,15 @@ public:
 
     QVariant valueAt( int row, int col ) const override final;
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void setEntries( const QStringList& );
     void clear();
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void entriesChanged();
     void selectedEntryChanged( const QString& );
 
-private:
+  private:
     void propagateEntries();
 
     class PrivateData;

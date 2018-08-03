@@ -4,10 +4,10 @@
  *****************************************************************************/
 
 #include "QskPopup.h"
-#include "QskInputGrabber.h"
 #include "QskAspect.h"
-#include "QskWindow.h"
+#include "QskInputGrabber.h"
 #include "QskQuick.h"
+#include "QskWindow.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickwindow_p.h>
@@ -43,14 +43,14 @@ namespace
     {
         using Inherited = QskInputGrabber;
 
-    public:
-        InputGrabber( QskPopup* parent ):
-            Inherited( parent )
+      public:
+        InputGrabber( QskPopup* parent )
+            : Inherited( parent )
         {
         }
 
-        void geometryChanged(
-            const QRectF& newGeometry, const QRectF& oldGeometry ) override
+        void geometryChanged( const QRectF& newGeometry,
+            const QRectF& oldGeometry ) override
         {
             Inherited::geometryChanged( newGeometry, oldGeometry );
 
@@ -84,14 +84,14 @@ namespace
 
 class QskPopup::PrivateData
 {
-public:
-    PrivateData():
-        inputGrabber( nullptr ),
-        flags( 0 ),
-        isModal( false ),
-        isOpen( false ),
-        autoGrabFocus( true ),
-        handoverFocus( true )
+  public:
+    PrivateData()
+        : inputGrabber( nullptr )
+        , flags( 0 )
+        , isModal( false )
+        , isOpen( false )
+        , autoGrabFocus( true )
+        , handoverFocus( true )
     {
     }
 
@@ -105,9 +105,9 @@ public:
     const bool handoverFocus : 1;
 };
 
-QskPopup::QskPopup( QQuickItem* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData() )
+QskPopup::QskPopup( QQuickItem* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData() )
 {
     // we need to stop event propagation
     setAcceptedMouseButtons( Qt::AllButtons );
@@ -166,8 +166,8 @@ QRectF QskPopup::overlayRect() const
 
 void QskPopup::updateInputGrabber()
 {
-    if ( parentItem() && isVisible()
-        && ( isModal() || testPopupFlag( CloseOnPressOutside ) ) )
+    if ( parentItem() && isVisible() &&
+        ( isModal() || testPopupFlag( CloseOnPressOutside ) ) )
     {
         if ( m_data->inputGrabber == nullptr )
         {
@@ -292,7 +292,7 @@ bool QskPopup::event( QEvent* event )
 {
     bool ok = Inherited::event( event );
 
-    switch( event->type() )
+    switch ( event->type() )
     {
         case QEvent::KeyPress:
         case QEvent::KeyRelease:
@@ -370,12 +370,12 @@ QQuickItem* QskPopup::focusSuccessor() const
     if ( const auto scope = qskNearestFocusScope( this ) )
     {
         const auto children = qskPaintOrderChildItems( scope );
-        for ( auto it = children.crbegin(); it != children.crend(); ++it)
+        for ( auto it = children.crbegin(); it != children.crend(); ++it )
         {
             auto child = *it;
 
-            if ( ( child != this ) && child->isFocusScope()
-                && child->activeFocusOnTab() && child->isVisible() )
+            if ( ( child != this ) && child->isFocusScope() &&
+                child->activeFocusOnTab() && child->isVisible() )
             {
                 return child;
             }

@@ -16,7 +16,7 @@ class QDebug;
 
 class QSK_EXPORT QskAnimator
 {
-public:
+  public:
     QskAnimator();
     virtual ~QskAnimator();
 
@@ -38,22 +38,24 @@ public:
     void stop();
     void update();
 
-    static QMetaObject::Connection addCleanupHandler( QObject* receiver,
-        const char* method, Qt::ConnectionType type = Qt::AutoConnection );
+    static QMetaObject::Connection addCleanupHandler(
+        QObject* receiver, const char* method,
+        Qt::ConnectionType type = Qt::AutoConnection );
 
-    static QMetaObject::Connection addAdvanceHandler( QObject* receiver,
-        const char* method, Qt::ConnectionType type = Qt::AutoConnection );
+    static QMetaObject::Connection addAdvanceHandler(
+        QObject* receiver, const char* method,
+        Qt::ConnectionType type = Qt::AutoConnection );
 
 #ifndef QT_NO_DEBUG_STREAM
     static void debugStatistics( QDebug );
 #endif
 
-protected:
+  protected:
     virtual void setup();
     virtual void advance( qreal value ) = 0;
     virtual void done();
 
-private:
+  private:
     QQuickWindow* m_window;
 
     int m_duration;
@@ -72,4 +74,3 @@ inline int QskAnimator::duration() const
 }
 
 #endif
-

@@ -6,23 +6,23 @@
 #include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
 
-#include <QGuiApplication>
 #include <QFontDatabase>
+#include <QGuiApplication>
 
 #include <QskAspect.h>
-#include <QskObjectCounter.h>
-#include <QskWindow.h>
-#include <QskLinearBox.h>
-#include <QskPushButton.h>
 #include <QskDialog.h>
-#include <QskStandardSymbol.h>
 #include <QskFocusIndicator.h>
+#include <QskLinearBox.h>
+#include <QskObjectCounter.h>
+#include <QskPushButton.h>
+#include <QskStandardSymbol.h>
+#include <QskWindow.h>
 
 class Button : public QskPushButton
 {
-public:
-    Button( const QString& text, QQuickItem* parent = nullptr ):
-        QskPushButton( text, parent )
+  public:
+    Button( const QString& text, QQuickItem* parent = nullptr )
+        : QskPushButton( text, parent )
     {
         setObjectName( text );
         setSizePolicy( QskSizePolicy::MinimumExpanding,
@@ -32,9 +32,9 @@ public:
 
 class ButtonBox : public QskLinearBox
 {
-public:
-    ButtonBox( QQuickItem* parent = nullptr ):
-        QskLinearBox( Qt::Horizontal, 2, parent )
+  public:
+    ButtonBox( QQuickItem* parent = nullptr )
+        : QskLinearBox( Qt::Horizontal, 2, parent )
     {
         setObjectName( "ButtonBox" );
 
@@ -60,7 +60,7 @@ public:
         connect( selectButton, &Button::clicked, this, &ButtonBox::execSelection );
     }
 
-private:
+  private:
     void execMessage()
     {
         qDebug() << qskDialog->message( "Message", "Request vector, over.",

@@ -4,8 +4,8 @@
  *****************************************************************************/
 
 #include "QskTextNode.h"
-#include "QskTextOptions.h"
 #include "QskTextColors.h"
+#include "QskTextOptions.h"
 #include "QskTextRenderer.h"
 
 #include <qfont.h>
@@ -17,20 +17,20 @@ static inline uint qskHash(
     Qt::Alignment alignment, Qsk::TextStyle textStyle )
 {
     uint hash = 11000;
-    
+
     hash = qHash( text, hash );
     hash = qHash( font, hash );
     hash = qHash( options, hash );
     hash = qHash( alignment, hash );
-    hash = qHash( textStyle, hash ); 
-    hash = colors.hash( hash ); 
+    hash = qHash( textStyle, hash );
+    hash = colors.hash( hash );
     hash = qHashBits( &size, sizeof( QSizeF ), hash );
 
     return hash;
 }
 
-QskTextNode::QskTextNode():
-    m_hash( 0 )
+QskTextNode::QskTextNode()
+    : m_hash( 0 )
 {
 }
 
@@ -38,9 +38,9 @@ QskTextNode::~QskTextNode()
 {
 }
 
-void QskTextNode::setTextData( const QQuickItem* item,
-    const QString& text, const QRectF& rect, const QFont& font,
-    const QskTextOptions& options, const QskTextColors& colors,
+void QskTextNode::setTextData(
+    const QQuickItem* item, const QString& text, const QRectF& rect,
+    const QFont& font, const QskTextOptions& options, const QskTextColors& colors,
     Qt::Alignment alignment, Qsk::TextStyle textStyle )
 {
     QMatrix4x4 matrix;

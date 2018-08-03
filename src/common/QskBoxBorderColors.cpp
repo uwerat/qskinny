@@ -23,7 +23,7 @@ static inline bool qskIsVisble( const QColor& c )
 
 static inline void qskSetColors( const QColor& c, QColor* colors )
 {
-    colors[0] = colors[1] = colors[2] = colors[3] = c.toRgb();
+    colors[ 0 ] = colors[ 1 ] = colors[ 2 ] = colors[ 3 ] = c.toRgb();
 }
 
 static inline void qskSetColors(
@@ -58,18 +58,18 @@ QskBoxBorderColors::~QskBoxBorderColors()
 
 bool QskBoxBorderColors::operator==( const QskBoxBorderColors& other ) const
 {
-    return ( m_colors[0] == other.m_colors[0] )
-        && ( m_colors[1] == other.m_colors[1] )
-        && ( m_colors[2] == other.m_colors[2] )
-        && ( m_colors[3] == other.m_colors[3] );
+    return ( m_colors[ 0 ] == other.m_colors[ 0 ] ) &&
+           ( m_colors[ 1 ] == other.m_colors[ 1 ] ) &&
+           ( m_colors[ 2 ] == other.m_colors[ 2 ] ) &&
+           ( m_colors[ 3 ] == other.m_colors[ 3 ] );
 }
 
 void QskBoxBorderColors::setAlpha( int alpha )
 {
     for ( int i = 0; i < 4; i++ )
     {
-        if ( m_colors[i].isValid() && m_colors[i].alpha() )
-            m_colors[i].setAlpha( alpha );
+        if ( m_colors[ i ].isValid() && m_colors[ i ].alpha() )
+            m_colors[ i ].setAlpha( alpha );
     }
 }
 
@@ -110,7 +110,7 @@ void QskBoxBorderColors::setColorsAt( Qt::Edges edges, const QColor& color )
 
 QColor QskBoxBorderColors::colorAt( Qt::Edge edge ) const
 {
-    switch( edge )
+    switch ( edge )
     {
         case Qt::TopEdge:
             return m_colors[ Qsk::Top ];
@@ -130,16 +130,16 @@ QColor QskBoxBorderColors::colorAt( Qt::Edge edge ) const
 
 bool QskBoxBorderColors::isVisible() const
 {
-    if ( qskIsVisble( m_colors[0] ) )
+    if ( qskIsVisble( m_colors[ 0 ] ) )
         return true;
 
-    if ( qskIsVisble( m_colors[1] ) )
+    if ( qskIsVisble( m_colors[ 1 ] ) )
         return true;
 
-    if ( qskIsVisble( m_colors[2] ) )
+    if ( qskIsVisble( m_colors[ 2 ] ) )
         return true;
 
-    if ( qskIsVisble( m_colors[3] ) )
+    if ( qskIsVisble( m_colors[ 3 ] ) )
         return true;
 
     return false;
@@ -147,13 +147,13 @@ bool QskBoxBorderColors::isVisible() const
 
 bool QskBoxBorderColors::isMonochrome() const
 {
-    if ( m_colors[1] != m_colors[0] )
+    if ( m_colors[ 1 ] != m_colors[ 0 ] )
         return false;
 
-    if ( m_colors[2] != m_colors[1] )
+    if ( m_colors[ 2 ] != m_colors[ 1 ] )
         return false;
 
-    if ( m_colors[3] != m_colors[2] )
+    if ( m_colors[ 3 ] != m_colors[ 2 ] )
         return false;
 
     return true;
@@ -166,8 +166,8 @@ QskBoxBorderColors QskBoxBorderColors::interpolated(
 
     for ( size_t i = 0; i < 4; i++ )
     {
-        colors.m_colors[i] = QskRgbValue::interpolated(
-            m_colors[i], to.m_colors[i], ratio );
+        colors.m_colors[ i ] = QskRgbValue::interpolated(
+            m_colors[ i ], to.m_colors[ i ], ratio );
     }
 
     return colors;
@@ -183,12 +183,12 @@ uint QskBoxBorderColors::hash( uint seed ) const
 {
     const QRgb rgb[] =
     {
-        m_colors[0].rgba(),
-        m_colors[1].rgba(),
-        m_colors[2].rgba(),
-        m_colors[3].rgba(),
+        m_colors[ 0 ].rgba(),
+        m_colors[ 1 ].rgba(),
+        m_colors[ 2 ].rgba(),
+        m_colors[ 3 ].rgba(),
     };
-    
+
     return qHashBits( rgb, sizeof( rgb ), seed );
 }
 

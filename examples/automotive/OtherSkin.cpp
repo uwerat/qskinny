@@ -1,30 +1,29 @@
 #include "OtherSkin.h"
 #include "SkinFactory.h"
 
-#include "SoundControl.h"
 #include "ButtonBar.h"
+#include "SoundControl.h"
 
 #include "Speedometer.h"
 #include "SpeedometerSkinlet.h"
 
 #include <QskBox.h>
+#include <QskBoxBorderColors.h>
+#include <QskBoxBorderMetrics.h>
+#include <QskColorFilter.h>
 #include <QskFunctions.h>
+#include <QskMargins.h>
 #include <QskPushButton.h>
+#include <QskSeparator.h>
 #include <QskSkinTransition.h>
 #include <QskSlider.h>
 #include <QskTextLabel.h>
-#include <QskSeparator.h>
-#include <QskColorFilter.h>
-#include <QskMargins.h>
-#include <QskBoxBorderColors.h>
-#include <QskBoxBorderMetrics.h>
 
 #include <QDebug>
 
 class Palette
 {
-public:
-
+  public:
     Palette()
     {
         // grey-blue-yellow:
@@ -40,24 +39,22 @@ public:
     QColor color3;
     QColor color4;
     QColor color5;
-
 };
 
-namespace {
-
+namespace
+{
     static inline QFont qskFont( qreal pointSize )
     {
         QFont font( "Roboto" );
         font.setPointSizeF( pointSize / qskDpiScaled( 1.0 ) );
         return font;
     }
-
 }
 
-OtherSkin::OtherSkin( const QString& name, QObject* parent ):
-        QskSkin( parent ),
-    m_name( name ),
-    m_palette( new Palette )
+OtherSkin::OtherSkin( const QString& name, QObject* parent )
+    : QskSkin( parent )
+    , m_name( name )
+    , m_palette( new Palette )
 {
     setObjectName( "OtherSkin" );
     declareSkinlet< Speedometer, SpeedometerSkinlet >();
@@ -113,8 +110,8 @@ void OtherSkin::initHints()
     setGradient( SoundControl::Overlay, overlayColor );
 
     // -- slider control buttons
-    setBoxBorderMetrics( SoundControl::SliderControl, 0 ); 
-    setBoxShape( SoundControl::SliderControl, 4 ); 
+    setBoxBorderMetrics( SoundControl::SliderControl, 0 );
+    setBoxShape( SoundControl::SliderControl, 4 );
 
     setGradient( SoundControl::SliderControl, m_palette->color1 );
     setGradient( SoundControl::SliderControl | QskPushButton::Pressed, m_palette->color2 );
@@ -144,8 +141,8 @@ void OtherSkin::initHints()
     // -- speedometers
 
     setBoxBorderMetrics( Speedometer::Panel, 5 );
-    setGradient( Speedometer::Panel, QskGradient( QskGradient::Vertical,
-                                                  m_palette->color2, m_palette->color4 ) );
+    setGradient( Speedometer::Panel,
+        QskGradient( QskGradient::Vertical, m_palette->color2, m_palette->color4 ) );
     setBoxBorderColors( Speedometer::Panel, m_palette->color3 );
 
     setBoxBorderMetrics( Speedometer::NeedleHead, 5 );

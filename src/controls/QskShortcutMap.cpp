@@ -4,11 +4,11 @@
  *****************************************************************************/
 
 #include "QskShortcutMap.h"
-#include "QskQuick.h"
 #include "QskMetaInvokable.h"
+#include "QskQuick.h"
 
-#include <qquickitem.h>
 #include <qkeysequence.h>
+#include <qquickitem.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <QtGui/private/qguiapplication_p.h>
@@ -23,7 +23,7 @@ static inline QShortcutMap* qskShortcutMap()
 
 class QskShortcutHandler final : public QObject
 {
-public:
+  public:
     QskShortcutHandler();
 
     int insert( QQuickItem*, const QKeySequence&, bool autoRepeat,
@@ -36,16 +36,15 @@ public:
 
     bool eventFilter( QObject*, QEvent* ) override;
 
-private:
-
+  private:
     void cleanUp( QObject* );
 
     class InvokeData
     {
-    public:
-        InvokeData():
-            item( nullptr ),
-            receiver( nullptr )
+      public:
+        InvokeData()
+            : item( nullptr )
+            , receiver( nullptr )
         {
         }
 
@@ -241,7 +240,7 @@ bool QskShortcutHandler::eventFilter( QObject* object, QEvent* event )
 
         Q_ASSERT( data.item == nullptr || data.item == object );
 
-        auto receiver = const_cast< QObject* > ( data.receiver );
+        auto receiver = const_cast< QObject* >( data.receiver );
         void* args[] = { nullptr };
 
         data.invokable.invoke( receiver, args, Qt::AutoConnection );
@@ -269,8 +268,8 @@ int QskShortcutMap::addMethod( QQuickItem* item, const QKeySequence& sequence,
 int QskShortcutMap::addFunction( QQuickItem* item, const QKeySequence& sequence,
     bool autoRepeat, const QObject* receiver, const QskMetaFunction& function )
 {
-    if ( ( receiver == nullptr )
-        && ( function.functionType() == QskMetaFunction::MemberFunction ) )
+    if ( ( receiver == nullptr ) &&
+        ( function.functionType() == QskMetaFunction::MemberFunction ) )
     {
         qDebug() << "QskShortcutMap: bad receiver for shortcut:" << sequence;
         return 0;
@@ -331,4 +330,3 @@ bool QskShortcutMap::contextMatcher(
 
     return false;
 }
-

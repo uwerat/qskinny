@@ -14,7 +14,7 @@ class SliderSkinlet : public QskSliderSkinlet
 {
     using Inherited = QskSliderSkinlet;
 
-public:
+  public:
     enum NodeRole
     {
         // we have a scale instead of a groove
@@ -28,11 +28,11 @@ public:
     QRectF subControlRect( const QskSkinnable*,
         QskAspect::Subcontrol ) const override;
 
-protected:
-    QSGNode* updateSubNode(
-        const QskSkinnable*, quint8 nodeRole, QSGNode* ) const override;
+  protected:
+    QSGNode* updateSubNode( const QskSkinnable*,
+        quint8 nodeRole, QSGNode* ) const override;
 
-private:
+  private:
     QSGNode* updateScaleNode( const QskSlider*, QSGNode* ) const;
     QSGNode* updateDecorationNode( const QskSlider*, QSGNode* ) const;
     QSGNode* updateHandleNode( const QskSlider*, QSGNode* ) const;

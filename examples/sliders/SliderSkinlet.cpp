@@ -7,14 +7,14 @@
 #include "Slider.h"
 
 #include <QskAspect.h>
-#include <QskSlider.h>
 #include <QskRgbValue.h>
+#include <QskSlider.h>
+#include <QskTextColors.h>
 #include <QskTextNode.h>
 #include <QskTextOptions.h>
-#include <QskTextColors.h>
 
-#include <QSGFlatColorMaterial>
 #include <QFontMetricsF>
+#include <QSGFlatColorMaterial>
 
 #include <cmath>
 
@@ -30,9 +30,9 @@ static QFont qskLabelFont;
 
 class TicksNode : public QSGGeometryNode
 {
-public:
-    TicksNode( const QColor& color ):
-        m_geometry( QSGGeometry::defaultAttributes_Point2D(), 0 )
+  public:
+    TicksNode( const QColor& color )
+        : m_geometry( QSGGeometry::defaultAttributes_Point2D(), 0 )
     {
         m_geometry.setDrawingMode( GL_LINES );
         m_geometry.setVertexDataPattern( QSGGeometry::StaticPattern );
@@ -43,16 +43,16 @@ public:
         setMaterial( &m_material );
     }
 
-private:
+  private:
     QSGFlatColorMaterial m_material;
     QSGGeometry m_geometry;
 };
 
 class HandleNode : public QSGGeometryNode
 {
-public:
-    HandleNode():
-        m_geometry( QSGGeometry::defaultAttributes_Point2D(), 8 * 2 )
+  public:
+    HandleNode()
+        : m_geometry( QSGGeometry::defaultAttributes_Point2D(), 8 * 2 )
     {
         setGeometry( &m_geometry );
         setMaterial( &m_material );
@@ -93,14 +93,14 @@ public:
         }
     }
 
-private:
+  private:
     inline void setLine( QSGGeometry::Point2D* points, float x1, float x2, qreal y )
     {
-        points[0].x = x1;
-        points[0].y = y;
+        points[ 0 ].x = x1;
+        points[ 0 ].y = y;
 
-        points[1].x = x2;
-        points[1].y = y;
+        points[ 1 ].x = x2;
+        points[ 1 ].y = y;
     }
 
     QRectF m_rect;
@@ -121,8 +121,8 @@ SliderSkinlet::~SliderSkinlet()
 {
 }
 
-QRectF SliderSkinlet::subControlRect( const QskSkinnable* skinnable,
-    QskAspect::Subcontrol subControl ) const
+QRectF SliderSkinlet::subControlRect(
+    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
 {
     const auto slider = static_cast< const QskSlider* >( skinnable );
 
@@ -155,7 +155,7 @@ QSGNode* SliderSkinlet::updateSubNode(
 {
     const auto slider = static_cast< const QskSlider* >( skinnable );
 
-    switch( nodeRole )
+    switch ( nodeRole )
     {
         case ScaleRole:
             return updateScaleNode( slider, node );
@@ -251,8 +251,8 @@ QSGNode* SliderSkinlet::updateScaleNode(
     // Create a series of tickmarks from minimum to maximum
     for ( int i = 0; i < tickCount; ++i )
     {
-        vertexData[0].set( x, y );
-        vertexData[1].set( x, y - ( ( i % 10 ) ? qskMinorTick : qskMajorTick ) );
+        vertexData[ 0 ].set( x, y );
+        vertexData[ 1 ].set( x, y - ( ( i % 10 ) ? qskMinorTick : qskMajorTick ) );
 
         vertexData += 2;
         x += stepStride;
@@ -333,7 +333,7 @@ QSGNode* SliderSkinlet::updateHandleNode(
 
     // finally the value label
     auto labelNode = static_cast< QskTextNode* >( handleNode->firstChild() );
-    if ( labelNode == nullptr  )
+    if ( labelNode == nullptr )
     {
         labelNode = new QskTextNode;
         handleNode->appendChildNode( labelNode );
@@ -349,9 +349,8 @@ QSGNode* SliderSkinlet::updateHandleNode(
 
     const QString text = QString::number( slider->value(), 'f', 0 );
 
-    labelNode->setTextData( slider, text, textRect,
-        font, QskTextOptions(), QskTextColors( Qt::white ),
-        Qt::AlignHCenter, Qsk::Normal );
+    labelNode->setTextData( slider, text, textRect, font, QskTextOptions(),
+        QskTextColors( Qt::white ), Qt::AlignHCenter, Qsk::Normal );
 
     return handleNode;
 }

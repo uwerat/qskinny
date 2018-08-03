@@ -6,9 +6,9 @@
 #ifndef QSK_STACK_BOX_ANIMATOR_H
 #define QSK_STACK_BOX_ANIMATOR_H
 
+#include "QskAnimator.h"
 #include "QskGlobal.h"
 #include "QskNamespace.h"
-#include "QskAnimator.h"
 #include <qobject.h>
 
 class QskStackBox;
@@ -18,7 +18,7 @@ class QSK_EXPORT QskStackBoxAnimator : public QObject, public QskAnimator
 {
     Q_OBJECT
 
-public:
+  public:
     QskStackBoxAnimator( QskStackBox* parent );
     ~QskStackBoxAnimator() override;
 
@@ -28,12 +28,12 @@ public:
     int startIndex() const;
     int endIndex() const;
 
-protected:
+  protected:
     QskStackBox* stackBox() const;
     QskLayoutItem* layoutItemAt( int index ) const;
     void resizeItemAt( int index );
 
-private:
+  private:
     int m_startIndex;
     int m_endIndex;
 };
@@ -42,20 +42,20 @@ class QSK_EXPORT QskStackBoxAnimator1 : public QskStackBoxAnimator
 {
     Q_OBJECT
 
-public:
+  public:
     QskStackBoxAnimator1( QskStackBox* parent );
     ~QskStackBoxAnimator1() override;
 
     void setOrientation( Qt::Orientation );
     Qt::Orientation orientation() const;
 
-protected:
+  protected:
     void setup() override;
     void advance( qreal value ) override;
     void done() override;
 
-private:
-    qreal m_itemOffset[2];
+  private:
+    qreal m_itemOffset[ 2 ];
 
     Qt::Orientation m_orientation : 2;
     Qsk::Direction m_direction : 4;
@@ -66,11 +66,11 @@ class QSK_EXPORT QskStackBoxAnimator3 : public QskStackBoxAnimator
 {
     Q_OBJECT
 
-public:
+  public:
     QskStackBoxAnimator3( QskStackBox* parent );
     ~QskStackBoxAnimator3() override;
 
-protected:
+  protected:
     void setup() override;
     void advance( qreal value ) override;
     void done() override;

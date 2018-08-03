@@ -24,13 +24,13 @@ class QSK_EXPORT QskSkinManager : public QObject
 {
     Q_OBJECT
 
-public:
+  public:
     static QskSkinManager* instance();
 
     void addPluginPath( const QString& );
     void removePluginPath( const QString& );
 
-    void setPluginPaths(const QStringList& paths);
+    void setPluginPaths( const QStringList& );
     QStringList pluginPaths() const;
 
     void registerFactory( const QString& factoryId, QskSkinFactory* );
@@ -40,7 +40,7 @@ public:
 
     QskSkin* createSkin( const QString& skinName ) const;
 
-protected:
+  protected:
     QskSkinManager();
     ~QskSkinManager() override;
 

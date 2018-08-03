@@ -48,7 +48,7 @@ QQuickItem* MainWindow::headerBar() const
     header->addIndicator( "location" );
     header->addIndicator( "phone" );
 
-    (void) new QskTextLabel( QDate::currentDate().toString(), header );
+    ( void ) new QskTextLabel( QDate::currentDate().toString(), header );
 
     header->addIndicator( "user" );
     header->addIndicator( "bookmark" );

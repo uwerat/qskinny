@@ -4,8 +4,8 @@
  *****************************************************************************/
 
 #include "LinearLayoutPage.h"
-#include "TestRectangle.h"
 #include "ButtonBox.h"
+#include "TestRectangle.h"
 
 #include <QskAspect.h>
 #include <QskLinearBox.h>
@@ -15,9 +15,9 @@ namespace
 {
     class Box : public QskLinearBox
     {
-    public:
-        Box( QQuickItem* parent = nullptr ):
-            QskLinearBox( Qt::Horizontal, parent )
+      public:
+        Box( QQuickItem* parent = nullptr )
+            : QskLinearBox( Qt::Horizontal, parent )
         {
             setObjectName( "Box" );
 
@@ -35,10 +35,10 @@ namespace
             addRectangle( "FireBrick" );
             addRectangle( "DarkRed" );
 
-            //setRowSpacing( 5, 30 );
+            // setRowSpacing( 5, 30 );
             insertSpacer( 5, 30 );
-            //insertStretch( 5, 2 );
-            //setRetainSizeWhenHidden( 2, true );
+            // insertStretch( 5, 2 );
+            // setRetainSizeWhenHidden( 2, true );
         }
 
         void mirror()
@@ -69,8 +69,7 @@ namespace
             setSpacing( this->spacing() + spacing );
         }
 
-    private:
-
+      private:
         void addRectangle( const char* colorName )
         {
             TestRectangle* rect = new TestRectangle( colorName );
@@ -81,8 +80,8 @@ namespace
     };
 }
 
-LinearLayoutPage::LinearLayoutPage( QQuickItem* parent ):
-    QskLinearBox( Qt::Vertical, parent )
+LinearLayoutPage::LinearLayoutPage( QQuickItem* parent )
+    : QskLinearBox( Qt::Vertical, parent )
 {
     setMargins( 10 );
     setBackgroundColor( QskRgbValue::LightSteelBlue );

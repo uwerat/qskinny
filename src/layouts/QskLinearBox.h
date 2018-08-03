@@ -28,7 +28,7 @@ class QSK_EXPORT QskLinearBox : public QskIndexedLayoutBox
 
     using Inherited = QskIndexedLayoutBox;
 
-public:
+  public:
     explicit QskLinearBox( QQuickItem* parent = nullptr );
     explicit QskLinearBox( Qt::Orientation, QQuickItem* parent = nullptr );
 
@@ -92,19 +92,19 @@ public:
     Q_INVOKABLE int columnStretchFactor( int column ) const;
 #endif
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void transpose();
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void orientationChanged();
     void dimensionChanged();
     void spacingChanged();
     void extraSpacingAtChanged();
 
-protected:
+  protected:
     QRectF alignedLayoutRect( const QRectF& ) const override;
 
-private:
+  private:
     void setupLayoutItem( QskLayoutItem*, int index ) override;
     void layoutItemInserted( QskLayoutItem*, int index ) override;
     void layoutItemRemoved( QskLayoutItem*, int index ) override;

@@ -6,9 +6,8 @@
 #ifndef QSK_DIALOG_SUB_WINDOW_H
 #define QSK_DIALOG_SUB_WINDOW_H 1
 
-#include "QskGlobal.h"
-#include "QskSubWindow.h"
 #include "QskDialog.h"
+#include "QskSubWindow.h"
 
 class QSK_EXPORT QskDialogSubWindow : public QskSubWindow
 {
@@ -16,30 +15,30 @@ class QSK_EXPORT QskDialogSubWindow : public QskSubWindow
 
     using Inherited = QskSubWindow;
 
-public:
+  public:
     QskDialogSubWindow( QQuickItem* parent = nullptr );
     ~QskDialogSubWindow() override;
 
     Q_INVOKABLE QskDialog::DialogCode result() const;
     Q_INVOKABLE QskDialog::DialogCode exec();
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void finished( QskDialog::DialogCode );
     void accepted();
     void rejected();
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void done( QskDialog::DialogCode );
     void accept();
     void reject();
 
-protected:
+  protected:
     void setResult( QskDialog::DialogCode r );
     void keyPressEvent( QKeyEvent* ) override;
 
     void aboutToShow() override;
 
-private:
+  private:
     QskDialog::DialogCode m_result;
 };
 

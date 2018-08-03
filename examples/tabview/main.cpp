@@ -7,24 +7,24 @@
 #include <SkinnyShortcut.h>
 
 #include <QskAspect.h>
-#include <QskObjectCounter.h>
-#include <QskWindow.h>
-#include <QskTabView.h>
-#include <QskTabButton.h>
-#include <QskTextLabel.h>
-#include <QskPushButton.h>
-#include <QskLinearBox.h>
-#include <QskFocusIndicator.h>
 #include <QskBoxBorderColors.h>
+#include <QskFocusIndicator.h>
+#include <QskLinearBox.h>
+#include <QskObjectCounter.h>
+#include <QskPushButton.h>
 #include <QskSkin.h>
+#include <QskTabButton.h>
+#include <QskTabView.h>
+#include <QskTextLabel.h>
+#include <QskWindow.h>
 
 #include <QGuiApplication>
 
 class Label : public QskTextLabel
 {
-public:
-    Label( const QString& text, QQuickItem* parent = nullptr ):
-        QskTextLabel( text, parent )
+  public:
+    Label( const QString& text, QQuickItem* parent = nullptr )
+        : QskTextLabel( text, parent )
     {
         setTextColor( Qt::darkRed );
         setFontRole( QskSkin::LargeFont );
@@ -34,9 +34,9 @@ public:
 
 class TabView : public QskTabView
 {
-public:
-    TabView( QQuickItem* parent = nullptr ):
-        QskTabView( parent )
+  public:
+    TabView( QQuickItem* parent = nullptr )
+        : QskTabView( parent )
     {
         for ( int i = 0; i < 6; i++ )
         {

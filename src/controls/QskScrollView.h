@@ -12,7 +12,8 @@ class QSK_EXPORT QskScrollView : public QskControl
 {
     Q_OBJECT
 
-    Q_PROPERTY( QPointF scrollPos READ scrollPos WRITE setScrollPos NOTIFY scrollPosChanged FINAL )
+    Q_PROPERTY( QPointF scrollPos READ scrollPos 
+        WRITE setScrollPos NOTIFY scrollPosChanged FINAL )
 
     Q_PROPERTY( Qt::ScrollBarPolicy verticalScrollBarPolicy READ verticalScrollBarPolicy
         WRITE setVerticalScrollBarPolicy NOTIFY verticalScrollBarPolicyChanged FINAL )
@@ -25,7 +26,7 @@ class QSK_EXPORT QskScrollView : public QskControl
 
     using Inherited = QskControl;
 
-public:
+  public:
     QSK_SUBCONTROLS( Panel, Viewport,
         HorizontalScrollBar, HorizontalScrollHandle,
         VerticalScrollBar, VerticalScrollHandle )
@@ -56,7 +57,7 @@ public:
     QRectF viewContentsRect() const;
     QRectF gestureRect() const override;
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void scrolledTo( const QPointF& );
     void scrollPosChanged();
 
@@ -65,14 +66,14 @@ Q_SIGNALS:
 
     void flickableOrientationsChanged();
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void setScrollPos( const QPointF& );
     void scrollTo( const QPointF& );
 
     void ensureVisible( const QPointF& );
     void ensureVisible( const QRectF& );
 
-protected:
+  protected:
     void mouseMoveEvent( QMouseEvent* ) override;
     void mousePressEvent( QMouseEvent* ) override;
     void mouseReleaseEvent( QMouseEvent* ) override;
@@ -87,7 +88,7 @@ protected:
 
     void setScrollableSize( const QSizeF& );
 
-private:
+  private:
     QPointF boundedScrollPos( const QPointF& ) const;
 
     class PrivateData;

@@ -41,8 +41,7 @@ inline QMarginsF qskMargins( const QRectF& rect, const QRectF& innerRect )
         innerRect.left() - rect.left(),
         innerRect.top() - rect.top(),
         rect.right() - innerRect.right(),
-        rect.bottom() - innerRect.bottom()
-        );
+        rect.bottom() - innerRect.bottom() );
 }
 
 #endif

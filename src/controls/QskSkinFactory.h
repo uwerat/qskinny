@@ -16,7 +16,7 @@ class QSK_EXPORT QskSkinFactory : public QObject
 {
     Q_OBJECT
 
-public:
+  public:
     QskSkinFactory( QObject* parent = nullptr );
     ~QskSkinFactory() override;
 

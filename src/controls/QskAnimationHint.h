@@ -13,17 +13,17 @@
 
 class QSK_EXPORT QskAnimationHint
 {
-public:
-    inline constexpr QskAnimationHint() noexcept:
-        duration( 0 ),
-        type( QEasingCurve::Linear )
+  public:
+    inline constexpr QskAnimationHint() noexcept
+        : duration( 0 )
+        , type( QEasingCurve::Linear )
     {
     }
 
     inline constexpr QskAnimationHint( uint duration,
-            QEasingCurve::Type type = QEasingCurve::Linear ) noexcept:
-        duration( duration ),
-        type( type )
+            QEasingCurve::Type type = QEasingCurve::Linear ) noexcept
+        : duration( duration )
+        , type( type )
     {
     }
 

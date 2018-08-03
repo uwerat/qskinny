@@ -9,10 +9,10 @@
 
 class QskDialogWindow::PrivateData
 {
-public:
-    PrivateData():
-        result( QskDialog::Rejected ),
-        inDone( false )
+  public:
+    PrivateData()
+        : result( QskDialog::Rejected )
+        , inDone( false )
     {
     }
 
@@ -20,12 +20,12 @@ public:
     bool inDone : 1; // flag blocking recursive done calls
 };
 
-QskDialogWindow::QskDialogWindow( QWindow* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData() )
+QskDialogWindow::QskDialogWindow( QWindow* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData() )
 {
-    setFlags( Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint
-        | Qt::WindowSystemMenuHint | Qt::WindowContextHelpButtonHint );
+    setFlags( Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint |
+        Qt::WindowSystemMenuHint | Qt::WindowContextHelpButtonHint );
 }
 
 QskDialogWindow::~QskDialogWindow()

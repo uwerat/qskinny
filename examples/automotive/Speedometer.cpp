@@ -8,8 +8,8 @@ QSK_SUBCONTROL( Speedometer, Labels )
 QSK_SUBCONTROL( Speedometer, NeedleHead )
 QSK_SUBCONTROL( Speedometer, Needle )
 
-Speedometer::Speedometer( QQuickItem* parent ) :
-    QskRangeControl( parent )
+Speedometer::Speedometer( QQuickItem* parent )
+    : QskRangeControl( parent )
 {
 }
 

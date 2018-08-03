@@ -4,15 +4,15 @@
  *****************************************************************************/
 
 #include "QskLayout.h"
-#include "QskLayoutItem.h"
-#include "QskLayoutEngine.h"
 #include "QskEvent.h"
+#include "QskLayoutEngine.h"
+#include "QskLayoutItem.h"
 
 class QskLayout::PrivateData
 {
-public:
-    PrivateData():
-        isActive( true )
+  public:
+    PrivateData()
+        : isActive( true )
     {
     }
 
@@ -21,9 +21,9 @@ public:
     QskLayoutEngine engine;
 };
 
-QskLayout::QskLayout( QQuickItem* parent ):
-    QskControl( parent ),
-    m_data( new PrivateData() )
+QskLayout::QskLayout( QQuickItem* parent )
+    : QskControl( parent )
+    , m_data( new PrivateData() )
 {
 }
 
@@ -294,7 +294,7 @@ void QskLayout::itemChange( ItemChange change, const ItemChangeData& value )
 {
     Inherited::itemChange( change, value );
 
-    switch( change )
+    switch ( change )
     {
         case ItemChildRemovedChange:
         {
@@ -320,7 +320,7 @@ void QskLayout::itemChange( ItemChange change, const ItemChangeData& value )
 
 bool QskLayout::event( QEvent* event )
 {
-    switch( event->type() )
+    switch ( event->type() )
     {
         case QEvent::LayoutRequest:
         {

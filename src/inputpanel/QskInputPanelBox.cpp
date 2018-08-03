@@ -4,23 +4,24 @@
  *****************************************************************************/
 
 #include "QskInputPanelBox.h"
-#include "QskVirtualKeyboard.h"
 #include "QskInputPredictionBar.h"
+#include "QskLinearBox.h"
 #include "QskTextInput.h"
 #include "QskTextLabel.h"
-#include "QskLinearBox.h"
+#include "QskVirtualKeyboard.h"
 
-#include <qstring.h>
 #include <qpointer.h>
+#include <qstring.h>
 
 namespace
 {
     class TextInputProxy final : public QskTextInput
     {
-    public:
-        TextInputProxy( QskInputPanelBox* panelBox, QQuickItem* parentItem = nullptr ):
-            QskTextInput( parentItem ),
-            m_panelBox( panelBox )
+      public:
+        TextInputProxy( QskInputPanelBox* panelBox,
+                QQuickItem* parentItem = nullptr )
+            : QskTextInput( parentItem )
+            , m_panelBox( panelBox )
         {
             setObjectName( "InputBoxProxy" );
             setFocusPolicy( Qt::NoFocus );
@@ -38,7 +39,7 @@ namespace
             return subControl;
         }
 
-    protected:
+      protected:
         void focusInEvent( QFocusEvent* ) override
         {
         }
@@ -47,7 +48,7 @@ namespace
         {
         }
 
-    private:
+      private:
         QskInputPanelBox* m_panelBox;
     };
 }
@@ -58,7 +59,7 @@ QSK_SUBCONTROL( QskInputPanelBox, ProxyText )
 
 class QskInputPanelBox::PrivateData
 {
-public:
+  public:
     QPointer< QQuickItem > inputItem;
 
     QskLinearBox* layout;
@@ -70,9 +71,9 @@ public:
     QskInputPanelBox::PanelHints panelHints = QskInputPanelBox::InputProxy;
 };
 
-QskInputPanelBox::QskInputPanelBox( QQuickItem* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData() )
+QskInputPanelBox::QskInputPanelBox( QQuickItem* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData() )
 {
     setAutoLayoutChildren( true );
 
@@ -128,8 +129,8 @@ void QskInputPanelBox::setPanelHints( PanelHints hints )
     m_data->inputProxy->setVisible( hints & QskInputPanelBox::InputProxy );
     m_data->predictionBar->setVisible( hints & QskInputPanelBox::Prediction );
 
-    const bool showPrompt = ( hints & QskInputPanelBox::InputProxy )
-        && !m_data->prompt->text().isEmpty();
+    const bool showPrompt = ( hints & QskInputPanelBox::InputProxy ) &&
+        !m_data->prompt->text().isEmpty();
 
     m_data->prompt->setVisible( showPrompt );
 
@@ -174,15 +175,15 @@ QQuickItem* QskInputPanelBox::inputProxy() const
 QskAspect::Subcontrol QskInputPanelBox::effectiveSubcontrol(
     QskAspect::Subcontrol subControl ) const
 {
-    if( subControl == QskBox::Panel )
+    if ( subControl == QskBox::Panel )
         return QskInputPanelBox::Panel;
 
 #if 1
     // TODO ...
-    if( subControl == QskInputPanelBox::ProxyPanel )
+    if ( subControl == QskInputPanelBox::ProxyPanel )
         return QskTextInput::Panel;
 
-    if( subControl == QskInputPanelBox::ProxyText )
+    if ( subControl == QskInputPanelBox::ProxyText )
         return QskTextInput::Text;
 #endif
 
@@ -218,7 +219,7 @@ void QskInputPanelBox::keyPressEvent( QKeyEvent* event )
 {
     int keyCode = -1;
 
-    switch( event->key() )
+    switch ( event->key() )
     {
         case Qt::Key_Return:
         case Qt::Key_Escape:
@@ -232,7 +233,7 @@ void QskInputPanelBox::keyPressEvent( QKeyEvent* event )
             const auto text = event->text();
 
             if ( !text.isEmpty() )
-                keyCode = text[0].unicode();
+                keyCode = text[ 0 ].unicode();
             else
                 keyCode = event->key();
         }

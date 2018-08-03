@@ -8,14 +8,14 @@
 
 QSK_SUBCONTROL( QskSeparator, Panel )
 
-QskSeparator::QskSeparator( QQuickItem* parent ):
-    QskSeparator( Qt::Horizontal, parent )
+QskSeparator::QskSeparator( QQuickItem* parent )
+    : QskSeparator( Qt::Horizontal, parent )
 {
 }
 
-QskSeparator::QskSeparator( Qt::Orientation orientation, QQuickItem* parent ):
-    Inherited( parent ),
-    m_orientation( orientation )
+QskSeparator::QskSeparator( Qt::Orientation orientation, QQuickItem* parent )
+    : Inherited( parent )
+    , m_orientation( orientation )
 {
     if ( orientation == Qt::Horizontal )
         initSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Fixed );

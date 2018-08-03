@@ -24,7 +24,7 @@ class QSK_EXPORT QskSlider : public QskRangeControl
 
     using Inherited = QskRangeControl;
 
-public:
+  public:
     QSK_SUBCONTROLS( Panel, Groove, Fill, Scale, Handle )
     QSK_STATES( Pressed, Minimum, Maximum )
 
@@ -44,12 +44,12 @@ public:
     QSizeF contentsSizeHint() const override;
     QskAspect::Placement effectivePlacement() const override;
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void pressedChanged( bool );
     void orientationChanged( Qt::Orientation );
     void trackingChanged( bool );
 
-protected:
+  protected:
     void mousePressEvent( QMouseEvent* e ) override;
     void mouseMoveEvent( QMouseEvent* e ) override;
     void mouseReleaseEvent( QMouseEvent* e ) override;
@@ -57,7 +57,7 @@ protected:
     QSizeF handleSize() const;
     QRectF handleRect() const;
 
-private:
+  private:
     void updatePosition();
 
     class PrivateData;

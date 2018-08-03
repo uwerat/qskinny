@@ -5,13 +5,13 @@
 
 class ButtonBar : public QskLinearBox
 {
-public:
+  public:
     QSK_SUBCONTROLS( Indicator )
 
     ButtonBar( QQuickItem* = nullptr );
     void addIndicator( const char* name );
 
-protected:
+  protected:
     QSizeF contentsSizeHint() const override;
 };
 

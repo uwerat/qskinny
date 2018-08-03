@@ -27,7 +27,7 @@ class QSK_EXPORT Frame : public QskControl
 
     using Inherited = QskControl;
 
-public:
+  public:
     enum Style
     {
         Plain,
@@ -53,16 +53,16 @@ public:
     void setColor( const QColor& );
     QColor color() const;
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void styleChanged();
     void frameWidthChanged();
     void radiusChanged();
     void colorChanged();
 
-protected:
+  protected:
     void updateNode( QSGNode* ) override;
 
-private:
+  private:
     void updateFrameNode( const QRectF&, QskBoxNode* );
 
     Style m_style;

@@ -8,12 +8,12 @@
 #include <qquickitem.h>
 
 QSK_QT_PRIVATE_BEGIN
-#include <private/qquickitem_p.h>
 #include <private/qguiapplication_p.h>
+#include <private/qquickitem_p.h>
 QSK_QT_PRIVATE_END
 
-#include <qpa/qplatformintegration.h>
 #include <qpa/qplatforminputcontext.h>
+#include <qpa/qplatformintegration.h>
 
 QRectF qskItemRect( const QQuickItem* item )
 {
@@ -50,7 +50,7 @@ bool qskIsAncestorOf( const QQuickItem* item, const QQuickItem* child )
     if ( item == nullptr || child == nullptr )
         return false;
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
     return item->isAncestorOf( child );
 #else
     while ( child )
@@ -199,10 +199,9 @@ void qskUpdateInputMethod( const QQuickItem* item, Qt::InputMethodQueries querie
             inputContext directly.
          */
 
-        inputContext->metaObject()->method( methodId ).invoke(
-            inputContext, Qt::DirectConnection,
-            Q_ARG( const QQuickItem*, item ),
-            Q_ARG( Qt::InputMethodQueries, queries ) );
+        const auto method = inputContext->metaObject()->method( methodId );
+        method.invoke( inputContext, Qt::DirectConnection,
+            Q_ARG( const QQuickItem*, item ), Q_ARG( Qt::InputMethodQueries, queries ) );
     }
     else
     {
@@ -233,10 +232,9 @@ void qskInputMethodSetVisible( const QQuickItem* item, bool on )
 
     if ( methodId >= 0 )
     {
-        inputContext->metaObject()->method( methodId ).invoke(
-            inputContext, Qt::DirectConnection,
-            Q_ARG( const QQuickItem*, item ),
-            Q_ARG( bool, on ) );
+        const auto method = inputContext->metaObject()->method( methodId );
+        method.invoke( inputContext, Qt::DirectConnection,
+            Q_ARG( const QQuickItem*, item ), Q_ARG( bool, on ) );
     }
     else
     {

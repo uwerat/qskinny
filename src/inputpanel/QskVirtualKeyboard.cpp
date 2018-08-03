@@ -8,8 +8,8 @@
 #include "QskTextOptions.h"
 
 #include <qguiapplication.h>
-#include <qstylehints.h>
 #include <qset.h>
+#include <qstylehints.h>
 
 namespace
 {
@@ -23,11 +23,11 @@ namespace
 
     class Button final : public QskPushButton
     {
-    public:
-        Button( int row, int column, QskVirtualKeyboard* parent ):
-            QskPushButton( parent ),
-            m_row( row ),
-            m_column( column )
+      public:
+        Button( int row, int column, QskVirtualKeyboard* parent )
+            : QskPushButton( parent )
+            , m_row( row )
+            , m_column( column )
         {
             QskTextOptions options;
             options.setFontSizeMode( QskTextOptions::VerticalFit );
@@ -39,7 +39,7 @@ namespace
         QskAspect::Subcontrol effectiveSubcontrol(
             QskAspect::Subcontrol subControl ) const override
         {
-            auto keyBoard = static_cast< const QskVirtualKeyboard*>( parent() );
+            auto keyBoard = static_cast< const QskVirtualKeyboard* >( parent() );
 
             if ( subControl == QskPushButton::Panel )
                 return keyBoard->effectiveSubcontrol( QskVirtualKeyboard::ButtonPanel );
@@ -53,7 +53,7 @@ namespace
         int row() const { return m_row; }
         int column() const { return m_column; }
 
-    private:
+      private:
         const int m_row;
         const int m_column;
     };
@@ -94,7 +94,7 @@ struct QskVirtualKeyboardLayouts
     Layout zh; // Chinese
 };
 
-#define LOWER(x) int(x + 32) // Convert an uppercase key to lowercase
+#define LOWER( x ) int( x + 32 ) // Convert an uppercase key to lowercase
 static constexpr const QskVirtualKeyboardLayouts qskKeyboardLayouts =
 {
 #include "QskVirtualKeyboardLayouts.cpp"
@@ -103,7 +103,7 @@ static constexpr const QskVirtualKeyboardLayouts qskKeyboardLayouts =
 
 static qreal qskKeyStretch( int key )
 {
-    switch( key )
+    switch ( key )
     {
         case Qt::Key_Backspace:
         case Qt::Key_Shift:
@@ -128,9 +128,9 @@ static qreal qskRowStretch( const KeyRow& keyRow )
 {
     qreal stretch = 0;
 
-    for( const auto& key : keyRow )
+    for ( const auto& key : keyRow )
     {
-        if( !key )
+        if ( !key )
         {
             continue;
         }
@@ -138,7 +138,7 @@ static qreal qskRowStretch( const KeyRow& keyRow )
         stretch += qskKeyStretch( key );
     }
 
-    if( stretch == 0.0 )
+    if ( stretch == 0.0 )
     {
         stretch = ColumnCount;
     }
@@ -149,7 +149,7 @@ static qreal qskRowStretch( const KeyRow& keyRow )
 static QString qskTextForKey( int key )
 {
     // Special cases
-    switch( key )
+    switch ( key )
     {
         case Qt::Key_Backspace:
         case Qt::Key_Muhenkan:
@@ -189,9 +189,12 @@ static QString qskTextForKey( int key )
 
 static bool qskIsAutorepeat( int key )
 {
-    return ( key != Qt::Key_Return && key != Qt::Key_Enter
-        && key != Qt::Key_Shift && key != Qt::Key_CapsLock
-        && key != Qt::Key_Mode_switch );
+    return (
+        ( key != Qt::Key_Return ) &&
+        ( key != Qt::Key_Enter ) &&
+        ( key != Qt::Key_Shift ) &&
+        ( key != Qt::Key_CapsLock ) &&
+        ( key != Qt::Key_Mode_switch ) );
 }
 
 static QSet< int > qskKeyCodes( const QskVirtualKeyboardLayouts::Layout& layout )
@@ -203,7 +206,7 @@ static QSet< int > qskKeyCodes( const QskVirtualKeyboardLayouts::Layout& layout 
     {
         const auto& keyCodes = layout[ mode ];
 
-        for( int row = 0; row < RowCount; row++ )
+        for ( int row = 0; row < RowCount; row++ )
         {
             const auto& keys = keyCodes.data[ row ];
 
@@ -221,7 +224,7 @@ QSK_SUBCONTROL( QskVirtualKeyboard, ButtonText )
 
 class QskVirtualKeyboard::PrivateData
 {
-public:
+  public:
     const QskVirtualKeyboardLayouts::Layout* currentLayout = nullptr;
     QskVirtualKeyboard::Mode mode = QskVirtualKeyboard::LowercaseMode;
 
@@ -229,9 +232,9 @@ public:
     QSet< int > keyCodes;
 };
 
-QskVirtualKeyboard::QskVirtualKeyboard( QQuickItem* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData )
+QskVirtualKeyboard::QskVirtualKeyboard( QQuickItem* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData )
 {
     setPolishOnResize( true );
     initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Constrained );
@@ -272,15 +275,15 @@ QskVirtualKeyboard::~QskVirtualKeyboard()
 QskAspect::Subcontrol QskVirtualKeyboard::effectiveSubcontrol(
     QskAspect::Subcontrol subControl ) const
 {
-    if( subControl == QskBox::Panel )
+    if ( subControl == QskBox::Panel )
         return QskVirtualKeyboard::Panel;
 
 #if 1
     // TODO ...
-    if( subControl == QskVirtualKeyboard::ButtonPanel )
+    if ( subControl == QskVirtualKeyboard::ButtonPanel )
         return QskPushButton::Panel;
 
-    if( subControl == QskVirtualKeyboard::ButtonText )
+    if ( subControl == QskVirtualKeyboard::ButtonText )
         return QskPushButton::Text;
 #endif
 
@@ -347,7 +350,7 @@ qreal QskVirtualKeyboard::widthForHeight( qreal height ) const
 void QskVirtualKeyboard::updateLayout()
 {
     const auto r = layoutRect();
-    if( r.isEmpty() )
+    if ( r.isEmpty() )
         return;
 
     const auto spacing = metric( Panel | QskAspect::Spacing );
@@ -359,7 +362,7 @@ void QskVirtualKeyboard::updateLayout()
 
     qreal yPos = r.top();
 
-    for( int row = 0; row < RowCount; row++ )
+    for ( int row = 0; row < RowCount; row++ )
     {
         const auto& keys = keyCodes.data[ row ];
 
@@ -418,7 +421,7 @@ void QskVirtualKeyboard::buttonPressed()
     const int key = keyCodes.data[ button->row() ][ button->column() ];
 
     // Mode-switching keys
-    switch( key )
+    switch ( key )
     {
         case Qt::Key_CapsLock:
         case Qt::Key_Kana_Lock:
@@ -438,7 +441,7 @@ void QskVirtualKeyboard::buttonPressed()
         {
             setMode( static_cast< QskVirtualKeyboard::Mode >(
                 m_data->mode ? ( ( m_data->mode + 1 ) % QskVirtualKeyboard::ModeCount )
-                : SpecialCharacterMode ) );
+                             : SpecialCharacterMode ) );
 
             break;
         }
@@ -453,7 +456,7 @@ void QskVirtualKeyboard::updateLocale( const QLocale& locale )
 {
     const QskVirtualKeyboardLayouts::Layout* newLayout = nullptr;
 
-    switch( locale.language() )
+    switch ( locale.language() )
     {
         case QLocale::Bulgarian:
             newLayout = &qskKeyboardLayouts.bg;
@@ -477,7 +480,7 @@ void QskVirtualKeyboard::updateLocale( const QLocale& locale )
 
         case QLocale::English:
         {
-            switch( locale.country() )
+            switch ( locale.country() )
             {
                 case QLocale::Canada:
                 case QLocale::UnitedStates:
@@ -538,7 +541,7 @@ void QskVirtualKeyboard::updateLocale( const QLocale& locale )
             newLayout = &qskKeyboardLayouts.ro;
             break;
 
-        case QLocale::Russia:
+        case QLocale::Russian:
             newLayout = &qskKeyboardLayouts.ru;
             break;
 

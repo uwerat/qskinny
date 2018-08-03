@@ -43,20 +43,20 @@ inline const QVariant* qskResolvedHint( QskAspect::Aspect aspect,
     }
 }
 
-QskSkinHintTable::QskSkinHintTable():
-    m_hints( nullptr ),
-    m_animatorCount( 0 ),
-    m_hasStates( false )
+QskSkinHintTable::QskSkinHintTable()
+    : m_hints( nullptr )
+    , m_animatorCount( 0 )
+    , m_hasStates( false )
 {
 }
 
-QskSkinHintTable::QskSkinHintTable( const QskSkinHintTable& other ):
-    m_hints( nullptr ),
-    m_animatorCount( other.m_animatorCount ),
-    m_hasStates( other.m_hasStates )
+QskSkinHintTable::QskSkinHintTable( const QskSkinHintTable& other )
+    : m_hints( nullptr )
+    , m_animatorCount( other.m_animatorCount )
+    , m_hasStates( other.m_hasStates )
 {
     if ( other.m_hints )
-        m_hints = new HintMap( *(other.m_hints) );
+        m_hints = new HintMap( *( other.m_hints ) );
 }
 
 QskSkinHintTable::~QskSkinHintTable()
@@ -124,7 +124,7 @@ void QskSkinHintTable::removeHint( QskAspect::Aspect aspect )
     {
         if ( aspect.isAnimator() )
             m_animatorCount--;
-        
+
         if ( m_hints->empty() )
         {
             delete m_hints;

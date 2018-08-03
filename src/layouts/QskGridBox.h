@@ -23,7 +23,7 @@ class QSK_EXPORT QskGridBox : public QskLayout
 
     using Inherited = QskLayout;
 
-public:
+  public:
     explicit QskGridBox( QQuickItem* parent = nullptr );
     ~QskGridBox() override;
 
@@ -119,16 +119,16 @@ public:
 
     QSizeF contentsSizeHint() const override;
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void verticalSpacingChanged();
     void horizontalSpacingChanged();
 
-protected:
+  protected:
     void setupLayoutItem( QskLayoutItem*, int index ) override;
     void layoutItemInserted( QskLayoutItem*, int index ) override;
     void layoutItemRemoved( QskLayoutItem*, int index ) override;
 
-private:
+  private:
     void setRowSizeHint(
         Qt::SizeHint which, int row, qreal size,
         Qt::Orientation orientation );

@@ -7,13 +7,13 @@
 #define QSK_CONTROL_H 1
 
 #include "QskGlobal.h"
-#include "QskSkinnable.h"
+#include "QskAspect.h"
 #include "QskGradient.h"
 #include "QskSizePolicy.h"
-#include "QskAspect.h"
+#include "QskSkinnable.h"
 
-#include <qquickitem.h>
 #include <qlocale.h>
+#include <qquickitem.h>
 
 #include <memory>
 
@@ -60,15 +60,18 @@ class QSK_EXPORT QskControl : public QQuickItem, public QskSkinnable
         WRITE setBackground RESET resetBackground NOTIFY backgroundChanged )
 
     Q_PROPERTY( QskSizePolicy sizePolicy READ sizePolicy WRITE setSizePolicy )
+
     Q_PROPERTY( QSizeF minimumSize READ minimumSize WRITE setMinimumSize )
+
     Q_PROPERTY( QSizeF maximumSize READ maximumSize WRITE setMaximumSize )
+
     Q_PROPERTY( QSizeF preferredSize READ preferredSize WRITE setPreferredSize )
 
     Q_PROPERTY( QRectF geometry READ geometry WRITE setGeometry )
 
     using Inherited = QQuickItem;
 
-public:
+  public:
     QSK_STATES( Disabled, Hovered, Focused )
 
     enum Flag
@@ -207,7 +210,7 @@ public:
 
     QVector< QskAspect::Subcontrol > subControls() const;
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void backgroundChanged();
     void marginsChanged();
     void focusIndicatorRectChanged();
@@ -216,7 +219,7 @@ Q_SIGNALS:
     void focusPolicyChanged();
     void wheelEnabledChanged();
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void setGeometry( const QRectF& );
     void setLocale( const QLocale& );
 
@@ -226,7 +229,7 @@ public Q_SLOTS:
 
     void resetImplicitSize();
 
-protected:
+  protected:
     bool event( QEvent* ) override;
 
     virtual void changeEvent( QEvent* );
@@ -250,14 +253,14 @@ protected:
 
     void cleanupNodes();
 
-    virtual void aboutToShow(); // called in updatePolish
+    virtual void aboutToShow();  // called in updatePolish
     virtual void updateLayout(); // called in updatePolish
 
-private:
+  private:
     // don't use boundingRect - it seems to be deprecated
     QRectF boundingRect() const override final { return rect(); }
 
-    void setActiveFocusOnTab( bool ) = delete; // use setFocusPolicy
+    void setActiveFocusOnTab( bool ) = delete;                 // use setFocusPolicy
     void updateInputMethod( Qt::InputMethodQueries ) = delete; // use qskUpdateInputMethod
 
     QSGNode* updatePaintNode( QSGNode*, UpdatePaintNodeData* ) override final;
@@ -270,7 +273,7 @@ private:
 
     void updateControlFlag( uint flag, bool on );
 
-private:
+  private:
     Q_DECLARE_PRIVATE( QskControl )
 };
 

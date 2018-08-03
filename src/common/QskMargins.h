@@ -9,8 +9,8 @@
 #include "QskGlobal.h"
 
 #include <qmargins.h>
-#include <qnamespace.h>
 #include <qmetatype.h>
+#include <qnamespace.h>
 
 class QVariant;
 
@@ -21,7 +21,7 @@ class QVariant;
  */
 class QSK_EXPORT QskMargins : public QMarginsF
 {
-public:
+  public:
     constexpr QskMargins() noexcept = default;
     constexpr QskMargins( const QMarginsF& ) noexcept;
     constexpr QskMargins( const QMargins& ) noexcept;
@@ -52,29 +52,30 @@ public:
         const QskMargins&, qreal progress ) noexcept;
 };
 
-constexpr inline QskMargins::QskMargins( qreal margin ) noexcept:
-    QskMargins( margin, margin, margin, margin )
+constexpr inline QskMargins::QskMargins( qreal margin ) noexcept
+    : QskMargins( margin, margin, margin, margin )
 {
 }
 
-constexpr inline QskMargins::QskMargins( qreal horizontal, qreal vertical ) noexcept:
-    QskMargins( horizontal, vertical, horizontal, vertical )
+constexpr inline QskMargins::QskMargins(
+        qreal horizontal, qreal vertical ) noexcept
+    : QskMargins( horizontal, vertical, horizontal, vertical )
 {
 }
 
 constexpr QskMargins::QskMargins(
-    qreal left, qreal top, qreal right, qreal bottom ) noexcept:
-    QMarginsF( left, top, right, bottom )
+        qreal left, qreal top, qreal right, qreal bottom ) noexcept
+    : QMarginsF( left, top, right, bottom )
 {
 }
 
-constexpr inline QskMargins::QskMargins( const QMarginsF& margins ) noexcept:
-    QMarginsF( margins )
+constexpr inline QskMargins::QskMargins( const QMarginsF& margins ) noexcept
+    : QMarginsF( margins )
 {
 }
 
-constexpr inline QskMargins::QskMargins( const QMargins& margins ) noexcept:
-    QMarginsF( margins )
+constexpr inline QskMargins::QskMargins( const QMargins& margins ) noexcept
+    : QMarginsF( margins )
 {
 }
 
@@ -96,7 +97,7 @@ inline void QskMargins::setMargins( qreal horizontal, qreal vertical ) noexcept
 inline QskMargins QskMargins::mirrored(
     Qt::Orientations orientations ) const noexcept
 {
-    switch( int( orientations ) )
+    switch ( int( orientations ) )
     {
         case Qt::Vertical:
             return QskMargins( left(), bottom(), right(), top() );

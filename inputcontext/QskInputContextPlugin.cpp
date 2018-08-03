@@ -3,8 +3,8 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#include <qpa/qplatforminputcontextplugin_p.h>
 #include <qpa/qplatforminputcontext.h>
+#include <qpa/qplatforminputcontextplugin_p.h>
 
 #include "QskInputContext.h"
 
@@ -14,15 +14,15 @@
 #include "QskHunspellTextPredictor.h"
 #endif
 
+#include <QEvent>
 #include <QLocale>
 #include <QRectF>
-#include <QEvent>
 
 namespace
 {
     class InputContextFactory : public QskInputContextFactory
     {
-    public:
+      public:
         virtual QskTextPredictor* createPredictor( const QLocale& locale ) const
         {
 #if HUNSPELL
@@ -49,7 +49,7 @@ class QskPlatformInputContext final : public QPlatformInputContext
 
     using Inherited = QPlatformInputContext;
 
-public:
+  public:
     QskPlatformInputContext();
     virtual ~QskPlatformInputContext() = default;
 
@@ -80,10 +80,10 @@ public:
 
     bool filterEvent( const QEvent* ) override;
 
-protected:
+  protected:
     bool event( QEvent* ) override;
 
-private:
+  private:
     void updateContext();
     void updateLocale();
 
@@ -129,13 +129,13 @@ void QskPlatformInputContext::updateLocale()
     {
         const auto oldLocale = m_locale;
         m_locale = m_context->locale();
-        
+
         if ( oldLocale != m_locale )
             emitLocaleChanged();
-            
+
         if ( m_locale.textDirection() != oldLocale.textDirection() )
-            emitInputDirectionChanged( m_locale.textDirection() ); 
-    }       
+            emitInputDirectionChanged( m_locale.textDirection() );
+    }
 }
 
 bool QskPlatformInputContext::isValid() const
@@ -165,7 +165,7 @@ void QskPlatformInputContext::update(
 void QskPlatformInputContext::invokeAction(
     QInputMethod::Action action, int cursorPosition )
 {
-    if ( m_context ) 
+    if ( m_context )
         m_context->invokeAction( action, cursorPosition );
 }
 
@@ -246,7 +246,7 @@ bool QskPlatformInputContext::filterEvent( const QEvent* )
 
 bool QskPlatformInputContext::event( QEvent* event )
 {
-    switch( event->type() )
+    switch ( event->type() )
     {
         case QEvent::LocaleChange:
         {
@@ -270,7 +270,7 @@ class QskInputContextPlugin final : public QPlatformInputContextPlugin
     Q_OBJECT
     Q_PLUGIN_METADATA( IID QPlatformInputContextFactoryInterface_iid FILE "metadata.json" )
 
-public:
+  public:
     QPlatformInputContext* create(
         const QString& system, const QStringList& ) override
     {

@@ -4,8 +4,8 @@
  *****************************************************************************/
 
 #include "QskStackBoxAnimator.h"
-#include "QskLayoutItem.h"
 #include "QskLayoutEngine.h"
+#include "QskLayoutItem.h"
 #include "QskStackBox.h"
 
 static Qsk::Direction qskDirection(
@@ -13,7 +13,7 @@ static Qsk::Direction qskDirection(
 {
     Qsk::Direction direction;
 
-    if ( orientation == Qt::Horizontal  )
+    if ( orientation == Qt::Horizontal )
     {
         direction = Qsk::RightToLeft;
 
@@ -55,10 +55,10 @@ static Qsk::Direction qskDirection(
     return direction;
 }
 
-QskStackBoxAnimator::QskStackBoxAnimator( QskStackBox* parent ):
-    QObject( parent ),
-    m_startIndex( -1 ),
-    m_endIndex( -1 )
+QskStackBoxAnimator::QskStackBoxAnimator( QskStackBox* parent )
+    : QObject( parent )
+    , m_startIndex( -1 )
+    , m_endIndex( -1 )
 {
 }
 
@@ -97,9 +97,9 @@ QskLayoutItem* QskStackBoxAnimator::layoutItemAt( int index ) const
         ( index == 0 ) ? m_startIndex : m_endIndex );
 }
 
-QskStackBoxAnimator1::QskStackBoxAnimator1( QskStackBox* parent ):
-    QskStackBoxAnimator( parent ),
-    m_orientation( Qt::Horizontal )
+QskStackBoxAnimator1::QskStackBoxAnimator1( QskStackBox* parent )
+    : QskStackBoxAnimator( parent )
+    , m_orientation( Qt::Horizontal )
 {
 }
 
@@ -138,7 +138,8 @@ void QskStackBoxAnimator1::setup()
             QQuickItem* item = layoutItem->item();
             const Qt::Orientation orientation = this->orientation();
 
-            m_itemOffset[i] = ( orientation == Qt::Horizontal ) ? item->x() : item->y();
+            m_itemOffset[ i ] =
+                ( orientation == Qt::Horizontal ) ? item->x() : item->y();
 
             if ( i == 1 )
             {
@@ -185,7 +186,8 @@ void QskStackBoxAnimator1::advance( qreal value )
             stackBox->adjustItemAt( ( i == 0 ) ? startIndex() : endIndex() );
 
             QQuickItem* item = layoutItem->item();
-            m_itemOffset[i] = ( m_orientation == Qt::Horizontal ) ? item->x() : item->y();
+            m_itemOffset[ i ] =
+                ( m_orientation == Qt::Horizontal ) ? item->x() : item->y();
         }
 
         QQuickItem* item = layoutItem->item();
@@ -195,18 +197,18 @@ void QskStackBoxAnimator1::advance( qreal value )
             const qreal off = stackBox->width() * ( value - i );
 
             if ( m_direction == Qsk::LeftToRight )
-                item->setX( m_itemOffset[i] - off );
+                item->setX( m_itemOffset[ i ] - off );
             else
-                item->setX( m_itemOffset[i] + off );
+                item->setX( m_itemOffset[ i ] + off );
         }
         else
         {
             const qreal off = stackBox->height() * ( value - i );
 
             if ( m_direction == Qsk::TopToBottom )
-                item->setY( m_itemOffset[i] + off );
+                item->setY( m_itemOffset[ i ] + off );
             else
-                item->setY( m_itemOffset[i] - off );
+                item->setY( m_itemOffset[ i ] - off );
         }
     }
 }
@@ -226,8 +228,8 @@ void QskStackBoxAnimator1::done()
         stackBox()->setClip( false );
 }
 
-QskStackBoxAnimator3::QskStackBoxAnimator3( QskStackBox* parent ):
-    QskStackBoxAnimator( parent )
+QskStackBoxAnimator3::QskStackBoxAnimator3( QskStackBox* parent )
+    : QskStackBoxAnimator( parent )
 {
 }
 

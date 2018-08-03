@@ -6,7 +6,7 @@
 
 class Palette
 {
-public:
+  public:
     enum Weight
     {
         W50,
@@ -60,9 +60,8 @@ public:
 
     static Palette palette( Color );
 
-protected:
+  protected:
     QRgb* m_rgb;
-
 };
 
 #endif

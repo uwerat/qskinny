@@ -10,7 +10,7 @@
 
 class LinearLayoutPage : public QskLinearBox
 {
-public:
+  public:
     LinearLayoutPage( QQuickItem* parent = nullptr );
 };
 

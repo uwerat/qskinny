@@ -5,14 +5,14 @@
 
 class QskHunspellTextPredictor::PrivateData
 {
-public:
+  public:
     Hunhandle* hunspellHandle;
     QVector< QString > candidates;
 };
 
-QskHunspellTextPredictor::QskHunspellTextPredictor( QObject* object ):
-    Inherited( Words, object ),
-    m_data( new PrivateData() )
+QskHunspellTextPredictor::QskHunspellTextPredictor( QObject* object )
+    : Inherited( Words, object )
+    , m_data( new PrivateData() )
 {
 #if 1
     // TODO: loading the language specific one depending on the locale
@@ -58,11 +58,11 @@ void QskHunspellTextPredictor::request( const QString& text )
     QVector< QString > candidates;
     candidates.reserve( count );
 
-    for( int i = 0; i < count; i++ )
+    for ( int i = 0; i < count; i++ )
     {
-        const QString suggestion = QString::fromUtf8( suggestions[i] ); // ### encoding?
+        const QString suggestion = QString::fromUtf8( suggestions[ i ] ); // ### encoding?
 
-        if( suggestion.startsWith( text ) )
+        if ( suggestion.startsWith( text ) )
             candidates.prepend( suggestion );
         else
             candidates.append( suggestion );

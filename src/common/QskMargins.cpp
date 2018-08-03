@@ -46,7 +46,7 @@ void QskMargins::setMarginsAt( Qt::Edges edges, qreal value ) noexcept
 
 qreal QskMargins::marginAt( Qt::Edge edge ) const noexcept
 {
-    switch( edge )
+    switch ( edge )
     {
         case Qt::LeftEdge:
             return left();
@@ -63,4 +63,3 @@ qreal QskMargins::marginAt( Qt::Edge edge ) const noexcept
 
     return 0.0;
 }
-

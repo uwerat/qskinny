@@ -6,7 +6,6 @@
 #ifndef QSK_LAYOUT_H
 #define QSK_LAYOUT_H
 
-#include "QskGlobal.h"
 #include "QskControl.h"
 
 class QskLayoutEngine;
@@ -19,7 +18,7 @@ class QSK_EXPORT QskLayout : public QskControl
 
     using Inherited = QskControl;
 
-public:
+  public:
     explicit QskLayout( QQuickItem* parent = 0 );
     ~QskLayout() override;
 
@@ -40,11 +39,11 @@ public:
     void adjustItem( const QQuickItem* );
     void adjustItemAt( int index );
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void activate();
     void invalidate();
 
-protected:
+  protected:
     bool event( QEvent* ) override;
     void geometryChangeEvent( QskGeometryChangeEvent* ) override;
 
@@ -64,7 +63,7 @@ protected:
 
     virtual QRectF alignedLayoutRect( const QRectF& ) const;
 
-private:
+  private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

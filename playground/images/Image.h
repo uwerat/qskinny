@@ -33,7 +33,7 @@ class Image : public QQuickImage
 
     using Inherited = QQuickImage;
 
-public:
+  public:
     Image( QQuickItem* parent = nullptr );
     ~Image() override;
 
@@ -49,16 +49,16 @@ public:
     Q_INVOKABLE virtual bool hasWidthForHeight() const;
     Q_INVOKABLE virtual qreal widthForHeight( qreal height ) const;
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void show();
     void hide();
     void setVisible( bool );
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void sourceSizeAdjustmentChanged();
     void deferredUpdatesChanged();
 
-protected:
+  protected:
     void geometryChanged( const QRectF&, const QRectF& ) override;
     void itemChange( ItemChange, const ItemChangeData& ) override;
     void componentComplete() override;
@@ -66,7 +66,7 @@ protected:
     QSGNode* updatePaintNode( QSGNode*, UpdatePaintNodeData* ) override;
     void updatePolish() override;
 
-private:
+  private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

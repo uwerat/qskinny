@@ -17,7 +17,7 @@ class QSK_EXPORT QskMessageWindow : public QskInputWindow
 
     using Inherited = QskInputWindow;
 
-public:
+  public:
     QskMessageWindow( QWindow* parent = nullptr );
     ~QskMessageWindow() override;
 };

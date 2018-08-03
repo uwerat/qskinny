@@ -4,8 +4,8 @@
  *****************************************************************************/
 
 #include "QskListView.h"
-#include "QskColorFilter.h"
 #include "QskAspect.h"
+#include "QskColorFilter.h"
 
 QSK_SUBCONTROL( QskListView, Cell )
 QSK_SUBCONTROL( QskListView, Text )
@@ -14,12 +14,12 @@ QSK_SUBCONTROL( QskListView, TextSelected )
 
 class QskListView::PrivateData
 {
-public:
-    PrivateData():
-        preferredWidthFromColumns( false ),
-        alternatingRowColors( false ),
-        selectionMode( QskListView::SingleSelection ),
-        selectedRow( -1 )
+  public:
+    PrivateData()
+        : preferredWidthFromColumns( false )
+        , alternatingRowColors( false )
+        , selectionMode( QskListView::SingleSelection )
+        , selectedRow( -1 )
     {
     }
 
@@ -31,9 +31,9 @@ public:
     int selectedRow;
 };
 
-QskListView::QskListView( QQuickItem* parent ):
-    QskScrollView( parent ),
-    m_data( new PrivateData() )
+QskListView::QskListView( QQuickItem* parent )
+    : QskScrollView( parent )
+    , m_data( new PrivateData() )
 {
 }
 

@@ -6,10 +6,12 @@
 #include "QskGraphicIO.h"
 #include "QskGraphic.h"
 #include "QskPainterCommand.h"
-#include <qfile.h>
+
 #include <qbuffer.h>
 #include <qdatastream.h>
+#include <qfile.h>
 #include <qvector.h>
+
 #include <cstring>
 
 static const char qskMagicNumber[] = "QSKG";
@@ -221,7 +223,7 @@ QskGraphic QskGraphicIO::read( QIODevice* dev )
     QDataStream stream( dev );
     stream.setByteOrder( QDataStream::BigEndian );
 
-    char magicNumber[4];
+    char magicNumber[ 4 ];
     stream.readRawData( magicNumber, 4 );
     if ( memcmp( magicNumber, qskMagicNumber, 4 ) != 0 )
     {
@@ -240,7 +242,7 @@ QskGraphic QskGraphicIO::read( QIODevice* dev )
         quint8 type;
         stream >> type;
 
-        switch( type )
+        switch ( type )
         {
             case QskPainterCommand::Path:
             {
@@ -273,7 +275,6 @@ QskGraphic QskGraphicIO::read( QIODevice* dev )
     return graphic;
 }
 
-
 bool QskGraphicIO::write( const QskGraphic& graphic, const QString& fileName )
 {
     QFile file( fileName );
@@ -298,7 +299,7 @@ bool QskGraphicIO::write( const QskGraphic& graphic, QIODevice* dev )
         return false;
 
     QDataStream stream( dev );
-    stream.setByteOrder( QDataStream::BigEndian ),
+    stream.setByteOrder( QDataStream::BigEndian );
     stream.writeRawData( qskMagicNumber, 4 );
 
     const int numCommands = graphic.commands().size();
@@ -308,27 +309,28 @@ bool QskGraphicIO::write( const QskGraphic& graphic, QIODevice* dev )
 
     for ( int i = 0; i < numCommands; i++ )
     {
-        stream << static_cast< quint8 > ( cmds[i].type() );
-        switch( cmds[i].type() )
+        stream << static_cast< quint8 >( cmds[ i ].type() );
+
+        switch ( cmds[ i ].type() )
         {
             case QskPainterCommand::Path:
             {
-                qskWritePathData( *cmds[i].path(), stream );
+                qskWritePathData( *cmds[ i ].path(), stream );
                 break;
             }
             case QskPainterCommand::Pixmap:
             {
-                qskWritePixmapData( *cmds[i].pixmapData(), stream );
+                qskWritePixmapData( *cmds[ i ].pixmapData(), stream );
                 break;
             }
             case QskPainterCommand::Image:
             {
-                qskWriteImageData( *cmds[i].imageData(), stream );
+                qskWriteImageData( *cmds[ i ].imageData(), stream );
                 break;
             }
             case QskPainterCommand::State:
             {
-                qskWriteStateData( *cmds[i].stateData(), stream );
+                qskWriteStateData( *cmds[ i ].stateData(), stream );
                 break;
             }
             default:

@@ -66,7 +66,7 @@ static void qskCriticalGraphic( QPainter* painter )
     path.addRect( 5, 22, 30, 5 );
 
     painter->setPen( Qt::NoPen );
-    //painter->setBrush( QColor( Qt::black ) );
+    // painter->setBrush( QColor( Qt::black ) );
     painter->setBrush( QColor( Qt::red ) );
     painter->drawPath( path );
 }
@@ -192,12 +192,12 @@ QskGraphic QskStandardSymbol::graphic( Type symbolType )
     if ( symbolType < 0 || symbolType >= SymbolTypeCount )
         return QskGraphic();
 
-    if ( graphics[symbolType].isNull() )
+    if ( graphics[ symbolType ].isNull() )
     {
-        QPainter painter( &graphics[symbolType] );
+        QPainter painter( &graphics[ symbolType ] );
         painter.setRenderHint( QPainter::Antialiasing, true );
 
-        switch( symbolType )
+        switch ( symbolType )
         {
             case QskStandardSymbol::Ok:
             {
@@ -233,7 +233,7 @@ QskGraphic QskStandardSymbol::graphic( Type symbolType )
         }
     }
 
-    return graphics[symbolType];
+    return graphics[ symbolType ];
 }
 
 #include "moc_QskStandardSymbol.cpp"

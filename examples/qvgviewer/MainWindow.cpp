@@ -5,34 +5,34 @@
 
 #include "MainWindow.h"
 
-#include <QskGraphic.h>
-#include <QskGraphicLabel.h>
-#include <QskGraphicIO.h>
-#include <QskPushButton.h>
-#include <QskLinearBox.h>
-#include <QskColorFilter.h>
+#include <QskAnimationHint.h>
 #include <QskAspect.h>
-#include <QskTabView.h>
+#include <QskColorFilter.h>
+#include <QskGradient.h>
+#include <QskGraphic.h>
+#include <QskGraphicIO.h>
+#include <QskGraphicLabel.h>
+#include <QskLinearBox.h>
+#include <QskPushButton.h>
+#include <QskRgbValue.h>
 #include <QskSetup.h>
 #include <QskSkin.h>
-#include <QskAnimationHint.h>
-#include <QskGradient.h>
-#include <QskRgbValue.h>
+#include <QskTabView.h>
 
 #include <QDir>
 #include <QVariant>
 
 class GraphicLabel : public QskGraphicLabel
 {
-public:
+  public:
     enum Role
     {
         Normal,
         Inverted
     };
 
-    GraphicLabel( const QskGraphic& graphic, QQuickItem* parent = nullptr ):
-        QskGraphicLabel( graphic, parent )
+    GraphicLabel( const QskGraphic& graphic, QQuickItem* parent = nullptr )
+        : QskGraphicLabel( graphic, parent )
     {
         setAlignment( Qt::AlignCenter );
         setAutoFillBackground( true );

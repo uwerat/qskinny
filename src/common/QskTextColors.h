@@ -7,6 +7,7 @@
 #define QSK_TEXT_COLORS_H
 
 #include "QskGlobal.h"
+
 #include <qcolor.h>
 #include <qmetatype.h>
 
@@ -15,7 +16,7 @@ class QVariant;
 
 class QSK_EXPORT QskTextColors
 {
-public:
+  public:
     QskTextColors( const QColor& text = QColor(),
         const QColor& style = QColor(), const QColor& link = QColor() );
 
@@ -32,10 +33,10 @@ public:
 };
 
 inline QskTextColors::QskTextColors(
-        const QColor& text, const QColor& style, const QColor& link ):
-    textColor( text ),
-    styleColor( style ),
-    linkColor( link )
+        const QColor& text, const QColor& style, const QColor& link )
+    : textColor( text )
+    , styleColor( style )
+    , linkColor( link )
 {
 }
 

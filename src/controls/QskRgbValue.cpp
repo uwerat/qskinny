@@ -16,7 +16,7 @@ namespace
 static inline QColor qskInterpolatedColor(
     const QColor& c1, const QColor& c2, qreal ratio )
 {
-    switch( c1.spec() )
+    switch ( c1.spec() )
     {
         case QColor::Rgb:
         {
@@ -26,38 +26,38 @@ static inline QColor qskInterpolatedColor(
             const int a = value( c1.alpha(), c2.alpha(), ratio );
 
             return QColor::fromRgb( r, g, b, a );
-        }   
+        }
         case QColor::Hsv:
         {
             const int h = value( c1.hue(), c2.hue(), ratio );
             const int s = value( c1.saturation(), c2.saturation(), ratio );
             const int v = value( c1.value(), c2.value(), ratio );
             const int a = value( c1.alpha(), c2.alpha(), ratio );
-            
+
             return QColor::fromHsv( h, s, v, a );
-        }   
+        }
         case QColor::Cmyk:
         {
             const int c = value( c1.cyan(), c2.cyan(), ratio );
-            const int m = value( c1.magenta(), c2.magenta(), ratio ); 
+            const int m = value( c1.magenta(), c2.magenta(), ratio );
             const int y = value( c1.yellow(), c2.yellow(), ratio );
             const int k = value( c1.black(), c2.black(), ratio );
             const int a = value( c1.alpha(), c2.alpha(), ratio );
 
             return QColor::fromCmykF( c, m, y, k, a );
-        }   
+        }
         case QColor::Hsl:
         {
             const int h = value( c1.hue(), c2.hue(), ratio );
             const int s = value( c1.saturation(), c2.saturation(), ratio );
             const int l = value( c1.lightness(), c2.lightness(), ratio );
             const int a = value( c1.alpha(), c2.alpha(), ratio );
- 
+
             return QColor::fromHsl( h, s, l, a );
-        }   
+        }
         case QColor::Invalid:
             break;
-    }   
+    }
 
     return c2;
 }

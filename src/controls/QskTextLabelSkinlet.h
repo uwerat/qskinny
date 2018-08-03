@@ -15,7 +15,7 @@ class QSK_EXPORT QskTextLabelSkinlet : public QskSkinlet
 
     using Inherited = QskSkinlet;
 
-public:
+  public:
     enum NodeRole
     {
         TextRole
@@ -27,7 +27,7 @@ public:
     QRectF subControlRect( const QskSkinnable*,
         QskAspect::Subcontrol ) const override;
 
-protected:
+  protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 };

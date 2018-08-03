@@ -15,7 +15,7 @@ namespace
 {
     class Control final : public QskControl
     {
-    public:
+      public:
         Control( const char* colorName, QQuickItem* parent = nullptr );
         Control( const char* colorName, qreal aspectRatio, QQuickItem* parent = nullptr );
 
@@ -24,25 +24,25 @@ namespace
 
         void transpose();
 
-    private:
+      private:
         qreal m_aspectRatio;
     };
 
     class Box : public QskLinearBox
     {
-    public:
+      public:
         Box( QQuickItem* parent = nullptr );
 
         void flip();
 
-    private:
+      private:
         void addControl( Control* );
     };
 }
 
-Control::Control( const char* colorName, QQuickItem* parent ):
-    QskControl( parent ),
-    m_aspectRatio( 1.0 )
+Control::Control( const char* colorName, QQuickItem* parent )
+    : QskControl( parent )
+    , m_aspectRatio( 1.0 )
 {
     setObjectName( colorName );
 
@@ -52,15 +52,15 @@ Control::Control( const char* colorName, QQuickItem* parent ):
     setPreferredSize( 80, 100 );
 }
 
-Control::Control( const char* colorName, qreal aspectRatio, QQuickItem* parent ):
-    QskControl( parent ),
-    m_aspectRatio( aspectRatio )
+Control::Control( const char* colorName, qreal aspectRatio, QQuickItem* parent )
+    : QskControl( parent )
+    , m_aspectRatio( aspectRatio )
 {
     setObjectName( colorName );
 
     setBackgroundColor( colorName );
 
-    //setSizePolicy( QskSizePolicy::Constrained, QskSizePolicy::Ignored );
+    // setSizePolicy( QskSizePolicy::Constrained, QskSizePolicy::Ignored );
     setSizePolicy( QskSizePolicy::Constrained, QskSizePolicy::Fixed );
     setPreferredHeight( 100 );
 }
@@ -83,8 +83,8 @@ void Control::transpose()
     setSizePolicy( sizePolicy().verticalPolicy(), sizePolicy().horizontalPolicy() );
 }
 
-Box::Box( QQuickItem* parent ):
-    QskLinearBox( Qt::Horizontal, 2, parent )
+Box::Box( QQuickItem* parent )
+    : QskLinearBox( Qt::Horizontal, 2, parent )
 {
     setObjectName( "Box" );
 
@@ -122,8 +122,8 @@ void Box::addControl( Control* control )
     addItem( control, Qt::AlignCenter );
 }
 
-DynamicConstraintsPage::DynamicConstraintsPage( QQuickItem* parent ):
-    QskLinearBox( Qt::Vertical, parent )
+DynamicConstraintsPage::DynamicConstraintsPage( QQuickItem* parent )
+    : QskLinearBox( Qt::Vertical, parent )
 {
     setMargins( 10 );
     setBackgroundColor( QskRgbValue::LightSteelBlue );

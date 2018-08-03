@@ -6,8 +6,8 @@
 #ifndef WINDOW_H
 #define WINDOW_H 1
 
-#include <QskWindow.h>
 #include <QskDialog.h>
+#include <QskWindow.h>
 
 class QskDialogButtonBox;
 class QskLinearBox;
@@ -16,21 +16,21 @@ class Window : public QskWindow
 {
     Q_OBJECT
 
-public:
+  public:
     Window( Qt::Orientation );
 
-private Q_SLOTS:
+  private Q_SLOTS:
     void flipOrientation();
     void centerButtons();
 
-private:
+  private:
     void addBox( QskDialog::StandardButtons );
     void addActionBox();
 
     QVector< QskDialogButtonBox* > dialogBoxes() const;
     Qt::Orientation invertedOrientation() const;
 
-private:
+  private:
     QskLinearBox* m_layoutBox;
     Qt::Orientation m_orientation;
 };

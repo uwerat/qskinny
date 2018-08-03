@@ -6,17 +6,17 @@
 #include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
 
+#include <QskAspect.h>
 #include <QskObjectCounter.h>
 #include <QskSimpleListBox.h>
 #include <QskWindow.h>
-#include <QskAspect.h>
 
-#include <QGuiApplication>
 #include <QFontMetricsF>
+#include <QGuiApplication>
 
 class ListBox : public QskSimpleListBox
 {
-public:
+  public:
     ListBox()
     {
         using namespace QskAspect;
@@ -31,7 +31,8 @@ public:
 
         setSelectedRow( 5 );
     }
-private:
+
+  private:
     void populate()
     {
         const QString format( "Row %1: The quick brown fox jumps over the lazy dog" );

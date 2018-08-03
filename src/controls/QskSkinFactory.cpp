@@ -5,8 +5,8 @@
 
 #include "QskSkinFactory.h"
 
-QskSkinFactory::QskSkinFactory( QObject* parent ):
-    QObject( parent )
+QskSkinFactory::QskSkinFactory( QObject* parent )
+    : QObject( parent )
 {
 }
 

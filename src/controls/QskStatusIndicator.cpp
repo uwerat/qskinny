@@ -4,8 +4,8 @@
  *****************************************************************************/
 
 #include "QskStatusIndicator.h"
-#include "QskGraphic.h"
 #include "QskColorFilter.h"
+#include "QskGraphic.h"
 #include "QskGraphicProvider.h"
 
 #include <qdebug.h>
@@ -16,16 +16,16 @@ namespace
 {
     class StatusData
     {
-    public:
-        StatusData( const QskGraphic& graphic ):
-            graphic( graphic ),
-            isDirty( false )
+      public:
+        StatusData( const QskGraphic& graphic )
+            : graphic( graphic )
+            , isDirty( false )
         {
         }
 
-        StatusData( const QUrl& url ):
-            source( url ),
-            isDirty( !url.isEmpty() )
+        StatusData( const QUrl& url )
+            : source( url )
+            , isDirty( !url.isEmpty() )
         {
         }
 
@@ -46,9 +46,9 @@ namespace
 
 class QskStatusIndicator::PrivateData
 {
-public:
-    PrivateData():
-        currentStatus( -1 )
+  public:
+    PrivateData()
+        : currentStatus( -1 )
     {
     }
 
@@ -56,9 +56,9 @@ public:
     QMap< int, StatusData > map;
 };
 
-QskStatusIndicator::QskStatusIndicator( QQuickItem* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData() )
+QskStatusIndicator::QskStatusIndicator( QQuickItem* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData() )
 {
     initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
 }
@@ -171,7 +171,7 @@ qreal QskStatusIndicator::sizeConstraint(
 
     qreal value = 0.0;
 
-    for ( auto &statusData : m_data->map )
+    for ( auto& statusData : m_data->map )
     {
         statusData.ensureGraphic( this );
 
@@ -199,7 +199,7 @@ QSizeF QskStatusIndicator::contentsSizeHint() const
 {
     QSizeF sz( 0, 0 );
 
-    for ( auto &statusData : m_data->map )
+    for ( auto& statusData : m_data->map )
     {
         statusData.ensureGraphic( this );
 
@@ -248,7 +248,7 @@ void QskStatusIndicator::changeEvent( QEvent* event )
 {
     if ( event->type() == QEvent::StyleChange )
     {
-        for ( auto &statusData : m_data->map )
+        for ( auto& statusData : m_data->map )
         {
             if ( !statusData.source.isEmpty() )
             {

@@ -4,9 +4,9 @@
  *****************************************************************************/
 
 #include "QskBoxRenderer.h"
-#include "QskVertex.h"
 #include "QskBoxRendererColorMap.h"
 #include "QskGradient.h"
+#include "QskVertex.h"
 
 #include <qmath.h>
 
@@ -16,7 +16,7 @@ namespace
 
     class ContourLine
     {
-    public:
+      public:
         inline void setLine( qreal x1, qreal y1, qreal value1,
             qreal x2, qreal y2, qreal value2 )
         {
@@ -35,12 +35,15 @@ namespace
             return QPointF( p1.x + r * ( p2.x - p1.x ), p1.y + r * ( p2.y - p1.y ) );
         }
 
-        struct { qreal x, y, v; } p1, p2;
+        struct
+        {
+            qreal x, y, v;
+        } p1, p2;
     };
 
     class ValueCurve
     {
-    public:
+      public:
         ValueCurve( const QskBoxRenderer::Metrics& m )
         {
             /*
@@ -57,7 +60,7 @@ namespace
 
             qreal xt, yt;
             {
-                const auto& c = m.corner[Qt::TopLeftCorner];
+                const auto& c = m.corner[ Qt::TopLeftCorner ];
 
                 const qreal k = c.radiusInnerY / c.radiusInnerX * md;
                 const qreal u = ::sqrt( 1.0 + k * k );
@@ -110,17 +113,17 @@ namespace
             return m_coeff_0 + x * m_coeff_x + y * m_coeff_y;
         }
 
-    private:
+      private:
         qreal m_coeff_0, m_coeff_x, m_coeff_y;
     };
 
     class ContourIterator
     {
-    public:
-        ContourIterator():
-            m_clockwise( true ),
-            m_isLeading( true ),
-            m_isDone( false )
+      public:
+        ContourIterator()
+            : m_clockwise( true )
+            , m_isLeading( true )
+            , m_isDone( false )
         {
         }
 
@@ -180,13 +183,13 @@ namespace
 
             if ( m_clockwise )
             {
-                switch( m_corner )
+                switch ( m_corner )
                 {
                     case TopLeftCorner:
                     {
                         if ( p.x >= c.centerX )
                         {
-                            p.x = corners[TopRightCorner].centerX;
+                            p.x = corners[ TopRightCorner ].centerX;
                             p.y = metrics.innerQuad.top;
 
                             setCorner( TopRightCorner, metrics );
@@ -197,7 +200,7 @@ namespace
                             p.x = c.centerX - m_cos * c.radiusInnerX;
                             p.y = c.centerY - m_sin * c.radiusInnerY;
 
-                            if ( p.x >= corners[TopRightCorner].centerX )
+                            if ( p.x >= corners[ TopRightCorner ].centerX )
                                 setCorner( TopRightCorner, metrics );
                         }
 
@@ -208,7 +211,7 @@ namespace
                         if ( p.y >= c.centerY )
                         {
                             p.x = metrics.innerQuad.right;
-                            p.y = corners[BottomRightCorner].centerY;
+                            p.y = corners[ BottomRightCorner ].centerY;
 
                             setCorner( BottomRightCorner, metrics );
                         }
@@ -218,7 +221,7 @@ namespace
                             p.x = c.centerX + m_cos * c.radiusInnerX;
                             p.y = c.centerY - m_sin * c.radiusInnerY;
 
-                            if ( p.y >= corners[BottomRightCorner].centerY )
+                            if ( p.y >= corners[ BottomRightCorner ].centerY )
                                 setCorner( BottomRightCorner, metrics );
                         }
 
@@ -242,14 +245,14 @@ namespace
             }
             else
             {
-                switch( m_corner )
+                switch ( m_corner )
                 {
                     case TopLeftCorner:
                     {
                         if ( p.y >= c.centerY )
                         {
                             p.x = metrics.innerQuad.left;
-                            p.y = corners[BottomLeftCorner].centerY;
+                            p.y = corners[ BottomLeftCorner ].centerY;
 
                             setCorner( BottomLeftCorner, metrics );
                         }
@@ -259,7 +262,7 @@ namespace
                             p.x = c.centerX - m_cos * c.radiusInnerX;
                             p.y = c.centerY - m_sin * c.radiusInnerY;
 
-                            if ( p.y >= corners[BottomLeftCorner].centerY )
+                            if ( p.y >= corners[ BottomLeftCorner ].centerY )
                                 setCorner( BottomLeftCorner, metrics );
                         }
 
@@ -269,7 +272,7 @@ namespace
                     {
                         if ( p.x >= c.centerX )
                         {
-                            p.x = corners[BottomRightCorner].centerX;
+                            p.x = corners[ BottomRightCorner ].centerX;
                             p.y = metrics.innerQuad.bottom;
 
                             setCorner( BottomRightCorner, metrics );
@@ -280,7 +283,7 @@ namespace
                             p.x = c.centerX - m_cos * c.radiusInnerX;
                             p.y = c.centerY + m_sin * c.radiusInnerY;
 
-                            if ( p.x >= corners[BottomRightCorner].centerX )
+                            if ( p.x >= corners[ BottomRightCorner ].centerX )
                                 setCorner( BottomRightCorner, metrics );
                         }
 
@@ -290,7 +293,7 @@ namespace
                     {
                         increment();
 
-                        p.x = c.centerX + m_cos * c.radiusInnerX;;
+                        p.x = c.centerX + m_cos * c.radiusInnerX;
                         p.y = c.centerY + m_sin * c.radiusInnerY;
 
                         break;
@@ -311,11 +314,11 @@ namespace
             }
         }
 
-    private:
+      private:
         static constexpr qreal m_eps = 1e-4;
 
-        inline void setCorner( Qt::Corner corner,
-            const QskBoxRenderer::Metrics& metrics )
+        inline void setCorner(
+            Qt::Corner corner, const QskBoxRenderer::Metrics& metrics )
         {
             m_corner = corner;
             const auto& c = metrics.corner[ corner ];
@@ -408,13 +411,13 @@ namespace
 
     class OutlineIterator
     {
-    public:
+      public:
         OutlineIterator( const QskBoxRenderer::Metrics& metrics,
-                const ValueCurve& curve, bool clockwise ):
-            m_metrics( metrics ),
-            m_curve( curve )
+                const ValueCurve& curve, bool clockwise )
+            : m_metrics( metrics )
+            , m_curve( curve )
         {
-            const auto& c = metrics.corner[Qt::TopLeftCorner];
+            const auto& c = metrics.corner[ Qt::TopLeftCorner ];
 
 #if 1
             // This does not need to be done twice !!!
@@ -448,25 +451,25 @@ namespace
                 {
                     if ( clockwise )
                     {
-                        m_iterator[0].setup( metrics, true, true,
+                        m_iterator[ 0 ].setup( metrics, true, true,
                             cos1, cosStep, sin1, sinStep, x2, y2, v2, x1, y1, v1 );
 
-                        m_iterator[1].setup( metrics, false, false,
+                        m_iterator[ 1 ].setup( metrics, false, false,
                             cos2, cosStep, sin2, sinStep, x1, y1, v1, x2, y2, v2 );
                     }
                     else
                     {
-                        m_iterator[0].setup( metrics, true, false,
+                        m_iterator[ 0 ].setup( metrics, true, false,
                             cos2, cosStep, sin2, sinStep, x1, y1, v1, x2, y2, v2 );
 
-                        m_iterator[1].setup( metrics, false, true,
+                        m_iterator[ 1 ].setup( metrics, false, true,
                             cos1, cosStep, sin1, sinStep, x2, y2, v2, x1, y1, v1 );
                     }
 
-                    while ( !m_iterator[1].isDone()
-                        && m_iterator[0].value() > m_iterator[1].value() )
+                    while ( !m_iterator[ 1 ].isDone() &&
+                            ( m_iterator[ 0 ].value() > m_iterator[ 1 ].value() ) )
                     {
-                        m_iterator[1].advance( metrics, m_curve );
+                        m_iterator[ 1 ].advance( metrics, m_curve );
                     }
 
                     return;
@@ -483,9 +486,9 @@ namespace
 
         inline void advance()
         {
-            m_iterator[0].advance( m_metrics, m_curve );
+            m_iterator[ 0 ].advance( m_metrics, m_curve );
 
-            if ( !m_iterator[0].isDone() )
+            if ( !m_iterator[ 0 ].isDone() )
             {
                 /*
                     adjusting the counter vertex until its top value is above
@@ -494,33 +497,33 @@ namespace
                     border point by cutting the counter vertex.
                  */
 
-                while ( !m_iterator[1].isDone() &&
-                        ( m_iterator[0].value() > m_iterator[1].value() ) )
+                while ( !m_iterator[ 1 ].isDone() &&
+                        ( m_iterator[ 0 ].value() > m_iterator[ 1 ].value() ) )
                 {
-                    m_iterator[1].advance( m_metrics, m_curve );
+                    m_iterator[ 1 ].advance( m_metrics, m_curve );
                 }
             }
         }
 
         inline bool isDone() const
         {
-            return m_iterator[0].isDone();
+            return m_iterator[ 0 ].isDone();
         }
 
         inline qreal value() const
         {
-            return m_iterator[0].value();
+            return m_iterator[ 0 ].value();
         }
 
         inline void setLineAt( qreal value, Color color, ColoredLine* line )
         {
-            const auto& contourLine1 = m_iterator[0].contourLine();
-            const auto& contourLine2 = m_iterator[1].contourLine();
+            const auto& contourLine1 = m_iterator[ 0 ].contourLine();
+            const auto& contourLine2 = m_iterator[ 1 ].contourLine();
 
             const QPointF pos = contourLine1.pointAt( value );
             const QPointF cPos = contourLine2.pointAt( value );
 
-            if ( m_iterator[0].isClockwise() )
+            if ( m_iterator[ 0 ].isClockwise() )
                 setLine( cPos.x(), cPos.y(), pos.x(), pos.y(), color, line );
             else
                 setLine( pos.x(), pos.y(), cPos.x(), cPos.y(), color, line );
@@ -528,18 +531,18 @@ namespace
 
         inline void setLine( Color color, ColoredLine* line )
         {
-            const auto& contourLine1 = m_iterator[0].contourLine();
-            const auto& contourLine2 = m_iterator[1].contourLine();
+            const auto& contourLine1 = m_iterator[ 0 ].contourLine();
+            const auto& contourLine2 = m_iterator[ 1 ].contourLine();
 
             const QPointF cPos = contourLine2.pointAt( contourLine1.p2.v );
 
-            if ( m_iterator[0].isClockwise() )
+            if ( m_iterator[ 0 ].isClockwise() )
                 setLine( cPos.x(), cPos.y(), contourLine1.p2.x, contourLine1.p2.y, color, line );
             else
                 setLine( contourLine1.p2.x, contourLine1.p2.y, cPos.x(), cPos.y(), color, line );
         }
 
-    private:
+      private:
         inline void setLine( qreal x1, qreal y1, qreal x2, qreal y2,
             Color color, ColoredLine* line )
         {
@@ -554,16 +557,16 @@ namespace
             half of the ellipse. The other one is for finding the
             corresponing point at the other side. */
 
-        ContourIterator m_iterator[2];
+        ContourIterator m_iterator[ 2 ];
     };
 
     class DRectellipseIterator
     {
-    public:
-        DRectellipseIterator( const QskBoxRenderer::Metrics& metrics,
-                const ValueCurve& curve ):
-            m_left( metrics, curve, false ),
-            m_right( metrics, curve, true )
+      public:
+        DRectellipseIterator(
+                const QskBoxRenderer::Metrics& metrics, const ValueCurve& curve )
+            : m_left( metrics, curve, false )
+            , m_right( metrics, curve, true )
         {
             m_next = ( m_left.value() < m_right.value() ) ? &m_left : &m_right;
         }
@@ -593,7 +596,7 @@ namespace
             return !m_next->isDone();
         }
 
-    private:
+      private:
         OutlineIterator m_left, m_right;
         OutlineIterator* m_next;
     };
@@ -619,7 +622,7 @@ void QskBoxRenderer::renderDiagonalFill( const QskBoxRenderer::Metrics& metrics,
 
     while ( line - lines < fillLineCount )
     {
-        line[0] = line[-1];
+        line[ 0 ] = line[ -1 ];
         line++;
     }
 }

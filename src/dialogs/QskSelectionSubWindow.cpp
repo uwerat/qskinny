@@ -10,19 +10,19 @@ namespace
 {
     class ListBox final : public QskSimpleListBox
     {
-    public:
-        ListBox( QskSelectionSubWindow* window )
+      public:
+        ListBox( QskSelectionSubWindow* subWindow )
         {
             setObjectName( QStringLiteral( "QskSelectionSubWindowListBox" ) );
 
-            connect( this, SIGNAL( selectedRowChanged(int) ),
-                window, SIGNAL( selectedRowChanged(int) ) );
+            connect( this, &QskSimpleListBox::selectedRowChanged,
+                subWindow, &QskSelectionSubWindow::selectedRowChanged );
 
-            connect( this, SIGNAL( selectedEntryChanged(const QString&) ),
-                window, SIGNAL( selectedEntryChanged(const QString&) ) );
+            connect( this, &QskSimpleListBox::selectedEntryChanged,
+                subWindow, &QskSelectionSubWindow::selectedEntryChanged );
 
-            connect( this, SIGNAL( entriesChanged() ),
-                window, SIGNAL( entriesChanged() ) );
+            connect( this, &QskSimpleListBox::entriesChanged,
+                subWindow, &QskSelectionSubWindow::entriesChanged );
         }
 
 #if 1
@@ -35,8 +35,8 @@ namespace
     };
 }
 
-QskSelectionSubWindow::QskSelectionSubWindow( QQuickItem* parent ):
-    Inherited( parent )
+QskSelectionSubWindow::QskSelectionSubWindow( QQuickItem* parent )
+    : Inherited( parent )
 {
     setInputControl( new ListBox( this ) );
     setStandardButtons( QskDialog::Ok | QskDialog::Cancel );

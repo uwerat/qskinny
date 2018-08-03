@@ -17,7 +17,7 @@ class QSK_EXPORT QskPageIndicatorSkinlet : public QskSkinlet
 
     using Inherited = QskSkinlet;
 
-public:
+  public:
     enum NodeRole
     {
         PanelRole,
@@ -27,14 +27,14 @@ public:
     Q_INVOKABLE QskPageIndicatorSkinlet( QskSkin* = nullptr );
     ~QskPageIndicatorSkinlet() override;
 
-    QRectF subControlRect(
-        const QskSkinnable*, QskAspect::Subcontrol ) const override;
+    QRectF subControlRect( const QskSkinnable*,
+        QskAspect::Subcontrol ) const override;
 
-protected:
+  protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 
-private:
+  private:
     QSGNode* updateBulletsNode( const QskPageIndicator*, QSGNode* ) const;
     QRectF bulletRect( const QskPageIndicator*, const QRectF&, int index ) const;
 };

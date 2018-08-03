@@ -8,18 +8,18 @@
 
 #include "QskGlobal.h"
 
-#include <qsgnode.h>
 #include <qnamespace.h>
+#include <qsgnode.h>
 
 class QskTextureNodePrivate;
 
 class QSK_EXPORT QskTextureNode : public QSGGeometryNode
 {
-public:
+  public:
     QskTextureNode();
     ~QskTextureNode() override;
 
-    void setRect(const QRectF& rect);
+    void setRect( const QRectF& );
     QRectF rect() const;
 
     void setTextureId( uint id );
@@ -28,7 +28,7 @@ public:
     void setMirrored( Qt::Orientations );
     Qt::Orientations mirrored() const;
 
-private:
+  private:
     void updateTexture();
 
     Q_DECLARE_PRIVATE( QskTextureNode )

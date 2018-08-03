@@ -14,13 +14,18 @@ class QSK_EXPORT QskPageIndicator : public QskControl
 {
     Q_OBJECT
 
-    Q_PROPERTY ( int count READ count WRITE setCount NOTIFY countChanged FINAL )
-    Q_PROPERTY ( qreal currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentIndexChanged FINAL )
-    Q_PROPERTY ( Qt::Orientation orientation READ orientation WRITE setOrientation NOTIFY orientationChanged FINAL )
+    Q_PROPERTY( int count READ count
+        WRITE setCount NOTIFY countChanged FINAL )
+
+    Q_PROPERTY( qreal currentIndex READ currentIndex
+        WRITE setCurrentIndex NOTIFY currentIndexChanged FINAL )
+
+    Q_PROPERTY( Qt::Orientation orientation READ orientation
+        WRITE setOrientation NOTIFY orientationChanged FINAL )
 
     using Inherited = QskControl;
 
-public:
+  public:
     QSK_SUBCONTROLS( Panel, Bullet, Highlighted )
 
     QskPageIndicator( QQuickItem* parent = nullptr );
@@ -37,16 +42,16 @@ public:
 
     QSizeF contentsSizeHint() const override;
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void countChanged();
     void currentIndexChanged();
     void orientationChanged();
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void setCount( int count );
     void setCurrentIndex( qreal index );
 
-private:
+  private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

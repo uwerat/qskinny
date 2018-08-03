@@ -4,25 +4,25 @@
  *****************************************************************************/
 
 #include "QskGraphicLabel.h"
+#include "QskAspect.h"
+#include "QskColorFilter.h"
 #include "QskGraphic.h"
 #include "QskGraphicProvider.h"
-#include "QskAspect.h"
 #include "QskSetup.h"
 #include "QskSkin.h"
-#include "QskColorFilter.h"
 
 QSK_SUBCONTROL( QskGraphicLabel, Graphic )
 
 class QskGraphicLabel::PrivateData
 {
-public:
-    PrivateData( const QUrl& sourceUrl ):
-        source( sourceUrl ),
-        sourceSize( -1, -1 ),
-        alignment( Qt::AlignLeft | Qt::AlignVCenter ),
-        fillMode( QskGraphicLabel::PreserveAspectFit ),
-        mirror( false ),
-        isSourceDirty( !sourceUrl.isEmpty() )
+  public:
+    PrivateData( const QUrl& sourceUrl )
+        : source( sourceUrl )
+        , sourceSize( -1, -1 )
+        , alignment( Qt::AlignLeft | Qt::AlignVCenter )
+        , fillMode( QskGraphicLabel::PreserveAspectFit )
+        , mirror( false )
+        , isSourceDirty( !sourceUrl.isEmpty() )
     {
     }
 
@@ -38,9 +38,9 @@ public:
     bool isSourceDirty : 1;
 };
 
-QskGraphicLabel::QskGraphicLabel( const QUrl& source, QQuickItem* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData( source ) )
+QskGraphicLabel::QskGraphicLabel( const QUrl& source, QQuickItem* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData( source ) )
 {
     initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
 
@@ -48,18 +48,18 @@ QskGraphicLabel::QskGraphicLabel( const QUrl& source, QQuickItem* parent ):
         polish();
 }
 
-QskGraphicLabel::QskGraphicLabel( QQuickItem* parent ):
-    QskGraphicLabel( QUrl(), parent )
+QskGraphicLabel::QskGraphicLabel( QQuickItem* parent )
+    : QskGraphicLabel( QUrl(), parent )
 {
 }
 
-QskGraphicLabel::QskGraphicLabel( const QString& source, QQuickItem* parent ):
-    QskGraphicLabel( QUrl( source ), parent )
+QskGraphicLabel::QskGraphicLabel( const QString& source, QQuickItem* parent )
+    : QskGraphicLabel( QUrl( source ), parent )
 {
 }
 
-QskGraphicLabel::QskGraphicLabel( const QskGraphic& graphic, QQuickItem* parent ):
-    QskGraphicLabel( parent )
+QskGraphicLabel::QskGraphicLabel( const QskGraphic& graphic, QQuickItem* parent )
+    : QskGraphicLabel( parent )
 {
     m_data->graphic = graphic;
 }

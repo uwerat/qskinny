@@ -3,27 +3,27 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#include <SkinnyShortcut.h>
 #include <SkinnyShapeProvider.h>
+#include <SkinnyShortcut.h>
 
+#include <QskAspect.h>
+#include <QskGradient.h>
+#include <QskGraphicLabel.h>
 #include <QskObjectCounter.h>
-#include <QskWindow.h>
+#include <QskShortcutMap.h>
 #include <QskSubWindow.h>
 #include <QskSubWindowArea.h>
-#include <QskGraphicLabel.h>
-#include <QskGradient.h>
-#include <QskAspect.h>
-#include <QskShortcutMap.h>
+#include <QskWindow.h>
 
+#include <QDebug>
 #include <QGuiApplication>
 #include <QKeySequence>
-#include <QDebug>
 
 class SubWindow : public QskSubWindow
 {
-public:
-    SubWindow( const QString& graphicSource, QQuickItem* parent = nullptr ):
-        QskSubWindow( parent )
+  public:
+    SubWindow( const QString& graphicSource, QQuickItem* parent = nullptr )
+        : QskSubWindow( parent )
     {
         setObjectName( graphicSource );
 
@@ -35,7 +35,7 @@ public:
             QskSizePolicy::MinimumExpanding );
 
         QskShortcutMap::addShortcut( this, QKeySequence( Qt::Key_P ), true,
-            [=] { qDebug() << graphicSource; } );
+            [ graphicSource ] { qDebug() << graphicSource; } );
     }
 };
 
@@ -66,7 +66,7 @@ int main( int argc, char* argv[] )
     {
         const qreal off = ( i + 1 ) * 100;
 
-        SubWindow* subWindow = new SubWindow( url + shapes[i], area );
+        auto subWindow = new SubWindow( url + shapes[ i ], area );
         subWindow->setGeometry( windowRect.translated( off, off ) );
     }
 

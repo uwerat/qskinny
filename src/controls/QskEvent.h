@@ -17,7 +17,7 @@ class QQuickWindow;
 
 class QSK_EXPORT QskEvent : public QEvent
 {
-public:
+  public:
     enum Type
     {
         NoEvent = 53800,
@@ -37,7 +37,7 @@ public:
 
 class QSK_EXPORT QskGeometryChangeEvent : public QskEvent
 {
-public:
+  public:
     QskGeometryChangeEvent( const QRectF& rect, const QRectF& oldRect );
 
     inline const QRectF& rect() const { return m_rect; }
@@ -46,42 +46,41 @@ public:
     bool isResized() const;
     bool isMoved() const;
 
-private:
+  private:
     const QRectF m_rect;
     const QRectF m_oldRect;
 };
 
 class QSK_EXPORT QskWindowChangeEvent : public QskEvent
 {
-public:
-    QskWindowChangeEvent( QQuickWindow* oldWindow,
-        QQuickWindow* window );
+  public:
+    QskWindowChangeEvent( QQuickWindow* oldWindow, QQuickWindow* window );
 
     inline QQuickWindow* window() const { return m_window; }
     inline QQuickWindow* oldWindow() const { return m_oldWindow; }
 
-private:
+  private:
     QQuickWindow* const m_oldWindow;
     QQuickWindow* const m_window;
 };
 
 class QSK_EXPORT QskGestureEvent : public QskEvent
 {
-public:
+  public:
     QskGestureEvent( const QskGesture* gesture, bool ownedByEvent = true );
     ~QskGestureEvent() override;
 
     inline const QskGesture* gesture() const { return m_gesture; }
     inline bool isGestureOwnedByEvent() const { return m_gestureOwnedByEvent; }
 
-private:
+  private:
     const QskGesture* m_gesture;
     bool m_gestureOwnedByEvent;
 };
 
 class QSK_EXPORT QskAnimatorEvent : public QskEvent
 {
-public:
+  public:
     enum State
     {
         Started,
@@ -94,7 +93,7 @@ public:
     inline QskAspect::Aspect aspect() const { return m_aspect; }
     inline State state() const { return m_state; }
 
-private:
+  private:
     const QskAspect::Aspect m_aspect;
     const State m_state;
 };

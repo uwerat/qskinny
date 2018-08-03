@@ -27,7 +27,7 @@ class QSK_EXPORT QskWindow : public QQuickWindow
 
     using Inherited = QQuickWindow;
 
-public:
+  public:
     enum EventAcceptance
     {
         EventProcessed = 0,
@@ -64,26 +64,26 @@ public:
     void setEventAcceptance( EventAcceptance );
     EventAcceptance eventAcceptance() const;
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void localeChanged( const QLocale& );
     void autoLayoutChildrenChanged();
     void deleteOnCloseChanged();
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void setLocale( const QLocale& );
     void resizeF( const QSizeF& );
 
-protected:
+  protected:
     bool event( QEvent* ) override;
     void resizeEvent( QResizeEvent* ) override;
     void exposeEvent( QExposeEvent* ) override;
-    void keyPressEvent(QKeyEvent *) override;
-    void keyReleaseEvent(QKeyEvent *) override;
+    void keyPressEvent( QKeyEvent* ) override;
+    void keyReleaseEvent( QKeyEvent* ) override;
 
     virtual void layoutItems();
     virtual void ensureFocus( Qt::FocusReason );
 
-private:
+  private:
     void enforceSkin();
 
     Q_DECLARE_PRIVATE( QskWindow )

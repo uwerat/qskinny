@@ -4,9 +4,9 @@
  *****************************************************************************/
 
 #include "QskTabButton.h"
+#include "QskSkinlet.h"
 #include "QskTabBar.h"
 #include "QskTextOptions.h"
-#include "QskSkinlet.h"
 
 #include <qfontmetrics.h>
 #include <qpointer.h>
@@ -16,9 +16,9 @@ QSK_SUBCONTROL( QskTabButton, Text )
 
 class QskTabButton::PrivateData
 {
-public:
-    PrivateData( const QString& txt ):
-        text( txt )
+  public:
+    PrivateData( const QString& txt )
+        : text( txt )
     {
     }
 
@@ -27,14 +27,14 @@ public:
     QPointer< QskTabBar > tabBar;
 };
 
-QskTabButton::QskTabButton( QQuickItem* parent ):
-    QskTabButton( QString(), parent )
+QskTabButton::QskTabButton( QQuickItem* parent )
+    : QskTabButton( QString(), parent )
 {
 }
 
-QskTabButton::QskTabButton( const QString& text, QQuickItem* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData( text ) )
+QskTabButton::QskTabButton( const QString& text, QQuickItem* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData( text ) )
 {
     resolveTabBar();
 
@@ -119,7 +119,7 @@ QskTabBar* QskTabButton::tabBar() const
 
 void QskTabButton::changeEvent( QEvent* event )
 {
-    switch( event->type() )
+    switch ( event->type() )
     {
         case QEvent::LocaleChange:
         {

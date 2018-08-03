@@ -14,7 +14,7 @@ class QSK_EXPORT QskVirtualKeyboard : public QskBox
 
     using Inherited = QskBox;
 
-public:
+  public:
     QSK_SUBCONTROLS( Panel, ButtonPanel, ButtonText )
 
     enum Mode
@@ -45,14 +45,14 @@ public:
 
     bool hasKey( int keyCode ) const;
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void modeChanged( Mode );
     void keySelected( int keyCode );
 
-protected:
+  protected:
     void updateLayout() override;
 
-private:
+  private:
     void buttonPressed();
 
     class PrivateData;

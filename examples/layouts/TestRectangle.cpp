@@ -7,8 +7,8 @@
 
 #include <QskAspect.h>
 
-TestRectangle::TestRectangle( const char* colorName, QQuickItem* parent ):
-    QskTextLabel( parent )
+TestRectangle::TestRectangle( const char* colorName, QQuickItem* parent )
+    : QskTextLabel( parent )
 {
     setObjectName( colorName );
 

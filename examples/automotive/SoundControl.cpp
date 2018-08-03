@@ -1,17 +1,17 @@
 #include "SoundControl.h"
 #include "SkinFactory.h"
 
+#include <QskBox.h>
 #include <QskGraphic.h>
-#include <QskGraphicLabel.h>
 #include <QskGraphicIO.h>
+#include <QskGraphicLabel.h>
 #include <QskGridBox.h>
 #include <QskLinearBox.h>
+#include <QskNamespace.h>
 #include <QskPushButton.h>
+#include <QskSeparator.h>
 #include <QskSlider.h>
 #include <QskTextLabel.h>
-#include <QskSeparator.h>
-#include <QskBox.h>
-#include <QskNamespace.h>
 
 QSK_SUBCONTROL( SoundControl, Overlay )
 QSK_SUBCONTROL( SoundControl, CrossHair )
@@ -22,9 +22,9 @@ QSK_SUBCONTROL( SoundControl, SliderControl )
 
 class VehicleLabel final : public QskGraphicLabel
 {
-public:
-    VehicleLabel( QQuickItem* parentItem = nullptr ):
-        QskGraphicLabel( parentItem )
+  public:
+    VehicleLabel( QQuickItem* parentItem = nullptr )
+        : QskGraphicLabel( parentItem )
     {
         setGraphic( QskGraphicIO::read( QString( ":/qvg/car.qvg" ) ) );
     }
@@ -43,9 +43,9 @@ public:
 
 class CrossHairLine final : public QskBox
 {
-public:
-    CrossHairLine( QQuickItem* parent ):
-        QskBox( parent )
+  public:
+    CrossHairLine( QQuickItem* parent )
+        : QskBox( parent )
     {
     }
 
@@ -61,9 +61,9 @@ public:
 
 class BalanceFadeMarker final : public QskBox
 {
-public:
-    BalanceFadeMarker( QQuickItem* parent ):
-        QskBox( parent )
+  public:
+    BalanceFadeMarker( QQuickItem* parent )
+        : QskBox( parent )
     {
     }
 
@@ -79,10 +79,10 @@ public:
 
 class MarkerControlButton final : public QskPushButton
 {
-public:
-    MarkerControlButton( Qsk::Direction direction, QQuickItem* parentItem = nullptr ):
-        QskPushButton( parentItem ),
-        m_direction( direction )
+  public:
+    MarkerControlButton( Qsk::Direction direction, QQuickItem* parentItem = nullptr )
+        : QskPushButton( parentItem )
+        , m_direction( direction )
     {
         const char* svgList[] = { "right", "left", "down", "up" };
 
@@ -97,7 +97,7 @@ public:
     {
         const qreal off = 5.0;
 
-        switch( m_direction )
+        switch ( m_direction )
         {
             case Qsk::LeftToRight:
                 return QPointF( off, 0.0 );
@@ -126,7 +126,7 @@ public:
         return subControl;
     }
 
-protected:
+  protected:
     QSizeF contentsSizeHint() const override
     {
         const qreal dim = 100;
@@ -137,15 +137,15 @@ protected:
             return QSizeF( dim, 0.5 * dim );
     }
 
-private:
+  private:
     const Qsk::Direction m_direction;
 };
 
 class ControlButton final : public QskPushButton
 {
-public:
-    ControlButton( const char symbol, QQuickItem* parentItem = nullptr ):
-        QskPushButton( parentItem )
+  public:
+    ControlButton( const char symbol, QQuickItem* parentItem = nullptr )
+        : QskPushButton( parentItem )
     {
         setText( QChar( symbol ) );
         setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
@@ -171,10 +171,10 @@ public:
 
 class StackedControl final : public QskControl
 {
-public:
-    StackedControl( QQuickItem* parent = nullptr ):
-        QskControl( parent ),
-        m_offset( 0.0, 0.0 )
+  public:
+    StackedControl( QQuickItem* parent = nullptr )
+        : QskControl( parent )
+        , m_offset( 0.0, 0.0 )
     {
         setPolishOnResize( true ); // we have t re-layout the crosshair
         setSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
@@ -185,7 +185,7 @@ public:
         auto verticalCarRectangle = new CrossHairLine( this );
         verticalCarRectangle->setObjectName( "verticalBar" );
 
-        (void) new VehicleLabel( this );
+        ( void ) new VehicleLabel( this );
 
         auto marker = new BalanceFadeMarker( this );
         marker->setObjectName( "marker" );
@@ -202,7 +202,7 @@ public:
         polish();
     }
 
-protected:
+  protected:
     void updateLayout() override
     {
         const QRectF cr = contentsRect();
@@ -238,15 +238,15 @@ protected:
         }
     }
 
-private:
+  private:
     QPointF m_offset;
 };
 
 class SectionTitleBar final : public QskLinearBox
 {
-public:
-    SectionTitleBar( const char* title, QQuickItem* parentItem = nullptr ):
-        QskLinearBox( Qt::Horizontal, parentItem )
+  public:
+    SectionTitleBar( const char* title, QQuickItem* parentItem = nullptr )
+        : QskLinearBox( Qt::Horizontal, parentItem )
     {
         setSpacing( 10 );
 
@@ -264,9 +264,9 @@ public:
 
 class SliderBox final : public QskLinearBox
 {
-public:
-    SliderBox( const char* title, qreal min, qreal max, QQuickItem* parentItem = nullptr ):
-        QskLinearBox( Qt::Vertical, parentItem )
+  public:
+    SliderBox( const char* title, qreal min, qreal max, QQuickItem* parentItem = nullptr )
+        : QskLinearBox( Qt::Vertical, parentItem )
     {
         auto label = new QskTextLabel( title );
         m_numberLabel = new QskTextLabel();
@@ -307,7 +307,7 @@ public:
             this, &SliderBox::setValue );
     }
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void setValue( qreal value )
     {
         m_slider->setValue( value );
@@ -318,7 +318,7 @@ public Q_SLOTS:
         m_numberLabel->setText( txt );
     }
 
-private:
+  private:
     void increment( qreal offset )
     {
         setValue( m_slider->value() + offset );
@@ -330,9 +330,9 @@ private:
 
 class ToneControlBox final : public QskLinearBox
 {
-public:
-    ToneControlBox( QQuickItem* parentItem = nullptr ):
-        QskLinearBox( Qt::Horizontal, parentItem )
+  public:
+    ToneControlBox( QQuickItem* parentItem = nullptr )
+        : QskLinearBox( Qt::Horizontal, parentItem )
     {
         auto bassControl = new SliderBox( "Bass", 0.0, 40.0, this );
         auto treebleControl = new SliderBox( "Treeble", 0.0, 40.0, this );
@@ -346,13 +346,13 @@ public:
 
 class BalanceFadeControlBox final : public QskGridBox
 {
-public:
-    BalanceFadeControlBox( QQuickItem* parentItem = nullptr ):
-        QskGridBox( parentItem )
+  public:
+    BalanceFadeControlBox( QQuickItem* parentItem = nullptr )
+        : QskGridBox( parentItem )
     {
-        MarkerControlButton* buttons[4];
+        MarkerControlButton* buttons[ 4 ];
         for ( int i = 0; i < 4; i++ )
-            buttons[i] = new MarkerControlButton( static_cast< Qsk::Direction >( i ) );
+            buttons[ i ] = new MarkerControlButton( static_cast< Qsk::Direction >( i ) );
 
         m_carControl = new StackedControl();
 
@@ -365,7 +365,7 @@ public:
 
         for ( int i = 0; i < 4; i++ )
         {
-            const auto button = buttons[i];
+            const auto button = buttons[ i ];
 
             setAlignment( button, Qt::AlignCenter );
 
@@ -382,8 +382,8 @@ public:
     StackedControl* m_carControl;
 };
 
-SoundControl::SoundControl( QQuickItem* parent ):
-    QskBox( parent )
+SoundControl::SoundControl( QQuickItem* parent )
+    : QskBox( parent )
 {
     setAutoLayoutChildren( true );
 
@@ -409,4 +409,3 @@ QskAspect::Subcontrol SoundControl::effectiveSubcontrol(
 
     return subControl;
 }
-

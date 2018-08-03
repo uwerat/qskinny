@@ -5,33 +5,34 @@
 
 #include "QskModule.h"
 
-#include "QskSetup.h"
-#include "QskSkinManager.h"
-#include "QskSkin.h"
-#include "QskPushButton.h"
 #include "QskCorner.h"
 #include "QskDialog.h"
 #include "QskDialogButton.h"
 #include "QskDialogButtonBox.h"
-#include "QskDialogWindow.h"
 #include "QskDialogSubWindow.h"
+#include "QskDialogWindow.h"
 #include "QskFocusIndicator.h"
 #include "QskGradient.h"
 #include "QskGraphicLabel.h"
 #include "QskGridBox.h"
-#include "QskVirtualKeyboard.h"
+#include "QskLinearBox.h"
+#include "QskMessageWindow.h"
+#include "QskPopup.h"
+#include "QskPushButton.h"
 #include "QskRgbValue.h"
-#include "QskScrollView.h"
 #include "QskScrollArea.h"
+#include "QskScrollView.h"
+#include "QskSelectionWindow.h"
 #include "QskSeparator.h"
-#include "QskSimpleListBox.h"
+#include "QskSetup.h"
 #include "QskShortcut.h"
+#include "QskSimpleListBox.h"
+#include "QskSkin.h"
+#include "QskSkinManager.h"
 #include "QskSlider.h"
 #include "QskStackBox.h"
 #include "QskStandardSymbol.h"
 #include "QskStatusIndicator.h"
-#include "QskLinearBox.h"
-#include "QskPopup.h"
 #include "QskSubWindow.h"
 #include "QskSubWindowArea.h"
 #include "QskTabBar.h"
@@ -39,17 +40,16 @@
 #include "QskTabView.h"
 #include "QskTextLabel.h"
 #include "QskTextOptions.h"
-#include "QskMessageWindow.h"
-#include "QskSelectionWindow.h"
+#include "QskVirtualKeyboard.h"
 #include "QskWindow.h"
 
-#include <qstringlist.h>
-#include <qmargins.h>
 #include <qjsvalueiterator.h>
+#include <qmargins.h>
+#include <qstringlist.h>
 
 QSK_QT_PRIVATE_BEGIN
-#include <private/qqmlmetatype_p.h>
 #include <private/qqmlglobal_p.h>
+#include <private/qqmlmetatype_p.h>
 #include <private/qvariantanimation_p.h>
 QSK_QT_PRIVATE_END
 
@@ -93,7 +93,7 @@ QSK_QT_PRIVATE_END
 template< typename Type, typename Gadget >
 class ValueProvider : public QQmlValueTypeProvider
 {
-public:
+  public:
     const QMetaObject* getMetaObjectForMetaType( int id ) override
     {
         if ( id == qMetaTypeId< Type >() )
@@ -105,9 +105,10 @@ public:
 // Expose values in QskRgbValue to QML
 struct QskRgbValue_Gadget
 {
-    enum Enum {
-#define RGB(name, value) name = value,
-QSK_RGB_VALUES
+    enum Enum
+    {
+#define RGB( name, value ) name = value,
+        QSK_RGB_VALUES
 #undef RGB
     };
 
@@ -136,10 +137,10 @@ Q_DECLARE_METATYPE( QMarginsF )
 class QskSetupFlagsProvider : public QskSetup::Flags
 {
     Q_GADGET
-public:
-    template< typename ... Args >
-    QskSetupFlagsProvider( Args&& ... args ):
-        QskSetup::Flags( std::forward< Args >( args ) ... )
+  public:
+    template< typename... Args >
+    QskSetupFlagsProvider( Args&&... args )
+        : QskSetup::Flags( std::forward< Args >( args )... )
     {
     }
 
@@ -148,7 +149,7 @@ public:
 
 class QskMain : public QObject
 {
-public:
+  public:
     Q_OBJECT
 
     Q_PRIVATE_PROPERTY( setup(), QString skin READ skinName
@@ -162,9 +163,9 @@ public:
     Q_PROPERTY( QQmlListProperty< QObject > data READ data )
     Q_CLASSINFO( "DefaultProperty", "data" )
 
-public:
-    QskMain( QObject* parent = nullptr ):
-        QObject( parent )
+  public:
+    QskMain( QObject* parent = nullptr )
+        : QObject( parent )
     {
         // how to supress warnings about a missing skinListChanged
         // as we don't have it ??
@@ -186,22 +187,22 @@ public:
     {
         return QQmlListProperty< QObject >(
             this, nullptr,
-            [] ( QQmlListProperty< QObject >* property, QObject* value )
+            []( QQmlListProperty< QObject >* property, QObject* value )
             {
                 QskMain* main = static_cast< QskMain* >( property->object );
                 main->m_data.append( value );
             },
-            [] ( QQmlListProperty< QObject >* property )
+            []( QQmlListProperty< QObject >* property )
             {
                 const QskMain* main = static_cast< const QskMain* >( property->object );
                 return main->m_data.count();
             },
-            [] ( QQmlListProperty< QObject >* property, int index )
+            []( QQmlListProperty< QObject >* property, int index )
             {
                 const QskMain* main = static_cast< const QskMain* >( property->object );
                 return main->m_data.at( index );
             },
-            [] ( QQmlListProperty< QObject >* property )
+            []( QQmlListProperty< QObject >* property )
             {
                 QskMain* main = static_cast< QskMain* >( property->object );
                 main->m_data.clear();
@@ -209,13 +210,13 @@ public:
         );
     }
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void skinListChanged(); // never emitted
     void skinChanged();
     void inputPanelChanged();
     void controlFlagsChanged();
 
-private:
+  private:
     static inline QskSetup* setup() { return QskSetup::instance(); }
 
     QObjectList m_data;
@@ -290,31 +291,31 @@ void QskModule::registerTypes()
     // Support (lists of) GradientStop
     QMetaType::registerConverter< QJSValue, QskGradientStop >(
 
-        [] (const QJSValue& value) -> QskGradientStop
+        [](const QJSValue& value) -> QskGradientStop
         {
             return
             {
-                value.property( QLatin1String("position") ).toNumber(),
-                value.property( QLatin1String("color") ).toVariant().value< QColor >()
+                value.property( QLatin1String( "position" ) ).toNumber(),
+                value.property( QLatin1String( "color" ) ).toVariant().value< QColor >()
             };
         }
     );
 
     QMetaType::registerConverter< QJSValue, QVector< QskGradientStop > >(
 
-        [] ( const QJSValue& value )
+        []( const QJSValue& value )
         {
             QVector< QskGradientStop > stops;
             if ( value.isArray() )
             {
-                QJSValueIterator it(value);
+                QJSValueIterator it( value );
                 while ( it.next() && it.hasNext() )
                 {
                     auto source = it.value();
                     auto target = QskGradientStop();
-                    QMetaType::convert(&source, qMetaTypeId< decltype( source ) >(),
+                    QMetaType::convert( &source, qMetaTypeId< decltype( source ) >(),
                         &target, qMetaTypeId< decltype( target ) >() );
-                    stops.append(target);
+                    stops.append( target );
                 }
             }
             return stops;
@@ -326,7 +327,7 @@ void QskModule::registerTypes()
 
     QQmlMetaType::registerCustomStringConverter(
         qMetaTypeId< QMarginsF >(),
-        [] ( const QString& rhs )
+        []( const QString& rhs )
         {
             auto margin = rhs.toDouble();
             return QVariant::fromValue( QMarginsF( margin, margin, margin, margin ) );
@@ -334,26 +335,26 @@ void QskModule::registerTypes()
     );
 
     QMetaType::registerConverter< int, QMarginsF >(
-        [] ( int value ) { return QMarginsF( value, value, value, value ); } );
+        []( int value ) { return QMarginsF( value, value, value, value ); } );
 
     QMetaType::registerConverter< qreal, QMarginsF >(
-        [] ( qreal value ) { return QMarginsF( value, value, value, value ); } );
+        []( qreal value ) { return QMarginsF( value, value, value, value ); } );
 
     qRegisterAnimationInterpolator<QMarginsF>(
         []( const QMarginsF& from, const QMarginsF& to, qreal progress )
         {
-            return QVariant::fromValue(QMarginsF(
+            return QVariant::fromValue( QMarginsF(
                 _q_interpolate( from.left(), to.left(), progress ),
                 _q_interpolate( from.top(), to.top(), progress ),
                 _q_interpolate( from.right(), to.right(), progress ),
                 _q_interpolate( from.bottom(), to.bottom(), progress )
-            ));
+            ) );
         }
     );
 
     // Support QskSizePolicy in QML user properties
     QMetaType::registerConverter< QJSValue, QskSizePolicy >(
-        [] ( const QJSValue& value )
+        []( const QJSValue& value )
         {
             return QskSizePolicy(
                 static_cast< QskSizePolicy::Policy >( value.property( 0 ).toInt() ),
@@ -362,7 +363,7 @@ void QskModule::registerTypes()
     );
 
     QMetaType::registerConverter< int, QskSizePolicy >(
-        [] ( int value )
+        []( int value )
         {
             const auto policy = static_cast< QskSizePolicy::Policy >( value );
             return QskSizePolicy( policy, policy );

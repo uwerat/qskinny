@@ -4,10 +4,11 @@
  *****************************************************************************/
 
 #include "Invoker.h"
+
 #include <QCoreApplication>
 #include <QDebug>
-#include <QTimer>
 #include <QThread>
+#include <QTimer>
 
 void debugNone1()
 {
@@ -47,9 +48,9 @@ class MyObject : public QObject
     Q_PROPERTY( qreal value WRITE setValue )
     Q_PROPERTY( QString valueString WRITE setValueString )
 
-public:
-    MyObject( QObject* parent = nullptr ):
-        QObject( parent )
+  public:
+    MyObject( QObject* parent = nullptr )
+        : QObject( parent )
     {
     }
 
@@ -73,7 +74,7 @@ public:
         qDebug() << "setValueString" << s;
     }
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void print0( double d, int i ) const
     {
         qDebug() << "print0" << d << i;
@@ -109,11 +110,11 @@ static auto fs = []( int i, double d ) { qDebug() << i << d; };
 
 class Application : public QCoreApplication
 {
-public:
-    Application( int& argc, char* argv[] ):
-        QCoreApplication( argc, argv ),
-        m_object( new MyObject() ),
-        m_thread( new QThread( this ) )
+  public:
+    Application( int& argc, char* argv[] )
+        : QCoreApplication( argc, argv )
+        , m_object( new MyObject() )
+        , m_thread( new QThread( this ) )
     {
 #if 1
         m_invoker.addPropertyCall( m_object, "number" );
@@ -124,7 +125,7 @@ public:
 #if 1
         m_invoker.addMethodCall( m_object, "print0(double,int)" );
         m_invoker.addMethodCall( m_object, "print1(double,int)" );
-        m_invoker.addMethodCall( m_object, SLOT(print2(int,double)) );
+        m_invoker.addMethodCall( m_object, SLOT( print2( int, double ) ) );
         m_invoker.addMethodCall( m_object, "print3(double)" );
         m_invoker.addMethodCall( m_object, "print4(int)" );
         m_invoker.addMethodCall( m_object, "print4(int)" );
@@ -194,7 +195,7 @@ public:
         QTimer::singleShot( 10, m_thread, &QThread::quit );
     }
 
-private:
+  private:
     Invoker m_invoker;
     MyObject* m_object;
     QThread* m_thread;

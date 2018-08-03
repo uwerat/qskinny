@@ -12,11 +12,11 @@ QSK_SUBCONTROL( QskPageIndicator, Highlighted )
 
 class QskPageIndicator::PrivateData
 {
-public:
-    PrivateData( int count ):
-        count ( count ),
-        currentIndex( -1 ),
-        orientation( Qt::Horizontal )
+  public:
+    PrivateData( int count )
+        : count( count )
+        , currentIndex( -1 )
+        , orientation( Qt::Horizontal )
     {
     }
 
@@ -25,16 +25,16 @@ public:
     Qt::Orientation orientation : 2;
 };
 
-QskPageIndicator::QskPageIndicator( int count, QQuickItem* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData( count ) )
+QskPageIndicator::QskPageIndicator( int count, QQuickItem* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData( count ) )
 {
     // as we don't stretch the bullets
     initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 }
 
-QskPageIndicator::QskPageIndicator( QQuickItem* parent ):
-    QskPageIndicator( 0, parent )
+QskPageIndicator::QskPageIndicator( QQuickItem* parent )
+    : QskPageIndicator( 0, parent )
 {
 }
 
@@ -59,7 +59,7 @@ Qt::Orientation QskPageIndicator::orientation() const
 
 void QskPageIndicator::setOrientation( Qt::Orientation orientation )
 {
-    if (orientation != m_data->orientation )
+    if ( orientation != m_data->orientation )
     {
         m_data->orientation = orientation;
 
@@ -88,7 +88,7 @@ void QskPageIndicator::setCurrentIndex( qreal index )
     if ( index < 0 || index >= m_data->count )
         index = -1;
 
-    if (index != m_data->currentIndex )
+    if ( index != m_data->currentIndex )
     {
         m_data->currentIndex = index;
         update();
@@ -118,7 +118,6 @@ QSizeF QskPageIndicator::contentsSizeHint() const
 
             if ( n > 1 )
                 w += ( n - 1 ) * ( sizeBullet + spacing );
-
         }
 
         h = qMax( sizeCurrent, sizeBullet );

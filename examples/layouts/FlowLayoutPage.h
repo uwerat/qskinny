@@ -10,7 +10,7 @@
 
 class FlowLayoutPage : public QskLinearBox
 {
-public:
+  public:
     FlowLayoutPage( QQuickItem* parent = nullptr );
 };
 

@@ -4,20 +4,20 @@
  *****************************************************************************/
 
 #include "QskBoxNode.h"
+#include "QskBoxBorderColors.h"
+#include "QskBoxBorderMetrics.h"
 #include "QskBoxRenderer.h"
 #include "QskBoxShapeMetrics.h"
-#include "QskBoxBorderMetrics.h"
-#include "QskBoxBorderColors.h"
 #include "QskGradient.h"
 
-#include <qsgvertexcolormaterial.h>
-#include <qsgflatcolormaterial.h>
 #include <qglobalstatic.h>
+#include <qsgflatcolormaterial.h>
+#include <qsgvertexcolormaterial.h>
 
 Q_GLOBAL_STATIC( QSGVertexColorMaterial, qskMaterialVertex )
 
-static inline uint qskMetricsHash( const QskBoxShapeMetrics& shape,
-    const QskBoxBorderMetrics& borderMetrics )
+static inline uint qskMetricsHash(
+    const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& borderMetrics )
 {
     uint hash = 13000;
 
@@ -25,18 +25,18 @@ static inline uint qskMetricsHash( const QskBoxShapeMetrics& shape,
     return borderMetrics.hash( hash );
 }
 
-static inline uint qskColorsHash( const QskBoxBorderColors& borderColors,
-    const QskGradient& fillGradient )
+static inline uint qskColorsHash(
+    const QskBoxBorderColors& borderColors, const QskGradient& fillGradient )
 {
     uint hash = 13000;
     hash = borderColors.hash( hash );
     return fillGradient.hash( hash );
 }
 
-QskBoxNode::QskBoxNode():
-    m_metricsHash( 0 ),
-    m_colorsHash( 0 ),
-    m_geometry( QSGGeometry::defaultAttributes_ColoredPoint2D(), 0 )
+QskBoxNode::QskBoxNode()
+    : m_metricsHash( 0 )
+    , m_colorsHash( 0 )
+    , m_geometry( QSGGeometry::defaultAttributes_ColoredPoint2D(), 0 )
 {
     setMaterial( qskMaterialVertex );
     setGeometry( &m_geometry );
@@ -127,8 +127,9 @@ void QskBoxNode::setBoxData( const QRectF& rect,
 
     if ( maybeFlat )
     {
-        if ( ( hasFill && hasBorder ) || ( hasFill && !isFillMonochrome )
-            || ( hasBorder && !isBorderMonochrome ) )
+        if ( ( hasFill && hasBorder ) ||
+            ( hasFill && !isFillMonochrome ) ||
+            ( hasBorder && !isBorderMonochrome ) )
         {
             maybeFlat = false;
         }
@@ -148,7 +149,7 @@ void QskBoxNode::setBoxData( const QRectF& rect,
         // all is done with one color
         setMonochrome( true );
 
-        auto* flatMaterial = static_cast< QSGFlatColorMaterial *>( material() );
+        auto* flatMaterial = static_cast< QSGFlatColorMaterial* >( material() );
 
         if ( hasFill )
         {
@@ -177,7 +178,7 @@ void QskBoxNode::setMonochrome( bool on )
         setMaterial( new QSGFlatColorMaterial() );
 
         const QSGGeometry g( QSGGeometry::defaultAttributes_Point2D(), 0 );
-        memcpy( (void *)&m_geometry, (void *)&g, sizeof( QSGGeometry ) );
+        memcpy( ( void* ) &m_geometry, ( void* ) &g, sizeof( QSGGeometry ) );
     }
     else
     {
@@ -185,6 +186,6 @@ void QskBoxNode::setMonochrome( bool on )
         delete material;
 
         const QSGGeometry g( QSGGeometry::defaultAttributes_ColoredPoint2D(), 0 );
-        memcpy( (void *)&m_geometry, (void *)&g, sizeof( QSGGeometry ) );
+        memcpy( ( void* ) &m_geometry, ( void* ) &g, sizeof( QSGGeometry ) );
     }
 }

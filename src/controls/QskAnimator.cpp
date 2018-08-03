@@ -5,11 +5,11 @@
 
 #include "QskAnimator.h"
 
-#include <qobject.h>
-#include <qvector.h>
-#include <qquickwindow.h>
 #include <qelapsedtimer.h>
 #include <qglobalstatic.h>
+#include <qobject.h>
+#include <qquickwindow.h>
+#include <qvector.h>
 
 #ifndef QT_NO_DEBUG_STREAM
 #include <qdebug.h>
@@ -19,14 +19,14 @@ namespace
 {
     class Statistics
     {
-    public:
+      public:
         inline Statistics()
         {
             reset();
         }
 
 #ifndef QT_NO_DEBUG_STREAM
-        void debugStatistics( QDebug debug ) 
+        void debugStatistics( QDebug debug )
         {
             QDebugStateSaver saver( debug );
             debug.nospace();
@@ -75,7 +75,7 @@ class QskAnimatorDriver final : public QObject
 {
     Q_OBJECT
 
-public:
+  public:
     QskAnimatorDriver();
 
     void registerAnimator( QskAnimator* );
@@ -83,11 +83,11 @@ public:
 
     qint64 referenceTime() const;
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void advanced( QQuickWindow* );
     void terminated( QQuickWindow* );
 
-private:
+  private:
     void advanceAnimators( QQuickWindow* );
     void removeWindow( QQuickWindow* );
     void scheduleUpdate( QQuickWindow* );
@@ -106,8 +106,8 @@ private:
     mutable int m_index; // current value, when iterating
 };
 
-QskAnimatorDriver::QskAnimatorDriver():
-    m_index( -1 )
+QskAnimatorDriver::QskAnimatorDriver()
+    : m_index( -1 )
 {
     m_referenceTime.start();
 }
@@ -169,7 +169,7 @@ void QskAnimatorDriver::removeWindow( QQuickWindow* window )
 
     for ( auto it = m_animators.begin(); it != m_animators.end(); )
     {
-        if ( (*it)->window() == window )
+        if ( ( *it )->window() == window )
             it = m_animators.erase( it );
         else
             ++it;
@@ -198,7 +198,7 @@ void QskAnimatorDriver::advanceAnimators( QQuickWindow* window )
         // Advancing animators might create/remove animators, what is handled by
         // adjusting m_index in register/unregister
 
-        QskAnimator* animator = m_animators[m_index];
+        auto animator = m_animators[ m_index ];
         if ( animator->window() == window )
         {
             hasAnimators = true;
@@ -213,7 +213,7 @@ void QskAnimatorDriver::advanceAnimators( QQuickWindow* window )
         }
     }
 
-    m_index = -1; 
+    m_index = -1;
 
     if ( !hasAnimators )
     {
@@ -230,10 +230,10 @@ void QskAnimatorDriver::advanceAnimators( QQuickWindow* window )
 Q_GLOBAL_STATIC( QskAnimatorDriver, qskAnimatorDriver )
 Q_GLOBAL_STATIC( Statistics, qskStatistics )
 
-QskAnimator::QskAnimator():
-    m_window( nullptr ),
-    m_duration( 200 ),
-    m_startTime( -1 )
+QskAnimator::QskAnimator()
+    : m_window( nullptr )
+    , m_duration( 200 )
+    , m_startTime( -1 )
 {
     if ( qskStatistics )
         qskStatistics->increment();
@@ -276,7 +276,7 @@ void QskAnimator::setEasingCurve( QEasingCurve::Type type )
 
         static QEasingCurve curveTable[ QEasingCurve::Custom ];
         if ( curveTable[ type ].type() != type )
-            curveTable[ type ].setType( type ); 
+            curveTable[ type ].setType( type );
 
         m_easingCurve = curveTable[ type ];
     }
@@ -362,23 +362,23 @@ void QskAnimator::done()
 // we should also have functor based callbacks too. TODO ...
 #endif
 
-QMetaObject::Connection QskAnimator::addCleanupHandler( QObject* receiver,
-    const char* method, Qt::ConnectionType type )
+QMetaObject::Connection QskAnimator::addCleanupHandler(
+    QObject* receiver, const char* method, Qt::ConnectionType type )
 {
     return QObject::connect( qskAnimatorDriver,
         SIGNAL(terminated(QQuickWindow*)), receiver, method, type );
 }
 
-QMetaObject::Connection QskAnimator::addAdvanceHandler( QObject* receiver,
-    const char* method, Qt::ConnectionType type )
-{   
+QMetaObject::Connection QskAnimator::addAdvanceHandler(
+    QObject* receiver, const char* method, Qt::ConnectionType type )
+{
     return QObject::connect( qskAnimatorDriver,
         SIGNAL(advanced(QQuickWindow*)), receiver, method, type );
 }
 
 #ifndef QT_NO_DEBUG_STREAM
 
-void QskAnimator::debugStatistics( QDebug debug ) 
+void QskAnimator::debugStatistics( QDebug debug )
 {
     if ( qskStatistics )
         qskStatistics->debugStatistics( debug );

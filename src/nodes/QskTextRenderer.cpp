@@ -4,8 +4,8 @@
  *****************************************************************************/
 
 #include "QskTextRenderer.h"
-#include "QskRichTextRenderer.h"
 #include "QskPlainTextRenderer.h"
+#include "QskRichTextRenderer.h"
 #include "QskTextOptions.h"
 
 #include <qrect.h>
@@ -14,8 +14,8 @@
     Since Qt 5.7 QQuickTextNode is exported as Q_QUICK_PRIVATE_EXPORT
     and could be used. TODO ...
  */
-QSizeF QskTextRenderer::textSize( const QString& text,
-    const QFont& font, const QskTextOptions& options )
+QSizeF QskTextRenderer::textSize(
+    const QString& text, const QFont& font, const QskTextOptions& options )
 {
     if ( options.effectiveFormat( text ) == QskTextOptions::PlainText )
         return QskPlainTextRenderer::textSize( text, font, options );
@@ -23,8 +23,9 @@ QSizeF QskTextRenderer::textSize( const QString& text,
         return QskRichTextRenderer::textSize( text, font, options );
 }
 
-QSizeF QskTextRenderer::textSize( const QString& text,
-    const QFont& font, const QskTextOptions& options, const QSizeF& size )
+QSizeF QskTextRenderer::textSize(
+    const QString& text, const QFont& font, const QskTextOptions& options,
+    const QSizeF& size )
 {
     if ( options.effectiveFormat( text ) == QskTextOptions::PlainText )
         return QskPlainTextRenderer::textRect( text, font, options, size ).size();
@@ -32,20 +33,19 @@ QSizeF QskTextRenderer::textSize( const QString& text,
         return QskRichTextRenderer::textRect( text, font, options, size ).size();
 }
 
-void QskTextRenderer::updateNode( const QString& text,
-    const QFont& font, const QskTextOptions& options,
-    Qsk::TextStyle style, const QskTextColors& colors,
-    Qt::Alignment alignment, const QRectF& rect,
-    const QQuickItem* item, QSGTransformNode* node )
+void QskTextRenderer::updateNode(
+    const QString& text, const QFont& font, const QskTextOptions& options,
+    Qsk::TextStyle style, const QskTextColors& colors, Qt::Alignment alignment,
+    const QRectF& rect, const QQuickItem* item, QSGTransformNode* node )
 {
     if ( options.format() == QskTextOptions::PlainText )
     {
-        QskPlainTextRenderer::updateNode( text, font, options, style,
-            colors, alignment, rect, item, node );
+        QskPlainTextRenderer::updateNode(
+            text, font, options, style, colors, alignment, rect, item, node );
     }
     else
     {
-        QskRichTextRenderer::updateNode( text, font, options, style,
-            colors, alignment, rect, item, node );
+        QskRichTextRenderer::updateNode(
+            text, font, options, style, colors, alignment, rect, item, node );
     }
 }

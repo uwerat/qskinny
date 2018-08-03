@@ -7,6 +7,7 @@
 #define QSK_SIZE_POLICY_H_
 
 #include "QskGlobal.h"
+
 #include <qmetatype.h>
 
 class QDebug;
@@ -15,10 +16,13 @@ class QSK_EXPORT QskSizePolicy
 {
     Q_GADGET
 
-    Q_PROPERTY( Policy horizontalPolicy READ horizontalPolicy WRITE setHorizontalPolicy )
-    Q_PROPERTY( Policy verticalPolicy READ verticalPolicy WRITE setVerticalPolicy )
+    Q_PROPERTY( Policy horizontalPolicy
+        READ horizontalPolicy WRITE setHorizontalPolicy )
 
-public:
+    Q_PROPERTY( Policy verticalPolicy
+        READ verticalPolicy WRITE setVerticalPolicy )
+
+  public:
     enum Flag
     {
         GrowFlag = 1,
@@ -57,27 +61,28 @@ public:
     Policy policy( Qt::Orientation ) const;
     void setPolicy( Qt::Orientation, Policy );
 
-private:
+  private:
     quint32 m_horizontalPolicy : 4;
     quint32 m_verticalPolicy : 4;
 };
 
-inline QskSizePolicy::QskSizePolicy():
-    m_horizontalPolicy( Ignored ),
-    m_verticalPolicy( Ignored )
+inline QskSizePolicy::QskSizePolicy()
+    : m_horizontalPolicy( Ignored )
+    , m_verticalPolicy( Ignored )
 {
 }
 
-inline QskSizePolicy::QskSizePolicy( Policy horizontalPolicy, Policy verticalPolicy ):
-    m_horizontalPolicy( horizontalPolicy ),
-    m_verticalPolicy( verticalPolicy )
+inline QskSizePolicy::QskSizePolicy(
+        Policy horizontalPolicy, Policy verticalPolicy )
+    : m_horizontalPolicy( horizontalPolicy )
+    , m_verticalPolicy( verticalPolicy )
 {
 }
 
 inline bool QskSizePolicy::operator==( const QskSizePolicy& other ) const
 {
-    return ( other.m_horizontalPolicy == m_horizontalPolicy )
-        && ( other.m_verticalPolicy == m_verticalPolicy );
+    return ( other.m_horizontalPolicy == m_horizontalPolicy ) &&
+           ( other.m_verticalPolicy == m_verticalPolicy );
 }
 
 inline bool QskSizePolicy::operator!=( const QskSizePolicy& other ) const

@@ -15,7 +15,7 @@ class QSK_EXPORT QskSquiekSkinFactory : public QskSkinFactory
     Q_PLUGIN_METADATA( IID QskSkinFactoryIID FILE "metadata.json" )
     Q_INTERFACES( QskSkinFactory )
 
-public:
+  public:
     QskSquiekSkinFactory( QObject* parent = nullptr );
     ~QskSquiekSkinFactory() override;
 

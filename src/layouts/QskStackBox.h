@@ -23,7 +23,7 @@ class QSK_EXPORT QskStackBox : public QskIndexedLayoutBox
 
     using Inherited = QskIndexedLayoutBox;
 
-public:
+  public:
     explicit QskStackBox( QQuickItem* parent = nullptr );
     QskStackBox( bool autoAddChildren, QQuickItem* parent = nullptr );
 
@@ -41,18 +41,18 @@ public:
     const QskStackBoxAnimator* animator() const;
     QskStackBoxAnimator* animator();
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void setCurrentIndex( int index );
     void setCurrentItem( const QQuickItem* );
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void currentIndexChanged( int index );
     void currentItemChanged( QQuickItem* );
 
-protected:
+  protected:
     QskStackBoxAnimator* effectiveAnimator();
 
-private:
+  private:
     friend class QskStackBoxAnimator;
 
     void layoutItemInserted( QskLayoutItem*, int index ) override;

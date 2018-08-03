@@ -4,19 +4,19 @@
  *****************************************************************************/
 
 #include "QskTabBar.h"
+#include "QskAspect.h"
 #include "QskLinearBox.h"
 #include "QskTabButton.h"
 #include "QskTextOptions.h"
-#include "QskAspect.h"
 
 QSK_SUBCONTROL( QskTabBar, Panel )
 
 class QskTabBar::PrivateData
 {
-public:
-    PrivateData():
-        currentIndex( -1 ),
-        layoutBox( nullptr )
+  public:
+    PrivateData()
+        : currentIndex( -1 )
+        , layoutBox( nullptr )
     {
     }
 
@@ -25,14 +25,14 @@ public:
     QskLinearBox* layoutBox;
 };
 
-QskTabBar::QskTabBar( QQuickItem* parent ):
-    QskTabBar( Qt::Horizontal, parent )
+QskTabBar::QskTabBar( QQuickItem* parent )
+    : QskTabBar( Qt::Horizontal, parent )
 {
 }
 
-QskTabBar::QskTabBar( Qt::Orientation orientation, QQuickItem* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData() )
+QskTabBar::QskTabBar( Qt::Orientation orientation, QQuickItem* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData() )
 {
     m_data->layoutBox = new QskLinearBox( orientation, this );
     m_data->layoutBox->setObjectName( QStringLiteral( "QskTabBarLayoutBox" ) );

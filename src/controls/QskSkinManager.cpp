@@ -6,14 +6,14 @@
 #include "QskSkinManager.h"
 #include "QskSkinFactory.h"
 
-#include <qglobalstatic.h>
 #include <qdir.h>
-#include <qpluginloader.h>
-#include <qjsonobject.h>
+#include <qglobalstatic.h>
 #include <qjsonarray.h>
+#include <qjsonobject.h>
 #include <qmap.h>
-#include <qset.h>
+#include <qpluginloader.h>
 #include <qpointer.h>
+#include <qset.h>
 
 /*
     We could use QFactoryLoader, but as it is again a "private" class
@@ -21,7 +21,13 @@
     from the application library path ) we prefer having our own code.
  */
 
-namespace { class SkinManager final : public QskSkinManager { }; }
+namespace
+{
+    class SkinManager final : public QskSkinManager
+    {
+    };
+}
+
 Q_GLOBAL_STATIC( SkinManager, qskGlobalSkinManager )
 
 static QStringList qskPathList( const char* envName )
@@ -43,9 +49,9 @@ namespace
 {
     class FactoryLoader final : public QPluginLoader
     {
-    public:
-        FactoryLoader( QObject* parent = nullptr ):
-            QPluginLoader( parent )
+      public:
+        FactoryLoader( QObject* parent = nullptr )
+            : QPluginLoader( parent )
         {
         }
 
@@ -109,7 +115,7 @@ namespace
             return m_skinNames;
         }
 
-    private:
+      private:
         void setFileName( const QString& ) = delete;
         QObject* instance() = delete;
 
@@ -119,12 +125,12 @@ namespace
 
     class FactoryMap
     {
-    private:
+      private:
         class Data
         {
-        public:
-            Data():
-                loader( nullptr )
+          public:
+            Data()
+                : loader( nullptr )
             {
             }
 
@@ -148,9 +154,9 @@ namespace
             QPointer< QskSkinFactory > factory;
         };
 
-    public:
-        FactoryMap():
-            m_isValid( false )
+      public:
+        FactoryMap()
+            : m_isValid( false )
         {
         }
 
@@ -208,7 +214,7 @@ namespace
             return QStringList();
         }
 
-        void insertFactory( FactoryLoader* loader  )
+        void insertFactory( FactoryLoader* loader )
         {
             auto& data = m_factoryMap[ loader->factoryId() ];
 
@@ -270,7 +276,7 @@ namespace
             return m_factoryMap.contains( factoryId );
         }
 
-    private:
+      private:
         void rebuild()
         {
             m_skinMap.clear();
@@ -315,9 +321,9 @@ namespace
 
 class QskSkinManager::PrivateData
 {
-public:
-    PrivateData():
-        pluginsRegistered( false )
+  public:
+    PrivateData()
+        : pluginsRegistered( false )
     {
     }
 
@@ -360,7 +366,7 @@ public:
         delete loader;
     }
 
-public:
+  public:
     QStringList pluginPaths;
     FactoryMap factoryMap;
 
@@ -372,11 +378,11 @@ QskSkinManager* QskSkinManager::instance()
     return qskGlobalSkinManager;
 }
 
-QskSkinManager::QskSkinManager():
-    m_data( new PrivateData() )
+QskSkinManager::QskSkinManager()
+    : m_data( new PrivateData() )
 {
-    setPluginPaths( qskPathList( "QSK_PLUGIN_PATH" )
-        + qskPathList( "QT_PLUGIN_PATH" ) );
+    setPluginPaths( qskPathList( "QSK_PLUGIN_PATH" ) +
+        qskPathList( "QT_PLUGIN_PATH" ) );
 }
 
 QskSkinManager::~QskSkinManager()

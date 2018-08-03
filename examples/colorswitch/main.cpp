@@ -11,9 +11,9 @@
 #include <QskModule.h>
 #include <QskObjectCounter.h>
 
-#include <QtQml>
-#include <QQmlApplicationEngine>
 #include <QGuiApplication>
+#include <QQmlApplicationEngine>
+#include <QtQml>
 
 int main( int argc, char* argv[] )
 {

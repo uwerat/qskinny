@@ -6,8 +6,8 @@
 #include "QskBoxSkinlet.h"
 #include "QskBox.h"
 
-QskBoxSkinlet::QskBoxSkinlet( QskSkin* skin ):
-    Inherited( skin )
+QskBoxSkinlet::QskBoxSkinlet( QskSkin* skin )
+    : Inherited( skin )
 {
     setNodeRoles( { PanelRole } );
 }
@@ -18,20 +18,20 @@ QskBoxSkinlet::~QskBoxSkinlet()
 
 QRectF QskBoxSkinlet::subControlRect(
     const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
-{      
+{
     if ( subControl == QskBox::Panel )
     {
         const auto box = static_cast< const QskBox* >( skinnable );
         return box->contentsRect();
     }
-    
+
     return Inherited::subControlRect( skinnable, subControl );
-}   
+}
 
 QSGNode* QskBoxSkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
-    switch( nodeRole )
+    switch ( nodeRole )
     {
         case PanelRole:
         {

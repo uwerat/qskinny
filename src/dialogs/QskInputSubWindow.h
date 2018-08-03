@@ -6,7 +6,6 @@
 #ifndef QSK_INPUT_SUB_WINDOW_H
 #define QSK_INPUT_SUB_WINDOW_H 1
 
-#include "QskGlobal.h"
 #include "QskDialogSubWindow.h"
 
 class QskGraphic;
@@ -28,7 +27,7 @@ class QSK_EXPORT QskInputSubWindow : public QskDialogSubWindow
 
     using Inherited = QskDialogSubWindow;
 
-public:
+  public:
     QskInputSubWindow( QQuickItem* parent = nullptr );
     ~QskInputSubWindow() override;
 
@@ -56,21 +55,21 @@ public:
     QskDialogButtonBox* buttonBox();
     const QskDialogButtonBox* buttonBox() const;
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void setInfoText( const QString& );
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void infoTextChanged();
     void infoTextOptionsChanged();
     void symbolSourceChanged();
 
-protected:
+  protected:
     void setInputControl( QskControl* );
     QskControl* inputControl() const;
 
     void keyPressEvent( QKeyEvent* ) override;
 
-private:
+  private:
     void updateTitleBox();
 
     class PrivateData;

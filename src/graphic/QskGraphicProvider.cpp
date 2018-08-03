@@ -8,19 +8,19 @@
 #include "QskSetup.h"
 
 #include <qcache.h>
-#include <qurl.h>
 #include <qdebug.h>
+#include <qurl.h>
 
 class QskGraphicProvider::PrivateData
 {
-public:
+  public:
     // caching of graphics
     QCache< QString, const QskGraphic > cache;
 };
 
-QskGraphicProvider::QskGraphicProvider( QObject* parent ):
-    QObject( parent ),
-    m_data( new PrivateData() )
+QskGraphicProvider::QskGraphicProvider( QObject* parent )
+    : QObject( parent )
+    , m_data( new PrivateData() )
 {
 }
 
@@ -48,7 +48,7 @@ void QskGraphicProvider::clearCache()
 
 const QskGraphic* QskGraphicProvider::requestGraphic( const QString& id ) const
 {
-    const QskGraphic* graphic = m_data->cache.object( id  );
+    const QskGraphic* graphic = m_data->cache.object( id );
 
     if ( graphic == nullptr )
     {
@@ -66,7 +66,8 @@ const QskGraphic* QskGraphicProvider::requestGraphic( const QString& id ) const
     return graphic;
 }
 
-void Qsk::addGraphicProvider( const QString& providerId, QskGraphicProvider* provider )
+void Qsk::addGraphicProvider(
+    const QString& providerId, QskGraphicProvider* provider )
 {
     qskSetup->addGraphicProvider( providerId, provider );
 }
@@ -85,21 +86,20 @@ QskGraphic Qsk::loadGraphic( const QUrl& url )
 {
     static QskGraphic nullGraphic;
 
-    QString imageId = url.toString( QUrl::RemoveScheme 
-        | QUrl::RemoveAuthority | QUrl::NormalizePathSegments );
+    QString imageId = url.toString( QUrl::RemoveScheme |
+        QUrl::RemoveAuthority | QUrl::NormalizePathSegments );
 
     if ( imageId.isEmpty() )
         return nullGraphic;
 
-    if ( imageId[0] == '/' )
+    if ( imageId[ 0 ] == '/' )
         imageId = imageId.mid( 1 );
 
     const QString providerId = url.host();
-    
+
     const QskGraphic* graphic = nullptr;
 
-    const QskGraphicProvider* provider = qskSetup->graphicProvider( providerId );
-    if ( provider )
+    if ( const auto provider = qskSetup->graphicProvider( providerId ) )
         graphic = provider->requestGraphic( imageId );
 
     return graphic ? *graphic : nullGraphic;

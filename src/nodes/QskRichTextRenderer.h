@@ -22,14 +22,16 @@ class QSGTransformNode;
 
 namespace QskRichTextRenderer
 {
-    QSK_EXPORT void updateNode( const QString&, const QFont&, const QskTextOptions&,
-        Qsk::TextStyle, const QskTextColors&, Qt::Alignment, const QRectF&,
-        const QQuickItem*, QSGTransformNode* );
+    QSK_EXPORT void updateNode(
+        const QString&, const QFont&, const QskTextOptions&,
+        Qsk::TextStyle, const QskTextColors&, Qt::Alignment,
+        const QRectF&, const QQuickItem*, QSGTransformNode* );
 
-    QSK_EXPORT QSizeF textSize( const QString&, const QFont&, const QskTextOptions& );
+    QSK_EXPORT QSizeF textSize(
+        const QString&, const QFont&, const QskTextOptions& );
 
-    QSK_EXPORT QRectF textRect( const QString&, const QFont&,
-        const QskTextOptions&, const QSizeF& );
+    QSK_EXPORT QRectF textRect(
+        const QString&, const QFont&, const QskTextOptions&, const QSizeF& );
 }
 
 #endif

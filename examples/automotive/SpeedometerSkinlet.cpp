@@ -17,38 +17,38 @@ namespace
 {
     class TicksNode : public QSGGeometryNode
     {
-        public:
-            TicksNode():
-                m_geometry( QSGGeometry::defaultAttributes_Point2D(), 0 )
-            {
-                m_geometry.setDrawingMode( GL_LINES );
-                m_geometry.setVertexDataPattern( QSGGeometry::StaticPattern );
+      public:
+        TicksNode()
+            : m_geometry( QSGGeometry::defaultAttributes_Point2D(), 0 )
+        {
+            m_geometry.setDrawingMode( GL_LINES );
+            m_geometry.setVertexDataPattern( QSGGeometry::StaticPattern );
 
-                setGeometry( &m_geometry );
-                setMaterial( &m_material );
-            }
+            setGeometry( &m_geometry );
+            setMaterial( &m_material );
+        }
 
-            void setColor( const QColor& color )
-            {
-                m_material.setColor( color );
-            }
+        void setColor( const QColor& color )
+        {
+            m_material.setColor( color );
+        }
 
-        private:
-            QSGFlatColorMaterial m_material;
-            QSGGeometry m_geometry;
+      private:
+        QSGFlatColorMaterial m_material;
+        QSGGeometry m_geometry;
     };
 } // namespace
 
-SpeedometerSkinlet::SpeedometerSkinlet( QskSkin* skin ) :
-    QskSkinlet( skin )
+SpeedometerSkinlet::SpeedometerSkinlet( QskSkin* skin )
+    : QskSkinlet( skin )
 {
     setNodeRoles( { PanelRole, LabelsRole, NeedleRole } );
 }
 
 SpeedometerSkinlet::~SpeedometerSkinlet() = default;
 
-QRectF SpeedometerSkinlet::subControlRect( const QskSkinnable* skinnable,
-                                           QskAspect::Subcontrol /*unused*/ ) const
+QRectF SpeedometerSkinlet::subControlRect(
+    const QskSkinnable* skinnable, QskAspect::Subcontrol ) const
 {
     const auto speedometer = static_cast< const Speedometer* >( skinnable );
 
@@ -56,12 +56,12 @@ QRectF SpeedometerSkinlet::subControlRect( const QskSkinnable* skinnable,
     return speedometer->contentsRect();
 }
 
-QSGNode* SpeedometerSkinlet::updateSubNode( const QskSkinnable* skinnable, quint8 nodeRole,
-                                            QSGNode* node ) const
+QSGNode* SpeedometerSkinlet::updateSubNode(
+    const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
     const auto speedometer = static_cast< const Speedometer* >( skinnable );
 
-    switch( nodeRole )
+    switch ( nodeRole )
     {
         case PanelRole:
             return updatePanelNode( speedometer, node );
@@ -81,7 +81,7 @@ QSGNode* SpeedometerSkinlet::updatePanelNode( const Speedometer* speedometer, QS
 {
     auto boxNode = static_cast< QskBoxNode* >( node );
 
-    if( boxNode == nullptr )
+    if ( boxNode == nullptr )
     {
         boxNode = new QskBoxNode;
     }
@@ -143,7 +143,7 @@ QSGNode* SpeedometerSkinlet::updateLabelsNode( const Speedometer* speedometer, Q
     QVector< QString > labels = speedometer->labels();
 
     // Create a series of tickmarks from minimum to maximum
-    for( int i = 0; i < labelsCount; ++i, angle += step )
+    for ( int i = 0; i < labelsCount; ++i, angle += step )
     {
         qreal cosine = qCos( qDegreesToRadians( angle ) );
         qreal sine = qSin( qDegreesToRadians( angle ) );
@@ -155,8 +155,8 @@ QSGNode* SpeedometerSkinlet::updateLabelsNode( const Speedometer* speedometer, Q
         auto xEnd = center.x() + ( radius - length ) * cosine;
         auto yEnd = center.y() + ( radius - length ) * sine;
 
-        vertexData[0].set( xStart, yStart );
-        vertexData[1].set( xEnd, yEnd );
+        vertexData[ 0 ].set( xStart, yStart );
+        vertexData[ 1 ].set( xEnd, yEnd );
 
         vertexData += 2;
 
@@ -187,9 +187,8 @@ QSGNode* SpeedometerSkinlet::updateLabelsNode( const Speedometer* speedometer, Q
             }
 
             QFont font = speedometer->effectiveFont( Speedometer::Labels );
-            numbersNode->setTextData( speedometer, text, numbersRect, font,
-                                      QskTextOptions(), QskTextColors( color ),
-                                      Qt::AlignCenter | Qt::AlignHCenter, Qsk::Normal );
+            numbersNode->setTextData( speedometer, text, numbersRect, font, QskTextOptions(),
+                QskTextColors( color ), Qt::AlignCenter | Qt::AlignHCenter, Qsk::Normal );
 
             if ( ticksNode->childCount() <= i )
             {
@@ -237,8 +236,7 @@ QSGNode* SpeedometerSkinlet::updateNeedleNode(
     QskBoxBorderMetrics borderMetrics = speedometer->boxBorderMetricsHint( Speedometer::NeedleHead );
     QskBoxBorderColors borderColors = speedometer->boxBorderColorsHint( Speedometer::NeedleHead );
     QskGradient gradient = speedometer->gradientHint( Speedometer::NeedleHead );
-    QRectF centerNodeRect( center.x() - radius, center.y() - radius,
-                           2 * radius, 2 * radius );
+    QRectF centerNodeRect( center.x() - radius, center.y() - radius, 2 * radius, 2 * radius );
     boxNode->setBoxData( centerNodeRect, shapeMetrics, borderMetrics, borderColors, gradient );
 
     QColor color = speedometer->color( Speedometer::Needle );
@@ -249,8 +247,8 @@ QSGNode* SpeedometerSkinlet::updateNeedleNode(
     auto needleWidth = speedometer->metric( Speedometer::Needle | QskAspect::MinimumWidth );
     auto needleMargin = speedometer->metric( Speedometer::Needle | QskAspect::Margin );
 
-    QRectF needleRect( center.x() - needleWidth , center.y() - needleWidth ,
-        panelRadius - ( needleWidth  + needleMargin ), 2 * needleWidth  );
+    QRectF needleRect( center.x() - needleWidth, center.y() - needleWidth,
+        panelRadius - ( needleWidth + needleMargin ), 2 * needleWidth );
     float xStart = center.x();
     float yStart = center.y();
 
@@ -268,10 +266,10 @@ QSGNode* SpeedometerSkinlet::updateNeedleNode(
     auto vertexData = geometry->vertexDataAsPoint2D();
     memset( vertexData, 0, static_cast< size_t >( geometry->vertexCount() ) );
 
-    vertexData[0].set( xStart, yStart );
-    vertexData[1].set( xEnd, yEnd );
+    vertexData[ 0 ].set( xStart, yStart );
+    vertexData[ 1 ].set( xEnd, yEnd );
 
-    geometry->setLineWidth( 2 * needleWidth  );
+    geometry->setLineWidth( 2 * needleWidth );
     geometry->markVertexDataDirty();
 
     needleNode->markDirty( QSGNode::DirtyGeometry );

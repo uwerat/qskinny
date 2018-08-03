@@ -4,15 +4,15 @@
  *****************************************************************************/
 
 #include "QskGraphicLabelSkinlet.h"
-#include "QskGraphicLabel.h"
 #include "QskAspect.h"
-#include "QskGraphic.h"
 #include "QskColorFilter.h"
-#include "QskTextureNode.h"
 #include "QskFunctions.h"
+#include "QskGraphic.h"
+#include "QskGraphicLabel.h"
+#include "QskTextureNode.h"
 
-QskGraphicLabelSkinlet::QskGraphicLabelSkinlet( QskSkin* skin ):
-    Inherited( skin )
+QskGraphicLabelSkinlet::QskGraphicLabelSkinlet( QskSkin* skin )
+    : Inherited( skin )
 {
     setNodeRoles( { GraphicRole } );
 }
@@ -37,7 +37,7 @@ QSGNode* QskGraphicLabelSkinlet::updateSubNode(
 {
     const auto label = static_cast< const QskGraphicLabel* >( skinnable );
 
-    switch( nodeRole )
+    switch ( nodeRole )
     {
         case GraphicRole:
         {
@@ -74,7 +74,7 @@ QRect QskGraphicLabelSkinlet::graphicRect( const QskGraphicLabel* label ) const
     }
 
     return qskAlignedRect( graphicRect,
-        ( int )sz.width(), ( int )sz.height(), label->alignment() );
+        ( int ) sz.width(), ( int ) sz.height(), label->alignment() );
 }
 
 QSGNode* QskGraphicLabelSkinlet::updateGraphicNode(

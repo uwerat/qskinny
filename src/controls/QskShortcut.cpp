@@ -34,13 +34,13 @@ static bool qskContextMatcher( QObject* object, Qt::ShortcutContext context )
 
 class QskShortcut::PrivateData
 {
-public:
-    PrivateData():
-        id( 0 ),
-        autoRepeat( true ),
-        enabled( true ),
-        isWindowContext( true ),
-        isComplete( true )
+  public:
+    PrivateData()
+        : id( 0 )
+        , autoRepeat( true )
+        , enabled( true )
+        , isWindowContext( true )
+        , isComplete( true )
     {
     }
 
@@ -81,7 +81,7 @@ public:
             shortcut->Q_EMIT shortcutIdChanged( id );
     }
 
-public:
+  public:
     QKeySequence sequence;
 
     int id;
@@ -92,21 +92,21 @@ public:
     bool isComplete : 1;
 };
 
-QskShortcut::QskShortcut( QObject* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData )
+QskShortcut::QskShortcut( QObject* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData )
 {
 }
 
-QskShortcut::QskShortcut( const QKeySequence& sequence, QObject* parent ):
-    QskShortcut( sequence, Qt::WindowShortcut, parent )
+QskShortcut::QskShortcut( const QKeySequence& sequence, QObject* parent )
+    : QskShortcut( sequence, Qt::WindowShortcut, parent )
 {
 }
 
 QskShortcut::QskShortcut( const QKeySequence& sequence,
-        Qt::ShortcutContext context, QObject* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData )
+        Qt::ShortcutContext context, QObject* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData )
 {
     m_data->sequence = sequence;
     m_data->isWindowContext = ( context == Qt::WindowShortcut );
@@ -130,8 +130,8 @@ Qt::ShortcutContext QskShortcut::context() const
 
 void QskShortcut::setContext( Qt::ShortcutContext context )
 {
-    if ( context == Qt::ApplicationShortcut
-        || context == Qt::WindowShortcut )
+    if ( context == Qt::ApplicationShortcut ||
+        context == Qt::WindowShortcut )
     {
         const bool isWindowContext = ( context == Qt::WindowShortcut );
 
@@ -164,7 +164,7 @@ QKeySequence QskShortcut::sequence() const
 void QskShortcut::setSequenceVariant( const QVariant& sequence )
 {
     if ( sequence.type() == QVariant::Int )
-        setSequence( static_cast<QKeySequence::StandardKey>( sequence.toInt() ) );
+        setSequence( static_cast< QKeySequence::StandardKey >( sequence.toInt() ) );
     else
         setSequence( QKeySequence::fromString( sequence.toString() ) );
 }

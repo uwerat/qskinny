@@ -5,9 +5,9 @@
 
 #include "QskWindow.h"
 #include "QskControl.h"
+#include "QskEvent.h"
 #include "QskQuick.h"
 #include "QskSetup.h"
-#include "QskEvent.h"
 
 #include <qmath.h>
 #include <qpointer.h>
@@ -31,7 +31,7 @@ static inline void qskSendEventTo( QObject* object, QEvent::Type type )
 static QQuickItem* qskDefaultFocusItem( QQuickWindow* window )
 {
     const auto children = qskPaintOrderChildItems( window->contentItem() );
-    for ( auto it = children.crbegin(); it != children.crend(); ++it)
+    for ( auto it = children.crbegin(); it != children.crend(); ++it )
     {
         auto child = *it;
 
@@ -49,7 +49,7 @@ namespace
 {
     class ChildListener final : public QQuickItemChangeListener
     {
-    public:
+      public:
         void setEnabled( QQuickItem* item, bool on )
         {
             m_item = item;
@@ -73,7 +73,7 @@ namespace
             }
         }
 
-    private:
+      private:
         QQuickItem* m_item;
     };
 }
@@ -87,7 +87,7 @@ static inline int qskToIntegerConstraint( qreal valueF )
         if ( valueF >= std::numeric_limits< int >::max() )
             value = std::numeric_limits< int >::max();
         else
-            value = ( int )qCeil( valueF );
+            value = ( int ) qCeil( valueF );
     }
 
     return value;
@@ -97,13 +97,13 @@ class QskWindowPrivate : public QQuickWindowPrivate
 {
     Q_DECLARE_PUBLIC( QskWindow )
 
-public:
-    QskWindowPrivate():
-        preferredSize( -1, -1 ),
-        eventAcceptance( QskWindow::EventProcessed ),
-        explicitLocale( false ),
-        deleteOnClose( false ),
-        autoLayoutChildren( true )
+  public:
+    QskWindowPrivate()
+        : preferredSize( -1, -1 )
+        , eventAcceptance( QskWindow::EventProcessed )
+        , explicitLocale( false )
+        , deleteOnClose( false )
+        , autoLayoutChildren( true )
     {
     }
 
@@ -120,8 +120,8 @@ public:
     bool autoLayoutChildren : 1;
 };
 
-QskWindow::QskWindow( QWindow* parent ):
-    Inherited( *( new QskWindowPrivate() ), parent )
+QskWindow::QskWindow( QWindow* parent )
+    : Inherited( *( new QskWindowPrivate() ), parent )
 {
     QSurfaceFormat fmt = format();
     fmt.setSamples( 4 );
@@ -227,12 +227,12 @@ bool QskWindow::event( QEvent* event )
         interested and when to do some fallback handling.
         To improve the situation we add an extra flag in QskWindow,
         while the right class to solve this shortcoming would be QQuickWindow.
-     */ 
+     */
 
     Q_D( QskWindow );
     d->eventAcceptance = EventProcessed;
 
-    switch( event->type() )
+    switch ( event->type() )
     {
         case QEvent::Show:
         {
@@ -464,10 +464,10 @@ void QskWindow::setCustomRenderMode( const char* mode )
 {
     class RenderJob final : public QRunnable
     {
-    public:
-        RenderJob( QQuickWindow* window, const QByteArray mode ):
-            m_window( window ),
-            m_mode( mode )
+      public:
+        RenderJob( QQuickWindow* window, const QByteArray mode )
+            : m_window( window )
+            , m_mode( mode )
         {
         }
 
@@ -487,7 +487,7 @@ void QskWindow::setCustomRenderMode( const char* mode )
             }
         }
 
-    private:
+      private:
         QQuickWindow* m_window;
         const QByteArray m_mode;
     };
@@ -529,7 +529,7 @@ void QskWindow::enforceSkin()
         // let's create a default skin on the GUI thread - whatever it is
         // good for.
 
-        (void) qskSetup->skin();
+        ( void ) qskSetup->skin();
         qskEnforcedSkin = true;
     }
 
@@ -539,7 +539,6 @@ void QskWindow::enforceSkin()
 void QskWindow::setEventAcceptance( EventAcceptance acceptance )
 {
     d_func()->eventAcceptance = acceptance;
-    
 }
 
 QskWindow::EventAcceptance QskWindow::eventAcceptance() const

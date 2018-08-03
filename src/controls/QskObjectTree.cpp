@@ -5,9 +5,9 @@
 
 #include "QskObjectTree.h"
 
-#include <qquickwindow.h>
-#include <qquickitem.h>
 #include <qguiapplication.h>
+#include <qquickitem.h>
+#include <qquickwindow.h>
 
 bool QskObjectTree::isRoot( const QObject* object )
 {
@@ -28,7 +28,7 @@ QObjectList QskObjectTree::childNodes( const QObject* object )
     {
         const auto childObjects = object->children();
 
-        for ( QObject* child : childObjects  )
+        for ( QObject* child : childObjects )
         {
             if ( child->isWindowType() )
             {
@@ -62,7 +62,6 @@ QObject* QskObjectTree::parentNode( const QObject* object )
         QObject* parentObject = object->parent();
         if ( parentObject == nullptr )
             return QGuiApplication::instance();
-
     }
 
     if ( const QQuickItem* item = qobject_cast< const QQuickItem* >( object ) )
@@ -97,4 +96,3 @@ void QskObjectTree::traverseUp( QObject* object, Visitor& visitor )
             traverseUp( parent, visitor );
     }
 }
-

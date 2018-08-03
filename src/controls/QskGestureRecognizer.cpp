@@ -1,10 +1,10 @@
 #include "QskGestureRecognizer.h"
 
-#include <qquickwindow.h>
-#include <qquickitem.h>
+#include <qbasictimer.h>
 #include <qcoreapplication.h>
 #include <qcoreevent.h>
-#include <qbasictimer.h>
+#include <qquickitem.h>
+#include <qquickwindow.h>
 #include <qscopedpointer.h>
 #include <qvector.h>
 
@@ -41,7 +41,7 @@ namespace
 
     class Timer final : public QObject
     {
-    public:
+      public:
         void start( int ms, QskGestureRecognizer* recognizer )
         {
             if ( m_timer.isActive() )
@@ -62,7 +62,7 @@ namespace
             return m_recognizer;
         }
 
-    protected:
+      protected:
         void timerEvent( QTimerEvent* ) override
         {
             m_timer.stop();
@@ -82,7 +82,7 @@ namespace
 
     class TimerTable
     {
-    public:
+      public:
         ~TimerTable()
         {
             qDeleteAll( m_table );
@@ -94,8 +94,8 @@ namespace
 
             for ( auto t : qskAsConst( m_table ) )
             {
-                if ( t->recognizer() == nullptr
-                    || t->recognizer() == recognizer )
+                if ( t->recognizer() == nullptr ||
+                    t->recognizer() == recognizer )
                 {
                     timer = t;
                     break;
@@ -124,7 +124,7 @@ namespace
             }
         }
 
-    private:
+      private:
         /*
             Usually we have not more than one entry.
             Only when having more than one screen we
@@ -136,7 +136,7 @@ namespace
 
     class PendingEvents : public QVector< QMouseEvent* >
     {
-    public:
+      public:
         ~PendingEvents()
         {
             qDeleteAll( *this );
@@ -154,15 +154,15 @@ Q_GLOBAL_STATIC( TimerTable, qskTimerTable )
 
 class QskGestureRecognizer::PrivateData
 {
-public:
-    PrivateData():
-        watchedItem( nullptr ),
-        timestamp( 0 ),
-        timestampProcessed( 0 ),
-        timeout( -1 ),
-        buttons( Qt::NoButton ),
-        state( QskGestureRecognizer::Idle ),
-        isReplayingEvents( false )
+  public:
+    PrivateData()
+        : watchedItem( nullptr )
+        , timestamp( 0 )
+        , timestampProcessed( 0 )
+        , timeout( -1 )
+        , buttons( Qt::NoButton )
+        , state( QskGestureRecognizer::Idle )
+        , isReplayingEvents( false )
     {
     }
 
@@ -180,8 +180,8 @@ public:
     bool isReplayingEvents : 1; // not exception safe !!!
 };
 
-QskGestureRecognizer::QskGestureRecognizer():
-    m_data( new PrivateData() )
+QskGestureRecognizer::QskGestureRecognizer()
+    : m_data( new PrivateData() )
 {
 }
 
@@ -265,8 +265,8 @@ bool QskGestureRecognizer::processEvent(
 
     auto& watchedItem = m_data->watchedItem;
 
-    if ( watchedItem == nullptr || !watchedItem->isEnabled()
-         || !watchedItem->isVisible() || watchedItem->window() == nullptr )
+    if ( watchedItem == nullptr || !watchedItem->isEnabled() ||
+        !watchedItem->isVisible() || watchedItem->window() == nullptr )
     {
         reset();
         return false;
@@ -350,7 +350,7 @@ bool QskGestureRecognizer::processEvent(
 
     if ( ( item == watchedItem ) && ( m_data->state > Idle ) )
     {
-        switch( event->type() )
+        switch ( event->type() )
         {
             case QEvent::MouseButtonPress:
             {
@@ -442,7 +442,8 @@ void QskGestureRecognizer::reject()
     if ( window->mouseGrabberItem() == m_data->watchedItem )
         m_data->watchedItem->ungrabMouse();
 
-    if ( !events.isEmpty() && events[0]->type() == QEvent::MouseButtonPress )
+    if ( !events.isEmpty() &&
+        ( events[ 0 ]->type() == QEvent::MouseButtonPress ) )
     {
         /*
             In a situation of several recognizers ( f.e a vertical
@@ -454,7 +455,7 @@ void QskGestureRecognizer::reject()
 
         m_data->timestampProcessed = events.last()->timestamp();
 
-        QCoreApplication::sendEvent( window, events[0] );
+        QCoreApplication::sendEvent( window, events[ 0 ] );
 
         /*
             After resending the initial press someone else
@@ -464,7 +465,7 @@ void QskGestureRecognizer::reject()
         if ( window->mouseGrabberItem() )
         {
             for ( int i = 1; i < events.size(); i++ )
-                QCoreApplication::sendEvent( window, events[i] );
+                QCoreApplication::sendEvent( window, events[ i ] );
         }
     }
 

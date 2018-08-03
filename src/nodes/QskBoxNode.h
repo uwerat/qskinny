@@ -16,17 +16,17 @@ class QskGradient;
 
 class QSK_EXPORT QskBoxNode : public QSGGeometryNode
 {
-public:
+  public:
     QskBoxNode();
     ~QskBoxNode() override;
 
-    void setBoxData( const QRectF& rect, 
+    void setBoxData( const QRectF&, 
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
         const QskBoxBorderColors&, const QskGradient& );
 
     void setBoxData( const QRectF& rect, const QskGradient& );
 
-private:
+  private:
     void setMonochrome( bool on );
 
     uint m_metricsHash;

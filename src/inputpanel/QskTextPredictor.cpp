@@ -5,10 +5,9 @@
 
 #include "QskTextPredictor.h"
 
-QskTextPredictor::QskTextPredictor(
-        Attributes attributes, QObject* parent ):
-    QObject( parent ),
-    m_attributes( attributes )
+QskTextPredictor::QskTextPredictor( Attributes attributes, QObject* parent )
+    : QObject( parent )
+    , m_attributes( attributes )
 {
 }
 
@@ -28,7 +27,7 @@ QStringList QskTextPredictor::candidates() const
     QStringList candidates;
     candidates.reserve( count );
 
-    for( int i = 0; i < count; i++ )
+    for ( int i = 0; i < count; i++ )
         candidates += candidate( i );
 
     return candidates;

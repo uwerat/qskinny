@@ -24,7 +24,7 @@ class QSK_EXPORT QskRangeControl : public QskControl
 
     using Inherited = QskControl;
 
-public:
+  public:
     QskRangeControl( QQuickItem* parent = nullptr );
     ~QskRangeControl() override;
 
@@ -47,7 +47,7 @@ public:
     void setReadOnly( bool );
     bool isReadOnly() const;
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void setValue( qreal );
     void setMinimum( qreal );
     void setMaximum( qreal );
@@ -59,7 +59,7 @@ public Q_SLOTS:
     void pageUp();
     void pageDown();
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void minimumChanged( qreal );
     void maximumChanged( qreal );
     void rangeChanged( qreal );
@@ -69,7 +69,7 @@ Q_SIGNALS:
     void snapChanged( bool );
     void readOnlyChanged( bool );
 
-protected:
+  protected:
     virtual qreal fixupValue( qreal value ) const;
     void keyPressEvent( QKeyEvent* event ) override;
 
@@ -79,7 +79,7 @@ protected:
 
     void componentComplete() override;
 
-private:
+  private:
     void adjustRangeAndValue( bool );
 
     class PrivateData;

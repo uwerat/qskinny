@@ -7,8 +7,8 @@
 #define QSK_HINT_ANIMATOR_H
 
 #include "QskGlobal.h"
-#include "QskVariantAnimator.h"
 #include "QskAspect.h"
+#include "QskVariantAnimator.h"
 
 #include <qpointer.h>
 
@@ -19,7 +19,7 @@ class QSK_EXPORT QskHintAnimator : public QskVariantAnimator
 {
     using Inherited = QskVariantAnimator;
 
-public:
+  public:
     QskHintAnimator();
     ~QskHintAnimator() override;
 
@@ -31,14 +31,14 @@ public:
 
     void advance( qreal value ) override;
 
-private:
+  private:
     QskAspect::Aspect m_aspect;
     QPointer< QskControl > m_control;
 };
 
 class QSK_EXPORT QskHintAnimatorTable
 {
-public:
+  public:
     QskHintAnimatorTable();
     ~QskHintAnimatorTable();
 
@@ -50,7 +50,7 @@ public:
 
     bool cleanup();
 
-private:
+  private:
     void reset();
 
     class PrivateData;

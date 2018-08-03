@@ -6,8 +6,8 @@
 #include "QskSubWindowAreaSkinlet.h"
 #include "QskSubWindowArea.h"
 
-QskSubWindowAreaSkinlet::QskSubWindowAreaSkinlet( QskSkin* skin ):
-    Inherited( skin )
+QskSubWindowAreaSkinlet::QskSubWindowAreaSkinlet( QskSkin* skin )
+    : Inherited( skin )
 {
     setNodeRoles( { PanelRole } );
 }
@@ -16,19 +16,19 @@ QskSubWindowAreaSkinlet::~QskSubWindowAreaSkinlet() = default;
 
 QRectF QskSubWindowAreaSkinlet::subControlRect(
     const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
-{       
+{
     const auto area = static_cast< const QskSubWindowArea* >( skinnable );
-    
+
     if ( subControl == QskSubWindowArea::Panel )
         return area->contentsRect();
-    
+
     return Inherited::subControlRect( skinnable, subControl );
 }
 
 QSGNode* QskSubWindowAreaSkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
-    switch( nodeRole )
+    switch ( nodeRole )
     {
         case PanelRole:
             return updateBoxNode( skinnable, node, QskSubWindowArea::Panel );

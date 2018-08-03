@@ -7,12 +7,12 @@
 #include <qtextdocument.h>
 #include <limits>
 
-QskTextOptions::QskTextOptions():
-    m_maximumLineCount( std::numeric_limits< int >::max() ),
-    m_fontSizeMode( QskTextOptions::FixedSize ),
-    m_wrapMode( QskTextOptions::NoWrap ),
-    m_format( PlainText ), // AutoText ???
-    m_elideMode( Qt::ElideNone )
+QskTextOptions::QskTextOptions()
+    : m_maximumLineCount( std::numeric_limits< int >::max() )
+    , m_fontSizeMode( QskTextOptions::FixedSize )
+    , m_wrapMode( QskTextOptions::NoWrap )
+    , m_format( PlainText ) // AutoText ???
+    , m_elideMode( Qt::ElideNone )
 {
 }
 
@@ -49,10 +49,10 @@ QskTextOptions::WrapMode QskTextOptions::wrapMode() const
 void QskTextOptions::setFontSizeMode( FontSizeMode fontSizeMode )
 {
     m_fontSizeMode = fontSizeMode;
-}   
-    
+}
+
 QskTextOptions::FontSizeMode QskTextOptions::fontSizeMode() const
-{   
+{
     return m_fontSizeMode;
 }
 
@@ -70,9 +70,9 @@ int QskTextOptions::textFlags() const
 {
     int flags = 0;
 
-    switch( m_wrapMode )
+    switch ( m_wrapMode )
     {
-        case QTextOption::NoWrap:
+        case QskTextOptions::NoWrap:
         {
             flags |= Qt::TextSingleLine;
             break;
@@ -101,11 +101,11 @@ int QskTextOptions::textFlags() const
 
 bool QskTextOptions::operator==( const QskTextOptions& other ) const
 {
-    return ( m_format == other.m_format )
-           && ( m_elideMode == other.m_elideMode )
-           && ( m_wrapMode == other.m_wrapMode )
-           && ( m_fontSizeMode == other.m_fontSizeMode )
-           && ( m_maximumLineCount == other.m_maximumLineCount );
+    return ( m_format == other.m_format ) &&
+           ( m_elideMode == other.m_elideMode ) &&
+           ( m_wrapMode == other.m_wrapMode ) &&
+           ( m_fontSizeMode == other.m_fontSizeMode ) &&
+           ( m_maximumLineCount == other.m_maximumLineCount );
 }
 
 QskTextOptions::TextFormat QskTextOptions::effectiveFormat( const QString& text ) const
@@ -119,7 +119,7 @@ QskTextOptions::TextFormat QskTextOptions::effectiveFormat( const QString& text 
         return m_format;
 }
 
-uint qHash( const QskTextOptions &options, uint seed ) noexcept
+uint qHash( const QskTextOptions& options, uint seed ) noexcept
 {
     uint hash;
 

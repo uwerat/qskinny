@@ -8,8 +8,8 @@
 
 #include "QskGlobal.h"
 
-#include <qpaintdevice.h>
 #include <qmetatype.h>
+#include <qpaintdevice.h>
 #include <qshareddata.h>
 
 class QskPainterCommand;
@@ -23,7 +23,7 @@ class QPaintEngineState;
 
 class QSK_EXPORT QskGraphic : public QPaintDevice
 {
-public:
+  public:
     enum RenderHint
     {
         RenderPensUnscaled = 0x1
@@ -54,28 +54,28 @@ public:
         QTransform* initialTransform = nullptr ) const;
 
     void render( QPainter*, const QSizeF&,
-        Qt::AspectRatioMode = Qt::IgnoreAspectRatio  ) const;
+        Qt::AspectRatioMode = Qt::IgnoreAspectRatio ) const;
 
     void render( QPainter*, const QPointF&,
         Qt::Alignment = Qt::AlignTop | Qt::AlignLeft ) const;
 
     void render( QPainter*, const QRectF&,
-        Qt::AspectRatioMode = Qt::IgnoreAspectRatio  ) const;
+        Qt::AspectRatioMode = Qt::IgnoreAspectRatio ) const;
 
-    void render( QPainter*, const QRectF&, const QskColorFilter& filter,
-        Qt::AspectRatioMode = Qt::IgnoreAspectRatio  ) const;
+    void render( QPainter*, const QRectF&, const QskColorFilter&,
+        Qt::AspectRatioMode = Qt::IgnoreAspectRatio ) const;
 
     QPixmap toPixmap( qreal devicePixelRatio = 0.0 ) const;
 
     QPixmap toPixmap( const QSize&,
         Qt::AspectRatioMode = Qt::IgnoreAspectRatio,
-        qreal devicePixelRatio = 0.0  ) const;
+        qreal devicePixelRatio = 0.0 ) const;
 
     QImage toImage( qreal devicePixelRatio = 0.0 ) const;
 
     QImage toImage( const QSize&,
         Qt::AspectRatioMode = Qt::IgnoreAspectRatio,
-        qreal devicePixelRatio = 0.0  ) const;
+        qreal devicePixelRatio = 0.0 ) const;
 
     QRectF scaledBoundingRect( qreal sx, qreal sy ) const;
 
@@ -99,7 +99,7 @@ public:
     static QskGraphic fromImage( const QImage& );
     static QskGraphic fromPixmap( const QPixmap& );
 
-protected:
+  protected:
     friend class QskGraphicPaintEngine;
 
     virtual QSize sizeMetrics() const;
@@ -114,7 +114,7 @@ protected:
 
     virtual void updateState( const QPaintEngineState& state );
 
-private:
+  private:
     void updateBoundingRect( const QRectF& );
     void updateControlPointRect( const QRectF& );
 

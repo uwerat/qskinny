@@ -17,6 +17,7 @@ class QSK_EXPORT QskGraphicLabel : public QskControl
     Q_OBJECT
 
     Q_PROPERTY( QUrl source READ source WRITE setSource NOTIFY sourceChanged )
+
     Q_PROPERTY( bool mirror READ mirror WRITE setMirror NOTIFY mirrorChanged )
 
     Q_PROPERTY( QSize sourceSize READ sourceSize
@@ -33,7 +34,7 @@ class QSK_EXPORT QskGraphicLabel : public QskControl
 
     using Inherited = QskControl;
 
-public:
+  public:
     QSK_SUBCONTROLS( Graphic )
 
     enum FillMode
@@ -87,7 +88,7 @@ public:
     void setGraphicRole( int role );
     int graphicRole() const;
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void sourceChanged();
     void mirrorChanged();
     void sourceSizeChanged();
@@ -95,15 +96,15 @@ Q_SIGNALS:
     void alignmentChanged();
     void fillModeChanged();
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void setGraphic( const QskGraphic& );
 
-protected:
+  protected:
     void changeEvent( QEvent* ) override;
     void updateLayout() override;
     virtual QskGraphic loadSource( const QUrl& ) const;
 
-private:
+  private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

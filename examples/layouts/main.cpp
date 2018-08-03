@@ -3,31 +3,31 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
+#include "DynamicConstraintsPage.h"
 #include "FlowLayoutPage.h"
 #include "LinearLayoutPage.h"
-#include "DynamicConstraintsPage.h"
 #include "StackLayoutPage.h"
 
 #include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
 
 #include <QskAspect.h>
-#include <QskObjectCounter.h>
-#include <QskWindow.h>
 #include <QskFocusIndicator.h>
+#include <QskObjectCounter.h>
+#include <QskSkin.h>
 #include <QskTabButton.h>
 #include <QskTabView.h>
 #include <QskTextLabel.h>
 #include <QskTextOptions.h>
-#include <QskSkin.h>
+#include <QskWindow.h>
 
 #include <QGuiApplication>
 
 class DummyLabel : public QskTextLabel
 {
-public:
-    DummyLabel( const QString& text, QQuickItem* parent = nullptr ):
-        QskTextLabel( text, parent )
+  public:
+    DummyLabel( const QString& text, QQuickItem* parent = nullptr )
+        : QskTextLabel( text, parent )
     {
         setBackgroundColor( Qt::black );
         setTextColor( Qt::white );

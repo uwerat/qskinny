@@ -5,37 +5,37 @@
 
 #include "QskSquiekSkin.h"
 
-#include <QskTextLabel.h>
-#include <QskTextInput.h>
-#include <QskFocusIndicator.h>
-#include <QskSeparator.h>
 #include <QskDialogButton.h>
 #include <QskDialogButtonBox.h>
-#include <QskPageIndicator.h>
-#include <QskPushButton.h>
-#include <QskSlider.h>
-#include <QskTabButton.h>
-#include <QskTabBar.h>
-#include <QskTabView.h>
+#include <QskFocusIndicator.h>
 #include <QskInputPanelBox.h>
 #include <QskInputPredictionBar.h>
-#include <QskVirtualKeyboard.h>
-#include <QskScrollView.h>
 #include <QskListView.h>
+#include <QskPageIndicator.h>
+#include <QskPushButton.h>
+#include <QskScrollView.h>
+#include <QskSeparator.h>
+#include <QskSlider.h>
 #include <QskSubWindow.h>
+#include <QskTabBar.h>
+#include <QskTabButton.h>
+#include <QskTabView.h>
+#include <QskTextInput.h>
+#include <QskTextLabel.h>
+#include <QskVirtualKeyboard.h>
 
 #include <QskSkinlet.h>
 
-#include <QskAspect.h>
-#include <QskNamespace.h>
-#include <QskFunctions.h>
-#include <QskRgbValue.h>
 #include <QskAnimationHint.h>
-#include <QskMargins.h>
-#include <QskGradient.h>
-#include <QskBoxShapeMetrics.h>
-#include <QskBoxBorderMetrics.h>
+#include <QskAspect.h>
 #include <QskBoxBorderColors.h>
+#include <QskBoxBorderMetrics.h>
+#include <QskBoxShapeMetrics.h>
+#include <QskFunctions.h>
+#include <QskGradient.h>
+#include <QskMargins.h>
+#include <QskNamespace.h>
+#include <QskRgbValue.h>
 
 static const int qskDuration = 200;
 
@@ -43,7 +43,7 @@ namespace
 {
     class ColorPalette
     {
-    public:
+      public:
         ColorPalette( const QColor& themeColor = QskRgbValue::Silver )
         {
             const bool isBright = themeColor.value() > 128;
@@ -112,13 +112,13 @@ namespace
 
 class QskSquiekSkin::PrivateData
 {
-public:
+  public:
     ColorPalette palette;
 };
 
-QskSquiekSkin::QskSquiekSkin( QObject* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData() )
+QskSquiekSkin::QskSquiekSkin( QObject* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData() )
 {
     initHints();
     setupFonts( "DejaVuSans" );
@@ -156,7 +156,7 @@ void QskSquiekSkin::setButton(
     QskGradient gradient;
     gradient.setOrientation( QskGradient::Vertical );
 
-    switch( style )
+    switch ( style )
     {
         case Raised:
         {
@@ -208,12 +208,12 @@ void QskSquiekSkin::setPanel( QskAspect::Aspect aspect, PanelStyle style )
     setButton( aspect, style, 1 );
 }
 
-void QskSquiekSkin::setTab( QskAspect::Aspect aspect,
-    Qt::Orientation orientation )
+void QskSquiekSkin::setTab( QskAspect::Aspect aspect, Qt::Orientation orientation )
 {
     const ColorPalette& pal = m_data->palette;
 
-    setGradient( aspect, QskGradient( QskGradient::Vertical, pal.lighter125, pal.lighter150 ) );
+    setGradient( aspect,
+        QskGradient( QskGradient::Vertical, pal.lighter125, pal.lighter150 ) );
     setBoxBorderColors( aspect, pal.darker200 );
 
     QskBoxBorderMetrics border( 1 );
@@ -298,7 +298,7 @@ void QskSquiekSkin::initTextLabelHints()
     const ColorPalette& pal = m_data->palette;
 
     setSkinHint( Q::Text | Alignment, Qt::AlignCenter );
-    setColor( Q::Text, pal.themeForeground  );
+    setColor( Q::Text, pal.themeForeground );
 }
 
 void QskSquiekSkin::initTextInputHints()
@@ -309,11 +309,11 @@ void QskSquiekSkin::initTextInputHints()
     const ColorPalette& pal = m_data->palette;
 
     setSkinHint( Q::Text | Alignment,
-        static_cast<int>( Qt::AlignLeft | Qt::AlignTop ) );
+        static_cast< int >( Qt::AlignLeft | Qt::AlignTop ) );
 
-    setColor( Q::Text, pal.themeForeground  );
-    setColor( Q::PanelSelected, pal.highlighted  );
-    setColor( Q::TextSelected, pal.highlightedText  );
+    setColor( Q::Text, pal.themeForeground );
+    setColor( Q::PanelSelected, pal.highlighted );
+    setColor( Q::TextSelected, pal.highlightedText );
 
     setMargins( Q::Panel | Padding, 5 );
     setBoxBorderMetrics( Q::Panel, 2 );

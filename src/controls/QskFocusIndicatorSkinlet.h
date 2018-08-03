@@ -17,7 +17,7 @@ class QSK_EXPORT QskFocusIndicatorSkinlet : public QskSkinlet
 
     using Inherited = QskSkinlet;
 
-public:
+  public:
     enum NodeRole
     {
         FrameRole
@@ -29,13 +29,12 @@ public:
     QRectF subControlRect( const QskSkinnable*,
         QskAspect::Subcontrol ) const override;
 
-protected:
+  protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 
-private:
+  private:
     QSGNode* updateFrameNode( const QskFocusIndicator*, QSGNode* ) const;
 };
 
 #endif
-

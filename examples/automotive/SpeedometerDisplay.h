@@ -9,13 +9,13 @@ class Speedometer;
 
 class SpeedometerDisplay : public QskControl
 {
-public:
+  public:
     SpeedometerDisplay( QQuickItem* parent = nullptr );
 
-protected:
+  protected:
     void updateLayout() override;
 
-private:
+  private:
     QskLinearBox* m_box;
     Speedometer* m_revCounter;
     QskTextLabel* m_revCounterText;

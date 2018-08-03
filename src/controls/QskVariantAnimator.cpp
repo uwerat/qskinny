@@ -4,12 +4,12 @@
  *****************************************************************************/
 
 #include "QskVariantAnimator.h"
-#include "QskColorFilter.h"
-#include "QskMargins.h"
-#include "QskBoxShapeMetrics.h"
-#include "QskBoxBorderMetrics.h"
 #include "QskBoxBorderColors.h"
+#include "QskBoxBorderMetrics.h"
+#include "QskBoxShapeMetrics.h"
+#include "QskColorFilter.h"
 #include "QskGradient.h"
+#include "QskMargins.h"
 #include "QskTextColors.h"
 
 // Even if we don't use the standard Qt animation system we
@@ -24,21 +24,21 @@ QSK_QT_PRIVATE_END
 #if 1
 static void qskRegisterInterpolator()
 {
-    qRegisterAnimationInterpolator<QskColorFilter>( QskColorFilter::interpolate );
-    qRegisterAnimationInterpolator<QskMargins>( QskMargins::interpolate );
-    qRegisterAnimationInterpolator<QskGradient>( QskGradient::interpolate );
-    qRegisterAnimationInterpolator<QskBoxShapeMetrics>( QskBoxShapeMetrics::interpolate );
-    qRegisterAnimationInterpolator<QskBoxBorderMetrics>( QskBoxBorderMetrics::interpolate );
-    qRegisterAnimationInterpolator<QskBoxBorderColors>( QskBoxBorderColors::interpolate );
-    qRegisterAnimationInterpolator<QskTextColors>( QskTextColors::interpolate );
+    qRegisterAnimationInterpolator< QskColorFilter >( QskColorFilter::interpolate );
+    qRegisterAnimationInterpolator< QskMargins >( QskMargins::interpolate );
+    qRegisterAnimationInterpolator< QskGradient >( QskGradient::interpolate );
+    qRegisterAnimationInterpolator< QskBoxShapeMetrics >( QskBoxShapeMetrics::interpolate );
+    qRegisterAnimationInterpolator< QskBoxBorderMetrics >( QskBoxBorderMetrics::interpolate );
+    qRegisterAnimationInterpolator< QskBoxBorderColors >( QskBoxBorderColors::interpolate );
+    qRegisterAnimationInterpolator< QskTextColors >( QskTextColors::interpolate );
 }
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterInterpolator )
 #endif
 
-#if defined(Q_CC_CLANG) 
-#if __has_feature(address_sanitizer)
-#define QSK_DECL_INSANE __attribute__ ( ( no_sanitize ("undefined") ) )
+#if defined( Q_CC_CLANG )
+#if __has_feature( address_sanitizer )
+#define QSK_DECL_INSANE __attribute__( ( no_sanitize( "undefined" ) ) )
 #endif
 #endif
 
@@ -46,8 +46,8 @@ Q_CONSTRUCTOR_FUNCTION( qskRegisterInterpolator )
 #define QSK_DECL_INSANE
 #endif
 
-QSK_DECL_INSANE static inline QVariant qskInterpolate (
-    void( *interpolator )(), const QVariant& from, const QVariant& to, qreal progress )
+QSK_DECL_INSANE static inline QVariant qskInterpolate(
+    void ( *interpolator )(), const QVariant& from, const QVariant& to, qreal progress )
 {
 #if 1
     /*
@@ -60,8 +60,8 @@ QSK_DECL_INSANE static inline QVariant qskInterpolate (
     return f( from.constData(), to.constData(), progress );
 }
 
-QskVariantAnimator::QskVariantAnimator():
-    m_interpolator( nullptr )
+QskVariantAnimator::QskVariantAnimator()
+    : m_interpolator( nullptr )
 {
 }
 
@@ -92,7 +92,8 @@ void QskVariantAnimator::setup()
     if ( type == m_endValue.userType() )
     {
         // all what has been registered by qRegisterAnimationInterpolator
-        m_interpolator = reinterpret_cast< void (*)() >( QVariantAnimationPrivate::getInterpolator( type ) );
+        m_interpolator = reinterpret_cast< void ( * )() >(
+            QVariantAnimationPrivate::getInterpolator( type ) );
     }
 
     m_currentValue = m_interpolator ? m_startValue : m_endValue;

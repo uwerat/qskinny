@@ -1,29 +1,29 @@
 #include "DefaultSkin.h"
 
+#include "ButtonBar.h"
 #include "SkinFactory.h"
 #include "SoundControl.h"
-#include "ButtonBar.h"
 
 #include "Speedometer.h"
 #include "SpeedometerSkinlet.h"
 
 #include <QskBox.h>
+#include <QskBoxBorderColors.h>
+#include <QskBoxBorderMetrics.h>
+#include <QskColorFilter.h>
 #include <QskFunctions.h>
+#include <QskMargins.h>
 #include <QskPushButton.h>
+#include <QskSeparator.h>
 #include <QskSkinTransition.h>
 #include <QskSlider.h>
 #include <QskTextLabel.h>
-#include <QskSeparator.h>
-#include <QskColorFilter.h>
-#include <QskMargins.h>
-#include <QskBoxBorderMetrics.h>
-#include <QskBoxBorderColors.h>
 
 #include <QDebug>
 
 class Transition final : public QskSkinTransition
 {
-protected:
+  protected:
     void updateSkin( QskSkin*, QskSkin* newSkin ) override
     {
         DefaultSkin* skin = static_cast< DefaultSkin* >( newSkin );
@@ -33,8 +33,7 @@ protected:
 
 class Palette
 {
-public:
-
+  public:
     Palette( DefaultSkin::Scheme scheme = DefaultSkin::Daylight )
     {
         if ( scheme == DefaultSkin::Daylight )
@@ -62,11 +61,10 @@ public:
     QColor color3;
     QColor color4;
     QColor color5;
-
 };
 
-namespace {
-
+namespace
+{
     static inline QFont qskFont( qreal pointSize )
     {
         QFont font( "Roboto" );
@@ -76,11 +74,11 @@ namespace {
 
 } // namespace
 
-DefaultSkin::DefaultSkin( const QString& name, QObject* parent ):
-    QskSkin( parent ),
-    m_name( name ),
-    m_palette( new Palette ),
-    m_scheme( Daylight )
+DefaultSkin::DefaultSkin( const QString& name, QObject* parent )
+    : QskSkin( parent )
+    , m_name( name )
+    , m_palette( new Palette )
+    , m_scheme( Daylight )
 {
     setObjectName( "DefaultSkin" );
     declareSkinlet< Speedometer, SpeedometerSkinlet >();
@@ -155,9 +153,9 @@ void DefaultSkin::initHints()
 
     setBoxBorderMetrics( Speedometer::NeedleHead, 2 );
     setMetric( Speedometer::NeedleHead | QskAspect::Size, 15 );
-    setGradient( Speedometer::NeedleHead, QskGradient( QskGradient::Diagonal,
-                                                       m_palette->color2, m_palette->color1 ) );
-//    setBoxBorderColors( Speedometer::NeedleHead, m_palette->color4 );
+    setGradient( Speedometer::NeedleHead,
+        QskGradient( QskGradient::Diagonal, m_palette->color2, m_palette->color1 ) );
+    //    setBoxBorderColors( Speedometer::NeedleHead, m_palette->color4 );
 
     setMetric( Speedometer::Needle | QskAspect::MinimumWidth, 2 );
     setMetric( Speedometer::Needle | QskAspect::Margin, 10 );
@@ -169,7 +167,6 @@ void DefaultSkin::initHints()
     setMetric( Speedometer::Labels | QskAspect::Size, 15 ); // ticks size
     setColor( Speedometer::Labels, m_palette->color4 );
     setFontRole( Speedometer::Labels, QskSkin::SmallFont );
-
 
     // handle expanding, when being pressed
     for ( auto state : { QskAspect::NoState, QskSlider::Pressed } )
@@ -217,4 +214,3 @@ void DefaultSkin::resetHints()
     m_palette = new Palette( m_scheme );
     initHints();
 }
-

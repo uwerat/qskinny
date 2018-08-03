@@ -8,10 +8,9 @@
 
 #include <qmetaobject.h>
 #include <qobject.h>
-
-#include <qthread.h>
 #include <qcoreapplication.h>
 #include <qsemaphore.h>
+#include <qthread.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qobject_p.h>
@@ -23,9 +22,9 @@ namespace
 
     class Function : public QskMetaFunction
     {
-    public:
-        inline Function( void* functionCall ):
-            QskMetaFunction( static_cast< FunctionCall* >( functionCall ) )
+      public:
+        inline Function( void* functionCall )
+            : QskMetaFunction( static_cast< FunctionCall* >( functionCall ) )
         {
         }
 
@@ -44,15 +43,16 @@ namespace
 
     class MetaCallEvent final : public QMetaCallEvent
     {
-    public:
-        MetaCallEvent( QMetaObject::Call call, CallFunction callFunction,
-            ushort offset, ushort index,
-            int nargs, int* types, void* args[], QSemaphore* semaphore = nullptr ):
-            QMetaCallEvent( offset, index, callFunction, nullptr, -1,
-                nargs, types, args, semaphore ),
-            m_call( call ),
-            m_callFunction( callFunction ),
-            m_index( index )
+      public:
+        MetaCallEvent(
+                QMetaObject::Call call, CallFunction callFunction, ushort offset,
+                ushort index, int nargs, int* types, void* args[],
+                QSemaphore* semaphore = nullptr )
+            : QMetaCallEvent( offset, index, callFunction, nullptr, -1,
+                nargs, types, args, semaphore )
+            , m_call( call )
+            , m_callFunction( callFunction )
+            , m_index( index )
         {
         }
 
@@ -61,7 +61,7 @@ namespace
             m_callFunction( object, m_call, m_index, args() );
         }
 
-    private:
+      private:
         const QMetaObject::Call m_call;
 
         // as those members from QMetaCallEvent are not accessible
@@ -70,9 +70,10 @@ namespace
     };
 }
 
-static inline void qskInvokeMetaCallQueued( QObject* object,
-    QMetaObject::Call call, ushort offset, ushort index,
-    int nargs, int* types, void* args[], QSemaphore* semaphore = nullptr )
+static inline void qskInvokeMetaCallQueued(
+    QObject* object, QMetaObject::Call call, ushort offset,
+    ushort index, int nargs, int* types, void* args[],
+    QSemaphore* semaphore = nullptr )
 {
     const auto callFunction = object->metaObject()->d.static_metacall;
 
@@ -97,12 +98,12 @@ QMetaMethod qskMetaMethod( const QMetaObject* metaObject, const char* methodName
 
     int index = -1;
 
-    if( methodName[0] == signalIndicator )
+    if ( methodName[ 0 ] == signalIndicator )
     {
-        auto signature =  QMetaObject::normalizedSignature( methodName + 1 );
+        auto signature = QMetaObject::normalizedSignature( methodName + 1 );
         index = metaObject->indexOfSignal( signature );
     }
-    else if ( methodName[0] == slotIndicator )
+    else if ( methodName[ 0 ] == slotIndicator )
     {
         auto signature = QMetaObject::normalizedSignature( methodName + 1 );
         index = metaObject->indexOfSlot( signature );
@@ -136,9 +137,10 @@ QMetaMethod qskNotifySignal( const QMetaObject* metaObject, const char* property
     return QMetaMethod();
 }
 
-static void qskInvokeMetaCall( QObject* object,
-    const QMetaObject* metaObject, QMetaObject::Call call,
-    int offset, int index, void* argv[], Qt::ConnectionType connectionType )
+static void qskInvokeMetaCall(
+    QObject* object, const QMetaObject* metaObject,
+    QMetaObject::Call call, int offset, int index, void* argv[],
+    Qt::ConnectionType connectionType )
 {
     QPointer< QObject > receiver( object );
 
@@ -150,7 +152,7 @@ static void qskInvokeMetaCall( QObject* object,
             ? Qt::QueuedConnection : Qt::DirectConnection;
     }
 
-    switch( invokeType )
+    switch ( invokeType )
     {
         case Qt::DirectConnection:
         {
@@ -172,8 +174,8 @@ static void qskInvokeMetaCall( QObject* object,
         }
         case Qt::BlockingQueuedConnection:
         {
-            if ( receiver.isNull()
-                || ( receiver->thread() == QThread::currentThread() ) )
+            if ( receiver.isNull() ||
+                ( receiver->thread() == QThread::currentThread() ) )
             {
                 // We would end up in a deadlock, better do nothing
                 return;
@@ -181,8 +183,8 @@ static void qskInvokeMetaCall( QObject* object,
 
             QSemaphore semaphore;
 
-            qskInvokeMetaCallQueued( receiver, call, offset, index,
-                0, nullptr, argv, &semaphore );
+            qskInvokeMetaCallQueued( receiver, call,
+                offset, index, 0, nullptr, argv, &semaphore );
 
             semaphore.acquire();
 
@@ -213,20 +215,20 @@ static void qskInvokeMetaCall( QObject* object,
                     invalid for Queued Connections.
                  */
 
-                types[0] = QMetaType::UnknownType;
-                arguments[0] = nullptr;
+                types[ 0 ] = QMetaType::UnknownType;
+                arguments[ 0 ] = nullptr;
 
                 for ( int i = 1; i < argc; i++ )
                 {
-                    if ( argv[i] == nullptr )
+                    if ( argv[ i ] == nullptr )
                     {
-                        Q_ASSERT( argv[i] != nullptr );
+                        Q_ASSERT( argv[ i ] != nullptr );
                         receiver = nullptr;
                         break;
                     }
 
-                    types[i] = method.parameterType( i - 1 );
-                    arguments[i] = QMetaType::create( types[i], argv[i] );
+                    types[ i ] = method.parameterType( i - 1 );
+                    arguments[ i ] = QMetaType::create( types[ i ], argv[ i ] );
                 }
             }
             else
@@ -239,8 +241,8 @@ static void qskInvokeMetaCall( QObject* object,
                 types = static_cast< int* >( malloc( argc * sizeof( int ) ) );
                 arguments = static_cast< void** >( malloc( argc * sizeof( void* ) ) );
 
-                types[0] = property.userType();
-                arguments[0] = QMetaType::create( types[0], argv[0] );
+                types[ 0 ] = property.userType();
+                arguments[ 0 ] = QMetaType::create( types[ 0 ], argv[ 0 ] );
             }
 
             if ( receiver.isNull() )
@@ -260,21 +262,20 @@ static void qskInvokeMetaCall( QObject* object,
     }
 }
 
-void qskInvokeMetaPropertyWrite( QObject* context,
-    const QMetaProperty& property, void* args[], Qt::ConnectionType connectionType )
+void qskInvokeMetaPropertyWrite( QObject* context, const QMetaProperty& property,
+    void* args[], Qt::ConnectionType connectionType )
 {
     qskInvokeMetaPropertyWrite( context, property.enclosingMetaObject(),
         property.propertyIndex(), args, connectionType );
 }
 
-void qskInvokeMetaPropertyWrite( QObject* context,
-    const QMetaObject* metaObject, int propertyIndex,
-    void* args[], Qt::ConnectionType connectionType )
+void qskInvokeMetaPropertyWrite( QObject* context, const QMetaObject* metaObject,
+    int propertyIndex, void* args[], Qt::ConnectionType connectionType )
 {
     // check for is writable ???
 
-    if ( metaObject && ( propertyIndex >= 0 )
-        && ( propertyIndex < metaObject->propertyCount() ) )
+    if ( metaObject && ( propertyIndex >= 0 ) &&
+        ( propertyIndex < metaObject->propertyCount() ) )
     {
         const auto offset = metaObject->propertyOffset();
         const auto index = propertyIndex - offset;
@@ -296,10 +297,9 @@ void qskInvokeMetaMethod( QObject* object,
     const QMetaObject* metaObject, int methodIndex, void* argv[],
     Qt::ConnectionType connectionType )
 {
-    if ( metaObject && ( methodIndex >= 0 )
-        && ( methodIndex < metaObject->methodCount() ) )
+    if ( metaObject && ( methodIndex >= 0 ) &&
+        ( methodIndex < metaObject->methodCount() ) )
     {
-
         const auto offset = metaObject->methodOffset();
         const auto index = methodIndex - offset;
 
@@ -308,39 +308,39 @@ void qskInvokeMetaMethod( QObject* object,
     }
 }
 
-QskMetaInvokable::QskMetaInvokable( const QMetaMethod& method ):
-    m_metaData { method.enclosingMetaObject(), method.methodIndex()  },
-    m_type( MetaMethod )
+QskMetaInvokable::QskMetaInvokable( const QMetaMethod& method )
+    : m_metaData{ method.enclosingMetaObject(), method.methodIndex() }
+    , m_type( MetaMethod )
 {
 }
 
-QskMetaInvokable::QskMetaInvokable( const QObject* object, const char* methodName ):
-    QskMetaInvokable( qskMetaMethod( object, methodName ) )
+QskMetaInvokable::QskMetaInvokable( const QObject* object, const char* methodName )
+    : QskMetaInvokable( qskMetaMethod( object, methodName ) )
 {
 }
 
-QskMetaInvokable::QskMetaInvokable( const QMetaObject* metaObject, const char* methodName ):
-    QskMetaInvokable( qskMetaMethod( metaObject, methodName ) )
+QskMetaInvokable::QskMetaInvokable( const QMetaObject* metaObject, const char* methodName )
+    : QskMetaInvokable( qskMetaMethod( metaObject, methodName ) )
 {
 }
 
-QskMetaInvokable::QskMetaInvokable( const QMetaProperty& property ):
-    m_metaData { property.enclosingMetaObject(), property.propertyIndex() },
-    m_type( MetaProperty )
+QskMetaInvokable::QskMetaInvokable( const QMetaProperty& property )
+    : m_metaData{ property.enclosingMetaObject(), property.propertyIndex() }
+    , m_type( MetaProperty )
 {
 }
 
-QskMetaInvokable::QskMetaInvokable( const QskMetaFunction& function ):
-    m_functionData { function.functionCall() },
-    m_type( MetaFunction )
+QskMetaInvokable::QskMetaInvokable( const QskMetaFunction& function )
+    : m_functionData{ function.functionCall() }
+    , m_type( MetaFunction )
 {
     Function::ref( m_functionData.functionCall );
 }
 
-QskMetaInvokable::QskMetaInvokable( const QskMetaInvokable& other ):
-    m_type( other.m_type )
+QskMetaInvokable::QskMetaInvokable( const QskMetaInvokable& other )
+    : m_type( other.m_type )
 {
-    switch( m_type )
+    switch ( m_type )
     {
         case MetaMethod:
         case MetaProperty:
@@ -371,7 +371,7 @@ QskMetaInvokable::~QskMetaInvokable()
 
 QskMetaInvokable& QskMetaInvokable::operator=( const QskMetaInvokable& other )
 {
-    switch( other.m_type )
+    switch ( other.m_type )
     {
         case MetaMethod:
         case MetaProperty:
@@ -386,7 +386,7 @@ QskMetaInvokable& QskMetaInvokable::operator=( const QskMetaInvokable& other )
         }
         case MetaFunction:
         {
-            if ( m_type == MetaFunction  )
+            if ( m_type == MetaFunction )
                 Function::deref( m_functionData.functionCall );
 
             m_functionData.functionCall = other.m_functionData.functionCall;
@@ -410,13 +410,13 @@ bool QskMetaInvokable::operator==( const QskMetaInvokable& other ) const
     if ( m_type != other.m_type )
         return false;
 
-    switch( m_type )
+    switch ( m_type )
     {
         case MetaMethod:
         case MetaProperty:
         {
-            return ( m_metaData.metaObject == other.m_metaData.metaObject )
-                && ( m_metaData.index == other.m_metaData.index );
+            return ( m_metaData.metaObject == other.m_metaData.metaObject ) &&
+                   ( m_metaData.index == other.m_metaData.index );
         }
         case MetaFunction:
         {
@@ -431,7 +431,7 @@ bool QskMetaInvokable::operator==( const QskMetaInvokable& other ) const
 
 bool QskMetaInvokable::isNull() const
 {
-    switch( m_type )
+    switch ( m_type )
     {
         case MetaMethod:
         case MetaProperty:
@@ -466,7 +466,7 @@ void QskMetaInvokable::reset()
 
 int QskMetaInvokable::parameterCount() const
 {
-    switch( m_type )
+    switch ( m_type )
     {
         case MetaMethod:
         {
@@ -491,7 +491,7 @@ int QskMetaInvokable::parameterCount() const
 
 int QskMetaInvokable::parameterType( int index ) const
 {
-    switch( m_type )
+    switch ( m_type )
     {
         case MetaMethod:
         {
@@ -506,7 +506,7 @@ int QskMetaInvokable::parameterType( int index ) const
         case MetaFunction:
         {
             auto types = function().parameterTypes();
-            return types[index];
+            return types[ index ];
         }
         default:
         {
@@ -517,7 +517,7 @@ int QskMetaInvokable::parameterType( int index ) const
 
 int QskMetaInvokable::returnType() const
 {
-    switch( m_type )
+    switch ( m_type )
     {
         case MetaMethod:
         {
@@ -540,7 +540,7 @@ int QskMetaInvokable::returnType() const
 
 QByteArray QskMetaInvokable::name() const
 {
-    switch( m_type )
+    switch ( m_type )
     {
         case MetaMethod:
         {
@@ -595,7 +595,7 @@ void QskMetaInvokable::invoke( QObject* object, void* args[],
     if ( isNull() )
         return;
 
-    switch( m_type )
+    switch ( m_type )
     {
         case MetaMethod:
         {
@@ -606,9 +606,8 @@ void QskMetaInvokable::invoke( QObject* object, void* args[],
         }
         case MetaProperty:
         {
-            qskInvokeMetaPropertyWrite( object,
-                m_metaData.metaObject, m_metaData.index,
-                args, connectionType );
+            qskInvokeMetaPropertyWrite(
+                object, m_metaData.metaObject, m_metaData.index, args, connectionType );
 
             break;
         }

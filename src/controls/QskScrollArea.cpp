@@ -4,16 +4,16 @@
  *****************************************************************************/
 
 #include "QskScrollArea.h"
+#include "QskEvent.h"
+#include "QskLayoutConstraint.h"
 #include "QskQuick.h"
 #include "QskScrollViewSkinlet.h"
-#include "QskLayoutConstraint.h"
-#include "QskEvent.h"
 
 QSK_QT_PRIVATE_BEGIN
-#include <private/qquickitem_p.h>
-#include <private/qquickwindow_p.h>
 #include <private/qquickclipnode_p.h>
+#include <private/qquickitem_p.h>
 #include <private/qquickitemchangelistener_p.h>
+#include <private/qquickwindow_p.h>
 QSK_QT_PRIVATE_END
 
 static QSizeF qskAdjustedSize( const QQuickItem* item, const QSizeF& targetSize )
@@ -62,9 +62,9 @@ namespace
 {
     class ViewportClipNode final : public QQuickDefaultClipNode
     {
-    public:
-        ViewportClipNode():
-            QQuickDefaultClipNode( QRectF() )
+      public:
+        ViewportClipNode()
+            : QQuickDefaultClipNode( QRectF() )
         {
             setGeometry( nullptr );
 
@@ -145,7 +145,7 @@ class QskScrollAreaClipItem final : public QskControl, public QQuickItemChangeLi
     // when inheriting from QskControl we participate in node cleanups
     using Inherited = QskControl;
 
-public:
+  public:
     QskScrollAreaClipItem( QskScrollArea* );
     virtual ~QskScrollAreaClipItem();
 
@@ -167,14 +167,14 @@ public:
         return scrollArea()->subControlRect( QskScrollView::Viewport );
     }
 
-protected:
+  protected:
     bool event( QEvent* event ) override;
     void windowChangeEvent( QskWindowChangeEvent* ) override;
 
     void itemChange( ItemChange, const ItemChangeData& ) override;
     void geometryChanged( const QRectF&, const QRectF& ) override;
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 )
     void itemGeometryChanged( QQuickItem*,
         QQuickGeometryChange change, const QRectF& ) override
     {
@@ -193,7 +193,7 @@ protected:
 
     void updateNode( QSGNode* ) override;
 
-private:
+  private:
     void connectWindow( const QQuickWindow*, bool on );
     void onFocusItemChanged();
 
@@ -210,8 +210,8 @@ private:
     const QSGClipNode* viewPortClipNode() const;
 };
 
-QskScrollAreaClipItem::QskScrollAreaClipItem( QskScrollArea* scrollArea ):
-    Inherited( scrollArea )
+QskScrollAreaClipItem::QskScrollAreaClipItem( QskScrollArea* scrollArea )
+    : Inherited( scrollArea )
 {
     setObjectName( QStringLiteral( "QskScrollAreaClipItem" ) );
     setClip( true );
@@ -245,8 +245,8 @@ void QskScrollAreaClipItem::updateNode( QSGNode* )
 {
     auto* d = QQuickItemPrivate::get( this );
 
-    if ( QQuickItemPrivate::get( scrollArea() )->dirtyAttributes
-        & QQuickItemPrivate::ContentUpdateMask )
+    if ( QQuickItemPrivate::get( scrollArea() )->dirtyAttributes &
+         QQuickItemPrivate::ContentUpdateMask )
     {
         /*
             The update order depends on who calls update first and we
@@ -369,7 +369,7 @@ void QskScrollAreaClipItem::onFocusItemChanged()
 
 bool QskScrollAreaClipItem::event( QEvent* event )
 {
-    if( event->type() == QEvent::LayoutRequest )
+    if ( event->type() == QEvent::LayoutRequest )
     {
         if ( scrollArea()->isItemResizable() )
             scrollArea()->polish();
@@ -388,10 +388,10 @@ void QskScrollAreaClipItem::windowChangeEvent( QskWindowChangeEvent* event )
 
 class QskScrollArea::PrivateData
 {
-public:
-    PrivateData():
-        isItemResizable( true ),
-        autoScrollFocusItem( true )
+  public:
+    PrivateData()
+        : isItemResizable( true )
+        , autoScrollFocusItem( true )
     {
     }
 
@@ -429,9 +429,9 @@ public:
     that references the geometry of the viewport clip node.
  */
 
-QskScrollArea::QskScrollArea( QQuickItem* parentItem ):
-    Inherited( parentItem ),
-    m_data( new PrivateData() )
+QskScrollArea::QskScrollArea( QQuickItem* parentItem )
+    : Inherited( parentItem )
+    , m_data( new PrivateData() )
 {
     setPolishOnResize( true );
 

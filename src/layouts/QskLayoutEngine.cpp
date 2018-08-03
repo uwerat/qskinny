@@ -13,7 +13,7 @@ static inline bool qskIsColliding(
     {
         for ( int col = item->firstColumn(); col <= item->lastColumn(); col++ )
         {
-            if ( engine->itemAt(row, col) )
+            if ( engine->itemAt( row, col ) )
                 return true;
         }
     }
@@ -25,7 +25,7 @@ namespace
 {
     class MessageHandler
     {
-    public:
+      public:
         MessageHandler()
         {
             m_defaultHandler = qInstallMessageHandler( suppressWarning );
@@ -36,7 +36,7 @@ namespace
             qInstallMessageHandler( m_defaultHandler );
         }
 
-    private:
+      private:
         static void suppressWarning( QtMsgType type,
             const QMessageLogContext& context, const QString& message )
         {
@@ -54,7 +54,7 @@ namespace
 
     class LayoutStyleInfo final : public QAbstractLayoutStyleInfo
     {
-    public:
+      public:
         LayoutStyleInfo()
         {
         }
@@ -78,8 +78,8 @@ namespace
     };
 }
 
-QskLayoutEngine::QskLayoutEngine():
-    QGridLayoutEngine( Qt::AlignVCenter, true /*snapToPixelGrid*/ )
+QskLayoutEngine::QskLayoutEngine()
+    : QGridLayoutEngine( Qt::AlignVCenter, true /*snapToPixelGrid*/ )
 {
 }
 
@@ -124,7 +124,7 @@ QskLayoutItem* QskLayoutEngine::layoutItemAt( int index ) const
     if ( index < 0 || index >= q_items.count() )
         return nullptr;
 
-    return static_cast< QskLayoutItem* >( q_items[index] );
+    return static_cast< QskLayoutItem* >( q_items[ index ] );
 }
 
 QskLayoutItem* QskLayoutEngine::layoutItemAt( int row, int column ) const
@@ -151,7 +151,7 @@ int QskLayoutEngine::indexOf( const QQuickItem* item ) const
 
     for ( int i = q_items.count() - 1; i >= 0; --i )
     {
-        const auto layoutItem = static_cast< const QskLayoutItem* >( q_items[i] );
+        const auto layoutItem = static_cast< const QskLayoutItem* >( q_items[ i ] );
         if ( layoutItem->item() == item )
             return i;
     }
@@ -220,4 +220,3 @@ void QskLayoutEngine::adjustSpans( int numRows, int numColumns )
 }
 
 #endif
-

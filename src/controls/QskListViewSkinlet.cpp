@@ -4,22 +4,22 @@
  *****************************************************************************/
 
 #include "QskListViewSkinlet.h"
-#include "QskListView.h"
 #include "QskColorFilter.h"
 #include "QskGraphic.h"
+#include "QskListView.h"
 
+#include <qmath.h>
 #include <qsgnode.h>
 #include <qsgsimplerectnode.h>
 #include <qtransform.h>
-#include <qmath.h>
 
 class QskListViewNode final : public QSGTransformNode
 {
-public:
-    inline QskListViewNode( int columnCount ):
-        columnCount( columnCount ),
-        m_rowMin( -1 ),
-        m_rowMax( -1 )
+  public:
+    inline QskListViewNode( int columnCount )
+        : columnCount( columnCount )
+        , m_rowMin( -1 )
+        , m_rowMax( -1 )
     {
         m_backgroundNode.setFlag( QSGNode::OwnedByParent, false );
         appendChildNode( &m_backgroundNode );
@@ -71,7 +71,7 @@ public:
 
     const int columnCount;
 
-private:
+  private:
     int m_rowMin;
     int m_rowMax;
 
@@ -79,8 +79,8 @@ private:
     QSGNode m_foregroundNode;
 };
 
-QskListViewSkinlet::QskListViewSkinlet( QskSkin* skin ):
-    Inherited( skin )
+QskListViewSkinlet::QskListViewSkinlet( QskSkin* skin )
+    : Inherited( skin )
 {
 }
 
@@ -436,8 +436,7 @@ QSGNode* QskListViewSkinlet::updateCellNode( const QskListView* listView,
      */
 #endif
     const auto alignment = listView->flagHint< Qt::Alignment >(
-        QskListView::Cell | QskAspect::Alignment,
-        Qt::AlignVCenter | Qt::AlignLeft );
+        QskListView::Cell | QskAspect::Alignment, Qt::AlignVCenter | Qt::AlignLeft );
 
     const QVariant value = listView->valueAt( row, col );
 
@@ -448,8 +447,8 @@ QSGNode* QskListViewSkinlet::updateCellNode( const QskListView* listView,
 
         const auto colorFilter = listView->graphicFilterAt( row, col );
 
-        newNode = updateGraphicNode( listView, newNode, value.value< QskGraphic >(),
-            colorFilter, rect, alignment );
+        newNode = updateGraphicNode( listView, newNode,
+            value.value< QskGraphic >(), colorFilter, rect, alignment );
 
         if ( newNode )
             setNodeRole( newNode, GraphicRole );

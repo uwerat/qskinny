@@ -5,18 +5,18 @@
 
 #include "Benchmark.h"
 
-#include <QskWindow.h>
-#include <QskPushButton.h>
 #include <QskLinearBox.h>
+#include <QskPushButton.h>
+#include <QskWindow.h>
 
-#include <QGuiApplication>
 #include <QCommandLineParser>
+#include <QGuiApplication>
 
 class Button : public QskPushButton
 {
-public:
-    Button( const QString& testDir ):
-        m_testDir( testDir )
+  public:
+    Button( const QString& testDir )
+        : m_testDir( testDir )
     {
         setText( QString( "Run: " ) + testDir );
         setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
@@ -27,7 +27,7 @@ public:
         Benchmark::run( m_testDir );
     }
 
-private:
+  private:
     QString m_testDir;
 };
 
@@ -36,19 +36,18 @@ int main( int argc, char* argv[] )
     QGuiApplication app( argc, argv );
 
     QCommandLineParser parser;
-    parser.setApplicationDescription("Benchmark for creating textures from SVGs");
+    parser.setApplicationDescription( "Benchmark for creating textures from SVGs" );
     parser.addHelpOption();
-    parser.addPositionalArgument("svgdir", "Directory with SVG files.", "[pathname]");
+    parser.addPositionalArgument( "svgdir", "Directory with SVG files.", "[pathname]" );
 
-    parser.process(app);
+    parser.process( app );
 
     const QStringList args = parser.positionalArguments();
 
     if ( args.count() != 1 )
         parser.showHelp( 1 );
 
-
-    Button* button = new Button( args[0] );
+    auto button = new Button( args[ 0 ] );
     QObject::connect( button, &Button::clicked, button, &Button::run );
 
     auto box = new QskLinearBox();

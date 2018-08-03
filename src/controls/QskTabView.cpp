@@ -4,12 +4,12 @@
  *****************************************************************************/
 
 #include "QskTabView.h"
-#include "QskTabBar.h"
-#include "QskTabButton.h"
+#include "QskAnimationHint.h"
+#include "QskAspect.h"
 #include "QskStackBox.h"
 #include "QskStackBoxAnimator.h"
-#include "QskAspect.h"
-#include "QskAnimationHint.h"
+#include "QskTabBar.h"
+#include "QskTabButton.h"
 
 QSK_SUBCONTROL( QskTabView, TabBar )
 QSK_SUBCONTROL( QskTabView, Page )
@@ -21,10 +21,10 @@ static inline Qt::Orientation qskTransposed( Qt::Orientation orientation )
 
 class QskTabView::PrivateData
 {
-public:
-    PrivateData():
-        tabBar( nullptr ),
-        stackBox( nullptr )
+  public:
+    PrivateData()
+        : tabBar( nullptr )
+        , stackBox( nullptr )
     {
     }
 
@@ -32,14 +32,14 @@ public:
     QskStackBox* stackBox;
 };
 
-QskTabView::QskTabView( QQuickItem* parent ):
-    QskTabView( Qt::Vertical, parent )
+QskTabView::QskTabView( QQuickItem* parent )
+    : QskTabView( Qt::Vertical, parent )
 {
 }
 
-QskTabView::QskTabView( Qt::Orientation orientation, QQuickItem* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData() )
+QskTabView::QskTabView( Qt::Orientation orientation, QQuickItem* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData() )
 {
     setPolishOnResize( true );
 
@@ -59,7 +59,7 @@ QskTabView::QskTabView( Qt::Orientation orientation, QQuickItem* parent ):
         auto animator = new QskStackBoxAnimator3( m_data->stackBox );
         animator->setDuration( hint.duration );
         animator->setEasingCurve( hint.type );
-        
+
         m_data->stackBox->setAnimator( animator );
     }
 #endif
@@ -202,7 +202,7 @@ void QskTabView::setCurrentIndex( int index )
 
 bool QskTabView::event( QEvent* event )
 {
-    switch( event->type() )
+    switch ( event->type() )
     {
         case QEvent::LayoutRequest:
         {

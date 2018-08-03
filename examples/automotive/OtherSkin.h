@@ -7,11 +7,11 @@ class Palette;
 
 class OtherSkin : public QskSkin
 {
-public:
+  public:
     OtherSkin( const QString& name, QObject* parent = nullptr );
     ~OtherSkin() override;
 
-private:
+  private:
     void initHints();
     void initGraphicFilters();
 

@@ -4,17 +4,17 @@
  *****************************************************************************/
 
 #include "QskIndexedLayoutBox.h"
-#include "QskQuick.h"
 #include "QskLayoutEngine.h"
 #include "QskLayoutItem.h"
+#include "QskQuick.h"
 
 class QskIndexedLayoutBox::PrivateData
 {
-public:
-    PrivateData():
-        autoAddChildren( true ),
-        blockChildAdded( false ),
-        defaultAlignment( Qt::AlignLeft | Qt::AlignVCenter )
+  public:
+    PrivateData()
+        : autoAddChildren( true )
+        , blockChildAdded( false )
+        , defaultAlignment( Qt::AlignLeft | Qt::AlignVCenter )
     {
     }
 
@@ -36,9 +36,9 @@ public:
     Qt::Alignment defaultAlignment;
 };
 
-QskIndexedLayoutBox::QskIndexedLayoutBox( QQuickItem* parent ):
-    QskLayout( parent ),
-    m_data( new PrivateData() )
+QskIndexedLayoutBox::QskIndexedLayoutBox( QQuickItem* parent )
+    : QskLayout( parent )
+    , m_data( new PrivateData() )
 {
     // classBegin/componentComplete -> setActive( false/true ) ?
 }
@@ -110,7 +110,7 @@ void QskIndexedLayoutBox::insertItem(
     if ( item->parentItem() == this )
     {
         const int oldIndex = indexOf( item );
-        if ( oldIndex >= 0  )
+        if ( oldIndex >= 0 )
         {
             // the item has been inserted before
 
@@ -199,7 +199,7 @@ void QskIndexedLayoutBox::insertLayoutItem(
 void QskIndexedLayoutBox::itemChange(
     QQuickItem::ItemChange change, const QQuickItem::ItemChangeData& value )
 {
-    switch( change )
+    switch ( change )
     {
         case QQuickItem::ItemChildAddedChange:
         {

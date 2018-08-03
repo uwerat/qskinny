@@ -23,7 +23,7 @@ class QSK_EXPORT QskSelectionSubWindow : public QskInputSubWindow
 
     using Inherited = QskInputSubWindow;
 
-public:
+  public:
     QskSelectionSubWindow( QQuickItem* parent = nullptr );
     ~QskSelectionSubWindow() override;
 
@@ -31,11 +31,11 @@ public:
     Q_INVOKABLE int selectedRow() const;
     Q_INVOKABLE QString selectedEntry() const;
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void setEntries( const QStringList& );
     void setSelectedRow( int row );
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void selectedRowChanged( int );
     void selectedEntryChanged( const QString& );
     void entriesChanged();

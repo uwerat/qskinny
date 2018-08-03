@@ -4,11 +4,11 @@
  *****************************************************************************/
 
 #include "QskTabViewSkinlet.h"
-#include "QskTabView.h"
 #include "QskTabBar.h"
+#include "QskTabView.h"
 
-QskTabViewSkinlet::QskTabViewSkinlet( QskSkin* skin ):
-    Inherited( skin )
+QskTabViewSkinlet::QskTabViewSkinlet( QskSkin* skin )
+    : Inherited( skin )
 {
     setNodeRoles( { PageRole } );
 }
@@ -33,10 +33,10 @@ QRectF QskTabViewSkinlet::subControlRect(
     return Inherited::subControlRect( skinnable, subControl );
 }
 
-QSGNode* QskTabViewSkinlet::updateSubNode( const QskSkinnable* skinnable,
-    quint8 nodeRole, QSGNode* node ) const
+QSGNode* QskTabViewSkinlet::updateSubNode(
+    const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
-    switch( nodeRole )
+    switch ( nodeRole )
     {
         case PageRole:
         {

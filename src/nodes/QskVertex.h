@@ -8,15 +8,16 @@
 
 #include "QskGlobal.h"
 
-#include <qsggeometry.h>
 #include <qcolor.h>
+#include <qsggeometry.h>
 
 namespace QskVertex
 {
     class QSK_EXPORT Color
     {
-    public:
+      public:
         constexpr Color();
+
         constexpr Color( unsigned char red, unsigned char green,
             unsigned char blue, unsigned char alpha );
 
@@ -33,7 +34,7 @@ namespace QskVertex
 
     class QSK_EXPORT Line
     {
-    public:
+      public:
         inline void setLine( float x1, float y1, float x2, float y2 )
         {
             p1.set( x1, y1 );
@@ -64,7 +65,7 @@ namespace QskVertex
 
     class QSK_EXPORT ColoredLine
     {
-    public:
+      public:
         inline void setLine( float x1, float y1, Color c1,
             float x2, float y2, Color c2 )
         {
@@ -100,20 +101,20 @@ namespace QskVertex
 
     void QSK_EXPORT debugGeometry( const QSGGeometry& );
 
-    inline constexpr Color::Color():
-        r( 0 ),
-        g( 0 ),
-        b( 0 ),
-        a( 255 )
+    inline constexpr Color::Color()
+        : r( 0 )
+        , g( 0 )
+        , b( 0 )
+        , a( 255 )
     {
     }
 
     inline constexpr Color::Color( unsigned char red, unsigned char green,
-        unsigned char blue, unsigned char alpha ):
-        r( red ),
-        g( green ),
-        b( blue ),
-        a( alpha )
+            unsigned char blue, unsigned char alpha )
+        : r( red )
+        , g( green )
+        , b( blue )
+        , a( alpha )
     {
     }
 
@@ -134,8 +135,8 @@ namespace QskVertex
         }
     }
 
-    inline Color::Color( const QColor& color ):
-        Color( color.rgba() )
+    inline Color::Color( const QColor& color )
+        : Color( color.rgba() )
     {
     }
 
@@ -167,9 +168,9 @@ namespace QskVertex
 }
 
 #ifndef QT_NO_DEBUG_STREAM
-    QDebug operator<<( QDebug debug, QskVertex::Color );
-    QDebug operator<<( QDebug debug, QskVertex::ColoredLine );
-    QDebug operator<<( QDebug debug, QskVertex::Line );
+QDebug operator<<( QDebug debug, QskVertex::Color );
+QDebug operator<<( QDebug debug, QskVertex::ColoredLine );
+QDebug operator<<( QDebug debug, QskVertex::Line );
 #endif
 
 #endif

@@ -6,22 +6,22 @@
 #include "QskSkinlet.h"
 
 #include "QskAspect.h"
-#include "QskControl.h"
-#include "QskBoxShapeMetrics.h"
-#include "QskBoxBorderMetrics.h"
 #include "QskBoxBorderColors.h"
-#include "QskGradient.h"
-#include "QskBoxNode.h"
+#include "QskBoxBorderMetrics.h"
 #include "QskBoxClipNode.h"
-#include "QskTextNode.h"
-#include "QskTextColors.h"
-#include "QskTextOptions.h"
+#include "QskBoxNode.h"
+#include "QskBoxShapeMetrics.h"
+#include "QskControl.h"
+#include "QskFunctions.h"
+#include "QskGradient.h"
 #include "QskGraphicNode.h"
 #include "QskGraphicTextureFactory.h"
-#include "QskFunctions.h"
+#include "QskTextColors.h"
+#include "QskTextNode.h"
+#include "QskTextOptions.h"
 
-#include <qquickwindow.h>
 #include <qguiapplication.h>
+#include <qquickwindow.h>
 #include <qsgsimplerectnode.h>
 
 static const int qskBackgroundRole = 254;
@@ -48,7 +48,7 @@ static inline QSGNode* qskFindNodeByFlag( QSGNode* parent, int nodeRole )
     auto node = parent->firstChild();
     while ( node )
     {
-        if ( qskRole( node ) == nodeRole)
+        if ( qskRole( node ) == nodeRole )
             return node;
 
         node = node->nextSibling();
@@ -65,7 +65,7 @@ static qreal qskDevicePixelRatio( const QskSkinnable* skinnable )
             return window->effectiveDevicePixelRatio();
     }
 
-    return qGuiApp->devicePixelRatio(); 
+    return qGuiApp->devicePixelRatio();
 }
 
 static inline QSGNode* qskUpdateGraphicNode(
@@ -130,10 +130,10 @@ static inline QskTextColors qskTextColors(
 
 class QskSkinlet::PrivateData
 {
-public:
-    PrivateData( QskSkin* skin ):
-        skin( skin ),
-        ownedBySkinnable( false )
+  public:
+    PrivateData( QskSkin* skin )
+        : skin( skin )
+        , ownedBySkinnable( false )
     {
     }
 
@@ -143,8 +143,8 @@ public:
     bool ownedBySkinnable : 1;
 };
 
-QskSkinlet::QskSkinlet( QskSkin* skin ):
-    m_data( new PrivateData( skin ) )
+QskSkinlet::QskSkinlet( QskSkin* skin )
+    : m_data( new PrivateData( skin ) )
 {
 }
 
@@ -212,7 +212,7 @@ void QskSkinlet::updateNode( QskSkinnable* skinnable, QSGNode* parentNode ) cons
 
     for ( int i = 0; i < m_data->nodeRoles.size(); i++ )
     {
-        const auto nodeRole = m_data->nodeRoles[i];
+        const auto nodeRole = m_data->nodeRoles[ i ];
 
         Q_ASSERT( nodeRole <= 245 ); // reserving 10 roles
 
@@ -288,7 +288,7 @@ void QskSkinlet::insertRemoveNodes( QSGNode* parentNode,
     {
         qskSetRole( nodeRole, newNode );
 
-        switch( nodeRole )
+        switch ( nodeRole )
         {
             case qskBackgroundRole:
             {
@@ -488,7 +488,7 @@ QSGNode* QskSkinlet::updateTextNode(
             break;
 
         case QskTextOptions::VerticalFit:
-            font.setPixelSize( static_cast<int>( rect.height() * 0.5 ) );
+            font.setPixelSize( static_cast< int >( rect.height() * 0.5 ) );
             break;
 
         case QskTextOptions::Fit:
@@ -511,8 +511,8 @@ QSGNode* QskSkinlet::updateTextNode(
     const auto alignment = skinnable->flagHint< Qt::Alignment >(
         QskAspect::Alignment | subControl, Qt::AlignLeft );
 
-    return updateTextNode( skinnable, node, rect, alignment,
-        text, textOptions, subControl );
+    return updateTextNode( skinnable, node,
+        rect, alignment, text, textOptions, subControl );
 }
 
 QSGNode* QskSkinlet::updateGraphicNode(

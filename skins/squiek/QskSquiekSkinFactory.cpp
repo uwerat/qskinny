@@ -8,8 +8,8 @@
 
 static const QString squiekSkinName = QStringLiteral( "squiek" );
 
-QskSquiekSkinFactory::QskSquiekSkinFactory( QObject* parent ):
-    QskSkinFactory( parent )
+QskSquiekSkinFactory::QskSquiekSkinFactory( QObject* parent )
+    : QskSkinFactory( parent )
 {
 }
 

@@ -5,13 +5,13 @@
 
 #include "QskObjectCounter.h"
 
-#include <qset.h>
 #include <qdebug.h>
+#include <qset.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qhooks_p.h>
-#include <private/qquickitem_p.h>
 #include <private/qobject_p.h>
+#include <private/qquickitem_p.h>
 QSK_QT_PRIVATE_END
 
 static inline bool qskIsItem( const QObject* object )
@@ -34,23 +34,23 @@ static void qskRemoveObjectHook( QObject* );
 
 class QskObjectCounterHook
 {
-public:
+  public:
     QskObjectCounterHook()
     {
-        m_otherStartup = qtHookData[QHooks::Startup];
-        m_otherAddObject = qtHookData[QHooks::AddQObject];
-        m_otherRemoveObject = qtHookData[QHooks::RemoveQObject];
+        m_otherStartup = qtHookData[ QHooks::Startup ];
+        m_otherAddObject = qtHookData[ QHooks::AddQObject ];
+        m_otherRemoveObject = qtHookData[ QHooks::RemoveQObject ];
 
-        qtHookData[QHooks::Startup] = reinterpret_cast< quintptr >( &qskStartupHook );
-        qtHookData[QHooks::AddQObject] = reinterpret_cast< quintptr >( &qskAddObjectHook );
-        qtHookData[QHooks::RemoveQObject] = reinterpret_cast< quintptr >( &qskRemoveObjectHook );
+        qtHookData[ QHooks::Startup ] = reinterpret_cast< quintptr >( &qskStartupHook );
+        qtHookData[ QHooks::AddQObject ] = reinterpret_cast< quintptr >( &qskAddObjectHook );
+        qtHookData[ QHooks::RemoveQObject ] = reinterpret_cast< quintptr >( &qskRemoveObjectHook );
     }
 
     ~QskObjectCounterHook()
     {
-        qtHookData[QHooks::Startup] = m_otherStartup;
-        qtHookData[QHooks::AddQObject] = m_otherAddObject;
-        qtHookData[QHooks::RemoveQObject] = m_otherRemoveObject;
+        qtHookData[ QHooks::Startup ] = m_otherStartup;
+        qtHookData[ QHooks::AddQObject ] = m_otherAddObject;
+        qtHookData[ QHooks::RemoveQObject ] = m_otherRemoveObject;
     }
 
     void registerCounter( QskObjectCounter* counter, bool on )
@@ -100,7 +100,7 @@ public:
 
     static bool autoDelete;
 
-private:
+  private:
     QSet< QskObjectCounter* > m_counterSet;
 
     quintptr m_otherStartup;
@@ -148,8 +148,8 @@ static void qskInstallCleanupHookHandler()
 
 Q_COREAPP_STARTUP_FUNCTION( qskInstallCleanupHookHandler )
 
-QskObjectCounter::QskObjectCounter( bool debugAtDestruction ):
-    m_debugAtDestruction( debugAtDestruction )
+QskObjectCounter::QskObjectCounter( bool debugAtDestruction )
+    : m_debugAtDestruction( debugAtDestruction )
 {
     setActive( true );
 }
@@ -192,49 +192,49 @@ bool QskObjectCounter::isActive() const
 
 void QskObjectCounter::addObject( QObject* object )
 {
-    m_counter[Objects].increment();
+    m_counter[ Objects ].increment();
 
     if ( qskIsItem( object ) )
-        m_counter[Items].increment();
+        m_counter[ Items ].increment();
 }
 
 void QskObjectCounter::removeObject( QObject* object )
 {
-    m_counter[Objects].decrement();
+    m_counter[ Objects ].decrement();
 
     if ( qskIsItem( object ) )
-        m_counter[Items].decrement();
+        m_counter[ Items ].decrement();
 }
 
 void QskObjectCounter::reset()
 {
-    m_counter[Objects].reset();
-    m_counter[Items].reset();
+    m_counter[ Objects ].reset();
+    m_counter[ Items ].reset();
 }
 
 int QskObjectCounter::created( ObjectType objectType ) const
 {
-    return m_counter[objectType].created;
+    return m_counter[ objectType ].created;
 }
 
 int QskObjectCounter::destroyed( ObjectType objectType ) const
 {
-    return m_counter[objectType].destroyed;
+    return m_counter[ objectType ].destroyed;
 }
 
 int QskObjectCounter::current( ObjectType objectType ) const
 {
-    return m_counter[objectType].current;
+    return m_counter[ objectType ].current;
 }
 
 int QskObjectCounter::maximum( ObjectType objectType ) const
 {
-    return m_counter[objectType].maximum;
+    return m_counter[ objectType ].maximum;
 }
 
 void QskObjectCounter::debugStatistics( QDebug debug, ObjectType objectType ) const
 {
-    const Counter& c = m_counter[objectType];
+    const Counter& c = m_counter[ objectType ];
 
     QDebugStateSaver saver( debug );
     debug.nospace();
@@ -271,4 +271,3 @@ QDebug operator<<( QDebug debug, const QskObjectCounter& counter )
 }
 
 #endif
-

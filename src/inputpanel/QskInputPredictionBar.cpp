@@ -4,8 +4,8 @@
  *****************************************************************************/
 
 #include "QskInputPredictionBar.h"
-#include "QskPushButton.h"
 #include "QskLinearBox.h"
+#include "QskPushButton.h"
 #include "QskTextOptions.h"
 
 #include <qfontmetrics.h>
@@ -19,9 +19,9 @@ namespace
 {
     class Button final : public QskPushButton
     {
-    public:
-        Button( QQuickItem* parent ):
-            QskPushButton( parent )
+      public:
+        Button( QQuickItem* parent )
+            : QskPushButton( parent )
         {
             QskTextOptions options;
             options.setElideMode( Qt::ElideRight );
@@ -45,10 +45,10 @@ namespace
         QskAspect::Subcontrol effectiveSubcontrol(
             QskAspect::Subcontrol subControl ) const override
         {
-            if( subControl == QskPushButton::Panel )
+            if ( subControl == QskPushButton::Panel )
                 return QskInputPredictionBar::ButtonPanel;
 
-            if( subControl == QskPushButton::Text )
+            if ( subControl == QskPushButton::Text )
                 return QskInputPredictionBar::ButtonText;
 
             return subControl;
@@ -58,7 +58,7 @@ namespace
 
 class QskInputPredictionBar::PrivateData
 {
-public:
+  public:
     QskLinearBox* layoutBox;
     QStringList candidates;
 
@@ -66,16 +66,16 @@ public:
     const int buttonCount = 12;
 };
 
-QskInputPredictionBar::QskInputPredictionBar( QQuickItem* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData )
+QskInputPredictionBar::QskInputPredictionBar( QQuickItem* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData )
 {
     setAutoLayoutChildren( true );
     initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Fixed );
 
     m_data->layoutBox = new QskLinearBox( Qt::Horizontal, this );
 
-    for( int i = 0; i < m_data->buttonCount; i++ )
+    for ( int i = 0; i < m_data->buttonCount; i++ )
     {
         auto button = new Button( m_data->layoutBox );
         button->setVisible( false );
@@ -99,7 +99,7 @@ QskInputPredictionBar::~QskInputPredictionBar()
 QskAspect::Subcontrol QskInputPredictionBar::effectiveSubcontrol(
     QskAspect::Subcontrol subControl ) const
 {
-    if( subControl == QskBox::Panel )
+    if ( subControl == QskBox::Panel )
         return QskInputPredictionBar::Panel;
 
     return subControl;
@@ -107,7 +107,7 @@ QskAspect::Subcontrol QskInputPredictionBar::effectiveSubcontrol(
 
 void QskInputPredictionBar::setPrediction( const QStringList& candidates )
 {
-    if( m_data->candidates != candidates )
+    if ( m_data->candidates != candidates )
     {
         m_data->candidates = candidates;
         setScrollOffset( 0 );
@@ -128,29 +128,29 @@ void QskInputPredictionBar::setScrollOffset( int offset )
     const bool continueLeft = m_data->scrollOffset > 0;
     const bool continueRight = ( candidateCount - m_data->scrollOffset ) > count;
 
-    for( int i = 0; i < count; i++ )
+    for ( int i = 0; i < count; i++ )
     {
         auto button = qobject_cast< QskPushButton* >(
             m_data->layoutBox->itemAtIndex( i ) );
 
-        if( continueLeft && i == 0 )
+        if ( continueLeft && i == 0 )
         {
             button->setText( QChar( 0x2B05 ) );
         }
-        else if( continueRight && ( i == m_data->buttonCount - 1 ) )
+        else if ( continueRight && ( i == m_data->buttonCount - 1 ) )
         {
             button->setText( QChar( 0x27A1 ) );
         }
         else
         {
             const int index = i + m_data->scrollOffset;
-            button->setText( m_data->candidates[index] );
+            button->setText( m_data->candidates[ index ] );
         }
 
         button->setVisible( true );
     }
 
-    for( int i = count; i < m_data->buttonCount; ++i )
+    for ( int i = count; i < m_data->buttonCount; ++i )
         m_data->layoutBox->itemAtIndex( i )->setVisible( false );
 }
 

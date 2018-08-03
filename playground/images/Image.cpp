@@ -10,12 +10,12 @@
 
 class Image::PrivateData
 {
-public:
-    PrivateData():
-        sourceSizeAdjustment( false ),
-        deferredUpdates( true ),
-        dirtyPolish( false ),
-        dirtyUpdate( false )
+  public:
+    PrivateData()
+        : sourceSizeAdjustment( false )
+        , deferredUpdates( true )
+        , dirtyPolish( false )
+        , dirtyUpdate( false )
     {
     }
 
@@ -26,9 +26,9 @@ public:
     bool dirtyUpdate : 1;
 };
 
-Image::Image( QQuickItem* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData() )
+Image::Image( QQuickItem* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData() )
 {
 }
 
@@ -124,8 +124,8 @@ void Image::itemChange( QQuickItem::ItemChange change,
     }
 }
 
-void Image::geometryChanged( const QRectF& newGeometry,
-    const QRectF& oldGeometry )
+void Image::geometryChanged(
+    const QRectF& newGeometry, const QRectF& oldGeometry )
 {
     Inherited::geometryChanged( newGeometry, oldGeometry );
 

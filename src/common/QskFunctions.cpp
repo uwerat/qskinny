@@ -1,8 +1,8 @@
 #include "QskFunctions.h"
 
 #include <qguiapplication.h>
-#include <qscreen.h>
 #include <qmath.h>
+#include <qscreen.h>
 
 template< class Rect, class Value >
 static inline Rect qskAlignedRect( const Rect& outerRect,
@@ -12,7 +12,7 @@ static inline Rect qskAlignedRect( const Rect& outerRect,
 
     Rect r( 0, 0, width, height );
 
-    switch( alignment & Qt::AlignHorizontal_Mask )
+    switch ( alignment & Qt::AlignHorizontal_Mask )
     {
         case Qt::AlignLeft:
         {
@@ -31,7 +31,7 @@ static inline Rect qskAlignedRect( const Rect& outerRect,
         }
     }
 
-    switch( alignment & Qt::AlignVertical_Mask )
+    switch ( alignment & Qt::AlignVertical_Mask )
     {
         case Qt::AlignTop:
         {
@@ -86,26 +86,26 @@ QRectF qskValidOrEmptyInnerRect( const QRectF& rect, const QMarginsF& margins )
     {
         x = rect.x() + rect.width() * ( margins.left() / marginsWidth );
         w = 0;
-    }   
+    }
     else
     {
         x = rect.x() + margins.left();
         w = rect.width() - marginsWidth;
-    }   
-    
+    }
+
     if ( marginsHeight > rect.height() )
     {
         y = rect.y() + rect.height() * ( margins.top() / marginsHeight );
         h = 0;
-    }   
+    }
     else
     {
         y = rect.y() + margins.top();
         h = rect.height() - marginsHeight;
-    }   
+    }
 
     return QRectF( x, y, w, h );
-}   
+}
 
 qreal qskDpiScaled( qreal value )
 {

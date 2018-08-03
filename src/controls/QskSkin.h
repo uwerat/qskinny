@@ -9,12 +9,12 @@
 #include "QskGlobal.h"
 #include "QskAspect.h"
 
-#include <qobject.h>
 #include <qcolor.h>
+#include <qobject.h>
 
-#include <unordered_map>
 #include <memory>
 #include <type_traits>
+#include <unordered_map>
 
 class QskControl;
 class QskSkinnable;
@@ -40,7 +40,7 @@ class QSK_EXPORT QskSkin : public QObject
 
     using Inherited = QObject;
 
-public:
+  public:
     enum SkinFontRole
     {
         DefaultFont = 0,
@@ -57,7 +57,8 @@ public:
     QskSkin( QObject* parent = nullptr );
     ~QskSkin() override;
 
-    template<typename Control, typename Skinlet> void declareSkinlet();
+    template< typename Control, typename Skinlet >
+    void declareSkinlet();
 
     virtual void resetColors( const QColor& accent );
 
@@ -118,7 +119,7 @@ public:
     QskGraphicProvider* graphicProvider( const QString& providerId ) const;
     bool hasGraphicProvider() const;
 
-    virtual const int *dialogButtonLayout( Qt::Orientation ) const;
+    virtual const int* dialogButtonLayout( Qt::Orientation ) const;
 
     QskSkinlet* skinlet( const QskSkinnable* );
 
@@ -127,7 +128,7 @@ public:
     const std::unordered_map< int, QFont >& fonts() const;
     const std::unordered_map< int, QskColorFilter >& graphicFilters() const;
 
-protected:
+  protected:
     QskSkinHintTable& skinHintTable();
 
 private:
@@ -138,7 +139,7 @@ private:
     std::unique_ptr< PrivateData > m_data;
 };
 
-template<typename Control, typename Skinlet>
+template< typename Control, typename Skinlet >
 inline void QskSkin::declareSkinlet()
 {
     Q_STATIC_ASSERT( ( std::is_base_of< QskControl, Control >::value ) );

@@ -17,7 +17,7 @@ class QSK_EXPORT QskSliderSkinlet : public QskSkinlet
 
     using Inherited = QskSkinlet;
 
-public:
+  public:
     enum NodeRole
     {
         PanelRole,
@@ -32,11 +32,11 @@ public:
     QRectF subControlRect( const QskSkinnable*,
         QskAspect::Subcontrol ) const override;
 
-protected:
+  protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 
-private:
+  private:
     QRectF panelRect( const QskSlider* ) const;
     QRectF grooveRect( const QskSlider* ) const;
     QRectF fillRect( const QskSlider* ) const;

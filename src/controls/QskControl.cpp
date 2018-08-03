@@ -4,17 +4,17 @@
  *****************************************************************************/
 
 #include "QskControl.h"
-#include "QskQuick.h"
 #include "QskAspect.h"
-#include "QskSetup.h"
-#include "QskEvent.h"
 #include "QskDirtyItemFilter.h"
-#include "QskSkinHintTable.h"
+#include "QskEvent.h"
+#include "QskQuick.h"
+#include "QskSetup.h"
 #include "QskSkin.h"
+#include "QskSkinHintTable.h"
 
+#include <qglobalstatic.h>
 #include <qlocale.h>
 #include <qvector.h>
-#include <qglobalstatic.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>
@@ -32,7 +32,7 @@ QSK_STATE( QskControl, Focused, QskAspect::LastSystemState )
 
 // QGridLayoutEngine internally uses FLT_MAX
 static constexpr qreal qskSizeHintMax = std::numeric_limits< float >::max();
-static QSizeF qskDefaultSizeHints[3] =
+static QSizeF qskDefaultSizeHints[ 3 ] =
     { { 0, 0 }, { -1, -1 }, { qskSizeHintMax, qskSizeHintMax } };
 
 typedef quint16 controlFlags_t;
@@ -69,10 +69,10 @@ namespace
      */
     class QskWindowStore
     {
-    public:
-        QskWindowStore():
-            m_refCount( 0 ),
-            m_window( nullptr )
+      public:
+        QskWindowStore()
+            : m_refCount( 0 )
+            , m_window( nullptr )
         {
         }
 
@@ -101,14 +101,14 @@ namespace
             return w;
         }
 
-    private:
+      private:
         int m_refCount;
         QQuickWindow* m_window;
     };
 
     class QskControlRegistry
     {
-    public:
+      public:
         QskControlRegistry()
         {
             /*
@@ -116,10 +116,10 @@ namespace
                 of setting up direct connections between qskSetup and each control
              */
             QObject::connect( qskSetup, &QskSetup::controlFlagsChanged,
-                [this] { updateControlFlags(); } );
+                [ this ] { updateControlFlags(); } );
 
             QObject::connect( qskSetup, &QskSetup::skinChanged,
-                [this] { updateSkin(); } );
+                [ this ] { updateSkin(); } );
         }
 
         inline void insert( QskControl* control )
@@ -151,7 +151,7 @@ namespace
             }
         }
 
-    private:
+      private:
         std::unordered_set< QskControl* > m_controls;
     };
 }
@@ -163,30 +163,30 @@ class QskControlPrivate final : public QQuickItemPrivate
 {
     Q_DECLARE_PUBLIC( QskControl )
 
-public:
+  public:
     class ExplicitSizeData
     {
-    public:
-        QSizeF sizeHints[3] =
-            { qskDefaultSizeHints[0], qskDefaultSizeHints[1], qskDefaultSizeHints[2] };
+      public:
+        QSizeF sizeHints[ 3 ] =
+            { qskDefaultSizeHints[ 0 ], qskDefaultSizeHints[ 1 ], qskDefaultSizeHints[ 2 ] };
     };
 
-    QskControlPrivate():
-        explicitSizeData( nullptr ),
-        sizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Preferred ),
-        controlFlags( qskControlFlags() ),
-        controlFlagsMask( 0 ),
-        explicitLocale( false ),
-        autoFillBackground( false ),
-        autoLayoutChildren( false ),
-        polishOnResize( false ),
-        blockedPolish( false ),
-        blockedImplicitSize( true ),
-        clearPreviousNodes( false ),
-        blockImplicitSizeNotification( false ),
-        isInitiallyPainted( false ),
-        focusPolicy( Qt::NoFocus ),
-        isWheelEnabled( false )
+    QskControlPrivate()
+        : explicitSizeData( nullptr )
+        , sizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Preferred )
+        , controlFlags( qskControlFlags() )
+        , controlFlagsMask( 0 )
+        , explicitLocale( false )
+        , autoFillBackground( false )
+        , autoLayoutChildren( false )
+        , polishOnResize( false )
+        , blockedPolish( false )
+        , blockedImplicitSize( true )
+        , clearPreviousNodes( false )
+        , blockImplicitSizeNotification( false )
+        , isInitiallyPainted( false )
+        , focusPolicy( Qt::NoFocus )
+        , isWheelEnabled( false )
     {
         if ( controlFlags & QskControl::DeferredLayout )
         {
@@ -273,12 +273,11 @@ public:
         return qskDefaultSizeHints[ whichHint ];
     }
 
-    
     bool maybeGesture( QQuickItem* child, QEvent* event )
     {
         Q_Q( QskControl );
 
-        switch( event->type() )
+        switch ( event->type() )
         {
             case QEvent::MouseButtonPress:
             {
@@ -329,10 +328,10 @@ public:
         }
     }
 
-private:
+  private:
     ExplicitSizeData* explicitSizeData;
 
-public:
+  public:
     QLocale locale;
 
     QskSizePolicy sizePolicy;
@@ -364,8 +363,8 @@ static void qskUpdateControlFlags( QskControl::Flags flags, QskControl* control 
     d->updateControlFlags( flags );
 }
 
-QskControl::QskControl( QQuickItem* parent ):
-    Inherited( *( new QskControlPrivate() ), parent )
+QskControl::QskControl( QQuickItem* parent )
+    : Inherited( *( new QskControlPrivate() ), parent )
 {
     setFlag( QQuickItem::ItemHasContents, true );
     QQuickItem::setActiveFocusOnTab( false );
@@ -384,7 +383,7 @@ QskControl::QskControl( QQuickItem* parent ):
         avoid this penalty also for earlier Qt versions.
      */
     connect( this, &QQuickItem::enabledChanged,
-        [this] { setSkinStateFlag( Disabled, !isEnabled() ); } );
+        [ this ] { setSkinStateFlag( Disabled, !isEnabled() ); } );
 #endif
 
     Q_D( QskControl );
@@ -672,8 +671,8 @@ void QskControl::updateControlFlag( uint flag, bool on )
 {
     Q_D( QskControl );
 
-    if ( ( flag > std::numeric_limits< controlFlags_t >::max() )
-        || ( bool( d->controlFlags & flag ) == on ) )
+    if ( ( flag > std::numeric_limits< controlFlags_t >::max() ) ||
+         ( bool( d->controlFlags & flag ) == on ) )
     {
         return;
     }
@@ -683,7 +682,7 @@ void QskControl::updateControlFlag( uint flag, bool on )
     else
         d->controlFlags &= ~flag;
 
-    switch( flag )
+    switch ( flag )
     {
         case QskControl::DeferredUpdate:
         {
@@ -884,7 +883,7 @@ void QskControl::setLayoutMirroring( bool on, bool recursive )
 
     Q_D( QskControl );
 
-    if ( recursive != d->inheritMirrorFromItem)
+    if ( recursive != d->inheritMirrorFromItem )
     {
         d->inheritMirrorFromItem = recursive;
         d->resolveLayoutMirror();
@@ -904,10 +903,10 @@ void QskControl::resetLayoutMirroring()
 {
     Q_D( QskControl );
 
-    if ( d && !d->isMirrorImplicit)
+    if ( d && !d->isMirrorImplicit )
     {
         d->isMirrorImplicit = true;
-        //d->inheritMirrorFromItem = false;
+        // d->inheritMirrorFromItem = false;
         d->resolveLayoutMirror();
     }
 }
@@ -982,7 +981,7 @@ void QskControl::initSizePolicy(
        Sometimes it is even worse as the parent might not be
        even prepared to handle the LayouRequest event.
      */
-    
+
     d->sizePolicy.setHorizontalPolicy( horizontalPolicy );
     d->sizePolicy.setVerticalPolicy( verticalPolicy );
 }
@@ -1119,8 +1118,8 @@ void QskControl::setFixedWidth( qreal width )
 
     auto size = d->explicitSizeHint( Qt::PreferredSize );
 
-    if ( ( d->sizePolicy.horizontalPolicy() != QskSizePolicy::Fixed )
-         || ( size.width() != width ) )
+    if ( ( d->sizePolicy.horizontalPolicy() != QskSizePolicy::Fixed ) ||
+         ( size.width() != width ) )
     {
         size.setWidth( width );
 
@@ -1140,8 +1139,8 @@ void QskControl::setFixedHeight( qreal height )
 
     auto size = d->explicitSizeHint( Qt::PreferredSize );
 
-    if ( ( d->sizePolicy.verticalPolicy() != QskSizePolicy::Fixed )
-         || ( size.height() != height ) )
+    if ( ( d->sizePolicy.verticalPolicy() != QskSizePolicy::Fixed ) ||
+         ( size.height() != height ) )
     {
         size.setHeight( height );
 
@@ -1270,28 +1269,28 @@ qreal QskControl::heightForWidth( qreal width ) const
 qreal QskControl::widthForHeight( qreal height ) const
 {
     qreal w = -1;
-        
+
     if ( d_func()->autoLayoutChildren )
     {
         const auto innerSize = layoutRect().size();
         const auto outerSize = size();
-        
+
         height -= outerSize.height() - innerSize.height();
-        
+
         const auto children = childItems();
         for ( auto child : children )
-        {   
+        {
             if ( auto control = qobject_cast< const QskControl* >( child ) )
-            {   
+            {
                 if ( !control->isTransparentForPositioner() )
                     w = qMax( w, control->widthForHeight( height ) );
             }
         }
-        
+
         if ( w >= 0 )
             w += outerSize.width() - innerSize.width();
     }
-    
+
     return w;
 }
 
@@ -1299,7 +1298,7 @@ bool QskControl::event( QEvent* event )
 {
     const int eventType = event->type();
 
-    switch( eventType )
+    switch ( eventType )
     {
 #if 0
         case QEvent::PolishRequest:
@@ -1328,7 +1327,7 @@ bool QskControl::event( QEvent* event )
         }
     }
 
-    switch( eventType )
+    switch ( eventType )
     {
         case QEvent::StyleChange:
         {
@@ -1491,7 +1490,7 @@ void QskControl::itemChange( QQuickItem::ItemChange change,
 
     Q_D( QskControl );
 
-    switch( change )
+    switch ( change )
     {
         case QQuickItem::ItemParentHasChanged:
         {
@@ -1577,7 +1576,7 @@ void QskControl::itemChange( QQuickItem::ItemChange change,
             setSkinStateFlag( Focused, hasActiveFocus() );
             break;
         }
-#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 10, 0 )
         case QQuickItem::ItemEnabledHasChanged:
         {
             setSkinStateFlag( Disabled, !value.boolValue );
@@ -1807,8 +1806,8 @@ bool QskControl::isUpdateNodeScheduled() const
 {
     Q_D( const QskControl );
 
-    return ( d->dirtyAttributes & QQuickItemPrivate::ContentUpdateMask )
-        && ( d->flags & QQuickItem::ItemHasContents );
+    return ( d->dirtyAttributes & QQuickItemPrivate::ContentUpdateMask ) &&
+           ( d->flags & QQuickItem::ItemHasContents );
 }
 
 bool QskControl::isInitiallyPainted() const

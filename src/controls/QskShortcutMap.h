@@ -16,7 +16,7 @@ class QKeySequence;
 
 class QSK_EXPORT QskShortcutMap
 {
-public:
+  public:
     static void setAutoRepeat( int, bool on );
     static void setEnabled( int, bool on );
 
@@ -59,7 +59,7 @@ public:
 
     static bool contextMatcher( const QQuickItem*, Qt::ShortcutContext );
 
-private:
+  private:
     QskShortcutMap() = delete;
     ~QskShortcutMap() = delete;
 

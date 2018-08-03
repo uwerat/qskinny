@@ -6,8 +6,8 @@
 #include "QskColorFilter.h"
 #include "QskRgbValue.h"
 
-#include <qpen.h>
 #include <qbrush.h>
+#include <qpen.h>
 #include <qvariant.h>
 
 static inline QRgb qskSubstitutedRgb(
@@ -22,8 +22,8 @@ static inline QRgb qskSubstitutedRgb(
     {
         if ( rgb == s.first )
         {
-            return ( s.second & QskRgbValue::ColorMask )
-                | ( rgba & QskRgbValue::AlphaMask );
+            return ( s.second & QskRgbValue::ColorMask ) |
+                ( rgba & QskRgbValue::AlphaMask );
         }
     }
 
@@ -49,10 +49,10 @@ static inline QBrush qskSubstitutedBrush(
         QGradientStops stops = gradient->stops();
         for ( int i = 0; i < stops.size(); i++ )
         {
-            const QColor c = qskSubstitutedColor( substitions, stops[i].second );
-            if ( c != stops[i].second )
+            const QColor c = qskSubstitutedColor( substitions, stops[ i ].second );
+            if ( c != stops[ i ].second )
             {
-                stops[i].second = c;
+                stops[ i ].second = c;
                 isModified = true;
             }
         }
@@ -79,7 +79,7 @@ static inline QBrush qskSubstitutedBrush(
 }
 
 static inline QskColorFilter qskInterpolatedFilter(
-    const QskColorFilter &from, const QskColorFilter &to, qreal progress )
+    const QskColorFilter& from, const QskColorFilter& to, qreal progress )
 {
     if ( progress <= 0.0 )
         return from;
@@ -155,9 +155,9 @@ void QskColorFilter::addColorSubstitution( QRgb from, QRgb to )
 {
     for ( int i = 0; i < m_substitutions.size(); i++ )
     {
-        if ( m_substitutions[i].first == from )
+        if ( m_substitutions[ i ].first == from )
         {
-            m_substitutions[i].second = to;
+            m_substitutions[ i ].second = to;
             return;
         }
     }
@@ -215,8 +215,8 @@ QskColorFilter QskColorFilter::interpolated(
     return qskInterpolatedFilter( *this, other, progress );
 }
 
-QVariant QskColorFilter::interpolate( const QskColorFilter &from,
-    const QskColorFilter &to, qreal progress )
+QVariant QskColorFilter::interpolate(
+    const QskColorFilter& from, const QskColorFilter& to, qreal progress )
 {
     return QVariant::fromValue( qskInterpolatedFilter( from, to, progress ) );
 }
@@ -234,11 +234,10 @@ QDebug operator<<( QDebug debug, const QskColorFilter& filter )
 
     debug << "Filter" << '(';
     for ( int i = 0; i < s.count(); i++ )
-        debug << '[' << s[i].first << "->" << s[i].second << "]";
+        debug << '[' << s[ i ].first << "->" << s[ i ].second << "]";
     debug << ')';
 
     return debug;
 }
 
 #endif
-

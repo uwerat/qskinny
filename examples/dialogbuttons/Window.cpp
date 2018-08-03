@@ -3,13 +3,14 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#include <QskLinearBox.h>
-#include <QskDialogButtonBox.h>
-#include <QskPushButton.h>
 #include "Window.h"
 
-Window::Window( Qt::Orientation orientation ):
-    m_orientation( orientation )
+#include <QskDialogButtonBox.h>
+#include <QskLinearBox.h>
+#include <QskPushButton.h>
+
+Window::Window( Qt::Orientation orientation )
+    : m_orientation( orientation )
 {
     m_layoutBox = new QskLinearBox( invertedOrientation() );
     m_layoutBox->setObjectName( "MainBox" );
@@ -17,10 +18,14 @@ Window::Window( Qt::Orientation orientation ):
     m_layoutBox->setExtraSpacingAt( Qt::BottomEdge | Qt::RightEdge );
 
     addBox( QskDialog::Ok );
+
     addBox( QskDialog::StandardButtons( QskDialog::Ok | QskDialog::Cancel ) );
+
     addBox( QskDialog::StandardButtons( QskDialog::Yes | QskDialog::No ) );
+
     addBox( QskDialog::StandardButtons( QskDialog::Save | QskDialog::Discard
         | QskDialog::RestoreDefaults | QskDialog::Help ) );
+
     addBox( QskDialog::StandardButtons( QskDialog::Abort
         | QskDialog::Retry | QskDialog::Ignore ) );
 
@@ -90,8 +95,7 @@ QVector< QskDialogButtonBox* > Window::dialogBoxes() const
     QVector< QskDialogButtonBox* > boxes;
     for ( int i = 0; i < m_layoutBox->itemCount(); i++ )
     {
-        if ( QskDialogButtonBox* box =
-            qobject_cast< QskDialogButtonBox* >( m_layoutBox->itemAtIndex( i ) ) )
+        if ( auto box = qobject_cast< QskDialogButtonBox* >( m_layoutBox->itemAtIndex( i ) ) )
         {
             boxes += box;
         }

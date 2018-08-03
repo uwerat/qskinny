@@ -8,12 +8,12 @@
 #include <SkinnyShapeProvider.h>
 #include <SkinnyShortcut.h>
 
-#include <QskModule.h>
 #include <QskGraphicImageProvider.h>
+#include <QskModule.h>
 #include <QskObjectCounter.h>
 
-#include <QQmlApplicationEngine>
 #include <QGuiApplication>
+#include <QQmlApplicationEngine>
 
 int main( int argc, char* argv[] )
 {

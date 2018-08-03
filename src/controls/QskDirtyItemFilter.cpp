@@ -7,8 +7,8 @@
 #include "QskControl.h"
 
 QSK_QT_PRIVATE_BEGIN
-#include <private/qquickwindow_p.h>
 #include <private/qquickitem_p.h>
+#include <private/qquickwindow_p.h>
 QSK_QT_PRIVATE_END
 
 static inline bool qskIsUpdateBlocked( const QQuickItem* item )
@@ -33,7 +33,7 @@ static inline bool qskIsUpdateBlocked( const QQuickItem* item )
         return !itemRect.intersects( sceneRect );
     }
 #endif
-    
+
     return false;
 }
 
@@ -51,9 +51,9 @@ namespace
 {
     class ResetBlockedDirtyJob final : public QRunnable
     {
-    public:
-        inline ResetBlockedDirtyJob( QQuickWindow* window ):
-            m_window( window )
+      public:
+        inline ResetBlockedDirtyJob( QQuickWindow* window )
+            : m_window( window )
         {
         }
 
@@ -62,13 +62,13 @@ namespace
             qskBlockDirty( m_window->contentItem(), false );
         }
 
-    private:
+      private:
         const QQuickWindow* m_window;
     };
 }
 
-QskDirtyItemFilter::QskDirtyItemFilter( QObject* parent ):
-    QObject( parent )
+QskDirtyItemFilter::QskDirtyItemFilter( QObject* parent )
+    : QObject( parent )
 {
 }
 
@@ -120,8 +120,8 @@ void QskDirtyItemFilter::beforeSynchronizing( QQuickWindow* window )
     }
 }
 
-void QskDirtyItemFilter::filterDirtyList( QQuickWindow* window,
-    bool ( *isBlocked )( const QQuickItem* ) )
+void QskDirtyItemFilter::filterDirtyList(
+    QQuickWindow* window, bool ( *isBlocked )( const QQuickItem* ) )
 {
     if ( window == nullptr )
         return;
@@ -137,4 +137,3 @@ void QskDirtyItemFilter::filterDirtyList( QQuickWindow* window,
         item = nextItem;
     }
 }
-

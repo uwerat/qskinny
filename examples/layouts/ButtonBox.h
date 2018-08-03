@@ -11,7 +11,7 @@
 
 class ButtonBox : public QskLinearBox
 {
-public:
+  public:
     ButtonBox( QQuickItem* parent = nullptr );
 
     void addButton( const QString& text,

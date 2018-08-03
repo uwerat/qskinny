@@ -37,7 +37,7 @@ class QskSkinHintTable;
 
 class QSK_EXPORT QskSkinHintStatus
 {
-public:
+  public:
     enum Source
     {
         NoSource = 0,
@@ -47,8 +47,8 @@ public:
         Animator
     };
 
-    QskSkinHintStatus():
-        source( NoSource )
+    QskSkinHintStatus()
+        : source( NoSource )
     {
     }
 
@@ -63,7 +63,7 @@ public:
 
 class QSK_EXPORT QskSkinnable
 {
-public:
+  public:
     QskSkinnable();
     virtual ~QskSkinnable();
 
@@ -90,7 +90,8 @@ public:
     QskBoxShapeMetrics boxShapeHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
     void setBoxBorderMetricsHint( QskAspect::Aspect, const QskBoxBorderMetrics& );
-    QskBoxBorderMetrics boxBorderMetricsHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
+    QskBoxBorderMetrics boxBorderMetricsHint(
+        QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
     void setBoxBorderColorsHint( QskAspect::Aspect, const QskBoxBorderColors& );
     QskBoxBorderColors boxBorderColorsHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
@@ -154,14 +155,14 @@ public:
     void debug( QDebug, QskAspect::Aspect ) const;
     void debug( QDebug, QskAspect::State ) const;
 
-protected:
+  protected:
     void setSkinStateFlag( QskAspect::State, bool = true );
     virtual void updateNode( QSGNode* );
 
     QskSkinHintTable& hintTable();
     const QskSkinHintTable& hintTable() const;
 
-private:
+  private:
     QVariant animatedValue( QskAspect::Aspect, QskSkinHintStatus* ) const;
     const QVariant& storedHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 

@@ -5,8 +5,8 @@
 
 #include "QskMaterialSkin.h"
 
-#include <QskDialogButtonBox.h>
 #include <QskDialogButton.h>
+#include <QskDialogButtonBox.h>
 #include <QskFocusIndicator.h>
 #include <QskInputPanelBox.h>
 #include <QskListView.h>
@@ -16,24 +16,24 @@
 #include <QskSeparator.h>
 #include <QskSlider.h>
 #include <QskSubWindow.h>
-#include <QskTabButton.h>
 #include <QskTabBar.h>
+#include <QskTabButton.h>
 #include <QskTabView.h>
-#include <QskTextLabel.h>
 #include <QskTextInput.h>
+#include <QskTextLabel.h>
 #include <QskVirtualKeyboard.h>
 
 #include <QskSkinlet.h>
 
-#include <QskAspect.h>
-#include <QskNamespace.h>
-#include <QskFunctions.h>
-#include <QskRgbValue.h>
 #include <QskAnimationHint.h>
-#include <QskMargins.h>
-#include <QskBoxShapeMetrics.h>
-#include <QskBoxBorderMetrics.h>
+#include <QskAspect.h>
 #include <QskBoxBorderColors.h>
+#include <QskBoxBorderMetrics.h>
+#include <QskBoxShapeMetrics.h>
+#include <QskFunctions.h>
+#include <QskMargins.h>
+#include <QskNamespace.h>
+#include <QskRgbValue.h>
 
 #if 1
 // should be defined in the public header, so that
@@ -55,7 +55,7 @@ namespace
 {
     class ColorPalette
     {
-    public:
+      public:
         ColorPalette( const QColor base = QColor::fromRgba( QskRgbValue::Grey100 ),
             const QColor& accent = QColor::fromRgba( QskRgbValue::Blue500 ),
             const QColor& contrast = QColor::fromRgba( QskRgbValue::White ) )
@@ -95,13 +95,13 @@ namespace
 
 class QskMaterialSkin::PrivateData
 {
-public:
+  public:
     ColorPalette palette;
 };
 
-QskMaterialSkin::QskMaterialSkin( QObject* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData() )
+QskMaterialSkin::QskMaterialSkin( QObject* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData() )
 {
     m_data->palette = ColorPalette( QskRgbValue::Grey100,
         QskRgbValue::Blue500, QskRgbValue::White );
@@ -190,7 +190,7 @@ void QskMaterialSkin::initTextLabelHints()
     const ColorPalette& pal = m_data->palette;
 
     setSkinHint( Q::Text | Alignment, Qt::AlignCenter );
-    setColor( Q::Text, pal.textColor  );
+    setColor( Q::Text, pal.textColor );
 }
 
 void QskMaterialSkin::initTextInputHints()
@@ -199,13 +199,13 @@ void QskMaterialSkin::initTextInputHints()
     using Q = QskTextInput;
 
     setSkinHint( Q::Text | Alignment,
-        static_cast<int>( Qt::AlignLeft | Qt::AlignTop ) );
+        static_cast< int >( Qt::AlignLeft | Qt::AlignTop ) );
 
     const ColorPalette& pal = m_data->palette;
 
-    setColor( Q::Text, pal.textColor  );
-    setColor( Q::PanelSelected, pal.accentColor  );
-    setColor( Q::TextSelected, pal.contrastColor  );
+    setColor( Q::Text, pal.textColor );
+    setColor( Q::PanelSelected, pal.accentColor );
+    setColor( Q::TextSelected, pal.contrastColor );
 
     setMargins( Q::Panel | Padding, 5 );
     setBoxShape( Q::Panel, 4 );

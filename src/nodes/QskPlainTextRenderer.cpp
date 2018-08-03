@@ -8,8 +8,8 @@
 #include "QskTextOptions.h"
 
 #include <qfontmetrics.h>
-#include <qsgnode.h>
 #include <qmath.h>
+#include <qsgnode.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qsgadaptationlayer_p.h>
@@ -26,15 +26,16 @@ QSK_QT_PRIVATE_END
 
 #define GlyphFlag static_cast< QSGNode::Flag >( 0x800 )
 
-QSizeF QskPlainTextRenderer::textSize( const QString& text,
-    const QFont& font, const QskTextOptions& options )
+QSizeF QskPlainTextRenderer::textSize(
+    const QString& text, const QFont& font, const QskTextOptions& options )
 {
     // result differs from QskTextRenderer::implicitSizeHint ???
     return textRect( text, font, options, QSizeF( 10e6, 10e6 ) ).size();
 }
 
-QRectF QskPlainTextRenderer::textRect( const QString& text,
-    const QFont& font, const QskTextOptions& options, const QSizeF& size )
+QRectF QskPlainTextRenderer::textRect(
+    const QString& text, const QFont& font, const QskTextOptions& options,
+    const QSizeF& size )
 {
     const QFontMetricsF fm( font );
     const QRectF r( 0, 0, size.width(), size.height() );
@@ -196,11 +197,14 @@ void QskPlainTextRenderer::updateNode( const QString& text,
         yBaseline = ( bh % 2 ) ? qFloor( yBaseline ) : qCeil( yBaseline );
     }
 
-    qskRenderText( const_cast< QQuickItem* >( item ), node, layout, yBaseline,
-        colors.textColor, static_cast< QQuickText::TextStyle >( style ), colors.styleColor );
+    qskRenderText(
+        const_cast< QQuickItem* >( item ), node, layout, yBaseline,
+        colors.textColor, static_cast< QQuickText::TextStyle >( style ),
+        colors.styleColor );
 }
 
-void QskPlainTextRenderer::updateNodeColor( QSGNode* parentNode, const QColor& textColor,
+void QskPlainTextRenderer::updateNodeColor(
+    QSGNode* parentNode, const QColor& textColor,
     Qsk::TextStyle style, const QColor& styleColor )
 {
     auto glyphNode = static_cast< QSGGlyphNode* >( parentNode->firstChild() );

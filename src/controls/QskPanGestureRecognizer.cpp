@@ -1,14 +1,14 @@
 #include "QskPanGestureRecognizer.h"
-#include "QskGesture.h"
 #include "QskEvent.h"
+#include "QskGesture.h"
 
-#include <qquickitem.h>
 #include <qcoreapplication.h>
-#include <qmath.h>
 #include <qline.h>
+#include <qmath.h>
+#include <qquickitem.h>
 
-static inline qreal qskDistance( const QPointF& from, const QPointF& to,
-    Qt::Orientations orientations )
+static inline qreal qskDistance(
+    const QPointF& from, const QPointF& to, Qt::Orientations orientations )
 {
     if ( orientations == Qt::Horizontal )
         return to.x() - from.x();
@@ -22,8 +22,8 @@ static inline qreal qskDistance( const QPointF& from, const QPointF& to,
     return qSqrt( dx * dx + dy * dy );
 }
 
-static inline qreal qskAngle( const QPointF& from, const QPointF& to,
-    Qt::Orientations orientations )
+static inline qreal qskAngle(
+    const QPointF& from, const QPointF& to, Qt::Orientations orientations )
 {
     if ( orientations == Qt::Horizontal )
         return ( to.x() >= from.x() ) ? 0.0 : 180.0;
@@ -56,7 +56,7 @@ namespace
 {
     class VelocityTracker
     {
-    public:
+      public:
         VelocityTracker()
         {
             reset();
@@ -64,14 +64,14 @@ namespace
 
         void record( int elapsed, qreal velocity )
         {
-            if ( ( velocity != 0.0 ) && ( m_values[m_pos].velocity != 0.0 ) )
+            if ( ( velocity != 0.0 ) && ( m_values[ m_pos ].velocity != 0.0 ) )
             {
-                if ( ( velocity > 0.0 ) != ( m_values[m_pos].velocity > 0.0 ) )
+                if ( ( velocity > 0.0 ) != ( m_values[ m_pos ].velocity > 0.0 ) )
                     reset(); // direction has changed
             }
 
-            m_values[m_pos].elapsed = elapsed;
-            m_values[m_pos].velocity = velocity;
+            m_values[ m_pos ].elapsed = elapsed;
+            m_values[ m_pos ].velocity = velocity;
 
             m_pos = ( m_pos + 1 ) % Count;
         }
@@ -80,8 +80,8 @@ namespace
         {
             for ( int i = 0; i < Count; i++ )
             {
-                m_values[i].elapsed = -1;
-                m_values[i].velocity = 0;
+                m_values[ i ].elapsed = -1;
+                m_values[ i ].velocity = 0;
             }
             m_pos = 0;
         }
@@ -93,7 +93,7 @@ namespace
 
             for ( int i = 0; i < Count; i++ )
             {
-                const auto& v = m_values[i];
+                const auto& v = m_values[ i ];
 
                 // only swipe events within the last 500 ms will be considered
                 if ( v.elapsed > 0 && ( elapsed - v.elapsed ) <= 500 )
@@ -106,7 +106,7 @@ namespace
             return ( numVelocities > 0 ) ? ( sum / numVelocities ) : 0.0;
         }
 
-    private:
+      private:
         int m_pos;
         enum { Count = 3 };
 
@@ -120,12 +120,12 @@ namespace
 
 class QskPanGestureRecognizer::PrivateData
 {
-public:
-    PrivateData():
-        orientations( Qt::Horizontal | Qt::Vertical ),
-        minDistance( 15 ),
-        timestamp( 0.0 ),
-        angle( 0.0 )
+  public:
+    PrivateData()
+        : orientations( Qt::Horizontal | Qt::Vertical )
+        , minDistance( 15 )
+        , timestamp( 0.0 )
+        , angle( 0.0 )
     {
     }
 
@@ -137,13 +137,13 @@ public:
     qreal angle;
 
     QPointF origin;
-    QPointF pos;    // position of the last mouse event
+    QPointF pos; // position of the last mouse event
 
     VelocityTracker velocityTracker;
 };
 
-QskPanGestureRecognizer::QskPanGestureRecognizer():
-    m_data( new PrivateData() )
+QskPanGestureRecognizer::QskPanGestureRecognizer()
+    : m_data( new PrivateData() )
 {
 }
 

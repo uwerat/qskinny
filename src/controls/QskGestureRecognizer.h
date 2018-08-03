@@ -17,7 +17,7 @@ class QMouseEvent;
 
 class QSK_EXPORT QskGestureRecognizer
 {
-public:
+  public:
     enum State
     {
         Idle,
@@ -52,14 +52,14 @@ public:
     bool isReplaying() const;
     bool hasProcessedBefore( const QMouseEvent* ) const;
 
-protected:
+  protected:
     virtual void pressEvent( const QMouseEvent* );
     virtual void moveEvent( const QMouseEvent* );
     virtual void releaseEvent( const QMouseEvent* );
 
     virtual void stateChanged( State from, State to );
 
-private:
+  private:
     void setState( State );
     void reset();
 

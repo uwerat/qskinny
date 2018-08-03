@@ -5,8 +5,8 @@
 
 #include "QskMessageSubWindow.h"
 
-QskMessageSubWindow::QskMessageSubWindow( QQuickItem* parent ):
-    Inherited( parent )
+QskMessageSubWindow::QskMessageSubWindow( QQuickItem* parent )
+    : Inherited( parent )
 {
 }
 

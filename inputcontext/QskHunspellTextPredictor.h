@@ -13,18 +13,18 @@ class QSK_EXPORT QskHunspellTextPredictor : public QskTextPredictor
 {
     using Inherited = QskTextPredictor;
 
-public:
+  public:
     QskHunspellTextPredictor( QObject* = nullptr );
     ~QskHunspellTextPredictor() override;
 
     int candidateCount() const override;
     QString candidate( int pos ) const override;
 
-protected:
+  protected:
     void request( const QString& ) override;
     void reset() override;
 
-private:
+  private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

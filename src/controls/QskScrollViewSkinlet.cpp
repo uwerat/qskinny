@@ -4,9 +4,9 @@
  *****************************************************************************/
 
 #include "QskScrollViewSkinlet.h"
-#include "QskScrollView.h"
-#include "QskQuick.h"
 #include "QskAspect.h"
+#include "QskQuick.h"
+#include "QskScrollView.h"
 
 #include <qsgnode.h>
 
@@ -36,8 +36,8 @@ static void qskAlignedHandle( qreal start, qreal end,
     }
 }
 
-QskScrollViewSkinlet::QskScrollViewSkinlet( QskSkin* skin ):
-    Inherited( skin )
+QskScrollViewSkinlet::QskScrollViewSkinlet( QskSkin* skin )
+    : Inherited( skin )
 {
     setNodeRoles( { ViewportRole, ContentsRootRole,
         HorizontalScrollBarRole, HorizontalScrollHandleRole,
@@ -89,7 +89,7 @@ QSGNode* QskScrollViewSkinlet::updateSubNode(
 {
     const auto scrollView = static_cast< const QskScrollView* >( skinnable );
 
-    switch( nodeRole )
+    switch ( nodeRole )
     {
         case ViewportRole:
         {

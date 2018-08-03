@@ -6,8 +6,8 @@
 #include "QskMessageWindow.h"
 #include "QskMessageSubWindow.h"
 
-QskMessageWindow::QskMessageWindow( QWindow* parent ):
-    Inherited( parent )
+QskMessageWindow::QskMessageWindow( QWindow* parent )
+    : Inherited( parent )
 {
     setSubWindow( new QskMessageSubWindow() );
 }

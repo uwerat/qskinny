@@ -15,7 +15,7 @@ class QSK_EXPORT QskPanGestureRecognizer : public QskGestureRecognizer
 {
     using Inherited = QskGestureRecognizer;
 
-public:
+  public:
     QskPanGestureRecognizer();
     ~QskPanGestureRecognizer() override;
 
@@ -25,7 +25,7 @@ public:
     void setOrientations( Qt::Orientations );
     Qt::Orientations orientations() const;
 
-private:
+  private:
     void pressEvent( const QMouseEvent* ) override;
     void moveEvent( const QMouseEvent* ) override;
     void releaseEvent( const QMouseEvent* ) override;

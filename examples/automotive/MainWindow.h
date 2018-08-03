@@ -7,10 +7,10 @@ class QQuickItem;
 
 class MainWindow : public QskWindow
 {
-public:
+  public:
     MainWindow();
 
-private:
+  private:
     QQuickItem* headerBar() const;
     QQuickItem* mainContent() const;
     QQuickItem* footerBar() const;

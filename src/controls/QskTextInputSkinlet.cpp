@@ -6,8 +6,8 @@
 #include "QskTextInputSkinlet.h"
 #include "QskTextInput.h"
 
-QskTextInputSkinlet::QskTextInputSkinlet( QskSkin* skin ):
-    Inherited( skin )
+QskTextInputSkinlet::QskTextInputSkinlet( QskSkin* skin )
+    : Inherited( skin )
 {
     setNodeRoles( { PanelRole } );
 }
@@ -36,7 +36,7 @@ QRectF QskTextInputSkinlet::subControlRect(
 QSGNode* QskTextInputSkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
-    switch( nodeRole )
+    switch ( nodeRole )
     {
         case PanelRole:
         {

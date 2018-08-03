@@ -7,8 +7,8 @@
 #include "QskTabButton.h"
 #include "QskTextOptions.h"
 
-QskTabButtonSkinlet::QskTabButtonSkinlet( QskSkin* skin ):
-    Inherited( skin )
+QskTabButtonSkinlet::QskTabButtonSkinlet( QskSkin* skin )
+    : Inherited( skin )
 {
     setNodeRoles( { PanelRole, TextRole } );
 }
@@ -40,7 +40,7 @@ QSGNode* QskTabButtonSkinlet::updateSubNode(
 {
     const auto tabButton = static_cast< const QskTabButton* >( skinnable );
 
-    switch( nodeRole )
+    switch ( nodeRole )
     {
         case PanelRole:
         {

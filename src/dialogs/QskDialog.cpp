@@ -6,18 +6,18 @@
 #include "QskDialog.h"
 #include "QskDialogButtonBox.h"
 
-#include "QskMessageWindow.h"
 #include "QskMessageSubWindow.h"
+#include "QskMessageWindow.h"
 
-#include "QskSelectionWindow.h"
 #include "QskSelectionSubWindow.h"
+#include "QskSelectionWindow.h"
 
 #include "QskFocusIndicator.h"
 #include "QskStandardSymbol.h"
 
+#include <qguiapplication.h>
 #include <qpointer.h>
 #include <qquickwindow.h>
-#include <qguiapplication.h>
 
 static QskDialog::DialogCode qskExec( QskDialogWindow* dialogWindow )
 {
@@ -48,9 +48,9 @@ static QQuickWindow* qskSomeQuickWindow()
     return nullptr;
 }
 
-static void qskSetupSubWindow( const QString& title,
-    QskDialog::StandardButtons buttons, QskDialog::StandardButton defaultButton,
-    QskInputSubWindow* subWindow )
+static void qskSetupSubWindow(
+    const QString& title, QskDialog::StandardButtons buttons,
+    QskDialog::StandardButton defaultButton, QskInputSubWindow* subWindow )
 {
     subWindow->setModal( true );
     subWindow->setTitle( title );
@@ -98,17 +98,17 @@ static void qskSetupWindow(
     window->setModality( Qt::ApplicationModal );
 }
 
-
-static QskDialog::StandardButton qskMessageSubWindow( QQuickWindow* window,
-    const QString& title, const QString& text, int symbolType,
-    QskDialog::StandardButtons buttons, QskDialog::StandardButton defaultButton )
+static QskDialog::StandardButton qskMessageSubWindow(
+    QQuickWindow* window, const QString& title,
+    const QString& text, int symbolType, QskDialog::StandardButtons buttons,
+    QskDialog::StandardButton defaultButton )
 {
     QskMessageSubWindow subWindow( window->contentItem() );
     subWindow.setSymbolType( symbolType );
     subWindow.setInfoText( text );
 
     qskSetupSubWindow( title, buttons, defaultButton, &subWindow );
-    (void) subWindow.exec();
+    ( void ) subWindow.exec();
 
     QskDialog::StandardButton clickedButton = subWindow.clickedButton();
     if ( clickedButton == QskDialog::NoButton )
@@ -120,9 +120,10 @@ static QskDialog::StandardButton qskMessageSubWindow( QQuickWindow* window,
     return clickedButton;
 }
 
-static QskDialog::StandardButton qskMessageWindow( QWindow* transientParent,
-    const QString& title, const QString& text, int symbolType,
-    QskDialog::StandardButtons buttons, QskDialog::StandardButton defaultButton )
+static QskDialog::StandardButton qskMessageWindow(
+    QWindow* transientParent, const QString& title,
+    const QString& text, int symbolType, QskDialog::StandardButtons buttons,
+    QskDialog::StandardButton defaultButton )
 {
     QskMessageWindow messageWindow;
     messageWindow.setSymbolType( symbolType );
@@ -141,8 +142,8 @@ static QskDialog::StandardButton qskMessageWindow( QWindow* transientParent,
     return clickedButton;
 }
 
-static QString qskSelectSubWindow( QQuickWindow* window,
-    const QString& title, const QString& text,
+static QString qskSelectSubWindow(
+    QQuickWindow* window, const QString& title, const QString& text,
     QskDialog::StandardButtons buttons, QskDialog::StandardButton defaultButton,
     const QStringList& entries, int selectedRow )
 {
@@ -160,8 +161,8 @@ static QString qskSelectSubWindow( QQuickWindow* window,
     return selectedEntry;
 }
 
-static QString qskSelectWindow( QWindow* transientParent,
-    const QString& title, const QString& text,
+static QString qskSelectWindow(
+    QWindow* transientParent, const QString& title, const QString& text,
     QskDialog::StandardButtons buttons, QskDialog::StandardButton defaultButton,
     const QStringList& entries, int selectedRow )
 {
@@ -181,9 +182,9 @@ static QString qskSelectWindow( QWindow* transientParent,
 
 class QskDialog::PrivateData
 {
-public:
-    PrivateData():
-        policy( QskDialog::TopLevelWindow )
+  public:
+    PrivateData()
+        : policy( QskDialog::TopLevelWindow )
     {
     }
 
@@ -191,8 +192,8 @@ public:
     QskDialog::Policy policy : 2;
 };
 
-QskDialog::QskDialog():
-    m_data( new PrivateData )
+QskDialog::QskDialog()
+    : m_data( new PrivateData )
 {
 }
 
@@ -243,8 +244,7 @@ QskDialog::StandardButton QskDialog::message(
 {
     if ( m_data->policy == EmbeddedBox )
     {
-        QQuickWindow* quickWindow =
-            qobject_cast< QQuickWindow* >( m_data->transientParent );
+        auto quickWindow = qobject_cast< QQuickWindow* >( m_data->transientParent );
 
         if ( quickWindow == nullptr )
             quickWindow = qskSomeQuickWindow();
@@ -304,8 +304,7 @@ QString QskDialog::select(
 
     if ( m_data->policy == EmbeddedBox )
     {
-        QQuickWindow* quickWindow =
-            qobject_cast< QQuickWindow* >( m_data->transientParent );
+        auto quickWindow = qobject_cast< QQuickWindow* >( m_data->transientParent );
 
         if ( quickWindow == nullptr )
             quickWindow = qskSomeQuickWindow();

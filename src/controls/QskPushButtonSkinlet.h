@@ -17,7 +17,7 @@ class QSK_EXPORT QskPushButtonSkinlet : public QskSkinlet
 
     using Inherited = QskSkinlet;
 
-public:
+  public:
     enum NodeRole
     {
         PanelRole,
@@ -28,14 +28,14 @@ public:
     Q_INVOKABLE QskPushButtonSkinlet( QskSkin* = nullptr );
     ~QskPushButtonSkinlet() override;
 
-    QRectF subControlRect(
-        const QskSkinnable*, QskAspect::Subcontrol ) const override;
+    QRectF subControlRect( const QskSkinnable*,
+        QskAspect::Subcontrol ) const override;
 
-protected:
+  protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 
-private:
+  private:
     QRectF textRect( const QskPushButton* ) const;
     QRectF graphicRect( const QskPushButton* ) const;
 
@@ -43,4 +43,3 @@ private:
 };
 
 #endif
-

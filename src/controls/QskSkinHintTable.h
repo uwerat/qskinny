@@ -7,22 +7,22 @@
 #define QSK_SKIN_HINT_TABLE_H
 
 #include "QskGlobal.h"
-#include "QskAspect.h"
-#include "QskMargins.h"
-#include "QskGradient.h"
-#include "QskBoxShapeMetrics.h"
-#include "QskBoxBorderMetrics.h"
-#include "QskBoxBorderColors.h"
 #include "QskAnimationHint.h"
+#include "QskAspect.h"
+#include "QskBoxBorderColors.h"
+#include "QskBoxBorderMetrics.h"
+#include "QskBoxShapeMetrics.h"
+#include "QskGradient.h"
+#include "QskMargins.h"
 
-#include <qvariant.h>
 #include <qcolor.h>
+#include <qvariant.h>
 
 #include <unordered_map>
 
 class QSK_EXPORT QskSkinHintTable
 {
-public:
+  public:
     QskSkinHintTable();
     QskSkinHintTable( const QskSkinHintTable& other );
 
@@ -83,7 +83,7 @@ public:
     QskAspect::Aspect resolvedAnimator(
         QskAspect::Aspect, QskAnimationHint& ) const;
 
-private:
+  private:
     static QVariant invalidHint;
 
     typedef std::unordered_map< QskAspect::Aspect, QVariant > HintMap;
@@ -148,7 +148,7 @@ inline void QskSkinHintTable::setColor(
 
 inline QColor QskSkinHintTable::color( QskAspect::Aspect aspect ) const
 {
-    return hint( aspect | QskAspect::Color ).value<QColor>();
+    return hint( aspect | QskAspect::Color ).value< QColor >();
 }
 
 inline void QskSkinHintTable::setMetric( QskAspect::Aspect aspect, qreal metric )
@@ -201,25 +201,25 @@ inline void QskSkinHintTable::setBoxBorder(
     using namespace QskAspect;
     setHint( aspect | Border | Metric, QVariant::fromValue( border ) );
 }
-    
+
 inline QskBoxBorderMetrics QskSkinHintTable::boxBorder( QskAspect::Aspect aspect ) const
 {
     using namespace QskAspect;
     return hint( aspect | Border | Metric ).value< QskBoxBorderMetrics >();
 }
-    
+
 inline void QskSkinHintTable::setBoxBorderColors(
     QskAspect::Aspect aspect, const QskBoxBorderColors& colors )
-{   
+{
     using namespace QskAspect;
     setHint( aspect | Border | Color, QVariant::fromValue( colors ) );
-}   
-    
+}
+
 inline QskBoxBorderColors QskSkinHintTable::boxBorderColors( QskAspect::Aspect aspect ) const
 {
     using namespace QskAspect;
     return hint( aspect | Border | Color ).value< QskBoxBorderColors >();
-}   
+}
 
 inline QskAnimationHint QskSkinHintTable::animation( QskAspect::Aspect aspect ) const
 {
@@ -244,9 +244,9 @@ inline void QskSkinHintTable::setFlagHint( QskAspect::Aspect aspect, int flag )
 
 inline void QskSkinHintTable::setAnimation(
     QskAspect::Aspect aspect, QskAnimationHint animation )
-{   
+{
     aspect.setAnimator( true );
-    setHint( aspect, QVariant::fromValue( animation ) ); 
+    setHint( aspect, QVariant::fromValue( animation ) );
 }
 
 #endif

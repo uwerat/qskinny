@@ -11,8 +11,8 @@
 #include <qfontmetrics.h>
 #include <qmath.h>
 
-QskPushButtonSkinlet::QskPushButtonSkinlet( QskSkin* skin ):
-    Inherited( skin )
+QskPushButtonSkinlet::QskPushButtonSkinlet( QskSkin* skin )
+    : Inherited( skin )
 {
     setNodeRoles( { PanelRole, GraphicRole, TextRole } );
 }
@@ -45,7 +45,7 @@ QSGNode* QskPushButtonSkinlet::updateSubNode(
 {
     const auto button = static_cast< const QskPushButton* >( skinnable );
 
-    switch( nodeRole )
+    switch ( nodeRole )
     {
         case PanelRole:
         {
@@ -93,8 +93,8 @@ QRectF QskPushButtonSkinlet::graphicRect( const QskPushButton* button ) const
 
     if ( !button->text().isEmpty() )
     {
-        qreal h = textRect( button ).height()
-            + button->metric( QskPushButton::Panel | QskAspect::Spacing );
+        qreal h = textRect( button ).height() +
+            button->metric( QskPushButton::Panel | QskAspect::Spacing );
 
         if ( h < r.height() )
             r.setBottom( r.bottom() - h );

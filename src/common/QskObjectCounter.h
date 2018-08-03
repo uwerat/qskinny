@@ -14,7 +14,7 @@ class QskObjectCounterHook;
 
 class QSK_EXPORT QskObjectCounter
 {
-public:
+  public:
     enum ObjectType
     {
         Objects,
@@ -37,7 +37,7 @@ public:
     void debugStatistics( QDebug, ObjectType = Objects ) const;
     void dump() const;
 
-private:
+  private:
     friend class QskObjectCounterHook;
 
     void addObject( QObject* );
@@ -45,7 +45,7 @@ private:
 
     class Counter
     {
-    public:
+      public:
         Counter()
         {
             reset();
@@ -77,7 +77,7 @@ private:
         int maximum;
     };
 
-    Counter m_counter[2];
+    Counter m_counter[ 2 ];
     const bool m_debugAtDestruction;
 };
 

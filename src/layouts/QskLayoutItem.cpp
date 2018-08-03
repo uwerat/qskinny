@@ -5,32 +5,31 @@
 
 #include "QskLayoutItem.h"
 #include "QskControl.h"
-#include "QskQuick.h"
 #include "QskLayoutConstraint.h"
+#include "QskQuick.h"
 
-QskLayoutItem::QskLayoutItem( QQuickItem* item,
-        int row, int column, int rowSpan, int columnSpan ):
-    Inherited( row, column, qMax( rowSpan, 1 ), qMax( columnSpan, 1 ), Qt::Alignment() ),
-    m_isGeometryDirty( false ),
-    m_isStretchable( false ),
-    m_retainSizeWhenHidden( false ),
-    m_unlimitedRowSpan( rowSpan <= 0 ),
-    m_unlimitedColumnSpan( columnSpan <= 0 ),
-    m_updateMode( UpdateWhenVisible ),
-    m_item( item )
+QskLayoutItem::QskLayoutItem( QQuickItem* item, int row, int column, int rowSpan, int columnSpan )
+    : Inherited( row, column, qMax( rowSpan, 1 ), qMax( columnSpan, 1 ), Qt::Alignment() )
+    , m_isGeometryDirty( false )
+    , m_isStretchable( false )
+    , m_retainSizeWhenHidden( false )
+    , m_unlimitedRowSpan( rowSpan <= 0 )
+    , m_unlimitedColumnSpan( columnSpan <= 0 )
+    , m_updateMode( UpdateWhenVisible )
+    , m_item( item )
 {
 }
 
-QskLayoutItem::QskLayoutItem( const QSizeF& size, int stretch, int row, int column ):
-    Inherited( row, column, 1, 1, Qt::Alignment() ),
-    m_isGeometryDirty( false ),
-    m_isStretchable( stretch > 0 ),
-    m_retainSizeWhenHidden( false ),
-    m_unlimitedRowSpan( false ),
-    m_unlimitedColumnSpan( false ),
-    m_updateMode( UpdateWhenVisible ),
-    m_spacingHint( size ),
-    m_item( nullptr )
+QskLayoutItem::QskLayoutItem( const QSizeF& size, int stretch, int row, int column )
+    : Inherited( row, column, 1, 1, Qt::Alignment() )
+    , m_isGeometryDirty( false )
+    , m_isStretchable( stretch > 0 )
+    , m_retainSizeWhenHidden( false )
+    , m_unlimitedRowSpan( false )
+    , m_unlimitedColumnSpan( false )
+    , m_updateMode( UpdateWhenVisible )
+    , m_spacingHint( size )
+    , m_item( nullptr )
 {
 }
 
@@ -152,7 +151,7 @@ void QskLayoutItem::setGeometry( const QRectF& rect )
     if ( m_item == nullptr )
         return;
 
-    if( m_updateMode == UpdateNone )
+    if ( m_updateMode == UpdateNone )
     {
         if ( !m_isGeometryDirty )
             m_isGeometryDirty = ( rect != qskItemGeometry( m_item ) );

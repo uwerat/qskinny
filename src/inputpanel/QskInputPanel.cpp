@@ -26,8 +26,8 @@ static inline bool qskUsePrediction( Qt::InputMethodHints hints )
     return ( hints & mask ) == 0;
 }
 
-static inline void qskSendText( QQuickItem* receiver,
-    const QString& text, bool isFinal )
+static inline void qskSendText(
+    QQuickItem* receiver, const QString& text, bool isFinal )
 {
     if ( receiver == nullptr )
         return;
@@ -76,7 +76,6 @@ static inline void qskSendReplaceText( QQuickItem* receiver, const QString& text
     qskSendText( receiver, text, true );
 }
 
-
 static inline void qskSendKey( QQuickItem* receiver, int key )
 {
     if ( receiver == nullptr )
@@ -93,7 +92,7 @@ namespace
 {
     class KeyProcessor
     {
-    public:
+      public:
         struct Result
         {
             int key = 0;
@@ -151,7 +150,7 @@ namespace
                         }
                     }
 
-                    if( !( inputHints & Qt::ImhMultiLine ) )
+                    if ( !( inputHints & Qt::ImhMultiLine ) )
                     {
                         result.key = Qt::Key_Return;
                         return result;
@@ -163,7 +162,7 @@ namespace
                 {
                     if ( predictor )
                     {
-                        if ( !m_preedit.isEmpty() && spaceLeft)
+                        if ( !m_preedit.isEmpty() && spaceLeft )
                         {
                             m_preedit += keyString( key );
                             m_preedit = m_preedit.left( spaceLeft );
@@ -223,7 +222,7 @@ namespace
             m_preedit.clear();
         }
 
-    private:
+      private:
         inline QString keyString( int keyCode ) const
         {
             // Special case entry codes here, else default to the symbol
@@ -256,7 +255,7 @@ namespace
 
 class QskInputPanel::PrivateData
 {
-public:
+  public:
     KeyProcessor keyProcessor;
     QPointer< QQuickItem > inputItem;
 
@@ -267,9 +266,9 @@ public:
     bool hasPredictorLocale = false;
 };
 
-QskInputPanel::QskInputPanel( QQuickItem* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData() )
+QskInputPanel::QskInputPanel( QQuickItem* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData() )
 {
     setAutoLayoutChildren( true );
     initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Constrained );
@@ -317,7 +316,7 @@ void QskInputPanel::attachInputItem( QQuickItem* item )
 
         if ( inputProxy() )
         {
-            /* 
+            /*
                 Hiding the cursor in item. We use postEvent
                 so that everything on the item is done,
                 when receiving the event.
@@ -357,13 +356,13 @@ void QskInputPanel::updateInputPanel( Qt::InputMethodQueries queries )
         setLocale( event.value( Qt::ImPreferredLanguage ).toLocale() );
     }
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
     if ( queries & Qt::ImInputItemClipRectangle )
     {
         /*
             Could be used to move the panel,
             so that it does not hide the item.
-         */ 
+         */
     }
 #endif
 }
@@ -497,7 +496,7 @@ void QskInputPanel::commitKey( int key )
     const auto result = m_data->keyProcessor.processKey(
         key, m_data->inputHints, predictor, spaceLeft );
 
-    switch( result.key )
+    switch ( result.key )
     {
         case 0:
         {

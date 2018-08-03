@@ -10,7 +10,7 @@
 
 class TestRectangle : public QskTextLabel
 {
-public:
+  public:
     TestRectangle( const char* colorName, QQuickItem* parent = nullptr );
 };
 

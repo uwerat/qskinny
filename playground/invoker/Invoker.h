@@ -14,7 +14,7 @@
 
 class Invoker : public QObject
 {
-public:
+  public:
     Invoker( QObject* parent = nullptr );
 
     void addFunctionCall( const QskMetaFunction& );
@@ -25,7 +25,7 @@ public:
 
     void invoke( qreal d, int i, Qt::ConnectionType );
 
-private:
+  private:
     QVector< Callback > m_callbacks;
 };
 

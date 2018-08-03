@@ -12,7 +12,7 @@ class Slider : public QskSlider
 {
     using Inherited = QskSlider;
 
-public:
+  public:
     QSK_SUBCONTROLS( Scale, Decoration )
 
     Slider( QQuickItem* parent = nullptr );

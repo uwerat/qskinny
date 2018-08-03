@@ -4,23 +4,23 @@
  *****************************************************************************/
 
 #include "StackLayoutPage.h"
-#include "TestRectangle.h"
 #include "ButtonBox.h"
+#include "TestRectangle.h"
 
 #include <QskAspect.h>
-#include <QskTextLabel.h>
 #include <QskPageIndicator.h>
+#include <QskRgbValue.h>
 #include <QskStackBox.h>
 #include <QskStackBoxAnimator.h>
-#include <QskRgbValue.h>
+#include <QskTextLabel.h>
 
 namespace
 {
     class Box : public QskStackBox
     {
-    public:
-        Box( QQuickItem* parent = nullptr ):
-            QskStackBox( parent )
+      public:
+        Box( QQuickItem* parent = nullptr )
+            : QskStackBox( parent )
         {
             setObjectName( "StackBox" );
 
@@ -41,7 +41,7 @@ namespace
             }
         }
 
-    public:
+      public:
         void incrementFading( int offset )
         {
             auto animator = dynamic_cast< QskStackBoxAnimator3* >( this->animator() );
@@ -73,7 +73,7 @@ namespace
             setCurrentIndex( incrementedIndex( offset ) );
         }
 
-    private:
+      private:
         void addRectangle( const char* colorName )
         {
             auto rect = new TestRectangle( colorName );
@@ -96,8 +96,8 @@ namespace
     };
 }
 
-StackLayoutPage::StackLayoutPage( QQuickItem* parent ):
-    QskLinearBox( Qt::Vertical, parent )
+StackLayoutPage::StackLayoutPage( QQuickItem* parent )
+    : QskLinearBox( Qt::Vertical, parent )
 {
     setObjectName( "StackLayoutPage" );
 

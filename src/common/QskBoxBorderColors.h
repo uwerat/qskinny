@@ -16,8 +16,9 @@ class QDebug;
 
 class QSK_EXPORT QskBoxBorderColors
 {
-public:
+  public:
     QskBoxBorderColors();
+
     QskBoxBorderColors( const QColor& left, const QColor& top,
         const QColor& right, const QColor& bottom );
 
@@ -54,18 +55,18 @@ public:
     bool isMonochrome() const;
     bool isVisible() const;
 
-private:
+  private:
     // should be stored as QRgb
     QColor m_colors[ 4 ];
 };
 
-inline QskBoxBorderColors::QskBoxBorderColors( Qt::GlobalColor color ):
-    QskBoxBorderColors( QColor( color ) )
+inline QskBoxBorderColors::QskBoxBorderColors( Qt::GlobalColor color )
+    : QskBoxBorderColors( QColor( color ) )
 {
 }
 
-inline QskBoxBorderColors::QskBoxBorderColors( QRgb rgb ):
-    QskBoxBorderColors( QColor::fromRgba( rgb ) )
+inline QskBoxBorderColors::QskBoxBorderColors( QRgb rgb )
+    : QskBoxBorderColors( QColor::fromRgba( rgb ) )
 {
 }
 

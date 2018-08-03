@@ -12,9 +12,9 @@
 #include <QskTabView.h>
 #include <QskWindow.h>
 
-#include <QskBoxShapeMetrics.h>
-#include <QskBoxBorderMetrics.h>
 #include <QskBoxBorderColors.h>
+#include <QskBoxBorderMetrics.h>
+#include <QskBoxShapeMetrics.h>
 #include <QskGradient.h>
 #include <QskRgbValue.h>
 
@@ -24,18 +24,18 @@
 
 class Rectangle : public Box
 {
-public:
-    Rectangle( QQuickItem* parentItem ):
-        Box( parentItem )
+  public:
+    Rectangle( QQuickItem* parentItem )
+        : Box( parentItem )
     {
     }
 };
 
 class RoundedRectangle : public Box
 {
-public:
-    RoundedRectangle( QQuickItem* parentItem ):
-        Box( parentItem )
+  public:
+    RoundedRectangle( QQuickItem* parentItem )
+        : Box( parentItem )
     {
         setShape( 20, Qt::AbsoluteSize );
     }
@@ -43,9 +43,9 @@ public:
 
 class Ellipse : public Box
 {
-public:
-    Ellipse( QQuickItem* parentItem ):
-        Box( parentItem )
+  public:
+    Ellipse( QQuickItem* parentItem )
+        : Box( parentItem )
     {
         setShape( 100, Qt::RelativeSize );
     }
@@ -257,7 +257,7 @@ static void addRectangles10( QskLinearBox* parent )
 static void addRectangles11( QskLinearBox* parent )
 {
     const qreal border = 5;
-    const Box::FillType fillType[5] = { Box::Solid, Box::Horizontal,
+    const Box::FillType fillType[ 5 ] = { Box::Solid, Box::Horizontal,
         Box::Vertical, Box::Horizontal, Box::Vertical };
 
     for ( int i = 0; i < 5; i++ )
@@ -266,12 +266,12 @@ static void addRectangles11( QskLinearBox* parent )
 
         box->setBorder( Box::Flat, Palette::Teal );
 
-        qreal bw[4] = { border, border, border, border };
+        qreal bw[ 4 ] = { border, border, border, border };
         if ( i != 0 )
             bw[ i - 1 ] = 0;
 
-        box->setBorderWidth( bw[0], bw[1], bw[2], bw[3] );
-        box->setBackground( fillType[i], Palette::Brown, i >= 3 );
+        box->setBorderWidth( bw[ 0 ], bw[ 1 ], bw[ 2 ], bw[ 3 ] );
+        box->setBackground( fillType[ i ], Palette::Brown, i >= 3 );
     }
 }
 
@@ -302,12 +302,12 @@ static void addRectangles12( QskLinearBox* parent )
     }
 
     for ( auto orientation : { QskGradient::Vertical, QskGradient::Diagonal } )
-    {   
+    {
         auto* box = new Box( parent );
         box->setBorder( Box::Flat, Palette::DeepOrange );
         box->setShape( 30, 40, Qt::RelativeSize );
         box->setGradient( orientation, Palette::Blue );
-    }   
+    }
 
     for ( auto orientation : { QskGradient::Vertical,
         QskGradient::Horizontal, QskGradient::Diagonal } )
@@ -361,9 +361,9 @@ static void addRectanglesRest( QskLinearBox* parent )
 
 class TabView : public QskTabView
 {
-public:
-    TabView( QQuickItem* parentItem = nullptr ):
-        QskTabView( Qt::Vertical, parentItem )
+  public:
+    TabView( QQuickItem* parentItem = nullptr )
+        : QskTabView( Qt::Vertical, parentItem )
     {
         setMargins( 10 );
 
@@ -400,7 +400,7 @@ public:
 #endif
     }
 
-private:
+  private:
     void addTab( QskLinearBox* layout )
     {
         layout->setMargins( 10 );
@@ -421,8 +421,7 @@ int main( int argc, char* argv[] )
     QGuiApplication app( argc, argv );
 
     SkinnyFont::init( &app );
-    SkinnyShortcut::enable( SkinnyShortcut::Quit |
-        SkinnyShortcut::DebugShortcuts );
+    SkinnyShortcut::enable( SkinnyShortcut::Quit | SkinnyShortcut::DebugShortcuts );
 
     auto* tabView = new TabView();
 

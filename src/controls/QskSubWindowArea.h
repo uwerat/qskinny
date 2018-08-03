@@ -18,13 +18,13 @@ class QSK_EXPORT QskSubWindowArea : public QskControl
 
     using Inherited = QskControl;
 
-public:
+  public:
     QSK_SUBCONTROLS( Panel )
 
     QskSubWindowArea( QQuickItem* parent = nullptr );
     ~QskSubWindowArea() override;
 
-protected:
+  protected:
     void geometryChangeEvent( QskGeometryChangeEvent* ) override;
 
     bool eventFilter( QObject*, QEvent* ) override;
@@ -32,7 +32,7 @@ protected:
 
     void itemChange( ItemChange, const ItemChangeData& ) override;
 
-private:
+  private:
     virtual void setDragging( QskSubWindow*, bool );
     virtual void setActive( QskSubWindow*, bool );
 

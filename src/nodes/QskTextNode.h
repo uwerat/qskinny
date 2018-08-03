@@ -9,8 +9,8 @@
 #include "QskGlobal.h"
 #include "QskNamespace.h"
 
-#include <qsgnode.h>
 #include <qrect.h>
+#include <qsgnode.h>
 
 class QskTextOptions;
 class QskTextColors;
@@ -20,7 +20,7 @@ class QQuickItem;
 
 class QSK_EXPORT QskTextNode : public QSGTransformNode
 {
-public:
+  public:
     QskTextNode();
     ~QskTextNode() override;
 
@@ -29,7 +29,7 @@ public:
         const QskTextOptions&, const QskTextColors&,
         Qt::Alignment, Qsk::TextStyle );
 
-private:
+  private:
     uint m_hash;
 };
 

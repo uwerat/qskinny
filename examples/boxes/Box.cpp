@@ -1,11 +1,11 @@
 #include "Box.h"
 
-#include <QskBoxShapeMetrics.h>
-#include <QskBoxBorderMetrics.h>
 #include <QskBoxBorderColors.h>
+#include <QskBoxBorderMetrics.h>
+#include <QskBoxShapeMetrics.h>
 
-Box::Box( QQuickItem* parentItem ):
-    QskBox( parentItem )
+Box::Box( QQuickItem* parentItem )
+    : QskBox( parentItem )
 {
     setSizePolicy( QskSizePolicy::Ignored, QskSizePolicy::Ignored );
 
@@ -29,7 +29,7 @@ void Box::setBackground( FillType type, Palette::Color color, bool inverted )
     const QColor light = pal.color( Palette::W300 );
     const QColor mid = pal.color( Palette::W600 );
 
-    switch( type )
+    switch ( type )
     {
         case Unfilled:
             setGradient( QskGradient() );
@@ -67,7 +67,7 @@ void Box::setBorder( BorderType type, Palette::Color color )
     light.setAlpha( 100 );
 #endif
 
-    switch( type )
+    switch ( type )
     {
         case NoBorder:
             setBorderWidth( 0 );
@@ -102,8 +102,7 @@ void Box::setShape( const QskBoxShapeMetrics& shape )
 
 void Box::setShape( qreal radius, Qt::SizeMode sizeMode )
 {
-    setBoxShapeHint( QskBox::Panel,
-        QskBoxShapeMetrics( radius, sizeMode ) );
+    setBoxShapeHint( QskBox::Panel, QskBoxShapeMetrics( radius, sizeMode ) );
 }
 
 void Box::setShape( qreal radiusX, qreal radiusY, Qt::SizeMode sizeMode )
@@ -179,8 +178,7 @@ void Box::setGradient(
 
     QVector< QskGradientStop > stops;
 
-    stops += QskGradientStop(
-        0.0, pal.color( static_cast<Palette::Weight>( 0 ) ) );
+    stops += QskGradientStop( 0.0, pal.color( static_cast< Palette::Weight >( 0 ) ) );
 
     const int count = Palette::NumWeights - 1;
     for ( int i = 1; i < count; i++ )
@@ -197,4 +195,3 @@ void Box::setGradient(
 
     setGradient( QskGradient( orientation, stops ) );
 }
-

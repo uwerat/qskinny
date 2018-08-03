@@ -15,11 +15,11 @@ class QSK_EXPORT QskMaterialSkin : public QskSkin
 
     using Inherited = QskSkin;
 
-public:
+  public:
     QskMaterialSkin( QObject* parent = nullptr );
     ~QskMaterialSkin() override;
 
-private:
+  private:
     void resetColors( const QColor& accent ) override;
 
     void initHints();

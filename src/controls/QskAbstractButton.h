@@ -13,23 +13,30 @@ class QSK_EXPORT QskAbstractButton : public QskControl
 {
     Q_OBJECT
 
-    Q_PROPERTY( bool checkable READ isCheckable WRITE setCheckable NOTIFY checkableChanged FINAL )
+    Q_PROPERTY( bool checkable READ isCheckable
+        WRITE setCheckable NOTIFY checkableChanged FINAL )
 
-    Q_PROPERTY( bool autoRepeat READ autoRepeat WRITE setAutoRepeat NOTIFY autoRepeatChanged FINAL )
+    Q_PROPERTY( bool autoRepeat READ autoRepeat
+        WRITE setAutoRepeat NOTIFY autoRepeatChanged FINAL )
+
     Q_PROPERTY( int autoRepeatDelay READ autoRepeatDelay
         WRITE setAutoRepeatDelay NOTIFY autoRepeatDelayChanged FINAL )
+
     Q_PROPERTY( int autoRepeatInterval READ autoRepeatInterval
         WRITE setAutoRepeatInterval NOTIFY autoRepeatIntervalChanged FINAL )
 
     Q_PROPERTY( bool exclusive READ exclusive
         WRITE setExclusive NOTIFY exclusiveChanged FINAL )
 
-    Q_PROPERTY( bool pressed READ isPressed WRITE setPressed NOTIFY pressedChanged FINAL )
-    Q_PROPERTY( bool checked READ isChecked WRITE setChecked NOTIFY checkedChanged FINAL )
+    Q_PROPERTY( bool pressed READ isPressed
+        WRITE setPressed NOTIFY pressedChanged FINAL )
+
+    Q_PROPERTY( bool checked READ isChecked
+        WRITE setChecked NOTIFY checkedChanged FINAL )
 
     using Inherited = QskControl;
 
-public:
+  public:
     QSK_STATES( Flat, Checked, Pressed, Checkable )
 
     QskAbstractButton( QQuickItem* parent = nullptr );
@@ -55,12 +62,12 @@ public:
     void setExclusive( bool );
     bool exclusive() const;
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void toggle();
     void click();
     void setChecked( bool );
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void pressed();
     void released();
     void canceled();
@@ -77,7 +84,7 @@ Q_SIGNALS:
 
     void exclusiveChanged( bool );
 
-protected:
+  protected:
     bool event( QEvent* ) override;
 
     void keyPressEvent( QKeyEvent* ) override;
@@ -95,7 +102,7 @@ protected:
 
     virtual void setCheckedState( bool on );
 
-private:
+  private:
     void releaseButton();
 
     class PrivateData;

@@ -14,7 +14,7 @@ class QSK_EXPORT QskInputPredictionBar : public QskBox
 
     using Inherited = QskBox;
 
-public:
+  public:
     QSK_SUBCONTROLS( Panel, ButtonPanel, ButtonText )
 
     QskInputPredictionBar( QQuickItem* parent = nullptr );
@@ -25,13 +25,13 @@ public:
 
     QStringList candidates() const;
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void predictiveTextSelected( int );
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void setPrediction( const QStringList& );
 
-private:
+  private:
     void buttonClicked();
     void setScrollOffset( int );
 

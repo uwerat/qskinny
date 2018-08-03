@@ -88,8 +88,9 @@ QskBoxBorderMetrics QskBoxBorderMetrics::interpolated(
     return QskBoxBorderMetrics( widths, m_sizeMode );
 }
 
-QVariant QskBoxBorderMetrics::interpolate( const QskBoxBorderMetrics& from,
-    const QskBoxBorderMetrics& to, qreal progress )
+QVariant QskBoxBorderMetrics::interpolate(
+    const QskBoxBorderMetrics& from, const QskBoxBorderMetrics& to,
+    qreal progress )
 {
     return QVariant::fromValue( from.interpolated( to, progress ) );
 }
@@ -119,4 +120,3 @@ QDebug operator<<( QDebug debug, const QskBoxBorderMetrics& metrics )
 }
 
 #endif
-

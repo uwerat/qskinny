@@ -9,8 +9,8 @@
 #include <QskModule.h>
 #include <QskObjectCounter.h>
 
-#include <QQmlApplicationEngine>
 #include <QGuiApplication>
+#include <QQmlApplicationEngine>
 
 int main( int argc, char* argv[] )
 {

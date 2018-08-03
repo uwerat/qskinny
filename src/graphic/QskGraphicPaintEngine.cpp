@@ -14,8 +14,8 @@ static inline QskGraphic* qskGraphic( QskGraphicPaintEngine* engine )
     return static_cast< QskGraphic* >( engine->paintDevice() );
 }
 
-QskGraphicPaintEngine::QskGraphicPaintEngine():
-    QPaintEngine( QPaintEngine::AllFeatures )
+QskGraphicPaintEngine::QskGraphicPaintEngine()
+    : QPaintEngine( QPaintEngine::AllFeatures )
 {
 }
 
@@ -35,7 +35,7 @@ bool QskGraphicPaintEngine::end()
     return true;
 }
 
-QPaintEngine::Type QskGraphicPaintEngine::type () const
+QPaintEngine::Type QskGraphicPaintEngine::type() const
 {
     return QPaintEngine::User;
 }
@@ -54,8 +54,8 @@ void QskGraphicPaintEngine::drawPath( const QPainterPath& path )
         graphic->drawPath( path );
 }
 
-void QskGraphicPaintEngine::drawPolygon( const QPointF* points,
-    int pointCount, PolygonDrawMode mode )
+void QskGraphicPaintEngine::drawPolygon(
+    const QPointF* points, int pointCount, PolygonDrawMode mode )
 {
     QskGraphic* graphic = qskGraphic( this );
     if ( graphic )
@@ -64,9 +64,9 @@ void QskGraphicPaintEngine::drawPolygon( const QPointF* points,
 
         if ( pointCount > 0 )
         {
-            path.moveTo( points[0] );
+            path.moveTo( points[ 0 ] );
             for ( int i = 1; i < pointCount; i++ )
-                path.lineTo( points[i] );
+                path.lineTo( points[ i ] );
 
             if ( mode != PolylineMode )
                 path.closeSubpath();
@@ -76,8 +76,8 @@ void QskGraphicPaintEngine::drawPolygon( const QPointF* points,
     }
 }
 
-void QskGraphicPaintEngine::drawPolygon( const QPoint* points,
-    int pointCount, PolygonDrawMode mode )
+void QskGraphicPaintEngine::drawPolygon(
+    const QPoint* points, int pointCount, PolygonDrawMode mode )
 {
     QskGraphic* graphic = qskGraphic( this );
     if ( graphic )
@@ -86,9 +86,9 @@ void QskGraphicPaintEngine::drawPolygon( const QPoint* points,
 
         if ( pointCount > 0 )
         {
-            path.moveTo( points[0] );
+            path.moveTo( points[ 0 ] );
             for ( int i = 1; i < pointCount; i++ )
-                path.lineTo( points[i] );
+                path.lineTo( points[ i ] );
 
             if ( mode != PolylineMode )
                 path.closeSubpath();
@@ -107,11 +107,10 @@ void QskGraphicPaintEngine::drawPixmap(
 }
 
 void QskGraphicPaintEngine::drawImage(
-    const QRectF& rect, const QImage& image, const QRectF& subRect,
-    Qt::ImageConversionFlags flags )
+    const QRectF& rect, const QImage& image,
+    const QRectF& subRect, Qt::ImageConversionFlags flags )
 {
     QskGraphic* graphic = qskGraphic( this );
     if ( graphic )
         graphic->drawImage( rect, image, subRect, flags );
 }
-

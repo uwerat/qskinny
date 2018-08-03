@@ -9,8 +9,8 @@
 #include "QskGlobal.h"
 #include "QskMargins.h"
 
-#include <qnamespace.h>
 #include <qmetatype.h>
+#include <qnamespace.h>
 #include <qsize.h>
 
 class QDebug;
@@ -18,12 +18,17 @@ class QVariant;
 
 class QSK_EXPORT QskBoxBorderMetrics
 {
-public:
+  public:
     constexpr QskBoxBorderMetrics();
-    constexpr QskBoxBorderMetrics( qreal width, Qt::SizeMode = Qt::AbsoluteSize );
+
+    constexpr QskBoxBorderMetrics(
+        qreal width, Qt::SizeMode = Qt::AbsoluteSize );
+
     constexpr QskBoxBorderMetrics( qreal left, qreal top,
         qreal right, qreal bottom, Qt::SizeMode = Qt::AbsoluteSize );
-    constexpr QskBoxBorderMetrics( const QskMargins& widths, Qt::SizeMode sizeMode = Qt::AbsoluteSize );
+
+    constexpr QskBoxBorderMetrics(
+        const QskMargins& widths, Qt::SizeMode sizeMode = Qt::AbsoluteSize );
 
     ~QskBoxBorderMetrics();
 
@@ -41,41 +46,44 @@ public:
     void setSizeMode( Qt::SizeMode );
     Qt::SizeMode sizeMode() const;
 
-    QskBoxBorderMetrics interpolated( const QskBoxBorderMetrics&, qreal value ) const;
-    QskBoxBorderMetrics toAbsolute ( const QSizeF& ) const;
+    QskBoxBorderMetrics interpolated(
+        const QskBoxBorderMetrics&, qreal value ) const;
+
+    QskBoxBorderMetrics toAbsolute( const QSizeF& ) const;
 
     uint hash( uint seed = 0 ) const;
 
     static QVariant interpolate( const QskBoxBorderMetrics&,
         const QskBoxBorderMetrics&, qreal progress );
 
-private:
+  private:
     QskMargins m_widths;
     Qt::SizeMode m_sizeMode : 2;
 };
 
-inline constexpr QskBoxBorderMetrics::QskBoxBorderMetrics():
-    m_sizeMode( Qt::AbsoluteSize )
-{
-}
-
-inline constexpr QskBoxBorderMetrics::QskBoxBorderMetrics( qreal width, Qt::SizeMode sizeMode ):
-    m_widths( width ),
-    m_sizeMode( sizeMode )
+inline constexpr QskBoxBorderMetrics::QskBoxBorderMetrics()
+    : m_sizeMode( Qt::AbsoluteSize )
 {
 }
 
 inline constexpr QskBoxBorderMetrics::QskBoxBorderMetrics(
-        const QskMargins& widths, Qt::SizeMode sizeMode ):
-    m_widths( widths ),
-    m_sizeMode( sizeMode )
+        qreal width, Qt::SizeMode sizeMode )
+    : m_widths( width )
+    , m_sizeMode( sizeMode )
 {
 }
 
-inline constexpr QskBoxBorderMetrics::QskBoxBorderMetrics( qreal left, qreal top,
-        qreal right, qreal bottom, Qt::SizeMode sizeMode ):
-    m_widths( left, top, right, bottom ),
-    m_sizeMode( sizeMode )
+inline constexpr QskBoxBorderMetrics::QskBoxBorderMetrics(
+        const QskMargins& widths, Qt::SizeMode sizeMode )
+    : m_widths( widths )
+    , m_sizeMode( sizeMode )
+{
+}
+
+inline constexpr QskBoxBorderMetrics::QskBoxBorderMetrics(
+        qreal left, qreal top, qreal right, qreal bottom, Qt::SizeMode sizeMode )
+    : m_widths( left, top, right, bottom )
+    , m_sizeMode( sizeMode )
 {
 }
 

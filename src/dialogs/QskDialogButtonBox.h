@@ -6,9 +6,9 @@
 #ifndef QSK_DIALOG_BUTTON_BOX_H
 #define QSK_DIALOG_BUTTON_BOX_H
 
-#include "QskGlobal.h"
-#include "QskDialog.h"
 #include "QskBox.h"
+#include "QskDialog.h"
+#include "QskGlobal.h"
 
 class QskPushButton;
 
@@ -24,7 +24,7 @@ class QSK_EXPORT QskDialogButtonBox : public QskBox
 
     using Inherited = QskBox;
 
-public:
+  public:
     QSK_SUBCONTROLS( Panel )
 
     QskDialogButtonBox( QQuickItem* parent = nullptr );
@@ -65,7 +65,7 @@ public:
     static bool isDefaultButtonKeyEvent( const QKeyEvent* );
     static QString buttonText( QskDialog::StandardButton );
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void clicked( QskPushButton* button );
     void accepted();
     void rejected();
@@ -73,7 +73,7 @@ Q_SIGNALS:
     void centeredButtonsChanged();
     void orientationChanged();
 
-protected:
+  protected:
     bool event( QEvent* event ) override;
     void updateLayout() override;
 
@@ -81,10 +81,10 @@ protected:
 
     void invalidateLayout();
 
-private Q_SLOTS:
+  private Q_SLOTS:
     void onButtonClicked();
 
-private:
+  private:
     void rearrangeButtons();
 
     class PrivateData;

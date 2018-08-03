@@ -6,13 +6,13 @@
 #include "QskBoxRenderer.h"
 #include "QskGradient.h"
 
-#include "QskBoxRendererColorMap.h"
-#include "QskBoxBorderMetrics.h"
 #include "QskBoxBorderColors.h"
+#include "QskBoxBorderMetrics.h"
+#include "QskBoxRendererColorMap.h"
 #include "QskBoxShapeMetrics.h"
 
-#include <qsggeometry.h>
 #include <qmath.h>
+#include <qsggeometry.h>
 
 using namespace QskVertex;
 
@@ -28,7 +28,7 @@ namespace
 
     class ArcIterator
     {
-    public:
+      public:
         inline ArcIterator() = default;
 
         inline ArcIterator( int stepCount, bool inverted = false )
@@ -59,7 +59,6 @@ namespace
             m_sinStep = qFastSin( angleStep );
         }
 
-
         inline bool isInverted() const { return m_inverted; }
 
         inline double cos() const { return m_cos; }
@@ -87,7 +86,7 @@ namespace
             return qBound( 3, qCeil( arcLength / 3.0 ), 18 ); // every 3 pixels
         }
 
-    private:
+      private:
         double m_cos;
         double m_sin;
 
@@ -104,11 +103,11 @@ namespace
 {
     class BorderValuesUniform
     {
-    public:
-        inline BorderValuesUniform( const QskBoxRenderer::Metrics& metrics ):
-            m_corner( metrics.corner[0] ),
-            m_dx1( m_corner.radiusInnerX ),
-            m_dy1( m_corner.radiusInnerY )
+      public:
+        inline BorderValuesUniform( const QskBoxRenderer::Metrics& metrics )
+            : m_corner( metrics.corner[ 0 ] )
+            , m_dx1( m_corner.radiusInnerX )
+            , m_dy1( m_corner.radiusInnerY )
         {
         }
 
@@ -116,7 +115,7 @@ namespace
         {
             if ( !m_corner.isCropped )
             {
-                m_dx1 = cos * m_corner.radiusInnerX;;
+                m_dx1 = cos * m_corner.radiusInnerX;
                 m_dy1 = sin * m_corner.radiusInnerY;
             }
 
@@ -129,21 +128,21 @@ namespace
         inline qreal dx2( int ) const { return m_dx2; }
         inline qreal dy2( int ) const { return m_dy2; }
 
-    private:
+      private:
         const QskBoxRenderer::Metrics::Corner& m_corner;
         qreal m_dx1, m_dy1, m_dx2, m_dy2;
     };
 
     class BorderValues
     {
-    public:
-        inline BorderValues( const QskBoxRenderer::Metrics& metrics ):
-            m_uniform( metrics.isRadiusRegular )
+      public:
+        inline BorderValues( const QskBoxRenderer::Metrics& metrics )
+            : m_uniform( metrics.isRadiusRegular )
         {
             for ( int i = 0; i < 4; i++ )
             {
-                const auto& c = metrics.corner[i];
-                auto& v = m_inner[i];
+                const auto& c = metrics.corner[ i ];
+                auto& v = m_inner[ i ];
 
                 if ( c.radiusInnerX >= 0.0 )
                 {
@@ -167,40 +166,40 @@ namespace
                     v.ry = 0.0;
                 }
 
-                m_outer[i].x0 = m_outer[i].y0 = 0.0;
-                m_outer[i].rx = c.radiusX;
-                m_outer[i].ry = c.radiusY;
+                m_outer[ i ].x0 = m_outer[ i ].y0 = 0.0;
+                m_outer[ i ].rx = c.radiusX;
+                m_outer[ i ].ry = c.radiusY;
             }
         }
 
         inline void setAngle( qreal cos, qreal sin )
         {
-            m_inner[0].setAngle( cos, sin );
-            m_inner[1].setAngle( cos, sin );
-            m_inner[2].setAngle( cos, sin );
-            m_inner[3].setAngle( cos, sin );
+            m_inner[ 0 ].setAngle( cos, sin );
+            m_inner[ 1 ].setAngle( cos, sin );
+            m_inner[ 2 ].setAngle( cos, sin );
+            m_inner[ 3 ].setAngle( cos, sin );
 
-            m_outer[0].setAngle( cos, sin );
+            m_outer[ 0 ].setAngle( cos, sin );
             if ( !m_uniform )
             {
-                m_outer[1].setAngle( cos, sin );
-                m_outer[2].setAngle( cos, sin );
-                m_outer[3].setAngle( cos, sin );
+                m_outer[ 1 ].setAngle( cos, sin );
+                m_outer[ 2 ].setAngle( cos, sin );
+                m_outer[ 3 ].setAngle( cos, sin );
             }
         }
 
-        inline qreal dx1( int pos ) const { return m_inner[pos].dx; }
-        inline qreal dy1( int pos ) const { return m_inner[pos].dy; }
+        inline qreal dx1( int pos ) const { return m_inner[ pos] .dx; }
+        inline qreal dy1( int pos ) const { return m_inner[ pos ].dy; }
         inline qreal dx2( int pos ) const
-            { return m_uniform ? m_outer[0].dx : m_outer[pos].dx; }
+            { return m_uniform ? m_outer[ 0 ].dx : m_outer[ pos ].dx; }
         inline qreal dy2( int pos ) const
-            { return m_uniform ? m_outer[0].dy : m_outer[pos].dy; }
+            { return m_uniform ? m_outer[ 0 ].dy : m_outer[ pos ].dy; }
 
-    private:
+      private:
         bool m_uniform;
         class Values
         {
-        public:
+          public:
             inline void setAngle( qreal cos, qreal sin )
             {
                 dx = x0 + cos * rx;
@@ -211,19 +210,19 @@ namespace
             qreal x0, y0, rx, ry;
         };
 
-        Values m_inner[4];
-        Values m_outer[4];
+        Values m_inner[ 4 ];
+        Values m_outer[ 4 ];
     };
 
     class FillValues
     {
-    public:
+      public:
         inline FillValues( const QskBoxRenderer::Metrics& metrics )
         {
             for ( int i = 0; i < 4; i++ )
             {
-                const auto& c = metrics.corner[i];
-                auto& v = m_inner[i];
+                const auto& c = metrics.corner[ i ];
+                auto& v = m_inner[ i ];
 
                 if ( c.radiusInnerX >= 0.0 )
                 {
@@ -251,19 +250,19 @@ namespace
 
         inline void setAngle( qreal cos, qreal sin )
         {
-            m_inner[0].setAngle( cos, sin );
-            m_inner[1].setAngle( cos, sin );
-            m_inner[2].setAngle( cos, sin );
-            m_inner[3].setAngle( cos, sin );
+            m_inner[ 0 ].setAngle( cos, sin );
+            m_inner[ 1 ].setAngle( cos, sin );
+            m_inner[ 2 ].setAngle( cos, sin );
+            m_inner[ 3 ].setAngle( cos, sin );
         }
 
-        inline qreal dx( int pos ) const { return m_inner[pos].dx; }
-        inline qreal dy( int pos ) const { return m_inner[pos].dy; }
+        inline qreal dx( int pos ) const { return m_inner[ pos ].dx; }
+        inline qreal dy( int pos ) const { return m_inner[ pos ].dy; }
 
-    private:
+      private:
         class Values
         {
-        public:
+          public:
             inline void setAngle( qreal cos, qreal sin )
             {
                 dx = x0 + cos * rx;
@@ -274,7 +273,7 @@ namespace
             qreal x0, y0, rx, ry;
         };
 
-        Values m_inner[4];
+        Values m_inner[ 4 ];
     };
 }
 
@@ -282,32 +281,32 @@ namespace
 {
     class VRectEllipseIterator
     {
-    public:
-        VRectEllipseIterator( const QskBoxRenderer::Metrics& metrics ):
-            m_metrics( metrics ),
-            m_values( metrics )
+      public:
+        VRectEllipseIterator( const QskBoxRenderer::Metrics& metrics )
+            : m_metrics( metrics )
+            , m_values( metrics )
         {
             const auto& c = metrics.corner;
 
-            m_v[0].left = c[TopLeft].centerX;
-            m_v[0].right = c[TopRight].centerX;
-            m_v[0].y = metrics.innerQuad.top;
+            m_v[ 0 ].left = c[ TopLeft ].centerX;
+            m_v[ 0 ].right = c[ TopRight ].centerX;
+            m_v[ 0 ].y = metrics.innerQuad.top;
 
-            m_v[1] = m_v[0];
+            m_v[ 1 ] = m_v[ 0 ];
 
-            m_leadingCorner = ( c[TopLeft].stepCount >= c[TopRight].stepCount )
+            m_leadingCorner = ( c[ TopLeft ].stepCount >= c[ TopRight ].stepCount )
                 ? TopLeft : TopRight;
 
-            m_arcIterator.reset( c[m_leadingCorner].stepCount, false );
+            m_arcIterator.reset( c[ m_leadingCorner ].stepCount, false );
         }
 
         template< class ColorIterator >
         inline void setGradientLine( const ColorIterator& it, ColoredLine* line )
         {
             const qreal y = it.value();
-            const qreal f = ( y - m_v[0].y ) / ( m_v[1].y - m_v[0].y );
-            const qreal left = m_v[0].left + f * ( m_v[1].left - m_v[0].left );
-            const qreal right = m_v[0].right + f * ( m_v[1].right - m_v[0].right );
+            const qreal f = ( y - m_v[ 0 ].y ) / ( m_v[ 1 ].y - m_v[ 0 ].y );
+            const qreal left = m_v[ 0 ].left + f * ( m_v[ 1 ].left - m_v[ 0 ].left );
+            const qreal right = m_v[ 0 ].right + f * ( m_v[ 1 ].right - m_v[ 0 ].right );
 
             line->setLine( left, y, right, y, it.color() );
         }
@@ -315,13 +314,13 @@ namespace
         template< class ColorIterator >
         inline void setContourLine( const ColorIterator& it, ColoredLine* line )
         {
-            line->setLine( m_v[1].left, m_v[1].y,
-                m_v[1].right, m_v[1].y, it.colorAt( m_v[1].y ) );
+            line->setLine( m_v[ 1 ].left, m_v[ 1 ].y,
+                m_v[ 1 ].right, m_v[ 1 ].y, it.colorAt( m_v[ 1 ].y ) );
         }
 
         inline qreal value() const
         {
-            return m_v[1].y;
+            return m_v[ 1 ].y;
         }
 
         inline bool advance()
@@ -334,18 +333,18 @@ namespace
                 if ( m_arcIterator.isInverted() )
                     return false;
 
-                m_leadingCorner = ( c[BottomLeft].stepCount >= c[BottomRight].stepCount )
+                m_leadingCorner = ( c[ BottomLeft ].stepCount >= c[ BottomRight ].stepCount )
                     ? BottomLeft : BottomRight;
 
-                m_arcIterator.reset( c[m_leadingCorner].stepCount, true );
+                m_arcIterator.reset( c[ m_leadingCorner ].stepCount, true );
 
                 if ( centerQuad.top < centerQuad.bottom )
                 {
-                    m_v[0] = m_v[1];
+                    m_v[ 0 ] = m_v[ 1 ];
 
-                    m_v[1].left = m_metrics.innerQuad.left;
-                    m_v[1].right = m_metrics.innerQuad.right;
-                    m_v[1].y = centerQuad.bottom;
+                    m_v[ 1 ].left = m_metrics.innerQuad.left;
+                    m_v[ 1 ].right = m_metrics.innerQuad.right;
+                    m_v[ 1 ].y = centerQuad.bottom;
 
                     return true;
                 }
@@ -354,60 +353,60 @@ namespace
             m_arcIterator.increment();
             m_values.setAngle( m_arcIterator.cos(), m_arcIterator.sin() );
 
-            m_v[0] = m_v[1];
+            m_v[ 0 ] = m_v[ 1 ];
 
             if ( m_arcIterator.isInverted() )
             {
-                m_v[1].left = c[BottomLeft].centerX - m_values.dx( BottomLeft );
-                m_v[1].right = c[BottomRight].centerX + m_values.dx( BottomRight );
-                m_v[1].y = c[ m_leadingCorner ].centerY + m_values.dy( m_leadingCorner );
+                m_v[ 1 ].left = c[ BottomLeft ].centerX - m_values.dx( BottomLeft );
+                m_v[ 1 ].right = c[ BottomRight ].centerX + m_values.dx( BottomRight );
+                m_v[ 1 ].y = c[ m_leadingCorner ].centerY + m_values.dy( m_leadingCorner );
             }
             else
             {
-                m_v[1].left = c[TopLeft].centerX - m_values.dx( TopLeft );
-                m_v[1].right = c[TopRight].centerX + m_values.dx( TopRight );
-                m_v[1].y = c[ m_leadingCorner ].centerY - m_values.dy( m_leadingCorner );
+                m_v[ 1 ].left = c[ TopLeft ].centerX - m_values.dx( TopLeft );
+                m_v[ 1 ].right = c[ TopRight ].centerX + m_values.dx( TopRight );
+                m_v[ 1 ].y = c[ m_leadingCorner ].centerY - m_values.dy( m_leadingCorner );
             }
 
             return true;
         }
 
-    private:
+      private:
         const QskBoxRenderer::Metrics& m_metrics;
         ArcIterator m_arcIterator;
         int m_leadingCorner;
         FillValues m_values;
-        struct { qreal left, right, y; } m_v[2];
+        struct { qreal left, right, y; } m_v[ 2 ];
     };
 
     class HRectEllipseIterator
     {
-    public:
-        HRectEllipseIterator( const QskBoxRenderer::Metrics& metrics ):
-            m_metrics( metrics ),
-            m_values( metrics )
+      public:
+        HRectEllipseIterator( const QskBoxRenderer::Metrics& metrics )
+            : m_metrics( metrics )
+            , m_values( metrics )
         {
             const auto& c = metrics.corner;
 
-            m_v[0].top = c[TopLeft].centerY;
-            m_v[0].bottom = c[BottomLeft].centerY;
-            m_v[0].x = metrics.innerQuad.left;
+            m_v[ 0 ].top = c[ TopLeft ].centerY;
+            m_v[ 0 ].bottom = c[ BottomLeft ].centerY;
+            m_v[ 0 ].x = metrics.innerQuad.left;
 
-            m_v[1] = m_v[0];
+            m_v[ 1 ] = m_v[ 0 ];
 
-            m_leadingCorner = ( c[TopLeft].stepCount >= c[BottomLeft].stepCount )
+            m_leadingCorner = ( c[ TopLeft ].stepCount >= c[ BottomLeft ].stepCount )
                 ? TopLeft : BottomLeft;
 
-            m_arcIterator.reset( c[m_leadingCorner].stepCount, true );
+            m_arcIterator.reset( c[ m_leadingCorner ].stepCount, true );
         }
 
         template< class ColorIterator >
         inline void setGradientLine( const ColorIterator& it, ColoredLine* line )
         {
             const qreal x = it.value();
-            const qreal f = ( x - m_v[0].x ) / ( m_v[1].x - m_v[0].x );
-            const qreal top = m_v[0].top + f * ( m_v[1].top - m_v[0].top );
-            const qreal bottom = m_v[0].bottom + f * ( m_v[1].bottom - m_v[0].bottom );
+            const qreal f = ( x - m_v[ 0 ].x ) / ( m_v[ 1 ].x - m_v[ 0 ].x );
+            const qreal top = m_v[ 0 ].top + f * ( m_v[ 1 ].top - m_v[ 0 ].top );
+            const qreal bottom = m_v[ 0 ].bottom + f * ( m_v[ 1 ].bottom - m_v[ 0 ].bottom );
 
             line->setLine( x, top, x, bottom, it.color() );
         }
@@ -415,13 +414,13 @@ namespace
         template< class ColorIterator >
         inline void setContourLine( const ColorIterator& it, ColoredLine* line )
         {
-            line->setLine( m_v[1].x, m_v[1].top,
-                m_v[1].x, m_v[1].bottom, it.colorAt( m_v[1].x ) );
+            line->setLine( m_v[ 1 ].x, m_v[ 1 ].top,
+                m_v[ 1 ].x, m_v[ 1 ].bottom, it.colorAt( m_v[ 1 ].x ) );
         }
 
         inline qreal value() const
         {
-            return m_v[1].x;
+            return m_v[ 1 ].x;
         }
 
         inline bool advance()
@@ -434,17 +433,17 @@ namespace
                 if ( !m_arcIterator.isInverted() )
                     return false;
 
-                m_leadingCorner = ( c[TopRight].stepCount >= c[BottomRight].stepCount )
+                m_leadingCorner = ( c[ TopRight ].stepCount >= c[ BottomRight ].stepCount )
                     ? TopRight : BottomRight;
 
-                m_arcIterator.reset( c[m_leadingCorner].stepCount, false );
+                m_arcIterator.reset( c[ m_leadingCorner ].stepCount, false );
                 if ( centerQuad.left < centerQuad.right )
                 {
-                    m_v[0] = m_v[1];
+                    m_v[ 0 ] = m_v[ 1 ];
 
-                    m_v[1].top = m_metrics.innerQuad.top;
-                    m_v[1].bottom = m_metrics.innerQuad.bottom;
-                    m_v[1].x = centerQuad.right;
+                    m_v[ 1 ].top = m_metrics.innerQuad.top;
+                    m_v[ 1 ].bottom = m_metrics.innerQuad.bottom;
+                    m_v[ 1 ].x = centerQuad.right;
 
                     return true;
                 }
@@ -453,30 +452,30 @@ namespace
             m_arcIterator.increment();
             m_values.setAngle( m_arcIterator.cos(), m_arcIterator.sin() );
 
-            m_v[0] = m_v[1];
+            m_v[ 0 ] = m_v[ 1 ];
 
             if ( m_arcIterator.isInverted() )
             {
-                m_v[1].top = c[TopLeft].centerY - m_values.dy( TopLeft );
-                m_v[1].bottom = c[BottomLeft].centerY + m_values.dy( BottomLeft );
-                m_v[1].x = c[m_leadingCorner].centerX - m_values.dx( m_leadingCorner );
+                m_v[ 1 ].top = c[ TopLeft ].centerY - m_values.dy( TopLeft );
+                m_v[ 1 ].bottom = c[ BottomLeft ].centerY + m_values.dy( BottomLeft );
+                m_v[ 1 ].x = c[ m_leadingCorner ].centerX - m_values.dx( m_leadingCorner );
             }
             else
             {
-                m_v[1].top = c[TopRight].centerY - m_values.dy( TopRight );
-                m_v[1].bottom = c[BottomRight].centerY + m_values.dy( BottomRight );
-                m_v[1].x = c[m_leadingCorner].centerX + m_values.dx( m_leadingCorner );
+                m_v[ 1 ].top = c[ TopRight ].centerY - m_values.dy( TopRight );
+                m_v[ 1 ].bottom = c[ BottomRight ].centerY + m_values.dy( BottomRight );
+                m_v[ 1 ].x = c[ m_leadingCorner ].centerX + m_values.dx( m_leadingCorner );
             }
 
             return true;
         }
 
-    private:
+      private:
         const QskBoxRenderer::Metrics& m_metrics;
         ArcIterator m_arcIterator;
         int m_leadingCorner;
         FillValues m_values;
-        struct { qreal top, bottom, x; } m_v[2];
+        struct { qreal top, bottom, x; } m_v[ 2 ];
     };
 }
 
@@ -484,15 +483,15 @@ namespace
 {
     class BorderMapNone
     {
-    public:
+      public:
         static inline constexpr Color colorAt( int ) { return Color(); }
     };
 
     class BorderMapSolid
     {
-    public:
-        inline BorderMapSolid( QRgb rgb ):
-            m_color( rgb )
+      public:
+        inline BorderMapSolid( QRgb rgb )
+            : m_color( rgb )
         {
         }
 
@@ -503,11 +502,11 @@ namespace
 
     class BorderMapGradient
     {
-    public:
-        inline BorderMapGradient( int stepCount, QRgb rgb1, QRgb rgb2 ):
-            m_stepCount( stepCount ),
-            m_color1( rgb1 ),
-            m_color2( rgb2 )
+      public:
+        inline BorderMapGradient( int stepCount, QRgb rgb1, QRgb rgb2 )
+            : m_stepCount( stepCount )
+            , m_color1( rgb1 )
+            , m_color2( rgb2 )
         {
         }
 
@@ -516,7 +515,7 @@ namespace
             return m_color1.interpolatedTo( m_color2, step / m_stepCount );
         }
 
-    private:
+      private:
         const qreal m_stepCount;
         const Color m_color1, m_color2;
     };
@@ -524,9 +523,9 @@ namespace
     template< class Line, class BorderValues >
     class Stroker
     {
-    public:
-        inline Stroker( const QskBoxRenderer::Metrics& metrics ):
-            m_metrics( metrics )
+      public:
+        inline Stroker( const QskBoxRenderer::Metrics& metrics )
+            : m_metrics( metrics )
         {
         }
 
@@ -539,10 +538,10 @@ namespace
             const auto& c = m_metrics.corner;
 #if 1
             // TODO ...
-            const int stepCount = c[0].stepCount;
+            const int stepCount = c[ 0 ].stepCount;
 #endif
 
-            Line* linesBR, * linesTR, * linesTL, * linesBL;
+            Line *linesBR, *linesTR, *linesTL, *linesBL;
             linesBR = linesTR = linesTL = linesBL = nullptr;
 
             const int numCornerLines = stepCount + 1;
@@ -599,44 +598,44 @@ namespace
                     {
                         constexpr auto corner = TopLeft;
 
-                        linesTL[j].setLine(
-                            c[corner].centerX - v.dx1( corner ),
-                            c[corner].centerY - v.dy1( corner ),
-                            c[corner].centerX - v.dx2( corner ),
-                            c[corner].centerY - v.dy2( corner ),
+                        linesTL[ j ].setLine(
+                            c[ corner ].centerX - v.dx1( corner ),
+                            c[ corner ].centerY - v.dy1( corner ),
+                            c[ corner ].centerX - v.dx2( corner ),
+                            c[ corner ].centerY - v.dy2( corner ),
                             borderMapTL.colorAt( j ) );
                     }
 
                     {
                         constexpr auto corner = TopRight;
 
-                        linesTR[k].setLine(
-                            c[corner].centerX + v.dx1( corner ),
-                            c[corner].centerY - v.dy1( corner ),
-                            c[corner].centerX + v.dx2( corner ),
-                            c[corner].centerY - v.dy2( corner ),
+                        linesTR[ k ].setLine(
+                            c[ corner ].centerX + v.dx1( corner ),
+                            c[ corner ].centerY - v.dy1( corner ),
+                            c[ corner ].centerX + v.dx2( corner ),
+                            c[ corner ].centerY - v.dy2( corner ),
                             borderMapTR.colorAt( k ) );
                     }
 
                     {
                         constexpr auto corner = BottomLeft;
 
-                        linesBL[k].setLine(
-                            c[corner].centerX - v.dx1( corner ),
-                            c[corner].centerY + v.dy1( corner ),
-                            c[corner].centerX - v.dx2( corner ),
-                            c[corner].centerY + v.dy2( corner ),
+                        linesBL[ k ].setLine(
+                            c[ corner ].centerX - v.dx1( corner ),
+                            c[ corner ].centerY + v.dy1( corner ),
+                            c[ corner ].centerX - v.dx2( corner ),
+                            c[ corner ].centerY + v.dy2( corner ),
                             borderMapBL.colorAt( k ) );
                     }
 
                     {
                         constexpr auto corner = BottomRight;
 
-                        linesBR[j].setLine(
-                            c[corner].centerX + v.dx1( corner ),
-                            c[corner].centerY + v.dy1( corner ),
-                            c[corner].centerX + v.dx2( corner ),
-                            c[corner].centerY + v.dy2( corner ),
+                        linesBR[ j ].setLine(
+                            c[ corner ].centerX + v.dx1( corner ),
+                            c[ corner ].centerY + v.dy1( corner ),
+                            c[ corner ].centerX + v.dx2( corner ),
+                            c[ corner ].centerY + v.dy2( corner ),
                             borderMapBR.colorAt( j ) );
                     }
                 }
@@ -650,36 +649,36 @@ namespace
                         const int j = it.step();
                         const int k = numFillLines - it.step() - 1;
 
-                        const qreal x11 = c[TopLeft].centerX - v.dx1( TopLeft );
-                        const qreal x12 = c[TopRight].centerX + v.dx1( TopRight );
-                        const qreal y1 = c[TopLeft].centerY - v.dy1( TopLeft );
+                        const qreal x11 = c[ TopLeft ].centerX - v.dx1( TopLeft );
+                        const qreal x12 = c[ TopRight ].centerX + v.dx1( TopRight );
+                        const qreal y1 = c[ TopLeft ].centerY - v.dy1( TopLeft );
                         const auto c1 = fillMap.colorAt( ( y1 - ri.top ) / ri.height );
 
-                        const qreal x21 = c[BottomLeft].centerX - v.dx1( BottomLeft );
-                        const qreal x22 = c[BottomRight].centerX + v.dx1( BottomRight );
-                        const qreal y2 = c[BottomLeft].centerY + v.dy1( BottomLeft );
+                        const qreal x21 = c[ BottomLeft ].centerX - v.dx1( BottomLeft );
+                        const qreal x22 = c[ BottomRight ].centerX + v.dx1( BottomRight );
+                        const qreal y2 = c[ BottomLeft ].centerY + v.dy1( BottomLeft );
                         const auto c2 = fillMap.colorAt( ( y2 - ri.top ) / ri.height );
 
-                        fillLines[j].setLine( x11, y1, x12, y1, c1 );
-                        fillLines[k].setLine( x21, y2, x22, y2, c2 );
+                        fillLines[ j ].setLine( x11, y1, x12, y1, c1 );
+                        fillLines[ k ].setLine( x21, y2, x22, y2, c2 );
                     }
                     else
                     {
                         const int j = stepCount - it.step();
                         const int k = numFillLines - 1 - stepCount + it.step();
 
-                        const qreal x1 = c[TopLeft].centerX - v.dx1( TopLeft );
-                        const qreal y11 = c[TopLeft].centerY - v.dy1( TopLeft );
-                        const qreal y12 = c[BottomLeft].centerY + v.dy1( BottomLeft );;
+                        const qreal x1 = c[ TopLeft ].centerX - v.dx1( TopLeft );
+                        const qreal y11 = c[ TopLeft ].centerY - v.dy1( TopLeft );
+                        const qreal y12 = c[ BottomLeft ].centerY + v.dy1( BottomLeft );
                         const auto c1 = fillMap.colorAt( ( x1 - ri.left ) / ri.width );
 
-                        const qreal x2 = c[TopRight].centerX + v.dx1( TopRight );
-                        const qreal y21 = c[TopRight].centerY - v.dy1( TopRight );
-                        const qreal y22 = c[BottomRight].centerY + v.dy1( BottomRight );;
+                        const qreal x2 = c[ TopRight ].centerX + v.dx1( TopRight );
+                        const qreal y21 = c[ TopRight ].centerY - v.dy1( TopRight );
+                        const qreal y22 = c[ BottomRight ].centerY + v.dy1( BottomRight );
                         const auto c2 = fillMap.colorAt( ( x2 - ri.left ) / ri.width );
 
-                        fillLines[j].setLine( x1, y11, x1, y12, c1 );
-                        fillLines[k].setLine( x2, y21, x2, y22, c2 );
+                        fillLines[ j ].setLine( x1, y11, x1, y12, c1 );
+                        fillLines[ k ].setLine( x2, y21, x2, y22, c2 );
                     }
                 }
             }
@@ -690,14 +689,14 @@ namespace
                 const int k = 4 * numCornerLines;
 
                 if ( orientation == Qt::Vertical )
-                    borderLines[k] = borderLines[0];
+                    borderLines[ k ] = borderLines[ 0 ];
                 else
-                    borderLines[0] = borderLines[k];
+                    borderLines[ 0 ] = borderLines[ k ];
             }
 #endif
         }
 
-    private:
+      private:
         const QskBoxRenderer::Metrics& m_metrics;
     };
 }
@@ -705,7 +704,7 @@ namespace
 static inline int qskFillLineCount(
     const QskBoxRenderer::Metrics& metrics, const QskGradient& gradient )
 {
-    const int stepCount = metrics.corner[0].stepCount;
+    const int stepCount = metrics.corner[ 0 ].stepCount;
 
     if ( !gradient.isVisible() )
         return 0;
@@ -782,7 +781,8 @@ static inline int qskFillLineCount(
 }
 
 template< class Line, class BorderMap, class FillMap >
-static inline void qskRenderLines( const QskBoxRenderer::Metrics& metrics,
+static inline void qskRenderLines(
+    const QskBoxRenderer::Metrics& metrics,
     Qt::Orientation orientation, Line* borderLines,
     const BorderMap& borderMapTL, const BorderMap& borderMapTR,
     const BorderMap& borderMapBL, const BorderMap& borderMapBR,
@@ -793,28 +793,32 @@ static inline void qskRenderLines( const QskBoxRenderer::Metrics& metrics,
         // the same border width for all edges
 
         Stroker< Line, BorderValuesUniform > stroker( metrics );
-        stroker.createLines( orientation, borderLines, borderMapTL, borderMapTR,
-            borderMapBL, borderMapBR, fillLines, fillMap );
+        stroker.createLines( orientation, borderLines,
+            borderMapTL, borderMapTR, borderMapBL, borderMapBR,
+            fillLines, fillMap );
     }
     else
     {
         Stroker< Line, BorderValues > stroker( metrics );
-        stroker.createLines( orientation, borderLines, borderMapTL, borderMapTR,
-            borderMapBL, borderMapBR, fillLines, fillMap );
+        stroker.createLines( orientation, borderLines,
+            borderMapTL, borderMapTR, borderMapBL, borderMapBR,
+            fillLines, fillMap );
     }
 }
 
 template< class Line, class BorderMap, class FillMap >
-static inline void qskRenderLines( const QskBoxRenderer::Metrics& metrics,
-    Qt::Orientation orientation, Line* borderLines,
-    const BorderMap& borderMap, Line* fillLines, const FillMap& fillMap )
+static inline void qskRenderLines(
+    const QskBoxRenderer::Metrics& metrics, Qt::Orientation orientation,
+    Line* borderLines, const BorderMap& borderMap, Line* fillLines,
+    const FillMap& fillMap )
 {
-    qskRenderLines( metrics, orientation, borderLines, borderMap, borderMap,
-        borderMap, borderMap, fillLines, fillMap );
+    qskRenderLines( metrics, orientation, borderLines,
+        borderMap, borderMap, borderMap, borderMap, fillLines, fillMap );
 }
 
 template< class Line, class BorderMap >
-static inline void qskRenderBorderLines( const QskBoxRenderer::Metrics& metrics,
+static inline void qskRenderBorderLines(
+    const QskBoxRenderer::Metrics& metrics,
     Qt::Orientation orientation, Line* lines,
     const BorderMap& borderMapTL, const BorderMap& borderMapTR,
     const BorderMap& borderMapBL, const BorderMap& borderMapBR )
@@ -824,7 +828,8 @@ static inline void qskRenderBorderLines( const QskBoxRenderer::Metrics& metrics,
 }
 
 template< class Line, class BorderMap >
-static inline void qskRenderBorderLines( const QskBoxRenderer::Metrics& metrics,
+static inline void qskRenderBorderLines(
+    const QskBoxRenderer::Metrics& metrics,
     Qt::Orientation orientation, Line* lines, const BorderMap& borderMap )
 {
     qskRenderBorderLines( metrics, orientation, lines,
@@ -850,24 +855,24 @@ static inline void qskRenderBorder( const QskBoxRenderer::Metrics& metrics,
     }
     else
     {
-        const int stepCount = metrics.corner[0].stepCount;
+        const int stepCount = metrics.corner[ 0 ].stepCount;
 
         qskRenderBorderLines( metrics, orientation, line,
             BorderMapGradient( stepCount, c.rgb( Qsk::Top ), c.rgb( Qsk::Left ) ),
             BorderMapGradient( stepCount, c.rgb( Qsk::Right ), c.rgb( Qsk::Top ) ),
             BorderMapGradient( stepCount, c.rgb( Qsk::Left ), c.rgb( Qsk::Bottom ) ),
-            BorderMapGradient( stepCount, c.rgb( Qsk::Bottom ), c.rgb( Qsk::Right ) )
-        );
+            BorderMapGradient( stepCount, c.rgb( Qsk::Bottom ), c.rgb( Qsk::Right ) ) );
     }
 }
 
-static inline void qskRenderFillRandom( const QskBoxRenderer::Metrics& metrics,
+static inline void qskRenderFillRandom(
+    const QskBoxRenderer::Metrics& metrics,
     const QskGradient& gradient, ColoredLine* line )
 {
     if ( gradient.isMonochrome() )
     {
         const ColorMapSolid map( gradient.startColor() );
-        qskRenderFillLines( metrics, Qt::Vertical,  line, map );
+        qskRenderFillLines( metrics, Qt::Vertical, line, map );
     }
     else
     {
@@ -905,7 +910,7 @@ static inline void qskRenderBoxRandom(
     }
     else
     {
-        const int n = metrics.corner[0].stepCount;
+        const int n = metrics.corner[ 0 ].stepCount;
 
         const BorderMapGradient tl( n, bc.rgb( Qsk::Top ), bc.rgb( Qsk::Left ) );
         const BorderMapGradient tr( n, bc.rgb( Qsk::Right ), bc.rgb( Qsk::Top ) );
@@ -928,7 +933,8 @@ static inline void qskRenderBoxRandom(
     }
 }
 
-static inline void qskRenderFillOrdered( const QskBoxRenderer::Metrics& metrics,
+static inline void qskRenderFillOrdered(
+    const QskBoxRenderer::Metrics& metrics,
     const QskGradient& gradient, ColoredLine* lines )
 {
     const auto& r = metrics.innerQuad;
@@ -938,7 +944,7 @@ static inline void qskRenderFillOrdered( const QskBoxRenderer::Metrics& metrics,
         implemented TODO ...
      */
 
-    if( gradient.orientation() == QskGradient::Horizontal )
+    if ( gradient.orientation() == QskGradient::Horizontal )
     {
         HRectEllipseIterator it( metrics );
         QskVertex::fillOrdered( it, r.left, r.right, gradient, lines );
@@ -951,21 +957,21 @@ static inline void qskRenderFillOrdered( const QskBoxRenderer::Metrics& metrics,
 }
 
 QskBoxRenderer::Metrics::Metrics( const QRectF& rect,
-    const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& border ):
-    outerQuad( rect )
+        const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& border )
+    : outerQuad( rect )
 {
     isRadiusRegular = shape.isRectellipse();
 
     for ( int i = 0; i < 4; i++ )
     {
-        auto& c = corner[i];
+        auto& c = corner[ i ];
 
         const QSizeF radius = shape.radius( static_cast< Qt::Corner >( i ) );
         c.radiusX = qBound( 0.0, radius.width(), 0.5 * outerQuad.width );
         c.radiusY = qBound( 0.0, radius.height(), 0.5 * outerQuad.height );
         c.stepCount = ArcIterator::segmentHint( qMax( c.radiusX, c.radiusY ) );
 
-        switch( i )
+        switch ( i )
         {
             case TopLeft:
                 c.centerX = outerQuad.left + c.radiusX;
@@ -989,16 +995,16 @@ QskBoxRenderer::Metrics::Metrics( const QRectF& rect,
         }
     }
 
-    centerQuad.left = qMax( corner[ TopLeft].centerX,
+    centerQuad.left = qMax( corner[ TopLeft ].centerX,
         corner[ BottomLeft ].centerX );
 
-    centerQuad.right = qMin( corner[ TopRight].centerX,
+    centerQuad.right = qMin( corner[ TopRight ].centerX,
         corner[ BottomRight ].centerX );
 
-    centerQuad.top = qMax( corner[ TopLeft].centerY,
+    centerQuad.top = qMax( corner[ TopLeft ].centerY,
         corner[ TopRight ].centerY );
 
-    centerQuad.bottom = qMin( corner[ BottomLeft].centerY,
+    centerQuad.bottom = qMin( corner[ BottomLeft ].centerY,
         corner[ BottomRight ].centerY );
 
     centerQuad.width = centerQuad.right - centerQuad.left;
@@ -1040,17 +1046,17 @@ QskBoxRenderer::Metrics::Metrics( const QRectF& rect,
 
     for ( int i = 0; i < 4; i++ )
     {
-        auto& c = corner[i];
+        auto& c = corner[ i ];
 
-        switch( i )
+        switch ( i )
         {
             case TopLeft:
             {
                 c.radiusInnerX = c.radiusX - borderLeft;
                 c.radiusInnerY = c.radiusY - borderTop;
 
-                c.isCropped = ( c.centerX <= innerQuad.left )
-                    || ( c.centerY <= innerQuad.top );
+                c.isCropped = ( c.centerX <= innerQuad.left ) ||
+                    ( c.centerY <= innerQuad.top );
 
                 break;
             }
@@ -1059,8 +1065,8 @@ QskBoxRenderer::Metrics::Metrics( const QRectF& rect,
                 c.radiusInnerX = c.radiusX - borderRight;
                 c.radiusInnerY = c.radiusY - borderTop;
 
-                c.isCropped = ( c.centerX >= innerQuad.right )
-                    || ( c.centerY <= innerQuad.top );
+                c.isCropped = ( c.centerX >= innerQuad.right ) || 
+                    ( c.centerY <= innerQuad.top );
                 break;
             }
             case BottomLeft:
@@ -1068,8 +1074,8 @@ QskBoxRenderer::Metrics::Metrics( const QRectF& rect,
                 c.radiusInnerX = c.radiusX - borderLeft;
                 c.radiusInnerY = c.radiusY - borderBottom;
 
-                c.isCropped = ( c.centerX <= innerQuad.left )
-                    || ( c.centerY >= innerQuad.bottom );
+                c.isCropped = ( c.centerX <= innerQuad.left ) ||
+                    ( c.centerY >= innerQuad.bottom );
                 break;
             }
             case BottomRight:
@@ -1077,8 +1083,8 @@ QskBoxRenderer::Metrics::Metrics( const QRectF& rect,
                 c.radiusInnerX = c.radiusX - borderRight;
                 c.radiusInnerY = c.radiusY - borderBottom;
 
-                c.isCropped = ( c.centerX >= innerQuad.right )
-                    || ( c.centerY >= innerQuad.bottom );
+                c.isCropped = ( c.centerX >= innerQuad.right ) ||
+                    ( c.centerY >= innerQuad.bottom );
                 break;
             }
         }
@@ -1092,8 +1098,10 @@ QskBoxRenderer::Metrics::Metrics( const QRectF& rect,
 
     // number of steps for iterating over the corners
 
-    isBorderRegular = ( borderLeft == borderTop )
-        && ( borderTop == borderRight ) && ( borderRight == borderBottom );
+    isBorderRegular =
+        ( borderLeft == borderTop ) &&
+        ( borderTop == borderRight ) &&
+        ( borderRight == borderBottom );
 }
 
 void QskBoxRenderer::renderRectellipseBorder(
@@ -1108,7 +1116,7 @@ void QskBoxRenderer::renderRectellipseBorder(
         return;
     }
 
-    const int stepCount = metrics.corner[0].stepCount;
+    const int stepCount = metrics.corner[ 0 ].stepCount;
     const int lineCount = 4 * ( stepCount + 1 ) + 1;
 
     const auto line = allocateLines< Line >( geometry, lineCount );
@@ -1140,7 +1148,7 @@ void QskBoxRenderer::renderRectellipseFill(
         return;
     }
 
-    const int stepCount = metrics.corner[0].stepCount;
+    const int stepCount = metrics.corner[ 0 ].stepCount;
 
     int lineCount = 2 * ( stepCount + 1 );
     if ( metrics.centerQuad.top >= metrics.centerQuad.bottom )
@@ -1191,7 +1199,7 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
         }
     }
 
-    const int stepCount = metrics.corner[0].stepCount;
+    const int stepCount = metrics.corner[ 0 ].stepCount;
 
     int borderLineCount = 0;
     if ( borderColors.isVisible() && metrics.innerQuad != metrics.outerQuad )
@@ -1250,8 +1258,8 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
     {
         if ( fillRandom )
         {
-            qskRenderBoxRandom( metrics, borderColors, gradient,
-                line, line + fillLineCount );
+            qskRenderBoxRandom( metrics, borderColors,
+                gradient, line, line + fillLineCount );
         }
         else
         {
@@ -1280,8 +1288,8 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
             if ( extraLine )
             {
                 const auto l = line + fillLineCount;
-                l[0].p1 = l[-1].p2;
-                l[0].p2 = l[1].p1;
+                l[ 0 ].p1 = l[ -1 ].p2;
+                l[ 0 ].p2 = l[ 1 ].p1;
             }
         }
     }

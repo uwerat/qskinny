@@ -5,7 +5,7 @@
 
 class SoundControl : public QskBox
 {
-public:
+  public:
     QSK_SUBCONTROLS( Overlay, CrossHair, Marker, Vehicle, SliderControl, MarkerControl )
 
     SoundControl( QQuickItem* parent = nullptr );

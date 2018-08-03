@@ -11,7 +11,7 @@
 
 class QSK_EXPORT QskFlickAnimator : public QskAnimator
 {
-public:
+  public:
     QskFlickAnimator();
     ~QskFlickAnimator() override;
 
@@ -26,15 +26,15 @@ public:
     void flick( qreal degrees, qreal velocity );
     void accelerate( qreal degrees, qreal velocity );
 
-protected:
+  protected:
     void setup() override;
     void advance( qreal value ) override final;
     void done() override;
 
     virtual void translate( qreal dx, qreal dy ) = 0;
 
-private:
-    qreal m_velocity[2];
+  private:
+    qreal m_velocity[ 2 ];
 
     qreal m_degrees;
     qreal m_cos;
@@ -50,12 +50,12 @@ inline qreal QskFlickAnimator::angle() const
 
 inline qreal QskFlickAnimator::velocity() const
 {
-    return m_velocity[0];
+    return m_velocity[ 0 ];
 }
 
 inline qreal QskFlickAnimator::animatedVelocity() const
 {
-    return m_velocity[1];
+    return m_velocity[ 1 ];
 }
 
 #endif

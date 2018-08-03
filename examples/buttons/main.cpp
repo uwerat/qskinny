@@ -3,15 +3,15 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#include <SkinnyShapeProvider.h>
 #include <SkinnyFont.h>
+#include <SkinnyShapeProvider.h>
 #include <SkinnyShortcut.h>
 
 #include <QskModule.h>
 #include <QskObjectCounter.h>
 
-#include <QQmlApplicationEngine>
 #include <QGuiApplication>
+#include <QQmlApplicationEngine>
 
 int main( int argc, char* argv[] )
 {

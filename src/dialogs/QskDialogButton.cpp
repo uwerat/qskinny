@@ -11,15 +11,15 @@ QSK_SUBCONTROL( QskDialogButton, Text )
 QSK_SUBCONTROL( QskDialogButton, Graphic )
 
 QskDialogButton::QskDialogButton(
-        QskDialog::StandardButton standardButton, QQuickItem* parent ):
-    QskPushButton( parent ),
-    m_buttonType( standardButton )
+        QskDialog::StandardButton standardButton, QQuickItem* parent )
+    : QskPushButton( parent )
+    , m_buttonType( standardButton )
 {
     setText( QskDialogButtonBox::buttonText( m_buttonType ) );
 }
 
-QskDialogButton::QskDialogButton( QQuickItem* parent ):
-    QskDialogButton( QskDialog::NoButton, parent )
+QskDialogButton::QskDialogButton( QQuickItem* parent )
+    : QskDialogButton( QskDialog::NoButton, parent )
 {
 }
 
@@ -67,5 +67,3 @@ void QskDialogButton::changeEvent( QEvent* event )
 }
 
 #include "moc_QskDialogButton.cpp"
-
-

@@ -11,9 +11,9 @@
 #include <qobject.h>
 #include <qthread.h>
 
+#include <algorithm>
 #include <map>
 #include <vector>
-#include <algorithm>
 
 #define ALIGN_VALUES 0
 
@@ -42,7 +42,7 @@ static inline QskMargins qskAligned05( const QskMargins& margins )
 
 static inline QVariant qskAligned05( const QVariant& value )
 {
-    if( value.canConvert< QskBoxBorderMetrics >() )
+    if ( value.canConvert< QskBoxBorderMetrics >() )
     {
         auto metrics = value.value< QskBoxBorderMetrics >();
 
@@ -139,7 +139,7 @@ namespace
     {
         Q_OBJECT
 
-    public:
+      public:
         AnimatorGuard()
         {
             QskAnimator::addCleanupHandler( this,
@@ -160,10 +160,10 @@ namespace
                 m_tables.erase( it );
         }
 
-    private Q_SLOTS:
+      private Q_SLOTS:
         void cleanup()
         {
-            for( auto it = m_tables.begin(); it != m_tables.end(); )
+            for ( auto it = m_tables.begin(); it != m_tables.end(); )
             {
                 if ( ( *it )->cleanup() )
                     it = m_tables.erase( it );
@@ -172,7 +172,7 @@ namespace
             }
         }
 
-    private:
+      private:
         // a vector as iteration is more important than insertion
         std::vector< QskHintAnimatorTable* > m_tables;
     };
@@ -182,14 +182,14 @@ namespace
 
 class QskHintAnimatorTable::PrivateData
 {
-public:
+  public:
     // we won't have many entries, so we prefer less memory over
     // using a hash table
     std::map< QskAspect::Aspect, QskHintAnimator > map;
 };
 
-QskHintAnimatorTable::QskHintAnimatorTable():
-    m_data( nullptr )
+QskHintAnimatorTable::QskHintAnimatorTable()
+    : m_data( nullptr )
 {
 }
 
@@ -269,7 +269,7 @@ bool QskHintAnimatorTable::cleanup()
     if ( m_data == nullptr )
         return true;
 
-    for( auto it = m_data->map.begin(); it != m_data->map.end(); )
+    for ( auto it = m_data->map.begin(); it != m_data->map.end(); )
     {
         // remove all terminated animators
         if ( !it->second.isRunning() )

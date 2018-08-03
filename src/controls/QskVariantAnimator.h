@@ -12,7 +12,7 @@
 
 class QSK_EXPORT QskVariantAnimator : public QskAnimator
 {
-public:
+  public:
     QskVariantAnimator();
     ~QskVariantAnimator() override;
 
@@ -25,17 +25,17 @@ public:
     void setEndValue( const QVariant& );
     QVariant endValue() const;
 
-protected:
+  protected:
     void setup() override;
     void advance( qreal value ) override;
     void done() override;
 
-private:
+  private:
     QVariant m_startValue;
     QVariant m_endValue;
     QVariant m_currentValue;
 
-    void( *m_interpolator )();
+    void ( *m_interpolator )();
 };
 
 inline QVariant QskVariantAnimator::startValue() const

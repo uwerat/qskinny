@@ -15,14 +15,14 @@ class MainWindow : public QskWindow
 {
     Q_OBJECT
 
-public:
+  public:
     MainWindow();
 
-private Q_SLOTS:
+  private Q_SLOTS:
     void setDarknessMode( bool on );
     void setGraphicRoles( QskSkin* );
 
-private:
+  private:
     QskTabView* m_tabView;
 };
 

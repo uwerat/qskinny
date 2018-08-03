@@ -8,15 +8,15 @@
 
 class QskRangeControl::PrivateData
 {
-public:
-    PrivateData():
-        minimum( 0.0 ),
-        maximum( 1.0 ),
-        value( 0.0 ),
-        stepSize( 0.1 ),
-        pageSize( 1 ),
-        snap( false ),
-        readOnly( false )
+  public:
+    PrivateData()
+        : minimum( 0.0 )
+        , maximum( 1.0 )
+        , value( 0.0 )
+        , stepSize( 0.1 )
+        , pageSize( 1 )
+        , snap( false )
+        , readOnly( false )
     {
     }
 
@@ -29,9 +29,9 @@ public:
     bool readOnly : 1;
 };
 
-QskRangeControl::QskRangeControl( QQuickItem* parent ):
-    QskControl( parent ),
-    m_data( new PrivateData() )
+QskRangeControl::QskRangeControl( QQuickItem* parent )
+    : QskControl( parent )
+    , m_data( new PrivateData() )
 {
     m_data->readOnly = true;
     setReadOnly( false );
@@ -277,7 +277,7 @@ void QskRangeControl::keyPressEvent( QKeyEvent* event )
 
 void QskRangeControl::wheelEvent( QWheelEvent* event )
 {
-    if( isReadOnly() )
+    if ( isReadOnly() )
         return;
 
     const int steps = event->delta() / QWheelEvent::DefaultDeltasPerStep;

@@ -4,18 +4,18 @@
  *****************************************************************************/
 
 #include "QskStackBox.h"
-#include "QskStackBoxAnimator.h"
-#include "QskLayoutItem.h"
-#include "QskLayoutEngine.h"
 #include "QskLayoutConstraint.h"
+#include "QskLayoutEngine.h"
+#include "QskLayoutItem.h"
+#include "QskStackBoxAnimator.h"
 
 #include <qpointer.h>
 
 class QskStackBox::PrivateData
 {
-public:
-    PrivateData():
-        currentIndex( -1 )
+  public:
+    PrivateData()
+        : currentIndex( -1 )
     {
     }
 
@@ -23,14 +23,14 @@ public:
     QPointer< QskStackBoxAnimator > animator;
 };
 
-QskStackBox::QskStackBox( QQuickItem* parent ):
-    QskStackBox( false, parent )
+QskStackBox::QskStackBox( QQuickItem* parent )
+    : QskStackBox( false, parent )
 {
 }
 
-QskStackBox::QskStackBox( bool autoAddChildren, QQuickItem* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData() )
+QskStackBox::QskStackBox( bool autoAddChildren, QQuickItem* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData() )
 {
     setAutoAddChildren( autoAddChildren );
 }
@@ -101,7 +101,6 @@ void QskStackBox::layoutItemRemoved( QskLayoutItem*, int index )
 
         if ( newIndex >= 0 )
             setCurrentIndex( index );
-
     }
     else if ( index > m_data->currentIndex )
     {

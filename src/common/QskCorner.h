@@ -23,7 +23,7 @@ class QSK_EXPORT QskCorner
     Q_PROPERTY( Qt::SizeMode sizeMode READ sizeMode WRITE setSizeMode )
     Q_PROPERTY( Qt::AspectRatioMode aspectRatioMode READ aspectRatioMode WRITE setAspectRatioMode )
 
-public:
+  public:
     QskCorner();
     QskCorner( Qt::SizeMode, qreal radius );
 
@@ -38,7 +38,7 @@ public:
 
     const QskBoxShapeMetrics& metrics() const;
 
-private:
+  private:
     // QskCorner could be replaced by QskBoxShapeMetrics TODO ...
     QskBoxShapeMetrics m_metrics;
 };

@@ -5,17 +5,17 @@
 
 #include "QskSkinnable.h"
 
+#include "QskAnimationHint.h"
 #include "QskAspect.h"
+#include "QskColorFilter.h"
+#include "QskControl.h"
+#include "QskHintAnimator.h"
+#include "QskMargins.h"
 #include "QskSetup.h"
 #include "QskSkin.h"
 #include "QskSkinHintTable.h"
-#include "QskSkinlet.h"
-#include "QskAnimationHint.h"
-#include "QskMargins.h"
-#include "QskHintAnimator.h"
-#include "QskControl.h"
-#include "QskColorFilter.h"
 #include "QskSkinTransition.h"
+#include "QskSkinlet.h"
 
 #include <qfont.h>
 
@@ -25,7 +25,7 @@
 
 static inline bool qskIsControl( const QskSkinnable* skinnable )
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
     return skinnable->metaObject()->inherits( &QskControl::staticMetaObject );
 #else
     for ( auto mo = skinnable->metaObject();
@@ -102,11 +102,11 @@ static inline bool qskCompareResolvedStates(
 
 class QskSkinnable::PrivateData
 {
-public:
-    PrivateData():
-        skinlet( nullptr ),
-        skinState( QskAspect::NoState ),
-        hasLocalSkinlet( false )
+  public:
+    PrivateData()
+        : skinlet( nullptr )
+        , skinState( QskAspect::NoState )
+        , hasLocalSkinlet( false )
     {
     }
 
@@ -128,8 +128,8 @@ public:
     bool hasLocalSkinlet : 1;
 };
 
-QskSkinnable::QskSkinnable():
-    m_data( new PrivateData() )
+QskSkinnable::QskSkinnable()
+    : m_data( new PrivateData() )
 {
 }
 
@@ -371,7 +371,7 @@ void QskSkinnable::setAnimation(
 }
 
 QskAnimationHint QskSkinnable::animation(
-    QskAspect::Aspect aspect, QskSkinHintStatus* status  ) const
+    QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
     aspect.setAnimator( true );
     return effectiveHint( aspect, status ).value< QskAnimationHint >();
@@ -446,7 +446,7 @@ QskSkinHintStatus QskSkinnable::hintStatus( QskAspect::Aspect aspect ) const
 {
     QskSkinHintStatus status;
 
-    (void)effectiveHint( aspect, &status );
+    ( void ) effectiveHint( aspect, &status );
     return status;
 }
 
@@ -469,8 +469,8 @@ QVariant QskSkinnable::animatedValue(
 
     if ( !v.isValid() )
     {
-        if ( QskSkinTransition::isRunning()
-            && !m_data->hintTable.hasHint( aspect ) )
+        if ( QskSkinTransition::isRunning() &&
+            !m_data->hintTable.hasHint( aspect ) )
         {
             /*
                Next we check for values from the skin. Those
@@ -596,13 +596,13 @@ const char* QskSkinnable::skinStateAsPrintable( QskAspect::State state ) const
     qskDebugState( debug, metaObject(), state );
 
     // we should find a better way
-    static QByteArray bytes[10];
+    static QByteArray bytes[ 10 ];
     static int counter = 0;
 
     counter = ( counter + 1 ) % 10;
 
-    bytes[counter] = tmp.toUtf8();
-    return bytes[counter].constData();
+    bytes[ counter ] = tmp.toUtf8();
+    return bytes[ counter ].constData();
 }
 
 static inline QMarginsF qskEffectivePadding( const QskSkinnable* skinnable,
@@ -613,7 +613,6 @@ static inline QMarginsF qskEffectivePadding( const QskSkinnable* skinnable,
 
     const auto shape = skinnable->boxShapeHint( aspect | Shape ).toAbsolute( size );
     const auto borderMetrics = skinnable->boxBorderMetricsHint( aspect | Border );
-
 
     const qreal left = qMax( shape.radius( TopLeftCorner ).width(),
         shape.radius( BottomLeftCorner ).width() );
@@ -720,7 +719,7 @@ void QskSkinnable::startTransition( QskAspect::Aspect aspect,
         return;
     }
 
-    if( aspect.flagPrimitive() == QskAspect::GraphicRole  )
+    if ( aspect.flagPrimitive() == QskAspect::GraphicRole )
     {
         const auto skin = effectiveSkin();
 
@@ -745,7 +744,8 @@ void QskSkinnable::startTransition( QskAspect::Aspect aspect,
 
 void QskSkinnable::setSkinStateFlag( QskAspect::State state, bool on )
 {
-    const auto newState = on ? ( m_data->skinState | state )
+    const auto newState = on
+        ? ( m_data->skinState | state )
         : ( m_data->skinState & ~state );
 
     if ( m_data->skinState == newState )
@@ -768,7 +768,7 @@ void QskSkinnable::setSkinStateFlag( QskAspect::State state, bool on )
         {
             using namespace QskAspect;
 
-            Aspect aspect = subControl | placement;;
+            Aspect aspect = subControl | placement;
 
             const auto& skinTable = effectiveSkin()->hintTable();
 
@@ -878,4 +878,3 @@ void QskSkinnable::debug( QskAspect::State state ) const
 {
     qskDebugState( qDebug(), metaObject(), state );
 }
-

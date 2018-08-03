@@ -13,12 +13,12 @@ namespace
 {
     class StandardPalette : public Palette
     {
-    public:
+      public:
         StandardPalette( int index )
         {
             using namespace QskRgbValue;
 
-            static QRgb table[][Palette::NumWeights] =
+            static QRgb table[][ Palette::NumWeights ] =
             {
                 RGBTABLE( Red ),
                 RGBTABLE( Pink ),
@@ -30,7 +30,7 @@ namespace
                 RGBTABLE( Cyan ),
                 RGBTABLE( Teal ),
                 RGBTABLE( Green ),
-                RGBTABLE( LightGreen),
+                RGBTABLE( LightGreen ),
                 RGBTABLE( Lime ),
                 RGBTABLE( Yellow ),
                 RGBTABLE( Amber ),
@@ -41,7 +41,7 @@ namespace
                 RGBTABLE( BlueGrey ),
             };
 
-            const int count = sizeof( table ) / sizeof( table[0] );
+            const int count = sizeof( table ) / sizeof( table[ 0 ] );
             m_rgb = table[ qBound( 0, index, count ) ];
         }
     };
@@ -51,4 +51,3 @@ Palette Palette::palette( Color color )
 {
     return StandardPalette( static_cast< int >( color ) );
 }
-

@@ -5,23 +5,23 @@
 
 #include "QskSkin.h"
 
-#include "QskAspect.h"
-#include "QskGraphic.h"
-#include "QskColorFilter.h"
-#include "QskGraphicProviderMap.h"
 #include "QskAnimationHint.h"
-#include "QskStandardSymbol.h"
+#include "QskAspect.h"
+#include "QskColorFilter.h"
+#include "QskGraphic.h"
+#include "QskGraphicProviderMap.h"
 #include "QskSkinHintTable.h"
+#include "QskStandardSymbol.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qguiapplication_p.h>
 QSK_QT_PRIVATE_END
 
-#include <qpa/qplatformtheme.h>
 #include <qpa/qplatformdialoghelper.h>
+#include <qpa/qplatformtheme.h>
 
-#include <unordered_map>
 #include <cmath>
+#include <unordered_map>
 
 #include "QskBox.h"
 #include "QskBoxSkinlet.h"
@@ -78,10 +78,10 @@ namespace
 {
     class SkinletData
     {
-    public:
-        SkinletData( const QMetaObject* metaObject ):
-            metaObject( metaObject ),
-            skinlet( nullptr )
+      public:
+        SkinletData( const QMetaObject* metaObject )
+            : metaObject( metaObject )
+            , skinlet( nullptr )
         {
         }
 
@@ -97,9 +97,9 @@ namespace
 
 class QskSkin::PrivateData
 {
-public:
-    PrivateData( QskSkin* skin ):
-        skin( skin )
+  public:
+    PrivateData( QskSkin* skin )
+        : skin( skin )
     {
     }
 
@@ -114,9 +114,9 @@ public:
     QskGraphicProviderMap graphicProviders;
 };
 
-QskSkin::QskSkin( QObject* parent ):
-    QObject( parent ),
-    m_data( new PrivateData( this ) )
+QskSkin::QskSkin( QObject* parent )
+    : QObject( parent )
+    , m_data( new PrivateData( this ) )
 {
     declareSkinlet< QskControl, QskSkinlet >();
 
@@ -417,7 +417,7 @@ bool QskSkin::hasGraphicProvider() const
 
 const int* QskSkin::dialogButtonLayout( Qt::Orientation orientation ) const
 {
-    //auto policy = QPlatformDialogHelper::UnknownLayout;
+    // auto policy = QPlatformDialogHelper::UnknownLayout;
     auto policy = QPlatformDialogHelper::WinLayout;
 
     if ( const auto theme = QGuiApplicationPrivate::platformTheme() )

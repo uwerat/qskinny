@@ -5,11 +5,11 @@
 
 #include "Frame.h"
 
-#include <QskBoxShapeMetrics.h>
-#include <QskBoxBorderMetrics.h>
 #include <QskBoxBorderColors.h>
-#include <QskGradient.h>
+#include <QskBoxBorderMetrics.h>
 #include <QskBoxNode.h>
+#include <QskBoxShapeMetrics.h>
+#include <QskGradient.h>
 #include <QskSkinlet.h>
 
 static inline qreal effectiveRadius( const QRectF& rect, qreal percentage )
@@ -17,12 +17,12 @@ static inline qreal effectiveRadius( const QRectF& rect, qreal percentage )
     return percentage / 100.0 * 0.5 * qMin( rect.width(), rect.height() );
 }
 
-Frame::Frame( QQuickItem* parent ):
-    Inherited( parent ),
-    m_style( Frame::Plain ),
-    m_color( Qt::gray ),
-    m_frameWidth( 1.0 ),
-    m_radius( 0.0 )
+Frame::Frame( QQuickItem* parent )
+    : Inherited( parent )
+    , m_style( Frame::Plain )
+    , m_color( Qt::gray )
+    , m_frameWidth( 1.0 )
+    , m_radius( 0.0 )
 {
 }
 
@@ -128,7 +128,7 @@ void Frame::updateFrameNode( const QRectF& rect, QskBoxNode* node )
 
     QColor c1, c2;
 
-    switch( m_style )
+    switch ( m_style )
     {
         case Frame::Sunken:
         {
@@ -147,10 +147,10 @@ void Frame::updateFrameNode( const QRectF& rect, QskBoxNode* node )
             c1 = c2 = dark;
         }
     }
-   
+
     const QskBoxBorderColors borderColors( c1, c1, c2, c2 );
     const qreal radius = effectiveRadius( rect, m_radius );
-    
+
     node->setBoxData( rect, radius, m_frameWidth, borderColors, m_color );
 }
 

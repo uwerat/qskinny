@@ -9,9 +9,9 @@
 #include "QskGlobal.h"
 
 #include <qcolor.h>
-#include <qvector.h>
-#include <qpair.h>
 #include <qmetatype.h>
+#include <qpair.h>
+#include <qvector.h>
 
 class QPen;
 class QBrush;
@@ -20,7 +20,7 @@ class QDebug;
 
 class QSK_EXPORT QskColorFilter
 {
-public:
+  public:
     QskColorFilter();
     ~QskColorFilter();
 
@@ -48,10 +48,10 @@ public:
         const QskColorFilter&, qreal value ) const;
 
     // can be registered by qRegisterAnimationInterpolator
-    static QVariant interpolate( const QskColorFilter &,
-        const QskColorFilter &, qreal progress );
+    static QVariant interpolate(
+        const QskColorFilter&, const QskColorFilter&, qreal progress );
 
-private:
+  private:
     QVector< QPair< QRgb, QRgb > > m_substitutions;
 };
 

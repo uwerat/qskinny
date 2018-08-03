@@ -9,26 +9,26 @@
 #include "QskGlobal.h"
 #include "QskControl.h"
 
-class QskInputGrabber: public QskControl
+class QskInputGrabber : public QskControl
 {
     Q_OBJECT
 
     using Inherited = QskControl;
 
-public:
+  public:
     QskInputGrabber( QQuickItem* parent = nullptr );
     ~QskInputGrabber() override;
 
     virtual QRectF grabberRect() const;
     virtual bool isBlocking( const QPointF& ) const;
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void updateGeometry();
 
-protected:
+  protected:
     bool event( QEvent* ) override;
 
-private:
+  private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

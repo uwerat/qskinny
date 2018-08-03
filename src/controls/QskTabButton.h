@@ -16,12 +16,13 @@ class QSK_EXPORT QskTabButton : public QskAbstractButton
     Q_OBJECT
 
     Q_PROPERTY( QString text READ text WRITE setText NOTIFY textChanged FINAL )
+
     Q_PROPERTY( QskTextOptions textOptions READ textOptions
         WRITE setTextOptions NOTIFY textOptionsChanged )
 
     using Inherited = QskAbstractButton;
 
-public:
+  public:
     QSK_SUBCONTROLS( Panel, Text )
 
     QskTabButton( QQuickItem* parent = nullptr );
@@ -41,14 +42,14 @@ public:
 
     QskTabBar* tabBar() const;
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void textChanged( const QString& text );
     void textOptionsChanged();
 
-protected:
+  protected:
     void changeEvent( QEvent* ) override;
 
-private:
+  private:
     void resolveTabBar();
 
     class PrivateData;

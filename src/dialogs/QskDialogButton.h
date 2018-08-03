@@ -6,9 +6,8 @@
 #ifndef QSK_DIALOG_BUTTON_H
 #define QSK_DIALOG_BUTTON_H
 
-#include "QskGlobal.h"
-#include "QskPushButton.h"
 #include "QskDialog.h"
+#include "QskPushButton.h"
 
 class QSK_EXPORT QskDialogButton : public QskPushButton
 {
@@ -19,7 +18,7 @@ class QSK_EXPORT QskDialogButton : public QskPushButton
 
     using Inherited = QskPushButton;
 
-public:
+  public:
     QSK_SUBCONTROLS( Panel, Text, Graphic )
 
     QskDialogButton( QskDialog::StandardButton, QQuickItem* parent = nullptr );
@@ -33,13 +32,13 @@ public:
     QskAspect::Subcontrol effectiveSubcontrol(
         QskAspect::Subcontrol ) const override;
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void standardButtonChanged();
 
-protected:
+  protected:
     void changeEvent( QEvent* ) override;
 
-private:
+  private:
     QskDialog::StandardButton m_buttonType;
 };
 

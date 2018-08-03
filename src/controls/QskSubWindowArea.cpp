@@ -4,9 +4,9 @@
  *****************************************************************************/
 
 #include "QskSubWindowArea.h"
-#include "QskSubWindow.h"
-#include "QskFunctions.h"
 #include "QskEvent.h"
+#include "QskFunctions.h"
+#include "QskSubWindow.h"
 
 #include <qtimer.h>
 
@@ -78,10 +78,10 @@ static void qskDragWindow( const QPointF& off, Qt::Edges edges, QskSubWindow* wi
 
 class QskSubWindowArea::PrivateData
 {
-public:
-    PrivateData():
-        isDraggableByHeaderOnly( false ),
-        isDragging( false )
+  public:
+    PrivateData()
+        : isDraggableByHeaderOnly( false )
+        , isDragging( false )
     {
     }
 
@@ -93,12 +93,12 @@ public:
     QPoint mousePos;
 };
 
-QskSubWindowArea::QskSubWindowArea( QQuickItem* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData() )
+QskSubWindowArea::QskSubWindowArea( QQuickItem* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData() )
 {
     setMargins( 0 );
-    //setAcceptedMouseButtons( Qt::AllButtons );
+    // setAcceptedMouseButtons( Qt::AllButtons );
 }
 
 QskSubWindowArea::~QskSubWindowArea()
@@ -115,12 +115,12 @@ void QskSubWindowArea::geometryChangeEvent( QskGeometryChangeEvent* event )
     Inherited::geometryChangeEvent( event );
 }
 
-void QskSubWindowArea::itemChange( QQuickItem::ItemChange change,
-    const QQuickItem::ItemChangeData& value )
+void QskSubWindowArea::itemChange(
+    QQuickItem::ItemChange change, const QQuickItem::ItemChangeData& value )
 {
     Inherited::itemChange( change, value );
 
-    switch( change )
+    switch ( change )
     {
         case QQuickItem::ItemChildAddedChange:
         {
@@ -142,7 +142,6 @@ void QskSubWindowArea::itemChange( QQuickItem::ItemChange change,
         {
             break;
         }
-
     }
 }
 
@@ -189,12 +188,12 @@ bool QskSubWindowArea::mouseEventFilter( QskSubWindow* window, const QMouseEvent
 
     const QRectF cr = window->contentsRect();
 
-    switch( event->type() )
+    switch ( event->type() )
     {
         case QEvent::MouseButtonPress:
         {
-            if ( !( cr.contains( event->localPos() )
-                && event->button() == Qt::LeftButton ) )
+            if ( !( cr.contains( event->localPos() ) &&
+                event->button() == Qt::LeftButton ) )
             {
                 return false;
             }

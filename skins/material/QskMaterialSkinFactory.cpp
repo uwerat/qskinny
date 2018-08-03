@@ -8,8 +8,8 @@
 
 static const QString materialSkinName = QStringLiteral( "material" );
 
-QskMaterialSkinFactory::QskMaterialSkinFactory( QObject* parent ):
-    QskSkinFactory( parent )
+QskMaterialSkinFactory::QskMaterialSkinFactory( QObject* parent )
+    : QskSkinFactory( parent )
 {
 }
 

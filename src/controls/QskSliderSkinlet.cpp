@@ -4,20 +4,20 @@
  *****************************************************************************/
 
 #include "QskSliderSkinlet.h"
-#include "QskSlider.h"
 #include "QskAspect.h"
 #include "QskBoxBorderMetrics.h"
 #include "QskFunctions.h"
+#include "QskSlider.h"
 
 static QMarginsF qskPadding(
     const QskSlider* slider, QskAspect::Subcontrol subControl )
 {
-    return slider->marginsHint( subControl | QskAspect::Padding )
-        + slider->boxBorderMetricsHint( subControl ).widths();
+    return slider->marginsHint( subControl | QskAspect::Padding ) +
+        slider->boxBorderMetricsHint( subControl ).widths();
 }
 
-QskSliderSkinlet::QskSliderSkinlet( QskSkin* skin ):
-    Inherited( skin )
+QskSliderSkinlet::QskSliderSkinlet( QskSkin* skin )
+    : Inherited( skin )
 {
     setNodeRoles( { PanelRole, GrooveRole, FillRole, HandleRole } );
 }
@@ -62,7 +62,7 @@ QSGNode* QskSliderSkinlet::updateSubNode(
 {
     const auto slider = static_cast< const QskSlider* >( skinnable );
 
-    switch( nodeRole )
+    switch ( nodeRole )
     {
         case PanelRole:
         {
@@ -115,8 +115,8 @@ QRectF QskSliderSkinlet::panelRect( const QskSlider* slider ) const
 
     if ( size > 0 && size < r.height() )
     {
-        const Qt::Alignment alignment = 
-            slider->flagHint<Qt::Alignment>( subControl | Alignment );
+        const Qt::Alignment alignment =
+            slider->flagHint< Qt::Alignment >( subControl | Alignment );
 
         if ( slider->orientation() == Qt::Horizontal )
             r = qskAlignedRectF( r, r.width(), size, alignment & Qt::AlignVertical_Mask );
@@ -127,8 +127,8 @@ QRectF QskSliderSkinlet::panelRect( const QskSlider* slider ) const
     return r;
 }
 
-QRectF QskSliderSkinlet::innerRect( const QskSlider* slider,
-    QskAspect::Subcontrol subControl ) const
+QRectF QskSliderSkinlet::innerRect(
+    const QskSlider* slider, QskAspect::Subcontrol subControl ) const
 {
     using namespace QskAspect;
 

@@ -20,11 +20,11 @@ static inline qreal qskAligned( qreal value )
     return value;
 }
 
-QskFlickAnimator::QskFlickAnimator():
-    m_velocity{ 0.0, 0.0 },
-    m_degrees( 0.0 ),
-    m_cos( 1.0 ),
-    m_sin( 0.0 )
+QskFlickAnimator::QskFlickAnimator()
+    : m_velocity{ 0.0, 0.0 }
+    , m_degrees( 0.0 )
+    , m_cos( 1.0 )
+    , m_sin( 0.0 )
 {
     setDuration( 1000 );
     setEasingCurve( QEasingCurve::OutCubic );
@@ -43,23 +43,23 @@ void QskFlickAnimator::flick( qreal degrees, qreal velocity )
 
     setAngle( degrees );
 
-    m_velocity[0] = velocity;
-    m_velocity[1] = 0.0;
+    m_velocity[ 0 ] = velocity;
+    m_velocity[ 1 ] = 0.0;
 
-    if ( m_velocity[0] > 0.0 )
+    if ( m_velocity[ 0 ] > 0.0 )
         start();
 }
 
 void QskFlickAnimator::accelerate( qreal degrees, qreal velocity )
 {
-    if ( isRunning() && !qFuzzyIsNull( m_velocity[1] ) )
+    if ( isRunning() && !qFuzzyIsNull( m_velocity[ 1 ] ) )
     {
         const qreal delta = qDegreesToRadians( degrees - m_degrees );
 
         if ( qFuzzyIsNull( delta ) )
         {
             // the same as below, but faster to calculate: exp2( 2.0 * cos( 0.0 )
-            velocity += 4.0 * m_velocity[1];
+            velocity += 4.0 * m_velocity[ 1 ];
         }
         else
         {
@@ -67,7 +67,7 @@ void QskFlickAnimator::accelerate( qreal degrees, qreal velocity )
             if ( cos >= 0.0 )
             {
                 // boosting the current velocity
-                velocity += exp2( 2.0 * cos ) * m_velocity[1];
+                velocity += exp2( 2.0 * cos ) * m_velocity[ 1 ];
             }
             else
             {
@@ -82,7 +82,7 @@ void QskFlickAnimator::accelerate( qreal degrees, qreal velocity )
 
 void QskFlickAnimator::done()
 {
-    m_velocity[1] = 0.0;
+    m_velocity[ 1 ] = 0.0;
     m_elapsed = 0.0;
 }
 
@@ -101,27 +101,27 @@ void QskFlickAnimator::setAngle( qreal degrees )
 
 void QskFlickAnimator::setVelocity( qreal velocity )
 {
-    m_velocity[0] = velocity;
+    m_velocity[ 0 ] = velocity;
 }
 
 void QskFlickAnimator::setup()
 {
     m_elapsed = 0;
-    m_velocity[1] = m_velocity[0];
+    m_velocity[ 1 ] = m_velocity[ 0 ];
 }
 
 void QskFlickAnimator::advance( qreal value )
 {
-    const qreal oldVelocity = m_velocity[1];
+    const qreal oldVelocity = m_velocity[ 1 ];
     const int oldElapsed = m_elapsed;
 
-    m_velocity[1] = m_velocity[0] * ( 1.0 - value );
+    m_velocity[ 1 ] = m_velocity[ 0 ] * ( 1.0 - value );
     m_elapsed = elapsed();
 
     const qreal duration = ( m_elapsed - oldElapsed ) / 1000.0; // in seconds
     if ( duration > 0.0 )
     {
-        const qreal velocity = 0.5 * ( m_velocity[1] + oldVelocity ); // average
+        const qreal velocity = 0.5 * ( m_velocity[ 1 ] + oldVelocity ); // average
 
         /*
             Using the average velocity is not accurate, when having a non linear

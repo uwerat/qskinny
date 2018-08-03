@@ -1,17 +1,17 @@
 #include "QskTextureNode.h"
 
+#include <qopenglfunctions.h>
 #include <qsggeometry.h>
 #include <qsgmaterial.h>
-#include <qopenglfunctions.h>
 
 #include <private/qsgnode_p.h>
 
 #if 1
 
-#include <qsurface.h>
-#include <qquickwindow.h>
 #include <qguiapplication.h>
+#include <qquickwindow.h>
 #include <qscreen.h>
+#include <qsurface.h>
 
 static inline qreal qskDevicePixelRatio()
 {
@@ -21,9 +21,9 @@ static inline qreal qskDevicePixelRatio()
 
     if ( context->surface()->surfaceClass() == QSurface::Window )
     {
-        auto *window = static_cast< QWindow* >( context->surface() );
+        auto* window = static_cast< QWindow* >( context->surface() );
 
-        if ( auto* quickWindow = qobject_cast< QQuickWindow *>( window ) )
+        if ( auto* quickWindow = qobject_cast< QQuickWindow* >( window ) )
             ratio = quickWindow->effectiveDevicePixelRatio();
         else
             ratio = window->devicePixelRatio();
@@ -45,16 +45,16 @@ namespace
 {
     class MaterialShader final : public QSGMaterialShader
     {
-    public:
+      public:
         MaterialShader( bool isOpaque );
 
         char const* const* attributeNames() const override;
         void updateState( const RenderState&, QSGMaterial*, QSGMaterial* ) override;
 
-    protected:
+      protected:
         void initialize() override;
 
-    private:
+      private:
         int m_matrixId;
         int m_opacityId;
 
@@ -63,7 +63,7 @@ namespace
 
     class Material final : public QSGMaterial
     {
-    public:
+      public:
         Material( bool isOpaque );
 
         QSGMaterialType* type() const override;
@@ -72,26 +72,26 @@ namespace
         void setTextureId( uint );
         uint textureId() const;
 
-        int compare(const QSGMaterial* ) const override;
+        int compare( const QSGMaterial* ) const override;
 
-    private:
+      private:
         uint m_textureId;
         const bool m_isOpaque : 1;
     };
 
-    MaterialShader::MaterialShader( bool isOpaque ):
-        m_isOpaque( isOpaque )
+    MaterialShader::MaterialShader( bool isOpaque )
+        : m_isOpaque( isOpaque )
     {
-        setShaderSourceFile(QOpenGLShader::Vertex,
-            QStringLiteral(":/qt-project.org/scenegraph/shaders/opaquetexture.vert") );
+        setShaderSourceFile( QOpenGLShader::Vertex,
+            QStringLiteral( ":/qt-project.org/scenegraph/shaders/opaquetexture.vert" ) );
 
-        setShaderSourceFile(QOpenGLShader::Fragment,
-            QStringLiteral(":/qt-project.org/scenegraph/shaders/opaquetexture.frag") );
+        setShaderSourceFile( QOpenGLShader::Fragment,
+            QStringLiteral( ":/qt-project.org/scenegraph/shaders/opaquetexture.frag" ) );
 
         if ( !m_isOpaque )
         {
-            setShaderSourceFile(QOpenGLShader::Fragment,
-                QStringLiteral(":/qt-project.org/scenegraph/shaders/texture.frag") );
+            setShaderSourceFile( QOpenGLShader::Fragment,
+                QStringLiteral( ":/qt-project.org/scenegraph/shaders/texture.frag" ) );
         }
     }
 
@@ -101,8 +101,8 @@ namespace
         return attr;
     }
 
-    void MaterialShader::updateState( const RenderState& state,
-        QSGMaterial* newMaterial, QSGMaterial* oldMaterial)
+    void MaterialShader::updateState(
+        const RenderState& state, QSGMaterial* newMaterial, QSGMaterial* oldMaterial )
     {
         if ( !m_isOpaque && state.isOpacityDirty() )
             program()->setUniformValue( m_opacityId, state.opacity() );
@@ -110,8 +110,8 @@ namespace
         auto* materialOld = static_cast< Material* >( oldMaterial );
         auto* materialNew = static_cast< Material* >( newMaterial );
 
-        if ( ( materialOld == nullptr )
-            || ( materialOld->textureId() != materialNew->textureId() ) )
+        if ( ( materialOld == nullptr ) ||
+             ( materialOld->textureId() != materialNew->textureId() ) )
         {
             auto funcs = QOpenGLContext::currentContext()->functions();
             funcs->glBindTexture( GL_TEXTURE_2D, materialNew->textureId() );
@@ -123,17 +123,17 @@ namespace
 
     void MaterialShader::initialize()
     {
-        m_matrixId = program()->uniformLocation("qt_Matrix");
+        m_matrixId = program()->uniformLocation( "qt_Matrix" );
 
         if ( !m_isOpaque )
-            m_opacityId = program()->uniformLocation("opacity");
+            m_opacityId = program()->uniformLocation( "opacity" );
     }
 
-    Material::Material( bool isOpaque ) :
-        m_textureId(0),
-        m_isOpaque( isOpaque )
+    Material::Material( bool isOpaque )
+        : m_textureId( 0 )
+        , m_isOpaque( isOpaque )
     {
-        setFlag(Blending, true ); // alpha blending
+        setFlag( Blending, true ); // alpha blending
     }
 
     void Material::setTextureId( uint id )
@@ -178,11 +178,11 @@ namespace
 
 class QskTextureNodePrivate final : public QSGGeometryNodePrivate
 {
-public:
-    QskTextureNodePrivate():
-        geometry( QSGGeometry::defaultAttributes_TexturedPoint2D(), 4 ),
-        opaqueMaterial( true ),
-        material( false )
+  public:
+    QskTextureNodePrivate()
+        : geometry( QSGGeometry::defaultAttributes_TexturedPoint2D(), 4 )
+        , opaqueMaterial( true )
+        , material( false )
     {
     }
 
@@ -195,8 +195,8 @@ public:
     Qt::Orientations mirrorOrientations;
 };
 
-QskTextureNode::QskTextureNode() :
-    QSGGeometryNode( *new QskTextureNodePrivate )
+QskTextureNode::QskTextureNode()
+    : QSGGeometryNode( *new QskTextureNodePrivate )
 {
     Q_D( QskTextureNode );
 
@@ -226,11 +226,11 @@ QskTextureNode::~QskTextureNode()
     }
 }
 
-void QskTextureNode::setRect(const QRectF& r)
+void QskTextureNode::setRect( const QRectF& r )
 {
     Q_D( QskTextureNode );
 
-    if ( d->rect == r)
+    if ( d->rect == r )
         return;
 
     d->rect = r;
@@ -289,7 +289,7 @@ void QskTextureNode::setMirrored( Qt::Orientations orientations )
     d->mirrorOrientations = orientations;
     updateTexture();
 
-    markDirty(DirtyMaterial);
+    markDirty( DirtyMaterial );
 }
 
 Qt::Orientations QskTextureNode::mirrored() const

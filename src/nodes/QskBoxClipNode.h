@@ -14,14 +14,14 @@ class QskBoxBorderMetrics;
 
 class QSK_EXPORT QskBoxClipNode : public QSGClipNode
 {
-public:
+  public:
     QskBoxClipNode();
     ~QskBoxClipNode() override;
 
     void setBox( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics& );
 
-private:
+  private:
     uint m_hash;
     QRectF m_rect;
 

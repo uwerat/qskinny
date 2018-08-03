@@ -6,7 +6,6 @@
 #ifndef QSK_INPUT_PANEL_H
 #define QSK_INPUT_PANEL_H
 
-#include "QskGlobal.h"
 #include "QskControl.h"
 #include <memory>
 
@@ -20,7 +19,7 @@ class QSK_EXPORT QskInputPanel : public QskControl
 
     using Inherited = QskControl;
 
-public:
+  public:
     QskInputPanel( QQuickItem* parent = nullptr );
     ~QskInputPanel() override;
 
@@ -32,23 +31,23 @@ public:
 
     virtual Qt::Alignment alignment() const;
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void commitKey( int keyCode );
     void commitPredictiveText( int index );
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void keySelected( int keyCode );
     void predictiveTextSelected( int );
 
-public Q_SLOTS:
+  public Q_SLOTS:
     virtual void setPrompt( const QString& );
     virtual void setPrediction( const QStringList& );
     virtual void setPredictionEnabled( bool );
 
-protected:
+  protected:
     virtual void attachItem( QQuickItem* ) = 0;
 
-private:
+  private:
     void resetPredictor( const QLocale& );
     void updatePrediction();
 

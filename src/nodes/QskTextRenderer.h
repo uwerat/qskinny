@@ -8,6 +8,7 @@
 
 #include "QskGlobal.h"
 #include "QskNamespace.h"
+
 #include <qnamespace.h>
 
 class QskTextColors;
@@ -22,14 +23,16 @@ class QSGTransformNode;
 
 namespace QskTextRenderer
 {
-    QSK_EXPORT void updateNode( const QString&, const QFont&, const QskTextOptions&,
-        Qsk::TextStyle, const QskTextColors&, Qt::Alignment, const QRectF&,
+    QSK_EXPORT void updateNode(
+        const QString&, const QFont&, const QskTextOptions&, Qsk::TextStyle,
+        const QskTextColors&, Qt::Alignment, const QRectF&,
         const QQuickItem*, QSGTransformNode* );
 
-    QSK_EXPORT QSizeF textSize( const QString&, const QFont&, const QskTextOptions& );
+    QSK_EXPORT QSizeF textSize(
+        const QString&, const QFont&, const QskTextOptions& );
 
-    QSK_EXPORT QSizeF textSize( const QString&, const QFont&,
-        const QskTextOptions&, const QSizeF& );
+    QSK_EXPORT QSizeF textSize(
+        const QString&, const QFont&, const QskTextOptions&, const QSizeF& );
 }
 
 #endif

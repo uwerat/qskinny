@@ -6,9 +6,11 @@
 #ifndef QSK_ASPECT_H
 #define QSK_ASPECT_H
 
+#include "QskGlobal.h"
 #include "QskFlags.h"
 
 #include <qmetaobject.h>
+
 #include <functional>
 
 #ifdef Q_MOC_RUN
@@ -27,8 +29,8 @@ QSK_NAMESPACE( QskAspect )
 {
     enum Subcontrol : quint16
     {
-        Control =           0,
-        LastSubcontrol =    ( 1 << 12 ) - 1
+        Control        = 0,
+        LastSubcontrol = ( 1 << 12 ) - 1
     };
     QSK_ENUM( Subcontrol )
 
@@ -93,20 +95,20 @@ QSK_NAMESPACE( QskAspect )
         Preserved = 0,
         Transposed = 1
     };
-    QSK_ENUM ( Placement )
+    QSK_ENUM( Placement )
 
     enum State : quint16
     {
-        NoState =         0,
+        NoState          = 0,
 
-        FirstSystemState =  1 << 0,
-        FirstUserState =    1 << 4,
-        LastUserState =     1 << 11,
-        LastSystemState =   1 << 15,
+        FirstSystemState = 1 << 0,
+        FirstUserState   = 1 << 4,
+        LastUserState    = 1 << 11,
+        LastSystemState  = 1 << 15,
 
-        AllStates =   0xFFFF
+        AllStates        =   0xFFFF
     };
-    QSK_ENUM ( State )
+    QSK_ENUM( State )
 
     extern const QMetaObject staticMetaObject;
 }
@@ -120,7 +122,7 @@ namespace QskAspect
 {
     class QSK_EXPORT Aspect
     {
-    public:
+      public:
         constexpr Aspect();
         constexpr Aspect( Subcontrol );
         constexpr Aspect( Type );
@@ -175,8 +177,9 @@ namespace QskAspect
 
         const char* toPrintable() const;
 
-    private:
+      private:
         constexpr Aspect( Subcontrol, Type, Placement );
+
         constexpr Aspect( uint subControl, uint type, bool isAnimator,
             uint primitive, uint placement, uint states );
 
@@ -202,34 +205,35 @@ namespace QskAspect
         };
     };
 
-    inline constexpr Aspect::Aspect():
-        Aspect( Control, Flag, Preserved )
+    inline constexpr Aspect::Aspect()
+        : Aspect( Control, Flag, Preserved )
     {
     }
 
-    inline constexpr Aspect::Aspect( Subcontrol subControl ):
-        Aspect( subControl, Flag, Preserved )
+    inline constexpr Aspect::Aspect( Subcontrol subControl )
+        : Aspect( subControl, Flag, Preserved )
     {
     }
 
-    inline constexpr Aspect::Aspect( Type type ):
-        Aspect( Control, type, Preserved )
+    inline constexpr Aspect::Aspect( Type type )
+        : Aspect( Control, type, Preserved )
     {
     }
 
-    inline constexpr Aspect::Aspect( Placement placement ):
-        Aspect( Control, Flag, placement )
+    inline constexpr Aspect::Aspect( Placement placement )
+        : Aspect( Control, Flag, placement )
     {
     }
 
-    inline constexpr Aspect::Aspect( Subcontrol subControl, Type type, Placement placement ):
-        Aspect( subControl, type, false, 0, placement, NoState )
+    inline constexpr Aspect::Aspect(
+            Subcontrol subControl, Type type, Placement placement )
+        : Aspect( subControl, type, false, 0, placement, NoState )
     {
     }
 
     inline constexpr Aspect::Aspect( uint subControl, uint type, bool isAnimator,
-            uint primitive, uint placement, uint states ):
-        m_bits { subControl, type, isAnimator, primitive, placement, 0, states, 0 }
+            uint primitive, uint placement, uint states )
+        : m_bits { subControl, type, isAnimator, primitive, placement, 0, states, 0 }
     {
     }
 
@@ -257,7 +261,7 @@ namespace QskAspect
     inline constexpr Aspect Aspect::operator|( Type type ) const
     {
         return Aspect( m_bits.subControl, type, m_bits.isAnimator,
-            m_bits.primitive, m_bits.placement,  m_bits.states );
+            m_bits.primitive, m_bits.placement, m_bits.states );
     }
 
     inline constexpr Aspect Aspect::operator|( FlagPrimitive primitive ) const

@@ -17,13 +17,12 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qgridlayoutengine_p.h>
 QSK_QT_PRIVATE_END
 
-
 class QskLayoutItem;
 class QQuickItem;
 
 class QskLayoutEngine : public QGridLayoutEngine
 {
-public:
+  public:
     QskLayoutEngine();
     ~QskLayoutEngine();
 

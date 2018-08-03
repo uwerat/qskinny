@@ -7,7 +7,7 @@ class Palette;
 
 class DefaultSkin : public QskSkin
 {
-public:
+  public:
     DefaultSkin( const QString& name, QObject* parent = nullptr );
     ~DefaultSkin() override;
 
@@ -20,7 +20,7 @@ public:
         Nighttime
     };
 
-private:
+  private:
     void initHints();
 
     QString m_name;

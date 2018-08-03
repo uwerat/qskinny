@@ -8,9 +8,9 @@
 
 #include "QskGlobal.h"
 
-#include <qobject.h>
-#include <qnamespace.h>
 #include <qinputmethod.h>
+#include <qnamespace.h>
+#include <qobject.h>
 
 #include <memory>
 
@@ -25,7 +25,7 @@ class QSK_EXPORT QskInputContextFactory : public QObject
 {
     Q_OBJECT
 
-public:
+  public:
     QskInputContextFactory( QObject* parent = nullptr );
     ~QskInputContextFactory() override;
 
@@ -39,7 +39,7 @@ class QSK_EXPORT QskInputContext : public QObject
 
     using Inherited = QObject;
 
-public:
+  public:
     QskInputContext();
     virtual ~QskInputContext();
 
@@ -60,15 +60,15 @@ public:
 
     QskTextPredictor* textPredictor( const QLocale& locale );
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void activeChanged();
     void panelRectChanged();
 
-protected:
+  protected:
     virtual void showPanel( const QQuickItem* );
     virtual void hidePanel( const QQuickItem* );
 
-private:
+  private:
     friend class QskPlatformInputContext;
 
     // called from QskPlatformInputContext

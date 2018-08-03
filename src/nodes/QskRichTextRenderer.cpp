@@ -8,8 +8,8 @@
 #include "QskTextOptions.h"
 
 #include <qglobalstatic.h>
-#include <qthread.h>
 #include <qmutex.h>
+#include <qthread.h>
 
 class QQuickWindow;
 
@@ -22,7 +22,7 @@ namespace
 {
     class TextItem final : public QQuickText
     {
-    public:
+      public:
         TextItem()
         {
             // fonts are supposed to be defined in the application skin and we
@@ -67,8 +67,8 @@ namespace
 
         inline void setAlignment( Qt::Alignment alignment )
         {
-            setHAlign( ( QQuickText::HAlignment ) ( int( alignment ) & 0x0f ) );
-            setVAlign( ( QQuickText::VAlignment ) ( int( alignment ) & 0xf0 ) );
+            setHAlign( ( QQuickText::HAlignment )( int( alignment ) & 0x0f ) );
+            setVAlign( ( QQuickText::VAlignment )( int( alignment ) & 0xf0 ) );
         }
 
         inline void setOptions( const QskTextOptions& options )
@@ -116,7 +116,7 @@ namespace
             QQuickItemPrivate::get( this )->derefWindow();
         }
 
-    protected:
+      protected:
         QSGNode* updatePaintNode( QSGNode*, UpdatePaintNodeData* ) override
         {
             Q_ASSERT( false );
@@ -126,7 +126,7 @@ namespace
 
     class TextItemMap
     {
-    public:
+      public:
         ~TextItemMap()
         {
             qDeleteAll( m_hash );
@@ -143,7 +143,7 @@ namespace
             {
                 auto textItem = new TextItem();
                 QObject::connect( thread, &QThread::finished,
-                    textItem, [this, thread] { removeItem( thread ); } );
+                    textItem, [ this, thread ] { removeItem( thread ); } );
 
                 m_hash.insert( thread, textItem );
                 return textItem;
@@ -152,7 +152,7 @@ namespace
             return it.value();
         }
 
-    private:
+      private:
         void removeItem( const QThread* thread )
         {
             auto textItem = m_hash.take( thread );
@@ -172,8 +172,8 @@ namespace
  */
 Q_GLOBAL_STATIC( TextItemMap, qskTextItemMap )
 
-QSizeF QskRichTextRenderer::textSize( const QString& text,
-    const QFont& font, const QskTextOptions& options )
+QSizeF QskRichTextRenderer::textSize(
+    const QString& text, const QFont& font, const QskTextOptions& options )
 {
     auto& textItem = *qskTextItemMap->item();
 
@@ -194,8 +194,9 @@ QSizeF QskRichTextRenderer::textSize( const QString& text,
     return sz;
 }
 
-QRectF QskRichTextRenderer::textRect( const QString& text,
-    const QFont& font, const QskTextOptions& options, const QSizeF& size )
+QRectF QskRichTextRenderer::textRect(
+    const QString& text, const QFont& font,
+    const QskTextOptions& options, const QSizeF& size )
 {
     auto& textItem = *qskTextItemMap->item();
 
@@ -219,11 +220,11 @@ QRectF QskRichTextRenderer::textRect( const QString& text,
     return rect;
 }
 
-void QskRichTextRenderer::updateNode( const QString& text,
-    const QFont& font, const QskTextOptions& options,
-    Qsk::TextStyle style, const QskTextColors& colors,
-    Qt::Alignment alignment, const QRectF& rect,
-    const QQuickItem* item, QSGTransformNode* node )
+void QskRichTextRenderer::updateNode(
+    const QString& text, const QFont& font,
+    const QskTextOptions& options, Qsk::TextStyle style,
+    const QskTextColors& colors, Qt::Alignment alignment,
+    const QRectF& rect, const QQuickItem* item, QSGTransformNode* node )
 {
     // are we killing internal caches of QQuickText, when always using
     // the same item for the creation the text nodes. TODO ...

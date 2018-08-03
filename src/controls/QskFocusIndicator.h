@@ -16,17 +16,17 @@ class QSK_EXPORT QskFocusIndicator : public QskControl
 
     using Inherited = QskControl;
 
-public:
+  public:
     QSK_SUBCONTROLS( Panel )
 
     QskFocusIndicator( QQuickItem* parent = nullptr );
     ~QskFocusIndicator() override;
 
-protected:
+  protected:
     void windowChangeEvent( QskWindowChangeEvent* ) override;
     virtual QRectF focusRect() const;
 
-private:
+  private:
     void onFocusItemGeometryChanged();
     void onWindowSizeChanged( int );
 

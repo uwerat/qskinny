@@ -7,8 +7,8 @@
 
 #include <qopenglcontext.h>
 #include <qopenglframebufferobject.h>
-#include <qopenglpaintdevice.h>
 #include <qopenglfunctions.h>
+#include <qopenglpaintdevice.h>
 
 // VS2012+ disable keyword macroizing unless _ALLOW_KEYWORD_MACROS is set
 #ifdef _MSC_VER
@@ -68,8 +68,8 @@ static uint qskTextureFBO(
     const QRect targetRect( sourceRect.x(), sourceRect.bottom() + 1,
         sourceRect.width(), -sourceRect.height() );
 
-    QOpenGLFramebufferObject::blitFramebuffer( &fbo, sourceRect,
-        &multisampledFbo, targetRect );
+    QOpenGLFramebufferObject::blitFramebuffer(
+        &fbo, sourceRect, &multisampledFbo, targetRect );
 
     return fbo.takeTexture();
 }
@@ -105,9 +105,9 @@ QskGraphicTextureFactory::QskGraphicTextureFactory()
 }
 
 QskGraphicTextureFactory::QskGraphicTextureFactory(
-    const QskGraphic& graphic, const QSize& size ):
-    m_graphic( graphic ),
-    m_size( size )
+        const QskGraphic& graphic, const QSize& size )
+    : m_graphic( graphic )
+    , m_size( size )
 {
 }
 

@@ -7,14 +7,15 @@
 #define QSK_PAINTER_COMMAND_H
 
 #include "QskGlobal.h"
-#include <qpaintengine.h>
-#include <qpixmap.h>
+
 #include <qimage.h>
+#include <qpaintengine.h>
 #include <qpainterpath.h>
+#include <qpixmap.h>
 
 class QSK_EXPORT QskPainterCommand
 {
-public:
+  public:
     //! Type of the paint command
     enum Type
     {
@@ -54,12 +55,12 @@ public:
     //! Attributes of a state change
     class StateData
     {
-    public:
-        StateData():
-            backgroundMode( Qt::TransparentMode ),
-            clipOperation( Qt::NoClip ),
-            isClipEnabled( false ),
-            compositionMode( QPainter::CompositionMode_SourceOver )
+      public:
+        StateData()
+            : backgroundMode( Qt::TransparentMode )
+            , clipOperation( Qt::NoClip )
+            , isClipEnabled( false )
+            , compositionMode( QPainter::CompositionMode_SourceOver )
         {
         }
 
@@ -106,7 +107,6 @@ public:
     bool operator==( const QskPainterCommand& other ) const;
     bool operator!=( const QskPainterCommand& other ) const;
 
-
     Type type() const;
 
     QPainterPath* path();
@@ -121,7 +121,7 @@ public:
     StateData* stateData();
     const StateData* stateData() const;
 
-private:
+  private:
     void copy( const QskPainterCommand& );
     void reset();
 

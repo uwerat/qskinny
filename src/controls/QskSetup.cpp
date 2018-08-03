@@ -4,15 +4,15 @@
  *****************************************************************************/
 
 #include "QskSetup.h"
+#include "QskControl.h"
+#include "QskGraphicProviderMap.h"
+#include "QskObjectTree.h"
 #include "QskSkin.h"
 #include "QskSkinManager.h"
-#include "QskGraphicProviderMap.h"
-#include "QskControl.h"
 #include "QskWindow.h"
-#include "QskObjectTree.h"
 
-#include <qpointer.h>
 #include <qguiapplication.h>
+#include <qpointer.h>
 #include <qstylehints.h>
 
 QskSetup* QskSetup::s_instance = nullptr;
@@ -80,21 +80,21 @@ namespace
 {
     class VisitorLocale final : public QskObjectTree::ResolveVisitor< QLocale >
     {
-    public:
-        VisitorLocale():
-            ResolveVisitor< QLocale >( "locale" )
+      public:
+        VisitorLocale()
+            : ResolveVisitor< QLocale >( "locale" )
         {
         }
 
-    private:
-        bool setImplicitValue(
-            QskControl* control, const QLocale& locale ) override
+      private:
+        bool setImplicitValue( QskControl* control,
+            const QLocale& locale ) override
         {
             return qskInheritLocale( control, locale );
         }
 
-        bool setImplicitValue(
-            QskWindow* window, const QLocale& locale ) override
+        bool setImplicitValue( QskWindow* window,
+            const QLocale& locale ) override
         {
             return qskInheritLocale( window, locale );
         }
@@ -113,9 +113,9 @@ namespace
 
 class QskSetup::PrivateData
 {
-public:
-    PrivateData():
-        controlFlags( qskDefaultControlFlags() )
+  public:
+    PrivateData()
+        : controlFlags( qskDefaultControlFlags() )
     {
     }
 
@@ -126,8 +126,8 @@ public:
     QskSetup::Flags controlFlags;
 };
 
-QskSetup::QskSetup():
-    m_data( new PrivateData() )
+QskSetup::QskSetup()
+    : m_data( new PrivateData() )
 {
 }
 
@@ -266,7 +266,6 @@ QLocale QskSetup::inheritedLocale( const QObject* object )
     return visitor.resolveValue();
 }
 
-
 void QskSetup::inheritLocale( QObject* object, const QLocale& locale )
 {
     VisitorLocale visitor;
@@ -294,7 +293,7 @@ bool QskSetup::eventFilter( QObject* object, QEvent* event )
             That's why we prefer to do the focus management outside of the
             event handlers.
          */
-        switch( event->type() )
+        switch ( event->type() )
         {
             case QEvent::MouseButtonPress:
             case QEvent::MouseButtonRelease:

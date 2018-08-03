@@ -29,7 +29,7 @@ class QSK_EXPORT QskTabBar : public QskBox
 
     using Inherited = QskBox;
 
-public:
+  public:
     QSK_SUBCONTROLS( Panel )
 
     QskTabBar( QQuickItem* parent = nullptr );
@@ -73,19 +73,19 @@ public:
     QskAspect::Subcontrol effectiveSubcontrol(
         QskAspect::Subcontrol ) const override;
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void setCurrentIndex( int index );
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void currentIndexChanged( int index );
     void countChanged();
     void textOptionsChanged();
     void orientationChanged();
 
-protected:
+  protected:
     void componentComplete() override;
 
-private:
+  private:
     void restack();
 
     class PrivateData;

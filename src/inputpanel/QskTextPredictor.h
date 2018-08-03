@@ -17,7 +17,7 @@ class QSK_EXPORT QskTextPredictor : public QObject
 {
     Q_OBJECT
 
-public:
+  public:
     enum Attribute
     {
         Words = 1 << 0
@@ -38,13 +38,13 @@ public:
 
     Attributes attributes() const;
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void predictionChanged();
 
-protected:
+  protected:
     QskTextPredictor( Attributes, QObject* );
 
-private:
+  private:
     const Attributes m_attributes;
 };
 

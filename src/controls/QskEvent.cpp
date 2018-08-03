@@ -1,3 +1,8 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * This file may be used under the terms of the QSkinny License, Version 1.0
+ *****************************************************************************/
+
 #include "QskEvent.h"
 #include "QskGesture.h"
 
@@ -26,7 +31,7 @@ int qskTabChainIncrement( const QEvent* event )
         const auto keyEvent = static_cast< const QKeyEvent* >( event );
         if ( !( keyEvent->modifiers() & ( Qt::ControlModifier | Qt::AltModifier ) ) )
         {
-            switch( keyEvent->key() )
+            switch ( keyEvent->key() )
             {
                 case Qt::Key_Tab:
                     return 1;
@@ -40,18 +45,18 @@ int qskTabChainIncrement( const QEvent* event )
     return 0;
 }
 
-QskEvent::QskEvent( QskEvent::Type type ):
-    QEvent( static_cast< QEvent::Type >( type ) )
+QskEvent::QskEvent( QskEvent::Type type )
+    : QEvent( static_cast< QEvent::Type >( type ) )
 {
 }
 
 // -- QskGeometryChangeEvent
 
 QskGeometryChangeEvent::QskGeometryChangeEvent(
-        const QRectF& rect, const QRectF& oldRect ):
-    QskEvent( QskEvent::GeometryChange ),
-    m_rect( rect ),
-    m_oldRect( oldRect )
+        const QRectF& rect, const QRectF& oldRect )
+    : QskEvent( QskEvent::GeometryChange )
+    , m_rect( rect )
+    , m_oldRect( oldRect )
 {
 }
 
@@ -70,19 +75,20 @@ bool QskGeometryChangeEvent::isMoved() const
 // -- QskWindowChangeEvent
 
 QskWindowChangeEvent::QskWindowChangeEvent(
-        QQuickWindow* oldWindow, QQuickWindow* window ):
-    QskEvent( QskEvent::WindowChange ),
-    m_oldWindow( oldWindow ),
-    m_window( window )
+        QQuickWindow* oldWindow, QQuickWindow* window )
+    : QskEvent( QskEvent::WindowChange )
+    , m_oldWindow( oldWindow )
+    , m_window( window )
 {
 }
 
 // -- QskGestureEvent
 
-QskGestureEvent::QskGestureEvent( const QskGesture* gesture, bool ownedByEvent ):
-    QskEvent( QskEvent::Gesture ),
-    m_gesture( gesture ),
-    m_gestureOwnedByEvent( ownedByEvent )
+QskGestureEvent::QskGestureEvent(
+        const QskGesture* gesture, bool ownedByEvent )
+    : QskEvent( QskEvent::Gesture )
+    , m_gesture( gesture )
+    , m_gestureOwnedByEvent( ownedByEvent )
 {
 }
 
@@ -94,10 +100,10 @@ QskGestureEvent::~QskGestureEvent()
 
 // -- QskAnimatorEvent
 
-QskAnimatorEvent::QskAnimatorEvent( QskAspect::Aspect aspect, State state ):
-    QskEvent( QskEvent::Animator ),
-    m_aspect( aspect ),
-    m_state( state )
+QskAnimatorEvent::QskAnimatorEvent( QskAspect::Aspect aspect, State state )
+    : QskEvent( QskEvent::Animator )
+    , m_aspect( aspect )
+    , m_state( state )
 {
 }
 

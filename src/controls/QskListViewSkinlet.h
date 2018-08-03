@@ -24,11 +24,11 @@ class QSK_EXPORT QskListViewSkinlet : public QskScrollViewSkinlet
 
     using Inherited = QskScrollViewSkinlet;
 
-public:
+  public:
     Q_INVOKABLE QskListViewSkinlet( QskSkin* = nullptr );
     ~QskListViewSkinlet() override;
 
-protected:
+  protected:
     enum NodeRole
     {
         TextRole,
@@ -41,7 +41,7 @@ protected:
     virtual QSGNode* updateCellNode( const QskListView*,
         QSGNode*, const QRectF&, int row, int col ) const;
 
-private:
+  private:
     void updateForegroundNodes( const QskListView*, QskListViewNode* ) const;
     void updateBackgroundNodes( const QskListView*, QskListViewNode* ) const;
 

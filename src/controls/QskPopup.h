@@ -18,7 +18,7 @@ class QSK_EXPORT QskPopup : public QskControl
 
     using Inherited = QskControl;
 
-public:
+  public:
     QSK_SUBCONTROLS( Overlay )
 
     enum PopupFlag
@@ -50,22 +50,22 @@ public:
 
     bool isOpen() const;
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void open();
     void close();
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void closed();
     void modalChanged( bool );
     void overlayChanged( bool );
 
-protected:
+  protected:
     void aboutToShow() override;
     virtual void setFading( bool on );
 
     bool event( QEvent* ) override;
-    void focusInEvent( QFocusEvent * ) override;
-    void focusOutEvent( QFocusEvent * ) override;
+    void focusInEvent( QFocusEvent* ) override;
+    void focusOutEvent( QFocusEvent* ) override;
 
     void itemChange( QQuickItem::ItemChange,
         const QQuickItem::ItemChangeData& ) override;
@@ -74,7 +74,7 @@ protected:
 
     void grabFocus( bool );
 
-private:
+  private:
     void updateInputGrabber();
 
     class PrivateData;

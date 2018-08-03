@@ -4,23 +4,23 @@
  *****************************************************************************/
 
 #include "QskInputSubWindow.h"
-#include "QskTextOptions.h"
-#include "QskGraphic.h"
-#include "QskPushButton.h"
-#include "QskTextLabel.h"
-#include "QskGraphicLabel.h"
 #include "QskDialogButtonBox.h"
+#include "QskGraphic.h"
+#include "QskGraphicLabel.h"
 #include "QskLinearBox.h"
+#include "QskPushButton.h"
 #include "QskSkin.h"
+#include "QskTextLabel.h"
+#include "QskTextOptions.h"
 
-#include <qpointer.h>
 #include <qfontmetrics.h>
+#include <qpointer.h>
 
 namespace
 {
     class TextLabel final : public QskTextLabel
     {
-    public:
+      public:
         TextLabel( QskInputSubWindow* box )
         {
             setObjectName( QStringLiteral( "QskInputSubWindowTextLabel" ) );
@@ -30,24 +30,24 @@ namespace
 
             setTextOptions( options );
 
-            connect( this, SIGNAL( textChanged(QString) ),
-                box, SIGNAL( infoTextChanged() ) );
+            connect( this, &QskTextLabel::textChanged,
+                box, &QskInputSubWindow::infoTextChanged );
 
-            connect( this, SIGNAL( textOptionsChanged() ),
-                box, SIGNAL( infoTextOptionsChanged() ) );
+            connect( this, &QskTextLabel::textOptionsChanged,
+                box, &QskInputSubWindow::infoTextOptionsChanged );
         }
     };
 
     class SymbolLabel final : public QskGraphicLabel
     {
-    public:
+      public:
         SymbolLabel( QskInputSubWindow* )
         {
             setObjectName( QStringLiteral( "QskInputSubWindowSymbolLabel" ) );
             updateSourceSize();
         }
 
-    protected:
+      protected:
         void changeEvent( QEvent* event ) override
         {
             if ( event->type() == QEvent::FontChange )
@@ -56,7 +56,7 @@ namespace
             QskGraphicLabel::changeEvent( event );
         }
 
-    private:
+      private:
         void updateSourceSize()
         {
             // when there is no explicit size known,
@@ -73,11 +73,11 @@ namespace
 
 class QskInputSubWindow::PrivateData
 {
-public:
-    PrivateData():
-        standardButtons( QskDialog::NoButton ),
-        defaultButton( QskDialog::NoButton ),
-        inputControl( nullptr )
+  public:
+    PrivateData()
+        : standardButtons( QskDialog::NoButton )
+        , defaultButton( QskDialog::NoButton )
+        , inputControl( nullptr )
     {
     }
 
@@ -92,9 +92,9 @@ public:
     QskLinearBox* layoutBox;
 };
 
-QskInputSubWindow::QskInputSubWindow( QQuickItem* parent ):
-    Inherited( parent ),
-    m_data( new PrivateData() )
+QskInputSubWindow::QskInputSubWindow( QQuickItem* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData() )
 {
     m_data->infoTextLabel = new TextLabel( this );
     m_data->infoTextLabel->setSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Preferred );
@@ -146,7 +146,7 @@ void QskInputSubWindow::setStandardButtons( QskDialog::StandardButtons buttons )
 #if 1
     const QList< QskPushButton* > b = m_data->buttonBox->buttons();
     if ( !b.isEmpty() )
-        b[0]->setFocus( true );
+        b[ 0 ]->setFocus( true );
 #endif
 }
 

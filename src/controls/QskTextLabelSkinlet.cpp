@@ -7,8 +7,8 @@
 #include "QskTextLabel.h"
 #include "QskTextOptions.h"
 
-QskTextLabelSkinlet::QskTextLabelSkinlet( QskSkin* skin ):
-    Inherited( skin )
+QskTextLabelSkinlet::QskTextLabelSkinlet( QskSkin* skin )
+    : Inherited( skin )
 {
     setNodeRoles( { TextRole } );
 }
@@ -17,9 +17,9 @@ QskTextLabelSkinlet::~QskTextLabelSkinlet() = default;
 
 QRectF QskTextLabelSkinlet::subControlRect(
     const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
-{       
+{
     const auto label = static_cast< const QskTextLabel* >( skinnable );
-    
+
     if ( subControl == QskTextLabel::Text )
     {
         return label->contentsRect();
@@ -28,12 +28,12 @@ QRectF QskTextLabelSkinlet::subControlRect(
     return Inherited::subControlRect( skinnable, subControl );
 }
 
-QSGNode* QskTextLabelSkinlet::updateSubNode( const QskSkinnable* skinnable,
-    quint8 nodeRole, QSGNode* node ) const
+QSGNode* QskTextLabelSkinlet::updateSubNode(
+    const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
     const auto label = static_cast< const QskTextLabel* >( skinnable );
 
-    switch( nodeRole )
+    switch ( nodeRole )
     {
         case TextRole:
         {

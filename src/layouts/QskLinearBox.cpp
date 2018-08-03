@@ -4,18 +4,18 @@
  *****************************************************************************/
 
 #include "QskLinearBox.h"
-#include "QskLayoutItem.h"
 #include "QskLayoutEngine.h"
+#include "QskLayoutItem.h"
 
 #include <qendian.h>
 
 class QskLinearBox::PrivateData
 {
-public:
-    PrivateData( Qt::Orientation orient, uint dim ):
-        dimension( dim ),
-        orientation( orient ),
-        transposeAlignments( false )
+  public:
+    PrivateData( Qt::Orientation orient, uint dim )
+        : dimension( dim )
+        , orientation( orient )
+        , transposeAlignments( false )
     {
     }
 
@@ -26,20 +26,20 @@ public:
     bool transposeAlignments : 1;
 };
 
-QskLinearBox::QskLinearBox( QQuickItem* parent ):
-    QskLinearBox( Qt::Horizontal, std::numeric_limits< uint >::max(), parent )
+QskLinearBox::QskLinearBox( QQuickItem* parent )
+    : QskLinearBox( Qt::Horizontal, std::numeric_limits< uint >::max(), parent )
 {
 }
 
-QskLinearBox::QskLinearBox( Qt::Orientation orientation, QQuickItem* parent ):
-    QskLinearBox( orientation, std::numeric_limits< uint >::max(), parent )
+QskLinearBox::QskLinearBox( Qt::Orientation orientation, QQuickItem* parent )
+    : QskLinearBox( orientation, std::numeric_limits< uint >::max(), parent )
 {
 }
 
-QskLinearBox::QskLinearBox( Qt::Orientation orientation,
-        uint dimension, QQuickItem* parent ):
-    Inherited( parent ),
-    m_data ( new PrivateData( orientation, dimension ) )
+QskLinearBox::QskLinearBox(
+        Qt::Orientation orientation, uint dimension, QQuickItem* parent )
+    : Inherited( parent )
+    , m_data( new PrivateData( orientation, dimension ) )
 {
 }
 
@@ -327,17 +327,17 @@ QSizeF QskLinearBox::contentsSizeHint() const
 
     if ( itemCount() == 0 )
         return QSizeF( 0, 0 );
-   
+
     return engine().sizeHint( Qt::PreferredSize );
 }
 
-qreal QskLinearBox::heightForWidth( qreal width ) const 
+qreal QskLinearBox::heightForWidth( qreal width ) const
 {
     const QSizeF constraint( width, -1 );
     return engine().sizeHint( Qt::PreferredSize, constraint ).height();
 }
 
-qreal QskLinearBox::widthForHeight( qreal height ) const 
+qreal QskLinearBox::widthForHeight( qreal height ) const
 {
     const QSizeF constraint( -1, height );
     return engine().sizeHint( Qt::PreferredSize, constraint ).width();
@@ -383,8 +383,8 @@ void QskLinearBox::rearrange()
 
         QskLayoutItem* layoutItem = engine().layoutItemAt( i );
 
-        if ( layoutItem->firstRow( Qt::Horizontal ) != col
-            || layoutItem->firstRow( Qt::Vertical ) != row )
+        if ( layoutItem->firstRow( Qt::Horizontal ) != col ||
+             layoutItem->firstRow( Qt::Vertical ) != row )
         {
             engine().removeItem( layoutItem );
 

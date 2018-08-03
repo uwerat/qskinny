@@ -7,9 +7,9 @@
 #include "QskMetaFunction.h"
 
 #include <qcoreapplication.h>
-#include <qthread.h>
 #include <qobject.h>
 #include <qsemaphore.h>
+#include <qthread.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qobject_p.h>
@@ -50,8 +50,8 @@ int QskMetaFunction::FunctionCall::typeInfo() const
 
     int value;
 
-    reinterpret_cast< SlotObject* >( that )->invoke( TypeInfo, that,
-        nullptr, reinterpret_cast< void** >( &value ), nullptr );
+    reinterpret_cast< SlotObject* >( that )->invoke(
+        TypeInfo, that, nullptr, reinterpret_cast< void** >( &value ), nullptr );
 
     return value;
 }
@@ -62,27 +62,27 @@ int QskMetaFunction::FunctionCall::refCount() const
     return reinterpret_cast< SlotObject* >( that )->ref.load();
 }
 
-QskMetaFunction::QskMetaFunction():
-    m_functionCall( nullptr )
+QskMetaFunction::QskMetaFunction()
+    : m_functionCall( nullptr )
 {
 }
 
-QskMetaFunction::QskMetaFunction( FunctionCall* functionCall ):
-    m_functionCall( functionCall )
-{
-    if ( m_functionCall )
-        m_functionCall->ref();
-}
-
-QskMetaFunction::QskMetaFunction( const QskMetaFunction& other ):
-    m_functionCall( other.m_functionCall )
+QskMetaFunction::QskMetaFunction( FunctionCall* functionCall )
+    : m_functionCall( functionCall )
 {
     if ( m_functionCall )
         m_functionCall->ref();
 }
 
-QskMetaFunction::QskMetaFunction( QskMetaFunction&& other ):
-    m_functionCall( other.m_functionCall )
+QskMetaFunction::QskMetaFunction( const QskMetaFunction& other )
+    : m_functionCall( other.m_functionCall )
+{
+    if ( m_functionCall )
+        m_functionCall->ref();
+}
+
+QskMetaFunction::QskMetaFunction( QskMetaFunction&& other )
+    : m_functionCall( other.m_functionCall )
 {
     other.m_functionCall = nullptr;
 }
@@ -177,8 +177,8 @@ QskMetaFunction::Type QskMetaFunction::functionType() const
     return static_cast< QskMetaFunction::Type >( m_functionCall->typeInfo() );
 }
 
-void QskMetaFunction::invoke(
-    QObject* object, void* argv[], Qt::ConnectionType connectionType )
+void QskMetaFunction::invoke( QObject* object,
+    void* argv[], Qt::ConnectionType connectionType )
 {
 #if 1
     /*
@@ -202,7 +202,7 @@ void QskMetaFunction::invoke(
             ? Qt::QueuedConnection : Qt::DirectConnection;
     }
 
-    switch( invokeType )
+    switch ( invokeType )
     {
         case Qt::DirectConnection:
         {
@@ -211,8 +211,8 @@ void QskMetaFunction::invoke(
         }
         case Qt::BlockingQueuedConnection:
         {
-            if ( receiver.isNull()
-                || ( receiver->thread() == QThread::currentThread() ) )
+            if ( receiver.isNull() ||
+                ( receiver->thread() == QThread::currentThread() ) )
             {
                 // We would end up in a deadlock, better do nothing
                 return;
@@ -220,8 +220,8 @@ void QskMetaFunction::invoke(
 
             QSemaphore semaphore;
 
-            qskInvokeFunctionQueued( receiver, m_functionCall,
-                0, nullptr, argv, &semaphore );
+            qskInvokeFunctionQueued( receiver,
+                m_functionCall, 0, nullptr, argv, &semaphore );
 
             semaphore.acquire();
 
@@ -239,21 +239,21 @@ void QskMetaFunction::invoke(
             auto types = static_cast< int* >( malloc( argc * sizeof( int ) ) );
             auto arguments = static_cast< void** >( malloc( argc * sizeof( void* ) ) );
 
-            types[0] = QMetaType::UnknownType;
-            arguments[0] = nullptr;
+            types[ 0 ] = QMetaType::UnknownType;
+            arguments[ 0 ] = nullptr;
 
             const int* parameterTypes = m_functionCall->parameterTypes();
             for ( uint i = 1; i < argc; i++ )
             {
-                if ( argv[i] == nullptr )
+                if ( argv[ i ] == nullptr )
                 {
-                    Q_ASSERT( arguments[i] != nullptr );
+                    Q_ASSERT( arguments[ i ] != nullptr );
                     receiver = nullptr;
                     break;
                 }
 
-                types[i] = parameterTypes[i - 1];
-                arguments[i] = QMetaType::create( types[i], argv[i] );
+                types[ i ] = parameterTypes[ i - 1 ];
+                arguments[ i ] = QMetaType::create( types[ i ], argv[ i ] );
             }
 
             if ( receiver.isNull() )

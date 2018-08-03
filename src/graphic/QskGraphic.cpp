@@ -4,17 +4,17 @@
  *****************************************************************************/
 
 #include "QskGraphic.h"
-#include "QskGraphicPaintEngine.h"
 #include "QskColorFilter.h"
+#include "QskGraphicPaintEngine.h"
 #include "QskPainterCommand.h"
 
-#include <qpainter.h>
-#include <qpaintengine.h>
-#include <qimage.h>
-#include <qpixmap.h>
-#include <qpainterpath.h>
 #include <qguiapplication.h>
+#include <qimage.h>
 #include <qmath.h>
+#include <qpaintengine.h>
+#include <qpainter.h>
+#include <qpainterpath.h>
+#include <qpixmap.h>
 
 static inline qreal qskDevicePixelRatio()
 {
@@ -74,7 +74,7 @@ static inline void qskExecCommand(
     const QTransform& transform,
     const QTransform* initialTransform )
 {
-    switch( cmd.type() )
+    switch ( cmd.type() )
     {
         case QskPainterCommand::Path:
         {
@@ -217,18 +217,18 @@ namespace
 {
     class PathInfo
     {
-    public:
-        PathInfo():
-            m_scalablePen( false )
+      public:
+        PathInfo()
+            : m_scalablePen( false )
         {
             // QVector needs a default constructor
         }
 
         PathInfo( const QRectF& pointRect,
-            const QRectF& boundingRect, bool scalablePen ):
-            m_pointRect( pointRect ),
-            m_boundingRect( boundingRect ),
-            m_scalablePen( scalablePen )
+                const QRectF& boundingRect, bool scalablePen )
+            : m_pointRect( pointRect )
+            , m_boundingRect( boundingRect )
+            , m_scalablePen( scalablePen )
         {
         }
 
@@ -271,8 +271,8 @@ namespace
             const qreal l = qAbs( pathRect.left() - p0.x() );
             const qreal r = qAbs( pathRect.right() - p0.x() );
 
-            const double w = 2.0 * qMin( l, r )
-                * targetRect.width() / pathRect.width();
+            const double w = 2.0 * qMin( l, r ) *
+                targetRect.width() / pathRect.width();
 
             double sx;
             if ( scalePens && m_scalablePen )
@@ -302,8 +302,8 @@ namespace
             const qreal t = qAbs( pathRect.top() - p0.y() );
             const qreal b = qAbs( pathRect.bottom() - p0.y() );
 
-            const double h = 2.0 * qMin( t, b )
-                * targetRect.height() / pathRect.height();
+            const double h = 2.0 * qMin( t, b ) *
+                targetRect.height() / pathRect.height();
 
             double sy;
             if ( scalePens && m_scalablePen )
@@ -322,7 +322,7 @@ namespace
             return sy;
         }
 
-    private:
+      private:
         QRectF m_pointRect;
         QRectF m_boundingRect;
         bool m_scalablePen;
@@ -331,24 +331,24 @@ namespace
 
 class QskGraphic::PrivateData : public QSharedData
 {
-public:
-    PrivateData():
-        boundingRect( 0.0, 0.0, -1.0, -1.0 ),
-        pointRect( 0.0, 0.0, -1.0, -1.0 ),
-        hasRasterData( false ),
-        renderHints( 0 )
+  public:
+    PrivateData()
+        : boundingRect( 0.0, 0.0, -1.0, -1.0 )
+        , pointRect( 0.0, 0.0, -1.0, -1.0 )
+        , hasRasterData( false )
+        , renderHints( 0 )
     {
     }
 
-    PrivateData( const PrivateData& other ):
-        QSharedData( other ),
-        defaultSize( other.defaultSize ),
-        commands( other.commands ),
-        pathInfos( other.pathInfos ),
-        boundingRect( other.boundingRect ),
-        pointRect( other.pointRect ),
-        hasRasterData( other.hasRasterData ),
-        renderHints( other.renderHints )
+    PrivateData( const PrivateData& other )
+        : QSharedData( other )
+        , defaultSize( other.defaultSize )
+        , commands( other.commands )
+        , pathInfos( other.pathInfos )
+        , boundingRect( other.boundingRect )
+        , pointRect( other.pointRect )
+        , hasRasterData( other.hasRasterData )
+        , renderHints( other.renderHints )
     {
     }
 
@@ -358,8 +358,8 @@ public:
 
     inline bool operator==( const PrivateData& other ) const
     {
-        return ( renderHints == other.renderHints )
-               && ( commands == other.commands );
+        return ( renderHints == other.renderHints ) &&
+            ( commands == other.commands );
     }
 
     QSizeF defaultSize;
@@ -373,22 +373,22 @@ public:
     uint renderHints : 4;
 };
 
-QskGraphic::QskGraphic():
-    m_data( new PrivateData() ),
-    m_paintEngine( nullptr )
+QskGraphic::QskGraphic()
+    : m_data( new PrivateData() )
+    , m_paintEngine( nullptr )
 {
 }
 
-QskGraphic::QskGraphic( const QskGraphic& other ):
-    QPaintDevice(),
-    m_data( other.m_data ),
-    m_paintEngine( nullptr )
+QskGraphic::QskGraphic( const QskGraphic& other )
+    : QPaintDevice()
+    , m_data( other.m_data )
+    , m_paintEngine( nullptr )
 {
 }
 
-QskGraphic::QskGraphic( QskGraphic&& other ):
-    m_data( std::move( other.m_data ) ),
-    m_paintEngine( nullptr )
+QskGraphic::QskGraphic( QskGraphic&& other )
+    : m_data( std::move( other.m_data ) )
+    , m_paintEngine( nullptr )
 {
 }
 
@@ -551,7 +551,7 @@ QRectF QskGraphic::scaledBoundingRect( qreal sx, qreal sy ) const
     QRectF rect = transform.mapRect( m_data->pointRect );
 
     for ( int i = 0; i < m_data->pathInfos.size(); i++ )
-        rect |= m_data->pathInfos[i].scaledBoundingRect( sx, sy, scalePens );
+        rect |= m_data->pathInfos[ i ].scaledBoundingRect( sx, sy, scalePens );
 
     return rect;
 }
@@ -584,7 +584,7 @@ void QskGraphic::render( QPainter* painter ) const
 }
 
 void QskGraphic::render( QPainter* painter,
-    const QskColorFilter& colorFilter, QTransform *initialTransform ) const
+    const QskColorFilter& colorFilter, QTransform* initialTransform ) const
 {
     if ( isNull() )
         return;
@@ -599,7 +599,7 @@ void QskGraphic::render( QPainter* painter,
 
     for ( int i = 0; i < numCommands; i++ )
     {
-        qskExecCommand( painter, commands[i], colorFilter,
+        qskExecCommand( painter, commands[ i ], colorFilter,
             renderHints, transform, initialTransform );
     }
 
@@ -638,7 +638,7 @@ void QskGraphic::render( QPainter* painter, const QRectF& rect,
 
     for ( int i = 0; i < m_data->pathInfos.size(); i++ )
     {
-        const PathInfo info = m_data->pathInfos[i];
+        const PathInfo info = m_data->pathInfos[ i ];
 
         const double ssx = info.scaleFactorX(
             m_data->pointRect, rect, scalePens );
@@ -831,8 +831,8 @@ void QskGraphic::drawPath( const QPainterPath& path )
         QRectF pointRect = scaledPath.boundingRect();
         QRectF boundingRect = pointRect;
 
-        if ( painter->pen().style() != Qt::NoPen
-             && painter->pen().brush().style() != Qt::NoBrush )
+        if ( painter->pen().style() != Qt::NoPen &&
+            painter->pen().brush().style() != Qt::NoBrush )
         {
             boundingRect = qskStrokedPathRect( painter, path );
         }
@@ -926,11 +926,14 @@ void QskGraphic::setCommands( const QVector< QskPainterCommand >& commands )
 
     const QskPainterCommand* cmds = commands.constData();
 
+    const QskColorFilter noFilter;
+    const QTransform noTransform;
+
     QPainter painter( this );
     for ( int i = 0; i < numCommands; i++ )
     {
-        qskExecCommand( &painter, cmds[i],
-            QskColorFilter(), RenderHints(), QTransform(), NULL );
+        qskExecCommand( &painter, cmds[ i ],
+            noFilter, RenderHints(), noTransform, nullptr );
     }
 
     painter.end();

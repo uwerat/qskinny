@@ -6,8 +6,8 @@
 #include "QskPopupSkinlet.h"
 #include "QskPopup.h"
 
-QskPopupSkinlet::QskPopupSkinlet( QskSkin* skin ):
-    Inherited( skin )
+QskPopupSkinlet::QskPopupSkinlet( QskSkin* skin )
+    : Inherited( skin )
 {
     appendNodeRoles( { OverlayRole } );
 }
@@ -25,10 +25,10 @@ QRectF QskPopupSkinlet::subControlRect(
     return Inherited::subControlRect( skinnable, subControl );
 }
 
-QSGNode* QskPopupSkinlet::updateSubNode( const QskSkinnable* skinnable,
-    quint8 nodeRole, QSGNode* node ) const
+QSGNode* QskPopupSkinlet::updateSubNode(
+    const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
-    switch( nodeRole )
+    switch ( nodeRole )
     {
         case OverlayRole:
             return updateBoxNode( skinnable, node, QskPopup::Overlay );

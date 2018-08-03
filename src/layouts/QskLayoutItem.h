@@ -23,7 +23,7 @@ class QskLayoutItem : public QGridLayoutItem
 {
     using Inherited = QGridLayoutItem;
 
-public:
+  public:
     enum UpdateMode
     {
         UpdateNone,
@@ -65,7 +65,7 @@ public:
     bool hasUnlimitedSpan() const;
     bool hasUnlimitedSpan( Qt::Orientation orientation ) const;
 
-private:
+  private:
     bool m_isGeometryDirty : 1;
     bool m_isStretchable : 1;
     bool m_retainSizeWhenHidden : 1;

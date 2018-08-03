@@ -4,11 +4,11 @@
  *****************************************************************************/
 
 #include "QskSeparatorSkinlet.h"
-#include "QskSeparator.h"
 #include "QskAspect.h"
+#include "QskSeparator.h"
 
-QskSeparatorSkinlet::QskSeparatorSkinlet( QskSkin* skin ):
-    Inherited( skin )
+QskSeparatorSkinlet::QskSeparatorSkinlet( QskSkin* skin )
+    : Inherited( skin )
 {
     setNodeRoles( { PanelRole } );
 }
@@ -17,14 +17,14 @@ QskSeparatorSkinlet::~QskSeparatorSkinlet() = default;
 
 QRectF QskSeparatorSkinlet::subControlRect(
     const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
-{      
+{
     const auto separator = static_cast< const QskSeparator* >( skinnable );
-    
+
     if ( subControl == QskSeparator::Panel )
     {
         return panelRect( separator );
     }
-    
+
     return Inherited::subControlRect( skinnable, subControl );
 }
 
@@ -33,7 +33,7 @@ QSGNode* QskSeparatorSkinlet::updateSubNode(
 {
     const auto separator = static_cast< const QskSeparator* >( skinnable );
 
-    switch( nodeRole )
+    switch ( nodeRole )
     {
         case PanelRole:
         {

@@ -8,9 +8,9 @@ QSK_SUBCONTROL( ButtonBar, Indicator )
 
 class IndicatorLabel final : public QskGraphicLabel
 {
-public:
-    IndicatorLabel( QQuickItem* parentItem = nullptr ):
-        QskGraphicLabel( parentItem )
+  public:
+    IndicatorLabel( QQuickItem* parentItem = nullptr )
+        : QskGraphicLabel( parentItem )
     {
         // so the skins are able to colorize them
         setGraphicRole( SkinFactory::Indicator );
@@ -28,8 +28,8 @@ public:
     }
 };
 
-ButtonBar::ButtonBar( QQuickItem* parentItem ):
-    QskLinearBox( parentItem )
+ButtonBar::ButtonBar( QQuickItem* parentItem )
+    : QskLinearBox( parentItem )
 {
     QColor c( Qt::black );
     c.setAlphaF( 0.5 );

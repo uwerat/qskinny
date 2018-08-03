@@ -17,7 +17,7 @@ class QSK_EXPORT QskScrollViewSkinlet : public QskSkinlet
 
     using Inherited = QskSkinlet;
 
-public:
+  public:
     enum NodeRole
     {
         ViewportRole,
@@ -33,17 +33,17 @@ public:
     Q_INVOKABLE QskScrollViewSkinlet( QskSkin* = nullptr );
     ~QskScrollViewSkinlet() override;
 
-    QRectF subControlRect(
-        const QskSkinnable*, QskAspect::Subcontrol ) const override;
+    QRectF subControlRect( const QskSkinnable*,
+        QskAspect::Subcontrol ) const override;
 
-protected:
+  protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 
     virtual QSGNode* updateContentsNode( const QskScrollView*, QSGNode* ) const;
     QSGNode* contentsNode( const QskScrollView* );
 
-private:
+  private:
     QSGNode* updateContentsRootNode( const QskScrollView*, QSGNode* ) const;
 
     QRectF viewportRect( const QskScrollView* ) const;

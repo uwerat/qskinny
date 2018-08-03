@@ -4,9 +4,9 @@
  *****************************************************************************/
 
 #include "QskFocusIndicator.h"
-#include "QskQuick.h"
 #include "QskAspect.h"
 #include "QskEvent.h"
+#include "QskQuick.h"
 
 #include <qquickwindow.h>
 
@@ -26,7 +26,7 @@ static inline QRectF qskFocusIndicatorRect( const QQuickItem* item )
 
 class QskFocusIndicator::PrivateData
 {
-public:
+  public:
     void resetConnections()
     {
         for ( const auto& connection : connections )
@@ -38,9 +38,9 @@ public:
     QVector< QMetaObject::Connection > connections;
 };
 
-QskFocusIndicator::QskFocusIndicator( QQuickItem* parent ):
-    Inherited( parent ), // parentItem() might change, but parent() stays
-    m_data( new PrivateData() )
+QskFocusIndicator::QskFocusIndicator( QQuickItem* parent )
+    : Inherited( parent ) // parentItem() might change, but parent() stays
+    , m_data( new PrivateData() )
 {
     setTransparentForPositioner( true );
     connectWindow( window(), true );
@@ -145,8 +145,8 @@ QRectF QskFocusIndicator::focusRect() const
     {
         const QQuickItem* item = window()->activeFocusItem();
 
-        if ( item && ( item != this ) && item->isVisible()
-            && ( item != window()->contentItem() ) )
+        if ( item && ( item != this ) && item->isVisible() &&
+            ( item != window()->contentItem() ) )
         {
             const auto rect = qskFocusIndicatorRect( item );
             return parentItem()->mapRectFromItem( item, rect );

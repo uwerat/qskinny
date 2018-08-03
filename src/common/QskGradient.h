@@ -8,8 +8,8 @@
 
 #include "QskGlobal.h"
 
-#include <qmetatype.h>
 #include <qcolor.h>
+#include <qmetatype.h>
 #include <qvector.h>
 
 class QDebug;
@@ -22,7 +22,7 @@ class QSK_EXPORT QskGradientStop
     Q_PROPERTY( qreal position READ position WRITE setPosition RESET resetPosition )
     Q_PROPERTY( QColor color READ color WRITE setColor RESET resetColor )
 
-public:
+  public:
     QskGradientStop();
     QskGradientStop( qreal position, const QColor& color );
 
@@ -42,7 +42,7 @@ public:
 
     uint hash( uint seed ) const;
 
-private:
+  private:
     qreal m_position;
     QColor m_color;
 };
@@ -54,7 +54,7 @@ class QSK_EXPORT QskGradient
     Q_PROPERTY( Orientation orientation READ orientation WRITE setOrientation )
     Q_PROPERTY( QVector< QskGradientStop > stops READ stops WRITE setStops )
 
-public:
+  public:
     // TODO: radial/canonical gradients + other diagonal linear gradients
     enum Orientation
     {
@@ -108,7 +108,7 @@ public:
 
     uint hash( uint seed ) const;
 
-private:
+  private:
     void setStopAt( int index, qreal stop );
     qreal stopAt( int index ) const;
 
@@ -119,13 +119,13 @@ private:
     QVector< QskGradientStop > m_stops;
 };
 
-inline QskGradient::QskGradient( Qt::GlobalColor color ):
-    QskGradient( QColor( color ) )
+inline QskGradient::QskGradient( Qt::GlobalColor color )
+    : QskGradient( QColor( color ) )
 {
 }
 
-inline QskGradient::QskGradient( QRgb rgb ):
-    QskGradient( QColor::fromRgba( rgb ) )
+inline QskGradient::QskGradient( QRgb rgb )
+    : QskGradient( QColor::fromRgba( rgb ) )
 {
 }
 

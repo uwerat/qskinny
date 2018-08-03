@@ -21,7 +21,7 @@ class QSK_EXPORT QskSeparator : public QskControl
 
     using Inherited = QskControl;
 
-public:
+  public:
     QSK_SUBCONTROLS( Panel )
 
     QskSeparator( QQuickItem* parent = nullptr );
@@ -38,11 +38,11 @@ public:
     QSizeF contentsSizeHint() const override;
     QskAspect::Placement effectivePlacement() const override;
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void orientationChanged( Qt::Orientation );
     void thicknessChanged();
 
-private:
+  private:
     Qt::Orientation m_orientation;
 };
 

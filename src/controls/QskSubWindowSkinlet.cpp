@@ -4,14 +4,14 @@
  *****************************************************************************/
 
 #include "QskSubWindowSkinlet.h"
-#include "QskSubWindow.h"
 #include "QskAspect.h"
 #include "QskBoxBorderMetrics.h"
+#include "QskSubWindow.h"
 
 #include <qfontmetrics.h>
 
-QskSubWindowSkinlet::QskSubWindowSkinlet( QskSkin* skin ):
-    Inherited( skin )
+QskSubWindowSkinlet::QskSubWindowSkinlet( QskSkin* skin )
+    : Inherited( skin )
 {
     appendNodeRoles( { PanelRole, TitleBarRole } );
 }
@@ -36,12 +36,12 @@ QRectF QskSubWindowSkinlet::subControlRect(
     return Inherited::subControlRect( skinnable, subControl );
 }
 
-QSGNode* QskSubWindowSkinlet::updateSubNode( const QskSkinnable* skinnable,
-    quint8 nodeRole, QSGNode* node ) const
+QSGNode* QskSubWindowSkinlet::updateSubNode(
+    const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
     const auto subWindow = static_cast< const QskSubWindow* >( skinnable );
 
-    switch( nodeRole )
+    switch ( nodeRole )
     {
         case PanelRole:
             return updateBoxNode( subWindow, node, QskSubWindow::Panel );
@@ -76,7 +76,7 @@ qreal QskSubWindowSkinlet::titleBarHeight( const QskSubWindow* subWindow ) const
     const qreal height = fm.height() + margins.top() + margins.bottom();
     const qreal minHeight = subWindow->metric( QskSubWindow::TitleBar | MinimumHeight );
 
-    return qMax( height, minHeight);
+    return qMax( height, minHeight );
 }
 
 #include "moc_QskSubWindowSkinlet.cpp"

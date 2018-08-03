@@ -20,7 +20,7 @@ class QByteArray;
 
 class QSK_EXPORT QskMetaInvokable
 {
-public:
+  public:
     enum Type
     {
         Invalid = 0,
@@ -75,7 +75,7 @@ public:
     QMetaProperty property() const;
     QskMetaFunction function() const;
 
-private:
+  private:
     struct FunctionData
     {
         void* functionCall;
@@ -96,8 +96,8 @@ private:
     int m_type : 3;
 };
 
-inline QskMetaInvokable::QskMetaInvokable():
-    m_type( Invalid )
+inline QskMetaInvokable::QskMetaInvokable()
+    : m_type( Invalid )
 {
 }
 
@@ -135,10 +135,8 @@ QSK_EXPORT void qskInvokeMetaPropertyWrite(
     const QObject* object, const QMetaProperty&,
     void* args[], Qt::ConnectionType = Qt::AutoConnection );
 
-
 QSK_EXPORT QMetaMethod qskNotifySignal( const QMetaObject*, const char* propertyName );
 QSK_EXPORT QMetaMethod qskNotifySignal( const QObject*, const char* propertyName );
-
 
 Q_DECLARE_METATYPE( QskMetaInvokable )
 

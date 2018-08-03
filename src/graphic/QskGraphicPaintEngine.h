@@ -11,14 +11,14 @@
 
 class QSK_EXPORT QskGraphicPaintEngine final : public QPaintEngine
 {
-public:
+  public:
     QskGraphicPaintEngine();
     ~QskGraphicPaintEngine() override;
 
     bool begin( QPaintDevice* ) override;
     bool end() override;
 
-    Type type () const override;
+    Type type() const override;
 
     void updateState( const QPaintEngineState& state ) override;
 

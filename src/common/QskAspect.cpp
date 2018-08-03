@@ -5,9 +5,9 @@
 
 #include "QskAspect.h"
 
+#include <qalgorithms.h>
 #include <qdebug.h>
 #include <qmetaobject.h>
-#include <qalgorithms.h>
 #include <qvector.h>
 
 #include <bitset>
@@ -57,8 +57,8 @@ QskAspect::Subcontrol QskAspect::nextSubcontrol(
     auto& names = qskAspectRegistry->subControlNames;
     auto& hashTable = qskAspectRegistry->subControlTable;
 
-    Q_ASSERT_X( names.size() <= LastSubcontrol,
-        "QskAspect", "There are no free subcontrol aspects; please modify your"
+    Q_ASSERT_X( names.size() <= LastSubcontrol, "QskAspect",
+        "There are no free subcontrol aspects; please modify your"
         " application to declare fewer aspects, or increase the mask size of"
         " QskAspect::Subcontrol in QskAspect.h." );
 
@@ -253,7 +253,7 @@ QDebug operator<<( QDebug debug, const QskAspect::Aspect& aspect )
 
 void qskDebugState( QDebug debug, const QMetaObject* metaObject, QskAspect::State state )
 {
-    QDebugStateSaver saver(debug);
+    QDebugStateSaver saver( debug );
 
     debug.resetFormat();
     debug.noquote();
@@ -266,7 +266,7 @@ void qskDebugAspect( QDebug debug, const QMetaObject* metaObject, QskAspect::Asp
 {
     using namespace QskAspect;
 
-    QDebugStateSaver saver(debug);
+    QDebugStateSaver saver( debug );
 
     debug.resetFormat();
     debug.noquote();
@@ -284,7 +284,7 @@ void qskDebugAspect( QDebug debug, const QMetaObject* metaObject, QskAspect::Asp
     if ( aspect.isAnimator() )
         debug << "(A)";
 
-    switch( aspect.type() )
+    switch ( aspect.type() )
     {
         case Color:
         {
@@ -324,13 +324,13 @@ const char* QskAspect::Aspect::toPrintable() const
     debug << *this;
 
     // we should find a better impementation
-    static QByteArray bytes[10];
+    static QByteArray bytes[ 10 ];
     static int counter = 0;
 
     counter = ( counter + 1 ) % 10;
 
-    bytes[counter] = tmp.toUtf8();
-    return bytes[counter].constData();
+    bytes[ counter ] = tmp.toUtf8();
+    return bytes[ counter ].constData();
 }
 
 QskAspect::State QskAspect::Aspect::topState() const

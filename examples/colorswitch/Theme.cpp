@@ -5,13 +5,13 @@
 
 #include "Theme.h"
 
+#include <QskAspect.h>
+#include <QskBoxBorderColors.h>
+#include <QskFocusIndicator.h>
+#include <QskListView.h>
 #include <QskSetup.h>
 #include <QskSkin.h>
 #include <QskSkinTransition.h>
-#include <QskAspect.h>
-#include <QskListView.h>
-#include <QskFocusIndicator.h>
-#include <QskBoxBorderColors.h>
 
 static void qskResetColors( QskSkin* skin, const QColor& accent )
 {
@@ -30,32 +30,32 @@ namespace
 {
     class SkinTransition final : public QskSkinTransition
     {
-    public:
-        SkinTransition( const QColor& accent ):
-            m_accent( accent )
+      public:
+        SkinTransition( const QColor& accent )
+            : m_accent( accent )
         {
         }
 
-    protected:
+      protected:
         void updateSkin( QskSkin*, QskSkin* newSkin ) override
         {
             qskResetColors( newSkin, m_accent );
         }
 
-    private:
+      private:
         const QColor m_accent;
     };
 }
 
-Theme::Theme( QObject* parent ):
-    QObject( parent ),
-    m_accent( qskSetup->skin()->color( QskAspect::Color ) )
+Theme::Theme( QObject* parent )
+    : QObject( parent )
+    , m_accent( qskSetup->skin()->color( QskAspect::Color ) )
 {
     connect( qskSetup, &QskSetup::skinChanged,
-        this, [this]( QskSkin* ) { updateColors(); } );
+        this, [ this ]( QskSkin* ) { updateColors(); } );
 
     connect( qskSetup, &QskSetup::skinChanged,
-        this, [this]( QskSkin* ) { Q_EMIT skinChanged(); } );
+        this, [ this ]( QskSkin* ) { Q_EMIT skinChanged(); } );
 }
 
 void Theme::setAccent( QColor color )

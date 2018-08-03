@@ -10,7 +10,7 @@
 
 class DynamicConstraintsPage : public QskLinearBox
 {
-public:
+  public:
     DynamicConstraintsPage( QQuickItem* parent = nullptr );
 };
 

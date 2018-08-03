@@ -8,9 +8,9 @@
 
 #include "QskGlobal.h"
 
+#include <qnamespace.h>
 #include <qobject.h>
 #include <qqmlparserstatus.h>
-#include <qnamespace.h>
 
 #include <memory>
 
@@ -42,7 +42,7 @@ class QSK_EXPORT QskShortcut : public QObject, public QQmlParserStatus
 
     using Inherited = QObject;
 
-public:
+  public:
     QskShortcut( QObject* parent = nullptr );
 
     QskShortcut( const QKeySequence&, QObject* = nullptr );
@@ -60,7 +60,7 @@ public:
     QVariant sequenceVariant() const;
 
     Qt::ShortcutContext context() const;
-    void setContext(Qt::ShortcutContext context);
+    void setContext( Qt::ShortcutContext );
 
     void setEnabled( bool );
     bool isEnabled() const;
@@ -70,7 +70,7 @@ public:
 
     virtual bool isFocusInScope() const;
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void sequenceChanged();
     void contextChanged();
     void enabledChanged();
@@ -81,12 +81,12 @@ Q_SIGNALS:
 
     int shortcutIdChanged( int ) const;
 
-protected:
+  protected:
     bool event( QEvent* ) override;
     void classBegin() override;
     void componentComplete() override;
 
-private:
+  private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

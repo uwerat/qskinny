@@ -30,7 +30,7 @@ class QSK_EXPORT QskDialog : public QObject
     Q_PROPERTY( QWindow* transientParent READ transientParent
         WRITE setTransientParent NOTIFY transientParentChanged )
 
-public:
+  public:
     enum Policy
     {
         EmbeddedBox,
@@ -112,33 +112,26 @@ public:
     ) const;
 
     Q_INVOKABLE StandardButton warning(
-        const QString &title, const QString &text,
-        StandardButtons buttons = Ok,
-        StandardButton = NoButton
-    ) const;
+        const QString& title, const QString& text,
+        StandardButtons buttons = Ok, StandardButton = NoButton ) const;
 
     Q_INVOKABLE StandardButton critical(
-        const QString &title, const QString &text,
-        StandardButtons buttons = Ok,
-        StandardButton = NoButton
-    ) const;
+        const QString& title, const QString& text,
+        StandardButtons buttons = Ok, StandardButton = NoButton ) const;
 
     Q_INVOKABLE StandardButton question(
-        const QString &title, const QString &text,
-        StandardButtons = StandardButtons( Yes | No ),
-        StandardButton = NoButton
-    ) const;
+        const QString& title, const QString& text,
+        StandardButtons = StandardButtons( Yes | No ), StandardButton = NoButton ) const;
 
     Q_INVOKABLE QString select(
         const QString& title, const QString& text,
-        const QStringList& entries, int selectedRow = 0
-    ) const;
+        const QStringList& entries, int selectedRow = 0 ) const;
 
-Q_SIGNALS:
+  Q_SIGNALS:
     void transientParentChanged();
     void policyChanged();
 
-private:
+  private:
     QskDialog();
     ~QskDialog() override;
 
