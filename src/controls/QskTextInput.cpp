@@ -33,11 +33,11 @@ static inline void qskBindSignals(
     const QQuickTextInput* wrappedInput, QskTextInput* input )
 {
     QObject::connect( wrappedInput, &QQuickTextInput::textChanged,
-        input, [ input ] { input->Q_EMIT textChanged( input->text() ); } );
+        input, [ input ] { Q_EMIT input->textChanged( input->text() ); } );
 
 #if QT_VERSION >= QT_VERSION_CHECK( 5, 9, 0 )
     QObject::connect( wrappedInput, &QQuickTextInput::textEdited,
-        input, [ input ] { input->Q_EMIT textEdited( input->text() ); } );
+        input, [ input ] { Q_EMIT input->textEdited( input->text() ); } );
 #endif
 
     QObject::connect( wrappedInput, &QQuickTextInput::validatorChanged,
@@ -58,7 +58,7 @@ static inline void qskBindSignals(
         input, &QskTextInput::maximumLengthChanged );
 
     QObject::connect( wrappedInput, &QQuickTextInput::echoModeChanged,
-        input, [ input ] { input->Q_EMIT echoModeChanged( input->echoMode() ); } );
+        input, [ input ] { Q_EMIT input->echoModeChanged( input->echoMode() ); } );
 
     QObject::connect( wrappedInput, &QQuickTextInput::passwordCharacterChanged,
         input, &QskTextInput::passwordCharacterChanged );
@@ -569,7 +569,7 @@ void QskTextInput::setEditing( bool on )
         if ( status == QQuickTextInputPrivate::AcceptableInput )
         {
             if ( fixup() )
-                m_data->textInput->Q_EMIT editingFinished();
+                Q_EMIT m_data->textInput->editingFinished();
         }
 
 #if 0

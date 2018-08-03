@@ -80,7 +80,7 @@ MainWindow::MainWindow()
     const QString resourceDir( ":/qvg" );
     const QStringList icons = QDir( resourceDir ).entryList();
 
-    for ( auto icon : icons )
+    for ( const auto& icon : icons )
     {
         auto title = icon;
         m_tabView->addTab( title.replace( ".qvg", "" ),

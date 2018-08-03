@@ -154,7 +154,7 @@ QskWindow::~QskWindow()
             items += child;
     }
 
-    for ( auto item : qskAsConst( items ) )
+    for ( auto& item : qskAsConst( items ) )
         delete item;
 }
 

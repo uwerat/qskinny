@@ -174,7 +174,7 @@ void SkinnyShortcut::changeFonts( int increment )
         skin->setFont( role, font );
     }
 
-    qskSetup->Q_EMIT skinChanged( skin );
+    Q_EMIT qskSetup->skinChanged( skin );
 }
 
 static inline void countNodes( const QSGNode* node, int& counter )

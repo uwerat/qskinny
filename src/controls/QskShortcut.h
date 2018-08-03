@@ -79,7 +79,7 @@ class QSK_EXPORT QskShortcut : public QObject, public QQmlParserStatus
     void activated();
     void activatedAmbiguously();
 
-    int shortcutIdChanged( int ) const;
+    int shortcutIdChanged( int );
 
   protected:
     bool event( QEvent* ) override;

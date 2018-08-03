@@ -116,10 +116,10 @@ namespace
                 of setting up direct connections between qskSetup and each control
              */
             QObject::connect( qskSetup, &QskSetup::controlFlagsChanged,
-                [ this ] { updateControlFlags(); } );
+                qskSetup, [ this ] { updateControlFlags(); } );
 
             QObject::connect( qskSetup, &QskSetup::skinChanged,
-                [ this ] { updateSkin(); } );
+                qskSetup, [ this ] { updateSkin(); } );
         }
 
         inline void insert( QskControl* control )

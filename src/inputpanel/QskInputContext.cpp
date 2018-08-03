@@ -151,7 +151,7 @@ namespace
     };
 }
 
-static QPointer< QskInputContext > qskInputContext = nullptr;
+static QPointer< QskInputContext > qskInputContext;
 
 static void qskSendToPlatformContext( QEvent::Type type )
 {

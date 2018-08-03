@@ -78,7 +78,7 @@ class QskShortcut::PrivateData
         }
 
         if ( oldId != id )
-            shortcut->Q_EMIT shortcutIdChanged( id );
+            Q_EMIT shortcut->shortcutIdChanged( id );
     }
 
   public:

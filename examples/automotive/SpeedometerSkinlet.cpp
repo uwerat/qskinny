@@ -247,8 +247,6 @@ QSGNode* SpeedometerSkinlet::updateNeedleNode(
     auto needleWidth = speedometer->metric( Speedometer::Needle | QskAspect::MinimumWidth );
     auto needleMargin = speedometer->metric( Speedometer::Needle | QskAspect::Margin );
 
-    QRectF needleRect( center.x() - needleWidth, center.y() - needleWidth,
-        panelRadius - ( needleWidth + needleMargin ), 2 * needleWidth );
     float xStart = center.x();
     float yStart = center.y();
 

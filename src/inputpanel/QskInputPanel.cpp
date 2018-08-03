@@ -298,9 +298,6 @@ void QskInputPanel::attachInputItem( QQuickItem* item )
 
     if ( item )
     {
-        auto context = QskInputContext::instance();
-        const auto locale = context->locale();
-
         if ( m_data->predictor )
             m_data->predictor->reset();
 

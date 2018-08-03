@@ -331,7 +331,7 @@ class QskSkinManager::PrivateData
     {
         if ( !pluginsRegistered )
         {
-            for ( auto path : pluginPaths )
+            for ( const auto& path : qskAsConst( pluginPaths ) )
                 registerPlugins( path + QStringLiteral( "/skins" ) );
 
             pluginsRegistered = true;
@@ -350,7 +350,9 @@ class QskSkinManager::PrivateData
 
         FactoryLoader* loader = nullptr;
 
-        for ( auto fileName : dir.entryList( QDir::Files ) )
+        const auto dirEntries = dir.entryList( QDir::Files );
+
+        for ( const auto& fileName : dirEntries )
         {
             if ( loader == nullptr )
                 loader = new FactoryLoader();
@@ -423,7 +425,7 @@ void QskSkinManager::setPluginPaths( const QStringList& paths )
     QSet< QString > pathSet; // checking for duplicates
     QStringList pluginPaths;
 
-    for ( auto path : paths )
+    for ( const auto& path : paths )
     {
         const auto pluginPath = qskResolvedPath( path );
         if ( !pluginPath.isEmpty() && !pathSet.contains( pluginPath ) )

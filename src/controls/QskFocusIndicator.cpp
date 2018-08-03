@@ -29,7 +29,7 @@ class QskFocusIndicator::PrivateData
   public:
     void resetConnections()
     {
-        for ( const auto& connection : connections )
+        for ( const auto& connection : qskAsConst( connections ) )
             QObject::disconnect( connection );
 
         connections.clear();
