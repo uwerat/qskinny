@@ -1,7 +1,0 @@
-About how Hunspell is used in QSkinny
-=====================================
-
-The files in this directory ( beside this README ) are a subset
-of Hunspell v1.6.2 ( see http://hunspell.github.io )
-
-These files are compiled into the qskinputcontext library
