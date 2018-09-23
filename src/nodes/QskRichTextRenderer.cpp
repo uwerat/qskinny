@@ -25,6 +25,15 @@ namespace
       public:
         TextItem()
         {
+#if 1
+            /*
+               QQuickTextPrivate::ExtraData::ExtraData is not exported with MSVC, so we
+               preallocate it by setting/unsetting the bottom padding
+             */
+            setBottomPadding( 1 );
+            setBottomPadding( 0 );
+#endif
+
             // fonts are supposed to be defined in the application skin and we
             // probably don't want to have them scaled
             setFontSizeMode( QQuickText::FixedSize );
@@ -266,9 +275,9 @@ void QskRichTextRenderer::updateNode(
         if ( static_cast< int >( rect.height() - h ) % 2 )
         {
             if ( static_cast< int >( h ) % 2 )
-                d->extra.value().bottomPadding = 1;
+                d->extra->bottomPadding = 1;
             else
-                d->extra.value().topPadding = 1;
+                d->extra->topPadding = 1;
         }
     }
 
