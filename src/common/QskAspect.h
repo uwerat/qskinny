@@ -186,7 +186,7 @@ namespace QskAspect
             uint subControl : 12;
 
             uint type : 3;
-            bool isAnimator : 1;
+            uint isAnimator : 1;
 
             uint primitive : 7;
             uint placement : 1;
