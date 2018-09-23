@@ -92,6 +92,13 @@ namespace
 
         bool fixup()
         {
+#ifdef _MSC_VER
+            /*
+                We can't call hasAcceptableInput with MSVC 
+                and need to find our own code instead TODO ...
+             */
+            return true;
+#else
             auto d = QQuickTextInputPrivate::get( this );
 
             // QQuickTextInputPrivate::checkIsValid ???
@@ -102,6 +109,7 @@ namespace
                 isAcceptable = d->fixup();
 
             return isAcceptable;
+#endif
         }
 
         void updateColors();

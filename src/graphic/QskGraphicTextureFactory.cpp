@@ -78,6 +78,14 @@ static uint qskTextureRaster(
     const QRect& rect, Qt::AspectRatioMode scalingMode,
     const QskGraphic& graphic, const QskColorFilter& filter )
 {
+#ifdef _MSC_VER
+    /*
+         We can't access the internals of QOpenGLTexture with MSVC
+         and have to replace the code below by doing OpenGL calls directly.
+         Until this is not done we disable using the raster
+     */
+    return qskTextureFBO( rect, scalingMode, graphic, filter );
+#else
     QImage image( rect.size(), QImage::Format_RGBA8888_Premultiplied );
     image.fill( Qt::transparent );
 
@@ -98,6 +106,7 @@ static uint qskTextureRaster(
     uint textureId = 0;
     qSwap( texture.d_func()->textureId, textureId );
     return textureId;
+#endif
 }
 
 QskGraphicTextureFactory::QskGraphicTextureFactory()
