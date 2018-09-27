@@ -7,3 +7,9 @@ SUBDIRS += \
     invoker \
     inputpanel \
     images
+
+qtHaveModule(webengine) {
+
+    SUBDIRS += \
+        webview
+}
