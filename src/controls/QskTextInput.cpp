@@ -571,14 +571,8 @@ void QskTextInput::setEditing( bool on )
     }
     else
     {
-        auto d = QQuickTextInputPrivate::get( m_data->textInput );
-
-        const auto status = d->hasAcceptableInput( d->m_text );
-        if ( status == QQuickTextInputPrivate::AcceptableInput )
-        {
-            if ( fixup() )
-                Q_EMIT m_data->textInput->editingFinished();
-        }
+        if ( fixup() )
+            Q_EMIT m_data->textInput->editingFinished();
 
 #if 0
         inputMethod->reset();
