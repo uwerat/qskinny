@@ -6,19 +6,9 @@
 #include "QskTextInput.h"
 #include "QskQuick.h"
 
-// VS2012+ disable keyword macroizing unless _ALLOW_KEYWORD_MACROS is set
-#ifdef _MSC_VER
-#if ( _MSC_VER >= 1700 ) && !defined( _ALLOW_KEYWORD_MACROS )
-#define _ALLOW_KEYWORD_MACROS
-#endif
-#endif
-
 QSK_QT_PRIVATE_BEGIN
-// we need to access QQuickTextInputPrivate::hasAcceptableInput
-#define private public
 #include <private/qquicktextinput_p.h>
 #include <private/qquicktextinput_p_p.h>
-#undef private
 QSK_QT_PRIVATE_END
 
 QSK_SUBCONTROL( QskTextInput, Panel )
@@ -92,24 +82,67 @@ namespace
 
         bool fixup()
         {
-#ifdef _MSC_VER
+            return QQuickTextInputPrivate::get( this )->fixup();
+        }
+
+        bool hasAcceptableInput() const
+        {
             /*
-                We can't call hasAcceptableInput with MSVC 
-                and need to find our own code instead TODO ...
+                we would like to call QQuickTextInputPrivate::hasAcceptableInput
+                but unfortunately it is private, so we need to hack somthing
+                together
              */
+
+            auto that = const_cast< TextInput* >( this );
+            auto d = QQuickTextInputPrivate::get( that );
+
+            if ( d->m_validator )
+            {
+                QString text = d->m_text;
+                int pos = d->m_cursor;
+
+                const auto state = d->m_validator->validate( text, pos );
+                if ( state != QValidator::Acceptable )
+                    return false;
+            }
+
+            if ( d->m_maskData )
+            {
+                /*
+                    We only want to do the check for the maskData here
+                    and have to disable d->m_validator temporarily
+                 */
+
+                class Validator final : public QValidator
+                {
+                public:
+                    State validate(QString &, int &) const override
+                    {
+                        return QValidator::Acceptable;
+                    }
+                };
+
+                const auto validator = d->m_validator;
+
+                const auto validInput = d->m_validInput;
+                const auto acceptableInput = d->m_acceptableInput;
+
+                d->m_acceptableInput = true;
+
+                static Validator noValidator;
+                that->setValidator( &noValidator ); // implicitly checking maskData
+                that->setValidator( d->m_validator );
+
+                const bool isAcceptable = d->m_acceptableInput;
+
+                // restoring old values
+                d->m_validInput = validInput;
+                d->m_acceptableInput = acceptableInput;
+
+                return isAcceptable;
+            }
+
             return true;
-#else
-            auto d = QQuickTextInputPrivate::get( this );
-
-            // QQuickTextInputPrivate::checkIsValid ???
-            const auto state = static_cast< int >( d->hasAcceptableInput( d->m_text ) );
-
-            bool isAcceptable = ( state == QValidator::Acceptable );
-            if ( !isAcceptable )
-                isAcceptable = d->fixup();
-
-            return isAcceptable;
-#endif
         }
 
         void updateColors();
@@ -298,7 +331,7 @@ void QskTextInput::keyPressEvent( QKeyEvent* event )
             case Qt::Key_Enter:
             case Qt::Key_Return:
             {
-                if ( fixup() )
+                if ( hasAcceptableInput() || fixup() )
                 {
                     QGuiApplication::inputMethod()->commit();
 
@@ -571,7 +604,7 @@ void QskTextInput::setEditing( bool on )
     }
     else
     {
-        if ( fixup() )
+        if ( hasAcceptableInput() || fixup() )
             Q_EMIT m_data->textInput->editingFinished();
 
 #if 0

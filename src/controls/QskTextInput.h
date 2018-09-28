@@ -132,8 +132,8 @@ class QSK_EXPORT QskTextInput : public QskControl
     void setOverwriteMode( bool );
 #endif
 
-    virtual bool hasAcceptableInput() const;
-    virtual bool fixup();
+    bool hasAcceptableInput() const;
+    bool fixup();
 
     QVariant inputMethodQuery( Qt::InputMethodQuery ) const override;
     QVariant inputMethodQuery( Qt::InputMethodQuery, QVariant argument ) const;
