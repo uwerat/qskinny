@@ -21,16 +21,15 @@ in a good startup performance and a low memory footprint.
 
 Nontheless QSkinny is lacking in areas like documentation or appealing
 default skins. The QML API has not been completed after reaching a
-proof of concept state. Furthermore the current selection of implemented
+proof of concept state. Furthermore the current selection of the implemented
 controls is limited to the needs of the driving projects.
 
 QSkinny is supposed to run on all platforms being supported by Qt/Quick.
 But so far only Linux is actively tested. 
-
 It might support all versions Qt >= 5.6, but you can rely on:
 
 - Qt 5.6
-- latest long term supported ( LTS ) version of Qt
+- current long term supported ( LTS ) version of Qt
 - current version of Qt
 
 If you want to know more about QSkinny - or even like to give it a specific
