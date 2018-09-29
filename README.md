@@ -15,27 +15,27 @@ Being "skinny" also means a design that separates concerns between
 the API and logic of the controls themselves, the styling of these controls,
 and the delegated rendering of the controls to the screen.
 
-The code already provides a solid fundament for an application with
-currently ~150K lines of pure C++/GUI code. As expected it results
-in a good startup performance a nd low memory footprint.
+The code already provides a solid fundament for an automotive GUI with
+currently ~150K lines of pure C++ code. As expected it results
+in a good startup performance and a low memory footprint.
 
-Nontheless the current state of the project is lacking in areas like
-documentation or offering appealing default skins. Furthermore
-the current selection of implemented controls is limited by the needs
-of the driving projects.
+Nontheless QSkinny is lacking in areas like documentation or appealing
+default skins. The QML API has not been completed after reaching a
+proof of concept state. Furthermore the current selection of implemented
+controls is limited to the needs of the driving projects.
 
-QSkinny is sopposed to run in all environments, that are supported by Qt/Quick,
-but only Linux is actively tested so far.
+QSkinny is supposed to run on all platforms being supported by Qt/Quick.
+But so far only Linux is actively tested. 
 
-Currently it supports all version of Qt >= 5.6, but it is intended to always support:
+It might support all versions Qt >= 5.6, but you can rely on:
 
 - Qt 5.6
-- The current long term supported ( LTS ) version of Qt
-- The current version of Qt
+- latest long term supported ( LTS ) version of Qt
+- current version of Qt
 
-If you want to know more about the (Q)Skinny or even like to give it a specific
-direction you can contact support@qskinny.org.
+If you want to know more about QSkinny - or even like to give it a specific
+direction - please contact support@qskinny.org.
 
-This is a screenshot of a sample automotive UI (see examples/automotive):
+Below is a screenshot of a sample automotive UI (see examples/automotive):
 
 ![Automotive screenshot](https://github.com/uwerat/qskinny/blob/master/doc/automotive-screenshot.jpg?raw=true)
