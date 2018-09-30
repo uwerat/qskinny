@@ -8,20 +8,9 @@
 #include <qopenglcontext.h>
 #include <qopenglframebufferobject.h>
 #include <qopenglfunctions.h>
+#include <qopenglextrafunctions.h>
 #include <qopenglpaintdevice.h>
-
-// VS2012+ disable keyword macroizing unless _ALLOW_KEYWORD_MACROS is set
-#ifdef _MSC_VER
-#if ( _MSC_VER >= 1700 ) && !defined( _ALLOW_KEYWORD_MACROS )
-#define _ALLOW_KEYWORD_MACROS
-#endif
-#endif
-
-#define private public
 #include <qopengltexture.h>
-#undef private
-
-#include <private/qopengltexture_p.h>
 
 #include <qpainter.h>
 #include <qquickwindow.h>
@@ -78,14 +67,6 @@ static uint qskTextureRaster(
     const QRect& rect, Qt::AspectRatioMode scalingMode,
     const QskGraphic& graphic, const QskColorFilter& filter )
 {
-#ifdef _MSC_VER
-    /*
-         We can't access the internals of QOpenGLTexture with MSVC
-         and have to replace the code below by doing OpenGL calls directly.
-         Until this is not done we disable using the raster
-     */
-    return qskTextureFBO( rect, scalingMode, graphic, filter );
-#else
     QImage image( rect.size(), QImage::Format_RGBA8888_Premultiplied );
     image.fill( Qt::transparent );
 
@@ -94,19 +75,47 @@ static uint qskTextureRaster(
         graphic.render( &painter, rect, filter, scalingMode );
     }
 
-    QOpenGLTexture texture( QOpenGLTexture::Target2D );
-    texture.setSize( image.width(), image.height() );
-    texture.setAutoMipMapGenerationEnabled( false );
-    texture.setFormat( QOpenGLTexture::RGBA8_UNorm );
-    texture.setMinMagFilters( QOpenGLTexture::Nearest, QOpenGLTexture::Nearest );
-    texture.setWrapMode( QOpenGLTexture::ClampToEdge );
-    texture.allocateStorage( QOpenGLTexture::RGBA, QOpenGLTexture::UInt8 );
-    texture.setData( QOpenGLTexture::RGBA, QOpenGLTexture::UInt8, image.constBits() );
+    const auto target = QOpenGLTexture::Target2D;
 
-    uint textureId = 0;
-    qSwap( texture.d_func()->textureId, textureId );
+    auto context = QOpenGLContext::currentContext();
+    if ( context == nullptr )
+        return 0;
+
+    auto& f = *context->functions();
+
+    GLint oldTexture; // we can't rely on having OpenGL Direct State Access
+    f.glGetIntegerv( QOpenGLTexture::BindingTarget2D, &oldTexture );
+
+    GLuint textureId;
+    f.glGenTextures( 1, &textureId );
+
+    f.glBindTexture( target, textureId );
+    
+    f.glTexParameteri( target, GL_TEXTURE_MIN_FILTER, QOpenGLTexture::Nearest );
+    f.glTexParameteri( target, GL_TEXTURE_MAG_FILTER, QOpenGLTexture::Nearest );
+
+    f.glTexParameteri( target, GL_TEXTURE_WRAP_S, QOpenGLTexture::ClampToEdge );
+    f.glTexParameteri( target, GL_TEXTURE_WRAP_T, QOpenGLTexture::ClampToEdge );
+
+    if ( QOpenGLTexture::hasFeature( QOpenGLTexture::ImmutableStorage ) )
+    {
+        auto& ef = *context->extraFunctions();
+        ef.glTexStorage2D( target, 1, 
+            QOpenGLTexture::RGBA8_UNorm, image.width(), image.height() );
+
+        f.glTexSubImage2D( target, 0, 0, 0, image.width(), image.height(),
+            QOpenGLTexture::RGBA, QOpenGLTexture::UInt8, image.constBits() );
+    }
+    else
+    {
+        f.glTexImage2D( target, 0, QOpenGLTexture::RGBA8_UNorm,
+            image.width(), image.height(), 0,
+            QOpenGLTexture::RGBA, QOpenGLTexture::UInt8, image.constBits() );
+    }
+
+    f.glBindTexture( target, oldTexture );
+
     return textureId;
-#endif
 }
 
 QskGraphicTextureFactory::QskGraphicTextureFactory()
