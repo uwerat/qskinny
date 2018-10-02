@@ -104,6 +104,7 @@ QSK_NAMESPACE( QskAspect )
         LastUserState    = 1 << 11,
         LastSystemState  = 1 << 15,
 
+        AllUserStates    =   0x0FF0,
         AllStates        =   0xFFFF
     };
     QSK_ENUM( State )
