@@ -527,9 +527,6 @@ QSK_EXPORT void qskDebugAspect( QDebug, const QMetaObject*, QskAspect::Aspect );
 
 #endif
 
-#define QSK_SUBCONTROLS( ... ) static const QskAspect::Subcontrol __VA_ARGS__;
-#define QSK_STATES( ... ) static const QskAspect::State __VA_ARGS__;
-
 #define QSK_SUBCONTROL( type, name ) \
     const QskAspect::Subcontrol type::name = \
         QskAspect::nextSubcontrol( &type::staticMetaObject, #type "::" #name );
@@ -537,4 +534,55 @@ QSK_EXPORT void qskDebugAspect( QDebug, const QMetaObject*, QskAspect::Aspect );
 #define QSK_STATE( type, name, value ) \
     const QskAspect::State type::name = \
         QskAspect::registerState( &type::staticMetaObject, value, #type "::" #name );
+
+#if !defined(_MSC_VER)
+
+#define QSK_SUBCONTROLS( ... ) static const QskAspect::Subcontrol __VA_ARGS__;
+#define QSK_STATES( ... ) static const QskAspect::State __VA_ARGS__;
+
+#else
+
+/*
+    Working around a MSVC bug: when static member are defined in one statement
+    only the first one is exported. Unfortuately the code below is also not
+    compliant with ISO C++11 and gcc -pedantic f.e. would fail.
+ */
+
+#define _QSK_EXPAND(x) x
+
+#define _QSK_EVAL_0( m, x, ... ) m(x)
+#define _QSK_EVAL_1( m, x, ... ) m(x) _QSK_EXPAND( _QSK_EVAL_0( m, __VA_ARGS__ ) )
+#define _QSK_EVAL_2( m, x, ... ) m(x) _QSK_EXPAND( _QSK_EVAL_1( m, __VA_ARGS__ ) )
+#define _QSK_EVAL_3( m, x, ... ) m(x) _QSK_EXPAND( _QSK_EVAL_2( m, __VA_ARGS__ ) )
+#define _QSK_EVAL_4( m, x, ... ) m(x) _QSK_EXPAND( _QSK_EVAL_3( m, __VA_ARGS__ ) )
+#define _QSK_EVAL_5( m, x, ... ) m(x) _QSK_EXPAND( _QSK_EVAL_4( m, __VA_ARGS__ ) )
+#define _QSK_EVAL_6( m, x, ... ) m(x) _QSK_EXPAND( _QSK_EVAL_5( m, __VA_ARGS__ ) )
+#define _QSK_EVAL_7( m, x, ... ) m(x) _QSK_EXPAND( _QSK_EVAL_6( m, __VA_ARGS__ ) )
+#define _QSK_EVAL_8( m, x, ... ) m(x) _QSK_EXPAND( _QSK_EVAL_7( m, __VA_ARGS__ ) )
+#define _QSK_EVAL_9( m, x, ... ) m(x) _QSK_EXPAND( _QSK_EVAL_8( m, __VA_ARGS__ ) )
+#define _QSK_EVAL_A( m, x, ... ) m(x) _QSK_EXPAND( _QSK_EVAL_9( m, __VA_ARGS__ ) )
+#define _QSK_EVAL_B( m, x, ... ) m(x) _QSK_EXPAND( _QSK_EVAL_A( m, __VA_ARGS__ ) )
+#define _QSK_EVAL_C( m, x, ... ) m(x) _QSK_EXPAND( _QSK_EVAL_B( m, __VA_ARGS__ ) )
+#define _QSK_EVAL_D( m, x, ... ) m(x) _QSK_EXPAND( _QSK_EVAL_C( m, __VA_ARGS__ ) )
+#define _QSK_EVAL_E( m, x, ... ) m(x) _QSK_EXPAND( _QSK_EVAL_D( m, __VA_ARGS__ ) )
+#define _QSK_EVAL_F( m, x, ... ) m(x) _QSK_EXPAND( _QSK_EVAL_E( m, __VA_ARGS__ ) )
+
+#define _QSK_EVAL_NARG( ... ) _QSK_EVAL_NARG_( __VA_ARGS__, _QSK_EVAL_RSEQ_N() )
+#define _QSK_EVAL_NARG_( ... ) _QSK_EXPAND( _QSK_EVAL_ARG_N(  __VA_ARGS__ ) )
+
+#define _QSK_EVAL_ARG_N( _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, A, B, C, D, E, F, N, ... ) N
+#define _QSK_EVAL_RSEQ_N() F, E, D, C, B, A, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
+
+#define _QSK_CAT(x,y) x##y
+#define _QSK_EVAL_( N, m, ... ) _QSK_EXPAND( _QSK_CAT( _QSK_EVAL_, N )( m, __VA_ARGS__ ) )
+#define _QSK_EVAL( m, ... ) _QSK_EVAL_( _QSK_EVAL_NARG( __VA_ARGS__ ), m, __VA_ARGS__ )
+
+#define _QSK_SUBCONTROLS_HELPER( name ) static const QskAspect::Subcontrol name;
+#define QSK_SUBCONTROLS( ... ) _QSK_EVAL( _QSK_SUBCONTROLS_HELPER, __VA_ARGS__ )
+
+#define _QSK_STATES_HELPER( name ) static const QskAspect::State name;
+#define QSK_STATES( ... ) _QSK_EVAL( _QSK_STATES_HELPER, __VA_ARGS__ )
+
+#endif
+
 #endif
