@@ -33,9 +33,9 @@ DEPENDPATH  *= $${QSK_DIRS}
 
 HEADERS += \
     QskShortcut.h \
-    QskModule.h
+    QskQml.h
 
 SOURCES += \
-    QskModule.cpp \
-    QskShortcut.cpp
+    QskShortcut.cpp \
+    QskQml.cpp
 

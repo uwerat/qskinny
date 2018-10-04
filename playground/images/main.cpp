@@ -9,7 +9,7 @@
 #include <SkinnyShortcut.h>
 
 #include <QskGraphicImageProvider.h>
-#include <QskModule.h>
+#include <QskQml.h>
 #include <QskObjectCounter.h>
 
 #include <QGuiApplication>
@@ -23,7 +23,7 @@ int main( int argc, char* argv[] )
 
     const char providerId[] = "shapes";
 
-    QskModule::registerTypes();
+    QskQml::registerTypes();
     qmlRegisterType< Image >( "Images", 1, 0, "Image" );
 
     Qsk::addGraphicProvider( providerId, new SkinnyShapeProvider() );

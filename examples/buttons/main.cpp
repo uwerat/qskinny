@@ -7,7 +7,7 @@
 #include <SkinnyShapeProvider.h>
 #include <SkinnyShortcut.h>
 
-#include <QskModule.h>
+#include <QskQml.h>
 #include <QskObjectCounter.h>
 
 #include <QGuiApplication>
@@ -19,7 +19,7 @@ int main( int argc, char* argv[] )
     QskObjectCounter counter( true );
 #endif
 
-    QskModule::registerTypes();
+    QskQml::registerTypes();
     Qsk::addGraphicProvider( "shapes", new SkinnyShapeProvider() );
 
     QGuiApplication app( argc, argv );

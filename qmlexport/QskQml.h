@@ -3,12 +3,12 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef QSK_MODULE_H
-#define QSK_MODULE_H
+#ifndef QSK_QML_EXPORT_H
+#define QSK_QML_EXPORT_H
 
 #include "QskGlobal.h"
 
-namespace QskModule
+namespace QskQml
 {
     QSK_EXPORT void registerTypes();
 }

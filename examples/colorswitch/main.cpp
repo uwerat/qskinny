@@ -8,7 +8,7 @@
 #include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
 
-#include <QskModule.h>
+#include <QskQml.h>
 #include <QskObjectCounter.h>
 
 #include <QGuiApplication>
@@ -23,7 +23,7 @@ int main( int argc, char* argv[] )
 
     qputenv( "QT_IM_MODULE", "skinny" );
 
-    QskModule::registerTypes();
+    QskQml::registerTypes();
     qmlRegisterType< Theme >( "Theme", 1, 0, "Theme" );
 
     QGuiApplication app( argc, argv );

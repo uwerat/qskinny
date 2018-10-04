@@ -3,7 +3,7 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#include "QskModule.h"
+#include "QskQml.h"
 
 #include "QskCorner.h"
 #include "QskDialog.h"
@@ -224,7 +224,7 @@ class QskMain : public QObject
 
 Q_DECLARE_METATYPE( QskSetupFlagsProvider )
 
-void QskModule::registerTypes()
+void QskQml::registerTypes()
 {
     qmlRegisterRevision< QQuickItem, 6 >( QSK_MODULE_NAME, 1, 0 );
 
@@ -371,4 +371,4 @@ void QskModule::registerTypes()
     );
 }
 
-#include "QskModule.moc"
+#include "QskQml.moc"
