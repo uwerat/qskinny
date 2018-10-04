@@ -95,11 +95,13 @@ HEADERS += \
     nodes/QskBoxRenderer.h \
     nodes/QskBoxRendererColorMap.h \
     nodes/QskGraphicNode.h \
+    nodes/QskPaintedNode.h \
     nodes/QskPlainTextRenderer.h \
     nodes/QskRichTextRenderer.h \
-    nodes/QskTextRenderer.h \
     nodes/QskTextNode.h \
+    nodes/QskTextRenderer.h \
     nodes/QskTextureNode.h \
+    nodes/QskTextureRenderer.h \
     nodes/QskVertex.h
 
 SOURCES += \
@@ -109,11 +111,13 @@ SOURCES += \
     nodes/QskBoxRendererEllipse.cpp \
     nodes/QskBoxRendererDEllipse.cpp \
     nodes/QskGraphicNode.cpp \
+    nodes/QskPaintedNode.cpp \
     nodes/QskPlainTextRenderer.cpp \
     nodes/QskRichTextRenderer.cpp \
-    nodes/QskTextRenderer.cpp \
     nodes/QskTextNode.cpp \
+    nodes/QskTextRenderer.cpp \
     nodes/QskTextureNode.cpp \
+    nodes/QskTextureRenderer.cpp \
     nodes/QskVertex.cpp
 
 HEADERS += \
@@ -295,6 +299,14 @@ SOURCES += \
     dialogs/QskSelectionSubWindow.cpp \
     dialogs/QskSelectionWindow.cpp
 
+HEADERS += \
+    inputpanel/QskTextPredictor.h \
+    inputpanel/QskInputContext.h \
+    inputpanel/QskInputPanel.h \
+    inputpanel/QskInputPanelBox.h \
+    inputpanel/QskInputPredictionBar.h \
+    inputpanel/QskVirtualKeyboard.h
+
 SOURCES += \
     inputpanel/QskTextPredictor.cpp \
     inputpanel/QskInputContext.cpp \
@@ -303,10 +315,3 @@ SOURCES += \
     inputpanel/QskInputPredictionBar.cpp \
     inputpanel/QskVirtualKeyboard.cpp
 
-HEADERS += \
-    inputpanel/QskTextPredictor.h \
-    inputpanel/QskInputContext.h \
-    inputpanel/QskInputPanel.h \
-    inputpanel/QskInputPanelBox.h \
-    inputpanel/QskInputPredictionBar.h \
-    inputpanel/QskVirtualKeyboard.h

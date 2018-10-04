@@ -3,25 +3,29 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef QSK_GRAPHIC_NODE_H
-#define QSK_GRAPHIC_NODE_H
+#ifndef QSK_PAINTED_NODE_H
+#define QSK_PAINTED_NODE_H
 
-#include "QskTextureRenderer.h"
 #include "QskTextureNode.h"
+#include "QskTextureRenderer.h"
 
-class QskGraphic;
-class QskColorFilter;
-
-class QSK_EXPORT QskGraphicNode : public QskTextureNode
+class QSK_EXPORT QskPaintedNode : public QskTextureNode
 {
   public:
-    QskGraphicNode();
-    ~QskGraphicNode() override;
+    QskPaintedNode();
+    ~QskPaintedNode() override;
 
-    void setGraphic( const QskGraphic&, const QskColorFilter&,
-        QskTextureRenderer::RenderMode, const QRect& );
+    void update( QskTextureRenderer::RenderMode, const QRect& );
+
+  protected:
+    virtual void paint( QPainter*, const QSizeF& ) = 0;
+
+    // a hash value of '0' always results in repainting
+    virtual uint hash() = 0;
 
   private:
+    class PaintHelper;
+
     void setTextureId( int ) = delete;
     void setRect( const QRectF& ) = delete;
 

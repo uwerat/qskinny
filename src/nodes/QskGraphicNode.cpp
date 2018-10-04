@@ -4,10 +4,12 @@
  *****************************************************************************/
 
 #include "QskGraphicNode.h"
+#include "QskGraphic.h"
+#include "QskColorFilter.h"
 
 static inline uint qskHash(
     const QskGraphic& graphic, const QskColorFilter& colorFilter,
-    QskGraphicTextureFactory::RenderMode renderMode )
+    QskTextureRenderer::RenderMode renderMode )
 {
     uint hash = 0;
 
@@ -45,7 +47,7 @@ QskGraphicNode::~QskGraphicNode()
 
 void QskGraphicNode::setGraphic(
     const QskGraphic& graphic, const QskColorFilter& colorFilter,
-    QskGraphicTextureFactory::RenderMode renderMode, const QRect& rect )
+    QskTextureRenderer::RenderMode renderMode, const QRect& rect )
 {
     bool isTextureDirty = ( QskTextureNode::textureId() == 0 );
 
@@ -67,10 +69,8 @@ void QskGraphicNode::setGraphic(
 
     if ( isTextureDirty )
     {
-        const QRect textureRect( 0, 0, rect.width(), rect.height() );
-
-        uint textureId = QskGraphicTextureFactory::createTexture(
-            renderMode, textureRect, Qt::IgnoreAspectRatio, graphic, colorFilter );
+        const uint textureId = QskTextureRenderer::createTextureFromGraphic(
+            renderMode, rect.size(), graphic, colorFilter );
 
         QskTextureNode::setTextureId( textureId );
     }

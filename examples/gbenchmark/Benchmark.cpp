@@ -7,7 +7,8 @@
 
 #include <QskGraphic.h>
 #include <QskGraphicIO.h>
-#include <QskGraphicTextureFactory.h>
+#include <QskColorFilter.h>
+#include <QskTextureRenderer.h>
 
 #include <QDebug>
 #include <QDir>
@@ -116,14 +117,15 @@ bool Benchmark::run( const QString& dirName )
 
         timer.start();
 
-        const QRect targetRect( 0, 0, 200, 200 );
+        const QSize targetSize( 200, 200 );
         const QskColorFilter colorFilter;
 
         for ( int i = 0; i < qvgFiles.size(); i++ )
         {
-            const auto textureId = QskGraphicTextureFactory::createTexture(
-                QskGraphicTextureFactory::OpenGL, targetRect, Qt::KeepAspectRatio,
-                graphics[ i ], colorFilter );
+            using namespace QskTextureRenderer;
+
+            const auto textureId = createTextureFromGraphic(
+                OpenGL, targetSize, graphics[ i ], colorFilter );
 
             if ( textureId == 0 )
             {
@@ -140,14 +142,15 @@ bool Benchmark::run( const QString& dirName )
 
         timer.start();
 
-        const QRect targetRect( 0, 0, 100, 100 );
+        const QSize targetSize( 200, 200 );
         const QskColorFilter colorFilter;
 
         for ( int i = 0; i < qvgFiles.size(); i++ )
         {
-            const auto textureId = QskGraphicTextureFactory::createTexture(
-                QskGraphicTextureFactory::Raster, targetRect, Qt::KeepAspectRatio,
-                graphics[ i ], colorFilter );
+            using namespace QskTextureRenderer;
+
+            const auto textureId = createTextureFromGraphic(
+                Raster, targetSize, graphics[ i ], colorFilter );
 
             if ( textureId == 0 )
             {

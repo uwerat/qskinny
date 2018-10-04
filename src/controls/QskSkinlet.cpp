@@ -76,11 +76,11 @@ static inline QSGNode* qskUpdateGraphicNode(
     if ( rect.isEmpty() )
         return nullptr;
 
-    auto mode = QskGraphicTextureFactory::OpenGL;
+    auto mode = QskTextureRenderer::OpenGL;
 
     const auto control = skinnable->owningControl();
     if ( control && control->testControlFlag( QskControl::PreferRasterForTextures ) )
-        mode = QskGraphicTextureFactory::Raster;
+        mode = QskTextureRenderer::Raster;
 
     auto graphicNode = static_cast< QskGraphicNode* >( node );
     if ( graphicNode == nullptr )

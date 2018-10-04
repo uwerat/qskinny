@@ -8,17 +8,12 @@
 
 #include "QskColorFilter.h"
 #include "QskGraphic.h"
+
 #include <qquickimageprovider.h>
 
 class QSK_EXPORT QskGraphicTextureFactory : public QQuickTextureFactory
 {
   public:
-    enum RenderMode
-    {
-        Raster,
-        OpenGL
-    };
-
     QskGraphicTextureFactory();
     QskGraphicTextureFactory( const QskGraphic&, const QSize& size );
 
@@ -38,9 +33,6 @@ class QSK_EXPORT QskGraphicTextureFactory : public QQuickTextureFactory
     int textureByteCount() const override;
 
     QImage image() const override;
-
-    static uint createTexture( RenderMode, const QRect& rect,
-        Qt::AspectRatioMode, const QskGraphic&, const QskColorFilter& );
 
   private:
     QskGraphic m_graphic;
