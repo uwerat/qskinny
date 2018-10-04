@@ -1,4 +1,5 @@
 include( $${PWD}/../playground.pri )
+include( $${PWD}/../qmlplayground.pri )
 
 TARGET = images
 

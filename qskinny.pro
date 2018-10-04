@@ -6,6 +6,7 @@ SUBDIRS = \
     src \
     skins \
     inputcontext \
+    qmlexport \
     tools \
     support \
     examples \
@@ -23,5 +24,5 @@ inputcontext.depends = src
 skins.depends = src
 tools.depends = src
 support.depends = skins
-examples.depends = tools support skins
-playground.depends = tools support skins
+examples.depends = tools support skins qmlexport
+playground.depends = tools support skins qmlexport

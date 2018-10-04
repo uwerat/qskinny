@@ -1,4 +1,5 @@
 include( $${PWD}/../example.pri )
+include( $${PWD}/../qmlexample.pri )
 
 TARGET = frames
 

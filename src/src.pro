@@ -43,7 +43,6 @@ HEADERS += \
     common/QskMetaFunction.h \
     common/QskMetaFunction.hpp \
     common/QskMetaInvokable.h \
-    common/QskModule.h \
     common/QskNamespace.h \
     common/QskObjectCounter.h \
     common/QskSizePolicy.h \
@@ -61,7 +60,6 @@ SOURCES += \
     common/QskMargins.cpp \
     common/QskMetaFunction.cpp \
     common/QskMetaInvokable.cpp \
-    common/QskModule.cpp \
     common/QskObjectCounter.cpp \
     common/QskSizePolicy.cpp \
     common/QskTextColors.cpp \
@@ -155,7 +153,6 @@ HEADERS += \
     controls/QskSeparator.h \
     controls/QskSeparatorSkinlet.h \
     controls/QskSetup.h \
-    controls/QskShortcut.h \
     controls/QskShortcutMap.h \
     controls/QskSimpleListBox.h \
     controls/QskSkin.h \
@@ -221,7 +218,6 @@ SOURCES += \
     controls/QskSeparator.cpp \
     controls/QskSeparatorSkinlet.cpp \
     controls/QskSetup.cpp \
-    controls/QskShortcut.cpp \
     controls/QskShortcutMap.cpp \
     controls/QskSimpleListBox.cpp \
     controls/QskSkin.cpp \
