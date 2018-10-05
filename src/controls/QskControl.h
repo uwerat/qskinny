@@ -244,6 +244,7 @@ class QSK_EXPORT QskControl : public QQuickItem, public QskSkinnable
 
     void itemChange( ItemChange, const ItemChangeData& ) override;
     void geometryChanged( const QRectF&, const QRectF& ) override;
+    void windowDeactivateEvent() override;
     void classBegin() override;
     void componentComplete() override;
     void releaseResources() override;

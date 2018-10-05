@@ -1606,6 +1606,12 @@ void QskControl::geometryChanged(
     QCoreApplication::sendEvent( this, &event );
 }
 
+void QskControl::windowDeactivateEvent()
+{
+    // stopping gesture recognition ???
+    Inherited::windowDeactivateEvent();
+}
+
 void QskControl::layoutConstraintChanged()
 {
     QQuickItem* item = parentItem();
