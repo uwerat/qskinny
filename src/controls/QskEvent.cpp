@@ -82,6 +82,14 @@ QskWindowChangeEvent::QskWindowChangeEvent(
 {
 }
 
+// -- QskPopupEvent
+
+QskPopupEvent::QskPopupEvent( Type type, QskPopup* popup )
+    : QskEvent( type )
+    , m_popup( popup )
+{
+}
+
 // -- QskGestureEvent
 
 QskGestureEvent::QskGestureEvent(

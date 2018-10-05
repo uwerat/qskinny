@@ -14,6 +14,7 @@ class QSK_EXPORT QskPopup : public QskControl
 
     Q_PROPERTY( bool modal READ isModal WRITE setModal NOTIFY modalChanged )
     Q_PROPERTY( bool overlay READ hasOverlay WRITE setOverlay NOTIFY overlayChanged )
+    Q_PROPERTY( uint priority READ priority WRITE setPriority NOTIFY priorityChanged )
 
     using Inherited = QskControl;
 
@@ -45,6 +46,10 @@ class QSK_EXPORT QskPopup : public QskControl
     void setOverlay( bool on = true );
     bool hasOverlay() const;
 
+    // allows for stacking according to priorities
+    void setPriority( uint );
+    uint priority() const;
+
     virtual QRectF overlayRect() const;
 
     bool isOpen() const;
@@ -57,6 +62,7 @@ class QSK_EXPORT QskPopup : public QskControl
     void closed();
     void modalChanged( bool );
     void overlayChanged( bool );
+    void priorityChanged( uint );
 
   protected:
     void aboutToShow() override;
@@ -65,6 +71,7 @@ class QSK_EXPORT QskPopup : public QskControl
     bool event( QEvent* ) override;
     void focusInEvent( QFocusEvent* ) override;
     void focusOutEvent( QFocusEvent* ) override;
+    void windowChangeEvent( QskWindowChangeEvent* ) override;
 
     void itemChange( QQuickItem::ItemChange,
         const QQuickItem::ItemChangeData& ) override;

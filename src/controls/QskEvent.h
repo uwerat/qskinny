@@ -12,7 +12,9 @@
 #include <qrect.h>
 
 class QskGesture;
+class QskPopup;
 class QQuickWindow;
+class QQuickItem;
 
 class QSK_EXPORT QskEvent : public QEvent
 {
@@ -23,6 +25,13 @@ class QSK_EXPORT QskEvent : public QEvent
 
         GeometryChange,
         WindowChange,
+
+        /*
+            Popups indicate their existence to the owning window
+            to allow for priority based stacking rules
+         */
+        PopupAdded,
+        PopupRemoved,
 
         Gesture,
 
@@ -61,6 +70,17 @@ class QSK_EXPORT QskWindowChangeEvent : public QskEvent
   private:
     QQuickWindow* const m_oldWindow;
     QQuickWindow* const m_window;
+};
+
+class QSK_EXPORT QskPopupEvent : public QskEvent
+{
+  public:
+    QskPopupEvent( Type, QskPopup* );
+
+    inline QskPopup* popup() const { return m_popup; }
+
+  private:
+    QskPopup* const m_popup;
 };
 
 class QSK_EXPORT QskGestureEvent : public QskEvent

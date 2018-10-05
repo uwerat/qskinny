@@ -8,6 +8,7 @@
 #include "QskInputGrabber.h"
 #include "QskQuick.h"
 #include "QskWindow.h"
+#include "QskEvent.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickwindow_p.h>
@@ -34,6 +35,18 @@ static void qskSetFocus( QQuickItem* item, bool on )
             dw->setFocusInScope( scope, item, Qt::PopupFocusReason );
         else
             dw->clearFocusInScope( scope, item, Qt::PopupFocusReason );
+    }
+}
+
+static inline void qskSendPopupEvent(
+    QQuickWindow* window, QskPopup* popup, bool on )
+{
+    if ( window )
+    {
+        const auto type = on ? QskEvent::PopupAdded : QskEvent::PopupRemoved;
+
+        QskPopupEvent event( type, popup );
+        QCoreApplication::sendEvent( window, &event );
     }
 }
 
@@ -86,8 +99,7 @@ class QskPopup::PrivateData
 {
   public:
     PrivateData()
-        : inputGrabber( nullptr )
-        , flags( 0 )
+        : flags( 0 )
         , isModal( false )
         , isOpen( false )
         , autoGrabFocus( true )
@@ -95,7 +107,9 @@ class QskPopup::PrivateData
     {
     }
 
-    InputGrabber* inputGrabber;
+    InputGrabber* inputGrabber = nullptr;
+
+    uint priority = 0;
 
     int flags    : 4;
     bool isModal : 1;
@@ -119,10 +133,13 @@ QskPopup::QskPopup( QQuickItem* parent )
     setFlag( ItemIsFocusScope, true );
     setTabFence( true );
     setFocusPolicy( Qt::StrongFocus );
+
+    qskSendPopupEvent( window(), this, true );
 }
 
 QskPopup::~QskPopup()
 {
+    qskSendPopupEvent( window(), this, false );
 }
 
 void QskPopup::open()
@@ -191,6 +208,20 @@ void QskPopup::updateInputGrabber()
         delete m_data->inputGrabber;
         m_data->inputGrabber = nullptr;
     }
+}
+
+void QskPopup::setPriority( uint priority )
+{
+    if ( m_data->priority != priority )
+    {
+        m_data->priority = priority;
+        Q_EMIT priorityChanged( priority );
+    }
+}
+
+uint QskPopup::priority() const
+{
+    return m_data->priority;
 }
 
 void QskPopup::setModal( bool on )
@@ -417,6 +448,21 @@ void QskPopup::itemChange( QQuickItem::ItemChange change,
             }
         }
     }
+    else if ( change == QQuickItem::ItemParentHasChanged )
+    {
+        delete m_data->inputGrabber;
+        m_data->inputGrabber = nullptr;
+
+        updateInputGrabber();
+    }
+}
+
+void QskPopup::windowChangeEvent( QskWindowChangeEvent* event )
+{
+    qskSendPopupEvent( event->oldWindow(), this, false );
+    qskSendPopupEvent( event->window(), this, true );
+
+    Inherited::windowChangeEvent( event );
 }
 
 #include "moc_QskPopup.cpp"

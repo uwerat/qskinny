@@ -50,13 +50,13 @@ namespace
     class ChildListener final : public QQuickItemChangeListener
     {
       public:
-        void setEnabled( QQuickItem* item, bool on )
+        void setEnabled( QQuickItem* contentItem, bool on )
         {
-            m_item = item;
+            m_contentItem = contentItem;
 
             const QQuickItemPrivate::ChangeTypes types = QQuickItemPrivate::Children;
 
-            QQuickItemPrivate* p = QQuickItemPrivate::get( item );
+            QQuickItemPrivate* p = QQuickItemPrivate::get( contentItem );
             if ( on )
                 p->addItemChangeListener( this, types );
             else
@@ -65,16 +65,16 @@ namespace
 
         void itemChildAdded( QQuickItem*, QQuickItem* ) override
         {
-            QskWindow* window = static_cast< QskWindow* >( m_item->window() );
+            QskWindow* window = static_cast< QskWindow* >( m_contentItem->window() );
             if ( window->isExposed() )
             {
-                // the child might not be fully constructed, better delay update
+                // the child is not fully constructed
                 QCoreApplication::postEvent( window, new QEvent( QEvent::LayoutRequest ) );
             }
         }
 
       private:
-        QQuickItem* m_item;
+        QQuickItem* m_contentItem;
     };
 }
 
