@@ -57,14 +57,9 @@ static uint qskCreateTextureOpenGL(
 
     QOpenGLFramebufferObject fbo( width, height, format2 );
 
-    /*
-        Mirror vertically to be compliant with what QQuickTextureFactory expects.
-        for some reason we have to add 1 pixel to avoid that the mirrored
-        image gets cut off.
-     */
-
+    // Mirror vertically
     const QRect sourceRect( 0, 0, width, height );
-    const QRect targetRect( 0, height + 1, width, -height );
+    const QRect targetRect( 0, height, width, -height );
 
     QOpenGLFramebufferObject::blitFramebuffer(
         &fbo, sourceRect, &multisampledFbo, targetRect );
