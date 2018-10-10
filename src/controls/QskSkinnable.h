@@ -156,6 +156,7 @@ class QSK_EXPORT QskSkinnable
   protected:
     void setSkinStateFlag( QskAspect::State, bool = true );
     virtual void updateNode( QSGNode* );
+    virtual bool isTransitionAccepted( QskAspect::Aspect ) const;
 
     QskSkinHintTable& hintTable();
     const QskSkinHintTable& hintTable() const;

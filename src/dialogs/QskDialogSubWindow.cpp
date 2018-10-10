@@ -59,7 +59,7 @@ QskDialog::DialogCode QskDialogSubWindow::exec()
         mouseGrabber->ungrabMouse();
     }
 
-    show();
+    open();
 
     QEventLoop eventLoop;
 

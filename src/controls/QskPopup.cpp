@@ -15,6 +15,7 @@ QSK_QT_PRIVATE_BEGIN
 QSK_QT_PRIVATE_END
 
 QSK_SUBCONTROL( QskPopup, Overlay )
+QSK_STATE( QskPopup, Closed, QskAspect::FirstSystemState << 1 )
 
 static void qskSetFocus( QQuickItem* item, bool on )
 {
@@ -101,7 +102,7 @@ class QskPopup::PrivateData
     PrivateData()
         : flags( 0 )
         , isModal( false )
-        , isOpen( false )
+        , hasFaderEffect( true )
         , autoGrabFocus( true )
         , handoverFocus( true )
     {
@@ -110,10 +111,11 @@ class QskPopup::PrivateData
     InputGrabber* inputGrabber = nullptr;
 
     uint priority = 0;
+    QskAspect::Aspect faderAspect;
 
-    int flags    : 4;
-    bool isModal : 1;
-    bool isOpen  : 1;
+    int flags           : 4;
+    bool isModal        : 1;
+    bool hasFaderEffect : 1;
 
     const bool autoGrabFocus : 1;
     const bool handoverFocus : 1;
@@ -123,6 +125,10 @@ QskPopup::QskPopup( QQuickItem* parent )
     : Inherited( parent )
     , m_data( new PrivateData() )
 {
+    // initially the popup is closed and invisible
+    Inherited::setVisible( false );
+    setSkinStateFlag( QskPopup::Closed );
+
     // we need to stop event propagation
     setAcceptedMouseButtons( Qt::AllButtons );
     setWheelEnabled( true );
@@ -134,6 +140,11 @@ QskPopup::QskPopup( QQuickItem* parent )
     setTabFence( true );
     setFocusPolicy( Qt::StrongFocus );
 
+    /*
+        sending a notification to the window, that can
+        be used to register popups for some sort of
+        popup/window management
+     */
     qskSendPopupEvent( window(), this, true );
 }
 
@@ -144,33 +155,61 @@ QskPopup::~QskPopup()
 
 void QskPopup::open()
 {
-    setFading( true );
+    setOpen( true );
 }
 
 void QskPopup::close()
 {
-    const bool wasOpen = m_data->isOpen;
-    m_data->isOpen = false;
-
-    setFading( false );
-
-    if ( wasOpen )
-    {
-        Q_EMIT closed();
-
-        if ( testPopupFlag( DeleteOnClose ) )
-            deleteLater();
-    }
+    setOpen( false );
 }
 
-void QskPopup::setFading( bool on )
+void QskPopup::setOpen( bool on )
 {
-    setVisible( on );
+    if ( on == isOpen() )
+        return;
+
+    if ( on )
+        QskControl::setVisible( on );
+
+    setSkinStateFlag( QskPopup::Closed, !on );
+
+    Q_EMIT openChanged( on );
+
+    if ( on )
+        Q_EMIT opened();
+    else
+        Q_EMIT closed();
+
+    if ( isFading() )
+    {
+        Q_EMIT fadingChanged( true );
+    }
+    else
+    {
+        if ( !on )
+        {
+            Inherited::setVisible( false );
+
+            if ( testPopupFlag( QskPopup::DeleteOnClose ) )
+                deleteLater();
+        }
+    }
 }
 
 bool QskPopup::isOpen() const
 {
-    return m_data->isOpen;
+    return !( skinState() & QskPopup::Closed );
+}
+
+bool QskPopup::isFading() const
+{
+    if ( m_data->faderAspect.value() == 0 )
+        return false;
+
+    QskSkinHintStatus status;
+    (void) effectiveHint( m_data->faderAspect, &status );
+
+    return status.source == QskSkinHintStatus::Animator;
 }
 
 QRectF QskPopup::overlayRect() const
@@ -210,6 +249,55 @@ void QskPopup::updateInputGrabber()
     }
 }
 
+QskAspect::Aspect QskPopup::faderAspect() const
+{
+    return m_data->faderAspect;
+}
+
+void QskPopup::setFaderAspect( QskAspect::Aspect aspect )
+{
+    auto faderAspect = aspect;
+    faderAspect.clearStates(); // animated values are always stateless
+
+    if ( faderAspect == m_data->faderAspect )
+        return;
+
+    if ( isFading() )
+    {
+        // stop the running animation TODO ...
+    }
+
+    m_data->faderAspect = faderAspect;
+}
+
+bool QskPopup::isTransitionAccepted( QskAspect::Aspect aspect ) const
+{
+    if ( isVisible() && m_data->hasFaderEffect )
+    {
+        if ( ( aspect.value() == 0 ) )
+        {
+            /*
+                QskAspect::Aspect() is an early check that is used
+                to find out if more detailed checking of aspects
+                is necessary.
+             */
+
+            return true;
+        }
+
+        if ( aspect == m_data->faderAspect )
+            return true;
+
+        if ( aspect.type() == QskAspect::Color )
+        {
+            if ( aspect.subControl() == effectiveSubcontrol( QskPopup::Overlay ) )
+                return true;
+        }
+    }
+
+    return Inherited::isTransitionAccepted( aspect );
+}
+
 void QskPopup::setPriority( uint priority )
 {
     if ( m_data->priority != priority )
@@ -238,6 +326,20 @@ void QskPopup::setModal( bool on )
 bool QskPopup::isModal() const
 {
     return m_data->isModal;
+}
+
+void QskPopup::setFaderEffect( bool on )
+{
+    if ( on != m_data->hasFaderEffect )
+    {
+        m_data->hasFaderEffect = on;
+        Q_EMIT faderEffectChanged( on );
+    }
+}
+
+bool QskPopup::hasFaderEffect() const
+{
+    return m_data->hasFaderEffect;
 }
 
 void QskPopup::setPopupFlags( PopupFlags flags )
@@ -323,7 +425,7 @@ bool QskPopup::event( QEvent* event )
 {
     bool ok = Inherited::event( event );
 
-    switch ( event->type() )
+    switch ( static_cast< int >( event->type() ) )
     {
         case QEvent::KeyPress:
         case QEvent::KeyRelease:
@@ -341,6 +443,26 @@ bool QskPopup::event( QEvent* event )
             event->accept();
             if ( auto w = qobject_cast< QskWindow* >( window() ) )
                 w->setEventAcceptance( QskWindow::EventPropagationStopped );
+
+            break;
+        }
+        case QskEvent::Animator:
+        {
+            const auto animtorEvent = static_cast< QskAnimatorEvent* >( event );
+
+            if ( ( animtorEvent->state() == QskAnimatorEvent::Terminated )
+                && ( animtorEvent->aspect() == m_data->faderAspect ) )
+            {
+                if ( !isOpen() )
+                {
+                    Inherited::setVisible( false );
+
+                    if ( testPopupFlag( QskPopup::DeleteOnClose ) )
+                        deleteLater();
+                }
+
+                Q_EMIT fadingChanged( false );
+            }
 
             break;
         }
@@ -418,8 +540,6 @@ QQuickItem* QskPopup::focusSuccessor() const
 
 void QskPopup::aboutToShow()
 {
-    m_data->isOpen = true;
-
     if ( m_data->autoGrabFocus )
     {
         // What to do, when we are hidden below another popup ??
@@ -436,16 +556,15 @@ void QskPopup::itemChange( QQuickItem::ItemChange change,
 
     if ( change == QQuickItem::ItemVisibleHasChanged )
     {
-        if ( !value.boolValue )
-        {
-            updateInputGrabber();
+        updateInputGrabber();
 
+        if ( value.boolValue )
+        {
+            polish(); // so that aboutToShow is called. TODO ...
+        }
+        else
+        {
             grabFocus( false );
-            if ( m_data->isOpen )
-            {
-                if ( testPopupFlag( CloseOnHide ) )
-                    close();
-            }
         }
     }
     else if ( change == QQuickItem::ItemParentHasChanged )

@@ -34,9 +34,14 @@ void QskInputWindow::setSubWindow( QskInputSubWindow* subWindow )
 
     if ( m_subWindow )
     {
+#if 1
+        // we shoudn't have a subwindow here TODO ...
         m_subWindow->setModal( false );
         m_subWindow->setDecorated( false );
         m_subWindow->setOverlay( false );
+        m_subWindow->setFaderEffect( false );
+        m_subWindow->open();
+#endif
 
         addItem( m_subWindow );
 

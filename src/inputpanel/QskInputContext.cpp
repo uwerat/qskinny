@@ -397,11 +397,10 @@ void QskInputContext::showPanel( const QQuickItem* item )
 
         popup->setParentItem( item->window()->contentItem() );
         popup->setParent( this );
-#if 1
-        popup->setVisible( true );
-#endif
 
         channel->popup = popup;
+
+        popup->open();
     }
 
     panel->attachInputItem( const_cast< QQuickItem* >( item ) );

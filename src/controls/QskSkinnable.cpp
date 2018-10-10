@@ -692,6 +692,21 @@ QRectF QskSkinnable::outerBox(
     return innerBox.marginsAdded( m );
 }
 
+bool QskSkinnable::isTransitionAccepted( QskAspect::Aspect aspect ) const
+{
+    Q_UNUSED( aspect )
+
+    /*
+        Usually we only need smooth transitions, when state changes
+        happen while the skinnable is visible. There are few exceptions
+        like QskPopup::Closed, that is used to slide/fade in.
+     */
+    if ( auto control = owningControl() )
+        return control->isInitiallyPainted();
+
+    return false;
+}
+
 void QskSkinnable::startTransition( QskAspect::Aspect aspect,
     QskAnimationHint animationHint, QVariant from, QVariant to )
 {
@@ -699,7 +714,7 @@ void QskSkinnable::startTransition( QskAspect::Aspect aspect,
         return;
 
     QskControl* control = this->owningControl();
-    if ( control->window() == nullptr || !control->isInitiallyPainted() )
+    if ( control->window() == nullptr || !isTransitionAccepted( aspect ) )
         return;
 
     // We might be invalid for one of the values, when an aspect
@@ -759,7 +774,7 @@ void QskSkinnable::setSkinStateFlag( QskAspect::State state, bool on )
         << skinStateAsPrintable( newState );
 #endif
 
-    if ( control->window() && control->isInitiallyPainted() )
+    if ( control->window() && isTransitionAccepted( QskAspect::Aspect() ) )
     {
         const auto placement = effectivePlacement();
 
