@@ -6,7 +6,7 @@
 #ifndef QSK_SHORTCUT_H
 #define QSK_SHORTCUT_H
 
-#include "QskGlobal.h"
+#include "QskQmlGlobal.h"
 
 #include <qnamespace.h>
 #include <qobject.h>
@@ -20,7 +20,7 @@ class QKeySequence;
     For QML, with C++ there is also QskShortcutMap that does
     not need to create QObjects per shortcut
  */
-class QSK_EXPORT QskShortcut : public QObject, public QQmlParserStatus
+class QSK_QML_EXPORT QskShortcut : public QObject, public QQmlParserStatus
 {
     Q_OBJECT
     Q_INTERFACES( QQmlParserStatus )

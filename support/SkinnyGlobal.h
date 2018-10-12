@@ -6,7 +6,9 @@
 #ifndef SKINNY_GLOBAL_H
 #define SKINNY_GLOBAL_H
 
-#ifdef SKINNY_DLL
+#include <QskGlobal.h>
+
+#ifdef QSK_DLL
 
 #if defined( SKINNY_MAKEDLL )     // create a DLL library
 #define SKINNY_EXPORT Q_DECL_EXPORT
@@ -14,7 +16,7 @@
 #define SKINNY_EXPORT Q_DECL_IMPORT
 #endif
 
-#endif // SKINNY_DLL
+#endif // QSK_DLL
 
 #ifndef SKINNY_EXPORT
 #define SKINNY_EXPORT

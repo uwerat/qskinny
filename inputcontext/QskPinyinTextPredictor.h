@@ -6,10 +6,11 @@
 #ifndef QSK_PINYIN_TEXT_PREDICTOR_H
 #define QSK_PINYIN_TEXT_PREDICTOR_H
 
-#include "QskTextPredictor.h"
+#include "QskInputContextGlobal.h"
+#include <QskTextPredictor.h>
 #include <memory>
 
-class QSK_EXPORT QskPinyinTextPredictor : public QskTextPredictor
+class QSK_INPUTCONTEXT_EXPORT QskPinyinTextPredictor : public QskTextPredictor
 {
     using Inherited = QskTextPredictor;
 

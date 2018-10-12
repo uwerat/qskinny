@@ -8,9 +8,9 @@
 
 #include "SkinnyGlobal.h"
 
-namespace SKINNY_EXPORT SkinnyPlugin
+namespace SkinnyPlugin
 {
-    void init();
+    void SKINNY_EXPORT init();
 }
 
 #endif

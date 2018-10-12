@@ -6,10 +6,11 @@
 #ifndef QSK_SQUIEK_SKIN_H
 #define QSK_SQUIEK_SKIN_H
 
+#include "QskSquiekGlobal.h"
 #include <QskSkin.h>
 #include <memory>
 
-class QSK_EXPORT QskSquiekSkin : public QskSkin
+class QSK_SQUIEK_EXPORT QskSquiekSkin : public QskSkin
 {
     Q_OBJECT
 

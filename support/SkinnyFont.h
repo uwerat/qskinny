@@ -10,9 +10,9 @@
 
 class QGuiApplication;
 
-namespace SKINNY_EXPORT SkinnyFont
+namespace SkinnyFont
 {
-    void init( QGuiApplication* );
+    SKINNY_EXPORT void init( QGuiApplication* );
 }
 
 #endif

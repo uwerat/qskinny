@@ -6,11 +6,11 @@
 #ifndef QSK_QML_EXPORT_H
 #define QSK_QML_EXPORT_H
 
-#include "QskGlobal.h"
+#include "QskQmlGlobal.h"
 
 namespace QskQml
 {
-    QSK_EXPORT void registerTypes();
+    QSK_QML_EXPORT void registerTypes();
 }
 
 #endif

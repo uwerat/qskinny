@@ -9,7 +9,7 @@
 #include "SkinnyGlobal.h"
 #include <QPainterPath>
 
-namespace SKINNY_EXPORT SkinnyShapeFactory
+namespace SkinnyShapeFactory
 {
     // a couple of standard painter paths, that can
     // be used for testing
@@ -30,7 +30,7 @@ namespace SKINNY_EXPORT SkinnyShapeFactory
         ShapeCount
     };
 
-    QPainterPath shapePath( Shape, const QSizeF& );
+    SKINNY_EXPORT QPainterPath shapePath( Shape, const QSizeF& );
 }
 
 #endif

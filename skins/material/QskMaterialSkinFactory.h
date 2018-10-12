@@ -6,9 +6,10 @@
 #ifndef QSK_MATERIAL_SKIN_FACTORY_H
 #define QSK_MATERIAL_SKIN_FACTORY_H
 
+#include "QskMaterialGlobal.h"
 #include <QskSkinFactory.h>
 
-class QSK_EXPORT QskMaterialSkinFactory : public QskSkinFactory
+class QSK_MATERIAL_EXPORT QskMaterialSkinFactory : public QskSkinFactory
 {
     Q_OBJECT
 

@@ -6,10 +6,11 @@
 #ifndef QSK_MATERIAL_SKIN_H
 #define QSK_MATERIAL_SKIN_H
 
+#include "QskMaterialGlobal.h"
 #include <QskSkin.h>
 #include <memory>
 
-class QSK_EXPORT QskMaterialSkin : public QskSkin
+class QSK_MATERIAL_EXPORT QskMaterialSkin : public QskSkin
 {
     Q_OBJECT
 

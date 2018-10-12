@@ -17,7 +17,7 @@ CONFIG += fontconfig
 contains(QSK_CONFIG, QskDll) {
 
     CONFIG += dll
-    DEFINES += QSK_DLL QSK_MAKEDLL
+    DEFINES += QSK_DLL SKINNY_MAKEDLL
 }
 else {
     CONFIG += staticlib

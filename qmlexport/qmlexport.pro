@@ -14,7 +14,7 @@ CONFIG += no_private_qt_headers_warning
 contains(QSK_CONFIG, QskDll) {
 
     CONFIG += dll
-    DEFINES += QSK_DLL QSK_MAKEDLL
+    DEFINES += QSK_DLL QSK_QML_MAKEDLL
 }
 else {
     CONFIG += staticlib
@@ -32,6 +32,7 @@ INCLUDEPATH *= $${QSK_DIRS}
 DEPENDPATH  *= $${QSK_DIRS}
 
 HEADERS += \
+    QskQmlGlobal.h \
     QskShortcut.h \
     QskQml.h
 

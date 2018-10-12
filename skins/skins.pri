@@ -26,9 +26,7 @@ DESTDIR      = $${QSK_OUT_ROOT}/plugins/skins
 QMAKE_RPATHDIR *= $${QSK_OUT_ROOT}/lib
 LIBS *= -L$${QSK_OUT_ROOT}/lib -lqskinny
 
-win32 {
-    contains(QSK_CONFIG, QskDll) {
-        DEFINES    += QT_DLL QSK_DLL
-    }
+contains(QSK_CONFIG, QskDll) {
+    DEFINES    += QT_DLL QSK_DLL
 }
 

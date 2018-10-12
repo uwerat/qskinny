@@ -3,6 +3,7 @@ include( $${PWD}/../skins.pri )
 TARGET = materialskin
 
 HEADERS += \
+    QskMaterialGlobal.h \
     QskMaterialSkin.h \
     QskMaterialSkinFactory.h
 
@@ -11,3 +12,5 @@ SOURCES += \
     QskMaterialSkinFactory.cpp
 
 OTHER_FILES += metadata.json
+
+DEFINES += QSK_MATERIAL_MAKEDLL
