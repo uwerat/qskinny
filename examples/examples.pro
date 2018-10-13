@@ -4,8 +4,6 @@ TEMPLATE = subdirs
 
 # c++
 SUBDIRS += \
-    automotive \
-    qvgviewer \
     desktop \
     dialogbuttons \
     layouts \
@@ -14,6 +12,15 @@ SUBDIRS += \
     sliders \
     thumbnails \
     tabview
+
+qtHaveModule(svg) {
+
+    # when checking in qvg files we could drop the svg dependency 
+
+    SUBDIRS += \
+        automotive \
+        qvgviewer
+}
 
 # qml
 SUBDIRS += \

@@ -2,8 +2,11 @@ include( $${PWD}/../qskconfig.pri )
 
 TEMPLATE = subdirs
 
-SUBDIRS += \
-    svg2qvg \
+qtHaveModule(svg) {
+
+    SUBDIRS += \
+        svg2qvg
+}
 
 doxygen {
     SUBDIRS += \
