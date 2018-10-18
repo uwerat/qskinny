@@ -88,6 +88,9 @@ class QSK_EXPORT QskGraphic : public QPaintDevice
     void setDefaultSize( const QSizeF& );
     QSizeF defaultSize() const;
 
+    qreal heightForWidth( qreal width ) const;
+    qreal widthForHeight( qreal height ) const;
+
     void setRenderHint( RenderHint, bool on = true );
     bool testRenderHint( RenderHint ) const;
 

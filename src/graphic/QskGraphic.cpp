@@ -578,6 +578,24 @@ QSizeF QskGraphic::defaultSize() const
     return boundingRect().size();
 }
 
+qreal QskGraphic::heightForWidth( qreal width ) const
+{
+    const auto sz = defaultSize();
+    if ( sz.isEmpty() )
+        return 0;
+
+    return sz.height() * width / sz.width();
+}
+
+qreal QskGraphic::widthForHeight( qreal height ) const
+{
+    const auto sz = defaultSize();
+    if ( sz.isEmpty() )
+        return 0;
+
+    return sz.width() * height / sz.height();
+}
+
 void QskGraphic::render( QPainter* painter ) const
 {
     render( painter, QskColorFilter() );
