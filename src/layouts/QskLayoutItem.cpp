@@ -75,11 +75,24 @@ QSizeF QskLayoutItem::sizeHint(
 
     if ( m_item == nullptr )
     {
-        if ( m_isStretchable && whichHint == Qt::MaximumSize )
-            return QSizeF( QskLayoutConstraint::unlimited, QskLayoutConstraint::unlimited );
-
         // a spacer item
-        return m_spacingHint;
+        if ( whichHint == Qt::MaximumSize )
+        {
+            if ( m_isStretchable )
+                return QSizeF( QskLayoutConstraint::unlimited, QskLayoutConstraint::unlimited );
+
+            if ( m_spacingHint.width() < 0 )
+                return QSizeF( QskLayoutConstraint::unlimited, m_spacingHint.height() );
+            else
+                return QSizeF( m_spacingHint.width(), QskLayoutConstraint::unlimited );
+        }
+        else
+        {
+            if ( m_spacingHint.width() < 0 )
+                return QSizeF( 0, m_spacingHint.height() );
+            else
+                return QSizeF( m_spacingHint.width(), 0 );
+        }
     }
 
     QSizeF hint( 0, 0 );

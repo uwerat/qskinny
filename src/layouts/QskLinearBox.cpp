@@ -183,9 +183,9 @@ void QskLinearBox::insertSpacer( int index, qreal spacing, int stretchFactor )
 
     QskLayoutItem* layoutItem;
     if ( m_data->orientation == Qt::Horizontal )
-        layoutItem = new QskLayoutItem( QSizeF( spacing, 0 ), stretchFactor, 0, 0 );
+        layoutItem = new QskLayoutItem( QSizeF( spacing, -1.0 ), stretchFactor, 0, 0 );
     else
-        layoutItem = new QskLayoutItem( QSizeF( 0, spacing ), stretchFactor, 0, 0 );
+        layoutItem = new QskLayoutItem( QSizeF( -1.0, spacing ), stretchFactor, 0, 0 );
 
 #if 1
     if ( stretchFactor >= 0 )
