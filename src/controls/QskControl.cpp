@@ -159,6 +159,30 @@ namespace
 Q_GLOBAL_STATIC( QskWindowStore, qskReleasedWindowCounter )
 Q_GLOBAL_STATIC( QskControlRegistry, qskRegistry )
 
+/*
+    QQuickItemPrivate somehow implies, that it is about private data,
+    but it is only the part of the public API, that does not fall
+    under the Qt binary compatibility rules.
+
+    Actually QQuickItemPrivate puts everything into its public section
+    and classes - even from totally different modules like QC2 -
+    are manipulating its members in a totally unguarded way
+
+    While hacking internals of QQuickItemPrivate can't be considered
+    being acceptable for any standards of software engineering
+    we need to do the same to convince QQuickItem/QuickWindow to do what we
+    need.
+
+    This is not the way how we want to create APIs in QSkinny, but that
+    does not mean, that the D-Pointer concept is bad in general:
+    it allows to allocate private data of base and derived class
+    together.
+
+    At the moment QSkinny uses D-Pointer only, when deriving from
+    Qt classes, but does not expose these private data to the public.
+    Once QSkinny is in a stable state this might be changed - but
+    without compromising the privacy of its members.
+ */
 class QskControlPrivate final : public QQuickItemPrivate
 {
     Q_DECLARE_PUBLIC( QskControl )
@@ -327,6 +351,28 @@ class QskControlPrivate final : public QQuickItemPrivate
             Q_EMIT q->controlFlagsChanged();
         }
     }
+
+    /*
+        Qt 5.11:
+            sizeof( QQuickItemPrivate::ExtraData ) -> 184
+            sizeof( QQuickItemPrivate ) -> 320
+
+            sizeof( QskControlPrivate ) -> sizeof( QQuickItemPrivate ) + 32
+            sizeof( QskSkinnable::PrivateData ) -> 40
+
+            ( these numbers include pointers to optional extra data, that might
+              increase the effective memory footprint, when being accurate ).
+
+        It might be possible to save some bytes, but in the end QskControl
+        is heavy simply because of deriving from QQuickItem. So without
+        patching Qt the only way to limit the memory footprint of an application
+        substantially is to limit the number of QQuickItems.
+
+        That's why QSkinny builds more complex controls from scene graph nodes
+        instead of doing QQuickItem composition. As this can only be done
+        in C++ it is kind of obvious, why it is often a bad idea to build
+        custom controls in QML.
+     */
 
   private:
     ExplicitSizeData* explicitSizeData;
