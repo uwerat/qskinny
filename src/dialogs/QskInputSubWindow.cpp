@@ -11,7 +11,6 @@
 #include "QskPushButton.h"
 #include "QskSkin.h"
 #include "QskTextLabel.h"
-#include "QskTextOptions.h"
 
 #include <qfontmetrics.h>
 #include <qpointer.h>
@@ -25,10 +24,7 @@ namespace
         {
             setObjectName( QStringLiteral( "QskInputSubWindowTextLabel" ) );
 
-            QskTextOptions options;
-            options.setWrapMode( QskTextOptions::WordWrap );
-
-            setTextOptions( options );
+            setWrapMode( QskTextOptions::WordWrap );
 
             connect( this, &QskTextLabel::textChanged,
                 box, &QskInputSubWindow::infoTextChanged );

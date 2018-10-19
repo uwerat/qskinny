@@ -114,7 +114,7 @@ QskTextOptions::TextFormat QskTextOptions::effectiveFormat( const QString& text 
         return PlainText;
 
     if ( m_format == QskTextOptions::AutoText )
-        return Qt::mightBeRichText( text ) ? RichText : PlainText;
+        return Qt::mightBeRichText( text ) ? StyledText : PlainText;
     else
         return m_format;
 }

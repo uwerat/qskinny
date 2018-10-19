@@ -7,8 +7,7 @@
 #define QSK_TEXT_LABEL_H
 
 #include "QskControl.h"
-
-class QskTextOptions;
+#include "QskTextOptions.h"
 
 class QSK_EXPORT QskTextLabel : public QskControl
 {
@@ -48,6 +47,15 @@ class QSK_EXPORT QskTextLabel : public QskControl
 
     void setTextOptions( const QskTextOptions& );
     QskTextOptions textOptions() const;
+
+    void setTextFormat( QskTextOptions::TextFormat );
+    QskTextOptions::TextFormat textFormat() const;
+
+    void setWrapMode( QskTextOptions::WrapMode );
+    QskTextOptions::WrapMode wrapMode() const;
+
+    void setElideMode( Qt::TextElideMode );
+    Qt::TextElideMode elideMode() const;
 
     void setAlignment( Qt::Alignment );
     Qt::Alignment alignment() const;

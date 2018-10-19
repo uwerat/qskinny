@@ -33,9 +33,7 @@ class DummyLabel : public QskTextLabel
         setTextColor( Qt::white );
         setFontRole( QskSkin::MediumFont );
 
-        QskTextOptions textOptions;
-        textOptions.setWrapMode( QskTextOptions::WordWrap );
-        setTextOptions( textOptions );
+        setWrapMode( QskTextOptions::WordWrap );
 
         setAlignment( Qt::AlignCenter );
         setSizePolicy( QskSizePolicy::Ignored, QskSizePolicy::Ignored );

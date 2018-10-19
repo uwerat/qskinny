@@ -105,6 +105,46 @@ QskTextOptions QskTextLabel::textOptions() const
     return m_data->textOptions;
 }
 
+void QskTextLabel::setTextFormat( QskTextOptions::TextFormat format )
+{
+    auto options = m_data->textOptions;
+    options.setFormat( format );
+
+    setTextOptions( options );
+}
+
+QskTextOptions::TextFormat QskTextLabel::textFormat() const
+{
+    return m_data->textOptions.format();
+}
+
+void QskTextLabel::setWrapMode( QskTextOptions::WrapMode wrapMode )
+{
+    auto options = m_data->textOptions;
+    options.setWrapMode( wrapMode );
+
+    setTextOptions( options );
+
+}
+
+QskTextOptions::WrapMode QskTextLabel::wrapMode() const
+{
+    return m_data->textOptions.wrapMode();
+}
+
+void QskTextLabel::setElideMode( Qt::TextElideMode elideMode )
+{
+    auto options = m_data->textOptions;
+    options.setElideMode( elideMode );
+    
+    setTextOptions( options );
+}
+
+Qt::TextElideMode QskTextLabel::elideMode() const
+{
+    return m_data->textOptions.elideMode();
+}
+
 void QskTextLabel::setFontRole( int role )
 {
     const int oldRole = fontRole();
