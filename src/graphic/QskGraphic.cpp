@@ -213,7 +213,11 @@ static inline void qskExecCommand(
     }
 }
 
-namespace
+/*
+    To avoid subobject-linkage warnings, when including the source code in
+    svg2qvg we don't use an anonymous namespace here
+ */
+namespace QskGraphicPrivate
 {
     class PathInfo
     {
@@ -364,7 +368,7 @@ class QskGraphic::PrivateData : public QSharedData
 
     QSizeF defaultSize;
     QVector< QskPainterCommand > commands;
-    QVector< PathInfo > pathInfos;
+    QVector< QskGraphicPrivate::PathInfo > pathInfos;
 
     QRectF boundingRect;
     QRectF pointRect;
@@ -856,7 +860,7 @@ void QskGraphic::drawPath( const QPainterPath& path )
         updateControlPointRect( pointRect );
         updateBoundingRect( boundingRect );
 
-        m_data->pathInfos += PathInfo( pointRect,
+        m_data->pathInfos += QskGraphicPrivate::PathInfo( pointRect,
             boundingRect, qskHasScalablePen( painter ) );
     }
 }

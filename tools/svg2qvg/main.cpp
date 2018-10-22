@@ -3,8 +3,18 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
+#if defined(QSK_STANDALONE)
+#include <QskGraphic.cpp>
+#include <QskRgbValue.cpp>
+#include <QskColorFilter.cpp>
+#include <QskPainterCommand.cpp>
+#include <QskGraphicPaintEngine.cpp>
+#include <QskGraphicIO.cpp>
+#else
 #include <QskGraphicIO.h>
 #include <QskGraphic.h>
+#endif
+
 #include <QSvgRenderer>
 #include <QPainter>
 #include <QDebug>

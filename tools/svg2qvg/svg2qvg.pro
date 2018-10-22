@@ -7,6 +7,8 @@ TEMPLATE     = app
 
 QT += svg
 
+CONFIG += standalone
+
 QSK_DIRS = \
     $${QSK_ROOT}/src/common \
     $${QSK_ROOT}/src/graphic
@@ -16,12 +18,23 @@ DEPENDPATH  += $${QSK_DIRS}
 
 DESTDIR      = $${QSK_OUT_ROOT}/tools/bin
 
-QMAKE_RPATHDIR *= $${QSK_OUT_ROOT}/lib
-LIBS *= -L$${QSK_OUT_ROOT}/lib -lqskinny
+standalone {
 
-contains(QSK_CONFIG, QskDll) {
-    DEFINES    += QSK_DLL
-} 
+    # We only need a very small subset of QSkinny and by including the 
+    # necessary cpp files svg2qvg becomes independent from the library
+
+    DEFINES += QSK_STANDALONE
+
+}
+else {
+
+    QMAKE_RPATHDIR *= $${QSK_OUT_ROOT}/lib
+    LIBS *= -L$${QSK_OUT_ROOT}/lib -lqskinny
+
+    contains(QSK_CONFIG, QskDll) {
+        DEFINES    += QSK_DLL
+    }
+}
 
 TARGET = svg2qvg
 
