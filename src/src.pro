@@ -45,6 +45,7 @@ HEADERS += \
     common/QskMetaInvokable.h \
     common/QskNamespace.h \
     common/QskObjectCounter.h \
+    common/QskRgbValue.h \
     common/QskSizePolicy.h \
     common/QskTextColors.h \
     common/QskTextOptions.h
@@ -61,6 +62,7 @@ SOURCES += \
     common/QskMetaFunction.cpp \
     common/QskMetaInvokable.cpp \
     common/QskObjectCounter.cpp \
+    common/QskRgbValue.cpp \
     common/QskSizePolicy.cpp \
     common/QskTextColors.cpp \
     common/QskTextOptions.cpp
@@ -150,7 +152,6 @@ HEADERS += \
     controls/QskPushButtonSkinlet.h \
     controls/QskQuick.h \
     controls/QskRangeControl.h \
-    controls/QskRgbValue.h \
     controls/QskScrollArea.h \
     controls/QskScrollView.h \
     controls/QskScrollViewSkinlet.h \
@@ -215,7 +216,6 @@ SOURCES += \
     controls/QskPushButtonSkinlet.cpp \
     controls/QskQuick.cpp \
     controls/QskRangeControl.cpp \
-    controls/QskRgbValue.cpp \
     controls/QskScrollArea.cpp \
     controls/QskScrollView.cpp \
     controls/QskScrollViewSkinlet.cpp \
