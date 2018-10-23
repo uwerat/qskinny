@@ -240,6 +240,9 @@ QSizeF QskStackBox::contentsSizeHint() const
 
 qreal QskStackBox::heightForWidth( qreal width ) const
 {
+    const auto m = margins();
+    width -= m.left() + m.right();
+
     qreal height = -1;
 
     const QskLayoutEngine& engine = this->engine();
@@ -250,11 +253,15 @@ qreal QskStackBox::heightForWidth( qreal width ) const
             height = qMax( height, QskLayoutConstraint::heightForWidth( item, width ) );
     }
 
+    height += m.top() + m.bottom();
     return height;
 }
 
 qreal QskStackBox::widthForHeight( qreal height ) const
 {
+    const auto m = margins();
+    height -= m.top() + m.bottom();
+
     qreal width = -1;
 
     const QskLayoutEngine& engine = this->engine();
@@ -265,6 +272,7 @@ qreal QskStackBox::widthForHeight( qreal height ) const
             width = qMax( width, QskLayoutConstraint::widthForHeight( item, height ) );
     }
 
+    width += m.left() + m.right();
     return width;
 }
 
