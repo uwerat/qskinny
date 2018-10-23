@@ -25,6 +25,7 @@ QSK_EXPORT bool qskIsTransparentForPositioner( const QQuickItem* );
 QSK_EXPORT bool qskIsTabFence( const QQuickItem* );
 QSK_EXPORT bool qskIsShortcutScope( const QQuickItem* );
 QSK_EXPORT bool qskIsVisibleTo( const QQuickItem* item, const QQuickItem* ancestor );
+QSK_EXPORT bool qskIsVisibleToParent( const QQuickItem* );
 
 QSK_EXPORT QRectF qskItemRect( const QQuickItem* );
 

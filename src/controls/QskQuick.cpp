@@ -65,6 +65,11 @@ bool qskIsAncestorOf( const QQuickItem* item, const QQuickItem* child )
 #endif
 }
 
+bool qskIsVisibleToParent( const QQuickItem* item )
+{
+    return QQuickItemPrivate::get( item )->explicitVisible;
+}
+
 bool qskIsVisibleTo( const QQuickItem* item, const QQuickItem* ancestor )
 {
     if ( item == nullptr )
