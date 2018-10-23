@@ -68,6 +68,7 @@ int main( int argc, char* argv[] )
 
         auto subWindow = new SubWindow( url + shapes[ i ], area );
         subWindow->setGeometry( windowRect.translated( off, off ) );
+        subWindow->open();
     }
 
     QskWindow window;
