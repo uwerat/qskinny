@@ -208,7 +208,7 @@ Qt::Orientation QskLayoutItem::dynamicConstraintOrientation() const
 
 bool QskLayoutItem::isIgnored() const
 {
-    if ( m_item && !m_item->isVisible() )
+    if ( m_item && !qskIsVisibleToParent( m_item ) )
         return !m_retainSizeWhenHidden;
 
     return false;
