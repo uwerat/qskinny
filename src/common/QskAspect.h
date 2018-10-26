@@ -11,6 +11,11 @@
 #include <qmetaobject.h>
 #include <functional>
 
+/*
+    hack to run moc over a namespace, what is not
+    yet supported with Qt 5.6
+ */
+
 #ifdef Q_MOC_RUN
 
 #define QSK_NAMESPACE( name ) struct name
@@ -19,7 +24,10 @@
 #else
 
 #define QSK_NAMESPACE( name ) namespace name
-#define QSK_ENUM( name )
+#define QSK_ENUM( name ) \
+    inline const QMetaObject *qt_getEnumMetaObject(name) noexcept { return qt_getQtMetaObject(); } \
+    inline constexpr const char *qt_getEnumName(name) noexcept { return #name; }
+
 
 #endif
 
