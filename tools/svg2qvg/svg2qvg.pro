@@ -4,6 +4,7 @@ include( $${QSK_ROOT}/qskconfig.pri )
 QSK_OUT_ROOT = $${OUT_PWD}/../..
 
 TEMPLATE     = app
+TARGET = svg2qvg
 
 QT += svg
 
@@ -28,7 +29,6 @@ standalone {
 }
 else {
 
-    QMAKE_RPATHDIR *= $${QSK_OUT_ROOT}/lib
     LIBS *= -L$${QSK_OUT_ROOT}/lib -lqskinny
 
     contains(QSK_CONFIG, QskDll) {
@@ -36,7 +36,8 @@ else {
     }
 }
 
-TARGET = svg2qvg
-
 SOURCES += \
     main.cpp
+
+target.path    = $${QSK_INSTALL_BINS}
+INSTALLS       = target

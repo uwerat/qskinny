@@ -1,5 +1,7 @@
 QSK_ROOT = $${PWD}/..
+
 include( $${QSK_ROOT}/qskconfig.pri )
+include( $${QSK_ROOT}/qskfunctions.pri )
 
 QSK_OUT_ROOT = $${OUT_PWD}/../..
 
@@ -25,7 +27,8 @@ DEPENDPATH  += $${QSK_DIRS}
 DESTDIR      = $${QSK_OUT_ROOT}/playground/bin
 
 QMAKE_RPATHDIR *= $${QSK_OUT_ROOT}/lib
-LIBS *= -L$${QSK_OUT_ROOT}/lib -lqsktestsupport -lqskinny
+qskAddLibrary($${QSK_OUT_ROOT}/lib, qsktestsupport)
+qskAddLibrary($${QSK_OUT_ROOT}/lib, qskinny)
 
 win32 {
     contains(QSK_CONFIG, QskDll) {

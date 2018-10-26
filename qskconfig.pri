@@ -1,3 +1,29 @@
+############################################################################
+# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# This file may be used under the terms of the QSkinny License, Version 1.0
+############################################################################
+
+QSK_VER_MAJ      = 0
+QSK_VER_MIN      = 0
+QSK_VER_PAT      = 0
+QSK_VERSION      = $${QSK_VER_MAJ}.$${QSK_VER_MIN}.$${QSK_VER_PAT}
+
+QSK_INSTALL_PREFIX    = $$[QT_INSTALL_PREFIX]
+
+unix {
+    QSK_INSTALL_PREFIX    = /usr/local/qskinny-$${QSK_VERSION}
+}
+
+win32 {
+    QSK_INSTALL_PREFIX    = C:/Qskinny-$${QSK_VERSION}
+}
+
+QSK_INSTALL_DOCS      = $${QSK_INSTALL_PREFIX}/doc
+QSK_INSTALL_HEADERS   = $${QSK_INSTALL_PREFIX}/include
+QSK_INSTALL_LIBS      = $${QSK_INSTALL_PREFIX}/lib
+QSK_INSTALL_BINS      = $${QSK_INSTALL_PREFIX}/bin
+QSK_INSTALL_PLUGINS   = $${QSK_INSTALL_PREFIX}/plugins
+
 CONFIG           += warn_on
 CONFIG           += no_keywords
 CONFIG           += silent

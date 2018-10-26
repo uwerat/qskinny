@@ -2,9 +2,10 @@ QSK_ROOT = $${PWD}/..
 QSK_OUT_ROOT = $${OUT_PWD}/..
 
 include( $${QSK_ROOT}/qskconfig.pri )
+include( $${QSK_ROOT}/qskfunctions.pri )
 
 TEMPLATE = lib
-TARGET = qskinputcontext
+TARGET = $$qskLibraryTarget(qskinputcontext)
 
 QT += quick gui-private
 CONFIG += no_private_qt_headers_warning
@@ -29,8 +30,7 @@ DEPENDPATH  *= $${QSK_SUBDIRS}
 
 DESTDIR      = $${QSK_OUT_ROOT}/plugins/platforminputcontexts
 
-QMAKE_RPATHDIR *= $${QSK_OUT_ROOT}/lib
-LIBS *= -L$${QSK_OUT_ROOT}/lib -lqskinny 
+qskAddLibrary($${QSK_OUT_ROOT}/lib, qskinny)
 
 HEADERS += \
     QskInputContextGlobal.h
@@ -74,3 +74,7 @@ hunspell {
 contains(QSK_CONFIG, QskDll) {
     DEFINES += QT_DLL QSK_DLL QSK_INPUTCONTEXT_MAKEDLL
 }
+
+target.path    = $${QSK_INSTALL_PLUGINS}/platforminputcontexts
+INSTALLS       = target
+

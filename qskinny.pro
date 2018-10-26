@@ -20,9 +20,9 @@ OTHER_FILES = \
     doc/classes/*.metadox \
     TODO
 
+qmlexport.depends = src
 inputcontext.depends = src
 skins.depends = src
-tools.depends = src
-support.depends = skins
+support.depends = src skins
 examples.depends = tools support skins qmlexport
 playground.depends = tools support skins qmlexport

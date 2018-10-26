@@ -2,11 +2,15 @@ QSK_ROOT = $${PWD}/..
 QSK_OUT_ROOT = $${OUT_PWD}/..
 
 include( $${QSK_ROOT}/qskconfig.pri )
+include( $${QSK_ROOT}/qskfunctions.pri )
 
 TEMPLATE = lib
-TARGET   = qskqmlexport
+TARGET   = $$qskLibraryTarget(qskqmlexport)
+VERSION  = $${QSK_VERSION}
 
 DESTDIR  = $${QSK_OUT_ROOT}/lib
+
+qskAddLibrary($${QSK_OUT_ROOT}/lib, qskinny)
 
 QT += quick quick-private
 CONFIG += no_private_qt_headers_warning
@@ -40,3 +44,5 @@ SOURCES += \
     QskShortcut.cpp \
     QskQml.cpp
 
+target.path    = $${QSK_INSTALL_LIBS}
+INSTALLS       = target

@@ -1,5 +1,7 @@
 QSK_ROOT = $${PWD}/..
+
 include( $${QSK_ROOT}/qskconfig.pri )
+include( $${QSK_ROOT}/qskfunctions.pri )
 
 QSK_OUT_ROOT = $${OUT_PWD}/../..
 
@@ -8,6 +10,7 @@ CONFIG         += plugin
 QT += quick
 
 TEMPLATE     = lib
+VERSION      = $${QSK_VERSION}
 
 QSK_DIRS = \
     $${QSK_ROOT}/src/common \
@@ -23,10 +26,11 @@ DEPENDPATH  += $${QSK_DIRS}
 
 DESTDIR      = $${QSK_OUT_ROOT}/plugins/skins
 
-QMAKE_RPATHDIR *= $${QSK_OUT_ROOT}/lib
-LIBS *= -L$${QSK_OUT_ROOT}/lib -lqskinny
+qskAddLibrary($${QSK_OUT_ROOT}/lib, qskinny)
 
 contains(QSK_CONFIG, QskDll) {
     DEFINES    += QT_DLL QSK_DLL
 }
 
+target.path    = $${QSK_INSTALL_PLUGINS}/skins
+INSTALLS       = target

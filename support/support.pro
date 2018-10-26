@@ -3,9 +3,10 @@ QSK_OUT_ROOT = $${OUT_PWD}/..
 QSK_PLUGIN_DIR = $${QSK_OUT_ROOT}/plugins
 
 include( $${QSK_ROOT}/qskconfig.pri )
+include( $${QSK_ROOT}/qskfunctions.pri )
 
 TEMPLATE = lib
-TARGET   = qsktestsupport
+TARGET   = $$qskLibraryTarget(qsktestsupport)
 
 DESTDIR  = $${QSK_OUT_ROOT}/lib
 
@@ -47,6 +48,8 @@ SOURCES += \
 
 DEFINES += PLUGIN_PATH=$$clean_path( $$QSK_PLUGIN_DIR )
 
+qskAddLibrary($${QSK_OUT_ROOT}/lib, qskinny)
+
 ensure_skins {
 
     # Enabling fall back code, that inserts some skin factories manually
@@ -58,7 +61,8 @@ ensure_skins {
     DEFINES += ENSURE_SKINS
 
     QMAKE_RPATHDIR *= $${QSK_PLUGIN_DIR}/skins
-    LIBS *= -L$${QSK_PLUGIN_DIR}/skins -lsquiekskin -lmaterialskin
+    qskAddLibrary($${QSK_PLUGIN_DIR}/skins, squiekskin)
+    qskAddLibrary($${QSK_PLUGIN_DIR}/skins, materialskin)
 }
 
 fontconfig {

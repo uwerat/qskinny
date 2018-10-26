@@ -2,14 +2,11 @@ QSK_ROOT = $${PWD}/..
 QSK_OUT_ROOT = $${OUT_PWD}/..
 
 include( $${QSK_ROOT}/qskconfig.pri )
+include( $${QSK_ROOT}/qskfunctions.pri )
 
 TEMPLATE = lib
-TARGET   = qskinny
-
-QSK_VER_MAJ      = 0
-QSK_VER_MIN      = 0
-QSK_VER_PAT      = 1
-QSK_VERSION      = $${QSK_VER_MAJ}.$${QSK_VER_MIN}.$${QSK_VER_PAT}
+TARGET   = $$qskLibraryTarget(qskinny)
+VERSION  = $${QSK_VERSION}
 
 DESTDIR  = $${QSK_OUT_ROOT}/lib
 
@@ -315,3 +312,9 @@ SOURCES += \
     inputpanel/QskInputPredictionBar.cpp \
     inputpanel/QskVirtualKeyboard.cpp
 
+target.path    = $${QSK_INSTALL_LIBS}
+INSTALLS       = target
+
+header_files.files = $$HEADERS
+header_files.path = $${QSK_INSTALL_HEADERS}
+INSTALLS += header_files
