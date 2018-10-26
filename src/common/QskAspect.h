@@ -25,14 +25,15 @@
 
 #define QSK_NAMESPACE( name ) namespace name
 #define QSK_ENUM( name ) \
-    inline const QMetaObject *qt_getEnumMetaObject(name) noexcept { return qt_getQtMetaObject(); } \
+    inline const QMetaObject *qt_getEnumMetaObject(name) noexcept { return &staticMetaObject; } \
     inline constexpr const char *qt_getEnumName(name) noexcept { return #name; }
-
 
 #endif
 
 QSK_NAMESPACE( QskAspect )
 {
+    extern const QMetaObject staticMetaObject;
+
     enum Subcontrol : quint16
     {
         Control        = 0,
@@ -116,8 +117,6 @@ QSK_NAMESPACE( QskAspect )
         AllStates        =   0xFFFF
     };
     QSK_ENUM( State )
-
-    extern const QMetaObject staticMetaObject;
 }
 
 QSK_DECLARE_OPERATORS_FOR_FLAGS( QskAspect::State )
