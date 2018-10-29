@@ -61,8 +61,15 @@ linux {
         # Qt headers do not stand pedantic checks, so it's better
         # to exclude them by declaring them as system includes
 
+        # As most distros set QT_INSTALL_HEADERS to /usr/include we
+        # would run into gcc compiler errors and better drop it
+        # from the list below. Should be no problem as we don't
+        # add the Qt module to our includes and therefore don't
+        # need this path.
+
+        # QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
+
         QMAKE_CXXFLAGS += \
-            -isystem $$[QT_INSTALL_HEADERS] \
             -isystem $$[QT_INSTALL_HEADERS]/QtCore \
             -isystem $$[QT_INSTALL_HEADERS]/QtGui \
             -isystem $$[QT_INSTALL_HEADERS]/QtGui/$$[QT_VERSION]/QtGui \
