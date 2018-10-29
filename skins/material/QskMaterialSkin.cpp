@@ -655,8 +655,9 @@ void QskMaterialSkin::initSubWindowHints()
 
     const ColorPalette& pal = m_data->palette;
 
-    // panel
+    // Panel
 
+    setSkinHint( Q::Panel | Decoration, true );
     setMargins( Q::Panel | Padding, 10 );
     setBoxShape( Q::Panel, 0 );
     setBoxBorderMetrics( Q::Panel, 2 );
@@ -668,11 +669,19 @@ void QskMaterialSkin::initSubWindowHints()
 
     setBoxBorderColors( Q::Panel, colors );
 
-    // title bar
+    // TitleBar
     setGradient( Q::TitleBar, pal.darker200 );
     setGradient( Q::TitleBar | Q::Focused, pal.accentColor );
 
-    setFontRole( Q::TitleBar, QskSkin::TinyFont );
+    // TitleBarText
+    setFontRole( Q::TitleBarText, QskSkin::SmallFont );
+
+    setSkinHint( Q::TitleBarText | Alignment,
+        static_cast<int>( Qt::AlignLeft | Qt::AlignVCenter ) );
+
+    for ( auto subControl : { Q::Panel, Q::TitleBar, Q::TitleBarText } )
+        setAnimation( subControl | Color, qskDuration );
+
 }
 
 #include "moc_QskMaterialSkin.cpp"

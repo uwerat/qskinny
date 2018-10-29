@@ -739,11 +739,14 @@ void QskSquiekSkin::initSubWindowHints()
 
     const ColorPalette& pal = m_data->palette;
 
+    const qreal radius = 5.0;
+
     // Panel
 
+    setSkinHint( Q::Panel | Decoration, true );
     setMargins( Q::Panel | Padding, 10 );
     setBoxBorderMetrics( Q::Panel, 2 );
-    setBoxShape( Q::Panel, 0 );
+    setBoxShape( Q::Panel, radius, radius, 0, 0, Qt::AbsoluteSize );
 
     QskBoxBorderColors borderColors;
     borderColors.setColorsAt( Qt::TopEdge | Qt::LeftEdge, pal.lighter125 );
@@ -754,9 +757,22 @@ void QskSquiekSkin::initSubWindowHints()
 
     // TitleBar
 
-    setFontRole( Q::TitleBar, QskSkin::TinyFont );
     setGradient( Q::TitleBar | Q::Focused, pal.highlighted );
     setGradient( Q::TitleBar, pal.contrasted );
+    setMetric( Q::TitleBar | Spacing, 5 );
+    setMetric( Q::TitleBar | MinimumHeight, 20 );
+    setBoxShape( Q::TitleBar, radius, radius, 0, 0, Qt::AbsoluteSize );
+
+    // TitleBarText
+    setFontRole( Q::TitleBarText, QskSkin::SmallFont );
+    setColor( Q::TitleBarText | Q::Focused, pal.highlightedText );
+    setColor( Q::TitleBarText, pal.themeForeground );
+
+    setSkinHint( Q::TitleBarText | Alignment,
+        static_cast<int>( Qt::AlignLeft | Qt::AlignVCenter ) );
+
+    for ( auto subControl : { Q::Panel, Q::TitleBar, Q::TitleBarText } )
+        setAnimation( subControl | Color, qskDuration );
 }
 
 #include "moc_QskSquiekSkin.cpp"

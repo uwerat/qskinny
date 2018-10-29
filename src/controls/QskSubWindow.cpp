@@ -6,24 +6,41 @@
 #include "QskSubWindow.h"
 #include "QskAspect.h"
 #include "QskFunctions.h"
+#include "QskGraphic.h"
+#include "QskGraphicProvider.h"
+#include "QskTextOptions.h"
 #include "QskQuick.h"
+
+#include <qurl.h>
 
 QSK_SUBCONTROL( QskSubWindow, Panel )
 QSK_SUBCONTROL( QskSubWindow, TitleBar )
+QSK_SUBCONTROL( QskSubWindow, TitleBarSymbol )
+QSK_SUBCONTROL( QskSubWindow, TitleBarText )
 
 class QskSubWindow::PrivateData
 {
   public:
     PrivateData()
+        : isWindowIconSourceDirty( false )
     {
         // should be available from the platform somehow. TODO ...
 
         windowButtons = QskSubWindow::WindowButtons( QskSubWindow::MinimizeButton |
             QskSubWindow::MaximizeButton | QskSubWindow::CloseButton );
+
+        windowTitleTextOptions.setElideMode( Qt::ElideRight );
     }
 
     QskSubWindow::WindowButtons windowButtons;
-    QString title;
+
+    QString windowTitle;
+    QskTextOptions windowTitleTextOptions;
+
+    QUrl windowIconSource;
+    QskGraphic windowIcon;
+
+    bool isWindowIconSourceDirty : 1;
 };
 
 QskSubWindow::QskSubWindow( QQuickItem* parent )
@@ -45,7 +62,7 @@ void QskSubWindow::setDecorated( bool on )
     if ( on == isDecorated() )
         return;
 
-    const auto subControl = effectiveSubcontrol( QskSubWindow::TitleBar );
+    const auto subControl = effectiveSubcontrol( QskSubWindow::Panel );
     setFlagHint( subControl | QskAspect::Decoration, on );
 
     resetImplicitSize(); // in case some parent wants to layout
@@ -58,22 +75,92 @@ void QskSubWindow::setDecorated( bool on )
 
 bool QskSubWindow::isDecorated() const
 {
-    return flagHint< bool >( TitleBar | QskAspect::Decoration, true );
+    return flagHint< bool >( Panel | QskAspect::Decoration, true );
 }
 
-void QskSubWindow::setTitle( const QString& title )
+void QskSubWindow::setWindowTitle( const QString& title )
 {
-    if ( m_data->title != title )
+    if ( m_data->windowTitle != title )
     {
-        m_data->title = title;
-        Q_EMIT titleChanged();
+        m_data->windowTitle = title;
+        Q_EMIT windowTitleChanged();
     }
 }
 
-QString QskSubWindow::title() const
+QString QskSubWindow::windowTitle() const
 {
-    return m_data->title;
+    return m_data->windowTitle;
 }
+
+void QskSubWindow::setWindowTitleTextOptions( const QskTextOptions& options )
+{
+    if ( options != m_data->windowTitleTextOptions )
+    {
+        m_data->windowTitleTextOptions = options;
+
+        update();
+        Q_EMIT windowTitleTextOptionsChanged();
+    }
+
+}
+
+QskTextOptions QskSubWindow::windowTitleTextOptions() const
+{
+    return m_data->windowTitleTextOptions;
+}
+
+void QskSubWindow::setWindowIconSource( const QUrl& url )
+{
+    if ( m_data->windowIconSource == url )
+        return;
+
+    m_data->windowIconSource = url;
+    m_data->windowIcon.reset();
+
+    m_data->isWindowIconSourceDirty = true;
+
+    polish();
+    update();
+
+    Q_EMIT windowIconSourceChanged();
+}
+
+QUrl QskSubWindow::windowIconSource() const
+{
+    return m_data->windowIconSource;
+}
+
+void QskSubWindow::setWindowIcon( const QskGraphic& graphic )
+{
+    if ( graphic != m_data->windowIcon )
+    {
+        m_data->windowIcon = graphic;
+
+        if ( !m_data->windowIconSource.isEmpty() )
+        {
+            m_data->windowIconSource = QString();
+            m_data->isWindowIconSourceDirty = false;
+
+            Q_EMIT windowIconSourceChanged();
+        }
+
+        polish();
+        update();
+
+        Q_EMIT windowIconChanged();
+    }
+}   
+
+QskGraphic QskSubWindow::windowIcon() const
+{
+    return m_data->windowIcon;
+}
+
+bool QskSubWindow::hasWindowIcon() const
+{
+    return !( windowIcon().isEmpty() && windowIconSource().isEmpty() );
+}
+
 
 void QskSubWindow::setWindowButtons( WindowButtons buttons )
 {
@@ -122,6 +209,22 @@ bool QskSubWindow::event( QEvent* event )
     return Inherited::event( event );
 }
 
+void QskSubWindow::updateLayout()
+{
+    if ( m_data->isWindowIconSourceDirty )
+    {
+        if ( !m_data->windowIconSource.isEmpty() )
+        {
+            m_data->windowIcon = Qsk::loadGraphic( m_data->windowIconSource );
+            Q_EMIT windowIconChanged();
+        }
+
+        m_data->isWindowIconSourceDirty = false;
+    }
+
+    Inherited::updateLayout();
+}
+
 QRectF QskSubWindow::layoutRect() const
 {
     QRectF rect = contentsRect();
@@ -135,36 +238,20 @@ QRectF QskSubWindow::layoutRect() const
 
 QSizeF QskSubWindow::contentsSizeHint() const
 {
-    qreal w = -1;
-    qreal h = -1;
-
-    const auto children = childItems();
-    for ( auto child : children )
-    {
-        if ( qskIsTransparentForPositioner( child ) )
-            continue;
-
-        const QskControl* control = qobject_cast< QskControl* >( child );
-        if ( control )
-        {
-            const QSizeF sz = control->sizeHint();
-
-            w = qMax( w, sz.width() );
-            h = qMax( h, sz.height() );
-        }
-    }
+    // the size we get from the children
+    auto hint = Inherited::contentsSizeHint();
 
 #if 1
     // should be Minimum Width/Height from the hints
-    if ( w < 0 )
-        w = qskDpiScaled( 100 );
+    if ( hint.width() < 0 )
+        hint.setWidth( qskDpiScaled( 100 ) );
 
-    if ( h < 0 )
-        h = qskDpiScaled( 80 );
+    if ( hint.height() < 0 )
+        hint.setHeight( qskDpiScaled( 80 ) );
 #endif
 
-    QSizeF hint = outerBoxSize( Panel, QSizeF( w, h ) );
-    hint.setHeight( hint.height() + titleBarRect().height() );
+    hint = outerBoxSize( Panel, hint );
+    hint.setHeight( hint.height() + subControlRect( TitleBar ).height() );
 
     return hint;
 }

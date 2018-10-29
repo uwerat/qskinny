@@ -53,7 +53,7 @@ static void qskSetupSubWindow(
     QskDialog::StandardButton defaultButton, QskInputSubWindow* subWindow )
 {
     subWindow->setModal( true );
-    subWindow->setTitle( title );
+    subWindow->setWindowTitle( title );
     subWindow->setStandardButtons( buttons );
 
     if ( defaultButton == QskDialog::NoButton )

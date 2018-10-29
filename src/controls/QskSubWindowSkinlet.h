@@ -20,7 +20,9 @@ class QSK_EXPORT QskSubWindowSkinlet : public QskPopupSkinlet
     enum NodeRole
     {
         PanelRole = QskPopupSkinlet::OverlayRole + 1,
-        TitleBarRole
+        TitleBarRole,
+        SymbolRole,
+        TitleRole
     };
 
     Q_INVOKABLE QskSubWindowSkinlet( QskSkin* = nullptr );
@@ -35,7 +37,10 @@ class QSK_EXPORT QskSubWindowSkinlet : public QskPopupSkinlet
 
   private:
     qreal titleBarHeight( const QskSubWindow* ) const;
+
     QRectF titleBarRect( const QskSubWindow* ) const;
+    QRectF symbolRect( const QskSubWindow* ) const;
+    QRectF titleRect( const QskSubWindow* ) const;
 };
 
 #endif

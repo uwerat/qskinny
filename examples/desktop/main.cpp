@@ -22,20 +22,25 @@
 class SubWindow : public QskSubWindow
 {
   public:
-    SubWindow( const QString& graphicSource, QQuickItem* parent = nullptr )
+    SubWindow( const QString& iconSource, QQuickItem* parent = nullptr )
         : QskSubWindow( parent )
     {
-        setObjectName( graphicSource );
+        setObjectName( iconSource );
+
+        const QUrl url( iconSource );
+
+        setWindowTitle( url.fileName() );
+        setWindowIconSource( url );
 
         auto label = new QskGraphicLabel( this );
-        label->setSource( graphicSource );
+        label->setSource( iconSource );
         label->setAlignment( Qt::AlignCenter );
 
         setSizePolicy( QskSizePolicy::MinimumExpanding,
             QskSizePolicy::MinimumExpanding );
 
         QskShortcutMap::addShortcut( this, QKeySequence( Qt::Key_P ), true,
-            [ graphicSource ] { qDebug() << graphicSource; } );
+            [ iconSource ] { qDebug() << iconSource; } );
     }
 };
 

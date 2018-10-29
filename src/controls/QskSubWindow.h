@@ -8,6 +8,10 @@
 
 #include "QskPopup.h"
 
+class QskGraphic;
+class QskTextOptions;
+class QUrl;
+
 class QSK_EXPORT QskSubWindow : public QskPopup
 {
     Q_OBJECT
@@ -15,8 +19,17 @@ class QSK_EXPORT QskSubWindow : public QskPopup
     Q_PROPERTY( bool decorated READ isDecorated
         WRITE setDecorated NOTIFY decoratedChanged )
 
-    Q_PROPERTY( QString title READ title
-        WRITE setTitle NOTIFY titleChanged )
+    Q_PROPERTY( QString windowTitle READ windowTitle
+        WRITE setWindowTitle NOTIFY windowTitleChanged )
+
+    Q_PROPERTY( QskTextOptions windowTitleTextOptions READ windowTitleTextOptions
+        WRITE setWindowTitleTextOptions NOTIFY windowTitleTextOptionsChanged )
+
+    Q_PROPERTY( QUrl windowIconSource READ windowIconSource
+        WRITE setWindowIconSource NOTIFY windowIconSourceChanged )
+
+    Q_PROPERTY( QskGraphic windowIcon READ windowIcon
+        WRITE setWindowIcon NOTIFY windowIconChanged FINAL )
 
     Q_PROPERTY( WindowButtons windowButtons READ windowButtons
         WRITE setWindowButtons NOTIFY windowButtonsChanged )
@@ -34,22 +47,33 @@ class QSK_EXPORT QskSubWindow : public QskPopup
     Q_ENUM( WindowButton )
     Q_DECLARE_FLAGS( WindowButtons, WindowButton )
 
-    QSK_SUBCONTROLS( Panel, TitleBar )
+    QSK_SUBCONTROLS( Panel, TitleBar, TitleBarSymbol, TitleBarText )
 
     QskSubWindow( QQuickItem* parent = nullptr );
     ~QskSubWindow() override;
 
-    Q_INVOKABLE void setTitle( const QString& );
-    Q_INVOKABLE QString title() const;
+    void setDecorated( bool );
+    bool isDecorated() const;
 
-    Q_INVOKABLE void setDecorated( bool );
-    Q_INVOKABLE bool isDecorated() const;
+    void setWindowTitleTextOptions( const QskTextOptions& );
+    QskTextOptions windowTitleTextOptions() const;
 
-    Q_INVOKABLE void setWindowButtons( WindowButtons );
-    Q_INVOKABLE WindowButtons windowButtons() const;
+    void setWindowTitle( const QString& );
+    QString windowTitle() const;
 
-    Q_INVOKABLE void setWindowButton( WindowButton, bool on = true );
-    Q_INVOKABLE bool testWindowButton( WindowButton ) const;
+    void setWindowIconSource( const QUrl& );
+    QUrl windowIconSource() const;
+
+    void setWindowIcon( const QskGraphic& );
+    QskGraphic windowIcon() const;
+
+    bool hasWindowIcon() const;
+
+    void setWindowButtons( WindowButtons );
+    WindowButtons windowButtons() const;
+
+    void setWindowButton( WindowButton, bool on = true );
+    bool testWindowButton( WindowButton ) const;
 
     QRectF titleBarRect() const;
 
@@ -57,12 +81,17 @@ class QSK_EXPORT QskSubWindow : public QskPopup
     QRectF layoutRect() const override;
 
   Q_SIGNALS:
-    void titleChanged();
     void decoratedChanged();
+    void windowTitleChanged();
+    void windowTitleTextOptionsChanged();
+    void windowIconChanged();
+    void windowIconSourceChanged();
     void windowButtonsChanged();
 
   protected:
     bool event( QEvent* ) override;
+
+    void updateLayout() override;
 
     void itemChange( QQuickItem::ItemChange,
         const QQuickItem::ItemChangeData& ) override;
