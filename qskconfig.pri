@@ -62,7 +62,6 @@ linux {
         # to exclude them by declaring them as system includes
 
         QMAKE_CXXFLAGS += \
-            -isystem $$[QT_INSTALL_HEADERS] \
             -isystem $$[QT_INSTALL_HEADERS]/QtCore \
             -isystem $$[QT_INSTALL_HEADERS]/QtGui \
             -isystem $$[QT_INSTALL_HEADERS]/QtGui/$$[QT_VERSION]/QtGui \
