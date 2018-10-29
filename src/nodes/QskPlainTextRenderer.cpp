@@ -181,12 +181,21 @@ void QskPlainTextRenderer::updateNode( const QString& text,
     const qreal textHeight = qskLayoutText( &layout, rect.width(), options );
     layout.endLayout();
 
-    qreal yBaseline = QFontMetricsF( font ).ascent();
+    const qreal y0 = QFontMetricsF( font ).ascent();
+
+    qreal yBaseline = y0;
 
     if ( alignment & Qt::AlignVCenter )
     {
         yBaseline += ( rect.height() - textHeight ) * 0.5;
+    }
+    else if ( alignment & Qt::AlignBottom )
+    {
+        yBaseline += rect.height() - textHeight;
+    }
 
+    if ( yBaseline != y0 )
+    {
         /*
             We need to have a stable algo for rounding the text base line,
             so that texts don't start wobbling, when processing transitions
