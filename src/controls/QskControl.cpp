@@ -1558,6 +1558,13 @@ void QskControl::itemChange( QQuickItem::ItemChange change,
 
             break;
         }
+#if 0
+        case QQuickItem::ItemChildRemovedChange:
+        {
+            // TODO ...
+            break;
+        }
+#endif
         case QQuickItem::ItemVisibleHasChanged:
         {
 #if 1
