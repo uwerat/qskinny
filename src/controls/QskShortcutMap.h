@@ -31,29 +31,39 @@ class QSK_EXPORT QskShortcutMap
         bool autoRepeat, const QObject* receiver, const char* method );
 
     // functor based slots
-    template< typename T >
-    static int addShortcut( const QKeySequence&,
-        bool autoRepeat, T function );
+    template< typename T, QskMetaFunctionTraits::IsFunctorOrStaticFunction< T >* = nullptr >
+    static int addShortcut( const QKeySequence&, bool autoRepeat, T function );
 
-    template< typename T >
-    static int addShortcut( const QKeySequence&,
+    template< typename T, QskMetaFunctionTraits::IsFunctorOrStaticFunction< T >* = nullptr >
+    static int addShortcut( QQuickItem*, const QKeySequence&, bool autoRepeat, T function );
+
+    template< typename T, QskMetaFunctionTraits::IsFunctorOrStaticFunction< T >* = nullptr >
+    static int addShortcut( QQuickWindow*, const QKeySequence&, bool autoRepeat, T function );
+
+    template< typename T, QskMetaFunctionTraits::IsFunctorOrStaticFunction< T >* = nullptr >
+    static int addShortcut( const QKeySequence&, bool autoRepeat,
+        const QObject* context, T function );
+
+    template< typename T, QskMetaFunctionTraits::IsFunctorOrStaticFunction< T >* = nullptr >
+    static int addShortcut( QQuickItem*, const QKeySequence&,
         bool autoRepeat, const QObject* context, T function );
 
-    template< typename T >
-    static int addShortcut( QQuickItem*, const QKeySequence&,
-        bool autoRepeat, T function );
-
-    template< typename T >
-    static int addShortcut( QQuickItem*, const QKeySequence&,
-        bool autoRepeat, const QObject* context, T function );
-
-    template< typename T >
-    static int addShortcut( QQuickWindow*, const QKeySequence&,
-        bool autoRepeat, T function );
-
-    template< typename T >
+    template< typename T, QskMetaFunctionTraits::IsFunctorOrStaticFunction< T >* = nullptr >
     static int addShortcut( QQuickWindow*, const QKeySequence&,
         bool autoRepeat, const QObject* context, T function );
+
+    template< typename T, QskMetaFunctionTraits::IsMemberFunction< T >* = nullptr >
+    static int addShortcut( const QKeySequence&, bool autoRepeat,
+        const typename QtPrivate::FunctionPointer< T >::Object* receiver, T function );
+
+    template< typename T, QskMetaFunctionTraits::IsMemberFunction< T >* = nullptr >
+    static int addShortcut( QQuickItem*, const QKeySequence&, bool autoRepeat,
+        const typename QtPrivate::FunctionPointer< T >::Object* receiver, T function );
+
+    template< typename T, QskMetaFunctionTraits::IsMemberFunction< T >* = nullptr >
+    static int addShortcut( QQuickWindow*, const QKeySequence&, bool autoRepeat,
+        const typename QtPrivate::FunctionPointer< T >::Object* receiver, T function );
+
 
     static bool contextMatcher( const QQuickItem*, Qt::ShortcutContext );
 
@@ -90,14 +100,31 @@ inline int QskShortcutMap::addShortcut(
     return addMethod( item, sequence, autoRepeat, receiver, method );
 }
 
-template< typename T >
+template< typename T, QskMetaFunctionTraits::IsFunctorOrStaticFunction< T >* >
 inline int QskShortcutMap::addShortcut(
     const QKeySequence& sequence, bool autoRepeat, T function )
 {
     return addFunctionT( nullptr, sequence, autoRepeat, nullptr, function );
 }
 
-template< typename T >
+template< typename T, QskMetaFunctionTraits::IsFunctorOrStaticFunction< T >* >
+inline int QskShortcutMap::addShortcut(
+    QQuickItem* item, const QKeySequence& sequence,
+    bool autoRepeat, T function )
+{   
+    return addFunctionT( item, sequence, autoRepeat, nullptr, function );
+}
+
+template< typename T, QskMetaFunctionTraits::IsFunctorOrStaticFunction< T >* >
+inline int QskShortcutMap::addShortcut(
+    QQuickWindow* window, const QKeySequence& sequence,
+    bool autoRepeat, T function )
+{
+    auto item = window ? window->contentItem() : nullptr;
+    return addFunctionT( item, sequence, autoRepeat, nullptr, function );
+}
+
+template< typename T, QskMetaFunctionTraits::IsFunctorOrStaticFunction< T >* >
 inline int QskShortcutMap::addShortcut(
     const QKeySequence& sequence, bool autoRepeat,
     const QObject* context, T function )
@@ -105,33 +132,15 @@ inline int QskShortcutMap::addShortcut(
     return addFunctionT( nullptr, sequence, autoRepeat, context, function );
 }
 
-template< typename T >
-inline int QskShortcutMap::addShortcut(
-    QQuickItem* item, const QKeySequence& sequence,
-    bool autoRepeat, T function )
-{
-    return addFunctionT( item, sequence, autoRepeat, nullptr, function );
-}
-
-template< typename T >
+template< typename T, QskMetaFunctionTraits::IsFunctorOrStaticFunction< T >* >
 inline int QskShortcutMap::addShortcut(
     QQuickItem* item, const QKeySequence& sequence, bool autoRepeat,
     const QObject* context, T function )
 {
-    return addFunctionT( item, sequence, autoRepeat,
-        context, QskMetaFunction( function ) );
+    return addFunctionT( item, sequence, autoRepeat, context, function );
 }
 
-template< typename T >
-inline int QskShortcutMap::addShortcut(
-    QQuickWindow* window, const QKeySequence& sequence,
-    bool autoRepeat, T function )
-{
-    auto item = window ? window->contentItem() : nullptr;
-    return addFunctionT( item, sequence, autoRepeat, nullptr, function );
-}
-
-template< typename T >
+template< typename T, QskMetaFunctionTraits::IsFunctorOrStaticFunction< T >* >
 inline int QskShortcutMap::addShortcut(
     QQuickWindow* window, const QKeySequence& sequence,
     bool autoRepeat, const QObject* context, T function )
@@ -139,6 +148,31 @@ inline int QskShortcutMap::addShortcut(
     auto item = window ? window->contentItem() : nullptr;
     return addFunctionT( item, sequence, autoRepeat, context, function );
 }
+
+template< typename T, QskMetaFunctionTraits::IsMemberFunction< T >* >
+inline int QskShortcutMap::addShortcut(
+    const QKeySequence& sequence, bool autoRepeat,
+    const typename QtPrivate::FunctionPointer< T >::Object* receiver, T function )
+{   
+    return addFunctionT( nullptr, sequence, autoRepeat, receiver, function );
+}   
+
+template< typename T, QskMetaFunctionTraits::IsMemberFunction< T >* >
+inline int QskShortcutMap::addShortcut(
+    QQuickItem* item, const QKeySequence& sequence, bool autoRepeat,
+    const typename QtPrivate::FunctionPointer< T >::Object* receiver, T function )
+{   
+    return addFunctionT( item, sequence, autoRepeat, receiver, function );
+}       
+
+template< typename T, QskMetaFunctionTraits::IsMemberFunction< T >* >
+inline int QskShortcutMap::addShortcut(
+    QQuickWindow* window, const QKeySequence& sequence, bool autoRepeat,
+    const typename QtPrivate::FunctionPointer< T >::Object* receiver, T function )
+{   
+    auto item = window ? window->contentItem() : nullptr;
+    return addFunctionT( item, sequence, autoRepeat, receiver, function );
+}   
 
 template< typename T >
 inline int QskShortcutMap::addFunctionT(
