@@ -20,6 +20,10 @@ namespace QskMetaFunctionTraits
         FunctionPointer< T >::IsPointerToMemberFunction, std::true_type >::type;
 
     template< typename T >
+    using IsFunctorOrStaticFunction = typename std::enable_if<
+        !FunctionPointer< T >::IsPointerToMemberFunction, std::true_type >::type;
+
+    template< typename T >
     using IsFunctor = typename std::enable_if<
         !FunctionPointer< T >::IsPointerToMemberFunction
         && FunctionPointer< T >::ArgumentCount == -1, std::true_type >::type;
