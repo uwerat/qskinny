@@ -1474,23 +1474,8 @@ void QskControl::hoverLeaveEvent( QHoverEvent* event )
     setSkinStateFlag( Hovered, false );
 }
 
-void QskControl::changeEvent( QEvent* event )
+void QskControl::changeEvent( QEvent* )
 {
-    if ( event->type() == QEvent::StyleChange )
-    {
-        /*
-            the skin has changed and we might have totally
-            different skinlets, that can't deal with nodes
-            created from other skinlets
-         */
-        d_func()->clearPreviousNodes = true;
-
-        resetImplicitSize();
-        polish();
-
-        if ( flags() & QQuickItem::ItemHasContents )
-            update();
-    }
 }
 
 void QskControl::gestureEvent( QskGestureEvent* )
