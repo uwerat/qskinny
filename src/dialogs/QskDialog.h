@@ -88,6 +88,18 @@ class QSK_EXPORT QskDialog : public QObject
 
     Q_ENUM( ActionRole )
 
+    // for building the mask in QskSkin::dialogButtonLayout
+    enum ButtonLayoutFlag
+    {
+        // from QPlatformDialogHelper::ButtonRole
+        ActionMask      = 0x0FFFFFFF,
+
+        AlternateRole   = 1 << 28,
+        Stretch         = 1 << 29,
+        Reverse         = 1 << 30
+    };
+
+
     enum DialogCode
     {
         Rejected = 0,
