@@ -11,15 +11,15 @@ QSK_SUBCONTROL( QskDialogButton, Text )
 QSK_SUBCONTROL( QskDialogButton, Graphic )
 
 QskDialogButton::QskDialogButton(
-        QskDialog::StandardButton standardButton, QQuickItem* parent )
+        QskDialog::Action action, QQuickItem* parent )
     : QskPushButton( parent )
-    , m_buttonType( standardButton )
+    , m_action( action )
 {
-    setText( QskDialogButtonBox::buttonText( m_buttonType ) );
+    setText( QskDialogButtonBox::buttonText( m_action ) );
 }
 
 QskDialogButton::QskDialogButton( QQuickItem* parent )
-    : QskDialogButton( QskDialog::NoButton, parent )
+    : QskDialogButton( QskDialog::NoAction, parent )
 {
 }
 
@@ -42,26 +42,26 @@ QskAspect::Subcontrol QskDialogButton::effectiveSubcontrol(
     return Inherited::effectiveSubcontrol( subControl );
 }
 
-void QskDialogButton::setStandardButton( QskDialog::StandardButton button )
+void QskDialogButton::setAction( QskDialog::Action action )
 {
-    if ( button != m_buttonType )
+    if ( action != m_action )
     {
-        m_buttonType = button;
-        setText( QskDialogButtonBox::buttonText( m_buttonType ) );
+        m_action = action;
+        setText( QskDialogButtonBox::buttonText( m_action ) );
 
-        Q_EMIT standardButtonChanged();
+        Q_EMIT actionChanged();
     }
 }
 
-QskDialog::StandardButton QskDialogButton::standardButton() const
+QskDialog::Action QskDialogButton::action() const
 {
-    return m_buttonType;
+    return m_action;
 }
 
 void QskDialogButton::changeEvent( QEvent* event )
 {
     if ( event->type() == QEvent::LocaleChange )
-        setText( QskDialogButtonBox::buttonText( m_buttonType ) );
+        setText( QskDialogButtonBox::buttonText( m_action ) );
 
     Inherited::changeEvent( event );
 }

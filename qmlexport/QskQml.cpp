@@ -278,7 +278,7 @@ void QskQml::registerTypes()
     QSK_REGISTER_FLAGS( QskSizePolicy::Policy );
     QMetaType::registerConverter< int, QskSetupFlagsProvider >();
 
-    QSK_REGISTER_FLAGS( QskDialog::StandardButtons );
+    QSK_REGISTER_FLAGS( QskDialog::Actions );
 
     QSK_REGISTER_GADGET( QskRgbValue_Gadget, "RgbValue" );
     QSK_REGISTER_GADGET( QskStandardSymbol, "StandardSymbol" );

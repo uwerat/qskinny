@@ -70,15 +70,8 @@ namespace
 class QskInputSubWindow::PrivateData
 {
   public:
-    PrivateData()
-        : standardButtons( QskDialog::NoButton )
-        , defaultButton( QskDialog::NoButton )
-        , inputControl( nullptr )
-    {
-    }
-
-    QskDialog::StandardButtons standardButtons;
-    QskDialog::StandardButton defaultButton;
+    QskDialog::Actions actions = QskDialog::NoAction;
+    QskDialog::Action defaultAction = QskDialog::NoAction;
 
     QskTextLabel* infoTextLabel;
     QskGraphicLabel* symbolLabel;
@@ -129,36 +122,36 @@ QskInputSubWindow::~QskInputSubWindow()
 {
 }
 
-void QskInputSubWindow::setStandardButtons( QskDialog::StandardButtons buttons )
+void QskInputSubWindow::setActions( QskDialog::Actions actions )
 {
-    if ( m_data->standardButtons == buttons )
+    if ( m_data->actions == actions )
         return;
 
-    m_data->standardButtons = buttons;
+    m_data->actions = actions;
 
-    m_data->buttonBox->setStandardButtons( buttons );
-    m_data->buttonBox->setVisible( buttons != QskDialog::NoButton );
+    m_data->buttonBox->setActions( actions );
+    m_data->buttonBox->setVisible( actions != QskDialog::NoAction );
 
 #if 1
-    const auto btns = m_data->buttonBox->buttons();
-    if ( !btns.isEmpty() )
-        btns[ 0 ]->setFocus( true );
+    const auto buttons = m_data->buttonBox->buttons();
+    if ( !buttons.isEmpty() )
+        buttons[ 0 ]->setFocus( true );
 #endif
 }
 
-QskDialog::StandardButtons QskInputSubWindow::standardButtons() const
+QskDialog::Actions QskInputSubWindow::actions() const
 {
-    return m_data->buttonBox->standardButtons();
+    return m_data->buttonBox->actions();
 }
 
-QskDialog::StandardButton QskInputSubWindow::defaultButton() const
+QskDialog::Action QskInputSubWindow::defaultAction() const
 {
-    return m_data->defaultButton;
+    return m_data->defaultAction;
 }
 
-void QskInputSubWindow::setDefaultButton( QskDialog::StandardButton button )
+void QskInputSubWindow::setDefaultAction( QskDialog::Action action )
 {
-    m_data->defaultButton = button;
+    m_data->defaultAction = action;
 }
 
 void QskInputSubWindow::setInfoText( const QString& text )
@@ -243,16 +236,16 @@ const QskDialogButtonBox* QskInputSubWindow::buttonBox() const
     return m_data->buttonBox;
 }
 
-QskDialog::StandardButton QskInputSubWindow::clickedButton() const
+QskDialog::Action QskInputSubWindow::clickedAction() const
 {
-    return m_data->buttonBox->clickedButton();
+    return m_data->buttonBox->clickedAction();
 }
 
 void QskInputSubWindow::keyPressEvent( QKeyEvent* event )
 {
     if ( QskDialogButtonBox::isDefaultButtonKeyEvent( event ) )
     {
-        QskPushButton* button = m_data->buttonBox->button( defaultButton() );
+        QskPushButton* button = m_data->buttonBox->button( defaultAction() );
         if ( button && button->isEnabled() )
             button->click();
     }

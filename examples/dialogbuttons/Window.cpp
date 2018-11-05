@@ -18,25 +18,20 @@ Window::Window( Qt::Orientation orientation )
     m_layoutBox->setExtraSpacingAt( Qt::BottomEdge | Qt::RightEdge );
 
     addBox( QskDialog::Ok );
-
-    addBox( QskDialog::StandardButtons( QskDialog::Ok | QskDialog::Cancel ) );
-
-    addBox( QskDialog::StandardButtons( QskDialog::Yes | QskDialog::No ) );
-
-    addBox( QskDialog::StandardButtons( QskDialog::Save | QskDialog::Discard
-        | QskDialog::RestoreDefaults | QskDialog::Help ) );
-
-    addBox( QskDialog::StandardButtons( QskDialog::Abort
-        | QskDialog::Retry | QskDialog::Ignore ) );
+    addBox( QskDialog::Ok | QskDialog::Cancel );
+    addBox( QskDialog::Yes | QskDialog::No );
+    addBox( QskDialog::Save | QskDialog::Discard |
+        QskDialog::RestoreDefaults | QskDialog::Help );
+    addBox( QskDialog::Abort | QskDialog::Retry | QskDialog::Ignore );
 
     addActionBox();
     addItem( m_layoutBox );
 }
 
-void Window::addBox( QskDialog::StandardButtons standardButtons )
+void Window::addBox( QskDialog::Actions actions )
 {
     QskDialogButtonBox* box = new QskDialogButtonBox( m_orientation );
-    box->setStandardButtons( standardButtons );
+    box->setActions( actions );
     box->setObjectName( "DialogBox" );
 
     m_layoutBox->addItem( box );
@@ -48,9 +43,9 @@ void Window::addActionBox()
     QskPushButton* centerButton = new QskPushButton( "Center" );
 
     QskDialogButtonBox* box = new QskDialogButtonBox( m_orientation );
-    box->addButton( flipButton, QskDialog::ActionRole );
-    box->addButton( centerButton, QskDialog::ActionRole );
-    box->setObjectName( "ActionBox" );
+    box->addButton( flipButton, QskDialog::UserRole );
+    box->addButton( centerButton, QskDialog::UserRole );
+    box->setObjectName( "UserBox" );
 
     m_layoutBox->addItem( box );
 

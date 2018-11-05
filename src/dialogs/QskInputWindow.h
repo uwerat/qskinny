@@ -33,26 +33,26 @@ class QSK_EXPORT QskInputWindow : public QskDialogWindow
     QskInputWindow( QWindow* parent = nullptr );
     ~QskInputWindow() override;
 
-    QskDialog::StandardButtons standardButtons() const;
-    void setStandardButtons( QskDialog::StandardButtons );
+    QskDialog::Actions actions() const;
+    void setActions( QskDialog::Actions );
 
-    QskDialog::StandardButton defaultButton() const;
-    void setDefaultButton( QskDialog::StandardButton );
+    QskDialog::Action defaultAction() const;
+    void setDefaultAction( QskDialog::Action );
 
     void setInfoTextOptions( const QskTextOptions& );
     QskTextOptions infoTextOptions() const;
 
     QString infoText() const;
 
-    void setSymbolType( int symbolType );
+    void setSymbolType( int );
 
-    void setSymbolSource( const QUrl& url );
+    void setSymbolSource( const QUrl& );
     QUrl symbolSource() const;
 
     void setSymbol( const QskGraphic& );
     QskGraphic symbol() const;
 
-    QskDialog::StandardButton clickedButton() const;
+    QskDialog::Action clickedAction() const;
 
     QskDialogButtonBox* buttonBox();
     const QskDialogButtonBox* buttonBox() const;

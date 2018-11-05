@@ -24,7 +24,7 @@ class Window : public QskWindow
     void centerButtons();
 
   private:
-    void addBox( QskDialog::StandardButtons );
+    void addBox( QskDialog::Actions );
     void addActionBox();
 
     QVector< QskDialogButtonBox* > dialogBoxes() const;

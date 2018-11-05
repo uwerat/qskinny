@@ -31,11 +31,11 @@ class QSK_EXPORT QskInputSubWindow : public QskDialogSubWindow
     QskInputSubWindow( QQuickItem* parent = nullptr );
     ~QskInputSubWindow() override;
 
-    QskDialog::StandardButtons standardButtons() const;
-    void setStandardButtons( QskDialog::StandardButtons );
+    QskDialog::Actions actions() const;
+    void setActions( QskDialog::Actions );
 
-    QskDialog::StandardButton defaultButton() const;
-    void setDefaultButton( QskDialog::StandardButton );
+    QskDialog::Action defaultAction() const;
+    void setDefaultAction( QskDialog::Action );
 
     void setInfoTextOptions( const QskTextOptions& );
     QskTextOptions infoTextOptions() const;
@@ -50,7 +50,7 @@ class QSK_EXPORT QskInputSubWindow : public QskDialogSubWindow
     void setSymbol( const QskGraphic& );
     QskGraphic symbol() const;
 
-    QskDialog::StandardButton clickedButton() const;
+    QskDialog::Action clickedAction() const;
 
     QskDialogButtonBox* buttonBox();
     const QskDialogButtonBox* buttonBox() const;

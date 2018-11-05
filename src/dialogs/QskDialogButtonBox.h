@@ -38,24 +38,24 @@ class QSK_EXPORT QskDialogButtonBox : public QskBox
     void setCenteredButtons( bool center );
     bool centeredButtons() const;
 
-    void addButton( QskPushButton* button, QskDialog::ButtonRole role );
-    void addButton( QskDialog::StandardButton button );
-    void removeButton( QskPushButton* button );
+    void addButton( QskPushButton*, QskDialog::ActionRole );
+    void addButton( QskDialog::Action );
+    void removeButton( QskPushButton* );
     void clear();
 
     QVector< QskPushButton* > buttons() const;
-    QskDialog::ButtonRole buttonRole( const QskPushButton* ) const;
+    QskDialog::ActionRole actionRole( const QskPushButton* ) const;
 
-    void setStandardButtons( QskDialog::StandardButtons buttons );
-    QskDialog::StandardButtons standardButtons() const;
-    QskDialog::StandardButton standardButton( const QskPushButton* ) const;
+    void setActions( QskDialog::Actions );
+    QskDialog::Actions actions() const;
+    QskDialog::Action action( const QskPushButton* ) const;
 
-    QskDialog::StandardButton defaultButtonCandidate() const;
+    QskDialog::Action defaultActionCandidate() const;
 
-    QskPushButton* button( QskDialog::StandardButton ) const;
-    QskPushButton* buttonFromRole( QskDialog::ButtonRole ) const;
+    QskPushButton* button( QskDialog::Action ) const;
+    QskPushButton* buttonFromRole( QskDialog::ActionRole ) const;
 
-    QskDialog::StandardButton clickedButton() const;
+    QskDialog::Action clickedAction() const;
 
     QSizeF contentsSizeHint() const override;
 
@@ -63,7 +63,7 @@ class QSK_EXPORT QskDialogButtonBox : public QskBox
         QskAspect::Subcontrol ) const override;
 
     static bool isDefaultButtonKeyEvent( const QKeyEvent* );
-    static QString buttonText( QskDialog::StandardButton );
+    static QString buttonText( QskDialog::Action );
 
   Q_SIGNALS:
     void clicked( QskPushButton* button );
@@ -77,7 +77,7 @@ class QSK_EXPORT QskDialogButtonBox : public QskBox
     bool event( QEvent* event ) override;
     void updateLayout() override;
 
-    virtual QskPushButton* createButton( QskDialog::StandardButton ) const;
+    virtual QskPushButton* createButton( QskDialog::Action ) const;
 
     void invalidateLayout();
 

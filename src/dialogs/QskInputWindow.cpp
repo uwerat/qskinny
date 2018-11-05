@@ -55,26 +55,26 @@ QskInputSubWindow* QskInputWindow::subWindow() const
     return m_subWindow;
 }
 
-QskDialog::StandardButtons QskInputWindow::standardButtons() const
+QskDialog::Actions QskInputWindow::actions() const
 {
-    return m_subWindow ? m_subWindow->standardButtons() : QskDialog::NoButton;
+    return m_subWindow ? m_subWindow->actions() : QskDialog::NoAction;
 }
 
-void QskInputWindow::setStandardButtons( QskDialog::StandardButtons buttons )
+void QskInputWindow::setActions( QskDialog::Actions actions )
 {
     if ( m_subWindow )
-        m_subWindow->setStandardButtons( buttons );
+        m_subWindow->setActions( actions );
 }
 
-QskDialog::StandardButton QskInputWindow::defaultButton() const
+QskDialog::Action QskInputWindow::defaultAction() const
 {
-    return m_subWindow ? m_subWindow->defaultButton() : QskDialog::NoButton;
+    return m_subWindow ? m_subWindow->defaultAction() : QskDialog::NoAction;
 }
 
-void QskInputWindow::setDefaultButton( QskDialog::StandardButton button )
+void QskInputWindow::setDefaultAction( QskDialog::Action action )
 {
     if ( m_subWindow )
-        m_subWindow->setDefaultButton( button );
+        m_subWindow->setDefaultAction( action );
 }
 
 void QskInputWindow::setInfoText( const QString& text )
@@ -136,9 +136,9 @@ QskGraphic QskInputWindow::symbol() const
     return m_subWindow ? m_subWindow->symbol() : QskGraphic();
 }
 
-QskDialog::StandardButton QskInputWindow::clickedButton() const
+QskDialog::Action QskInputWindow::clickedAction() const
 {
-    return m_subWindow->clickedButton();
+    return m_subWindow->clickedAction();
 }
 
 QskDialogButtonBox* QskInputWindow::buttonBox()
