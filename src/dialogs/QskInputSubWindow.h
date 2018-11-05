@@ -25,17 +25,23 @@ class QSK_EXPORT QskInputSubWindow : public QskDialogSubWindow
     Q_PROPERTY( QUrl symbolSource READ symbolSource
         WRITE setSymbolSource NOTIFY symbolSourceChanged FINAL )
 
+    Q_PROPERTY( QskDialog::Actions dialogActions
+        READ dialogActions WRITE setDialogActions )
+
+    Q_PROPERTY( QskDialog::Action defaultDialogAction
+        READ defaultDialogAction WRITE setDefaultDialogAction )
+
     using Inherited = QskDialogSubWindow;
 
   public:
     QskInputSubWindow( QQuickItem* parent = nullptr );
     ~QskInputSubWindow() override;
 
-    QskDialog::Actions actions() const;
-    void setActions( QskDialog::Actions );
+    QskDialog::Actions dialogActions() const;
+    void setDialogActions( QskDialog::Actions );
 
-    QskDialog::Action defaultAction() const;
-    void setDefaultAction( QskDialog::Action );
+    QskDialog::Action defaultDialogAction() const;
+    void setDefaultDialogAction( QskDialog::Action );
 
     void setInfoTextOptions( const QskTextOptions& );
     QskTextOptions infoTextOptions() const;

@@ -122,7 +122,7 @@ QskInputSubWindow::~QskInputSubWindow()
 {
 }
 
-void QskInputSubWindow::setActions( QskDialog::Actions actions )
+void QskInputSubWindow::setDialogActions( QskDialog::Actions actions )
 {
     if ( m_data->actions == actions )
         return;
@@ -139,17 +139,17 @@ void QskInputSubWindow::setActions( QskDialog::Actions actions )
 #endif
 }
 
-QskDialog::Actions QskInputSubWindow::actions() const
+QskDialog::Actions QskInputSubWindow::dialogActions() const
 {
     return m_data->buttonBox->actions();
 }
 
-QskDialog::Action QskInputSubWindow::defaultAction() const
+QskDialog::Action QskInputSubWindow::defaultDialogAction() const
 {
     return m_data->defaultAction;
 }
 
-void QskInputSubWindow::setDefaultAction( QskDialog::Action action )
+void QskInputSubWindow::setDefaultDialogAction( QskDialog::Action action )
 {
     m_data->defaultAction = action;
 }
@@ -245,7 +245,7 @@ void QskInputSubWindow::keyPressEvent( QKeyEvent* event )
 {
     if ( QskDialogButtonBox::isDefaultButtonKeyEvent( event ) )
     {
-        QskPushButton* button = m_data->buttonBox->button( defaultAction() );
+        auto button = m_data->buttonBox->button( defaultDialogAction() );
         if ( button && button->isEnabled() )
             button->click();
     }

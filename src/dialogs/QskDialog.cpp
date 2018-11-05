@@ -54,12 +54,12 @@ static void qskSetupSubWindow(
 {
     subWindow->setModal( true );
     subWindow->setWindowTitle( title );
-    subWindow->setActions( actions );
+    subWindow->setDialogActions( actions );
 
     if ( defaultAction == QskDialog::NoAction )
         defaultAction = subWindow->buttonBox()->defaultActionCandidate();
 
-    subWindow->setDefaultAction( defaultAction );
+    subWindow->setDefaultDialogAction( defaultAction );
 }
 
 static void qskSetupWindow(
@@ -70,12 +70,12 @@ static void qskSetupWindow(
     window->setTransientParent( transientParent );
 
     window->setTitle( title );
-    window->setActions( actions );
+    window->setDialogActions( actions );
 
     if ( defaultAction == QskDialog::NoAction )
         defaultAction = window->buttonBox()->defaultActionCandidate();
 
-    window->setDefaultAction( defaultAction );
+    window->setDefaultDialogAction( defaultAction );
 
     window->setModality( transientParent ? Qt::WindowModal : Qt::ApplicationModal );
 

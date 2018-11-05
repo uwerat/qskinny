@@ -55,26 +55,26 @@ QskInputSubWindow* QskInputWindow::subWindow() const
     return m_subWindow;
 }
 
-QskDialog::Actions QskInputWindow::actions() const
+QskDialog::Actions QskInputWindow::dialogActions() const
 {
-    return m_subWindow ? m_subWindow->actions() : QskDialog::NoAction;
+    return m_subWindow ? m_subWindow->dialogActions() : QskDialog::NoAction;
 }
 
-void QskInputWindow::setActions( QskDialog::Actions actions )
+void QskInputWindow::setDialogActions( QskDialog::Actions actions )
 {
     if ( m_subWindow )
-        m_subWindow->setActions( actions );
+        m_subWindow->setDialogActions( actions );
 }
 
-QskDialog::Action QskInputWindow::defaultAction() const
+QskDialog::Action QskInputWindow::defaultDialogAction() const
 {
-    return m_subWindow ? m_subWindow->defaultAction() : QskDialog::NoAction;
+    return m_subWindow ? m_subWindow->defaultDialogAction() : QskDialog::NoAction;
 }
 
-void QskInputWindow::setDefaultAction( QskDialog::Action action )
+void QskInputWindow::setDefaultDialogAction( QskDialog::Action action )
 {
     if ( m_subWindow )
-        m_subWindow->setDefaultAction( action );
+        m_subWindow->setDefaultDialogAction( action );
 }
 
 void QskInputWindow::setInfoText( const QString& text )

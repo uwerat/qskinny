@@ -27,17 +27,23 @@ class QSK_EXPORT QskInputWindow : public QskDialogWindow
     Q_PROPERTY( QUrl symbolSource READ symbolSource
         WRITE setSymbolSource NOTIFY symbolSourceChanged FINAL )
 
+    Q_PROPERTY( QskDialog::Actions dialogActions
+        READ dialogActions WRITE setDialogActions )
+
+    Q_PROPERTY( QskDialog::Action defaultDialogAction
+        READ defaultDialogAction WRITE setDefaultDialogAction )
+
     using Inherited = QskDialogWindow;
 
   public:
     QskInputWindow( QWindow* parent = nullptr );
     ~QskInputWindow() override;
 
-    QskDialog::Actions actions() const;
-    void setActions( QskDialog::Actions );
+    QskDialog::Actions dialogActions() const;
+    void setDialogActions( QskDialog::Actions );
 
-    QskDialog::Action defaultAction() const;
-    void setDefaultAction( QskDialog::Action );
+    QskDialog::Action defaultDialogAction() const;
+    void setDefaultDialogAction( QskDialog::Action );
 
     void setInfoTextOptions( const QskTextOptions& );
     QskTextOptions infoTextOptions() const;

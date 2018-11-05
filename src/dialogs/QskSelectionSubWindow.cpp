@@ -39,7 +39,7 @@ QskSelectionSubWindow::QskSelectionSubWindow( QQuickItem* parent )
     : Inherited( parent )
 {
     setInputControl( new ListBox( this ) );
-    setActions( QskDialog::Ok | QskDialog::Cancel );
+    setDialogActions( QskDialog::Ok | QskDialog::Cancel );
 }
 
 QskSelectionSubWindow::~QskSelectionSubWindow()

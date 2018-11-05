@@ -61,6 +61,7 @@ class QSK_EXPORT QskSubWindow : public QskPopup
     void setWindowTitle( const QString& );
     QString windowTitle() const;
 
+    void setWindowIconSource( const QString& );
     void setWindowIconSource( const QUrl& );
     QUrl windowIconSource() const;
 

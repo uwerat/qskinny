@@ -109,6 +109,11 @@ QskTextOptions QskSubWindow::windowTitleTextOptions() const
     return m_data->windowTitleTextOptions;
 }
 
+void QskSubWindow::setWindowIconSource( const QString& url )
+{
+    setWindowIconSource( QUrl( url ) );
+}
+
 void QskSubWindow::setWindowIconSource( const QUrl& url )
 {
     if ( m_data->windowIconSource == url )
