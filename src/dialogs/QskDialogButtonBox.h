@@ -10,6 +10,7 @@
 #include "QskDialog.h"
 
 class QskPushButton;
+template <typename T> class QVector;
 
 class QSK_EXPORT QskDialogButtonBox : public QskBox
 {
@@ -42,7 +43,7 @@ class QSK_EXPORT QskDialogButtonBox : public QskBox
     void removeButton( QskPushButton* button );
     void clear();
 
-    QList< QskPushButton* > buttons() const;
+    QVector< QskPushButton* > buttons() const;
     QskDialog::ButtonRole buttonRole( const QskPushButton* ) const;
 
     void setStandardButtons( QskDialog::StandardButtons buttons );
@@ -80,10 +81,8 @@ class QSK_EXPORT QskDialogButtonBox : public QskBox
 
     void invalidateLayout();
 
-  private Q_SLOTS:
-    void onButtonClicked();
-
   private:
+    void onButtonClicked();
     void rearrangeButtons();
 
     class PrivateData;

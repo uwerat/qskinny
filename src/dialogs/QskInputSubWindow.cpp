@@ -140,9 +140,9 @@ void QskInputSubWindow::setStandardButtons( QskDialog::StandardButtons buttons )
     m_data->buttonBox->setVisible( buttons != QskDialog::NoButton );
 
 #if 1
-    const QList< QskPushButton* > b = m_data->buttonBox->buttons();
-    if ( !b.isEmpty() )
-        b[ 0 ]->setFocus( true );
+    const auto btns = m_data->buttonBox->buttons();
+    if ( !btns.isEmpty() )
+        btns[ 0 ]->setFocus( true );
 #endif
 }
 
