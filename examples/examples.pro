@@ -5,7 +5,6 @@ TEMPLATE = subdirs
 # c++
 SUBDIRS += \
     desktop \
-    dialogbuttons \
     layouts \
     listbox \
     messagebox \

@@ -1,4 +1,4 @@
-include( $${PWD}/../example.pri )
+include( $${PWD}/../playground.pri )
 
 TARGET = dialogbuttons
 
