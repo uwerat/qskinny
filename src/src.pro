@@ -276,8 +276,6 @@ HEADERS += \
     dialogs/QskDialogButtonBox.h \
     dialogs/QskDialogSubWindow.h \
     dialogs/QskDialogWindow.h \
-    dialogs/QskInputSubWindow.h \
-    dialogs/QskInputWindow.h \
     dialogs/QskMessageSubWindow.h \
     dialogs/QskMessageWindow.h \
     dialogs/QskSelectionSubWindow.h \
@@ -289,8 +287,6 @@ SOURCES += \
     dialogs/QskDialog.cpp \
     dialogs/QskDialogSubWindow.cpp \
     dialogs/QskDialogWindow.cpp \
-    dialogs/QskInputSubWindow.cpp \
-    dialogs/QskInputWindow.cpp \
     dialogs/QskMessageSubWindow.cpp \
     dialogs/QskMessageWindow.cpp \
     dialogs/QskSelectionSubWindow.cpp \

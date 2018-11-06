@@ -19,6 +19,29 @@
 #include <qpointer.h>
 #include <qquickwindow.h>
 
+static QskDialog::Action qskActionCandidate( const QskDialogButtonBox* buttonBox )
+{
+    // not the fastest code ever, but usually we always
+    // have a AcceptRole or YesRole button
+
+    const QskDialog::ActionRole candidates[] =
+    {
+        QskDialog::AcceptRole, QskDialog::YesRole,
+        QskDialog::RejectRole, QskDialog::NoRole, QskDialog::DestructiveRole,
+        QskDialog::UserRole, QskDialog::ResetRole,
+        QskDialog::ApplyRole, QskDialog::HelpRole
+    };
+
+    for ( auto role : candidates )
+    {
+        const auto& buttons = buttonBox->buttons( role );
+        if ( !buttons.isEmpty() )
+            return buttonBox->action( buttons.first() );
+    }
+
+    return QskDialog::NoAction;
+}
+
 static QskDialog::DialogCode qskExec( QskDialogWindow* dialogWindow )
 {
 #if 1
@@ -50,14 +73,14 @@ static QQuickWindow* qskSomeQuickWindow()
 
 static void qskSetupSubWindow(
     const QString& title, QskDialog::Actions actions,
-    QskDialog::Action defaultAction, QskInputSubWindow* subWindow )
+    QskDialog::Action defaultAction, QskDialogSubWindow* subWindow )
 {
     subWindow->setModal( true );
     subWindow->setWindowTitle( title );
     subWindow->setDialogActions( actions );
 
-    if ( defaultAction == QskDialog::NoAction )
-        defaultAction = subWindow->buttonBox()->defaultActionCandidate();
+    if ( actions != QskDialog::NoAction && defaultAction == QskDialog::NoAction )
+        defaultAction = qskActionCandidate( subWindow->buttonBox() );
 
     subWindow->setDefaultDialogAction( defaultAction );
 }
@@ -65,15 +88,15 @@ static void qskSetupSubWindow(
 static void qskSetupWindow(
     QWindow* transientParent, const QString& title,
     QskDialog::Actions actions, QskDialog::Action defaultAction,
-    QskInputWindow* window )
+    QskDialogWindow* window )
 {
     window->setTransientParent( transientParent );
 
     window->setTitle( title );
     window->setDialogActions( actions );
 
-    if ( defaultAction == QskDialog::NoAction )
-        defaultAction = window->buttonBox()->defaultActionCandidate();
+    if ( actions != QskDialog::NoAction && defaultAction == QskDialog::NoAction )
+        defaultAction = qskActionCandidate( window->buttonBox() );
 
     window->setDefaultDialogAction( defaultAction );
 

@@ -9,11 +9,15 @@
 #include "QskDialog.h"
 #include "QskWindow.h"
 
-#include <memory>
+class QskDialogButtonBox;
+class QskPushButton;
 
 class QSK_EXPORT QskDialogWindow : public QskWindow
 {
     Q_OBJECT
+
+    Q_PROPERTY( QskDialog::Actions dialogActions
+        READ dialogActions WRITE setDialogActions )
 
     using Inherited = QskWindow;
 
@@ -21,8 +25,24 @@ class QSK_EXPORT QskDialogWindow : public QskWindow
     QskDialogWindow( QWindow* parent = nullptr );
     ~QskDialogWindow() override;
 
+    QskDialog::Actions dialogActions() const;
+    void setDialogActions( QskDialog::Actions );
+
+    Q_INVOKABLE QskDialog::Action clickedAction() const;
+
     Q_INVOKABLE QskDialog::DialogCode result() const;
     Q_INVOKABLE QskDialog::DialogCode exec();
+
+    void setDefaultDialogAction( QskDialog::Action );
+
+    void setDefaultButton( QskPushButton* );
+    QskPushButton* defaultButton() const;
+
+    QskDialogButtonBox* buttonBox();
+    const QskDialogButtonBox* buttonBox() const;
+
+    void setDialogContentItem( QQuickItem* );
+    QQuickItem* dialogContentItem() const;
 
   Q_SIGNALS:
     void finished( QskDialog::DialogCode result );
@@ -36,6 +56,7 @@ class QSK_EXPORT QskDialogWindow : public QskWindow
 
   protected:
     void setResult( QskDialog::DialogCode r );
+    virtual QskDialogButtonBox* createButtonBox();
 
     bool event( QEvent* ) override;
     void keyPressEvent( QKeyEvent* ) override;

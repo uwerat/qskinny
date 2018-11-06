@@ -9,7 +9,9 @@
 #include "QskSkin.h"
 
 #include <qevent.h>
+#include <qpointer.h>
 #include <qvector.h>
+
 #include <qpa/qplatformdialoghelper.h>
 #include <qpa/qplatformtheme.h>
 
@@ -59,6 +61,7 @@ class QskDialogButtonBox::PrivateData
 
     QskLinearBox* layoutBox = nullptr;
     QVector< QskPushButton* > buttons[ QskDialog::NActionRoles ];
+    QPointer< QskPushButton > defaultButton;
 
     QskDialog::Action clickedAction = QskDialog::NoAction;
 
@@ -255,6 +258,12 @@ void QskDialogButtonBox::addButton(
         if ( button->parent() == nullptr )
             button->setParent( this );
 
+        /*
+            To have a proper ownership, inserting the buttons
+            according to the layout rules will be done later 
+         */
+        button->setParentItem( m_data->layoutBox );
+
         connect( button, &QskPushButton::clicked, this,
             &QskDialogButtonBox::onButtonClicked );
 
@@ -308,6 +317,16 @@ void QskDialogButtonBox::clear()
     invalidateLayout();
 }
 
+void QskDialogButtonBox::setDefaultButton( QskPushButton* button )
+{
+    m_data->defaultButton = button;
+}
+
+QskPushButton* QskDialogButtonBox::defaultButton() const
+{
+    return m_data->defaultButton;
+}
+
 void QskDialogButtonBox::setActions( QskDialog::Actions actions )
 {
     for ( int i = 0; i < QskDialog::NActionRoles; i++ )
@@ -336,6 +355,16 @@ QVector< QskPushButton* > QskDialogButtonBox::buttons() const
     return buttons;
 }
 
+QVector< QskPushButton* > QskDialogButtonBox::buttons(
+    QskDialog::ActionRole role ) const
+{
+    if ( role < 0 || role >= QskDialog::NActionRoles )
+        return QVector< QskPushButton* >();
+
+    return m_data->buttons[ role ];
+}
+
+
 QskDialog::ActionRole QskDialogButtonBox::actionRole(
     const QskPushButton* button ) const
 {
@@ -351,29 +380,6 @@ QskDialog::ActionRole QskDialogButtonBox::actionRole(
     }
 
     return QskDialog::InvalidRole;
-}
-
-QskDialog::Action QskDialogButtonBox::defaultActionCandidate() const
-{
-    // not the fastest code ever, but usually we always
-    // have a AcceptRole or YesRole button
-
-    static const QVector< QskDialog::ActionRole > fallBackRoles =
-    {
-        QskDialog::AcceptRole, QskDialog::YesRole,
-        QskDialog::RejectRole, QskDialog::NoRole, QskDialog::DestructiveRole,
-        QskDialog::UserRole, QskDialog::ResetRole,
-        QskDialog::ApplyRole, QskDialog::HelpRole
-    };
-
-    for ( auto role : fallBackRoles )
-    {
-        const auto defaultAction = action( buttonFromRole( role ) );
-        if ( defaultAction != QskDialog::NoAction )
-            return defaultAction;
-    }
-
-    return QskDialog::NoAction;
 }
 
 void QskDialogButtonBox::onButtonClicked()
@@ -456,15 +462,6 @@ QskPushButton* QskDialogButtonBox::button( QskDialog::Action action ) const
     }
 
     return nullptr;
-}
-
-QskPushButton* QskDialogButtonBox::buttonFromRole( QskDialog::ActionRole role ) const
-{
-    if ( role < 0 || role >= QskDialog::NActionRoles )
-        return nullptr;
-
-    const auto& buttons = m_data->buttons[ role ];
-    return buttons.isEmpty() ? nullptr : buttons.first();
 }
 
 QskDialog::Action QskDialogButtonBox::clickedAction() const

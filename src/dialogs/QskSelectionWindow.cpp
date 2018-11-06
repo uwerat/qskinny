@@ -4,57 +4,143 @@
  *****************************************************************************/
 
 #include "QskSelectionWindow.h"
-#include "QskSelectionSubWindow.h"
+#include "QskGraphicLabel.h"
+#include "QskGraphic.h"
+#include "QskLinearBox.h"
+#include "QskSimpleListBox.h"
+#include "QskTextLabel.h"
+#include "QskTextOptions.h"
+
+namespace 
+{   
+    class TextLabel final : public QskTextLabel
+    {
+      public:
+        TextLabel( QskSelectionWindow* window )
+        {
+            setObjectName( QStringLiteral( "QskSelectionWindowTextLabel" ) );
+            initSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Preferred );
+
+            setAlignment( Qt::AlignLeft | Qt::AlignTop );
+            setWrapMode( QskTextOptions::WordWrap );
+
+            connect( this, &QskTextLabel::textChanged,
+                window, &QskSelectionWindow::infoTextChanged );
+
+            connect( this, &QskTextLabel::textOptionsChanged,
+                window, &QskSelectionWindow::infoTextOptionsChanged );
+        }
+    };
+
+    class ListBox final : public QskSimpleListBox
+    {
+      public:
+        ListBox( QskSelectionWindow* window )
+        {
+            setObjectName( QStringLiteral( "QskSelectionWindowListBox" ) );
+
+            connect( this, &QskSimpleListBox::selectedRowChanged,
+                window, &QskSelectionWindow::selectedRowChanged );
+
+            connect( this, &QskSimpleListBox::selectedEntryChanged,
+                window, &QskSelectionWindow::selectedEntryChanged );
+
+            connect( this, &QskSimpleListBox::entriesChanged,
+                window, &QskSelectionWindow::entriesChanged );
+        }
+
+#if 1
+        // how to find a reasonable default size ???
+        QSizeF contentsSizeHint() const override
+        {
+            return QSizeF( 500, 500 );
+        }
+#endif
+    };
+}
+
+class QskSelectionWindow::PrivateData
+{
+  public:
+    QskTextLabel* textLabel;
+    QskSimpleListBox* listBox;
+};
 
 QskSelectionWindow::QskSelectionWindow( QWindow* parent )
     : Inherited( parent )
+    , m_data( new PrivateData )
 {
-    auto subWindow = new QskSelectionSubWindow();
+    setFlags( Qt::Dialog | Qt::WindowTitleHint |
+        Qt::WindowCloseButtonHint | Qt::WindowSystemMenuHint );
 
-    connect( subWindow, &QskSelectionSubWindow::selectedRowChanged,
-        this, &QskSelectionWindow::selectedRowChanged );
+    m_data->textLabel = new TextLabel( this );
+    m_data->textLabel->setVisible( false );
 
-    connect( subWindow, &QskSelectionSubWindow::selectedEntryChanged,
-        this, &QskSelectionWindow::selectedEntryChanged );
+    m_data->listBox = new ListBox( this );
 
-    connect( subWindow, &QskSelectionSubWindow::entriesChanged,
-        this, &QskSelectionWindow::entriesChanged );
+    auto box = new QskLinearBox( Qt::Vertical );
+    box->setMargins( 5 );
+    box->setSpacing( 10 );
+    box->addItem( m_data->textLabel );
+    box->addItem( m_data->listBox );
+    box->setStretchFactor( m_data->listBox, 10 );
 
-    setSubWindow( subWindow );
+    setDialogContentItem( box );
+    setDialogActions( QskDialog::Ok | QskDialog::Cancel );
 }
 
 QskSelectionWindow::~QskSelectionWindow()
 {
 }
 
+void QskSelectionWindow::setInfoText( const QString& text )
+{
+    m_data->textLabel->setText( text );
+    m_data->textLabel->setVisible( !text.isEmpty() );
+}
+
+QString QskSelectionWindow::infoText() const
+{
+    return m_data->textLabel->text();
+}
+
+void QskSelectionWindow::setInfoTextOptions( const QskTextOptions& options )
+{
+    if ( options != infoTextOptions() )
+    {
+        m_data->textLabel->setTextOptions( options );
+        Q_EMIT infoTextOptionsChanged( options );
+    }
+}
+
+QskTextOptions QskSelectionWindow::infoTextOptions() const
+{
+    return m_data->textLabel->textOptions();
+}
+
 void QskSelectionWindow::setEntries( const QStringList& entries )
 {
-    auto subWindow = static_cast< QskSelectionSubWindow* >( this->subWindow() );
-    subWindow->setEntries( entries );
+    m_data->listBox->setEntries( entries );
 }
 
 QStringList QskSelectionWindow::entries() const
 {
-    auto w = static_cast< const QskSelectionSubWindow* >( this->subWindow() );
-    return w->entries();
+    return m_data->listBox->entries();
 }
 
 void QskSelectionWindow::setSelectedRow( int row )
 {
-    auto subWindow = static_cast< QskSelectionSubWindow* >( this->subWindow() );
-    subWindow->setSelectedRow( row );
+    m_data->listBox->setSelectedRow( row );
 }
 
 int QskSelectionWindow::selectedRow() const
 {
-    auto subWindow = static_cast< const QskSelectionSubWindow* >( this->subWindow() );
-    return subWindow->selectedRow();
+    return m_data->listBox->selectedRow();
 }
 
 QString QskSelectionWindow::selectedEntry() const
 {
-    auto subWindow = static_cast< const QskSelectionSubWindow* >( this->subWindow() );
-    return subWindow->selectedEntry();
+    return m_data->listBox->selectedEntry();
 }
 
 #include "moc_QskSelectionWindow.cpp"

@@ -44,16 +44,15 @@ class QSK_EXPORT QskDialogButtonBox : public QskBox
     void clear();
 
     QVector< QskPushButton* > buttons() const;
+    QVector< QskPushButton* > buttons( QskDialog::ActionRole ) const;
+
     QskDialog::ActionRole actionRole( const QskPushButton* ) const;
 
     void setActions( QskDialog::Actions );
     QskDialog::Actions actions() const;
     QskDialog::Action action( const QskPushButton* ) const;
 
-    QskDialog::Action defaultActionCandidate() const;
-
     QskPushButton* button( QskDialog::Action ) const;
-    QskPushButton* buttonFromRole( QskDialog::ActionRole ) const;
 
     QskDialog::Action clickedAction() const;
 
@@ -61,6 +60,9 @@ class QSK_EXPORT QskDialogButtonBox : public QskBox
 
     QskAspect::Subcontrol effectiveSubcontrol(
         QskAspect::Subcontrol ) const override;
+
+    void setDefaultButton( QskPushButton* );
+    QskPushButton* defaultButton() const;
 
     static bool isDefaultButtonKeyEvent( const QKeyEvent* );
     static QString buttonText( QskDialog::Action );
