@@ -15,6 +15,7 @@
 #include <QskGraphic.h>
 #endif
 
+#include <QGuiApplication>
 #include <QSvgRenderer>
 #include <QPainter>
 #include <QDebug>
@@ -31,6 +32,9 @@ int main( int argc, char* argv[] )
         usage( argv[0] );
         return -1;
     }
+
+    // we need an application object, when the SVG loads fonts
+    QGuiApplication app( argc, argv );
 
     QSvgRenderer renderer;
     if ( !renderer.load( QString( argv[1] ) ) )
