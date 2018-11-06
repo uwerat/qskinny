@@ -23,14 +23,14 @@ namespace
             setObjectName( QStringLiteral( "QskMessageWindowTextLabel" ) );
             initSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Preferred );
 
-            setAlignment( Qt::AlignHCenter | Qt::AlignTop );
+            setAlignment( Qt::AlignLeft | Qt::AlignTop );
             setWrapMode( QskTextOptions::WordWrap );
 
             connect( this, &QskTextLabel::textChanged,
-                box, &QskMessageWindow::infoTextChanged );
+                box, &QskMessageWindow::textChanged );
 
             connect( this, &QskTextLabel::textOptionsChanged,
-                box, &QskMessageWindow::infoTextOptionsChanged );
+                box, &QskMessageWindow::textOptionsChanged );
         }
     };
 
@@ -104,22 +104,22 @@ QskMessageWindow::~QskMessageWindow()
 {
 }
 
-void QskMessageWindow::setInfoText( const QString& text )
+void QskMessageWindow::setText( const QString& text )
 {
     m_data->textLabel->setText( text );
 }
 
-QString QskMessageWindow::infoText() const
+QString QskMessageWindow::text() const
 {
     return m_data->textLabel->text();
 }
 
-void QskMessageWindow::setInfoTextOptions( const QskTextOptions& options )
+void QskMessageWindow::setTextOptions( const QskTextOptions& options )
 {
     m_data->textLabel->setTextOptions( options );
 }
 
-QskTextOptions QskMessageWindow::infoTextOptions() const
+QskTextOptions QskMessageWindow::textOptions() const
 {
     return m_data->textLabel->textOptions();
 }

@@ -128,7 +128,7 @@ static QskDialog::Action qskMessageSubWindow(
 {
     QskMessageSubWindow subWindow( window->contentItem() );
     subWindow.setSymbolType( symbolType );
-    subWindow.setInfoText( text );
+    subWindow.setText( text );
 
     qskSetupSubWindow( title, actions, defaultAction, &subWindow );
     ( void ) subWindow.exec();
@@ -150,7 +150,7 @@ static QskDialog::Action qskMessageWindow(
 {
     QskMessageWindow messageWindow;
     messageWindow.setSymbolType( symbolType );
-    messageWindow.setInfoText( text );
+    messageWindow.setText( text );
 
     qskSetupWindow( transientParent, title, actions, defaultAction, &messageWindow );
     ( void ) qskExec( &messageWindow );

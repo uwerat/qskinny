@@ -15,11 +15,11 @@ class QSK_EXPORT QskMessageWindow : public QskDialogWindow
 {
     Q_OBJECT
 
-    Q_PROPERTY( QString infoText READ infoText
-        WRITE setInfoText NOTIFY infoTextChanged )
+    Q_PROPERTY( QString text READ text
+        WRITE setText NOTIFY textChanged )
 
-    Q_PROPERTY( QskTextOptions infoTextOptions READ infoTextOptions
-        WRITE setInfoTextOptions NOTIFY infoTextOptionsChanged )
+    Q_PROPERTY( QskTextOptions textOptions READ textOptions
+        WRITE setTextOptions NOTIFY textOptionsChanged )
 
     Q_PROPERTY( QUrl symbolSource READ symbolSource WRITE setSymbolSource )
 
@@ -29,10 +29,10 @@ class QSK_EXPORT QskMessageWindow : public QskDialogWindow
     QskMessageWindow( QWindow* parent = nullptr );
     ~QskMessageWindow() override;
 
-    void setInfoTextOptions( const QskTextOptions& );
-    QskTextOptions infoTextOptions() const;
+    void setTextOptions( const QskTextOptions& );
+    QskTextOptions textOptions() const;
 
-    QString infoText() const;
+    QString text() const;
 
     void setSymbolSource( const QUrl& url );
     QUrl symbolSource() const;
@@ -43,16 +43,15 @@ class QSK_EXPORT QskMessageWindow : public QskDialogWindow
     QskGraphic symbol() const;
 
   public Q_SLOTS:
-    void setInfoText( const QString& );
+    void setText( const QString& );
 
   Q_SIGNALS:
-    void infoTextChanged( const QString& );
-    void infoTextOptionsChanged( const QskTextOptions& );
+    void textChanged( const QString& );
+    void textOptionsChanged( const QskTextOptions& );
 
   private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
-
 };
 
 #endif

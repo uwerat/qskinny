@@ -22,14 +22,14 @@ namespace
             setObjectName( QStringLiteral( "QskMessageSubWindowTextLabel" ) );
             initSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Preferred );
 
-            setAlignment( Qt::AlignHCenter | Qt::AlignTop );
+            setAlignment( Qt::AlignLeft | Qt::AlignTop );
             setWrapMode( QskTextOptions::WordWrap );
 
             connect( this, &QskTextLabel::textChanged,
-                box, &QskMessageSubWindow::infoTextChanged );
+                box, &QskMessageSubWindow::textChanged );
 
             connect( this, &QskTextLabel::textOptionsChanged,
-                box, &QskMessageSubWindow::infoTextOptionsChanged );
+                box, &QskMessageSubWindow::textOptionsChanged );
         }
     };
 
@@ -73,14 +73,14 @@ class QskMessageSubWindow::PrivateData
 {
   public:
     QskGraphicLabel* symbolLabel;
-    QskTextLabel* infoTextLabel;
+    QskTextLabel* textLabel;
 };  
 
 QskMessageSubWindow::QskMessageSubWindow( QQuickItem* parent )
     : Inherited( parent )
     , m_data( new PrivateData() )
 {
-    m_data->infoTextLabel = new TextLabel( this );
+    m_data->textLabel = new TextLabel( this );
 
     m_data->symbolLabel = new SymbolLabel( this );
     m_data->symbolLabel->hide();
@@ -90,8 +90,8 @@ QskMessageSubWindow::QskMessageSubWindow( QQuickItem* parent )
     auto box = new QskLinearBox( Qt::Horizontal );
     box->setSpacing( 0 );
     box->addItem( m_data->symbolLabel, alignment );
-    box->addItem( m_data->infoTextLabel, alignment );
-    box->setStretchFactor( m_data->infoTextLabel, 10 );
+    box->addItem( m_data->textLabel, alignment );
+    box->setStretchFactor( m_data->textLabel, 10 );
 
     setContentItem( box );
 }
@@ -100,24 +100,24 @@ QskMessageSubWindow::~QskMessageSubWindow()
 {
 }
 
-void QskMessageSubWindow::setInfoText( const QString& text )
+void QskMessageSubWindow::setText( const QString& text )
 {
-    m_data->infoTextLabel->setText( text );
+    m_data->textLabel->setText( text );
 }
 
-QString QskMessageSubWindow::infoText() const
+QString QskMessageSubWindow::text() const
 {
-    return m_data->infoTextLabel->text();
+    return m_data->textLabel->text();
 }
 
-void QskMessageSubWindow::setInfoTextOptions( const QskTextOptions& options )
+void QskMessageSubWindow::setTextOptions( const QskTextOptions& options )
 {
-    m_data->infoTextLabel->setTextOptions( options );
+    m_data->textLabel->setTextOptions( options );
 }
 
-QskTextOptions QskMessageSubWindow::infoTextOptions() const
+QskTextOptions QskMessageSubWindow::textOptions() const
 {
-    return m_data->infoTextLabel->textOptions();
+    return m_data->textLabel->textOptions();
 }
 
 void QskMessageSubWindow::setSymbolSource( const QUrl& url )
