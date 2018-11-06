@@ -97,7 +97,7 @@ void QskTextLabel::setTextOptions( const QskTextOptions& options )
     resetImplicitSize();
     update();
 
-    Q_EMIT textOptionsChanged();
+    Q_EMIT textOptionsChanged( options );
 }
 
 QskTextOptions QskTextLabel::textOptions() const
@@ -174,7 +174,7 @@ void QskTextLabel::setTextColor( const QColor& color )
     if ( oldColor != color )
     {
         update();
-        Q_EMIT textColorChanged();
+        Q_EMIT textColorChanged( color );
     }
 }
 

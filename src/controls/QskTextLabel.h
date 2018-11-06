@@ -69,8 +69,8 @@ class QSK_EXPORT QskTextLabel : public QskControl
 
   Q_SIGNALS:
     void textChanged( const QString& );
-    void textColorChanged();
-    void textOptionsChanged();
+    void textColorChanged( const QColor& );
+    void textOptionsChanged( const QskTextOptions& );
     void fontRoleChanged();
     void alignmentChanged();
 
