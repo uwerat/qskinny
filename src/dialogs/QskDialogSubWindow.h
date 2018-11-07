@@ -44,6 +44,15 @@ class QSK_EXPORT QskDialogSubWindow : public QskSubWindow
     void setContentItem( QQuickItem* );
     QQuickItem* contentItem() const;
 
+    // padding around the contentItem
+    void setContentPadding( const QMarginsF & );
+    QMarginsF contentPadding() const;
+
+    qreal heightForWidth( qreal width ) const override;
+    qreal widthForHeight( qreal height ) const override;
+
+    QSizeF contentsSizeHint() const override;
+
   Q_SIGNALS:
     void finished( QskDialog::DialogCode );
     void accepted();
@@ -58,6 +67,7 @@ class QSK_EXPORT QskDialogSubWindow : public QskSubWindow
     void setResult( QskDialog::DialogCode );
     void keyPressEvent( QKeyEvent* ) override;
 
+    void updateLayout() override;
     void aboutToShow() override;
 
     virtual QskDialogButtonBox* createButtonBox();

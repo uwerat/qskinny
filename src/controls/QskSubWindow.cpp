@@ -235,9 +235,8 @@ QRectF QskSubWindow::layoutRect() const
     QRectF rect = contentsRect();
 
     const qreal top = rect.top() + subControlRect( TitleBar ).height();
-    rect.setTop( qMin( top, rect.bottom() ) );
+    rect.setTop( top );
 
-    // wrong: the Padding would be above the header: TODO
     return innerBox( Panel, rect );
 }
 
