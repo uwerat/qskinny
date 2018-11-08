@@ -272,7 +272,7 @@ void QskDialogButtonBox::addButton(
     }
 }
 
-void QskDialogButtonBox::addButton( QskDialog::Action action )
+void QskDialogButtonBox::addAction( QskDialog::Action action )
 {
     QskPushButton* button = createButton( action );
     if ( button )
@@ -339,7 +339,7 @@ void QskDialogButtonBox::setActions( QskDialog::Actions actions )
     {
         const auto action = static_cast< QskDialog::Action >( i );
         if ( action & actions )
-            addButton( action );
+            addAction( action );
     }
 
     invalidateLayout();

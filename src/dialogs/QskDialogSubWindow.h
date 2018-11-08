@@ -27,6 +27,9 @@ class QSK_EXPORT QskDialogSubWindow : public QskSubWindow
 
     QskDialog::Actions dialogActions() const;
     void setDialogActions( QskDialog::Actions );
+
+    void addDialogAction( QskDialog::Action );
+    void addDialogButton( QskPushButton*, QskDialog::ActionRole );
     
     Q_INVOKABLE QskDialog::Action clickedAction() const;
 

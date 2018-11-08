@@ -51,6 +51,31 @@ QskDialogSubWindow::~QskDialogSubWindow()
 {
 }
 
+void QskDialogSubWindow::addDialogAction( QskDialog::Action action )
+{
+    if ( action != QskDialog::NoAction )
+    {
+        if ( m_data->buttonBox == nullptr )
+            m_data->buttonBox = createButtonBox();
+
+        if ( m_data->buttonBox )
+            m_data->buttonBox->addAction( action );
+    }
+}
+
+void QskDialogSubWindow::addDialogButton(
+    QskPushButton* button, QskDialog::ActionRole actionRole )
+{
+    if ( button )
+    {
+        if ( m_data->buttonBox == nullptr )
+            m_data->buttonBox = createButtonBox();
+
+        if ( m_data->buttonBox )
+            m_data->buttonBox->addButton( button, actionRole );
+    }
+}
+
 void QskDialogSubWindow::setDialogActions( QskDialog::Actions actions )
 {
     if ( m_data->actions == actions )

@@ -39,7 +39,6 @@ class QSK_EXPORT QskDialogButtonBox : public QskBox
     bool centeredButtons() const;
 
     void addButton( QskPushButton*, QskDialog::ActionRole );
-    void addButton( QskDialog::Action );
     void removeButton( QskPushButton* );
     void clear();
 
@@ -48,8 +47,11 @@ class QSK_EXPORT QskDialogButtonBox : public QskBox
 
     QskDialog::ActionRole actionRole( const QskPushButton* ) const;
 
+    void addAction( QskDialog::Action );
+
     void setActions( QskDialog::Actions );
     QskDialog::Actions actions() const;
+
     QskDialog::Action action( const QskPushButton* ) const;
 
     QskPushButton* button( QskDialog::Action ) const;
