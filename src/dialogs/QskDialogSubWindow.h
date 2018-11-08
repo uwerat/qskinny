@@ -30,7 +30,7 @@ class QSK_EXPORT QskDialogSubWindow : public QskSubWindow
 
     void addDialogAction( QskDialog::Action );
     void addDialogButton( QskPushButton*, QskDialog::ActionRole );
-    
+
     Q_INVOKABLE QskDialog::Action clickedAction() const;
 
     Q_INVOKABLE QskDialog::DialogCode result() const;
@@ -48,7 +48,7 @@ class QSK_EXPORT QskDialogSubWindow : public QskSubWindow
     QQuickItem* contentItem() const;
 
     // padding around the contentItem
-    void setContentPadding( const QMarginsF & );
+    void setContentPadding( const QMarginsF& );
     QMarginsF contentPadding() const;
 
     qreal heightForWidth( qreal width ) const override;
@@ -76,6 +76,8 @@ class QSK_EXPORT QskDialogSubWindow : public QskSubWindow
     virtual QskDialogButtonBox* createButtonBox();
 
   private:
+    void initButtonBox();
+
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

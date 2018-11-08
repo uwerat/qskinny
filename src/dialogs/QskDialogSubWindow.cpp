@@ -56,7 +56,7 @@ void QskDialogSubWindow::addDialogAction( QskDialog::Action action )
     if ( action != QskDialog::NoAction )
     {
         if ( m_data->buttonBox == nullptr )
-            m_data->buttonBox = createButtonBox();
+            initButtonBox();
 
         if ( m_data->buttonBox )
             m_data->buttonBox->addAction( action );
@@ -69,7 +69,7 @@ void QskDialogSubWindow::addDialogButton(
     if ( button )
     {
         if ( m_data->buttonBox == nullptr )
-            m_data->buttonBox = createButtonBox();
+            initButtonBox();
 
         if ( m_data->buttonBox )
             m_data->buttonBox->addButton( button, actionRole );
@@ -100,27 +100,14 @@ void QskDialogSubWindow::setDialogActions( QskDialog::Actions actions )
                 this, &QskDialogSubWindow::reject );
 
         }
-    
+
         m_data->buttonBox = nullptr;
     }
     else
     {
         if ( m_data->buttonBox == nullptr )
         {
-            m_data->buttonBox = createButtonBox();
-
-            if ( m_data->buttonBox )
-            {
-                m_data->buttonBox->setParentItem( this );
-                if ( m_data->buttonBox->parent() == nullptr )
-                    m_data->buttonBox->setParent( this );
-
-                connect( m_data->buttonBox, &QskDialogButtonBox::accepted,
-                    this, &QskDialogSubWindow::accept, Qt::UniqueConnection );
-
-                connect( m_data->buttonBox, &QskDialogButtonBox::rejected,
-                    this, &QskDialogSubWindow::reject, Qt::UniqueConnection );
-            }
+            initButtonBox();
         }
 
         if ( m_data->buttonBox )
@@ -192,7 +179,7 @@ QMarginsF QskDialogSubWindow::contentPadding() const
 void QskDialogSubWindow::setDefaultDialogAction( QskDialog::Action action )
 {
     QskPushButton* button = nullptr;
-    
+
     if ( m_data->buttonBox )
         button = m_data->buttonBox->button( action );
 
@@ -223,12 +210,12 @@ QskPushButton* QskDialogSubWindow::defaultButton() const
 QskDialogButtonBox* QskDialogSubWindow::buttonBox()
 {
     return m_data->buttonBox;
-}   
+}
 
 const QskDialogButtonBox* QskDialogSubWindow::buttonBox() const
 {
     return m_data->buttonBox;
-}   
+}
 
 QskDialog::Action QskDialogSubWindow::clickedAction() const
 {
@@ -236,7 +223,7 @@ QskDialog::Action QskDialogSubWindow::clickedAction() const
         return m_data->buttonBox->clickedAction();
 
     return QskDialog::NoAction;
-}   
+}
 
 void QskDialogSubWindow::setResult( QskDialog::DialogCode result )
 {
@@ -326,6 +313,25 @@ void QskDialogSubWindow::keyPressEvent( QKeyEvent* event )
 QskDialogButtonBox* QskDialogSubWindow::createButtonBox()
 {
     return new QskDialogButtonBox();
+}
+
+void QskDialogSubWindow::initButtonBox()
+{
+    m_data->buttonBox = createButtonBox();
+
+    if ( m_data->buttonBox )
+    {
+        m_data->buttonBox->setParentItem( this );
+
+        if ( m_data->buttonBox->parent() == nullptr )
+            m_data->buttonBox->setParent( this );
+
+        connect( m_data->buttonBox, &QskDialogButtonBox::accepted,
+            this, &QskDialogSubWindow::accept, Qt::UniqueConnection );
+
+        connect( m_data->buttonBox, &QskDialogButtonBox::rejected,
+            this, &QskDialogSubWindow::reject, Qt::UniqueConnection );
+    }
 }
 
 void QskDialogSubWindow::aboutToShow()
