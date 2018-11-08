@@ -336,8 +336,7 @@ qreal QskLinearBox::heightForWidth( qreal width ) const
     const auto m = margins();
     width -= m.left() + m.right();
 
-    const QSizeF constraint( width, -1 );
-    qreal height = engine().sizeHint( Qt::PreferredSize, constraint ).height();
+    qreal height = engine().heightForWidth( width );
 
     height += m.top() + m.bottom();
     return height;
@@ -348,8 +347,7 @@ qreal QskLinearBox::widthForHeight( qreal height ) const
     const auto m = margins();
     height -= m.top() + m.bottom();
 
-    const QSizeF constraint( -1, height );
-    qreal width = engine().sizeHint( Qt::PreferredSize, constraint ).width();
+    qreal width = engine().widthForHeight( height );
 
     width += m.left() + m.right();
     return width;
@@ -444,7 +442,7 @@ QRectF QskLinearBox::alignedLayoutRect( const QRectF& rect ) const
 
         if ( !isExpandable )
         {
-            const qreal w = widthForHeight( r.height() );
+            const qreal w = engine.widthForHeight( r.height() );
 
             if ( m_data->extraSpacingAt & Qt::LeftEdge )
             {
@@ -484,7 +482,7 @@ QRectF QskLinearBox::alignedLayoutRect( const QRectF& rect ) const
 
         if ( !isExpandable )
         {
-            const qreal h = heightForWidth( r.width() );
+            const qreal h = engine.heightForWidth( r.width() );
 
             if ( m_data->extraSpacingAt & Qt::TopEdge )
             {

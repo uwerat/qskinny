@@ -165,6 +165,18 @@ QSizeF QskLayoutEngine::sizeHint( Qt::SizeHint which, const QSizeF& constraint )
     return QGridLayoutEngine::sizeHint( which, constraint, &styleInfo );
 }
 
+qreal QskLayoutEngine::widthForHeight( qreal height ) const
+{
+    const QSizeF constraint( -1, height );
+    return sizeHint( Qt::PreferredSize, constraint ).width();
+}
+
+qreal QskLayoutEngine::heightForWidth( qreal width ) const
+{
+    const QSizeF constraint( width, -1 );
+    return sizeHint( Qt::PreferredSize, constraint ).height();
+}
+
 qreal QskLayoutEngine::spacing( Qt::Orientation orientation ) const
 {
     const LayoutStyleInfo styleInfo;

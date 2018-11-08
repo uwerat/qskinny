@@ -41,6 +41,9 @@ class QskLayoutEngine : public QGridLayoutEngine
 
     QSizeF sizeHint( Qt::SizeHint, const QSizeF& constraint = QSizeF() ) const;
 
+    qreal widthForHeight( qreal height ) const;
+    qreal heightForWidth( qreal width ) const;
+
     qreal spacing( Qt::Orientation ) const;
     static qreal defaultSpacing( Qt::Orientation );
 
