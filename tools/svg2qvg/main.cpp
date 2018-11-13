@@ -33,8 +33,15 @@ int main( int argc, char* argv[] )
         return -1;
     }
 
-    // we need an application object, when the SVG loads fonts
+#if 1
+    /*
+        When having a SVG with specific font assignments Qt runs on
+        qGuiApp to load a default font. Makes no sense in this context,
+        but to avoid having segfaults ...
+     */
+    qputenv( "QT_QPA_PLATFORM", "minimal" );
     QGuiApplication app( argc, argv );
+#endif
 
     QSvgRenderer renderer;
     if ( !renderer.load( QString( argv[1] ) ) )
