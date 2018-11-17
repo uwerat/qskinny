@@ -16,48 +16,6 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qquickwindow_p.h>
 QSK_QT_PRIVATE_END
 
-static QSizeF qskAdjustedSize( const QQuickItem* item, const QSizeF& targetSize )
-{
-    using namespace QskLayoutConstraint;
-
-    QSizeF sz = effectiveConstraint( item, Qt::PreferredSize );
-
-    qreal w = sz.width();
-    qreal h = sz.height();
-
-    if ( targetSize != sz )
-    {
-        const QSizeF minSize = effectiveConstraint( item, Qt::MinimumSize );
-        const QSizeF maxSize = effectiveConstraint( item, Qt::MaximumSize );
-
-        const auto policy = sizePolicy( item );
-
-        if ( targetSize.width() > w )
-        {
-            if ( policy.horizontalPolicy() & QskSizePolicy::GrowFlag )
-                w = qMin( maxSize.width(), targetSize.width() );
-        }
-        else if ( targetSize.width() < w )
-        {
-            if ( policy.horizontalPolicy() & QskSizePolicy::ShrinkFlag )
-                w = qMax( minSize.width(), w );
-        }
-
-        if ( targetSize.height() > h )
-        {
-            if ( policy.verticalPolicy() & QskSizePolicy::GrowFlag )
-                h = qMin( maxSize.height(), targetSize.height() );
-        }
-        else if ( targetSize.height() < h )
-        {
-            if ( policy.verticalPolicy() & QskSizePolicy::ShrinkFlag )
-                h = qMax( minSize.height(), h );
-        }
-    }
-
-    return QSizeF( w, h );
-}
-
 namespace
 {
     class ViewportClipNode final : public QQuickDefaultClipNode
@@ -485,7 +443,7 @@ void QskScrollArea::adjustItem()
                 moment we ignore this and start with a simplified code.
              */
 #endif
-            auto newSize = qskAdjustedSize( item, rect.size() );
+            const auto newSize = QskLayoutConstraint::adjustedSize( item, rect.size() );
             item->setSize( newSize );
         }
 

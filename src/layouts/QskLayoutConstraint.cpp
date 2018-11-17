@@ -39,6 +39,23 @@ static inline bool qskHasHintFor( const QQuickItem* item, const char* method )
     return false;
 }
 
+static inline qreal qskAdjustedValue( QskSizePolicy::Policy policy, qreal value, qreal targetValue )
+{
+    if ( targetValue > value )
+    {
+        if ( policy & QskSizePolicy::GrowFlag )
+            return targetValue;
+    }
+    else if ( targetValue < value )
+    {
+        if ( policy & QskSizePolicy::ShrinkFlag )
+            return targetValue;
+    }
+
+    return value;
+}
+
+
 bool QskLayoutConstraint::hasDynamicConstraint( const QQuickItem* item )
 {
     if ( const QskControl* control = qobject_cast< const QskControl* >( item ) )
@@ -140,4 +157,69 @@ QskSizePolicy QskLayoutConstraint::sizePolicy( const QQuickItem* item )
     }
 
     return QskSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Preferred );
+}
+
+QSizeF QskLayoutConstraint::boundedSize( const QQuickItem* item, const QSizeF& size )
+{
+    const auto minSize = effectiveConstraint( item, Qt::MinimumSize );
+    const auto maxSize = effectiveConstraint( item, Qt::MaximumSize );
+
+    qreal width = size.width();
+    qreal height = size.height();
+
+    if ( ( minSize.width() >= 0 ) && ( minSize.width() > width ) )
+        width = minSize.width();
+
+    if ( ( minSize.height() >= 0 ) && ( minSize.height() > height ) )
+        height = minSize.height();
+
+    if ( ( maxSize.width() >= 0 ) && ( maxSize.width() < width ) )
+        width = maxSize.width();
+
+    if ( ( maxSize.height() >= 0 ) && ( maxSize.height() < height ) )
+        height = maxSize.height();
+
+    return QSizeF( width, height );
+}
+
+QSizeF QskLayoutConstraint::adjustedSize( const QQuickItem* item, const QSizeF& targetSize )
+{
+    const auto policy = sizePolicy( item );
+
+    const auto boundedSize = QskLayoutConstraint::boundedSize( item, targetSize );
+    const auto preferredSize = effectiveConstraint( item, Qt::PreferredSize );
+
+    qreal w;
+    qreal h;
+
+    if ( policy.horizontalPolicy() == QskSizePolicy::Constrained )
+    {
+        h = qskAdjustedValue( policy.verticalPolicy(),
+            preferredSize.height(), boundedSize.height() );
+
+        w = widthForHeight( item, h );
+
+        if ( w < boundedSize.height() )
+            w = boundedSize.height();
+    }
+    else if ( policy.verticalPolicy() == QskSizePolicy::Constrained )
+    {
+        w = qskAdjustedValue( policy.horizontalPolicy(),
+            preferredSize.width(), boundedSize.width() );
+
+        h = heightForWidth( item, w );
+
+        if ( h < boundedSize.height() )
+            h = boundedSize.height();
+    }
+    else
+    {
+        w = qskAdjustedValue( policy.horizontalPolicy(),
+            preferredSize.width(), boundedSize.width() );
+
+        h = qskAdjustedValue( policy.verticalPolicy(),
+            preferredSize.height(), boundedSize.height() );
+    }
+
+    return QSizeF( w, h );
 }

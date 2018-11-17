@@ -24,10 +24,12 @@ class QSK_EXPORT QskSizePolicy
   public:
     enum Flag
     {
-        GrowFlag = 1,
-        ExpandFlag = 2,
-        ShrinkFlag = 4,
-        IgnoreFlag = 8
+        GrowFlag   = 1 << 0,
+        ExpandFlag = 1 << 1,
+        ShrinkFlag = 1 << 2,
+        IgnoreFlag = 1 << 3,
+
+        ConstrainedFlag = IgnoreFlag
     };
 
     enum Policy
@@ -39,7 +41,7 @@ class QSK_EXPORT QskSizePolicy
         MinimumExpanding = GrowFlag | ExpandFlag,
         Expanding = GrowFlag | ShrinkFlag | ExpandFlag,
         Ignored = ShrinkFlag | GrowFlag | IgnoreFlag,
-        Constrained = IgnoreFlag
+        Constrained = ConstrainedFlag
     };
 
     Q_ENUM( Flag )

@@ -54,6 +54,7 @@ QRectF QskScrollViewSkinlet::subControlRect(
 
     if ( subControl == QskScrollView::Panel )
     {
+        // layoutRect ???
         return scrollView->contentsRect();
     }
 

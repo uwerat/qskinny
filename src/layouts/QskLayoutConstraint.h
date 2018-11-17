@@ -24,6 +24,11 @@ namespace QskLayoutConstraint
     QSK_EXPORT QSizeF effectiveConstraint( const QQuickItem*, Qt::SizeHint );
     QSK_EXPORT QskSizePolicy sizePolicy( const QQuickItem* );
 
+    // bounded by Qt::MinimumSize/Qt::MaximumSize
+    QSK_EXPORT QSizeF boundedSize( const QQuickItem*, const QSizeF& );
+
+    QSK_EXPORT QSizeF adjustedSize( const QQuickItem*, const QSizeF& );
+
     // QGridLayoutEngine internally uses FLT_MAX
     const qreal unlimited = std::numeric_limits< float >::max();
 }

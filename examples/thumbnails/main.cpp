@@ -164,9 +164,15 @@ int main( int argc, char* argv[] )
     new QskPushButton( "Push Me", buttonBox );
     new QskPushButton( "Push Me", buttonBox );
 
+    auto iconGrid = new IconGrid();
+
+    // don't allow to shrink the iconGrid
+    iconGrid->setSizePolicy( QskSizePolicy::MinimumExpanding,
+        QskSizePolicy::MinimumExpanding );
+
     auto scrollArea = new ScrollArea( box );
     scrollArea->setMargins( QMarginsF( 25, 25, 5, 5 ) );
-    scrollArea->setScrolledItem( new IconGrid() );
+    scrollArea->setScrolledItem( iconGrid );
 
     auto focusIndicator = new QskFocusIndicator();
     focusIndicator->setBoxBorderColorsHint( QskFocusIndicator::Panel, Qt::darkRed );

@@ -628,50 +628,54 @@ QPointF QskScrollView::boundedScrollPos( const QPointF& pos ) const
 
 Qt::Orientations QskScrollView::scrollableOrientations() const
 {
+    // layoutRect ???
     const QRectF vr = contentsRect();
 
-    Qt::ScrollBarPolicy policyV = m_data->verticalScrollBarPolicy;
-    Qt::ScrollBarPolicy policyH = m_data->horizontalScrollBarPolicy;
+    auto policyVertical = m_data->verticalScrollBarPolicy;
+    auto policyHorizontal = m_data->horizontalScrollBarPolicy;
 
-    if ( policyV == Qt::ScrollBarAsNeeded )
+    if ( policyVertical == Qt::ScrollBarAsNeeded )
     {
-        qreal h = vr.height();
-        if ( policyH == Qt::ScrollBarAlwaysOn )
-            h -= metric( HorizontalScrollBar | QskAspect::Size );
+        qreal height = vr.height();
 
-        if ( m_data->scrollableSize.height() > h )
-            policyV = Qt::ScrollBarAlwaysOn;
+        if ( policyHorizontal == Qt::ScrollBarAlwaysOn )
+            height -= metric( HorizontalScrollBar | QskAspect::Size );
+
+        if ( m_data->scrollableSize.height() > height )
+            policyVertical = Qt::ScrollBarAlwaysOn;
     }
 
-    if ( policyH == Qt::ScrollBarAsNeeded )
+    if ( policyHorizontal == Qt::ScrollBarAsNeeded )
     {
-        qreal w = vr.width();
-        if ( policyV == Qt::ScrollBarAlwaysOn )
-            w -= metric( VerticalScrollBar | QskAspect::Size );
+        qreal width = vr.width();
 
-        if ( m_data->scrollableSize.width() > w )
+        if ( policyVertical == Qt::ScrollBarAlwaysOn )
+            width -= metric( VerticalScrollBar | QskAspect::Size );
+
+        if ( m_data->scrollableSize.width() > width )
         {
-            policyH = Qt::ScrollBarAlwaysOn;
+            policyHorizontal = Qt::ScrollBarAlwaysOn;
 
             // we have to check the vertical once more
 
-            if ( ( policyV == Qt::ScrollBarAsNeeded ) &&
+            if ( ( policyVertical == Qt::ScrollBarAsNeeded ) &&
                  ( m_data->scrollableSize.height() >
                      vr.height() - metric( HorizontalScrollBar | QskAspect::Size ) ) )
             {
-                policyV = Qt::ScrollBarAlwaysOn;
+                policyVertical = Qt::ScrollBarAlwaysOn;
             }
         }
     }
 
-    Qt::Orientations o;
-    if ( policyH == Qt::ScrollBarAlwaysOn )
-        o |= Qt::Horizontal;
+    Qt::Orientations orientations;
 
-    if ( policyV == Qt::ScrollBarAlwaysOn )
-        o |= Qt::Vertical;
+    if ( policyHorizontal == Qt::ScrollBarAlwaysOn )
+        orientations |= Qt::Horizontal;
 
-    return o;
+    if ( policyVertical == Qt::ScrollBarAlwaysOn )
+        orientations |= Qt::Vertical;
+
+    return orientations;
 }
 
 #include "moc_QskScrollView.cpp"
