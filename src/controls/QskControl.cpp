@@ -195,66 +195,10 @@ class QskControlPrivate final : public QQuickItemPrivate
             { qskDefaultSizeHints[ 0 ], qskDefaultSizeHints[ 1 ], qskDefaultSizeHints[ 2 ] };
     };
 
-    QskControlPrivate()
-        : explicitSizeData( nullptr )
-        , sizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Preferred )
-        , controlFlags( qskControlFlags() )
-        , controlFlagsMask( 0 )
-        , explicitLocale( false )
-        , autoFillBackground( false )
-        , autoLayoutChildren( false )
-        , polishOnResize( false )
-        , blockedPolish( false )
-        , blockedImplicitSize( true )
-        , clearPreviousNodes( false )
-        , blockImplicitSizeNotification( false )
-        , isInitiallyPainted( false )
-        , focusPolicy( Qt::NoFocus )
-        , isWheelEnabled( false )
-    {
-        if ( controlFlags & QskControl::DeferredLayout )
-        {
-            /*
-                In general the geometry of an item should be the job of
-                the parent - unfortunatly not done by Qt Quick
-                probably in the spirit of "making things easier".
+    QskControlPrivate();
+    ~QskControlPrivate() override;
 
-                To avoid potentially expensive calculations happening
-                too often and early QskControl blocks updates of
-                the implicitSize and any auto resizing of the control
-                according to it.
-
-                There should be no strong reason for using concepts
-                like Positioners, that rely on implicit resizing,
-                but to make it working: the DeferredLayout flag needs to be disabled.
-             */
-
-            widthValid = heightValid = true;
-        }
-    }
-
-    ~QskControlPrivate() override
-    {
-        delete explicitSizeData;
-    }
-
-    void mirrorChange() override
-    {
-        Q_Q( QskControl );
-        qskSendEventTo( q, QEvent::LayoutDirectionChange );
-    }
-
-    inline void implicitSizeChanged()
-    {
-        Q_Q( QskControl );
-        if ( !q->explicitSizeHint( Qt::PreferredSize ).isValid() )
-        {
-            // when we have no PreferredSize we fall back
-            // to the implicit size
-
-            q->layoutConstraintChanged();
-        }
-    }
+    void mirrorChange() override;
 
 #if 0
     // can we do something useful with overloading those ???
@@ -265,92 +209,15 @@ class QskControlPrivate final : public QQuickItemPrivate
     QSGTransformNode* createTransformNode() override;
 #endif
 
-    void implicitWidthChanged() override
-    {
-        QQuickItemPrivate::implicitWidthChanged();
+    void implicitWidthChanged() override;
+    void implicitHeightChanged() override;
 
-        if ( !blockImplicitSizeNotification )
-            implicitSizeChanged();
-    }
+    void setExplicitSizeHint( Qt::SizeHint whichHint, const QSizeF& size );
+    QSizeF explicitSizeHint( Qt::SizeHint whichHint ) const;
 
-    void implicitHeightChanged() override
-    {
-        QQuickItemPrivate::implicitWidthChanged();
+    bool maybeGesture( QQuickItem* child, QEvent* event );
 
-        if ( !blockImplicitSizeNotification )
-            implicitSizeChanged();
-    }
-
-    inline void setExplicitSizeHint( Qt::SizeHint whichHint, const QSizeF& size )
-    {
-        if ( explicitSizeData == nullptr )
-            explicitSizeData = new ExplicitSizeData;
-
-        explicitSizeData->sizeHints[ whichHint ] = size;
-    }
-
-    inline QSizeF explicitSizeHint( Qt::SizeHint whichHint ) const
-    {
-        if ( explicitSizeData )
-            return explicitSizeData->sizeHints[ whichHint ];
-
-        return qskDefaultSizeHints[ whichHint ];
-    }
-
-    bool maybeGesture( QQuickItem* child, QEvent* event )
-    {
-        Q_Q( QskControl );
-
-        switch ( event->type() )
-        {
-            case QEvent::MouseButtonPress:
-            {
-                const auto mouseEvent = static_cast< const QMouseEvent* >( event );
-                const QPointF pos = q->mapFromScene( mouseEvent->windowPos() );
-
-                if ( !q->gestureRect().contains( pos ) )
-                    return false;
-
-                break;
-            }
-
-            case QEvent::MouseMove:
-            case QEvent::MouseButtonRelease:
-            case QEvent::MouseButtonDblClick:
-            case QEvent::UngrabMouse:
-            case QEvent::TouchBegin:
-            case QEvent::TouchCancel:
-            case QEvent::TouchUpdate:
-                break;
-
-            default:
-                return false;
-        }
-
-        return q->gestureFilter( child, event );
-    }
-
-    void updateControlFlags( QskControl::Flags flags )
-    {
-        Q_Q( QskControl );
-
-        const auto oldFlags = controlFlags;
-        const auto newFlags = static_cast< controlFlags_t >( flags );
-
-        if ( oldFlags != newFlags )
-        {
-            const auto numBits = qCountTrailingZeroBits(
-                static_cast< quint32 >( QskControl::LastFlag ) );
-
-            for ( quint32 i = 0; i <= numBits; ++i )
-            {
-                const quint32 flag = ( 1 << i );
-                q->updateControlFlag( flag, flags & flag );
-            }
-
-            Q_EMIT q->controlFlagsChanged();
-        }
-    }
+    void updateControlFlags( QskControl::Flags flags );
 
     /*
         Qt 5.11:
@@ -375,6 +242,8 @@ class QskControlPrivate final : public QQuickItemPrivate
      */
 
   private:
+    void implicitSizeChanged();
+
     ExplicitSizeData* explicitSizeData;
 
   public:
@@ -408,6 +277,157 @@ static void qskUpdateControlFlags( QskControl::Flags flags, QskControl* control 
     auto d = static_cast< QskControlPrivate* >( QQuickItemPrivate::get( control ) );
     d->updateControlFlags( flags );
 }
+
+QskControlPrivate::QskControlPrivate()
+    : explicitSizeData( nullptr )
+    , sizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Preferred )
+    , controlFlags( qskControlFlags() )
+    , controlFlagsMask( 0 )
+    , explicitLocale( false )
+    , autoFillBackground( false )
+    , autoLayoutChildren( false )
+    , polishOnResize( false )
+    , blockedPolish( false )
+    , blockedImplicitSize( true )
+    , clearPreviousNodes( false )
+    , blockImplicitSizeNotification( false )
+    , isInitiallyPainted( false )
+    , focusPolicy( Qt::NoFocus )
+    , isWheelEnabled( false )
+{
+    if ( controlFlags & QskControl::DeferredLayout )
+    {
+        /*
+            In general the geometry of an item should be the job of
+            the parent - unfortunatly not done by Qt Quick
+            probably in the spirit of "making things easier".
+
+            To avoid potentially expensive calculations happening
+            too often and early QskControl blocks updates of
+            the implicitSize and any auto resizing of the control
+            according to it.
+
+            There should be no strong reason for using concepts
+            like Positioners, that rely on implicit resizing,
+            but to make it working: the DeferredLayout flag needs to be disabled.
+         */
+
+        widthValid = heightValid = true;
+    }
+}
+
+QskControlPrivate::~QskControlPrivate()
+{
+    delete explicitSizeData;
+}
+
+void QskControlPrivate::mirrorChange()
+{
+    Q_Q( QskControl );
+    qskSendEventTo( q, QEvent::LayoutDirectionChange );
+}
+
+inline void QskControlPrivate::implicitSizeChanged()
+{
+    Q_Q( QskControl );
+    if ( !q->explicitSizeHint( Qt::PreferredSize ).isValid() )
+    {
+        // when we have no PreferredSize we fall back
+        // to the implicit size
+
+        q->layoutConstraintChanged();
+    }
+}
+
+void QskControlPrivate::implicitWidthChanged()
+{
+    QQuickItemPrivate::implicitWidthChanged();
+
+    if ( !blockImplicitSizeNotification )
+        implicitSizeChanged();
+}
+
+void QskControlPrivate::implicitHeightChanged()
+{
+    QQuickItemPrivate::implicitWidthChanged();
+
+    if ( !blockImplicitSizeNotification )
+        implicitSizeChanged();
+}
+
+inline void QskControlPrivate::setExplicitSizeHint(
+    Qt::SizeHint whichHint, const QSizeF& size )
+{
+    if ( explicitSizeData == nullptr )
+        explicitSizeData = new ExplicitSizeData;
+
+    explicitSizeData->sizeHints[ whichHint ] = size;
+}
+
+inline QSizeF QskControlPrivate::explicitSizeHint( Qt::SizeHint whichHint ) const
+{
+    if ( explicitSizeData )
+        return explicitSizeData->sizeHints[ whichHint ];
+
+    return qskDefaultSizeHints[ whichHint ];
+}
+
+bool QskControlPrivate::maybeGesture( QQuickItem* child, QEvent* event )
+{
+    Q_Q( QskControl );
+
+    switch ( event->type() )
+    {
+        case QEvent::MouseButtonPress:
+        {
+            const auto mouseEvent = static_cast< const QMouseEvent* >( event );
+            const QPointF pos = q->mapFromScene( mouseEvent->windowPos() );
+
+            if ( !q->gestureRect().contains( pos ) )
+                return false;
+
+            break;
+        }
+
+        case QEvent::MouseMove:
+        case QEvent::MouseButtonRelease:
+        case QEvent::MouseButtonDblClick:
+        case QEvent::UngrabMouse:
+        case QEvent::TouchBegin:
+        case QEvent::TouchCancel:
+        case QEvent::TouchUpdate:
+            break;
+
+        default:
+            return false;
+    }
+
+    return q->gestureFilter( child, event );
+}
+
+void QskControlPrivate::updateControlFlags( QskControl::Flags flags )
+{
+    Q_Q( QskControl );
+
+    const auto oldFlags = controlFlags;
+    const auto newFlags = static_cast< controlFlags_t >( flags );
+
+    if ( oldFlags != newFlags )
+    {
+        const auto numBits = qCountTrailingZeroBits(
+            static_cast< quint32 >( QskControl::LastFlag ) );
+
+        for ( quint32 i = 0; i <= numBits; ++i )
+        {
+            const quint32 flag = ( 1 << i );
+            q->updateControlFlag( flag, flags & flag );
+        }
+
+        Q_EMIT q->controlFlagsChanged();
+    }
+}
+
+// --------
 
 QskControl::QskControl( QQuickItem* parent )
     : Inherited( *( new QskControlPrivate() ), parent )
