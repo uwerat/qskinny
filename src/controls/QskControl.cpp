@@ -212,12 +212,11 @@ class QskControlPrivate final : public QQuickItemPrivate
     void implicitWidthChanged() override;
     void implicitHeightChanged() override;
 
-    void setExplicitSizeHint( Qt::SizeHint whichHint, const QSizeF& size );
-    QSizeF explicitSizeHint( Qt::SizeHint whichHint ) const;
+    void setExplicitSizeHint( Qt::SizeHint, const QSizeF& );
+    QSizeF explicitSizeHint( Qt::SizeHint ) const;
 
-    bool maybeGesture( QQuickItem* child, QEvent* event );
-
-    void updateControlFlags( QskControl::Flags flags );
+    bool maybeGesture( QQuickItem* child, QEvent* );
+    void updateControlFlags( QskControl::Flags );
 
     /*
         Qt 5.11:
