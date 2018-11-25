@@ -1247,7 +1247,7 @@ QSizeF QskControl::effectiveSizeHint( Qt::SizeHint whichHint ) const
 
         if ( d_func()->blockedImplicitSize )
         {
-            QskControl* that = const_cast< QskControl* >( this );
+            auto that = const_cast< QskControl* >( this );
             that->updateImplicitSize();
         }
 
@@ -1805,7 +1805,7 @@ void QskControl::updateImplicitSize()
     const auto dw = m.left() + m.right();
     const auto dh = m.top() + m.bottom();
 
-    const QSizeF hint = contentsSizeHint();
+    const auto hint = contentsSizeHint();
 
     const qreal w = ( hint.width() >= 0 ) ? dw + hint.width() : 0.0;
     const qreal h = ( hint.height() >= 0 ) ? dh + hint.height() : 0.0;

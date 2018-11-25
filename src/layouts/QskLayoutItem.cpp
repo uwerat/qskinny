@@ -10,26 +10,26 @@
 
 QskLayoutItem::QskLayoutItem( QQuickItem* item, int row, int column, int rowSpan, int columnSpan )
     : Inherited( row, column, qMax( rowSpan, 1 ), qMax( columnSpan, 1 ), Qt::Alignment() )
+    , m_item( item )
     , m_isGeometryDirty( false )
     , m_isStretchable( false )
     , m_retainSizeWhenHidden( false )
     , m_unlimitedRowSpan( rowSpan <= 0 )
     , m_unlimitedColumnSpan( columnSpan <= 0 )
     , m_updateMode( UpdateWhenVisible )
-    , m_item( item )
 {
 }
 
 QskLayoutItem::QskLayoutItem( const QSizeF& size, int stretch, int row, int column )
     : Inherited( row, column, 1, 1, Qt::Alignment() )
+    , m_item( nullptr )
+    , m_spacingHint( size )
     , m_isGeometryDirty( false )
     , m_isStretchable( stretch > 0 )
     , m_retainSizeWhenHidden( false )
     , m_unlimitedRowSpan( false )
     , m_unlimitedColumnSpan( false )
     , m_updateMode( UpdateWhenVisible )
-    , m_spacingHint( size )
-    , m_item( nullptr )
 {
 }
 
@@ -150,8 +150,8 @@ QLayoutPolicy::Policy QskLayoutItem::sizePolicy( Qt::Orientation orientation ) c
 
         const QSizeF hint = QskLayoutConstraint::effectiveConstraint( m_item, Qt::PreferredSize );
 
-        const qreal h = ( orientation == Qt::Horizontal ) ? hint.width() : hint.height();
-        if ( h <= 0 )
+        const qreal value = ( orientation == Qt::Horizontal ) ? hint.width() : hint.height();
+        if ( value <= 0 )
             policy = QskSizePolicy::Ignored;
     }
 #endif
@@ -194,9 +194,10 @@ Qt::Orientation QskLayoutItem::dynamicConstraintOrientation() const
 {
     Qt::Orientation orientation = Qt::Vertical;
 
-    if ( const QskControl* control = qobject_cast< const QskControl* >( m_item ) )
+    if ( auto control = qobject_cast< const QskControl* >( m_item ) )
     {
         const QskSizePolicy& policy = control->sizePolicy();
+
         if ( policy.horizontalPolicy() == QskSizePolicy::Constrained )
             return Qt::Horizontal;
         else

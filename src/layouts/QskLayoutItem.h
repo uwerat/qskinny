@@ -66,16 +66,15 @@ class QskLayoutItem : public QGridLayoutItem
     bool hasUnlimitedSpan( Qt::Orientation orientation ) const;
 
   private:
+    QQuickItem* m_item;
+    QSizeF m_spacingHint;
+
     bool m_isGeometryDirty : 1;
     bool m_isStretchable : 1;
     bool m_retainSizeWhenHidden : 1;
     bool m_unlimitedRowSpan : 1;
     bool m_unlimitedColumnSpan : 1;
     UpdateMode m_updateMode : 2;
-
-    QSizeF m_spacingHint;
-
-    QQuickItem* m_item;
 };
 
 inline QQuickItem* QskLayoutItem::item()
