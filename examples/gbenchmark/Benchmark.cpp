@@ -125,7 +125,8 @@ bool Benchmark::run( const QString& dirName )
             using namespace QskTextureRenderer;
 
             const auto textureId = createTextureFromGraphic(
-                OpenGL, targetSize, graphics[ i ], colorFilter );
+                OpenGL, targetSize, graphics[ i ], colorFilter,
+                Qt::IgnoreAspectRatio );
 
             if ( textureId == 0 )
             {
@@ -150,7 +151,8 @@ bool Benchmark::run( const QString& dirName )
             using namespace QskTextureRenderer;
 
             const auto textureId = createTextureFromGraphic(
-                Raster, targetSize, graphics[ i ], colorFilter );
+                Raster, targetSize, graphics[ i ], colorFilter,
+                Qt::IgnoreAspectRatio );
 
             if ( textureId == 0 )
             {

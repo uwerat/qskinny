@@ -70,7 +70,7 @@ void QskGraphicNode::setGraphic(
     if ( isTextureDirty )
     {
         const uint textureId = QskTextureRenderer::createTextureFromGraphic(
-            renderMode, rect.size(), graphic, colorFilter );
+            renderMode, rect.size(), graphic, colorFilter, Qt::IgnoreAspectRatio );
 
         QskTextureNode::setTextureId( textureId );
     }

@@ -144,28 +144,32 @@ uint QskTextureRenderer::createTexture(
 
 uint QskTextureRenderer::createTextureFromGraphic(
     RenderMode renderMode, const QSize& size,
-    const QskGraphic& graphic, const QskColorFilter& colorFilter )
+    const QskGraphic& graphic, const QskColorFilter& colorFilter,
+    Qt::AspectRatioMode aspectRatioMode )
 {
     class PaintHelper : public QskTextureRenderer::PaintHelper
     {
       public:
-        PaintHelper( const QskGraphic& graphic, const QskColorFilter& filter )
+        PaintHelper( const QskGraphic& graphic,
+                const QskColorFilter& filter, Qt::AspectRatioMode aspectRatioMode )
             : m_graphic( graphic )
             , m_filter( filter )
+            , m_aspectRatioMode( aspectRatioMode )
         {
         }
 
         void paint( QPainter* painter, const QSize& size ) override
         {
             const QRect rect( 0, 0, size.width(), size.height() );
-            m_graphic.render( painter, rect, m_filter, Qt::KeepAspectRatio );
+            m_graphic.render( painter, rect, m_filter, m_aspectRatioMode );
         }
 
       private:
         const QskGraphic& m_graphic;
         const QskColorFilter& m_filter;
+        const Qt::AspectRatioMode m_aspectRatioMode;
     };
 
-    PaintHelper helper( graphic, colorFilter );
+    PaintHelper helper( graphic, colorFilter, aspectRatioMode );
     return createTexture( renderMode, size, &helper );
 }

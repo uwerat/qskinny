@@ -26,7 +26,8 @@ QskGraphicTextureFactory::~QskGraphicTextureFactory()
 QSGTexture* QskGraphicTextureFactory::createTexture( QQuickWindow* window ) const
 {
     const uint textureId = QskTextureRenderer::createTextureFromGraphic(
-        QskTextureRenderer::OpenGL, m_size, m_graphic, m_colorFilter );
+        QskTextureRenderer::OpenGL, m_size, m_graphic, m_colorFilter,
+        Qt::IgnoreAspectRatio );
 
     const auto flags = static_cast< QQuickWindow::CreateTextureOptions >(
         QQuickWindow::TextureHasAlphaChannel | QQuickWindow::TextureOwnsGLTexture );

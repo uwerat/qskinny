@@ -7,6 +7,7 @@
 #define QSK_TEXTURE_RENDERER_H
 
 #include "QskGlobal.h"
+#include <qnamespace.h>
 
 class QskGraphic;
 class QskColorFilter;
@@ -43,7 +44,8 @@ namespace QskTextureRenderer
         RenderMode, const QSize&, PaintHelper* helper );
 
     QSK_EXPORT uint createTextureFromGraphic(
-        RenderMode, const QSize&, const QskGraphic&, const QskColorFilter& );
+        RenderMode, const QSize&, const QskGraphic&,
+        const QskColorFilter&, Qt::AspectRatioMode );
 }
 
 #endif
