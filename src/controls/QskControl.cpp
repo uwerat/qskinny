@@ -200,12 +200,13 @@ class QskControlPrivate final : public QQuickItemPrivate
 
     void mirrorChange() override;
 
-#if 0
-    // can we do something useful with overloading those ???
-
     qreal getImplicitWidth() const override;
     qreal getImplicitHeight() const override;
 
+    void updateImplicitSize( bool doNotify );
+
+#if 0
+    // can we do something useful with overloading ???
     QSGTransformNode* createTransformNode() override;
 #endif
 
@@ -215,7 +216,7 @@ class QskControlPrivate final : public QQuickItemPrivate
     void setExplicitSizeHint( Qt::SizeHint, const QSizeF& );
     QSizeF explicitSizeHint( Qt::SizeHint ) const;
 
-    bool maybeGesture( QQuickItem* child, QEvent* );
+    bool maybeGesture( QQuickItem*, QEvent* );
     void updateControlFlags( QskControl::Flags );
 
     /*
@@ -242,6 +243,7 @@ class QskControlPrivate final : public QQuickItemPrivate
 
   private:
     void implicitSizeChanged();
+    void setImplicitSize( qreal width, qreal height, bool doNotify );
 
     ExplicitSizeData* explicitSizeData;
 
@@ -263,15 +265,13 @@ class QskControlPrivate final : public QQuickItemPrivate
     bool blockedImplicitSize : 1;
     bool clearPreviousNodes : 1;
 
-    bool blockImplicitSizeNotification : 1;
-
     bool isInitiallyPainted : 1;
 
     uint focusPolicy : 4;
     bool isWheelEnabled : 1;
 };
 
-static void qskUpdateControlFlags( QskControl::Flags flags, QskControl* control )
+static inline void qskUpdateControlFlags( QskControl::Flags flags, QskControl* control )
 {
     auto d = static_cast< QskControlPrivate* >( QQuickItemPrivate::get( control ) );
     d->updateControlFlags( flags );
@@ -289,7 +289,6 @@ QskControlPrivate::QskControlPrivate()
     , blockedPolish( false )
     , blockedImplicitSize( true )
     , clearPreviousNodes( false )
-    , blockImplicitSizeNotification( false )
     , isInitiallyPainted( false )
     , focusPolicy( Qt::NoFocus )
     , isWheelEnabled( false )
@@ -328,6 +327,8 @@ void QskControlPrivate::mirrorChange()
 
 inline void QskControlPrivate::implicitSizeChanged()
 {
+    blockedImplicitSize = false;
+
     Q_Q( QskControl );
     if ( !q->explicitSizeHint( Qt::PreferredSize ).isValid() )
     {
@@ -338,20 +339,102 @@ inline void QskControlPrivate::implicitSizeChanged()
     }
 }
 
+qreal QskControlPrivate::getImplicitWidth() const
+{
+    if ( blockedImplicitSize )
+    {
+        auto that = const_cast< QskControlPrivate* >( this );
+        that->updateImplicitSize( false );
+    }
+
+    return implicitWidth;
+}
+
+qreal QskControlPrivate::getImplicitHeight() const
+{
+    if ( blockedImplicitSize )
+    {
+        auto that = const_cast< QskControlPrivate* >( this );
+        that->updateImplicitSize( false );
+    }
+
+    return implicitHeight;
+}
+
+void QskControlPrivate::updateImplicitSize( bool doNotify )
+{
+    Q_Q( const QskControl );
+
+    blockedImplicitSize = false;
+
+    const auto m = q->margins();
+    const auto dw = m.left() + m.right();
+    const auto dh = m.top() + m.bottom();
+
+    const auto hint = q->contentsSizeHint();
+
+    const qreal w = ( hint.width() >= 0 ) ? dw + hint.width() : -1.0;
+    const qreal h = ( hint.height() >= 0 ) ? dh + hint.height() : -1.0;
+
+    setImplicitSize( w, h, doNotify );
+}
+
+void QskControlPrivate::setImplicitSize( qreal w, qreal h, bool doNotify )
+{
+    const bool doWidth = ( w != implicitWidth );
+    const bool doHeight = ( w != implicitHeight );
+
+    if ( !( doWidth || doHeight ) )
+        return; // nothing to do
+
+    implicitWidth = w;
+    implicitHeight = h;
+
+    if ( !( widthValid && heightValid ) )
+    {
+        // auto adjusting the size
+
+        const qreal oldWidth = width;
+        const qreal oldHeight = height;
+
+        if ( doWidth && !widthValid )
+            width = qMax( w, qreal( 0.0 ) );
+
+        if ( doHeight && !heightValid )
+            height = qMax( h, qreal( 0.0 ) );
+
+        if ( ( width != oldWidth ) || ( height != oldHeight ) )
+        {
+            dirty( QQuickItemPrivate::Size );
+
+            const QRectF oldRect( x, y, oldWidth, oldHeight );
+            const QRectF newRect( x, y, width, height );
+
+            Q_Q( QskControl );
+            q->geometryChanged( newRect, oldRect );
+        }
+    }
+
+    if ( doNotify )
+    {
+        if ( doWidth )
+            QQuickItemPrivate::implicitWidthChanged();
+
+        if ( doHeight )
+            QQuickItemPrivate::implicitHeightChanged();
+    }
+}
+
 void QskControlPrivate::implicitWidthChanged()
 {
     QQuickItemPrivate::implicitWidthChanged();
-
-    if ( !blockImplicitSizeNotification )
-        implicitSizeChanged();
+    implicitSizeChanged();
 }
 
 void QskControlPrivate::implicitHeightChanged()
 {
     QQuickItemPrivate::implicitWidthChanged();
-
-    if ( !blockImplicitSizeNotification )
-        implicitSizeChanged();
+    implicitSizeChanged();
 }
 
 inline void QskControlPrivate::setExplicitSizeHint(
@@ -778,7 +861,7 @@ void QskControl::updateControlFlag( uint flag, bool on )
                 // Having set the size explicitly gets lost.
 
                 d->widthValid = d->heightValid = false;
-                updateImplicitSize();
+                d->updateImplicitSize( false );
             }
 
             break;
@@ -1264,12 +1347,6 @@ QSizeF QskControl::effectiveSizeHint( Qt::SizeHint whichHint ) const
         // in most cases we don't have a preferred width/height
         // and fall back to the implicit size.
 
-        if ( d_func()->blockedImplicitSize )
-        {
-            auto that = const_cast< QskControl* >( this );
-            that->updateImplicitSize();
-        }
-
         if ( size.width() < 0 )
             size.setWidth( implicitWidth() );
 
@@ -1294,12 +1371,7 @@ void QskControl::resetImplicitSize()
     }
     else
     {
-        const QSizeF sz = implicitSize();
-
-        updateImplicitSize();
-
-        if ( sz != implicitSize() )
-            d->implicitSizeChanged();
+        d->updateImplicitSize( true );
     }
 }
 
@@ -1813,25 +1885,6 @@ void QskControl::aboutToShow()
 
 void QskControl::updateLayout()
 {
-}
-
-void QskControl::updateImplicitSize()
-{
-    Q_D( QskControl );
-    d->blockedImplicitSize = false;
-
-    const auto m = margins();
-    const auto dw = m.left() + m.right();
-    const auto dh = m.top() + m.bottom();
-
-    const auto hint = contentsSizeHint();
-
-    const qreal w = ( hint.width() >= 0 ) ? dw + hint.width() : 0.0;
-    const qreal h = ( hint.height() >= 0 ) ? dh + hint.height() : 0.0;
-
-    d->blockImplicitSizeNotification = true;
-    setImplicitSize( w, h );
-    d->blockImplicitSizeNotification = false;
 }
 
 QSizeF QskControl::contentsSizeHint() const

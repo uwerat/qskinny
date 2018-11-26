@@ -269,7 +269,6 @@ class QSK_EXPORT QskControl : public QQuickItem, public QskSkinnable
     QskControl* owningControl() const override final;
 
     void layoutConstraintChanged();
-    void updateImplicitSize();
 
     void updateControlFlag( uint flag, bool on );
 
