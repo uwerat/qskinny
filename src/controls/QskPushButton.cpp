@@ -25,6 +25,7 @@ class QskPushButton::PrivateData
   public:
     PrivateData( const QString& txt )
         : text( txt )
+        , graphicSourceSize( -1, -1 )
         , isGraphicSourceDirty( false )
     {
         textOptions.setElideMode( Qt::ElideMiddle );
@@ -35,6 +36,8 @@ class QskPushButton::PrivateData
 
     QUrl graphicSource;
     QskGraphic graphic;
+
+    QSizeF graphicSourceSize;
 
     bool isGraphicSourceDirty : 1;
 };
@@ -141,6 +144,37 @@ QFont QskPushButton::font() const
     return effectiveFont( QskPushButton::Text );
 }
 
+void QskPushButton::resetGraphicSourceSize()
+{
+    setGraphicSourceSize( QSizeF( -1.0, -1.0 ) );
+}
+
+void QskPushButton::setGraphicSourceSize( const QSizeF& size )
+{
+    auto newSize = size;
+    if ( newSize.width() < 0.0 )
+        newSize.setWidth( -1.0 );
+
+    if ( newSize.height() < 0.0 )
+        newSize.setHeight( -1.0 );
+
+    if ( size != m_data->graphicSourceSize )
+    {
+        m_data->graphicSourceSize = size;
+
+        resetImplicitSize();
+        polish();
+        update();
+
+        Q_EMIT graphicSourceSizeChanged();
+    }
+}
+
+QSizeF QskPushButton::graphicSourceSize() const
+{
+    return m_data->graphicSourceSize;
+}
+
 void QskPushButton::setGraphicSource( const QUrl& url )
 {
     if ( m_data->graphicSource == url )
@@ -205,10 +239,7 @@ void QskPushButton::updateLayout()
     if ( m_data->isGraphicSourceDirty )
     {
         if ( !m_data->graphicSource.isEmpty() )
-        {
             m_data->graphic = loadGraphic( m_data->graphicSource );
-            Q_EMIT graphicChanged();
-        }
 
         m_data->isGraphicSourceDirty = false;
     }
@@ -223,20 +254,40 @@ QSizeF QskPushButton::contentsSizeHint() const
 {
     QSizeF size( 0, 0 );
 
+    const QFontMetricsF fm( font() );
+
     if ( !m_data->text.isEmpty() )
     {
         // in elide mode we might want to ignore the text width ???
 
-        const QFontMetricsF fm( font() );
         size += fm.size( Qt::TextShowMnemonic, m_data->text );
     }
 
-    if ( !m_data->graphicSource.isEmpty() )
+    if ( m_data->isGraphicSourceDirty )
     {
-        const double dim = 1.5 * size.height();
-        size.rheight() += 4 + dim;
-        const QSizeF graphicSize = m_data->graphic.defaultSize();
-        size.rwidth() += graphicSize.width() * dim / graphicSize.height();
+        if ( !m_data->graphicSource.isEmpty() )
+            m_data->graphic = loadGraphic( m_data->graphicSource );
+        
+        m_data->isGraphicSourceDirty = false;
+    }   
+
+    if ( !m_data->graphic.isEmpty() )
+    {
+        qreal w = m_data->graphicSourceSize.width();
+        qreal h = m_data->graphicSourceSize.height();
+
+        if ( ( w < 0.0 ) && ( h < 0.0 ) )
+            h = 1.5 * fm.height();
+
+        if ( w < 0 )
+            w = m_data->graphic.widthForHeight( h );
+        else if ( h < 0 )
+            h = m_data->graphic.heightForWidth( w );
+
+        const qreal padding = 2.0; // Graphic::Padding ???
+
+        size.rheight() += 2 * padding + h;
+        size.rwidth() = qMax( size.width(), w );
     }
 
     const QSizeF minSize( metric( Panel | QskAspect::MinimumWidth ),

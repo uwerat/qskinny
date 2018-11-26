@@ -103,22 +103,47 @@ QRectF QskPushButtonSkinlet::graphicRect( const QskPushButton* button ) const
             r.setHeight( 0 );
     }
 
+    const auto maxSize = button->graphicSourceSize();
+    if ( maxSize.width() >= 0 || maxSize.height() >= 0 )
+    {
+        // limiting the size by graphicSize
+        const qreal maxW = maxSize.width();
+        const qreal maxH = maxSize.height();
+
+        if ( maxW >= 0.0 && maxW < r.width() )
+        {
+            r.setX( r.center().x() - 0.5 * maxW );
+            r.setWidth( maxW );
+        }
+    
+        if ( maxH >= 0.0 && maxH < r.height() )
+        {
+            r.setY( r.center().y() - 0.5 * maxH );
+            r.setHeight( maxH );
+        }
+    }
+
     const QSizeF sz = button->graphic().defaultSize();
-    if ( r.isEmpty() || sz.isEmpty() )
-        return r;
 
-    const double scaleFactor =
-        qMin( r.width() / sz.width(), r.height() / sz.height() );
+    if ( !( r.isEmpty() || sz.isEmpty() ) )
+    {
+        // inner rectangle according to the aspect ratio
 
-    // early aligning to avoid pointless operations, that finally will
-    // have no effect, when drawing to an integer based paint device
+        const double scaleFactor =
+            qMin( r.width() / sz.width(), r.height() / sz.height() );
 
-    const int w = qFloor( scaleFactor * sz.width() );
-    const int h = qFloor( scaleFactor * sz.height() );
-    const int x = qFloor( r.center().x() - 0.5 * w );
-    const int y = qFloor( r.center().y() - 0.5 * h );
+        // early aligning to avoid pointless operations, that finally will
+        // have no effect, when drawing to an integer based paint device
 
-    return QRectF( x, y, w, h );
+        const int w = qFloor( scaleFactor * sz.width() );
+        const int h = qFloor( scaleFactor * sz.height() );
+        const int x = qFloor( r.center().x() - 0.5 * w );
+        const int y = qFloor( r.center().y() - 0.5 * h );
+
+        r = QRectF( x, y, w, h );
+    }
+
+    return r;
 }
 
 QSGNode* QskPushButtonSkinlet::updateTextNode(

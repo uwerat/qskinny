@@ -27,6 +27,10 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     Q_PROPERTY( QskGraphic graphic READ graphic
         WRITE setGraphic NOTIFY graphicChanged FINAL )
 
+    Q_PROPERTY( QSizeF graphicSourceSize READ graphicSourceSize
+        WRITE setGraphicSourceSize RESET resetGraphicSourceSize
+        NOTIFY graphicSourceSizeChanged FINAL )
+
     Q_PROPERTY( bool flat READ isFlat WRITE setFlat NOTIFY flatChanged FINAL )
     Q_PROPERTY( QskCorner corner READ corner WRITE setCorner NOTIFY cornerChanged )
 
@@ -49,8 +53,11 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     QskTextOptions textOptions() const;
 
     QUrl graphicSource() const;
+    QSizeF graphicSourceSize() const;
     QskGraphic graphic() const;
     bool hasGraphic() const;
+
+    void resetGraphicSourceSize();
 
     void setFlat( bool );
     bool isFlat() const;
@@ -65,6 +72,7 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     void setGraphicSource( const QUrl& url );
     void setGraphicSource( const QString& source );
     void setGraphic( const QskGraphic& );
+    void setGraphicSourceSize( const QSizeF & );
 
   Q_SIGNALS:
     void cornerChanged();
@@ -74,6 +82,7 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     void flatChanged();
     void graphicChanged();
     void graphicSourceChanged();
+    void graphicSourceSizeChanged();
 
     void hovered( bool );
 
