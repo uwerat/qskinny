@@ -39,7 +39,8 @@ static inline bool qskHasHintFor( const QQuickItem* item, const char* method )
     return false;
 }
 
-static inline qreal qskAdjustedValue( QskSizePolicy::Policy policy, qreal value, qreal targetValue )
+static inline qreal qskAdjustedValue(
+    QskSizePolicy::Policy policy, qreal value, qreal targetValue )
 {
     if ( targetValue > value )
     {
@@ -58,9 +59,9 @@ static inline qreal qskAdjustedValue( QskSizePolicy::Policy policy, qreal value,
 
 bool QskLayoutConstraint::hasDynamicConstraint( const QQuickItem* item )
 {
-    if ( const QskControl* control = qobject_cast< const QskControl* >( item ) )
+    if ( auto control = qobject_cast< const QskControl* >( item ) )
     {
-        const QskSizePolicy& policy = control->sizePolicy();
+        const auto& policy = control->sizePolicy();
         return ( policy.horizontalPolicy() == QskSizePolicy::Constrained ) ||
             ( policy.verticalPolicy() == QskSizePolicy::Constrained );
     }
@@ -71,7 +72,7 @@ bool QskLayoutConstraint::hasDynamicConstraint( const QQuickItem* item )
 
 qreal QskLayoutConstraint::heightForWidth( const QQuickItem* item, qreal width )
 {
-    if ( const QskControl* control = qobject_cast< const QskControl* >( item ) )
+    if ( auto control = qobject_cast< const QskControl* >( item ) )
         return control->heightForWidth( width );
 
     return qskHintFor( item, "heightForWidth", width );
@@ -79,7 +80,7 @@ qreal QskLayoutConstraint::heightForWidth( const QQuickItem* item, qreal width )
 
 qreal QskLayoutConstraint::widthForHeight( const QQuickItem* item, qreal height )
 {
-    if ( const QskControl* control = qobject_cast< const QskControl* >( item ) )
+    if ( auto control = qobject_cast< const QskControl* >( item ) )
         return control->widthForHeight( height );
 
     return qskHintFor( item, "widthForHeight", height );
@@ -88,7 +89,7 @@ qreal QskLayoutConstraint::widthForHeight( const QQuickItem* item, qreal height 
 QSizeF QskLayoutConstraint::effectiveConstraint(
     const QQuickItem* item, Qt::SizeHint whichHint )
 {
-    if ( const QskControl* control = qobject_cast< const QskControl* >( item ) )
+    if ( auto control = qobject_cast< const QskControl* >( item ) )
         return control->effectiveSizeHint( whichHint );
 
     QSizeF constraint( -1.0, -1.0 ); // no hint
