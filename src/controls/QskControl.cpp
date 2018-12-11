@@ -1363,11 +1363,14 @@ void QskControl::resetImplicitSize()
 
     if ( d->controlFlags & QskControl::DeferredLayout )
     {
-        if ( !d->blockedImplicitSize )
-        {
-            d->blockedImplicitSize = true;
-            layoutConstraintChanged();
-        }
+        /*
+            Is there a way to block consecutive calls ? 
+            When the parent is requesting the preferred size, we could use
+            d->blockedImplicitSize, but in case of dynamic constraints we don't
+            have an indication when the event has been processed. TODO ...
+         */
+        d->blockedImplicitSize = true;
+        layoutConstraintChanged();
     }
     else
     {
@@ -1743,8 +1746,7 @@ void QskControl::windowDeactivateEvent()
 
 void QskControl::layoutConstraintChanged()
 {
-    QQuickItem* item = parentItem();
-    if ( item )
+    if ( auto item = parentItem() )
         qskSendEventTo( item, QEvent::LayoutRequest );
 }
 
