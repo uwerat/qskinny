@@ -420,6 +420,8 @@ void QskScrollView::mousePressEvent( QMouseEvent* event )
             setScrollPos( QPointF( x, m_data->scrollPos.y() ) );
         }
     }
+
+    Inherited::mousePressEvent( event );
 }
 
 void QskScrollView::mouseMoveEvent( QMouseEvent* event )
@@ -453,16 +455,19 @@ void QskScrollView::mouseMoveEvent( QMouseEvent* event )
         setScrollPos( pos );
 }
 
-void QskScrollView::mouseReleaseEvent( QMouseEvent* )
+void QskScrollView::mouseReleaseEvent( QMouseEvent* event )
 {
-    if ( m_data->isScrolling )
+    if ( !m_data->isScrolling )
     {
-        m_data->isScrolling = 0;
-        m_data->scrollPressPos = 0;
-
-        setSkinStateFlag( HorizontalHandlePressed, false );
-        setSkinStateFlag( VerticalHandlePressed, false );
+        Inherited::mouseReleaseEvent( event );
+        return;
     }
+
+    m_data->isScrolling = 0;
+    m_data->scrollPressPos = 0;
+
+    setSkinStateFlag( HorizontalHandlePressed, false );
+    setSkinStateFlag( VerticalHandlePressed, false );
 }
 
 void QskScrollView::gestureEvent( QskGestureEvent* event )
