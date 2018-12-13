@@ -36,6 +36,14 @@ Qt::TextElideMode QskTextOptions::elideMode() const
     return m_elideMode;
 }
 
+Qt::TextElideMode QskTextOptions::effectiveElideMode() const
+{
+    if ( m_wrapMode != QskTextOptions::NoWrap )
+        return Qt::ElideNone;
+
+    return m_elideMode;
+}
+
 void QskTextOptions::setWrapMode( WrapMode wrapMode )
 {
     m_wrapMode = wrapMode;

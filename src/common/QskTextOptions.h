@@ -60,6 +60,8 @@ class QSK_EXPORT QskTextOptions
     Qt::TextElideMode elideMode() const;
     void setElideMode( Qt::TextElideMode );
 
+    Qt::TextElideMode effectiveElideMode() const;
+
     FontSizeMode fontSizeMode() const;
     void setFontSizeMode( FontSizeMode );
 
