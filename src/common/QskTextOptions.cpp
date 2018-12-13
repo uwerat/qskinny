@@ -82,7 +82,7 @@ int QskTextOptions::textFlags() const
     {
         case QskTextOptions::NoWrap:
         {
-            flags |= Qt::TextSingleLine;
+            // flags |= Qt::TextSingleLine;
             break;
         }
         case QskTextOptions::WordWrap:

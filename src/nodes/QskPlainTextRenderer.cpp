@@ -29,7 +29,7 @@ QSK_QT_PRIVATE_END
 QSizeF QskPlainTextRenderer::textSize(
     const QString& text, const QFont& font, const QskTextOptions& options )
 {
-    // result differs from QskTextRenderer::implicitSizeHint ???
+    // result differs from QQuickText::implicitSizeHint ???
     return textRect( text, font, options, QSizeF( 10e6, 10e6 ) ).size();
 }
 
@@ -46,8 +46,14 @@ QRectF QskPlainTextRenderer::textRect(
 static qreal qskLayoutText( QTextLayout* layout,
     qreal lineWidth, const QskTextOptions& options )
 {
-    const auto maxLineCount = ( options.wrapMode() == QskTextOptions::NoWrap )
-        ? 1 : options.maximumLineCount();
+    auto maxLineCount = options.maximumLineCount();
+
+    const auto elideMode = options.effectiveElideMode();
+    if ( elideMode != Qt::ElideNone )
+    {
+        // What about strings with newlines and elide mode
+        maxLineCount = 1;
+    }
 
     int lineNumber = 0;
     int characterPosition = 0;
@@ -60,7 +66,6 @@ static qreal qskLayoutText( QTextLayout* layout,
 
         if ( lineNumber == maxLineCount )
         {
-            const auto elideMode = options.elideMode();
             const auto engine = layout->engine();
 
             const auto textLength = engine->text.length();
@@ -172,10 +177,29 @@ void QskPlainTextRenderer::updateNode( const QString& text,
     QTextOption textOption( alignment );
     textOption.setWrapMode( static_cast< QTextOption::WrapMode >( options.wrapMode() ) );
 
+    QString tmp = text;
+
+#if 0
+    const int pos = tmp.indexOf( QLatin1Char( '\x9c' ) );
+    if ( pos != -1 )
+    {
+        // ST: string termination
+
+        tmp = tmp.mid( 0, pos );
+        tmp.replace( QLatin1Char( '\n' ), QChar::LineSeparator );
+    }
+    else
+#endif
+    if ( tmp.contains( QLatin1Char( '\n' ) ) )
+    {
+        tmp.replace( QLatin1Char('\n'), QChar::LineSeparator );
+    }
+
+
     QTextLayout layout;
     layout.setFont( font );
     layout.setTextOption( textOption );
-    layout.setText( text );
+    layout.setText( tmp );
 
     layout.beginLayout();
     const qreal textHeight = qskLayoutText( &layout, rect.width(), options );

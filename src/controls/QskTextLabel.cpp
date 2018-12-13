@@ -210,14 +210,15 @@ QFont QskTextLabel::font() const
 
 QSizeF QskTextLabel::contentsSizeHint() const
 {
+    const auto font = effectiveFont( Text );
+
     if ( !m_data->text.isEmpty() )
     {
-        const auto font = effectiveFont( Text );
         return QskTextRenderer::textSize(
             m_data->text, font, m_data->effectiveOptions() );
     }
 
-    return QSizeF( 0, 0 );
+    return QSizeF( 0, QFontMetricsF( font ).height() );
 }
 
 qreal QskTextLabel::heightForWidth( qreal width ) const
@@ -225,30 +226,49 @@ qreal QskTextLabel::heightForWidth( qreal width ) const
     const auto font = effectiveFont( Text );
     const qreal lineHeight = QFontMetricsF( font ).height();
 
-    if ( m_data->text.isEmpty() ||
-        ( m_data->textOptions.wrapMode() == QskTextOptions::NoWrap ) )
+    qreal h = 0;
+
+    const auto m = margins();
+
+    if ( m_data->text.isEmpty() )
     {
-        return lineHeight;
+        h = lineHeight;
+    }
+    else if ( m_data->textOptions.effectiveElideMode() != Qt::ElideNone )
+    {
+        h = lineHeight;
+    }
+    else
+    {
+        /*
+            In case of QskTextOptions::NoWrap we could count
+            the line numbers and calculate the height from
+            lineHeight. TODO ...
+         */
+        qreal maxHeight = std::numeric_limits< qreal >::max();
+        if ( maxHeight / lineHeight > m_data->textOptions.maximumLineCount() )
+        {
+            // be careful with overflows
+            maxHeight = m_data->textOptions.maximumLineCount() * lineHeight;
+        }
+
+        qreal w = width - m.left() + m.right();
+
+        QSizeF size( w, maxHeight );
+        size = QskTextRenderer::textSize(
+            m_data->text, font, m_data->effectiveOptions(), size );
+
+        h = size.height();
     }
 
-    qreal maxHeight = std::numeric_limits< qreal >::max();
-    if ( maxHeight / lineHeight > m_data->textOptions.maximumLineCount() )
-    {
-        // be careful with overflows
-        maxHeight = m_data->textOptions.maximumLineCount() * lineHeight;
-    }
+    h += m.top() + m.bottom();
 
-    QSizeF size( width, maxHeight );
-    size = QskTextRenderer::textSize(
-        m_data->text, font, m_data->effectiveOptions(), size );
-
-    return qCeil( size.height() );
+    return qCeil( h );
 }
 
 qreal QskTextLabel::widthForHeight( qreal height ) const
 {
-    if ( m_data->text.isEmpty() ||
-        ( m_data->textOptions.wrapMode() == QskTextOptions::NoWrap ) )
+    if ( m_data->text.isEmpty() )
     {
         return Inherited::widthForHeight( height );
     }
@@ -256,11 +276,13 @@ qreal QskTextLabel::widthForHeight( qreal height ) const
     const auto font = effectiveFont( Text );
     const qreal maxWidth = std::numeric_limits< qreal >::max();
 
-    QSizeF size( maxWidth, height );
+    const auto m = margins();
+
+    QSizeF size( maxWidth, height - m.top() + m.bottom() );
     size = QskTextRenderer::textSize( m_data->text, font,
         m_data->effectiveOptions(), size );
 
-    return qCeil( size.width() );
+    return qCeil( size.width() + m.left() + m.right() );
 }
 
 void QskTextLabel::changeEvent( QEvent* event )
