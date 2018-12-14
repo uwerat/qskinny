@@ -140,6 +140,8 @@ QLayoutPolicy::Policy QskLayoutItem::sizePolicy( Qt::Orientation orientation ) c
 {
     auto policy = QskLayoutConstraint::sizePolicy( m_item ).policy( orientation );
 #if 1
+    // we need to get rid of this extra check as we are calling sizeHint trillion times TODO ...
+
     if ( ( policy == QskSizePolicy::Preferred ) && m_item )
     {
         // QskSizePolicy::Preferred without having a preferred size is the default
@@ -196,12 +198,10 @@ Qt::Orientation QskLayoutItem::dynamicConstraintOrientation() const
 
     if ( auto control = qobject_cast< const QskControl* >( m_item ) )
     {
-        const QskSizePolicy& policy = control->sizePolicy();
+        const auto policy = control->sizePolicy().horizontalPolicy();
 
-        if ( policy.horizontalPolicy() == QskSizePolicy::Constrained )
-            return Qt::Horizontal;
-        else
-            return Qt::Vertical;
+        return ( policy == QskSizePolicy::Constrained )
+            ? Qt::Horizontal : Qt::Vertical;
     }
 
     return orientation;
