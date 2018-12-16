@@ -54,6 +54,7 @@ QSK_NAMESPACE( QskAspect )
         NoFlagPrimitive,
 
         Alignment,
+        Direction,
         Style,
         SizeMode,
         Decoration,
