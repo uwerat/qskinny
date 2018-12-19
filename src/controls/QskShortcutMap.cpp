@@ -69,7 +69,7 @@ static bool qskContextMatcher( QObject* object, Qt::ShortcutContext context )
         if ( QskShortcutMap::contextMatcher( item, context ) )
         {
             /*
-                Unfortunatley there is no way to have to know about
+                Unfortunatley there is no way to know about
                 the contextItem without making it the receiver of
                 the following QShortcutEvent. So we have to install
                 an event handler to process and swallow it in QskShortcutHandler.
