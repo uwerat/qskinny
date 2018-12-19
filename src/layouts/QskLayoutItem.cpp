@@ -100,13 +100,19 @@ QSizeF QskLayoutItem::sizeHint(
     if ( whichHint == Qt::PreferredSize && QskLayoutConstraint::hasDynamicConstraint( m_item ) )
     {
         const quint32 growFlags = QLayoutPolicy::GrowFlag | QLayoutPolicy::ExpandFlag;
-        hint = QskLayoutConstraint::effectiveConstraint( m_item, whichHint );
 
         if ( constraint.width() > 0 )
         {
             qreal w = constraint.width();
+
             if ( !( sizePolicy( Qt::Horizontal ) & growFlags ) )
-                w = qMin( w, hint.width() );
+            {
+                const auto maxW = QskLayoutConstraint::effectiveConstraint(
+                    m_item, Qt::PreferredSize ).width();
+
+                if ( maxW >= 0.0 )
+                    w = qMin( w, maxW );
+            }
 
             hint.setWidth( w );
             hint.setHeight( QskLayoutConstraint::heightForWidth( m_item, w ) );
@@ -114,14 +120,23 @@ QSizeF QskLayoutItem::sizeHint(
         else if ( constraint.height() > 0 )
         {
             qreal h = constraint.height();
+
             if ( !( sizePolicy( Qt::Vertical ) & growFlags ) )
-                h = qMin( h, hint.height() );
+            {
+                const auto maxH = QskLayoutConstraint::effectiveConstraint(
+                    m_item, Qt::PreferredSize ).height();
+
+                if ( maxH >= 0.0 )
+                    h = qMin( h, maxH );
+            }
 
             hint.setWidth( QskLayoutConstraint::widthForHeight( m_item, h ) );
             hint.setHeight( h );
         }
         else
         {
+            hint = QskLayoutConstraint::effectiveConstraint( m_item, Qt::PreferredSize );
+
             if ( dynamicConstraintOrientation() == Qt::Horizontal )
                 hint.setWidth( QskLayoutConstraint::widthForHeight( m_item, hint.height() ) );
             else
@@ -133,15 +148,16 @@ QSizeF QskLayoutItem::sizeHint(
         hint = QskLayoutConstraint::effectiveConstraint( m_item, whichHint );
     }
 
+    hint = hint.expandedTo( QSizeF( 0.0, 0.0 ) );
+
     return hint;
 }
 
 QLayoutPolicy::Policy QskLayoutItem::sizePolicy( Qt::Orientation orientation ) const
 {
     auto policy = QskLayoutConstraint::sizePolicy( m_item ).policy( orientation );
-#if 1
-    // we need to get rid of this extra check as we are calling sizeHint trillion times TODO ...
 
+#if 0
     if ( ( policy == QskSizePolicy::Preferred ) && m_item )
     {
         // QskSizePolicy::Preferred without having a preferred size is the default
