@@ -717,19 +717,21 @@ void QskSkinnable::startTransition( QskAspect::Aspect aspect,
     if ( control->window() == nullptr || !isTransitionAccepted( aspect ) )
         return;
 
-    // We might be invalid for one of the values, when an aspect
-    // has not been defined for all states ( f.e. metrics are expected
-    // to fallback to 0.0 ). In this case we create a default one.
+    /*
+        We might be invalid for one of the values, when an aspect
+        has not been defined for all states ( f.e. metrics are expected
+        to fallback to 0.0 ). In this case we create a default one.
+     */
 
     if ( !from.isValid() )
     {
-        from = QVariant( to.type() );
+        from = QVariant( to.userType(), nullptr );
     }
     else if ( !to.isValid() )
     {
-        to = QVariant( from.type() );
+        to = QVariant( from.userType(), nullptr );
     }
-    else if ( from.type() != to.type() )
+    else if ( from.userType() != to.userType() )
     {
         return;
     }
