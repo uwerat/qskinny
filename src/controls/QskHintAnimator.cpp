@@ -211,11 +211,7 @@ void QskHintAnimatorTable::start( QskControl* control,
         qskAnimatorGuard->registerTable( this );
     }
 
-    auto it = m_data->map.find( aspect );
-    if ( it == m_data->map.end() )
-        it = m_data->map.emplace( aspect, QskHintAnimator() ).first;
-
-    auto& animator = it->second;
+    auto& animator = m_data->map[ aspect ];
 
     animator.setAspect( aspect );
     animator.setStartValue( from );
