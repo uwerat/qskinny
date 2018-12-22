@@ -759,12 +759,17 @@ void QskSkinnable::startTransition( QskAspect::Aspect aspect,
     m_data->animators.start( control, aspect, animationHint, from, to );
 }
 
-void QskSkinnable::setSkinStateFlag( QskAspect::State state, bool on )
+void QskSkinnable::setSkinStateFlag( QskAspect::State stateFlag, bool on )
 {
     const auto newState = on
-        ? ( m_data->skinState | state )
-        : ( m_data->skinState & ~state );
+        ? ( m_data->skinState | stateFlag )
+        : ( m_data->skinState & ~stateFlag );
 
+    setSkinState( newState );
+}
+
+void QskSkinnable::setSkinState( QskAspect::State newState )
+{
     if ( m_data->skinState == newState )
         return;
 
