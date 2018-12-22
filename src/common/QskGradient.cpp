@@ -360,7 +360,40 @@ QskGradient QskGradient::interpolated(
     const QskGradient& to, qreal value ) const
 {
     if ( !( isValid() && to.isValid() ) )
-        return to;
+    {
+        if ( !isValid() && !to.isValid() )
+            return to;
+
+        qreal progress;
+        const QskGradient* gradient;
+
+        if ( to.isValid() )
+        {
+            progress = value;
+            gradient = &to;
+        }
+        else
+        {
+            progress = 1.0 - value;
+            gradient = this;
+        }
+        
+        /*
+            We interpolate as if the invalid gradient would be
+            a transparent version of the valid gradient
+         */
+
+        QVector< QskGradientStop > stops = gradient->m_stops;
+        for ( auto& stop : stops )
+        {
+            auto c = stop.color();
+            c.setAlpha( c.alpha() * progress );
+
+            stop.setColor( c );
+        }
+
+        return QskGradient( gradient->m_orientation, stops );
+    }
 
     if ( qskIsMonochrome( m_stops ) )
     {
@@ -422,7 +455,7 @@ QskGradient QskGradient::interpolated(
     {
         /*
             The interpolation is devided into 2 steps. First we
-            interpolate into a monochrome gradient and ten change
+            interpolate into a monochrome gradient and then change
             the orientation before we continue in direction of the
             final gradient.
          */
