@@ -92,6 +92,13 @@ linux-g++ | linux-g++-64 {
 
     # QMAKE_CXXFLAGS_RELEASE  *= -Ofast
     # QMAKE_CXXFLAGS_RELEASE  *= -Os
+
+    # Some versions ( here 2.31.1 ) of the BFD linker may generate shared
+    # libraries with corrupt symbol version info which leads to
+    # "invalid version 21" errors when the corrupt shared library is used. 
+    # One possible workaround is to use the gold linker instead.
+
+    # QMAKE_LFLAGS  *= -Wl,-fuse-ld=gold
 }
 
 pedantic {
