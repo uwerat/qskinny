@@ -25,8 +25,8 @@
 
 #define QSK_NAMESPACE( name ) namespace name
 #define QSK_ENUM( name ) \
-    inline const QMetaObject *qt_getEnumMetaObject(name) noexcept { return &staticMetaObject; } \
-    inline constexpr const char *qt_getEnumName(name) noexcept { return #name; }
+    inline const QMetaObject* qt_getEnumMetaObject(name) noexcept { return &staticMetaObject; } \
+    inline constexpr const char* qt_getEnumName(name) noexcept { return #name; }
 
 #endif
 
@@ -543,7 +543,7 @@ QSK_EXPORT void qskDebugAspect( QDebug, const QMetaObject*, QskAspect::Aspect );
     const QskAspect::State type::name = \
         QskAspect::registerState( &type::staticMetaObject, value, #type "::" #name );
 
-#if !defined(_MSC_VER)
+#if !defined( _MSC_VER )
 
 #define QSK_SUBCONTROLS( ... ) static const QskAspect::Subcontrol __VA_ARGS__;
 #define QSK_STATES( ... ) static const QskAspect::State __VA_ARGS__;
@@ -581,7 +581,7 @@ QSK_EXPORT void qskDebugAspect( QDebug, const QMetaObject*, QskAspect::Aspect );
 #define _QSK_EVAL_ARG_N( _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, A, B, C, D, E, F, N, ... ) N
 #define _QSK_EVAL_RSEQ_N() F, E, D, C, B, A, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
 
-#define _QSK_CAT(x,y) x##y
+#define _QSK_CAT(x,y) x ## y
 #define _QSK_EVAL_( N, m, ... ) _QSK_EXPAND( _QSK_CAT( _QSK_EVAL_, N )( m, __VA_ARGS__ ) )
 #define _QSK_EVAL( m, ... ) _QSK_EVAL_( _QSK_EVAL_NARG( __VA_ARGS__ ), m, __VA_ARGS__ )
 

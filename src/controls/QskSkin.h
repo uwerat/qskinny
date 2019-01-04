@@ -130,7 +130,7 @@ class QSK_EXPORT QskSkin : public QObject
   protected:
     QskSkinHintTable& skinHintTable();
 
-private:
+  private:
     void declareSkinlet( const QMetaObject* controlMetaObject,
         const QMetaObject* skinMetaObject );
 

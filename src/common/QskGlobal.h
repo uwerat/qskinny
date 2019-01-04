@@ -45,10 +45,10 @@
 
 #else
 
-template < typename T >
+template< typename T >
 struct QskAddConst { typedef const T Type; };
 
-template < typename T >
+template< typename T >
 constexpr typename QskAddConst< T >::Type& qskAsConst( T& t ) noexcept { return t; }
 
 template< typename T >

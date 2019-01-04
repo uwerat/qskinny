@@ -169,7 +169,7 @@ namespace
         void start()
         {
             m_notifyConnection =
-                QskAnimator::addAdvanceHandler( this, SLOT( notify( QQuickWindow* ) ) );
+                QskAnimator::addAdvanceHandler( this, SLOT(notify(QQuickWindow*)) );
 
             for ( auto& it : m_hintAnimatorMap )
                 it.second.start();

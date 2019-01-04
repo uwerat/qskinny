@@ -38,7 +38,7 @@ QSGNode* QskTextLabelSkinlet::updateSubNode(
     {
         case TextRole:
         {
-            return updateTextNode( label, node, 
+            return updateTextNode( label, node,
                 label->text(), label->textOptions(), QskTextLabel::Text );
         }
     }

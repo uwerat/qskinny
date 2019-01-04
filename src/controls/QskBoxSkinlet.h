@@ -26,7 +26,7 @@ class QSK_EXPORT QskBoxSkinlet : public QskSkinlet
     QRectF subControlRect( const QskSkinnable*,
         QskAspect::Subcontrol ) const override;
 
-protected:
+  protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 };

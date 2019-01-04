@@ -219,8 +219,8 @@ QVector< QMetaObject::Connection > QskFocusIndicator::connectItem( const QQuickI
     {
         if ( sender->metaObject()->indexOfSignal( "focusIndicatorRectChanged()" ) >= 0 )
         {
-            c += QObject::connect( sender, SIGNAL( focusIndicatorRectChanged() ),
-                this, SLOT( onFocusItemGeometryChanged() ) );
+            c += QObject::connect( sender, SIGNAL(focusIndicatorRectChanged()),
+                this, SLOT(onFocusItemGeometryChanged()) );
         }
     }
 

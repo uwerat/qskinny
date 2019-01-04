@@ -74,7 +74,7 @@ class QskMessageSubWindow::PrivateData
   public:
     QskGraphicLabel* symbolLabel;
     QskTextLabel* textLabel;
-};  
+};
 
 QskMessageSubWindow::QskMessageSubWindow( QQuickItem* parent )
     : Inherited( parent )

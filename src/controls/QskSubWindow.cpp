@@ -154,7 +154,7 @@ void QskSubWindow::setWindowIcon( const QskGraphic& graphic )
 
         Q_EMIT windowIconChanged();
     }
-}   
+}
 
 QskGraphic QskSubWindow::windowIcon() const
 {

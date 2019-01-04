@@ -55,7 +55,7 @@ void QskGraphicNode::setGraphic(
     {
         const auto oldRect = QskTextureNode::rect();
         isTextureDirty = ( rect.width() != static_cast< int >( oldRect.width() ) ) ||
-                         ( rect.height() != static_cast< int >( oldRect.height() ) );
+            ( rect.height() != static_cast< int >( oldRect.height() ) );
     }
 
     QskTextureNode::setRect( rect );

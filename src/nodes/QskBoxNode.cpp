@@ -54,7 +54,7 @@ void QskBoxNode::setBoxData( const QRectF& rect, const QskGradient& fillGradient
         QskBoxBorderColors(), fillGradient );
 }
 
-void QskBoxNode::setBoxData( const QRectF& rect, 
+void QskBoxNode::setBoxData( const QRectF& rect,
     const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& borderMetrics,
     const QskBoxBorderColors& borderColors, const QskGradient& fillGradient )
 {

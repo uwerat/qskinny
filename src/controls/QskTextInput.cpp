@@ -115,8 +115,8 @@ namespace
 
                 class Validator final : public QValidator
                 {
-                public:
-                    State validate(QString &, int &) const override
+                  public:
+                    State validate( QString&, int& ) const override
                     {
                         return QValidator::Acceptable;
                     }
@@ -153,7 +153,7 @@ namespace
             return this->event( event );
         }
 
-    protected:
+      protected:
         void geometryChanged(
             const QRectF& newGeometry, const QRectF& oldGeometry ) override
         {

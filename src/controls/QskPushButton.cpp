@@ -267,9 +267,9 @@ QSizeF QskPushButton::contentsSizeHint() const
     {
         if ( !m_data->graphicSource.isEmpty() )
             m_data->graphic = loadGraphic( m_data->graphicSource );
-        
+
         m_data->isGraphicSourceDirty = false;
-    }   
+    }
 
     if ( !m_data->graphic.isEmpty() )
     {

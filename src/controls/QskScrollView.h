@@ -12,7 +12,7 @@ class QSK_EXPORT QskScrollView : public QskControl
 {
     Q_OBJECT
 
-    Q_PROPERTY( QPointF scrollPos READ scrollPos 
+    Q_PROPERTY( QPointF scrollPos READ scrollPos
         WRITE setScrollPos NOTIFY scrollPosChanged FINAL )
 
     Q_PROPERTY( Qt::ScrollBarPolicy verticalScrollBarPolicy READ verticalScrollBarPolicy

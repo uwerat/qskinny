@@ -145,7 +145,7 @@ QRectF QskSubWindowSkinlet::titleRect( const QskSubWindow* subWindow ) const
             QskSubWindow::TitleBar | QskAspect::Spacing );
 
         const auto symbolRect = subControlRect( subWindow, QskSubWindow::TitleBarSymbol );
-        rect.setX( rect.x() + symbolRect.right() + spacing ); 
+        rect.setX( rect.x() + symbolRect.right() + spacing );
 
 #if 0
         const QFontMetricsF fm( subWindow->effectiveFont( QskSubWindow::TitleBarText ) );

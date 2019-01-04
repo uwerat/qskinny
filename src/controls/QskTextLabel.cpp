@@ -136,7 +136,7 @@ void QskTextLabel::setElideMode( Qt::TextElideMode elideMode )
 {
     auto options = m_data->textOptions;
     options.setElideMode( elideMode );
-    
+
     setTextOptions( options );
 }
 

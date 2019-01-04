@@ -1267,7 +1267,7 @@ void QskControl::setFixedWidth( qreal width )
     auto size = d->explicitSizeHint( Qt::PreferredSize );
 
     if ( ( d->sizePolicy.horizontalPolicy() != QskSizePolicy::Fixed ) ||
-         ( size.width() != width ) )
+        ( size.width() != width ) )
     {
         size.setWidth( width );
 
@@ -1288,7 +1288,7 @@ void QskControl::setFixedHeight( qreal height )
     auto size = d->explicitSizeHint( Qt::PreferredSize );
 
     if ( ( d->sizePolicy.verticalPolicy() != QskSizePolicy::Fixed ) ||
-         ( size.height() != height ) )
+        ( size.height() != height ) )
     {
         size.setHeight( height );
 
@@ -1364,7 +1364,7 @@ void QskControl::resetImplicitSize()
     if ( d->controlFlags & QskControl::DeferredLayout )
     {
         /*
-            Is there a way to block consecutive calls ? 
+            Is there a way to block consecutive calls ?
             When the parent is requesting the preferred size, we could use
             d->blockedImplicitSize, but in case of dynamic constraints we don't
             have an indication when the event has been processed. TODO ...

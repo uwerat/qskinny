@@ -10,7 +10,7 @@
 #include <functional>
 
 #define QSK_DECLARE_OPERATORS_FOR_FLAGS( Flags ) \
-    constexpr inline Flags operator|( const Flags &a, const Flags &b ) noexcept \
+    constexpr inline Flags operator|( const Flags& a, const Flags& b ) noexcept \
     { \
         using underlying = typename std::underlying_type< Flags >::type; \
         return static_cast< Flags >( \

@@ -115,7 +115,7 @@ QRectF QskPushButtonSkinlet::graphicRect( const QskPushButton* button ) const
             r.setX( r.center().x() - 0.5 * maxW );
             r.setWidth( maxW );
         }
-    
+
         if ( maxH >= 0.0 && maxH < r.height() )
         {
             r.setY( r.center().y() - 0.5 * maxH );

@@ -20,7 +20,7 @@ class QSK_EXPORT QskMessageSubWindow : public QskDialogSubWindow
 
     Q_PROPERTY( QskTextOptions textOptions READ textOptions
         WRITE setTextOptions NOTIFY textOptionsChanged )
-    
+
     Q_PROPERTY( QUrl symbolSource READ symbolSource WRITE setSymbolSource )
 
     using Inherited = QskDialogSubWindow;
@@ -31,20 +31,20 @@ class QSK_EXPORT QskMessageSubWindow : public QskDialogSubWindow
 
     void setTextOptions( const QskTextOptions& );
     QskTextOptions textOptions() const;
-    
+
     QString text() const;
-    
+
     void setSymbolSource( const QUrl& url );
     QUrl symbolSource() const;
-    
+
     void setSymbolType( int symbolType );
-    
+
     void setSymbol( const QskGraphic& );
     QskGraphic symbol() const;
 
   public Q_SLOTS:
     void setText( const QString& );
-    
+
   Q_SIGNALS:
     void textChanged( const QString& );
     void textOptionsChanged( const QskTextOptions& );

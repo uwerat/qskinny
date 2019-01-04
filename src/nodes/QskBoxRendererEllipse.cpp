@@ -188,10 +188,13 @@ namespace
             }
         }
 
-        inline qreal dx1( int pos ) const { return m_inner[ pos] .dx; }
+        inline qreal dx1( int pos ) const { return m_inner[ pos].dx; }
+
         inline qreal dy1( int pos ) const { return m_inner[ pos ].dy; }
+
         inline qreal dx2( int pos ) const
             { return m_uniform ? m_outer[ 0 ].dx : m_outer[ pos ].dx; }
+
         inline qreal dy2( int pos ) const
             { return m_uniform ? m_outer[ 0 ].dy : m_outer[ pos ].dy; }
 
@@ -541,7 +544,7 @@ namespace
             const int stepCount = c[ 0 ].stepCount;
 #endif
 
-            Line *linesBR, *linesTR, *linesTL, *linesBL;
+            Line* linesBR, * linesTR, * linesTL, * linesBL;
             linesBR = linesTR = linesTL = linesBL = nullptr;
 
             const int numCornerLines = stepCount + 1;
@@ -1065,7 +1068,7 @@ QskBoxRenderer::Metrics::Metrics( const QRectF& rect,
                 c.radiusInnerX = c.radiusX - borderRight;
                 c.radiusInnerY = c.radiusY - borderTop;
 
-                c.isCropped = ( c.centerX >= innerQuad.right ) || 
+                c.isCropped = ( c.centerX >= innerQuad.right ) ||
                     ( c.centerY <= innerQuad.top );
                 break;
             }

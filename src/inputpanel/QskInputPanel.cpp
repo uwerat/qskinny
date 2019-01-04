@@ -321,7 +321,7 @@ void QskInputPanel::attachInputItem( QQuickItem* item )
             const QInputMethodEvent::Attribute attribute(
                 QInputMethodEvent::Cursor, 0, 0, QVariant() );
 
-            QCoreApplication::postEvent( item, 
+            QCoreApplication::postEvent( item,
                 new QInputMethodEvent( QString(), { attribute } ) );
         }
     }

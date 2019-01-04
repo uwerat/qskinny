@@ -18,6 +18,7 @@ QDebug operator<<( QDebug debug, Color color )
     debug << "C" << '(';
     debug << color.r << "," << color.g << "," << color.b << "," << color.a;
     debug << ')';
+
     return debug;
 }
 
@@ -25,7 +26,8 @@ QDebug operator<<( QDebug debug, ColoredLine line )
 {
     QDebugStateSaver saver( debug );
     qDebug() << qRound( line.p1.x ) << qRound( line.p1.y )
-            << "->" << qRound( line.p2.x ) << qRound( line.p2.y );
+        << "->" << qRound( line.p2.x ) << qRound( line.p2.y );
+
     return debug;
 }
 
@@ -33,7 +35,8 @@ QDebug operator<<( QDebug debug, Line line )
 {
     QDebugStateSaver saver( debug );
     qDebug() << qRound( line.p1.x ) << qRound( line.p1.y )
-            << "->" << qRound( line.p2.x ) << qRound( line.p2.y );
+        << "->" << qRound( line.p2.x ) << qRound( line.p2.y );
+
     return debug;
 }
 

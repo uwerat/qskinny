@@ -377,7 +377,7 @@ QskGradient QskGradient::interpolated(
             progress = 1.0 - value;
             gradient = this;
         }
-        
+
         /*
             We interpolate as if the invalid gradient would be
             a transparent version of the valid gradient

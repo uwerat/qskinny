@@ -66,7 +66,7 @@ QRectF QskPageIndicatorSkinlet::bulletRect(
     if ( indexDiff > ( indicator->count() - 1 ) )
         indexDiff = ( indicator->count() - indicator->currentIndex() ); // wrapping
 
-    const qreal sz =  ( indexDiff < 1 ) ?
+    const qreal sz = ( indexDiff < 1 ) ?
         ( 1 - indexDiff ) * szHighlighted + indexDiff * szNormal : szNormal;
 
     const qreal spacing = indicator->metric( QskPageIndicator::Panel | QskAspect::Spacing );

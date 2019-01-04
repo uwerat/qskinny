@@ -75,7 +75,7 @@ class QskMessageWindow::PrivateData
   public:
     QskGraphicLabel* symbolLabel;
     QskTextLabel* textLabel;
-};  
+};
 
 QskMessageWindow::QskMessageWindow( QWindow* parent )
     : Inherited( parent )
@@ -85,18 +85,18 @@ QskMessageWindow::QskMessageWindow( QWindow* parent )
         Qt::WindowCloseButtonHint | Qt::WindowSystemMenuHint );
 
     m_data->textLabel = new TextLabel( this );
-    
+
     m_data->symbolLabel = new SymbolLabel( this );
     m_data->symbolLabel->hide();
-    
+
     const auto alignment = Qt::AlignTop | Qt::AlignHCenter;
-    
+
     auto box = new QskLinearBox( Qt::Horizontal );
     box->setSpacing( 0 );
-    box->addItem( m_data->symbolLabel, alignment ); 
-    box->addItem( m_data->textLabel, alignment ); 
+    box->addItem( m_data->symbolLabel, alignment );
+    box->addItem( m_data->textLabel, alignment );
     box->setStretchFactor( m_data->textLabel, 10 );
-    
+
     setDialogContentItem( box );
 }
 

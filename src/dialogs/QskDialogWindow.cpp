@@ -117,7 +117,7 @@ QQuickItem* QskDialogWindow::dialogContentItem() const
 void QskDialogWindow::setDefaultButton( QskPushButton* button )
 {
     if ( !qskIsAncestorOf( m_data->buttonBox, button ) )
-    {   
+    {
 #if defined( QT_DEBUG )
         qWarning( "Only buttons of the QskDialogButtonBox can be the default button." );
 #endif

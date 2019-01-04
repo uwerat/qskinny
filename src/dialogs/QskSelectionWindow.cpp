@@ -11,8 +11,8 @@
 #include "QskTextLabel.h"
 #include "QskTextOptions.h"
 
-namespace 
-{   
+namespace
+{
     class TextLabel final : public QskTextLabel
     {
       public:

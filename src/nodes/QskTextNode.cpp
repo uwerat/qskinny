@@ -11,7 +11,7 @@
 #include <qfont.h>
 #include <qstring.h>
 
-static inline uint qskHash( 
+static inline uint qskHash(
     const QString& text, const QSizeF& size, const QFont& font,
     const QskTextOptions& options, const QskTextColors& colors,
     Qt::Alignment alignment, Qsk::TextStyle textStyle )

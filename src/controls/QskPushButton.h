@@ -68,11 +68,11 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     QRectF layoutRect() const override;
 
   public Q_SLOTS:
-    void setText( const QString& text );
-    void setGraphicSource( const QUrl& url );
-    void setGraphicSource( const QString& source );
+    void setText( const QString& );
+    void setGraphicSource( const QUrl& );
+    void setGraphicSource( const QString& );
     void setGraphic( const QskGraphic& );
-    void setGraphicSourceSize( const QSizeF & );
+    void setGraphicSourceSize( const QSizeF& );
 
   Q_SIGNALS:
     void cornerChanged();

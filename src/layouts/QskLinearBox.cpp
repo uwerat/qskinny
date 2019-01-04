@@ -394,7 +394,7 @@ void QskLinearBox::rearrange()
         QskLayoutItem* layoutItem = engine().layoutItemAt( i );
 
         if ( layoutItem->firstRow( Qt::Horizontal ) != col ||
-             layoutItem->firstRow( Qt::Vertical ) != row )
+            layoutItem->firstRow( Qt::Vertical ) != row )
         {
             engine().removeItem( layoutItem );
 
@@ -464,7 +464,7 @@ QRectF QskLinearBox::alignedLayoutRect( const QRectF& rect ) const
     }
 
     if ( ( m_data->extraSpacingAt & Qt::TopEdge ) ||
-         ( m_data->extraSpacingAt & Qt::BottomEdge ) )
+        ( m_data->extraSpacingAt & Qt::BottomEdge ) )
     {
         bool isExpandable = false;
 

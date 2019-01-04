@@ -99,7 +99,6 @@ class QSK_EXPORT QskDialog : public QObject
         Reverse         = 1 << 30
     };
 
-
     enum DialogCode
     {
         Rejected = 0,

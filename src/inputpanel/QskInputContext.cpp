@@ -206,7 +206,7 @@ class QskInputContext::PrivateData
 
         connect( panel, &QskInputPanel::visibleChanged,
             context, &QskInputContext::activeChanged );
-            
+
         connect( panel, &QskInputPanel::localeChanged,
             context, [] { qskSendToPlatformContext( QEvent::LocaleChange ); } );
 

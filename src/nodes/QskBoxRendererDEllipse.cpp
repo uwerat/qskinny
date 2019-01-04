@@ -467,7 +467,7 @@ namespace
                     }
 
                     while ( !m_iterator[ 1 ].isDone() &&
-                            ( m_iterator[ 0 ].value() > m_iterator[ 1 ].value() ) )
+                        ( m_iterator[ 0 ].value() > m_iterator[ 1 ].value() ) )
                     {
                         m_iterator[ 1 ].advance( metrics, m_curve );
                     }
@@ -498,7 +498,7 @@ namespace
                  */
 
                 while ( !m_iterator[ 1 ].isDone() &&
-                        ( m_iterator[ 0 ].value() > m_iterator[ 1 ].value() ) )
+                    ( m_iterator[ 0 ].value() > m_iterator[ 1 ].value() ) )
                 {
                     m_iterator[ 1 ].advance( m_metrics, m_curve );
                 }

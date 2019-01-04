@@ -111,7 +111,7 @@ namespace
         auto* materialNew = static_cast< Material* >( newMaterial );
 
         if ( ( materialOld == nullptr ) ||
-             ( materialOld->textureId() != materialNew->textureId() ) )
+            ( materialOld->textureId() != materialNew->textureId() ) )
         {
             auto funcs = QOpenGLContext::currentContext()->functions();
             funcs->glBindTexture( GL_TEXTURE_2D, materialNew->textureId() );

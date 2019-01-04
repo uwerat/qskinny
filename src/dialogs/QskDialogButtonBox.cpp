@@ -29,7 +29,7 @@ static void qskSendEventTo( QObject* object, QEvent::Type type )
 
 static inline QskDialog::ActionRole qskActionRole( QskDialog::Action action )
 {
-    const auto role = QPlatformDialogHelper::buttonRole( 
+    const auto role = QPlatformDialogHelper::buttonRole(
         static_cast< QPlatformDialogHelper::StandardButton >( action ) );
 
     return static_cast< QskDialog::ActionRole >( role );
@@ -260,7 +260,7 @@ void QskDialogButtonBox::addButton(
 
         /*
             To have a proper ownership. Inserting the buttons
-            according to the layout rules will be done later 
+            according to the layout rules will be done later
          */
         button->setParentItem( m_data->layoutBox );
 

@@ -12,14 +12,14 @@
 class QQuickItem;
 class QSGNode;
 class QRectF;
-template <typename T> class QList;
+template< typename T > class QList;
 
 /*
     Exporting methods from QQuickItemPrivate, that should be part
     of QQuickItem.
  */
 
-QSK_EXPORT bool qskIsItemComplete( const QQuickItem* item );
+QSK_EXPORT bool qskIsItemComplete( const QQuickItem* );
 QSK_EXPORT bool qskIsAncestorOf( const QQuickItem* item, const QQuickItem* child );
 QSK_EXPORT bool qskIsTransparentForPositioner( const QQuickItem* );
 QSK_EXPORT bool qskIsTabFence( const QQuickItem* );

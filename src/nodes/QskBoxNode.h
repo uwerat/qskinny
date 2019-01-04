@@ -20,7 +20,7 @@ class QSK_EXPORT QskBoxNode : public QSGGeometryNode
     QskBoxNode();
     ~QskBoxNode() override;
 
-    void setBoxData( const QRectF&, 
+    void setBoxData( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
         const QskBoxBorderColors&, const QskGradient& );
 
