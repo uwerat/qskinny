@@ -79,13 +79,30 @@ QRgb QskRgbValue::interpolated( QRgb rgb1, QRgb rgb2, qreal ratio )
 
 QColor QskRgbValue::interpolated( const QColor& c1, const QColor& c2, qreal ratio )
 {
-    if ( c1 != c2 && c1.isValid() && c2.isValid() )
+    if ( c1 == c2 )
+        return c2;
+
+    /*
+        If one of the colors is invalid we treat it like
+        a transparent version of the other color
+     */
+
+    if ( !c1.isValid() )
     {
-        if ( c1.spec() == c2.spec() )
-            return qskInterpolatedColor( c1, c2, ratio );
-        else
-            return qskInterpolatedColor( c1.convertTo( c2.spec() ), c2, ratio );
+        QColor c = c2;
+        c.setAlpha( ratio * c2.alpha() );
+        return c;
     }
 
-    return c2;
+    if ( !c2.isValid() )
+    {
+        QColor c = c1;
+        c.setAlpha( ( 1.0 - ratio ) * c1.alpha() );
+        return c;
+    }
+
+    if ( c1.spec() == c2.spec() )
+        return qskInterpolatedColor( c1, c2, ratio );
+    else
+        return qskInterpolatedColor( c1.convertTo( c2.spec() ), c2, ratio );
 }
