@@ -78,10 +78,10 @@ namespace
 
         inline void reset()
         {
-            for ( int i = 0; i < Count; i++ )
+            for ( auto& v : m_values )
             {
-                m_values[ i ].elapsed = -1;
-                m_values[ i ].velocity = 0;
+                v.elapsed = -1;
+                v.velocity = 0;
             }
             m_pos = 0;
         }
@@ -91,10 +91,8 @@ namespace
             qreal sum = 0;
             int numVelocities = 0;
 
-            for ( int i = 0; i < Count; i++ )
+            for ( const auto& v : m_values )
             {
-                const auto& v = m_values[ i ];
-
                 // only swipe events within the last 500 ms will be considered
                 if ( v.elapsed > 0 && ( elapsed - v.elapsed ) <= 500 )
                 {
