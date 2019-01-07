@@ -204,7 +204,7 @@ void QskScrollAreaClipItem::updateNode( QSGNode* )
     auto* d = QQuickItemPrivate::get( this );
 
     if ( QQuickItemPrivate::get( scrollArea() )->dirtyAttributes &
-         QQuickItemPrivate::ContentUpdateMask )
+        QQuickItemPrivate::ContentUpdateMask )
     {
         /*
             The update order depends on who calls update first and we

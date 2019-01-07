@@ -10,7 +10,7 @@
 
 class ParserTree
 {
-public:
+  public:
     void beginScope( int token );
     void addText( const char* );
     void endScope();
@@ -20,7 +20,7 @@ public:
         return m_interfaces;
     }
 
-private:
+  private:
     int scope() const;
 
     std::vector< Interface > m_interfaces;

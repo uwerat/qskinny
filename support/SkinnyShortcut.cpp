@@ -150,7 +150,7 @@ void SkinnyShortcut::showBackground()
 void SkinnyShortcut::changeFonts( int increment )
 {
     auto skin = qskSetup->skin();
-    
+
     const auto fonts = skin->fonts();
 
     for ( auto it = fonts.begin(); it != fonts.end(); ++it )

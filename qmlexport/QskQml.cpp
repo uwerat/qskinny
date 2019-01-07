@@ -340,7 +340,7 @@ void QskQml::registerTypes()
     QMetaType::registerConverter< qreal, QMarginsF >(
         []( qreal value ) { return QMarginsF( value, value, value, value ); } );
 
-    qRegisterAnimationInterpolator<QMarginsF>(
+        qRegisterAnimationInterpolator< QMarginsF >(
         []( const QMarginsF& from, const QMarginsF& to, qreal progress )
         {
             return QVariant::fromValue( QMarginsF(

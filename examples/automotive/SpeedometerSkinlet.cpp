@@ -132,7 +132,8 @@ QSGNode* SpeedometerSkinlet::updateLabelsNode( const Speedometer* speedometer, Q
         Speedometer::Panel ).marginsRemoved( panelMargins );
 
     QPointF center = QPointF( panelRect.x() + panelRect.width() / 2,
-                              panelRect.y() + panelRect.height() / 2 );
+        panelRect.y() + panelRect.height() / 2 );
+
     auto radius = static_cast< float >( panelRect.width() / 2 );
 
     const QMarginsF numbersMargins = speedometer->marginsHint( Speedometer::Labels );

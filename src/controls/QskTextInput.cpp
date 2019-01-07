@@ -775,10 +775,10 @@ QVariant QskTextInput::inputMethodQuery(
         {
             return locale();
         }
-        case Qt::ImCursorRectangle:
 #if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
         case Qt::ImInputItemClipRectangle:
 #endif
+        case Qt::ImCursorRectangle:
         {
             QVariant v = m_data->textInput->inputMethodQuery( query, argument );
 #if 1

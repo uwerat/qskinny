@@ -820,7 +820,7 @@ void QskControl::updateControlFlag( uint flag, bool on )
     Q_D( QskControl );
 
     if ( ( flag > std::numeric_limits< controlFlags_t >::max() ) ||
-         ( bool( d->controlFlags & flag ) == on ) )
+        ( bool( d->controlFlags & flag ) == on ) )
     {
         return;
     }

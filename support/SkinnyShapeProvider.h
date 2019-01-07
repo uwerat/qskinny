@@ -11,7 +11,7 @@
 
 class SKINNY_EXPORT SkinnyShapeProvider : public QskGraphicProvider
 {
-protected:
+  protected:
     const QskGraphic* loadGraphic( const QString& id ) const override final;
 };
 

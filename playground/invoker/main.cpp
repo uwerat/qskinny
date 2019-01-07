@@ -125,7 +125,7 @@ class Application : public QCoreApplication
 #if 1
         m_invoker.addMethodCall( m_object, "print0(double,int)" );
         m_invoker.addMethodCall( m_object, "print1(double,int)" );
-        m_invoker.addMethodCall( m_object, SLOT( print2( int, double ) ) );
+        m_invoker.addMethodCall( m_object, SLOT(print2(int,double)) );
         m_invoker.addMethodCall( m_object, "print3(double)" );
         m_invoker.addMethodCall( m_object, "print4(int)" );
         m_invoker.addMethodCall( m_object, "print4(int)" );

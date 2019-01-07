@@ -16,7 +16,7 @@
 
 class WebView : public QQuickWebEngineView
 {
-public:
+  public:
     WebView( const char* url, QQuickItem* parent = nullptr )
         : WebView( parent )
     {

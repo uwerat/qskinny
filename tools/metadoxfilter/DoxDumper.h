@@ -11,14 +11,14 @@
 
 class DoxDumper
 {
-public:
+  public:
     DoxDumper();
     int dump( const Interface&, FILE* );
 
     int dumpCpp( const Interface&, FILE* );
     int dumpQml( const Interface&, FILE* );
 
-private:
+  private:
     void doxPrintf( const char* format, ... );
 
     std::string expandedText(

@@ -60,10 +60,10 @@ class QSK_EXPORT QskBoxRenderer
         inline bool operator==( const Quad& other ) const
         {
             return
-               ( left == other.left ) &&
-               ( right == other.right ) &&
-               ( top == other.top ) &&
-               ( bottom == other.bottom );
+                ( left == other.left ) &&
+                ( right == other.right ) &&
+                ( top == other.top ) &&
+                ( bottom == other.bottom );
         }
 
         inline bool operator!=( const Quad& other ) const

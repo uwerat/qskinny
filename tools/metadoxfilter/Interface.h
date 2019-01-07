@@ -11,7 +11,7 @@
 
 class Property
 {
-public:
+  public:
     std::string name;
     std::string type;
 
@@ -24,7 +24,7 @@ public:
 
 class Enum
 {
-public:
+  public:
     std::string className;
     std::string qmlClassName;
     std::string description;
@@ -32,7 +32,7 @@ public:
 
 class Method
 {
-public:
+  public:
     Method( int methodType = -1 ):
         type( methodType )
     {
@@ -45,7 +45,7 @@ public:
 
 class Interface
 {
-public:
+  public:
     std::string className;
     std::string baseName;
     std::string qmlClassName;

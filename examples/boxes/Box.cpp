@@ -191,7 +191,7 @@ void Box::setGradient(
     }
 
     stops += QskGradientStop( 1.0,
-        pal.color( static_cast<Palette::Weight>( Palette::NumWeights - 1 ) ) );
+        pal.color( static_cast< Palette::Weight >( Palette::NumWeights - 1 ) ) );
 
     setGradient( QskGradient( orientation, stops ) );
 }

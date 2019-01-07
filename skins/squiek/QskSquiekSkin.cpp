@@ -769,7 +769,7 @@ void QskSquiekSkin::initSubWindowHints()
     setColor( Q::TitleBarText, pal.themeForeground );
 
     setSkinHint( Q::TitleBarText | Alignment,
-        static_cast<int>( Qt::AlignLeft | Qt::AlignVCenter ) );
+        static_cast< int >( Qt::AlignLeft | Qt::AlignVCenter ) );
 
     for ( auto subControl : { Q::Panel, Q::TitleBar, Q::TitleBarText } )
         setAnimation( subControl | Color, qskDuration );

@@ -13,7 +13,7 @@ class SKINNY_EXPORT SkinnyShortcut : public QObject
 {
     Q_OBJECT
 
-public:
+  public:
     enum Type
     {
         Quit            = 1 << 0,
@@ -31,7 +31,7 @@ public:
 
     static void enable( Types );
 
-private:
+  private:
     SkinnyShortcut( QObject* parent = nullptr );
 
     void rotateSkin();
