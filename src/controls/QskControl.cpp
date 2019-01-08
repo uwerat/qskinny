@@ -1697,8 +1697,24 @@ void QskControl::itemChange( QQuickItem::ItemChange change,
                     qskFilterWindow( value.window );
             }
 
-            QskWindowChangeEvent event(
-                qskReleasedWindowCounter->window(), value.window );
+#if 1
+            auto oldWindow = qskReleasedWindowCounter->window();
+            if ( oldWindow && ( oldWindow->activeFocusItem() == this ) )
+            {
+                /*
+                    When deleting the activeFocusItem inside of QQuickItem::polish 
+                    we run into crashes because of QQuickWindow::activeFocusItem()
+                    becomes a dangling pointer being used at the end of
+                    QQuickWindowPrivate::polishItems.
+                    The crash becomes less likely since
+                 */
+
+                QQuickWindowPrivate::get( oldWindow )->clearFocusInScope(
+                    qskNearestFocusScope( this ), this, Qt::OtherFocusReason );
+            }
+#endif
+
+            QskWindowChangeEvent event( oldWindow, value.window );
             QCoreApplication::sendEvent( this, &event );
 
             break;
