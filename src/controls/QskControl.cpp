@@ -1706,7 +1706,6 @@ void QskControl::itemChange( QQuickItem::ItemChange change,
                     we run into crashes because of QQuickWindow::activeFocusItem()
                     becomes a dangling pointer being used at the end of
                     QQuickWindowPrivate::polishItems.
-                    The crash becomes less likely since
                  */
 
                 QQuickWindowPrivate::get( oldWindow )->clearFocusInScope(
