@@ -546,6 +546,10 @@ QskControl::~QskControl()
     if ( qskRegistry )
         qskRegistry->remove( this );
 
+#if QT_VERSION < QT_VERSION_CHECK( 5, 10, 0 )
+    disconnect( this, &QQuickItem::enabledChanged, nullptr, nullptr );
+#endif
+
     /*
         We set componentComplete to false, so that operations
         that are triggered by detaching the item from its parent
