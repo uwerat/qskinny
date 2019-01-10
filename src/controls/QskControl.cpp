@@ -1706,12 +1706,15 @@ void QskControl::itemChange( QQuickItem::ItemChange change,
             if ( oldWindow && ( oldWindow->activeFocusItem() == this ) )
             {
                 /*
-                    When deleting the activeFocusItem inside of QQuickItem::polish 
-                    we run into crashes because of QQuickWindow::activeFocusItem()
-                    becomes a dangling pointer being used at the end of
-                    QQuickWindowPrivate::polishItems.
+                    Removing an item from the scene might result in
+                    changes of the active focus item. Unfortunately the corresponding
+                    FocusIn/Out events are sent, while the item tree is in an
+                    invalid state.
+                    When having event handlers, that do modifications of the focus
+                    ( f.e. assigning the local focus, inside of a focus scope )
+                    we might end up with having a dangling pointer for
+                    oldWindow->activeFocusItem().
                  */
-
                 QQuickWindowPrivate::get( oldWindow )->clearFocusInScope(
                     qskNearestFocusScope( this ), this, Qt::OtherFocusReason );
             }
