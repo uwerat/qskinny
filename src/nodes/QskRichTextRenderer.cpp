@@ -18,6 +18,8 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qquicktext_p_p.h>
 QSK_QT_PRIVATE_END
 
+// Since Qt 5.7 QQuickTextNode is public and could be used TODO ...
+
 namespace
 {
     class TextItem final : public QQuickText
