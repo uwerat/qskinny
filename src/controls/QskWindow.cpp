@@ -127,6 +127,12 @@ QskWindow::QskWindow( QWindow* parent )
     fmt.setSamples( 4 );
     setFormat( fmt );
 
+    /*
+        So that inheriting/resolving of the locale works
+        over all windows and items.
+     */
+    contentItem()->setProperty( "locale", locale() );
+
     if ( parent )
     {
         // also when the parent changes TODO ...
