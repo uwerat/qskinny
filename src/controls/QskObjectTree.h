@@ -50,10 +50,10 @@ namespace QskObjectTree
 
         bool visitDown( QObject* object ) override final
         {
-            if ( QskControl* control = qobject_cast< QskControl* >( object ) )
+            if ( auto control = qobject_cast< QskControl* >( object ) )
                 return setImplicitValue( control, m_value );
 
-            if ( QskWindow* window = qobject_cast< QskWindow* >( object ) )
+            if ( auto window = qobject_cast< QskWindow* >( object ) )
                 return setImplicitValue( window, m_value );
 
             return !setProperty( object, m_propertyName.constData(), m_value );
@@ -64,13 +64,13 @@ namespace QskObjectTree
             if ( isRoot( object ) )
                 return true;
 
-            if ( const QskControl* control = qobject_cast< const QskControl* >( object ) )
+            if ( auto control = qobject_cast< const QskControl* >( object ) )
             {
                 m_value = value( control );
                 return true;
             }
 
-            if ( const QskWindow* window = qobject_cast< const QskWindow* >( object ) )
+            if ( auto window = qobject_cast< const QskWindow* >( object ) )
             {
                 m_value = value( window );
                 return true;
