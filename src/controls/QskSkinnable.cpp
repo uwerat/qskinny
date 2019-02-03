@@ -340,22 +340,19 @@ QskColorFilter QskSkinnable::effectiveGraphicFilter(
         if ( v.canConvert< QskColorFilter >() )
             return v.value< QskColorFilter >();
 
-        if ( QskSkinTransition::isRunning() )
+        if ( auto control = owningControl() )
         {
-            v = QskSkinTransition::animatedGraphicFilter( hint.toInt() );
+            v = QskSkinTransition::animatedGraphicFilter(
+                    control->window(), hint.toInt() );
 
             if ( v.canConvert< QskColorFilter >() )
             {
-                if ( owningControl() )
-                {
-                    /*
-                        As it is hard to find out which controls depend
-                        on the animated graphic filters we reschedule
-                        our updates here.
-                     */
-                    owningControl()->update();
-                }
-
+                /*
+                    As it is hard to find out which controls depend
+                    on the animated graphic filters we reschedule
+                    our updates here.
+                 */
+                control->update();
                 return v.value< QskColorFilter >();
             }
         }
@@ -478,16 +475,19 @@ QVariant QskSkinnable::animatedValue(
                and are state aware
              */
 
-            if ( aspect.state() == QskAspect::NoState )
-                aspect = aspect | skinState();
-
-            Q_FOREVER
+            if ( const auto control = owningControl() )
             {
-                v = QskSkinTransition::animatedHint( aspect );
-                if ( v.isValid() || aspect.state() == QskAspect::NoState )
-                    break;
+                if ( aspect.state() == QskAspect::NoState )
+                    aspect = aspect | skinState();
 
-                aspect.clearState( aspect.topState() );
+                Q_FOREVER
+                {
+                    v = QskSkinTransition::animatedHint( control->window(), aspect );
+                    if ( v.isValid() || aspect.state() == QskAspect::NoState )
+                        break;
+
+                    aspect.clearState( aspect.topState() );
+                }
             }
         }
     }

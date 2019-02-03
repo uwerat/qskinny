@@ -5,6 +5,7 @@
 #include "QskAspect.h"
 
 class QskSkin;
+class QQuickWindow;
 class QVariant;
 
 class QSK_EXPORT QskSkinTransition
@@ -36,8 +37,8 @@ class QSK_EXPORT QskSkinTransition
     void process();
 
     static bool isRunning();
-    static QVariant animatedHint( QskAspect::Aspect );
-    static QVariant animatedGraphicFilter( int graphicRole );
+    static QVariant animatedHint( const QQuickWindow*, QskAspect::Aspect );
+    static QVariant animatedGraphicFilter( const QQuickWindow*, int graphicRole );
 
   protected:
     virtual void updateSkin( QskSkin*, QskSkin* );

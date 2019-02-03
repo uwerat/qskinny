@@ -157,39 +157,26 @@ static QVector< AnimatorCandidate > qskAnimatorCandidates(
 
 namespace
 {
-    class AnimatorGroup final : public QObject
+    class AnimatorGroup
     {
-        Q_OBJECT
-
       public:
-        AnimatorGroup()
+        AnimatorGroup( QQuickWindow* window = nullptr )
+            : m_window( window )
         {
+        }
+
+        inline const QQuickWindow* window() const
+        {
+            return m_window;
         }
 
         void start()
         {
-            m_notifyConnection =
-                QskAnimator::addAdvanceHandler( this, SLOT(notify(QQuickWindow*)) );
-
             for ( auto& it : m_hintAnimatorMap )
                 it.second.start();
 
             for ( auto& it : m_graphicFilterAnimatorMap )
                 it.second.start();
-        }
-
-        bool isRunning() const
-        {
-            return !m_hintAnimatorMap.empty();
-        }
-
-        void reset()
-        {
-            disconnect( m_notifyConnection );
-
-            m_hintAnimatorMap.clear();
-            m_graphicFilterAnimatorMap.clear();
-            m_updateInfos.clear();
         }
 
         inline QVariant animatedHint( QskAspect::Aspect aspect ) const
@@ -219,7 +206,7 @@ namespace
         }
 
         void addGraphicFilterAnimators(
-            QQuickWindow* window, const QskAnimationHint& animatorHint,
+            const QskAnimationHint& animatorHint,
             const std::unordered_map< int, QskColorFilter >& oldFilters,
             const std::unordered_map< int, QskColorFilter >& newFilters )
         {
@@ -237,7 +224,7 @@ namespace
                 if ( f1 != f2 )
                 {
                     QskVariantAnimator animator;
-                    animator.setWindow( window );
+                    animator.setWindow( m_window );
                     animator.setDuration( animatorHint.duration );
                     animator.setEasingCurve( animatorHint.type );
                     animator.setStartValue( QVariant::fromValue( f1 ) );
@@ -275,16 +262,11 @@ namespace
                 addAnimators( child, animatorHint, candidates, skin );
         }
 
-      private Q_SLOTS:
-        void notify( QQuickWindow* window )
+        void update()
         {
-            if ( m_updateInfos.empty() )
-                return;
-
             for ( auto& info : m_updateInfos )
             {
-                QskControl* control = info.control;
-                if ( control && control->window() == window )
+                if ( auto control = info.control )
                 {
                     if ( info.updateModes & UpdateInfo::Polish )
                     {
@@ -296,15 +278,10 @@ namespace
                         control->update();
                 }
             }
-
-            if ( !m_hintAnimatorMap.empty() )
-            {
-                if ( !m_hintAnimatorMap.begin()->second.isRunning() )
-                    reset();
-            }
         }
 
       private:
+
         void addControlAnimators( QskControl* control, const QskAnimationHint& animatorHint,
             const QVector< AnimatorCandidate >& candidates )
         {
@@ -411,15 +388,113 @@ namespace
                 m_updateInfos.insert( it, info );
         }
 
+        QQuickWindow* m_window;
         std::unordered_map< QskAspect::Aspect, QskHintAnimator > m_hintAnimatorMap;
         std::unordered_map< int, QskVariantAnimator > m_graphicFilterAnimatorMap;
         std::vector< UpdateInfo > m_updateInfos; // vector: for fast iteration
+    };
 
-        QMetaObject::Connection m_notifyConnection;
+    class AnimatorGroups : public QObject
+    {
+        Q_OBJECT
+
+      public:
+        ~AnimatorGroups()
+        {
+            reset();
+        }
+
+        inline AnimatorGroup* animatorGroup( const QQuickWindow* window )
+        {
+            if ( !m_animatorGroups.empty() && window )
+            {
+                for ( auto group : m_animatorGroups )
+                {
+                    if ( group->window() == window )
+                        return group;
+                }
+            }
+
+            return nullptr;
+        }
+
+        void add( AnimatorGroup* group )
+        {
+            m_animatorGroups.push_back( group );
+        }
+
+        void start()
+        {
+            m_connections[0] = QskAnimator::addAdvanceHandler(
+                this, SLOT(notify(QQuickWindow*)), Qt::UniqueConnection );
+
+            m_connections[1] = QskAnimator::addCleanupHandler(
+                this, SLOT(cleanup(QQuickWindow*)), Qt::UniqueConnection );
+
+            for ( auto& group : m_animatorGroups )
+                group->start();
+        }
+
+        void reset()
+        {
+            qDeleteAll( m_animatorGroups );
+            m_animatorGroups.clear();
+
+            disconnect( m_connections[0] );
+            disconnect( m_connections[1] );
+        }
+
+        inline bool isRunning() const
+        {
+            return !m_animatorGroups.empty();
+        }
+
+      private Q_SLOTS:
+        void notify( QQuickWindow* window )
+        {
+            for ( auto& group : m_animatorGroups )
+            {
+                if ( group->window() == window )
+                {
+                    group->update();
+                    return;
+                }
+            }
+        }
+
+        void cleanup( QQuickWindow* window )
+        {
+            for ( auto it = m_animatorGroups.begin();
+                it != m_animatorGroups.end(); ++it )
+            {
+                auto group = *it;
+                if ( group->window() == window )
+                {
+                    m_animatorGroups.erase( it );
+                    delete group;
+
+                    break;
+                }
+            }
+
+            if ( m_animatorGroups.empty() )
+                reset();
+        }
+
+      private:
+        /*
+            It should be possible to find an implementation, that interpolates
+            a skin hint only once for all windows. But as our animtors are driven by
+            QQuickWindow::afterAnimating the code will have to be somehow tricky.
+            But as skin transitions are no operations, that happen often, we can accept
+            the overhaed of the current implementation and do the finetuning later.
+         */
+        std::vector< AnimatorGroup* > m_animatorGroups;
+        QMetaObject::Connection m_connections[2];
     };
 }
 
-Q_GLOBAL_STATIC( AnimatorGroup, qskSkinAnimator )
+Q_GLOBAL_STATIC( AnimatorGroups, qskSkinAnimator )
 
 QskSkinTransition::QskSkinTransition()
     : m_mask( QskSkinTransition::AllTypes )
@@ -514,14 +589,17 @@ void QskSkinTransition::process()
         bool doGraphicFilter = m_mask & QskSkinTransition::Color;
 
         const auto windows = qGuiApp->topLevelWindows();
+
         for ( const auto window : windows )
         {
             if ( auto quickWindow = qobject_cast< QQuickWindow* >( window ) )
             {
+                auto* group = new AnimatorGroup( quickWindow );
+
                 if ( doGraphicFilter )
                 {
-                    qskSkinAnimator->addGraphicFilterAnimators(
-                        quickWindow, m_animationHint, oldFilters,
+                    group->addGraphicFilterAnimators(
+                        m_animationHint, oldFilters,
                         m_skins[ 1 ]->graphicFilters() );
 
                     doGraphicFilter = false;
@@ -532,8 +610,10 @@ void QskSkinTransition::process()
                    over the the item trees.
                  */
 
-                qskSkinAnimator->addAnimators( quickWindow->contentItem(),
+                group->addAnimators( quickWindow->contentItem(),
                     m_animationHint, candidates, m_skins[ 1 ] );
+
+                qskSkinAnimator->add( group );
             }
         }
 
@@ -543,23 +623,34 @@ void QskSkinTransition::process()
 
 bool QskSkinTransition::isRunning()
 {
-    return qskSkinAnimator.exists() && qskSkinAnimator->isRunning();
+    if ( qskSkinAnimator.exists() )
+        return qskSkinAnimator->isRunning();
+
+    return false;
 }
 
-QVariant QskSkinTransition::animatedHint( QskAspect::Aspect aspect )
+QVariant QskSkinTransition::animatedHint(
+    const QQuickWindow* window, QskAspect::Aspect aspect )
 {
-    if ( !qskSkinAnimator.exists() )
-        return QVariant();
+    if ( qskSkinAnimator.exists() )
+    {
+        if ( const auto group = qskSkinAnimator->animatorGroup( window ) )
+            return group->animatedHint( aspect );
+    }
 
-    return qskSkinAnimator->animatedHint( aspect );
+    return QVariant();
 }
 
-QVariant QskSkinTransition::animatedGraphicFilter( int graphicRole )
+QVariant QskSkinTransition::animatedGraphicFilter(
+    const QQuickWindow* window, int graphicRole )
 {
-    if ( !qskSkinAnimator.exists() )
-        return QVariant();
+    if ( qskSkinAnimator.exists() )
+    {
+        if ( const auto group = qskSkinAnimator->animatorGroup( window ) )
+            return group->animatedGraphicFilter( graphicRole );
+    }
 
-    return qskSkinAnimator->animatedGraphicFilter( graphicRole );
+    return QVariant();
 }
 
 #include "QskSkinTransition.moc"
