@@ -12,6 +12,7 @@
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickwindow_p.h>
+#include <private/qquickitem_p.h>
 QSK_QT_PRIVATE_END
 
 QSK_SUBCONTROL( QskPopup, Overlay )
@@ -33,9 +34,15 @@ static void qskSetFocus( QQuickItem* item, bool on )
         auto dw = QQuickWindowPrivate::get( item->window() );
 
         if ( on )
+        {
             dw->setFocusInScope( scope, item, Qt::PopupFocusReason );
+        }
         else
-            dw->clearFocusInScope( scope, item, Qt::PopupFocusReason );
+        {
+            // to avoid an assertion we have to check if we have the subFocus
+            if ( QQuickItemPrivate::get( scope )->subFocusItem == item )
+                dw->clearFocusInScope( scope, item, Qt::PopupFocusReason );
+        }
     }
 }
 
