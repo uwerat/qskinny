@@ -70,7 +70,7 @@ class QSK_EXPORT QskLayout : public QskControl
 
 inline bool QskLayout::isEmpty() const
 {
-    return itemCount() > 0;
+    return itemCount() <= 0;
 }
 
 inline void QskLayout::removeItem( const QQuickItem* item )
