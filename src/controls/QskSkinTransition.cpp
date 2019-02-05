@@ -179,6 +179,25 @@ namespace
                 it.second.start();
         }
 
+        bool isRunning() const
+        {
+            if ( !m_hintAnimatorMap.empty() )
+            {
+                const auto& animator = m_hintAnimatorMap.begin()->second;
+                if ( animator.isRunning() )
+                    return true;
+            }
+
+            if ( !m_graphicFilterAnimatorMap.empty() )
+            {
+                const auto& animator = m_graphicFilterAnimatorMap.begin()->second;
+                if ( animator.isRunning() )
+                    return true;
+            }
+
+            return false;
+        }
+
         inline QVariant animatedHint( QskAspect::Aspect aspect ) const
         {
             auto it = m_hintAnimatorMap.find( aspect );
@@ -470,8 +489,13 @@ namespace
                 auto group = *it;
                 if ( group->window() == window )
                 {
-                    m_animatorGroups.erase( it );
-                    delete group;
+                    if ( !group->isRunning() )
+                    {
+                        // The notification might be for other animators
+
+                        m_animatorGroups.erase( it );
+                        delete group;
+                    }
 
                     break;
                 }
