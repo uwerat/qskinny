@@ -251,8 +251,19 @@ void QskPopup::updateInputGrabber()
     }
     else
     {
-        delete m_data->inputGrabber;
-        m_data->inputGrabber = nullptr;
+        if ( m_data->inputGrabber )
+        {
+            /*
+                In QQuickWindowPrivate::deliverPressOrReleaseEvent ( 5.12 )
+                might crash, when we delete the grabber as a result of a
+                mouse event somewehere below the popup. 
+             */
+            m_data->inputGrabber->setParentItem( nullptr );
+            m_data->inputGrabber->setParent( nullptr );
+            m_data->inputGrabber->deleteLater();
+
+            m_data->inputGrabber = nullptr;
+        }
     }
 }
 
