@@ -395,6 +395,7 @@ void QskInputContext::showPanel( const QQuickItem* item )
 
         auto popup = m_data->createPopup( panel );
 
+        popup->setPopupFlag( QskPopup::DeleteOnClose, true );
         popup->setParentItem( item->window()->contentItem() );
         popup->setParent( this );
 
@@ -414,7 +415,7 @@ void QskInputContext::hidePanel( const QQuickItem* item )
     if ( auto channel = m_data->channels.channel( item ) )
     {
         if ( channel->popup )
-            channel->popup->deleteLater();
+            channel->popup->close(); // deleteOnClose is set
 
         if ( channel->window )
             channel->window->close(); // deleteOnClose is set
