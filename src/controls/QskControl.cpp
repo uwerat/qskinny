@@ -1665,7 +1665,7 @@ void QskControl::itemChange( QQuickItem::ItemChange change,
 
                 if ( d->controlFlags & QskControl::DeferredUpdate )
                 {
-                    if ( d->dirtyAttributes )
+                    if ( d->dirtyAttributes && ( d->flags & QQuickItem::ItemHasContents ) )
                         update();
                 }
             }
