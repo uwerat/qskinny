@@ -11,6 +11,8 @@
 #include "QskTabBar.h"
 #include "QskTabButton.h"
 
+#include <QPointer>
+
 QSK_SUBCONTROL( QskTabView, TabBar )
 QSK_SUBCONTROL( QskTabView, Page )
 
@@ -108,6 +110,9 @@ int QskTabView::insertTab( int index, QskTabButton* button, QQuickItem* item )
 {
     // multiple insertion ???
 
+    if ( item && item->parent() == nullptr )
+        item->setParent( this );
+
     index = m_data->tabBar->insertTab( index, button );
     m_data->stackBox->insertItem( index, item, Qt::Alignment() );
 
@@ -128,10 +133,20 @@ void QskTabView::removeTab( int index )
 {
     if ( index >= 0 && index < m_data->tabBar->count() )
     {
+        QPointer< QQuickItem > tabItem = m_data->stackBox->itemAtIndex( index );
+
         // indexes still in sync ???
 
         m_data->tabBar->removeTab( index );
         m_data->stackBox->removeAt( index );
+
+        if ( tabItem )
+        {
+            if ( tabItem->parent() == this )
+                delete tabItem;
+            else
+                tabItem->setParentItem( nullptr );
+        }
     }
 }
 
