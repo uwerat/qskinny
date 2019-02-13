@@ -17,6 +17,7 @@
 #include <QskTabView.h>
 #include <QskTextLabel.h>
 #include <QskWindow.h>
+#include <QskShortcutMap.h>
 
 #include <QGuiApplication>
 
@@ -95,6 +96,12 @@ int main( int argc, char* argv[] )
     window.addItem( focusIndicator );
 
     window.show();
+
+    for ( int i = 0; i < 10; i++ )
+    {
+        QskShortcutMap::addShortcut( Qt::Key_F1 + i, false,
+            [tabView, i] { tabView->removeTab( i ); } );
+    }
 
     return app.exec();
 }
