@@ -102,7 +102,7 @@ void QskStackBox::layoutItemRemoved( QskLayoutItem*, int index )
         if ( newIndex >= 0 )
             setCurrentIndex( index );
     }
-    else if ( index > m_data->currentIndex )
+    else if ( index < m_data->currentIndex )
     {
         m_data->currentIndex--;
         // currentIndexChanged ???
