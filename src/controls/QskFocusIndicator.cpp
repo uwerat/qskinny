@@ -73,7 +73,8 @@ void QskFocusIndicator::onFocusItemChanged()
     if ( window() == nullptr )
         return;
 
-    const QQuickItem* focusItem = window()->activeFocusItem();
+    const auto focusItem = window()->activeFocusItem();
+
     if ( ( focusItem == nullptr ) || ( focusItem == window()->contentItem() ) )
     {
         /*
@@ -83,10 +84,9 @@ void QskFocusIndicator::onFocusItemChanged()
          */
 
         if ( parentItem() != window()->contentItem() )
-        {
             setParentItem( window()->contentItem() );
-            updateFocusFrame();
-        }
+
+        updateFocusFrame();
 
         return;
     }
@@ -143,7 +143,7 @@ QRectF QskFocusIndicator::focusRect() const
 {
     if ( window() && parentItem() )
     {
-        const QQuickItem* item = window()->activeFocusItem();
+        const auto item = window()->activeFocusItem();
 
         if ( item && ( item != this ) && item->isVisible() &&
             ( item != window()->contentItem() ) )
