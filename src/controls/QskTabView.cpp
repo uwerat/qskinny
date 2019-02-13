@@ -135,10 +135,13 @@ void QskTabView::removeTab( int index )
     {
         QPointer< QQuickItem > tabItem = m_data->stackBox->itemAtIndex( index );
 
-        // indexes still in sync ???
-
-        m_data->tabBar->removeTab( index );
+        /*
+            We have to remove the item from the stackBox first. Removing
+            the tab then will result in a currentIndexChanged, where the stack
+            box will be resynced.
+         */
         m_data->stackBox->removeAt( index );
+        m_data->tabBar->removeTab( index );
 
         if ( tabItem )
         {

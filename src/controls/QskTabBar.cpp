@@ -20,6 +20,20 @@ class QskTabBar::PrivateData
     {
     }
 
+    void connectButton( QskTabButton* button, QskTabBar* tabBar, bool on )
+    {
+        if ( on )
+        {
+            connect( button, &QskTabButton::toggled,
+                tabBar, &QskTabBar::adjustCurrentIndex, Qt::UniqueConnection );
+        }
+        else
+        {
+            disconnect( button, &QskTabButton::toggled,
+                tabBar, &QskTabBar::adjustCurrentIndex );
+        }
+    }
+
     int currentIndex;
     QskTextOptions textOptions;
     QskLinearBox* layoutBox;
@@ -132,21 +146,7 @@ int QskTabBar::insertTab( int index, QskTabButton* button )
     if ( button->textOptions() != m_data->textOptions )
         button->setTextOptions( m_data->textOptions );
 
-    auto onTabSelected =
-        [ this, button ] ( bool on )
-        {
-            if ( on )
-            {
-                const int pos = indexOf( button );
-                if ( pos >= 0 && pos != m_data->currentIndex )
-                {
-                    m_data->currentIndex = pos;
-                    Q_EMIT currentIndexChanged( pos );
-                }
-            }
-        };
-
-    connect( button, &QskTabButton::toggled, this, onTabSelected );
+    m_data->connectButton( button, this, true );
 
     Q_EMIT countChanged();
 
@@ -155,45 +155,67 @@ int QskTabBar::insertTab( int index, QskTabButton* button )
 
 void QskTabBar::removeTab( int index )
 {
-    QQuickItem* item = m_data->layoutBox->itemAtIndex( index );
-    if ( item )
+    auto item = m_data->layoutBox->itemAtIndex( index );
+    if ( item == nullptr )
+        return;
+
+    delete item;
+
+    if ( index > m_data->currentIndex )
     {
-        delete m_data->layoutBox->itemAtIndex( index );
         Q_EMIT countChanged();
+    }
+    else if ( index < m_data->currentIndex )
+    {
+        m_data->currentIndex--;
 
-        if ( index == m_data->currentIndex )
+        Q_EMIT countChanged();
+        Q_EMIT currentIndexChanged( m_data->currentIndex );
+    }
+    else
+    {
+        QskTabButton* nextButton = nullptr;
+        int nextIndex = -1;
+
+        for ( int i = m_data->currentIndex; i >= 0; i-- )
         {
-            QskTabButton* nextButton = nullptr;
-
-            for ( int i = m_data->currentIndex; i >= 0; i-- )
+            auto button = buttonAt( i );
+            if ( button && button->isEnabled() )
             {
-                QskTabButton* btn = buttonAt( index );
-                if ( btn && btn->isEnabled() )
+                nextButton = button;
+                nextIndex = i;
+
+                break;
+            }
+        }
+
+        if ( nextButton == nullptr )
+        {
+            for ( int i = m_data->currentIndex + 1; i < count(); i++ )
+            {
+                auto button = buttonAt( i );
+                if ( button && button->isEnabled() )
                 {
-                    nextButton = btn;
+                    nextButton = button;
+                    nextIndex = i;
+
                     break;
                 }
             }
-
-            if ( nextButton == nullptr )
-            {
-                for ( int i = m_data->currentIndex; i < count(); i++ )
-                {
-                    QskTabButton* btn = buttonAt( index );
-                    if ( btn && btn->isEnabled() )
-                    {
-                        nextButton = btn;
-                        break;
-                    }
-                }
-            }
-
-            if ( nextButton && !nextButton->isChecked() )
-                nextButton->setChecked( true );
         }
-    }
 
-    restack();
+        if ( nextButton )
+        {
+            m_data->connectButton( nextButton, this, false );
+            nextButton->setChecked( true );
+            m_data->connectButton( nextButton, this, true );
+        }
+        
+        m_data->currentIndex = nextIndex;
+        
+        Q_EMIT countChanged();
+        Q_EMIT currentIndexChanged( nextIndex );
+    }
 }
 
 void QskTabBar::clear()
@@ -212,17 +234,16 @@ void QskTabBar::clear()
 
 bool QskTabBar::isTabEnabled( int index ) const
 {
-    const QskTabButton* btn = buttonAt( index );
-    return btn ? btn->isEnabled() : false;
+    const auto button = buttonAt( index );
+    return button ? button->isEnabled() : false;
 }
 
 void QskTabBar::setTabEnabled( int index, bool enabled )
 {
-    QskTabButton* btn = buttonAt( index );
-    if ( btn )
+    if ( auto button = buttonAt( index ) )
     {
         // what happens, when it is the current button ???
-        btn->setEnabled( enabled );
+        button->setEnabled( enabled );
     }
 }
 
@@ -232,9 +253,9 @@ void QskTabBar::setCurrentIndex( int index )
     {
         if ( isComponentComplete() )
         {
-            QskTabButton* btn = buttonAt( index );
-            if ( btn && btn->isEnabled() && !btn->isChecked() )
-                btn->setChecked( true );
+            auto button = buttonAt( index );
+            if ( button && button->isEnabled() && !button->isChecked() )
+                button->setChecked( true );
         }
         else
         {
@@ -261,7 +282,7 @@ QskTabButton* QskTabBar::buttonAt( int position )
 
 const QskTabButton* QskTabBar::buttonAt( int position ) const
 {
-    QskTabBar* that = const_cast< QskTabBar* >( this );
+    auto that = const_cast< QskTabBar* >( this );
     return that->buttonAt( position );
 }
 
@@ -282,8 +303,8 @@ QString QskTabBar::currentButtonText() const
 
 QString QskTabBar::buttonTextAt( int index ) const
 {
-    if ( const QskTabButton* btn = buttonAt( index ) )
-        return btn->text();
+    if ( const auto button = buttonAt( index ) )
+        return button->text();
 
     return QString();
 }
@@ -300,18 +321,43 @@ void QskTabBar::componentComplete()
     if ( m_data->currentIndex < 0 && count() >= 0 )
         m_data->currentIndex = 0;
 
-    QskTabButton* btn = buttonAt( m_data->currentIndex );
-    if ( btn && btn->isEnabled() && !btn->isChecked() )
-        btn->setChecked( true );
+    if ( auto button = buttonAt( m_data->currentIndex ) )
+    {
+        if ( button->isEnabled() && !button->isChecked() )
+            button->setChecked( true );
+    }
 }
 
 void QskTabBar::restack()
 {
-    const int c = currentIndex();
+    const auto index = m_data->currentIndex;
     for ( int i = count() - 1; i >= 0; --i )
     {
         auto button = buttonAt( i );
-        button->setZ( c == i ? count() : ( count() - i ) );
+        button->setZ( ( index == i ) ? count() : ( count() - i ) );
+    }
+}
+
+void QskTabBar::adjustCurrentIndex()
+{
+    int index = -1;
+
+    for ( int i = 0; i < count(); i++ )
+    {
+        if ( auto button = buttonAt( i ) )
+        {
+            if ( button->isChecked() )
+            {
+                index = i;
+                break;
+            }
+        }
+    }
+
+    if ( index != m_data->currentIndex )
+    {
+        m_data->currentIndex = index;
+        Q_EMIT currentIndexChanged( index );
     }
 }
 

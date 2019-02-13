@@ -85,6 +85,7 @@ class QSK_EXPORT QskTabBar : public QskBox
     void componentComplete() override;
 
   private:
+    void adjustCurrentIndex();
     void restack();
 
     class PrivateData;
