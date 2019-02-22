@@ -156,7 +156,7 @@ namespace
         void unregisterTable( QskHintAnimatorTable* table )
         {
             auto it = std::lower_bound( m_tables.begin(), m_tables.end(), table );
-            if ( it != m_tables.end() )
+            if ( it != m_tables.end() && *it == table )
                 m_tables.erase( it );
         }
 
