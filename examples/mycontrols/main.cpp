@@ -47,18 +47,20 @@ class ContentBox : public QskBox
 
         auto layout = new QskLinearBox( Qt::Horizontal, 2, this );
         layout->setMargins( 10 );
-        layout->setSpacing( 10 );
+        layout->setSpacing( 20 );
         layout->setDefaultAlignment( Qt::AlignCenter );
         layout->setExtraSpacingAt( Qt::BottomEdge );
 
         {
             auto button = new MyToggleButton( layout );
+            button->setSizePolicy( QskSizePolicy::MinimumExpanding, QskSizePolicy::MinimumExpanding );
             button->setTextAt( 0, "On" );
             button->setTextAt( 1, "Off" );
         }
 
         {
             auto button = new MyToggleButton( layout );
+            button->setSizePolicy( QskSizePolicy::MinimumExpanding, QskSizePolicy::MinimumExpanding );
             button->setIconAt( 0, "image://shapes/Ring/Khaki" );
             button->setIconAt( 1, "image://shapes/Diamond/Khaki" );
         }
