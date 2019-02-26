@@ -72,7 +72,7 @@ namespace
       private:
         void addRectangle( const char* colorName )
         {
-            TestRectangle* rect = new TestRectangle( colorName );
+            auto rect = new TestRectangle( colorName );
             rect->setText( QString::number( itemCount() + 1 ) );
 
             addItem( rect, Qt::AlignCenter );
@@ -86,9 +86,9 @@ LinearLayoutPage::LinearLayoutPage( QQuickItem* parent )
     setMargins( 10 );
     setBackgroundColor( QskRgbValue::LightSteelBlue );
 
-    Box* box = new Box();
+    auto box = new Box();
 
-    ButtonBox* buttonBox = new ButtonBox();
+    auto buttonBox = new ButtonBox();
     buttonBox->addButton( "Flip", [ box ]() { box->transpose(); } );
     buttonBox->addButton( "Mirror", [ box ]() { box->mirror(); } );
     buttonBox->addButton( "Rotate", [ box ]() { box->rotate(); } );

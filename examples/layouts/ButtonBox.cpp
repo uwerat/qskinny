@@ -16,8 +16,9 @@ ButtonBox::ButtonBox( QQuickItem* parent )
 void ButtonBox::addButton(
     const QString& text, std::function< void() > func, bool autoRepeat )
 {
-    QskPushButton* button = new QskPushButton( text );
+    auto button = new QskPushButton( text );
     button->setAutoRepeat( autoRepeat );
+
     QObject::connect( button, &QskPushButton::clicked, func );
 
     addItem( button );

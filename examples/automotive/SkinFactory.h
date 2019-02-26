@@ -10,10 +10,10 @@ class SkinFactory : public QskSkinFactory
   public:
     enum GraphicRoles
     {
-        // to be visisble on a button
+        // to be visible on a button
         Button,
 
-        // to be visisble on header/footer
+        // to be visible on header/footer
         Indicator,
 
         // in contrast to the background pixmap

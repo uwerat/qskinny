@@ -79,11 +79,11 @@ void Theme::setSkin( const QString& skinName )
     if ( skinName == qskSetup->skinName() )
         return;
 
-    QskSkin* oldSkin = qskSetup->skin();
+    auto oldSkin = qskSetup->skin();
     if ( oldSkin->parent() == qskSetup )
         oldSkin->setParent( nullptr ); // otherwise setSkin deletes it
 
-    QskSkin* newSkin = qskSetup->setSkin( skinName );
+    auto newSkin = qskSetup->setSkin( skinName );
 
     SkinTransition transition( m_accent );
 

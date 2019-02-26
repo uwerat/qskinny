@@ -136,7 +136,7 @@ class SliderBox : public QskLinearBox
 
         for ( int i = 0; i < itemCount(); i++ )
         {
-            if ( QskSlider* slider = qobject_cast< QskSlider* >( itemAtIndex( i ) ) )
+            if ( auto slider = qobject_cast< QskSlider* >( itemAtIndex( i ) ) )
             {
                 slider->setObjectName( "Slider " + QString::number( i + 1 ) );
                 slider->setValue( slider->minimum() +
@@ -156,7 +156,7 @@ class SliderBox : public QskLinearBox
 
         for ( int i = 0; i < itemCount(); i++ )
         {
-            if ( QskSlider* slider = qobject_cast< QskSlider* >( itemAtIndex( i ) ) )
+            if ( auto slider = qobject_cast< QskSlider* >( itemAtIndex( i ) ) )
             {
                 const Qt::Orientation orientation = inverted( slider->orientation() );
 
@@ -170,7 +170,7 @@ class SliderBox : public QskLinearBox
                     slider->setVisible( orientation == Qt::Horizontal );
                 }
             }
-            else if ( QskSeparator* separator = qobject_cast< QskSeparator* >( itemAtIndex( i ) ) )
+            else if ( auto separator = qobject_cast< QskSeparator* >( itemAtIndex( i ) ) )
             {
                 separator->setOrientation( inverted( separator->orientation() ) );
             }
@@ -195,24 +195,24 @@ int main( int argc, char* argv[] )
     SkinnyFont::init( &app );
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
-    QskPushButton* buttonFlip = new QskPushButton( "Flip" );
+    auto buttonFlip = new QskPushButton( "Flip" );
     buttonFlip->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
     buttonFlip->setFocus( true );
 
-    SliderBox* sliderBox = new SliderBox();
+    auto sliderBox = new SliderBox();
     sliderBox->setBackgroundColor( QskRgbValue::PeachPuff );
 
     QObject::connect( buttonFlip, &QskPushButton::clicked,
         sliderBox, &SliderBox::flip );
 
-    QskLinearBox* mainBox = new QskLinearBox( Qt::Vertical );
+    auto mainBox = new QskLinearBox( Qt::Vertical );
     mainBox->setMargins( 10 );
     mainBox->setSpacing( 10 );
     mainBox->addItem( buttonFlip, Qt::AlignLeft );
     mainBox->addItem( sliderBox );
     mainBox->setStretchFactor( sliderBox, 10 );
 
-    QskFocusIndicator* focusIndicator = new QskFocusIndicator();
+    auto focusIndicator = new QskFocusIndicator();
     focusIndicator->setObjectName( "FocusIndicator" );
 
     QskWindow window;

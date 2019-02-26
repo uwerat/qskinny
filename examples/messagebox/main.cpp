@@ -131,7 +131,7 @@ int main( int argc, char* argv[] )
 
     qskDialog->setPolicy( QskDialog::EmbeddedBox );
 
-    ButtonBox* box = new ButtonBox();
+    auto box = new ButtonBox();
 
     /*
         To avoid losing the focus, when a message box is executed

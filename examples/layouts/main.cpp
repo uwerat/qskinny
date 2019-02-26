@@ -51,7 +51,7 @@ int main( int argc, char* argv[] )
     SkinnyFont::init( &app );
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
-    QskTabView* tabView = new QskTabView();
+    auto tabView = new QskTabView();
     tabView->setMargins( 10 );
     tabView->setOrientation( Qt::Horizontal );
     tabView->addTab( "Grid Layout", new DummyLabel( "Grid Layout - TODO ..." ) );
@@ -59,7 +59,7 @@ int main( int argc, char* argv[] )
     tabView->addTab( "Linear Layout", new LinearLayoutPage() );
     int dynamicIndex = tabView->addTab( "Dynamic\nConstraints", new DynamicConstraintsPage() );
 
-    QskTabButton* button = tabView->buttonAt( dynamicIndex );
+    auto button = tabView->buttonAt( dynamicIndex );
     QskTextOptions textOptions = button->textOptions();
     textOptions.setWrapMode( QskTextOptions::WordWrap );
     button->setTextOptions( textOptions );

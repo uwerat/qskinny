@@ -70,8 +70,7 @@ class HandleNode : public QSGGeometryNode
 
         if ( rect != m_rect || peakPos != m_peakPos )
         {
-            QSGGeometry::Point2D* p =
-                reinterpret_cast< QSGGeometry::Point2D* >( m_geometry.vertexData() );
+            auto p = reinterpret_cast< QSGGeometry::Point2D* >( m_geometry.vertexData() );
 
             const qreal y0 = rect.y() + qskPeak;
 

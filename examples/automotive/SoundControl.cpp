@@ -210,7 +210,7 @@ class StackedControl final : public QskControl
 
         for ( int a = 0; a < children().count(); a++ )
         {
-            QskControl* control = static_cast< QskControl* >( children().at( a ) );
+            auto control = static_cast< QskControl* >( children().at( a ) );
 
             if ( control->objectName() == "verticalBar" )
             {
@@ -250,7 +250,7 @@ class SectionTitleBar final : public QskLinearBox
     {
         setSpacing( 10 );
 
-        auto* label = new QskTextLabel( title );
+        auto label = new QskTextLabel( title );
         label->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
 
         addItem( new QskSeparator() );
@@ -275,7 +275,7 @@ class SliderBox final : public QskLinearBox
         label->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
         m_numberLabel->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
 
-        auto* plusButton = new ControlButton( '+' );
+        auto plusButton = new ControlButton( '+' );
         auto minusButton = new ControlButton( '-' );
 
         m_slider = new QskSlider( Qt::Vertical );

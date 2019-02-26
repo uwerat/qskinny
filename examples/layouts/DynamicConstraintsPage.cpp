@@ -128,10 +128,11 @@ DynamicConstraintsPage::DynamicConstraintsPage( QQuickItem* parent )
     setMargins( 10 );
     setBackgroundColor( QskRgbValue::LightSteelBlue );
 
-    Box* box = new Box();
+    auto box = new Box();
 
-    QskPushButton* button = new QskPushButton( "Flip" );
+    auto button = new QskPushButton( "Flip" );
     button->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
+
     QObject::connect( button, &QskPushButton::clicked, box, &Box::flip );
 
     addItem( button, Qt::AlignTop | Qt::AlignLeft );

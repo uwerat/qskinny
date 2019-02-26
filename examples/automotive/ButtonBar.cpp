@@ -43,7 +43,7 @@ ButtonBar::ButtonBar( QQuickItem* parentItem )
 
 void ButtonBar::addIndicator( const char* name )
 {
-    auto* label = new IndicatorLabel( this );
+    auto label = new IndicatorLabel( this );
 
     /*
         The label should adjust vertically and be stretched horizontally
