@@ -8,6 +8,7 @@ SUBDIRS += \
     layouts \
     listbox \
     messagebox \
+    mycontrols \
     sliders \
     thumbnails \
     tabview
