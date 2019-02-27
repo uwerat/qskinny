@@ -53,14 +53,16 @@ class ContentBox : public QskBox
 
         {
             auto button = new MyToggleButton( layout );
-            button->setSizePolicy( QskSizePolicy::MinimumExpanding, QskSizePolicy::MinimumExpanding );
+            button->setSizePolicy( QskSizePolicy::MinimumExpanding,
+                QskSizePolicy::MinimumExpanding );
             button->setTextAt( 0, "On" );
             button->setTextAt( 1, "Off" );
         }
 
         {
             auto button = new MyToggleButton( layout );
-            button->setSizePolicy( QskSizePolicy::MinimumExpanding, QskSizePolicy::MinimumExpanding );
+            button->setSizePolicy( QskSizePolicy::MinimumExpanding,
+                QskSizePolicy::MinimumExpanding );
             button->setIconAt( 0, "image://shapes/Ring/Khaki" );
             button->setIconAt( 1, "image://shapes/Diamond/Khaki" );
         }
@@ -82,6 +84,7 @@ class Window : public QskWindow
 
         box->setMargins( 20 );
         box->addItem( button, Qt::AlignRight );
+        box->addSpacer( 10 );
         box->addItem( new ContentBox() );
 
         connect( button, &MyToggleButton::toggled,

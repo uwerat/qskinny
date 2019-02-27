@@ -74,7 +74,7 @@ class MySkin : public QskSkin
     }
 
     void initToggleButtonHints(
-        qreal width, qreal height, qreal radius,
+        bool raised, qreal width, qreal height, qreal radius,
         QRgb baseColor, QRgb baseTextColor,
         QRgb foregroundColor, QRgb foregroundTextColor )
     {
@@ -115,19 +115,33 @@ class MySkin : public QskSkin
         }
 
         setGradient( Q::Panel, baseColor );
-        setBoxBorderColors( Q::Panel, QColor( baseColor ).dark( 120 ) );
+
+        if ( raised )
+        {
+            setBoxBorderMetrics( Q::Panel, 3 );
+
+            auto light = QColor( baseColor ).light( 110 );
+            auto dark = QColor( baseColor ).dark( 120 );
+            setBoxBorderColors( Q::Panel,
+                QskBoxBorderColors( light, light, dark, dark ) );
+        }
+        else
+        {
+            setBoxBorderMetrics( Q::Panel, 1 );
+            setBoxBorderColors( Q::Panel, QColor( baseColor ).dark( 120 ) );
+        }
 
         setGradient( Q::Cursor, foregroundColor );
         setBoxBorderColors( Q::Cursor, QColor( foregroundColor ).dark( 120 ) );
+        setBoxBorderMetrics( Q::Cursor, 1 );
 
         for( auto subControl : { Q::Panel, Q::Cursor } )
         {
             setMetric( subControl | MinimumWidth, width );
             setMetric( subControl | MinimumHeight, height );
-            setMargins( subControl | Padding, -4 );
+            //setMargins( subControl | Padding, +2 );
 
             setBoxShape( subControl, radius );
-            setBoxBorderMetrics( subControl, 1 );
         }
 
         setMargins( Q::CheckedPanel | Padding, 10 );
@@ -170,9 +184,9 @@ class MySkin1 : public MySkin
         setGraphicFilter( GraphicRoleNormal, QskRgbValue::Crimson );
         setGraphicFilter( GraphicRoleInverted, QskRgbValue::Gold );
 
-        initFocusIndicatorHints( 2, 3, 6, Teal );
+        initFocusIndicatorHints( 2, 3, 6, DarkBlue );
         initBoxHints( 2, 8, DarkCyan, LightCyan );
-        initToggleButtonHints( 150, 120, 6,
+        initToggleButtonHints( false, 150, 120, 6,
             AliceBlue, Black, CornflowerBlue, White );
     }
 
@@ -194,8 +208,8 @@ class MySkin2 : public MySkin
 
         initFocusIndicatorHints( 2, 6, 6, Crimson );
         initBoxHints( 4, 30, LightPink, MistyRose );
-        initToggleButtonHints( 130, 100, 40,
-            Linen, Black, HotPink, White );
+        initToggleButtonHints( true, 130, 100, 40,
+            LightPink, Black, HotPink, White );
     }
 
     QskAnimationHint animator() const override
