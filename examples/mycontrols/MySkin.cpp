@@ -168,10 +168,7 @@ class MySkin : public QskSkin
 
   private:
 
-    virtual QskAnimationHint animator() const
-    {
-        return QskAnimationHint( 200 );
-    }
+    virtual QskAnimationHint animator() const = 0;
 };
 
 class MySkin1 : public MySkin
@@ -192,7 +189,7 @@ class MySkin1 : public MySkin
 
     QskAnimationHint animator() const override
     {
-        return QskAnimationHint( 200 );
+        return QskAnimationHint( 200, QEasingCurve::Linear );
     }
 };
 

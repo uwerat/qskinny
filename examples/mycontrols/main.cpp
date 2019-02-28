@@ -111,7 +111,7 @@ class Window : public QskWindow
 
         transition.setSourceSkin( oldSkin );
         transition.setTargetSkin( newSkin );
-        transition.setAnimation( 600 );
+        transition.setAnimation( QskAnimationHint( 600, QEasingCurve::Linear ) );
 
         transition.process();
 
