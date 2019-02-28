@@ -98,12 +98,6 @@ namespace
 class QskSkin::PrivateData
 {
   public:
-    PrivateData( QskSkin* skin )
-        : skin( skin )
-    {
-    }
-
-    QskSkin* skin;
     std::unordered_map< const QMetaObject*, SkinletData > skinletMap;
 
     QskSkinHintTable hintTable;
@@ -116,7 +110,7 @@ class QskSkin::PrivateData
 
 QskSkin::QskSkin( QObject* parent )
     : QObject( parent )
-    , m_data( new PrivateData( this ) )
+    , m_data( new PrivateData() )
 {
     declareSkinlet< QskControl, QskSkinlet >();
 
