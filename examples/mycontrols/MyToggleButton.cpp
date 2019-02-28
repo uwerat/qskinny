@@ -51,27 +51,6 @@ MyToggleButton::MyToggleButton( QQuickItem* parent )
     initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 }
 
-MyToggleButton::MyToggleButton(
-        const QString& checkedIcon, const QString& uncheckedIcon, QQuickItem* parent )
-    : MyToggleButton( parent )
-{
-    if ( !uncheckedIcon.isEmpty() )
-    {
-        auto& data = m_data->content[ UncheckedSection ];
-
-        data.iconSource = uncheckedIcon;
-        data.iconDirty = true;
-    }
-
-    if ( !checkedIcon.isEmpty() )
-    {
-        auto& data = m_data->content[ CheckedSection ];
-
-        data.iconSource = checkedIcon;
-        data.iconDirty = true;
-    }
-}
-
 MyToggleButton::~MyToggleButton()
 {
 }

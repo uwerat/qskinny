@@ -26,9 +26,11 @@ MyToggleButtonSkinlet::MyToggleButtonSkinlet( QskSkin* skin )
 {
     // sorted in stacking order
 
-    setNodeRoles( { PanelRole, CursorRole, UncheckedPanelRole, UncheckedLabelRole,
-                    UncheckedIconRole, CheckedPanelRole, CheckedLabelRole, CheckedIconRole
-                  } );
+    setNodeRoles(
+        { PanelRole, CursorRole, UncheckedPanelRole, UncheckedLabelRole,
+          UncheckedIconRole, CheckedPanelRole, CheckedLabelRole, CheckedIconRole
+        }
+    );
 }
 
 QRectF MyToggleButtonSkinlet::subControlRect(
@@ -44,12 +46,12 @@ QRectF MyToggleButtonSkinlet::subControlRect(
     }
     else if( subControl == Q::UncheckedPanel )
     {
-        auto rect = innerRect( skinnable, Q::Panel );
+        const auto rect = innerRect( skinnable, Q::Panel );
         return sectionRect( rect, button->isInverted() ? 0 : 1 );
     }
     else if( subControl == Q::CheckedPanel )
     {
-        auto rect = innerRect( skinnable, Q::Panel );
+        const auto rect = innerRect( skinnable, Q::Panel );
         return sectionRect( rect, button->isInverted() ? 1 : 0 );
     }
     else if( subControl == Q::CheckedLabel || subControl == Q::CheckedIcon )
@@ -100,27 +102,27 @@ QSGNode* MyToggleButtonSkinlet::updateSubNode(
         case CheckedLabelRole:
         {
             return updateTextNode(
-                button, node, button->textAt( Q::CheckedSection ),
+                button, node, button->textAt( 1 ),
                 button->textOptions(), Q::CheckedLabel );
         }
 
         case UncheckedLabelRole:
         {
             return updateTextNode(
-                button, node, button->textAt( Q::UncheckedSection ),
+                button, node, button->textAt( 0 ),
                 button->textOptions(), Q::UncheckedLabel );
         }
 
         case CheckedIconRole:
         {
             return updateGraphicNode(
-                button, node, button->graphicAt( Q::CheckedSection ), Q::CheckedIcon );
+                button, node, button->graphicAt( 1 ), Q::CheckedIcon );
         }
 
         case UncheckedIconRole:
         {
             return updateGraphicNode(
-                button, node, button->graphicAt( Q::UncheckedSection ), Q::UncheckedIcon );
+                button, node, button->graphicAt( 0 ), Q::UncheckedIcon );
         }
 
         case CheckedPanelRole:

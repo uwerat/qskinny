@@ -19,17 +19,8 @@ class MyToggleButton : public QskAbstractButton
   public:
     QSK_SUBCONTROLS( Panel, Cursor, CheckedPanel, CheckedLabel, CheckedIcon,
         UncheckedPanel, UncheckedLabel, UncheckedIcon )
-    enum
-    {
-        UncheckedSection = 0,
-        CheckedSection   = 1
-    };
 
     MyToggleButton( QQuickItem* parent = nullptr );
-
-    MyToggleButton( const QString& ckeckedIcon, const QString& uncheckedIcon,
-        QQuickItem* parent = nullptr );
-
     ~MyToggleButton() override;
 
     void setTextAt( int index, const QString& );
