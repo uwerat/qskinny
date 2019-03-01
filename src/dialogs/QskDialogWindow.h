@@ -50,9 +50,10 @@ class QSK_EXPORT QskDialogWindow : public QskWindow
     void rejected();
 
   public Q_SLOTS:
-    void done( QskDialog::DialogCode );
     void accept();
     void reject();
+
+    virtual void done( QskDialog::DialogCode );
 
   protected:
     void setResult( QskDialog::DialogCode r );
