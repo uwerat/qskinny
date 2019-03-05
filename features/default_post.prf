@@ -1,0 +1,7 @@
+load(default_post)
+
+darwin:equals(TEMPLATE, lib) {
+    # Add install name to all libraries, including plugins
+    LIBS += -Wl,-install_name,@rpath/lib$${TARGET}.dylib
+}
+
