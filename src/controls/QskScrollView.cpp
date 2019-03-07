@@ -419,6 +419,8 @@ void QskScrollView::mousePressEvent( QMouseEvent* event )
 
             setScrollPos( QPointF( x, m_data->scrollPos.y() ) );
         }
+
+        return;
     }
 
     Inherited::mousePressEvent( event );
