@@ -2,16 +2,6 @@ include( $${PWD}/../example.pri )
 
 TARGET = automotive
 
-# in this example we don't load skin factories as plugins
-QSK_SKIN_DIR=$${QSK_ROOT}/skins
-
-INCLUDEPATH *= $${QSK_SKIN_DIR}
-DEPENDPATH *= $${QSK_SKIN_DIR}
-
-QSK_PLUGIN_DIR = $${QSK_OUT_ROOT}/plugins
-QMAKE_RPATHDIR *= $${QSK_PLUGIN_DIR}/skins
-LIBS *= -L$${QSK_PLUGIN_DIR}/skins -lsquiekskin -lmaterialskin
-
 HEADERS += \
     ButtonBar.h \
     SoundControl.h \
