@@ -1,6 +1,6 @@
 include( $${PWD}/../skins.pri )
 
-TARGET = squiekskin
+TARGET = $$qskPluginTarget(squiekskin)
 
 HEADERS += \
     QskSquiekGlobal.h \

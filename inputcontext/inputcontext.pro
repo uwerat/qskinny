@@ -5,7 +5,7 @@ include( $${QSK_ROOT}/qskconfig.pri )
 include( $${QSK_ROOT}/qskfunctions.pri )
 
 TEMPLATE = lib
-TARGET = $$qskLibraryTarget(qskinputcontext)
+TARGET = $$qskPluginTarget(qskinputcontext)
 
 QT += quick gui-private
 CONFIG += no_private_qt_headers_warning

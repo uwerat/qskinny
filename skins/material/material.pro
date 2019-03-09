@@ -1,6 +1,6 @@
 include( $${PWD}/../skins.pri )
 
-TARGET = materialskin
+TARGET = $$qskPluginTarget(materialskin)
 
 HEADERS += \
     QskMaterialGlobal.h \
