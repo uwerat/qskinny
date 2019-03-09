@@ -9,6 +9,7 @@ TARGET = svg2qvg
 QT += svg
 
 CONFIG += standalone
+CONFIG -= app_bundle
 
 QSK_DIRS = \
     $${QSK_ROOT}/src/common \
