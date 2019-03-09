@@ -10,9 +10,6 @@ TARGET = $$qskLibraryTarget(qskinputcontext)
 QT += quick gui-private
 CONFIG += no_private_qt_headers_warning
 
-# disable warnings for 3rdparty libs only TODO
-CONFIG += warn_off
-
 # CONFIG += pinyin
 # CONFIG += hunspell
 

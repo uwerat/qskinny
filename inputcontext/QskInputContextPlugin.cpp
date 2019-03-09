@@ -20,10 +20,10 @@
 
 namespace
 {
-    class InputContextFactory : public QskInputContextFactory
+    class InputContextFactory final : public QskInputContextFactory
     {
       public:
-        virtual QskTextPredictor* createPredictor( const QLocale& locale ) const
+        QskTextPredictor* createPredictor( const QLocale& locale ) const override
         {
 #if HUNSPELL
             /*
