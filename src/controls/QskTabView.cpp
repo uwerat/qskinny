@@ -169,12 +169,12 @@ QQuickItem* QskTabView::itemAt( int index ) const
     return m_data->stackBox->itemAtIndex( index );
 }
 
-int QskTabView::itemIndex( QQuickItem* item )
+int QskTabView::itemIndex( const QQuickItem* item )
 {
     return m_data->stackBox->indexOf( item );
 }
 
-int QskTabView::buttonIndex( QskTabButton* button )
+int QskTabView::buttonIndex( const QskTabButton* button )
 {
     return m_data->tabBar->indexOf( button );
 }

@@ -50,8 +50,8 @@ class QSK_EXPORT QskTabView : public QskControl
     QQuickItem* itemAt( int index ) const;
     QskTabButton* buttonAt( int index ) const;
 
-    int itemIndex( QQuickItem* );
-    int buttonIndex( QskTabButton* );
+    int itemIndex( const QQuickItem* );
+    int buttonIndex( const QskTabButton* );
 
     QQuickItem* currentItem() const;
     QskTabButton* currentButton() const;
