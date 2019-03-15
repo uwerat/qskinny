@@ -8,6 +8,7 @@
 
 #include "QskGlobal.h"
 #include <qnamespace.h>
+#include <qquickitem.h>
 
 class QQuickItem;
 class QSGNode;
@@ -42,5 +43,17 @@ QSK_EXPORT void qskInputMethodSetVisible( const QQuickItem*, bool );
 
 QSK_EXPORT const QSGNode* qskItemNode( const QQuickItem* );
 QSK_EXPORT const QSGNode* qskPaintNode( const QQuickItem* );
+
+template< typename Item >
+inline Item qskAncestorOf( const QQuickItem* item )
+{
+    for ( auto it = item; it != nullptr; it = it->parentItem() )
+    {
+        if ( auto ancestor = qobject_cast< Item >( it ) )
+            return ancestor;
+    }
+
+    return nullptr;
+}
 
 #endif
