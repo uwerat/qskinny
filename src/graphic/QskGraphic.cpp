@@ -484,6 +484,7 @@ void QskGraphic::reset()
 {
     m_data->commands.clear();
     m_data->pathInfos.clear();
+    m_data->hasRasterData = false;
 
     m_data->boundingRect = QRectF( 0.0, 0.0, -1.0, -1.0 );
     m_data->pointRect = QRectF( 0.0, 0.0, -1.0, -1.0 );
