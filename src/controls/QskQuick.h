@@ -44,12 +44,12 @@ QSK_EXPORT void qskInputMethodSetVisible( const QQuickItem*, bool );
 QSK_EXPORT const QSGNode* qskItemNode( const QQuickItem* );
 QSK_EXPORT const QSGNode* qskPaintNode( const QQuickItem* );
 
-template< typename Item >
-inline Item qskAncestorOf( const QQuickItem* item )
+template< typename T >
+inline T qskFindAncestorOf( const QQuickItem* item )
 {
     for ( auto it = item; it != nullptr; it = it->parentItem() )
     {
-        if ( auto ancestor = qobject_cast< Item >( it ) )
+        if ( auto ancestor = qobject_cast< T >( it ) )
             return ancestor;
     }
 
