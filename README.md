@@ -16,7 +16,7 @@ the API and logic of the controls themselves, the styling of these controls,
 and the delegated rendering of the controls to the screen.
 
 The code already provides a solid fundament for an automotive GUI with
-currently ~150K lines of pure C++ code. As expected it results
+currently ~300K lines of pure C++ code. As expected it results
 in a good startup performance and a low memory footprint.
 
 Nontheless QSkinny is lacking in areas like documentation or appealing
