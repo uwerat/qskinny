@@ -22,9 +22,6 @@
 #include <QFontMetricsF>
 #include <QGuiApplication>
 
-#define STRINGIFY( x ) #x
-#define STRING( x ) STRINGIFY( x )
-
 static inline QString nativeLocaleString( const QLocale& locale )
 {
     switch ( locale.language() )
@@ -287,10 +284,7 @@ int main( int argc, char* argv[] )
     QskObjectCounter counter( true );
 #endif
 
-#if 1
     qputenv( "QT_IM_MODULE", "skinny" );
-    qputenv( "QT_PLUGIN_PATH", STRING( PLUGIN_PATH ) );
-#endif
 
     QGuiApplication app( argc, argv );
 
