@@ -112,6 +112,8 @@ class QSK_EXPORT QskSkinnable
     void setAnimation( QskAspect::Aspect, QskAnimationHint );
     QskAnimationHint animation( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
+    void resetHint( QskAspect::Aspect );
+
     QskAnimationHint effectiveAnimation( QskAspect::Type, QskAspect::Subcontrol,
         QskAspect::State, QskSkinHintStatus* status = nullptr ) const;
 

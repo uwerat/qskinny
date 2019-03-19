@@ -420,6 +420,11 @@ QskAnimationHint QskSkinnable::effectiveAnimation(
     return hint;
 }
 
+void QskSkinnable::resetHint( QskAspect::Aspect aspect )
+{
+    m_data->hintTable.removeHint( aspect );
+}
+
 QVariant QskSkinnable::effectiveHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
