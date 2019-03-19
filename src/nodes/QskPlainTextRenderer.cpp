@@ -46,58 +46,50 @@ QRectF QskPlainTextRenderer::textRect(
 static qreal qskLayoutText( QTextLayout* layout,
     qreal lineWidth, const QskTextOptions& options )
 {
-    auto maxLineCount = options.maximumLineCount();
+    if ( layout->text().isEmpty() )
+        return 0.0;
 
-    const auto elideMode = options.effectiveElideMode();
-    if ( elideMode != Qt::ElideNone )
-    {
-        // What about strings with newlines and elide mode
-        maxLineCount = 1;
-    }
-
-    int lineNumber = 0;
-    int characterPosition = 0;
     qreal y = 0;
 
-    Q_FOREVER
+    const auto elideMode = options.effectiveElideMode();
+
+    if ( elideMode == Qt::ElideNone )
     {
-        if ( ++lineNumber > maxLineCount )
-            break;
-
-        if ( lineNumber == maxLineCount )
+        for ( int i = 0; i < options.maximumLineCount(); i++ )
         {
-            const auto engine = layout->engine();
+            auto line = layout->createLine();
+            if ( !line.isValid() )
+                break;
 
-            const auto textLength = engine->text.length();
-            if ( elideMode != Qt::ElideNone && textLength > characterPosition )
-            {
-                if ( lineNumber == 1 || elideMode == Qt::ElideRight )
-                {
-                    auto option = layout->textOption();
-                    option.setWrapMode( QTextOption::WrapAnywhere );
-                    layout->setTextOption( option );
+            line.setPosition( QPointF( 0, y ) );
+            line.setLineWidth( lineWidth );
 
-                    auto elidedText = engine->elidedText(
-                        elideMode, QFixed::fromReal( lineWidth ),
-                        Qt::TextShowMnemonic, characterPosition );
-
-                    elidedText = elidedText.leftJustified( textLength - characterPosition );
-
-                    engine->text.replace( characterPosition, elidedText.length(), elidedText );
-                    Q_ASSERT( engine->text.length() == textLength );
-                }
-            }
+            y += line.leading() + line.height();
         }
+    }
+    else
+    {
+        const auto engine = layout->engine();
+
+        auto text = engine->elidedText(
+            elideMode, QFixed::fromReal( lineWidth ),
+            Qt::TextShowMnemonic, 0 );
+
+#if 1
+        // why do we need this padding ???
+        text = text.leftJustified( engine->text.length() );
+#endif
+
+        engine->text = text;
 
         auto line = layout->createLine();
-        if ( !line.isValid() )
-            break;
+        if ( line.isValid() )
+        {
+            line.setPosition( QPointF( 0, y ) );
+            line.setLineWidth( lineWidth );
 
-        line.setPosition( QPointF( 0, y ) );
-        line.setLineWidth( lineWidth );
-        characterPosition = line.textStart() + line.textLength();
-
-        y += line.leading() + line.height();
+            y += line.leading() + line.height();
+        }
     }
 
     return y;
