@@ -382,7 +382,7 @@ void QskControlPrivate::updateImplicitSize( bool doNotify )
 void QskControlPrivate::setImplicitSize( qreal w, qreal h, bool doNotify )
 {
     const bool doWidth = ( w != implicitWidth );
-    const bool doHeight = ( w != implicitHeight );
+    const bool doHeight = ( h != implicitHeight );
 
     if ( !( doWidth || doHeight ) )
         return; // nothing to do
