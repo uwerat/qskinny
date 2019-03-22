@@ -75,16 +75,24 @@ static qreal qskLayoutText( QTextLayout* layout,
             elideMode, QFixed::fromReal( lineWidth ),
             Qt::TextShowMnemonic, 0 );
 
-#if 1
         // why do we need this padding ???
         text = text.leftJustified( engine->text.length() );
-#endif
-
         engine->text = text;
 
         auto line = layout->createLine();
+
         if ( line.isValid() )
         {
+            /*
+                For some reason the position of the text is wrong,
+                with QTextOption::NoWrap - even if word wrapping
+                for elided text does not make any sense.
+                Needs some debugging of QTextLine::layout_helper, TODO ...
+            */
+            auto option = layout->textOption();
+            option.setWrapMode( QTextOption::WrapAnywhere );
+            layout->setTextOption( option );
+
             line.setPosition( QPointF( 0, y ) );
             line.setLineWidth( lineWidth );
 
