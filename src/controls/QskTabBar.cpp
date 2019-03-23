@@ -11,12 +11,61 @@
 
 QSK_SUBCONTROL( QskTabBar, Panel )
 
+namespace
+{
+    class ButtonBox : public QskLinearBox
+    {
+      public:
+        ButtonBox( Qt::Orientation orientation, QQuickItem* parent )
+            : QskLinearBox( orientation, parent )
+        {
+            setObjectName( QStringLiteral( "QskTabBarLayoutBox" ) );
+
+            setSpacing( 0 );
+            setExtraSpacingAt( Qt::RightEdge | Qt::BottomEdge );
+        }
+
+        void restack( int currentIndex )
+        {
+            if ( itemCount() <= 1 )
+                return;
+
+            QQuickItem* buttonBefore = nullptr;
+
+            for ( int i = 0; i < itemCount(); i++ )
+            {
+                if ( i != currentIndex )
+                {
+                    if ( auto button = itemAtIndex( i ) )
+                    {
+                        if ( buttonBefore == nullptr )
+                        {
+                            auto firstChild = childItems().first();
+                            if ( firstChild != button )
+                                button->stackBefore( firstChild );
+                        }
+                        else
+                        {
+                            button->stackAfter( buttonBefore );
+                        }
+
+                        buttonBefore = button;
+                    }
+                }
+            }
+
+            if ( auto button = itemAtIndex( currentIndex ) )
+                button->stackAfter( buttonBefore );
+        }
+    };
+}
+
 class QskTabBar::PrivateData
 {
   public:
     PrivateData()
         : currentIndex( -1 )
-        , layoutBox( nullptr )
+        , buttonBox( nullptr )
     {
     }
 
@@ -36,7 +85,7 @@ class QskTabBar::PrivateData
 
     int currentIndex;
     QskTextOptions textOptions;
-    QskLinearBox* layoutBox;
+    ButtonBox* buttonBox;
 };
 
 QskTabBar::QskTabBar( QQuickItem* parent )
@@ -48,21 +97,17 @@ QskTabBar::QskTabBar( Qt::Orientation orientation, QQuickItem* parent )
     : Inherited( parent )
     , m_data( new PrivateData() )
 {
-    m_data->layoutBox = new QskLinearBox( orientation, this );
-    m_data->layoutBox->setObjectName( QStringLiteral( "QskTabBarLayoutBox" ) );
-    m_data->layoutBox->setSpacing( 0 );
-    m_data->layoutBox->setMargins( 0 );
-    m_data->layoutBox->setExtraSpacingAt( Qt::RightEdge | Qt::BottomEdge );
+    setAutoLayoutChildren( true );
 
     if ( orientation == Qt::Horizontal )
         initSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Fixed );
     else
         initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Preferred );
 
-    setAutoLayoutChildren( true );
+    m_data->buttonBox = new ButtonBox( orientation, this );
 
-    QObject::connect( this, &QskTabBar::currentIndexChanged,
-        this, &QskTabBar::restack, Qt::QueuedConnection );
+    connect( this, &QskTabBar::currentIndexChanged,
+        m_data->buttonBox, &ButtonBox::restack, Qt::QueuedConnection );
 }
 
 QskTabBar::~QskTabBar()
@@ -71,11 +116,11 @@ QskTabBar::~QskTabBar()
 
 void QskTabBar::setOrientation( Qt::Orientation orientation )
 {
-    if ( orientation == m_data->layoutBox->orientation() )
+    if ( orientation == m_data->buttonBox->orientation() )
         return;
 
     setSizePolicy( sizePolicy( Qt::Vertical ), sizePolicy( Qt::Horizontal ) );
-    m_data->layoutBox->setOrientation( orientation );
+    m_data->buttonBox->setOrientation( orientation );
 
     resetImplicitSize();
 
@@ -87,7 +132,7 @@ void QskTabBar::setOrientation( Qt::Orientation orientation )
 
 Qt::Orientation QskTabBar::orientation() const
 {
-    return m_data->layoutBox->orientation();
+    return m_data->buttonBox->orientation();
 }
 
 void QskTabBar::setTextOptions( const QskTextOptions& options )
@@ -127,8 +172,10 @@ int QskTabBar::addTab( QskTabButton* button )
 
 int QskTabBar::insertTab( int index, QskTabButton* button )
 {
-    if ( index < 0 || index >= m_data->layoutBox->itemCount() )
-        index = m_data->layoutBox->itemCount();
+    auto buttonBox = m_data->buttonBox;
+
+    if ( index < 0 || index >= buttonBox->itemCount() )
+        index = buttonBox->itemCount();
 
     if ( isComponentComplete() )
     {
@@ -139,9 +186,8 @@ int QskTabBar::insertTab( int index, QskTabButton* button )
         }
     }
 
-    m_data->layoutBox->insertItem( index, button );
-
-    restack();
+    buttonBox->insertItem( index, button );
+    buttonBox->restack( m_data->currentIndex );
 
     if ( button->textOptions() != m_data->textOptions )
         button->setTextOptions( m_data->textOptions );
@@ -155,7 +201,7 @@ int QskTabBar::insertTab( int index, QskTabButton* button )
 
 void QskTabBar::removeTab( int index )
 {
-    auto item = m_data->layoutBox->itemAtIndex( index );
+    auto item = m_data->buttonBox->itemAtIndex( index );
     if ( item == nullptr )
         return;
 
@@ -224,7 +270,7 @@ void QskTabBar::clear()
         return;
 
     const int idx = currentIndex();
-    m_data->layoutBox->clear();
+    m_data->buttonBox->clear();
 
     Q_EMIT countChanged();
 
@@ -272,12 +318,13 @@ int QskTabBar::currentIndex() const
 
 int QskTabBar::count() const
 {
-    return m_data->layoutBox->itemCount();
+    return m_data->buttonBox->itemCount();
 }
 
 QskTabButton* QskTabBar::buttonAt( int position )
 {
-    return qobject_cast< QskTabButton* >( m_data->layoutBox->itemAtIndex( position ) );
+    return qobject_cast< QskTabButton* >(
+        m_data->buttonBox->itemAtIndex( position ) );
 }
 
 const QskTabButton* QskTabBar::buttonAt( int position ) const
@@ -311,7 +358,7 @@ QString QskTabBar::buttonTextAt( int index ) const
 
 int QskTabBar::indexOf( QskTabButton* button ) const
 {
-    return m_data->layoutBox->indexOf( button );
+    return m_data->buttonBox->indexOf( button );
 }
 
 void QskTabBar::componentComplete()
@@ -325,16 +372,6 @@ void QskTabBar::componentComplete()
     {
         if ( button->isEnabled() && !button->isChecked() )
             button->setChecked( true );
-    }
-}
-
-void QskTabBar::restack()
-{
-    const auto index = m_data->currentIndex;
-    for ( int i = count() - 1; i >= 0; --i )
-    {
-        auto button = buttonAt( i );
-        button->setZ( ( index == i ) ? count() : ( count() - i ) );
     }
 }
 

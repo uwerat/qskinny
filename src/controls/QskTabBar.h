@@ -86,7 +86,6 @@ class QSK_EXPORT QskTabBar : public QskBox
 
   private:
     void adjustCurrentIndex();
-    void restack();
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
