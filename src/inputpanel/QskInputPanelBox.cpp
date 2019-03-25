@@ -24,7 +24,9 @@ namespace
             , m_panelBox( panelBox )
         {
             setObjectName( "InputBoxProxy" );
+
             setFocusPolicy( Qt::NoFocus );
+            initSizePolicy( QskSizePolicy::Ignored, QskSizePolicy::Fixed );
         }
 
         QskAspect::Subcontrol effectiveSubcontrol(
