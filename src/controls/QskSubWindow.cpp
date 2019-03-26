@@ -84,7 +84,7 @@ void QskSubWindow::setWindowTitle( const QString& title )
     {
         m_data->windowTitle = title;
 
-        update();  
+        update();
         Q_EMIT windowTitleChanged();
     }
 }
