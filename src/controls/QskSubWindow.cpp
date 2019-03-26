@@ -83,6 +83,8 @@ void QskSubWindow::setWindowTitle( const QString& title )
     if ( m_data->windowTitle != title )
     {
         m_data->windowTitle = title;
+
+        update();  
         Q_EMIT windowTitleChanged();
     }
 }
@@ -101,7 +103,6 @@ void QskSubWindow::setWindowTitleTextOptions( const QskTextOptions& options )
         update();
         Q_EMIT windowTitleTextOptionsChanged();
     }
-
 }
 
 QskTextOptions QskSubWindow::windowTitleTextOptions() const
