@@ -60,6 +60,7 @@ class QSK_EXPORT QskScrollView : public QskControl
   Q_SIGNALS:
     void scrolledTo( const QPointF& );
     void scrollPosChanged();
+    void scrollableSizeChanged( const QSizeF& );
 
     void verticalScrollBarPolicyChanged();
     void horizontalScrollBarPolicyChanged();

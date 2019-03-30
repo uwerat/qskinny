@@ -251,6 +251,7 @@ void QskScrollView::setScrollableSize( const QSizeF& size )
     if ( boundedSize != m_data->scrollableSize )
     {
         m_data->scrollableSize = boundedSize;
+        Q_EMIT scrollableSizeChanged( m_data->scrollableSize );
 
         setScrollPos( m_data->scrollPos ); // scroll pos might need to be re-bounded
 
