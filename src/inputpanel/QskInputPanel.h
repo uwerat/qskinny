@@ -38,6 +38,7 @@ class QSK_EXPORT QskInputPanel : public QskControl
   Q_SIGNALS:
     void keySelected( int keyCode );
     void predictiveTextSelected( int );
+    void inputItemDestroyed();
 
   public Q_SLOTS:
     virtual void setPrompt( const QString& );

@@ -69,9 +69,10 @@ class QSK_EXPORT QskInputContext : public QObject
     virtual void hidePanel( const QQuickItem* );
 
   private:
-    friend class QskPlatformInputContext;
+    void hideChannel( const QskInputPanel* );
 
     // called from QskPlatformInputContext
+    friend class QskPlatformInputContext;
     virtual void setFocusObject( QObject* );
     virtual void update( const QQuickItem*, Qt::InputMethodQueries );
     virtual void invokeAction( QInputMethod::Action, int cursorPosition );

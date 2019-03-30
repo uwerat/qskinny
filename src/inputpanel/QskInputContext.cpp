@@ -107,13 +107,34 @@ namespace
             return nullptr;
         }
 
+        inline Channel* channel( const QskInputPanel* panel ) const
+        {
+            if ( panel )
+            {
+                QMap< const QQuickWindow*, Channel >::const_iterator it;
+
+                for( it = m_map.constBegin(); it != m_map.constEnd(); ++it )
+                {
+                    if( it.value().panel == panel )
+                        return const_cast< Channel* >( &it.value() );
+                }
+            }
+
+            return nullptr;
+        }
+
         inline Channel* channel( const QQuickItem* item ) const
         {
             if ( item )
             {
-                auto channel = this->channel( item->window() );
-                if ( channel && channel->item == item )
-                    return channel;
+                // item->window() might already been gone
+                QMap< const QQuickWindow*, Channel >::const_iterator it;
+
+                for( it = m_map.constBegin(); it != m_map.constEnd(); ++it )
+                {
+                    if( it.value().item == item )
+                        return const_cast< Channel* >( &it.value() );
+                }
             }
 
             return nullptr;
@@ -210,6 +231,9 @@ class QskInputContext::PrivateData
         connect( panel, &QskInputPanel::localeChanged,
             context, [] { qskSendToPlatformContext( QEvent::LocaleChange ); } );
 
+        connect( panel, &QskInputPanel::inputItemDestroyed,
+            context, [ context, panel ] { context->hideChannel( panel ); } );
+
         return panel;
     }
 
@@ -264,6 +288,15 @@ class QskInputContext::PrivateData
         panel->setParentItem( window->contentItem() );
 
         return window;
+    }
+
+    void closeChannel( Channel* channel )
+    {
+        if ( channel->popup )
+            channel->popup->close(); // deleteOnClose is set
+
+        if ( channel->window )
+            channel->window->close(); // deleteOnClose is set
     }
 
     ChannelTable channels;
@@ -414,13 +447,18 @@ void QskInputContext::hidePanel( const QQuickItem* item )
 
     if ( auto channel = m_data->channels.channel( item ) )
     {
-        if ( channel->popup )
-            channel->popup->close(); // deleteOnClose is set
-
-        if ( channel->window )
-            channel->window->close(); // deleteOnClose is set
-
+        m_data->closeChannel( channel );
         m_data->channels.remove( item->window() );
+    }
+}
+
+void QskInputContext::hideChannel( const QskInputPanel* panel )
+{
+    if ( auto channel = m_data->channels.channel( panel ) )
+    {
+        // channel->item is already dead here
+        m_data->closeChannel( channel );
+        m_data->channels.remove( panel->window() );
     }
 }
 

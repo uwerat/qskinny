@@ -294,6 +294,12 @@ void QskInputPanel::attachInputItem( QQuickItem* item )
     if ( item == m_data->inputItem )
         return;
 
+    if ( m_data->inputItem )
+    {
+        disconnect( m_data->inputItem, &QObject::destroyed,
+            this, &QskInputPanel::inputItemDestroyed );
+    }
+
     m_data->inputItem = item;
 
     if ( item )
