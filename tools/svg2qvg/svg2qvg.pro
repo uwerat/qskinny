@@ -1,6 +1,4 @@
 QSK_ROOT = $${PWD}/../..
-include( $${QSK_ROOT}/qskconfig.pri )
-
 QSK_OUT_ROOT = $${OUT_PWD}/../..
 
 TEMPLATE     = app

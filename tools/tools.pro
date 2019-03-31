@@ -1,5 +1,3 @@
-include( $${PWD}/../qskconfig.pri )
-
 TEMPLATE = subdirs
 
 qtHaveModule(svg) {

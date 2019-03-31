@@ -1,0 +1,4 @@
+load(default_pre)
+
+include( qskconfig.pri )
+include( qskfunctions.pri )

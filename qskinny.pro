@@ -1,5 +1,3 @@
-include( qskconfig.pri )
-
 TEMPLATE = subdirs
 
 SUBDIRS = \

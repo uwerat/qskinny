@@ -2,9 +2,6 @@ QSK_ROOT = $${PWD}/..
 QSK_OUT_ROOT = $${OUT_PWD}/..
 QSK_PLUGIN_DIR = $${QSK_OUT_ROOT}/plugins
 
-include( $${QSK_ROOT}/qskconfig.pri )
-include( $${QSK_ROOT}/qskfunctions.pri )
-
 TEMPLATE = lib
 TARGET   = $$qskLibraryTarget(qsktestsupport)
 

@@ -1,9 +1,6 @@
 QSK_ROOT = $${PWD}/..
 QSK_OUT_ROOT = $${OUT_PWD}/..
 
-include( $${QSK_ROOT}/qskconfig.pri )
-include( $${QSK_ROOT}/qskfunctions.pri )
-
 TEMPLATE = lib
 TARGET   = $$qskLibraryTarget(qskqmlexport)
 VERSION  = $${QSK_VERSION}

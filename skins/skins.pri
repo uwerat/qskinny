@@ -1,8 +1,4 @@
 QSK_ROOT = $${PWD}/..
-
-include( $${QSK_ROOT}/qskconfig.pri )
-include( $${QSK_ROOT}/qskfunctions.pri )
-
 QSK_OUT_ROOT = $${OUT_PWD}/../..
 
 CONFIG         += plugin
