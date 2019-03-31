@@ -167,13 +167,25 @@ void QskLayout::removeItem( QQuickItem* item )
     removeAt( indexOf( item ) );
 }
 
-void QskLayout::clear()
+void QskLayout::clear( bool autoDelete )
 {
     const bool isActive = m_data->isActive;
     setActive( false );
 
     for ( int i = itemCount() - 1; i >= 0; i-- )
+    {
+        auto item = itemAtIndex( i );
+
         removeAt( i );
+
+        if( item )
+        {
+            if( autoDelete && ( item->parent() == this ) )
+                delete item;
+            else
+                item->setParentItem( nullptr );
+        }
+    }
 
     setActive( isActive );
 }

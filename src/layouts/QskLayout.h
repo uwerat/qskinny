@@ -31,7 +31,8 @@ class QSK_EXPORT QskLayout : public QskControl
     void removeItem( const QQuickItem* );
     Q_INVOKABLE void removeItem( QQuickItem* );
     Q_INVOKABLE void removeAt( int index );
-    Q_INVOKABLE void clear();
+
+    Q_INVOKABLE void clear( bool autoDelete = false );
 
     Q_INVOKABLE void setActive( bool );
     Q_INVOKABLE bool isActive() const;
