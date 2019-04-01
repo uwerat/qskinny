@@ -10,7 +10,6 @@ DESTDIR  = $${QSK_OUT_ROOT}/lib
 qskAddLibrary($${QSK_OUT_ROOT}/lib, qskinny)
 
 QT += quick quick-private
-CONFIG += no_private_qt_headers_warning
 
 contains(QSK_CONFIG, QskDll) {
 

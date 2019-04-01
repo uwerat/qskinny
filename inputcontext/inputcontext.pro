@@ -66,7 +66,7 @@ hunspell {
 }
 
 contains(QSK_CONFIG, QskDll) {
-    DEFINES += QT_DLL QSK_DLL QSK_INPUTCONTEXT_MAKEDLL
+    DEFINES += QSK_DLL QSK_INPUTCONTEXT_MAKEDLL
 }
 
 target.path    = $${QSK_INSTALL_PLUGINS}/platforminputcontexts

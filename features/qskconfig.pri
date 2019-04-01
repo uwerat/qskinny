@@ -24,6 +24,8 @@ QSK_INSTALL_LIBS      = $${QSK_INSTALL_PREFIX}/lib
 QSK_INSTALL_BINS      = $${QSK_INSTALL_PREFIX}/bin
 QSK_INSTALL_PLUGINS   = $${QSK_INSTALL_PREFIX}/plugins
 
+CONFIG           += no_private_qt_headers_warning
+
 CONFIG           += warn_on
 CONFIG           += no_keywords
 CONFIG           += silent
@@ -32,6 +34,7 @@ CONFIG           -= depend_includepath
 CONFIG           += strict_c++
 CONFIG           += c++11
 CONFIG           += pedantic
+CONFIG           += hide_symbols
 
 # CONFIG           += debug
 # CONFIG           += sanitize

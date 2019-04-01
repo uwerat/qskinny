@@ -28,7 +28,7 @@ standalone {
 }
 else {
 
-    LIBS *= -L$${QSK_OUT_ROOT}/lib -lqskinny
+    qskAddLibrary( $${QSK_OUT_ROOT}/lib, qskinny )
 
     contains(QSK_CONFIG, QskDll) {
         DEFINES    += QSK_DLL

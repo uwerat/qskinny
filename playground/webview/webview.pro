@@ -1,7 +1,6 @@
 include( $${PWD}/../playground.pri )
 
-QT += webengine
-QT += webengine-private
+QT += webengine webengine-private
 
 TARGET = webview
 

@@ -11,7 +11,7 @@
 
 class QskGraphic;
 
-class QskStandardSymbol
+class QSK_EXPORT QskStandardSymbol
 {
     Q_GADGET
 

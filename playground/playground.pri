@@ -26,9 +26,6 @@ QMAKE_RPATHDIR *= $${QSK_OUT_ROOT}/lib
 qskAddLibrary($${QSK_OUT_ROOT}/lib, qsktestsupport)
 qskAddLibrary($${QSK_OUT_ROOT}/lib, qskinny)
 
-win32 {
-    contains(QSK_CONFIG, QskDll) {
-        DEFINES    += QT_DLL QSK_DLL
-    }
+contains(QSK_CONFIG, QskDll) {
+    DEFINES    += QSK_DLL
 }
-

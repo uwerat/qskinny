@@ -25,7 +25,7 @@ DESTDIR      = $${QSK_OUT_ROOT}/plugins/skins
 qskAddLibrary($${QSK_OUT_ROOT}/lib, qskinny)
 
 contains(QSK_CONFIG, QskDll) {
-    DEFINES    += QT_DLL QSK_DLL
+    DEFINES    += QSK_DLL
 }
 
 target.path    = $${QSK_INSTALL_PLUGINS}/skins

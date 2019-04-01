@@ -8,7 +8,6 @@ VERSION  = $${QSK_VERSION}
 DESTDIR  = $${QSK_OUT_ROOT}/lib
 
 QT += quick quick-private
-CONFIG += no_private_qt_headers_warning
 
 contains(QSK_CONFIG, QskDll) {
 
