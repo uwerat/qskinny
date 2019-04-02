@@ -16,8 +16,8 @@ QSK_SUBCONTROL( QskTextInput, Text )
 QSK_SUBCONTROL( QskTextInput, PanelSelected )
 QSK_SUBCONTROL( QskTextInput, TextSelected )
 
-QSK_STATE( QskTextInput, ReadOnly, QskAspect::FirstSystemState << 1 )
-QSK_STATE( QskTextInput, Editing, QskAspect::FirstSystemState << 2 )
+QSK_SYSTEM_STATE( QskTextInput, ReadOnly, QskAspect::FirstSystemState << 1 )
+QSK_SYSTEM_STATE( QskTextInput, Editing, QskAspect::FirstSystemState << 2 )
 
 static inline void qskBindSignals(
     const QQuickTextInput* wrappedInput, QskTextInput* input )

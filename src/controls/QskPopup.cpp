@@ -16,7 +16,7 @@ QSK_QT_PRIVATE_BEGIN
 QSK_QT_PRIVATE_END
 
 QSK_SUBCONTROL( QskPopup, Overlay )
-QSK_STATE( QskPopup, Closed, QskAspect::FirstSystemState << 1 )
+QSK_SYSTEM_STATE( QskPopup, Closed, QskAspect::FirstSystemState << 1 )
 
 static void qskSetFocus( QQuickItem* item, bool on )
 {

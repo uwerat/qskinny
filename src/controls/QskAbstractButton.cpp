@@ -10,10 +10,13 @@
 
 #include <qbasictimer.h>
 
-QSK_STATE( QskAbstractButton, Flat, QskAspect::FirstSystemState << 1 )
-QSK_STATE( QskAbstractButton, Checked, QskAspect::LastSystemState >> 4 )
-QSK_STATE( QskAbstractButton, Pressed, QskAspect::LastSystemState >> 3 )
-QSK_STATE( QskAbstractButton, Checkable, QskAspect::LastSystemState >> 2 )
+QSK_SYSTEM_STATE( QskAbstractButton, Flat, QskAspect::FirstSystemState << 1 )
+#if 1
+// Wrong: we are overlapping with the user states, TODO ...
+QSK_SYSTEM_STATE( QskAbstractButton, Checked, QskAspect::LastSystemState >> 4 )
+#endif
+QSK_SYSTEM_STATE( QskAbstractButton, Pressed, QskAspect::LastSystemState >> 3 )
+QSK_SYSTEM_STATE( QskAbstractButton, Checkable, QskAspect::LastSystemState >> 2 )
 
 static QskAbstractButton* qskCheckedSibling( const QskAbstractButton* button )
 {

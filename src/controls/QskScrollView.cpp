@@ -19,8 +19,8 @@ QSK_SUBCONTROL( QskScrollView, HorizontalScrollHandle )
 QSK_SUBCONTROL( QskScrollView, VerticalScrollBar )
 QSK_SUBCONTROL( QskScrollView, VerticalScrollHandle )
 
-QSK_STATE( QskScrollView, VerticalHandlePressed, QskAspect::FirstSystemState << 1 )
-QSK_STATE( QskScrollView, HorizontalHandlePressed, QskAspect::FirstSystemState << 2 )
+QSK_SYSTEM_STATE( QskScrollView, VerticalHandlePressed, QskAspect::FirstSystemState << 1 )
+QSK_SYSTEM_STATE( QskScrollView, HorizontalHandlePressed, QskAspect::FirstSystemState << 2 )
 
 namespace
 {

@@ -26,9 +26,9 @@ QSK_QT_PRIVATE_END
 #include <limits>
 #include <unordered_set>
 
-QSK_STATE( QskControl, Disabled, QskAspect::FirstSystemState )
-QSK_STATE( QskControl, Hovered, QskAspect::LastSystemState >> 1 )
-QSK_STATE( QskControl, Focused, QskAspect::LastSystemState )
+QSK_SYSTEM_STATE( QskControl, Disabled, QskAspect::FirstSystemState )
+QSK_SYSTEM_STATE( QskControl, Hovered, QskAspect::LastSystemState >> 1 )
+QSK_SYSTEM_STATE( QskControl, Focused, QskAspect::LastSystemState )
 
 // QGridLayoutEngine internally uses FLT_MAX
 static constexpr qreal qskSizeHintMax = std::numeric_limits< float >::max();
