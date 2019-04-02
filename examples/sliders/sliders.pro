@@ -1,6 +1,4 @@
-include( $${PWD}/../example.pri )
-
-TARGET = sliders
+CONFIG += qskexample
 
 SOURCES += \
     Slider.cpp \

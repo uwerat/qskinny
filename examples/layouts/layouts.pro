@@ -1,8 +1,4 @@
-include( $${PWD}/../example.pri )
-
-TARGET = layouts
-
-QT += quick
+CONFIG += qskexample
 
 HEADERS += \
     TestRectangle.h \

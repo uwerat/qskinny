@@ -1,8 +1,5 @@
-include( $${PWD}/../playground.pri )
-
+CONFIG += qskexample
 QT += webengine webengine-private
-
-TARGET = webview
 
 SOURCES += \
     main.cpp

@@ -1,6 +1,11 @@
-include( $${PWD}/../skins.pri )
+CONFIG += plugin
+CONFIG += qskinny
+
+TEMPLATE = lib
+QSK_PLUGIN_SUBDIR = skins
 
 TARGET = $$qskPluginTarget(materialskin)
+DEFINES += QSK_MATERIAL_MAKEDLL
 
 HEADERS += \
     QskMaterialGlobal.h \
@@ -13,4 +18,6 @@ SOURCES += \
 
 OTHER_FILES += metadata.json
 
-DEFINES += QSK_MATERIAL_MAKEDLL
+target.path    = $${QSK_INSTALL_PLUGINS}/$${QSK_PLUGIN_SUBDIR}
+INSTALLS       = target
+

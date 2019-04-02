@@ -1,6 +1,4 @@
-include( $${PWD}/../example.pri )
-
-TARGET = thumbnails
+CONFIG += qskexample
 
 SOURCES += \
     main.cpp

@@ -1,7 +1,33 @@
 load(default_post)
 
-darwin:equals(TEMPLATE, lib) {
-    # Add install name to all libraries, including plugins
-    LIBS += -Wl,-install_name,@rpath/lib$${TARGET}.dylib
+equals(TEMPLATE, lib) {
+
+    plugin {
+
+        !isEmpty( QSK_PLUGIN_SUBDIR ) {
+
+            DESTDIR      = $${QSK_PLUGIN_DIR}/$${QSK_PLUGIN_SUBDIR}
+        }
+
+        darwin {
+            # Add install name to all libraries, including plugins
+            LIBS += -Wl,-install_name,@rpath/lib$${TARGET}.dylib
+        }
+    }
+    else {
+
+        DESTDIR  = $${QSK_LIB_DIR}
+    }
+
+    VERSION  = $${QSK_VERSION}
+
+    contains(QSK_CONFIG, QskDll) {
+
+        CONFIG += dll
+        DEFINES += QSK_DLL
+    }
+    else {
+        CONFIG += staticlib
+    }
 }
 

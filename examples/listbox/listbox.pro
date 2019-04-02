@@ -1,6 +1,4 @@
-include( $${PWD}/../example.pri )
-
-TARGET = listbox
+CONFIG += qskexample
 
 SOURCES += \
     main.cpp

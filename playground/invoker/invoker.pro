@@ -1,8 +1,6 @@
-include( $${PWD}/../playground.pri )
+CONFIG += qskexample
 
 QMAKE_MOC_OPTIONS += -nw # disable warning about missing READ
-
-TARGET = invoker
 
 HEADERS += \
     Callback.h \

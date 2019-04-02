@@ -1,7 +1,4 @@
-include( $${PWD}/../playground.pri )
-include( $${PWD}/../qmlplayground.pri )
-
-TARGET = images
+CONFIG += qskexample qskqmlexport
 
 RESOURCES += \
     images.qrc

@@ -1,33 +1,11 @@
-QSK_ROOT = $${PWD}/..
-QSK_OUT_ROOT = $${OUT_PWD}/..
-QSK_PLUGIN_DIR = $${QSK_OUT_ROOT}/plugins
-
 TEMPLATE = lib
 TARGET   = $$qskLibraryTarget(qsktestsupport)
 
-DESTDIR  = $${QSK_OUT_ROOT}/lib
-
-QT += quick 
-
 CONFIG += ensure_skins
 CONFIG += fontconfig
+CONFIG += qskinny
 
-contains(QSK_CONFIG, QskDll) {
-
-    CONFIG += dll
-    DEFINES += QSK_DLL SKINNY_MAKEDLL
-}
-else {
-    CONFIG += staticlib
-}
-
-QSK_DIRS = \
-    $${QSK_ROOT}/src/common \
-    $${QSK_ROOT}/src/controls \
-    $${QSK_ROOT}/src/graphic 
-
-INCLUDEPATH *= $${QSK_DIRS}
-DEPENDPATH  *= $${QSK_DIRS}
+contains(QSK_CONFIG, QskDll): DEFINES += SKINNY_MAKEDLL 
 
 HEADERS += \
     SkinnyGlobal.h \
@@ -43,9 +21,7 @@ SOURCES += \
     SkinnyShapeProvider.cpp \
     SkinnyShortcut.cpp
 
-DEFINES += PLUGIN_PATH=$$clean_path( $$QSK_PLUGIN_DIR )
-
-qskAddLibrary($${QSK_OUT_ROOT}/lib, qskinny)
+DEFINES += PLUGIN_PATH=$${QSK_PLUGIN_DIR}
 
 ensure_skins {
 

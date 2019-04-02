@@ -1,6 +1,4 @@
-include( $${PWD}/../playground.pri )
-
-TARGET = inputpanel
+CONFIG += qskexample
 
 SOURCES += \
     main.cpp

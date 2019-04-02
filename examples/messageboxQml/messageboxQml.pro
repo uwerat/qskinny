@@ -1,7 +1,5 @@
-include( $${PWD}/../example.pri )
-include( $${PWD}/../qmlexample.pri )
-
-TARGET = messageboxQml
+CONFIG += qskexample
+CONFIG += qskqmlexport
 
 RESOURCES += \
     messagebox.qrc

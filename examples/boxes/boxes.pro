@@ -1,6 +1,4 @@
-include( $${PWD}/../example.pri )
-
-TARGET = boxes
+CONFIG += qskexample
 
 HEADERS += \
     Box.h \

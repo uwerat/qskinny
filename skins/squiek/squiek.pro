@@ -1,6 +1,11 @@
-include( $${PWD}/../skins.pri )
+CONFIG += plugin
+CONFIG += qskinny
+
+TEMPLATE     = lib
+QSK_PLUGIN_SUBDIR = skins
 
 TARGET = $$qskPluginTarget(squiekskin)
+DEFINES += QSK_SQUIEK_MAKEDLL
 
 HEADERS += \
     QskSquiekGlobal.h \
@@ -13,4 +18,5 @@ SOURCES += \
 
 OTHER_FILES += metadata.json
 
-DEFINES += QSK_SQUIEK_MAKEDLL
+target.path    = $${QSK_INSTALL_PLUGINS}/$${QSK_PLUGIN_SUBDIR}
+INSTALLS       = target

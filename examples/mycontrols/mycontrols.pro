@@ -1,6 +1,4 @@
-include( $${PWD}/../example.pri )
-
-TARGET = mycontrols
+CONFIG += qskexample
 
 SOURCES += \
     MySkin.cpp \

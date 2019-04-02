@@ -1,8 +1,6 @@
-include( $${PWD}/../example.pri )
+CONFIG += qskexample
 
 QT += svg
-
-TARGET = gbenchmark
 
 HEADERS += \
     Benchmark.h

@@ -1,6 +1,4 @@
-include( $${PWD}/../example.pri )
-
-TARGET = tlabels
+CONFIG += qskexample
 
 SOURCES += \
     main.cpp

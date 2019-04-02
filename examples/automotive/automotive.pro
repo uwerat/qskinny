@@ -1,6 +1,4 @@
-include( $${PWD}/../example.pri )
-
-TARGET = automotive
+CONFIG += qskexample
 
 HEADERS += \
     ButtonBar.h \

@@ -1,6 +1,4 @@
-include( $${PWD}/../example.pri )
-
-TARGET = qvgviewer
+CONFIG += qskexample
 
 HEADERS += \
     MainWindow.h

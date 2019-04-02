@@ -1,4 +1,20 @@
 load(default_pre)
 
+QSK_ROOT = $$clean_path( $$PWD/.. )
+
+equals( QSK_ROOT, $$_PRO_FILE_PWD_ ) {
+
+    QSK_SUB_DIR = "."
+    QSK_OUT_ROOT = $$OUT_PWD
+}
+else {
+
+    QSK_SUB_DIR = $$relative_path( $$_PRO_FILE_PWD_, $$QSK_ROOT )
+    QSK_OUT_ROOT = $$replace( OUT_PWD, /$$QSK_SUB_DIR, "" )
+}
+
+QSK_PLUGIN_DIR = $${QSK_OUT_ROOT}/plugins
+QSK_LIB_DIR = $${QSK_OUT_ROOT}/lib
+
 include( qskconfig.pri )
 include( qskfunctions.pri )

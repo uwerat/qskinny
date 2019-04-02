@@ -1,8 +1,4 @@
-include( $${PWD}/../playground.pri )
-
-TARGET = dialogbuttons
-
-QT += quick 
+CONFIG += qskexample
 
 HEADERS += \
     Window.h

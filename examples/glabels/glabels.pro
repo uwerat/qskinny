@@ -1,7 +1,4 @@
-include( $${PWD}/../example.pri )
-include( $${PWD}/../qmlexample.pri )
-
-TARGET = glabels
+CONFIG += qskexample qskqmlexport
 
 RESOURCES += \
     glabels.qrc

@@ -1,0 +1,7 @@
+QSK_QML_EXPORT_DIRS = $${QSK_ROOT}/qmlexport
+
+INCLUDEPATH *= $${QSK_QML_EXPORT_DIRS}
+DEPENDPATH  *= $${QSK_QML_EXPORT_DIRS}
+
+QMAKE_RPATHDIR *= $${QSK_LIB_DIR}
+qskAddLibrary( $${QSK_LIB_DIR}, qskqmlexport)

@@ -1,30 +1,16 @@
-QSK_ROOT = $${PWD}/..
-QSK_OUT_ROOT = $${OUT_PWD}/..
-
 TEMPLATE = lib
 TARGET = $$qskPluginTarget(qskinputcontext)
 
-QT += quick gui-private
-CONFIG += no_private_qt_headers_warning
+QT += gui-private
 
 # CONFIG += pinyin
 # CONFIG += hunspell
 
-QSK_SUBDIRS = \
-    $${QSK_ROOT}/src/common \
-    $${QSK_ROOT}/src/nodes \
-    $${QSK_ROOT}/src/graphic \
-    $${QSK_ROOT}/src/controls \
-    $${QSK_ROOT}/src/layouts \
-    $${QSK_ROOT}/src/dialogs \
-    $${QSK_ROOT}/src/inputpanel
+CONFIG += plugin
+CONFIG += qskinny
 
-INCLUDEPATH *= $${QSK_SUBDIRS}
-DEPENDPATH  *= $${QSK_SUBDIRS}
-
-DESTDIR      = $${QSK_OUT_ROOT}/plugins/platforminputcontexts
-
-qskAddLibrary($${QSK_OUT_ROOT}/lib, qskinny)
+QSK_PLUGIN_SUBDIR = platforminputcontexts
+contains(QSK_CONFIG, QskDll): DEFINES += QSK_INPUTCONTEXT_MAKEDLL
 
 HEADERS += \
     QskInputContextGlobal.h
@@ -65,10 +51,5 @@ hunspell {
 
 }
 
-contains(QSK_CONFIG, QskDll) {
-    DEFINES += QSK_DLL QSK_INPUTCONTEXT_MAKEDLL
-}
-
-target.path    = $${QSK_INSTALL_PLUGINS}/platforminputcontexts
+target.path    = $${QSK_INSTALL_PLUGINS}/$${QSK_PLUGIN_SUBDIR}
 INSTALLS       = target
-

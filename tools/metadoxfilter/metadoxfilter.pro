@@ -1,6 +1,3 @@
-QSK_ROOT = $${PWD}/../..
-QSK_OUT_ROOT = $${OUT_PWD}/../..
-
 TEMPLATE     = app
 
 CONFIG -= qt

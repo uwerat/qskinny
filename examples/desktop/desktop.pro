@@ -1,8 +1,4 @@
-include( $${PWD}/../example.pri )
-
-TARGET = desktop
-
-QT += quick 
+CONFIG += qskexample
 
 SOURCES += \
     main.cpp
