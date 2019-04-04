@@ -2,5 +2,3 @@ TEMPLATE     = app
 CONFIG      += qskinny qsktestsupport
 
 DESTDIR      = $$clean_path( $${OUT_PWD}/../bin )
-
-message( $$TARGET )
