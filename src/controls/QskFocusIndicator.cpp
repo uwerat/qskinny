@@ -50,6 +50,11 @@ QskFocusIndicator::~QskFocusIndicator()
 {
 }
 
+bool QskFocusIndicator::contains( const QPointF & ) const
+{
+    return false;
+}
+
 void QskFocusIndicator::onFocusItemGeometryChanged()
 {
     updateFocusFrame();
