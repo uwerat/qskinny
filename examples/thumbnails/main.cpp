@@ -127,6 +127,8 @@ class ScrollArea : public QskScrollArea
 
         setBoxBorderMetricsHint( HorizontalScrollHandle, 1 );
         setBoxShapeHint( HorizontalScrollHandle, 8 );
+
+        setFlickRecognizerTimeout( 300 );
     }
 };
 
