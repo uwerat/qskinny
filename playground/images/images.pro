@@ -1,5 +1,7 @@
 CONFIG += qskexample qskqmlexport
 
+QT += quick_private
+
 RESOURCES += \
     images.qrc
 
