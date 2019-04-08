@@ -21,7 +21,7 @@ class QskGridBox::PrivateData
 };
 
 QskGridBox::QskGridBox( QQuickItem* parent )
-    : QskLayout( parent )
+    : QskLayoutBox( parent )
     , m_data( new PrivateData() )
 {
 }

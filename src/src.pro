@@ -235,7 +235,7 @@ HEADERS += \
     layouts/QskGridBox.h \
     layouts/QskIndexedLayoutBox.h \
     layouts/QskLayoutEngine.h \
-    layouts/QskLayout.h \
+    layouts/QskLayoutBox.h \
     layouts/QskLayoutConstraint.h \
     layouts/QskLayoutItem.h \
     layouts/QskLinearBox.h \
@@ -245,7 +245,7 @@ HEADERS += \
 SOURCES += \
     layouts/QskGridBox.cpp \
     layouts/QskIndexedLayoutBox.cpp \
-    layouts/QskLayout.cpp \
+    layouts/QskLayoutBox.cpp \
     layouts/QskLayoutConstraint.cpp \
     layouts/QskLayoutEngine.cpp \
     layouts/QskLayoutItem.cpp \

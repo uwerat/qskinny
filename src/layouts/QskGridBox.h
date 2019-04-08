@@ -6,9 +6,9 @@
 #ifndef QSK_GRID_BOX_H
 #define QSK_GRID_BOX_H
 
-#include "QskLayout.h"
+#include "QskLayoutBox.h"
 
-class QSK_EXPORT QskGridBox : public QskLayout
+class QSK_EXPORT QskGridBox : public QskLayoutBox
 {
     Q_OBJECT
 
@@ -20,7 +20,7 @@ class QSK_EXPORT QskGridBox : public QskLayout
         WRITE setVerticalSpacing RESET resetVerticalSpacing
         NOTIFY verticalSpacingChanged )
 
-    using Inherited = QskLayout;
+    using Inherited = QskLayoutBox;
 
   public:
     explicit QskGridBox( QQuickItem* parent = nullptr );

@@ -3,12 +3,12 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#include "QskLayout.h"
+#include "QskLayoutBox.h"
 #include "QskEvent.h"
 #include "QskLayoutEngine.h"
 #include "QskLayoutItem.h"
 
-class QskLayout::PrivateData
+class QskLayoutBox::PrivateData
 {
   public:
     PrivateData()
@@ -21,19 +21,19 @@ class QskLayout::PrivateData
     QskLayoutEngine engine;
 };
 
-QskLayout::QskLayout( QQuickItem* parent )
+QskLayoutBox::QskLayoutBox( QQuickItem* parent )
     : QskControl( parent )
     , m_data( new PrivateData() )
 {
 }
 
-QskLayout::~QskLayout()
+QskLayoutBox::~QskLayoutBox()
 {
     disconnect( this, 0, this, 0 ); // destructor runs on invalidate else
     setActive( false );
 }
 
-void QskLayout::setActive( bool on )
+void QskLayoutBox::setActive( bool on )
 {
     if ( on == m_data->isActive )
         return;
@@ -54,17 +54,17 @@ void QskLayout::setActive( bool on )
     }
 }
 
-bool QskLayout::isActive() const
+bool QskLayoutBox::isActive() const
 {
     return m_data->isActive;
 }
 
-int QskLayout::itemCount() const
+int QskLayoutBox::itemCount() const
 {
     return m_data->engine.itemCount();
 }
 
-QQuickItem* QskLayout::itemAtIndex( int index ) const
+QQuickItem* QskLayoutBox::itemAtIndex( int index ) const
 {
     QskLayoutItem* layoutItem = m_data->engine.layoutItemAt( index );
     if ( layoutItem )
@@ -73,7 +73,7 @@ QQuickItem* QskLayout::itemAtIndex( int index ) const
     return nullptr;
 }
 
-int QskLayout::indexOf( const QQuickItem* item ) const
+int QskLayoutBox::indexOf( const QQuickItem* item ) const
 {
     if ( item != nullptr )
         return m_data->engine.indexOf( item );
@@ -81,7 +81,7 @@ int QskLayout::indexOf( const QQuickItem* item ) const
     return -1;
 }
 
-void QskLayout::insertItemInternal( QskLayoutItem* layoutItem, int index )
+void QskLayoutBox::insertItemInternal( QskLayoutItem* layoutItem, int index )
 {
     // check if item is already inserted ???
 
@@ -140,7 +140,7 @@ void QskLayout::insertItemInternal( QskLayoutItem* layoutItem, int index )
     }
 }
 
-void QskLayout::removeAt( int index )
+void QskLayoutBox::removeAt( int index )
 {
     QskLayoutEngine& engine = this->engine();
 
@@ -162,12 +162,12 @@ void QskLayout::removeAt( int index )
     }
 }
 
-void QskLayout::removeItem( QQuickItem* item )
+void QskLayoutBox::removeItem( QQuickItem* item )
 {
     removeAt( indexOf( item ) );
 }
 
-void QskLayout::clear( bool autoDelete )
+void QskLayoutBox::clear( bool autoDelete )
 {
     const bool isActive = m_data->isActive;
     setActive( false );
@@ -190,31 +190,31 @@ void QskLayout::clear( bool autoDelete )
     setActive( isActive );
 }
 
-void QskLayout::setupLayoutItem( QskLayoutItem* layoutItem, int index )
+void QskLayoutBox::setupLayoutItem( QskLayoutItem* layoutItem, int index )
 {
     Q_UNUSED( layoutItem )
     Q_UNUSED( index )
 }
 
-void QskLayout::layoutItemInserted( QskLayoutItem* layoutItem, int index )
+void QskLayoutBox::layoutItemInserted( QskLayoutItem* layoutItem, int index )
 {
     Q_UNUSED( layoutItem )
     Q_UNUSED( index )
 }
 
-void QskLayout::layoutItemRemoved( QskLayoutItem* layoutItem, int index )
+void QskLayoutBox::layoutItemRemoved( QskLayoutItem* layoutItem, int index )
 {
     Q_UNUSED( layoutItem )
     Q_UNUSED( index )
 }
 
-void QskLayout::activate()
+void QskLayoutBox::activate()
 {
     if ( m_data->isActive )
         polish();
 }
 
-void QskLayout::invalidate()
+void QskLayoutBox::invalidate()
 {
     engine().invalidate();
     activate();
@@ -222,12 +222,12 @@ void QskLayout::invalidate()
     resetImplicitSize();
 }
 
-void QskLayout::adjustItem( const QQuickItem* item )
+void QskLayoutBox::adjustItem( const QQuickItem* item )
 {
     adjustItemAt( indexOf( item ) );
 }
 
-void QskLayout::adjustItemAt( int index )
+void QskLayoutBox::adjustItemAt( int index )
 {
     QskLayoutItem* layoutItem = engine().layoutItemAt( index );
     if ( layoutItem == nullptr )
@@ -239,18 +239,18 @@ void QskLayout::adjustItemAt( int index )
     layoutItem->setUpdateMode( QskLayoutItem::UpdateWhenVisible );
 }
 
-void QskLayout::updateLayout()
+void QskLayoutBox::updateLayout()
 {
     if ( m_data->isActive )
         engine().setGeometries( alignedLayoutRect( layoutRect() ) );
 }
 
-QRectF QskLayout::alignedLayoutRect( const QRectF& rect ) const
+QRectF QskLayoutBox::alignedLayoutRect( const QRectF& rect ) const
 {
     return rect;
 }
 
-void QskLayout::geometryChangeEvent( QskGeometryChangeEvent* event )
+void QskLayoutBox::geometryChangeEvent( QskGeometryChangeEvent* event )
 {
     Inherited::geometryChangeEvent( event );
 
@@ -258,7 +258,7 @@ void QskLayout::geometryChangeEvent( QskGeometryChangeEvent* event )
         activate();
 }
 
-void QskLayout::setItemActive( const QQuickItem* item, bool on )
+void QskLayoutBox::setItemActive( const QQuickItem* item, bool on )
 {
     if ( item == nullptr )
         return;
@@ -271,38 +271,38 @@ void QskLayout::setItemActive( const QQuickItem* item, bool on )
         if ( on )
         {
             connect( item, &QQuickItem::implicitWidthChanged,
-                this, &QskLayout::invalidate );
+                this, &QskLayoutBox::invalidate );
 
             connect( item, &QQuickItem::implicitHeightChanged,
-                this, &QskLayout::invalidate );
+                this, &QskLayoutBox::invalidate );
         }
         else
         {
             disconnect( item, &QQuickItem::implicitWidthChanged,
-                this, &QskLayout::invalidate );
+                this, &QskLayoutBox::invalidate );
 
             disconnect( item, &QQuickItem::implicitHeightChanged,
-                this, &QskLayout::invalidate );
+                this, &QskLayoutBox::invalidate );
         }
     }
 
     if ( on )
-        connect( item, &QQuickItem::visibleChanged, this, &QskLayout::activate );
+        connect( item, &QQuickItem::visibleChanged, this, &QskLayoutBox::activate );
     else
-        disconnect( item, &QQuickItem::visibleChanged, this, &QskLayout::activate );
+        disconnect( item, &QQuickItem::visibleChanged, this, &QskLayoutBox::activate );
 }
 
-QskLayoutEngine& QskLayout::engine()
+QskLayoutEngine& QskLayoutBox::engine()
 {
     return m_data->engine;
 }
 
-const QskLayoutEngine& QskLayout::engine() const
+const QskLayoutEngine& QskLayoutBox::engine() const
 {
     return m_data->engine;
 }
 
-void QskLayout::itemChange( ItemChange change, const ItemChangeData& value )
+void QskLayoutBox::itemChange( ItemChange change, const ItemChangeData& value )
 {
     Inherited::itemChange( change, value );
 
@@ -330,7 +330,7 @@ void QskLayout::itemChange( ItemChange change, const ItemChangeData& value )
     }
 }
 
-bool QskLayout::event( QEvent* event )
+bool QskLayoutBox::event( QEvent* event )
 {
     switch ( event->type() )
     {
@@ -359,4 +359,4 @@ bool QskLayout::event( QEvent* event )
     return Inherited::event( event );
 }
 
-#include "moc_QskLayout.cpp"
+#include "moc_QskLayoutBox.cpp"

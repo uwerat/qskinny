@@ -6,9 +6,9 @@
 #ifndef QSK_INDEXED_LAYOUT_BOX_H
 #define QSK_INDEXED_LAYOUT_BOX_H
 
-#include "QskLayout.h"
+#include "QskLayoutBox.h"
 
-class QSK_EXPORT QskIndexedLayoutBox : public QskLayout
+class QSK_EXPORT QskIndexedLayoutBox : public QskLayoutBox
 {
     Q_OBJECT
 
@@ -18,7 +18,7 @@ class QSK_EXPORT QskIndexedLayoutBox : public QskLayout
     Q_PROPERTY( Qt::Alignment defaultAlignment READ defaultAlignment
         WRITE setDefaultAlignment NOTIFY defaultAlignmentChanged )
 
-    using Inherited = QskLayout;
+    using Inherited = QskLayoutBox;
 
   public:
     explicit QskIndexedLayoutBox( QQuickItem* parent = nullptr );

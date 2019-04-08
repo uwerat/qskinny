@@ -3,24 +3,23 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef QSK_LAYOUT_H
-#define QSK_LAYOUT_H
+#ifndef QSK_LAYOUT_BOX_H
+#define QSK_LAYOUT_BOX_H
 
 #include "QskControl.h"
 
 class QskLayoutEngine;
 class QskLayoutItem;
 
-// might be derived from QskFrame
-class QSK_EXPORT QskLayout : public QskControl
+class QSK_EXPORT QskLayoutBox : public QskControl
 {
     Q_OBJECT
 
     using Inherited = QskControl;
 
   public:
-    explicit QskLayout( QQuickItem* parent = 0 );
-    ~QskLayout() override;
+    explicit QskLayoutBox( QQuickItem* parent = 0 );
+    ~QskLayoutBox() override;
 
     Q_INVOKABLE bool isEmpty() const;
 
@@ -69,12 +68,12 @@ class QSK_EXPORT QskLayout : public QskControl
     std::unique_ptr< PrivateData > m_data;
 };
 
-inline bool QskLayout::isEmpty() const
+inline bool QskLayoutBox::isEmpty() const
 {
     return itemCount() <= 0;
 }
 
-inline void QskLayout::removeItem( const QQuickItem* item )
+inline void QskLayoutBox::removeItem( const QQuickItem* item )
 {
     removeItem( const_cast< QQuickItem* >( item ) );
 }

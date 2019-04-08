@@ -37,7 +37,7 @@ class QskIndexedLayoutBox::PrivateData
 };
 
 QskIndexedLayoutBox::QskIndexedLayoutBox( QQuickItem* parent )
-    : QskLayout( parent )
+    : QskLayoutBox( parent )
     , m_data( new PrivateData() )
 {
     // classBegin/componentComplete -> setActive( false/true ) ?
