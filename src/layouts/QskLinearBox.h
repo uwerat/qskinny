@@ -72,11 +72,6 @@ class QSK_EXPORT QskLinearBox : public QskIndexedLayoutBox
     Q_INVOKABLE bool retainSizeWhenHidden( QQuickItem* ) const;
     Q_INVOKABLE void setRetainSizeWhenHidden( QQuickItem*, bool on );
 
-    QSizeF contentsSizeHint() const override;
-
-    qreal heightForWidth( qreal width ) const override;
-    qreal widthForHeight( qreal height ) const override;
-
 #if 1
     Q_INVOKABLE void setRowSpacing( int row, qreal spacing );
     Q_INVOKABLE qreal rowSpacing( int row ) const;

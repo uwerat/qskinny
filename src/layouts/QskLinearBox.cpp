@@ -320,39 +320,6 @@ int QskLinearBox::columnStretchFactor( int column ) const
     return engine().rowStretchFactor( column, Qt::Horizontal );
 }
 
-QSizeF QskLinearBox::contentsSizeHint() const
-{
-    if ( !isActive() )
-        return QSizeF( -1, -1 );
-
-    if ( itemCount() == 0 )
-        return QSizeF( 0, 0 );
-
-    return engine().sizeHint( Qt::PreferredSize );
-}
-
-qreal QskLinearBox::heightForWidth( qreal width ) const
-{
-    const auto m = margins();
-    width -= m.left() + m.right();
-
-    qreal height = engine().heightForWidth( width );
-
-    height += m.top() + m.bottom();
-    return height;
-}
-
-qreal QskLinearBox::widthForHeight( qreal height ) const
-{
-    const auto m = margins();
-    height -= m.top() + m.bottom();
-
-    qreal width = engine().widthForHeight( height );
-
-    width += m.left() + m.right();
-    return width;
-}
-
 void QskLinearBox::setupLayoutItem( QskLayoutItem* layoutItem, int index )
 {
     int col = index % m_data->dimension;

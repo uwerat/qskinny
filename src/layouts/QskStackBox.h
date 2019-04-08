@@ -31,8 +31,6 @@ class QSK_EXPORT QskStackBox : public QskIndexedLayoutBox
     QQuickItem* currentItem() const;
     int currentIndex() const;
 
-    QSizeF contentsSizeHint() const override;
-
     qreal heightForWidth( qreal width ) const override;
     qreal widthForHeight( qreal height ) const override;
 
@@ -50,6 +48,7 @@ class QSK_EXPORT QskStackBox : public QskIndexedLayoutBox
 
   protected:
     QskStackBoxAnimator* effectiveAnimator();
+    QSizeF layoutItemsSizeHint() const override;
 
   private:
     friend class QskStackBoxAnimator;

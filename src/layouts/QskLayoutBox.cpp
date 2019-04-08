@@ -250,6 +250,44 @@ QRectF QskLayoutBox::alignedLayoutRect( const QRectF& rect ) const
     return rect;
 }
 
+QSizeF QskLayoutBox::contentsSizeHint() const
+{   
+   if ( !isActive() )
+        return QSizeF( -1, -1 );
+
+    if ( itemCount() == 0 )
+        return QSizeF( 0, 0 );
+
+    return layoutItemsSizeHint();
+}
+
+QSizeF QskLayoutBox::layoutItemsSizeHint() const
+{
+    return engine().sizeHint( Qt::PreferredSize );
+}
+
+qreal QskLayoutBox::heightForWidth( qreal width ) const
+{
+    const auto m = margins();
+    width -= m.left() + m.right();
+    
+    qreal height = engine().heightForWidth( width );
+    
+    height += m.top() + m.bottom();
+    return height;
+}   
+
+qreal QskLayoutBox::widthForHeight( qreal height ) const
+{
+    const auto m = margins();
+    height -= m.top() + m.bottom();
+    
+    qreal width = engine().widthForHeight( height );
+    
+    width += m.left() + m.right();
+    return width;
+}   
+
 void QskLayoutBox::geometryChangeEvent( QskGeometryChangeEvent* event )
 {
     Inherited::geometryChangeEvent( event );

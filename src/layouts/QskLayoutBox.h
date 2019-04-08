@@ -39,6 +39,11 @@ class QSK_EXPORT QskLayoutBox : public QskControl
     void adjustItem( const QQuickItem* );
     void adjustItemAt( int index );
 
+    QSizeF contentsSizeHint() const override;
+
+    qreal heightForWidth( qreal width ) const override;
+    qreal widthForHeight( qreal height ) const override;
+
   public Q_SLOTS:
     void activate();
     void invalidate();
@@ -62,6 +67,7 @@ class QSK_EXPORT QskLayoutBox : public QskControl
     virtual void layoutItemRemoved( QskLayoutItem*, int index );
 
     virtual QRectF alignedLayoutRect( const QRectF& ) const;
+    virtual QSizeF layoutItemsSizeHint() const;
 
   private:
     class PrivateData;

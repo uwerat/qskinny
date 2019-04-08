@@ -139,7 +139,7 @@ void QskStackBox::setCurrentIndex( int index )
         return;
 
     // stop and complete the running transition
-    QskStackBoxAnimator* animator = effectiveAnimator();
+    auto animator = effectiveAnimator();
     if ( animator )
         animator->stop();
 
@@ -158,8 +158,8 @@ void QskStackBox::setCurrentIndex( int index )
     }
     else
     {
-        QQuickItem* item1 = itemAtIndex( m_data->currentIndex );
-        QQuickItem* item2 = itemAtIndex( index );
+        auto item1 = itemAtIndex( m_data->currentIndex );
+        auto item2 = itemAtIndex( index );
 
         if ( item1 )
             item1->setVisible( false );
@@ -177,24 +177,18 @@ void QskStackBox::setCurrentItem( const QQuickItem* item )
     setCurrentIndex( indexOf( item ) );
 }
 
-QSizeF QskStackBox::contentsSizeHint() const
+QSizeF QskStackBox::layoutItemsSizeHint() const
 {
-    if ( !isActive() )
-        return QSizeF( -1, -1 );
-
-    if ( itemCount() == 0 )
-        return QSizeF( 0, 0 );
-
     qreal width = -1;
     qreal height = -1;
 
     QSizeF constraint( -1, -1 );
     Qt::Orientations constraintOrientation = 0;
 
-    const QskLayoutEngine& engine = this->engine();
+    const auto& engine = this->engine();
     for ( int i = 0; i < engine.itemCount(); i++ )
     {
-        const QskLayoutItem* layoutItem = engine.layoutItemAt( i );
+        const auto layoutItem = engine.layoutItemAt( i );
 
         if ( layoutItem->hasDynamicConstraint() )
         {
@@ -221,7 +215,7 @@ QSizeF QskStackBox::contentsSizeHint() const
 
         for ( int i = 0; i < engine.itemCount(); i++ )
         {
-            const QskLayoutItem* layoutItem = engine.layoutItemAt( i );
+            const auto layoutItem = engine.layoutItemAt( i );
 
             if ( layoutItem->hasDynamicConstraint() &&
                 layoutItem->dynamicConstraintOrientation() == Qt::Horizontal )
@@ -240,7 +234,7 @@ QSizeF QskStackBox::contentsSizeHint() const
 
         for ( int i = 0; i < engine.itemCount(); i++ )
         {
-            const QskLayoutItem* layoutItem = engine.layoutItemAt( i );
+            const auto layoutItem = engine.layoutItemAt( i );
 
             if ( layoutItem->hasDynamicConstraint() &&
                 layoutItem->dynamicConstraintOrientation() == Qt::Vertical )

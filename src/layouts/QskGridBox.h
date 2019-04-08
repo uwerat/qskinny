@@ -113,11 +113,6 @@ class QSK_EXPORT QskGridBox : public QskLayoutBox
     Q_INVOKABLE bool retainSizeWhenHidden( QQuickItem* ) const;
     Q_INVOKABLE void setRetainSizeWhenHidden( QQuickItem*, bool on );
 
-    qreal heightForWidth( qreal width ) const override;
-    qreal widthForHeight( qreal height ) const override;
-
-    QSizeF contentsSizeHint() const override;
-
   Q_SIGNALS:
     void verticalSpacingChanged();
     void horizontalSpacingChanged();

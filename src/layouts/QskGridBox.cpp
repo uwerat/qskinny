@@ -425,39 +425,6 @@ bool QskGridBox::retainSizeWhenHidden( QQuickItem* item ) const
     return false;
 }
 
-QSizeF QskGridBox::contentsSizeHint() const
-{
-    if ( !isActive() )
-        return QSizeF( -1, -1 );
-
-    if ( itemCount() == 0 )
-        return QSizeF( 0, 0 );
-
-    return engine().sizeHint( Qt::PreferredSize );
-}
-
-qreal QskGridBox::heightForWidth( qreal width ) const
-{
-    const auto m = margins();
-    width -= m.left() + m.right();
-
-    qreal height = engine().heightForWidth( width );
-
-    height += m.top() + m.bottom();
-    return height;
-}
-
-qreal QskGridBox::widthForHeight( qreal height ) const
-{
-    const auto m = margins();
-    height -= m.top() + m.bottom();
-
-    qreal width = engine().widthForHeight( height );
-
-    width += m.left() + m.right();
-    return width;
-}
-
 void QskGridBox::setRowSizeHint(
     Qt::SizeHint which, int row, qreal size, Qt::Orientation orientation )
 {
