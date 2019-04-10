@@ -75,6 +75,16 @@ QRect qskInnerRect( const QRectF& rect )
     return QRect( left, top, right - left, bottom - top );
 }
 
+QRectF qskInnerRectF( const QRectF& rect )
+{
+    const qreal left = qCeil( rect.left() );
+    const qreal top = qCeil( rect.top() );
+    const qreal right = qFloor( rect.right() );
+    const qreal bottom = qFloor( rect.bottom() );
+
+    return QRectF( left, top, right - left, bottom - top );
+}
+
 QRectF qskValidOrEmptyInnerRect( const QRectF& rect, const QMarginsF& margins )
 {
     qreal x, y, h, w;

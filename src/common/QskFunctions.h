@@ -20,6 +20,7 @@ QSK_EXPORT QRectF qskAlignedRectF( const QRectF& outerRect,
     qreal width, qreal height, Qt::Alignment alignment );
 
 QSK_EXPORT QRect qskInnerRect( const QRectF& rect );
+QSK_EXPORT QRectF qskInnerRectF( const QRectF& rect );
 
 QSK_EXPORT QRectF qskValidOrEmptyInnerRect(
     const QRectF& rect, const QMarginsF& margins );
