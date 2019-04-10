@@ -79,16 +79,12 @@ namespace
 }
 
 QskLayoutEngine::QskLayoutEngine()
-    : QGridLayoutEngine( Qt::AlignVCenter, true /*snapToPixelGrid*/ )
+    : QGridLayoutEngine( Qt::AlignVCenter, false /*snapToPixelGrid*/ )
 {
     /*
-        When centering something integer based like a QImage
-        inside an odd number of pixels, we end up at x.5 positions.
-        Then snapToPixelGrid will ceil one side and we lose 0.5
-        in height/width. For these type of situations it would be
-        good to be able to disable snapToPixelGrid. Unfortunately
-        this can't be done without recreating the QGridLayoutEngine.
-        TODO ...
+        snapToPixelGrid rounds x/y, what might lead to losing a pixel.
+        F.e. when having a text in elideMode we end up with an elided text
+        because of this.    
      */
 }
 
