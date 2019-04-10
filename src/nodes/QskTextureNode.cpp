@@ -316,11 +316,9 @@ void QskTextureNode::updateTexture()
         r.setBottom( 0 );
     }
 
-#if 1
     const qreal ratio = qskDevicePixelRatio();
-    const QRect rect( d->rect.x(), d->rect.y(),
+    const QRectF rect( d->rect.x(), d->rect.y(),
         d->rect.width() / ratio, d->rect.height() / ratio );
-#endif
 
     QSGGeometry::updateTexturedRectGeometry( &d->geometry, rect, r );
 }

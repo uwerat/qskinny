@@ -57,37 +57,43 @@ static inline QSGNode* qskFindNodeByFlag( QSGNode* parent, int nodeRole )
     return nullptr;
 }
 
-static qreal qskDevicePixelRatio( const QskSkinnable* skinnable )
-{
-    if ( auto control = skinnable->owningControl() )
-    {
-        if ( auto window = control->window() )
-            return window->effectiveDevicePixelRatio();
-    }
-
-    return qGuiApp->devicePixelRatio();
-}
-
 static inline QSGNode* qskUpdateGraphicNode(
     const QskSkinnable* skinnable, QSGNode* node,
     const QskGraphic& graphic, const QskColorFilter& colorFilter,
-    const QRect& rect )
+    const QRectF& rect )
 {
     if ( rect.isEmpty() )
         return nullptr;
 
     auto mode = QskTextureRenderer::OpenGL;
 
-    const auto control = skinnable->owningControl();
-    if ( control && control->testControlFlag( QskControl::PreferRasterForTextures ) )
-        mode = QskTextureRenderer::Raster;
-
     auto graphicNode = static_cast< QskGraphicNode* >( node );
     if ( graphicNode == nullptr )
         graphicNode = new QskGraphicNode();
 
-    const qreal ratio = qskDevicePixelRatio( skinnable );
-    const QRect r( rect.x(), rect.y(), ratio * rect.width(), ratio * rect.height() );
+    QRectF r = rect;
+
+    if ( const auto control = skinnable->owningControl() )
+    {
+        if ( control->testControlFlag( QskControl::PreferRasterForTextures ) )
+            mode = QskTextureRenderer::Raster;
+
+        if ( auto window = control->window() )
+        {
+            /*
+               Aligning the rect according to scene coordinates, so that
+               we don't run into rounding issues downstream, where values
+               will be floored/ceiled ending up with a slightly different
+               aspect ratio.
+             */
+            const QRectF sceneRect(
+                control->mapToScene( r.topLeft() ),
+                r.size() * window->effectiveDevicePixelRatio() );
+
+            r = qskInnerRect( sceneRect );
+            r.moveTopLeft( control->mapFromScene( r.topLeft() ) );
+        }
+    }
 
     graphicNode->setGraphic( graphic, colorFilter, mode, r );
 
@@ -538,12 +544,10 @@ QSGNode* QskSkinlet::updateGraphicNode(
     if ( graphic.isNull() )
         return nullptr;
 
-    const QSizeF scaledSize = graphic.defaultSize().scaled(
+    const QSizeF size = graphic.defaultSize().scaled(
         rect.size(), Qt::KeepAspectRatio );
 
-    const QRect r = qskAlignedRect( qskInnerRect( rect ),
-        int( scaledSize.width() ), int( scaledSize.height() ), alignment );
-
+    const QRectF r = qskAlignedRectF( rect, size.width(), size.height(), alignment );
     return qskUpdateGraphicNode( skinnable, node, graphic, colorFilter, r );
 }
 
@@ -555,8 +559,7 @@ QSGNode* QskSkinlet::updateGraphicNode(
     if ( graphic.isNull() )
         return nullptr;
 
-    return qskUpdateGraphicNode( skinnable, node,
-        graphic, colorFilter, rect.toAlignedRect() );
+    return qskUpdateGraphicNode( skinnable, node, graphic, colorFilter, rect );
 }
 
 #include "moc_QskSkinlet.cpp"

@@ -47,7 +47,7 @@ QskGraphicNode::~QskGraphicNode()
 
 void QskGraphicNode::setGraphic(
     const QskGraphic& graphic, const QskColorFilter& colorFilter,
-    QskTextureRenderer::RenderMode renderMode, const QRect& rect )
+    QskTextureRenderer::RenderMode renderMode, const QRectF& rect )
 {
     bool isTextureDirty = ( QskTextureNode::textureId() == 0 );
 
@@ -70,7 +70,7 @@ void QskGraphicNode::setGraphic(
     if ( isTextureDirty )
     {
         const uint textureId = QskTextureRenderer::createTextureFromGraphic(
-            renderMode, rect.size(), graphic, colorFilter, Qt::IgnoreAspectRatio );
+            renderMode, rect.size().toSize(), graphic, colorFilter, Qt::IgnoreAspectRatio );
 
         QskTextureNode::setTextureId( textureId );
     }

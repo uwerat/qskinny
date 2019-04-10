@@ -19,7 +19,7 @@ class QSK_EXPORT QskGraphicNode : public QskTextureNode
     ~QskGraphicNode() override;
 
     void setGraphic( const QskGraphic&, const QskColorFilter&,
-        QskTextureRenderer::RenderMode, const QRect& );
+        QskTextureRenderer::RenderMode, const QRectF& );
 
   private:
     void setTextureId( int ) = delete;
