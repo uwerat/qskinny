@@ -27,35 +27,19 @@ namespace
 
         void restack( int currentIndex )
         {
-            if ( itemCount() <= 1 )
-                return;
-
-            QQuickItem* buttonBefore = nullptr;
+            /*
+                We can't simply reorder the buttons as the focus tab chain depends on it.
+                Again we have some QML only API ( QQuickKeyNavigationAttached ),
+                that is useless for C++, but nothing like QWidget::setTabOrder.
+                Maybe it makes sense to implement our own navigation in
+                QskControl::keyPressEvent.
+             */
 
             for ( int i = 0; i < itemCount(); i++ )
             {
-                if ( i != currentIndex )
-                {
-                    if ( auto button = itemAtIndex( i ) )
-                    {
-                        if ( buttonBefore == nullptr )
-                        {
-                            auto firstChild = childItems().first();
-                            if ( firstChild != button )
-                                button->stackBefore( firstChild );
-                        }
-                        else
-                        {
-                            button->stackAfter( buttonBefore );
-                        }
-
-                        buttonBefore = button;
-                    }
-                }
+                if ( auto button = itemAtIndex( i ) )
+                    button->setZ( i == currentIndex ? 0.001 : 0.0 );
             }
-
-            if ( auto button = itemAtIndex( currentIndex ) )
-                button->stackAfter( buttonBefore );
         }
     };
 }
