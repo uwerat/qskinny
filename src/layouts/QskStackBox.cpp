@@ -143,7 +143,7 @@ void QskStackBox::setCurrentIndex( int index )
     if ( animator )
         animator->stop();
 
-    if ( window() && isVisible() && animator )
+    if ( window() && isVisible() && isInitiallyPainted() && animator )
     {
         // When being hidden, the geometry is not updated.
         // So we do it now.
