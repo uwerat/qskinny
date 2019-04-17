@@ -13,10 +13,10 @@ Qsk.Window
     color: "Beige"
 
     Qsk.Shortcut
-	{
-		sequence : "Ctrl+X"
-		onActivated: console.log( "Ctrl+X" )
-	}
+    {
+        sequence : "Ctrl+X"
+        onActivated: console.log( "Ctrl+X" )
+    }
 
     Qsk.LinearBox
     {

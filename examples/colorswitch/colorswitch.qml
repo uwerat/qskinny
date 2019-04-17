@@ -11,7 +11,7 @@ Main
     Theme
     {
         accent: accentColors[ tabBar.currentIndex < 0 ? 0 : tabBar.currentIndex ]
-		skin: listBox.entries[ listBox.selectedRow ]
+        skin: listBox.entries[ listBox.selectedRow ]
     }
 
     Window
