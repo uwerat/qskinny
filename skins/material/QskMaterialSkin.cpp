@@ -505,7 +505,7 @@ void QskMaterialSkin::initTabButtonHints()
 
         borderColors.setColorsAt( edge, pal.accentColor );
         for ( auto state : { Q::Checked, Q::Pressed, Q::Checkable | Q::Hovered } )
-            setBoxBorderColors( Q::Panel | state, borderColors );
+            setBoxBorderColors( aspect | state, borderColors );
     }
 
     setAnimation( Q::Panel | Color, qskDuration );
