@@ -517,8 +517,6 @@ void QskSquiekSkin::initTabButtonHints()
             for ( const auto state : { Q::Checked, Q::Checked | Q::Pressed } )
                 setMargins( aspect | Margin | state, QskMargins( 0, -1, -3, 0 ) );
 
-            setMargins( aspect | Padding, padding );
-
             setMargins( aspect | Padding, padding.rotated() );
             setTab( aspect, Qt::Horizontal );
         }
