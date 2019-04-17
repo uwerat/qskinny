@@ -53,12 +53,18 @@ class TabView : public QskTabView
         buttonAt( 2 )->setEnabled( false );
     }
 
-    void flip()
+    void rotate()
     {
-        if ( orientation() == Qt::Vertical )
-            setOrientation( Qt::Horizontal );
-        else
-            setOrientation( Qt::Vertical );
+        const Qsk::Position pos[] = { Qsk::Top, Qsk::Right, Qsk::Bottom, Qsk::Left };
+
+        for ( int i = 0; i < 4; i++ )
+        {
+            if ( tabPosition() == pos[i] )
+            {
+                setTabPosition( pos[ ( i + 1 ) % 4 ] ); 
+                break;
+            }
+        }
     }
 };
 
@@ -75,15 +81,15 @@ int main( int argc, char* argv[] )
 
     auto tabView = new TabView();
 
-    auto flipButton = new QskPushButton( "Flip" );
-    flipButton->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
-    flipButton->setFocus( true );
-    QObject::connect( flipButton, &QskPushButton::clicked, tabView, &TabView::flip );
+    auto rotateButton = new QskPushButton( "Rotate" );
+    rotateButton->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
+    rotateButton->setFocus( true );
+    QObject::connect( rotateButton, &QskPushButton::clicked, tabView, &TabView::rotate );
 
     auto layoutBox = new QskLinearBox( Qt::Vertical );
     layoutBox->setMargins( 5 );
     layoutBox->setSpacing( 10 );
-    layoutBox->addItem( flipButton, Qt::AlignLeft );
+    layoutBox->addItem( rotateButton, Qt::AlignLeft );
     layoutBox->addItem( tabView );
 
     auto focusIndicator = new QskFocusIndicator();

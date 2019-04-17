@@ -305,7 +305,7 @@ void qskDebugAspect( QDebug debug, const QMetaObject* metaObject, QskAspect::Asp
         }
     }
 
-    if ( aspect.placement() != QskAspect::Preserved )
+    if ( aspect.placement() != QskAspect::NoPlacement )
         debug << ", " << qskEnumString( "Placement", aspect.placement() );
 
     if ( aspect.state() )

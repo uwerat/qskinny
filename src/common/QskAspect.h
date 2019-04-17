@@ -8,8 +8,10 @@
 
 #include "QskGlobal.h"
 #include "QskFlags.h"
+#include "QskNamespace.h"
 
 #include <qmetaobject.h>
+#include <qnamespace.h>
 #include <functional>
 
 /*
@@ -101,8 +103,15 @@ QSK_NAMESPACE( QskAspect )
 
     enum Placement : quint8
     {
-        Preserved = 0,
-        Transposed = 1
+        NoPlacement = 0,
+
+        Vertical = Qt::Vertical,
+        Horizontal = Qt::Horizontal,
+
+        Top    = 1,
+        Left   = 2,
+        Right  = 3,
+        Bottom = 4
     };
     QSK_ENUM( Placement )
 
@@ -199,8 +208,8 @@ namespace QskAspect
             uint isAnimator : 1;
 
             uint primitive : 7;
-            uint placement : 1;
-            uint reserved1 : 8;
+            uint placement : 3;
+            uint reserved1 : 6;
 
             uint states : 16;
             uint reserved2 : 16;
@@ -214,17 +223,17 @@ namespace QskAspect
     };
 
     inline constexpr Aspect::Aspect()
-        : Aspect( Control, Flag, Preserved )
+        : Aspect( Control, Flag, NoPlacement )
     {
     }
 
     inline constexpr Aspect::Aspect( Subcontrol subControl )
-        : Aspect( subControl, Flag, Preserved )
+        : Aspect( subControl, Flag, NoPlacement )
     {
     }
 
     inline constexpr Aspect::Aspect( Type type )
-        : Aspect( Control, type, Preserved )
+        : Aspect( Control, type, NoPlacement )
     {
     }
 

@@ -128,14 +128,13 @@ QskSquiekSkin::~QskSquiekSkin()
 {
 }
 
-void QskSquiekSkin::setSeparator(
-    QskAspect::Aspect aspect, Qt::Orientation orientation )
+void QskSquiekSkin::setSeparator( QskAspect::Aspect aspect )
 {
     const ColorPalette& pal = m_data->palette;
 
     QskGradient gradient( QskGradient::Vertical, pal.lighter110, pal.darker125 );
 
-    if ( orientation == Qt::Vertical )
+    if ( aspect.placement() == QskAspect::Vertical )
         gradient.setOrientation( QskGradient::Horizontal );
 
     setGradient( aspect, gradient );
@@ -208,7 +207,7 @@ void QskSquiekSkin::setPanel( QskAspect::Aspect aspect, PanelStyle style )
     setButton( aspect, style, 1 );
 }
 
-void QskSquiekSkin::setTab( QskAspect::Aspect aspect, Qt::Orientation orientation )
+void QskSquiekSkin::setTab( QskAspect::Aspect aspect )
 {
     const ColorPalette& pal = m_data->palette;
 
@@ -219,17 +218,29 @@ void QskSquiekSkin::setTab( QskAspect::Aspect aspect, Qt::Orientation orientatio
     QskBoxBorderMetrics border( 1 );
     QskBoxShapeMetrics shape( 4 );
 
-    if ( orientation == Qt::Horizontal )
+    if ( aspect.placement() == QskAspect::Top )
+    {
+        border.setWidthAt( Qt::BottomEdge, 0 );
+        shape.setRadius( Qt::BottomLeftCorner, 0 );
+        shape.setRadius( Qt::BottomRightCorner, 0 );
+    }
+    else if ( aspect.placement() == QskAspect::Bottom )
+    {
+        border.setWidthAt( Qt::TopEdge, 0 );
+        shape.setRadius( Qt::TopLeftCorner, 0 );
+        shape.setRadius( Qt::TopRightCorner, 0 );
+    }
+    else if ( aspect.placement() == QskAspect::Left )
     {
         border.setWidthAt( Qt::RightEdge, 0 );
         shape.setRadius( Qt::TopRightCorner, 0 );
         shape.setRadius( Qt::BottomRightCorner, 0 );
     }
-    else
+    else if ( aspect.placement() == QskAspect::Right )
     {
-        border.setWidthAt( Qt::BottomEdge, 0 );
+        border.setWidthAt( Qt::LeftEdge, 0 );
+        shape.setRadius( Qt::TopLeftCorner, 0 );
         shape.setRadius( Qt::BottomLeftCorner, 0 );
-        shape.setRadius( Qt::BottomRightCorner, 0 );
     }
 
     setBoxBorderMetrics( aspect, border );
@@ -370,8 +381,8 @@ void QskSquiekSkin::initSeparatorHints()
 
     setMetric( Q::Panel | Size, 4 );
 
-    setSeparator( Q::Panel, Qt::Horizontal );
-    setSeparator( Q::Panel | Transposed, Qt::Vertical );
+    setSeparator( Q::Panel | Horizontal );
+    setSeparator( Q::Panel | Vertical );
 }
 
 void QskSquiekSkin::initPageIndicatorHints()
@@ -496,30 +507,44 @@ void QskSquiekSkin::initTabButtonHints()
 
     const QskMargins padding( 10, 4 );
 
-    for ( auto placement : { Preserved, Transposed } )
+    for ( auto placement : { Left, Right, Top, Bottom } )
     {
         const Aspect aspect = Q::Panel | placement;
 
-        if ( placement == Preserved )
+        QskMargins margins0, margins1, padding;
+
+        if ( placement == Top )
         {
-            setMargins( aspect | Margin, QskMargins( -1, 2, -1, -2 ) );
+            margins0 = QskMargins( -1, 2, -1, -2 );
+            margins1 = QskMargins( -1, 0, -1, -3 );
 
-            for ( const auto state : { Q::Checked, Q::Checked | Q::Pressed } )
-                setMargins( aspect | Margin | state, QskMargins( -1, 0, -1, -3 ) );
-
-            setMargins( aspect | Padding, padding );
-            setTab( aspect, Qt::Vertical );
+            padding = padding.rotated();
         }
-        else
+        else if ( placement == Bottom )
         {
-            setMargins( aspect | Margin, QskMargins( 2, -1, -2, -1 ) );
+            margins0 = QskMargins( -1, -2, -1, 2 );
+            margins1 = QskMargins( -1, -3, -1, 0 );
 
-            for ( const auto state : { Q::Checked, Q::Checked | Q::Pressed } )
-                setMargins( aspect | Margin | state, QskMargins( 0, -1, -3, 0 ) );
-
-            setMargins( aspect | Padding, padding.rotated() );
-            setTab( aspect, Qt::Horizontal );
+            padding = padding.rotated();
         }
+        else if ( placement == Left )
+        {
+            margins0 = QskMargins( 2, -1, -2, -1 );
+            margins1 = QskMargins( 0, -1, -3, 0 );
+        }
+        else if ( placement == Right )
+        {
+            margins0 = QskMargins( -2, -1, 2, -1 );
+            margins1 = QskMargins( -3, -1, 0, 0 );
+        }
+
+        setMargins( aspect | Margin, margins0 );
+
+        for ( const auto state : { Q::Checked, Q::Checked | Q::Pressed } )
+            setMargins( aspect | Margin | state, margins1 );
+
+        setMargins( aspect | Padding, padding );
+        setTab( aspect );
     }
 
     setAnimation( Q::Panel | Color, qskDuration );
@@ -542,7 +567,7 @@ void QskSquiekSkin::initSliderHints()
 
     // Panel
 
-    for ( auto placement : { Preserved, Transposed } )
+    for ( auto placement : { Horizontal, Vertical } )
     {
         const auto aspect = Q::Panel | placement;
 
@@ -552,12 +577,12 @@ void QskSquiekSkin::initSliderHints()
         setGradient( aspect, QskGradient() );
     }
 
-    setMargins( Q::Panel | Preserved | Padding, QskMargins( 0.5 * dim, 0 ) );
-    setMargins( Q::Panel | Transposed | Padding, QskMargins( 0, 0.5 * dim ) );
+    setMargins( Q::Panel | Horizontal | Padding, QskMargins( 0.5 * dim, 0 ) );
+    setMargins( Q::Panel | Vertical | Padding, QskMargins( 0, 0.5 * dim ) );
 
     // Groove, Fill
 
-    for ( auto placement : { Preserved, Transposed } )
+    for ( auto placement : { Horizontal, Vertical } )
     {
         for ( auto subControl : { Q::Groove, Q::Fill } )
         {
@@ -578,7 +603,7 @@ void QskSquiekSkin::initSliderHints()
 
     // Handle
 
-    for ( auto placement : { Preserved, Transposed } )
+    for ( auto placement : { Horizontal, Vertical } )
     {
         Aspect aspect = Q::Handle | placement;
 

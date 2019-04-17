@@ -363,7 +363,7 @@ class TabView : public QskTabView
 {
   public:
     TabView( QQuickItem* parentItem = nullptr )
-        : QskTabView( Qt::Vertical, parentItem )
+        : QskTabView( parentItem )
     {
         setMargins( 10 );
 

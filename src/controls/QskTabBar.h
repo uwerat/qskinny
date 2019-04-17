@@ -15,8 +15,10 @@ class QSK_EXPORT QskTabBar : public QskBox
 {
     Q_OBJECT
 
-    Q_PROPERTY( Qt::Orientation orientation READ orientation
-        WRITE setOrientation NOTIFY orientationChanged FINAL )
+    Q_PROPERTY( Qsk::Position position READ position
+        WRITE setPosition NOTIFY positionChanged FINAL )
+
+    Q_PROPERTY( Qt::Orientation orientation READ orientation )
 
     Q_PROPERTY( int count READ count NOTIFY countChanged FINAL )
 
@@ -32,11 +34,13 @@ class QSK_EXPORT QskTabBar : public QskBox
     QSK_SUBCONTROLS( Panel )
 
     QskTabBar( QQuickItem* parent = nullptr );
-    QskTabBar( Qt::Orientation, QQuickItem* parent = nullptr );
+    QskTabBar( Qsk::Position, QQuickItem* parent = nullptr );
 
     ~QskTabBar() override;
 
-    void setOrientation( Qt::Orientation );
+    void setPosition( Qsk::Position );
+    Qsk::Position position() const;
+
     Qt::Orientation orientation() const;
 
     void setTextOptions( const QskTextOptions& );
@@ -77,9 +81,9 @@ class QSK_EXPORT QskTabBar : public QskBox
 
   Q_SIGNALS:
     void currentIndexChanged( int index );
-    void countChanged();
-    void textOptionsChanged();
-    void orientationChanged();
+    void countChanged( int );
+    void textOptionsChanged( const QskTextOptions& );
+    void positionChanged( Qsk::Position );
 
   protected:
     void componentComplete() override;

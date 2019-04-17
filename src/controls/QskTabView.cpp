@@ -24,28 +24,22 @@ static inline Qt::Orientation qskTransposed( Qt::Orientation orientation )
 class QskTabView::PrivateData
 {
   public:
-    PrivateData()
-        : tabBar( nullptr )
-        , stackBox( nullptr )
-    {
-    }
-
-    QskTabBar* tabBar;
-    QskStackBox* stackBox;
+    QskTabBar* tabBar = nullptr;
+    QskStackBox* stackBox = nullptr;
 };
 
 QskTabView::QskTabView( QQuickItem* parent )
-    : QskTabView( Qt::Vertical, parent )
+    : QskTabView( Qsk::Top, parent )
 {
 }
 
-QskTabView::QskTabView( Qt::Orientation orientation, QQuickItem* parent )
+QskTabView::QskTabView( Qsk::Position tabPosition, QQuickItem* parent )
     : Inherited( parent )
     , m_data( new PrivateData() )
 {
     setPolishOnResize( true );
 
-    m_data->tabBar = new QskTabBar( qskTransposed( orientation ), this );
+    m_data->tabBar = new QskTabBar( tabPosition, this );
     m_data->tabBar->setZ( 1 );
 
     m_data->stackBox = new QskStackBox( this );
@@ -71,6 +65,9 @@ QskTabView::QskTabView( Qt::Orientation orientation, QQuickItem* parent )
 
     connect( m_data->tabBar, &QskTabBar::currentIndexChanged,
         this, &QskTabView::currentIndexChanged );
+
+    connect( m_data->tabBar, &QskTabBar::positionChanged,
+        this, &QskTabView::tabPositionChanged );
 }
 
 QskTabView::~QskTabView()
@@ -82,18 +79,20 @@ const QskTabBar* QskTabView::tabBar() const
     return m_data->tabBar;
 }
 
-void QskTabView::setOrientation( Qt::Orientation orientation )
+void QskTabView::setTabPosition( Qsk::Position position )
 {
-    const Qt::Orientation o = qskTransposed( orientation );
-    if ( o != m_data->tabBar->orientation() )
-    {
-        m_data->tabBar->setOrientation( o );
+    if ( position == tabPosition() )
+        return;
 
-        polish();
-        update();
+    m_data->tabBar->setPosition( position );
 
-        Q_EMIT orientationChanged();
-    }
+    polish();
+    update();
+}
+
+Qsk::Position QskTabView::tabPosition() const
+{
+    return m_data->tabBar->position();
 }
 
 Qt::Orientation QskTabView::orientation() const
@@ -205,10 +204,20 @@ QSizeF QskTabView::contentsSizeHint() const
         return Inherited::contentsSizeHint();
 
     const QSizeF barHint = m_data->tabBar->sizeHint();
-    const QSizeF itemHint = m_data->stackBox->sizeHint();
+    const QSizeF boxHint = m_data->stackBox->sizeHint();
 
-    const qreal w = qMax( barHint.width(), itemHint.width() );
-    const qreal h = barHint.height() + itemHint.height();
+    qreal w, h;
+
+    if ( orientation() == Qt::Vertical )
+    {
+        w = qMax( barHint.width(), boxHint.width() );
+        h = barHint.height() + boxHint.height();
+    }
+    else
+    {
+        w = barHint.width() + boxHint.width();
+        h = qMax( barHint.height(), boxHint.height() );
+    }
 
     return QSizeF( w, h );
 }

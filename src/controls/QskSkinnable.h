@@ -185,7 +185,7 @@ inline T QskSkinnable::flagHint( QskAspect::Aspect aspect, T defaultValue ) cons
 
 inline QskAspect::Placement QskSkinnable::effectivePlacement() const
 {
-    return QskAspect::Preserved;
+    return QskAspect::NoPlacement;
 }
 
 #endif

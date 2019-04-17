@@ -27,10 +27,7 @@
 class OtherSlider : public QskSlider
 {
   public:
-    /*
-        Slider overriding many hints from the skin.
-        "Preserved" is for horizontal, "Transposed" for vertical orientation
-     */
+    // Slider overriding many hints from the skin.
 
     OtherSlider( QQuickItem* parentItem = nullptr )
         : QskSlider( parentItem )
@@ -44,7 +41,7 @@ class OtherSlider : public QskSlider
 
         // Panel
 
-        for ( auto placement : { Preserved, Transposed } )
+        for ( auto placement : { Horizontal, Vertical } )
         {
             const Aspect aspect = Panel | placement;
 
@@ -54,7 +51,7 @@ class OtherSlider : public QskSlider
             setBoxBorderColorsHint( aspect, Grey900 );
             setGradientHint( aspect, Grey400 );
 
-            if ( placement == Preserved )
+            if ( placement == Horizontal )
                 setMarginsHint( aspect | Padding, QMarginsF( paddingW, 0, paddingW, 0 ) );
             else
                 setMarginsHint( aspect | Padding, QMarginsF( 0, paddingW, 0, paddingW ) );
@@ -62,7 +59,7 @@ class OtherSlider : public QskSlider
 
         // Groove
 
-        for ( auto placement : { Preserved, Transposed } )
+        for ( auto placement : { Horizontal, Vertical } )
         {
             const Aspect aspect = Groove | placement;
 
@@ -74,7 +71,7 @@ class OtherSlider : public QskSlider
         }
 
         // no Fill
-        for ( auto placement : { Preserved, Transposed } )
+        for ( auto placement : { Horizontal, Vertical } )
         {
             const Aspect aspect = Fill | placement;
             setMetric( aspect | Size, 0 );
@@ -82,7 +79,7 @@ class OtherSlider : public QskSlider
 
         // Handle
 
-        for ( auto placement : { Preserved, Transposed } )
+        for ( auto placement : { Horizontal, Vertical } )
         {
             const Aspect aspect = Handle | placement;
 
@@ -91,7 +88,7 @@ class OtherSlider : public QskSlider
 
             const qreal m = 0.5 * qCeil( 0.5 * ( w - h ) ) + 1;
 
-            if ( placement == Preserved )
+            if ( placement == Horizontal )
                 setMarginsHint( aspect | Margin, QMarginsF( -m, 0, -m, 0 ) );
             else
                 setMarginsHint( aspect | Margin, QMarginsF( 0, -m, 0, -m ) );

@@ -7,6 +7,7 @@
 #define QSK_TAB_VIEW_H
 
 #include "QskControl.h"
+#include "QskNamespace.h"
 
 class QskTabBar;
 class QskTabButton;
@@ -15,8 +16,10 @@ class QSK_EXPORT QskTabView : public QskControl
 {
     Q_OBJECT
 
-    Q_PROPERTY( Qt::Orientation orientation READ orientation
-        WRITE setOrientation NOTIFY orientationChanged )
+    Q_PROPERTY( Qsk::Position tabPosition READ tabPosition
+        WRITE setTabPosition NOTIFY tabPositionChanged FINAL )
+
+    Q_PROPERTY( Qt::Orientation orientation READ orientation )
 
     Q_PROPERTY( int count READ count NOTIFY countChanged FINAL )
 
@@ -29,13 +32,15 @@ class QSK_EXPORT QskTabView : public QskControl
     QSK_SUBCONTROLS( TabBar, Page )
 
     QskTabView( QQuickItem* parent = nullptr );
-    QskTabView( Qt::Orientation, QQuickItem* parent = nullptr );
+    QskTabView( Qsk::Position tabPosition, QQuickItem* parent = nullptr );
 
     ~QskTabView() override;
 
     const QskTabBar* tabBar() const;
 
-    void setOrientation( Qt::Orientation );
+    void setTabPosition( Qsk::Position );
+    Qsk::Position tabPosition() const;
+
     Qt::Orientation orientation() const;
 
     int addTab( QskTabButton*, QQuickItem* );
@@ -68,8 +73,8 @@ class QSK_EXPORT QskTabView : public QskControl
 
   Q_SIGNALS:
     void currentIndexChanged( int index );
-    void countChanged();
-    void orientationChanged();
+    void countChanged( int );
+    void tabPositionChanged( Qsk::Position );
 
   protected:
     bool event( QEvent* event ) override;

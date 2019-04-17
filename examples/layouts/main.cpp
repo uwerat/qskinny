@@ -53,7 +53,7 @@ int main( int argc, char* argv[] )
 
     auto tabView = new QskTabView();
     tabView->setMargins( 10 );
-    tabView->setOrientation( Qt::Horizontal );
+    tabView->setTabPosition( Qsk::Left );
     tabView->addTab( "Grid Layout", new DummyLabel( "Grid Layout - TODO ..." ) );
     tabView->addTab( "Flow Layout", new FlowLayoutPage() );
     tabView->addTab( "Linear Layout", new LinearLayoutPage() );

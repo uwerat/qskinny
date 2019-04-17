@@ -11,6 +11,14 @@
 
 QSK_SUBCONTROL( QskTabBar, Panel )
 
+static inline Qt::Orientation qskOrientation( int position )
+{
+    if ( ( position == Qsk::Top ) || ( position == Qsk::Bottom ) )
+        return Qt::Horizontal;
+    else
+        return Qt::Vertical;
+}
+
 namespace
 {
     class ButtonBox : public QskLinearBox
@@ -47,9 +55,8 @@ namespace
 class QskTabBar::PrivateData
 {
   public:
-    PrivateData()
-        : currentIndex( -1 )
-        , buttonBox( nullptr )
+    PrivateData( Qsk::Position position )
+        : position( position )
     {
     }
 
@@ -67,21 +74,25 @@ class QskTabBar::PrivateData
         }
     }
 
-    int currentIndex;
+    ButtonBox* buttonBox = nullptr;
+    int currentIndex = -1;
+
     QskTextOptions textOptions;
-    ButtonBox* buttonBox;
+    uint position : 2;
 };
 
 QskTabBar::QskTabBar( QQuickItem* parent )
-    : QskTabBar( Qt::Horizontal, parent )
+    : QskTabBar( Qsk::Top, parent )
 {
 }
 
-QskTabBar::QskTabBar( Qt::Orientation orientation, QQuickItem* parent )
+QskTabBar::QskTabBar( Qsk::Position position, QQuickItem* parent )
     : Inherited( parent )
-    , m_data( new PrivateData() )
+    , m_data( new PrivateData( position ) )
 {
     setAutoLayoutChildren( true );
+
+    const auto orientation = qskOrientation( position );
 
     if ( orientation == Qt::Horizontal )
         initSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Fixed );
@@ -98,25 +109,36 @@ QskTabBar::~QskTabBar()
 {
 }
 
-void QskTabBar::setOrientation( Qt::Orientation orientation )
+void QskTabBar::setPosition( Qsk::Position position )
 {
-    if ( orientation == m_data->buttonBox->orientation() )
+    if ( position == m_data->position )
         return;
 
-    setSizePolicy( sizePolicy( Qt::Vertical ), sizePolicy( Qt::Horizontal ) );
-    m_data->buttonBox->setOrientation( orientation );
+    m_data->position = position;
+
+    const auto orientation = qskOrientation( position );
+    if ( orientation != m_data->buttonBox->orientation() )
+    {
+        setSizePolicy( sizePolicy( Qt::Vertical ), sizePolicy( Qt::Horizontal ) );
+        m_data->buttonBox->setOrientation( orientation );
+    }
 
     resetImplicitSize();
 
     for ( int i = 0; i < count(); i++ )
         buttonAt( i )->update();
 
-    Q_EMIT orientationChanged();
+    Q_EMIT positionChanged( position );
+}
+
+Qsk::Position QskTabBar::position() const
+{
+    return static_cast< Qsk::Position >( m_data->position );
 }
 
 Qt::Orientation QskTabBar::orientation() const
 {
-    return m_data->buttonBox->orientation();
+    return qskOrientation( m_data->position );
 }
 
 void QskTabBar::setTextOptions( const QskTextOptions& options )
@@ -127,7 +149,7 @@ void QskTabBar::setTextOptions( const QskTextOptions& options )
         // QskControl - maybe added to the propagation system ???
 
         m_data->textOptions = options;
-        Q_EMIT textOptionsChanged();
+        Q_EMIT textOptionsChanged( options );
 
         for ( int i = 0; i < count(); i++ )
             buttonAt( i )->setTextOptions( options );
@@ -178,7 +200,7 @@ int QskTabBar::insertTab( int index, QskTabButton* button )
 
     m_data->connectButton( button, this, true );
 
-    Q_EMIT countChanged();
+    Q_EMIT countChanged( count() );
 
     return index;
 }
@@ -193,13 +215,13 @@ void QskTabBar::removeTab( int index )
 
     if ( index > m_data->currentIndex )
     {
-        Q_EMIT countChanged();
+        Q_EMIT countChanged( count() );
     }
     else if ( index < m_data->currentIndex )
     {
         m_data->currentIndex--;
 
-        Q_EMIT countChanged();
+        Q_EMIT countChanged( count() );
         Q_EMIT currentIndexChanged( m_data->currentIndex );
     }
     else
@@ -243,7 +265,7 @@ void QskTabBar::removeTab( int index )
         
         m_data->currentIndex = nextIndex;
         
-        Q_EMIT countChanged();
+        Q_EMIT countChanged( count() );
         Q_EMIT currentIndexChanged( nextIndex );
     }
 }
@@ -256,7 +278,7 @@ void QskTabBar::clear()
     const int idx = currentIndex();
     m_data->buttonBox->clear();
 
-    Q_EMIT countChanged();
+    Q_EMIT countChanged( count() );
 
     if ( idx >= 0 )
         Q_EMIT currentIndexChanged( -1 );

@@ -32,9 +32,9 @@ inline const QVariant* qskResolvedHint( QskAspect::Aspect aspect,
 
         if ( aspect.placement() )
         {
-            // clear the placement bit and restart
+            // clear the placement bits and restart
             aspect = a;
-            aspect.setPlacement( static_cast< QskAspect::Placement >( 0 ) );
+            aspect.setPlacement( QskAspect::NoPlacement );
 
             continue;
         }

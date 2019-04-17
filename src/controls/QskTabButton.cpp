@@ -101,15 +101,27 @@ QRectF QskTabButton::layoutRect() const
 
 QskAspect::Placement QskTabButton::effectivePlacement() const
 {
-    using namespace QskAspect;
-
     if ( m_data->tabBar )
     {
-        const auto o = m_data->tabBar->orientation();
-        return ( o == Qt::Horizontal ) ? Preserved : Transposed;
+        const auto pos = m_data->tabBar->position();
+
+        switch ( pos )
+        {
+            case Qsk::Left:
+                return QskAspect::Left;
+
+            case Qsk::Right:
+                return QskAspect::Right;
+
+            case Qsk::Top:
+                return QskAspect::Top;
+
+            case Qsk::Bottom:
+                return QskAspect::Bottom;
+        }
     }
 
-    return Preserved;
+    return QskAspect::NoPlacement;
 }
 
 QskTabBar* QskTabButton::tabBar() const

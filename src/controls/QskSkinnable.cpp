@@ -77,15 +77,15 @@ static inline bool qskCompareResolvedStates(
 
                 if ( s1 == 0 )
                 {
-                    if ( aspect1.placement() == 0 )
+                    if ( aspect1.placement() == QskAspect::NoPlacement )
                         return true;
 
-                    // clear the placement bit and restart with the initial state
+                    // clear the placement bits and restart with the initial state
                     aspect1 = a1;
-                    aspect1.setPlacement( static_cast< QskAspect::Placement >( 0 ) );
+                    aspect1.setPlacement( QskAspect::NoPlacement );
 
                     aspect2 = a2;
-                    aspect2.setPlacement( static_cast< QskAspect::Placement >( 0 ) );
+                    aspect2.setPlacement( QskAspect::NoPlacement );
                 }
             }
             else

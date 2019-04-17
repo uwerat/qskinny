@@ -56,10 +56,10 @@ class QSK_SQUIEK_EXPORT QskSquiekSkin : public QskSkin
         Flat
     };
 
-    void setSeparator( QskAspect::Aspect, Qt::Orientation );
+    void setSeparator( QskAspect::Aspect );
     void setButton( QskAspect::Aspect, PanelStyle, qreal border = 2.0 );
     void setPanel( QskAspect::Aspect, PanelStyle );
-    void setTab( QskAspect::Aspect, Qt::Orientation );
+    void setTab( QskAspect::Aspect );
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

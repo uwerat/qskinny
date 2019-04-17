@@ -235,7 +235,7 @@ void QskMaterialSkin::initSeparatorHints()
 
     const ColorPalette& pal = m_data->palette;
 
-    for ( auto placement : { Preserved, Transposed } )
+    for ( auto placement : { Horizontal, Vertical } )
     {
         const Aspect aspect = Q::Panel | placement;
 
@@ -419,8 +419,8 @@ void QskMaterialSkin::initSliderHints()
     setBoxBorderMetrics( Q::Panel, 0 );
     setGradient( Q::Panel, QskGradient() );
 
-    setMargins( Q::Panel | Preserved | Padding, QskMargins( 0.5 * dim, 0 ) );
-    setMargins( Q::Panel | Transposed | Padding, QskMargins( 0, 0.5 * dim ) );
+    setMargins( Q::Panel | Horizontal | Padding, QskMargins( 0.5 * dim, 0 ) );
+    setMargins( Q::Panel | Vertical | Padding, QskMargins( 0, 0.5 * dim ) );
 
     // Groove, Fill
 
@@ -485,15 +485,37 @@ void QskMaterialSkin::initTabButtonHints()
     setMetric( Q::Panel | MinimumWidth, 30 );
     setMetric( Q::Panel | MinimumHeight, 16 );
 
-    for ( auto placement : { Preserved, Transposed } )
+    for ( auto placement : { Left, Right, Top, Bottom } )
     {
         const Aspect aspect = Q::Panel | placement;
-        const Qt::Edge edge = ( placement == Preserved ) ? Qt::BottomEdge : Qt::RightEdge;
+
+        Qt::Edge edge;
+
+        switch( placement )
+        {
+            case Left:
+                edge = Qt::RightEdge;
+                break;
+
+            case Right:
+                edge = Qt::LeftEdge;
+                break;
+
+            case Top:
+                edge = Qt::BottomEdge;
+                break;
+
+            case Bottom:
+                edge = Qt::TopEdge;
+                break;
+
+            default:
+                break;
+        }
 
         setGradient( aspect, QskRgbValue::White );
 
-        // The highlighted button has a accented bar at the bottom/right edge
-
+        // The highlighted button has a accented bar at one edge
         setBoxShape( aspect, 0 );
 
         QskBoxBorderMetrics border;
@@ -501,7 +523,7 @@ void QskMaterialSkin::initTabButtonHints()
         setBoxBorderMetrics( aspect, border );
 
         QskBoxBorderColors borderColors( QskRgbValue::White );
-        setBoxBorderColors( placement, borderColors );
+        setBoxBorderColors( aspect, borderColors );
 
         borderColors.setColorsAt( edge, pal.accentColor );
         for ( auto state : { Q::Checked, Q::Pressed, Q::Checkable | Q::Hovered } )

@@ -91,8 +91,7 @@ Qt::Orientation QskSlider::orientation() const
 
 QskAspect::Placement QskSlider::effectivePlacement() const
 {
-    using namespace QskAspect;
-    return ( m_data->orientation == Qt::Horizontal ) ? Preserved : Transposed;
+    return static_cast< QskAspect::Placement >( m_data->orientation );
 }
 
 void QskSlider::setTracking( bool on )

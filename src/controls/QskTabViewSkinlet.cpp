@@ -52,18 +52,25 @@ QRectF QskTabViewSkinlet::pageRect( const QskTabView* tabView ) const
 {
     const QRectF barRect = subControlRect( tabView, QskTabView::TabBar );
 
-    QRectF r = tabView->contentsRect();
+    QRectF r = tabView->layoutRect();
 
-    if ( tabView->orientation() == Qt::Vertical )
+    switch( tabView->tabPosition() )
     {
-        r.setTop( barRect.bottom() );
-    }
-    else
-    {
-        if ( tabView->layoutMirroring() )
-            r.setRight( r.right() - barRect.left() );
-        else
+        case Qsk::Top:
+            r.setTop( barRect.bottom() );
+            break;
+
+        case Qsk::Bottom:
+            r.setBottom( barRect.top() );
+            break;
+
+        case Qsk::Left:
             r.setLeft( barRect.right() );
+            break;
+
+        case Qsk::Right:
+            r.setRight( barRect.left() );
+            break;
     }
 
     return r;
@@ -71,19 +78,27 @@ QRectF QskTabViewSkinlet::pageRect( const QskTabView* tabView ) const
 
 QRectF QskTabViewSkinlet::tabBarRect( const QskTabView* tabView ) const
 {
-    QRectF r = tabView->layoutRect();
     const QSizeF hint = tabView->tabBar()->sizeHint();
 
-    if ( tabView->orientation() == Qt::Vertical )
-    {
-        r.setHeight( hint.height() );
-    }
-    else
-    {
-        r.setWidth( hint.width() );
+    QRectF r = tabView->layoutRect();
 
-        if ( tabView->layoutMirroring() )
-            r.moveLeft( r.right() - r.width() );
+    switch( tabView->tabPosition() )
+    {
+        case Qsk::Top:
+            r.setBottom( hint.height() );
+            break;
+
+        case Qsk::Bottom:
+            r.setTop( r.bottom() - hint.height() );
+            break;
+
+        case Qsk::Left:
+            r.setRight( hint.width() );
+            break;
+
+        case Qsk::Right:
+            r.setLeft( r.right() - hint.width() );
+            break;
     }
 
     return r;
