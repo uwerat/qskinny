@@ -6,6 +6,7 @@
 #ifndef QSK_ASPECT_H
 #define QSK_ASPECT_H
 
+#include "QskGlobal.h"
 #include "QskFlags.h"
 
 #include <qmetaobject.h>
@@ -32,7 +33,7 @@
 
 QSK_NAMESPACE( QskAspect )
 {
-    extern const QMetaObject staticMetaObject;
+    extern QSK_EXPORT const QMetaObject staticMetaObject;
 
     enum Subcontrol : quint16
     {
