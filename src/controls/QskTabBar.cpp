@@ -413,4 +413,24 @@ QskAspect::Subcontrol QskTabBar::effectiveSubcontrol(
     return Inherited::effectiveSubcontrol( subControl );
 }
 
+QskAspect::Placement QskTabBar::effectivePlacement() const
+{
+    switch ( m_data->position )
+    {
+        case Qsk::Left:
+            return QskAspect::Left;
+
+        case Qsk::Right:
+            return QskAspect::Right;
+
+        case Qsk::Top:
+            return QskAspect::Top;
+
+        case Qsk::Bottom:
+            return QskAspect::Bottom;
+    }
+
+    return QskAspect::NoPlacement;
+}
+
 #include "moc_QskTabBar.cpp"

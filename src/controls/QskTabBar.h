@@ -73,6 +73,8 @@ class QSK_EXPORT QskTabBar : public QskBox
     int indexOf( const QskTabButton* ) const;
     Q_INVOKABLE int indexOf( QskTabButton* ) const;
 
+    QskAspect::Placement effectivePlacement() const override;
+
     QskAspect::Subcontrol effectiveSubcontrol(
         QskAspect::Subcontrol ) const override;
 
@@ -100,4 +102,5 @@ inline int QskTabBar::indexOf( const QskTabButton* tabButton ) const
 {
     return QskTabBar::indexOf( const_cast< QskTabButton* >( tabButton ) );
 }
+
 #endif
