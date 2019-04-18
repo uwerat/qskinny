@@ -12,6 +12,7 @@
 static void qskRegisterGradient()
 {
     qRegisterMetaType< QskGradient >();
+    qRegisterMetaType< QskGradientStop >();
 }
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterGradient )
