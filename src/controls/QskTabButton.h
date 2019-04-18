@@ -38,9 +38,11 @@ class QSK_EXPORT QskTabButton : public QskAbstractButton
 
     QSizeF contentsSizeHint() const override;
     QRectF layoutRect() const override;
+
     QskAspect::Placement effectivePlacement() const override;
 
-    QskTabBar* tabBar() const;
+    const QskTabBar* tabBar() const;
+    QskTabBar* tabBar();
 
   Q_SIGNALS:
     void textChanged( const QString& text );
@@ -50,8 +52,6 @@ class QSK_EXPORT QskTabButton : public QskAbstractButton
     void changeEvent( QEvent* ) override;
 
   private:
-    void resolveTabBar();
-
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

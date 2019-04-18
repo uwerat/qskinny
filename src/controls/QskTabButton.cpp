@@ -7,12 +7,18 @@
 #include "QskSkinlet.h"
 #include "QskTabBar.h"
 #include "QskTextOptions.h"
+#include "QskQuick.h"
 
 #include <qfontmetrics.h>
 #include <qpointer.h>
 
 QSK_SUBCONTROL( QskTabButton, Panel )
 QSK_SUBCONTROL( QskTabButton, Text )
+
+static inline QskTabBar* qskFindTabBar( QskTabButton* button )
+{
+    return qskFindAncestorOf< QskTabBar* >( button->parentItem() );
+}
 
 class QskTabButton::PrivateData
 {
@@ -36,7 +42,8 @@ QskTabButton::QskTabButton( const QString& text, QQuickItem* parent )
     : Inherited( parent )
     , m_data( new PrivateData( text ) )
 {
-    resolveTabBar();
+    if ( parent )
+        m_data->tabBar = qskFindTabBar( this );
 
     initSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Fixed );
 
@@ -102,29 +109,17 @@ QRectF QskTabButton::layoutRect() const
 QskAspect::Placement QskTabButton::effectivePlacement() const
 {
     if ( m_data->tabBar )
-    {
-        const auto pos = m_data->tabBar->position();
-
-        switch ( pos )
-        {
-            case Qsk::Left:
-                return QskAspect::Left;
-
-            case Qsk::Right:
-                return QskAspect::Right;
-
-            case Qsk::Top:
-                return QskAspect::Top;
-
-            case Qsk::Bottom:
-                return QskAspect::Bottom;
-        }
-    }
+        return m_data->tabBar->effectivePlacement();
 
     return QskAspect::NoPlacement;
 }
 
-QskTabBar* QskTabButton::tabBar() const
+const QskTabBar* QskTabButton::tabBar() const
+{
+    return m_data->tabBar;
+}
+
+QskTabBar* QskTabButton::tabBar()
 {
     return m_data->tabBar;
 }
@@ -145,7 +140,7 @@ void QskTabButton::changeEvent( QEvent* event )
         }
         case QEvent::ParentChange:
         {
-            resolveTabBar();
+            m_data->tabBar = qskFindTabBar( this );
             break;
         }
         default:
@@ -153,20 +148,6 @@ void QskTabButton::changeEvent( QEvent* event )
     }
 
     Inherited::changeEvent( event );
-}
-
-void QskTabButton::resolveTabBar()
-{
-    auto p = parent();
-    while ( p )
-    {
-        if ( const auto tabBar = qobject_cast< QskTabBar* >( p ) )
-        {
-            m_data->tabBar = tabBar;
-            break;
-        }
-        p = p->parent();
-    }
 }
 
 #include "moc_QskTabButton.cpp"
