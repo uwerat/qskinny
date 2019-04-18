@@ -108,12 +108,12 @@ class QSK_EXPORT QskGradient
 
     uint hash( uint seed ) const;
 
+    qreal stopAt( int index ) const;
+    QColor colorAt( int index ) const;
+
   private:
     void setStopAt( int index, qreal stop );
-    qreal stopAt( int index ) const;
-
     void setColorAt( int index, const QColor& color );
-    QColor colorAt( int index ) const;
 
     Orientation m_orientation;
     QVector< QskGradientStop > m_stops;
