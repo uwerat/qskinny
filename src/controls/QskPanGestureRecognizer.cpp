@@ -7,6 +7,26 @@
 #include <qmath.h>
 #include <qquickitem.h>
 
+static inline bool qskIsInOrientation(
+    const QPointF& from, const QPointF& to, Qt::Orientations orientations )
+{
+    if ( orientations == ( Qt::Horizontal | Qt::Vertical ) )
+        return true;
+
+    const qreal dx = std::fabs( to.x() - from.x() );
+    const qreal dy = std::fabs( to.y() - from.y() );
+
+    const qreal ratio = 0.75;
+
+    if ( orientations == Qt::Horizontal )
+        return ( dx >= ratio * dy );
+
+    if ( orientations == Qt::Vertical )
+        return ( dy >= ratio * dx );
+
+    return false; // should never happen
+}
+
 static inline qreal qskDistance(
     const QPointF& from, const QPointF& to, Qt::Orientations orientations )
 {
@@ -202,7 +222,8 @@ void QskPanGestureRecognizer::moveEvent( const QMouseEvent* event )
         const qreal dist = qskDistance(
             m_data->origin, m_data->pos, m_data->orientations );
 
-        if ( ( dist >= m_data->minDistance ) || ( -dist >= m_data->minDistance ) )
+        if ( ( qAbs( dist ) >= m_data->minDistance ) &&
+            qskIsInOrientation( m_data->origin, m_data->pos, m_data->orientations ) )
         {
             accept();
             started = true;
