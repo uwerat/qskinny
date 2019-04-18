@@ -237,9 +237,18 @@ QskDialog::DialogCode QskDialogSubWindow::result() const
 
 QskDialog::DialogCode QskDialogSubWindow::exec()
 {
+    if ( priority() > 0 )
+    {
+        qWarning( "illegal call of QskDialogSubWindow::exec "
+                  "for a subwindow with non default priority." );
+    }
+
+    open();
+
+    //check for window after call to open(), because maybe a popupmanager assigns a window on open.
     if ( window() == nullptr )
     {
-        qWarning( "trying to exec a subwindow without window. " );
+        qWarning( "trying to exec a subwindow without window." );
         return QskDialog::Rejected;
     }
 
@@ -247,11 +256,10 @@ QskDialog::DialogCode QskDialogSubWindow::exec()
     {
         // when being called from QQuickWindow::mouseReleaseEvent
         // the mouse grabber has not yet been released.
-
-        mouseGrabber->ungrabMouse();
+        
+        if( !qskIsAncestorOf( this, mouseGrabber ) )
+            mouseGrabber->ungrabMouse();
     }
-
-    open();
 
     QEventLoop eventLoop;
 
