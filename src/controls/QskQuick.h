@@ -45,7 +45,7 @@ QSK_EXPORT const QSGNode* qskItemNode( const QQuickItem* );
 QSK_EXPORT const QSGNode* qskPaintNode( const QQuickItem* );
 
 template< typename T >
-inline T qskFindAncestorOf( const QQuickItem* item )
+inline T qskFindAncestorOf( QQuickItem* item )
 {
     for ( auto it = item; it != nullptr; it = it->parentItem() )
     {
@@ -54,6 +54,13 @@ inline T qskFindAncestorOf( const QQuickItem* item )
     }
 
     return nullptr;
+}
+
+template< typename T >
+inline T qskFindAncestorOf( const QQuickItem* item )
+{
+    return qskFindAncestorOf< std::remove_const< T > >(
+        const_cast< QQuickItem * >( item ) );
 }
 
 #endif
