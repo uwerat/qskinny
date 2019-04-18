@@ -543,6 +543,14 @@ QskControl::QskControl( QQuickItem* parent )
 
 QskControl::~QskControl()
 {
+#if defined( QT_DEBUG )
+    if ( auto w = window() )
+    {
+        // to catch suicide situations as a result of mouse clicks
+        Q_ASSERT( this != w->mouseGrabberItem() );
+    }
+#endif
+
     if ( qskRegistry )
         qskRegistry->remove( this );
 
