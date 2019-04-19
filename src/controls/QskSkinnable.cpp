@@ -395,8 +395,7 @@ QskAnimationHint QskSkinnable::effectiveAnimation(
         return hint;
     }
 
-    const QskSkin* skin = effectiveSkin();
-    if ( skin )
+    if ( auto skin = effectiveSkin() )
     {
         const auto a = skin->hintTable().resolvedAnimator( aspect, hint );
         if ( a.isAnimator() )
@@ -485,13 +484,24 @@ QVariant QskSkinnable::animatedValue(
                 if ( aspect.state() == QskAspect::NoState )
                     aspect = aspect | skinState();
 
+                const auto aspect0 = aspect;
+
                 Q_FOREVER
                 {
-                    v = QskSkinTransition::animatedHint( control->window(), aspect );
-                    if ( v.isValid() || aspect.state() == QskAspect::NoState )
+                    Q_FOREVER
+                    {
+                        v = QskSkinTransition::animatedHint( control->window(), aspect );
+                        if ( v.isValid() || aspect.state() == QskAspect::NoState )
+                            break;
+
+                        aspect.clearState( aspect.topState() );
+                    }
+
+                    if ( v.isValid() || aspect.placement() == QskAspect::NoPlacement )
                         break;
 
-                    aspect.clearState( aspect.topState() );
+                    aspect = aspect0;
+                    aspect.setPlacement( QskAspect::NoPlacement );
                 }
             }
         }
