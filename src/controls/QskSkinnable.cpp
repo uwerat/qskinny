@@ -484,24 +484,31 @@ QVariant QskSkinnable::animatedValue(
                 if ( aspect.state() == QskAspect::NoState )
                     aspect = aspect | skinState();
 
-                const auto aspect0 = aspect;
+                const auto a = aspect;
 
                 Q_FOREVER
                 {
-                    Q_FOREVER
-                    {
-                        v = QskSkinTransition::animatedHint( control->window(), aspect );
-                        if ( v.isValid() || aspect.state() == QskAspect::NoState )
-                            break;
+                    v = QskSkinTransition::animatedHint( control->window(), aspect );
 
-                        aspect.clearState( aspect.topState() );
+                    if ( !v.isValid() )
+                    {
+                        if ( const auto topState = aspect.topState() )
+                        {
+                            aspect.clearState( aspect.topState() );
+                            continue;
+                        }
+
+                        if ( aspect.placement() )
+                        {
+                            // clear the placement bits and restart
+                            aspect = a;
+                            aspect.setPlacement( QskAspect::NoPlacement );
+
+                            continue;
+                        }
                     }
 
-                    if ( v.isValid() || aspect.placement() == QskAspect::NoPlacement )
-                        break;
-
-                    aspect = aspect0;
-                    aspect.setPlacement( QskAspect::NoPlacement );
+                    break;
                 }
             }
         }
