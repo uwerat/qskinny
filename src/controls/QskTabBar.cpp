@@ -28,8 +28,6 @@ namespace
             : QskLinearBox( orientation, parent )
         {
             setObjectName( QStringLiteral( "QskTabBarLayoutBox" ) );
-
-            setSpacing( 0 );
             setExtraSpacingAt( Qt::RightEdge | Qt::BottomEdge );
         }
 
@@ -100,6 +98,7 @@ QskTabBar::QskTabBar( Qsk::Position position, QQuickItem* parent )
         initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Preferred );
 
     m_data->buttonBox = new ButtonBox( orientation, this );
+    m_data->buttonBox->setSpacing( metric( QskTabBar::Panel | QskAspect::Spacing ) );
 
     connect( this, &QskTabBar::currentIndexChanged,
         m_data->buttonBox, &ButtonBox::restack, Qt::QueuedConnection );
