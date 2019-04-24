@@ -89,29 +89,45 @@ QRectF qskValidOrEmptyInnerRect( const QRectF& rect, const QMarginsF& margins )
 {
     qreal x, y, h, w;
 
-    const qreal marginsWidth = margins.left() + margins.right();
-    const qreal marginsHeight = margins.top() + margins.bottom();
-
-    if ( marginsWidth > rect.width() )
+    if ( rect.width() > 0.0 )
     {
-        x = rect.x() + rect.width() * ( margins.left() / marginsWidth );
-        w = 0;
+        const qreal marginsWidth = margins.left() + margins.right();
+
+        if ( marginsWidth > rect.width() )
+        {
+            x = rect.x() + rect.width() * ( margins.left() / marginsWidth );
+            w = 0.0;
+        }
+        else
+        {
+            x = rect.x() + margins.left();
+            w = rect.width() - marginsWidth;
+        }
     }
     else
     {
-        x = rect.x() + margins.left();
-        w = rect.width() - marginsWidth;
+        x = rect.x();
+        w = 0.0;
     }
 
-    if ( marginsHeight > rect.height() )
+    if ( rect.height() > 0.0 )
     {
-        y = rect.y() + rect.height() * ( margins.top() / marginsHeight );
-        h = 0;
+        const qreal marginsHeight = margins.top() + margins.bottom();
+        if ( marginsHeight > rect.height() )
+        {
+            y = rect.y() + rect.height() * ( margins.top() / marginsHeight );
+            h = 0.0;
+        }
+        else
+        {
+            y = rect.y() + margins.top();
+            h = rect.height() - marginsHeight;
+        }
     }
     else
     {
-        y = rect.y() + margins.top();
-        h = rect.height() - marginsHeight;
+        y = rect.y();
+        h = 0.0;
     }
 
     return QRectF( x, y, w, h );

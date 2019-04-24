@@ -5,6 +5,7 @@
 
 #include "QskControl.h"
 #include "QskAspect.h"
+#include "QskFunctions.h"
 #include "QskDirtyItemFilter.h"
 #include "QskEvent.h"
 #include "QskQuick.h"
@@ -1003,27 +1004,7 @@ QMarginsF QskControl::margins() const
 
 QRectF QskControl::contentsRect() const
 {
-    const QRectF r = rect();
-
-    const auto m = margins();
-    qreal left = r.left() + m.left();
-    qreal top = r.top() + m.top();
-    qreal right = r.right() - m.right();
-    qreal bottom = r.bottom() - m.bottom();
-
-    if ( left > r.right() )
-        left = r.right();
-
-    if ( top > r.bottom() )
-        top = r.bottom();
-
-    if ( right < left )
-        right = left;
-
-    if ( bottom < top )
-        bottom = top;
-
-    return QRectF( QPointF( left, top ), QPointF( right, bottom ) );
+    return qskValidOrEmptyInnerRect( rect(), margins() );
 }
 
 bool QskControl::layoutMirroring() const
