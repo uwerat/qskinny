@@ -52,7 +52,9 @@ QRectF QskTabViewSkinlet::pageRect( const QskTabView* tabView ) const
 {
     const QRectF barRect = subControlRect( tabView, QskTabView::TabBar );
 
+#if 1
     QRectF r = tabView->layoutRect();
+#endif
 
     switch( tabView->tabPosition() )
     {
@@ -80,12 +82,14 @@ QRectF QskTabViewSkinlet::tabBarRect( const QskTabView* tabView ) const
 {
     const QSizeF hint = tabView->tabBar()->sizeHint();
 
+#if 1
     QRectF r = tabView->layoutRect();
+#endif
 
     switch( tabView->tabPosition() )
     {
         case Qsk::Top:
-            r.setBottom( hint.height() );
+            r.setHeight( hint.height() );
             break;
 
         case Qsk::Bottom:
@@ -93,7 +97,7 @@ QRectF QskTabViewSkinlet::tabBarRect( const QskTabView* tabView ) const
             break;
 
         case Qsk::Left:
-            r.setRight( hint.width() );
+            r.setWidth( hint.width() );
             break;
 
         case Qsk::Right:
