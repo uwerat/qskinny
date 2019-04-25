@@ -14,15 +14,15 @@ QskPopupSkinlet::QskPopupSkinlet( QskSkin* skin )
 
 QskPopupSkinlet::~QskPopupSkinlet() = default;
 
-QRectF QskPopupSkinlet::subControlRect(
-    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
+QRectF QskPopupSkinlet::subControlRect( const QskSkinnable* skinnable,
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
     const auto popup = static_cast< const QskPopup* >( skinnable );
 
     if ( subControl == QskPopup::Overlay )
         return popup->overlayRect();
 
-    return Inherited::subControlRect( skinnable, subControl );
+    return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
 QSGNode* QskPopupSkinlet::updateSubNode(

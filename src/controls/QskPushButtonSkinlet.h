@@ -28,15 +28,15 @@ class QSK_EXPORT QskPushButtonSkinlet : public QskSkinlet
     ~QskPushButtonSkinlet() override;
 
     QRectF subControlRect( const QskSkinnable*,
-        QskAspect::Subcontrol ) const override;
+        const QRectF&, QskAspect::Subcontrol ) const override;
 
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 
   private:
-    QRectF textRect( const QskPushButton* ) const;
-    QRectF graphicRect( const QskPushButton* ) const;
+    QRectF textRect( const QskPushButton*, const QRectF& ) const;
+    QRectF graphicRect( const QskPushButton*, const QRectF& ) const;
 
     QSGNode* updateTextNode( const QskPushButton*, QSGNode* ) const;
 };

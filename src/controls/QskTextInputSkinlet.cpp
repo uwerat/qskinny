@@ -16,21 +16,20 @@ QskTextInputSkinlet::~QskTextInputSkinlet()
 {
 }
 
-QRectF QskTextInputSkinlet::subControlRect(
-    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
+QRectF QskTextInputSkinlet::subControlRect( const QskSkinnable* skinnable,
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
     if ( subControl == QskTextInput::Panel )
     {
-        const auto textInput = static_cast< const QskTextInput* >( skinnable );
-        return textInput->contentsRect();
+        return contentsRect;
     }
     else if ( subControl == QskTextInput::Text )
     {
-        return skinnable->innerBox( QskTextInput::Panel,
-            subControlRect( skinnable, QskTextInput::Panel ) );
+        const auto r = subControlRect( skinnable, contentsRect, QskTextInput::Panel );
+        return skinnable->innerBox( QskTextInput::Panel, r );
     }
 
-    return Inherited::subControlRect( skinnable, subControl );
+    return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
 QSGNode* QskTextInputSkinlet::updateSubNode(

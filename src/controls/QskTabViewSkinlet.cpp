@@ -16,22 +16,22 @@ QskTabViewSkinlet::QskTabViewSkinlet( QskSkin* skin )
 
 QskTabViewSkinlet::~QskTabViewSkinlet() = default;
 
-QRectF QskTabViewSkinlet::subControlRect(
-    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
+QRectF QskTabViewSkinlet::subControlRect( const QskSkinnable* skinnable,
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
     const auto tabView = static_cast< const QskTabView* >( skinnable );
 
     if ( subControl == QskTabView::Page )
     {
-        return pageRect( tabView );
+        return pageRect( tabView, contentsRect );
     }
 
     if ( subControl == QskTabView::TabBar )
     {
-        return tabBarRect( tabView );
+        return tabBarRect( tabView, contentsRect );
     }
 
-    return Inherited::subControlRect( skinnable, subControl );
+    return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
 QSGNode* QskTabViewSkinlet::updateSubNode(
@@ -48,9 +48,10 @@ QSGNode* QskTabViewSkinlet::updateSubNode(
     return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
-QRectF QskTabViewSkinlet::pageRect( const QskTabView* tabView ) const
+QRectF QskTabViewSkinlet::pageRect(
+    const QskTabView* tabView, const QRectF& rect ) const
 {
-    const QRectF barRect = subControlRect( tabView, QskTabView::TabBar );
+    const QRectF barRect = subControlRect( tabView, rect, QskTabView::TabBar );
 
 #if 1
     QRectF r = tabView->layoutRect();
@@ -78,8 +79,11 @@ QRectF QskTabViewSkinlet::pageRect( const QskTabView* tabView ) const
     return r;
 }
 
-QRectF QskTabViewSkinlet::tabBarRect( const QskTabView* tabView ) const
+QRectF QskTabViewSkinlet::tabBarRect(
+    const QskTabView* tabView, const QRectF& rect ) const
 {
+    Q_UNUSED( rect )
+
     const QSizeF hint = tabView->tabBar()->sizeHint();
 
 #if 1

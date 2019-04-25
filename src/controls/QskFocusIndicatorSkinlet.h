@@ -26,7 +26,7 @@ class QSK_EXPORT QskFocusIndicatorSkinlet : public QskSkinlet
     ~QskFocusIndicatorSkinlet() override;
 
     QRectF subControlRect( const QskSkinnable*,
-        QskAspect::Subcontrol ) const override;
+        const QRectF&, QskAspect::Subcontrol ) const override;
 
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,

@@ -120,8 +120,8 @@ SliderSkinlet::~SliderSkinlet()
 {
 }
 
-QRectF SliderSkinlet::subControlRect(
-    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
+QRectF SliderSkinlet::subControlRect( const QskSkinnable* skinnable,
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
     const auto slider = static_cast< const QskSlider* >( skinnable );
 
@@ -131,22 +131,22 @@ QRectF SliderSkinlet::subControlRect(
     }
     else if ( subControl == QskSlider::Fill )
     {
-        return fillRect( slider );
+        return fillRect( slider, contentsRect );
     }
     else if ( subControl == QskSlider::Handle )
     {
-        return handleRect( slider );
+        return handleRect( slider, contentsRect );
     }
     else if ( subControl == Slider::Scale )
     {
-        return scaleRect( slider );
+        return scaleRect( contentsRect );
     }
     else if ( subControl == Slider::Decoration )
     {
-        return decorationRect( slider );
+        return decorationRect( slider, contentsRect );
     }
 
-    return Inherited::subControlRect( skinnable, subControl );
+    return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
 QSGNode* SliderSkinlet::updateSubNode(
@@ -173,9 +173,9 @@ QSGNode* SliderSkinlet::updateSubNode(
     }
 }
 
-QRectF SliderSkinlet::scaleRect( const QskSlider* slider ) const
+QRectF SliderSkinlet::scaleRect( const QRectF& contentsRect ) const
 {
-    auto r = slider->contentsRect();
+    auto r = contentsRect;
 
     r.setX( r.left() + qskMargin );
     r.setBottom( r.center().y() );
@@ -185,9 +185,10 @@ QRectF SliderSkinlet::scaleRect( const QskSlider* slider ) const
     return r;
 }
 
-QRectF SliderSkinlet::fillRect( const QskSlider* slider ) const
+QRectF SliderSkinlet::fillRect(
+    const QskSlider* slider, const QRectF& contentsRect ) const
 {
-    auto r = subControlRect( slider, Slider::Scale );
+    auto r = subControlRect( slider, contentsRect, Slider::Scale );
 
     r.setTop( r.bottom() - qskMinorTick );
     r.setWidth( r.width() * slider->position() );
@@ -195,22 +196,23 @@ QRectF SliderSkinlet::fillRect( const QskSlider* slider ) const
     return r;
 }
 
-QRectF SliderSkinlet::decorationRect( const QskSlider* slider ) const
+QRectF SliderSkinlet::decorationRect(
+    const QskSlider* slider, const QRectF& contentsRect ) const
 {
     // decoration exceeds scale !!!!
 
-    auto r = subControlRect( slider, Slider::Scale );
+    auto r = subControlRect( slider, contentsRect, Slider::Scale );
     r.setBottom( r.top() );
     r.setTop( r.bottom() - QFontMetricsF( qskLabelFont ).height() );
 
     return r;
 }
 
-QRectF SliderSkinlet::handleRect( const QskSlider* slider ) const
+QRectF SliderSkinlet::handleRect(
+    const QskSlider* slider, const QRectF& contentsRect ) const
 {
-    const QRectF contentsRect = slider->contentsRect();
-    const QRectF fillRect = subControlRect( slider, QskSlider::Fill );
-    const QRectF scaleRect = subControlRect( slider, Slider::Scale );
+    const QRectF fillRect = subControlRect( slider, contentsRect, QskSlider::Fill );
+    const QRectF scaleRect = subControlRect( slider, contentsRect, Slider::Scale );
 
     QRectF handleRect( 0, scaleRect.bottom(), 80, 50 );
     handleRect.moveCenter( QPointF( fillRect.right(), handleRect.center().y() ) );
@@ -226,7 +228,9 @@ QRectF SliderSkinlet::handleRect( const QskSlider* slider ) const
 QSGNode* SliderSkinlet::updateScaleNode(
     const QskSlider* slider, QSGNode* node ) const
 {
-    const QRectF scaleRect = subControlRect( slider, Slider::Scale );
+    const auto scaleRect = subControlRect(
+        slider, slider->contentsRect(), Slider::Scale );
+
     if ( scaleRect.isEmpty() )
         return nullptr;
 
@@ -267,7 +271,9 @@ QSGNode* SliderSkinlet::updateScaleNode(
 QSGNode* SliderSkinlet::updateDecorationNode(
     const QskSlider* slider, QSGNode* node ) const
 {
-    const QRectF decorationRect = subControlRect( slider, Slider::Decoration );
+    const QRectF decorationRect = subControlRect(
+        slider, slider->contentsRect(), Slider::Decoration );
+
     if ( decorationRect.isEmpty() )
         return nullptr;
 
@@ -317,11 +323,14 @@ QSGNode* SliderSkinlet::updateDecorationNode(
 QSGNode* SliderSkinlet::updateHandleNode(
     const QskSlider* slider, QSGNode* node ) const
 {
-    const QRectF handleRect = subControlRect( slider, QskSlider::Handle );
+    const QRectF handleRect = subControlRect(
+        slider, slider->contentsRect(), QskSlider::Handle );
+
     if ( handleRect.isEmpty() )
         return nullptr;
 
-    const QRectF fillRect = subControlRect( slider, QskSlider::Fill );
+    const QRectF fillRect = subControlRect(
+        slider, slider->contentsRect(), QskSlider::Fill );
 
     auto handleNode = static_cast< HandleNode* >( node );
     if ( handleNode == nullptr )

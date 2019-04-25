@@ -26,14 +26,14 @@ class QSK_EXPORT QskSeparatorSkinlet : public QskSkinlet
     ~QskSeparatorSkinlet() override;
 
     QRectF subControlRect( const QskSkinnable*,
-        QskAspect::Subcontrol ) const override;
+        const QRectF& rect, QskAspect::Subcontrol ) const override;
 
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 
   private:
-    QRectF panelRect( const QskSeparator* ) const;
+    QRectF panelRect( const QskSeparator*, const QRectF& rect ) const;
 };
 
 #endif

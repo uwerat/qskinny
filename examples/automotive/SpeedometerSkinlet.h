@@ -20,8 +20,8 @@ class SpeedometerSkinlet : public QskSkinlet
     Q_INVOKABLE SpeedometerSkinlet( QskSkin* skin = nullptr );
     ~SpeedometerSkinlet() override;
 
-    QRectF subControlRect( const QskSkinnable* skinnable,
-        QskAspect::Subcontrol ) const override;
+    QRectF subControlRect( const QskSkinnable*,
+        const QRectF&, QskAspect::Subcontrol ) const override;
 
   protected:
     virtual QSGNode* updateSubNode( const QskSkinnable*,

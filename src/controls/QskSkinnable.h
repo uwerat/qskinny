@@ -134,8 +134,6 @@ class QSK_EXPORT QskSkinnable
 
     QMarginsF innerPadding( QskAspect::Aspect, const QSizeF& ) const;
 
-    QRectF subControlRect( QskAspect::Subcontrol ) const;
-
     virtual const QskSkinlet* effectiveSkinlet() const;
     QskSkin* effectiveSkin() const;
 

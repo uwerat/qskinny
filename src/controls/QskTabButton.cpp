@@ -103,7 +103,7 @@ QSizeF QskTabButton::contentsSizeHint() const
 
 QRectF QskTabButton::layoutRect() const
 {
-    return innerBox( Panel, effectiveSkinlet()->subControlRect( this, Panel ) );
+    return innerBox( Panel, subControlRect( Panel ) );
 }
 
 QskAspect::Placement QskTabButton::effectivePlacement() const

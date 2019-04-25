@@ -24,7 +24,7 @@ class QSK_EXPORT QskTextLabelSkinlet : public QskSkinlet
     ~QskTextLabelSkinlet() override;
 
     QRectF subControlRect( const QskSkinnable*,
-        QskAspect::Subcontrol ) const override;
+        const QRectF&, QskAspect::Subcontrol ) const override;
 
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,

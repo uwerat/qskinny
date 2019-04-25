@@ -16,17 +16,15 @@ QskTextLabelSkinlet::QskTextLabelSkinlet( QskSkin* skin )
 
 QskTextLabelSkinlet::~QskTextLabelSkinlet() = default;
 
-QRectF QskTextLabelSkinlet::subControlRect(
-    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
+QRectF QskTextLabelSkinlet::subControlRect( const QskSkinnable* skinnable,
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
-    const auto label = static_cast< const QskTextLabel* >( skinnable );
-
     if ( subControl == QskTextLabel::Text )
     {
-        return label->contentsRect();
+        return contentsRect;
     }
 
-    return Inherited::subControlRect( skinnable, subControl );
+    return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
 QSGNode* QskTextLabelSkinlet::updateSubNode(

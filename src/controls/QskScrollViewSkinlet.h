@@ -33,7 +33,7 @@ class QSK_EXPORT QskScrollViewSkinlet : public QskSkinlet
     ~QskScrollViewSkinlet() override;
 
     QRectF subControlRect( const QskSkinnable*,
-        QskAspect::Subcontrol ) const override;
+        const QRectF&, QskAspect::Subcontrol ) const override;
 
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,
@@ -45,9 +45,9 @@ class QSK_EXPORT QskScrollViewSkinlet : public QskSkinlet
   private:
     QSGNode* updateContentsRootNode( const QskScrollView*, QSGNode* ) const;
 
-    QRectF viewportRect( const QskScrollView* ) const;
-    QRectF scrollBarRect( const QskScrollView*, Qt::Orientation ) const;
-    QRectF scrollHandleRect( const QskScrollView*, Qt::Orientation ) const;
+    QRectF viewportRect( const QskScrollView*, const QRectF& ) const;
+    QRectF scrollBarRect( const QskScrollView*, const QRectF&, Qt::Orientation ) const;
+    QRectF scrollHandleRect( const QskScrollView*, const QRectF&, Qt::Orientation ) const;
 };
 
 #endif

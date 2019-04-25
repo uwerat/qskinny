@@ -47,43 +47,42 @@ QskScrollViewSkinlet::QskScrollViewSkinlet( QskSkin* skin )
 
 QskScrollViewSkinlet::~QskScrollViewSkinlet() = default;
 
-QRectF QskScrollViewSkinlet::subControlRect(
-    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
+QRectF QskScrollViewSkinlet::subControlRect( const QskSkinnable* skinnable,
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
     const auto scrollView = static_cast< const QskScrollView* >( skinnable );
 
     if ( subControl == QskScrollView::Panel )
     {
-        // layoutRect ???
-        return scrollView->contentsRect();
+        return contentsRect;
     }
 
     if ( subControl == QskScrollView::Viewport )
     {
-        return viewportRect( scrollView );
+        return viewportRect( scrollView, contentsRect );
     }
 
     if ( subControl == QskScrollView::HorizontalScrollBar )
     {
-        return scrollBarRect( scrollView, Qt::Horizontal );
+        return scrollBarRect( scrollView, contentsRect, Qt::Horizontal );
     }
 
     if ( subControl == QskScrollView::HorizontalScrollHandle )
     {
-        return scrollHandleRect( scrollView, Qt::Horizontal );
+        return scrollHandleRect( scrollView, contentsRect, Qt::Horizontal );
     }
 
     if ( subControl == QskScrollView::VerticalScrollBar )
     {
-        return scrollBarRect( scrollView, Qt::Vertical );
+        return scrollBarRect( scrollView, contentsRect, Qt::Vertical );
     }
 
     if ( subControl == QskScrollView::VerticalScrollHandle )
     {
-        return scrollHandleRect( scrollView, Qt::Vertical );
+        return scrollHandleRect( scrollView, contentsRect, Qt::Vertical );
     }
 
-    return Inherited::subControlRect( skinnable, subControl );
+    return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
 QSGNode* QskScrollViewSkinlet::updateSubNode(
@@ -182,23 +181,28 @@ QSGNode* QskScrollViewSkinlet::contentsNode( const QskScrollView* scrollView )
     return nullptr;
 }
 
-QRectF QskScrollViewSkinlet::viewportRect( const QskScrollView* scrollView ) const
+QRectF QskScrollViewSkinlet::viewportRect(
+    const QskScrollView* scrollView, const QRectF& contentsRect ) const
 {
     const Qt::Orientations orientation = scrollView->scrollableOrientations();
 
-    QRectF vr = subControlRect( scrollView, QskScrollView::Panel );
+    QRectF vr = subControlRect( scrollView, contentsRect, QskScrollView::Panel );
     const qreal spacing = scrollView->metric( QskScrollView::Panel | QskAspect::Spacing );
 
     if ( orientation & Qt::Vertical )
     {
-        const QRectF r = subControlRect( scrollView, QskScrollView::VerticalScrollBar );
+        const QRectF r = subControlRect(
+            scrollView, contentsRect, QskScrollView::VerticalScrollBar );
+
         if ( r.width() > 0.0 )
             vr.setWidth( vr.width() - r.width() - spacing );
     }
 
     if ( orientation & Qt::Horizontal )
     {
-        const QRectF r = subControlRect( scrollView, QskScrollView::HorizontalScrollBar );
+        const QRectF r = subControlRect(
+            scrollView, contentsRect, QskScrollView::HorizontalScrollBar );
+
         if ( r.height() >= 0.0 )
             vr.setHeight( vr.height() - r.height() - spacing );
     }
@@ -206,15 +210,17 @@ QRectF QskScrollViewSkinlet::viewportRect( const QskScrollView* scrollView ) con
     return vr;
 }
 
-QRectF QskScrollViewSkinlet::scrollHandleRect(
-    const QskScrollView* scrollView, Qt::Orientation orientation ) const
+QRectF QskScrollViewSkinlet::scrollHandleRect( const QskScrollView* scrollView,
+    const QRectF& contentsRect, Qt::Orientation orientation ) const
 {
     const Qt::Orientations scrollOrientations = scrollView->scrollableOrientations();
     if ( !( orientation & scrollOrientations ) )
         return QRectF();
 
     const QPointF pos = scrollView->scrollPos();
-    const QRectF vRect = subControlRect( scrollView, QskScrollView::Viewport );
+
+    const QRectF vRect = subControlRect(
+        scrollView, contentsRect, QskScrollView::Viewport );
 
     QRectF handleRect;
 
@@ -222,7 +228,7 @@ QRectF QskScrollViewSkinlet::scrollHandleRect(
     {
         const auto subControlBar = QskScrollView::VerticalScrollBar;
 
-        const QRectF sbRect = subControlRect( scrollView, subControlBar );
+        const QRectF sbRect = subControlRect( scrollView, contentsRect, subControlBar );
         const QMarginsF padding = scrollView->marginsHint( subControlBar | QskAspect::Padding );
 
         const qreal h = scrollView->scrollableSize().height();
@@ -245,7 +251,7 @@ QRectF QskScrollViewSkinlet::scrollHandleRect(
     {
         const auto subControlBar = QskScrollView::HorizontalScrollBar;
 
-        const QRectF sbRect = subControlRect( scrollView, subControlBar );
+        const QRectF sbRect = subControlRect( scrollView, contentsRect, subControlBar );
         const auto padding = scrollView->marginsHint( subControlBar | QskAspect::Padding );
 
         const qreal w = scrollView->scrollableSize().width();
@@ -268,14 +274,14 @@ QRectF QskScrollViewSkinlet::scrollHandleRect(
     return handleRect;
 }
 
-QRectF QskScrollViewSkinlet::scrollBarRect(
-    const QskScrollView* scrollView, Qt::Orientation orientation ) const
+QRectF QskScrollViewSkinlet::scrollBarRect( const QskScrollView* scrollView,
+    const QRectF& contentsRect, Qt::Orientation orientation ) const
 {
     const Qt::Orientations scrollOrientations = scrollView->scrollableOrientations();
     if ( !( orientation & scrollOrientations ) )
         return QRectF();
 
-    QRectF r = subControlRect( scrollView, QskScrollView::Panel );
+    QRectF r = subControlRect( scrollView, contentsRect, QskScrollView::Panel );
 
     if ( orientation == Qt::Horizontal )
     {

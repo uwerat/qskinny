@@ -29,7 +29,7 @@ class QSK_EXPORT QskSubWindowSkinlet : public QskPopupSkinlet
     ~QskSubWindowSkinlet() override;
 
     QRectF subControlRect( const QskSkinnable*,
-        QskAspect::Subcontrol ) const override;
+        const QRectF&, QskAspect::Subcontrol ) const override;
 
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,
@@ -38,9 +38,9 @@ class QSK_EXPORT QskSubWindowSkinlet : public QskPopupSkinlet
   private:
     qreal titleBarHeight( const QskSubWindow* ) const;
 
-    QRectF titleBarRect( const QskSubWindow* ) const;
-    QRectF symbolRect( const QskSubWindow* ) const;
-    QRectF titleRect( const QskSubWindow* ) const;
+    QRectF titleBarRect( const QskSubWindow*, const QRectF& ) const;
+    QRectF symbolRect( const QskSubWindow*, const QRectF& ) const;
+    QRectF titleRect( const QskSubWindow*, const QRectF& ) const;
 };
 
 #endif

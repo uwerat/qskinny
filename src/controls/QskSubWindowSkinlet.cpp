@@ -21,29 +21,29 @@ QskSubWindowSkinlet::QskSubWindowSkinlet( QskSkin* skin )
 
 QskSubWindowSkinlet::~QskSubWindowSkinlet() = default;
 
-QRectF QskSubWindowSkinlet::subControlRect(
-    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
+QRectF QskSubWindowSkinlet::subControlRect( const QskSkinnable* skinnable,
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
     const auto subWindow = static_cast< const QskSubWindow* >( skinnable );
 
     if ( subControl == QskSubWindow::Panel )
     {
-        return subWindow->contentsRect();
+        return contentsRect;
     }
     else if ( subControl == QskSubWindow::TitleBar )
     {
-        return titleBarRect( subWindow );
+        return titleBarRect( subWindow, contentsRect );
     }
     else if ( subControl == QskSubWindow::TitleBarSymbol )
     {
-        return symbolRect( subWindow );
+        return symbolRect( subWindow, contentsRect );
     }
     else if ( subControl == QskSubWindow::TitleBarText )
     {
-        return titleRect( subWindow );
+        return titleRect( subWindow, contentsRect );
     }
 
-    return Inherited::subControlRect( skinnable, subControl );
+    return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
 QSGNode* QskSubWindowSkinlet::updateSubNode(
@@ -89,14 +89,15 @@ QSGNode* QskSubWindowSkinlet::updateSubNode(
     return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
-QRectF QskSubWindowSkinlet::titleBarRect( const QskSubWindow* subWindow ) const
+QRectF QskSubWindowSkinlet::titleBarRect(
+    const QskSubWindow* subWindow, const QRectF& contentsRect ) const
 {
     const auto border = subWindow->boxBorderMetricsHint( QskSubWindow::Panel );
 
-    QRectF rect = subWindow->contentsRect().marginsRemoved( border.widths() );
-    rect.setHeight( titleBarHeight( subWindow ) );
+    QRectF r = contentsRect.marginsRemoved( border.widths() );
+    r.setHeight( titleBarHeight( subWindow ) );
 
-    return rect;
+    return r;
 }
 
 qreal QskSubWindowSkinlet::titleBarHeight( const QskSubWindow* subWindow ) const
@@ -115,9 +116,10 @@ qreal QskSubWindowSkinlet::titleBarHeight( const QskSubWindow* subWindow ) const
     return qMax( height, minHeight );
 }
 
-QRectF QskSubWindowSkinlet::symbolRect( const QskSubWindow* subWindow ) const
+QRectF QskSubWindowSkinlet::symbolRect(
+    const QskSubWindow* subWindow, const QRectF& contentsRect ) const
 {
-    auto rect = subControlRect( subWindow, QskSubWindow::TitleBar );
+    auto rect = subControlRect( subWindow, contentsRect, QskSubWindow::TitleBar );
     rect = subWindow->innerBox( QskSubWindow::TitleBar, rect );
 
     int w = 0;
@@ -134,9 +136,10 @@ QRectF QskSubWindowSkinlet::symbolRect( const QskSubWindow* subWindow ) const
     return rect;
 }
 
-QRectF QskSubWindowSkinlet::titleRect( const QskSubWindow* subWindow ) const
+QRectF QskSubWindowSkinlet::titleRect(
+    const QskSubWindow* subWindow, const QRectF& contentsRect ) const
 {
-    auto rect = subControlRect( subWindow, QskSubWindow::TitleBar );
+    auto rect = subControlRect( subWindow, contentsRect, QskSubWindow::TitleBar );
     rect = subWindow->innerBox( QskSubWindow::TitleBar, rect );
 
     if ( !rect.isEmpty() )
@@ -144,7 +147,9 @@ QRectF QskSubWindowSkinlet::titleRect( const QskSubWindow* subWindow ) const
         const auto spacing = subWindow->metric(
             QskSubWindow::TitleBar | QskAspect::Spacing );
 
-        const auto symbolRect = subControlRect( subWindow, QskSubWindow::TitleBarSymbol );
+        const auto symbolRect = subControlRect(
+            subWindow, rect, QskSubWindow::TitleBarSymbol );
+
         rect.setX( rect.x() + symbolRect.right() + spacing );
 
 #if 0

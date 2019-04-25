@@ -16,16 +16,15 @@ QskBoxSkinlet::~QskBoxSkinlet()
 {
 }
 
-QRectF QskBoxSkinlet::subControlRect(
-    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
+QRectF QskBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
     if ( subControl == QskBox::Panel )
     {
-        const auto box = static_cast< const QskBox* >( skinnable );
-        return box->contentsRect();
+        return contentsRect;
     }
 
-    return Inherited::subControlRect( skinnable, subControl );
+    return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
 QSGNode* QskBoxSkinlet::updateSubNode(

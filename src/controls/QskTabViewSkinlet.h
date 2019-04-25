@@ -26,15 +26,15 @@ class QSK_EXPORT QskTabViewSkinlet : public QskSkinlet
     ~QskTabViewSkinlet() override;
 
     QRectF subControlRect( const QskSkinnable*,
-        QskAspect::Subcontrol ) const override;
+        const QRectF& rect, QskAspect::Subcontrol ) const override;
 
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 
   private:
-    QRectF pageRect( const QskTabView* ) const;
-    QRectF tabBarRect( const QskTabView* ) const;
+    QRectF pageRect( const QskTabView*, const QRectF& ) const;
+    QRectF tabBarRect( const QskTabView*, const QRectF& ) const;
 };
 
 #endif

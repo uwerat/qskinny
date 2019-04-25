@@ -26,14 +26,14 @@ class QSK_EXPORT QskGraphicLabelSkinlet : public QskSkinlet
     ~QskGraphicLabelSkinlet() override;
 
     QRectF subControlRect( const QskSkinnable*,
-        QskAspect::Subcontrol ) const override;
+        const QRectF&, QskAspect::Subcontrol ) const override;
 
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 
   private:
-    QRect graphicRect( const QskGraphicLabel* ) const;
+    QRect graphicRect( const QskGraphicLabel*, const QRectF& ) const;
     QSGNode* updateGraphicNode( const QskGraphicLabel*, QSGNode* ) const;
 };
 

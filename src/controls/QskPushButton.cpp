@@ -247,7 +247,7 @@ void QskPushButton::updateLayout()
 
 QRectF QskPushButton::layoutRect() const
 {
-    return innerBox( Panel, effectiveSkinlet()->subControlRect( this, Panel ) );
+    return innerBox( Panel, subControlRect( Panel ) );
 }
 
 QSizeF QskPushButton::contentsSizeHint() const

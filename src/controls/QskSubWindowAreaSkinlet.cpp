@@ -14,15 +14,13 @@ QskSubWindowAreaSkinlet::QskSubWindowAreaSkinlet( QskSkin* skin )
 
 QskSubWindowAreaSkinlet::~QskSubWindowAreaSkinlet() = default;
 
-QRectF QskSubWindowAreaSkinlet::subControlRect(
-    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
+QRectF QskSubWindowAreaSkinlet::subControlRect( const QskSkinnable* skinnable,
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
-    const auto area = static_cast< const QskSubWindowArea* >( skinnable );
-
     if ( subControl == QskSubWindowArea::Panel )
-        return area->contentsRect();
+        return contentsRect;
 
-    return Inherited::subControlRect( skinnable, subControl );
+    return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
 QSGNode* QskSubWindowAreaSkinlet::updateSubNode(

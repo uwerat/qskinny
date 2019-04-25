@@ -26,7 +26,7 @@ class SliderSkinlet : public QskSliderSkinlet
     ~SliderSkinlet() override;
 
     QRectF subControlRect( const QskSkinnable*,
-        QskAspect::Subcontrol ) const override;
+        const QRectF&, QskAspect::Subcontrol ) const override;
 
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,
@@ -37,10 +37,10 @@ class SliderSkinlet : public QskSliderSkinlet
     QSGNode* updateDecorationNode( const QskSlider*, QSGNode* ) const;
     QSGNode* updateHandleNode( const QskSlider*, QSGNode* ) const;
 
-    QRectF fillRect( const QskSlider* ) const;
-    QRectF scaleRect( const QskSlider* ) const;
-    QRectF decorationRect( const QskSlider* ) const;
-    QRectF handleRect( const QskSlider* ) const;
+    QRectF scaleRect( const QRectF& ) const;
+    QRectF fillRect( const QskSlider*, const QRectF& ) const;
+    QRectF decorationRect( const QskSlider*, const QRectF& ) const;
+    QRectF handleRect( const QskSlider*, const QRectF& ) const;
 };
 
 #endif

@@ -16,24 +16,24 @@ QskTabButtonSkinlet::QskTabButtonSkinlet( QskSkin* skin )
 
 QskTabButtonSkinlet::~QskTabButtonSkinlet() = default;
 
-QRectF QskTabButtonSkinlet::subControlRect(
-    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
+QRectF QskTabButtonSkinlet::subControlRect( const QskSkinnable* skinnable,
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
     auto tabButton = static_cast< const QskTabButton* >( skinnable );
 
     if ( subControl == QskTabButton::Text )
     {
-        QRectF rect = subControlRect( tabButton, QskTabButton::Panel );
-        rect = tabButton->innerBox( QskTabButton::Panel, rect );
+        auto r = subControlRect( tabButton, contentsRect, QskTabButton::Panel );
+        r = tabButton->innerBox( QskTabButton::Panel, r );
 
-        return rect;
+        return r;
     }
     else if ( subControl == QskTabButton::Panel )
     {
-        return tabButton->contentsRect();
+        return contentsRect;
     }
 
-    return Inherited::subControlRect( skinnable, subControl );
+    return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
 QSGNode* QskTabButtonSkinlet::updateSubNode(

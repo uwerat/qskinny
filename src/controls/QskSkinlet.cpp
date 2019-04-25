@@ -57,6 +57,18 @@ static inline QSGNode* qskFindNodeByFlag( QSGNode* parent, int nodeRole )
     return nullptr;
 }
 
+static inline QRectF qskSubControlRect( const QskSkinlet* skinlet,
+    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl )
+{
+    if ( auto control = skinnable->controlCast() )
+    {
+        const auto r = control->contentsRect();
+        return skinlet->subControlRect( skinnable, r, subControl );
+    }
+
+    return QRectF();
+}
+
 static inline QSGNode* qskUpdateGraphicNode(
     const QskSkinnable* skinnable, QSGNode* node,
     const QskGraphic& graphic, const QskColorFilter& colorFilter,
@@ -386,7 +398,7 @@ QSGNode* QskSkinlet::findNodeByRole( QSGNode* parent, quint8 nodeRole )
 QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
     QSGNode* node, QskAspect::Subcontrol subControl ) const
 {
-    const QRectF rect = subControlRect( skinnable, subControl );
+    const QRectF rect = qskSubControlRect( this, skinnable, subControl );
     return updateBoxNode( skinnable, node, rect, subControl );
 }
 
@@ -425,7 +437,7 @@ QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
 QSGNode* QskSkinlet::updateBoxClipNode( const QskSkinnable* skinnable,
     QSGNode* node, QskAspect::Subcontrol subControl ) const
 {
-    const QRectF rect = subControlRect( skinnable, subControl );
+    const QRectF rect = qskSubControlRect( this, skinnable, subControl );
     return updateBoxClipNode( skinnable, node, rect, subControl );
 }
 
@@ -513,7 +525,7 @@ QSGNode* QskSkinlet::updateTextNode(
     const QString& text, const QskTextOptions& textOptions,
     QskAspect::Subcontrol subControl ) const
 {
-    const QRectF rect = subControlRect( skinnable, subControl );
+    const QRectF rect = qskSubControlRect( this, skinnable, subControl );
     const auto alignment = skinnable->flagHint< Qt::Alignment >(
         QskAspect::Alignment | subControl, Qt::AlignLeft );
 
@@ -525,7 +537,7 @@ QSGNode* QskSkinlet::updateGraphicNode(
     const QskSkinnable* skinnable, QSGNode* node,
     const QskGraphic& graphic, QskAspect::Subcontrol subcontrol ) const
 {
-    const QRectF rect = subControlRect( skinnable, subcontrol );
+    const QRectF rect = qskSubControlRect( this, skinnable, subcontrol );
 
     const Qt::Alignment alignment = skinnable->flagHint< Qt::Alignment >(
         subcontrol | QskAspect::Alignment, Qt::AlignCenter );

@@ -34,13 +34,15 @@ class MyToggleButtonSkinlet : public QskSkinlet
     Q_INVOKABLE MyToggleButtonSkinlet( QskSkin* = nullptr );
     ~MyToggleButtonSkinlet() override = default;
 
-    QRectF subControlRect( const QskSkinnable*, QskAspect::Subcontrol ) const override;
+    QRectF subControlRect( const QskSkinnable*,
+        const QRectF&, QskAspect::Subcontrol ) const override;
 
   protected:
     QSGNode* updateSubNode( const QskSkinnable*, quint8 nodeRole, QSGNode* ) const override;
 
   private:
-    QRectF innerRect( const QskSkinnable*, QskAspect::Subcontrol ) const;
+    QRectF innerRect( const QskSkinnable*,
+        const QRectF&, QskAspect::Subcontrol ) const;
 };
 
 #endif

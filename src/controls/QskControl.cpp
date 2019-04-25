@@ -11,6 +11,7 @@
 #include "QskQuick.h"
 #include "QskSetup.h"
 #include "QskSkin.h"
+#include "QskSkinlet.h"
 #include "QskSkinHintTable.h"
 
 #include <qglobalstatic.h>
@@ -1005,6 +1006,11 @@ QMarginsF QskControl::margins() const
 QRectF QskControl::contentsRect() const
 {
     return qskValidOrEmptyInnerRect( rect(), margins() );
+}
+
+QRectF QskControl::subControlRect( QskAspect::Subcontrol subControl ) const
+{   
+    return effectiveSkinlet()->subControlRect( this, contentsRect(), subControl );
 }
 
 bool QskControl::layoutMirroring() const

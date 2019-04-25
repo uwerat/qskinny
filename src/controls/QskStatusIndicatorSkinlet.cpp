@@ -19,17 +19,17 @@ QskStatusIndicatorSkinlet::QskStatusIndicatorSkinlet( QskSkin* skin )
 
 QskStatusIndicatorSkinlet::~QskStatusIndicatorSkinlet() = default;
 
-QRectF QskStatusIndicatorSkinlet::subControlRect(
-    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
+QRectF QskStatusIndicatorSkinlet::subControlRect( const QskSkinnable* skinnable,
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
     const auto label = static_cast< const QskStatusIndicator* >( skinnable );
 
     if ( subControl == QskStatusIndicator::Graphic )
     {
-        return graphicRect( label );
+        return graphicRect( label, contentsRect );
     }
 
-    return Inherited::subControlRect( skinnable, subControl );
+    return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
 QSGNode* QskStatusIndicatorSkinlet::updateSubNode(
@@ -49,14 +49,14 @@ QSGNode* QskStatusIndicatorSkinlet::updateSubNode(
 }
 
 QRect QskStatusIndicatorSkinlet::graphicRect(
-    const QskStatusIndicator* indicator ) const
+    const QskStatusIndicator* indicator, const QRectF& contentsRect ) const
 {
     // maybe we should have a common base class for
     // QskStatusIndicator and QskGraphicLabel
 
     // PreserveAspectFit/PreserveAspectCrop
 
-    const QRect graphicRect = indicator->contentsRect().toAlignedRect();
+    const QRect graphicRect = contentsRect.toAlignedRect();
 
     QSizeF sz = indicator->graphic( indicator->status() ).defaultSize();
     sz.scale( graphicRect.size(), Qt::KeepAspectRatio );
@@ -70,7 +70,7 @@ QSGNode* QskStatusIndicatorSkinlet::updateGraphicNode(
 {
     const auto subControl = QskStatusIndicator::Graphic;
 
-    const QRectF rect = subControlRect( indicator, subControl );
+    const QRectF rect = subControlRect( indicator, indicator->contentsRect(), subControl );
     const Qt::Alignment alignment = indicator->flagHint< Qt::Alignment >(
         subControl | QskAspect::Alignment, Qt::AlignCenter );
 

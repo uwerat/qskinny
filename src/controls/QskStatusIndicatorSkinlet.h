@@ -26,14 +26,14 @@ class QSK_EXPORT QskStatusIndicatorSkinlet : public QskSkinlet
     ~QskStatusIndicatorSkinlet() override;
 
     QRectF subControlRect( const QskSkinnable*,
-        QskAspect::Subcontrol ) const override;
+        const QRectF&, QskAspect::Subcontrol ) const override;
 
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 
   private:
-    QRect graphicRect( const QskStatusIndicator* ) const;
+    QRect graphicRect( const QskStatusIndicator*, const QRectF& ) const;
     QSGNode* updateGraphicNode( const QskStatusIndicator*, QSGNode* ) const;
 };
 

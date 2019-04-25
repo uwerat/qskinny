@@ -38,7 +38,9 @@ class QSK_EXPORT QskSkinlet
     QskSkin* skin() const;
 
     void updateNode( QskSkinnable*, QSGNode* parent ) const;
-    virtual QRectF subControlRect( const QskSkinnable*, QskAspect::Subcontrol ) const;
+
+    virtual QRectF subControlRect(
+        const QskSkinnable*, const QRectF&, QskAspect::Subcontrol ) const;
 
     const QVector< quint8 >& nodeRoles() const;
 
@@ -105,7 +107,7 @@ class QSK_EXPORT QskSkinlet
 };
 
 inline QRectF QskSkinlet::subControlRect(
-    const QskSkinnable*, QskAspect::Subcontrol ) const
+    const QskSkinnable*, const QRectF&, QskAspect::Subcontrol ) const
 {
     return QRectF();
 }

@@ -20,17 +20,17 @@ QskGraphicLabelSkinlet::QskGraphicLabelSkinlet( QskSkin* skin )
 
 QskGraphicLabelSkinlet::~QskGraphicLabelSkinlet() = default;
 
-QRectF QskGraphicLabelSkinlet::subControlRect(
-    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
+QRectF QskGraphicLabelSkinlet::subControlRect( const QskSkinnable* skinnable,
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
     const auto label = static_cast< const QskGraphicLabel* >( skinnable );
 
     if ( subControl == QskGraphicLabel::Graphic )
     {
-        return graphicRect( label );
+        return graphicRect( label, contentsRect );
     }
 
-    return Inherited::subControlRect( skinnable, subControl );
+    return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
 QSGNode* QskGraphicLabelSkinlet::updateSubNode(
@@ -49,14 +49,15 @@ QSGNode* QskGraphicLabelSkinlet::updateSubNode(
     return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
-QRect QskGraphicLabelSkinlet::graphicRect( const QskGraphicLabel* label ) const
+QRect QskGraphicLabelSkinlet::graphicRect(
+    const QskGraphicLabel* label, const QRectF& contentsRect ) const
 {
     // textures are in integers, to avoid useless recalculations
     // that finally will be rounded anyway, we calculate in integers
 
     const auto fillMode = label->fillMode();
 
-    const QRect graphicRect = label->contentsRect().toAlignedRect();
+    const QRect graphicRect = contentsRect.toAlignedRect();
 
     if ( fillMode == QskGraphicLabel::Stretch )
     {
@@ -82,7 +83,7 @@ QSGNode* QskGraphicLabelSkinlet::updateGraphicNode(
     const QskGraphicLabel* label, QSGNode* node ) const
 {
     const auto colorFilter = label->graphicFilter();
-    const auto rect = subControlRect( label, QskGraphicLabel::Graphic );
+    const auto rect = label->subControlRect( QskGraphicLabel::Graphic );
 
     if ( label->fillMode() == QskGraphicLabel::Stretch )
     {

@@ -18,17 +18,15 @@ QskPageIndicatorSkinlet::~QskPageIndicatorSkinlet()
 {
 }
 
-QRectF QskPageIndicatorSkinlet::subControlRect(
-    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
+QRectF QskPageIndicatorSkinlet::subControlRect( const QskSkinnable* skinnable,
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
-    const auto indicator = static_cast< const QskPageIndicator* >( skinnable );
-
     if ( subControl == QskPageIndicator::Panel )
     {
-        return indicator->contentsRect();
+        return contentsRect;
     }
 
-    return Inherited::subControlRect( skinnable, subControl );
+    return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
 QSGNode* QskPageIndicatorSkinlet::updateSubNode(
@@ -137,7 +135,7 @@ QSGNode* QskPageIndicatorSkinlet::updateBulletsNode(
     if ( node == nullptr )
         node = new QSGNode();
 
-    QRectF rect = subControlRect( indicator, QskPageIndicator::Panel );
+    QRectF rect = indicator->subControlRect( QskPageIndicator::Panel );
     rect = indicator->innerBox( QskPageIndicator::Panel, rect );
 
     // index of the highlighted bullet

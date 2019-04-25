@@ -16,17 +16,17 @@ QskSeparatorSkinlet::QskSeparatorSkinlet( QskSkin* skin )
 
 QskSeparatorSkinlet::~QskSeparatorSkinlet() = default;
 
-QRectF QskSeparatorSkinlet::subControlRect(
-    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
+QRectF QskSeparatorSkinlet::subControlRect( const QskSkinnable* skinnable,
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
     const auto separator = static_cast< const QskSeparator* >( skinnable );
 
     if ( subControl == QskSeparator::Panel )
     {
-        return panelRect( separator );
+        return panelRect( separator, contentsRect );
     }
 
-    return Inherited::subControlRect( skinnable, subControl );
+    return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
 QSGNode* QskSeparatorSkinlet::updateSubNode(
@@ -45,25 +45,25 @@ QSGNode* QskSeparatorSkinlet::updateSubNode(
     return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
-QRectF QskSeparatorSkinlet::panelRect( const QskSeparator* separator ) const
+QRectF QskSeparatorSkinlet::panelRect(
+    const QskSeparator* separator, const QRectF& contentsRect ) const
 {
-    const QRectF cr = separator->contentsRect();
     const qreal m = separator->metric( QskSeparator::Panel | QskAspect::Size );
 
     QRectF r;
 
     if ( separator->orientation() == Qt::Horizontal )
     {
-        r.setWidth( cr.width() );
+        r.setWidth( contentsRect.width() );
         r.setHeight( m );
     }
     else
     {
-        r.setHeight( cr.height() );
+        r.setHeight( contentsRect.height() );
         r.setWidth( m );
     }
 
-    r.moveCenter( cr.center() );
+    r.moveCenter( contentsRect.center() );
     return r;
 }
 

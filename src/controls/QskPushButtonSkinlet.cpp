@@ -20,25 +20,25 @@ QskPushButtonSkinlet::QskPushButtonSkinlet( QskSkin* skin )
 
 QskPushButtonSkinlet::~QskPushButtonSkinlet() = default;
 
-QRectF QskPushButtonSkinlet::subControlRect(
-    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
+QRectF QskPushButtonSkinlet::subControlRect( const QskSkinnable* skinnable,
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
     const auto button = static_cast< const QskPushButton* >( skinnable );
 
     if ( subControl == QskPushButton::Text )
     {
-        return textRect( button );
+        return textRect( button, contentsRect );
     }
     else if ( subControl == QskPushButton::Graphic )
     {
-        return graphicRect( button );
+        return graphicRect( button, contentsRect );
     }
     else if ( subControl == QskPushButton::Panel )
     {
-        return button->contentsRect();
+        return contentsRect;
     }
 
-    return Inherited::subControlRect( skinnable, subControl );
+    return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
 QSGNode* QskPushButtonSkinlet::updateSubNode(
@@ -68,12 +68,13 @@ QSGNode* QskPushButtonSkinlet::updateSubNode(
     return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
-QRectF QskPushButtonSkinlet::textRect( const QskPushButton* button ) const
+QRectF QskPushButtonSkinlet::textRect(
+    const QskPushButton* button, const QRectF& contentsRect ) const
 {
     // buttonShift -> TODO
 
     QRectF r = button->innerBox( QskPushButton::Panel,
-        subControlRect( button, QskPushButton::Panel ) );
+        subControlRect( button, contentsRect, QskPushButton::Panel ) );
 
     if ( button->hasGraphic() )
     {
@@ -87,14 +88,17 @@ QRectF QskPushButtonSkinlet::textRect( const QskPushButton* button ) const
     return r;
 }
 
-QRectF QskPushButtonSkinlet::graphicRect( const QskPushButton* button ) const
+QRectF QskPushButtonSkinlet::graphicRect(
+    const QskPushButton* button, const QRectF& contentsRect ) const
 {
     // buttonShift -> TODO
-    QRectF r = button->innerBox( QskPushButton::Panel, button->contentsRect() );
+
+    QRectF r = button->innerBox( QskPushButton::Panel,
+        subControlRect( button, contentsRect, QskPushButton::Panel ) );
 
     if ( !button->text().isEmpty() )
     {
-        qreal h = textRect( button ).height() +
+        qreal h = textRect( button, contentsRect ).height() +
             button->metric( QskPushButton::Panel | QskAspect::Spacing );
 
         if ( h < r.height() )
@@ -149,7 +153,7 @@ QRectF QskPushButtonSkinlet::graphicRect( const QskPushButton* button ) const
 QSGNode* QskPushButtonSkinlet::updateTextNode(
     const QskPushButton* button, QSGNode* node ) const
 {
-    const auto rect = subControlRect( button, QskPushButton::Text ).toAlignedRect();
+    const auto rect = button->subControlRect( QskPushButton::Text ).toAlignedRect();
 
     const QFontMetricsF fm( button->effectiveFont( QskPushButton::Text ) );
     if ( !button->clip() && ( rect.height() < fm.height() ) )

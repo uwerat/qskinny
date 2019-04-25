@@ -33,8 +33,8 @@ MyToggleButtonSkinlet::MyToggleButtonSkinlet( QskSkin* skin )
     );
 }
 
-QRectF MyToggleButtonSkinlet::subControlRect(
-    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
+QRectF MyToggleButtonSkinlet::subControlRect( const QskSkinnable* skinnable,
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
     using Q = MyToggleButton;
 
@@ -42,25 +42,25 @@ QRectF MyToggleButtonSkinlet::subControlRect(
 
     if( subControl == Q::Panel )
     {
-        return button->contentsRect();
+        return contentsRect;
     }
     else if( subControl == Q::UncheckedPanel )
     {
-        const auto rect = innerRect( skinnable, Q::Panel );
-        return sectionRect( rect, button->isInverted() ? 0 : 1 );
+        const auto r = innerRect( skinnable, contentsRect, Q::Panel );
+        return sectionRect( r, button->isInverted() ? 0 : 1 );
     }
     else if( subControl == Q::CheckedPanel )
     {
-        const auto rect = innerRect( skinnable, Q::Panel );
-        return sectionRect( rect, button->isInverted() ? 1 : 0 );
+        const auto r = innerRect( skinnable, contentsRect, Q::Panel );
+        return sectionRect( r, button->isInverted() ? 1 : 0 );
     }
     else if( subControl == Q::CheckedLabel || subControl == Q::CheckedIcon )
     {
-        return innerRect( skinnable, Q::CheckedPanel );
+        return innerRect( skinnable, contentsRect, Q::CheckedPanel );
     }
     else if( subControl == Q::UncheckedLabel || subControl == Q::UncheckedIcon )
     {
-        return innerRect( skinnable, Q::UncheckedPanel );
+        return innerRect( skinnable, contentsRect, Q::UncheckedPanel );
     }
     else if( subControl == Q::Cursor )
     {
@@ -68,7 +68,7 @@ QRectF MyToggleButtonSkinlet::subControlRect(
         if ( button->isInverted() )
             position = 1.0 - position;
 
-        auto rect = innerRect( skinnable, Q::Panel );
+        auto rect = innerRect( skinnable, contentsRect, Q::Panel );
 
         rect.setWidth( 0.5 * rect.width() );
         rect.moveLeft( rect.left() + position * rect.width() );
@@ -76,13 +76,14 @@ QRectF MyToggleButtonSkinlet::subControlRect(
         return rect;
     }
 
-    return Inherited::subControlRect( skinnable, subControl );
+    return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
-QRectF MyToggleButtonSkinlet::innerRect(
-    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
+QRectF MyToggleButtonSkinlet::innerRect( const QskSkinnable* skinnable,
+    const QRectF& rect, QskAspect::Subcontrol subControl ) const
 {
-    return skinnable->innerBox( subControl, subControlRect( skinnable, subControl ) );
+    const auto r = subControlRect( skinnable, rect, subControl );
+    return skinnable->innerBox( subControl, r );
 }
 
 QSGNode* MyToggleButtonSkinlet::updateSubNode(
