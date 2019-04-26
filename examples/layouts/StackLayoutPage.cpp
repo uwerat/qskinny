@@ -35,7 +35,7 @@ namespace
 
             for ( int i = 0; i < itemCount(); i += 2 )
             {
-                if ( auto control = qobject_cast< QskControl* >( itemAtIndex( i ) ) )
+                if ( auto control = qskControlCast( itemAtIndex( i ) ) )
                     control->setFixedSize( 200, 200 );
             }
         }

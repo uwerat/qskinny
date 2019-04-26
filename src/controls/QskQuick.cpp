@@ -29,7 +29,7 @@ QRectF qskItemGeometry( const QQuickItem* item )
 
 void qskSetItemGeometry( QQuickItem* item, const QRectF& rect )
 {
-    if ( auto control = qobject_cast< QskControl* >( item ) )
+    if ( auto control = qskControlCast( item ) )
     {
         control->setGeometry( rect );
     }

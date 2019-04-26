@@ -1965,9 +1965,9 @@ QSizeF QskControl::contentsSizeHint() const
         const auto children = childItems();
         for ( const auto child : children )
         {
-            if ( auto* control = qobject_cast< const QskControl* >( child ) )
+            if ( auto control = qskControlCast( child ) )
             {
-                if ( !QQuickItemPrivate::get( control )->isTransparentForPositioner() )
+                if ( !control->isTransparentForPositioner() )
                 {
                     const QSizeF hint = control->sizeHint();
 

@@ -42,8 +42,7 @@ void QskLayoutBox::setActive( bool on )
 
     for ( int i = 0; i < itemCount(); ++i )
     {
-        QQuickItem* item = itemAtIndex( i );
-        if ( item )
+        if( auto item = itemAtIndex( i ) )
             setItemActive( item, on );
     }
 
@@ -66,8 +65,7 @@ int QskLayoutBox::itemCount() const
 
 QQuickItem* QskLayoutBox::itemAtIndex( int index ) const
 {
-    QskLayoutItem* layoutItem = m_data->engine.layoutItemAt( index );
-    if ( layoutItem )
+    if ( auto layoutItem = m_data->engine.layoutItemAt( index ) )
         return layoutItem->item();
 
     return nullptr;
@@ -85,12 +83,12 @@ void QskLayoutBox::insertItemInternal( QskLayoutItem* layoutItem, int index )
 {
     // check if item is already inserted ???
 
-    QQuickItem* item = layoutItem->item();
+    auto item = layoutItem->item();
 
     if ( index > itemCount() )
         index = -1; // append
 
-    QskLayoutEngine& engine = this->engine();
+    auto& engine = this->engine();
 
     if ( item )
     {
@@ -142,9 +140,9 @@ void QskLayoutBox::insertItemInternal( QskLayoutItem* layoutItem, int index )
 
 void QskLayoutBox::removeAt( int index )
 {
-    QskLayoutEngine& engine = this->engine();
+    auto& engine = this->engine();
 
-    QskLayoutItem* layoutItem = engine.layoutItemAt( index );
+    auto layoutItem = engine.layoutItemAt( index );
     if ( layoutItem == nullptr )
         return;
 
@@ -303,7 +301,7 @@ void QskLayoutBox::setItemActive( const QQuickItem* item, bool on )
 
     // QskControl sends QEvent::LayoutRequest
 
-    const bool hasLayoutRequests = qobject_cast< const QskControl* >( item );
+    const bool hasLayoutRequests = qskControlCast( item );
     if ( !hasLayoutRequests )
     {
         if ( on )

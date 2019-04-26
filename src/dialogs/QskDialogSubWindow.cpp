@@ -458,7 +458,7 @@ QSizeF QskDialogSubWindow::contentsSizeHint() const
         h = hint.height();
     }
 
-    if ( auto* control = qobject_cast< const QskControl* >( m_data->contentItem ) )
+    if ( auto* control = qskControlCast( m_data->contentItem ) )
     {
         const auto hint = control->sizeHint();
 

@@ -313,6 +313,16 @@ inline QSizeF QskControl::preferredSize() const
     return explicitSizeHint( Qt::PreferredSize );
 }
 
+inline QskControl* qskControlCast( QObject* object )
+{
+    return qobject_cast< QskControl* >( object );
+}
+
+inline const QskControl* qskControlCast( const QObject* object )
+{
+    return qobject_cast< const QskControl* >( object );
+}
+
 Q_DECLARE_OPERATORS_FOR_FLAGS( QskControl::Flags )
 Q_DECLARE_METATYPE( QskControl::Flags )
 

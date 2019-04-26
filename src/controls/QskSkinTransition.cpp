@@ -260,7 +260,7 @@ namespace
             if ( !item->isVisible() )
                 return;
 
-            if ( auto control = qobject_cast< QskControl* >( item ) )
+            if ( auto control = qskControlCast( item ) )
             {
                 if ( control->isInitiallyPainted() && ( skin == control->effectiveSkin() ) )
                 {

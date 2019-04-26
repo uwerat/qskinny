@@ -14,7 +14,7 @@ QSK_SUBCONTROL( QskFocusIndicator, Panel )
 
 static inline QRectF qskFocusIndicatorRect( const QQuickItem* item )
 {
-    if ( auto control = qobject_cast< const QskControl* >( item ) )
+    if ( auto control = qskControlCast( item ) )
         return control->focusIndicatorRect();
 
     const QVariant v = item->property( "focusIndicatorRect" );
@@ -216,7 +216,7 @@ QVector< QMetaObject::Connection > QskFocusIndicator::connectItem( const QQuickI
     c += QObject::connect( sender, &QQuickItem::heightChanged, this, method );
     c += QObject::connect( sender, &QQuickItem::visibleChanged, this, method );
 
-    if ( const auto control = qobject_cast< const QskControl* >( sender ) )
+    if ( const auto control = qskControlCast( sender ) )
     {
         c += QObject::connect( control, &QskControl::focusIndicatorRectChanged, this, method );
     }

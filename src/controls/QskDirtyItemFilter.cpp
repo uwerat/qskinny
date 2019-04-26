@@ -15,7 +15,7 @@ static inline bool qskIsUpdateBlocked( const QQuickItem* item )
 {
     if ( !item->isVisible() )
     {
-        if ( const auto control = qobject_cast< const QskControl* >( item ) )
+        if ( const auto control = qskControlCast( item ) )
             return control->testControlFlag( QskControl::DeferredUpdate );
     }
 
@@ -25,7 +25,7 @@ static inline bool qskIsUpdateBlocked( const QQuickItem* item )
         but we have not yet found a performant way to send update notifications
         when an item enters/leaves the window. TODO ...
      */
-    else if ( const auto control = qobject_cast< const QskControl* >( item ) )
+    else if ( const auto control = qskControlCast( item ) )
     {
         const QRectF itemRect( item->mapToScene( QPointF() ), item->size() );
         const QRectF sceneRect( 0, 0, item->window()->width(), item->window()->height() );

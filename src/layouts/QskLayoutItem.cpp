@@ -212,7 +212,7 @@ Qt::Orientation QskLayoutItem::dynamicConstraintOrientation() const
 {
     Qt::Orientation orientation = Qt::Vertical;
 
-    if ( auto control = qobject_cast< const QskControl* >( m_item ) )
+    if ( auto control = qskControlCast( m_item ) )
     {
         const auto policy = control->sizePolicy().horizontalPolicy();
 

@@ -276,7 +276,7 @@ void QskSetup::inheritLocale( QObject* object, const QLocale& locale )
 
 bool QskSetup::eventFilter( QObject* object, QEvent* event )
 {
-    if ( auto control = qobject_cast< QskControl* >( object ) )
+    if ( auto control = qskControlCast( object ) )
     {
         /*
             Qt::FocusPolicy has always been there with widgets, got lost with

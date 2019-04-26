@@ -409,10 +409,10 @@ QSize QskWindow::effectivePreferredSize() const
         const bool doWidth = constraint.width() < 0;
         const bool doHeight = constraint.height() < 0;
 
-        const QList< QQuickItem* > children = contentItem()->childItems();
+        const auto children = contentItem()->childItems();
         for ( auto child : children )
         {
-            if ( QskControl* control = qobject_cast< QskControl* >( child ) )
+            if ( auto control = qskControlCast( child ) )
             {
                 const QSizeF itemConstraint = control->sizeHint();
                 if ( doWidth )
