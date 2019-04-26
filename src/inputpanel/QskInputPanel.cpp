@@ -330,6 +330,10 @@ void QskInputPanel::attachInputItem( QQuickItem* item )
             QCoreApplication::postEvent( item,
                 new QInputMethodEvent( QString(), { attribute } ) );
         }
+
+        connect( item, &QObject::destroyed,
+            this, &QskInputPanel::inputItemDestroyed,
+            Qt::UniqueConnection );
     }
     else
     {
@@ -474,6 +478,9 @@ Qt::Alignment QskInputPanel::alignment() const
 
 void QskInputPanel::commitKey( int key )
 {
+    if ( m_data->inputItem == nullptr )
+        return;
+
     int spaceLeft = -1;
 
     if ( !( m_data->inputHints & Qt::ImhMultiLine ) )
