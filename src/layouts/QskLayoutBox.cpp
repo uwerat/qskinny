@@ -7,6 +7,7 @@
 #include "QskEvent.h"
 #include "QskLayoutEngine.h"
 #include "QskLayoutItem.h"
+#include "QskLayoutConstraint.h"
 
 class QskLayoutBox::PrivateData
 {
@@ -266,24 +267,26 @@ QSizeF QskLayoutBox::layoutItemsSizeHint() const
 
 qreal QskLayoutBox::heightForWidth( qreal width ) const
 {
-    const auto m = margins();
-    width -= m.left() + m.right();
-    
-    qreal height = engine().heightForWidth( width );
-    
-    height += m.top() + m.bottom();
-    return height;
+    auto constrainedHeight =
+        [this]( QskLayoutConstraint::Type, const QskControl*, qreal width )
+    {
+        return engine().heightForWidth( width );
+    };
+
+    return QskLayoutConstraint::constrainedMetric(
+        QskLayoutConstraint::HeightForWidth, this, width, constrainedHeight );
 }   
 
 qreal QskLayoutBox::widthForHeight( qreal height ) const
 {
-    const auto m = margins();
-    height -= m.top() + m.bottom();
-    
-    qreal width = engine().widthForHeight( height );
-    
-    width += m.left() + m.right();
-    return width;
+    auto constrainedWidth =
+        [this]( QskLayoutConstraint::Type, const QskControl*, qreal height )
+    {
+        return engine().widthForHeight( height );
+    };
+
+    return QskLayoutConstraint::constrainedMetric(
+        QskLayoutConstraint::WidthForHeight, this, height, constrainedWidth );
 }   
 
 void QskLayoutBox::geometryChangeEvent( QskGeometryChangeEvent* event )

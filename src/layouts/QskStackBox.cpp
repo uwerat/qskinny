@@ -11,6 +11,30 @@
 
 #include <qpointer.h>
 
+static qreal qskConstrainedValue( QskLayoutConstraint::Type type,
+    const QskControl* control, qreal widthOrHeight )
+{
+    using namespace QskLayoutConstraint;
+
+    auto constrainFunction =
+        ( type == WidthForHeight ) ? widthForHeight : heightForWidth;
+
+    qreal constrainedValue = -1;
+    auto stackBox = static_cast< const QskStackBox* >( control );
+
+    for ( int i = 0; i < stackBox->itemCount(); i++ )
+    {
+        if ( const auto item = stackBox->itemAtIndex( i ) )
+        {
+            const qreal v = constrainFunction( item, widthOrHeight );
+            if ( v > constrainedValue )
+                constrainedValue = v;
+        }
+    }   
+
+    return constrainedValue;
+}
+
 class QskStackBox::PrivateData
 {
   public:
@@ -252,40 +276,14 @@ QSizeF QskStackBox::layoutItemsSizeHint() const
 
 qreal QskStackBox::heightForWidth( qreal width ) const
 {
-    const auto m = margins();
-    width -= m.left() + m.right();
-
-    qreal height = -1;
-
-    const QskLayoutEngine& engine = this->engine();
-    for ( int i = 0; i < engine.itemCount(); i++ )
-    {
-        const QskLayoutItem* layoutItem = engine.layoutItemAt( i );
-        if ( const auto item = layoutItem->item() )
-            height = qMax( height, QskLayoutConstraint::heightForWidth( item, width ) );
-    }
-
-    height += m.top() + m.bottom();
-    return height;
+    return QskLayoutConstraint::constrainedMetric(
+        QskLayoutConstraint::HeightForWidth, this, width, qskConstrainedValue );
 }
 
 qreal QskStackBox::widthForHeight( qreal height ) const
 {
-    const auto m = margins();
-    height -= m.top() + m.bottom();
-
-    qreal width = -1;
-
-    const QskLayoutEngine& engine = this->engine();
-    for ( int i = 0; i < engine.itemCount(); i++ )
-    {
-        const QskLayoutItem* layoutItem = engine.layoutItemAt( i );
-        if ( const auto item = layoutItem->item() )
-            width = qMax( width, QskLayoutConstraint::widthForHeight( item, height ) );
-    }
-
-    width += m.left() + m.right();
-    return width;
+    return QskLayoutConstraint::constrainedMetric(
+        QskLayoutConstraint::WidthForHeight, this, height, qskConstrainedValue );
 }
 
 void QskStackBox::layoutItemInserted( QskLayoutItem* layoutItem, int index )

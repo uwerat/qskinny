@@ -16,9 +16,9 @@ QskBox::~QskBox()
 {
 }
 
-QRectF QskBox::layoutRect() const
+QRectF QskBox::layoutRectForSize( const QSizeF& size ) const
 {
-    return innerBox( Panel, subControlRect( Panel ) );
+    return innerBox( Panel, subControlRect( size, Panel ) );
 }
 
 QSizeF QskBox::contentsSizeHint() const

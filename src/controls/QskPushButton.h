@@ -65,7 +65,7 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     QFont font() const;
 
     QSizeF contentsSizeHint() const override;
-    QRectF layoutRect() const override;
+    QRectF layoutRectForSize( const QSizeF& ) const override;
 
   public Q_SLOTS:
     void setText( const QString& );

@@ -12,14 +12,29 @@
 #include <limits>
 
 class QskSizePolicy;
+class QskControl;
 class QQuickItem;
 class QSizeF;
 
+namespace std { template< typename T > class function; }
+
 namespace QskLayoutConstraint
 {
+    enum Type
+    {
+        WidthForHeight,
+        HeightForWidth
+    };
+
     QSK_EXPORT bool hasDynamicConstraint( const QQuickItem* );
     QSK_EXPORT qreal heightForWidth( const QQuickItem*, qreal width );
     QSK_EXPORT qreal widthForHeight( const QQuickItem*, qreal height );
+
+    QSK_EXPORT qreal constrainedMetric(
+        Type, const QskControl*, qreal value,
+        std::function< qreal( Type, const QskControl*, qreal ) > );
+
+    QSK_EXPORT qreal constrainedChildrenMetric( Type, const QskControl*, qreal width );
 
     QSK_EXPORT QSizeF effectiveConstraint( const QQuickItem*, Qt::SizeHint );
     QSK_EXPORT QskSizePolicy sizePolicy( const QQuickItem* );

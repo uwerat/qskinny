@@ -7,6 +7,8 @@
 #include "QskControl.h"
 #include "QskSizePolicy.h"
 
+#include <functional>
+
 static inline qreal qskHintFor(
     const QQuickItem* item, const char* method, qreal widthOrHeight )
 {
@@ -83,6 +85,71 @@ qreal QskLayoutConstraint::widthForHeight( const QQuickItem* item, qreal height 
         return control->widthForHeight( height );
 
     return qskHintFor( item, "widthForHeight", height );
+}
+
+qreal QskLayoutConstraint::constrainedMetric(
+    Type type, const QskControl* control, qreal widthOrHeight,
+    std::function< qreal( Type, const QskControl*, qreal ) > constrainFunction )
+{
+#if 1
+    /*
+        In case of having a corner radius of Qt::RelativeSize the margins
+        we might have a wrong result when using QskLayoutConstraint::unlimited.
+        No idea how to solve this in a generic way: TODO ...
+     */
+#endif
+
+    const qreal upperLimit = 10e6;
+
+    if ( type == WidthForHeight )
+    {
+        const QSizeF outer( upperLimit, widthOrHeight );
+        const QSizeF inner = control->layoutRectForSize( outer ).size();
+
+        qreal width = constrainFunction( type, control, inner.height() );
+
+        if ( width >= 0.0 )
+            width += outer.width() - inner.width();
+
+        return width;
+    }
+    else
+    {
+        const QSizeF outer( widthOrHeight, upperLimit );
+        const QSizeF inner = control->layoutRectForSize( outer ).size();
+    
+        qreal height = constrainFunction( type, control, inner.width() );
+        
+        if ( height >= 0.0 )
+            height += outer.height() - inner.height();
+    
+        return height;
+    }
+}
+
+qreal QskLayoutConstraint::constrainedChildrenMetric(
+    Type type, const QskControl* control, qreal widthOrHeight )
+{
+    auto constrainFunction =
+        ( type == WidthForHeight ) ? widthForHeight : heightForWidth;
+
+    qreal constrainedValue = -1.0;
+
+    const auto children = control->childItems();
+    for ( auto child : children )
+    {
+        if ( auto control = qskControlCast( child ) )
+        {
+            if ( !control->isTransparentForPositioner() )
+            {
+                const auto v = constrainFunction( control, widthOrHeight );
+                if ( v > constrainedValue )
+                    constrainedValue = v;
+            }
+        }
+    }
+
+    return constrainedValue;
 }
 
 QSizeF QskLayoutConstraint::effectiveConstraint(

@@ -20,7 +20,7 @@ class QSK_EXPORT QskBox : public QskControl
     QskBox( QQuickItem* parent = nullptr );
     ~QskBox() override;
 
-    QRectF layoutRect() const override;
+    QRectF layoutRectForSize( const QSizeF& ) const override;
     QSizeF contentsSizeHint() const override;
 };
 

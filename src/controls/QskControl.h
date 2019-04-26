@@ -110,12 +110,14 @@ class QSK_EXPORT QskControl : public QQuickItem, public QskSkinnable
 
     QRectF rect() const;
     QRectF contentsRect() const;
+    QRectF layoutRect() const;
 
-    virtual QRectF layoutRect() const;
+    virtual QRectF layoutRectForSize( const QSizeF& ) const;
     virtual QRectF gestureRect() const;
     virtual QRectF focusIndicatorRect() const;
 
     QRectF subControlRect( QskAspect::Subcontrol ) const;
+    QRectF subControlRect( const QSizeF&, QskAspect::Subcontrol ) const;
 
     void setAutoFillBackground( bool );
     bool autoFillBackground() const;
@@ -311,6 +313,11 @@ inline QSizeF QskControl::maximumSize() const
 inline QSizeF QskControl::preferredSize() const
 {
     return explicitSizeHint( Qt::PreferredSize );
+}
+
+inline QRectF QskControl::layoutRect() const
+{
+    return layoutRectForSize( size() );
 }
 
 inline QskControl* qskControlCast( QObject* object )

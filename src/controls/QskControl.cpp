@@ -13,6 +13,7 @@
 #include "QskSkin.h"
 #include "QskSkinlet.h"
 #include "QskSkinHintTable.h"
+#include "QskLayoutConstraint.h"
 
 #include <qglobalstatic.h>
 #include <qlocale.h>
@@ -1013,6 +1014,15 @@ QRectF QskControl::subControlRect( QskAspect::Subcontrol subControl ) const
     return effectiveSkinlet()->subControlRect( this, contentsRect(), subControl );
 }
 
+QRectF QskControl::subControlRect(
+    const QSizeF& size, QskAspect::Subcontrol subControl ) const
+{
+    QRectF rect( 0.0, 0.0, size.width(), size.height() );
+    rect = qskValidOrEmptyInnerRect( rect, margins() );
+
+    return effectiveSkinlet()->subControlRect( this, rect, subControl );
+}
+
 bool QskControl::layoutMirroring() const
 {
     return d_func()->effectiveLayoutMirror;
@@ -1379,58 +1389,24 @@ void QskControl::resetImplicitSize()
 
 qreal QskControl::heightForWidth( qreal width ) const
 {
-    qreal h = -1;
+    if ( !d_func()->autoLayoutChildren )
+        return -1.0;
 
-    if ( d_func()->autoLayoutChildren )
-    {
-        const auto innerSize = layoutRect().size();
-        const auto outerSize = size();
+    using namespace QskLayoutConstraint;
 
-        width -= outerSize.width() - innerSize.width();
-
-        const auto children = childItems();
-        for ( auto child : children )
-        {
-            if ( auto control = qobject_cast< const QskControl* >( child ) )
-            {
-                if ( !control->isTransparentForPositioner() )
-                    h = qMax( h, control->heightForWidth( width ) );
-            }
-        }
-
-        if ( h >= 0 )
-            h += outerSize.height() - innerSize.height();
-    }
-
-    return h;
+    return constrainedMetric(
+        HeightForWidth, this, width, constrainedChildrenMetric );
 }
 
 qreal QskControl::widthForHeight( qreal height ) const
 {
-    qreal w = -1;
+    if ( !d_func()->autoLayoutChildren )
+        return -1.0;
 
-    if ( d_func()->autoLayoutChildren )
-    {
-        const auto innerSize = layoutRect().size();
-        const auto outerSize = size();
+    using namespace QskLayoutConstraint;
 
-        height -= outerSize.height() - innerSize.height();
-
-        const auto children = childItems();
-        for ( auto child : children )
-        {
-            if ( auto control = qobject_cast< const QskControl* >( child ) )
-            {
-                if ( !control->isTransparentForPositioner() )
-                    w = qMax( w, control->widthForHeight( height ) );
-            }
-        }
-
-        if ( w >= 0 )
-            w += outerSize.width() - innerSize.width();
-    }
-
-    return w;
+    return constrainedMetric(
+        WidthForHeight, this, height, constrainedChildrenMetric );
 }
 
 bool QskControl::event( QEvent* event )
@@ -1932,9 +1908,10 @@ QskControl* QskControl::owningControl() const
     return const_cast< QskControl* >( this );
 }
 
-QRectF QskControl::layoutRect() const
+QRectF QskControl::layoutRectForSize( const QSizeF& size ) const
 {
-    return contentsRect();
+    const QRectF r( 0.0, 0.0, size.width(), size.height() );
+    return qskValidOrEmptyInnerRect( r, margins() );
 }
 
 QRectF QskControl::gestureRect() const

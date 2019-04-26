@@ -79,7 +79,7 @@ class QSK_EXPORT QskSubWindow : public QskPopup
     QRectF titleBarRect() const;
 
     QSizeF contentsSizeHint() const override;
-    QRectF layoutRect() const override;
+    QRectF layoutRectForSize( const QSizeF& ) const override;
 
   Q_SIGNALS:
     void decoratedChanged();
