@@ -53,8 +53,6 @@ class QSK_EXPORT QskInputContext : public QObject
 
     QLocale locale() const;
 
-    QQuickItem* inputItem() const;
-
     static QskInputContext* instance();
     static void setInstance( QskInputContext* );
 
