@@ -99,7 +99,7 @@ qreal QskLayoutConstraint::constrainedMetric(
      */
 #endif
 
-    const qreal upperLimit = 10e6;
+    const qreal upperLimit = 1e6;
 
     if ( type == WidthForHeight )
     {
