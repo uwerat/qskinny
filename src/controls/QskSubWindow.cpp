@@ -233,10 +233,9 @@ void QskSubWindow::updateLayout()
 
 QRectF QskSubWindow::layoutRectForSize( const QSizeF& size ) const
 {
-    QRectF rect = contentsRect();
-
-    const qreal top = rect.top() + subControlRect( size, TitleBar ).height();
-    rect.setTop( top );
+    QRectF rect;
+    rect.setSize( size );
+    rect.setTop( subControlRect( size, TitleBar ).bottom() );
 
     return innerBox( Panel, rect );
 }
