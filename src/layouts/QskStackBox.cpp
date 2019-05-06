@@ -30,7 +30,7 @@ static qreal qskConstrainedValue( QskLayoutConstraint::Type type,
             if ( v > constrainedValue )
                 constrainedValue = v;
         }
-    }   
+    }
 
     return constrainedValue;
 }
@@ -139,12 +139,12 @@ void QskStackBox::layoutItemRemoved( QskLayoutItem*, int index )
             Using QGridLayoutEngine for a stack layout is actually
             not a good ideas. Until we have a new implementation,
             we need to work around situations, where the layout does
-            not work properly with having several items in the 
-            same cell. 
+            not work properly with having several items in the
+            same cell.
             In this particular situation we need to fix, that we lost
             the item from engine.q_grid[0].
             Calling transpose has this side effect.
-            
+
          */
         engine.transpose();
         engine.transpose(); // reverting the call before

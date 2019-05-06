@@ -202,18 +202,18 @@ QSize QskLayoutEngine::requiredCells() const
 
     for ( int i = 0; i < itemCount(); i++ )
     {
-        const QskLayoutItem* l = layoutItemAt( i );
-        if ( l->isIgnored() )
+        const auto layoutItem = layoutItemAt( i );
+        if ( layoutItem->isIgnored() )
             continue;
 
-        const int col = l->hasUnlimitedSpan( Qt::Horizontal )
-            ? l->firstColumn() + 1 : l->lastColumn();
+        const int col = layoutItem->hasUnlimitedSpan( Qt::Horizontal )
+            ? layoutItem->firstColumn() + 1 : layoutItem->lastColumn();
 
         if ( col > lastColumn )
             lastColumn = col;
 
-        const int row = l->hasUnlimitedSpan( Qt::Vertical )
-            ? l->firstRow() + 1 : l->lastRow();
+        const int row = layoutItem->hasUnlimitedSpan( Qt::Vertical )
+            ? layoutItem->firstRow() + 1 : layoutItem->lastRow();
 
         if ( row > lastRow )
             lastRow = row;
@@ -226,13 +226,13 @@ void QskLayoutEngine::adjustSpans( int numRows, int numColumns )
 {
     for ( int i = 0; i < itemCount(); i++ )
     {
-        QskLayoutItem* l = layoutItemAt( i );
+        auto layoutItem = layoutItemAt( i );
 
-        if ( l->hasUnlimitedSpan( Qt::Horizontal ) )
-            l->setRowSpan( numColumns - l->firstColumn(), Qt::Horizontal );
+        if ( layoutItem->hasUnlimitedSpan( Qt::Horizontal ) )
+            layoutItem->setRowSpan( numColumns - layoutItem->firstColumn(), Qt::Horizontal );
 
-        if ( l->hasUnlimitedSpan( Qt::Vertical ) )
-            l->setRowSpan( numRows - l->firstRow(), Qt::Vertical );
+        if ( layoutItem->hasUnlimitedSpan( Qt::Vertical ) )
+            layoutItem->setRowSpan( numRows - layoutItem->firstRow(), Qt::Vertical );
     }
 }
 

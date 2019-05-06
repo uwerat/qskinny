@@ -90,8 +90,8 @@ void QskLinearBox::transpose()
         {
             QskLayoutItem* layoutItem = engine().layoutItemAt( i );
 
-            const int row = layoutItem->firstRow( Qt::Horizontal );
-            const int col = layoutItem->firstRow( Qt::Vertical );
+            const int row = layoutItem->firstColumn();
+            const int col = layoutItem->firstRow();
 
             engine().removeItem( layoutItem );
 
@@ -358,10 +358,9 @@ void QskLinearBox::rearrange()
         if ( m_data->orientation == Qt::Vertical )
             qSwap( col, row );
 
-        QskLayoutItem* layoutItem = engine().layoutItemAt( i );
+        auto layoutItem = engine().layoutItemAt( i );
 
-        if ( layoutItem->firstRow( Qt::Horizontal ) != col ||
-            layoutItem->firstRow( Qt::Vertical ) != row )
+        if ( layoutItem->firstColumn() != col || layoutItem->firstRow() != row )
         {
             engine().removeItem( layoutItem );
 

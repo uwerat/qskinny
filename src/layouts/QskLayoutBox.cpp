@@ -250,7 +250,7 @@ QRectF QskLayoutBox::alignedLayoutRect( const QRectF& rect ) const
 }
 
 QSizeF QskLayoutBox::contentsSizeHint() const
-{   
+{
    if ( !isActive() )
         return QSizeF( -1, -1 );
 
@@ -269,25 +269,25 @@ qreal QskLayoutBox::heightForWidth( qreal width ) const
 {
     auto constrainedHeight =
         [this]( QskLayoutConstraint::Type, const QskControl*, qreal width )
-    {
-        return engine().heightForWidth( width );
-    };
+        {
+            return engine().heightForWidth( width );
+        };
 
     return QskLayoutConstraint::constrainedMetric(
         QskLayoutConstraint::HeightForWidth, this, width, constrainedHeight );
-}   
+}
 
 qreal QskLayoutBox::widthForHeight( qreal height ) const
 {
     auto constrainedWidth =
         [this]( QskLayoutConstraint::Type, const QskControl*, qreal height )
-    {
-        return engine().widthForHeight( height );
-    };
+        {
+            return engine().widthForHeight( height );
+        };
 
     return QskLayoutConstraint::constrainedMetric(
         QskLayoutConstraint::WidthForHeight, this, height, constrainedWidth );
-}   
+}
 
 void QskLayoutBox::geometryChangeEvent( QskGeometryChangeEvent* event )
 {

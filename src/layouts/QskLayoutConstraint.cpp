@@ -117,12 +117,12 @@ qreal QskLayoutConstraint::constrainedMetric(
     {
         const QSizeF outer( widthOrHeight, upperLimit );
         const QSizeF inner = control->layoutRectForSize( outer ).size();
-    
+
         qreal height = constrainFunction( type, control, inner.width() );
-        
+
         if ( height >= 0.0 )
             height += outer.height() - inner.height();
-    
+
         return height;
     }
 }
