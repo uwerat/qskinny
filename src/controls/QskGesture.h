@@ -92,7 +92,7 @@ class QSK_EXPORT QskTapAndHoldGesture : public QskGesture
     int m_timeout;
 };
 
-class QskPanGesture : public QskGesture
+class QSK_EXPORT QskPanGesture : public QskGesture
 {
     using Inherited = QskGesture;
 
@@ -126,7 +126,7 @@ class QskPanGesture : public QskGesture
     QPointF m_position;
 };
 
-class QskSwipeGesture : public QskGesture
+class QSK_EXPORT QskSwipeGesture : public QskGesture
 {
     using Inherited = QskGesture;
 
