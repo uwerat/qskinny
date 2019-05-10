@@ -6,12 +6,12 @@
 #ifndef QSK_LAYOUT_BOX_H
 #define QSK_LAYOUT_BOX_H
 
-#include "QskControl.h"
+#include "QskBox.h"
 
 class QskLayoutEngine;
 class QskLayoutItem;
 
-class QSK_EXPORT QskLayoutBox : public QskControl
+class QSK_EXPORT QskLayoutBox : public QskBox
 {
     Q_OBJECT
 

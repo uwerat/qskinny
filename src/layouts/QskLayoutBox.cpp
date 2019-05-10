@@ -23,7 +23,7 @@ class QskLayoutBox::PrivateData
 };
 
 QskLayoutBox::QskLayoutBox( QQuickItem* parent )
-    : QskControl( parent )
+    : QskBox( false, parent )
     , m_data( new PrivateData() )
 {
 }
