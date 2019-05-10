@@ -30,10 +30,15 @@ QRectF QskBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
 QSGNode* QskBoxSkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
+    const auto box = static_cast< const QskBox* >( skinnable );
+
     switch ( nodeRole )
     {
         case PanelRole:
         {
+            if ( !box->hasPanel() )
+                return nullptr;
+
             return updateBoxNode( skinnable, node, QskBox::Panel );
         }
     }

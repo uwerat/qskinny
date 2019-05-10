@@ -14,14 +14,28 @@ class QSK_EXPORT QskBox : public QskControl
 
     using Inherited = QskControl;
 
+    Q_PROPERTY( bool panel READ hasPanel
+        WRITE setPanel NOTIFY panelChanged FINAL )
+
   public:
     QSK_SUBCONTROLS( Panel )
 
     QskBox( QQuickItem* parent = nullptr );
+    QskBox( bool hasPanel, QQuickItem* parent = nullptr );
+
     ~QskBox() override;
 
+    void setPanel( bool );
+    bool hasPanel() const;
+    
     QRectF layoutRectForSize( const QSizeF& ) const override;
     QSizeF contentsSizeHint() const override;
+
+  Q_SIGNALS:
+    void panelChanged( bool );
+
+  private:
+    bool m_hasPanel;
 };
 
 #endif
