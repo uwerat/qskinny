@@ -47,7 +47,7 @@ QskTabView::QskTabView( Qsk::Position tabPosition, QQuickItem* parent )
     m_data->stackBox->setZ( 0 );
 
 #if 1
-    const QskAnimationHint hint = animation( Page );
+    const auto hint = animation( Page );
     if ( hint.duration > 0 )
     {
         // When changing the skin, we have to update the animator. TODO ...
@@ -247,7 +247,12 @@ bool QskTabView::event( QEvent* event )
 void QskTabView::updateLayout()
 {
     m_data->tabBar->setGeometry( subControlRect( TabBar ) );
+
+#if 1
     m_data->stackBox->setGeometry( subControlRect( Page ) );
+#else
+    m_data->stackBox->setGeometry( innerBox( Page, subControlRect( Page ) ) );
+#endif
 }
 
 #include "moc_QskTabView.cpp"
