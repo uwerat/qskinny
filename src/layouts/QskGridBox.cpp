@@ -56,8 +56,7 @@ int QskGridBox::columnCount() const
 
 QQuickItem* QskGridBox::itemAt( int row, int column ) const
 {
-    QskLayoutItem* layoutItem = engine().layoutItemAt( row, column );
-    if ( layoutItem )
+    if ( const auto layoutItem = engine().layoutItemAt( row, column ) )
         return layoutItem->item();
 
     return nullptr;
@@ -70,45 +69,41 @@ int QskGridBox::indexAt( int row, int column ) const
 
 int QskGridBox::rowOfIndex( int index ) const
 {
-    QskLayoutItem* layoutItem = engine().layoutItemAt( index );
-    if ( layoutItem == nullptr )
-        return -1;
+    if ( auto layoutItem = engine().layoutItemAt( index ) )
+        return layoutItem->firstRow();
 
-    return layoutItem->firstRow();
+    return -1;
 }
 
 int QskGridBox::rowSpanOfIndex( int index ) const
 {
-    QskLayoutItem* layoutItem = engine().layoutItemAt( index );
-    if ( layoutItem == nullptr )
-        return 0;
+    if ( auto layoutItem = engine().layoutItemAt( index ) )
+        return layoutItem->rowSpan();
 
-    return layoutItem->rowSpan();
+    return 0;
 }
 
 int QskGridBox::columnOfIndex( int index ) const
 {
-    QskLayoutItem* layoutItem = engine().layoutItemAt( index );
-    if ( layoutItem == nullptr )
-        return -1;
+    if ( auto layoutItem = engine().layoutItemAt( index ) )
+        return layoutItem->firstColumn();
 
-    return layoutItem->firstColumn();
+    return -1;
 }
 
 int QskGridBox::columnSpanOfIndex( int index ) const
 {
-    QskLayoutItem* layoutItem = engine().layoutItemAt( index );
-    if ( layoutItem == nullptr )
-        return 0;
+    if ( auto layoutItem = engine().layoutItemAt( index ) )
+        return layoutItem->columnSpan();
 
-    return layoutItem->columnSpan();
+    return 0;
 }
 
 void QskGridBox::setupLayoutItem( QskLayoutItem* layoutItem, int index )
 {
     Q_UNUSED( index )
 
-    QskLayoutEngine& engine = this->engine();
+    auto& engine = this->engine();
 
     m_data->isExpanding = ( layoutItem->lastColumn() >= engine.columnCount() ) ||
         ( layoutItem->lastRow() >= engine.rowCount() );
