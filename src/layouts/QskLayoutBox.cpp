@@ -251,7 +251,7 @@ QRectF QskLayoutBox::alignedLayoutRect( const QRectF& rect ) const
 
 QSizeF QskLayoutBox::contentsSizeHint() const
 {
-   if ( !isActive() )
+    if ( !isActive() )
         return QSizeF( -1, -1 );
 
     if ( itemCount() == 0 )
@@ -262,7 +262,7 @@ QSizeF QskLayoutBox::contentsSizeHint() const
 
 QSizeF QskLayoutBox::layoutItemsSizeHint() const
 {
-    return engine().sizeHint( Qt::PreferredSize );
+    return engine().sizeHint( Qt::PreferredSize, QSizeF() );
 }
 
 qreal QskLayoutBox::heightForWidth( qreal width ) const
