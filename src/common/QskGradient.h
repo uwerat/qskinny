@@ -54,6 +54,10 @@ class QSK_EXPORT QskGradient
     Q_PROPERTY( Orientation orientation READ orientation WRITE setOrientation )
     Q_PROPERTY( QVector< QskGradientStop > stops READ stops WRITE setStops )
 
+    Q_PROPERTY( bool valid READ isValid )
+    Q_PROPERTY( bool visible READ isVisible )
+    Q_PROPERTY( bool monochrome READ isMonochrome )
+
   public:
     // TODO: radial/canonical gradients + other diagonal linear gradients
     enum Orientation
