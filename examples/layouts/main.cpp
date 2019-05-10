@@ -6,6 +6,7 @@
 #include "DynamicConstraintsPage.h"
 #include "FlowLayoutPage.h"
 #include "LinearLayoutPage.h"
+#include "GridLayoutPage.h"
 #include "StackLayoutPage.h"
 
 #include <SkinnyFont.h>
@@ -52,11 +53,13 @@ int main( int argc, char* argv[] )
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
     auto tabView = new QskTabView();
+
     tabView->setMargins( 10 );
     tabView->setTabPosition( Qsk::Left );
-    tabView->addTab( "Grid Layout", new DummyLabel( "Grid Layout - TODO ..." ) );
+    tabView->addTab( "Grid Layout", new GridLayoutPage() );
     tabView->addTab( "Flow Layout", new FlowLayoutPage() );
     tabView->addTab( "Linear Layout", new LinearLayoutPage() );
+
     int dynamicIndex = tabView->addTab( "Dynamic\nConstraints", new DynamicConstraintsPage() );
 
     auto button = tabView->buttonAt( dynamicIndex );
