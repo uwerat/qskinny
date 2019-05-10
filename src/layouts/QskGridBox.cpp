@@ -46,12 +46,12 @@ void QskGridBox::addItem( QQuickItem* item,
 
 int QskGridBox::rowCount() const
 {
-    return engine().effectiveLastRow( Qt::Vertical ) + 1;
+    return engine().rowCount();
 }
 
 int QskGridBox::columnCount() const
 {
-    return engine().effectiveLastRow( Qt::Horizontal ) + 1;
+    return engine().columnCount();
 }
 
 QQuickItem* QskGridBox::itemAt( int row, int column ) const
