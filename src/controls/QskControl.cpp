@@ -262,6 +262,11 @@ class QskControlPrivate final : public QQuickItemPrivate
 
     bool autoFillBackground : 1;
     bool autoLayoutChildren : 1;
+
+    /*
+        This one is about calling updateLayout whenever layoutRect()
+        has changed -> whe should find a better name: TODO
+     */
     bool polishOnResize : 1;
 
     bool blockedPolish : 1;
@@ -1437,6 +1442,16 @@ bool QskControl::event( QEvent* event )
         {
             if ( d_func()->autoLayoutChildren )
                 resetImplicitSize();
+
+            if ( d_func()->polishOnResize )
+                polish();
+
+            break;
+        }
+        case QEvent::ContentsRectChange:
+        {
+            if ( d_func()->polishOnResize )
+                polish();
 
             break;
         }
