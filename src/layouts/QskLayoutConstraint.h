@@ -22,10 +22,10 @@ namespace QskLayoutConstraint
 {
     enum Type
     {
-        Unconstrained,
+        Unconstrained  = 0,
 
-        WidthForHeight,
-        HeightForWidth
+        WidthForHeight = 1 << 0,
+        HeightForWidth = 1 << 1
     };
 
     QSK_EXPORT qreal heightForWidth( const QQuickItem*, qreal width );
