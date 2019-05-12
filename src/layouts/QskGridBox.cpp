@@ -382,7 +382,7 @@ Qt::Alignment QskGridBox::columnAlignment( int column ) const
     return engine().rowAlignment( column, Qt::Horizontal );
 }
 
-void QskGridBox::setAlignment( QQuickItem* item, Qt::Alignment alignment )
+void QskGridBox::setAlignment( const QQuickItem* item, Qt::Alignment alignment )
 {
     QskLayoutItem* layoutItem = engine().layoutItemOf( item );
     if ( layoutItem && layoutItem->alignment() != alignment )
@@ -392,7 +392,7 @@ void QskGridBox::setAlignment( QQuickItem* item, Qt::Alignment alignment )
     }
 }
 
-Qt::Alignment QskGridBox::alignment( QQuickItem* item ) const
+Qt::Alignment QskGridBox::alignment( const QQuickItem* item ) const
 {
     QskLayoutItem* layoutItem = engine().layoutItemOf( item );
     if ( layoutItem )
@@ -401,7 +401,7 @@ Qt::Alignment QskGridBox::alignment( QQuickItem* item ) const
     return Qt::Alignment();
 }
 
-void QskGridBox::setRetainSizeWhenHidden( QQuickItem* item, bool on )
+void QskGridBox::setRetainSizeWhenHidden( const QQuickItem* item, bool on )
 {
     QskLayoutItem* layoutItem = engine().layoutItemOf( item );
     if ( layoutItem && on != layoutItem->retainSizeWhenHidden() )
@@ -411,7 +411,7 @@ void QskGridBox::setRetainSizeWhenHidden( QQuickItem* item, bool on )
     }
 }
 
-bool QskGridBox::retainSizeWhenHidden( QQuickItem* item ) const
+bool QskGridBox::retainSizeWhenHidden( const QQuickItem* item ) const
 {
     QskLayoutItem* layoutItem = engine().layoutItemOf( item );
     if ( layoutItem )

@@ -60,17 +60,11 @@ class QSK_EXPORT QskLinearBox : public QskIndexedLayoutBox
     void setStretchFactor( const QQuickItem*, int stretchFactor );
     int stretchFactor( const QQuickItem* ) const;
 
-    Q_INVOKABLE void setStretchFactor( QQuickItem*, int stretchFactor );
-    Q_INVOKABLE int stretchFactor( QQuickItem* ) const;
-
     Q_INVOKABLE bool retainSizeWhenHidden( int index ) const;
     Q_INVOKABLE void setRetainSizeWhenHidden( int index, bool on );
 
     bool retainSizeWhenHidden( const QQuickItem* ) const;
     void setRetainSizeWhenHidden( const QQuickItem*, bool on );
-
-    Q_INVOKABLE bool retainSizeWhenHidden( QQuickItem* ) const;
-    Q_INVOKABLE void setRetainSizeWhenHidden( QQuickItem*, bool on );
 
 #if 1
     Q_INVOKABLE void setRowSpacing( int row, qreal spacing );
@@ -108,27 +102,5 @@ class QSK_EXPORT QskLinearBox : public QskIndexedLayoutBox
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
-
-// using const is the right thing, unfortunately Qml does not like it.
-
-inline void QskLinearBox::setStretchFactor( const QQuickItem* item, int stretchFactor )
-{
-    setStretchFactor( const_cast< QQuickItem* >( item ), stretchFactor );
-}
-
-inline int QskLinearBox::stretchFactor( const QQuickItem* item ) const
-{
-    return stretchFactor( const_cast< QQuickItem* >( item ) );
-}
-
-inline void QskLinearBox::setRetainSizeWhenHidden( const QQuickItem* item, bool on )
-{
-    setRetainSizeWhenHidden( const_cast< QQuickItem* >( item ), on );
-}
-
-inline bool QskLinearBox::retainSizeWhenHidden( const QQuickItem* item ) const
-{
-    return retainSizeWhenHidden( const_cast< QQuickItem* >( item ) );
-}
 
 #endif

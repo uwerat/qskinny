@@ -12,6 +12,11 @@
 #include <QskLinearBox.h>
 #include <QskGridBox.h>
 
+/*
+    QML need methods being Q_INVOKABLE and QQuickItem parameters
+    need to be non const.
+ */
+
 template< typename LayoutBox >
 class QskLayoutBoxQml : public LayoutBox
 {
@@ -42,10 +47,85 @@ class QskLayoutBoxQml : public LayoutBox
         // QML does not like a const version
         LayoutBox::removeItem( item );
     }   
+
+    Q_INVOKABLE void setAlignment( QQuickItem* item, Qt::Alignment alignment )
+    {
+        LayoutBox::setAlignment( item, alignment );
+    }
+
+    Q_INVOKABLE Qt::Alignment alignment( QQuickItem* item ) const
+    {
+        return LayoutBox::alignment( item );
+    }
 };
 
-class QskStackBoxQml : public QskLayoutBoxQml< QskLinearBox > { Q_OBJECT };
-class QskLinearBoxQml : public QskLayoutBoxQml< QskLinearBox > { Q_OBJECT };
-class QskGridBoxQml : public QskLayoutBoxQml< QskGridBox > { Q_OBJECT };
+class QskStackBoxQml : public QskLayoutBoxQml< QskStackBox >
+{
+    Q_OBJECT
+
+    Q_INVOKABLE void setAlignment( int index, Qt::Alignment alignment )
+    {
+        QskStackBox::setAlignment( index, alignment );
+    }
+
+    Q_INVOKABLE Qt::Alignment alignment( int index ) const
+    {
+        return QskStackBox::alignment( index );
+    }
+};
+
+class QskLinearBoxQml : public QskLayoutBoxQml< QskLinearBox >
+{
+    Q_OBJECT
+
+  public:
+
+    Q_INVOKABLE void setAlignment( int index, Qt::Alignment alignment )
+    {
+        QskLinearBox::setAlignment( index, alignment );
+    }
+
+    Q_INVOKABLE Qt::Alignment alignment( int index ) const
+    {
+        return QskLinearBox::alignment( index );
+    }
+
+    Q_INVOKABLE void setStretchFactor( QQuickItem* item, int stretchFactor )
+    {
+        QskLinearBox::setStretchFactor( item, stretchFactor );
+    }
+
+    Q_INVOKABLE int stretchFactor( QQuickItem* item ) const
+    {
+        return QskLinearBox::stretchFactor( item );
+    }
+
+    Q_INVOKABLE void setRetainSizeWhenHidden( QQuickItem* item, bool on )
+    {
+        QskLinearBox::setRetainSizeWhenHidden( item, on );
+    }
+
+    Q_INVOKABLE bool retainSizeWhenHidden( QQuickItem* item ) const
+    {
+        return QskLinearBox::retainSizeWhenHidden( item );
+    }
+};
+
+class QskGridBoxQml : public QskLayoutBoxQml< QskGridBox >
+{
+    Q_OBJECT
+
+  public:
+
+    Q_INVOKABLE bool retainSizeWhenHidden( QQuickItem* item ) const
+    {
+        return QskGridBox::retainSizeWhenHidden( item );
+    }
+
+    Q_INVOKABLE void setRetainSizeWhenHidden( QQuickItem* item, bool on )
+    {
+        QskGridBox::setRetainSizeWhenHidden( item, on );
+    }
+};
 
 #endif

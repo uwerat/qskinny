@@ -225,19 +225,19 @@ int QskLinearBox::stretchFactor( int index ) const
     return 0;
 }
 
-void QskLinearBox::setStretchFactor( QQuickItem* item, int stretch )
+void QskLinearBox::setStretchFactor( const QQuickItem* item, int stretch )
 {
     setStretchFactor( engine().indexOf( item ), stretch );
 }
 
-int QskLinearBox::stretchFactor( QQuickItem* item ) const
+int QskLinearBox::stretchFactor( const QQuickItem* item ) const
 {
     return stretchFactor( engine().indexOf( item ) );
 }
 
 void QskLinearBox::setRetainSizeWhenHidden( int index, bool on )
 {
-    QskLayoutItem* layoutItem = engine().layoutItemAt( index );
+    auto layoutItem = engine().layoutItemAt( index );
     if ( layoutItem && on != layoutItem->retainSizeWhenHidden() )
     {
         layoutItem->setRetainSizeWhenHidden( on );
@@ -247,19 +247,18 @@ void QskLinearBox::setRetainSizeWhenHidden( int index, bool on )
 
 bool QskLinearBox::retainSizeWhenHidden( int index ) const
 {
-    QskLayoutItem* layoutItem = engine().layoutItemAt( index );
-    if ( layoutItem )
+    if ( const auto layoutItem = engine().layoutItemAt( index ) )
         return layoutItem->retainSizeWhenHidden();
 
     return false;
 }
 
-void QskLinearBox::setRetainSizeWhenHidden( QQuickItem* item, bool on )
+void QskLinearBox::setRetainSizeWhenHidden( const QQuickItem* item, bool on )
 {
     setRetainSizeWhenHidden( engine().indexOf( item ), on );
 }
 
-bool QskLinearBox::retainSizeWhenHidden( QQuickItem* item ) const
+bool QskLinearBox::retainSizeWhenHidden( const QQuickItem* item ) const
 {
     return retainSizeWhenHidden( engine().indexOf( item ) );
 }

@@ -127,7 +127,7 @@ void QskIndexedLayoutBox::insertItem(
         }
     }
 
-    QskLayoutItem* layoutItem = new QskLayoutItem( item, 0, 0 );
+    auto layoutItem = new QskLayoutItem( item, 0, 0 );
     layoutItem->setAlignment( alignment );
 
     insertLayoutItem( layoutItem, index );
@@ -135,8 +135,8 @@ void QskIndexedLayoutBox::insertItem(
 
 void QskIndexedLayoutBox::setAlignment( int index, Qt::Alignment alignment )
 {
-    QskLayoutItem* layoutItem = engine().layoutItemAt( index );
-    if ( layoutItem && alignment != layoutItem->alignment() )
+    auto layoutItem = engine().layoutItemAt( index );
+    if ( layoutItem && ( alignment != layoutItem->alignment() ) )
     {
         layoutItem->setAlignment( alignment );
         activate(); // invalidate() ???
@@ -145,19 +145,20 @@ void QskIndexedLayoutBox::setAlignment( int index, Qt::Alignment alignment )
 
 Qt::Alignment QskIndexedLayoutBox::alignment( int index ) const
 {
-    QskLayoutItem* layoutItem = engine().layoutItemAt( index );
+    const auto layoutItem = engine().layoutItemAt( index );
     if ( layoutItem )
         return layoutItem->alignment();
 
     return Qt::Alignment();
 }
 
-void QskIndexedLayoutBox::setAlignment( QQuickItem* item, Qt::Alignment alignment )
+void QskIndexedLayoutBox::setAlignment(
+    const QQuickItem* item, Qt::Alignment alignment )
 {
     setAlignment( engine().indexOf( item ), alignment );
 }
 
-Qt::Alignment QskIndexedLayoutBox::alignment( QQuickItem* item ) const
+Qt::Alignment QskIndexedLayoutBox::alignment( const QQuickItem* item ) const
 {
     return alignment( engine().indexOf( item ) );
 }

@@ -36,14 +36,11 @@ class QSK_EXPORT QskIndexedLayoutBox : public QskLayoutBox
     Q_INVOKABLE void insertItem(
         int index, QQuickItem*, Qt::Alignment alignment = Qt::Alignment() );
 
-    Q_INVOKABLE void setAlignment( int index, Qt::Alignment );
-    Q_INVOKABLE Qt::Alignment alignment( int index ) const;
+    void setAlignment( int index, Qt::Alignment );
+    Qt::Alignment alignment( int index ) const;
 
     void setAlignment( const QQuickItem*, Qt::Alignment );
     Qt::Alignment alignment( const QQuickItem* ) const;
-
-    Q_INVOKABLE void setAlignment( QQuickItem*, Qt::Alignment );
-    Q_INVOKABLE Qt::Alignment alignment( QQuickItem* ) const;
 
   Q_SIGNALS:
     void autoAddChildrenChanged();
@@ -57,17 +54,5 @@ class QSK_EXPORT QskIndexedLayoutBox : public QskLayoutBox
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
-
-// Qml does not like the const version
-
-inline void QskIndexedLayoutBox::setAlignment( const QQuickItem* item, Qt::Alignment alignment )
-{
-    setAlignment( const_cast< QQuickItem* >( item ), alignment );
-}
-
-inline Qt::Alignment QskIndexedLayoutBox::alignment( const QQuickItem* item ) const
-{
-    return alignment( const_cast< QQuickItem* >( item ) );
-}
 
 #endif

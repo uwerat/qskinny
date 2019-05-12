@@ -104,14 +104,8 @@ class QSK_EXPORT QskGridBox : public QskLayoutBox
     void setAlignment( const QQuickItem* item, Qt::Alignment alignment );
     Qt::Alignment alignment( const QQuickItem* item ) const;
 
-    Q_INVOKABLE void setAlignment( QQuickItem* item, Qt::Alignment alignment );
-    Q_INVOKABLE Qt::Alignment alignment( QQuickItem* item ) const;
-
     bool retainSizeWhenHidden( const QQuickItem* ) const;
     void setRetainSizeWhenHidden( const QQuickItem*, bool on );
-
-    Q_INVOKABLE bool retainSizeWhenHidden( QQuickItem* ) const;
-    Q_INVOKABLE void setRetainSizeWhenHidden( QQuickItem*, bool on );
 
   Q_SIGNALS:
     void verticalSpacingChanged();
@@ -135,28 +129,6 @@ inline void QskGridBox::addItem(
     QQuickItem* item, int row, int column, Qt::Alignment alignment )
 {
     addItem( item, row, column, 1, 1, alignment );
-}
-
-// Qml does not like the const versions
-
-inline void QskGridBox::setAlignment( const QQuickItem* item, Qt::Alignment alignment )
-{
-    setAlignment( const_cast< QQuickItem* >( item ), alignment );
-}
-
-inline Qt::Alignment QskGridBox::alignment( const QQuickItem* item ) const
-{
-    return alignment( const_cast< QQuickItem* >( item ) );
-}
-
-inline bool QskGridBox::retainSizeWhenHidden( const QQuickItem* item ) const
-{
-    return retainSizeWhenHidden( const_cast< QQuickItem* >( item ) );
-}
-
-inline void QskGridBox::setRetainSizeWhenHidden( const QQuickItem* item, bool on )
-{
-    setRetainSizeWhenHidden( const_cast< QQuickItem* >( item ), on );
 }
 
 #endif
