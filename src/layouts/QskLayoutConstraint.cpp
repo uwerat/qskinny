@@ -58,17 +58,35 @@ static inline qreal qskAdjustedValue(
     return value;
 }
 
-bool QskLayoutConstraint::hasDynamicConstraint( const QQuickItem* item )
+QskLayoutConstraint::Type QskLayoutConstraint::constraintType( const QQuickItem* item )
 {
+    Type constraintType = Unconstrained;
+         
     if ( auto control = qskControlCast( item ) )
-    {
-        const auto& policy = control->sizePolicy();
-        return ( policy.horizontalPolicy() == QskSizePolicy::Constrained ) ||
-            ( policy.verticalPolicy() == QskSizePolicy::Constrained );
+    {    
+        const auto policy = control->sizePolicy();
+        if ( policy.horizontalPolicy() == QskSizePolicy::Constrained )
+        {    
+            constraintType = WidthForHeight;
+        }
+        else if ( policy.verticalPolicy() == QskSizePolicy::Constrained )
+        {
+            constraintType = HeightForWidth;
+        }
     }
-
-    return qskHasHintFor( item, "hasHeightForWidth" ) ||
-        qskHasHintFor( item, "hasWidthForHeight" );
+    else
+    {
+        if ( qskHasHintFor( item, "hasWidthForHeight" ) )
+        {
+            constraintType = WidthForHeight;
+        }
+        else if ( qskHasHintFor( item, "hasHeightForWidth" ) )
+        {
+            constraintType = HeightForWidth;
+        }
+    }
+    
+    return constraintType;
 }
 
 qreal QskLayoutConstraint::heightForWidth( const QQuickItem* item, qreal width )
@@ -289,4 +307,71 @@ QSizeF QskLayoutConstraint::adjustedSize( const QQuickItem* item, const QSizeF& 
     }
 
     return QSizeF( w, h );
+}
+
+QSizeF QskLayoutConstraint::sizeHint( const QQuickItem* item,
+    Qt::SizeHint whichHint, const QSizeF& constraint )
+{
+    if ( item == nullptr ||  whichHint < Qt::MinimumSize || whichHint > Qt::MaximumSize )
+        return QSizeF( 0, 0 );
+
+    QSizeF hint( 0, 0 );
+
+    Type constraintType = Unconstrained;
+
+    if ( whichHint == Qt::PreferredSize )
+        constraintType = QskLayoutConstraint::constraintType( item );
+
+    if ( constraintType != Unconstrained )
+    {
+        const quint32 growFlags = QskSizePolicy::GrowFlag | QskSizePolicy::ExpandFlag;
+
+        if ( constraint.width() > 0 ) // && constrainedType == HeightForWidth ??
+        {
+            qreal w = constraint.width();
+
+            if ( !( sizePolicy( item ).policy( Qt::Horizontal ) & growFlags ) )
+            {
+                const auto maxW = effectiveConstraint( item, Qt::PreferredSize ).width();
+
+                if ( maxW >= 0.0 )
+                    w = qMin( w, maxW );
+            }
+
+            hint.setWidth( w );
+            hint.setHeight( heightForWidth( item, w ) );
+        }
+        else if ( constraint.height() > 0 ) // && constrainedType == WidthForHeight ??
+        {
+            qreal h = constraint.height();
+
+            if ( !( sizePolicy( item ).policy( Qt::Vertical ) & growFlags ) )
+            {
+                const auto maxH = effectiveConstraint( item, Qt::PreferredSize ).height();
+
+                if ( maxH >= 0.0 )
+                    h = qMin( h, maxH );
+            }
+
+            hint.setWidth( widthForHeight( item, h ) );
+            hint.setHeight( h );
+        }
+        else
+        {
+            hint = effectiveConstraint( item, Qt::PreferredSize );
+
+            if ( constraintType == WidthForHeight )
+                hint.setWidth( widthForHeight( item, hint.height() ) );
+            else
+                hint.setHeight( heightForWidth( item, hint.width() ) );
+        }
+    }
+    else
+    {
+        hint = effectiveConstraint( item, whichHint );
+    }
+
+    hint = hint.expandedTo( QSizeF( 0.0, 0.0 ) );
+
+    return hint;
 }

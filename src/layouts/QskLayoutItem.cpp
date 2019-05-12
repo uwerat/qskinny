@@ -70,11 +70,11 @@ void QskLayoutItem::setSpacingHint( const QSizeF& hint )
 QSizeF QskLayoutItem::sizeHint(
     Qt::SizeHint whichHint, const QSizeF& constraint ) const
 {
-    if ( whichHint < Qt::MinimumSize || whichHint > Qt::MaximumSize )
-        return QSizeF( 0, 0 );
-
     if ( m_item == nullptr )
     {
+        if ( whichHint < Qt::MinimumSize || whichHint > Qt::MaximumSize )
+            return QSizeF( 0, 0 );
+
         // a spacer item
         if ( whichHint == Qt::MaximumSize )
         {
@@ -94,63 +94,10 @@ QSizeF QskLayoutItem::sizeHint(
                 return QSizeF( m_spacingHint.width(), 0 );
         }
     }
-
-    QSizeF hint( 0, 0 );
-
-    if ( whichHint == Qt::PreferredSize && QskLayoutConstraint::hasDynamicConstraint( m_item ) )
-    {
-        const quint32 growFlags = QLayoutPolicy::GrowFlag | QLayoutPolicy::ExpandFlag;
-
-        if ( constraint.width() > 0 )
-        {
-            qreal w = constraint.width();
-
-            if ( !( sizePolicy( Qt::Horizontal ) & growFlags ) )
-            {
-                const auto maxW = QskLayoutConstraint::effectiveConstraint(
-                    m_item, Qt::PreferredSize ).width();
-
-                if ( maxW >= 0.0 )
-                    w = qMin( w, maxW );
-            }
-
-            hint.setWidth( w );
-            hint.setHeight( QskLayoutConstraint::heightForWidth( m_item, w ) );
-        }
-        else if ( constraint.height() > 0 )
-        {
-            qreal h = constraint.height();
-
-            if ( !( sizePolicy( Qt::Vertical ) & growFlags ) )
-            {
-                const auto maxH = QskLayoutConstraint::effectiveConstraint(
-                    m_item, Qt::PreferredSize ).height();
-
-                if ( maxH >= 0.0 )
-                    h = qMin( h, maxH );
-            }
-
-            hint.setWidth( QskLayoutConstraint::widthForHeight( m_item, h ) );
-            hint.setHeight( h );
-        }
-        else
-        {
-            hint = QskLayoutConstraint::effectiveConstraint( m_item, Qt::PreferredSize );
-
-            if ( dynamicConstraintOrientation() == Qt::Horizontal )
-                hint.setWidth( QskLayoutConstraint::widthForHeight( m_item, hint.height() ) );
-            else
-                hint.setHeight( QskLayoutConstraint::heightForWidth( m_item, hint.width() ) );
-        }
-    }
     else
     {
-        hint = QskLayoutConstraint::effectiveConstraint( m_item, whichHint );
+        return QskLayoutConstraint::sizeHint( m_item, whichHint, constraint );
     }
-
-    hint = hint.expandedTo( QSizeF( 0.0, 0.0 ) );
-
-    return hint;
 }
 
 QLayoutPolicy::Policy QskLayoutItem::sizePolicy( Qt::Orientation orientation ) const
@@ -203,7 +150,10 @@ void QskLayoutItem::setGeometry( const QRectF& rect )
 bool QskLayoutItem::hasDynamicConstraint() const
 {
     if ( m_item )
-        return QskLayoutConstraint::hasDynamicConstraint( m_item );
+    {
+        using namespace QskLayoutConstraint;
+        return constraintType( m_item ) != Unconstrained;
+    }
 
     return false;
 }

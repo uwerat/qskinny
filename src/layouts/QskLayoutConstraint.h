@@ -22,13 +22,16 @@ namespace QskLayoutConstraint
 {
     enum Type
     {
+        Unconstrained,
+
         WidthForHeight,
         HeightForWidth
     };
 
-    QSK_EXPORT bool hasDynamicConstraint( const QQuickItem* );
     QSK_EXPORT qreal heightForWidth( const QQuickItem*, qreal width );
     QSK_EXPORT qreal widthForHeight( const QQuickItem*, qreal height );
+
+    QSK_EXPORT Type constraintType( const QQuickItem* );
 
     QSK_EXPORT qreal constrainedMetric(
         Type, const QskControl*, qreal value,
@@ -43,6 +46,9 @@ namespace QskLayoutConstraint
     QSK_EXPORT QSizeF boundedSize( const QQuickItem*, const QSizeF& );
 
     QSK_EXPORT QSizeF adjustedSize( const QQuickItem*, const QSizeF& );
+
+    QSK_EXPORT QSizeF sizeHint(
+        const QQuickItem*, Qt::SizeHint, const QSizeF& constraint );
 
     // QGridLayoutEngine internally uses FLT_MAX
     const qreal unlimited = std::numeric_limits< float >::max();
