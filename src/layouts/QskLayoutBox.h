@@ -15,7 +15,7 @@ class QSK_EXPORT QskLayoutBox : public QskBox
 {
     Q_OBJECT
 
-    using Inherited = QskControl;
+    using Inherited = QskBox;
 
   public:
     explicit QskLayoutBox( QQuickItem* parent = 0 );
