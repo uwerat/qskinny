@@ -3,8 +3,8 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef QSK_SHORTCUT_H
-#define QSK_SHORTCUT_H
+#ifndef QSK_SHORTCUT_QML_H
+#define QSK_SHORTCUT_QML_H
 
 #include "QskQmlGlobal.h"
 
@@ -20,7 +20,7 @@ class QKeySequence;
     For QML, with C++ there is also QskShortcutMap that does
     not need to create QObjects per shortcut
  */
-class QSK_QML_EXPORT QskShortcut : public QObject, public QQmlParserStatus
+class QskShortcutQml : public QObject, public QQmlParserStatus
 {
     Q_OBJECT
     Q_INTERFACES( QQmlParserStatus )
@@ -43,12 +43,12 @@ class QSK_QML_EXPORT QskShortcut : public QObject, public QQmlParserStatus
     using Inherited = QObject;
 
   public:
-    QskShortcut( QObject* parent = nullptr );
+    QskShortcutQml( QObject* parent = nullptr );
 
-    QskShortcut( const QKeySequence&, QObject* = nullptr );
-    QskShortcut( const QKeySequence&, Qt::ShortcutContext, QObject* = nullptr );
+    QskShortcutQml( const QKeySequence&, QObject* = nullptr );
+    QskShortcutQml( const QKeySequence&, Qt::ShortcutContext, QObject* = nullptr );
 
-    ~QskShortcut() override;
+    ~QskShortcutQml() override;
 
     int shortcutId() const;
 

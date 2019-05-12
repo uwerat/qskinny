@@ -4,44 +4,43 @@
  *****************************************************************************/
 
 #include "QskQml.h"
+#include "QskLayoutQml.h"
+#include "QskShortcutQml.h"
 
-#include "QskCorner.h"
-#include "QskDialog.h"
-#include "QskDialogButton.h"
-#include "QskDialogButtonBox.h"
-#include "QskDialogSubWindow.h"
-#include "QskDialogWindow.h"
-#include "QskFocusIndicator.h"
-#include "QskGradient.h"
-#include "QskGraphicLabel.h"
-#include "QskGridBox.h"
-#include "QskLinearBox.h"
-#include "QskMessageWindow.h"
-#include "QskPopup.h"
-#include "QskPushButton.h"
-#include "QskRgbValue.h"
-#include "QskScrollArea.h"
-#include "QskScrollView.h"
-#include "QskSelectionWindow.h"
-#include "QskSeparator.h"
-#include "QskSetup.h"
-#include "QskShortcut.h"
-#include "QskSimpleListBox.h"
-#include "QskSkin.h"
-#include "QskSkinManager.h"
-#include "QskSlider.h"
-#include "QskStackBox.h"
-#include "QskStandardSymbol.h"
-#include "QskStatusIndicator.h"
-#include "QskSubWindow.h"
-#include "QskSubWindowArea.h"
-#include "QskTabBar.h"
-#include "QskTabButton.h"
-#include "QskTabView.h"
-#include "QskTextLabel.h"
-#include "QskTextOptions.h"
-#include "QskVirtualKeyboard.h"
-#include "QskWindow.h"
+#include <QskCorner.h>
+#include <QskDialog.h>
+#include <QskDialogButton.h>
+#include <QskDialogButtonBox.h>
+#include <QskDialogSubWindow.h>
+#include <QskDialogWindow.h>
+#include <QskFocusIndicator.h>
+#include <QskGradient.h>
+#include <QskGraphicLabel.h>
+#include <QskMessageWindow.h>
+#include <QskPopup.h>
+#include <QskPushButton.h>
+#include <QskRgbValue.h>
+#include <QskScrollArea.h>
+#include <QskScrollView.h>
+#include <QskSelectionWindow.h>
+#include <QskSeparator.h>
+#include <QskSetup.h>
+#include <QskSimpleListBox.h>
+#include <QskSkin.h>
+#include <QskSkinManager.h>
+#include <QskSlider.h>
+#include <QskStandardSymbol.h>
+#include <QskStatusIndicator.h>
+#include <QskSubWindow.h>
+#include <QskSubWindowArea.h>
+#include <QskTabBar.h>
+#include <QskTabButton.h>
+#include <QskTabView.h>
+#include <QskTextLabel.h>
+#include <QskTextOptions.h>
+#include <QskVirtualKeyboard.h>
+#include <QskWindow.h>
+
 
 #include <qjsvalueiterator.h>
 #include <qmargins.h>
@@ -233,7 +232,7 @@ void QskQml::registerTypes()
     qRegisterMetaType< QskSkin* >();
 
     QSK_REGISTER( QskMain, "Main" );
-    QSK_REGISTER( QskShortcut, "Shortcut" );
+    QSK_REGISTER( QskShortcutQml, "Shortcut" );
 
     QSK_REGISTER( QskWindow, "Window" );
 
@@ -241,9 +240,13 @@ void QskQml::registerTypes()
     QSK_REGISTER( QskMessageWindow, "MessageWindow" );
     QSK_REGISTER( QskSelectionWindow, "SelectionWindow" );
 
-    QSK_REGISTER( QskGridBox, "GridBox" );
-    QSK_REGISTER( QskLinearBox, "LinearBox" );
-    QSK_REGISTER( QskStackBox, "StackBox" );
+#if 1
+    QSK_REGISTER( QskGridBoxQml, "GridBox" );
+    QSK_REGISTER( QskLinearBoxQml, "LinearBox" );
+    QSK_REGISTER( QskStackBoxQml, "StackBox" );
+#else
+    QskGridBoxQml gridBox;
+#endif
 
     QSK_REGISTER( QskControl, "Control" );
     QSK_REGISTER( QskGraphicLabel, "GraphicLabel" );

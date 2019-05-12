@@ -3,8 +3,8 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#include "QskShortcut.h"
-#include "QskShortcutMap.h"
+#include "QskShortcutQml.h"
+#include <QskShortcutMap.h>
 
 #include <qquickitem.h>
 #include <qquickwindow.h>
@@ -25,14 +25,14 @@ static bool qskContextMatcher( QObject* object, Qt::ShortcutContext context )
 
     if ( context == Qt::WindowShortcut )
     {
-        if ( const auto shortcut = qobject_cast< const QskShortcut* >( object ) )
+        if ( const auto shortcut = qobject_cast< const QskShortcutQml* >( object ) )
             return shortcut->isFocusInScope();
     }
 
     return false;
 }
 
-class QskShortcut::PrivateData
+class QskShortcutQml::PrivateData
 {
   public:
     PrivateData()
@@ -50,7 +50,7 @@ class QskShortcut::PrivateData
             qskShortcutMap().removeShortcut( id, nullptr );
     }
 
-    void resetShortcut( QskShortcut* shortcut )
+    void resetShortcut( QskShortcutQml* shortcut )
     {
         if ( !isComplete )
             return;
@@ -92,18 +92,18 @@ class QskShortcut::PrivateData
     bool isComplete : 1;
 };
 
-QskShortcut::QskShortcut( QObject* parent )
+QskShortcutQml::QskShortcutQml( QObject* parent )
     : Inherited( parent )
     , m_data( new PrivateData )
 {
 }
 
-QskShortcut::QskShortcut( const QKeySequence& sequence, QObject* parent )
-    : QskShortcut( sequence, Qt::WindowShortcut, parent )
+QskShortcutQml::QskShortcutQml( const QKeySequence& sequence, QObject* parent )
+    : QskShortcutQml( sequence, Qt::WindowShortcut, parent )
 {
 }
 
-QskShortcut::QskShortcut( const QKeySequence& sequence,
+QskShortcutQml::QskShortcutQml( const QKeySequence& sequence,
         Qt::ShortcutContext context, QObject* parent )
     : Inherited( parent )
     , m_data( new PrivateData )
@@ -113,22 +113,22 @@ QskShortcut::QskShortcut( const QKeySequence& sequence,
     m_data->resetShortcut( this );
 }
 
-QskShortcut::~QskShortcut()
+QskShortcutQml::~QskShortcutQml()
 {
 }
 
-int QskShortcut::shortcutId() const
+int QskShortcutQml::shortcutId() const
 {
     return m_data->id;
 }
 
-Qt::ShortcutContext QskShortcut::context() const
+Qt::ShortcutContext QskShortcutQml::context() const
 {
     return m_data->isWindowContext
         ? Qt::WindowShortcut : Qt::ApplicationShortcut;
 }
 
-void QskShortcut::setContext( Qt::ShortcutContext context )
+void QskShortcutQml::setContext( Qt::ShortcutContext context )
 {
     if ( context == Qt::ApplicationShortcut ||
         context == Qt::WindowShortcut )
@@ -145,7 +145,7 @@ void QskShortcut::setContext( Qt::ShortcutContext context )
     }
 }
 
-void QskShortcut::setSequence( const QKeySequence& sequence )
+void QskShortcutQml::setSequence( const QKeySequence& sequence )
 {
     if ( sequence != m_data->sequence )
     {
@@ -156,12 +156,12 @@ void QskShortcut::setSequence( const QKeySequence& sequence )
     }
 }
 
-QKeySequence QskShortcut::sequence() const
+QKeySequence QskShortcutQml::sequence() const
 {
     return m_data->sequence;
 }
 
-void QskShortcut::setSequenceVariant( const QVariant& sequence )
+void QskShortcutQml::setSequenceVariant( const QVariant& sequence )
 {
     if ( sequence.type() == QVariant::Int )
         setSequence( static_cast< QKeySequence::StandardKey >( sequence.toInt() ) );
@@ -169,12 +169,12 @@ void QskShortcut::setSequenceVariant( const QVariant& sequence )
         setSequence( QKeySequence::fromString( sequence.toString() ) );
 }
 
-QVariant QskShortcut::sequenceVariant() const
+QVariant QskShortcutQml::sequenceVariant() const
 {
     return m_data->sequence.toString();
 }
 
-void QskShortcut::setEnabled( bool on )
+void QskShortcutQml::setEnabled( bool on )
 {
     if ( on != m_data->enabled )
     {
@@ -187,12 +187,12 @@ void QskShortcut::setEnabled( bool on )
     }
 }
 
-bool QskShortcut::isEnabled() const
+bool QskShortcutQml::isEnabled() const
 {
     return m_data->enabled;
 }
 
-void QskShortcut::setAutoRepeat( bool on )
+void QskShortcutQml::setAutoRepeat( bool on )
 {
     if ( on != m_data->autoRepeat )
     {
@@ -205,12 +205,12 @@ void QskShortcut::setAutoRepeat( bool on )
     }
 }
 
-bool QskShortcut::autoRepeat() const
+bool QskShortcutQml::autoRepeat() const
 {
     return m_data->autoRepeat;
 }
 
-bool QskShortcut::event( QEvent* event )
+bool QskShortcutQml::event( QEvent* event )
 {
     if ( event->type() == QEvent::Shortcut )
     {
@@ -230,7 +230,7 @@ bool QskShortcut::event( QEvent* event )
     return false;
 }
 
-bool QskShortcut::isFocusInScope() const
+bool QskShortcutQml::isFocusInScope() const
 {
     if ( !m_data->isWindowContext )
         return true;
@@ -258,12 +258,12 @@ bool QskShortcut::isFocusInScope() const
     }
 }
 
-void QskShortcut::classBegin()
+void QskShortcutQml::classBegin()
 {
     m_data->isComplete = false;
 }
 
-void QskShortcut::componentComplete()
+void QskShortcutQml::componentComplete()
 {
     if ( m_data->isComplete == false )
     {
@@ -272,4 +272,4 @@ void QskShortcut::componentComplete()
     }
 }
 
-#include "moc_QskShortcut.cpp"
+#include "moc_QskShortcutQml.cpp"

@@ -52,6 +52,8 @@ void QskLayoutBox::setActive( bool on )
         resetImplicitSize();
         polish();
     }
+
+    Q_EMIT activeChanged( m_data->isActive );
 }
 
 bool QskLayoutBox::isActive() const
@@ -161,7 +163,7 @@ void QskLayoutBox::removeAt( int index )
     }
 }
 
-void QskLayoutBox::removeItem( QQuickItem* item )
+void QskLayoutBox::removeItem( const QQuickItem* item )
 {
     removeAt( indexOf( item ) );
 }

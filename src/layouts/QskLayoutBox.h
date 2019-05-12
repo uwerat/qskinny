@@ -15,26 +15,30 @@ class QSK_EXPORT QskLayoutBox : public QskBox
 {
     Q_OBJECT
 
+    // signals ???
+    Q_PROPERTY( int itemCount READ itemCount() )
+    Q_PROPERTY( bool empty READ isEmpty() )
+
+    Q_PROPERTY( bool active READ isActive
+        WRITE setActive NOTIFY activeChanged )
+
     using Inherited = QskBox;
 
   public:
-    explicit QskLayoutBox( QQuickItem* parent = 0 );
+    explicit QskLayoutBox( QQuickItem* parent = nullptr );
     ~QskLayoutBox() override;
 
-    Q_INVOKABLE bool isEmpty() const;
+    bool isEmpty() const;
 
-    Q_INVOKABLE int itemCount() const;
-    Q_INVOKABLE QQuickItem* itemAtIndex( int index ) const;
-    Q_INVOKABLE int indexOf( const QQuickItem* ) const;
+    int itemCount() const;
+    QQuickItem* itemAtIndex( int index ) const;
+    int indexOf( const QQuickItem* ) const;
 
     void removeItem( const QQuickItem* );
-    Q_INVOKABLE void removeItem( QQuickItem* );
-    Q_INVOKABLE void removeAt( int index );
+    void removeAt( int index );
 
-    Q_INVOKABLE void clear( bool autoDelete = false );
-
-    Q_INVOKABLE void setActive( bool );
-    Q_INVOKABLE bool isActive() const;
+    void setActive( bool );
+    bool isActive() const;
 
     void adjustItem( const QQuickItem* );
     void adjustItemAt( int index );
@@ -44,9 +48,13 @@ class QSK_EXPORT QskLayoutBox : public QskBox
     qreal heightForWidth( qreal width ) const override;
     qreal widthForHeight( qreal height ) const override;
 
+  Q_SIGNALS:
+    void activeChanged( bool );
+
   public Q_SLOTS:
     void activate();
     void invalidate();
+    void clear( bool autoDelete = false );
 
   protected:
     bool event( QEvent* ) override;
@@ -77,11 +85,6 @@ class QSK_EXPORT QskLayoutBox : public QskBox
 inline bool QskLayoutBox::isEmpty() const
 {
     return itemCount() <= 0;
-}
-
-inline void QskLayoutBox::removeItem( const QQuickItem* item )
-{
-    removeItem( const_cast< QQuickItem* >( item ) );
 }
 
 #endif

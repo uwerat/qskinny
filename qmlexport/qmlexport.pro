@@ -8,11 +8,12 @@ contains(QSK_CONFIG, QskDll): DEFINES += QSK_QML_MAKEDLL
 
 HEADERS += \
     QskQmlGlobal.h \
-    QskShortcut.h \
+    QskShortcutQml.h \
+    QskLayoutQml.h \
     QskQml.h
 
 SOURCES += \
-    QskShortcut.cpp \
+    QskShortcutQml.cpp \
     QskQml.cpp
 
 target.path = $${QSK_INSTALL_LIBS}
