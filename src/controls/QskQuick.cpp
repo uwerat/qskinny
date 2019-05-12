@@ -117,6 +117,12 @@ bool qskIsShortcutScope( const QQuickItem* item )
     return item->isFocusScope() && QQuickItemPrivate::get( item )->isTabFence;
 }
 
+void qskSetTransparentForPositioner( QQuickItem* item, bool on )
+{
+    if ( item )
+        QQuickItemPrivate::get( item )->setTransparentForPositioner( on );
+}
+
 bool qskIsTransparentForPositioner( const QQuickItem* item )
 {
     if ( item == nullptr )
