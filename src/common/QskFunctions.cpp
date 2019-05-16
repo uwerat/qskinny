@@ -8,49 +8,38 @@ template< class Rect, class Value >
 static inline Rect qskAlignedRect( const Rect& outerRect,
     Value width, Value height, Qt::Alignment alignment )
 {
-    // we might need this code at other place too ???
-
-    Rect r( 0, 0, width, height );
+    Value x = outerRect.x();
+    Value y = outerRect.y();
 
     switch ( alignment & Qt::AlignHorizontal_Mask )
     {
-        case Qt::AlignLeft:
-        {
-            r.moveLeft( outerRect.left() );
+        case Qt::AlignHCenter:
+            x += ( outerRect.width() - width ) / 2;
             break;
-        }
+
         case Qt::AlignRight:
-        {
-            r.moveRight( outerRect.right() );
+            x += outerRect.width() - width;
             break;
-        }
+
         default:
-        {
-            const auto dx = ( outerRect.width() - width ) / 2;
-            r.moveLeft( outerRect.left() + dx );
-        }
+            break;
     }
 
     switch ( alignment & Qt::AlignVertical_Mask )
     {
-        case Qt::AlignTop:
-        {
-            r.moveTop( outerRect.top() );
+        case Qt::AlignVCenter:
+            y += ( outerRect.height() - height ) / 2;
             break;
-        }
+
         case Qt::AlignBottom:
-        {
-            r.moveBottom( outerRect.bottom() );
+            y += outerRect.height() - height;
             break;
-        }
+
         default:
-        {
-            const auto dy = ( outerRect.height() - height ) / 2;
-            r.moveTop( outerRect.top() + dy );
-        }
+            break;
     }
 
-    return r;
+    return Rect( x, y, width, height );
 }
 
 QRect qskAlignedRect( const QRect& outerRect,
