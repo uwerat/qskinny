@@ -25,6 +25,7 @@ QskFlickAnimator::QskFlickAnimator()
     , m_degrees( 0.0 )
     , m_cos( 1.0 )
     , m_sin( 0.0 )
+    , m_elapsed( 0 )
 {
     setDuration( 1000 );
     setEasingCurve( QEasingCurve::OutCubic );
@@ -83,7 +84,7 @@ void QskFlickAnimator::accelerate( qreal degrees, qreal velocity )
 void QskFlickAnimator::done()
 {
     m_velocity[ 1 ] = 0.0;
-    m_elapsed = 0.0;
+    m_elapsed = 0;
 }
 
 void QskFlickAnimator::setAngle( qreal degrees )

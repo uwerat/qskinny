@@ -100,6 +100,7 @@ QskLayoutItem* QskStackBoxAnimator::layoutItemAt( int index ) const
 QskStackBoxAnimator1::QskStackBoxAnimator1( QskStackBox* parent )
     : QskStackBoxAnimator( parent )
     , m_orientation( Qt::Horizontal )
+    , m_hasClip( false )
 {
 }
 

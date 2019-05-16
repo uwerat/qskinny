@@ -55,8 +55,8 @@ namespace
         void initialize() override;
 
       private:
-        int m_matrixId;
-        int m_opacityId;
+        int m_matrixId = -1;
+        int m_opacityId = -1;
 
         const bool m_isOpaque : 1;
     };

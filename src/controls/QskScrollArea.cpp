@@ -367,7 +367,7 @@ class QskScrollArea::PrivateData
         }
     }
 
-    QskScrollAreaClipItem* clipItem;
+    QskScrollAreaClipItem* clipItem = nullptr;
 
     bool isItemResizable : 1;
     bool autoScrollFocusItem : 1;

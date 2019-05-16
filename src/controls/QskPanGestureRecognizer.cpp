@@ -125,13 +125,13 @@ namespace
         }
 
       private:
-        int m_pos;
+        int m_pos = 0;
         enum { Count = 3 };
 
         struct
         {
-            int elapsed;
-            qreal velocity;
+            int elapsed = 0;
+            qreal velocity = 0.0;
         } m_values[ Count ];
     };
 }
