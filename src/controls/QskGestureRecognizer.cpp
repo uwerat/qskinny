@@ -192,6 +192,9 @@ QskGestureRecognizer::~QskGestureRecognizer()
 
 void QskGestureRecognizer::setWatchedItem( QQuickItem* item )
 {
+    if ( m_data->watchedItem )
+        reset();
+
     m_data->watchedItem = item;
 }
 
@@ -435,12 +438,18 @@ void QskGestureRecognizer::reject()
 
     reset();
 
+    auto watchedItem = m_data->watchedItem;
+    if ( watchedItem == nullptr )
+        return;
+
+    const auto window = watchedItem->window();
+    if ( window == nullptr )
+        return;
+
     m_data->isReplayingEvents = true;
 
-    const auto window = m_data->watchedItem->window();
-
-    if ( window->mouseGrabberItem() == m_data->watchedItem )
-        m_data->watchedItem->ungrabMouse();
+    if ( window->mouseGrabberItem() == watchedItem )
+       watchedItem->ungrabMouse();
 
     if ( !events.isEmpty() &&
         ( events[ 0 ]->type() == QEvent::MouseButtonPress ) )
@@ -481,12 +490,15 @@ void QskGestureRecognizer::reset()
 {
     qskTimerTable->stopTimer( this );
 
-    m_data->watchedItem->setKeepMouseGrab( false );
-
-    if ( auto window = m_data->watchedItem->window() )
+    if ( auto watchedItem = m_data->watchedItem )
     {
-        if ( window->mouseGrabberItem() == m_data->watchedItem )
-            m_data->watchedItem->ungrabMouse();
+        watchedItem->setKeepMouseGrab( false );
+
+        if ( auto window = watchedItem->window() )
+        {
+            if ( window->mouseGrabberItem() == m_data->watchedItem )
+                watchedItem->ungrabMouse();
+        }
     }
 
     m_data->pendingEvents.reset();
