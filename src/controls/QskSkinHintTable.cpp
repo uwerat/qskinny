@@ -115,12 +115,14 @@ void QskSkinHintTable::setHint( QskAspect::Aspect aspect, const QVariant& skinHi
         m_hasStates = true;
 }
 
-void QskSkinHintTable::removeHint( QskAspect::Aspect aspect )
+bool QskSkinHintTable::removeHint( QskAspect::Aspect aspect )
 {
     if ( m_hints == nullptr )
-        return;
+        return false;
 
-    if ( m_hints->erase( aspect ) )
+    const bool erased = m_hints->erase( aspect );
+
+    if ( erased )
     {
         if ( aspect.isAnimator() )
             m_animatorCount--;
@@ -131,6 +133,34 @@ void QskSkinHintTable::removeHint( QskAspect::Aspect aspect )
             m_hints = nullptr;
         }
     }
+
+    return erased;
+}
+
+QVariant QskSkinHintTable::takeHint( QskAspect::Aspect aspect )
+{
+    if ( m_hints )
+    {
+        auto it = m_hints->find( aspect );
+        if ( it != m_hints->end() )
+        {
+            const auto value = it->second;
+            m_hints->erase( it );
+
+            if ( aspect.isAnimator() )
+                m_animatorCount--;
+
+            if ( m_hints->empty() )
+            {
+                delete m_hints;
+                m_hints = nullptr;
+            }
+
+            return value;
+        }
+    }
+
+    return QVariant();
 }
 
 void QskSkinHintTable::clear()

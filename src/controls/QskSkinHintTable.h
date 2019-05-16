@@ -33,7 +33,7 @@ class QSK_EXPORT QskSkinHintTable
     void setColor( QskAspect::Aspect, QRgb );
 
     void setColor( QskAspect::Aspect, const QColor& );
-    QColor color( QskAspect::Aspect aspect ) const;
+    QColor color( QskAspect::Aspect ) const;
 
     void setMetric( QskAspect::Aspect, qreal metric );
     qreal metric( QskAspect::Aspect ) const;
@@ -62,7 +62,9 @@ class QSK_EXPORT QskSkinHintTable
 
     void setHint( QskAspect::Aspect, const QVariant& );
     const QVariant& hint( QskAspect::Aspect ) const;
-    void removeHint( QskAspect::Aspect );
+
+    bool removeHint( QskAspect::Aspect );
+    QVariant takeHint( QskAspect::Aspect );
 
     bool hasHint( QskAspect::Aspect ) const;
 
@@ -160,7 +162,8 @@ inline qreal QskSkinHintTable::metric( QskAspect::Aspect aspect ) const
     return hint( aspect | QskAspect::Metric ).toReal();
 }
 
-inline void QskSkinHintTable::setMargins( QskAspect::Aspect aspect, const QskMargins& margins )
+inline void QskSkinHintTable::setMargins(
+    QskAspect::Aspect aspect, const QskMargins& margins )
 {
     setHint( aspect | QskAspect::Metric, QVariant::fromValue( margins ) );
 }
