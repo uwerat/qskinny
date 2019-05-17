@@ -67,7 +67,10 @@ bool qskIsAncestorOf( const QQuickItem* item, const QQuickItem* child )
 
 bool qskIsVisibleToParent( const QQuickItem* item )
 {
-    return QQuickItemPrivate::get( item )->explicitVisible;
+    if ( item )
+        return QQuickItemPrivate::get( item )->explicitVisible;
+
+    return false;
 }
 
 bool qskIsVisibleTo( const QQuickItem* item, const QQuickItem* ancestor )
@@ -97,6 +100,14 @@ bool qskIsTabFence( const QQuickItem* item )
         return false;
 
     return QQuickItemPrivate::get( item )->isTabFence;
+}
+
+bool qskIsPolishScheduled( const QQuickItem* item )
+{
+    if ( item )
+        return QQuickItemPrivate::get( item )->polishScheduled;
+
+    return false;
 }
 
 bool qskIsShortcutScope( const QQuickItem* item )

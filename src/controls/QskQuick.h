@@ -26,6 +26,7 @@ QSK_EXPORT bool qskIsTabFence( const QQuickItem* );
 QSK_EXPORT bool qskIsShortcutScope( const QQuickItem* );
 QSK_EXPORT bool qskIsVisibleTo( const QQuickItem* item, const QQuickItem* ancestor );
 QSK_EXPORT bool qskIsVisibleToParent( const QQuickItem* );
+QSK_EXPORT bool qskIsPolishScheduled( const QQuickItem* );
 
 QSK_EXPORT void qskSetTransparentForPositioner( QQuickItem*, bool );
 QSK_EXPORT bool qskIsTransparentForPositioner( const QQuickItem* );
@@ -45,6 +46,12 @@ QSK_EXPORT void qskInputMethodSetVisible( const QQuickItem*, bool );
 
 QSK_EXPORT const QSGNode* qskItemNode( const QQuickItem* );
 QSK_EXPORT const QSGNode* qskPaintNode( const QQuickItem* );
+
+inline void qskSetItemGeometry(
+    QQuickItem* item, qreal x, qreal y, qreal width, qreal height )
+{
+    qskSetItemGeometry( item, QRectF( x, y, width, height ) );
+}
 
 template< typename T >
 inline T qskFindAncestorOf( QQuickItem* item )
