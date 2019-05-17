@@ -16,10 +16,10 @@
 
 namespace
 {
-    class Box : public QskStackBox
+    class StackBox : public QskStackBox
     {
       public:
-        Box( QQuickItem* parent = nullptr )
+        StackBox( QQuickItem* parent = nullptr )
             : QskStackBox( parent )
         {
             setObjectName( "StackBox" );
@@ -103,7 +103,7 @@ StackLayoutPage::StackLayoutPage( QQuickItem* parent )
     setMargins( 10 );
     setBackgroundColor( QskRgbValue::LightSteelBlue );
 
-    auto* box = new Box();
+    auto* box = new StackBox();
 
     auto* buttonBox = new ButtonBox();
     buttonBox->addButton( "<<", [ box ]() { box->incrementScrolling( Qt::Horizontal, +1 ); } );
