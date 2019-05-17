@@ -31,7 +31,6 @@ class QSK_EXPORT QskStackBoxAnimator : public QObject, public QskAnimator
   protected:
     QskStackBox* stackBox() const;
     QskLayoutItem* layoutItemAt( int index ) const;
-    void resizeItemAt( int index );
 
   private:
     int m_startIndex;
