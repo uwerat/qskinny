@@ -15,6 +15,7 @@ class QskSizePolicy;
 class QskControl;
 class QQuickItem;
 class QSizeF;
+class QRectF;
 
 namespace std { template< typename T > class function; }
 
@@ -44,11 +45,13 @@ namespace QskLayoutConstraint
 
     // bounded by Qt::MinimumSize/Qt::MaximumSize
     QSK_EXPORT QSizeF boundedSize( const QQuickItem*, const QSizeF& );
-
     QSK_EXPORT QSizeF adjustedSize( const QQuickItem*, const QSizeF& );
 
     QSK_EXPORT QSizeF sizeHint(
         const QQuickItem*, Qt::SizeHint, const QSizeF& constraint );
+
+    QSK_EXPORT QRectF itemRect(
+        const QQuickItem*, const QRectF&, Qt::Alignment );
 
     // QGridLayoutEngine internally uses FLT_MAX
     const qreal unlimited = std::numeric_limits< float >::max();
