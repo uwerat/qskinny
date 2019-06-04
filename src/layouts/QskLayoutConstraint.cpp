@@ -97,8 +97,11 @@ static inline QSizeF qskExpandedSize( const QQuickItem* item, const QSizeF& cons
 
 QskLayoutConstraint::Type QskLayoutConstraint::constraintType( const QQuickItem* item )
 {
+    if ( item == nullptr )
+        return Unconstrained;
+
     Type constraintType = Unconstrained;
-         
+
     if ( auto control = qskControlCast( item ) )
     {    
         const auto policy = control->sizePolicy();
