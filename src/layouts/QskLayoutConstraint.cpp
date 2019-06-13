@@ -350,6 +350,19 @@ QSizeF QskLayoutConstraint::adjustedSize(
     return QSizeF( w, h );
 }
 
+qreal QskLayoutConstraint::sizeHint( const QQuickItem* item,
+    Qt::SizeHint whichHint, Qt::Orientation orientation, qreal constraint )
+{
+    if ( orientation == Qt::Horizontal )
+    {
+        return sizeHint( item, whichHint, QSizeF( -1.0, constraint ) ).width();
+    }
+    else
+    {
+        return sizeHint( item, whichHint, QSizeF( constraint, -1.0 ) ).height();
+    }
+}
+
 QSizeF QskLayoutConstraint::sizeHint( const QQuickItem* item,
     Qt::SizeHint whichHint, const QSizeF& constraint )
 {

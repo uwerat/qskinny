@@ -50,6 +50,9 @@ namespace QskLayoutConstraint
     QSK_EXPORT QSizeF sizeHint(
         const QQuickItem*, Qt::SizeHint, const QSizeF& constraint );
 
+    QSK_EXPORT qreal sizeHint(
+        const QQuickItem*, Qt::SizeHint, Qt::Orientation, qreal constraint );
+
     QSK_EXPORT QRectF itemRect(
         const QQuickItem*, const QRectF&, Qt::Alignment );
 
