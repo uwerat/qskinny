@@ -424,8 +424,6 @@ QSize QskWindow::effectivePreferredSize() const
         }
     }
 
-qDebug() << constraint.width() << constraint.height();
-
     // QWindow geometries are in integers
 
     return QSize( qskToIntegerConstraint( constraint.width() ),
