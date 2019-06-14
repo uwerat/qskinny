@@ -246,7 +246,7 @@ bool QskWindow::event( QEvent* event )
             {
                 const QSize sz = effectivePreferredSize();
                 if ( !sz.isEmpty() )
-                    resize( effectivePreferredSize() );
+                    resize( sz );
             }
 
             break;
@@ -423,6 +423,8 @@ QSize QskWindow::effectivePreferredSize() const
             }
         }
     }
+
+qDebug() << constraint.width() << constraint.height();
 
     // QWindow geometries are in integers
 
