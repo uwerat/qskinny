@@ -74,7 +74,7 @@ namespace
         }
 
       private:
-        QQuickItem* m_contentItem;
+        QQuickItem* m_contentItem = nullptr;
     };
 }
 
@@ -244,9 +244,14 @@ bool QskWindow::event( QEvent* event )
         {
             if ( size().isEmpty() )
             {
-                const QSize sz = effectivePreferredSize();
+                QSize sz = effectivePreferredSize();
                 if ( !sz.isEmpty() )
+                {
+                    sz = sz.expandedTo( minimumSize() );
+                    sz = sz.boundedTo( maximumSize() );
+
                     resize( sz );
+                }
             }
 
             break;
@@ -415,6 +420,7 @@ QSize QskWindow::effectivePreferredSize() const
             if ( auto control = qskControlCast( child ) )
             {
                 const QSizeF itemConstraint = control->sizeHint();
+
                 if ( doWidth )
                     constraint.setWidth( qMax( constraint.width(), itemConstraint.width() ) );
 
