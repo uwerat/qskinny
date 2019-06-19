@@ -485,7 +485,7 @@ void QskMaterialSkin::initTabButtonHints()
     setMetric( Q::Panel | MinimumWidth, 30 );
     setMetric( Q::Panel | MinimumHeight, 16 );
 
-    for ( auto placement : { Left, Right, Top, Bottom } )
+    for ( const auto placement : { Left, Right, Top, Bottom } )
     {
         const Aspect aspect = Q::Panel | placement;
 
@@ -510,7 +510,7 @@ void QskMaterialSkin::initTabButtonHints()
                 break;
 
             default:
-                break;
+                edge = Qt::Edge( 0 ); // making gcc4 happy
         }
 
         setGradient( aspect, QskRgbValue::White );
