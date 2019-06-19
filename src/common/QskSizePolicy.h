@@ -63,8 +63,8 @@ class QSK_EXPORT QskSizePolicy
     void setPolicy( Qt::Orientation, Policy );
 
   private:
-    quint32 m_horizontalPolicy : 4;
-    quint32 m_verticalPolicy : 4;
+    unsigned char m_horizontalPolicy : 4;
+    unsigned char m_verticalPolicy : 4;
 };
 
 inline QskSizePolicy::QskSizePolicy()
