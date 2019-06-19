@@ -105,16 +105,13 @@ Box::Box( QQuickItem* parent )
 
 void Box::flip()
 {
-    setActive( false );
-
-    for ( int i = 0; i < itemCount(); i++ )
+    for ( int i = 0; i < entryCount(); i++ )
     {
-        if ( Control* control = dynamic_cast< Control* >( itemAtIndex( i ) ) )
+        if ( auto control = dynamic_cast< Control* >( itemAtIndex( i ) ) )
             control->transpose();
     }
 
     transpose();
-    setActive( true );
 }
 
 void Box::addControl( Control* control )

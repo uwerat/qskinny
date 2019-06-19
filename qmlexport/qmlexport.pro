@@ -14,6 +14,7 @@ HEADERS += \
 
 SOURCES += \
     QskShortcutQml.cpp \
+    QskLayoutQml.cpp \
     QskQml.cpp
 
 target.path = $${QSK_INSTALL_LIBS}

@@ -19,11 +19,16 @@ class QSK_EXPORT QskLinearBox : public QskIndexedLayoutBox
         WRITE setDimension NOTIFY dimensionChanged FINAL )
 
     Q_PROPERTY( qreal spacing READ spacing
-        WRITE setSpacing RESET resetSpacing
-        NOTIFY spacingChanged FINAL )
+        WRITE setSpacing RESET resetSpacing NOTIFY spacingChanged FINAL )
+
+    Q_PROPERTY( Qt::Alignment defaultAlignment READ defaultAlignment
+        WRITE setDefaultAlignment NOTIFY defaultAlignmentChanged )
 
     Q_PROPERTY( Qt::Edges extraSpacingAt READ extraSpacingAt
         WRITE setExtraSpacingAt NOTIFY extraSpacingAtChanged )
+
+    Q_PROPERTY( int entryCount READ entryCount() )
+    Q_PROPERTY( bool empty READ isEmpty() )
 
     using Inherited = QskIndexedLayoutBox;
 
@@ -32,8 +37,25 @@ class QSK_EXPORT QskLinearBox : public QskIndexedLayoutBox
     explicit QskLinearBox( Qt::Orientation, QQuickItem* parent = nullptr );
 
     QskLinearBox( Qt::Orientation, uint dimension, QQuickItem* parent = nullptr );
-
     ~QskLinearBox() override;
+
+    bool isEmpty() const;
+    int entryCount() const; // items and spacers
+
+#ifdef QSK_LAYOUT_COMPAT
+    int itemCount() const { return entryCount(); } // items and spacers
+#endif
+
+    QQuickItem* itemAtIndex( int index ) const;
+    int indexOf( const QQuickItem* ) const;
+
+    void removeItem( const QQuickItem* );
+    void removeAt( int index );
+
+    QSizeF contentsSizeHint() const override;
+
+    qreal heightForWidth( qreal width ) const override;
+    qreal widthForHeight( qreal height ) const override;
 
     Qt::Orientation orientation() const;
     void setOrientation( Qt::Orientation );
@@ -44,9 +66,18 @@ class QSK_EXPORT QskLinearBox : public QskIndexedLayoutBox
     void setExtraSpacingAt( Qt::Edges );
     Qt::Edges extraSpacingAt() const;
 
+    void setDefaultAlignment( Qt::Alignment );
+    Qt::Alignment defaultAlignment() const;
+
     void setSpacing( qreal spacing );
     void resetSpacing();
     qreal spacing() const;
+
+    Q_INVOKABLE void addItem(
+        QQuickItem*, Qt::Alignment alignment = Qt::Alignment() );
+
+    Q_INVOKABLE void insertItem(
+        int index, QQuickItem*, Qt::Alignment alignment = Qt::Alignment() );
 
     Q_INVOKABLE void addSpacer( qreal spacing, int stretchFactor = 0 );
     Q_INVOKABLE void insertSpacer( int index, qreal spacing, int stretchFactor = 0 );
@@ -60,47 +91,51 @@ class QSK_EXPORT QskLinearBox : public QskIndexedLayoutBox
     void setStretchFactor( const QQuickItem*, int stretchFactor );
     int stretchFactor( const QQuickItem* ) const;
 
+    void setAlignment( int index, Qt::Alignment );
+    Qt::Alignment alignment( int index ) const;
+
+    void setAlignment( const QQuickItem*, Qt::Alignment );
+    Qt::Alignment alignment( const QQuickItem* ) const;
+
     Q_INVOKABLE bool retainSizeWhenHidden( int index ) const;
     Q_INVOKABLE void setRetainSizeWhenHidden( int index, bool on );
 
     bool retainSizeWhenHidden( const QQuickItem* ) const;
     void setRetainSizeWhenHidden( const QQuickItem*, bool on );
 
-#if 1
-    Q_INVOKABLE void setRowSpacing( int row, qreal spacing );
-    Q_INVOKABLE qreal rowSpacing( int row ) const;
-
-    Q_INVOKABLE void setColumnSpacing( int column, qreal spacing );
-    Q_INVOKABLE qreal columnSpacing( int column ) const;
-
-    Q_INVOKABLE void setRowStretchFactor( int row, int stretchFactor );
-    Q_INVOKABLE int rowStretchFactor( int row ) const;
-
-    Q_INVOKABLE void setColumnStretchFactor( int column, int stretchFactor );
-    Q_INVOKABLE int columnStretchFactor( int column ) const;
-#endif
-
   public Q_SLOTS:
     void transpose();
+    void activate();
+    void invalidate();
+    void clear( bool autoDelete = false );
 
   Q_SIGNALS:
     void orientationChanged();
     void dimensionChanged();
+    void defaultAlignmentChanged();
     void spacingChanged();
     void extraSpacingAtChanged();
 
   protected:
-    QRectF alignedLayoutRect( const QRectF& ) const override;
+    bool event( QEvent* ) override;
+    void geometryChangeEvent( QskGeometryChangeEvent* ) override;
+
+    void itemChange( ItemChange, const ItemChangeData& ) override;
+    void updateLayout() override;
+
+    void autoAddItem( QQuickItem* ) override final;
+    void autoRemoveItem( QQuickItem* ) override final;
 
   private:
-    void setupLayoutItem( QskLayoutItem*, int index ) override;
-    void layoutItemInserted( QskLayoutItem*, int index ) override;
-    void layoutItemRemoved( QskLayoutItem*, int index ) override;
-
-    void rearrange();
+    void removeItemInternal( int index, bool autoDelete );
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
+
+inline bool QskLinearBox::isEmpty() const
+{
+    return entryCount() <= 0;
+}
 
 #endif

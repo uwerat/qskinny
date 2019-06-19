@@ -6,21 +6,16 @@
 #ifndef QSK_GRID_BOX_H
 #define QSK_GRID_BOX_H
 
-#include "QskLayoutBox.h"
+#include "QskBox.h"
 
-class QSK_EXPORT QskGridBox : public QskLayoutBox
+class QSK_EXPORT QskGridBox : public QskBox
 {
     Q_OBJECT
 
-    Q_PROPERTY( qreal horizontalSpacing READ horizontalSpacing
-        WRITE setHorizontalSpacing RESET resetHorizontalSpacing
-        NOTIFY horizontalSpacingChanged )
+    Q_PROPERTY( bool empty READ isEmpty() )
+    Q_PROPERTY( int itemCount READ itemCount() )
 
-    Q_PROPERTY( qreal verticalSpacing READ verticalSpacing
-        WRITE setVerticalSpacing RESET resetVerticalSpacing
-        NOTIFY verticalSpacingChanged )
-
-    using Inherited = QskLayoutBox;
+    using Inherited = QskBox;
 
   public:
     explicit QskGridBox( QQuickItem* parent = nullptr );
@@ -34,8 +29,17 @@ class QSK_EXPORT QskGridBox : public QskLayoutBox
         QQuickItem*, int row, int column,
         Qt::Alignment alignment = Qt::Alignment() );
 
+    void removeItem( const QQuickItem* );
+    void removeAt( int index );
+
     Q_INVOKABLE int rowCount() const;
     Q_INVOKABLE int columnCount() const;
+
+    int itemCount() const;
+    QQuickItem* itemAtIndex( int index ) const;
+    int indexOf( const QQuickItem* ) const;
+
+    bool isEmpty() const;
 
     Q_INVOKABLE QQuickItem* itemAt( int row, int column ) const;
     Q_INVOKABLE int indexAt( int row, int column ) const;
@@ -47,15 +51,29 @@ class QSK_EXPORT QskGridBox : public QskLayoutBox
     Q_INVOKABLE int columnSpanOfIndex( int index ) const;
 
     // spacings
-    void setSpacing( qreal spacing );
 
-    void setHorizontalSpacing( qreal spacing );
-    void resetHorizontalSpacing();
-    qreal horizontalSpacing() const;
+    void setSpacing( Qt::Orientations, qreal spacing );
+    void resetSpacing( Qt::Orientations );
+    qreal spacing( Qt::Orientation ) const;
 
-    void setVerticalSpacing( qreal spacing );
-    void resetVerticalSpacing();
-    qreal verticalSpacing() const;
+#ifdef QSK_LAYOUT_COMPAT
+    void setVerticalSpacing( qreal spacing ) { setSpacing( Qt::Vertical, spacing ); }
+    qreal verticalSpacing() const { return spacing( Qt::Vertical ); }
+
+    void setHorizontalSpacing( qreal spacing ) { setSpacing( Qt::Horizontal, spacing ); }
+    qreal horizontalSpacing() const { return spacing( Qt::Horizontal ); }
+
+    void setSpacing( qreal spacing ) { setSpacing( Qt::Horizontal | Qt::Vertical, spacing ); }
+
+    void setActive( bool ) {}
+    bool isActive() const { return true; }
+
+    void setRowMinimumHeight( int column, qreal height )
+        { setRowSizeHint( column, Qt::MinimumSize, height ); }
+
+    void setColumnMaximumWidth( int column, qreal width )
+        { setColumnSizeHint( column, Qt::MaximumSize, width ); }
+#endif
 
     Q_INVOKABLE void setRowSpacing( int row, qreal spacing );
     Q_INVOKABLE qreal rowSpacing( int row ) const;
@@ -71,26 +89,14 @@ class QSK_EXPORT QskGridBox : public QskLayoutBox
     Q_INVOKABLE int columnStretchFactor( int column ) const;
 
     // row/column size hints
-    Q_INVOKABLE void setRowMinimumHeight( int row, qreal height );
-    Q_INVOKABLE qreal rowMinimumHeight( int row ) const;
 
-    Q_INVOKABLE void setRowPreferredHeight( int row, qreal height );
-    Q_INVOKABLE qreal rowPreferredHeight( int row ) const;
+    Q_INVOKABLE void setColumnSizeHint( int column, Qt::SizeHint, qreal width );
+    Q_INVOKABLE qreal columnSizeHint( int column, Qt::SizeHint ) const;
 
-    Q_INVOKABLE void setRowMaximumHeight( int row, qreal height );
-    Q_INVOKABLE qreal rowMaximumHeight( int row ) const;
+    Q_INVOKABLE void setRowSizeHint( int row, Qt::SizeHint, qreal height );
+    Q_INVOKABLE qreal rowSizeHint( int row, Qt::SizeHint ) const;
 
     Q_INVOKABLE void setRowFixedHeight( int row, qreal height );
-
-    Q_INVOKABLE void setColumnMinimumWidth( int column, qreal width );
-    Q_INVOKABLE qreal columnMinimumWidth( int column ) const;
-
-    Q_INVOKABLE void setColumnPreferredWidth( int column, qreal width );
-    Q_INVOKABLE qreal columnPreferredWidth( int column ) const;
-
-    Q_INVOKABLE void setColumnMaximumWidth( int column, qreal width );
-    Q_INVOKABLE qreal columnMaximumWidth( int column ) const;
-
     Q_INVOKABLE void setColumnFixedWidth( int column, qreal width );
 
     // alignments
@@ -107,20 +113,23 @@ class QSK_EXPORT QskGridBox : public QskLayoutBox
     bool retainSizeWhenHidden( const QQuickItem* ) const;
     void setRetainSizeWhenHidden( const QQuickItem*, bool on );
 
-  Q_SIGNALS:
-    void verticalSpacingChanged();
-    void horizontalSpacingChanged();
+    QSizeF contentsSizeHint() const override;
+
+    qreal heightForWidth( qreal width ) const override;
+    qreal widthForHeight( qreal height ) const override;
+
+  public Q_SLOTS:
+    void invalidate();
+    void clear( bool autoDelete = false );
 
   protected:
-    void setupLayoutItem( QskLayoutItem*, int index ) override;
-    void layoutItemInserted( QskLayoutItem*, int index ) override;
-    void layoutItemRemoved( QskLayoutItem*, int index ) override;
+    bool event( QEvent* ) override;
+    void geometryChangeEvent( QskGeometryChangeEvent* ) override;
+
+    void itemChange( ItemChange, const ItemChangeData& ) override;
+    void updateLayout() override;
 
   private:
-    void setRowSizeHint(
-        Qt::SizeHint which, int row, qreal size,
-        Qt::Orientation orientation );
-
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
@@ -129,6 +138,11 @@ inline void QskGridBox::addItem(
     QQuickItem* item, int row, int column, Qt::Alignment alignment )
 {
     addItem( item, row, column, 1, 1, alignment );
+}
+
+inline bool QskGridBox::isEmpty() const
+{
+    return itemCount() <= 0;
 }
 
 #endif

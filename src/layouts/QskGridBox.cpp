@@ -4,24 +4,54 @@
  *****************************************************************************/
 
 #include "QskGridBox.h"
-#include "QskLayoutEngine.h"
-#include "QskLayoutItem.h"
+#include "QskGridLayoutEngine.h"
+#include "QskLayoutConstraint.h"
+#include "QskEvent.h"
+
+static void qskSetItemActive( QObject* receiver, const QQuickItem* item, bool on )
+{
+    if ( ( item == nullptr ) || ( qskControlCast( item ) != nullptr ) )
+        return;
+
+    /*
+        For QQuickItems not being derived from QskControl we manually
+        send QEvent::LayoutRequest events.
+     */
+
+    if ( on )
+    {
+        auto sendLayoutRequest =
+            [receiver]()
+            {
+                QEvent event( QEvent::LayoutRequest );
+                QCoreApplication::sendEvent( receiver, &event );
+            };
+
+        QObject::connect( item, &QQuickItem::implicitWidthChanged,
+            receiver, sendLayoutRequest );
+
+        QObject::connect( item, &QQuickItem::implicitHeightChanged,
+            receiver, sendLayoutRequest );
+
+        QObject::connect( item, &QQuickItem::visibleChanged,
+            receiver, sendLayoutRequest );
+    }
+    else
+    {
+        QObject::disconnect( item, &QQuickItem::implicitWidthChanged, receiver, nullptr );
+        QObject::disconnect( item, &QQuickItem::implicitHeightChanged, receiver, nullptr );
+        QObject::disconnect( item, &QQuickItem::visibleChanged, receiver, nullptr );
+    }
+}
 
 class QskGridBox::PrivateData
 {
   public:
-    PrivateData()
-        : isExpanding( false )
-        , unlimitedSpanned( 0 )
-    {
-    }
-
-    bool isExpanding;
-    unsigned int unlimitedSpanned;
+    QskGridLayoutEngine engine;
 };
 
 QskGridBox::QskGridBox( QQuickItem* parent )
-    : QskLayoutBox( parent )
+    : QskBox( false, parent )
     , m_data( new PrivateData() )
 {
 }
@@ -34,400 +64,444 @@ void QskGridBox::addItem( QQuickItem* item,
     int row, int column, int rowSpan, int columnSpan,
     Qt::Alignment alignment )
 {
-    auto layoutItem = new QskLayoutItem( item, row, column, rowSpan, columnSpan );
-    layoutItem->setAlignment( alignment );
+    if ( item == nullptr )
+        return;
 
-    const int index = itemCount(); // position and index doesn't match
+    if ( item->parent() == nullptr )
+        item->setParent( this );
 
-    setupLayoutItem( layoutItem, index );
-    insertItemInternal( layoutItem, -1 );
-    layoutItemInserted( layoutItem, index );
+    if ( item->parentItem() != this )
+        item->setParentItem( this );
+
+    qskSetItemActive( this, item, true );
+
+    // What about the focus tab chain - TODO ... ????
+    // check if item is already inserted ???
+
+    m_data->engine.insertItem(
+        item, row, column, rowSpan, columnSpan, alignment );
+
+    resetImplicitSize();
+    polish();
+
+}
+
+void QskGridBox::removeAt( int index )
+{
+    auto& engine = m_data->engine;
+
+    if ( auto item = engine.itemAt( index ) )
+        qskSetItemActive( this, item, false );
+
+    engine.removeAt( index );
+
+    resetImplicitSize();
+    polish();
+}
+
+void QskGridBox::removeItem( const QQuickItem* item )
+{
+    removeAt( indexOf( item ) );
+}
+
+void QskGridBox::clear( bool autoDelete )
+{
+    for ( int i = itemCount() - 1; i >= 0; i-- )
+    {
+        auto item = itemAtIndex( i );
+
+        removeAt( i );
+
+        if( item )
+        {
+            if( autoDelete && ( item->parent() == this ) )
+                delete item;
+            else
+                item->setParentItem( nullptr );
+        }
+    }
+}
+
+int QskGridBox::itemCount() const
+{
+    return m_data->engine.itemCount();
 }
 
 int QskGridBox::rowCount() const
 {
-    return engine().rowCount();
+    return m_data->engine.rowCount();
 }
 
 int QskGridBox::columnCount() const
 {
-    return engine().columnCount();
+    return m_data->engine.columnCount();
+}
+
+QQuickItem* QskGridBox::itemAtIndex( int index ) const
+{
+    return m_data->engine.itemAt( index );
+}
+
+int QskGridBox::indexOf( const QQuickItem* item ) const
+{
+    return m_data->engine.indexOf( item );
 }
 
 QQuickItem* QskGridBox::itemAt( int row, int column ) const
 {
-    if ( const auto layoutItem = engine().layoutItemAt( row, column ) )
-        return layoutItem->item();
-
-    return nullptr;
+    return m_data->engine.itemAt( row, column );
 }
 
 int QskGridBox::indexAt( int row, int column ) const
 {
-    return engine().indexAt( row, column );
+    return m_data->engine.indexAt( row, column );
 }
 
 int QskGridBox::rowOfIndex( int index ) const
 {
-    if ( auto layoutItem = engine().layoutItemAt( index ) )
-        return layoutItem->firstRow();
-
-    return -1;
+    return m_data->engine.rowOfIndex( index );
 }
 
 int QskGridBox::rowSpanOfIndex( int index ) const
 {
-    if ( auto layoutItem = engine().layoutItemAt( index ) )
-        return layoutItem->rowSpan();
-
-    return 0;
+    return m_data->engine.rowSpanOfIndex( index );
 }
 
 int QskGridBox::columnOfIndex( int index ) const
 {
-    if ( auto layoutItem = engine().layoutItemAt( index ) )
-        return layoutItem->firstColumn();
-
-    return -1;
+    return m_data->engine.columnOfIndex( index );
 }
 
 int QskGridBox::columnSpanOfIndex( int index ) const
 {
-    if ( auto layoutItem = engine().layoutItemAt( index ) )
-        return layoutItem->columnSpan();
-
-    return 0;
+    return m_data->engine.columnSpanOfIndex( index );
 }
 
-void QskGridBox::setupLayoutItem( QskLayoutItem* layoutItem, int index )
-{
-    Q_UNUSED( index )
-
-    auto& engine = this->engine();
-
-    m_data->isExpanding = ( layoutItem->lastColumn() >= engine.columnCount() ) ||
-        ( layoutItem->lastRow() >= engine.rowCount() );
-}
-
-void QskGridBox::layoutItemInserted( QskLayoutItem* layoutItem, int index )
-{
-    Q_UNUSED( index )
-
-    if ( m_data->isExpanding )
-    {
-        // the new item has extended the number of rows/columns and
-        // we need to adjust all items without fixed spanning
-
-        if ( m_data->unlimitedSpanned > 0 )
-            engine().adjustSpans( columnCount(), rowCount() );
-    }
-
-    if ( layoutItem->hasUnlimitedSpan() )
-    {
-        // the item itself might need to be adjusted
-
-        if ( layoutItem->hasUnlimitedSpan( Qt::Horizontal ) )
-        {
-            const int span = columnCount() - layoutItem->firstColumn();
-            layoutItem->setRowSpan( span, Qt::Horizontal );
-        }
-
-        if ( layoutItem->hasUnlimitedSpan( Qt::Vertical ) )
-        {
-            const int span = rowCount() - layoutItem->firstRow();
-            layoutItem->setRowSpan( span, Qt::Vertical );
-        }
-
-        m_data->unlimitedSpanned++;
-    }
-}
-
-void QskGridBox::layoutItemRemoved( QskLayoutItem* layoutItem, int index )
-{
-    Q_UNUSED( index )
-
-    if ( layoutItem->hasUnlimitedSpan() )
-        m_data->unlimitedSpanned--;
-
-    QskLayoutEngine& engine = this->engine();
-
-    // cleanup rows/columns
-
-    const QSize cells = engine.requiredCells();
-
-    const int numPendingColumns = engine.columnCount() - cells.width();
-    const int numPendingRows = engine.rowCount() - cells.height();
-
-    if ( numPendingColumns > 0 || numPendingRows > 0 )
-    {
-        if ( m_data->unlimitedSpanned > 0 )
-            engine.adjustSpans( cells.height(), cells.width() );
-
-        engine.removeRows( cells.width(), numPendingColumns, Qt::Horizontal );
-        engine.removeRows( cells.height(), numPendingRows, Qt::Vertical );
-    }
-}
-
-void QskGridBox::setSpacing( qreal spacing )
-{
-    setHorizontalSpacing( spacing );
-    setVerticalSpacing( spacing );
-}
-
-void QskGridBox::setHorizontalSpacing( qreal spacing )
+void QskGridBox::setSpacing( Qt::Orientations orientations, qreal spacing )
 {
     spacing = qMax( spacing, 0.0 );
 
-    if ( spacing != engine().spacing( Qt::Horizontal ) )
-    {
-        engine().setSpacing( spacing, Qt::Horizontal );
-        activate();
+    bool doUpdate = false;
 
-        Q_EMIT horizontalSpacingChanged();
+    auto& engine = m_data->engine;
+
+    for ( const auto o : { Qt::Horizontal, Qt::Vertical } )
+    {
+        if ( orientations & o )
+        {
+            if ( spacing != engine.spacing( o ) )
+            {
+                engine.setSpacing( o, spacing );
+                doUpdate = true;
+            }
+        }
+    }
+
+    if ( doUpdate )
+    {
+        resetImplicitSize();
+        polish();
     }
 }
 
-qreal QskGridBox::horizontalSpacing() const
+void QskGridBox::resetSpacing( Qt::Orientations orientations )
 {
-    return engine().spacing( Qt::Horizontal );
-}
-
-void QskGridBox::resetHorizontalSpacing()
-{
-    const qreal spacing = QskLayoutEngine::defaultSpacing( Qt::Horizontal );
-    setHorizontalSpacing( spacing );
-}
-
-void QskGridBox::setVerticalSpacing( qreal spacing )
-{
-    spacing = qMax( spacing, 0.0 );
-
-    if ( spacing != engine().spacing( Qt::Vertical ) )
+    for ( const auto o : { Qt::Horizontal, Qt::Vertical } )
     {
-        engine().setSpacing( spacing, Qt::Vertical );
-        activate();
-
-        Q_EMIT verticalSpacingChanged();
+        if ( orientations & o )
+            setSpacing( o, QskGridLayoutEngine::defaultSpacing( o ) );
     }
 }
 
-qreal QskGridBox::verticalSpacing() const
+qreal QskGridBox::spacing( Qt::Orientation orientation ) const
 {
-    return engine().spacing( Qt::Vertical );
-}
-
-void QskGridBox::resetVerticalSpacing()
-{
-    const qreal spacing = QskLayoutEngine::defaultSpacing( Qt::Vertical );
-    setVerticalSpacing( spacing );
+    return m_data->engine.spacing( orientation );
 }
 
 void QskGridBox::setRowSpacing( int row, qreal spacing )
 {
     spacing = qMax( spacing, 0.0 );
 
-    if ( spacing != engine().rowSpacing( row, Qt::Vertical ) )
+    auto& engine = m_data->engine;
+
+    if ( spacing != engine.spacingAt( Qt::Vertical, row ) )
     {
-        engine().setRowSpacing( row, spacing, Qt::Vertical );
-        activate();
+        engine.setSpacingAt( Qt::Vertical, row, spacing );
+        polish();
     }
 }
 
 qreal QskGridBox::rowSpacing( int row ) const
 {
-    return engine().rowSpacing( row, Qt::Vertical );
+    return m_data->engine.spacingAt( Qt::Vertical, row );
 }
 
 void QskGridBox::setColumnSpacing( int column, qreal spacing )
 {
     spacing = qMax( spacing, 0.0 );
 
-    if ( spacing != engine().rowSpacing( column, Qt::Horizontal ) )
+    auto& engine = m_data->engine;
+
+    if ( spacing != engine.spacingAt( Qt::Horizontal, column ) )
     {
-        engine().setRowSpacing( column, spacing, Qt::Horizontal );
-        activate();
+        engine.setSpacingAt( Qt::Horizontal, column, spacing );
+        polish();
     }
 }
 
 qreal QskGridBox::columnSpacing( int column ) const
 {
-    return engine().rowSpacing( column, Qt::Horizontal );
+    return m_data->engine.spacingAt( Qt::Horizontal, column );
 }
 
 void QskGridBox::setRowStretchFactor( int row, int stretch )
 {
-    if ( stretch != engine().rowStretchFactor( row, Qt::Vertical ) )
+    auto& engine = m_data->engine;
+
+    if ( stretch != engine.stretchFactorAt( Qt::Vertical, row ) )
     {
-        engine().setRowStretchFactor( row, stretch, Qt::Vertical );
-        activate();
+        engine.setStretchFactorAt( Qt::Vertical, row, stretch );
+        polish();
     }
 }
 
 int QskGridBox::rowStretchFactor( int row ) const
 {
-    return engine().rowStretchFactor( row, Qt::Vertical );
+    return m_data->engine.stretchFactorAt( Qt::Vertical, row );
 }
 
 void QskGridBox::setColumnStretchFactor( int column, int stretch )
 {
-    if ( stretch != engine().rowStretchFactor( column, Qt::Horizontal ) )
+    auto& engine = m_data->engine;
+
+    if ( stretch != engine.stretchFactorAt( Qt::Horizontal, column ) )
     {
-        engine().setRowStretchFactor( column, stretch, Qt::Horizontal );
-        activate();
+        engine.setStretchFactorAt( Qt::Horizontal, column, stretch );
+        polish();
     }
 }
 
 int QskGridBox::columnStretchFactor( int column ) const
 {
-    return engine().rowStretchFactor( column, Qt::Horizontal );
-}
-
-void QskGridBox::setRowMinimumHeight( int row, qreal height )
-{
-    setRowSizeHint( Qt::MinimumSize, row, height, Qt::Vertical );
-}
-
-qreal QskGridBox::rowMinimumHeight( int row ) const
-{
-    return engine().rowSizeHint( Qt::MinimumSize, row, Qt::Vertical );
-}
-
-void QskGridBox::setRowPreferredHeight( int row, qreal height )
-{
-    setRowSizeHint( Qt::PreferredSize, row, height, Qt::Vertical );
-}
-
-qreal QskGridBox::rowPreferredHeight( int row ) const
-{
-    return engine().rowSizeHint( Qt::PreferredSize, row, Qt::Vertical );
-}
-
-void QskGridBox::setRowMaximumHeight( int row, qreal height )
-{
-    setRowSizeHint( Qt::MaximumSize, row, height, Qt::Vertical );
-}
-
-qreal QskGridBox::rowMaximumHeight( int row ) const
-{
-    return engine().rowSizeHint( Qt::MaximumSize, row, Qt::Vertical );
+    return m_data->engine.stretchFactorAt( Qt::Horizontal, column );
 }
 
 void QskGridBox::setRowFixedHeight( int row, qreal height )
 {
-    setRowMinimumHeight( row, height );
-    setRowMaximumHeight( row, height );
-}
-
-void QskGridBox::setColumnMinimumWidth( int column, qreal width )
-{
-    setRowSizeHint( Qt::MinimumSize, column, width, Qt::Horizontal );
-}
-
-qreal QskGridBox::columnMinimumWidth( int column ) const
-{
-    return engine().rowSizeHint( Qt::MinimumSize, column, Qt::Horizontal );
-}
-
-void QskGridBox::setColumnPreferredWidth( int column, qreal width )
-{
-    setRowSizeHint( Qt::PreferredSize, column, width, Qt::Horizontal );
-}
-
-qreal QskGridBox::columnPreferredWidth( int column ) const
-{
-    return engine().rowSizeHint( Qt::PreferredSize, column, Qt::Horizontal );
-}
-
-void QskGridBox::setColumnMaximumWidth( int column, qreal width )
-{
-    setRowSizeHint( Qt::MaximumSize, column, width, Qt::Horizontal );
-}
-
-qreal QskGridBox::columnMaximumWidth( int column ) const
-{
-    return engine().rowSizeHint( Qt::MaximumSize, column, Qt::Horizontal );
+    setRowSizeHint( row, Qt::MinimumSize, height );
+    setRowSizeHint( row, Qt::MaximumSize, height );
 }
 
 void QskGridBox::setColumnFixedWidth( int column, qreal width )
 {
-    setColumnMinimumWidth( column, width );
-    setColumnMaximumWidth( column, width );
+    setColumnSizeHint( column, Qt::MinimumSize, width );
+    setColumnSizeHint( column, Qt::MaximumSize, width );
 }
 
 void QskGridBox::setRowAlignment( int row, Qt::Alignment alignment )
 {
-    if ( engine().rowAlignment( row, Qt::Vertical ) != alignment )
+    auto& engine = m_data->engine;
+
+    if ( engine.alignmentAt( Qt::Vertical, row ) != alignment )
     {
-        engine().setRowAlignment( row, alignment, Qt::Vertical );
-        activate();
+        engine.setAlignmentAt( Qt::Vertical, row, alignment );
+        polish();
     }
 }
 
 Qt::Alignment QskGridBox::rowAlignment( int row ) const
 {
-    return engine().rowAlignment( row, Qt::Vertical );
+    return m_data->engine.alignmentAt( Qt::Vertical, row );
 }
 
 void QskGridBox::setColumnAlignment( int column, Qt::Alignment alignment )
 {
-    if ( alignment != engine().rowAlignment( column, Qt::Horizontal ) )
+    auto& engine = m_data->engine;
+
+    if ( engine.alignmentAt( Qt::Horizontal, column ) != alignment )
     {
-        engine().setRowAlignment( column, alignment, Qt::Horizontal );
-        activate();
+        engine.setAlignmentAt( Qt::Horizontal, column, alignment );
+        polish();
     }
 }
 
 Qt::Alignment QskGridBox::columnAlignment( int column ) const
 {
-    return engine().rowAlignment( column, Qt::Horizontal );
+    return m_data->engine.alignmentAt( Qt::Horizontal, column );
 }
 
 void QskGridBox::setAlignment( const QQuickItem* item, Qt::Alignment alignment )
 {
-    QskLayoutItem* layoutItem = engine().layoutItemOf( item );
-    if ( layoutItem && layoutItem->alignment() != alignment )
+    auto& engine = m_data->engine;
+
+    if ( engine.alignmentOf( item ) != alignment )
     {
-        layoutItem->setAlignment( alignment );
-        activate();
+        engine.setAlignmentOf( item, alignment );
+        polish();
     }
 }
 
 Qt::Alignment QskGridBox::alignment( const QQuickItem* item ) const
 {
-    QskLayoutItem* layoutItem = engine().layoutItemOf( item );
-    if ( layoutItem )
-        return layoutItem->alignment();
-
-    return Qt::Alignment();
+    return m_data->engine.alignmentOf( item );
 }
 
 void QskGridBox::setRetainSizeWhenHidden( const QQuickItem* item, bool on )
 {
-    QskLayoutItem* layoutItem = engine().layoutItemOf( item );
-    if ( layoutItem && on != layoutItem->retainSizeWhenHidden() )
+    auto& engine = m_data->engine;
+
+    if ( engine.retainSizeWhenHiddenOf( item ) != on )
     {
-        layoutItem->setRetainSizeWhenHidden( on );
+        engine.setRetainSizeWhenHiddenOf( item, on );
         invalidate();
     }
 }
 
 bool QskGridBox::retainSizeWhenHidden( const QQuickItem* item ) const
 {
-    QskLayoutItem* layoutItem = engine().layoutItemOf( item );
-    if ( layoutItem )
-        return layoutItem->retainSizeWhenHidden();
-
-    return false;
+    return m_data->engine.retainSizeWhenHiddenOf( item );
 }
 
-void QskGridBox::setRowSizeHint(
-    Qt::SizeHint which, int row, qreal size, Qt::Orientation orientation )
+void QskGridBox::setRowSizeHint( int row, Qt::SizeHint which, qreal height )
 {
-    if ( size != engine().rowSizeHint( which, row, orientation ) )
+    auto& engine = m_data->engine;
+
+    if ( height != engine.rowSizeHint( row, which ) )
     {
-        engine().setRowSizeHint( which, row, size, orientation );
-        activate();
+        engine.setRowSizeHint( row, which, height );
+        polish();
     }
+}
+
+qreal QskGridBox::rowSizeHint( int row, Qt::SizeHint which ) const
+{
+    return m_data->engine.rowSizeHint( row, which );
+}
+
+void QskGridBox::setColumnSizeHint( int column, Qt::SizeHint which, qreal width )
+{
+    auto& engine = m_data->engine;
+
+    if ( width != engine.columnSizeHint( column, which ) )
+    {
+        engine.setColumnSizeHint( column, which, width );
+        polish();
+    }
+}
+
+qreal QskGridBox::columnSizeHint( int column, Qt::SizeHint which ) const
+{
+    return m_data->engine.columnSizeHint( column, which );
+}
+
+void QskGridBox::invalidate()
+{
+    m_data->engine.invalidate();
+
+    resetImplicitSize();
+    polish();
+}
+
+void QskGridBox::updateLayout()
+{
+    m_data->engine.setGeometries( layoutRect() );
+}
+
+QSizeF QskGridBox::contentsSizeHint() const
+{
+    if ( itemCount() == 0 )
+        return QSizeF( 0, 0 );
+
+    return m_data->engine.sizeHint( Qt::PreferredSize, QSizeF() );
+}
+
+qreal QskGridBox::heightForWidth( qreal width ) const
+{
+    auto constrainedHeight =
+        [this]( QskLayoutConstraint::Type, const QskControl*, qreal width )
+        {
+            return m_data->engine.heightForWidth( width );
+        };
+
+    return QskLayoutConstraint::constrainedMetric(
+        QskLayoutConstraint::HeightForWidth, this, width, constrainedHeight );
+}
+
+qreal QskGridBox::widthForHeight( qreal height ) const
+{
+    auto constrainedWidth =
+        [this]( QskLayoutConstraint::Type, const QskControl*, qreal height )
+        {
+            return m_data->engine.widthForHeight( height );
+        };
+
+    return QskLayoutConstraint::constrainedMetric(
+        QskLayoutConstraint::WidthForHeight, this, height, constrainedWidth );
+}
+
+void QskGridBox::geometryChangeEvent( QskGeometryChangeEvent* event )
+{
+    Inherited::geometryChangeEvent( event );
+
+    if ( event->isResized() )
+        polish();
+}
+
+void QskGridBox::itemChange( ItemChange change, const ItemChangeData& value )
+{
+    Inherited::itemChange( change, value );
+
+    switch ( change )
+    {
+        case ItemChildRemovedChange:
+        {
+            removeItem( value.item );
+            break;
+        }
+        case QQuickItem::ItemVisibleHasChanged:
+        {
+            if ( value.boolValue )
+                polish();
+            break;
+        }
+        case QQuickItem::ItemSceneChange:
+        {
+            if ( value.window )
+                polish();
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+bool QskGridBox::event( QEvent* event )
+{
+    switch ( event->type() )
+    {
+        case QEvent::LayoutRequest:
+        {
+            invalidate();
+            break;
+        }
+        case QEvent::LayoutDirectionChange:
+        {
+            m_data->engine.setVisualDirection(
+                layoutMirroring() ? Qt::RightToLeft : Qt::LeftToRight );
+
+            polish();
+            break;
+        }
+        case QEvent::ContentsRectChange:
+        {
+            polish();
+            break;
+        }
+        default:
+            break;
+    }
+
+    return Inherited::event( event );
 }
 
 #include "moc_QskGridBox.cpp"

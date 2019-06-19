@@ -160,9 +160,6 @@ void QskDialogButtonBox::rearrangeButtons()
 
     auto layoutBox = m_data->layoutBox;
 
-    const bool isActive = layoutBox->isActive();
-    layoutBox->setActive( false );
-
     layoutBox->clear();
 
     const int* currentLayout = effectiveSkin()->dialogButtonLayout( orientation() );
@@ -225,8 +222,6 @@ void QskDialogButtonBox::rearrangeButtons()
 
     if ( m_data->centeredButtons )
         layoutBox->addStretch( 1 );
-
-    layoutBox->setActive( isActive );
 
     // reorganizing the tab chain ???
 }
@@ -472,7 +467,10 @@ QskDialog::Action QskDialogButtonBox::clickedAction() const
 bool QskDialogButtonBox::event( QEvent* event )
 {
     if ( event->type() == QEvent::LayoutRequest )
-        resetImplicitSize();
+    {
+        if ( !m_data->dirtyLayout )
+            resetImplicitSize();
+    }
 
     return Inherited::event( event );
 }

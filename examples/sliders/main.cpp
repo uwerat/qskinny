@@ -131,7 +131,7 @@ class SliderBox : public QskLinearBox
         customSlider->setStepSize( 10 );
         customSlider->setPageSize( 10 );
 
-        for ( int i = 0; i < itemCount(); i++ )
+        for ( int i = 0; i < entryCount(); i++ )
         {
             if ( auto slider = qobject_cast< QskSlider* >( itemAtIndex( i ) ) )
             {
@@ -151,7 +151,7 @@ class SliderBox : public QskLinearBox
     {
         setOrientation( inverted( orientation() ) );
 
-        for ( int i = 0; i < itemCount(); i++ )
+        for ( int i = 0; i < entryCount(); i++ )
         {
             if ( auto slider = qobject_cast< QskSlider* >( itemAtIndex( i ) ) )
             {
@@ -159,7 +159,7 @@ class SliderBox : public QskLinearBox
 
                 slider->setOrientation( orientation );
 
-                if ( i >= itemCount() - 1 )
+                if ( i >= entryCount() - 1 )
                 {
                     // we didn't implement the vertical mode of the heavily
                     // customized slider yet.

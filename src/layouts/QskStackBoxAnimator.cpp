@@ -4,9 +4,9 @@
  *****************************************************************************/
 
 #include "QskStackBoxAnimator.h"
-#include "QskLayoutEngine.h"
-#include "QskLayoutItem.h"
 #include "QskStackBox.h"
+#include "QskEvent.h"
+#include "QskQuick.h"
 
 static Qsk::Direction qskDirection(
     Qt::Orientation orientation, int from, int to, int itemCount )
@@ -91,17 +91,19 @@ QskStackBox* QskStackBoxAnimator::stackBox() const
     return static_cast< QskStackBox* >( parent() );
 }
 
-QskLayoutItem* QskStackBoxAnimator::layoutItemAt( int index ) const
+QQuickItem* QskStackBoxAnimator::itemAt( int index ) const
 {
-    return stackBox()->engine().layoutItemAt(
+    return stackBox()->itemAtIndex(
         ( index == 0 ) ? m_startIndex : m_endIndex );
 }
 
 QskStackBoxAnimator1::QskStackBoxAnimator1( QskStackBox* parent )
     : QskStackBoxAnimator( parent )
     , m_orientation( Qt::Horizontal )
+    , m_isDirty( false )
     , m_hasClip( false )
 {
+    // catching geometryChanges to know about resizing
 }
 
 QskStackBoxAnimator1::~QskStackBoxAnimator1()
@@ -131,102 +133,96 @@ void QskStackBoxAnimator1::setup()
     m_direction = qskDirection( m_orientation,
         startIndex(), endIndex(), stackBox->itemCount() );
 
-    for ( int i = 0; i < 2; i++ )
-    {
-        QskLayoutItem* layoutItem = layoutItemAt( i );
-        if ( layoutItem )
-        {
-            QQuickItem* item = layoutItem->item();
-            const Qt::Orientation orientation = this->orientation();
-
-            m_itemOffset[ i ] =
-                ( orientation == Qt::Horizontal ) ? item->x() : item->y();
-
-            if ( i == 1 )
-            {
-                // now move the new item outside of
-                // the visible area and then "show" it
-
-                if ( orientation == Qt::Horizontal )
-                    item->setX( stackBox->width() );
-                else
-                    item->setY( stackBox->height() );
-
-                item->setVisible( true );
-            }
-
-            // we don't want the engine() to interfere, when
-            // controlling the item by the animation
-
-            layoutItem->setUpdateMode( QskLayoutItem::UpdateNone );
-        }
-    }
-
     m_hasClip = stackBox->clip();
     if ( !m_hasClip )
         stackBox->setClip( true );
+
+    stackBox->installEventFilter( this );
+    m_isDirty = true;
 }
 
 void QskStackBoxAnimator1::advance( qreal value )
 {
     auto stackBox = this->stackBox();
+    const bool isHorizontal = m_orientation == Qt::Horizontal;
 
     for ( int i = 0; i < 2; i++ )
     {
-        QskLayoutItem* layoutItem = layoutItemAt( i );
-        if ( layoutItem == nullptr )
-            continue;
-
-        if ( layoutItem->isGeometryDirty() )
+        if ( auto item = itemAt( i ) )
         {
-            // the layout tried to replace the item, but we
-            // want to have control over the position. But we
-            // also lost resizing - that's why we have to do it here
-            // manually
+            QRectF rect = qskItemGeometry( item );
 
-            stackBox->adjustItemAt( ( i == 0 ) ? startIndex() : endIndex() );
+            if ( m_isDirty )
+            {
+                const int index = ( i == 0 ) ? startIndex() : endIndex();
+                rect = stackBox->geometryForItemAt( index );
 
-            QQuickItem* item = layoutItem->item();
-            m_itemOffset[ i ] =
-                ( m_orientation == Qt::Horizontal ) ? item->x() : item->y();
-        }
+                m_itemOffset[ i ] = isHorizontal ? rect.x() : rect.y();
+            }
 
-        QQuickItem* item = layoutItem->item();
+            qreal x, y;
 
-        if ( m_orientation == Qt::Horizontal )
-        {
-            const qreal off = stackBox->width() * ( value - i );
+            if ( isHorizontal )
+            {
+                qreal off = stackBox->width() * ( value - i );
+                if ( m_direction == Qsk::LeftToRight )
+                    off = -off;
 
-            if ( m_direction == Qsk::LeftToRight )
-                item->setX( m_itemOffset[ i ] - off );
+                x = m_itemOffset[ i ] + off;
+                y = rect.y();
+            }
             else
-                item->setX( m_itemOffset[ i ] + off );
-        }
-        else
-        {
-            const qreal off = stackBox->height() * ( value - i );
+            {
+                qreal off = stackBox->height() * ( value - i );
+                if ( m_direction == Qsk::BottomToTop )
+                    off = -off;
 
-            if ( m_direction == Qsk::TopToBottom )
-                item->setY( m_itemOffset[ i ] + off );
-            else
-                item->setY( m_itemOffset[ i ] - off );
+                x = rect.x();
+                y = m_itemOffset[ i ] + off;
+            }
+
+            qskSetItemGeometry( item, x, y, rect.width(), rect.height() );
+
+            if ( !item->isVisible() )
+                item->setVisible( true );
         }
     }
+
+    m_isDirty = false;
 }
 
 void QskStackBoxAnimator1::done()
 {
     for ( int i = 0; i < 2; i++ )
     {
-        if ( QskLayoutItem* layoutItem = layoutItemAt( i ) )
+        if ( auto item = itemAt( i ) )
         {
-            layoutItem->setUpdateMode( QskLayoutItem::UpdateWhenVisible );
-            layoutItem->item()->setVisible( i == 1 );
+            item->removeEventFilter( this );
+            item->setVisible( i == 1 );
         }
     }
 
     if ( !m_hasClip )
         stackBox()->setClip( false );
+}
+
+bool QskStackBoxAnimator1::eventFilter( QObject* object, QEvent* event )
+{
+    if ( !m_isDirty && object == stackBox() )
+    {
+        switch( static_cast< int >( event->type() ) )
+        {
+            case QskEvent::GeometryChange:
+            case QskEvent::ContentsRectChange:
+            case QskEvent::LayoutRequest:
+            {
+                m_isDirty = true;
+                break;
+            }
+        }
+    }
+
+    return QObject::eventFilter( object, event );
 }
 
 QskStackBoxAnimator3::QskStackBoxAnimator3( QskStackBox* parent )
@@ -240,33 +236,30 @@ QskStackBoxAnimator3::~QskStackBoxAnimator3()
 
 void QskStackBoxAnimator3::setup()
 {
-    QskLayoutItem* layoutItem = layoutItemAt( 1 );
-    if ( layoutItem )
+    if ( auto item = itemAt( 1 ) )
     {
-        layoutItem->item()->setOpacity( 0.0 );
-        layoutItem->item()->setVisible( true );
+        item->setOpacity( 0.0 );
+        item->setVisible( true );
     }
 }
 
 void QskStackBoxAnimator3::advance( qreal value )
 {
-    QskLayoutItem* layoutItem1 = layoutItemAt( 0 );
-    if ( layoutItem1 )
-        layoutItem1->item()->setOpacity( 1.0 - value );
+    if ( auto item1 = itemAt( 0 ) )
+        item1->setOpacity( 1.0 - value );
 
-    QskLayoutItem* layoutItem2 = layoutItemAt( 1 );
-    if ( layoutItem2 )
-        layoutItem2->item()->setOpacity( value );
+    if ( auto item2 = itemAt( 1 ) )
+        item2->setOpacity( value );
 }
 
 void QskStackBoxAnimator3::done()
 {
     for ( int i = 0; i < 2; i++ )
     {
-        if ( QskLayoutItem* layoutItem = layoutItemAt( i ) )
+        if ( auto item = itemAt( i ) )
         {
-            layoutItem->item()->setOpacity( 1.0 );
-            layoutItem->item()->setVisible( i == 1 ); // not here !!
+            item->setOpacity( 1.0 );
+            item->setVisible( i == 1 ); // not here !!
         }
     }
 }

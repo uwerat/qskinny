@@ -20,7 +20,7 @@ class QSK_EXPORT QskStackBox : public QskIndexedLayoutBox
     Q_PROPERTY( QQuickItem* currentItem READ currentItem
         WRITE setCurrentItem NOTIFY currentItemChanged )
 
-    using Inherited = QskIndexedLayoutBox;
+    using Inherited = QskBox;
 
   public:
     explicit QskStackBox( QQuickItem* parent = nullptr );
@@ -28,36 +28,74 @@ class QSK_EXPORT QskStackBox : public QskIndexedLayoutBox
 
     ~QskStackBox() override;
 
+    bool isEmpty() const;
+
+    int itemCount() const;
+    QQuickItem* itemAtIndex( int index ) const;
+    int indexOf( const QQuickItem* ) const;
+
+    void addItem(
+        QQuickItem*, Qt::Alignment alignment = Qt::Alignment() );
+
+    void insertItem(
+        int index, QQuickItem*, Qt::Alignment alignment = Qt::Alignment() );
+
+    void removeItem( const QQuickItem* );
+    void removeAt( int index );
+
     QQuickItem* currentItem() const;
     int currentIndex() const;
 
-    qreal heightForWidth( qreal width ) const override;
-    qreal widthForHeight( qreal height ) const override;
+    void setDefaultAlignment( Qt::Alignment );
+    Qt::Alignment defaultAlignment() const;
+
+    void setAlignmentAt( int index, Qt::Alignment );
+    Qt::Alignment alignmentAt( int index ) const;
+
+    void setAlignment( const QQuickItem*, Qt::Alignment );
+    Qt::Alignment alignment( const QQuickItem* ) const;
 
     void setAnimator( QskStackBoxAnimator* );
     const QskStackBoxAnimator* animator() const;
     QskStackBoxAnimator* animator();
 
+    QSizeF contentsSizeHint() const override;
+    qreal heightForWidth( qreal width ) const override;
+    qreal widthForHeight( qreal height ) const override;
+
+    QRectF geometryForItemAt( int index ) const;
+
+  Q_SIGNALS:
+    void defaultAlignmentChanged( Qt::Alignment );
+
   public Q_SLOTS:
     void setCurrentIndex( int index );
     void setCurrentItem( const QQuickItem* );
+    void clear( bool autoDelete = false );
 
   Q_SIGNALS:
     void currentIndexChanged( int index );
     void currentItemChanged( QQuickItem* );
 
   protected:
+    bool event( QEvent* ) override;
+    void updateLayout() override;
+
+    void autoAddItem( QQuickItem* ) override final;
+    void autoRemoveItem( QQuickItem* ) override final;
+
     QskStackBoxAnimator* effectiveAnimator();
-    QSizeF layoutItemsSizeHint() const override;
 
   private:
-    friend class QskStackBoxAnimator;
-
-    void layoutItemInserted( QskLayoutItem*, int index ) override;
-    void layoutItemRemoved( QskLayoutItem*, int index ) override;
+    void removeItemInternal( int index, bool autoDelete );
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
+
+inline bool QskStackBox::isEmpty() const
+{
+    return itemCount() <= 0;
+}
 
 #endif

@@ -233,25 +233,23 @@ SOURCES += \
 
 HEADERS += \
     layouts/QskGridBox.h \
+    layouts/QskGridLayoutEngine.h \
     layouts/QskIndexedLayoutBox.h \
-    layouts/QskLayoutEngine.h \
-    layouts/QskLayoutBox.h \
     layouts/QskLayoutConstraint.h \
     layouts/QskLayoutHint.h \
-    layouts/QskLayoutItem.h \
     layouts/QskLinearBox.h \
+    layouts/QskLinearLayoutEngine.h \
     layouts/QskStackBoxAnimator.h \
     layouts/QskStackBox.h
 
 SOURCES += \
     layouts/QskGridBox.cpp \
+    layouts/QskGridLayoutEngine.cpp \
     layouts/QskIndexedLayoutBox.cpp \
-    layouts/QskLayoutBox.cpp \
     layouts/QskLayoutConstraint.cpp \
     layouts/QskLayoutHint.cpp \
-    layouts/QskLayoutEngine.cpp \
-    layouts/QskLayoutItem.cpp \
     layouts/QskLinearBox.cpp \
+    layouts/QskLinearLayoutEngine.cpp \
     layouts/QskStackBoxAnimator.cpp \
     layouts/QskStackBox.cpp
 

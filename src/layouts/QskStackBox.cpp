@@ -4,12 +4,12 @@
  *****************************************************************************/
 
 #include "QskStackBox.h"
-#include "QskLayoutConstraint.h"
-#include "QskLayoutEngine.h"
-#include "QskLayoutItem.h"
 #include "QskStackBoxAnimator.h"
+#include "QskLayoutConstraint.h"
+#include "QskEvent.h"
+#include "QskQuick.h"
 
-#include <qpointer.h>
+#include <QPointer>
 
 static qreal qskConstrainedValue( QskLayoutConstraint::Type type,
     const QskControl* control, qreal widthOrHeight )
@@ -35,16 +35,35 @@ static qreal qskConstrainedValue( QskLayoutConstraint::Type type,
     return constrainedValue;
 }
 
+namespace
+{
+    class ItemInfo
+    {
+      public:
+        inline ItemInfo()
+            : item( nullptr )
+        {
+        }
+
+        inline ItemInfo( Qt::Alignment alignment, QQuickItem* item )
+            : alignment( alignment )
+            , item( item )
+        {
+        }
+
+        Qt::Alignment alignment;
+        QQuickItem* item;
+    };
+}
+
 class QskStackBox::PrivateData
 {
   public:
-    PrivateData()
-        : currentIndex( -1 )
-    {
-    }
-
-    int currentIndex;
+    QVector< ItemInfo > itemInfos;
     QPointer< QskStackBoxAnimator > animator;
+
+    int currentIndex = -1;
+    Qt::Alignment defaultAlignment = Qt::AlignLeft | Qt::AlignVCenter;
 };
 
 QskStackBox::QskStackBox( QQuickItem* parent )
@@ -53,7 +72,7 @@ QskStackBox::QskStackBox( QQuickItem* parent )
 }
 
 QskStackBox::QskStackBox( bool autoAddChildren, QQuickItem* parent )
-    : Inherited( parent )
+    : QskIndexedLayoutBox( parent )
     , m_data( new PrivateData() )
 {
     setAutoAddChildren( autoAddChildren );
@@ -61,6 +80,22 @@ QskStackBox::QskStackBox( bool autoAddChildren, QQuickItem* parent )
 
 QskStackBox::~QskStackBox()
 {
+}
+
+void QskStackBox::setDefaultAlignment( Qt::Alignment alignment )
+{
+    if ( alignment != m_data->defaultAlignment )
+    {
+        m_data->defaultAlignment = alignment;
+        Q_EMIT defaultAlignmentChanged( alignment );
+
+        polish();
+    }
+}
+
+Qt::Alignment QskStackBox::defaultAlignment() const
+{
+    return m_data->defaultAlignment;
 }
 
 void QskStackBox::setAnimator( QskStackBoxAnimator* animator )
@@ -103,6 +138,33 @@ QskStackBoxAnimator* QskStackBox::effectiveAnimator()
     return nullptr;
 }
 
+int QskStackBox::itemCount() const
+{
+    return m_data->itemInfos.count();
+}
+
+QQuickItem* QskStackBox::itemAtIndex( int index ) const
+{
+    if ( index >= 0 && index < m_data->itemInfos.count() )
+        return m_data->itemInfos[ index ].item;
+
+    return nullptr;
+}
+
+int QskStackBox::indexOf( const QQuickItem* item ) const
+{
+    if ( item && ( item->parentItem() != this ) )
+    {
+        for ( int i = 0; i < m_data->itemInfos.count(); i++ )
+        {
+            if ( item == m_data->itemInfos[i].item )
+                return i;
+        }
+    }
+
+    return -1;
+}
+
 QQuickItem* QskStackBox::currentItem() const
 {
     return itemAtIndex( m_data->currentIndex );
@@ -111,44 +173,6 @@ QQuickItem* QskStackBox::currentItem() const
 int QskStackBox::currentIndex() const
 {
     return m_data->currentIndex;
-}
-
-void QskStackBox::layoutItemRemoved( QskLayoutItem*, int index )
-{
-    if ( index == m_data->currentIndex )
-    {
-        int newIndex = m_data->currentIndex;
-        if ( newIndex == itemCount() )
-            newIndex--;
-
-        m_data->currentIndex = -1;
-
-        if ( newIndex >= 0 )
-            setCurrentIndex( index );
-    }
-    else if ( index < m_data->currentIndex )
-    {
-        m_data->currentIndex--;
-        // currentIndexChanged ???
-    }
-
-    auto& engine = this->engine();
-    if ( engine.itemCount() > 0 && engine.itemAt( 0, 0 ) == nullptr )
-    {
-        /*
-            Using QGridLayoutEngine for a stack layout is actually
-            not a good ideas. Until we have a new implementation,
-            we need to work around situations, where the layout does
-            not work properly with having several items in the
-            same cell.
-            In this particular situation we need to fix, that we lost
-            the item from engine.q_grid[0].
-            Calling transpose has this side effect.
-
-         */
-        engine.transpose();
-        engine.transpose(); // reverting the call before
-    }
 }
 
 void QskStackBox::setCurrentIndex( int index )
@@ -169,11 +193,6 @@ void QskStackBox::setCurrentIndex( int index )
 
     if ( window() && isVisible() && isInitiallyPainted() && animator )
     {
-        // When being hidden, the geometry is not updated.
-        // So we do it now.
-
-        adjustItemAt( index );
-
         // start the animation
         animator->setStartIndex( m_data->currentIndex );
         animator->setEndIndex( index );
@@ -201,26 +220,229 @@ void QskStackBox::setCurrentItem( const QQuickItem* item )
     setCurrentIndex( indexOf( item ) );
 }
 
-QSizeF QskStackBox::layoutItemsSizeHint() const
+void QskStackBox::addItem( QQuickItem* item, Qt::Alignment alignment )
 {
-    qreal width = -1;
-    qreal height = -1;
+    insertItem( -1, item, alignment );
+}
 
-    QSizeF constraint( -1, -1 );
-    Qt::Orientations constraintOrientation = 0;
+void QskStackBox::insertItem(
+    int index, QQuickItem* item, Qt::Alignment alignment )
+{
+    if ( item == nullptr )
+        return;
 
-    const auto& engine = this->engine();
-    for ( int i = 0; i < engine.itemCount(); i++ )
+    reparentItem( item );
+
+    if ( qskIsTransparentForPositioner( item ) )
     {
-        const auto layoutItem = engine.layoutItemAt( i );
+        // giving a warning, or ignoring the insert ???
+        qskSetTransparentForPositioner( item, false );
+    }
 
-        if ( layoutItem->hasDynamicConstraint() )
+    const bool doAppend = ( index < 0 ) || ( index >= itemCount() );
+
+    if ( item->parentItem() == this )
+    {
+        const int oldIndex = indexOf( item );
+        if ( oldIndex >= 0 )
         {
-            constraintOrientation |= layoutItem->dynamicConstraintOrientation();
+            // the item had been inserted before
+
+            if ( ( index == oldIndex ) || ( doAppend && ( oldIndex == itemCount() - 1 ) ) )
+            {
+                // already in place
+
+                auto& itemInfo = m_data->itemInfos[oldIndex];
+
+                if ( alignment != itemInfo.alignment )
+                {
+                    itemInfo.alignment = alignment;
+                    polish();
+                }
+
+                return;
+            }
+
+            m_data->itemInfos.removeAt( oldIndex );
+        }
+    }
+
+    if ( doAppend )
+        index = itemCount();
+
+    m_data->itemInfos.insert( index, { alignment, item } );
+
+    const int oldCurrentIndex = m_data->currentIndex;
+
+    if ( m_data->itemInfos.count() == 1 )
+    {
+        m_data->currentIndex = 0;
+        item->setVisible( true );
+    }
+    else
+    {
+        item->setVisible( false );
+
+        if ( index <= m_data->currentIndex )
+            m_data->currentIndex++;
+    }
+
+    if ( oldCurrentIndex != m_data->currentIndex )
+        Q_EMIT currentIndexChanged( m_data->currentIndex );
+
+    resetImplicitSize();
+    polish();
+}
+
+void QskStackBox::removeAt( int index )
+{
+    removeItemInternal( index, false );
+}
+
+void QskStackBox::removeItemInternal( int index, bool unparent )
+{
+    if ( index < 0 || index >= m_data->itemInfos.count() )
+        return;
+
+    if ( !unparent )
+    {
+        if ( auto item = m_data->itemInfos[ index ].item )
+        {
+            if ( item->parentItem() == this )
+                item->setParentItem( nullptr );
+        }
+    }
+
+    m_data->itemInfos.removeAt( index );
+
+    if ( index <= m_data->currentIndex )
+        Q_EMIT currentIndexChanged( --m_data->currentIndex );
+
+    resetImplicitSize();
+    polish();
+}
+
+void QskStackBox::removeItem( const QQuickItem* item )
+{
+    removeAt( indexOf( item ) );
+}
+
+void QskStackBox::autoAddItem( QQuickItem* item )
+{
+    removeAt( indexOf( item ) );
+}
+
+void QskStackBox::autoRemoveItem( QQuickItem* item )
+{
+    removeItemInternal( indexOf( item ), false );
+}
+
+void QskStackBox::clear( bool autoDelete )
+{
+    for ( const auto& itemInfo : qskAsConst( m_data->itemInfos ) )
+    {
+        auto item = itemInfo.item;
+
+        if( autoDelete && ( item->parent() == this ) )
+        {
+            delete item;
         }
         else
         {
-            const QSizeF hint = layoutItem->sizeHint( Qt::PreferredSize, constraint );
+            item->setParentItem( nullptr );
+        }
+    }
+
+    m_data->itemInfos.clear();
+
+    if ( m_data->currentIndex >= 0 )
+    {
+        m_data->currentIndex = -1;
+        Q_EMIT currentIndexChanged( m_data->currentIndex );
+    }
+}
+
+void QskStackBox::setAlignment( const QQuickItem* item, Qt::Alignment alignment )
+{
+    setAlignmentAt( indexOf( item ), alignment );
+}
+
+Qt::Alignment QskStackBox::alignment( const QQuickItem* item ) const
+{
+    return alignmentAt( indexOf( item ) );
+}
+
+void QskStackBox::setAlignmentAt( int index, Qt::Alignment alignment )
+{
+    if ( index < 0 || index >= m_data->itemInfos.count() )
+        return;
+
+    m_data->itemInfos[ index ].alignment = alignment;
+
+    if ( index == m_data->currentIndex )
+        polish();
+}
+
+Qt::Alignment QskStackBox::alignmentAt( int index ) const
+{
+    if ( index >= 0 && index < m_data->itemInfos.count() )
+        return m_data->itemInfos[ index ].alignment;
+
+    return Qt::Alignment();
+}
+
+QRectF QskStackBox::geometryForItemAt( int index ) const
+{
+    const auto r = layoutRect();
+
+    if ( index >= 0 && index < m_data->itemInfos.count() )
+    {
+        const auto& info = m_data->itemInfos[ index ];
+
+        const auto align = info.alignment ? info.alignment : m_data->defaultAlignment;
+        return QskLayoutConstraint::itemRect( info.item, r, align );
+    }
+
+    return QRectF( r.x(), r.y(), 0.0, 0.0 );
+}
+
+void QskStackBox::updateLayout()
+{
+    const auto idx = m_data->currentIndex;
+
+    if ( idx >= 0 )
+    {
+        const auto rect = geometryForItemAt( idx );
+        qskSetItemGeometry( m_data->itemInfos[ idx ].item, rect );
+    }
+}
+
+QSizeF QskStackBox::contentsSizeHint() const
+{
+#if 1
+    if ( itemCount() == 0 )
+        return QSizeF( 0, 0 );
+#endif
+
+    qreal width = -1;
+    qreal height = -1;
+
+    using namespace QskLayoutConstraint;
+
+    int constraintTypes = Unconstrained;
+
+    for ( const auto& itemInfo : qskAsConst( m_data->itemInfos ) )
+    {
+        const auto item = itemInfo.item;
+
+        const auto type = constraintType( item );
+        if ( type != Unconstrained )
+        {
+            constraintTypes |= type;
+        }
+        else
+        {
+            const QSizeF hint = effectiveConstraint( item, Qt::PreferredSize );
 
             if ( hint.width() >= width )
                 width = hint.width();
@@ -232,40 +454,39 @@ QSizeF QskStackBox::layoutItemsSizeHint() const
 
 #if 1
     // does this work ???
-    if ( constraintOrientation & Qt::Horizontal )
+
+    if ( constraintTypes & WidthForHeight )
     {
-        constraint.setWidth( -1 );
-        constraint.setHeight( height );
+        const QSizeF constraint( -1, height );
 
-        for ( int i = 0; i < engine.itemCount(); i++ )
+        for ( const auto& itemInfo : qskAsConst( m_data->itemInfos ) )
         {
-            const auto layoutItem = engine.layoutItemAt( i );
+            const auto item = itemInfo.item;
 
-            if ( layoutItem->hasDynamicConstraint() &&
-                layoutItem->dynamicConstraintOrientation() == Qt::Horizontal )
+            if ( constraintType( item ) == WidthForHeight )
             {
-                const QSizeF hint = layoutItem->sizeHint( Qt::PreferredSize, constraint );
-                if ( hint.width() > width )
-                    width = hint.width();
+                const QSizeF hint = QskLayoutConstraint::sizeHint(
+                    item, Qt::PreferredSize, constraint );
+
+                width = qMax( width, hint.width() );
             }
         }
     }
 
-    if ( constraintOrientation & Qt::Vertical )
+    if ( constraintTypes & HeightForWidth )
     {
-        constraint.setWidth( width );
-        constraint.setHeight( -1 );
+        const QSizeF constraint( width, -1 );
 
-        for ( int i = 0; i < engine.itemCount(); i++ )
+        for ( const auto& itemInfo : qskAsConst( m_data->itemInfos ) )
         {
-            const auto layoutItem = engine.layoutItemAt( i );
+            const auto item = itemInfo.item;
 
-            if ( layoutItem->hasDynamicConstraint() &&
-                layoutItem->dynamicConstraintOrientation() == Qt::Vertical )
+            if ( constraintType( item ) == HeightForWidth )
             {
-                const QSizeF hint = layoutItem->sizeHint( Qt::PreferredSize, constraint );
-                if ( hint.height() > height )
-                    height = hint.height();
+                const QSizeF hint = QskLayoutConstraint::sizeHint(
+                    item, Qt::PreferredSize, constraint );
+
+                height = qMax( height, hint.height() );
             }
         }
     }
@@ -286,39 +507,25 @@ qreal QskStackBox::widthForHeight( qreal height ) const
         QskLayoutConstraint::WidthForHeight, this, height, qskConstrainedValue );
 }
 
-void QskStackBox::layoutItemInserted( QskLayoutItem* layoutItem, int index )
+bool QskStackBox::event( QEvent* event )
 {
-    Q_UNUSED( index )
-
-    QQuickItem* item = layoutItem->item();
-    if ( item == nullptr )
-        return;
-
-#if 1
-    /*
-       In general QGridLayoutEngine supports having multiple entries
-       in one cell, but well ...
-       So we have to go away from using it and doing the simple use case of
-       a stack layout manually. TODO ...
-
-       One problem we ran into is, that a cell is considered being hidden,
-       when the first entry is ignored. So for the moment we simply set the
-       retainSizeWhenHidden flag, with the cost of having geometry updates
-       for invisible updates.
-     */
-    layoutItem->setRetainSizeWhenHidden( true );
-#endif
-    if ( itemCount() == 1 )
+    switch ( static_cast< int >( event->type() ) )
     {
-        m_data->currentIndex = 0;
-        item->setVisible( true );
+        case QEvent::LayoutRequest:
+        {
+            resetImplicitSize();
+            polish();
+            break;
+        }
+        case QEvent::ContentsRectChange:
+        case QskEvent::GeometryChange:
+        {
+            polish();
+            break;
+        }
+    }
 
-        Q_EMIT currentIndexChanged( m_data->currentIndex );
-    }
-    else
-    {
-        item->setVisible( false );
-    }
+    return Inherited::event( event );
 }
 
 #include "moc_QskStackBox.cpp"

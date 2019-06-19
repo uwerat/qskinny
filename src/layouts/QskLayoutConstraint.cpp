@@ -103,10 +103,10 @@ QskLayoutConstraint::Type QskLayoutConstraint::constraintType( const QQuickItem*
     Type constraintType = Unconstrained;
 
     if ( auto control = qskControlCast( item ) )
-    {    
+    {
         const auto policy = control->sizePolicy();
         if ( policy.horizontalPolicy() == QskSizePolicy::Constrained )
-        {    
+        {
             constraintType = WidthForHeight;
         }
         else if ( policy.verticalPolicy() == QskSizePolicy::Constrained )
@@ -125,7 +125,7 @@ QskLayoutConstraint::Type QskLayoutConstraint::constraintType( const QQuickItem*
             constraintType = HeightForWidth;
         }
     }
-    
+
     return constraintType;
 }
 
@@ -366,7 +366,7 @@ qreal QskLayoutConstraint::sizeHint( const QQuickItem* item,
 QSizeF QskLayoutConstraint::sizeHint( const QQuickItem* item,
     Qt::SizeHint whichHint, const QSizeF& constraint )
 {
-    if ( item == nullptr ||  whichHint < Qt::MinimumSize || whichHint > Qt::MaximumSize )
+    if ( item == nullptr || whichHint < Qt::MinimumSize || whichHint > Qt::MaximumSize )
         return QSizeF( 0, 0 );
 
     QSizeF hint( 0, 0 );
@@ -438,7 +438,7 @@ QRectF QskLayoutConstraint::itemRect( const QQuickItem* item,
     switch( constraintType( item ) )
     {
         case HeightForWidth:
-        {   
+        {
             if ( size.width() > rect.width() )
                 size = qskExpandedSize( item, QSizeF( rect.width(), -1 ) );
 

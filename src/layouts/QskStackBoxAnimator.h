@@ -12,14 +12,14 @@
 #include <qobject.h>
 
 class QskStackBox;
-class QskLayoutItem;
+class QQuickItem;
 
 class QSK_EXPORT QskStackBoxAnimator : public QObject, public QskAnimator
 {
     Q_OBJECT
 
   public:
-    QskStackBoxAnimator( QskStackBox* parent );
+    QskStackBoxAnimator( QskStackBox* );
     ~QskStackBoxAnimator() override;
 
     void setStartIndex( int index );
@@ -30,7 +30,7 @@ class QSK_EXPORT QskStackBoxAnimator : public QObject, public QskAnimator
 
   protected:
     QskStackBox* stackBox() const;
-    QskLayoutItem* layoutItemAt( int index ) const;
+    QQuickItem* itemAt( int index ) const;
 
   private:
     int m_startIndex;
@@ -42,13 +42,15 @@ class QSK_EXPORT QskStackBoxAnimator1 : public QskStackBoxAnimator
     Q_OBJECT
 
   public:
-    QskStackBoxAnimator1( QskStackBox* parent );
+    QskStackBoxAnimator1( QskStackBox* );
     ~QskStackBoxAnimator1() override;
 
     void setOrientation( Qt::Orientation );
     Qt::Orientation orientation() const;
 
   protected:
+    bool eventFilter( QObject*, QEvent* ) override;
+
     void setup() override;
     void advance( qreal value ) override;
     void done() override;
@@ -58,6 +60,7 @@ class QSK_EXPORT QskStackBoxAnimator1 : public QskStackBoxAnimator
 
     Qt::Orientation m_orientation : 2;
     Qsk::Direction m_direction : 4;
+    bool m_isDirty : 1;
     bool m_hasClip : 1;
 };
 
@@ -66,7 +69,7 @@ class QSK_EXPORT QskStackBoxAnimator3 : public QskStackBoxAnimator
     Q_OBJECT
 
   public:
-    QskStackBoxAnimator3( QskStackBox* parent );
+    QskStackBoxAnimator3( QskStackBox* );
     ~QskStackBoxAnimator3() override;
 
   protected:

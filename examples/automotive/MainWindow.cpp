@@ -33,7 +33,7 @@ MainWindow::MainWindow()
     layout->setStretchFactor( header, 1 );
 
     layout->addItem( content );
-    layout->setStretchFactor( content, 10 );
+    layout->setStretchFactor( content, 8 );
 
     layout->addItem( footer );
     layout->setStretchFactor( footer, 1 );

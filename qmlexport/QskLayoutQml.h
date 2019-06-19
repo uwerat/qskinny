@@ -36,7 +36,7 @@ class QskLayoutBoxQml : public LayoutBox
     {
         return LayoutBox::indexOf( item );
     }
-    
+
     Q_INVOKABLE void removeAt( int index )
     {
         return LayoutBox::removeAt( index );
@@ -46,7 +46,7 @@ class QskLayoutBoxQml : public LayoutBox
     {
         // QML does not like a const version
         LayoutBox::removeItem( item );
-    }   
+    }
 
     Q_INVOKABLE void setAlignment( QQuickItem* item, Qt::Alignment alignment )
     {
@@ -63,14 +63,14 @@ class QskStackBoxQml : public QskLayoutBoxQml< QskStackBox >
 {
     Q_OBJECT
 
-    Q_INVOKABLE void setAlignment( int index, Qt::Alignment alignment )
+    Q_INVOKABLE void setAlignmentAt( int index, Qt::Alignment alignment )
     {
-        QskStackBox::setAlignment( index, alignment );
+        QskStackBox::setAlignmentAt( index, alignment );
     }
 
-    Q_INVOKABLE Qt::Alignment alignment( int index ) const
+    Q_INVOKABLE Qt::Alignment alignmentAt( int index ) const
     {
-        return QskStackBox::alignment( index );
+        return QskStackBox::alignmentAt( index );
     }
 };
 
@@ -115,7 +115,22 @@ class QskGridBoxQml : public QskLayoutBoxQml< QskGridBox >
 {
     Q_OBJECT
 
+    Q_PROPERTY( qreal horizontalSpacing READ horizontalSpacing
+        WRITE setHorizontalSpacing RESET resetHorizontalSpacing
+        NOTIFY horizontalSpacingChanged )
+
+    Q_PROPERTY( qreal verticalSpacing READ verticalSpacing
+        WRITE setVerticalSpacing RESET resetVerticalSpacing
+        NOTIFY verticalSpacingChanged )
+
   public:
+    void setHorizontalSpacing( qreal );
+    void resetHorizontalSpacing();
+    qreal horizontalSpacing() const;
+
+    void setVerticalSpacing( qreal );
+    void resetVerticalSpacing();
+    qreal verticalSpacing() const;
 
     Q_INVOKABLE bool retainSizeWhenHidden( QQuickItem* item ) const
     {
@@ -126,6 +141,10 @@ class QskGridBoxQml : public QskLayoutBoxQml< QskGridBox >
     {
         QskGridBox::setRetainSizeWhenHidden( item, on );
     }
+
+  Q_SIGNALS:
+    void verticalSpacingChanged();
+    void horizontalSpacingChanged();
 };
 
 #endif

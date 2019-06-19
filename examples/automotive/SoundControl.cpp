@@ -389,8 +389,8 @@ SoundControl::SoundControl( QQuickItem* parent )
 
     auto layout = new QskGridBox( this );
     layout->setMargins( QMarginsF( 40, 20, 40, 20 ) );
-    layout->setVerticalSpacing( 10 );
-    layout->setHorizontalSpacing( 60 );
+    layout->setSpacing( Qt::Vertical, 10 );
+    layout->setSpacing( Qt::Horizontal, 60 );
     layout->setColumnStretchFactor( 0, 1 );
     layout->setColumnStretchFactor( 1, 2 );
 
