@@ -75,3 +75,20 @@ void QskLayoutHint::normalize()
     m_maximum = qMax( m_minimum, m_maximum );
     m_preferred = qBound( m_minimum, m_preferred, m_maximum );
 }
+
+#ifndef QT_NO_DEBUG_STREAM
+
+#include <qdebug.h>
+
+QDebug operator<<( QDebug debug, const QskLayoutHint& hint )
+{
+    QDebugStateSaver saver( debug );
+    debug.nospace();
+
+    debug << "LayoutHint" << "( " << hint.minimum() << ", "
+          << hint.preferred() << ", " << hint.maximum() << " )";
+
+    return debug;
+}
+
+#endif

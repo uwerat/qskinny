@@ -4,6 +4,8 @@
 #include "QskGlobal.h"
 #include <qglobal.h>
 
+class QDebug;
+
 class QSK_EXPORT QskLayoutHint
 {
   public:
@@ -35,32 +37,32 @@ class QSK_EXPORT QskLayoutHint
 };
 
 inline qreal QskLayoutHint::minimum() const
-{   
+{
     return m_minimum;
-}           
-            
+}
+
 inline void QskLayoutHint::setMinimum( qreal value )
-{       
+{
     m_minimum = value;
-}           
-            
+}
+
 inline qreal QskLayoutHint::preferred() const
-{           
+{
     return m_preferred;
-}           
-        
+}
+
 inline void QskLayoutHint::setPreferred( qreal value )
-{   
+{
     m_preferred = value;
 }
 
 inline qreal QskLayoutHint::maximum() const
-{   
+{
     return m_maximum;
 }
 
 inline void QskLayoutHint::setMaximum( qreal value )
-{   
+{
     m_maximum = value;
 }
 
@@ -75,6 +77,12 @@ inline bool QskLayoutHint::operator!=( const QskLayoutHint& other ) const
 {
     return !( *this == other );
 }
+
+#ifndef QT_NO_DEBUG_STREAM
+
+QSK_EXPORT QDebug operator<<( QDebug, const QskLayoutHint& );
+
+#endif
 
 Q_DECLARE_TYPEINFO( QskLayoutHint, Q_MOVABLE_TYPE );
 
