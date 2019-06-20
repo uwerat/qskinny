@@ -1,3 +1,8 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * This file may be used under the terms of the 3-clause BSD License
+ *****************************************************************************/
+
 #ifndef SPEEDOMETER_H
 #define SPEEDOMETER_H
 
@@ -19,4 +24,4 @@ class Speedometer : public QskRangeControl
     QVector< QString > m_labels;
 };
 
-#endif // SPEEDOMETER_H
+#endif
