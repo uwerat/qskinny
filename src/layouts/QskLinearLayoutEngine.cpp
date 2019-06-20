@@ -35,7 +35,7 @@ namespace
       public:
         QskLayoutHint hint;
         int stretch = 0;
-        bool growFlag = false; // using stretch: -1
+        bool canGrow = false;
     };
 
     class CellTable
@@ -113,7 +113,7 @@ void CellTable::addCellData( int index, const CellData& data )
 {
     auto& combinedData = m_cells[ index ];
 
-    combinedData.growFlag |= data.growFlag;
+    combinedData.canGrow |= data.canGrow;
     combinedData.stretch = qMax( combinedData.stretch, data.stretch );
 
     m_sumStretches += data.stretch;
@@ -134,7 +134,7 @@ void CellTable::finish()
             minimum += cellData.hint.minimum();
             preferred += cellData.hint.preferred();
 
-            if ( cellData.stretch == 0 && !cellData.growFlag )
+            if ( cellData.stretch == 0 && !cellData.canGrow )
                 maximum += cellData.hint.preferred();
             else
                 maximum += cellData.hint.maximum();  // overflow ???
@@ -250,7 +250,7 @@ QVector< Range > CellTable::minimumExpanded( qreal size ) const
         - somehow using the stretch factors
      */
 
-#if QSK_LAYOUT_COMPAT
+#ifdef QSK_LAYOUT_COMPAT
 
     /*
          Code does not make much sense, but this is what QGridLayoutEngine does.
@@ -330,7 +330,7 @@ QVector< Range > CellTable::preferredStretched( qreal size ) const
         else
         {
             if ( m_sumStretches == 0 )
-                factors[i] = m_cells[i].growFlag ? 1.0 : 0.0;
+                factors[i] = m_cells[i].canGrow ? 1.0 : 0.0;
             else
                 factors[i] = m_cells[i].stretch;
         }
@@ -851,7 +851,7 @@ CellData EntryTable::cellData( const EntryData& entry,
     Qt::Orientation orientation, qreal constraint ) const
 {
     int stretch = 0;
-    bool growFlag = true;
+    bool canGrow = true;
     qreal minimum, preferred, maximum;
 
     if ( const auto item = entry.item() )
@@ -910,7 +910,7 @@ CellData EntryTable::cellData( const EntryData& entry,
                 stretch = entry.stretch();
         }
 
-        growFlag = policy & QskSizePolicy::GrowFlag;
+        canGrow = policy & QskSizePolicy::GrowFlag;
     }
     else
     {
@@ -937,7 +937,7 @@ CellData EntryTable::cellData( const EntryData& entry,
     CellData cellData;
     cellData.hint = QskLayoutHint( minimum, preferred, maximum );
     cellData.stretch = stretch;
-    cellData.growFlag = growFlag;
+    cellData.canGrow = canGrow;
 
     return cellData;
 }
