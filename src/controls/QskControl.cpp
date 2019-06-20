@@ -253,10 +253,10 @@ class QskControlPrivate final : public QQuickItemPrivate
   public:
     QLocale locale;
 
-    QskSizePolicy sizePolicy;
-
     quint16 controlFlags;
     quint16 controlFlagsMask;
+
+    QskSizePolicy sizePolicy;
 
     bool explicitLocale : 1;
 
@@ -287,9 +287,9 @@ static inline void qskUpdateControlFlags( QskControl::Flags flags, QskControl* c
 
 QskControlPrivate::QskControlPrivate()
     : explicitSizeData( nullptr )
-    , sizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Preferred )
     , controlFlags( qskControlFlags() )
     , controlFlagsMask( 0 )
+    , sizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Preferred )
     , explicitLocale( false )
     , autoFillBackground( false )
     , autoLayoutChildren( false )
@@ -1154,7 +1154,7 @@ void QskControl::initSizePolicy(
     }
 }
 
-void QskControl::setSizePolicy( const QskSizePolicy& policy )
+void QskControl::setSizePolicy( QskSizePolicy policy )
 {
     Q_D( QskControl );
 
@@ -1190,7 +1190,7 @@ void QskControl::setSizePolicy(
     }
 }
 
-const QskSizePolicy& QskControl::sizePolicy() const
+QskSizePolicy QskControl::sizePolicy() const
 {
     return d_func()->sizePolicy;
 }
@@ -1842,7 +1842,10 @@ void QskControl::updatePolish()
         for ( auto child : children )
         {
             if ( !QQuickItemPrivate::get( child )->isTransparentForPositioner() )
+            {
+                // rect = QskLayoutConstraint::itemRect( info.item, rect, ... );
                 qskSetItemGeometry( child, rect );
+            }
         }
     }
 

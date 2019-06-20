@@ -149,10 +149,10 @@ class QSK_EXPORT QskControl : public QQuickItem, public QskSkinnable
     Q_INVOKABLE bool testControlFlag( Flag ) const;
 
     void setSizePolicy( QskSizePolicy::Policy, QskSizePolicy::Policy );
-    void setSizePolicy( const QskSizePolicy& );
+    void setSizePolicy( QskSizePolicy );
     void setSizePolicy( Qt::Orientation, QskSizePolicy::Policy );
 
-    const QskSizePolicy& sizePolicy() const;
+    QskSizePolicy sizePolicy() const;
     QskSizePolicy::Policy sizePolicy( Qt::Orientation ) const;
 
     void setMinimumSize( const QSizeF& );

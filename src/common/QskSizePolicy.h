@@ -24,24 +24,32 @@ class QSK_EXPORT QskSizePolicy
   public:
     enum Flag
     {
-        GrowFlag   = 1 << 0,
-        ExpandFlag = 1 << 1,
-        ShrinkFlag = 1 << 2,
-        IgnoreFlag = 1 << 3,
-
-        ConstrainedFlag = IgnoreFlag
+        GrowFlag        = 1 << 0,
+        ExpandFlag      = 1 << 1,
+        ShrinkFlag      = 1 << 2,
+        IgnoreFlag      = 1 << 3,
+        ConstrainedFlag = 1 << 4
     };
 
     enum Policy
     {
         Fixed = 0,
-        Minimum = GrowFlag,
-        Maximum = ShrinkFlag,
-        Preferred = GrowFlag | ShrinkFlag,
+
+        Minimum          = GrowFlag,
+        Maximum          = ShrinkFlag,
+        Preferred        = GrowFlag | ShrinkFlag,
         MinimumExpanding = GrowFlag | ExpandFlag,
-        Expanding = GrowFlag | ShrinkFlag | ExpandFlag,
-        Ignored = ShrinkFlag | GrowFlag | IgnoreFlag,
-        Constrained = ConstrainedFlag
+        Expanding        = GrowFlag | ShrinkFlag | ExpandFlag,
+
+        Ignored          = ShrinkFlag | GrowFlag | IgnoreFlag,
+
+        Constrained                 = ConstrainedFlag,
+
+        ConstrainedMinimum          = ConstrainedFlag | Minimum,
+        ConstrainedMaximum          = ConstrainedFlag | Maximum,
+        ConstrainedPreferred        = ConstrainedFlag | Preferred,
+        ConstrainedMinimumExpanding = ConstrainedFlag | MinimumExpanding,
+        ConstrainedExpanding        = ConstrainedFlag | Expanding
     };
 
     Q_ENUM( Flag )
@@ -63,8 +71,8 @@ class QSK_EXPORT QskSizePolicy
     void setPolicy( Qt::Orientation, Policy );
 
   private:
-    unsigned char m_horizontalPolicy : 4;
-    unsigned char m_verticalPolicy : 4;
+    unsigned char m_horizontalPolicy;
+    unsigned char m_verticalPolicy;
 };
 
 inline QskSizePolicy::QskSizePolicy()
