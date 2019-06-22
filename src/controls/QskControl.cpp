@@ -263,14 +263,11 @@ class QskControlPrivate final : public QQuickItemPrivate
     bool autoFillBackground : 1;
     bool autoLayoutChildren : 1;
 
-    /*
-        This one is about calling updateLayout whenever layoutRect()
-        has changed -> whe should find a better name: TODO
-     */
     bool polishOnResize : 1;
 
     bool blockedPolish : 1;
     bool blockedImplicitSize : 1;
+    mutable bool blockLayoutRequestEvents : 1;
     bool clearPreviousNodes : 1;
 
     bool isInitiallyPainted : 1;
@@ -296,6 +293,7 @@ QskControlPrivate::QskControlPrivate()
     , polishOnResize( false )
     , blockedPolish( false )
     , blockedImplicitSize( true )
+    , blockLayoutRequestEvents( true )
     , clearPreviousNodes( false )
     , isInitiallyPainted( false )
     , focusPolicy( Qt::NoFocus )
@@ -1366,6 +1364,8 @@ QSizeF QskControl::effectiveSizeHint( Qt::SizeHint whichHint ) const
     if ( whichHint < Qt::MinimumSize || whichHint > Qt::MaximumSize )
         return QSizeF( 0, 0 );
 
+    d_func()->blockLayoutRequestEvents = false;
+
     QSizeF size = explicitSizeHint( whichHint );
 
     if ( whichHint == Qt::PreferredSize && !size.isValid() )
@@ -1389,12 +1389,6 @@ void QskControl::resetImplicitSize()
 
     if ( d->controlFlags & QskControl::DeferredLayout )
     {
-        /*
-            Is there a way to block consecutive calls ?
-            When the parent is requesting the preferred size, we could use
-            d->blockedImplicitSize, but in case of dynamic constraints we don't
-            have an indication when the event has been processed. TODO ...
-         */
         d->blockedImplicitSize = true;
         layoutConstraintChanged();
     }
@@ -1406,7 +1400,11 @@ void QskControl::resetImplicitSize()
 
 qreal QskControl::heightForWidth( qreal width ) const
 {
-    if ( !d_func()->autoLayoutChildren )
+    Q_D( const QskControl );
+
+    d->blockLayoutRequestEvents = false;
+
+    if ( !d->autoLayoutChildren )
         return -1.0;
 
     using namespace QskLayoutConstraint;
@@ -1417,7 +1415,11 @@ qreal QskControl::heightForWidth( qreal width ) const
 
 qreal QskControl::widthForHeight( qreal height ) const
 {
-    if ( !d_func()->autoLayoutChildren )
+    Q_D( const QskControl );
+
+    d->blockLayoutRequestEvents = false;
+
+    if ( !d->autoLayoutChildren )
         return -1.0;
 
     using namespace QskLayoutConstraint;
@@ -1815,8 +1817,19 @@ void QskControl::windowDeactivateEvent()
 
 void QskControl::layoutConstraintChanged()
 {
-    if ( auto item = parentItem() )
-        qskSendEventTo( item, QEvent::LayoutRequest );
+    Q_D( QskControl );
+
+    if ( !d->blockLayoutRequestEvents )
+    {
+        if ( auto item = parentItem() )
+            qskSendEventTo( item, QEvent::LayoutRequest );
+
+        /*
+            We don't send further LayoutRequest events until someone has requested
+            a layout relevant information
+         */
+        d->blockLayoutRequestEvents = true;
+    }
 }
 
 void QskControl::updatePolish()
