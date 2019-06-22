@@ -106,6 +106,11 @@ void QskHintAnimator::setAspect( QskAspect::Aspect aspect )
     m_aspect = aspect;
 }
 
+void QskHintAnimator::setUpdateFlags( QskAnimationHint::UpdateFlags flags )
+{
+    m_updateFlags = flags;
+}
+
 void QskHintAnimator::setControl( QskControl* control )
 {
     m_control = control;
@@ -123,13 +128,29 @@ void QskHintAnimator::advance( qreal progress )
 
     if ( m_control && ( currentValue() != oldValue ) )
     {
-        if ( m_aspect.type() == QskAspect::Metric )
+        if ( m_updateFlags == QskAnimationHint::UpdateAuto )
         {
-            m_control->resetImplicitSize();
-            m_control->polish();
-        }
+            if ( m_aspect.type() == QskAspect::Metric )
+            {
+                m_control->resetImplicitSize();
 
-        m_control->update();
+                if ( !m_control->childItems().isEmpty() )
+                    m_control->polish();
+            }
+
+            m_control->update();
+        }
+        else
+        {
+            if ( m_updateFlags & QskAnimationHint::UpdateSizeHint )
+                m_control->resetImplicitSize();
+
+            if ( m_updateFlags & QskAnimationHint::UpdatePolish )
+                m_control->polish();
+
+            if ( m_updateFlags & QskAnimationHint::UpdateNode )
+                m_control->update();
+        }
     }
 }
 
@@ -219,6 +240,7 @@ void QskHintAnimatorTable::start( QskControl* control,
 
     animator.setDuration( animationHint.duration );
     animator.setEasingCurve( animationHint.type );
+    animator.setUpdateFlags( animationHint.updateFlags );
 
     animator.setControl( control );
     animator.setWindow( control->window() );

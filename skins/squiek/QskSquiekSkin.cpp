@@ -547,8 +547,11 @@ void QskSquiekSkin::initTabButtonHints()
         setTab( aspect );
     }
 
-    setAnimation( Q::Panel | Color, qskDuration );
-    setAnimation( Q::Panel | Metric, qskDuration );
+    QskAnimationHint animationHint( qskDuration );
+    animationHint.updateFlags = QskAnimationHint::UpdateNode;
+
+    setAnimation( Q::Panel | Color, animationHint );
+    setAnimation( Q::Panel | Metric, animationHint );
 
     // text
     setSkinHint( Q::Text | QskAspect::Alignment, Qt::AlignCenter );

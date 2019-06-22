@@ -8,11 +8,11 @@
 
 #include "QskAspect.h"
 #include "QskVariantAnimator.h"
+#include "QskAnimationHint.h"
 
 #include <qpointer.h>
 
 class QskControl;
-class QskAnimationHint;
 
 class QSK_EXPORT QskHintAnimator : public QskVariantAnimator
 {
@@ -28,10 +28,14 @@ class QSK_EXPORT QskHintAnimator : public QskVariantAnimator
     void setControl( QskControl* );
     QskControl* control() const;
 
+    void setUpdateFlags( QskAnimationHint::UpdateFlags );
+    QskAnimationHint::UpdateFlags updateFlags() const;
+
     void advance( qreal value ) override;
 
   private:
     QskAspect::Aspect m_aspect;
+    QskAnimationHint::UpdateFlags m_updateFlags;
     QPointer< QskControl > m_control;
 };
 
@@ -59,6 +63,11 @@ class QSK_EXPORT QskHintAnimatorTable
 inline QskAspect::Aspect QskHintAnimator::aspect() const
 {
     return m_aspect;
+}
+
+inline QskAnimationHint::UpdateFlags QskHintAnimator::updateFlags() const
+{
+    return m_updateFlags;
 }
 
 inline QskControl* QskHintAnimator::control() const

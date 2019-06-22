@@ -384,6 +384,7 @@ namespace
 
             animator.setDuration( animationHint.duration );
             animator.setEasingCurve( animationHint.type );
+            animator.setUpdateFlags( animationHint.updateFlags );
 
             animator.setControl( nullptr );
             animator.setWindow( window );
