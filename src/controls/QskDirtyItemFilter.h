@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #ifndef QSK_DIRTY_ITEM_FILTER_H
-#define QSK_DIRTY_ITEM_FILTER_H 1
+#define QSK_DIRTY_ITEM_FILTER_H
 
 #include "QskGlobal.h"
 
@@ -14,7 +14,7 @@
 class QQuickWindow;
 class QQuickItem;
 
-class QSK_EXPORT QskDirtyItemFilter : public QObject
+class QskDirtyItemFilter : public QObject
 {
     using Inherited = QObject;
 
