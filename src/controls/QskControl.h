@@ -264,6 +264,13 @@ class QSK_EXPORT QskControl : public QQuickItem, public QskSkinnable
     // don't use boundingRect - it seems to be deprecated
     QRectF boundingRect() const override final { return rect(); }
 
+    /*
+        childrenRect()/childrenRectChanged does not make much sense
+        in a system, where the parent is responsible for laying out
+        its children.
+     */
+    void childrenRect() = delete;
+
     void setActiveFocusOnTab( bool ) = delete;                 // use setFocusPolicy
     void updateInputMethod( Qt::InputMethodQueries ) = delete; // use qskUpdateInputMethod
 
