@@ -404,7 +404,8 @@ void QskGridBox::invalidate()
 
 void QskGridBox::updateLayout()
 {
-    m_data->engine.setGeometries( layoutRect() );
+    if ( !maybeUnresized() )
+        m_data->engine.setGeometries( layoutRect() );
 }
 
 QSizeF QskGridBox::contentsSizeHint() const

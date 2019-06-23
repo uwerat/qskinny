@@ -246,6 +246,9 @@ bool QskTabView::event( QEvent* event )
 
 void QskTabView::updateLayout()
 {
+    if ( maybeUnresized() )
+        return; 
+
     m_data->tabBar->setGeometry( subControlRect( TabBar ) );
 
 #if 1

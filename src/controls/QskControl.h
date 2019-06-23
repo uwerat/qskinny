@@ -260,6 +260,8 @@ class QSK_EXPORT QskControl : public QQuickItem, public QskSkinnable
     virtual void aboutToShow();  // called in updatePolish
     virtual void updateLayout(); // called in updatePolish
 
+    bool maybeUnresized() const;
+
   private:
     // don't use boundingRect - it seems to be deprecated
     QRectF boundingRect() const override final { return rect(); }
@@ -320,11 +322,6 @@ inline QSizeF QskControl::maximumSize() const
 inline QSizeF QskControl::preferredSize() const
 {
     return explicitSizeHint( Qt::PreferredSize );
-}
-
-inline QRectF QskControl::layoutRect() const
-{
-    return layoutRectForSize( size() );
 }
 
 inline QskControl* qskControlCast( QObject* object )

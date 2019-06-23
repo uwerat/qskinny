@@ -210,7 +210,9 @@ class QskControlPrivate final : public QQuickItemPrivate
 
 #if 0
     // can we do something useful with overloading ???
+
     QSGTransformNode* createTransformNode() override;
+    void transformChanged() override;
 #endif
 
     void implicitWidthChanged() override;
@@ -227,11 +229,12 @@ class QskControlPrivate final : public QQuickItemPrivate
             sizeof( QQuickItemPrivate::ExtraData ) -> 184
             sizeof( QQuickItemPrivate ) -> 320
 
+            ( these numbers include pointers to optional extra data, but not
+              the size for the extra data. So the effective memory footprint,
+              is often even worse ).
+
             sizeof( QskControlPrivate ) -> sizeof( QQuickItemPrivate ) + 32
             sizeof( QskSkinnable::PrivateData ) -> 40
-
-            ( these numbers include pointers to optional extra data, that might
-              increase the effective memory footprint, when being accurate ).
 
         It might be possible to save some bytes, but in the end QskControl
         is heavy simply because of deriving from QQuickItem. So without
@@ -1648,6 +1651,26 @@ void QskControl::componentComplete()
     Inherited::componentComplete();
 }
 
+bool QskControl::maybeUnresized() const
+{
+    Q_D( const QskControl );
+
+    if ( d->width <= 0.0 && d->height <= 0.0 )
+    {
+        /*
+            Unfortunately the list of items to-be-polished is not processed
+            in top/down order and we might run into updatePolish() before
+            having a proper size. But when the parentItem() is waiting
+            for to-be-polished, we assume, that we will be resized then
+            and run into another updatePolish() then.
+         */
+        if ( d->polishOnResize && qskIsPolishScheduled( parentItem() ) )
+            return true;
+    }
+
+    return false;
+}
+
 void QskControl::releaseResources()
 {
     Inherited::releaseResources();
@@ -1847,7 +1870,7 @@ void QskControl::updatePolish()
 
     d->blockedPolish = false;
 
-    if ( d->autoLayoutChildren )
+    if ( d->autoLayoutChildren && !maybeUnresized() )
     {
         const QRectF rect = layoutRect();
 
@@ -1949,6 +1972,16 @@ void QskControl::cleanupNodes()
 QskControl* QskControl::owningControl() const
 {
     return const_cast< QskControl* >( this );
+}
+
+QRectF QskControl::layoutRect() const
+{
+    Q_D( const QskControl );
+
+    if ( d->width <= 0.0 && d->height <= 0.0 )
+        return QRectF();
+
+    return layoutRectForSize( size() );
 }
 
 QRectF QskControl::layoutRectForSize( const QSizeF& size ) const

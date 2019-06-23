@@ -408,6 +408,9 @@ QRectF QskStackBox::geometryForItemAt( int index ) const
 
 void QskStackBox::updateLayout()
 {
+    if ( maybeUnresized() )
+        return;
+
     const auto idx = m_data->currentIndex;
 
     if ( idx >= 0 )

@@ -198,7 +198,8 @@ void QskLinearBox::invalidate()
 
 void QskLinearBox::updateLayout()
 {
-    m_data->engine.setGeometries( layoutRect() );
+    if ( !maybeUnresized() )
+        m_data->engine.setGeometries( layoutRect() );
 }
 
 QSizeF QskLinearBox::contentsSizeHint() const
@@ -478,7 +479,6 @@ void QskLinearBox::insertItem(
         if ( item != children.last() )
             item->stackAfter( children.last() );
     }
-
 
     qskSetItemActive( this, item, true );
 
