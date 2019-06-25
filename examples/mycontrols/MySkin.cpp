@@ -120,19 +120,19 @@ class MySkin : public QskSkin
         {
             setBoxBorderMetrics( Q::Panel, 3 );
 
-            auto light = QColor( baseColor ).light( 110 );
-            auto dark = QColor( baseColor ).dark( 120 );
+            auto light = QColor( baseColor ).lighter( 110 );
+            auto dark = QColor( baseColor ).darker( 120 );
             setBoxBorderColors( Q::Panel,
                 QskBoxBorderColors( light, light, dark, dark ) );
         }
         else
         {
             setBoxBorderMetrics( Q::Panel, 1 );
-            setBoxBorderColors( Q::Panel, QColor( baseColor ).dark( 120 ) );
+            setBoxBorderColors( Q::Panel, QColor( baseColor ).darker( 120 ) );
         }
 
         setGradient( Q::Cursor, foregroundColor );
-        setBoxBorderColors( Q::Cursor, QColor( foregroundColor ).dark( 120 ) );
+        setBoxBorderColors( Q::Cursor, QColor( foregroundColor ).darker( 120 ) );
         setBoxBorderMetrics( Q::Cursor, 1 );
 
         for( auto subControl : { Q::Panel, Q::Cursor } )

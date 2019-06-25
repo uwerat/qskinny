@@ -145,7 +145,7 @@ QSGNode* SpeedometerSkinlet::updateLabelsNode( const Speedometer* speedometer, Q
     auto radius = static_cast< float >( panelRect.width() / 2 );
 
     const QMarginsF numbersMargins = speedometer->marginsHint( Speedometer::Labels );
-    QFontMetrics fontMetrics( speedometer->effectiveFont( Speedometer::Labels ) );
+    QFontMetricsF fontMetrics( speedometer->effectiveFont( Speedometer::Labels ) );
 
     auto angle = startAngle;
     qreal length = speedometer->metric( Speedometer::Labels | QskAspect::Size );
