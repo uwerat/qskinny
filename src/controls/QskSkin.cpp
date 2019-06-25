@@ -74,6 +74,22 @@ QSK_QT_PRIVATE_END
 #include "QskStatusIndicator.h"
 #include "QskStatusIndicatorSkinlet.h"
 
+static inline QskSkinlet *qskNewSkinlet( const QMetaObject* metaObject, QskSkin* skin )
+{
+    const QByteArray signature = metaObject->className() + QByteArrayLiteral( "(QskSkin*)" );
+
+    QskSkinlet *skinlet = nullptr;
+
+    const int index = metaObject->indexOfConstructor( signature.constData() );
+    if ( index >= 0 )
+    {
+        void *param[] = { &skinlet, &skin }; 
+        metaObject->static_metacall( QMetaObject::CreateInstance, index, param );
+    }
+
+    return skinlet;
+}   
+
 namespace
 {
     class SkinletData
@@ -434,10 +450,7 @@ QskSkinlet* QskSkin::skinlet( const QskSkinnable* skinnable )
             auto& entry = it->second;
 
             if ( entry.skinlet == nullptr )
-            {
-                entry.skinlet = reinterpret_cast< QskSkinlet* >(
-                    entry.metaObject->newInstance( Q_ARG( QskSkin*, this ) ) );
-            }
+                entry.skinlet = qskNewSkinlet( entry.metaObject, this );
 
             return entry.skinlet;
         }

@@ -32,8 +32,6 @@ It might support all versions Qt >= 5.6, but you can rely on:
 - current long term supported ( LTS ) version of Qt
 - current version of Qt
 
-( Unfortunately Qt 12.4 and Qt 13.0 are broken - see https://bugreports.qt.io/browse/QTBUG-76663. Until this has been fixed you have to stay with Qt 12.3 )
-
 If you want to know more about QSkinny - or even like to give it a specific
 direction - please contact support@qskinny.org.
 
