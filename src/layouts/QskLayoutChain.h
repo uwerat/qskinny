@@ -37,6 +37,7 @@ class QskLayoutChain
 
     void reset( int count, qreal constraint );
     void addCell( int index, const Cell& );
+    Cell cell( int index ) const { return m_cells[ index ]; }
     void finish();
 
     bool setSpacing( qreal spacing );
@@ -58,7 +59,7 @@ class QskLayoutChain
     QVector< Range > preferredStretched( qreal size ) const;
 
     QskLayoutHint m_boundingHint;
-    qreal m_constraint = -2;
+    qreal m_constraint = -2.0;
 
     qreal m_spacing = 0;
     Qt::Edges m_extraSpacingAt;

@@ -30,6 +30,7 @@ void QskLayoutChain::reset( int count, qreal constraint )
 {
     m_cells.assign( count, Cell() );
     m_constraint = constraint;
+    m_sumStretches = 0;
 }
 
 void QskLayoutChain::addCell( int index, const Cell& cell )
@@ -195,7 +196,6 @@ QVector< QskLayoutChain::Range > QskLayoutChain::minimumExpanded( qreal size ) c
         factors[i] = l * std::pow( available / desired, l / desired );
         sumFactors += factors[i];
     }
-
 
     for ( uint i = 0; i < m_cells.size(); i++ )
     {
