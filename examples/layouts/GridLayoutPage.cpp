@@ -25,7 +25,11 @@ namespace
             addItem( new TestRectangle( "PaleVioletRed" ), 0, 0, 1, 2 );
             addItem( new TestRectangle( "DarkSeaGreen" ), 1, 0, 2, 1 );
             addItem( new TestRectangle( "SkyBlue" ), 2, 1, 1, 1 );
-            addItem( new TestRectangle( "NavajoWhite" ), 0, 2, 4, 1 );
+            addItem( new TestRectangle( "NavajoWhite" ), 0, 2, -1, 1 );
+
+            setRowStretchFactor( 0, 1 );
+            setRowStretchFactor( 1, 2 );
+            setRowStretchFactor( 2, 1 );
         }
 
         void mirror()
