@@ -1,17 +1,17 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * This file may be used under the terms of the QSkinny License, Version 1.0
+ *****************************************************************************/
+
 #include "QskLinearLayoutEngine.h"
 
 #include "QskLayoutHint.h"
 #include "QskLayoutConstraint.h"
+#include "QskLayoutChain.h"
 #include "QskSizePolicy.h"
 #include "QskQuick.h"
 
 #include <qvector.h>
-#include <qvarlengtharray.h>
-#include <vector>
-
-#ifdef QSK_LAYOUT_COMPAT
-#include <cmath>
-#endif
 
 static constexpr qreal qskDefaultSpacing()
 {
@@ -21,58 +21,6 @@ static constexpr qreal qskDefaultSpacing()
 
 namespace
 {
-    class Range
-    {
-      public:
-        inline qreal end() const { return start + length; }
-
-        qreal start = 0.0;
-        qreal length = 0.0;
-    };
-
-    class CellData
-    {
-      public:
-        QskLayoutHint hint;
-        int stretch = 0;
-        bool canGrow = false;
-    };
-
-    class CellTable
-    {
-      public:
-        void invalidate();
-
-        void reset( int count, qreal constraint );
-        void addCellData( int index, const CellData& );
-        void finish();
-
-        bool setSpacing( qreal spacing );
-        qreal spacing() const { return m_spacing; }
-
-        void setExtraSpacingAt( Qt::Edges edges ) { m_extraSpacingAt = edges; }
-
-        QVector< Range > cellRanges( qreal size ) const;
-        QskLayoutHint boundingHint() const { return m_boundingHint; }
-
-        inline qreal constraint() const { return m_constraint; }
-        inline int count() const { return m_cells.size(); }
-
-      private:
-        QVector< Range > distributed( int which, qreal offset, qreal extra ) const;
-        QVector< Range > minimumExpanded( qreal size ) const;
-        QVector< Range > preferredStretched( qreal size ) const;
-
-        QskLayoutHint m_boundingHint;
-        qreal m_constraint = -2;
-
-        qreal m_spacing = 0;
-        Qt::Edges m_extraSpacingAt;
-
-        int m_sumStretches = 0;
-        std::vector< CellData > m_cells;
-    };
-
     class CellGeometries
     {
       public:
@@ -92,313 +40,10 @@ namespace
 
         QSizeF boundingSize;
 
-        QVector< Range > rows;
-        QVector< Range > columns;
+        QVector< QskLayoutChain::Range > rows;
+        QVector< QskLayoutChain::Range > columns;
     };
-}
 
-void CellTable::invalidate()
-{
-    m_cells.clear();
-    m_constraint = -2;
-}
-
-void CellTable::reset( int count, qreal constraint )
-{
-    m_cells.assign( count, CellData() );
-    m_constraint = constraint;
-}
-
-void CellTable::addCellData( int index, const CellData& data )
-{
-    auto& combinedData = m_cells[ index ];
-
-    combinedData.canGrow |= data.canGrow;
-    combinedData.stretch = qMax( combinedData.stretch, data.stretch );
-
-    m_sumStretches += data.stretch;
-
-    combinedData.hint.intersect( data.hint );
-}
-
-void CellTable::finish()
-{
-    qreal minimum = 0.0;
-    qreal preferred = 0.0;
-    qreal maximum = 0.0;
-
-    if ( !m_cells.empty() )
-    {
-        for ( auto& cellData : m_cells )
-        {
-            minimum += cellData.hint.minimum();
-            preferred += cellData.hint.preferred();
-
-            if ( cellData.stretch == 0 && !cellData.canGrow )
-                maximum += cellData.hint.preferred();
-            else
-                maximum += cellData.hint.maximum();  // overflow ???
-        }
-
-        const qreal spacing = ( m_cells.size() - 1 ) * m_spacing;
-
-        minimum += spacing;
-        preferred += spacing;
-        maximum += spacing;
-    }
-
-    m_boundingHint.setMinimum( minimum );
-    m_boundingHint.setPreferred( preferred );
-    m_boundingHint.setMaximum( maximum );
-}
-
-bool CellTable::setSpacing( qreal spacing )
-{
-    if ( m_spacing != spacing )
-    {
-        m_spacing = spacing;
-        return true;
-    }
-
-    return false;
-}
-
-QVector< Range > CellTable::cellRanges( qreal size ) const
-{
-    QVector< Range > ranges;
-
-    if ( size <= m_boundingHint.minimum() )
-    {
-        ranges = distributed( Qt::MinimumSize, 0.0, 0.0 );
-    }
-    else if ( size < m_boundingHint.preferred() )
-    {
-        ranges = minimumExpanded( size );
-    }
-    else if ( size <= m_boundingHint.maximum() )
-    {
-        ranges = preferredStretched( size );
-    }
-    else
-    {
-        const qreal padding = size - m_boundingHint.maximum();
-
-        qreal offset = 0.0;
-        qreal extra = 0.0;;
-
-        if ( m_extraSpacingAt == Qt::LeftEdge )
-        {
-            offset = padding;
-        }
-        else if ( m_extraSpacingAt == Qt::RightEdge )
-        {
-            offset = 0.0;
-        }
-        else if ( m_extraSpacingAt == ( Qt::LeftEdge | Qt::RightEdge ) )
-        {
-            offset = 0.5 * padding;
-        }
-        else
-        {
-            extra = padding / m_cells.size();
-        }
-
-        ranges = distributed( Qt::MaximumSize, offset, extra );
-    }
-
-    return ranges;
-}
-
-QVector< Range > CellTable::distributed(
-    int which, qreal offset, const qreal extra ) const
-{
-    qreal fillSpacing = 0.0;
-
-    QVector< Range > ranges( m_cells.size() );
-
-    for ( int i = 0; i < ranges.count(); i++ )
-    {
-        auto& range = ranges[i];
-
-        offset += fillSpacing;
-        fillSpacing = m_spacing;
-
-        range.start = offset;
-        range.length = m_cells[i].hint.size( which ) + extra;
-
-        offset += range.length;
-    }
-
-    return ranges;
-}
-
-QVector< Range > CellTable::minimumExpanded( qreal size ) const
-{
-    QVector< Range > ranges( m_cells.size() );
-
-    qreal fillSpacing = 0.0;
-    qreal offset = 0.0;
-
-    /*
-        We have different options how to distribute the availabe space
-
-        - according to the preferred sizes
-
-        - items with a larger preferred size are stretchier: this is
-          what QSK_LAYOUT_COMPAT does ( compatible with QGridLayoutEngine )
-
-        - somehow using the stretch factors
-     */
-
-#ifdef QSK_LAYOUT_COMPAT
-
-    /*
-         Code does not make much sense, but this is what QGridLayoutEngine does.
-         The implementation is intended to help during the migration, but is supposed
-         to be removed then TODO ...
-     */
-    qreal sumFactors = 0.0;
-    QVarLengthArray< qreal > factors( m_cells.size() );
-
-    const qreal desired = m_boundingHint.preferred() - m_boundingHint.minimum();
-    const qreal available = size - m_boundingHint.minimum();
-
-    for ( uint i = 0; i < m_cells.size(); i++ )
-    {
-        const auto& hint = m_cells[i].hint;
-
-        const qreal l = hint.preferred() - hint.minimum();
-
-        factors[i] = l * std::pow( available / desired, l / desired );
-        sumFactors += factors[i];
-    }
-
-
-    for ( uint i = 0; i < m_cells.size(); i++ )
-    {
-        const auto& hint = m_cells[i].hint;
-
-        auto& range = ranges[i];
-
-        offset += fillSpacing;
-        fillSpacing = m_spacing;
-
-        range.start = offset;
-        range.length = hint.minimum() + available * ( factors[i] / sumFactors );
-
-        offset += range.length;
-    }
-#else
-    const qreal factor = ( size - m_boundingHint.minimum() ) /
-        ( m_boundingHint.preferred() - m_boundingHint.minimum() );
-
-    for ( uint i = 0; i < m_cells.size(); i++ )
-    {
-        const auto& hint = m_cells[i].hint;
-
-        auto& range = ranges[i];
-
-        offset += fillSpacing;
-        fillSpacing = m_spacing;
-
-        range.start = offset;
-        range.length = hint.minimum() + factor * ( hint.preferred() - hint.minimum() );
-
-        offset += range.length;
-    }
-#endif
-
-    return ranges;
-}
-
-QVector< Range > CellTable::preferredStretched( qreal size ) const
-{
-    const int count = m_cells.size();
-    auto sumSizes = size - ( count - 1 ) * m_spacing;
-
-    qreal sumFactors = 0.0;
-    QVarLengthArray< qreal > factors( count );
-
-    for ( int i = 0; i < count; i++ )
-    {
-        const auto& hint = m_cells[i].hint;
-
-        if ( hint.preferred() >= hint.maximum() )
-        {
-            factors[i] = 0.0;
-        }
-        else
-        {
-            if ( m_sumStretches == 0 )
-                factors[i] = m_cells[i].canGrow ? 1.0 : 0.0;
-            else
-                factors[i] = m_cells[i].stretch;
-        }
-
-        sumFactors += factors[i];
-    }
-
-    QVector< Range > ranges( count );
-
-    Q_FOREVER
-    {
-        bool done = true;
-
-        for ( int i = 0; i < count; i++ )
-        {
-            if ( factors[i] < 0.0 )
-                continue;
-
-            const auto size = sumSizes * factors[i] / sumFactors;
-
-            const auto& hint = m_cells[i].hint;
-            const auto boundedSize =
-                qBound( hint.preferred(), size, hint.maximum() );
-
-            if ( boundedSize != size )
-            {
-                ranges[i].length = boundedSize;
-                sumSizes -= boundedSize;
-                sumFactors -= factors[i];
-                factors[i] = -1.0;
-
-                done = false;
-            }
-        }
-
-        if ( done )
-            break;
-    }
-
-    qreal offset = 0;
-    qreal fillSpacing = 0.0;
-
-    for ( int i = 0; i < count; i++ )
-    {
-        auto& range = ranges[i];
-        const auto& factor = factors[i];
-
-        offset += fillSpacing;
-        fillSpacing = m_spacing;
-
-        range.start = offset;
-
-        if ( factor >= 0.0 )
-        {
-            if ( factor > 0.0 )
-                range.length = sumSizes * factor / sumFactors;
-            else
-                range.length = m_cells[i].hint.preferred();
-        }
-
-        offset += range.length;
-    }
-
-    return ranges;
-}
-
-namespace
-{
     class EntryData
     {
       public:
@@ -478,15 +123,16 @@ namespace
         int effectiveCount() const;
         int effectiveCount( Qt::Orientation orientation ) const;
 
-        void updateCellTable( Qt::Orientation,
-            const QVector< Range >& constraints, CellTable& ) const;
+        void resetChain( Qt::Orientation,
+            const QVector< QskLayoutChain::Range >& constraints,
+            QskLayoutChain& ) const;
 
         QskLayoutConstraint::Type constraintType() const;
 
         void invalidate();
 
       private:
-        CellData cellData( const EntryData&,
+        QskLayoutChain::Cell cell( const EntryData&,
             Qt::Orientation, qreal constraint ) const;
 
         inline EntryData* entryAt( int index ) const
@@ -504,7 +150,7 @@ namespace
 
         uint m_dimension;
         mutable int m_sumIgnored : 19;
-        mutable int m_constrainedType : 3;
+        mutable int m_constraintType : 3;
 
         unsigned int m_defaultAlignment : 8;
         unsigned int m_orientation : 2;
@@ -575,7 +221,7 @@ bool EntryData::isConstrained( Qt::Orientation orientation ) const
 EntryTable::EntryTable( Qt::Orientation orientation, uint dimension )
     : m_dimension( dimension )
     , m_sumIgnored( -1 )
-    , m_constrainedType( -1 )
+    , m_constraintType( -1 )
     , m_defaultAlignment( Qt::AlignLeft | Qt::AlignVCenter )
     , m_orientation( orientation )
 {
@@ -782,7 +428,7 @@ bool EntryTable::retainSizeWhenHiddenAt( int index ) const
 void EntryTable::invalidate()
 {
     m_sumIgnored = -1;
-    m_constrainedType = -1;
+    m_constraintType = -1;
 }
 
 int EntryTable::effectiveCount() const
@@ -821,9 +467,9 @@ int EntryTable::effectiveCount( Qt::Orientation orientation ) const
 
 QskLayoutConstraint::Type EntryTable::constraintType() const
 {
-    if ( m_constrainedType < 0 )
+    if ( m_constraintType < 0 )
     {
-        m_constrainedType = QskLayoutConstraint::Unconstrained;
+        m_constraintType = QskLayoutConstraint::Unconstrained;
 
         for ( const auto& entry : m_entries )
         {
@@ -831,23 +477,23 @@ QskLayoutConstraint::Type EntryTable::constraintType() const
 
             if ( itemType != QskLayoutConstraint::Unconstrained )
             {
-                if ( m_constrainedType == QskLayoutConstraint::Unconstrained )
+                if ( m_constraintType == QskLayoutConstraint::Unconstrained )
                 {
-                    m_constrainedType = itemType;
+                    m_constraintType = itemType;
                 }
-                else if ( m_constrainedType != itemType )
+                else if ( m_constraintType != itemType )
                 {
                     qWarning( "QskLinearLayoutEngine: conflicting constraints");
-                    m_constrainedType = QskLayoutConstraint::Unconstrained;
+                    m_constraintType = QskLayoutConstraint::Unconstrained;
                 }
             }
         }
     }
 
-    return static_cast< QskLayoutConstraint::Type >( m_constrainedType );
+    return static_cast< QskLayoutConstraint::Type >( m_constraintType );
 }
 
-CellData EntryTable::cellData( const EntryData& entry,
+QskLayoutChain::Cell EntryTable::cell( const EntryData& entry,
     Qt::Orientation orientation, qreal constraint ) const
 {
     int stretch = 0;
@@ -934,28 +580,29 @@ CellData EntryTable::cellData( const EntryData& entry,
         }
     }
 
-    CellData cellData;
-    cellData.hint = QskLayoutHint( minimum, preferred, maximum );
-    cellData.stretch = stretch;
-    cellData.canGrow = canGrow;
+    QskLayoutChain::Cell cell;
+    cell.hint = QskLayoutHint( minimum, preferred, maximum );
+    cell.stretch = stretch;
+    cell.canGrow = canGrow;
 
-    return cellData;
+    return cell;
 }
 
-void EntryTable::updateCellTable( Qt::Orientation orientation,
-    const QVector< Range >& constraints, CellTable& cellTable ) const
+void EntryTable::resetChain( Qt::Orientation orientation,
+    const QVector< QskLayoutChain::Range >& constraints,
+    QskLayoutChain& chain ) const
 {
     const auto count = effectiveCount( orientation );
     const qreal constraint =
         constraints.isEmpty() ? -1.0 : constraints.last().end();
 
-    if ( ( cellTable.constraint() == constraint )
-        && ( cellTable.count() == count ) )
+    if ( ( chain.constraint() == constraint )
+        && ( chain.count() == count ) )
     {
         return; // already up to date
     }
 
-    cellTable.reset( count, constraint );
+    chain.reset( count, constraint );
 
     uint index1 = 0;
     uint index2 = 0;
@@ -968,8 +615,8 @@ void EntryTable::updateCellTable( Qt::Orientation orientation,
         const qreal cellConstraint =
             constraints.isEmpty() ? -1.0 : constraints[index1].length;
 
-        const auto data = cellData( entry, orientation, cellConstraint );
-        cellTable.addCellData( index2, data );
+        const auto cell = this->cell( entry, orientation, cellConstraint );
+        chain.addCell( index2, cell );
 
         if ( m_orientation != orientation )
         {
@@ -989,22 +636,23 @@ void EntryTable::updateCellTable( Qt::Orientation orientation,
         }
     }
 
-    cellTable.finish();
+    chain.finish();
 }
 
 // ---------
 
-static inline void qskUpdateCellTable( Qt::Orientation orientation,
-    const QVector< Range >& constraints,
-    const EntryTable& entryTable, CellTable& cellTable )
+static inline void qskResetChain( Qt::Orientation orientation,
+    const QVector< QskLayoutChain::Range >& constraints,
+    const EntryTable& entryTable, QskLayoutChain& chain )
 {
-    entryTable.updateCellTable( orientation, constraints, cellTable );
+    entryTable.resetChain( orientation, constraints, chain );
 }
 
-static inline void qskUpdateCellTable( Qt::Orientation orientation,
-    const EntryTable& entryTable, CellTable& cellTable )
+static inline void qskResetChain( Qt::Orientation orientation,
+    const EntryTable& entryTable, QskLayoutChain& chain )
 {
-    entryTable.updateCellTable( orientation, QVector< Range >(), cellTable );
+    const QVector< QskLayoutChain::Range > constraints;
+    entryTable.resetChain( orientation, constraints, chain );
 }
 
 class QskLinearLayoutEngine::PrivateData
@@ -1015,8 +663,8 @@ class QskLinearLayoutEngine::PrivateData
         : entryTable( orientation, dimension )
         , blockInvalidate( false )
     {
-        rowTable.setSpacing( qskDefaultSpacing() );
-        colTable.setSpacing( qskDefaultSpacing() );
+        rowChain.setSpacing( qskDefaultSpacing() );
+        colChain.setSpacing( qskDefaultSpacing() );
     }
 
     EntryTable entryTable;
@@ -1024,8 +672,8 @@ class QskLinearLayoutEngine::PrivateData
     Qt::LayoutDirection visualDirection = Qt::LeftToRight;
     Qt::Edges extraSpacingAt;
 
-    CellTable colTable;
-    CellTable rowTable;
+    QskLayoutChain colChain;
+    QskLayoutChain rowChain;
 
     CellGeometries geometries;
 
@@ -1127,10 +775,10 @@ void QskLinearLayoutEngine::setSpacing( qreal spacing, Qt::Orientations orientat
     bool doInvalidate = false;
 
     if ( orientations & Qt::Horizontal )
-        doInvalidate |= m_data->colTable.setSpacing( spacing );
+        doInvalidate |= m_data->colChain.setSpacing( spacing );
 
     if ( orientations & Qt::Vertical )
-        doInvalidate |= m_data->rowTable.setSpacing( spacing );
+        doInvalidate |= m_data->rowChain.setSpacing( spacing );
 
     if ( doInvalidate )
         invalidate( CellCache | LayoutCache );
@@ -1139,9 +787,9 @@ void QskLinearLayoutEngine::setSpacing( qreal spacing, Qt::Orientations orientat
 qreal QskLinearLayoutEngine::spacing( Qt::Orientation orientation ) const
 {
     if ( orientation == Qt::Horizontal )
-        return m_data->colTable.spacing();
+        return m_data->colChain.spacing();
     else
-        return m_data->rowTable.spacing();
+        return m_data->rowChain.spacing();
 }
 
 void QskLinearLayoutEngine::setExtraSpacingAt( Qt::Edges edges )
@@ -1152,7 +800,7 @@ void QskLinearLayoutEngine::setExtraSpacingAt( Qt::Edges edges )
     m_data->extraSpacingAt = edges;
 
     Qt::Edges colEdges = edges & ~( Qt::TopEdge | Qt::BottomEdge );
-    m_data->colTable.setExtraSpacingAt( colEdges );
+    m_data->colChain.setExtraSpacingAt( colEdges );
 
     /*
         FlowLayoutInfo does not have an orientation, so we always
@@ -1167,7 +815,7 @@ void QskLinearLayoutEngine::setExtraSpacingAt( Qt::Edges edges )
     if ( edges & Qt::BottomEdge )
         rowEdges |= Qt::RightEdge;
 
-    m_data->rowTable.setExtraSpacingAt( rowEdges );
+    m_data->rowChain.setExtraSpacingAt( rowEdges );
 
     invalidate( LayoutCache );
 }
@@ -1235,8 +883,8 @@ void QskLinearLayoutEngine::invalidate( int what )
 
     if ( what & CellCache )
     {
-        m_data->rowTable.invalidate();
-        m_data->colTable.invalidate();
+        m_data->rowChain.invalidate();
+        m_data->colChain.invalidate();
     }
 
     if ( what & LayoutCache )
@@ -1315,37 +963,37 @@ QSizeF QskLinearLayoutEngine::sizeHint( Qt::SizeHint which, const QSizeF& constr
 
     const auto constraintType = m_data->entryTable.constraintType();
 
-    auto& colTable = m_data->colTable;
-    auto& rowTable = m_data->rowTable;
+    auto& colChain = m_data->colChain;
+    auto& rowChain = m_data->rowChain;
 
     m_data->blockInvalidate = true;
 
     if ( ( constraint.width() >= 0 ) &&
         ( constraintType == QskLayoutConstraint::HeightForWidth ) )
     {
-        qskUpdateCellTable( Qt::Horizontal, entryTable, colTable );
+        qskResetChain( Qt::Horizontal, entryTable, colChain );
 
-        const auto cellConstraints = colTable.cellRanges( constraint.width() );
-        qskUpdateCellTable( Qt::Vertical, cellConstraints, entryTable, rowTable );
+        const auto cellConstraints = colChain.geometries( constraint.width() );
+        qskResetChain( Qt::Vertical, cellConstraints, entryTable, rowChain );
     }
     else if ( ( constraint.height() >= 0 ) &&
         ( constraintType == QskLayoutConstraint::WidthForHeight ) )
     {
-        qskUpdateCellTable( Qt::Vertical, entryTable, rowTable );
+        qskResetChain( Qt::Vertical, entryTable, rowChain );
 
-        const auto cellConstraints = rowTable.cellRanges( constraint.height() );
-        qskUpdateCellTable( Qt::Horizontal, cellConstraints, entryTable, colTable );
+        const auto cellConstraints = rowChain.geometries( constraint.height() );
+        qskResetChain( Qt::Horizontal, cellConstraints, entryTable, colChain );
     }
     else
     {
-        qskUpdateCellTable( Qt::Horizontal, entryTable, colTable );
-        qskUpdateCellTable( Qt::Vertical, entryTable, rowTable );
+        qskResetChain( Qt::Horizontal, entryTable, colChain );
+        qskResetChain( Qt::Vertical, entryTable, rowChain );
     }
 
     m_data->blockInvalidate = false;
 
-    const qreal width = colTable.boundingHint().size( which );
-    const qreal height = rowTable.boundingHint().size( which );
+    const qreal width = colChain.boundingHint().size( which );
+    const qreal height = rowChain.boundingHint().size( which );
 
     return QSizeF( width, height );
 }
@@ -1377,41 +1025,41 @@ void QskLinearLayoutEngine::updateCellGeometries( const QSizeF& size )
     auto& geometries = m_data->geometries;
     geometries.boundingSize = size;
 
-    auto& colTable = m_data->colTable;
-    auto& rowTable = m_data->rowTable;
+    auto& colChain = m_data->colChain;
+    auto& rowChain = m_data->rowChain;
     auto& entryTable = m_data->entryTable;
 
-    const QVector< Range > noConstraints;
+    const QVector< QskLayoutChain::Range > noConstraints;
 
     switch( entryTable.constraintType() )
     {
         case QskLayoutConstraint::WidthForHeight:
         {
-            qskUpdateCellTable( Qt::Vertical, entryTable, rowTable );
-            geometries.rows = rowTable.cellRanges( size.height() );
+            qskResetChain( Qt::Vertical, entryTable, rowChain );
+            geometries.rows = rowChain.geometries( size.height() );
 
-            qskUpdateCellTable( Qt::Horizontal, geometries.rows, entryTable, colTable );
-            geometries.columns = colTable.cellRanges( size.width() );
+            qskResetChain( Qt::Horizontal, geometries.rows, entryTable, colChain );
+            geometries.columns = colChain.geometries( size.width() );
 
             break;
         }
         case QskLayoutConstraint::HeightForWidth:
         {
-            qskUpdateCellTable( Qt::Horizontal, entryTable, colTable );
-            geometries.columns = colTable.cellRanges( size.width() );
+            qskResetChain( Qt::Horizontal, entryTable, colChain );
+            geometries.columns = colChain.geometries( size.width() );
 
-            qskUpdateCellTable( Qt::Vertical, geometries.columns, entryTable, rowTable );
-            geometries.rows = rowTable.cellRanges( size.height() );
+            qskResetChain( Qt::Vertical, geometries.columns, entryTable, rowChain );
+            geometries.rows = rowChain.geometries( size.height() );
 
             break;
         }
         default:
         {
-            qskUpdateCellTable( Qt::Horizontal, entryTable, colTable );
-            geometries.columns = colTable.cellRanges( size.width() );
+            qskResetChain( Qt::Horizontal, entryTable, colChain );
+            geometries.columns = colChain.geometries( size.width() );
 
-            qskUpdateCellTable( Qt::Vertical, entryTable, rowTable );
-            geometries.rows = rowTable.cellRanges( size.height() );
+            qskResetChain( Qt::Vertical, entryTable, rowChain );
+            geometries.rows = rowChain.geometries( size.height() );
         }
     }
 }

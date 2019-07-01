@@ -237,6 +237,7 @@ HEADERS += \
     layouts/QskIndexedLayoutBox.h \
     layouts/QskLayoutConstraint.h \
     layouts/QskLayoutHint.h \
+    layouts/QskLayoutChain.h \
     layouts/QskLinearBox.h \
     layouts/QskLinearLayoutEngine.h \
     layouts/QskStackBoxAnimator.h \
@@ -248,6 +249,7 @@ SOURCES += \
     layouts/QskIndexedLayoutBox.cpp \
     layouts/QskLayoutConstraint.cpp \
     layouts/QskLayoutHint.cpp \
+    layouts/QskLayoutChain.cpp \
     layouts/QskLinearBox.cpp \
     layouts/QskLinearLayoutEngine.cpp \
     layouts/QskStackBoxAnimator.cpp \
