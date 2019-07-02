@@ -490,11 +490,11 @@ QSizeF QskDialogSubWindow::contentsSizeHint() const
             h += hint.height() + m.top() + m.bottom();
     }
 
-    const auto innerSize = layoutRect().size();
-    const auto outerSize = size();
+    const qreal sz = 400.0; // something
+    const auto innerSize = layoutRectForSize( QSizeF( sz, sz ) ).size();
 
-    w += outerSize.width() - innerSize.width();
-    h += outerSize.height() - innerSize.height();
+    w += sz - innerSize.width();
+    h += sz - innerSize.height();
 
     return QSizeF( w, h );
 }
