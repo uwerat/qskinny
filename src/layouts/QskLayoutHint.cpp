@@ -80,13 +80,23 @@ void QskLayoutHint::normalize()
 
 #include <qdebug.h>
 
+static inline QString qskHintValueString( qreal value )
+{
+    if ( value >= QskLayoutConstraint::unlimited )
+        return QStringLiteral( "unlimited" );
+    else
+        return QString::number( value );
+}
+
 QDebug operator<<( QDebug debug, const QskLayoutHint& hint )
 {
     QDebugStateSaver saver( debug );
     debug.nospace();
 
-    debug << "LayoutHint" << "( " << hint.minimum() << ", "
-          << hint.preferred() << ", " << hint.maximum() << " )";
+    debug << "LayoutHint" << "( " 
+        << qskHintValueString( hint.minimum() ) << ", "
+        << qskHintValueString( hint.preferred() ) << ", "
+        << qskHintValueString( hint.maximum() ) << " )";
 
     return debug;
 }
