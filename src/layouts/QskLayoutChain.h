@@ -7,8 +7,11 @@
 #define QSK_LAYOUT_CHAIN_H
 
 #include <QskLayoutHint.h>
+#include <qglobal.h>
 #include <qvector.h>
 #include <vector>
+
+class QDebug;
 
 class QskLayoutChain
 {
@@ -25,6 +28,19 @@ class QskLayoutChain
     class Cell
     {
       public:
+
+        inline bool operator==( const Cell& other ) const
+        {
+            return ( canGrow == other.canGrow )
+                && ( stretch == other.stretch )
+                && ( hint == other.hint );
+        }
+
+        inline bool operator!=( const Cell& other ) const
+        {
+            return !( *this == other );
+        }
+
         QskLayoutHint hint;
         int stretch = 0;
         bool canGrow = false;
@@ -37,8 +53,9 @@ class QskLayoutChain
 
     void reset( int count, qreal constraint );
     void addCell( int index, const Cell& );
-    Cell cell( int index ) const { return m_cells[ index ]; }
     void finish();
+
+    const Cell& cell( int index ) const { return m_cells[ index ]; }
 
     bool setSpacing( qreal spacing );
     qreal spacing() const { return m_spacing; }
@@ -67,5 +84,15 @@ class QskLayoutChain
     int m_sumStretches = 0;
     std::vector< Cell > m_cells;
 };
+
+#ifndef QT_NO_DEBUG_STREAM
+
+QDebug operator<<( QDebug, const QskLayoutChain::Range& );
+QDebug operator<<( QDebug, const QskLayoutChain::Cell& );
+
+#endif
+
+Q_DECLARE_TYPEINFO( QskLayoutChain::Range, Q_MOVABLE_TYPE );
+Q_DECLARE_TYPEINFO( QskLayoutChain::Cell, Q_MOVABLE_TYPE );
 
 #endif

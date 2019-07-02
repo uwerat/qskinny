@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskLayoutChain.h"
+#include "QskLayoutConstraint.h"
 
 #include <qvarlengtharray.h>
 #include <qvector.h>
@@ -39,9 +40,6 @@ void QskLayoutChain::addCell( int index, const Cell& cell )
 
     combinedCell.canGrow |= cell.canGrow;
     combinedCell.stretch = qMax( combinedCell.stretch, cell.stretch );
-
-    m_sumStretches += cell.stretch;
-
     combinedCell.hint.intersect( cell.hint );
 }
 
@@ -51,24 +49,42 @@ void QskLayoutChain::finish()
     qreal preferred = 0.0;
     qreal maximum = 0.0;
 
+    m_sumStretches = 0;
+
     if ( !m_cells.empty() )
     {
-        for ( auto& cellData : m_cells )
-        {
-            minimum += cellData.hint.minimum();
-            preferred += cellData.hint.preferred();
+        const auto maxMaximum = QskLayoutConstraint::unlimited;
 
-            if ( cellData.stretch == 0 && !cellData.canGrow )
-                maximum += cellData.hint.preferred();
-            else
-                maximum += cellData.hint.maximum();  // overflow ???
+        for ( auto& cell : m_cells )
+        {
+            minimum += cell.hint.minimum();
+            preferred += cell.hint.preferred();
+
+            if ( maximum < maxMaximum )
+            {
+                if ( cell.stretch == 0 && !cell.canGrow )
+                {
+                    maximum += cell.hint.preferred();
+                }
+                else
+                {
+                    if ( cell.hint.maximum() == maxMaximum )
+                        maximum = maxMaximum;
+                    else
+                        maximum += cell.hint.maximum();
+                }
+            }
+
+            m_sumStretches += cell.stretch;
         }
 
         const qreal spacing = ( m_cells.size() - 1 ) * m_spacing;
 
         minimum += spacing;
         preferred += spacing;
-        maximum += spacing;
+
+        if ( maximum < maxMaximum )
+            maximum += spacing;
     }
 
     m_boundingHint.setMinimum( minimum );
@@ -319,3 +335,30 @@ QVector< QskLayoutChain::Range > QskLayoutChain::preferredStretched( qreal size 
 
     return ranges;
 }
+
+#ifndef QT_NO_DEBUG_STREAM
+
+#include <qdebug.h>
+
+QDebug operator<<( QDebug debug, const QskLayoutChain::Range& range )
+{
+    QDebugStateSaver saver( debug );
+    debug.nospace();
+
+    debug << "( " << range.start << ", " << range.end() << " )";
+
+    return debug;
+}
+
+QDebug operator<<( QDebug debug, const QskLayoutChain::Cell& cell )
+{
+    QDebugStateSaver saver( debug );
+    debug.nospace();
+
+    debug << "( " << cell.hint << ", "
+        << cell.stretch << ", " << cell.canGrow << " )";
+    return debug;
+}
+
+#endif
+
