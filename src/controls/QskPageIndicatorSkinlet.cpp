@@ -165,7 +165,7 @@ QSGNode* QskPageIndicatorSkinlet::updateBulletsNode(
     while ( bulletNode->nextSibling() != nullptr )
     {
         auto sibling = bulletNode->nextSibling();
-        node->removeChildNode( bulletNode->nextSibling() );
+        node->removeChildNode( sibling );
         delete sibling;
     }
 
