@@ -343,11 +343,12 @@ void QskDialogSubWindow::done( QskDialog::DialogCode result )
 {
     m_data->result = result;
 
-    if ( !isOpen() )
-        return;
-
-    qskSetRejectOnClose( this, false );
-    close();
+    if ( isOpen() )
+    {
+        qskSetRejectOnClose( this, false );
+        close();
+        qskSetRejectOnClose( this, true );
+    }
 
     Q_EMIT finished( result );
 
