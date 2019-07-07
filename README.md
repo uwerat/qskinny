@@ -36,3 +36,4 @@ If you want to know more about QSkinny - or even like to give it a specific
 direction - please contact support@qskinny.org.
 
 [![FendtOne](https://github.com/uwerat/qskinny/blob/master/doc/FendtOne.jpg)](https://www.fendt.com/int/fendt-700-vario-12894.html)
+[//]: FendtOne.jpg: Copyright AGCO GmbH - more details on the linked article
