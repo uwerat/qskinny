@@ -35,6 +35,4 @@ It might support all versions Qt >= 5.6, but you can rely on:
 If you want to know more about QSkinny - or even like to give it a specific
 direction - please contact support@qskinny.org.
 
-Below is a screenshot of a sample automotive UI (see examples/automotive):
-
-![Automotive screenshot](https://github.com/uwerat/qskinny/blob/master/doc/automotive-screenshot.jpg?raw=true)
+[![FendtOne](https://github.com/uwerat/qskinny/blob/master/doc/FendtOne.jpg)](https://www.fendt.com/int/fendt-700-vario-12894.html)
