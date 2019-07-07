@@ -35,5 +35,5 @@ It might support all versions Qt >= 5.6, but you can rely on:
 If you want to know more about QSkinny - or even like to give it a specific
 direction - please contact support@qskinny.org.
 
-[![FendtOne](https://www.fendt.com/int/fendt-700-vario-12894.html)](https://www.fendt.com/int/fendt-700-vario-12894.html)<br />
+[![FendtOne](https://www.fendt.com/int/geneva-assets/widget/28291/news-3-low.jpg)](https://www.fendt.com/int/fendt-700-vario-12894.html)<br />
 ( Photo: Copyright AGCO GmbH )
