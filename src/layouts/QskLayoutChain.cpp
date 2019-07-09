@@ -34,13 +34,13 @@ void QskLayoutChain::reset( int count, qreal constraint )
     m_sumStretches = 0;
 }
 
-void QskLayoutChain::addCell( int index, const Cell& cell )
+void QskLayoutChain::expandTo( int index, const Cell& newCell )
 {
-    auto& combinedCell = m_cells[ index ];
+    auto& cell = m_cells[ index ];
 
-    combinedCell.canGrow |= cell.canGrow;
-    combinedCell.stretch = qMax( combinedCell.stretch, cell.stretch );
-    combinedCell.hint.intersect( cell.hint );
+    cell.canGrow |= newCell.canGrow;
+    cell.stretch = qMax( cell.stretch, newCell.stretch );
+    cell.hint.intersect( newCell.hint );
 }
 
 void QskLayoutChain::finish()

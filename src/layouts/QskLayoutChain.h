@@ -52,7 +52,7 @@ class QskLayoutChain
     void invalidate();
 
     void reset( int count, qreal constraint );
-    void addCell( int index, const Cell& );
+    void expandTo( int index, const Cell& );
     void finish();
 
     const Cell& cell( int index ) const { return m_cells[ index ]; }

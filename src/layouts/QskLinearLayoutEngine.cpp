@@ -616,7 +616,7 @@ void EntryTable::resetChain( Qt::Orientation orientation,
             constraints.isEmpty() ? -1.0 : constraints[index1].length;
 
         const auto cell = this->cell( entry, orientation, cellConstraint );
-        chain.addCell( index2, cell );
+        chain.expandTo( index2, cell );
 
         if ( m_orientation != orientation )
         {
