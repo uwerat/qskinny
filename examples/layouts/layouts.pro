@@ -1,4 +1,7 @@
-CONFIG += qskexample
+CONFIG += qskexample qskqmlexport
+
+RESOURCES += \
+    layouts.qrc
 
 HEADERS += \
     TestRectangle.h \

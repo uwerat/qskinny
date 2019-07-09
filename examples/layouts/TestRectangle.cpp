@@ -5,17 +5,33 @@
 
 #include "TestRectangle.h"
 
-#include <QskAspect.h>
-
-TestRectangle::TestRectangle( const char* colorName, QQuickItem* parent )
+TestRectangle::TestRectangle( QQuickItem* parent )
     : QskTextLabel( parent )
 {
-    setObjectName( colorName );
-
     setAlignment( Qt::AlignCenter );
-    setBackgroundColor( colorName );
 
     setPreferredSize( 10, 10 );
     setSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Minimum );
     setFocusPolicy( Qt::TabFocus ); // for checking the focus tab chain
 }
+
+TestRectangle::TestRectangle( const char* colorName, QQuickItem* parent )
+    : TestRectangle( parent )
+{
+    setColorName( colorName );
+}
+
+void TestRectangle::setColorName( const QString& colorName )
+{
+    m_colorName = colorName;
+
+    setObjectName( colorName );
+    setBackgroundColor( colorName );
+}
+
+QString TestRectangle::colorName() const
+{
+    return m_colorName;
+}
+
+#include "moc_TestRectangle.cpp"

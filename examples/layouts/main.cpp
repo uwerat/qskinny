@@ -8,6 +8,7 @@
 #include "LinearLayoutPage.h"
 #include "GridLayoutPage.h"
 #include "StackLayoutPage.h"
+#include "TestRectangle.h"
 
 #include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
@@ -21,31 +22,17 @@
 #include <QskTextLabel.h>
 #include <QskTextOptions.h>
 #include <QskWindow.h>
+#include <QskQml.h>
 
 #include <QGuiApplication>
-
-class DummyLabel : public QskTextLabel
-{
-  public:
-    DummyLabel( const QString& text, QQuickItem* parent = nullptr )
-        : QskTextLabel( text, parent )
-    {
-        setBackgroundColor( Qt::black );
-        setTextColor( Qt::white );
-        setFontRole( QskSkin::MediumFont );
-
-        setWrapMode( QskTextOptions::WordWrap );
-
-        setAlignment( Qt::AlignCenter );
-        setSizePolicy( QskSizePolicy::Ignored, QskSizePolicy::Ignored );
-    }
-};
 
 int main( int argc, char* argv[] )
 {
 #ifdef ITEM_STATISTICS
     QskObjectCounter counter( true );
 #endif
+    QskQml::registerTypes();
+    qmlRegisterType< TestRectangle >( "Test", 1, 0, "TestRectangle" );
 
     QGuiApplication app( argc, argv );
 
@@ -69,7 +56,7 @@ int main( int argc, char* argv[] )
 
     tabView->addTab( "Stack Layout", new StackLayoutPage() );
 
-    tabView->setCurrentIndex( 4 );
+    tabView->setCurrentIndex( 0 );
 
     QSize size( 800, 600 );
     size = size.expandedTo( tabView->sizeHint().toSize() );

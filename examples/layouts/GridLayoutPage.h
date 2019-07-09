@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #ifndef GRID_LAYOUT_PAGE
-#define GRID_LAYOUT_PAGE 1
+#define GRID_LAYOUT_PAGE
 
 #include <QskControl.h>
 
