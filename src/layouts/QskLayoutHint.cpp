@@ -76,6 +76,12 @@ void QskLayoutHint::normalize()
     m_preferred = qBound( m_minimum, m_preferred, m_maximum );
 }
 
+bool QskLayoutHint::isDefault() const
+{
+    return ( m_minimum == 0.0 ) && (m_preferred == 0.0 )
+        && ( m_maximum == QskLayoutConstraint::unlimited );
+}
+
 #ifndef QT_NO_DEBUG_STREAM
 
 #include <qdebug.h>

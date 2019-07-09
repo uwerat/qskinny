@@ -20,6 +20,9 @@ class QSK_EXPORT QskLayoutHint
     void intersect( const QskLayoutHint& );
     void normalize();
 
+    QskLayoutHint normalized() const;
+    bool isDefault() const;
+
     qreal size( int which ) const;
     void setSize( int which, qreal size );
 
@@ -81,6 +84,13 @@ inline bool QskLayoutHint::operator==( const QskLayoutHint& other ) const
 inline bool QskLayoutHint::operator!=( const QskLayoutHint& other ) const
 {
     return !( *this == other );
+}
+
+inline QskLayoutHint QskLayoutHint::normalized() const
+{
+    auto hint = *this;
+    hint.normalize();
+    return hint;
 }
 
 #ifndef QT_NO_DEBUG_STREAM
