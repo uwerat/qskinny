@@ -13,14 +13,9 @@
 #include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
 
-#include <QskAspect.h>
 #include <QskFocusIndicator.h>
 #include <QskObjectCounter.h>
-#include <QskSkin.h>
-#include <QskTabButton.h>
 #include <QskTabView.h>
-#include <QskTextLabel.h>
-#include <QskTextOptions.h>
 #include <QskWindow.h>
 #include <QskQml.h>
 
@@ -46,14 +41,7 @@ int main( int argc, char* argv[] )
     tabView->addTab( "Grid Layout", new GridLayoutPage() );
     tabView->addTab( "Flow Layout", new FlowLayoutPage() );
     tabView->addTab( "Linear Layout", new LinearLayoutPage() );
-
-    int dynamicIndex = tabView->addTab( "Dynamic\nConstraints", new DynamicConstraintsPage() );
-
-    auto button = tabView->buttonAt( dynamicIndex );
-    QskTextOptions textOptions = button->textOptions();
-    textOptions.setWrapMode( QskTextOptions::WordWrap );
-    button->setTextOptions( textOptions );
-
+    tabView->addTab( "Dynamic\nConstraints", new DynamicConstraintsPage() );
     tabView->addTab( "Stack Layout", new StackLayoutPage() );
 
     tabView->setCurrentIndex( 0 );
