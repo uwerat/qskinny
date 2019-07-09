@@ -4,44 +4,44 @@ import Test 1.0
 
 GridBox
 {
-	margins: 10
-	autoFillBackground : true
+    margins: 10
+    autoFillBackground : true
 
-	background
-	{
-		stops: [
-			{ position: 0.0, color: "White" },
-			{ position: 1.0, color: "White" },
-		]
-	}
+    background
+    {
+        stops: [
+            { position: 0.0, color: "White" },
+            { position: 1.0, color: "White" },
+        ]
+    }
 
-	TestRectangle
-	{
-		id: paleVioletRed
-		color: "PaleVioletRed"
-	}
+    TestRectangle
+    {
+        id: paleVioletRed
+        color: "PaleVioletRed"
+    }
 
-	TestRectangle
+    TestRectangle
     {
         id: darkSeaGreen
-		color: "DarkSeaGreen"
+        color: "DarkSeaGreen"
     }
 
-	TestRectangle
+    TestRectangle
     {
         id: skyBlue
-		color: "SkyBlue"
+        color: "SkyBlue"
     }
 
-	TestRectangle
+    TestRectangle
     {
         id: navajoWhite
-		color: "NavajoWhite"
+        color: "NavajoWhite"
     }
 
-	Component.onCompleted:
-	{
-		addItem( paleVioletRed, 0, 0, 1, 2 );
+    Component.onCompleted:
+    {
+        addItem( paleVioletRed, 0, 0, 1, 2 );
         addItem( darkSeaGreen, 1, 0, 2, 1 );
         addItem( skyBlue, 2, 1, 1, 1 );
         addItem( navajoWhite, 0, 2, -1, 1 );
@@ -49,6 +49,6 @@ GridBox
         setRowStretchFactor( 0, 1 );
         setRowStretchFactor( 1, 2 );
         setRowStretchFactor( 2, 1 );
-	}
+    }
 }
 
