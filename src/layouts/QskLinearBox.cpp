@@ -82,6 +82,11 @@ int QskLinearBox::entryCount() const
     return m_data->engine.count();
 }
 
+int QskLinearBox::spacingAtIndex( int index ) const
+{
+    return m_data->engine.spacerAt( index );
+}
+
 QQuickItem* QskLinearBox::itemAtIndex( int index ) const
 {
     return m_data->engine.itemAt( index );

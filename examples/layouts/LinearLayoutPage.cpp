@@ -35,10 +35,7 @@ namespace
             addRectangle( "FireBrick" );
             addRectangle( "DarkRed" );
 
-            // setRowSpacing( 5, 30 );
             insertSpacer( 5, 30 );
-            // insertStretch( 5, 2 );
-            // setRetainSizeWhenHidden( 2, true );
         }
 
         void mirror()
@@ -50,17 +47,16 @@ namespace
         {
             const int index = 0;
 
-            QQuickItem* item = itemAtIndex( index );
-            removeAt( index );
-
-            if ( item == nullptr )
+            if ( auto item = itemAtIndex( index ) )
             {
-                // how to get the spacer item and its settings ???
-                addSpacer( 30 );
+                removeAt( index );
+                addItem( item );
             }
             else
             {
-                addItem( item );
+                const auto spacing = spacingAtIndex( index );
+                removeAt( index );
+                addSpacer( spacing );
             }
         }
 

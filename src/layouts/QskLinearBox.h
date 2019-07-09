@@ -46,6 +46,8 @@ class QSK_EXPORT QskLinearBox : public QskIndexedLayoutBox
     int itemCount() const { return entryCount(); } // items and spacers
 #endif
 
+    int spacingAtIndex( int index ) const;
+
     QQuickItem* itemAtIndex( int index ) const;
     int indexOf( const QQuickItem* ) const;
 

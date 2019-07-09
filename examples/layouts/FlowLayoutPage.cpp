@@ -53,7 +53,7 @@ namespace
         {
             const int index = 0;
 
-            QQuickItem* item = itemAtIndex( index );
+            auto item = itemAtIndex( index );
             removeAt( index );
 
             if ( item == nullptr )
