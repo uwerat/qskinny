@@ -473,15 +473,15 @@ QskLayoutConstraint::Type EntryTable::constraintType() const
 
         for ( const auto& entry : m_entries )
         {
-            const auto itemType = QskLayoutConstraint::constraintType( entry.item() );
+            const auto entryType = QskLayoutConstraint::constraintType( entry.item() );
 
-            if ( itemType != QskLayoutConstraint::Unconstrained )
+            if ( entryType != QskLayoutConstraint::Unconstrained )
             {
                 if ( m_constraintType == QskLayoutConstraint::Unconstrained )
                 {
-                    m_constraintType = itemType;
+                    m_constraintType = entryType;
                 }
-                else if ( m_constraintType != itemType )
+                else if ( m_constraintType != entryType )
                 {
                     qWarning( "QskLinearLayoutEngine: conflicting constraints");
                     m_constraintType = QskLayoutConstraint::Unconstrained;
