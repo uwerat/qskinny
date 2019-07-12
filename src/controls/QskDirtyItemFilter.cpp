@@ -127,7 +127,7 @@ void QskDirtyItemFilter::filterDirtyList(
         return;
 
     auto d = QQuickWindowPrivate::get( window );
-    for ( QQuickItem* item = d->dirtyItemList; item != nullptr; )
+    for ( auto item = d->dirtyItemList; item != nullptr; )
     {
         auto nextItem = QQuickItemPrivate::get( item )->nextDirtyItem;
 
