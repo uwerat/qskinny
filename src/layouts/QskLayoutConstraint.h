@@ -13,6 +13,7 @@
 
 class QskSizePolicy;
 class QskControl;
+class QskLayoutHint;
 class QQuickItem;
 class QSizeF;
 class QRectF;
@@ -33,17 +34,18 @@ namespace QskLayoutConstraint
     QSK_EXPORT qreal widthForHeight( const QQuickItem*, qreal height );
 
     QSK_EXPORT Type constraintType( const QQuickItem* );
+    QSK_EXPORT bool isConstrained( const QQuickItem*, Qt::Orientation );
 
     QSK_EXPORT qreal constrainedMetric(
         Type, const QskControl*, qreal value,
         std::function< qreal( Type, const QskControl*, qreal ) > );
 
-    QSK_EXPORT qreal constrainedChildrenMetric( Type, const QskControl*, qreal width );
+    QSK_EXPORT qreal constrainedChildrenMetric(
+        Type, const QskControl*, qreal constraint );
 
     QSK_EXPORT QSizeF effectiveConstraint( const QQuickItem*, Qt::SizeHint );
     QSK_EXPORT QskSizePolicy sizePolicy( const QQuickItem* );
 
-    // bounded by Qt::MinimumSize/Qt::MaximumSize
     QSK_EXPORT QSizeF boundedSize( const QQuickItem*, const QSizeF& );
     QSK_EXPORT QSizeF adjustedSize( const QQuickItem*, const QSizeF& );
 
@@ -56,7 +58,9 @@ namespace QskLayoutConstraint
     QSK_EXPORT QRectF itemRect(
         const QQuickItem*, const QRectF&, Qt::Alignment );
 
-    // QGridLayoutEngine internally uses FLT_MAX
+    QSK_EXPORT QskLayoutHint layoutHint(
+        const QQuickItem*, Qt::Orientation, qreal constraint );
+
     const qreal unlimited = std::numeric_limits< float >::max();
 }
 

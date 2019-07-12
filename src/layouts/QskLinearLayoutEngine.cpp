@@ -53,7 +53,6 @@ namespace
         EntryData& operator=( const EntryData& );
 
         bool isIgnored() const;
-        bool isConstrained( Qt::Orientation ) const;
 
         qreal spacer() const { return m_isSpacer ? m_spacer : -1.0; }
         QQuickItem* item() const { return m_isSpacer ? nullptr : m_item; }
@@ -198,24 +197,6 @@ bool EntryData::isIgnored() const
         return !qskIsVisibleToParent( m_item );
 
     return false;
-}
-
-bool EntryData::isConstrained( Qt::Orientation orientation ) const
-{
-    if ( m_isSpacer )
-        return false;
-
-    switch( QskLayoutConstraint::constraintType( m_item ) )
-    {
-        case QskLayoutConstraint::WidthForHeight:
-            return orientation == Qt::Horizontal;
-
-        case QskLayoutConstraint::HeightForWidth:
-            return orientation == Qt::Vertical;
-
-        default:
-            return false;
-    }
 }
 
 EntryTable::EntryTable( Qt::Orientation orientation, uint dimension )
@@ -496,94 +477,38 @@ QskLayoutConstraint::Type EntryTable::constraintType() const
 QskLayoutChain::Cell EntryTable::cell( const EntryData& entry,
     Qt::Orientation orientation, qreal constraint ) const
 {
-    int stretch = 0;
-    bool canGrow = true;
-    qreal minimum, preferred, maximum;
+    QskLayoutChain::Cell cell;
+    cell.canGrow = true;
 
     if ( const auto item = entry.item() )
     {
+        cell.hint = QskLayoutConstraint::layoutHint( item, orientation, constraint );
+
         const auto policy = QskLayoutConstraint::sizePolicy( item ).policy( orientation );
-
-        if ( constraint >= 0.0 )
-        {
-            if ( !entry.isConstrained( orientation ) )
-                constraint = -1.0;
-        }
-
-        const auto expandFlags = QskSizePolicy::GrowFlag | QskSizePolicy::ExpandFlag;
-
-        if ( ( policy & QskSizePolicy::ShrinkFlag ) &&
-            ( policy & expandFlags ) && ( policy & QskSizePolicy::IgnoreFlag ) )
-        {
-            // we don't need to calculate the preferred size
-
-            minimum = QskLayoutConstraint::sizeHint(
-                item, Qt::MinimumSize, orientation, constraint );
-
-            maximum = QskLayoutConstraint::sizeHint(
-                item, Qt::MaximumSize, orientation, constraint );
-
-            preferred = minimum;
-        }
-        else
-        {
-            preferred = QskLayoutConstraint::sizeHint(
-                item, Qt::PreferredSize, orientation, constraint );
-
-            minimum = maximum = preferred;
-
-            if ( policy & QskSizePolicy::ShrinkFlag )
-            {
-                minimum = QskLayoutConstraint::sizeHint(
-                    item, Qt::MinimumSize, orientation, constraint );
-            }
-
-            if ( policy & expandFlags )
-            {
-                maximum = QskLayoutConstraint::sizeHint(
-                    item, Qt::MaximumSize, orientation, constraint );
-            }
-
-            if ( policy & QskSizePolicy::IgnoreFlag )
-                preferred = minimum;
-        }
 
         if ( orientation == m_orientation )
         {
             if ( entry.stretch() < 0 )
-                stretch = ( policy & QskSizePolicy::ExpandFlag ) ? 1 : 0;
+                cell.stretch = ( policy & QskSizePolicy::ExpandFlag ) ? 1 : 0;
             else
-                stretch = entry.stretch();
+                cell.stretch = entry.stretch();
         }
 
-        canGrow = policy & QskSizePolicy::GrowFlag;
+        cell.canGrow = policy & QskSizePolicy::GrowFlag;
     }
     else
     {
-        // a spacer
-
         if ( orientation == m_orientation )
         {
-            minimum = preferred = maximum = entry.spacer();
+            cell.hint.setMinimum( entry.spacer() );
+            cell.hint.setPreferred( entry.spacer() );
 
-            // >= 0 ???
-            if ( entry.stretch() > 0 )
-                maximum = QskLayoutConstraint::unlimited;
+            if ( entry.stretch() <= 0 )
+                cell.hint.setMaximum( entry.spacer() );
 
-            stretch = qMax( entry.stretch(), 0 );
-        }
-        else
-        {
-            minimum = 0.0;
-            preferred = 0.0;
-            maximum = QskLayoutConstraint::unlimited;
+            cell.stretch = qMax( entry.stretch(), 0 );
         }
     }
-
-    QskLayoutChain::Cell cell;
-    cell.hint = QskLayoutHint( minimum, preferred, maximum );
-    cell.stretch = stretch;
-    cell.canGrow = canGrow;
 
     return cell;
 }

@@ -6,6 +6,7 @@
 #include "QskLayoutConstraint.h"
 #include "QskControl.h"
 #include "QskSizePolicy.h"
+#include "QskLayoutHint.h"
 #include "QskFunctions.h"
 
 #include <functional>
@@ -129,6 +130,22 @@ QskLayoutConstraint::Type QskLayoutConstraint::constraintType( const QQuickItem*
     return constraintType;
 }
 
+bool QskLayoutConstraint::isConstrained(
+    const QQuickItem* item, Qt::Orientation orientation )
+{
+    switch( constraintType( item ) )
+    {
+        case QskLayoutConstraint::WidthForHeight:
+            return orientation == Qt::Horizontal;
+
+        case QskLayoutConstraint::HeightForWidth:
+            return orientation == Qt::Vertical;
+
+        default:
+            return false;
+    }
+}
+
 qreal QskLayoutConstraint::heightForWidth( const QQuickItem* item, qreal width )
 {
     if ( auto control = qskControlCast( item ) )
@@ -186,7 +203,7 @@ qreal QskLayoutConstraint::constrainedMetric(
 }
 
 qreal QskLayoutConstraint::constrainedChildrenMetric(
-    Type type, const QskControl* control, qreal widthOrHeight )
+    Type type, const QskControl* control, qreal constraint )
 {
     auto constrainFunction =
         ( type == WidthForHeight ) ? widthForHeight : heightForWidth;
@@ -200,7 +217,7 @@ qreal QskLayoutConstraint::constrainedChildrenMetric(
         {
             if ( !control->isTransparentForPositioner() )
             {
-                const auto v = constrainFunction( control, widthOrHeight );
+                const auto v = constrainFunction( control, constraint );
                 if ( v > constrainedValue )
                     constrainedValue = v;
             }
@@ -460,3 +477,50 @@ QRectF QskLayoutConstraint::itemRect( const QQuickItem* item,
     return qskAlignedRectF( rect, size.width(), size.height(), alignment );
 }
 
+QskLayoutHint QskLayoutConstraint::layoutHint(
+    const QQuickItem* item, Qt::Orientation orientation, qreal constraint )
+{
+    if ( item == nullptr )
+        return QskLayoutHint();
+
+    const auto policy = sizePolicy( item ).policy( orientation );
+
+    if ( constraint >= 0.0 )
+    {
+        if ( !isConstrained( item, orientation ) )
+            constraint = -1.0;
+    }
+
+    qreal minimum, preferred, maximum;
+
+    const auto expandFlags = QskSizePolicy::GrowFlag | QskSizePolicy::ExpandFlag;
+
+    if ( ( policy & QskSizePolicy::ShrinkFlag ) &&
+        ( policy & expandFlags ) && ( policy & QskSizePolicy::IgnoreFlag ) )
+    {
+        // we don't need to calculate the preferred size
+
+        minimum = sizeHint( item, Qt::MinimumSize, orientation, constraint );
+        maximum = sizeHint( item, Qt::MaximumSize, orientation, constraint );
+        preferred = minimum;
+    }
+    else
+    {
+        preferred = sizeHint( item, Qt::PreferredSize, orientation, constraint );
+
+        if ( policy & QskSizePolicy::ShrinkFlag )
+            minimum = sizeHint( item, Qt::MinimumSize, orientation, constraint );
+        else
+            minimum = preferred;
+
+        if ( policy & expandFlags )
+            maximum = sizeHint( item, Qt::MaximumSize, orientation, constraint );
+        else
+            maximum = preferred;
+
+        if ( policy & QskSizePolicy::IgnoreFlag )
+            preferred = minimum;
+    }
+
+    return QskLayoutHint( minimum, preferred, maximum );
+}
