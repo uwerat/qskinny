@@ -290,15 +290,8 @@ bool QskLinearBox::event( QEvent* event )
 
 void QskLinearBox::setDimension( uint dimension )
 {
-    if ( dimension < 1 )
-        dimension = 1;
-
-    auto& engine = m_data->engine;
-
-    if ( dimension != engine.dimension() )
+    if ( m_data->engine.setDimension( dimension ) )
     {
-        engine.setDimension( dimension );
-
         polish();
         resetImplicitSize();
 
@@ -313,12 +306,8 @@ uint QskLinearBox::dimension() const
 
 void QskLinearBox::setOrientation( Qt::Orientation orientation )
 {
-    auto& engine = m_data->engine;
-
-    if ( engine.orientation() != orientation )
+    if ( m_data->engine.setOrientation( orientation ) )
     {
-        engine.setOrientation( orientation );
-
         polish();
         resetImplicitSize();
 
@@ -356,13 +345,8 @@ void QskLinearBox::transpose()
 
 void QskLinearBox::setDefaultAlignment( Qt::Alignment alignment )
 {
-    auto& engine = m_data->engine;
-
-    if ( alignment != engine.defaultAlignment() )
-    {
-        engine.setDefaultAlignment( alignment );
+    if ( m_data->engine.setDefaultAlignment( alignment ) )
         Q_EMIT defaultAlignmentChanged();
-    }
 }
 
 Qt::Alignment QskLinearBox::defaultAlignment() const
@@ -377,15 +361,11 @@ void QskLinearBox::setSpacing( qreal spacing )
         but need to create an API for Qml in QskQml
         using qmlAttachedPropertiesObject then. TODO ...
      */
-    spacing = qMax( spacing, 0.0 );
 
-    auto& engine = m_data->engine;
-
-    if ( spacing != engine.spacing( Qt::Horizontal ) )
+    if ( m_data->engine.setSpacing(
+        spacing, Qt::Horizontal | Qt::Vertical ) )
     {
-        engine.setSpacing( spacing, Qt::Horizontal | Qt::Vertical );
         polish();
-
         Q_EMIT spacingChanged();
     }
 }

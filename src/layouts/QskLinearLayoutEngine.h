@@ -19,25 +19,29 @@ class QskLinearLayoutEngine
     ~QskLinearLayoutEngine();
 
     Qt::Orientation orientation() const;
-    void setOrientation( Qt::Orientation );
+    bool setOrientation( Qt::Orientation );
 
-    void setDimension( uint dimension );
+    bool setDimension( uint dimension );
     uint dimension() const;
 
-    void setDefaultAlignment( Qt::Alignment );
+    bool setDefaultAlignment( Qt::Alignment );
     Qt::Alignment defaultAlignment() const;
 
-    void setExtraSpacingAt( Qt::Edges );
+    bool setExtraSpacingAt( Qt::Edges );
     Qt::Edges extraSpacingAt() const;
+
+    bool setVisualDirection( Qt::LayoutDirection );
+    Qt::LayoutDirection visualDirection() const;
+
+    bool setSpacing( qreal spacing, Qt::Orientations );
+    qreal spacing( Qt::Orientation ) const;
+
+    qreal defaultSpacing( Qt::Orientation ) const;
 
     int count() const;
 
     int rowCount() const;
     int columnCount() const;
-
-    void setSpacing( qreal spacing, Qt::Orientations );
-    qreal spacing( Qt::Orientation ) const;
-    qreal defaultSpacing( Qt::Orientation ) const;
 
     void insertItem( QQuickItem*, int index );
     void addItem( QQuickItem* );
@@ -50,13 +54,13 @@ class QskLinearLayoutEngine
     QQuickItem* itemAt( int index ) const;
     int spacerAt( int index ) const;
 
-    void setRetainSizeWhenHiddenAt( int index, bool on );
+    bool setRetainSizeWhenHiddenAt( int index, bool on );
     bool retainSizeWhenHiddenAt( int index ) const;
 
-    void setAlignmentAt( int index, Qt::Alignment );
+    bool setAlignmentAt( int index, Qt::Alignment );
     Qt::Alignment alignmentAt( int index ) const;
 
-    void setStretchFactorAt( int index, int stretchFactor );
+    bool setStretchFactorAt( int index, int stretchFactor );
     int stretchFactorAt( int index ) const;
 
     void setGeometries( const QRectF& );
@@ -65,9 +69,6 @@ class QskLinearLayoutEngine
     qreal heightForWidth( qreal width ) const;
 
     QSizeF sizeHint( Qt::SizeHint, const QSizeF& contraint ) const;
-
-    void setVisualDirection( Qt::LayoutDirection );
-    Qt::LayoutDirection visualDirection() const;
 
     enum
     {

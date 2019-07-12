@@ -620,10 +620,13 @@ QskLinearLayoutEngine::~QskLinearLayoutEngine()
 {
 }
 
-void QskLinearLayoutEngine::setOrientation( Qt::Orientation orientation )
+bool QskLinearLayoutEngine::setOrientation( Qt::Orientation orientation )
 {
-    if ( m_data->entryTable.setOrientation( orientation ) )
+    const bool isModified = m_data->entryTable.setOrientation( orientation );
+    if ( isModified )
         invalidate( CellCache | LayoutCache );
+
+    return isModified;
 }
 
 Qt::Orientation QskLinearLayoutEngine::orientation() const
@@ -631,13 +634,18 @@ Qt::Orientation QskLinearLayoutEngine::orientation() const
     return m_data->entryTable.orientation();
 }
 
-void QskLinearLayoutEngine::setDimension( uint dimension )
+bool QskLinearLayoutEngine::setDimension( uint dimension )
 {
     if ( dimension < 1 )
         dimension = 1;
 
-    if ( m_data->entryTable.setDimension( dimension ) )
+    const bool isModified =
+        m_data->entryTable.setDimension( dimension );
+
+    if ( isModified )
         invalidate( CellCache | LayoutCache );
+
+    return isModified;
 }
 
 uint QskLinearLayoutEngine::dimension() const
@@ -660,10 +668,15 @@ int QskLinearLayoutEngine::columnCount() const
     return m_data->entryTable.effectiveCount( Qt::Horizontal );
 }
 
-void QskLinearLayoutEngine::setRetainSizeWhenHiddenAt( int index, bool on )
+bool QskLinearLayoutEngine::setRetainSizeWhenHiddenAt( int index, bool on )
 {
-    if ( m_data->entryTable.setRetainSizeWhenHiddenAt( index, on ) )
+    const bool isModified =
+        m_data->entryTable.setRetainSizeWhenHiddenAt( index, on );
+
+    if ( isModified )
         invalidate( CellCache | LayoutCache );
+
+    return isModified;
 }
 
 bool QskLinearLayoutEngine::retainSizeWhenHiddenAt( int index ) const
@@ -671,10 +684,15 @@ bool QskLinearLayoutEngine::retainSizeWhenHiddenAt( int index ) const
     return m_data->entryTable.retainSizeWhenHiddenAt( index );
 }
 
-void QskLinearLayoutEngine::setStretchFactorAt( int index, int stretchFactor )
+bool QskLinearLayoutEngine::setStretchFactorAt( int index, int stretchFactor )
 {
-    if ( m_data->entryTable.setStretchFactorAt( index, stretchFactor ) )
+    const bool isModified =
+        m_data->entryTable.setStretchFactorAt( index, stretchFactor );
+
+    if ( isModified )
         invalidate( CellCache | LayoutCache );
+
+    return isModified;
 }
 
 int QskLinearLayoutEngine::stretchFactorAt( int index ) const
@@ -682,9 +700,9 @@ int QskLinearLayoutEngine::stretchFactorAt( int index ) const
     return m_data->entryTable.stretchFactorAt( index );
 }
 
-void QskLinearLayoutEngine::setAlignmentAt( int index, Qt::Alignment alignment )
+bool QskLinearLayoutEngine::setAlignmentAt( int index, Qt::Alignment alignment )
 {
-    m_data->entryTable.setAlignmentAt( index, alignment );
+    return m_data->entryTable.setAlignmentAt( index, alignment );
 }
 
 Qt::Alignment QskLinearLayoutEngine::alignmentAt( int index ) const
@@ -692,21 +710,23 @@ Qt::Alignment QskLinearLayoutEngine::alignmentAt( int index ) const
     return m_data->entryTable.alignmentAt( index );
 }
 
-void QskLinearLayoutEngine::setSpacing( qreal spacing, Qt::Orientations orientations )
+bool QskLinearLayoutEngine::setSpacing( qreal spacing, Qt::Orientations orientations )
 {
     if ( spacing < 0.0 )
         spacing = 0.0;
 
-    bool doInvalidate = false;
+    bool isModified = false;
 
     if ( orientations & Qt::Horizontal )
-        doInvalidate |= m_data->colChain.setSpacing( spacing );
+        isModified |= m_data->colChain.setSpacing( spacing );
 
     if ( orientations & Qt::Vertical )
-        doInvalidate |= m_data->rowChain.setSpacing( spacing );
+        isModified |= m_data->rowChain.setSpacing( spacing );
 
-    if ( doInvalidate )
+    if ( isModified )
         invalidate( CellCache | LayoutCache );
+
+    return isModified;
 }
 
 qreal QskLinearLayoutEngine::spacing( Qt::Orientation orientation ) const
@@ -717,10 +737,10 @@ qreal QskLinearLayoutEngine::spacing( Qt::Orientation orientation ) const
         return m_data->rowChain.spacing();
 }
 
-void QskLinearLayoutEngine::setExtraSpacingAt( Qt::Edges edges )
+bool QskLinearLayoutEngine::setExtraSpacingAt( Qt::Edges edges )
 {
     if ( edges == m_data->extraSpacingAt )
-        return;
+        return false;
 
     m_data->extraSpacingAt = edges;
 
@@ -743,6 +763,7 @@ void QskLinearLayoutEngine::setExtraSpacingAt( Qt::Edges edges )
     m_data->rowChain.setExtraSpacingAt( rowEdges );
 
     invalidate( LayoutCache );
+    return true;
 }
 
 Qt::Edges QskLinearLayoutEngine::extraSpacingAt() const
@@ -750,9 +771,9 @@ Qt::Edges QskLinearLayoutEngine::extraSpacingAt() const
     return m_data->extraSpacingAt;
 }
 
-void QskLinearLayoutEngine::setDefaultAlignment( Qt::Alignment alignment )
+bool QskLinearLayoutEngine::setDefaultAlignment( Qt::Alignment alignment )
 {
-    m_data->entryTable.setDefaultAlignment( alignment );
+    return m_data->entryTable.setDefaultAlignment( alignment );
 }
 
 Qt::Alignment QskLinearLayoutEngine::defaultAlignment() const
@@ -935,9 +956,15 @@ qreal QskLinearLayoutEngine::heightForWidth( qreal width ) const
     return sizeHint( Qt::PreferredSize, constraint ).height();
 }
 
-void QskLinearLayoutEngine::setVisualDirection(Qt::LayoutDirection direction)
+bool QskLinearLayoutEngine::setVisualDirection(Qt::LayoutDirection direction)
 {
-    m_data->visualDirection = direction;
+    if ( m_data->visualDirection != direction )
+    {
+        m_data->visualDirection = direction;
+        return true;
+    }
+
+    return false;
 }
 
 Qt::LayoutDirection QskLinearLayoutEngine::visualDirection() const
