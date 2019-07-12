@@ -122,7 +122,7 @@ namespace
         int effectiveCount() const;
         int effectiveCount( Qt::Orientation orientation ) const;
 
-        void resetChain( Qt::Orientation,
+        void updateLayoutChain( Qt::Orientation,
             const QVector< QskLayoutChain::Range >& constraints,
             QskLayoutChain& ) const;
 
@@ -513,7 +513,7 @@ QskLayoutChain::Cell EntryTable::cell( const EntryData& entry,
     return cell;
 }
 
-void EntryTable::resetChain( Qt::Orientation orientation,
+void EntryTable::updateLayoutChain( Qt::Orientation orientation,
     const QVector< QskLayoutChain::Range >& constraints,
     QskLayoutChain& chain ) const
 {
@@ -566,18 +566,18 @@ void EntryTable::resetChain( Qt::Orientation orientation,
 
 // ---------
 
-static inline void qskResetChain( Qt::Orientation orientation,
+static inline void qskUpdateLayoutChain( Qt::Orientation orientation,
     const QVector< QskLayoutChain::Range >& constraints,
     const EntryTable& entryTable, QskLayoutChain& chain )
 {
-    entryTable.resetChain( orientation, constraints, chain );
+    entryTable.updateLayoutChain( orientation, constraints, chain );
 }
 
-static inline void qskResetChain( Qt::Orientation orientation,
+static inline void qskUpdateLayoutChain( Qt::Orientation orientation,
     const EntryTable& entryTable, QskLayoutChain& chain )
 {
     const QVector< QskLayoutChain::Range > constraints;
-    entryTable.resetChain( orientation, constraints, chain );
+    entryTable.updateLayoutChain( orientation, constraints, chain );
 }
 
 class QskLinearLayoutEngine::PrivateData
@@ -896,23 +896,23 @@ QSizeF QskLinearLayoutEngine::sizeHint( Qt::SizeHint which, const QSizeF& constr
     if ( ( constraint.width() >= 0 ) &&
         ( constraintType == QskLayoutConstraint::HeightForWidth ) )
     {
-        qskResetChain( Qt::Horizontal, entryTable, colChain );
+        qskUpdateLayoutChain( Qt::Horizontal, entryTable, colChain );
 
         const auto cellConstraints = colChain.geometries( constraint.width() );
-        qskResetChain( Qt::Vertical, cellConstraints, entryTable, rowChain );
+        qskUpdateLayoutChain( Qt::Vertical, cellConstraints, entryTable, rowChain );
     }
     else if ( ( constraint.height() >= 0 ) &&
         ( constraintType == QskLayoutConstraint::WidthForHeight ) )
     {
-        qskResetChain( Qt::Vertical, entryTable, rowChain );
+        qskUpdateLayoutChain( Qt::Vertical, entryTable, rowChain );
 
         const auto cellConstraints = rowChain.geometries( constraint.height() );
-        qskResetChain( Qt::Horizontal, cellConstraints, entryTable, colChain );
+        qskUpdateLayoutChain( Qt::Horizontal, cellConstraints, entryTable, colChain );
     }
     else
     {
-        qskResetChain( Qt::Horizontal, entryTable, colChain );
-        qskResetChain( Qt::Vertical, entryTable, rowChain );
+        qskUpdateLayoutChain( Qt::Horizontal, entryTable, colChain );
+        qskUpdateLayoutChain( Qt::Vertical, entryTable, rowChain );
     }
 
     m_data->blockInvalidate = false;
@@ -960,30 +960,30 @@ void QskLinearLayoutEngine::updateCellGeometries( const QSizeF& size )
     {
         case QskLayoutConstraint::WidthForHeight:
         {
-            qskResetChain( Qt::Vertical, entryTable, rowChain );
+            qskUpdateLayoutChain( Qt::Vertical, entryTable, rowChain );
             geometries.rows = rowChain.geometries( size.height() );
 
-            qskResetChain( Qt::Horizontal, geometries.rows, entryTable, colChain );
+            qskUpdateLayoutChain( Qt::Horizontal, geometries.rows, entryTable, colChain );
             geometries.columns = colChain.geometries( size.width() );
 
             break;
         }
         case QskLayoutConstraint::HeightForWidth:
         {
-            qskResetChain( Qt::Horizontal, entryTable, colChain );
+            qskUpdateLayoutChain( Qt::Horizontal, entryTable, colChain );
             geometries.columns = colChain.geometries( size.width() );
 
-            qskResetChain( Qt::Vertical, geometries.columns, entryTable, rowChain );
+            qskUpdateLayoutChain( Qt::Vertical, geometries.columns, entryTable, rowChain );
             geometries.rows = rowChain.geometries( size.height() );
 
             break;
         }
         default:
         {
-            qskResetChain( Qt::Horizontal, entryTable, colChain );
+            qskUpdateLayoutChain( Qt::Horizontal, entryTable, colChain );
             geometries.columns = colChain.geometries( size.width() );
 
-            qskResetChain( Qt::Vertical, entryTable, rowChain );
+            qskUpdateLayoutChain( Qt::Vertical, entryTable, rowChain );
             geometries.rows = rowChain.geometries( size.height() );
         }
     }
