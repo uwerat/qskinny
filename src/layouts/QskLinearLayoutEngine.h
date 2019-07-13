@@ -50,6 +50,7 @@ class QskLinearLayoutEngine
     void addSpacer( qreal spacing );
 
     void removeAt( int index );
+    void clear();
 
     QQuickItem* itemAt( int index ) const;
     int spacerAt( int index ) const;

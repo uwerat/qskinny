@@ -105,6 +105,7 @@ namespace
         int spacerAt( int index ) const;
 
         bool removeAt( int index );
+        bool clear();
 
         bool isIgnoredAt( int index ) const;
 
@@ -302,9 +303,27 @@ void EntryTable::insertSpacer( int index, qreal spacing )
 
 bool EntryTable::removeAt( int index )
 {
-    if ( index >= 0 && index < count() )
+    auto entry = entryAt( index );
+    if ( entry == nullptr )
+        return false;
+
+    if ( entry->isIgnored() )
+        m_sumIgnored--;
+
+    const auto itemType = QskLayoutConstraint::constraintType( entry->item() );
+    if ( itemType > QskLayoutConstraint::Unconstrained )
+        m_constraintType = -1;
+
+    m_entries.erase( m_entries.begin() + index );
+
+    return true;
+}
+
+bool EntryTable::clear()
+{
+    if ( count() > 0 )
     {
-        m_entries.erase( m_entries.begin() + index );
+        m_entries.clear();
         invalidate();
 
         return true;
@@ -454,15 +473,15 @@ QskLayoutConstraint::Type EntryTable::constraintType() const
 
         for ( const auto& entry : m_entries )
         {
-            const auto entryType = QskLayoutConstraint::constraintType( entry.item() );
+            const auto itemType = QskLayoutConstraint::constraintType( entry.item() );
 
-            if ( entryType != QskLayoutConstraint::Unconstrained )
+            if ( itemType != QskLayoutConstraint::Unconstrained )
             {
                 if ( m_constraintType == QskLayoutConstraint::Unconstrained )
                 {
-                    m_constraintType = entryType;
+                    m_constraintType = itemType;
                 }
-                else if ( m_constraintType != entryType )
+                else if ( m_constraintType != itemType )
                 {
                     qWarning( "QskLinearLayoutEngine: conflicting constraints");
                     m_constraintType = QskLayoutConstraint::Unconstrained;
@@ -807,6 +826,12 @@ void QskLinearLayoutEngine::addSpacer( qreal spacing )
 void QskLinearLayoutEngine::removeAt( int index )
 {
     if ( m_data->entryTable.removeAt( index ) )
+        invalidate( CellCache | LayoutCache );
+}
+
+void QskLinearLayoutEngine::clear()
+{
+    if ( m_data->entryTable.clear() )
         invalidate( CellCache | LayoutCache );
 }
 
