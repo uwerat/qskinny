@@ -28,10 +28,21 @@ class QskLayoutChain
     class Cell
     {
       public:
+        Cell()
+        {
+        }
+
+        Cell( QskLayoutHint hint, int stretch )
+            : hint( hint )
+            , stretch( stretch )
+            , isValid( true )
+        {
+        }
 
         inline bool operator==( const Cell& other ) const
         {
-            return ( canGrow == other.canGrow )
+            return ( isValid == other.isValid )
+                && ( canGrow == other.canGrow )
                 && ( stretch == other.stretch )
                 && ( hint == other.hint );
         }
@@ -44,6 +55,7 @@ class QskLayoutChain
         QskLayoutHint hint;
         int stretch = 0;
         bool canGrow = false;
+        bool isValid = false;
     };
 
     QskLayoutChain();
@@ -82,6 +94,7 @@ class QskLayoutChain
     Qt::Edges m_extraSpacingAt;
 
     int m_sumStretches = 0;
+    int m_validCells = 0;
     std::vector< Cell > m_cells;
 };
 

@@ -53,20 +53,13 @@ void QskLayoutHint::setSize( int which, qreal size )
     }
 }
 
-void QskLayoutHint::intersect( const QskLayoutHint& other )
+void QskLayoutHint::expandTo( const QskLayoutHint& other )
 {
-    m_minimum = qMax( m_minimum, other.m_minimum );
-    m_preferred = qMax( m_preferred, other.m_preferred );
+    const auto hint = other.normalized();
 
-    if ( other.m_maximum != QskLayoutConstraint::unlimited )
-    {
-        if ( m_maximum == QskLayoutConstraint::unlimited )
-            m_maximum = other.m_maximum;
-        else
-            m_maximum = qMax( m_maximum, other.m_maximum );
-    }
-
-    normalize();
+    m_minimum = qMax( m_minimum, hint.m_minimum );
+    m_preferred = qMax( m_preferred, hint.m_preferred );
+    m_maximum = qMax( m_maximum, hint.m_maximum );
 }
 
 void QskLayoutHint::normalize()

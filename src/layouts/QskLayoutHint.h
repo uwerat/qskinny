@@ -17,7 +17,7 @@ class QSK_EXPORT QskLayoutHint
     QskLayoutHint();
     QskLayoutHint( qreal minimum, qreal preferred, qreal maximum );
 
-    void intersect( const QskLayoutHint& );
+    void expandTo( const QskLayoutHint& );
     void normalize();
 
     QskLayoutHint normalized() const;

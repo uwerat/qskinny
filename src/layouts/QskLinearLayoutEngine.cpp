@@ -479,6 +479,7 @@ QskLayoutChain::Cell EntryTable::cell( const EntryData& entry,
 {
     QskLayoutChain::Cell cell;
     cell.canGrow = true;
+    cell.isValid = true;
 
     if ( const auto item = entry.item() )
     {
