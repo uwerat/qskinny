@@ -4,7 +4,6 @@
  *****************************************************************************/
 
 #include "QskLinearLayoutEngine.h"
-
 #include "QskLayoutHint.h"
 #include "QskLayoutConstraint.h"
 #include "QskLayoutChain.h"
@@ -614,13 +613,13 @@ class QskLinearLayoutEngine::PrivateData
 
     EntryTable entryTable;
 
-    Qt::LayoutDirection visualDirection = Qt::LeftToRight;
-    Qt::Edges extraSpacingAt;
-
     QskLayoutChain colChain;
     QskLayoutChain rowChain;
 
     CellGeometries geometries;
+
+    Qt::LayoutDirection visualDirection = Qt::LeftToRight;
+    Qt::Edges extraSpacingAt;
 
     /*
         Some weired controls do lazy updates inside of their sizeHint calculation
@@ -865,7 +864,7 @@ void QskLinearLayoutEngine::invalidate( int what )
 
 void QskLinearLayoutEngine::setGeometries( const QRectF& rect )
 {
-    if ( m_data->entryTable.count() == 0 )
+    if ( m_data->entryTable.effectiveCount() == 0 )
         return;
 
     if ( m_data->geometries.boundingSize != rect.size() )

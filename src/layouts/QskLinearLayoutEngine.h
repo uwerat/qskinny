@@ -6,11 +6,14 @@
 #ifndef QSK_LINEAR_LAYOUT_ENGINE_H
 #define QSK_LINEAR_LAYOUT_ENGINE_H
 
+#include "QskGlobal.h"
+
 #include <qnamespace.h>
-#include <qrect.h>
 #include <memory>
 
 class QQuickItem;
+class QSizeF;
+class QRectF;
 
 class QskLinearLayoutEngine
 {
