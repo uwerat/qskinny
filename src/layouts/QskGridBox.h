@@ -13,7 +13,7 @@ class QSK_EXPORT QskGridBox : public QskBox
     Q_OBJECT
 
     Q_PROPERTY( bool empty READ isEmpty() )
-    Q_PROPERTY( int itemCount READ itemCount() )
+    Q_PROPERTY( int count READ count )
 
     using Inherited = QskBox;
 
@@ -35,7 +35,11 @@ class QSK_EXPORT QskGridBox : public QskBox
     Q_INVOKABLE int rowCount() const;
     Q_INVOKABLE int columnCount() const;
 
-    int itemCount() const;
+    int count() const;
+
+#ifdef QSK_LAYOUT_COMPAT
+    int itemCount() const { return count(); } // items and spacers
+#endif
     QQuickItem* itemAtIndex( int index ) const;
     int indexOf( const QQuickItem* ) const;
 
@@ -56,7 +60,10 @@ class QSK_EXPORT QskGridBox : public QskBox
     void resetSpacing( Qt::Orientations );
     qreal spacing( Qt::Orientation ) const;
 
+    void setSpacing( qreal spacing );
+
 #ifdef QSK_LAYOUT_COMPAT
+
     void setVerticalSpacing( qreal spacing ) { setSpacing( Qt::Vertical, spacing ); }
     qreal verticalSpacing() const { return spacing( Qt::Vertical ); }
 
@@ -142,7 +149,12 @@ inline void QskGridBox::addItem(
 
 inline bool QskGridBox::isEmpty() const
 {
-    return itemCount() <= 0;
+    return count() <= 0;
+}
+
+inline void QskGridBox::setSpacing( qreal spacing )
+{
+    setSpacing( Qt::Horizontal | Qt::Vertical, spacing );
 }
 
 #endif

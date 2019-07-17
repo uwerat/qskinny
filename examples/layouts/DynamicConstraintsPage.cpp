@@ -105,7 +105,7 @@ Box::Box( QQuickItem* parent )
 
 void Box::flip()
 {
-    for ( int i = 0; i < entryCount(); i++ )
+    for ( int i = 0; i < count(); i++ )
     {
         if ( auto control = dynamic_cast< Control* >( itemAtIndex( i ) ) )
             control->transpose();

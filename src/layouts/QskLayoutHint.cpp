@@ -76,7 +76,7 @@ void QskLayoutHint::normalize()
 
 bool QskLayoutHint::isDefault() const
 {
-    return ( m_minimum == 0.0 ) && (m_preferred == 0.0 )
+    return ( m_minimum == 0.0 ) && ( m_preferred == 0.0 )
         && ( m_maximum == QskLayoutConstraint::unlimited );
 }
 
@@ -97,7 +97,7 @@ QDebug operator<<( QDebug debug, const QskLayoutHint& hint )
     QDebugStateSaver saver( debug );
     debug.nospace();
 
-    debug << "LayoutHint" << "( " 
+    debug << "LayoutHint" << "( "
         << qskHintValueString( hint.minimum() ) << ", "
         << qskHintValueString( hint.preferred() ) << ", "
         << qskHintValueString( hint.maximum() ) << " )";

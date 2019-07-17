@@ -77,7 +77,7 @@ QskLinearBox::~QskLinearBox()
 {
 }
 
-int QskLinearBox::entryCount() const
+int QskLinearBox::count() const
 {
     return m_data->engine.count();
 }
@@ -155,8 +155,8 @@ void QskLinearBox::clear( bool autoDelete )
 {
     auto& engine = m_data->engine;
 
-    // do we have visible entries
-    const bool hasVisibleEntries = engine.rowCount() > 0;
+    // do we have visible elements
+    const bool hasVisibleElements = engine.rowCount() > 0;
 
     for ( int i = engine.count() - 1; i >= 0; i-- )
     {
@@ -174,7 +174,7 @@ void QskLinearBox::clear( bool autoDelete )
         }
     }
 
-    if ( hasVisibleEntries )
+    if ( hasVisibleElements )
         resetImplicitSize();
 }
 

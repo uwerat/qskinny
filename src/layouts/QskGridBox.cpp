@@ -106,7 +106,7 @@ void QskGridBox::removeItem( const QQuickItem* item )
 
 void QskGridBox::clear( bool autoDelete )
 {
-    for ( int i = itemCount() - 1; i >= 0; i-- )
+    for ( int i = count() - 1; i >= 0; i-- )
     {
         auto item = itemAtIndex( i );
 
@@ -122,7 +122,7 @@ void QskGridBox::clear( bool autoDelete )
     }
 }
 
-int QskGridBox::itemCount() const
+int QskGridBox::count() const
 {
     return m_data->engine.itemCount();
 }
@@ -410,7 +410,7 @@ void QskGridBox::updateLayout()
 
 QSizeF QskGridBox::contentsSizeHint() const
 {
-    if ( itemCount() == 0 )
+    if ( count() == 0 )
         return QSizeF( 0, 0 );
 
     return m_data->engine.sizeHint( Qt::PreferredSize, QSizeF() );
