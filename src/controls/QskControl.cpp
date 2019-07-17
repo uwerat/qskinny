@@ -1349,7 +1349,8 @@ void QskControl::setExplicitSizeHint( Qt::SizeHint whichHint, const QSizeF& size
     }
 }
 
-void QskControl::setExplicitSizeHint( Qt::SizeHint whichHint, qreal width, qreal height )
+void QskControl::setExplicitSizeHint(
+    Qt::SizeHint whichHint, qreal width, qreal height )
 {
     setExplicitSizeHint( whichHint, QSizeF( width, height ) );
 }
@@ -1362,28 +1363,76 @@ QSizeF QskControl::explicitSizeHint( Qt::SizeHint whichHint ) const
     return QSizeF( -1, -1 );
 }
 
-QSizeF QskControl::effectiveSizeHint( Qt::SizeHint whichHint ) const
+QSizeF QskControl::implicitSizeHint(
+    Qt::SizeHint whichHint, const QSizeF& constraint ) const
+{
+    if ( whichHint < Qt::MinimumSize || whichHint > Qt::MaximumSize )
+        return QSizeF( -1, -1 );
+
+    if ( constraint.isValid() )
+    {
+        // having constraints in both directions does not make sense
+        return constraint;
+    }
+
+    QSizeF hint( -1, -1 );
+
+    if ( whichHint == Qt::PreferredSize )
+    {
+        if ( constraint.width() >= 0 )
+        {
+            hint.setWidth( constraint.width() );
+            hint.setHeight( heightForWidth( constraint.width() ) );
+        }
+        else if ( constraint.height() >= 0 )
+        {
+            hint.setWidth( widthForHeight( constraint.height() ) );
+            hint.setHeight( constraint.height() );
+        }
+        else
+        {
+            hint = implicitSize();
+        }
+    }
+    else
+    {
+        // TODO ...
+    }
+
+    return hint;
+}
+
+QSizeF QskControl::effectiveSizeHint(
+    Qt::SizeHint whichHint, const QSizeF& constraint ) const
 {
     if ( whichHint < Qt::MinimumSize || whichHint > Qt::MaximumSize )
         return QSizeF( 0, 0 );
 
     d_func()->blockLayoutRequestEvents = false;
 
-    QSizeF size = explicitSizeHint( whichHint );
+    QSizeF hint;
 
-    if ( whichHint == Qt::PreferredSize && !size.isValid() )
+    if ( ( constraint.width() < 0 ) && ( constraint.height() < 0 ) )
     {
-        // in most cases we don't have a preferred width/height
-        // and fall back to the implicit size.
+        hint = explicitSizeHint( whichHint );
 
-        if ( size.width() < 0 )
-            size.setWidth( implicitWidth() );
+        if ( !hint.isValid() )
+        {
+            const auto implicit = implicitSizeHint( whichHint, constraint );
 
-        if ( size.height() < 0 )
-            size.setHeight( implicitHeight() );
+            if ( hint.width() < 0 )
+                hint.setWidth( implicit.width() );
+
+            if ( hint.height() < 0 )
+                hint.setHeight( implicit.height() );
+        }
+    }
+    else
+    {
+        hint = implicitSizeHint( whichHint, constraint );
     }
 
-    return size;
+    return hint;
 }
 
 void QskControl::resetImplicitSize()
@@ -1848,8 +1897,8 @@ void QskControl::layoutConstraintChanged()
             qskSendEventTo( item, QEvent::LayoutRequest );
 
         /*
-            We don't send further LayoutRequest events until someone has requested
-            a layout relevant information
+            We don't send further LayoutRequest events until someone 
+            actively requests a layout relevant information
          */
         d->blockLayoutRequestEvents = true;
     }

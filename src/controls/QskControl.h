@@ -184,9 +184,11 @@ class QSK_EXPORT QskControl : public QQuickItem, public QskSkinnable
     QSizeF preferredSize() const;
 
     QSizeF explicitSizeHint( Qt::SizeHint ) const;
+    QSizeF implicitSizeHint( Qt::SizeHint, const QSizeF& constraint ) const;
 
     QSizeF sizeHint() const;
-    QSizeF effectiveSizeHint( Qt::SizeHint ) const;
+    QSizeF effectiveSizeHint( Qt::SizeHint,
+        const QSizeF& constraint = QSizeF( -1.0, -1.0 ) ) const;
 
     virtual qreal heightForWidth( qreal width ) const;
     virtual qreal widthForHeight( qreal height ) const;
@@ -311,17 +313,17 @@ inline QSizeF QskControl::sizeHint() const
 
 inline QSizeF QskControl::minimumSize() const
 {
-    return explicitSizeHint( Qt::MinimumSize );
+    return effectiveSizeHint( Qt::MinimumSize );
 }
 
 inline QSizeF QskControl::maximumSize() const
 {
-    return explicitSizeHint( Qt::MaximumSize );
+    return effectiveSizeHint( Qt::MaximumSize );
 }
 
 inline QSizeF QskControl::preferredSize() const
 {
-    return explicitSizeHint( Qt::PreferredSize );
+    return effectiveSizeHint( Qt::PreferredSize );
 }
 
 inline QskControl* qskControlCast( QObject* object )
