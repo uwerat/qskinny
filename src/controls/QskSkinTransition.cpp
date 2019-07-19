@@ -619,6 +619,9 @@ void QskSkinTransition::process()
         {
             if ( auto quickWindow = qobject_cast< QQuickWindow* >( window ) )
             {
+                if ( !quickWindow->isVisible() )
+                    continue;
+
                 auto* group = new AnimatorGroup( quickWindow );
 
                 if ( doGraphicFilter )
