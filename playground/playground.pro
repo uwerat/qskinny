@@ -11,3 +11,9 @@ qtHaveModule(webengine) {
     SUBDIRS += \
         webview
 }
+
+qtHaveModule(quickwidgets) {
+
+    SUBDIRS += \
+        grids
+}
