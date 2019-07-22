@@ -11,7 +11,7 @@ TestRectangle::TestRectangle( QQuickItem* parent )
     setAlignment( Qt::AlignCenter );
 
     setPreferredSize( 10, 10 );
-    setSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Minimum );
+    initSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Minimum );
     setFocusPolicy( Qt::TabFocus ); // for checking the focus tab chain
 }
 
