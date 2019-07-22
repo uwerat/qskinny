@@ -264,6 +264,8 @@ class SectionTitleBar final : public QskLinearBox
 
         setStretchFactor( 0, 1 );
         setStretchFactor( 2, 5 );
+
+        setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
     }
 };
 
@@ -362,9 +364,9 @@ class BalanceFadeControlBox final : public QskGridBox
         m_carControl = new StackedControl();
 
         addItem( buttons[ Qsk::RightToLeft ], 1, 0 );
-        addItem( buttons[ Qsk::BottomToTop ], 0, 0, 1, 3 );
+        addItem( buttons[ Qsk::BottomToTop ], 0, 1 );
         addItem( buttons[ Qsk::LeftToRight ], 1, 2 );
-        addItem( buttons[ Qsk::TopToBottom ], 2, 0, 1, 3 );
+        addItem( buttons[ Qsk::TopToBottom ], 2, 1 );
 
         addItem( m_carControl, 1, 1 );
 
@@ -397,7 +399,7 @@ SoundControl::SoundControl( QQuickItem* parent )
     layout->setSpacing( Qt::Vertical, 10 );
     layout->setSpacing( Qt::Horizontal, 60 );
     layout->setColumnStretchFactor( 0, 1 );
-    layout->setColumnStretchFactor( 1, 2 );
+    layout->setColumnStretchFactor( 1, 3 );
 
     layout->addItem( new SectionTitleBar( "Tone" ), 0, 0 );
     layout->addItem( new ToneControlBox(), 1, 0 );
