@@ -7,6 +7,7 @@
 #include "GridGraphics.h"
 #include "GridSkinny.h"
 #include "GridWidgets.h"
+#include "GridQuick.h"
 
 TestBox::TestBox( QWidget* parent )
     : QWidget( parent )
@@ -19,10 +20,19 @@ TestBox::TestBox( QWidget* parent )
     grids[Skinny] = new GridSkinny( this );
     grids[Widgets] = new GridWidgets( this );
     grids[Graphics] = new GridGraphics( this );
+    grids[Quick] = new GridQuick( this );
 }
 
 TestBox::~TestBox()
 {
+}
+
+void TestBox::setColumns( int columnCount )
+{
+    m_columnCount = qBound( 1, columnCount, static_cast< int >( GridCount ) );
+
+    if ( testAttribute( Qt::WA_WState_Polished ) )
+        layoutGrids();
 }
 
 void TestBox::insert( const QByteArray& colorName,
@@ -45,63 +55,70 @@ void TestBox::setSpacing( Qt::Orientations orientations, int spacing )
     }
 }
 
-void TestBox::setRowSizeHint( int row, Qt::SizeHint which, int height )
-{
-    for ( auto grid : grids )
-    {
-        auto accessor = dynamic_cast< GridAccessor* >( grid );
-        accessor->setRowSizeHint( row, which, height );
-    }
-}
-
-void TestBox::setColumnSizeHint( int column, Qt::SizeHint which, int width )
-{
-    for ( auto grid : grids )
-    {
-        auto accessor = dynamic_cast< GridAccessor* >( grid );
-        accessor->setColumnSizeHint( column, which, width );
-    }
-}
-
 void TestBox::setSizeHint(
+    int pos, Qt::Orientation orientation, Qt::SizeHint which, int hint )
+{
+    for ( auto grid : grids )
+    {
+        auto accessor = dynamic_cast< GridAccessor* >( grid );
+        accessor->setSizeHint( pos, orientation, which, hint );
+    }
+}
+
+void TestBox::setStretchFactor(
+    int pos, Qt::Orientation orientation, int stretch )
+{
+    for ( auto grid : grids )
+    {
+        auto accessor = dynamic_cast< GridAccessor* >( grid );
+        accessor->setStretchFactor( pos, orientation, stretch );
+    }
+}
+
+void TestBox::setSizeHintAt(
     int index, Qt::Orientation orientation, Qt::SizeHint which, int hint )
 {
     for ( auto grid : grids )
     {
         auto accessor = dynamic_cast< GridAccessor* >( grid );
-        accessor->setSizeHint( index, orientation, which, hint );
+        accessor->setSizeHintAt( index, orientation, which, hint );
     }
 }
 
-void TestBox::setSizePolicy(
+void TestBox::setSizePolicyAt(
     int index, Qt::Orientation orientation, int policy )
 {
     for ( auto grid : grids )
     {
         auto accessor = dynamic_cast< GridAccessor* >( grid );
-        accessor->setSizePolicy( index, orientation, policy );
+        accessor->setSizePolicyAt( index, orientation, policy );
     }
 }
 
-void TestBox::setAlignment( int index, Qt::Alignment alignment )
+void TestBox::setAlignmentAt( int index, Qt::Alignment alignment )
 {
     for ( auto grid : grids )
     {
         auto accessor = dynamic_cast< GridAccessor* >( grid );
-        accessor->setAlignment( index, alignment );
+        accessor->setAlignmentAt( index, alignment );
     }
 }
 
-void TestBox::setRetainSizeWhenHidden( int index, bool on )
+void TestBox::setRetainSizeWhenHiddenAt( int index, bool on )
 {
     for ( auto grid : grids )
     {
         auto accessor = dynamic_cast< GridAccessor* >( grid );
-        accessor->setRetainSizeWhenHidden( index, on );
+        accessor->setRetainSizeWhenHiddenAt( index, on );
     }
 }
 
 void TestBox::resizeEvent( QResizeEvent* )
+{
+    layoutGrids();
+}
+
+void TestBox::layoutGrids()
 {
     /*
         Not using layouts here to avoid confusion
@@ -109,12 +126,30 @@ void TestBox::resizeEvent( QResizeEvent* )
      */
 
     const auto r = contentsRect();
-    const auto sz = 0.5 * r.size() - QSize( 5, 5 );
 
-    grids[ 0 ]->move( r.left(), r.top() );
-    grids[ 1 ]->move( r.right() - sz.width(), r.top() );
-    grids[ 2 ]->move( r.left(), r.bottom() - sz.height() );
+    int rowCount = GridCount / m_columnCount;
+    if ( rowCount * m_columnCount < GridCount )
+        rowCount++;
 
-    for ( auto grid : grids )
-        grid->resize( sz );
+    const int spacing = 5;
+
+    const int width = ( r.width() - ( m_columnCount - 1 ) * spacing ) / m_columnCount;
+    const int height = ( r.height() - ( rowCount - 1 ) * spacing ) / rowCount;
+
+    int row = 0;
+    int col = 0;
+
+    for ( int i = 0; i < GridCount; i++ )
+    {
+        const int x = r.left() + col * ( spacing + width );
+        const int y = r.top() + row * ( spacing + height );
+
+        grids[i]->setGeometry( x, y, width, height );
+
+        if ( ++col >= m_columnCount )
+        {
+            col = 0;
+            row++;
+        }
+    }
 }

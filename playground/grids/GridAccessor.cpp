@@ -11,6 +11,16 @@ void GridAccessor::setSpacing( int spacing )
     setSpacing( Qt::Vertical | Qt::Horizontal, spacing );
 }
 
+void GridAccessor::setRowSizeHint( int row, Qt::SizeHint which, int height )
+{
+    setSizeHint( row, Qt::Vertical, which, height );
+}
+
+void GridAccessor::setColumnSizeHint( int column, Qt::SizeHint which, int width )
+{
+    setSizeHint( column, Qt::Horizontal, which, width );
+}
+
 void GridAccessor::setRowFixedHeight( int row, qreal height )
 {
     setRowSizeHint( row, Qt::MinimumSize, height );
@@ -23,57 +33,67 @@ void GridAccessor::setColumnFixedWidth( int column, qreal width )
     setColumnSizeHint( column, Qt::MaximumSize, width );
 }
 
-void GridAccessor::setMinimumWidth( int index, int hint )
+void GridAccessor::setRowStretchFactor( int row, int stretch )
 {
-    setSizeHint( index, Qt::Horizontal, Qt::MinimumSize, hint );
+    setStretchFactor( row, Qt::Vertical, stretch );
 }
 
-void GridAccessor::setMinimumHeight( int index, int hint )
+void GridAccessor::setColumnStretchFactor( int column, int stretch )
 {
-    setSizeHint( index, Qt::Vertical, Qt::MinimumSize, hint );
+    setStretchFactor( column, Qt::Vertical, stretch );
 }
 
-void GridAccessor::setMinimumSize( int index, const QSize& size )
+void GridAccessor::setMinimumWidthAt( int index, int hint )
 {
-    setMinimumWidth( index, size.width() );
-    setMinimumHeight( index, size.height() );
+    setSizeHintAt( index, Qt::Horizontal, Qt::MinimumSize, hint );
 }
 
-void GridAccessor::setPreferredWidth( int index, int hint )
+void GridAccessor::setMinimumHeightAt( int index, int hint )
 {
-    setSizeHint( index, Qt::Horizontal, Qt::PreferredSize, hint );
+    setSizeHintAt( index, Qt::Vertical, Qt::MinimumSize, hint );
 }
 
-void GridAccessor::setPreferredHeight( int index, int hint )
+void GridAccessor::setMinimumSizeAt( int index, const QSize& size )
 {
-    setSizeHint( index, Qt::Vertical, Qt::PreferredSize, hint );
+    setMinimumWidthAt( index, size.width() );
+    setMinimumHeightAt( index, size.height() );
 }
 
-void GridAccessor::setPreferredSize( int index, const QSize& size )
+void GridAccessor::setPreferredWidthAt( int index, int hint )
 {
-    setPreferredWidth( index, size.width() );
-    setPreferredHeight( index, size.height() );
+    setSizeHintAt( index, Qt::Horizontal, Qt::PreferredSize, hint );
 }
 
-void GridAccessor::setMaximumWidth( int index, int hint )
+void GridAccessor::setPreferredHeightAt( int index, int hint )
 {
-    setSizeHint( index, Qt::Horizontal, Qt::MaximumSize, hint );
+    setSizeHintAt( index, Qt::Vertical, Qt::PreferredSize, hint );
 }
 
-void GridAccessor::setMaximumHeight( int index, int hint )
+void GridAccessor::setPreferredSizeAt( int index, const QSize& size )
 {
-    setSizeHint( index, Qt::Vertical, Qt::MaximumSize, hint );
+    setPreferredWidthAt( index, size.width() );
+    setPreferredHeightAt( index, size.height() );
 }
 
-void GridAccessor::setMaximumSize( int index, const QSize& size )
+void GridAccessor::setMaximumWidthAt( int index, int hint )
 {
-    setMaximumWidth( index, size.width() );
-    setMaximumHeight( index, size.height() );
+    setSizeHintAt( index, Qt::Horizontal, Qt::MaximumSize, hint );
 }
 
-void GridAccessor::setSizePolicy(
+void GridAccessor::setMaximumHeightAt( int index, int hint )
+{
+    setSizeHintAt( index, Qt::Vertical, Qt::MaximumSize, hint );
+}
+
+void GridAccessor::setMaximumSizeAt( int index, const QSize& size )
+{
+    setMaximumWidthAt( index, size.width() );
+    setMaximumHeightAt( index, size.height() );
+}
+
+void GridAccessor::setSizePolicyAt(
     int index, int horizontalPolicy, int verticalPolicy )
 {
-    setSizePolicy( index, Qt::Horizontal, horizontalPolicy );
-    setSizePolicy( index, Qt::Vertical, verticalPolicy );
+    setSizePolicyAt( index, Qt::Horizontal, horizontalPolicy );
+    setSizePolicyAt( index, Qt::Vertical, verticalPolicy );
 }

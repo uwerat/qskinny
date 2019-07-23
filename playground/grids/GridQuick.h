@@ -3,19 +3,19 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef GRID_SKINNY_H
-#define GRID_SKINNY_H
+#ifndef GRID_QUICK_H
+#define GRID_QUICK_H
 
 #include "GridAccessor.h"
 #include <QQuickWidget>
 
-class QskGridBox;
+class QGraphicsGridLayout;
 
-class GridSkinny : public QQuickWidget, public GridAccessor
+class GridQuick : public QQuickWidget, public GridAccessor
 {
   public:
-    GridSkinny( QWidget* parent = nullptr );
-    ~GridSkinny() override;
+    GridQuick( QWidget* parent = nullptr );
+    ~GridQuick() override;
 
     void insert( const QByteArray& colorName,
         int row, int column, int rowSpan, int columnSpan ) override;
@@ -27,12 +27,14 @@ class GridSkinny : public QQuickWidget, public GridAccessor
 
     void setSizeHintAt( int index, Qt::Orientation, Qt::SizeHint, int hint ) override;
     void setSizePolicyAt( int index, Qt::Orientation, int policy ) override;
-
     void setAlignmentAt( int index, Qt::Alignment ) override;
     void setRetainSizeWhenHiddenAt( int index, bool on ) override;
 
+  protected:
+    void resizeEvent( QResizeEvent* ) override;
+
   private:
-    QskGridBox* m_grid;
+    QQuickItem* m_grid;
 };
 
 #endif

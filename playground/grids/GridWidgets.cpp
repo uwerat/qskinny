@@ -83,29 +83,31 @@ void GridWidgets::setSpacing( Qt::Orientations orientations, int spacing )
         m_layout->setVerticalSpacing( spacing );
 }
 
-void GridWidgets::setRowSizeHint( int row, Qt::SizeHint which, int height )
-{
-    if ( which != Qt::MinimumSize )
-    {
-        qWarning() << "setRowSizeHint" << which << "is not supported by QGridLayout.";
-        return;
-    }
-
-    m_layout->setRowMinimumHeight( row, height );
-}
-
-void GridWidgets::setColumnSizeHint( int column, Qt::SizeHint which, int width )
-{
-    if ( which != Qt::MinimumSize )
-    {
-        qWarning() << "setColumnSizeHint" << which << "is not supported by QGridLayout.";
-        return;
-    }
-
-    m_layout->setColumnMinimumWidth( column, width );
-}
-
 void GridWidgets::setSizeHint(
+    int pos, Qt::Orientation orientation, Qt::SizeHint which, int hint )
+{
+    if ( which != Qt::MinimumSize )
+    {
+        qWarning() << "setSizeHint" << which << "is not supported by QGridLayout.";
+        return;
+    }
+
+    if ( orientation == Qt::Vertical )
+        m_layout->setRowMinimumHeight( pos, hint );
+    else
+        m_layout->setColumnMinimumWidth( pos, hint );
+}
+
+void GridWidgets::setStretchFactor(
+    int pos, Qt::Orientation orientation, int stretch )
+{
+    if ( orientation == Qt::Vertical )
+        m_layout->setRowStretch( pos, stretch );
+    else
+        m_layout->setColumnStretch( pos, stretch );
+}
+
+void GridWidgets::setSizeHintAt(
     int index, Qt::Orientation orientation, Qt::SizeHint which, int hint )
 {
     Rectangle* rectangle = nullptr;
@@ -148,7 +150,7 @@ void GridWidgets::setSizeHint(
     }
 }
 
-void GridWidgets::setSizePolicy( int index, Qt::Orientation orientation, int policy )
+void GridWidgets::setSizePolicyAt( int index, Qt::Orientation orientation, int policy )
 {
     QWidget* widget = nullptr;
 
@@ -177,13 +179,13 @@ void GridWidgets::setSizePolicy( int index, Qt::Orientation orientation, int pol
     widget->setSizePolicy( sizePolicy );
 }
 
-void GridWidgets::setAlignment( int index, Qt::Alignment alignment )
+void GridWidgets::setAlignmentAt( int index, Qt::Alignment alignment )
 {
     if ( auto layoutItem = m_layout->itemAt( index ) )
         layoutItem->setAlignment( alignment );
 }
 
-void GridWidgets::setRetainSizeWhenHidden( int index, bool on )
+void GridWidgets::setRetainSizeWhenHiddenAt( int index, bool on )
 {
     if ( auto layoutItem = m_layout->itemAt( index ) )
     {

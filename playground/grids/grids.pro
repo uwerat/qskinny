@@ -6,6 +6,7 @@ HEADERS += \
     GridSkinny.h \
     GridWidgets.h \
     GridGraphics.h \
+    GridQuick.h \
     TestBox.h
 
 SOURCES += \
@@ -13,6 +14,7 @@ SOURCES += \
     GridSkinny.cpp \
     GridWidgets.cpp \
     GridGraphics.cpp \
+    GridQuick.cpp \
     TestBox.cpp \
     main.cpp
 

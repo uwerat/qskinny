@@ -23,31 +23,36 @@ class GridAccessor
     void setSpacing( int spacing );
     virtual void setSpacing( Qt::Orientations, int spacing ) = 0;
 
-    virtual void setRowSizeHint( int row, Qt::SizeHint, int height ) = 0;
-    virtual void setColumnSizeHint( int column, Qt::SizeHint, int width ) = 0;
+    virtual void setSizeHint( int pos, Qt::Orientation, Qt::SizeHint, int height ) = 0;
+    void setRowSizeHint( int row, Qt::SizeHint, int height );
+    void setColumnSizeHint( int column, Qt::SizeHint, int width );
 
     void setRowFixedHeight( int row, qreal height );
     void setColumnFixedWidth( int column, qreal width );
 
-    virtual void setSizeHint( int index, Qt::Orientation, Qt::SizeHint, int hint ) = 0;
-    virtual void setSizePolicy(int index, Qt::Orientation, int policy ) = 0;
+    virtual void setStretchFactor( int pos, Qt::Orientation, int stretch ) = 0;
+    void setRowStretchFactor( int row, int stretch );
+    void setColumnStretchFactor( int row, int stretch );
 
-    void setSizePolicy( int index, int horizontalPolicy, int verticalPolicy );
+    virtual void setSizeHintAt( int index, Qt::Orientation, Qt::SizeHint, int hint ) = 0;
+    virtual void setSizePolicyAt( int index, Qt::Orientation, int policy ) = 0;
 
-    void setMinimumWidth( int index, int hint );
-    void setMinimumHeight( int index, int hint );
-    void setMinimumSize( int index, const QSize& );
+    void setSizePolicyAt( int index, int horizontalPolicy, int verticalPolicy );
 
-    void setPreferredWidth( int index, int hint );
-    void setPreferredHeight( int index, int hint );
-    void setPreferredSize( int index, const QSize& );
+    void setMinimumWidthAt( int index, int hint );
+    void setMinimumHeightAt( int index, int hint );
+    void setMinimumSizeAt( int index, const QSize& );
 
-    void setMaximumWidth( int index, int hint );
-    void setMaximumHeight( int index, int hint );
-    void setMaximumSize( int index, const QSize& );
+    void setPreferredWidthAt( int index, int hint );
+    void setPreferredHeightAt( int index, int hint );
+    void setPreferredSizeAt( int index, const QSize& );
 
-    virtual void setAlignment( int index, Qt::Alignment ) = 0;
-    virtual void setRetainSizeWhenHidden( int, bool on ) = 0;
+    void setMaximumWidthAt( int index, int hint );
+    void setMaximumHeightAt( int index, int hint );
+    void setMaximumSizeAt( int index, const QSize& );
+
+    virtual void setAlignmentAt( int index, Qt::Alignment ) = 0;
+    virtual void setRetainSizeWhenHiddenAt( int index, bool on ) = 0;
 };
 
 #endif

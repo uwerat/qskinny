@@ -76,17 +76,25 @@ void GridSkinny::setSpacing( Qt::Orientations orientations, int spacing )
     m_grid->setSpacing( orientations, spacing );
 }
 
-void GridSkinny::setRowSizeHint( int row, Qt::SizeHint which, int height )
+void GridSkinny::setSizeHint(
+    int pos, Qt::Orientation orientation, Qt::SizeHint which, int hint )
 {
-    m_grid->setRowSizeHint( row, which, height );
+    if ( orientation == Qt::Vertical )
+        m_grid->setRowSizeHint( pos, which, hint );
+    else
+        m_grid->setColumnSizeHint( pos, which, hint );
 }
 
-void GridSkinny::setColumnSizeHint( int column, Qt::SizeHint which, int width )
+void GridSkinny::setStretchFactor(
+    int pos, Qt::Orientation orientation, int stretch )
 {
-    m_grid->setColumnSizeHint( column, which, width );
+    if ( orientation == Qt::Vertical )
+        m_grid->setRowStretchFactor( pos, stretch );
+    else
+        m_grid->setColumnStretchFactor( pos, stretch );
 }
 
-void GridSkinny::setSizeHint( int index, Qt::Orientation orientation,
+void GridSkinny::setSizeHintAt( int index, Qt::Orientation orientation,
     Qt::SizeHint which, int hint )
 {
     if ( auto control = qobject_cast< QskControl* >( m_grid->itemAtIndex( index ) ) )
@@ -102,7 +110,7 @@ void GridSkinny::setSizeHint( int index, Qt::Orientation orientation,
     }
 }
 
-void GridSkinny::setSizePolicy(
+void GridSkinny::setSizePolicyAt(
     int index, Qt::Orientation orientation, int policy )
 {
     if ( auto control = qobject_cast< QskControl* >( m_grid->itemAtIndex( index ) ) )
@@ -112,13 +120,13 @@ void GridSkinny::setSizePolicy(
     }
 }
 
-void GridSkinny::setAlignment( int index, Qt::Alignment alignment )
+void GridSkinny::setAlignmentAt( int index, Qt::Alignment alignment )
 {
     if ( auto item = m_grid->itemAtIndex( index ) )
         m_grid->setAlignment( item, alignment );
 }
 
-void GridSkinny::setRetainSizeWhenHidden( int index, bool on )
+void GridSkinny::setRetainSizeWhenHiddenAt( int index, bool on )
 {
     if ( auto item = m_grid->itemAtIndex( index ) )
         m_grid->setRetainSizeWhenHidden( item, on );
