@@ -43,7 +43,6 @@ namespace QskLayoutConstraint
     QSK_EXPORT qreal constrainedChildrenMetric(
         Type, const QskControl*, qreal constraint );
 
-    QSK_EXPORT QSizeF effectiveConstraint( const QQuickItem*, Qt::SizeHint );
     QSK_EXPORT QskSizePolicy sizePolicy( const QQuickItem* );
 
     QSK_EXPORT QSizeF boundedSize( const QQuickItem*, const QSizeF& );

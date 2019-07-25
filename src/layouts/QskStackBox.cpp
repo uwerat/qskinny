@@ -445,7 +445,8 @@ QSizeF QskStackBox::contentsSizeHint() const
         }
         else
         {
-            const QSizeF hint = effectiveConstraint( item, Qt::PreferredSize );
+            const auto hint = QskLayoutConstraint::sizeHint(
+                item, Qt::PreferredSize, QSizeF( -1, -1 ) );
 
             if ( hint.width() >= width )
                 width = hint.width();
