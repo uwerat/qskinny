@@ -1408,28 +1408,92 @@ QSizeF QskControl::effectiveSizeHint(
     if ( whichHint < Qt::MinimumSize || whichHint > Qt::MaximumSize )
         return QSizeF( 0, 0 );
 
-    d_func()->blockLayoutRequestEvents = false;
+    Q_D( const QskControl );
 
-    QSizeF hint;
+    d->blockLayoutRequestEvents = false;
 
-    if ( ( constraint.width() < 0 ) && ( constraint.height() < 0 ) )
+    /*
+        The explicit size has always precedence over te implicit size.
+        
+        Implicit sizes are currently only implemented for preferred and
+        explicitSizeHint returns valid explicit hints for minimum/maximum
+        even if not being set by application code.
+     */
+
+    QSizeF hint = d->explicitSizeHint( whichHint );
+
+    if ( !hint.isValid() )
     {
-        hint = explicitSizeHint( whichHint );
+#if 0
+        if ( hint.width() >= 0 && constraint.width() >= 0 )
+            constraint.setWidth( hint.width() );
 
-        if ( !hint.isValid() )
-        {
-            const auto implicit = implicitSizeHint( whichHint, constraint );
+        if ( hint.height() >= 0 && constraint.height() >= 0 )
+            constraint.setHeight( hint.height() );
+#endif
 
-            if ( hint.width() < 0 )
-                hint.setWidth( implicit.width() );
+        const auto implicit = implicitSizeHint( whichHint, constraint );
 
-            if ( hint.height() < 0 )
-                hint.setHeight( implicit.height() );
-        }
+        if ( hint.width() < 0 )
+            hint.setWidth( implicit.width() );
+
+        if ( hint.height() < 0 )
+            hint.setHeight( implicit.height() );
     }
-    else
+
+    if ( hint.width() >= 0 || hint.height() >= 0 )
     {
-        hint = implicitSizeHint( whichHint, constraint );
+        /*
+            We might need to normalize the hints, so that
+            we always have: minimum <= preferred <= maximum.
+         */
+
+#define DEBUG_NORMALIZE_HINTS 0
+
+#if DEBUG_NORMALIZE_HINTS
+        const auto oldHint = hint;
+#endif
+
+        if ( whichHint == Qt::MaximumSize )
+        {
+            const auto minimumHint = d->explicitSizeHint( Qt::MinimumSize );
+
+            if ( hint.width() >= 0 )
+                hint.setWidth( qMax( hint.width(), minimumHint.width() ) );
+        
+            if ( hint.height() >= 0 )
+                hint.setHeight( qMax( hint.height(), minimumHint.height() ) );
+        }
+        else if ( whichHint == Qt::PreferredSize )
+        {
+            const auto minimumHint = d->explicitSizeHint( Qt::MinimumSize );
+            const auto maximumHint = d->explicitSizeHint( Qt::MaximumSize );
+
+            if ( hint.width() >= 0 )
+            {
+                const auto minW = minimumHint.width();
+                const auto maxW = qMax( minW, maximumHint.width() );
+
+                hint.setWidth( qBound( minW, hint.width(), maxW ) );
+            }
+
+            if ( hint.height() >= 0 )
+            {
+                const auto minH = minimumHint.height();
+                const auto maxH = qMax( minH, maximumHint.height() );
+                
+                hint.setHeight( qBound( minH, hint.height(), maxH ) );
+            }
+        }
+
+#if DEBUG_NORMALIZE_HINTS
+        if ( hint != oldHint )
+        {
+            const auto minimumHint = d->explicitSizeHint( Qt::MinimumSize );
+            const auto maximumHint = d->explicitSizeHint( Qt::MaximumSize );
+            qDebug() << whichHint << minimumHint << oldHint << maximumHint << "->" << hint;
+        }
+#endif
     }
 
     return hint;
