@@ -34,17 +34,6 @@ namespace
       private:
         QByteArray m_colorName;
     };
-
-    class Grid : public QskGridBox
-    {
-      public:
-        Grid( QQuickItem* parent = nullptr )
-            : QskGridBox( parent )
-        {
-            setBackgroundColor( Qt::white );
-            setMargins( 10 );
-        }
-    };
 }
 
 GridSkinny::GridSkinny( QWidget* parent )
@@ -56,6 +45,7 @@ GridSkinny::GridSkinny( QWidget* parent )
     m_grid = new QskGridBox();
     m_grid->setBackgroundColor( Qt::white );
     m_grid->setMargins( 10 );
+    m_grid->setSpacing( 5 );
 
     setContent( QUrl(), nullptr, m_grid );
 }
@@ -130,5 +120,15 @@ void GridSkinny::setRetainSizeWhenHiddenAt( int index, bool on )
 {
     if ( auto item = m_grid->itemAtIndex( index ) )
         m_grid->setRetainSizeWhenHidden( item, on );
+}
 
+void GridSkinny::setVisibleAt( int index, bool on )
+{
+    if ( auto item = m_grid->itemAtIndex( index ) )
+        item->setVisible( on );
+}
+
+QSize GridSkinny::preferredSize() const
+{
+    return m_grid->preferredSize().toSize();
 }

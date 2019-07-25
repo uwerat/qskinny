@@ -91,7 +91,25 @@ void GridAccessor::setMaximumSizeAt( int index, const QSize& size )
     setMaximumHeightAt( index, size.height() );
 }
 
-void GridAccessor::setSizePolicyAt(
+void GridAccessor::setFixedWidthAt( int index, int hint )
+{
+    setMinimumWidthAt( index, hint );
+    setMaximumWidthAt( index, hint );
+}
+
+void GridAccessor::setFixedHeightAt( int index, int hint )
+{
+    setMinimumHeightAt( index, hint );
+    setMaximumHeightAt( index, hint );
+}
+
+void GridAccessor::setFixedSizeAt( int index, const QSize& size )
+{
+    setMinimumSizeAt( index, size );
+    setMaximumSizeAt( index, size );
+}
+
+void GridAccessor::setSizePoliciesAt(
     int index, int horizontalPolicy, int verticalPolicy )
 {
     setSizePolicyAt( index, Qt::Horizontal, horizontalPolicy );

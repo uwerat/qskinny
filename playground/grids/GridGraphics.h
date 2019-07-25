@@ -29,6 +29,9 @@ class GridGraphics : public QGraphicsView, public GridAccessor
     void setSizePolicyAt( int index, Qt::Orientation, int policy ) override;
     void setAlignmentAt( int index, Qt::Alignment ) override;
     void setRetainSizeWhenHiddenAt( int index, bool on ) override;
+    void setVisibleAt( int index, bool on ) override;
+
+    QSize preferredSize() const override;
 
   protected:
     void resizeEvent( QResizeEvent* ) override;

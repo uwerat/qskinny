@@ -17,6 +17,15 @@ static QQuickItem* createQml( const char* qmlCode )
     return qobject_cast< QQuickItem* >( component.create() );
 }
 
+static QQuickItem* itemAt( const QQuickItem* grid, int index )
+{
+    const auto children = grid->childItems();
+    if ( ( index >= 0 ) && ( index < children.count() ) )
+        return children.at( index );
+
+    return nullptr;
+}
+
 static QObject* attachedProperties( const QQuickItem* item )
 {
     for ( auto child : item->children() )
@@ -30,14 +39,11 @@ static QObject* attachedProperties( const QQuickItem* item )
 
 static QObject* attachedPropertiesAt( const QQuickItem* grid, int index )
 {
-    const auto children = grid->childItems();
-
-    if ( ( index >= 0 ) && ( index < children.count() ) )
-        return attachedProperties( children.at( index ) );
+    if ( auto item = itemAt( grid, index ) )
+        return attachedProperties( item );
 
     return nullptr;
 }
-
 
 GridQuick::GridQuick( QWidget* parent )
     : QQuickWidget( parent )
@@ -50,6 +56,8 @@ GridQuick::GridQuick( QWidget* parent )
     setContent( QUrl(), nullptr, contentItem );
 
     m_grid = contentItem->childItems().first();
+    m_grid->setProperty( "rowSpacing", 5 );
+    m_grid->setProperty( "columnSpacing", 5 );
 }
 
 GridQuick::~GridQuick()
@@ -127,7 +135,7 @@ void GridQuick::setSizeHintAt( int index, Qt::Orientation orientation,
                 if ( orientation == Qt::Horizontal )
                     props->setProperty( "maximumWidth", size );
                 else
-                    props->setProperty( "maximumWidth", size );
+                    props->setProperty( "maximumHeight", size );
 
                 break;
             }
@@ -167,11 +175,24 @@ void GridQuick::setRetainSizeWhenHiddenAt( int, bool )
     qWarning() << "setRetainSizeWhenHidden is not supported by Quick Layouts.";
 }
 
+void GridQuick::setVisibleAt( int index, bool on )
+{
+    if ( auto item = itemAt( m_grid, index ) )
+        item->setVisible( on );
+}
+
+static const qreal margin = 10.0;
+
+QSize GridQuick::preferredSize() const
+{
+    return QSize(
+        m_grid->implicitWidth() + 2 * margin,
+        m_grid->implicitHeight() + 2 * margin );
+}
+
 void GridQuick::resizeEvent( QResizeEvent* event )
 {
     QQuickWidget::resizeEvent( event );
-
-    const qreal margin = 10.0;
 
     m_grid->setX( margin );
     m_grid->setY( margin );

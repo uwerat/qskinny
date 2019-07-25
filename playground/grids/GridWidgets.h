@@ -27,9 +27,11 @@ class GridWidgets : public QWidget, public GridAccessor
 
     void setSizeHintAt( int index, Qt::Orientation, Qt::SizeHint, int hint ) override;
     void setSizePolicyAt( int index, Qt::Orientation, int policy ) override;
-
     void setAlignmentAt( int index, Qt::Alignment ) override;
     void setRetainSizeWhenHiddenAt( int index, bool on ) override;
+    void setVisibleAt( int index, bool on ) override;
+
+    QSize preferredSize() const override;
 
   private:
     QGridLayout* m_layout;

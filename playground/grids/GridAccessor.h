@@ -37,7 +37,7 @@ class GridAccessor
     virtual void setSizeHintAt( int index, Qt::Orientation, Qt::SizeHint, int hint ) = 0;
     virtual void setSizePolicyAt( int index, Qt::Orientation, int policy ) = 0;
 
-    void setSizePolicyAt( int index, int horizontalPolicy, int verticalPolicy );
+    void setSizePoliciesAt( int index, int horizontalPolicy, int verticalPolicy );
 
     void setMinimumWidthAt( int index, int hint );
     void setMinimumHeightAt( int index, int hint );
@@ -51,8 +51,15 @@ class GridAccessor
     void setMaximumHeightAt( int index, int hint );
     void setMaximumSizeAt( int index, const QSize& );
 
+    void setFixedWidthAt( int index, int hint );
+    void setFixedHeightAt( int index, int hint );
+    void setFixedSizeAt( int index, const QSize& );
+
     virtual void setAlignmentAt( int index, Qt::Alignment ) = 0;
     virtual void setRetainSizeWhenHiddenAt( int index, bool on ) = 0;
+    virtual void setVisibleAt( int index, bool on ) = 0;
+
+    virtual QSize preferredSize() const = 0;
 };
 
 #endif

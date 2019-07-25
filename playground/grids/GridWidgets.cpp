@@ -60,6 +60,8 @@ GridWidgets::GridWidgets( QWidget* parent )
     setContentsMargins( QMargins() );
 
     m_layout = new QGridLayout();
+    m_layout->setSpacing( 5 );
+
     setLayout( m_layout );
 }
 
@@ -197,3 +199,18 @@ void GridWidgets::setRetainSizeWhenHiddenAt( int index, bool on )
         }
     }
 }
+
+void GridWidgets::setVisibleAt( int index, bool on )
+{
+    if ( auto layoutItem = m_layout->itemAt( index ) )
+    {
+        if ( auto widget = layoutItem->widget() )
+            widget->setVisible( on );
+    }
+}
+
+QSize GridWidgets::preferredSize() const
+{
+    return sizeHint();
+}
+

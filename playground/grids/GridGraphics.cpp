@@ -69,7 +69,9 @@ GridGraphics::GridGraphics( QWidget* parent )
     setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 
     auto grid = new Grid();
+
     m_layout = new QGraphicsGridLayout( grid );
+    m_layout->setSpacing( 5 );
 
     auto scene = new QGraphicsScene();
     scene->addItem( grid );
@@ -218,6 +220,20 @@ void GridGraphics::setRetainSizeWhenHiddenAt( int index, bool on )
         sizePolicy.setRetainSizeWhenHidden( on );
         layoutItem->setSizePolicy( sizePolicy );
     }
+}
+
+void GridGraphics::setVisibleAt( int index, bool on )
+{
+    if ( auto layoutItem = m_layout->itemAt( index ) )
+    {
+        if ( auto item = layoutItem->graphicsItem() )
+            item->setVisible( on );
+    }
+}
+
+QSize GridGraphics::preferredSize() const
+{
+    return m_layout->preferredSize().toSize();
 }
 
 void GridGraphics::resizeEvent( QResizeEvent* )

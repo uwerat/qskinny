@@ -9,34 +9,11 @@
 #include "GridAccessor.h"
 #include <QWidget>
 
+class QLabel;
+
 class TestBox : public QWidget, public GridAccessor
 {
   public:
-    TestBox( QWidget* parent = nullptr );
-    ~TestBox() override;
-
-    void setColumns( int );
-
-    void insert( const QByteArray& colorName,
-        int row, int column, int rowSpan, int columnSpan ) override;
-
-    void setSpacing( Qt::Orientations, int spacing ) override;
-
-    void setStretchFactor( int pos, Qt::Orientation, int stretch ) override;
-    void setSizeHint( int pos, Qt::Orientation, Qt::SizeHint, int hint ) override;
-
-    void setSizeHintAt( int index, Qt::Orientation, Qt::SizeHint, int hint ) override;
-    void setSizePolicyAt( int index, Qt::Orientation, int policy ) override;
-
-    void setAlignmentAt( int index, Qt::Alignment ) override;
-    void setRetainSizeWhenHiddenAt( int index, bool on ) override;
-
-  protected:
-    void resizeEvent( QResizeEvent* ) override;
-
-  private:
-    void layoutGrids();
-
     enum
     {
         Skinny,
@@ -47,7 +24,39 @@ class TestBox : public QWidget, public GridAccessor
         GridCount
     };
 
-    QWidget* grids[ GridCount ];
+    TestBox( QWidget* parent = nullptr );
+    ~TestBox() override;
+
+    void setColumns( int );
+    void enableGrid( int, bool on );
+
+    void insert( const QByteArray& colorName,
+        int row, int column, int rowSpan, int columnSpan ) override;
+
+    void setSpacing( Qt::Orientations, int spacing ) override;
+    using GridAccessor::setSpacing;
+
+    void setStretchFactor( int pos, Qt::Orientation, int stretch ) override;
+    void setSizeHint( int pos, Qt::Orientation, Qt::SizeHint, int hint ) override;
+
+    void setSizeHintAt( int index, Qt::Orientation, Qt::SizeHint, int hint ) override;
+    void setSizePolicyAt( int index, Qt::Orientation, int policy ) override;
+    void setAlignmentAt( int index, Qt::Alignment ) override;
+    void setRetainSizeWhenHiddenAt( int index, bool on ) override;
+    void setVisibleAt( int index, bool on ) override;
+
+    QSize preferredSize() const override;
+
+  protected:
+    bool event( QEvent* ) override;
+    void resizeEvent( QResizeEvent* ) override;
+
+  private:
+    void layoutGrids();
+
+    QWidget* m_grids[ GridCount ];
+    QLabel* m_labels[ GridCount ];
+
     int m_columnCount = 2;
 };
 

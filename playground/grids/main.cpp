@@ -4,93 +4,110 @@
  *****************************************************************************/
 
 #include "TestBox.h"
-#include <QApplication>
+
 #include <QskSizePolicy.h>
+#include <QApplication>
+#include <QDebug>
 
 class MainBox : public TestBox
 {
   public:
     MainBox( int id )
     {
-        switch( id )
+        using Testcase = void (MainBox::*)();
+
+        const Testcase tests[] =
         {
-            case 0:
-                setup0();
-                break;
+            &MainBox::test0, &MainBox::test1, &MainBox::test2,
+            &MainBox::test3, &MainBox::test4, &MainBox::test5,
+            &MainBox::test6, &MainBox::test7, &MainBox::test8
+        };
 
-            case 1:
-                setup1();
-                break;
+        const int count = static_cast<int>( sizeof( tests ) / sizeof( tests[0] ) );
 
-            case 2:
-                setup2();
-                break;
+        if ( id < 0 || id >= count )
+            id = 0;
 
-            case 3:
-                setup3();
-                break;
-        }
+        ( this->*tests[id] )();
     }
+
+    void insert( const char* colorName, int row, int column )
+    {
+        insert( colorName, row, column, 1, 1 );
+    }
+
+    using TestBox::insert;
 
   private:
 
-    void setup0();
-    void setup1();
-    void setup2();
-    void setup3();
-
-    void setSizePolicyAt( int index,
-        QskSizePolicy::Policy horizontalPolicy,
-        QskSizePolicy::Policy verticalPolicy )
-    {
-        TestBox::setSizePolicyAt( index, Qt::Horizontal, horizontalPolicy );
-        TestBox::setSizePolicyAt( index, Qt::Vertical, verticalPolicy );
-    }
+    void test0();
+    void test1();
+    void test2();
+    void test3();
+    void test4();
+    void test5();
+    void test6();
+    void test7();
+    void test8();
 };
 
-void MainBox::setup0()
+void MainBox::test0()
 {
     // something, that works with all layouts
 
-    insert( "PaleVioletRed", 0, 0, 1, 1 );
-    insert( "DarkSeaGreen", 1, 1, 1, 1 );
-    insert( "SkyBlue", 2, 1, 1, 1 );
-    insert( "Coral", 2, 2, 1, 1 );
+    insert( "PaleVioletRed", 0, 0 );
+    insert( "DarkSeaGreen", 1, 1 );
+    insert( "SkyBlue", 2, 1 );
+    insert( "Coral", 2, 2 );
     insert( "NavajoWhite", 3, 0, 1, 3 );
 }
 
-void MainBox::setup1()
+void MainBox::test1()
 {
     /*
-        The Graphics layout adds the extra space to the stretchable
+        Graphics layout adds the extra space to the stretchables
         while the other layouts use the extra space for reaching
         a ratio according to the stretch factor first,
         That leads to column 0 being too large.
-
      */
 
     setColumns( 1 );
 
-    insert( "PaleVioletRed", 0, 0, 1, 1 );
-    insert( "DarkSeaGreen", 1, 1, 1, 1 );
-    insert( "SkyBlue", 2, 1, 1, 1 );
-    insert( "Coral", 2, 2, 1, 1 );
-    insert( "NavajoWhite", 3, 0, 1, 3 );
-
-    setSizePolicyAt( 0, QskSizePolicy::Expanding, QskSizePolicy::Preferred );
-    setSizePolicyAt( 1, QskSizePolicy::Fixed, QskSizePolicy::Preferred );
-    setSizePolicyAt( 2, QskSizePolicy::Expanding, QskSizePolicy::Preferred );
-
-#if 1
     // Quick layouts do not support row/column hints
+    enableGrid( Quick, false );
+
+    insert( "PaleVioletRed", 0, 0 );
+    insert( "DarkSeaGreen", 1, 1 );
+    insert( "SkyBlue", 2, 1 );
+    insert( "Coral", 2, 2 );
+
+    setSizePolicyAt( 0, Qt::Horizontal, QskSizePolicy::Expanding );
+    setSizePolicyAt( 1, Qt::Horizontal, QskSizePolicy::Fixed );
+    setSizePolicyAt( 2, Qt::Horizontal, QskSizePolicy::Expanding );
+    setSizePolicyAt( 3, Qt::Horizontal, QskSizePolicy::Fixed );
+
     setColumnSizeHint( 1, Qt::MinimumSize, 100 );
-#else
-    for ( int i = 0; i < 4; i++ )
-        setMinimumWidthAt( i, 100 );
-#endif
 }
 
-void MainBox::setup2()
+void MainBox::test2()
+{
+    setColumns( 1 );
+
+    insert( "PaleVioletRed", 0, 0 );
+    insert( "DarkSeaGreen", 1, 1 );
+    insert( "SkyBlue", 2, 1 );
+    insert( "Coral", 2, 2 );
+
+    setSizePolicyAt( 0, Qt::Horizontal, QskSizePolicy::Expanding );
+    setSizePolicyAt( 1, Qt::Horizontal, QskSizePolicy::Fixed );
+    setSizePolicyAt( 2, Qt::Horizontal, QskSizePolicy::Expanding );
+    setSizePolicyAt( 3, Qt::Horizontal, QskSizePolicy::Fixed );
+
+    setMinimumWidthAt( 1, 100 );
+    setMinimumWidthAt( 2, 100 );
+}
+
+void MainBox::test3()
 {
     /*
         The Graphics layout uses a "magic" formula for how to apply
@@ -100,16 +117,19 @@ void MainBox::setup2()
         larger than twice of columns 0.
      */
 
-    setColumns( 4 );
+    setColumns( 3 );
 
-    insert( "PaleVioletRed", 0, 0, 1, 1 );
-    insert( "DarkSeaGreen", 1, 0, 1, 1 );
+    // Quick layouts do not support row/column hints
+    enableGrid( Quick, false );
+
+    insert( "PaleVioletRed", 0, 0 );
+    insert( "DarkSeaGreen", 1, 0 );
 
     setRowStretchFactor( 0, 1 );
     setRowStretchFactor( 1, 2 );
 }
 
-void MainBox::setup3()
+void MainBox::test4()
 {
     /*
         When setting a maximum size together with an alignment the expected result
@@ -125,22 +145,111 @@ void MainBox::setup3()
      */
     setColumns( 1 );
 
-    insert( "PaleVioletRed", 0, 0, 1, 1 );
+    insert( "PaleVioletRed", 0, 0 );
 
-    setPreferredWidthAt( 0, 10 );
-    setPreferredHeightAt( 0, 10 );
-
-    setMaximumWidthAt( 0, 200 );
-    setMaximumHeightAt( 0, 200 );
+    setPreferredSizeAt( 0, QSize( 10, 10 ) );
+    setMaximumSizeAt( 0, QSize( 200, 200 ) );
 
     setAlignmentAt( 0, Qt::AlignCenter );
+}
+
+void MainBox::test5()
+{
+    /*
+        QGridLayoutEngine does not work correctly when putting more
+        than one element into the same cell. For the specific situation
+        below we have a wrong preferredSize for Quick and Graphic as only the
+        last element being inserted one cell goes into the calculation.
+
+        The reason behind this limitation is a second list for the elements
+        organized according to row/column that can only store one
+        element per cell. Unfortunately the implementation iterates in several
+        situations over rows/columns using this list.
+        Iterating over the elements instead avoids this limitation and would
+        be more efficient as well.
+
+        Actually the row/column organized list is ony useful for faster lookups,
+        when retrieving an item at a specific cell - beside that it 
+        complicates the code without offering extra benefits.
+
+        The position of the rectangles differs because the systems have
+        default alignments.
+     */
+
+    insert( "PaleVioletRed", 0, 0 );
+    insert( "DarkSeaGreen", 0, 0 );
+
+    setFixedSizeAt( 0, QSize( 100, 100 ) );
+    setFixedSizeAt( 1, QSize( 50, 50 ) );
+}
+
+void MainBox::test6()
+{
+    /*
+        QGridLayoutEngine ignores the first column coming from
+        the multicell element at the bottom
+     */
+    insert( "DarkSeaGreen", 1, 1 );
+    insert( "Coral", 2, 2 );
+    insert( "NavajoWhite", 3, 0, 1, 3 );
+
+    setSpacing( 0 );
+}
+
+void MainBox::test7()
+{
+    /*
+        This test is very similar to test6, but here we can see a
+        difference between Quick and Graphic. The hidden element has
+        an effect on the layout for Graphic, what is actually wrong, when
+        setRetainSizeWhenHidden is not set. The preferred width also
+        includes a wrong contribution from the hidden element.
+     */
+    insert( "PaleVioletRed", 0, 0 );
+    insert( "DarkSeaGreen", 1, 1 );
+    insert( "Coral", 2, 2 );
+    insert( "NavajoWhite", 3, 0, 1, 3 );
+    
+    setVisibleAt( 0, false );
+    //setRetainSizeWhenHiddenAt( 0, true );
+}   
+
+void MainBox::test8()
+{
+    /*
+        This test creates a situation, where we have more space than
+        the minimum, but not enough for preferred. For this situation 
+        all layout engines use a different algorithm how to distribute
+        the extra space. All of them are based on the difference between
+        preferred and minimum.
+
+        - Skinny simply uses the ratio of the differences
+        - Widgets seems to do something that works exponatially
+          ( need to check the code ).
+        - Graphic/Quick ( QGridLayoutEngine ) levels the impact
+          of the differences down. 
+
+        Hard to say what a user expects to happen.
+     */
+    insert( "PaleVioletRed", 0, 0 );
+    insert( "DarkSeaGreen", 1, 1 );
+
+    for ( int i = 0; i < 2; i++ )
+    {
+        setMinimumSizeAt( i, QSize( 20, 20 ) );
+        setPreferredSizeAt( i, ( i + 1 ) * QSize( 2000, 2000 ) );
+    }
 }
 
 int main( int argc, char** argv )
 {
     QApplication a( argc, argv );
 
-    MainBox box( 0 );
+    int testcase = 0;
+    if ( argc == 2 )
+        testcase = atoi( argv[1] );
+
+    MainBox box( testcase );
 
     box.resize( 600, 600 );
     box.show();
