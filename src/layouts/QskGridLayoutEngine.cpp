@@ -667,7 +667,7 @@ void QskGridLayoutEngine::setupChain( Qt::Orientation orientation,
 {
     /*
         We collect all information from the simple elements first
-        befora adding those that occupy more than one cell
+        before adding those that occupy more than one cell
      */
     QVarLengthArray< const Element* > postponed;
 
