@@ -18,7 +18,7 @@
 #include <QDate>
 #include <QImage>
 
-#define SPEEDO 0
+#define SPEEDO 1
 
 MainWindow::MainWindow()
 {
