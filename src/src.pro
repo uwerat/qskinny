@@ -9,6 +9,8 @@ QSK_SUBDIRS = common graphic nodes controls layouts dialogs inputpanel
 INCLUDEPATH *= $${QSK_SUBDIRS}
 DEPENDPATH *= $${QSK_SUBDIRS}
 
+# DEFINES += QSK_LAYOUT_COMPAT
+
 HEADERS += \
     common/QskAspect.h \
     common/QskBoxBorderColors.h \
@@ -236,8 +238,9 @@ HEADERS += \
     layouts/QskGridLayoutEngine.h \
     layouts/QskIndexedLayoutBox.h \
     layouts/QskLayoutConstraint.h \
-    layouts/QskLayoutHint.h \
     layouts/QskLayoutChain.h \
+    layouts/QskLayoutEngine2D.cpp \
+    layouts/QskLayoutHint.h \
     layouts/QskLinearBox.h \
     layouts/QskLinearLayoutEngine.h \
     layouts/QskStackBoxAnimator.h \
@@ -247,9 +250,10 @@ SOURCES += \
     layouts/QskGridBox.cpp \
     layouts/QskGridLayoutEngine.cpp \
     layouts/QskIndexedLayoutBox.cpp \
-    layouts/QskLayoutConstraint.cpp \
-    layouts/QskLayoutHint.cpp \
     layouts/QskLayoutChain.cpp \
+    layouts/QskLayoutConstraint.cpp \
+    layouts/QskLayoutEngine2D.cpp \
+    layouts/QskLayoutHint.cpp \
     layouts/QskLinearBox.cpp \
     layouts/QskLinearLayoutEngine.cpp \
     layouts/QskStackBoxAnimator.cpp \

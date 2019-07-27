@@ -17,7 +17,6 @@ class QSK_EXPORT QskLayoutHint
     QskLayoutHint();
     QskLayoutHint( qreal minimum, qreal preferred, qreal maximum );
 
-    void expandTo( const QskLayoutHint& );
     void normalize();
 
     QskLayoutHint normalized() const;
@@ -37,6 +36,8 @@ class QSK_EXPORT QskLayoutHint
 
     void setMaximum( qreal value );
     qreal maximum() const;
+
+    void setSizes( qreal minimum, qreal preferred, qreal maximum );
 
   private:
     qreal m_minimum;
@@ -72,6 +73,14 @@ inline qreal QskLayoutHint::maximum() const
 inline void QskLayoutHint::setMaximum( qreal value )
 {
     m_maximum = value;
+}
+
+inline void QskLayoutHint::setSizes(
+    qreal minimum, qreal preferred, qreal maximum )
+{
+    m_minimum = minimum;
+    m_preferred = preferred;
+    m_maximum = maximum;
 }
 
 inline bool QskLayoutHint::operator==( const QskLayoutHint& other ) const

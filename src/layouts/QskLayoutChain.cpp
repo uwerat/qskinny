@@ -13,6 +13,8 @@
 #include <cmath>
 #endif
 
+#include <qdebug.h>
+
 QskLayoutChain::QskLayoutChain()
 {
 }
@@ -29,13 +31,13 @@ void QskLayoutChain::invalidate()
 
 void QskLayoutChain::reset( int count, qreal constraint )
 {
-    m_cells.assign( count, Cell() );
+    m_cells.fill( CellData(), count );
     m_constraint = constraint;
     m_sumStretches = 0;
     m_validCells = 0;
 }
 
-void QskLayoutChain::expandTo( int index, const Cell& newCell )
+void QskLayoutChain::narrowCell( int index, const CellData& newCell )
 {
     if ( !newCell.isValid )
         return;
@@ -45,12 +47,109 @@ void QskLayoutChain::expandTo( int index, const Cell& newCell )
     if ( !cell.isValid )
     {
         cell = newCell;
+        cell.stretch = qMax( cell.stretch, 0 );
+        m_validCells++;
+    }
+    else
+    {
+        cell.canGrow &= newCell.canGrow;
+        if ( newCell.stretch >= 0 )
+            cell.stretch = qMax( cell.stretch, newCell.stretch );
+
+        if ( !newCell.hint.isDefault() )
+        {
+            cell.hint.setSizes(
+                qMax( cell.hint.minimum(), newCell.hint.minimum() ),
+                qMax( cell.hint.preferred(), newCell.hint.preferred() ),
+                qMin( cell.hint.maximum(), newCell.hint.maximum() )
+            );
+
+            cell.hint.normalize();
+        }
+    }
+}
+
+void QskLayoutChain::expandCell( int index, const CellData& newCell )
+{
+    if ( !newCell.isValid )
+        return;
+
+    auto& cell = m_cells[ index ];
+
+    if ( !cell.isValid )
+    {
+        cell = newCell;
+        cell.stretch = qMax( cell.stretch, 0 );
+        m_validCells++;
     }
     else
     {
         cell.canGrow |= newCell.canGrow;
         cell.stretch = qMax( cell.stretch, newCell.stretch );
-        cell.hint.expandTo( newCell.hint );
+
+        cell.hint.setSizes(
+            qMax( cell.hint.minimum(), newCell.hint.minimum() ),
+            qMax( cell.hint.preferred(), newCell.hint.preferred() ),
+            qMax( cell.hint.maximum(), newCell.hint.maximum() )
+        );
+    }
+}
+
+void QskLayoutChain::expandCells(
+    int index, int count, const CellData& multiCell )
+{
+    QskLayoutChain chain;
+    chain.reset( count, -1 );
+
+    for ( int i = 0; i < count; i++ )
+    {
+        chain.expandCell( i, m_cells[ index + i ] );
+
+        auto& cell = chain.m_cells[ i ];
+#if 1
+        // what to do now ??
+        if ( !cell.isValid )
+        {
+            cell.isValid = true;
+            cell.canGrow = multiCell.canGrow;
+            cell.stretch = qMax( cell.stretch, 0 );
+        }
+#endif
+    }
+    chain.m_validCells = count;
+
+    QVarLengthArray< QskLayoutHint > hints( count );
+
+    const auto& hint = multiCell.hint;
+    const auto chainHint = chain.boundingHint();
+
+    if ( hint.minimum() > chainHint.minimum() )
+    {
+        const auto segments = chain.segments( hint.minimum() );
+        for ( int i = 0; i < count; i++ )
+            hints[i].setMinimum( segments[i].length );
+    }
+
+    if ( hint.preferred() > chainHint.preferred() )
+    {
+        const auto segments = chain.segments( hint.preferred() );
+        for ( int i = 0; i < count; i++ )
+            hints[i].setPreferred( segments[i].length );
+    }
+
+    if ( hint.maximum() < chainHint.maximum() )
+    {
+        const auto segments = chain.segments( hint.maximum() );
+        for ( int i = 0; i < count; i++ )
+            hints[i].setMaximum( segments[i].length );
+    }
+
+    for ( int i = 0; i < count; i++ )
+    {
+        auto cell = multiCell;
+        cell.hint = hints[i];
+
+        expandCell( index + i, cell );
     }
 }
 
@@ -119,24 +218,24 @@ bool QskLayoutChain::setSpacing( qreal spacing )
     return false;
 }
 
-QVector< QskLayoutChain::Range > QskLayoutChain::geometries( qreal size ) const
+QskLayoutChain::Segments QskLayoutChain::segments( qreal size ) const
 {
     if ( m_validCells == 0 )
-        return QVector< Range >();
+        return Segments();
 
-    QVector< Range > ranges;
+    Segments segments;
 
     if ( size <= m_boundingHint.minimum() )
     {
-        ranges = distributed( Qt::MinimumSize, 0.0, 0.0 );
+        segments = distributed( Qt::MinimumSize, 0.0, 0.0 );
     }
     else if ( size < m_boundingHint.preferred() )
     {
-        ranges = minimumExpanded( size );
+        segments = minimumExpanded( size );
     }
     else if ( size <= m_boundingHint.maximum() )
     {
-        ranges = preferredStretched( size );
+        segments = preferredStretched( size );
     }
     else
     {
@@ -145,70 +244,70 @@ QVector< QskLayoutChain::Range > QskLayoutChain::geometries( qreal size ) const
         qreal offset = 0.0;
         qreal extra = 0.0;;
 
-        if ( m_extraSpacingAt == Qt::LeftEdge )
+        switch( m_extraSpacingAt )
         {
-            offset = padding;
-        }
-        else if ( m_extraSpacingAt == Qt::RightEdge )
-        {
-            offset = 0.0;
-        }
-        else if ( m_extraSpacingAt == ( Qt::LeftEdge | Qt::RightEdge ) )
-        {
-            offset = 0.5 * padding;
-        }
-        else
-        {
-            extra = padding / m_validCells;
+            case Leading:
+                offset = padding;
+                break;
+
+            case Trailing:
+                break;
+
+            case Leading | Trailing:
+                offset = 0.5 * padding;
+                break;
+
+            default:
+                extra = padding / m_validCells;
         }
 
-        ranges = distributed( Qt::MaximumSize, offset, extra );
+        segments = distributed( Qt::MaximumSize, offset, extra );
     }
 
-    return ranges;
+    return segments;
 }
 
-QVector< QskLayoutChain::Range > QskLayoutChain::distributed(
+QskLayoutChain::Segments QskLayoutChain::distributed(
     int which, qreal offset, const qreal extra ) const
 {
     qreal fillSpacing = 0.0;
 
-    QVector< Range > ranges( m_cells.size() );
+    Segments segments( m_cells.size() );
 
-    for ( int i = 0; i < ranges.count(); i++ )
+    for ( int i = 0; i < segments.count(); i++ )
     {
         const auto& cell = m_cells[i];
-        auto& range = ranges[i];
+        auto& segment = segments[i];
 
         if ( !cell.isValid )
         {
-            range.start = offset;
-            range.length = 0.0;
+            segment.start = offset;
+            segment.length = 0.0;
         }
         else
         {
             offset += fillSpacing;
             fillSpacing = m_spacing;
 
-            range.start = offset;
-            range.length = cell.hint.size( which ) + extra;
+            segment.start = offset;
+            segment.length = cell.hint.size( which ) + extra;
 
-            offset += range.length;
+            offset += segment.length;
         }
     }
 
-    return ranges;
+    return segments;
 }
 
-QVector< QskLayoutChain::Range > QskLayoutChain::minimumExpanded( qreal size ) const
+QskLayoutChain::Segments QskLayoutChain::minimumExpanded( qreal size ) const
 {
-    QVector< Range > ranges( m_cells.size() );
+    Segments segments( m_cells.size() );
 
     qreal fillSpacing = 0.0;
     qreal offset = 0.0;
 
     /*
-        We have different options how to distribute the availabe space
+        We have different options how to distribute the available space
 
         - according to the preferred sizes
 
@@ -231,7 +330,7 @@ QVector< QskLayoutChain::Range > QskLayoutChain::minimumExpanded( qreal size ) c
     const qreal desired = m_boundingHint.preferred() - m_boundingHint.minimum();
     const qreal available = size - m_boundingHint.minimum();
 
-    for ( uint i = 0; i < m_cells.size(); i++ )
+    for ( int i = 0; i < m_cells.size(); i++ )
     {
         const auto& cell = m_cells[i];
         if ( !cell.isValid )
@@ -247,67 +346,67 @@ QVector< QskLayoutChain::Range > QskLayoutChain::minimumExpanded( qreal size ) c
         }
     }
 
-    for ( uint i = 0; i < m_cells.size(); i++ )
+    for ( int i = 0; i < m_cells.size(); i++ )
     {
         const auto& cell = m_cells[i];
-        auto& range = ranges[i];
+        auto& segment = segments[i];
 
         if ( !cell.isValid )
         {
-            range.start = offset;
-            range.length = 0.0;
+            segment.start = offset;
+            segment.length = 0.0;
         }
         else
         {
             offset += fillSpacing;
             fillSpacing = m_spacing;
 
-            range.start = offset;
-            range.length = cell.hint.minimum()
+            segment.start = offset;
+            segment.length = cell.hint.minimum()
                 + available * ( factors[i] / sumFactors );
 
-            offset += range.length;
+            offset += segment.length;
         }
     }
 #else
     const qreal factor = ( size - m_boundingHint.minimum() ) /
         ( m_boundingHint.preferred() - m_boundingHint.minimum() );
 
-    for ( uint i = 0; i < m_cells.size(); i++ )
+    for ( int i = 0; i < m_cells.count(); i++ )
     {
         const auto& cell = m_cells[i];
-        auto& range = ranges[i];
+        auto& segment = segments[i];
 
         if ( !cell.isValid )
         {
-            range.start = offset;
-            range.length = 0.0;
+            segment.start = offset;
+            segment.length = 0.0;
         }
         else
         {
             offset += fillSpacing;
             fillSpacing = m_spacing;
 
-            range.start = offset;
-            range.length = cell.hint.minimum()
+            segment.start = offset;
+            segment.length = cell.hint.minimum()
                 + factor * ( cell.hint.preferred() - cell.hint.minimum() );
 
-            offset += range.length;
+            offset += segment.length;
         }
     }
 #endif
 
-    return ranges;
+    return segments;
 }
 
-QVector< QskLayoutChain::Range > QskLayoutChain::preferredStretched( qreal size ) const
+QskLayoutChain::Segments QskLayoutChain::preferredStretched( qreal size ) const
 {
     const int count = m_cells.size();
 
     qreal sumFactors = 0.0;
 
     QVarLengthArray< qreal > factors( count );
-    QVector< Range > ranges( count );
+    Segments segments( count );
 
     for ( int i = 0; i < count; i++ )
     {
@@ -315,7 +414,7 @@ QVector< QskLayoutChain::Range > QskLayoutChain::preferredStretched( qreal size 
 
         if ( !cell.isValid )
         {
-            ranges[i].length = 0.0;
+            segments[i].length = 0.0;
             factors[i] = -1.0;
             continue;
         }
@@ -355,7 +454,7 @@ QVector< QskLayoutChain::Range > QskLayoutChain::preferredStretched( qreal size 
 
             if ( boundedSize != size )
             {
-                ranges[i].length = boundedSize;
+                segments[i].length = boundedSize;
                 sumSizes -= boundedSize;
                 sumFactors -= factors[i];
                 factors[i] = -1.0;
@@ -374,7 +473,7 @@ QVector< QskLayoutChain::Range > QskLayoutChain::preferredStretched( qreal size 
     for ( int i = 0; i < count; i++ )
     {
         const auto& cell = m_cells[i];
-        auto& range = ranges[i];
+        auto& segment = segments[i];
 
         const auto& factor = factors[i];
 
@@ -384,37 +483,37 @@ QVector< QskLayoutChain::Range > QskLayoutChain::preferredStretched( qreal size 
             fillSpacing = m_spacing;
         }
 
-        range.start = offset;
+        segment.start = offset;
 
         if ( factor >= 0.0 )
         {
             if ( factor > 0.0 )
-                range.length = sumSizes * factor / sumFactors;
+                segment.length = sumSizes * factor / sumFactors;
             else
-                range.length = cell.hint.preferred();
+                segment.length = cell.hint.preferred();
         }
 
-        offset += range.length;
+        offset += segment.length;
     }
 
-    return ranges;
+    return segments;
 }
 
 #ifndef QT_NO_DEBUG_STREAM
 
 #include <qdebug.h>
 
-QDebug operator<<( QDebug debug, const QskLayoutChain::Range& range )
+QDebug operator<<( QDebug debug, const QskLayoutChain::Segment& segment )
 {
     QDebugStateSaver saver( debug );
     debug.nospace();
 
-    debug << "( " << range.start << ", " << range.end() << " )";
+    debug << "( " << segment.start << ", " << segment.end() << " )";
 
     return debug;
 }
 
-QDebug operator<<( QDebug debug, const QskLayoutChain::Cell& cell )
+QDebug operator<<( QDebug debug, const QskLayoutChain::CellData& cell )
 {
     QDebugStateSaver saver( debug );
     debug.nospace();

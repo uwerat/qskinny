@@ -12,6 +12,9 @@ class QSK_EXPORT QskGridBox : public QskBox
 {
     Q_OBJECT
 
+    Q_PROPERTY( Qt::Alignment defaultAlignment READ defaultAlignment
+        WRITE setDefaultAlignment NOTIFY defaultAlignmentChanged )
+
     Q_PROPERTY( bool empty READ isEmpty() )
     Q_PROPERTY( int count READ count )
 
@@ -21,13 +24,16 @@ class QSK_EXPORT QskGridBox : public QskBox
     explicit QskGridBox( QQuickItem* parent = nullptr );
     ~QskGridBox() override;
 
-    Q_INVOKABLE void addItem(
+    Q_INVOKABLE int addItem(
         QQuickItem*, int row, int column, int rowSpan, int columnSpan,
         Qt::Alignment alignment = Qt::Alignment() );
 
-    Q_INVOKABLE void addItem(
+    Q_INVOKABLE int addItem(
         QQuickItem*, int row, int column,
         Qt::Alignment alignment = Qt::Alignment() );
+
+    Q_INVOKABLE int addSpacer( qreal spacing,
+        int row, int column, int columnSpan = 1, int rowSpan = 1 );
 
     void removeItem( const QQuickItem* );
     void removeAt( int index );
@@ -48,13 +54,11 @@ class QSK_EXPORT QskGridBox : public QskBox
     Q_INVOKABLE QQuickItem* itemAt( int row, int column ) const;
     Q_INVOKABLE int indexAt( int row, int column ) const;
 
-    Q_INVOKABLE int rowOfIndex( int index ) const;
-    Q_INVOKABLE int rowSpanOfIndex( int index ) const;
+    Q_INVOKABLE QRect gridOfIndex( int index ) const;
+    Q_INVOKABLE QRect effectiveGridOfIndex( int index ) const;
 
-    Q_INVOKABLE int columnOfIndex( int index ) const;
-    Q_INVOKABLE int columnSpanOfIndex( int index ) const;
-
-    // spacings
+    void setDefaultAlignment( Qt::Alignment );
+    Qt::Alignment defaultAlignment() const;
 
     void setSpacing( Qt::Orientations, qreal spacing );
     void resetSpacing( Qt::Orientations );
@@ -70,23 +74,15 @@ class QSK_EXPORT QskGridBox : public QskBox
     void setHorizontalSpacing( qreal spacing ) { setSpacing( Qt::Horizontal, spacing ); }
     qreal horizontalSpacing() const { return spacing( Qt::Horizontal ); }
 
-    void setSpacing( qreal spacing ) { setSpacing( Qt::Horizontal | Qt::Vertical, spacing ); }
-
     void setActive( bool ) {}
     bool isActive() const { return true; }
 
-    void setRowMinimumHeight( int column, qreal height )
-        { setRowSizeHint( column, Qt::MinimumSize, height ); }
+    void setRowMinimumHeight( int row, qreal height )
+        { setRowSizeHint( row, Qt::MinimumSize, height ); }
 
     void setColumnMaximumWidth( int column, qreal width )
         { setColumnSizeHint( column, Qt::MaximumSize, width ); }
 #endif
-
-    Q_INVOKABLE void setRowSpacing( int row, qreal spacing );
-    Q_INVOKABLE qreal rowSpacing( int row ) const;
-
-    Q_INVOKABLE void setColumnSpacing( int column, qreal spacing );
-    Q_INVOKABLE qreal columnSpacing( int column ) const;
 
     // stretch factors
     Q_INVOKABLE void setRowStretchFactor( int row, int stretch );
@@ -108,12 +104,6 @@ class QSK_EXPORT QskGridBox : public QskBox
 
     // alignments
 
-    Q_INVOKABLE void setRowAlignment( int row, Qt::Alignment alignment );
-    Q_INVOKABLE Qt::Alignment rowAlignment( int row ) const;
-
-    Q_INVOKABLE void setColumnAlignment( int column, Qt::Alignment alignment );
-    Q_INVOKABLE Qt::Alignment columnAlignment( int column ) const;
-
     void setAlignment( const QQuickItem* item, Qt::Alignment alignment );
     Qt::Alignment alignment( const QQuickItem* item ) const;
 
@@ -129,6 +119,9 @@ class QSK_EXPORT QskGridBox : public QskBox
     void invalidate();
     void clear( bool autoDelete = false );
 
+  Q_SIGNALS:
+    void defaultAlignmentChanged();
+
   protected:
     bool event( QEvent* ) override;
     void geometryChangeEvent( QskGeometryChangeEvent* ) override;
@@ -141,10 +134,10 @@ class QSK_EXPORT QskGridBox : public QskBox
     std::unique_ptr< PrivateData > m_data;
 };
 
-inline void QskGridBox::addItem(
+inline int QskGridBox::addItem(
     QQuickItem* item, int row, int column, Qt::Alignment alignment )
 {
-    addItem( item, row, column, 1, 1, alignment );
+    return addItem( item, row, column, 1, 1, alignment );
 }
 
 inline bool QskGridBox::isEmpty() const

@@ -58,15 +58,6 @@ void QskLayoutHint::setSize( int which, qreal size )
     }
 }
 
-void QskLayoutHint::expandTo( const QskLayoutHint& other )
-{
-    const auto hint = other.normalized();
-
-    m_minimum = qMax( m_minimum, hint.m_minimum );
-    m_preferred = qMax( m_preferred, hint.m_preferred );
-    m_maximum = qMax( m_maximum, hint.m_maximum );
-}
-
 void QskLayoutHint::normalize()
 {
     m_minimum = qMax( m_minimum, qreal( 0.0 ) );

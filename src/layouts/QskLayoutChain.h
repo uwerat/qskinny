@@ -7,16 +7,15 @@
 #define QSK_LAYOUT_CHAIN_H
 
 #include <QskLayoutHint.h>
-#include <qglobal.h>
+#include <qrect.h>
 #include <qvector.h>
-#include <vector>
 
 class QDebug;
 
 class QskLayoutChain
 {
   public:
-    class Range
+    class Segment
     {
       public:
         inline qreal end() const { return start + length; }
@@ -25,21 +24,12 @@ class QskLayoutChain
         qreal length = 0.0;
     };
 
-    class Cell
+    typedef QVector< Segment > Segments;
+
+    class CellData
     {
       public:
-        Cell()
-        {
-        }
-
-        Cell( QskLayoutHint hint, int stretch )
-            : hint( hint )
-            , stretch( stretch )
-            , isValid( true )
-        {
-        }
-
-        inline bool operator==( const Cell& other ) const
+        inline bool operator==( const CellData& other ) const
         {
             return ( isValid == other.isValid )
                 && ( canGrow == other.canGrow )
@@ -47,15 +37,32 @@ class QskLayoutChain
                 && ( hint == other.hint );
         }
 
-        inline bool operator!=( const Cell& other ) const
+        inline bool operator!=( const CellData& other ) const
         {
             return !( *this == other );
         }
 
+        inline qreal size( int which ) const
+        {
+            return hint.size( which );
+        }
+
+        inline void setSize( int which, qreal size )
+        {
+            hint.setSize( which, size );
+        }
+
         QskLayoutHint hint;
+
         int stretch = 0;
         bool canGrow = false;
         bool isValid = false;
+    };
+
+    enum ExtraSpacing
+    {
+        Leading = 1 << 0,
+        Trailing = 1 << 1
     };
 
     QskLayoutChain();
@@ -64,48 +71,49 @@ class QskLayoutChain
     void invalidate();
 
     void reset( int count, qreal constraint );
-    void expandTo( int index, const Cell& );
+    void expandCell( int index, const CellData& );
+    void expandCells( int start, int end, const CellData& );
+    void narrowCell( int index, const CellData& );
     void finish();
 
-    const Cell& cell( int index ) const { return m_cells[ index ]; }
+    const CellData& cell( int index ) const { return m_cells[ index ]; }
 
     bool setSpacing( qreal spacing );
     qreal spacing() const { return m_spacing; }
 
-    void setExtraSpacingAt( Qt::Edges edges ) { m_extraSpacingAt = edges; }
+    void setExtraSpacingAt( int extraSpacingAt ) { m_extraSpacingAt = extraSpacingAt; }
 
-    QVector< Range > geometries( qreal size ) const;
+    Segments segments( qreal size ) const;
     QskLayoutHint boundingHint() const { return m_boundingHint; }
 
     inline qreal constraint() const { return m_constraint; }
     inline int count() const { return m_cells.size(); }
 
   private:
-    Q_DISABLE_COPY( QskLayoutChain )
-
-    QVector< Range > distributed( int which, qreal offset, qreal extra ) const;
-    QVector< Range > minimumExpanded( qreal size ) const;
-    QVector< Range > preferredStretched( qreal size ) const;
+    Segments distributed( int which, qreal offset, qreal extra ) const;
+    Segments minimumExpanded( qreal size ) const;
+    Segments preferredStretched( qreal size ) const;
 
     QskLayoutHint m_boundingHint;
     qreal m_constraint = -2.0;
 
     qreal m_spacing = 0;
-    Qt::Edges m_extraSpacingAt;
+    int m_extraSpacingAt;
 
     int m_sumStretches = 0;
     int m_validCells = 0;
-    std::vector< Cell > m_cells;
+
+    QVector< CellData > m_cells;
 };
 
 #ifndef QT_NO_DEBUG_STREAM
 
-QDebug operator<<( QDebug, const QskLayoutChain::Range& );
-QDebug operator<<( QDebug, const QskLayoutChain::Cell& );
+QDebug operator<<( QDebug, const QskLayoutChain::Segment& );
+QDebug operator<<( QDebug, const QskLayoutChain::CellData& );
 
 #endif
 
-Q_DECLARE_TYPEINFO( QskLayoutChain::Range, Q_MOVABLE_TYPE );
-Q_DECLARE_TYPEINFO( QskLayoutChain::Cell, Q_MOVABLE_TYPE );
+Q_DECLARE_TYPEINFO( QskLayoutChain::Segment, Q_MOVABLE_TYPE );
+Q_DECLARE_TYPEINFO( QskLayoutChain::CellData, Q_MOVABLE_TYPE );
 
 #endif

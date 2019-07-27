@@ -12,59 +12,32 @@
 
 #include <qvector.h>
 
-static constexpr qreal qskDefaultSpacing()
-{
-    // should be a skin hint
-    return 5.0;
-}
-
 namespace
 {
-    class CellGeometries
+    class Element
     {
       public:
-        void invalidate()
-        {
-            boundingSize = QSizeF();
-            rows.clear();
-            columns.clear();
-        }
+        Element( QQuickItem* item );
+        Element( qreal spacing );
 
-        QRectF geometryAt( int row, int col ) const
-        {
-            return QRectF(
-                columns[ col ].start, rows[ row ].start,
-                columns[ col ].length, rows[ row ].length );
-        }
+        Element& operator=( const Element& );
 
-        QSizeF boundingSize;
+        qreal spacer() const;
+        QQuickItem* item() const;
 
-        QVector< QskLayoutChain::Range > rows;
-        QVector< QskLayoutChain::Range > columns;
-    };
+        Qt::Alignment alignment() const;
+        void setAlignment( Qt::Alignment );
 
-    class EntryData
-    {
-      public:
-        EntryData( QQuickItem* item );
-        EntryData( qreal spacing );
+        bool retainSizeWhenHidden() const;
+        void setRetainSizeWhenHidden( bool );
 
-        EntryData& operator=( const EntryData& );
+        int stretch() const;
+        void setStretch( int );
 
         bool isIgnored() const;
 
-        qreal spacer() const { return m_isSpacer ? m_spacer : -1.0; }
-        QQuickItem* item() const { return m_isSpacer ? nullptr : m_item; }
-
-        inline Qt::Alignment alignment() const
-            { return static_cast< Qt::Alignment >( m_alignment ); }
-        inline void setAlignment( Qt::Alignment alignment ) { m_alignment = alignment; }
-
-        inline int stretch() const { return m_stretch; }
-        inline void setStretch( int stretch ) { m_stretch = stretch; }
-
-        bool retainSizeWhenHidden() const { return m_retainSizeWhenHidden; }
-        void setRetainSizeWhenHidden( bool on ) { m_retainSizeWhenHidden = on; }
+        QskLayoutChain::CellData cell( Qt::Orientation,
+            bool isLayoutOrientation, qreal constraint ) const;
 
       private:
 
@@ -80,84 +53,9 @@ namespace
         bool m_isSpacer : 1;
         bool m_retainSizeWhenHidden : 1;
     };
-
-    class EntryTable
-    {
-      public:
-        EntryTable( Qt::Orientation, uint dimension );
-
-        bool setOrientation( Qt::Orientation orientation );
-        Qt::Orientation orientation() const;
-
-        bool setDimension( uint dimension );
-        uint dimension() const;
-
-        bool setDefaultAlignment( Qt::Alignment );
-        Qt::Alignment defaultAlignment() const;
-
-        Qt::Alignment effectiveAlignmentAt( int index ) const;
-
-        void insertItem( int index, QQuickItem* );
-        void insertSpacer( int index, qreal spacing );
-
-        QQuickItem* itemAt( int index ) const;
-        int spacerAt( int index ) const;
-
-        bool removeAt( int index );
-        bool clear();
-
-        bool isIgnoredAt( int index ) const;
-
-        bool setAlignmentAt( int index, Qt::Alignment );
-        Qt::Alignment alignmentAt( int index ) const;
-
-        bool setStretchFactorAt( int index, int stretchFactor );
-        int stretchFactorAt( int index ) const;
-
-        bool setRetainSizeWhenHiddenAt( int index, bool on );
-        bool retainSizeWhenHiddenAt( int index ) const;
-
-        inline int count() const { return m_entries.size(); }
-
-        int effectiveCount() const;
-        int effectiveCount( Qt::Orientation orientation ) const;
-
-        void updateLayoutChain( Qt::Orientation,
-            const QVector< QskLayoutChain::Range >& constraints,
-            QskLayoutChain& ) const;
-
-        QskLayoutConstraint::Type constraintType() const;
-
-        void invalidate();
-
-      private:
-        QskLayoutChain::Cell cell( const EntryData&,
-            Qt::Orientation, qreal constraint ) const;
-
-        inline EntryData* entryAt( int index ) const
-        {
-            if ( index < 0 || index >= count() )
-            {
-                // qWarning, TODO ...
-                return nullptr;
-            }
-
-            return const_cast< EntryData* >( &m_entries[index] );
-        }
-
-        std::vector< EntryData > m_entries;
-
-        uint m_dimension;
-        mutable int m_sumIgnored : 19;
-        mutable int m_constraintType : 3;
-
-        unsigned int m_defaultAlignment : 8;
-        unsigned int m_orientation : 2;
-    };
-
 }
 
-EntryData::EntryData( QQuickItem* item )
+Element::Element( QQuickItem* item )
     : m_item( item )
     , m_stretch( -1 )
     , m_alignment( 0 )
@@ -166,7 +64,7 @@ EntryData::EntryData( QQuickItem* item )
 {
 }
 
-EntryData::EntryData( qreal spacing )
+Element::Element( qreal spacing )
     : m_spacer( spacing )
     , m_stretch( -1 )
     , m_alignment( 0 )
@@ -175,7 +73,7 @@ EntryData::EntryData( qreal spacing )
 {
 }
 
-EntryData& EntryData::operator=( const EntryData& other )
+Element& Element::operator=( const Element& other )
 {
     m_isSpacer = other.m_isSpacer;
 
@@ -191,7 +89,47 @@ EntryData& EntryData::operator=( const EntryData& other )
     return *this;
 }
 
-bool EntryData::isIgnored() const
+inline qreal Element::spacer() const
+{
+    return m_isSpacer ? m_spacer : -1.0;
+}
+
+inline QQuickItem* Element::item() const
+{
+    return m_isSpacer ? nullptr : m_item;
+}
+
+inline Qt::Alignment Element::alignment() const
+{
+    return static_cast< Qt::Alignment >( m_alignment );
+}
+
+inline void Element::setAlignment( Qt::Alignment alignment )
+{
+    m_alignment = alignment;
+}
+
+bool Element::retainSizeWhenHidden() const
+{
+    return m_retainSizeWhenHidden;
+}
+
+void Element::setRetainSizeWhenHidden( bool on )
+{
+    m_retainSizeWhenHidden = on;
+}
+
+inline int Element::stretch() const
+{
+    return m_stretch;
+}
+
+inline void Element::setStretch( int stretch )
+{
+    m_stretch = stretch;
+}
+
+bool Element::isIgnored() const
 {
     if ( !m_isSpacer && !m_retainSizeWhenHidden )
         return !qskIsVisibleToParent( m_item );
@@ -199,404 +137,44 @@ bool EntryData::isIgnored() const
     return false;
 }
 
-EntryTable::EntryTable( Qt::Orientation orientation, uint dimension )
-    : m_dimension( dimension )
-    , m_sumIgnored( -1 )
-    , m_constraintType( -1 )
-    , m_defaultAlignment( Qt::AlignLeft | Qt::AlignVCenter )
-    , m_orientation( orientation )
+QskLayoutChain::CellData Element::cell( Qt::Orientation orientation,
+    bool isLayoutOrientation, qreal constraint ) const
 {
-}
-
-bool EntryTable::setOrientation( Qt::Orientation orientation )
-{
-    if ( m_orientation != orientation )
-    {
-        m_orientation = orientation;
-        return true;
-    }
-
-    return false;
-}
-
-Qt::Orientation EntryTable::orientation() const
-{
-    return static_cast< Qt::Orientation >( m_orientation );
-}
-
-bool EntryTable::setDimension( uint dimension )
-{
-    if ( m_dimension != dimension )
-    {
-        m_dimension = dimension;
-        return true;
-    }
-
-    return false;
-}
-
-uint EntryTable::dimension() const
-{
-    return m_dimension;
-}
-
-bool EntryTable::setDefaultAlignment( Qt::Alignment alignment )
-{
-    if ( defaultAlignment() != alignment )
-    {
-        m_defaultAlignment = alignment;
-        return true;
-    }
-
-    return false;
-}
-
-Qt::Alignment EntryTable::defaultAlignment() const
-{
-    return static_cast< Qt::Alignment >( m_defaultAlignment );
-}
-
-Qt::Alignment EntryTable::effectiveAlignmentAt( int index ) const
-{
-    Qt::Alignment alignment;
-
-    if ( const auto entry = entryAt( index ) )
-        alignment = entry->alignment();
-
-    if ( !( alignment & Qt::AlignVertical_Mask ) )
-        alignment |= ( defaultAlignment() & Qt::AlignVertical_Mask );
-
-    if ( !( alignment & Qt::AlignHorizontal_Mask ) )
-        alignment |= ( defaultAlignment() & Qt::AlignHorizontal_Mask );
-
-    return alignment;
-}
-
-bool EntryTable::isIgnoredAt( int index ) const
-{
-    if ( index >= 0 && index < count() )
-        return m_entries[index].isIgnored();
-
-    return false;
-}
-
-void EntryTable::insertItem( int index, QQuickItem* item )
-{
-    if ( index < 0 || index > count() )
-        m_entries.emplace_back( item );
-    else
-        m_entries.emplace( m_entries.begin() + index, item );
-
-    invalidate();
-}
-
-void EntryTable::insertSpacer( int index, qreal spacing )
-{
-    spacing = qMax( spacing, static_cast< qreal >( 0.0 ) );
-
-    if ( index < 0 || index > count() )
-        m_entries.emplace_back( spacing );
-    else
-        m_entries.emplace( m_entries.begin() + index, spacing );
-}
-
-bool EntryTable::removeAt( int index )
-{
-    auto entry = entryAt( index );
-    if ( entry == nullptr )
-        return false;
-
-    if ( entry->isIgnored() )
-        m_sumIgnored--;
-
-    const auto itemType = QskLayoutConstraint::constraintType( entry->item() );
-    if ( itemType > QskLayoutConstraint::Unconstrained )
-        m_constraintType = -1;
-
-    m_entries.erase( m_entries.begin() + index );
-
-    return true;
-}
-
-bool EntryTable::clear()
-{
-    if ( count() > 0 )
-    {
-        m_entries.clear();
-        invalidate();
-
-        return true;
-    }
-
-    return false;
-}
-
-QQuickItem* EntryTable::itemAt( int index ) const
-{
-    if ( const auto entry = entryAt( index ) )
-        return entry->item();
-
-    return nullptr;
-}
-
-int EntryTable::spacerAt( int index ) const
-{
-    if ( const auto entry = entryAt( index ) )
-        return entry->spacer();
-
-    return -1;
-}
-
-bool EntryTable::setAlignmentAt( int index, Qt::Alignment alignment )
-{
-    if ( auto entry = entryAt( index ) )
-    {
-        if ( alignment != entry->alignment() )
-            entry->setAlignment( alignment );
-
-        return true;
-    }
-
-    return false;
-}
-
-Qt::Alignment EntryTable::alignmentAt( int index ) const
-{
-    if ( const auto entry = entryAt( index ) )
-        return entry->alignment();
-
-    return Qt::Alignment();
-}
-
-bool EntryTable::setStretchFactorAt( int index, int stretchFactor )
-{
-    if ( auto entry = entryAt( index ) )
-    {
-        if ( stretchFactor < 0 )
-            stretchFactor = -1;
-
-        if ( entry->stretch() != stretchFactor )
-        {
-            entry->setStretch( stretchFactor );
-            return true;
-        }
-    }
-
-    return false;
-}
-
-int EntryTable::stretchFactorAt( int index ) const
-{
-    if ( const auto entry = entryAt( index ) )
-        return entry->stretch();
-
-    return -1;
-}
-
-bool EntryTable::setRetainSizeWhenHiddenAt( int index, bool on )
-{
-    if ( auto entry = entryAt( index ) )
-    {
-        if ( on != entry->retainSizeWhenHidden() )
-        {
-            const bool isIgnored = entry->isIgnored();
-
-            entry->setRetainSizeWhenHidden( on );
-
-            if ( isIgnored != entry->isIgnored() )
-            {
-                if ( m_sumIgnored >= 0 )
-                    m_sumIgnored += on ? 1 : -1;
-
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
-bool EntryTable::retainSizeWhenHiddenAt( int index ) const
-{
-    if ( const auto entry = entryAt( index ) )
-        return entry->retainSizeWhenHidden();
-
-    return false;
-}
-
-void EntryTable::invalidate()
-{
-    m_sumIgnored = -1;
-    m_constraintType = -1;
-}
-
-int EntryTable::effectiveCount() const
-{
-    if ( m_sumIgnored < 0 )
-    {
-        m_sumIgnored = 0;
-
-        for ( const auto& entry : m_entries )
-        {
-            if ( entry.isIgnored() )
-                m_sumIgnored++;
-        }
-    }
-
-    return m_entries.size() - m_sumIgnored;
-}
-
-int EntryTable::effectiveCount( Qt::Orientation orientation ) const
-{
-    const uint cellCount = effectiveCount();
-
-    if ( orientation == m_orientation )
-    {
-        return qMin( cellCount, m_dimension );
-    }
-    else
-    {
-        int count = cellCount / m_dimension;
-        if ( cellCount % m_dimension )
-            count++;
-
-        return count;
-    }
-}
-
-QskLayoutConstraint::Type EntryTable::constraintType() const
-{
-    if ( m_constraintType < 0 )
-    {
-        m_constraintType = QskLayoutConstraint::Unconstrained;
-
-        for ( const auto& entry : m_entries )
-        {
-            const auto itemType = QskLayoutConstraint::constraintType( entry.item() );
-
-            if ( itemType != QskLayoutConstraint::Unconstrained )
-            {
-                if ( m_constraintType == QskLayoutConstraint::Unconstrained )
-                {
-                    m_constraintType = itemType;
-                }
-                else if ( m_constraintType != itemType )
-                {
-                    qWarning( "QskLinearLayoutEngine: conflicting constraints");
-                    m_constraintType = QskLayoutConstraint::Unconstrained;
-                }
-            }
-        }
-    }
-
-    return static_cast< QskLayoutConstraint::Type >( m_constraintType );
-}
-
-QskLayoutChain::Cell EntryTable::cell( const EntryData& entry,
-    Qt::Orientation orientation, qreal constraint ) const
-{
-    QskLayoutChain::Cell cell;
+    QskLayoutChain::CellData cell;
     cell.canGrow = true;
     cell.isValid = true;
 
-    if ( const auto item = entry.item() )
+    if ( !m_isSpacer )
     {
-        cell.hint = QskLayoutConstraint::layoutHint( item, orientation, constraint );
+        cell.hint = QskLayoutConstraint::layoutHint( m_item, orientation, constraint );
 
-        const auto policy = QskLayoutConstraint::sizePolicy( item ).policy( orientation );
+        const auto policy = QskLayoutConstraint::sizePolicy( m_item ).policy( orientation );
 
-        if ( orientation == m_orientation )
+        if ( isLayoutOrientation )
         {
-            if ( entry.stretch() < 0 )
+            if ( m_stretch < 0 )
                 cell.stretch = ( policy & QskSizePolicy::ExpandFlag ) ? 1 : 0;
             else
-                cell.stretch = entry.stretch();
+                cell.stretch = m_stretch;
         }
 
         cell.canGrow = policy & QskSizePolicy::GrowFlag;
     }
     else
     {
-        if ( orientation == m_orientation )
+        if ( isLayoutOrientation )
         {
-            cell.hint.setMinimum( entry.spacer() );
-            cell.hint.setPreferred( entry.spacer() );
+            cell.hint.setMinimum( m_spacer );
+            cell.hint.setPreferred( m_spacer );
 
-            if ( entry.stretch() <= 0 )
-                cell.hint.setMaximum( entry.spacer() );
+            if ( m_stretch <= 0 )
+                cell.hint.setMaximum( m_spacer );
 
-            cell.stretch = qMax( entry.stretch(), 0 );
+            cell.stretch = qMax( m_stretch, 0 );
         }
     }
 
     return cell;
-}
-
-void EntryTable::updateLayoutChain( Qt::Orientation orientation,
-    const QVector< QskLayoutChain::Range >& constraints,
-    QskLayoutChain& chain ) const
-{
-    const auto count = effectiveCount( orientation );
-    const qreal constraint =
-        constraints.isEmpty() ? -1.0 : constraints.last().end();
-
-    if ( ( chain.constraint() == constraint )
-        && ( chain.count() == count ) )
-    {
-        return; // already up to date
-    }
-
-    chain.reset( count, constraint );
-
-    uint index1 = 0;
-    uint index2 = 0;
-
-    for ( const auto& entry : m_entries )
-    {
-        if ( entry.isIgnored() )
-            continue;
-
-        const qreal cellConstraint =
-            constraints.isEmpty() ? -1.0 : constraints[index1].length;
-
-        const auto cell = this->cell( entry, orientation, cellConstraint );
-        chain.expandTo( index2, cell );
-
-        if ( m_orientation != orientation )
-        {
-            if ( ++index1 == m_dimension )
-            {
-                index1 = 0;
-                index2++;
-            }
-        }
-        else
-        {
-            if ( ++index2 == m_dimension )
-            {
-                index2 = 0;
-                index1++;
-            }
-        }
-    }
-
-    chain.finish();
-}
-
-// ---------
-
-static inline void qskUpdateLayoutChain( Qt::Orientation orientation,
-    const QVector< QskLayoutChain::Range >& constraints,
-    const EntryTable& entryTable, QskLayoutChain& chain )
-{
-    entryTable.updateLayoutChain( orientation, constraints, chain );
-}
-
-static inline void qskUpdateLayoutChain( Qt::Orientation orientation,
-    const EntryTable& entryTable, QskLayoutChain& chain )
-{
-    const QVector< QskLayoutChain::Range > constraints;
-    entryTable.updateLayoutChain( orientation, constraints, chain );
 }
 
 class QskLinearLayoutEngine::PrivateData
@@ -604,33 +182,31 @@ class QskLinearLayoutEngine::PrivateData
   public:
 
     PrivateData( Qt::Orientation orientation, uint dimension )
-        : entryTable( orientation, dimension )
-        , blockInvalidate( false )
+        : dimension( dimension )
+        , sumIgnored( -1 )
+        , orientation( orientation )
     {
-        rowChain.setSpacing( qskDefaultSpacing() );
-        colChain.setSpacing( qskDefaultSpacing() );
     }
 
-    EntryTable entryTable;
+    inline Element* elementAt( int index ) const
+    {
+        const int count = this->elements.size();
+        if ( ( index < 0 ) || ( index >= count ) )
+            return nullptr;
 
-    QskLayoutChain colChain;
-    QskLayoutChain rowChain;
+        return const_cast< Element* >( &this->elements[index] );
+    }
 
-    CellGeometries geometries;
+    std::vector< Element > elements;
 
-    Qt::LayoutDirection visualDirection = Qt::LeftToRight;
-    Qt::Edges extraSpacingAt;
+    uint dimension;
 
-    /*
-        Some weired controls do lazy updates inside of their sizeHint calculation
-        that lead to LayoutRequest events. While being in the process of
-        updating the tables we can't - and don't need to - handle invalidations
-        because of them.
-     */
-    bool blockInvalidate : 1;
+    mutable int sumIgnored : 30;
+    unsigned int orientation : 2;
 };
 
-QskLinearLayoutEngine::QskLinearLayoutEngine( Qt::Orientation orientation, uint dimension )
+QskLinearLayoutEngine::QskLinearLayoutEngine(
+        Qt::Orientation orientation, uint dimension )
     : m_data( new PrivateData( orientation, dimension ) )
 {
 }
@@ -641,16 +217,20 @@ QskLinearLayoutEngine::~QskLinearLayoutEngine()
 
 bool QskLinearLayoutEngine::setOrientation( Qt::Orientation orientation )
 {
-    const bool isModified = m_data->entryTable.setOrientation( orientation );
-    if ( isModified )
-        invalidate( CellCache | LayoutCache );
+    if ( m_data->orientation != orientation )
+    {
+        m_data->orientation = orientation;
+        invalidate( LayoutCache );
 
-    return isModified;
+        return true;
+    }
+
+    return false;
 }
 
 Qt::Orientation QskLinearLayoutEngine::orientation() const
 {
-    return m_data->entryTable.orientation();
+    return static_cast< Qt::Orientation >( m_data->orientation );
 }
 
 bool QskLinearLayoutEngine::setDimension( uint dimension )
@@ -658,257 +238,214 @@ bool QskLinearLayoutEngine::setDimension( uint dimension )
     if ( dimension < 1 )
         dimension = 1;
 
-    const bool isModified =
-        m_data->entryTable.setDimension( dimension );
+    if ( m_data->dimension != dimension )
+    {
+        m_data->dimension = dimension;
+        invalidate( LayoutCache );
 
-    if ( isModified )
-        invalidate( CellCache | LayoutCache );
+        return true;
+    }
 
-    return isModified;
+    return false;
 }
 
 uint QskLinearLayoutEngine::dimension() const
 {
-    return m_data->entryTable.dimension();
+    return m_data->dimension;
 }
 
 int QskLinearLayoutEngine::count() const
 {
-    return m_data->entryTable.count();
-}
-
-int QskLinearLayoutEngine::rowCount() const
-{
-    return m_data->entryTable.effectiveCount( Qt::Vertical );
-}
-
-int QskLinearLayoutEngine::columnCount() const
-{
-    return m_data->entryTable.effectiveCount( Qt::Horizontal );
+    return m_data->elements.size();
 }
 
 bool QskLinearLayoutEngine::setRetainSizeWhenHiddenAt( int index, bool on )
 {
-    const bool isModified =
-        m_data->entryTable.setRetainSizeWhenHiddenAt( index, on );
+    if ( auto element = m_data->elementAt( index ) )
+    {
+        if ( on != element->retainSizeWhenHidden() )
+        {
+            const bool isIgnored = element->isIgnored();
 
-    if ( isModified )
-        invalidate( CellCache | LayoutCache );
+            element->setRetainSizeWhenHidden( on );
 
-    return isModified;
+            if ( isIgnored != element->isIgnored() )
+            {
+                if ( m_data->sumIgnored >= 0 )
+                    m_data->sumIgnored += on ? 1 : -1;
+
+                invalidate( LayoutCache );
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 bool QskLinearLayoutEngine::retainSizeWhenHiddenAt( int index ) const
 {
-    return m_data->entryTable.retainSizeWhenHiddenAt( index );
+    if ( const auto element = m_data->elementAt( index ) )
+        return element->retainSizeWhenHidden();
+
+    return false;
 }
 
 bool QskLinearLayoutEngine::setStretchFactorAt( int index, int stretchFactor )
 {
-    const bool isModified =
-        m_data->entryTable.setStretchFactorAt( index, stretchFactor );
+    if ( auto element = m_data->elementAt( index ) )
+    {
+        if ( stretchFactor < 0 )
+            stretchFactor = -1;
 
-    if ( isModified )
-        invalidate( CellCache | LayoutCache );
+        if ( element->stretch() != stretchFactor )
+        {
+            element->setStretch( stretchFactor );
+            invalidate( LayoutCache );
 
-    return isModified;
+            return true;
+        }
+    }
+
+    return false;
 }
 
 int QskLinearLayoutEngine::stretchFactorAt( int index ) const
 {
-    return m_data->entryTable.stretchFactorAt( index );
+    if ( const auto element = m_data->elementAt( index ) )
+        return element->stretch();
+
+    return -1;
 }
 
 bool QskLinearLayoutEngine::setAlignmentAt( int index, Qt::Alignment alignment )
 {
-    return m_data->entryTable.setAlignmentAt( index, alignment );
+    if ( auto element = m_data->elementAt( index ) )
+    {
+        if ( alignment != element->alignment() )
+            element->setAlignment( alignment );
+
+        return true;
+    }
+
+    return false;
 }
 
 Qt::Alignment QskLinearLayoutEngine::alignmentAt( int index ) const
 {
-    return m_data->entryTable.alignmentAt( index );
+    if ( const auto element = m_data->elementAt( index ) )
+        return element->alignment();
+
+    return Qt::Alignment();
 }
 
-bool QskLinearLayoutEngine::setSpacing( qreal spacing, Qt::Orientations orientations )
+int QskLinearLayoutEngine::insertItem( QQuickItem* item, int index )
 {
-    if ( spacing < 0.0 )
-        spacing = 0.0;
+    auto& elements = m_data->elements;
 
-    bool isModified = false;
-
-    if ( orientations & Qt::Horizontal )
-        isModified |= m_data->colChain.setSpacing( spacing );
-
-    if ( orientations & Qt::Vertical )
-        isModified |= m_data->rowChain.setSpacing( spacing );
-
-    if ( isModified )
-        invalidate( CellCache | LayoutCache );
-
-    return isModified;
-}
-
-qreal QskLinearLayoutEngine::spacing( Qt::Orientation orientation ) const
-{
-    if ( orientation == Qt::Horizontal )
-        return m_data->colChain.spacing();
+    if ( index < 0 || index > count() )
+    {
+        index = elements.size();
+        elements.emplace_back( item );
+    }
     else
-        return m_data->rowChain.spacing();
+    {
+        elements.emplace( elements.begin() + index, item );
+    }
+
+    invalidate();
+    return index;
 }
 
-bool QskLinearLayoutEngine::setExtraSpacingAt( Qt::Edges edges )
+int QskLinearLayoutEngine::insertSpacerAt( int index, qreal spacing )
 {
-    if ( edges == m_data->extraSpacingAt )
-        return false;
+    spacing = qMax( spacing, static_cast< qreal >( 0.0 ) );
 
-    m_data->extraSpacingAt = edges;
+    auto& elements = m_data->elements;
 
-    Qt::Edges colEdges = edges & ~( Qt::TopEdge | Qt::BottomEdge );
-    m_data->colChain.setExtraSpacingAt( colEdges );
-
-    /*
-        FlowLayoutInfo does not have an orientation, so we always
-        set the position for potential fill spaces using Left/Right.
-        Maybe introducing another enum might be a good idea. TODO ...
-     */
-
-    Qt::Edges rowEdges;
-    if ( edges & Qt::TopEdge )
-        rowEdges |= Qt::LeftEdge;
-
-    if ( edges & Qt::BottomEdge )
-        rowEdges |= Qt::RightEdge;
-
-    m_data->rowChain.setExtraSpacingAt( rowEdges );
+    if ( index < 0 || index > count() )
+    {
+        index = elements.size();
+        elements.emplace_back( spacing );
+    }
+    else
+    {
+        elements.emplace( elements.begin() + index, spacing );
+    }
 
     invalidate( LayoutCache );
+    return index;
+}
+
+bool QskLinearLayoutEngine::removeAt( int index )
+{
+    auto element = m_data->elementAt( index );
+    if ( element == nullptr )
+        return false;
+
+    if ( element->isIgnored() )
+        m_data->sumIgnored--;
+
+    const auto itemType =
+        QskLayoutConstraint::constraintType( element->item() );
+
+    int invalidationMode = LayoutCache;
+
+    if ( itemType > QskLayoutConstraint::Unconstrained )
+        invalidationMode |= ElementCache;
+
+    m_data->elements.erase( m_data->elements.begin() + index );
+    invalidate( invalidationMode );
+
     return true;
 }
 
-Qt::Edges QskLinearLayoutEngine::extraSpacingAt() const
+bool QskLinearLayoutEngine::clear()
 {
-    return m_data->extraSpacingAt;
-}
+    if ( count() <= 0 )
+        return false;
 
-bool QskLinearLayoutEngine::setDefaultAlignment( Qt::Alignment alignment )
-{
-    return m_data->entryTable.setDefaultAlignment( alignment );
-}
+    m_data->elements.clear();
+    invalidate();
 
-Qt::Alignment QskLinearLayoutEngine::defaultAlignment() const
-{
-    return m_data->entryTable.defaultAlignment();
-}
-
-void QskLinearLayoutEngine::insertItem( QQuickItem* item, int index )
-{
-    m_data->entryTable.insertItem( index, item );
-    invalidate( CellCache | LayoutCache );
-}
-
-void QskLinearLayoutEngine::addItem( QQuickItem* item )
-{
-    insertItem( item, -1 );
-}
-
-void QskLinearLayoutEngine::insertSpacerAt( int index, qreal spacing )
-{
-    m_data->entryTable.insertSpacer( index, spacing );
-    invalidate( CellCache | LayoutCache );
-}
-
-void QskLinearLayoutEngine::addSpacer( qreal spacing )
-{
-    insertSpacerAt( -1, spacing );
-}
-
-void QskLinearLayoutEngine::removeAt( int index )
-{
-    if ( m_data->entryTable.removeAt( index ) )
-        invalidate( CellCache | LayoutCache );
-}
-
-void QskLinearLayoutEngine::clear()
-{
-    if ( m_data->entryTable.clear() )
-        invalidate( CellCache | LayoutCache );
+    return true;
 }
 
 QQuickItem* QskLinearLayoutEngine::itemAt( int index ) const
 {
-    return m_data->entryTable.itemAt( index );
+    if ( const auto element = m_data->elementAt( index ) )
+        return element->item();
+
+    return nullptr;
 }
 
-int QskLinearLayoutEngine::spacerAt( int index ) const
+qreal QskLinearLayoutEngine::spacerAt( int index ) const
 {
-    return m_data->entryTable.spacerAt( index );
+    if ( const auto element = m_data->elementAt( index ) )
+        return element->spacer();
+
+    return -1.0;
 }
 
-void QskLinearLayoutEngine::invalidate( int what )
+void QskLinearLayoutEngine::layoutItems()
 {
-    if ( m_data->blockInvalidate )
-        return;
-
-    if ( what & EntryCache )
-        m_data->entryTable.invalidate();
-
-    if ( what & CellCache )
-    {
-        m_data->rowChain.invalidate();
-        m_data->colChain.invalidate();
-    }
-
-    if ( what & LayoutCache )
-        m_data->geometries.invalidate();
-}
-
-void QskLinearLayoutEngine::setGeometries( const QRectF& rect )
-{
-    if ( m_data->entryTable.effectiveCount() == 0 )
-        return;
-
-    if ( m_data->geometries.boundingSize != rect.size() )
-    {
-        m_data->blockInvalidate = true;
-        updateCellGeometries( rect.size() );
-        m_data->blockInvalidate = false;
-    }
-
-    /*
-        In case we have items that send LayoutRequest events on
-        geometry changes - what doesn't make much sense - we
-        better make a ( implicitely shared ) copy of the geometries.
-     */
-    const auto geometries = m_data->geometries;
-
     uint row = 0;
     uint col = 0;
 
-    const auto& entryTable = m_data->entryTable;
-
-    for ( int i = 0; i < entryTable.count(); i++ )
+    for ( const auto& element : m_data->elements )
     {
-        if ( entryTable.isIgnoredAt( i ) )
+        if ( element.isIgnored() )
             continue;
 
-        if ( auto item = entryTable.itemAt( i ) )
+        if ( auto item = element.item() )
         {
-            QRectF r = geometries.geometryAt( row, col );
-            r.translate( rect.x(), rect.y() );
-
-            const auto alignment = entryTable.effectiveAlignmentAt( i );
-
-            r = QskLayoutConstraint::itemRect( item, r, alignment );
-
-            if ( m_data->visualDirection == Qt::RightToLeft )
-                r.moveRight( rect.right() - ( r.left() - rect.left() ) );
-
-            qskSetItemGeometry( item, r );
+            const QRect grid( col, row, 1, 1 );
+            layoutItem( item, grid, element.alignment() );
         }
 
-        if ( entryTable.orientation() == Qt::Horizontal )
+        if ( m_data->orientation == Qt::Horizontal )
         {
-            if ( ++col == entryTable.dimension() )
+            if ( ++col == m_data->dimension )
             {
                 col = 0;
                 row++;
@@ -916,7 +453,7 @@ void QskLinearLayoutEngine::setGeometries( const QRectF& rect )
         }
         else
         {
-            if ( ++row == entryTable.dimension() )
+            if ( ++row == m_data->dimension )
             {
                 row = 0;
                 col++;
@@ -925,123 +462,83 @@ void QskLinearLayoutEngine::setGeometries( const QRectF& rect )
     }
 }
 
-QSizeF QskLinearLayoutEngine::sizeHint( Qt::SizeHint which, const QSizeF& constraint ) const
+int QskLinearLayoutEngine::effectiveCount( Qt::Orientation orientation ) const
 {
-    const auto& entryTable = m_data->entryTable;
+    const uint cellCount = effectiveCount();
 
-    if ( entryTable.effectiveCount() == 0 )
-        return QSizeF( 0.0, 0.0 );
-
-    const auto constraintType = m_data->entryTable.constraintType();
-
-    auto& colChain = m_data->colChain;
-    auto& rowChain = m_data->rowChain;
-
-    m_data->blockInvalidate = true;
-
-    if ( ( constraint.width() >= 0 ) &&
-        ( constraintType == QskLayoutConstraint::HeightForWidth ) )
+    if ( orientation == m_data->orientation )
     {
-        qskUpdateLayoutChain( Qt::Horizontal, entryTable, colChain );
-
-        const auto cellConstraints = colChain.geometries( constraint.width() );
-        qskUpdateLayoutChain( Qt::Vertical, cellConstraints, entryTable, rowChain );
-    }
-    else if ( ( constraint.height() >= 0 ) &&
-        ( constraintType == QskLayoutConstraint::WidthForHeight ) )
-    {
-        qskUpdateLayoutChain( Qt::Vertical, entryTable, rowChain );
-
-        const auto cellConstraints = rowChain.geometries( constraint.height() );
-        qskUpdateLayoutChain( Qt::Horizontal, cellConstraints, entryTable, colChain );
+        return qMin( cellCount, m_data->dimension );
     }
     else
     {
-        qskUpdateLayoutChain( Qt::Horizontal, entryTable, colChain );
-        qskUpdateLayoutChain( Qt::Vertical, entryTable, rowChain );
+        int count = cellCount / m_data->dimension;
+        if ( cellCount % m_data->dimension )
+            count++;
+
+        return count;
     }
-
-    m_data->blockInvalidate = false;
-
-    const qreal width = colChain.boundingHint().size( which );
-    const qreal height = rowChain.boundingHint().size( which );
-
-    return QSizeF( width, height );
 }
 
-qreal QskLinearLayoutEngine::widthForHeight( qreal height ) const
+int QskLinearLayoutEngine::effectiveCount() const
 {
-    const QSizeF constraint( -1, height );
-    return sizeHint( Qt::PreferredSize, constraint ).width();
-}
-
-qreal QskLinearLayoutEngine::heightForWidth( qreal width ) const
-{
-    const QSizeF constraint( width, -1 );
-    return sizeHint( Qt::PreferredSize, constraint ).height();
-}
-
-bool QskLinearLayoutEngine::setVisualDirection(Qt::LayoutDirection direction)
-{
-    if ( m_data->visualDirection != direction )
+    if ( m_data->sumIgnored < 0 )
     {
-        m_data->visualDirection = direction;
-        return true;
+        m_data->sumIgnored = 0;
+
+        for ( const auto& element : m_data->elements )
+        {
+            if ( element.isIgnored() )
+                m_data->sumIgnored++;
+        }
     }
 
-    return false;
+    return m_data->elements.size() - m_data->sumIgnored;
 }
 
-Qt::LayoutDirection QskLinearLayoutEngine::visualDirection() const
+void QskLinearLayoutEngine::invalidateElementCache()
 {
-    return m_data->visualDirection;
+    m_data->sumIgnored = -1;
 }
 
-void QskLinearLayoutEngine::updateCellGeometries( const QSizeF& size )
+void QskLinearLayoutEngine::setupChain( Qt::Orientation orientation,
+    const QskLayoutChain::Segments& constraints, QskLayoutChain& chain ) const
 {
-    auto& geometries = m_data->geometries;
-    geometries.boundingSize = size;
+    uint index1 = 0;
+    uint index2 = 0;
 
-    auto& colChain = m_data->colChain;
-    auto& rowChain = m_data->rowChain;
-    auto& entryTable = m_data->entryTable;
+    const bool isLayoutOrientation = ( orientation == m_data->orientation );
 
-    const QVector< QskLayoutChain::Range > noConstraints;
+    qreal constraint = -1.0;
 
-    switch( entryTable.constraintType() )
+    for ( const auto& element : m_data->elements )
     {
-        case QskLayoutConstraint::WidthForHeight:
+        if ( element.isIgnored() )
+            continue;
+
+        if ( !constraints.isEmpty() )
+            constraint = constraints[index1].length;
+
+        const auto cell = element.cell(
+            orientation, isLayoutOrientation, constraint );
+
+        chain.expandCell( index2, cell );
+
+        if ( isLayoutOrientation )
         {
-            qskUpdateLayoutChain( Qt::Vertical, entryTable, rowChain );
-            geometries.rows = rowChain.geometries( size.height() );
-
-            qskUpdateLayoutChain( Qt::Horizontal, geometries.rows, entryTable, colChain );
-            geometries.columns = colChain.geometries( size.width() );
-
-            break;
+            if ( ++index2 == m_data->dimension )
+            {
+                index2 = 0;
+                index1++;
+            }
         }
-        case QskLayoutConstraint::HeightForWidth:
+        else
         {
-            qskUpdateLayoutChain( Qt::Horizontal, entryTable, colChain );
-            geometries.columns = colChain.geometries( size.width() );
-
-            qskUpdateLayoutChain( Qt::Vertical, geometries.columns, entryTable, rowChain );
-            geometries.rows = rowChain.geometries( size.height() );
-
-            break;
-        }
-        default:
-        {
-            qskUpdateLayoutChain( Qt::Horizontal, entryTable, colChain );
-            geometries.columns = colChain.geometries( size.width() );
-
-            qskUpdateLayoutChain( Qt::Vertical, entryTable, rowChain );
-            geometries.rows = rowChain.geometries( size.height() );
+            if ( ++index1 == m_data->dimension )
+            {
+                index1 = 0;
+                index2++;
+            }
         }
     }
-}
-
-qreal QskLinearLayoutEngine::defaultSpacing( Qt::Orientation ) const
-{
-    return qskDefaultSpacing();
 }

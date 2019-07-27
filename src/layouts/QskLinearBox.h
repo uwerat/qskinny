@@ -75,17 +75,17 @@ class QSK_EXPORT QskLinearBox : public QskIndexedLayoutBox
     void resetSpacing();
     qreal spacing() const;
 
-    Q_INVOKABLE void addItem(
+    Q_INVOKABLE int addItem(
         QQuickItem*, Qt::Alignment alignment = Qt::Alignment() );
 
-    Q_INVOKABLE void insertItem(
+    Q_INVOKABLE int insertItem(
         int index, QQuickItem*, Qt::Alignment alignment = Qt::Alignment() );
 
-    Q_INVOKABLE void addSpacer( qreal spacing, int stretchFactor = 0 );
-    Q_INVOKABLE void insertSpacer( int index, qreal spacing, int stretchFactor = 0 );
+    Q_INVOKABLE int addSpacer( qreal spacing, int stretchFactor = 0 );
+    Q_INVOKABLE int insertSpacer( int index, qreal spacing, int stretchFactor = 0 );
 
-    Q_INVOKABLE void addStretch( int stretchFactor = 0 );
-    Q_INVOKABLE void insertStretch( int index, int stretchFactor = 0 );
+    Q_INVOKABLE int addStretch( int stretchFactor = 0 );
+    Q_INVOKABLE int insertStretch( int index, int stretchFactor = 0 );
 
     Q_INVOKABLE void setStretchFactor( int index, int stretchFactor );
     Q_INVOKABLE int stretchFactor( int index ) const;

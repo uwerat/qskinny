@@ -4,214 +4,378 @@
  *****************************************************************************/
 
 #include "QskGridLayoutEngine.h"
+#include "QskLayoutHint.h"
 #include "QskLayoutConstraint.h"
+#include "QskLayoutChain.h"
 #include "QskSizePolicy.h"
-#include "QskControl.h"
 #include "QskQuick.h"
 
-QSK_QT_PRIVATE_BEGIN
-#include <private/qgridlayoutengine_p.h>
-QSK_QT_PRIVATE_END
+#include <qvector.h>
+
+#include <vector>
+#include <functional>
+
+static inline qreal qskSegmentLength(
+    const QskLayoutChain::Segments& s, int start, int end )
+{
+    return s[ end ].start - s[ start ].start + s[ end ].length;
+}
 
 namespace
 {
-    class LayoutStyleInfo final : public QAbstractLayoutStyleInfo
+    class Settings
     {
       public:
-        qreal spacing( Qt::Orientation ) const override
+        class Setting
         {
-            // later from the theme !!
-            return 5.0;
-        }
-
-        qreal windowMargin( Qt::Orientation ) const override
-        {
-            // later from the theme !!
-            return 0;
-        }
-
-        bool hasChangedCore() const override
-        {
-            return false; // never changes
-        }
-    };
-
-    class LayoutItem final : public QGridLayoutItem
-    {
-      public:
-        LayoutItem( QQuickItem* item, int row, int column,
-                int rowSpan, int columnSpan, Qt::Alignment alignment )
-            : QGridLayoutItem( row, column,
-                qMax( rowSpan, 1 ), qMax( columnSpan, 1 ), alignment )
-            , m_item( item )
-            , m_retainSizeWhenHidden( false )
-            , m_unlimitedRowSpan( rowSpan <= 0 )
-            , m_unlimitedColumnSpan( columnSpan <= 0 )
-        {
-        }
-
-        QQuickItem* item() const
-        {
-            return m_item;
-        }
-
-        void setGeometry( const QRectF& rect ) override
-        {
-            qskSetItemGeometry( m_item, rect );
-        }
-
-        QLayoutPolicy::Policy sizePolicy( Qt::Orientation orientation ) const override
-        {
-            const auto policy = QskLayoutConstraint::sizePolicy( m_item );
-            return static_cast< QLayoutPolicy::Policy >( policy.policy( orientation ) );
-        }
-
-        QSizeF sizeHint( Qt::SizeHint which, const QSizeF& constraint ) const override
-        {
-            return QskLayoutConstraint::sizeHint( m_item, which, constraint );
-        }
-
-        bool hasDynamicConstraint() const override
-        {
-            using namespace QskLayoutConstraint;
-            return constraintType( m_item ) != Unconstrained;
-        }
-
-        Qt::Orientation dynamicConstraintOrientation() const override
-        {
-            Qt::Orientation orientation = Qt::Vertical;
-
-            if ( auto control = qskControlCast( m_item ) )
+          public:
+            inline bool isDefault() const
             {
-                const auto policy = control->sizePolicy().horizontalPolicy();
-
-                return ( policy == QskSizePolicy::Constrained )
-                    ? Qt::Horizontal : Qt::Vertical;
+                return m_stretch < 0 && m_hint.isDefault();
             }
 
-            return orientation;
-        }
+            bool setStretch( int stretch )
+            {
+                if ( stretch != m_stretch )
+                {
+                    m_stretch = stretch;
+                    return true;
+                }
+                return false;
+            }
 
-        bool isIgnored() const override final
+            bool setHint( Qt::SizeHint which, qreal size )
+            {
+                if ( size != m_hint.size( which ) )
+                {
+                    m_hint.setSize( which, size );
+                    return true;
+                }
+                return false;
+            }
+
+            QskLayoutChain::CellData cell() const
+            {
+                QskLayoutChain::CellData cell;
+                cell.hint = m_hint.normalized();
+                cell.stretch = m_stretch;
+                cell.canGrow = m_stretch != 0;
+                cell.isValid = true;
+
+                return cell;
+            }
+
+            inline int stretch() const { return m_stretch; }
+            inline QskLayoutHint hint() const { return m_hint; }
+
+            int position = -1;
+
+          private:
+            int m_stretch = -1;
+            QskLayoutHint m_hint;
+        };
+
+        void clear()
         {
-            if ( m_item && !qskIsVisibleToParent( m_item ) )
-                return !m_retainSizeWhenHidden;
-
-            return false;
+            m_settings.clear();
         }
 
-        QLayoutPolicy::ControlTypes controlTypes( LayoutSide ) const override
+        bool setStretchAt( int index, int stretch )
         {
-            return QLayoutPolicy::DefaultType;
+            auto setStretch = [stretch]( Setting& s )
+                { return s.setStretch( stretch ); };
+
+            return setValueAt( index, setStretch );
         }
 
-        bool retainSizeWhenHidden() const
+        bool setHintAt( int index, Qt::SizeHint which, qreal size )
         {
-            return m_retainSizeWhenHidden;
+            auto setHint = [which, size]( Setting& s )
+                { return s.setHint( which, size ); };
+
+            return setValueAt( index, setHint );
         }
 
-        void setRetainSizeWhenHidden( bool on )
+        Setting settingAt( int index ) const
         {
-            m_retainSizeWhenHidden = on;
+            auto it = lowerBound( index );
+            if ( it != m_settings.end() )
+                return *it;
+
+            return Setting();
         }
 
-        bool hasUnlimitedSpan() const
-        {
-            return m_unlimitedColumnSpan || m_unlimitedRowSpan;
-        }
-
-        bool hasUnlimitedSpan( Qt::Orientation orientation ) const
-        {
-            return ( orientation == Qt::Horizontal )
-                   ? m_unlimitedColumnSpan : m_unlimitedRowSpan;
-        }
+        const std::vector< Setting >& settings() const { return m_settings; }
 
       private:
-        QQuickItem* m_item;
-
-        bool m_retainSizeWhenHidden : 1;
-        bool m_unlimitedRowSpan : 1;
-        bool m_unlimitedColumnSpan : 1;
-    };
-
-    class LayoutEngine : public QGridLayoutEngine
-    {
-      public:
-        LayoutEngine()
-            : QGridLayoutEngine( Qt::AlignVCenter, false /*snapToPixelGrid*/ )
+        inline bool setValueAt( int pos,
+            const std::function< bool( Setting& ) > modify )
         {
-            /*
-                snapToPixelGrid rounds x/y, what might lead to losing a pixel.
-                F.e. when having a text in elideMode we end up with an elided text
-                because of this.
-             */
-        }
+            if ( pos < 0 )
+                return false;
 
-        LayoutItem* layoutItemAt( int index ) const
-        {
-            if ( index < 0 || index >= q_items.count() )
-                return nullptr;
+            bool isModified;
 
-            return static_cast< LayoutItem* >( q_items[ index ] );
-        }
+            auto it = lowerBound( pos );
 
-        LayoutItem* layoutItemAt( int row, int column ) const
-        {
-            if ( row < 0 || row >= rowCount() || column < 0 || column >= columnCount() )
-                return nullptr;
-
-            return static_cast< LayoutItem* >( itemAt( row, column ) );
-        }
-
-        inline LayoutItem* layoutItemOf( const QQuickItem* item ) const
-        {
-            return layoutItemAt( indexOf( item ) );
-        }
-
-        int indexAt( int row, int column ) const
-        {
-            const auto item = layoutItemAt( row, column );
-            if ( item )
-                return q_items.indexOf( item );
-
-            return -1;
-        }
-
-        int indexOf( const QQuickItem* item ) const
-        {
-            // linear search might become slow for many items,
-            // better introduce some sort of hash table TODO ...
-
-            for ( int i = q_items.count() - 1; i >= 0; --i )
+            if ( it != m_settings.end() && it->position == pos )
             {
-                const auto layoutItem = static_cast< const LayoutItem* >( q_items[ i ] );
-                if ( layoutItem->item() == item )
-                    return i;
+                isModified = modify( *it );
+
+                if ( isModified && it->isDefault() )
+                    m_settings.erase( it );
+            }
+            else
+            {
+                Setting setting;
+                isModified = modify( setting );
+
+                if ( isModified )
+                {
+                    setting.position = pos;
+                    m_settings.insert( it, setting );
+                }
             }
 
-            return -1;
+            return isModified;
         }
 
-        qreal spacing( Qt::Orientation orientation ) const
+        inline std::vector< Setting >::iterator lowerBound( int index ) const
         {
-            const LayoutStyleInfo styleInfo;
-            return QGridLayoutEngine::spacing( orientation, &styleInfo );
+            auto cmp = []( const Setting& setting, const int& pos )
+                { return setting.position < pos; };
+
+            auto& settings = const_cast< std::vector< Setting >& >( m_settings );
+            return std::lower_bound( settings.begin(), settings.end(), index, cmp );
         }
+
+        std::vector< Setting > m_settings; // a flat map
     };
+}
+
+namespace
+{
+    class Element
+    {
+      public:
+        Element( QQuickItem*, const QRect&, Qt::Alignment );
+        Element( qreal spacing, const QRect& );
+
+        Element& operator=( const Element& );
+
+        qreal spacer() const;
+        QQuickItem* item() const;
+
+        Qt::Alignment alignment() const;
+        void setAlignment( Qt::Alignment );
+
+        bool retainSizeWhenHidden() const;
+        void setRetainSizeWhenHidden( bool );
+
+        QRect grid() const;
+        void setGrid( const QRect& );
+
+        QRect minimumGrid() const;
+
+        bool isIgnored() const;
+
+        QskLayoutChain::CellData cell(
+            Qt::Orientation, qreal constraint ) const;
+
+        void transpose();
+
+      private:
+
+        union
+        {
+            QQuickItem* m_item;
+            qreal m_spacer;
+        };
+
+        QRect m_grid;
+
+        unsigned int m_alignment : 8;
+        bool m_isSpacer : 1;
+        bool m_retainSizeWhenHidden : 1;
+    };
+}
+
+Element::Element( QQuickItem* item,
+        const QRect& grid, Qt::Alignment alignment )
+    : m_item( item )
+    , m_grid( grid )
+    , m_alignment(alignment)
+    , m_isSpacer( false )
+    , m_retainSizeWhenHidden( false )
+{
+}
+
+Element::Element( qreal spacing, const QRect& grid )
+    : m_spacer( spacing )
+    , m_grid( grid )
+    , m_alignment( 0 )
+    , m_isSpacer( true )
+    , m_retainSizeWhenHidden( false )
+{
+}
+
+Element& Element::operator=( const Element& other )
+{
+    m_isSpacer = other.m_isSpacer;
+
+    if ( other.m_isSpacer )
+        m_spacer = other.m_spacer;
+    else
+        m_item = other.m_item;
+
+    m_grid = other.m_grid;
+    m_alignment = other.m_alignment;
+    m_retainSizeWhenHidden = other.m_retainSizeWhenHidden;
+
+    return *this;
+}
+
+inline qreal Element::spacer() const
+{
+    return m_isSpacer ? m_spacer : -1.0;
+}
+
+inline QQuickItem* Element::item() const
+{
+    return m_isSpacer ? nullptr : m_item;
+}
+
+inline Qt::Alignment Element::alignment() const
+{
+    return static_cast< Qt::Alignment >( m_alignment );
+}
+
+void Element::setAlignment( Qt::Alignment alignment )
+{
+    m_alignment = alignment;
+}
+
+inline bool Element::retainSizeWhenHidden() const
+{
+    return m_retainSizeWhenHidden;
+}
+
+void Element::setRetainSizeWhenHidden( bool on )
+{
+    m_retainSizeWhenHidden = on;
+}
+
+QRect Element::grid() const
+{
+    return m_grid;
+}
+
+void Element::setGrid( const QRect& grid )
+{
+    m_grid = grid;
+}
+
+QRect Element::minimumGrid() const
+{
+    return QRect( m_grid.left(), m_grid.top(),
+        qMax( m_grid.width(), 1 ), qMax( m_grid.height(), 1 ) );
+}
+
+bool Element::isIgnored() const
+{
+    if ( !m_isSpacer && !m_retainSizeWhenHidden )
+        return !qskIsVisibleToParent( m_item );
+
+    return false;
+}
+
+QskLayoutChain::CellData Element::cell(
+    Qt::Orientation orientation, qreal constraint ) const
+{
+    const auto policy = QskLayoutConstraint::sizePolicy(
+        m_item ).policy( orientation );
+
+    QskLayoutChain::CellData cell;
+    cell.isValid = true;
+    cell.canGrow = policy & QskSizePolicy::GrowFlag;
+
+    if ( policy & QskSizePolicy::ExpandFlag )
+        cell.stretch = 1;
+
+    cell.hint = QskLayoutConstraint::layoutHint( m_item, orientation, constraint );
+
+    return cell;
+}
+
+void Element::transpose()
+{
+    m_grid.setRect( m_grid.top(), m_grid.left(),
+        m_grid.height(), m_grid.width() );
 }
 
 class QskGridLayoutEngine::PrivateData
 {
   public:
-    /*
-        For the moment we use QGridLayoutEngine, but sooner and later
-        it should be replaced by a new implementation, that uses
-        the same backend as QskLinearLayoutEngine.
-     */
-    LayoutEngine qengine;
-    unsigned int unlimitedSpanned = 0;
-};
+    inline Element* elementAt( int index ) const
+    {
+        const int count = this->elements.size();
+        if ( index < 0 || index >= count )
+            return nullptr;
 
+        return const_cast< Element* >( &this->elements[index] );
+    }
+
+    int insertElement( QQuickItem* item, qreal spacing,
+        QRect grid, Qt::Alignment alignment )
+    {
+        // -1 means unlimited, while 0 does not make any sense
+        if ( grid.width() == 0 )
+            grid.setWidth( 1 );
+
+        if ( grid.height() == 0 )
+            grid.setHeight( 1 );
+
+        if ( item )
+            elements.push_back( Element( item, grid, alignment ) );
+        else
+            elements.push_back( Element( spacing, grid ) );
+
+        grid = effectiveGrid( elements.back() );
+
+        rowCount = qMax( rowCount, grid.bottom() + 1 );
+        columnCount = qMax( columnCount, grid.right() + 1 );
+
+        return this->elements.size() - 1;
+    }
+
+    QRect effectiveGrid( const Element& element ) const
+    {
+        QRect r = element.grid();
+
+        if ( r.width() <= 0 )
+            r.setRight( qMax( this->columnCount - 1, r.left() ) );
+
+        if ( r.height() <= 0 )
+            r.setBottom( qMax( this->rowCount - 1, r.top() ) );
+
+        return r;
+    }
+
+    Settings& settings( Qt::Orientation orientation ) const
+    {
+        auto that = const_cast< PrivateData* >( this );
+        return ( orientation == Qt::Horizontal )
+            ? that->columnSettings : that->rowSettings;
+    }
+
+    std::vector< Element > elements;
+
+    Settings rowSettings;
+    Settings columnSettings;
+
+    int rowCount = 0;
+    int columnCount = 0;
+};
 
 QskGridLayoutEngine::QskGridLayoutEngine()
     : m_data( new PrivateData() )
@@ -222,333 +386,330 @@ QskGridLayoutEngine::~QskGridLayoutEngine()
 {
 }
 
-void QskGridLayoutEngine::setGeometries( const QRectF rect )
+int QskGridLayoutEngine::count() const
 {
-    const LayoutStyleInfo styleInfo;
-    m_data->qengine.setGeometries( rect, &styleInfo );
+    return m_data->elements.size();
 }
 
-void QskGridLayoutEngine::invalidate()
+bool QskGridLayoutEngine::setStretchFactor(
+    int pos, int stretch, Qt::Orientation orientation )
 {
-    m_data->qengine.invalidate();
-}
+    if ( pos < 0 )
+        return false;
 
-void QskGridLayoutEngine::setVisualDirection( Qt::LayoutDirection direction )
-{
-    m_data->qengine.setVisualDirection( direction );
-}
+    if ( stretch < 0 )
+        stretch = -1;
 
-Qt::LayoutDirection QskGridLayoutEngine::visualDirection() const
-{
-    return m_data->qengine.visualDirection();
-}
-
-int QskGridLayoutEngine::itemCount() const
-{
-    return m_data->qengine.itemCount();
-}
-
-int QskGridLayoutEngine::rowCount() const
-{
-    return m_data->qengine.rowCount();
-}
-
-int QskGridLayoutEngine::columnCount() const
-{
-    return m_data->qengine.columnCount();
-}
-
-void QskGridLayoutEngine::insertItem( QQuickItem* item,
-    int row, int column, int rowSpan, int columnSpan, Qt::Alignment alignment )
-{
-    auto& qengine = m_data->qengine;
-
-    auto layoutItem = new LayoutItem(
-        item, row, column, rowSpan, columnSpan, alignment );
-
-    const bool isExpanding = ( layoutItem->lastColumn() >= qengine.columnCount() ) ||
-        ( layoutItem->lastRow() >= qengine.rowCount() );
-
-    qengine.insertItem( layoutItem, -1 );
-
-    if ( isExpanding )
+    if ( m_data->settings( orientation ).setStretchAt( pos, stretch ) )
     {
-        // the new item has extended the number of rows/columns and
-        // we need to adjust all items without fixed spanning
-
-        if ( m_data->unlimitedSpanned > 0 )
-            adjustSpans( columnCount(), rowCount() );
+        invalidate();
+        return true;
     }
-
-    if ( layoutItem->hasUnlimitedSpan() )
-    {
-        // the item itself might need to be adjusted
-
-        if ( layoutItem->hasUnlimitedSpan( Qt::Horizontal ) )
-        {
-            const int span = columnCount() - layoutItem->firstColumn();
-            layoutItem->setRowSpan( span, Qt::Horizontal );
-        }
-
-        if ( layoutItem->hasUnlimitedSpan( Qt::Vertical ) )
-        {
-            const int span = rowCount() - layoutItem->firstRow();
-            layoutItem->setRowSpan( span, Qt::Vertical );
-        }
-
-        m_data->unlimitedSpanned++;
-    }
-}
-
-void QskGridLayoutEngine::removeAt( int index )
-{
-    auto& qengine = m_data->qengine;
-
-    auto layoutItem = qengine.layoutItemAt( index );
-    if ( layoutItem == nullptr )
-        return;
-
-    qengine.removeItem( layoutItem );
-
-    if ( layoutItem->hasUnlimitedSpan() )
-        m_data->unlimitedSpanned--;
-
-    // cleanup rows/columns
-
-    const QSize cells = requiredCells();
-
-    const int numPendingColumns = qengine.columnCount() - cells.width();
-    const int numPendingRows = qengine.rowCount() - cells.height();
-
-    if ( numPendingColumns > 0 || numPendingRows > 0 )
-    {
-        if ( m_data->unlimitedSpanned > 0 )
-            adjustSpans( cells.height(), cells.width() );
-
-        qengine.removeRows( cells.width(), numPendingColumns, Qt::Horizontal );
-        qengine.removeRows( cells.height(), numPendingRows, Qt::Vertical );
-    }
-
-    delete layoutItem;
-}
-
-QQuickItem* QskGridLayoutEngine::itemAt( int index ) const
-{
-    if ( const auto layoutItem = m_data->qengine.layoutItemAt( index ) )
-        return layoutItem->item();
-
-    return nullptr;
-}
-
-QQuickItem* QskGridLayoutEngine::itemAt( int row, int column ) const
-{
-    if ( const auto layoutItem = m_data->qengine.layoutItemAt( row, column ) )
-        return layoutItem->item();
-
-    return nullptr;
-}
-
-int QskGridLayoutEngine::indexAt( int row, int column ) const
-{
-    return m_data->qengine.indexAt( row, column );
-}
-
-int QskGridLayoutEngine::indexOf( const QQuickItem* item ) const
-{
-    if ( item == nullptr )
-        return -1;
-
-    return m_data->qengine.indexOf( item );
-}
-
-int QskGridLayoutEngine::rowOfIndex( int index ) const
-{
-    if ( auto layoutItem = m_data->qengine.layoutItemAt( index ) )
-        return layoutItem->firstRow();
-
-    return -1;
-}
-
-int QskGridLayoutEngine::rowSpanOfIndex( int index ) const
-{
-    if ( auto layoutItem = m_data->qengine.layoutItemAt( index ) )
-        return layoutItem->rowSpan();
-
-    return 0;
-}
-
-int QskGridLayoutEngine::columnOfIndex( int index ) const
-{
-    if ( auto layoutItem = m_data->qengine.layoutItemAt( index ) )
-        return layoutItem->firstColumn();
-
-    return -1;
-}
-
-int QskGridLayoutEngine::columnSpanOfIndex( int index ) const
-{
-    if ( auto layoutItem = m_data->qengine.layoutItemAt( index ) )
-        return layoutItem->columnSpan();
-
-    return 0;
-}
-
-void QskGridLayoutEngine::setSpacing(
-    Qt::Orientation orientation, qreal spacing )
-{
-    m_data->qengine.setSpacing( spacing, orientation );
-}
-
-qreal QskGridLayoutEngine::spacing( Qt::Orientation orientation ) const
-{
-    return m_data->qengine.spacing( orientation );
-}
-
-void QskGridLayoutEngine::setSpacingAt(
-    Qt::Orientation orientation, int cell, qreal spacing )
-{
-    // is this a spacer ???
-    m_data->qengine.setRowSpacing( cell, spacing, orientation );
-}
-
-qreal QskGridLayoutEngine::spacingAt(
-    Qt::Orientation orientation, int cell ) const
-{
-    return m_data->qengine.rowSpacing( cell, orientation );
-}
-
-void QskGridLayoutEngine::setStretchFactorAt(
-    Qt::Orientation orientation, int cell, int stretch )
-{
-    m_data->qengine.setRowStretchFactor( cell, stretch, orientation );
-}
-
-int QskGridLayoutEngine::stretchFactorAt( Qt::Orientation orientation, int cell )
-{
-    return m_data->qengine.rowStretchFactor( cell, orientation );
-}
-
-void QskGridLayoutEngine::setAlignmentAt(
-    Qt::Orientation orientation, int cell, Qt::Alignment alignment )
-{
-    m_data->qengine.setRowAlignment( cell, alignment, orientation );
-}
-
-Qt::Alignment QskGridLayoutEngine::alignmentAt(
-    Qt::Orientation orientation, int cell ) const
-{
-    return m_data->qengine.rowAlignment( cell, orientation );
-}
-
-void QskGridLayoutEngine::setAlignmentOf(
-    const QQuickItem* item, Qt::Alignment alignment )
-{
-    if ( auto layoutItem = m_data->qengine.layoutItemOf( item ) )
-        layoutItem->setAlignment( alignment );
-}
-
-Qt::Alignment QskGridLayoutEngine::alignmentOf( const QQuickItem* item ) const
-{
-    if ( const auto layoutItem = m_data->qengine.layoutItemOf( item ) )
-        return layoutItem->alignment();
-
-    return Qt::Alignment();
-}
-
-void QskGridLayoutEngine::setRetainSizeWhenHiddenOf( const QQuickItem* item, bool on )
-{
-    if ( auto layoutItem = m_data->qengine.layoutItemOf( item ) )
-        layoutItem->setRetainSizeWhenHidden( on );
-}
-
-bool QskGridLayoutEngine::retainSizeWhenHiddenOf( const QQuickItem* item ) const
-{
-    if ( const auto layoutItem = m_data->qengine.layoutItemOf( item ) )
-        return layoutItem->retainSizeWhenHidden();
 
     return false;
 }
 
-void QskGridLayoutEngine::setRowSizeHint( int row, Qt::SizeHint which, qreal height )
+int QskGridLayoutEngine::stretchFactor(
+    int pos, Qt::Orientation orientation ) const
 {
-    m_data->qengine.setRowSizeHint( which, row, height, Qt::Vertical );
+    const auto setting = m_data->settings( orientation ).settingAt( pos );
+    return ( setting.position == pos ) ? setting.stretch() : 0;
+}
+
+bool QskGridLayoutEngine::setRowSizeHint(
+    int row, Qt::SizeHint which, qreal height )
+{
+    if ( m_data->rowSettings.setHintAt( row, which, height ) )
+    {
+        invalidate();
+        return true;
+    }
+
+    return false;
 }
 
 qreal QskGridLayoutEngine::rowSizeHint( int row, Qt::SizeHint which ) const
 {
-    return m_data->qengine.rowSizeHint( which, row, Qt::Vertical );
+    const auto& settings = m_data->rowSettings;
+    return settings.settingAt( row ).hint().size( which );
 }
 
-void QskGridLayoutEngine::setColumnSizeHint( int column, Qt::SizeHint which, qreal width )
+bool QskGridLayoutEngine::setColumnSizeHint(
+    int column, Qt::SizeHint which, qreal width )
 {
-    m_data->qengine.setRowSizeHint( which, column, width, Qt::Horizontal );
+    if ( m_data->columnSettings.setHintAt( column, which, width ) )
+    {
+        invalidate();
+        return true;
+    }
+
+    return false;
 }
 
 qreal QskGridLayoutEngine::columnSizeHint( int column, Qt::SizeHint which ) const
 {
-    return m_data->qengine.rowSizeHint( which, column, Qt::Horizontal );
+    const auto& settings = m_data->columnSettings;
+    return settings.settingAt( column ).hint().size( which );
 }
 
-QSizeF QskGridLayoutEngine::sizeHint( Qt::SizeHint which, const QSizeF& constraint ) const
+bool QskGridLayoutEngine::setAlignmentAt( int index, Qt::Alignment alignment )
 {
-    const LayoutStyleInfo styleInfo;
-    return m_data->qengine.sizeHint( which, constraint, &styleInfo );
-}
-
-qreal QskGridLayoutEngine::widthForHeight( qreal height ) const
-{
-    const QSizeF constraint( -1, height );
-    return sizeHint( Qt::PreferredSize, constraint ).width();
-}
-
-qreal QskGridLayoutEngine::heightForWidth( qreal width ) const
-{
-    const QSizeF constraint( width, -1 );
-    return sizeHint( Qt::PreferredSize, constraint ).height();
-}
-
-qreal QskGridLayoutEngine::defaultSpacing( Qt::Orientation orientation )
-{
-    return LayoutStyleInfo().spacing( orientation );
-}
-
-QSize QskGridLayoutEngine::requiredCells() const
-{
-    int lastRow = -1;
-    int lastColumn = -1;
-
-    for ( int i = 0; i < m_data->qengine.itemCount(); i++ )
+    if ( auto element = m_data->elementAt( index ) )
     {
-        const auto layoutItem = m_data->qengine.layoutItemAt( i );
-        if ( layoutItem->isIgnored() )
-            continue;
+        if ( alignment != element->alignment() )
+            element->setAlignment( alignment );
 
-        const int col = layoutItem->hasUnlimitedSpan( Qt::Horizontal )
-            ? layoutItem->firstColumn() + 1 : layoutItem->lastColumn();
-
-        if ( col > lastColumn )
-            lastColumn = col;
-
-        const int row = layoutItem->hasUnlimitedSpan( Qt::Vertical )
-            ? layoutItem->firstRow() + 1 : layoutItem->lastRow();
-
-        if ( row > lastRow )
-            lastRow = row;
+        return true;
     }
 
-    return QSize( lastColumn + 1, lastRow + 1 );
+    return false;
 }
 
-void QskGridLayoutEngine::adjustSpans( int numRows, int numColumns )
+Qt::Alignment QskGridLayoutEngine::alignmentAt( int index ) const
 {
-    for ( int i = 0; i < m_data->qengine.itemCount(); i++ )
+    if ( const auto element = m_data->elementAt( index ) )
+        return element->alignment();
+
+    return Qt::Alignment();
+}
+
+bool QskGridLayoutEngine::setRetainSizeWhenHiddenAt( int index, bool on )
+{
+    if ( auto element = m_data->elementAt( index ) )
     {
-        auto layoutItem = m_data->qengine.layoutItemAt( i );
+        if ( on != element->retainSizeWhenHidden() )
+        {
+            const bool isIgnored = element->isIgnored();
+            element->setRetainSizeWhenHidden( on );
 
-        if ( layoutItem->hasUnlimitedSpan( Qt::Horizontal ) )
-            layoutItem->setRowSpan( numColumns - layoutItem->firstColumn(), Qt::Horizontal );
+            if ( isIgnored != element->isIgnored() )
+            {
+                invalidate();
+                return true;
+            }
+        }
+    }
 
-        if ( layoutItem->hasUnlimitedSpan( Qt::Vertical ) )
-            layoutItem->setRowSpan( numRows - layoutItem->firstRow(), Qt::Vertical );
+    return false;
+}
+
+bool QskGridLayoutEngine::retainSizeWhenHiddenAt( int index ) const
+{
+    if ( const auto element = m_data->elementAt( index ) )
+        return element->retainSizeWhenHidden();
+
+    return false;
+}
+
+int QskGridLayoutEngine::insertItem( QQuickItem* item,
+    const QRect& grid, Qt::Alignment alignment )
+{
+    invalidate();
+    return m_data->insertElement( item, -1, grid, alignment );
+}
+
+int QskGridLayoutEngine::insertSpacer( qreal spacing, const QRect& grid )
+{
+    spacing = qMax( spacing, 0.0 );
+    return m_data->insertElement( nullptr, spacing, grid, Qt::Alignment() );
+}
+
+bool QskGridLayoutEngine::removeAt( int index )
+{
+    const auto element = m_data->elementAt( index );
+    if ( element == nullptr )
+        return false;
+
+    const auto grid = element->minimumGrid();
+
+    auto& elements = m_data->elements;
+    elements.erase( elements.begin() + index );
+
+    // doing a lazy recalculation instead ??
+
+    if ( grid.bottom() >= m_data->rowCount
+        || grid.right() >= m_data->columnCount )
+    {
+        int maxRow = -1;
+        int maxColumn = -1;
+
+        for ( const auto& element : elements )
+        {
+            const auto grid = element.minimumGrid();
+
+            maxRow = qMax( maxRow, grid.bottom() );
+            maxColumn = qMax( maxColumn, grid.right() );
+        }
+
+        m_data->rowCount = maxRow + 1;
+        m_data->columnCount = maxColumn + 1;
+    }
+
+    invalidate();
+    return true;
+}
+
+bool QskGridLayoutEngine::clear()
+{
+    m_data->elements.clear();
+    m_data->rowSettings.clear();
+    m_data->columnSettings.clear();
+
+    invalidate();
+    return true;
+}
+
+int QskGridLayoutEngine::indexAt( int row, int column ) const
+{
+    if ( row < m_data->rowCount && column < m_data->columnCount )
+    {
+        for ( uint i = 0; i < m_data->elements.size(); i++ )
+        {
+            const auto grid = m_data->effectiveGrid( m_data->elements[i] );
+            if ( grid.contains( column, row ) )
+                return i;
+        }
+    }
+
+    return -1;
+}
+
+QQuickItem* QskGridLayoutEngine::itemAt( int index ) const
+{
+    if ( const auto element = m_data->elementAt( index ) )
+        return element->item();
+
+    return nullptr;
+}
+
+qreal QskGridLayoutEngine::spacerAt( int index ) const
+{
+    if ( const auto element = m_data->elementAt( index ) )
+        return element->spacer();
+
+    return -1.0;
+}
+
+QQuickItem* QskGridLayoutEngine::itemAt( int row, int column ) const
+{
+    return itemAt( indexAt( row, column ) );
+}
+
+bool QskGridLayoutEngine::setGridAt( int index, const QRect& grid )
+{
+    if ( auto element = m_data->elementAt( index ) )
+    {
+        if ( element->grid() != grid )
+        {
+            element->setGrid( grid );
+            invalidate();
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+QRect QskGridLayoutEngine::gridAt( int index ) const
+{
+    if ( auto element = m_data->elementAt( index ) )
+        return element->grid();
+
+    return QRect();
+}
+
+QRect QskGridLayoutEngine::effectiveGridAt( int index ) const
+{
+    if ( auto element = m_data->elementAt( index ) )
+        return m_data->effectiveGrid( *element );
+
+    return QRect();
+}
+
+void QskGridLayoutEngine::invalidateElementCache()
+{
+}
+
+void QskGridLayoutEngine::layoutItems()
+{
+    for ( const auto& element : m_data->elements )
+    {
+        if ( !element.isIgnored() )
+        {
+            if ( auto item = element.item() )
+            {
+                const auto grid = m_data->effectiveGrid( element );
+                layoutItem( item, grid, element.alignment() );
+            }
+        }
+    }
+}
+
+void QskGridLayoutEngine::transpose()
+{
+    for ( auto& element : m_data->elements )
+        element.transpose();
+
+    qSwap( m_data->columnSettings, m_data->rowSettings );
+    invalidate();
+}
+
+int QskGridLayoutEngine::effectiveCount(
+    Qt::Orientation orientation ) const
+{
+    return ( orientation == Qt::Horizontal )
+        ? m_data->columnCount : m_data->rowCount;
+}
+
+void QskGridLayoutEngine::setupChain( Qt::Orientation orientation,
+    const QskLayoutChain::Segments& constraints, QskLayoutChain& chain ) const
+{
+    /*
+        We collect all information from the simple elements first
+        befora adding those that occupy more than one cell
+     */
+    QVarLengthArray< const Element* > postponed;
+
+    for ( const auto& element : m_data->elements )
+    {
+        if ( element.isIgnored() )
+            continue;
+
+        auto grid = m_data->effectiveGrid( element );
+        if ( orientation == Qt::Horizontal )
+            grid.setRect( grid.y(), grid.x(), grid.height(), grid.width() );
+
+        if ( grid.height() == 1 )
+        {
+            qreal constraint = -1.0;
+            if ( !constraints.isEmpty() )
+                constraint = qskSegmentLength( constraints, grid.left(), grid.right() );
+
+            chain.expandCell( grid.top(), element.cell( orientation, constraint ) );
+        }
+        else
+        {
+            postponed += &element;
+        }
+    }
+
+    const auto& settings = m_data->settings( orientation );
+
+    for ( const auto& setting : settings.settings() )
+        chain.narrowCell( setting.position, setting.cell() );
+
+    for ( const auto element : postponed )
+    {
+        auto grid = m_data->effectiveGrid( *element );
+        if ( orientation == Qt::Horizontal )
+            grid.setRect( grid.y(), grid.x(), grid.height(), grid.width() );
+
+        qreal constraint = -1.0;
+        if ( !constraints.isEmpty() )
+            constraint = qskSegmentLength( constraints, grid.left(), grid.right() );
+
+        chain.expandCells( grid.top(), grid.height(),
+            element->cell( orientation, constraint ) );
     }
 }

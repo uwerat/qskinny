@@ -7,6 +7,7 @@
 #define QSK_LINEAR_LAYOUT_ENGINE_H
 
 #include "QskGlobal.h"
+#include "QskLayoutEngine2D.h"
 
 #include <qnamespace.h>
 #include <memory>
@@ -15,11 +16,11 @@ class QQuickItem;
 class QSizeF;
 class QRectF;
 
-class QskLinearLayoutEngine
+class QskLinearLayoutEngine : public QskLayoutEngine2D
 {
   public:
     QskLinearLayoutEngine( Qt::Orientation, uint dimension );
-    ~QskLinearLayoutEngine();
+    ~QskLinearLayoutEngine() override;
 
     Qt::Orientation orientation() const;
     bool setOrientation( Qt::Orientation );
@@ -27,36 +28,19 @@ class QskLinearLayoutEngine
     bool setDimension( uint dimension );
     uint dimension() const;
 
-    bool setDefaultAlignment( Qt::Alignment );
-    Qt::Alignment defaultAlignment() const;
+    int count() const override final;
 
-    bool setExtraSpacingAt( Qt::Edges );
-    Qt::Edges extraSpacingAt() const;
+    int insertItem( QQuickItem*, int index );
+    int addItem( QQuickItem* );
 
-    bool setVisualDirection( Qt::LayoutDirection );
-    Qt::LayoutDirection visualDirection() const;
+    int insertSpacerAt( int index, qreal spacing );
+    int addSpacer( qreal spacing );
 
-    bool setSpacing( qreal spacing, Qt::Orientations );
-    qreal spacing( Qt::Orientation ) const;
+    bool removeAt( int index );
+    bool clear();
 
-    qreal defaultSpacing( Qt::Orientation ) const;
-
-    int count() const;
-
-    int rowCount() const;
-    int columnCount() const;
-
-    void insertItem( QQuickItem*, int index );
-    void addItem( QQuickItem* );
-
-    void insertSpacerAt( int index, qreal spacing );
-    void addSpacer( qreal spacing );
-
-    void removeAt( int index );
-    void clear();
-
-    QQuickItem* itemAt( int index ) const;
-    int spacerAt( int index ) const;
+    QQuickItem* itemAt( int index ) const override final;
+    qreal spacerAt( int index ) const override final;
 
     bool setRetainSizeWhenHiddenAt( int index, bool on );
     bool retainSizeWhenHiddenAt( int index ) const;
@@ -67,30 +51,31 @@ class QskLinearLayoutEngine
     bool setStretchFactorAt( int index, int stretchFactor );
     int stretchFactorAt( int index ) const;
 
-    void setGeometries( const QRectF& );
-
-    qreal widthForHeight( qreal height ) const;
-    qreal heightForWidth( qreal width ) const;
-
-    QSizeF sizeHint( Qt::SizeHint, const QSizeF& contraint ) const;
-
-    enum
-    {
-        EntryCache  = 1 << 0,
-        CellCache   = 1 << 1,
-        LayoutCache = 1 << 2
-    };
-
-    void invalidate( int what = EntryCache | CellCache | LayoutCache );
-
-  private:
-    void updateCellGeometries( const QSizeF& );
-
   private:
     Q_DISABLE_COPY(QskLinearLayoutEngine)
+
+    void layoutItems() override;
+
+    int effectiveCount() const;
+    int effectiveCount( Qt::Orientation ) const override;
+
+    void invalidateElementCache() override;
+
+    virtual void setupChain( Qt::Orientation,
+        const QskLayoutChain::Segments&, QskLayoutChain& ) const override;
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
+
+inline int QskLinearLayoutEngine::addItem( QQuickItem* item )
+{
+    return insertItem( item, -1 );
+}
+
+inline int QskLinearLayoutEngine::addSpacer( qreal spacing )
+{
+    return insertSpacerAt( -1, spacing );
+}
 
 #endif

@@ -94,26 +94,7 @@ QQuickItem* QskLinearBox::itemAtIndex( int index ) const
 
 int QskLinearBox::indexOf( const QQuickItem* item ) const
 {
-    if ( item )
-    {
-        /*
-             Linear search might become slow for many items,
-             better introduce some sort of hash table TODO ...
-
-             indexOf is often used for configuring an item
-             after inserting it. So we iterate in reverse order
-         */
-
-        const auto& engine = m_data->engine;
-
-        for ( int i = engine.count() - 1; i >= 0; --i )
-        {
-            if ( engine.itemAt( i ) == item )
-                return i;
-        }
-    }
-
-    return -1;
+    return m_data->engine.indexOf( item );
 }
 
 void QskLinearBox::removeAt( int index )
@@ -398,16 +379,16 @@ Qt::Edges QskLinearBox::extraSpacingAt() const
     return m_data->engine.extraSpacingAt();
 }
 
-void QskLinearBox::addItem( QQuickItem* item, Qt::Alignment alignment )
+int QskLinearBox::addItem( QQuickItem* item, Qt::Alignment alignment )
 {
-    insertItem( -1, item, alignment );
+    return insertItem( -1, item, alignment );
 }
 
-void QskLinearBox::insertItem(
+int QskLinearBox::insertItem(
     int index, QQuickItem* item, Qt::Alignment alignment )
 {
     if ( item == nullptr )
-        return;
+        return -1;
 
     auto& engine = m_data->engine;
 
@@ -424,7 +405,7 @@ void QskLinearBox::insertItem(
                 ( doAppend && oldIndex == engine.count() - 1 ) )
             {
                 // already at its position, nothing to do
-                return;
+                return oldIndex;
             }
 
             removeAt( oldIndex );
@@ -433,11 +414,7 @@ void QskLinearBox::insertItem(
 
     reparentItem( item );
 
-    const int numItems = engine.count();
-    if ( index < 0 || index > numItems )
-        index = numItems;
-
-    engine.insertItem( item, index );
+    index = engine.insertItem( item, index );
     engine.setAlignmentAt( index, alignment );
 
     // Re-ordering the child items to have a a proper focus tab chain
@@ -472,14 +449,16 @@ void QskLinearBox::insertItem(
     resetImplicitSize();
     polish();
 #endif
+
+    return index;
 }
 
-void QskLinearBox::addSpacer( qreal spacing, int stretchFactor )
+int QskLinearBox::addSpacer( qreal spacing, int stretchFactor )
 {
-    insertSpacer( -1, spacing, stretchFactor );
+    return insertSpacer( -1, spacing, stretchFactor );
 }
 
-void QskLinearBox::insertSpacer( int index, qreal spacing, int stretchFactor )
+int QskLinearBox::insertSpacer( int index, qreal spacing, int stretchFactor )
 {
     auto& engine = m_data->engine;
 
@@ -487,7 +466,7 @@ void QskLinearBox::insertSpacer( int index, qreal spacing, int stretchFactor )
     if ( index < 0 || index > numItems )
         index = numItems;
 
-    engine.insertSpacerAt( index, spacing );
+    index = engine.insertSpacerAt( index, spacing );
 
     stretchFactor = qMax( stretchFactor, 0 );
     engine.setStretchFactorAt( index, stretchFactor );
@@ -497,16 +476,18 @@ void QskLinearBox::insertSpacer( int index, qreal spacing, int stretchFactor )
     resetImplicitSize();
     polish();
 #endif
+
+    return index;
 }
 
-void QskLinearBox::addStretch( int stretchFactor )
+int QskLinearBox::addStretch( int stretchFactor )
 {
-    insertSpacer( -1, 0, stretchFactor );
+    return insertSpacer( -1, 0, stretchFactor );
 }
 
-void QskLinearBox::insertStretch( int index, int stretchFactor )
+int QskLinearBox::insertStretch( int index, int stretchFactor )
 {
-    insertSpacer( index, 0, stretchFactor );
+    return insertSpacer( index, 0, stretchFactor );
 }
 
 void QskLinearBox::setAlignment( int index, Qt::Alignment alignment )

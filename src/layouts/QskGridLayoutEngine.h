@@ -7,89 +7,68 @@
 #define QSK_GRID_LAYOUT_ENGINE_H
 
 #include "QskGlobal.h"
+#include "QskLayoutEngine2D.h"
 
 #include <qnamespace.h>
-#include <qrect.h>
 #include <memory>
 
 class QQuickItem;
+class QSizeF;
+class QRectF;
 
-class QskGridLayoutEngine
+class QskGridLayoutEngine : public QskLayoutEngine2D
 {
   public:
     QskGridLayoutEngine();
-    ~QskGridLayoutEngine();
+    ~QskGridLayoutEngine() override;
 
-    void setGeometries( const QRectF );
-    void invalidate();
+    int count() const override final;
 
-    void setVisualDirection( Qt::LayoutDirection );
-    Qt::LayoutDirection visualDirection() const;
+    bool setStretchFactor( int pos, int stretch, Qt::Orientation );
+    int stretchFactor( int pos, Qt::Orientation ) const;
 
-    int itemCount() const;
-
-    int rowCount() const;
-    int columnCount() const;
-
-    void insertItem( QQuickItem* item,
-        int row, int column, int rowSpan, int columnSpan,
-        Qt::Alignment );
-
-    void removeAt( int index );
-
-    int indexAt( int row, int column ) const;
-    int indexOf( const QQuickItem* item ) const;
-
-    QQuickItem* itemAt( int index ) const;
-    QQuickItem* itemAt( int row, int column ) const;
-
-    int rowOfIndex( int index ) const;
-    int rowSpanOfIndex( int index ) const;
-
-    int columnOfIndex( int index ) const;
-    int columnSpanOfIndex( int index ) const;
-
-    void setSpacing( Qt::Orientation, qreal spacing );
-    qreal spacing( Qt::Orientation ) const;
-
-    void setSpacingAt( Qt::Orientation, int cell, qreal spacing );
-    qreal spacingAt( Qt::Orientation, int cell ) const;
-
-    void setStretchFactorAt( Qt::Orientation, int cell, int stretch );
-    int stretchFactorAt( Qt::Orientation, int cell );
-
-    void setAlignmentAt( Qt::Orientation, int cell, Qt::Alignment );
-    Qt::Alignment alignmentAt( Qt::Orientation, int cell ) const;
-
-    void setAlignmentOf( const QQuickItem*, Qt::Alignment );
-    Qt::Alignment alignmentOf( const QQuickItem* ) const;
-
-    void setRetainSizeWhenHiddenOf( const QQuickItem*, bool on );
-    bool retainSizeWhenHiddenOf( const QQuickItem* ) const;
-
-    void setRowSizeHint( int row, Qt::SizeHint, qreal height );
+    bool setRowSizeHint( int row, Qt::SizeHint, qreal height );
     qreal rowSizeHint( int row, Qt::SizeHint ) const;
 
-    void setColumnSizeHint( int column, Qt::SizeHint, qreal width );
+    bool setColumnSizeHint( int column, Qt::SizeHint, qreal width );
     qreal columnSizeHint( int column, Qt::SizeHint ) const;
 
-    QSizeF sizeHint( Qt::SizeHint, const QSizeF& constraint = QSizeF() ) const;
+    int insertItem( QQuickItem*, const QRect& grid, Qt::Alignment );
+    int insertSpacer( qreal spacing, const QRect& grid );
 
-    qreal widthForHeight( qreal height ) const;
-    qreal heightForWidth( qreal width ) const;
+    bool removeAt( int index );
+    bool clear();
 
-    static qreal defaultSpacing( Qt::Orientation );
+    QQuickItem* itemAt( int index ) const override final;
+    qreal spacerAt( int index ) const override final;
 
-#if 1
-    QSize requiredCells() const;
-    void adjustSpans( int numRows, int numColumns );
-#endif
+    QQuickItem* itemAt( int row, int column ) const;
+    int indexAt( int row, int column ) const;
+
+    bool setGridAt( int index, const QRect& );
+    QRect gridAt( int index ) const;
+
+    QRect effectiveGridAt( int index ) const;
+
+    bool setRetainSizeWhenHiddenAt( int index, bool on );
+    bool retainSizeWhenHiddenAt( int index ) const;
+
+    bool setAlignmentAt( int index, Qt::Alignment );
+    Qt::Alignment alignmentAt( int index ) const;
+
+    void transpose();
 
   private:
-    Q_DISABLE_COPY(QskGridLayoutEngine)
+    void layoutItems() override;
+    int effectiveCount( Qt::Orientation ) const override;
+
+    void invalidateElementCache() override;
+
+    void setupChain( Qt::Orientation,
+        const QskLayoutChain::Segments&, QskLayoutChain& ) const override;
 
     class PrivateData;
-    std::unique_ptr< PrivateData > m_data;
+    PrivateData* m_data;
 };
 
 #endif
