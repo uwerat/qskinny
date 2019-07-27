@@ -14,16 +14,17 @@ class MainBox : public TestBox
   public:
     MainBox( int id )
     {
-        using Testcase = void (MainBox::*)();
+        using Testcase = void ( MainBox::* )();
 
         const Testcase tests[] =
         {
             &MainBox::test0, &MainBox::test1, &MainBox::test2,
             &MainBox::test3, &MainBox::test4, &MainBox::test5,
-            &MainBox::test6, &MainBox::test7, &MainBox::test8
+            &MainBox::test6, &MainBox::test7, &MainBox::test8,
+            &MainBox::test9
         };
 
-        const int count = static_cast<int>( sizeof( tests ) / sizeof( tests[0] ) );
+        const int count = static_cast< int >( sizeof( tests ) / sizeof( tests[0] ) );
 
         if ( id < 0 || id >= count )
             id = 0;
@@ -49,6 +50,7 @@ class MainBox : public TestBox
     void test6();
     void test7();
     void test8();
+    void test9();
 };
 
 void MainBox::test0()
@@ -169,7 +171,7 @@ void MainBox::test5()
         be more efficient as well.
 
         Actually the row/column organized list is ony useful for faster lookups,
-        when retrieving an item at a specific cell - beside that it 
+        when retrieving an item at a specific cell - beside that it
         complicates the code without offering extra benefits.
 
         The position of the rectangles differs because the systems have
@@ -209,16 +211,16 @@ void MainBox::test7()
     insert( "DarkSeaGreen", 1, 1 );
     insert( "Coral", 2, 2 );
     insert( "NavajoWhite", 3, 0, 1, 3 );
-    
+
     setVisibleAt( 0, false );
     //setRetainSizeWhenHiddenAt( 0, true );
-}   
+}
 
 void MainBox::test8()
 {
     /*
         This test creates a situation, where we have more space than
-        the minimum, but not enough for preferred. For this situation 
+        the minimum, but not enough for preferred. For this situation
         all layout engines use a different algorithm how to distribute
         the extra space. All of them are based on the difference between
         preferred and minimum.
@@ -227,7 +229,7 @@ void MainBox::test8()
         - Widgets seems to do something that works exponatially
           ( need to check the code ).
         - Graphic/Quick ( QGridLayoutEngine ) levels the impact
-          of the differences down. 
+          of the differences down.
 
         Hard to say what a user expects to happen.
      */
@@ -239,6 +241,25 @@ void MainBox::test8()
         setMinimumSizeAt( i, QSize( 20, 20 ) );
         setPreferredSizeAt( i, ( i + 1 ) * QSize( 2000, 2000 ) );
     }
+}
+
+void MainBox::test9()
+{
+    /*
+        This one is a bit unclear about how much space from the first
+        element goes to column 1/2. Skinny gives 50% to both,
+        while QGridLayoutEngine gives 100% to column 1 ( starting
+        at 0 + spacing() ). The Widgets implementation seems to be
+        wrong as column 1 grows beyond 100%.
+
+        The situation can be clarified by using setColumnFixedWidth -
+        unfortunately Quick does not support this.
+     */
+    insert( "PaleVioletRed", 0, 0, 1, 2 );
+    insert( "DarkSeaGreen", 1, 1 );
+
+    setFixedWidthAt( 0, 100 );
+    //setColumnFixedWidth( 0, 50 );
 }
 
 int main( int argc, char** argv )
