@@ -29,19 +29,6 @@ class QskLayoutChain
     class CellData
     {
       public:
-        inline bool operator==( const CellData& other ) const
-        {
-            return ( isValid == other.isValid )
-                && ( canGrow == other.canGrow )
-                && ( stretch == other.stretch )
-                && ( hint == other.hint );
-        }
-
-        inline bool operator!=( const CellData& other ) const
-        {
-            return !( *this == other );
-        }
-
         inline qreal size( int which ) const
         {
             return hint.size( which );
@@ -56,10 +43,11 @@ class QskLayoutChain
 
         int stretch = 0;
         bool canGrow = false;
+        bool isShrunk = false;
         bool isValid = false;
     };
 
-    enum ExtraSpacing
+    enum FillMode
     {
         Leading = 1 << 0,
         Trailing = 1 << 1
@@ -73,7 +61,7 @@ class QskLayoutChain
     void reset( int count, qreal constraint );
     void expandCell( int index, const CellData& );
     void expandCells( int start, int end, const CellData& );
-    void narrowCell( int index, const CellData& );
+    void shrinkCell( int index, const CellData& );
     void finish();
 
     const CellData& cell( int index ) const { return m_cells[ index ]; }
@@ -81,7 +69,8 @@ class QskLayoutChain
     bool setSpacing( qreal spacing );
     qreal spacing() const { return m_spacing; }
 
-    void setExtraSpacingAt( int extraSpacingAt ) { m_extraSpacingAt = extraSpacingAt; }
+    void setFillMode( int mode ) { m_fillMode = mode; }
+    int fillMode() const { return m_fillMode; }
 
     Segments segments( qreal size ) const;
     QskLayoutHint boundingHint() const { return m_boundingHint; }
@@ -98,7 +87,7 @@ class QskLayoutChain
     qreal m_constraint = -2.0;
 
     qreal m_spacing = 0;
-    int m_extraSpacingAt;
+    int m_fillMode = 0;
 
     int m_sumStretches = 0;
     int m_validCells = 0;

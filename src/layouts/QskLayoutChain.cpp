@@ -37,7 +37,7 @@ void QskLayoutChain::reset( int count, qreal constraint )
     m_validCells = 0;
 }
 
-void QskLayoutChain::narrowCell( int index, const CellData& newCell )
+void QskLayoutChain::shrinkCell( int index, const CellData& newCell )
 {
     if ( !newCell.isValid )
         return;
@@ -58,11 +58,17 @@ void QskLayoutChain::narrowCell( int index, const CellData& newCell )
 
         if ( !newCell.hint.isDefault() )
         {
-            cell.hint.setSizes(
-                qMax( cell.hint.minimum(), newCell.hint.minimum() ),
-                qMax( cell.hint.preferred(), newCell.hint.preferred() ),
-                qMin( cell.hint.maximum(), newCell.hint.maximum() )
-            );
+            auto& hint = cell.hint;
+            auto& newHint = newCell.hint;
+
+            hint.setMinimum( qMax( hint.minimum(), newHint.minimum() ) );
+            hint.setPreferred( qMax( hint.preferred(), newHint.preferred() ) );
+
+            if ( newHint.maximum() < hint.maximum() )
+            {
+                hint.setMaximum( newHint.maximum() );
+                cell.isShrunk = true;
+            }
 
             cell.hint.normalize();
         }
@@ -244,7 +250,7 @@ QskLayoutChain::Segments QskLayoutChain::segments( qreal size ) const
         qreal offset = 0.0;
         qreal extra = 0.0;;
 
-        switch( m_extraSpacingAt )
+        switch( m_fillMode )
         {
             case Leading:
                 offset = padding;
@@ -290,9 +296,17 @@ QskLayoutChain::Segments QskLayoutChain::distributed(
             fillSpacing = m_spacing;
 
             segment.start = offset;
-            segment.length = cell.hint.size( which ) + extra;
 
-            offset += segment.length;
+            if ( which == Qt::MaximumSize && cell.isShrunk )
+            {
+                segment.length = cell.hint.size( which );
+                offset += segment.length + extra;
+            }
+            else
+            {
+                segment.length = cell.hint.size( which ) + extra;
+                offset += segment.length;
+            }
         }
     }
 

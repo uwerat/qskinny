@@ -670,6 +670,7 @@ void QskGridLayoutEngine::setupChain( Qt::Orientation orientation,
         before adding those that occupy more than one cell
      */
     QVarLengthArray< const Element* > postponed;
+    postponed.reserve( m_data->elements.size() );
 
     for ( const auto& element : m_data->elements )
     {
@@ -697,7 +698,7 @@ void QskGridLayoutEngine::setupChain( Qt::Orientation orientation,
     const auto& settings = m_data->settings( orientation );
 
     for ( const auto& setting : settings.settings() )
-        chain.narrowCell( setting.position, setting.cell() );
+        chain.shrinkCell( setting.position, setting.cell() );
 
     for ( const auto element : postponed )
     {

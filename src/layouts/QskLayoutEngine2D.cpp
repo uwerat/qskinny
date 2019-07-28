@@ -130,7 +130,6 @@ Qt::Alignment QskLayoutEngine2D::defaultAlignment() const
     return static_cast< Qt::Alignment >( m_data->defaultAlignment );
 }
 
-
 qreal QskLayoutEngine2D::defaultSpacing( Qt::Orientation ) const
 {
     return 5.0; // should be from the skin
@@ -168,27 +167,33 @@ bool QskLayoutEngine2D::setExtraSpacingAt( Qt::Edges edges )
 
     m_data->extraSpacingAt = edges;
 
-    int value = 0;
+    {
+        int fillMode = 0;
 
-    if ( edges & Qt::LeftEdge )
-        value |= QskLayoutChain::Leading;
+        if ( edges & Qt::LeftEdge )
+            fillMode |= QskLayoutChain::Leading;
 
-    if ( edges & Qt::RightEdge )
-        value |= QskLayoutChain::Trailing;
+        if ( edges & Qt::RightEdge )
+            fillMode |= QskLayoutChain::Trailing;
 
-    m_data->columnChain.setExtraSpacingAt( value );
+        m_data->columnChain.setFillMode( fillMode );
+    }
 
-    value = 0;
+    {
+        int fillMode = 0;
 
-    if ( edges & Qt::TopEdge )
-        value |= QskLayoutChain::Leading;
+        if ( edges & Qt::TopEdge )
+            fillMode |= QskLayoutChain::Leading;
 
-    if ( edges & Qt::BottomEdge )
-        value |= QskLayoutChain::Trailing;
+        if ( edges & Qt::BottomEdge )
+            fillMode |= QskLayoutChain::Trailing;
 
-    m_data->rowChain.setExtraSpacingAt( value );
+        m_data->rowChain.setFillMode( fillMode );
+    }
 
-    invalidate();
+    m_data->layoutSize = QSize();
+    m_data->rows.clear();
+    m_data->columns.clear();
 
     return true;
 }
@@ -357,7 +362,7 @@ void QskLayoutEngine2D::setupChain( Qt::Orientation orientation,
 void QskLayoutEngine2D::updateSegments( const QSizeF& size ) const
 {
     auto& rowChain = m_data->rowChain;
-    auto& colLine = m_data->columnChain;
+    auto& columnChain = m_data->columnChain;
 
     auto& rows = m_data->rows;
     auto& columns = m_data->columns;
@@ -372,14 +377,14 @@ void QskLayoutEngine2D::updateSegments( const QSizeF& size ) const
             rows = rowChain.segments( size.height() );
 
             setupChain( Qt::Horizontal, rows );
-            columns = colLine.segments( size.width() );
+            columns = columnChain.segments( size.width() );
 
             break;
         }
         case QskLayoutConstraint::HeightForWidth:
         {
             setupChain( Qt::Horizontal );
-            columns = colLine.segments( size.width() );
+            columns = columnChain.segments( size.width() );
 
             setupChain( Qt::Vertical, m_data->columns );
             rows = rowChain.segments( size.height() );
@@ -389,7 +394,7 @@ void QskLayoutEngine2D::updateSegments( const QSizeF& size ) const
         default:
         {
             setupChain( Qt::Horizontal );
-            columns = colLine.segments( size.width() );
+            columns = columnChain.segments( size.width() );
 
             setupChain( Qt::Vertical );
             rows = rowChain.segments( size.height() );
