@@ -114,7 +114,7 @@ void MainBox::test3()
     /*
         The Graphics layout uses a "magic" formula for how to apply
         the stretch factors, while the other layouts result in
-        predictable sizes being calculated according to the factors.
+        predictable sizes.
         In the specific situation column 1 in the Graphics layout is
         larger than twice of columns 0.
      */
@@ -139,9 +139,9 @@ void MainBox::test4()
         at its maximum, being aligned inside the cell.
 
         But with widgets, the cell size gets always bounded to the preferred size
-        as soon as an alignment has been set. In ths
+        as soon as an alignment has been set.
 
-        With graphics we have the effect, that the cells get bounded to the
+        With graphics we have the effect, that the cells gets bounded to the
         maximum size and we always end up with being aligned Top | Left.
 
      */
@@ -150,7 +150,7 @@ void MainBox::test4()
     insert( "PaleVioletRed", 0, 0 );
 
     setPreferredSizeAt( 0, QSize( 10, 10 ) );
-    setMaximumSizeAt( 0, QSize( 200, 200 ) );
+    setMaximumSizeAt( 0, QSize( 80, 80 ) );
 
     setAlignmentAt( 0, Qt::AlignCenter );
 }
@@ -195,7 +195,7 @@ void MainBox::test6()
     insert( "Coral", 2, 2 );
     insert( "NavajoWhite", 3, 0, 1, 3 );
 
-    setSpacing( 0 );
+    //setSpacing( 0 );
 }
 
 void MainBox::test7()
