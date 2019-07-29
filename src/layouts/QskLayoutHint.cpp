@@ -58,6 +58,13 @@ void QskLayoutHint::setSize( int which, qreal size )
     }
 }
 
+void QskLayoutHint::expandTo( const QskLayoutHint& other )
+{
+    m_minimum = qMax( m_minimum, other.m_minimum );
+    m_preferred = qMax( m_preferred, other.m_preferred );
+    m_maximum = qMax( m_maximum, other.m_maximum );
+}
+
 void QskLayoutHint::normalize()
 {
     m_minimum = qMax( m_minimum, qreal( 0.0 ) );

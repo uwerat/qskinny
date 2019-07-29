@@ -85,7 +85,6 @@ void QskLayoutChain::expandCell( int index, const CellData& newCell )
     if ( !cell.isValid )
     {
         cell = newCell;
-        cell.stretch = qMax( cell.stretch, 0 );
         m_validCells++;
     }
     else
@@ -105,58 +104,63 @@ void QskLayoutChain::expandCells(
     int index, int count, const CellData& multiCell )
 {
     QskLayoutChain chain;
+    chain.setSpacing( m_spacing );
     chain.reset( count, -1 );
 
     for ( int i = 0; i < count; i++ )
     {
-        chain.expandCell( i, m_cells[ index + i ] );
-
         auto& cell = chain.m_cells[ i ];
-#if 1
-        // what to do now ??
+        cell = m_cells[ index + i ];
+
         if ( !cell.isValid )
         {
             cell.isValid = true;
             cell.canGrow = multiCell.canGrow;
-            cell.stretch = qMax( cell.stretch, 0 );
+            cell.stretch = multiCell.stretch;
         }
-#endif
     }
-    chain.m_validCells = count;
+    chain.finish();
 
-    QVarLengthArray< QskLayoutHint > hints( count );
+    QskLayoutChain::Segments minimum;
+    QskLayoutChain::Segments preferred;
+    QskLayoutChain::Segments maximum;
 
-    const auto& hint = multiCell.hint;
     const auto chainHint = chain.boundingHint();
 
-    if ( hint.minimum() > chainHint.minimum() )
-    {
-        const auto segments = chain.segments( hint.minimum() );
-        for ( int i = 0; i < count; i++ )
-            hints[i].setMinimum( segments[i].length );
-    }
+    if ( multiCell.hint.minimum() > chainHint.minimum() )
+        minimum = chain.segments( multiCell.hint.minimum() );
 
-    if ( hint.preferred() > chainHint.preferred() )
-    {
-        const auto segments = chain.segments( hint.preferred() );
-        for ( int i = 0; i < count; i++ )
-            hints[i].setPreferred( segments[i].length );
-    }
+    if ( multiCell.hint.preferred() > chainHint.preferred() )
+        preferred = chain.segments( multiCell.hint.preferred() );
 
-    if ( hint.maximum() < chainHint.maximum() )
+    if ( chainHint.maximum() == QskLayoutConstraint::unlimited )
     {
-        const auto segments = chain.segments( hint.maximum() );
-        for ( int i = 0; i < count; i++ )
-            hints[i].setMaximum( segments[i].length );
+        if ( multiCell.hint.maximum() < QskLayoutConstraint::unlimited )
+            maximum = chain.segments( multiCell.hint.maximum() );
     }
 
     for ( int i = 0; i < count; i++ )
     {
-        auto cell = multiCell;
-        cell.hint = hints[i];
+        auto& cell = m_cells[ index + i ];
 
-        expandCell( index + i, cell );
-    }
+        cell.canGrow |= multiCell.canGrow;
+        cell.stretch = qMax( cell.stretch, multiCell.stretch );
+
+        if ( !minimum.isEmpty() )
+            cell.hint.expandMinimum( minimum[i].length );
+
+        if ( !preferred.isEmpty() )
+            cell.hint.expandPreferred( preferred[i].length );
+
+        if ( !maximum.isEmpty() && !cell.isValid )
+            cell.hint.setMaximum( maximum[i].length );
+
+        if ( !cell.isValid )
+        {
+            cell.isValid = true;
+            m_validCells++;
+        }
+    }    
 }
 
 void QskLayoutChain::finish()
