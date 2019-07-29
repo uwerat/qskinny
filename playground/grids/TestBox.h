@@ -27,6 +27,8 @@ class TestBox : public QWidget, public GridAccessor
     TestBox( QWidget* parent = nullptr );
     ~TestBox() override;
 
+    void reset();
+
     void setColumns( int );
     void enableGrid( int, bool on );
 
@@ -50,6 +52,7 @@ class TestBox : public QWidget, public GridAccessor
   protected:
     bool event( QEvent* ) override;
     void resizeEvent( QResizeEvent* ) override;
+    void updateLabels();
 
   private:
     void layoutGrids();

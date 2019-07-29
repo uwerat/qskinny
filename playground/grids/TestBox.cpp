@@ -12,27 +12,43 @@
 
 TestBox::TestBox( QWidget* parent )
     : QWidget( parent )
+    , m_grids {}
 {
     setPalette( QColor( "Lavender" ) );
     setAutoFillBackground( true );
 
     setContentsMargins( QMargins( 10, 10, 10, 10 ) );
 
-    m_grids[Skinny] = new GridSkinny( this );
-    m_labels[Skinny] = new QLabel( "Skinny", this );
-
-    m_grids[Widgets] = new GridWidgets( this );
-    m_labels[Widgets] = new QLabel( "Widget", this );
-
-    m_grids[Graphics] = new GridGraphics( this );
-    m_labels[Graphics] = new QLabel( "Graphic", this );
-
-    m_grids[Quick] = new GridQuick( this );
-    m_labels[Quick] = new QLabel( "Quick", this );
+    for ( int i = 0; i < GridCount; i++ )
+        m_labels[i] = new QLabel( this );
 }
 
 TestBox::~TestBox()
 {
+}
+
+void TestBox::reset()
+{
+    setColumns( 2 );
+
+    for ( auto grid : m_grids )
+        delete grid;
+
+    m_grids[Skinny] = new GridSkinny( this );
+    m_grids[Widgets] = new GridWidgets( this );
+    m_grids[Graphics] = new GridGraphics( this );
+    m_grids[Quick] = new GridQuick( this );
+
+    for ( int i = 0; i < GridCount; i++ )
+    {
+        m_grids[i]->show();
+
+        m_labels[i]->show();
+        m_labels[i]->raise();
+        m_labels[i]->setText( QString() );
+    }
+
+    updateGeometry();
 }
 
 void TestBox::enableGrid( int index, bool on )
@@ -161,7 +177,6 @@ void TestBox::setVisibleAt( int index, bool on )
             accessor->setVisibleAt( index, on );
         }
     }
-
 }
 
 QSize TestBox::preferredSize() const
@@ -171,21 +186,8 @@ QSize TestBox::preferredSize() const
 
 bool TestBox::event( QEvent* event )
 {
-    if ( event->type() == QEvent::Polish )
-    {
-        for ( int i = 0; i < GridCount; i++ )
-        {
-            auto accessor = dynamic_cast< GridAccessor* >( m_grids[i] );
-            auto label = m_labels[i];
-
-            const auto hint = accessor->preferredSize();
-
-            QString text = label->text();
-            text += QString( ": ( %1x%2 )" ).arg( hint.width() ).arg( hint.height() );
-
-            label->setText( text );
-        }
-    }
+    if ( event->type() == QEvent::LayoutRequest )
+        layoutGrids();
 
     return QWidget::event( event );
 }
@@ -193,6 +195,24 @@ bool TestBox::event( QEvent* event )
 void TestBox::resizeEvent( QResizeEvent* )
 {
     layoutGrids();
+}
+
+void TestBox::updateLabels()
+{
+    const QString texts[ GridCount ] = { "Skinny", "Widgets", "Graphics", "Quick" };
+
+    for ( int i = 0; i < GridCount; i++ )
+    {
+        auto accessor = dynamic_cast< GridAccessor* >( m_grids[i] );
+        auto label = m_labels[i];
+
+        const auto hint = accessor->preferredSize();
+
+        QString text = texts[i];
+        text += QString( ": ( %1x%2 )" ).arg( hint.width() ).arg( hint.height() );
+
+        label->setText( text );
+    }
 }
 
 void TestBox::layoutGrids()

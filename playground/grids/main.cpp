@@ -7,30 +7,43 @@
 
 #include <QskSizePolicy.h>
 #include <QApplication>
+#include <QListWidget>
 #include <QDebug>
 
-class MainBox : public TestBox
+#include <functional>
+#include <vector>
+
+class Box : public TestBox
 {
   public:
-    MainBox( int id )
+    Box( QWidget* parent = nullptr )
+        : TestBox( parent )
     {
-        using Testcase = void ( MainBox::* )();
-
-        const Testcase tests[] =
+        m_tests =
         {
-            &MainBox::test0, &MainBox::test1, &MainBox::test2,
-            &MainBox::test3, &MainBox::test4, &MainBox::test5,
-            &MainBox::test6, &MainBox::test7, &MainBox::test8,
-            &MainBox::test9
+            &Box::test0, &Box::test1, &Box::test2,
+            &Box::test3, &Box::test4, &Box::test5,
+            &Box::test6, &Box::test7, &Box::test8,
+            &Box::test9, &Box::test10 
         };
-
-        const int count = static_cast< int >( sizeof( tests ) / sizeof( tests[0] ) );
-
-        if ( id < 0 || id >= count )
-            id = 0;
-
-        ( this->*tests[id] )();
     }
+
+    void showTest( int id )
+    {
+        reset();
+
+        id = qBound( 0, id, count() - 1 );
+        m_tests[id]( *this );
+
+        updateLabels();
+    }
+
+    int count() const
+    {
+        return m_tests.size();
+    }
+
+  private:
 
     void insert( const char* colorName, int row, int column )
     {
@@ -38,8 +51,6 @@ class MainBox : public TestBox
     }
 
     using TestBox::insert;
-
-  private:
 
     void test0();
     void test1();
@@ -51,9 +62,12 @@ class MainBox : public TestBox
     void test7();
     void test8();
     void test9();
+    void test10();
+
+    std::vector< std::function< void( Box& ) > > m_tests;
 };
 
-void MainBox::test0()
+void Box::test0()
 {
     // something, that works with all layouts
 
@@ -64,7 +78,7 @@ void MainBox::test0()
     insert( "NavajoWhite", 3, 0, 1, 3 );
 }
 
-void MainBox::test1()
+void Box::test1()
 {
     /*
         Graphics layout adds the extra space to the stretchables
@@ -91,7 +105,7 @@ void MainBox::test1()
     setColumnSizeHint( 1, Qt::MinimumSize, 100 );
 }
 
-void MainBox::test2()
+void Box::test2()
 {
     setColumns( 1 );
 
@@ -109,7 +123,7 @@ void MainBox::test2()
     setMinimumWidthAt( 2, 100 );
 }
 
-void MainBox::test3()
+void Box::test3()
 {
     /*
         The Graphics layout uses a "magic" formula for how to apply
@@ -131,7 +145,7 @@ void MainBox::test3()
     setRowStretchFactor( 1, 2 );
 }
 
-void MainBox::test4()
+void Box::test4()
 {
     /*
         When setting a maximum size together with an alignment the expected result
@@ -155,7 +169,7 @@ void MainBox::test4()
     setAlignmentAt( 0, Qt::AlignCenter );
 }
 
-void MainBox::test5()
+void Box::test5()
 {
     /*
         QGridLayoutEngine does not work correctly when putting more
@@ -183,9 +197,12 @@ void MainBox::test5()
 
     setFixedSizeAt( 0, QSize( 100, 100 ) );
     setFixedSizeAt( 1, QSize( 50, 50 ) );
+
+    setAlignmentAt( 0, Qt::AlignCenter );
+    setAlignmentAt( 1, Qt::AlignCenter );
 }
 
-void MainBox::test6()
+void Box::test6()
 {
     /*
         QGridLayoutEngine ignores the first column coming from
@@ -198,7 +215,7 @@ void MainBox::test6()
     //setSpacing( 0 );
 }
 
-void MainBox::test7()
+void Box::test7()
 {
     /*
         This test is very similar to test6, but here we can see a
@@ -216,7 +233,7 @@ void MainBox::test7()
     //setRetainSizeWhenHiddenAt( 0, true );
 }
 
-void MainBox::test8()
+void Box::test8()
 {
     /*
         This test creates a situation, where we have more space than
@@ -243,7 +260,7 @@ void MainBox::test8()
     }
 }
 
-void MainBox::test9()
+void Box::test9()
 {
     /*
         This one is a bit unclear about how much space from the first
@@ -262,6 +279,64 @@ void MainBox::test9()
     //setColumnFixedWidth( 0, 50 );
 }
 
+void Box::test10()
+{
+    /*
+        Widgets gives space to the bounded columns 1/2 instead
+        of 0/3, where they would be more useful.
+     */
+    insert( "PaleVioletRed", 0, 0 );
+    insert( "NavajoWhite", 0, 1, 1, 2 );
+    insert( "Coral", 0, 3 );
+
+    setMaximumWidthAt( 1, 70 );
+}
+
+class MainWidget : public QWidget
+{
+  public:
+    MainWidget( int id )
+    {
+        m_box = new Box( this );
+        m_box->showTest( id );
+
+        m_listBox = new QListWidget( this );
+        for ( int i = 0; i < m_box->count(); i++ )
+            m_listBox->addItem( QStringLiteral( "Test " ) + QString::number( i ) );
+
+        m_listBox->setCurrentRow( id );
+
+        connect( m_listBox, &QListWidget::currentRowChanged,
+            m_box, &Box::showTest );
+    }
+
+  protected:
+    void resizeEvent( QResizeEvent* ) override
+    {
+        /*
+            Not using layouts here to avoid confusion
+            while debugging.
+        */
+
+        const auto r = contentsRect();
+        const int spacing = 5;
+
+        auto fm = m_listBox->fontMetrics();
+
+        const int w1 = fm.width( "Test 100" ) + 20;
+        const int w2 = r.width() - w1 - spacing;
+
+        m_listBox->setGeometry( r.left(), r.top(), w1, r.height() );
+        m_box->setGeometry( r.right() - w2, r.top(), w2, r.height() );
+
+        m_listBox->setFocus();
+    }
+
+  private:
+    QListWidget* m_listBox;
+    Box* m_box;
+};
+
 int main( int argc, char** argv )
 {
     QApplication a( argc, argv );
@@ -270,10 +345,10 @@ int main( int argc, char** argv )
     if ( argc == 2 )
         testcase = atoi( argv[1] );
 
-    MainBox box( testcase );
+    MainWidget w( testcase );
 
-    box.resize( 600, 600 );
-    box.show();
+    w.resize( 600, 600 );
+    w.show();
 
     return a.exec();
 }

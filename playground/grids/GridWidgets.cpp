@@ -21,6 +21,8 @@ namespace
 
             setPalette( QColor( colorName.constData() ) );
             setAutoFillBackground( true );
+
+            setAttribute( Qt::WA_LayoutUsesWidgetRect, true );
         }
 
         void setPreferredWidth( qreal width )
@@ -72,8 +74,9 @@ GridWidgets::~GridWidgets()
 void GridWidgets::insert( const QByteArray& colorName,
     int row, int column, int rowSpan, int columnSpan )
 {
-    m_layout->addWidget( new Rectangle( colorName ),
-        row, column, rowSpan, columnSpan );
+    auto rectangle = new Rectangle( colorName );
+    m_layout->addWidget( rectangle, row, column, rowSpan, columnSpan );
+    rectangle->show();
 }
 
 void GridWidgets::setSpacing( Qt::Orientations orientations, int spacing )
