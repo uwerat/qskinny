@@ -9,6 +9,7 @@
 #include "QskGlobal.h"
 
 #include <qnamespace.h>
+#include <qsize.h>
 #include <limits>
 
 class QskSizePolicy;
@@ -48,8 +49,8 @@ namespace QskLayoutConstraint
     QSK_EXPORT QSizeF boundedSize( const QQuickItem*, const QSizeF& );
     QSK_EXPORT QSizeF adjustedSize( const QQuickItem*, const QSizeF& );
 
-    QSK_EXPORT QSizeF sizeHint(
-        const QQuickItem*, Qt::SizeHint, const QSizeF& constraint );
+    QSK_EXPORT QSizeF sizeHint( const QQuickItem*,
+        Qt::SizeHint, const QSizeF& constraint = QSizeF() );
 
     QSK_EXPORT qreal sizeHint(
         const QQuickItem*, Qt::SizeHint, Qt::Orientation, qreal constraint );
