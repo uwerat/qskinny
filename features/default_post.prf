@@ -19,7 +19,10 @@ equals(TEMPLATE, lib) {
         DESTDIR  = $${QSK_LIB_DIR}
     }
 
-    VERSION  = $${QSK_VERSION}
+    unix {
+
+        VERSION  = $${QSK_VERSION}
+    }
 
     contains(QSK_CONFIG, QskDll) {
 
