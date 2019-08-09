@@ -188,7 +188,7 @@ class QSK_EXPORT QskControl : public QQuickItem, public QskSkinnable
 
     QSizeF sizeHint() const;
     QSizeF effectiveSizeHint( Qt::SizeHint,
-        const QSizeF& constraint = QSizeF( -1.0, -1.0 ) ) const;
+        const QSizeF& constraint = QSizeF() ) const;
 
     virtual qreal heightForWidth( qreal width ) const;
     virtual qreal widthForHeight( qreal height ) const;
