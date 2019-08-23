@@ -386,6 +386,9 @@ QSizeF QskLayoutConstraint::sizeHint( const QQuickItem* item,
     if ( item == nullptr || whichHint < Qt::MinimumSize || whichHint > Qt::MaximumSize )
         return QSizeF( 0, 0 );
 
+    if ( constraint.isValid() )
+        return constraint;
+
     QSizeF hint( 0, 0 );
 
     Type constraintType = Unconstrained;
