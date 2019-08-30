@@ -1,6 +1,7 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
+    anchors \
     dialogbuttons \
     invoker \
     inputpanel \
