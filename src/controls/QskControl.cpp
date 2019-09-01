@@ -540,7 +540,7 @@ QskControl::QskControl( QQuickItem* parent )
         avoid this penalty also for earlier Qt versions.
      */
     connect( this, &QQuickItem::enabledChanged,
-        [ this ] { setSkinStateFlag( Disabled, !isEnabled() ); } );
+        [ this ] { qskSendEventTo( this, QEvent::EnabledChange ); } );
 #endif
 
     Q_D( QskControl );
@@ -1550,14 +1550,6 @@ bool QskControl::event( QEvent* event )
 
     switch ( eventType )
     {
-#if 0
-        case QEvent::PolishRequest:
-        {
-            d->polishScheduled = false;
-            updatePolish();
-            break;
-        }
-#endif
         case QEvent::EnabledChange:
         {
             setSkinStateFlag( Disabled, !isEnabled() );
@@ -1918,7 +1910,7 @@ void QskControl::itemChange( QQuickItem::ItemChange change,
 #if QT_VERSION >= QT_VERSION_CHECK( 5, 10, 0 )
         case QQuickItem::ItemEnabledHasChanged:
         {
-            setSkinStateFlag( Disabled, !value.boolValue );
+            qskSendEventTo( this, QEvent::EnabledChange );
             break;
         }
 #endif
