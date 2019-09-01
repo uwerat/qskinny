@@ -36,8 +36,6 @@ QSK_SYSTEM_STATE( QskControl, Focused, QskAspect::LastSystemState )
 static QSizeF qskDefaultSizeHints[] =
     { { 0, 0 }, { -1, -1 }, { QskLayoutConstraint::unlimited, QskLayoutConstraint::unlimited } };
 
-typedef quint16 controlFlags_t;
-
 void qskResolveLocale( QskControl* ); // not static as being used from outside !
 static void qskUpdateControlFlags( QskControl::Flags, QskControl* );
 
@@ -47,10 +45,10 @@ static inline void qskSendEventTo( QObject* object, QEvent::Type type )
     QCoreApplication::sendEvent( object, &event );
 }
 
-static inline controlFlags_t qskControlFlags()
+static inline quint16 qskControlFlags()
 {
     // we are only interested in the first 8 bits
-    return static_cast< controlFlags_t >( qskSetup->controlFlags() );
+    return static_cast< quint16 >( qskSetup->controlFlags() );
 }
 
 static inline void qskFilterWindow( QQuickWindow* window )
@@ -499,7 +497,7 @@ void QskControlPrivate::updateControlFlags( QskControl::Flags flags )
     Q_Q( QskControl );
 
     const auto oldFlags = controlFlags;
-    const auto newFlags = static_cast< controlFlags_t >( flags );
+    const auto newFlags = static_cast< quint16 >( flags );
 
     if ( oldFlags != newFlags )
     {
@@ -788,7 +786,7 @@ void QskControl::setControlFlags( Flags flags )
     Q_D( QskControl );
 
     // set all bits in the mask
-    d->controlFlagsMask = std::numeric_limits< controlFlags_t >::max();
+    d->controlFlagsMask = std::numeric_limits< quint16 >::max();
     d->updateControlFlags( flags );
 }
 
@@ -838,7 +836,7 @@ void QskControl::updateControlFlag( uint flag, bool on )
 {
     Q_D( QskControl );
 
-    if ( ( flag > std::numeric_limits< controlFlags_t >::max() ) ||
+    if ( ( flag > std::numeric_limits< quint16 >::max() ) ||
         ( bool( d->controlFlags & flag ) == on ) )
     {
         return;
