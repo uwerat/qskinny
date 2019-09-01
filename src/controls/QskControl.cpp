@@ -33,10 +33,8 @@ QSK_SYSTEM_STATE( QskControl, Disabled, QskAspect::FirstSystemState )
 QSK_SYSTEM_STATE( QskControl, Hovered, QskAspect::LastSystemState >> 1 )
 QSK_SYSTEM_STATE( QskControl, Focused, QskAspect::LastSystemState )
 
-// QGridLayoutEngine internally uses FLT_MAX
-static constexpr qreal qskSizeHintMax = std::numeric_limits< float >::max();
-static QSizeF qskDefaultSizeHints[ 3 ] =
-    { { 0, 0 }, { -1, -1 }, { qskSizeHintMax, qskSizeHintMax } };
+static QSizeF qskDefaultSizeHints[] =
+    { { 0, 0 }, { -1, -1 }, { QskLayoutConstraint::unlimited, QskLayoutConstraint::unlimited } };
 
 typedef quint16 controlFlags_t;
 
