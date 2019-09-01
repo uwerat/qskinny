@@ -33,9 +33,6 @@ QSK_SYSTEM_STATE( QskControl, Disabled, QskAspect::FirstSystemState )
 QSK_SYSTEM_STATE( QskControl, Hovered, QskAspect::LastSystemState >> 1 )
 QSK_SYSTEM_STATE( QskControl, Focused, QskAspect::LastSystemState )
 
-static QSizeF qskDefaultSizeHints[] =
-    { { 0, 0 }, { -1, -1 }, { QskLayoutConstraint::unlimited, QskLayoutConstraint::unlimited } };
-
 void qskResolveLocale( QskControl* ); // not static as being used from outside !
 static void qskUpdateControlFlags( QskControl::Flags, QskControl* );
 
@@ -187,12 +184,6 @@ class QskControlPrivate final : public QQuickItemPrivate
     Q_DECLARE_PUBLIC( QskControl )
 
   public:
-    class ExplicitSizeData
-    {
-      public:
-        QSizeF sizeHints[ 3 ] =
-            { qskDefaultSizeHints[ 0 ], qskDefaultSizeHints[ 1 ], qskDefaultSizeHints[ 2 ] };
-    };
 
     QskControlPrivate();
     ~QskControlPrivate() override;
@@ -215,6 +206,7 @@ class QskControlPrivate final : public QQuickItemPrivate
     void implicitHeightChanged() override;
 
     void setExplicitSizeHint( Qt::SizeHint, const QSizeF& );
+    void resetExplicitSizeHint( Qt::SizeHint );
     QSizeF explicitSizeHint( Qt::SizeHint ) const;
 
     bool maybeGesture( QQuickItem*, QEvent* );
@@ -247,7 +239,7 @@ class QskControlPrivate final : public QQuickItemPrivate
     void implicitSizeChanged();
     void setImplicitSize( qreal width, qreal height, bool doNotify );
 
-    ExplicitSizeData* explicitSizeData;
+    QSizeF* explicitSizeHints;
 
   public:
     QLocale locale;
@@ -282,7 +274,7 @@ static inline void qskUpdateControlFlags( QskControl::Flags flags, QskControl* c
 }
 
 QskControlPrivate::QskControlPrivate()
-    : explicitSizeData( nullptr )
+    : explicitSizeHints( nullptr )
     , controlFlags( qskControlFlags() )
     , controlFlagsMask( 0 )
     , sizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Preferred )
@@ -321,7 +313,7 @@ QskControlPrivate::QskControlPrivate()
 
 QskControlPrivate::~QskControlPrivate()
 {
-    delete explicitSizeData;
+    delete [] explicitSizeHints;
 }
 
 void QskControlPrivate::mirrorChange()
@@ -442,21 +434,37 @@ void QskControlPrivate::implicitHeightChanged()
     implicitSizeChanged();
 }
 
-inline void QskControlPrivate::setExplicitSizeHint(
+void QskControlPrivate::setExplicitSizeHint(
     Qt::SizeHint whichHint, const QSizeF& size )
 {
-    if ( explicitSizeData == nullptr )
-        explicitSizeData = new ExplicitSizeData;
+    if ( explicitSizeHints == nullptr )
+    {
+        using namespace QskLayoutConstraint;
 
-    explicitSizeData->sizeHints[ whichHint ] = size;
+        explicitSizeHints = new QSizeF[3];
+        explicitSizeHints[0] = defaultSizeHints[0];
+        explicitSizeHints[1] = defaultSizeHints[1];
+        explicitSizeHints[2] = defaultSizeHints[2];
+    }
+
+    explicitSizeHints[ whichHint ] = size;
+}
+
+void QskControlPrivate::resetExplicitSizeHint( Qt::SizeHint whichHint )
+{
+    if ( explicitSizeHints )
+    {
+        using namespace QskLayoutConstraint;
+        explicitSizeHints[ whichHint ] = defaultSizeHints[ whichHint ];
+    }
 }
 
 inline QSizeF QskControlPrivate::explicitSizeHint( Qt::SizeHint whichHint ) const
 {
-    if ( explicitSizeData )
-        return explicitSizeData->sizeHints[ whichHint ];
+    if ( explicitSizeHints )
+        return explicitSizeHints[ whichHint ];
 
-    return qskDefaultSizeHints[ whichHint ];
+    return QskLayoutConstraint::defaultSizeHints[ whichHint ];
 }
 
 bool QskControlPrivate::maybeGesture( QQuickItem* child, QEvent* event )
@@ -1325,7 +1333,15 @@ void QskControl::setFixedHeight( qreal height )
 void QskControl::resetExplicitSizeHint( Qt::SizeHint whichHint )
 {
     if ( whichHint >= Qt::MinimumSize && whichHint <= Qt::MaximumSize )
-        setExplicitSizeHint( whichHint, qskDefaultSizeHints[ whichHint ] );
+    {
+        Q_D( QskControl );
+
+        const auto oldHint = d->explicitSizeHint( whichHint );
+        d->resetExplicitSizeHint( whichHint );
+
+        if ( oldHint != d->explicitSizeHint( whichHint ) )
+            layoutConstraintChanged();
+    }
 }
 
 void QskControl::setExplicitSizeHint( Qt::SizeHint whichHint, const QSizeF& size )

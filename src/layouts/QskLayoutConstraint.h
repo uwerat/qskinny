@@ -62,6 +62,7 @@ namespace QskLayoutConstraint
         const QQuickItem*, Qt::Orientation, qreal constraint );
 
     const qreal unlimited = std::numeric_limits< float >::max();
+    const QSizeF defaultSizeHints[] = { { 0, 0 }, { -1, -1 }, { unlimited, unlimited } };
 }
 
 #endif
