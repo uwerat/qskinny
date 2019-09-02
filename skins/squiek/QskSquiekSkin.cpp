@@ -505,8 +505,6 @@ void QskSquiekSkin::initTabButtonHints()
     setMetric( Q::Panel | MinimumWidth, 30 );
     setMetric( Q::Panel | MinimumHeight, 16 );
 
-    const QskMargins padding( 10, 4 );
-
     for ( auto placement : { Left, Right, Top, Bottom } )
     {
         const Aspect aspect = Q::Panel | placement;
@@ -517,15 +515,11 @@ void QskSquiekSkin::initTabButtonHints()
         {
             margins0 = QskMargins( -1, 2, -1, -2 );
             margins1 = QskMargins( -1, 0, -1, -3 );
-
-            padding = padding.rotated();
         }
         else if ( placement == Bottom )
         {
             margins0 = QskMargins( -1, -2, -1, 2 );
             margins1 = QskMargins( -1, -3, -1, 0 );
-
-            padding = padding.rotated();
         }
         else if ( placement == Left )
         {
