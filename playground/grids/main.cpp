@@ -321,7 +321,7 @@ class MainWidget : public QWidget
         const auto r = contentsRect();
         const int spacing = 5;
 
-        auto fm = m_listBox->fontMetrics();
+        auto fm = QFontMetricsF( m_listBox->font() );
 
         const int w1 = fm.width( "Test 100" ) + 20;
         const int w2 = r.width() - w1 - spacing;
