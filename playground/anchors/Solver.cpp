@@ -152,16 +152,6 @@ namespace
             return lhs.m_id < rhs.m_id;
         }
 
-        friend bool operator==( const Symbol& lhs, const Symbol& rhs )
-        {
-            return lhs.m_id == rhs.m_id;
-        }
-
-        friend bool operator!=( const Symbol& lhs, const Symbol& rhs )
-        {
-            return lhs.m_id != rhs.m_id;
-        }
-
         uint32_t m_id;
         Type m_type;
     };
