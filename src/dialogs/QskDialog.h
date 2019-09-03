@@ -109,8 +109,8 @@ class QSK_EXPORT QskDialog : public QObject
 
     static QskDialog* instance();
 
-    Q_INVOKABLE void setPolicy( Policy );
-    Q_INVOKABLE Policy policy() const;
+    void setPolicy( Policy );
+    Policy policy() const;
 
     Q_INVOKABLE void setTransientParent( QWindow* );
     Q_INVOKABLE QWindow* transientParent() const;
