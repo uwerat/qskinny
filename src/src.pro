@@ -111,6 +111,7 @@ HEADERS += \
     controls/QskBox.h \
     controls/QskBoxSkinlet.h \
     controls/QskControl.h \
+    controls/QskControlPrivate.h \
     controls/QskDirtyItemFilter.h \
     controls/QskEvent.h \
     controls/QskFlickAnimator.h \
@@ -133,6 +134,8 @@ HEADERS += \
     controls/QskPushButton.h \
     controls/QskPushButtonSkinlet.h \
     controls/QskQuick.h \
+    controls/QskQuickItem.h \
+    controls/QskQuickItemPrivate.h \
     controls/QskRangeControl.h \
     controls/QskScrollArea.h \
     controls/QskScrollView.h \
@@ -175,6 +178,7 @@ SOURCES += \
     controls/QskBox.cpp \
     controls/QskBoxSkinlet.cpp \
     controls/QskControl.cpp \
+    controls/QskControlPrivate.cpp \
     controls/QskDirtyItemFilter.cpp \
     controls/QskEvent.cpp \
     controls/QskFlickAnimator.cpp \
@@ -197,6 +201,8 @@ SOURCES += \
     controls/QskPushButton.cpp \
     controls/QskPushButtonSkinlet.cpp \
     controls/QskQuick.cpp \
+    controls/QskQuickItem.cpp \
+    controls/QskQuickItemPrivate.cpp \
     controls/QskRangeControl.cpp \
     controls/QskScrollArea.cpp \
     controls/QskScrollView.cpp \

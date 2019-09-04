@@ -1,0 +1,64 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * This file may be used under the terms of the QSkinny License, Version 1.0
+ *****************************************************************************/
+
+#ifndef QSK_QUICK_ITEM_PRIVATE_H
+#define QSK_QUICK_ITEM_PRIVATE_H
+
+#include "QskGlobal.h"
+#include "QskQuickItem.h"
+
+QSK_QT_PRIVATE_BEGIN
+#include <private/qquickitem_p.h>
+QSK_QT_PRIVATE_END
+
+class QskQuickItemPrivate : public QQuickItemPrivate
+{
+    using Inherited = QQuickItemPrivate;
+
+  protected:
+    QskQuickItemPrivate();
+    ~QskQuickItemPrivate() override;
+
+  public:
+    void updateControlFlags( QskQuickItem::Flags );
+
+  protected:
+    void layoutConstraintChanged();
+    virtual void implicitSizeChanged();
+    virtual QSizeF implicitSizeHint() const = 0;
+
+  private:
+    void cleanupNodes();
+    void mirrorChange() override;
+
+    qreal getImplicitWidth() const override final;
+    qreal getImplicitHeight() const override final;
+
+    void implicitWidthChanged() override final;
+    void implicitHeightChanged() override final;
+
+    void updateImplicitSize( bool doNotify );
+
+    void setImplicitSize( qreal width, qreal height, bool doNotify );
+
+  private:
+    Q_DECLARE_PUBLIC( QskQuickItem )
+
+    quint16 controlFlags;
+    quint16 controlFlagsMask;
+
+    bool polishOnResize : 1;
+
+    bool blockedPolish : 1;
+    bool blockedImplicitSize : 1;
+    bool clearPreviousNodes : 1;
+
+    bool isInitiallyPainted : 1;
+
+  protected:
+    mutable bool blockLayoutRequestEvents : 1;
+};
+
+#endif

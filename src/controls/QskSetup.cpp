@@ -5,6 +5,7 @@
 
 #include "QskSetup.h"
 #include "QskControl.h"
+#include "QskControlPrivate.h"
 #include "QskGraphicProviderMap.h"
 #include "QskObjectTree.h"
 #include "QskSkin.h"
@@ -73,7 +74,6 @@ static void qskApplicationFilter()
 Q_CONSTRUCTOR_FUNCTION( qskApplicationHook )
 Q_COREAPP_STARTUP_FUNCTION( qskApplicationFilter )
 
-extern bool qskInheritLocale( QskControl*, const QLocale& );
 extern bool qskInheritLocale( QskWindow*, const QLocale& );
 
 namespace
@@ -90,7 +90,7 @@ namespace
         bool setImplicitValue( QskControl* control,
             const QLocale& locale ) override
         {
-            return qskInheritLocale( control, locale );
+            return QskControlPrivate::inheritLocale( control, locale );
         }
 
         bool setImplicitValue( QskWindow* window,
