@@ -443,7 +443,7 @@ void QskScrollArea::adjustItem()
                 moment we ignore this and start with a simplified code.
              */
 #endif
-            const auto newSize = QskLayoutConstraint::adjustedSize( item, rect.size() );
+            const auto newSize = QskLayoutConstraint::boundedSize( item, rect.size() );
             item->setSize( newSize );
         }
 

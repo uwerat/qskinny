@@ -43,23 +43,6 @@ static inline bool qskHasHintFor( const QQuickItem* item, const char* method )
     return false;
 }
 
-static inline qreal qskAdjustedValue(
-    QskSizePolicy::Policy policy, qreal value, qreal targetValue )
-{
-    if ( targetValue > value )
-    {
-        if ( policy & QskSizePolicy::GrowFlag )
-            return targetValue;
-    }
-    else if ( targetValue < value )
-    {
-        if ( policy & QskSizePolicy::ShrinkFlag )
-            return targetValue;
-    }
-
-    return value;
-}
-
 static inline QSizeF qskExpandedSize( const QQuickItem* item, const QSizeF& constraint )
 {
     using namespace QskLayoutConstraint;
@@ -102,7 +85,7 @@ static inline QSizeF qskEffectiveSizeHint(
     if ( auto control = qskControlCast( item ) )
         return control->effectiveSizeHint( whichHint );
 
-    QSizeF constraint( -1.0, -1.0 ); // no hint
+    QSizeF hint( -1.0, -1.0 ); // no hint
 
     const char* properties[] =
     {
@@ -113,38 +96,38 @@ static inline QSizeF qskEffectiveSizeHint(
 
     const QVariant v = item->property( properties[ whichHint ] );
     if ( v.canConvert( QMetaType::QSizeF ) )
-        constraint = v.toSizeF();
+        hint = v.toSizeF();
 
     switch ( whichHint )
     {
         case Qt::MinimumSize:
         {
-            if ( constraint.width() < 0 )
-                constraint.setWidth( 0.0 );
+            if ( hint.width() < 0 )
+                hint.setWidth( 0.0 );
 
-            if ( constraint.height() < 0 )
-                constraint.setHeight( 0.0 );
+            if ( hint.height() < 0 )
+                hint.setHeight( 0.0 );
 
             break;
         }
 
         case Qt::PreferredSize:
         {
-            if ( constraint.width() < 0 )
-                constraint.setWidth( item->implicitWidth() );
+            if ( hint.width() < 0 )
+                hint.setWidth( item->implicitWidth() );
 
-            if ( constraint.height() < 0 )
-                constraint.setHeight( item->implicitHeight() );
+            if ( hint.height() < 0 )
+                hint.setHeight( item->implicitHeight() );
 
             break;
         }
         case Qt::MaximumSize:
         {
-            if ( constraint.width() < 0 )
-                constraint.setWidth( QskLayoutConstraint::unlimited );
+            if ( hint.width() < 0 )
+                hint.setWidth( QskLayoutConstraint::unlimited );
 
-            if ( constraint.height() < 0 )
-                constraint.setHeight( QskLayoutConstraint::unlimited );
+            if ( hint.height() < 0 )
+                hint.setHeight( QskLayoutConstraint::unlimited );
 
             break;
         }
@@ -152,7 +135,7 @@ static inline QSizeF qskEffectiveSizeHint(
             break;
     }
 
-    return constraint;
+    return hint;
 }
 
 QskLayoutConstraint::Type QskLayoutConstraint::constraintType( const QQuickItem* item )
@@ -227,7 +210,7 @@ qreal QskLayoutConstraint::constrainedMetric(
 {
 #if 1
     /*
-        In case of having a corner radius of Qt::RelativeSize the margins
+        In case of having a corner radius of Qt::RelativeSize
         we might have a wrong result when using QskLayoutConstraint::unlimited.
         No idea how to solve this in a generic way: TODO ...
      */
@@ -303,81 +286,51 @@ QskSizePolicy QskLayoutConstraint::sizePolicy( const QQuickItem* item )
 
 QSizeF QskLayoutConstraint::boundedSize( const QQuickItem* item, const QSizeF& size )
 {
-    const auto minSize = qskEffectiveSizeHint( item, Qt::MinimumSize );
-    const auto maxSize = qskEffectiveSizeHint( item, Qt::MaximumSize );
+    qreal width, height;
 
-    qreal width = size.width();
-    qreal height = size.height();
+    switch( constraintType( item ) )
+    {
+        case WidthForHeight:
+        {
+            const auto hintV = layoutHint( item, Qt::Vertical, -1 );
+            height = qBound( hintV.minimum(), size.height(), hintV.maximum() );
 
-    if ( ( minSize.width() >= 0 ) && ( minSize.width() > width ) )
-        width = minSize.width();
+            const auto hintH = layoutHint( item, Qt::Horizontal, height );
+            width = qBound( hintH.minimum(), size.width(), hintH.maximum() );
 
-    if ( ( minSize.height() >= 0 ) && ( minSize.height() > height ) )
-        height = minSize.height();
+            break;
+        }
+        case HeightForWidth:
+        {
+            const auto hintH = layoutHint( item, Qt::Horizontal, -1 );
+            width = qBound( hintH.minimum(), size.width(), hintH.maximum() );
 
-    if ( ( maxSize.width() >= 0 ) && ( maxSize.width() < width ) )
-        width = maxSize.width();
+            const auto hintV = layoutHint( item, Qt::Vertical, width );
+            height = qBound( hintV.minimum(), size.height(), hintV.maximum() );
 
-    if ( ( maxSize.height() >= 0 ) && ( maxSize.height() < height ) )
-        height = maxSize.height();
+            break;
+        }
+        default:
+        {
+            const auto hintH = layoutHint( item, Qt::Horizontal, -1 );
+            const auto hintV = layoutHint( item, Qt::Vertical, -1 );
+
+            width = qBound( hintH.minimum(), size.width(), hintH.maximum() );
+            height = qBound( hintV.minimum(), size.height(), hintV.maximum() );
+        }
+    }
 
     return QSizeF( width, height );
-}
 
-QSizeF QskLayoutConstraint::adjustedSize(
-    const QQuickItem* item, const QSizeF& targetSize )
-{
-    const auto policy = sizePolicy( item );
-
-    const auto boundedSize = QskLayoutConstraint::boundedSize( item, targetSize );
-    const auto preferredSize = qskEffectiveSizeHint( item, Qt::PreferredSize );
-
-    qreal w;
-    qreal h;
-
-    if ( policy.horizontalPolicy() == QskSizePolicy::Constrained )
-    {
-        h = qskAdjustedValue( policy.verticalPolicy(),
-            preferredSize.height(), boundedSize.height() );
-
-        w = widthForHeight( item, h );
-
-        if ( w < boundedSize.height() )
-            w = boundedSize.height();
-    }
-    else if ( policy.verticalPolicy() == QskSizePolicy::Constrained )
-    {
-        w = qskAdjustedValue( policy.horizontalPolicy(),
-            preferredSize.width(), boundedSize.width() );
-
-        h = heightForWidth( item, w );
-
-        if ( h < boundedSize.height() )
-            h = boundedSize.height();
-    }
-    else
-    {
-        w = qskAdjustedValue( policy.horizontalPolicy(),
-            preferredSize.width(), boundedSize.width() );
-
-        h = qskAdjustedValue( policy.verticalPolicy(),
-            preferredSize.height(), boundedSize.height() );
-    }
-
-    return QSizeF( w, h );
 }
 
 qreal QskLayoutConstraint::sizeHint( const QQuickItem* item,
     Qt::SizeHint whichHint, Qt::Orientation orientation, qreal constraint )
 {
     if ( orientation == Qt::Horizontal )
-    {
         return sizeHint( item, whichHint, QSizeF( -1.0, constraint ) ).width();
-    }
     else
-    {
         return sizeHint( item, whichHint, QSizeF( constraint, -1.0 ) ).height();
-    }
 }
 
 QSizeF QskLayoutConstraint::sizeHint( const QQuickItem* item,

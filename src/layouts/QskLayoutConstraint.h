@@ -47,7 +47,6 @@ namespace QskLayoutConstraint
     QSK_EXPORT QskSizePolicy sizePolicy( const QQuickItem* );
 
     QSK_EXPORT QSizeF boundedSize( const QQuickItem*, const QSizeF& );
-    QSK_EXPORT QSizeF adjustedSize( const QQuickItem*, const QSizeF& );
 
     QSK_EXPORT QSizeF sizeHint( const QQuickItem*,
         Qt::SizeHint, const QSizeF& constraint = QSizeF() );
