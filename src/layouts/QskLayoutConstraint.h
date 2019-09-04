@@ -46,16 +46,16 @@ namespace QskLayoutConstraint
 
     QSK_EXPORT QskSizePolicy sizePolicy( const QQuickItem* );
 
+    // size/rect bounded by the layout hints
     QSK_EXPORT QSizeF boundedSize( const QQuickItem*, const QSizeF& );
+    QSK_EXPORT QRectF boundedRect(
+        const QQuickItem*, const QRectF&, Qt::Alignment );
 
     QSK_EXPORT QSizeF sizeHint( const QQuickItem*,
         Qt::SizeHint, const QSizeF& constraint = QSizeF() );
 
     QSK_EXPORT qreal sizeHint(
         const QQuickItem*, Qt::SizeHint, Qt::Orientation, qreal constraint );
-
-    QSK_EXPORT QRectF itemRect(
-        const QQuickItem*, const QRectF&, Qt::Alignment );
 
     QSK_EXPORT QskLayoutHint layoutHint(
         const QQuickItem*, Qt::Orientation, qreal constraint );

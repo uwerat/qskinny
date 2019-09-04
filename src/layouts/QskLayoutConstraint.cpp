@@ -43,42 +43,6 @@ static inline bool qskHasHintFor( const QQuickItem* item, const char* method )
     return false;
 }
 
-static inline QSizeF qskExpandedSize( const QQuickItem* item, const QSizeF& constraint )
-{
-    using namespace QskLayoutConstraint;
-
-    const auto policy = sizePolicy( item );
-
-    QSizeF size = constraint;
-
-    const bool vGrow = ( policy.policy( Qt::Vertical ) & QskSizePolicy::GrowFlag );
-    const bool hGrow = ( policy.policy( Qt::Horizontal ) & QskSizePolicy::GrowFlag );
-
-    if ( !vGrow || !hGrow )
-    {
-        const auto hint = sizeHint( item, Qt::PreferredSize, constraint );
-
-        if ( !vGrow )
-            size.setHeight( hint.height() );
-
-        if ( !hGrow )
-            size.setWidth( hint.width() );
-    }
-
-    if ( !size.isValid() )
-    {
-        const auto hint = sizeHint( item, Qt::MaximumSize, size );
-
-        if ( size.width() == -1 )
-            size.setWidth( hint.width() );
-
-        if ( size.height() == -1 )
-            size.setHeight( hint.height() );
-    }
-
-    return size;
-}
-
 static inline QSizeF qskEffectiveSizeHint(
     const QQuickItem* item, Qt::SizeHint whichHint )
 {
@@ -403,32 +367,13 @@ QSizeF QskLayoutConstraint::sizeHint( const QQuickItem* item,
     return hint;
 }
 
-QRectF QskLayoutConstraint::itemRect( const QQuickItem* item,
+QRectF QskLayoutConstraint::boundedRect( const QQuickItem* item,
     const QRectF& rect, Qt::Alignment alignment )
 {
-    QSizeF size = qskExpandedSize( item, QSizeF( -1, -1 ) );
-
-    switch( constraintType( item ) )
-    {
-        case HeightForWidth:
-        {
-            if ( size.width() > rect.width() )
-                size = qskExpandedSize( item, QSizeF( rect.width(), -1 ) );
-
-            break;
-        }
-        case WidthForHeight:
-        {
-            if ( size.height() > rect.height() )
-                size = qskExpandedSize( item, QSizeF( -1, rect.height() ) );
-
-            break;
-        }
-        default:
-            break;
-    }
-
-    size = size.boundedTo( rect.size() );
+    auto size = boundedSize( item, rect.size() );
+#if 0
+    size = size.boundedTo( rect.size() ); // ignoring minimumSize
+#endif
 
     return qskAlignedRectF( rect, size.width(), size.height(), alignment );
 }

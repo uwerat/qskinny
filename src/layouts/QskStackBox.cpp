@@ -400,7 +400,7 @@ QRectF QskStackBox::geometryForItemAt( int index ) const
         const auto& info = m_data->itemInfos[ index ];
 
         const auto align = info.alignment ? info.alignment : m_data->defaultAlignment;
-        return QskLayoutConstraint::itemRect( info.item, r, align );
+        return QskLayoutConstraint::boundedRect( info.item, r, align );
     }
 
     return QRectF( r.x(), r.y(), 0.0, 0.0 );

@@ -263,7 +263,7 @@ void QskLayoutEngine2D::layoutItem( QQuickItem* item,
     alignment = m_data->effectiveAlignment( alignment );
 
     QRectF rect = layoutData->geometryAt( grid );
-    rect = QskLayoutConstraint::itemRect(item, rect, alignment );
+    rect = QskLayoutConstraint::boundedRect(item, rect, alignment );
 
     if ( layoutData->direction == Qt::RightToLeft )
     {
