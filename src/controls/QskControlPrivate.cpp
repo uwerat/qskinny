@@ -44,6 +44,7 @@ QskControlPrivate::QskControlPrivate()
     , autoLayoutChildren( false )
     , focusPolicy( Qt::NoFocus )
     , isWheelEnabled( false )
+    , blockLayoutRequestEvents( true )
 {
 }
 
@@ -52,14 +53,25 @@ QskControlPrivate::~QskControlPrivate()
     delete [] explicitSizeHints;
 }
 
+void QskControlPrivate::layoutConstraintChanged()
+{
+    if ( !blockLayoutRequestEvents )
+    {
+        Inherited::layoutConstraintChanged();
+
+        /*
+            We don't send further LayoutRequest events until someone
+            actively requests a layout relevant information
+         */
+        blockLayoutRequestEvents = true;
+    }
+}
+
 void QskControlPrivate::implicitSizeChanged()
 {
-    Q_Q( QskControl );
-    if ( !q->explicitSizeHint( Qt::PreferredSize ).isValid() )
+    if ( !q_func()->explicitSizeHint( Qt::PreferredSize ).isValid() )
     {
-        // when we have no PreferredSize we fall back
-        // to the implicit size
-
+        // when we have no explit size, the implicit size matters
         layoutConstraintChanged();
     }
 }

@@ -25,9 +25,8 @@ class QskQuickItemPrivate : public QQuickItemPrivate
     void updateControlFlags( QskQuickItem::Flags );
 
   protected:
-    void layoutConstraintChanged();
+    virtual void layoutConstraintChanged();
     virtual void implicitSizeChanged();
-    virtual QSizeF implicitSizeHint() const = 0;
 
   private:
     void cleanupNodes();
@@ -42,6 +41,7 @@ class QskQuickItemPrivate : public QQuickItemPrivate
     void updateImplicitSize( bool doNotify );
 
     void setImplicitSize( qreal width, qreal height, bool doNotify );
+    virtual QSizeF implicitSizeHint() const = 0;
 
   private:
     Q_DECLARE_PUBLIC( QskQuickItem )
@@ -56,9 +56,6 @@ class QskQuickItemPrivate : public QQuickItemPrivate
     bool clearPreviousNodes : 1;
 
     bool isInitiallyPainted : 1;
-
-  protected:
-    mutable bool blockLayoutRequestEvents : 1;
 };
 
 #endif

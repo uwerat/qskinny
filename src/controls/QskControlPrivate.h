@@ -35,6 +35,7 @@ class QskControlPrivate : public QskQuickItemPrivate
 
     QSizeF implicitSizeHint() const override final;
     void implicitSizeChanged() override final;
+    void layoutConstraintChanged() override final;
 
   private:
     Q_DECLARE_PUBLIC( QskControl )
@@ -51,6 +52,8 @@ class QskControlPrivate : public QskQuickItemPrivate
 
     uint focusPolicy : 4;
     bool isWheelEnabled : 1;
+
+    mutable bool blockLayoutRequestEvents : 1;
 };
 
 #endif

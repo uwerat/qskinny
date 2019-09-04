@@ -26,7 +26,6 @@ QskQuickItemPrivate::QskQuickItemPrivate()
     , blockedImplicitSize( true )
     , clearPreviousNodes( false )
     , isInitiallyPainted( false )
-    , blockLayoutRequestEvents( true )
 {
     if ( controlFlags & QskQuickItem::DeferredLayout )
     {
@@ -55,8 +54,7 @@ QskQuickItemPrivate::~QskQuickItemPrivate()
 
 void QskQuickItemPrivate::mirrorChange()
 {
-    Q_Q( QskQuickItem );
-    qskSendEventTo( q, QEvent::LayoutDirectionChange );
+    qskSendEventTo( q_func(), QEvent::LayoutDirectionChange );
 }
 
 void QskQuickItemPrivate::updateControlFlags( QskQuickItem::Flags flags )
@@ -83,18 +81,8 @@ void QskQuickItemPrivate::updateControlFlags( QskQuickItem::Flags flags )
 
 void QskQuickItemPrivate::layoutConstraintChanged()
 {
-    if ( !blockLayoutRequestEvents )
-    {
-        Q_Q( QskQuickItem );
-        if ( auto item = q->parentItem() )
-            qskSendEventTo( item, QEvent::LayoutRequest );
-
-        /*
-            We don't send further LayoutRequest events until someone
-            actively requests a layout relevant information
-         */
-        blockLayoutRequestEvents = true;
-    }
+    if ( auto item = q_func()->parentItem() )
+        qskSendEventTo( item, QEvent::LayoutRequest );
 }
 
 void QskQuickItemPrivate::implicitSizeChanged()
@@ -170,8 +158,6 @@ void QskQuickItemPrivate::setImplicitSize( qreal w, qreal h, bool doNotify )
 
     if ( doNotify )
     {
-        // calling implicitSizeChanged only once, TODO ...
-
         if ( doWidth )
             Inherited::implicitWidthChanged();
 
@@ -180,6 +166,10 @@ void QskQuickItemPrivate::setImplicitSize( qreal w, qreal h, bool doNotify )
     }
 }
 
+/*
+    In case of the application interferes by calling
+    setImplicitWidth or setImplicitHeight manually:
+ */
 void QskQuickItemPrivate::implicitWidthChanged()
 {
     Inherited::implicitWidthChanged();
