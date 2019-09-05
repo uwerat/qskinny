@@ -252,14 +252,14 @@ void QskLayoutEngine2D::setGeometries( const QRectF& rect )
     m_data->layoutData = nullptr;
 }
 
-void QskLayoutEngine2D::layoutItem( QQuickItem* item,
-    const QRect& grid, Qt::Alignment alignment ) const
+void QskLayoutEngine2D::layoutItem( QQuickItem* item, const QRect& grid ) const
 {
     auto layoutData = m_data->layoutData;
 
     if ( layoutData == nullptr || item == nullptr )
         return;
 
+    auto alignment = QskLayoutConstraint::layoutAlignmentHint( item );
     alignment = m_data->effectiveAlignment( alignment );
 
     QRectF rect = layoutData->geometryAt( grid );

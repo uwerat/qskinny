@@ -77,13 +77,15 @@ class Window : public QskWindow
     Window()
     {
         auto button = new MyToggleButton();
+
         button->setTextAt( 0, "Skin 1" );
         button->setTextAt( 1, "Skin 2" );
+        button->setLayoutAlignmentHint( Qt::AlignRight );
 
         auto box = new QskLinearBox( Qt::Vertical );
 
         box->setMargins( 20 );
-        box->addItem( button, Qt::AlignRight );
+        box->addItem( button );
         box->addSpacer( 10 );
         box->addItem( new ContentBox() );
 

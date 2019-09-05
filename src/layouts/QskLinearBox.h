@@ -75,11 +75,8 @@ class QSK_EXPORT QskLinearBox : public QskIndexedLayoutBox
     void resetSpacing();
     qreal spacing() const;
 
-    Q_INVOKABLE int addItem(
-        QQuickItem*, Qt::Alignment alignment = Qt::Alignment() );
-
-    Q_INVOKABLE int insertItem(
-        int index, QQuickItem*, Qt::Alignment alignment = Qt::Alignment() );
+    Q_INVOKABLE int addItem( QQuickItem* );
+    Q_INVOKABLE int insertItem( int index, QQuickItem* );
 
     Q_INVOKABLE int addSpacer( qreal spacing, int stretchFactor = 0 );
     Q_INVOKABLE int insertSpacer( int index, qreal spacing, int stretchFactor = 0 );
@@ -92,18 +89,6 @@ class QSK_EXPORT QskLinearBox : public QskIndexedLayoutBox
 
     void setStretchFactor( const QQuickItem*, int stretchFactor );
     int stretchFactor( const QQuickItem* ) const;
-
-    void setAlignment( int index, Qt::Alignment );
-    Qt::Alignment alignment( int index ) const;
-
-    void setAlignment( const QQuickItem*, Qt::Alignment );
-    Qt::Alignment alignment( const QQuickItem* ) const;
-
-    Q_INVOKABLE bool retainSizeWhenHidden( int index ) const;
-    Q_INVOKABLE void setRetainSizeWhenHidden( int index, bool on );
-
-    bool retainSizeWhenHidden( const QQuickItem* ) const;
-    void setRetainSizeWhenHidden( const QQuickItem*, bool on );
 
   public Q_SLOTS:
     void transpose();

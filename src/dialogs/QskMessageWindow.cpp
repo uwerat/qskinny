@@ -89,12 +89,12 @@ QskMessageWindow::QskMessageWindow( QWindow* parent )
     m_data->symbolLabel = new SymbolLabel( this );
     m_data->symbolLabel->hide();
 
-    const auto alignment = Qt::AlignTop | Qt::AlignHCenter;
-
     auto box = new QskLinearBox( Qt::Horizontal );
+
+    box->setDefaultAlignment( Qt::AlignTop | Qt::AlignHCenter );
     box->setSpacing( 0 );
-    box->addItem( m_data->symbolLabel, alignment );
-    box->addItem( m_data->textLabel, alignment );
+    box->addItem( m_data->symbolLabel );
+    box->addItem( m_data->textLabel );
     box->setStretchFactor( m_data->textLabel, 10 );
 
     setDialogContentItem( box );

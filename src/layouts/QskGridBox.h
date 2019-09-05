@@ -24,13 +24,10 @@ class QSK_EXPORT QskGridBox : public QskBox
     explicit QskGridBox( QQuickItem* parent = nullptr );
     ~QskGridBox() override;
 
-    Q_INVOKABLE int addItem(
-        QQuickItem*, int row, int column, int rowSpan, int columnSpan,
-        Qt::Alignment alignment = Qt::Alignment() );
+    Q_INVOKABLE int addItem( QQuickItem*,
+        int row, int column, int rowSpan, int columnSpan );
 
-    Q_INVOKABLE int addItem(
-        QQuickItem*, int row, int column,
-        Qt::Alignment alignment = Qt::Alignment() );
+    Q_INVOKABLE int addItem( QQuickItem*, int row, int column );
 
     Q_INVOKABLE int addSpacer( qreal spacing,
         int row, int column, int columnSpan = 1, int rowSpan = 1 );
@@ -102,14 +99,6 @@ class QSK_EXPORT QskGridBox : public QskBox
     Q_INVOKABLE void setRowFixedHeight( int row, qreal height );
     Q_INVOKABLE void setColumnFixedWidth( int column, qreal width );
 
-    // alignments
-
-    void setAlignment( const QQuickItem* item, Qt::Alignment alignment );
-    Qt::Alignment alignment( const QQuickItem* item ) const;
-
-    bool retainSizeWhenHidden( const QQuickItem* ) const;
-    void setRetainSizeWhenHidden( const QQuickItem*, bool on );
-
     QSizeF contentsSizeHint() const override;
 
     qreal heightForWidth( qreal width ) const override;
@@ -134,10 +123,9 @@ class QSK_EXPORT QskGridBox : public QskBox
     std::unique_ptr< PrivateData > m_data;
 };
 
-inline int QskGridBox::addItem(
-    QQuickItem* item, int row, int column, Qt::Alignment alignment )
+inline int QskGridBox::addItem( QQuickItem* item, int row, int column )
 {
-    return addItem( item, row, column, 1, 1, alignment );
+    return addItem( item, row, column, 1, 1 );
 }
 
 inline bool QskGridBox::isEmpty() const

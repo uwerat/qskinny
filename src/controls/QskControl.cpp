@@ -341,6 +341,64 @@ QskSizePolicy::Policy QskControl::sizePolicy( Qt::Orientation orientation ) cons
     return d_func()->sizePolicy.policy( orientation );
 }
 
+/*
+    Layout attributes belong more to the layout code, than
+    being parameters of the control. So storing them here is kind of a
+    design flaw ( similar to QWidget/QSizePolicy ).
+    But this way we don't need to add the attributes to all type of
+    layout engines + we can make use of them when doing layouts
+    manually ( f.e autoLayoutChildren ).
+ */
+void QskControl::setLayoutAlignmentHint( Qt::Alignment alignment )
+{
+    Q_D( QskControl );
+
+    if ( d->layoutAlignmentHint != alignment )
+    {
+        d->layoutAlignmentHint = alignment;
+        d->layoutConstraintChanged();
+    }
+}
+
+Qt::Alignment QskControl::layoutAlignmentHint() const
+{
+    return static_cast< Qt::Alignment >( d_func()->layoutAlignmentHint );
+}
+
+void QskControl::setLayoutHint( LayoutHint flag, bool on )
+{
+    Q_D( QskControl );
+    if ( ( d->layoutHints & flag ) != on )
+    {
+        if ( on )
+            d->layoutHints |= flag;
+        else
+            d->layoutHints &= ~flag;
+    
+        d->layoutConstraintChanged();
+    }
+}
+
+bool QskControl::testLayoutHint( LayoutHint hint ) const
+{
+    return d_func()->layoutHints & hint;
+}
+
+void QskControl::setLayoutHints( LayoutHints hints )
+{
+    Q_D( QskControl );
+    if ( hints != layoutHints() )
+    {
+        d->layoutHints = hints;
+        d->layoutConstraintChanged();
+    }
+}
+
+QskControl::LayoutHints QskControl::layoutHints() const
+{
+    return static_cast< LayoutHints >( d_func()->layoutHints );
+}
+
 void QskControl::setPreferredSize( const QSizeF& size )
 {
     setExplicitSizeHint( Qt::PreferredSize, size );

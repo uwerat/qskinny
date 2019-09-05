@@ -379,13 +379,12 @@ Qt::Edges QskLinearBox::extraSpacingAt() const
     return m_data->engine.extraSpacingAt();
 }
 
-int QskLinearBox::addItem( QQuickItem* item, Qt::Alignment alignment )
+int QskLinearBox::addItem( QQuickItem* item )
 {
-    return insertItem( -1, item, alignment );
+    return insertItem( -1, item );
 }
 
-int QskLinearBox::insertItem(
-    int index, QQuickItem* item, Qt::Alignment alignment )
+int QskLinearBox::insertItem( int index, QQuickItem* item )
 {
     if ( item == nullptr )
         return -1;
@@ -415,7 +414,6 @@ int QskLinearBox::insertItem(
     reparentItem( item );
 
     index = engine.insertItem( item, index );
-    engine.setAlignmentAt( index, alignment );
 
     // Re-ordering the child items to have a a proper focus tab chain
 
@@ -490,30 +488,6 @@ int QskLinearBox::insertStretch( int index, int stretchFactor )
     return insertSpacer( index, 0, stretchFactor );
 }
 
-void QskLinearBox::setAlignment( int index, Qt::Alignment alignment )
-{
-    if ( alignment != m_data->engine.alignmentAt( index ) )
-    {
-        m_data->engine.setAlignmentAt( index, alignment );
-        polish();
-    }
-}
-
-Qt::Alignment QskLinearBox::alignment( int index ) const
-{
-    return m_data->engine.alignmentAt( index );
-}
-
-void QskLinearBox::setAlignment( const QQuickItem* item, Qt::Alignment alignment )
-{
-    setAlignment( indexOf( item ), alignment );
-}
-
-Qt::Alignment QskLinearBox::alignment( const QQuickItem* item ) const
-{
-    return alignment( indexOf( item ) );
-}
-
 void QskLinearBox::setStretchFactor( int index, int stretchFactor )
 {
     auto& engine = m_data->engine;
@@ -538,34 +512,6 @@ void QskLinearBox::setStretchFactor( const QQuickItem* item, int stretch )
 int QskLinearBox::stretchFactor( const QQuickItem* item ) const
 {
     return stretchFactor( indexOf( item ) );
-}
-
-void QskLinearBox::setRetainSizeWhenHidden( int index, bool on )
-{
-    auto& engine = m_data->engine;
-
-    if ( engine.retainSizeWhenHiddenAt( index ) != on )
-    {
-        engine.setRetainSizeWhenHiddenAt( index, on );
-
-        resetImplicitSize();
-        polish();
-    }
-}
-
-bool QskLinearBox::retainSizeWhenHidden( int index ) const
-{
-    return m_data->engine.retainSizeWhenHiddenAt( index );
-}
-
-void QskLinearBox::setRetainSizeWhenHidden( const QQuickItem* item, bool on )
-{
-    setRetainSizeWhenHidden( indexOf( item ), on );
-}
-
-bool QskLinearBox::retainSizeWhenHidden( const QQuickItem* item ) const
-{
-    return retainSizeWhenHidden( indexOf( item ) );
 }
 
 #include "moc_QskLinearBox.cpp"

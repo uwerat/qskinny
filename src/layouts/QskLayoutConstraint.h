@@ -60,6 +60,12 @@ namespace QskLayoutConstraint
     QSK_EXPORT QskLayoutHint layoutHint(
         const QQuickItem*, Qt::Orientation, qreal constraint );
 
+    QSK_EXPORT Qt::Alignment layoutAlignmentHint( const QQuickItem* );
+    QSK_EXPORT void setLayoutAlignmentHint( QQuickItem*, Qt::Alignment );
+
+    QSK_EXPORT bool retainSizeWhenHidden( const QQuickItem* );
+    QSK_EXPORT void setRetainSizeWhenHidden( QQuickItem*, bool );
+
     const qreal unlimited = std::numeric_limits< float >::max();
     const QSizeF defaultSizeHints[] = { { 0, 0 }, { -1, -1 }, { unlimited, unlimited } };
 }

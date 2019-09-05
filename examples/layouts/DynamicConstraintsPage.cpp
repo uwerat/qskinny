@@ -89,6 +89,7 @@ Box::Box( QQuickItem* parent )
     setObjectName( "Box" );
 
     setBackgroundColor( Qt::white );
+    setDefaultAlignment( Qt::AlignCenter );
 
     setMargins( 10 );
     setSpacing( 5 );
@@ -116,7 +117,7 @@ void Box::flip()
 
 void Box::addControl( Control* control )
 {
-    addItem( control, Qt::AlignCenter );
+    addItem( control );
 }
 
 DynamicConstraintsPage::DynamicConstraintsPage( QQuickItem* parent )
@@ -129,9 +130,10 @@ DynamicConstraintsPage::DynamicConstraintsPage( QQuickItem* parent )
 
     auto button = new QskPushButton( "Flip" );
     button->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
+    button->setLayoutAlignmentHint( Qt::AlignTop | Qt::AlignLeft );
 
     QObject::connect( button, &QskPushButton::clicked, box, &Box::flip );
 
-    addItem( button, Qt::AlignTop | Qt::AlignLeft );
+    addItem( button );
     addItem( box );
 }

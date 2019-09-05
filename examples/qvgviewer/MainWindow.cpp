@@ -90,10 +90,11 @@ MainWindow::MainWindow()
     auto invertButton = new QskPushButton( "Inverted" );
     invertButton->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
     invertButton->setCheckable( true );
+    invertButton->setLayoutAlignmentHint( Qt::AlignRight );
 
     auto box = new QskLinearBox( Qt::Vertical );
     box->setMargins( 5 );
-    box->addItem( invertButton, Qt::AlignRight );
+    box->addItem( invertButton );
     box->addItem( m_tabView );
 
     addItem( box );

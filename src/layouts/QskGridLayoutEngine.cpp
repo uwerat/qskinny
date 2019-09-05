@@ -158,19 +158,13 @@ namespace
     class Element
     {
       public:
-        Element( QQuickItem*, const QRect&, Qt::Alignment );
+        Element( QQuickItem*, const QRect& );
         Element( qreal spacing, const QRect& );
 
         Element& operator=( const Element& );
 
         qreal spacer() const;
         QQuickItem* item() const;
-
-        Qt::Alignment alignment() const;
-        void setAlignment( Qt::Alignment );
-
-        bool retainSizeWhenHidden() const;
-        void setRetainSizeWhenHidden( bool );
 
         QRect grid() const;
         void setGrid( const QRect& );
@@ -193,29 +187,21 @@ namespace
         };
 
         QRect m_grid;
-
-        unsigned int m_alignment : 8;
-        bool m_isSpacer : 1;
-        bool m_retainSizeWhenHidden : 1;
+        bool m_isSpacer;
     };
 }
 
-Element::Element( QQuickItem* item,
-        const QRect& grid, Qt::Alignment alignment )
+Element::Element( QQuickItem* item, const QRect& grid )
     : m_item( item )
     , m_grid( grid )
-    , m_alignment(alignment)
     , m_isSpacer( false )
-    , m_retainSizeWhenHidden( false )
 {
 }
 
 Element::Element( qreal spacing, const QRect& grid )
     : m_spacer( spacing )
     , m_grid( grid )
-    , m_alignment( 0 )
     , m_isSpacer( true )
-    , m_retainSizeWhenHidden( false )
 {
 }
 
@@ -229,8 +215,6 @@ Element& Element::operator=( const Element& other )
         m_item = other.m_item;
 
     m_grid = other.m_grid;
-    m_alignment = other.m_alignment;
-    m_retainSizeWhenHidden = other.m_retainSizeWhenHidden;
 
     return *this;
 }
@@ -243,26 +227,6 @@ inline qreal Element::spacer() const
 inline QQuickItem* Element::item() const
 {
     return m_isSpacer ? nullptr : m_item;
-}
-
-inline Qt::Alignment Element::alignment() const
-{
-    return static_cast< Qt::Alignment >( m_alignment );
-}
-
-void Element::setAlignment( Qt::Alignment alignment )
-{
-    m_alignment = alignment;
-}
-
-inline bool Element::retainSizeWhenHidden() const
-{
-    return m_retainSizeWhenHidden;
-}
-
-void Element::setRetainSizeWhenHidden( bool on )
-{
-    m_retainSizeWhenHidden = on;
 }
 
 QRect Element::grid() const
@@ -283,7 +247,7 @@ QRect Element::minimumGrid() const
 
 bool Element::isIgnored() const
 {
-    if ( !m_isSpacer && !m_retainSizeWhenHidden )
+    if ( !m_isSpacer && !QskLayoutConstraint::retainSizeWhenHidden( m_item ) )
         return !qskIsVisibleToParent( m_item );
 
     return false;
@@ -325,8 +289,7 @@ class QskGridLayoutEngine::PrivateData
         return const_cast< Element* >( &this->elements[index] );
     }
 
-    int insertElement( QQuickItem* item, qreal spacing,
-        QRect grid, Qt::Alignment alignment )
+    int insertElement( QQuickItem* item, qreal spacing, QRect grid )
     {
         // -1 means unlimited, while 0 does not make any sense
         if ( grid.width() == 0 )
@@ -336,7 +299,7 @@ class QskGridLayoutEngine::PrivateData
             grid.setHeight( 1 );
 
         if ( item )
-            elements.push_back( Element( item, grid, alignment ) );
+            elements.push_back( Element( item, grid ) );
         else
             elements.push_back( Element( spacing, grid ) );
 
@@ -452,66 +415,16 @@ qreal QskGridLayoutEngine::columnSizeHint( int column, Qt::SizeHint which ) cons
     return settings.settingAt( column ).hint().size( which );
 }
 
-bool QskGridLayoutEngine::setAlignmentAt( int index, Qt::Alignment alignment )
-{
-    if ( auto element = m_data->elementAt( index ) )
-    {
-        if ( alignment != element->alignment() )
-            element->setAlignment( alignment );
-
-        return true;
-    }
-
-    return false;
-}
-
-Qt::Alignment QskGridLayoutEngine::alignmentAt( int index ) const
-{
-    if ( const auto element = m_data->elementAt( index ) )
-        return element->alignment();
-
-    return Qt::Alignment();
-}
-
-bool QskGridLayoutEngine::setRetainSizeWhenHiddenAt( int index, bool on )
-{
-    if ( auto element = m_data->elementAt( index ) )
-    {
-        if ( on != element->retainSizeWhenHidden() )
-        {
-            const bool isIgnored = element->isIgnored();
-            element->setRetainSizeWhenHidden( on );
-
-            if ( isIgnored != element->isIgnored() )
-            {
-                invalidate();
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
-bool QskGridLayoutEngine::retainSizeWhenHiddenAt( int index ) const
-{
-    if ( const auto element = m_data->elementAt( index ) )
-        return element->retainSizeWhenHidden();
-
-    return false;
-}
-
-int QskGridLayoutEngine::insertItem( QQuickItem* item,
-    const QRect& grid, Qt::Alignment alignment )
+int QskGridLayoutEngine::insertItem( QQuickItem* item, const QRect& grid )
 {
     invalidate();
-    return m_data->insertElement( item, -1, grid, alignment );
+    return m_data->insertElement( item, -1, grid );
 }
 
 int QskGridLayoutEngine::insertSpacer( qreal spacing, const QRect& grid )
 {
     spacing = qMax( spacing, 0.0 );
-    return m_data->insertElement( nullptr, spacing, grid, Qt::Alignment() );
+    return m_data->insertElement( nullptr, spacing, grid );
 }
 
 bool QskGridLayoutEngine::removeAt( int index )
@@ -640,7 +553,7 @@ void QskGridLayoutEngine::layoutItems()
             if ( auto item = element.item() )
             {
                 const auto grid = m_data->effectiveGrid( element );
-                layoutItem( item, grid, element.alignment() );
+                layoutItem( item, grid );
             }
         }
     }

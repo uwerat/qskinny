@@ -48,10 +48,11 @@ int main( int argc, char* argv[] )
         parser.showHelp( 1 );
 
     auto button = new Button( args[ 0 ] );
+    button->setLayoutAlignmentHint( Qt::AlignCenter );
     QObject::connect( button, &Button::clicked, button, &Button::run );
 
     auto box = new QskLinearBox();
-    box->addItem( button, Qt::AlignCenter );
+    box->addItem( button );
 
     QskWindow window;
     window.setColor( Qt::white );

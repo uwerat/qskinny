@@ -7,6 +7,7 @@
 #include "QskControl.h"
 #include "QskSizePolicy.h"
 #include "QskLayoutHint.h"
+#include "QskQuick.h"
 #include "QskFunctions.h"
 
 #include <functional>
@@ -219,14 +220,11 @@ qreal QskLayoutConstraint::constrainedChildrenMetric(
     const auto children = control->childItems();
     for ( auto child : children )
     {
-        if ( auto control = qskControlCast( child ) )
+        if ( !qskIsTransparentForPositioner( child ) )
         {
-            if ( !control->isTransparentForPositioner() )
-            {
-                const auto v = constrainFunction( control, constraint );
-                if ( v > constrainedValue )
-                    constrainedValue = v;
-            }
+            const auto v = constrainFunction( child, constraint );
+            if ( v > constrainedValue )
+                constrainedValue = v;
         }
     }
 
@@ -424,4 +422,72 @@ QskLayoutHint QskLayoutConstraint::layoutHint(
     }
 
     return QskLayoutHint( minimum, preferred, maximum );
+}
+
+static const char s_alignmentProperty[] = "layoutAlignmentHint";
+static const char s_retainSizeWhenHiddenProperty[] = "layoutRetainSizeWhenHidden";
+
+Qt::Alignment QskLayoutConstraint::layoutAlignmentHint( const QQuickItem* item )
+{
+    if ( auto control = qskControlCast( item ) )
+    {
+        return control->layoutAlignmentHint();
+    }
+    else if ( item )
+    {
+        const QVariant v = item->property( s_alignmentProperty );
+        if ( v.canConvert< Qt::Alignment >() )
+            return v.value< Qt::Alignment >();
+    }
+        
+    return Qt::Alignment();
+}
+
+void QskLayoutConstraint::setLayoutAlignmentHint(
+    QQuickItem* item, Qt::Alignment alignment )
+{
+    if ( auto control = qskControlCast( item ) )
+    {
+        control->setLayoutAlignmentHint( alignment );
+    }
+    else if ( item )
+    {
+        QVariant v;
+        if ( alignment )
+            v.setValue( alignment );
+
+        item->setProperty( s_alignmentProperty, v );
+    }
+}
+
+bool QskLayoutConstraint::retainSizeWhenHidden( const QQuickItem* item )
+{
+    if ( auto control = qskControlCast( item ) )
+    {
+        return control->layoutHints() & QskControl::RetainSizeWhenHidden;
+    }
+    else if ( item )
+    {
+        const QVariant v = item->property( s_retainSizeWhenHiddenProperty );
+        if ( v.canConvert< bool >() )
+            return v.toBool();
+    }
+
+    return false;
+}
+
+void QskLayoutConstraint::setRetainSizeWhenHidden( QQuickItem* item, bool on )
+{
+    if ( auto control = qskControlCast( item ) )
+    {
+        control->setLayoutHint( QskControl::RetainSizeWhenHidden, on );
+    }
+    else if ( item )
+    {
+        QVariant v;
+        if ( on )
+            v.setValue( on );
+
+        item->setProperty( s_retainSizeWhenHiddenProperty, v );
+    }
 }

@@ -87,7 +87,7 @@ QskInputPredictionBar::QskInputPredictionBar( QQuickItem* parent )
         if ( i == 0 )
         {
             // to keep the height
-            m_data->layoutBox->setRetainSizeWhenHidden( button, true );
+            button->setLayoutHint( QskControl::RetainSizeWhenHidden, true );
         }
     }
 }

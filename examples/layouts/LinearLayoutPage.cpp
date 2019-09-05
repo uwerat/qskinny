@@ -26,6 +26,8 @@ namespace
             setMargins( 10 );
             setSpacing( 5 );
 
+            setDefaultAlignment( Qt::AlignCenter );
+
             addRectangle( "LightSalmon" );
             addRectangle( "Salmon" );
             addRectangle( "DarkSalmon" );
@@ -71,7 +73,7 @@ namespace
             auto rect = new TestRectangle( colorName );
             rect->setText( QString::number( count() + 1 ) );
 
-            addItem( rect, Qt::AlignCenter );
+            addItem( rect );
         }
     };
 }
@@ -85,12 +87,14 @@ LinearLayoutPage::LinearLayoutPage( QQuickItem* parent )
     auto box = new Box();
 
     auto buttonBox = new ButtonBox();
+
+    buttonBox->setLayoutAlignmentHint( Qt::AlignTop | Qt::AlignLeft );
     buttonBox->addButton( "Flip", [ box ]() { box->transpose(); } );
     buttonBox->addButton( "Mirror", [ box ]() { box->mirror(); } );
     buttonBox->addButton( "Rotate", [ box ]() { box->rotate(); } );
     buttonBox->addButton( "Spacing+", [ box ]() { box->incrementSpacing( +1 ); }, true );
     buttonBox->addButton( "Spacing-", [ box ]() { box->incrementSpacing( -1 ); }, true );
 
-    addItem( buttonBox, Qt::AlignTop | Qt::AlignLeft );
+    addItem( buttonBox );
     addItem( box );
 }

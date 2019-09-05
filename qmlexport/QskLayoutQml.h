@@ -80,16 +80,6 @@ class QskLinearBoxQml : public QskLayoutBoxQml< QskLinearBox >
 
   public:
 
-    Q_INVOKABLE void setAlignment( int index, Qt::Alignment alignment )
-    {
-        QskLinearBox::setAlignment( index, alignment );
-    }
-
-    Q_INVOKABLE Qt::Alignment alignment( int index ) const
-    {
-        return QskLinearBox::alignment( index );
-    }
-
     Q_INVOKABLE void setStretchFactor( QQuickItem* item, int stretchFactor )
     {
         QskLinearBox::setStretchFactor( item, stretchFactor );
@@ -98,16 +88,6 @@ class QskLinearBoxQml : public QskLayoutBoxQml< QskLinearBox >
     Q_INVOKABLE int stretchFactor( QQuickItem* item ) const
     {
         return QskLinearBox::stretchFactor( item );
-    }
-
-    Q_INVOKABLE void setRetainSizeWhenHidden( QQuickItem* item, bool on )
-    {
-        QskLinearBox::setRetainSizeWhenHidden( item, on );
-    }
-
-    Q_INVOKABLE bool retainSizeWhenHidden( QQuickItem* item ) const
-    {
-        return QskLinearBox::retainSizeWhenHidden( item );
     }
 };
 
@@ -131,16 +111,6 @@ class QskGridBoxQml : public QskLayoutBoxQml< QskGridBox >
     void setVerticalSpacing( qreal );
     void resetVerticalSpacing();
     qreal verticalSpacing() const;
-
-    Q_INVOKABLE bool retainSizeWhenHidden( QQuickItem* item ) const
-    {
-        return QskGridBox::retainSizeWhenHidden( item );
-    }
-
-    Q_INVOKABLE void setRetainSizeWhenHidden( QQuickItem* item, bool on )
-    {
-        QskGridBox::setRetainSizeWhenHidden( item, on );
-    }
 
   Q_SIGNALS:
     void verticalSpacingChanged();

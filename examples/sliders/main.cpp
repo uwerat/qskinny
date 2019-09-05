@@ -142,7 +142,7 @@ class SliderBox : public QskLinearBox
                 connect( slider, &QskSlider::valueChanged,
                     []( qreal value ) { qDebug() << value; } );
 #endif
-                setAlignment( slider, Qt::AlignCenter );
+                slider->setLayoutAlignmentHint( Qt::AlignCenter );
             }
         }
     }
@@ -203,9 +203,10 @@ int main( int argc, char* argv[] )
         sliderBox, &SliderBox::flip );
 
     auto mainBox = new QskLinearBox( Qt::Vertical );
+    mainBox->setDefaultAlignment( Qt::AlignLeft );
     mainBox->setMargins( 10 );
     mainBox->setSpacing( 10 );
-    mainBox->addItem( buttonFlip, Qt::AlignLeft );
+    mainBox->addItem( buttonFlip );
     mainBox->addItem( sliderBox );
     mainBox->setStretchFactor( sliderBox, 10 );
 

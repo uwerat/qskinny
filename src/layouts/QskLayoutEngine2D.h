@@ -54,8 +54,7 @@ class QskLayoutEngine2D
 
   protected:
 
-    void layoutItem( QQuickItem*,
-        const QRect& grid, Qt::Alignment ) const;
+    void layoutItem( QQuickItem*, const QRect& grid ) const;
 
     enum
     {

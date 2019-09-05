@@ -56,6 +56,15 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
   public:
     QSK_STATES( Disabled, Hovered, Focused )
 
+    enum LayoutHint
+    {
+        // How to be treated by layouts
+        RetainSizeWhenHidden = 1 << 0
+    };
+
+    Q_ENUM( LayoutHint )
+    Q_DECLARE_FLAGS( LayoutHints, LayoutHint )
+
     QskControl( QQuickItem* parent = nullptr );
     ~QskControl() override;
 
@@ -98,6 +107,16 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
 
     QskSizePolicy sizePolicy() const;
     QskSizePolicy::Policy sizePolicy( Qt::Orientation ) const;
+
+    // hints for how to be treated by layouts
+    void setLayoutAlignmentHint( Qt::Alignment );
+    Qt::Alignment layoutAlignmentHint() const;
+
+    void setLayoutHint( LayoutHint, bool on );
+    bool testLayoutHint( LayoutHint ) const;
+
+    void setLayoutHints( LayoutHints );
+    LayoutHints layoutHints() const;
 
     void setMinimumSize( const QSizeF& );
     void setMinimumSize( qreal width, qreal height );

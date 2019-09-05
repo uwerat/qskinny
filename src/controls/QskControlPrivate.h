@@ -8,7 +8,6 @@
 
 #include "QskGlobal.h"
 #include "QskControl.h"
-
 #include "QskQuickItemPrivate.h"
 
 class QskControlPrivate : public QskQuickItemPrivate
@@ -43,7 +42,10 @@ class QskControlPrivate : public QskQuickItemPrivate
     QSizeF* explicitSizeHints;
 
     QLocale locale;
+
     QskSizePolicy sizePolicy;
+    int layoutHints : 4;
+    unsigned int layoutAlignmentHint : 8;
 
     bool explicitLocale : 1;
 

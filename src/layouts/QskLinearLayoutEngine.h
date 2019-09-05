@@ -42,12 +42,6 @@ class QskLinearLayoutEngine : public QskLayoutEngine2D
     QQuickItem* itemAt( int index ) const override final;
     qreal spacerAt( int index ) const override final;
 
-    bool setRetainSizeWhenHiddenAt( int index, bool on );
-    bool retainSizeWhenHiddenAt( int index ) const;
-
-    bool setAlignmentAt( int index, Qt::Alignment );
-    Qt::Alignment alignmentAt( int index ) const;
-
     bool setStretchFactorAt( int index, int stretchFactor );
     int stretchFactorAt( int index ) const;
 

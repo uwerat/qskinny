@@ -87,7 +87,7 @@ void GridSkinny::setStretchFactor(
 void GridSkinny::setSizeHintAt( int index, Qt::Orientation orientation,
     Qt::SizeHint which, int hint )
 {
-    if ( auto control = qobject_cast< QskControl* >( m_grid->itemAtIndex( index ) ) )
+    if ( auto control = qskControlCast( m_grid->itemAtIndex( index ) ) )
     {
         auto size = control->explicitSizeHint( which );
 
@@ -103,7 +103,7 @@ void GridSkinny::setSizeHintAt( int index, Qt::Orientation orientation,
 void GridSkinny::setSizePolicyAt(
     int index, Qt::Orientation orientation, int policy )
 {
-    if ( auto control = qobject_cast< QskControl* >( m_grid->itemAtIndex( index ) ) )
+    if ( auto control = qskControlCast( m_grid->itemAtIndex( index ) ) )
     {
         control->setSizePolicy( orientation,
             static_cast< QskSizePolicy::Policy >( policy ) );
@@ -112,14 +112,14 @@ void GridSkinny::setSizePolicyAt(
 
 void GridSkinny::setAlignmentAt( int index, Qt::Alignment alignment )
 {
-    if ( auto item = m_grid->itemAtIndex( index ) )
-        m_grid->setAlignment( item, alignment );
+    if ( auto control = qskControlCast( m_grid->itemAtIndex( index ) ) )
+        control->setLayoutAlignmentHint( alignment );
 }
 
 void GridSkinny::setRetainSizeWhenHiddenAt( int index, bool on )
 {
-    if ( auto item = m_grid->itemAtIndex( index ) )
-        m_grid->setRetainSizeWhenHidden( item, on );
+    if ( auto control = qskControlCast( m_grid->itemAtIndex( index ) ) )
+        control->setLayoutHint( QskControl::RetainSizeWhenHidden, on );
 }
 
 void GridSkinny::setVisibleAt( int index, bool on )

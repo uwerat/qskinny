@@ -359,7 +359,15 @@ class BalanceFadeControlBox final : public QskGridBox
     {
         MarkerControlButton* buttons[ 4 ];
         for ( int i = 0; i < 4; i++ )
-            buttons[ i ] = new MarkerControlButton( static_cast< Qsk::Direction >( i ) );
+        {
+            auto button = new MarkerControlButton( static_cast< Qsk::Direction >( i ) );
+            button->setLayoutAlignmentHint( Qt::AlignCenter );
+
+            connect( button, &QskPushButton::pressed,
+                this, [ this, button ]() { shift( button->offset() ); } );
+
+            buttons[ i ] = button;
+        }
 
         m_carControl = new StackedControl();
 
@@ -369,16 +377,6 @@ class BalanceFadeControlBox final : public QskGridBox
         addItem( buttons[ Qsk::TopToBottom ], 2, 1 );
 
         addItem( m_carControl, 1, 1 );
-
-        for ( int i = 0; i < 4; i++ )
-        {
-            const auto button = buttons[ i ];
-
-            setAlignment( button, Qt::AlignCenter );
-
-            connect( button, &QskPushButton::pressed,
-                this, [ this, button ]() { shift( button->offset() ); } );
-        }
     }
 
     void shift( const QPointF& offset )

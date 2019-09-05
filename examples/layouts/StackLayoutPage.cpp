@@ -106,6 +106,8 @@ StackLayoutPage::StackLayoutPage( QQuickItem* parent )
     auto* box = new StackBox();
 
     auto* buttonBox = new ButtonBox();
+
+    buttonBox->setLayoutAlignmentHint( Qt::AlignTop | Qt::AlignLeft );
     buttonBox->addButton( "<<", [ box ]() { box->incrementScrolling( Qt::Horizontal, +1 ); } );
     buttonBox->addButton( ">>", [ box ]() { box->incrementScrolling( Qt::Horizontal, -1 ); } );
     buttonBox->addButton( "^", [ box ]() { box->incrementScrolling( Qt::Vertical, -1 ); } );
@@ -115,9 +117,10 @@ StackLayoutPage::StackLayoutPage( QQuickItem* parent )
     auto pageIndicator = new QskPageIndicator();
     pageIndicator->setCount( box->itemCount() );
     pageIndicator->setCurrentIndex( box->currentIndex() );
+    pageIndicator->setLayoutAlignmentHint( Qt::AlignCenter );
 
-    addItem( buttonBox, Qt::AlignTop | Qt::AlignLeft );
-    addItem( pageIndicator, Qt::AlignCenter );
+    addItem( buttonBox );
+    addItem( pageIndicator );
     addItem( box );
 
     connect( box, &QskStackBox::currentIndexChanged,

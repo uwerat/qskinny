@@ -47,29 +47,20 @@ namespace
             qreal m_spacer;
         };
 
-        int m_stretch;
-
-        unsigned int m_alignment : 8;
-        bool m_isSpacer : 1;
-        bool m_retainSizeWhenHidden : 1;
+        int m_stretch = -1;
+        bool m_isSpacer;
     };
 }
 
 Element::Element( QQuickItem* item )
     : m_item( item )
-    , m_stretch( -1 )
-    , m_alignment( 0 )
     , m_isSpacer( false )
-    , m_retainSizeWhenHidden( false )
 {
 }
 
 Element::Element( qreal spacing )
     : m_spacer( spacing )
-    , m_stretch( -1 )
-    , m_alignment( 0 )
     , m_isSpacer( true )
-    , m_retainSizeWhenHidden( false )
 {
 }
 
@@ -83,8 +74,6 @@ Element& Element::operator=( const Element& other )
         m_item = other.m_item;
 
     m_stretch = other.m_stretch;
-    m_alignment = other.m_alignment;
-    m_retainSizeWhenHidden = other.m_retainSizeWhenHidden;
 
     return *this;
 }
@@ -99,26 +88,6 @@ inline QQuickItem* Element::item() const
     return m_isSpacer ? nullptr : m_item;
 }
 
-inline Qt::Alignment Element::alignment() const
-{
-    return static_cast< Qt::Alignment >( m_alignment );
-}
-
-inline void Element::setAlignment( Qt::Alignment alignment )
-{
-    m_alignment = alignment;
-}
-
-bool Element::retainSizeWhenHidden() const
-{
-    return m_retainSizeWhenHidden;
-}
-
-void Element::setRetainSizeWhenHidden( bool on )
-{
-    m_retainSizeWhenHidden = on;
-}
-
 inline int Element::stretch() const
 {
     return m_stretch;
@@ -131,7 +100,7 @@ inline void Element::setStretch( int stretch )
 
 bool Element::isIgnored() const
 {
-    if ( !m_isSpacer && !m_retainSizeWhenHidden )
+    if ( !m_isSpacer && !QskLayoutConstraint::retainSizeWhenHidden( m_item ) )
         return !qskIsVisibleToParent( m_item );
 
     return false;
@@ -259,38 +228,6 @@ int QskLinearLayoutEngine::count() const
     return m_data->elements.size();
 }
 
-bool QskLinearLayoutEngine::setRetainSizeWhenHiddenAt( int index, bool on )
-{
-    if ( auto element = m_data->elementAt( index ) )
-    {
-        if ( on != element->retainSizeWhenHidden() )
-        {
-            const bool isIgnored = element->isIgnored();
-
-            element->setRetainSizeWhenHidden( on );
-
-            if ( isIgnored != element->isIgnored() )
-            {
-                if ( m_data->sumIgnored >= 0 )
-                    m_data->sumIgnored += on ? 1 : -1;
-
-                invalidate( LayoutCache );
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
-bool QskLinearLayoutEngine::retainSizeWhenHiddenAt( int index ) const
-{
-    if ( const auto element = m_data->elementAt( index ) )
-        return element->retainSizeWhenHidden();
-
-    return false;
-}
-
 bool QskLinearLayoutEngine::setStretchFactorAt( int index, int stretchFactor )
 {
     if ( auto element = m_data->elementAt( index ) )
@@ -316,27 +253,6 @@ int QskLinearLayoutEngine::stretchFactorAt( int index ) const
         return element->stretch();
 
     return -1;
-}
-
-bool QskLinearLayoutEngine::setAlignmentAt( int index, Qt::Alignment alignment )
-{
-    if ( auto element = m_data->elementAt( index ) )
-    {
-        if ( alignment != element->alignment() )
-            element->setAlignment( alignment );
-
-        return true;
-    }
-
-    return false;
-}
-
-Qt::Alignment QskLinearLayoutEngine::alignmentAt( int index ) const
-{
-    if ( const auto element = m_data->elementAt( index ) )
-        return element->alignment();
-
-    return Qt::Alignment();
 }
 
 int QskLinearLayoutEngine::insertItem( QQuickItem* item, int index )
@@ -440,7 +356,7 @@ void QskLinearLayoutEngine::layoutItems()
         if ( auto item = element.item() )
         {
             const QRect grid( col, row, 1, 1 );
-            layoutItem( item, grid, element.alignment() );
+            layoutItem( item, grid );
         }
 
         if ( m_data->orientation == Qt::Horizontal )

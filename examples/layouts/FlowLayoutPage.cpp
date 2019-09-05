@@ -27,6 +27,8 @@ namespace
             setMargins( 10 );
             setSpacing( 5 );
 
+            setDefaultAlignment( Qt::AlignCenter );
+
             addRectangle( "LightSteelBlue" );
             addRectangle( "PowderBlue" );
             addRectangle( "LightBlue" );
@@ -78,7 +80,7 @@ namespace
             auto rect = new TestRectangle( colorName );
             rect->setText( QString::number( count() + 1 ) );
 
-            addItem( rect, Qt::AlignCenter );
+            addItem( rect );
         }
     };
 }
@@ -92,12 +94,13 @@ FlowLayoutPage::FlowLayoutPage( QQuickItem* parent )
     auto box = new Box();
 
     auto buttonBox = new ButtonBox();
+    buttonBox->setLayoutAlignmentHint( Qt::AlignTop | Qt::AlignLeft );
     buttonBox->addButton( "Flip", [ box ]() { box->transpose(); } );
     buttonBox->addButton( "Mirror", [ box ]() { box->mirror(); } );
     buttonBox->addButton( "Rotate", [ box ]() { box->rotate(); } );
     buttonBox->addButton( "Dim+", [ box ]() { box->incrementDimension( +1 ); } );
     buttonBox->addButton( "Dim-", [ box ]() { box->incrementDimension( -1 ); } );
 
-    addItem( buttonBox, Qt::AlignTop | Qt::AlignLeft );
+    addItem( buttonBox );
     addItem( box );
 }

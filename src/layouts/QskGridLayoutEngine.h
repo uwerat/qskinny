@@ -33,7 +33,7 @@ class QskGridLayoutEngine : public QskLayoutEngine2D
     bool setColumnSizeHint( int column, Qt::SizeHint, qreal width );
     qreal columnSizeHint( int column, Qt::SizeHint ) const;
 
-    int insertItem( QQuickItem*, const QRect& grid, Qt::Alignment );
+    int insertItem( QQuickItem*, const QRect& grid );
     int insertSpacer( qreal spacing, const QRect& grid );
 
     bool removeAt( int index );
@@ -49,12 +49,6 @@ class QskGridLayoutEngine : public QskLayoutEngine2D
     QRect gridAt( int index ) const;
 
     QRect effectiveGridAt( int index ) const;
-
-    bool setRetainSizeWhenHiddenAt( int index, bool on );
-    bool retainSizeWhenHiddenAt( int index ) const;
-
-    bool setAlignmentAt( int index, Qt::Alignment );
-    Qt::Alignment alignmentAt( int index ) const;
 
     void transpose();
 

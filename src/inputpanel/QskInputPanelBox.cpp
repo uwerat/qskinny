@@ -93,9 +93,10 @@ QskInputPanelBox::QskInputPanelBox( QQuickItem* parent )
     m_data->keyboard = new QskVirtualKeyboard();
 
     auto layout = new QskLinearBox( Qt::Vertical, this );
+    layout->setDefaultAlignment( Qt::AlignLeft | Qt::AlignHCenter );
 
-    layout->addItem( m_data->prompt, Qt::AlignLeft | Qt::AlignHCenter );
-    layout->addItem( m_data->inputProxy, Qt::AlignLeft | Qt::AlignHCenter );
+    layout->addItem( m_data->prompt );
+    layout->addItem( m_data->inputProxy );
     layout->addStretch( 10 );
     layout->addItem( m_data->predictionBar );
     layout->addItem( m_data->keyboard );

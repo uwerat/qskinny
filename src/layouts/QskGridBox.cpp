@@ -96,8 +96,7 @@ QskGridBox::~QskGridBox()
 }
 
 int QskGridBox::addItem( QQuickItem* item,
-    int row, int column, int rowSpan, int columnSpan,
-    Qt::Alignment alignment )
+    int row, int column, int rowSpan, int columnSpan )
 {
     if ( item == nullptr || row < 0 || column < 0 )
         return -1;
@@ -116,12 +115,7 @@ int QskGridBox::addItem( QQuickItem* item,
         if ( index >= 0 )
         {
             if ( engine.gridAt( index ) == itemGrid )
-            {
-                if ( engine.setAlignmentAt( index, alignment ) )
-                    polish();
-
                 return index;
-            }
         }
     }
 
@@ -134,7 +128,7 @@ int QskGridBox::addItem( QQuickItem* item,
             item->setParentItem( this );
 
         qskSetItemActive( this, item, true );
-        index = engine.insertItem( item, itemGrid, alignment );
+        index = engine.insertItem( item, itemGrid );
     }
 
     if ( engine.count() > 1 )
@@ -309,42 +303,6 @@ void QskGridBox::setColumnFixedWidth( int column, qreal width )
 {
     setColumnSizeHint( column, Qt::MinimumSize, width );
     setColumnSizeHint( column, Qt::MaximumSize, width );
-}
-
-void QskGridBox::setAlignment( const QQuickItem* item, Qt::Alignment alignment )
-{
-    auto& engine = m_data->engine;
-
-    const int index = engine.indexOf( item );
-    if ( index >= 0 )
-    {
-        if ( engine.setAlignmentAt( index, alignment ) )
-            polish();
-    }
-}
-
-Qt::Alignment QskGridBox::alignment( const QQuickItem* item ) const
-{
-    const auto& engine = m_data->engine;
-    return engine.alignmentAt( engine.indexOf( item ) );
-}
-
-void QskGridBox::setRetainSizeWhenHidden( const QQuickItem* item, bool on )
-{
-    auto& engine = m_data->engine;
-
-    const int index = engine.indexOf( item );
-    if ( index >= 0 )
-    {
-        if ( engine.setRetainSizeWhenHiddenAt( index, on ) )
-            invalidate();
-    }
-}
-
-bool QskGridBox::retainSizeWhenHidden( const QQuickItem* item ) const
-{
-    const auto& engine = m_data->engine;
-    return engine.retainSizeWhenHiddenAt( engine.indexOf( item ) );
 }
 
 void QskGridBox::setRowSizeHint( int row, Qt::SizeHint which, qreal height )

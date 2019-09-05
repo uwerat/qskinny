@@ -87,9 +87,10 @@ int main( int argc, char* argv[] )
     QObject::connect( rotateButton, &QskPushButton::clicked, tabView, &TabView::rotate );
 
     auto layoutBox = new QskLinearBox( Qt::Vertical );
+    layoutBox->setDefaultAlignment( Qt::AlignLeft );
     layoutBox->setMargins( 5 );
     layoutBox->setSpacing( 10 );
-    layoutBox->addItem( rotateButton, Qt::AlignLeft );
+    layoutBox->addItem( rotateButton );
     layoutBox->addItem( tabView );
 
     auto focusIndicator = new QskFocusIndicator();
