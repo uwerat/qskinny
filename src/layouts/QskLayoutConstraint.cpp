@@ -222,9 +222,12 @@ qreal QskLayoutConstraint::constrainedChildrenMetric(
     {
         if ( !qskIsTransparentForPositioner( child ) )
         {
-            const auto v = constrainFunction( child, constraint );
-            if ( v > constrainedValue )
-                constrainedValue = v;
+            if ( qskIsVisibleToParent( child ) || retainSizeWhenHidden( child ) )
+            {
+                const auto v = constrainFunction( child, constraint );
+                if ( v > constrainedValue )
+                    constrainedValue = v;
+            }
         }
     }
 

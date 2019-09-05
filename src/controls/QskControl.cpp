@@ -711,13 +711,13 @@ qreal QskControl::heightForWidth( qreal width ) const
 
     d->blockLayoutRequestEvents = false;
 
-    if ( !d->autoLayoutChildren )
-        return -1.0;
+    if ( d->autoLayoutChildren )
+    {
+        return constrainedMetric( QskLayoutConstraint::HeightForWidth,
+            this, width, QskLayoutConstraint::constrainedChildrenMetric );
+    }
 
-    using namespace QskLayoutConstraint;
-
-    return constrainedMetric(
-        HeightForWidth, this, width, constrainedChildrenMetric );
+    return -1.0;
 }
 
 qreal QskControl::widthForHeight( qreal height ) const
@@ -726,13 +726,13 @@ qreal QskControl::widthForHeight( qreal height ) const
 
     d->blockLayoutRequestEvents = false;
 
-    if ( !d->autoLayoutChildren )
-        return -1.0;
+    if ( d->autoLayoutChildren )
+    {
+        return constrainedMetric( QskLayoutConstraint::WidthForHeight,
+            this, height, QskLayoutConstraint::constrainedChildrenMetric );
+    }
 
-    using namespace QskLayoutConstraint;
-
-    return constrainedMetric(
-        WidthForHeight, this, height, constrainedChildrenMetric );
+    return -1.0;
 }
 
 bool QskControl::event( QEvent* event )
@@ -924,10 +924,13 @@ void QskControl::updateItemPolish()
         const auto children = childItems();
         for ( auto child : children )
         {
+            // checking qskIsVisibleToParent ???
             if ( !qskIsTransparentForPositioner( child ) )
             {
-                // rect = QskLayoutConstraint::itemRect( info.item, rect, ... );
-                qskSetItemGeometry( child, rect );
+                const auto itemRect = QskLayoutConstraint::boundedRect(
+                    child, rect, QskLayoutConstraint::layoutAlignmentHint( child ) );
+
+                qskSetItemGeometry( child, itemRect );
             }
         }
     }
