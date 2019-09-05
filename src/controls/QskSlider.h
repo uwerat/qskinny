@@ -41,7 +41,6 @@ class QSK_EXPORT QskSlider : public QskRangeControl
     void setTracking( bool );
     bool isTracking() const;
 
-    QSizeF contentsSizeHint() const override;
     QskAspect::Placement effectivePlacement() const override;
 
   Q_SIGNALS:
@@ -53,6 +52,8 @@ class QSK_EXPORT QskSlider : public QskRangeControl
     void mousePressEvent( QMouseEvent* e ) override;
     void mouseMoveEvent( QMouseEvent* e ) override;
     void mouseReleaseEvent( QMouseEvent* e ) override;
+
+    QSizeF contentsSizeHint() const override;
 
     QSizeF handleSize() const;
     QRectF handleRect() const;

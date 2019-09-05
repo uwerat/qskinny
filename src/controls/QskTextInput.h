@@ -146,8 +146,6 @@ class QSK_EXPORT QskTextInput : public QskControl
 
     void ensureVisible( int position );
 
-    QSizeF contentsSizeHint() const override;
-
   public Q_SLOTS:
     void setText( const QString& );
     void setEditing( bool );
@@ -200,6 +198,8 @@ class QSK_EXPORT QskTextInput : public QskControl
     void keyReleaseEvent( QKeyEvent* ) override;
 
     void updateLayout() override;
+    QSizeF contentsSizeHint() const override;
+
     void updateNode( QSGNode* ) override;
 
   private:

@@ -40,8 +40,6 @@ class QSK_EXPORT QskPageIndicator : public QskControl
     Qt::Orientation orientation() const;
     void setOrientation( Qt::Orientation );
 
-    QSizeF contentsSizeHint() const override;
-
   Q_SIGNALS:
     void countChanged();
     void currentIndexChanged();
@@ -50,6 +48,9 @@ class QSK_EXPORT QskPageIndicator : public QskControl
   public Q_SLOTS:
     void setCount( int count );
     void setCurrentIndex( qreal index );
+
+  protected:
+    QSizeF contentsSizeHint() const override;
 
   private:
     class PrivateData;

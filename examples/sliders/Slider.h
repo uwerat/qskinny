@@ -18,6 +18,8 @@ class Slider : public QskSlider
     Slider( QQuickItem* parent = nullptr );
 
     QRectF focusIndicatorRect() const override;
+
+  protected:
     QSizeF contentsSizeHint() const override;
 };
 

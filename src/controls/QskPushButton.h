@@ -63,8 +63,6 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     bool isFlat() const;
 
     QFont font() const;
-
-    QSizeF contentsSizeHint() const override;
     QRectF layoutRectForSize( const QSizeF& ) const override;
 
   public Q_SLOTS:
@@ -92,6 +90,8 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     void changeEvent( QEvent* ) override;
 
     void updateLayout() override;
+    QSizeF contentsSizeHint() const override;
+
     virtual QskGraphic loadGraphic( const QUrl& ) const;
 
   private:

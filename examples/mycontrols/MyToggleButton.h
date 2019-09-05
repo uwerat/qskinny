@@ -29,8 +29,6 @@ class MyToggleButton : public QskAbstractButton
     void setIconAt( int index, const QString& icon );
     QString iconAt( int index ) const;
 
-    QSizeF contentsSizeHint() const override;
-
     qreal heightForWidth( qreal width ) const override;
     qreal widthForHeight( qreal height ) const override;
 
@@ -47,6 +45,7 @@ class MyToggleButton : public QskAbstractButton
 
   protected:
     void updateLayout() override;
+    QSizeF contentsSizeHint() const override;
 
   private:
     class PrivateData;

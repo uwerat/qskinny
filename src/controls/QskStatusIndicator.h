@@ -38,8 +38,6 @@ class QSK_EXPORT QskStatusIndicator : public QskControl
     qreal heightForWidth( qreal width ) const override;
     qreal widthForHeight( qreal height ) const override;
 
-    QSizeF contentsSizeHint() const override;
-
     int status() const;
     bool hasStatus( int status ) const;
 
@@ -52,6 +50,8 @@ class QSK_EXPORT QskStatusIndicator : public QskControl
   protected:
     void changeEvent( QEvent* ) override;
     void updateLayout() override;
+
+    QSizeF contentsSizeHint() const override;
 
   private:
     qreal sizeConstraint( Qt::Orientation, qreal ) const;

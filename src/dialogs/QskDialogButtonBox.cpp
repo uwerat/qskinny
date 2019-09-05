@@ -128,7 +128,7 @@ QSizeF QskDialogButtonBox::contentsSizeHint() const
         m_data->dirtyLayout = false;
     }
 
-    return outerBoxSize( Panel, m_data->layoutBox->contentsSizeHint() );
+    return outerBoxSize( Panel, m_data->layoutBox->sizeHint() );
 }
 
 void QskDialogButtonBox::invalidateLayout()

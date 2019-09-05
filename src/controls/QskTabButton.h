@@ -36,7 +36,6 @@ class QSK_EXPORT QskTabButton : public QskAbstractButton
     void setTextOptions( const QskTextOptions& );
     QskTextOptions textOptions() const;
 
-    QSizeF contentsSizeHint() const override;
     QRectF layoutRectForSize( const QSizeF& ) const override;
 
     QskAspect::Placement effectivePlacement() const override;
@@ -50,6 +49,7 @@ class QSK_EXPORT QskTabButton : public QskAbstractButton
 
   protected:
     void changeEvent( QEvent* ) override;
+    QSizeF contentsSizeHint() const override;
 
   private:
     class PrivateData;

@@ -29,6 +29,8 @@ class QSK_EXPORT QskBox : public QskControl
     bool hasPanel() const;
     
     QRectF layoutRectForSize( const QSizeF& ) const override;
+
+  protected:
     QSizeF contentsSizeHint() const override;
 
   Q_SIGNALS:

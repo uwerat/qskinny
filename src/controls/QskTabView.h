@@ -66,8 +66,6 @@ class QSK_EXPORT QskTabView : public QskControl
 
     QRectF tabRect() const;
 
-    QSizeF contentsSizeHint() const override;
-
   public Q_SLOTS:
     void setCurrentIndex( int index );
 
@@ -79,6 +77,8 @@ class QSK_EXPORT QskTabView : public QskControl
   protected:
     bool event( QEvent* event ) override;
     void updateLayout() override;
+
+    QSizeF contentsSizeHint() const override;
 
   private:
     class PrivateData;

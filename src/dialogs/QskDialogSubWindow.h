@@ -54,8 +54,6 @@ class QSK_EXPORT QskDialogSubWindow : public QskSubWindow
     qreal heightForWidth( qreal width ) const override;
     qreal widthForHeight( qreal height ) const override;
 
-    QSizeF contentsSizeHint() const override;
-
   Q_SIGNALS:
     void finished( QskDialog::DialogCode );
     void accepted();
@@ -73,6 +71,8 @@ class QSK_EXPORT QskDialogSubWindow : public QskSubWindow
 
     void updateLayout() override;
     void aboutToShow() override;
+
+    QSizeF contentsSizeHint() const override;
 
     virtual QskDialogButtonBox* createButtonBox();
 

@@ -80,8 +80,6 @@ class QSK_EXPORT QskGraphicLabel : public QskControl
     qreal heightForWidth( qreal width ) const override;
     qreal widthForHeight( qreal height ) const override;
 
-    QSizeF contentsSizeHint() const override;
-
     bool isEmpty() const;
 
     void setGraphicRole( int role );
@@ -101,6 +99,8 @@ class QSK_EXPORT QskGraphicLabel : public QskControl
   protected:
     void changeEvent( QEvent* ) override;
     void updateLayout() override;
+
+    QSizeF contentsSizeHint() const override;
     virtual QskGraphic loadSource( const QUrl& ) const;
 
   private:

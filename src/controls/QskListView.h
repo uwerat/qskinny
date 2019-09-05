@@ -79,8 +79,6 @@ class QSK_EXPORT QskListView : public QskScrollView
     virtual QskAspect::Subcontrol textSubControlAt( int row, int col ) const;
 #endif
 
-    QSizeF contentsSizeHint() const override;
-
   public Q_SLOTS:
     void setSelectedRow( int row );
 
@@ -100,6 +98,7 @@ class QSK_EXPORT QskListView : public QskScrollView
     void mouseReleaseEvent( QMouseEvent* ) override;
 
     void updateScrollableSize();
+    QSizeF contentsSizeHint() const override;
 
     void componentComplete() override;
 

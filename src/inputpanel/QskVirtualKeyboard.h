@@ -38,8 +38,6 @@ class QSK_EXPORT QskVirtualKeyboard : public QskBox
     qreal heightForWidth( qreal width ) const override;
     qreal widthForHeight( qreal height ) const override;
 
-    QSizeF contentsSizeHint() const override;
-
     QskAspect::Subcontrol effectiveSubcontrol(
         QskAspect::Subcontrol ) const override;
 
@@ -51,6 +49,7 @@ class QSK_EXPORT QskVirtualKeyboard : public QskBox
 
   protected:
     void updateLayout() override;
+    QSizeF contentsSizeHint() const override;
 
   private:
     void buttonPressed();

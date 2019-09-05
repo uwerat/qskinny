@@ -58,8 +58,6 @@ class QSK_EXPORT QskDialogButtonBox : public QskBox
 
     QskDialog::Action clickedAction() const;
 
-    QSizeF contentsSizeHint() const override;
-
     QskAspect::Subcontrol effectiveSubcontrol(
         QskAspect::Subcontrol ) const override;
 
@@ -80,6 +78,8 @@ class QSK_EXPORT QskDialogButtonBox : public QskBox
   protected:
     bool event( QEvent* event ) override;
     void updateLayout() override;
+
+    QSizeF contentsSizeHint() const override;
 
     virtual QskPushButton* createButton( QskDialog::Action ) const;
 

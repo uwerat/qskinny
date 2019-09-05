@@ -77,8 +77,6 @@ class QSK_EXPORT QskSubWindow : public QskPopup
     bool testWindowButton( WindowButton ) const;
 
     QRectF titleBarRect() const;
-
-    QSizeF contentsSizeHint() const override;
     QRectF layoutRectForSize( const QSizeF& ) const override;
 
   Q_SIGNALS:
@@ -91,8 +89,9 @@ class QSK_EXPORT QskSubWindow : public QskPopup
 
   protected:
     bool event( QEvent* ) override;
-
     void updateLayout() override;
+
+    QSizeF contentsSizeHint() const override;
 
     void itemChange( QQuickItem::ItemChange,
         const QQuickItem::ItemChangeData& ) override;

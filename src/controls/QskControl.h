@@ -193,6 +193,7 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     virtual void updateResources();
     virtual void updateLayout();
 
+  protected:
     virtual QSizeF contentsSizeHint() const;
 
   private:

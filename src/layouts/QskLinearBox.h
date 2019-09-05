@@ -54,8 +54,6 @@ class QSK_EXPORT QskLinearBox : public QskIndexedLayoutBox
     void removeItem( const QQuickItem* );
     void removeAt( int index );
 
-    QSizeF contentsSizeHint() const override;
-
     qreal heightForWidth( qreal width ) const override;
     qreal widthForHeight( qreal height ) const override;
 
@@ -109,6 +107,8 @@ class QSK_EXPORT QskLinearBox : public QskIndexedLayoutBox
 
     void itemChange( ItemChange, const ItemChangeData& ) override;
     void updateLayout() override;
+
+    QSizeF contentsSizeHint() const override;
 
     void autoAddItem( QQuickItem* ) override final;
     void autoRemoveItem( QQuickItem* ) override final;

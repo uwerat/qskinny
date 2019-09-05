@@ -99,8 +99,6 @@ class QSK_EXPORT QskGridBox : public QskBox
     Q_INVOKABLE void setRowFixedHeight( int row, qreal height );
     Q_INVOKABLE void setColumnFixedWidth( int column, qreal width );
 
-    QSizeF contentsSizeHint() const override;
-
     qreal heightForWidth( qreal width ) const override;
     qreal widthForHeight( qreal height ) const override;
 
@@ -117,6 +115,8 @@ class QSK_EXPORT QskGridBox : public QskBox
 
     void itemChange( ItemChange, const ItemChangeData& ) override;
     void updateLayout() override;
+
+    QSizeF contentsSizeHint() const override;
 
   private:
     class PrivateData;

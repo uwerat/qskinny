@@ -34,12 +34,14 @@ class QSK_EXPORT QskSeparator : public QskControl
     void setThickness( qreal thickness );
     qreal thickness() const;
 
-    QSizeF contentsSizeHint() const override;
     QskAspect::Placement effectivePlacement() const override;
 
   Q_SIGNALS:
     void orientationChanged( Qt::Orientation );
     void thicknessChanged();
+
+  protected:
+    QSizeF contentsSizeHint() const override;
 
   private:
     Qt::Orientation m_orientation;
