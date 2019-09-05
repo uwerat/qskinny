@@ -156,8 +156,6 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     virtual qreal heightForWidth( qreal width ) const;
     virtual qreal widthForHeight( qreal height ) const;
 
-    virtual QSizeF contentsSizeHint() const;
-
     QLocale locale() const;
     void resetLocale();
 
@@ -194,6 +192,8 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     // called from updatePolish
     virtual void updateResources();
     virtual void updateLayout();
+
+    virtual QSizeF contentsSizeHint() const;
 
   private:
     void setActiveFocusOnTab( bool ) = delete;                 // use setFocusPolicy
