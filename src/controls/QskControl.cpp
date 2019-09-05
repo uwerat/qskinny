@@ -713,8 +713,8 @@ qreal QskControl::heightForWidth( qreal width ) const
 
     if ( d->autoLayoutChildren )
     {
-        return constrainedMetric( QskLayoutConstraint::HeightForWidth,
-            this, width, QskLayoutConstraint::constrainedChildrenMetric );
+        using namespace QskLayoutConstraint;
+        return constrainedMetric( HeightForWidth, this, width, constrainedChildrenMetric );
     }
 
     return -1.0;
@@ -728,8 +728,8 @@ qreal QskControl::widthForHeight( qreal height ) const
 
     if ( d->autoLayoutChildren )
     {
-        return constrainedMetric( QskLayoutConstraint::WidthForHeight,
-            this, height, QskLayoutConstraint::constrainedChildrenMetric );
+        using namespace QskLayoutConstraint;
+        return constrainedMetric( WidthForHeight, this, height, constrainedChildrenMetric );
     }
 
     return -1.0;
