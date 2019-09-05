@@ -8,7 +8,6 @@
 
 #include "QskQmlGlobal.h"
 
-#include <QskStackBox.h>
 #include <QskLinearBox.h>
 #include <QskGridBox.h>
 
@@ -46,31 +45,6 @@ class QskLayoutBoxQml : public LayoutBox
     {
         // QML does not like a const version
         LayoutBox::removeItem( item );
-    }
-
-    Q_INVOKABLE void setAlignment( QQuickItem* item, Qt::Alignment alignment )
-    {
-        LayoutBox::setAlignment( item, alignment );
-    }
-
-    Q_INVOKABLE Qt::Alignment alignment( QQuickItem* item ) const
-    {
-        return LayoutBox::alignment( item );
-    }
-};
-
-class QskStackBoxQml : public QskLayoutBoxQml< QskStackBox >
-{
-    Q_OBJECT
-
-    Q_INVOKABLE void setAlignmentAt( int index, Qt::Alignment alignment )
-    {
-        QskStackBox::setAlignmentAt( index, alignment );
-    }
-
-    Q_INVOKABLE Qt::Alignment alignmentAt( int index ) const
-    {
-        return QskStackBox::alignmentAt( index );
     }
 };
 

@@ -25,6 +25,7 @@ namespace
             setObjectName( "StackBox" );
 
             setBackgroundColor( Qt::white );
+            setDefaultAlignment( Qt::AlignCenter );
 
             setMargins( 30 );
 
@@ -77,7 +78,7 @@ namespace
         {
             auto rect = new TestRectangle( colorName );
             rect->setText( QString::number( itemCount() + 1 ) );
-            addItem( rect, Qt::AlignCenter );
+            addItem( rect );
         }
 
         int incrementedIndex( int offset ) const

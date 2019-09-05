@@ -35,31 +35,10 @@ static qreal qskConstrainedValue( QskLayoutConstraint::Type type,
     return constrainedValue;
 }
 
-namespace
-{
-    class ItemInfo
-    {
-      public:
-        inline ItemInfo()
-            : item( nullptr )
-        {
-        }
-
-        inline ItemInfo( Qt::Alignment alignment, QQuickItem* item )
-            : alignment( alignment )
-            , item( item )
-        {
-        }
-
-        Qt::Alignment alignment;
-        QQuickItem* item;
-    };
-}
-
 class QskStackBox::PrivateData
 {
   public:
-    QVector< ItemInfo > itemInfos;
+    QVector< QQuickItem* > items;
     QPointer< QskStackBoxAnimator > animator;
 
     int currentIndex = -1;
@@ -140,24 +119,21 @@ QskStackBoxAnimator* QskStackBox::effectiveAnimator()
 
 int QskStackBox::itemCount() const
 {
-    return m_data->itemInfos.count();
+    return m_data->items.count();
 }
 
 QQuickItem* QskStackBox::itemAtIndex( int index ) const
 {
-    if ( index >= 0 && index < m_data->itemInfos.count() )
-        return m_data->itemInfos[ index ].item;
-
-    return nullptr;
+    return m_data->items.value( index );
 }
 
 int QskStackBox::indexOf( const QQuickItem* item ) const
 {
     if ( item && ( item->parentItem() != this ) )
     {
-        for ( int i = 0; i < m_data->itemInfos.count(); i++ )
+        for ( int i = 0; i < m_data->items.count(); i++ )
         {
-            if ( item == m_data->itemInfos[i].item )
+            if ( item == m_data->items[i] )
                 return i;
         }
     }
@@ -220,13 +196,12 @@ void QskStackBox::setCurrentItem( const QQuickItem* item )
     setCurrentIndex( indexOf( item ) );
 }
 
-void QskStackBox::addItem( QQuickItem* item, Qt::Alignment alignment )
+void QskStackBox::addItem( QQuickItem* item )
 {
-    insertItem( -1, item, alignment );
+    insertItem( -1, item );
 }
 
-void QskStackBox::insertItem(
-    int index, QQuickItem* item, Qt::Alignment alignment )
+void QskStackBox::insertItem( int index, QQuickItem* item )
 {
     if ( item == nullptr )
         return;
@@ -251,30 +226,21 @@ void QskStackBox::insertItem(
             if ( ( index == oldIndex ) || ( doAppend && ( oldIndex == itemCount() - 1 ) ) )
             {
                 // already in place
-
-                auto& itemInfo = m_data->itemInfos[oldIndex];
-
-                if ( alignment != itemInfo.alignment )
-                {
-                    itemInfo.alignment = alignment;
-                    polish();
-                }
-
                 return;
             }
 
-            m_data->itemInfos.removeAt( oldIndex );
+            m_data->items.removeAt( oldIndex );
         }
     }
 
     if ( doAppend )
         index = itemCount();
 
-    m_data->itemInfos.insert( index, { alignment, item } );
+    m_data->items.insert( index, item );
 
     const int oldCurrentIndex = m_data->currentIndex;
 
-    if ( m_data->itemInfos.count() == 1 )
+    if ( m_data->items.count() == 1 )
     {
         m_data->currentIndex = 0;
         item->setVisible( true );
@@ -301,19 +267,19 @@ void QskStackBox::removeAt( int index )
 
 void QskStackBox::removeItemInternal( int index, bool unparent )
 {
-    if ( index < 0 || index >= m_data->itemInfos.count() )
+    if ( index < 0 || index >= m_data->items.count() )
         return;
 
     if ( !unparent )
     {
-        if ( auto item = m_data->itemInfos[ index ].item )
+        if ( auto item = m_data->items[ index ] )
         {
             if ( item->parentItem() == this )
                 item->setParentItem( nullptr );
         }
     }
 
-    m_data->itemInfos.removeAt( index );
+    m_data->items.removeAt( index );
 
     if ( index <= m_data->currentIndex )
         Q_EMIT currentIndexChanged( --m_data->currentIndex );
@@ -339,21 +305,15 @@ void QskStackBox::autoRemoveItem( QQuickItem* item )
 
 void QskStackBox::clear( bool autoDelete )
 {
-    for ( const auto& itemInfo : qskAsConst( m_data->itemInfos ) )
+    for ( const auto item : qskAsConst( m_data->items ) )
     {
-        auto item = itemInfo.item;
-
         if( autoDelete && ( item->parent() == this ) )
-        {
             delete item;
-        }
         else
-        {
             item->setParentItem( nullptr );
-        }
     }
 
-    m_data->itemInfos.clear();
+    m_data->items.clear();
 
     if ( m_data->currentIndex >= 0 )
     {
@@ -362,45 +322,17 @@ void QskStackBox::clear( bool autoDelete )
     }
 }
 
-void QskStackBox::setAlignment( const QQuickItem* item, Qt::Alignment alignment )
-{
-    setAlignmentAt( indexOf( item ), alignment );
-}
-
-Qt::Alignment QskStackBox::alignment( const QQuickItem* item ) const
-{
-    return alignmentAt( indexOf( item ) );
-}
-
-void QskStackBox::setAlignmentAt( int index, Qt::Alignment alignment )
-{
-    if ( index < 0 || index >= m_data->itemInfos.count() )
-        return;
-
-    m_data->itemInfos[ index ].alignment = alignment;
-
-    if ( index == m_data->currentIndex )
-        polish();
-}
-
-Qt::Alignment QskStackBox::alignmentAt( int index ) const
-{
-    if ( index >= 0 && index < m_data->itemInfos.count() )
-        return m_data->itemInfos[ index ].alignment;
-
-    return Qt::Alignment();
-}
-
 QRectF QskStackBox::geometryForItemAt( int index ) const
 {
     const auto r = layoutRect();
 
-    if ( index >= 0 && index < m_data->itemInfos.count() )
+    if ( const auto item = m_data->items.value( index ) )
     {
-        const auto& info = m_data->itemInfos[ index ];
+        auto alignment = QskLayoutConstraint::layoutAlignmentHint( item );
+        if ( alignment == 0 )
+            alignment = m_data->defaultAlignment;
 
-        const auto align = info.alignment ? info.alignment : m_data->defaultAlignment;
-        return QskLayoutConstraint::boundedRect( info.item, r, align );
+        return QskLayoutConstraint::boundedRect( item, r, alignment );
     }
 
     return QRectF( r.x(), r.y(), 0.0, 0.0 );
@@ -411,12 +343,12 @@ void QskStackBox::updateLayout()
     if ( maybeUnresized() )
         return;
 
-    const auto idx = m_data->currentIndex;
+    const auto index = m_data->currentIndex;
 
-    if ( idx >= 0 )
+    if ( index >= 0 )
     {
-        const auto rect = geometryForItemAt( idx );
-        qskSetItemGeometry( m_data->itemInfos[ idx ].item, rect );
+        const auto rect = geometryForItemAt( index );
+        qskSetItemGeometry( m_data->items[ index ], rect );
     }
 }
 
@@ -434,10 +366,8 @@ QSizeF QskStackBox::contentsSizeHint() const
 
     int constraintTypes = Unconstrained;
 
-    for ( const auto& itemInfo : qskAsConst( m_data->itemInfos ) )
+    for ( const auto item : qskAsConst( m_data->items ) )
     {
-        const auto item = itemInfo.item;
-
         const auto type = constraintType( item );
         if ( type != Unconstrained )
         {
@@ -463,13 +393,11 @@ QSizeF QskStackBox::contentsSizeHint() const
     {
         const QSizeF constraint( -1, height );
 
-        for ( const auto& itemInfo : qskAsConst( m_data->itemInfos ) )
+        for ( const auto& item : qskAsConst( m_data->items ) )
         {
-            const auto item = itemInfo.item;
-
             if ( constraintType( item ) == WidthForHeight )
             {
-                const QSizeF hint = QskLayoutConstraint::sizeHint(
+                const auto hint = QskLayoutConstraint::sizeHint(
                     item, Qt::PreferredSize, constraint );
 
                 width = qMax( width, hint.width() );
@@ -481,10 +409,8 @@ QSizeF QskStackBox::contentsSizeHint() const
     {
         const QSizeF constraint( width, -1 );
 
-        for ( const auto& itemInfo : qskAsConst( m_data->itemInfos ) )
+        for ( const auto& item : qskAsConst( m_data->items ) )
         {
-            const auto item = itemInfo.item;
-
             if ( constraintType( item ) == HeightForWidth )
             {
                 const QSizeF hint = QskLayoutConstraint::sizeHint(

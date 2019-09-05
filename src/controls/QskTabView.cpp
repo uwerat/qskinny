@@ -113,7 +113,7 @@ int QskTabView::insertTab( int index, QskTabButton* button, QQuickItem* item )
         item->setParent( this );
 
     index = m_data->tabBar->insertTab( index, button );
-    m_data->stackBox->insertItem( index, item, Qt::Alignment() );
+    m_data->stackBox->insertItem( index, item );
 
     return index;
 }

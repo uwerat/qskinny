@@ -34,11 +34,9 @@ class QSK_EXPORT QskStackBox : public QskIndexedLayoutBox
     QQuickItem* itemAtIndex( int index ) const;
     int indexOf( const QQuickItem* ) const;
 
-    void addItem(
-        QQuickItem*, Qt::Alignment alignment = Qt::Alignment() );
+    void addItem( QQuickItem* );
 
-    void insertItem(
-        int index, QQuickItem*, Qt::Alignment alignment = Qt::Alignment() );
+    void insertItem( int index, QQuickItem* );
 
     void removeItem( const QQuickItem* );
     void removeAt( int index );
@@ -48,12 +46,6 @@ class QSK_EXPORT QskStackBox : public QskIndexedLayoutBox
 
     void setDefaultAlignment( Qt::Alignment );
     Qt::Alignment defaultAlignment() const;
-
-    void setAlignmentAt( int index, Qt::Alignment );
-    Qt::Alignment alignmentAt( int index ) const;
-
-    void setAlignment( const QQuickItem*, Qt::Alignment );
-    Qt::Alignment alignment( const QQuickItem* ) const;
 
     void setAnimator( QskStackBoxAnimator* );
     const QskStackBoxAnimator* animator() const;

@@ -243,7 +243,6 @@ void QskQml::registerTypes()
 #if 1
     QSK_REGISTER( QskGridBoxQml, "GridBox" );
     QSK_REGISTER( QskLinearBoxQml, "LinearBox" );
-    QSK_REGISTER( QskStackBoxQml, "StackBox" );
 #else
     QskGridBoxQml gridBox;
 #endif
