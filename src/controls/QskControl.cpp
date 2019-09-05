@@ -883,7 +883,7 @@ QSGNode* QskControl::updateItemPaintNode( QSGNode* node )
     if ( node == nullptr )
         node = new QSGNode;
 
-    QskSkinnable::updateNode( node );
+    updateNode( node );
     return node;
 }
 
