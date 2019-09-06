@@ -66,6 +66,8 @@ namespace QskLayoutConstraint
     QSK_EXPORT bool retainSizeWhenHidden( const QQuickItem* );
     QSK_EXPORT void setRetainSizeWhenHidden( QQuickItem*, bool );
 
+    QSK_EXPORT bool isVisibleToLayout( const QQuickItem* );
+
     const qreal unlimited = std::numeric_limits< float >::max();
     const QSizeF defaultSizeHints[] = { { 0, 0 }, { -1, -1 }, { unlimited, unlimited } };
 }

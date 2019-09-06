@@ -494,3 +494,14 @@ void QskLayoutConstraint::setRetainSizeWhenHidden( QQuickItem* item, bool on )
         item->setProperty( s_retainSizeWhenHiddenProperty, v );
     }
 }
+
+bool QskLayoutConstraint::isVisibleToLayout( const QQuickItem* item )
+{
+    if ( item )
+    {
+        if ( !qskIsTransparentForPositioner( item ) )
+            return qskIsVisibleToParent( item ) || retainSizeWhenHidden( item );
+    }
+
+    return false;
+}
