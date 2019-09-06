@@ -118,6 +118,8 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     void setLayoutHints( LayoutHints );
     LayoutHints layoutHints() const;
 
+    bool isVisibleToLayout() const;
+
     void setMinimumSize( const QSizeF& );
     void setMinimumSize( qreal width, qreal height );
     void setMinimumWidth( qreal width );

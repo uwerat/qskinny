@@ -399,6 +399,12 @@ QskControl::LayoutHints QskControl::layoutHints() const
     return static_cast< LayoutHints >( d_func()->layoutHints );
 }
 
+bool QskControl::isVisibleToLayout() const
+{
+    return !isTransparentForPositioner()
+        && ( isVisibleToParent() || ( layoutHints() & RetainSizeWhenHidden ) );
+}
+
 void QskControl::setPreferredSize( const QSizeF& size )
 {
     setExplicitSizeHint( Qt::PreferredSize, size );
@@ -654,12 +660,6 @@ QSizeF QskControl::effectiveSizeHint(
             we always have: minimum <= preferred <= maximum.
          */
 
-#define DEBUG_NORMALIZE_HINTS 0
-
-#if DEBUG_NORMALIZE_HINTS
-        const auto oldHint = hint;
-#endif
-
         if ( whichHint == Qt::MaximumSize )
         {
             const auto minimumHint = d->explicitSizeHint( Qt::MinimumSize );
@@ -691,15 +691,6 @@ QSizeF QskControl::effectiveSizeHint(
                 hint.setHeight( qBound( minH, hint.height(), maxH ) );
             }
         }
-
-#if DEBUG_NORMALIZE_HINTS
-        if ( hint != oldHint )
-        {
-            const auto minimumHint = d->explicitSizeHint( Qt::MinimumSize );
-            const auto maximumHint = d->explicitSizeHint( Qt::MaximumSize );
-            qDebug() << whichHint << minimumHint << oldHint << maximumHint << "->" << hint;
-        }
-#endif
     }
 
     return hint;
