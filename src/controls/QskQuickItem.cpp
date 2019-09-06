@@ -250,6 +250,11 @@ bool QskQuickItem::isVisibleTo( const QQuickItem* ancestor ) const
     return qskIsVisibleTo( this, ancestor );
 }
 
+bool QskQuickItem::isVisibleToParent() const
+{
+    return d_func()->explicitVisible;
+}
+
 void QskQuickItem::setGeometry( qreal x, qreal y, qreal width, qreal height )
 {
     // QQuickItem does not even offer changing the geometry

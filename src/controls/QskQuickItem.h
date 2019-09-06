@@ -53,6 +53,7 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
     const char* className() const;
 
     bool isVisibleTo( const QQuickItem* ) const;
+    bool isVisibleToParent() const;
 
     QRectF geometry() const;
     QRectF rect() const;
