@@ -342,7 +342,7 @@ qreal QskVirtualKeyboard::widthForHeight( qreal height ) const
     qreal width = height / ratio;
 
     width += padding.left() + padding.right();
-    width += padding.left() + padding.right();
+    width += margins.left() + margins.right();
 
     return width;
 }
