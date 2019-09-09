@@ -11,6 +11,7 @@
 #include <qnamespace.h>
 #include <qsize.h>
 #include <limits>
+#include <functional>
 
 class QskSizePolicy;
 class QskControl;
@@ -18,8 +19,6 @@ class QskLayoutHint;
 class QQuickItem;
 class QSizeF;
 class QRectF;
-
-namespace std { template< typename T > class function; }
 
 namespace QskLayoutConstraint
 {
