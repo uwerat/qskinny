@@ -266,7 +266,8 @@ QskLayoutChain::CellData Element::cell(
     if ( policy & QskSizePolicy::ExpandFlag )
         cell.stretch = 1;
 
-    cell.hint = QskLayoutConstraint::layoutHint( m_item, orientation, constraint );
+    if ( !m_isSpacer )
+        cell.hint = QskLayoutConstraint::layoutHint( m_item, orientation, constraint );
 
     return cell;
 }
