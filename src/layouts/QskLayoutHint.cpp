@@ -4,11 +4,11 @@
  *****************************************************************************/
 
 #include "QskLayoutHint.h"
-#include "QskLayoutConstraint.h"
+#include "QskControl.h"
 #include <qnamespace.h>
 
 QskLayoutHint::QskLayoutHint()
-    : QskLayoutHint( 0.0, 0.0, QskLayoutConstraint::unlimited )
+    : QskLayoutHint( 0.0, 0.0, QskLayoutHint::unlimited )
 {
 }
 
@@ -75,7 +75,21 @@ void QskLayoutHint::normalize()
 bool QskLayoutHint::isDefault() const
 {
     return ( m_minimum == 0.0 ) && ( m_preferred == 0.0 )
-        && ( m_maximum == QskLayoutConstraint::unlimited );
+        && ( m_maximum == QskLayoutHint::unlimited );
+}
+
+qreal QskLayoutHint::combined( int which, qreal value1, qreal value2 )
+{
+    if ( value1 < 0.0 )
+        return value2;
+
+    if ( value2 < 0.0 )
+        return value1;
+
+    if ( which == Qt::MaximumSize )
+        return qMin( value1, value2 );
+    else
+        return qMax( value1, value2 );
 }
 
 #ifndef QT_NO_DEBUG_STREAM
@@ -84,7 +98,7 @@ bool QskLayoutHint::isDefault() const
 
 static inline QString qskHintValueString( qreal value )
 {
-    if ( value >= QskLayoutConstraint::unlimited )
+    if ( value >= QskLayoutHint::unlimited )
         return QStringLiteral( "unlimited" );
     else
         return QString::number( value );

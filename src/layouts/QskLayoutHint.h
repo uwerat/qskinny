@@ -8,6 +8,7 @@
 
 #include "QskGlobal.h"
 #include <qglobal.h>
+#include <limits>
 
 class QDebug;
 
@@ -43,6 +44,9 @@ class QSK_EXPORT QskLayoutHint
     void expandMinimum( qreal value );
     void expandPreferred( qreal value );
     void expandMaximum( qreal value );
+
+    static qreal combined( int which, qreal value1, qreal value2 );
+    static constexpr qreal unlimited = std::numeric_limits< float >::max();
 
   private:
     qreal m_minimum;

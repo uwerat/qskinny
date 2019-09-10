@@ -7,6 +7,7 @@
 #define QSK_SIZE_POLICY_H_
 
 #include "QskGlobal.h"
+#include <qnamespace.h>
 #include <qmetatype.h>
 
 class QDebug;
@@ -52,8 +53,17 @@ class QSK_EXPORT QskSizePolicy
         ConstrainedExpanding        = ConstrainedFlag | Expanding
     };
 
+    enum ConstraintType
+    {
+        Unconstrained  = 0,
+
+        WidthForHeight = 1 << 0,
+        HeightForWidth = 1 << 1
+    };
+
     Q_ENUM( Flag )
     Q_ENUM( Policy )
+    Q_ENUM( ConstraintType )
 
     QskSizePolicy();
     QskSizePolicy( Policy horizontalPolicy, Policy verticalPolicy );
@@ -69,6 +79,12 @@ class QSK_EXPORT QskSizePolicy
 
     Policy policy( Qt::Orientation ) const;
     void setPolicy( Qt::Orientation, Policy );
+
+    ConstraintType constraintType() const;
+    bool isConstrained( Qt::Orientation ) const;
+
+    Qt::SizeHint effectiveSizeHintType(
+        Qt::SizeHint, Qt::Orientation ) const;
 
   private:
     unsigned char m_horizontalPolicy;
@@ -117,6 +133,11 @@ inline void QskSizePolicy::setVerticalPolicy( Policy policy )
 inline QskSizePolicy::Policy QskSizePolicy::verticalPolicy() const
 {
     return static_cast< Policy >( m_verticalPolicy );
+}
+
+inline bool QskSizePolicy::isConstrained( Qt::Orientation orientation ) const
+{
+    return ( policy( orientation ) & ConstrainedFlag );
 }
 
 #ifndef QT_NO_DEBUG_STREAM

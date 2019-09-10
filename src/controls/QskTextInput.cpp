@@ -441,8 +441,11 @@ void QskTextInput::focusOutEvent( QFocusEvent* event )
     Inherited::focusOutEvent( event );
 }
 
-QSizeF QskTextInput::contentsSizeHint() const
+QSizeF QskTextInput::contentsSizeHint( Qt::SizeHint which, const QSizeF& ) const
 {
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
+
     using namespace QskAspect;
 
     auto input = m_data->textInput;

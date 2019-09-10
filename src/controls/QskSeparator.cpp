@@ -70,8 +70,12 @@ qreal QskSeparator::thickness() const
     return metric( QskSeparator::Panel | QskAspect::Size );
 }
 
-QSizeF QskSeparator::contentsSizeHint() const
+QSizeF QskSeparator::contentsSizeHint(
+    Qt::SizeHint which, const QSizeF& ) const
 {
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
+
     const qreal m = thickness();
 
     if ( m_orientation == Qt::Horizontal )

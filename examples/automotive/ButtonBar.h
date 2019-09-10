@@ -17,7 +17,7 @@ class ButtonBar : public QskLinearBox
     void addIndicator( const char* name );
 
   protected:
-    QSizeF contentsSizeHint() const override;
+    QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 };
 
 #endif

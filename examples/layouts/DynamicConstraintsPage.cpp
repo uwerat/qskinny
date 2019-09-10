@@ -19,10 +19,10 @@ namespace
         Control( const char* colorName, QQuickItem* parent = nullptr );
         Control( const char* colorName, qreal aspectRatio, QQuickItem* parent = nullptr );
 
-        qreal heightForWidth( qreal width ) const override;
-        qreal widthForHeight( qreal height ) const override;
-
         void transpose();
+
+      protected:
+        QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
       private:
         qreal m_aspectRatio;
@@ -65,14 +65,19 @@ Control::Control( const char* colorName, qreal aspectRatio, QQuickItem* parent )
     setPreferredHeight( 100 );
 }
 
-qreal Control::heightForWidth( qreal width ) const
+QSizeF Control::contentsSizeHint(
+    Qt::SizeHint which, const QSizeF& constraint ) const
 {
-    return width / m_aspectRatio;
-}
+    if ( which == Qt::PreferredSize )
+    {
+        if ( constraint.width() >= 0.0 )
+            return QSizeF( -1.0, constraint.width() / m_aspectRatio );
 
-qreal Control::widthForHeight( qreal height ) const
-{
-    return height * m_aspectRatio;
+        if ( constraint.height() >= 0.0 )
+            return QSizeF( constraint.height() * m_aspectRatio, -1.0 );
+    }
+
+    return QSizeF();
 }
 
 void Control::transpose()

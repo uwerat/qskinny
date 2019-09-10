@@ -30,11 +30,13 @@ class QskControlPrivate : public QskQuickItemPrivate
     void resetExplicitSizeHint( Qt::SizeHint );
     QSizeF explicitSizeHint( Qt::SizeHint ) const;
 
-    bool maybeGesture( QQuickItem*, QEvent* );
-
+    QSizeF implicitSizeHint( Qt::SizeHint, const QSizeF& ) const;
     QSizeF implicitSizeHint() const override final;
+
     void implicitSizeChanged() override final;
     void layoutConstraintChanged() override final;
+
+    bool maybeGesture( QQuickItem*, QEvent* );
 
   private:
     Q_DECLARE_PUBLIC( QskControl )

@@ -261,9 +261,9 @@ void QskTabBar::removeTab( int index )
             nextButton->setChecked( true );
             m_data->connectButton( nextButton, this, true );
         }
-        
+
         m_data->currentIndex = nextIndex;
-        
+
         Q_EMIT countChanged( count() );
         Q_EMIT currentIndexChanged( nextIndex );
     }

@@ -10,7 +10,6 @@
 #include "Variable.h"
 #include "Expression.h"
 
-#include <QskLayoutConstraint.h>
 #include <QskEvent.h>
 #include <QskQuick.h>
 
@@ -122,14 +121,18 @@ void AnchorBox::PrivateData::setupSolver( int type, Solver& solver )
 
         if ( type < 0 || type == Qt::MinimumSize )
         {
-            const auto minSize = QskLayoutConstraint::sizeHint( item, Qt::MinimumSize );
-            solver.addConstraint( r.right >= r.left + minSize.width() );
-            solver.addConstraint( r.bottom >= r.top + minSize.height() );
+            const auto minSize = qskSizeConstraint( item, Qt::MinimumSize );
+
+            if ( minSize.width() >= 0.0 )
+                solver.addConstraint( r.right >= r.left + minSize.width() );
+
+            if ( minSize.height() >= 0.0 )
+                solver.addConstraint( r.bottom >= r.top + minSize.height() );
         }
 
         if ( type < 0 || type == Qt::PreferredSize )
         {
-            const auto prefSize = QskLayoutConstraint::sizeHint( item, Qt::PreferredSize );
+            const auto prefSize = qskSizeConstraint( item, Qt::PreferredSize );
 
             Constraint c1( r.right == r.left + prefSize.width(), Strength::strong );
             solver.addConstraint( c1 );
@@ -140,11 +143,11 @@ void AnchorBox::PrivateData::setupSolver( int type, Solver& solver )
 
         if ( type < 0 || type == Qt::MaximumSize )
         {
-            const auto maxSize = QskLayoutConstraint::sizeHint( item, Qt::MaximumSize );
-            if ( maxSize.width() < QskLayoutConstraint::unlimited )
+            const auto maxSize = qskSizeConstraint( item, Qt::MaximumSize );
+            if ( maxSize.width() >= 0.0 )
                 solver.addConstraint( r.right <= r.left + maxSize.width() );
 
-            if ( maxSize.height() < QskLayoutConstraint::unlimited )
+            if ( maxSize.height() >= 0.0 )
                 solver.addConstraint( r.bottom <= r.top + maxSize.height() );
         }
     }

@@ -250,8 +250,11 @@ QRectF QskPushButton::layoutRectForSize( const QSizeF& size ) const
     return innerBox( Panel, subControlRect( size, Panel ) );
 }
 
-QSizeF QskPushButton::contentsSizeHint() const
+QSizeF QskPushButton::contentsSizeHint( Qt::SizeHint which, const QSizeF& ) const
 {
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
+
     QSizeF size( 0, 0 );
 
     const QFontMetricsF fm( font() );

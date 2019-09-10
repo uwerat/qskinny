@@ -5,7 +5,6 @@
 
 #include "QskGridLayoutEngine.h"
 #include "QskLayoutHint.h"
-#include "QskLayoutConstraint.h"
 #include "QskLayoutChain.h"
 #include "QskSizePolicy.h"
 #include "QskQuick.h"
@@ -172,9 +171,7 @@ namespace
         QRect minimumGrid() const;
 
         bool isIgnored() const;
-
-        QskLayoutChain::CellData cell(
-            Qt::Orientation, qreal constraint ) const;
+        QskLayoutChain::CellData cell( Qt::Orientation ) const;
 
         void transpose();
 
@@ -247,17 +244,12 @@ QRect Element::minimumGrid() const
 
 bool Element::isIgnored() const
 {
-    if ( !m_isSpacer && !QskLayoutConstraint::retainSizeWhenHidden( m_item ) )
-        return !qskIsVisibleToParent( m_item );
-
-    return false;
+    return !( m_isSpacer || qskIsVisibleToLayout( m_item ) );
 }
 
-QskLayoutChain::CellData Element::cell(
-    Qt::Orientation orientation, qreal constraint ) const
+QskLayoutChain::CellData Element::cell( Qt::Orientation orientation ) const
 {
-    const auto policy = QskLayoutConstraint::sizePolicy(
-        m_item ).policy( orientation );
+    const auto policy = qskSizePolicy( m_item ).policy( orientation );
 
     QskLayoutChain::CellData cell;
     cell.isValid = true;
@@ -265,9 +257,6 @@ QskLayoutChain::CellData Element::cell(
 
     if ( policy & QskSizePolicy::ExpandFlag )
         cell.stretch = 1;
-
-    if ( !m_isSpacer )
-        cell.hint = QskLayoutConstraint::layoutHint( m_item, orientation, constraint );
 
     return cell;
 }
@@ -601,7 +590,10 @@ void QskGridLayoutEngine::setupChain( Qt::Orientation orientation,
             if ( !constraints.isEmpty() )
                 constraint = qskSegmentLength( constraints, grid.left(), grid.right() );
 
-            chain.expandCell( grid.top(), element.cell( orientation, constraint ) );
+            auto cell = element.cell( orientation );
+            cell.hint = layoutHint( element.item(), orientation, constraint );
+            
+            chain.expandCell( grid.top(), cell );
         }
         else
         {
@@ -624,7 +616,9 @@ void QskGridLayoutEngine::setupChain( Qt::Orientation orientation,
         if ( !constraints.isEmpty() )
             constraint = qskSegmentLength( constraints, grid.left(), grid.right() );
 
-        chain.expandCells( grid.top(), grid.height(),
-            element->cell( orientation, constraint ) );
+        auto cell = element->cell( orientation );
+        cell.hint = layoutHint( element->item(), orientation, constraint );
+
+        chain.expandCells( grid.top(), grid.height(), cell );
     }
 }

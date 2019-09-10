@@ -98,8 +98,8 @@ class QSK_EXPORT QskListView : public QskScrollView
     void mouseReleaseEvent( QMouseEvent* ) override;
 
     void updateScrollableSize();
-    QSizeF contentsSizeHint() const override;
 
+    QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
     void componentComplete() override;
 
   private:

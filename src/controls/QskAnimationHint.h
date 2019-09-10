@@ -38,7 +38,7 @@ class QSK_EXPORT QskAnimationHint
             QEasingCurve::Type type = QEasingCurve::Linear ) noexcept
         : duration( duration )
         , type( type )
-        , updateFlags( UpdateAuto ) 
+        , updateFlags( UpdateAuto )
     {
     }
 

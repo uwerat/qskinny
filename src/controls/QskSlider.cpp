@@ -108,8 +108,12 @@ bool QskSlider::isTracking() const
     return m_data->tracking;
 }
 
-QSizeF QskSlider::contentsSizeHint() const
+QSizeF QskSlider::contentsSizeHint(
+    Qt::SizeHint which, const QSizeF& ) const
 {
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
+
     const qreal dim = metric( QskSlider::Panel | QskAspect::Size );
     return ( m_data->orientation == Qt::Horizontal )
         ? QSizeF( 4 * dim, dim ) : QSizeF( dim, 4 * dim );

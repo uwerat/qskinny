@@ -120,7 +120,8 @@ QskAspect::Subcontrol QskDialogButtonBox::effectiveSubcontrol(
     return Inherited::effectiveSubcontrol( subControl );
 }
 
-QSizeF QskDialogButtonBox::contentsSizeHint() const
+QSizeF QskDialogButtonBox::layoutSizeHint(
+    Qt::SizeHint which, const QSizeF& constraint ) const
 {
     if ( m_data->dirtyLayout )
     {
@@ -128,7 +129,7 @@ QSizeF QskDialogButtonBox::contentsSizeHint() const
         m_data->dirtyLayout = false;
     }
 
-    return outerBoxSize( Panel, m_data->layoutBox->sizeHint() );
+    return m_data->layoutBox->effectiveSizeHint( which, constraint );
 }
 
 void QskDialogButtonBox::invalidateLayout()

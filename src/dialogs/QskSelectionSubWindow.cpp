@@ -48,9 +48,13 @@ namespace
 
 #if 1
         // how to find a reasonable default size ???
-        QSizeF contentsSizeHint() const override
+        QSizeF contentsSizeHint(
+            Qt::SizeHint which, const QSizeF& ) const override
         {
-            return QSizeF( 500, 500 );
+            if ( which == Qt::PreferredSize )
+                return QSizeF( 500, 500 );
+
+            return QSizeF();
         }
 #endif
     };

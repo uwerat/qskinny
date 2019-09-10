@@ -19,6 +19,37 @@ void QskSizePolicy::setPolicy( Qt::Orientation orientation, Policy policy )
         setVerticalPolicy( policy );
 }
 
+QskSizePolicy::ConstraintType QskSizePolicy::constraintType() const
+{
+    if ( horizontalPolicy() & ConstrainedFlag )
+        return QskSizePolicy::WidthForHeight;
+
+    if ( verticalPolicy() & ConstrainedFlag )
+        return QskSizePolicy::HeightForWidth;
+        
+    return QskSizePolicy::Unconstrained;
+}   
+
+Qt::SizeHint QskSizePolicy::effectiveSizeHintType(
+    Qt::SizeHint which, Qt::Orientation orientation ) const
+{
+    const auto policy = ( orientation == Qt::Horizontal )
+        ? horizontalPolicy() : verticalPolicy();
+
+    if ( which == Qt::MinimumSize )
+    {
+        if ( !( policy & ShrinkFlag ) )
+            return Qt::PreferredSize;
+    }
+    else if ( which == Qt::MaximumSize )
+    {
+        if ( !( policy & ( GrowFlag | ExpandFlag ) ) )
+            return Qt::PreferredSize;
+    }
+
+    return which;
+}
+
 #ifndef QT_NO_DEBUG_STREAM
 
 #include <qdebug.h>

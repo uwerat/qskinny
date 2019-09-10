@@ -29,8 +29,12 @@ namespace
             setTextOptions( options );
         }
 
-        QSizeF contentsSizeHint() const override
+        QSizeF contentsSizeHint(
+            Qt::SizeHint which, const QSizeF& ) const override
         {
+            if ( which != Qt::PreferredSize )
+                return QSizeF();
+
             auto size = QFontMetricsF( font() ).size( Qt::TextSingleLine, text() );
 
             const QSizeF minSize( metric( Panel | QskAspect::MinimumWidth ),

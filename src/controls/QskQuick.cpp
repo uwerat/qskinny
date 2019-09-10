@@ -5,6 +5,7 @@
 
 #include "QskQuick.h"
 #include "QskControl.h"
+#include "QskFunctions.h"
 #include <qquickitem.h>
 
 QSK_QT_PRIVATE_BEGIN
@@ -142,11 +143,68 @@ bool qskIsTransparentForPositioner( const QQuickItem* item )
     return QQuickItemPrivate::get( item )->isTransparentForPositioner();
 }
 
+bool qskIsVisibleToLayout( const QQuickItem* item )
+{
+    if ( item )
+    {
+        const auto d = QQuickItemPrivate::get( item );
+        return !d->isTransparentForPositioner()
+            && ( d->explicitVisible || qskRetainSizeWhenHidden( item ) );
+    }
+
+    return false;
+}
+
+QskSizePolicy qskSizePolicy( const QQuickItem* item )
+{
+    if ( auto control = qskControlCast( item ) )
+        return control->sizePolicy();
+
+    if ( item )
+    {
+        const QVariant v = item->property( "sizePolicy" );
+        if ( v.canConvert< QskSizePolicy >() )
+            return qvariant_cast< QskSizePolicy >( v );
+    }
+
+    return QskSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Preferred );
+}
+
+Qt::Alignment qskLayoutAlignmentHint( const QQuickItem* item )
+{
+    if ( auto control = qskControlCast( item ) )
+        return control->layoutAlignmentHint();
+
+    if ( item )
+    {
+        const QVariant v = item->property( "layoutAlignmentHint" );
+        if ( v.canConvert< Qt::Alignment >() )
+            return v.value< Qt::Alignment >();
+    }
+
+    return Qt::Alignment();
+}
+
+bool qskRetainSizeWhenHidden( const QQuickItem* item )
+{
+    if ( auto control = qskControlCast( item ) )
+        return control->layoutHints() & QskControl::RetainSizeWhenHidden;
+
+    if ( item )
+    {
+        const QVariant v = item->property( "retainSizeWhenHidden" );
+        if ( v.canConvert< bool >() )
+            return v.value< bool >();
+    }
+
+    return false;
+}
+
 QQuickItem* qskNearestFocusScope( const QQuickItem* item )
 {
     if ( item )
     {
-        for ( QQuickItem* scope = item->parentItem();
+        for ( auto scope = item->parentItem();
             scope != nullptr; scope = scope->parentItem() )
         {
             if ( scope->isFocusScope() )
@@ -290,3 +348,224 @@ const QSGNode* qskPaintNode( const QQuickItem* item )
 
     return QQuickItemPrivate::get( item )->paintNode;
 }
+
+QSizeF qskEffectiveSizeHint( const QQuickItem* item,
+    Qt::SizeHint whichHint, const QSizeF& constraint )
+{
+    if ( auto control = qskControlCast( item ) )
+        return control->effectiveSizeHint( whichHint, constraint );
+
+    if ( constraint.width() >= 0.0 || constraint.height() >= 0.0 )
+    {
+        // QQuickItem does not support dynamic constraints
+        return constraint;
+    }
+
+    if ( item == nullptr )
+        return QSizeF();
+
+    /*
+        Trying to retrieve something useful for non QskControls:
+
+        First are checking some properties, that usually match the
+        names for the explicit hints. For the implicit hints we only
+        have the implicitSize, what is interpreted as the implicit
+        preferred size.
+     */
+    QSizeF hint;
+
+    static const char* properties[] =
+    {
+        "minimumSize",
+        "preferredSize",
+        "maximumSize"
+    };
+
+    const QVariant v = item->property( properties[ whichHint ] );
+    if ( v.canConvert( QMetaType::QSizeF ) )
+        hint = v.toSizeF();
+
+    if ( whichHint == Qt::PreferredSize )
+    {
+        if ( hint.width() < 0 )
+            hint.setWidth( item->implicitWidth() );
+
+        if ( hint.height() < 0 )
+            hint.setHeight( item->implicitHeight() );
+    }
+
+    return hint;
+}
+
+static QSizeF qskBoundedConstraint( const QQuickItem* item,
+    const QSizeF& constraint, QskSizePolicy policy )
+{
+    Qt::Orientation orientation;
+
+    if ( constraint.width() >= 0.0 )
+    {
+        orientation = Qt::Horizontal;
+    }
+    else if ( constraint.height() >= 0.0 )
+    {
+        orientation = Qt::Vertical;
+    }
+    else
+    {
+        return constraint;
+    }
+
+    const auto whichMin = policy.effectiveSizeHintType( Qt::MinimumSize, orientation );
+    const auto whichMax = policy.effectiveSizeHintType( Qt::MaximumSize, orientation );
+
+    const auto hintMin = qskEffectiveSizeHint( item, whichMin );
+    const auto hintMax = ( whichMax == whichMin )
+        ? hintMin : qskEffectiveSizeHint( item, whichMax );
+
+    QSizeF size;
+
+    if ( orientation == Qt::Horizontal )
+    {
+        if ( hintMax.width() >= 0.0 )
+            size.rwidth() = qMin( constraint.width(), hintMax.width() );
+
+        size.rwidth() = qMax( constraint.width(), hintMin.width() );
+    }
+    else
+    {
+        if ( hintMax.height() >= 0.0 )
+            size.rheight() = qMin( constraint.height(), hintMax.height() );
+
+        size.rheight() = qMax( constraint.height(), hintMin.height() );
+
+    }
+
+    return size;
+}
+
+QSizeF qskSizeConstraint( const QQuickItem* item,
+    Qt::SizeHint which, const QSizeF& constraint )
+{
+    if ( item == nullptr )
+        return QSizeF( 0, 0 );
+
+    if ( constraint.isValid() )
+        return constraint;
+
+    const auto policy = qskSizePolicy( item );
+
+    const auto whichH = policy.effectiveSizeHintType( which, Qt::Horizontal );
+    const auto whichV = policy.effectiveSizeHintType( which, Qt::Vertical );
+
+    QSizeF size;
+
+    int constraintType = QskSizePolicy::Unconstrained;
+
+    if ( constraint.height() >= 0.0 )
+    {
+        const auto c = qskBoundedConstraint( item, constraint, policy );
+        size = qskEffectiveSizeHint( item, whichV, c );
+
+        if ( ( whichH != whichV ) || ( size.height() != c.height() ) )
+            constraintType = QskSizePolicy::WidthForHeight;
+    }
+    else if ( constraint.width() >= 0.0 )
+    {
+        const auto c = qskBoundedConstraint( item, constraint, policy );
+        size = qskEffectiveSizeHint( item, whichH, c );
+
+        if ( ( whichV != whichH ) || ( size.width() != c.height() ) )
+            constraintType = QskSizePolicy::HeightForWidth;
+    }
+    else
+    {
+        constraintType = policy.constraintType();
+
+        switch( constraintType )
+        {
+            case QskSizePolicy::WidthForHeight:
+            {
+                size = qskEffectiveSizeHint( item, whichV );
+                break;
+            }
+            case QskSizePolicy::HeightForWidth:
+            {
+                size = qskEffectiveSizeHint( item, whichH );
+                break;
+            }
+            default:
+            {
+                size = qskEffectiveSizeHint( item, whichH );
+
+                if ( whichV != whichH )
+                    constraintType = QskSizePolicy::HeightForWidth;
+            }
+        }
+    }
+
+    switch( constraintType )
+    {
+        case QskSizePolicy::HeightForWidth:
+        {
+            const QSizeF c( size.width(), -1.0 );
+            size.setHeight( qskEffectiveSizeHint( item, whichV, c ).height() );
+            break;
+        }
+        case QskSizePolicy::WidthForHeight:
+        {
+            const QSizeF c( -1.0, size.height() );
+            size.setWidth( qskEffectiveSizeHint( item, whichH, c ).width() );
+            break;
+        }
+    }
+
+    return size;
+}
+
+QSizeF qskConstrainedItemSize( const QQuickItem* item, const QSizeF& size )
+{
+    QSizeF constraint;
+
+    switch( static_cast< int >( qskSizePolicy( item ).constraintType() ) )
+    {
+        case QskSizePolicy::WidthForHeight:
+        {
+            constraint.setHeight( size.height() );
+            break;
+        }
+        case QskSizePolicy::HeightForWidth:
+        {
+            constraint.setWidth( size.width() );
+            break;
+        }
+    }
+
+    const auto max = qskSizeConstraint( item, Qt::MaximumSize, constraint );
+
+    qreal width = size.width();
+    qreal height = size.height();
+
+    if ( max.width() >= 0.0 )
+        width = qMin( width, max.width() );
+
+    if ( max.height() >= 0.0 )
+        height = qMin( height, max.height() );
+
+#if 1
+    const auto min = qskSizeConstraint( item, Qt::MinimumSize, constraint );
+
+    width = qMax( width, min.width() );
+    height = qMax( height, min.height() );
+#endif
+
+    return QSizeF( width, height );
+}
+
+QRectF qskConstrainedItemRect( const QQuickItem* item,
+    const QRectF& rect, Qt::Alignment alignment )
+{
+    const auto size = qskConstrainedItemSize( item, rect.size() );
+    return qskAlignedRectF( rect, size.width(), size.height(), alignment );
+}
+
+

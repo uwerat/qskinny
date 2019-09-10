@@ -77,12 +77,11 @@ class QSK_EXPORT QskDialogButtonBox : public QskBox
 
   protected:
     bool event( QEvent* event ) override;
-    void updateLayout() override;
 
-    QSizeF contentsSizeHint() const override;
+    void updateLayout() override;
+    QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
     virtual QskPushButton* createButton( QskDialog::Action ) const;
-
     void invalidateLayout();
 
   private:

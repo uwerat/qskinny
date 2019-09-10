@@ -41,7 +41,7 @@ class QSK_EXPORT QskSeparator : public QskControl
     void thicknessChanged();
 
   protected:
-    QSizeF contentsSizeHint() const override;
+    QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
   private:
     Qt::Orientation m_orientation;

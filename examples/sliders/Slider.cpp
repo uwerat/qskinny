@@ -53,10 +53,15 @@ Slider::Slider( QQuickItem* parentItem )
         this, &QskControl::focusIndicatorRectChanged );
 }
 
-QSizeF Slider::contentsSizeHint() const
+QSizeF Slider::contentsSizeHint(
+    Qt::SizeHint which, const QSizeF& constraint ) const
 {
-    const qreal extra = 40;
-    return Inherited::contentsSizeHint() + QSizeF( 0, extra );
+    auto size = Inherited::contentsSizeHint( which, constraint );
+
+    if ( which == Qt::PreferredSize && size.height() >= 0 )
+        size.setHeight( size.height() + 40 );
+
+    return size;
 }
 
 QRectF Slider::focusIndicatorRect() const

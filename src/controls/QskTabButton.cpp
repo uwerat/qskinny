@@ -86,8 +86,12 @@ QskTextOptions QskTabButton::textOptions() const
     return m_data->textOptions;
 }
 
-QSizeF QskTabButton::contentsSizeHint() const
+QSizeF QskTabButton::contentsSizeHint(
+    Qt::SizeHint which, const QSizeF& ) const
 {
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
+
     QSizeF size( metric( Panel | QskAspect::MinimumWidth ),
         metric( Panel | QskAspect::MinimumHeight ) );
 

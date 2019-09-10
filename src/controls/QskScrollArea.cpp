@@ -5,7 +5,6 @@
 
 #include "QskScrollArea.h"
 #include "QskEvent.h"
-#include "QskLayoutConstraint.h"
 #include "QskQuick.h"
 #include "QskScrollViewSkinlet.h"
 
@@ -423,7 +422,7 @@ void QskScrollArea::updateLayout()
 
 void QskScrollArea::adjustItem()
 {
-    QQuickItem* item = m_data->clipItem->scrolledItem();
+    auto item = m_data->clipItem->scrolledItem();
 
     if ( item == nullptr )
     {
@@ -434,7 +433,7 @@ void QskScrollArea::adjustItem()
     {
         if ( m_data->isItemResizable )
         {
-            const QRectF rect = viewContentsRect();
+            auto size = viewContentsRect().size();
 
 #if 0
             /*
@@ -443,13 +442,13 @@ void QskScrollArea::adjustItem()
                 moment we ignore this and start with a simplified code.
              */
 #endif
-            const auto newSize = QskLayoutConstraint::boundedSize( item, rect.size() );
-            item->setSize( newSize );
+            size = qskConstrainedItemSize( item, size );
+            item->setSize( size );
         }
 
         m_data->enableAutoTranslation( this, false );
 
-        setScrollableSize( QSizeF( item->width(), item->height() ) );
+        setScrollableSize( item->size() );
         setScrollPos( scrollPos() );
 
         m_data->enableAutoTranslation( this, true );

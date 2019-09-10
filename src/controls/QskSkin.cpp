@@ -74,21 +74,21 @@ QSK_QT_PRIVATE_END
 #include "QskStatusIndicator.h"
 #include "QskStatusIndicatorSkinlet.h"
 
-static inline QskSkinlet *qskNewSkinlet( const QMetaObject* metaObject, QskSkin* skin )
+static inline QskSkinlet* qskNewSkinlet( const QMetaObject* metaObject, QskSkin* skin )
 {
     const QByteArray signature = metaObject->className() + QByteArrayLiteral( "(QskSkin*)" );
 
-    QskSkinlet *skinlet = nullptr;
+    QskSkinlet* skinlet = nullptr;
 
     const int index = metaObject->indexOfConstructor( signature.constData() );
     if ( index >= 0 )
     {
-        void *param[] = { &skinlet, &skin }; 
+        void* param[] = { &skinlet, &skin };
         metaObject->static_metacall( QMetaObject::CreateInstance, index, param );
     }
 
     return skinlet;
-}   
+}
 
 namespace
 {

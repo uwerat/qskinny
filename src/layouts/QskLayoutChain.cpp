@@ -4,7 +4,6 @@
  *****************************************************************************/
 
 #include "QskLayoutChain.h"
-#include "QskLayoutConstraint.h"
 
 #include <qvarlengtharray.h>
 #include <qvector.h>
@@ -133,9 +132,9 @@ void QskLayoutChain::expandCells(
     if ( multiCell.hint.preferred() > chainHint.preferred() )
         preferred = chain.segments( multiCell.hint.preferred() );
 
-    if ( chainHint.maximum() == QskLayoutConstraint::unlimited )
+    if ( chainHint.maximum() == QskLayoutHint::unlimited )
     {
-        if ( multiCell.hint.maximum() < QskLayoutConstraint::unlimited )
+        if ( multiCell.hint.maximum() < QskLayoutHint::unlimited )
             maximum = chain.segments( multiCell.hint.maximum() );
     }
 
@@ -174,7 +173,7 @@ void QskLayoutChain::finish()
 
     if ( !m_cells.empty() )
     {
-        const auto maxMaximum = QskLayoutConstraint::unlimited;
+        const auto maxMaximum = QskLayoutHint::unlimited;
 
         for ( auto& cell : m_cells )
         {

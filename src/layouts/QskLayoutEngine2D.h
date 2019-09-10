@@ -8,10 +8,13 @@
 
 #include "QskGlobal.h"
 #include "QskLayoutChain.h"
-#include "QskLayoutConstraint.h"
+#include "QskSizePolicy.h"
 
 #include <qnamespace.h>
 #include <memory>
+
+class QQuickItem;
+class QskLayoutHint;
 
 class QskLayoutEngine2D
 {
@@ -55,6 +58,8 @@ class QskLayoutEngine2D
   protected:
 
     void layoutItem( QQuickItem*, const QRect& grid ) const;
+    QskLayoutHint layoutHint( const QQuickItem*,
+        Qt::Orientation, qreal constraint ) const;
 
     enum
     {
@@ -73,7 +78,7 @@ class QskLayoutEngine2D
     virtual int effectiveCount( Qt::Orientation ) const = 0;
 
     virtual void invalidateElementCache() = 0;
-    QskLayoutConstraint::Type constraintType() const;
+    QskSizePolicy::ConstraintType constraintType() const;
 
     void setupChain( Qt::Orientation ) const;
     void setupChain( Qt::Orientation, const QskLayoutChain::Segments& ) const;

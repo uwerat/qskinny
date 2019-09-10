@@ -5,7 +5,6 @@
 
 #include "QskGridBox.h"
 #include "QskGridLayoutEngine.h"
-#include "QskLayoutConstraint.h"
 #include "QskEvent.h"
 #include <algorithm>
 
@@ -341,38 +340,16 @@ void QskGridBox::updateLayout()
         m_data->engine.setGeometries( layoutRect() );
 }
 
-QSizeF QskGridBox::contentsSizeHint() const
+QSizeF QskGridBox::layoutSizeHint(
+    Qt::SizeHint which, const QSizeF& constraint ) const
 {
-    if ( count() == 0 )
-        return QSizeF( 0, 0 );
+    if ( which == Qt::MaximumSize )
+    {
+        // we can extend beyond the maximum size of the children
+        return QSizeF();
+    }
 
-    return m_data->engine.sizeHint( Qt::PreferredSize, QSizeF() );
-}
-
-qreal QskGridBox::heightForWidth( qreal width ) const
-{
-    auto constrainedHeight =
-        [this]( QskLayoutConstraint::Type, const QskControl*, qreal width )
-        {
-            const QSizeF constraint( width, -1 );
-            return m_data->engine.sizeHint( Qt::PreferredSize, constraint ).height();
-        };
-
-    return QskLayoutConstraint::constrainedMetric(
-        QskLayoutConstraint::HeightForWidth, this, width, constrainedHeight );
-}
-
-qreal QskGridBox::widthForHeight( qreal height ) const
-{
-    auto constrainedWidth =
-        [this]( QskLayoutConstraint::Type, const QskControl*, qreal height )
-        {
-            const QSizeF constraint( -1, height );
-            return m_data->engine.sizeHint( Qt::PreferredSize, constraint ).width();
-        };
-
-    return QskLayoutConstraint::constrainedMetric(
-        QskLayoutConstraint::WidthForHeight, this, height, constrainedWidth );
+    return m_data->engine.sizeHint( which, constraint );
 }
 
 void QskGridBox::geometryChangeEvent( QskGeometryChangeEvent* event )

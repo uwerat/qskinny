@@ -53,7 +53,7 @@ class QSK_EXPORT QskSlider : public QskRangeControl
     void mouseMoveEvent( QMouseEvent* e ) override;
     void mouseReleaseEvent( QMouseEvent* e ) override;
 
-    QSizeF contentsSizeHint() const override;
+    QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
     QSizeF handleSize() const;
     QRectF handleRect() const;

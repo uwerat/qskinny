@@ -50,7 +50,7 @@ class QSK_EXPORT QskPageIndicator : public QskControl
     void setCurrentIndex( qreal index );
 
   protected:
-    QSizeF contentsSizeHint() const override;
+    QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
   private:
     class PrivateData;

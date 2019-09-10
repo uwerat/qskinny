@@ -5,7 +5,6 @@
 
 #include "QskLinearLayoutEngine.h"
 #include "QskLayoutHint.h"
-#include "QskLayoutConstraint.h"
 #include "QskLayoutChain.h"
 #include "QskSizePolicy.h"
 #include "QskQuick.h"
@@ -36,8 +35,8 @@ namespace
 
         bool isIgnored() const;
 
-        QskLayoutChain::CellData cell( Qt::Orientation,
-            bool isLayoutOrientation, qreal constraint ) const;
+        QskLayoutChain::CellData cell(
+            Qt::Orientation, bool isLayoutOrientation ) const;
 
       private:
 
@@ -100,14 +99,11 @@ inline void Element::setStretch( int stretch )
 
 bool Element::isIgnored() const
 {
-    if ( !m_isSpacer && !QskLayoutConstraint::retainSizeWhenHidden( m_item ) )
-        return !qskIsVisibleToParent( m_item );
-
-    return false;
+    return !( m_isSpacer || qskIsVisibleToLayout( m_item ) );
 }
 
-QskLayoutChain::CellData Element::cell( Qt::Orientation orientation,
-    bool isLayoutOrientation, qreal constraint ) const
+QskLayoutChain::CellData Element::cell(
+    Qt::Orientation orientation, bool isLayoutOrientation ) const
 {
     QskLayoutChain::CellData cell;
     cell.canGrow = true;
@@ -115,9 +111,7 @@ QskLayoutChain::CellData Element::cell( Qt::Orientation orientation,
 
     if ( !m_isSpacer )
     {
-        cell.hint = QskLayoutConstraint::layoutHint( m_item, orientation, constraint );
-
-        const auto policy = QskLayoutConstraint::sizePolicy( m_item ).policy( orientation );
+        const auto policy = qskSizePolicy( m_item ).policy( orientation );
 
         if ( isLayoutOrientation )
         {
@@ -302,12 +296,11 @@ bool QskLinearLayoutEngine::removeAt( int index )
     if ( element->isIgnored() )
         m_data->sumIgnored--;
 
-    const auto itemType =
-        QskLayoutConstraint::constraintType( element->item() );
+    const auto itemType = qskSizePolicy( element->item() ).constraintType();
 
     int invalidationMode = LayoutCache;
 
-    if ( itemType > QskLayoutConstraint::Unconstrained )
+    if ( itemType > QskSizePolicy::Unconstrained )
         invalidationMode |= ElementCache;
 
     m_data->elements.erase( m_data->elements.begin() + index );
@@ -435,8 +428,10 @@ void QskLinearLayoutEngine::setupChain( Qt::Orientation orientation,
         if ( !constraints.isEmpty() )
             constraint = constraints[index1].length;
 
-        const auto cell = element.cell(
-            orientation, isLayoutOrientation, constraint );
+        auto cell = element.cell( orientation, isLayoutOrientation );
+
+        if ( element.item() )
+            cell.hint = layoutHint( element.item(), orientation, constraint );
 
         chain.expandCell( index2, cell );
 

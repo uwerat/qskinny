@@ -240,22 +240,21 @@ QRectF QskSubWindow::layoutRectForSize( const QSizeF& size ) const
     return innerBox( Panel, rect );
 }
 
-QSizeF QskSubWindow::contentsSizeHint() const
+QSizeF QskSubWindow::layoutSizeHint(
+    Qt::SizeHint which, const QSizeF& constraint ) const
 {
     // the size we get from the children
-    auto hint = Inherited::contentsSizeHint();
+    auto hint = Inherited::layoutSizeHint( which, constraint );
 
-#if 1
-    // should be Minimum Width/Height from the hints
-    if ( hint.width() < 0 )
-        hint.setWidth( qskDpiScaled( 100 ) );
+    if ( which == Qt::PreferredSize )
+    {
+        // should be Minimum Width/Height from the skin hints
+        if ( hint.width() < 0.0 )
+            hint.setWidth( qskDpiScaled( 100 ) );
 
-    if ( hint.height() < 0 )
-        hint.setHeight( qskDpiScaled( 80 ) );
-#endif
-
-    hint = outerBoxSize( Panel, hint );
-    hint.setHeight( hint.height() + subControlRect( TitleBar ).height() );
+        if ( hint.height() < 0.0 )
+            hint.setHeight( qskDpiScaled( 80 ) );
+    }
 
     return hint;
 }

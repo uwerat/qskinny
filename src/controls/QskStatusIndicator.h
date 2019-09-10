@@ -35,9 +35,6 @@ class QSK_EXPORT QskStatusIndicator : public QskControl
     virtual QskColorFilter graphicFilter( int status ) const;
     virtual QskGraphic loadSource( const QUrl& ) const;
 
-    qreal heightForWidth( qreal width ) const override;
-    qreal widthForHeight( qreal height ) const override;
-
     int status() const;
     bool hasStatus( int status ) const;
 
@@ -51,11 +48,9 @@ class QSK_EXPORT QskStatusIndicator : public QskControl
     void changeEvent( QEvent* ) override;
     void updateLayout() override;
 
-    QSizeF contentsSizeHint() const override;
+    QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
   private:
-    qreal sizeConstraint( Qt::Orientation, qreal ) const;
-
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

@@ -5,8 +5,6 @@
 
 #include "QskLinearBox.h"
 #include "QskLinearLayoutEngine.h"
-
-#include "QskLayoutConstraint.h"
 #include "QskEvent.h"
 #include "QskQuick.h"
 
@@ -188,33 +186,16 @@ void QskLinearBox::updateLayout()
         m_data->engine.setGeometries( layoutRect() );
 }
 
-QSizeF QskLinearBox::contentsSizeHint() const
+QSizeF QskLinearBox::layoutSizeHint(
+    Qt::SizeHint which, const QSizeF& constraint ) const
 {
-    return m_data->engine.sizeHint( Qt::PreferredSize, QSizeF() );
-}
+    if ( which == Qt::MaximumSize )
+    {
+        // we can extend beyond the maximum size of the children
+        return QSizeF();
+    }
 
-qreal QskLinearBox::heightForWidth( qreal width ) const
-{
-    auto constrainedHeight =
-        [this]( QskLayoutConstraint::Type, const QskControl*, qreal width )
-        {
-            return m_data->engine.heightForWidth( width );
-        };
-
-    return QskLayoutConstraint::constrainedMetric(
-        QskLayoutConstraint::HeightForWidth, this, width, constrainedHeight );
-}
-
-qreal QskLinearBox::widthForHeight( qreal height ) const
-{
-    auto constrainedWidth =
-        [this]( QskLayoutConstraint::Type, const QskControl*, qreal height )
-        {
-            return m_data->engine.widthForHeight( height );
-        };
-
-    return QskLayoutConstraint::constrainedMetric(
-        QskLayoutConstraint::WidthForHeight, this, height, constrainedWidth );
+    return m_data->engine.sizeHint( which, constraint );
 }
 
 void QskLinearBox::geometryChangeEvent( QskGeometryChangeEvent* event )

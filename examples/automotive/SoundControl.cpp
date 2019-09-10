@@ -132,8 +132,11 @@ class MarkerControlButton final : public QskPushButton
     }
 
   protected:
-    QSizeF contentsSizeHint() const override
+    QSizeF contentsSizeHint( Qt::SizeHint which, const QSizeF& ) const override
     {
+        if ( which != Qt::PreferredSize )
+            return QSizeF();
+
         const qreal dim = 100;
 
         if ( m_direction == Qsk::LeftToRight || m_direction == Qsk::RightToLeft )
@@ -167,10 +170,15 @@ class ControlButton final : public QskPushButton
         return QskPushButton::effectiveSubcontrol( subControl );
     }
 
-    QSizeF contentsSizeHint() const override
+    QSizeF contentsSizeHint( Qt::SizeHint which, const QSizeF& ) const override
     {
-        qreal h = QskPushButton::contentsSizeHint().height();
-        return QSizeF( h, h );
+        if ( which == Qt::PreferredSize )
+        {
+            qreal h = QskPushButton::contentsSizeHint( which, QSizeF() ).height();
+            return QSizeF( h, h );
+        }
+
+        return QSizeF();
     }
 };
 

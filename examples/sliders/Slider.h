@@ -20,7 +20,7 @@ class Slider : public QskSlider
     QRectF focusIndicatorRect() const override;
 
   protected:
-    QSizeF contentsSizeHint() const override;
+    QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 };
 
 #endif

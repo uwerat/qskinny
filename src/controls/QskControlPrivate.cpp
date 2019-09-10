@@ -5,7 +5,7 @@
 
 #include "QskControlPrivate.h"
 #include "QskSetup.h"
-#include "QskLayoutConstraint.h"
+#include "QskLayoutHint.h"
 
 static inline void qskSendEventTo( QObject* object, QEvent::Type type )
 {
@@ -71,7 +71,7 @@ void QskControlPrivate::layoutConstraintChanged()
 
 void QskControlPrivate::implicitSizeChanged()
 {
-    if ( !q_func()->explicitSizeHint( Qt::PreferredSize ).isValid() )
+    if ( !( explicitSizeHints && explicitSizeHints[ Qt::PreferredSize ].isValid() ) )
     {
         // when we have no explit size, the implicit size matters
         layoutConstraintChanged();
@@ -80,16 +80,94 @@ void QskControlPrivate::implicitSizeChanged()
 
 QSizeF QskControlPrivate::implicitSizeHint() const
 {
+    return implicitSizeHint( Qt::PreferredSize, QSizeF() );
+}
+
+QSizeF QskControlPrivate::implicitSizeHint(
+    Qt::SizeHint which, const QSizeF& constraint ) const
+{
     Q_Q( const QskControl );
 
-    const auto m = q->margins();
-    const auto dw = m.left() + m.right();
-    const auto dh = m.top() + m.bottom();
+    /*
+        The hint is calculated from the contents ( usually scene graph nodes )
+        and - when being a container - the children.
+     */
+    QSizeF contentsHint;
 
-    const auto hint = q->contentsSizeHint();
+    {
+        const auto m = q->margins();
+        const auto dw = m.left() + m.right();
+        const auto dh = m.top() + m.bottom();
 
-    const qreal w = ( hint.width() >= 0 ) ? dw + hint.width() : -1.0;
-    const qreal h = ( hint.height() >= 0 ) ? dh + hint.height() : -1.0;
+        if ( constraint.width() >= 0.0 )
+        {
+            contentsHint.setWidth( qMax( constraint.width() - dw, 0.0 ) );
+        }
+        else if ( constraint.height() >= 0.0 )
+        {
+            contentsHint.setHeight( qMax( constraint.height() - dh, 0.0 ) );
+        }
+
+        contentsHint = q->contentsSizeHint( which, contentsHint );
+
+        if ( contentsHint.rwidth() >= 0 )
+            contentsHint.rwidth() += dw;
+
+        if ( contentsHint.rheight() >= 0 )
+            contentsHint.rheight() += dh;
+    }
+
+    QSizeF layoutHint;
+    {
+        if ( constraint.width() >= 0.0 )
+        {
+            const QSizeF boundingSize( constraint.width(), 1e6 );
+            const QSizeF layoutSize = q->layoutRectForSize( boundingSize ).size();
+
+            layoutHint = q->layoutSizeHint( which, QSizeF( layoutSize.width(), -1 ) );
+
+            if ( layoutHint.height() >= 0 )
+                layoutHint.rheight() += boundingSize.height() - layoutSize.height();
+        }
+        else if ( constraint.height() >= 0.0 )
+        {
+            const QSizeF boundingSize( 1e6, constraint.height() );
+            const QSizeF layoutSize = q->layoutRectForSize( boundingSize ).size();
+
+            layoutHint = q->layoutSizeHint( which, QSizeF( -1, layoutSize.height() ) );
+
+            if ( layoutHint.width() >= 0 )
+                layoutHint.rwidth() += boundingSize.width() - layoutSize.width();
+        }
+        else
+        {
+            /*
+                In situations, where layoutRectForSize depends on
+                the size ( f.e when using a corner radius of Qt::RelativeSize )
+                we will have wrong results. TODO ...
+             */
+            const QSizeF boundingSize( 1000.0, 1000.0 );
+            const QSizeF layoutSize = q->layoutRectForSize( boundingSize ).size();
+
+            layoutHint = q->layoutSizeHint( which, QSizeF() );
+
+            if ( layoutHint.width() >= 0 )
+                layoutHint.rwidth() += boundingSize.width() - layoutSize.width();
+
+            if ( layoutHint.height() >= 0 )
+                layoutHint.rheight() += boundingSize.height() - layoutSize.height();
+        }
+    }
+
+    // Combining both hints
+    qreal w = constraint.width();
+    qreal h = constraint.height();
+
+    if ( w < 0.0 )
+        w = QskLayoutHint::combined( which, contentsHint.width(), layoutHint.width() );
+
+    if ( h < 0.0 )
+        h = QskLayoutHint::combined( which, contentsHint.height(), layoutHint.height() );
 
     return QSizeF( w, h );
 }
@@ -98,14 +176,7 @@ void QskControlPrivate::setExplicitSizeHint(
     Qt::SizeHint whichHint, const QSizeF& size )
 {
     if ( explicitSizeHints == nullptr )
-    {
-        using namespace QskLayoutConstraint;
-
         explicitSizeHints = new QSizeF[3];
-        explicitSizeHints[0] = defaultSizeHints[0];
-        explicitSizeHints[1] = defaultSizeHints[1];
-        explicitSizeHints[2] = defaultSizeHints[2];
-    }
 
     explicitSizeHints[ whichHint ] = size;
 }
@@ -113,10 +184,7 @@ void QskControlPrivate::setExplicitSizeHint(
 void QskControlPrivate::resetExplicitSizeHint( Qt::SizeHint whichHint )
 {
     if ( explicitSizeHints )
-    {
-        using namespace QskLayoutConstraint;
-        explicitSizeHints[ whichHint ] = defaultSizeHints[ whichHint ];
-    }
+        explicitSizeHints[ whichHint ] = QSizeF();
 }
 
 QSizeF QskControlPrivate::explicitSizeHint( Qt::SizeHint whichHint ) const
@@ -124,7 +192,7 @@ QSizeF QskControlPrivate::explicitSizeHint( Qt::SizeHint whichHint ) const
     if ( explicitSizeHints )
         return explicitSizeHints[ whichHint ];
 
-    return QskLayoutConstraint::defaultSizeHints[ whichHint ];
+    return QSizeF();
 }
 
 bool QskControlPrivate::maybeGesture( QQuickItem* child, QEvent* event )

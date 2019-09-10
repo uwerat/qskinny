@@ -78,7 +78,7 @@ class QSK_EXPORT QskTabView : public QskControl
     bool event( QEvent* event ) override;
     void updateLayout() override;
 
-    QSizeF contentsSizeHint() const override;
+    QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
   private:
     class PrivateData;

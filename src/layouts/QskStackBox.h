@@ -51,9 +51,6 @@ class QSK_EXPORT QskStackBox : public QskIndexedLayoutBox
     const QskStackBoxAnimator* animator() const;
     QskStackBoxAnimator* animator();
 
-    qreal heightForWidth( qreal width ) const override;
-    qreal widthForHeight( qreal height ) const override;
-
     QRectF geometryForItemAt( int index ) const;
 
   Q_SIGNALS:
@@ -72,7 +69,7 @@ class QSK_EXPORT QskStackBox : public QskIndexedLayoutBox
     bool event( QEvent* ) override;
     void updateLayout() override;
 
-    QSizeF contentsSizeHint() const override;
+    QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
     void autoAddItem( QQuickItem* ) override final;
     void autoRemoveItem( QQuickItem* ) override final;

@@ -152,11 +152,11 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     QSizeF implicitSizeHint( Qt::SizeHint, const QSizeF& constraint ) const;
 
     QSizeF sizeHint() const;
+    qreal heightForWidth( qreal width ) const;
+    qreal widthForHeight( qreal height ) const;
+
     QSizeF effectiveSizeHint( Qt::SizeHint,
         const QSizeF& constraint = QSizeF() ) const;
-
-    virtual qreal heightForWidth( qreal width ) const;
-    virtual qreal widthForHeight( qreal height ) const;
 
     QLocale locale() const;
     void resetLocale();
@@ -195,8 +195,8 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     virtual void updateResources();
     virtual void updateLayout();
 
-  protected:
-    virtual QSizeF contentsSizeHint() const;
+    virtual QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const;
+    virtual QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const;
 
   private:
     void setActiveFocusOnTab( bool ) = delete;                 // use setFocusPolicy

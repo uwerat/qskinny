@@ -60,9 +60,6 @@ class QSK_EXPORT QskTextLabel : public QskControl
     void setAlignment( Qt::Alignment );
     Qt::Alignment alignment() const;
 
-    qreal heightForWidth( qreal width ) const override;
-    qreal widthForHeight( qreal height ) const override;
-
     QFont font() const;
 
   Q_SIGNALS:
@@ -77,7 +74,7 @@ class QSK_EXPORT QskTextLabel : public QskControl
 
   protected:
     void changeEvent( QEvent* ) override;
-    QSizeF contentsSizeHint() const override;
+    QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
   private:
     class PrivateData;

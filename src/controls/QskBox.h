@@ -27,14 +27,14 @@ class QSK_EXPORT QskBox : public QskControl
 
     void setPanel( bool );
     bool hasPanel() const;
-    
-    QRectF layoutRectForSize( const QSizeF& ) const override;
 
-  protected:
-    QSizeF contentsSizeHint() const override;
+    QRectF layoutRectForSize( const QSizeF& ) const override;
 
   Q_SIGNALS:
     void panelChanged( bool );
+
+  protected:
+    QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
   private:
     bool m_hasPanel;

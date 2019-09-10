@@ -10,6 +10,8 @@
 #include <qnamespace.h>
 #include <qquickitem.h>
 
+class QskSizePolicy;
+
 class QQuickItem;
 class QSGNode;
 class QRectF;
@@ -30,6 +32,21 @@ QSK_EXPORT bool qskIsPolishScheduled( const QQuickItem* );
 
 QSK_EXPORT void qskSetTransparentForPositioner( QQuickItem*, bool );
 QSK_EXPORT bool qskIsTransparentForPositioner( const QQuickItem* );
+QSK_EXPORT bool qskIsVisibleToLayout( const QQuickItem* );
+
+QSK_EXPORT QSizeF qskEffectiveSizeHint( const QQuickItem*,
+    Qt::SizeHint, const QSizeF& constraint = QSizeF() );
+
+QSK_EXPORT QSizeF qskSizeConstraint( const QQuickItem*,
+    Qt::SizeHint, const QSizeF& constraint = QSizeF() );
+
+QSK_EXPORT QSizeF qskConstrainedItemSize( const QQuickItem*, const QSizeF& );
+QSK_EXPORT QRectF qskConstrainedItemRect(
+    const QQuickItem*, const QRectF&, Qt::Alignment );
+
+QSK_EXPORT QskSizePolicy qskSizePolicy( const QQuickItem* );
+QSK_EXPORT Qt::Alignment qskLayoutAlignmentHint( const QQuickItem* );
+QSK_EXPORT bool qskRetainSizeWhenHidden( const QQuickItem* );
 
 QSK_EXPORT QRectF qskItemRect( const QQuickItem* );
 
@@ -69,7 +86,26 @@ template< typename T >
 inline T qskFindAncestorOf( const QQuickItem* item )
 {
     return qskFindAncestorOf< std::remove_const< T > >(
-        const_cast< QQuickItem * >( item ) );
+        const_cast< QQuickItem* >( item ) );
+}
+
+inline qreal qskHeightForWidth(
+    const QQuickItem* item, Qt::SizeHint which, qreal width )
+{
+    return qskEffectiveSizeHint(
+        item, which, QSizeF( width, -1.0 ) ).height();
+}
+
+inline qreal qskWidthForHeight(
+    const QQuickItem* item, Qt::SizeHint which, qreal height )
+{
+    return qskEffectiveSizeHint(
+        item, which, QSizeF( -1.0, height ) ).width();
+}
+
+inline QRectF qskConstrainedItemRect( const QQuickItem* item, const QRectF& rect )
+{
+    return qskConstrainedItemRect( item, rect, qskLayoutAlignmentHint( item ) );
 }
 
 #endif

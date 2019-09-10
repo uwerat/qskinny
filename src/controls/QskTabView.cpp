@@ -198,13 +198,14 @@ int QskTabView::count() const
     return m_data->tabBar->count();
 }
 
-QSizeF QskTabView::contentsSizeHint() const
+QSizeF QskTabView::layoutSizeHint(
+    Qt::SizeHint which, const QSizeF& constraint ) const
 {
-    if ( m_data->tabBar == nullptr || m_data->tabBar->count() == 0 )
-        return Inherited::contentsSizeHint();
+    if ( which != Qt::PreferredSize )
+        return constraint;
 
-    const QSizeF barHint = m_data->tabBar->sizeHint();
-    const QSizeF boxHint = m_data->stackBox->sizeHint();
+    const auto barHint = m_data->tabBar->sizeHint();
+    const auto boxHint = m_data->stackBox->sizeHint();
 
     qreal w, h;
 
@@ -229,16 +230,10 @@ void QskTabView::setCurrentIndex( int index )
 
 bool QskTabView::event( QEvent* event )
 {
-    switch ( event->type() )
+    if ( event->type() == QEvent::LayoutRequest )
     {
-        case QEvent::LayoutRequest:
-        {
-            resetImplicitSize();
-            polish();
-            break;
-        }
-        default:
-            break;
+        resetImplicitSize();
+        polish();
     }
 
     return Inherited::event( event );
@@ -247,7 +242,7 @@ bool QskTabView::event( QEvent* event )
 void QskTabView::updateLayout()
 {
     if ( maybeUnresized() )
-        return; 
+        return;
 
     m_data->tabBar->setGeometry( subControlRect( TabBar ) );
 

@@ -179,26 +179,33 @@ QskGraphic MyToggleButton::graphicAt( int index ) const
     return data.icon;
 }
 
-QSizeF MyToggleButton::contentsSizeHint() const
+QSizeF MyToggleButton::contentsSizeHint(
+    Qt::SizeHint which, const QSizeF& constraint ) const
 {
-    const qreal width = metric( Panel | QskAspect::MinimumWidth );
-    const qreal height = metric( Panel | QskAspect::MinimumHeight );
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
 
-    return QSizeF( width, height );
-}
+    qreal w = constraint.width();
+    qreal h = constraint.height();
 
-// better use Minimum Width/Height hints TODO ...
+    // better use Minimum Width/Height hints TODO ...
+    constexpr qreal aspectRatio = 4.0 / 3.0;
 
-static constexpr qreal aspectRatio = 4.0 / 3.0;
+    if ( w >= 0.0 )
+    {
+        h = w / aspectRatio;
+    }
+    else if ( h >= 0.0 )
+    {
+        w = h * aspectRatio;
+    }
+    else
+    {
+        w = metric( Panel | QskAspect::MinimumWidth );
+        h = metric( Panel | QskAspect::MinimumHeight );
+    }
 
-qreal MyToggleButton::heightForWidth( qreal width ) const
-{
-    return width / aspectRatio;
-}
-
-qreal MyToggleButton::widthForHeight( qreal height ) const
-{
-    return height * aspectRatio;
+    return QSizeF( w, h );
 }
 
 void MyToggleButton::updateLayout()

@@ -14,7 +14,7 @@
 #include "QskSkin.h"
 #include "QskSkinlet.h"
 #include "QskSkinHintTable.h"
-#include "QskLayoutConstraint.h"
+#include "QskLayoutHint.h"
 
 #include <qlocale.h>
 #include <qvector.h>
@@ -374,7 +374,7 @@ void QskControl::setLayoutHint( LayoutHint flag, bool on )
             d->layoutHints |= flag;
         else
             d->layoutHints &= ~flag;
-    
+
         d->layoutConstraintChanged();
     }
 }
@@ -569,17 +569,17 @@ void QskControl::setExplicitSizeHint(
 
 QSizeF QskControl::explicitSizeHint( Qt::SizeHint whichHint ) const
 {
-    if ( whichHint >= Qt::MinimumSize && whichHint <= Qt::MaximumSize )
-        return d_func()->explicitSizeHint( whichHint );
+    if ( whichHint < Qt::MinimumSize || whichHint > Qt::MaximumSize )
+        return QSizeF();
 
-    return QSizeF( -1, -1 );
+    return d_func()->explicitSizeHint( whichHint );
 }
 
 QSizeF QskControl::implicitSizeHint(
     Qt::SizeHint whichHint, const QSizeF& constraint ) const
 {
     if ( whichHint < Qt::MinimumSize || whichHint > Qt::MaximumSize )
-        return QSizeF( -1, -1 );
+        return QSizeF();
 
     if ( constraint.isValid() )
     {
@@ -587,108 +587,94 @@ QSizeF QskControl::implicitSizeHint(
         return constraint;
     }
 
-    QSizeF hint( -1, -1 );
+    QSizeF hint;
 
-    if ( whichHint == Qt::PreferredSize )
+    if ( whichHint == Qt::PreferredSize
+        && constraint.width() < 0.0 && constraint.height() < 0.0 )
     {
-        if ( constraint.width() >= 0 )
-        {
-            hint.setWidth( constraint.width() );
-            hint.setHeight( heightForWidth( constraint.width() ) );
-        }
-        else if ( constraint.height() >= 0 )
-        {
-            hint.setWidth( widthForHeight( constraint.height() ) );
-            hint.setHeight( constraint.height() );
-        }
-        else
-        {
-            hint = implicitSize();
-        }
+        // this one might be cached
+        hint = implicitSize();
     }
     else
     {
-        // TODO ...
+        hint = d_func()->implicitSizeHint( whichHint, constraint );
     }
 
     return hint;
 }
 
 QSizeF QskControl::effectiveSizeHint(
-    Qt::SizeHint whichHint, const QSizeF& constraint ) const
+    Qt::SizeHint which, const QSizeF& constraint ) const
 {
-    if ( whichHint < Qt::MinimumSize || whichHint > Qt::MaximumSize )
+    if ( which < Qt::MinimumSize || which > Qt::MaximumSize )
         return QSizeF( 0, 0 );
+
+    if ( constraint.isValid() )
+        return constraint;
+
+    const bool isConstrained =
+        constraint.width() >= 0 || constraint.height() >= 0;
 
     Q_D( const QskControl );
 
     d->blockLayoutRequestEvents = false;
 
-    /*
-        The explicit size has always precedence over te implicit size.
+    QSizeF hint;
 
-        Implicit sizes are currently only implemented for preferred and
-        explicitSizeHint returns valid explicit hints for minimum/maximum
-        even if not being set by application code.
+    /*
+        The explicit size has always precedence over the implicit size,
+        and will kill the effect of the constraint
      */
 
-    QSizeF hint = d->explicitSizeHint( whichHint );
+    hint = d->explicitSizeHint( which );
 
     if ( !hint.isValid() )
     {
-#if 0
-        if ( hint.width() >= 0 && constraint.width() >= 0 )
-            constraint.setWidth( hint.width() );
-
-        if ( hint.height() >= 0 && constraint.height() >= 0 )
-            constraint.setHeight( hint.height() );
-#endif
-
-        const auto implicit = implicitSizeHint( whichHint, constraint );
+        const auto implicitHint = implicitSizeHint( which, constraint );
 
         if ( hint.width() < 0 )
-            hint.setWidth( implicit.width() );
+            hint.setWidth( implicitHint.width() );
 
         if ( hint.height() < 0 )
-            hint.setHeight( implicit.height() );
+            hint.setHeight( implicitHint.height() );
     }
 
-    if ( hint.width() >= 0 || hint.height() >= 0 )
+    if ( !isConstrained && ( hint.width() >= 0 || hint.height() >= 0 ) )
     {
         /*
-            We might need to normalize the hints, so that
+            We normalize the unconstrained hints by the explicit hints, so that
             we always have: minimum <= preferred <= maximum.
          */
 
-        if ( whichHint == Qt::MaximumSize )
+        if ( which == Qt::MaximumSize )
         {
             const auto minimumHint = d->explicitSizeHint( Qt::MinimumSize );
 
             if ( hint.width() >= 0 )
-                hint.setWidth( qMax( hint.width(), minimumHint.width() ) );
+                hint.rwidth() = qMax( hint.width(), minimumHint.width() );
 
             if ( hint.height() >= 0 )
-                hint.setHeight( qMax( hint.height(), minimumHint.height() ) );
+                hint.rheight() = qMax( hint.height(), minimumHint.height() );
         }
-        else if ( whichHint == Qt::PreferredSize )
+        else if ( which == Qt::PreferredSize )
         {
             const auto minimumHint = d->explicitSizeHint( Qt::MinimumSize );
             const auto maximumHint = d->explicitSizeHint( Qt::MaximumSize );
 
             if ( hint.width() >= 0 )
             {
-                const auto minW = minimumHint.width();
-                const auto maxW = qMax( minW, maximumHint.width() );
+                if ( maximumHint.width() >= 0 )
+                    hint.rwidth() = qMin( hint.width(), maximumHint.width() );
 
-                hint.setWidth( qBound( minW, hint.width(), maxW ) );
+                hint.rwidth() = qMax( hint.width(), minimumHint.width() );
             }
 
             if ( hint.height() >= 0 )
             {
-                const auto minH = minimumHint.height();
-                const auto maxH = qMax( minH, maximumHint.height() );
+                if ( maximumHint.height() >= 0 )
+                    hint.rheight() = qMin( hint.height(), maximumHint.height() );
 
-                hint.setHeight( qBound( minH, hint.height(), maxH ) );
+                hint.rheight() = qMax( hint.height(), minimumHint.height() );
             }
         }
     }
@@ -698,32 +684,18 @@ QSizeF QskControl::effectiveSizeHint(
 
 qreal QskControl::heightForWidth( qreal width ) const
 {
-    Q_D( const QskControl );
+    const auto hint = effectiveSizeHint(
+        Qt::PreferredSize, QSizeF( width, -1.0 ) );
 
-    d->blockLayoutRequestEvents = false;
-
-    if ( d->autoLayoutChildren )
-    {
-        using namespace QskLayoutConstraint;
-        return constrainedMetric( HeightForWidth, this, width, constrainedChildrenMetric );
-    }
-
-    return -1.0;
+    return hint.height();
 }
 
 qreal QskControl::widthForHeight( qreal height ) const
 {
-    Q_D( const QskControl );
+    const auto hint = effectiveSizeHint(
+        Qt::PreferredSize, QSizeF( -1.0, height ) );
 
-    d->blockLayoutRequestEvents = false;
-
-    if ( d->autoLayoutChildren )
-    {
-        using namespace QskLayoutConstraint;
-        return constrainedMetric( WidthForHeight, this, height, constrainedChildrenMetric );
-    }
-
-    return -1.0;
+    return hint.width();
 }
 
 bool QskControl::event( QEvent* event )
@@ -918,10 +890,8 @@ void QskControl::updateItemPolish()
             // checking qskIsVisibleToParent ???
             if ( !qskIsTransparentForPositioner( child ) )
             {
-                const auto itemRect = QskLayoutConstraint::boundedRect(
-                    child, rect, QskLayoutConstraint::layoutAlignmentHint( child ) );
-
-                qskSetItemGeometry( child, itemRect );
+                const auto r = qskConstrainedItemRect( child, rect );
+                qskSetItemGeometry( child, r );
             }
         }
     }
@@ -978,26 +948,30 @@ void QskControl::updateResources()
 {
 }
 
-QSizeF QskControl::contentsSizeHint() const
+QSizeF QskControl::contentsSizeHint(
+    Qt::SizeHint, const QSizeF& constraint ) const
 {
-    qreal w = -1; // no hint
-    qreal h = -1;
+    return constraint;
+}
 
-    if ( d_func()->autoLayoutChildren )
+QSizeF QskControl::layoutSizeHint(
+    Qt::SizeHint which, const QSizeF& constraint ) const
+{
+    if ( !d_func()->autoLayoutChildren )
+        return QSizeF();
+
+    qreal w = constraint.width();
+    qreal h = constraint.height();
+
+    const auto children = childItems();
+    for ( const auto child : children )
     {
-        const auto children = childItems();
-        for ( const auto child : children )
+        if ( qskIsVisibleToLayout( child ) )
         {
-            if ( auto control = qskControlCast( child ) )
-            {
-                if ( !control->isTransparentForPositioner() )
-                {
-                    const QSizeF hint = control->sizeHint();
+            const auto hint = qskEffectiveSizeHint( child, which, constraint );
 
-                    w = qMax( w, hint.width() );
-                    h = qMax( h, hint.height() );
-                }
-            }
+            w = QskLayoutHint::combined( which, w, hint.width() );
+            h = QskLayoutHint::combined( which, h, hint.height() );
         }
     }
 

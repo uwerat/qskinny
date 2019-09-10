@@ -208,81 +208,67 @@ QFont QskTextLabel::font() const
     return effectiveFont( QskTextLabel::Text );
 }
 
-QSizeF QskTextLabel::contentsSizeHint() const
+QSizeF QskTextLabel::contentsSizeHint(
+    Qt::SizeHint which, const QSizeF& constraint ) const
 {
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
+
     const auto font = effectiveFont( Text );
 
-    if ( !m_data->text.isEmpty() )
-    {
-        return QskTextRenderer::textSize(
-            m_data->text, font, m_data->effectiveOptions() );
-    }
+    QSizeF hint;
 
-    return QSizeF( 0, QFontMetricsF( font ).height() );
-}
-
-qreal QskTextLabel::heightForWidth( qreal width ) const
-{
-    const auto font = effectiveFont( Text );
     const qreal lineHeight = QFontMetricsF( font ).height();
-
-    qreal h = 0;
-
-    const auto m = margins();
 
     if ( m_data->text.isEmpty() )
     {
-        h = lineHeight;
+        if ( constraint.height() < 0.0 )
+            hint.setHeight( qCeil( lineHeight ) );
     }
-    else if ( m_data->textOptions.effectiveElideMode() != Qt::ElideNone )
+    else if ( constraint.width() >= 0.0 )
     {
-        h = lineHeight;
+        if ( m_data->textOptions.effectiveElideMode() != Qt::ElideNone )
+        {
+            hint.setHeight( qCeil( lineHeight ) );
+        }
+        else
+        {
+            /*
+                In case of QskTextOptions::NoWrap we could count
+                the line numbers and calculate the height from
+                lineHeight. TODO ...
+             */
+            qreal maxHeight = std::numeric_limits< qreal >::max();
+            if ( maxHeight / lineHeight > m_data->textOptions.maximumLineCount() )
+            {
+                // be careful with overflows
+                maxHeight = m_data->textOptions.maximumLineCount() * lineHeight;
+            }
+
+            QSizeF size( constraint.width(), maxHeight );
+            size = QskTextRenderer::textSize(
+                m_data->text, font, m_data->effectiveOptions(), size );
+
+            hint.setHeight( qCeil( size.height() ) );
+        }
+    }
+    else if ( constraint.height() >= 0.0 )
+    {
+        const qreal maxWidth = std::numeric_limits< qreal >::max();
+
+        QSizeF size( maxWidth, constraint.height() );
+        size = QskTextRenderer::textSize( m_data->text, font,
+            m_data->effectiveOptions(), size );
+
+        hint.setWidth( qCeil( size.width() ) );
     }
     else
     {
-        /*
-            In case of QskTextOptions::NoWrap we could count
-            the line numbers and calculate the height from
-            lineHeight. TODO ...
-         */
-        qreal maxHeight = std::numeric_limits< qreal >::max();
-        if ( maxHeight / lineHeight > m_data->textOptions.maximumLineCount() )
-        {
-            // be careful with overflows
-            maxHeight = m_data->textOptions.maximumLineCount() * lineHeight;
-        }
-
-        qreal w = width - m.left() + m.right();
-
-        QSizeF size( w, maxHeight );
-        size = QskTextRenderer::textSize(
-            m_data->text, font, m_data->effectiveOptions(), size );
-
-        h = size.height();
+        hint = QskTextRenderer::textSize(
+            m_data->text, font, m_data->effectiveOptions() );
     }
 
-    h += m.top() + m.bottom();
-
-    return qCeil( h );
-}
-
-qreal QskTextLabel::widthForHeight( qreal height ) const
-{
-    if ( m_data->text.isEmpty() )
-    {
-        return Inherited::widthForHeight( height );
-    }
-
-    const auto font = effectiveFont( Text );
-    const qreal maxWidth = std::numeric_limits< qreal >::max();
-
-    const auto m = margins();
-
-    QSizeF size( maxWidth, height - m.top() + m.bottom() );
-    size = QskTextRenderer::textSize( m_data->text, font,
-        m_data->effectiveOptions(), size );
-
-    return qCeil( size.width() + m.left() + m.right() );
+    return hint;
 }
 
 void QskTextLabel::changeEvent( QEvent* event )

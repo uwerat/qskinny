@@ -47,29 +47,17 @@ QRectF QskBox::layoutRectForSize( const QSizeF& size ) const
     return innerBox( Panel, subControlRect( size, Panel ) );
 }
 
-QSizeF QskBox::contentsSizeHint() const
+QSizeF QskBox::contentsSizeHint(
+    Qt::SizeHint which, const QSizeF& constraint ) const
 {
-    if ( !m_hasPanel )
-        return Inherited::contentsSizeHint();
-
-    QSizeF size( -1, -1 );
-
-    if ( autoLayoutChildren() )
+    if ( m_hasPanel && which == Qt::PreferredSize )
     {
-        const QSizeF hint = Inherited::contentsSizeHint();
-
-        if ( hint.width() > 0 )
-            size.setWidth( hint.width() );
-
-        if ( hint.height() > 0 )
-            size.setHeight( hint.height() );
+        return QSizeF(
+            metric( Panel | QskAspect::MinimumWidth ),
+            metric( Panel | QskAspect::MinimumHeight ) );
     }
 
-    const QSizeF minSize(
-        metric( Panel | QskAspect::MinimumWidth ),
-        metric( Panel | QskAspect::MinimumHeight ) );
-
-    return outerBoxSize( Panel, size ).expandedTo( minSize );
+    return Inherited::contentsSizeHint( which, constraint );
 }
 
 #include "moc_QskBox.cpp"

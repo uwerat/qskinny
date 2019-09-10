@@ -61,7 +61,11 @@ void ButtonBar::addIndicator( const char* name )
     label->setGraphic( QskGraphicIO::read( fileName ) );
 }
 
-QSizeF ButtonBar::contentsSizeHint() const
+QSizeF ButtonBar::layoutSizeHint(
+    Qt::SizeHint which, const QSizeF& ) const
 {
-    return QSizeF( -1, 20 );
+    if ( which == Qt::PreferredSize )
+        return QSizeF( -1, 20 );
+
+    return QSizeF();
 }

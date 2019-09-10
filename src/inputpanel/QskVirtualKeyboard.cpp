@@ -295,56 +295,38 @@ QskVirtualKeyboard::Mode QskVirtualKeyboard::mode() const
     return m_data->mode;
 }
 
-QSizeF QskVirtualKeyboard::contentsSizeHint() const
+QSizeF QskVirtualKeyboard::layoutSizeHint(
+    Qt::SizeHint which, const QSizeF& constraint ) const
 {
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
+
     constexpr qreal ratio = qreal( RowCount ) / ColumnCount;
 
-    const qreal w = 600;
-    return QSizeF( w, ratio * w );
-}
+    qreal w = constraint.width();
+    qreal h = constraint.height();
 
-qreal QskVirtualKeyboard::heightForWidth( qreal width ) const
-{
-    /*
-        Not necessarily correct, when
-        subControlRect( Panel ) != contentsRect: TODO ...
-     */
-    constexpr qreal ratio = qreal( RowCount ) / ColumnCount;
-    const auto margins = this->margins();
+    if ( h >= 0 )
+    {
+        const auto padding = innerPadding( Panel, QSizeF( h, h ) );
+        const auto dw = padding.left() + padding.right();
+        const auto dh = padding.top() + padding.bottom();
 
-    width -= margins.left() + margins.right();
+        w = ( h - dh ) / ratio + dw;
+    }    
+    else
+    {
+        if ( w < 0 )
+            w = 600;
 
-    const auto padding = innerPadding(
-        Panel, QSizeF( width, width ) );
+        const auto padding = innerPadding( Panel, QSizeF( w, w ) );
+        const auto dw = padding.left() + padding.right();
+        const auto dh = padding.top() + padding.bottom();
 
-    width -= padding.left() + padding.right();
+        h = ( w - dw ) * ratio + dh;
+    }
 
-    qreal height = width * ratio;
-
-    height += padding.top() + padding.bottom();
-    height += margins.top() + margins.bottom();
-
-    return height;
-}
-
-qreal QskVirtualKeyboard::widthForHeight( qreal height ) const
-{
-    constexpr qreal ratio = qreal( RowCount ) / ColumnCount;
-    const auto margins = this->margins();
-
-    height -= margins.top() + margins.bottom();
-
-    const auto padding = innerPadding(
-        Panel, QSizeF( height, height ) );
-
-    height -= padding.top() + padding.bottom();
-
-    qreal width = height / ratio;
-
-    width += padding.left() + padding.right();
-    width += margins.left() + margins.right();
-
-    return width;
+    return QSizeF( w, h );
 }
 
 void QskVirtualKeyboard::updateLayout()

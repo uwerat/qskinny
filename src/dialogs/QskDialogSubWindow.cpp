@@ -5,7 +5,6 @@
 
 #include "QskDialogSubWindow.h"
 #include "QskDialogButtonBox.h"
-#include "QskLayoutConstraint.h"
 #include "QskPushButton.h"
 #include "QskQuick.h"
 
@@ -24,75 +23,6 @@ static inline void qskSetRejectOnClose( QskDialogSubWindow* subWindow, bool on )
     {
         QObject::disconnect( subWindow, &QskPopup::closed,
             subWindow, &QskDialogSubWindow::reject );
-    }
-}
-
-static inline qreal qskConstrainedValue( QskLayoutConstraint::Type type,
-    const QskControl* control, qreal widthOrHeight )
-{
-    auto subWindow = static_cast< const QskDialogSubWindow* >( control );
-
-    if ( type == QskLayoutConstraint::WidthForHeight )
-    {
-        qreal width = -1.0;
-        qreal height = widthOrHeight;
-
-        if ( auto buttonBox = subWindow->buttonBox() )
-        {
-            if ( buttonBox->isVisibleTo( subWindow ) )
-            {
-                const auto hint = buttonBox->sizeHint();
-
-                width = hint.width();
-                height -= hint.height();
-            }
-        }
-
-        if ( auto contentItem = qskControlCast( subWindow->contentItem() ) )
-        {
-            if ( contentItem->isVisibleTo( subWindow ) )
-            {
-                const auto m = subWindow->contentPadding();
-                height -= m.top() + m.bottom();
-
-                qreal w = contentItem->widthForHeight( height );
-
-                if ( w >= 0 )
-                {
-                    w += m.left() + m.right();
-                    width = qMax( width, w );
-                }
-            }
-        }
-
-        return width;
-    }
-    else
-    {
-        qreal width = widthOrHeight;
-        qreal height = -1.0;
-
-        if ( auto buttonBox = subWindow->buttonBox() )
-        {
-            if ( buttonBox->isVisibleTo( subWindow ) )
-                height += buttonBox->sizeHint().height();
-        }
-
-        if ( auto contentItem = qskControlCast( subWindow->contentItem() ) )
-        {
-            if ( qskIsVisibleTo( contentItem, subWindow ) )
-            {
-                const auto& m = subWindow->contentPadding();
-                width -= m.left() + m.right();
-
-                const qreal h = contentItem->heightForWidth( width );
-
-                if ( h >= 0 )
-                    height += h + m.top() + m.bottom();
-            }
-        }
-
-        return height;
     }
 }
 
@@ -438,7 +368,7 @@ void QskDialogSubWindow::updateLayout()
 
     auto rect = layoutRect();
 
-    if ( m_data->buttonBox && m_data->buttonBox->isVisibleTo( this ) )
+    if ( m_data->buttonBox && m_data->buttonBox->isVisibleToParent() )
     {
         const auto h = m_data->buttonBox->sizeHint().height();
         rect.setBottom( rect.bottom() - h );
@@ -453,49 +383,68 @@ void QskDialogSubWindow::updateLayout()
     }
 }
 
-qreal QskDialogSubWindow::heightForWidth( qreal width ) const
+QSizeF QskDialogSubWindow::layoutSizeHint(
+    Qt::SizeHint which, const QSizeF& constraint ) const
 {
-    return QskLayoutConstraint::constrainedMetric(
-        QskLayoutConstraint::HeightForWidth, this, width, qskConstrainedValue );
-}
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
 
-qreal QskDialogSubWindow::widthForHeight( qreal height ) const
-{
-    return QskLayoutConstraint::constrainedMetric(
-        QskLayoutConstraint::WidthForHeight, this, height, qskConstrainedValue );
-}
+    QSizeF buttonBoxHint;
 
-QSizeF QskDialogSubWindow::contentsSizeHint() const
-{
+    qreal constraintHeight = constraint.height();
+
+    if ( auto buttonBox = m_data->buttonBox )
+    {
+        if ( buttonBox->isVisibleToLayout() )
+        {
+            buttonBoxHint = buttonBox->effectiveSizeHint(
+                which, QSizeF( constraint.width(), -1 ) );
+
+            if ( constraint.width() >= 0.0 )
+                buttonBoxHint.rwidth() = constraint.width();
+
+            if ( constraintHeight >= 0.0 && buttonBoxHint.height() >= 0.0 )
+            {
+                constraintHeight -= buttonBoxHint.height();
+                constraintHeight = qMax( constraintHeight, 0.0 );
+            }
+        }
+    }
+
+    QSizeF contentHint;
+
+    if ( qskIsVisibleToLayout( m_data->contentItem ) )
+    {
+        const auto& m = m_data->contentPadding;
+        const qreal dw = m.left() + m.right();
+        const qreal dh = m.top() + m.bottom();
+
+        qreal constraintWidth = constraint.width();
+
+        if ( constraintWidth > 0.0 )
+            constraintWidth = qMax( constraintWidth - dw, 0.0 );
+
+        if ( constraintHeight > 0.0 )
+            constraintHeight = qMax( constraintHeight - dh, 0.0 );
+
+        contentHint = qskEffectiveSizeHint( m_data->contentItem,
+            which, QSizeF( constraintWidth, constraintHeight ) );
+
+        if ( contentHint.width() >= 0 )
+            contentHint.rwidth() += dw;
+
+        if ( contentHint.height() >= 0 )
+            contentHint.rheight() += dh;
+    }
+
     qreal w = -1;
+    w = qMax( w, buttonBoxHint.width() );
+    w = qMax( w, contentHint.width() );
+
     qreal h = -1;
 
-    if ( m_data->buttonBox && m_data->buttonBox->isVisibleTo( this ) )
-    {
-        const auto hint = m_data->buttonBox->sizeHint();
-
-        w = hint.width();
-        h = hint.height();
-    }
-
-    if ( auto* control = qskControlCast( m_data->contentItem ) )
-    {
-        const auto hint = control->sizeHint();
-
-        const auto& m = m_data->contentPadding;
-
-        if ( hint.width() >= 0 )
-            w = qMax( w, hint.width() + m.left() + m.right() );
-
-        if ( hint.height() >= 0 )
-            h += hint.height() + m.top() + m.bottom();
-    }
-
-    const qreal sz = 400.0; // something
-    const auto innerSize = layoutRectForSize( QSizeF( sz, sz ) ).size();
-
-    w += sz - innerSize.width();
-    h += sz - innerSize.height();
+    if ( buttonBoxHint.height() > 0.0 && contentHint.height() > 0.0 )
+        h = buttonBoxHint.height() + contentHint.height();
 
     return QSizeF( w, h );
 }

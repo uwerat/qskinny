@@ -22,7 +22,7 @@ class QSK_EXPORT QskFocusIndicator : public QskControl
     QskFocusIndicator( QQuickItem* parent = nullptr );
     ~QskFocusIndicator() override;
 
-    bool contains( const QPointF & ) const override;
+    bool contains( const QPointF& ) const override;
 
   protected:
     void windowChangeEvent( QskWindowChangeEvent* ) override;

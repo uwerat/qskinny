@@ -5,35 +5,11 @@
 
 #include "QskStackBox.h"
 #include "QskStackBoxAnimator.h"
-#include "QskLayoutConstraint.h"
+#include "QskLayoutHint.h"
 #include "QskEvent.h"
 #include "QskQuick.h"
 
 #include <QPointer>
-
-static qreal qskConstrainedValue( QskLayoutConstraint::Type type,
-    const QskControl* control, qreal widthOrHeight )
-{
-    using namespace QskLayoutConstraint;
-
-    auto constrainFunction =
-        ( type == WidthForHeight ) ? widthForHeight : heightForWidth;
-
-    qreal constrainedValue = -1;
-    auto stackBox = static_cast< const QskStackBox* >( control );
-
-    for ( int i = 0; i < stackBox->itemCount(); i++ )
-    {
-        if ( const auto item = stackBox->itemAtIndex( i ) )
-        {
-            const qreal v = constrainFunction( item, widthOrHeight );
-            if ( v > constrainedValue )
-                constrainedValue = v;
-        }
-    }
-
-    return constrainedValue;
-}
 
 class QskStackBox::PrivateData
 {
@@ -328,11 +304,11 @@ QRectF QskStackBox::geometryForItemAt( int index ) const
 
     if ( const auto item = m_data->items.value( index ) )
     {
-        auto alignment = QskLayoutConstraint::layoutAlignmentHint( item );
+        auto alignment = qskLayoutAlignmentHint( item );
         if ( alignment == 0 )
             alignment = m_data->defaultAlignment;
 
-        return QskLayoutConstraint::boundedRect( item, r, alignment );
+        return qskConstrainedItemRect( item, r, alignment );
     }
 
     return QRectF( r.x(), r.y(), 0.0, 0.0 );
@@ -352,89 +328,91 @@ void QskStackBox::updateLayout()
     }
 }
 
-QSizeF QskStackBox::contentsSizeHint() const
+QSizeF QskStackBox::layoutSizeHint(
+    Qt::SizeHint which, const QSizeF& constraint ) const
 {
-#if 1
+    // needs to reimplemented TODO ...
+
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
+
     if ( itemCount() == 0 )
-        return QSizeF( 0, 0 );
-#endif
+        return QSizeF();
+
+    if ( constraint.width() >= 0 || constraint.height() >= 0 )
+    {
+        qreal value = -1;
+
+        for ( const auto& item : qskAsConst( m_data->items ) )
+        {
+            const auto hint = qskEffectiveSizeHint(
+                item, Qt::PreferredSize, constraint );
+
+            if ( constraint.width() >= 0 )
+                value = qMax( hint.height(), value );
+            else
+                value = qMax( hint.width(), value );
+        }
+
+        if ( constraint.width() >= 0 )
+            return QSizeF( constraint.width(), value );
+        else
+            return QSizeF( value, constraint.height() );
+    }
 
     qreal width = -1;
     qreal height = -1;
 
-    using namespace QskLayoutConstraint;
-
-    int constraintTypes = Unconstrained;
+    int constraintTypes = QskSizePolicy::Unconstrained;
 
     for ( const auto item : qskAsConst( m_data->items ) )
     {
-        const auto type = constraintType( item );
-        if ( type != Unconstrained )
+        const auto type = qskSizePolicy( item ).constraintType();
+        if ( type != QskSizePolicy::Unconstrained )
         {
             constraintTypes |= type;
+            continue;
         }
-        else
-        {
-            const auto hint = QskLayoutConstraint::sizeHint(
-                item, Qt::PreferredSize, QSizeF( -1, -1 ) );
 
-            if ( hint.width() >= width )
-                width = hint.width();
+        const auto hint = qskSizeConstraint( item, which, constraint );
 
-            if ( hint.height() >= height )
-                height = hint.height();
-        }
+        width = QskLayoutHint::combined( which, width, hint.width() );
+        height = QskLayoutHint::combined( which, height, hint.height() );
     }
 
-#if 1
-    // does this work ???
-
-    if ( constraintTypes & WidthForHeight )
+    if ( constraintTypes & QskSizePolicy::WidthForHeight )
     {
         const QSizeF constraint( -1, height );
 
         for ( const auto& item : qskAsConst( m_data->items ) )
         {
-            if ( constraintType( item ) == WidthForHeight )
-            {
-                const auto hint = QskLayoutConstraint::sizeHint(
-                    item, Qt::PreferredSize, constraint );
+            const auto sizePolicy = qskSizePolicy( item );
 
-                width = qMax( width, hint.width() );
+            if ( sizePolicy.constraintType() == QskSizePolicy::WidthForHeight )
+            {
+                const auto hint = qskSizeConstraint( item, which, constraint );
+                width = QskLayoutHint::combined( which, width, hint.width() );
             }
         }
     }
 
-    if ( constraintTypes & HeightForWidth )
+    if ( constraintTypes & QskSizePolicy::HeightForWidth )
     {
         const QSizeF constraint( width, -1 );
 
         for ( const auto& item : qskAsConst( m_data->items ) )
         {
-            if ( constraintType( item ) == HeightForWidth )
-            {
-                const QSizeF hint = QskLayoutConstraint::sizeHint(
-                    item, Qt::PreferredSize, constraint );
+            const auto sizePolicy = qskSizePolicy( item );
 
-                height = qMax( height, hint.height() );
+            if ( sizePolicy.constraintType() == QskSizePolicy::HeightForWidth )
+            {
+                const auto hint = qskSizeConstraint( item, which, constraint );
+                height = QskLayoutHint::combined( which, height, hint.height() );
             }
         }
     }
-#endif
 
     return QSizeF( width, height );
-}
-
-qreal QskStackBox::heightForWidth( qreal width ) const
-{
-    return QskLayoutConstraint::constrainedMetric(
-        QskLayoutConstraint::HeightForWidth, this, width, qskConstrainedValue );
-}
-
-qreal QskStackBox::widthForHeight( qreal height ) const
-{
-    return QskLayoutConstraint::constrainedMetric(
-        QskLayoutConstraint::WidthForHeight, this, height, qskConstrainedValue );
 }
 
 bool QskStackBox::event( QEvent* event )

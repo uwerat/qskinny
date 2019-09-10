@@ -50,7 +50,7 @@ QskFocusIndicator::~QskFocusIndicator()
 {
 }
 
-bool QskFocusIndicator::contains( const QPointF & ) const
+bool QskFocusIndicator::contains( const QPointF& ) const
 {
     return false;
 }

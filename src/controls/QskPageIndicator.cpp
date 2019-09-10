@@ -97,8 +97,12 @@ void QskPageIndicator::setCurrentIndex( qreal index )
     }
 }
 
-QSizeF QskPageIndicator::contentsSizeHint() const
+QSizeF QskPageIndicator::contentsSizeHint(
+    Qt::SizeHint which, const QSizeF& ) const
 {
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
+
     using namespace QskAspect;
 
     const qreal sizeBullet = metric( Bullet | Size );

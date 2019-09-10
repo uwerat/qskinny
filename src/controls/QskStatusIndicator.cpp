@@ -153,23 +153,13 @@ QskColorFilter QskStatusIndicator::graphicFilter( int status ) const
     return effectiveGraphicFilter( QskStatusIndicator::Graphic );
 }
 
-qreal QskStatusIndicator::heightForWidth( qreal width ) const
+QSizeF QskStatusIndicator::contentsSizeHint(
+    Qt::SizeHint which, const QSizeF& constraint ) const
 {
-    return sizeConstraint( Qt::Horizontal, width );
-}
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
 
-qreal QskStatusIndicator::widthForHeight( qreal height ) const
-{
-    return sizeConstraint( Qt::Vertical, height );
-}
-
-qreal QskStatusIndicator::sizeConstraint(
-    Qt::Orientation orientation, qreal constraint ) const
-{
-    if ( constraint <= 0.0 )
-        return 0.0;
-
-    qreal value = 0.0;
+    QSizeF sz;
 
     for ( auto& statusData : m_data->map )
     {
@@ -177,34 +167,22 @@ qreal QskStatusIndicator::sizeConstraint(
 
         if ( !statusData.graphic.isEmpty() )
         {
-            const QSizeF sz = statusData.graphic.defaultSize();
-            if ( !sz.isEmpty() )
+            auto hint = statusData.graphic.defaultSize();
+
+            if ( !hint.isEmpty() )
             {
-                qreal v;
-                if ( orientation == Qt::Horizontal )
-                    v = sz.height() * constraint / sz.width();
-                else
-                    v = sz.width() * constraint / sz.height();
-
-                if ( v > value )
-                    value = v;
+                if ( constraint.width() >= 0.0 )
+                {
+                    hint.setHeight( sz.height() * constraint.width() / sz.width() );
+                }
+                else if ( constraint.height() >= 0.0 )
+                {
+                    hint.setWidth( sz.width() * constraint.height() / sz.height() );
+                }
             }
+
+            sz = sz.expandedTo( hint );
         }
-    }
-
-    return value;
-}
-
-QSizeF QskStatusIndicator::contentsSizeHint() const
-{
-    QSizeF sz( 0, 0 );
-
-    for ( auto& statusData : m_data->map )
-    {
-        statusData.ensureGraphic( this );
-
-        if ( !statusData.graphic.isEmpty() )
-            sz = sz.expandedTo( statusData.graphic.defaultSize() );
     }
 
     return sz;
