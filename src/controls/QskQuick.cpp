@@ -551,7 +551,7 @@ QSizeF qskConstrainedItemSize( const QQuickItem* item, const QSizeF& size )
     if ( max.height() >= 0.0 )
         height = qMin( height, max.height() );
 
-#if 1
+#if 0
     const auto min = qskSizeConstraint( item, Qt::MinimumSize, constraint );
 
     width = qMax( width, min.width() );
