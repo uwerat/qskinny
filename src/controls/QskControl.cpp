@@ -948,16 +948,15 @@ void QskControl::updateResources()
 {
 }
 
-QSizeF QskControl::contentsSizeHint(
-    Qt::SizeHint, const QSizeF& constraint ) const
+QSizeF QskControl::contentsSizeHint( Qt::SizeHint, const QSizeF& ) const
 {
-    return constraint;
+    return QSizeF();
 }
 
 QSizeF QskControl::layoutSizeHint(
     Qt::SizeHint which, const QSizeF& constraint ) const
 {
-    if ( !d_func()->autoLayoutChildren )
+    if ( which == Qt::MaximumSize || !d_func()->autoLayoutChildren )
         return QSizeF();
 
     qreal w = constraint.width();
