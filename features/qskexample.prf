@@ -1,4 +1,5 @@
 TEMPLATE     = app
 CONFIG      += qskinny qsktestsupport
 
+DEFINES     += QSK_DLL
 DESTDIR      = $$clean_path( $${OUT_PWD}/../bin )
