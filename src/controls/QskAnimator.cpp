@@ -148,6 +148,9 @@ void QskAnimatorDriver::registerAnimator( QskAnimator* animator )
             connect( window, &QQuickWindow::frameSwapped,
                 this, [ this, window ]() { scheduleUpdate( window ); } );
 
+            connect( window, &QWindow::visibleChanged,
+                this, [ this, window ]( bool on ) { if ( !on ) removeWindow( window ); } );
+
             connect( window, &QObject::destroyed,
                 this, [ this, window ]( QObject* ) { removeWindow( window ); } );
 
