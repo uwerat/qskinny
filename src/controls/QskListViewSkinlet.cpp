@@ -18,7 +18,7 @@ class QskListViewNode final : public QSGTransformNode
 {
   public:
     inline QskListViewNode( int columnCount )
-        : columnCount( columnCount )
+        : m_columnCount( columnCount )
         , m_rowMin( -1 )
         , m_rowMax( -1 )
     {
@@ -62,7 +62,12 @@ class QskListViewNode final : public QSGTransformNode
 
     inline int nodeCount() const
     {
-        return ( m_rowMin >= 0 ) ? ( m_rowMax - m_rowMin + 1 ) * columnCount : 0;
+        return ( m_rowMin >= 0 ) ? ( m_rowMax - m_rowMin + 1 ) * m_columnCount : 0;
+    }
+
+    inline int columnCount() const
+    {
+        return m_columnCount;
     }
 
     inline void invalidate()
@@ -70,9 +75,8 @@ class QskListViewNode final : public QSGTransformNode
         m_rowMin = m_rowMax = -1;
     }
 
-    const int columnCount;
-
   private:
+    int m_columnCount;
     int m_rowMin;
     int m_rowMax;
 
