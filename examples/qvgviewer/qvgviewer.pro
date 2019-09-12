@@ -22,7 +22,7 @@ svg2qvg.name = SVG compiler
 svg2qvg.input = SVGSOURCES
 svg2qvg.output = qvg/${QMAKE_FILE_BASE}.qvg
 svg2qvg.variable_out = 
-svg2qvg.commands += mkdir -p qvg && $${SVG2QVG} ${QMAKE_FILE_IN} $${svg2qvg.output}
+svg2qvg.commands += $${QMAKE_MKDIR} qvg && $${SVG2QVG} ${QMAKE_FILE_IN} $${svg2qvg.output}
 
 rccgen.name = RCC compiler
 rccgen.input = QRCFILES
