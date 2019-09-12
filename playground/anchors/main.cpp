@@ -15,10 +15,10 @@
 #include <QGuiApplication>
 #include <QDebug>
 
-class Rectangle : public QskControl
+class TestRectangle : public QskControl
 {
   public:
-    Rectangle( const char* colorName, QQuickItem* parent = nullptr )
+    TestRectangle( const char* colorName, QQuickItem* parent = nullptr )
         : QskControl( parent)
         , m_colorName( colorName )
     {
@@ -76,13 +76,13 @@ class MyBox : public AnchorBox
 
 void MyBox::setup1()
 {
-    auto a = new Rectangle( "PaleVioletRed" );
-    auto b = new Rectangle( "DarkSeaGreen" );
-    auto c = new Rectangle( "SkyBlue" );
-    auto d = new Rectangle( "Coral" );
-    auto e = new Rectangle( "NavajoWhite" );
-    auto f = new Rectangle( "Peru" );
-    auto g = new Rectangle( "Olive" );
+    auto a = new TestRectangle( "PaleVioletRed" );
+    auto b = new TestRectangle( "DarkSeaGreen" );
+    auto c = new TestRectangle( "SkyBlue" );
+    auto d = new TestRectangle( "Coral" );
+    auto e = new TestRectangle( "NavajoWhite" );
+    auto f = new TestRectangle( "Peru" );
+    auto g = new TestRectangle( "Olive" );
 
     addAnchor( a, Qt::AnchorTop, Qt::AnchorTop );
     addAnchor( b, Qt::AnchorTop, Qt::AnchorTop );
@@ -119,7 +119,7 @@ void MyBox::setup1()
 
 void MyBox::setup2()
 {
-    auto a = new Rectangle( "PaleVioletRed" );
+    auto a = new TestRectangle( "PaleVioletRed" );
 
     addAnchor( a, Qt::AnchorLeft, Qt::AnchorLeft );
     addAnchor( a, Qt::AnchorTop, Qt::AnchorTop );
@@ -132,11 +132,11 @@ void MyBox::setup2()
 #endif
 
 #if 1
-    auto c = new Rectangle( "SkyBlue" );
+    auto c = new TestRectangle( "SkyBlue" );
     addAnchor( a, Qt::AnchorBottom, c, Qt::AnchorTop );
     addAnchor( a, Qt::AnchorRight, c, Qt::AnchorRight );
 
-    auto d = new Rectangle( "Coral" );
+    auto d = new TestRectangle( "Coral" );
     addAnchor( c, Qt::AnchorLeft, d, Qt::AnchorLeft );
     addAnchor( c, Qt::AnchorBottom, d, Qt::AnchorTop );
     addAnchor( d, Qt::AnchorRight, Qt::AnchorRight );
@@ -145,10 +145,10 @@ void MyBox::setup2()
 
 void MyBox::setup3()
 {
-    auto a = new Rectangle( "PaleVioletRed" );
-    auto b = new Rectangle( "DarkSeaGreen" );
-    auto c = new Rectangle( "SkyBlue" );
-    auto d = new Rectangle( "Coral" );
+    auto a = new TestRectangle( "PaleVioletRed" );
+    auto b = new TestRectangle( "DarkSeaGreen" );
+    auto c = new TestRectangle( "SkyBlue" );
+    auto d = new TestRectangle( "Coral" );
 
     addAnchor( a, Qt::AnchorTop, Qt::AnchorTop );
 
@@ -158,7 +158,7 @@ void MyBox::setup3()
     addAnchor( c, Qt::AnchorRight, d, Qt::AnchorLeft );
     addAnchor( d, Qt::AnchorRight, Qt::AnchorRight );
 
-    auto e = new Rectangle( "NavajoWhite" );
+    auto e = new TestRectangle( "NavajoWhite" );
 #if 1
     e->setMinimumWidth( 100 );
 #endif
