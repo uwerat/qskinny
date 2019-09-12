@@ -16,20 +16,20 @@ SVGSOURCES = \
     svg/01.08.05q.svg \
     svg/01.25.18.svg
 
-SVG2QVG=$${QSK_OUT_ROOT}/tools/bin/svg2qvg
+# Convert path to shell path, otherwise it fails on Windows.
+SVG2QVG=$$shell_path($${QSK_OUT_ROOT}/tools/bin/svg2qvg)
 
 svg2qvg.name = SVG compiler
 svg2qvg.input = SVGSOURCES
 svg2qvg.output = qvg/${QMAKE_FILE_BASE}.qvg
 svg2qvg.variable_out = 
-svg2qvg.commands += $${QMAKE_MKDIR} qvg && $${SVG2QVG} ${QMAKE_FILE_IN} $${svg2qvg.output}
+svg2qvg.commands += ($$sprintf($${QMAKE_MKDIR_CMD}, qvg)) && $${SVG2QVG} ${QMAKE_FILE_IN} $${svg2qvg.output}
 
 rccgen.name = RCC compiler
 rccgen.input = QRCFILES
 rccgen.output = $${RCC_DIR}/qrc_${QMAKE_FILE_BASE}.cpp
 rccgen.variable_out = SOURCES
-
-rccgen.commands += $${QMAKE_MKDIR} $${RCC_DIR}
+rccgen.commands += ($$sprintf($${QMAKE_MKDIR_CMD}, $${RCC_DIR}))
 
 !equals( OUT_PWD, $${PWD} ) {
 
@@ -41,7 +41,8 @@ rccgen.commands += $${QMAKE_MKDIR} $${RCC_DIR}
     QRC_SHADOW_CLONE = $${OUT_PWD}/${QMAKE_FILE_BASE}_shadow.qrc
 
     rccgen.commands += && $${QMAKE_COPY} ${QMAKE_FILE_IN} $${QRC_SHADOW_CLONE}
-    rccgen.commands += && $$dirname(QMAKE_QMAKE)/rcc $${QRC_SHADOW_CLONE} -o ${QMAKE_FILE_OUT}
+    # Use shell_path again to prevent from path error under Windows
+    rccgen.commands += && $$shell_path($$dirname(QMAKE_QMAKE)/rcc) $${QRC_SHADOW_CLONE} -o ${QMAKE_FILE_OUT}
     rccgen.commands += && $${QMAKE_DEL_FILE} $${QRC_SHADOW_CLONE}
 }
 else {
