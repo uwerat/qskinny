@@ -448,7 +448,7 @@ void QskScrollArea::adjustItem()
 
         m_data->enableAutoTranslation( this, false );
 
-        setScrollableSize( item->size() );
+        setScrollableSize( QSizeF( item->width(), item->height() ) );
         setScrollPos( scrollPos() );
 
         m_data->enableAutoTranslation( this, true );
