@@ -185,27 +185,26 @@ QSizeF MyToggleButton::contentsSizeHint(
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
-    qreal w = constraint.width();
-    qreal h = constraint.height();
+    QSizeF hint;
 
     // better use Minimum Width/Height hints TODO ...
     constexpr qreal aspectRatio = 4.0 / 3.0;
 
-    if ( w >= 0.0 )
+    if ( constraint.width() >= 0.0 )
     {
-        h = w / aspectRatio;
+        hint.rheight() = constraint.width() / aspectRatio;
     }
-    else if ( h >= 0.0 )
+    else if ( constraint.height() >= 0.0 )
     {
-        w = h * aspectRatio;
+        hint.rwidth() = constraint.height() * aspectRatio;
     }
     else
     {
-        w = metric( Panel | QskAspect::MinimumWidth );
-        h = metric( Panel | QskAspect::MinimumHeight );
+        hint.rwidth() = metric( Panel | QskAspect::MinimumWidth );
+        hint.rheight() = metric( Panel | QskAspect::MinimumHeight );
     }
 
-    return QSizeF( w, h );
+    return hint;
 }
 
 void MyToggleButton::updateLayout()
