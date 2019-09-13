@@ -112,7 +112,7 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     void setLayoutAlignmentHint( Qt::Alignment );
     Qt::Alignment layoutAlignmentHint() const;
 
-    void setLayoutHint( LayoutHint, bool on );
+    void setLayoutHint( LayoutHint, bool on = true );
     bool testLayoutHint( LayoutHint ) const;
 
     void setLayoutHints( LayoutHints );
@@ -157,6 +157,9 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
 
     QSizeF effectiveSizeHint( Qt::SizeHint,
         const QSizeF& constraint = QSizeF() ) const;
+
+    QSizeF sizeConstraint( Qt::SizeHint,
+        const QSizeF& constraint = QSizeF() ) const ;
 
     QLocale locale() const;
     void resetLocale();

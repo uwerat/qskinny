@@ -698,6 +698,12 @@ qreal QskControl::widthForHeight( qreal height ) const
     return hint.width();
 }
 
+QSizeF QskControl::sizeConstraint(
+    Qt::SizeHint which, const QSizeF& constraint ) const
+{
+    return qskSizeConstraint( this, which, constraint );
+}
+
 bool QskControl::event( QEvent* event )
 {
     switch ( static_cast< int >( event->type() ) )
