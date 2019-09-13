@@ -353,7 +353,7 @@ void QskControl::setLayoutAlignmentHint( Qt::Alignment alignment )
 {
     Q_D( QskControl );
 
-    if ( d->layoutAlignmentHint != alignment )
+    if ( layoutAlignmentHint() != alignment )
     {
         d->layoutAlignmentHint = alignment;
         d->layoutConstraintChanged();
