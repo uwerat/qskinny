@@ -1,5 +1,5 @@
 CONFIG += qskexample
-QT += webengine webengine-private
+QT += webengine webengine-private webenginecore-private
 
 SOURCES += \
     main.cpp
