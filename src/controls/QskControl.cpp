@@ -412,17 +412,19 @@ void QskControl::setPreferredSize( const QSizeF& size )
 
 void QskControl::setPreferredSize( qreal width, qreal height )
 {
-    setPreferredSize( QSizeF( width, height ) );
+    setExplicitSizeHint( Qt::PreferredSize, QSizeF( width, height ) );
 }
 
 void QskControl::setPreferredWidth( qreal width )
 {
-    setPreferredSize( QSizeF( width, preferredSize().height() ) );
+    const qreal height = explicitSizeHint( Qt::PreferredSize ).height();
+    setExplicitSizeHint( Qt::PreferredSize, QSizeF( width, height ) );
 }
 
 void QskControl::setPreferredHeight( qreal height )
 {
-    setPreferredSize( QSizeF( preferredSize().width(), height ) );
+    const qreal width = explicitSizeHint( Qt::PreferredSize ).width();
+    setExplicitSizeHint( Qt::PreferredSize, QSizeF( width, height ) );
 }
 
 void QskControl::setMinimumSize( const QSizeF& size )
@@ -432,17 +434,19 @@ void QskControl::setMinimumSize( const QSizeF& size )
 
 void QskControl::setMinimumSize( qreal width, qreal height )
 {
-    setMinimumSize( QSizeF( width, height ) );
+    setExplicitSizeHint( Qt::MinimumSize, QSizeF( width, height ) );
 }
 
 void QskControl::setMinimumWidth( qreal width )
 {
-    setMinimumSize( QSizeF( width, minimumSize().height() ) );
+    const qreal height = explicitSizeHint( Qt::MinimumSize ).height();
+    setExplicitSizeHint( Qt::MinimumSize, QSizeF( width, height ) );
 }
 
 void QskControl::setMinimumHeight( qreal height )
 {
-    setMinimumSize( QSizeF( minimumSize().width(), height ) );
+    const qreal width = explicitSizeHint( Qt::MinimumSize ).width();
+    setExplicitSizeHint( Qt::MinimumSize, QSizeF( width, height ) );
 }
 
 void QskControl::setMaximumSize( const QSizeF& size )
@@ -452,17 +456,19 @@ void QskControl::setMaximumSize( const QSizeF& size )
 
 void QskControl::setMaximumSize( qreal width, qreal height )
 {
-    setMaximumSize( QSizeF( width, height ) );
+    setExplicitSizeHint( Qt::MaximumSize, QSizeF( width, height ) );
 }
 
 void QskControl::setMaximumWidth( qreal width )
 {
-    setMaximumSize( QSizeF( width, maximumSize().height() ) );
+    const qreal height = explicitSizeHint( Qt::MaximumSize ).height();
+    setExplicitSizeHint( Qt::MaximumSize, QSizeF( width, height ) );
 }
 
 void QskControl::setMaximumHeight( qreal height )
 {
-    setMaximumSize( QSizeF( maximumSize().width(), height ) );
+    const qreal width = explicitSizeHint( Qt::MaximumSize ).width();
+    setExplicitSizeHint( Qt::MaximumSize, QSizeF( width, height ) );
 }
 
 void QskControl::setFixedSize( const QSizeF& size )
