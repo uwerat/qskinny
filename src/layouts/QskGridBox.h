@@ -43,6 +43,7 @@ class QSK_EXPORT QskGridBox : public QskBox
 #ifdef QSK_LAYOUT_COMPAT
     int itemCount() const { return count(); } // items and spacers
 #endif
+
     QQuickItem* itemAtIndex( int index ) const;
     int indexOf( const QQuickItem* ) const;
 
