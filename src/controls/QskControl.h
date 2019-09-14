@@ -158,8 +158,8 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     QSizeF effectiveSizeHint( Qt::SizeHint,
         const QSizeF& constraint = QSizeF() ) const;
 
-    QSizeF sizeConstraint( Qt::SizeHint,
-        const QSizeF& constraint = QSizeF() ) const ;
+    QSizeF sizeConstraint( Qt::SizeHint, const QSizeF& constraint = QSizeF() ) const;
+    QSizeF sizeConstraint() const;
 
     QLocale locale() const;
     void resetLocale();
@@ -213,6 +213,11 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
   private:
     Q_DECLARE_PRIVATE( QskControl )
 };
+
+inline QSizeF QskControl::sizeConstraint() const
+{
+    return sizeConstraint( Qt::PreferredSize, QSizeF() );
+}
 
 inline QSizeF QskControl::sizeHint() const
 {
