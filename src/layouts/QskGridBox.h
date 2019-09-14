@@ -122,6 +122,8 @@ class QSK_EXPORT QskGridBox : public QskBox
     QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
   private:
+    void setItemActive( QQuickItem*, bool );
+
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

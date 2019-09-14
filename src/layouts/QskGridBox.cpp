@@ -10,9 +10,6 @@
 
 static void qskSetItemActive( QObject* receiver, const QQuickItem* item, bool on )
 {
-    if ( ( item == nullptr ) || ( qskControlCast( item ) != nullptr ) )
-        return;
-
     /*
         For QQuickItems not being derived from QskControl we manually
         send QEvent::LayoutRequest events.
@@ -32,15 +29,11 @@ static void qskSetItemActive( QObject* receiver, const QQuickItem* item, bool on
 
         QObject::connect( item, &QQuickItem::implicitHeightChanged,
             receiver, sendLayoutRequest );
-
-        QObject::connect( item, &QQuickItem::visibleChanged,
-            receiver, sendLayoutRequest );
     }
     else
     {
         QObject::disconnect( item, &QQuickItem::implicitWidthChanged, receiver, nullptr );
         QObject::disconnect( item, &QQuickItem::implicitHeightChanged, receiver, nullptr );
-        QObject::disconnect( item, &QQuickItem::visibleChanged, receiver, nullptr );
     }
 }
 
@@ -92,6 +85,13 @@ QskGridBox::QskGridBox( QQuickItem* parent )
 
 QskGridBox::~QskGridBox()
 {
+    auto& engine = m_data->engine;
+
+    for ( int i = 0; i < engine.count(); i++ )
+    {
+        if ( auto item = engine.itemAt( i ) )
+            setItemActive( item, false ); 
+    }
 }
 
 int QskGridBox::addItem( QQuickItem* item, 
@@ -144,7 +144,7 @@ int QskGridBox::addItem( QQuickItem* item,
         if ( item->parentItem() != this )
             item->setParentItem( this );
 
-        qskSetItemActive( this, item, true );
+        setItemActive( item, true );
         index = engine.insertItem( item, itemGrid );
     }
 
@@ -174,7 +174,7 @@ void QskGridBox::removeAt( int index )
     auto& engine = m_data->engine;
 
     if ( auto item = engine.itemAt( index ) )
-        qskSetItemActive( this, item, false );
+        setItemActive( item, false );
 
     engine.removeAt( index );
 
@@ -195,7 +195,7 @@ void QskGridBox::clear( bool autoDelete )
     {
         if ( auto item = itemAtIndex( i ) )
         {
-            qskSetItemActive( this, item, false );
+            setItemActive( item, false );
 
             if( autoDelete && ( item->parent() == this ) )
                 delete item;
@@ -350,6 +350,23 @@ void QskGridBox::invalidate()
 
     resetImplicitSize();
     polish();
+}
+
+void QskGridBox::setItemActive( QQuickItem* item, bool on )
+{
+    if ( on )
+    {
+        QObject::connect( item, &QQuickItem::visibleChanged,
+            this, &QskGridBox::invalidate );
+    }
+    else
+    {
+        QObject::disconnect( item, &QQuickItem::visibleChanged,
+            this, &QskGridBox::invalidate );
+    }
+
+    if ( qskControlCast( item ) == nullptr )
+        qskSetItemActive( this, item, on );
 }
 
 void QskGridBox::updateLayout()

@@ -10,9 +10,6 @@
 
 static void qskSetItemActive( QObject* receiver, const QQuickItem* item, bool on )
 {
-    if ( ( item == nullptr ) || ( qskControlCast( item ) != nullptr ) )
-        return;
-
     /*
         For QQuickItems not being derived from QskControl we manually
         send QEvent::LayoutRequest events.
@@ -32,15 +29,11 @@ static void qskSetItemActive( QObject* receiver, const QQuickItem* item, bool on
 
         QObject::connect( item, &QQuickItem::implicitHeightChanged,
             receiver, sendLayoutRequest );
-
-        QObject::connect( item, &QQuickItem::visibleChanged,
-            receiver, sendLayoutRequest );
     }
     else
     {
         QObject::disconnect( item, &QQuickItem::implicitWidthChanged, receiver, nullptr );
         QObject::disconnect( item, &QQuickItem::implicitHeightChanged, receiver, nullptr );
-        QObject::disconnect( item, &QQuickItem::visibleChanged, receiver, nullptr );
     }
 }
 
@@ -73,6 +66,13 @@ QskLinearBox::QskLinearBox( Qt::Orientation orientation, uint dimension, QQuickI
 
 QskLinearBox::~QskLinearBox()
 {
+    auto& engine = m_data->engine;
+
+    for ( int i = 0; i < engine.count(); i++ )
+    {
+        if ( auto item = engine.itemAt( i ) )
+            setItemActive( item, false );
+    }
 }
 
 int QskLinearBox::count() const
@@ -112,7 +112,7 @@ void QskLinearBox::removeItemInternal( int index, bool unparent )
 
     if ( item )
     {
-        qskSetItemActive( this, engine.itemAt( index ), false );
+        setItemActive( item, false );
 
         if ( !unparent )
         {
@@ -144,7 +144,7 @@ void QskLinearBox::clear( bool autoDelete )
 
         if( item )
         {
-            qskSetItemActive( this, item, false );
+            setItemActive( item, false );
 
             if( autoDelete && ( item->parent() == this ) )
                 delete item;
@@ -178,6 +178,23 @@ void QskLinearBox::invalidate()
 
     resetImplicitSize();
     polish();
+}
+
+void QskLinearBox::setItemActive( QQuickItem* item, bool on )
+{
+    if ( on )
+    {
+        QObject::connect( item, &QQuickItem::visibleChanged,
+            this, &QskLinearBox::invalidate );
+    }
+    else
+    {
+        QObject::disconnect( item, &QQuickItem::visibleChanged,
+            this, &QskLinearBox::invalidate );
+    }
+
+    if ( qskControlCast( item ) == nullptr )
+        qskSetItemActive( this, item, on );
 }
 
 void QskLinearBox::updateLayout()
@@ -435,7 +452,7 @@ int QskLinearBox::insertItem( int index, QQuickItem* item )
             item->stackAfter( children.last() );
     }
 
-    qskSetItemActive( this, item, true );
+    setItemActive( item, true );
 
 #if 1
     // Is there a way to block consecutive calls ???

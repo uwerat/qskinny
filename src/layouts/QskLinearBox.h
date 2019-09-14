@@ -114,6 +114,7 @@ class QSK_EXPORT QskLinearBox : public QskIndexedLayoutBox
     void autoRemoveItem( QQuickItem* ) override final;
 
   private:
+    void setItemActive( QQuickItem*, bool );
     void removeItemInternal( int index, bool autoDelete );
 
     class PrivateData;
