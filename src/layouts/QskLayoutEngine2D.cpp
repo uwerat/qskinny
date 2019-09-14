@@ -385,18 +385,32 @@ QSizeF QskLayoutEngine2D::sizeHint(
     auto& rowChain = m_data->rowChain;
     auto& columnChain = m_data->columnChain;
 
+    if ( constraint.width() >= 0.0 || constraint.height() >= 0.0 )
+    {
+        const auto type = constraintType();
+
+        if ( constraint.width() >= 0 )
+        {
+            if ( type == QskSizePolicy::WidthForHeight )
+                qWarning( "QskLayoutEngine2D: WidthForHeight conflict." );
+        }
+        else
+        {
+            if ( type == QskSizePolicy::HeightForWidth )
+                qWarning( "QskLayoutEngine2D: HeightForWidth conflict." );
+        }
+    }
+
     m_data->blockInvalidate = true;
 
-    if ( ( constraint.width() >= 0 ) &&
-        ( constraintType() == QskSizePolicy::HeightForWidth ) )
+    if ( constraint.width() >= 0 )
     {
         setupChain( Qt::Horizontal );
 
         const auto constraints = columnChain.segments( constraint.width() );
         setupChain( Qt::Vertical, constraints );
     }
-    else if ( ( constraint.height() >= 0 ) &&
-        ( constraintType() == QskSizePolicy::WidthForHeight ) )
+    else if ( constraint.height() >= 0 )
     {
         setupChain( Qt::Vertical );
 
