@@ -416,7 +416,7 @@ int QskLinearBox::insertItem( int index, QQuickItem* item )
 
     if ( index < engine.count() - 1 )
     {
-        for ( int i = index; i < engine.count(); i++ )
+        for ( int i = index + 1; i < engine.count(); i++ )
         {
             if ( auto nextItem = engine.itemAt( i ) )
             {
