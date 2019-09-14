@@ -437,7 +437,6 @@ static QSizeF qskBoundedConstraint( const QQuickItem* item,
             size.rheight() = qMin( constraint.height(), hintMax.height() );
 
         size.rheight() = qMax( constraint.height(), hintMin.height() );
-
     }
 
     return size;
