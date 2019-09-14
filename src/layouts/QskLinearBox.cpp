@@ -360,9 +360,23 @@ Qt::Edges QskLinearBox::extraSpacingAt() const
     return m_data->engine.extraSpacingAt();
 }
 
+int QskLinearBox::addItem( QQuickItem* item, Qt::Alignment alignment )
+{
+    return insertItem( -1, item, alignment );
+}
+
 int QskLinearBox::addItem( QQuickItem* item )
 {
     return insertItem( -1, item );
+}
+
+int QskLinearBox::insertItem(
+    int index, QQuickItem* item, Qt::Alignment alignment )
+{
+    if ( auto control = qskControlCast( item ) )
+        control->setLayoutAlignmentHint( alignment );
+
+    return insertItem( index, item );
 }
 
 int QskLinearBox::insertItem( int index, QQuickItem* item )

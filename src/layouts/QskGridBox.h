@@ -29,6 +29,11 @@ class QSK_EXPORT QskGridBox : public QskBox
 
     Q_INVOKABLE int addItem( QQuickItem*, int row, int column );
 
+    int addItem( QQuickItem*, int row, int column, Qt::Alignment );
+
+    int addItem( QQuickItem*, int row, int column,
+        int rowSpan, int columnSpan, Qt::Alignment );
+
     Q_INVOKABLE int addSpacer( qreal spacing,
         int row, int column, int columnSpan = 1, int rowSpan = 1 );
 

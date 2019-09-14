@@ -94,6 +94,24 @@ QskGridBox::~QskGridBox()
 {
 }
 
+int QskGridBox::addItem( QQuickItem* item, 
+    int row, int column, Qt::Alignment alignment )
+{   
+    if ( auto control = qskControlCast( item ) ) 
+        control->setLayoutAlignmentHint( alignment );
+
+    return addItem( item, row, column );
+}   
+    
+int QskGridBox::addItem( QQuickItem* item, 
+        int row, int column, int rowSpan, int columnSpan, Qt::Alignment alignment )
+{
+    if ( auto control = qskControlCast( item ) )
+        control->setLayoutAlignmentHint( alignment );
+
+    return addItem( item, row, column, rowSpan, columnSpan );
+}
+
 int QskGridBox::addItem( QQuickItem* item,
     int row, int column, int rowSpan, int columnSpan )
 {

@@ -35,8 +35,10 @@ class QSK_EXPORT QskStackBox : public QskIndexedLayoutBox
     int indexOf( const QQuickItem* ) const;
 
     void addItem( QQuickItem* );
+    void addItem( QQuickItem*, Qt::Alignment );
 
     void insertItem( int index, QQuickItem* );
+    void insertItem( int index, QQuickItem*, Qt::Alignment );
 
     void removeItem( const QQuickItem* );
     void removeAt( int index );

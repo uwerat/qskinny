@@ -177,6 +177,11 @@ void QskStackBox::addItem( QQuickItem* item )
     insertItem( -1, item );
 }
 
+void QskStackBox::addItem( QQuickItem* item, Qt::Alignment alignment )
+{
+    insertItem( -1, item, alignment );
+}
+
 void QskStackBox::insertItem( int index, QQuickItem* item )
 {
     if ( item == nullptr )
@@ -234,6 +239,15 @@ void QskStackBox::insertItem( int index, QQuickItem* item )
 
     resetImplicitSize();
     polish();
+}
+
+void QskStackBox::insertItem(
+    int index, QQuickItem* item, Qt::Alignment alignment )
+{
+    if ( auto control = qskControlCast( item ) )
+        control->setLayoutAlignmentHint( alignment );
+
+    insertItem( index, item );
 }
 
 void QskStackBox::removeAt( int index )
