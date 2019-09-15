@@ -164,6 +164,8 @@ void QskStackBox::setCurrentIndex( int index )
     }
 
     m_data->currentIndex = index;
+    polish();
+
     Q_EMIT currentIndexChanged( m_data->currentIndex );
 }
 
