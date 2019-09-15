@@ -261,12 +261,12 @@ QSizeF QskGraphicLabel::contentsSizeHint(
         if ( constraint.width() >= 0.0 )
         {
             sz.setHeight( sz.height() * constraint.width() / sz.width() );
-            sz.setWidth( constraint.width() );
+            sz.setWidth( -1.0 );
         }
         else if ( constraint.height() >= 0.0 )
         {
             sz.setWidth( sz.width() * constraint.height() / sz.height() );
-            sz.setHeight( constraint.height() );
+            sz.setHeight( -1.0 );
         }
     }
 
