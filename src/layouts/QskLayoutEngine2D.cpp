@@ -379,56 +379,99 @@ qreal QskLayoutEngine2D::heightForWidth( qreal width ) const
 QSizeF QskLayoutEngine2D::sizeHint(
     Qt::SizeHint which, const QSizeF& constraint ) const
 {
+    if ( constraint.isValid() )
+        return constraint; // should never happen
+
     if ( effectiveCount( Qt::Horizontal ) <= 0 )
         return QSizeF( 0.0, 0.0 );
+
+    auto requestType = constraintType();
+
+    switch ( requestType )
+    {
+        case QskSizePolicy::HeightForWidth:
+        {
+            if ( constraint.height() >= 0 )
+            {
+                qWarning( "QskLayoutEngine2D: HeightForWidth conflict." );
+                return QSizeF();
+            }
+
+            if ( constraint.width() <= 0 )
+                requestType = QskSizePolicy::Unconstrained;
+            
+            break;
+        }
+        case QskSizePolicy::WidthForHeight:
+        {
+            if ( constraint.width() >= 0 )
+            {
+                qWarning( "QskLayoutEngine2D: WidthForHeight conflict." );
+                return QSizeF();
+            }
+
+            if ( constraint.height() <= 0 )
+                requestType = QskSizePolicy::Unconstrained;
+
+            break;
+        }
+        default:
+        {
+            if ( constraint.height() >= 0 || constraint.width() >= 0 )
+            {
+                /*
+                    As none of the items have the Constrained flag the constraint
+                    will have no effect and we ignore it to make use of the cached
+                    results from unconstrained requests
+                 */
+                qWarning( "QskLayoutEngine2D: constraint will be ignored." );
+            }
+        }
+    } 
 
     auto& rowChain = m_data->rowChain;
     auto& columnChain = m_data->columnChain;
 
-    if ( constraint.width() >= 0.0 || constraint.height() >= 0.0 )
-    {
-        const auto type = constraintType();
-
-        if ( constraint.width() >= 0 )
-        {
-            if ( type == QskSizePolicy::WidthForHeight )
-                qWarning( "QskLayoutEngine2D: WidthForHeight conflict." );
-        }
-        else
-        {
-            if ( type == QskSizePolicy::HeightForWidth )
-                qWarning( "QskLayoutEngine2D: HeightForWidth conflict." );
-        }
-    }
-
     m_data->blockInvalidate = true;
 
-    if ( constraint.width() >= 0 )
+    switch( requestType )
     {
-        setupChain( Qt::Horizontal );
+        case QskSizePolicy::HeightForWidth:
+        {
+            setupChain( Qt::Horizontal );
 
-        const auto constraints = columnChain.segments( constraint.width() );
-        setupChain( Qt::Vertical, constraints );
-    }
-    else if ( constraint.height() >= 0 )
-    {
-        setupChain( Qt::Vertical );
+            const auto constraints = columnChain.segments( constraint.width() );
+            setupChain( Qt::Vertical, constraints );
 
-        const auto constraints = rowChain.segments( constraint.height() );
-        setupChain( Qt::Horizontal, constraints );
-    }
-    else
-    {
-        setupChain( Qt::Horizontal );
-        setupChain( Qt::Vertical );
+            break;
+        }
+        case QskSizePolicy::WidthForHeight:
+        {
+            setupChain( Qt::Vertical );
+
+            const auto constraints = rowChain.segments( constraint.height() );
+            setupChain( Qt::Horizontal, constraints );
+
+            break;
+        }
+        default:
+        {
+            setupChain( Qt::Horizontal );
+            setupChain( Qt::Vertical );
+        }
     }
 
     m_data->blockInvalidate = false;
 
-    const qreal width = columnChain.boundingHint().size( which );
-    const qreal height = rowChain.boundingHint().size( which );
+    QSizeF hint;
 
-    return QSizeF( width, height );
+    if ( constraint.width() <= 0.0 )
+        hint.rwidth() = columnChain.boundingHint().size( which );
+
+    if ( constraint.height() <= 0.0 )
+        hint.rheight() = rowChain.boundingHint().size( which );
+
+    return hint;
 }
 
 QskLayoutHint QskLayoutEngine2D::layoutHint( const QQuickItem* item,
@@ -493,8 +536,7 @@ void QskLayoutEngine2D::setupChain( Qt::Orientation orientation,
 
     auto& chain = m_data->layoutChain( orientation );
 
-    if ( ( chain.constraint() == constraint )
-        && ( chain.count() == count ) )
+    if ( ( chain.constraint() == constraint ) && ( chain.count() == count ) )
     {
         return; // already up to date
     }

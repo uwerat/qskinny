@@ -212,18 +212,7 @@ QSizeF QskLinearBox::layoutSizeHint(
         return QSizeF();
     }
 
-    auto hint = m_data->engine.sizeHint( which, constraint );
-
-    if ( constraint.width() >= 0.0 )
-    {
-        hint.setWidth( -1.0 );
-    }
-    else if ( constraint.height() >= 0.0 )
-    {
-        hint.setHeight( -1.0 );
-    }
-
-    return hint;
+    return m_data->engine.sizeHint( which, constraint );
 }
 
 void QskLinearBox::geometryChangeEvent( QskGeometryChangeEvent* event )
