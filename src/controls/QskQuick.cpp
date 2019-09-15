@@ -523,6 +523,9 @@ QSizeF qskSizeConstraint( const QQuickItem* item,
 
 QSizeF qskConstrainedItemSize( const QQuickItem* item, const QSizeF& size )
 {
+    if ( size.width() <= 0.0 && size.height() <= 0.0 )
+        return QSizeF( 0.0, 0.0 );
+
     QSizeF constraint;
 
     switch( static_cast< int >( qskSizePolicy( item ).constraintType() ) )
@@ -550,12 +553,10 @@ QSizeF qskConstrainedItemSize( const QQuickItem* item, const QSizeF& size )
     if ( max.height() >= 0.0 )
         height = qMin( height, max.height() );
 
-#if 0
     const auto min = qskSizeConstraint( item, Qt::MinimumSize, constraint );
 
     width = qMax( width, min.width() );
     height = qMax( height, min.height() );
-#endif
 
     return QSizeF( width, height );
 }
