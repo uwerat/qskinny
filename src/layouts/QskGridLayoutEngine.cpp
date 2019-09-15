@@ -249,14 +249,22 @@ bool Element::isIgnored() const
 
 QskLayoutChain::CellData Element::cell( Qt::Orientation orientation ) const
 {
-    const auto policy = qskSizePolicy( m_item ).policy( orientation );
-
     QskLayoutChain::CellData cell;
     cell.isValid = true;
-    cell.canGrow = policy & QskSizePolicy::GrowFlag;
+    
+    if ( m_isSpacer )
+    {
+        // ???
+    }
+    else
+    {
+        const auto policy = qskSizePolicy( m_item ).policy( orientation );
 
-    if ( policy & QskSizePolicy::ExpandFlag )
-        cell.stretch = 1;
+        cell.canGrow = policy & QskSizePolicy::GrowFlag;
+
+        if ( policy & QskSizePolicy::ExpandFlag )
+            cell.stretch = 1;
+    }
 
     return cell;
 }
