@@ -40,7 +40,7 @@ class QskLinearLayoutEngine : public QskLayoutEngine2D
     bool clear();
 
     QQuickItem* itemAt( int index ) const override final;
-    qreal spacerAt( int index ) const override final;
+    qreal spacerAt( int index ) const;
 
     bool setStretchFactorAt( int index, int stretchFactor );
     int stretchFactorAt( int index ) const;

@@ -157,7 +157,7 @@ int QskGridBox::addItem( QQuickItem* item,
     return index;
 }
 
-int QskGridBox::addSpacer( qreal spacing,
+int QskGridBox::addSpacer( const QSizeF& spacing,
     int row, int column, int rowSpan, int columnSpan )
 {
     const int index = m_data->engine.insertSpacer(

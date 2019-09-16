@@ -34,13 +34,13 @@ class QskGridLayoutEngine : public QskLayoutEngine2D
     qreal columnSizeHint( int column, Qt::SizeHint ) const;
 
     int insertItem( QQuickItem*, const QRect& grid );
-    int insertSpacer( qreal spacing, const QRect& grid );
+    int insertSpacer( const QSizeF&, const QRect& grid );
 
     bool removeAt( int index );
     bool clear();
 
     QQuickItem* itemAt( int index ) const override final;
-    qreal spacerAt( int index ) const override final;
+    QSizeF spacerAt( int index ) const;
 
     QQuickItem* itemAt( int row, int column ) const;
     int indexAt( int row, int column ) const;

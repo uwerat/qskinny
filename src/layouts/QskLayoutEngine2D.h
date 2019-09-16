@@ -25,7 +25,6 @@ class QskLayoutEngine2D
     virtual int count() const = 0;
 
     virtual QQuickItem* itemAt( int index ) const = 0;
-    virtual qreal spacerAt( int index ) const = 0;
 
     int indexOf( const QQuickItem* ) const;
 

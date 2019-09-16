@@ -158,11 +158,11 @@ namespace
     {
       public:
         Element( QQuickItem*, const QRect& );
-        Element( qreal spacing, const QRect& );
+        Element( const QSizeF& spacing, const QRect& );
 
         Element& operator=( const Element& );
 
-        qreal spacing() const;
+        QSizeF spacing() const;
         QQuickItem* item() const;
 
         QRect grid() const;
@@ -180,7 +180,7 @@ namespace
         union
         {
             QQuickItem* m_item;
-            qreal m_spacing;
+            QSizeF m_spacing;
         };
 
         QRect m_grid;
@@ -195,7 +195,7 @@ Element::Element( QQuickItem* item, const QRect& grid )
 {
 }
 
-Element::Element( qreal spacing, const QRect& grid )
+Element::Element( const QSizeF& spacing, const QRect& grid )
     : m_spacing( spacing )
     , m_grid( grid )
     , m_isSpacer( true )
@@ -216,9 +216,9 @@ Element& Element::operator=( const Element& other )
     return *this;
 }
 
-inline qreal Element::spacing() const
+inline QSizeF Element::spacing() const
 {
-    return m_isSpacer ? m_spacing : -1.0;
+    return m_isSpacer ? m_spacing : QSizeF();
 }
 
 inline QQuickItem* Element::item() const
@@ -254,9 +254,12 @@ QskLayoutChain::CellData Element::cell( Qt::Orientation orientation ) const
     
     if ( m_isSpacer )
     {
-        cell.hint.setMinimum( m_spacing );
-        cell.hint.setPreferred( m_spacing );
-        cell.hint.setMaximum( m_spacing );
+        const qreal value = ( orientation == Qt::Horizontal )
+            ? m_spacing.width() : m_spacing.height();
+            
+        cell.hint.setMinimum( value );
+        cell.hint.setPreferred( value );
+        cell.hint.setMaximum( value );
     }
     else
     {
@@ -289,7 +292,7 @@ class QskGridLayoutEngine::PrivateData
         return const_cast< Element* >( &this->elements[index] );
     }
 
-    int insertElement( QQuickItem* item, qreal spacing, QRect grid )
+    int insertElement( QQuickItem* item, QSizeF spacing, QRect grid )
     {
         // -1 means unlimited, while 0 does not make any sense
         if ( grid.width() == 0 )
@@ -299,9 +302,19 @@ class QskGridLayoutEngine::PrivateData
             grid.setHeight( 1 );
 
         if ( item )
+        {
             elements.push_back( Element( item, grid ) );
+        }
         else
+        {
+            if ( spacing.width() < 0.0 )
+                spacing.setWidth( 0.0 );
+
+            if ( spacing.height() < 0.0 )
+                spacing.setHeight( 0.0 );
+
             elements.push_back( Element( spacing, grid ) );
+        }
 
         grid = effectiveGrid( elements.back() );
 
@@ -418,12 +431,11 @@ qreal QskGridLayoutEngine::columnSizeHint( int column, Qt::SizeHint which ) cons
 int QskGridLayoutEngine::insertItem( QQuickItem* item, const QRect& grid )
 {
     invalidate();
-    return m_data->insertElement( item, -1, grid );
+    return m_data->insertElement( item, QSizeF(), grid );
 }
 
-int QskGridLayoutEngine::insertSpacer( qreal spacing, const QRect& grid )
+int QskGridLayoutEngine::insertSpacer( const QSizeF& spacing, const QRect& grid )
 {
-    spacing = qMax( spacing, 0.0 );
     return m_data->insertElement( nullptr, spacing, grid );
 }
 
@@ -495,12 +507,12 @@ QQuickItem* QskGridLayoutEngine::itemAt( int index ) const
     return nullptr;
 }
 
-qreal QskGridLayoutEngine::spacerAt( int index ) const
+QSizeF QskGridLayoutEngine::spacerAt( int index ) const
 {
     if ( const auto element = m_data->elementAt( index ) )
         return element->spacing();
 
-    return -1.0;
+    return QSizeF();
 }
 
 QQuickItem* QskGridLayoutEngine::itemAt( int row, int column ) const
