@@ -456,7 +456,10 @@ void QskWindow::layoutItems()
     for ( auto child : children )
     {
         if ( !qskIsTransparentForPositioner( child ) )
-            qskSetItemGeometry( child, rect );
+        {
+            const auto r = qskConstrainedItemRect( child, rect );
+            qskSetItemGeometry( child, r );
+        }
     }
 }
 
