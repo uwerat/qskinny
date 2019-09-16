@@ -460,6 +460,10 @@ QSizeF qskSizeConstraint( const QQuickItem* item,
 
     int constraintType = QskSizePolicy::Unconstrained;
 
+    /*
+        We apply a constraint - even, when the policy is unconstrained.
+        Do we really want to do this ???
+     */
     if ( constraint.height() >= 0.0 )
     {
         const auto c = qskBoundedConstraint( item, constraint, policy );
@@ -497,7 +501,7 @@ QSizeF qskSizeConstraint( const QQuickItem* item,
                 size = qskEffectiveSizeHint( item, whichH );
 
                 if ( whichV != whichH )
-                    constraintType = QskSizePolicy::HeightForWidth;
+                    size.setHeight( qskEffectiveSizeHint( item, whichV ).height() );
             }
         }
     }
