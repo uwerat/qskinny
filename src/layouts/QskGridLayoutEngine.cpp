@@ -560,13 +560,12 @@ void QskGridLayoutEngine::layoutItems()
 {
     for ( const auto& element : m_data->elements )
     {
-        if ( !element.isIgnored() )
+        auto item = element.item();
+
+        if ( item && qskIsVisibleToParent( item ) )
         {
-            if ( auto item = element.item() )
-            {
-                const auto grid = m_data->effectiveGrid( element );
-                layoutItem( item, grid );
-            }
+            const auto grid = m_data->effectiveGrid( element );
+            layoutItem( item, grid );
         }
     }
 }

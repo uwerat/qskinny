@@ -348,8 +348,11 @@ void QskLinearLayoutEngine::layoutItems()
 
         if ( auto item = element.item() )
         {
-            const QRect grid( col, row, 1, 1 );
-            layoutItem( item, grid );
+            if ( qskIsVisibleToParent( item ) )
+            {
+                const QRect grid( col, row, 1, 1 );
+                layoutItem( item, grid );
+            }
         }
 
         if ( m_data->orientation == Qt::Horizontal )
