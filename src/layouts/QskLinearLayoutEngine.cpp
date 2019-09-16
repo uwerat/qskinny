@@ -21,7 +21,7 @@ namespace
 
         Element& operator=( const Element& );
 
-        qreal spacer() const;
+        qreal spacing() const;
         QQuickItem* item() const;
 
         Qt::Alignment alignment() const;
@@ -43,7 +43,7 @@ namespace
         union
         {
             QQuickItem* m_item;
-            qreal m_spacer;
+            qreal m_spacing;
         };
 
         int m_stretch = -1;
@@ -58,7 +58,7 @@ Element::Element( QQuickItem* item )
 }
 
 Element::Element( qreal spacing )
-    : m_spacer( spacing )
+    : m_spacing( spacing )
     , m_isSpacer( true )
 {
 }
@@ -68,7 +68,7 @@ Element& Element::operator=( const Element& other )
     m_isSpacer = other.m_isSpacer;
 
     if ( other.m_isSpacer )
-        m_spacer = other.m_spacer;
+        m_spacing = other.m_spacing;
     else
         m_item = other.m_item;
 
@@ -77,9 +77,9 @@ Element& Element::operator=( const Element& other )
     return *this;
 }
 
-inline qreal Element::spacer() const
+inline qreal Element::spacing() const
 {
-    return m_isSpacer ? m_spacer : -1.0;
+    return m_isSpacer ? m_spacing : -1.0;
 }
 
 inline QQuickItem* Element::item() const
@@ -127,11 +127,11 @@ QskLayoutChain::CellData Element::cell(
     {
         if ( isLayoutOrientation )
         {
-            cell.hint.setMinimum( m_spacer );
-            cell.hint.setPreferred( m_spacer );
+            cell.hint.setMinimum( m_spacing );
+            cell.hint.setPreferred( m_spacing );
 
             if ( m_stretch <= 0 )
-                cell.hint.setMaximum( m_spacer );
+                cell.hint.setMaximum( m_spacing );
 
             cell.stretch = qMax( m_stretch, 0 );
         }
@@ -331,7 +331,7 @@ QQuickItem* QskLinearLayoutEngine::itemAt( int index ) const
 qreal QskLinearLayoutEngine::spacerAt( int index ) const
 {
     if ( const auto element = m_data->elementAt( index ) )
-        return element->spacer();
+        return element->spacing();
 
     return -1.0;
 }
