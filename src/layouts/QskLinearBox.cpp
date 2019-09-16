@@ -80,7 +80,7 @@ int QskLinearBox::count() const
     return m_data->engine.count();
 }
 
-int QskLinearBox::spacingAtIndex( int index ) const
+qreal QskLinearBox::spacingAtIndex( int index ) const
 {
     return m_data->engine.spacerAt( index );
 }
