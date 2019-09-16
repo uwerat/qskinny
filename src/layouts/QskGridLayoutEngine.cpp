@@ -612,7 +612,8 @@ void QskGridLayoutEngine::setupChain( Qt::Orientation orientation,
                 constraint = qskSegmentLength( constraints, grid.left(), grid.right() );
 
             auto cell = element.cell( orientation );
-            cell.hint = layoutHint( element.item(), orientation, constraint );
+            if ( element.item() )
+                cell.hint = layoutHint( element.item(), orientation, constraint );
             
             chain.expandCell( grid.top(), cell );
         }
