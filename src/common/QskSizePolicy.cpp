@@ -5,6 +5,10 @@
 
 #include "QskSizePolicy.h"
 
+#ifndef QT_NO_DEBUG
+#include <qdebug.h>
+#endif
+
 QskSizePolicy::Policy QskSizePolicy::policy( Qt::Orientation orientation ) const
 {
     return ( orientation == Qt::Horizontal )
@@ -21,10 +25,20 @@ void QskSizePolicy::setPolicy( Qt::Orientation orientation, Policy policy )
 
 QskSizePolicy::ConstraintType QskSizePolicy::constraintType() const
 {
-    if ( horizontalPolicy() & ConstrainedFlag )
+    constexpr unsigned char mask = IgnoreFlag | ConstrainedFlag;
+
+#ifndef QT_NO_DEBUG
+    if ( ( ( m_horizontalPolicy & mask ) == mask )
+        || ( ( m_verticalPolicy & mask ) == mask ) )
+    {
+        qWarning() << "invalid policy having IgnoreFlag and ConstrainedFlag";
+    }
+#endif
+
+    if ( ( m_horizontalPolicy & mask ) == ConstrainedFlag )
         return QskSizePolicy::WidthForHeight;
 
-    if ( verticalPolicy() & ConstrainedFlag )
+    if ( ( m_verticalPolicy & mask ) == ConstrainedFlag )
         return QskSizePolicy::HeightForWidth;
         
     return QskSizePolicy::Unconstrained;
