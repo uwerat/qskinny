@@ -892,14 +892,19 @@ void QskControl::windowDeactivateEvent()
 
 void QskControl::updateItemPolish()
 {
-    if ( d_func()->autoLayoutChildren && !maybeUnresized() )
+    if ( d_func()->autoLayoutChildren && !maybeUnresized()
+        && ( width() > 0.0 || height() > 0.0 ) )
     {
         const auto rect = layoutRect();
 
         const auto children = childItems();
         for ( auto child : children )
         {
-            // checking qskIsVisibleToParent ???
+            /*
+                We don't want to resize invisible children, but then
+                we would need to set up connections to know when a child
+                becomes visible. So we don't use qskIsVisibleToLayout here.
+             */
             if ( !qskIsTransparentForPositioner( child ) )
             {
                 const auto r = qskConstrainedItemRect( child, rect );
@@ -971,18 +976,21 @@ QSizeF QskControl::layoutSizeHint(
     if ( which == Qt::MaximumSize || !d_func()->autoLayoutChildren )
         return QSizeF();
 
-    qreal w = constraint.width();
-    qreal h = constraint.height();
+    qreal w = -1.0;
+    qreal h = -1.0;
 
     const auto children = childItems();
     for ( const auto child : children )
     {
         if ( qskIsVisibleToLayout( child ) )
         {
-            const auto hint = qskEffectiveSizeHint( child, which, constraint );
+            const auto hint = qskSizeConstraint( child, which, constraint );
 
-            w = QskLayoutHint::combined( which, w, hint.width() );
-            h = QskLayoutHint::combined( which, h, hint.height() );
+            if ( constraint.width() < 0.0 )
+                w = QskLayoutHint::combined( which, w, hint.width() );
+
+            if ( constraint.height() < 0.0 )
+                h = QskLayoutHint::combined( which, h, hint.height() );
         }
     }
 
