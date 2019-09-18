@@ -244,7 +244,7 @@ bool QskWindow::event( QEvent* event )
         {
             if ( size().isEmpty() )
             {
-                QSize sz = effectivePreferredSize();
+                QSize sz = sizeConstraint();
                 if ( !sz.isEmpty() )
                 {
                     sz = sz.expandedTo( minimumSize() );
@@ -403,7 +403,7 @@ QSize QskWindow::preferredSize() const
     return d->preferredSize;
 }
 
-QSize QskWindow::effectivePreferredSize() const
+QSize QskWindow::sizeConstraint() const
 {
     Q_D( const QskWindow );
 
@@ -419,7 +419,7 @@ QSize QskWindow::effectivePreferredSize() const
         {
             if ( auto control = qskControlCast( child ) )
             {
-                const QSizeF itemConstraint = control->sizeHint();
+                const QSizeF itemConstraint = control->sizeConstraint();
 
                 if ( doWidth )
                     constraint.setWidth( qMax( constraint.width(), itemConstraint.width() ) );

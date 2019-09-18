@@ -51,7 +51,7 @@ class QSK_EXPORT QskWindow : public QQuickWindow
     Q_INVOKABLE void setPreferredSize( const QSize& );
     Q_INVOKABLE QSize preferredSize() const;
 
-    Q_INVOKABLE QSize effectivePreferredSize() const;
+    Q_INVOKABLE QSize sizeConstraint() const;
 
     Q_INVOKABLE void setFixedSize( const QSize& );
 

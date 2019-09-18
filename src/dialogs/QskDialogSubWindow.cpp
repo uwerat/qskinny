@@ -353,7 +353,7 @@ void QskDialogSubWindow::aboutToShow()
         const qreal cy = 0.5 * parentItem()->height();
 
         QRectF rect;
-        rect.setSize( sizeHint() );
+        rect.setSize( sizeConstraint() );
         rect.moveCenter( QPointF( cx, cy ) );
 
         setGeometry( rect );
@@ -370,7 +370,7 @@ void QskDialogSubWindow::updateLayout()
 
     if ( m_data->buttonBox && m_data->buttonBox->isVisibleToParent() )
     {
-        const auto h = m_data->buttonBox->sizeHint().height();
+        const auto h = m_data->buttonBox->sizeConstraint().height();
         rect.setBottom( rect.bottom() - h );
 
         m_data->buttonBox->setGeometry( rect.x(), rect.bottom(), rect.width(), h );

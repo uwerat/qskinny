@@ -408,7 +408,7 @@ void QskInputContext::showPanel( const QQuickItem* item )
 
         auto window = m_data->createWindow( panel );
 
-        QSize size = window->effectivePreferredSize();
+        QSize size = window->sizeConstraint();
         if ( size.isEmpty() )
         {
             // no idea, may be something based on the screen size

@@ -102,7 +102,7 @@ static void qskSetupWindow(
 
     window->setModality( transientParent ? Qt::WindowModal : Qt::ApplicationModal );
 
-    const QSize size = window->effectivePreferredSize();
+    const QSize size = window->sizeConstraint();
 
     if ( window->parent() )
     {
