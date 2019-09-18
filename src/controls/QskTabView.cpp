@@ -201,26 +201,66 @@ int QskTabView::count() const
 QSizeF QskTabView::layoutSizeHint(
     Qt::SizeHint which, const QSizeF& constraint ) const
 {
-    if ( which != Qt::PreferredSize )
-        return constraint;
+    if ( which == Qt::MaximumSize )
+        return QSizeF();
 
-    const auto barHint = m_data->tabBar->sizeHint();
-    const auto boxHint = m_data->stackBox->sizeHint();
+    const auto& tabBar = m_data->tabBar;
+    const auto& stackBox = m_data->stackBox;
 
-    qreal w, h;
+    const auto barHint = tabBar->sizeConstraint( which );
+
+    QSizeF hint;
 
     if ( orientation() == Qt::Vertical )
     {
-        w = qMax( barHint.width(), boxHint.width() );
-        h = barHint.height() + boxHint.height();
+        if ( constraint.width() >= 0.0 )
+        {
+            qreal w = qMax( constraint.width(), barHint.width() );
+            qreal h = stackBox->sizeConstraint( which, QSizeF( w, -1.0 ) ).height();
+
+            hint.rheight() = barHint.height() + h;
+        }
+        else if ( constraint.height() >= 0.0 )
+        {
+            qreal h = constraint.height() - barHint.height();
+            qreal w = stackBox->sizeConstraint( which, QSizeF( -1.0, h ) ).width();
+
+            hint.rwidth() = qMax( barHint.width(), w );
+        }
+        else
+        {
+            const auto boxHint = stackBox->sizeConstraint();
+
+            hint.rwidth() = qMax( barHint.width(), boxHint.width() );
+            hint.rheight() = barHint.height() + boxHint.height();
+        }
     }
     else
     {
-        w = barHint.width() + boxHint.width();
-        h = qMax( barHint.height(), boxHint.height() );
+        if ( constraint.width() >= 0.0 )
+        {
+            qreal w = constraint.width() - barHint.width();
+            qreal h = stackBox->sizeConstraint( which, QSizeF( w, -1.0 ) ).height();
+
+            hint.rheight() = qMax( barHint.height(), h );
+        }
+        else if ( constraint.height() >= 0.0 )
+        {
+            qreal h = qMax( constraint.height(), barHint.height() );
+            qreal w = stackBox->sizeConstraint( which, QSizeF( -1.0, h ) ).width();
+
+            hint.rwidth() = barHint.width() + w;
+        }
+        else
+        {
+            const auto boxHint = stackBox->sizeConstraint();
+
+            hint.rwidth() = barHint.width() + boxHint.width();
+            hint.rheight() = qMax( barHint.height(), boxHint.height() );
+        }
     }
 
-    return QSizeF( w, h );
+    return hint;
 }
 
 void QskTabView::setCurrentIndex( int index )
