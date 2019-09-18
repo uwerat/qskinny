@@ -451,7 +451,27 @@ QSizeF qskSizeConstraint( const QQuickItem* item,
     if ( constraint.isValid() )
         return constraint;
 
-    const auto policy = qskSizePolicy( item );
+    auto policy = qskSizePolicy( item );
+
+    bool ignoreWidth = false;
+    bool ignoreHeight = false;
+
+    if ( which == Qt::PreferredSize )
+    {
+        /*
+            First we are checking the IgnoreFlag, to avoid doing
+            pointless calculations.
+         */
+        ignoreWidth = policy.policy( Qt::Horizontal ) & QskSizePolicy::IgnoreFlag;
+        ignoreHeight = policy.policy( Qt::Vertical ) & QskSizePolicy::IgnoreFlag;
+
+        if ( ( ignoreWidth && ignoreHeight )
+            || ( ignoreWidth && constraint.height() >= 0.0 )
+            || ( ignoreHeight && constraint.width() >= 0.0 ) )
+        {
+            return QSizeF();
+        }
+    }
 
     const auto whichH = policy.effectiveSizeHintType( which, Qt::Horizontal );
     const auto whichV = policy.effectiveSizeHintType( which, Qt::Vertical );
@@ -498,10 +518,18 @@ QSizeF qskSizeConstraint( const QQuickItem* item,
             }
             default:
             {
-                size = qskEffectiveSizeHint( item, whichH );
-
                 if ( whichV != whichH )
-                    size.setHeight( qskEffectiveSizeHint( item, whichV ).height() );
+                {
+                    if ( !ignoreWidth )
+                        size.rwidth() = qskEffectiveSizeHint( item, whichH ).width();
+
+                    if ( !ignoreHeight )
+                        size.rheight() = qskEffectiveSizeHint( item, whichV ).height();
+                }
+                else
+                {
+                    size = qskEffectiveSizeHint( item, whichH );
+                }
             }
         }
     }
@@ -511,16 +539,22 @@ QSizeF qskSizeConstraint( const QQuickItem* item,
         case QskSizePolicy::HeightForWidth:
         {
             const QSizeF c( size.width(), -1.0 );
-            size.setHeight( qskEffectiveSizeHint( item, whichV, c ).height() );
+            size.rheight() = qskEffectiveSizeHint( item, whichV, c ).height();
             break;
         }
         case QskSizePolicy::WidthForHeight:
         {
             const QSizeF c( -1.0, size.height() );
-            size.setWidth( qskEffectiveSizeHint( item, whichH, c ).width() );
+            size.rwidth() = qskEffectiveSizeHint( item, whichH, c ).width();
             break;
         }
     }
+
+    if ( ignoreWidth || constraint.width() >= 0.0 )
+        size.rwidth() = -1.0;
+
+    if ( ignoreHeight || constraint.height() >= 0.0 )
+        size.rheight() = -1.0;
 
     return size;
 }
