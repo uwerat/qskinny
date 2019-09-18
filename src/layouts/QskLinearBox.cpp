@@ -401,6 +401,14 @@ int QskLinearBox::insertItem( int index, QQuickItem* item )
     if ( item == nullptr )
         return -1;
 
+    if ( qskIsTransparentForPositioner( item ) )
+    {
+        qWarning() << "Inserting an item that is marked as transparent for layouting:"
+            << item->metaObject()->className();
+
+        qskSetTransparentForPositioner( item, false );
+    }
+
     auto& engine = m_data->engine;
 
     if ( item->parentItem() == this )
