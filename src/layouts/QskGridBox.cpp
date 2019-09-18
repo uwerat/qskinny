@@ -6,6 +6,7 @@
 #include "QskGridBox.h"
 #include "QskGridLayoutEngine.h"
 #include "QskEvent.h"
+#include "QskQuick.h"
 #include <algorithm>
 
 static void qskSetItemActive( QObject* receiver, const QQuickItem* item, bool on )
@@ -118,6 +119,14 @@ int QskGridBox::addItem( QQuickItem* item,
     if ( item == nullptr || row < 0 || column < 0 )
         return -1;
 
+    if ( qskIsTransparentForPositioner( item ) )
+    {
+        qWarning() << "Inserting an item that is marked as transparent for layouting:"
+            << item->metaObject()->className();
+
+        qskSetTransparentForPositioner( item, false );
+    }
+
     rowSpan = qMax( rowSpan, -1 );
     columnSpan = qMax( columnSpan, -1 );
 
@@ -167,6 +176,16 @@ int QskGridBox::addSpacer( const QSizeF& spacing,
     polish();
 
     return index;
+}
+
+int QskGridBox::addColumnSpacer( qreal spacing, int column )
+{
+    return addSpacer( QSizeF( spacing, 0.0 ), 0, column );
+}
+
+int QskGridBox::addRowSpacer( qreal spacing, int row )
+{
+    return addSpacer( QSizeF( 0.0, spacing ), row, 0 );
 }
 
 void QskGridBox::removeAt( int index )

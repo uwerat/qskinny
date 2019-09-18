@@ -37,6 +37,9 @@ class QSK_EXPORT QskGridBox : public QskBox
     Q_INVOKABLE int addSpacer( const QSizeF&,
         int row, int column, int columnSpan = 1, int rowSpan = 1 );
 
+    int addColumnSpacer( qreal spacing, int column );
+    int addRowSpacer( qreal spacing, int row );
+
     void removeItem( const QQuickItem* );
     void removeAt( int index );
 
