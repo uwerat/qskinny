@@ -240,7 +240,7 @@ QskGraphic QskGraphicLabel::loadSource( const QUrl& url ) const
     return Qsk::loadGraphic( url );
 }
 
-void QskGraphicLabel::updateLayout()
+void QskGraphicLabel::updateResources()
 {
     if ( !m_data->source.isEmpty() && m_data->isSourceDirty )
         m_data->graphic = loadSource( m_data->source );

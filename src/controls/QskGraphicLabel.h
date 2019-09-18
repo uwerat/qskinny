@@ -95,7 +95,7 @@ class QSK_EXPORT QskGraphicLabel : public QskControl
 
   protected:
     void changeEvent( QEvent* ) override;
-    void updateLayout() override;
+    void updateResources() override;
     virtual QskGraphic loadSource( const QUrl& ) const;
 
     QSizeF contentsSizeHint(
