@@ -348,6 +348,7 @@ QSizeF QskStackBox::layoutSizeHint(
     Qt::SizeHint which, const QSizeF& constraint ) const
 {
     // needs to reimplemented TODO ...
+    // minimum/preferred layout hint need to be cached
 
     if ( which != Qt::PreferredSize )
         return QSizeF();
@@ -361,8 +362,7 @@ QSizeF QskStackBox::layoutSizeHint(
 
         for ( const auto& item : qskAsConst( m_data->items ) )
         {
-            const auto hint = qskEffectiveSizeHint(
-                item, Qt::PreferredSize, constraint );
+            const auto hint = qskSizeConstraint( item, which, constraint );
 
             if ( constraint.width() >= 0 )
                 value = qMax( hint.height(), value );

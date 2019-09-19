@@ -201,7 +201,7 @@ int QskTabView::count() const
 QSizeF QskTabView::layoutSizeHint(
     Qt::SizeHint which, const QSizeF& constraint ) const
 {
-    if ( which != Qt::PreferredSize )
+    if ( which == Qt::MaximumSize )
         return QSizeF();
 
     const auto& tabBar = m_data->tabBar;
@@ -253,7 +253,7 @@ QSizeF QskTabView::layoutSizeHint(
         }
         else
         {
-            const auto boxHint = stackBox->sizeConstraint();
+            const auto boxHint = stackBox->sizeConstraint( which );
 
             hint.rwidth() = barHint.width() + boxHint.width();
             hint.rheight() = qMax( barHint.height(), boxHint.height() );
