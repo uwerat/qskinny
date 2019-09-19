@@ -201,7 +201,7 @@ int QskTabView::count() const
 QSizeF QskTabView::layoutSizeHint(
     Qt::SizeHint which, const QSizeF& constraint ) const
 {
-    if ( which == Qt::MaximumSize )
+    if ( which != Qt::PreferredSize )
         return QSizeF();
 
     const auto& tabBar = m_data->tabBar;
