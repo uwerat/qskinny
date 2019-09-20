@@ -445,7 +445,7 @@ void QskGridBox::itemChange( ItemChange change, const ItemChangeData& value )
 
 bool QskGridBox::event( QEvent* event )
 {
-    switch ( event->type() )
+    switch ( static_cast<int>( event->type() ) )
     {
         case QEvent::LayoutRequest:
         {
@@ -465,8 +465,6 @@ bool QskGridBox::event( QEvent* event )
             polish();
             break;
         }
-        default:
-            break;
     }
 
     return Inherited::event( event );
