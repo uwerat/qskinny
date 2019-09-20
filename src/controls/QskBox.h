@@ -17,6 +17,9 @@ class QSK_EXPORT QskBox : public QskControl
     Q_PROPERTY( bool panel READ hasPanel
         WRITE setPanel NOTIFY panelChanged FINAL )
 
+    Q_PROPERTY( QMarginsF padding READ padding
+        WRITE setPadding RESET resetPadding NOTIFY paddingChanged )
+
   public:
     QSK_SUBCONTROLS( Panel )
 
@@ -28,10 +31,16 @@ class QSK_EXPORT QskBox : public QskControl
     void setPanel( bool );
     bool hasPanel() const;
 
+    void setPadding( qreal );
+    void setPadding( const QMarginsF& );
+    void resetPadding();
+    QMarginsF padding() const;
+
     QRectF layoutRectForSize( const QSizeF& ) const override;
 
   Q_SIGNALS:
     void panelChanged( bool );
+    void paddingChanged( const QMarginsF& );
 
   protected:
     QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
