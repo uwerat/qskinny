@@ -14,7 +14,6 @@
 #include "QskSkin.h"
 #include "QskSkinlet.h"
 #include "QskSkinHintTable.h"
-#include "QskLayoutHint.h"
 
 #include <qlocale.h>
 #include <qvector.h>
@@ -724,6 +723,14 @@ bool QskControl::event( QEvent* event )
             Q_EMIT localeChanged( locale() );
             break;
         }
+        case QEvent::ContentsRectChange:
+        {
+            resetImplicitSize();
+            if ( d_func()->autoLayoutChildren )
+                polish();
+
+            break;
+        }
         case QEvent::LayoutRequest:
         {
             if ( d_func()->autoLayoutChildren )
@@ -994,19 +1001,19 @@ QSizeF QskControl::layoutSizeHint(
         if ( constraint.width() >= 0.0 && policy.isConstrained( Qt::Vertical ) )
         {
             const auto hint = qskSizeConstraint( child, which, constraint );
-            h = QskLayoutHint::combined( which, h, hint.height() );
+            h = qMax( h, hint.height() );
         }
         else if ( constraint.height() >= 0.0 && policy.isConstrained( Qt::Horizontal ) )
         {
             const auto hint = qskSizeConstraint( child, which, constraint );
-            w = QskLayoutHint::combined( which, w, hint.width() );
+            w = qMax( w, hint.width() );
         }
         else
         {
             const auto hint = qskSizeConstraint( child, which, QSizeF() );
 
-            w = QskLayoutHint::combined( which, w, hint.width() );
-            h = QskLayoutHint::combined( which, h, hint.height() );
+            w = qMax( w, hint.width() );
+            h = qMax( h, hint.height() );
         }
     }
 
