@@ -422,19 +422,19 @@ static QSizeF qskBoundedConstraint( const QQuickItem* item,
     const auto hintMax = ( whichMax == whichMin )
         ? hintMin : qskEffectiveSizeHint( item, whichMax );
 
-    QSizeF size;
+    QSizeF size = constraint;
 
     if ( orientation == Qt::Horizontal )
     {
         if ( hintMax.width() >= 0.0 )
-            size.rwidth() = qMin( constraint.width(), hintMax.width() );
+            size.rwidth() = qMin( size.width(), hintMax.width() );
 
         size.rwidth() = qMax( size.width(), hintMin.width() );
     }
     else
     {
         if ( hintMax.height() >= 0.0 )
-            size.rheight() = qMin( constraint.height(), hintMax.height() );
+            size.rheight() = qMin( size.height(), hintMax.height() );
 
         size.rheight() = qMax( size.height(), hintMin.height() );
     }
