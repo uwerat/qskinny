@@ -171,8 +171,6 @@ void QskControl::setMargins( const QMarginsF& margins )
 {
     using namespace QskAspect;
 
-    const auto subControl = effectiveSubcontrol( QskAspect::Control );
-
     const QMarginsF m(
         qMax( qreal( margins.left() ), qreal( 0.0 ) ),
         qMax( qreal( margins.top() ), qreal( 0.0 ) ),
@@ -181,6 +179,8 @@ void QskControl::setMargins( const QMarginsF& margins )
 
     if ( m != this->margins() )
     {
+        const auto subControl = effectiveSubcontrol( QskAspect::Control );
+
         setMarginsHint( subControl | Margin, m );
         resetImplicitSize();
 
@@ -892,29 +892,32 @@ void QskControl::windowDeactivateEvent()
 
 void QskControl::updateItemPolish()
 {
-    if ( d_func()->autoLayoutChildren && !maybeUnresized()
-        && ( width() > 0.0 || height() > 0.0 ) )
-    {
-        const auto rect = layoutRect();
+    updateResources(); // an extra dirty bit for this ???
 
-        const auto children = childItems();
-        for ( auto child : children )
+    if ( width() >= 0.0 || height() >= 0.0 )
+    {
+        if ( d_func()->autoLayoutChildren && !maybeUnresized() )
         {
-            /*
-                We don't want to resize invisible children, but then
-                we would need to set up connections to know when a child
-                becomes visible. So we don't use qskIsVisibleToLayout here.
-             */
-            if ( !qskIsTransparentForPositioner( child ) )
+            const auto rect = layoutRect();
+
+            const auto children = childItems();
+            for ( auto child : children )
             {
-                const auto r = qskConstrainedItemRect( child, rect );
-                qskSetItemGeometry( child, r );
+                /*
+                    We don't want to resize invisible children, but then
+                    we would need to set up connections to know when a child
+                    becomes visible. So we don't use qskIsVisibleToLayout here.
+                 */
+                if ( !qskIsTransparentForPositioner( child ) )
+                {
+                    const auto r = qskConstrainedItemRect( child, rect );
+                    qskSetItemGeometry( child, r );
+                }
             }
         }
-    }
 
-    updateResources();
-    updateLayout();
+        updateLayout();
+    }
 }
 
 QSGNode* QskControl::updateItemPaintNode( QSGNode* node )
@@ -980,17 +983,30 @@ QSizeF QskControl::layoutSizeHint(
     qreal h = -1.0;
 
     const auto children = childItems();
+
     for ( const auto child : children )
     {
-        if ( qskIsVisibleToLayout( child ) )
+        if ( !qskIsVisibleToLayout( child ) )
+            continue;
+
+        const auto policy = qskSizePolicy( child );
+
+        if ( constraint.width() >= 0.0 && policy.isConstrained( Qt::Vertical ) )
         {
             const auto hint = qskSizeConstraint( child, which, constraint );
+            h = QskLayoutHint::combined( which, h, hint.height() );
+        }
+        else if ( constraint.height() >= 0.0 && policy.isConstrained( Qt::Horizontal ) )
+        {
+            const auto hint = qskSizeConstraint( child, which, constraint );
+            w = QskLayoutHint::combined( which, w, hint.width() );
+        }
+        else
+        {
+            const auto hint = qskSizeConstraint( child, which, QSizeF() );
 
-            if ( constraint.width() < 0.0 )
-                w = QskLayoutHint::combined( which, w, hint.width() );
-
-            if ( constraint.height() < 0.0 )
-                h = QskLayoutHint::combined( which, h, hint.height() );
+            w = QskLayoutHint::combined( which, w, hint.width() );
+            h = QskLayoutHint::combined( which, h, hint.height() );
         }
     }
 
