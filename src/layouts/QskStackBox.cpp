@@ -5,7 +5,6 @@
 
 #include "QskStackBox.h"
 #include "QskStackBoxAnimator.h"
-#include "QskLayoutHint.h"
 #include "QskEvent.h"
 #include "QskQuick.h"
 
@@ -347,88 +346,41 @@ void QskStackBox::updateLayout()
 QSizeF QskStackBox::layoutSizeHint(
     Qt::SizeHint which, const QSizeF& constraint ) const
 {
-    // needs to reimplemented TODO ...
-    // minimum/preferred layout hint need to be cached
-
-    if ( which != Qt::PreferredSize )
+    if ( which == Qt::MaximumSize )
         return QSizeF();
 
-    if ( itemCount() == 0 )
-        return QSizeF();
+    qreal w = -1.0;
+    qreal h = -1.0;
 
-    if ( constraint.width() >= 0 || constraint.height() >= 0 )
+    for ( const auto item : m_data->items )
     {
-        qreal value = -1;
+        /*
+            We ignore the retainSizeWhenVisible flag and include all
+            invisible items. Maybe we should offer a flag to control this ?
+         */
+        const auto policy = qskSizePolicy( item );
 
-        for ( const auto& item : qskAsConst( m_data->items ) )
+        if ( constraint.width() >= 0.0 && policy.isConstrained( Qt::Vertical ) )
         {
             const auto hint = qskSizeConstraint( item, which, constraint );
-
-            if ( constraint.width() >= 0 )
-                value = qMax( hint.height(), value );
-            else
-                value = qMax( hint.width(), value );
+            h = qMax( h, hint.height() );
         }
-
-        if ( constraint.width() >= 0 )
-            return QSizeF( constraint.width(), value );
+        else if ( constraint.height() >= 0.0 && policy.isConstrained( Qt::Horizontal ) )
+        {
+            const auto hint = qskSizeConstraint( item, which, constraint );
+            w = qMax( w, hint.width() );
+        }
         else
-            return QSizeF( value, constraint.height() );
-    }
-
-    qreal width = -1;
-    qreal height = -1;
-
-    int constraintTypes = QskSizePolicy::Unconstrained;
-
-    for ( const auto item : qskAsConst( m_data->items ) )
-    {
-        const auto type = qskSizePolicy( item ).constraintType();
-        if ( type != QskSizePolicy::Unconstrained )
         {
-            constraintTypes |= type;
-            continue;
-        }
+            const auto hint = qskSizeConstraint( item, which, QSizeF() );
 
-        const auto hint = qskSizeConstraint( item, which, constraint );
-
-        width = QskLayoutHint::combined( which, width, hint.width() );
-        height = QskLayoutHint::combined( which, height, hint.height() );
-    }
-
-    if ( constraintTypes & QskSizePolicy::WidthForHeight )
-    {
-        const QSizeF constraint( -1, height );
-
-        for ( const auto& item : qskAsConst( m_data->items ) )
-        {
-            const auto sizePolicy = qskSizePolicy( item );
-
-            if ( sizePolicy.constraintType() == QskSizePolicy::WidthForHeight )
-            {
-                const auto hint = qskSizeConstraint( item, which, constraint );
-                width = QskLayoutHint::combined( which, width, hint.width() );
-            }
+            w = qMax( w, hint.width() );
+            h = qMax( h, hint.height() );
         }
     }
 
-    if ( constraintTypes & QskSizePolicy::HeightForWidth )
-    {
-        const QSizeF constraint( width, -1 );
-
-        for ( const auto& item : qskAsConst( m_data->items ) )
-        {
-            const auto sizePolicy = qskSizePolicy( item );
-
-            if ( sizePolicy.constraintType() == QskSizePolicy::HeightForWidth )
-            {
-                const auto hint = qskSizeConstraint( item, which, constraint );
-                height = QskLayoutHint::combined( which, height, hint.height() );
-            }
-        }
-    }
-
-    return QSizeF( width, height );
+    // minimum layout hint needs to be cached TODO ...
+    return QSizeF( w, h );
 }
 
 bool QskStackBox::event( QEvent* event )
