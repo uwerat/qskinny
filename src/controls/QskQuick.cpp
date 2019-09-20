@@ -429,14 +429,14 @@ static QSizeF qskBoundedConstraint( const QQuickItem* item,
         if ( hintMax.width() >= 0.0 )
             size.rwidth() = qMin( constraint.width(), hintMax.width() );
 
-        size.rwidth() = qMax( constraint.width(), hintMin.width() );
+        size.rwidth() = qMax( size.width(), hintMin.width() );
     }
     else
     {
         if ( hintMax.height() >= 0.0 )
             size.rheight() = qMin( constraint.height(), hintMax.height() );
 
-        size.rheight() = qMax( constraint.height(), hintMin.height() );
+        size.rheight() = qMax( size.height(), hintMin.height() );
     }
 
     return size;
@@ -561,26 +561,43 @@ QSizeF qskSizeConstraint( const QQuickItem* item,
 
 QSizeF qskConstrainedItemSize( const QQuickItem* item, const QSizeF& size )
 {
-    if ( size.width() <= 0.0 && size.height() <= 0.0 )
+    if ( item == nullptr || ( size.width() <= 0.0 && size.height() <= 0.0 ) )
         return QSizeF( 0.0, 0.0 );
 
-    QSizeF constraint;
+    QSizeF min, max;
 
-    switch( static_cast< int >( qskSizePolicy( item ).constraintType() ) )
+    const auto policy = qskSizePolicy( item );
+
+    switch( policy.constraintType() )
     {
         case QskSizePolicy::WidthForHeight:
         {
-            constraint.setHeight( size.height() );
+            const auto constraint = qskBoundedConstraint( item,
+                QSizeF( -1.0, size.height() ), policy );
+
+            min = qskSizeConstraint( item, Qt::MinimumSize, constraint );
+            max = qskSizeConstraint( item, Qt::MaximumSize, constraint );
+
+            min.rheight() = max.rheight() = constraint.height();
             break;
         }
         case QskSizePolicy::HeightForWidth:
         {
-            constraint.setWidth( size.width() );
+            const auto constraint = qskBoundedConstraint( item,
+                QSizeF( size.width(), -1.0 ), policy );
+
+            min = qskSizeConstraint( item, Qt::MinimumSize, constraint );
+            max = qskSizeConstraint( item, Qt::MaximumSize, constraint );
+
+            min.rwidth() = max.rwidth() = constraint.width();
             break;
         }
+        default:
+        {
+            min = qskSizeConstraint( item, Qt::MinimumSize, QSizeF() );
+            max = qskSizeConstraint( item, Qt::MaximumSize, QSizeF() );
+        }
     }
-
-    const auto max = qskSizeConstraint( item, Qt::MaximumSize, constraint );
 
     qreal width = size.width();
     qreal height = size.height();
@@ -590,8 +607,6 @@ QSizeF qskConstrainedItemSize( const QQuickItem* item, const QSizeF& size )
 
     if ( max.height() >= 0.0 )
         height = qMin( height, max.height() );
-
-    const auto min = qskSizeConstraint( item, Qt::MinimumSize, constraint );
 
     width = qMax( width, min.width() );
     height = qMax( height, min.height() );
