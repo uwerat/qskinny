@@ -626,7 +626,15 @@ void QskGridLayoutEngine::setupChain( Qt::Orientation orientation,
     const auto& settings = m_data->settings( orientation );
 
     for ( const auto& setting : settings.settings() )
+    {
+        if ( setting.position >= chain.count() )
+        {
+            qWarning() << "Extra settings for exceeding rows/columns not yet implemented.";
+            continue;
+        }
+
         chain.shrinkCell( setting.position, setting.cell() );
+    }
 
     for ( const auto element : postponed )
     {
