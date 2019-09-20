@@ -80,16 +80,18 @@ bool QskLayoutHint::isDefault() const
 
 qreal QskLayoutHint::combined( int which, qreal value1, qreal value2 )
 {
-    if ( value1 < 0.0 )
-        return value2;
-
-    if ( value2 < 0.0 )
-        return value1;
-
     if ( which == Qt::MaximumSize )
+    {
+        if ( value1 < 0.0 )
+            return value2;
+
+        if ( value2 < 0.0 )
+            return value1;
+
         return qMin( value1, value2 );
-    else
-        return qMax( value1, value2 );
+    }
+
+    return qMax( value1, value2 );
 }
 
 #ifndef QT_NO_DEBUG_STREAM
