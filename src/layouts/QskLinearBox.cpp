@@ -240,7 +240,7 @@ void QskLinearBox::itemChange( ItemChange change, const ItemChangeData& value )
 
 bool QskLinearBox::event( QEvent* event )
 {
-    switch ( event->type() )
+    switch ( static_cast<int>( event->type() ) )
     {
         case QEvent::LayoutRequest:
         {
@@ -260,8 +260,6 @@ bool QskLinearBox::event( QEvent* event )
             polish();
             break;
         }
-        default:
-            break;
     }
 
     return Inherited::event( event );
