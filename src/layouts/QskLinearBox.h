@@ -88,6 +88,8 @@ class QSK_EXPORT QskLinearBox : public QskIndexedLayoutBox
     void setStretchFactor( const QQuickItem*, int stretchFactor );
     int stretchFactor( const QQuickItem* ) const;
 
+    void dump();
+
   public Q_SLOTS:
     void transpose();
     void activate();

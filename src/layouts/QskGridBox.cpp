@@ -7,6 +7,7 @@
 #include "QskGridLayoutEngine.h"
 #include "QskEvent.h"
 #include "QskQuick.h"
+#include <qdebug.h>
 #include <algorithm>
 
 static void qskSetItemActive( QObject* receiver, const QQuickItem* item, bool on )
@@ -468,6 +469,55 @@ bool QskGridBox::event( QEvent* event )
     }
 
     return Inherited::event( event );
+}
+
+void QskGridBox::dump()
+{
+    const auto& engine = m_data->engine;
+
+    auto debug = qDebug();
+
+    QDebugStateSaver saver( debug );
+    debug.nospace();
+    
+    const auto constraint = sizeConstraint();
+
+    debug << "QskGridBox" 
+        << "[" << engine.columnCount() << "," << engine.rowCount() << "] w:"
+        << constraint.width() << " h:" << constraint.height() << '\n';
+
+    for ( int i = 0; i < engine.count(); i++ )
+    {
+        const auto grid = engine.gridAt( i );
+
+        debug << "  [";
+
+        debug << grid.left();
+        if ( grid.width() > 1 )
+            debug << "-" << grid.right();
+        debug << ",";
+
+        debug << grid.top();
+        if ( grid.height() > 1 )
+            debug << "->" << grid.bottom();
+
+        debug << "]: ";
+
+        if ( auto item = engine.itemAt( i ) )
+        {
+            const auto constraint = qskSizeConstraint( item, Qt::PreferredSize );
+
+            debug << item->metaObject()->className()
+                <<  " w:" << constraint.width() << " h:" << constraint.height();
+        }
+        else
+        {
+            const auto size = engine.spacerAt( i );
+            debug << "spacer w:" << size.width() << " h:" << size.height();
+        }
+
+        debug << '\n';
+    }
 }
 
 #include "moc_QskGridBox.cpp"

@@ -108,6 +108,8 @@ class QSK_EXPORT QskGridBox : public QskBox
     Q_INVOKABLE void setRowFixedHeight( int row, qreal height );
     Q_INVOKABLE void setColumnFixedWidth( int column, qreal width );
 
+    void dump();
+
   public Q_SLOTS:
     void invalidate();
     void clear( bool autoDelete = false );

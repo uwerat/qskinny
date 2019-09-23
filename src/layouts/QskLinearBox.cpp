@@ -532,4 +532,37 @@ int QskLinearBox::stretchFactor( const QQuickItem* item ) const
     return stretchFactor( indexOf( item ) );
 }
 
+void QskLinearBox::dump()
+{           
+    const auto& engine = m_data->engine;
+        
+    auto debug = qDebug();
+            
+    QDebugStateSaver saver( debug );
+    debug.nospace();
+        
+    const auto constraint = sizeConstraint();
+        
+    debug << "QskLinearBox" << engine.orientation()
+        << " w:" << constraint.width() << " h:" << constraint.height() << '\n';
+
+    for ( int i = 0; i < engine.count(); i++ )
+    {
+        debug << "  " << i << ": ";
+
+        if ( auto item = engine.itemAt( i ) )
+        {
+            const auto constraint = qskSizeConstraint( item, Qt::PreferredSize );
+            debug << item->metaObject()->className()
+                <<  " w:" << constraint.width() << " h:" << constraint.height();
+        }
+        else
+        {
+            debug << "spacer: " << engine.spacerAt( i );
+        }
+
+        debug << '\n';
+    }
+}
+
 #include "moc_QskLinearBox.cpp"

@@ -404,4 +404,33 @@ bool QskStackBox::event( QEvent* event )
     return Inherited::event( event );
 }
 
+void QskStackBox::dump()
+{
+    auto debug = qDebug();
+
+    QDebugStateSaver saver( debug );
+    debug.nospace();
+
+    const auto constraint = sizeConstraint();
+
+    debug << "QskStackBox"
+        << " w:" << constraint.width() << " h:" << constraint.height() << '\n';
+
+    for ( int i = 0; i < m_data->items.count(); i++ )
+    {
+        const auto item = m_data->items[i];
+
+        debug << "  " << i << ": ";
+
+        const auto constraint = qskSizeConstraint( item, Qt::PreferredSize );
+        debug << item->metaObject()->className()
+            <<  " w:" << constraint.width() << " h:" << constraint.height();
+
+        if ( i == m_data->currentIndex )
+            debug << " [X]";
+
+        debug << '\n';
+    }
+}
+
 #include "moc_QskStackBox.cpp"
