@@ -397,7 +397,7 @@ QSizeF QskDialogSubWindow::layoutSizeHint(
     {
         if ( buttonBox->isVisibleToLayout() )
         {
-            buttonBoxHint = buttonBox->effectiveSizeHint(
+            buttonBoxHint = buttonBox->sizeConstraint(
                 which, QSizeF( constraint.width(), -1 ) );
 
             if ( constraint.width() >= 0.0 )
@@ -427,7 +427,7 @@ QSizeF QskDialogSubWindow::layoutSizeHint(
         if ( constraintHeight > 0.0 )
             constraintHeight = qMax( constraintHeight - dh, 0.0 );
 
-        contentHint = qskEffectiveSizeHint( m_data->contentItem,
+        contentHint = qskSizeConstraint( m_data->contentItem,
             which, QSizeF( constraintWidth, constraintHeight ) );
 
         if ( contentHint.width() >= 0 )
