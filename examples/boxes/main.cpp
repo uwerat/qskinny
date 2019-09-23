@@ -22,34 +22,37 @@
 
 #include <QGuiApplication>
 
-class Rectangle : public Box
+namespace
 {
-  public:
-    Rectangle( QQuickItem* parentItem )
-        : Box( parentItem )
+    class Rectangle : public Box
     {
-    }
-};
+      public:
+        Rectangle( QQuickItem* parentItem )
+            : Box( parentItem )
+        {
+        }
+    };
 
-class RoundedRectangle : public Box
-{
-  public:
-    RoundedRectangle( QQuickItem* parentItem )
-        : Box( parentItem )
+    class RoundedRectangle : public Box
     {
-        setShape( 20, Qt::AbsoluteSize );
-    }
-};
+      public:
+        RoundedRectangle( QQuickItem* parentItem )
+            : Box( parentItem )
+        {
+            setShape( 20, Qt::AbsoluteSize );
+        }
+    };
 
-class Ellipse : public Box
-{
-  public:
-    Ellipse( QQuickItem* parentItem )
-        : Box( parentItem )
+    class Ellipse : public Box
     {
-        setShape( 100, Qt::RelativeSize );
-    }
-};
+      public:
+        Ellipse( QQuickItem* parentItem )
+            : Box( parentItem )
+        {
+            setShape( 100, Qt::RelativeSize );
+        }
+    };
+}
 
 static void addTestRectangle( QskLinearBox* parent )
 {
