@@ -38,7 +38,7 @@ rccgen.commands += ($$sprintf($${QMAKE_MKDIR_CMD}, $${RCC_DIR}))
     # qrc file into the shadow directory as the included qvg files
     # are generated locally.
 
-    QRC_SHADOW_CLONE = $${OUT_PWD}/${QMAKE_FILE_BASE}_shadow.qrc
+    QRC_SHADOW_CLONE = $$shell_path($${OUT_PWD}/${QMAKE_FILE_BASE}_shadow.qrc)
 
     rccgen.commands += && $${QMAKE_COPY} ${QMAKE_FILE_IN} $${QRC_SHADOW_CLONE}
     # Use shell_path again to prevent from path error under Windows
