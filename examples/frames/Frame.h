@@ -10,7 +10,7 @@
 
 class QskBoxNode;
 
-class QSK_EXPORT Frame : public QskControl
+class Frame : public QskControl
 {
     Q_OBJECT
 
