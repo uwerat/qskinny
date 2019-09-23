@@ -156,19 +156,13 @@ QskQuickItem::QskQuickItem( QskQuickItemPrivate& dd, QQuickItem* parent )
 {
     setFlag( QQuickItem::ItemHasContents, true );
 
-    // since Qt 5.10 we have QQuickItem::ItemEnabledHasChanged
 #if QT_VERSION < QT_VERSION_CHECK( 5, 10, 0 )
-    /*
-        Setting up this connections slows down the time needed
-        for construction by almost 100%. Would be nice to
-        avoid this penalty also for earlier Qt versions.
-     */
+    // since Qt 5.10 we have QQuickItem::ItemEnabledHasChanged
     connect( this, &QQuickItem::enabledChanged,
-        [ this ] { qskSendEventTo( this, QEvent::EnabledChange ); } );
+        this, &QskQuickItem::sendEnabledChangeEvent );
 #endif
 
-    Q_D( QskQuickItem );
-    if ( d->controlFlags & QskQuickItem::DeferredUpdate )
+    if ( dd.controlFlags & QskQuickItem::DeferredUpdate )
         qskFilterWindow( window() );
 
     qskRegistry->insert( this );
@@ -187,7 +181,8 @@ QskQuickItem::~QskQuickItem()
         qskRegistry->remove( this );
 
 #if QT_VERSION < QT_VERSION_CHECK( 5, 10, 0 )
-    disconnect( this, &QQuickItem::enabledChanged, nullptr, nullptr );
+    disconnect( this, &QQuickItem::enabledChanged,
+        this, &QskQuickItem::sendEnabledChangeEvent );
 #endif
 }
 
@@ -586,6 +581,11 @@ void QskQuickItem::resetImplicitSize()
     }
 }
 
+void QskQuickItem::sendEnabledChangeEvent()
+{
+    qskSendEventTo( this, QEvent::EnabledChange );
+}
+
 bool QskQuickItem::event( QEvent* event )
 {
     const int eventType = event->type();
@@ -698,7 +698,7 @@ void QskQuickItem::itemChange( QQuickItem::ItemChange change,
 #if QT_VERSION >= QT_VERSION_CHECK( 5, 10, 0 )
         case QQuickItem::ItemEnabledHasChanged:
         {
-            qskSendEventTo( this, QEvent::EnabledChange );
+            sendEnabledChangeEvent();
             break;
         }
 #endif

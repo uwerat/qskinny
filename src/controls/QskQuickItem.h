@@ -132,6 +132,7 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
     void childrenRect() = delete;
 
     void updateControlFlag( uint flag, bool on );
+    void sendEnabledChangeEvent();
 
     QSGNode* updatePaintNode( QSGNode*, UpdatePaintNodeData* ) override final;
     virtual QSGNode* updateItemPaintNode( QSGNode* );
