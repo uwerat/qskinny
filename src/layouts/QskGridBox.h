@@ -35,7 +35,7 @@ class QSK_EXPORT QskGridBox : public QskBox
         int rowSpan, int columnSpan, Qt::Alignment );
 
     Q_INVOKABLE int addSpacer( const QSizeF&,
-        int row, int column, int columnSpan = 1, int rowSpan = 1 );
+        int row, int column, int rowSpan = 1, int columnSpan = 1 );
 
     int addColumnSpacer( qreal spacing, int column );
     int addRowSpacer( qreal spacing, int row );
