@@ -74,6 +74,14 @@ namespace
             QskLayoutHint m_hint;
         };
 
+        int maxPosition() const
+        {
+            if ( m_settings.empty() )
+                return -1;
+
+            return m_settings.back().position;
+        }
+
         void clear()
         {
             m_settings.clear();
@@ -376,13 +384,22 @@ bool QskGridLayoutEngine::setStretchFactor(
     if ( stretch < 0 )
         stretch = -1;
 
-    if ( m_data->settings( orientation ).setStretchAt( pos, stretch ) )
+    if ( !m_data->settings( orientation ).setStretchAt( pos, stretch ) )
+        return false;
+
+    if ( orientation == Qt::Horizontal )
     {
-        invalidate();
-        return true;
+        if ( pos >= m_data->columnCount )
+            m_data->columnCount = pos + 1;
+    }
+    else
+    {
+        if ( pos >= m_data->rowCount )
+            m_data->rowCount = pos + 1;
     }
 
-    return false;
+    invalidate();
+    return true;
 }
 
 int QskGridLayoutEngine::stretchFactor(
@@ -395,13 +412,14 @@ int QskGridLayoutEngine::stretchFactor(
 bool QskGridLayoutEngine::setRowSizeHint(
     int row, Qt::SizeHint which, qreal height )
 {
-    if ( m_data->rowSettings.setHintAt( row, which, height ) )
-    {
-        invalidate();
-        return true;
-    }
+    if ( !m_data->rowSettings.setHintAt( row, which, height ) )
+        return false;
 
-    return false;
+    if ( row >= m_data->rowCount )
+        m_data->rowCount = row + 1;
+
+    invalidate();
+    return true;
 }
 
 qreal QskGridLayoutEngine::rowSizeHint( int row, Qt::SizeHint which ) const
@@ -413,13 +431,14 @@ qreal QskGridLayoutEngine::rowSizeHint( int row, Qt::SizeHint which ) const
 bool QskGridLayoutEngine::setColumnSizeHint(
     int column, Qt::SizeHint which, qreal width )
 {
-    if ( m_data->columnSettings.setHintAt( column, which, width ) )
-    {
-        invalidate();
-        return true;
-    }
+    if ( !m_data->columnSettings.setHintAt( column, which, width ) )
+        return false;
 
-    return false;
+   if ( column >= m_data->columnCount )
+        m_data->columnCount = column + 1;
+
+    invalidate();
+    return true;
 }
 
 qreal QskGridLayoutEngine::columnSizeHint( int column, Qt::SizeHint which ) const
@@ -455,8 +474,8 @@ bool QskGridLayoutEngine::removeAt( int index )
     if ( grid.bottom() >= m_data->rowCount
         || grid.right() >= m_data->columnCount )
     {
-        int maxRow = -1;
-        int maxColumn = -1;
+        int maxRow = m_data->rowSettings.maxPosition();
+        int maxColumn = m_data->columnSettings.maxPosition();
 
         for ( const auto& element : elements )
         {
@@ -576,6 +595,8 @@ void QskGridLayoutEngine::transpose()
         element.transpose();
 
     qSwap( m_data->columnSettings, m_data->rowSettings );
+    qSwap( m_data->columnCount, m_data->rowCount );
+
     invalidate();
 }
 
@@ -626,15 +647,7 @@ void QskGridLayoutEngine::setupChain( Qt::Orientation orientation,
     const auto& settings = m_data->settings( orientation );
 
     for ( const auto& setting : settings.settings() )
-    {
-        if ( setting.position >= chain.count() )
-        {
-            qWarning() << "Extra settings for exceeding rows/columns not yet implemented.";
-            continue;
-        }
-
         chain.shrinkCell( setting.position, setting.cell() );
-    }
 
     for ( const auto element : postponed )
     {
