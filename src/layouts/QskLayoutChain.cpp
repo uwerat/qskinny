@@ -7,12 +7,9 @@
 
 #include <qvarlengtharray.h>
 #include <qvector.h>
-
-#ifdef QSK_LAYOUT_COMPAT
-#include <cmath>
-#endif
-
 #include <qdebug.h>
+
+#include <cmath>
 
 QskLayoutChain::QskLayoutChain()
 {
@@ -300,14 +297,29 @@ QskLayoutChain::Segments QskLayoutChain::distributed(
 
             segment.start = offset;
 
+            qreal size = cell.hint.size( which );
+
+#if 1
+            if ( which == Qt::MaximumSize && size == QskLayoutHint::unlimited )
+            {
+                /*
+                    We have some special handling in QskLayoutChain::finish,
+                    that adds the preferred instead of the maximum
+                    size of a cell to the bounding maximum size.
+                    No good way to have this here, TODO ...
+                 */
+                size = cell.hint.size( Qt::PreferredSize );
+            }
+#endif
+
             if ( which == Qt::MaximumSize && cell.isShrunk )
             {
-                segment.length = cell.hint.size( which );
+                segment.length = size;
                 offset += segment.length + extra;
             }
             else
             {
-                segment.length = cell.hint.size( which ) + extra;
+                segment.length = size + extra;
                 offset += segment.length;
             }
         }
@@ -334,7 +346,7 @@ QskLayoutChain::Segments QskLayoutChain::minimumExpanded( qreal size ) const
         - somehow using the stretch factors
      */
 
-#ifdef QSK_LAYOUT_COMPAT
+#if 0
 
     /*
          Code does not make much sense, but this is what QGridLayoutEngine does.
