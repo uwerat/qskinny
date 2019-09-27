@@ -6,6 +6,8 @@
 #include "QskRangeControl.h"
 #include "QskFunctions.h"
 
+QSK_SYSTEM_STATE( QskRangeControl, ReadOnly, ( QskAspect::FirstSystemState << 1 ) )
+
 class QskRangeControl::PrivateData
 {
   public:
@@ -16,7 +18,6 @@ class QskRangeControl::PrivateData
         , stepSize( 0.1 )
         , pageSize( 1 )
         , snap( false )
-        , readOnly( false )
     {
     }
 
@@ -26,15 +27,15 @@ class QskRangeControl::PrivateData
     qreal stepSize;
     int pageSize;
     bool snap : 1;
-    bool readOnly : 1;
 };
 
 QskRangeControl::QskRangeControl( QQuickItem* parent )
     : QskControl( parent )
     , m_data( new PrivateData() )
 {
-    m_data->readOnly = true;
-    setReadOnly( false );
+    setFocusPolicy( Qt::StrongFocus );
+    setAcceptedMouseButtons( Qt::LeftButton );
+    setWheelEnabled( true );
 }
 
 QskRangeControl::~QskRangeControl()
@@ -215,22 +216,22 @@ bool QskRangeControl::snap() const
 
 void QskRangeControl::setReadOnly( bool readOnly )
 {
-    if ( m_data->readOnly == readOnly )
+    if ( readOnly == isReadOnly() )
         return;
 
-    m_data->readOnly = readOnly;
+    setSkinStateFlag( ReadOnly, readOnly );
 
     // we are killing user settings here !!
     setFocusPolicy( readOnly ? Qt::NoFocus : Qt::StrongFocus );
     setAcceptedMouseButtons( readOnly ? Qt::NoButton : Qt::LeftButton );
-    setWheelEnabled( !m_data->readOnly );
+    setWheelEnabled( !readOnly );
 
     Q_EMIT readOnlyChanged( readOnly );
 }
 
 bool QskRangeControl::isReadOnly() const
 {
-    return m_data->readOnly;
+    return skinState() & ReadOnly;
 }
 
 void QskRangeControl::stepUp()

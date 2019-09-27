@@ -21,10 +21,13 @@ class QSK_EXPORT QskRangeControl : public QskControl
     Q_PROPERTY( int pageSize READ pageSize WRITE setPageSize NOTIFY pageSizeChanged )
 
     Q_PROPERTY( bool snap READ snap WRITE setSnap NOTIFY snapChanged )
+    Q_PROPERTY( bool readOnly READ isReadOnly WRITE setReadOnly NOTIFY readOnlyChanged )
 
     using Inherited = QskControl;
 
   public:
+    QSK_STATES( ReadOnly )
+
     QskRangeControl( QQuickItem* parent = nullptr );
     ~QskRangeControl() override;
 
