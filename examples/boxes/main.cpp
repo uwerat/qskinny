@@ -22,37 +22,34 @@
 
 #include <QGuiApplication>
 
-namespace
+class MyRectangle : public Box
 {
-    class Rectangle : public Box
+  public:
+    MyRectangle( QQuickItem* parentItem )
+        : Box( parentItem )
     {
-      public:
-        Rectangle( QQuickItem* parentItem )
-            : Box( parentItem )
-        {
-        }
-    };
+    }
+};
 
-    class RoundedRectangle : public Box
+class MyRoundedRectangle : public Box
+{
+  public:
+    MyRoundedRectangle( QQuickItem* parentItem )
+        : Box( parentItem )
     {
-      public:
-        RoundedRectangle( QQuickItem* parentItem )
-            : Box( parentItem )
-        {
-            setShape( 20, Qt::AbsoluteSize );
-        }
-    };
+        setShape( 20, Qt::AbsoluteSize );
+    }
+};
 
-    class Ellipse : public Box
+class MyEllipse : public Box
+{
+  public:
+    MyEllipse( QQuickItem* parentItem )
+        : Box( parentItem )
     {
-      public:
-        Ellipse( QQuickItem* parentItem )
-            : Box( parentItem )
-        {
-            setShape( 100, Qt::RelativeSize );
-        }
-    };
-}
+        setShape( 100, Qt::RelativeSize );
+    }
+};
 
 static void addTestRectangle( QskLinearBox* parent )
 {
@@ -75,7 +72,7 @@ static void addRectangles1( QskLinearBox* parent )
     for ( auto type : { Box::Unfilled, Box::Solid,
                         Box::Horizontal, Box::Vertical, Box::Diagonal } )
     {
-        auto* rectangle = new Rectangle( parent );
+        auto* rectangle = new MyRectangle( parent );
         rectangle->setBackground( type, Palette::Teal );
     }
 }
@@ -85,7 +82,7 @@ static void addRectangles2( QskLinearBox* parent )
     for ( auto type : { Box::Unfilled, Box::Solid,
         Box::Horizontal, Box::Vertical, Box::Diagonal } )
     {
-        auto* rectangle = new Rectangle( parent );
+        auto* rectangle = new MyRectangle( parent );
         rectangle->setBorder( Box::Flat, Palette::Brown );
         rectangle->setBackground( type, Palette::Yellow );
     }
@@ -100,23 +97,23 @@ static void addRectangles3( QskLinearBox* parent )
 
     Box* box;
 
-    box = new Rectangle( parent );
+    box = new MyRectangle( parent );
     box->setBorder( Box::Raised1, borderColor );
     box->setGradient( Grey400 );
 
-    box = new Rectangle( parent );
+    box = new MyRectangle( parent );
     box->setBorder( Box::Sunken1, borderColor );
     box->setGradient( QskGradient::Diagonal, Grey400, Grey500 );
 
-    box = new Rectangle( parent );
+    box = new MyRectangle( parent );
     box->setBorder( Box::Raised2, borderColor );
     box->setGradient( QskGradient::Vertical, Grey400, Grey500 );
 
-    box = new Rectangle( parent );
+    box = new MyRectangle( parent );
     box->setBorder( Box::Raised2, borderColor );
     box->setBackground( Box::Vertical, fillColor, false );
 
-    box = new Rectangle( parent );
+    box = new MyRectangle( parent );
     box->setBorder( Box::Sunken2, borderColor );
     box->setBackground( Box::Vertical, fillColor, true );
 }
@@ -126,7 +123,7 @@ static void addRectangles4( QskLinearBox* parent )
     for ( auto type : { Box::Unfilled, Box::Solid,
         Box::Horizontal, Box::Vertical, Box::Diagonal } )
     {
-        auto* box = new RoundedRectangle( parent );
+        auto* box = new MyRoundedRectangle( parent );
         box->setBackground( type, Palette::DeepOrange );
     }
 }
@@ -136,7 +133,7 @@ static void addRectangles5( QskLinearBox* parent )
     for ( auto type : { Box::Unfilled, Box::Solid,
         Box::Horizontal, Box::Vertical, Box::Diagonal } )
     {
-        auto* box = new RoundedRectangle( parent );
+        auto* box = new MyRoundedRectangle( parent );
         box->setBorder( Box::Flat, Palette::Indigo );
         box->setBackground( type, Palette::Pink );
     }
@@ -151,23 +148,23 @@ static void addRectangles6( QskLinearBox* parent )
 
     Box* box;
 
-    box = new RoundedRectangle( parent );
+    box = new MyRoundedRectangle( parent );
     box->setBorder( Box::Raised1, borderColor );
     box->setGradient( Grey400 );
 
-    box = new RoundedRectangle( parent );
+    box = new MyRoundedRectangle( parent );
     box->setBorder( Box::Sunken1, borderColor );
     box->setGradient( QskGradient::Diagonal, Grey400, Grey500 );
 
-    box = new RoundedRectangle( parent );
+    box = new MyRoundedRectangle( parent );
     box->setBorder( Box::Raised2, borderColor );
     box->setGradient( QskGradient::Vertical, Grey400, Grey500 );
 
-    box = new RoundedRectangle( parent );
+    box = new MyRoundedRectangle( parent );
     box->setBorder( Box::Raised2, borderColor );
     box->setBackground( Box::Vertical, fillColor, false );
 
-    box = new RoundedRectangle( parent );
+    box = new MyRoundedRectangle( parent );
     box->setBorder( Box::Sunken2, borderColor );
     box->setBackground( Box::Vertical, fillColor, true );
 }
@@ -177,7 +174,7 @@ static void addRectangles7( QskLinearBox* parent )
     for ( auto type : { Box::Unfilled, Box::Solid,
         Box::Horizontal, Box::Vertical, Box::Diagonal } )
     {
-        auto* box = new Ellipse( parent );
+        auto* box = new MyEllipse( parent );
         box->setBackground( type, Palette::BlueGrey );
     }
 }
@@ -187,7 +184,7 @@ static void addRectangles8( QskLinearBox* parent )
     for ( auto type : { Box::Unfilled, Box::Solid,
         Box::Horizontal, Box::Vertical, Box::Diagonal } )
     {
-        auto* box = new Ellipse( parent );
+        auto* box = new MyEllipse( parent );
         box->setBorder( Box::Flat, Palette::Indigo );
         box->setBackground( type, Palette::Red );
     }
@@ -202,23 +199,23 @@ static void addRectangles9( QskLinearBox* parent )
 
     Box* box;
 
-    box = new Ellipse( parent );
+    box = new MyEllipse( parent );
     box->setBorder( Box::Raised1, borderColor );
     box->setGradient( Grey400 );
 
-    box = new Ellipse( parent );
+    box = new MyEllipse( parent );
     box->setBorder( Box::Sunken1, borderColor );
     box->setGradient( QskGradient::Diagonal, Grey400, Grey500 );
 
-    box = new Ellipse( parent );
+    box = new MyEllipse( parent );
     box->setBorder( Box::Raised2, borderColor );
     box->setGradient( QskGradient::Vertical, Grey400, Grey500 );
 
-    box = new Ellipse( parent );
+    box = new MyEllipse( parent );
     box->setBorder( Box::Raised2, borderColor );
     box->setBackground( Box::Vertical, fillColor, false );
 
-    box = new Ellipse( parent );
+    box = new MyEllipse( parent );
     box->setBorder( Box::Sunken2, borderColor );
     box->setBackground( Box::Vertical, fillColor, true );
 }
@@ -265,7 +262,7 @@ static void addRectangles11( QskLinearBox* parent )
 
     for ( int i = 0; i < 5; i++ )
     {
-        auto box = new Rectangle( parent );
+        auto box = new MyRectangle( parent );
 
         box->setBorder( Box::Flat, Palette::Teal );
 
