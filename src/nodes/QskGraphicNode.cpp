@@ -51,11 +51,22 @@ void QskGraphicNode::setGraphic(
 {
     bool isTextureDirty = ( QskTextureNode::textureId() == 0 );
 
-    if ( !isTextureDirty )
+    QSize textureSize;
+
+    if ( graphic.isScalable() )
     {
-        const auto oldRect = QskTextureNode::rect();
-        isTextureDirty = ( rect.width() != static_cast< int >( oldRect.width() ) ) ||
-            ( rect.height() != static_cast< int >( oldRect.height() ) );
+        textureSize = rect.size().toSize();
+
+        if ( !isTextureDirty )
+        {
+            const auto oldRect = QskTextureNode::rect();
+            isTextureDirty = ( rect.width() != static_cast< int >( oldRect.width() ) ) ||
+                ( rect.height() != static_cast< int >( oldRect.height() ) );
+        }
+    }
+    else
+    {
+        textureSize = graphic.defaultSize().toSize();
     }
 
     QskTextureNode::setRect( rect );
@@ -70,7 +81,7 @@ void QskGraphicNode::setGraphic(
     if ( isTextureDirty )
     {
         const uint textureId = QskTextureRenderer::createTextureFromGraphic(
-            renderMode, rect.size().toSize(), graphic, colorFilter, Qt::IgnoreAspectRatio );
+            renderMode, textureSize, graphic, colorFilter, Qt::IgnoreAspectRatio );
 
         QskTextureNode::setTextureId( textureId );
     }
