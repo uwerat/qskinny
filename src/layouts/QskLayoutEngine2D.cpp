@@ -424,7 +424,9 @@ QSizeF QskLayoutEngine2D::sizeHint(
                     will have no effect and we ignore it to make use of the cached
                     results from unconstrained requests
                  */
+#if 0
                 qWarning( "QskLayoutEngine2D: constraint will be ignored." );
+#endif
             }
         }
     } 
