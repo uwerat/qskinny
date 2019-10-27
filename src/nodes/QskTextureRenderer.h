@@ -14,6 +14,7 @@ class QskColorFilter;
 
 class QPainter;
 class QSize;
+class QOpenGLContext;
 
 namespace QskTextureRenderer
 {
@@ -46,6 +47,8 @@ namespace QskTextureRenderer
     QSK_EXPORT uint createTextureFromGraphic(
         RenderMode, const QSize&, const QskGraphic&,
         const QskColorFilter&, Qt::AspectRatioMode );
+
+    QSK_EXPORT qreal devicePixelRatio( const QOpenGLContext* = nullptr );
 }
 
 #endif

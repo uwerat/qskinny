@@ -90,21 +90,18 @@ static inline QSGNode* qskUpdateGraphicNode(
         if ( control->testControlFlag( QskControl::PreferRasterForTextures ) )
             mode = QskTextureRenderer::Raster;
 
-        if ( auto window = control->window() )
-        {
-            /*
-               Aligning the rect according to scene coordinates, so that
-               we don't run into rounding issues downstream, where values
-               will be floored/ceiled ending up with a slightly different
-               aspect ratio.
-             */
-            const QRectF sceneRect(
-                control->mapToScene( r.topLeft() ),
-                r.size() * window->effectiveDevicePixelRatio() );
+        /*
+           Aligning the rect according to scene coordinates, so that
+           we don't run into rounding issues downstream, where values
+           will be floored/ceiled ending up with a slightly different
+           aspect ratio.
+         */
+        const QRectF sceneRect(
+            control->mapToScene( r.topLeft() ),
+            r.size() * QskTextureRenderer::devicePixelRatio() );
 
-            r = qskInnerRect( sceneRect );
-            r.moveTopLeft( control->mapFromScene( r.topLeft() ) );
-        }
+        r = qskInnerRect( sceneRect );
+        r.moveTopLeft( control->mapFromScene( r.topLeft() ) );
     }
 
     graphicNode->setGraphic( graphic, colorFilter, mode, r );

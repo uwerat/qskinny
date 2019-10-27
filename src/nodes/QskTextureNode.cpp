@@ -1,45 +1,11 @@
 #include "QskTextureNode.h"
+#include "QskTextureRenderer.h"
 
 #include <qopenglfunctions.h>
 #include <qsggeometry.h>
 #include <qsgmaterial.h>
 
 #include <private/qsgnode_p.h>
-
-#if 1
-
-#include <qguiapplication.h>
-#include <qquickwindow.h>
-#include <qscreen.h>
-#include <qsurface.h>
-
-static inline qreal qskDevicePixelRatio()
-{
-    qreal ratio = 1.0;
-
-    const auto context = QOpenGLContext::currentContext();
-
-    if ( context->surface()->surfaceClass() == QSurface::Window )
-    {
-        auto* window = static_cast< QWindow* >( context->surface() );
-
-        if ( auto* quickWindow = qobject_cast< QQuickWindow* >( window ) )
-            ratio = quickWindow->effectiveDevicePixelRatio();
-        else
-            ratio = window->devicePixelRatio();
-    }
-    else
-    {
-        if ( context->screen() )
-            ratio = context->screen()->devicePixelRatio();
-        else
-            ratio = qGuiApp->devicePixelRatio();
-    }
-
-    return ratio;
-}
-
-#endif
 
 namespace
 {
@@ -316,7 +282,8 @@ void QskTextureNode::updateTexture()
         r.setBottom( 0 );
     }
 
-    const qreal ratio = qskDevicePixelRatio();
+    const qreal ratio = QskTextureRenderer::devicePixelRatio();
+
     const QRectF rect( d->rect.x(), d->rect.y(),
         d->rect.width() / ratio, d->rect.height() / ratio );
 
