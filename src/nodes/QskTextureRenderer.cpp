@@ -42,6 +42,10 @@ static uint qskCreateTextureOpenGL(
     {
         QPainter painter( &pd );
 
+        painter.setCompositionMode( QPainter::CompositionMode_Source );
+        painter.fillRect( 0, 0, width, height, Qt::transparent );
+        painter.setCompositionMode( QPainter::CompositionMode_SourceOver );
+
         helper->paint( &painter, size );
 
 #if 1
