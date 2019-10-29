@@ -108,9 +108,14 @@ void QskGraphicLabel::setGraphic( const QskGraphic& graphic )
 {
     if ( m_data->graphic != graphic )
     {
+        const bool keepImplicitSize = m_data->sourceSize.isValid()
+            || ( m_data->graphic.defaultSize() == graphic.defaultSize() );
+
         m_data->graphic = graphic;
 
-        resetImplicitSize();
+        if ( !keepImplicitSize )
+            resetImplicitSize();
+
         update();
     }
 
