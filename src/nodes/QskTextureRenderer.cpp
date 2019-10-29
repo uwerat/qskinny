@@ -38,6 +38,7 @@ static uint qskCreateTextureOpenGL(
     QOpenGLFramebufferObject multisampledFbo( width, height, format1 );
 
     QOpenGLPaintDevice pd( width, height );
+    pd.setPaintFlipped( true );
 
     {
         QPainter painter( &pd );
@@ -66,12 +67,10 @@ static uint qskCreateTextureOpenGL(
 
     QOpenGLFramebufferObject fbo( width, height, format2 );
 
-    // Mirror vertically
-    const QRect sourceRect( 0, 0, width, height );
-    const QRect targetRect( 0, height, width, -height );
+    const QRect fboRect( 0, 0, width, height );
 
     QOpenGLFramebufferObject::blitFramebuffer(
-        &fbo, sourceRect, &multisampledFbo, targetRect );
+        &fbo, fboRect, &multisampledFbo, fboRect );
 
     return fbo.takeTexture();
 }
