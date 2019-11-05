@@ -64,6 +64,8 @@ QSK_EXPORT void qskInputMethodSetVisible( const QQuickItem*, bool );
 QSK_EXPORT const QSGNode* qskItemNode( const QQuickItem* );
 QSK_EXPORT const QSGNode* qskPaintNode( const QQuickItem* );
 
+QSK_EXPORT void qskItemUpdateRecursive( QQuickItem* );
+
 inline void qskSetItemGeometry(
     QQuickItem* item, qreal x, qreal y, qreal width, qreal height )
 {

@@ -621,4 +621,15 @@ QRectF qskConstrainedItemRect( const QQuickItem* item,
     return qskAlignedRectF( rect, size.width(), size.height(), alignment );
 }
 
+void qskItemUpdateRecursive( QQuickItem* item )
+{
+    if ( item == nullptr )
+        return;
 
+    if ( item->flags() & QQuickItem::ItemHasContents )
+        item->update();
+
+    const auto& children = QQuickItemPrivate::get( item )->childItems;
+    for ( auto child : children )
+        qskItemUpdateRecursive( child );
+}
