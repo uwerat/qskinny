@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskTextNode
+    BASE:  QSGTransformNode
+
+    HEADER: QskTextNode.h
+
+    DESCRIPTION
+		\brief QskTextNode
+    END
+END

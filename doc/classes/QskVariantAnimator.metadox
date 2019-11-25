@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskVariantAnimator
+    BASE:  QskAnimator
+
+    HEADER: QskVariantAnimator.h
+
+    DESCRIPTION
+		\brief QskVariantAnimator
+    END
+END

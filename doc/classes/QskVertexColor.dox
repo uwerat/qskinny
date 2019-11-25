@@ -1,9 +1,0 @@
-/*! \class QskVertexColor
-
-  \brief An RGBA color that can be used for vertex lists of QSGGeometryNode
- */
-
-/*! \class QskVertexColorMap
-
-  \brief An color map interpolating between QskVertexColor colors.
- */

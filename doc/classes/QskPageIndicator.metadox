@@ -1,0 +1,13 @@
+INTERFACE
+    CLASS: QskPageIndicator
+    BASE:  QskControl
+
+    QMLCLASS: PageIndicator
+    QMLBASE: Control
+
+    HEADER: QskPageIndicator.h
+
+    DESCRIPTION
+		\brief A page indicator
+    END
+END

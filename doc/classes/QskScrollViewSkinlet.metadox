@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskScrollViewSkinlet
+    BASE:  QskSkinlet
+
+    HEADER: QskScrollViewSkinlet.h
+
+    DESCRIPTION
+        \brief QskScrollViewSkinlet
+    END
+END

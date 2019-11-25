@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskPopupSkinlet
+    BASE:  QskSkinlet
+
+    HEADER: QskPopupSkinlet.h
+
+    DESCRIPTION
+		\brief QskPopupSkinlet
+    END
+END

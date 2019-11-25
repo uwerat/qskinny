@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskTabButtonSkinlet
+    BASE:  QskSkinlet
+
+    HEADER: QskTabButtonSkinlet.h
+
+    DESCRIPTION
+        \brief QskTabButtonSkinlet
+    END
+END

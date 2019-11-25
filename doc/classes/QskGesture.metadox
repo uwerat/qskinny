@@ -1,0 +1,9 @@
+INTERFACE
+    CLASS: QskGesture
+
+    HEADER: QskGesture.h
+
+    DESCRIPTION
+		\brief QskGesture
+    END
+END

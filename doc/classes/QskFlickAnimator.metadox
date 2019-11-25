@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskFlickAnimator
+    BASE:  QskAnimator
+
+    HEADER: QskFlickAnimator.h
+
+    DESCRIPTION
+		\brief QskFlickAnimator
+    END
+END

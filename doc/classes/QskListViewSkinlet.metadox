@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskListViewSkinlet
+    BASE:  QskSkinlet
+
+    HEADER: QskListViewSkinlet.h
+
+    DESCRIPTION
+        \brief QskListViewSkinlet
+    END
+END

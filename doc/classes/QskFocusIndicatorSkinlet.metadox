@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskFocusIndicatorSkinlet
+    BASE:  QskSkinlet
+
+    HEADER: QskFocusIndicatorSkinlet.h
+
+    DESCRIPTION
+        \brief QskFocusIndicatorSkinlet
+    END
+END

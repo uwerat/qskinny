@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskSizePolicy
+	QMLCLASS: SizePolicy
+
+	HEADER QskSizePolicy.h
+
+	DESCRIPTION
+		\brief A size policy ( similar to QSizePolicy ) 
+	END
+END

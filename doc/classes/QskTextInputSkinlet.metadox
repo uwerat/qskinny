@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskTextInputSkinlet
+    BASE:  QskSkinlet
+
+    HEADER: QskTextInputSkinlet.h
+
+    DESCRIPTION
+        \brief QskTextInputSkinlet
+    END
+END

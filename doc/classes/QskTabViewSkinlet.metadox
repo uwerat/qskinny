@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskTabViewSkinlet
+    BASE:  QskSkinlet
+
+    HEADER: QskTabViewSkinlet.h
+
+    DESCRIPTION
+        \brief QskTabViewSkinlet
+    END
+END

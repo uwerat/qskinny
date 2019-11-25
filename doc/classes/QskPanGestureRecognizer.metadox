@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskPanGestureRecognizer
+    BASE:  QskGestureRecognizer
+
+    HEADER: QskPanGestureRecognizer.h
+
+    DESCRIPTION
+		\brief QskPanGestureRecognizer
+    END
+END

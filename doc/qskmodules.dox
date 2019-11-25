@@ -1,131 +1,124 @@
 /*!
-    \defgroup Classes C++ Classes
+    \defgroup Core Core
     \{
-          \defgroup Controls Controls
-          \{
-                \class QskSetup
-                \class QskControl
-                \class QskAbstractButton
-                \class QskRangeControl
-                \class QskPushButton
-                \class QskFocusIndicator
-                \class QskFrame
-                \class QskGraphicLabel
-                \class QskImage
-                \class QskRectangle
-                \class QskResizable
-                \class QskScrollView
-                \class QskListView
-                \class QskSeparator
-                \class QskSimpleListBox
-                \class QskSlider
-                \class QskTabBar
-                \class QskTabButton
-                \class QskTabView
-                \class QskTextLabel
-                \class QskWindow
-                \class QskDialogButtonBox
-                \class QskDialog
-                \class QskMessageBox
-                \class QskStandardIcons
-          \}
+		\namespace QskNamespace
 
-          \defgroup Layouts
-          \{
-                \class QskLayout
-                \class QskGridBox
-                \class QskIndexedLayoutBox
-                \class QskLayoutEngine
-                \class QskLayoutItem
-                \class QskStackLayoutAnimation
-                \class QskStackBox
-                \class QskLinearBox
-          \}
-
-          \defgroup Graphic
-          \{
-                \class QskGraphic
-                \class QskGraphicImageProvider
-                \class QskGraphicPaintEngine
-                \class QskGraphicPaintFilter
-                \class QskGraphicProvider
-                \class QskGraphicTextureFactory
-                \class QskPainterCommand
-
-                \namespace QskGraphicIO
-          \}
-
-          \defgroup Skins
-          \{
-                \namespace QskAspect
-                \struct QskSkinHint
-                \class QskSkin
-                \class QskSkinnable
-                \class QskSkinlet
-                \class QskPushButtonSkinlet
-                \class QskFocusIndicatorSkinlet
-                \class QskFrameSkinlet
-                \class QskGraphicLabelSkinlet
-                \class QskSliderSkinlet
-                \class QskTabButtonSkinlet
-                \class QskTextLabelSkinlet
-          \}
-
-          \defgroup Nodes
-          \{
-                \class QskArcIterator
-                \class QskClipNode
-                \class QskFrameNode
-                \class QskGeometry
-                \class QskPlainTextRenderer
-                \class QskRectNode
-                \class QskSymbolMaterial
-                \class QskTextRenderer
-                \class QskTextureNode
-                \class QskTextureRenderer
-                \class QskVertexColor
-                \class QskVertexPen
-                \class QskVertexRendererColored
-                \class QskVertexRenderer
-          \}
+		\class QskColorFilter
+		\class QskGraphic
+		\class QskGraphicImageProvider
+		\class QskGraphicIO
+		\class QskGraphicProvider
+		\class QskGraphicProviderMap
+		\class QskGraphicTextureFactory
+		\class QskGradient
+		\class QskMargins
+		\class QskObjectCounter
+		\class QskSetup
+		\class QskSkinManager
+		\class QskVariantAnimator
+		\class QskAnimator
+		\class QskHintAnimator
+		\class QskFlickAnimator
+		\class QskQuickItem
+		\class QskControl
+		\class QskShortcutMap
+		\class QskSizePolicy
+		\class QskGesture
+		\class QskGestureRecognizer
+		\class QskPanGestureRecognizer
+		\class QskSkinHintTable
+		\class QskSkinlet
+		\class QskAnimationHint
+		\class QskAspect
+		\class QskSkinFactory
+		\class QskSkin
+		\class QskSkinnable
+		\class QskSkinTransition
+		\class QskWindow
+		\class QskBoxShapeMetrics
+		\class QskBoxBorderColors
+		\class QskBoxBorderMetrics
+		\class QskTextColors
+		\class QskTextOptions
     \}
 
-    \defgroup QMLTypes QML Types
+    \defgroup Controls Controls
     \{
-          \defgroup QMLControls Controls
-          \{
-                \class Control
-
-                \class AbstractButton
-                \class RangeControl
-                \class PushButton
-                \class FocusIndicator
-                \class Frame
-                \class GraphicLabel
-                \class Image
-                \class ListView
-                \class Rectangle
-                \class SimpleListBox
-                \class ScrollView
-                \class Separator
-                \class Slider
-                \class TabBar
-                \class TabButton
-                \class TabView
-                \class TextLabel
-                \class Window
-                \class DialogButtonBox
-                \class Dialog
-                \class MessageBox
-          \}
-
-          \defgroup QMLLayouts Layouts
-          \{
-                \class Layout
-                \class GridBox
-                \class IndexedLayoutBox
-                \class StackBox
-                \class LinearBox
-          \}
+		\class QskAbstractButton
+		\class QskBox
+		\class QskFocusIndicator
+		\class QskGraphicLabel
+		\class QskListView
+		\class QskPageIndicator
+		\class QskPopup
+		\class QskPushButton
+		\class QskRangeControl
+		\class QskScrollArea
+		\class QskScrollView
+		\class QskSlider
+		\class QskStatusIndicator
+		\class QskSubWindowArea
+		\class QskSubWindow
+		\class QskTabBar
+		\class QskTabButton
+		\class QskTabView
+		\class QskTextInput
+		\class QskTextLabel
     \}
+
+    \defgroup Layouts
+    \{
+		\class QskGridBox
+		\class QskIndexedLayoutBox
+		\class QskLinearBox
+		\class QskStackBox
+    \}
+
+    \defgroup Dialogs
+    \{
+		\class QskDialogButtonBox
+		\class QskDialogButton
+		\class QskDialog
+		\class QskDialogSubWindow
+		\class QskDialogWindow
+		\class QskMessageSubWindow
+		\class QskMessageWindow
+		\class QskSelectionSubWindow
+		\class QskSelectionWindow
+		\class QskSeparator
+		\class QskSimpleListBox
+    \}
+
+    \defgroup Skins
+    \{
+		\class QskBoxSkinlet
+		\class QskFocusIndicatorSkinlet
+		\class QskGraphicLabelSkinlet
+		\class QskListViewSkinlet
+		\class QskPageIndicatorSkinlet
+		\class QskPopupSkinlet
+		\class QskPushButtonSkinlet
+		\class QskScrollViewSkinlet
+		\class QskSeparatorSkinlet
+		\class QskSliderSkinlet
+		\class QskStatusIndicatorSkinlet
+		\class QskSubWindowAreaSkinlet
+		\class QskSubWindowSkinlet
+		\class QskTabButtonSkinlet
+		\class QskTabViewSkinlet
+		\class QskTextInputSkinlet
+		\class QskTextLabelSkinlet
+		\class QskStandardSymbol
+    \}
+
+    \defgroup Nodes
+    \{
+		\class QskBoxClipNode
+		\class QskBoxNode
+		\class QskGraphicNode
+		\class QskPaintedNode
+		\class QskTextNode
+		\class QskTextureNode
+    \}
+
  */

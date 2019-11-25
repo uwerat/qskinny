@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskBoxBorderMetrics
+    BASE:  QskBoxBorderMetrics
+
+    HEADER: QskBoxBorderMetrics.h
+
+    DESCRIPTION
+		\brief Something
+    END
+END

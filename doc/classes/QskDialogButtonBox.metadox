@@ -1,6 +1,6 @@
 INTERFACE
     CLASS: QskDialogButtonBox
-    BASE:  QskControl
+    BASE:  QskBox
 
     QMLCLASS: DialogButtonBox
     QMLBASE: Control

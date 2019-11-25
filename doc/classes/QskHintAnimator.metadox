@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskHintAnimator
+    BASE:  QskVariantAnimator
+
+    HEADER: QskHintAnimator.h
+
+    DESCRIPTION
+		\brief QskHintAnimator
+    END
+END

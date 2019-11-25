@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskGraphicNode
+    BASE:  QskTextureNode
+
+    HEADER: QskGraphicNode.h
+
+    DESCRIPTION
+		\brief QskGraphicNode
+    END
+END

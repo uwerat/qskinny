@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskGraphicLabelSkinlet
+    BASE:  QskSkinlet
+
+    HEADER: QskGraphicLabelSkinlet.h
+
+    DESCRIPTION
+        \brief QskGraphicLabelSkinlet
+    END
+END

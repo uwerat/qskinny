@@ -1,0 +1,13 @@
+INTERFACE
+    CLASS: QskPopup
+    BASE:  QskControl
+
+    QMLCLASS: QskPopup
+    QMLBASE: Control
+
+    HEADER: QskPopup.h
+
+    DESCRIPTION
+		\brief Something
+    END
+END

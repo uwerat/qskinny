@@ -1,0 +1,13 @@
+INTERFACE
+    CLASS: QskStatusIndicator
+    BASE:  QskControl
+
+    QMLCLASS: StatusIndicator
+    QMLBASE: Control
+
+    HEADER: QskStatusIndicator.h
+
+    DESCRIPTION
+		\brief QskStatusIndicator
+    END
+END

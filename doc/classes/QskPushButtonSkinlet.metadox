@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskPushButtonSkinlet
+    BASE:  QskSkinlet
+
+    HEADER: QskPushButtonSkinlet.h
+
+    DESCRIPTION
+        \brief QskPushButtonSkinlet
+    END
+END

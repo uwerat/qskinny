@@ -11,3 +11,7 @@ qvg
 *.swp
 qskinny.pro.user
 *.o
+*.log
+Doxyfile
+html
+parser

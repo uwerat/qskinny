@@ -1,0 +1,13 @@
+INTERFACE
+    CLASS: QskMessageWindow
+    BASE:  QskDialogWindow
+
+    QMLCLASS: MessageWindow
+    QMLBASE: DialogWindow
+
+    HEADER: QskDialogWindow.h
+
+    DESCRIPTION
+		\brief QskDialogWindow
+    END
+END

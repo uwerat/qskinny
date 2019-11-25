@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskBoxSkinlet
+    BASE:  QskSkinlet
+
+    HEADER: QskBoxSkinlet.h
+
+    DESCRIPTION
+		\brief QskBoxSkinlet
+    END
+END

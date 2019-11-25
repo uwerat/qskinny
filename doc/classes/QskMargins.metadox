@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskMargins
+    BASE:  QMarginsF
+
+    HEADER: QskMargins.h
+
+    DESCRIPTION
+		\brief A stupid wrapper around QMarginsF
+    END
+END

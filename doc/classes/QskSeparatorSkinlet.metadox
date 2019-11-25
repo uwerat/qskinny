@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskSeparatorSkinlet
+    BASE:  QskSkinlet
+
+    HEADER: QskSeparatorSkinlet.h
+
+    DESCRIPTION
+        \brief QskSeparatorSkinlet
+    END
+END

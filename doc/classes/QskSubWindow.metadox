@@ -1,0 +1,13 @@
+INTERFACE
+    CLASS: QskSubWindow
+    BASE:  QskPopup
+
+    QMLCLASS: SubWindow
+    QMLBASE: Popup
+
+    HEADER: QskSubWindow.h
+
+    DESCRIPTION
+		\brief QskSubWindow
+    END
+END

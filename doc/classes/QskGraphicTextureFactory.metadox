@@ -1,0 +1,15 @@
+INTERFACE
+    CLASS: QskGraphicTextureFactory
+    BASE: QQuickTextureFactory
+
+	HEADER: QskGraphicTextureFactory.h
+
+	DESCRIPTION
+		\brief A QQuickTextureFactory creating a QSGTexture from a QskGraphic.
+
+		QskGraphicTextureFactory is a helper class to forward the creation
+		of textures for QQuickImage to the scene graph thread.
+
+		\sa QskGraphicImageProvider
+	END
+END

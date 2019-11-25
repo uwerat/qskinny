@@ -1,0 +1,11 @@
+INTERFACE
+    CLASS: QskGraphicProvider
+    BASE: QObject
+
+	HEADER: QskGraphicProvider.h
+
+	DESCRIPTION
+		\brief QskGraphicProvider loads QskGraphic from a source URL.
+		\sa QskGraphicImageProvider, Qsk::addGraphicProvider
+	END
+END

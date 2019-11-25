@@ -1,0 +1,13 @@
+INTERFACE
+    CLASS: QskDialogButton
+    BASE:  QskPushButton
+
+    QMLCLASS: DialogButton
+    QMLBASE: Button
+
+    HEADER: QskDialogButton.h
+
+    DESCRIPTION
+		\brief QskDialogButton
+    END
+END

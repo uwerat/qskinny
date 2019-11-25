@@ -1,6 +1,6 @@
 INTERFACE
     CLASS: QskControl
-    BASE: QQuickItem
+    BASE: QskQuickItem
 
     QMLCLASS: Control
     QMLBASE: Item

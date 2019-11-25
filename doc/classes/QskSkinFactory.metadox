@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskSkinFactory
+    BASE:  QObject
+
+    HEADER: QskSkinFactory.h
+
+    DESCRIPTION
+		\brief QskSkinFactory
+    END
+END

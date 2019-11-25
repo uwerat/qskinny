@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskSliderSkinlet
+    BASE:  QskSkinlet
+
+    HEADER: QskSliderSkinlet.h
+
+    DESCRIPTION
+        \brief QskSliderSkinlet
+    END
+END

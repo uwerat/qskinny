@@ -1,9 +1,0 @@
-/*! \class QskGradientStop
-
-  \brief A color stop of a QskGradient
- */
-
-/*! \class QskGradient
-
-  \brief Attributes of a linear gradient that can be set from QML
- */

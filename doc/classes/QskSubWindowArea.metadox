@@ -1,0 +1,13 @@
+INTERFACE
+    CLASS: QskSubWindowArea
+    BASE:  QskControl
+
+    QMLCLASS: QskSubWindowArea
+    QMLBASE: QskControl
+
+    HEADER: QskSubWindowArea.h
+
+    DESCRIPTION
+		\brief QskSubWindowArea
+    END
+END

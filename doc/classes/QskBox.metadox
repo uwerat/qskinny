@@ -1,0 +1,13 @@
+INTERFACE
+    CLASS: QskBox
+    BASE:  QskControl
+
+    QMLCLASS: Box
+    QMLBASE: Control
+
+    HEADER: QskBox.h
+
+    DESCRIPTION
+		\brief QskBox
+    END
+END

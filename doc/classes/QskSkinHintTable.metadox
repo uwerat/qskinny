@@ -1,0 +1,9 @@
+INTERFACE
+    CLASS: QskSkinHintTable
+
+    HEADER: QskSkinHintTable.h
+
+    DESCRIPTION
+		\brief QskSkinHintTable
+    END
+END

@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskPaintedNode
+    BASE:  QskTextureNode
+
+    HEADER: QskPaintedNode.h
+
+    DESCRIPTION
+		\brief QskPaintedNode
+    END
+END

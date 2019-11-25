@@ -1,0 +1,13 @@
+INTERFACE
+    CLASS: QskSelectionWindow
+    BASE:  QskDialogWindow
+
+    QMLCLASS: SelectionWindow
+    QMLBASE: DialogWindow
+
+    HEADER: QskSelectionWindow.h
+
+    DESCRIPTION
+		\brief QskSelectionWindow
+    END
+END

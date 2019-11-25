@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskPageIndicatorSkinlet
+    BASE:  QskSkinlet
+
+    HEADER: QskPageIndicatorSkinlet.h
+
+    DESCRIPTION
+        \brief QskPageIndicatorSkinlet
+    END
+END

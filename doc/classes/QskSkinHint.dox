@@ -1,6 +1,0 @@
-/*! \struct QskSkinHint
-    This struct acts as a union between option types used by the framework.
-    Skin hints are attributes of a given control which affect the visual
-    representation of the control. They can also be animated using
-    QskSkinHintAnimator.
-  */

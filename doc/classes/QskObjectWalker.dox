@@ -1,7 +1,0 @@
-/*! \class QskObjectAttributes
-    \brief A helper class for resolving properties on the window/item tree
- */
-
-/*! \class QskObjectWalker
-    \brief A helper class for resolving properties on the window/item tree
- */

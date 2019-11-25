@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskBoxClipNode
+    BASE:  QSGClipNode
+
+    HEADER: QskBoxClipNode.h
+
+    DESCRIPTION
+		\brief QskBoxClipNode
+    END
+END

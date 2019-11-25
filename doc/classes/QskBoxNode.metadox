@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskBoxNode
+    BASE:  QSGGeometryNode
+
+    HEADER: QskBoxNode.h
+
+    DESCRIPTION
+		\brief QskBoxNode
+    END
+END

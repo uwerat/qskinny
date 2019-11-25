@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskTextColors
+    QMLCLASS: TextColors
+
+    HEADER: QskTextColors.h
+
+    DESCRIPTION
+		\brief QskTextColors
+    END
+END

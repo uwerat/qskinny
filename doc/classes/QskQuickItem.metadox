@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskQuickItem
+    BASE:  QQuickItem
+
+    HEADER: QskQuickItem.h
+
+    DESCRIPTION
+		\brief QskQuickItem
+    END
+END

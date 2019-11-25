@@ -1,0 +1,11 @@
+INTERFACE
+	CLASS: QskAbstractButton
+	BASE: QskControl
+
+	HEADER: QskAbstractButton.h
+
+	DESCRIPTION
+		\brief An object counter using Qt hooks to create statistics
+			   about QObject and QQuickItem instantiations
+	END
+END

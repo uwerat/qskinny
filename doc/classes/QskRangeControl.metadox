@@ -8,6 +8,6 @@ INTERFACE
     HEADER: QskRangeControl.h
 
     DESCRIPTION
-        \brief A push button
+        \brief QskRangeControl
     END
 END

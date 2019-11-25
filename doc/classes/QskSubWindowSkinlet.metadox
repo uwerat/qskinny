@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskSubWindowSkinlet
+    BASE:  QskSkinlet
+
+    HEADER: QskSubWindowSkinlet.h
+
+    DESCRIPTION
+        \brief QskSubWindowSkinlet
+    END
+END

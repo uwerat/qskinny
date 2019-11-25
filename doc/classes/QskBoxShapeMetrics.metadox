@@ -1,0 +1,9 @@
+INTERFACE
+    CLASS: QskBoxShapeMetrics
+
+    HEADER: QskBoxShapeMetrics.h
+
+    DESCRIPTION
+		\brief QskBoxShapeMetrics
+    END
+END

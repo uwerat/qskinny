@@ -1,0 +1,9 @@
+INTERFACE
+    CLASS: QskColorFilter
+
+    HEADER: QskColorFilter.h
+
+    DESCRIPTION
+		\brief QskColorFilter
+    END
+END

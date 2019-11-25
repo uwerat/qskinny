@@ -1,0 +1,10 @@
+INTERFACE
+    CLASS: QskTextureNode
+    BASE: QSGGeometryNode
+
+    HEADER: QskTextureNode.h
+
+    DESCRIPTION
+		\brief QskTextureNode
+	END
+END

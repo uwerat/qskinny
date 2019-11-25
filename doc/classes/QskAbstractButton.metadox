@@ -8,6 +8,6 @@ INTERFACE
 	HEADER: QskAbstractButton.h
 
 	DESCRIPTION
-		\brief Base class of all Qsk buttons
+		\brief Base class of all buttons
 	END
 END

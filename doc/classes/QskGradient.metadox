@@ -1,0 +1,10 @@
+INTERFACE
+	CLASS : QskGradientStop
+	QMLCLASS: GradientStop
+
+	HEADER: QskGradient.h
+
+	DESCRIPTION
+		\brief A color stop of a gradient
+	END
+END
