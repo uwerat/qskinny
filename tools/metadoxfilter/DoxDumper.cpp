@@ -119,6 +119,7 @@ int DoxDumper::dump( const Interface& interface, FILE* file )
             return ok;
     }
 
+#if 0 // disabled until we fully support QML
     if ( !interface.qmlClassName.empty() )
     {
         if ( !interface.className.empty() )
@@ -127,6 +128,7 @@ int DoxDumper::dump( const Interface& interface, FILE* file )
         if ( ok != 0 )
             return ok;
     }
+#endif
 
     return 0;
 }
