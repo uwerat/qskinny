@@ -98,7 +98,9 @@ QRectF QskPushButtonSkinlet::graphicRect(
 
     if ( !button->text().isEmpty() )
     {
-        qreal h = textRect( button, contentsRect ).height() +
+        const auto textRect = subControlRect( button, contentsRect, QskPushButton::Text );
+
+        qreal h = textRect.height() +
             button->metric( QskPushButton::Panel | QskAspect::Spacing );
 
         if ( h < r.height() )
