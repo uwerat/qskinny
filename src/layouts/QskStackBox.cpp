@@ -104,7 +104,7 @@ QQuickItem* QskStackBox::itemAtIndex( int index ) const
 
 int QskStackBox::indexOf( const QQuickItem* item ) const
 {
-    if ( item && ( item->parentItem() != this ) )
+    if ( item && ( item->parentItem() == this ) )
     {
         for ( int i = 0; i < m_data->items.count(); i++ )
         {
