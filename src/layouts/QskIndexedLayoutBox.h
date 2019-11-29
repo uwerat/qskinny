@@ -31,10 +31,10 @@ class QSK_EXPORT QskIndexedLayoutBox : public QskBox
     void itemChange( ItemChange, const ItemChangeData& ) override;
     void reparentItem( QQuickItem* );
 
+  private:
     virtual void autoAddItem( QQuickItem* ) = 0;
     virtual void autoRemoveItem( QQuickItem* ) = 0;
 
-  private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

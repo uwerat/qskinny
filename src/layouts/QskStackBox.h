@@ -75,12 +75,12 @@ class QSK_EXPORT QskStackBox : public QskIndexedLayoutBox
 
     QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
-    void autoAddItem( QQuickItem* ) override final;
-    void autoRemoveItem( QQuickItem* ) override final;
-
     QskStackBoxAnimator* effectiveAnimator();
 
   private:
+    void autoAddItem( QQuickItem* ) override final;
+    void autoRemoveItem( QQuickItem* ) override final;
+
     void removeItemInternal( int index, bool autoDelete );
 
     class PrivateData;

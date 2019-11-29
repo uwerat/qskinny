@@ -291,7 +291,7 @@ void QskStackBox::autoAddItem( QQuickItem* item )
 
 void QskStackBox::autoRemoveItem( QQuickItem* item )
 {
-    removeItemInternal( indexOf( item ), false );
+    removeItemInternal( indexOf( item ), true );
 }
 
 void QskStackBox::clear( bool autoDelete )

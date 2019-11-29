@@ -112,10 +112,10 @@ class QSK_EXPORT QskLinearBox : public QskIndexedLayoutBox
 
     QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
+  private:
     void autoAddItem( QQuickItem* ) override final;
     void autoRemoveItem( QQuickItem* ) override final;
 
-  private:
     void setItemActive( QQuickItem*, bool );
     void removeItemInternal( int index, bool autoDelete );
 
