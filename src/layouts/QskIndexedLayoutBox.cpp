@@ -11,12 +11,12 @@ class QskIndexedLayoutBox::PrivateData
   public:
     PrivateData()
         : autoAddChildren( true )
-        , blockChildAdded( false )
+        , blockChildAddedRemoved( false )
     {
     }
 
     bool autoAddChildren : 1;
-    bool blockChildAdded : 1;
+    bool blockChildAddedRemoved : 1;
 };
 
 QskIndexedLayoutBox::QskIndexedLayoutBox( QQuickItem* parent )
@@ -51,7 +51,7 @@ void QskIndexedLayoutBox::itemChange(
     {
         case QQuickItem::ItemChildAddedChange:
         {
-            if ( m_data->autoAddChildren && !m_data->blockChildAdded )
+            if ( m_data->autoAddChildren && !m_data->blockChildAddedRemoved )
             {
                 if ( !qskIsTransparentForPositioner( value.item ) )
                     autoAddItem( value.item );
@@ -61,7 +61,9 @@ void QskIndexedLayoutBox::itemChange(
         }
         case QQuickItem::ItemChildRemovedChange:
         {
-            autoRemoveItem( value.item );
+            if ( !m_data->blockChildAddedRemoved )
+                autoRemoveItem( value.item );
+
             break;
         }
 #if 1
@@ -91,9 +93,19 @@ void QskIndexedLayoutBox::reparentItem( QQuickItem* item )
 
     if ( item->parentItem() != this )
     {
-        m_data->blockChildAdded = true;
+        m_data->blockChildAddedRemoved = true;
         item->setParentItem( this );
-        m_data->blockChildAdded = false;
+        m_data->blockChildAddedRemoved = false;
+    }
+}
+
+void QskIndexedLayoutBox::unparentItem( QQuickItem* item )
+{
+    if ( item->parentItem() == this )
+    {
+        m_data->blockChildAddedRemoved = true;
+        item->setParentItem( nullptr );
+        m_data->blockChildAddedRemoved = false;
     }
 }
 

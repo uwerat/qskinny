@@ -81,7 +81,7 @@ class QSK_EXPORT QskStackBox : public QskIndexedLayoutBox
     void autoAddItem( QQuickItem* ) override final;
     void autoRemoveItem( QQuickItem* ) override final;
 
-    void removeItemInternal( int index, bool autoDelete );
+    void removeItemInternal( int index, bool unparent );
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

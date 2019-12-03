@@ -97,7 +97,7 @@ int QskLinearBox::indexOf( const QQuickItem* item ) const
 
 void QskLinearBox::removeAt( int index )
 {
-    removeItemInternal( index, false );
+    removeItemInternal( index, true );
 }
 
 void QskLinearBox::removeItemInternal( int index, bool unparent )
@@ -114,11 +114,8 @@ void QskLinearBox::removeItemInternal( int index, bool unparent )
     {
         setItemActive( item, false );
 
-        if ( !unparent )
-        {
-            if ( item->parentItem() == this )
-                item->setParentItem( nullptr );
-        }
+        if ( unparent )
+            unparentItem( item );
     }
 
     resetImplicitSize();
@@ -149,7 +146,7 @@ void QskLinearBox::clear( bool autoDelete )
             if( autoDelete && ( item->parent() == this ) )
                 delete item;
             else
-                item->setParentItem( nullptr );
+                unparentItem( item );
         }
     }
 
@@ -164,7 +161,7 @@ void QskLinearBox::autoAddItem( QQuickItem* item )
 
 void QskLinearBox::autoRemoveItem( QQuickItem* item )
 {
-    removeItemInternal( indexOf( item ), true );
+    removeItemInternal( indexOf( item ), false );
 }
 
 void QskLinearBox::activate()

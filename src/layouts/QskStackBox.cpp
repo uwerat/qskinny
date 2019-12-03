@@ -253,7 +253,7 @@ void QskStackBox::insertItem(
 
 void QskStackBox::removeAt( int index )
 {
-    removeItemInternal( index, false );
+    removeItemInternal( index, true );
 }
 
 void QskStackBox::removeItemInternal( int index, bool unparent )
@@ -261,13 +261,10 @@ void QskStackBox::removeItemInternal( int index, bool unparent )
     if ( index < 0 || index >= m_data->items.count() )
         return;
 
-    if ( !unparent )
+    if ( unparent )
     {
         if ( auto item = m_data->items[ index ] )
-        {
-            if ( item->parentItem() == this )
-                item->setParentItem( nullptr );
-        }
+            unparentItem( item );
     }
 
     m_data->items.removeAt( index );
@@ -291,7 +288,7 @@ void QskStackBox::autoAddItem( QQuickItem* item )
 
 void QskStackBox::autoRemoveItem( QQuickItem* item )
 {
-    removeItemInternal( indexOf( item ), true );
+    removeItemInternal( indexOf( item ), false );
 }
 
 void QskStackBox::clear( bool autoDelete )

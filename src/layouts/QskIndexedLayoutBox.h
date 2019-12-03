@@ -29,7 +29,9 @@ class QSK_EXPORT QskIndexedLayoutBox : public QskBox
 
   protected:
     void itemChange( ItemChange, const ItemChangeData& ) override;
+
     void reparentItem( QQuickItem* );
+    void unparentItem( QQuickItem* );
 
   private:
     virtual void autoAddItem( QQuickItem* ) = 0;
