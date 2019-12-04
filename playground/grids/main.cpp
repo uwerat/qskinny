@@ -24,7 +24,8 @@ class Box : public TestBox
             &Box::test0, &Box::test1, &Box::test2,
             &Box::test3, &Box::test4, &Box::test5,
             &Box::test6, &Box::test7, &Box::test8,
-            &Box::test9, &Box::test10 
+            &Box::test9, &Box::test10, &Box::test11,
+            &Box::test12
         };
     }
 
@@ -63,6 +64,8 @@ class Box : public TestBox
     void test8();
     void test9();
     void test10();
+    void test11();
+    void test12();
 
     std::vector< std::function< void( Box& ) > > m_tests;
 };
@@ -290,6 +293,49 @@ void Box::test10()
     insert( "Coral", 0, 3 );
 
     setMaximumWidthAt( 1, 70 );
+}
+
+void Box::test11()
+{
+    /*
+        Here we have an expandble element, that is limited by
+        its maximum size and another element, that can grow only.
+
+        The expected behavior is, that if the expandable elements
+        do not accept the complete available space the rest goes to
+        the elements, that can grow only.
+
+        - Graphic/Skinny do not handle the grow flag once there is
+          an element with the expand flag
+     */
+
+    // Quick layouts do not support GrowFlag vs. ExpandFlag
+    enableGrid( Quick, false );
+
+    insert( "PaleVioletRed", 0, 0 );
+    insert( "NavajoWhite", 1, 0 );
+
+    setSizePolicyAt( 0, Qt::Vertical, QskSizePolicy::Preferred );
+    setPreferredHeightAt( 0, 50 );
+
+    setSizePolicyAt( 1, Qt::Vertical, QskSizePolicy::Expanding );
+    setMaximumHeightAt( 1, 50 );
+}
+
+void Box::test12()
+{
+   /*
+        We have different strategies where to put the spaces, when
+        there is more space than the elements are willing to accept.
+        QSkinny has the extraSpacingAt parameter to control this.
+     */
+
+    insert( "PaleVioletRed", 0, 0 );
+    insert( "NavajoWhite", 1, 0 );
+    insert( "Coral", 2, 0 );
+
+    for ( int i = 0; i < 3; i++ )
+        setFixedHeightAt( i, 50 );
 }
 
 class MainWidget : public QWidget
