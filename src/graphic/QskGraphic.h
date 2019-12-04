@@ -23,13 +23,26 @@ class QPaintEngineState;
 
 class QSK_EXPORT QskGraphic : public QPaintDevice
 {
+    Q_GADGET
+
   public:
     enum RenderHint
     {
         RenderPensUnscaled = 0x1
     };
 
-    typedef QFlags< RenderHint > RenderHints;
+    Q_ENUM( RenderHint )
+    Q_DECLARE_FLAGS( RenderHints, RenderHint )
+
+    enum CommandType
+    {
+        VectorData     = 1 << 0,
+        RasterData     = 1 << 1,
+        Transformation = 1 << 2
+    };
+
+    Q_ENUM( CommandType )
+    Q_DECLARE_FLAGS( CommandTypes, CommandType )
 
     QskGraphic();
     QskGraphic( const QskGraphic& );
@@ -47,7 +60,8 @@ class QSK_EXPORT QskGraphic : public QPaintDevice
 
     bool isNull() const;
     bool isEmpty() const;
-    bool isScalable() const;
+
+    CommandTypes commandTypes() const;
 
     void render( QPainter* ) const;
     void render( QPainter*, const QskColorFilter& filter,
@@ -132,6 +146,7 @@ inline bool QskGraphic::operator!=( const QskGraphic& other ) const
 }
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( QskGraphic::RenderHints )
+Q_DECLARE_OPERATORS_FOR_FLAGS( QskGraphic::CommandTypes )
 Q_DECLARE_METATYPE( QskGraphic )
 
 #endif

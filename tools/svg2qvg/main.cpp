@@ -53,7 +53,7 @@ int main( int argc, char* argv[] )
     renderer.render( &painter );
     painter.end();
 
-    if ( !graphic.isScalable() )
+    if ( graphic.commandTypes() & QskGraphic::RasterData )
         qWarning() << argv[1] << "contains non scalable parts.";
 
     QskGraphicIO::write( graphic, argv[2] );

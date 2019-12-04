@@ -53,7 +53,9 @@ void QskGraphicNode::setGraphic(
 
     QSize textureSize;
 
-    if ( graphic.isScalable() )
+    constexpr auto mask = QskGraphic::VectorData | QskGraphic::Transformation;
+
+    if ( graphic.commandTypes() & mask )
     {
         textureSize = rect.size().toSize();
 
@@ -66,6 +68,11 @@ void QskGraphicNode::setGraphic(
     }
     else
     {
+        /*
+            simple raster data - usually a QImage/QPixmap only.
+            There is no benefit in rescaling it into the target rectangle
+            by the CPU and creating a new texture.
+         */
         textureSize = graphic.defaultSize().toSize();
     }
 

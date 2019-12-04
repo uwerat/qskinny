@@ -339,7 +339,7 @@ class QskGraphic::PrivateData : public QSharedData
     PrivateData()
         : boundingRect( 0.0, 0.0, -1.0, -1.0 )
         , pointRect( 0.0, 0.0, -1.0, -1.0 )
-        , hasRasterData( false )
+        , commandTypes( 0 )
         , renderHints( 0 )
     {
     }
@@ -351,7 +351,7 @@ class QskGraphic::PrivateData : public QSharedData
         , pathInfos( other.pathInfos )
         , boundingRect( other.boundingRect )
         , pointRect( other.pointRect )
-        , hasRasterData( other.hasRasterData )
+        , commandTypes( other.commandTypes )
         , renderHints( other.renderHints )
     {
     }
@@ -373,7 +373,7 @@ class QskGraphic::PrivateData : public QSharedData
     QRectF boundingRect;
     QRectF pointRect;
 
-    bool hasRasterData : 1;
+    uint commandTypes : 4;
     uint renderHints : 4;
 };
 
@@ -484,7 +484,8 @@ void QskGraphic::reset()
 {
     m_data->commands.clear();
     m_data->pathInfos.clear();
-    m_data->hasRasterData = false;
+
+    m_data->commandTypes = 0;
 
     m_data->boundingRect = QRectF( 0.0, 0.0, -1.0, -1.0 );
     m_data->pointRect = QRectF( 0.0, 0.0, -1.0, -1.0 );
@@ -504,9 +505,9 @@ bool QskGraphic::isEmpty() const
     return m_data->boundingRect.isEmpty();
 }
 
-bool QskGraphic::isScalable() const
+QskGraphic::CommandTypes QskGraphic::commandTypes() const
 {
-    return !m_data->hasRasterData;
+    return static_cast< CommandTypes >( m_data->commandTypes );
 }
 
 void QskGraphic::setRenderHint( RenderHint hint, bool on )
@@ -840,10 +841,11 @@ QImage QskGraphic::toImage( qreal devicePixelRatio ) const
 void QskGraphic::drawPath( const QPainterPath& path )
 {
     const QPainter* painter = paintEngine()->painter();
-    if ( painter == NULL )
+    if ( painter == nullptr )
         return;
 
     m_data->commands += QskPainterCommand( path );
+    m_data->commandTypes |= QskGraphic::VectorData;
 
     if ( !path.isEmpty() )
     {
@@ -869,12 +871,12 @@ void QskGraphic::drawPath( const QPainterPath& path )
 void QskGraphic::drawPixmap( const QRectF& rect,
     const QPixmap& pixmap, const QRectF& subRect )
 {
-    const QPainter* painter = paintEngine()->painter();
-    if ( painter == NULL )
+    const auto painter = paintEngine()->painter();
+    if ( painter == nullptr )
         return;
 
     m_data->commands += QskPainterCommand( rect, pixmap, subRect );
-    m_data->hasRasterData = true;
+    m_data->commandTypes |= QskGraphic::RasterData;
 
     const QRectF r = painter->transform().mapRect( rect );
     updateControlPointRect( r );
@@ -884,12 +886,12 @@ void QskGraphic::drawPixmap( const QRectF& rect,
 void QskGraphic::drawImage( const QRectF& rect, const QImage& image,
     const QRectF& subRect, Qt::ImageConversionFlags flags )
 {
-    const QPainter* painter = paintEngine()->painter();
-    if ( painter == NULL )
+    const auto painter = paintEngine()->painter();
+    if ( painter == nullptr )
         return;
 
     m_data->commands += QskPainterCommand( rect, image, subRect, flags );
-    m_data->hasRasterData = true;
+    m_data->commandTypes |= QskGraphic::RasterData;
 
     const QRectF r = painter->transform().mapRect( rect );
 
@@ -900,13 +902,22 @@ void QskGraphic::drawImage( const QRectF& rect, const QImage& image,
 void QskGraphic::updateState( const QPaintEngineState& state )
 {
     m_data->commands += QskPainterCommand( state );
+
+    if ( state.state() & QPaintEngine::DirtyTransform )
+    {
+        if ( !( m_data->commandTypes & QskGraphic::Transformation ) )
+        {
+            if ( !state.transform().isTranslating() )
+                m_data->commandTypes |= QskGraphic::Transformation;
+        }
+    }
 }
 
 void QskGraphic::updateBoundingRect( const QRectF& rect )
 {
     QRectF br = rect;
 
-    const QPainter* painter = paintEngine()->painter();
+    const auto painter = paintEngine()->painter();
     if ( painter && painter->hasClipping() )
     {
         QRectF cr = painter->clipRegion().boundingRect();
