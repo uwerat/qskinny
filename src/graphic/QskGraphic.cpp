@@ -907,7 +907,12 @@ void QskGraphic::updateState( const QPaintEngineState& state )
     {
         if ( !( m_data->commandTypes & QskGraphic::Transformation ) )
         {
-            if ( !state.transform().isTranslating() )
+            /*
+                QTransform::isScaling() returns true for all type
+                of transformations beside simple translations
+                even if it is f.e a rotation
+             */
+            if ( state.transform().isScaling() )
                 m_data->commandTypes |= QskGraphic::Transformation;
         }
     }

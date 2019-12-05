@@ -53,9 +53,16 @@ void QskGraphicNode::setGraphic(
 
     QSize textureSize;
 
-    constexpr auto mask = QskGraphic::VectorData | QskGraphic::Transformation;
-
-    if ( graphic.commandTypes() & mask )
+    if ( graphic.commandTypes() == QskGraphic::RasterData )
+    {
+        /*
+            simple raster data - usually a QImage/QPixmap only.
+            There is no benefit in rescaling it into the target rectangle
+            by the CPU and creating a new texture.
+         */
+        textureSize = graphic.defaultSize().toSize();
+    }
+    else
     {
         textureSize = rect.size().toSize();
 
@@ -65,15 +72,6 @@ void QskGraphicNode::setGraphic(
             isTextureDirty = ( rect.width() != static_cast< int >( oldRect.width() ) ) ||
                 ( rect.height() != static_cast< int >( oldRect.height() ) );
         }
-    }
-    else
-    {
-        /*
-            simple raster data - usually a QImage/QPixmap only.
-            There is no benefit in rescaling it into the target rectangle
-            by the CPU and creating a new texture.
-         */
-        textureSize = graphic.defaultSize().toSize();
     }
 
     QskTextureNode::setRect( rect );
