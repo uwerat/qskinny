@@ -9,6 +9,7 @@
 #include "QskGlobal.h"
 
 #include <qmetatype.h>
+#include <qflags.h>
 #include <qpaintdevice.h>
 #include <qshareddata.h>
 
@@ -20,19 +21,17 @@ class QPixmap;
 class QPainterPath;
 class QPaintEngine;
 class QPaintEngineState;
+class QTransform;
 
 class QSK_EXPORT QskGraphic : public QPaintDevice
 {
-    Q_GADGET
-
   public:
     enum RenderHint
     {
         RenderPensUnscaled = 0x1
     };
 
-    Q_ENUM( RenderHint )
-    Q_DECLARE_FLAGS( RenderHints, RenderHint )
+    typedef QFlags< RenderHint > RenderHints;
 
     enum CommandType
     {
@@ -41,8 +40,7 @@ class QSK_EXPORT QskGraphic : public QPaintDevice
         Transformation = 1 << 2
     };
 
-    Q_ENUM( CommandType )
-    Q_DECLARE_FLAGS( CommandTypes, CommandType )
+    typedef QFlags< CommandType > CommandTypes;
 
     QskGraphic();
     QskGraphic( const QskGraphic& );
@@ -64,7 +62,7 @@ class QSK_EXPORT QskGraphic : public QPaintDevice
     CommandTypes commandTypes() const;
 
     void render( QPainter* ) const;
-    void render( QPainter*, const QskColorFilter& filter,
+    void render( QPainter*, const QskColorFilter&,
         QTransform* initialTransform = nullptr ) const;
 
     void render( QPainter*, const QSizeF&,
