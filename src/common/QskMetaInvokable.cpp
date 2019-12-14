@@ -49,11 +49,16 @@ namespace
                 ushort index, int nargs, int* types, void* args[],
                 QSemaphore* semaphore = nullptr )
             : QMetaCallEvent( offset, index, callFunction, nullptr, -1,
-                nargs, types, args, semaphore )
+#if QT_VERSION < QT_VERSION_CHECK( 5, 14, 0 )
+                nargs, types,
+#endif
+                args, semaphore )
             , m_call( call )
             , m_callFunction( callFunction )
             , m_index( index )
         {
+            Q_UNUSED( nargs )
+            Q_UNUSED( types )
         }
 
         void placeMetaCall( QObject* object ) override

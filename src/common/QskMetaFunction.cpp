@@ -21,8 +21,16 @@ static inline void qskInvokeFunctionQueued( QObject* object,
     constexpr QObject* sender = nullptr;
     constexpr int signalId = 0;
 
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 14, 0 )
+    Q_UNUSED( types )
+    Q_UNUSED( argc )
+
+    auto event = new QMetaCallEvent(
+        functionCall, sender, signalId, argv, semaphore );
+#else
     auto event = new QMetaCallEvent(
         functionCall, sender, signalId, argc, types, argv, semaphore );
+#endif
 
     QCoreApplication::postEvent( object, event );
 }
@@ -58,7 +66,11 @@ int QskMetaFunction::FunctionCall::typeInfo() const
 int QskMetaFunction::FunctionCall::refCount() const
 {
     auto that = const_cast< FunctionCall* >( this );
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 14, 0 )
+    return reinterpret_cast< SlotObject* >( that )->ref.loadRelaxed();
+#else
     return reinterpret_cast< SlotObject* >( that )->ref.load();
+#endif
 }
 
 QskMetaFunction::QskMetaFunction()
