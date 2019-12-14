@@ -11,6 +11,11 @@ namespace
     {
         return int( from + ( to - from ) * ratio );
     }
+
+    inline qreal valueF( qreal from, qreal to, qreal ratio )
+    {
+        return int( from + ( to - from ) * ratio );
+    }
 }
 
 static inline QColor qskInterpolatedColor(
@@ -55,6 +60,17 @@ static inline QColor qskInterpolatedColor(
 
             return QColor::fromHsl( h, s, l, a );
         }
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 14, 0 )
+        case QColor::ExtendedRgb:
+        {
+            const qreal r = valueF( c1.redF(), c2.redF(), ratio );
+            const qreal g = valueF( c1.greenF(), c2.greenF(), ratio );
+            const qreal b = valueF( c1.blueF(), c2.blueF(), ratio );
+            const qreal a = valueF( c1.alphaF(), c2.alphaF(), ratio );
+
+            return QColor::fromRgbF( r, g, b, a );
+        }
+#endif
         case QColor::Invalid:
             break;
     }
