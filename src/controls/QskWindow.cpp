@@ -522,7 +522,7 @@ void QskWindow::setCustomRenderMode( const char* mode )
          */
 
         if ( m.isEmpty() != d->customRenderMode.isEmpty() )
-            scheduleRenderJob( new RenderJob( this, m ), AfterRenderingStage );
+            scheduleRenderJob( new RenderJob( this, m ), AfterSwapStage );
         else
             d->customRenderMode = m;
 
