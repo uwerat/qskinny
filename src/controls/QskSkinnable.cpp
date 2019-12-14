@@ -421,15 +421,29 @@ QskAnimationHint QskSkinnable::effectiveAnimation(
 
 bool QskSkinnable::resetHint( QskAspect::Aspect aspect )
 {
-    const auto value = m_data->hintTable.takeHint( aspect );
+    if ( !m_data->hintTable.hasHint( aspect ) )
+        return false;
 
-    if ( value.isValid() )
-    {
-        // return true, if the value has changed
-        return value != storedHint( aspect );
-    }
+    /*
+        To be able to indicate, when the resolved value has changed
+        we retrieve the value before and after removing the hint from
+        the local table. An implementation with less lookups
+        should be possible, but as reset is a low frequently called
+        operation, we prefer to keep the implementation simple.
+     */
 
-    return false;
+    auto a = aspect;
+    a.setSubControl( effectiveSubcontrol( a.subControl() ) );
+    a.setPlacement( effectivePlacement() );
+
+    if ( a.state() == QskAspect::NoState )
+        a = a | skinState();
+    
+    const auto oldHint = storedHint( a );
+
+    m_data->hintTable.removeHint( aspect );
+
+    return oldHint != storedHint( a );
 }
 
 QVariant QskSkinnable::effectiveHint(

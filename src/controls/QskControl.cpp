@@ -142,14 +142,9 @@ void QskControl::setBackground( const QskGradient& gradient )
 void QskControl::resetBackground()
 {
     using namespace QskAspect;
-    const Aspect aspect = Control | Color;
 
-    auto& table = hintTable();
-
-    if ( table.hint( aspect ).isValid() )
+    if ( resetHint( Control | Color ) )
     {
-        table.removeHint( aspect );
-
         update();
         Q_EMIT backgroundChanged();
     }
@@ -195,25 +190,17 @@ void QskControl::setMargins( const QMarginsF& margins )
 void QskControl::resetMargins()
 {
     using namespace QskAspect;
-    const Aspect aspect = Control | Metric | Margin;
 
-    const auto oldMargin = marginsHint( aspect );
-
-    auto& table = hintTable();
-    if ( table.hint( aspect ).isValid() )
+    if ( resetHint( Control | Metric | Margin ) )
     {
-        table.removeHint( aspect );
-        if ( marginsHint( aspect ) != oldMargin )
-        {
-            resetImplicitSize();
+        resetImplicitSize();
 
-            Q_D( const QskControl );
-            if ( polishOnResize() || d->autoLayoutChildren )
-                polish();
+        Q_D( const QskControl );
+        if ( polishOnResize() || d->autoLayoutChildren )
+            polish();
 
-            qskSendEventTo( this, QEvent::ContentsRectChange );
-            Q_EMIT marginsChanged();
-        }
+        qskSendEventTo( this, QEvent::ContentsRectChange );
+        Q_EMIT marginsChanged();
     }
 }
 
