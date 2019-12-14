@@ -4,7 +4,6 @@
  *****************************************************************************/
 
 #include "QskBox.h"
-#include "QskSkinHintTable.h"
 
 QSK_SUBCONTROL( QskBox, Panel )
 
@@ -72,25 +71,15 @@ void QskBox::setPadding( const QMarginsF& padding )
 void QskBox::resetPadding()
 {
     using namespace QskAspect;
-    const Aspect aspect = QskBox::Panel | Metric | Padding;
 
-    const auto oldPadding = marginsHint( aspect );
-
-    auto& table = hintTable();
-    if ( table.hint( aspect ).isValid() )
+    if ( resetHint( QskBox::Panel | Metric | Padding ) )
     {
-        table.removeHint( aspect );
+        resetImplicitSize();
 
-        const auto padding = marginsHint( aspect );
-        if ( padding != oldPadding )
-        {
-            resetImplicitSize();
+        if ( polishOnResize() || autoLayoutChildren() )
+            polish();
 
-            if ( polishOnResize() || autoLayoutChildren() )
-                polish();
-
-            Q_EMIT paddingChanged( padding );
-        }
+        Q_EMIT paddingChanged( padding() );
     }
 }
 

@@ -419,9 +419,17 @@ QskAnimationHint QskSkinnable::effectiveAnimation(
     return hint;
 }
 
-void QskSkinnable::resetHint( QskAspect::Aspect aspect )
+bool QskSkinnable::resetHint( QskAspect::Aspect aspect )
 {
-    m_data->hintTable.removeHint( aspect );
+    const auto value = m_data->hintTable.takeHint( aspect );
+
+    if ( value.isValid() )
+    {
+        // return true, if the value has changed
+        return value != storedHint( aspect );
+    }
+
+    return false;
 }
 
 QVariant QskSkinnable::effectiveHint(
@@ -571,7 +579,7 @@ const QVariant& QskSkinnable::storedHint(
 
         if ( aspect.subControl() != QskAspect::Control )
         {
-            // trying to resolve something the skin default settings
+            // trying to resolve something from the skin default settings
 
             aspect.setSubControl( QskAspect::Control );
             aspect.clearStates();
