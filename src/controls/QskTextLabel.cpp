@@ -11,6 +11,7 @@
 #include <qfontmetrics.h>
 #include <qmath.h>
 
+QSK_SUBCONTROL( QskTextLabel, Panel )
 QSK_SUBCONTROL( QskTextLabel, Text )
 
 class QskTextLabel::PrivateData
@@ -18,6 +19,7 @@ class QskTextLabel::PrivateData
   public:
     PrivateData( const QString& txt )
         : text( txt )
+        , hasPanel( false )
     {
         effectiveTextFormat = textOptions.format();
     }
@@ -40,6 +42,8 @@ class QskTextLabel::PrivateData
 
     QskTextOptions textOptions;
     mutable QskTextOptions::TextFormat effectiveTextFormat;
+
+    bool hasPanel : 1;
 };
 
 QskTextLabel::QskTextLabel( QQuickItem* parent )
@@ -56,6 +60,24 @@ QskTextLabel::QskTextLabel( const QString& text, QQuickItem* parent )
 
 QskTextLabel::~QskTextLabel()
 {
+}
+
+void QskTextLabel::setPanel( bool on )
+{
+    if ( on == m_data->hasPanel )
+        return;
+
+    m_data->hasPanel = on;
+
+    resetImplicitSize();
+    update();
+
+    Q_EMIT panelChanged( on );
+}
+
+bool QskTextLabel::hasPanel() const
+{
+    return m_data->hasPanel;
 }
 
 void QskTextLabel::setText( const QString& text )
@@ -246,8 +268,12 @@ QSizeF QskTextLabel::contentsSizeHint(
             }
 
             QSizeF size( constraint.width(), maxHeight );
+
             size = QskTextRenderer::textSize(
                 m_data->text, font, m_data->effectiveOptions(), size );
+
+            if ( m_data->hasPanel )
+                size = outerBoxSize( Panel, size );
 
             hint.setHeight( qCeil( size.height() ) );
         }
@@ -257,8 +283,12 @@ QSizeF QskTextLabel::contentsSizeHint(
         const qreal maxWidth = std::numeric_limits< qreal >::max();
 
         QSizeF size( maxWidth, constraint.height() );
+
         size = QskTextRenderer::textSize( m_data->text, font,
             m_data->effectiveOptions(), size );
+
+        if ( m_data->hasPanel )
+            size = outerBoxSize( Panel, size );
 
         hint.setWidth( qCeil( size.width() ) );
     }
@@ -266,6 +296,9 @@ QSizeF QskTextLabel::contentsSizeHint(
     {
         hint = QskTextRenderer::textSize(
             m_data->text, font, m_data->effectiveOptions() );
+
+        if ( m_data->hasPanel )
+            hint = outerBoxSize( Panel, hint );
     }
 
     return hint;

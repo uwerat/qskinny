@@ -27,10 +27,13 @@ class QSK_EXPORT QskTextLabel : public QskControl
     Q_PROPERTY( Qt::Alignment alignment READ alignment
         WRITE setAlignment NOTIFY alignmentChanged )
 
+    Q_PROPERTY( bool panel READ hasPanel
+        WRITE setPanel NOTIFY panelChanged FINAL )
+
     using Inherited = QskControl;
 
   public:
-    QSK_SUBCONTROLS( Text )
+    QSK_SUBCONTROLS( Panel, Text )
 
     QskTextLabel( QQuickItem* parent = nullptr );
     QskTextLabel( const QString& text, QQuickItem* parent = nullptr );
@@ -62,19 +65,25 @@ class QSK_EXPORT QskTextLabel : public QskControl
 
     QFont font() const;
 
+    void setPanel( bool );
+    bool hasPanel() const;
+
   Q_SIGNALS:
     void textChanged( const QString& );
     void textColorChanged( const QColor& );
     void textOptionsChanged( const QskTextOptions& );
     void fontRoleChanged();
     void alignmentChanged();
+    void panelChanged( bool );
 
   public Q_SLOTS:
     void setText( const QString& );
 
   protected:
     void changeEvent( QEvent* ) override;
-    QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
+
+    QSizeF contentsSizeHint(
+        Qt::SizeHint, const QSizeF& ) const override;
 
   private:
     class PrivateData;

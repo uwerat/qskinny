@@ -27,6 +27,7 @@ class QSK_MATERIAL_EXPORT QskMaterialSkin : public QskSkin
 
     void initCommonHints();
 
+    void initBoxHints();
     void initDialogButtonBoxHints();
     void initDialogButtonHints();
     void initFocusIndicatorHints();

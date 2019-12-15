@@ -11,7 +11,7 @@
 QskTextLabelSkinlet::QskTextLabelSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
-    setNodeRoles( { TextRole } );
+    setNodeRoles( { PanelRole, TextRole } );
 }
 
 QskTextLabelSkinlet::~QskTextLabelSkinlet() = default;
@@ -19,8 +19,20 @@ QskTextLabelSkinlet::~QskTextLabelSkinlet() = default;
 QRectF QskTextLabelSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
-    if ( subControl == QskTextLabel::Text )
+    const auto label = static_cast< const QskTextLabel* >( skinnable );
+
+    if ( subControl == QskTextLabel::Panel )
     {
+        return contentsRect;
+    }
+    else if ( subControl == QskTextLabel::Text )
+    {
+        if ( label->hasPanel() )
+        {
+            auto r = subControlRect( label, contentsRect, QskTextLabel::Panel );
+            return label->innerBox( QskTextLabel::Panel, r );
+        }
+
         return contentsRect;
     }
 
@@ -34,6 +46,13 @@ QSGNode* QskTextLabelSkinlet::updateSubNode(
 
     switch ( nodeRole )
     {
+        case PanelRole:
+        {
+            if ( !label->hasPanel() )
+                return nullptr;
+
+            return updateBoxNode( label, node, QskTextLabel::Panel );
+        }
         case TextRole:
         {
             return updateTextNode( label, node,

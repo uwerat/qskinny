@@ -27,6 +27,7 @@ class QSK_SQUIEK_EXPORT QskSquiekSkin : public QskSkin
 
     void initCommonHints();
 
+    void initBoxHints();
     void initDialogButtonHints();
     void initDialogButtonBoxHints();
     void initFocusIndicatorHints();

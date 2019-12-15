@@ -5,6 +5,7 @@
 
 #include "QskSquiekSkin.h"
 
+#include <QskBox.h>
 #include <QskDialogButton.h>
 #include <QskDialogButtonBox.h>
 #include <QskFocusIndicator.h>
@@ -251,6 +252,7 @@ void QskSquiekSkin::initHints()
 {
     initCommonHints();
 
+    initBoxHints();
     initDialogButtonBoxHints();
     initDialogButtonHints();
     initFocusIndicatorHints();
@@ -292,6 +294,11 @@ void QskSquiekSkin::initCommonHints()
     setColor( Control | StyleColor | Q::Disabled, pal.theme );
 }
 
+void QskSquiekSkin::initBoxHints()
+{
+    setPanel( QskBox::Panel, Plain );
+}
+
 void QskSquiekSkin::initPopupHints()
 {
     using namespace QskAspect;
@@ -310,6 +317,19 @@ void QskSquiekSkin::initTextLabelHints()
 
     setSkinHint( Q::Text | Alignment, Qt::AlignCenter );
     setColor( Q::Text, pal.themeForeground );
+
+    setMargins( Q::Panel | Padding, 5 );
+    setBoxBorderMetrics( Q::Panel, 2 );
+    setBoxShape( Q::Panel, 4 );
+
+    const QColor c = pal.base;
+
+    const QskBoxBorderColors borderColors(
+        c.darker( 170 ), c.darker( 170 ),
+        c.darker( 105 ), c.darker( 105 ) );
+
+    setBoxBorderColors( Q::Panel, borderColors );
+    setGradient( Q::Panel, c );
 }
 
 void QskSquiekSkin::initTextInputHints()
