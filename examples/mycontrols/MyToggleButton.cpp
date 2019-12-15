@@ -207,7 +207,7 @@ QSizeF MyToggleButton::contentsSizeHint(
     return hint;
 }
 
-void MyToggleButton::updateLayout()
+void MyToggleButton::updateResources()
 {
     for( int i = 0; i < 2; i++ )
     {

@@ -41,7 +41,7 @@ class MyToggleButton : public QskAbstractButton
     void invertedChanged( bool );
 
   protected:
-    void updateLayout() override;
+    void updateResources() override;
     QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
   private:
