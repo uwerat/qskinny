@@ -649,8 +649,8 @@ void QskGraphic::render( QPainter* painter, const QRectF& rect,
     if ( isEmpty() || rect.isEmpty() )
         return;
 
-    double sx = 1.0;
-    double sy = 1.0;
+    qreal sx = 1.0;
+    qreal sy = 1.0;
 
     if ( m_data->pointRect.width() > 0.0 )
         sx = rect.width() / m_data->pointRect.width();
@@ -662,13 +662,13 @@ void QskGraphic::render( QPainter* painter, const QRectF& rect,
 
     for ( const auto& info : qskAsConst( m_data->pathInfos ) )
     {
-        const double ssx = info.scaleFactorX(
+        const qreal ssx = info.scaleFactorX(
             m_data->pointRect, rect, scalePens );
 
         if ( ssx > 0.0 )
             sx = qMin( sx, ssx );
 
-        const double ssy = info.scaleFactorY(
+        const qreal ssy = info.scaleFactorY(
             m_data->pointRect, rect, scalePens );
 
         if ( ssy > 0.0 )
@@ -677,41 +677,46 @@ void QskGraphic::render( QPainter* painter, const QRectF& rect,
 
     if ( aspectRatioMode == Qt::KeepAspectRatio )
     {
-        const double s = qMin( sx, sy );
-        sx = s;
-        sy = s;
+        sx = sy = qMin( sx, sy );
     }
     else if ( aspectRatioMode == Qt::KeepAspectRatioByExpanding )
     {
-        const double s = qMax( sx, sy );
-        sx = s;
-        sy = s;
+        sx = sy = qMax( sx, sy );
     }
+
+    const auto& pr = m_data->pointRect;
+    const auto rc =  rect.center();
 
     QTransform tr;
-    tr.translate( rect.center().x() - 0.5 * sx * m_data->pointRect.width(),
-        rect.center().y() - 0.5 * sy * m_data->pointRect.height() );
+    tr.translate(
+        rc.x() - 0.5 * sx * pr.width(),
+        rc.y() - 0.5 * sy * pr.height() );
     tr.scale( sx, sy );
-    tr.translate( -m_data->pointRect.x(), -m_data->pointRect.y() );
+    tr.translate( -pr.x(), -pr.y() );
 
     const QTransform transform = painter->transform();
-    QTransform* initialTransform = nullptr;
-    if ( !scalePens && transform.isScaling() )
-    {
-        // we don't want to scale pens according to sx/sy,
-        // but we want to apply the scaling from the
-        // painter transformation later
-
-        initialTransform = new QTransform();
-        initialTransform->scale( transform.m11(), transform.m22() );
-    }
 
     painter->setTransform( tr, true );
-    render( painter, colorFilter, initialTransform );
+
+    if ( !scalePens && transform.isScaling() )
+    {
+        /*
+            We don't want to scale pens according to sx/sy,
+            but we want to apply the initial scaling from the
+            painter transformation.
+         */
+
+        QTransform initialTransform;
+        initialTransform.scale( transform.m11(), transform.m22() );
+
+        render( painter, colorFilter, &initialTransform );
+    }
+    else
+    {
+        render( painter, colorFilter, nullptr );
+    }
 
     painter->setTransform( transform );
-
-    delete initialTransform;
 }
 
 void QskGraphic::render( QPainter* painter,
@@ -922,13 +927,15 @@ void QskGraphic::updateBoundingRect( const QRectF& rect )
 {
     QRectF br = rect;
 
-    const auto painter = paintEngine()->painter();
-    if ( painter && painter->hasClipping() )
+    if ( const auto painter = paintEngine()->painter() )
     {
-        QRectF cr = painter->clipRegion().boundingRect();
-        cr = painter->transform().mapRect( cr );
+        if ( painter->hasClipping() )
+        {
+            QRectF cr = painter->clipRegion().boundingRect();
+            cr = painter->transform().mapRect( cr );
 
-        br &= cr;
+            br &= cr;
+        }
     }
 
     if ( m_data->boundingRect.width() < 0 )
@@ -1003,3 +1010,159 @@ QskGraphic QskGraphic::fromPixmap( const QPixmap& pixmap )
 
     return graphic;
 }
+
+#ifndef QT_NO_DEBUG_STREAM
+
+#include <qdebug.h>
+
+QDebug operator<<( QDebug debug, const QskGraphic& graphic )
+{
+    // Qt::endl
+
+    QDebugStateSaver saver( debug );
+
+    debug << "Graphic" << '(';
+    debug << Qt::endl << " boundingRect:" << graphic.boundingRect();
+    debug << Qt::endl << " controlPointsRect:" << graphic.boundingRect();
+    debug << Qt::endl << " commandTypes:" << graphic.commandTypes();
+
+    for ( const auto command : graphic.commands() )
+    {
+        switch ( command.type() )
+        {
+            case QskPainterCommand::Path:
+            {
+                const auto& path = *command.path();
+
+                debug << Qt::endl << " Path(" << path.elementCount() << ")";
+
+                const char *types[] = { "MoveTo", "LineTo", "CurveTo", "CurveToData" };
+
+                for ( int i = 0; i < path.elementCount(); i++ )
+                {
+                    debug << Qt::endl << "   ";
+
+                    const auto el = path.elementAt(i);
+                    debug << types[ el.type] << el.x << el.y;
+                }
+
+                break;
+            }
+            case QskPainterCommand::Pixmap:
+            {
+                const auto& pixmapData = *command.pixmapData();
+
+                debug << Qt::endl << " Pixmap:"; 
+                debug << Qt::endl << "  " << pixmapData.pixmap;
+                debug << Qt::endl << "  Rect:" << pixmapData.rect;
+                debug << Qt::endl << "  SubRect:" << pixmapData.subRect;
+                break;
+            }
+            case QskPainterCommand::Image:
+            {
+                const auto& imageData = *command.imageData();
+
+                debug << Qt::endl << " Image:";
+                debug << Qt::endl << "  " << imageData.image;
+                debug << Qt::endl << "  ConversionFlags" << imageData.flags;
+                debug << Qt::endl << "  Rect:" << imageData.rect;
+                debug << Qt::endl << "  SubRect:" << imageData.subRect;
+
+                break;
+            }
+            case QskPainterCommand::State:
+            {
+                const auto& stateData = *command.stateData();
+                const auto flags = stateData.flags;
+
+                debug << Qt::endl << " State:";
+
+                const char indent[] = "   ";
+
+                if ( flags & QPaintEngine::DirtyPen )
+                {
+                    debug << Qt::endl << indent;
+                    debug << "Pen:" << stateData.pen;
+                }
+
+                if ( flags & QPaintEngine::DirtyBrush )
+                {
+                    debug << Qt::endl << indent;
+                    debug << "Brush:" << stateData.brush;
+                }
+
+                if ( flags & QPaintEngine::DirtyBrushOrigin )
+                {
+                    debug << Qt::endl << indent;
+                    debug << "BrushOrigin:" << stateData.brushOrigin;
+                }
+
+                if ( flags & QPaintEngine::DirtyFont )
+                {
+                    debug << Qt::endl << indent;
+                    debug << "Font:" << stateData.font;
+                }
+
+                if ( flags & QPaintEngine::DirtyBackground )
+                {
+                    debug << Qt::endl << indent;
+                    debug << "Background:"
+                        << stateData.backgroundMode
+                        << stateData.backgroundBrush;
+                }
+
+                if ( flags & QPaintEngine::DirtyTransform )
+                {
+                    debug << Qt::endl << indent;
+                    debug << "Transform: " << stateData.transform;
+                }
+
+                if ( flags & QPaintEngine::DirtyClipEnabled )
+                {
+                    debug << Qt::endl << indent;
+                    debug << "ClipEnabled: " << stateData.isClipEnabled;
+                }
+
+                if ( flags & QPaintEngine::DirtyClipRegion )
+                {
+                    debug << Qt::endl << indent;
+                    debug << "ClipRegion: " << stateData.clipOperation;
+                }
+
+                if ( flags & QPaintEngine::DirtyClipPath )
+                {
+                    debug << Qt::endl << indent;
+                    debug << "ClipPath:" << stateData.clipOperation;
+                }
+
+                if ( flags & QPaintEngine::DirtyHints )
+                {
+                    debug << Qt::endl << indent;
+                    debug << "RenderHints:" << stateData.renderHints;
+                }
+
+                if ( flags & QPaintEngine::DirtyCompositionMode )
+                {
+                    debug << Qt::endl << indent;
+                    debug << "CompositionMode:" << stateData.compositionMode;
+                }
+
+                if ( flags & QPaintEngine::DirtyOpacity )
+                {
+                    debug << Qt::endl << indent;
+                    debug << "Opacity:" << stateData.opacity;
+                }
+
+                break;
+            }
+            default:
+                break;
+        }
+    }
+
+    debug << "\n)";
+
+    return debug;
+}
+
+#endif

@@ -22,6 +22,7 @@ class QPainterPath;
 class QPaintEngine;
 class QPaintEngineState;
 class QTransform;
+class QDebug;
 
 class QSK_EXPORT QskGraphic : public QPaintDevice
 {
@@ -142,6 +143,10 @@ inline bool QskGraphic::operator!=( const QskGraphic& other ) const
 {
     return !( *this == other );
 }
+
+#ifndef QT_NO_DEBUG_STREAM
+QSK_EXPORT QDebug operator<<( QDebug, const QskGraphic& );
+#endif
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( QskGraphic::RenderHints )
 Q_DECLARE_OPERATORS_FOR_FLAGS( QskGraphic::CommandTypes )
