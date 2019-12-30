@@ -42,23 +42,20 @@ QPaintEngine::Type QskGraphicPaintEngine::type() const
 
 void QskGraphicPaintEngine::updateState( const QPaintEngineState& state )
 {
-    QskGraphic* graphic = qskGraphic( this );
-    if ( graphic )
+    if ( auto graphic = qskGraphic( this ) )
         graphic->updateState( state );
 }
 
 void QskGraphicPaintEngine::drawPath( const QPainterPath& path )
 {
-    QskGraphic* graphic = qskGraphic( this );
-    if ( graphic )
+    if ( auto graphic = qskGraphic( this ) )
         graphic->drawPath( path );
 }
 
 void QskGraphicPaintEngine::drawPolygon(
     const QPointF* points, int pointCount, PolygonDrawMode mode )
 {
-    QskGraphic* graphic = qskGraphic( this );
-    if ( graphic )
+    if ( auto graphic = qskGraphic( this ) )
     {
         QPainterPath path;
 
@@ -79,8 +76,7 @@ void QskGraphicPaintEngine::drawPolygon(
 void QskGraphicPaintEngine::drawPolygon(
     const QPoint* points, int pointCount, PolygonDrawMode mode )
 {
-    QskGraphic* graphic = qskGraphic( this );
-    if ( graphic )
+    if ( auto graphic = qskGraphic( this ) )
     {
         QPainterPath path;
 
@@ -101,8 +97,7 @@ void QskGraphicPaintEngine::drawPolygon(
 void QskGraphicPaintEngine::drawPixmap(
     const QRectF& rect, const QPixmap& pixmap, const QRectF& subRect )
 {
-    QskGraphic* graphic = qskGraphic( this );
-    if ( graphic )
+    if ( auto graphic = qskGraphic( this ) )
         graphic->drawPixmap( rect, pixmap, subRect );
 }
 
@@ -110,7 +105,6 @@ void QskGraphicPaintEngine::drawImage(
     const QRectF& rect, const QImage& image,
     const QRectF& subRect, Qt::ImageConversionFlags flags )
 {
-    QskGraphic* graphic = qskGraphic( this );
-    if ( graphic )
+    if ( auto graphic = qskGraphic( this ) )
         graphic->drawImage( rect, image, subRect, flags );
 }
