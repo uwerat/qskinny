@@ -29,6 +29,8 @@ class QSK_EXPORT QskGradientStop
     bool operator==( const QskGradientStop& ) const;
     bool operator!=( const QskGradientStop& ) const;
 
+    void setStop( qreal position, const QColor& color );
+
     qreal position() const;
     void setPosition( qreal position );
     void resetPosition();

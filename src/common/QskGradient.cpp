@@ -141,6 +141,12 @@ void QskGradientStop::resetColor()
     m_color = QColor();
 }
 
+void QskGradientStop::setStop( qreal position, const QColor& color )
+{
+    m_position = position;
+    m_color = color;
+}
+
 uint QskGradientStop::hash( uint seed ) const
 {
     uint hash = qHashBits( &m_position, sizeof( m_position ), seed );
