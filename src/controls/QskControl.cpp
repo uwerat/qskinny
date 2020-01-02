@@ -277,7 +277,7 @@ void QskControl::initSizePolicy(
     if ( horizontalPolicy == QskSizePolicy::Constrained
         && verticalPolicy == QskSizePolicy::Constrained )
     {
-        qWarning( "QskControl::initSizePolicy: conflicting constraints");
+        qWarning( "QskControl::initSizePolicy: conflicting constraints" );
     }
 }
 
@@ -293,7 +293,7 @@ void QskControl::setSizePolicy( QskSizePolicy policy )
         if ( policy.policy( Qt::Horizontal ) == QskSizePolicy::Constrained
             && policy.policy( Qt::Vertical ) == QskSizePolicy::Constrained )
         {
-            qWarning( "QskControl::setSizePolicy: conflicting constraints");
+            qWarning( "QskControl::setSizePolicy: conflicting constraints" );
         }
     }
 }
