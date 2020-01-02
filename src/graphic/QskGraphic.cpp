@@ -16,6 +16,11 @@
 #include <qpainterpath.h>
 #include <qpixmap.h>
 
+QSK_QT_PRIVATE_BEGIN
+#include <private/qpainter_p.h>
+#include <private/qpaintengineex_p.h>
+QSK_QT_PRIVATE_END
+
 static inline qreal qskDevicePixelRatio()
 {
     return qGuiApp ? qGuiApp->devicePixelRatio() : 1.0;
@@ -44,16 +49,18 @@ static bool qskHasScalablePen( const QPainter* painter )
 static QRectF qskStrokedPathRect(
     const QPainter* painter, const QPainterPath& path )
 {
+    const auto pen = painter->pen();
+
     QPainterPathStroker stroker;
-    stroker.setWidth( painter->pen().widthF() );
-    stroker.setCapStyle( painter->pen().capStyle() );
-    stroker.setJoinStyle( painter->pen().joinStyle() );
-    stroker.setMiterLimit( painter->pen().miterLimit() );
+    stroker.setWidth( pen.widthF() );
+    stroker.setCapStyle( pen.capStyle() );
+    stroker.setJoinStyle( pen.joinStyle() );
+    stroker.setMiterLimit( pen.miterLimit() );
 
     QRectF rect;
     if ( qskHasScalablePen( painter ) )
     {
-        QPainterPath stroke = stroker.createStroke( path );
+        const QPainterPath stroke = stroker.createStroke( path );
         rect = painter->transform().map( stroke ).boundingRect();
     }
     else
@@ -128,20 +135,20 @@ static inline void qskExecCommand(
         }
         case QskPainterCommand::Pixmap:
         {
-            const QskPainterCommand::PixmapData* data = cmd.pixmapData();
+            const auto data = cmd.pixmapData();
             painter->drawPixmap( data->rect, data->pixmap, data->subRect );
             break;
         }
         case QskPainterCommand::Image:
         {
-            const QskPainterCommand::ImageData* data = cmd.imageData();
+            const auto data = cmd.imageData();
             painter->drawImage( data->rect, data->image,
                 data->subRect, data->flags );
             break;
         }
         case QskPainterCommand::State:
         {
-            const QskPainterCommand::StateData* data = cmd.stateData();
+            const auto data = cmd.stateData();
 
             if ( data->flags & QPaintEngine::DirtyPen )
                 painter->setPen( colorFilter.substituted( data->pen ) );
@@ -182,22 +189,20 @@ static inline void qskExecCommand(
 
             if ( data->flags & QPaintEngine::DirtyHints )
             {
-                const QPainter::RenderHints hints = data->renderHints;
+#if 1
+                auto state = QPainterPrivate::get( painter )->state;
+                state->renderHints = data->renderHints;
 
-                painter->setRenderHint( QPainter::Antialiasing,
-                    hints.testFlag( QPainter::Antialiasing ) );
-
-                painter->setRenderHint( QPainter::TextAntialiasing,
-                    hints.testFlag( QPainter::TextAntialiasing ) );
-
-                painter->setRenderHint( QPainter::SmoothPixmapTransform,
-                    hints.testFlag( QPainter::SmoothPixmapTransform ) );
-
-                painter->setRenderHint( QPainter::HighQualityAntialiasing,
-                    hints.testFlag( QPainter::HighQualityAntialiasing ) );
-
-                painter->setRenderHint( QPainter::NonCosmeticDefaultPen,
-                    hints.testFlag( QPainter::NonCosmeticDefaultPen ) );
+                // to trigger internal updates we have to set at least one flag
+                const auto hint = QPainter::SmoothPixmapTransform;
+                painter->setRenderHint( hint, data->renderHints.testFlag( hint ) );
+#else
+                for ( int i = 0; i < 8; i++ )
+                {
+                    const auto hint = static_cast< QPainter::RenderHint >( 1 << i );
+                    painter->setRenderHint( hint, data->renderHints.testFlag( hint ) );
+                }
+#endif
             }
 
             if ( data->flags & QPaintEngine::DirtyCompositionMode )
@@ -694,7 +699,7 @@ void QskGraphic::render( QPainter* painter, const QRectF& rect,
     tr.scale( sx, sy );
     tr.translate( -pr.x(), -pr.y() );
 
-    const QTransform transform = painter->transform();
+    const auto transform = painter->transform();
 
     painter->setTransform( tr, true );
 
