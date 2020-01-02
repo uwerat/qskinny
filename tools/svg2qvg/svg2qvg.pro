@@ -23,6 +23,7 @@ standalone {
     DEFINES += QSK_STANDALONE
     QSK_CONFIG -= QskDll
 
+    QT += gui-private
 }
 else {
 
