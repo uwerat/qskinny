@@ -1022,14 +1022,12 @@ QskGraphic QskGraphic::fromPixmap( const QPixmap& pixmap )
 
 QDebug operator<<( QDebug debug, const QskGraphic& graphic )
 {
-    // Qt::endl
-
     QDebugStateSaver saver( debug );
 
     debug << "Graphic" << '(';
-    debug << Qt::endl << " boundingRect:" << graphic.boundingRect();
-    debug << Qt::endl << " controlPointsRect:" << graphic.boundingRect();
-    debug << Qt::endl << " commandTypes:" << graphic.commandTypes();
+    debug << "\n boundingRect:" << graphic.boundingRect();
+    debug << "\n controlPointsRect:" << graphic.boundingRect();
+    debug << "\n commandTypes:" << graphic.commandTypes();
 
     for ( const auto command : graphic.commands() )
     {
@@ -1039,13 +1037,13 @@ QDebug operator<<( QDebug debug, const QskGraphic& graphic )
             {
                 const auto& path = *command.path();
 
-                debug << Qt::endl << " Path(" << path.elementCount() << ")";
+                debug << "\n Path(" << path.elementCount() << ")";
 
                 const char *types[] = { "MoveTo", "LineTo", "CurveTo", "CurveToData" };
 
                 for ( int i = 0; i < path.elementCount(); i++ )
                 {
-                    debug << Qt::endl << "   ";
+                    debug << "\n   ";
 
                     const auto el = path.elementAt(i);
                     debug << types[ el.type] << el.x << el.y;
@@ -1057,21 +1055,21 @@ QDebug operator<<( QDebug debug, const QskGraphic& graphic )
             {
                 const auto& pixmapData = *command.pixmapData();
 
-                debug << Qt::endl << " Pixmap:"; 
-                debug << Qt::endl << "  " << pixmapData.pixmap;
-                debug << Qt::endl << "  Rect:" << pixmapData.rect;
-                debug << Qt::endl << "  SubRect:" << pixmapData.subRect;
+                debug << "\n Pixmap:"; 
+                debug << "\n  " << pixmapData.pixmap;
+                debug << "\n  Rect:" << pixmapData.rect;
+                debug << "\n  SubRect:" << pixmapData.subRect;
                 break;
             }
             case QskPainterCommand::Image:
             {
                 const auto& imageData = *command.imageData();
 
-                debug << Qt::endl << " Image:";
-                debug << Qt::endl << "  " << imageData.image;
-                debug << Qt::endl << "  ConversionFlags" << imageData.flags;
-                debug << Qt::endl << "  Rect:" << imageData.rect;
-                debug << Qt::endl << "  SubRect:" << imageData.subRect;
+                debug << "\n Image:";
+                debug << "\n  " << imageData.image;
+                debug << "\n  ConversionFlags" << imageData.flags;
+                debug << "\n  Rect:" << imageData.rect;
+                debug << "\n  SubRect:" << imageData.subRect;
 
                 break;
             }
@@ -1080,82 +1078,70 @@ QDebug operator<<( QDebug debug, const QskGraphic& graphic )
                 const auto& stateData = *command.stateData();
                 const auto flags = stateData.flags;
 
-                debug << Qt::endl << " State:";
+                debug << "\n State:";
 
-                const char indent[] = "   ";
+                const char indent[] = "\n   ";
 
                 if ( flags & QPaintEngine::DirtyPen )
                 {
-                    debug << Qt::endl << indent;
-                    debug << "Pen:" << stateData.pen;
+                    debug << indent << "Pen:" << stateData.pen;
                 }
 
                 if ( flags & QPaintEngine::DirtyBrush )
                 {
-                    debug << Qt::endl << indent;
-                    debug << "Brush:" << stateData.brush;
+                    debug << indent << "Brush:" << stateData.brush;
                 }
 
                 if ( flags & QPaintEngine::DirtyBrushOrigin )
                 {
-                    debug << Qt::endl << indent;
-                    debug << "BrushOrigin:" << stateData.brushOrigin;
+                    debug << indent << "BrushOrigin:" << stateData.brushOrigin;
                 }
 
                 if ( flags & QPaintEngine::DirtyFont )
                 {
-                    debug << Qt::endl << indent;
-                    debug << "Font:" << stateData.font;
+                    debug << indent << "Font:" << stateData.font;
                 }
 
                 if ( flags & QPaintEngine::DirtyBackground )
                 {
-                    debug << Qt::endl << indent;
-                    debug << "Background:"
+                    debug << indent << "Background:"
                         << stateData.backgroundMode
                         << stateData.backgroundBrush;
                 }
 
                 if ( flags & QPaintEngine::DirtyTransform )
                 {
-                    debug << Qt::endl << indent;
-                    debug << "Transform: " << stateData.transform;
+                    debug << indent << "Transform: " << stateData.transform;
                 }
 
                 if ( flags & QPaintEngine::DirtyClipEnabled )
                 {
-                    debug << Qt::endl << indent;
-                    debug << "ClipEnabled: " << stateData.isClipEnabled;
+                    debug << indent << "ClipEnabled: " << stateData.isClipEnabled;
                 }
 
                 if ( flags & QPaintEngine::DirtyClipRegion )
                 {
-                    debug << Qt::endl << indent;
-                    debug << "ClipRegion: " << stateData.clipOperation;
+                    debug << indent << "ClipRegion: " << stateData.clipOperation;
                 }
 
                 if ( flags & QPaintEngine::DirtyClipPath )
                 {
-                    debug << Qt::endl << indent;
-                    debug << "ClipPath:" << stateData.clipOperation;
+                    debug << indent << "ClipPath:" << stateData.clipOperation;
                 }
 
                 if ( flags & QPaintEngine::DirtyHints )
                 {
-                    debug << Qt::endl << indent;
-                    debug << "RenderHints:" << stateData.renderHints;
+                    debug << indent << "RenderHints:" << stateData.renderHints;
                 }
 
                 if ( flags & QPaintEngine::DirtyCompositionMode )
                 {
-                    debug << Qt::endl << indent;
-                    debug << "CompositionMode:" << stateData.compositionMode;
+                    debug << indent << "CompositionMode:" << stateData.compositionMode;
                 }
 
                 if ( flags & QPaintEngine::DirtyOpacity )
                 {
-                    debug << Qt::endl << indent;
-                    debug << "Opacity:" << stateData.opacity;
+                    debug << indent << "Opacity:" << stateData.opacity;
                 }
 
                 break;
