@@ -145,6 +145,17 @@ inline QColor QskGradient::endColor() const
     return ( m_stops.size() >= 2 ) ? m_stops.last().color() : QColor();
 }
 
+inline QskGradientStop::QskGradientStop()
+    : m_position( -1.0 )
+{
+}
+
+inline QskGradientStop::QskGradientStop( qreal position, const QColor& color )
+    : m_position( position )
+    , m_color( color )
+{
+}
+
 inline qreal QskGradientStop::position() const
 {
     return m_position;

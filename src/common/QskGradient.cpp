@@ -110,17 +110,6 @@ static inline QVector< QskGradientStop > qskExpandedStops(
     return stops;
 }
 
-QskGradientStop::QskGradientStop()
-    : m_position( -1.0 )
-{
-}
-
-QskGradientStop::QskGradientStop( qreal position, const QColor& color )
-    : m_position( position )
-    , m_color( color )
-{
-}
-
 void QskGradientStop::setPosition( qreal position )
 {
     m_position = position;
@@ -249,16 +238,18 @@ QskGradient::Orientation QskGradient::orientation() const
 
 void QskGradient::setColor( const QColor& color )
 {
-    setColors( color, color );
+    m_stops.reserve( 2 );
+
+    m_stops.append( QskGradientStop( 0.0, color ) );
+    m_stops.append( QskGradientStop( 1.0, color ) );
 }
 
 void QskGradient::setColors( const QColor& startColor, const QColor& stopColor )
 {
-    m_stops.resize( 2 );
-    m_stops[ 0 ].setPosition( 0.0 );
-    m_stops[ 0 ].setColor( startColor );
-    m_stops[ 1 ].setPosition( 1.0 );
-    m_stops[ 1 ].setColor( stopColor );
+    m_stops.reserve( 2 );
+
+    m_stops.append( QskGradientStop( 0.0, startColor ) );
+    m_stops.append( QskGradientStop( 1.0, stopColor ) );
 }
 
 void QskGradient::setStops( const QVector< QskGradientStop >& stops )
