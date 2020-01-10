@@ -94,9 +94,9 @@ class QskInputGrabber::PrivateData final : public QQuickItemChangeListener
         bool doUpdate = false;
 
         if ( item == itemAbove )
-            doUpdate = newRect.size() != oldRect.size();
-        else
             doUpdate = newRect.topLeft() != oldRect.topLeft();
+        else
+            doUpdate = newRect.size() != oldRect.size();
 
         if ( doUpdate )
             m_grabber->updateGeometry();
