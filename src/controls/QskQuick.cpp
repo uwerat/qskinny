@@ -16,6 +16,13 @@ QSK_QT_PRIVATE_END
 #include <qpa/qplatforminputcontext.h>
 #include <qpa/qplatformintegration.h>
 
+QSizeF qskItemSize( const QQuickItem* item )
+{
+    // obsolete for Qt >= 5.10
+    auto d = QQuickItemPrivate::get( item );
+    return QSizeF( d->width, d->height );
+}
+
 QRectF qskItemRect( const QQuickItem* item )
 {
     auto d = QQuickItemPrivate::get( item );

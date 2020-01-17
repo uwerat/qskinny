@@ -57,7 +57,9 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
 
     QRectF geometry() const;
     QRectF rect() const;
+#if QT_VERSION < QT_VERSION_CHECK( 5, 10, 0 )
     QSizeF size() const;
+#endif
     QSizeF implicitSize() const;
 
     void setGeometry( qreal x, qreal y, qreal width, qreal height );
@@ -148,10 +150,14 @@ inline void QskQuickItem::setGeometry( const QRectF& rect )
     setGeometry( rect.x(), rect.y(), rect.width(), rect.height() );
 }
 
+#if QT_VERSION < QT_VERSION_CHECK( 5, 10, 0 )
+
 inline QSizeF QskQuickItem::size() const
 {
     return QSizeF( width(), height() );
 }
+
+#endif
 
 inline QSizeF QskQuickItem::implicitSize() const
 {
