@@ -16,10 +16,13 @@
 #include <QskObjectCounter.h>
 #include <QskPushButton.h>
 #include <QskScrollArea.h>
+#include <QskQuick.h>
 #include <QskWindow.h>
 
 #include <QGuiApplication>
 #include <QPainter>
+
+#define HIDE_NODES 1
 
 const int gridSize = 20;
 const int thumbnailSize = 150;
@@ -65,12 +68,23 @@ class Thumbnail : public QskPushButton
     Thumbnail( const QColor& color, int shape, QQuickItem* parentItem )
         : QskPushButton( parentItem )
     {
-        using namespace SkinnyShapeFactory;
-
         const QSizeF size( thumbnailSize, thumbnailSize );
 
-        QskGraphic graphic;
+        setGraphic( thumbnailGraphic( color, shape, size ) );
+        setFixedSize( size );
 
+        setFlat( true );
+    }
+
+  private:
+    QskGraphic thumbnailGraphic( const QColor& color,
+        int shape, const QSizeF& size ) const
+    {
+        const auto path = SkinnyShapeFactory::shapePath(
+            static_cast< SkinnyShapeFactory::Shape >( shape ), size );
+
+        QskGraphic graphic;
+        
         QPen pen( Qt::black, 3 );
         pen.setJoinStyle( Qt::MiterJoin );
         pen.setCosmetic( true );
@@ -80,13 +94,10 @@ class Thumbnail : public QskPushButton
         painter.setPen( pen );
         painter.setBrush( color );
 
-        painter.drawPath( shapePath( static_cast< Shape >( shape ), size ) );
+        painter.drawPath( path );
         painter.end();
 
-        setGraphic( graphic );
-        setFixedSize( size );
-
-        setFlat( true );
+        return graphic;
     }
 };
 
@@ -104,7 +115,67 @@ class IconGrid : public QskLinearBox
             for ( int row = 0; row < gridSize; row++ )
                 ( void ) new Thumbnail( randomColor(), randomShape(), this );
         }
+
+#if HIDE_NODES
+        /*
+            When having too many nodes, the scene graph becomes horribly slow.
+            So we explicitely hide all items outside the visible area
+            ( see updateVisibilities below ) and make use of the DeferredUpdate and
+            CleanupOnVisibility features of QskQuickItem.
+         */
+        setSize( sizeConstraint() );
+        updateLayout(); // so that every item has its initial geometry
+
+        for ( int i = 0; i < count(); i++ )
+        {
+            if ( auto item = qobject_cast< QskControl* > ( itemAtIndex( i ) ) )
+            {
+                // to support the optimizations in ScrollArea::updateVisibilities
+                item->setLayoutHint( RetainSizeWhenHidden, true );
+                item->setVisible( false );
+            }
+        }
+#endif
     }
+
+#if HIDE_NODES
+    void updateVisibilities( const QRectF& viewPort )
+    {
+        if ( !isEmpty() && viewPort != m_viewPort )
+        {
+            setItemsVisible( m_viewPort, false );
+            setItemsVisible( viewPort, true );
+
+            m_viewPort = viewPort;
+        }
+    }
+
+  private:
+    void setItemsVisible( const QRectF& rect, bool on )
+    {
+        const int dim = dimension();
+
+        // we know, that all items have the same size
+        const auto itemSize = qskItemSize( itemAtIndex( 0 ) );
+
+        const int rowMin = rect.top() / ( itemSize.height() + spacing() );
+        const int rowMax = rect.bottom() / ( itemSize.height() + spacing() );
+
+        const int colMin = rect.left() / ( itemSize.width() + spacing() );
+        const int colMax = rect.right() / ( itemSize.height() + spacing() );
+
+        for ( int row = rowMin; row <= rowMax; row++ )
+        {
+            for ( int col = colMin; col <= colMax; col++ )
+            {
+                if ( auto item = itemAtIndex( row * dim + col ) )
+                    item->setVisible( on );
+            }
+        }
+    }
+
+    QRectF m_viewPort;
+#endif
 };
 
 class ScrollArea : public QskScrollArea
@@ -129,6 +200,29 @@ class ScrollArea : public QskScrollArea
         setBoxShapeHint( HorizontalScrollHandle, 8 );
 
         setFlickRecognizerTimeout( 300 );
+
+        connect( this, &QskScrollView::scrollPosChanged,
+                 this, &ScrollArea::updateVisibilities );
+    }
+
+  protected:
+    void geometryChanged( const QRectF& newRect, const QRectF& oldRect ) override
+    {
+        QskScrollArea::geometryChanged( newRect, oldRect );
+        updateVisibilities();
+    }
+
+  private:
+    void updateVisibilities()
+    {
+#if HIDE_NODES
+        const auto box = static_cast< IconGrid* >( scrolledItem() );
+        if ( box )
+        {
+            const QRectF viewPort( scrollPos(), viewContentsRect().size() );
+            box->updateVisibilities( viewPort );
+        }
+#endif
     }
 };
 
@@ -153,6 +247,8 @@ int main( int argc, char* argv[] )
         This example also shows, that blocking of the scene graph node creation
         ( QskControl::DeferredUpdate + QskControl::CleanupOnVisibility )
         could be improved to also respect being inside the window or a clip region.
+        To have a similar effect with what is possible today, the code
+        explicitely hide/show(s) the buttons out/inside the viewport.
 
         But here we only want to demonstrate how QskScrollArea works.
      */
