@@ -262,7 +262,7 @@ class QskInputPanel::PrivateData
     QLocale predictorLocale;
     QPointer< QskTextPredictor > predictor;
 
-    Qt::InputMethodHints inputHints = 0;
+    Qt::InputMethodHints inputHints;
     bool hasPredictorLocale = false;
 };
 
@@ -308,7 +308,7 @@ void QskInputPanel::attachInputItem( QQuickItem* item )
             m_data->predictor->reset();
 
         m_data->keyProcessor.reset();
-        m_data->inputHints = 0;
+        m_data->inputHints = Qt::InputMethodHints();
 
         attachItem( item );
 
