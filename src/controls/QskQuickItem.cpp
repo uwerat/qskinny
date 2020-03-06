@@ -690,6 +690,27 @@ void QskQuickItem::itemChange( QQuickItem::ItemChange change,
             }
 #endif
 
+#if 1
+            if ( value.window == nullptr )
+            {
+                Q_D( QskQuickItem );
+
+                if( d->focus )
+                {
+                    /*
+                        The focus flag is not cleared, when removing an
+                        item from the window. In situations where the item gets
+                        reinserted into the window - or transferred to another one -
+                        we might run into situations, where 2 items in the same scope
+                        have the "focus" flag being set.
+                        A better solution might be to check the flag when reinserting
+                        into a window ...
+                     */
+                    d->focus = false;
+                }
+            }
+#endif
+
             QskWindowChangeEvent event( oldWindow, value.window );
             QCoreApplication::sendEvent( this, &event );
 
