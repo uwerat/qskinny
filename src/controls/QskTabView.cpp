@@ -66,6 +66,9 @@ QskTabView::QskTabView( Qsk::Position tabPosition, QQuickItem* parent )
     connect( m_data->tabBar, &QskTabBar::currentIndexChanged,
         this, &QskTabView::currentIndexChanged );
 
+    connect( m_data->tabBar, &QskTabBar::countChanged,
+        this, &QskTabView::countChanged );
+
     connect( m_data->tabBar, &QskTabBar::positionChanged,
         this, &QskTabView::tabPositionChanged );
 }
@@ -152,10 +155,10 @@ void QskTabView::removeTab( int index )
     }
 }
 
-void QskTabView::clear()
+void QskTabView::clear( bool autoDelete )
 {
-    m_data->tabBar->clear();
-    m_data->stackBox->clear();
+    m_data->tabBar->clear( autoDelete );
+    m_data->stackBox->clear( autoDelete );
 }
 
 QskTabButton* QskTabView::buttonAt( int index ) const
