@@ -19,6 +19,19 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qsgrenderer_p.h>
 QSK_QT_PRIVATE_END
 
+#include <qpa/qwindowsysteminterface.h>
+#include <QGuiApplication>
+
+#define QSK_DEBUG_RENDER_TIMING
+
+#ifdef QSK_DEBUG_RENDER_TIMING
+
+#include <qelapsedtimer.h>
+#include <qloggingcategory.h>
+Q_LOGGING_CATEGORY( logTiming, "qsk.window.timing", QtCriticalMsg )
+ 
+#endif
+
 static void qskResolveLocale( QskWindow* );
 static bool qskEnforcedSkin = false;
 
@@ -107,6 +120,10 @@ class QskWindowPrivate : public QQuickWindowPrivate
     {
     }
 
+#ifdef QSK_DEBUG_RENDER_TIMING
+    QElapsedTimer renderInterval;
+#endif
+
     ChildListener contentItemListener;
     QLocale locale;
 
@@ -145,6 +162,14 @@ QskWindow::QskWindow( QWindow* parent )
         connect( this, &QQuickWindow::afterAnimating, this, &QskWindow::enforceSkin );
 }
 
+QskWindow::QskWindow(QQuickRenderControl *renderControl , QWindow *parent)
+    : QskWindow( parent )
+{
+    auto* d = static_cast< QskWindowPrivate* >( QQuickWindowPrivate::get( this ) );
+    d->renderControl = renderControl;
+    d->init( this, renderControl );
+}
+
 QskWindow::~QskWindow()
 {
     // When being used from Qml the item destruction would run in the most
@@ -162,6 +187,23 @@ QskWindow::~QskWindow()
 
     for ( auto& item : qskAsConst( items ) )
         delete item;
+}
+
+void QskWindow::setScreen( const QString& name )
+{
+    if ( !name.isEmpty() )
+    {
+        for ( auto screen : QGuiApplication::screens() )
+        {
+            if ( screen->name() == name )
+            {
+                setScreen( screen );
+                return;
+            }
+        }
+    }
+
+    setScreen( QGuiApplication::primaryScreen() );
 }
 
 void QskWindow::resizeF( const QSizeF& size )
@@ -271,12 +313,30 @@ bool QskWindow::event( QEvent* event )
         {
             if ( event->isAccepted() )
             {
-                Q_D( const QskWindow );
                 if ( d->deleteOnClose )
                     deleteLater();
             }
             break;
         }
+#ifdef QSK_DEBUG_RENDER_TIMING
+        case QEvent::Timer:
+        {
+            if ( logTiming().isDebugEnabled() )
+            {
+                if ( static_cast<QTimerEvent *>( event )->timerId() == d->updateTimer )
+                {
+                    if ( !d->renderInterval.isValid() )
+                        d->renderInterval.start();
+
+                    qCDebug( logTiming() ) << "update timer - elapsed"
+                        << d->renderInterval.restart() << this;
+                }
+            }
+
+            break;
+        }
+#endif
+
         default:
             break;
     }
@@ -522,7 +582,7 @@ void QskWindow::setCustomRenderMode( const char* mode )
          */
 
         if ( m.isEmpty() != d->customRenderMode.isEmpty() )
-            scheduleRenderJob( new RenderJob( this, m ), AfterSwapStage );
+            scheduleRenderJob( new RenderJob( this, m ), AfterRenderingStage );
         else
             d->customRenderMode = m;
 

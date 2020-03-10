@@ -35,7 +35,12 @@ class QSK_EXPORT QskWindow : public QQuickWindow
     };
 
     QskWindow( QWindow* parent = nullptr );
+    QskWindow( QQuickRenderControl* renderControl, QWindow* parent = nullptr );
+
     ~QskWindow() override;
+
+    using Inherited::setScreen;
+    void setScreen( const QString& ); 
 
     bool deleteOnClose() const;
     void setDeleteOnClose( bool );
