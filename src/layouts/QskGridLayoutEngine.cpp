@@ -581,7 +581,7 @@ void QskGridLayoutEngine::layoutItems()
     {
         auto item = element.item();
 
-        if ( item && qskIsVisibleToParent( item ) )
+        if ( requiresAdjustment( item ) )
         {
             const auto grid = m_data->effectiveGrid( element );
             layoutItem( item, grid );

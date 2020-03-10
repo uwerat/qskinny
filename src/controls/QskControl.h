@@ -59,7 +59,14 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     enum LayoutHint
     {
         // How to be treated by layouts
-        RetainSizeWhenHidden = 1 << 0
+        RetainSizeWhenHidden = 1 << 0,
+
+        /*
+            Adjust the item even, even when being hidden
+            Depending on the type of layout the value only works
+            in combination with RetainSizeWhenHidden
+         */
+        LayoutOutWhenHidden = 1 << 1
     };
 
     Q_ENUM( LayoutHint )

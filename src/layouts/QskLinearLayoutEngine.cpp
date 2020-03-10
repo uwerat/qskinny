@@ -348,7 +348,7 @@ void QskLinearLayoutEngine::layoutItems()
 
         if ( auto item = element.item() )
         {
-            if ( qskIsVisibleToParent( item ) )
+            if ( requiresAdjustment( item ) )
             {
                 const QRect grid( col, row, 1, 1 );
                 layoutItem( item, grid );

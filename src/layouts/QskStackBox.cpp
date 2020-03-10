@@ -331,6 +331,10 @@ void QskStackBox::updateLayout()
     if ( maybeUnresized() )
         return;
 
+#if 1
+    // what about QskControl::LayoutOutWhenHidden
+#endif
+
     const auto index = m_data->currentIndex;
 
     if ( index >= 0 )
