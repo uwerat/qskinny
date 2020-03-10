@@ -22,7 +22,7 @@ QSK_QT_PRIVATE_END
 #include <qpa/qwindowsysteminterface.h>
 #include <QGuiApplication>
 
-#define QSK_DEBUG_RENDER_TIMING
+// #define QSK_DEBUG_RENDER_TIMING
 
 #ifdef QSK_DEBUG_RENDER_TIMING
 
@@ -323,6 +323,7 @@ bool QskWindow::event( QEvent* event )
         {
             if ( logTiming().isDebugEnabled() )
             {
+                // updateTimer was removed with Qt 5.??? TODO ...
                 if ( static_cast<QTimerEvent *>( event )->timerId() == d->updateTimer )
                 {
                     if ( !d->renderInterval.isValid() )
