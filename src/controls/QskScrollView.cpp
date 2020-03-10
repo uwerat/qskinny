@@ -294,7 +294,7 @@ void QskScrollView::ensureVisible( const QPointF& pos )
 
     const QPoint newPos( x - margin, y - margin );
 
-    if ( isInitiallyPainted() )
+    if( isInitiallyPainted() && window() )
         scrollTo( newPos );
     else
         setScrollPos( newPos );
@@ -338,7 +338,7 @@ void QskScrollView::ensureVisible( const QRectF& itemRect )
 
     const QPoint newPos( x - margin, y - margin );
 
-    if ( isInitiallyPainted() )
+    if( isInitiallyPainted() && window() )
         scrollTo( newPos );
     else
         setScrollPos( newPos );
