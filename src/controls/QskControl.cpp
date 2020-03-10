@@ -45,8 +45,12 @@ QskControl::~QskControl()
 #if defined( QT_DEBUG )
     if ( auto w = window() )
     {
-        // to catch suicide situations as a result of mouse clicks
-        Q_ASSERT( this != w->mouseGrabberItem() );
+        if( this == w->mouseGrabberItem() )
+        {
+            // to catch suicide situations as a result of mouse clicks
+            qWarning() << "QskControl::~QskControl: probably suicide situation detected, control is the mouse grabber item" << this;
+        }
+
     }
 #endif
 }
@@ -901,6 +905,7 @@ void QskControl::updateItemPolish()
                     We don't want to resize invisible children, but then
                     we would need to set up connections to know when a child
                     becomes visible. So we don't use qskIsVisibleToLayout here.
+                    And what about using QskControl::LayoutOutWhenHidden ?
                  */
                 if ( !qskIsTransparentForPositioner( child ) )
                 {
