@@ -138,6 +138,7 @@ HEADERS += \
     controls/QskQuickItemPrivate.h \
     controls/QskRangeControl.h \
     controls/QskScrollArea.h \
+    controls/QskScrollBox.h \
     controls/QskScrollView.h \
     controls/QskScrollViewSkinlet.h \
     controls/QskSeparator.h \
@@ -205,6 +206,7 @@ SOURCES += \
     controls/QskQuickItemPrivate.cpp \
     controls/QskRangeControl.cpp \
     controls/QskScrollArea.cpp \
+    controls/QskScrollBox.cpp \
     controls/QskScrollView.cpp \
     controls/QskScrollViewSkinlet.cpp \
     controls/QskSeparator.cpp \
