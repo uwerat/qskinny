@@ -50,7 +50,7 @@ class QSK_EXPORT QskTabView : public QskControl
     int insertTab( int index, const QString&, QQuickItem* );
 
     void removeTab( int index );
-    void clear();
+    void clear( bool autoDelete = false );
 
     QQuickItem* itemAt( int index ) const;
     QskTabButton* buttonAt( int index ) const;
