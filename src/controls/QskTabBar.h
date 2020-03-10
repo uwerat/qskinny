@@ -53,7 +53,7 @@ class QSK_EXPORT QskTabBar : public QskBox
     Q_INVOKABLE int insertTab( int index, QskTabButton* );
 
     Q_INVOKABLE void removeTab( int index );
-    Q_INVOKABLE void clear();
+    Q_INVOKABLE void clear( bool autoDelete = false );
 
     bool isTabEnabled( int index ) const;
     void setTabEnabled( int index, bool );

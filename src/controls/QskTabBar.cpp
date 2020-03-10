@@ -269,13 +269,13 @@ void QskTabBar::removeTab( int index )
     }
 }
 
-void QskTabBar::clear()
+void QskTabBar::clear( bool autoDelete )
 {
     if ( count() == 0 )
         return;
 
     const int idx = currentIndex();
-    m_data->buttonBox->clear();
+    m_data->buttonBox->clear( autoDelete );
 
     Q_EMIT countChanged( count() );
 
