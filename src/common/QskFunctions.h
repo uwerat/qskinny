@@ -11,7 +11,12 @@
 #include <qmargins.h>
 #include <qrect.h>
 
+class QScreen;
+
 QSK_EXPORT qreal qskDpiScaled( qreal value );
+QSK_EXPORT qreal qskGlobalScaleFactor();
+QSK_EXPORT bool qskHasPlatformWindowManagement();
+QSK_EXPORT QRect qskPlatformScreenGeometry( const QScreen* );
 
 QSK_EXPORT QRect qskAlignedRect( const QRect& outerRect,
     int width, int height, Qt::Alignment alignment );
