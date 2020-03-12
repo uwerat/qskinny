@@ -32,7 +32,15 @@ QSGTexture* QskGraphicTextureFactory::createTexture( QQuickWindow* window ) cons
     const auto flags = static_cast< QQuickWindow::CreateTextureOptions >(
         QQuickWindow::TextureHasAlphaChannel | QQuickWindow::TextureOwnsGLTexture );
 
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 14, 0 )
+    const int nativeLayout = 0; // VkImageLayout in case of Vulkan
+
+    return window->createTextureFromNativeObject( 
+        QQuickWindow::NativeObjectTexture, &textureId, nativeLayout,
+        m_size, flags );
+#else
     return window->createTextureFromId( textureId, m_size, flags );
+#endif
 }
 
 QSize QskGraphicTextureFactory::textureSize() const

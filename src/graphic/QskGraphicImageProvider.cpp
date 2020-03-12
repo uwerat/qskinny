@@ -10,7 +10,7 @@
 
 QskGraphicImageProvider::QskGraphicImageProvider(
         const QString& providerId, ImageType type )
-    : QQuickImageProvider( type, 0 )
+    : QQuickImageProvider( type )
     , m_providerId( providerId )
 {
 }
