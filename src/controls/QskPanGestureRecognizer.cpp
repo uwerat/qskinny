@@ -31,10 +31,10 @@ static inline qreal qskDistance(
     const QPointF& from, const QPointF& to, Qt::Orientations orientations )
 {
     if ( orientations == Qt::Horizontal )
-        return to.x() - from.x();
+        return std::fabs( to.x() - from.x() );
 
     if ( orientations == Qt::Vertical )
-        return to.y() - from.y();
+        return std::fabs( to.y() - from.y() );
 
     const qreal dx = to.x() - from.x();
     const qreal dy = to.y() - from.y();
