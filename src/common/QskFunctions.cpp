@@ -5,7 +5,6 @@
 #include <qscreen.h>
 
 QSK_QT_PRIVATE_BEGIN
-#include <private/qhighdpiscaling_p.h>
 #include <private/qguiapplication_p.h>
 QSK_QT_PRIVATE_END
 
@@ -147,13 +146,6 @@ qreal qskDpiScaled( qreal value )
     return value * factor;
 }
 
-qreal qskGlobalScaleFactor()
-{
-    // The value of QT_SCALE_FACTOR
-    const QScreen* noScreen = nullptr;
-    return QHighDpiScaling::factor( noScreen );
-}
-
 bool qskHasPlatformWindowManagement()
 {
     if ( auto platform = QGuiApplicationPrivate::platformIntegration() )
@@ -169,3 +161,18 @@ QRect qskPlatformScreenGeometry( const QScreen* screen )
 
     return screen->handle()->geometry();
 }
+
+#if 0
+
+QSK_QT_PRIVATE_BEGIN
+#include <private/qhighdpiscaling_p.h>
+QSK_QT_PRIVATE_END
+
+qreal qskGlobalScaleFactor()
+{
+    // The value of QT_SCALE_FACTOR
+    const QScreen* noScreen = nullptr;
+    return QHighDpiScaling::factor( noScreen );
+}
+
+#endif

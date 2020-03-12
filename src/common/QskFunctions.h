@@ -14,7 +14,6 @@
 class QScreen;
 
 QSK_EXPORT qreal qskDpiScaled( qreal value );
-QSK_EXPORT qreal qskGlobalScaleFactor();
 QSK_EXPORT bool qskHasPlatformWindowManagement();
 QSK_EXPORT QRect qskPlatformScreenGeometry( const QScreen* );
 
