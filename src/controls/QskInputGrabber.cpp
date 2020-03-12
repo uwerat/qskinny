@@ -158,7 +158,12 @@ bool QskInputGrabber::event( QEvent* event )
         case QEvent::Wheel:
         {
             const auto ev = static_cast< QWheelEvent* >( event );
+
+#if QT_VERSION < 0x050e00
             doBlock = isBlocking( ev->posF() );
+#else
+            doBlock = isBlocking( ev->position() );
+#endif
             break;
         }
         case QEvent::HoverEnter:
