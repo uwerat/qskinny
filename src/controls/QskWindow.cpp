@@ -162,7 +162,7 @@ QskWindow::QskWindow( QWindow* parent )
         connect( this, &QQuickWindow::afterAnimating, this, &QskWindow::enforceSkin );
 }
 
-QskWindow::QskWindow(QQuickRenderControl *renderControl , QWindow *parent)
+QskWindow::QskWindow( QQuickRenderControl* renderControl, QWindow* parent )
     : QskWindow( parent )
 {
     auto* d = static_cast< QskWindowPrivate* >( QQuickWindowPrivate::get( this ) );
