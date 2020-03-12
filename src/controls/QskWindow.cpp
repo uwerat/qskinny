@@ -30,6 +30,12 @@ QSK_QT_PRIVATE_END
 #include <qloggingcategory.h>
 Q_LOGGING_CATEGORY( logTiming, "qsk.window.timing", QtCriticalMsg )
  
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 12, 0 )
+QSK_QT_PRIVATE_BEGIN
+#include <qpa/qplatformwindow_p.h>
+QSK_QT_PRIVATE_END
+#endif
+
 #endif
 
 static void qskResolveLocale( QskWindow* );
@@ -57,6 +63,28 @@ static QQuickItem* qskDefaultFocusItem( QQuickWindow* window )
 
     return window->contentItem()->nextItemInFocusChain( true );
 }
+
+#ifdef QSK_DEBUG_RENDER_TIMING
+static inline int qskUpdateTimerId( const QWindow* window )
+{
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 12, 0 )
+    class PlatformWindow : public QPlatformWindow
+    {
+      public:
+        int updateTimerId() const
+        {
+            return d_ptr->updateTimer.timerId();
+        }
+    };
+
+    auto platformWindow = static_cast< const PlatformWindow* >( window->handle() );
+    return platformWindow->updateTimerId();
+#else
+    auto w = const_cast< QWindow* >( window );
+    return QWindowPrivate::get( w )->updateTimer;
+#endif
+}
+#endif
 
 namespace
 {
@@ -323,8 +351,9 @@ bool QskWindow::event( QEvent* event )
         {
             if ( logTiming().isDebugEnabled() )
             {
-                // updateTimer was removed with Qt 5.??? TODO ...
-                if ( static_cast<QTimerEvent *>( event )->timerId() == d->updateTimer )
+                const int updateTimerId = qskUpdateTimerId( this );
+
+                if ( static_cast<QTimerEvent *>( event )->timerId() == updateTimerId )
                 {
                     if ( !d->renderInterval.isValid() )
                         d->renderInterval.start();
