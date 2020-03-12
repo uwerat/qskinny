@@ -210,13 +210,24 @@ QPointF QskScrollView::scrollOffset( const QWheelEvent* event ) const
 {
     QPointF offset;
 
-    if ( subControlRect( VerticalScrollBar ).contains( event->posF() ) )
+#if QT_VERSION < 0x050e00
+    const auto wheelPos = event->posF();
+    const auto wheelDelta = event->delta();
+#else
+    const auto wheelPos = event->position();
+
+    const QPoint delta = event->angleDelta();
+    const int wheelDelta = ( qAbs( delta.x() ) > qAbs( delta.y() ) )
+        ? delta.x() : delta.y();
+#endif
+
+    if ( subControlRect( VerticalScrollBar ).contains( wheelPos ) )
     {
-        offset.setY( event->delta() );
+        offset.setY( wheelDelta );
     }
-    else if ( subControlRect( HorizontalScrollBar ).contains( event->posF() ) )
+    else if ( subControlRect( HorizontalScrollBar ).contains( wheelPos ) )
     {
-        offset.setX( event->delta() );
+        offset.setX( wheelDelta );
     }
     else
     {
