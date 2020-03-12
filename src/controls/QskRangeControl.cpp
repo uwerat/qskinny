@@ -281,7 +281,15 @@ void QskRangeControl::wheelEvent( QWheelEvent* event )
     if ( isReadOnly() )
         return;
 
-    const int steps = event->delta() / QWheelEvent::DefaultDeltasPerStep;
+#if QT_VERSION < 0x050e00
+    const int wheelDelta = event->delta();
+#else
+    const auto delta = event->angleDelta();
+    const int wheelDelta = ( qAbs( delta.x() ) > qAbs( delta.y() ) )
+        ? delta.x() : delta.y();
+#endif
+
+    const int steps = wheelDelta / QWheelEvent::DefaultDeltasPerStep;
     setValue( m_data->value + steps * m_data->stepSize );
 }
 
