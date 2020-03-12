@@ -26,6 +26,8 @@ QSK_QT_PRIVATE_END
 
 #ifdef QSK_DEBUG_RENDER_TIMING
 
+// does not work with Qt >= 5.12 TODO ...
+
 #include <qelapsedtimer.h>
 #include <qloggingcategory.h>
 Q_LOGGING_CATEGORY( logTiming, "qsk.window.timing", QtCriticalMsg )
