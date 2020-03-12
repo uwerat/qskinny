@@ -328,7 +328,12 @@ void QskScrollBox::gestureEvent( QskGestureEvent* event )
 
 QPointF QskScrollBox::scrollOffset( const QWheelEvent* event ) const
 {
-    if ( viewContentsRect().contains( event->posF() ) )
+#if QT_VERSION < 0x050e00
+    const auto pos = event->posF();
+#else
+    const auto pos = event->position();
+#endif
+    if ( viewContentsRect().contains( pos ) )
     {
         /*
              Not sure if that code makes sense, but I don't have an input device
