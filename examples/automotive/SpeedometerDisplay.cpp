@@ -15,6 +15,8 @@
 #include <QTimer>
 #include <QtGlobal>
 
+#include <cstdlib>
+
 SpeedometerDisplay::SpeedometerDisplay( QQuickItem* parent )
     : QskControl( parent )
     , m_box( new QskLinearBox( Qt::Horizontal, this ) )
@@ -25,7 +27,7 @@ SpeedometerDisplay::SpeedometerDisplay( QQuickItem* parent )
     , m_fuelGauge( new Speedometer( m_box ) )
     , m_fuelGaugeText( new QskTextLabel( QStringLiteral( "fuel" ), m_fuelGauge ) )
 {
-    qsrand( static_cast< uint >( QTime::currentTime().msec() ) );
+    std::srand( static_cast< uint >( QTime::currentTime().msec() ) );
 
     setPolishOnResize( true );
 
@@ -67,7 +69,7 @@ SpeedometerDisplay::SpeedometerDisplay( QQuickItem* parent )
 
     connect( timer, &QTimer::timeout, this, [ this ]()
     {
-        auto speedometerValue = m_speedometer->value() + qrand() % 3 - 0.95;
+        auto speedometerValue = m_speedometer->value() + std::rand() % 3 - 0.95;
         m_speedometer->setValue( speedometerValue );
 
         auto fuelGaugeValue = 0.99997 * m_fuelGauge->value();

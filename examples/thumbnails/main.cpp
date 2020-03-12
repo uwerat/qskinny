@@ -22,6 +22,8 @@
 #include <QGuiApplication>
 #include <QPainter>
 
+#include <cstdlib>
+
 #define HIDE_NODES 1
 
 const int gridSize = 20;
@@ -53,13 +55,13 @@ static QColor randomColor()
         "DarkSlateGray"
     };
 
-    const int index = qrand() % int( ( sizeof( colors ) / sizeof( colors[ 0 ] ) ) );
+    const int index = std::rand() % int( ( sizeof( colors ) / sizeof( colors[ 0 ] ) ) );
     return QColor( colors[ index ] );
 }
 
 static int randomShape()
 {
-    return qrand() % SkinnyShapeFactory::ShapeCount;
+    return std::rand() % SkinnyShapeFactory::ShapeCount;
 }
 
 class Thumbnail : public QskPushButton
