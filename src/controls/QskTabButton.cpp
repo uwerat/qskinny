@@ -45,7 +45,8 @@ QskTabButton::QskTabButton( const QString& text, QQuickItem* parent )
     if ( parent )
         m_data->tabBar = qskFindTabBar( this );
 
-    initSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Fixed );
+    initSizePolicy( QskSizePolicy::MinimumExpanding,
+        QskSizePolicy::QskSizePolicy::MinimumExpanding );
 
     setCheckable( true );
     setExclusive( true );

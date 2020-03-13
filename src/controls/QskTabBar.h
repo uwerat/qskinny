@@ -23,6 +23,9 @@ class QSK_EXPORT QskTabBar : public QskBox
     Q_PROPERTY( bool autoScrollFocusButton READ autoScrollFocusButton
         WRITE setAutoScrollFocusedButton NOTIFY autoScrollFocusedButtonChanged FINAL )
 
+    Q_PROPERTY( bool autoFitTabs READ autoFitTabs
+        WRITE setAutoFitTabs NOTIFY autoFitTabsChanged FINAL )
+
     Q_PROPERTY( int count READ count NOTIFY countChanged FINAL )
 
     Q_PROPERTY( int currentIndex READ currentIndex
@@ -46,8 +49,11 @@ class QSK_EXPORT QskTabBar : public QskBox
 
     Qt::Orientation orientation() const;
 
-    void setAutoScrollFocusedButton( bool on );
+    void setAutoScrollFocusedButton( bool );
     bool autoScrollFocusButton() const;
+
+    void setAutoFitTabs( bool );
+    bool autoFitTabs() const;
 
     void ensureButtonVisible( const QskTabButton* );
 
@@ -95,6 +101,7 @@ class QSK_EXPORT QskTabBar : public QskBox
     void textOptionsChanged( const QskTextOptions& );
     void positionChanged( Qsk::Position );
     void autoScrollFocusedButtonChanged( bool );
+    void autoFitTabsChanged( bool );
 
   protected:
     void componentComplete() override;

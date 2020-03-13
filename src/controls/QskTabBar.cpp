@@ -22,6 +22,11 @@ static inline Qt::Orientation qskOrientation( int position )
         return Qt::Vertical;
 }
 
+static inline void qskTransposeSizePolicy( QskControl* control )
+{
+    control->setSizePolicy( control->sizePolicy().transposed() );
+}
+
 namespace
 {
     class ButtonBox final : public QskLinearBox
@@ -270,9 +275,11 @@ void QskTabBar::setPosition( Qsk::Position position )
 
     if ( orientation != m_data->buttonBox->orientation() )
     {
-        setSizePolicy( sizePolicy().transposed() );
+        qskTransposeSizePolicy( this );
 
         m_data->buttonBox->setOrientation( orientation );
+        qskTransposeSizePolicy( m_data->buttonBox );
+
         m_data->scrollBox->setOrientation( orientation );
     }
 
@@ -306,6 +313,34 @@ void QskTabBar::setAutoScrollFocusedButton( bool on )
 bool QskTabBar::autoScrollFocusButton() const
 {
     return m_data->scrollBox->autoScrollFocusItem();
+}
+
+void QskTabBar::setAutoFitTabs( bool on )
+{
+    const auto orientation = qskOrientation( m_data->position );
+    int policy = m_data->buttonBox->sizePolicy( orientation );
+
+    if ( ( policy & QskSizePolicy::GrowFlag ) != on )
+    {
+        if ( on )
+            policy |= QskSizePolicy::GrowFlag;
+        else
+            policy &= ~QskSizePolicy::GrowFlag;
+
+        // we need operators for QskSizePolicy::Policy: TODO ...
+        m_data->buttonBox->setSizePolicy(
+            orientation, static_cast< QskSizePolicy::Policy >( policy ) );
+
+        polish();
+
+        Q_EMIT autoFitTabsChanged( on );
+    }
+}
+
+bool QskTabBar::autoFitTabs() const
+{
+    const auto policy = m_data->buttonBox->sizePolicy( orientation() );
+    return ( policy & QskSizePolicy::GrowFlag );
 }
 
 void QskTabBar::setTextOptions( const QskTextOptions& options )

@@ -14,6 +14,7 @@
 #include <QskPushButton.h>
 #include <QskSkin.h>
 #include <QskTabButton.h>
+#include <QskTabBar.h>
 #include <QskTabView.h>
 #include <QskTextLabel.h>
 #include <QskWindow.h>
@@ -82,15 +83,25 @@ int main( int argc, char* argv[] )
     auto tabView = new TabView();
 
     auto rotateButton = new QskPushButton( "Rotate" );
-    rotateButton->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
     rotateButton->setFocus( true );
-    QObject::connect( rotateButton, &QskPushButton::clicked, tabView, &TabView::rotate );
+    QObject::connect( rotateButton, &QskPushButton::clicked,
+        tabView, &TabView::rotate );
+
+    auto autoFitButton = new QskPushButton( "Fit Tabs" );
+    autoFitButton->setCheckable( true );
+    QObject::connect( autoFitButton, &QskPushButton::toggled,
+        tabView, &QskTabView::setAutoFitTabs );
+
+    auto buttonBox = new QskLinearBox( Qt::Horizontal );
+    buttonBox->addItem( rotateButton );
+    buttonBox->addItem( autoFitButton );
+    buttonBox->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 
     auto layoutBox = new QskLinearBox( Qt::Vertical );
     layoutBox->setDefaultAlignment( Qt::AlignLeft );
     layoutBox->setMargins( 5 );
     layoutBox->setSpacing( 10 );
-    layoutBox->addItem( rotateButton );
+    layoutBox->addItem( buttonBox );
     layoutBox->addItem( tabView );
 
     auto focusIndicator = new QskFocusIndicator();
@@ -98,7 +109,7 @@ int main( int argc, char* argv[] )
     focusIndicator->setBoxBorderColorsHint( QskFocusIndicator::Panel, Qt::red );
 
     QskWindow window;
-    window.resize( 600, 400 );
+    window.resize( 800, 600 );
     window.addItem( layoutBox );
     window.addItem( focusIndicator );
 

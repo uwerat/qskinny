@@ -4,7 +4,10 @@
  *****************************************************************************/
 
 #include "QskSizePolicy.h"
-#include <algorithm>
+
+#ifndef QT_NO_DEBUG
+#include <qdebug.h>
+#endif
 
 QskSizePolicy::Policy QskSizePolicy::policy( Qt::Orientation orientation ) const
 {

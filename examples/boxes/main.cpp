@@ -366,6 +366,7 @@ class TabView : public QskTabView
         : QskTabView( parentItem )
     {
         setMargins( 10 );
+        setAutoFitTabs( true );
 
         auto* tab1 = new QskLinearBox( Qt::Horizontal, 5 );
 

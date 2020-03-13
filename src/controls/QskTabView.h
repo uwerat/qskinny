@@ -21,6 +21,9 @@ class QSK_EXPORT QskTabView : public QskControl
     Q_PROPERTY( Qsk::Position tabPosition READ tabPosition
         WRITE setTabPosition NOTIFY tabPositionChanged FINAL )
 
+    Q_PROPERTY( bool autoFitTabs READ autoFitTabs
+        WRITE setAutoFitTabs NOTIFY autoFitTabsChanged FINAL )
+
     Q_PROPERTY( Qt::Orientation orientation READ orientation )
 
     Q_PROPERTY( int count READ count NOTIFY countChanged FINAL )
@@ -43,6 +46,9 @@ class QSK_EXPORT QskTabView : public QskControl
 
     void setTabPosition( Qsk::Position );
     Qsk::Position tabPosition() const;
+
+    void setAutoFitTabs( bool );
+    bool autoFitTabs() const;
 
     Qt::Orientation orientation() const;
 
@@ -76,6 +82,7 @@ class QSK_EXPORT QskTabView : public QskControl
     void currentIndexChanged( int index );
     void countChanged( int );
     void tabPositionChanged( Qsk::Position );
+    void autoFitTabsChanged( bool );
 
   protected:
     bool event( QEvent* event ) override;
