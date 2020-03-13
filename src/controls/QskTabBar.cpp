@@ -123,29 +123,30 @@ namespace
 
         void updateLayout() override
         {
-            auto scrolledItem = this->scrolledItem();
+            auto box = buttonBox();
 
-            auto itemSize = viewContentsRect().size();
-            itemSize = qskConstrainedItemSize( scrolledItem, itemSize );
+            auto boxSize = viewContentsRect().size();
+            boxSize = qskConstrainedItemSize( box, boxSize );
 
-            scrolledItem->setSize( itemSize );
+            if ( auto box = buttonBox() )
+                box->setSize( boxSize );
 
             enableAutoTranslation( false );
 
-            setScrollableSize( itemSize );
+            setScrollableSize( boxSize );
             setScrollPos( scrollPos() );
 
             enableAutoTranslation( true );
 
-            translateItem();
+            translateButtonBox();
 
-            setClip( size().width() < itemSize.width()
-                || size().height() < itemSize.height() );
+            setClip( size().width() < boxSize.width()
+                || size().height() < boxSize.height() );
         }
 
         QSizeF layoutSizeHint( Qt::SizeHint which, const QSizeF& constraint ) const override
         {
-            auto hint = scrolledItem()->sizeConstraint( which, constraint );
+            auto hint = buttonBox()->sizeConstraint( which, constraint );
 
             if ( which == Qt::MinimumSize )
             {
@@ -161,9 +162,9 @@ namespace
 
       private:
 
-        inline QskControl* scrolledItem() const
+        inline QskLinearBox* buttonBox() const
         {
-            return qskControlCast( childItems().first() );
+            return qobject_cast< QskLinearBox* >( childItems().first() );
         }
 
         void enableAutoTranslation( bool on )
@@ -171,21 +172,21 @@ namespace
             if ( on )
             {
                 connect( this, &QskScrollBox::scrollPosChanged,
-                    this, &ScrollBox::translateItem );
+                    this, &ScrollBox::translateButtonBox );
             }
             else
             {
                 disconnect( this, &QskScrollBox::scrollPosChanged,
-                    this, &ScrollBox::translateItem );
+                    this, &ScrollBox::translateButtonBox );
             }
         }
 
-        void translateItem()
+        void translateButtonBox()
         {
-            if ( auto item = this->scrolledItem() )
+            if ( auto box = buttonBox() )
             {
                 const QPointF pos = viewContentsRect().topLeft() - scrollPos();
-                item->setPosition( pos );
+                box->setPosition( pos );
             }
         }
     };
@@ -266,9 +267,11 @@ void QskTabBar::setPosition( Qsk::Position position )
     m_data->position = position;
 
     const auto orientation = qskOrientation( position );
+
     if ( orientation != m_data->buttonBox->orientation() )
     {
-        setSizePolicy( sizePolicy( Qt::Vertical ), sizePolicy( Qt::Horizontal ) );
+        setSizePolicy( sizePolicy().transposed() );
+
         m_data->buttonBox->setOrientation( orientation );
         m_data->scrollBox->setOrientation( orientation );
     }
