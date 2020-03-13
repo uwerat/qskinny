@@ -250,11 +250,7 @@ QskTabBar::QskTabBar( Qsk::Position position, QQuickItem* parent )
 
     m_data->buttonBox = new ButtonBox( orientation, m_data->scrollBox );
     m_data->buttonBox->setSpacing( metric( QskTabBar::Panel | QskAspect::Spacing ) );
-
-#if 1
-    // We might want to have a mode, where the buttons are stretched: TODO ...
     m_data->buttonBox->setSizePolicy( QskSizePolicy::Maximum, QskSizePolicy::Maximum );
-#endif
 
     connect( this, &QskTabBar::currentIndexChanged,
         m_data->buttonBox, &ButtonBox::restack, Qt::QueuedConnection );
