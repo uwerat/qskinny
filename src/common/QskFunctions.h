@@ -12,6 +12,9 @@
 #include <qrect.h>
 
 class QScreen;
+class QFont;
+class QFontMetricsF;
+class QString;
 
 QSK_EXPORT qreal qskDpiScaled( qreal value );
 QSK_EXPORT bool qskHasPlatformWindowManagement();
@@ -28,6 +31,9 @@ QSK_EXPORT QRectF qskInnerRectF( const QRectF& rect );
 
 QSK_EXPORT QRectF qskValidOrEmptyInnerRect(
     const QRectF& rect, const QMarginsF& margins );
+
+QSK_EXPORT qreal qskHorizontalAdvance( const QFont&, const QString& );
+QSK_EXPORT qreal qskHorizontalAdvance( const QFontMetricsF&, const QString& );
 
 inline bool qskFuzzyCompare( qreal value1, qreal value2 )
 {

@@ -12,7 +12,8 @@
 #include <QskBoxShapeMetrics.h>
 #include <QskTextColors.h>
 #include <QskTextNode.h>
-#include <QskTextOptions.h> // ### remove
+#include <QskTextOptions.h>
+#include <QskFunctions.h>
 
 #include <QFontMetrics>
 #include <QSGFlatColorMaterial>
@@ -174,7 +175,7 @@ QSGNode* SpeedometerSkinlet::updateLabelsNode( const Speedometer* speedometer, Q
         {
             const QString& text = labels.at( i );
 
-            auto w = fontMetrics.width( text );
+            auto w = qskHorizontalAdvance( fontMetrics, text );
             auto h = fontMetrics.height();
             auto adjustX = ( -0.5 * cosine - 0.5 ) * w;
             auto adjustY = ( -0.5 * sine - 0.5 ) * h;

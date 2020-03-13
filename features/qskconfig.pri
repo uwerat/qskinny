@@ -166,3 +166,5 @@ debug {
 
 # Help out Qt Creator
 ide: DEFINES += QT_IDE
+
+# DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000

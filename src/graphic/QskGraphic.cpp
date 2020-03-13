@@ -35,12 +35,6 @@ static bool qskHasScalablePen( const QPainter* painter )
     if ( pen.style() != Qt::NoPen && pen.brush().style() != Qt::NoBrush )
     {
         scalablePen = !pen.isCosmetic();
-        if ( !scalablePen && pen.widthF() == 0.0 )
-        {
-            const QPainter::RenderHints hints = painter->renderHints();
-            if ( hints.testFlag( QPainter::NonCosmeticDefaultPen ) )
-                scalablePen = true;
-        }
     }
 
     return scalablePen;
@@ -89,15 +83,7 @@ static inline void qskExecCommand(
 
             if ( painter->transform().isScaling() )
             {
-                bool isCosmetic = painter->pen().isCosmetic();
-                if ( isCosmetic && painter->pen().widthF() == 0.0 )
-                {
-                    QPainter::RenderHints hints = painter->renderHints();
-                    if ( hints.testFlag( QPainter::NonCosmeticDefaultPen ) )
-                        isCosmetic = false;
-                }
-
-                if ( isCosmetic )
+                if ( painter->pen().isCosmetic() )
                 {
                     // OpenGL2 seems to be buggy for cosmetic pens.
                     // It interpolates curves in too rough steps then

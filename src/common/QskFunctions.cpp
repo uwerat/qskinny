@@ -3,8 +3,11 @@
 #include <qguiapplication.h>
 #include <qmath.h>
 #include <qscreen.h>
+#include <qfont.h>
+#include <qfontmetrics.h>
 
 QSK_QT_PRIVATE_BEGIN
+#include <private/qhighdpiscaling_p.h>
 #include <private/qguiapplication_p.h>
 QSK_QT_PRIVATE_END
 
@@ -146,6 +149,20 @@ qreal qskDpiScaled( qreal value )
     return value * factor;
 }
 
+qreal qskHorizontalAdvance( const QFont& font, const QString& text )
+{
+    return qskHorizontalAdvance( QFontMetricsF( font ), text );
+}
+
+qreal qskHorizontalAdvance( const QFontMetricsF& fontMetrics, const QString& text )
+{
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 11, 0 )
+    return fontMetrics.horizontalAdvance( text );
+#else
+    return fontMetrics.width( text );
+#endif
+}
+
 bool qskHasPlatformWindowManagement()
 {
     if ( auto platform = QGuiApplicationPrivate::platformIntegration() )
@@ -162,17 +179,9 @@ QRect qskPlatformScreenGeometry( const QScreen* screen )
     return screen->handle()->geometry();
 }
 
-#if 0
-
-QSK_QT_PRIVATE_BEGIN
-#include <private/qhighdpiscaling_p.h>
-QSK_QT_PRIVATE_END
-
 qreal qskGlobalScaleFactor()
 {
     // The value of QT_SCALE_FACTOR
     const QScreen* noScreen = nullptr;
     return QHighDpiScaling::factor( noScreen );
 }
-
-#endif

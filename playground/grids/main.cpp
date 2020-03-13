@@ -6,6 +6,8 @@
 #include "TestBox.h"
 
 #include <QskSizePolicy.h>
+#include <QskFunctions.h>
+
 #include <QApplication>
 #include <QListWidget>
 #include <QDebug>
@@ -367,9 +369,7 @@ class MainWidget : public QWidget
         const auto r = contentsRect();
         const int spacing = 5;
 
-        auto fm = QFontMetricsF( m_listBox->font() );
-
-        const int w1 = fm.width( "Test 100" ) + 20;
+        const int w1 = qskHorizontalAdvance( m_listBox->font(), "Test 100" ) + 20;
         const int w2 = r.width() - w1 - spacing;
 
         m_listBox->setGeometry( r.left(), r.top(), w1, r.height() );

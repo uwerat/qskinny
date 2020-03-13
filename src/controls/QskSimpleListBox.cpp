@@ -5,6 +5,7 @@
 
 #include "QskSimpleListBox.h"
 #include "QskAspect.h"
+#include "QskFunctions.h"
 
 #include <qfontmetrics.h>
 
@@ -16,7 +17,7 @@ static inline qreal qskMaxWidth(
     qreal max = 0.0;
     for ( int i = 0; i < list.size(); i++ )
     {
-        const qreal w = fm.width( list[ i ] );
+        const qreal w = qskHorizontalAdvance( fm, list[ i ] );
         if ( w > max )
             max = w;
     }
@@ -146,7 +147,7 @@ void QskSimpleListBox::insert( const QString& text, int index )
 {
     if ( m_data->columnWidthHint <= 0.0 )
     {
-        const auto w = QFontMetricsF( effectiveFont( Cell ) ).width( text );
+        const auto w = qskHorizontalAdvance( effectiveFont( Cell ), text );
         if ( w > m_data->maxTextWidth )
             m_data->maxTextWidth = w;
     }
@@ -168,9 +169,7 @@ void QskSimpleListBox::removeAt( int index )
 
     if ( m_data->columnWidthHint <= 0.0 )
     {
-        const QFontMetricsF fm( effectiveFont( Cell ) );
-        const auto w = fm.width( entries[ index ] );
-
+        const auto w = qskHorizontalAdvance( effectiveFont( Cell ), entries[ index ] );
         if ( w >= m_data->maxTextWidth )
             m_data->maxTextWidth = qskMaxWidth( effectiveFont( Text ), entries );
     }

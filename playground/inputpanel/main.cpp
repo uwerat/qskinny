@@ -16,6 +16,7 @@
 
 #include <QskAspect.h>
 #include <QskWindow.h>
+#include <QskFunctions.h>
 
 #include <QskObjectCounter.h>
 
@@ -202,7 +203,7 @@ class LocaleListView final : public QskListView
             const QFontMetricsF fm( effectiveFont( Text ) );
 
             for ( const auto& entry : m_values )
-                m_maxWidth = qMax( m_maxWidth, fm.width( entry.first ) );
+                m_maxWidth = qMax( m_maxWidth, qskHorizontalAdvance( fm, entry.first ) );
 
             const QMarginsF padding = marginsHint( Cell | Padding );
             m_maxWidth += padding.left() + padding.right();

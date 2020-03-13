@@ -10,6 +10,7 @@
 #include <QskObjectCounter.h>
 #include <QskSimpleListBox.h>
 #include <QskWindow.h>
+#include <QskFunctions.h>
 
 #include <QFontMetricsF>
 #include <QGuiApplication>
@@ -46,8 +47,8 @@ class ListBox : public QskSimpleListBox
         // can prevent the list box from having to find it out
         // the expensive way.
 
-        const QFontMetricsF fm( effectiveFont( Cell ) );
-        setColumnWidthHint( 0, fm.width( entries.last() ) );
+        const qreal maxWidth = qskHorizontalAdvance( effectiveFont( Cell ), entries.last() );
+        setColumnWidthHint( 0, maxWidth );
 
         append( entries );
     }
