@@ -4,10 +4,7 @@
  *****************************************************************************/
 
 #include "QskSizePolicy.h"
-
-#ifndef QT_NO_DEBUG
-#include <qdebug.h>
-#endif
+#include <algorithm>
 
 QskSizePolicy::Policy QskSizePolicy::policy( Qt::Orientation orientation ) const
 {
@@ -62,6 +59,16 @@ Qt::SizeHint QskSizePolicy::effectiveSizeHintType(
     }
 
     return which;
+}
+
+void QskSizePolicy::transpose()
+{
+    std::swap( m_horizontalPolicy, m_verticalPolicy );
+}
+
+QskSizePolicy QskSizePolicy::transposed() const
+{
+    return QskSizePolicy( verticalPolicy(), horizontalPolicy() );
 }
 
 #ifndef QT_NO_DEBUG_STREAM

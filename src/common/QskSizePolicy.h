@@ -86,6 +86,9 @@ class QSK_EXPORT QskSizePolicy
     Qt::SizeHint effectiveSizeHintType(
         Qt::SizeHint, Qt::Orientation ) const;
 
+    QskSizePolicy transposed() const;
+    void transpose();
+
   private:
     unsigned char m_horizontalPolicy;
     unsigned char m_verticalPolicy;
