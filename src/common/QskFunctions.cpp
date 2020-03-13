@@ -7,7 +7,6 @@
 #include <qfontmetrics.h>
 
 QSK_QT_PRIVATE_BEGIN
-#include <private/qhighdpiscaling_p.h>
 #include <private/qguiapplication_p.h>
 QSK_QT_PRIVATE_END
 
@@ -179,9 +178,19 @@ QRect qskPlatformScreenGeometry( const QScreen* screen )
     return screen->handle()->geometry();
 }
 
+#if 0
+
+// does not compile with Qt 5.6 TODO ...
+
+QSK_QT_PRIVATE_BEGIN
+#include <private/qhighdpiscaling_p.h>
+QSK_QT_PRIVATE_END
+
 qreal qskGlobalScaleFactor()
 {
     // The value of QT_SCALE_FACTOR
     const QScreen* noScreen = nullptr;
     return QHighDpiScaling::factor( noScreen );
 }
+
+#endif
