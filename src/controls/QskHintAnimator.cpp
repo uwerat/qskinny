@@ -301,8 +301,8 @@ bool QskHintAnimatorTable::cleanup()
             {
                 if ( qskCheckReceiverThread( control ) )
                 {
-                    QskAnimatorEvent event( aspect, QskAnimatorEvent::Terminated );
-                    QCoreApplication::sendEvent( control, &event );
+                    auto event = new QskAnimatorEvent( aspect, QskAnimatorEvent::Terminated );
+                    QCoreApplication::postEvent( control, event );
                 }
             }
         }
