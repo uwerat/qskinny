@@ -77,6 +77,11 @@ QskTabView::~QskTabView()
 {
 }
 
+QskTabBar* QskTabView::tabBar()
+{
+    return m_data->tabBar;
+}
+
 const QskTabBar* QskTabView::tabBar() const
 {
     return m_data->tabBar;

@@ -16,6 +16,8 @@ class QSK_EXPORT QskTabView : public QskControl
 {
     Q_OBJECT
 
+    Q_PROPERTY( QskTabBar* tabBar READ tabBar )
+
     Q_PROPERTY( Qsk::Position tabPosition READ tabPosition
         WRITE setTabPosition NOTIFY tabPositionChanged FINAL )
 
@@ -37,6 +39,7 @@ class QSK_EXPORT QskTabView : public QskControl
     ~QskTabView() override;
 
     const QskTabBar* tabBar() const;
+    QskTabBar* tabBar();
 
     void setTabPosition( Qsk::Position );
     Qsk::Position tabPosition() const;
