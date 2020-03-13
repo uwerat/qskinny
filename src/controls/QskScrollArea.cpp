@@ -124,9 +124,13 @@ class QskScrollAreaClipItem final : public QskControl, public QQuickItemChangeLi
         return scrollArea()->subControlRect( QskScrollView::Viewport );
     }
 
+    bool hasFocusIndicatorClip() const override
+    {
+        return scrollArea()->hasFocusIndicatorClip();
+    }
+
   protected:
     bool event( QEvent* event ) override;
-    void windowChangeEvent( QskWindowChangeEvent* ) override;
 
     void itemChange( ItemChange, const ItemChangeData& ) override;
     void geometryChanged( const QRectF&, const QRectF& ) override;
@@ -151,9 +155,6 @@ class QskScrollAreaClipItem final : public QskControl, public QQuickItemChangeLi
     void updateNode( QSGNode* ) override;
 
   private:
-    void connectWindow( const QQuickWindow*, bool on );
-    void onFocusItemChanged();
-
     inline QskScrollArea* scrollArea()
     {
         return static_cast< QskScrollArea* >( parentItem() );
@@ -172,30 +173,11 @@ QskScrollAreaClipItem::QskScrollAreaClipItem( QskScrollArea* scrollArea )
 {
     setObjectName( QStringLiteral( "QskScrollAreaClipItem" ) );
     setClip( true );
-
-    connectWindow( window(), true );
 }
 
 QskScrollAreaClipItem::~QskScrollAreaClipItem()
 {
     enableGeometryListener( false );
-}
-
-void QskScrollAreaClipItem::connectWindow( const QQuickWindow* window, bool on )
-{
-    if ( window == nullptr )
-        return;
-
-    if ( on )
-    {
-        connect( window, &QQuickWindow::activeFocusItemChanged,
-            this, &QskScrollAreaClipItem::onFocusItemChanged );
-    }
-    else
-    {
-        disconnect( window, &QQuickWindow::activeFocusItemChanged,
-            this, &QskScrollAreaClipItem::onFocusItemChanged );
-    }
 }
 
 void QskScrollAreaClipItem::updateNode( QSGNode* )
@@ -310,20 +292,6 @@ void QskScrollAreaClipItem::enableGeometryListener( bool on )
     }
 }
 
-void QskScrollAreaClipItem::onFocusItemChanged()
-{
-    if ( window() == nullptr || !scrollArea()->autoScrollFocusItem() )
-        return;
-
-    const auto focusItem = window()->activeFocusItem();
-    if ( focusItem )
-    {
-        auto reason = QQuickWindowPrivate::get( window() )->lastFocusReason;
-        if ( reason == Qt::TabFocusReason || reason == Qt::BacktabFocusReason )
-            scrollArea()->ensureItemVisible( focusItem );
-    }
-}
-
 bool QskScrollAreaClipItem::event( QEvent* event )
 {
     if ( event->type() == QEvent::LayoutRequest )
@@ -335,20 +303,11 @@ bool QskScrollAreaClipItem::event( QEvent* event )
     return Inherited::event( event );
 }
 
-void QskScrollAreaClipItem::windowChangeEvent( QskWindowChangeEvent* event )
-{
-    Inherited::windowChangeEvent( event );
-
-    connectWindow( event->oldWindow(), false );
-    connectWindow( event->window(), true );
-}
-
 class QskScrollArea::PrivateData
 {
   public:
     PrivateData()
         : isItemResizable( true )
-        , autoScrollFocusItem( true )
     {
     }
 
@@ -369,7 +328,6 @@ class QskScrollArea::PrivateData
     QskScrollAreaClipItem* clipItem = nullptr;
 
     bool isItemResizable : 1;
-    bool autoScrollFocusItem : 1;
 };
 
 /*
@@ -399,16 +357,6 @@ QskScrollArea::QskScrollArea( QQuickItem* parentItem )
 QskScrollArea::~QskScrollArea()
 {
     delete m_data->clipItem;
-}
-
-void QskScrollArea::ensureItemVisible( const QQuickItem* item )
-{
-    const QQuickItem* scrolledItem = this->scrolledItem();
-    if ( scrolledItem && qskIsAncestorOf( scrolledItem, item ) )
-    {
-        const auto pos = scrolledItem->mapFromItem( item, QPointF() );
-        ensureVisible( QRectF( pos.x(), pos.y(), item->width(), item->height() ) );
-    }
 }
 
 void QskScrollArea::updateLayout()
@@ -457,18 +405,9 @@ void QskScrollArea::adjustItem()
     }
 }
 
-void QskScrollArea::setAutoScrollFocusedItem( bool on )
+bool QskScrollArea::hasFocusIndicatorClip() const
 {
-    if ( m_data->autoScrollFocusItem != on )
-    {
-        m_data->autoScrollFocusItem = on;
-        Q_EMIT autoScrollFocusedItemChanged();
-    }
-}
-
-bool QskScrollArea::autoScrollFocusItem() const
-{
-    return m_data->autoScrollFocusItem;
+    return true;
 }
 
 void QskScrollArea::setItemResizable( bool on )
@@ -476,7 +415,7 @@ void QskScrollArea::setItemResizable( bool on )
     if ( on != m_data->isItemResizable )
     {
         m_data->isItemResizable = on;
-        Q_EMIT itemResizableChanged();
+        Q_EMIT itemResizableChanged( on );
 
         if ( m_data->isItemResizable )
             polish();
@@ -520,8 +459,7 @@ QQuickItem* QskScrollArea::scrolledItem() const
 
 void QskScrollArea::translateItem()
 {
-    auto item = m_data->clipItem->scrolledItem();
-    if ( item )
+    if ( auto item = m_data->clipItem->scrolledItem() )
     {
         const QPointF pos = viewContentsRect().topLeft() - scrollPos();
         item->setPosition( pos );

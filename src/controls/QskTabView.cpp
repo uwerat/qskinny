@@ -210,12 +210,22 @@ QSizeF QskTabView::layoutSizeHint(
     const auto& tabBar = m_data->tabBar;
     const auto& stackBox = m_data->stackBox;
 
-    const auto barHint = tabBar->sizeConstraint( which );
+    auto barHint = tabBar->sizeConstraint( which );
+
+#if 1
+    /*
+        How to limit the constribution of the tabbar in a reasonable way ?
+        QTabWidget uses 200x200 - what is kind of random. TODO ...
+     */
+    const qreal minBarSize = 200;
+#endif
 
     QSizeF hint;
 
     if ( orientation() == Qt::Vertical )
     {
+        barHint.setWidth( qMin( barHint.width(), minBarSize ) );
+
         if ( constraint.width() >= 0.0 )
         {
             qreal w = qMax( constraint.width(), barHint.width() );
@@ -240,6 +250,8 @@ QSizeF QskTabView::layoutSizeHint(
     }
     else
     {
+        barHint.setHeight( qMin( barHint.height(), minBarSize ) );
+
         if ( constraint.width() >= 0.0 )
         {
             qreal w = constraint.width() - barHint.width();

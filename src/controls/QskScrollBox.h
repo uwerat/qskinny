@@ -18,11 +18,17 @@ class QSK_EXPORT QskScrollBox : public QskControl
     Q_PROPERTY( Qt::Orientations flickableOrientations READ flickableOrientations
         WRITE setFlickableOrientations NOTIFY flickableOrientationsChanged FINAL )
 
+   Q_PROPERTY( bool autoScrollFocusedItem READ autoScrollFocusItem
+        WRITE setAutoScrollFocusedItem NOTIFY autoScrollFocusedItemChanged FINAL )
+
     using Inherited = QskControl;
 
   public:
     QskScrollBox( QQuickItem* parent = nullptr );
     ~QskScrollBox() override;
+
+    void setAutoScrollFocusedItem( bool on );
+    bool autoScrollFocusItem() const;
 
     void setFlickableOrientations( Qt::Orientations );
     Qt::Orientations flickableOrientations() const;
@@ -43,17 +49,21 @@ class QSK_EXPORT QskScrollBox : public QskControl
     void scrollPosChanged();
     void scrollableSizeChanged( const QSizeF& );
 
+    void autoScrollFocusedItemChanged( bool );
     void flickableOrientationsChanged();
 
   public Q_SLOTS:
     void setScrollPos( const QPointF& );
     void scrollTo( const QPointF& );
 
+    void ensureItemVisible( const QQuickItem* );
+    void ensureFocusItemVisible();
     void ensureVisible( const QPointF& );
     void ensureVisible( const QRectF& );
 
   protected:
     void geometryChangeEvent( QskGeometryChangeEvent* ) override;
+    void windowChangeEvent( QskWindowChangeEvent* ) override;
     void gestureEvent( QskGestureEvent* ) override;
 
 #ifndef QT_NO_WHEELEVENT
@@ -66,6 +76,8 @@ class QSK_EXPORT QskScrollBox : public QskControl
 
   private:
     QPointF boundedScrollPos( const QPointF& ) const;
+    void onFocusItemChanged();
+    void connectWindow( const QQuickWindow*, bool on );
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

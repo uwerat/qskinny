@@ -39,7 +39,7 @@ class TabView : public QskTabView
     TabView( QQuickItem* parent = nullptr )
         : QskTabView( parent )
     {
-        for ( int i = 0; i < 6; i++ )
+        for ( int i = 0; i < 10; i++ )
         {
             QString text;
             if ( i == 4 )

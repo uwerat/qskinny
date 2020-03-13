@@ -641,6 +641,9 @@ void QskSquiekSkin::initTabBarHints()
     setMargins( Q::Panel | Padding, 0 );
     setMargins( Q::Panel | Margin, 0 );
     setPanel( Q::Panel, NoPanel );
+
+    // when flicking
+    setAnimation( Q::Panel | Metric, QskAnimationHint( 200, QEasingCurve::OutCubic ) );
 }
 
 void QskSquiekSkin::initTabViewHints()

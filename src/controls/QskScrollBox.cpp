@@ -9,6 +9,11 @@
 #include "QskFlickAnimator.h"
 #include "QskGesture.h"
 #include "QskPanGestureRecognizer.h"
+#include "QskQuick.h"
+
+QSK_QT_PRIVATE_BEGIN
+#include <private/qquickwindow_p.h>
+QSK_QT_PRIVATE_END
 
 namespace
 {
@@ -95,6 +100,11 @@ namespace
 class QskScrollBox::PrivateData
 {
   public:
+    PrivateData()
+        : autoScrollFocusItem( true )
+    {
+    }
+
     QPointF scrollPos;
     QSizeF scrollableSize = QSize( 0.0, 0.0 );
 
@@ -105,6 +115,8 @@ class QskScrollBox::PrivateData
     ScrollAnimator scroller;
 
     const qreal viewportPadding = 10;
+
+    bool autoScrollFocusItem : 1;
 };
 
 QskScrollBox::QskScrollBox( QQuickItem* parent )
@@ -119,12 +131,50 @@ QskScrollBox::QskScrollBox( QQuickItem* parent )
 
     setFiltersChildMouseEvents( true );
 
+    setAcceptedMouseButtons( Qt::LeftButton );
     setWheelEnabled( true );
+
     setFocusPolicy( Qt::StrongFocus );
+
+    connectWindow( window(), true );
 }
 
 QskScrollBox::~QskScrollBox()
 {
+}
+
+void QskScrollBox::setAutoScrollFocusedItem( bool on )
+{
+    if ( m_data->autoScrollFocusItem != on )
+    {
+        m_data->autoScrollFocusItem = on;
+        connectWindow( window(), true );
+        Q_EMIT autoScrollFocusedItemChanged( on );
+    }
+}
+
+bool QskScrollBox::autoScrollFocusItem() const
+{
+    return m_data->autoScrollFocusItem;
+}
+
+void QskScrollBox::onFocusItemChanged()
+{
+    if ( window() )
+    {
+        auto reason = QQuickWindowPrivate::get( window() )->lastFocusReason;
+        if ( reason == Qt::TabFocusReason || reason == Qt::BacktabFocusReason )
+            ensureFocusItemVisible();
+    }
+}
+
+void QskScrollBox::ensureFocusItemVisible()
+{
+    if ( window() == nullptr )
+        return;
+
+    if ( const auto focusItem = window()->activeFocusItem() )
+        ensureItemVisible( focusItem );
 }
 
 void QskScrollBox::setFlickRecognizerTimeout( int timeout )
@@ -200,6 +250,17 @@ QSizeF QskScrollBox::scrollableSize() const
 QRectF QskScrollBox::gestureRect() const
 {
     return viewContentsRect();
+}
+
+void QskScrollBox::ensureItemVisible( const QQuickItem* item )
+{
+    if ( qskIsAncestorOf( this, item ) )
+    {
+        auto pos = scrollPos() - viewContentsRect().topLeft();
+        pos += mapFromItem( item, QPointF() );
+
+        ensureVisible( QRectF( pos.x(), pos.y(), item->width(), item->height() ) );
+    }
 }
 
 void QskScrollBox::ensureVisible( const QPointF& pos )
@@ -280,6 +341,14 @@ void QskScrollBox::ensureVisible( const QRectF& itemRect )
         scrollTo( newPos );
     else
         setScrollPos( newPos );
+}
+
+void QskScrollBox::windowChangeEvent( QskWindowChangeEvent* event )
+{
+    Inherited::windowChangeEvent( event );
+
+    connectWindow( event->oldWindow(), false );
+    connectWindow( event->window(), true );
 }
 
 void QskScrollBox::geometryChangeEvent( QskGeometryChangeEvent* event )
@@ -441,6 +510,23 @@ QPointF QskScrollBox::boundedScrollPos( const QPointF& pos ) const
     const qreal maxY = qMax( 0.0, scrollableSize().height() - vr.height() );
 
     return QPointF( qBound( 0.0, pos.x(), maxX ), qBound( 0.0, pos.y(), maxY ) );
+}
+
+void QskScrollBox::connectWindow( const QQuickWindow* window, bool on )
+{
+    if ( ( window == nullptr ) || ( on && !autoScrollFocusItem() ) )
+        return;
+
+    if ( on )
+    {
+        QObject::connect( window, &QQuickWindow::activeFocusItemChanged,
+            this, &QskScrollBox::onFocusItemChanged, Qt::UniqueConnection );
+    }
+    else
+    {
+        QObject::disconnect( window, &QQuickWindow::activeFocusItemChanged,
+            this, &QskScrollBox::onFocusItemChanged );
+    }
 }
 
 #include "moc_QskScrollBox.cpp"

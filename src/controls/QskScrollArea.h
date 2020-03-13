@@ -18,9 +18,6 @@ class QSK_EXPORT QskScrollArea : public QskScrollView
     Q_PROPERTY( bool itemResizable READ isItemResizable
         WRITE setItemResizable NOTIFY itemResizableChanged FINAL )
 
-    Q_PROPERTY( bool autoScrollFocusedItem READ autoScrollFocusItem
-        WRITE setAutoScrollFocusedItem NOTIFY autoScrollFocusedItemChanged FINAL )
-
     using Inherited = QskScrollView;
 
   public:
@@ -33,15 +30,11 @@ class QSK_EXPORT QskScrollArea : public QskScrollView
     void setItemResizable( bool on );
     bool isItemResizable() const;
 
-    void setAutoScrollFocusedItem( bool on );
-    bool autoScrollFocusItem() const;
-
-    void ensureItemVisible( const QQuickItem* );
+    bool hasFocusIndicatorClip() const override;
 
   Q_SIGNALS:
-    void itemResizableChanged();
     void scrolledItemChanged();
-    void autoScrollFocusedItemChanged();
+    void itemResizableChanged( bool );
 
   protected:
     void updateLayout() override;

@@ -569,6 +569,9 @@ void QskMaterialSkin::initTabBarHints()
     setBoxShape( Q::Panel, 0 );
     setBoxBorderMetrics( Q::Panel, 0 );
     setGradient( Q::Panel, QskGradient() );
+
+    // when flicking
+    setAnimation( Q::Panel | Metric, QskAnimationHint( 200, QEasingCurve::InCubic ) );
 }
 
 void QskMaterialSkin::initTabViewHints()

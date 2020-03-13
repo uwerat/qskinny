@@ -5,9 +5,12 @@
 
 #include "QskTabBar.h"
 #include "QskAspect.h"
+#include "QskScrollBox.h"
 #include "QskLinearBox.h"
 #include "QskTabButton.h"
 #include "QskTextOptions.h"
+#include "QskAnimationHint.h"
+#include "QskQuick.h"
 
 QSK_SUBCONTROL( QskTabBar, Panel )
 
@@ -21,8 +24,10 @@ static inline Qt::Orientation qskOrientation( int position )
 
 namespace
 {
-    class ButtonBox : public QskLinearBox
+    class ButtonBox final : public QskLinearBox
     {
+        using Inherited = QskLinearBox;
+
       public:
         ButtonBox( Qt::Orientation orientation, QQuickItem* parent )
             : QskLinearBox( orientation, parent )
@@ -45,6 +50,142 @@ namespace
             {
                 if ( auto button = itemAtIndex( i ) )
                     button->setZ( i == currentIndex ? 0.001 : 0.0 );
+            }
+        }
+    };
+
+    class ScrollBox final : public QskScrollBox
+    {
+        using Inherited = QskScrollBox;
+
+      public:
+        ScrollBox( QQuickItem* parent )
+            : QskScrollBox( parent )
+        {
+            setPolishOnResize( true );
+            enableAutoTranslation( true );
+
+            setFocusPolicy( Qt::NoFocus );
+        }
+
+        bool hasFocusIndicatorClip() const override
+        {
+            return false;
+        }
+
+        QskAnimationHint flickHint() const override
+        {
+            if ( auto tabBar = qobject_cast< const QskTabBar* >( parentItem() ) )
+            {
+                return tabBar->effectiveAnimation( QskAspect::Metric,
+                    QskTabBar::Panel, QskAspect::NoState );
+            }
+
+            return QskAnimationHint( 200, QEasingCurve::OutCubic );
+        }
+
+        QRectF viewContentsRect() const override
+        {
+            return layoutRect();
+        }
+
+        void setOrientation( Qt::Orientation orientation )
+        {
+            setFlickableOrientations( orientation );
+
+            if ( orientation == Qt::Horizontal )
+                setSizePolicy( QskSizePolicy::Ignored, QskSizePolicy::MinimumExpanding );
+            else
+                setSizePolicy( QskSizePolicy::MinimumExpanding, QskSizePolicy::Ignored );
+        }
+
+        void ensureItemVisible( const QQuickItem* item )
+        {
+            if ( qskIsAncestorOf( this, item ) )
+            {
+                const auto pos = mapFromItem( item, QPointF() );
+                ensureVisible( QRectF( pos.x(), pos.y(), item->width(), item->height() ) );
+            }
+        }
+
+      protected:
+
+        bool event( QEvent* event ) override
+        {
+            if ( event->type() == QEvent::LayoutRequest )
+            {
+                resetImplicitSize();
+                polish();
+            }
+
+            return Inherited::event( event );
+        }
+
+        void updateLayout() override
+        {
+            auto scrolledItem = this->scrolledItem();
+
+            auto itemSize = viewContentsRect().size();
+            itemSize = qskConstrainedItemSize( scrolledItem, itemSize );
+
+            scrolledItem->setSize( itemSize );
+
+            enableAutoTranslation( false );
+
+            setScrollableSize( itemSize );
+            setScrollPos( scrollPos() );
+
+            enableAutoTranslation( true );
+
+            translateItem();
+
+            setClip( size().width() < itemSize.width()
+                || size().height() < itemSize.height() );
+        }
+
+        QSizeF layoutSizeHint( Qt::SizeHint which, const QSizeF& constraint ) const override
+        {
+            auto hint = scrolledItem()->sizeConstraint( which, constraint );
+
+            if ( which == Qt::MinimumSize )
+            {
+                if ( sizePolicy().horizontalPolicy() & QskSizePolicy::ShrinkFlag )
+                    hint.setWidth( -1 );
+
+                if ( sizePolicy().verticalPolicy() & QskSizePolicy::ShrinkFlag )
+                    hint.setHeight( -1 );
+            }
+
+            return hint;
+        }
+
+      private:
+
+        inline QskControl* scrolledItem() const
+        {
+            return qskControlCast( childItems().first() );
+        }
+
+        void enableAutoTranslation( bool on )
+        {
+            if ( on )
+            {
+                connect( this, &QskScrollBox::scrollPosChanged,
+                    this, &ScrollBox::translateItem );
+            }
+            else
+            {
+                disconnect( this, &QskScrollBox::scrollPosChanged,
+                    this, &ScrollBox::translateItem );
+            }
+        }
+
+        void translateItem()
+        {
+            if ( auto item = this->scrolledItem() )
+            {
+                const QPointF pos = viewContentsRect().topLeft() - scrollPos();
+                item->setPosition( pos );
             }
         }
     };
@@ -72,6 +213,7 @@ class QskTabBar::PrivateData
         }
     }
 
+    ScrollBox* scrollBox = nullptr;
     ButtonBox* buttonBox = nullptr;
     int currentIndex = -1;
 
@@ -97,8 +239,16 @@ QskTabBar::QskTabBar( Qsk::Position position, QQuickItem* parent )
     else
         initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Preferred );
 
-    m_data->buttonBox = new ButtonBox( orientation, this );
+    m_data->scrollBox = new ScrollBox( this );
+    m_data->scrollBox->setOrientation( orientation );
+
+    m_data->buttonBox = new ButtonBox( orientation, m_data->scrollBox );
     m_data->buttonBox->setSpacing( metric( QskTabBar::Panel | QskAspect::Spacing ) );
+
+#if 1
+    // We might want to have a mode, where the buttons are stretched: TODO ...
+    m_data->buttonBox->setSizePolicy( QskSizePolicy::Maximum, QskSizePolicy::Maximum );
+#endif
 
     connect( this, &QskTabBar::currentIndexChanged,
         m_data->buttonBox, &ButtonBox::restack, Qt::QueuedConnection );
@@ -120,6 +270,7 @@ void QskTabBar::setPosition( Qsk::Position position )
     {
         setSizePolicy( sizePolicy( Qt::Vertical ), sizePolicy( Qt::Horizontal ) );
         m_data->buttonBox->setOrientation( orientation );
+        m_data->scrollBox->setOrientation( orientation );
     }
 
     resetImplicitSize();
@@ -138,6 +289,20 @@ Qsk::Position QskTabBar::position() const
 Qt::Orientation QskTabBar::orientation() const
 {
     return qskOrientation( m_data->position );
+}
+
+void QskTabBar::setAutoScrollFocusedButton( bool on )
+{
+    if ( m_data->scrollBox->autoScrollFocusItem() != on )
+    {
+        m_data->scrollBox->setAutoScrollFocusedItem( on );
+        Q_EMIT autoScrollFocusedButtonChanged( on );
+    }
+}
+
+bool QskTabBar::autoScrollFocusButton() const
+{
+    return m_data->scrollBox->autoScrollFocusItem();
 }
 
 void QskTabBar::setTextOptions( const QskTextOptions& options )
@@ -364,6 +529,11 @@ QString QskTabBar::buttonTextAt( int index ) const
 int QskTabBar::indexOf( QskTabButton* button ) const
 {
     return m_data->buttonBox->indexOf( button );
+}
+
+void QskTabBar::ensureButtonVisible( const QskTabButton* button )
+{
+    m_data->scrollBox->ensureItemVisible( button );
 }
 
 void QskTabBar::componentComplete()

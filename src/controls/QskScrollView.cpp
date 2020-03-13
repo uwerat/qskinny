@@ -38,7 +38,6 @@ QskScrollView::QskScrollView( QQuickItem* parent )
     : Inherited( parent )
     , m_data( new PrivateData() )
 {
-    setAcceptedMouseButtons( Qt::LeftButton );
 }
 
 QskScrollView::~QskScrollView()

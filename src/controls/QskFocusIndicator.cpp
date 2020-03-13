@@ -103,16 +103,25 @@ void QskFocusIndicator::onFocusItemChanged()
     {
         auto itemParent = item->parentItem();
 
-        if ( itemParent == window()->contentItem() || itemParent->clip() )
+        bool doReparent = ( itemParent == window()->contentItem() );
+
+        if ( !doReparent )
         {
             /*
                 When the focus item is clipped - maybe because of being at the
-                border of a scrollarea - the focus indicator needs to be
+                border of a scrollarea - the focus indicator might need to be
                 clipped as well. The easiest way to have this is to put us
                 below the item having the clip.
              */
-            setParentItem( itemParent );
+
+            if ( auto control = qskControlCast( itemParent ) )
+                doReparent = control->hasFocusIndicatorClip();
+            else
+                doReparent = itemParent->clip();
         }
+
+        if ( doReparent )
+            setParentItem( itemParent );
 
         if ( itemParent == parentItem() )
         {
