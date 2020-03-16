@@ -93,7 +93,7 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     virtual QRectF gestureRect() const;
 
     virtual QRectF focusIndicatorRect() const;
-    virtual bool hasFocusIndicatorClip() const;
+    virtual QRectF focusIndicatorClipRect() const;
 
     QRectF subControlRect( QskAspect::Subcontrol ) const;
     QRectF subControlRect( const QSizeF&, QskAspect::Subcontrol ) const;

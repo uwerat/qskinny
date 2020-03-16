@@ -30,8 +30,6 @@ class QSK_EXPORT QskScrollArea : public QskScrollView
     void setItemResizable( bool on );
     bool isItemResizable() const;
 
-    bool hasFocusIndicatorClip() const override;
-
   Q_SIGNALS:
     void scrolledItemChanged();
     void itemResizableChanged( bool );

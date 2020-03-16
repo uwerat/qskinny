@@ -959,13 +959,9 @@ QRectF QskControl::focusIndicatorRect() const
     return contentsRect();
 }
 
-bool QskControl::hasFocusIndicatorClip() const
+QRectF QskControl::focusIndicatorClipRect() const
 {
-    /*
-        Often we want to clip the focus indicator,
-        when the control is clipped.
-     */
-    return clip();
+    return clipRect();
 }
 
 void QskControl::updateLayout()

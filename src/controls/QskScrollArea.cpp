@@ -124,11 +124,6 @@ class QskScrollAreaClipItem final : public QskControl, public QQuickItemChangeLi
         return scrollArea()->subControlRect( QskScrollView::Viewport );
     }
 
-    bool hasFocusIndicatorClip() const override
-    {
-        return scrollArea()->hasFocusIndicatorClip();
-    }
-
   protected:
     bool event( QEvent* event ) override;
 
@@ -403,11 +398,6 @@ void QskScrollArea::adjustItem()
 
         translateItem();
     }
-}
-
-bool QskScrollArea::hasFocusIndicatorClip() const
-{
-    return true;
 }
 
 void QskScrollArea::setItemResizable( bool on )

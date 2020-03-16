@@ -8,6 +8,7 @@
 #include "QskEvent.h"
 #include "QskQuick.h"
 
+#include <qpointer.h>
 #include <qquickwindow.h>
 
 QSK_SUBCONTROL( QskFocusIndicator, Panel )
@@ -24,6 +25,21 @@ static inline QRectF qskFocusIndicatorRect( const QQuickItem* item )
     return qskItemRect( item );
 }
 
+static inline QRectF qskFocusIndicatorClipRect( const QQuickItem* item )
+{
+    QRectF rect( 0.0, 0.0, -1.0, -1.0 );
+
+    if ( item )
+    {
+        if ( auto control = qskControlCast( item ) )
+            rect = control->focusIndicatorClipRect();
+        else
+            rect = item->clipRect();
+    }
+
+    return rect;
+}
+
 class QskFocusIndicator::PrivateData
 {
   public:
@@ -35,6 +51,7 @@ class QskFocusIndicator::PrivateData
         connections.clear();
     }
 
+    QPointer< QQuickItem > clippingItem;
     QVector< QMetaObject::Connection > connections;
 };
 
@@ -53,6 +70,19 @@ QskFocusIndicator::~QskFocusIndicator()
 bool QskFocusIndicator::contains( const QPointF& ) const
 {
     return false;
+}
+
+QRectF QskFocusIndicator::clipRect() const
+{
+    if ( m_data->clippingItem )
+    {
+        auto rect = qskFocusIndicatorClipRect( m_data->clippingItem );
+        rect = mapRectFromItem( m_data->clippingItem, rect );
+
+        return rect;
+    }
+
+    return Inherited::clipRect();
 }
 
 void QskFocusIndicator::onFocusItemGeometryChanged()
@@ -78,64 +108,34 @@ void QskFocusIndicator::onFocusItemChanged()
     if ( window() == nullptr )
         return;
 
+    // We want to be on top, but do we cover all corner cases ???
+    setParentItem( window()->contentItem() );
+    setZ( 10e-6 );
+
     const auto focusItem = window()->activeFocusItem();
+    QQuickItem* clippingItem = nullptr;
 
-    if ( ( focusItem == nullptr ) || ( focusItem == window()->contentItem() ) )
+    if ( focusItem && ( focusItem != window()->contentItem() ) )
     {
-        /*
-            We might get here, when the previously focused item was destroyed.
-            Might happen in common situations, like when a subwindow
-            was closed. We put ourself below the root item then.
-         */
-
-        if ( parentItem() != window()->contentItem() )
-            setParentItem( window()->contentItem() );
-
-        updateFocusFrame();
-
-        return;
-    }
-
-    m_data->connections += connectItem( focusItem );
-
-    const QQuickItem* item = focusItem;
-    while ( item->parentItem() )
-    {
-        auto itemParent = item->parentItem();
-
-        bool doReparent = ( itemParent == window()->contentItem() );
-
-        if ( !doReparent )
-        {
-            /*
-                When the focus item is clipped - maybe because of being at the
-                border of a scrollarea - the focus indicator might need to be
-                clipped as well. The easiest way to have this is to put us
-                below the item having the clip.
-             */
-
-            if ( auto control = qskControlCast( itemParent ) )
-                doReparent = control->hasFocusIndicatorClip();
-            else
-                doReparent = itemParent->clip();
-        }
-
-        if ( doReparent )
-            setParentItem( itemParent );
-
-        if ( itemParent == parentItem() )
-        {
-            // We want to be on top, but do we cover all corner cases ???
-
-            setZ( item->z() + 10e-6 );
-            break;
-        }
-
-        item = itemParent;
-
+        auto item = focusItem;
         m_data->connections += connectItem( item );
+
+        while ( auto itemParent = item->parentItem() )
+        {
+            m_data->connections += connectItem( itemParent );
+
+            if ( clippingItem == nullptr && itemParent->clip() )
+            {
+                const auto clipRect = qskFocusIndicatorClipRect( itemParent );
+                if ( !clipRect.isEmpty() )
+                    clippingItem = itemParent;
+            }
+
+            item = itemParent;
+        }
     }
 
+    m_data->clippingItem = clippingItem;
     updateFocusFrame();
 }
 
@@ -148,6 +148,9 @@ void QskFocusIndicator::updateFocusFrame()
     {
         r = r.marginsAdded( marginsHint( Panel | QskAspect::Padding ) );
         setGeometry( r );
+
+        const auto clipRect = qskFocusIndicatorClipRect( m_data->clippingItem );
+        setClip( !clipRect.isEmpty() );
     }
 
     update();

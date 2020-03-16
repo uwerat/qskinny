@@ -12,6 +12,8 @@
 #include "QskAnimationHint.h"
 #include "QskQuick.h"
 
+#include <qquickwindow.h>
+
 QSK_SUBCONTROL( QskTabBar, Panel )
 
 static inline Qt::Orientation qskOrientation( int position )
@@ -71,11 +73,28 @@ namespace
             enableAutoTranslation( true );
 
             setFocusPolicy( Qt::NoFocus );
+
+            connect( this, &ScrollBox::scrollPosChanged,
+                     this, &QskControl::focusIndicatorRectChanged );
         }
 
-        bool hasFocusIndicatorClip() const override
+        QRectF focusIndicatorClipRect() const override
         {
-            return false;
+            auto r = clipRect();
+
+            if ( window() )
+            {
+                if ( auto focusItem = window()->activeFocusItem() )
+                {
+                    const auto itemRect = mapRectFromItem(
+                        focusItem, focusItem->boundingRect() );
+
+                    if ( r.intersects( itemRect ) )
+                        return QRectF();
+                }
+            }
+
+            return r;
         }
 
         QskAnimationHint flickHint() const override

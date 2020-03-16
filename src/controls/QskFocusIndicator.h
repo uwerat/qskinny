@@ -23,6 +23,7 @@ class QSK_EXPORT QskFocusIndicator : public QskControl
     ~QskFocusIndicator() override;
 
     bool contains( const QPointF& ) const override;
+    QRectF clipRect() const override;
 
   protected:
     void windowChangeEvent( QskWindowChangeEvent* ) override;
