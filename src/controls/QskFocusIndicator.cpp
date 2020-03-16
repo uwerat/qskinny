@@ -11,6 +11,10 @@
 #include <qpointer.h>
 #include <qquickwindow.h>
 
+QSK_QT_PRIVATE_BEGIN
+#include <private/qquickitem_p.h>
+QSK_QT_PRIVATE_END
+
 QSK_SUBCONTROL( QskFocusIndicator, Panel )
 
 static inline QRectF qskFocusIndicatorRect( const QQuickItem* item )
@@ -69,6 +73,7 @@ QskFocusIndicator::~QskFocusIndicator()
 
 bool QskFocusIndicator::contains( const QPointF& ) const
 {
+    // so that tools like Squish do not see it
     return false;
 }
 
@@ -151,6 +156,18 @@ void QskFocusIndicator::updateFocusFrame()
 
         const auto clipRect = qskFocusIndicatorClipRect( m_data->clippingItem );
         setClip( !clipRect.isEmpty() );
+
+        if ( clip() )
+        {
+            /*
+                The clip node is updated on QQuickItemPrivate::Size
+                So we need to set it here even in situations, where
+                the size did not change. For now we always trigger an
+                update of the clipNode, but we could limit it to
+                changes of the clipRect(). TODO ...
+             */
+            QQuickItemPrivate::get( this )->dirty( QQuickItemPrivate::Size );
+        }
     }
 
     update();
