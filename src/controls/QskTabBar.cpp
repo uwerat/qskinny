@@ -70,6 +70,7 @@ namespace
             : QskScrollBox( parent )
         {
             setPolishOnResize( true );
+            setWheelEnabled( false );
             enableAutoTranslation( true );
 
             setFocusPolicy( Qt::NoFocus );
