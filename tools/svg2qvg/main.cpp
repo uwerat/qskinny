@@ -33,13 +33,21 @@ int main( int argc, char* argv[] )
         return -1;
     }
 
+#if 0
+    /*
+        When there are no "text" parts in the SVGs we can avoid
+        the costs of initializing not needed fonts
+        by using the minimal plugin.
+     */
+    qputenv( "QT_QPA_PLATFORM", "minimal" );
+#endif
+
 #if 1
     /*
         When having a SVG with specific font assignments Qt runs on
         qGuiApp to load a default font. Makes no sense in this context,
         but to avoid having segfaults ...
      */
-    qputenv( "QT_QPA_PLATFORM", "minimal" );
     QGuiApplication app( argc, argv );
 #endif
 

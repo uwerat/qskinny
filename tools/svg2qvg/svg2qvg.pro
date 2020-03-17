@@ -5,6 +5,7 @@ QT += svg
 
 CONFIG += standalone
 CONFIG -= app_bundle
+CONFIG -= sanitize
 
 DESTDIR      = $${QSK_OUT_ROOT}/tools/bin
 
