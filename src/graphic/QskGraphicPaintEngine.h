@@ -36,6 +36,8 @@ class QSK_EXPORT QskGraphicPaintEngine final : public QPaintEngine
     void drawImage( const QRectF& rect,
         const QImage& image, const QRectF& subRect,
         Qt::ImageConversionFlags flags ) override;
+
+    void drawTextItem( const QPointF&, const QTextItem& ) override;
 };
 
 #endif

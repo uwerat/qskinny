@@ -108,3 +108,10 @@ void QskGraphicPaintEngine::drawImage(
     if ( auto graphic = qskGraphic( this ) )
         graphic->drawImage( rect, image, subRect, flags );
 }
+
+void QskGraphicPaintEngine::drawTextItem(
+    const QPointF& position, const QTextItem& textItem )
+{
+    // TODO ...
+    QPaintEngine::drawTextItem( position, textItem );
+}
