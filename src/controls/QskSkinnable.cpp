@@ -296,9 +296,10 @@ void QskSkinnable::setFontRole( QskAspect::Aspect aspect, int role )
     m_data->hintTable.setFontRole( aspect, role );
 }
 
-int QskSkinnable::fontRole( QskAspect::Aspect aspect ) const
+int QskSkinnable::fontRole(
+    QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
-    return effectiveHint( aspect | QskAspect::FontRole ).toInt();
+    return effectiveHint( aspect | QskAspect::FontRole, status ).toInt();
 }
 
 QFont QskSkinnable::effectiveFont( QskAspect::Aspect aspect ) const
@@ -311,9 +312,10 @@ void QskSkinnable::setGraphicRole( QskAspect::Aspect aspect, int role )
     m_data->hintTable.setGraphicRole( aspect, role );
 }
 
-int QskSkinnable::graphicRole( QskAspect::Aspect aspect ) const
+int QskSkinnable::graphicRole(
+    QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
-    return effectiveHint( aspect | QskAspect::GraphicRole ).toInt();
+    return effectiveHint( aspect | QskAspect::GraphicRole, status ).toInt();
 }
 
 QskColorFilter QskSkinnable::effectiveGraphicFilter(

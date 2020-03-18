@@ -100,12 +100,12 @@ class QSK_EXPORT QskSkinnable
     template< typename T > T flagHint( QskAspect::Aspect, T = T() ) const;
 
     void setFontRole( QskAspect::Aspect, int role );
-    int fontRole( QskAspect::Aspect ) const;
+    int fontRole( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
     QFont effectiveFont( QskAspect::Aspect ) const;
 
     void setGraphicRole( QskAspect::Aspect, int role );
-    int graphicRole( QskAspect::Aspect ) const;
+    int graphicRole( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
     QskColorFilter effectiveGraphicFilter( QskAspect::Aspect ) const;
 
