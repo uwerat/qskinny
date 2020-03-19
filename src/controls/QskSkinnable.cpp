@@ -550,6 +550,11 @@ QVariant QskSkinnable::animatedValue(
 const QVariant& QskSkinnable::storedHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
+    const auto skin = effectiveSkin();
+
+    // clearing all state bits not being handled from the skin
+    aspect.clearState( ~skin->stateMask() );
+    
     QskAspect::Aspect resolvedAspect;
 
     const auto& localTable = m_data->hintTable;
@@ -576,7 +581,7 @@ const QVariant& QskSkinnable::storedHint(
 
     // next we try the hints from the skin
 
-    const auto& skinTable = effectiveSkin()->hintTable();
+    const auto& skinTable = skin->hintTable();
     if ( skinTable.hasHints() )
     {
         QskAspect::Aspect a = aspect;
@@ -819,13 +824,27 @@ void QskSkinnable::setSkinState( QskAspect::State newState )
     if ( m_data->skinState == newState )
         return;
 
-    QskControl* control = owningControl();
+    auto control = owningControl();
 
 #if DEBUG_STATE
     qDebug() << control->className() << ":"
         << skinStateAsPrintable( m_data->skinState ) << "->"
         << skinStateAsPrintable( newState );
 #endif
+
+    const auto skin = effectiveSkin();
+
+    if ( skin )
+    {
+        const auto mask = skin->stateMask();
+        if ( ( newState & mask ) == ( m_data->skinState & mask ) )
+        {
+            // the modified bits are not handled by the skin
+
+            m_data->skinState = newState;
+            return;
+        }
+    }
 
     if ( control->window() && isTransitionAccepted( QskAspect::Aspect() ) )
     {
@@ -838,7 +857,7 @@ void QskSkinnable::setSkinState( QskAspect::State newState )
 
             Aspect aspect = subControl | placement;
 
-            const auto& skinTable = effectiveSkin()->hintTable();
+            const auto& skinTable = skin->hintTable();
 
             for ( int i = 0; i <= LastType; i++ )
             {
@@ -894,7 +913,11 @@ void QskSkinnable::setSkinState( QskAspect::State newState )
 
 QskSkin* QskSkinnable::effectiveSkin() const
 {
-    auto skin = effectiveSkinlet()->skin();
+    QskSkin* skin = nullptr;
+
+    if ( m_data->skinlet )
+        skin = m_data->skinlet->skin();
+
     return skin ? skin : qskSetup->skin();
 }
 
