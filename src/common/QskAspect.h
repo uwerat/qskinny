@@ -180,8 +180,8 @@ namespace QskAspect
         State state() const;
         State topState() const;
 
-        void addState( State state );
-        void clearState( State state );
+        void addState( State );
+        void clearState( State );
         void clearStates();
 
         FlagPrimitive flagPrimitive() const;
