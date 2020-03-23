@@ -130,11 +130,7 @@ void QskFocusIndicator::onFocusItemChanged()
             m_data->connections += connectItem( itemParent );
 
             if ( clippingItem == nullptr && itemParent->clip() )
-            {
-                const auto clipRect = qskFocusIndicatorClipRect( itemParent );
-                if ( !clipRect.isEmpty() )
-                    clippingItem = itemParent;
-            }
+                clippingItem = itemParent;
 
             item = itemParent;
         }
