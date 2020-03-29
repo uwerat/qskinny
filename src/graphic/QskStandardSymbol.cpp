@@ -5,7 +5,9 @@
 
 #include "QskStandardSymbol.h"
 #include "QskGraphic.h"
+
 #include <qpainter.h>
+#include <qpainterpath.h>
 
 static void qskOkGraphic( QPainter* painter )
 {

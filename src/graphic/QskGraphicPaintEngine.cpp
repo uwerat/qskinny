@@ -6,6 +6,8 @@
 #include "QskGraphicPaintEngine.h"
 #include "QskGraphic.h"
 
+#include <qpainterpath.h>
+
 static inline QskGraphic* qskGraphic( QskGraphicPaintEngine* engine )
 {
     if ( !engine->isActive() )
