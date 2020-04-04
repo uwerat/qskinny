@@ -66,11 +66,6 @@ class MyBox : public AnchorBox
     virtual void geometryChangeEvent( QskGeometryChangeEvent* event ) override
     {
         AnchorBox::geometryChangeEvent( event );
-#if 1
-        qDebug() << boxHint( Qt::MinimumSize );
-        qDebug() << boxHint( Qt::PreferredSize );
-        qDebug() << boxHint( Qt::MaximumSize );
-#endif
     }
 };
 

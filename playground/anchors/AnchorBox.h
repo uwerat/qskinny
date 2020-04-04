@@ -21,15 +21,13 @@ class AnchorBox : public QskControl
     void addAnchor( QQuickItem*, Qt::AnchorPoint, Qt::AnchorPoint );
     void addAnchor( QQuickItem*, Qt::AnchorPoint, QQuickItem*, Qt::AnchorPoint );
 
-    QSizeF boxHint( Qt::SizeHint );
-
   protected:
     void geometryChangeEvent( QskGeometryChangeEvent* ) override;
     void updateLayout() override;
 
-  private:
-    void setItemGeometries( const QRectF& );
+    QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
+  private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

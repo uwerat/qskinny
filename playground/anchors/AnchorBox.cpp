@@ -30,22 +30,22 @@ namespace
             switch( anchorPoint )
             {
                 case Qt::AnchorLeft:
-                    return Term( left );
+                    return Term( m_left );
 
                 case Qt::AnchorHorizontalCenter:
                     return centerH();
 
                 case Qt::AnchorRight:
-                    return Term( right );
+                    return Term( m_right );
 
                 case Qt::AnchorTop:
-                    return Term( top );
+                    return Term( m_top );
 
                 case Qt::AnchorVerticalCenter:
                     return centerV();
 
                 case Qt::AnchorBottom:
-                    return Term( bottom );
+                    return Term( m_bottom );
             }
 
             return Expression();
@@ -58,17 +58,23 @@ namespace
 
         QRectF rect() const
         {
-            return QRectF( left.value(), top.value(),
-                right.value() - left.value(), bottom.value() - top.value() );
+            return QRectF( m_left.value(), m_top.value(),
+                m_right.value() - m_left.value(), m_bottom.value() - m_top.value() );
         }
 
-        Expression width() const { return right - left; }
-        Expression height() const { return bottom - top; }
+        inline Expression width() const { return m_right - m_left; }
+        inline Expression height() const { return m_bottom - m_top; }
 
-        Expression centerH() const { return left + 0.5 * width(); }
-        Expression centerV() const { return top + 0.5 * height(); }
+        inline Expression centerH() const { return m_left + 0.5 * width(); }
+        inline Expression centerV() const { return m_top + 0.5 * height(); }
 
-        Variable left, right, top, bottom;
+        inline const Variable& left() const { return m_left; }
+        inline const Variable& right() const { return m_right; }
+        inline const Variable& top() const { return m_top; }
+        inline const Variable& bottom() const { return m_bottom; }
+
+      private:
+        Variable m_left, m_right, m_top, m_bottom;
     };
 
     class Anchor
@@ -85,13 +91,19 @@ namespace
 class AnchorBox::PrivateData
 {
   public:
-    void setupSolver( int type, Solver& );
+    void setupSolver( Solver& );
+    void setItemGeometries( const AnchorBox*, const QRectF& );
 
+  private:
+    void setupAnchorConstraints( Solver& );
+    void setupSizeConstraints( Solver& );
+
+  public:
     QMap< QQuickItem*, Geometry > geometries;
     QVector< Anchor > anchors;
 };
 
-void AnchorBox::PrivateData::setupSolver( int type, Solver& solver )
+void AnchorBox::PrivateData::setupAnchorConstraints( Solver& solver )
 {
     for ( const auto& anchor : anchors )
     {
@@ -102,55 +114,94 @@ void AnchorBox::PrivateData::setupSolver( int type, Solver& solver )
             == r2.expressionAt( anchor.edge2 ) );
 
 #if 1
-        if ( type < 0 )
         {
+            const auto o = qskOrientation( anchor.edge1 );
+
+            /*
+                A constraint with medium strength to make anchored item
+                being stretched according to their stretch factors s1, s2.
+                ( For the moment we don't support having specific factors. )
+             */
             const auto s1 = 1.0;
             const auto s2 = 1.0;
-            const auto o = qskOrientation( anchor.edge1 );
 
             Constraint c( r1.length( o ) * s1 == r2.length( o ) * s2, Strength::medium );
             solver.addConstraint( c );
         }
 #endif
     }
+}
 
+void AnchorBox::PrivateData::setupSizeConstraints( Solver& solver )
+{
     for ( auto it = geometries.begin(); it != geometries.end(); ++it )
     {
         const auto item = it.key();
         auto& r = it.value();
 
-        if ( type < 0 || type == Qt::MinimumSize )
         {
+            // minimum size
             const auto minSize = qskSizeConstraint( item, Qt::MinimumSize );
 
             if ( minSize.width() >= 0.0 )
-                solver.addConstraint( r.right >= r.left + minSize.width() );
+                solver.addConstraint( r.right() >= r.left() + minSize.width() );
 
             if ( minSize.height() >= 0.0 )
-                solver.addConstraint( r.bottom >= r.top + minSize.height() );
+                solver.addConstraint( r.bottom() >= r.top() + minSize.height() );
         }
 
-        if ( type < 0 || type == Qt::PreferredSize )
         {
+            // preferred size
             const auto prefSize = qskSizeConstraint( item, Qt::PreferredSize );
 
-            Constraint c1( r.right == r.left + prefSize.width(), Strength::strong );
+            Constraint c1( r.right() == r.left() + prefSize.width(), Strength::strong );
             solver.addConstraint( c1 );
 
-            Constraint c2( r.bottom == r.top + prefSize.height(), Strength::strong );
+            Constraint c2( r.bottom() == r.top() + prefSize.height(), Strength::strong );
             solver.addConstraint( c2 );
         }
 
-        if ( type < 0 || type == Qt::MaximumSize )
         {
+            // maximum size
             const auto maxSize = qskSizeConstraint( item, Qt::MaximumSize );
             if ( maxSize.width() >= 0.0 )
-                solver.addConstraint( r.right <= r.left + maxSize.width() );
+                solver.addConstraint( r.right() <= r.left() + maxSize.width() );
 
             if ( maxSize.height() >= 0.0 )
-                solver.addConstraint( r.bottom <= r.top + maxSize.height() );
+                solver.addConstraint( r.bottom() <= r.top() + maxSize.height() );
         }
     }
+}
+
+void AnchorBox::PrivateData::setupSolver( Solver& solver )
+{
+    setupAnchorConstraints( solver );
+    setupSizeConstraints( solver );
+}
+
+void AnchorBox::PrivateData::setItemGeometries(
+    const AnchorBox* box, const QRectF& rect )
+{
+    Solver solver;
+    setupSolver( solver );
+
+    const auto& r0 = geometries[ const_cast< AnchorBox* >( box ) ];
+
+    solver.addConstraint( r0.left() == rect.left() );
+    solver.addConstraint( r0.right() == rect.right() );
+    solver.addConstraint( r0.top() == rect.top() );
+    solver.addConstraint( r0.bottom() == rect.bottom() );
+
+    solver.updateVariables();
+
+    for ( auto it = geometries.begin(); it != geometries.end(); ++it )
+        qskSetItemGeometry( it.key(), it.value().rect() );
+
+#if 0
+    qDebug() << "=== Rect:" << rect;
+    for ( auto it = geometries.begin(); it != geometries.end(); ++it )
+        qDebug() << it.key()->objectName() << it.value().rect();
+#endif
 }
 
 AnchorBox::AnchorBox( QQuickItem* parent )
@@ -206,40 +257,9 @@ void AnchorBox::addAnchor( QQuickItem* item1, Qt::AnchorPoint edge1,
     m_data->anchors += anchor;
 }
 
-QSizeF AnchorBox::boxHint( Qt::SizeHint which )
+QSizeF AnchorBox::layoutSizeHint( Qt::SizeHint, const QSizeF& ) const
 {
-    Solver solver;
-    m_data->setupSolver( which, solver );
-    solver.updateVariables();
-
-    auto& r0 = m_data->geometries[ this ];
-
-    return QSizeF( r0.rect().size() );
-}
-
-void AnchorBox::setItemGeometries( const QRectF& rect )
-{
-    Solver solver;
-    m_data->setupSolver( -1, solver );
-
-    auto& r0 = m_data->geometries[ this ];
-
-    solver.addConstraint( r0.left == rect.left() );
-    solver.addConstraint( r0.right == rect.right() );
-    solver.addConstraint( r0.top == rect.top() );
-    solver.addConstraint( r0.bottom == rect.bottom() );
-
-    solver.updateVariables();
-
-    const auto& geometries = m_data->geometries;
-    for ( auto it = geometries.begin(); it != geometries.end(); ++it )
-        qskSetItemGeometry( it.key(), it.value().rect() );
-
-#if 0
-    qDebug() << "=== Rect:" << rect;
-    for ( auto it = geometries.begin(); it != geometries.end(); ++it )
-        qDebug() << it.key()->objectName() << it.value().rect();
-#endif
+    return QSizeF();
 }
 
 void AnchorBox::geometryChangeEvent( QskGeometryChangeEvent* event )
@@ -253,7 +273,7 @@ void AnchorBox::geometryChangeEvent( QskGeometryChangeEvent* event )
 void AnchorBox::updateLayout()
 {
     if ( !maybeUnresized() )
-        setItemGeometries( layoutRect() );
+        m_data->setItemGeometries( this, layoutRect() );
 }
 
 #include "moc_AnchorBox.cpp"
