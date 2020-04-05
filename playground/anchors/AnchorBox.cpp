@@ -12,12 +12,22 @@
 
 #include <QskEvent.h>
 #include <QskQuick.h>
+#include <QskLayoutHint.h>
 
 #include <vector>
 
 static inline Qt::Orientation qskOrientation( int edge )
 {
     return ( edge <= Qt::AnchorRight ) ? Qt::Horizontal : Qt::Vertical;
+}
+
+static inline Qt::AnchorPoint qskAnchorPoint(
+    Qt::Corner corner, Qt::Orientation orientation )
+{
+    if ( orientation == Qt::Horizontal )
+        return ( corner & 0x1 ) ? Qt::AnchorRight : Qt::AnchorLeft;
+    else
+        return ( corner >= 0x2 ) ? Qt::AnchorBottom : Qt::AnchorTop;
 }
 
 namespace
@@ -51,15 +61,21 @@ namespace
             return Expression();
         }
 
-        Expression length( Qt::Orientation orientation )
+        inline Expression length( Qt::Orientation orientation )
         {
             return ( orientation == Qt::Horizontal ) ? width() : height();
         }
 
-        QRectF rect() const
+        inline QRectF rect() const
         {
             return QRectF( m_left.value(), m_top.value(),
                 m_right.value() - m_left.value(), m_bottom.value() - m_top.value() );
+        }
+
+        inline QSizeF size() const
+        {
+            return QSizeF( m_right.value() - m_left.value(),
+                m_bottom.value() - m_top.value() );
         }
 
         inline Expression width() const { return m_right - m_left; }
@@ -91,12 +107,10 @@ namespace
 class AnchorBox::PrivateData
 {
   public:
-    void setupSolver( Solver& );
     void setItemGeometries( const AnchorBox*, const QRectF& );
 
-  private:
     void setupAnchorConstraints( Solver& );
-    void setupSizeConstraints( Solver& );
+    void setupSizeConstraints( const AnchorBox*, bool, Solver& );
 
   public:
     QMap< QQuickItem*, Geometry > geometries;
@@ -132,11 +146,15 @@ void AnchorBox::PrivateData::setupAnchorConstraints( Solver& solver )
     }
 }
 
-void AnchorBox::PrivateData::setupSizeConstraints( Solver& solver )
+void AnchorBox::PrivateData::setupSizeConstraints(
+    const AnchorBox* box, bool preferred, Solver& solver )
 {
     for ( auto it = geometries.begin(); it != geometries.end(); ++it )
     {
         const auto item = it.key();
+        if ( item == box )
+            continue;
+
         auto& r = it.value();
 
         {
@@ -150,6 +168,7 @@ void AnchorBox::PrivateData::setupSizeConstraints( Solver& solver )
                 solver.addConstraint( r.bottom() >= r.top() + minSize.height() );
         }
 
+        if ( preferred )
         {
             // preferred size
             const auto prefSize = qskSizeConstraint( item, Qt::PreferredSize );
@@ -173,17 +192,13 @@ void AnchorBox::PrivateData::setupSizeConstraints( Solver& solver )
     }
 }
 
-void AnchorBox::PrivateData::setupSolver( Solver& solver )
-{
-    setupAnchorConstraints( solver );
-    setupSizeConstraints( solver );
-}
-
 void AnchorBox::PrivateData::setItemGeometries(
     const AnchorBox* box, const QRectF& rect )
 {
+    // Unefficient as we are always starting from scratch TODO ...
     Solver solver;
-    setupSolver( solver );
+    setupAnchorConstraints( solver );
+    setupSizeConstraints( box, true, solver );
 
     const auto& r0 = geometries[ const_cast< AnchorBox* >( box ) ];
 
@@ -213,6 +228,41 @@ AnchorBox::AnchorBox( QQuickItem* parent )
 
 AnchorBox::~AnchorBox()
 {
+}
+
+void AnchorBox::addAnchors( QQuickItem* item, Qt::Orientations orientations )
+{
+    addAnchors( item, this, orientations );
+}
+
+void AnchorBox::addAnchors( QQuickItem* item1,
+    QQuickItem* item2, Qt::Orientations orientations )
+{
+    if ( orientations & Qt::Horizontal )
+    {
+        addAnchor( item1, Qt::AnchorLeft, item2, Qt::AnchorLeft );
+        addAnchor( item1, Qt::AnchorRight, item2, Qt::AnchorRight );
+    }
+    if ( orientations & Qt::Vertical )
+    {
+        addAnchor( item1, Qt::AnchorTop, item2, Qt::AnchorTop );
+        addAnchor( item1, Qt::AnchorBottom, item2, Qt::AnchorBottom );
+    }
+}
+
+void AnchorBox::addAnchors( QQuickItem* item, Qt::Corner corner )
+{
+    addAnchors( item, corner, this, corner );
+}
+
+void AnchorBox::addAnchors( QQuickItem* item1,
+    Qt::Corner corner1, QQuickItem* item2, Qt::Corner corner2 )
+{
+    addAnchor( item1, qskAnchorPoint( corner1, Qt::Horizontal ),
+        item2, qskAnchorPoint( corner2, Qt::Horizontal ) );
+
+    addAnchor( item1, qskAnchorPoint( corner1, Qt::Vertical ),
+        item2, qskAnchorPoint( corner2, Qt::Vertical ) );
 }
 
 void AnchorBox::addAnchor( QQuickItem* item,
@@ -257,9 +307,32 @@ void AnchorBox::addAnchor( QQuickItem* item1, Qt::AnchorPoint edge1,
     m_data->anchors += anchor;
 }
 
-QSizeF AnchorBox::layoutSizeHint( Qt::SizeHint, const QSizeF& ) const
+QSizeF AnchorBox::layoutSizeHint( Qt::SizeHint which, const QSizeF& constraint ) const
 {
-    return QSizeF();
+    if ( constraint.width() >= 0.0 || constraint.height() >= 0.0 )
+    {
+        // TODO ...
+        return QSizeF();
+    }
+
+    const auto& r0 = m_data->geometries[ const_cast< AnchorBox* >( this ) ];
+
+    Solver solver;
+    m_data->setupAnchorConstraints( solver );
+    m_data->setupSizeConstraints( this, which == Qt::PreferredSize, solver );
+
+    if ( which != Qt::PreferredSize )
+    {
+        const qreal b = ( which == Qt::MinimumSize ) ? 0.0 : QskLayoutHint::unlimited;
+
+        // why do we need strong here ?
+        solver.addConstraint( Constraint( r0.width() == b, Strength::strong ) );
+        solver.addConstraint( Constraint( r0.height() == b, Strength::strong ) );
+    }
+
+    solver.updateVariables();
+
+    return r0.size();
 }
 
 void AnchorBox::geometryChangeEvent( QskGeometryChangeEvent* event )

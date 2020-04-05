@@ -54,7 +54,6 @@ class MyBox : public AnchorBox
         : AnchorBox( parent )
     {
         setObjectName( "Box" );
-
         setup1();
     }
 
@@ -115,27 +114,11 @@ void MyBox::setup1()
 void MyBox::setup2()
 {
     auto a = new TestRectangle( "PaleVioletRed" );
+    auto b = new TestRectangle( "DarkSeaGreen" );
 
-    addAnchor( a, Qt::AnchorLeft, Qt::AnchorLeft );
-    addAnchor( a, Qt::AnchorTop, Qt::AnchorTop );
-
-
-#if 0
-    auto b = new Rectangle( "DarkSeaGreen" );
-    addAnchor( a, Qt::AnchorRight, b, Qt::AnchorLeft );
-    addAnchor( b, Qt::AnchorRight, m_layout, Qt::AnchorRight );
-#endif
-
-#if 1
-    auto c = new TestRectangle( "SkyBlue" );
-    addAnchor( a, Qt::AnchorBottom, c, Qt::AnchorTop );
-    addAnchor( a, Qt::AnchorRight, c, Qt::AnchorRight );
-
-    auto d = new TestRectangle( "Coral" );
-    addAnchor( c, Qt::AnchorLeft, d, Qt::AnchorLeft );
-    addAnchor( c, Qt::AnchorBottom, d, Qt::AnchorTop );
-    addAnchor( d, Qt::AnchorRight, Qt::AnchorRight );
-#endif
+    addAnchors( a, Qt::TopLeftCorner );
+    addAnchors( a, Qt::BottomRightCorner, b, Qt::TopLeftCorner );
+    addAnchors( b, Qt::BottomRightCorner );
 }
 
 void MyBox::setup3()
@@ -174,6 +157,14 @@ int main( int argc, char* argv[] )
     SkinnyShortcut::enable( SkinnyShortcut::Quit | SkinnyShortcut::DebugShortcuts );
 
     auto box = new MyBox();
+
+#if 1
+    for ( int i = Qt::MinimumSize; i <= Qt::MaximumSize; i++ )
+    {
+        const auto which = static_cast< Qt::SizeHint >( i );
+        qDebug() << which << box->effectiveSizeHint( which );
+    }
+#endif
 
     QskWindow window;
     window.addItem( box );

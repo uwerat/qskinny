@@ -18,8 +18,16 @@ class AnchorBox : public QskControl
     AnchorBox( QQuickItem* parent = nullptr );
     ~AnchorBox() override;
 
+    // anchoring to the box
     void addAnchor( QQuickItem*, Qt::AnchorPoint, Qt::AnchorPoint );
+    void addAnchors( QQuickItem*, Qt::Corner );
+    void addAnchors( QQuickItem*, Qt::Orientations = Qt::Horizontal | Qt::Vertical );
+
+    // anchoring between 2 children
     void addAnchor( QQuickItem*, Qt::AnchorPoint, QQuickItem*, Qt::AnchorPoint );
+    void addAnchors( QQuickItem*, Qt::Corner, QQuickItem*, Qt::Corner );
+    void addAnchors( QQuickItem*, QQuickItem*,
+        Qt::Orientations = Qt::Horizontal | Qt::Vertical );
 
   protected:
     void geometryChangeEvent( QskGeometryChangeEvent* ) override;
