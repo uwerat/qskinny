@@ -46,7 +46,7 @@ namespace
                     return centerH();
 
                 case Qt::AnchorRight:
-                    return Term( m_right );
+                    return right();
 
                 case Qt::AnchorTop:
                     return Term( m_top );
@@ -55,42 +55,40 @@ namespace
                     return centerV();
 
                 case Qt::AnchorBottom:
-                    return Term( m_bottom );
+                    return bottom();
             }
 
             return Expression();
         }
 
-        inline Expression length( Qt::Orientation orientation )
+        inline const Variable& length( Qt::Orientation orientation )
         {
-            return ( orientation == Qt::Horizontal ) ? width() : height();
+            return ( orientation == Qt::Horizontal ) ? m_width : m_height;
         }
 
         inline QRectF rect() const
         {
             return QRectF( m_left.value(), m_top.value(),
-                m_right.value() - m_left.value(), m_bottom.value() - m_top.value() );
+                m_width.value(), m_height.value() );
         }
 
         inline QSizeF size() const
         {
-            return QSizeF( m_right.value() - m_left.value(),
-                m_bottom.value() - m_top.value() );
+            return QSizeF( m_width.value(), m_height.value() );
         }
 
-        inline Expression width() const { return m_right - m_left; }
-        inline Expression height() const { return m_bottom - m_top; }
-
-        inline Expression centerH() const { return m_left + 0.5 * width(); }
-        inline Expression centerV() const { return m_top + 0.5 * height(); }
+        inline Expression centerH() const { return m_left + 0.5 * m_width; }
+        inline Expression centerV() const { return m_top + 0.5 * m_height; }
+        inline Expression right() const { return m_left + m_width; }
+        inline Expression bottom() const { return m_top + m_height; }
 
         inline const Variable& left() const { return m_left; }
-        inline const Variable& right() const { return m_right; }
         inline const Variable& top() const { return m_top; }
-        inline const Variable& bottom() const { return m_bottom; }
+        inline const Variable& width() const { return m_width; }
+        inline const Variable& height() const { return m_height; }
 
       private:
-        Variable m_left, m_right, m_top, m_bottom;
+        Variable m_left, m_top, m_width, m_height;
     };
 
     class Anchor
@@ -109,7 +107,7 @@ class AnchorBox::PrivateData
   public:
     void setItemGeometries( const AnchorBox*, const QRectF& );
 
-    void setupAnchorConstraints( Solver& );
+    void setupAnchorConstraints( const AnchorBox*, Solver& );
     void setupSizeConstraints( const AnchorBox*, bool, Solver& );
 
   public:
@@ -117,17 +115,53 @@ class AnchorBox::PrivateData
     QVector< Anchor > anchors;
 };
 
-void AnchorBox::PrivateData::setupAnchorConstraints( Solver& solver )
+void AnchorBox::PrivateData::setupAnchorConstraints(
+    const AnchorBox* box, Solver& solver )
 {
     for ( const auto& anchor : anchors )
     {
         auto& r1 = geometries[ anchor.item1 ];
         auto& r2 = geometries[ anchor.item2 ];
 
-        solver.addConstraint( r1.expressionAt( anchor.edge1 )
-            == r2.expressionAt( anchor.edge2 ) );
+        const auto expr1 = r1.expressionAt( anchor.edge1 );
+
+        Expression expr2;
+
+        if ( anchor.item2 == box )
+        {
+            switch( anchor.edge2 )
+            {
+                case Qt::AnchorLeft:
+                case Qt::AnchorTop:
+                    expr2 = 0;
+                    break;
+
+                case Qt::AnchorHorizontalCenter:
+                    expr2 = Term( 0.5 * r2.width() );
+                    break;
+
+                case Qt::AnchorRight:
+                    expr2 = Term( r2.width() );
+                    break;
+
+                case Qt::AnchorVerticalCenter:
+                    expr2 = Term( 0.5 * r2.height() );
+                    break;
+
+                case Qt::AnchorBottom:
+                    expr2 = Term( r2.height() );
+                    break;
+            }
+        }
+        else
+        {
+            expr2 = r2.expressionAt( anchor.edge2 );
+        }
+
+        solver.addConstraint( expr1 == expr2 );
 
 #if 1
+        if ( anchor.item2 != box )
         {
             const auto o = qskOrientation( anchor.edge1 );
 
@@ -162,10 +196,10 @@ void AnchorBox::PrivateData::setupSizeConstraints(
             const auto minSize = qskSizeConstraint( item, Qt::MinimumSize );
 
             if ( minSize.width() >= 0.0 )
-                solver.addConstraint( r.right() >= r.left() + minSize.width() );
+                solver.addConstraint( r.width() >= minSize.width() );
 
             if ( minSize.height() >= 0.0 )
-                solver.addConstraint( r.bottom() >= r.top() + minSize.height() );
+                solver.addConstraint( r.height() >= minSize.height() );
         }
 
         if ( preferred )
@@ -173,10 +207,10 @@ void AnchorBox::PrivateData::setupSizeConstraints(
             // preferred size
             const auto prefSize = qskSizeConstraint( item, Qt::PreferredSize );
 
-            Constraint c1( r.right() == r.left() + prefSize.width(), Strength::strong );
+            Constraint c1( r.width() == prefSize.width(), Strength::strong );
             solver.addConstraint( c1 );
 
-            Constraint c2( r.bottom() == r.top() + prefSize.height(), Strength::strong );
+            Constraint c2( r.height() == prefSize.height(), Strength::strong );
             solver.addConstraint( c2 );
         }
 
@@ -184,10 +218,10 @@ void AnchorBox::PrivateData::setupSizeConstraints(
             // maximum size
             const auto maxSize = qskSizeConstraint( item, Qt::MaximumSize );
             if ( maxSize.width() >= 0.0 )
-                solver.addConstraint( r.right() <= r.left() + maxSize.width() );
+                solver.addConstraint( r.width() <= maxSize.width() );
 
             if ( maxSize.height() >= 0.0 )
-                solver.addConstraint( r.bottom() <= r.top() + maxSize.height() );
+                solver.addConstraint( r.height() <= maxSize.height() );
         }
     }
 }
@@ -197,20 +231,26 @@ void AnchorBox::PrivateData::setItemGeometries(
 {
     // Unefficient as we are always starting from scratch TODO ...
     Solver solver;
-    setupAnchorConstraints( solver );
+    setupAnchorConstraints( box, solver );
     setupSizeConstraints( box, true, solver );
 
     const auto& r0 = geometries[ const_cast< AnchorBox* >( box ) ];
 
-    solver.addConstraint( r0.left() == rect.left() );
-    solver.addConstraint( r0.right() == rect.right() );
-    solver.addConstraint( r0.top() == rect.top() );
-    solver.addConstraint( r0.bottom() == rect.bottom() );
+    const double strength = 0.9 * Strength::required;
+
+    solver.addEditVariable( r0.width(), strength );
+    solver.addEditVariable( r0.height(), strength );
+
+    solver.suggestValue( r0.width(), rect.width() );
+    solver.suggestValue( r0.height(), rect.height() );
 
     solver.updateVariables();
 
     for ( auto it = geometries.begin(); it != geometries.end(); ++it )
-        qskSetItemGeometry( it.key(), it.value().rect() );
+    {
+        const auto r = it.value().rect().translated( rect.left(), rect.top() );
+        qskSetItemGeometry( it.key(), r );
+    }
 
 #if 0
     qDebug() << "=== Rect:" << rect;
@@ -277,6 +317,9 @@ void AnchorBox::addAnchor( QQuickItem* item1, Qt::AnchorPoint edge1,
     if ( item1 == item2 || item1 == nullptr || item2 == nullptr )
         return;
 
+    if ( item1 == this )
+        std::swap( item1, item2 );
+
     if ( item1 != this )
     {
         if ( item1->parent() == nullptr )
@@ -318,7 +361,7 @@ QSizeF AnchorBox::layoutSizeHint( Qt::SizeHint which, const QSizeF& constraint )
     const auto& r0 = m_data->geometries[ const_cast< AnchorBox* >( this ) ];
 
     Solver solver;
-    m_data->setupAnchorConstraints( solver );
+    m_data->setupAnchorConstraints( this, solver );
     m_data->setupSizeConstraints( this, which == Qt::PreferredSize, solver );
 
     if ( which != Qt::PreferredSize )
