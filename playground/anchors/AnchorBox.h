@@ -36,6 +36,9 @@ class AnchorBox : public QskControl
     QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
   private:
+    void setupAnchorConstraints();
+    void setupSizeConstraints( bool );
+
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
