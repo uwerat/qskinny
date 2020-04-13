@@ -15,6 +15,17 @@
 #include <qpointer.h>
 #include <qset.h>
 
+static inline QStringList qskSplitPath( const QString& s )
+{
+    const auto separator = QDir::listSeparator();
+
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 15, 0 )
+    return s.split( separator, Qt::SkipEmptyParts );
+#else
+    return s.split( separator, QString::SkipEmptyParts );
+#endif
+}
+
 /*
     We could use QFactoryLoader, but as it is again a "private" class
     and does a couple of hardcoded things we don't need ( like always resolving
@@ -36,8 +47,7 @@ static QStringList qskPathList( const char* envName )
     if ( env.isEmpty() )
         return QStringList();
 
-    return QFile::decodeName( env ).split(
-        QDir::listSeparator(), QString::SkipEmptyParts );
+    return qskSplitPath( QFile::decodeName( env ) );
 }
 
 static inline QString qskResolvedPath( const QString& path )
