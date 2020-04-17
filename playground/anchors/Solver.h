@@ -14,6 +14,8 @@ class Solver
     Solver();
     ~Solver();
 
+    bool hasConstraints() const;
+
     void addConstraint( const Constraint& );
     void removeConstraint( const Constraint& );
     bool hasConstraint( const Constraint& ) const;

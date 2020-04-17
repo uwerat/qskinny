@@ -388,6 +388,8 @@ class SimplexSolver
     void removeConstraint( const Constraint& );
     bool hasConstraint( const Constraint& ) const;
 
+    bool hasConstraints() const;
+
     void addEditVariable( const Variable&, double strength );
     void removeEditVariable( const Variable& );
 
@@ -437,6 +439,11 @@ SimplexSolver::SimplexSolver()
 SimplexSolver::~SimplexSolver()
 {
     clearRows();
+}
+
+bool SimplexSolver::hasConstraints() const
+{
+    return !m_constraints.empty();
 }
 
 void SimplexSolver::addConstraint( const Constraint& constraint )
@@ -1032,6 +1039,11 @@ Solver::Solver()
 
 Solver::~Solver()
 {
+}
+
+bool Solver::hasConstraints() const
+{
+    return m_solver->hasConstraints();
 }
 
 void Solver::addConstraint( const Constraint& constraint )

@@ -108,6 +108,9 @@ class AnchorBox::PrivateData
     QMap< QQuickItem*, Geometry > geometries;
     QVector< Anchor > anchors;
     Solver solver;
+
+    QSizeF hints[3];
+    bool hasValidHints = false;
 };
 
 AnchorBox::AnchorBox( QQuickItem* parent )
@@ -209,28 +212,57 @@ QSizeF AnchorBox::layoutSizeHint( Qt::SizeHint which, const QSizeF& constraint )
         return QSizeF();
     }
 
-    const auto& r0 = m_data->geometries[ const_cast< AnchorBox* >( this ) ];
-
-    Solver& solver = m_data->solver;
-    solver.reset();
-
-    auto that = const_cast< AnchorBox* >( this );
-    that->setupAnchorConstraints();
-    that->setupSizeConstraints( which == Qt::PreferredSize );
-
-    if ( which != Qt::PreferredSize )
+    if ( !m_data->hasValidHints )
     {
-        const qreal b = ( which == Qt::MinimumSize ) ? 0.0 : QskLayoutHint::unlimited;
+        auto that = const_cast< AnchorBox* >( this );
 
-        // why do we need strong here ?
-        solver.addConstraint( Constraint( r0.width() == b, Strength::strong ) );
-        solver.addConstraint( Constraint( r0.height() == b, Strength::strong ) );
+        that->updateHints();
+        m_data->hasValidHints = true;
     }
 
-    solver.updateVariables();
-    solver.reset();
+    return m_data->hints[ which ];
+}
 
-    return r0.size();
+void AnchorBox::updateHints()
+{
+    const auto& r0 = m_data->geometries[ const_cast< AnchorBox* >( this ) ];
+
+    Solver solver;
+
+    setupAnchorConstraints( solver );
+    setupSizeConstraints( solver );
+
+    {
+        solver.updateVariables();
+        m_data->hints[ Qt::PreferredSize ] = r0.size();
+    }
+
+    const double strength = 0.9 * Strength::required;
+    
+    solver.addEditVariable( r0.width(), strength );
+    solver.addEditVariable( r0.height(), strength );
+
+    {
+        solver.suggestValue( r0.width(), 0.0 );
+        solver.suggestValue( r0.height(), 0.0 );
+
+        solver.updateVariables();
+        m_data->hints[ Qt::MinimumSize ] = r0.size();
+    }
+
+    {
+        /*
+            The solver seems to run into overflows with
+            std::numeric_limits< unsigned float >::max()
+         */
+        const qreal max = std::numeric_limits< unsigned int >::max();
+
+        solver.suggestValue( r0.width(), max );
+        solver.suggestValue( r0.height(), max );
+
+        solver.updateVariables();
+        m_data->hints[ Qt::MaximumSize ] = r0.size();
+    }
 }
 
 void AnchorBox::geometryChangeEvent( QskGeometryChangeEvent* event )
@@ -246,39 +278,50 @@ void AnchorBox::updateLayout()
     if ( maybeUnresized() )
         return;
 
-    auto& geometries = m_data->geometries;
-
     const auto rect = layoutRect();
-    const auto& r0 = geometries[ this ];
 
-    const double strength = 0.9 * Strength::required;
+    updateVariables( rect.width(), rect.height() );
+
+    const auto& geometries = m_data->geometries;
+    for ( auto it = geometries.begin(); it != geometries.end(); ++it )
+    {
+        auto item = it.key();
+        if ( item != this )
+        {
+            auto r = it.value().rect();
+            r.translate( rect.left(), rect.top() );
+
+            qskSetItemGeometry( item, r );
+        }
+    }
+
+}
+
+void AnchorBox::updateVariables( qreal width, qreal height )
+{
+    const auto& r0 = m_data->geometries[ this ];
 
     Solver& solver = m_data->solver;
 
-    if ( !solver.hasEditVariable( r0.width() ) )
+    if ( !solver.hasConstraints() )
     {
-        setupAnchorConstraints();
-        setupSizeConstraints( true );
+        setupAnchorConstraints( solver );
+        setupSizeConstraints( solver );
+
+        const double strength = 0.9 * Strength::required;
 
         solver.addEditVariable( r0.width(), strength );
         solver.addEditVariable( r0.height(), strength );
     }
 
-    solver.suggestValue( r0.width(), rect.width() );
-    solver.suggestValue( r0.height(), rect.height() );
+    solver.suggestValue( r0.width(), width );
+    solver.suggestValue( r0.height(), height );
 
     solver.updateVariables();
-
-    for ( auto it = geometries.begin(); it != geometries.end(); ++it )
-    {
-        const auto r = it.value().rect().translated( rect.left(), rect.top() );
-        qskSetItemGeometry( it.key(), r );
-    }
 }
 
-void AnchorBox::setupAnchorConstraints()
+void AnchorBox::setupAnchorConstraints( Solver& solver )
 {
-    auto& solver = m_data->solver;
     auto& geometries = m_data->geometries;
 
     for ( const auto& anchor : m_data->anchors )
@@ -343,9 +386,8 @@ void AnchorBox::setupAnchorConstraints()
     }
 }
 
-void AnchorBox::setupSizeConstraints( bool preferred )
+void AnchorBox::setupSizeConstraints( Solver& solver )
 {
-    auto& solver = m_data->solver;
     auto& geometries = m_data->geometries;
 
     for ( auto it = geometries.begin(); it != geometries.end(); ++it )
@@ -367,7 +409,6 @@ void AnchorBox::setupSizeConstraints( bool preferred )
                 solver.addConstraint( r.height() >= minSize.height() );
         }
 
-        if ( preferred )
         {
             // preferred size
             const auto prefSize = qskSizeConstraint( item, Qt::PreferredSize );
@@ -390,6 +431,5 @@ void AnchorBox::setupSizeConstraints( bool preferred )
         }
     }
 }
-
 
 #include "moc_AnchorBox.cpp"
