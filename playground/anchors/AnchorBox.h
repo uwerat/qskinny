@@ -40,8 +40,8 @@ class AnchorBox : public QskControl
   private:
     void updateHints();
     void updateVariables( qreal width, qreal height );
-    void setupAnchorConstraints( Solver& );
-    void setupSizeConstraints( Solver& );
+    void setupAnchorConstraints( bool layoutChildren, Solver& );
+    void setupSizeConstraints( bool layoutChildren, Solver& );
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

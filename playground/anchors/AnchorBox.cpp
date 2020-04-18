@@ -229,8 +229,8 @@ void AnchorBox::updateHints()
 
     Solver solver;
 
-    setupAnchorConstraints( solver );
-    setupSizeConstraints( solver );
+    setupAnchorConstraints( false, solver );
+    setupSizeConstraints( true, solver );
 
     {
         solver.updateVariables();
@@ -305,8 +305,8 @@ void AnchorBox::updateVariables( qreal width, qreal height )
 
     if ( !solver.hasConstraints() )
     {
-        setupAnchorConstraints( solver );
-        setupSizeConstraints( solver );
+        setupAnchorConstraints( true, solver );
+        setupSizeConstraints( true, solver );
 
         const double strength = 0.9 * Strength::required;
 
@@ -320,7 +320,7 @@ void AnchorBox::updateVariables( qreal width, qreal height )
     solver.updateVariables();
 }
 
-void AnchorBox::setupAnchorConstraints( Solver& solver )
+void AnchorBox::setupAnchorConstraints( bool layoutChildren, Solver& solver )
 {
     auto& geometries = m_data->geometries;
 
@@ -367,7 +367,7 @@ void AnchorBox::setupAnchorConstraints( Solver& solver )
         solver.addConstraint( expr1 == expr2 );
 
 #if 1
-        if ( anchor.item2 != this )
+        if ( layoutChildren && anchor.item2 != this )
         {
             const auto o = qskOrientation( anchor.edge1 );
 
@@ -386,7 +386,7 @@ void AnchorBox::setupAnchorConstraints( Solver& solver )
     }
 }
 
-void AnchorBox::setupSizeConstraints( Solver& solver )
+void AnchorBox::setupSizeConstraints( bool layoutChildren, Solver& solver )
 {
     auto& geometries = m_data->geometries;
 
@@ -409,6 +409,7 @@ void AnchorBox::setupSizeConstraints( Solver& solver )
                 solver.addConstraint( r.height() >= minSize.height() );
         }
 
+        if ( layoutChildren )
         {
             // preferred size
             const auto prefSize = qskSizeConstraint( item, Qt::PreferredSize );
