@@ -8,8 +8,6 @@
 
 #include "QskControl.h"
 
-class Solver;
-
 class AnchorBox : public QskControl
 {
     Q_OBJECT
@@ -39,9 +37,7 @@ class AnchorBox : public QskControl
 
   private:
     void updateHints();
-    void updateVariables( qreal width, qreal height );
-    void setupAnchorConstraints( bool layoutChildren, Solver& );
-    void setupSizeConstraints( bool layoutChildren, Solver& );
+    void updateGeometries( const QRectF& );
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
