@@ -5,10 +5,10 @@
 
 #include "AnchorBox.h"
 
-#include "Solver.h"
-#include "Constraint.h"
-#include "Variable.h"
-#include "Expression.h"
+#include "kiwi/Solver.h"
+#include "kiwi/Constraint.h"
+#include "kiwi/Variable.h"
+#include "kiwi/Expression.h"
 
 #include <QskEvent.h>
 #include <QskQuick.h>
