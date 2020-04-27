@@ -1,6 +1,6 @@
 TEMPLATE = subdirs
 
-qtHaveModule(svg) {
+qtHaveModule(svg):!cross_compile {
 
     SUBDIRS += \
         svg2qvg

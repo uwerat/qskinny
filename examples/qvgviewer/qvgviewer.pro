@@ -16,8 +16,13 @@ SVGSOURCES = \
     svg/01.08.05q.svg \
     svg/01.25.18.svg
 
-# Convert path to shell path, otherwise it fails on Windows.
-SVG2QVG=$$shell_path($${QSK_OUT_ROOT}/tools/bin/svg2qvg)
+cross_compile {
+    # for now just assume that a desktop version of the tool is in the path
+    SVG2QVG=svg2qvg
+} else {
+    # Convert path to shell path, otherwise it fails on Windows.
+    SVG2QVG=$$shell_path($${QSK_OUT_ROOT}/tools/bin/svg2qvg)
+}
 
 svg2qvg.name = SVG compiler
 svg2qvg.input = SVGSOURCES
