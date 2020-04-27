@@ -23,6 +23,7 @@ QSK_INSTALL_HEADERS   = $${QSK_INSTALL_PREFIX}/include
 QSK_INSTALL_LIBS      = $${QSK_INSTALL_PREFIX}/lib
 QSK_INSTALL_BINS      = $${QSK_INSTALL_PREFIX}/bin
 QSK_INSTALL_PLUGINS   = $${QSK_INSTALL_PREFIX}/plugins
+QSK_INSTALL_EXAMPLES  = $${QSK_INSTALL_PREFIX}/examples
 
 CONFIG           += no_private_qt_headers_warning
 

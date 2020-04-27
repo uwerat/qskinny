@@ -51,3 +51,6 @@ fontconfig {
 
     DEFINES += FONTCONFIG_FILE=$$clean_path( $$QSK_FONTCONF_FILE )
 }
+
+target.path    = $${QSK_INSTALL_LIBS}
+INSTALLS       = target

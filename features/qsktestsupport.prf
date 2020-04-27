@@ -5,3 +5,6 @@ DEPENDPATH  *= $${QSK_TEST_SUPPORT_DIRS}
 
 QMAKE_RPATHDIR *= $${QSK_LIB_DIR}
 qskAddLibrary( $${QSK_LIB_DIR}, qsktestsupport)
+
+qskAddLibrary( $${QSK_PLUGIN_DIR}/skins, squiekskin)
+qskAddLibrary( $${QSK_PLUGIN_DIR}/skins, materialskin)
