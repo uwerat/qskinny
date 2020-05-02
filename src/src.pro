@@ -21,6 +21,7 @@ HEADERS += \
     common/QskFunctions.h \
     common/QskGlobal.h \
     common/QskGradient.h \
+    common/QskIntervalF.h \
     common/QskMargins.h \
     common/QskMetaFunction.h \
     common/QskMetaFunction.hpp \
@@ -40,6 +41,7 @@ SOURCES += \
     common/QskCorner.cpp \
     common/QskFunctions.cpp \
     common/QskGradient.cpp \
+    common/QskIntervalF.cpp \
     common/QskMargins.cpp \
     common/QskMetaFunction.cpp \
     common/QskMetaInvokable.cpp \
