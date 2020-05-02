@@ -17,6 +17,7 @@
 #include <QskGradient.h>
 #include <QskGraphicLabel.h>
 #include <QskIntervalF.h>
+#include <QskLayoutHint.h>
 #include <QskMessageWindow.h>
 #include <QskPopup.h>
 #include <QskPushButton.h>
@@ -289,6 +290,7 @@ void QskQml::registerTypes()
     QSK_REGISTER_GADGET( QskGradient, "Gradient" );
     QSK_REGISTER_GADGET( QskGradientStop, "GradientStop" );
     QSK_REGISTER_GADGET( QskIntervalF, "IntervalF" );
+    QSK_REGISTER_GADGET( QskLayoutHint, "LayoutHint" );
     QSK_REGISTER_GADGET( QskSizePolicy, "SizePolicy" );
     QSK_REGISTER_GADGET( QskTextOptions, "TextOptions" );
 
