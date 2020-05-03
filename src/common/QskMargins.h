@@ -46,7 +46,7 @@ class QSK_EXPORT QskMargins : public QMarginsF
 
     QskMargins interpolated( const QskMargins&, qreal progress ) const noexcept;
 
-    bool isExpanding() const;
+    constexpr bool isExpanding() const noexcept;
 
     static QVariant interpolate( const QskMargins&,
         const QskMargins&, qreal progress ) noexcept;
@@ -84,7 +84,7 @@ inline void QskMargins::setMargins( qreal margin ) noexcept
     *this = QskMargins( margin );
 }
 
-inline bool QskMargins::isExpanding() const
+inline constexpr bool QskMargins::isExpanding() const noexcept
 {
     return ( left() > 0 ) || ( right() > 0 ) || ( top() > 0 ) || ( right() > 0 );
 }
