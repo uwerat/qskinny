@@ -22,24 +22,12 @@ static inline qreal qskAbsoluted( qreal length, qreal percentage )
     return percentage / 100.0 * 0.5 * length;
 }
 
-QskBoxBorderMetrics::~QskBoxBorderMetrics()
-{
-}
-
-bool QskBoxBorderMetrics::operator==( const QskBoxBorderMetrics& other ) const
-{
-    if ( m_sizeMode != other.m_sizeMode )
-        return false;
-
-    return m_widths == other.m_widths;
-}
-
-void QskBoxBorderMetrics::setSizeMode( Qt::SizeMode sizeMode )
+void QskBoxBorderMetrics::setSizeMode( Qt::SizeMode sizeMode ) noexcept
 {
     m_sizeMode = sizeMode;
 }
 
-void QskBoxBorderMetrics::setWidths( const QskMargins& widths )
+void QskBoxBorderMetrics::setWidths( const QskMargins& widths ) noexcept
 {
     m_widths.setLeft( qMax( widths.left(), 0.0 ) );
     m_widths.setTop( qMax( widths.top(), 0.0 ) );
@@ -47,12 +35,12 @@ void QskBoxBorderMetrics::setWidths( const QskMargins& widths )
     m_widths.setBottom( qMax( widths.bottom(), 0.0 ) );
 }
 
-void QskBoxBorderMetrics::setWidthAt( Qt::Edges edges, qreal width )
+void QskBoxBorderMetrics::setWidthAt( Qt::Edges edges, qreal width ) noexcept
 {
     m_widths.setMarginsAt( edges, qMax( width, 0.0 ) );
 }
 
-QskBoxBorderMetrics QskBoxBorderMetrics::toAbsolute( const QSizeF& size ) const
+QskBoxBorderMetrics QskBoxBorderMetrics::toAbsolute( const QSizeF& size ) const noexcept
 {
     if ( m_sizeMode != Qt::RelativeSize )
         return *this;
@@ -79,7 +67,7 @@ QskBoxBorderMetrics QskBoxBorderMetrics::toAbsolute( const QSizeF& size ) const
 }
 
 QskBoxBorderMetrics QskBoxBorderMetrics::interpolated(
-    const QskBoxBorderMetrics& to, qreal ratio ) const
+    const QskBoxBorderMetrics& to, qreal ratio ) const noexcept
 {
     if ( ( *this == to ) || ( m_sizeMode != to.m_sizeMode ) )
         return to;
@@ -95,7 +83,7 @@ QVariant QskBoxBorderMetrics::interpolate(
     return QVariant::fromValue( from.interpolated( to, progress ) );
 }
 
-uint QskBoxBorderMetrics::hash( uint seed ) const
+uint QskBoxBorderMetrics::hash( uint seed ) const noexcept
 {
     uint hash = qHashBits( &m_widths, sizeof( m_widths ), seed );
 
