@@ -448,10 +448,9 @@ namespace QskRgbValue
         return toTransparent( QColor( color ), alpha );
     }
 
-    inline QRgb toTransparent( QRgb rgb, int alpha = 0 )
+    inline constexpr QRgb toTransparent( QRgb rgb, int alpha = 0 ) noexcept
     {
-        const auto alphaU = static_cast< uint >( alpha );
-        return ( rgb & ColorMask ) | ( ( alphaU & 0xffu ) << 24 );
+        return ( rgb & ColorMask ) | ( ( static_cast< uint >( alpha ) & 0xffu ) << 24 );
     }
 }
 
