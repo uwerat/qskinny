@@ -13,7 +13,6 @@
 #include <qsize.h>
 
 class QVariant;
-class QMarginsF;
 
 class QSK_EXPORT QskBoxShapeMetrics
 {
@@ -70,8 +69,6 @@ class QSK_EXPORT QskBoxShapeMetrics
     QskBoxShapeMetrics toAbsolute( const QSizeF& ) const noexcept;
 
     QskBoxShapeMetrics transposed() const noexcept;
-
-    QMarginsF padding( const QSizeF& ) const noexcept;
 
     uint hash( uint seed = 0 ) const noexcept;
 
