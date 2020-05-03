@@ -143,14 +143,6 @@ static inline QskColorFilter qskInterpolatedFilter(
     return interpolated;
 }
 
-QskColorFilter::QskColorFilter()
-{
-}
-
-QskColorFilter::~QskColorFilter()
-{
-}
-
 void QskColorFilter::addColorSubstitution( QRgb from, QRgb to )
 {
     for ( auto& substitution : m_substitutions )
@@ -201,12 +193,6 @@ QColor QskColorFilter::substituted( const QColor& color ) const
 QRgb QskColorFilter::substituted( const QRgb& rgb ) const
 {
     return qskSubstitutedRgb( m_substitutions, rgb );
-}
-
-bool QskColorFilter::operator==( const QskColorFilter& other ) const
-{
-    // what about having the same substitutions, but in different order ???
-    return ( m_substitutions == other.m_substitutions );
 }
 
 QskColorFilter QskColorFilter::interpolated(

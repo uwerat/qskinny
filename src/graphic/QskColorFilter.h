@@ -16,13 +16,11 @@
 class QPen;
 class QBrush;
 class QVariant;
-class QDebug;
 
 class QSK_EXPORT QskColorFilter
 {
   public:
-    QskColorFilter();
-    ~QskColorFilter();
+    QskColorFilter() noexcept = default;
 
     void addColorSubstitution( QRgb from, QRgb to );
     void addColorSubstitution( Qt::GlobalColor, QRgb );
@@ -37,12 +35,12 @@ class QSK_EXPORT QskColorFilter
     QColor substituted( const QColor& ) const;
     QRgb substituted( const QRgb& ) const;
 
-    bool isIdentity() const;
+    bool isIdentity() const noexcept;
 
-    bool operator==( const QskColorFilter& other ) const;
-    bool operator!=( const QskColorFilter& other ) const;
+    bool operator==( const QskColorFilter& other ) const noexcept;
+    bool operator!=( const QskColorFilter& other ) const noexcept;
 
-    const QVector< QPair< QRgb, QRgb > >& substitutions() const;
+    const QVector< QPair< QRgb, QRgb > >& substitutions() const noexcept;
 
     QskColorFilter interpolated(
         const QskColorFilter&, qreal value ) const;
@@ -55,19 +53,26 @@ class QSK_EXPORT QskColorFilter
     QVector< QPair< QRgb, QRgb > > m_substitutions;
 };
 
-inline bool QskColorFilter::isIdentity() const
+inline bool QskColorFilter::isIdentity() const noexcept
 {
     return m_substitutions.isEmpty();
 }
 
+inline bool QskColorFilter::operator==(
+    const QskColorFilter& other ) const noexcept
+{
+    // what about having the same substitutions, but in different order ???
+    return ( m_substitutions == other.m_substitutions );
+}
+
 inline bool QskColorFilter::operator!=(
-    const QskColorFilter& other ) const
+    const QskColorFilter& other ) const noexcept
 {
     return ( !( *this == other ) );
 }
 
 inline const QVector< QPair< QRgb, QRgb > >&
-QskColorFilter::substitutions() const
+QskColorFilter::substitutions() const noexcept
 {
     return m_substitutions;
 }
@@ -91,6 +96,7 @@ inline void QskColorFilter::addColorSubstitution(
 Q_DECLARE_METATYPE( QskColorFilter )
 
 #ifndef QT_NO_DEBUG_STREAM
+class QDebug;
 QSK_EXPORT QDebug operator<<( QDebug, const QskColorFilter& );
 #endif
 
