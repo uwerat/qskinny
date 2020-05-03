@@ -37,7 +37,7 @@ class QSK_EXPORT QskBoxRenderer
     class Quad
     {
       public:
-        inline constexpr Quad()
+        inline constexpr Quad() noexcept
             : left( 0.0 )
             , top( 0.0 )
             , right( 0.0 )
@@ -47,7 +47,7 @@ class QSK_EXPORT QskBoxRenderer
         {
         }
 
-        inline Quad( const QRectF& rect )
+        inline constexpr Quad( const QRectF& rect ) noexcept
             : left( rect.left() )
             , top( rect.top() )
             , right( rect.right() )
@@ -57,7 +57,7 @@ class QSK_EXPORT QskBoxRenderer
         {
         }
 
-        inline bool operator==( const Quad& other ) const
+        inline constexpr bool operator==( const Quad& other ) const noexcept
         {
             return
                 ( left == other.left ) &&
@@ -66,12 +66,12 @@ class QSK_EXPORT QskBoxRenderer
                 ( bottom == other.bottom );
         }
 
-        inline bool operator!=( const Quad& other ) const
+        inline constexpr bool operator!=( const Quad& other ) const noexcept
         {
             return !( *this == other );
         }
 
-        inline bool isEmpty() const
+        inline constexpr bool isEmpty() const noexcept
         {
             return ( width <= 0 ) || ( height <= 0 );
         }
