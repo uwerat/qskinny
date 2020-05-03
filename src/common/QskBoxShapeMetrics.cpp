@@ -8,6 +8,8 @@
 #include <qhashfunctions.h>
 #include <qvariant.h>
 
+#include <algorithm>
+
 static void qskRegisterBoxShapeMetrics()
 {
     qRegisterMetaType< QskBoxShapeMetrics >();
@@ -28,99 +30,31 @@ static inline qreal qskAbsoluted( qreal length, qreal percentage )
     return percentage / 100.0 * 0.5 * length;
 }
 
-QskBoxShapeMetrics::QskBoxShapeMetrics(
-        qreal radiusX, qreal radiusY, Qt::SizeMode sizeMode )
-    : m_sizeMode( sizeMode )
-    , m_aspectRatioMode( Qt::KeepAspectRatio )
+static inline void qskSetRadius( qreal rx, qreal ry, QSizeF& radius )
 {
-    setRadius( radiusX, radiusY );
-}
-
-QskBoxShapeMetrics::~QskBoxShapeMetrics()
-{
-}
-
-bool QskBoxShapeMetrics::operator==( const QskBoxShapeMetrics& other ) const
-{
-    if ( m_sizeMode != other.m_sizeMode )
-        return false;
-
-    if ( m_aspectRatioMode != other.m_aspectRatioMode )
-        return false;
-
-    for ( size_t i = 0; i < 4; i++ )
-    {
-        if ( m_radii[ i ] != other.m_radii[ i ] )
-            return false;
-    }
-
-    return true;
-}
-
-void QskBoxShapeMetrics::setSizeMode( Qt::SizeMode sizeMode )
-{
-    m_sizeMode = sizeMode;
-}
-
-void QskBoxShapeMetrics::setAspectRatioMode( Qt::AspectRatioMode aspectRatioMode )
-{
-    m_aspectRatioMode = aspectRatioMode;
+    radius.rwidth() = ( rx > 0.0 ) ? rx : 0.0;
+    radius.rheight() = ( ry > 0.0 ) ? ry : 0.0;
 }
 
 void QskBoxShapeMetrics::setRadius(
     qreal topLeftX, qreal topLeftY,
     qreal topRightX, qreal topRightY,
     qreal bottomLeftX, qreal bottomLeftY,
-    qreal bottomRightX, qreal bottomRightY )
+    qreal bottomRightX, qreal bottomRightY ) noexcept
 {
-    m_radii[ Qt::TopLeftCorner ].setWidth( qMax( topLeftX, 0.0 ) );
-    m_radii[ Qt::TopLeftCorner ].setHeight( qMax( topLeftY, 0.0 ) );
-
-    m_radii[ Qt::TopRightCorner ].setWidth( qMax( topRightX, 0.0 ) );
-    m_radii[ Qt::TopRightCorner ].setHeight( qMax( topRightY, 0.0 ) );
-
-    m_radii[ Qt::BottomLeftCorner ].setWidth( qMax( bottomLeftX, 0.0 ) );
-    m_radii[ Qt::BottomLeftCorner ].setHeight( qMax( bottomLeftY, 0.0 ) );
-
-    m_radii[ Qt::BottomRightCorner ].setWidth( qMax( bottomRightX, 0.0 ) );
-    m_radii[ Qt::BottomRightCorner ].setHeight( qMax( bottomRightY, 0.0 ) );
+    qskSetRadius( topLeftX, topLeftY, m_radii[ Qt::TopLeftCorner ] );
+    qskSetRadius( topRightX, topRightY, m_radii[ Qt::TopRightCorner ] );
+    qskSetRadius( bottomLeftX, bottomLeftY, m_radii[ Qt::BottomLeftCorner ] );
+    qskSetRadius( bottomRightX, bottomRightY, m_radii[ Qt::BottomRightCorner ] );
 }
 
-void QskBoxShapeMetrics::setRadius( Qt::Corner corner, qreal radiusX, qreal radiusY )
+void QskBoxShapeMetrics::setRadius( Qt::Corner corner, qreal radiusX, qreal radiusY ) noexcept
 {
     if ( ( corner >= Qt::TopLeftCorner ) && ( corner <= Qt::BottomRightCorner ) )
-    {
-        m_radii[ corner ].setWidth( qMax( radiusX, 0.0 ) );
-        m_radii[ corner ].setHeight( qMax( radiusY, 0.0 ) );
-    }
+        qskSetRadius( radiusX, radiusY, m_radii[ corner ] );
 }
 
-bool QskBoxShapeMetrics::isRectellipse() const
-{
-    const QSizeF* r = m_radii;
-    return ( r[ 1 ] == r[ 0 ] ) && ( r[ 2 ] == r[ 1 ] ) && ( r[ 3 ] == r[ 2 ] );
-}
-
-bool QskBoxShapeMetrics::isRectangle() const
-{
-    const QSizeF* r = m_radii;
-
-    if ( ( r[ 0 ].width() > 0.0 ) || ( r[ 0 ].height() > 0.0 ) )
-        return false;
-
-    if ( ( r[ 1 ].width() > 0.0 ) || ( r[ 1 ].height() > 0.0 ) )
-        return false;
-
-    if ( ( r[ 2 ].width() > 0.0 ) || ( r[ 2 ].height() > 0.0 ) )
-        return false;
-
-    if ( ( r[ 3 ].width() > 0.0 ) || ( r[ 3 ].height() > 0.0 ) )
-        return false;
-
-    return true;
-}
-
-QskBoxShapeMetrics QskBoxShapeMetrics::rotated() const
+QskBoxShapeMetrics QskBoxShapeMetrics::transposed() const noexcept
 {
     QskBoxShapeMetrics other;
 
@@ -132,7 +66,7 @@ QskBoxShapeMetrics QskBoxShapeMetrics::rotated() const
     return other;
 }
 
-QskBoxShapeMetrics QskBoxShapeMetrics::toAbsolute( const QSizeF& size ) const
+QskBoxShapeMetrics QskBoxShapeMetrics::toAbsolute( const QSizeF& size ) const noexcept
 {
     if ( m_sizeMode != Qt::RelativeSize )
         return *this;
@@ -163,14 +97,14 @@ QskBoxShapeMetrics QskBoxShapeMetrics::toAbsolute( const QSizeF& size ) const
                 }
                 case Qt::KeepAspectRatio:
                 {
-                    radii.setWidth( qMin( rx, ry ) );
-                    radii.setHeight( qMin( rx, ry ) );
+                    radii.setWidth( std::min( rx, ry ) );
+                    radii.setHeight( std::min( rx, ry ) );
                     break;
                 }
                 case Qt::KeepAspectRatioByExpanding:
                 {
-                    radii.setWidth( qMax( rx, ry ) );
-                    radii.setHeight( qMax( rx, ry ) );
+                    radii.setWidth( std::max( rx, ry ) );
+                    radii.setHeight( std::max( rx, ry ) );
                     break;
                 }
             }
@@ -182,7 +116,7 @@ QskBoxShapeMetrics QskBoxShapeMetrics::toAbsolute( const QSizeF& size ) const
 }
 
 QskBoxShapeMetrics QskBoxShapeMetrics::interpolated(
-    const QskBoxShapeMetrics& to, qreal ratio ) const
+    const QskBoxShapeMetrics& to, qreal ratio ) const noexcept
 {
     if ( ( *this == to ) || ( m_sizeMode != to.m_sizeMode ) )
         return to;
@@ -197,12 +131,12 @@ QskBoxShapeMetrics QskBoxShapeMetrics::interpolated(
 }
 
 QVariant QskBoxShapeMetrics::interpolate(
-    const QskBoxShapeMetrics& from, const QskBoxShapeMetrics& to, qreal progress )
+    const QskBoxShapeMetrics& from, const QskBoxShapeMetrics& to, qreal progress ) noexcept
 {
     return QVariant::fromValue( from.interpolated( to, progress ) );
 }
 
-uint QskBoxShapeMetrics::hash( uint seed ) const
+uint QskBoxShapeMetrics::hash( uint seed ) const noexcept
 {
     uint hash = qHashBits( m_radii, sizeof( m_radii ), seed );
 
