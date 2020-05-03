@@ -3,14 +3,12 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef QSK_SIZE_POLICY_H_
-#define QSK_SIZE_POLICY_H_
+#ifndef QSK_SIZE_POLICY_H
+#define QSK_SIZE_POLICY_H
 
 #include "QskGlobal.h"
 #include <qnamespace.h>
 #include <qmetatype.h>
-
-class QDebug;
 
 class QSK_EXPORT QskSizePolicy
 {
@@ -65,85 +63,110 @@ class QSK_EXPORT QskSizePolicy
     Q_ENUM( Policy )
     Q_ENUM( ConstraintType )
 
-    QskSizePolicy();
-    QskSizePolicy( Policy horizontalPolicy, Policy verticalPolicy );
+    constexpr QskSizePolicy() noexcept;
+    constexpr QskSizePolicy( Policy horizontalPolicy, Policy verticalPolicy ) noexcept;
 
-    bool operator==( const QskSizePolicy& other ) const;
-    bool operator!=( const QskSizePolicy& other ) const;
+    constexpr bool operator==( const QskSizePolicy& ) const noexcept;
+    constexpr bool operator!=( const QskSizePolicy& ) const noexcept;
 
-    void setHorizontalPolicy( Policy );
-    Policy horizontalPolicy() const;
+    void setHorizontalPolicy( Policy ) noexcept;
+    constexpr Policy horizontalPolicy() const noexcept;
 
-    void setVerticalPolicy( Policy );
-    Policy verticalPolicy() const;
+    void setVerticalPolicy( Policy ) noexcept;
+    constexpr Policy verticalPolicy() const noexcept;
 
-    Policy policy( Qt::Orientation ) const;
-    void setPolicy( Qt::Orientation, Policy );
+    void setPolicy( Qt::Orientation, Policy ) noexcept;
+    constexpr Policy policy( Qt::Orientation ) const noexcept;
 
-    ConstraintType constraintType() const;
-    bool isConstrained( Qt::Orientation ) const;
+    ConstraintType constraintType() const noexcept;
+    constexpr bool isConstrained( Qt::Orientation ) const noexcept;
 
     Qt::SizeHint effectiveSizeHintType(
-        Qt::SizeHint, Qt::Orientation ) const;
+        Qt::SizeHint, Qt::Orientation ) const noexcept;
 
-    QskSizePolicy transposed() const;
-    void transpose();
+    constexpr QskSizePolicy transposed() const noexcept;
+    void transpose() noexcept;
 
   private:
     unsigned char m_horizontalPolicy;
     unsigned char m_verticalPolicy;
 };
 
-inline QskSizePolicy::QskSizePolicy()
+inline constexpr QskSizePolicy::QskSizePolicy() noexcept
     : m_horizontalPolicy( Ignored )
     , m_verticalPolicy( Ignored )
 {
 }
 
-inline QskSizePolicy::QskSizePolicy(
-        Policy horizontalPolicy, Policy verticalPolicy )
+inline constexpr QskSizePolicy::QskSizePolicy(
+        Policy horizontalPolicy, Policy verticalPolicy ) noexcept
     : m_horizontalPolicy( horizontalPolicy )
     , m_verticalPolicy( verticalPolicy )
 {
 }
 
-inline bool QskSizePolicy::operator==( const QskSizePolicy& other ) const
+inline constexpr bool QskSizePolicy::operator==(
+    const QskSizePolicy& other ) const noexcept
 {
     return ( other.m_horizontalPolicy == m_horizontalPolicy ) &&
            ( other.m_verticalPolicy == m_verticalPolicy );
 }
 
-inline bool QskSizePolicy::operator!=( const QskSizePolicy& other ) const
+inline constexpr bool QskSizePolicy::operator!=(
+    const QskSizePolicy& other ) const noexcept
 {
     return !( *this == other );
 }
 
-inline void QskSizePolicy::setHorizontalPolicy( Policy policy )
+inline void QskSizePolicy::setHorizontalPolicy( Policy policy ) noexcept
 {
     m_horizontalPolicy = static_cast< quint32 >( policy );
 }
 
-inline QskSizePolicy::Policy QskSizePolicy::horizontalPolicy() const
+inline constexpr QskSizePolicy::Policy QskSizePolicy::horizontalPolicy() const noexcept
 {
     return static_cast< Policy >( m_horizontalPolicy );
 }
 
-inline void QskSizePolicy::setVerticalPolicy( Policy policy )
+inline void QskSizePolicy::setVerticalPolicy( Policy policy ) noexcept
 {
     m_verticalPolicy = static_cast< quint32 >( policy );
 }
 
-inline QskSizePolicy::Policy QskSizePolicy::verticalPolicy() const
+inline constexpr QskSizePolicy::Policy QskSizePolicy::verticalPolicy() const noexcept
 {
     return static_cast< Policy >( m_verticalPolicy );
 }
 
-inline bool QskSizePolicy::isConstrained( Qt::Orientation orientation ) const
+inline constexpr QskSizePolicy::Policy QskSizePolicy::policy(
+    Qt::Orientation orientation ) const noexcept
+{
+    return static_cast< Policy >(
+        ( orientation == Qt::Horizontal ) ? m_horizontalPolicy : m_verticalPolicy );
+}
+
+inline void QskSizePolicy::setPolicy(
+    Qt::Orientation orientation, Policy policy ) noexcept
+{
+    if ( orientation == Qt::Horizontal )
+        m_horizontalPolicy = static_cast< quint32 >( policy );
+    else
+        m_verticalPolicy = static_cast< quint32 >( policy );
+}
+
+inline constexpr bool QskSizePolicy::isConstrained(
+    Qt::Orientation orientation ) const noexcept
 {
     return ( policy( orientation ) & ConstrainedFlag );
 }
 
+inline constexpr QskSizePolicy QskSizePolicy::transposed() const noexcept
+{
+    return QskSizePolicy( verticalPolicy(), horizontalPolicy() );
+}
+
 #ifndef QT_NO_DEBUG_STREAM
+class QDebug;
 QSK_EXPORT QDebug operator<<( QDebug, const QskSizePolicy& );
 #endif
 

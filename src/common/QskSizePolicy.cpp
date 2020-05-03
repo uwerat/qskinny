@@ -9,21 +9,9 @@
 #include <qdebug.h>
 #endif
 
-QskSizePolicy::Policy QskSizePolicy::policy( Qt::Orientation orientation ) const
-{
-    return ( orientation == Qt::Horizontal )
-           ? horizontalPolicy() : verticalPolicy();
-}
+#include <utility>
 
-void QskSizePolicy::setPolicy( Qt::Orientation orientation, Policy policy )
-{
-    if ( orientation == Qt::Horizontal )
-        setHorizontalPolicy( policy );
-    else
-        setVerticalPolicy( policy );
-}
-
-QskSizePolicy::ConstraintType QskSizePolicy::constraintType() const
+QskSizePolicy::ConstraintType QskSizePolicy::constraintType() const noexcept
 {
     constexpr unsigned char mask = IgnoreFlag | ConstrainedFlag;
 
@@ -45,7 +33,7 @@ QskSizePolicy::ConstraintType QskSizePolicy::constraintType() const
 }   
 
 Qt::SizeHint QskSizePolicy::effectiveSizeHintType(
-    Qt::SizeHint which, Qt::Orientation orientation ) const
+    Qt::SizeHint which, Qt::Orientation orientation ) const noexcept
 {
     const auto policy = ( orientation == Qt::Horizontal )
         ? horizontalPolicy() : verticalPolicy();
@@ -64,14 +52,9 @@ Qt::SizeHint QskSizePolicy::effectiveSizeHintType(
     return which;
 }
 
-void QskSizePolicy::transpose()
+void QskSizePolicy::transpose() noexcept
 {
     std::swap( m_horizontalPolicy, m_verticalPolicy );
-}
-
-QskSizePolicy QskSizePolicy::transposed() const
-{
-    return QskSizePolicy( verticalPolicy(), horizontalPolicy() );
 }
 
 #ifndef QT_NO_DEBUG_STREAM
