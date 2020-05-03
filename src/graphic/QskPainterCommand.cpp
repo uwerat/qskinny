@@ -5,11 +5,6 @@
 
 #include "QskPainterCommand.h"
 
-QskPainterCommand::QskPainterCommand()
-    : m_type( Invalid )
-{
-}
-
 QskPainterCommand::QskPainterCommand( const QPainterPath& path )
     : m_type( Path )
 {
@@ -114,7 +109,7 @@ QskPainterCommand& QskPainterCommand::operator=( const QskPainterCommand& other 
     return *this;
 }
 
-bool QskPainterCommand::operator==( const QskPainterCommand& other ) const
+bool QskPainterCommand::operator==( const QskPainterCommand& other ) const noexcept
 {
     if ( m_type != other.m_type )
         return false;
@@ -293,22 +288,22 @@ void QskPainterCommand::reset()
     m_type = Invalid;
 }
 
-QPainterPath* QskPainterCommand::path()
+QPainterPath* QskPainterCommand::path() noexcept
 {
     return m_path;
 }
 
-QskPainterCommand::PixmapData* QskPainterCommand::pixmapData()
+QskPainterCommand::PixmapData* QskPainterCommand::pixmapData() noexcept
 {
     return m_pixmapData;
 }
 
-QskPainterCommand::ImageData* QskPainterCommand::imageData()
+QskPainterCommand::ImageData* QskPainterCommand::imageData() noexcept
 {
     return m_imageData;
 }
 
-QskPainterCommand::StateData* QskPainterCommand::stateData()
+QskPainterCommand::StateData* QskPainterCommand::stateData() noexcept
 {
     return m_stateData;
 }
