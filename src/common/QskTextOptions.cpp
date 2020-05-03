@@ -5,76 +5,8 @@
 
 #include "QskTextOptions.h"
 #include <qtextdocument.h>
-#include <limits>
 
-QskTextOptions::QskTextOptions()
-    : m_maximumLineCount( std::numeric_limits< int >::max() )
-    , m_fontSizeMode( QskTextOptions::FixedSize )
-    , m_wrapMode( QskTextOptions::NoWrap )
-    , m_format( PlainText ) // AutoText ???
-    , m_elideMode( Qt::ElideNone )
-{
-}
-
-void QskTextOptions::setFormat( TextFormat format )
-{
-    m_format = format;
-}
-
-QskTextOptions::TextFormat QskTextOptions::format() const
-{
-    return m_format;
-}
-
-void QskTextOptions::setElideMode( Qt::TextElideMode elideMode )
-{
-    m_elideMode = elideMode;
-}
-
-Qt::TextElideMode QskTextOptions::elideMode() const
-{
-    return m_elideMode;
-}
-
-Qt::TextElideMode QskTextOptions::effectiveElideMode() const
-{
-    if ( m_wrapMode != QskTextOptions::NoWrap )
-        return Qt::ElideNone;
-
-    return m_elideMode;
-}
-
-void QskTextOptions::setWrapMode( WrapMode wrapMode )
-{
-    m_wrapMode = wrapMode;
-}
-
-QskTextOptions::WrapMode QskTextOptions::wrapMode() const
-{
-    return m_wrapMode;
-}
-
-void QskTextOptions::setFontSizeMode( FontSizeMode fontSizeMode )
-{
-    m_fontSizeMode = fontSizeMode;
-}
-
-QskTextOptions::FontSizeMode QskTextOptions::fontSizeMode() const
-{
-    return m_fontSizeMode;
-}
-
-void QskTextOptions::setMaximumLineCount( int lineCount )
-{
-    m_maximumLineCount = lineCount;
-}
-
-int QskTextOptions::maximumLineCount() const
-{
-    return m_maximumLineCount;
-}
-
-int QskTextOptions::textFlags() const
+int QskTextOptions::textFlags() const noexcept
 {
     int flags = 0;
 
@@ -105,15 +37,6 @@ int QskTextOptions::textFlags() const
     }
 
     return flags;
-}
-
-bool QskTextOptions::operator==( const QskTextOptions& other ) const
-{
-    return ( m_format == other.m_format ) &&
-           ( m_elideMode == other.m_elideMode ) &&
-           ( m_wrapMode == other.m_wrapMode ) &&
-           ( m_fontSizeMode == other.m_fontSizeMode ) &&
-           ( m_maximumLineCount == other.m_maximumLineCount );
 }
 
 QskTextOptions::TextFormat QskTextOptions::effectiveFormat( const QString& text ) const
