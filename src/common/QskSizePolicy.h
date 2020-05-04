@@ -120,7 +120,7 @@ inline constexpr bool QskSizePolicy::operator!=(
 
 inline void QskSizePolicy::setHorizontalPolicy( Policy policy ) noexcept
 {
-    m_horizontalPolicy = static_cast< quint32 >( policy );
+    m_horizontalPolicy = static_cast< unsigned char >( policy );
 }
 
 inline constexpr QskSizePolicy::Policy QskSizePolicy::horizontalPolicy() const noexcept
@@ -130,7 +130,7 @@ inline constexpr QskSizePolicy::Policy QskSizePolicy::horizontalPolicy() const n
 
 inline void QskSizePolicy::setVerticalPolicy( Policy policy ) noexcept
 {
-    m_verticalPolicy = static_cast< quint32 >( policy );
+    m_verticalPolicy = static_cast< unsigned char >( policy );
 }
 
 inline constexpr QskSizePolicy::Policy QskSizePolicy::verticalPolicy() const noexcept
@@ -149,9 +149,9 @@ inline void QskSizePolicy::setPolicy(
     Qt::Orientation orientation, Policy policy ) noexcept
 {
     if ( orientation == Qt::Horizontal )
-        m_horizontalPolicy = static_cast< quint32 >( policy );
+        m_horizontalPolicy = static_cast< unsigned char >( policy );
     else
-        m_verticalPolicy = static_cast< quint32 >( policy );
+        m_verticalPolicy = static_cast< unsigned char >( policy );
 }
 
 inline constexpr bool QskSizePolicy::isConstrained(
