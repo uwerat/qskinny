@@ -54,18 +54,6 @@ void QskBoxShapeMetrics::setRadius( Qt::Corner corner, qreal radiusX, qreal radi
         qskSetRadius( radiusX, radiusY, m_radii[ corner ] );
 }
 
-QskBoxShapeMetrics QskBoxShapeMetrics::transposed() const noexcept
-{
-    QskBoxShapeMetrics other;
-
-    for ( int i = 0; i < 4; i++ )
-        other.m_radii[ i ] = m_radii[ i ].transposed();
-
-    other.m_sizeMode = m_sizeMode;
-
-    return other;
-}
-
 QskBoxShapeMetrics QskBoxShapeMetrics::toAbsolute( const QSizeF& size ) const noexcept
 {
     if ( m_sizeMode != Qt::RelativeSize )
@@ -82,29 +70,29 @@ QskBoxShapeMetrics QskBoxShapeMetrics::toAbsolute( const QSizeF& size ) const no
     {
         for ( int i = 0; i < 4; i++ )
         {
-            auto& radii = absoluted.m_radii[ i ];
+            auto& radius = absoluted.m_radii[ i ];
 
-            const qreal rx = qskAbsoluted( size.width(), radii.width() );
-            const qreal ry = qskAbsoluted( size.height(), radii.height() );
+            const qreal rx = qskAbsoluted( size.width(), radius.width() );
+            const qreal ry = qskAbsoluted( size.height(), radius.height() );
 
             switch ( m_aspectRatioMode )
             {
                 case Qt::IgnoreAspectRatio:
                 {
-                    radii.setWidth( rx );
-                    radii.setHeight( ry );
+                    radius.rwidth() = rx;
+                    radius.rheight() = ry;
                     break;
                 }
                 case Qt::KeepAspectRatio:
                 {
-                    radii.setWidth( std::min( rx, ry ) );
-                    radii.setHeight( std::min( rx, ry ) );
+                    radius.rwidth() = std::min( rx, ry );
+                    radius.rheight() = std::min( rx, ry );
                     break;
                 }
                 case Qt::KeepAspectRatioByExpanding:
                 {
-                    radii.setWidth( std::max( rx, ry ) );
-                    radii.setHeight( std::max( rx, ry ) );
+                    radius.rwidth() = std::max( rx, ry );
+                    radius.rheight() = std::max( rx, ry );
                     break;
                 }
             }
@@ -118,16 +106,17 @@ QskBoxShapeMetrics QskBoxShapeMetrics::toAbsolute( const QSizeF& size ) const no
 QskBoxShapeMetrics QskBoxShapeMetrics::interpolated(
     const QskBoxShapeMetrics& to, qreal ratio ) const noexcept
 {
+    // what about m_aspectRatioMode != to.m_aspectRatioMode ???
+
     if ( ( *this == to ) || ( m_sizeMode != to.m_sizeMode ) )
         return to;
 
-    QSizeF radii[ 4 ];
-    radii[ 0 ] = qskInterpolatedSize( m_radii[ 0 ], to.m_radii[ 0 ], ratio );
-    radii[ 1 ] = qskInterpolatedSize( m_radii[ 1 ], to.m_radii[ 1 ], ratio );
-    radii[ 2 ] = qskInterpolatedSize( m_radii[ 2 ], to.m_radii[ 2 ], ratio );
-    radii[ 3 ] = qskInterpolatedSize( m_radii[ 3 ], to.m_radii[ 3 ], ratio );
-
-    return QskBoxShapeMetrics( to.m_sizeMode, radii );
+    return QskBoxShapeMetrics(
+        qskInterpolatedSize( m_radii[ 0 ], to.m_radii[ 0 ], ratio ),
+        qskInterpolatedSize( m_radii[ 1 ], to.m_radii[ 1 ], ratio ),
+        qskInterpolatedSize( m_radii[ 2 ], to.m_radii[ 2 ], ratio ),
+        qskInterpolatedSize( m_radii[ 3 ], to.m_radii[ 3 ], ratio ),
+        to.m_sizeMode, to.m_aspectRatioMode );
 }
 
 QVariant QskBoxShapeMetrics::interpolate(

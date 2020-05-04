@@ -68,7 +68,7 @@ class QSK_EXPORT QskBoxShapeMetrics
 
     QskBoxShapeMetrics toAbsolute( const QSizeF& ) const noexcept;
 
-    QskBoxShapeMetrics transposed() const noexcept;
+    constexpr QskBoxShapeMetrics transposed() const noexcept;
 
     uint hash( uint seed = 0 ) const noexcept;
 
@@ -77,10 +77,12 @@ class QSK_EXPORT QskBoxShapeMetrics
 
   private:
     inline constexpr QskBoxShapeMetrics(
-            Qt::SizeMode sizeMode, const QSizeF radii[ 4 ] ) noexcept
-        : m_radii{ radii[ 0 ], radii[ 1 ], radii[ 2 ], radii[ 3 ] }
+            const QSizeF& topLeft, const QSizeF& topRight,
+            const QSizeF& bottomLeft, const QSizeF& bottomRight,
+            Qt::SizeMode sizeMode, Qt::AspectRatioMode aspectRatioMode ) noexcept
+        : m_radii{ topLeft, topRight, bottomLeft, bottomRight }
         , m_sizeMode( sizeMode )
-        , m_aspectRatioMode( Qt::KeepAspectRatio )
+        , m_aspectRatioMode( aspectRatioMode )
     {
     }
 
@@ -225,6 +227,14 @@ inline constexpr bool QskBoxShapeMetrics::isRectangle() const noexcept
         && ( ( m_radii[ 1 ].width() <= 0.0 ) && ( m_radii[ 1 ].height() <= 0.0 ) )
         && ( ( m_radii[ 2 ].width() <= 0.0 ) && ( m_radii[ 2 ].height() <= 0.0 ) )
         && ( ( m_radii[ 3 ].width() <= 0.0 ) && ( m_radii[ 3 ].height() <= 0.0 ) ) );
+}
+
+inline constexpr QskBoxShapeMetrics QskBoxShapeMetrics::transposed() const noexcept
+{
+    return QskBoxShapeMetrics(
+        m_radii[ 0 ].transposed(), m_radii[ 1 ].transposed(),
+        m_radii[ 2 ].transposed(), m_radii[ 3 ].transposed(),
+        m_sizeMode, m_aspectRatioMode );
 }
 
 #ifndef QT_NO_DEBUG_STREAM
