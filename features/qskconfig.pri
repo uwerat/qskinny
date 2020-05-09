@@ -120,6 +120,8 @@ pedantic {
         QMAKE_CXXFLAGS *= -Wsuggest-override
         # QMAKE_CXXFLAGS *= -Wsuggest-final-types
         # QMAKE_CXXFLAGS *= -Wsuggest-final-methods
+
+        # QMAKE_CXXFLAGS *= -fanalyzer
     }
 
     linux-clang {

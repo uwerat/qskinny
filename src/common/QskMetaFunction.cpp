@@ -200,10 +200,10 @@ void QskMetaFunction::invoke( QObject* object,
 
     // code is not thread safe - TODO ...
 
-    QPointer< QObject > receiver( object );
-
     if ( m_functionCall == nullptr )
         return;
+
+    QPointer< QObject > receiver( object );
 
     int invokeType = connectionType & 0x3;
 
@@ -247,8 +247,16 @@ void QskMetaFunction::invoke( QObject* object,
 
             const auto argc = parameterCount() + 1; // return value + arguments
 
-            auto types = static_cast< int* >( malloc( argc * sizeof( int ) ) );
-            auto arguments = static_cast< void** >( malloc( argc * sizeof( void* ) ) );
+            auto types = static_cast< int* >( std::malloc( argc * sizeof( int ) ) );
+            auto arguments = static_cast< void** >( std::malloc( argc * sizeof( void* ) ) );
+
+            if ( types == nullptr || arguments == nullptr )
+            {
+                std::free( types );
+                std::free( arguments );
+
+                return;
+            }
 
             types[ 0 ] = QMetaType::UnknownType;
             arguments[ 0 ] = nullptr;
@@ -270,8 +278,8 @@ void QskMetaFunction::invoke( QObject* object,
             if ( receiver.isNull() )
             {
                 // object might have died in the meantime
-                free( types );
-                free( arguments );
+                std::free( types );
+                std::free( arguments );
 
                 return;
             }
