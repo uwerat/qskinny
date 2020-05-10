@@ -195,28 +195,25 @@ QskWindow::QskWindow( QWindow* parent )
 QskWindow::QskWindow( QQuickRenderControl* renderControl, QWindow* parent )
     : QskWindow( parent )
 {
-    auto* d = static_cast< QskWindowPrivate* >( QQuickWindowPrivate::get( this ) );
+    Q_D( QskWindow );
+
     d->renderControl = renderControl;
     d->init( this, renderControl );
 }
 
 QskWindow::~QskWindow()
 {
+#if QT_VERSION < QT_VERSION_CHECK( 5, 12, 0 )
     // When being used from Qml the item destruction would run in the most
     // unefficient way, leading to lots of QQuickItem::ItemChildRemovedChange
-    // depending operations. So let's remove the toplevel children manually.
+    // depending operations.
 
-    QVector< QPointer< QQuickItem > > items;
+    Q_D( QskWindow );
 
-    const auto children = contentItem()->childItems();
-    for ( auto child : children )
-    {
-        if ( child->parent() == contentItem() )
-            items += child;
-    }
-
-    for ( auto& item : qskAsConst( items ) )
-        delete item;
+    auto contentItem = d->contentItem;
+    d->contentItem = nullptr;
+    delete contentItem;
+#endif
 }
 
 void QskWindow::setScreen( const QString& name )
