@@ -110,7 +110,7 @@ void QskFocusIndicator::onFocusItemChanged()
 {
     m_data->resetConnections();
 
-    if ( window() == nullptr )
+    if ( !( window() && window()->contentItem() ) )
         return;
 
     // We want to be on top, but do we cover all corner cases ???
