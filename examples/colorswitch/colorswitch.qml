@@ -28,7 +28,7 @@ Main
         {
             // very much standard: we should find a better way
 
-            var hint = effectivePreferredSize();
+            var hint = sizeConstraint();
             setMinimumWidth( hint.width )
             setMinimumHeight( hint.height )
         }
