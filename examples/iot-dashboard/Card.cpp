@@ -7,6 +7,6 @@ Card::Card(const QString &title, QskControl *content, QQuickItem *parent ) : Qsk
 {
     m_label = new QskTextLabel( m_title, this );
     m_content = content;
-    m_content->setParentItem( this );
+    m_content->setParentItem( this ); // ### maybe do it differently
     m_content->setParent( this );
 }

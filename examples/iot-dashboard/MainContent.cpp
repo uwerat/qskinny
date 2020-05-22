@@ -1,6 +1,7 @@
 #include "MainContent.h"
 
 #include "Card.h"
+#include "PieChart.h"
 
 #include <QskTextLabel.h>
 
@@ -14,7 +15,9 @@ MainContent::MainContent( QQuickItem *parent ) : QskLinearBox( Qt::Horizontal, p
         m_columns.append( column );
     }
 
-    auto* pieChart =  new QskTextLabel( "here pie chart" );
+    auto* pieChart =  new PieChart;
+    QVector< float > angles = { 60, 90, 150, 60 };
+    pieChart->setAngles( angles );
     addCard( "Sample usage", pieChart, 0 );
 
     auto* barGraph = new QskTextLabel( "here bar graph" );
