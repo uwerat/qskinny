@@ -3,6 +3,17 @@
 
 #include <QskLinearBox.h>
 
+class MenuItem : public QskLinearBox
+{
+    Q_OBJECT
+
+public:
+    MenuItem( const QString& name, QQuickItem* parent );
+
+private:
+    QString m_name;
+};
+
 class MenuBar : public QskLinearBox
 {
     Q_OBJECT

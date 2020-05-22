@@ -1,3 +1,5 @@
+#include "MainWindow.h"
+
 #include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
 
@@ -7,8 +9,6 @@
 #include <QskWindow.h>
 
 #include <QGuiApplication>
-
-#include "MainWindow.h"
 
 int main( int argc, char* argv[] )
 {

@@ -1,4 +1,6 @@
 #include "MainWindow.h"
+
+#include "MainContent.h"
 #include "MenuBar.h"
 
 #include <QskLinearBox.h>
@@ -9,17 +11,6 @@ MainWindow::MainWindow() : QskWindow()
     setTitle( "IOT dashboard" );
 
     m_mainLayout = new QskLinearBox( Qt::Horizontal, contentItem() );
-
-    addMenuBar();
-    addMainContent();
-}
-
-void MainWindow::addMenuBar()
-{
-    auto* menuBar = new MenuBar( m_mainLayout );
-}
-
-void MainWindow::addMainContent()
-{
-
+    m_menuBar = new MenuBar( m_mainLayout );
+    m_mainContent = new MainContent( m_mainLayout );
 }

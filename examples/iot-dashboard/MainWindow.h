@@ -3,6 +3,8 @@
 
 #include <QskWindow.h>
 
+class MainContent;
+class MenuBar;
 class QskLinearBox;
 
 class MainWindow : public QskWindow
@@ -13,10 +15,9 @@ public:
     MainWindow();
 
 private:
-    void addMenuBar();
-    void addMainContent();
-
     QskLinearBox* m_mainLayout;
+    MenuBar* m_menuBar;
+    MainContent* m_mainContent;
 };
 
 #endif // MAINWINDOW_H
