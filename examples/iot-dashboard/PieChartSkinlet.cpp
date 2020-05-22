@@ -42,10 +42,19 @@ QSGNode* PieChartSkinlet::updatePanelNode( const PieChart* pieChart, QSGNode* no
         boxNode = new QskBoxNode;
     }
 
-    const auto panelRect = subControlRect( pieChart, pieChart->contentsRect(), PieChart::Panel );
+    auto panelRect = subControlRect( pieChart, pieChart->contentsRect(), PieChart::Panel );
+
+    // ### when displaying a legend we might want to revise this
+    if( panelRect.width() > panelRect.height() )
+    {
+        panelRect.setWidth( panelRect.height() );
+    }
+    else if( panelRect.width() < panelRect.height() )
+    {
+        panelRect.setHeight( panelRect.width() );
+    }
 
     const qreal radius = panelRect.width() / 2;
-    qDebug() << "radius:" << radius << panelRect;
 
     QskBoxShapeMetrics shapeMetrics( radius, radius, radius, radius );
     QskBoxBorderMetrics borderMetrics = pieChart->boxBorderMetricsHint( PieChart::Panel );
@@ -60,8 +69,7 @@ QSGNode* PieChartSkinlet::updateLabelsNode( const PieChart* pieChart, QSGNode* n
 {
     const int labelsCount = pieChart->labels().count();
 
-    // ### actually, we could draw labels with only one entry
-    if ( labelsCount <= 1 )
+    if ( labelsCount < 1 )
     {
         return nullptr;
     }
