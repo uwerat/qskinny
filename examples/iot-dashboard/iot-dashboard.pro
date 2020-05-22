@@ -2,6 +2,7 @@ CONFIG += qskexample
 
 SOURCES += \
     Card.cpp \
+    DaytimeSkin.cpp \
     MainContent.cpp \
     MenuBar.cpp \
     PieChart.cpp \
@@ -11,6 +12,7 @@ SOURCES += \
 
 HEADERS += \
     Card.h \
+    DaytimeSkin.h \
     MainContent.h \
     MainWindow.h \
     MenuBar.h \

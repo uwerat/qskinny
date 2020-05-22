@@ -7,7 +7,7 @@
 
 MainWindow::MainWindow() : QskWindow()
 {
-    setFixedSize( { 1024, 600 } );
+    setPreferredSize( { 1024, 600 } );
     setTitle( "IOT dashboard" );
 
     m_mainLayout = new QskLinearBox( Qt::Horizontal, contentItem() );

@@ -45,6 +45,7 @@ QSGNode* PieChartSkinlet::updatePanelNode( const PieChart* pieChart, QSGNode* no
     const auto panelRect = subControlRect( pieChart, pieChart->contentsRect(), PieChart::Panel );
 
     const qreal radius = panelRect.width() / 2;
+    qDebug() << "radius:" << radius << panelRect;
 
     QskBoxShapeMetrics shapeMetrics( radius, radius, radius, radius );
     QskBoxBorderMetrics borderMetrics = pieChart->boxBorderMetricsHint( PieChart::Panel );
