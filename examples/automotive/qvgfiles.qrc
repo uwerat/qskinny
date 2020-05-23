@@ -1,0 +1,26 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+
+    <qresource>
+        <file>qvg/car.qvg</file>
+
+		<file>qvg/bluetooth.qvg</file>
+		<file>qvg/bookmark.qvg</file>
+		<file>qvg/bus.qvg</file>
+		<file>qvg/cloud.qvg</file>
+		<file>qvg/location.qvg</file>
+		<file>qvg/man.qvg</file>
+		<file>qvg/menu.qvg</file>
+		<file>qvg/phone.qvg</file>
+		<file>qvg/plane.qvg</file>
+		<file>qvg/train.qvg</file>
+		<file>qvg/user.qvg</file>
+
+        <file>qvg/down.qvg</file>
+        <file>qvg/left.qvg</file>
+        <file>qvg/right.qvg</file>
+        <file>qvg/up.qvg</file>
+    </qresource>
+
+</RCC>
+

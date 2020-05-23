@@ -1,0 +1,83 @@
+##############################################################################
+# rules to create qvg from svg files
+##############################################################################
+
+SVG2QVG=$$shell_path($${QSK_OUT_ROOT}/tools/bin/svg2qvg)
+QVG_DIR=qvg
+
+svg2qvg.name = SVG compiler
+svg2qvg.input = SVGSOURCES
+svg2qvg.output = $${QVG_DIR}/${QMAKE_FILE_BASE}.qvg
+svg2qvg.variable_out =
+svg2qvg.commands += ($$sprintf($${QMAKE_MKDIR_CMD}, $${QVG_DIR})) && $${SVG2QVG} ${QMAKE_FILE_IN} $${svg2qvg.output}
+
+QMAKE_EXTRA_COMPILERS += svg2qvg
+
+##############################################################################
+# When using qvg files, that have to be generated from svg files, as resource,
+##############################################################################
+
+qvgrcc.name = RCC compiler
+qvgrcc.input = QVGRESOURCES
+qvgrcc.output = $${RCC_DIR}/qrc_${QMAKE_FILE_BASE}.cpp
+qvgrcc.variable_out = SOURCES
+qvgrcc.CONFIG += add_inputs_as_makefile_deps
+
+# Paths inside a qrc file are always relative to the path of the
+# qrc file itself. So in case of shadow builds we need to copy the
+# qrc file into the shadow directory as the included qvg files
+# are generated there.
+
+QRC_SHADOW_CLONE = $$shell_path( $${OUT_PWD}/${QMAKE_FILE_BASE}_shadow.qrc )
+qtPrepareTool(QMAKE_RCC, rcc, _DEP)
+
+lessThan(QT_MAJOR_VERSION, 6): lessThan(QT_MINOR_VERSION, 12) {
+
+    # Since Qt 5.12 "rcc --list" works for qvg files, that do not yet exist
+    # To get these rules working for earlier versions we derive the qvg
+    # files from the SVGSOURCES
+
+    defineReplace(qvgfiles) {
+
+        svgfiles = $$1
+
+        files =
+            for( svgfile, svgfiles) {
+                filename = $$basename( svgfile )
+                files += $$shell_path( $${QVG_DIR}/$$replace( filename, svg, qvg ) )
+            }
+
+        return( $$files )
+    }
+
+    qvgrcc.depends += $$qvgfiles( $${SVGSOURCES} )
+
+} else {
+
+    equals( OUT_PWD, $${_PRO_FILE_PWD_} ) {
+
+        qvgrcc.depend_command = $$QMAKE_RCC_DEP -list $$QMAKE_RESOURCE_FLAGS ${QMAKE_FILE_IN}
+
+    } else {
+
+        qvgrcc.depend_command = \
+            $${QMAKE_COPY} ${QMAKE_FILE_IN} $${QRC_SHADOW_CLONE} && \
+            $$QMAKE_RCC_DEP -list $$QMAKE_RESOURCE_FLAGS $${QRC_SHADOW_CLONE} && \
+            $${QMAKE_DEL_FILE} $${QRC_SHADOW_CLONE}
+    }
+}
+
+equals( OUT_PWD, $${_PRO_FILE_PWD_} ) {
+
+    qvgrcc.commands = $$QMAKE_RCC $$QMAKE_RESOURCE_FLAGS ${QMAKE_FILE_IN} -o ${QMAKE_FILE_OUT}
+
+} else {
+
+    qvgrcc.commands = \
+        $${QMAKE_COPY} ${QMAKE_FILE_IN} $${QRC_SHADOW_CLONE} && \
+        $$QMAKE_RCC $$QMAKE_RESOURCE_FLAGS $${QRC_SHADOW_CLONE} -o ${QMAKE_FILE_OUT} && \
+        $${QMAKE_DEL_FILE} $${QRC_SHADOW_CLONE}
+}
+
+QMAKE_EXTRA_COMPILERS += qvgrcc
+
