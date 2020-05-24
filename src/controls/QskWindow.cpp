@@ -208,11 +208,17 @@ QskWindow::~QskWindow()
     // unefficient way, leading to lots of QQuickItem::ItemChildRemovedChange
     // depending operations.
 
-    Q_D( QskWindow );
+    QVector< QPointer< QQuickItem > > items;
 
-    auto contentItem = d->contentItem;
-    d->contentItem = nullptr;
-    delete contentItem;
+    const auto children = contentItem()->childItems();
+    for ( auto child : children )
+    {
+        if ( child->parent() == contentItem() )
+            items += child;
+    }
+
+    for ( auto& item : qskAsConst( items ) )
+        delete item;
 #endif
 }
 
