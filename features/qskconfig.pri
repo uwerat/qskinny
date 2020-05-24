@@ -23,6 +23,7 @@ QSK_INSTALL_HEADERS   = $${QSK_INSTALL_PREFIX}/include
 QSK_INSTALL_LIBS      = $${QSK_INSTALL_PREFIX}/lib
 QSK_INSTALL_BINS      = $${QSK_INSTALL_PREFIX}/bin
 QSK_INSTALL_PLUGINS   = $${QSK_INSTALL_PREFIX}/plugins
+QSK_INSTALL_EXAMPLES  = $${QSK_INSTALL_PREFIX}/examples
 
 CONFIG           += no_private_qt_headers_warning
 
@@ -38,6 +39,16 @@ CONFIG           += hide_symbols
 
 # CONFIG           += debug
 # CONFIG           += sanitize
+
+use_no_rpath {
+    CONFIG -= use_local_rpath use_install_rpath
+} else {
+    cross_compile {
+        CONFIG *= use_install_rpath
+    } else {
+        !use_install_rpath: CONFIG *= use_local_rpath
+    }
+}
 
 MOC_DIR      = moc
 OBJECTS_DIR  = obj
@@ -169,4 +180,4 @@ debug {
 # Help out Qt Creator
 ide: DEFINES += QT_IDE
 
-# DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
+# DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x000000

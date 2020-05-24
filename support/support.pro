@@ -1,6 +1,9 @@
 TEMPLATE = lib
 TARGET   = $$qskLibraryTarget(qsktestsupport)
 
+target.path    = $${QSK_INSTALL_EXAMPLES}/lib
+INSTALLS       = target
+
 CONFIG += ensure_skins
 CONFIG += fontconfig
 CONFIG += qskinny
@@ -33,7 +36,9 @@ ensure_skins {
 
     DEFINES += ENSURE_SKINS
 
-    QMAKE_RPATHDIR *= $${QSK_PLUGIN_DIR}/skins
+    use_install_rpath: QMAKE_RPATHDIR *= $${QSK_INSTALL_PLUGINS}/skins
+    use_local_rpath: QMAKE_RPATHDIR *= $${QSK_PLUGIN_DIR}/skins
+
     qskAddLibrary($${QSK_PLUGIN_DIR}/skins, squiekskin)
     qskAddLibrary($${QSK_PLUGIN_DIR}/skins, materialskin)
 }

@@ -12,5 +12,7 @@ QSK_DIRS = \
 INCLUDEPATH *= $${QSK_DIRS}
 DEPENDPATH  *= $${QSK_DIRS}
 
-QMAKE_RPATHDIR *= $${QSK_LIB_DIR}
+use_install_rpath: QMAKE_RPATHDIR *= $${QSK_INSTALL_LIBS}
+use_local_rpath: QMAKE_RPATHDIR *= $${QSK_LIB_DIR}
+
 qskAddLibrary( $${QSK_LIB_DIR}, qskinny )
