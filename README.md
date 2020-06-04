@@ -1,5 +1,7 @@
 # QSkinny
 
+![](https://github.com/uwerat/qskinny/workflows/CI/badge.svg)
+
 The (Q)Skinny library is a framework built on top of the Qt scene graph
 and very few core classes from Qt/Quick. It offers a set of lightweight controls,
 that can be used from C++ and/or QML.
