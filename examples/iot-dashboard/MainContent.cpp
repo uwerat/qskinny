@@ -5,6 +5,8 @@
 
 #include <QskTextLabel.h>
 
+#include <QtQuickShapes/private/qquickshape_p.h>
+
 MainContent::MainContent( QQuickItem *parent ) : QskLinearBox( Qt::Horizontal, parent )
 {
     setSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
