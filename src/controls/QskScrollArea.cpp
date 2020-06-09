@@ -377,15 +377,21 @@ void QskScrollArea::adjustItem()
         if ( m_data->isItemResizable )
         {
             auto size = viewContentsRect().size();
+            if ( size.isEmpty() )
+            {
+                size = QSizeF( 0.0, 0.0 );
+            }
+            else
+            {
+                /*
+                    For optional scrollbars the available space also depends
+                    on wether the adjustedSize results in scroll bars. For the
+                    moment we ignore this and start with a simplified code. TODO ...
+                 */
 
-#if 0
-            /*
-                For optional scrollbars the available space also depends
-                on wether the adjustedSize results in scroll bars. For the
-                moment we ignore this and start with a simplified code.
-             */
-#endif
-            size = qskConstrainedItemSize( item, size );
+                size = qskConstrainedItemSize( item, size );
+            }
+
             item->setSize( size );
         }
 
