@@ -1,5 +1,6 @@
 #include "DaytimeSkin.h"
 
+#include "MenuBar.h"
 #include "PieChart.h"
 #include "PieChartSkinlet.h"
 
@@ -37,6 +38,10 @@ void DaytimeSkin::initHints()
     setFont( QskSkin::SmallFont, qskFont( 10 ) );
     setFont( QskSkin::LargeFont, qskFont( 14 ) );
     setFont( QskSkin::HugeFont, qskFont( 36 ) );
+
+    QColor color(Qt::white);
+    color.setAlphaF(0.09);
+    setGradient( MenuItem::Panel | QskControl::Hovered, color );
 
     setBoxBorderMetrics( PieChart::Panel, 2 );
     setGradient( PieChart::Panel, Qt::blue );
