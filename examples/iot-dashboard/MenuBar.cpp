@@ -3,6 +3,7 @@
 #include <QskGraphic.h>
 #include <QskGraphicLabel.h>
 #include <QskGraphicIO.h>
+#include <QskSkin.h>
 #include <QskTextLabel.h>
 
 #include <QtGui/QImage>
@@ -23,6 +24,7 @@ MenuItem::MenuItem( const QString& name, QQuickItem* parent ) : QskLinearBox( Qt
 
     auto* textLabel = new QskTextLabel( name, this );
     textLabel->setTextColor( Qt::white ); // ### style
+    textLabel->setFontRole(QskSkin::SmallFont);
 }
 
 MenuBar::MenuBar( QQuickItem *parent ) : QskLinearBox( Qt::Vertical, parent )

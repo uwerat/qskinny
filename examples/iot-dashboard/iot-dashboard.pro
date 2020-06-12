@@ -20,4 +20,5 @@ HEADERS += \
     PieChartSkinlet.h
 
 RESOURCES += \
-    images.qrc
+    images.qrc \
+    fonts.qrc
