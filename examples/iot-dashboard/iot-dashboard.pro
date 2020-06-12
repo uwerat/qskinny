@@ -1,7 +1,5 @@
 CONFIG += qskexample
 
-QT += quickshapes-private quick-private
-
 SOURCES += \
     Card.cpp \
     DaytimeSkin.cpp \
