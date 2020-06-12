@@ -12,12 +12,14 @@ MenuItem::MenuItem( const QString& name, QQuickItem* parent ) : QskLinearBox( Qt
 {
     setAutoLayoutChildren( true );
     setAutoAddChildren( true );
+    setPreferredWidth( 140 );
 
     QString fileName = ":/images/" + name.toLower() + ".png";
     QImage image( fileName );
     auto graphic = QskGraphic::fromImage( image );
     auto* graphicLabel = new QskGraphicLabel( graphic, this );
-    graphicLabel->setFixedSize( 32, 32 );
+    graphicLabel->setSizePolicy(QskSizePolicy::Fixed, QskSizePolicy::Fixed);
+//    graphicLabel->setFixedSize( 32, 32 );
 
     auto* textLabel = new QskTextLabel( name, this );
     textLabel->setTextColor( Qt::white ); // ### style
@@ -28,12 +30,17 @@ MenuBar::MenuBar( QQuickItem *parent ) : QskLinearBox( Qt::Vertical, parent )
     setSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Preferred );
     setAutoLayoutChildren( true );
     setAutoAddChildren( true );
-    setMargins( 35 ); // ### style
-    setSpacing( 30 ); // ### style
 
-    setBackgroundColor( { 0, 35, 102 } ); // ### style
+    setBackgroundColor( "#6D7BFB" ); // ### style
 
-    m_entries = { "Home", "Details", "Statistics", "Settings" };
+    auto* mainIcon = ":/images/main-icon.png";
+    QImage image(mainIcon);
+    auto graphic = QskGraphic::fromImage( image );
+    auto* graphicLabel = new QskGraphicLabel( graphic, this );
+    graphicLabel->setMargins( { 50, 35, 50, 50 });
+
+
+    m_entries = { "Dashboard", "Rooms", "Devices", "Statistics", "Storage", "Members" };
 
     for( const auto entry : m_entries )
     {
