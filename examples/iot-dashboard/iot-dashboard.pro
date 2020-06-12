@@ -24,3 +24,6 @@ HEADERS += \
 RESOURCES += \
     images.qrc \
     fonts.qrc
+
+CONFIG -= pedantic
+include(/home/peter/dev/qnanopainter/libqnanopainter/include.pri)
