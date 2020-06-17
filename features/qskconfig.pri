@@ -34,7 +34,7 @@ CONFIG           -= depend_includepath
 
 CONFIG           += strict_c++
 CONFIG           += c++11
-#CONFIG           += pedantic
+CONFIG           += pedantic
 CONFIG           += hide_symbols
 
 # CONFIG           += debug
