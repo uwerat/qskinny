@@ -7,7 +7,7 @@ class TopBarItem : public QskLinearBox
     Q_OBJECT
 
 public:
-    TopBarItem( const QString& name, QQuickItem* parent );
+    TopBarItem(const QString& name, int progress, int value, QQuickItem* parent );
 
 private:
     QString m_name;

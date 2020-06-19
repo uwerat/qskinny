@@ -1,11 +1,12 @@
 #include "TopBar.h"
+#include "PieChartPainted.h"
 
 #include <QskSkin.h>
 #include <QskTextLabel.h>
 
 #include <QTime>
 
-TopBarItem::TopBarItem( const QString& name, QQuickItem* parent ) : QskLinearBox( Qt::Vertical, parent ),
+TopBarItem::TopBarItem(const QString& name, int progress, int value, QQuickItem* parent ) : QskLinearBox( Qt::Vertical, parent ),
     m_name( name )
 {
     setAutoLayoutChildren( true );
@@ -17,6 +18,8 @@ TopBarItem::TopBarItem( const QString& name, QQuickItem* parent ) : QskLinearBox
 
     auto* textLabel = new QskTextLabel( name, this );
     textLabel->setFontRole(QskSkin::SmallFont); // ### style
+
+    auto* pieChart = new PieChartPainted(progress, value, this);
 }
 
 TopBar::TopBar(QQuickItem *parent) : QskLinearBox(Qt::Horizontal, parent)
@@ -24,12 +27,15 @@ TopBar::TopBar(QQuickItem *parent) : QskLinearBox(Qt::Horizontal, parent)
     setAutoLayoutChildren(true);
     setAutoAddChildren(true);
     setSizePolicy(QskSizePolicy::Preferred, QskSizePolicy::Fixed);
+    setFixedHeight(100);
 
     QStringList itemStrings = { "Living Room", "Bedroom", "Bathroom", "Kitchen" };
+    int progressValues[] = {25, 45, 15, 86};
+    int values[] = {175, 205, 115, 289};
 
-    for( const auto itemString : itemStrings )
+    for(int a = 0; a < itemStrings.count(); a++)
     {
-        auto* item = new TopBarItem( itemString, this );
+        auto* item = new TopBarItem( itemStrings.at(a), progressValues[a], values[a], this );
         m_entries.append(item);
     }
 
