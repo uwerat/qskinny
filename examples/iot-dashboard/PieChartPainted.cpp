@@ -6,9 +6,10 @@
 #include <QFontMetricsF>
 #include <QQuickPaintedItem>
 
-PieChartPainted::PieChartPainted(int progress, int value, QQuickItem *parent)
+PieChartPainted::PieChartPainted(const QColor &color, int progress, int value, QQuickItem *parent)
     : QskControl(parent)
-    , m_progressBar(new CircularProgressBar(progress, this))
+    , m_color(color)
+    , m_progressBar(new CircularProgressBar(color, progress, this))
     , m_progressLabel(new QskTextLabel(this))
 //    , m_numberLabel(new QskTextLabel(QString::number(value), this))
 //    , m_unitLabel(new QskTextLabel("kwH", this))
@@ -18,6 +19,7 @@ PieChartPainted::PieChartPainted(int progress, int value, QQuickItem *parent)
     auto progressText = QString::number(progress) + " %";
     m_progressLabel->setText(progressText);
     m_progressLabel->setFontRole(QskSkin::SmallFont);
+    m_progressLabel->setTextColor(color);
 }
 
 QSizeF PieChartPainted::contentsSizeHint(Qt::SizeHint sizeHint, const QSizeF& size) const
@@ -29,7 +31,6 @@ QSizeF PieChartPainted::contentsSizeHint(Qt::SizeHint sizeHint, const QSizeF& si
 
 void PieChartPainted::updateLayout()
 {
-    m_progressBar->setColor(Qt::magenta);
     m_progressBar->setContentsSize(size().toSize());
     m_progressBar->update();
 

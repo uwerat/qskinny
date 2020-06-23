@@ -11,12 +11,13 @@ class QQuickPaintedItem;
 class PieChartPainted : public QskControl
 {
 public:
-    PieChartPainted(int progress, int value, QQuickItem* parent = nullptr);
+    PieChartPainted(const QColor& color, int progress, int value, QQuickItem* parent = nullptr);
 
     virtual QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
     void updateLayout() override;
 
 private:
+    QColor m_color;
     CircularProgressBar* m_progressBar;
     QskTextLabel* m_progressLabel;
 //    QskTextLabel* m_numberLabel;

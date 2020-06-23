@@ -7,7 +7,7 @@
 class CircularProgressBar : public QQuickPaintedItem
 {
 public:
-    CircularProgressBar(int progress, QQuickItem* parent = nullptr);
+    CircularProgressBar(const QColor& color, int progress, QQuickItem* parent = nullptr);
 
     virtual void paint(QPainter *painter) override;
 

@@ -2,8 +2,9 @@
 
 #include <QPainter>
 
-CircularProgressBar::CircularProgressBar(int progress, QQuickItem *parent)
+CircularProgressBar::CircularProgressBar(const QColor &color, int progress, QQuickItem *parent)
     : QQuickPaintedItem(parent)
+    , m_color(color)
     , m_progress(progress)
 {
 }
