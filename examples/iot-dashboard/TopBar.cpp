@@ -6,7 +6,7 @@
 
 #include <QTime>
 
-TopBarItem::TopBarItem(const QString& name, const QColor &color, int progress, int value, QQuickItem* parent ) : QskLinearBox( Qt::Vertical, parent ),
+TopBarItem::TopBarItem(const QString& name, const QColor &textColor, const QGradient& gradient, int progress, int value, QQuickItem* parent ) : QskLinearBox( Qt::Vertical, parent ),
     m_name( name )
 {
     setAutoLayoutChildren( true );
@@ -19,7 +19,7 @@ TopBarItem::TopBarItem(const QString& name, const QColor &color, int progress, i
     auto* textLabel = new QskTextLabel( name, this );
     textLabel->setFontRole(QskSkin::SmallFont); // ### style
 
-    auto* pieChart = new PieChartPainted(color, progress, value, this);
+    auto* pieChart = new PieChartPainted(textColor, gradient, progress, value, this);
 }
 
 TopBar::TopBar(QQuickItem *parent) : QskLinearBox(Qt::Horizontal, parent)
@@ -30,13 +30,24 @@ TopBar::TopBar(QQuickItem *parent) : QskLinearBox(Qt::Horizontal, parent)
     setFixedHeight(100);
 
     QStringList itemStrings = { "Living Room", "Bedroom", "Bathroom", "Kitchen" };
-    QColor colors[] = {"#ff3122", "#6776ff", "#f99055", "#6776ff"};
+    QColor textColors[] = {"#ff3122", "#6776ff", "#f99055", "#6776ff"};
+    QColor gradientColors[] = {"#FF5C00", "#FF3122",
+                               "#6776FF", "#6100FF",
+                               "#FFCE50", "#FF3122",
+//                               "#00ff00", "#ffffff", // ### remove
+                               "#6776FF", "#6100FF"};
+
     int progressValues[] = {25, 45, 15, 86};
     int values[] = {175, 205, 115, 289};
 
     for(int a = 0; a < itemStrings.count(); a++)
     {
-        auto* item = new TopBarItem( itemStrings.at(a), colors[a], progressValues[a], values[a], this );
+        QLinearGradient gradient(0, 0, 30, 0); // ### do this properly and dependent on the size
+        QGradientStop stop1(0.0, gradientColors[2 * a]);
+        QGradientStop stop2(1.0, gradientColors[2 * a + 1]);
+        gradient.setStops({stop1, stop2});
+
+        auto* item = new TopBarItem( itemStrings.at(a), textColors[a], gradient, progressValues[a], values[a], this );
         m_entries.append(item);
     }
 

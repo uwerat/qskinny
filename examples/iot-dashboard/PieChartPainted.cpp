@@ -6,10 +6,11 @@
 #include <QFontMetricsF>
 #include <QQuickPaintedItem>
 
-PieChartPainted::PieChartPainted(const QColor &color, int progress, int value, QQuickItem *parent)
+PieChartPainted::PieChartPainted(const QColor& color, const QGradient& gradient, int progress, int value, QQuickItem *parent)
     : QskControl(parent)
     , m_color(color)
-    , m_progressBar(new CircularProgressBar(color, progress, this))
+    , m_gradient(gradient)
+    , m_progressBar(new CircularProgressBar(gradient, progress, this))
     , m_progressLabel(new QskTextLabel(this))
 //    , m_numberLabel(new QskTextLabel(QString::number(value), this))
 //    , m_unitLabel(new QskTextLabel("kwH", this))

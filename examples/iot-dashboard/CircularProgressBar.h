@@ -1,23 +1,15 @@
 #ifndef CIRCULARPROGRESSBAR_H
 #define CIRCULARPROGRESSBAR_H
 
-#include <QColor>
+#include <QGradient>
 #include <QQuickPaintedItem>
 
 class CircularProgressBar : public QQuickPaintedItem
 {
 public:
-    CircularProgressBar(const QColor& color, int progress, QQuickItem* parent = nullptr);
+    CircularProgressBar(const QGradient& gradient, int progress, QQuickItem* parent = nullptr);
 
     virtual void paint(QPainter *painter) override;
-
-    QColor color() const {
-        return m_color;
-    }
-
-    void setColor(const QColor& color) {
-        m_color = color;
-    }
 
     double width() const {
         return m_width;
@@ -28,7 +20,7 @@ public:
     }
 
 private:
-    QColor m_color;
+    QGradient m_gradient;
     double m_width = 20;
     int m_progress;
 };
