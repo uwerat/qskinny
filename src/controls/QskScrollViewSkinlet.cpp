@@ -207,6 +207,12 @@ QRectF QskScrollViewSkinlet::viewportRect(
             vr.setHeight( vr.height() - r.height() - spacing );
     }
 
+    if ( vr.width() < 0.0 )
+        vr.setWidth( 0.0 );
+
+    if ( vr.height() < 0.0 )
+        vr.setHeight( 0.0 );
+
     return vr;
 }
 
