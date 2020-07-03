@@ -62,7 +62,7 @@ class QskGridLayoutEngine : public QskLayoutEngine2D
         const QskLayoutChain::Segments&, QskLayoutChain& ) const override;
 
     class PrivateData;
-    PrivateData* m_data;
+    std::unique_ptr< PrivateData > m_data;
 };
 
 #endif
