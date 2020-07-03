@@ -43,33 +43,46 @@ static void qskUpdateFocusChain(
     QskGridBox* box, const QskGridLayoutEngine* engine,
     QQuickItem* item, const QRect& grid )
 {
-    auto comparePosition =
-        [item, engine]( const QPoint& pos, const QQuickItem* child )
-        {
-            if ( item != child )
-            {
-                const int index = engine->indexOf( child );
-                if ( index >= 0 )
-                {
-                    const auto grid = engine->gridAt( index );
-                    if ( pos.y() < grid.y() )
-                        return true;
+    /*
+        We are running over all entries each time an item gets inserted.
+        There should be a faster way TODO ...
+     */
 
-                    if ( pos.y() == grid.y() && pos.x() < grid.x() )
-                        return true;
+    const int cellIndex = grid.y() * engine->rowCount() + grid.x();
+
+    QQuickItem* itemNext = nullptr;
+    int minDelta = -1;
+
+    for ( int i = 0; i < engine->count(); i++ )
+    {
+        const auto itemAt = engine->itemAt( i );
+
+        if ( itemAt && item != itemAt )
+        {
+            const auto gridAt = engine->gridAt( i );
+            const int delta = gridAt.y() * engine->rowCount() + gridAt.x() - cellIndex;
+
+            if ( delta > 0 )
+            {
+                if ( itemNext == nullptr || delta < minDelta )
+                {
+                    itemNext = itemAt;
+                    minDelta = delta;
                 }
             }
+        }
+    }
 
-            return false;
-        };
-
-    const auto children = box->childItems();
-
-    auto it = std::upper_bound( children.begin(), children.end(),
-        grid.topLeft(), comparePosition );
-
-    if ( it != children.end() )
-        item->stackBefore( *it );
+    if ( itemNext )
+    {
+        item->stackBefore( itemNext );
+    }
+    else
+    {
+        const auto itemLast = box->childItems().last();
+        if ( itemLast != item )
+            item->stackAfter( itemLast );
+    }
 }
 
 class QskGridBox::PrivateData
