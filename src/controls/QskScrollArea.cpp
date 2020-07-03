@@ -7,6 +7,7 @@
 #include "QskEvent.h"
 #include "QskQuick.h"
 #include "QskScrollViewSkinlet.h"
+#include "QskBoxBorderMetrics.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickclipnode_p.h>
@@ -14,6 +15,83 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitemchangelistener_p.h>
 #include <private/qquickwindow_p.h>
 QSK_QT_PRIVATE_END
+
+static inline bool qskNeedsScrollBars(
+    qreal available, qreal required, Qt::ScrollBarPolicy policy )
+{
+    if ( policy == Qt::ScrollBarAsNeeded )
+        return required > available;
+    else
+        return policy == Qt::ScrollBarAlwaysOn;
+}
+
+static inline QSizeF qskPanelInnerSize( const QskScrollView* scrollView )
+{
+    auto size = scrollView->subControlRect( QskScrollView::Panel ).size();
+
+    const auto borderMetrics = scrollView->boxBorderMetricsHint( QskScrollView::Viewport );
+    const qreal bw = 2 * borderMetrics.widthAt( Qt::TopEdge );
+
+    size.setWidth( qMax( size.width() - bw, 0.0 ) );
+    size.setHeight( qMax( size.height() - bw, 0.0 ) );
+
+    return size;
+}
+
+static inline QSizeF qskScrolledItemSize( const QskScrollView* scrollView,
+    const QQuickItem* item, const QSizeF& boundingSize )
+{
+    QSizeF outerSize = boundingSize;
+
+    const qreal spacing = scrollView->metric( QskScrollView::Panel | QskAspect::Spacing );
+
+    const auto sbV = scrollView->metric( QskScrollView::VerticalScrollBar | QskAspect::Size );
+    const auto sbH = scrollView->metric( QskScrollView::HorizontalScrollBar | QskAspect::Size );
+
+    const auto policyH = scrollView->horizontalScrollBarPolicy();
+    const auto policyV = scrollView->verticalScrollBarPolicy();
+
+    auto itemSize = qskConstrainedItemSize( item, outerSize );
+
+    bool needScrollBarV = qskNeedsScrollBars( outerSize.height(), itemSize.height(), policyV );
+    bool needScrollBarH = qskNeedsScrollBars( outerSize.width(), itemSize.width(), policyH );
+
+    bool hasScrollBarV = needScrollBarV;
+
+    // Vertical/Horizonal scroll bars might depend on each other
+
+    if ( needScrollBarV )
+    {
+        outerSize.rwidth() -= sbV + spacing;
+        itemSize = qskConstrainedItemSize( item, outerSize );
+
+        if ( !needScrollBarH )
+        {
+            needScrollBarH = qskNeedsScrollBars(
+                outerSize.width(), itemSize.width(), policyH );
+        }
+    }
+
+    if ( needScrollBarH )
+    {
+        outerSize.rheight() -= sbH + spacing;
+        itemSize = qskConstrainedItemSize( item, outerSize );
+
+        if ( !hasScrollBarV )
+        {
+            needScrollBarV = qskNeedsScrollBars(
+                outerSize.height(), itemSize.height(), policyV );
+        }
+    }
+
+    if ( needScrollBarV )
+    {
+        outerSize.rwidth() -= sbV + spacing;
+        itemSize = qskConstrainedItemSize( item, outerSize );
+    }
+
+    return itemSize;
+}
 
 namespace
 {
@@ -124,6 +202,11 @@ class QskScrollAreaClipItem final : public QskControl, public QQuickItemChangeLi
         return scrollArea()->subControlRect( QskScrollView::Viewport );
     }
 
+    inline void setItemSizeChangedEnabled( bool on )
+    {
+        m_isSizeChangedEnabled = on;
+    }
+
   protected:
     bool event( QEvent* event ) override;
 
@@ -134,7 +217,7 @@ class QskScrollAreaClipItem final : public QskControl, public QQuickItemChangeLi
     void itemGeometryChanged( QQuickItem*,
         QQuickGeometryChange change, const QRectF& ) override
     {
-        if ( change.sizeChange() )
+        if ( m_isSizeChangedEnabled && change.sizeChange() )
             scrollArea()->polish();
     }
 
@@ -142,7 +225,7 @@ class QskScrollAreaClipItem final : public QskControl, public QQuickItemChangeLi
     void itemGeometryChanged( QQuickItem*,
         const QRectF& newRect, const QRectF& oldRect ) override
     {
-        if ( oldRect.size() != newRect.size() )
+        if ( m_isSizeChangedEnabled && ( oldRect.size() != newRect.size() ) )
             scrollArea()->polish();
     }
 #endif
@@ -161,6 +244,8 @@ class QskScrollAreaClipItem final : public QskControl, public QQuickItemChangeLi
     }
 
     const QSGClipNode* viewPortClipNode() const;
+
+    bool m_isSizeChangedEnabled = true;
 };
 
 QskScrollAreaClipItem::QskScrollAreaClipItem( QskScrollArea* scrollArea )
@@ -371,39 +456,38 @@ void QskScrollArea::adjustItem()
     {
         setScrollableSize( QSizeF() );
         setScrollPos( QPointF() );
+
+        return;
     }
-    else
+
+    if ( m_data->isItemResizable )
     {
-        if ( m_data->isItemResizable )
+        QSizeF itemSize;
+
+        const auto viewSize = qskPanelInnerSize( this );
+        if ( !viewSize.isEmpty() )
         {
-            auto size = viewContentsRect().size();
-            if ( size.isEmpty() )
-            {
-                size = QSizeF( 0.0, 0.0 );
-            }
-            else
-            {
-                /*
-                    For optional scrollbars the available space also depends
-                    on wether the adjustedSize results in scroll bars. For the
-                    moment we ignore this and start with a simplified code. TODO ...
-                 */
-
-                size = qskConstrainedItemSize( item, size );
-            }
-
-            item->setSize( size );
+            // we have to anticipate the scrollbars
+            itemSize = qskScrolledItemSize( this, item, viewSize );
         }
 
-        m_data->enableAutoTranslation( this, false );
+        if ( itemSize.isEmpty() )
+            itemSize = QSizeF( 0.0, 0.0 );
 
-        setScrollableSize( QSizeF( item->width(), item->height() ) );
-        setScrollPos( scrollPos() );
 
-        m_data->enableAutoTranslation( this, true );
-
-        translateItem();
+        m_data->clipItem->setItemSizeChangedEnabled( false );
+        item->setSize( itemSize );
+        m_data->clipItem->setItemSizeChangedEnabled( true );
     }
+
+    m_data->enableAutoTranslation( this, false );
+
+    setScrollableSize( QSizeF( item->width(), item->height() ) );
+    setScrollPos( scrollPos() );
+
+    m_data->enableAutoTranslation( this, true );
+
+    translateItem();
 }
 
 void QskScrollArea::setItemResizable( bool on )
