@@ -18,6 +18,8 @@ class QSK_EXPORT QskTextLabel : public QskControl
     Q_PROPERTY( int fontRole READ fontRole
         WRITE setFontRole NOTIFY fontRoleChanged )
 
+    Q_PROPERTY( QFont font READ font )
+
     Q_PROPERTY( QColor textColor READ textColor
         WRITE setTextColor NOTIFY textColorChanged )
 

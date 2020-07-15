@@ -22,6 +22,8 @@ class QSK_EXPORT QskTextInput : public QskControl
     Q_PROPERTY( int fontRole READ fontRole
         WRITE setFontRole NOTIFY fontRoleChanged )
 
+    Q_PROPERTY( QFont font READ font )
+
     Q_PROPERTY( Qt::Alignment alignment READ alignment
         WRITE setAlignment NOTIFY alignmentChanged )
 

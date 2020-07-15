@@ -18,6 +18,8 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
 
     Q_PROPERTY( QString text READ text WRITE setText NOTIFY textChanged FINAL )
 
+    Q_PROPERTY( QFont font READ font )
+
     Q_PROPERTY( QskTextOptions textOptions READ textOptions
         WRITE setTextOptions NOTIFY textOptionsChanged )
 
