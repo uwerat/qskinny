@@ -148,6 +148,15 @@ void QskFocusIndicator::updateFocusFrame()
     if ( !r.isEmpty() )
     {
         r = r.marginsAdded( marginsHint( Panel | QskAspect::Padding ) );
+
+        if ( auto w = window() )
+        {
+            QRectF clipRect( 0, 0, w->width(), w->height() );
+            clipRect = parentItem()->mapRectFromScene( clipRect );
+    
+            r = r.intersected( clipRect );
+        }
+
         setGeometry( r );
 
         const auto clipRect = qskFocusIndicatorClipRect( m_data->clippingItem );
