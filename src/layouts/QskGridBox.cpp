@@ -48,7 +48,7 @@ static void qskUpdateFocusChain(
         There should be a faster way TODO ...
      */
 
-    const int cellIndex = grid.y() * engine->rowCount() + grid.x();
+    const int cellIndex = grid.y() * engine->columnCount() + grid.x();
 
     QQuickItem* itemNext = nullptr;
     int minDelta = -1;
@@ -60,7 +60,7 @@ static void qskUpdateFocusChain(
         if ( itemAt && item != itemAt )
         {
             const auto gridAt = engine->gridAt( i );
-            const int delta = gridAt.y() * engine->rowCount() + gridAt.x() - cellIndex;
+            const int delta = gridAt.y() * engine->columnCount() + gridAt.x() - cellIndex;
 
             if ( delta > 0 )
             {
