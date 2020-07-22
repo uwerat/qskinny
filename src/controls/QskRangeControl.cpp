@@ -5,6 +5,7 @@
 
 #include "QskRangeControl.h"
 #include "QskFunctions.h"
+#include "QskIntervalF.h"
 
 QSK_SYSTEM_STATE( QskRangeControl, ReadOnly, ( QskAspect::FirstSystemState << 1 ) )
 
@@ -90,6 +91,46 @@ void QskRangeControl::setMaximum( qreal maximum )
 qreal QskRangeControl::maximum() const
 {
     return m_data->maximum;
+}
+
+void QskRangeControl::setInterval( qreal min, qreal max )
+{
+    if ( max < min )
+        max = min;
+
+    if ( min == m_data->minimum && max == m_data->maximum )
+        return;
+
+    const auto oldMin = m_data->minimum;
+    const auto oldMax = m_data->maximum;
+
+    m_data->minimum = min;
+    m_data->maximum = max;
+
+    if ( isComponentComplete() )
+        adjustRangeAndValue( false );
+
+    if ( m_data->minimum != oldMin )
+        Q_EMIT minimumChanged( m_data->minimum );
+
+    if ( m_data->maximum != oldMax )
+        Q_EMIT maximumChanged( m_data->maximum );
+
+    const auto newRange = range();
+    if ( newRange != oldMax - oldMin )
+        Q_EMIT rangeChanged( newRange );
+
+    update();
+}
+
+void QskRangeControl::setInterval( const QskIntervalF& interval )
+{
+    setInterval( interval.lowerBound(), interval.upperBound() );
+}
+
+QskIntervalF QskRangeControl::interval() const
+{
+    return QskIntervalF( m_data->minimum, m_data->maximum );
 }
 
 void QskRangeControl::adjustRangeAndValue( bool increasing )

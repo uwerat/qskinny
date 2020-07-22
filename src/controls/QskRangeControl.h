@@ -8,6 +8,8 @@
 
 #include "QskControl.h"
 
+class QskIntervalF;
+
 class QSK_EXPORT QskRangeControl : public QskControl
 {
     Q_OBJECT
@@ -36,6 +38,9 @@ class QSK_EXPORT QskRangeControl : public QskControl
     qreal minimum() const;
     qreal maximum() const;
 
+    void setInterval( qreal min, qreal max );
+    QskIntervalF interval() const;
+
     qreal range() const;
     qreal position() const;
 
@@ -54,6 +59,7 @@ class QSK_EXPORT QskRangeControl : public QskControl
     void setValue( qreal );
     void setMinimum( qreal );
     void setMaximum( qreal );
+    void setInterval( const QskIntervalF& );
     void setStepSize( qreal );
     void setPageSize( int );
 
