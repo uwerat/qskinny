@@ -49,6 +49,7 @@ class QSK_EXPORT QskSkinlet
 
     static void setNodeRole( QSGNode* node, quint8 nodeRole );
     static quint8 nodeRole( const QSGNode* node );
+    static void removeTraillingNodes( QSGNode* node, QSGNode* child );
 
     static QSGNode* findNodeByRole( QSGNode* parent, quint8 nodeRole );
 
