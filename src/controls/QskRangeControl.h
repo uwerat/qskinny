@@ -33,8 +33,6 @@ class QSK_EXPORT QskRangeControl : public QskControl
     QskRangeControl( QQuickItem* parent = nullptr );
     ~QskRangeControl() override;
 
-    bool pressed() const;
-
     qreal minimum() const;
     qreal maximum() const;
 
