@@ -1,5 +1,6 @@
 Makefile
 .qmake.stash
+.uuid
 obj
 moc
 rcc
