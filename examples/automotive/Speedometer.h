@@ -6,9 +6,9 @@
 #ifndef SPEEDOMETER_H
 #define SPEEDOMETER_H
 
-#include <QskRangeControl.h>
+#include <QskBoundedValueControl.h>
 
-class Speedometer : public QskRangeControl
+class Speedometer : public QskBoundedValueControl
 {
     Q_OBJECT
 

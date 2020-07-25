@@ -50,13 +50,10 @@ QskSlider::QskSlider( Qt::Orientation orientation, QQuickItem* parent )
     else
         initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Minimum );
 
-    setMetric( QskSlider::Handle | QskAspect::Position, position() );
+    setMetric( QskSlider::Handle | QskAspect::Position, valueAsRatio() );
 
-    connect( this, &QskRangeControl::rangeChanged,
-        [ this ]( qreal ) { updatePosition(); } );
-
-    connect( this, &QskRangeControl::valueChanged,
-        [ this ]( qreal ) { updatePosition(); } );
+    connect( this, &QskSlider::boundariesChanged, [ this ]() { updatePosition(); } );
+    connect( this, &QskSlider::valueChanged, [ this ]() { updatePosition(); } );
 }
 
 QskSlider::~QskSlider()
@@ -173,12 +170,12 @@ void QskSlider::mouseMoveEvent( QMouseEvent* event )
     if ( m_data->orientation == Qt::Horizontal )
     {
         const auto distance = event->localPos().x() - m_data->pressedPos.x();
-        newValue = m_data->pressedValue + distance / r.width() * range();
+        newValue = m_data->pressedValue + distance / r.width() * boundaryLength();
     }
     else
     {
         const auto distance = event->localPos().y() - m_data->pressedPos.y();
-        newValue = m_data->pressedValue - distance / r.height() * range();
+        newValue = m_data->pressedValue - distance / r.height() * boundaryLength();
     }
 
     setValue( newValue );
@@ -199,14 +196,14 @@ void QskSlider::mouseReleaseEvent( QMouseEvent* event )
             const qreal w = szHandle.width();
 
             const qreal x = ( pos.x() - rect.x() - w * 0.5 ) / ( rect.width() - w );
-            up = x > position();
+            up = x > valueAsRatio();
         }
         else
         {
             const qreal h = szHandle.height();
 
             const qreal y = ( pos.y() - rect.y() - h * 0.5 ) / ( rect.height() - h );
-            up = y < 1.0 - position();
+            up = y < 1.0 - valueAsRatio();
         }
 
         if ( up )
@@ -228,9 +225,8 @@ void QskSlider::updatePosition()
 
     const Aspect aspect = QskSlider::Handle | Position | Metric;
 
-    const QskAnimationHint hint = animation( aspect | skinState() );
-
-    const qreal pos = position();
+    const auto hint = animation( aspect | skinState() );
+    const qreal pos = valueAsRatio();
 
     if ( hint.duration > 0 )
     {

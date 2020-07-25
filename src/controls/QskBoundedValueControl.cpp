@@ -3,13 +3,13 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#include "QskRangeControl.h"
+#include "QskBoundedValueControl.h"
 #include "QskFunctions.h"
 #include "QskIntervalF.h"
 
-QSK_SYSTEM_STATE( QskRangeControl, ReadOnly, ( QskAspect::FirstSystemState << 1 ) )
+QSK_SYSTEM_STATE( QskBoundedValueControl, ReadOnly, ( QskAspect::FirstSystemState << 1 ) )
 
-class QskRangeControl::PrivateData
+class QskBoundedValueControl::PrivateData
 {
   public:
     PrivateData()
@@ -30,7 +30,7 @@ class QskRangeControl::PrivateData
     bool snap : 1;
 };
 
-QskRangeControl::QskRangeControl( QQuickItem* parent )
+QskBoundedValueControl::QskBoundedValueControl( QQuickItem* parent )
     : QskControl( parent )
     , m_data( new PrivateData() )
 {
@@ -39,76 +39,66 @@ QskRangeControl::QskRangeControl( QQuickItem* parent )
     setWheelEnabled( true );
 }
 
-QskRangeControl::~QskRangeControl()
+QskBoundedValueControl::~QskBoundedValueControl()
 {
 }
 
-void QskRangeControl::setMinimum( qreal minimum )
+void QskBoundedValueControl::setMinimum( qreal minimum )
 {
     if ( m_data->minimum == minimum )
         return;
-
-    const auto oldRange = range();
 
     m_data->minimum = minimum;
     Q_EMIT minimumChanged( minimum );
 
     if ( isComponentComplete() )
-        adjustRangeAndValue( false );
+        adjustBoundariesAndValue( false );
 
-    const auto newRange = range();
-    if ( oldRange != newRange )
-        Q_EMIT rangeChanged( newRange );
-
+    Q_EMIT boundariesChanged( boundaries() );
     update();
 }
 
-qreal QskRangeControl::minimum() const
+qreal QskBoundedValueControl::minimum() const
 {
     return m_data->minimum;
 }
 
-void QskRangeControl::setMaximum( qreal maximum )
+void QskBoundedValueControl::setMaximum( qreal maximum )
 {
     if ( m_data->maximum == maximum )
         return;
-
-    const auto oldRange = range();
 
     m_data->maximum = maximum;
     Q_EMIT maximumChanged( maximum );
 
     if ( isComponentComplete() )
-        adjustRangeAndValue( true );
+        adjustBoundariesAndValue( true );
 
-    const auto newRange = range();
-    if ( oldRange != newRange )
-        Q_EMIT rangeChanged( newRange );
-
+    Q_EMIT boundariesChanged( boundaries() );
     update();
 }
 
-qreal QskRangeControl::maximum() const
+qreal QskBoundedValueControl::maximum() const
 {
     return m_data->maximum;
 }
 
-void QskRangeControl::setInterval( qreal min, qreal max )
+void QskBoundedValueControl::setBoundaries( qreal min, qreal max )
 {
     if ( max < min )
         max = min;
 
-    if ( min == m_data->minimum && max == m_data->maximum )
-        return;
-
     const auto oldMin = m_data->minimum;
     const auto oldMax = m_data->maximum;
+
+    if ( min == oldMin && max == oldMax )
+        return;
 
     m_data->minimum = min;
     m_data->maximum = max;
 
     if ( isComponentComplete() )
-        adjustRangeAndValue( false );
+        adjustBoundariesAndValue( false );
 
     if ( m_data->minimum != oldMin )
         Q_EMIT minimumChanged( m_data->minimum );
@@ -116,24 +106,21 @@ void QskRangeControl::setInterval( qreal min, qreal max )
     if ( m_data->maximum != oldMax )
         Q_EMIT maximumChanged( m_data->maximum );
 
-    const auto newRange = range();
-    if ( newRange != oldMax - oldMin )
-        Q_EMIT rangeChanged( newRange );
-
+    Q_EMIT boundariesChanged( boundaries() );
     update();
 }
 
-void QskRangeControl::setInterval( const QskIntervalF& interval )
+void QskBoundedValueControl::setBoundaries( const QskIntervalF& boundaries )
 {
-    setInterval( interval.lowerBound(), interval.upperBound() );
+    setBoundaries( boundaries.lowerBound(), boundaries.upperBound() );
 }
 
-QskIntervalF QskRangeControl::interval() const
+QskIntervalF QskBoundedValueControl::boundaries() const
 {
     return QskIntervalF( m_data->minimum, m_data->maximum );
 }
 
-void QskRangeControl::adjustRangeAndValue( bool increasing )
+void QskBoundedValueControl::adjustBoundariesAndValue( bool increasing )
 {
     if ( m_data->maximum < m_data->minimum )
     {
@@ -163,22 +150,28 @@ void QskRangeControl::adjustRangeAndValue( bool increasing )
     }
 }
 
-qreal QskRangeControl::range() const
+qreal QskBoundedValueControl::boundaryLength() const
 {
     return m_data->maximum - m_data->minimum;
 }
 
-qreal QskRangeControl::position() const
-{
-    return ( value() - minimum() ) / range();
-}
-
-qreal QskRangeControl::fixupValue( qreal value ) const
+qreal QskBoundedValueControl::fixupValue( qreal value ) const
 {
     return value;
 }
 
-void QskRangeControl::setValue( qreal value )
+void QskBoundedValueControl::setValueAsRatio( qreal ratio )
+{
+    ratio = qBound( 0.0, ratio, 1.0 );
+    setValue( m_data->minimum + ratio * ( m_data->maximum - m_data->minimum ) );
+}
+
+qreal QskBoundedValueControl::valueAsRatio() const 
+{
+    return ( m_data->value - m_data->minimum ) / ( m_data->maximum - m_data->minimum );
+}
+
+void QskBoundedValueControl::setValue( qreal value )
 {
     if ( isComponentComplete() )
     {
@@ -199,12 +192,12 @@ void QskRangeControl::setValue( qreal value )
     }
 }
 
-qreal QskRangeControl::value() const
+qreal QskBoundedValueControl::value() const
 {
     return m_data->value;
 }
 
-void QskRangeControl::setStepSize( qreal stepSize )
+void QskBoundedValueControl::setStepSize( qreal stepSize )
 {
     if ( qskFuzzyCompare( m_data->stepSize, stepSize ) )
         return;
@@ -215,12 +208,12 @@ void QskRangeControl::setStepSize( qreal stepSize )
     update();
 }
 
-qreal QskRangeControl::stepSize() const
+qreal QskBoundedValueControl::stepSize() const
 {
     return m_data->stepSize;
 }
 
-void QskRangeControl::setPageSize( int pageSize )
+void QskBoundedValueControl::setPageSize( int pageSize )
 {
     if ( m_data->pageSize == pageSize )
         return;
@@ -231,12 +224,12 @@ void QskRangeControl::setPageSize( int pageSize )
     update();
 }
 
-int QskRangeControl::pageSize() const
+int QskBoundedValueControl::pageSize() const
 {
     return m_data->pageSize;
 }
 
-void QskRangeControl::setSnap( bool snap )
+void QskBoundedValueControl::setSnap( bool snap )
 {
     if ( m_data->snap == snap )
         return;
@@ -250,12 +243,12 @@ void QskRangeControl::setSnap( bool snap )
     }
 }
 
-bool QskRangeControl::snap() const
+bool QskBoundedValueControl::snap() const
 {
     return m_data->snap;
 }
 
-void QskRangeControl::setReadOnly( bool readOnly )
+void QskBoundedValueControl::setReadOnly( bool readOnly )
 {
     if ( readOnly == isReadOnly() )
         return;
@@ -270,32 +263,32 @@ void QskRangeControl::setReadOnly( bool readOnly )
     Q_EMIT readOnlyChanged( readOnly );
 }
 
-bool QskRangeControl::isReadOnly() const
+bool QskBoundedValueControl::isReadOnly() const
 {
     return skinState() & ReadOnly;
 }
 
-void QskRangeControl::stepUp()
+void QskBoundedValueControl::stepUp()
 {
     setValue( m_data->value + m_data->stepSize );
 }
 
-void QskRangeControl::stepDown()
+void QskBoundedValueControl::stepDown()
 {
     setValue( m_data->value - m_data->stepSize );
 }
 
-void QskRangeControl::pageUp()
+void QskBoundedValueControl::pageUp()
 {
     setValue( m_data->value + m_data->stepSize * m_data->pageSize );
 }
 
-void QskRangeControl::pageDown()
+void QskBoundedValueControl::pageDown()
 {
     setValue( m_data->value - m_data->stepSize * m_data->pageSize );
 }
 
-void QskRangeControl::keyPressEvent( QKeyEvent* event )
+void QskBoundedValueControl::keyPressEvent( QKeyEvent* event )
 {
     if ( !isReadOnly() )
     {
@@ -317,7 +310,7 @@ void QskRangeControl::keyPressEvent( QKeyEvent* event )
 
 #ifndef QT_NO_WHEELEVENT
 
-void QskRangeControl::wheelEvent( QWheelEvent* event )
+void QskBoundedValueControl::wheelEvent( QWheelEvent* event )
 {
     if ( isReadOnly() )
         return;
@@ -336,10 +329,10 @@ void QskRangeControl::wheelEvent( QWheelEvent* event )
 
 #endif
 
-void QskRangeControl::componentComplete()
+void QskBoundedValueControl::componentComplete()
 {
     Inherited::componentComplete();
-    adjustRangeAndValue( true );
+    adjustBoundariesAndValue( true );
 }
 
-#include "moc_QskRangeControl.cpp"
+#include "moc_QskBoundedValueControl.cpp"

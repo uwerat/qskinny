@@ -3,20 +3,22 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef QSK_RANGE_CONTROL_H
-#define QSK_RANGE_CONTROL_H
+#ifndef QSK_BOUNDED_VALUE_CONTROL_H
+#define QSK_BOUNDED_VALUE_CONTROL_H
 
 #include "QskControl.h"
 
 class QskIntervalF;
 
-class QSK_EXPORT QskRangeControl : public QskControl
+class QSK_EXPORT QskBoundedValueControl : public QskControl
 {
     Q_OBJECT
 
     Q_PROPERTY( qreal minimum READ minimum WRITE setMinimum NOTIFY minimumChanged )
     Q_PROPERTY( qreal maximum READ maximum WRITE setMaximum NOTIFY maximumChanged )
-    Q_PROPERTY( qreal range READ range NOTIFY rangeChanged )
+    Q_PROPERTY( QskIntervalF boundaries READ boundaries
+                WRITE setBoundaries NOTIFY boundariesChanged )
+
     Q_PROPERTY( qreal value READ value WRITE setValue NOTIFY valueChanged )
 
     Q_PROPERTY( qreal stepSize READ stepSize WRITE setStepSize NOTIFY stepSizeChanged )
@@ -30,19 +32,21 @@ class QSK_EXPORT QskRangeControl : public QskControl
   public:
     QSK_STATES( ReadOnly )
 
-    QskRangeControl( QQuickItem* parent = nullptr );
-    ~QskRangeControl() override;
+    QskBoundedValueControl( QQuickItem* parent = nullptr );
+    ~QskBoundedValueControl() override;
 
     qreal minimum() const;
     qreal maximum() const;
 
-    void setInterval( qreal min, qreal max );
-    QskIntervalF interval() const;
+    qreal boundaryLength() const;
 
-    qreal range() const;
-    qreal position() const;
+    void setBoundaries( qreal min, qreal max );
+    QskIntervalF boundaries() const;
 
     qreal value() const;
+
+    // [0.0, 1.0]
+    qreal valueAsRatio() const; 
 
     qreal stepSize() const;
     int pageSize() const;
@@ -55,9 +59,12 @@ class QSK_EXPORT QskRangeControl : public QskControl
 
   public Q_SLOTS:
     void setValue( qreal );
+    void setValueAsRatio( qreal );
+
     void setMinimum( qreal );
     void setMaximum( qreal );
-    void setInterval( const QskIntervalF& );
+    void setBoundaries( const QskIntervalF& );
+
     void setStepSize( qreal );
     void setPageSize( int );
 
@@ -67,13 +74,16 @@ class QSK_EXPORT QskRangeControl : public QskControl
     void pageDown();
 
   Q_SIGNALS:
+    void valueChanged( qreal );
+
     void minimumChanged( qreal );
     void maximumChanged( qreal );
-    void rangeChanged( qreal );
-    void valueChanged( qreal );
+    void boundariesChanged( const QskIntervalF&  );
+
     void stepSizeChanged( qreal );
     void pageSizeChanged( qreal );
     void snapChanged( bool );
+
     void readOnlyChanged( bool );
 
   protected:
@@ -87,7 +97,7 @@ class QSK_EXPORT QskRangeControl : public QskControl
     void componentComplete() override;
 
   private:
-    void adjustRangeAndValue( bool );
+    void adjustBoundariesAndValue( bool );
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

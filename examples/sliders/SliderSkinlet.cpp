@@ -191,7 +191,7 @@ QRectF SliderSkinlet::fillRect(
     auto r = subControlRect( slider, contentsRect, Slider::Scale );
 
     r.setTop( r.bottom() - qskMinorTick );
-    r.setWidth( r.width() * slider->position() );
+    r.setWidth( r.width() * slider->valueAsRatio() );
 
     return r;
 }
@@ -238,7 +238,7 @@ QSGNode* SliderSkinlet::updateScaleNode(
     if ( ticksNode == nullptr )
         ticksNode = new TicksNode( slider->color( Slider::Scale ) );
 
-    const int tickCount = std::floor( slider->range() / slider->stepSize() ) + 1;
+    const int tickCount = std::floor( slider->boundaryLength() / slider->stepSize() ) + 1;
 
     auto geometry = ticksNode->geometry();
     geometry->allocate( tickCount * 2 );
@@ -246,7 +246,7 @@ QSGNode* SliderSkinlet::updateScaleNode(
     auto vertexData = geometry->vertexDataAsPoint2D();
     memset( vertexData, 0, geometry->vertexCount() );
 
-    auto stepStride = slider->stepSize() / slider->range() * scaleRect.width();
+    auto stepStride = slider->stepSize() / slider->boundaryLength() * scaleRect.width();
 
     auto x = scaleRect.x();
     const auto y = scaleRect.bottom();
@@ -281,11 +281,11 @@ QSGNode* SliderSkinlet::updateDecorationNode(
     if ( decorationNode == nullptr )
         decorationNode = new QSGTransformNode();
 
-    const int tickCount = std::floor( slider->range() / slider->stepSize() ) + 1;
+    const int tickCount = std::floor( slider->boundaryLength() / slider->stepSize() ) + 1;
 
     auto labelNode = static_cast< QskTextNode* >( decorationNode->firstChild() );
 
-    auto stepStride = slider->stepSize() / slider->range() * decorationRect.width();
+    auto stepStride = slider->stepSize() / slider->boundaryLength() * decorationRect.width();
 
     auto x = decorationRect.x();
     const auto y = decorationRect.y();

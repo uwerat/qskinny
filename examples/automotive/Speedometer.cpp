@@ -14,7 +14,7 @@ QSK_SUBCONTROL( Speedometer, NeedleHead )
 QSK_SUBCONTROL( Speedometer, Needle )
 
 Speedometer::Speedometer( QQuickItem* parent )
-    : QskRangeControl( parent )
+    : QskBoundedValueControl( parent )
 {
 }
 

@@ -49,7 +49,7 @@ Slider::Slider( QQuickItem* parentItem )
 
     setSkinlet( skinlet );
 
-    connect( this, &QskRangeControl::valueChanged,
+    connect( this, &QskSlider::valueChanged,
         this, &QskControl::focusIndicatorRectChanged );
 }
 
