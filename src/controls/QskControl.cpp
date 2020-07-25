@@ -107,7 +107,20 @@ void QskControl::setFocusPolicy( Qt::FocusPolicy policy )
     if ( policy != d->focusPolicy )
     {
         d->focusPolicy = ( policy & ~Qt::TabFocus );
-        Inherited::setActiveFocusOnTab( policy & Qt::TabFocus );
+
+        const bool tabFocus = policy & Qt::TabFocus;
+
+        if ( !tabFocus && window() )
+        {
+            // Removing the activeFocusItem from the focus tab chain is not possible
+            if ( window()->activeFocusItem() == this )
+            {
+                if ( auto focusItem = nextItemInFocusChain( true ) )
+                    focusItem->setFocus( true );
+            }
+        }
+
+        Inherited::setActiveFocusOnTab( tabFocus );
 
         Q_EMIT focusPolicyChanged();
     }
