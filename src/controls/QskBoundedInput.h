@@ -87,6 +87,9 @@ class QSK_EXPORT QskBoundedInput : public QskControl
 
     virtual void alignInput() = 0;
 
+    qreal alignedValue( qreal ) const;
+    QskIntervalF alignedInterval( const QskIntervalF& ) const;
+
   private:
     void adjustBoundaries( bool increasing );
 

@@ -7,6 +7,8 @@
 #include "QskFunctions.h"
 #include "QskIntervalF.h"
 
+#include <cmath>
+
 QSK_SYSTEM_STATE( QskBoundedInput, ReadOnly, ( QskAspect::FirstSystemState << 1 ) )
 
 class QskBoundedInput::PrivateData
@@ -145,13 +147,20 @@ qreal QskBoundedInput::boundaryLength() const
 
 void QskBoundedInput::setStepSize( qreal stepSize )
 {
-    if ( qskFuzzyCompare( m_data->stepSize, stepSize ) )
+    if ( qFuzzyIsNull( stepSize ) )
+        stepSize = 0.0;
+
+    if ( qFuzzyCompare( m_data->stepSize, stepSize ) )
         return;
 
     m_data->stepSize = stepSize;
     Q_EMIT stepSizeChanged( stepSize );
 
-    update();
+    if ( isComponentComplete() )
+    {
+        if ( m_data->snap && stepSize )
+            alignInput();
+    }
 }
 
 qreal QskBoundedInput::stepSize() const
@@ -166,8 +175,6 @@ void QskBoundedInput::setPageSize( int pageSize )
 
     m_data->pageSize = pageSize;
     Q_EMIT pageSizeChanged( pageSize );
-
-    update();
 }
 
 int QskBoundedInput::pageSize() const
@@ -210,6 +217,33 @@ void QskBoundedInput::setSnap( bool snap )
 bool QskBoundedInput::snap() const
 {
     return m_data->snap;
+}
+
+qreal QskBoundedInput::alignedValue( qreal value ) const
+{
+    if ( m_data->snap )
+    {
+        if ( const auto step = m_data->stepSize )
+            value = qRound( value / step ) * step;
+    }
+    
+    return qBound( minimum(), value, maximum() );
+}
+
+QskIntervalF QskBoundedInput::alignedInterval( const QskIntervalF& interval ) const
+{
+    if ( m_data->snap )
+    {
+        if ( const auto step = m_data->stepSize )
+        {
+            const qreal lower = std::floor( interval.lowerBound() / step ) * step;
+            const qreal upper = std::ceil( interval.upperBound() / step ) * step;
+
+            return QskIntervalF( lower, upper );
+        }
+    }
+
+    return interval;
 }
 
 void QskBoundedInput::setReadOnly( bool readOnly )

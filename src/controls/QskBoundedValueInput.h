@@ -40,9 +40,8 @@ class QSK_EXPORT QskBoundedValueInput : public QskBoundedInput
     void alignInput() override;
 
   private:
+    void setValueInternal( qreal value );
     void adjustValue();
-
-    qreal alignedValue( qreal value ) const;
 
     qreal m_value = 0.0;
 };

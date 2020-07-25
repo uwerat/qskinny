@@ -15,26 +15,12 @@ QskBoundedValueInput::~QskBoundedValueInput()
 {
 }
 
-qreal QskBoundedValueInput::alignedValue( qreal value ) const
-{
-    if ( snap() )
-    {
-        if ( const auto step = stepSize() )
-            value = qRound( value / step ) * step;
-    }
-
-    return qBound( minimum(), value, maximum() );
-}
-
 void QskBoundedValueInput::alignInput()
 {
-    const auto newValue = alignedValue( m_value );
+    auto value = alignedValue( m_value );
+    value = fixupValue( value );
 
-    if ( newValue != m_value )
-    {
-        m_value = newValue;
-        Q_EMIT valueChanged( newValue );
-    }
+    setValueInternal( value );
 }
 
 qreal QskBoundedValueInput::fixupValue( qreal value ) const
@@ -58,17 +44,10 @@ void QskBoundedValueInput::setValue( qreal value )
     if ( isComponentComplete() )
     {
         value = alignedValue( value );
+        value = fixupValue( value );
     }
 
-    value = fixupValue( value );
-
-    if ( !qskFuzzyCompare( value, m_value ) )
-    {
-        m_value = value;
-        Q_EMIT valueChanged( value );
-
-        update();
-    }
+    setValueInternal( value );
 }
 
 qreal QskBoundedValueInput::value() const
@@ -79,6 +58,17 @@ qreal QskBoundedValueInput::value() const
 void QskBoundedValueInput::increment( qreal offset )
 {
     setValue( m_value + offset );
+}
+
+void QskBoundedValueInput::setValueInternal( qreal value )
+{
+    if ( !qskFuzzyCompare( value, m_value ) )
+    {
+        m_value = value;
+        Q_EMIT valueChanged( value );
+
+        update();
+    }
 }
 
 #include "moc_QskBoundedValueInput.cpp"
