@@ -162,12 +162,7 @@ QSGNode* QskPageIndicatorSkinlet::updateBulletsNode(
     }
 
     // if count has decreased we need to remove superfluous nodes
-    while ( bulletNode->nextSibling() != nullptr )
-    {
-        auto sibling = bulletNode->nextSibling();
-        node->removeChildNode( sibling );
-        delete sibling;
-    }
+    removeTraillingNodes( node, bulletNode );
 
     return node;
 }

@@ -377,6 +377,18 @@ void QskSkinlet::insertNodeSorted( QSGNode* node, QSGNode* parentNode ) const
         parentNode->prependChildNode( node );
 }
 
+void QskSkinlet::removeTraillingNodes( QSGNode* node, QSGNode* child )
+{
+    if ( node && child )
+    {
+        while ( auto sibling = child->nextSibling() )
+        {
+            node->removeChildNode( sibling );
+            delete sibling;
+        }   
+    }   
+}
+
 void QskSkinlet::setNodeRole( QSGNode* node, quint8 nodeRole )
 {
     qskSetRole( nodeRole, node );

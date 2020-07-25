@@ -113,7 +113,7 @@ inline constexpr qreal QskIntervalF::upperBound() const noexcept
 
 inline constexpr qreal QskIntervalF::width() const noexcept
 {
-    return ( m_upperBound > m_lowerBound ) ? m_upperBound - m_upperBound : 0.0;
+    return ( m_upperBound > m_lowerBound ) ? ( m_upperBound - m_lowerBound ) : 0.0;
 }
 
 inline void QskIntervalF::setWidth( qreal width ) noexcept
