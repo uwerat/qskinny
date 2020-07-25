@@ -6,12 +6,12 @@
 #ifndef QSK_SLIDER_H
 #define QSK_SLIDER_H
 
-#include "QskBoundedValueControl.h"
+#include "QskBoundedValueInput.h"
 
 class QSGNode;
 class QskSkin;
 
-class QSK_EXPORT QskSlider : public QskBoundedValueControl
+class QSK_EXPORT QskSlider : public QskBoundedValueInput
 {
     Q_OBJECT
 
@@ -22,7 +22,7 @@ class QSK_EXPORT QskSlider : public QskBoundedValueControl
 
     Q_PROPERTY( bool tracking READ isTracking WRITE setTracking NOTIFY trackingChanged )
 
-    using Inherited = QskBoundedValueControl;
+    using Inherited = QskBoundedValueInput;
 
   public:
     QSK_SUBCONTROLS( Panel, Groove, Fill, Scale, Handle )

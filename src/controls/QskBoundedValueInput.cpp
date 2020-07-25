@@ -3,13 +3,13 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#include "QskBoundedValueControl.h"
+#include "QskBoundedValueInput.h"
 #include "QskFunctions.h"
 #include "QskIntervalF.h"
 
-QSK_SYSTEM_STATE( QskBoundedValueControl, ReadOnly, ( QskAspect::FirstSystemState << 1 ) )
+QSK_SYSTEM_STATE( QskBoundedValueInput, ReadOnly, ( QskAspect::FirstSystemState << 1 ) )
 
-class QskBoundedValueControl::PrivateData
+class QskBoundedValueInput::PrivateData
 {
   public:
     PrivateData()
@@ -30,7 +30,7 @@ class QskBoundedValueControl::PrivateData
     bool snap : 1;
 };
 
-QskBoundedValueControl::QskBoundedValueControl( QQuickItem* parent )
+QskBoundedValueInput::QskBoundedValueInput( QQuickItem* parent )
     : QskControl( parent )
     , m_data( new PrivateData() )
 {
@@ -39,11 +39,11 @@ QskBoundedValueControl::QskBoundedValueControl( QQuickItem* parent )
     setWheelEnabled( true );
 }
 
-QskBoundedValueControl::~QskBoundedValueControl()
+QskBoundedValueInput::~QskBoundedValueInput()
 {
 }
 
-void QskBoundedValueControl::setMinimum( qreal minimum )
+void QskBoundedValueInput::setMinimum( qreal minimum )
 {
     if ( m_data->minimum == minimum )
         return;
@@ -58,12 +58,12 @@ void QskBoundedValueControl::setMinimum( qreal minimum )
     update();
 }
 
-qreal QskBoundedValueControl::minimum() const
+qreal QskBoundedValueInput::minimum() const
 {
     return m_data->minimum;
 }
 
-void QskBoundedValueControl::setMaximum( qreal maximum )
+void QskBoundedValueInput::setMaximum( qreal maximum )
 {
     if ( m_data->maximum == maximum )
         return;
@@ -78,12 +78,12 @@ void QskBoundedValueControl::setMaximum( qreal maximum )
     update();
 }
 
-qreal QskBoundedValueControl::maximum() const
+qreal QskBoundedValueInput::maximum() const
 {
     return m_data->maximum;
 }
 
-void QskBoundedValueControl::setBoundaries( qreal min, qreal max )
+void QskBoundedValueInput::setBoundaries( qreal min, qreal max )
 {
     if ( max < min )
         max = min;
@@ -110,17 +110,17 @@ void QskBoundedValueControl::setBoundaries( qreal min, qreal max )
     update();
 }
 
-void QskBoundedValueControl::setBoundaries( const QskIntervalF& boundaries )
+void QskBoundedValueInput::setBoundaries( const QskIntervalF& boundaries )
 {
     setBoundaries( boundaries.lowerBound(), boundaries.upperBound() );
 }
 
-QskIntervalF QskBoundedValueControl::boundaries() const
+QskIntervalF QskBoundedValueInput::boundaries() const
 {
     return QskIntervalF( m_data->minimum, m_data->maximum );
 }
 
-void QskBoundedValueControl::adjustBoundariesAndValue( bool increasing )
+void QskBoundedValueInput::adjustBoundariesAndValue( bool increasing )
 {
     if ( m_data->maximum < m_data->minimum )
     {
@@ -150,28 +150,28 @@ void QskBoundedValueControl::adjustBoundariesAndValue( bool increasing )
     }
 }
 
-qreal QskBoundedValueControl::boundaryLength() const
+qreal QskBoundedValueInput::boundaryLength() const
 {
     return m_data->maximum - m_data->minimum;
 }
 
-qreal QskBoundedValueControl::fixupValue( qreal value ) const
+qreal QskBoundedValueInput::fixupValue( qreal value ) const
 {
     return value;
 }
 
-void QskBoundedValueControl::setValueAsRatio( qreal ratio )
+void QskBoundedValueInput::setValueAsRatio( qreal ratio )
 {
     ratio = qBound( 0.0, ratio, 1.0 );
     setValue( m_data->minimum + ratio * ( m_data->maximum - m_data->minimum ) );
 }
 
-qreal QskBoundedValueControl::valueAsRatio() const 
+qreal QskBoundedValueInput::valueAsRatio() const 
 {
     return ( m_data->value - m_data->minimum ) / ( m_data->maximum - m_data->minimum );
 }
 
-void QskBoundedValueControl::setValue( qreal value )
+void QskBoundedValueInput::setValue( qreal value )
 {
     if ( isComponentComplete() )
     {
@@ -192,12 +192,12 @@ void QskBoundedValueControl::setValue( qreal value )
     }
 }
 
-qreal QskBoundedValueControl::value() const
+qreal QskBoundedValueInput::value() const
 {
     return m_data->value;
 }
 
-void QskBoundedValueControl::setStepSize( qreal stepSize )
+void QskBoundedValueInput::setStepSize( qreal stepSize )
 {
     if ( qskFuzzyCompare( m_data->stepSize, stepSize ) )
         return;
@@ -208,12 +208,12 @@ void QskBoundedValueControl::setStepSize( qreal stepSize )
     update();
 }
 
-qreal QskBoundedValueControl::stepSize() const
+qreal QskBoundedValueInput::stepSize() const
 {
     return m_data->stepSize;
 }
 
-void QskBoundedValueControl::setPageSize( int pageSize )
+void QskBoundedValueInput::setPageSize( int pageSize )
 {
     if ( m_data->pageSize == pageSize )
         return;
@@ -224,12 +224,12 @@ void QskBoundedValueControl::setPageSize( int pageSize )
     update();
 }
 
-int QskBoundedValueControl::pageSize() const
+int QskBoundedValueInput::pageSize() const
 {
     return m_data->pageSize;
 }
 
-void QskBoundedValueControl::setSnap( bool snap )
+void QskBoundedValueInput::setSnap( bool snap )
 {
     if ( m_data->snap == snap )
         return;
@@ -243,12 +243,12 @@ void QskBoundedValueControl::setSnap( bool snap )
     }
 }
 
-bool QskBoundedValueControl::snap() const
+bool QskBoundedValueInput::snap() const
 {
     return m_data->snap;
 }
 
-void QskBoundedValueControl::setReadOnly( bool readOnly )
+void QskBoundedValueInput::setReadOnly( bool readOnly )
 {
     if ( readOnly == isReadOnly() )
         return;
@@ -263,32 +263,32 @@ void QskBoundedValueControl::setReadOnly( bool readOnly )
     Q_EMIT readOnlyChanged( readOnly );
 }
 
-bool QskBoundedValueControl::isReadOnly() const
+bool QskBoundedValueInput::isReadOnly() const
 {
     return skinState() & ReadOnly;
 }
 
-void QskBoundedValueControl::stepUp()
+void QskBoundedValueInput::stepUp()
 {
     setValue( m_data->value + m_data->stepSize );
 }
 
-void QskBoundedValueControl::stepDown()
+void QskBoundedValueInput::stepDown()
 {
     setValue( m_data->value - m_data->stepSize );
 }
 
-void QskBoundedValueControl::pageUp()
+void QskBoundedValueInput::pageUp()
 {
     setValue( m_data->value + m_data->stepSize * m_data->pageSize );
 }
 
-void QskBoundedValueControl::pageDown()
+void QskBoundedValueInput::pageDown()
 {
     setValue( m_data->value - m_data->stepSize * m_data->pageSize );
 }
 
-void QskBoundedValueControl::keyPressEvent( QKeyEvent* event )
+void QskBoundedValueInput::keyPressEvent( QKeyEvent* event )
 {
     if ( !isReadOnly() )
     {
@@ -310,7 +310,7 @@ void QskBoundedValueControl::keyPressEvent( QKeyEvent* event )
 
 #ifndef QT_NO_WHEELEVENT
 
-void QskBoundedValueControl::wheelEvent( QWheelEvent* event )
+void QskBoundedValueInput::wheelEvent( QWheelEvent* event )
 {
     if ( isReadOnly() )
         return;
@@ -329,10 +329,10 @@ void QskBoundedValueControl::wheelEvent( QWheelEvent* event )
 
 #endif
 
-void QskBoundedValueControl::componentComplete()
+void QskBoundedValueInput::componentComplete()
 {
     Inherited::componentComplete();
     adjustBoundariesAndValue( true );
 }
 
-#include "moc_QskBoundedValueControl.cpp"
+#include "moc_QskBoundedValueInput.cpp"

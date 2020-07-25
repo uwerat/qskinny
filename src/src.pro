@@ -110,7 +110,7 @@ HEADERS += \
     controls/QskAbstractButton.h \
     controls/QskAnimationHint.h \
     controls/QskAnimator.h \
-    controls/QskBoundedValueControl.h \
+    controls/QskBoundedValueInput.h \
     controls/QskBox.h \
     controls/QskBoxSkinlet.h \
     controls/QskControl.h \
@@ -178,7 +178,7 @@ HEADERS += \
 SOURCES += \
     controls/QskAbstractButton.cpp \
     controls/QskAnimator.cpp \
-    controls/QskBoundedValueControl.cpp \
+    controls/QskBoundedValueInput.cpp \
     controls/QskBox.cpp \
     controls/QskBoxSkinlet.cpp \
     controls/QskControl.cpp \

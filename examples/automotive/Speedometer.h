@@ -6,9 +6,9 @@
 #ifndef SPEEDOMETER_H
 #define SPEEDOMETER_H
 
-#include <QskBoundedValueControl.h>
+#include <QskBoundedValueInput.h>
 
-class Speedometer : public QskBoundedValueControl
+class Speedometer : public QskBoundedValueInput
 {
     Q_OBJECT
 

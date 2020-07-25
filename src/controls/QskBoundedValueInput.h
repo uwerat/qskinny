@@ -3,14 +3,14 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef QSK_BOUNDED_VALUE_CONTROL_H
-#define QSK_BOUNDED_VALUE_CONTROL_H
+#ifndef QSK_BOUNDED_VALUE_INPUT_H
+#define QSK_BOUNDED_VALUE_INPUT_H
 
 #include "QskControl.h"
 
 class QskIntervalF;
 
-class QSK_EXPORT QskBoundedValueControl : public QskControl
+class QSK_EXPORT QskBoundedValueInput : public QskControl
 {
     Q_OBJECT
 
@@ -32,8 +32,8 @@ class QSK_EXPORT QskBoundedValueControl : public QskControl
   public:
     QSK_STATES( ReadOnly )
 
-    QskBoundedValueControl( QQuickItem* parent = nullptr );
-    ~QskBoundedValueControl() override;
+    QskBoundedValueInput( QQuickItem* parent = nullptr );
+    ~QskBoundedValueInput() override;
 
     qreal minimum() const;
     qreal maximum() const;
