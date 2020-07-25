@@ -133,6 +133,30 @@ namespace
             }
         }
 
+        QRectF clipRect() const override
+        {
+            auto r = Inherited::clipRect();
+
+            /*
+                Often the current tab button grows beyond the bounding rectangle
+                of the tab bar, so that it looks like being on top of the tab page
+                border. So we only want to clip in scroll direction.
+             */
+            constexpr qreal expanded = std::numeric_limits< int >::max();
+
+            if ( flickableOrientations() & Qt::Horizontal )
+            {
+                r.setTop( r.top() - 0.5 * expanded );
+                r.setHeight( expanded );
+            }
+            else
+            {
+                r.setLeft( r.left() - 0.5 * expanded );
+                r.setWidth( expanded );
+            }
+            return r;
+        }
+
       protected:
 
         bool event( QEvent* event ) override
