@@ -48,10 +48,12 @@ qreal QskBoundedRangeInput::upperValueAsRatio() const
 void QskBoundedRangeInput::setLowerValue( qreal value )
 {
     if ( isComponentComplete() )
+    {
+        value = std::min( value, m_range.upperBound() );
         value = qBound( minimum(), value, maximum() );
+    }
 
-    const auto upperValue = std::max( m_range.upperBound(), value );
-    setRange( QskIntervalF( value, upperValue ) );
+    setRange( QskIntervalF( value, m_range.upperBound() ) );
 }
 
 qreal QskBoundedRangeInput::lowerValue() const
@@ -62,10 +64,12 @@ qreal QskBoundedRangeInput::lowerValue() const
 void QskBoundedRangeInput::setUpperValue( qreal value )
 {
     if ( isComponentComplete() )
+    {
+        value = std::max( m_range.lowerBound(), value );
         value = qBound( minimum(), value, maximum() );
+    }
 
-    const auto lowerValue = std::min( m_range.lowerBound(), value );
-    setRange( QskIntervalF( lowerValue, value ) );
+    setRange( QskIntervalF( m_range.lowerBound(), value ) );
 }   
 
 qreal QskBoundedRangeInput::upperValue() const
