@@ -24,7 +24,7 @@ static void qskRegisterEventTypes()
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterEventTypes )
 
-int qskTabChainIncrement( const QEvent* event )
+int qskFocusChainIncrement( const QEvent* event )
 {
     if ( event && event->type() == QEvent::KeyPress )
     {

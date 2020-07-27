@@ -381,7 +381,7 @@ bool QskWindow::event( QEvent* event )
 
 void QskWindow::keyPressEvent( QKeyEvent* event )
 {
-    if ( qskTabChainIncrement( event ) != 0 )
+    if ( qskFocusChainIncrement( event ) != 0 )
     {
         auto focusItem = activeFocusItem();
         if ( focusItem == nullptr || focusItem == contentItem() )

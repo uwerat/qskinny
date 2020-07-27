@@ -117,6 +117,6 @@ class QSK_EXPORT QskAnimatorEvent : public QskEvent
     const State m_state;
 };
 
-QSK_EXPORT int qskTabChainIncrement( const QEvent* );
+QSK_EXPORT int qskFocusChainIncrement( const QEvent* );
 
 #endif
