@@ -153,10 +153,10 @@ class QSK_EXPORT QskSkinnable
     void debug( QDebug, QskAspect::Aspect ) const;
     void debug( QDebug, QskAspect::State ) const;
 
-  protected:
-    void setSkinState( QskAspect::State );
-    void setSkinStateFlag( QskAspect::State, bool = true );
+    void setSkinState( QskAspect::State, bool animated = true );
+    void setSkinStateFlag( QskAspect::State, bool on = true );
 
+  protected:
     virtual void updateNode( QSGNode* );
     virtual bool isTransitionAccepted( QskAspect::Aspect ) const;
 

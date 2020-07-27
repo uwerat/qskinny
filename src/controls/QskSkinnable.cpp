@@ -819,7 +819,7 @@ void QskSkinnable::setSkinStateFlag( QskAspect::State stateFlag, bool on )
     setSkinState( newState );
 }
 
-void QskSkinnable::setSkinState( QskAspect::State newState )
+void QskSkinnable::setSkinState( QskAspect::State newState, bool animated )
 {
     if ( m_data->skinState == newState )
         return;
@@ -846,7 +846,7 @@ void QskSkinnable::setSkinState( QskAspect::State newState )
         }
     }
 
-    if ( control->window() && isTransitionAccepted( QskAspect::Aspect() ) )
+    if ( control->window() && animated && isTransitionAccepted( QskAspect::Aspect() ) )
     {
         const auto placement = effectivePlacement();
 
