@@ -85,7 +85,7 @@ class QSK_EXPORT QskBoundedInput : public QskControl
 
     void componentComplete() override;
 
-    virtual void alignInput() = 0;
+    virtual void alignInput();
 
     qreal alignedValue( qreal ) const;
     QskIntervalF alignedInterval( const QskIntervalF& ) const;

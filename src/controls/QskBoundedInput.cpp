@@ -210,13 +210,17 @@ void QskBoundedInput::setSnap( bool snap )
     m_data->snap = snap;
     Q_EMIT snapChanged( snap );
 
-    if ( snap )
+    if ( isComponentComplete() && snap )
         alignInput();
 }
 
 bool QskBoundedInput::snap() const
 {
     return m_data->snap;
+}
+
+void QskBoundedInput::alignInput()
+{
 }
 
 qreal QskBoundedInput::alignedValue( qreal value ) const
