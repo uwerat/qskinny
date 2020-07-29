@@ -37,7 +37,7 @@ class QSK_EXPORT QskSkinlet
 
     QskSkin* skin() const;
 
-    void updateNode( QskSkinnable*, QSGNode* parent ) const;
+    virtual void updateNode( QskSkinnable*, QSGNode* parent ) const;
 
     virtual QRectF subControlRect(
         const QskSkinnable*, const QRectF&, QskAspect::Subcontrol ) const;
