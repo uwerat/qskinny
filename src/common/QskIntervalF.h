@@ -37,6 +37,7 @@ class QSK_EXPORT QskIntervalF
     void setWidth( qreal ) noexcept;
 
     constexpr bool contains( qreal value ) const noexcept;
+    bool fuzzyContains( qreal value ) const;
 
     static constexpr QskIntervalF normalized( qreal value1, qreal value2 ) noexcept;
 

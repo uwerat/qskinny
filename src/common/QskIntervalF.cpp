@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskIntervalF.h"
+#include "QskFunctions.h"
 #include <algorithm>
 
 void QskIntervalF::unite( const QskIntervalF& other ) noexcept
@@ -116,6 +117,20 @@ QskIntervalF QskIntervalF::extended( qreal value ) const noexcept
     const qreal upper = std::max( value, m_upperBound );
 
     return QskIntervalF( lower, upper );
+}
+
+bool QskIntervalF::fuzzyContains( qreal value ) const
+{
+    if ( !isValid() )
+        return false;
+
+    if ( ( value < m_lowerBound ) && !qskFuzzyCompare( value, m_lowerBound ) )
+        return false;
+
+    if ( ( value > m_upperBound ) && !qskFuzzyCompare( value, m_upperBound ) )
+        return false;
+
+    return true;
 }
 
 #ifndef QT_NO_DEBUG_STREAM
