@@ -1,10 +1,10 @@
 /******************************************************************************
  * QSkinny - Copyright (C) 2016 Uwe Rathmann
- * This file may be used under the terms of the 3-clause BSD License
+ * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#include "Palette.h"
-#include <QskRgbValue.h>
+#include "QskRgbPalette.h"
+#include "QskRgbValue.h"
 
 #define RGB( color, weight ) color ## weight
 
@@ -16,14 +16,14 @@
 
 namespace
 {
-    class StandardPalette : public Palette
+    class Palette : public QskRgbPalette
     {
       public:
-        StandardPalette( int index )
+        Palette( int index )
         {
             using namespace QskRgbValue;
 
-            static QRgb table[][ Palette::NumWeights ] =
+            static constexpr QRgb table[][ Palette::NumWeights ] =
             {
                 RGBTABLE( Red ),
                 RGBTABLE( Pink ),
@@ -52,7 +52,7 @@ namespace
     };
 }
 
-Palette Palette::palette( Color color )
+QskRgbPalette QskRgbPalette::palette( Theme theme )
 {
-    return StandardPalette( static_cast< int >( color ) );
+    return Palette( static_cast< int >( theme ) );
 }

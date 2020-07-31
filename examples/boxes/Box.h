@@ -6,7 +6,7 @@
 #ifndef BOX_H
 #define BOX_H
 
-#include "Palette.h"
+#include <QskRgbPalette.h>
 #include <QskBox.h>
 
 class Box : public QskBox
@@ -33,8 +33,8 @@ class Box : public QskBox
 
     Box( QQuickItem* parentItem = nullptr );
 
-    void setBackground( FillType, Palette::Color, bool inverted = false );
-    void setBorder( BorderType type, Palette::Color );
+    void setBackground( FillType, QskRgbPalette::Theme, bool inverted = false );
+    void setBorder( BorderType type, QskRgbPalette::Theme );
 
     void setShape( const QskBoxShapeMetrics& );
     void setShape( qreal radius, Qt::SizeMode );
@@ -57,7 +57,7 @@ class Box : public QskBox
         const QColor&, const QColor&, const QColor& );
 
     void setGradient( const QskGradient& gradient );
-    void setGradient( const QskGradient::Orientation, Palette::Color );
+    void setGradient( const QskGradient::Orientation, QskRgbPalette::Theme );
 };
 
 #endif

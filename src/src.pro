@@ -29,6 +29,7 @@ HEADERS += \
     common/QskNamespace.h \
     common/QskObjectCounter.h \
     common/QskRgbValue.h \
+    common/QskRgbPalette.h \
     common/QskSizePolicy.h \
     common/QskTextColors.h \
     common/QskTextOptions.h
@@ -47,6 +48,7 @@ SOURCES += \
     common/QskMetaInvokable.cpp \
     common/QskObjectCounter.cpp \
     common/QskRgbValue.cpp \
+    common/QskRgbPalette.cpp \
     common/QskSizePolicy.cpp \
     common/QskTextColors.cpp \
     common/QskTextOptions.cpp

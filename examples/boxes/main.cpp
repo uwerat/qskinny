@@ -56,7 +56,7 @@ static void addTestRectangle( QskLinearBox* parent )
     auto box = new Box( parent );
     box->setMargins( 50 );
 
-    box->setBorder( Box::Flat, Palette::DeepOrange );
+    box->setBorder( Box::Flat, QskRgbPalette::DeepOrange );
     box->setBorderWidth( 10, 20, 40, 20 );
 
     QskBoxShapeMetrics shape( 50, Qt::RelativeSize );
@@ -64,7 +64,7 @@ static void addTestRectangle( QskLinearBox* parent )
     shape.setRadius( Qt::TopRightCorner, 70 );
 
     box->setShape( shape );
-    box->setGradient( QskGradient::Diagonal, Palette::Blue );
+    box->setGradient( QskGradient::Diagonal, QskRgbPalette::Blue );
 }
 
 static void addRectangles1( QskLinearBox* parent )
@@ -73,7 +73,7 @@ static void addRectangles1( QskLinearBox* parent )
                         Box::Horizontal, Box::Vertical, Box::Diagonal } )
     {
         auto* rectangle = new MyRectangle( parent );
-        rectangle->setBackground( type, Palette::Teal );
+        rectangle->setBackground( type, QskRgbPalette::Teal );
     }
 }
 
@@ -83,8 +83,8 @@ static void addRectangles2( QskLinearBox* parent )
         Box::Horizontal, Box::Vertical, Box::Diagonal } )
     {
         auto* rectangle = new MyRectangle( parent );
-        rectangle->setBorder( Box::Flat, Palette::Brown );
-        rectangle->setBackground( type, Palette::Yellow );
+        rectangle->setBorder( Box::Flat, QskRgbPalette::Brown );
+        rectangle->setBackground( type, QskRgbPalette::Yellow );
     }
 }
 
@@ -92,30 +92,30 @@ static void addRectangles3( QskLinearBox* parent )
 {
     using namespace QskRgbValue;
 
-    const Palette::Color borderColor = Palette::Grey;
-    const Palette::Color fillColor = Palette::Blue;
+    const auto borderTheme = QskRgbPalette::Grey;
+    const auto fillTheme = QskRgbPalette::Blue;
 
     Box* box;
 
     box = new MyRectangle( parent );
-    box->setBorder( Box::Raised1, borderColor );
+    box->setBorder( Box::Raised1, borderTheme );
     box->setGradient( Grey400 );
 
     box = new MyRectangle( parent );
-    box->setBorder( Box::Sunken1, borderColor );
+    box->setBorder( Box::Sunken1, borderTheme );
     box->setGradient( QskGradient::Diagonal, Grey400, Grey500 );
 
     box = new MyRectangle( parent );
-    box->setBorder( Box::Raised2, borderColor );
+    box->setBorder( Box::Raised2, borderTheme );
     box->setGradient( QskGradient::Vertical, Grey400, Grey500 );
 
     box = new MyRectangle( parent );
-    box->setBorder( Box::Raised2, borderColor );
-    box->setBackground( Box::Vertical, fillColor, false );
+    box->setBorder( Box::Raised2, borderTheme );
+    box->setBackground( Box::Vertical, fillTheme, false );
 
     box = new MyRectangle( parent );
-    box->setBorder( Box::Sunken2, borderColor );
-    box->setBackground( Box::Vertical, fillColor, true );
+    box->setBorder( Box::Sunken2, borderTheme );
+    box->setBackground( Box::Vertical, fillTheme, true );
 }
 
 static void addRectangles4( QskLinearBox* parent )
@@ -124,7 +124,7 @@ static void addRectangles4( QskLinearBox* parent )
         Box::Horizontal, Box::Vertical, Box::Diagonal } )
     {
         auto* box = new MyRoundedRectangle( parent );
-        box->setBackground( type, Palette::DeepOrange );
+        box->setBackground( type, QskRgbPalette::DeepOrange );
     }
 }
 
@@ -134,8 +134,8 @@ static void addRectangles5( QskLinearBox* parent )
         Box::Horizontal, Box::Vertical, Box::Diagonal } )
     {
         auto* box = new MyRoundedRectangle( parent );
-        box->setBorder( Box::Flat, Palette::Indigo );
-        box->setBackground( type, Palette::Pink );
+        box->setBorder( Box::Flat, QskRgbPalette::Indigo );
+        box->setBackground( type, QskRgbPalette::Pink );
     }
 }
 
@@ -143,30 +143,30 @@ static void addRectangles6( QskLinearBox* parent )
 {
     using namespace QskRgbValue;
 
-    const Palette::Color borderColor = Palette::Grey;
-    const Palette::Color fillColor = Palette::Lime;
+    const auto borderTheme = QskRgbPalette::Grey;
+    const auto fillTheme = QskRgbPalette::Lime;
 
     Box* box;
 
     box = new MyRoundedRectangle( parent );
-    box->setBorder( Box::Raised1, borderColor );
+    box->setBorder( Box::Raised1, borderTheme );
     box->setGradient( Grey400 );
 
     box = new MyRoundedRectangle( parent );
-    box->setBorder( Box::Sunken1, borderColor );
+    box->setBorder( Box::Sunken1, borderTheme );
     box->setGradient( QskGradient::Diagonal, Grey400, Grey500 );
 
     box = new MyRoundedRectangle( parent );
-    box->setBorder( Box::Raised2, borderColor );
+    box->setBorder( Box::Raised2, borderTheme );
     box->setGradient( QskGradient::Vertical, Grey400, Grey500 );
 
     box = new MyRoundedRectangle( parent );
-    box->setBorder( Box::Raised2, borderColor );
-    box->setBackground( Box::Vertical, fillColor, false );
+    box->setBorder( Box::Raised2, borderTheme );
+    box->setBackground( Box::Vertical, fillTheme, false );
 
     box = new MyRoundedRectangle( parent );
-    box->setBorder( Box::Sunken2, borderColor );
-    box->setBackground( Box::Vertical, fillColor, true );
+    box->setBorder( Box::Sunken2, borderTheme );
+    box->setBackground( Box::Vertical, fillTheme, true );
 }
 
 static void addRectangles7( QskLinearBox* parent )
@@ -175,7 +175,7 @@ static void addRectangles7( QskLinearBox* parent )
         Box::Horizontal, Box::Vertical, Box::Diagonal } )
     {
         auto* box = new MyEllipse( parent );
-        box->setBackground( type, Palette::BlueGrey );
+        box->setBackground( type, QskRgbPalette::BlueGrey );
     }
 }
 
@@ -185,8 +185,8 @@ static void addRectangles8( QskLinearBox* parent )
         Box::Horizontal, Box::Vertical, Box::Diagonal } )
     {
         auto* box = new MyEllipse( parent );
-        box->setBorder( Box::Flat, Palette::Indigo );
-        box->setBackground( type, Palette::Red );
+        box->setBorder( Box::Flat, QskRgbPalette::Indigo );
+        box->setBackground( type, QskRgbPalette::Red );
     }
 }
 
@@ -194,36 +194,36 @@ static void addRectangles9( QskLinearBox* parent )
 {
     using namespace QskRgbValue;
 
-    const Palette::Color borderColor = Palette::Grey;
-    const Palette::Color fillColor = Palette::Lime;
+    const auto borderTheme = QskRgbPalette::Grey;
+    const auto fillTheme = QskRgbPalette::Lime;
 
     Box* box;
 
     box = new MyEllipse( parent );
-    box->setBorder( Box::Raised1, borderColor );
+    box->setBorder( Box::Raised1, borderTheme );
     box->setGradient( Grey400 );
 
     box = new MyEllipse( parent );
-    box->setBorder( Box::Sunken1, borderColor );
+    box->setBorder( Box::Sunken1, borderTheme );
     box->setGradient( QskGradient::Diagonal, Grey400, Grey500 );
 
     box = new MyEllipse( parent );
-    box->setBorder( Box::Raised2, borderColor );
+    box->setBorder( Box::Raised2, borderTheme );
     box->setGradient( QskGradient::Vertical, Grey400, Grey500 );
 
     box = new MyEllipse( parent );
-    box->setBorder( Box::Raised2, borderColor );
-    box->setBackground( Box::Vertical, fillColor, false );
+    box->setBorder( Box::Raised2, borderTheme );
+    box->setBackground( Box::Vertical, fillTheme, false );
 
     box = new MyEllipse( parent );
-    box->setBorder( Box::Sunken2, borderColor );
-    box->setBackground( Box::Vertical, fillColor, true );
+    box->setBorder( Box::Sunken2, borderTheme );
+    box->setBackground( Box::Vertical, fillTheme, true );
 }
 
 static void addRectangles10( QskLinearBox* parent )
 {
-    QColor borderColor( "Indigo" );
-    // borderColor.setAlpha( 100 );
+    QColor borderTheme( "Indigo" );
+    // borderTheme.setAlpha( 100 );
 
     Box* box;
 
@@ -232,25 +232,25 @@ static void addRectangles10( QskLinearBox* parent )
 
     box = new Box( parent );
     box->setBorderWidth( 10 );
-    box->setBorderColor( borderColor );
+    box->setBorderColor( borderTheme );
     box->setGradient( QskGradient::Diagonal, "DeepPink", "DarkOrange", "HotPink" );
 
     box = new Box( parent );
     box->setShape( 100, Qt::RelativeSize );
     box->setBorderWidth( 5 );
-    box->setBorderColor( borderColor );
+    box->setBorderColor( borderTheme );
     box->setGradient( QskGradient::Vertical, "DeepPink", "DarkOrange", "HotPink" );
 
     box = new Box( parent );
     box->setShape( 100, Qt::RelativeSize );
     box->setBorderWidth( 5 );
-    box->setBorderColor( borderColor );
+    box->setBorderColor( borderTheme );
     box->setGradient( QskGradient::Diagonal, "DeepPink", "DarkOrange", "HotPink" );
 
     box = new Box( parent );
     box->setShape( 100, Qt::RelativeSize );
     box->setBorderWidth( 5, 20, 30, 5 );
-    box->setBorderColor( borderColor );
+    box->setBorderColor( borderTheme );
     box->setGradient( QskGradient::Vertical, "DeepPink", "DarkOrange", "HotPink" );
 }
 
@@ -264,14 +264,14 @@ static void addRectangles11( QskLinearBox* parent )
     {
         auto box = new MyRectangle( parent );
 
-        box->setBorder( Box::Flat, Palette::Teal );
+        box->setBorder( Box::Flat, QskRgbPalette::Teal );
 
         qreal bw[ 4 ] = { border, border, border, border };
         if ( i != 0 )
             bw[ i - 1 ] = 0;
 
         box->setBorderWidth( bw[ 0 ], bw[ 1 ], bw[ 2 ], bw[ 3 ] );
-        box->setBackground( fillType[ i ], Palette::Brown, i >= 3 );
+        box->setBackground( fillType[ i ], QskRgbPalette::Brown, i >= 3 );
     }
 }
 
@@ -282,14 +282,14 @@ static void addRectangles12( QskLinearBox* parent )
     {
         auto* box = new Box( parent );
         box->setBorderWidth( 0 );
-        box->setGradient( orientation, Palette::Brown );
+        box->setGradient( orientation, QskRgbPalette::Brown );
     }
 
     for ( auto orientation : { QskGradient::Vertical, QskGradient::Diagonal } )
     {
         auto* box = new Box( parent );
-        box->setBorder( Box::Flat, Palette::DeepOrange );
-        box->setGradient( orientation, Palette::Blue );
+        box->setBorder( Box::Flat, QskRgbPalette::DeepOrange );
+        box->setGradient( orientation, QskRgbPalette::Blue );
     }
 
     for ( auto orientation : { QskGradient::Vertical,
@@ -298,15 +298,15 @@ static void addRectangles12( QskLinearBox* parent )
         auto* box = new Box( parent );
         box->setBorderWidth( 0 );
         box->setShape( 30, 40, Qt::RelativeSize );
-        box->setGradient( orientation, Palette::Brown );
+        box->setGradient( orientation, QskRgbPalette::Brown );
     }
 
     for ( auto orientation : { QskGradient::Vertical, QskGradient::Diagonal } )
     {
         auto* box = new Box( parent );
-        box->setBorder( Box::Flat, Palette::DeepOrange );
+        box->setBorder( Box::Flat, QskRgbPalette::DeepOrange );
         box->setShape( 30, 40, Qt::RelativeSize );
-        box->setGradient( orientation, Palette::Blue );
+        box->setGradient( orientation, QskRgbPalette::Blue );
     }
 
     for ( auto orientation : { QskGradient::Vertical,
@@ -315,15 +315,15 @@ static void addRectangles12( QskLinearBox* parent )
         auto* box = new Box( parent );
         box->setBorderWidth( 0 );
         box->setShape( 100, 100, Qt::RelativeSize );
-        box->setGradient( orientation, Palette::Brown );
+        box->setGradient( orientation, QskRgbPalette::Brown );
     }
 
     for ( auto orientation : { QskGradient::Vertical, QskGradient::Diagonal } )
     {
         auto* box = new Box( parent );
-        box->setBorder( Box::Flat, Palette::DeepOrange );
+        box->setBorder( Box::Flat, QskRgbPalette::DeepOrange );
         box->setShape( 100, 100, Qt::RelativeSize );
-        box->setGradient( orientation, Palette::Blue );
+        box->setGradient( orientation, QskRgbPalette::Blue );
     }
 }
 

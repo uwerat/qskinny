@@ -1,10 +1,8 @@
 CONFIG += qskexample
 
 HEADERS += \
-    Box.h \
-    Palette.h
+    Box.h
 
 SOURCES += \
     Box.cpp \
-    Palette.cpp \
     main.cpp

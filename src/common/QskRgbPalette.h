@@ -1,16 +1,19 @@
 /******************************************************************************
  * QSkinny - Copyright (C) 2016 Uwe Rathmann
- * This file may be used under the terms of the 3-clause BSD License
+ * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef PALETTE_H
-#define PALETTE_H 1
+#ifndef QSK_RGB_PALETTE_H
+#define QSK_RGB_PALETTE_H
 
-#include <QColor>
-#include <QVector>
+#include "QskGlobal.h"
+#include <qmetaobject.h>
+#include <qcolor.h>
 
-class Palette
+class QSK_EXPORT QskRgbPalette
 {
+    Q_GADGET
+
   public:
     enum Weight
     {
@@ -27,8 +30,9 @@ class Palette
 
         NumWeights
     };
+    Q_ENUM( Weight )
 
-    enum Color
+    enum Theme
     {
         Red,
         Pink,
@@ -50,11 +54,15 @@ class Palette
         Grey,
         BlueGrey,
 
-        NumColors
+        NumThemes
     };
+    Q_ENUM( Theme )
 
-    QRgb rgb( Weight weight ) const
+    inline QRgb rgb( Weight weight ) const
     {
+        if ( weight < 0 || weight >= NumWeights )
+            return 0;
+ 
         return m_rgb[ weight ];
     }
 
@@ -63,10 +71,10 @@ class Palette
         return QColor::fromRgba( rgb( weight ) );
     }
 
-    static Palette palette( Color );
+    static QskRgbPalette palette( Theme );
 
   protected:
-    QRgb* m_rgb;
+    const QRgb* m_rgb;
 };
 
 #endif

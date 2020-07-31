@@ -21,7 +21,7 @@ Box::Box( QQuickItem* parentItem )
     setGradientHint( QskBox::Panel, QskGradient() );
 }
 
-void Box::setBackground( FillType type, Palette::Color color, bool inverted )
+void Box::setBackground( FillType type, QskRgbPalette::Theme theme, bool inverted )
 {
     if ( type == Unfilled )
     {
@@ -29,10 +29,10 @@ void Box::setBackground( FillType type, Palette::Color color, bool inverted )
         return;
     }
 
-    const auto pal = Palette::palette( color );
+    const auto pal = QskRgbPalette::palette( theme );
 
-    const QColor light = pal.color( Palette::W300 );
-    const QColor mid = pal.color( Palette::W600 );
+    const QColor light = pal.color( QskRgbPalette::W300 );
+    const QColor mid = pal.color( QskRgbPalette::W600 );
 
     switch ( type )
     {
@@ -57,15 +57,15 @@ void Box::setBackground( FillType type, Palette::Color color, bool inverted )
     }
 }
 
-void Box::setBorder( BorderType type, Palette::Color color )
+void Box::setBorder( BorderType type, QskRgbPalette::Theme theme )
 {
-    const auto pal = Palette::palette( color );
+    const auto pal = QskRgbPalette::palette( theme );
 
     setBorderWidth( 5 );
 
-    QColor dark = pal.color( Palette::W700 );
-    QColor mid = pal.color( Palette::W500 );
-    QColor light = pal.color( Palette::W300 );
+    QColor dark = pal.color( QskRgbPalette::W700 );
+    QColor mid = pal.color( QskRgbPalette::W500 );
+    QColor light = pal.color( QskRgbPalette::W300 );
 #if 0
     dark.setAlpha( 100 );
     mid.setAlpha( 100 );
@@ -177,26 +177,26 @@ void Box::setGradient( const QskGradient& gradient )
 }
 
 void Box::setGradient(
-    const QskGradient::Orientation orientation, Palette::Color color )
+    const QskGradient::Orientation orientation, QskRgbPalette::Theme theme )
 {
-    const auto pal = Palette::palette( color );
+    const auto pal = QskRgbPalette::palette( theme );
 
     QVector< QskGradientStop > stops;
 
-    stops += QskGradientStop( 0.0, pal.color( static_cast< Palette::Weight >( 0 ) ) );
+    stops += QskGradientStop( 0.0, pal.color( static_cast< QskRgbPalette::Weight >( 0 ) ) );
 
-    const int count = Palette::NumWeights - 1;
+    const int count = QskRgbPalette::NumWeights - 1;
     for ( int i = 1; i < count; i++ )
     {
         const qreal pos = qreal( i ) / count;
-        const auto weight = static_cast< Palette::Weight >( i );
+        const auto weight = static_cast< QskRgbPalette::Weight >( i );
 
         stops += QskGradientStop( pos, stops.last().color() );
         stops += QskGradientStop( pos, pal.color( weight ) );
     }
 
     stops += QskGradientStop( 1.0,
-        pal.color( static_cast< Palette::Weight >( Palette::NumWeights - 1 ) ) );
+        pal.color( static_cast< QskRgbPalette::Weight >( QskRgbPalette::NumWeights - 1 ) ) );
 
     setGradient( QskGradient( orientation, stops ) );
 }
