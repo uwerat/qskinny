@@ -132,13 +132,13 @@ static inline QVector< QskGradientStop > qskExtractedStops(
 
     if ( from == 0.0 )
     {
-        extracted += QskGradientStop( 0.0, stops[i].color() );
+        extracted += QskGradientStop( 0.0, stops[i++].color() );
     }
     else
     {
-        for ( ; i < stops.count(); i++ )
+        for ( i = 1 ; i < stops.count(); i++ )
         {
-            if ( stops[i].position() >= from )
+            if ( stops[i].position() > from )
                 break;
         }
 
@@ -148,7 +148,7 @@ static inline QVector< QskGradientStop > qskExtractedStops(
         extracted += QskGradientStop( 0.0, color );
     }
 
-    for ( i = i + 1 ; i < stops.count(); i++ )
+    for ( ; i < stops.count(); i++ )
     {
         const auto& s = stops[i];
 
@@ -608,7 +608,7 @@ QVariant QskGradient::interpolate(
 
 QDebug operator<<( QDebug debug, const QskGradientStop& stop )
 {
-    debug << "GR:" << stop.position() << stop.color();
+    debug << stop.position() << ": " << stop.color();
     return debug;
 }
 
