@@ -22,6 +22,7 @@
 #include <QskTabView.h>
 #include <QskTextInput.h>
 #include <QskTextLabel.h>
+#include <QskValueBar.h>
 #include <QskVirtualKeyboard.h>
 
 #include <QskSkinlet.h>
@@ -144,6 +145,7 @@ void QskMaterialSkin::initHints()
     initTabViewHints();
     initTextLabelHints();
     initTextInputHints();
+    initValueBarHints();
 }
 
 void QskMaterialSkin::resetColors( const QColor& accent )
@@ -232,6 +234,19 @@ void QskMaterialSkin::initTextInputHints()
     setBoxBorderMetrics( Q::Panel, 2 );
     setBoxBorderColors( Q::Panel, pal.darker125 );
     setGradient( Q::Panel, pal.baseColor );
+}
+
+void QskMaterialSkin::initValueBarHints()
+{
+    using namespace QskAspect;
+    using Q = QskValueBar;
+
+    const ColorPalette& pal = m_data->palette;
+
+    setGradient( Q::Groove, Qt::white );
+    setMetric( Q::Groove | Size, 10 );
+
+    setGradient( Q::ValueFill, pal.accentColor );
 }
 
 void QskMaterialSkin::initFocusIndicatorHints()

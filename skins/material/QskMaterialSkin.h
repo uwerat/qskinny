@@ -46,6 +46,7 @@ class QSK_MATERIAL_EXPORT QskMaterialSkin : public QskSkin
     void initTabViewHints();
     void initTextInputHints();
     void initTextLabelHints();
+    void initValueBarHints();
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

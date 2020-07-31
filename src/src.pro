@@ -177,6 +177,8 @@ HEADERS += \
     controls/QskTextInputSkinlet.h \
     controls/QskTextLabel.h \
     controls/QskTextLabelSkinlet.h \
+    controls/QskValueBar.h \
+    controls/QskValueBarSkinlet.h \
     controls/QskVariantAnimator.h \
     controls/QskWindow.h
 
@@ -248,6 +250,8 @@ SOURCES += \
     controls/QskTextInputSkinlet.cpp \
     controls/QskTextLabel.cpp \
     controls/QskTextLabelSkinlet.cpp \
+    controls/QskValueBar.cpp \
+    controls/QskValueBarSkinlet.cpp \
     controls/QskVariantAnimator.cpp \
     controls/QskWindow.cpp
 

@@ -23,6 +23,7 @@
 #include <QskTabView.h>
 #include <QskTextInput.h>
 #include <QskTextLabel.h>
+#include <QskValueBar.h>
 #include <QskVirtualKeyboard.h>
 
 #include <QskSkinlet.h>
@@ -272,6 +273,7 @@ void QskSquiekSkin::initHints()
     initTabViewHints();
     initTextLabelHints();
     initTextInputHints();
+    initValueBarInputHints();
 }
 
 void QskSquiekSkin::resetColors( const QColor& accent )
@@ -378,6 +380,19 @@ void QskSquiekSkin::initTextInputHints()
     }
 
     setAnimation( Q::Panel | Color, qskDuration );
+}
+
+void QskSquiekSkin::initValueBarInputHints()
+{
+    using namespace QskAspect;
+    using Q = QskValueBar;
+
+    const ColorPalette& pal = m_data->palette;
+
+    setGradient( Q::Groove, Qt::white );
+    setMetric( Q::Groove | Size, 10 );
+
+    setGradient( Q::ValueFill, pal.highlighted );
 }
 
 void QskSquiekSkin::initFocusIndicatorHints()
