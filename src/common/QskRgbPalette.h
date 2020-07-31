@@ -10,6 +10,9 @@
 #include <qmetaobject.h>
 #include <qcolor.h>
 
+class QskGradientStop;
+template< typename T > class QVector;
+
 class QSK_EXPORT QskRgbPalette
 {
     Q_GADGET
@@ -70,6 +73,8 @@ class QSK_EXPORT QskRgbPalette
     {
         return QColor::fromRgba( rgb( weight ) );
     }
+
+    QVector< QskGradientStop > colorStops( bool discrete = false ) const;
 
     static QskRgbPalette palette( Theme );
 

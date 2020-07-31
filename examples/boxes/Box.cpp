@@ -8,6 +8,7 @@
 #include <QskBoxBorderColors.h>
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxShapeMetrics.h>
+#include <QskRgbPalette.h>
 
 Box::Box( QQuickItem* parentItem )
     : QskBox( parentItem )
@@ -180,23 +181,5 @@ void Box::setGradient(
     const QskGradient::Orientation orientation, QskRgbPalette::Theme theme )
 {
     const auto pal = QskRgbPalette::palette( theme );
-
-    QVector< QskGradientStop > stops;
-
-    stops += QskGradientStop( 0.0, pal.color( static_cast< QskRgbPalette::Weight >( 0 ) ) );
-
-    const int count = QskRgbPalette::NumWeights - 1;
-    for ( int i = 1; i < count; i++ )
-    {
-        const qreal pos = qreal( i ) / count;
-        const auto weight = static_cast< QskRgbPalette::Weight >( i );
-
-        stops += QskGradientStop( pos, stops.last().color() );
-        stops += QskGradientStop( pos, pal.color( weight ) );
-    }
-
-    stops += QskGradientStop( 1.0,
-        pal.color( static_cast< QskRgbPalette::Weight >( QskRgbPalette::NumWeights - 1 ) ) );
-
-    setGradient( QskGradient( orientation, stops ) );
+    setGradient( QskGradient( orientation, pal.colorStops( true ) ) );
 }
