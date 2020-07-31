@@ -76,16 +76,20 @@ class QSK_EXPORT QskGradient
     QskGradient( QRgb );
     QskGradient( const QColor& );
 
+    QskGradient( Qt::Orientation, const QVector< QskGradientStop >& );
+    QskGradient( Qt::Orientation, const QColor&, const QColor& );
+
     QskGradient( Orientation, const QVector< QskGradientStop >& );
     QskGradient( Orientation, const QColor&, const QColor& );
 
     ~QskGradient();
 
+    void setOrientation( Qt::Orientation );
     void setOrientation( Orientation );
     Orientation orientation() const;
 
     bool isValid() const;
-    void invalidate();
+    Q_INVOKABLE void invalidate();
 
     bool operator==( const QskGradient& ) const;
     bool operator!=( const QskGradient& ) const;
@@ -93,20 +97,25 @@ class QSK_EXPORT QskGradient
     void setColor( const QColor& );
     void setColors( const QColor&, const QColor& );
 
-    QColor startColor() const;
-    QColor endColor() const;
+    Q_INVOKABLE QColor startColor() const;
+    Q_INVOKABLE QColor endColor() const;
 
-    void setStops( const QVector< QskGradientStop >& );
-    QVector< QskGradientStop > stops() const;
+    Q_INVOKABLE void setStops( const QVector< QskGradientStop >& );
+    Q_INVOKABLE QVector< QskGradientStop > stops() const;
 
-    bool hasStopAt( qreal value ) const;
+    Q_INVOKABLE bool hasStopAt( qreal value ) const;
 
     void setAlpha( int alpha );
 
     bool isMonochrome() const;
     bool isVisible() const;
 
-    QskGradient expanded( const QVector< QskGradientStop >& );
+    void reverse();
+    QskGradient reversed() const;
+
+    // all stops between [from, to] with positions streched into [0,1]
+    QskGradient extracted( qreal from, qreal start ) const;
+
     QskGradient interpolated( const QskGradient&, qreal value ) const;
 
     static QVariant interpolate( const QskGradient&,
@@ -114,8 +123,8 @@ class QSK_EXPORT QskGradient
 
     uint hash( uint seed ) const;
 
-    qreal stopAt( int index ) const;
-    QColor colorAt( int index ) const;
+    Q_INVOKABLE qreal stopAt( int index ) const;
+    Q_INVOKABLE QColor colorAt( int index ) const;
 
   private:
     void setStopAt( int index, qreal stop );
