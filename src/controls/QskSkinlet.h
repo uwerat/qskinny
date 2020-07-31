@@ -56,6 +56,9 @@ class QSK_EXPORT QskSkinlet
     static QSGNode* updateBoxNode( const QskSkinnable*, QSGNode*,
         const QRectF&, QskAspect::Subcontrol );
 
+    static QSGNode* updateBoxNode( const QskSkinnable*, QSGNode*,
+        const QRectF&, const QskGradient&, QskAspect::Subcontrol );
+
     static QSGNode* updateTextNode( const QskSkinnable*, QSGNode*,
         const QRectF&, Qt::Alignment, const QString&, const QskTextOptions&,
         QskAspect::Subcontrol );

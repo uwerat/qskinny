@@ -241,11 +241,11 @@ void QskSkinlet::updateNode( QskSkinnable* skinnable, QSGNode* parentNode ) cons
 QSGNode* QskSkinlet::updateBackgroundNode(
     const QskControl* control, QSGNode* node ) const
 {
-    const QRectF rect = control->rect();
+    const auto rect = control->rect();
     if ( rect.isEmpty() )
         return nullptr;
 
-    const QskGradient gradient = control->background();
+    const auto gradient = control->background();
     if ( !gradient.isValid() )
         return nullptr;
 
@@ -265,7 +265,7 @@ QSGNode* QskSkinlet::updateDebugNode(
         return nullptr;
     }
 
-    QSGSimpleRectNode* rectNode = static_cast< QSGSimpleRectNode* >( node );
+    auto rectNode = static_cast< QSGSimpleRectNode* >( node );
     if ( rectNode == nullptr )
     {
         rectNode = new QSGSimpleRectNode();
@@ -414,6 +414,14 @@ QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
 QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
     QSGNode* node, const QRectF& rect, QskAspect::Subcontrol subControl )
 {
+    const auto fillGradient = skinnable->gradientHint( subControl );
+    return updateBoxNode( skinnable, node, rect, fillGradient, subControl );
+}
+
+QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
+    QSGNode* node, const QRectF& rect, const QskGradient& fillGradient,
+    QskAspect::Subcontrol subControl )
+{
     using namespace QskAspect;
 
     const QMarginsF margins = skinnable->marginsHint( subControl | Margin );
@@ -426,7 +434,6 @@ QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
     borderMetrics = borderMetrics.toAbsolute( boxRect.size() );
 
     const auto borderColors = skinnable->boxBorderColorsHint( subControl );
-    const auto fillGradient = skinnable->gradientHint( subControl );
 
     if ( !qskIsBoxVisible( borderMetrics, borderColors, fillGradient ) )
         return nullptr;
