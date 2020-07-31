@@ -299,6 +299,8 @@ const QVariant& QskSkin::skinHint( QskAspect::Aspect aspect ) const
 void QskSkin::declareSkinlet( const QMetaObject* metaObject,
     const QMetaObject* skinletMetaObject )
 {
+    Q_ASSERT( skinletMetaObject->constructorCount() );
+
     const auto it = m_data->skinletMap.find( metaObject );
 
     if ( it != m_data->skinletMap.cend() )
