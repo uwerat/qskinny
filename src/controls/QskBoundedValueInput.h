@@ -26,6 +26,7 @@ class QSK_EXPORT QskBoundedValueInput : public QskBoundedInput
 
     // [0.0, 1.0]
     qreal valueAsRatio() const; 
+    using QskBoundedInput::valueAsRatio;
 
   public Q_SLOTS:
     void setValue( qreal );

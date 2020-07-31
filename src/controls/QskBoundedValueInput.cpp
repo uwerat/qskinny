@@ -34,9 +34,9 @@ void QskBoundedValueInput::setValueAsRatio( qreal ratio )
     setValue( minimum() + ratio * boundaryLength() );
 }
 
-qreal QskBoundedValueInput::valueAsRatio() const 
+qreal QskBoundedValueInput::valueAsRatio() const
 {
-    return ( m_value - minimum() ) / boundaryLength();
+    return valueAsRatio( m_value );
 }
 
 void QskBoundedValueInput::setValue( qreal value )

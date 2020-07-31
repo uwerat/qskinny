@@ -50,7 +50,7 @@ void QskBoundedRangeInput::setLowerValue( qreal value )
     if ( isComponentComplete() )
     {
         value = std::min( value, m_range.upperBound() );
-        value = qBound( minimum(), value, maximum() );
+        value = boundedValue( value );
     }
 
     setRange( QskIntervalF( value, m_range.upperBound() ) );
@@ -66,7 +66,7 @@ void QskBoundedRangeInput::setUpperValue( qreal value )
     if ( isComponentComplete() )
     {
         value = std::max( m_range.lowerBound(), value );
-        value = qBound( minimum(), value, maximum() );
+        value = boundedValue( value );
     }
 
     setRange( QskIntervalF( m_range.lowerBound(), value ) );

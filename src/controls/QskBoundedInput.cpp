@@ -11,138 +11,25 @@
 
 QSK_SYSTEM_STATE( QskBoundedInput, ReadOnly, ( QskAspect::FirstSystemState << 1 ) )
 
-class QskBoundedInput::PrivateData
-{
-  public:
-    PrivateData()
-        : minimum( 0.0 )
-        , maximum( 1.0 )
-        , stepSize( 0.1 )
-        , pageSize( 1 )
-        , snap( false )
-    {
-    }
-
-    qreal minimum;
-    qreal maximum;
-    qreal stepSize;
-    int pageSize;
-
-    bool snap : 1;
-};
-
 QskBoundedInput::QskBoundedInput( QQuickItem* parent )
-    : QskControl( parent )
-    , m_data( new PrivateData() )
+    : Inherited( parent )
+    , m_stepSize( 0.1 )
+    , m_pageSize( 1 )
+    , m_snap( false )
 {
     setFocusPolicy( Qt::StrongFocus );
     setAcceptedMouseButtons( Qt::LeftButton );
     setWheelEnabled( true );
+
+    if ( isComponentComplete() )
+    {
+        connect( this, &QskBoundedControl::boundariesChanged,
+            this, &QskBoundedInput::alignInput );
+    }
 }
 
 QskBoundedInput::~QskBoundedInput()
 {
-}
-
-void QskBoundedInput::setMinimum( qreal minimum )
-{
-    if ( m_data->minimum == minimum )
-        return;
-
-    m_data->minimum = minimum;
-    Q_EMIT minimumChanged( minimum );
-
-    if ( isComponentComplete() )
-        adjustBoundaries( false );
-
-    Q_EMIT boundariesChanged( boundaries() );
-    update();
-}
-
-qreal QskBoundedInput::minimum() const
-{
-    return m_data->minimum;
-}
-
-void QskBoundedInput::setMaximum( qreal maximum )
-{
-    if ( m_data->maximum == maximum )
-        return;
-
-    m_data->maximum = maximum;
-    Q_EMIT maximumChanged( maximum );
-
-    if ( isComponentComplete() )
-        adjustBoundaries( true );
-
-    Q_EMIT boundariesChanged( boundaries() );
-    update();
-}
-
-qreal QskBoundedInput::maximum() const
-{
-    return m_data->maximum;
-}
-
-void QskBoundedInput::setBoundaries( qreal min, qreal max )
-{
-    if ( max < min )
-        max = min;
-
-    const auto oldMin = m_data->minimum;
-    const auto oldMax = m_data->maximum;
-
-    if ( min == oldMin && max == oldMax )
-        return;
-
-    m_data->minimum = min;
-    m_data->maximum = max;
-
-    if ( isComponentComplete() )
-        adjustBoundaries( false );
-
-    if ( m_data->minimum != oldMin )
-        Q_EMIT minimumChanged( m_data->minimum );
-
-    if ( m_data->maximum != oldMax )
-        Q_EMIT maximumChanged( m_data->maximum );
-
-    Q_EMIT boundariesChanged( boundaries() );
-    update();
-}
-
-void QskBoundedInput::setBoundaries( const QskIntervalF& boundaries )
-{
-    setBoundaries( boundaries.lowerBound(), boundaries.upperBound() );
-}
-
-QskIntervalF QskBoundedInput::boundaries() const
-{
-    return QskIntervalF( m_data->minimum, m_data->maximum );
-}
-
-void QskBoundedInput::adjustBoundaries( bool increasing )
-{
-    if ( m_data->maximum < m_data->minimum )
-    {
-        if ( increasing )
-        {
-            m_data->minimum = m_data->maximum;
-            Q_EMIT minimumChanged( m_data->minimum );
-        }
-        else
-        {
-            m_data->maximum = m_data->minimum;
-            Q_EMIT maximumChanged( m_data->maximum );
-        }
-
-        alignInput();
-    }
-}
-
-qreal QskBoundedInput::boundaryLength() const
-{
-    return m_data->maximum - m_data->minimum;
 }
 
 void QskBoundedInput::setStepSize( qreal stepSize )
@@ -150,64 +37,64 @@ void QskBoundedInput::setStepSize( qreal stepSize )
     if ( qFuzzyIsNull( stepSize ) )
         stepSize = 0.0;
 
-    if ( qFuzzyCompare( m_data->stepSize, stepSize ) )
+    if ( qFuzzyCompare( m_stepSize, stepSize ) )
         return;
 
-    m_data->stepSize = stepSize;
+    m_stepSize = stepSize;
     Q_EMIT stepSizeChanged( stepSize );
 
     if ( isComponentComplete() )
     {
-        if ( m_data->snap && stepSize )
+        if ( m_snap && stepSize )
             alignInput();
     }
 }
 
 qreal QskBoundedInput::stepSize() const
 {
-    return m_data->stepSize;
+    return m_stepSize;
 }
 
 void QskBoundedInput::setPageSize( int pageSize )
 {
-    if ( m_data->pageSize == pageSize )
+    if ( m_pageSize == pageSize )
         return;
 
-    m_data->pageSize = pageSize;
+    m_pageSize = pageSize;
     Q_EMIT pageSizeChanged( pageSize );
 }
 
 int QskBoundedInput::pageSize() const
 {
-    return m_data->pageSize;
+    return m_pageSize;
 }
 
 void QskBoundedInput::stepUp()
 {
-    increment( m_data->stepSize );
+    increment( m_stepSize );
 }   
 
 void QskBoundedInput::stepDown()
 {
-    increment( -m_data->stepSize );
+    increment( -m_stepSize );
 }   
     
 void QskBoundedInput::pageUp()
 {
-    increment( m_data->pageSize * m_data->stepSize );
+    increment( m_pageSize * m_stepSize );
 }   
     
 void QskBoundedInput::pageDown()
 {
-    increment( -m_data->pageSize * m_data->stepSize );
+    increment( -m_pageSize * m_stepSize );
 }
 
 void QskBoundedInput::setSnap( bool snap )
 {
-    if ( m_data->snap == snap )
+    if ( m_snap == snap )
         return;
 
-    m_data->snap = snap;
+    m_snap = snap;
     Q_EMIT snapChanged( snap );
 
     if ( isComponentComplete() && snap )
@@ -216,7 +103,18 @@ void QskBoundedInput::setSnap( bool snap )
 
 bool QskBoundedInput::snap() const
 {
-    return m_data->snap;
+    return m_snap;
+}
+
+void QskBoundedInput::componentComplete()
+{
+    if ( isComponentComplete() )
+    {
+        connect( this, &QskBoundedControl::boundariesChanged,
+            this, &QskBoundedInput::alignInput, Qt::UniqueConnection );
+    }
+
+    Inherited::componentComplete();
 }
 
 void QskBoundedInput::alignInput()
@@ -225,20 +123,20 @@ void QskBoundedInput::alignInput()
 
 qreal QskBoundedInput::alignedValue( qreal value ) const
 {
-    if ( m_data->snap )
+    if ( m_snap )
     {
-        if ( const auto step = m_data->stepSize )
+        if ( const auto step = m_stepSize )
             value = qRound( value / step ) * step;
     }
     
-    return qBound( minimum(), value, maximum() );
+    return boundedValue( value );
 }
 
 QskIntervalF QskBoundedInput::alignedInterval( const QskIntervalF& interval ) const
 {
-    if ( m_data->snap )
+    if ( m_snap )
     {
-        if ( const auto step = m_data->stepSize )
+        if ( const auto step = m_stepSize )
         {
             const qreal lower = std::floor( interval.lowerBound() / step ) * step;
             const qreal upper = std::ceil( interval.upperBound() / step ) * step;
@@ -276,13 +174,13 @@ void QskBoundedInput::keyPressEvent( QKeyEvent* event )
     {
         if ( event->key() == Qt::Key_Up || event->matches( QKeySequence::MoveToNextChar ) )
         {
-            increment( m_data->stepSize );
+            increment( m_stepSize );
             return;
         }
 
         if ( event->key() == Qt::Key_Down || event->matches( QKeySequence::MoveToPreviousChar ) )
         {
-            increment( -m_data->stepSize );
+            increment( -m_stepSize );
             return;
         }
     }
@@ -310,11 +208,5 @@ void QskBoundedInput::wheelEvent( QWheelEvent* event )
 }
 
 #endif
-
-void QskBoundedInput::componentComplete()
-{
-    Inherited::componentComplete();
-    adjustBoundaries( true );
-}
 
 #include "moc_QskBoundedInput.cpp"

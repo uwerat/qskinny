@@ -6,18 +6,13 @@
 #ifndef QSK_BOUNDED_INPUT_H
 #define QSK_BOUNDED_INPUT_H
 
-#include "QskControl.h"
+#include "QskBoundedControl.h"
 
 class QskIntervalF;
 
-class QSK_EXPORT QskBoundedInput : public QskControl
+class QSK_EXPORT QskBoundedInput : public QskBoundedControl
 {
     Q_OBJECT
-
-    Q_PROPERTY( qreal minimum READ minimum WRITE setMinimum NOTIFY minimumChanged )
-    Q_PROPERTY( qreal maximum READ maximum WRITE setMaximum NOTIFY maximumChanged )
-    Q_PROPERTY( QskIntervalF boundaries READ boundaries
-                WRITE setBoundaries NOTIFY boundariesChanged )
 
     Q_PROPERTY( qreal stepSize READ stepSize WRITE setStepSize NOTIFY stepSizeChanged )
     Q_PROPERTY( int pageSize READ pageSize WRITE setPageSize NOTIFY pageSizeChanged )
@@ -25,21 +20,13 @@ class QSK_EXPORT QskBoundedInput : public QskControl
     Q_PROPERTY( bool snap READ snap WRITE setSnap NOTIFY snapChanged )
     Q_PROPERTY( bool readOnly READ isReadOnly WRITE setReadOnly NOTIFY readOnlyChanged )
 
-    using Inherited = QskControl;
+    using Inherited = QskBoundedControl;
 
   public:
     QSK_STATES( ReadOnly )
 
     QskBoundedInput( QQuickItem* parent = nullptr );
     ~QskBoundedInput() override;
-
-    qreal minimum() const;
-    qreal maximum() const;
-
-    qreal boundaryLength() const;
-
-    void setBoundaries( qreal min, qreal max );
-    QskIntervalF boundaries() const;
 
     qreal stepSize() const;
     int pageSize() const;
@@ -51,10 +38,6 @@ class QSK_EXPORT QskBoundedInput : public QskControl
     bool isReadOnly() const;
 
   public Q_SLOTS:
-    void setMinimum( qreal );
-    void setMaximum( qreal );
-    void setBoundaries( const QskIntervalF& );
-
     void setStepSize( qreal );
     void setPageSize( int );
 
@@ -66,10 +49,6 @@ class QSK_EXPORT QskBoundedInput : public QskControl
     virtual void increment( qreal offset ) = 0;
 
   Q_SIGNALS:
-    void minimumChanged( qreal );
-    void maximumChanged( qreal );
-    void boundariesChanged( const QskIntervalF&  );
-
     void stepSizeChanged( qreal );
     void pageSizeChanged( qreal );
     void snapChanged( bool );
@@ -84,17 +63,15 @@ class QSK_EXPORT QskBoundedInput : public QskControl
 #endif
 
     void componentComplete() override;
-
     virtual void alignInput();
 
     qreal alignedValue( qreal ) const;
     QskIntervalF alignedInterval( const QskIntervalF& ) const;
 
   private:
-    void adjustBoundaries( bool increasing );
-
-    class PrivateData;
-    std::unique_ptr< PrivateData > m_data;
+    qreal m_stepSize = 0.1;
+    int m_pageSize = 1;
+    bool m_snap = false;
 };
 
 #endif
