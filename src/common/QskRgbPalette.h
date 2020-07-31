@@ -61,6 +61,8 @@ class QSK_EXPORT QskRgbPalette
     };
     Q_ENUM( Theme )
 
+    static QskRgbPalette palette( Theme );
+
     inline QRgb rgb( Weight weight ) const
     {
         if ( weight < 0 || weight >= NumWeights )
@@ -76,7 +78,10 @@ class QSK_EXPORT QskRgbPalette
 
     QVector< QskGradientStop > colorStops( bool discrete = false ) const;
 
-    static QskRgbPalette palette( Theme );
+    static QVector< QskGradientStop > colorStops( Theme, bool discrete = false );
+
+    static QVector< QskGradientStop > colorStops(
+        const QVector< QRgb >&, bool discrete = false );
 
   protected:
     const QRgb* m_rgb;
