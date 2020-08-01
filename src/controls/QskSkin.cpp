@@ -71,11 +71,11 @@ QSK_QT_PRIVATE_END
 #include "QskPageIndicator.h"
 #include "QskPageIndicatorSkinlet.h"
 
+#include "QskProgressBar.h"
+#include "QskProgressBarSkinlet.h"
+
 #include "QskStatusIndicator.h"
 #include "QskStatusIndicatorSkinlet.h"
-
-#include "QskValueBar.h"
-#include "QskValueBarSkinlet.h"
 
 static inline QskSkinlet* qskNewSkinlet( const QMetaObject* metaObject, QskSkin* skin )
 {
@@ -151,7 +151,7 @@ QskSkin::QskSkin( QObject* parent )
     declareSkinlet< QskTabView, QskTabViewSkinlet >();
     declareSkinlet< QskTextLabel, QskTextLabelSkinlet >();
     declareSkinlet< QskTextInput, QskTextInputSkinlet >();
-    declareSkinlet< QskValueBar, QskValueBarSkinlet >();
+    declareSkinlet< QskProgressBar, QskProgressBarSkinlet >();
 
     const QFont font = QGuiApplication::font();
     setupFonts( font.family(), font.weight(), font.italic() );

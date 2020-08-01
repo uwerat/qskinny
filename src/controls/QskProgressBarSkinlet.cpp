@@ -3,28 +3,28 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#include "QskValueBarSkinlet.h"
-#include "QskValueBar.h"
+#include "QskProgressBarSkinlet.h"
+#include "QskProgressBar.h"
 
 #include <cmath>
 
-QskValueBarSkinlet::QskValueBarSkinlet( QskSkin* skin )
+QskProgressBarSkinlet::QskProgressBarSkinlet( QskSkin* skin )
     : QskSkinlet( skin )
 {
     setNodeRoles( { GrooveRole, ValueFillRole } );
 }
 
-QskValueBarSkinlet::~QskValueBarSkinlet()
+QskProgressBarSkinlet::~QskProgressBarSkinlet()
 {
 }
 
-QRectF QskValueBarSkinlet::subControlRect(
+QRectF QskProgressBarSkinlet::subControlRect(
     const QskSkinnable* skinnable, const QRectF& contentsRect,
     QskAspect::Subcontrol subControl ) const
 {
-    const auto bar = static_cast< const QskValueBar* >( skinnable );
+    const auto bar = static_cast< const QskProgressBar* >( skinnable );
 
-    if( ( subControl == QskValueBar::Groove ) )
+    if( ( subControl == QskProgressBar::Groove ) )
     {
         const auto dim = bar->thickness();
         
@@ -43,28 +43,28 @@ QRectF QskValueBarSkinlet::subControlRect(
         return rect;
     }
 
-    if( subControl == QskValueBar::ValueFill )
+    if( subControl == QskProgressBar::ValueFill )
     {
-        const auto bar = static_cast< const QskValueBar* >( skinnable );
+        const auto bar = static_cast< const QskProgressBar* >( skinnable );
         return fillRect( bar );
     }
 
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
-QSGNode* QskValueBarSkinlet::updateSubNode(
+QSGNode* QskProgressBarSkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
     switch( nodeRole )
     {
         case GrooveRole:
         {
-            return updateBoxNode( skinnable, node, QskValueBar::Groove );
+            return updateBoxNode( skinnable, node, QskProgressBar::Groove );
         }
 
         case ValueFillRole:
         {
-            const auto bar = static_cast< const QskValueBar* >( skinnable );
+            const auto bar = static_cast< const QskProgressBar* >( skinnable );
             return updateFillNode( bar, node );
         }
     }
@@ -72,10 +72,10 @@ QSGNode* QskValueBarSkinlet::updateSubNode(
     return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
-QSGNode* QskValueBarSkinlet::updateFillNode(
-    const QskValueBar* bar, QSGNode* node ) const
+QSGNode* QskProgressBarSkinlet::updateFillNode(
+    const QskProgressBar* bar, QSGNode* node ) const
 {
-    const auto subControl = QskValueBar::ValueFill;
+    const auto subControl = QskProgressBar::ValueFill;
 
     const auto rect = bar->subControlRect( subControl );
     if ( rect.isEmpty() )
@@ -104,10 +104,10 @@ QSGNode* QskValueBarSkinlet::updateFillNode(
     return updateBoxNode( bar, node, rect, gradient, subControl );
 }
 
-QRectF QskValueBarSkinlet::fillRect( const QskValueBar* bar ) const
+QRectF QskProgressBarSkinlet::fillRect( const QskProgressBar* bar ) const
 {
-    auto rect = bar->subControlRect( QskValueBar::Groove );
-    rect = bar->innerBox( QskValueBar::Groove, rect );
+    auto rect = bar->subControlRect( QskProgressBar::Groove );
+    rect = bar->innerBox( QskProgressBar::Groove, rect );
 
     auto pos1 = bar->valueAsRatio( bar->origin() );
     auto pos2 = bar->valueAsRatio( bar->value() );
@@ -133,4 +133,4 @@ QRectF QskValueBarSkinlet::fillRect( const QskValueBar* bar ) const
     return rect;
 }
 
-#include "moc_QskValueBarSkinlet.cpp"
+#include "moc_QskProgressBarSkinlet.cpp"

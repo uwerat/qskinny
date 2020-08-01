@@ -3,14 +3,14 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef QSK_VALUE_BAR_SKINLET_H
-#define QSK_VALUE_BAR_SKINLET_H
+#ifndef QSK_PROGRESS_BAR_SKINLET_H
+#define QSK_PROGRESS_BAR_SKINLET_H
 
 #include "QskSkinlet.h"
 
-class QskValueBar;
+class QskProgressBar;
 
-class QSK_EXPORT QskValueBarSkinlet : public QskSkinlet
+class QSK_EXPORT QskProgressBarSkinlet : public QskSkinlet
 {
     Q_GADGET
 
@@ -25,8 +25,8 @@ class QSK_EXPORT QskValueBarSkinlet : public QskSkinlet
         RoleCount,
     };
 
-    Q_INVOKABLE QskValueBarSkinlet( QskSkin* = nullptr );
-    ~QskValueBarSkinlet() override;
+    Q_INVOKABLE QskProgressBarSkinlet( QskSkin* = nullptr );
+    ~QskProgressBarSkinlet() override;
 
     QRectF subControlRect( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol ) const override;
@@ -36,8 +36,8 @@ class QSK_EXPORT QskValueBarSkinlet : public QskSkinlet
         quint8 nodeRole, QSGNode* ) const override;
 
   private:
-    QSGNode* updateFillNode( const QskValueBar*, QSGNode* ) const;
-    QRectF fillRect( const QskValueBar* ) const;
+    QSGNode* updateFillNode( const QskProgressBar*, QSGNode* ) const;
+    QRectF fillRect( const QskProgressBar* ) const;
 };
 
 #endif

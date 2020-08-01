@@ -13,6 +13,7 @@
 #include <QskInputPredictionBar.h>
 #include <QskListView.h>
 #include <QskPageIndicator.h>
+#include <QskProgressBar.h>
 #include <QskPushButton.h>
 #include <QskScrollView.h>
 #include <QskSeparator.h>
@@ -23,7 +24,6 @@
 #include <QskTabView.h>
 #include <QskTextInput.h>
 #include <QskTextLabel.h>
-#include <QskValueBar.h>
 #include <QskVirtualKeyboard.h>
 
 #include <QskSkinlet.h>
@@ -263,6 +263,7 @@ void QskSquiekSkin::initHints()
     initListViewHints();
     initPageIndicatorHints();
     initPopupHints();
+    initProgressBarHints();
     initPushButtonHints();
     initScrollViewHints();
     initSeparatorHints();
@@ -273,7 +274,6 @@ void QskSquiekSkin::initHints()
     initTabViewHints();
     initTextLabelHints();
     initTextInputHints();
-    initValueBarInputHints();
 }
 
 void QskSquiekSkin::resetColors( const QColor& accent )
@@ -382,10 +382,10 @@ void QskSquiekSkin::initTextInputHints()
     setAnimation( Q::Panel | Color, qskDuration );
 }
 
-void QskSquiekSkin::initValueBarInputHints()
+void QskSquiekSkin::initProgressBarHints()
 {
     using namespace QskAspect;
-    using Q = QskValueBar;
+    using Q = QskProgressBar;
 
     const ColorPalette& pal = m_data->palette;
 

@@ -37,6 +37,7 @@ class QSK_SQUIEK_EXPORT QskSquiekSkin : public QskSkin
     void initListViewHints();
     void initPageIndicatorHints();
     void initPopupHints();
+    void initProgressBarHints();
     void initPushButtonHints();
     void initScrollViewHints();
     void initSeparatorHints();
@@ -47,7 +48,6 @@ class QSK_SQUIEK_EXPORT QskSquiekSkin : public QskSkin
     void initTabViewHints();
     void initTextLabelHints();
     void initTextInputHints();
-    void initValueBarInputHints();
 
     enum PanelStyle
     {

@@ -141,6 +141,8 @@ HEADERS += \
     controls/QskPopupSkinlet.h \
     controls/QskPushButton.h \
     controls/QskPushButtonSkinlet.h \
+    controls/QskProgressBar.h \
+    controls/QskProgressBarSkinlet.h \
     controls/QskQuick.h \
     controls/QskQuickItem.h \
     controls/QskQuickItemPrivate.h \
@@ -177,8 +179,6 @@ HEADERS += \
     controls/QskTextInputSkinlet.h \
     controls/QskTextLabel.h \
     controls/QskTextLabelSkinlet.h \
-    controls/QskValueBar.h \
-    controls/QskValueBarSkinlet.h \
     controls/QskVariantAnimator.h \
     controls/QskWindow.h
 
@@ -214,6 +214,8 @@ SOURCES += \
     controls/QskPopupSkinlet.cpp \
     controls/QskPushButton.cpp \
     controls/QskPushButtonSkinlet.cpp \
+    controls/QskProgressBar.cpp \
+    controls/QskProgressBarSkinlet.cpp \
     controls/QskQuick.cpp \
     controls/QskQuickItem.cpp \
     controls/QskQuickItemPrivate.cpp \
@@ -250,8 +252,6 @@ SOURCES += \
     controls/QskTextInputSkinlet.cpp \
     controls/QskTextLabel.cpp \
     controls/QskTextLabelSkinlet.cpp \
-    controls/QskValueBar.cpp \
-    controls/QskValueBarSkinlet.cpp \
     controls/QskVariantAnimator.cpp \
     controls/QskWindow.cpp
 

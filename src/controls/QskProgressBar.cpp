@@ -3,17 +3,17 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#include "QskValueBar.h"
+#include "QskProgressBar.h"
 
 #include "QskIntervalF.h"
 #include "QskGradient.h"
 #include "QskFunctions.h"
 #include "QskAspect.h"
 
-QSK_SUBCONTROL( QskValueBar, Groove )
-QSK_SUBCONTROL( QskValueBar, ValueFill )
+QSK_SUBCONTROL( QskProgressBar, Groove )
+QSK_SUBCONTROL( QskProgressBar, ValueFill )
 
-class QskValueBar::PrivateData
+class QskProgressBar::PrivateData
 {
   public:
     qreal value = 0.0;
@@ -24,7 +24,7 @@ class QskValueBar::PrivateData
     Qt::Orientation orientation;
 };
 
-QskValueBar::QskValueBar( Qt::Orientation orientation,
+QskProgressBar::QskProgressBar( Qt::Orientation orientation,
         qreal min, qreal max, QQuickItem* parent )
     : QskBoundedControl( min, max, parent )
     , m_data( new PrivateData )
@@ -38,39 +38,39 @@ QskValueBar::QskValueBar( Qt::Orientation orientation,
         initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::MinimumExpanding );
 
     connect( this, &QskBoundedControl::boundariesChanged,
-             this, &QskValueBar::adjustValue );
+             this, &QskProgressBar::adjustValue );
 }
 
-QskValueBar::QskValueBar( Qt::Orientation orientation, QQuickItem* parent )
-    : QskValueBar( orientation, 0.0, 100.0, parent )
+QskProgressBar::QskProgressBar( Qt::Orientation orientation, QQuickItem* parent )
+    : QskProgressBar( orientation, 0.0, 100.0, parent )
 {
 }
 
-QskValueBar::QskValueBar( const QskIntervalF& boundaries, QQuickItem* parent )
-    : QskValueBar( boundaries.lowerBound(), boundaries.upperBound(), parent )
+QskProgressBar::QskProgressBar( const QskIntervalF& boundaries, QQuickItem* parent )
+    : QskProgressBar( boundaries.lowerBound(), boundaries.upperBound(), parent )
 {
 }
 
-QskValueBar::QskValueBar( qreal min, qreal max, QQuickItem* parent )
-    : QskValueBar( Qt::Horizontal, min, max, parent )
+QskProgressBar::QskProgressBar( qreal min, qreal max, QQuickItem* parent )
+    : QskProgressBar( Qt::Horizontal, min, max, parent )
 {
 }
 
-QskValueBar::QskValueBar( QQuickItem* parent )
-    : QskValueBar( Qt::Horizontal, parent )
+QskProgressBar::QskProgressBar( QQuickItem* parent )
+    : QskProgressBar( Qt::Horizontal, parent )
 {
 }
 
-QskValueBar::~QskValueBar()
+QskProgressBar::~QskProgressBar()
 {
 }
 
-Qt::Orientation QskValueBar::orientation() const
+Qt::Orientation QskProgressBar::orientation() const
 {
     return m_data->orientation;
 }
 
-void QskValueBar::setOrientation( Qt::Orientation orientation )
+void QskProgressBar::setOrientation( Qt::Orientation orientation )
 {
     if ( orientation != m_data->orientation )
     {
@@ -84,26 +84,26 @@ void QskValueBar::setOrientation( Qt::Orientation orientation )
     }
 }
 
-QskAspect::Placement QskValueBar::effectivePlacement() const
+QskAspect::Placement QskProgressBar::effectivePlacement() const
 {
     // so you can define different hints depending on the orientation
     return static_cast< QskAspect::Placement >( m_data->orientation );
 }
 
-void QskValueBar::setFillGradient( const QskGradient& gradient )
+void QskProgressBar::setFillGradient( const QskGradient& gradient )
 {
-    setGradientHint( QskValueBar::ValueFill, gradient );
+    setGradientHint( QskProgressBar::ValueFill, gradient );
 }
 
-QskGradient QskValueBar::fillGradient() const
+QskGradient QskProgressBar::fillGradient() const
 {
-    return gradientHint( QskValueBar::ValueFill );
+    return gradientHint( QskProgressBar::ValueFill );
 }
 
-void QskValueBar::setThickness( qreal thickness )
+void QskProgressBar::setThickness( qreal thickness )
 {
-    // effectiveSubcontrol( QskValueBar::Groove ) ???
-    const auto aspect = QskValueBar::Groove | QskAspect::Size;
+    // effectiveSubcontrol( QskProgressBar::Groove ) ???
+    const auto aspect = QskProgressBar::Groove | QskAspect::Size;
 
     if ( thickness != metric( aspect ) )
     {
@@ -114,12 +114,12 @@ void QskValueBar::setThickness( qreal thickness )
     }
 }
 
-qreal QskValueBar::thickness() const
+qreal QskProgressBar::thickness() const
 {
     return metric( Groove | QskAspect::Size );
 }
 
-void QskValueBar::setOrigin( qreal origin )
+void QskProgressBar::setOrigin( qreal origin )
 {
     if ( isComponentComplete() )
         origin = boundedValue( origin );
@@ -134,7 +134,7 @@ void QskValueBar::setOrigin( qreal origin )
     }
 }
 
-void QskValueBar::resetOrigin()
+void QskProgressBar::resetOrigin()
 {
     if ( m_data->hasOrigin )
     {
@@ -144,7 +144,7 @@ void QskValueBar::resetOrigin()
     }
 }
 
-qreal QskValueBar::origin() const
+qreal QskProgressBar::origin() const
 {
     if ( m_data->hasOrigin )
     {
@@ -154,7 +154,7 @@ qreal QskValueBar::origin() const
     return minimum();
 }
 
-void QskValueBar::setValue( qreal value )
+void QskProgressBar::setValue( qreal value )
 {
     if ( isComponentComplete() )
         value = boundedValue( value );
@@ -162,23 +162,23 @@ void QskValueBar::setValue( qreal value )
     setValueInternal( value );
 }
 
-qreal QskValueBar::value() const
+qreal QskProgressBar::value() const
 {
     return m_data->value;
 }
 
-void QskValueBar::setValueAsRatio( qreal ratio )
+void QskProgressBar::setValueAsRatio( qreal ratio )
 {
     ratio = qBound( 0.0, ratio, 1.0 );
     setValue( minimum() + ratio * boundaryLength() );
 }
 
-qreal QskValueBar::valueAsRatio() const
+qreal QskProgressBar::valueAsRatio() const
 {
     return valueAsRatio( m_data->value );
 }
 
-QSizeF QskValueBar::contentsSizeHint( Qt::SizeHint which, const QSizeF& ) const
+QSizeF QskProgressBar::contentsSizeHint( Qt::SizeHint which, const QSizeF& ) const
 {
     if ( which != Qt::PreferredSize )
         return QSizeF();
@@ -189,19 +189,19 @@ QSizeF QskValueBar::contentsSizeHint( Qt::SizeHint which, const QSizeF& ) const
         return QSizeF( thickness(), -1 );
 }
 
-void QskValueBar::componentComplete()
+void QskProgressBar::componentComplete()
 {
     Inherited::componentComplete();
     adjustValue();
 }
 
-void QskValueBar::adjustValue()
+void QskProgressBar::adjustValue()
 {
     if ( isComponentComplete() )
         setValueInternal( boundedValue( m_data->value ) );
 }
 
-void QskValueBar::setValueInternal( qreal value )
+void QskProgressBar::setValueInternal( qreal value )
 {
     if ( !qskFuzzyCompare( value, m_data->value ) )
     {
@@ -212,4 +212,4 @@ void QskValueBar::setValueInternal( qreal value )
     }
 }
 
-#include "moc_QskValueBar.cpp"
+#include "moc_QskProgressBar.cpp"

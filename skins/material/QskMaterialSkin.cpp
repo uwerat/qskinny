@@ -13,6 +13,7 @@
 #include <QskListView.h>
 #include <QskPageIndicator.h>
 #include <QskPushButton.h>
+#include <QskProgressBar.h>
 #include <QskScrollView.h>
 #include <QskSeparator.h>
 #include <QskSlider.h>
@@ -22,7 +23,6 @@
 #include <QskTabView.h>
 #include <QskTextInput.h>
 #include <QskTextLabel.h>
-#include <QskValueBar.h>
 #include <QskVirtualKeyboard.h>
 
 #include <QskSkinlet.h>
@@ -135,6 +135,7 @@ void QskMaterialSkin::initHints()
     initListViewHints();
     initPageIndicatorHints();
     initPopupHints();
+    initProgressBarHints();
     initPushButtonHints();
     initScrollViewHints();
     initSeparatorHints();
@@ -145,7 +146,6 @@ void QskMaterialSkin::initHints()
     initTabViewHints();
     initTextLabelHints();
     initTextInputHints();
-    initValueBarHints();
 }
 
 void QskMaterialSkin::resetColors( const QColor& accent )
@@ -236,10 +236,10 @@ void QskMaterialSkin::initTextInputHints()
     setGradient( Q::Panel, pal.baseColor );
 }
 
-void QskMaterialSkin::initValueBarHints()
+void QskMaterialSkin::initProgressBarHints()
 {
     using namespace QskAspect;
-    using Q = QskValueBar;
+    using Q = QskProgressBar;
 
     const ColorPalette& pal = m_data->palette;
 

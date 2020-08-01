@@ -3,14 +3,14 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef QSK_VALUE_BAR_H
-#define QSK_VALUE_BAR_H
+#ifndef QSK_PROGRESS_BAR_H
+#define QSK_PROGRESS_BAR_H
 
 #include "QskBoundedControl.h"
 
 class QskIntervalF;
 
-class QSK_EXPORT QskValueBar : public QskBoundedControl
+class QSK_EXPORT QskProgressBar : public QskBoundedControl
 {
     Q_OBJECT
 
@@ -29,13 +29,13 @@ class QSK_EXPORT QskValueBar : public QskBoundedControl
   public:
     QSK_SUBCONTROLS( Groove, ValueFill )
 
-    QskValueBar( Qt::Orientation, QQuickItem* parent = nullptr );
-    QskValueBar( Qt::Orientation, qreal min, qreal max, QQuickItem* parent = nullptr );
-    QskValueBar( const QskIntervalF&, QQuickItem* parent = nullptr );
-    QskValueBar( qreal min, qreal max, QQuickItem* parent = nullptr );
-    QskValueBar( QQuickItem* parent = nullptr );
+    QskProgressBar( Qt::Orientation, QQuickItem* parent = nullptr );
+    QskProgressBar( Qt::Orientation, qreal min, qreal max, QQuickItem* parent = nullptr );
+    QskProgressBar( const QskIntervalF&, QQuickItem* parent = nullptr );
+    QskProgressBar( qreal min, qreal max, QQuickItem* parent = nullptr );
+    QskProgressBar( QQuickItem* parent = nullptr );
 
-    ~QskValueBar() override;
+    ~QskProgressBar() override;
 
     Qt::Orientation orientation() const;
     void setOrientation( Qt::Orientation orientation );
