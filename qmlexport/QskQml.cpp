@@ -20,6 +20,7 @@
 #include <QskLayoutHint.h>
 #include <QskMessageWindow.h>
 #include <QskPopup.h>
+#include <QskProgressBar.h>
 #include <QskPushButton.h>
 #include <QskRgbValue.h>
 #include <QskScrollArea.h>
@@ -242,12 +243,8 @@ void QskQml::registerTypes()
     QSK_REGISTER( QskMessageWindow, "MessageWindow" );
     QSK_REGISTER( QskSelectionWindow, "SelectionWindow" );
 
-#if 1
     QSK_REGISTER( QskGridBoxQml, "GridBox" );
     QSK_REGISTER( QskLinearBoxQml, "LinearBox" );
-#else
-    QskGridBoxQml gridBox;
-#endif
 
     QSK_REGISTER( QskControl, "Control" );
     QSK_REGISTER( QskGraphicLabel, "GraphicLabel" );
@@ -258,6 +255,7 @@ void QskQml::registerTypes()
     QSK_REGISTER( QskTabView, "TabView" );
     QSK_REGISTER( QskFocusIndicator, "FocusIndicator" );
     QSK_REGISTER( QskSeparator, "Separator" );
+    QSK_REGISTER( QskProgressBar, "ProgressBar" );
     QSK_REGISTER( QskPushButton, "PushButton" );
     QSK_REGISTER( QskScrollView, "ScrollView" );
     QSK_REGISTER( QskScrollArea, "ScrollArea" );
