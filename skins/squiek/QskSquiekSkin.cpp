@@ -392,7 +392,7 @@ void QskSquiekSkin::initProgressBarHints()
     setGradient( Q::Groove, Qt::white );
     setMetric( Q::Groove | Size, 10 );
 
-    setGradient( Q::ValueFill, pal.highlighted );
+    setGradient( Q::Bar, pal.highlighted );
 }
 
 void QskSquiekSkin::initFocusIndicatorHints()

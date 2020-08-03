@@ -27,7 +27,7 @@ class QSK_EXPORT QskProgressBar : public QskBoundedControl
     using Inherited = QskBoundedControl;
 
   public:
-    QSK_SUBCONTROLS( Groove, ValueFill )
+    QSK_SUBCONTROLS( Groove, Bar )
 
     QskProgressBar( Qt::Orientation, QQuickItem* parent = nullptr );
     QskProgressBar( Qt::Orientation, qreal min, qreal max, QQuickItem* parent = nullptr );
@@ -42,8 +42,9 @@ class QSK_EXPORT QskProgressBar : public QskBoundedControl
 
     QskAspect::Placement effectivePlacement() const override;
 
-    void setFillGradient( const QskGradient& );
-    QskGradient fillGradient() const;
+    void setBarGradient( const QskGradient & );
+    void resetBarGradient();
+    QskGradient barGradient() const;
 
     void setThickness( qreal );
     qreal thickness() const;

@@ -20,7 +20,7 @@ class QSK_EXPORT QskProgressBarSkinlet : public QskSkinlet
     enum NodeRole
     {
         GrooveRole,
-        ValueFillRole,
+        BarRole,
 
         RoleCount,
     };
@@ -36,8 +36,8 @@ class QSK_EXPORT QskProgressBarSkinlet : public QskSkinlet
         quint8 nodeRole, QSGNode* ) const override;
 
   private:
-    QSGNode* updateFillNode( const QskProgressBar*, QSGNode* ) const;
-    QRectF fillRect( const QskProgressBar* ) const;
+    QSGNode* updateBarNode( const QskProgressBar*, QSGNode* ) const;
+    QRectF barRect( const QskProgressBar* ) const;
 };
 
 #endif

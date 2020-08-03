@@ -5,13 +5,34 @@
 
 #include "QskProgressBarSkinlet.h"
 #include "QskProgressBar.h"
+#include "QskIntervalF.h"
 
 #include <cmath>
+
+static inline QskIntervalF qskBarInterval( const QskProgressBar* bar )
+{
+    auto pos1 = bar->valueAsRatio( bar->origin() );
+    auto pos2 = bar->valueAsRatio( bar->value() );
+
+    if( bar->orientation() == Qt::Horizontal )
+    {
+        if ( bar->layoutMirroring() )
+        {
+            pos1 = 1.0 - pos1;
+            pos2 = 1.0 - pos2;
+        }
+    }
+
+    if ( pos1 > pos2 )
+        std::swap( pos1, pos2 );
+
+    return QskIntervalF( pos1, pos2 );
+}
 
 QskProgressBarSkinlet::QskProgressBarSkinlet( QskSkin* skin )
     : QskSkinlet( skin )
 {
-    setNodeRoles( { GrooveRole, ValueFillRole } );
+    setNodeRoles( { GrooveRole, BarRole } );
 }
 
 QskProgressBarSkinlet::~QskProgressBarSkinlet()
@@ -43,10 +64,10 @@ QRectF QskProgressBarSkinlet::subControlRect(
         return rect;
     }
 
-    if( subControl == QskProgressBar::ValueFill )
+    if( subControl == QskProgressBar::Bar )
     {
         const auto bar = static_cast< const QskProgressBar* >( skinnable );
-        return fillRect( bar );
+        return barRect( bar );
     }
 
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
@@ -62,20 +83,20 @@ QSGNode* QskProgressBarSkinlet::updateSubNode(
             return updateBoxNode( skinnable, node, QskProgressBar::Groove );
         }
 
-        case ValueFillRole:
+        case BarRole:
         {
             const auto bar = static_cast< const QskProgressBar* >( skinnable );
-            return updateFillNode( bar, node );
+            return updateBarNode( bar, node );
         }
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
-QSGNode* QskProgressBarSkinlet::updateFillNode(
+QSGNode* QskProgressBarSkinlet::updateBarNode(
     const QskProgressBar* bar, QSGNode* node ) const
 {
-    const auto subControl = QskProgressBar::ValueFill;
+    const auto subControl = QskProgressBar::Bar;
 
     const auto rect = bar->subControlRect( subControl );
     if ( rect.isEmpty() )
@@ -89,45 +110,36 @@ QSGNode* QskProgressBarSkinlet::updateFillNode(
 
     if ( !gradient.isMonochrome() )
     {
-        qreal pos1 = bar->valueAsRatio( bar->origin() );
-        qreal pos2 = bar->valueAsRatio( bar->value() );
+        const auto intv = qskBarInterval( bar );
+        gradient = gradient.extracted( intv.lowerBound(), intv.upperBound() );
 
-        if ( pos2 < pos1 )
-            std::swap( pos1, pos2 );
-
-        gradient = gradient.extracted( pos1, pos2 );
-
-        if ( bar->orientation() == Qt::Vertical )
+        if ( bar->orientation() == Qt::Vertical || bar->layoutMirroring() )
             gradient.reverse();
     }
 
     return updateBoxNode( bar, node, rect, gradient, subControl );
 }
 
-QRectF QskProgressBarSkinlet::fillRect( const QskProgressBar* bar ) const
+QRectF QskProgressBarSkinlet::barRect( const QskProgressBar* bar ) const
 {
     auto rect = bar->subControlRect( QskProgressBar::Groove );
     rect = bar->innerBox( QskProgressBar::Groove, rect );
 
-    auto pos1 = bar->valueAsRatio( bar->origin() );
-    auto pos2 = bar->valueAsRatio( bar->value() );
-
-    if ( pos1 > pos2 )
-        std::swap( pos1, pos2 );
+    const auto intv = qskBarInterval( bar );
 
     if( bar->orientation() == Qt::Horizontal )
     {
         const auto w = rect.width();
 
-        rect.setRight( rect.left() + pos2 * w );
-        rect.setLeft( rect.left() + pos1 * w );
+        rect.setRight( rect.left() + intv.upperBound() * w );
+        rect.setLeft( rect.left() + intv.lowerBound() * w );
     }
     else
     {
         const auto h = rect.height();
 
-        rect.setTop( rect.bottom() - h * pos2 );
-        rect.setBottom( rect.bottom() - h * pos1 );
+        rect.setTop( rect.bottom() - h * intv.upperBound() );
+        rect.setBottom( rect.bottom() - h * intv.lowerBound() );
     }
 
     return rect;

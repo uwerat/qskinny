@@ -11,7 +11,7 @@
 #include "QskAspect.h"
 
 QSK_SUBCONTROL( QskProgressBar, Groove )
-QSK_SUBCONTROL( QskProgressBar, ValueFill )
+QSK_SUBCONTROL( QskProgressBar, Bar )
 
 class QskProgressBar::PrivateData
 {
@@ -90,14 +90,30 @@ QskAspect::Placement QskProgressBar::effectivePlacement() const
     return static_cast< QskAspect::Placement >( m_data->orientation );
 }
 
-void QskProgressBar::setFillGradient( const QskGradient& gradient )
+void QskProgressBar::setBarGradient( const QskGradient& gradient )
 {
-    setGradientHint( QskProgressBar::ValueFill, gradient );
+    // An API where we set the stops only would be more accurate TODO ...
+    auto g = gradient;
+
+    g.setOrientation( Qt::Horizontal );
+    setGradientHint( QskProgressBar::Bar | QskAspect::Horizontal, g );
+
+    g.setOrientation( Qt::Vertical );
+    setGradientHint( QskProgressBar::Bar | QskAspect::Vertical, g );
 }
 
-QskGradient QskProgressBar::fillGradient() const
+void QskProgressBar::resetBarGradient()
 {
-    return gradientHint( QskProgressBar::ValueFill );
+    using namespace QskAspect;
+    const auto aspect = QskProgressBar::Bar | Color;
+
+    if ( resetHint( aspect | Vertical ) || resetHint( aspect | Horizontal ) )
+        update();
+}
+
+QskGradient QskProgressBar::barGradient() const
+{
+    return gradientHint( QskProgressBar::Bar );
 }
 
 void QskProgressBar::setThickness( qreal thickness )

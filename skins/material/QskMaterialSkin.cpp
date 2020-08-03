@@ -246,7 +246,7 @@ void QskMaterialSkin::initProgressBarHints()
     setGradient( Q::Groove, Qt::white );
     setMetric( Q::Groove | Size, 10 );
 
-    setGradient( Q::ValueFill, pal.accentColor );
+    setGradient( Q::Bar, pal.accentColor );
 }
 
 void QskMaterialSkin::initFocusIndicatorHints()
