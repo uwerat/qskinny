@@ -24,7 +24,6 @@ QDebug operator<<( QDebug debug, Color color )
 
 QDebug operator<<( QDebug debug, ColoredLine line )
 {
-    QDebugStateSaver saver( debug );
     qDebug() << qRound( line.p1.x ) << qRound( line.p1.y )
         << "->" << qRound( line.p2.x ) << qRound( line.p2.y );
 
@@ -33,7 +32,6 @@ QDebug operator<<( QDebug debug, ColoredLine line )
 
 QDebug operator<<( QDebug debug, Line line )
 {
-    QDebugStateSaver saver( debug );
     qDebug() << qRound( line.p1.x ) << qRound( line.p1.y )
         << "->" << qRound( line.p2.x ) << qRound( line.p2.y );
 
@@ -48,7 +46,11 @@ static inline void qskDebugGeometry( Line* lines, int count )
 #ifndef QT_NO_DEBUG_STREAM
     for ( int i = 0; i < count; i++ )
     {
-        qDebug() << i << ":" << lines[ i ];
+        const auto l = lines[i];
+
+        qDebug() << i << ":"
+            << qRound( l.p1.x ) << qRound( l.p1.y )
+            << "->" << qRound( l.p2.x ) << qRound( l.p2.y );
     }
 #endif
 }
