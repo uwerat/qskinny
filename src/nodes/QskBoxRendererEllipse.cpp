@@ -872,16 +872,16 @@ static inline void qskRenderFillRandom(
     const QskBoxRenderer::Metrics& metrics,
     const QskGradient& gradient, ColoredLine* line )
 {
+    const auto orientation =
+        ( gradient.orientation() == QskGradient::Vertical ) ? Qt::Vertical : Qt::Horizontal;
+
     if ( gradient.isMonochrome() )
     {
         const ColorMapSolid map( gradient.startColor() );
-        qskRenderFillLines( metrics, Qt::Vertical, line, map );
+        qskRenderFillLines( metrics, orientation, line, map );
     }
     else
     {
-        const auto orientation = ( gradient.orientation() == QskGradient::Vertical )
-            ? Qt::Vertical : Qt::Horizontal;
-
         const ColorMapGradient map( gradient.startColor(), gradient.endColor() );
         qskRenderFillLines( metrics, orientation, line, map );
     }
