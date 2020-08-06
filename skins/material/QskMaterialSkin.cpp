@@ -161,7 +161,7 @@ void QskMaterialSkin::initCommonHints()
     using namespace QskAspect;
     using Q = QskControl;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     setMargins( Control | Padding, 4 );
 
@@ -176,7 +176,7 @@ void QskMaterialSkin::initBoxHints()
     using namespace QskAspect;
     using Q = QskBox;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     setGradient( Q::Panel, pal.baseColor );
     setBoxShape( Q::Panel, 4 );
@@ -188,7 +188,7 @@ void QskMaterialSkin::initPopupHints()
     using namespace QskAspect;
     using Q = QskPopup;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     setSkinHint( Q::Overlay | QskAspect::Style, true );
 
@@ -203,7 +203,7 @@ void QskMaterialSkin::initTextLabelHints()
     using namespace QskAspect;
     using Q = QskTextLabel;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     setSkinHint( Q::Text | Alignment, Qt::AlignCenter );
     setColor( Q::Text, pal.textColor );
@@ -223,7 +223,7 @@ void QskMaterialSkin::initTextInputHints()
     setSkinHint( Q::Text | Alignment,
         static_cast< int >( Qt::AlignLeft | Qt::AlignTop ) );
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     setColor( Q::Text, pal.textColor );
     setColor( Q::PanelSelected, pal.accentColor );
@@ -239,13 +239,22 @@ void QskMaterialSkin::initTextInputHints()
 void QskMaterialSkin::initProgressBarHints()
 {
     using namespace QskAspect;
+    using namespace QskRgbValue;
     using Q = QskProgressBar;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
-    setGradient( Q::Groove, Qt::white );
-    setMetric( Q::Groove | Size, 10 );
+    for ( auto subControl : { Q::Groove, Q::Bar } )
+    {   
+        setMetric( subControl | Size, 5 );
+        setMargins( subControl | Padding, 0 );
+        
+        setBoxShape( subControl, 0 );
+        setBoxBorderMetrics( subControl, 0 );
+    }   
 
+    setGradient( Q::Groove, Grey );
+    setMetric( Q::Groove | Size, 5 );
     setGradient( Q::Bar, pal.accentColor );
 }
 
@@ -254,7 +263,7 @@ void QskMaterialSkin::initFocusIndicatorHints()
     using namespace QskAspect;
     using Q = QskFocusIndicator;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     setMargins( Q::Panel | Padding, 5 );
     setBoxShape( Q::Panel, 4 );
@@ -268,7 +277,7 @@ void QskMaterialSkin::initSeparatorHints()
     using namespace QskAspect;
     using Q = QskSeparator;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     for ( auto placement : { Horizontal, Vertical } )
     {
@@ -286,7 +295,7 @@ void QskMaterialSkin::initPageIndicatorHints()
     using namespace QskAspect;
     using Q = QskPageIndicator;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     for ( auto subControl : { Q::Bullet, Q::Highlighted } )
     {
@@ -316,7 +325,7 @@ void QskMaterialSkin::initPushButtonHints()
     using namespace QskRgbValue;
     using Q = QskPushButton;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     setMetric( Q::Panel | MinimumWidth, qskDpiScaled( 75.0 ) );
     setMetric( Q::Panel | MinimumHeight, qskDpiScaled( 23.0 ) );
@@ -377,7 +386,7 @@ void QskMaterialSkin::initDialogButtonHints()
     using namespace QskRgbValue;
     using Q = QskDialogButton;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     setMetric( Q::Panel | MinimumWidth, 30 );
     setMetric( Q::Panel | MinimumHeight, 16 );
@@ -430,7 +439,7 @@ void QskMaterialSkin::initDialogButtonBoxHints()
     using namespace QskAspect;
     using Q = QskDialogButtonBox;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     setGradient( Q::Panel, pal.baseColor );
     setBoxShape( Q::Panel, 0 );
@@ -443,7 +452,7 @@ void QskMaterialSkin::initSliderHints()
     using namespace QskRgbValue;
     using Q = QskSlider;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     const qreal dim = 30;
 
@@ -466,7 +475,6 @@ void QskMaterialSkin::initSliderHints()
 
         setBoxShape( subControl, 0 );
         setBoxBorderMetrics( subControl, 0 );
-        setGradient( subControl, QskGradient() );
     }
 
     setGradient( Q::Groove, Grey );
@@ -488,7 +496,7 @@ void QskMaterialSkin::initSliderHints()
 
     // should be transparent, but the current renderer doesn't "cut out" the background
     setGradient( Q::Handle, pal.accentColor );
-    setGradient( Q::Pressed | Q::Handle, pal.accentColor );
+    setGradient( Q::Handle | Q::Pressed, pal.accentColor );
 
     for ( auto state : { NoState, Q::Pressed, Q::Pressed | Q::Hovered } )
     {
@@ -515,7 +523,7 @@ void QskMaterialSkin::initTabButtonHints()
     using namespace QskAspect;
     using Q = QskTabButton;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     setMetric( Q::Panel | MinimumWidth, 30 );
     setMetric( Q::Panel | MinimumHeight, 16 );
@@ -594,7 +602,7 @@ void QskMaterialSkin::initTabViewHints()
     using namespace QskAspect;
     using Q = QskTabView;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     setBoxShape( Q::Page, 0 );
     setBoxBorderMetrics( Q::Page, 0 );
@@ -609,7 +617,7 @@ void QskMaterialSkin::initInputPanelHints()
     using namespace QskAspect;
     using Q = QskInputPanelBox;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     setBoxShape( Q::Panel, 0 );
     setBoxBorderMetrics( Q::Panel, 0 );
@@ -622,7 +630,7 @@ void QskMaterialSkin::initVirtualKeyboardHints()
     using namespace QskAspect;
     using Q = QskVirtualKeyboard;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     // key panel
     setMargins( Q::ButtonPanel | Margin, 2 );
@@ -651,7 +659,7 @@ void QskMaterialSkin::initScrollViewHints()
     using namespace QskAspect;
     using Q = QskScrollView;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     setMetric( Q::Panel | Spacing, 2 );
 
@@ -696,7 +704,7 @@ void QskMaterialSkin::initListViewHints()
     using namespace QskAspect;
     using Q = QskListView;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     // padding for each cell
     setMargins( Q::Cell | Padding, QskMargins( 4, 8 ) );
@@ -713,7 +721,7 @@ void QskMaterialSkin::initSubWindowHints()
     using namespace QskAspect;
     using Q = QskSubWindow;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     // Panel
 

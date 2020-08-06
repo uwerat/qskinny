@@ -132,7 +132,7 @@ QskSquiekSkin::~QskSquiekSkin()
 
 void QskSquiekSkin::setSeparator( QskAspect::Aspect aspect )
 {
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     QskGradient gradient( QskGradient::Vertical, pal.lighter110, pal.darker125 );
 
@@ -150,7 +150,7 @@ void QskSquiekSkin::setButton(
 #if 1
     // Buttons shift ???
 #endif
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     QskBoxBorderColors borderColors;
 
@@ -211,7 +211,7 @@ void QskSquiekSkin::setPanel( QskAspect::Aspect aspect, PanelStyle style )
 
 void QskSquiekSkin::setTab( QskAspect::Aspect aspect )
 {
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     setGradient( aspect,
         QskGradient( QskGradient::Vertical, pal.lighter125, pal.lighter150 ) );
@@ -287,7 +287,7 @@ void QskSquiekSkin::initCommonHints()
     using namespace QskAspect;
     using Q = QskControl;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     setMargins( Control | Padding, 4 );
 
@@ -315,7 +315,7 @@ void QskSquiekSkin::initTextLabelHints()
     using namespace QskAspect;
     using Q = QskTextLabel;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     setSkinHint( Q::Text | Alignment, Qt::AlignCenter );
     setColor( Q::Text, pal.themeForeground );
@@ -339,7 +339,7 @@ void QskSquiekSkin::initTextInputHints()
     using namespace QskAspect;
     using Q = QskTextInput;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     setSkinHint( Q::Text | Alignment,
         static_cast< int >( Qt::AlignLeft | Qt::AlignTop ) );
@@ -387,12 +387,15 @@ void QskSquiekSkin::initProgressBarHints()
     using namespace QskAspect;
     using Q = QskProgressBar;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
-    setGradient( Q::Groove, Qt::white );
-    setMetric( Q::Groove | Size, 10 );
+    setMetric( Q::Groove | Size, 8 );
+    setMargins( Q::Groove | Padding, 0 );
+    setGradient( Q::Groove, pal.darker200 );
+    setBoxShape( Q::Groove, 4 );
 
     setGradient( Q::Bar, pal.highlighted );
+    setBoxShape( Q::Bar, 4 );
 }
 
 void QskSquiekSkin::initFocusIndicatorHints()
@@ -400,7 +403,7 @@ void QskSquiekSkin::initFocusIndicatorHints()
     using namespace QskAspect;
     using Q = QskFocusIndicator;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     setMargins( Q::Panel | Padding, 5 );
     setBoxBorderMetrics( Q::Panel, 2 );
@@ -425,7 +428,7 @@ void QskSquiekSkin::initPageIndicatorHints()
     using namespace QskAspect;
     using Q = QskPageIndicator;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     for ( auto subControl : { Q::Bullet, Q::Highlighted } )
     {
@@ -452,7 +455,7 @@ void QskSquiekSkin::initPushButtonHints()
     using namespace QskAspect;
     using Q = QskPushButton;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     // Panel
 
@@ -494,7 +497,7 @@ void QskSquiekSkin::initDialogButtonHints()
     using namespace QskAspect;
     using Q = QskDialogButton;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     // panel
     setMetric( Q::Panel | MinimumWidth, qskDpiScaled( 75.0 ) );
@@ -522,7 +525,7 @@ void QskSquiekSkin::initDialogButtonBoxHints()
     using namespace QskAspect;
     using Q = QskDialogButtonBox;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     setBoxBorderColors( Q::Panel, pal.theme );
     setGradient( Q::Panel, pal.lighter135 );
@@ -535,7 +538,7 @@ void QskSquiekSkin::initTabButtonHints()
     using namespace QskAspect;
     using Q = QskTabButton;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     setMetric( Q::Panel | MinimumWidth, 30 );
     setMetric( Q::Panel | MinimumHeight, 16 );
@@ -593,7 +596,7 @@ void QskSquiekSkin::initSliderHints()
     using namespace QskAspect;
     using Q = QskSlider;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     const qreal dim = 40;
 
@@ -687,7 +690,7 @@ void QskSquiekSkin::initInputPredictionBar()
     using namespace QskAspect;
     using Q = QskInputPredictionBar;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     setMargins( Q::Panel | Padding, 5 );
     setPanel( Q::Panel, Flat );
@@ -705,7 +708,7 @@ void QskSquiekSkin::initVirtualKeyboardHints()
     using namespace QskAspect;
     using Q = QskVirtualKeyboard;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     setMargins( Q::Panel | Padding, 5 );
     setMetric( Q::Panel | Spacing, 5 );
@@ -778,7 +781,7 @@ void QskSquiekSkin::initListViewHints()
     using namespace QskAspect;
     using Q = QskListView;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     // padding for each cell
     setMargins( Q::Cell | Padding, QskMargins( 4, 8 ) );
@@ -795,7 +798,7 @@ void QskSquiekSkin::initSubWindowHints()
     using namespace QskAspect;
     using Q = QskSubWindow;
 
-    const ColorPalette& pal = m_data->palette;
+    const auto& pal = m_data->palette;
 
     const qreal radius = 5.0;
 

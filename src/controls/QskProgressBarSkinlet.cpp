@@ -6,6 +6,7 @@
 #include "QskProgressBarSkinlet.h"
 #include "QskProgressBar.h"
 #include "QskIntervalF.h"
+#include "QskBoxBorderMetrics.h"
 
 #include <cmath>
 
@@ -122,8 +123,16 @@ QSGNode* QskProgressBarSkinlet::updateBarNode(
 
 QRectF QskProgressBarSkinlet::barRect( const QskProgressBar* bar ) const
 {
-    auto rect = bar->subControlRect( QskProgressBar::Groove );
-    rect = bar->innerBox( QskProgressBar::Groove, rect );
+    const auto subControl = QskProgressBar::Groove;
+
+    auto rect = bar->subControlRect( subControl );
+
+    const auto borderMetrics = bar->boxBorderMetricsHint( subControl );
+
+    auto m = bar->marginsHint( subControl | QskAspect::Padding );
+    m += 0.5 * borderMetrics.toAbsolute( rect.size() ).widths();
+
+    rect = rect.marginsRemoved( m );
 
     const auto intv = qskBarInterval( bar );
 
