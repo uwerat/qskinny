@@ -135,8 +135,7 @@ void QskAnimatorDriver::registerAnimator( QskAnimator* animator )
 
     m_animators.insert( it, animator );
 
-    QQuickWindow* window = animator->window();
-    if ( window )
+    if ( auto window = animator->window() )
     {
         if ( !m_windows.contains( window ) )
         {
@@ -313,7 +312,7 @@ void QskAnimator::start()
     if ( isRunning() )
         return;
 
-    if ( QskAnimatorDriver* driver = qskAnimatorDriver )
+    if ( auto driver = qskAnimatorDriver )
     {
         driver->registerAnimator( this );
         m_startTime = driver->referenceTime();
@@ -327,7 +326,7 @@ void QskAnimator::stop()
     if ( !isRunning() )
         return;
 
-    if ( QskAnimatorDriver* driver = qskAnimatorDriver )
+    if ( auto driver = qskAnimatorDriver )
         driver->unregisterAnimator( this );
 
     m_startTime = -1;
@@ -362,7 +361,7 @@ void QskAnimator::done()
 }
 
 #if 1
-// we should also have functor based callbacks too. TODO ...
+// we should also have functor based callbacks. TODO ...
 #endif
 
 QMetaObject::Connection QskAnimator::addCleanupHandler(
