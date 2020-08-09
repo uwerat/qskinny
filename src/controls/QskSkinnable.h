@@ -28,6 +28,7 @@ class QskBoxShapeMetrics;
 class QskBoxBorderMetrics;
 class QskBoxBorderColors;
 class QskGradient;
+class QskIntervalF;
 
 class QskSkin;
 class QskSkinlet;
@@ -93,6 +94,9 @@ class QSK_EXPORT QskSkinnable
 
     void setBoxBorderColorsHint( QskAspect::Aspect, const QskBoxBorderColors& );
     QskBoxBorderColors boxBorderColorsHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
+
+    void setIntervalHint( QskAspect::Aspect, const QskIntervalF & );
+    QskIntervalF intervalHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
     void setFlagHint( QskAspect::Aspect, int flag );
     int flagHint( QskAspect::Aspect ) const;

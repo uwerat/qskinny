@@ -291,6 +291,18 @@ QskBoxBorderColors QskSkinnable::boxBorderColorsHint(
     return effectiveHint( aspect | Color | Border, status ).value< QskBoxBorderColors >();
 }
 
+void QskSkinnable::setIntervalHint(
+    QskAspect::Aspect aspect, const QskIntervalF& interval )
+{
+    m_data->hintTable.setInterval( aspect, interval );
+}
+
+QskIntervalF QskSkinnable::intervalHint(
+    QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
+{
+    return effectiveHint( aspect | QskAspect::Metric, status ).value< QskIntervalF >();
+}
+
 void QskSkinnable::setFontRole( QskAspect::Aspect aspect, int role )
 {
     m_data->hintTable.setFontRole( aspect, role );
@@ -739,7 +751,7 @@ QSizeF QskSkinnable::outerBoxSize(
 QRectF QskSkinnable::outerBox(
     QskAspect::Aspect aspect, const QRectF& innerBox ) const
 {
-    const QMarginsF m = qskEffectivePadding( this, aspect, innerBox.size(), false );
+    const auto m = qskEffectivePadding( this, aspect, innerBox.size(), false );
     return innerBox.marginsAdded( m );
 }
 
@@ -764,7 +776,7 @@ void QskSkinnable::startTransition( QskAspect::Aspect aspect,
     if ( animationHint.duration <= 0 || ( from == to ) )
         return;
 
-    QskControl* control = this->owningControl();
+    auto control = this->owningControl();
     if ( control->window() == nullptr || !isTransitionAccepted( aspect ) )
         return;
 

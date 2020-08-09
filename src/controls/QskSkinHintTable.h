@@ -13,6 +13,7 @@
 #include "QskBoxShapeMetrics.h"
 #include "QskGradient.h"
 #include "QskMargins.h"
+#include "QskIntervalF.h"
 
 #include <qcolor.h>
 #include <qvariant.h>
@@ -52,6 +53,9 @@ class QSK_EXPORT QskSkinHintTable
 
     void setBoxBorderColors( QskAspect::Aspect, const QskBoxBorderColors& );
     QskBoxBorderColors boxBorderColors( QskAspect::Aspect ) const;
+
+    void setInterval( QskAspect::Aspect, const QskIntervalF& );
+    QskIntervalF interval( QskAspect::Aspect ) const;
 
     void setAnimation( QskAspect::Aspect, QskAnimationHint animation );
     QskAnimationHint animation( QskAspect::Aspect ) const;
@@ -221,6 +225,19 @@ inline QskBoxBorderColors QskSkinHintTable::boxBorderColors( QskAspect::Aspect a
 {
     using namespace QskAspect;
     return hint( aspect | Border | Color ).value< QskBoxBorderColors >();
+}
+
+inline void QskSkinHintTable::setInterval(
+    QskAspect::Aspect aspect, const QskIntervalF& interval )
+{
+    using namespace QskAspect;
+    setHint( aspect | Metric, QVariant::fromValue( interval ) );
+}
+
+inline QskIntervalF QskSkinHintTable::interval( QskAspect::Aspect aspect ) const
+{
+    using namespace QskAspect;
+    return hint( aspect | Metric ).value< QskIntervalF >();
 }
 
 inline QskAnimationHint QskSkinHintTable::animation( QskAspect::Aspect aspect ) const
