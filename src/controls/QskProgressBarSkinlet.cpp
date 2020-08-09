@@ -8,12 +8,29 @@
 #include "QskIntervalF.h"
 #include "QskBoxBorderMetrics.h"
 
+#include <qeasingcurve.h>
 #include <cmath>
 
 static inline QskIntervalF qskBarInterval( const QskProgressBar* bar )
 {
-    auto pos1 = bar->valueAsRatio( bar->origin() );
-    auto pos2 = bar->valueAsRatio( bar->value() );
+    qreal pos1, pos2;
+
+    if ( bar->isIndeterminate() )
+    {
+        const auto pos = bar->metric( QskProgressBar::Bar | QskAspect::Position );
+
+        static const QEasingCurve curve( QEasingCurve::InOutCubic );
+
+        const qreal off = 0.15;
+
+        pos1 = curve.valueForProgress( qMax( pos - off, 0.0 ) );
+        pos2 = curve.valueForProgress( qMin( pos + off, 1.0 ) );
+    }
+    else
+    {
+        pos1 = bar->valueAsRatio( bar->origin() );
+        pos2 = bar->valueAsRatio( bar->value() );
+    }
 
     if( bar->orientation() == Qt::Horizontal )
     {

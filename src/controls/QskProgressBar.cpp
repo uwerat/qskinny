@@ -8,18 +8,73 @@
 #include "QskIntervalF.h"
 #include "QskGradient.h"
 #include "QskFunctions.h"
+#include "QskAnimator.h"
 #include "QskAspect.h"
 
 QSK_SUBCONTROL( QskProgressBar, Groove )
 QSK_SUBCONTROL( QskProgressBar, Bar )
 
+namespace
+{
+    class PositionAnimator : public QskAnimator
+    {
+      public:
+        PositionAnimator( QskProgressBar* progressBar )
+            : m_progressBar( progressBar )
+        {
+            setAutoRepeat( true );
+            setDuration( 1300 );
+
+            setWindow( progressBar->window() );
+        }
+
+        void advance( qreal value ) override
+        {
+            const auto aspect = QskProgressBar::Bar | QskAspect::Position;
+
+            m_progressBar->setMetric( aspect, value );
+            m_progressBar->update();
+        }
+
+      private:
+        QskProgressBar* m_progressBar;
+    };
+}
+
 class QskProgressBar::PrivateData
 {
   public:
-    qreal value = 0.0;
+    void updateIndeterminateAnimator( QskProgressBar* progressBar )
+    {
+        if ( !isIndeterminate )
+        {
+            delete animator;
+            animator = nullptr;
 
+            return;
+        }
+
+        if ( progressBar->window() && progressBar->isVisible() )
+        {
+            if ( animator == nullptr )
+                animator = new PositionAnimator( progressBar );
+
+            animator->start();
+        }
+        else
+        {
+            if ( animator )
+                animator->stop();
+        }
+    }
+
+    PositionAnimator* animator = nullptr;
+
+    qreal value = 0.0;
     qreal origin = 0.0;
+
     bool hasOrigin = false;
+    bool isIndeterminate = false;
 
     Qt::Orientation orientation;
 };
@@ -63,6 +118,7 @@ QskProgressBar::QskProgressBar( QQuickItem* parent )
 
 QskProgressBar::~QskProgressBar()
 {
+    delete m_data->animator;
 }
 
 Qt::Orientation QskProgressBar::orientation() const
@@ -82,6 +138,23 @@ void QskProgressBar::setOrientation( Qt::Orientation orientation )
 
         Q_EMIT orientationChanged( m_data->orientation );
     }
+}
+
+bool QskProgressBar::isIndeterminate() const
+{
+    return m_data->isIndeterminate;
+}
+
+void QskProgressBar::setIndeterminate( bool on )
+{
+    if ( on == m_data->isIndeterminate )
+        return;
+
+    m_data->isIndeterminate = on;
+    m_data->updateIndeterminateAnimator( this );
+
+    update();
+    Q_EMIT indeterminateChanged( on );
 }
 
 QskAspect::Placement QskProgressBar::effectivePlacement() const
@@ -226,6 +299,22 @@ void QskProgressBar::setValueInternal( qreal value )
 
         update();
     }
+}
+
+void QskProgressBar::itemChange( QQuickItem::ItemChange change,
+    const QQuickItem::ItemChangeData& value )
+{
+    switch( static_cast< int >( change ) )
+    {
+        case QQuickItem::ItemVisibleHasChanged:
+        case QQuickItem::ItemSceneChange:
+        {
+            m_data->updateIndeterminateAnimator( this );
+            break;
+        }
+    }
+
+    Inherited::itemChange( change, value );
 }
 
 #include "moc_QskProgressBar.cpp"

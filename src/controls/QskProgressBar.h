@@ -17,6 +17,9 @@ class QSK_EXPORT QskProgressBar : public QskBoundedControl
     Q_PROPERTY( Qt::Orientation orientation READ orientation
                 WRITE setOrientation NOTIFY orientationChanged )
 
+    Q_PROPERTY( bool indeterminate READ isIndeterminate
+                WRITE setIndeterminate NOTIFY indeterminateChanged )
+
     Q_PROPERTY( qreal origin READ origin
                 WRITE setOrigin RESET resetOrigin NOTIFY originChanged )
 
@@ -39,6 +42,9 @@ class QSK_EXPORT QskProgressBar : public QskBoundedControl
 
     Qt::Orientation orientation() const;
     void setOrientation( Qt::Orientation orientation );
+
+    bool isIndeterminate() const;
+    void setIndeterminate( bool on = true );
 
     QskAspect::Placement effectivePlacement() const override;
 
@@ -63,12 +69,14 @@ class QSK_EXPORT QskProgressBar : public QskBoundedControl
 
   Q_SIGNALS:
     void orientationChanged( Qt::Orientation );
+    void indeterminateChanged( bool );
     void valueChanged( qreal );
     void originChanged( qreal );
 
   protected:
     QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
     void componentComplete() override;
+    void itemChange( ItemChange, const ItemChangeData& ) override;
 
   private:
     void setValueInternal( qreal value );
