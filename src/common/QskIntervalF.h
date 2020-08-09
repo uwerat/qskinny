@@ -10,6 +10,8 @@
 #include <qglobal.h>
 #include <qmetatype.h>
 
+class QVariant;
+
 class QSK_EXPORT QskIntervalF
 {
     Q_GADGET
@@ -66,6 +68,11 @@ class QSK_EXPORT QskIntervalF
     constexpr bool isNull() const noexcept;
 
     void invalidate() noexcept;
+
+    QskIntervalF interpolated( const QskIntervalF&, qreal progress ) const noexcept;
+
+    static QVariant interpolate( const QskIntervalF&,
+        const QskIntervalF&, qreal progress ) noexcept;
 
   private:
     qreal m_lowerBound = 0.0;

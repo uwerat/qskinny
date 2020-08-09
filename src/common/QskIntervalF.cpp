@@ -5,7 +5,33 @@
 
 #include "QskIntervalF.h"
 #include "QskFunctions.h"
+
+#include <qvariant.h>
 #include <algorithm>
+
+static inline QskIntervalF qskInterpolated(
+    const QskIntervalF& intv1, const QskIntervalF& intv2, qreal progress )
+{
+    const qreal lowerBound = intv1.lowerBound()
+        + progress * ( intv2.lowerBound() - intv1.lowerBound() );
+
+    const qreal upperBound = intv1.upperBound()
+        + progress * ( intv2.upperBound() - intv1.upperBound() );
+
+    return QskIntervalF( lowerBound, upperBound );
+}
+
+QskIntervalF QskIntervalF::interpolated(
+    const QskIntervalF& to, qreal progress ) const noexcept
+{
+    return qskInterpolated( *this, to, progress );
+} 
+    
+QVariant QskIntervalF::interpolate(
+    const QskIntervalF& intv1, const QskIntervalF& intv2, qreal progress ) noexcept
+{   
+    return QVariant::fromValue( qskInterpolated( intv1, intv2, progress ) ); 
+}
 
 void QskIntervalF::unite( const QskIntervalF& other ) noexcept
 {

@@ -10,6 +10,7 @@
 #include "QskColorFilter.h"
 #include "QskGradient.h"
 #include "QskMargins.h"
+#include "QskIntervalF.h"
 #include "QskTextColors.h"
 
 // Even if we don't use the standard Qt animation system we
@@ -25,6 +26,7 @@ QSK_QT_PRIVATE_END
 static void qskRegisterInterpolator()
 {
     qRegisterAnimationInterpolator< QskColorFilter >( QskColorFilter::interpolate );
+    qRegisterAnimationInterpolator< QskIntervalF >( QskIntervalF::interpolate );
     qRegisterAnimationInterpolator< QskMargins >( QskMargins::interpolate );
     qRegisterAnimationInterpolator< QskGradient >( QskGradient::interpolate );
     qRegisterAnimationInterpolator< QskBoxShapeMetrics >( QskBoxShapeMetrics::interpolate );
