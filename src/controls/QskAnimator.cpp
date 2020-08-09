@@ -11,6 +11,8 @@
 #include <qquickwindow.h>
 #include <qvector.h>
 
+#include <cmath>
+
 #ifndef QT_NO_DEBUG_STREAM
 #include <qdebug.h>
 #endif
@@ -264,6 +266,11 @@ void QskAnimator::setWindow( QQuickWindow* window )
     }
 }
 
+void QskAnimator::setAutoRepeat( bool on )
+{
+    m_autoRepeat = on;
+}
+
 void QskAnimator::setDuration( int ms )
 {
     m_duration = ms;
@@ -298,7 +305,7 @@ const QEasingCurve& QskAnimator::easingCurve() const
     return m_easingCurve;
 }
 
-int QskAnimator::elapsed() const
+qint64 QskAnimator::elapsed() const
 {
     if ( !isRunning() )
         return -1;
@@ -340,14 +347,25 @@ void QskAnimator::update()
 
     const qint64 driverTime = qskAnimatorDriver->referenceTime();
 
-    double progress = ( driverTime - m_startTime ) / double( m_duration );
-    if ( progress > 1.0 )
-        progress = 1.0;
+    if ( m_autoRepeat )
+    {
+        double progress = std::fmod(( driverTime - m_startTime ), m_duration );
+        progress /= m_duration;
 
-    advance( m_easingCurve.valueForProgress( progress ) );
+        advance( m_easingCurve.valueForProgress( progress ) );
+    }
+    else
+    {
+        double progress = ( driverTime - m_startTime ) / double( m_duration );
 
-    if ( progress >= 1.0 )
-        stop();
+        if ( progress > 1.0 )
+            progress = 1.0;
+
+        advance( m_easingCurve.valueForProgress( progress ) );
+
+        if ( progress >= 1.0 )
+            stop();
+    }
 }
 
 void QskAnimator::setup()

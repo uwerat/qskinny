@@ -29,11 +29,14 @@ class QSK_EXPORT QskAnimator
 
     const QEasingCurve& easingCurve() const;
 
+    void setAutoRepeat( bool );
+    bool autoRepeat() const;
+
     void setDuration( int ms );
     int duration() const;
 
     bool isRunning() const;
-    int elapsed() const;
+    qint64 elapsed() const;
 
     void start();
     void stop();
@@ -62,6 +65,8 @@ class QSK_EXPORT QskAnimator
     int m_duration;
     QEasingCurve m_easingCurve;
     qint64 m_startTime; // quint32 might be enough
+
+    bool m_autoRepeat = false;
 };
 
 inline bool QskAnimator::isRunning() const
@@ -72,6 +77,11 @@ inline bool QskAnimator::isRunning() const
 inline int QskAnimator::duration() const
 {
     return m_duration;
+}
+
+inline bool QskAnimator::autoRepeat() const
+{
+    return m_autoRepeat;
 }
 
 #endif
