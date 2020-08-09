@@ -349,7 +349,7 @@ void QskAnimator::update()
 
     if ( m_autoRepeat )
     {
-        double progress = std::fmod(( driverTime - m_startTime ), m_duration );
+        double progress = std::fmod( driverTime - m_startTime, m_duration );
         progress /= m_duration;
 
         advance( m_easingCurve.valueForProgress( progress ) );

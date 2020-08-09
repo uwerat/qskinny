@@ -93,7 +93,7 @@ QskProgressBar::QskProgressBar( Qt::Orientation orientation,
         initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::MinimumExpanding );
 
     connect( this, &QskBoundedControl::boundariesChanged,
-             this, &QskProgressBar::adjustValue );
+        this, &QskProgressBar::adjustValue );
 }
 
 QskProgressBar::QskProgressBar( Qt::Orientation orientation, QQuickItem* parent )

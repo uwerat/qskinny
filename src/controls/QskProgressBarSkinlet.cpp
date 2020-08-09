@@ -66,7 +66,7 @@ QRectF QskProgressBarSkinlet::subControlRect(
     if( ( subControl == QskProgressBar::Groove ) )
     {
         const auto dim = bar->thickness();
-        
+
         auto rect = contentsRect;
         if ( bar->orientation() == Qt::Horizontal )
         {
@@ -119,7 +119,7 @@ QSGNode* QskProgressBarSkinlet::updateBarNode(
     const auto rect = bar->subControlRect( subControl );
     if ( rect.isEmpty() )
         return nullptr;
-    
+
     auto gradient = bar->gradientHint( subControl );
     if ( !gradient.isVisible() )
         return nullptr;

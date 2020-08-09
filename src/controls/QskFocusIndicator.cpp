@@ -153,7 +153,7 @@ void QskFocusIndicator::updateFocusFrame()
         {
             QRectF clipRect( 0, 0, w->width(), w->height() );
             clipRect = parentItem()->mapRectFromScene( clipRect );
-    
+
             r = r.intersected( clipRect );
         }
 

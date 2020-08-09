@@ -73,15 +73,15 @@ class QSK_EXPORT QskShortcutMap
 
     template< typename T >
     static int addFunctionT(
-        QQuickItem* item, const QKeySequence&, bool autoRepeat,
+        QQuickItem*, const QKeySequence&, bool autoRepeat,
         const QObject* receiver, T );
 
     static int addFunction(
-        QQuickItem* item, const QKeySequence&, bool autoRepeat,
+        QQuickItem*, const QKeySequence&, bool autoRepeat,
         const QObject* receiver, const QskMetaFunction& );
 
     static int addMethod(
-        QQuickItem* item, const QKeySequence&, bool autoRepeat,
+        QQuickItem*, const QKeySequence&, bool autoRepeat,
         const QObject* receiver, const char* );
 };
 

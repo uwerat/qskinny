@@ -38,8 +38,8 @@ class QSK_EXPORT QskBoundedRangeInput : public QskBoundedInput
     qreal upperValue() const;
 
     // [0.0, 1.0]
-    qreal lowerValueAsRatio() const; 
-    qreal upperValueAsRatio() const; 
+    qreal lowerValueAsRatio() const;
+    qreal upperValueAsRatio() const;
 
   public Q_SLOTS:
     void setRange( const QskIntervalF& );

@@ -31,7 +31,7 @@ QSK_QT_PRIVATE_END
 #include <qelapsedtimer.h>
 #include <qloggingcategory.h>
 Q_LOGGING_CATEGORY( logTiming, "qsk.window.timing", QtCriticalMsg )
- 
+
 #if QT_VERSION >= QT_VERSION_CHECK( 5, 12, 0 )
 QSK_QT_PRIVATE_BEGIN
 #include <qpa/qplatformwindow_p.h>
@@ -358,7 +358,7 @@ bool QskWindow::event( QEvent* event )
             {
                 const int updateTimerId = qskUpdateTimerId( this );
 
-                if ( static_cast<QTimerEvent *>( event )->timerId() == updateTimerId )
+                if ( static_cast< QTimerEvent* >( event )->timerId() == updateTimerId )
                 {
                     if ( !d->renderInterval.isValid() )
                         d->renderInterval.start();

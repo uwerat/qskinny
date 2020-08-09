@@ -136,7 +136,7 @@ qreal QskBoundedControl::boundedValue( qreal value ) const
 }
 
 qreal QskBoundedControl::valueAsRatio( qreal value ) const
-{   
+{
     return ( value - m_minimum ) / ( m_maximum - m_minimum );
 }
 

@@ -72,18 +72,18 @@ int QskBoundedInput::pageSize() const
 void QskBoundedInput::stepUp()
 {
     increment( m_stepSize );
-}   
+}
 
 void QskBoundedInput::stepDown()
 {
     increment( -m_stepSize );
-}   
-    
+}
+
 void QskBoundedInput::pageUp()
 {
     increment( m_pageSize * m_stepSize );
-}   
-    
+}
+
 void QskBoundedInput::pageDown()
 {
     increment( -m_pageSize * m_stepSize );
@@ -128,7 +128,7 @@ qreal QskBoundedInput::alignedValue( qreal value ) const
         if ( const auto step = m_stepSize )
             value = qRound( value / step ) * step;
     }
-    
+
     return boundedValue( value );
 }
 

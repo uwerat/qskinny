@@ -452,7 +452,7 @@ bool QskSkinnable::resetHint( QskAspect::Aspect aspect )
 
     if ( a.state() == QskAspect::NoState )
         a = a | skinState();
-    
+
     const auto oldHint = storedHint( a );
 
     m_data->hintTable.removeHint( aspect );
@@ -566,7 +566,7 @@ const QVariant& QskSkinnable::storedHint(
 
     // clearing all state bits not being handled from the skin
     aspect.clearState( ~skin->stateMask() );
-    
+
     QskAspect::Aspect resolvedAspect;
 
     const auto& localTable = m_data->hintTable;
@@ -714,7 +714,7 @@ static inline QMarginsF qskEffectivePadding( const QskSkinnable* skinnable,
         qMax( padding.top(), paddingHint.top() ),
         qMax( padding.right(), paddingHint.right() ),
         qMax( padding.bottom(), paddingHint.bottom() )
-    );
+        );
 }
 
 QMarginsF QskSkinnable::innerPadding(

@@ -29,7 +29,7 @@ void QskBoundedRangeInput::setLowerValueAsRatio( qreal ratio )
     setLowerValue( minimum() + ratio * boundaryLength() );
 }
 
-qreal QskBoundedRangeInput::lowerValueAsRatio() const 
+qreal QskBoundedRangeInput::lowerValueAsRatio() const
 {
     return ( lowerValue() - minimum() ) / boundaryLength();
 }
@@ -41,7 +41,7 @@ void QskBoundedRangeInput::setUpperValueAsRatio( qreal ratio )
 }
 
 qreal QskBoundedRangeInput::upperValueAsRatio() const
-{   
+{
     return ( upperValue() - minimum() ) / boundaryLength();
 }
 
@@ -70,7 +70,7 @@ void QskBoundedRangeInput::setUpperValue( qreal value )
     }
 
     setRange( QskIntervalF( m_range.lowerBound(), value ) );
-}   
+}
 
 qreal QskBoundedRangeInput::upperValue() const
 {
@@ -93,8 +93,8 @@ void QskBoundedRangeInput::setRange( const QskIntervalF& range )
     }
 
     setRangeInternal( range );
-} 
-    
+}
+
 void QskBoundedRangeInput::resetRange()
 {
     if ( m_range.isValid() )
@@ -122,9 +122,9 @@ void QskBoundedRangeInput::setRangeInternal( const QskIntervalF& range )
 }
 
 QskIntervalF QskBoundedRangeInput::range() const
-{   
+{
     return m_range;
-} 
+}
 
 void QskBoundedRangeInput::alignInput()
 {

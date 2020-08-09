@@ -18,7 +18,7 @@ class QSK_EXPORT QskScrollBox : public QskControl
     Q_PROPERTY( Qt::Orientations flickableOrientations READ flickableOrientations
         WRITE setFlickableOrientations NOTIFY flickableOrientationsChanged FINAL )
 
-   Q_PROPERTY( bool autoScrollFocusedItem READ autoScrollFocusItem
+    Q_PROPERTY( bool autoScrollFocusedItem READ autoScrollFocusItem
         WRITE setAutoScrollFocusedItem NOTIFY autoScrollFocusedItemChanged FINAL )
 
     using Inherited = QskControl;

@@ -40,7 +40,7 @@ class QSK_EXPORT QskWindow : public QQuickWindow
     ~QskWindow() override;
 
     using Inherited::setScreen;
-    void setScreen( const QString& ); 
+    void setScreen( const QString& );
 
     bool deleteOnClose() const;
     void setDeleteOnClose( bool );

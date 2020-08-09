@@ -76,7 +76,7 @@ namespace
             setFocusPolicy( Qt::NoFocus );
 
             connect( this, &ScrollBox::scrollPosChanged,
-                     this, &QskControl::focusIndicatorRectChanged );
+                this, &QskControl::focusIndicatorRectChanged );
         }
 
         QRectF focusIndicatorClipRect() const override

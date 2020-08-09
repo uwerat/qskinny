@@ -17,7 +17,7 @@ class QSK_EXPORT QskBoundedControl : public QskControl
     Q_PROPERTY( qreal minimum READ minimum WRITE setMinimum NOTIFY minimumChanged )
     Q_PROPERTY( qreal maximum READ maximum WRITE setMaximum NOTIFY maximumChanged )
     Q_PROPERTY( QskIntervalF boundaries READ boundaries
-                WRITE setBoundaries NOTIFY boundariesChanged )
+        WRITE setBoundaries NOTIFY boundariesChanged )
 
     using Inherited = QskControl;
 

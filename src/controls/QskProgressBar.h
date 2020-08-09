@@ -15,17 +15,17 @@ class QSK_EXPORT QskProgressBar : public QskBoundedControl
     Q_OBJECT
 
     Q_PROPERTY( Qt::Orientation orientation READ orientation
-                WRITE setOrientation NOTIFY orientationChanged )
+        WRITE setOrientation NOTIFY orientationChanged )
 
     Q_PROPERTY( bool indeterminate READ isIndeterminate
-                WRITE setIndeterminate NOTIFY indeterminateChanged )
+        WRITE setIndeterminate NOTIFY indeterminateChanged )
 
     Q_PROPERTY( qreal origin READ origin
-                WRITE setOrigin RESET resetOrigin NOTIFY originChanged )
+        WRITE setOrigin RESET resetOrigin NOTIFY originChanged )
 
     Q_PROPERTY( qreal value READ value WRITE setValue NOTIFY valueChanged )
     Q_PROPERTY( qreal valueAsRatio READ valueAsRatio
-                WRITE setValueAsRatio NOTIFY valueChanged )
+        WRITE setValueAsRatio NOTIFY valueChanged )
 
     using Inherited = QskBoundedControl;
 
@@ -48,7 +48,7 @@ class QSK_EXPORT QskProgressBar : public QskBoundedControl
 
     QskAspect::Placement effectivePlacement() const override;
 
-    void setBarGradient( const QskGradient & );
+    void setBarGradient( const QskGradient& );
     void resetBarGradient();
     QskGradient barGradient() const;
 

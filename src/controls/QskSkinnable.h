@@ -95,7 +95,7 @@ class QSK_EXPORT QskSkinnable
     void setBoxBorderColorsHint( QskAspect::Aspect, const QskBoxBorderColors& );
     QskBoxBorderColors boxBorderColorsHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
-    void setIntervalHint( QskAspect::Aspect, const QskIntervalF & );
+    void setIntervalHint( QskAspect::Aspect, const QskIntervalF& );
     QskIntervalF intervalHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
     void setFlagHint( QskAspect::Aspect, int flag );

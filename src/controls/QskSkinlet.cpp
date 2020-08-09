@@ -385,8 +385,8 @@ void QskSkinlet::removeTraillingNodes( QSGNode* node, QSGNode* child )
         {
             node->removeChildNode( sibling );
             delete sibling;
-        }   
-    }   
+        }
+    }
 }
 
 void QskSkinlet::setNodeRole( QSGNode* node, quint8 nodeRole )
