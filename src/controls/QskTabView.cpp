@@ -39,12 +39,10 @@ QskTabView::QskTabView( Qsk::Position tabPosition, QQuickItem* parent )
 {
     setPolishOnResize( true );
 
-    m_data->tabBar = new QskTabBar( tabPosition, this );
-    m_data->tabBar->setZ( 1 );
-
     m_data->stackBox = new QskStackBox( this );
     m_data->stackBox->setObjectName( QStringLiteral( "QskTabViewStackBox" ) );
-    m_data->stackBox->setZ( 0 );
+
+    m_data->tabBar = new QskTabBar( tabPosition, this );
 
 #if 1
     const auto hint = animation( Page );
@@ -217,6 +215,11 @@ int QskTabView::currentIndex() const
 int QskTabView::count() const
 {
     return m_data->tabBar->count();
+}
+
+QskAspect::Placement QskTabView::effectivePlacement() const
+{
+    return m_data->tabBar->effectivePlacement();
 }
 
 QSizeF QskTabView::layoutSizeHint(

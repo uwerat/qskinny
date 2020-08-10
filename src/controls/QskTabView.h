@@ -75,6 +75,8 @@ class QSK_EXPORT QskTabView : public QskControl
 
     QRectF tabRect() const;
 
+    QskAspect::Placement effectivePlacement() const override;
+
   public Q_SLOTS:
     void setCurrentIndex( int index );
 
