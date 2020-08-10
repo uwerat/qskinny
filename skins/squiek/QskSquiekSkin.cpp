@@ -209,46 +209,6 @@ void QskSquiekSkin::setPanel( QskAspect::Aspect aspect, PanelStyle style )
     setButton( aspect, style, 1 );
 }
 
-void QskSquiekSkin::setTab( QskAspect::Aspect aspect )
-{
-    const auto& pal = m_data->palette;
-
-    setGradient( aspect,
-        QskGradient( QskGradient::Vertical, pal.lighter125, pal.lighter150 ) );
-    setBoxBorderColors( aspect, pal.darker200 );
-
-    QskBoxBorderMetrics border( 1 );
-    QskBoxShapeMetrics shape( 4 );
-
-    if ( aspect.placement() == QskAspect::Top )
-    {
-        border.setWidthAt( Qt::BottomEdge, 0 );
-        shape.setRadius( Qt::BottomLeftCorner, 0 );
-        shape.setRadius( Qt::BottomRightCorner, 0 );
-    }
-    else if ( aspect.placement() == QskAspect::Bottom )
-    {
-        border.setWidthAt( Qt::TopEdge, 0 );
-        shape.setRadius( Qt::TopLeftCorner, 0 );
-        shape.setRadius( Qt::TopRightCorner, 0 );
-    }
-    else if ( aspect.placement() == QskAspect::Left )
-    {
-        border.setWidthAt( Qt::RightEdge, 0 );
-        shape.setRadius( Qt::TopRightCorner, 0 );
-        shape.setRadius( Qt::BottomRightCorner, 0 );
-    }
-    else if ( aspect.placement() == QskAspect::Right )
-    {
-        border.setWidthAt( Qt::LeftEdge, 0 );
-        shape.setRadius( Qt::TopLeftCorner, 0 );
-        shape.setRadius( Qt::BottomLeftCorner, 0 );
-    }
-
-    setBoxBorderMetrics( aspect, border );
-    setBoxShape( aspect, shape );
-}
-
 void QskSquiekSkin::initHints()
 {
     initCommonHints();
@@ -543,31 +503,65 @@ void QskSquiekSkin::initTabButtonHints()
     setMetric( Q::Panel | MinimumWidth, 30 );
     setMetric( Q::Panel | MinimumHeight, 16 );
 
+    setGradient( Q::Panel, pal.theme );
+
+    for ( const auto state : { Q::Checked, Q::Checked | Q::Pressed } )
+    {
+        setGradient( Q::Panel | state, pal.lighter125 );
+        setColor( Q::Text | state, pal.themeForeground );
+    }
+
+    setBoxBorderColors( Q::Panel, pal.darker200 );
+
     for ( auto placement : { Left, Right, Top, Bottom } )
     {
         const Aspect aspect = Q::Panel | placement;
 
         QskMargins margins0, margins1, padding;
+        QskBoxBorderMetrics border( 1 );
+        QskBoxShapeMetrics shape( 4 );
+
+        const int indent = 4;
 
         if ( placement == Top )
         {
-            margins0 = QskMargins( -1, 2, -1, -2 );
-            margins1 = QskMargins( -1, 0, -1, -3 );
+            margins0 = QskMargins( -1, indent, -1, -1 );
+            margins1 = QskMargins( -1, 0, -1, -2 );
+
+            border.setWidthAt( Qt::BottomEdge, 0 );
+
+            shape.setRadius( Qt::BottomLeftCorner, 0 );
+            shape.setRadius( Qt::BottomRightCorner, 0 );
         }
         else if ( placement == Bottom )
         {
-            margins0 = QskMargins( -1, -2, -1, 2 );
-            margins1 = QskMargins( -1, -3, -1, 0 );
+            margins0 = QskMargins( -1, -1, -1, indent );
+            margins1 = QskMargins( -1, -2, -1, 0 );
+
+            border.setWidthAt( Qt::TopEdge, 0 );
+
+            shape.setRadius( Qt::TopLeftCorner, 0 );
+            shape.setRadius( Qt::TopRightCorner, 0 );
         }
         else if ( placement == Left )
         {
-            margins0 = QskMargins( 2, -1, -2, -1 );
-            margins1 = QskMargins( 0, -1, -3, 0 );
+            margins0 = QskMargins( indent, -1, -1, -1 );
+            margins1 = QskMargins( 0, -1, -2, 0 );
+
+            border.setWidthAt( Qt::RightEdge, 0 );
+
+            shape.setRadius( Qt::TopRightCorner, 0 );
+            shape.setRadius( Qt::BottomRightCorner, 0 );
         }
         else if ( placement == Right )
         {
-            margins0 = QskMargins( -2, -1, 2, -1 );
-            margins1 = QskMargins( -3, -1, 0, 0 );
+            margins0 = QskMargins( -1, -1, indent, -1 );
+            margins1 = QskMargins( -2, -1, 0, 0 );
+
+            border.setWidthAt( Qt::LeftEdge, 0 );
+
+            shape.setRadius( Qt::TopLeftCorner, 0 );
+            shape.setRadius( Qt::BottomLeftCorner, 0 );
         }
 
         setMargins( aspect | Margin, margins0 );
@@ -576,7 +570,9 @@ void QskSquiekSkin::initTabButtonHints()
             setMargins( aspect | Margin | state, margins1 );
 
         setMargins( aspect | Padding, padding );
-        setTab( aspect );
+
+        setBoxBorderMetrics( aspect, border );
+        setBoxShape( aspect, shape );
     }
 
     QskAnimationHint animationHint( qskDuration );
@@ -671,7 +667,13 @@ void QskSquiekSkin::initTabViewHints()
 
     setMargins( Q::Page | Padding, 0 );
     setMargins( Q::Page | Margin, 0 );
-    setPanel( Q::Page, Raised );
+    setPanel( Q::Page, Plain );
+
+    const qreal radius = 8.0;
+    setBoxShape( Q::Page | Top, 0, 0, radius, radius );
+    setBoxShape( Q::Page | Bottom, radius, radius, 0, 0 );
+    setBoxShape( Q::Page | Left, 0, radius, 0, radius );
+    setBoxShape( Q::Page | Right, radius, 0, radius, 0 );
 
     setAnimation( Q::Page, qskDuration );
 }
