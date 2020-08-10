@@ -38,6 +38,8 @@ int main( int argc, char* argv[] )
 
     tabView->setMargins( 10 );
     tabView->setTabPosition( Qsk::Left );
+    tabView->setAutoFitTabs( true );
+
     tabView->addTab( "Grid Layout", new GridLayoutPage() );
     tabView->addTab( "Flow Layout", new FlowLayoutPage() );
     tabView->addTab( "Linear Layout", new LinearLayoutPage() );
