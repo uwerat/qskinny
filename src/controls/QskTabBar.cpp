@@ -137,6 +137,9 @@ namespace
         {
             auto r = Inherited::clipRect();
 
+            if ( auto control = qskControlCast( parentItem() ) )
+                r += control->marginsHint( QskTabBar::Panel | QskAspect::Padding );
+
             /*
                 Often the current tab button grows beyond the bounding rectangle
                 of the tab bar, so that it looks like being on top of the tab page
@@ -154,6 +157,7 @@ namespace
                 r.setLeft( r.left() - 0.5 * expanded );
                 r.setWidth( expanded );
             }
+
             return r;
         }
 
