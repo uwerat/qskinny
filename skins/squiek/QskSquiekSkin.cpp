@@ -503,12 +503,27 @@ void QskSquiekSkin::initTabButtonHints()
     setMetric( Q::Panel | MinimumWidth, 30 );
     setMetric( Q::Panel | MinimumHeight, 16 );
 
-    setGradient( Q::Panel, pal.theme );
-
-    for ( const auto state : { Q::Checked, Q::Checked | Q::Pressed } )
+    for ( auto placement : { Top, Bottom } )
     {
-        setGradient( Q::Panel | state, pal.lighter125 );
-        setColor( Q::Text | state, pal.themeForeground );
+        setGradient( Q::Panel | placement,
+            QskGradient( Qt::Vertical, pal.lighter125, pal.lighter110 ) );
+
+        for ( const auto state : { Q::Checked, Q::Checked | Q::Pressed } )
+        {
+            setGradient( Q::Panel | placement | state, pal.lighter125 );
+            setColor( Q::Text | placement | state, pal.themeForeground );
+        }
+    }
+
+    for ( auto placement : { Left, Right } )
+    {
+        setGradient( Q::Panel | placement, pal.lighter125 );
+
+        for ( const auto state : { Q::Checked, Q::Checked | Q::Pressed } )
+        {
+            setGradient( Q::Panel | placement | state, pal.highlighted );
+            setColor( Q::Text | placement | state, pal.highlightedText );
+        }
     }
 
     setBoxBorderColors( Q::Panel, pal.darker200 );
@@ -652,9 +667,17 @@ void QskSquiekSkin::initTabBarHints()
     using namespace QskAspect;
     using Q = QskTabBar;
 
-    setMargins( Q::Panel | Padding, 0 );
+    setBoxBorderMetrics( Q::Panel, 0 );
+
     setMargins( Q::Panel | Margin, 0 );
-    setPanel( Q::Panel, NoPanel );
+
+    const qreal vb = 1.0; // borderWidth of the view
+    const qreal pw = 1.0; // extra space for the negative padding of the buttons
+
+    setMargins( Q::Panel | Top | Padding, QskMargins( pw, 0.0, pw, vb ) );
+    setMargins( Q::Panel | Bottom | Padding, QskMargins( pw, vb, pw, 0.0 ) );
+    setMargins( Q::Panel | Left | Padding, QskMargins( 0.0, pw, vb, pw ) );
+    setMargins( Q::Panel | Right | Padding, QskMargins( vb, pw, 0.0, pw ) );
 
     // when flicking
     setAnimation( Q::Panel | Metric, QskAnimationHint( 200, QEasingCurve::OutCubic ) );
