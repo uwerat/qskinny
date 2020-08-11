@@ -52,6 +52,7 @@ class TabView : public QskTabView
         }
 
         buttonAt( 2 )->setEnabled( false );
+        setCurrentIndex( 4 );
     }
 
     void rotate()
