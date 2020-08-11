@@ -3,24 +3,17 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef SLIDER_H
-#define SLIDER_H
+#ifndef OTHER_SLIDER_H
+#define OTHER_SLIDER_H
 
 #include <QskSlider.h>
 
-class Slider : public QskSlider
+class OtherSlider : public QskSlider
 {
-    using Inherited = QskSlider;
-
   public:
-    QSK_SUBCONTROLS( Scale, Decoration )
+    // Slider overriding many hints from the skin.
 
-    Slider( QQuickItem* parent = nullptr );
-
-    QRectF focusIndicatorRect() const override;
-
-  protected:
-    QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
+    OtherSlider( QQuickItem* = nullptr );
 };
 
 #endif

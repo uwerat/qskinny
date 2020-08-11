@@ -3,8 +3,8 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#include "SliderSkinlet.h"
-#include "Slider.h"
+#include "CustomSliderSkinlet.h"
+#include "CustomSlider.h"
 
 #include <QskAspect.h>
 #include <QskRgbValue.h>
@@ -26,101 +26,101 @@ static const qreal qskMargin = 20;
 static const qreal qskPeak = 10;
 
 static QFont qskLabelFont;
+
 #endif
 
-class TicksNode : public QSGGeometryNode
+namespace
 {
-  public:
-    TicksNode( const QColor& color )
-        : m_geometry( QSGGeometry::defaultAttributes_Point2D(), 0 )
+    class TicksNode : public QSGGeometryNode
     {
-        m_geometry.setDrawingMode( GL_LINES );
-        m_geometry.setVertexDataPattern( QSGGeometry::StaticPattern );
-
-        m_material.setColor( color );
-
-        setGeometry( &m_geometry );
-        setMaterial( &m_material );
-    }
-
-  private:
-    QSGFlatColorMaterial m_material;
-    QSGGeometry m_geometry;
-};
-
-class HandleNode : public QSGGeometryNode
-{
-  public:
-    HandleNode()
-        : m_geometry( QSGGeometry::defaultAttributes_Point2D(), 8 * 2 )
-    {
-        setGeometry( &m_geometry );
-        setMaterial( &m_material );
-    }
-
-    void update( const QRectF& rect, qreal peakPos, const QColor& color )
-    {
-        if ( color != m_color )
+      public:
+        TicksNode( const QColor& color )
+            : m_geometry( QSGGeometry::defaultAttributes_Point2D(), 0 )
         {
+            m_geometry.setDrawingMode( GL_LINES );
+            m_geometry.setVertexDataPattern( QSGGeometry::StaticPattern );
+
             m_material.setColor( color );
 
-            m_color = color;
-            markDirty( QSGNode::DirtyMaterial );
+            setGeometry( &m_geometry );
+            setMaterial( &m_material );
         }
 
-        if ( rect != m_rect || peakPos != m_peakPos )
-        {
-            auto p = reinterpret_cast< QSGGeometry::Point2D* >( m_geometry.vertexData() );
+      private:
+        QSGFlatColorMaterial m_material;
+        QSGGeometry m_geometry;
+    };
 
-            const qreal y0 = rect.y() + qskPeak;
-
-            setLine( p, peakPos, peakPos, rect.y() );
-            setLine( p + 2, peakPos - 5, peakPos + 5, y0 );
-
-            // corners manually "rounded" by 3 pixels
-
-            setLine( p + 4, rect.left() + 2, rect.right() - 2, y0 );
-            setLine( p + 6, rect.left() + 1, rect.right() - 1, y0 + 1 );
-            setLine( p + 8, rect.left(), rect.right(), y0 + 2 );
-            setLine( p + 10, rect.left(), rect.right(), rect.bottom() - 1 );
-            setLine( p + 12, rect.left() + 1, rect.right() - 1, rect.bottom() - 1 );
-            setLine( p + 14, rect.left() + 2, rect.right() - 2, rect.bottom() );
-
-            m_rect = rect;
-            m_peakPos = peakPos;
-            markDirty( QSGNode::DirtyGeometry );
-        }
-    }
-
-  private:
-    inline void setLine( QSGGeometry::Point2D* points, float x1, float x2, qreal y )
+    class HandleNode : public QSGGeometryNode
     {
-        points[ 0 ].x = x1;
-        points[ 0 ].y = y;
+      public:
+        HandleNode()
+            : m_geometry( QSGGeometry::defaultAttributes_Point2D(), 8 * 2 )
+        {
+            setGeometry( &m_geometry );
+            setMaterial( &m_material );
+        }
 
-        points[ 1 ].x = x2;
-        points[ 1 ].y = y;
-    }
+        void update( const QRectF& rect, qreal peakPos, const QColor& color )
+        {
+            if ( color != m_color )
+            {
+                m_material.setColor( color );
 
-    QRectF m_rect;
-    qreal m_peakPos;
-    QColor m_color;
+                m_color = color;
+                markDirty( QSGNode::DirtyMaterial );
+            }
 
-    QSGFlatColorMaterial m_material;
-    QSGGeometry m_geometry;
-};
+            if ( rect != m_rect || peakPos != m_peakPos )
+            {
+                auto p = reinterpret_cast< QSGGeometry::Point2D* >( m_geometry.vertexData() );
 
-SliderSkinlet::SliderSkinlet()
+                const qreal y0 = rect.y() + qskPeak;
+
+                setLine( p, peakPos, peakPos, rect.y() );
+                setLine( p + 2, peakPos - 5, peakPos + 5, y0 );
+
+                // corners manually "rounded" by 3 pixels
+
+                setLine( p + 4, rect.left() + 2, rect.right() - 2, y0 );
+                setLine( p + 6, rect.left() + 1, rect.right() - 1, y0 + 1 );
+                setLine( p + 8, rect.left(), rect.right(), y0 + 2 );
+                setLine( p + 10, rect.left(), rect.right(), rect.bottom() - 1 );
+                setLine( p + 12, rect.left() + 1, rect.right() - 1, rect.bottom() - 1 );
+                setLine( p + 14, rect.left() + 2, rect.right() - 2, rect.bottom() );
+
+                m_rect = rect;
+                m_peakPos = peakPos;
+                markDirty( QSGNode::DirtyGeometry );
+            }
+        }
+
+      private:
+        inline void setLine( QSGGeometry::Point2D* points, float x1, float x2, qreal y )
+        {
+            points[ 0 ].x = x1;
+            points[ 0 ].y = y;
+
+            points[ 1 ].x = x2;
+            points[ 1 ].y = y;
+        }
+
+        QRectF m_rect;
+        qreal m_peakPos;
+        QColor m_color;
+
+        QSGFlatColorMaterial m_material;
+        QSGGeometry m_geometry;
+    };
+}
+
+CustomSliderSkinlet::CustomSliderSkinlet()
 {
     qskLabelFont = QFont();
     setNodeRoles( { ScaleRole, FillRole, DecorationRole, HandleRole } );
 }
 
-SliderSkinlet::~SliderSkinlet()
-{
-}
-
-QRectF SliderSkinlet::subControlRect( const QskSkinnable* skinnable,
+QRectF CustomSliderSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
     const auto slider = static_cast< const QskSlider* >( skinnable );
@@ -137,11 +137,11 @@ QRectF SliderSkinlet::subControlRect( const QskSkinnable* skinnable,
     {
         return handleRect( slider, contentsRect );
     }
-    else if ( subControl == Slider::Scale )
+    else if ( subControl == CustomSlider::Scale )
     {
         return scaleRect( contentsRect );
     }
-    else if ( subControl == Slider::Decoration )
+    else if ( subControl == CustomSlider::Decoration )
     {
         return decorationRect( slider, contentsRect );
     }
@@ -149,7 +149,7 @@ QRectF SliderSkinlet::subControlRect( const QskSkinnable* skinnable,
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
-QSGNode* SliderSkinlet::updateSubNode(
+QSGNode* CustomSliderSkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
     const auto slider = static_cast< const QskSlider* >( skinnable );
@@ -173,7 +173,7 @@ QSGNode* SliderSkinlet::updateSubNode(
     }
 }
 
-QRectF SliderSkinlet::scaleRect( const QRectF& contentsRect ) const
+QRectF CustomSliderSkinlet::scaleRect( const QRectF& contentsRect ) const
 {
     auto r = contentsRect;
 
@@ -185,10 +185,10 @@ QRectF SliderSkinlet::scaleRect( const QRectF& contentsRect ) const
     return r;
 }
 
-QRectF SliderSkinlet::fillRect(
+QRectF CustomSliderSkinlet::fillRect(
     const QskSlider* slider, const QRectF& contentsRect ) const
 {
-    auto r = subControlRect( slider, contentsRect, Slider::Scale );
+    auto r = subControlRect( slider, contentsRect, CustomSlider::Scale );
 
     r.setTop( r.bottom() - qskMinorTick );
     r.setWidth( r.width() * slider->valueAsRatio() );
@@ -196,23 +196,23 @@ QRectF SliderSkinlet::fillRect(
     return r;
 }
 
-QRectF SliderSkinlet::decorationRect(
+QRectF CustomSliderSkinlet::decorationRect(
     const QskSlider* slider, const QRectF& contentsRect ) const
 {
     // decoration exceeds scale !!!!
 
-    auto r = subControlRect( slider, contentsRect, Slider::Scale );
+    auto r = subControlRect( slider, contentsRect, CustomSlider::Scale );
     r.setBottom( r.top() );
     r.setTop( r.bottom() - QFontMetricsF( qskLabelFont ).height() );
 
     return r;
 }
 
-QRectF SliderSkinlet::handleRect(
+QRectF CustomSliderSkinlet::handleRect(
     const QskSlider* slider, const QRectF& contentsRect ) const
 {
     const QRectF fillRect = subControlRect( slider, contentsRect, QskSlider::Fill );
-    const QRectF scaleRect = subControlRect( slider, contentsRect, Slider::Scale );
+    const QRectF scaleRect = subControlRect( slider, contentsRect, CustomSlider::Scale );
 
     QRectF handleRect( 0, scaleRect.bottom(), 80, 50 );
     handleRect.moveCenter( QPointF( fillRect.right(), handleRect.center().y() ) );
@@ -225,18 +225,18 @@ QRectF SliderSkinlet::handleRect(
     return handleRect;
 }
 
-QSGNode* SliderSkinlet::updateScaleNode(
+QSGNode* CustomSliderSkinlet::updateScaleNode(
     const QskSlider* slider, QSGNode* node ) const
 {
     const auto scaleRect = subControlRect(
-        slider, slider->contentsRect(), Slider::Scale );
+        slider, slider->contentsRect(), CustomSlider::Scale );
 
     if ( scaleRect.isEmpty() )
         return nullptr;
 
     auto ticksNode = static_cast< TicksNode* >( node );
     if ( ticksNode == nullptr )
-        ticksNode = new TicksNode( slider->color( Slider::Scale ) );
+        ticksNode = new TicksNode( slider->color( CustomSlider::Scale ) );
 
     const int tickCount = std::floor( slider->boundaryLength() / slider->stepSize() ) + 1;
 
@@ -268,11 +268,11 @@ QSGNode* SliderSkinlet::updateScaleNode(
     return ticksNode;
 }
 
-QSGNode* SliderSkinlet::updateDecorationNode(
+QSGNode* CustomSliderSkinlet::updateDecorationNode(
     const QskSlider* slider, QSGNode* node ) const
 {
     const QRectF decorationRect = subControlRect(
-        slider, slider->contentsRect(), Slider::Decoration );
+        slider, slider->contentsRect(), CustomSlider::Decoration );
 
     if ( decorationRect.isEmpty() )
         return nullptr;
@@ -320,7 +320,7 @@ QSGNode* SliderSkinlet::updateDecorationNode(
     return decorationNode;
 }
 
-QSGNode* SliderSkinlet::updateHandleNode(
+QSGNode* CustomSliderSkinlet::updateHandleNode(
     const QskSlider* slider, QSGNode* node ) const
 {
     const QRectF handleRect = subControlRect(

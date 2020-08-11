@@ -3,11 +3,11 @@ TEMPLATE = subdirs
 # c++
 SUBDIRS += \
     desktop \
+    gallery \
     layouts \
     listbox \
     messagebox \
     mycontrols \
-    sliders \
     thumbnails \
     tabview
 
@@ -28,5 +28,4 @@ SUBDIRS += \
     frames \
     gbenchmark \
     glabels \
-    messageboxQml \
-    tlabels
+    messageboxQml

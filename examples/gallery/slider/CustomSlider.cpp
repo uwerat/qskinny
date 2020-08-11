@@ -3,8 +3,8 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#include "Slider.h"
-#include "SliderSkinlet.h"
+#include "CustomSlider.h"
+#include "CustomSliderSkinlet.h"
 
 #include <QskAnimationHint.h>
 #include <QskAspect.h>
@@ -12,10 +12,10 @@
 #include <QskGradient.h>
 #include <QskRgbValue.h>
 
-QSK_SUBCONTROL( Slider, Scale )
-QSK_SUBCONTROL( Slider, Decoration )
+QSK_SUBCONTROL( CustomSlider, Scale )
+QSK_SUBCONTROL( CustomSlider, Decoration )
 
-Slider::Slider( QQuickItem* parentItem )
+CustomSlider::CustomSlider( QQuickItem* parentItem )
     : QskSlider( parentItem )
 {
     using namespace QskAspect;
@@ -44,7 +44,7 @@ Slider::Slider( QQuickItem* parentItem )
 
     // using an individual skinlet, not known by the skin
 
-    auto skinlet = new SliderSkinlet();
+    auto skinlet = new CustomSliderSkinlet();
     skinlet->setOwnedBySkinnable( true );
 
     setSkinlet( skinlet );
@@ -53,7 +53,7 @@ Slider::Slider( QQuickItem* parentItem )
         this, &QskControl::focusIndicatorRectChanged );
 }
 
-QSizeF Slider::contentsSizeHint(
+QSizeF CustomSlider::contentsSizeHint(
     Qt::SizeHint which, const QSizeF& constraint ) const
 {
     auto size = Inherited::contentsSizeHint( which, constraint );
@@ -64,7 +64,7 @@ QSizeF Slider::contentsSizeHint(
     return size;
 }
 
-QRectF Slider::focusIndicatorRect() const
+QRectF CustomSlider::focusIndicatorRect() const
 {
     return subControlRect( QskSlider::Handle );
 }

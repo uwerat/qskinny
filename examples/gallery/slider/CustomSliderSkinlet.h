@@ -3,14 +3,14 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef SLIDER_SKINLET_H
-#define SLIDER_SKINLET_H
+#ifndef CUSTOM_SLIDER_SKINLET_H
+#define CUSTOM_SLIDER_SKINLET_H
 
 #include <QskSliderSkinlet.h>
 
 class QSGTransformNode;
 
-class SliderSkinlet : public QskSliderSkinlet
+class CustomSliderSkinlet : public QskSliderSkinlet
 {
     using Inherited = QskSliderSkinlet;
 
@@ -22,8 +22,7 @@ class SliderSkinlet : public QskSliderSkinlet
         DecorationRole
     };
 
-    SliderSkinlet();
-    ~SliderSkinlet() override;
+    CustomSliderSkinlet();
 
     QRectF subControlRect( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol ) const override;
