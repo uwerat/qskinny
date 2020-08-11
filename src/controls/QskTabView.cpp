@@ -235,7 +235,7 @@ QSizeF QskTabView::layoutSizeHint(
 
 #if 1
     /*
-        How to limit the constribution of the tabbar in a reasonable way ?
+        How to limit the contribution of the tabbar in a reasonable way ?
         QTabWidget uses 200x200 - what is kind of random. TODO ...
      */
     const qreal minBarSize = 200;
