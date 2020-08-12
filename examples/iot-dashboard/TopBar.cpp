@@ -11,15 +11,22 @@ TopBarItem::TopBarItem(const QString& name, const QColor &textColor, const QGrad
 {
     setAutoLayoutChildren( true );
     setAutoAddChildren( true );
-    setFixedSize( {140, 40} );
-    setMargins({0, 0, 0, 0});
-    setPadding({30, 0, 30, 0});
-    setSpacing(6);
 
     auto* textLabel = new QskTextLabel( name, this );
     textLabel->setFontRole(QskSkin::SmallFont); // ### style
 
-    auto* pieChart = new PieChartPainted(textColor, gradient, progress, value, this);
+    auto* pieChartAndDisplay = new QskLinearBox( Qt::Horizontal, this );
+    pieChartAndDisplay->setSpacing(10);
+    auto* pieChart = new PieChartPainted(textColor, gradient, progress, value, pieChartAndDisplay);
+    auto* display = new QskLinearBox( Qt::Vertical, pieChartAndDisplay );
+    display->setSpacing(0);
+    display->addSpacer(0, 1);
+    auto* displayValue = new QskTextLabel(QString::number(value), display);
+    displayValue->setFontRole(QskSkin::MediumFont);
+    auto* displayUnit = new QskTextLabel("kwH", display);
+    displayUnit->setFontRole(QskSkin::SmallFont);
+    display->addSpacer(0, 1);
+
 }
 
 TopBar::TopBar(QQuickItem *parent) : QskLinearBox(Qt::Horizontal, parent)
@@ -27,7 +34,7 @@ TopBar::TopBar(QQuickItem *parent) : QskLinearBox(Qt::Horizontal, parent)
     setAutoLayoutChildren(true);
     setAutoAddChildren(true);
     setSizePolicy(QskSizePolicy::Preferred, QskSizePolicy::Fixed);
-    setFixedHeight(100);
+    setMargins({25, 30, 25, 0});
 
     QStringList itemStrings = { "Living Room", "Bedroom", "Bathroom", "Kitchen" };
     QColor textColors[] = {"#ff3122", "#6776ff", "#f99055", "#6776ff"};
@@ -52,6 +59,7 @@ TopBar::TopBar(QQuickItem *parent) : QskLinearBox(Qt::Horizontal, parent)
     }
 
     auto* timeControl = new QskLinearBox(Qt::Vertical, this);
+    timeControl->setMargins({0, 0, 35, 0});
     auto* timeTitle = new QskTextLabel("Current time", timeControl); // ### make bold or so
     timeTitle->setFontRole(QskSkin::TinyFont);
 
