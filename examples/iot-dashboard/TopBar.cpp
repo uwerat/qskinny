@@ -59,7 +59,7 @@ TopBar::TopBar(QQuickItem *parent) : QskLinearBox(Qt::Horizontal, parent)
     }
 
     auto* timeControl = new QskLinearBox(Qt::Vertical, this);
-    timeControl->setMargins({0, 0, 35, 0});
+    timeControl->setMargins({0, 0, 50, 0});
     auto* timeTitle = new QskTextLabel("Current time", timeControl); // ### make bold or so
     timeTitle->setFontRole(QskSkin::TinyFont);
 

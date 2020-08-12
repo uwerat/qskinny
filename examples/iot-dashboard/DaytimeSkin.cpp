@@ -14,8 +14,13 @@ namespace
 {
     static inline QFont qskFont( qreal pointSize, bool semiBold = false )
     {
-        QString family = semiBold ? "Proxima Nova Lt" : "Proxima Nova";
-        QFont font(family);
+        QFont font("Proxima Nova");
+
+        if(semiBold)
+        {
+            font.setWeight(QFont::Bold);
+        }
+
         font.setPointSizeF( pointSize /*/ qskDpiScaled( 1.0 )*/ );
         return font;
     }
@@ -32,14 +37,13 @@ void DaytimeSkin::initHints()
 {
     QFontDatabase db;
     db.addApplicationFont(":/fonts/ProximaNova-Regular.otf"); // ### use fontconfig
-    db.addApplicationFont(":/fonts/ProximaNova-Semibold.otf"); // ### use fontconfig
 
     setFont( QskSkin::DefaultFont, qskFont( 12 ) );
     setFont( QskSkin::TinyFont, qskFont( 12 ) );
     setFont( QskSkin::SmallFont, qskFont( 10 ) );
     setFont( QskSkin::MediumFont, qskFont( 13 ) );
-    setFont( QskSkin::LargeFont, qskFont( 14 ) );
-    setFont( QskSkin::HugeFont, qskFont( 36, true ) );
+    setFont( QskSkin::LargeFont, qskFont( 20 ) );
+    setFont( QskSkin::HugeFont, qskFont( 27, true ) );
 
     QColor color(Qt::white);
     color.setAlphaF(0.09);
