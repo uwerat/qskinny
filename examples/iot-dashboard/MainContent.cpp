@@ -3,35 +3,33 @@
 #include "Card.h"
 #include "PieChart.h"
 #include "TopBar.h"
+#include "Usage.h"
 
+#include <QskBoxBorderColors.h>
+#include <QskBoxBorderMetrics.h>
+#include <QskBoxShapeMetrics.h>
+#include <QskGridBox.h>
 #include <QskTextLabel.h>
 
-MainContent::MainContent( QQuickItem *parent ) : QskLinearBox( Qt::Horizontal, parent )
+MainContent::MainContent( QQuickItem *parent ) : QskLinearBox( Qt::Vertical, parent )
 {
     setSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
     setDefaultAlignment(Qt::AlignTop);
+    setSpacing(30);
 
     auto* topBar = new TopBar(this);
 
-//    for( int a = 0; a < 4; ++a )
-//    {
-//        auto* column = new QskLinearBox( Qt::Vertical, this );
-//        m_columns.append( column );
-//    }
+    auto* gridBox = new QskGridBox(this);
+    gridBox->setMargins({15, 0, 15, 0});
+    gridBox->setPanel(true);
+    gridBox->setBoxShapeHint(QskBox::Panel, QskBoxShapeMetrics(6) );
+    gridBox->setBoxBorderMetricsHint( QskBox::Panel, QskBoxBorderMetrics(2) );
+    QskBoxBorderColors borderColors("#dddddd");
+    borderColors.setAlpha(100);
+    gridBox->setBoxBorderColorsHint( QskBox::Panel, borderColors);
 
-//    auto* pieChart =  new PieChart;
-//    QVector< float > angles = { 60, 90, 150, 60 };
-//    pieChart->setAngles( angles );
-//    addCard( "Sample usage", pieChart, 0 );
-
-//    auto* barGraph = new QskTextLabel( "here bar graph" );
-//    addCard( "Power consumption", barGraph, 0 );
-
-//    auto* statistics = new QskTextLabel( "here detailed statistics" );
-//    addCard( "Detailed statistics", statistics, 1 );
-
-//    auto* users = new QskTextLabel( "here users" );
-//    addCard( "Users", users, 1 );
+    auto* usage = new Usage(gridBox);
+    gridBox->addItem(usage, 0, 0, 2, 1);
 }
 
 void MainContent::addCard( const QString &title, QskControl *content, int column )

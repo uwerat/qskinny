@@ -45,6 +45,8 @@ void DaytimeSkin::initHints()
     setFont( QskSkin::LargeFont, qskFont( 20 ) );
     setFont( QskSkin::HugeFont, qskFont( 27, true ) );
 
+    setFont( DaytimeSkin::TitleFont, qskFont(10, true));
+
     QColor color(Qt::white);
     color.setAlphaF(0.09);
     setGradient( MenuItem::Panel | QskControl::Hovered, color );

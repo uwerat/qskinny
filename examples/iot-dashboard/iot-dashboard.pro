@@ -10,6 +10,7 @@ SOURCES += \
     PieChartPainted.cpp \
     PieChartSkinlet.cpp \
     TopBar.cpp \
+    Usage.cpp \
     main.cpp \
     MainWindow.cpp
 
@@ -23,7 +24,8 @@ HEADERS += \
     PieChart.h \
     PieChartPainted.h \
     PieChartSkinlet.h \
-    TopBar.h
+    TopBar.h \
+    Usage.h
 
 RESOURCES += \
     images.qrc \

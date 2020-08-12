@@ -11,6 +11,7 @@ TopBarItem::TopBarItem(const QString& name, const QColor &textColor, const QGrad
 {
     setAutoLayoutChildren( true );
     setAutoAddChildren( true );
+    setSpacing(15);
 
     auto* textLabel = new QskTextLabel( name, this );
     textLabel->setFontRole(QskSkin::SmallFont); // ### style
@@ -34,7 +35,7 @@ TopBar::TopBar(QQuickItem *parent) : QskLinearBox(Qt::Horizontal, parent)
     setAutoLayoutChildren(true);
     setAutoAddChildren(true);
     setSizePolicy(QskSizePolicy::Preferred, QskSizePolicy::Fixed);
-    setMargins({25, 30, 25, 0});
+    setMargins({25, 35, 25, 0});
 
     QStringList itemStrings = { "Living Room", "Bedroom", "Bathroom", "Kitchen" };
     QColor textColors[] = {"#ff3122", "#6776ff", "#f99055", "#6776ff"};
