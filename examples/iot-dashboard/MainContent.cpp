@@ -1,6 +1,7 @@
 #include "MainContent.h"
 
 #include "Card.h"
+#include "Humidity.h"
 #include "IndoorTemperature.h"
 #include "PieChart.h"
 #include "TopBar.h"
@@ -34,6 +35,9 @@ MainContent::MainContent( QQuickItem *parent ) : QskLinearBox( Qt::Vertical, par
 
     auto* indoorTemperature = new IndoorTemperature(gridBox);
     gridBox->addItem(indoorTemperature, 0, 1);
+
+    auto* humidity = new Humidity(gridBox);
+    gridBox->addItem(humidity, 1, 1);
 }
 
 void MainContent::addCard( const QString &title, QskControl *content, int column )
