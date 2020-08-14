@@ -23,10 +23,8 @@ PieChartPainted::PieChartPainted(const QColor& color, const QGradient& gradient,
     m_progressLabel->setTextColor(color);
 }
 
-QSizeF PieChartPainted::contentsSizeHint(Qt::SizeHint sizeHint, const QSizeF& size) const
+QSizeF PieChartPainted::contentsSizeHint(Qt::SizeHint /*sizeHint*/, const QSizeF& /*size*/) const
 {
-    qDebug() << Q_FUNC_INFO << sizeHint << size << layoutRect() << contentsRect();
-//    return size;
     return {57, 57};
 }
 

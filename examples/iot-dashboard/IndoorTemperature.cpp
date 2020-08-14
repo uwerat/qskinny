@@ -1,0 +1,55 @@
+#include "IndoorTemperature.h"
+#include "DaytimeSkin.h"
+#include "RoundedIcon.h"
+
+#include <QskBoxShapeMetrics.h>
+#include <QskGraphic.h>
+#include <QskGraphicLabel.h>
+#include <QskPushButton.h>
+#include <QskTextLabel.h>
+
+#include <QImage>
+
+IndoorTemperature::IndoorTemperature(QQuickItem *parent)
+    : QskLinearBox(Qt::Horizontal, parent)
+{
+    setMargins(17);
+    setSpacing(20);
+
+    QskGradient gradient(QskGradient::Vertical, "#ff7d34", "#ff3122");
+    auto* icon = new RoundedIcon("indoor-temperature", gradient, this);
+
+    auto *titleAndValue = new QskLinearBox(Qt::Vertical, this);
+
+    auto* title = new QskTextLabel("Indoor Temperature", titleAndValue);
+    title->setFontRole(DaytimeSkin::TitleFont);
+
+    auto* value = new QskTextLabel("+24", titleAndValue);
+    value->setFontRole(QskSkin::HugeFont);
+    value->setTextColor("#929CB2");
+
+    auto* buttons = new QskLinearBox(Qt::Vertical, this);
+    buttons->setSpacing(0);
+
+    QImage upImage( ":/images/up.png");
+    auto upGraphic = QskGraphic::fromImage( upImage );
+    upGraphic.setDefaultSize({10, 5.71});
+    auto* upButton = new QskPushButton(buttons);
+    upButton->setBoxShapeHint(QskPushButton::Panel, {30, 30, 0, 0});
+    upButton->setSizePolicy(QskSizePolicy::Fixed, QskSizePolicy::Expanding);
+    upButton->setFixedWidth(32);
+    upButton->setGradientHint(QskPushButton::Panel, {"#f7f7f7"});
+    upButton->setGraphic(upGraphic);
+    upButton->setGraphicSourceSize({10, 5.71});
+
+    QImage downImage( ":/images/down.png");
+    auto downGraphic = QskGraphic::fromImage( downImage );
+    downGraphic.setDefaultSize({10, 5.71});
+    auto* downButton = new QskPushButton(buttons);
+    downButton->setBoxShapeHint(QskPushButton::Panel, {0, 0, 30, 30});
+    downButton->setSizePolicy(QskSizePolicy::Fixed, QskSizePolicy::Expanding);
+    downButton->setFixedWidth(32);
+    downButton->setGradientHint(QskPushButton::Panel, {"#f7f7f7"});
+    downButton->setGraphic(downGraphic);
+    downButton->setGraphicSourceSize({10, 5.71});
+}

@@ -8,5 +8,8 @@
         <file>images/storage.png</file>
         <file>images/members.png</file>
         <file>images/logout.png</file>
+        <file>images/indoor-temperature.png</file>
+        <file>images/up.png</file>
+        <file>images/down.png</file>
     </qresource>
 </RCC>

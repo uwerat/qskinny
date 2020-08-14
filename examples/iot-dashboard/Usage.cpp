@@ -7,6 +7,7 @@ Usage::Usage(QQuickItem *parent)
     : QskLinearBox(Qt::Vertical, parent)
 {
     setMargins(17);
+
     auto* title = new QskTextLabel("Usage", this);
     title->setFontRole(DaytimeSkin::TitleFont);
 
