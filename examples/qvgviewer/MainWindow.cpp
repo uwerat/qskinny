@@ -54,7 +54,7 @@ class GraphicLabel : public QskGraphicLabel
         }
         else
         {
-            gradient.setColor( QskRgbValue::Wheat );
+            gradient.setColor( QskRgb::Wheat );
             setGraphicRole( Normal );
         }
 

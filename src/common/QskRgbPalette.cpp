@@ -22,7 +22,7 @@ namespace
       public:
         Palette( int index )
         {
-            using namespace QskRgbValue;
+            using namespace QskRgb;
 
             static constexpr QRgb table[][ Palette::NumWeights ] =
             {

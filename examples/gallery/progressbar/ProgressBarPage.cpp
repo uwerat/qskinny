@@ -45,7 +45,7 @@ namespace
 ProgressBarPage::ProgressBarPage( QQuickItem* parent )
     : Page( Qt::Horizontal, parent )
 {
-    setGradient( QskRgbValue::AliceBlue );
+    setGradient( QskRgb::AliceBlue );
     setSpacing( 40 );
 
     populate();

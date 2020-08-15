@@ -160,7 +160,7 @@ StackLayoutPage::StackLayoutPage( QQuickItem* parent )
     setObjectName( "StackLayoutPage" );
 
     setMargins( 10 );
-    setBackgroundColor( QskRgbValue::LightSteelBlue );
+    setBackgroundColor( QskRgb::LightSteelBlue );
 
     auto box = new StackBox();
 

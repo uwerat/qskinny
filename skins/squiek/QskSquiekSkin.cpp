@@ -46,7 +46,7 @@ namespace
     class ColorPalette
     {
       public:
-        ColorPalette( const QColor& themeColor = QskRgbValue::Silver )
+        ColorPalette( const QColor& themeColor = QskRgb::Silver )
         {
             const bool isBright = themeColor.value() > 128;
 
@@ -61,30 +61,32 @@ namespace
             darker150 = themeColor.darker( 150 );
             darker200 = themeColor.darker( 200 );
 
+            using namespace QskRgb;
+
             if ( isBright )
             {
-                themeForeground = QskRgbValue::Black;
+                themeForeground = Black;
 
-                contrasted = QskRgbValue::Gainsboro;
-                contrastedText = QskRgbValue::Black;
+                contrasted = Gainsboro;
+                contrastedText = Black;
 
-                highlighted = QskRgbValue::RoyalBlue;
-                highlightedText = QskRgbValue::White;
+                highlighted = RoyalBlue;
+                highlightedText = White;
 
-                base = QskRgbValue::White;
-                baseActive = QskRgbValue::Beige;
+                base = White;
+                baseActive = Beige;
             }
             else
             {
-                themeForeground = QskRgbValue::White;
+                themeForeground = White;
 
-                contrasted = QskRgbValue::DarkGrey;
-                contrastedText = QskRgbValue::White;
+                contrasted = DarkGrey;
+                contrastedText = White;
 
-                highlighted = QskRgbValue::BlueGrey500;
-                highlightedText = QskRgbValue::White;
+                highlighted = BlueGrey500;
+                highlightedText = White;
 
-                base = QskRgbValue::Black;
+                base = Black;
                 baseActive = base.lighter( 110 );
             }
         }

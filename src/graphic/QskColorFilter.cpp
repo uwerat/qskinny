@@ -16,14 +16,14 @@ static inline QRgb qskSubstitutedRgb(
     // usually we have 2-3 substitutions, so we can simply iterate
     // and don't need to introduce some sort of sorting or search index
 
-    const QRgb rgb = rgba | QskRgbValue::AlphaMask;
+    const QRgb rgb = rgba | QskRgb::AlphaMask;
 
     for ( const auto& s : substitions )
     {
         if ( rgb == s.first )
         {
-            return ( s.second & QskRgbValue::ColorMask ) |
-                ( rgba & QskRgbValue::AlphaMask );
+            return ( s.second & QskRgb::ColorMask ) |
+                ( rgba & QskRgb::AlphaMask );
         }
     }
 
@@ -105,7 +105,7 @@ static inline QskColorFilter qskInterpolatedFilter(
             }
         }
 
-        rgb = QskRgbValue::interpolated( rgb, pairTo.second, progress );
+        rgb = QskRgb::interpolated( rgb, pairTo.second, progress );
 
         if ( rgb != pairTo.first )
             interpolated.addColorSubstitution( pairTo.first, rgb );
@@ -132,7 +132,7 @@ static inline QskColorFilter qskInterpolatedFilter(
 
         if ( !hasRgb )
         {
-            const auto rgb = QskRgbValue::interpolated(
+            const auto rgb = QskRgb::interpolated(
                 pairFrom.second, pairFrom.first, progress );
 
             if ( rgb != pairFrom.first )

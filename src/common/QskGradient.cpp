@@ -68,7 +68,7 @@ static inline QColor qskInterpolated(
         return s1.color();
 
     const qreal ratio = ( pos - s1.position() ) / ( s2.position() - s1.position() );
-    return QskRgbValue::interpolated( s1.color(), s2.color(), ratio );
+    return QskRgb::interpolated( s1.color(), s2.color(), ratio );
 }
 
 static inline bool qskComparePositions(
@@ -216,7 +216,7 @@ QColor QskGradientStop::interpolated(
         return max->color();
 
     const qreal r = ( position - min->position() ) / ( max->position() - min->position() );
-    return QskRgbValue::interpolated( min->color(), max->color(), r );
+    return QskRgb::interpolated( min->color(), max->color(), r );
 }
 
 QskGradient::QskGradient()
@@ -507,7 +507,7 @@ QskGradient QskGradient::interpolated(
         QVector< QskGradientStop > s2 = to.m_stops;
         for ( int i = 0; i < s2.count(); i++ )
         {
-            const QColor c2 = QskRgbValue::interpolated(
+            const QColor c2 = QskRgb::interpolated(
                 c, s2[ i ].color(), value );
 
             s2[ i ].setColor( c2 );
@@ -525,7 +525,7 @@ QskGradient QskGradient::interpolated(
         QVector< QskGradientStop > s2 = m_stops;
         for ( int i = 0; i < s2.count(); i++ )
         {
-            const QColor c2 = QskRgbValue::interpolated(
+            const QColor c2 = QskRgb::interpolated(
                 s2[ i ].color(), c, value );
 
             s2[ i ].setColor( c2 );
@@ -546,7 +546,7 @@ QskGradient QskGradient::interpolated(
 
         for ( int i = 0; i < s1.count(); i++ )
         {
-            const QColor c2 = QskRgbValue::interpolated(
+            const QColor c2 = QskRgb::interpolated(
                 s1[ i ].color(), s2[ i ].color(), value );
 
             s2[ i ].setColor( c2 );
@@ -571,7 +571,7 @@ QskGradient QskGradient::interpolated(
 
             for ( int i = 0; i < s2.count(); i++ )
             {
-                const QColor c2 = QskRgbValue::interpolated(
+                const QColor c2 = QskRgb::interpolated(
                     s2[ i ].color(), c, 2 * value );
 
                 s2[ i ].setColor( c2 );
@@ -585,7 +585,7 @@ QskGradient QskGradient::interpolated(
 
             for ( int i = 0; i < s2.count(); i++ )
             {
-                const QColor c2 = QskRgbValue::interpolated(
+                const QColor c2 = QskRgb::interpolated(
                     c, s2[ i ].color(), 2 * ( value - 0.5 ) );
 
                 s2[ i ].setColor( c2 );

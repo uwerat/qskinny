@@ -17,7 +17,7 @@ OtherSlider::OtherSlider( QQuickItem* parentItem )
     : QskSlider( parentItem )
 {
     using namespace QskAspect;
-    using namespace QskRgbValue;
+    using namespace QskRgb;
 
     const qreal h = 30;
     const qreal w = 2.0 * h;

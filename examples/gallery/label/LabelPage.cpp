@@ -67,7 +67,7 @@ namespace
 LabelPage::LabelPage( QQuickItem* parent )
     : Page( Qt::Vertical, parent )
 {
-    setGradient( QskRgbValue::AliceBlue );
+    setGradient( QskRgb::AliceBlue );
     setSpacing( 40 );
 
     (void) new TextBox( this );

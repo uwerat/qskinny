@@ -78,7 +78,7 @@ static inline QColor qskInterpolatedColor(
     return c2;
 }
 
-QRgb QskRgbValue::interpolated( QRgb rgb1, QRgb rgb2, qreal ratio )
+QRgb QskRgb::interpolated( QRgb rgb1, QRgb rgb2, qreal ratio )
 {
     // interpolating in HSV usually provides better results !!
 
@@ -93,7 +93,7 @@ QRgb QskRgbValue::interpolated( QRgb rgb1, QRgb rgb2, qreal ratio )
     return qRgba( r, g, b, a );
 }
 
-QColor QskRgbValue::interpolated( const QColor& c1, const QColor& c2, qreal ratio )
+QColor QskRgb::interpolated( const QColor& c1, const QColor& c2, qreal ratio )
 {
     if ( c1 == c2 )
         return c2;
@@ -123,9 +123,9 @@ QColor QskRgbValue::interpolated( const QColor& c1, const QColor& c2, qreal rati
         return qskInterpolatedColor( c1.convertTo( c2.spec() ), c2, ratio );
 }
 
-QRgb QskRgbValue::rgb( Qt::GlobalColor color )
+QRgb QskRgb::rgb( Qt::GlobalColor color )
 {
-    using namespace QskRgbValue;
+    using namespace QskRgb;
 
     static constexpr QRgb rgbValues[] =
     {
@@ -154,7 +154,7 @@ QRgb QskRgbValue::rgb( Qt::GlobalColor color )
     return rgbValues[ color ];
 }
 
-QRgb QskRgbValue::lighter( QRgb rgb, int factor ) noexcept
+QRgb QskRgb::lighter( QRgb rgb, int factor ) noexcept
 {
     if ( factor <= 0 )
         return rgb;
@@ -163,7 +163,7 @@ QRgb QskRgbValue::lighter( QRgb rgb, int factor ) noexcept
     return QColor::fromRgba( rgb ).lighter( factor ).rgba();
 }
 
-QRgb QskRgbValue::darker( QRgb rgb, int factor ) noexcept
+QRgb QskRgb::darker( QRgb rgb, int factor ) noexcept
 {   
     if ( factor <= 0 )                                
         return rgb;

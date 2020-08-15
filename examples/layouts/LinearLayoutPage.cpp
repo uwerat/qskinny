@@ -82,7 +82,7 @@ LinearLayoutPage::LinearLayoutPage( QQuickItem* parent )
     : QskLinearBox( Qt::Vertical, parent )
 {
     setMargins( 10 );
-    setBackgroundColor( QskRgbValue::LightSteelBlue );
+    setBackgroundColor( QskRgb::LightSteelBlue );
 
     auto box = new Box();
 

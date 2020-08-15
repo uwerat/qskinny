@@ -19,9 +19,9 @@ QskTextColors QskTextColors::interpolated(
     const QskTextColors& to, qreal ratio ) const
 {
     QskTextColors colors;
-    colors.textColor = QskRgbValue::interpolated( textColor, to.textColor, ratio );
-    colors.styleColor = QskRgbValue::interpolated( styleColor, to.styleColor, ratio );
-    colors.linkColor = QskRgbValue::interpolated( linkColor, to.linkColor, ratio );
+    colors.textColor = QskRgb::interpolated( textColor, to.textColor, ratio );
+    colors.styleColor = QskRgb::interpolated( styleColor, to.styleColor, ratio );
+    colors.linkColor = QskRgb::interpolated( linkColor, to.linkColor, ratio );
 
     return colors;
 }

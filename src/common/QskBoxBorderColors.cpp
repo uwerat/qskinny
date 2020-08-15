@@ -166,7 +166,7 @@ QskBoxBorderColors QskBoxBorderColors::interpolated(
 
     for ( size_t i = 0; i < 4; i++ )
     {
-        colors.m_colors[ i ] = QskRgbValue::interpolated(
+        colors.m_colors[ i ] = QskRgb::interpolated(
             m_colors[ i ], to.m_colors[ i ], ratio );
     }
 

@@ -58,9 +58,9 @@ namespace
     class ColorPalette
     {
       public:
-        ColorPalette( const QColor base = QColor::fromRgba( QskRgbValue::Grey100 ),
-            const QColor& accent = QColor::fromRgba( QskRgbValue::Blue500 ),
-            const QColor& contrast = QColor::fromRgba( QskRgbValue::White ) )
+        ColorPalette( const QColor base = QColor::fromRgba( QskRgb::Grey100 ),
+            const QColor& accent = QColor::fromRgba( QskRgb::Blue500 ),
+            const QColor& contrast = QColor::fromRgba( QskRgb::White ) )
         {
             baseColor = base;
             accentColor = accent;
@@ -75,7 +75,7 @@ namespace
             lighter200 = baseColor.lighter( 200 );
 
             textColor = ( baseColor.value() > 128 )
-                ? QskRgbValue::Black : QskRgbValue::White;
+                ? QskRgb::Black : QskRgb::White;
         }
 
         QColor accentColor;
@@ -105,8 +105,8 @@ QskMaterialSkin::QskMaterialSkin( QObject* parent )
     : Inherited( parent )
     , m_data( new PrivateData() )
 {
-    m_data->palette = ColorPalette( QskRgbValue::Grey100,
-        QskRgbValue::Blue500, QskRgbValue::White );
+    m_data->palette = ColorPalette( QskRgb::Grey100,
+        QskRgb::Blue500, QskRgb::White );
 
     // Default theme colors
     setupFonts( "Roboto" );
@@ -239,7 +239,7 @@ void QskMaterialSkin::initTextInputHints()
 void QskMaterialSkin::initProgressBarHints()
 {
     using namespace QskAspect;
-    using namespace QskRgbValue;
+    using namespace QskRgb;
     using Q = QskProgressBar;
 
     const auto& pal = m_data->palette;
@@ -322,7 +322,7 @@ void QskMaterialSkin::initPageIndicatorHints()
 void QskMaterialSkin::initPushButtonHints()
 {
     using namespace QskAspect;
-    using namespace QskRgbValue;
+    using namespace QskRgb;
     using Q = QskPushButton;
 
     const auto& pal = m_data->palette;
@@ -383,7 +383,7 @@ void QskMaterialSkin::initPushButtonHints()
 void QskMaterialSkin::initDialogButtonHints()
 {
     using namespace QskAspect;
-    using namespace QskRgbValue;
+    using namespace QskRgb;
     using Q = QskDialogButton;
 
     const auto& pal = m_data->palette;
@@ -449,7 +449,7 @@ void QskMaterialSkin::initDialogButtonBoxHints()
 void QskMaterialSkin::initSliderHints()
 {
     using namespace QskAspect;
-    using namespace QskRgbValue;
+    using namespace QskRgb;
     using Q = QskSlider;
 
     const auto& pal = m_data->palette;
@@ -556,7 +556,7 @@ void QskMaterialSkin::initTabButtonHints()
                 edge = Qt::Edge( 0 ); // making gcc4 happy
         }
 
-        setGradient( aspect, QskRgbValue::White );
+        setGradient( aspect, QskRgb::White );
 
         // The highlighted button has a accented bar at one edge
         setBoxShape( aspect, 0 );
@@ -565,7 +565,7 @@ void QskMaterialSkin::initTabButtonHints()
         border.setWidthAt( edge, 3 );
         setBoxBorderMetrics( aspect, border );
 
-        QskBoxBorderColors borderColors( QskRgbValue::White );
+        QskBoxBorderColors borderColors( QskRgb::White );
         setBoxBorderColors( aspect, borderColors );
 
         borderColors.setColorsAt( edge, pal.accentColor );
@@ -581,7 +581,7 @@ void QskMaterialSkin::initTabButtonHints()
 
     setColor( Q::Text, pal.textColor );
     setColor( Q::Text | Q::Checkable | Q::Disabled, qskShadedColor( pal.textColor, 0.6 ) );
-    setColor( Q::Text | Q::Disabled, QskRgbValue::Grey600 );
+    setColor( Q::Text | Q::Disabled, QskRgb::Grey600 );
 }
 
 void QskMaterialSkin::initTabBarHints()
@@ -665,7 +665,7 @@ void QskMaterialSkin::initScrollViewHints()
 
     setBoxShape( Q::Viewport, 5 );
     setBoxBorderMetrics( Q::Viewport, 1 );
-    setGradient( Q::Viewport, QskRgbValue::White );
+    setGradient( Q::Viewport, QskRgb::White );
     setBoxBorderColors( Q::Viewport, Qt::black );
 
     for ( auto subControl : { Q::HorizontalScrollBar, Q::VerticalScrollBar } )
@@ -682,7 +682,7 @@ void QskMaterialSkin::initScrollViewHints()
         setBoxShape( subControl, 3 );
         setBoxBorderMetrics( subControl, 1 );
         setGradient( subControl, pal.accentColor );
-        setBoxBorderColors( subControl, QskRgbValue::White );
+        setBoxBorderColors( subControl, QskRgb::White );
 
         setAnimation( subControl | Color, qskDuration );
     }

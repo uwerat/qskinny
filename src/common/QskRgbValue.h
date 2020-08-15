@@ -435,7 +435,7 @@
     RGB( AlphaMask, 0xff000000 ) \
     RGB( ColorMask, 0x00ffffff )
 
-namespace QskRgbValue
+namespace QskRgb
 {
 #define RGB( name, value ) static constexpr const QRgb name = value;
     QSK_RGB_VALUES

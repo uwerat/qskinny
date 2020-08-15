@@ -90,7 +90,7 @@ static void addRectangles2( QskLinearBox* parent )
 
 static void addRectangles3( QskLinearBox* parent )
 {
-    using namespace QskRgbValue;
+    using namespace QskRgb;
 
     const auto borderTheme = QskRgbPalette::Grey;
     const auto fillTheme = QskRgbPalette::Blue;
@@ -141,7 +141,7 @@ static void addRectangles5( QskLinearBox* parent )
 
 static void addRectangles6( QskLinearBox* parent )
 {
-    using namespace QskRgbValue;
+    using namespace QskRgb;
 
     const auto borderTheme = QskRgbPalette::Grey;
     const auto fillTheme = QskRgbPalette::Lime;
@@ -192,7 +192,7 @@ static void addRectangles8( QskLinearBox* parent )
 
 static void addRectangles9( QskLinearBox* parent )
 {
-    using namespace QskRgbValue;
+    using namespace QskRgb;
 
     const auto borderTheme = QskRgbPalette::Grey;
     const auto fillTheme = QskRgbPalette::Lime;
@@ -350,7 +350,7 @@ static void addRectanglesRest( QskLinearBox* parent )
     box->setShape( 20, Qt::AbsoluteSize );
     box->setBorderWidth( 2, 10, 40, 2 );
     box->setBorderColor( "Crimson" );
-    box->setGradient( QskRgbValue::WhiteSmoke );
+    box->setGradient( QskRgb::WhiteSmoke );
 
     box = new Box( parent );
     box->setShape( 100, Qt::RelativeSize );

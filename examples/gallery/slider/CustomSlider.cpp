@@ -24,19 +24,19 @@ CustomSlider::CustomSlider( QQuickItem* parentItem )
 
 #if 0
     const QskGradient fillGradient( QskGradient::Horizontal,
-        QskRgbValue::Grey700, QskRgbValue::Grey500 );
+        QskRgb::Grey700, QskRgb::Grey500 );
 #else
-    const QskGradient fillGradient( QskRgbValue::Grey700 );
+    const QskGradient fillGradient( QskRgb::Grey700 );
 #endif
 
     setBoxShapeHint( Fill, 0 );
     setGradientHint( Fill, fillGradient );
     setColor( Scale, qRgb( 178, 178, 178 ) ); // for the ticks
 
-    setColor( QskSlider::Handle, QskRgbValue::Grey800 );
+    setColor( QskSlider::Handle, QskRgb::Grey800 );
 
     for ( auto state : { Pressed, Focused | Hovered, Hovered, Focused } )
-        setColor( QskSlider::Handle | Color | state, QskRgbValue::Orange600 );
+        setColor( QskSlider::Handle | Color | state, QskRgb::Orange600 );
 
     setAnimation( QskSlider::Handle | Color, 1000 );
     for ( auto state : { Focused | Hovered, Hovered, Focused } )

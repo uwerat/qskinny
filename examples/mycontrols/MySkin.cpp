@@ -161,7 +161,7 @@ class MySkin : public QskSkin
     void setGraphicFilter( int role, QRgb rgb )
     {
         QskColorFilter filter;
-        filter.addColorSubstitution( QskRgbValue::Khaki, rgb );
+        filter.addColorSubstitution( QskRgb::Khaki, rgb );
 
         QskSkin::setGraphicFilter( role, filter );
     }
@@ -176,10 +176,10 @@ class MySkin1 : public MySkin
   public:
     MySkin1()
     {
-        using namespace QskRgbValue;
+        using namespace QskRgb;
 
-        setGraphicFilter( GraphicRoleNormal, QskRgbValue::Crimson );
-        setGraphicFilter( GraphicRoleInverted, QskRgbValue::Gold );
+        setGraphicFilter( GraphicRoleNormal, Crimson );
+        setGraphicFilter( GraphicRoleInverted, Gold );
 
         initFocusIndicatorHints( 2, 3, 6, DarkBlue );
         initBoxHints( 2, 8, DarkCyan, LightCyan );
@@ -198,10 +198,10 @@ class MySkin2 : public MySkin
   public:
     MySkin2()
     {
-        using namespace QskRgbValue;
+        using namespace QskRgb;
 
-        setGraphicFilter( GraphicRoleNormal, QskRgbValue::HotPink );
-        setGraphicFilter( GraphicRoleInverted, QskRgbValue::White );
+        setGraphicFilter( GraphicRoleNormal, HotPink );
+        setGraphicFilter( GraphicRoleInverted, White );
 
         initFocusIndicatorHints( 2, 6, 6, Crimson );
         initBoxHints( 4, 30, LightPink, MistyRose );

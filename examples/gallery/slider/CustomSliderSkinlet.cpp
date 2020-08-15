@@ -301,7 +301,7 @@ QSGNode* CustomSliderSkinlet::updateDecorationNode(
         auto labelText = QString::number( slider->minimum() + slider->stepSize() * i, 'f', 0 );
 
         labelNode->setTextData( slider, labelText, QRectF( x, y, 0, 0 ),
-            qskLabelFont, QskTextOptions(), QskTextColors( QskRgbValue::Grey700 ),
+            qskLabelFont, QskTextOptions(), QskTextColors( QskRgb::Grey700 ),
             Qt::AlignHCenter, Qsk::Normal );
 
         labelNode = static_cast< decltype( labelNode ) >( labelNode->nextSibling() );

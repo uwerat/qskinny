@@ -15,7 +15,7 @@ Page::Page( Qt::Orientation orientation, QQuickItem* parent )
 
     setPanel( true );
     setBoxShapeHint( QskBox::Panel, 8 );
-    setGradient( QskRgbValue::GhostWhite );
+    setGradient( QskRgb::GhostWhite );
 
     setMargins( 5 );
     setPadding( 10 );

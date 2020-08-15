@@ -67,7 +67,7 @@ GridLayoutPage::GridLayoutPage( QQuickItem* parent )
     : QskControl( parent )
 {
     setMargins( 10 );
-    setBackgroundColor( QskRgbValue::LightSteelBlue );
+    setBackgroundColor( QskRgb::LightSteelBlue );
 
     setAutoLayoutChildren( true );
 
