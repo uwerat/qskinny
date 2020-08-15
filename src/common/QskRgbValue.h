@@ -437,7 +437,7 @@
 
 namespace QskRgbValue
 {
-#define RGB( name, value ) static constexpr const unsigned int name = value;
+#define RGB( name, value ) static constexpr const QRgb name = value;
     QSK_RGB_VALUES
 #undef RGB
 
@@ -460,6 +460,9 @@ namespace QskRgbValue
     {
         return ( rgb & ColorMask ) | ( ( static_cast< uint >( alpha ) & 0xffu ) << 24 );
     }
+
+    QSK_EXPORT QRgb lighter( QRgb, int factor = 150 ) noexcept;
+    QSK_EXPORT QRgb darker( QRgb, int factor = 200 ) noexcept;
 }
 
 #endif

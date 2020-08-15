@@ -153,3 +153,22 @@ QRgb QskRgbValue::rgb( Qt::GlobalColor color )
 
     return rgbValues[ color ];
 }
+
+QRgb QskRgbValue::lighter( QRgb rgb, int factor ) noexcept
+{
+    if ( factor <= 0 )
+        return rgb;
+
+    // guess we can find a faster implementation without using QColor TODO ...
+    return QColor::fromRgba( rgb ).lighter( factor ).rgba();
+}
+
+QRgb QskRgbValue::darker( QRgb rgb, int factor ) noexcept
+{   
+    if ( factor <= 0 )                                
+        return rgb;
+
+    // guess we can find a faster implementation without using QColor TODO ...
+    return QColor::fromRgba( rgb ).darker( factor ).rgba();
+}
+
