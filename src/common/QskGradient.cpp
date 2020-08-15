@@ -389,7 +389,7 @@ void QskGradient::setAlpha( int alpha )
 {
     for ( auto& stop : m_stops )
     {
-        QColor c = stop.color();
+        auto c = stop.color();
         if ( c.isValid() && c.alpha() )
         {
             c.setAlpha( alpha );
@@ -486,7 +486,7 @@ QskGradient QskGradient::interpolated(
             a transparent version of the valid gradient
          */
 
-        QVector< QskGradientStop > stops = gradient->m_stops;
+        auto stops = gradient->m_stops;
         for ( auto& stop : stops )
         {
             auto c = stop.color();
@@ -502,14 +502,12 @@ QskGradient QskGradient::interpolated(
     {
         // we can ignore our stops
 
-        const QColor c = m_stops[ 0 ].color();
+        const auto c = m_stops[ 0 ].color();
 
-        QVector< QskGradientStop > s2 = to.m_stops;
+        auto s2 = to.m_stops;
         for ( int i = 0; i < s2.count(); i++ )
         {
-            const QColor c2 = QskRgb::interpolated(
-                c, s2[ i ].color(), value );
-
+            const auto c2 = QskRgb::interpolated( c, s2[ i ].color(), value );
             s2[ i ].setColor( c2 );
         }
 
@@ -520,14 +518,12 @@ QskGradient QskGradient::interpolated(
     {
         // we can ignore the stops of to
 
-        const QColor c = to.m_stops[ 0 ].color();
+        const auto c = to.m_stops[ 0 ].color();
 
-        QVector< QskGradientStop > s2 = m_stops;
+        auto s2 = m_stops;
         for ( int i = 0; i < s2.count(); i++ )
         {
-            const QColor c2 = QskRgb::interpolated(
-                s2[ i ].color(), c, value );
-
+            const auto c2 = QskRgb::interpolated( s2[ i ].color(), c, value );
             s2[ i ].setColor( c2 );
         }
 
@@ -546,7 +542,7 @@ QskGradient QskGradient::interpolated(
 
         for ( int i = 0; i < s1.count(); i++ )
         {
-            const QColor c2 = QskRgb::interpolated(
+            const auto c2 = QskRgb::interpolated(
                 s1[ i ].color(), s2[ i ].color(), value );
 
             s2[ i ].setColor( c2 );
@@ -563,15 +559,15 @@ QskGradient QskGradient::interpolated(
             final gradient.
          */
 
-        const QColor c = m_stops[ 0 ].color();
+        const auto c = m_stops[ 0 ].color();
 
         if ( value <= 0.5 )
         {
-            QVector< QskGradientStop > s2 = m_stops;
+            auto s2 = m_stops;
 
             for ( int i = 0; i < s2.count(); i++ )
             {
-                const QColor c2 = QskRgb::interpolated(
+                const auto c2 = QskRgb::interpolated(
                     s2[ i ].color(), c, 2 * value );
 
                 s2[ i ].setColor( c2 );
@@ -581,11 +577,11 @@ QskGradient QskGradient::interpolated(
         }
         else
         {
-            QVector< QskGradientStop > s2 = to.m_stops;
+            auto s2 = to.m_stops;
 
             for ( int i = 0; i < s2.count(); i++ )
             {
-                const QColor c2 = QskRgb::interpolated(
+                const auto c2 = QskRgb::interpolated(
                     c, s2[ i ].color(), 2 * ( value - 0.5 ) );
 
                 s2[ i ].setColor( c2 );
