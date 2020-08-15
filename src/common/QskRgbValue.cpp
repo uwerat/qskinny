@@ -122,3 +122,34 @@ QColor QskRgbValue::interpolated( const QColor& c1, const QColor& c2, qreal rati
     else
         return qskInterpolatedColor( c1.convertTo( c2.spec() ), c2, ratio );
 }
+
+QRgb QskRgbValue::rgb( Qt::GlobalColor color )
+{
+    using namespace QskRgbValue;
+
+    static constexpr QRgb rgbValues[] =
+    {
+        White,   // Qt::color0
+        Black,   // Qt::color1
+        Black,   // Qt::black
+        White,   // Qt::white
+        Grey,    // Qt::darkGray
+        qRgb( 160, 160, 164 ), // Qt::gray
+        Silver,  // Qt::lightGray
+        Red,     // Qt::red
+        Lime,    // Qt::green
+        Blue,    // Qt::blue
+        Cyan,    // Qt::cyan
+        Magenta, // Qt::magenta
+        Yellow,  // Qt::yellow
+        Maroon,  // Qt::darkRed
+        Green,   // Qt::darkGreen
+        Navy,    // Qt::darkBlue
+        Teal,    // Qt::darkCyan
+        Purple,  // Qt::darkMagenta
+        Olive, // Qt::darkYellow
+        Transparent // Qt::transparent
+    };
+
+    return rgbValues[ color ];
+}

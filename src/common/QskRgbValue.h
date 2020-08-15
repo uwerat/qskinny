@@ -56,7 +56,7 @@
     RGB( Aquamarine, 0xff7fffd4 ) \
     RGB( Maroon, 0xff800000 ) \
     RGB( Purple, 0xff800080 ) \
-    RGB( Olive, 0xff808080 ) \
+    RGB( Olive, 0xff808000 ) \
     RGB( Grey, 0xff808080 ) \
     RGB( SkyBlue, 0xff87ceeb ) \
     RGB( LightSkyBlue, 0xff87cefa ) \
@@ -425,6 +425,7 @@
     RGB( BlueGrey800, 0xff37474f ) \
     RGB( BlueGrey900, 0xff263238 ) \
     \
+    RGB( Transparent, 0x00000000 ) \
     RGB( AlphaMask, 0xff000000 ) \
     RGB( ColorMask, 0x00ffffff )
 
@@ -434,6 +435,7 @@ namespace QskRgbValue
     QSK_RGB_VALUES
 #undef RGB
 
+    QSK_EXPORT QRgb rgb( Qt::GlobalColor );
     QSK_EXPORT QRgb interpolated( QRgb rgb1, QRgb rgb2, qreal ratio );
     QSK_EXPORT QColor interpolated( const QColor& c1, const QColor& c2, qreal ratio );
 
