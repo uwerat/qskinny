@@ -8,6 +8,7 @@ SOURCES += \
     IndoorTemperature.cpp \
     MainContent.cpp \
     MenuBar.cpp \
+    MyDevices.cpp \
     PieChart.cpp \
     PieChartPainted.cpp \
     PieChartSkinlet.cpp \
@@ -26,6 +27,7 @@ HEADERS += \
     MainContent.h \
     MainWindow.h \
     MenuBar.h \
+    MyDevices.h \
     PieChart.h \
     PieChartPainted.h \
     PieChartSkinlet.h \

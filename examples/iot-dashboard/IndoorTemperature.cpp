@@ -29,6 +29,7 @@ IndoorTemperature::IndoorTemperature(QQuickItem *parent)
     value->setTextColor("#929CB2");
 
     auto* buttons = new QskLinearBox(Qt::Vertical, this);
+    buttons->setSizePolicy(Qt::Horizontal, QskSizePolicy::Fixed);
     buttons->setSpacing(0);
 
     QImage upImage( ":/images/up.png");

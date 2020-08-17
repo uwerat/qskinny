@@ -12,5 +12,9 @@
         <file>images/humidity.png</file>
         <file>images/up.png</file>
         <file>images/down.png</file>
+        <file>images/lamps.png</file>
+        <file>images/music-system.png</file>
+        <file>images/ac.png</file>
+        <file>images/router.png</file>
     </qresource>
 </RCC>

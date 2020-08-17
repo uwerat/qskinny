@@ -3,6 +3,7 @@
 #include "Card.h"
 #include "Humidity.h"
 #include "IndoorTemperature.h"
+#include "MyDevices.h"
 #include "PieChart.h"
 #include "TopBar.h"
 #include "Usage.h"
@@ -38,6 +39,9 @@ MainContent::MainContent( QQuickItem *parent ) : QskLinearBox( Qt::Vertical, par
 
     auto* humidity = new Humidity(gridBox);
     gridBox->addItem(humidity, 1, 1);
+
+    auto* myDevices = new MyDevices(gridBox);
+    gridBox->addItem(myDevices, 0, 2, 2, 1);
 }
 
 void MainContent::addCard( const QString &title, QskControl *content, int column )
