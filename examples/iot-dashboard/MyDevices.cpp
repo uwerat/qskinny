@@ -2,8 +2,12 @@
 #include "DaytimeSkin.h"
 #include "RoundedIcon.h"
 
+#include <QskGraphic.h>
+#include <QskGraphicLabel.h>
 #include <QskGridBox.h>
 #include <QskTextLabel.h>
+
+#include <QImage>
 
 namespace {
     class Device : public QskLinearBox
@@ -13,16 +17,38 @@ namespace {
             : QskLinearBox(Qt::Vertical, parent)
             , m_name(name)
         {
-            auto fileName = name.toLower();
-            fileName.replace(' ', '-');
-            auto* icon = new RoundedIcon(fileName, gradient, this);
-            icon->setOpacity(0.15);
+            setAutoAddChildren(false);
+
+            m_icon = new RoundedIcon(QString(), gradient, this);
+            m_icon->setOpacity(0.15);
+            addItem(m_icon);
+
             auto* textLabel = new QskTextLabel(name, this);
             textLabel->setAlignment(Qt::AlignHCenter);
+            addItem(textLabel);
+
+            auto fileName = name.toLower();
+            fileName.replace(' ', '-');
+            fileName = ":/images/" + fileName + ".png";
+            QImage image( fileName );
+            auto graphic = QskGraphic::fromImage( image );
+            m_graphicLabel = new QskGraphicLabel( graphic, this );
+        }
+
+    protected:
+        void updateLayout() override
+        {
+            QskLinearBox::updateLayout();
+
+            m_graphicLabel->setSize( {36, 36});
+            m_graphicLabel->setPosition( { ( m_icon->width() - m_graphicLabel->width() ) / 2,
+                                           ( m_icon->height() - m_graphicLabel->height() ) / 2 } );
         }
 
     private:
         QString m_name;
+        RoundedIcon* m_icon;
+        QskGraphicLabel* m_graphicLabel;
     };
 }
 

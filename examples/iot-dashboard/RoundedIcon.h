@@ -19,7 +19,7 @@ protected:
 private:
     QString m_iconName;
     QskGradient m_gradient;
-    QskGraphicLabel* m_graphicLabel;
+    QskGraphicLabel* m_graphicLabel = nullptr;
 };
 
 #endif // ROUNDEDICON_H

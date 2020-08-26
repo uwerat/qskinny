@@ -17,13 +17,20 @@ RoundedIcon::RoundedIcon(const QString& iconName, const QskGradient& gradient, Q
     setBoxShapeHint(Panel, 6 );
 
     QString fileName = ":/images/" + iconName + ".png";
-    QImage image( fileName );
-    auto graphic = QskGraphic::fromImage( image );
-    m_graphicLabel = new QskGraphicLabel( graphic, this );
+
+    if(QFile::exists(fileName))
+    {
+        QImage image( fileName );
+        auto graphic = QskGraphic::fromImage( image );
+        m_graphicLabel = new QskGraphicLabel( graphic, this );
+    }
 }
 
 void RoundedIcon::updateLayout()
 {
-    m_graphicLabel->setSize( {36, 36});
-    m_graphicLabel->setPosition( { ( width() - m_graphicLabel->width() ) / 2, ( height() - m_graphicLabel->height() ) / 2 } );
+    if(m_graphicLabel)
+    {
+        m_graphicLabel->setSize( {36, 36});
+        m_graphicLabel->setPosition( { ( width() - m_graphicLabel->width() ) / 2, ( height() - m_graphicLabel->height() ) / 2 } );
+    }
 }
