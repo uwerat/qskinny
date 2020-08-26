@@ -4,6 +4,7 @@ SOURCES += \
     Card.cpp \
     CircularProgressBar.cpp \
     DaytimeSkin.cpp \
+    Diagram.cpp \
     Humidity.cpp \
     IndoorTemperature.cpp \
     MainContent.cpp \
@@ -22,6 +23,7 @@ HEADERS += \
     Card.h \
     CircularProgressBar.h \
     DaytimeSkin.h \
+    Diagram.h \
     Humidity.h \
     IndoorTemperature.h \
     MainContent.h \
