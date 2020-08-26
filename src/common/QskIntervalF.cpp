@@ -159,6 +159,26 @@ bool QskIntervalF::fuzzyContains( qreal value ) const
     return true;
 }
 
+bool QskIntervalF::fuzzyContains( const QskIntervalF& interval ) const
+{
+    if ( !isValid() || !interval.isValid() )
+        return false;
+
+    if ( ( interval.m_lowerBound < m_lowerBound )
+        && !qskFuzzyCompare( interval.m_lowerBound, m_lowerBound ) )
+    {
+        return false;
+    }
+
+    if ( ( interval.m_upperBound > m_upperBound )
+        && !qskFuzzyCompare( interval.m_upperBound, m_upperBound ) )
+    {
+        return false;
+    }
+
+    return true;
+}
+
 #ifndef QT_NO_DEBUG_STREAM
 
 #include <qdebug.h>

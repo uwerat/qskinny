@@ -39,7 +39,10 @@ class QSK_EXPORT QskIntervalF
     void setWidth( qreal ) noexcept;
 
     constexpr bool contains( qreal value ) const noexcept;
+    constexpr bool contains( const QskIntervalF& ) const noexcept;
+
     bool fuzzyContains( qreal value ) const;
+    bool fuzzyContains( const QskIntervalF& ) const;
 
     static constexpr QskIntervalF normalized( qreal value1, qreal value2 ) noexcept;
 
@@ -148,6 +151,12 @@ inline void QskIntervalF::invalidate() noexcept
 inline constexpr bool QskIntervalF::contains( qreal value ) const noexcept
 {
     return ( value >= m_lowerBound ) && ( value <= m_upperBound );
+}
+
+inline constexpr bool QskIntervalF::contains( const QskIntervalF& interval ) const noexcept
+{
+    return interval.isValid() && contains( interval.m_lowerBound )
+        && contains( interval.m_upperBound );
 }
 
 inline void QskIntervalF::translate( qreal offset ) noexcept
