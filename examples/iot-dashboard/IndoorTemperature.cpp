@@ -18,6 +18,8 @@ IndoorTemperature::IndoorTemperature(QQuickItem *parent)
 
     QskGradient gradient(QskGradient::Vertical, "#ff7d34", "#ff3122");
     auto* icon = new RoundedIcon("indoor-temperature", gradient, this);
+    icon->setMinimumWidth(68);
+    icon->setFixedSize(68, 68); // ### fix properly
 
     auto *titleAndValue = new QskLinearBox(Qt::Vertical, this);
 

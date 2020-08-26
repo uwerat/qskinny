@@ -18,6 +18,8 @@ Humidity::Humidity(QQuickItem *parent)
 
     QskGradient gradient(QskGradient::Vertical, "#6776FF", "#6100FF");
     auto* icon = new RoundedIcon("humidity", gradient, this);
+    icon->setMinimumWidth(68);
+    icon->setFixedSize(68, 68); // ### fix properly
 
     auto *titleAndValue = new QskLinearBox(Qt::Vertical, this);
 

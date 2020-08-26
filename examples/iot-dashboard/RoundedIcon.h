@@ -15,6 +15,7 @@ public:
 
 protected:
     void updateLayout() override;
+    virtual QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
 private:
     QString m_iconName;

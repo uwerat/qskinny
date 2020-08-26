@@ -21,6 +21,7 @@ namespace {
 
             m_icon = new RoundedIcon(QString(), gradient, this);
             m_icon->setOpacity(0.15);
+            m_icon->setPreferredWidth(60);
             addItem(m_icon);
 
             auto* textLabel = new QskTextLabel(name, this);

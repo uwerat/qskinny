@@ -16,6 +16,8 @@ RoundedIcon::RoundedIcon(const QString& iconName, const QskGradient& gradient, Q
     setGradientHint(Panel, gradient);
     setBoxShapeHint(Panel, 6 );
 
+    setSizePolicy(QskSizePolicy::Minimum, QskSizePolicy::Constrained);
+
     QString fileName = ":/images/" + iconName + ".png";
 
     if(QFile::exists(fileName))
@@ -33,4 +35,12 @@ void RoundedIcon::updateLayout()
         m_graphicLabel->setSize( {36, 36});
         m_graphicLabel->setPosition( { ( width() - m_graphicLabel->width() ) / 2, ( height() - m_graphicLabel->height() ) / 2 } );
     }
+}
+
+QSizeF RoundedIcon::contentsSizeHint( Qt::SizeHint /*which*/, const QSizeF& size ) const
+{
+    QSizeF ret = size;
+    ret.setHeight( size.width() );
+
+    return ret;
 }
