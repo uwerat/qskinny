@@ -738,7 +738,10 @@ bool QskControl::event( QEvent* event )
         case QEvent::LayoutRequest:
         {
             if ( d_func()->autoLayoutChildren )
+            {
                 resetImplicitSize();
+                polish();
+            }
 
             break;
         }
