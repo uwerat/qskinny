@@ -193,8 +193,7 @@ namespace
 
             translateButtonBox();
 
-            setClip( size().width() < boxSize.width()
-                || size().height() < boxSize.height() );
+            setClip( width() < boxSize.width() || height() < boxSize.height() );
         }
 
         QSizeF layoutSizeHint( Qt::SizeHint which, const QSizeF& constraint ) const override
