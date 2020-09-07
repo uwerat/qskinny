@@ -22,7 +22,7 @@ namespace
                 box->setGradientHint( QskBox::Panel, color );
 
                 auto* textLabel = new QskTextLabel( text, this );
-                textLabel->setFontRole( QskSkin::SmallFont );
+                textLabel->setFontRole( QskSkin::TinyFont );
 
                 qreal h = textLabel->preferredSize().height();
                 box->setPreferredSize( h, h );
