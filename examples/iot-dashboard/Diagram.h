@@ -1,32 +1,33 @@
 #ifndef DIAGRAM_H
 #define DIAGRAM_H
 
-#include <QskControl.h>
+#include <QskLinearBox.h>
 
 #include <QQuickPaintedItem>
 
 class DiagramContent;
 
-class Diagram : public QskControl
+class Diagram : public QskLinearBox
 {
-    Q_OBJECT
+        Q_OBJECT
 
-public:
-    Diagram( QQuickItem* parent );
-    void updateLayout() override;
+    public:
+        Diagram( QQuickItem* parent );
+        void updateLayout() override;
 
-private:
-    DiagramContent* m_content;
+    private:
+        QskLinearBox* m_caption;
+        DiagramContent* m_content;
 };
 
 class DiagramContent : public QQuickPaintedItem
 {
-    Q_OBJECT
+        Q_OBJECT
 
-public:
-    DiagramContent( QQuickItem* parent);
+    public:
+        DiagramContent( QQuickItem* parent );
 
-    virtual void paint(QPainter *painter) override;
+        virtual void paint( QPainter* painter ) override;
 
 };
 

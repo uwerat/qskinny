@@ -1,11 +1,36 @@
 #include "Diagram.h"
 
+#include <QskBoxShapeMetrics.h>
+#include <QskSkin.h>
+#include <QskTextLabel.h>
+
 #include <QPainter>
 
 #include <cmath>
 
 namespace
 {
+    class CaptionItem : public QskLinearBox
+    {
+            Q_OBJECT
+        public:
+            CaptionItem( const QColor& color, const QString& text, QQuickItem* parent )
+                : QskLinearBox( Qt::Horizontal, parent )
+            {
+                setSpacing( 10 );
+                auto* box = new QskBox( true, this );
+                box->setGradientHint( QskBox::Panel, color );
+
+                auto* textLabel = new QskTextLabel( text, this );
+                textLabel->setFontRole( QskSkin::SmallFont );
+
+                qreal h = textLabel->preferredSize().height();
+                box->setPreferredSize( h, h );
+                box->setBoxShapeHint( QskBox::Panel, h / 2 );
+            }
+    };
+
+
     float distance( const QPointF& pt1, const QPointF& pt2 )
     {
         float hd = ( pt1.x() - pt2.x() ) * ( pt1.x() - pt2.x() );
@@ -82,15 +107,29 @@ namespace
 static constexpr int segments = 7;
 
 Diagram::Diagram( QQuickItem* parent )
-    : QskControl( parent )
+    : QskLinearBox( Qt::Vertical, parent )
     , m_content( new DiagramContent( this ) )
 {
+    setAutoAddChildren( false );
     setAutoLayoutChildren( true );
+
+    m_caption = new QskLinearBox( Qt::Horizontal, this );
+    addItem( m_caption, Qt::AlignRight );
+    m_caption->setSizePolicy( QskSizePolicy::Maximum, QskSizePolicy::Maximum );
+    m_caption->setSpacing( 30 );
+    m_caption->addItem( new CaptionItem( "#6776ff", "Water", this ) );
+    m_caption->addItem( new CaptionItem( "#ff3122", "Electricity", this ) );
+    m_caption->addItem( new CaptionItem( "#ff7d34", "Gas", this ) );
+
+    addItem( m_content );
 }
 
 void Diagram::updateLayout()
 {
-    m_content->setContentsSize( size().toSize() );
+    qreal w = size().width();
+    qreal h = size().height() - ( m_caption->size().height() );
+    m_content->setSize( { w, h } );
+    m_content->setPosition( { 0, m_caption->size().height() } );
     m_content->update();
 }
 
@@ -146,3 +185,5 @@ void DiagramContent::paint( QPainter* painter )
         painter->drawPath( smoothPath );
     }
 }
+
+#include "Diagram.moc"
