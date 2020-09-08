@@ -9,71 +9,74 @@
 
 #include <QImage>
 
-namespace {
+namespace
+{
     class Device : public QskLinearBox
     {
-    public:
-        Device(const QString& name, const QskGradient& gradient, QQuickItem* parent)
-            : QskLinearBox(Qt::Vertical, parent)
-            , m_name(name)
-        {
-            setAutoAddChildren(false);
+        public:
+            Device( const QString& name, const QskGradient& gradient, QQuickItem* parent )
+                : QskLinearBox( Qt::Vertical, parent )
+                , m_name( name )
+            {
+                setDefaultAlignment( Qt::AlignCenter );
+                setAutoAddChildren( false );
 
-            m_icon = new RoundedIcon(QString(), gradient, this);
-            m_icon->setOpacity(0.15);
-            m_icon->setPreferredWidth(60);
-            addItem(m_icon);
+                m_icon = new RoundedIcon( QString(), gradient, this );
+                m_icon->setOpacity( 0.15 );
+                m_icon->setFixedWidth( 60 );
+                addItem( m_icon );
 
-            auto* textLabel = new QskTextLabel(name, this);
-            textLabel->setAlignment(Qt::AlignHCenter);
-            addItem(textLabel);
+                auto* textLabel = new QskTextLabel( name, this );
+                textLabel->setFontRole( QskSkin::TinyFont );
+                textLabel->setAlignment( Qt::AlignHCenter );
+                addItem( textLabel );
 
-            auto fileName = name.toLower();
-            fileName.replace(' ', '-');
-            fileName = ":/images/" + fileName + ".png";
-            QImage image( fileName );
-            auto graphic = QskGraphic::fromImage( image );
-            m_graphicLabel = new QskGraphicLabel( graphic, this );
-        }
+                auto fileName = name.toLower();
+                fileName.replace( ' ', '-' );
+                fileName = ":/images/" + fileName + ".png";
+                QImage image( fileName );
+                auto graphic = QskGraphic::fromImage( image );
+                m_graphicLabel = new QskGraphicLabel( graphic, this );
+            }
 
-    protected:
-        void updateLayout() override
-        {
-            QskLinearBox::updateLayout();
+        protected:
+            void updateLayout() override
+            {
+                QskLinearBox::updateLayout();
 
-            m_graphicLabel->setSize( {36, 36});
-            m_graphicLabel->setPosition( { ( m_icon->width() - m_graphicLabel->width() ) / 2,
-                                           ( m_icon->height() - m_graphicLabel->height() ) / 2 } );
-        }
+                m_graphicLabel->setSize( {36, 36} );
+                m_graphicLabel->setPosition( { m_icon->position().x() + ( m_icon->width() - m_graphicLabel->width() ) / 2,
+                                               ( m_icon->position().y() + m_icon->height() - m_graphicLabel->height() ) / 2 } );
+            }
 
-    private:
-        QString m_name;
-        RoundedIcon* m_icon;
-        QskGraphicLabel* m_graphicLabel;
+        private:
+            QString m_name;
+            RoundedIcon* m_icon;
+            QskGraphicLabel* m_graphicLabel;
     };
 }
 
-MyDevices::MyDevices(QQuickItem *parent) : QskLinearBox(Qt::Vertical, parent)
+MyDevices::MyDevices( QQuickItem* parent ) : QskLinearBox( Qt::Vertical, parent )
 {
-    setMargins(17);
+    setMargins( 17 );
 
-    auto* title = new QskTextLabel("My Devices", this);
-    title->setFontRole(DaytimeSkin::TitleFont);
+    auto* title = new QskTextLabel( "My Devices", this );
+    title->setFontRole( DaytimeSkin::TitleFont );
 
-    auto* content = new QskGridBox(this);
+    auto* content = new QskGridBox( this );
 
-    QskGradient gradient1(QskGradient::Vertical, "#FF3122", "#FF7D34");
-    QskGradient gradient2(QskGradient::Vertical, "#6100FF", "#6776FF");
+    QskGradient gradient1( QskGradient::Vertical, "#FF3122", "#FF7D34" );
+    QskGradient gradient2( QskGradient::Vertical, "#6100FF", "#6776FF" );
 
-    auto* lamps = new Device("Lamps", gradient1, content);
-    content->addItem(lamps, 0, 0);
+    auto* lamps = new Device( "Lamps", gradient1, content );
+    content->addItem( lamps, 0, 0 );
 
-    auto* musicSystem = new Device("Music System", gradient2, content);
-    content->addItem(musicSystem, 0, 1);
+    auto* musicSystem = new Device( "Music System", gradient2, content );
+    content->addItem( musicSystem, 0, 1 );
 
-    auto* ac = new Device("AC", gradient1, content);
-    content->addItem(ac, 1, 0);
+    auto* ac = new Device( "AC", gradient2, content );
+    content->addItem( ac, 1, 0 );
 
-    auto* router = new Device("Router", gradient2, content);
-    content->addItem(router, 1, 1);
+    auto* router = new Device( "Router", gradient1, content );
+    content->addItem( router, 1, 1 );
 }
