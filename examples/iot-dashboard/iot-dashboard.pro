@@ -7,6 +7,7 @@ SOURCES += \
     Diagram.cpp \
     Humidity.cpp \
     IndoorTemperature.cpp \
+    LightIntensity.cpp \
     MainContent.cpp \
     MenuBar.cpp \
     MyDevices.cpp \
@@ -26,6 +27,7 @@ HEADERS += \
     Diagram.h \
     Humidity.h \
     IndoorTemperature.h \
+    LightIntensity.h \
     MainContent.h \
     MainWindow.h \
     MenuBar.h \

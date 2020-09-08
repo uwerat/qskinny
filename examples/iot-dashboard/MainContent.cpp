@@ -4,6 +4,7 @@
 #include "Diagram.h"
 #include "Humidity.h"
 #include "IndoorTemperature.h"
+#include "LightIntensity.h"
 #include "MyDevices.h"
 #include "PieChart.h"
 #include "TopBar.h"
@@ -21,7 +22,7 @@ MainContent::MainContent( QQuickItem* parent ) : QskLinearBox( Qt::Vertical, par
     setDefaultAlignment( Qt::AlignTop );
     setSpacing( 30 );
 
-    auto* topBar = new TopBar( this );
+    new TopBar( this );
 
     auto* gridBox = new QskGridBox( this );
     gridBox->setMargins( {15, 0, 15, 20} );
@@ -46,6 +47,9 @@ MainContent::MainContent( QQuickItem* parent ) : QskLinearBox( Qt::Vertical, par
 
     auto* diagram = new Diagram( gridBox );
     gridBox->addItem( diagram, 2, 0, 0, 2 );
+
+    auto* lightIntensity = new LightIntensity( gridBox );
+    gridBox->addItem( lightIntensity, 2, 2 );
 }
 
 void MainContent::addCard( const QString& title, QskControl* content, int column )
