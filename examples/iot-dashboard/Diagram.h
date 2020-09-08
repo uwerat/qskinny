@@ -6,6 +6,7 @@
 #include <QQuickPaintedItem>
 
 class DiagramContent;
+class QskGridBox;
 
 class Diagram : public QskLinearBox
 {
@@ -17,7 +18,7 @@ class Diagram : public QskLinearBox
 
     private:
         QskLinearBox* m_caption;
-        QskLinearBox* m_weekdays;
+        QskGridBox* m_weekdays;
         DiagramContent* m_content;
 };
 

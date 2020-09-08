@@ -1,6 +1,9 @@
 #include "Diagram.h"
 
+#include <QskBoxBorderColors.h>
+#include <QskBoxBorderMetrics.h>
 #include <QskBoxShapeMetrics.h>
+#include <QskGridBox.h>
 #include <QskSkin.h>
 #include <QskTextLabel.h>
 
@@ -107,22 +110,27 @@ static constexpr int segments = 7;
 
 Diagram::Diagram( QQuickItem* parent )
     : QskLinearBox( Qt::Vertical, parent )
-    , m_weekdays( new QskLinearBox( Qt::Horizontal, this ) )
+    , m_weekdays( new QskGridBox( this ) )
     , m_content( new DiagramContent( this ) )
 {
     setAutoAddChildren( false );
     setAutoLayoutChildren( true );
 
     m_weekdays->setDefaultAlignment( Qt::AlignCenter );
-    m_weekdays->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
-    m_weekdays->setMargins( {0, 5, 0, 10} );
+    m_weekdays->setSpacing( 0 );
     QStringList weekdays = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
 
-    for( const QString weekday : weekdays )
+    for( int i = 0; i < segments; ++i )
     {
-        auto* label = new QskTextLabel( weekday, m_weekdays );
+        auto* box = new QskBox( true, m_weekdays );
+        box->setBoxBorderColorsHint( QskBox::Panel, {"#f4f4f4"} );
+        box->setBoxBorderMetricsHint( QskBox::Panel, {0, 0, 3, 3} );
+        m_weekdays->addItem( box, 0, i );
+        auto* label = new QskTextLabel( weekdays.at( i ), m_weekdays );
         label->setFontRole( QskSkin::TinyFont );
+        label->setMargins( {0, 5, 0, 10} );
         label->setAlignment( Qt::AlignCenter );
+        m_weekdays->addItem( label, 1, i );
     }
 
     addItem( m_weekdays, Qt::AlignBottom );
@@ -130,6 +138,7 @@ Diagram::Diagram( QQuickItem* parent )
     m_caption = new QskLinearBox( Qt::Horizontal, this );
     addItem( m_caption, Qt::AlignRight );
     m_caption->setSizePolicy( QskSizePolicy::Maximum, QskSizePolicy::Maximum );
+    m_caption->setMargins( {10, 0, 10, 0} );
     m_caption->setSpacing( 30 );
     m_caption->addItem( new CaptionItem( "#6776ff", "Water", this ) );
     m_caption->addItem( new CaptionItem( "#ff3122", "Electricity", this ) );
@@ -140,8 +149,9 @@ Diagram::Diagram( QQuickItem* parent )
 
 void Diagram::updateLayout()
 {
+    auto* firstWeekday = static_cast<QskControl*>( m_weekdays->itemAt( 1, 0 ) );
     qreal w = size().width();
-    qreal h = size().height() - ( m_caption->size().height() + m_weekdays->size().height() );
+    qreal h = size().height() - ( m_caption->size().height() + firstWeekday->size().height() );
 
     m_content->setSize( { w, h } );
     m_content->setPosition( { 0, m_caption->size().height() } );
