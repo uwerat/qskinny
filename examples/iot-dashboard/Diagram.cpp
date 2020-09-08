@@ -107,10 +107,25 @@ static constexpr int segments = 7;
 
 Diagram::Diagram( QQuickItem* parent )
     : QskLinearBox( Qt::Vertical, parent )
+    , m_weekdays( new QskLinearBox( Qt::Horizontal, this ) )
     , m_content( new DiagramContent( this ) )
 {
     setAutoAddChildren( false );
     setAutoLayoutChildren( true );
+
+    m_weekdays->setDefaultAlignment( Qt::AlignCenter );
+    m_weekdays->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
+    m_weekdays->setMargins( {0, 5, 0, 10} );
+    QStringList weekdays = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+
+    for( const QString weekday : weekdays )
+    {
+        auto* label = new QskTextLabel( weekday, m_weekdays );
+        label->setFontRole( QskSkin::TinyFont );
+        label->setAlignment( Qt::AlignCenter );
+    }
+
+    addItem( m_weekdays, Qt::AlignBottom );
 
     m_caption = new QskLinearBox( Qt::Horizontal, this );
     addItem( m_caption, Qt::AlignRight );
@@ -126,7 +141,8 @@ Diagram::Diagram( QQuickItem* parent )
 void Diagram::updateLayout()
 {
     qreal w = size().width();
-    qreal h = size().height() - ( m_caption->size().height() );
+    qreal h = size().height() - ( m_caption->size().height() + m_weekdays->size().height() );
+
     m_content->setSize( { w, h } );
     m_content->setPosition( { 0, m_caption->size().height() } );
     m_content->update();

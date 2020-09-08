@@ -17,6 +17,7 @@ class Diagram : public QskLinearBox
 
     private:
         QskLinearBox* m_caption;
+        QskLinearBox* m_weekdays;
         DiagramContent* m_content;
 };
 
