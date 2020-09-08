@@ -24,9 +24,8 @@ namespace
                 auto* textLabel = new QskTextLabel( text, this );
                 textLabel->setFontRole( QskSkin::TinyFont );
 
-                qreal h = textLabel->preferredSize().height();
-                box->setPreferredSize( h, h );
-                box->setBoxShapeHint( QskBox::Panel, h / 2 );
+                box->setFixedSize( 8, 8 );
+                box->setBoxShapeHint( QskBox::Panel, 4 );
             }
     };
 
