@@ -29,9 +29,9 @@ MainContent::MainContent( QQuickItem* parent ) : QskLinearBox( Qt::Vertical, par
     gridBox->setPanel( true );
     gridBox->setBoxShapeHint( QskBox::Panel, 6 );
     gridBox->setBoxBorderMetricsHint( QskBox::Panel, 2 );
-    QskBoxBorderColors borderColors( "#dddddd" );
-    borderColors.setAlpha( 100 );
-    gridBox->setBoxBorderColorsHint( QskBox::Panel, borderColors );
+//    QskBoxBorderColors borderColors( "#dddddd" );
+//    borderColors.setAlpha( 100 );
+//    gridBox->setBoxBorderColorsHint( QskBox::Panel, borderColors );
 
     auto* usage = new Usage( gridBox );
     gridBox->addItem( usage, 0, 0, 2, 1 );
@@ -50,9 +50,4 @@ MainContent::MainContent( QQuickItem* parent ) : QskLinearBox( Qt::Vertical, par
 
     auto* lightIntensity = new LightIntensity( gridBox );
     gridBox->addItem( lightIntensity, 2, 2 );
-}
-
-void MainContent::addCard( const QString& title, QskControl* content, int column )
-{
-    new Card( title, content, m_columns.at( column ) );
 }
