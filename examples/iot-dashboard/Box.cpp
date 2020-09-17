@@ -1,4 +1,4 @@
-#include "Card.h"
+#include "Box.h"
 #include "DaytimeSkin.h"
 
 #include <QskBoxBorderColors.h>
@@ -6,7 +6,7 @@
 #include <QskBoxShapeMetrics.h>
 #include <QskTextLabel.h>
 
-Card::Card( const QString& title, QQuickItem* parent )
+Box::Box( const QString& title, QQuickItem* parent )
     : QskLinearBox( Qt::Vertical, parent )
     , m_title( title )
     , m_label( new QskTextLabel( m_title, this ) )

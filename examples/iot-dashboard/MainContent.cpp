@@ -1,6 +1,6 @@
 #include "MainContent.h"
 
-#include "Card.h"
+#include "Box.h"
 #include "Diagram.h"
 #include "Humidity.h"
 #include "IndoorTemperature.h"

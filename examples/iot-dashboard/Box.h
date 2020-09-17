@@ -5,10 +5,10 @@
 
 class QskTextLabel;
 
-class Card : public QskLinearBox
+class Box : public QskLinearBox
 {
     public:
-        Card( const QString& title, QQuickItem* parent );
+        Box( const QString& title, QQuickItem* parent );
 
     private:
         QString m_title;

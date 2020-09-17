@@ -1,7 +1,7 @@
 CONFIG += qskexample
 
 SOURCES += \
-    Card.cpp \
+    Box.cpp \
     CircularProgressBar.cpp \
     DaytimeSkin.cpp \
     Diagram.cpp \
@@ -21,7 +21,7 @@ SOURCES += \
     MainWindow.cpp
 
 HEADERS += \
-    Card.h \
+    Box.h \
     CircularProgressBar.h \
     DaytimeSkin.h \
     Diagram.h \

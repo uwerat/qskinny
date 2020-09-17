@@ -1,10 +1,10 @@
 #ifndef USAGE_H
 #define USAGE_H
 
-#include "Card.h"
+#include "Box.h"
 #include <QskLinearBox.h>
 
-class Usage : public Card
+class Usage : public Box
 {
     public:
         Usage( QQuickItem* parent );

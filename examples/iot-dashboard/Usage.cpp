@@ -4,7 +4,7 @@
 #include <QskTextLabel.h>
 
 Usage::Usage( QQuickItem* parent )
-    : Card( "Usage", parent )
+    : Box( "Usage", parent )
 {
     auto* content = new QskLinearBox( Qt::Vertical, this );
 
