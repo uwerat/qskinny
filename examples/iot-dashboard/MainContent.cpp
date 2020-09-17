@@ -21,6 +21,7 @@ MainContent::MainContent( QQuickItem* parent ) : QskLinearBox( Qt::Vertical, par
     setSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
     setDefaultAlignment( Qt::AlignTop );
     setSpacing( 30 );
+    setBackgroundColor( "#FBFBFB" );
 
     new TopBar( this );
 
@@ -29,9 +30,6 @@ MainContent::MainContent( QQuickItem* parent ) : QskLinearBox( Qt::Vertical, par
     gridBox->setPanel( true );
     gridBox->setBoxShapeHint( QskBox::Panel, 6 );
     gridBox->setBoxBorderMetricsHint( QskBox::Panel, 2 );
-//    QskBoxBorderColors borderColors( "#dddddd" );
-//    borderColors.setAlpha( 100 );
-//    gridBox->setBoxBorderColorsHint( QskBox::Panel, borderColors );
 
     auto* usage = new Usage( gridBox );
     gridBox->addItem( usage, 0, 0, 2, 1 );

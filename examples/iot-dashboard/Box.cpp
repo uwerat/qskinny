@@ -13,6 +13,7 @@ Box::Box( const QString& title, QQuickItem* parent )
 {
     setAutoAddChildren( true );
     setAutoLayoutChildren( true );
+    setBackgroundColor( Qt::white );
 
     setMarginsHint( Panel | QskAspect::Padding, 15 );
     setPanel( true );
