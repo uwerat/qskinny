@@ -1,7 +1,7 @@
 #ifndef LIGHTINTENSITY_H
 #define LIGHTINTENSITY_H
 
-#include <QskLinearBox.h>
+#include "Box.h"
 
 #include <QQuickPaintedItem>
 
@@ -47,7 +47,7 @@ class LightDisplay : public QskControl
         LightDimmer* m_dimmer;
 };
 
-class LightIntensity : public QskLinearBox
+class LightIntensity : public Box
 {
         Q_OBJECT
 

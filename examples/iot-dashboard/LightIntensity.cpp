@@ -97,12 +97,7 @@ void LightDisplay::updateLayout()
 }
 
 LightIntensity::LightIntensity( QQuickItem* parent )
-    : QskLinearBox( Qt::Vertical, parent )
+    : Box( "Light intensity", parent )
 {
-    setMargins( 17 );
-
-    auto* title = new QskTextLabel( "Light Intensity", this );
-    title->setFontRole( DaytimeSkin::TitleFont );
-
     new LightDisplay( this );
 }

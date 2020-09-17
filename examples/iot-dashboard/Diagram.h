@@ -1,14 +1,14 @@
 #ifndef DIAGRAM_H
 #define DIAGRAM_H
 
-#include <QskLinearBox.h>
+#include "Box.h"
 
 #include <QQuickPaintedItem>
 
 class DiagramContent;
 class QskGridBox;
 
-class Diagram : public QskLinearBox
+class Diagram : public Box
 {
         Q_OBJECT
 

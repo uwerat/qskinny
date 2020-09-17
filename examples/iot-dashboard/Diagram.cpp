@@ -109,10 +109,12 @@ namespace
 static constexpr int segments = 7;
 
 Diagram::Diagram( QQuickItem* parent )
-    : QskLinearBox( Qt::Vertical, parent )
+    : Box( "", parent )
     , m_weekdays( new QskGridBox( this ) )
     , m_content( new DiagramContent( this ) )
 {
+    setMarginsHint( Panel | QskAspect::Padding, 0 );
+
     setAutoAddChildren( false );
     setAutoLayoutChildren( true );
 
@@ -138,7 +140,7 @@ Diagram::Diagram( QQuickItem* parent )
     m_caption = new QskLinearBox( Qt::Horizontal, this );
     addItem( m_caption, Qt::AlignRight );
     m_caption->setSizePolicy( QskSizePolicy::Maximum, QskSizePolicy::Maximum );
-    m_caption->setMargins( {10, 0, 10, 0} );
+    m_caption->setMargins( {10, 10, 20, 0} );
     m_caption->setSpacing( 30 );
     m_caption->addItem( new CaptionItem( "#6776ff", "Water", this ) );
     m_caption->addItem( new CaptionItem( "#ff3122", "Electricity", this ) );

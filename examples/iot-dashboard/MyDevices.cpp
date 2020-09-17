@@ -56,13 +56,9 @@ namespace
     };
 }
 
-MyDevices::MyDevices( QQuickItem* parent ) : QskLinearBox( Qt::Vertical, parent )
+MyDevices::MyDevices( QQuickItem* parent )
+    : Box( "My devices", parent )
 {
-    setMargins( 17 );
-
-    auto* title = new QskTextLabel( "My Devices", this );
-    title->setFontRole( DaytimeSkin::TitleFont );
-
     auto* content = new QskGridBox( this );
 
     QskGradient gradient1( QskGradient::Vertical, "#FF3122", "#FF7D34" );
