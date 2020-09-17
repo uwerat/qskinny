@@ -1,12 +1,12 @@
 #ifndef HUMIDITY_H
 #define HUMIDITY_H
 
-#include <QskLinearBox.h>
+#include "Box.h"
 
-class Humidity : public QskLinearBox
+class Humidity : public Box
 {
-public:
-    Humidity( QQuickItem* parent );
+    public:
+        Humidity( QQuickItem* parent );
 };
 
 #endif // HUMIDITY_H
