@@ -10,49 +10,51 @@
 
 #include <QImage>
 
-IndoorTemperature::IndoorTemperature(QQuickItem *parent)
-    : QskLinearBox(Qt::Horizontal, parent)
+IndoorTemperature::IndoorTemperature( QQuickItem* parent )
+    : Box( "", parent )
 {
-    setMargins(17);
-    setSpacing(20);
+    setMarginsHint( Panel | QskAspect::Padding, 10 );
 
-    QskGradient gradient(QskGradient::Vertical, "#ff7d34", "#ff3122");
-    auto* icon = new RoundedIcon("indoor-temperature", gradient, this);
-    icon->setMinimumWidth(68);
-    icon->setFixedSize(68, 68); // ### fix properly
+    auto* layout = new QskLinearBox( Qt::Horizontal, this );
+    layout->setSpacing( 20 );
 
-    auto *titleAndValue = new QskLinearBox(Qt::Vertical, this);
+    QskGradient gradient( QskGradient::Vertical, "#ff7d34", "#ff3122" );
+    auto* icon = new RoundedIcon( "indoor-temperature", gradient, layout );
+    icon->setMinimumWidth( 68 );
+    icon->setFixedSize( 68, 68 ); // ### fix properly
 
-    auto* title = new QskTextLabel("Indoor Temperature", titleAndValue);
-    title->setFontRole(DaytimeSkin::TitleFont);
+    auto* titleAndValue = new QskLinearBox( Qt::Vertical, layout );
 
-    auto* value = new QskTextLabel("+24", titleAndValue);
-    value->setFontRole(QskSkin::HugeFont);
-    value->setTextColor("#929CB2");
+    auto* title = new QskTextLabel( "Indoor Temperature", titleAndValue );
+    title->setFontRole( DaytimeSkin::TitleFont );
 
-    auto* buttons = new QskLinearBox(Qt::Vertical, this);
-    buttons->setSizePolicy(Qt::Horizontal, QskSizePolicy::Fixed);
-    buttons->setSpacing(0);
+    auto* value = new QskTextLabel( "+24", titleAndValue );
+    value->setFontRole( QskSkin::HugeFont );
+    value->setTextColor( "#929CB2" );
 
-    QImage upImage( ":/images/up.png");
+    auto* buttons = new QskLinearBox( Qt::Vertical, layout );
+    buttons->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
+    buttons->setSpacing( 0 );
+
+    QImage upImage( ":/images/up.png" );
     auto upGraphic = QskGraphic::fromImage( upImage );
-    upGraphic.setDefaultSize({10, 5.71});
-    auto* upButton = new QskPushButton(buttons);
-    upButton->setBoxShapeHint(QskPushButton::Panel, {30, 30, 0, 0});
-    upButton->setSizePolicy(QskSizePolicy::Fixed, QskSizePolicy::Expanding);
-    upButton->setFixedWidth(32);
-    upButton->setGradientHint(QskPushButton::Panel, {"#f7f7f7"});
-    upButton->setGraphic(upGraphic);
-    upButton->setGraphicSourceSize({10, 5.71});
+    upGraphic.setDefaultSize( {10, 5.71} );
+    auto* upButton = new QskPushButton( buttons );
+    upButton->setBoxShapeHint( QskPushButton::Panel, {30, 30, 0, 0} );
+    upButton->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Expanding );
+    upButton->setFixedWidth( 32 );
+    upButton->setGradientHint( QskPushButton::Panel, {"#f7f7f7"} );
+    upButton->setGraphic( upGraphic );
+    upButton->setGraphicSourceSize( {10, 5.71} );
 
-    QImage downImage( ":/images/down.png");
+    QImage downImage( ":/images/down.png" );
     auto downGraphic = QskGraphic::fromImage( downImage );
-    downGraphic.setDefaultSize({10, 5.71});
-    auto* downButton = new QskPushButton(buttons);
-    downButton->setBoxShapeHint(QskPushButton::Panel, {0, 0, 30, 30});
-    downButton->setSizePolicy(QskSizePolicy::Fixed, QskSizePolicy::Expanding);
-    downButton->setFixedWidth(32);
-    downButton->setGradientHint(QskPushButton::Panel, {"#f7f7f7"});
-    downButton->setGraphic(downGraphic);
-    downButton->setGraphicSourceSize({10, 5.71});
+    downGraphic.setDefaultSize( {10, 5.71} );
+    auto* downButton = new QskPushButton( buttons );
+    downButton->setBoxShapeHint( QskPushButton::Panel, {0, 0, 30, 30} );
+    downButton->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Expanding );
+    downButton->setFixedWidth( 32 );
+    downButton->setGradientHint( QskPushButton::Panel, {"#f7f7f7"} );
+    downButton->setGraphic( downGraphic );
+    downButton->setGraphicSourceSize( {10, 5.71} );
 }

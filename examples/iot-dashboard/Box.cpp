@@ -23,4 +23,9 @@ Box::Box( const QString& title, QQuickItem* parent )
     setBoxBorderColorsHint( QskBox::Panel, borderColors );
 
     m_label->setFontRole( DaytimeSkin::TitleFont );
+
+    if( m_label->text().isEmpty() )
+    {
+        m_label->setVisible( false );
+    }
 }

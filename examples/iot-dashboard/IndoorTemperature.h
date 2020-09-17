@@ -1,12 +1,12 @@
 #ifndef INDOORTEMPERATURE_H
 #define INDOORTEMPERATURE_H
 
-#include <QskLinearBox.h>
+#include <Box.h>
 
-class IndoorTemperature : public QskLinearBox
+class IndoorTemperature : public Box
 {
-public:
-    IndoorTemperature( QQuickItem* parent );
+    public:
+        IndoorTemperature( QQuickItem* parent );
 };
 
 #endif // INDOORTEMPERATURE_H
