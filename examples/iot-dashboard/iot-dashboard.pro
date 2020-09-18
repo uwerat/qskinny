@@ -39,6 +39,49 @@ HEADERS += \
     TopBar.h \
     Usage.h
 
+HEADERS += src/avatar.h \
+src/colorutils.h \
+src/columnview.h \
+src/columnview_p.h \
+src/delegaterecycler.h \
+src/enums.h \
+src/formlayoutattached.h \
+src/icon.h \
+src/imagecolors.h \
+src/kirigamiplugin.h \
+src/mnemonicattached.h \
+src/pagepool.h \
+src/pagerouter.h \
+src/scenepositionattached.h \
+src/settings.h \
+src/shadowedrectangle.h \
+src/shadowedtexture.h \
+src/sizegroup.h \
+src/toolbarlayoutdelegate.h \
+src/toolbarlayout.h \
+src/wheelhandler.h
+
+SOURCES += src/avatar.cpp \
+src/colorutils.cpp \
+src/columnview.cpp \
+src/delegaterecycler.cpp \
+src/enums.cpp \
+src/formlayoutattached.cpp \
+src/icon.cpp \
+src/imagecolors.cpp \
+src/kirigamiplugin.cpp \
+src/mnemonicattached.cpp \
+src/pagepool.cpp \
+src/pagerouter.cpp \
+src/scenepositionattached.cpp \
+src/settings.cpp \
+src/shadowedrectangle.cpp \
+src/shadowedtexture.cpp \
+src/sizegroup.cpp \
+src/toolbarlayoutdelegate.cpp \
+src/toolbarlayout.cpp \
+src/wheelhandler.cpp
+
 RESOURCES += \
     images.qrc \
     fonts.qrc
