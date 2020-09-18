@@ -1,7 +1,7 @@
 #include "Box.h"
 #include "DaytimeSkin.h"
 
-#include "src/shadowedrectangle.h"
+#include "QskShadowedRectangle.h"
 
 #include <QskBoxBorderColors.h>
 #include <QskBoxBorderMetrics.h>
@@ -26,8 +26,18 @@ Box::Box( const QString& title, QQuickItem* parent )
     setBoxBorderColorsHint( QskBox::Panel, borderColors );
 
 
-    auto* r = new ShadowedRectangle( this );
-    r->setColor( Qt::green );
+    auto* r = new QskShadowedRectangle( this );
+//    r->setPosition( {50, 50} );
+//    r->setColor( Qt::green );
+//    r->setOpacity( 0.5 );
+//    r->setSize( {100, 50} );
+//    r->setVisible( true );
+//    r->corners()->setTopLeft( 5 );
+//    r->corners()->setTopRight( 5 );
+//    r->corners()->setBottomLeft( 5 );
+//    r->corners()->setBottomRight( 5 );
+//    r->setRadius( 5 );
+    auto* t = new QskTextLabel( "bla", r );
 
 
     m_label->setFontRole( DaytimeSkin::TitleFont );

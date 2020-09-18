@@ -1,6 +1,8 @@
 #include "DaytimeSkin.h"
 
 #include "MenuBar.h"
+#include "QskShadowedRectangle.h"
+#include "QskShadowedRectangleSkinlet.h"
 #include "PieChart.h"
 #include "PieChartSkinlet.h"
 
@@ -29,6 +31,7 @@ namespace
 
 DaytimeSkin::DaytimeSkin( QObject* parent ) : QskSkin( parent )
 {
+    declareSkinlet< QskShadowedRectangle, QskShadowedRectangleSkinlet >();
     declareSkinlet< PieChart, PieChartSkinlet >();
     initHints();
 }
