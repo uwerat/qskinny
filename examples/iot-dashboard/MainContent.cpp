@@ -32,7 +32,8 @@ MainContent::MainContent( QQuickItem* parent ) : QskLinearBox( Qt::Vertical, par
     gridBox->setBoxBorderMetricsHint( QskBox::Panel, 2 );
 
     auto* usage = new Usage( gridBox );
-    gridBox->addItem( usage, 0, 0, 2, 1 );
+    auto* usageShadowBox = new ShadowBox( usage, this );
+    gridBox->addItem( usageShadowBox, 0, 0, 2, 1 );
 
     auto* indoorTemperature = new IndoorTemperature( gridBox );
     gridBox->addItem( indoorTemperature, 0, 1 );
