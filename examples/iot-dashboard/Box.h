@@ -11,13 +11,13 @@ class ShadowBox : public QskControl
 {
         Q_OBJECT
     public:
-        ShadowBox( QskControl* control, QQuickItem* parent );
+        ShadowBox( QQuickItem* parent = nullptr );
 
     protected:
         void updateLayout() override;
 
     private:
-        QskControl* m_control;
+//        QskControl* m_control;
         ShadowedRectangle* m_rectangle;
 };
 

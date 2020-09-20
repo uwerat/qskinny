@@ -13,6 +13,7 @@
 IndoorTemperature::IndoorTemperature( QQuickItem* parent )
     : Box( "", parent )
 {
+//    setBackgroundColor( Qt::transparent );
     setMarginsHint( Panel | QskAspect::Padding, 10 );
 
     auto* layout = new QskLinearBox( Qt::Horizontal, this );

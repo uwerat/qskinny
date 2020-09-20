@@ -6,6 +6,7 @@
 Usage::Usage( QQuickItem* parent )
     : Box( "Usage", parent )
 {
+    setBackgroundColor( Qt::transparent );
     auto* content = new QskLinearBox( Qt::Vertical, this );
 
     auto* today = new QskLinearBox( Qt::Horizontal, content );
