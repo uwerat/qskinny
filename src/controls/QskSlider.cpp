@@ -161,7 +161,7 @@ void QskSlider::mouseMoveEvent( QMouseEvent* event )
     if ( !isPressed() )
         return;
 
-    if ( m_data->tracking )
+    if ( !m_data->tracking )
     {
 #if 0
         // if tracking is false we need to update the position only
