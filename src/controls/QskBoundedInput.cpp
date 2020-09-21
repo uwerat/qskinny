@@ -204,7 +204,7 @@ void QskBoundedInput::wheelEvent( QWheelEvent* event )
 #endif
 
     const int steps = wheelDelta / QWheelEvent::DefaultDeltasPerStep;
-    increment( steps );
+    increment( steps * m_stepSize );
 }
 
 #endif
