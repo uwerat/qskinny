@@ -13,7 +13,8 @@
 Humidity::Humidity( QQuickItem* parent )
     : Box( "", parent )
 {
-    setMarginsHint( Panel | QskAspect::Padding, 10 );
+    setMarginsHint( Panel | QskAspect::Padding, 8 );
+    setSizePolicy( Qt::Vertical, QskSizePolicy::Maximum );
 
     auto* layout = new QskLinearBox( Qt::Horizontal, this );
     layout->setSpacing( 20 );
@@ -42,7 +43,8 @@ Humidity::Humidity( QQuickItem* parent )
     auto* upButton = new QskPushButton( buttons );
     upButton->setBoxShapeHint( QskPushButton::Panel, {30, 30, 0, 0} );
     upButton->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Expanding );
-    upButton->setFixedWidth( 32 );
+    upButton->setFixedWidth( 42 );
+    upButton->setFixedHeight( 46.31 );
     upButton->setGradientHint( QskPushButton::Panel, {"#f7f7f7"} );
     upButton->setGraphic( upGraphic );
     upButton->setGraphicSourceSize( {10, 5.71} );
@@ -53,7 +55,8 @@ Humidity::Humidity( QQuickItem* parent )
     auto* downButton = new QskPushButton( buttons );
     downButton->setBoxShapeHint( QskPushButton::Panel, {0, 0, 30, 30} );
     downButton->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Expanding );
-    downButton->setFixedWidth( 32 );
+    downButton->setFixedWidth( 42 );
+    downButton->setFixedHeight( 46.31 );
     downButton->setGradientHint( QskPushButton::Panel, {"#f7f7f7"} );
     downButton->setGraphic( downGraphic );
     downButton->setGraphicSourceSize( {10, 5.71} );
