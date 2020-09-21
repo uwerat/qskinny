@@ -50,8 +50,6 @@ QskSlider::QskSlider( Qt::Orientation orientation, QQuickItem* parent )
     else
         initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Minimum );
 
-    setMetric( QskSlider::Handle | QskAspect::Position, valueAsRatio() );
-
     connect( this, &QskSlider::boundariesChanged, [ this ]() { updatePosition(); } );
     connect( this, &QskSlider::valueChanged, [ this ]() { updatePosition(); } );
 }
@@ -103,6 +101,14 @@ void QskSlider::setTracking( bool on )
 bool QskSlider::isTracking() const
 {
     return m_data->tracking;
+}
+
+void QskSlider::aboutToShow()
+{
+    const auto subControl = effectiveSubcontrol( QskSlider::Handle );
+    setMetric( subControl | QskAspect::Position, valueAsRatio() );
+
+    Inherited::aboutToShow();
 }
 
 QSizeF QskSlider::contentsSizeHint(
@@ -223,7 +229,7 @@ void QskSlider::updatePosition()
     setSkinStateFlag( QskSlider::Minimum, value() <= minimum() );
     setSkinStateFlag( QskSlider::Maximum, value() >= maximum() );
 
-    const Aspect aspect = QskSlider::Handle | Position | Metric;
+    const auto aspect = effectiveSubcontrol( QskSlider::Handle ) | Position | Metric;
 
     const auto hint = animation( aspect | skinState() );
     const qreal pos = valueAsRatio();

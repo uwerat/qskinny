@@ -58,6 +58,8 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
     QSizeF handleSize() const;
     QRectF handleRect() const;
 
+    void aboutToShow() override;
+
   private:
     void updatePosition();
 
