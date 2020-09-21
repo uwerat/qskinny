@@ -13,9 +13,9 @@ QSK_SUBCONTROL( QskSlider, Fill )
 QSK_SUBCONTROL( QskSlider, Scale )
 QSK_SUBCONTROL( QskSlider, Handle )
 
-QSK_SYSTEM_STATE( QskSlider, Pressed, QskAspect::FirstSystemState << 1 )
-QSK_SYSTEM_STATE( QskSlider, Minimum, QskAspect::FirstSystemState << 2 )
-QSK_SYSTEM_STATE( QskSlider, Maximum, QskAspect::FirstSystemState << 3 )
+QSK_SYSTEM_STATE( QskSlider, Pressed, QskAspect::FirstSystemState << 2 )
+QSK_SYSTEM_STATE( QskSlider, Minimum, QskAspect::FirstSystemState << 3 )
+QSK_SYSTEM_STATE( QskSlider, Maximum, QskAspect::FirstSystemState << 4 )
 
 class QskSlider::PrivateData
 {
