@@ -8,6 +8,7 @@
 #include <QskTextLabel.h>
 
 #include <QPainter>
+#include <QPainterPath>
 
 #include <cmath>
 
