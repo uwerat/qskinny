@@ -10,10 +10,10 @@
 
 namespace
 {
-    class Rectangle : public QskControl
+    class ColoredRectangle : public QskControl
     {
       public:
-        Rectangle( const QByteArray& colorName )
+        ColoredRectangle( const QByteArray& colorName )
             : m_colorName( colorName )
         {
             setObjectName( colorName );
@@ -57,7 +57,7 @@ GridSkinny::~GridSkinny()
 void GridSkinny::insert( const QByteArray& colorName,
     int row, int column, int rowSpan, int columnSpan )
 {
-    m_grid->addItem( new Rectangle( colorName ),
+    m_grid->addItem( new ColoredRectangle( colorName ),
         row, column, rowSpan, columnSpan );
 }
 
