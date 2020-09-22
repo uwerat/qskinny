@@ -10,10 +10,12 @@
 
 namespace
 {
-    class Rectangle : public QskControl
+    // "Priv" to distinguish ambiguious symbol on Windows because
+    // Rectangle() from wingdi.h gets included automatically via QtQuick.
+    class RectanglePriv : public QskControl
     {
       public:
-        Rectangle( const QByteArray& colorName )
+        RectanglePriv( const QByteArray& colorName )
             : m_colorName( colorName )
         {
             setObjectName( colorName );
@@ -57,7 +59,7 @@ GridSkinny::~GridSkinny()
 void GridSkinny::insert( const QByteArray& colorName,
     int row, int column, int rowSpan, int columnSpan )
 {
-    m_grid->addItem( new Rectangle( colorName ),
+    m_grid->addItem( new RectanglePriv( colorName ),
         row, column, rowSpan, columnSpan );
 }
 
