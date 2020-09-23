@@ -56,8 +56,8 @@ QskSlider::QskSlider( Qt::Orientation orientation, QQuickItem* parent )
     else
         initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Minimum );
 
-    connect( this, &QskSlider::boundariesChanged, [ this ]() { updatePosition(); } );
-    connect( this, &QskSlider::valueChanged, [ this ]() { updatePosition(); } );
+    connect( this, &QskSlider::boundariesChanged, this, &QskSlider::moveHandle );
+    connect( this, &QskSlider::valueChanged, this, &QskSlider::moveHandle );
 }
 
 QskSlider::~QskSlider()
@@ -186,7 +186,7 @@ void QskSlider::mouseMoveEvent( QMouseEvent* event )
     }
     else
     {
-        updatePosition( newValue, QskAnimationHint() );
+        moveHandleTo( newValue, QskAnimationHint() );
     }
 }
 
@@ -224,7 +224,7 @@ void QskSlider::mouseReleaseEvent( QMouseEvent* event )
     {
         if ( !m_data->tracking )
         {
-            const auto pos = metric( qskAspectPosition( this ) );
+            const auto pos = handlePosition();
             setValue( valueFromRatio( pos ) );
         }
     }
@@ -233,13 +233,18 @@ void QskSlider::mouseReleaseEvent( QMouseEvent* event )
     Q_EMIT pressedChanged( false );
 }
 
-void QskSlider::updatePosition()
+qreal QskSlider::handlePosition() const
 {
-    const auto hint = animation( qskAspectPosition( this ) | skinState() );
-    updatePosition( value(), hint );
+    return metric( qskAspectPosition( this ) );
 }
 
-void QskSlider::updatePosition( qreal value, const QskAnimationHint& hint )
+void QskSlider::moveHandle()
+{
+    const auto hint = animation( qskAspectPosition( this ) | skinState() );
+    moveHandleTo( value(), hint );
+}
+
+void QskSlider::moveHandleTo( qreal value, const QskAnimationHint& hint )
 {
     using namespace QskAspect;
 

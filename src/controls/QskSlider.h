@@ -21,6 +21,7 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
         WRITE setOrientation NOTIFY orientationChanged )
 
     Q_PROPERTY( bool tracking READ isTracking WRITE setTracking NOTIFY trackingChanged )
+    Q_PROPERTY( qreal handlePosition READ handlePosition )
 
     using Inherited = QskBoundedValueInput;
 
@@ -40,6 +41,8 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
 
     void setTracking( bool );
     bool isTracking() const;
+
+    qreal handlePosition() const; // [0,0, 1.0]
 
     QskAspect::Placement effectivePlacement() const override;
 
@@ -61,8 +64,8 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
     void aboutToShow() override;
 
   private:
-    void updatePosition();
-    void updatePosition( qreal value, const QskAnimationHint& );
+    void moveHandle();
+    void moveHandleTo( qreal value, const QskAnimationHint& );
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
