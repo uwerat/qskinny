@@ -62,6 +62,7 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
 
   private:
     void updatePosition();
+    void updatePosition( qreal value, const QskAnimationHint& );
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

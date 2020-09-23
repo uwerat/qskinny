@@ -17,6 +17,12 @@ QSK_SYSTEM_STATE( QskSlider, Pressed, QskAspect::FirstSystemState << 2 )
 QSK_SYSTEM_STATE( QskSlider, Minimum, QskAspect::FirstSystemState << 3 )
 QSK_SYSTEM_STATE( QskSlider, Maximum, QskAspect::FirstSystemState << 4 )
 
+static inline QskAspect::Aspect qskAspectPosition( const QskSlider* slider )
+{
+    using namespace QskAspect;
+    return slider->effectiveSubcontrol( QskSlider::Handle ) | Position | Metric;
+}
+
 class QskSlider::PrivateData
 {
   public:
@@ -105,9 +111,7 @@ bool QskSlider::isTracking() const
 
 void QskSlider::aboutToShow()
 {
-    const auto subControl = effectiveSubcontrol( QskSlider::Handle );
-    setMetric( subControl | QskAspect::Position, valueAsRatio() );
-
+    setMetric( qskAspectPosition( this ), valueAsRatio() );
     Inherited::aboutToShow();
 }
 
@@ -161,14 +165,6 @@ void QskSlider::mouseMoveEvent( QMouseEvent* event )
     if ( !isPressed() )
         return;
 
-    if ( !m_data->tracking )
-    {
-#if 0
-        // if tracking is false we need to update the position only
-        // without changing the value TODO..
-#endif
-    }
-
     const auto r = subControlRect( Scale );
 
     qreal newValue;
@@ -184,7 +180,14 @@ void QskSlider::mouseMoveEvent( QMouseEvent* event )
         newValue = m_data->pressedValue - distance / r.height() * boundaryLength();
     }
 
-    setValue( newValue );
+    if ( m_data->tracking )
+    {
+        setValue( newValue );
+    }
+    else
+    {
+        updatePosition( newValue, QskAnimationHint() );
+    }
 }
 
 void QskSlider::mouseReleaseEvent( QMouseEvent* event )
@@ -217,6 +220,14 @@ void QskSlider::mouseReleaseEvent( QMouseEvent* event )
         else
             pageDown();
     }
+    else
+    {
+        if ( !m_data->tracking )
+        {
+            const auto pos = metric( qskAspectPosition( this ) );
+            setValue( valueFromRatio( pos ) );
+        }
+    }
 
     setSkinStateFlag( Pressed, false );
     Q_EMIT pressedChanged( false );
@@ -224,15 +235,19 @@ void QskSlider::mouseReleaseEvent( QMouseEvent* event )
 
 void QskSlider::updatePosition()
 {
+    const auto hint = animation( qskAspectPosition( this ) | skinState() );
+    updatePosition( value(), hint );
+}
+
+void QskSlider::updatePosition( qreal value, const QskAnimationHint& hint )
+{
     using namespace QskAspect;
 
-    setSkinStateFlag( QskSlider::Minimum, value() <= minimum() );
-    setSkinStateFlag( QskSlider::Maximum, value() >= maximum() );
+    setSkinStateFlag( QskSlider::Minimum, value <= minimum() );
+    setSkinStateFlag( QskSlider::Maximum, value >= maximum() );
 
-    const auto aspect = effectiveSubcontrol( QskSlider::Handle ) | Position | Metric;
-
-    const auto hint = animation( aspect | skinState() );
-    const qreal pos = valueAsRatio();
+    const auto aspect = qskAspectPosition( this );
+    const qreal pos = valueAsRatio( value );
 
     if ( hint.duration > 0 )
     {

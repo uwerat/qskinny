@@ -140,4 +140,10 @@ qreal QskBoundedControl::valueAsRatio( qreal value ) const
     return ( value - m_minimum ) / ( m_maximum - m_minimum );
 }
 
+qreal QskBoundedControl::valueFromRatio( qreal ratio ) const
+{
+    ratio = qBound( 0.0, ratio, 1.0 );
+    return m_minimum + ratio * ( m_maximum - m_minimum );
+}
+
 #include "moc_QskBoundedControl.cpp"

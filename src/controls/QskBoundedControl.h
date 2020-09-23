@@ -33,7 +33,9 @@ class QSK_EXPORT QskBoundedControl : public QskControl
     QskIntervalF boundaries() const;
 
     qreal boundedValue( qreal ) const;
+
     qreal valueAsRatio( qreal ) const;
+    qreal valueFromRatio( qreal ) const;
 
   public Q_SLOTS:
     void setMinimum( qreal );
