@@ -24,8 +24,14 @@ class LightDimmer: public QQuickPaintedItem
             m_thickness = thickness;
         }
 
+        void setBackgroundColor( const QColor& color )
+        {
+            m_backgroundColor = color;
+        }
+
     private:
         double m_thickness = 17.57;
+        QColor m_backgroundColor;
 
         virtual void paint( QPainter* painter ) override;
 };
@@ -35,7 +41,12 @@ class LightDisplay : public QskControl
         Q_OBJECT
 
     public:
+        QSK_SUBCONTROLS( Panel )
+
         LightDisplay( QQuickItem* parent );
+
+        QskAspect::Subcontrol effectiveSubcontrol(
+            QskAspect::Subcontrol subControl ) const override final;
 
     protected:
         void updateLayout() override;

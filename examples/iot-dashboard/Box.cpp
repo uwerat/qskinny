@@ -8,6 +8,8 @@
 #include <QskBoxShapeMetrics.h>
 #include <QskTextLabel.h>
 
+QSK_SUBCONTROL( Box, Panel )
+
 ShadowBox::ShadowBox( QQuickItem* parent )
     : QskControl( parent )
 //    , m_control( control )
@@ -72,4 +74,14 @@ Box::Box( const QString& title, QQuickItem* parent )
     {
         m_label->setVisible( false );
     }
+}
+
+QskAspect::Subcontrol Box::effectiveSubcontrol( QskAspect::Subcontrol subControl ) const
+{
+    if( subControl == QskBox::Panel )
+    {
+        return Box::Panel;
+    }
+
+    return subControl;
 }

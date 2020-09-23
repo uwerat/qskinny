@@ -1,4 +1,4 @@
-#include "DaytimeSkin.h"
+#include "NighttimeSkin.h"
 
 #include "Box.h"
 #include "LightIntensity.h"
@@ -31,13 +31,13 @@ namespace
 
 }
 
-DaytimeSkin::DaytimeSkin( QObject* parent ) : QskSkin( parent )
+NighttimeSkin::NighttimeSkin( QObject* parent ) : QskSkin( parent )
 {
     declareSkinlet< QskShadowedRectangle, QskShadowedRectangleSkinlet >();
     initHints();
 }
 
-void DaytimeSkin::initHints()
+void NighttimeSkin::initHints()
 {
     QFontDatabase db;
     db.addApplicationFont( ":/fonts/ProximaNova-Regular.otf" ); // ### use fontconfig
@@ -49,15 +49,15 @@ void DaytimeSkin::initHints()
     setFont( QskSkin::LargeFont, qskFont( 20 ) );
     setFont( QskSkin::HugeFont, qskFont( 27, true ) );
 
-    setFont( DaytimeSkin::TitleFont, qskFont( 10, true ) );
+    setFont( NighttimeSkin::TitleFont, qskFont( 10, true ) );
 
 
-    setGradient( MainContent::Panel, {"#fbfbfb"} );
-    setGradient( Box::Panel, {"#ffffff"} );
-    setColor( LightDisplay::Panel, "#ffffff" );
-    setColor( PieChartPainted::Panel, "#ffffff" );
+    setGradient( MainContent::Panel, {"#040404"} );
+    setGradient( Box::Panel, {"#000000"} );
+    setColor( LightDisplay::Panel, "#000000" );
+    setColor( PieChartPainted::Panel, "#000000" );
 
     QColor color( Qt::white );
     color.setAlphaF( 0.09 );
-    setGradient( MenuItem::Panel | QskControl::Hovered, color );
+    setGradient( MenuItem::Panel | QskControl::Hovered, Qt::yellow ); // ### nicer color
 }

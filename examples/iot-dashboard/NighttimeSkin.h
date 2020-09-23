@@ -1,12 +1,12 @@
-#ifndef DAYTIMESKIN_H
-#define DAYTIMESKIN_H
+#ifndef NIGHTTIMESKIN_H
+#define NIGHTTIMESKIN_H
 
 #include <QskSkin.h>
 
-class DaytimeSkin : public QskSkin
+class NighttimeSkin : public QskSkin
 {
     public:
-        DaytimeSkin( QObject* parent = nullptr );
+        NighttimeSkin( QObject* parent = nullptr );
 
         enum SkinFontRole
         {
@@ -17,4 +17,4 @@ class DaytimeSkin : public QskSkin
         void initHints();
 };
 
-#endif // DAYTIMESKIN_H
+#endif // NIGHTTIMESKIN_H

@@ -1,6 +1,7 @@
 #include "MainWindow.h"
 
 #include "DaytimeSkin.h"
+#include "NighttimeSkin.h"
 
 #include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
@@ -16,29 +17,36 @@
 #include <QGuiApplication>
 
 
-namespace {
+namespace
+{
     class SkinFactory : public QskSkinFactory
     {
-        Q_OBJECT
+            Q_OBJECT
 
-      public:
-        SkinFactory( QObject* parent = nullptr ) : QskSkinFactory( parent )
-        {
-        }
-
-        QStringList skinNames() const override
-        {
-            return { "DaytimeSkin" };
-        }
-        QskSkin* createSkin( const QString& skinName ) override
-        {
-            if( skinName == "DaytimeSkin" )
+        public:
+            SkinFactory( QObject* parent = nullptr ) : QskSkinFactory( parent )
             {
-                return new DaytimeSkin;
             }
 
-            return nullptr;
-        }
+            QStringList skinNames() const override
+            {
+                return { "DaytimeSkin", "NighttimeSkin" };
+            }
+
+            QskSkin* createSkin( const QString& skinName ) override
+            {
+                if( skinName == "DaytimeSkin" )
+                {
+                    return new DaytimeSkin;
+                }
+
+                if( skinName == "NighttimeSkin" )
+                {
+                    return new NighttimeSkin;
+                }
+
+                return nullptr;
+            }
     };
 }
 
@@ -51,6 +59,9 @@ int main( int argc, char* argv[] )
     SkinFactory skinFactory;
 
     qskSkinManager->setPluginPaths( QStringList() ); // no plugins
+
+    qskSkinManager->unregisterFactory( "materialfactory" );
+    qskSkinManager->unregisterFactory( "squiekfactory" );
     qskSkinManager->registerFactory(
         QStringLiteral( "SampleSkinFactory" ), &skinFactory );
 
@@ -58,13 +69,13 @@ int main( int argc, char* argv[] )
 //        false, skinFactory, SLOT(toggleScheme()) );
 
 //    QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_S ),
-//        false, skinFactory, SLOT(rotateSkin()) );
+//                                 true, &skinFactory, SLOT( rotateSkin() ) );
 
     qskSetup->setSkin( "DaytimeSkin" );
 
     // With CTRL-B you can rotate a couple of visual debug modes
-    SkinnyShortcut::enable( SkinnyShortcut::DebugBackground |
-        SkinnyShortcut::DebugStatistics | SkinnyShortcut::Quit );
+    SkinnyShortcut::enable( SkinnyShortcut::RotateSkin | SkinnyShortcut::DebugBackground |
+                            SkinnyShortcut::DebugStatistics | SkinnyShortcut::Quit );
 
     MainWindow window;
     window.show();

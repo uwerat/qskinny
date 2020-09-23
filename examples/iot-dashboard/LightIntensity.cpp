@@ -1,10 +1,13 @@
 #include "LightIntensity.h"
 #include "DaytimeSkin.h"
 
+#include <QskSetup.h>
 #include <QskTextLabel.h>
 
 #include <QPainter>
 #include <QRadialGradient>
+
+QSK_SUBCONTROL( LightDisplay, Panel )
 
 LightDimmer::LightDimmer( QQuickItem* parent )
     : QQuickPaintedItem( parent )
@@ -28,7 +31,8 @@ void LightDimmer::paint( QPainter* painter )
     gradient.setStops( {stop1, stop2, stop3} );
 
     painter->setBrush( gradient );
-    painter->setPen( Qt::white );
+
+    painter->setPen( m_backgroundColor );
     painter->drawEllipse( outerRect );
 
     int startAngle = 16 * 180;
@@ -48,12 +52,12 @@ void LightDimmer::paint( QPainter* painter )
     painter->setBrush( redGradient );
     painter->drawPie( outerRect, 16 * 90, endAngle );
 
-    painter->setBrush( Qt::white );
-    painter->setPen( Qt::white );
+    painter->setBrush( m_backgroundColor );
+    painter->setPen( m_backgroundColor );
     QRectF innerRect( thickness() / 2, thickness() / 2 + offset, size.width() - thickness(), size.height() - thickness() );
     painter->drawEllipse( innerRect );
 
-    painter->setBrush( Qt::white );
+    painter->setBrush( m_backgroundColor );
     painter->setPen( "#c4c4c4" );
     QRectF knobRect( ( contentsSize().width() - knobDiameter ) / 2, 1, knobDiameter, knobDiameter );
     painter->drawEllipse( knobRect );
@@ -75,6 +79,25 @@ LightDisplay::LightDisplay( QQuickItem* parent )
     m_rightLabel->setZ( 1 );
 
     setAutoLayoutChildren( true );
+
+    const QColor c = color( Panel );
+    m_dimmer->setBackgroundColor( c );
+
+    connect( qskSetup, &QskSetup::skinChanged, [this]()
+    {
+        const QColor c = color( Panel );
+        m_dimmer->setBackgroundColor( c );
+    } );
+}
+
+QskAspect::Subcontrol LightDisplay::effectiveSubcontrol( QskAspect::Subcontrol subControl ) const
+{
+    if( subControl == QskBox::Panel )
+    {
+        return LightDisplay::Panel;
+    }
+
+    return subControl;
 }
 
 void LightDisplay::updateLayout()

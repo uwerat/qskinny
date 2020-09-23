@@ -23,8 +23,14 @@ class ShadowBox : public QskControl
 
 class Box : public QskLinearBox
 {
+        Q_OBJECT
     public:
+        QSK_SUBCONTROLS( Panel )
+
         Box( const QString& title, QQuickItem* parent );
+
+        QskAspect::Subcontrol effectiveSubcontrol(
+            QskAspect::Subcontrol subControl ) const override final;
 
     private:
         QString m_title;

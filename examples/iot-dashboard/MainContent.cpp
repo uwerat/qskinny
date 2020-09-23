@@ -20,6 +20,8 @@
 
 #include <QTimer>
 
+QSK_SUBCONTROL( MainContent, Panel )
+
 ShadowPositioner::ShadowPositioner( QQuickItem* parent ) : QskControl( parent )
 {
     setAutoLayoutChildren( true );
@@ -67,7 +69,7 @@ MainContent::MainContent( QQuickItem* parent ) : QskLinearBox( Qt::Vertical, par
     setSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
     setDefaultAlignment( Qt::AlignTop );
     setSpacing( 24 );
-    setBackgroundColor( "#FBFBFB" );
+    setPanel( true );
 
     auto* topBar = new TopBar( this );
     addItem( topBar );
@@ -101,6 +103,16 @@ MainContent::MainContent( QQuickItem* parent ) : QskLinearBox( Qt::Vertical, par
 
     m_shadowPositioner = new ShadowPositioner( this );
     m_shadowPositioner->setGridBox( gridBox );
+}
+
+QskAspect::Subcontrol MainContent::effectiveSubcontrol( QskAspect::Subcontrol subControl ) const
+{
+    if( subControl == QskBox::Panel )
+    {
+        return MainContent::Panel;
+    }
+
+    return subControl;
 }
 
 void MainContent::geometryChanged( const QRectF& newGeometry, const QRectF& oldGeometry )

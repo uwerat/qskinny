@@ -11,6 +11,7 @@ SOURCES += \
     MainContent.cpp \
     MenuBar.cpp \
     MyDevices.cpp \
+    NighttimeSkin.cpp \
     PieChart.cpp \
     PieChartPainted.cpp \
     PieChartSkinlet.cpp \
@@ -34,6 +35,7 @@ HEADERS += \
     MainWindow.h \
     MenuBar.h \
     MyDevices.h \
+    NighttimeSkin.h \
     PieChart.h \
     PieChartPainted.h \
     PieChartSkinlet.h \

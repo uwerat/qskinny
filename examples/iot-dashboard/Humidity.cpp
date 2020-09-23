@@ -13,6 +13,7 @@
 Humidity::Humidity( QQuickItem* parent )
     : Box( "", parent )
 {
+    setPanel( true );
     setMarginsHint( Panel | QskAspect::Padding, 8 );
     setSizePolicy( Qt::Vertical, QskSizePolicy::Maximum );
 

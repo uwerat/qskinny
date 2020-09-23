@@ -26,7 +26,12 @@ class MainContent : public QskLinearBox
         Q_OBJECT
 
     public:
+        QSK_SUBCONTROLS( Panel )
+
         MainContent( QQuickItem* parent );
+
+        QskAspect::Subcontrol effectiveSubcontrol(
+            QskAspect::Subcontrol subControl ) const override final;
 
     protected:
         void geometryChanged( const QRectF&, const QRectF& ) override;
