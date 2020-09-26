@@ -71,8 +71,21 @@ GridQuick::~GridQuick()
 void GridQuick::insert( const QByteArray& colorName,
     int row, int column, int rowSpan, int columnSpan )
 {
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 15, 0 )
+    /*
+        We need to create a temporary layout in QML, so that the
+        object for the attachedProperties is created early
+     */
+    auto layout = createQml( "import QtQuick 2.0\nimport QtQuick.Layouts 1.15\nGridLayout { Rectangle {} }" );
+
+    auto rectangle = layout->childItems().first();
+    rectangle->setParent( nullptr );
+
+    delete layout;
+#else
     auto rectangle = createQml( "import QtQuick 2.0\nRectangle {}" );
-    rectangle->setProperty( "color", QColor( colorName.constData() ) );
+#endif
+
     rectangle->setParent( m_grid );
     rectangle->setParentItem( m_grid );
 
