@@ -6,6 +6,7 @@
 #include "GridQuick.h"
 #include <QQuickItem>
 #include <QtQml>
+#include <QDebug>
 
 static QQuickItem* createQml( const char* qmlCode )
 {
@@ -13,6 +14,9 @@ static QQuickItem* createQml( const char* qmlCode )
 
     QQmlComponent component( &engine );
     component.setData( qmlCode, QUrl() );
+
+    if ( component.status() != QQmlComponent::Ready )
+        qWarning() << component.errorString();
 
     return qobject_cast< QQuickItem* >( component.create() );
 }
@@ -74,14 +78,17 @@ void GridQuick::insert( const QByteArray& colorName,
 
     rectangle->setImplicitWidth( 50 );
     rectangle->setImplicitHeight( 50 );
+    rectangle->setProperty( "color", QColor( colorName.constData() ) );
 
-    auto props = attachedProperties( rectangle );
-    props->setProperty( "row", row );
-    props->setProperty( "column", column );
-    props->setProperty( "rowSpan", rowSpan );
-    props->setProperty( "columnSpan", columnSpan );
-    props->setProperty( "fillWidth", true );
-    props->setProperty( "fillHeight", true );
+    if ( auto props = attachedProperties( rectangle ) )
+    {
+        props->setProperty( "row", row );
+        props->setProperty( "column", column );
+        props->setProperty( "rowSpan", rowSpan );
+        props->setProperty( "columnSpan", columnSpan );
+        props->setProperty( "fillWidth", true );
+        props->setProperty( "fillHeight", true );
+    }
 }
 
 void GridQuick::setSpacing( Qt::Orientations orientations, int spacing )
