@@ -28,6 +28,9 @@ class QSK_EXPORT QskBoxBorderMetrics
     constexpr QskBoxBorderMetrics( const QskMargins& widths,
         Qt::SizeMode sizeMode = Qt::AbsoluteSize ) noexcept;
 
+    constexpr QskBoxBorderMetrics( const QMarginsF& widths,
+        Qt::SizeMode sizeMode = Qt::AbsoluteSize ) noexcept;
+
     constexpr bool operator==( const QskBoxBorderMetrics& ) const noexcept;
     constexpr bool operator!=( const QskBoxBorderMetrics& ) const noexcept;
 
@@ -65,6 +68,13 @@ inline constexpr QskBoxBorderMetrics::QskBoxBorderMetrics() noexcept
 inline constexpr QskBoxBorderMetrics::QskBoxBorderMetrics(
         qreal width, Qt::SizeMode sizeMode ) noexcept
     : m_widths( width )
+    , m_sizeMode( sizeMode )
+{
+}
+
+inline constexpr QskBoxBorderMetrics::QskBoxBorderMetrics(
+        const QMarginsF& widths, Qt::SizeMode sizeMode ) noexcept
+    : m_widths( widths )
     , m_sizeMode( sizeMode )
 {
 }
