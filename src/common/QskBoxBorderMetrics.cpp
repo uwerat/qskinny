@@ -101,7 +101,7 @@ QDebug operator<<( QDebug debug, const QskBoxBorderMetrics& metrics )
     debug.nospace();
 
     debug << "BoxBorder" << '(';
-    debug << metrics.sizeMode() << metrics.widths();
+    debug << metrics.sizeMode() << ',' << metrics.widths();
     debug << ')';
 
     return debug;
