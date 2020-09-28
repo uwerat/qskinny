@@ -60,6 +60,13 @@ class QSK_EXPORT QskSkinHintStatus
     QskAspect::Aspect aspect;
 };
 
+#ifndef QT_NO_DEBUG_STREAM
+
+class QDebug;
+QSK_EXPORT QDebug operator<<( QDebug, const QskSkinHintStatus& );
+
+#endif
+
 class QSK_EXPORT QskSkinnable
 {
   public:

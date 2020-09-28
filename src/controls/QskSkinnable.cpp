@@ -976,3 +976,35 @@ void QskSkinnable::debug( QskAspect::State state ) const
 {
     qskDebugState( qDebug(), metaObject(), state );
 }
+
+#ifndef QT_NO_DEBUG_STREAM
+
+#include <qdebug.h>
+
+QDebug operator<<( QDebug debug, const QskSkinHintStatus& status )
+{
+    QDebugStateSaver saver( debug );
+    debug.nospace();
+
+    switch( status.source )
+    {
+        case QskSkinHintStatus::Skinnable:
+            debug << "Skinnable";
+            break;
+        case QskSkinHintStatus::Skin:
+            debug << "Skin";
+            break;
+        case QskSkinHintStatus::Animator:
+            debug << "Animator";
+            break;
+        default:
+            debug << "None";
+            break;
+    }
+
+    debug << ": " << status.aspect;
+
+    return debug;
+}
+
+#endif
