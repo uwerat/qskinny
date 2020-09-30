@@ -6,6 +6,7 @@
 #include <QQuickPaintedItem>
 #include <QRadialGradient>
 
+class DimmerAnimator;
 class QskTextLabel;
 
 class LightDimmer: public QQuickPaintedItem
@@ -23,6 +24,11 @@ class LightDimmer: public QQuickPaintedItem
         void setThickness( double thickness )
         {
             m_thickness = thickness;
+        }
+
+        QColor backgroundColor() const
+        {
+            return m_backgroundColor;
         }
 
         void setBackgroundColor( const QColor& color )
@@ -68,6 +74,7 @@ class LightDisplay : public QskControl
         QskTextLabel* m_centreLabel;
         QskTextLabel* m_rightLabel;
         LightDimmer* m_dimmer;
+        DimmerAnimator* m_animator;
 };
 
 class LightIntensity : public Box

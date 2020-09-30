@@ -1,13 +1,76 @@
 #include "LightIntensity.h"
 #include "DaytimeSkin.h"
 
+#include <QskAnimator.h>
+#include <QskRgbValue.h>
 #include <QskSetup.h>
 #include <QskTextLabel.h>
 
+#include <QGuiApplication>
+#include <QQuickWindow>
 #include <QPainter>
 #include <QRadialGradient>
 
 QSK_SUBCONTROL( LightDisplay, Panel )
+
+namespace
+{
+    QColor invertedColor( const QColor& c )
+    {
+        QColor ret = { 255 - c.red(), 255 - c.green(), 255 - c.blue()};
+        return ret;
+    }
+}
+
+// ### There must be an easier way to do this
+class DimmerAnimator : public QskAnimator
+{
+    public:
+        DimmerAnimator( LightDisplay* display, LightDimmer* dimmer )
+            : m_display( display )
+            , m_dimmer( dimmer )
+        {
+            QQuickWindow* w = static_cast<QQuickWindow*>( qGuiApp->allWindows().at( 0 ) );
+            setWindow( w );
+            setDuration( 500 );
+            setEasingCurve( QEasingCurve::Linear );
+            setAutoRepeat( false );
+        }
+
+        void setup() override
+        {
+            m_backgroundColor = m_display->color( LightDisplay::Panel );
+            m_ringGradient = m_dimmer->ringGradient();
+        }
+
+        void advance( qreal value ) override
+        {
+            const QColor c = m_backgroundColor;
+            const QColor c2 = invertedColor( c );
+            const QColor newColor = QskRgb::interpolated( c2, c, value );
+            m_dimmer->setBackgroundColor( newColor );
+
+            QRadialGradient gradient = m_ringGradient;
+            QRadialGradient newGradient = gradient;
+
+            for( const QGradientStop& stop : gradient.stops() )
+            {
+                QColor c = stop.second;
+                QColor c2 = invertedColor( c );
+                const QColor newColor = QskRgb::interpolated( c, c2, value );
+                newGradient.setColorAt( stop.first, newColor );
+            }
+
+            m_dimmer->setRingGradient( newGradient );
+            m_dimmer->update();
+        }
+
+    private:
+        QColor m_backgroundColor;
+        QRadialGradient m_ringGradient;
+        LightDisplay* m_display;
+        LightDimmer* m_dimmer;
+};
 
 LightDimmer::LightDimmer( QQuickItem* parent )
     : QQuickPaintedItem( parent )
@@ -74,6 +137,7 @@ LightDisplay::LightDisplay( QQuickItem* parent )
     , m_centreLabel( new QskTextLabel( QString::number( 50 ) + "%", this ) )
     , m_rightLabel( new QskTextLabel( QString::number( 100 ), this ) )
     , m_dimmer( new LightDimmer( this ) )
+    , m_animator( new DimmerAnimator( this, m_dimmer ) )
 {
     m_leftLabel->setSizePolicy( Qt::Horizontal, QskSizePolicy::Maximum );
     m_centreLabel->setSizePolicy( Qt::Horizontal, QskSizePolicy::Maximum );
@@ -90,20 +154,7 @@ LightDisplay::LightDisplay( QQuickItem* parent )
 
     connect( qskSetup, &QskSetup::skinChanged, [this]()
     {
-        const QColor c = color( Panel );
-        m_dimmer->setBackgroundColor( c );
-
-        QRadialGradient gradient = m_dimmer->ringGradient();
-        QRadialGradient newGradient = gradient;
-
-        for( const QGradientStop& stop : gradient.stops() )
-        {
-            QColor s = stop.second;
-            QColor newColor = { 255 - s.red(), 255 - s.green(), 255 - s.blue()};
-            newGradient.setColorAt( stop.first, newColor );
-        }
-
-        m_dimmer->setRingGradient( newGradient );
+        m_animator->start();
     } );
 }
 
