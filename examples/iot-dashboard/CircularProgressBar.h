@@ -21,6 +21,11 @@ class CircularProgressBar : public QQuickPaintedItem
             m_width = width;
         }
 
+        QColor backgroundColor() const
+        {
+            return m_backgroundColor;
+        }
+
         void setBackgroundColor( const QColor& color )
         {
             m_backgroundColor = color;

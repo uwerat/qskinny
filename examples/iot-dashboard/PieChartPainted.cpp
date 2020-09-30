@@ -1,14 +1,77 @@
 #include "PieChartPainted.h"
 
+#include <QskAnimator.h>
 #include <QskBox.h>
+#include <QskRgbValue.h>
 #include <QskSetup.h>
 #include <QskSkin.h>
 #include <QskTextLabel.h>
 
 #include <QFontMetricsF>
+#include <QGuiApplication>
 #include <QQuickPaintedItem>
+#include <QQuickWindow>
 
 QSK_SUBCONTROL( PieChartPainted, Panel )
+
+namespace
+{
+    QColor invertedColor( const QColor& c )
+    {
+        QColor ret = { 255 - c.red(), 255 - c.green(), 255 - c.blue()};
+        return ret;
+    }
+}
+
+// ### There must be an easier way to do this
+class ProgressBarAnimator : public QskAnimator
+{
+    public:
+        ProgressBarAnimator( PieChartPainted* pieChart, CircularProgressBar* progressBar )
+            : m_pieChart( pieChart )
+            , m_progressBar( progressBar )
+        {
+            QQuickWindow* w = static_cast<QQuickWindow*>( qGuiApp->allWindows().at( 0 ) );
+            setWindow( w );
+            setDuration( 500 );
+            setEasingCurve( QEasingCurve::Linear );
+            setAutoRepeat( false );
+        }
+
+        void setup() override
+        {
+            m_backgroundColor = m_pieChart->color( PieChartPainted::Panel );
+            m_ringGradient = m_progressBar->ringGradient();
+        }
+
+        void advance( qreal value ) override
+        {
+            const QColor c = m_backgroundColor;
+            const QColor c2 = invertedColor( c );
+            const QColor newColor = QskRgb::interpolated( c2, c, value );
+            m_progressBar->setBackgroundColor( newColor );
+
+            QRadialGradient gradient = m_ringGradient;
+            QRadialGradient newGradient = gradient;
+
+            for( const QGradientStop& stop : gradient.stops() )
+            {
+                QColor c = stop.second;
+                QColor c2 = invertedColor( c );
+                const QColor newColor = QskRgb::interpolated( c, c2, value );
+                newGradient.setColorAt( stop.first, newColor );
+            }
+
+            m_progressBar->setRingGradient( newGradient );
+            m_progressBar->update();
+        }
+
+    private:
+        QColor m_backgroundColor;
+        QRadialGradient m_ringGradient;
+        PieChartPainted* m_pieChart;
+        CircularProgressBar* m_progressBar;
+};
 
 PieChartPainted::PieChartPainted( const QColor& color, const QGradient& gradient, int progress, int value, QQuickItem* parent )
     : QskControl( parent )
@@ -16,8 +79,7 @@ PieChartPainted::PieChartPainted( const QColor& color, const QGradient& gradient
     , m_gradient( gradient )
     , m_progressBar( new CircularProgressBar( gradient, progress, this ) )
     , m_progressLabel( new QskTextLabel( this ) )
-//    , m_numberLabel(new QskTextLabel(QString::number(value), this))
-//    , m_unitLabel(new QskTextLabel("kwH", this))
+    , m_animator( new ProgressBarAnimator( this, m_progressBar ) )
 {
     setAutoLayoutChildren( true );
 
@@ -31,20 +93,7 @@ PieChartPainted::PieChartPainted( const QColor& color, const QGradient& gradient
 
     connect( qskSetup, &QskSetup::skinChanged, [this]()
     {
-        const QColor c = this->color( Panel );
-        m_progressBar->setBackgroundColor( c );
-
-        QRadialGradient gradient = m_progressBar->ringGradient();
-        QRadialGradient newGradient = gradient;
-
-        for( const QGradientStop& stop : gradient.stops() )
-        {
-            QColor s = stop.second;
-            QColor newColor = { 255 - s.red(), 255 - s.green(), 255 - s.blue()};
-            newGradient.setColorAt( stop.first, newColor );
-        }
-
-        m_progressBar->setRingGradient( newGradient );
+        m_animator->start();
     } );
 }
 

@@ -5,6 +5,8 @@
 
 #include "CircularProgressBar.h"
 
+class ProgressBarAnimator;
+
 class QskTextLabel;
 class QQuickPaintedItem;
 
@@ -26,8 +28,7 @@ class PieChartPainted : public QskControl
         QGradient m_gradient;
         CircularProgressBar* m_progressBar;
         QskTextLabel* m_progressLabel;
-//    QskTextLabel* m_numberLabel;
-//    QskTextLabel* m_unitLabel;
+        ProgressBarAnimator* m_animator;
 };
 
 #endif // PIECHARTPAINTED_H
