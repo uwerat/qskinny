@@ -7,6 +7,7 @@
 #include "QskShadowedRectangle.h"
 #include "QskShadowedRectangleSkinlet.h"
 #include "PieChartPainted.h"
+#include "UpAndDownButton.h"
 
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxBorderColors.h>
@@ -56,6 +57,7 @@ void NighttimeSkin::initHints()
     setGradient( Box::Panel, {"#000000"} );
     setColor( LightDisplay::Panel, "#000000" );
     setColor( PieChartPainted::Panel, "#000000" );
+    setGradient( RoundButton::Panel, {"#0a0a0a"} );
 
     QColor color( Qt::white );
     color.setAlphaF( 0.09 );

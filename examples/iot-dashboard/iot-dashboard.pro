@@ -19,6 +19,7 @@ SOURCES += \
     QskShadowedRectangleSkinlet.cpp \
     RoundedIcon.cpp \
     TopBar.cpp \
+    UpAndDownButton.cpp \
     Usage.cpp \
     main.cpp \
     MainWindow.cpp
@@ -43,6 +44,7 @@ HEADERS += \
     QskShadowedRectangleSkinlet.h \
     RoundedIcon.h \
     TopBar.h \
+    UpAndDownButton.h \
     Usage.h
 
 HEADERS += \
