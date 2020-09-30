@@ -1,6 +1,7 @@
 #include "DaytimeSkin.h"
 
 #include "Box.h"
+#include "Diagram.h"
 #include "LightIntensity.h"
 #include "MainContent.h"
 #include "MenuBar.h"
@@ -12,6 +13,7 @@
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxBorderColors.h>
 #include <QskFunctions.h>
+#include <QskTextLabel.h>
 
 #include <QFontDatabase>
 
@@ -58,6 +60,8 @@ void DaytimeSkin::initHints()
     setColor( LightDisplay::Panel, "#ffffff" );
     setColor( PieChartPainted::Panel, "#ffffff" );
     setGradient( RoundButton::Panel, {"#f7f7f7"} );
+    setBoxBorderColors( WeekdayBox::Panel, {"#f4f4f4"} );
+    setColor( QskTextLabel::Text, "#000000" );
 
     QColor color( Qt::white );
     color.setAlphaF( 0.09 );

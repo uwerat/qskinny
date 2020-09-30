@@ -1,6 +1,7 @@
 #include "NighttimeSkin.h"
 
 #include "Box.h"
+#include "Diagram.h"
 #include "LightIntensity.h"
 #include "MainContent.h"
 #include "MenuBar.h"
@@ -12,6 +13,7 @@
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxBorderColors.h>
 #include <QskFunctions.h>
+#include <QskTextLabel.h>
 
 #include <QFontDatabase>
 
@@ -58,8 +60,11 @@ void NighttimeSkin::initHints()
     setColor( LightDisplay::Panel, "#000000" );
     setColor( PieChartPainted::Panel, "#000000" );
     setGradient( RoundButton::Panel, {"#0a0a0a"} );
+    setBoxBorderColors( WeekdayBox::Panel, {"#0c0c0c"} );
+
+    setColor( QskTextLabel::Text, "#ffffff" );
 
     QColor color( Qt::white );
     color.setAlphaF( 0.09 );
-    setGradient( MenuItem::Panel | QskControl::Hovered, Qt::yellow ); // ### nicer color
+    setGradient( MenuItem::Panel | QskControl::Hovered, color );
 }

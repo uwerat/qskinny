@@ -24,7 +24,7 @@ void LightDimmer::paint( QPainter* painter )
     auto size = contentsSize();
     QRectF outerRect( {0, offset}, size );
 
-    QRadialGradient gradient( size.width() / 2, size.height() / 2, 70 );
+    QRadialGradient gradient( size.width() / 2, size.height() / 2, 110 );
     QGradientStop stop1( 0.0, "#c0c0c0" );
     QGradientStop stop2( 0.5, "#f0f0f0" );
     QGradientStop stop3( 1.0, "#c0c0c0" );

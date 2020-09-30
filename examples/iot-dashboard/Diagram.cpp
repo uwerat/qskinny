@@ -12,6 +12,24 @@
 
 #include <cmath>
 
+QSK_SUBCONTROL( WeekdayBox, Panel )
+
+WeekdayBox::WeekdayBox( QQuickItem* parent )
+    : QskBox( true, parent )
+{
+    setBoxBorderMetricsHint( WeekdayBox::Panel, {0, 0, 3, 3} );
+}
+
+QskAspect::Subcontrol WeekdayBox::effectiveSubcontrol( QskAspect::Subcontrol subControl ) const
+{
+    if( subControl == QskBox::Panel )
+    {
+        return WeekdayBox::Panel;
+    }
+
+    return subControl;
+}
+
 namespace
 {
     class CaptionItem : public QskLinearBox
@@ -125,9 +143,9 @@ Diagram::Diagram( QQuickItem* parent )
 
     for( int i = 0; i < segments; ++i )
     {
-        auto* box = new QskBox( true, m_weekdays );
-        box->setBoxBorderColorsHint( QskBox::Panel, {"#f4f4f4"} );
-        box->setBoxBorderMetricsHint( QskBox::Panel, {0, 0, 3, 3} );
+        auto* box = new WeekdayBox( m_weekdays );
+//        box->setBoxBorderColorsHint( QskBox::Panel, {"#f4f4f4"} );
+//        box->setBoxBorderMetricsHint( QskBox::Panel, {0, 0, 3, 3} );
         m_weekdays->addItem( box, 0, i );
         auto* label = new QskTextLabel( weekdays.at( i ), m_weekdays );
         label->setFontRole( QskSkin::TinyFont );
