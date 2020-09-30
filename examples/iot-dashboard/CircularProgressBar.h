@@ -26,11 +26,20 @@ class CircularProgressBar : public QQuickPaintedItem
             m_backgroundColor = color;
         }
 
+        QRadialGradient ringGradient() const
+        {
+            return m_ringGradient;
+        }
 
+        void setRingGradient( const QRadialGradient& gradient )
+        {
+            m_ringGradient = gradient;
+        }
 
     private:
         QGradient m_gradient;
         QColor m_backgroundColor;
+        QRadialGradient m_ringGradient;
         double m_width = 20;
         int m_progress;
 };

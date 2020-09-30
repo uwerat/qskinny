@@ -7,6 +7,17 @@ CircularProgressBar::CircularProgressBar( const QGradient& gradient, int progres
     , m_gradient( gradient )
     , m_progress( progress )
 {
+    connect( this, &QQuickPaintedItem::contentsSizeChanged, [this]()
+    {
+        auto size = contentsSize();
+        QRadialGradient ringGradient( size.width() / 2, size.height() / 2, 45 );
+        QGradientStop stop1( 0.0, "#c0c0c0" );
+        QGradientStop stop2( 0.5, "#f0f0f0" );
+        QGradientStop stop3( 1.0, "#c0c0c0" );
+        ringGradient.setStops( {stop1, stop2, stop3} );
+
+        m_ringGradient = ringGradient;
+    } );
 }
 
 void CircularProgressBar::paint( QPainter* painter )
@@ -16,13 +27,7 @@ void CircularProgressBar::paint( QPainter* painter )
 
     painter->setRenderHint( QPainter::Antialiasing, true );
 
-    QRadialGradient gradient( size.width() / 2, size.height() / 2, 45 );
-    QGradientStop stop1( 0.0, "#c0c0c0" );
-    QGradientStop stop2( 0.5, "#f0f0f0" );
-    QGradientStop stop3( 1.0, "#c0c0c0" );
-    gradient.setStops( {stop1, stop2, stop3} );
-
-    painter->setBrush( gradient );
+    painter->setBrush( m_ringGradient );
     painter->setPen( m_backgroundColor );
     painter->drawEllipse( outerRect );
 

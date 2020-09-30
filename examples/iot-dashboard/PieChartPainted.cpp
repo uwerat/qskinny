@@ -33,6 +33,18 @@ PieChartPainted::PieChartPainted( const QColor& color, const QGradient& gradient
     {
         const QColor c = this->color( Panel );
         m_progressBar->setBackgroundColor( c );
+
+        QRadialGradient gradient = m_progressBar->ringGradient();
+        QRadialGradient newGradient = gradient;
+
+        for( const QGradientStop& stop : gradient.stops() )
+        {
+            QColor s = stop.second;
+            QColor newColor = { 255 - s.red(), 255 - s.green(), 255 - s.blue()};
+            newGradient.setColorAt( stop.first, newColor );
+        }
+
+        m_progressBar->setRingGradient( newGradient );
     } );
 }
 
