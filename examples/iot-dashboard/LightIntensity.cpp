@@ -12,6 +12,17 @@ QSK_SUBCONTROL( LightDisplay, Panel )
 LightDimmer::LightDimmer( QQuickItem* parent )
     : QQuickPaintedItem( parent )
 {
+    connect( this, &QQuickPaintedItem::contentsSizeChanged, [this]()
+    {
+        auto size = contentsSize();
+        QRadialGradient ringGradient( size.width() / 2, size.height() / 2, 110 );
+        QGradientStop stop1( 0.0, "#c0c0c0" );
+        QGradientStop stop2( 0.5, "#f0f0f0" );
+        QGradientStop stop3( 1.0, "#c0c0c0" );
+        ringGradient.setStops( {stop1, stop2, stop3} );
+
+        m_ringGradient = ringGradient;
+    } );
 }
 
 void LightDimmer::paint( QPainter* painter )
@@ -24,13 +35,7 @@ void LightDimmer::paint( QPainter* painter )
     auto size = contentsSize();
     QRectF outerRect( {0, offset}, size );
 
-    QRadialGradient gradient( size.width() / 2, size.height() / 2, 110 );
-    QGradientStop stop1( 0.0, "#c0c0c0" );
-    QGradientStop stop2( 0.5, "#f0f0f0" );
-    QGradientStop stop3( 1.0, "#c0c0c0" );
-    gradient.setStops( {stop1, stop2, stop3} );
-
-    painter->setBrush( gradient );
+    painter->setBrush( m_ringGradient );
 
     painter->setPen( m_backgroundColor );
     painter->drawEllipse( outerRect );
@@ -87,6 +92,18 @@ LightDisplay::LightDisplay( QQuickItem* parent )
     {
         const QColor c = color( Panel );
         m_dimmer->setBackgroundColor( c );
+
+        QRadialGradient gradient = m_dimmer->ringGradient();
+        QRadialGradient newGradient = gradient;
+
+        for( const QGradientStop& stop : gradient.stops() )
+        {
+            QColor s = stop.second;
+            QColor newColor = { 255 - s.red(), 255 - s.green(), 255 - s.blue()};
+            newGradient.setColorAt( stop.first, newColor );
+        }
+
+        m_dimmer->setRingGradient( newGradient );
     } );
 }
 

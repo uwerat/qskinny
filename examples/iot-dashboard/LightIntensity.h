@@ -4,6 +4,7 @@
 #include "Box.h"
 
 #include <QQuickPaintedItem>
+#include <QRadialGradient>
 
 class QskTextLabel;
 
@@ -29,9 +30,20 @@ class LightDimmer: public QQuickPaintedItem
             m_backgroundColor = color;
         }
 
+        QRadialGradient ringGradient() const
+        {
+            return m_ringGradient;
+        }
+
+        void setRingGradient( const QRadialGradient& gradient )
+        {
+            m_ringGradient = gradient;
+        }
+
     private:
         double m_thickness = 17.57;
         QColor m_backgroundColor;
+        QRadialGradient m_ringGradient;
 
         virtual void paint( QPainter* painter ) override;
 };
