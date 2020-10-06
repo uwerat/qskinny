@@ -1,0 +1,7 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="/qskinny/shaders">
+        <file>boxshadow.vert</file>
+        <file>boxshadow.frag</file>
+    </qresource>
+</RCC>
