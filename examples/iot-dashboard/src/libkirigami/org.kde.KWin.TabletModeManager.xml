@@ -1,0 +1,13 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <interface name="org.kde.KWin.TabletModeManager">
+    <property name="tabletModeAvailable" type="b" access="read"/>
+    <property name="tabletMode" type="b" access="read"/>
+    <signal name="tabletModeAvailableChanged">
+      <arg name="tabletModeAvailable" type="b" direction="out"/>
+    </signal>
+    <signal name="tabletModeChanged">
+      <arg name="tabletMode" type="b" direction="out"/>
+    </signal>
+  </interface>
+</node>

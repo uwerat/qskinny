@@ -1,0 +1,10 @@
+module org.kde.kirigami.templates
+
+OverlaySheet 2.2 OverlaySheet.qml
+FormLayout 2.2 FormLayout.qml
+SwipeListItem 2.2 SwipeListItem.qml
+AbstractListItem 2.2 AbstractListItem.qml
+ApplicationHeader 2.2 ApplicationHeader.qml
+AbstractApplicationHeader 2.2 AbstractApplicationHeader.qml
+OverlayDrawer 2.2 OverlayDrawer.qml
+singleton AppHeaderSizeGroup 2.2 SingletonHeaderSizeGroup.qml
