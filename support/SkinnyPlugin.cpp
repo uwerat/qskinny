@@ -19,7 +19,7 @@ static int initPluginPath()
     if ( !value.isEmpty() )
     {
         if ( QChar( value.at( value.size() - 1 ) ) != QDir::listSeparator() )
-            value += QDir::listSeparator();
+            value += QDir::listSeparator().toLatin1();
     }
 
     value += STRING( PLUGIN_PATH );
