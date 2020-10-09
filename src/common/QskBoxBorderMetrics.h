@@ -57,7 +57,7 @@ class QSK_EXPORT QskBoxBorderMetrics
 
   private:
     QskMargins m_widths;
-    Qt::SizeMode m_sizeMode : 2;
+    Qt::SizeMode m_sizeMode;
 };
 
 inline constexpr QskBoxBorderMetrics::QskBoxBorderMetrics() noexcept
