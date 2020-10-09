@@ -121,13 +121,13 @@ inline constexpr Qt::SizeMode QskShadowMetrics::sizeMode() const noexcept
     return m_sizeMode;
 }
 
-void QskShadowMetrics::setOffset( qreal dx, qreal dy ) noexcept
+inline void QskShadowMetrics::setOffset( qreal dx, qreal dy ) noexcept
 {
     m_offset.rx() = dx;
     m_offset.ry() = dy;
 }
 
-void QskShadowMetrics::setOffset( const QPointF& offset ) noexcept
+inline void QskShadowMetrics::setOffset( const QPointF& offset ) noexcept
 {
     m_offset = offset;
 }
