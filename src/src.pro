@@ -30,6 +30,7 @@ HEADERS += \
     common/QskObjectCounter.h \
     common/QskRgbValue.h \
     common/QskRgbPalette.h \
+    common/QskShadowMetrics.h \
     common/QskSizePolicy.h \
     common/QskTextColors.h \
     common/QskTextOptions.h
@@ -49,6 +50,7 @@ SOURCES += \
     common/QskObjectCounter.cpp \
     common/QskRgbValue.cpp \
     common/QskRgbPalette.cpp \
+    common/QskShadowMetrics.cpp \
     common/QskSizePolicy.cpp \
     common/QskTextColors.cpp \
     common/QskTextOptions.cpp
