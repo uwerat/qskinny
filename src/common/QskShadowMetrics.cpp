@@ -6,7 +6,7 @@
 #include "QskShadowMetrics.h"
 
 #include <qhashfunctions.h>
-#include <qsize.h>
+#include <qrect.h>
 #include <qvariant.h>
 
 static void qskRegisterShadowMetrics()
@@ -69,6 +69,15 @@ QVariant QskShadowMetrics::interpolate(
     qreal progress )
 {
     return QVariant::fromValue( from.interpolated( to, progress ) );
+}
+
+QRectF QskShadowMetrics::shadowRect( const QRectF& sourceRect ) const
+{
+    return QRectF(
+        sourceRect.x() + m_offset.x() - m_spreadRadius,
+        sourceRect.y() + m_offset.y() - m_spreadRadius,
+        sourceRect.width() + 2 * m_spreadRadius,
+        sourceRect.height() + 2 * m_spreadRadius );
 }
 
 uint QskShadowMetrics::hash( uint seed ) const noexcept
