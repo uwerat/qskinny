@@ -586,7 +586,7 @@ void QskTextInput::setReadOnly( bool on )
     m_data->textInput->setFlag( QQuickItem::ItemAcceptsInputMethod, !on );
     qskUpdateInputMethod( this, Qt::ImEnabled );
 
-    setSkinStateFlag( ReadOnly, true );
+    setSkinStateFlag( ReadOnly, on );
 }
 
 void QskTextInput::setEditing( bool on )
