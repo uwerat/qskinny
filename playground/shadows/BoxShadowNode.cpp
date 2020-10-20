@@ -89,8 +89,7 @@ namespace
         if ( state.isOpacityDirty() )
             p->setUniformValue(m_opacityLocation, state.opacity());
 
-        if ( oldMaterial == nullptr || newMaterial->compare( oldMaterial ) != 0
-            || state.isCachedMaterialDataDirty( )) 
+        if ( oldMaterial == nullptr || newMaterial->compare( oldMaterial ) != 0 )
         {
             auto material = static_cast< const Material* >(newMaterial);
 
