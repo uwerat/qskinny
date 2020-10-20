@@ -13,15 +13,8 @@
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qsgadaptationlayer_p.h>
-
-#if QT_VERSION < QT_VERSION_CHECK( 5, 8, 0 )
 #include <private/qsgcontext_p.h>
-typedef QSGRenderContext RenderContext;
-#else
-#include <private/qsgdefaultrendercontext_p.h>
-typedef QSGDefaultRenderContext RenderContext;
-#endif
-
+#include <private/qquickitem_p.h>
 QSK_QT_PRIVATE_END
 
 #define GlyphFlag static_cast< QSGNode::Flag >( 0x800 )
@@ -107,7 +100,7 @@ static void qskRenderText(
     QQuickItem* item, QSGNode* parentNode, const QTextLayout& layout, qreal baseLine,
     const QColor& color, QQuickText::TextStyle style, const QColor& styleColor )
 {
-    auto renderContext = RenderContext::from( QOpenGLContext::currentContext() );
+    auto renderContext = QQuickItemPrivate::get(item)->sceneGraphRenderContext();
     auto sgContext = renderContext->sceneGraphContext();
 
     // Clear out foreign nodes (e.g. from QskRichTextRenderer)
@@ -137,7 +130,14 @@ static void qskRenderText(
             {
                 const bool preferNativeGlyphNode = false; // QskTextOptions?
 
-                glyphNode = sgContext->createGlyphNode( renderContext, preferNativeGlyphNode );
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+                constexpr int renderQuality = -1; // QQuickText::DefaultRenderTypeQuality
+                glyphNode = sgContext->createGlyphNode(
+                    renderContext, preferNativeGlyphNode, renderQuality );
+#else
+                glyphNode = sgContext->createGlyphNode(
+                    renderContext, preferNativeGlyphNode );
+#endif
                 glyphNode->setOwnerElement( item );
                 glyphNode->setFlags( QSGNode::OwnedByParent | GlyphFlag );
             }
