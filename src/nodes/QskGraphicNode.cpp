@@ -6,6 +6,7 @@
 #include "QskGraphicNode.h"
 #include "QskGraphic.h"
 #include "QskColorFilter.h"
+#include "QskPainterCommand.h"
 
 static inline uint qskHash(
     const QskGraphic& graphic, const QskColorFilter& colorFilter,
