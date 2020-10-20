@@ -63,7 +63,6 @@ class QSK_EXPORT QskPainterCommand
         QBrush backgroundBrush;
         Qt::BGMode backgroundMode = Qt::TransparentMode;
         QFont font;
-        QMatrix matrix;
         QTransform transform;
 
         Qt::ClipOperation clipOperation = Qt::NoClip;
