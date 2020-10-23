@@ -23,6 +23,15 @@ static inline QskAspect::Aspect qskAspectPosition( const QskSlider* slider )
     return slider->effectiveSubcontrol( QskSlider::Handle ) | Position | Metric;
 }
 
+static inline QPointF qskMousePosition( const QMouseEvent* event )
+{   
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+    return event->position();
+#else
+    return event->localPos();
+#endif
+}
+
 class QskSlider::PrivateData
 {
   public:
@@ -165,18 +174,19 @@ void QskSlider::mouseMoveEvent( QMouseEvent* event )
     if ( !isPressed() )
         return;
 
+    const auto mousePos = qskMousePosition( event );
     const auto r = subControlRect( Scale );
 
     qreal newValue;
 
     if ( m_data->orientation == Qt::Horizontal )
     {
-        const auto distance = event->localPos().x() - m_data->pressedPos.x();
+        const auto distance = mousePos.x() - m_data->pressedPos.x();
         newValue = m_data->pressedValue + distance / r.width() * boundaryLength();
     }
     else
     {
-        const auto distance = event->localPos().y() - m_data->pressedPos.y();
+        const auto distance = mousePos.y() - m_data->pressedPos.y();
         newValue = m_data->pressedValue - distance / r.height() * boundaryLength();
     }
 
@@ -194,7 +204,7 @@ void QskSlider::mouseReleaseEvent( QMouseEvent* event )
 {
     if ( !isPressed() ) // Page event
     {
-        const QPointF pos = event->localPos();
+        const auto mousePos = qskMousePosition( event );
 
         const auto szHandle = handleSize();
         const auto rect = contentsRect();
@@ -204,14 +214,14 @@ void QskSlider::mouseReleaseEvent( QMouseEvent* event )
         {
             const qreal w = szHandle.width();
 
-            const qreal x = ( pos.x() - rect.x() - w * 0.5 ) / ( rect.width() - w );
+            const qreal x = ( mousePos.x() - rect.x() - w * 0.5 ) / ( rect.width() - w );
             up = x > valueAsRatio();
         }
         else
         {
             const qreal h = szHandle.height();
 
-            const qreal y = ( pos.y() - rect.y() - h * 0.5 ) / ( rect.height() - h );
+            const qreal y = ( mousePos.y() - rect.y() - h * 0.5 ) / ( rect.height() - h );
             up = y < 1.0 - valueAsRatio();
         }
 
