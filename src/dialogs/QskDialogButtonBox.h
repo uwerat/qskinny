@@ -10,7 +10,10 @@
 #include "QskDialog.h"
 
 class QskPushButton;
-template< typename T > class QVector;
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    template< typename T > class QVector;
+#endif
 
 class QSK_EXPORT QskDialogButtonBox : public QskBox
 {
