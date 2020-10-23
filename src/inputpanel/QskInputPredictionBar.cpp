@@ -127,8 +127,8 @@ void QskInputPredictionBar::setScrollOffset( int offset )
 {
     m_data->scrollOffset = offset;
 
-    const auto candidateCount = m_data->candidates.length();
-    const auto count = std::min( candidateCount, m_data->buttonCount );
+    const int candidateCount = m_data->candidates.length();
+    const int count = std::min( candidateCount, m_data->buttonCount );
     const bool continueLeft = m_data->scrollOffset > 0;
     const bool continueRight = ( candidateCount - m_data->scrollOffset ) > count;
 
