@@ -389,7 +389,7 @@ QSizeF qskEffectiveSizeHint( const QQuickItem* item,
     };
 
     const QVariant v = item->property( properties[ whichHint ] );
-    if ( v.canConvert( QMetaType::QSizeF ) )
+    if ( v.canConvert< QSizeF >() )
         hint = v.toSizeF();
 
     if ( whichHint == Qt::PreferredSize )
