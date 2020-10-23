@@ -13,6 +13,15 @@ static inline void qskSendEventTo( QObject* object, QEvent::Type type )
     QCoreApplication::sendEvent( object, &event );
 }
 
+static inline QPointF qskScenePosition( const QMouseEvent* event )
+{
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+    return event->scenePosition();
+#else
+    return event->windowPos();
+#endif
+}
+
 /*
     Qt 5.12:
         sizeof( QQuickItemPrivate::ExtraData ) -> 184
@@ -204,7 +213,9 @@ bool QskControlPrivate::maybeGesture( QQuickItem* child, QEvent* event )
         case QEvent::MouseButtonPress:
         {
             const auto mouseEvent = static_cast< const QMouseEvent* >( event );
-            const QPointF pos = q->mapFromScene( mouseEvent->windowPos() );
+
+            auto pos = qskScenePosition( mouseEvent );
+            pos = q->mapFromScene( pos );
 
             if ( !q->gestureRect().contains( pos ) )
                 return false;
