@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #ifndef QSK_SKINLET_H
-#define QSK_SKINLET_H 1
+#define QSK_SKINLET_H
 
 #include "QskAspect.h"
 
@@ -26,6 +26,10 @@ class QSGNode;
 class QRectF;
 class QRect;
 class QSize;
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    template< typename T > class QVector;
+#endif
 
 class QSK_EXPORT QskSkinlet
 {
