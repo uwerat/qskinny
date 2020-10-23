@@ -32,17 +32,17 @@ void SkinnyShortcut::enable( Types types )
 
     if ( types & RotateSkin )
     {
-        QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_S ),
+        QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL | Qt::Key_S ),
             false, &s_shortcut, &SkinnyShortcut::rotateSkin );
         cout << "CTRL-S to change the skin." << endl;
     }
 
     if ( types & ChangeFonts )
     {
-        QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_F ),
+        QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL | Qt::Key_F ),
             false, &s_shortcut, [] { s_shortcut.changeFonts( +1 ); } );
 
-        QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_G ),
+        QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL | Qt::Key_G ),
             false, &s_shortcut, [] { s_shortcut.changeFonts( -1 ); } );
 
         cout << "CTRL-F to increase the font size." << endl;
@@ -51,14 +51,14 @@ void SkinnyShortcut::enable( Types types )
 
     if ( types & DebugBackground )
     {
-        QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_B ),
+        QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL | Qt::Key_B ),
             false, &s_shortcut, &SkinnyShortcut::showBackground );
         cout << "CTRL-B to enable visual debugging modes." << endl;
     }
 
     if ( types & DebugStatistics )
     {
-        QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_K ),
+        QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL | Qt::Key_K ),
             false, &s_shortcut, &SkinnyShortcut::debugStatistics );
         cout << "CTRL-K to dump statistics about the items/nodes being currently used." << endl;
     }
@@ -68,7 +68,7 @@ void SkinnyShortcut::enable( Types types )
         // QKeySequence::Quit crashes the application
         // when not being implemented by the platform !!
 
-        QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_Q ),
+        QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL | Qt::Key_Q ),
             false, QGuiApplication::instance(), &QGuiApplication::quit );
         cout << "CTRL-Q to terminate the application." << endl;
     }
