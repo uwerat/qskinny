@@ -10,7 +10,6 @@
 #include <qobject.h>
 
 class QskSkin;
-class QStringList;
 
 class QSK_EXPORT QskSkinFactory : public QObject
 {

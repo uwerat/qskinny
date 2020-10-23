@@ -13,7 +13,6 @@
 
 class QskSkin;
 class QskSkinFactory;
-class QStringList;
 
 #if defined( qskSkinManager )
 #undef qskSkinManager

@@ -12,7 +12,6 @@
 #include <memory>
 
 class QString;
-class QStringList;
 class QWindow;
 
 #if defined( qskDialog )
