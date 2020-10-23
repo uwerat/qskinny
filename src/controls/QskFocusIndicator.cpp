@@ -23,7 +23,7 @@ static inline QRectF qskFocusIndicatorRect( const QQuickItem* item )
         return control->focusIndicatorRect();
 
     const QVariant v = item->property( "focusIndicatorRect" );
-    if ( v.canConvert( QMetaType::QRectF ) )
+    if ( v.canConvert< QRectF >() )
         return v.toRectF();
 
     return qskItemRect( item );
