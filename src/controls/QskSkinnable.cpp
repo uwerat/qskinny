@@ -100,6 +100,17 @@ static inline bool qskCompareResolvedStates(
     }
 }
 
+static inline QVariant qskTypedNullValue( const QVariant& value )
+{
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+    const auto vType = static_cast< QMetaType >( value.userType() );
+#else
+    const auto vType = value.userType();
+#endif
+
+    return QVariant( vType, nullptr );
+}
+
 class QskSkinnable::PrivateData
 {
   public:
@@ -788,11 +799,11 @@ void QskSkinnable::startTransition( QskAspect::Aspect aspect,
 
     if ( !from.isValid() )
     {
-        from = QVariant( to.userType(), nullptr );
+        from = qskTypedNullValue( to );
     }
     else if ( !to.isValid() )
     {
-        to = QVariant( from.userType(), nullptr );
+        to = qskTypedNullValue( from );
     }
     else if ( from.userType() != to.userType() )
     {
