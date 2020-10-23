@@ -17,6 +17,15 @@ QSK_SUBCONTROL( QskScrollView, VerticalScrollHandle )
 QSK_SYSTEM_STATE( QskScrollView, VerticalHandlePressed, QskAspect::FirstSystemState << 1 )
 QSK_SYSTEM_STATE( QskScrollView, HorizontalHandlePressed, QskAspect::FirstSystemState << 2 )
 
+static inline QPointF qskMousePosition( const QMouseEvent* event )
+{
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+    return event->position();
+#else
+    return event->localPos();
+#endif
+}
+
 class QskScrollView::PrivateData
 {
   public:
@@ -98,14 +107,16 @@ QRectF QskScrollView::viewContentsRect() const
 
 void QskScrollView::mousePressEvent( QMouseEvent* event )
 {
-    if ( subControlRect( VerticalScrollBar ).contains( event->pos() ) )
+    const auto mousePos = qskMousePosition( event );
+
+    if ( subControlRect( VerticalScrollBar ).contains( mousePos ) )
     {
         const QRectF handleRect = subControlRect( VerticalScrollHandle );
 
-        if ( handleRect.contains( event->pos() ) )
+        if ( handleRect.contains( mousePos ) )
         {
             m_data->isScrolling = Qt::Vertical;
-            m_data->scrollPressPos = event->y();
+            m_data->scrollPressPos = mousePos.y();
 
             setSkinStateFlag( VerticalHandlePressed, true );
         }
@@ -115,7 +126,7 @@ void QskScrollView::mousePressEvent( QMouseEvent* event )
 
             qreal y = scrollPos().y();
 
-            if ( event->y() < handleRect.top() )
+            if ( mousePos.y() < handleRect.top() )
                 y -= vRect.height();
             else
                 y += vRect.height();
@@ -126,14 +137,14 @@ void QskScrollView::mousePressEvent( QMouseEvent* event )
         return;
     }
 
-    if ( subControlRect( HorizontalScrollBar ).contains( event->pos() ) )
+    if ( subControlRect( HorizontalScrollBar ).contains( mousePos ) )
     {
         const QRectF handleRect = subControlRect( HorizontalScrollHandle );
 
-        if ( handleRect.contains( event->pos() ) )
+        if ( handleRect.contains( mousePos ) )
         {
             m_data->isScrolling = Qt::Horizontal;
-            m_data->scrollPressPos = event->x();
+            m_data->scrollPressPos = mousePos.x();
 
             setSkinStateFlag( HorizontalHandlePressed, true );
         }
@@ -143,7 +154,7 @@ void QskScrollView::mousePressEvent( QMouseEvent* event )
 
             qreal x = scrollPos().x();
 
-            if ( event->x() < handleRect.left() )
+            if ( mousePos.x() < handleRect.left() )
                 x -= vRect.width();
             else
                 x += vRect.width();
@@ -165,23 +176,24 @@ void QskScrollView::mouseMoveEvent( QMouseEvent* event )
         return;
     }
 
+    const auto mousePos = qskMousePosition( event );
     QPointF pos = scrollPos();
 
     if ( m_data->isScrolling == Qt::Horizontal )
     {
-        const qreal dx = event->x() - m_data->scrollPressPos;
+        const qreal dx = mousePos.x() - m_data->scrollPressPos;
         const qreal w = subControlRect( HorizontalScrollBar ).width();
 
         pos.rx() += dx / w * scrollableSize().width();
-        m_data->scrollPressPos = event->x();
+        m_data->scrollPressPos = mousePos.x();
     }
     else if ( m_data->isScrolling == Qt::Vertical )
     {
-        const qreal dy = event->y() - m_data->scrollPressPos;
+        const qreal dy = mousePos.y() - m_data->scrollPressPos;
         const qreal h = subControlRect( VerticalScrollBar ).height();
 
         pos.ry() += dy / h * scrollableSize().height();
-        m_data->scrollPressPos = event->y();
+        m_data->scrollPressPos = mousePos.y();
     }
 
     if ( pos != scrollPos() )
