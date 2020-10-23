@@ -272,7 +272,13 @@ void QskMetaFunction::invoke( QObject* object,
                 }
 
                 types[ i ] = parameterTypes[ i - 1 ];
-                arguments[ i ] = QMetaType::create( types[ i ], argv[ i ] );
+
+                arguments[ i ] = 
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+                    QMetaType( types[ i ] ).create( argv[ i ] );
+#else
+                    QMetaType::create( types[ i ], argv[ i ] );
+#endif
             }
 
             if ( receiver.isNull() )
