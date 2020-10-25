@@ -213,9 +213,8 @@ namespace
         bool event( QEvent* event ) override;
 
         void itemChange( ItemChange, const ItemChangeData& ) override;
-        void geometryChanged( const QRectF&, const QRectF& ) override;
 
-    #if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 )
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 )
         void itemGeometryChanged( QQuickItem*,
             QQuickGeometryChange change, const QRectF& ) override
         {
@@ -223,14 +222,14 @@ namespace
                 scrollArea()->polish();
         }
 
-    #else
+#else
         void itemGeometryChanged( QQuickItem*,
             const QRectF& newRect, const QRectF& oldRect ) override
         {
             if ( m_isSizeChangedEnabled && ( oldRect.size() != newRect.size() ) )
                 scrollArea()->polish();
         }
-    #endif
+#endif
 
         void updateNode( QSGNode* ) override;
 
@@ -331,18 +330,6 @@ namespace
         return nullptr;
     }
 
-    void ClipItem::geometryChanged(
-        const QRectF& newRect, const QRectF& oldRect )
-    {
-        Inherited::geometryChanged( newRect, oldRect );
-
-        if ( newRect.size() != oldRect.size() )
-        {
-            // we need to restore the clip node
-            update();
-        }
-    }
-
     void ClipItem::itemChange(
         QQuickItem::ItemChange change, const QQuickItem::ItemChangeData& value )
     {
@@ -376,10 +363,21 @@ namespace
 
     bool ClipItem::event( QEvent* event )
     {
-        if ( event->type() == QEvent::LayoutRequest )
+        const int eventType = event->type();
+
+        if ( eventType == QEvent::LayoutRequest )
         {
             if ( scrollArea()->isItemResizable() )
                 scrollArea()->polish();
+        }
+        else if ( eventType == QskEvent::GeometryChange )
+        {
+            auto geometryEvent = static_cast< const QskGeometryChangeEvent* >( event );
+            if ( geometryEvent->isResized() )
+            {
+                // we need to restore the clip node
+                update();
+            }
         }
 
         return Inherited::event( event );
