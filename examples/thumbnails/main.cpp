@@ -208,9 +208,9 @@ class ScrollArea : public QskScrollArea
     }
 
   protected:
-    void geometryChanged( const QRectF& newRect, const QRectF& oldRect ) override
+    void geometryChangeEvent( QskGeometryChangeEvent* event ) override
     {
-        QskScrollArea::geometryChanged( newRect, oldRect );
+        QskScrollArea::geometryChangeEvent( event );
         updateVisibilities();
     }
 
