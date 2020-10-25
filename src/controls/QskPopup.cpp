@@ -70,23 +70,14 @@ namespace
         {
         }
 
-        void geometryChanged( const QRectF& newGeometry,
-            const QRectF& oldGeometry ) override
-        {
-            Inherited::geometryChanged( newGeometry, oldGeometry );
-
-            if ( auto popup = static_cast< QskPopup* >( parentItem() ) )
-            {
-                if ( popup->hasOverlay() )
-                    popup->update();
-            }
-        }
-
+      protected:
         bool event( QEvent* event ) override
         {
             bool ok = Inherited::event( event );
 
-            if ( event->type() == QEvent::MouseButtonPress )
+            const int eventType = event->type();
+
+            if ( eventType == QEvent::MouseButtonPress )
             {
                 if ( auto popup = static_cast< QskPopup* >( parentItem() ) )
                 {
@@ -95,6 +86,14 @@ namespace
                     {
                         popup->close();
                     }
+                }
+            }
+            else if ( eventType == QskEvent::GeometryChange )
+            {
+                if ( auto popup = static_cast< QskPopup* >( parentItem() ) )
+                {
+                    if ( popup->hasOverlay() )
+                        popup->update();
                 }
             }
 
