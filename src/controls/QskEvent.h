@@ -15,6 +15,7 @@ class QskGesture;
 class QskPopup;
 class QQuickWindow;
 class QQuickItem;
+class QMouseEvent;
 
 class QSK_EXPORT QskEvent : public QEvent
 {
@@ -118,5 +119,9 @@ class QSK_EXPORT QskAnimatorEvent : public QskEvent
 };
 
 QSK_EXPORT int qskFocusChainIncrement( const QEvent* );
+
+// some helper to work around Qt version incompatibilities
+QSK_EXPORT QPointF qskMouseScenePosition( const QMouseEvent* );
+QSK_EXPORT QPointF qskMousePosition( const QMouseEvent* );
 
 #endif

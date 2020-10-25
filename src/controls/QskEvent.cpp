@@ -45,6 +45,24 @@ int qskFocusChainIncrement( const QEvent* event )
     return 0;
 }
 
+QPointF qskMousePosition( const QMouseEvent* event )
+{
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+    return event->position();
+#else
+    return event->localPos();
+#endif
+}
+
+QPointF qskMouseScenePosition( const QMouseEvent* event )
+{
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+    return event->scenePosition();
+#else
+    return event->windowPos();
+#endif
+}
+
 QskEvent::QskEvent( QskEvent::Type type )
     : QEvent( static_cast< QEvent::Type >( type ) )
 {
