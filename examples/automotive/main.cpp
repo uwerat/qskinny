@@ -44,11 +44,11 @@ int main( int argc, char** argv )
     cout << "CTRL-S to change the skin." << endl;
     cout << "CTRL-T to change the color scheme, when the \"Default\" skin is active." << endl;
 
-    QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_T ),
-        false, skinFactory, SLOT(toggleScheme()) );
+    QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL | Qt::Key_T ),
+        false, skinFactory, &SkinFactory::toggleScheme );
 
-    QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_S ),
-        false, skinFactory, SLOT(rotateSkin()) );
+    QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL | Qt::Key_S ),
+        false, skinFactory, &SkinFactory::rotateSkin );
 
     // With CTRL-B you can rotate a couple of visual debug modes
     SkinnyShortcut::enable( SkinnyShortcut::DebugBackground |
