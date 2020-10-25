@@ -90,7 +90,7 @@ class QskSubWindowArea::PrivateData
     bool isDraggableByHeaderOnly : 1;
     bool isDragging : 1;
     Qt::Edges draggedEdges;
-    QPoint mousePos;
+    QPointF mousePos;
 };
 
 QskSubWindowArea::QskSubWindowArea( QQuickItem* parent )
@@ -192,7 +192,9 @@ bool QskSubWindowArea::mouseEventFilter( QskSubWindow* window, const QMouseEvent
     {
         case QEvent::MouseButtonPress:
         {
-            if ( !( cr.contains( event->localPos() ) &&
+            const auto mousePos = qskMousePosition( event );
+
+            if ( !( cr.contains( mousePos ) &&
                 event->button() == Qt::LeftButton ) )
             {
                 return false;
@@ -214,14 +216,14 @@ bool QskSubWindowArea::mouseEventFilter( QskSubWindow* window, const QMouseEvent
             if ( !doDrag )
             {
                 // dragging by title bar only
-                doDrag = window->titleBarRect().contains( event->localPos() );
+                doDrag = window->titleBarRect().contains( mousePos );
             }
 
             if ( doDrag )
             {
                 m_data->isDragging = true;
-                m_data->draggedEdges = qskSelectedEdges( cr, event->localPos() );
-                m_data->mousePos = event->globalPos();
+                m_data->draggedEdges = qskSelectedEdges( cr, mousePos );
+                m_data->mousePos = qskMouseScenePosition( event );
 
                 setDragging( window, true );
                 return true;
@@ -233,10 +235,12 @@ bool QskSubWindowArea::mouseEventFilter( QskSubWindow* window, const QMouseEvent
         {
             if ( m_data->isDragging )
             {
-                qskDragWindow( event->globalPos() - m_data->mousePos,
+                const auto scenePos = qskMouseScenePosition( event );
+
+                qskDragWindow( scenePos - m_data->mousePos,
                     m_data->draggedEdges, window );
 
-                m_data->mousePos = event->globalPos();
+                m_data->mousePos = scenePos;
                 return true;
             }
             break;
@@ -247,7 +251,7 @@ bool QskSubWindowArea::mouseEventFilter( QskSubWindow* window, const QMouseEvent
             {
                 setDragging( window, false );
 
-                m_data->mousePos = QPoint();
+                m_data->mousePos = QPointF();
                 m_data->isDragging = false;
 
                 return true;

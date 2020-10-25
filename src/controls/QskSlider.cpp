@@ -6,6 +6,7 @@
 #include "QskSlider.h"
 #include "QskAnimationHint.h"
 #include "QskAspect.h"
+#include "QskIntervalF.h"
 
 QSK_SUBCONTROL( QskSlider, Panel )
 QSK_SUBCONTROL( QskSlider, Groove )

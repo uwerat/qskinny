@@ -1,4 +1,5 @@
 #include "QskGestureRecognizer.h"
+#include "QskEvent.h"
 
 #include <qbasictimer.h>
 #include <qcoreapplication.h>
@@ -20,7 +21,7 @@ static inline QMouseEvent* qskClonedMouseEvent(
 
     if ( item )
     {
-        QPointF localPos = item->mapFromScene( event->windowPos() );
+        QPointF localPos = item->mapFromScene( qskMouseScenePosition( event ) );
         clonedEvent = QQuickWindowPrivate::cloneMouseEvent( event, &localPos );
     }
     else

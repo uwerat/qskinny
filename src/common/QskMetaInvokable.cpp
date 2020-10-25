@@ -16,6 +16,15 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qobject_p.h>
 QSK_QT_PRIVATE_END
 
+static inline void *qskMetaTypeCreate( int type, const void *copy )
+{
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+    return QMetaType( type ).create( copy );
+#else
+    return QMetaType::create( type, copy );
+#endif
+}
+
 namespace
 {
     using CallFunction = QObjectPrivate::StaticMetaCallFunction;
@@ -233,7 +242,7 @@ static void qskInvokeMetaCall(
                     }
 
                     types[ i ] = method.parameterType( i - 1 );
-                    arguments[ i ] = QMetaType::create( types[ i ], argv[ i ] );
+                    arguments[ i ] = qskMetaTypeCreate( types[ i ], argv[ i ] );
                 }
             }
             else
@@ -247,7 +256,7 @@ static void qskInvokeMetaCall(
                 arguments = static_cast< void** >( malloc( argc * sizeof( void* ) ) );
 
                 types[ 0 ] = property.userType();
-                arguments[ 0 ] = QMetaType::create( types[ 0 ], argv[ 0 ] );
+                arguments[ 0 ] = qskMetaTypeCreate( types[ 0 ], argv[ 0 ] );
             }
 
             if ( receiver.isNull() )
