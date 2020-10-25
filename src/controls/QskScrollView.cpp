@@ -6,6 +6,7 @@
 #include "QskScrollView.h"
 #include "QskAnimationHint.h"
 #include "QskBoxBorderMetrics.h"
+#include "QskEvent.h"
 
 QSK_SUBCONTROL( QskScrollView, Panel )
 QSK_SUBCONTROL( QskScrollView, Viewport )
@@ -16,15 +17,6 @@ QSK_SUBCONTROL( QskScrollView, VerticalScrollHandle )
 
 QSK_SYSTEM_STATE( QskScrollView, VerticalHandlePressed, QskAspect::FirstSystemState << 1 )
 QSK_SYSTEM_STATE( QskScrollView, HorizontalHandlePressed, QskAspect::FirstSystemState << 2 )
-
-static inline QPointF qskMousePosition( const QMouseEvent* event )
-{
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-    return event->position();
-#else
-    return event->localPos();
-#endif
-}
 
 class QskScrollView::PrivateData
 {
@@ -221,12 +213,11 @@ QPointF QskScrollView::scrollOffset( const QWheelEvent* event ) const
 {
     QPointF offset;
 
+    const auto wheelPos = qskWheelPosition( event );
+
 #if QT_VERSION < 0x050e00
-    const auto wheelPos = event->posF();
     const auto wheelDelta = event->delta();
 #else
-    const auto wheelPos = event->position();
-
     const QPoint delta = event->angleDelta();
     const int wheelDelta = ( qAbs( delta.x() ) > qAbs( delta.y() ) )
         ? delta.x() : delta.y();

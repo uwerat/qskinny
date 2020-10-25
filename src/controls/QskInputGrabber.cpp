@@ -5,6 +5,7 @@
 
 #include "QskInputGrabber.h"
 #include "QskWindow.h"
+#include "QskEvent.h"
 
 #include <qpointer.h>
 
@@ -151,26 +152,21 @@ bool QskInputGrabber::event( QEvent* event )
         case QEvent::MouseMove:
         case QEvent::MouseButtonRelease:
         {
-            const auto ev = static_cast< QMouseEvent* >( event );
-            doBlock = isBlocking( ev->localPos() );
+            const auto mouseEvent = static_cast< QMouseEvent* >( event );
+            doBlock = isBlocking( qskMousePosition( mouseEvent ) );
             break;
         }
         case QEvent::Wheel:
         {
-            const auto ev = static_cast< QWheelEvent* >( event );
-
-#if QT_VERSION < 0x050e00
-            doBlock = isBlocking( ev->posF() );
-#else
-            doBlock = isBlocking( ev->position() );
-#endif
+            const auto wheelEvent = static_cast< QWheelEvent* >( event );
+            doBlock = isBlocking( qskWheelPosition( wheelEvent ) );
             break;
         }
         case QEvent::HoverEnter:
         case QEvent::HoverLeave:
         {
             const auto ev = static_cast< QHoverEvent* >( event );
-            doBlock = isBlocking( ev->posF() );
+            doBlock = isBlocking( qskHoverPosition( ev ) );
             break;
         }
     }

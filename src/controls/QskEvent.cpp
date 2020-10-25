@@ -63,6 +63,24 @@ QPointF qskMouseScenePosition( const QMouseEvent* event )
 #endif
 }
 
+QPointF qskWheelPosition( const QWheelEvent* event )
+{
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 14, 0 )
+    return event->position();
+#else
+    return event->posF();
+#endif
+}
+
+QPointF qskHoverPosition( const QHoverEvent* event )
+{
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 14, 0 )
+    return event->position();
+#else
+    return event->posF();
+#endif
+}
+
 QskEvent::QskEvent( QskEvent::Type type )
     : QEvent( static_cast< QEvent::Type >( type ) )
 {
