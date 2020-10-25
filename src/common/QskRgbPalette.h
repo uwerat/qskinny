@@ -12,10 +12,6 @@
 
 class QskGradientStop;
 
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-    template< typename T > class QVector;
-#endif
-
 class QSK_EXPORT QskRgbPalette
 {
     Q_GADGET
