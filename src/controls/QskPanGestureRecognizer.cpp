@@ -191,7 +191,7 @@ int QskPanGestureRecognizer::minDistance() const
 
 void QskPanGestureRecognizer::pressEvent( const QMouseEvent* event )
 {
-    m_data->origin = m_data->pos = event->localPos();
+    m_data->origin = m_data->pos = qskMousePosition( event );
     m_data->timestamp = timestamp();
 
     m_data->velocityTracker.reset();
@@ -205,7 +205,7 @@ void QskPanGestureRecognizer::moveEvent( const QMouseEvent* event )
     const QPointF oldPos = m_data->pos;
 
     m_data->timestamp = event->timestamp();
-    m_data->pos = event->localPos();
+    m_data->pos = qskMousePosition( event );
 
     if ( elapsedTotal > 0 ) // ???
     {
