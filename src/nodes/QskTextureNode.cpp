@@ -51,10 +51,12 @@ namespace
         setShaderSourceFile( QOpenGLShader::Vertex,
             QStringLiteral( ":/qt-project.org/scenegraph/shaders/opaquetexture.vert" ) );
 
-        setShaderSourceFile( QOpenGLShader::Fragment,
-            QStringLiteral( ":/qt-project.org/scenegraph/shaders/opaquetexture.frag" ) );
-
-        if ( !m_isOpaque )
+        if ( m_isOpaque )
+        {
+            setShaderSourceFile( QOpenGLShader::Fragment,
+                QStringLiteral( ":/qt-project.org/scenegraph/shaders/opaquetexture.frag" ) );
+        }
+        else
         {
             setShaderSourceFile( QOpenGLShader::Fragment,
                 QStringLiteral( ":/qt-project.org/scenegraph/shaders/texture.frag" ) );
@@ -152,6 +154,30 @@ class QskTextureNodePrivate final : public QSGGeometryNodePrivate
     {
     }
 
+    void updateTextureGeometry()
+    {
+        QRectF r( 0, 0, 1, 1 );
+
+        if ( this->mirrorOrientations & Qt::Horizontal )
+        {
+            r.setLeft( 1 );
+            r.setRight( 0 );
+        }
+
+        if ( mirrorOrientations & Qt::Vertical )
+        {
+            r.setTop( 1 );
+            r.setBottom( 0 );
+        }
+
+        const qreal ratio = QskTextureRenderer::devicePixelRatio();
+
+        const QRectF scaledRect( rect.x(), rect.y(),
+            rect.width() / ratio, rect.height() / ratio );
+
+        QSGGeometry::updateTexturedRectGeometry( &geometry, scaledRect, r );
+    }
+
     QSGGeometry geometry;
 
     Material opaqueMaterial;
@@ -196,19 +222,38 @@ void QskTextureNode::setRect( const QRectF& r )
 {
     Q_D( QskTextureNode );
 
-    if ( d->rect == r )
-        return;
+    if ( d->rect != r )
+    {
+        d->rect = r;
+        d->updateTextureGeometry();
 
-    d->rect = r;
-
-    updateTexture();
-    markDirty( DirtyGeometry );
+        markDirty( DirtyGeometry );
+    }
 }
 
 QRectF QskTextureNode::rect() const
 {
     Q_D( const QskTextureNode );
     return d->rect;
+}
+
+void QskTextureNode::setMirrored( Qt::Orientations orientations )
+{
+    Q_D( QskTextureNode );
+
+    if ( d->mirrorOrientations != orientations )
+    {
+        d->mirrorOrientations = orientations;
+        d->updateTextureGeometry();
+
+        markDirty( DirtyMaterial );
+    }
+}
+
+Qt::Orientations QskTextureNode::mirrored() const
+{
+    Q_D( const QskTextureNode );
+    return d->mirrorOrientations;
 }
 
 void QskTextureNode::setTextureId( uint textureId )
@@ -228,64 +273,12 @@ void QskTextureNode::setTextureId( uint textureId )
 
     d->material.setTextureId( textureId );
     d->opaqueMaterial.setTextureId( textureId );
-    updateTexture();
 
-    DirtyState dirty = DirtyMaterial;
-#if 0
-    // if old/new is in the atlas
-    dirty |= DirtyGeometry;
-#endif
-
-    markDirty( dirty );
+    markDirty( DirtyMaterial );
 }
 
 uint QskTextureNode::textureId() const
 {
     Q_D( const QskTextureNode );
     return d->material.textureId();
-}
-
-void QskTextureNode::setMirrored( Qt::Orientations orientations )
-{
-    Q_D( QskTextureNode );
-
-    if ( d->mirrorOrientations == orientations )
-        return;
-
-    d->mirrorOrientations = orientations;
-    updateTexture();
-
-    markDirty( DirtyMaterial );
-}
-
-Qt::Orientations QskTextureNode::mirrored() const
-{
-    Q_D( const QskTextureNode );
-    return d->mirrorOrientations;
-}
-
-void QskTextureNode::updateTexture()
-{
-    Q_D( QskTextureNode );
-
-    QRectF r( 0, 0, 1, 1 );
-
-    if ( d->mirrorOrientations & Qt::Horizontal )
-    {
-        r.setLeft( 1 );
-        r.setRight( 0 );
-    }
-
-    if ( d->mirrorOrientations & Qt::Vertical )
-    {
-        r.setTop( 1 );
-        r.setBottom( 0 );
-    }
-
-    const qreal ratio = QskTextureRenderer::devicePixelRatio();
-
-    const QRectF rect( d->rect.x(), d->rect.y(),
-        d->rect.width() / ratio, d->rect.height() / ratio );
-
-    QSGGeometry::updateTexturedRectGeometry( &d->geometry, rect, r );
 }

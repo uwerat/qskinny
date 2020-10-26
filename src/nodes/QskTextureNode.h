@@ -29,8 +29,6 @@ class QSK_EXPORT QskTextureNode : public QSGGeometryNode
     Qt::Orientations mirrored() const;
 
   private:
-    void updateTexture();
-
     Q_DECLARE_PRIVATE( QskTextureNode )
 };
 
