@@ -136,6 +136,26 @@ static inline int qskToIntegerConstraint( qreal valueF )
     return value;
 }
 
+static inline void qskSetVisualizationMode(
+    QQuickWindow* window, const QByteArray& mode )
+{
+    auto d = QQuickWindowPrivate::get( window );
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+    d->visualizationMode = mode;
+#else
+    d->customRenderMode = mode;
+#endif
+}
+
+static inline QByteArray qskVisualizationMode( const QQuickWindow* window )
+{
+    auto d = QQuickWindowPrivate::get( const_cast< QQuickWindow* >( window ) );
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+    return d->visualizationMode; 
+#else
+    return d->customRenderMode;
+#endif
+}
 class QskWindowPrivate : public QQuickWindowPrivate
 {
     Q_DECLARE_PUBLIC( QskWindow )
@@ -583,10 +603,9 @@ void QskWindow::setCustomRenderMode( const char* mode )
 
         void run() override
         {
-            auto* d = QQuickWindowPrivate::get( m_window );
+            qskSetVisualizationMode( m_window, m_mode );
 
-            d->customRenderMode = m_mode;
-
+            auto d = QQuickWindowPrivate::get( m_window );
             if ( d->renderer )
             {
                 delete d->renderer->rootNode();
@@ -602,10 +621,11 @@ void QskWindow::setCustomRenderMode( const char* mode )
         const QByteArray m_mode;
     };
 
-    const QByteArray m( mode );
+    const QByteArray newMode( mode );
 
-    Q_D( QskWindow );
-    if ( m != d->customRenderMode )
+    const auto oldMode = qskVisualizationMode( this );
+
+    if ( newMode != oldMode )
     {
         /*
             batch renderer uses an optimized memory allocation strategy,
@@ -616,10 +636,10 @@ void QskWindow::setCustomRenderMode( const char* mode )
             after swapping.
          */
 
-        if ( m.isEmpty() != d->customRenderMode.isEmpty() )
-            scheduleRenderJob( new RenderJob( this, m ), AfterSwapStage );
+        if ( newMode.isEmpty() != oldMode.isEmpty() )
+            scheduleRenderJob( new RenderJob( this, newMode ), AfterSwapStage );
         else
-            d->customRenderMode = m;
+            qskSetVisualizationMode( this, newMode );
 
         update();
     }
@@ -627,8 +647,7 @@ void QskWindow::setCustomRenderMode( const char* mode )
 
 const char* QskWindow::customRenderMode() const
 {
-    Q_D( const QskWindow );
-    return d->customRenderMode;
+    return qskVisualizationMode( this );
 }
 
 void QskWindow::enforceSkin()
