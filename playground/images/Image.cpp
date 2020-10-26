@@ -124,24 +124,42 @@ void Image::itemChange( QQuickItem::ItemChange change,
     }
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+
+void Image::geometryChange(
+    const QRectF& newGeometry, const QRectF& oldGeometry )
+{
+    Inherited::geometryChange( newGeometry, oldGeometry );
+
+    if ( newGeometry.size() != oldGeometry.size() )
+        adjustSourceSize( newGeometry.size() );
+}
+
+#else
+
 void Image::geometryChanged(
     const QRectF& newGeometry, const QRectF& oldGeometry )
 {
     Inherited::geometryChanged( newGeometry, oldGeometry );
 
     if ( newGeometry.size() != oldGeometry.size() )
+        adjustSourceSize( newGeometry.size() );
+}
+
+#endif
+
+void Image::adjustSourceSize( const QSizeF& size )
+{
+    if ( m_data->sourceSizeAdjustment )
     {
-        if ( m_data->sourceSizeAdjustment )
+        if ( m_data->deferredUpdates )
         {
-            if ( m_data->deferredUpdates )
-            {
-                setImplicitSize( newGeometry.width(), newGeometry.height() );
-                polish();
-            }
-            else
-            {
-                setSourceSize( newGeometry.size().toSize() );
-            }
+            setImplicitSize( size.width(), size.height() );
+            polish();
+        }
+        else
+        {
+            setSourceSize( size.toSize() );
         }
     }
 }

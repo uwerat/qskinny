@@ -59,7 +59,11 @@ class Image : public QQuickImage
     void deferredUpdatesChanged();
 
   protected:
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+    void geometryChange( const QRectF&, const QRectF& ) override;
+#else
     void geometryChanged( const QRectF&, const QRectF& ) override;
+#endif
     void itemChange( ItemChange, const ItemChangeData& ) override;
     void componentComplete() override;
 
@@ -67,6 +71,8 @@ class Image : public QQuickImage
     void updatePolish() override;
 
   private:
+    void adjustSourceSize( const QSizeF& );
+
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
