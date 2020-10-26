@@ -19,6 +19,8 @@ class QSK_EXPORT QskTextureNode : public QSGGeometryNode
     QskTextureNode();
     ~QskTextureNode() override;
 
+    bool isNull() const;
+
     void setRect( const QRectF& );
     QRectF rect() const;
 

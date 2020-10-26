@@ -282,3 +282,10 @@ uint QskTextureNode::textureId() const
     Q_D( const QskTextureNode );
     return d->material.textureId();
 }
+
+
+bool QskTextureNode::isNull() const
+{
+    Q_D( const QskTextureNode );
+    return d->material.textureId() == 0;
+}

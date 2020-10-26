@@ -50,7 +50,7 @@ void QskGraphicNode::setGraphic(
     const QskGraphic& graphic, const QskColorFilter& colorFilter,
     QskTextureRenderer::RenderMode renderMode, const QRectF& rect )
 {
-    bool isTextureDirty = ( QskTextureNode::textureId() == 0 );
+    bool isTextureDirty = isNull();
 
     QSize textureSize;
 

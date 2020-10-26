@@ -34,7 +34,7 @@ QskPaintedNode::~QskPaintedNode()
 void QskPaintedNode::update(
     QskTextureRenderer::RenderMode renderMode, const QRect& rect )
 {
-    bool isTextureDirty = ( QskTextureNode::textureId() == 0 );
+    bool isTextureDirty = isNull();
 
     if ( !isTextureDirty )
     {
