@@ -118,7 +118,13 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
     virtual void windowChangeEvent( QskWindowChangeEvent* );
 
     void itemChange( ItemChange, const ItemChangeData& ) override;
-    void geometryChanged( const QRectF&, const QRectF& ) override;
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+    void geometryChange( const QRectF&, const QRectF& ) override;
+#else
+    // using geometryChange also for Qt5
+    void geometryChanged( const QRectF&, const QRectF& ) override final;
+    virtual void geometryChange( const QRectF&, const QRectF& );
+#endif
 
     virtual void aboutToShow();  // called in updatePolish
 

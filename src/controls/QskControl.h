@@ -196,7 +196,7 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     virtual bool gestureFilter( QQuickItem*, QEvent* );
 
     void itemChange( ItemChange, const ItemChangeData& ) override;
-    void geometryChanged( const QRectF&, const QRectF& ) override;
+    void geometryChange( const QRectF&, const QRectF& ) override;
     void windowDeactivateEvent() override;
 
     void initSizePolicy( QskSizePolicy::Policy, QskSizePolicy::Policy );

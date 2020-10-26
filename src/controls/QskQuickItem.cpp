@@ -290,11 +290,16 @@ void QskQuickItem::setGeometry( qreal x, qreal y, qreal width, qreal height )
             d->dirty( QQuickItemPrivate::Size );
 
         /*
-            Unfortunately geometryChanged is protected and we can't implement
+            Unfortunately geometryChange(d) is protected and we can't implement
             this code as qskSetItemGeometry - further hacking required: TODO ...
          */
 
-        geometryChanged( QRectF( d->x, d->y, d->width, d->height ), oldRect );
+        const QRectF newRect( d->x, d->y, d->width, d->height );
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+        geometryChange( newRect, oldRect );
+#else
+        geometryChanged( newRect, oldRect );
+#endif
     }
 }
 
@@ -787,10 +792,24 @@ void QskQuickItem::itemChange( QQuickItem::ItemChange change,
     Inherited::itemChange( change, value );
 }
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+
 void QskQuickItem::geometryChanged(
     const QRectF& newGeometry, const QRectF& oldGeometry )
 {
+    geometryChange( newGeometry, oldGeometry );
+}
+
+#endif
+
+void QskQuickItem::geometryChange(
+    const QRectF& newGeometry, const QRectF& oldGeometry )
+{
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
     Inherited::geometryChanged( newGeometry, oldGeometry );
+#else
+    Inherited::geometryChange( newGeometry, oldGeometry );
+#endif
 
     Q_D( const QskQuickItem );
     if ( !d->polishScheduled && d->polishOnResize )

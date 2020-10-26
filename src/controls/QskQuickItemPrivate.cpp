@@ -152,7 +152,7 @@ void QskQuickItemPrivate::setImplicitSize( qreal w, qreal h, bool doNotify )
             const QRectF newRect( x, y, width, height );
 
             Q_Q( QskQuickItem );
-            q->geometryChanged( newRect, oldRect );
+            q->geometryChange( newRect, oldRect );
         }
     }
 

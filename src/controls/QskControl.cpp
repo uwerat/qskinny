@@ -886,7 +886,7 @@ void QskControl::itemChange( QQuickItem::ItemChange change,
     Inherited::itemChange( change, value );
 }
 
-void QskControl::geometryChanged(
+void QskControl::geometryChange(
     const QRectF& newGeometry, const QRectF& oldGeometry )
 {
     if ( d_func()->autoLayoutChildren )
@@ -895,7 +895,7 @@ void QskControl::geometryChanged(
             polish();
     }
 
-    Inherited::geometryChanged( newGeometry, oldGeometry );
+    Inherited::geometryChange( newGeometry, oldGeometry );
 }
 
 void QskControl::windowDeactivateEvent()
