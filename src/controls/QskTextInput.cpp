@@ -154,12 +154,22 @@ namespace
         }
 
       protected:
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+        void geometryChange(
+            const QRectF& newGeometry, const QRectF& oldGeometry ) override
+        {
+            Inherited::geometryChange( newGeometry, oldGeometry );
+            updateClip();
+        }
+#else
         void geometryChanged(
             const QRectF& newGeometry, const QRectF& oldGeometry ) override
         {
             Inherited::geometryChanged( newGeometry, oldGeometry );
             updateClip();
         }
+#endif
 
         void updateClip()
         {
