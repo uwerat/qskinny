@@ -317,8 +317,16 @@ void QskQml::registerTypes()
                 {
                     auto source = it.value();
                     auto target = QskGradientStop();
-                    QMetaType::convert( &source, qMetaTypeId< decltype( source ) >(),
-                        &target, qMetaTypeId< decltype( target ) >() );
+
+                    const int sourceTypeId = qMetaTypeId< decltype( source ) >();
+                    const int targetTypeId = qMetaTypeId< decltype( target ) >();
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+                    QMetaType::convert( QMetaType( sourceTypeId ), &source,
+                        QMetaType( targetTypeId ), &target );
+#else
+                    QMetaType::convert( &source, sourceTypeId, &target, targetTypeId );
+#endif
                     stops.append( target );
                 }
             }
