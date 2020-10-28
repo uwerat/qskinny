@@ -17,7 +17,7 @@ class QSK_EXPORT QskBox : public QskControl
     Q_PROPERTY( bool panel READ hasPanel
         WRITE setPanel NOTIFY panelChanged FINAL )
 
-    Q_PROPERTY( QMarginsF padding READ padding
+    Q_PROPERTY( QskMargins padding READ padding
         WRITE setPadding RESET resetPadding NOTIFY paddingChanged )
 
   public:

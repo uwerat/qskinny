@@ -37,7 +37,7 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     Q_PROPERTY( bool wheelEnabled READ isWheelEnabled
         WRITE setWheelEnabled NOTIFY wheelEnabledChanged FINAL )
 
-    Q_PROPERTY( QMarginsF margins READ margins
+    Q_PROPERTY( QskMargins margins READ margins
         WRITE setMargins RESET resetMargins NOTIFY marginsChanged )
 
     Q_PROPERTY( QskGradient background READ background

@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskBox.h"
+#include "QskMargins.h"
 
 QSK_SUBCONTROL( QskBox, Panel )
 

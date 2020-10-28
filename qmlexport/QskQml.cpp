@@ -45,9 +45,7 @@
 #include <QskVirtualKeyboard.h>
 #include <QskWindow.h>
 
-
 #include <qjsvalueiterator.h>
-#include <qmargins.h>
 #include <qstringlist.h>
 
 QSK_QT_PRIVATE_BEGIN
@@ -105,8 +103,6 @@ struct QskRgbValue_Gadget
     Q_ENUM( Enum )
     Q_GADGET
 };
-
-Q_DECLARE_METATYPE( QMarginsF )
 
 // Use this pattern to provide valueOf() to any type, something which is needed
 // in JS to convert a variant to a JS value. This would be a template, but moc
@@ -267,6 +263,7 @@ void QskQml::registerTypes()
     QSK_REGISTER_GADGET( QskLayoutHint, "LayoutHint" );
     QSK_REGISTER_GADGET( QskSizePolicy, "SizePolicy" );
     QSK_REGISTER_GADGET( QskTextOptions, "TextOptions" );
+    QSK_REGISTER_GADGET( QskMargins, "Margins" );
 
     // Support (lists of) GradientStop
     QMetaType::registerConverter< QJSValue, QskGradientStop >(
@@ -310,46 +307,8 @@ void QskQml::registerTypes()
         }
     );
 
-    // Support QMarginsF in QML
-    class MarginsProvider final : public QQmlValueTypeProvider
-    {
-      public:
-        const QMetaObject* getMetaObjectForMetaType( int id ) override
-        {
-            if ( id == qMetaTypeId< QMarginsF >() )
-                return &QskMargins::staticMetaObject;
-
-            return nullptr;
-        }
-    };
-    QQml_addValueTypeProvider( new MarginsProvider() );
-
-    QQmlMetaType::registerCustomStringConverter(
-        qMetaTypeId< QMarginsF >(),
-        []( const QString& rhs )
-        {
-            auto margin = rhs.toDouble();
-            return QVariant::fromValue( QMarginsF( margin, margin, margin, margin ) );
-        }
-    );
-
-    QMetaType::registerConverter< int, QMarginsF >(
-        []( int value ) { return QMarginsF( value, value, value, value ); } );
-
-    QMetaType::registerConverter< qreal, QMarginsF >(
-        []( qreal value ) { return QMarginsF( value, value, value, value ); } );
-
-    qRegisterAnimationInterpolator< QMarginsF >(
-        []( const QMarginsF& from, const QMarginsF& to, qreal progress )
-        {
-            return QVariant::fromValue( QMarginsF(
-                _q_interpolate( from.left(), to.left(), progress ),
-                _q_interpolate( from.top(), to.top(), progress ),
-                _q_interpolate( from.right(), to.right(), progress ),
-                _q_interpolate( from.bottom(), to.bottom(), progress )
-            ) );
-        }
-    );
+    QQmlMetaType::registerCustomStringConverter( qMetaTypeId< QskMargins >(),
+        []( const QString& s ) { return QVariant::fromValue( QskMargins( s.toDouble() ) ); } );
 
     // Support QskSizePolicy in QML user properties
     QMetaType::registerConverter< QJSValue, QskSizePolicy >(

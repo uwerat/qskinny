@@ -1,6 +1,17 @@
 #include "QskMargins.h"
 #include <qvariant.h>
 
+static void qskRegisterConverter()
+{
+    QMetaType::registerConverter< int, QskMargins >(
+        []( int value ) { return QskMargins( value ); } );
+
+    QMetaType::registerConverter< qreal, QskMargins >(
+        []( qreal value ) { return QskMargins( value ); } );
+}
+
+Q_CONSTRUCTOR_FUNCTION( qskRegisterConverter )
+
 static inline qreal qskInterpolated( qreal from, qreal to, qreal ratio )
 {
     return from + ( to - from ) * ratio;

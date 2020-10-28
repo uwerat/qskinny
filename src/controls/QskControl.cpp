@@ -14,6 +14,7 @@
 #include "QskSkin.h"
 #include "QskSkinlet.h"
 #include "QskSkinHintTable.h"
+#include "QskMargins.h"
 
 #include <qlocale.h>
 #include <qvector.h>
