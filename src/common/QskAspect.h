@@ -28,7 +28,7 @@
 
 #define QSK_NAMESPACE( name ) namespace name
 #define QSK_ENUM( name ) \
-    inline const QMetaObject* qt_getEnumMetaObject(name) noexcept { return &staticMetaObject; } \
+    inline constexpr const QMetaObject* qt_getEnumMetaObject(name) noexcept { return &staticMetaObject; } \
     inline constexpr const char* qt_getEnumName(name) noexcept { return #name; }
 
 #endif
