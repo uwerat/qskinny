@@ -21,6 +21,13 @@ class QVariant;
  */
 class QSK_EXPORT QskMargins : public QMarginsF
 {
+    Q_GADGET
+
+    Q_PROPERTY( qreal left READ left WRITE setLeft )
+    Q_PROPERTY( qreal top READ top WRITE setTop )
+    Q_PROPERTY( qreal right READ right WRITE setRight )
+    Q_PROPERTY( qreal bottom READ bottom WRITE setBottom )
+
   public:
     constexpr QskMargins() noexcept = default;
     constexpr QskMargins( const QMarginsF& ) noexcept;

@@ -63,3 +63,5 @@ qreal QskMargins::marginAt( Qt::Edge edge ) const noexcept
 
     return 0.0;
 }
+
+#include "moc_QskMargins.cpp"
