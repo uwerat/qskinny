@@ -18,6 +18,7 @@
 #include <QskGraphicLabel.h>
 #include <QskIntervalF.h>
 #include <QskLayoutHint.h>
+#include <QskMargins.h>
 #include <QskMessageWindow.h>
 #include <QskPopup.h>
 #include <QskProgressBar.h>
@@ -91,19 +92,6 @@ QSK_QT_PRIVATE_END
 }
 #endif
 
-// Utility for exposing a value type which is missing Q_GADGET, like QMarginsF
-template< typename Type, typename Gadget >
-class ValueProvider : public QQmlValueTypeProvider
-{
-  public:
-    const QMetaObject* getMetaObjectForMetaType( int id ) override
-    {
-        if ( id == qMetaTypeId< Type >() )
-            return &Gadget::staticMetaObject;
-        return nullptr;
-    }
-};
-
 // Expose values in QskRgbValue to QML
 struct QskRgbValue_Gadget
 {
@@ -118,18 +106,6 @@ struct QskRgbValue_Gadget
     Q_GADGET
 };
 
-// Out-of-band meta object provider for QMarginsF
-// This is required because QMarginsF doesn't have the Q_GADGET macro, and must
-// therefore be treated like similar classes QRectF/QSizeF/etc.
-
-class QMarginsF_Gadget : public QMarginsF
-{
-    Q_GADGET
-    Q_PROPERTY( qreal left READ left WRITE setLeft )
-    Q_PROPERTY( qreal top READ top WRITE setTop )
-    Q_PROPERTY( qreal right READ right WRITE setRight )
-    Q_PROPERTY( qreal bottom READ bottom WRITE setBottom )
-};
 Q_DECLARE_METATYPE( QMarginsF )
 
 // Use this pattern to provide valueOf() to any type, something which is needed
@@ -335,7 +311,18 @@ void QskQml::registerTypes()
     );
 
     // Support QMarginsF in QML
-    QQml_addValueTypeProvider( new ValueProvider< QMarginsF, QMarginsF_Gadget >() );
+    class MarginsProvider final : public QQmlValueTypeProvider
+    {
+      public:
+        const QMetaObject* getMetaObjectForMetaType( int id ) override
+        {
+            if ( id == qMetaTypeId< QMarginsF >() )
+                return &QskMargins::staticMetaObject;
+
+            return nullptr;
+        }
+    };
+    QQml_addValueTypeProvider( new MarginsProvider() );
 
     QQmlMetaType::registerCustomStringConverter(
         qMetaTypeId< QMarginsF >(),
@@ -352,7 +339,7 @@ void QskQml::registerTypes()
     QMetaType::registerConverter< qreal, QMarginsF >(
         []( qreal value ) { return QMarginsF( value, value, value, value ); } );
 
-        qRegisterAnimationInterpolator< QMarginsF >(
+    qRegisterAnimationInterpolator< QMarginsF >(
         []( const QMarginsF& from, const QMarginsF& to, qreal progress )
         {
             return QVariant::fromValue( QMarginsF(
