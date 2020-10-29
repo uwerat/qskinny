@@ -7,6 +7,7 @@
 #include "QskLayoutQml.h"
 #include "QskShortcutQml.h"
 #include "QskMainQml.h"
+#include "QskRgbValueQml.h"
 
 #include <QskCorner.h>
 #include <QskDialog.h>
@@ -24,7 +25,6 @@
 #include <QskPopup.h>
 #include <QskProgressBar.h>
 #include <QskPushButton.h>
-#include <QskRgbValue.h>
 #include <QskScrollArea.h>
 #include <QskScrollView.h>
 #include <QskSelectionWindow.h>
@@ -70,21 +70,6 @@ QSK_QT_PRIVATE_END
     qmlRegisterSingletonType< className >( QSK_MODULE_NAME, 1, 0, typeName, \
         [] ( QQmlEngine*, QJSEngine* ) { return dynamic_cast< QObject* >( singleton ); } )
 
-// Expose values in QskRgbValue to QML
-struct QskRgbValue_Gadget
-{
-    enum Enum
-    {
-#define RGB( name, value ) name = value,
-        QSK_RGB_VALUES
-#undef RGB
-    };
-
-    Q_ENUM( Enum )
-    Q_GADGET
-};
-
-
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
 
 #include <qloggingcategory.h>
@@ -127,7 +112,11 @@ namespace
 
 void QskQml::registerTypes()
 {
+#if 0
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
     qmlRegisterRevision< QQuickItem, 6 >( QSK_MODULE_NAME, 1, 0 );
+#endif
+#endif
 
     qmlRegisterUncreatableType< QskSetup >( QSK_MODULE_NAME, 1, 0, "Setup", QString() );
     qmlRegisterUncreatableType< QskSkin >( QSK_MODULE_NAME, 1, 0, "Skin", QString() );
@@ -196,7 +185,7 @@ void QskQml::registerTypes()
         WarningBlocker warningBlocker;
 #endif
 
-        QSK_REGISTER_GADGET( QskRgbValue_Gadget, "RgbValue" );
+        QSK_REGISTER_GADGET( QskRgbValueQml, "RgbValue" );
         QSK_REGISTER_GADGET( QskStandardSymbol, "StandardSymbol" );
         QSK_REGISTER_GADGET( QskCorner, "Corner" );
         QSK_REGISTER_GADGET( QskGradient, "Gradient" );
@@ -271,5 +260,3 @@ void QskQml::registerTypes()
         }
     );
 }
-
-#include "QskQml.moc"

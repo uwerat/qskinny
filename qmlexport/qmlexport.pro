@@ -10,6 +10,7 @@ HEADERS += \
     QskQmlGlobal.h \
     QskShortcutQml.h \
     QskLayoutQml.h \
+    QskRgbValueQml.h \
     QskMainQml.h \
     QskQml.h
 
