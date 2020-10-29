@@ -72,24 +72,6 @@ QSK_QT_PRIVATE_END
     qmlRegisterSingletonType< className >( QSK_MODULE_NAME, 1, 0, typeName, \
         [] ( QQmlEngine*, QJSEngine* ) { return dynamic_cast< QObject* >( singleton ); } )
 
-#if 0
-// Utility for exposing a namespaced enum to QML, copied from qmlRegisterUncreatableType
-#define QSK_REGISTER_NS_ENUM( namespaceName, enumName, typeName ) \
-{ \
-    namespace T = namespaceName; \
-    QML_GETTYPENAMES \
-    QQmlPrivate::RegisterType type = \
-    { \
-        1, qRegisterNormalizedMetaType< T::enumName* >( pointerName.constData() ), \
-        qRegisterNormalizedMetaType< QQmlListProperty< T::enumName > >( listName.constData() ), \
-        0, nullptr, QString(), QSK_MODULE_NAME, 1, 0, typeName, &T::staticMetaObject, \
-        nullptr, nullptr, -1, -1, -1, nullptr, nullptr, nullptr, 0 \
-    }; \
-    (void) QQmlPrivate::qmlregister(QQmlPrivate::TypeRegistration, &type); \
-    (void) qRegisterMetaType< namespaceName::enumName >(); \
-}
-#endif
-
 // Expose values in QskRgbValue to QML
 struct QskRgbValue_Gadget
 {
@@ -163,22 +145,22 @@ class QskMain : public QObject
             this, nullptr,
             []( QQmlListProperty< QObject >* property, QObject* value )
             {
-                QskMain* main = static_cast< QskMain* >( property->object );
+                auto main = static_cast< QskMain* >( property->object );
                 main->m_data.append( value );
             },
             []( QQmlListProperty< QObject >* property )
             {
-                const QskMain* main = static_cast< const QskMain* >( property->object );
-                return main->m_data.count();
+                auto main = static_cast< const QskMain* >( property->object );
+                return static_cast< int >( main->m_data.count() );
             },
             []( QQmlListProperty< QObject >* property, int index )
             {
-                const QskMain* main = static_cast< const QskMain* >( property->object );
+                auto main = static_cast< const QskMain* >( property->object );
                 return main->m_data.at( index );
             },
             []( QQmlListProperty< QObject >* property )
             {
-                QskMain* main = static_cast< QskMain* >( property->object );
+                auto main = static_cast< QskMain* >( property->object );
                 main->m_data.clear();
             }
         );
