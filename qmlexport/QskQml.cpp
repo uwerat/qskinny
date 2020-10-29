@@ -276,16 +276,33 @@ void QskQml::registerTypes()
 
     QSK_REGISTER_FLAGS( QskDialog::Actions );
 
-    QSK_REGISTER_GADGET( QskRgbValue_Gadget, "RgbValue" );
-    QSK_REGISTER_GADGET( QskStandardSymbol, "StandardSymbol" );
-    QSK_REGISTER_GADGET( QskCorner, "Corner" );
-    QSK_REGISTER_GADGET( QskGradient, "Gradient" );
-    QSK_REGISTER_GADGET( QskGradientStop, "GradientStop" );
-    QSK_REGISTER_GADGET( QskIntervalF, "IntervalF" );
-    QSK_REGISTER_GADGET( QskLayoutHint, "LayoutHint" );
-    QSK_REGISTER_GADGET( QskSizePolicy, "SizePolicy" );
-    QSK_REGISTER_GADGET( QskTextOptions, "TextOptions" );
-    QSK_REGISTER_GADGET( QskMargins, "Margins" );
+    {
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+        /*
+            The QML engine warns about registering uncreatables with names starting with
+            a capital letter. But as those classes usually appear only as scope for
+            local enums in QML, we do want to have capitals. f.e.:
+
+                - "policy.horizonalPolicy : SizePolicy::Minimum".
+
+            Maybe we need to introduce some dummy gadgets exposing the enums
+            in capital letters by using QML_FOREIGN_NAMESPACE, while the
+            original gadget is exposed in lower letters. TODO ...
+         */
+        WarningBlocker warningBlocker;
+#endif
+
+        QSK_REGISTER_GADGET( QskRgbValue_Gadget, "RgbValue" );
+        QSK_REGISTER_GADGET( QskStandardSymbol, "StandardSymbol" );
+        QSK_REGISTER_GADGET( QskCorner, "Corner" );
+        QSK_REGISTER_GADGET( QskGradient, "Gradient" );
+        QSK_REGISTER_GADGET( QskGradientStop, "GradientStop" );
+        QSK_REGISTER_GADGET( QskIntervalF, "IntervalF" );
+        QSK_REGISTER_GADGET( QskLayoutHint, "LayoutHint" );
+        QSK_REGISTER_GADGET( QskSizePolicy, "SizePolicy" );
+        QSK_REGISTER_GADGET( QskTextOptions, "TextOptions" );
+        QSK_REGISTER_GADGET( QskMargins, "Margins" );
+    }
 
     // Support (lists of) GradientStop
     QMetaType::registerConverter< QJSValue, QskGradientStop >(
