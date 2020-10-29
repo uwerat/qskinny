@@ -180,6 +180,46 @@ class QskMain : public QObject
 
 Q_DECLARE_METATYPE( QskSetupFlagsProvider )
 
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+
+#include <qloggingcategory.h>
+
+namespace
+{
+    class WarningBlocker
+    {
+      public:
+        WarningBlocker()
+        {
+            m_oldFilter = QLoggingCategory::installFilter( &WarningBlocker::filter );
+        }
+
+        ~WarningBlocker()
+        {
+            QLoggingCategory::installFilter( m_oldFilter );
+        }
+
+      private:
+
+        static void filter( QLoggingCategory *category )
+        {
+            if ( qstrcmp( category->categoryName(), "qt.qml.typeregistration" ) == 0 )
+            {
+                category->setEnabled( QtWarningMsg, false);
+                return;
+            }
+
+            m_oldFilter(category);
+        }
+
+        static QLoggingCategory::CategoryFilter m_oldFilter;
+    };
+
+    QLoggingCategory::CategoryFilter WarningBlocker::m_oldFilter;
+}
+
+#endif
+
 void QskQml::registerTypes()
 {
     qmlRegisterRevision< QQuickItem, 6 >( QSK_MODULE_NAME, 1, 0 );
