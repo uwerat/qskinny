@@ -6,6 +6,7 @@
 #include "QskQml.h"
 #include "QskLayoutQml.h"
 #include "QskShortcutQml.h"
+#include "QskMainQml.h"
 
 #include <QskCorner.h>
 #include <QskDialog.h>
@@ -49,9 +50,7 @@
 #include <qstringlist.h>
 
 QSK_QT_PRIVATE_BEGIN
-#include <private/qqmlglobal_p.h>
 #include <private/qqmlmetatype_p.h>
-#include <private/qvariantanimation_p.h>
 QSK_QT_PRIVATE_END
 
 #define QSK_MODULE_NAME "Skinny"
@@ -65,8 +64,7 @@ QSK_QT_PRIVATE_END
 
 // Required for QFlags to be constructed from an enum value
 #define QSK_REGISTER_FLAGS( Type ) \
-    QMetaType::registerConverter< int, Type >([] ( int value ) \
-    { return Type( value ); })
+    QMetaType::registerConverter< int, Type >([] ( int value ) { return Type( value ); })
 
 #define QSK_REGISTER_SINGLETON( className, typeName, singleton ) \
     qmlRegisterSingletonType< className >( QSK_MODULE_NAME, 1, 0, typeName, \
@@ -86,99 +84,6 @@ struct QskRgbValue_Gadget
     Q_GADGET
 };
 
-// Use this pattern to provide valueOf() to any type, something which is needed
-// in JS to convert a variant to a JS value. This would be a template, but moc
-// doesn't support template classes.
-
-class QskSetupFlagsProvider : public QskSetup::Flags
-{
-    Q_GADGET
-  public:
-    template< typename... Args >
-    QskSetupFlagsProvider( Args&&... args )
-        : QskSetup::Flags( std::forward< Args >( args )... )
-    {
-    }
-
-    Q_INVOKABLE int valueOf() const { return int( *this ); }
-};
-
-class QskMain : public QObject
-{
-  public:
-    Q_OBJECT
-
-    Q_PRIVATE_PROPERTY( setup(), QString skin READ skinName
-        WRITE setSkin NOTIFY skinChanged )
-
-    Q_PROPERTY( QStringList skinList READ skinList NOTIFY skinListChanged )
-
-    Q_PRIVATE_PROPERTY( setup(), QskSetupFlagsProvider controlFlags
-        READ controlFlags WRITE setControlFlags NOTIFY controlFlagsChanged )
-
-    Q_PROPERTY( QQmlListProperty< QObject > data READ data )
-    Q_CLASSINFO( "DefaultProperty", "data" )
-
-  public:
-    QskMain( QObject* parent = nullptr )
-        : QObject( parent )
-    {
-        // how to supress warnings about a missing skinListChanged
-        // as we don't have it ??
-
-        connect( setup(), &QskSetup::skinChanged,
-            this, &QskMain::skinChanged, Qt::QueuedConnection );
-
-        connect( setup(), &QskSetup::controlFlagsChanged,
-            this, &QskMain::controlFlagsChanged, Qt::QueuedConnection );
-    }
-
-    QStringList skinList() const
-    {
-        auto manager = QskSkinManager::instance();
-        return manager ? manager->skinNames() : QStringList();
-    }
-
-    QQmlListProperty< QObject > data()
-    {
-        return QQmlListProperty< QObject >(
-            this, nullptr,
-            []( QQmlListProperty< QObject >* property, QObject* value )
-            {
-                auto main = static_cast< QskMain* >( property->object );
-                main->m_data.append( value );
-            },
-            []( QQmlListProperty< QObject >* property )
-            {
-                auto main = static_cast< const QskMain* >( property->object );
-                return static_cast< int >( main->m_data.count() );
-            },
-            []( QQmlListProperty< QObject >* property, int index )
-            {
-                auto main = static_cast< const QskMain* >( property->object );
-                return main->m_data.at( index );
-            },
-            []( QQmlListProperty< QObject >* property )
-            {
-                auto main = static_cast< QskMain* >( property->object );
-                main->m_data.clear();
-            }
-        );
-    }
-
-  Q_SIGNALS:
-    void skinListChanged(); // never emitted
-    void skinChanged();
-    void inputPanelChanged();
-    void controlFlagsChanged();
-
-  private:
-    static inline QskSetup* setup() { return QskSetup::instance(); }
-
-    QObjectList m_data;
-};
-
-Q_DECLARE_METATYPE( QskSetupFlagsProvider )
 
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
 
@@ -272,7 +177,6 @@ void QskQml::registerTypes()
     QSK_REGISTER_FLAGS( QskSetup::Flag );
     QSK_REGISTER_FLAGS( QskSetup::Flags );
     QSK_REGISTER_FLAGS( QskSizePolicy::Policy );
-    QMetaType::registerConverter< int, QskSetupFlagsProvider >();
 
     QSK_REGISTER_FLAGS( QskDialog::Actions );
 
