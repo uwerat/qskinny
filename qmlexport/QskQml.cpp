@@ -110,6 +110,14 @@ namespace
 
 #endif
 
+static inline QskGradientStop qskToGradientStop( const QJSValue& value )
+{
+    return QskGradientStop(
+        value.property( QLatin1String( "position" ) ).toNumber(),
+        value.property( QLatin1String( "color" ) ).toVariant().value< QColor >()
+    );
+}
+
 void QskQml::registerTypes()
 {
 #if 0
@@ -198,17 +206,7 @@ void QskQml::registerTypes()
     }
 
     // Support (lists of) GradientStop
-    QMetaType::registerConverter< QJSValue, QskGradientStop >(
-
-        [](const QJSValue& value) -> QskGradientStop
-        {
-            return
-            {
-                value.property( QLatin1String( "position" ) ).toNumber(),
-                value.property( QLatin1String( "color" ) ).toVariant().value< QColor >()
-            };
-        }
-    );
+    QMetaType::registerConverter< QJSValue, QskGradientStop >( qskToGradientStop );
 
     QMetaType::registerConverter< QJSValue, QVector< QskGradientStop > >(
 
@@ -218,22 +216,9 @@ void QskQml::registerTypes()
             if ( value.isArray() )
             {
                 QJSValueIterator it( value );
+
                 while ( it.next() && it.hasNext() )
-                {
-                    auto source = it.value();
-                    auto target = QskGradientStop();
-
-                    const int sourceTypeId = qMetaTypeId< decltype( source ) >();
-                    const int targetTypeId = qMetaTypeId< decltype( target ) >();
-
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-                    QMetaType::convert( QMetaType( sourceTypeId ), &source,
-                        QMetaType( targetTypeId ), &target );
-#else
-                    QMetaType::convert( &source, sourceTypeId, &target, targetTypeId );
-#endif
-                    stops.append( target );
-                }
+                    stops.append( qskToGradientStop( it.value() ) );
             }
             return stops;
         }
@@ -252,6 +237,7 @@ void QskQml::registerTypes()
         }
     );
 
+#if 1
     QMetaType::registerConverter< int, QskSizePolicy >(
         []( int value )
         {
@@ -259,4 +245,5 @@ void QskQml::registerTypes()
             return QskSizePolicy( policy, policy );
         }
     );
+#endif
 }
