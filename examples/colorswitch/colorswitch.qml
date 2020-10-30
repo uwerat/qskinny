@@ -1,5 +1,5 @@
-import Skinny 1.0
 import QtQuick 2.5
+import Skinny 1.0
 import Theme 1.0 // things beyond supersimple are way more convenient with C++
 
 Main
