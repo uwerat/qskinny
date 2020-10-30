@@ -13,6 +13,12 @@
 static void qskRegisterBoxShapeMetrics()
 {
     qRegisterMetaType< QskBoxShapeMetrics >();
+
+    QMetaType::registerConverter< int, QskBoxShapeMetrics >(
+        []( int radius ) { return QskBoxShapeMetrics( radius ); } );
+
+    QMetaType::registerConverter< qreal, QskBoxShapeMetrics >(
+        []( qreal radius ) { return QskBoxShapeMetrics( radius ); } );
 }
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterBoxShapeMetrics )

@@ -16,6 +16,13 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qobject_p.h>
 QSK_QT_PRIVATE_END
 
+static void qskRegisterMetaInvokable()
+{
+    qRegisterMetaType< QskMetaInvokable >();
+}
+    
+Q_CONSTRUCTOR_FUNCTION( qskRegisterMetaInvokable )
+
 static inline void *qskMetaTypeCreate( int type, const void *copy )
 {
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )

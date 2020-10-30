@@ -11,6 +11,15 @@
 static void qskRegisterBoxBorderMetrics()
 {
     qRegisterMetaType< QskBoxBorderMetrics >();
+
+    QMetaType::registerConverter< QskMargins, QskBoxBorderMetrics >(
+        []( const QskMargins& margins ) { return QskBoxBorderMetrics( margins ); } );
+
+    QMetaType::registerConverter< int, QskBoxBorderMetrics >(
+        []( int width ) { return QskBoxBorderMetrics( width ); } );
+
+    QMetaType::registerConverter< qreal, QskBoxBorderMetrics >(
+        []( qreal width ) { return QskBoxBorderMetrics( width ); } );
 }
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterBoxBorderMetrics )

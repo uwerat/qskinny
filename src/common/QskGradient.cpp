@@ -15,6 +15,9 @@ static void qskRegisterGradient()
 {
     qRegisterMetaType< QskGradient >();
     qRegisterMetaType< QskGradientStop >();
+
+    QMetaType::registerConverter< QColor, QskGradient >(
+        []( const QColor& color ) { return QskGradient( color ); } );
 }
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterGradient )

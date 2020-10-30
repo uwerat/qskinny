@@ -12,6 +12,9 @@
 static void qskRegisterBoxBorderColors()
 {
     qRegisterMetaType< QskBoxBorderColors >();
+
+    QMetaType::registerConverter< QColor, QskBoxBorderColors >(
+        []( const QColor& color ) { return QskBoxBorderColors( color ); } );
 }
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterBoxBorderColors )
