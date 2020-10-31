@@ -92,7 +92,7 @@ bool Image::deferredUpdates() const
 
 void Image::setSourceSize( const QSize& size )
 {
-    if ( size.isEmpty() != sourceSize().isEmpty() )
+    if ( !( size.isEmpty() && sourceSize().isEmpty() ) )
         QQuickImage::setSourceSize( size );
 }
 
