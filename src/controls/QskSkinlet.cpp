@@ -77,32 +77,31 @@ static inline QSGNode* qskUpdateGraphicNode(
     if ( rect.isEmpty() )
         return nullptr;
 
+    const auto control = skinnable->owningControl();
+    if ( control == nullptr )
+        return nullptr;
+
     auto mode = QskTextureRenderer::OpenGL;
 
     auto graphicNode = static_cast< QskGraphicNode* >( node );
     if ( graphicNode == nullptr )
         graphicNode = new QskGraphicNode();
 
-    QRectF r = rect;
+    if ( control->testControlFlag( QskControl::PreferRasterForTextures ) )
+        mode = QskTextureRenderer::Raster;
 
-    if ( const auto control = skinnable->owningControl() )
-    {
-        if ( control->testControlFlag( QskControl::PreferRasterForTextures ) )
-            mode = QskTextureRenderer::Raster;
+    /*
+       Aligning the rect according to scene coordinates, so that
+       we don't run into rounding issues downstream, where values
+       will be floored/ceiled ending up with a slightly different
+       aspect ratio.
+     */
+    QRectF r(
+        control->mapToScene( rect.topLeft() ),
+        rect.size() * QskTextureRenderer::devicePixelRatio() );
 
-        /*
-           Aligning the rect according to scene coordinates, so that
-           we don't run into rounding issues downstream, where values
-           will be floored/ceiled ending up with a slightly different
-           aspect ratio.
-         */
-        const QRectF sceneRect(
-            control->mapToScene( r.topLeft() ),
-            r.size() * QskTextureRenderer::devicePixelRatio() );
-
-        r = qskInnerRect( sceneRect );
-        r.moveTopLeft( control->mapFromScene( r.topLeft() ) );
-    }
+    r = qskInnerRect( r );
+    r.moveTopLeft( control->mapFromScene( r.topLeft() ) );
 
     graphicNode->setGraphic( graphic, colorFilter, mode, r );
 
