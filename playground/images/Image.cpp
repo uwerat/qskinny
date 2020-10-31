@@ -90,6 +90,12 @@ bool Image::deferredUpdates() const
     return m_data->deferredUpdates;
 }
 
+void Image::setSourceSize( const QSize& size )
+{
+    if ( size.isEmpty() != sourceSize().isEmpty() )
+        QQuickImage::setSourceSize( size );
+}
+
 void Image::componentComplete()
 {
     if ( m_data->deferredUpdates && m_data->sourceSizeAdjustment )

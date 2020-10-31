@@ -49,6 +49,8 @@ class Image : public QQuickImage
     Q_INVOKABLE virtual bool hasWidthForHeight() const;
     Q_INVOKABLE virtual qreal widthForHeight( qreal height ) const;
 
+    void setSourceSize( const QSize& ) override;
+
   public Q_SLOTS:
     void show();
     void hide();
