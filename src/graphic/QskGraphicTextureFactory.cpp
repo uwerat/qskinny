@@ -7,6 +7,11 @@
 #include "QskTextureRenderer.h"
 
 #include <qquickwindow.h>
+#include <qsgtexture.h>
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+    #include <qsgtexture_platform.h>
+#endif
 
 QskGraphicTextureFactory::QskGraphicTextureFactory()
 {
@@ -32,15 +37,24 @@ QSGTexture* QskGraphicTextureFactory::createTexture( QQuickWindow* window ) cons
     const auto flags = static_cast< QQuickWindow::CreateTextureOptions >(
         QQuickWindow::TextureHasAlphaChannel | QQuickWindow::TextureOwnsGLTexture );
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 14, 0 )
+    QSGTexture* texture;
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+
+    texture = QNativeInterface::QSGOpenGLTexture::fromNative(
+        textureId, window, m_size, flags );
+
+#elif QT_VERSION >= QT_VERSION_CHECK( 5, 14, 0 )
     const int nativeLayout = 0; // VkImageLayout in case of Vulkan
 
-    return window->createTextureFromNativeObject( 
+    texture = window->createTextureFromNativeObject( 
         QQuickWindow::NativeObjectTexture, &textureId, nativeLayout,
         m_size, flags );
 #else
-    return window->createTextureFromId( textureId, m_size, flags );
+    texture = window->createTextureFromId( textureId, m_size, flags );
 #endif
+
+    return texture;
 }
 
 QSize QskGraphicTextureFactory::textureSize() const
