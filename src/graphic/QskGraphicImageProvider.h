@@ -17,9 +17,6 @@ class QSK_EXPORT QskGraphicImageProvider : public QQuickImageProvider
     QskGraphicImageProvider( const QString& providerId, ImageType );
     ~QskGraphicImageProvider() override;
 
-    void setCacheSize( int );
-    int cacheSize() const;
-
     QImage requestImage( const QString& id,
         QSize* size, const QSize& requestedSize ) override;
 
@@ -33,8 +30,8 @@ class QSK_EXPORT QskGraphicImageProvider : public QQuickImageProvider
 
   protected:
     const QskGraphic* requestGraphic( const QString& id ) const;
-    QSize effectiveSize( const QSize& requestedSize, const QSizeF& defaultSize ) const;
 
+  private:
     const QString m_providerId;
 };
 
