@@ -40,35 +40,4 @@ class QSK_EXPORT QskGraphicTextureFactory : public QQuickTextureFactory
     QSize m_size;
 };
 
-inline void QskGraphicTextureFactory::setGraphic( const QskGraphic& graphic )
-{
-    m_graphic = graphic;
-}
-
-inline QskGraphic QskGraphicTextureFactory::graphic() const
-{
-    return m_graphic;
-}
-
-inline void QskGraphicTextureFactory::setColorFilter(
-    const QskColorFilter& colorFilter )
-{
-    m_colorFilter = colorFilter;
-}
-
-inline const QskColorFilter& QskGraphicTextureFactory::colorFilter() const
-{
-    return m_colorFilter;
-}
-
-inline void QskGraphicTextureFactory::setSize( const QSize& size )
-{
-    m_size = size;
-}
-
-inline QSize QskGraphicTextureFactory::size() const
-{
-    return m_size;
-}
-
 #endif

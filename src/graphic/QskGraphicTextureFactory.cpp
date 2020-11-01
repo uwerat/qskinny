@@ -7,11 +7,6 @@
 #include "QskTextureRenderer.h"
 
 #include <qquickwindow.h>
-#include <qsgtexture.h>
-
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-    #include <qsgtexture_platform.h>
-#endif
 
 QskGraphicTextureFactory::QskGraphicTextureFactory()
 {
@@ -28,33 +23,47 @@ QskGraphicTextureFactory::~QskGraphicTextureFactory()
 {
 }
 
+void QskGraphicTextureFactory::setGraphic( const QskGraphic& graphic )
+{
+    m_graphic = graphic;
+}
+
+QskGraphic QskGraphicTextureFactory::graphic() const
+{
+    return m_graphic;
+}
+
+void QskGraphicTextureFactory::setColorFilter(
+    const QskColorFilter& colorFilter )
+{
+    m_colorFilter = colorFilter;
+}
+
+const QskColorFilter& QskGraphicTextureFactory::colorFilter() const
+{
+    return m_colorFilter;
+}
+
+void QskGraphicTextureFactory::setSize( const QSize& size )
+{
+    m_size = size;
+}
+
+QSize QskGraphicTextureFactory::size() const
+{
+    return m_size;
+}
+
+
 QSGTexture* QskGraphicTextureFactory::createTexture( QQuickWindow* window ) const
 {
-    const uint textureId = QskTextureRenderer::createTextureFromGraphic(
+    using namespace QskTextureRenderer;
+
+    const uint textureId = createTextureFromGraphic(
         QskTextureRenderer::OpenGL, m_size, m_graphic, m_colorFilter,
         Qt::IgnoreAspectRatio );
 
-    const auto flags = static_cast< QQuickWindow::CreateTextureOptions >(
-        QQuickWindow::TextureHasAlphaChannel | QQuickWindow::TextureOwnsGLTexture );
-
-    QSGTexture* texture;
-
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-
-    texture = QNativeInterface::QSGOpenGLTexture::fromNative(
-        textureId, window, m_size, flags );
-
-#elif QT_VERSION >= QT_VERSION_CHECK( 5, 14, 0 )
-    const int nativeLayout = 0; // VkImageLayout in case of Vulkan
-
-    texture = window->createTextureFromNativeObject( 
-        QQuickWindow::NativeObjectTexture, &textureId, nativeLayout,
-        m_size, flags );
-#else
-    texture = window->createTextureFromId( textureId, m_size, flags );
-#endif
-
-    return texture;
+    return textureFromId( window, textureId, m_size );
 }
 
 QSize QskGraphicTextureFactory::textureSize() const

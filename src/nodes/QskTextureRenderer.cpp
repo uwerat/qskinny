@@ -23,6 +23,12 @@
 #include <qscreen.h>
 #include <qsurface.h>
 
+#include <qsgtexture.h>
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+    #include <qsgtexture_platform.h>
+#endif
+
 static uint qskCreateTextureOpenGL(
     const QSize& size, QskTextureRenderer::PaintHelper* helper )
 {
@@ -129,6 +135,35 @@ static uint qskCreateTextureRaster(
     return textureId;
 }
 
+QSGTexture* QskTextureRenderer::textureFromId(
+    QQuickWindow* window, uint textureId, const QSize& size )
+{
+    const auto flags = static_cast< QQuickWindow::CreateTextureOptions >(
+        QQuickWindow::TextureHasAlphaChannel | QQuickWindow::TextureOwnsGLTexture );
+
+    QSGTexture* texture;
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+
+    texture = QNativeInterface::QSGOpenGLTexture::fromNative(
+        textureId, window, size, flags );
+
+#elif QT_VERSION >= QT_VERSION_CHECK( 5, 14, 0 )
+
+    const int nativeLayout = 0; // VkImageLayout in case of Vulkan
+
+    texture = window->createTextureFromNativeObject(
+        QQuickWindow::NativeObjectTexture, &textureId, nativeLayout, size, flags );
+
+#else
+
+    texture = window->createTextureFromId( textureId, size, flags );
+
+#endif
+
+    return texture;
+}
+
 QskTextureRenderer::PaintHelper::~PaintHelper()
 {
 }
@@ -136,6 +171,10 @@ QskTextureRenderer::PaintHelper::~PaintHelper()
 uint QskTextureRenderer::createTexture(
     RenderMode renderMode, const QSize& size, PaintHelper* helper )
 {
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+    // Qt6.0.0 is buggy when using FBOs. So let's disable it for the moment TODO ...
+    renderMode = Raster;
+#endif
     if ( renderMode == AutoDetect )
     {
         if ( qskSetup->controlFlags() & QskSetup::PreferRasterForTextures )
