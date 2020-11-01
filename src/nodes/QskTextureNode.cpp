@@ -41,7 +41,7 @@ namespace
         int compare( const QSGMaterial* ) const override;
 
       private:
-        uint m_textureId;
+        uint m_textureId = 0;
         const bool m_isOpaque : 1;
     };
 
@@ -51,16 +51,11 @@ namespace
         setShaderSourceFile( QOpenGLShader::Vertex,
             QStringLiteral( ":/qt-project.org/scenegraph/shaders/opaquetexture.vert" ) );
 
-        if ( m_isOpaque )
-        {
-            setShaderSourceFile( QOpenGLShader::Fragment,
-                QStringLiteral( ":/qt-project.org/scenegraph/shaders/opaquetexture.frag" ) );
-        }
-        else
-        {
-            setShaderSourceFile( QOpenGLShader::Fragment,
-                QStringLiteral( ":/qt-project.org/scenegraph/shaders/texture.frag" ) );
-        }
+        const auto fragmentShaderFile = m_isOpaque
+            ? QStringLiteral( ":/qt-project.org/scenegraph/shaders/opaquetexture.frag" )
+            : QStringLiteral( ":/qt-project.org/scenegraph/shaders/texture.frag" );
+
+        setShaderSourceFile( QOpenGLShader::Fragment, fragmentShaderFile );
     }
 
     char const* const* MaterialShader::attributeNames() const
@@ -98,8 +93,7 @@ namespace
     }
 
     Material::Material( bool isOpaque )
-        : m_textureId( 0 )
-        , m_isOpaque( isOpaque )
+        : m_isOpaque( isOpaque )
     {
         setFlag( Blending, true ); // alpha blending
     }
