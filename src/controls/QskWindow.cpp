@@ -192,6 +192,10 @@ QskWindow::QskWindow( QWindow* parent )
 {
     QSurfaceFormat fmt = format();
     fmt.setSamples( 4 );
+#if 0
+    // for QOpenGLDebugLogger
+    fmt.setOption( QSurfaceFormat::DebugContext );
+#endif
     setFormat( fmt );
 
     /*
