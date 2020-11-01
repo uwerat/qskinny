@@ -14,7 +14,6 @@ class QskColorFilter;
 
 class QPainter;
 class QSize;
-class QOpenGLContext;
 class QSGTexture;
 class QQuickWindow;
 
@@ -52,8 +51,6 @@ namespace QskTextureRenderer
 
     QSK_EXPORT QSGTexture* textureFromId(
         QQuickWindow*, uint textureId, const QSize& );
-
-    QSK_EXPORT qreal devicePixelRatio( const QOpenGLContext* = nullptr );
 }
 
 #endif

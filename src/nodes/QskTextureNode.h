@@ -11,6 +11,7 @@
 #include <qnamespace.h>
 #include <qsgnode.h>
 
+class QQuickWindow;
 class QskTextureNodePrivate;
 
 class QSK_EXPORT QskTextureNode : public QSGGeometryNode
@@ -21,13 +22,11 @@ class QSK_EXPORT QskTextureNode : public QSGGeometryNode
 
     bool isNull() const;
 
-    void setRect( const QRectF& );
-    QRectF rect() const;
+    void setTexture( QQuickWindow*, const QRectF&, uint id,
+        Qt::Orientations mirrored = Qt::Orientations() );
 
-    void setTextureId( uint id );
     uint textureId() const;
-
-    void setMirrored( Qt::Orientations );
+    QRectF rect() const;
     Qt::Orientations mirrored() const;
 
   private:

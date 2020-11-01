@@ -4,8 +4,12 @@
 #include <qopenglfunctions.h>
 #include <qsggeometry.h>
 #include <qsgmaterial.h>
+#include <qquickwindow.h>
 
+QSK_QT_PRIVATE_BEGIN
 #include <private/qsgnode_p.h>
+QSK_QT_PRIVATE_END
+
 
 namespace
 {
@@ -148,23 +152,25 @@ class QskTextureNodePrivate final : public QSGGeometryNodePrivate
     {
     }
 
-    void updateTextureGeometry()
+    void setTextureId( QQuickWindow*, uint id );
+
+    void updateTextureGeometry( const QQuickWindow* window )
     {
         QRectF r( 0, 0, 1, 1 );
 
-        if ( this->mirrorOrientations & Qt::Horizontal )
+        if ( this->mirrored & Qt::Horizontal )
         {
             r.setLeft( 1 );
             r.setRight( 0 );
         }
 
-        if ( mirrorOrientations & Qt::Vertical )
+        if ( mirrored & Qt::Vertical )
         {
             r.setTop( 1 );
             r.setBottom( 0 );
         }
 
-        const qreal ratio = QskTextureRenderer::devicePixelRatio();
+        const qreal ratio = window->effectiveDevicePixelRatio();
 
         const QRectF scaledRect( rect.x(), rect.y(),
             rect.width() / ratio, rect.height() / ratio );
@@ -178,7 +184,7 @@ class QskTextureNodePrivate final : public QSGGeometryNodePrivate
     Material material;
 
     QRectF rect;
-    Qt::Orientations mirrorOrientations;
+    Qt::Orientations mirrored;
 };
 
 QskTextureNode::QskTextureNode()
@@ -212,63 +218,41 @@ QskTextureNode::~QskTextureNode()
     }
 }
 
-void QskTextureNode::setRect( const QRectF& r )
+void QskTextureNode::setTexture( QQuickWindow* window,
+    const QRectF& rect, uint textureId,
+    Qt::Orientations mirrored )
 {
     Q_D( QskTextureNode );
 
-    if ( d->rect != r )
+    if ( d->rect != rect || d->mirrored != mirrored )
     {
-        d->rect = r;
-        d->updateTextureGeometry();
+        d->rect = rect;
+        d->mirrored = mirrored;
+
+        d->updateTextureGeometry( window );
 
         markDirty( DirtyGeometry );
     }
-}
 
-QRectF QskTextureNode::rect() const
-{
-    Q_D( const QskTextureNode );
-    return d->rect;
-}
-
-void QskTextureNode::setMirrored( Qt::Orientations orientations )
-{
-    Q_D( QskTextureNode );
-
-    if ( d->mirrorOrientations != orientations )
+    if ( textureId != this->textureId() )
     {
-        d->mirrorOrientations = orientations;
-        d->updateTextureGeometry();
-
+        d->setTextureId( window, textureId );
         markDirty( DirtyMaterial );
     }
 }
 
-Qt::Orientations QskTextureNode::mirrored() const
+void QskTextureNodePrivate::setTextureId( QQuickWindow*, uint textureId )
 {
-    Q_D( const QskTextureNode );
-    return d->mirrorOrientations;
-}
-
-void QskTextureNode::setTextureId( uint textureId )
-{
-    Q_D( QskTextureNode );
-
-    if ( textureId == d->material.textureId() )
-        return;
-
-    if ( d->material.textureId() > 0 )
+    if ( this->material.textureId() > 0 )
     {
-        GLuint id = d->material.textureId();
+        GLuint id = this->material.textureId();
 
         auto funcs = QOpenGLContext::currentContext()->functions();
         funcs->glDeleteTextures( 1, &id );
     }
 
-    d->material.setTextureId( textureId );
-    d->opaqueMaterial.setTextureId( textureId );
-
-    markDirty( DirtyMaterial );
+    this->material.setTextureId( textureId );
+    this->opaqueMaterial.setTextureId( textureId );
 }
 
 uint QskTextureNode::textureId() const
@@ -277,9 +261,19 @@ uint QskTextureNode::textureId() const
     return d->material.textureId();
 }
 
-
 bool QskTextureNode::isNull() const
 {
+    return textureId() == 0;
+}
+
+QRectF QskTextureNode::rect() const
+{
     Q_D( const QskTextureNode );
-    return d->material.textureId() == 0;
+    return d->rect;
+}
+
+Qt::Orientations QskTextureNode::mirrored() const
+{
+    Q_D( const QskTextureNode );
+    return d->mirrored;
 }

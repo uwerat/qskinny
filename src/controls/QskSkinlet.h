@@ -66,11 +66,12 @@ class QSK_EXPORT QskSkinlet
     // keeping the aspect ratio
     static QSGNode* updateGraphicNode( const QskSkinnable*, QSGNode*,
         const QskGraphic&, const QskColorFilter&,
-        const QRectF&, Qt::Alignment );
+        const QRectF&, Qt::Alignment, Qt::Orientations mirrored = Qt::Orientations() );
 
     // stretching to fit
     static QSGNode* updateGraphicNode( const QskSkinnable*, QSGNode*,
-        const QskGraphic&, const QskColorFilter&, const QRectF& );
+        const QskGraphic&, const QskColorFilter&, const QRectF&,
+        Qt::Orientations mirrored = Qt::Orientations() );
 
     static QSGNode* updateBoxClipNode( const QskSkinnable*, QSGNode*,
         const QRectF&, QskAspect::Subcontrol );
@@ -98,7 +99,8 @@ class QSK_EXPORT QskSkinlet
         const QString&, const QskTextOptions&, QskAspect::Subcontrol ) const;
 
     QSGNode* updateGraphicNode( const QskSkinnable*, QSGNode*,
-        const QskGraphic&, QskAspect::Subcontrol ) const;
+        const QskGraphic&, QskAspect::Subcontrol,
+        Qt::Orientations mirrored = Qt::Orientations() ) const;
 
     void insertRemoveNodes( QSGNode* parentNode,
         QSGNode* oldNode, QSGNode* newNode, quint8 nodeRole ) const;

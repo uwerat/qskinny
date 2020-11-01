@@ -18,11 +18,7 @@
 #include <qimage.h>
 #include <qpainter.h>
 
-#include <qguiapplication.h>
 #include <qquickwindow.h>
-#include <qscreen.h>
-#include <qsurface.h>
-
 #include <qsgtexture.h>
 
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
@@ -220,36 +216,3 @@ uint QskTextureRenderer::createTextureFromGraphic(
     PaintHelper helper( graphic, colorFilter, aspectRatioMode );
     return createTexture( renderMode, size, &helper );
 }
-
-static inline qreal qskOffscreenBufferRatio( const QOpenGLContext* context )
-{
-    if ( context->screen() )
-        return context->screen()->devicePixelRatio();
-
-    return qGuiApp->devicePixelRatio();
-}
-
-qreal QskTextureRenderer::devicePixelRatio( const QOpenGLContext* context )
-{
-    if ( context == nullptr )
-        context = QOpenGLContext::currentContext();
-
-    qreal ratio = 1.0;
-
-    if ( context->surface()->surfaceClass() == QSurface::Window )
-    {
-        auto* window = static_cast< QWindow* >( context->surface() );
-
-        if ( auto* quickWindow = qobject_cast< QQuickWindow* >( window ) )
-            ratio = quickWindow->effectiveDevicePixelRatio();
-        else
-            ratio = window->devicePixelRatio();
-    }
-    else
-    {
-        ratio = qskOffscreenBufferRatio( context );
-    }
-
-    return ratio;
-}
-

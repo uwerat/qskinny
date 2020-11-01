@@ -31,7 +31,7 @@ QskPaintedNode::~QskPaintedNode()
 {
 }
 
-void QskPaintedNode::update(
+void QskPaintedNode::update( QQuickWindow* window,
     QskTextureRenderer::RenderMode renderMode, const QRect& rect )
 {
     bool isTextureDirty = isNull();
@@ -43,21 +43,21 @@ void QskPaintedNode::update(
             ( rect.height() != static_cast< int >( oldRect.height() ) );
     }
 
-    QskTextureNode::setRect( rect );
-
-    const uint newHash = hash();
+    const auto newHash = hash();
     if ( ( newHash == 0 ) || ( newHash != m_hash ) )
     {
         m_hash = newHash;
         isTextureDirty = true;
     }
 
+    auto textureId = QskTextureNode::textureId();
+
     if ( isTextureDirty )
     {
         PaintHelper helper( this );
-        const uint textureId =
-            QskTextureRenderer::createTexture( renderMode, rect.size(), &helper );
-
-        QskTextureNode::setTextureId( textureId );
+        textureId = QskTextureRenderer::createTexture(
+            renderMode, rect.size(), &helper );
     }
+
+    QskTextureNode::setTexture( window, rect, textureId );
 }

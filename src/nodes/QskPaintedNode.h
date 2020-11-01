@@ -15,7 +15,8 @@ class QSK_EXPORT QskPaintedNode : public QskTextureNode
     QskPaintedNode();
     ~QskPaintedNode() override;
 
-    void update( QskTextureRenderer::RenderMode, const QRect& );
+    void update( QQuickWindow*,
+        QskTextureRenderer::RenderMode, const QRect& );
 
   protected:
     virtual void paint( QPainter*, const QSizeF& ) = 0;
@@ -26,8 +27,8 @@ class QSK_EXPORT QskPaintedNode : public QskTextureNode
   private:
     class PaintHelper;
 
-    void setTextureId( int ) = delete;
-    void setRect( const QRectF& ) = delete;
+    void setTexture( QQuickWindow*,
+        const QRectF&, uint id, Qt::Orientations ) = delete;
 
     uint m_hash;
 };

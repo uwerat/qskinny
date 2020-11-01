@@ -47,8 +47,9 @@ QskGraphicNode::~QskGraphicNode()
 }
 
 void QskGraphicNode::setGraphic(
-    const QskGraphic& graphic, const QskColorFilter& colorFilter,
-    QskTextureRenderer::RenderMode renderMode, const QRectF& rect )
+    QQuickWindow* window, const QskGraphic& graphic, const QskColorFilter& colorFilter,
+    QskTextureRenderer::RenderMode renderMode, const QRectF& rect,
+    Qt::Orientations mirrored )
 {
     bool isTextureDirty = isNull();
 
@@ -75,20 +76,20 @@ void QskGraphicNode::setGraphic(
         }
     }
 
-    QskTextureNode::setRect( rect );
-
-    const uint hash = qskHash( graphic, colorFilter, renderMode );
+    const auto hash = qskHash( graphic, colorFilter, renderMode );
     if ( hash != m_hash )
     {
         m_hash = hash;
         isTextureDirty = true;
     }
 
+    auto textureId = QskTextureNode::textureId();
+
     if ( isTextureDirty )
     {
-        const uint textureId = QskTextureRenderer::createTextureFromGraphic(
+        textureId = QskTextureRenderer::createTextureFromGraphic(
             renderMode, textureSize, graphic, colorFilter, Qt::IgnoreAspectRatio );
-
-        QskTextureNode::setTextureId( textureId );
     }
+
+    QskTextureNode::setTexture( window, rect, textureId, mirrored );
 }

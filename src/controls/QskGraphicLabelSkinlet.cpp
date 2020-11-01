@@ -85,21 +85,19 @@ QSGNode* QskGraphicLabelSkinlet::updateGraphicNode(
     const auto colorFilter = label->graphicFilter();
     const auto rect = label->subControlRect( QskGraphicLabel::Graphic );
 
+    Qt::Orientations mirrored;
+    if ( label->mirror() )
+        mirrored = Qt::Horizontal;
+
     if ( label->fillMode() == QskGraphicLabel::Stretch )
     {
         node = QskSkinlet::updateGraphicNode( label, node,
-            label->graphic(), colorFilter, rect );
+            label->graphic(), colorFilter, rect, mirrored );
     }
     else
     {
         node = QskSkinlet::updateGraphicNode( label, node,
-            label->graphic(), colorFilter, rect, Qt::AlignCenter );
-    }
-
-    if ( node && label->mirror() )
-    {
-        auto textureNode = static_cast< QskTextureNode* >( node );
-        textureNode->setMirrored( Qt::Horizontal );
+            label->graphic(), colorFilter, rect, Qt::AlignCenter, mirrored );
     }
 
     return node;

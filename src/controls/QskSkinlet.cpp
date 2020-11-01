@@ -73,7 +73,7 @@ static inline QRectF qskSubControlRect( const QskSkinlet* skinlet,
 static inline QSGNode* qskUpdateGraphicNode(
     const QskSkinnable* skinnable, QSGNode* node,
     const QskGraphic& graphic, const QskColorFilter& colorFilter,
-    const QRectF& rect )
+    const QRectF& rect, Qt::Orientations mirrored )
 {
     if ( rect.isEmpty() )
         return nullptr;
@@ -99,12 +99,13 @@ static inline QSGNode* qskUpdateGraphicNode(
      */
     QRectF r(
         control->mapToScene( rect.topLeft() ),
-        rect.size() * QskTextureRenderer::devicePixelRatio() );
+        rect.size() * control->window()->effectiveDevicePixelRatio() );
 
     r = qskInnerRect( r );
     r.moveTopLeft( control->mapFromScene( r.topLeft() ) );
 
-    graphicNode->setGraphic( graphic, colorFilter, mode, r );
+    graphicNode->setGraphic( control->window(), graphic,
+        colorFilter, mode, r, mirrored );
 
     return graphicNode;
 }
@@ -551,7 +552,8 @@ QSGNode* QskSkinlet::updateTextNode(
 
 QSGNode* QskSkinlet::updateGraphicNode(
     const QskSkinnable* skinnable, QSGNode* node,
-    const QskGraphic& graphic, QskAspect::Subcontrol subcontrol ) const
+    const QskGraphic& graphic, QskAspect::Subcontrol subcontrol,
+    Qt::Orientations mirrored ) const
 {
     const QRectF rect = qskSubControlRect( this, skinnable, subcontrol );
 
@@ -561,13 +563,13 @@ QSGNode* QskSkinlet::updateGraphicNode(
     const auto colorFilter = skinnable->effectiveGraphicFilter( subcontrol );
 
     return updateGraphicNode( skinnable, node,
-        graphic, colorFilter, rect, alignment );
+        graphic, colorFilter, rect, alignment, mirrored );
 }
 
 QSGNode* QskSkinlet::updateGraphicNode(
     const QskSkinnable* skinnable, QSGNode* node,
     const QskGraphic& graphic, const QskColorFilter& colorFilter,
-    const QRectF& rect, Qt::Alignment alignment )
+    const QRectF& rect, Qt::Alignment alignment, Qt::Orientations mirrored )
 {
     if ( graphic.isNull() )
         return nullptr;
@@ -576,18 +578,18 @@ QSGNode* QskSkinlet::updateGraphicNode(
         rect.size(), Qt::KeepAspectRatio );
 
     const QRectF r = qskAlignedRectF( rect, size.width(), size.height(), alignment );
-    return qskUpdateGraphicNode( skinnable, node, graphic, colorFilter, r );
+    return qskUpdateGraphicNode( skinnable, node, graphic, colorFilter, r, mirrored );
 }
 
 QSGNode* QskSkinlet::updateGraphicNode(
     const QskSkinnable* skinnable, QSGNode* node,
     const QskGraphic& graphic, const QskColorFilter& colorFilter,
-    const QRectF& rect )
+    const QRectF& rect, Qt::Orientations mirrored )
 {
     if ( graphic.isNull() )
         return nullptr;
 
-    return qskUpdateGraphicNode( skinnable, node, graphic, colorFilter, rect );
+    return qskUpdateGraphicNode( skinnable, node, graphic, colorFilter, rect, mirrored );
 }
 
 #include "moc_QskSkinlet.cpp"

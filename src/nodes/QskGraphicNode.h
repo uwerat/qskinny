@@ -11,6 +11,7 @@
 
 class QskGraphic;
 class QskColorFilter;
+class QQuickWindow;
 
 class QSK_EXPORT QskGraphicNode : public QskTextureNode
 {
@@ -18,12 +19,14 @@ class QSK_EXPORT QskGraphicNode : public QskTextureNode
     QskGraphicNode();
     ~QskGraphicNode() override;
 
-    void setGraphic( const QskGraphic&, const QskColorFilter&,
-        QskTextureRenderer::RenderMode, const QRectF& );
+    void setGraphic( QQuickWindow*,
+        const QskGraphic&, const QskColorFilter&,
+        QskTextureRenderer::RenderMode, const QRectF&,
+        Qt::Orientations mirrored = Qt::Orientations() );
 
   private:
-    void setTextureId( int ) = delete;
-    void setRect( const QRectF& ) = delete;
+    void setTexture( QQuickWindow*,
+        const QRectF&, uint id, Qt::Orientations ) = delete;
 
     uint m_hash;
 };
