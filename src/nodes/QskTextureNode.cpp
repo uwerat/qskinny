@@ -10,6 +10,53 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qsgnode_p.h>
 QSK_QT_PRIVATE_END
 
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+
+#include <qsgtexture.h>
+#include <qsgtexturematerial.h>
+#include <qsgtexture_platform.h>
+
+QSK_QT_PRIVATE_BEGIN
+#include <private/qrhi_p.h>
+#include <private/qrhigles2_p_p.h>
+QSK_QT_PRIVATE_END
+
+static void qskUpdateGLTextureId( QRhiTexture* rhiTexture, uint textureId )
+{
+    // hack time: we do not want to create a new QSGTexture object for each texture
+
+    class Texture : public QRhiTexture
+    {
+      public:
+        GLuint texture;
+        // ...
+    };
+
+    GLuint id = rhiTexture->nativeTexture().object;
+
+    if ( id )
+    {
+        auto funcs = QOpenGLContext::currentContext()->functions();
+        funcs->glDeleteTextures( 1, &id );
+    }
+        
+    auto glTexture = static_cast< Texture* >( rhiTexture );
+    glTexture->texture = textureId;
+
+    Q_ASSERT( rhiTexture->nativeTexture().object == textureId );
+}
+
+using TextureMaterial = QSGTextureMaterial;
+using OpaqueTextureMaterial = QSGOpaqueTextureMaterial;
+
+static inline void qskDeleteTexture( const TextureMaterial& material )
+{
+    delete material.texture();
+}
+
+#endif
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
 
 namespace
 {
@@ -31,7 +78,7 @@ namespace
         const bool m_isOpaque : 1;
     };
 
-    class Material final : public QSGMaterial
+    class Material : public QSGMaterial
     {
       public:
         Material( bool isOpaque );
@@ -47,6 +94,24 @@ namespace
       private:
         uint m_textureId = 0;
         const bool m_isOpaque : 1;
+    };
+
+    class TextureMaterial final : public Material
+    {
+      public:
+        TextureMaterial()
+            : Material( false )
+        {
+        }
+    };
+
+    class OpaqueTextureMaterial final : public Material
+    {
+      public:
+        OpaqueTextureMaterial()
+            : Material( true )
+        {
+        }
     };
 
     MaterialShader::MaterialShader( bool isOpaque )
@@ -142,13 +207,31 @@ namespace
     }
 }
 
+static inline void qskDeleteTexture( const TextureMaterial& material )
+{
+    if ( material.textureId() > 0 )
+    {
+        /*
+            In certain environments we have the effect, that at
+            program termination the context is already gone
+         */
+        if ( auto context = QOpenGLContext::currentContext() )
+        {
+            GLuint id = material.textureId();
+
+            auto funcs = context->functions();
+            funcs->glDeleteTextures( 1, &id );
+        }
+    }
+}
+
+#endif
+
 class QskTextureNodePrivate final : public QSGGeometryNodePrivate
 {
   public:
     QskTextureNodePrivate()
         : geometry( QSGGeometry::defaultAttributes_TexturedPoint2D(), 4 )
-        , opaqueMaterial( true )
-        , material( false )
     {
     }
 
@@ -180,8 +263,8 @@ class QskTextureNodePrivate final : public QSGGeometryNodePrivate
 
     QSGGeometry geometry;
 
-    Material opaqueMaterial;
-    Material material;
+    OpaqueTextureMaterial opaqueMaterial;
+    TextureMaterial material;
 
     QRectF rect;
     Qt::Orientations mirrored;
@@ -200,22 +283,8 @@ QskTextureNode::QskTextureNode()
 
 QskTextureNode::~QskTextureNode()
 {
-    Q_D( QskTextureNode );
-
-    if ( d->material.textureId() > 0 )
-    {
-        /*
-            In certain environments we have the effect, that at
-            program termination the context is already gone
-         */
-        if ( auto context = QOpenGLContext::currentContext() )
-        {
-            GLuint id = d->material.textureId();
-
-            auto funcs = context->functions();
-            funcs->glDeleteTextures( 1, &id );
-        }
-    }
+    Q_D( const QskTextureNode );
+    qskDeleteTexture( d->material );
 }
 
 void QskTextureNode::setTexture( QQuickWindow* window,
@@ -224,13 +293,12 @@ void QskTextureNode::setTexture( QQuickWindow* window,
 {
     Q_D( QskTextureNode );
 
-    if ( d->rect != rect || d->mirrored != mirrored )
+    if ( ( d->rect != rect ) || ( d->mirrored != mirrored ) )
     {
         d->rect = rect;
         d->mirrored = mirrored;
 
         d->updateTextureGeometry( window );
-
         markDirty( DirtyGeometry );
     }
 
@@ -241,15 +309,11 @@ void QskTextureNode::setTexture( QQuickWindow* window,
     }
 }
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+
 void QskTextureNodePrivate::setTextureId( QQuickWindow*, uint textureId )
 {
-    if ( this->material.textureId() > 0 )
-    {
-        GLuint id = this->material.textureId();
-
-        auto funcs = QOpenGLContext::currentContext()->functions();
-        funcs->glDeleteTextures( 1, &id );
-    }
+    qskDeleteTexture( this->material );
 
     this->material.setTextureId( textureId );
     this->opaqueMaterial.setTextureId( textureId );
@@ -260,6 +324,61 @@ uint QskTextureNode::textureId() const
     Q_D( const QskTextureNode );
     return d->material.textureId();
 }
+
+#endif
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+
+void QskTextureNodePrivate::setTextureId( QQuickWindow* window, uint textureId )
+{
+    auto texture = this->material.texture();
+
+    if ( texture )
+    {
+        // we do not want to create a new QSGTexture object only
+        // to replace the textureId
+
+        switch( window->rendererInterface()->graphicsApi() )
+        {
+            case QSGRendererInterface::OpenGL:
+            {
+                qskUpdateGLTextureId( texture->rhiTexture(), textureId );
+                break;
+            }
+            default:
+            {
+                delete texture;
+                texture = nullptr;
+            }
+        }
+    }
+
+    if ( textureId > 0 && texture == nullptr )
+    {
+        texture = QNativeInterface::QSGOpenGLTexture::fromNative(
+            static_cast< GLuint >( textureId ), window,
+            this->rect.size().toSize(), QQuickWindow::TextureHasAlphaChannel );
+
+    }
+
+    this->material.setTexture( texture );
+    this->opaqueMaterial.setTexture( texture );
+}
+
+uint QskTextureNode::textureId() const
+{
+    Q_D( const QskTextureNode );
+
+    if ( auto texture = d->material.texture() )
+    {
+        const auto nativeTexture = texture->rhiTexture()->nativeTexture();
+        return nativeTexture.object;
+    }
+
+    return 0;
+}
+
+#endif
 
 bool QskTextureNode::isNull() const
 {
