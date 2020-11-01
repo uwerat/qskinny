@@ -96,8 +96,7 @@ QQuickTextureFactory* QskGraphicImageProvider::requestTexture(
 
 const QskGraphic* QskGraphicImageProvider::requestGraphic( const QString& id ) const
 {
-    const QskGraphicProvider* graphicProvider = Qsk::graphicProvider( m_providerId );
-    if ( graphicProvider )
+    if ( auto graphicProvider = Qsk::graphicProvider( m_providerId ) )
         return graphicProvider->requestGraphic( id );
 
     return nullptr;
