@@ -64,6 +64,10 @@ class QSK_EXPORT QskShortcutMap
     static int addShortcut( QQuickWindow*, const QKeySequence&, bool autoRepeat,
         const typename QtPrivate::FunctionPointer< T >::Object* receiver, T function );
 
+    // calling the registered callbacks manually
+    static bool invokeCallback( const QKeySequence& );
+    static bool invokeCallback( QQuickWindow*, const QKeySequence& );
+    static bool invokeCallback( QQuickItem*, const QKeySequence& );
 
     static bool contextMatcher( const QQuickItem*, Qt::ShortcutContext );
 

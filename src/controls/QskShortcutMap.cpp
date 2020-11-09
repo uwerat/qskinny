@@ -35,6 +35,7 @@ class QskShortcutHandler final : public QObject
     void setAutoRepeat( int id, bool repeat );
 
     bool eventFilter( QObject*, QEvent* ) override;
+    bool invoke( QQuickItem*, const QKeySequence& );
 
   private:
     void cleanUp( QObject* );
@@ -48,6 +49,16 @@ class QskShortcutHandler final : public QObject
         {
         }
 
+        void invoke() const
+        {
+            auto that = const_cast< InvokeData* >( this );
+            auto object = const_cast< QObject* >( receiver );
+
+            void* args[] = { nullptr };
+            that->invokable.invoke( object, args, Qt::AutoConnection );
+        }
+
+        QKeySequence sequence;
         QQuickItem* item;
         const QObject* receiver;
         QskMetaInvokable invokable;
@@ -132,6 +143,7 @@ int QskShortcutHandler::insert(
 
     auto& data = m_invokeDataMap[ id ];
 
+    data.sequence = sequence;
     data.item = item;
     data.receiver = receiver;
     data.invokable = invokable;
@@ -240,16 +252,31 @@ bool QskShortcutHandler::eventFilter( QObject* object, QEvent* event )
 
         Q_ASSERT( data.item == nullptr || data.item == object );
 
-        auto receiver = const_cast< QObject* >( data.receiver );
-        void* args[] = { nullptr };
-
-        data.invokable.invoke( receiver, args, Qt::AutoConnection );
+        data.invoke( );
 
         return true;
     }
 
     // seems like someone else is also interested in shortcuts
     return false;
+}
+
+bool QskShortcutHandler::invoke( QQuickItem* item, const QKeySequence& sequence )
+{
+    bool found = false;
+
+    for ( const auto& entry : qskAsConst( m_invokeDataMap ) )
+    {
+        auto& data = entry.second;
+
+        if ( ( data.item == item ) && ( data.sequence == sequence ) )
+        {
+            data.invoke();
+            found = true;
+        }
+    }
+
+    return found;
 }
 
 int QskShortcutMap::addMethod( QQuickItem* item, const QKeySequence& sequence,
@@ -277,6 +304,23 @@ int QskShortcutMap::addFunction( QQuickItem* item, const QKeySequence& sequence,
 
     return qskShortcutHandler->insert(
         item, sequence, autoRepeat, receiver, function );
+}
+
+bool QskShortcutMap::invokeCallback( const QKeySequence& sequence )
+{
+    QQuickItem* item = nullptr;
+    return qskShortcutHandler->invoke( item, sequence );
+}
+
+bool QskShortcutMap::invokeCallback( QQuickWindow* window, const QKeySequence& sequence )
+{
+    auto item = window ? window->contentItem() : nullptr;
+    return qskShortcutHandler->invoke( item, sequence );
+}
+
+bool QskShortcutMap::invokeCallback( QQuickItem* item, const QKeySequence& sequence )
+{
+    return qskShortcutHandler->invoke( item, sequence );
 }
 
 void QskShortcutMap::setAutoRepeat( int id, bool on )
