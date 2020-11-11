@@ -7,6 +7,7 @@
 #include "QskAnimationHint.h"
 #include "QskAspect.h"
 #include "QskIntervalF.h"
+#include "QskEvent.h"
 
 QSK_SUBCONTROL( QskSlider, Panel )
 QSK_SUBCONTROL( QskSlider, Groove )
@@ -22,15 +23,6 @@ static inline QskAspect::Aspect qskAspectPosition( const QskSlider* slider )
 {
     using namespace QskAspect;
     return slider->effectiveSubcontrol( QskSlider::Handle ) | Position | Metric;
-}
-
-static inline QPointF qskMousePosition( const QMouseEvent* event )
-{   
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-    return event->position();
-#else
-    return event->localPos();
-#endif
 }
 
 class QskSlider::PrivateData
