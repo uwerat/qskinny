@@ -48,10 +48,6 @@ class QSK_EXPORT QskGridBox : public QskBox
 
     int count() const;
 
-#ifdef QSK_LAYOUT_COMPAT
-    int itemCount() const { return count(); } // items and spacers
-#endif
-
     QQuickItem* itemAtIndex( int index ) const;
     int indexOf( const QQuickItem* ) const;
 
@@ -71,24 +67,6 @@ class QSK_EXPORT QskGridBox : public QskBox
     qreal spacing( Qt::Orientation ) const;
 
     void setSpacing( qreal spacing );
-
-#ifdef QSK_LAYOUT_COMPAT
-
-    void setVerticalSpacing( qreal spacing ) { setSpacing( Qt::Vertical, spacing ); }
-    qreal verticalSpacing() const { return spacing( Qt::Vertical ); }
-
-    void setHorizontalSpacing( qreal spacing ) { setSpacing( Qt::Horizontal, spacing ); }
-    qreal horizontalSpacing() const { return spacing( Qt::Horizontal ); }
-
-    void setActive( bool ) {}
-    bool isActive() const { return true; }
-
-    void setRowMinimumHeight( int row, qreal height )
-        { setRowSizeHint( row, Qt::MinimumSize, height ); }
-
-    void setColumnMaximumWidth( int column, qreal width )
-        { setColumnSizeHint( column, Qt::MaximumSize, width ); }
-#endif
 
     // stretch factors
     Q_INVOKABLE void setRowStretchFactor( int row, int stretch );

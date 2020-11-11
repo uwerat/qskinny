@@ -42,10 +42,6 @@ class QSK_EXPORT QskLinearBox : public QskIndexedLayoutBox
     bool isEmpty() const;
     int count() const; // items and spacers
 
-#ifdef QSK_LAYOUT_COMPAT
-    int itemCount() const { return count(); }
-#endif
-
     qreal spacingAtIndex( int index ) const;
 
     QQuickItem* itemAtIndex( int index ) const;
