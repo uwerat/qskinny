@@ -75,7 +75,7 @@ QskLinearBox::~QskLinearBox()
     }
 }
 
-int QskLinearBox::count() const
+int QskLinearBox::elementCount() const
 {
     return m_data->engine.count();
 }

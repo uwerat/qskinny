@@ -16,7 +16,7 @@ class QSK_EXPORT QskGridBox : public QskBox
         WRITE setDefaultAlignment NOTIFY defaultAlignmentChanged )
 
     Q_PROPERTY( bool empty READ isEmpty() )
-    Q_PROPERTY( int count READ count )
+    Q_PROPERTY( int elementCount READ elementCount )
 
     using Inherited = QskBox;
 
@@ -46,7 +46,7 @@ class QSK_EXPORT QskGridBox : public QskBox
     Q_INVOKABLE int rowCount() const;
     Q_INVOKABLE int columnCount() const;
 
-    int count() const;
+    int elementCount() const;
 
     QQuickItem* itemAtIndex( int index ) const;
     int indexOf( const QQuickItem* ) const;
@@ -118,7 +118,7 @@ inline int QskGridBox::addItem( QQuickItem* item, int row, int column )
 
 inline bool QskGridBox::isEmpty() const
 {
-    return count() <= 0;
+    return elementCount() <= 0;
 }
 
 inline void QskGridBox::setSpacing( qreal spacing )

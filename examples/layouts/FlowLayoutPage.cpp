@@ -78,7 +78,7 @@ namespace
         void addRectangle( const char* colorName )
         {
             auto rect = new TestRectangle( colorName );
-            rect->setText( QString::number( count() + 1 ) );
+            rect->setText( QString::number( elementCount() + 1 ) );
 
             addItem( rect );
         }

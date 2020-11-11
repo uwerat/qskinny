@@ -87,7 +87,7 @@ void Window::centerButtons()
 QVector< QskDialogButtonBox* > Window::dialogBoxes() const
 {
     QVector< QskDialogButtonBox* > boxes;
-    for ( int i = 0; i < m_layoutBox->count(); i++ )
+    for ( int i = 0; i < m_layoutBox->elementCount(); i++ )
     {
         if ( auto box = qobject_cast< QskDialogButtonBox* >( m_layoutBox->itemAtIndex( i ) ) )
         {

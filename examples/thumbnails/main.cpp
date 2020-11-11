@@ -128,7 +128,7 @@ class IconGrid : public QskLinearBox
         setSize( sizeConstraint() );
         updateLayout(); // so that every item has its initial geometry
 
-        for ( int i = 0; i < count(); i++ )
+        for ( int i = 0; i < elementCount(); i++ )
         {
             if ( auto item = qobject_cast< QskControl* > ( itemAtIndex( i ) ) )
             {

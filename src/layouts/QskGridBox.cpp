@@ -224,7 +224,7 @@ void QskGridBox::clear( bool autoDelete )
 {
     m_data->blockAutoRemove = true;
 
-    for ( int i = 0; i < count(); i++ )
+    for ( int i = 0; i < elementCount(); i++ )
     {
         if ( auto item = itemAtIndex( i ) )
         {
@@ -242,7 +242,7 @@ void QskGridBox::clear( bool autoDelete )
     m_data->engine.clear();
 }
 
-int QskGridBox::count() const
+int QskGridBox::elementCount() const
 {
     return m_data->engine.count();
 }

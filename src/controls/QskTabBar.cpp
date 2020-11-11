@@ -53,7 +53,7 @@ namespace
                 QskControl::keyPressEvent.
              */
 
-            for ( int i = 0; i < count(); i++ )
+            for ( int i = 0; i < elementCount(); i++ )
             {
                 if ( auto button = itemAtIndex( i ) )
                     button->setZ( i == currentIndex ? 0.001 : 0.0 );
@@ -425,8 +425,8 @@ int QskTabBar::insertTab( int index, QskTabButton* button )
 {
     auto buttonBox = m_data->buttonBox;
 
-    if ( index < 0 || index >= buttonBox->count() )
-        index = buttonBox->count();
+    if ( index < 0 || index >= buttonBox->elementCount() )
+        index = buttonBox->elementCount();
 
     if ( isComponentComplete() )
     {
@@ -569,7 +569,7 @@ int QskTabBar::currentIndex() const
 
 int QskTabBar::count() const
 {
-    return m_data->buttonBox->count();
+    return m_data->buttonBox->elementCount();
 }
 
 QskTabButton* QskTabBar::buttonAt( int position )

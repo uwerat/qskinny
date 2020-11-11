@@ -27,7 +27,7 @@ class QSK_EXPORT QskLinearBox : public QskIndexedLayoutBox
     Q_PROPERTY( Qt::Edges extraSpacingAt READ extraSpacingAt
         WRITE setExtraSpacingAt NOTIFY extraSpacingAtChanged )
 
-    Q_PROPERTY( int count READ count )
+    Q_PROPERTY( int elementCount READ elementCount )
     Q_PROPERTY( bool empty READ isEmpty() )
 
     using Inherited = QskIndexedLayoutBox;
@@ -40,7 +40,7 @@ class QSK_EXPORT QskLinearBox : public QskIndexedLayoutBox
     ~QskLinearBox() override;
 
     bool isEmpty() const;
-    int count() const; // items and spacers
+    int elementCount() const; // items and spacers
 
     qreal spacingAtIndex( int index ) const;
 
@@ -121,7 +121,7 @@ class QSK_EXPORT QskLinearBox : public QskIndexedLayoutBox
 
 inline bool QskLinearBox::isEmpty() const
 {
-    return count() <= 0;
+    return elementCount() <= 0;
 }
 
 #endif
