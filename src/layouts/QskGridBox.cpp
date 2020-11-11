@@ -345,34 +345,34 @@ int QskGridBox::columnStretchFactor( int column ) const
 
 void QskGridBox::setRowFixedHeight( int row, qreal height )
 {
-    setRowSizeHint( row, Qt::MinimumSize, height );
-    setRowSizeHint( row, Qt::MaximumSize, height );
+    setRowHeightHint( row, Qt::MinimumSize, height );
+    setRowHeightHint( row, Qt::MaximumSize, height );
 }
 
 void QskGridBox::setColumnFixedWidth( int column, qreal width )
 {
-    setColumnSizeHint( column, Qt::MinimumSize, width );
-    setColumnSizeHint( column, Qt::MaximumSize, width );
+    setColumnWidthHint( column, Qt::MinimumSize, width );
+    setColumnWidthHint( column, Qt::MaximumSize, width );
 }
 
-void QskGridBox::setRowSizeHint( int row, Qt::SizeHint which, qreal height )
+void QskGridBox::setRowHeightHint( int row, Qt::SizeHint which, qreal height )
 {
     if ( m_data->engine.setRowSizeHint( row, which, height ) )
         polish();
 }
 
-qreal QskGridBox::rowSizeHint( int row, Qt::SizeHint which ) const
+qreal QskGridBox::rowHeightHint( int row, Qt::SizeHint which ) const
 {
     return m_data->engine.rowSizeHint( row, which );
 }
 
-void QskGridBox::setColumnSizeHint( int column, Qt::SizeHint which, qreal width )
+void QskGridBox::setColumnWidthHint( int column, Qt::SizeHint which, qreal width )
 {
     if ( m_data->engine.setColumnSizeHint( column, which, width ) )
         polish();
 }
 
-qreal QskGridBox::columnSizeHint( int column, Qt::SizeHint which ) const
+qreal QskGridBox::columnWidthHint( int column, Qt::SizeHint which ) const
 {
     return m_data->engine.columnSizeHint( column, which );
 }

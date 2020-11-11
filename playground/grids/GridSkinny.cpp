@@ -70,9 +70,9 @@ void GridSkinny::setSizeHint(
     int pos, Qt::Orientation orientation, Qt::SizeHint which, int hint )
 {
     if ( orientation == Qt::Vertical )
-        m_grid->setRowSizeHint( pos, which, hint );
+        m_grid->setRowHeightHint( pos, which, hint );
     else
-        m_grid->setColumnSizeHint( pos, which, hint );
+        m_grid->setColumnWidthHint( pos, which, hint );
 }
 
 void GridSkinny::setStretchFactor(

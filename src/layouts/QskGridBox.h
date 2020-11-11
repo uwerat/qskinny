@@ -77,11 +77,11 @@ class QSK_EXPORT QskGridBox : public QskBox
 
     // row/column size hints
 
-    Q_INVOKABLE void setColumnSizeHint( int column, Qt::SizeHint, qreal width );
-    Q_INVOKABLE qreal columnSizeHint( int column, Qt::SizeHint ) const;
+    Q_INVOKABLE void setColumnWidthHint( int column, Qt::SizeHint, qreal width );
+    Q_INVOKABLE qreal columnWidthHint( int column, Qt::SizeHint ) const;
 
-    Q_INVOKABLE void setRowSizeHint( int row, Qt::SizeHint, qreal height );
-    Q_INVOKABLE qreal rowSizeHint( int row, Qt::SizeHint ) const;
+    Q_INVOKABLE void setRowHeightHint( int row, Qt::SizeHint, qreal height );
+    Q_INVOKABLE qreal rowHeightHint( int row, Qt::SizeHint ) const;
 
     Q_INVOKABLE void setRowFixedHeight( int row, qreal height );
     Q_INVOKABLE void setColumnFixedWidth( int column, qreal width );
