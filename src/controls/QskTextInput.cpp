@@ -610,7 +610,7 @@ void QskTextInput::setEditing( bool on )
     if ( on )
     {
 #if 0
-        updateInputMethod(Qt::ImCursorRectangle | Qt::ImAnchorRectangle);
+        updateInputMethod( Qt::ImCursorRectangle | Qt::ImAnchorRectangle );
         QGuiApplication::inputMethod()->inputDirection
 #endif
         qskInputMethodSetVisible( this, true );
