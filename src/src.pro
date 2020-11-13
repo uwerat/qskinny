@@ -30,6 +30,8 @@ HEADERS += \
     common/QskObjectCounter.h \
     common/QskRgbValue.h \
     common/QskRgbPalette.h \
+    common/QskScaleEngine.h \
+    common/QskScaleTickmarks.h \
     common/QskShadowMetrics.h \
     common/QskSizePolicy.h \
     common/QskTextColors.h \
@@ -50,6 +52,8 @@ SOURCES += \
     common/QskObjectCounter.cpp \
     common/QskRgbValue.cpp \
     common/QskRgbPalette.cpp \
+    common/QskScaleEngine.cpp \
+    common/QskScaleTickmarks.cpp \
     common/QskShadowMetrics.cpp \
     common/QskSizePolicy.cpp \
     common/QskTextColors.cpp \
@@ -92,6 +96,7 @@ HEADERS += \
     nodes/QskTextRenderer.h \
     nodes/QskTextureNode.h \
     nodes/QskTextureRenderer.h \
+    nodes/QskTickmarksNode.h \
     nodes/QskVertex.h
 
 SOURCES += \
@@ -108,6 +113,7 @@ SOURCES += \
     nodes/QskTextRenderer.cpp \
     nodes/QskTextureNode.cpp \
     nodes/QskTextureRenderer.cpp \
+    nodes/QskTickmarksNode.cpp \
     nodes/QskVertex.cpp
 
 HEADERS += \
