@@ -144,8 +144,10 @@ namespace
                 Often the current tab button grows beyond the bounding rectangle
                 of the tab bar, so that it looks like being on top of the tab page
                 border. So we only want to clip in scroll direction.
+                Note: std::numeric_limits< int >::max() does not work - guess
+                some overflow somewhere ...
              */
-            constexpr qreal expanded = std::numeric_limits< int >::max();
+            constexpr qreal expanded = 0.90 * std::numeric_limits< int >::max();
 
             if ( flickableOrientations() & Qt::Horizontal )
             {
