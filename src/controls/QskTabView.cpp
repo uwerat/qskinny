@@ -39,10 +39,10 @@ QskTabView::QskTabView( Qsk::Position tabPosition, QQuickItem* parent )
 {
     setPolishOnResize( true );
 
+    m_data->tabBar = new QskTabBar( tabPosition, this );
+
     m_data->stackBox = new QskStackBox( this );
     m_data->stackBox->setObjectName( QStringLiteral( "QskTabViewStackBox" ) );
-
-    m_data->tabBar = new QskTabBar( tabPosition, this );
 
 #if 1
     const auto hint = animation( Page );
