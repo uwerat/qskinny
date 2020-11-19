@@ -65,8 +65,8 @@ class QSK_EXPORT QskSkinlet
 
     // keeping the aspect ratio
     static QSGNode* updateGraphicNode( const QskSkinnable*, QSGNode*,
-        const QskGraphic&, const QskColorFilter&,
-        const QRectF&, Qt::Alignment, Qt::Orientations mirrored = Qt::Orientations() );
+        const QskGraphic&, const QskColorFilter&, const QRectF&,
+        Qt::Alignment, Qt::Orientations mirrored = Qt::Orientations() );
 
     // stretching to fit
     static QSGNode* updateGraphicNode( const QskSkinnable*, QSGNode*,
