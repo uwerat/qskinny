@@ -473,7 +473,7 @@ QSGNode* QskListViewSkinlet::updateCellNode( const QskListView* listView,
     }
     else
     {
-        qWarning() << "QskListViewSkinlet: got unsupported QVariant type" << value.type();
+        qWarning() << "QskListViewSkinlet: got unsupported QVariant type" << value.typeName();
     }
 
     return newNode;

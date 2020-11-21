@@ -163,7 +163,7 @@ QKeySequence QskShortcutQml::sequence() const
 
 void QskShortcutQml::setSequenceVariant( const QVariant& sequence )
 {
-    if ( sequence.type() == QVariant::Int )
+    if ( sequence.userType() == QVariant::Int )
         setSequence( static_cast< QKeySequence::StandardKey >( sequence.toInt() ) );
     else
         setSequence( QKeySequence::fromString( sequence.toString() ) );

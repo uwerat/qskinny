@@ -21,7 +21,11 @@ class QskTickmarksNodePrivate final : public QSGGeometryNodePrivate
     QskTickmarksNodePrivate()
         : geometry( QSGGeometry::defaultAttributes_Point2D(), 0 )
     {
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 )
+        geometry.setDrawingMode( QSGGeometry::DrawLines );
+#else
         geometry.setDrawingMode( GL_LINES );
+#endif
         geometry.setVertexDataPattern( QSGGeometry::StaticPattern );
     }
 

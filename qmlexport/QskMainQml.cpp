@@ -35,6 +35,12 @@ QStringList QskMain::skinList() const
 
 QQmlListProperty< QObject > QskMain::data()
 {
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+    using SizeType = qsizetype;
+#else
+    using SizeType = int;
+#endif
+
     return QQmlListProperty< QObject >(
         this, nullptr,
         []( QQmlListProperty< QObject >* property, QObject* value )
@@ -45,9 +51,9 @@ QQmlListProperty< QObject > QskMain::data()
         []( QQmlListProperty< QObject >* property )
         {
             auto main = static_cast< const QskMain* >( property->object );
-            return static_cast< int >( main->m_data.count() );
+            return static_cast< SizeType >( main->m_data.count() );
         },
-        []( QQmlListProperty< QObject >* property, int index )
+        []( QQmlListProperty< QObject >* property, SizeType index )
         {
             auto main = static_cast< const QskMain* >( property->object );
             return main->m_data.at( index );

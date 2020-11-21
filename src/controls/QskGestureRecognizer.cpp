@@ -13,20 +13,40 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qquickwindow_p.h>
 QSK_QT_PRIVATE_END
 
+static QMouseEvent* qskClonedMouseEventAt(
+    const QMouseEvent *event, QPointF *localPos )
+{
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+
+    auto clonedEvent = QQuickWindowPrivate::cloneMouseEvent(
+        const_cast< QMouseEvent* >( event ), localPos );
+
+#else
+    auto clonedEvent = new QMouseEvent( *event );
+
+    auto& point = QMutableEventPoint::from( clonedEvent->point( 0 ) );
+    point.detach();
+    point.setTimestamp( event->timestamp() );
+    point.setPosition( localPos ? *localPos : event->position() );
+#endif
+
+    return clonedEvent;
+}
+
 static inline QMouseEvent* qskClonedMouseEvent(
     const QMouseEvent* mouseEvent, const QQuickItem* item = nullptr )
 {
     QMouseEvent* clonedEvent;
-    QMouseEvent* event = const_cast< QMouseEvent* >( mouseEvent );
+    auto event = const_cast< QMouseEvent* >( mouseEvent );
 
     if ( item )
     {
-        QPointF localPos = item->mapFromScene( qskMouseScenePosition( event ) );
-        clonedEvent = QQuickWindowPrivate::cloneMouseEvent( event, &localPos );
+        auto localPos = item->mapFromScene( qskMouseScenePosition( event ) );
+        clonedEvent = qskClonedMouseEventAt( event, &localPos );
     }
     else
     {
-        clonedEvent = QQuickWindowPrivate::cloneMouseEvent( event, nullptr );
+        clonedEvent = qskClonedMouseEventAt( event, nullptr );
     }
 
     clonedEvent->setAccepted( false );
