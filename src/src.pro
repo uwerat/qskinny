@@ -92,6 +92,7 @@ HEADERS += \
     nodes/QskPaintedNode.h \
     nodes/QskPlainTextRenderer.h \
     nodes/QskRichTextRenderer.h \
+    nodes/QskScaleRenderer.h \
     nodes/QskSGNode.h \
     nodes/QskTextNode.h \
     nodes/QskTextRenderer.h \
@@ -110,6 +111,7 @@ SOURCES += \
     nodes/QskPaintedNode.cpp \
     nodes/QskPlainTextRenderer.cpp \
     nodes/QskRichTextRenderer.cpp \
+    nodes/QskScaleRenderer.cpp \
     nodes/QskSGNode.cpp \
     nodes/QskTextNode.cpp \
     nodes/QskTextRenderer.cpp \
