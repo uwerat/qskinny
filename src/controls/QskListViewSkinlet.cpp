@@ -8,6 +8,7 @@
 
 #include "QskColorFilter.h"
 #include "QskGraphic.h"
+#include "QskSGNode.h"
 
 #include <qmath.h>
 #include <qsgnode.h>
@@ -431,6 +432,8 @@ QSGTransformNode* QskListViewSkinlet::updateForegroundNode(
 QSGNode* QskListViewSkinlet::updateCellNode( const QskListView* listView,
     QSGNode* contentNode, const QRectF& rect, int row, int col ) const
 {
+    using namespace QskSGNode;
+
     QSGNode* newNode = nullptr;
 
 #if 1

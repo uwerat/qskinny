@@ -8,6 +8,7 @@
 
 #include "QskAspect.h"
 #include "QskQuick.h"
+#include "QskSGNode.h"
 
 #include <qsgnode.h>
 
@@ -129,8 +130,8 @@ QSGNode* QskScrollViewSkinlet::updateContentsRootNode(
     if ( clipNode == nullptr )
         return nullptr;
 
-    QSGNode* oldContentsNode = findNodeByRole( clipNode, ContentsRootRole );
-    QSGNode* contentsNode = updateContentsNode( scrollView, oldContentsNode );
+    auto oldContentsNode = QskSGNode::findChildNode( clipNode, ContentsRootRole );
+    auto contentsNode = updateContentsNode( scrollView, oldContentsNode );
 
     if ( contentsNode )
     {
@@ -141,7 +142,7 @@ QSGNode* QskScrollViewSkinlet::updateContentsRootNode(
             For those situations we need to set a node role, that we can decide
             which child of the clip node needs to be replaced.
          */
-        setNodeRole( contentsNode, ContentsRootRole );
+        QskSGNode::setNodeRole( contentsNode, ContentsRootRole );
 
         if ( contentsNode->parent() != clipNode )
             clipNode->appendChildNode( contentsNode );
@@ -169,7 +170,7 @@ QSGNode* QskScrollViewSkinlet::contentsNode( const QskScrollView* scrollView )
     QSGNode* node = const_cast< QSGNode* >( qskPaintNode( scrollView ) );
     if ( node )
     {
-        node = findNodeByRole( node, ContentsRootRole );
+        node = QskSGNode::findChildNode( node, ContentsRootRole );
         if ( node )
         {
             node = node->firstChild();

@@ -17,46 +17,13 @@
 #include "QskGradient.h"
 #include "QskGraphicNode.h"
 #include "QskGraphic.h"
+#include "QskSGNode.h"
 #include "QskTextColors.h"
 #include "QskTextNode.h"
 #include "QskTextOptions.h"
 
-#include <qguiapplication.h>
 #include <qquickwindow.h>
 #include <qsgsimplerectnode.h>
-
-static const int qskBackgroundRole = 254;
-static const int qskDebugRole = 253;
-
-static inline QSGNode::Flags qskNodeFlags( quint8 nodeRole )
-{
-    return static_cast< QSGNode::Flags >( ( nodeRole + 1 ) << 8 );
-}
-
-static inline quint8 qskRole( const QSGNode* node )
-{
-    return static_cast< quint8 >( ( ( node->flags() & 0x0ffff ) >> 8 ) - 1 );
-}
-
-static inline void qskSetRole( quint8 nodeRole, QSGNode* node )
-{
-    const QSGNode::Flags flags = qskNodeFlags( nodeRole );
-    node->setFlags( node->flags() | flags );
-}
-
-static inline QSGNode* qskFindNodeByFlag( QSGNode* parent, int nodeRole )
-{
-    auto node = parent->firstChild();
-    while ( node )
-    {
-        if ( qskRole( node ) == nodeRole )
-            return node;
-
-        node = node->nextSibling();
-    }
-
-    return nullptr;
-}
 
 static inline QRectF qskSubControlRect( const QskSkinlet* skinlet,
     const QskSkinnable* skinnable, QskAspect::Subcontrol subControl )
@@ -200,6 +167,8 @@ const QVector< quint8 >& QskSkinlet::nodeRoles() const
 
 void QskSkinlet::updateNode( QskSkinnable* skinnable, QSGNode* parentNode ) const
 {
+    using namespace QskSGNode;
+
     QSGNode* oldNode;
     QSGNode* newNode;
 
@@ -207,35 +176,35 @@ void QskSkinlet::updateNode( QskSkinnable* skinnable, QSGNode* parentNode ) cons
     {
         // background
 
-        oldNode = qskFindNodeByFlag( parentNode, qskBackgroundRole );
+        oldNode = findChildNode( parentNode, BackgroundRole );
 
         newNode = nullptr;
         if ( control->autoFillBackground() )
             newNode = updateBackgroundNode( control, oldNode );
 
-        insertRemoveNodes( parentNode, oldNode, newNode, qskBackgroundRole );
+        replaceChildNode( BackgroundRole, parentNode, oldNode, newNode );
 
         // debug
 
-        oldNode = qskFindNodeByFlag( parentNode, qskDebugRole );
+        oldNode = findChildNode( parentNode, DebugRole );
 
         newNode = nullptr;
         if ( control->testControlFlag( QskControl::DebugForceBackground ) )
             newNode = updateDebugNode( control, oldNode );
 
-        insertRemoveNodes( parentNode, oldNode, newNode, qskDebugRole );
+        replaceChildNode( DebugRole, parentNode, oldNode, newNode );
     }
 
     for ( int i = 0; i < m_data->nodeRoles.size(); i++ )
     {
         const auto nodeRole = m_data->nodeRoles[ i ];
 
-        Q_ASSERT( nodeRole <= 245 ); // reserving 10 roles
+        Q_ASSERT( nodeRole < FirstReservedRole );
 
-        oldNode = qskFindNodeByFlag( parentNode, nodeRole );
+        oldNode = QskSGNode::findChildNode( parentNode, nodeRole );
         newNode = updateSubNode( skinnable, nodeRole, oldNode );
 
-        insertRemoveNodes( parentNode, oldNode, newNode, nodeRole );
+        replaceChildNode( nodeRole, parentNode, oldNode, newNode );
     }
 }
 
@@ -262,9 +231,7 @@ QSGNode* QskSkinlet::updateDebugNode(
     const QskControl* control, QSGNode* node ) const
 {
     if ( control->size().isEmpty() )
-    {
         return nullptr;
-    }
 
     auto rectNode = static_cast< QSGSimpleRectNode* >( node );
     if ( rectNode == nullptr )
@@ -290,125 +257,24 @@ QSGNode* QskSkinlet::updateDebugNode(
         rectNode->setColor( color );
     }
 
-    const QRectF r = control->rect();
+    const auto r = control->rect();
     if ( rectNode->rect() != r )
         rectNode->setRect( r );
 
     return rectNode;
 }
 
-void QskSkinlet::insertRemoveNodes( QSGNode* parentNode,
-    QSGNode* oldNode, QSGNode* newNode, quint8 nodeRole ) const
+void QskSkinlet::replaceChildNode( quint8 role,
+    QSGNode* parentNode, QSGNode* oldNode, QSGNode* newNode ) const
 {
-    if ( newNode && newNode->parent() != parentNode )
-    {
-        qskSetRole( nodeRole, newNode );
-
-        switch ( nodeRole )
-        {
-            case qskBackgroundRole:
-            {
-                parentNode->prependChildNode( newNode );
-                break;
-            }
-            case qskDebugRole:
-            {
-                QSGNode* firstNode = parentNode->firstChild();
-
-                if ( firstNode && ( qskRole( firstNode ) == qskBackgroundRole ) )
-                    parentNode->insertChildNodeAfter( newNode, firstNode );
-                else
-                    parentNode->prependChildNode( newNode );
-
-                break;
-            }
-            default:
-            {
-                insertNodeSorted( newNode, parentNode );
-            }
-        }
-    }
-
-    if ( oldNode && oldNode != newNode )
-    {
-        parentNode->removeChildNode( oldNode );
-        if ( oldNode->flags() & QSGNode::OwnedByParent )
-            delete oldNode;
-    }
-}
-
-void QskSkinlet::insertNodeSorted( QSGNode* node, QSGNode* parentNode ) const
-{
-    QSGNode* sibling = nullptr;
-
-    if ( parentNode->childCount() > 0 )
-    {
-        const int nodePos = m_data->nodeRoles.indexOf( qskRole( node ) );
-
-        // in most cases we are appending, so let's start at the end
-
-        for ( QSGNode* childNode = parentNode->lastChild();
-            childNode != nullptr; childNode = childNode->previousSibling() )
-        {
-            const auto childNodeRole = qskRole( childNode );
-            if ( childNodeRole == qskBackgroundRole )
-            {
-                sibling = childNode;
-            }
-            else
-            {
-                /*
-                   Imperformant implementation, but as the number of roles is
-                   usually < 5 we don't introduce some sort of support for faster lookups
-                 */
-
-                const int index = m_data->nodeRoles.indexOf( qskRole( childNode ) );
-                if ( index >= 0 && index < nodePos )
-                    sibling = childNode;
-            }
-
-            if ( sibling != nullptr )
-                break;
-        }
-    }
-
-    if ( sibling )
-        parentNode->insertChildNodeAfter( node, sibling );
-    else
-        parentNode->prependChildNode( node );
-}
-
-void QskSkinlet::removeTraillingNodes( QSGNode* node, QSGNode* child )
-{
-    if ( node && child )
-    {
-        while ( auto sibling = child->nextSibling() )
-        {
-            node->removeChildNode( sibling );
-            delete sibling;
-        }
-    }
-}
-
-void QskSkinlet::setNodeRole( QSGNode* node, quint8 nodeRole )
-{
-    qskSetRole( nodeRole, node );
-}
-
-quint8 QskSkinlet::nodeRole( const QSGNode* node )
-{
-    return node ? qskRole( node ) : 0;
-}
-
-QSGNode* QskSkinlet::findNodeByRole( QSGNode* parent, quint8 nodeRole )
-{
-    return qskFindNodeByFlag( parent, nodeRole );
+    QskSGNode::replaceChildNode(
+        m_data->nodeRoles, role, parentNode, oldNode, newNode );
 }
 
 QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
     QSGNode* node, QskAspect::Subcontrol subControl ) const
 {
-    const QRectF rect = qskSubControlRect( this, skinnable, subControl );
+    const auto rect = qskSubControlRect( this, skinnable, subControl );
     return updateBoxNode( skinnable, node, rect, subControl );
 }
 
@@ -425,9 +291,9 @@ QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
 {
     using namespace QskAspect;
 
-    const QMarginsF margins = skinnable->marginsHint( subControl | Margin );
+    const auto margins = skinnable->marginsHint( subControl | Margin );
 
-    const QRectF boxRect = rect.marginsRemoved( margins );
+    const auto boxRect = rect.marginsRemoved( margins );
     if ( boxRect.isEmpty() )
         return nullptr;
 
@@ -454,7 +320,7 @@ QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
 QSGNode* QskSkinlet::updateBoxClipNode( const QskSkinnable* skinnable,
     QSGNode* node, QskAspect::Subcontrol subControl ) const
 {
-    const QRectF rect = qskSubControlRect( this, skinnable, subControl );
+    const auto rect = qskSubControlRect( this, skinnable, subControl );
     return updateBoxClipNode( skinnable, node, rect, subControl );
 }
 
@@ -467,9 +333,9 @@ QSGNode* QskSkinlet::updateBoxClipNode( const QskSkinnable* skinnable,
     if ( clipNode == nullptr )
         clipNode = new QskBoxClipNode();
 
-    const QMarginsF margins = skinnable->marginsHint( subControl | Margin );
+    const auto margins = skinnable->marginsHint( subControl | Margin );
 
-    const QRectF clipRect = rect.marginsRemoved( margins );
+    const auto clipRect = rect.marginsRemoved( margins );
     if ( clipRect.isEmpty() )
     {
         clipNode->setIsRectangular( true );
@@ -502,7 +368,7 @@ QSGNode* QskSkinlet::updateTextNode(
     if ( textNode == nullptr )
         textNode = new QskTextNode();
 
-    auto colors = qskTextColors( skinnable, subControl );
+    const auto colors = qskTextColors( skinnable, subControl );
 
     auto textStyle = Qsk::Normal;
     if ( colors.styleColor.alpha() == 0 )
@@ -542,7 +408,7 @@ QSGNode* QskSkinlet::updateTextNode(
     const QString& text, const QskTextOptions& textOptions,
     QskAspect::Subcontrol subControl ) const
 {
-    const QRectF rect = qskSubControlRect( this, skinnable, subControl );
+    const auto rect = qskSubControlRect( this, skinnable, subControl );
     const auto alignment = skinnable->flagHint< Qt::Alignment >(
         QskAspect::Alignment | subControl, Qt::AlignLeft );
 
@@ -555,9 +421,9 @@ QSGNode* QskSkinlet::updateGraphicNode(
     const QskGraphic& graphic, QskAspect::Subcontrol subcontrol,
     Qt::Orientations mirrored ) const
 {
-    const QRectF rect = qskSubControlRect( this, skinnable, subcontrol );
+    const auto rect = qskSubControlRect( this, skinnable, subcontrol );
 
-    const Qt::Alignment alignment = skinnable->flagHint< Qt::Alignment >(
+    const auto alignment = skinnable->flagHint< Qt::Alignment >(
         subcontrol | QskAspect::Alignment, Qt::AlignCenter );
 
     const auto colorFilter = skinnable->effectiveGraphicFilter( subcontrol );
@@ -574,10 +440,10 @@ QSGNode* QskSkinlet::updateGraphicNode(
     if ( graphic.isNull() )
         return nullptr;
 
-    const QSizeF size = graphic.defaultSize().scaled(
+    const auto size = graphic.defaultSize().scaled(
         rect.size(), Qt::KeepAspectRatio );
 
-    const QRectF r = qskAlignedRectF( rect, size.width(), size.height(), alignment );
+    const auto r = qskAlignedRectF( rect, size.width(), size.height(), alignment );
     return qskUpdateGraphicNode( skinnable, node, graphic, colorFilter, r, mirrored );
 }
 

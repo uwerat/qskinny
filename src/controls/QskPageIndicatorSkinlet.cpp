@@ -7,6 +7,7 @@
 #include "QskPageIndicator.h"
 
 #include "QskBoxNode.h"
+#include "QskSGNode.h"
 
 QskPageIndicatorSkinlet::QskPageIndicatorSkinlet( QskSkin* skin )
     : QskSkinlet( skin )
@@ -162,7 +163,7 @@ QSGNode* QskPageIndicatorSkinlet::updateBulletsNode(
     }
 
     // if count has decreased we need to remove superfluous nodes
-    removeTraillingNodes( node, bulletNode );
+    QskSGNode::removeAllChildNodesAfter( node, bulletNode );
 
     return node;
 }

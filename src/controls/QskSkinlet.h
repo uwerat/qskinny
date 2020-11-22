@@ -47,12 +47,6 @@ class QSK_EXPORT QskSkinlet
     void setOwnedBySkinnable( bool on );
     bool isOwnedBySkinnable() const;
 
-    static void setNodeRole( QSGNode* node, quint8 nodeRole );
-    static quint8 nodeRole( const QSGNode* node );
-    static void removeTraillingNodes( QSGNode* node, QSGNode* child );
-
-    static QSGNode* findNodeByRole( QSGNode* parent, quint8 nodeRole );
-
     static QSGNode* updateBoxNode( const QskSkinnable*, QSGNode*,
         const QRectF&, QskAspect::Subcontrol );
 
@@ -102,12 +96,10 @@ class QSK_EXPORT QskSkinlet
         const QskGraphic&, QskAspect::Subcontrol,
         Qt::Orientations mirrored = Qt::Orientations() ) const;
 
-    void insertRemoveNodes( QSGNode* parentNode,
-        QSGNode* oldNode, QSGNode* newNode, quint8 nodeRole ) const;
+    void replaceChildNode( quint8 nodeRole, QSGNode* parentNode,
+        QSGNode* oldNode, QSGNode* newNode ) const;
 
   private:
-    void insertNodeSorted( QSGNode* node, QSGNode* parentNode ) const;
-
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

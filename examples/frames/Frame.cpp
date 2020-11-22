@@ -10,7 +10,7 @@
 #include <QskBoxNode.h>
 #include <QskBoxShapeMetrics.h>
 #include <QskGradient.h>
-#include <QskSkinlet.h>
+#include <QskSGNode.h>
 
 static inline qreal effectiveRadius( const QRectF& rect, qreal percentage )
 {
@@ -100,7 +100,7 @@ void Frame::updateNode( QSGNode* parentNode )
     const quint8 nodeRole = 0;
 
     auto node = static_cast< QskBoxNode* >(
-        QskSkinlet::findNodeByRole( parentNode, nodeRole ) );
+        QskSGNode::findChildNode( parentNode, nodeRole ) );
 
     const QRectF rect = contentsRect();
     if ( rect.isEmpty() )
@@ -112,7 +112,7 @@ void Frame::updateNode( QSGNode* parentNode )
     if ( node == nullptr )
     {
         node = new QskBoxNode;
-        QskSkinlet::setNodeRole( node, nodeRole );
+        QskSGNode::setNodeRole( node, nodeRole );
     }
 
     updateFrameNode( rect, node );

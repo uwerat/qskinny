@@ -8,6 +8,7 @@
 #include "QskQuick.h"
 #include "QskScrollViewSkinlet.h"
 #include "QskBoxBorderMetrics.h"
+#include "QskSGNode.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickclipnode_p.h>
@@ -322,7 +323,7 @@ namespace
     {
         auto node = const_cast< QSGNode* >( qskPaintNode( scrollArea() ) );
         if ( node )
-            node = QskSkinlet::findNodeByRole( node, QskScrollViewSkinlet::ContentsRootRole );
+            node = QskSGNode::findChildNode( node, QskScrollViewSkinlet::ContentsRootRole );
 
         if ( node && node->type() == QSGNode::ClipNodeType )
             return static_cast< QSGClipNode* >( node );
