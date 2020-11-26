@@ -22,7 +22,7 @@ class QSK_EXPORT QskScaleTickmarks
     {
         MinorTick,
         MediumTick,
-        MajorTick,
+        MajorTick
     };
 
     Q_ENUM( TickType )
