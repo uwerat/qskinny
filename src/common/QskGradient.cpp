@@ -139,7 +139,7 @@ static inline QVector< QskGradientStop > qskExtractedStops(
     }
     else
     {
-        for ( i = 1 ; i < stops.count(); i++ )
+        for ( i = 1; i < stops.count(); i++ )
         {
             if ( stops[i].position() > from )
                 break;

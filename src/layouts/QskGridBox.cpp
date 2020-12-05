@@ -105,21 +105,21 @@ QskGridBox::~QskGridBox()
     for ( int i = 0; i < engine.count(); i++ )
     {
         if ( auto item = engine.itemAt( i ) )
-            setItemActive( item, false ); 
+            setItemActive( item, false );
     }
 }
 
-int QskGridBox::addItem( QQuickItem* item, 
+int QskGridBox::addItem( QQuickItem* item,
     int row, int column, Qt::Alignment alignment )
-{   
-    if ( auto control = qskControlCast( item ) ) 
+{
+    if ( auto control = qskControlCast( item ) )
         control->setLayoutAlignmentHint( alignment );
 
     return addItem( item, row, column );
-}   
-    
-int QskGridBox::addItem( QQuickItem* item, 
-        int row, int column, int rowSpan, int columnSpan, Qt::Alignment alignment )
+}
+
+int QskGridBox::addItem( QQuickItem* item,
+    int row, int column, int rowSpan, int columnSpan, Qt::Alignment alignment )
 {
     if ( auto control = qskControlCast( item ) )
         control->setLayoutAlignmentHint( alignment );
@@ -459,7 +459,7 @@ void QskGridBox::itemChange( ItemChange change, const ItemChangeData& value )
 
 bool QskGridBox::event( QEvent* event )
 {
-    switch ( static_cast<int>( event->type() ) )
+    switch ( static_cast< int >( event->type() ) )
     {
         case QEvent::LayoutRequest:
         {
@@ -492,10 +492,10 @@ void QskGridBox::dump()
 
     QDebugStateSaver saver( debug );
     debug.nospace();
-    
+
     const auto constraint = sizeConstraint();
 
-    debug << "QskGridBox" 
+    debug << "QskGridBox"
         << "[" << engine.columnCount() << "," << engine.rowCount() << "] w:"
         << constraint.width() << " h:" << constraint.height() << '\n';
 

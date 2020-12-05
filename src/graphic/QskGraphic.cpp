@@ -676,7 +676,7 @@ void QskGraphic::render( QPainter* painter, const QRectF& rect,
     }
 
     const auto& pr = m_data->pointRect;
-    const auto rc =  rect.center();
+    const auto rc = rect.center();
 
     QTransform tr;
     tr.translate(
@@ -1025,7 +1025,7 @@ QDebug operator<<( QDebug debug, const QskGraphic& graphic )
 
                 debug << "\n Path(" << path.elementCount() << ")";
 
-                const char *types[] = { "MoveTo", "LineTo", "CurveTo", "CurveToData" };
+                const char* types[] = { "MoveTo", "LineTo", "CurveTo", "CurveToData" };
 
                 for ( int i = 0; i < path.elementCount(); i++ )
                 {
@@ -1041,7 +1041,7 @@ QDebug operator<<( QDebug debug, const QskGraphic& graphic )
             {
                 const auto& pixmapData = *command.pixmapData();
 
-                debug << "\n Pixmap:"; 
+                debug << "\n Pixmap:";
                 debug << "\n  " << pixmapData.pixmap;
                 debug << "\n  Rect:" << pixmapData.rect;
                 debug << "\n  SubRect:" << pixmapData.subRect;

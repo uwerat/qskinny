@@ -91,7 +91,7 @@ namespace
 
       private:
 
-        static void filter( QLoggingCategory *category )
+        static void filter( QLoggingCategory* category )
         {
             if ( qstrcmp( category->categoryName(), "qt.qml.typeregistration" ) == 0 )
             {

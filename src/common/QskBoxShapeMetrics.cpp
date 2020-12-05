@@ -133,7 +133,7 @@ QVariant QskBoxShapeMetrics::interpolate(
 
 uint QskBoxShapeMetrics::hash( uint seed ) const noexcept
 {
-    uint hash = qHash( static_cast<int>( m_sizeMode ), seed );
+    uint hash = qHash( static_cast< int >( m_sizeMode ), seed );
     return qHashBits( m_radii, sizeof( m_radii ), hash );
 }
 

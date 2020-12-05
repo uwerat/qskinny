@@ -313,7 +313,7 @@ QSizeF QskVirtualKeyboard::layoutSizeHint(
         const auto dh = padding.top() + padding.bottom();
 
         w = ( h - dh ) / ratio + dw;
-    }    
+    }
     else
     {
         if ( w < 0 )

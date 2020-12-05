@@ -156,7 +156,7 @@ void QskLayoutChain::expandCells(
             cell.isValid = true;
             m_validCells++;
         }
-    }    
+    }
 }
 
 void QskLayoutChain::finish()

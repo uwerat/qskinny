@@ -20,10 +20,10 @@ static void qskRegisterMetaInvokable()
 {
     qRegisterMetaType< QskMetaInvokable >();
 }
-    
+
 Q_CONSTRUCTOR_FUNCTION( qskRegisterMetaInvokable )
 
-static inline void *qskMetaTypeCreate( int type, const void *copy )
+static inline void* qskMetaTypeCreate( int type, const void* copy )
 {
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
     return QMetaType( type ).create( copy );

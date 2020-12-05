@@ -81,7 +81,7 @@ namespace
 
       Q_SIGNALS:
         void transitionStarted( int ms );
-            
+
       private:
         void addRectangle( const char* colorName )
         {
@@ -133,7 +133,7 @@ namespace
             if ( m_elapsed.elapsed() >= m_duration )
                 reset();
             else
-                setValue( m_elapsed.elapsed() / m_duration * 100.0 ); 
+                setValue( m_elapsed.elapsed() / m_duration * 100.0 );
         }
 
       private:

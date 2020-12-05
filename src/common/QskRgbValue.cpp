@@ -164,8 +164,8 @@ QRgb QskRgb::lighter( QRgb rgb, int factor ) noexcept
 }
 
 QRgb QskRgb::darker( QRgb rgb, int factor ) noexcept
-{   
-    if ( factor <= 0 )                                
+{
+    if ( factor <= 0 )
         return rgb;
 
     // guess we can find a faster implementation without using QColor TODO ...

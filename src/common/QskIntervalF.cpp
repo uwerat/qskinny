@@ -25,12 +25,12 @@ QskIntervalF QskIntervalF::interpolated(
     const QskIntervalF& to, qreal progress ) const noexcept
 {
     return qskInterpolated( *this, to, progress );
-} 
-    
+}
+
 QVariant QskIntervalF::interpolate(
     const QskIntervalF& intv1, const QskIntervalF& intv2, qreal progress ) noexcept
-{   
-    return QVariant::fromValue( qskInterpolated( intv1, intv2, progress ) ); 
+{
+    return QVariant::fromValue( qskInterpolated( intv1, intv2, progress ) );
 }
 
 void QskIntervalF::unite( const QskIntervalF& other ) noexcept

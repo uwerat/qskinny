@@ -14,31 +14,31 @@
 namespace
 {
     class ProgressBar : public QskProgressBar
-    {   
-        public:
-            ProgressBar( QskLinearBox* box )
-                : QskProgressBar( box )
-            {   
-                setOrientation( ( box->orientation() == Qt::Horizontal )
-                    ? Qt::Vertical : Qt::Horizontal );
-                
-                setBoundaries( 0, 100 );
-            }
-            
-            void setTheme( QskRgbPalette::Theme theme )
-            {   
-                const auto pal = QskRgbPalette::palette( theme );
-                
-                QVector< QRgb > rgb;
-                rgb += pal.rgb( QskRgbPalette::W200 );
-                rgb += pal.rgb( QskRgbPalette::W400 );
-                rgb += pal.rgb( QskRgbPalette::W600 );
-                rgb += pal.rgb( QskRgbPalette::W900 );
-                
-                const auto stops = QskRgbPalette::colorStops( rgb, true );
-                
-                setBarGradient( QskGradient( orientation(), stops ) );
-            }
+    {
+      public:
+        ProgressBar( QskLinearBox* box )
+            : QskProgressBar( box )
+        {
+            setOrientation( ( box->orientation() == Qt::Horizontal )
+                ? Qt::Vertical : Qt::Horizontal );
+
+            setBoundaries( 0, 100 );
+        }
+
+        void setTheme( QskRgbPalette::Theme theme )
+        {
+            const auto pal = QskRgbPalette::palette( theme );
+
+            QVector< QRgb > rgb;
+            rgb += pal.rgb( QskRgbPalette::W200 );
+            rgb += pal.rgb( QskRgbPalette::W400 );
+            rgb += pal.rgb( QskRgbPalette::W600 );
+            rgb += pal.rgb( QskRgbPalette::W900 );
+
+            const auto stops = QskRgbPalette::colorStops( rgb, true );
+
+            setBarGradient( QskGradient( orientation(), stops ) );
+        }
     };
 }
 

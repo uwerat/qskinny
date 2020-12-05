@@ -400,7 +400,7 @@ QSizeF QskLayoutEngine2D::sizeHint(
 
             if ( constraint.width() <= 0 )
                 requestType = QskSizePolicy::Unconstrained;
-            
+
             break;
         }
         case QskSizePolicy::WidthForHeight:
@@ -430,7 +430,7 @@ QSizeF QskLayoutEngine2D::sizeHint(
 #endif
             }
         }
-    } 
+    }
 
     auto& rowChain = m_data->rowChain;
     auto& columnChain = m_data->columnChain;

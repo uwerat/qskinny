@@ -15,7 +15,7 @@
 
 #include <cmath>
 
-namespace  
+namespace
 {
     // What about using qskFuzzyCompare and friends ???
 
@@ -101,7 +101,7 @@ namespace
     }
 }
 
-namespace  
+namespace
 {
     double minorStepSize( double intervalSize, int maxSteps )
     {
@@ -113,7 +113,7 @@ namespace
             const int numTicks = qCeil( qAbs( intervalSize / minStep ) ) - 1;
 
             // Do the minor steps fit into the interval?
-            if ( fuzzyCompare( ( numTicks +  1 ) * qAbs( minStep ),
+            if ( fuzzyCompare( ( numTicks + 1 ) * qAbs( minStep ),
                 qAbs( intervalSize ), intervalSize ) > 0 )
             {
                 // The minor steps doesn't fit into the interval
@@ -163,7 +163,7 @@ QskScaleTickmarks QskScaleEngine::divideScale(
 
     const auto interval = QskIntervalF::normalized( x1, x2 );
 
-    if ( interval.width() > std::numeric_limits<qreal>::max() )
+    if ( interval.width() > std::numeric_limits< qreal >::max() )
     {
         qWarning() << "QskScaleEngine::divideScale: overflow";
         return tickmarks;
@@ -223,7 +223,7 @@ QskIntervalF QskScaleEngine::align( const QskIntervalF& interval, qreal stepSize
     // when there is no rounding beside some effect, when
     // calculating with doubles, we keep the original value
 
-    const auto max = std::numeric_limits<qreal>::max();
+    const auto max = std::numeric_limits< qreal >::max();
 
     if ( -max + stepSize <= x1 )
     {
@@ -242,11 +242,11 @@ QskIntervalF QskScaleEngine::align( const QskIntervalF& interval, qreal stepSize
     return QskIntervalF( x1, x2 );
 }
 
-QVector<qreal> QskScaleEngine::strip(
-    const QVector<qreal>& ticks, const QskIntervalF& interval ) const
+QVector< qreal > QskScaleEngine::strip(
+    const QVector< qreal >& ticks, const QskIntervalF& interval ) const
 {
     if ( !interval.isValid() || ticks.count() == 0 )
-        return QVector<qreal>();
+        return QVector< qreal >();
 
     if ( fuzzyContains( interval, ticks.first() )
         && fuzzyContains( interval, ticks.last() ) )
@@ -254,7 +254,7 @@ QVector<qreal> QskScaleEngine::strip(
         return ticks;
     }
 
-    QVector<qreal> strippedTicks;
+    QVector< qreal > strippedTicks;
     for ( int i = 0; i < ticks.count(); i++ )
     {
         if ( fuzzyContains( interval, ticks[i] ) )
@@ -265,13 +265,13 @@ QVector<qreal> QskScaleEngine::strip(
 }
 
 QskScaleTickmarks QskScaleEngine::buildTicks(
-    const QskIntervalF &interval, qreal stepSize, int maxMinorSteps ) const
+    const QskIntervalF& interval, qreal stepSize, int maxMinorSteps ) const
 {
     using T = QskScaleTickmarks;
 
     const auto boundingInterval = align( interval, stepSize );
 
-    QVector<qreal> ticks[3];
+    QVector< qreal > ticks[3];
     ticks[T::MajorTick] = buildMajorTicks( boundingInterval, stepSize );
 
     if ( maxMinorSteps > 0 )
@@ -302,14 +302,14 @@ QskScaleTickmarks QskScaleEngine::buildTicks(
     return tickmarks;
 }
 
-QVector<qreal> QskScaleEngine::buildMajorTicks(
+QVector< qreal > QskScaleEngine::buildMajorTicks(
     const QskIntervalF& interval, qreal stepSize ) const
 {
     int numTicks = qRound( interval.width() / stepSize ) + 1;
     if ( numTicks > 10000 )
         numTicks = 10000;
 
-    QVector<qreal> ticks;
+    QVector< qreal > ticks;
     ticks.reserve( numTicks );
 
     ticks += interval.lowerBound();
@@ -321,8 +321,8 @@ QVector<qreal> QskScaleEngine::buildMajorTicks(
 }
 
 void QskScaleEngine::buildMinorTicks(
-    const QVector<qreal>& majorTicks, int maxMinorSteps, qreal stepSize,
-    QVector<qreal> &minorTicks, QVector<qreal> &mediumTicks ) const
+    const QVector< qreal >& majorTicks, int maxMinorSteps, qreal stepSize,
+    QVector< qreal >& minorTicks, QVector< qreal >& mediumTicks ) const
 {
     auto minStep = minorStepSize( stepSize, maxMinorSteps );
     if ( minStep == 0.0 )

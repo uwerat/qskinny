@@ -86,7 +86,7 @@ class Thumbnail : public QskPushButton
             static_cast< SkinnyShapeFactory::Shape >( shape ), size );
 
         QskGraphic graphic;
-        
+
         QPen pen( Qt::black, 3 );
         pen.setJoinStyle( Qt::MiterJoin );
         pen.setCosmetic( true );
@@ -204,7 +204,7 @@ class ScrollArea : public QskScrollArea
         setFlickRecognizerTimeout( 300 );
 
         connect( this, &QskScrollView::scrollPosChanged,
-                 this, &ScrollArea::updateVisibilities );
+            this, &ScrollArea::updateVisibilities );
     }
 
   protected:

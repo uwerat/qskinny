@@ -11,7 +11,7 @@
 
 class QskMetaFunction::FunctionCall : public QtPrivate::QSlotObjectBase
 {
-public:
+  public:
     typedef void (* InvokeFunction)(
         int which, QtPrivate::QSlotObjectBase*, QObject*, void**, bool* );
 
@@ -33,7 +33,7 @@ public:
         m_parameterTypes = types;
     }
 
-protected:
+  protected:
     explicit inline FunctionCall( InvokeFunction f,
             const int* m_parameterTypes = nullptr ):
         QSlotObjectBase( f ),
@@ -41,7 +41,7 @@ protected:
     {
     }
 
-private:
+  private:
     const int* m_parameterTypes; // static array, only needed for Qt::QueuedConnection
 };
 
@@ -55,7 +55,7 @@ namespace QskMetaFunctionCall
     {
         using MetaCall = StaticFunctionCall< Function, Args, R >;
 
-    public:
+      public:
         explicit inline StaticFunctionCall( Function function ):
             FunctionCall( &invoke ),
             m_function( function )
@@ -95,7 +95,7 @@ namespace QskMetaFunctionCall
             }
         }
 
-    private:
+      private:
         Function m_function;
     };
 
@@ -104,7 +104,7 @@ namespace QskMetaFunctionCall
     {
         using MetaCall = MemberFunctionCall< Function, Args, R >;
 
-    public:
+      public:
         explicit inline MemberFunctionCall( Function function ):
             FunctionCall( &invoke ),
             m_function( function )
@@ -139,7 +139,7 @@ namespace QskMetaFunctionCall
             }
         }
 
-    private:
+      private:
         Function m_function;
     };
 
@@ -148,7 +148,7 @@ namespace QskMetaFunctionCall
     {
         using MetaCall = FunctorFunctionCall< Function, N, Args, R >;
 
-    public:
+      public:
         explicit inline FunctorFunctionCall( Function function ):
             FunctionCall( &invoke ),
             m_function( function )
@@ -182,7 +182,7 @@ namespace QskMetaFunctionCall
             }
         }
 
-    private:
+      private:
         Function m_function;
     };
 }

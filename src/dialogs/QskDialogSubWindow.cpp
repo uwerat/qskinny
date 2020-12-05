@@ -256,7 +256,7 @@ QskDialog::DialogCode QskDialogSubWindow::exec()
     {
         // when being called from QQuickWindow::mouseReleaseEvent
         // the mouse grabber has not yet been released.
-        
+
         if( !qskIsAncestorOf( this, mouseGrabber ) )
             mouseGrabber->ungrabMouse();
     }

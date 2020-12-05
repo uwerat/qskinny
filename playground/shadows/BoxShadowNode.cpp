@@ -11,15 +11,15 @@ namespace
 {
     class Shader final : public QSGMaterialShader
     {
-    public:
+      public:
         Shader();
 
-        char const *const *attributeNames() const override;
-        
+        char const* const* attributeNames() const override;
+
         void initialize() override;
 
-        void updateState( const QSGMaterialShader::RenderState &state,
-            QSGMaterial *newMaterial, QSGMaterial *oldMaterial) override;
+        void updateState( const QSGMaterialShader::RenderState& state,
+            QSGMaterial* newMaterial, QSGMaterial* oldMaterial) override;
 
       private:
         int m_matrixLocation = -1;
@@ -32,10 +32,10 @@ namespace
     };
 
     class Material final : public QSGMaterial
-    {       
+    {
       public:
         Material();
-            
+
         QSGMaterialShader* createShader() const override;
 
         QSGMaterialType* type() const override;
@@ -47,7 +47,7 @@ namespace
         QVector4D radius = QVector4D{0.0, 0.0, 0.0, 0.0};
         QColor color = Qt::black;
         QVector2D offset;
-    }; 
+    };
 
     Shader::Shader()
     {
@@ -55,14 +55,14 @@ namespace
 
         setShaderSourceFile( QOpenGLShader::Vertex, root + "boxshadow.vert" );
         setShaderSourceFile( QOpenGLShader::Fragment, root + "boxshadow.frag" );
-    } 
+    }
 
     char const* const* Shader::attributeNames() const
     {
-        static char const *const names[] = { "in_vertex", "in_coord", nullptr };
+        static char const* const names[] = { "in_vertex", "in_coord", nullptr };
         return names;
     }
-    
+
     void Shader::initialize()
     {
         QSGMaterialShader::initialize();
@@ -78,20 +78,20 @@ namespace
         m_colorLocation = p->uniformLocation( "color" );
     }
 
-    void Shader::updateState( const QSGMaterialShader::RenderState &state,
-        QSGMaterial *newMaterial, QSGMaterial *oldMaterial )
+    void Shader::updateState( const QSGMaterialShader::RenderState& state,
+        QSGMaterial* newMaterial, QSGMaterial* oldMaterial )
     {
         auto p = program();
 
-        if ( state.isMatrixDirty() ) 
-            p->setUniformValue(m_matrixLocation, state.combinedMatrix());
+        if ( state.isMatrixDirty() )
+            p->setUniformValue(m_matrixLocation, state.combinedMatrix() );
 
         if ( state.isOpacityDirty() )
-            p->setUniformValue(m_opacityLocation, state.opacity());
+            p->setUniformValue(m_opacityLocation, state.opacity() );
 
         if ( oldMaterial == nullptr || newMaterial->compare( oldMaterial ) != 0 )
         {
-            auto material = static_cast< const Material* >(newMaterial);
+            auto material = static_cast< const Material* >( newMaterial );
 
             p->setUniformValue( m_aspectLocation, material->aspect );
             p->setUniformValue( m_extentLocation, material->extent );
@@ -105,7 +105,7 @@ namespace
     {
         setFlag( QSGMaterial::Blending, true );
     }
-        
+
     QSGMaterialShader* Material::createShader() const
     {
         return new Shader();
@@ -165,7 +165,7 @@ void BoxShadowNode::setRect( const QRectF& rect )
 {
     Q_D( BoxShadowNode );
 
-    if ( rect == d->rect) 
+    if ( rect == d->rect )
         return;
 
     d->rect = rect;
@@ -173,7 +173,7 @@ void BoxShadowNode::setRect( const QRectF& rect )
     QVector2D newAspect( 1.0, 1.0 );
 
     if ( rect.width() >= rect.height() )
-        newAspect.setX( rect.width() / rect.height());
+        newAspect.setX( rect.width() / rect.height() );
     else
         newAspect.setY( rect.height() / rect.width() );
 
@@ -188,7 +188,7 @@ void BoxShadowNode::setShape( const QskBoxShapeMetrics& shape )
 {
     Q_D( BoxShadowNode );
 
-    const float t = 0.5 * std::min( d->rect.width(), d->rect.height());
+    const float t = 0.5 * std::min( d->rect.width(), d->rect.height() );
 
     const float r1 = shape.radius( Qt::BottomRightCorner ).width();
     const float r2 = shape.radius( Qt::TopRightCorner ).width();
@@ -216,7 +216,7 @@ void BoxShadowNode::setColor( const QColor& color )
     const auto c = QColor::fromRgbF(
         color.redF() * a, color.greenF() * a, color.blueF() * a, a );
 
-    if ( d->material.color != c ) 
+    if ( d->material.color != c )
     {
         d->material.color = c;
         markDirty(QSGNode::DirtyMaterial);
@@ -234,7 +234,7 @@ void BoxShadowNode::setShadow( qreal extent, qreal dx, qreal dy )
 
     const float uniformExtent = ( extent / minDimension ) * 2.0;
 
-    if ( !qFuzzyCompare( d->material.extent, uniformExtent ) ) 
+    if ( !qFuzzyCompare( d->material.extent, uniformExtent ) )
     {
         d->material.extent = uniformExtent;
         markDirty(QSGNode::DirtyMaterial);
@@ -258,8 +258,7 @@ void BoxShadowNode::updateGeometry()
 
     auto rect = d->rect.adjusted(
         -sz * aspect.x(), -sz * aspect.y(),
-        sz * aspect.x(), sz * aspect.y()
-    );
+        sz * aspect.x(), sz * aspect.y() );
 
     auto offsetLength = d->material.offset.length();
 

@@ -13,9 +13,9 @@ class QSK_EXPORT QskScaleTickmarks
 {
     Q_GADGET
 
-    Q_PROPERTY( QVector<qreal> majorTicks READ majorTicks WRITE setMajorTicks )
-    Q_PROPERTY( QVector<qreal> mediumTicks READ mediumTicks WRITE setMediumTicks )
-    Q_PROPERTY( QVector<qreal> minorTicks READ minorTicks WRITE setMinorTicks )
+    Q_PROPERTY( QVector< qreal > majorTicks READ majorTicks WRITE setMajorTicks )
+    Q_PROPERTY( QVector< qreal > mediumTicks READ mediumTicks WRITE setMediumTicks )
+    Q_PROPERTY( QVector< qreal > minorTicks READ minorTicks WRITE setMinorTicks )
 
   public:
     enum TickType
@@ -36,17 +36,17 @@ class QSK_EXPORT QskScaleTickmarks
     int tickCount() const noexcept;
     int tickCount( TickType ) const noexcept;
 
-    QVector<qreal> ticks( TickType ) const noexcept;
-    void setTicks( TickType, const QVector<qreal> & );
+    QVector< qreal > ticks( TickType ) const noexcept;
+    void setTicks( TickType, const QVector< qreal >& );
 
-    void setMinorTicks( const QVector<qreal>& );
-    QVector<qreal> minorTicks() const noexcept;
+    void setMinorTicks( const QVector< qreal >& );
+    QVector< qreal > minorTicks() const noexcept;
 
-    void setMediumTicks( const QVector<qreal>& );
-    QVector<qreal> mediumTicks() const noexcept;
+    void setMediumTicks( const QVector< qreal >& );
+    QVector< qreal > mediumTicks() const noexcept;
 
-    void setMajorTicks( const QVector<qreal>& );
-    QVector<qreal> majorTicks() const noexcept;
+    void setMajorTicks( const QVector< qreal >& );
+    QVector< qreal > majorTicks() const noexcept;
 
     void invert();
     void reset();
@@ -57,32 +57,32 @@ class QSK_EXPORT QskScaleTickmarks
     QVector< qreal > m_ticks[ 3 ];
 };
 
-inline void QskScaleTickmarks::setMinorTicks( const QVector<qreal>& ticks )
+inline void QskScaleTickmarks::setMinorTicks( const QVector< qreal >& ticks )
 {
     setTicks( MinorTick, ticks );
 }
 
-inline QVector<qreal> QskScaleTickmarks::minorTicks() const noexcept
+inline QVector< qreal > QskScaleTickmarks::minorTicks() const noexcept
 {
     return ticks( MinorTick );
 }
 
-inline void QskScaleTickmarks::setMediumTicks( const QVector<qreal>& ticks )
+inline void QskScaleTickmarks::setMediumTicks( const QVector< qreal >& ticks )
 {
     setTicks( MediumTick, ticks );
 }
 
-inline QVector<qreal> QskScaleTickmarks::mediumTicks() const noexcept
+inline QVector< qreal > QskScaleTickmarks::mediumTicks() const noexcept
 {
     return ticks( MediumTick );
 }
 
-inline void QskScaleTickmarks::setMajorTicks( const QVector<qreal>& ticks )
+inline void QskScaleTickmarks::setMajorTicks( const QVector< qreal >& ticks )
 {
     setTicks( MajorTick, ticks );
 }
 
-inline QVector<qreal> QskScaleTickmarks::majorTicks() const noexcept
+inline QVector< qreal > QskScaleTickmarks::majorTicks() const noexcept
 {
     return ticks( MajorTick );
 }

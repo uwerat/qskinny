@@ -42,8 +42,7 @@ namespace QskTextureRenderer
         virtual void paint( QPainter*, const QSize& ) = 0;
     };
 
-    QSK_EXPORT uint createTexture(
-        RenderMode, const QSize&, PaintHelper* helper );
+    QSK_EXPORT uint createTexture( RenderMode, const QSize&, PaintHelper* );
 
     QSK_EXPORT uint createTextureFromGraphic(
         RenderMode, const QSize&, const QskGraphic&,

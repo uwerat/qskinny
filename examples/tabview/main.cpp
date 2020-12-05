@@ -63,7 +63,7 @@ class TabView : public QskTabView
         {
             if ( tabPosition() == pos[i] )
             {
-                setTabPosition( pos[ ( i + 1 ) % 4 ] ); 
+                setTabPosition( pos[ ( i + 1 ) % 4 ] );
                 break;
             }
         }

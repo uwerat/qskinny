@@ -28,9 +28,9 @@ QskSizePolicy::ConstraintType QskSizePolicy::constraintType() const noexcept
 
     if ( ( m_verticalPolicy & mask ) == ConstrainedFlag )
         return QskSizePolicy::HeightForWidth;
-        
+
     return QskSizePolicy::Unconstrained;
-}   
+}
 
 Qt::SizeHint QskSizePolicy::effectiveSizeHintType(
     Qt::SizeHint which, Qt::Orientation orientation ) const noexcept

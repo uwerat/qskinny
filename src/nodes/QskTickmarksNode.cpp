@@ -86,7 +86,7 @@ void QskTickmarksNode::update(
 
         for( int i = TM::MinorTick; i <= TM::MajorTick; i++ )
         {
-            const auto tickType = static_cast< TM::TickType >(i);
+            const auto tickType = static_cast< TM::TickType >( i );
             const auto ticks = tickmarks.ticks( tickType );
 
             if ( orientation == Qt::Horizontal )

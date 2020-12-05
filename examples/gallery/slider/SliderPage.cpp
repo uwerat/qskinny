@@ -59,8 +59,8 @@ void SliderPage::populate()
 
     {
         auto slider = new QskSlider( Qt::Vertical, hBox );
-        
-        slider->setMinimum( 0 ); 
+
+        slider->setMinimum( 0 );
         slider->setMaximum( 1000 );
         slider->setPageSize( 10 );
         slider->setStepSize( 10 );
@@ -70,7 +70,7 @@ void SliderPage::populate()
     {
         auto slider = new OtherSlider( hBox );
         slider->setOrientation( Qt::Vertical );
-        
+
         slider->setMinimum( 0 );
         slider->setMaximum( 10 );
         slider->setStepSize( 1 );

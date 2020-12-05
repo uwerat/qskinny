@@ -259,12 +259,12 @@ QskLayoutChain::CellData Element::cell( Qt::Orientation orientation ) const
 {
     QskLayoutChain::CellData cell;
     cell.isValid = true;
-    
+
     if ( m_isSpacer )
     {
         const qreal value = ( orientation == Qt::Horizontal )
             ? m_spacing.width() : m_spacing.height();
-            
+
         cell.hint.setMinimum( value );
         cell.hint.setPreferred( value );
         cell.hint.setMaximum( value );
@@ -434,7 +434,7 @@ bool QskGridLayoutEngine::setColumnSizeHint(
     if ( !m_data->columnSettings.setHintAt( column, which, width ) )
         return false;
 
-   if ( column >= m_data->columnCount )
+    if ( column >= m_data->columnCount )
         m_data->columnCount = column + 1;
 
     invalidate();
@@ -635,7 +635,7 @@ void QskGridLayoutEngine::setupChain( Qt::Orientation orientation,
             auto cell = element.cell( orientation );
             if ( element.item() )
                 cell.hint = layoutHint( element.item(), orientation, constraint );
-            
+
             chain.expandCell( grid.top(), cell );
         }
         else

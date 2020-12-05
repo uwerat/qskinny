@@ -39,7 +39,7 @@ static void qskUpdateGLTextureId( QRhiTexture* rhiTexture, uint textureId )
         auto funcs = QOpenGLContext::currentContext()->functions();
         funcs->glDeleteTextures( 1, &id );
     }
-        
+
     auto glTexture = static_cast< Texture* >( rhiTexture );
     glTexture->texture = textureId;
 

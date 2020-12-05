@@ -99,7 +99,7 @@ inline constexpr qreal QskShadowMetrics::spreadRadius() const noexcept
 }
 
 inline void QskShadowMetrics::setBlurRadius( qreal radius ) noexcept
-{   
+{
     m_blurRadius = radius;
 }
 

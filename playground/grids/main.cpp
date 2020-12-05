@@ -326,10 +326,10 @@ void Box::test11()
 
 void Box::test12()
 {
-   /*
-        We have different strategies where to put the spaces, when
-        there is more space than the elements are willing to accept.
-        QSkinny has the extraSpacingAt parameter to control this.
+    /*
+         We have different strategies where to put the spaces, when
+         there is more space than the elements are willing to accept.
+         QSkinny has the extraSpacingAt parameter to control this.
      */
 
     insert( "PaleVioletRed", 0, 0 );
@@ -364,7 +364,7 @@ class MainWidget : public QWidget
         /*
             Not using layouts here to avoid confusion
             while debugging.
-        */
+         */
 
         const auto r = contentsRect();
         const int spacing = 5;

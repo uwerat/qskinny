@@ -26,12 +26,12 @@ int QskScaleTickmarks::tickCount( TickType type ) const noexcept
     return m_ticks[ type ].count();
 }
 
-QVector<qreal> QskScaleTickmarks::ticks( TickType type ) const noexcept
+QVector< qreal > QskScaleTickmarks::ticks( TickType type ) const noexcept
 {
     return m_ticks[ type ];
 }
 
-void QskScaleTickmarks::setTicks(TickType type, const QVector<qreal>& ticks )
+void QskScaleTickmarks::setTicks(TickType type, const QVector< qreal >& ticks )
 {
     m_ticks[ type ] = ticks;
 }
@@ -44,7 +44,7 @@ void QskScaleTickmarks::reset()
 }
 
 void QskScaleTickmarks::invert()
-{   
+{
     std::reverse( m_ticks[ 0 ].begin(), m_ticks[ 0 ].end() );
     std::reverse( m_ticks[ 1 ].begin(), m_ticks[ 1 ].end() );
     std::reverse( m_ticks[ 2 ].begin(), m_ticks[ 2 ].end() );
@@ -59,7 +59,7 @@ uint QskScaleTickmarks::hash( uint seed ) const
     return seed;
 }
 
-bool QskScaleTickmarks::operator==( const QskScaleTickmarks &other ) const noexcept
+bool QskScaleTickmarks::operator==( const QskScaleTickmarks& other ) const noexcept
 {
     return ( m_ticks[ 0 ] == other.m_ticks[ 0 ] )
         && ( m_ticks[ 1 ] == other.m_ticks[ 1 ] )

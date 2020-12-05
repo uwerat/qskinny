@@ -252,7 +252,7 @@ bool QskShortcutHandler::eventFilter( QObject* object, QEvent* event )
 
         Q_ASSERT( data.item == nullptr || data.item == object );
 
-        data.invoke( );
+        data.invoke();
 
         return true;
     }

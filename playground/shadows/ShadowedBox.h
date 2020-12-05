@@ -10,7 +10,7 @@ class ShadowedBox : public QskControl
 {
     Q_OBJECT
 
-public:
+  public:
     QSK_SUBCONTROLS( Panel )
 
     class Shadow
@@ -21,7 +21,7 @@ public:
         qreal yOffset = 0.0;
     };
 
-    ShadowedBox(QQuickItem *parent = nullptr);
+    ShadowedBox(QQuickItem* parent = nullptr);
     ~ShadowedBox() override;
 
     void setShadow( const Shadow& );
@@ -36,7 +36,7 @@ public:
     void setShape( const QskBoxShapeMetrics& );
     const QskBoxShapeMetrics& shape() const;
 
-private:
+  private:
     Shadow m_shadow;
     QColor m_shadowColor = Qt::black;
     QskGradient m_gradient;

@@ -11,7 +11,7 @@ static inline void qskRemoveChildNode( QSGNode* parent, QSGNode* child )
 
     if ( child->flags() & QSGNode::OwnedByParent )
         delete child;
-        
+
 }
 
 static inline void qskRemoveAllChildNodesAfter( QSGNode* parent, QSGNode* child )
@@ -90,7 +90,7 @@ void QskSGNode::removeAllChildNodesAfter( QSGNode* parent, QSGNode* child )
 }
 
 void QskSGNode::removeAllChildNodesFrom( QSGNode* parent, QSGNode* child )
-{   
+{
     if ( parent && child && child->parent() == parent )
     {
         qskRemoveAllChildNodesAfter( parent, child );

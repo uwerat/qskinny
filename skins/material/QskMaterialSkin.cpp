@@ -245,13 +245,13 @@ void QskMaterialSkin::initProgressBarHints()
     const auto& pal = m_data->palette;
 
     for ( auto subControl : { Q::Groove, Q::Bar } )
-    {   
+    {
         setMetric( subControl | Size, 5 );
         setMargins( subControl | Padding, 0 );
-        
+
         setBoxShape( subControl, 0 );
         setBoxBorderMetrics( subControl, 0 );
-    }   
+    }
 
     setGradient( Q::Groove, Grey );
     setMetric( Q::Groove | Size, 5 );

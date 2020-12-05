@@ -42,7 +42,7 @@ class QSK_EXPORT QskScaleRenderer
         const QRectF& tickmarksRect, const QRectF& labelsRect, QSGNode* );
 
     virtual QVariant labelAt( qreal pos ) const;
-    qreal maxLabelWidth() const; 
+    qreal maxLabelWidth() const;
 
     virtual QSGNode* updateTicksNode(
         const QskSkinnable*, const QRectF&, QSGNode* ) const;

@@ -41,7 +41,7 @@ QskShadowMetrics QskShadowMetrics::toAbsolute( const QSizeF& size ) const noexce
     const qreal blurRadius = qskToAbsolute( length, m_spreadRadius );
     const qreal dx = qskToAbsolute( size.width(), m_offset.x() );
     const qreal dy = qskToAbsolute( size.height(), m_offset.x() );
-    
+
     return QskShadowMetrics( spreadRadius, blurRadius, QPointF( dx, dy ) );
 }
 
@@ -55,7 +55,7 @@ QskShadowMetrics QskShadowMetrics::interpolated(
         qskInterpolated( m_offset.x(), to.m_offset.x(), ratio ),
         qskInterpolated( m_offset.y(), to.m_offset.y(), ratio ) );
 
-    QskShadowMetrics metrics( 
+    QskShadowMetrics metrics(
         qskInterpolated( m_spreadRadius, to.m_spreadRadius, ratio ),
         qskInterpolated( m_blurRadius, to.m_blurRadius, ratio ),
         offset );

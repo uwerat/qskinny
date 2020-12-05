@@ -80,7 +80,7 @@ namespace
 
 QSK_SUBCONTROL( ShadowedBox, Panel )
 
-ShadowedBox::ShadowedBox(QQuickItem *parentItem)
+ShadowedBox::ShadowedBox( QQuickItem* parentItem )
     : QskControl( parentItem )
 {
     setFlag( QQuickItem::ItemHasContents, true );

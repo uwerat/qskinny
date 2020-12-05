@@ -560,7 +560,7 @@ QSK_EXPORT void qskDebugAspect( QDebug, const QMetaObject*, QskAspect::Aspect );
 #define QSK_SYSTEM_STATE( type, name, value ) \
     const QskAspect::State type::name = \
         QskAspect::registerState( &type::staticMetaObject, value, #type "::" #name );
-          
+
 #if !defined( _MSC_VER )
 
 #define QSK_SUBCONTROLS( ... ) static const QskAspect::Subcontrol __VA_ARGS__;

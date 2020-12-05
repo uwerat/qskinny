@@ -66,7 +66,7 @@ class QSK_EXPORT QskRgbPalette
     {
         if ( weight < 0 || weight >= NumWeights )
             return 0;
- 
+
         return m_rgb[ weight ];
     }
 

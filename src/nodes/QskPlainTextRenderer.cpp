@@ -81,7 +81,7 @@ static qreal qskLayoutText( QTextLayout* layout,
                 with QTextOption::NoWrap - even if word wrapping
                 for elided text does not make any sense.
                 Needs some debugging of QTextLine::layout_helper, TODO ...
-            */
+             */
             auto option = layout->textOption();
             option.setWrapMode( QTextOption::WrapAnywhere );
             layout->setTextOption( option );

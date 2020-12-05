@@ -68,7 +68,7 @@ const QskGraphic* QskGraphicProvider::requestGraphic( const QString& id ) const
         {
             qWarning() << "QskGraphicProvider: can't load" << id;
             return nullptr;
-        }        
+        }
 
         {
             QMutexLocker locker( &m_data->mutex );

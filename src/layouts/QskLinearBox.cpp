@@ -237,7 +237,7 @@ void QskLinearBox::itemChange( ItemChange change, const ItemChangeData& value )
 
 bool QskLinearBox::event( QEvent* event )
 {
-    switch ( static_cast<int>( event->type() ) )
+    switch ( static_cast< int >( event->type() ) )
     {
         case QEvent::LayoutRequest:
         {
@@ -530,16 +530,16 @@ int QskLinearBox::stretchFactor( const QQuickItem* item ) const
 }
 
 void QskLinearBox::dump()
-{           
+{
     const auto& engine = m_data->engine;
-        
+
     auto debug = qDebug();
-            
+
     QDebugStateSaver saver( debug );
     debug.nospace();
-        
+
     const auto constraint = sizeConstraint();
-        
+
     debug << "QskLinearBox" << engine.orientation()
         << " w:" << constraint.width() << " h:" << constraint.height() << '\n';
 

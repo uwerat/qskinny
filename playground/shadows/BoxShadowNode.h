@@ -21,7 +21,7 @@ class BoxShadowNode : public QSGGeometryNode
 
     void updateGeometry();
 
-private:
+  private:
     Q_DECLARE_PRIVATE( BoxShadowNode )
 };
 

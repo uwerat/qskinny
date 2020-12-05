@@ -151,7 +151,7 @@ static inline QByteArray qskVisualizationMode( const QQuickWindow* window )
 {
     auto d = QQuickWindowPrivate::get( const_cast< QQuickWindow* >( window ) );
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-    return d->visualizationMode; 
+    return d->visualizationMode;
 #else
     return d->customRenderMode;
 #endif

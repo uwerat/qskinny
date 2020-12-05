@@ -384,9 +384,9 @@ QSizeF AnchorBox::layoutSizeHint( Qt::SizeHint which, const QSizeF& constraint )
 
 void AnchorBox::updateHints()
 {
-   /*
-        The solver seems to run into overflows with
-        std::numeric_limits< unsigned float >::max()
+    /*
+         The solver seems to run into overflows with
+         std::numeric_limits< unsigned float >::max()
      */
     const qreal max = std::numeric_limits< unsigned int >::max();
 

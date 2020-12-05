@@ -30,14 +30,14 @@ static inline void qskInsertRemoveChild( QSGNode* parentNode,
         return;
 
     if ( oldNode )
-    {   
+    {
         parentNode->removeChildNode( oldNode );
         if ( oldNode->flags() & QSGNode::OwnedByParent )
             delete oldNode;
     }
-    
+
     if ( newNode )
-    {   
+    {
         if ( append )
             parentNode->appendChildNode( newNode );
         else
@@ -67,7 +67,7 @@ void QskScaleRenderer::setTickColor( const QColor& color )
 
 void QskScaleRenderer::setTickWidth( qreal width )
 {
-    m_tickWidth = width; 
+    m_tickWidth = width;
 }
 
 void QskScaleRenderer::setFont( const QFont& font )
@@ -139,10 +139,10 @@ QSGNode* QskScaleRenderer::updateTicksNode(
 
     if( ticksNode == nullptr )
         ticksNode = new QskTickmarksNode;
-        
+
     ticksNode->update( m_tickColor, rect, m_boundaries,
         m_tickmarks, m_tickWidth, m_orientation );
-    
+
     return ticksNode;
 }
 
@@ -180,7 +180,7 @@ QSGNode* QskScaleRenderer::updateLabelsNode(
 
         const qreal tickPos = ratio * ( tick - m_boundaries.lowerBound() );
 
-        if ( label.canConvert< QString >() )   
+        if ( label.canConvert< QString >() )
         {
             const auto text = label.toString();
             if ( text.isEmpty() )
