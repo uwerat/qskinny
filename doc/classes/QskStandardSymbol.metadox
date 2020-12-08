@@ -1,8 +1,0 @@
-INTERFACE
-    CLASS: QskStandardSymbol
-    HEADER: QskStandardSymbol.h
-
-    DESCRIPTION
-		\brief QskStandardSymbol
-    END
-END

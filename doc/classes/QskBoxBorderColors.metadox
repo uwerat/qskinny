@@ -1,9 +1,0 @@
-INTERFACE
-    CLASS: QskBoxBorderColors
-
-    HEADER: QskBoxBorderColors.h
-
-    DESCRIPTION
-		\brief QskBoxBorderColors
-    END
-END

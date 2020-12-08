@@ -1,9 +1,0 @@
-INTERFACE
-    CLASS: QskAnimator
-
-    HEADER: QskAnimator.h
-
-    DESCRIPTION
-		\brief QskAnimator
-    END
-END

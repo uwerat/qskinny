@@ -1,0 +1,47 @@
+/*!
+    \headerfile QskGraphic.h
+    \brief A paint device for scalable graphics
+
+    QskGraphic is the representation of a graphic that is tailored for
+    scalability. Like QPicture it will be initialized by QPainter
+    operations and can be replayed later to any target paint device.
+    It can be stored and loaded from disk using the operators
+    from QskGraphicIO. Together with QSvgRenderer it can be used to
+    implement a simple SVG compiler.
+
+    QskGraphic maps all scalable drawing primitives to a QPainterPath
+    and stores them together with the painter state changes
+    ( pen, brush, transformation ... ) in a list of QskPainterCommand.
+    For being a complete QPaintDevice it also stores pixmaps or images,
+    what is somehow against the idea of the class, because these objects
+    can't be scaled without a loss in quality.
+
+    The main issue about scaling a QskGraphic object are the pens used for
+    drawing the outlines of the painter paths. While non cosmetic pens
+    ( QPen::isCosmetic() ) are scaled with the same ratio as the path,
+    cosmetic pens have a fixed width. A graphic might have paths with
+    different pens - cosmetic and non-cosmetic.
+
+    QskGraphic caches 2 different rectangles:
+
+    - control point rectangle\n
+      The control point rectangle is the bounding rectangle of all
+      control point rectangles of the painter paths, or the target
+      rectangle of the pixmaps/images.
+
+    - bounding rectangle\n
+      The bounding rectangle extends the control point rectangle by
+      what is needed for rendering the outline with an unscaled pen.
+
+    Because the offset for drawing the outline depends on the shape
+    of the painter path ( the peak of a triangle is different than the flat side )
+    scaling with a fixed aspect ratio always needs to be calculated from the
+    control point rectangle.
+
+    \sa QskGraphicIO, QskPainterCommand
+*/
+
+class QskGraphic
+{
+  public:
+};

@@ -1,9 +1,0 @@
-INTERFACE
-    CLASS: QskGraphicProviderMap
-
-    HEADER: QskGraphicProviderMap.h
-
-    DESCRIPTION
-		\brief QskGraphicProviderMap
-    END
-END

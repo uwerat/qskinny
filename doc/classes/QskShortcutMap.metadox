@@ -1,9 +1,0 @@
-INTERFACE
-    CLASS: QskShortcutMap
-
-    HEADER: QskShortcutMap.h
-
-    DESCRIPTION
-		\brief QskShortcutMap
-    END
-END

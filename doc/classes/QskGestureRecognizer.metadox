@@ -1,9 +1,0 @@
-INTERFACE
-    CLASS: QskGestureRecognizer
-
-    HEADER: QskGestureRecognizer.h
-
-    DESCRIPTION
-		\brief QskGestureRecognizer
-    END
-END

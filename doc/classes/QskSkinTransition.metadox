@@ -1,9 +1,0 @@
-INTERFACE
-    CLASS: QskSkinTransition
-
-    HEADER: QskSkinTransition.h
-
-    DESCRIPTION
-		\brief QskSkinTransition
-    END
-END

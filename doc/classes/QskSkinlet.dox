@@ -1,0 +1,17 @@
+/*!
+    \headerfile QskSkinlet.h
+
+    \brief Describes the rendering interface of a QskControl. Change the
+           skinlet to change the appearance of the control using the low-level scene
+           graph API.
+
+    \sa QskControl::setSkinlet()
+    \sa QskSkin
+    \sa setMetric()
+    \sa setColor()
+*/
+
+class QskSkinlet
+{
+    public:
+};

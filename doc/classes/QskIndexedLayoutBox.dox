@@ -1,0 +1,154 @@
+/*!
+    \headerfile QskIndexedLayoutBox.h
+    \brief Base class of layouts with index ordered elements
+*/
+
+class QskIndexedLayoutBox
+{
+  public:
+    /*!
+        \property bool autoAddChildren
+
+        \brief Flag controlling whether to automatically append children to the layout.
+
+        When autoAddChildren is enabled new children are automatically
+        appended to the layout. Otherwise items have to be inserted
+        manually using addItem() or insertItem().
+
+        \note Children being transparent for positioners are ignored
+
+        \accessors autoAddChildren(), setAutoAddChildren(), autoAddChildrenChanged()
+    */
+
+    /*!
+        \fn QskIndexedLayoutBox( QQuickItem * parent )
+
+        \brief Constructor
+
+        Create a layout having autoAddChildren set to false.
+
+        \param parent Parent item
+    */
+
+    /*!
+        \fn ~QskIndexedLayoutBox()
+        \brief Destructor
+    */
+
+    /*!
+        \fn void addItem( QQuickItem * item, Qt::Alignment alignment )
+
+        \brief Insert an item at the end
+
+        The geometries of items being inserted be controlled by the layout.
+
+        \param item Item to be inserted
+        \param alignment Flags to control how to align a non expandable element
+               inside of the available space.
+
+        \sa insertItem()
+        \sa QskLayout::itemAtIndex()
+    */
+
+    /*!
+        \fn void insertItem( int index, QQuickItem* item,
+                             Qt::Alignment alignment = Qt::Alignment() );
+
+        \brief Insert an item
+
+        The geometries of items being inserted be controlled by the layout.
+
+        \param index Position, where to insert the item. If index is < 0
+               or beyond QskLayout::itemCount() the item will be appended.
+        \param item  Item to be inserted
+        \param alignment Flags to control how to align a non expandable element
+                         inside of the available space.
+
+        \sa addItem(), QskLayout::itemAtIndex()
+     */
+
+    /*!
+        \fn void setAlignment( int index, Qt::Alignment alignment );
+
+        \brief Modify the alignment of a layout element
+
+        \param index Position of the inserted element
+        \param alignment Flags to control how to align a non expandable element
+                         inside of the available space
+
+        \note The alignment has only an effect, when the item can't be extended
+              to fill the cell geometry.
+        \sa alignment()
+    */
+
+    /*!
+        \fn Qt::Alignment alignment( int index ) const;
+
+        \param index Position of the inserted element
+        \return Flags to control how to align a non expandable element
+                inside of the available space
+
+        \sa setAlignment()
+    */
+
+    /*!
+        \fn void setAlignment( const QQuickItem * item, Qt::Alignment alignment );
+
+        \brief Modify the alignment of a layout element
+
+        \param item Inserted item
+        \param alignment Flags to control how to align a non expandable element
+                         inside of the available space
+
+        \note The alignment has only an effect, when the item can't be extended
+              to fill the cell geometry.
+        \sa alignment()
+
+    */
+
+    /*!
+        \fn Qt::Alignment alignment( const QQuickItem * item ) const;
+
+        \param item Inserted item
+        \return Flags to control how to align a non expandable element
+                inside of the available space
+
+        \sa setAlignment()
+    */
+
+    /*!
+        \fn void autoAddChildrenChanged()
+
+        The autoAddChildren property has changed
+        \sa setAutoAddChildren(), autoAddChildren()
+    */
+
+    /*!
+        \fn void setAutoAddChildren( bool on )
+
+        \brief En/Disable auto appending of children
+
+        When autoAddChildren() is enabled new children are automatically
+        appended to the layout. Otherwise items have to be inserted
+        manually using addItem() or insertItem().
+
+        \param on When true autoAddChildren is enabled
+
+        \note Existing children, that have not been inserted before
+              remain being not seen by the layout.
+    */
+
+    /*!
+        \fn bool autoAddChildren() const
+        \return Value of the \ref autoAddChildren property
+     */
+
+    /*!
+        \fn void itemChange( QQQuickItem *::ItemChange, const QQQuickItem *::ItemChangeData & )
+
+        Checking ItemChildAddedChange/ItemChildRemovedChange changes to
+        implement the \ref autoAddChildren mode
+
+        \sa autoAddChildren
+    */
+};

@@ -1,0 +1,39 @@
+/*!
+    \headerfile QskControl.h
+
+    \brief Base class of all Qsk controls
+
+    QskControl is the base class for most visible Qsk controls.
+
+    It re-establishes several concepts known from QWidget, that got lost
+    with QQuickItem:
+
+    - contentsRect()
+    - autoFillBackground()
+    - support of layout rules: sizeHint(), sizePolicy()
+    - locale and its propagation on the item tree
+
+    Even if QQuickItem is part of the public C++ API it has obviously been
+    designed for implementing custom items, but not for using them in C++
+    code. To support this use case a lot of trivial methods have been added.
+
+    For some reason the QQuick classes introduced proprietory notfier hooks
+    instead of using the well established and powerful concept of events.
+    QskControl tries to revert this decision by mapping notifications
+    to events, when possible.
+
+    The following events are currently implemented:
+
+    - QEvent::FontChange
+    - QEvent::PaletteChange
+    - QEvent::LocaleChange
+    - QEvent::LayoutDirectionChange
+    - QEvent::ContentsRectChange
+    - QEvent::LayoutRequest
+*/
+
+class QskControl
+{
+  public:
+};
+

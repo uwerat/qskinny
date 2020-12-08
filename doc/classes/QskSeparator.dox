@@ -1,0 +1,63 @@
+/*!
+	\class QskSeparator QskSeparator.h
+
+	\brief Separates a group of items from adjacent items.
+
+	QskSeparator is used to visually distinguish between groups of items.
+	It can be used in horizontal or vertical direction by setting the
+    orientation property to Qt::Vertical or Qt::Horizontal, respectively.
+
+	\subcontrols Panel
+	\skinlet QskSeparatorSkinlet
+*/
+
+/*!
+	\property Qt::Orientation QskSeparator::orientation
+
+	\brief Orientation of the separator - Qt::Horizontal (the default) or Qt::Vertical.
+
+	A separator is often represented by some line - for a
+    orientation of Qt::Horizontal it might be a vertical line.
+
+	\accessors orientation(), setOrientation(), orientationChanged()
+*/
+
+/*!
+	\fn QskSeparator::QskSeparator( QQuickItem* )
+
+	Constructs a horizontal separator with the given parent.
+*/
+
+/*!
+	\fn QskSeparator::QskSeparator( Qt::Orientation, QQuickItem* )
+
+	Constructs a separator with the given parent. The orientation parameter
+	determines whether the separator is horizontal or vertical.
+
+	\sa orientation
+*/
+
+/*!
+	\fn QskSeparator::~QskSeparator();
+	Destroys this separator.
+*/
+
+/*!
+	\fn void QskSeparator::setOrientation( Qt::Orientation );
+
+	Set the orientation of the separator
+	\param orientation Qt::Vertical or Qt::Horizontal
+	\sa orientation
+*/
+
+/*!
+	\fn Qt::Orientation QskSeparator::orientation() const;
+	\return Value of the \ref orientation property
+*/
+
+/*!
+	\fn void QskSeparator::orientationChanged()
+
+	The orientation of the layout has changed
+	\sa orientation
+*/

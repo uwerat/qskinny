@@ -1,0 +1,38 @@
+/*!
+	\headerfile QskSetup.h
+
+	\brief Singleton maintaining the global settings of an application using Qsk controls
+*/
+
+class QskSetup
+{
+  public:
+
+	/*!
+		\property QskSkin* skin
+		\accessors skin(), setSkin(), skinChanged()
+	*/
+
+	/*!
+	\enum Flag
+
+		\var DeferredUpdate
+		\var DeferredPolish
+		\var DeferredLayout
+		\var CleanupOnVisibility
+		\var PreferRasterForTextures
+		\var DebugForceBackground
+	*/
+
+	/*!
+		\fn void setSkin( QskSkin* );
+	*/
+
+	/*!
+		\fn QskSkin* skin();
+	*/
+
+	/*!
+		\fn void skinChanged( QskSkin* );
+	*/
+};

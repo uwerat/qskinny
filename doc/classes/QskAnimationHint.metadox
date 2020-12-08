@@ -1,9 +1,0 @@
-INTERFACE
-    CLASS: QskAnimationHint
-
-    HEADER: QskAnimationHint.h
-
-    DESCRIPTION
-		\brief QskAnimationHint
-    END
-END
