@@ -3,41 +3,70 @@
     \{
 		\namespace QskNamespace
 
+		\class QskCorner
+		\class QskGradient
+		\class QskIntervalF
+		\class QskMargins
+		\class QskMetaFunction
+		\class QskMetaInvokable
+		\class QskObjectCounter
+		\class QskRgbPalette
+		\class QskRgbValue
+		\class QskScaleEngine
+		\class QskScaleTickmarks
+		\class QskSizePolicy
+    \}
+
+    \defgroup Graphic Graphic
+	\{
 		\class QskColorFilter
 		\class QskGraphic
 		\class QskGraphicImageProvider
 		\class QskGraphicIO
+		\class QskGraphicPaintEngine
 		\class QskGraphicProvider
 		\class QskGraphicProviderMap
 		\class QskGraphicTextureFactory
-		\class QskGradient
-		\class QskMargins
-		\class QskObjectCounter
-		\class QskSetup
-		\class QskSkinManager
-		\class QskVariantAnimator
-		\class QskAnimator
-		\class QskHintAnimator
-		\class QskFlickAnimator
-		\class QskQuickItem
+		\class QskPainterCommand
+		\class QskStandardSymbol
+	\}
+
+    \defgroup Framework Framework
+    \{
 		\class QskControl
-		\class QskShortcutMap
-		\class QskSizePolicy
+		\class QskEvent
 		\class QskGesture
 		\class QskGestureRecognizer
 		\class QskPanGestureRecognizer
-		\class QskSkinHintTable
-		\class QskSkinlet
-		\class QskAnimationHint
-		\class QskAspect
-		\class QskSkinFactory
-		\class QskSkin
-		\class QskSkinnable
-		\class QskSkinTransition
+		\class QskQuick
+		\class QskQuickItem
+		\class QskSetup
+		\class QskShortcutMap
 		\class QskWindow
-		\class QskBoxShapeMetrics
+    \}
+
+    \defgroup Animation Animation
+    \{
+		\class QskAnimator
+		\class QskAnimationHint
+		\class QskFlickAnimator
+		\class QskVariantAnimator
+    \}
+
+    \defgroup Themeing Themeing
+    \{
+		\class QskAspect
 		\class QskBoxBorderColors
 		\class QskBoxBorderMetrics
+		\class QskBoxShapeMetrics
+		\class QskShadowMetrics
+		\class QskSkinFactory
+		\class QskSkin
+		\class QskSkinHintTable
+		\class QskSkinlet
+		\class QskSkinManager
+		\class QskSkinnable
+		\class QskSkinTransition
 		\class QskTextColors
 		\class QskTextOptions
     \}
@@ -45,36 +74,77 @@
     \defgroup Controls Controls
     \{
 		\class QskAbstractButton
+		\class QskBoundedControl
+		\class QskBoundedInput
+		\class QskBoundedRangeInput
+		\class QskBoundedValueInput
 		\class QskBox
 		\class QskFocusIndicator
 		\class QskGraphicLabel
+		\class QskHintAnimator
+		\class QskInputGrabber
 		\class QskListView
 		\class QskPageIndicator
 		\class QskPopup
+		\class QskProgressBar
 		\class QskPushButton
-		\class QskRangeControl
-		\class QskScrollArea
+		\class QskScrollBox
 		\class QskScrollView
+		\class QskSeparator
+		\class QskSimpleListBox
 		\class QskSlider
 		\class QskStatusIndicator
-		\class QskSubWindowArea
-		\class QskSubWindow
-		\class QskTabBar
 		\class QskTabButton
-		\class QskTabView
 		\class QskTextInput
 		\class QskTextLabel
     \}
 
-    \defgroup Layouts
+    \defgroup Skinlets Skinlets
     \{
+		\class QskBoxSkinlet
+		\class QskFocusIndicatorSkinlet
+		\class QskGraphicLabelSkinlet
+		\class QskListViewSkinlet
+		\class QskPageIndicatorSkinlet
+		\class QskPopupSkinlet
+		\class QskProgressBarSkinlet
+		\class QskPushButtonSkinlet
+		\class QskScrollViewSkinlet
+		\class QskSeparatorSkinlet
+		\class QskSliderSkinlet
+		\class QskStatusIndicatorSkinlet
+		\class QskSubWindowAreaSkinlet
+		\class QskSubWindowSkinlet
+		\class QskTabButtonSkinlet
+		\class QskTabViewSkinlet
+		\class QskTextInputSkinlet
+		\class QskTextLabelSkinlet
+    \}
+
+    \defgroup Container Container
+    \{
+		\class QskScrollArea
+		\class QskSubWindowArea
+		\class QskSubWindow
+		\class QskTabBar
+		\class QskTabView
 		\class QskGridBox
 		\class QskIndexedLayoutBox
 		\class QskLinearBox
 		\class QskStackBox
     \}
 
-    \defgroup Dialogs
+    \defgroup Layouts Layouts
+    \{
+		\class QskGridLayoutEngine
+		\class QskIndexedLayoutBox
+		\class QskLayoutChain
+		\class QskLayoutEngine2D
+		\class QskLayoutHint
+		\class QskLinearLayoutEngine
+    \}
+
+    \defgroup Dialogs Dialogs
     \{
 		\class QskDialogButtonBox
 		\class QskDialogButton
@@ -89,7 +159,7 @@
 		\class QskSimpleListBox
     \}
 
-    \defgroup Skins
+    \defgroup Skinlets Skinlets
     \{
 		\class QskBoxSkinlet
 		\class QskFocusIndicatorSkinlet
@@ -111,14 +181,24 @@
 		\class QskStandardSymbol
     \}
 
-    \defgroup Nodes
+    \defgroup Scenegraph Scenegraph
     \{
 		\class QskBoxClipNode
 		\class QskBoxNode
+		\class QskBoxRendererColorMap
+		\class QskBoxRenderer
 		\class QskGraphicNode
 		\class QskPaintedNode
+		\class QskPlainTextRenderer
+		\class QskRichTextRenderer
+		\class QskScaleRenderer
+		\class QskSGNode
 		\class QskTextNode
+		\class QskTextRenderer
 		\class QskTextureNode
+		\class QskTextureRenderer
+		\class QskTickmarksNode
+		\class QskVertex
     \}
 
  */

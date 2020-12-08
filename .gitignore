@@ -12,6 +12,4 @@ fontconfig
 qskinny.pro.user
 *.o
 *.log
-Doxyfile
 html
-parser
