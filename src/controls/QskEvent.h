@@ -102,12 +102,14 @@ class QSK_EXPORT QskPopupEvent : public QskEvent
 class QSK_EXPORT QskGestureEvent : public QskEvent
 {
   public:
-    QskGestureEvent( const QskGesture* gesture );
+    QskGestureEvent( std::shared_ptr< const QskGesture > );
 
-    inline const QskGesture* gesture() const { return m_gesture; }
+    inline std::shared_ptr< const QskGesture > gesture() const { return m_gesture; }
+
+    QskGestureEvent* clone() const override;
 
   private:
-    const QskGesture* m_gesture;
+    std::shared_ptr< const QskGesture > m_gesture;
 };
 
 class QSK_EXPORT QskAnimatorEvent : public QskEvent

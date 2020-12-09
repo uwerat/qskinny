@@ -151,10 +151,15 @@ QskPopupEvent* QskPopupEvent::clone() const
 
 // -- QskGestureEvent
 
-QskGestureEvent::QskGestureEvent( const QskGesture* gesture )
+QskGestureEvent::QskGestureEvent( std::shared_ptr< const QskGesture > gesture )
     : QskEvent( QskEvent::Gesture )
     , m_gesture( gesture )
 {
+}
+
+QskGestureEvent* QskGestureEvent::clone() const
+{
+    return new QskGestureEvent( *this );
 }
 
 // -- QskAnimatorEvent

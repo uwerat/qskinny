@@ -363,7 +363,7 @@ void QskScrollBox::gestureEvent( QskGestureEvent* event )
 {
     if ( event->gesture()->type() == QskGesture::Pan )
     {
-        const auto gesture = static_cast< const QskPanGesture* >( event->gesture() );
+        const auto gesture = static_cast< const QskPanGesture* >( event->gesture().get() );
 
         switch ( gesture->state() )
         {

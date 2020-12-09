@@ -58,7 +58,7 @@ static void qskSendPanGestureEvent(
     QQuickItem* item, QskGesture::State state, qreal velocity, qreal angle,
     const QPointF& origin, const QPointF& lastPosition, const QPointF& position )
 {
-    auto gesture = new QskPanGesture();
+    auto gesture = std::make_shared< QskPanGesture >();
     gesture->setState( state );
 
     gesture->setAngle( angle );
