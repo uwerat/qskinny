@@ -58,17 +58,17 @@ static void qskSendPanGestureEvent(
     QQuickItem* item, QskGesture::State state, qreal velocity, qreal angle,
     const QPointF& origin, const QPointF& lastPosition, const QPointF& position )
 {
-    QskPanGesture gesture;
-    gesture.setState( state );
+    auto gesture = new QskPanGesture();
+    gesture->setState( state );
 
-    gesture.setAngle( angle );
-    gesture.setVelocity( velocity );
+    gesture->setAngle( angle );
+    gesture->setVelocity( velocity );
 
-    gesture.setOrigin( origin );
-    gesture.setLastPosition( lastPosition );
-    gesture.setPosition( position );
+    gesture->setOrigin( origin );
+    gesture->setLastPosition( lastPosition );
+    gesture->setPosition( position );
 
-    QskGestureEvent event( &gesture, false );
+    QskGestureEvent event( gesture );
     QCoreApplication::sendEvent( item, &event );
 }
 

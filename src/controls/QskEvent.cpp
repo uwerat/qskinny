@@ -86,6 +86,14 @@ QskEvent::QskEvent( QskEvent::Type type )
 {
 }
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+
+QskEvent* QskEvent::clone() const
+{
+    return new QskEvent( *this );
+}
+
+#endif
 // -- QskGeometryChangeEvent
 
 QskGeometryChangeEvent::QskGeometryChangeEvent(
@@ -94,6 +102,11 @@ QskGeometryChangeEvent::QskGeometryChangeEvent(
     , m_rect( rect )
     , m_oldRect( oldRect )
 {
+}
+
+QskGeometryChangeEvent* QskGeometryChangeEvent::clone() const
+{
+    return new QskGeometryChangeEvent( *this );
 }
 
 bool QskGeometryChangeEvent::isResized() const
@@ -118,6 +131,11 @@ QskWindowChangeEvent::QskWindowChangeEvent(
 {
 }
 
+QskWindowChangeEvent* QskWindowChangeEvent::clone() const
+{
+    return new QskWindowChangeEvent( *this );
+}
+
 // -- QskPopupEvent
 
 QskPopupEvent::QskPopupEvent( Type type, QskPopup* popup )
@@ -126,20 +144,17 @@ QskPopupEvent::QskPopupEvent( Type type, QskPopup* popup )
 {
 }
 
-// -- QskGestureEvent
-
-QskGestureEvent::QskGestureEvent(
-        const QskGesture* gesture, bool ownedByEvent )
-    : QskEvent( QskEvent::Gesture )
-    , m_gesture( gesture )
-    , m_gestureOwnedByEvent( ownedByEvent )
+QskPopupEvent* QskPopupEvent::clone() const
 {
+    return new QskPopupEvent( *this );
 }
 
-QskGestureEvent::~QskGestureEvent()
+// -- QskGestureEvent
+
+QskGestureEvent::QskGestureEvent( const QskGesture* gesture )
+    : QskEvent( QskEvent::Gesture )
+    , m_gesture( gesture )
 {
-    if ( m_gestureOwnedByEvent )
-        delete m_gesture;
 }
 
 // -- QskAnimatorEvent
@@ -151,6 +166,7 @@ QskAnimatorEvent::QskAnimatorEvent( QskAspect::Aspect aspect, State state )
 {
 }
 
-QskAnimatorEvent::~QskAnimatorEvent()
+QskAnimatorEvent* QskAnimatorEvent::clone() const
 {
+    return new QskAnimatorEvent( *this );
 }

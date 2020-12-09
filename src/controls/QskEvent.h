@@ -10,6 +10,7 @@
 
 #include <qcoreevent.h>
 #include <qrect.h>
+#include <memory>
 
 class QskGesture;
 class QskPopup;
@@ -45,6 +46,11 @@ class QSK_EXPORT QskEvent : public QEvent
     };
 
     QskEvent( QskEvent::Type type );
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    virtual QskEvent *clone() const;
+#endif
+
 };
 
 class QSK_EXPORT QskGeometryChangeEvent : public QskEvent
@@ -57,6 +63,8 @@ class QSK_EXPORT QskGeometryChangeEvent : public QskEvent
 
     bool isResized() const;
     bool isMoved() const;
+
+    QskGeometryChangeEvent* clone() const override;
 
   private:
     const QRectF m_rect;
@@ -71,6 +79,8 @@ class QSK_EXPORT QskWindowChangeEvent : public QskEvent
     inline QQuickWindow* window() const { return m_window; }
     inline QQuickWindow* oldWindow() const { return m_oldWindow; }
 
+    QskWindowChangeEvent* clone() const override;
+
   private:
     QQuickWindow* const m_oldWindow;
     QQuickWindow* const m_window;
@@ -83,6 +93,8 @@ class QSK_EXPORT QskPopupEvent : public QskEvent
 
     inline QskPopup* popup() const { return m_popup; }
 
+    QskPopupEvent* clone() const override;
+
   private:
     QskPopup* const m_popup;
 };
@@ -90,15 +102,12 @@ class QSK_EXPORT QskPopupEvent : public QskEvent
 class QSK_EXPORT QskGestureEvent : public QskEvent
 {
   public:
-    QskGestureEvent( const QskGesture* gesture, bool ownedByEvent = true );
-    ~QskGestureEvent() override;
+    QskGestureEvent( const QskGesture* gesture );
 
     inline const QskGesture* gesture() const { return m_gesture; }
-    inline bool isGestureOwnedByEvent() const { return m_gestureOwnedByEvent; }
 
   private:
     const QskGesture* m_gesture;
-    bool m_gestureOwnedByEvent;
 };
 
 class QSK_EXPORT QskAnimatorEvent : public QskEvent
@@ -111,10 +120,11 @@ class QSK_EXPORT QskAnimatorEvent : public QskEvent
     };
 
     QskAnimatorEvent( QskAspect::Aspect aspect, State state );
-    ~QskAnimatorEvent() override;
 
     inline QskAspect::Aspect aspect() const { return m_aspect; }
     inline State state() const { return m_state; }
+
+    QskAnimatorEvent* clone() const override;
 
   private:
     const QskAspect::Aspect m_aspect;
