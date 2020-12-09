@@ -14,7 +14,7 @@ QSK_QT_PRIVATE_BEGIN
 QSK_QT_PRIVATE_END
 
 static QMouseEvent* qskClonedMouseEventAt(
-    const QMouseEvent *event, QPointF *localPos )
+    const QMouseEvent* event, QPointF* localPos )
 {
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
 
@@ -22,12 +22,14 @@ static QMouseEvent* qskClonedMouseEventAt(
         const_cast< QMouseEvent* >( event ), localPos );
 
 #else
-    auto clonedEvent = new QMouseEvent( *event );
+    auto clonedEvent = event->clone();
 
     auto& point = QMutableEventPoint::from( clonedEvent->point( 0 ) );
     point.detach();
     point.setTimestamp( event->timestamp() );
-    point.setPosition( localPos ? *localPos : event->position() );
+
+    if ( localPos )
+        point.setPosition( *localPos );
 #endif
 
     return clonedEvent;
