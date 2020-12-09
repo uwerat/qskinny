@@ -899,12 +899,6 @@ void QskControl::geometryChange(
     Inherited::geometryChange( newGeometry, oldGeometry );
 }
 
-void QskControl::windowDeactivateEvent()
-{
-    // stopping gesture recognition ???
-    Inherited::windowDeactivateEvent();
-}
-
 void QskControl::updateItemPolish()
 {
     updateResources(); // an extra dirty bit for this ???

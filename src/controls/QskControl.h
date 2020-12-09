@@ -197,7 +197,6 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
 
     void itemChange( ItemChange, const ItemChangeData& ) override;
     void geometryChange( const QRectF&, const QRectF& ) override;
-    void windowDeactivateEvent() override;
 
     void initSizePolicy( QskSizePolicy::Policy, QskSizePolicy::Policy );
 
