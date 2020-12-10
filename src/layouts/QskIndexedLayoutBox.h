@@ -21,7 +21,7 @@ class QSK_EXPORT QskIndexedLayoutBox : public QskBox
     explicit QskIndexedLayoutBox( QQuickItem* parent = nullptr );
     ~QskIndexedLayoutBox() override;
 
-    void setAutoAddChildren( bool );
+    void setAutoAddChildren( bool on = true );
     bool autoAddChildren() const;
 
   Q_SIGNALS:
