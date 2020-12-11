@@ -16,7 +16,7 @@ class QSK_EXPORT QskSeparator : public QskControl
         WRITE setOrientation NOTIFY orientationChanged )
 
     Q_PROPERTY( qreal thickness READ thickness
-        WRITE setThickness NOTIFY thicknessChanged )
+        WRITE setThickness RESET resetThickness NOTIFY thicknessChanged )
 
     using Inherited = QskControl;
 
@@ -32,13 +32,14 @@ class QSK_EXPORT QskSeparator : public QskControl
     Qt::Orientation orientation() const;
 
     void setThickness( qreal thickness );
+    void resetThickness();
     qreal thickness() const;
 
     QskAspect::Placement effectivePlacement() const override;
 
   Q_SIGNALS:
     void orientationChanged( Qt::Orientation );
-    void thicknessChanged();
+    void thicknessChanged( qreal );
 
   protected:
     QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;

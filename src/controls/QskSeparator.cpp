@@ -8,6 +8,12 @@
 
 QSK_SUBCONTROL( QskSeparator, Panel )
 
+static inline QskAspect::Aspect qskAspectThickness()
+{
+    using namespace QskAspect;
+    return QskSeparator::Panel | Metric | Size;
+}
+
 QskSeparator::QskSeparator( QQuickItem* parent )
     : QskSeparator( Qt::Horizontal, parent )
 {
@@ -54,20 +60,31 @@ void QskSeparator::setThickness( qreal thickness )
 {
     thickness = qMax( thickness, 0.0 );
 
-    if ( thickness != metric( QskSeparator::Panel | QskAspect::Size ) )
+    if ( thickness != metric( qskAspectThickness() ) )
     {
         setMetric( QskSeparator::Panel | QskAspect::Size, thickness );
 
         resetImplicitSize();
         update();
 
-        Q_EMIT thicknessChanged();
+        Q_EMIT thicknessChanged( thickness );
     }
 }
 
 qreal QskSeparator::thickness() const
 {
-    return metric( QskSeparator::Panel | QskAspect::Size );
+    return metric( qskAspectThickness() );
+}
+
+void QskSeparator::resetThickness()
+{
+    if ( resetHint( qskAspectThickness() ) )
+    {
+        resetImplicitSize();
+        update();
+
+        Q_EMIT thicknessChanged( thickness() );
+    }
 }
 
 QSizeF QskSeparator::contentsSizeHint(
