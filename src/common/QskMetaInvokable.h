@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #ifndef QSK_META_INVOKABLE_H
-#define QSK_META_INVOKABLE_H 1
+#define QSK_META_INVOKABLE_H
 
 #include "QskGlobal.h"
 

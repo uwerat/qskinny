@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #ifndef QSK_META_FUNCTION_HPP
-#define QSK_META_FUNCTION_HPP 1
+#define QSK_META_FUNCTION_HPP
 
 #include "QskGlobal.h"
 #include <qobject.h>
