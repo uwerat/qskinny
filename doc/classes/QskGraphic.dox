@@ -1,5 +1,5 @@
 /*!
-    \headerfile QskGraphic.h
+    \class QskGraphic QskGraphic.h
     \brief A paint device for scalable graphics
 
     QskGraphic is the representation of a graphic that is tailored for
@@ -37,11 +37,4 @@
     of the painter path ( the peak of a triangle is different than the flat side )
     scaling with a fixed aspect ratio always needs to be calculated from the
     control point rectangle.
-
-    \sa QskGraphicIO, QskPainterCommand
 */
-
-class QskGraphic
-{
-  public:
-};

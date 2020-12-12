@@ -1,67 +1,65 @@
 /*!
-    \headerfile QskQuickItem.h
-    \brief what a quick item
+    \class QskQuickItem QskQuickItem.h
  */
 
-class QskQuickItem
-{
-  public:
+/*!
+	\enum QskQuickItem::Flag
 
-    /*!
-        \enum Flag
+	Qt/Quick classes have a tendency to update items too early
+	and too often. To avoid processing of unwanted operations
+	QskQuickItem implements a couple of modifications, that
+	can be en/disabled individually.
 
-        QQuick classes have a tendency to update items too early
-        and too often. To avoid processing of unwanted operations
-        QskControl implements a couple of modifications, that
-        can be en/disabled individually.
+	The default setting enables all attributes.
 
-        The default setting enables all attributes.
+	\var DeferredUpdate
 
-        \var DeferredUpdate
+		Creating of paint nodes is blocked for all invisible nodes
+		( QQuickItem::isVisible() ).
 
-            Creating of paint nodes is blocked for all invisible nodes
-            ( QQuickItem::isVisible() ).
+		\note Some more advanced algorithms have not yet been implemented,
+			  such as viewport frustrum culling (i.e. hiding items outside of the
+			  window geometry).
 
-            \note Some more advanced algorithms have not yet been implemented,
-                  such as viewport frustrum culling (i.e. hiding items outside of the
-                  window geometry).
+		\var DeferredPolish
 
-            \var DeferredPolish
+			Calculation of layouts ( updateLayout() ) is blocked for all invisible
+			nodes ( QQuickItem::isVisible() ).
 
-                Calculation of layouts ( updateLayout() ) is blocked for all invisible
-                nodes ( QQuickItem::isVisible() ).
+		\var DeferredLayout
 
-            \var DeferredLayout
+			Updates of the implicit size is blocked until effectiveConstraint() or sizeHint()
+			is explicitly called. When being enabled the implicit size is not recalculated before
+			being requested - usually by a QskLayout.
 
-                Updates of the implicit size is blocked until effectiveConstraint() or sizeHint()
-                is explicitly called. When being enabled the implicit size is not recalculated before
-                being requested - usually by a QskLayout.
+		\var CleanupOnVisibility
 
-            \var CleanupOnVisibility
+			Delete scene graph nodes, when the item becomes hidden ( QQuickItem::isVisible() ).
+			Enabling this mode will reduce the memory footprint, but comes at the cost
+			of having to recreate nodes later.
 
-                Delete scene graph nodes, when the item becomes hidden ( QQuickItem::isVisible() ).
-                Enabling this mode will reduce the memory footprint, but comes at the cost
-                of having to recreate nodes later.
+		\var PreferRasterForTextures
 
-            \var PreferRasterForTextures
+			When creating textures from QskGraphic, prefer the raster paint
+			engine over the OpenGL paint engine.
 
-                When creating textures from QskGraphic, prefer the raster paint
-                engine over the OpenGL paint engine.
+		\var DebugForceBackground
 
-            \var DebugForceBackground
+			Always fill the background of thecontrol with a random color.
+			\note This flag is useful when analyzing layouts.
 
-                Always fill the background of thecontrol with a random color.
-                \note This flag is useful when analyzing layouts.
-    */
+	\sa controlFlags(), setControlFlags(), resetControlFlags()
+		testControlFlag(), setControlFlag(), resetControlFlag()
+*/
 
-    /*!
-        \fn void setControlFlag( Flag, bool on = true );
-    */  
-    
-    /*! 
-        \fn void resetControlFlag( Flag );
-    */  
-    
-    /*! 
-        \fn bool testControlFlag( Flag ) const;
-    */
+/*!
+	\fn void QskQuickItem::setControlFlag( Flag, bool on = true );
+*/  
+
+/*! 
+	\fn void QskQuickItem::resetControlFlag( Flag );
+*/  
+
+/*! 
+	\fn bool QskQuickItem::testControlFlag( Flag ) const;
+*/

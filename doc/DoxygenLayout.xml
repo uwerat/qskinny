@@ -38,8 +38,9 @@
 
   <!-- Layout definition for a class page -->
   <class>
-    <briefdescription visible="yes"/>
+    <briefdescription visible="no"/>
     <includes visible="$SHOW_INCLUDE_FILES"/>
+    <detaileddescription title=""/>
     <inheritancegraph visible="$CLASS_GRAPH"/>
     <collaborationgraph visible="$COLLABORATION_GRAPH"/>
     <memberdecl>
@@ -76,7 +77,6 @@
       <friends title=""/>
       <membergroups visible="yes"/>
     </memberdecl>
-    <detaileddescription title=""/>
     <memberdef>
       <inlineclasses title=""/>
       <typedefs title=""/>

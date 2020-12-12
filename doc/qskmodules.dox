@@ -155,7 +155,6 @@
 		\class QskMessageWindow
 		\class QskSelectionSubWindow
 		\class QskSelectionWindow
-		\class QskSeparator
 		\class QskSimpleListBox
     \}
 

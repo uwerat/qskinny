@@ -1,20 +1,16 @@
 /*!
-	\headerfile QskSetup.h
+	\class QskSetup QskSetup.h
 
 	\brief Singleton maintaining the global settings of an application using Qsk controls
 */
 
-class QskSetup
-{
-  public:
+/*!
+	\property QskSkin* QskSetup::skin
+	\accessors skin(), setSkin(), skinChanged()
+*/
 
-	/*!
-		\property QskSkin* skin
-		\accessors skin(), setSkin(), skinChanged()
-	*/
-
-	/*!
-	\enum Flag
+/*!
+	\enum QskSetup::Flag
 
 		\var DeferredUpdate
 		\var DeferredPolish
@@ -22,17 +18,16 @@ class QskSetup
 		\var CleanupOnVisibility
 		\var PreferRasterForTextures
 		\var DebugForceBackground
-	*/
+*/
 
-	/*!
-		\fn void setSkin( QskSkin* );
-	*/
+/*!
+	\fn void QskSetup::setSkin( QskSkin* );
+*/
 
-	/*!
-		\fn QskSkin* skin();
-	*/
+/*!
+	\fn QskSkin* QskSetup::skin();
+*/
 
-	/*!
-		\fn void skinChanged( QskSkin* );
-	*/
-};
+/*!
+	\fn void QskSetup::skinChanged( QskSkin* );
+*/

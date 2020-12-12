@@ -1,5 +1,5 @@
 /*!
-    \headerfile QskControl.h
+    \class QskControl QskControl.h
 
     \brief Base class of all Qsk controls
 
@@ -31,9 +31,3 @@
     - QEvent::ContentsRectChange
     - QEvent::LayoutRequest
 */
-
-class QskControl
-{
-  public:
-};
-

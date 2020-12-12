@@ -7,7 +7,7 @@
 	It can be used in horizontal or vertical direction by setting the
     orientation property to Qt::Vertical or Qt::Horizontal, respectively.
 
-	\subcontrols Panel
+	\subcontrols QskSeparator::Panel
 	\skinlet QskSeparatorSkinlet
 */
 
@@ -21,6 +21,11 @@
 
 	\accessors orientation(), setOrientation(), orientationChanged()
 */
+
+/*!
+	\var QskSeparator::Panel
+	\sa QskSeparatorSkinlet
+ */
 
 /*!
 	\fn QskSeparator::QskSeparator( QQuickItem* )
