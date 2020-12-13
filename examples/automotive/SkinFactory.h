@@ -15,22 +15,15 @@ class SkinFactory : public QskSkinFactory
   public:
     enum GraphicRoles
     {
-        // to be visible on a button
-        Button,
-
         // to be visible on header/footer
         Indicator,
-
-        // in contrast to the background pixmap
-        Vehicle
     };
 
     QStringList skinNames() const override;
-    QskSkin* createSkin( const QString& skinName ) override;
+    QskSkin* createSkin( const QString& ) override;
 
   public Q_SLOTS:
     void rotateSkin();
-    void toggleScheme();
 };
 
 #endif

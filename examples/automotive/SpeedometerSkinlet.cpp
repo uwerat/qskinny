@@ -60,7 +60,12 @@ SpeedometerSkinlet::~SpeedometerSkinlet() = default;
 QRectF SpeedometerSkinlet::subControlRect( const QskSkinnable*,
     const QRectF& contentsRect, QskAspect::Subcontrol ) const
 {
-    return contentsRect;
+    const auto extent = qMin( contentsRect.width(), contentsRect.height() );
+
+    QRectF r( 0.0, 0.0, extent, extent );
+    r.moveCenter( contentsRect.center() );
+
+    return r;
 }
 
 QSGNode* SpeedometerSkinlet::updateSubNode(

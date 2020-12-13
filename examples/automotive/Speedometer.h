@@ -18,7 +18,7 @@ class Speedometer : public QskBoundedValueInput
     Speedometer( QQuickItem* parent = nullptr );
 
     QVector< QString > labels() const;
-    void setLabels( const QVector< QString >& labels );
+    void setLabels( const QVector< QString >& );
 
   private:
     QVector< QString > m_labels;

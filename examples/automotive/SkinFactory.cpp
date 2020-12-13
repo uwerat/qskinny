@@ -4,37 +4,163 @@
  *****************************************************************************/
 
 #include "SkinFactory.h"
-#include "DefaultSkin.h"
-#include "OtherSkin.h"
 
+#include "ButtonBar.h"
+#include "Speedometer.h"
+#include "SpeedometerSkinlet.h"
+
+#include <QskBoxBorderColors.h>
+#include <QskBoxBorderMetrics.h>
+#include <QskColorFilter.h>
+#include <QskFunctions.h>
+#include <QskMargins.h>
+#include <QskTextLabel.h>
+#include <QskAnimationHint.h>
 #include <QskSetup.h>
 #include <QskSkinTransition.h>
+#include <QskSkin.h>
+
+#include <QEasingCurve>
+
+namespace
+{
+    inline QFont qskFont( qreal pointSize )
+    {
+        QFont font( "Roboto" );
+        font.setPointSizeF( pointSize / qskDpiScaled( 1.0 ) );
+        return font;
+    }
+
+    class Skin : public QskSkin
+    {
+      public:
+        Skin() 
+        {
+            using namespace QskAspect;
+
+            declareSkinlet< Speedometer, SpeedometerSkinlet >();
+
+            setFont( QskSkin::DefaultFont, qskFont( 13 ) );
+            setFont( QskSkin::LargeFont, qskFont( 20 ) );
+
+            setSkinHint( ButtonBar::Indicator | GraphicRole, SkinFactory::Indicator );
+        }
+    };
+
+    class Skin1 : public Skin
+    {
+      public:
+        Skin1() 
+        {
+            using namespace QskAspect;
+
+            const QColor color1( "#363636" ); // Jet
+            const QColor color2( "#242F40" ); // Yankees blue
+            const QColor color3( "#CCA43B" ); // Satin sheet gold
+            const QColor color4( "#E5E5E5" ); // Platinum
+            const QColor color5( "#FFFFFF" ); // white
+
+            setColor( QskTextLabel::Text, color3 );
+
+            {
+                using Q = Speedometer;
+
+                setBoxBorderMetrics( Q::Panel, 5 );
+                setGradient( Q::Panel,
+                    QskGradient( QskGradient::Vertical, color2, color4 ) );
+                setBoxBorderColors( Q::Panel, color3 );
+
+                setBoxBorderMetrics( Q::NeedleHead, 5 );
+                setMetric( Q::NeedleHead | Size, 10 );
+                setGradient( Q::NeedleHead, color2 );
+                setBoxBorderColors( Q::NeedleHead, color4 );
+
+                setMetric( Q::Needle | MinimumWidth, 4 );
+                setMetric( Q::Needle | Margin, 15 );
+                setColor( Q::Needle, color4 );
+
+                // margins between numbers and ticks:
+                setMargins( Q::Labels, QskMargins( 3, 3, 3, 3 ) );
+                setMetric( Q::Labels | MinimumWidth, 3 );
+                setMetric( Q::Labels | Size, 25 ); // ticks size
+                setColor( Q::Labels, color4 );
+                setFontRole( Q::Labels, QskSkin::SmallFont );
+            }
+
+            {
+                // all SVGs on the header/footer are plain white
+
+                QskColorFilter filter;
+                filter.addColorSubstitution( Qt::white, color3.rgb() );
+
+                setGraphicFilter( SkinFactory::Indicator, filter );
+            }
+        }
+    };
+
+    class Skin2 : public Skin
+    {
+      public:
+        Skin2() 
+        {
+            using namespace QskAspect;
+
+            const QColor color1( "#011627" ); // Maastricht blue
+            const QColor color2( "#FF0022" ); // ruddy
+            const QColor color3( "#41EAD4" ); // Turquoise
+            const QColor color4( "#FDFFFC" ); // baby powder
+            const QColor color5( "#B91372" ); // red violet
+
+            setColor( QskTextLabel::Text, color4 );
+
+            {
+                using Q = Speedometer;
+
+                setBoxBorderMetrics( Q::Panel, 2 );
+                setGradient( Q::Panel, color1 );
+                setBoxBorderColors( Q::Panel, color3 );
+
+                setBoxBorderMetrics( Q::NeedleHead, 2 );
+                setMetric( Q::NeedleHead | Size, 15 );
+                setGradient( Q::NeedleHead,
+                    QskGradient( QskGradient::Diagonal, color2, color1 ) );
+                // setBoxBorderColors( Q::NeedleHead, color4 );
+
+                setMetric( Q::Needle | MinimumWidth, 2 );
+                setMetric( Q::Needle | Margin, 10 );
+                setColor( Q::Needle, color2 );
+
+                // margins between numbers and ticks:
+                setMargins( Q::Labels, QskMargins( 4, 4, 4, 4 ) );
+                setMetric( Q::Labels | MinimumWidth, 2 );
+                setMetric( Q::Labels | Size, 15 ); // ticks size
+                setColor( Q::Labels, color4 );
+                setFontRole( Q::Labels, QskSkin::SmallFont );
+            }
+        }
+    };
+
+}
 
 QStringList SkinFactory::skinNames() const
 {
-    return { "DefaultSkin", "OtherSkin" };
+    return { "Skin1", "Skin2" };
 }
 
 QskSkin* SkinFactory::createSkin( const QString& skinName )
 {
-    if ( skinName == "DefaultSkin" )
-        return new DefaultSkin( skinName );
+    if ( skinName == "Skin1" )
+        return new Skin1();
 
-    if ( skinName == "OtherSkin" )
-        return new OtherSkin( skinName );
+    if ( skinName == "Skin2" )
+        return new Skin2();
 
     return nullptr;
 }
 
-void SkinFactory::toggleScheme()
-{
-    if ( qskSetup->skinName() == "DefaultSkin" )
-        static_cast< DefaultSkin* >( qskSetup->skin() )->toggleScheme();
-}
-
 void SkinFactory::rotateSkin()
 {
-    const QStringList names = skinNames();
+    const auto names = skinNames();
 
     int index = names.indexOf( qskSetup->skinName() );
     index = ( index + 1 ) % names.size();
