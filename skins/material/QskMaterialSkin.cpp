@@ -281,7 +281,7 @@ void QskMaterialSkin::initSeparatorHints()
 
     for ( auto placement : { Horizontal, Vertical } )
     {
-        const Aspect aspect = Q::Panel | placement;
+        const auto aspect = Q::Panel | placement;
 
         setMetric( aspect | Size, 4 );
         setBoxShape( Q::Panel, 0 );
@@ -505,7 +505,7 @@ void QskMaterialSkin::initSliderHints()
 
     for ( auto state : { NoState, Q::Pressed, Q::Pressed | Q::Hovered } )
     {
-        QskAspect::Aspect aspect = Q::Handle | Q::Minimum | state;
+        const auto aspect = Q::Handle | Q::Minimum | state;
         setGradient( aspect, Grey300 );
         setBoxBorderColors( aspect, Grey );
     }
@@ -530,7 +530,7 @@ void QskMaterialSkin::initTabButtonHints()
 
     for ( const auto placement : { Left, Right, Top, Bottom } )
     {
-        const Aspect aspect = Q::Panel | placement;
+        const auto aspect = Q::Panel | placement;
 
         Qt::Edge edge;
 

@@ -320,7 +320,7 @@ namespace
                     }
                 }
 
-                const Subcontrol subControl = candidate.aspect.subControl();
+                const auto subControl = candidate.aspect.subControl();
                 if ( subControl != control->effectiveSubcontrol( subControl ) )
                 {
                     // The control uses subcontrol redirection, so we can assume it
@@ -345,7 +345,7 @@ namespace
                     }
                 }
 
-                QskAspect::Aspect a = candidate.aspect;
+                auto a = candidate.aspect;
                 a.clearStates();
                 a.addState( control->skinState() );
 

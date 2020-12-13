@@ -46,8 +46,8 @@ static inline bool qskCompareResolvedStates(
     if ( !table.hasStates() )
         return false;
 
-    const QskAspect::Aspect a1 = aspect1;
-    const QskAspect::Aspect a2 = aspect2;
+    const auto a1 = aspect1;
+    const auto a2 = aspect2;
 
     Q_FOREVER
     {
@@ -77,15 +77,17 @@ static inline bool qskCompareResolvedStates(
 
                 if ( s1 == 0 )
                 {
-                    if ( aspect1.placement() == QskAspect::NoPlacement )
+                    using namespace QskAspect;
+
+                    if ( aspect1.placement() == NoPlacement )
                         return true;
 
                     // clear the placement bits and restart with the initial state
                     aspect1 = a1;
-                    aspect1.setPlacement( QskAspect::NoPlacement );
+                    aspect1.setPlacement( NoPlacement );
 
                     aspect2 = a2;
-                    aspect2.setPlacement( QskAspect::NoPlacement );
+                    aspect2.setPlacement( NoPlacement );
                 }
             }
             else
@@ -878,7 +880,7 @@ void QskSkinnable::setSkinState( QskAspect::State newState, bool animated )
         {
             using namespace QskAspect;
 
-            Aspect aspect = subControl | placement;
+            auto aspect = subControl | placement;
 
             const auto& skinTable = skin->hintTable();
 
@@ -898,8 +900,8 @@ void QskSkinnable::setSkinState( QskAspect::State newState, bool animated )
                     {
                         aspect.setPrimitive( type, primitive );
 
-                        Aspect a1 = aspect | m_data->skinState;
-                        Aspect a2 = aspect | newState;
+                        auto a1 = aspect | m_data->skinState;
+                        auto a2 = aspect | newState;
 
                         bool doTransition = true;
 

@@ -97,6 +97,8 @@ DefaultSkin::~DefaultSkin()
 
 void DefaultSkin::initHints()
 {
+    using namespace QskAspect;
+
     const int duration = 200; // for animators
 
     setFont( QskSkin::DefaultFont, qskFont( 13 ) );
@@ -114,38 +116,38 @@ void DefaultSkin::initHints()
     setBoxShape( SoundControl::Marker, 100, Qt::RelativeSize );
 
     setGradient( QskSeparator::Panel, m_palette->color3 );
-    setMetric( QskSeparator::Panel | QskAspect::Size, 2 );
+    setMetric( QskSeparator::Panel | Size, 2 );
 
     // -- push buttons
 
-    setMargins( QskPushButton::Panel | QskAspect::Padding, 10 );
+    setMargins( QskPushButton::Panel | Padding, 10 );
     setGradient( QskPushButton::Panel, m_palette->color1 );
     setColor( QskPushButton::Text, m_palette->color3 );
     setGradient( QskPushButton::Panel | QskPushButton::Pressed, m_palette->color2 );
-    setAnimation( QskPushButton::Panel | QskAspect::Color, duration );
+    setAnimation( QskPushButton::Panel | Color, duration );
 
     setGradient( SoundControl::SliderControl, m_palette->color1 );
     setGradient( SoundControl::SliderControl | QskPushButton::Pressed, m_palette->color2 );
-    setAnimation( SoundControl::SliderControl | QskAspect::Color, duration );
+    setAnimation( SoundControl::SliderControl | Color, duration );
 
-    setMetric( QskPushButton::Text | QskAspect::Size, 20 );
-    setSkinHint( QskPushButton::Text | QskAspect::FontRole, int( QskSkin::LargeFont ) );
-    setSkinHint( QskPushButton::Text | QskAspect::Alignment, Qt::AlignCenter );
+    setMetric( QskPushButton::Text | Size, 20 );
+    setSkinHint( QskPushButton::Text | FontRole, int( QskSkin::LargeFont ) );
+    setSkinHint( QskPushButton::Text | Alignment, Qt::AlignCenter );
 
     // -- a more advanced setup of the hints for the slider
 
     const qreal dim = 30;
 
-    setMetric( QskSlider::Panel | QskAspect::Size, dim );
+    setMetric( QskSlider::Panel | Size, dim );
     setGradient( QskSlider::Panel, QskGradient() );
 
-    setMetric( QskSlider::Groove | QskAspect::Size, 2 );
+    setMetric( QskSlider::Groove | Size, 2 );
     setGradient( QskSlider::Groove, m_palette->color4 );
 
-    setMetric( QskSlider::Fill | QskAspect::Size, 2 );
+    setMetric( QskSlider::Fill | Size, 2 );
     setGradient( QskSlider::Fill, m_palette->color4.darker( 200 ) );
 
-    setMetric( QskSlider::Handle | QskAspect::Size, 24 );
+    setMetric( QskSlider::Handle | Size, 24 );
     setBoxBorderMetrics( QskSlider::Handle, 0 );
     setBoxShape( QskSlider::Handle, 100.0, Qt::RelativeSize );
     setGradient( QskSlider::Handle, m_palette->color5 );
@@ -157,28 +159,26 @@ void DefaultSkin::initHints()
     setBoxBorderColors( Speedometer::Panel, m_palette->color3 );
 
     setBoxBorderMetrics( Speedometer::NeedleHead, 2 );
-    setMetric( Speedometer::NeedleHead | QskAspect::Size, 15 );
+    setMetric( Speedometer::NeedleHead | Size, 15 );
     setGradient( Speedometer::NeedleHead,
         QskGradient( QskGradient::Diagonal, m_palette->color2, m_palette->color1 ) );
     //    setBoxBorderColors( Speedometer::NeedleHead, m_palette->color4 );
 
-    setMetric( Speedometer::Needle | QskAspect::MinimumWidth, 2 );
-    setMetric( Speedometer::Needle | QskAspect::Margin, 10 );
+    setMetric( Speedometer::Needle | MinimumWidth, 2 );
+    setMetric( Speedometer::Needle | Margin, 10 );
     setColor( Speedometer::Needle, m_palette->color2 );
 
     // margins between numbers and ticks:
     setMargins( Speedometer::Labels, QskMargins( 4, 4, 4, 4 ) );
-    setMetric( Speedometer::Labels | QskAspect::MinimumWidth, 2 );
-    setMetric( Speedometer::Labels | QskAspect::Size, 15 ); // ticks size
+    setMetric( Speedometer::Labels | MinimumWidth, 2 );
+    setMetric( Speedometer::Labels | Size, 15 ); // ticks size
     setColor( Speedometer::Labels, m_palette->color4 );
     setFontRole( Speedometer::Labels, QskSkin::SmallFont );
 
     // handle expanding, when being pressed
     for ( auto state : { QskAspect::NoState, QskSlider::Pressed } )
     {
-        using namespace QskAspect;
-
-        const Aspect aspect = QskSlider::Handle | state;
+        const auto aspect = QskSlider::Handle | state;
 
         // fullsize, only when being pressed
         const qreal sz = ( state == NoState ) ? 0.7 * dim : dim;
@@ -190,10 +190,10 @@ void DefaultSkin::initHints()
             ( state == NoState ) ? 2 * duration : 0 );
     }
 
-    setAnimation( QskSlider::Handle | QskAspect::Metric, duration );
+    setAnimation( QskSlider::Handle | Metric, duration );
 
     // animator for color scheme transitions
-    setAnimation( QskAspect::Color, QskAnimationHint( 1000, QEasingCurve::InQuad ) );
+    setAnimation( Color, QskAnimationHint( 1000, QEasingCurve::InQuad ) );
 }
 
 void DefaultSkin::toggleScheme()

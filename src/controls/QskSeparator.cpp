@@ -60,9 +60,11 @@ void QskSeparator::setThickness( qreal thickness )
 {
     thickness = qMax( thickness, 0.0 );
 
-    if ( thickness != metric( qskAspectThickness() ) )
+    const auto aspect = qskAspectThickness();
+
+    if ( thickness != metric( aspect ) )
     {
-        setMetric( QskSeparator::Panel | QskAspect::Size, thickness );
+        setMetric( aspect, thickness );
 
         resetImplicitSize();
         update();

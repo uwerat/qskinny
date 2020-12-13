@@ -27,7 +27,7 @@ OtherSlider::OtherSlider( QQuickItem* parentItem )
 
     for ( auto placement : { Horizontal, Vertical } )
     {
-        const Aspect aspect = Panel | placement;
+        const auto aspect = Panel | placement;
 
         setMetric( aspect | Size, h );
         setBoxShapeHint( aspect, 4 );
@@ -45,7 +45,7 @@ OtherSlider::OtherSlider( QQuickItem* parentItem )
 
     for ( auto placement : { Horizontal, Vertical } )
     {
-        const Aspect aspect = Groove | placement;
+        const auto aspect = Groove | placement;
 
         setMetric( aspect | Size, 4 );
         setBoxBorderMetricsHint( aspect, 0 );
@@ -57,7 +57,7 @@ OtherSlider::OtherSlider( QQuickItem* parentItem )
     // no Fill
     for ( auto placement : { Horizontal, Vertical } )
     {
-        const Aspect aspect = Fill | placement;
+        const auto aspect = Fill | placement;
         setMetric( aspect | Size, 0 );
     }
 
@@ -65,7 +65,7 @@ OtherSlider::OtherSlider( QQuickItem* parentItem )
 
     for ( auto placement : { Horizontal, Vertical } )
     {
-        const Aspect aspect = Handle | placement;
+        const auto aspect = Handle | placement;
 
         setBoxBorderMetricsHint( aspect, 1 );
         setBoxShapeHint( aspect, 4 );

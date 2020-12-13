@@ -61,7 +61,7 @@ QskPushButton::~QskPushButton()
 void QskPushButton::setCorner( const QskCorner& corner )
 {
     using namespace QskAspect;
-    const Aspect aspect = Panel | Shape;
+    const auto aspect = Panel | Shape;
 
     if ( corner.metrics() != boxShapeHint( aspect ) )
     {
@@ -75,7 +75,7 @@ void QskPushButton::setCorner( const QskCorner& corner )
 QskCorner QskPushButton::corner() const
 {
     using namespace QskAspect;
-    const Aspect aspect = Panel | Shape;
+    const auto aspect = Panel | Shape;
 
     const auto shape = boxShapeHint( aspect );
 

@@ -74,6 +74,8 @@ OtherSkin::~OtherSkin()
 
 void OtherSkin::initHints()
 {
+    using namespace QskAspect;
+
     const int duration = 200; // for animators
 
     setFont( QskSkin::DefaultFont, qskFont( 13 ) );
@@ -88,17 +90,17 @@ void OtherSkin::initHints()
     setBoxBorderMetrics( SoundControl::Marker, 2 );
     setBoxShape( SoundControl::Marker, 100, Qt::RelativeSize );
 
-    setSkinHint( ButtonBar::Indicator | QskAspect::GraphicRole, SkinFactory::Indicator );
-    setSkinHint( SoundControl::Vehicle | QskAspect::GraphicRole, SkinFactory::Vehicle );
-    setSkinHint( SoundControl::MarkerControl | QskAspect::GraphicRole, SkinFactory::Vehicle );
+    setSkinHint( ButtonBar::Indicator | GraphicRole, SkinFactory::Indicator );
+    setSkinHint( SoundControl::Vehicle | GraphicRole, SkinFactory::Vehicle );
+    setSkinHint( SoundControl::MarkerControl | GraphicRole, SkinFactory::Vehicle );
 
     setBoxBorderMetrics( QskSeparator::Panel, 0 );
     setGradient( QskSeparator::Panel, m_palette->color3 );
-    setMetric( QskSeparator::Panel | QskAspect::Size, 1 );
+    setMetric( QskSeparator::Panel | Size, 1 );
 
     // -- push buttons
 
-    setMargins( QskPushButton::Panel | QskAspect::Padding, 8 );
+    setMargins( QskPushButton::Panel | Padding, 8 );
     setBoxBorderMetrics( QskPushButton::Panel, 0 );
     setBoxShape( QskPushButton::Panel, 4 );
 
@@ -106,7 +108,7 @@ void OtherSkin::initHints()
     setGradient( QskPushButton::Panel | QskPushButton::Pressed, m_palette->color2 );
 
     setColor( QskPushButton::Text, m_palette->color3 );
-    setAnimation( QskPushButton::Panel | QskAspect::Color, duration );
+    setAnimation( QskPushButton::Panel | Color, duration );
 
     // -- overlay
 
@@ -121,24 +123,24 @@ void OtherSkin::initHints()
     setGradient( SoundControl::SliderControl, m_palette->color1 );
     setGradient( SoundControl::SliderControl | QskPushButton::Pressed, m_palette->color2 );
 
-    setAnimation( SoundControl::SliderControl | QskAspect::Color, duration );
+    setAnimation( SoundControl::SliderControl | Color, duration );
 
-    setMetric( QskPushButton::Text | QskAspect::Size, 20 );
-    setSkinHint( QskPushButton::Text | QskAspect::FontRole, int( QskSkin::LargeFont ) );
-    setSkinHint( QskPushButton::Text | QskAspect::Alignment, Qt::AlignCenter );
+    setMetric( QskPushButton::Text | Size, 20 );
+    setSkinHint( QskPushButton::Text | FontRole, int( QskSkin::LargeFont ) );
+    setSkinHint( QskPushButton::Text | Alignment, Qt::AlignCenter );
 
     // -- a more advanced setup of the hints for the slider
 
-    setMetric( QskSlider::Panel | QskAspect::Size, 30 );
+    setMetric( QskSlider::Panel | Size, 30 );
     setGradient( QskSlider::Panel, QskGradient() );
 
-    setMetric( QskSlider::Groove | QskAspect::Size, 5 );
+    setMetric( QskSlider::Groove | Size, 5 );
     setGradient( QskSlider::Groove, m_palette->color4.darker( 200 ) );
 
-    setMetric( QskSlider::Fill | QskAspect::Size, 5 );
+    setMetric( QskSlider::Fill | Size, 5 );
     setGradient( QskSlider::Fill, m_palette->color3.lighter( 150 ) );
 
-    setMetric( QskSlider::Handle | QskAspect::Size, 22 );
+    setMetric( QskSlider::Handle | Size, 22 );
     setBoxBorderMetrics( QskSlider::Handle, 0 );
     setBoxShape( QskSlider::Handle, 6 );
     setGradient( QskSlider::Handle, m_palette->color3 );
@@ -151,18 +153,18 @@ void OtherSkin::initHints()
     setBoxBorderColors( Speedometer::Panel, m_palette->color3 );
 
     setBoxBorderMetrics( Speedometer::NeedleHead, 5 );
-    setMetric( Speedometer::NeedleHead | QskAspect::Size, 10 );
+    setMetric( Speedometer::NeedleHead | Size, 10 );
     setGradient( Speedometer::NeedleHead, m_palette->color2 );
     setBoxBorderColors( Speedometer::NeedleHead, m_palette->color4 );
 
-    setMetric( Speedometer::Needle | QskAspect::MinimumWidth, 4 );
-    setMetric( Speedometer::Needle | QskAspect::Margin, 15 );
+    setMetric( Speedometer::Needle | MinimumWidth, 4 );
+    setMetric( Speedometer::Needle | Margin, 15 );
     setColor( Speedometer::Needle, m_palette->color4 );
 
     // margins between numbers and ticks:
     setMargins( Speedometer::Labels, QskMargins( 3, 3, 3, 3 ) );
-    setMetric( Speedometer::Labels | QskAspect::MinimumWidth, 3 );
-    setMetric( Speedometer::Labels | QskAspect::Size, 25 ); // ticks size
+    setMetric( Speedometer::Labels | MinimumWidth, 3 );
+    setMetric( Speedometer::Labels | Size, 25 ); // ticks size
     setColor( Speedometer::Labels, m_palette->color4 );
     setFontRole( Speedometer::Labels, QskSkin::SmallFont );
 }

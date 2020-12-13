@@ -293,12 +293,6 @@ bool QskPopup::isTransitionAccepted( QskAspect::Aspect aspect ) const
     {
         if ( ( aspect.value() == 0 ) )
         {
-            /*
-                QskAspect::Aspect() is an early check that is used
-                to find out if more detailed checking of aspects
-                is necessary.
-             */
-
             return true;
         }
 

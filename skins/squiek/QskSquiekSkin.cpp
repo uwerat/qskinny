@@ -532,7 +532,7 @@ void QskSquiekSkin::initTabButtonHints()
 
     for ( auto placement : { Left, Right, Top, Bottom } )
     {
-        const Aspect aspect = Q::Panel | placement;
+        const auto aspect = Q::Panel | placement;
 
         QskMargins margins0, margins1, padding;
         QskBoxBorderMetrics border( 1 );
@@ -599,7 +599,7 @@ void QskSquiekSkin::initTabButtonHints()
     setAnimation( Q::Panel | Metric, animationHint );
 
     // text
-    setSkinHint( Q::Text | QskAspect::Alignment, Qt::AlignCenter );
+    setSkinHint( Q::Text | Alignment, Qt::AlignCenter );
     setColor( Q::Text, pal.themeForeground );
     setColor( Q::Text | Q::Checkable | Q::Disabled, pal.darker200 );
 }
@@ -653,7 +653,7 @@ void QskSquiekSkin::initSliderHints()
 
     for ( auto placement : { Horizontal, Vertical } )
     {
-        Aspect aspect = Q::Handle | placement;
+        const auto aspect = Q::Handle | placement;
 
         setButton( aspect, Raised, 1 );
         setBoxShape( aspect, 20.0, Qt::RelativeSize );

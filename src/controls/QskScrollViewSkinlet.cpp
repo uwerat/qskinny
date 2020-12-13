@@ -220,7 +220,9 @@ QRectF QskScrollViewSkinlet::viewportRect(
 QRectF QskScrollViewSkinlet::scrollHandleRect( const QskScrollView* scrollView,
     const QRectF& contentsRect, Qt::Orientation orientation ) const
 {
-    const Qt::Orientations scrollOrientations = scrollView->scrollableOrientations();
+    using namespace QskAspect;
+
+    const auto scrollOrientations = scrollView->scrollableOrientations();
     if ( !( orientation & scrollOrientations ) )
         return QRectF();
 
@@ -236,7 +238,7 @@ QRectF QskScrollViewSkinlet::scrollHandleRect( const QskScrollView* scrollView,
         const auto subControlBar = QskScrollView::VerticalScrollBar;
 
         const QRectF sbRect = subControlRect( scrollView, contentsRect, subControlBar );
-        const QMarginsF padding = scrollView->marginsHint( subControlBar | QskAspect::Padding );
+        const QMarginsF padding = scrollView->marginsHint( subControlBar | Padding );
 
         const qreal h = scrollView->scrollableSize().height();
 
@@ -244,7 +246,7 @@ QRectF QskScrollViewSkinlet::scrollHandleRect( const QskScrollView* scrollView,
         const qreal y2 = ( pos.y() + vRect.height() ) / h;
 
         const qreal minHandleLength =
-            scrollView->metric( QskScrollView::VerticalScrollHandle | QskAspect::MinimumHeight );
+            scrollView->metric( QskScrollView::VerticalScrollHandle | MinimumHeight );
 
         qreal top, bottom;
         qskAlignedHandle( y1, y2, sbRect.height(), minHandleLength, top, bottom );
@@ -259,7 +261,7 @@ QRectF QskScrollViewSkinlet::scrollHandleRect( const QskScrollView* scrollView,
         const auto subControlBar = QskScrollView::HorizontalScrollBar;
 
         const QRectF sbRect = subControlRect( scrollView, contentsRect, subControlBar );
-        const auto padding = scrollView->marginsHint( subControlBar | QskAspect::Padding );
+        const auto padding = scrollView->marginsHint( subControlBar | Padding );
 
         const qreal w = scrollView->scrollableSize().width();
 
@@ -267,7 +269,7 @@ QRectF QskScrollViewSkinlet::scrollHandleRect( const QskScrollView* scrollView,
         const qreal x2 = ( pos.x() + vRect.width() ) / w;
 
         const qreal minHandleLength =
-            scrollView->metric( QskScrollView::HorizontalScrollHandle | QskAspect::MinimumWidth );
+            scrollView->metric( QskScrollView::HorizontalScrollHandle | MinimumWidth );
 
         qreal left, right;
         qskAlignedHandle( x1, x2, sbRect.width(), minHandleLength, left, right );
@@ -284,7 +286,9 @@ QRectF QskScrollViewSkinlet::scrollHandleRect( const QskScrollView* scrollView,
 QRectF QskScrollViewSkinlet::scrollBarRect( const QskScrollView* scrollView,
     const QRectF& contentsRect, Qt::Orientation orientation ) const
 {
-    const Qt::Orientations scrollOrientations = scrollView->scrollableOrientations();
+    using namespace QskAspect;
+
+    const auto scrollOrientations = scrollView->scrollableOrientations();
     if ( !( orientation & scrollOrientations ) )
         return QRectF();
 
@@ -293,14 +297,14 @@ QRectF QskScrollViewSkinlet::scrollBarRect( const QskScrollView* scrollView,
     if ( orientation == Qt::Horizontal )
     {
         const qreal h = scrollView->metric(
-            QskScrollView::HorizontalScrollBar | QskAspect::Size );
+            QskScrollView::HorizontalScrollBar | Size );
 
         r.setTop( r.bottom() - h );
 
         if ( scrollOrientations & Qt::Vertical )
         {
             const qreal w = scrollView->metric(
-                QskScrollView::VerticalScrollBar | QskAspect::Size );
+                QskScrollView::VerticalScrollBar | Size );
 
             r.setRight( r.right() - w );
         }
@@ -308,14 +312,14 @@ QRectF QskScrollViewSkinlet::scrollBarRect( const QskScrollView* scrollView,
     else
     {
         const qreal w = scrollView->metric(
-            QskScrollView::VerticalScrollBar | QskAspect::Size );
+            QskScrollView::VerticalScrollBar | Size );
 
         r.setLeft( r.right() - w );
 
         if ( scrollOrientations & Qt::Horizontal )
         {
             const qreal h = scrollView->metric(
-                QskScrollView::HorizontalScrollBar | QskAspect::Size );
+                QskScrollView::HorizontalScrollBar | Size );
 
             r.setBottom( r.bottom() - h );
         }

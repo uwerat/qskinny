@@ -102,7 +102,7 @@ static inline QskTextColors qskTextColors(
     c.textColor = skinnable->color( subControl, &status );
 #if 1
     if ( !status.isValid() )
-        c.textColor = skinnable->color( subControl | QskAspect::TextColor );
+        c.textColor = skinnable->color( subControl | TextColor );
 #endif
 
     c.styleColor = skinnable->color( subControl | StyleColor );

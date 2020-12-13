@@ -249,8 +249,6 @@ void QskSlider::moveHandle()
 
 void QskSlider::moveHandleTo( qreal value, const QskAnimationHint& hint )
 {
-    using namespace QskAspect;
-
     setSkinStateFlag( QskSlider::Minimum, value <= minimum() );
     setSkinStateFlag( QskSlider::Maximum, value >= maximum() );
 

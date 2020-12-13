@@ -145,7 +145,7 @@ void QskControl::setBackgroundColor( const QColor& color )
 void QskControl::setBackground( const QskGradient& gradient )
 {
     using namespace QskAspect;
-    const Aspect aspect = Control | Color;
+    const auto aspect = Control | Color;
 
     if ( hintTable().gradient( aspect ) != gradient )
     {
