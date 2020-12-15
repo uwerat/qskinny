@@ -55,7 +55,7 @@ void QskBox::setPadding( const QMarginsF& padding )
 
     if ( pd != this->padding() )
     {
-        const auto subControl = effectiveSubcontrol( QskBox::Panel );
+        const auto subControl = effectiveSubcontrol( Panel );
 
         setPaddingHint( subControl, pd );
         resetImplicitSize();
@@ -69,8 +69,7 @@ void QskBox::setPadding( const QMarginsF& padding )
 
 void QskBox::resetPadding()
 {
-    static auto aspectPadding = QskBox::Panel | QskAspect::Metric | QskAspect::Padding;
-    if ( resetHint( aspectPadding ) )
+    if ( resetPaddingHint( Panel ) )
     {
         resetImplicitSize();
 
@@ -83,7 +82,7 @@ void QskBox::resetPadding()
 
 QMarginsF QskBox::padding() const
 {
-    return paddingHint( QskBox::Panel );
+    return paddingHint( Panel );
 }
 
 QRectF QskBox::layoutRectForSize( const QSizeF& size ) const

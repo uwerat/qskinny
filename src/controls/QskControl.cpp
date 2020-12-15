@@ -158,7 +158,7 @@ void QskControl::setBackground( const QskGradient& gradient )
 
 void QskControl::resetBackground()
 {
-    if ( resetHint( QskAspect::Control | QskAspect::Color ) )
+    if ( resetColor( QskAspect::Control ) )
     {
         update();
         Q_EMIT backgroundChanged();
@@ -203,7 +203,7 @@ void QskControl::resetMargins()
 {
     using namespace QskAspect;
 
-    if ( resetHint( Control | Metric | Margin ) )
+    if ( resetMarginHint( Control ) )
     {
         resetImplicitSize();
 

@@ -79,45 +79,53 @@ class QSK_EXPORT QskSkinnable
     void setColor( QskAspect::Aspect, Qt::GlobalColor );
     void setColor( QskAspect::Aspect, QRgb );
     void setColor( QskAspect::Aspect, const QColor& );
-
+    bool resetColor( QskAspect::Aspect );
     QColor color( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
     void setMetric( QskAspect::Aspect, qreal metric );
+    bool resetMetric( QskAspect::Aspect );
     qreal metric( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
+
+    void setFlagHint( QskAspect::Aspect, int flag );
+    bool resetFlagHint( QskAspect::Aspect );
+    int flagHint( QskAspect::Aspect ) const;
+    template< typename T > T flagHint( QskAspect::Aspect, T = T() ) const;
 
     void setMarginHint( QskAspect::Aspect, qreal );
     void setMarginHint( QskAspect::Aspect, const QMarginsF& );
+    bool resetMarginHint( QskAspect::Aspect );
     QMarginsF marginHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
     void setPaddingHint( QskAspect::Aspect, qreal );
     void setPaddingHint( QskAspect::Aspect, const QMarginsF& );
+    bool resetPaddingHint( QskAspect::Aspect );
     QMarginsF paddingHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
     void setGradientHint( QskAspect::Aspect, const QskGradient& );
     QskGradient gradientHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
     void setBoxShapeHint( QskAspect::Aspect, const QskBoxShapeMetrics& );
+    bool resetBoxShapeHint( QskAspect::Aspect );
     QskBoxShapeMetrics boxShapeHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
     void setBoxBorderMetricsHint( QskAspect::Aspect, const QskBoxBorderMetrics& );
+    bool resetBoxBorderMetricsHint( QskAspect::Aspect );
     QskBoxBorderMetrics boxBorderMetricsHint(
         QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
     void setBoxBorderColorsHint( QskAspect::Aspect, const QskBoxBorderColors& );
+    bool resetBoxBorderColorsHint( QskAspect::Aspect );
     QskBoxBorderColors boxBorderColorsHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
     void setIntervalHint( QskAspect::Aspect, const QskIntervalF& );
     QskIntervalF intervalHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
     void setSpacingHint( QskAspect::Aspect, qreal );
+    bool resetSpacingHint( QskAspect::Aspect );
     qreal spacingHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
-    void setFlagHint( QskAspect::Aspect, int flag );
-    int flagHint( QskAspect::Aspect ) const;
-
-    template< typename T > T flagHint( QskAspect::Aspect, T = T() ) const;
-
     void setAlignmentHint( QskAspect::Aspect, Qt::Alignment );
+    bool resetAlignmentHint( QskAspect::Aspect );
     Qt::Alignment alignmentHint( QskAspect::Aspect, Qt::Alignment = Qt::Alignment() ) const;
 
     void setFontRole( QskAspect::Aspect, int role );
@@ -211,6 +219,21 @@ inline Qt::Alignment QskSkinnable::alignmentHint(
 inline QskAspect::Placement QskSkinnable::effectivePlacement() const
 {
     return QskAspect::NoPlacement;
+}
+
+inline bool QskSkinnable::resetColor( QskAspect::Aspect aspect )
+{
+    return resetHint( aspect | QskAspect::Color );
+}
+
+inline bool QskSkinnable::resetMetric( QskAspect::Aspect aspect )
+{
+    return resetHint( aspect | QskAspect::Metric );
+}
+
+inline bool QskSkinnable::resetFlagHint( QskAspect::Aspect aspect )
+{
+    return resetHint( aspect | QskAspect::Flag );
 }
 
 #endif

@@ -211,6 +211,11 @@ void QskSkinnable::setAlignmentHint(
     setFlagHint( aspect | QskAspect::Alignment, alignment );
 }
 
+bool QskSkinnable::resetAlignmentHint( QskAspect::Aspect aspect )
+{
+    return resetFlagHint( aspect | QskAspect::Alignment );
+}
+
 void QskSkinnable::setColor( QskAspect::Aspect aspect, const QColor& color )
 {
     m_data->hintTable.setColor( aspect, color );
@@ -251,11 +256,17 @@ void QskSkinnable::setMarginHint( QskAspect::Aspect aspect, const QMarginsF& mar
     m_data->hintTable.setMargin( aspect, margins );
 }
 
+bool QskSkinnable::resetMarginHint( QskAspect::Aspect aspect )
+{
+    const auto asp = aspect | QskAspect::Metric | QskAspect::Margin;
+    return resetHint( asp );
+}
+
 QMarginsF QskSkinnable::marginHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
-    const auto aspectMargin = aspect | QskAspect::Metric | QskAspect::Margin;
-    return effectiveHint( aspectMargin, status ).value< QskMargins >();
+    const auto asp = aspect | QskAspect::Metric | QskAspect::Margin;
+    return effectiveHint( asp, status ).value< QskMargins >();
 }
 
 void QskSkinnable::setPaddingHint( QskAspect::Aspect aspect, qreal padding )
@@ -268,11 +279,17 @@ void QskSkinnable::setPaddingHint( QskAspect::Aspect aspect, const QMarginsF& pa
     m_data->hintTable.setPadding( aspect, padding );
 }
 
+bool QskSkinnable::resetPaddingHint( QskAspect::Aspect aspect )
+{
+    const auto asp = aspect | QskAspect::Metric | QskAspect::Padding;
+    return resetHint( asp );
+}
+
 QMarginsF QskSkinnable::paddingHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
-    const auto aspectPadding = aspect | QskAspect::Metric | QskAspect::Padding;
-    return effectiveHint( aspectPadding, status ).value< QskMargins >();
+    const auto asp = aspect | QskAspect::Metric | QskAspect::Padding;
+    return effectiveHint( asp, status ).value< QskMargins >();
 }
 
 void QskSkinnable::setGradientHint(
@@ -293,11 +310,17 @@ void QskSkinnable::setBoxShapeHint(
     m_data->hintTable.setBoxShape( aspect, shape );
 }
 
+bool QskSkinnable::resetBoxShapeHint( QskAspect::Aspect aspect )
+{
+    const auto asp = aspect | QskAspect::Metric | QskAspect::Shape;
+    return resetHint( asp );
+}
+
 QskBoxShapeMetrics QskSkinnable::boxShapeHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
-    using namespace QskAspect;
-    return effectiveHint( aspect | Metric | Shape, status ).value< QskBoxShapeMetrics >();
+    const auto asp = aspect | QskAspect::Metric | QskAspect::Shape;
+    return effectiveHint( asp, status ).value< QskBoxShapeMetrics >();
 }
 
 void QskSkinnable::setBoxBorderMetricsHint(
@@ -306,11 +329,17 @@ void QskSkinnable::setBoxBorderMetricsHint(
     m_data->hintTable.setBoxBorder( aspect, border );
 }
 
+bool QskSkinnable::resetBoxBorderMetricsHint( QskAspect::Aspect aspect )
+{
+    const auto asp = aspect | QskAspect::Metric | QskAspect::Border;
+    return resetHint( asp );
+}
+
 QskBoxBorderMetrics QskSkinnable::boxBorderMetricsHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
-    using namespace QskAspect;
-    return effectiveHint( aspect | Metric | Border, status ).value< QskBoxBorderMetrics >();
+    const auto asp = aspect | QskAspect::Metric | QskAspect::Border;
+    return effectiveHint( asp, status ).value< QskBoxBorderMetrics >();
 }
 
 void QskSkinnable::setBoxBorderColorsHint(
@@ -319,11 +348,17 @@ void QskSkinnable::setBoxBorderColorsHint(
     m_data->hintTable.setBoxBorderColors( aspect, colors );
 }
 
+bool QskSkinnable::resetBoxBorderColorsHint( QskAspect::Aspect aspect )
+{
+    const auto asp = aspect | QskAspect::Color | QskAspect::Border;
+    return resetHint( asp );
+}
+
 QskBoxBorderColors QskSkinnable::boxBorderColorsHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
-    using namespace QskAspect;
-    return effectiveHint( aspect | Color | Border, status ).value< QskBoxBorderColors >();
+    const auto asp = aspect | QskAspect::Color | QskAspect::Border;
+    return effectiveHint( asp, status ).value< QskBoxBorderColors >();
 }
 
 void QskSkinnable::setIntervalHint(
@@ -335,12 +370,18 @@ void QskSkinnable::setIntervalHint(
 QskIntervalF QskSkinnable::intervalHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
-    return effectiveHint( aspect | QskAspect::Metric, status ).value< QskIntervalF >();
+    const auto hint = effectiveHint( aspect | QskAspect::Metric, status );
+    return hint.value< QskIntervalF >();
 }
 
 void QskSkinnable::setSpacingHint( QskAspect::Aspect aspect, qreal spacing )
 {
     m_data->hintTable.setSpacing( aspect, spacing );
+}
+
+bool QskSkinnable::resetSpacingHint( QskAspect::Aspect aspect )
+{
+    return resetMetric( aspect | QskAspect::Spacing );
 }
 
 qreal QskSkinnable::spacingHint(
@@ -717,8 +758,6 @@ const char* QskSkinnable::skinStateAsPrintable( QskAspect::State state ) const
 static inline QMarginsF qskEffectivePadding( const QskSkinnable* skinnable,
     QskAspect::Aspect aspect, const QSizeF& size, bool inner )
 {
-    using namespace QskAspect;
-
     const auto shape = skinnable->boxShapeHint( aspect ).toAbsolute( size );
     const auto borderMetrics = skinnable->boxBorderMetricsHint( aspect );
 
