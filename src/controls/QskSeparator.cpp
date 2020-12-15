@@ -8,11 +8,6 @@
 
 QSK_SUBCONTROL( QskSeparator, Panel )
 
-static inline QskAspect::Aspect qskAspectThickness()
-{
-    return QskSeparator::Panel | QskAspect::Metric | QskAspect::Size;
-}
-
 QskSeparator::QskSeparator( QQuickItem* parent )
     : QskSeparator( Qt::Horizontal, parent )
 {
@@ -55,36 +50,36 @@ Qt::Orientation QskSeparator::orientation() const
     return m_orientation;
 }
 
-void QskSeparator::setThickness( qreal thickness )
+void QskSeparator::setExtent( qreal extent )
 {
-    thickness = qMax( thickness, 0.0 );
+    extent = qMax( extent, 0.0 );
 
-    const auto aspect = qskAspectThickness();
+    const auto aspect = Panel | QskAspect::Size;
 
-    if ( thickness != metric( aspect ) )
+    if ( extent != metric( aspect ) )
     {
-        setMetric( aspect, thickness );
+        setMetric( aspect, extent );
 
         resetImplicitSize();
         update();
 
-        Q_EMIT thicknessChanged( thickness );
+        Q_EMIT extentChanged( extent );
     }
 }
 
-qreal QskSeparator::thickness() const
+qreal QskSeparator::extent() const
 {
-    return metric( qskAspectThickness() );
+    return metric( Panel | QskAspect::Size );
 }
 
-void QskSeparator::resetThickness()
+void QskSeparator::resetExtent()
 {
-    if ( resetHint( qskAspectThickness() ) )
+    if ( resetMetric( Panel | QskAspect::Size ) )
     {
         resetImplicitSize();
         update();
 
-        Q_EMIT thicknessChanged( thickness() );
+        Q_EMIT extentChanged( extent() );
     }
 }
 
@@ -94,7 +89,7 @@ QSizeF QskSeparator::contentsSizeHint(
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
-    const qreal m = thickness();
+    const qreal m = extent();
 
     if ( m_orientation == Qt::Horizontal )
         return QSizeF( -1, m );
