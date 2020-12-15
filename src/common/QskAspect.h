@@ -8,7 +8,6 @@
 
 #include "QskGlobal.h"
 #include "QskFlags.h"
-#include "QskNamespace.h"
 
 #include <qmetaobject.h>
 #include <qnamespace.h>
