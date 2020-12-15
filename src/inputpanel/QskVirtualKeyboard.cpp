@@ -335,7 +335,7 @@ void QskVirtualKeyboard::updateLayout()
     if ( r.isEmpty() )
         return;
 
-    const auto spacing = metric( Panel | QskAspect::Spacing );
+    const auto spacing = spacingHint( Panel );
     const auto totalVSpacing = ( RowCount - 1 ) * spacing;
 
     const auto keyHeight = ( r.height() - totalVSpacing ) / RowCount;

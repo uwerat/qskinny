@@ -186,14 +186,12 @@ class ScrollArea : public QskScrollArea
     ScrollArea( QQuickItem* parentItem = nullptr )
         : QskScrollArea( parentItem )
     {
-        using namespace QskAspect;
-
         // settings usually done in the skins
         setBoxBorderMetricsHint( Viewport, 2 );
         setBoxShapeHint( Viewport, 20 );
 
         for ( auto subControl : { HorizontalScrollBar, VerticalScrollBar } )
-            setMetric( subControl | Size, 20 );
+            setMetric( subControl | QskAspect::Size, 20 );
 
         setBoxBorderMetricsHint( VerticalScrollHandle, 1 );
         setBoxShapeHint( VerticalScrollHandle, 8 );

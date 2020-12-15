@@ -113,9 +113,11 @@ QSGNode* SpeedometerSkinlet::updatePanelNode(
     return boxNode;
 }
 
-QSGNode* SpeedometerSkinlet::updateLabelsNode( const Speedometer* speedometer, QSGNode* node ) const
+QSGNode* SpeedometerSkinlet::updateLabelsNode(
+    const Speedometer* speedometer, QSGNode* node ) const
 {
     using namespace QskAspect;
+    using Q = Speedometer;
 
     const int labelsCount = speedometer->labels().count();
 
@@ -132,7 +134,7 @@ QSGNode* SpeedometerSkinlet::updateLabelsNode( const Speedometer* speedometer, Q
         ticksNode = new TicksNode();
     }
 
-    QColor color = speedometer->color( Speedometer::Labels );
+    QColor color = speedometer->color( Q::Labels );
     ticksNode->setColor( color );
 
     const auto startAngle = speedometer->minimum();
@@ -145,10 +147,10 @@ QSGNode* SpeedometerSkinlet::updateLabelsNode( const Speedometer* speedometer, Q
     auto vertexData = geometry->vertexDataAsPoint2D();
     memset( vertexData, 0, static_cast< size_t >( geometry->vertexCount() ) );
 
-    const auto panelMargins = speedometer->marginsHint( Speedometer::Panel | Margin );
+    const auto panelMargins = speedometer->marginHint( Q::Panel );
 
     auto panelRect = subControlRect(
-        speedometer, speedometer->contentsRect(), Speedometer::Panel );
+        speedometer, speedometer->contentsRect(), Q::Panel );
     panelRect = panelRect.marginsRemoved( panelMargins );
 
     QPointF center = QPointF( panelRect.x() + panelRect.width() / 2,
@@ -156,12 +158,12 @@ QSGNode* SpeedometerSkinlet::updateLabelsNode( const Speedometer* speedometer, Q
 
     auto radius = static_cast< float >( panelRect.width() / 2 );
 
-    const QMarginsF numbersMargins = speedometer->marginsHint( Speedometer::Labels );
-    QFontMetricsF fontMetrics( speedometer->effectiveFont( Speedometer::Labels ) );
+    const auto numbersMargins = speedometer->marginHint( Q::Labels );
+    QFontMetricsF fontMetrics( speedometer->effectiveFont( Q::Labels ) );
 
     auto angle = startAngle;
-    qreal length = speedometer->metric( Speedometer::Labels | Size );
-    QVector< QString > labels = speedometer->labels();
+    qreal length = speedometer->metric( Q::Labels | Size );
+    const auto labels = speedometer->labels();
 
     // Create a series of tickmarks from minimum to maximum
     for ( int i = 0; i < labelsCount; ++i, angle += step )
@@ -207,7 +209,7 @@ QSGNode* SpeedometerSkinlet::updateLabelsNode( const Speedometer* speedometer, Q
                 numbersNode = new QskTextNode();
             }
 
-            QFont font = speedometer->effectiveFont( Speedometer::Labels );
+            const auto font = speedometer->effectiveFont( Q::Labels );
             numbersNode->setTextData( speedometer, text, numbersRect, font, QskTextOptions(),
                 QskTextColors( color ), Qt::AlignCenter | Qt::AlignHCenter, Qsk::Normal );
 
@@ -219,7 +221,7 @@ QSGNode* SpeedometerSkinlet::updateLabelsNode( const Speedometer* speedometer, Q
         }
     }
 
-    auto lineWidth = speedometer->metric( Speedometer::Labels | MinimumWidth );
+    auto lineWidth = speedometer->metric( Q::Labels | MinimumWidth );
     geometry->setLineWidth( lineWidth );
     geometry->markVertexDataDirty();
 
@@ -232,6 +234,7 @@ QSGNode* SpeedometerSkinlet::updateNeedleNode(
     const Speedometer* speedometer, QSGNode* node ) const
 {
     using namespace QskAspect;
+    using Q = Speedometer;
 
     auto needleNode = static_cast< TicksNode* >( node );
     if ( needleNode == nullptr )
@@ -249,31 +252,31 @@ QSGNode* SpeedometerSkinlet::updateNeedleNode(
         boxNode = static_cast< QskBoxNode* >( needleNode->childAtIndex( 0 ) );
     }
 
-    const auto margins = speedometer->marginsHint( Speedometer::Panel | Margin );
+    const auto margins = speedometer->marginHint( Q::Panel );
 
     auto panelRect = subControlRect(
-        speedometer, speedometer->contentsRect(), Speedometer::Panel );
+        speedometer, speedometer->contentsRect(), Q::Panel );
 
     panelRect = panelRect.marginsRemoved( margins );
 
-    auto radius = speedometer->metric( Speedometer::NeedleHead | Size );
+    auto radius = speedometer->metric( Q::NeedleHead | Size );
     QPointF center = QPointF( panelRect.x() + panelRect.width() / 2,
         panelRect.y() + panelRect.height() / 2 );
 
     QskBoxShapeMetrics shapeMetrics( radius, radius, radius, radius );
-    QskBoxBorderMetrics borderMetrics = speedometer->boxBorderMetricsHint( Speedometer::NeedleHead );
-    QskBoxBorderColors borderColors = speedometer->boxBorderColorsHint( Speedometer::NeedleHead );
-    QskGradient gradient = speedometer->gradientHint( Speedometer::NeedleHead );
+    QskBoxBorderMetrics borderMetrics = speedometer->boxBorderMetricsHint( Q::NeedleHead );
+    QskBoxBorderColors borderColors = speedometer->boxBorderColorsHint( Q::NeedleHead );
+    QskGradient gradient = speedometer->gradientHint( Q::NeedleHead );
     QRectF centerNodeRect( center.x() - radius, center.y() - radius, 2 * radius, 2 * radius );
     boxNode->setBoxData( centerNodeRect, shapeMetrics, borderMetrics, borderColors, gradient );
 
-    QColor color = speedometer->color( Speedometer::Needle );
+    QColor color = speedometer->color( Q::Needle );
     needleNode->setColor( color );
 
     auto panelRadius = static_cast< float >( panelRect.width() / 2 );
 
-    auto needleWidth = speedometer->metric( Speedometer::Needle | MinimumWidth );
-    auto needleMargin = speedometer->metric( Speedometer::Needle | Margin );
+    auto needleWidth = speedometer->metric( Q::Needle | MinimumWidth );
+    auto needleMargin = speedometer->metric( Q::Needle | Margin );
 
     float xStart = center.x();
     float yStart = center.y();

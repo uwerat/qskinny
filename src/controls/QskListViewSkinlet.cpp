@@ -188,7 +188,7 @@ void QskListViewSkinlet::updateBackgroundNodes(
 void QskListViewSkinlet::updateForegroundNodes(
     const QskListView* listView, QskListViewNode* listViewNode ) const
 {
-    QSGNode* parentNode = listViewNode->foregroundNode();
+    auto parentNode = listViewNode->foregroundNode();
 
     if ( listView->rowCount() <= 0 || listView->columnCount() <= 0 )
     {
@@ -197,10 +197,10 @@ void QskListViewSkinlet::updateForegroundNodes(
         return;
     }
 
-    const QMarginsF margins = listView->marginsHint( QskListView::Cell | QskAspect::Padding );
+    const auto margins = listView->paddingHint( QskListView::Cell );
 
-    const QRectF cr = listView->viewContentsRect();
-    const QPointF scrolledPos = listView->scrollPos();
+    const auto cr = listView->viewContentsRect();
+    const auto scrolledPos = listView->scrollPos();
 
     const int rowMin = qFloor( scrolledPos.y() / listView->rowHeight() );
 
@@ -291,7 +291,7 @@ void QskListViewSkinlet::updateVisibleForegroundNodes(
     int rowMin, int rowMax, int colMin, int colMax, const QMarginsF& margins,
     bool forward ) const
 {
-    QSGNode* parentNode = listViewNode->foregroundNode();
+    auto parentNode = listViewNode->foregroundNode();
 
     const int rowCount = rowMax - rowMin + 1;
     const int colCount = colMax - colMin + 1;
@@ -443,8 +443,8 @@ QSGNode* QskListViewSkinlet::updateCellNode( const QskListView* listView,
         public API of QskListView TODO ...
      */
 #endif
-    const auto alignment = listView->flagHint< Qt::Alignment >(
-        QskListView::Cell | QskAspect::Alignment, Qt::AlignVCenter | Qt::AlignLeft );
+    const auto alignment = listView->alignmentHint(
+        QskListView::Cell, Qt::AlignVCenter | Qt::AlignLeft );
 
     const QVariant value = listView->valueAt( row, col );
 

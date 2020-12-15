@@ -77,17 +77,15 @@ static inline bool qskCompareResolvedStates(
 
                 if ( s1 == 0 )
                 {
-                    using namespace QskAspect;
-
-                    if ( aspect1.placement() == NoPlacement )
+                    if ( aspect1.placement() == QskAspect::NoPlacement )
                         return true;
 
                     // clear the placement bits and restart with the initial state
                     aspect1 = a1;
-                    aspect1.setPlacement( NoPlacement );
+                    aspect1.setPlacement( QskAspect::NoPlacement );
 
                     aspect2 = a2;
-                    aspect2.setPlacement( NoPlacement );
+                    aspect2.setPlacement( QskAspect::NoPlacement );
                 }
             }
             else
@@ -207,6 +205,12 @@ int QskSkinnable::flagHint( QskAspect::Aspect aspect ) const
     return effectiveHint( aspect ).toInt();
 }
 
+void QskSkinnable::setAlignmentHint(
+    QskAspect::Aspect aspect, Qt::Alignment alignment )
+{
+    setFlagHint( aspect | QskAspect::Alignment, alignment );
+}
+
 void QskSkinnable::setColor( QskAspect::Aspect aspect, const QColor& color )
 {
     m_data->hintTable.setColor( aspect, color );
@@ -237,20 +241,38 @@ qreal QskSkinnable::metric( QskAspect::Aspect aspect, QskSkinHintStatus* status 
     return effectiveHint( aspect | QskAspect::Metric, status ).toReal();
 }
 
-void QskSkinnable::setMarginsHint( QskAspect::Aspect aspect, qreal margins )
+void QskSkinnable::setMarginHint( QskAspect::Aspect aspect, qreal margins )
 {
-    m_data->hintTable.setMargins( aspect, QskMargins( margins ) );
+    m_data->hintTable.setMargin( aspect, QskMargins( margins ) );
 }
 
-void QskSkinnable::setMarginsHint( QskAspect::Aspect aspect, const QMarginsF& margins )
+void QskSkinnable::setMarginHint( QskAspect::Aspect aspect, const QMarginsF& margins )
 {
-    m_data->hintTable.setMargins( aspect, margins );
+    m_data->hintTable.setMargin( aspect, margins );
 }
 
-QMarginsF QskSkinnable::marginsHint(
+QMarginsF QskSkinnable::marginHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
-    return effectiveHint( aspect | QskAspect::Metric, status ).value< QskMargins >();
+    const auto aspectMargin = aspect | QskAspect::Metric | QskAspect::Margin;
+    return effectiveHint( aspectMargin, status ).value< QskMargins >();
+}
+
+void QskSkinnable::setPaddingHint( QskAspect::Aspect aspect, qreal padding )
+{
+    m_data->hintTable.setPadding( aspect, QskMargins( padding ) );
+}
+
+void QskSkinnable::setPaddingHint( QskAspect::Aspect aspect, const QMarginsF& padding )
+{
+    m_data->hintTable.setPadding( aspect, padding );
+}
+
+QMarginsF QskSkinnable::paddingHint(
+    QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
+{
+    const auto aspectPadding = aspect | QskAspect::Metric | QskAspect::Padding;
+    return effectiveHint( aspectPadding, status ).value< QskMargins >();
 }
 
 void QskSkinnable::setGradientHint(
@@ -316,6 +338,17 @@ QskIntervalF QskSkinnable::intervalHint(
     return effectiveHint( aspect | QskAspect::Metric, status ).value< QskIntervalF >();
 }
 
+void QskSkinnable::setSpacingHint( QskAspect::Aspect aspect, qreal spacing )
+{
+    m_data->hintTable.setSpacing( aspect, spacing );
+}
+
+qreal QskSkinnable::spacingHint(
+    QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
+{
+    return metric( aspect | QskAspect::Spacing, status );
+}
+
 void QskSkinnable::setFontRole( QskAspect::Aspect aspect, int role )
 {
     m_data->hintTable.setFontRole( aspect, role );
@@ -352,7 +385,7 @@ QskColorFilter QskSkinnable::effectiveGraphicFilter(
 
     QskSkinHintStatus status;
 
-    const QVariant hint = storedHint( aspect | skinState(), &status );
+    const auto hint = storedHint( aspect | skinState(), &status );
     if ( status.isValid() )
     {
         // we need to know about how the aspect gets resolved
@@ -585,7 +618,7 @@ const QVariant& QskSkinnable::storedHint(
     const auto& localTable = m_data->hintTable;
     if ( localTable.hasHints() )
     {
-        QskAspect::Aspect a = aspect;
+        auto a = aspect;
 
         if ( !localTable.hasStates() )
         {
@@ -609,7 +642,7 @@ const QVariant& QskSkinnable::storedHint(
     const auto& skinTable = skin->hintTable();
     if ( skinTable.hasHints() )
     {
-        QskAspect::Aspect a = aspect;
+        auto a = aspect;
 
         const QVariant* value = skinTable.resolvedHint( a, &resolvedAspect );
         if ( value )
@@ -685,19 +718,18 @@ static inline QMarginsF qskEffectivePadding( const QskSkinnable* skinnable,
     QskAspect::Aspect aspect, const QSizeF& size, bool inner )
 {
     using namespace QskAspect;
-    using namespace Qt;
 
-    const auto shape = skinnable->boxShapeHint( aspect | Shape ).toAbsolute( size );
-    const auto borderMetrics = skinnable->boxBorderMetricsHint( aspect | Border );
+    const auto shape = skinnable->boxShapeHint( aspect ).toAbsolute( size );
+    const auto borderMetrics = skinnable->boxBorderMetricsHint( aspect );
 
-    const qreal left = qMax( shape.radius( TopLeftCorner ).width(),
-        shape.radius( BottomLeftCorner ).width() );
+    const qreal left = qMax( shape.radius( Qt::TopLeftCorner ).width(),
+        shape.radius( Qt::BottomLeftCorner ).width() );
 
-    const qreal top = qMax( shape.radius( TopLeftCorner ).height(),
-        shape.radius( TopRightCorner ).height() );
+    const qreal top = qMax( shape.radius( Qt::TopLeftCorner ).height(),
+        shape.radius( Qt::TopRightCorner ).height() );
 
-    const qreal right = qMax( shape.radius( TopRightCorner ).width(),
-        shape.radius( BottomRightCorner ).width() );
+    const qreal right = qMax( shape.radius( Qt::TopRightCorner ).width(),
+        shape.radius( Qt::BottomRightCorner ).width() );
 
     const qreal bottom = qMax( shape.radius( Qt::BottomLeftCorner ).height(),
         shape.radius( Qt::BottomRightCorner ).height() );
@@ -720,7 +752,7 @@ static inline QMarginsF qskEffectivePadding( const QskSkinnable* skinnable,
     // sin 45° ceiled : 0.70710678;
     padding *= 1.0 - 0.70710678;
 
-    const QMarginsF paddingHint = skinnable->marginsHint( aspect | Padding );
+    const auto paddingHint = skinnable->paddingHint( aspect );
 
     return QMarginsF(
         qMax( padding.left(), paddingHint.left() ),
@@ -878,15 +910,13 @@ void QskSkinnable::setSkinState( QskAspect::State newState, bool animated )
         const auto subControls = control->subControls();
         for ( const auto subControl : subControls )
         {
-            using namespace QskAspect;
-
             auto aspect = subControl | placement;
 
             const auto& skinTable = skin->hintTable();
 
-            for ( int i = 0; i <= LastType; i++ )
+            for ( int i = 0; i <= QskAspect::LastType; i++ )
             {
-                const auto type = static_cast< Type >( i );
+                const auto type = static_cast< QskAspect::Type >( i );
 
                 const auto hint = effectiveAnimation( type, subControl, newState );
 
@@ -896,7 +926,8 @@ void QskSkinnable::setSkinState( QskAspect::State newState, bool animated )
                         Starting an animator for all primitives,
                         that differ between the states
                      */
-                    for ( uint primitive = 0; primitive <= LastPrimitive; primitive++ )
+                    for ( uint primitive = 0;
+                        primitive <= QskAspect::LastPrimitive; primitive++ )
                     {
                         aspect.setPrimitive( type, primitive );
 

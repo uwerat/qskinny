@@ -70,8 +70,14 @@ class QSK_EXPORT QskSkin : public QObject
     void setMetric( QskAspect::Aspect, qreal metric );
     qreal metric( QskAspect::Aspect ) const;
 
-    void setMargins( QskAspect::Aspect, const QskMargins& );
-    QskMargins margins( QskAspect::Aspect ) const;
+    void setMargin( QskAspect::Aspect, const QskMargins& );
+    QskMargins margin( QskAspect::Aspect ) const;
+
+    void setPadding( QskAspect::Aspect, const QskMargins& );
+    QskMargins padding( QskAspect::Aspect ) const;
+
+    void setSpacing( QskAspect::Aspect, qreal );
+    qreal spacing( QskAspect::Aspect ) const;
 
     void setGradient( QskAspect::Aspect, const QskGradient& );
     QskGradient gradient( QskAspect::Aspect ) const;
@@ -94,6 +100,9 @@ class QSK_EXPORT QskSkin : public QObject
 
     void setAnimation( QskAspect::Aspect, QskAnimationHint );
     QskAnimationHint animation( QskAspect::Aspect ) const;
+
+    void setAlignment( QskAspect::Aspect, Qt::Alignment );
+    Qt::Alignment alignment( QskAspect::Aspect ) const;
 
     void setSkinHint( QskAspect::Aspect, const QVariant& hint );
     const QVariant& skinHint( QskAspect::Aspect ) const;

@@ -7,6 +7,7 @@
 #define QSK_TAB_BAR_H
 
 #include "QskBox.h"
+#include "QskNamespace.h"
 
 class QskTabButton;
 class QskTextOptions;

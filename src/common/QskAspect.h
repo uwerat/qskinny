@@ -168,6 +168,10 @@ namespace QskAspect
         bool isAnimator() const;
         void setAnimator( bool on );
 
+        bool isMetric() const;
+        bool isColor() const;
+        bool isFlag() const;
+
         Subcontrol subControl() const;
         void setSubControl( Subcontrol );
 
@@ -342,6 +346,21 @@ namespace QskAspect
     inline void Aspect::setType( Type type )
     {
         m_bits.type = type;
+    }
+
+    inline bool Aspect::isMetric() const
+    {
+        return type() == Metric;
+    }
+
+    inline bool Aspect::isColor() const
+    {
+        return type() == Color;
+    }
+
+    inline bool Aspect::isFlag() const
+    {
+        return type() == Flag;
     }
 
     inline State Aspect::state() const

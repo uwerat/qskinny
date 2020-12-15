@@ -89,8 +89,6 @@ static inline bool qskIsBoxVisible( const QskBoxBorderMetrics& borderMetrics,
 static inline QskTextColors qskTextColors(
     const QskSkinnable* skinnable, QskAspect::Subcontrol subControl )
 {
-    using namespace QskAspect;
-
     /*
         Would be more efficient to have QskTextColors hints instead of
         storing the colors as seperated hints. TODO ...
@@ -102,11 +100,11 @@ static inline QskTextColors qskTextColors(
     c.textColor = skinnable->color( subControl, &status );
 #if 1
     if ( !status.isValid() )
-        c.textColor = skinnable->color( subControl | TextColor );
+        c.textColor = skinnable->color( subControl | QskAspect::TextColor );
 #endif
 
-    c.styleColor = skinnable->color( subControl | StyleColor );
-    c.linkColor = skinnable->color( subControl | LinkColor );
+    c.styleColor = skinnable->color( subControl | QskAspect::StyleColor );
+    c.linkColor = skinnable->color( subControl | QskAspect::LinkColor );
 
     return c;
 }
@@ -289,9 +287,7 @@ QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
     QSGNode* node, const QRectF& rect, const QskGradient& fillGradient,
     QskAspect::Subcontrol subControl )
 {
-    using namespace QskAspect;
-
-    const auto margins = skinnable->marginsHint( subControl | Margin );
+    const auto margins = skinnable->marginHint( subControl );
 
     const auto boxRect = rect.marginsRemoved( margins );
     if ( boxRect.isEmpty() )
@@ -327,13 +323,11 @@ QSGNode* QskSkinlet::updateBoxClipNode( const QskSkinnable* skinnable,
 QSGNode* QskSkinlet::updateBoxClipNode( const QskSkinnable* skinnable,
     QSGNode* node, const QRectF& rect, QskAspect::Subcontrol subControl )
 {
-    using namespace QskAspect;
-
     auto clipNode = static_cast< QskBoxClipNode* >( node );
     if ( clipNode == nullptr )
         clipNode = new QskBoxClipNode();
 
-    const auto margins = skinnable->marginsHint( subControl | Margin );
+    const auto margins = skinnable->marginHint( subControl );
 
     const auto clipRect = rect.marginsRemoved( margins );
     if ( clipRect.isEmpty() )
@@ -409,8 +403,7 @@ QSGNode* QskSkinlet::updateTextNode(
     QskAspect::Subcontrol subControl ) const
 {
     const auto rect = qskSubControlRect( this, skinnable, subControl );
-    const auto alignment = skinnable->flagHint< Qt::Alignment >(
-        QskAspect::Alignment | subControl, Qt::AlignLeft );
+    const auto alignment = skinnable->alignmentHint( subControl, Qt::AlignLeft );
 
     return updateTextNode( skinnable, node,
         rect, alignment, text, textOptions, subControl );
@@ -422,10 +415,7 @@ QSGNode* QskSkinlet::updateGraphicNode(
     Qt::Orientations mirrored ) const
 {
     const auto rect = qskSubControlRect( this, skinnable, subcontrol );
-
-    const auto alignment = skinnable->flagHint< Qt::Alignment >(
-        subcontrol | QskAspect::Alignment, Qt::AlignCenter );
-
+    const auto alignment = skinnable->alignmentHint( subcontrol, Qt::AlignCenter );
     const auto colorFilter = skinnable->effectiveGraphicFilter( subcontrol );
 
     return updateGraphicNode( skinnable, node,

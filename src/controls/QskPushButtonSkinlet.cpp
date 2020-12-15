@@ -93,15 +93,13 @@ QRectF QskPushButtonSkinlet::graphicRect(
 {
     // buttonShift -> TODO
 
-    QRectF r = button->innerBox( QskPushButton::Panel,
+    auto r = button->innerBox( QskPushButton::Panel,
         subControlRect( button, contentsRect, QskPushButton::Panel ) );
 
     if ( !button->text().isEmpty() )
     {
         const auto textRect = subControlRect( button, contentsRect, QskPushButton::Text );
-
-        qreal h = textRect.height() +
-            button->metric( QskPushButton::Panel | QskAspect::Spacing );
+        qreal h = textRect.height() + button->spacingHint( QskPushButton::Panel );
 
         if ( h < r.height() )
             r.setBottom( r.bottom() - h );
@@ -161,8 +159,7 @@ QSGNode* QskPushButtonSkinlet::updateTextNode(
     if ( !button->clip() && ( rect.height() < fm.height() ) )
         return nullptr;
 
-    const auto alignment = button->flagHint< Qt::Alignment >(
-        QskPushButton::Text | QskAspect::Alignment, Qt::AlignCenter );
+    const auto alignment = button->alignmentHint( QskPushButton::Text, Qt::AlignCenter );
 
     return QskSkinlet::updateTextNode( button, node, rect, alignment,
         button->text(), button->textOptions(), QskPushButton::Text );

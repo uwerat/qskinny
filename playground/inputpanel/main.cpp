@@ -198,14 +198,12 @@ class LocaleListView final : public QskListView
     {
         if ( m_maxWidth == 0.0 )
         {
-            using namespace QskAspect;
-
             const QFontMetricsF fm( effectiveFont( Text ) );
 
             for ( const auto& entry : m_values )
                 m_maxWidth = qMax( m_maxWidth, qskHorizontalAdvance( fm, entry.first ) );
 
-            const QMarginsF padding = marginsHint( Cell | Padding );
+            const auto padding = paddingHint( Cell );
             m_maxWidth += padding.left() + padding.right();
         }
 
@@ -214,10 +212,8 @@ class LocaleListView final : public QskListView
 
     qreal rowHeight() const override
     {
-        using namespace QskAspect;
-
         const QFontMetricsF fm( effectiveFont( Text ) );
-        const QMarginsF padding = marginsHint( Cell | Padding );
+        const auto padding = paddingHint( Cell );
 
         return fm.height() + padding.top() + padding.bottom();
     }

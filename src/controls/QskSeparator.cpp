@@ -10,8 +10,7 @@ QSK_SUBCONTROL( QskSeparator, Panel )
 
 static inline QskAspect::Aspect qskAspectThickness()
 {
-    using namespace QskAspect;
-    return QskSeparator::Panel | Metric | Size;
+    return QskSeparator::Panel | QskAspect::Metric | QskAspect::Size;
 }
 
 QskSeparator::QskSeparator( QQuickItem* parent )

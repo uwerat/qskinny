@@ -20,13 +20,11 @@ class ListBox : public QskSimpleListBox
   public:
     ListBox()
     {
-        using namespace QskAspect;
-
         setMargins( QMarginsF( 15, 10, 10, 10 ) );
         setAlternatingRowColors( true );
 
         // increasing the padding of each row: usually the job of the skin !
-        setMarginsHint( Cell | Padding, QMargins( 10, 20, 10, 20 ) );
+        setPaddingHint( Cell, QMargins( 10, 20, 10, 20 ) );
 
         populate();
 

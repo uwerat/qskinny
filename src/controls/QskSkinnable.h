@@ -85,9 +85,13 @@ class QSK_EXPORT QskSkinnable
     void setMetric( QskAspect::Aspect, qreal metric );
     qreal metric( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
-    void setMarginsHint( QskAspect::Aspect, qreal );
-    void setMarginsHint( QskAspect::Aspect, const QMarginsF& );
-    QMarginsF marginsHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
+    void setMarginHint( QskAspect::Aspect, qreal );
+    void setMarginHint( QskAspect::Aspect, const QMarginsF& );
+    QMarginsF marginHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
+
+    void setPaddingHint( QskAspect::Aspect, qreal );
+    void setPaddingHint( QskAspect::Aspect, const QMarginsF& );
+    QMarginsF paddingHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
     void setGradientHint( QskAspect::Aspect, const QskGradient& );
     QskGradient gradientHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
@@ -105,10 +109,16 @@ class QSK_EXPORT QskSkinnable
     void setIntervalHint( QskAspect::Aspect, const QskIntervalF& );
     QskIntervalF intervalHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
+    void setSpacingHint( QskAspect::Aspect, qreal );
+    qreal spacingHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
+
     void setFlagHint( QskAspect::Aspect, int flag );
     int flagHint( QskAspect::Aspect ) const;
 
     template< typename T > T flagHint( QskAspect::Aspect, T = T() ) const;
+
+    void setAlignmentHint( QskAspect::Aspect, Qt::Alignment );
+    Qt::Alignment alignmentHint( QskAspect::Aspect, Qt::Alignment = Qt::Alignment() ) const;
 
     void setFontRole( QskAspect::Aspect, int role );
     int fontRole( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
@@ -190,6 +200,12 @@ inline T QskSkinnable::flagHint( QskAspect::Aspect aspect, T defaultValue ) cons
         return static_cast< T >( hint.value< int >() );
 
     return defaultValue;
+}
+
+inline Qt::Alignment QskSkinnable::alignmentHint(
+    QskAspect::Aspect aspect, Qt::Alignment defaultAlignment ) const
+{
+    return flagHint< Qt::Alignment >( aspect | QskAspect::Alignment, defaultAlignment );
 }
 
 inline QskAspect::Placement QskSkinnable::effectivePlacement() const

@@ -21,8 +21,8 @@ QSK_SYSTEM_STATE( QskSlider, Maximum, QskAspect::FirstSystemState << 4 )
 
 static inline QskAspect::Aspect qskAspectPosition( const QskSlider* slider )
 {
-    using namespace QskAspect;
-    return slider->effectiveSubcontrol( QskSlider::Handle ) | Position | Metric;
+    const auto subControl = slider->effectiveSubcontrol( QskSlider::Handle );
+    return subControl | QskAspect::Position | QskAspect::Metric;
 }
 
 class QskSlider::PrivateData

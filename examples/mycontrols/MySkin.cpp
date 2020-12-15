@@ -53,7 +53,7 @@ class MySkin : public QskSkin
 
         setBoxBorderMetrics( subControl, border );
         setBoxShape( subControl, radius );
-        setMargins( subControl | QskAspect::Padding, padding );
+        setPadding( subControl, padding );
         setGradient( subControl, Qt::transparent );
 
         setBoxBorderColors( subControl, rgb );
@@ -70,7 +70,7 @@ class MySkin : public QskSkin
         setBoxShape( subControl, radius );
         setBoxBorderColors( subControl, borderColors );
         setGradient( subControl, fillColor );
-        setMargins( subControl | QskAspect::Padding, 0.5 * radius );
+        setPadding( subControl, 0.5 * radius );
     }
 
     void initToggleButtonHints(
@@ -94,7 +94,7 @@ class MySkin : public QskSkin
             setColor( subControl | Q::Checked, color1 );
             setColor( subControl, color2 );
 
-            setSkinHint( subControl | Alignment, Qt::AlignCenter );
+            setAlignment( subControl, Qt::AlignCenter );
             setAnimation( subControl | Color, animator() );
         }
 
@@ -139,13 +139,13 @@ class MySkin : public QskSkin
         {
             setMetric( subControl | MinimumWidth, width );
             setMetric( subControl | MinimumHeight, height );
-            //setMargins( subControl | Padding, +2 );
+            //setPadding( subControl, +2 );
 
             setBoxShape( subControl, radius );
         }
 
-        setMargins( Q::CheckedPanel | Padding, 10 );
-        setMargins( Q::UncheckedPanel | Padding, 10 );
+        setPadding( Q::CheckedPanel, 10 );
+        setPadding( Q::UncheckedPanel, 10 );
 
         for( auto state : { NoState, Q::Disabled } )
         {

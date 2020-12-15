@@ -130,7 +130,7 @@ void QskHintAnimator::advance( qreal progress )
     {
         if ( m_updateFlags == QskAnimationHint::UpdateAuto )
         {
-            if ( m_aspect.type() == QskAspect::Metric )
+            if ( m_aspect.isMetric() )
             {
                 m_control->resetImplicitSize();
 

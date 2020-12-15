@@ -42,8 +42,6 @@ class GraphicLabel : public QskGraphicLabel
 
     void setDarknessMode( bool on )
     {
-        using namespace QskAspect;
-
         const int oldRole = graphicRole();
 
         QskGradient gradient;
@@ -65,10 +63,10 @@ class GraphicLabel : public QskGraphicLabel
         setBackground( gradient );
 
         // finally setup a smooth transition manually
-        startTransition( Control | Color, duration,
+        startTransition( QskAspect::Control | QskAspect::Color, duration,
             QVariant::fromValue( oldGradient ), QVariant::fromValue( gradient ) );
 
-        startTransition( QskGraphicLabel::Graphic | GraphicRole,
+        startTransition( QskGraphicLabel::Graphic | QskAspect::GraphicRole,
             duration, oldRole, graphicRole() );
     }
 };

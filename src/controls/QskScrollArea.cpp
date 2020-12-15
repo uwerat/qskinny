@@ -42,12 +42,14 @@ static inline QSizeF qskPanelInnerSize( const QskScrollView* scrollView )
 static inline QSizeF qskScrolledItemSize( const QskScrollView* scrollView,
     const QQuickItem* item, const QSizeF& boundingSize )
 {
+    using Q = QskScrollView;
+
     QSizeF outerSize = boundingSize;
 
-    const qreal spacing = scrollView->metric( QskScrollView::Panel | QskAspect::Spacing );
+    const qreal spacing = scrollView->spacingHint( Q::Panel );
 
-    const auto sbV = scrollView->metric( QskScrollView::VerticalScrollBar | QskAspect::Size );
-    const auto sbH = scrollView->metric( QskScrollView::HorizontalScrollBar | QskAspect::Size );
+    const auto sbV = scrollView->metric( Q::VerticalScrollBar | QskAspect::Size );
+    const auto sbH = scrollView->metric( Q::HorizontalScrollBar | QskAspect::Size );
 
     const auto policyH = scrollView->horizontalScrollBarPolicy();
     const auto policyV = scrollView->verticalScrollBarPolicy();

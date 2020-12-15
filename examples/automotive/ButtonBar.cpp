@@ -5,9 +5,11 @@
 
 #include "ButtonBar.h"
 #include "SkinFactory.h"
+
 #include <QskGraphic.h>
 #include <QskGraphicIO.h>
 #include <QskGraphicLabel.h>
+#include <QskMargins.h>
 
 QSK_SUBCONTROL( ButtonBar, Indicator )
 
@@ -40,7 +42,7 @@ ButtonBar::ButtonBar( QQuickItem* parentItem )
     c.setAlphaF( 0.5 );
     setBackgroundColor( c );
 
-    setMargins( QMarginsF( 20, 15, 20, 15 ) );
+    setMargins( QskMargins( 20, 15 ) );
     setSpacing( 20 );
 
     setSizePolicy( QskSizePolicy::MinimumExpanding, QskSizePolicy::MinimumExpanding );

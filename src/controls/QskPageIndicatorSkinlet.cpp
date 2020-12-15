@@ -54,11 +54,10 @@ QSGNode* QskPageIndicatorSkinlet::updateSubNode(
 QRectF QskPageIndicatorSkinlet::bulletRect(
     const QskPageIndicator* indicator, const QRectF& rect, int index ) const
 {
-    const qreal szNormal =
-        indicator->metric( QskPageIndicator::Bullet | QskAspect::Size );
+    using Q = QskPageIndicator;
 
-    const qreal szHighlighted =
-        indicator->metric( QskPageIndicator::Highlighted | QskAspect::Size );
+    const qreal szNormal = indicator->metric( Q::Bullet | QskAspect::Size );
+    const qreal szHighlighted = indicator->metric( Q::Highlighted | QskAspect::Size );
 
     // scale bullet size if we are in between a transition:
     qreal indexDiff = qAbs( indicator->currentIndex() - index );
@@ -68,7 +67,7 @@ QRectF QskPageIndicatorSkinlet::bulletRect(
     const qreal sz = ( indexDiff < 1 ) ?
         ( 1 - indexDiff ) * szHighlighted + indexDiff * szNormal : szNormal;
 
-    const qreal spacing = indicator->metric( QskPageIndicator::Panel | QskAspect::Spacing );
+    const qreal spacing = indicator->spacingHint( Q::Panel );
     const bool horizontal = ( indicator->orientation() == Qt::Horizontal );
 
     qreal w, h;
@@ -123,8 +122,7 @@ QRectF QskPageIndicatorSkinlet::bulletRect(
         yAdjust *= indexDiff;
     const qreal y = ( horizontal ? r.top() : r.left() ) + yAdjust;
 
-    QRectF ret = horizontal ? QRectF( x, y, sz, sz ) : QRectF( y, x, sz, sz );
-    return ret;
+    return horizontal ? QRectF( x, y, sz, sz ) : QRectF( y, x, sz, sz );
 }
 
 QSGNode* QskPageIndicatorSkinlet::updateBulletsNode(

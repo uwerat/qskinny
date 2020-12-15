@@ -147,7 +147,7 @@ void QskFocusIndicator::updateFocusFrame()
 
     if ( !r.isEmpty() )
     {
-        r = r.marginsAdded( marginsHint( Panel | QskAspect::Padding ) );
+        r = r.marginsAdded( paddingHint( Panel ) );
 
         if ( auto w = window() )
         {

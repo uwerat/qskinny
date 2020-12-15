@@ -106,6 +106,7 @@ namespace
                     QskTabBar::Panel, QskAspect::NoState );
             }
 
+            // should be a skin hint TODO ...
             return QskAnimationHint( 200, QEasingCurve::OutCubic );
         }
 
@@ -138,7 +139,7 @@ namespace
             auto r = Inherited::clipRect();
 
             if ( auto control = qskControlCast( parentItem() ) )
-                r += control->marginsHint( QskTabBar::Panel | QskAspect::Padding );
+                r += control->paddingHint( QskTabBar::Panel );
 
             /*
                 Often the current tab button grows beyond the bounding rectangle
@@ -298,7 +299,7 @@ QskTabBar::QskTabBar( Qsk::Position position, QQuickItem* parent )
     m_data->scrollBox->setOrientation( orientation );
 
     m_data->buttonBox = new ButtonBox( orientation, m_data->scrollBox );
-    m_data->buttonBox->setSpacing( metric( QskTabBar::Panel | QskAspect::Spacing ) );
+    m_data->buttonBox->setSpacing( spacingHint( QskTabBar::Panel ) );
     m_data->buttonBox->setSizePolicy( QskSizePolicy::Maximum, QskSizePolicy::Maximum );
 
     connect( this, &QskTabBar::currentIndexChanged,

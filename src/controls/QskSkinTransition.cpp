@@ -308,9 +308,7 @@ namespace
 
             for ( const auto& candidate : candidates )
             {
-                using namespace QskAspect;
-
-                if ( candidate.aspect.type() != Metric )
+                if ( !candidate.aspect.isMetric() )
                 {
                     if ( !( control->flags() & QQuickItem::ItemHasContents ) )
                     {
@@ -396,7 +394,7 @@ namespace
             info.control = control;
 
             info.updateModes = UpdateInfo::Update;
-            if ( aspect.type() == QskAspect::Metric )
+            if ( aspect.isMetric() )
                 info.updateModes |= UpdateInfo::Polish;
 
             auto it = std::lower_bound(

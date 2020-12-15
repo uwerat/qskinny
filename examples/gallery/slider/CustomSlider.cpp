@@ -18,29 +18,19 @@ QSK_SUBCONTROL( CustomSlider, Decoration )
 CustomSlider::CustomSlider( QQuickItem* parentItem )
     : QskSlider( parentItem )
 {
-    using namespace QskAspect;
-
-    setMetric( QskSlider::Handle | Size, 80 );
-
-#if 0
-    const QskGradient fillGradient( QskGradient::Horizontal,
-        QskRgb::Grey700, QskRgb::Grey500 );
-#else
-    const QskGradient fillGradient( QskRgb::Grey700 );
-#endif
-
     setBoxShapeHint( Fill, 0 );
-    setGradientHint( Fill, fillGradient );
+    setGradientHint( Fill, QskRgb::Grey700 );
     setColor( Scale, qRgb( 178, 178, 178 ) ); // for the ticks
 
+    setMetric( QskSlider::Handle | QskAspect::Size, 80 );
     setColor( QskSlider::Handle, QskRgb::Grey800 );
 
     for ( auto state : { Pressed, Focused | Hovered, Hovered, Focused } )
-        setColor( QskSlider::Handle | Color | state, QskRgb::Orange600 );
+        setColor( QskSlider::Handle | state, QskRgb::Orange600 );
 
-    setAnimation( QskSlider::Handle | Color, 1000 );
+    setAnimation( QskSlider::Handle | QskAspect::Color, 1000 );
     for ( auto state : { Focused | Hovered, Hovered, Focused } )
-        setAnimation( QskSlider::Handle | Color | state, 300 );
+        setAnimation( QskSlider::Handle | QskAspect::Color | state, 300 );
 
     // using an individual skinlet, not known by the skin
 

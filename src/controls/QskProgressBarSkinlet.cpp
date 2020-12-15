@@ -146,7 +146,7 @@ QRectF QskProgressBarSkinlet::barRect( const QskProgressBar* bar ) const
 
     const auto borderMetrics = bar->boxBorderMetricsHint( subControl );
 
-    auto m = bar->marginsHint( subControl | QskAspect::Padding );
+    auto m = bar->paddingHint( subControl );
     m += 0.5 * borderMetrics.toAbsolute( rect.size() ).widths();
 
     rect = rect.marginsRemoved( m );

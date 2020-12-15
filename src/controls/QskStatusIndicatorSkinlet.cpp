@@ -70,10 +70,8 @@ QSGNode* QskStatusIndicatorSkinlet::updateGraphicNode(
 {
     const auto subControl = QskStatusIndicator::Graphic;
 
-    const QRectF rect = subControlRect( indicator, indicator->contentsRect(), subControl );
-    const Qt::Alignment alignment = indicator->flagHint< Qt::Alignment >(
-        subControl | QskAspect::Alignment, Qt::AlignCenter );
-
+    const auto rect = subControlRect( indicator, indicator->contentsRect(), subControl );
+    const auto alignment = indicator->alignmentHint( subControl, Qt::AlignCenter );
     const int status = indicator->status();
 
     node = QskSkinlet::updateGraphicNode( indicator, node,

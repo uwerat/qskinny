@@ -207,8 +207,7 @@ QColor QskTextLabel::textColor() const
 
 Qt::Alignment QskTextLabel::alignment() const
 {
-    return flagHint< Qt::Alignment >(
-        Text | QskAspect::Alignment, Qt::AlignLeft | Qt::AlignTop );
+    return alignmentHint( Text, Qt::AlignLeft | Qt::AlignTop );
 }
 
 void QskTextLabel::setAlignment( Qt::Alignment alignment )
@@ -217,7 +216,7 @@ void QskTextLabel::setAlignment( Qt::Alignment alignment )
         return;
 
     const auto subControl = effectiveSubcontrol( Text );
-    setFlagHint( subControl | QskAspect::Alignment, alignment );
+    setAlignmentHint( subControl, alignment );
 
     if ( m_data->text.isEmpty() )
         update();

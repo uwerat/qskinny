@@ -456,8 +456,6 @@ QSizeF QskTextInput::contentsSizeHint( Qt::SizeHint which, const QSizeF& ) const
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
-    using namespace QskAspect;
-
     auto input = m_data->textInput;
 
     input->updateMetrics();
@@ -465,8 +463,8 @@ QSizeF QskTextInput::contentsSizeHint( Qt::SizeHint which, const QSizeF& ) const
     const qreal w = input->implicitWidth();
     const qreal h = input->implicitHeight();
 
-    const QSizeF minSize( metric( Panel | MinimumWidth ),
-        metric( Panel | MinimumHeight ) );
+    const QSizeF minSize( metric( Panel | QskAspect::MinimumWidth ),
+        metric( Panel | QskAspect::MinimumHeight ) );
 
     return outerBoxSize( Panel, QSizeF( w, h ) ).expandedTo( minSize );
 }
@@ -554,7 +552,7 @@ void QskTextInput::setAlignment( Qt::Alignment alignment )
     if ( alignment != this->alignment() )
     {
         const auto subControl = effectiveSubcontrol( Text );
-        setFlagHint( subControl | QskAspect::Alignment, alignment );
+        setAlignmentHint( subControl, alignment );
 
         m_data->textInput->setAlignment( alignment );
 
@@ -566,8 +564,7 @@ void QskTextInput::setAlignment( Qt::Alignment alignment )
 
 Qt::Alignment QskTextInput::alignment() const
 {
-    return flagHint< Qt::Alignment >(
-        Text | QskAspect::Alignment, Qt::AlignLeft | Qt::AlignTop );
+    return alignmentHint( Text, Qt::AlignLeft | Qt::AlignTop );
 }
 
 QFont QskTextInput::font() const

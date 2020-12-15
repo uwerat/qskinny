@@ -8,6 +8,7 @@
 #include "OtherSlider.h"
 
 #include <QskRgbValue.h>
+#include <QskMargins.h>
 
 SliderPage::SliderPage( QQuickItem* parentItem )
     : Page( Qt::Vertical, parentItem )
@@ -79,7 +80,7 @@ void SliderPage::populate()
     {
         auto slider = new CustomSlider( this );
 
-        slider->setMargins( QMarginsF( 0, 15, 0, 15 ) );
+        slider->setMargins( QskMargins( 0, 15 ) );
         slider->setSnap( true );
         slider->setMinimum( 0 );
         slider->setMaximum( 2000 );

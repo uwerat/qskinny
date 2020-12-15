@@ -299,7 +299,7 @@ bool QskPopup::isTransitionAccepted( QskAspect::Aspect aspect ) const
         if ( aspect == m_data->faderAspect )
             return true;
 
-        if ( aspect.type() == QskAspect::Color )
+        if ( aspect.isColor() )
         {
             if ( aspect.subControl() == effectiveSubcontrol( QskPopup::Overlay ) )
                 return true;

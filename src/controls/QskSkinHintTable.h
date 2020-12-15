@@ -39,8 +39,11 @@ class QSK_EXPORT QskSkinHintTable
     void setMetric( QskAspect::Aspect, qreal metric );
     qreal metric( QskAspect::Aspect ) const;
 
-    void setMargins( QskAspect::Aspect, const QskMargins& );
-    QskMargins margins( QskAspect::Aspect ) const;
+    void setMargin( QskAspect::Aspect, const QskMargins& );
+    QskMargins margin( QskAspect::Aspect ) const;
+
+    void setPadding( QskAspect::Aspect, const QskMargins& );
+    QskMargins padding( QskAspect::Aspect ) const;
 
     void setGradient( QskAspect::Aspect, const QskGradient& );
     QskGradient gradient( QskAspect::Aspect ) const;
@@ -56,6 +59,12 @@ class QSK_EXPORT QskSkinHintTable
 
     void setInterval( QskAspect::Aspect, const QskIntervalF& );
     QskIntervalF interval( QskAspect::Aspect ) const;
+
+    void setSpacing( QskAspect::Aspect, qreal );
+    qreal spacing( QskAspect::Aspect ) const;
+
+    void setAlignment( QskAspect::Aspect, Qt::Alignment );
+    Qt::Alignment alignment( QskAspect::Aspect ) const;
 
     void setAnimation( QskAspect::Aspect, QskAnimationHint animation );
     QskAnimationHint animation( QskAspect::Aspect ) const;
@@ -166,15 +175,30 @@ inline qreal QskSkinHintTable::metric( QskAspect::Aspect aspect ) const
     return hint( aspect | QskAspect::Metric ).toReal();
 }
 
-inline void QskSkinHintTable::setMargins(
+inline void QskSkinHintTable::setMargin(
     QskAspect::Aspect aspect, const QskMargins& margins )
 {
-    setHint( aspect | QskAspect::Metric, QVariant::fromValue( margins ) );
+    const auto aspectMargin = aspect | QskAspect::Metric | QskAspect::Margin;
+    setHint( aspectMargin, QVariant::fromValue( margins ) );
 }
 
-inline QskMargins QskSkinHintTable::margins( QskAspect::Aspect aspect ) const
+inline QskMargins QskSkinHintTable::margin( QskAspect::Aspect aspect ) const
 {
-    return hint( aspect | QskAspect::Metric ).value< QskMargins >();
+    const auto aspectMargin = aspect | QskAspect::Metric | QskAspect::Margin;
+    return hint( aspectMargin ).value< QskMargins >();
+}
+
+inline void QskSkinHintTable::setPadding(
+    QskAspect::Aspect aspect, const QskMargins& padding )
+{
+    const auto aspectPadding = aspect | QskAspect::Metric | QskAspect::Padding;
+    setHint( aspectPadding, QVariant::fromValue( padding ) );
+}
+
+inline QskMargins QskSkinHintTable::padding( QskAspect::Aspect aspect ) const
+{
+    const auto aspectPadding = aspect | QskAspect::Metric | QskAspect::Padding;
+    return hint( aspectPadding ).value< QskMargins >();
 }
 
 inline void QskSkinHintTable::setGradient(
@@ -230,14 +254,22 @@ inline QskBoxBorderColors QskSkinHintTable::boxBorderColors( QskAspect::Aspect a
 inline void QskSkinHintTable::setInterval(
     QskAspect::Aspect aspect, const QskIntervalF& interval )
 {
-    using namespace QskAspect;
-    setHint( aspect | Metric, QVariant::fromValue( interval ) );
+    setHint( aspect | QskAspect::Metric, QVariant::fromValue( interval ) );
 }
 
 inline QskIntervalF QskSkinHintTable::interval( QskAspect::Aspect aspect ) const
 {
-    using namespace QskAspect;
-    return hint( aspect | Metric ).value< QskIntervalF >();
+    return hint( aspect | QskAspect::Metric ).value< QskIntervalF >();
+}
+
+inline void QskSkinHintTable::setSpacing( QskAspect::Aspect aspect, qreal spacing )
+{
+    setMetric( aspect | QskAspect::Spacing, spacing );
+}
+
+inline qreal QskSkinHintTable::spacing( QskAspect::Aspect aspect ) const
+{
+    return metric( aspect | QskAspect::Spacing );
 }
 
 inline QskAnimationHint QskSkinHintTable::animation( QskAspect::Aspect aspect ) const
@@ -254,6 +286,17 @@ inline void QskSkinHintTable::setGraphicRole( QskAspect::Aspect aspect, int role
 inline void QskSkinHintTable::setFontRole( QskAspect::Aspect aspect, int role )
 {
     setHint( aspect | QskAspect::FontRole, role );
+}
+
+inline void QskSkinHintTable::setAlignment(
+    QskAspect::Aspect aspect, Qt::Alignment alignment )
+{
+    setFlagHint( aspect | QskAspect::Alignment, alignment );
+}
+
+inline Qt::Alignment QskSkinHintTable::alignment( QskAspect::Aspect aspect ) const
+{
+    return hint( aspect | QskAspect::Alignment ).value< Qt::Alignment >();
 }
 
 inline void QskSkinHintTable::setFlagHint( QskAspect::Aspect aspect, int flag )

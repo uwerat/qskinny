@@ -102,16 +102,16 @@ QRectF QskSubWindowSkinlet::titleBarRect(
 
 qreal QskSubWindowSkinlet::titleBarHeight( const QskSubWindow* subWindow ) const
 {
-    using namespace QskAspect;
+    using Q = QskSubWindow;
 
     if ( !subWindow->isDecorated() )
         return 0;
 
-    const QMarginsF margins = subWindow->marginsHint( QskSubWindow::TitleBar | Padding );
-    const QFontMetricsF fm( subWindow->effectiveFont( QskSubWindow::TitleBarText ) );
+    const auto margins = subWindow->paddingHint( Q::TitleBar );
+    const QFontMetricsF fm( subWindow->effectiveFont( Q::TitleBarText ) );
 
     const qreal height = fm.height() + margins.top() + margins.bottom();
-    const qreal minHeight = subWindow->metric( QskSubWindow::TitleBar | MinimumHeight );
+    const qreal minHeight = subWindow->metric( Q::TitleBar | QskAspect::MinimumHeight );
 
     return qMax( height, minHeight );
 }
@@ -119,8 +119,10 @@ qreal QskSubWindowSkinlet::titleBarHeight( const QskSubWindow* subWindow ) const
 QRectF QskSubWindowSkinlet::symbolRect(
     const QskSubWindow* subWindow, const QRectF& contentsRect ) const
 {
-    auto rect = subControlRect( subWindow, contentsRect, QskSubWindow::TitleBar );
-    rect = subWindow->innerBox( QskSubWindow::TitleBar, rect );
+    using Q = QskSubWindow;
+
+    auto rect = subControlRect( subWindow, contentsRect, Q::TitleBar );
+    rect = subWindow->innerBox( Q::TitleBar, rect );
 
     int w = 0;
 
@@ -139,21 +141,20 @@ QRectF QskSubWindowSkinlet::symbolRect(
 QRectF QskSubWindowSkinlet::titleRect(
     const QskSubWindow* subWindow, const QRectF& contentsRect ) const
 {
-    auto rect = subControlRect( subWindow, contentsRect, QskSubWindow::TitleBar );
-    rect = subWindow->innerBox( QskSubWindow::TitleBar, rect );
+    using Q = QskSubWindow;
+
+    auto rect = subControlRect( subWindow, contentsRect, Q::TitleBar );
+    rect = subWindow->innerBox( Q::TitleBar, rect );
 
     if ( !rect.isEmpty() )
     {
-        const auto spacing = subWindow->metric(
-            QskSubWindow::TitleBar | QskAspect::Spacing );
-
-        const auto symbolRect = subControlRect(
-            subWindow, rect, QskSubWindow::TitleBarSymbol );
+        const auto spacing = subWindow->spacingHint( Q::TitleBar );
+        const auto symbolRect = subControlRect( subWindow, rect, Q::TitleBarSymbol );
 
         rect.setX( rect.x() + symbolRect.right() + spacing );
 
 #if 0
-        const QFontMetricsF fm( subWindow->effectiveFont( QskSubWindow::TitleBarText ) );
+        const QFontMetricsF fm( subWindow->effectiveFont( Q::TitleBarText ) );
         rect.setHeight( fm.height() ); // TitleBarText | Alignment
 #endif
     }

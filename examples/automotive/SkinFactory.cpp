@@ -36,14 +36,12 @@ namespace
       public:
         Skin() 
         {
-            using namespace QskAspect;
-
             declareSkinlet< Speedometer, SpeedometerSkinlet >();
 
             setFont( QskSkin::DefaultFont, qskFont( 13 ) );
             setFont( QskSkin::LargeFont, qskFont( 20 ) );
 
-            setSkinHint( ButtonBar::Indicator | GraphicRole, SkinFactory::Indicator );
+            setSkinHint( ButtonBar::Indicator | QskAspect::GraphicRole, SkinFactory::Indicator );
         }
     };
 
@@ -80,7 +78,7 @@ namespace
                 setColor( Q::Needle, color4 );
 
                 // margins between numbers and ticks:
-                setMargins( Q::Labels, QskMargins( 3, 3, 3, 3 ) );
+                setMargin( Q::Labels, 3 );
                 setMetric( Q::Labels | MinimumWidth, 3 );
                 setMetric( Q::Labels | Size, 25 ); // ticks size
                 setColor( Q::Labels, color4 );
@@ -131,7 +129,7 @@ namespace
                 setColor( Q::Needle, color2 );
 
                 // margins between numbers and ticks:
-                setMargins( Q::Labels, QskMargins( 4, 4, 4, 4 ) );
+                setMargin( Q::Labels, 4 );
                 setMetric( Q::Labels | MinimumWidth, 2 );
                 setMetric( Q::Labels | Size, 15 ); // ticks size
                 setColor( Q::Labels, color4 );

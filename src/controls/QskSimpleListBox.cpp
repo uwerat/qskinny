@@ -279,13 +279,13 @@ qreal QskSimpleListBox::columnWidth( int col ) const
     if ( col >= columnCount() )
         return 0.0;
 
-    const auto padding = marginsHint( Cell | QskAspect::Padding );
+    const auto padding = paddingHint( Cell );
     return m_data->maxTextWidth + padding.left() + padding.right();
 }
 
 qreal QskSimpleListBox::rowHeight() const
 {
-    const auto padding = marginsHint( Cell | QskAspect::Padding );
+    const auto padding = paddingHint( Cell );
     const QFontMetricsF fm( effectiveFont( Text ) );
 
     return fm.height() + padding.top() + padding.bottom();

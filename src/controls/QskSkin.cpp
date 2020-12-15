@@ -156,11 +156,9 @@ QskSkin::QskSkin( QObject* parent )
     const QFont font = QGuiApplication::font();
     setupFonts( font.family(), font.weight(), font.italic() );
 
-    using namespace QskAspect;
-
-    setMargins( Control | Margin, 0 );
-    setMargins( Control | Padding, 0 );
-    setMetric( Control | Spacing, 0 );
+    setMargin( QskAspect::Control, 0 );
+    setPadding( QskAspect::Control, 0 );
+    setSpacing( QskAspect::Control, 0 );
 }
 
 QskSkin::~QskSkin()
@@ -197,14 +195,34 @@ qreal QskSkin::metric( QskAspect::Aspect aspect ) const
     return m_data->hintTable.metric( aspect );
 }
 
-void QskSkin::setMargins( QskAspect::Aspect aspect, const QskMargins& margins )
+void QskSkin::setMargin( QskAspect::Aspect aspect, const QskMargins& margins )
 {
-    m_data->hintTable.setMargins( aspect, margins );
+    m_data->hintTable.setMargin( aspect, margins );
 }
 
-QskMargins QskSkin::margins( QskAspect::Aspect aspect ) const
+QskMargins QskSkin::margin( QskAspect::Aspect aspect ) const
 {
-    return m_data->hintTable.margins( aspect );
+    return m_data->hintTable.margin( aspect );
+}
+
+void QskSkin::setPadding( QskAspect::Aspect aspect, const QskMargins& padding )
+{
+    m_data->hintTable.setPadding( aspect, padding );
+}
+
+QskMargins QskSkin::padding( QskAspect::Aspect aspect ) const
+{
+    return m_data->hintTable.padding( aspect );
+}
+
+void QskSkin::setSpacing( QskAspect::Aspect aspect, qreal spacing )
+{
+    m_data->hintTable.setSpacing( aspect, spacing );
+}
+
+qreal QskSkin::spacing( QskAspect::Aspect aspect ) const
+{
+    return m_data->hintTable.spacing( aspect );
 }
 
 void QskSkin::setGradient( QskAspect::Aspect aspect, const QskGradient& gradient )
@@ -288,6 +306,16 @@ void QskSkin::setAnimation(
 QskAnimationHint QskSkin::animation( QskAspect::Aspect aspect ) const
 {
     return m_data->hintTable.animation( aspect );
+}
+
+void QskSkin::setAlignment( QskAspect::Aspect aspect, Qt::Alignment alignment )
+{
+    m_data->hintTable.setAlignment( aspect, alignment );
+}
+
+Qt::Alignment QskSkin::alignment( QskAspect::Aspect aspect ) const
+{
+    return m_data->hintTable.alignment( aspect );
 }
 
 void QskSkin::setSkinHint( QskAspect::Aspect aspect, const QVariant& skinHint )

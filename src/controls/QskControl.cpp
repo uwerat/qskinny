@@ -144,8 +144,7 @@ void QskControl::setBackgroundColor( const QColor& color )
 
 void QskControl::setBackground( const QskGradient& gradient )
 {
-    using namespace QskAspect;
-    const auto aspect = Control | Color;
+    const auto aspect = QskAspect::Control | QskAspect::Color;
 
     if ( hintTable().gradient( aspect ) != gradient )
     {
@@ -159,9 +158,7 @@ void QskControl::setBackground( const QskGradient& gradient )
 
 void QskControl::resetBackground()
 {
-    using namespace QskAspect;
-
-    if ( resetHint( Control | Color ) )
+    if ( resetHint( QskAspect::Control | QskAspect::Color ) )
     {
         update();
         Q_EMIT backgroundChanged();
@@ -170,8 +167,7 @@ void QskControl::resetBackground()
 
 QskGradient QskControl::background() const
 {
-    using namespace QskAspect;
-    return gradientHint( Control );
+    return gradientHint( QskAspect::Control );
 }
 
 void QskControl::setMargins( qreal margin )
@@ -181,8 +177,6 @@ void QskControl::setMargins( qreal margin )
 
 void QskControl::setMargins( const QMarginsF& margins )
 {
-    using namespace QskAspect;
-
     const QMarginsF m(
         qMax( qreal( margins.left() ), qreal( 0.0 ) ),
         qMax( qreal( margins.top() ), qreal( 0.0 ) ),
@@ -193,7 +187,7 @@ void QskControl::setMargins( const QMarginsF& margins )
     {
         const auto subControl = effectiveSubcontrol( QskAspect::Control );
 
-        setMarginsHint( subControl | Margin, m );
+        setMarginHint( subControl, m );
         resetImplicitSize();
 
         Q_D( const QskControl );
@@ -224,7 +218,7 @@ void QskControl::resetMargins()
 
 QMarginsF QskControl::margins() const
 {
-    return marginsHint( QskAspect::Control | QskAspect::Margin );
+    return marginHint( QskAspect::Control );
 }
 
 QRectF QskControl::contentsRect() const
@@ -1030,9 +1024,7 @@ QSizeF QskControl::layoutSizeHint(
 
 QVector< QskAspect::Subcontrol > QskControl::subControls() const
 {
-    using namespace QskAspect;
-
-    QVector< Subcontrol > subControls;
+    QVector< QskAspect::Subcontrol > subControls;
 
     for ( auto mo = metaObject(); mo != nullptr; mo = mo->superClass() )
     {

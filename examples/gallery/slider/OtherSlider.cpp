@@ -36,9 +36,9 @@ OtherSlider::OtherSlider( QQuickItem* parentItem )
         setGradientHint( aspect, Grey400 );
 
         if ( placement == Horizontal )
-            setMarginsHint( aspect | Padding, QMarginsF( paddingW, 0, paddingW, 0 ) );
+            setPaddingHint( aspect, QskMargins( paddingW, 0 ) );
         else
-            setMarginsHint( aspect | Padding, QMarginsF( 0, paddingW, 0, paddingW ) );
+            setPaddingHint( aspect, QskMargins( 0, paddingW ) );
     }
 
     // Groove
@@ -73,9 +73,9 @@ OtherSlider::OtherSlider( QQuickItem* parentItem )
         const qreal m = 0.5 * std::ceil( 0.5 * ( w - h ) ) + 1;
 
         if ( placement == Horizontal )
-            setMarginsHint( aspect | Margin, QMarginsF( -m, 0, -m, 0 ) );
+            setMarginHint( aspect, QskMargins( -m, 0 ) );
         else
-            setMarginsHint( aspect | Margin, QMarginsF( 0, -m, 0, -m ) );
+            setMarginHint( aspect, QskMargins( 0, -m ) );
 
         for ( auto state : { NoState, Pressed } )
         {
