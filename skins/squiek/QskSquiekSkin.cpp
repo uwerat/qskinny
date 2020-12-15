@@ -274,7 +274,6 @@ void QskSquiekSkin::initPopupHints()
 
 void QskSquiekSkin::initTextLabelHints()
 {
-    using namespace QskAspect;
     using Q = QskTextLabel;
 
     const auto& pal = m_data->palette;
@@ -361,7 +360,6 @@ void QskSquiekSkin::initProgressBarHints()
 
 void QskSquiekSkin::initFocusIndicatorHints()
 {
-    using namespace QskAspect;
     using Q = QskFocusIndicator;
 
     const auto& pal = m_data->palette;
@@ -703,7 +701,6 @@ void QskSquiekSkin::initTabViewHints()
 
 void QskSquiekSkin::initInputPanelHints()
 {
-    using namespace QskAspect;
     using Q = QskInputPanelBox;
 
     setPadding( Q::Panel, 5 );
@@ -803,7 +800,6 @@ void QskSquiekSkin::initScrollViewHints()
 
 void QskSquiekSkin::initListViewHints()
 {
-    using namespace QskAspect;
     using Q = QskListView;
 
     const auto& pal = m_data->palette;

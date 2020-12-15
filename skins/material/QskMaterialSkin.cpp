@@ -198,7 +198,6 @@ void QskMaterialSkin::initPopupHints()
 
 void QskMaterialSkin::initTextLabelHints()
 {
-    using namespace QskAspect;
     using Q = QskTextLabel;
 
     const auto& pal = m_data->palette;
@@ -215,7 +214,6 @@ void QskMaterialSkin::initTextLabelHints()
 
 void QskMaterialSkin::initTextInputHints()
 {
-    using namespace QskAspect;
     using Q = QskTextInput;
 
     setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignTop );
@@ -257,7 +255,6 @@ void QskMaterialSkin::initProgressBarHints()
 
 void QskMaterialSkin::initFocusIndicatorHints()
 {
-    using namespace QskAspect;
     using Q = QskFocusIndicator;
 
     const auto& pal = m_data->palette;
@@ -313,7 +310,7 @@ void QskMaterialSkin::initPageIndicatorHints()
     setBoxBorderMetrics( Q::Panel, 0 );
     setGradient( Q::Panel, QskGradient() );
 
-    setMetric( Q::Panel | Spacing, 3 );
+    setSpacing( Q::Panel, 3 );
 }
 
 void QskMaterialSkin::initPushButtonHints()
@@ -327,7 +324,7 @@ void QskMaterialSkin::initPushButtonHints()
     setMetric( Q::Panel | MinimumWidth, qskDpiScaled( 75.0 ) );
     setMetric( Q::Panel | MinimumHeight, qskDpiScaled( 23.0 ) );
 
-    setMetric( Q::Panel | Spacing, 4 );
+    setSpacing( Q::Panel, 4 );
 
     const QskMargins margin( 4, 3 );
     const QskMargins padding( 10, 6 );
@@ -389,11 +386,8 @@ void QskMaterialSkin::initDialogButtonHints()
     setMetric( Q::Panel | MinimumHeight, 16 );
     setMetric( Q::Panel | Spacing, 4 );
 
-    const QskMargins margin( 4, 3 );
-    const QskMargins padding( 10, 6 );
-
-    setMargin( Q::Panel, margin );
-    setPadding( Q::Panel, padding );
+    setMargin( Q::Panel, QskMargins( 4, 3 ) );
+    setPadding( Q::Panel, QskMargins( 10, 6 ) );
 
     const QskBoxBorderColors borderColors( Grey400, Grey300, Grey400, Grey600 );
 
@@ -655,7 +649,7 @@ void QskMaterialSkin::initScrollViewHints()
 
     const auto& pal = m_data->palette;
 
-    setMetric( Q::Panel | Spacing, 2 );
+    setSpacing( Q::Panel, 2 );
 
     setBoxShape( Q::Viewport, 5 );
     setBoxBorderMetrics( Q::Viewport, 1 );

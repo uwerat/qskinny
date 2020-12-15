@@ -178,9 +178,8 @@ void QskProgressBar::setBarGradient( const QskGradient& gradient )
 void QskProgressBar::resetBarGradient()
 {
     using namespace QskAspect;
-    const auto aspect = QskProgressBar::Bar | Color;
 
-    if ( resetHint( aspect | Vertical ) || resetHint( aspect | Horizontal ) )
+    if ( resetColor( Bar | Vertical ) || resetHint( Bar | Horizontal ) )
         update();
 }
 

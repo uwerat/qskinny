@@ -201,9 +201,7 @@ void QskControl::setMargins( const QMarginsF& margins )
 
 void QskControl::resetMargins()
 {
-    using namespace QskAspect;
-
-    if ( resetMarginHint( Control ) )
+    if ( resetMarginHint( QskAspect::Control ) )
     {
         resetImplicitSize();
 
