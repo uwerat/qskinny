@@ -333,7 +333,7 @@ const char* QskAspect::Aspect::toPrintable() const
     return bytes[ counter ].constData();
 }
 
-QskAspect::State QskAspect::Aspect::topState() const
+QskAspect::State QskAspect::Aspect::topState() const noexcept
 {
     if ( m_bits.states == NoState )
         return NoState;
