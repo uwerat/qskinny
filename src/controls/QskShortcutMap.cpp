@@ -32,6 +32,7 @@ class QskShortcutHandler final : public QObject
     void remove( int id );
 
     void setEnabled( int id, bool );
+    void setEnabled( const QKeySequence&, bool on );
     void setAutoRepeat( int id, bool repeat );
 
     bool eventFilter( QObject*, QEvent* ) override;
@@ -217,6 +218,16 @@ void QskShortcutHandler::cleanUp( QObject* object )
     }
 }
 
+void QskShortcutHandler::setEnabled( const QKeySequence& sequence, bool on )
+{
+    for ( auto it = m_invokeDataMap.begin();
+        it != m_invokeDataMap.end(); ++it )
+    {
+        if ( it->second.sequence == sequence )
+            setEnabled( it->first, on );
+    }
+}
+
 void QskShortcutHandler::setEnabled( int id, bool enabled )
 {
     auto map = qskShortcutMap();
@@ -326,6 +337,11 @@ bool QskShortcutMap::invokeCallback( QQuickItem* item, const QKeySequence& seque
 void QskShortcutMap::setAutoRepeat( int id, bool on )
 {
     qskShortcutHandler->setAutoRepeat( id, on );
+}
+
+void QskShortcutMap::setEnabled( const QKeySequence& sequence, bool on )
+{
+    qskShortcutHandler->setEnabled( sequence, on );
 }
 
 void QskShortcutMap::setEnabled( int id, bool on )

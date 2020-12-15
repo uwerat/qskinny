@@ -17,6 +17,7 @@ class QSK_EXPORT QskShortcutMap
   public:
     static void setAutoRepeat( int, bool on );
     static void setEnabled( int, bool on );
+    static void setEnabled( const QKeySequence&, bool on );
 
     static void removeShortcut( int );
 
