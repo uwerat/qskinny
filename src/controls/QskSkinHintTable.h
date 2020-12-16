@@ -39,6 +39,9 @@ class QSK_EXPORT QskSkinHintTable
     void setMetric( QskAspect::Aspect, qreal metric );
     qreal metric( QskAspect::Aspect ) const;
 
+    void setStrutSize( QskAspect::Aspect, const QSizeF& );
+    QSizeF strutSize( QskAspect::Aspect ) const;
+
     void setMargin( QskAspect::Aspect, const QskMargins& );
     QskMargins margin( QskAspect::Aspect ) const;
 
@@ -173,6 +176,19 @@ inline void QskSkinHintTable::setMetric( QskAspect::Aspect aspect, qreal metric 
 inline qreal QskSkinHintTable::metric( QskAspect::Aspect aspect ) const
 {
     return hint( aspect | QskAspect::Metric ).toReal();
+}
+
+inline void QskSkinHintTable::setStrutSize(
+    QskAspect::Aspect aspect, const QSizeF& size )
+{
+    const auto aspectStrut = aspect | QskAspect::Metric | QskAspect::StrutSize;
+    setHint( aspectStrut, QVariant::fromValue( size ) );
+}
+
+inline QSizeF QskSkinHintTable::strutSize( QskAspect::Aspect aspect ) const
+{
+    const auto aspectStrut = aspect | QskAspect::Metric | QskAspect::StrutSize;
+    return hint( aspectStrut ).value< QSizeF >();
 }
 
 inline void QskSkinHintTable::setMargin(

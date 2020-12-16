@@ -463,10 +463,8 @@ QSizeF QskTextInput::contentsSizeHint( Qt::SizeHint which, const QSizeF& ) const
     const qreal w = input->implicitWidth();
     const qreal h = input->implicitHeight();
 
-    const QSizeF minSize( metric( Panel | QskAspect::MinimumWidth ),
-        metric( Panel | QskAspect::MinimumHeight ) );
-
-    return outerBoxSize( Panel, QSizeF( w, h ) ).expandedTo( minSize );
+    const auto hint = outerBoxSize( Panel, QSizeF( w, h ) );
+    return hint.expandedTo( strutSizeHint( Panel ) );
 }
 
 void QskTextInput::updateLayout()

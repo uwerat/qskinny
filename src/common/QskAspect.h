@@ -69,12 +69,10 @@ QSK_NAMESPACE( QskAspect )
     {
         NoMetricPrimitive,
 
+        StrutSize,
+
         Size,
         Position,
-        MinimumWidth,
-        MinimumHeight,
-        MaximumWidth,
-        MaximumHeight,
 
         Margin,
         Padding,

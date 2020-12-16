@@ -195,6 +195,21 @@ qreal QskSkin::metric( QskAspect::Aspect aspect ) const
     return m_data->hintTable.metric( aspect );
 }
 
+void QskSkin::setStrutSize( QskAspect::Aspect aspect, qreal width, qreal height )
+{
+    setStrutSize( aspect, QSizeF( width, height ) );
+}
+
+void QskSkin::setStrutSize( QskAspect::Aspect aspect, const QSizeF& strut )
+{
+    m_data->hintTable.setStrutSize( aspect, strut );
+}
+
+QSizeF QskSkin::strutSize( QskAspect::Aspect aspect ) const
+{
+    return m_data->hintTable.strutSize( aspect );
+}
+
 void QskSkin::setMargin( QskAspect::Aspect aspect, const QskMargins& margins )
 {
     m_data->hintTable.setMargin( aspect, margins );

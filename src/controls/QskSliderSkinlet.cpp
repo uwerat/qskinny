@@ -23,7 +23,9 @@ QskSliderSkinlet::QskSliderSkinlet( QskSkin* skin )
     setNodeRoles( { PanelRole, GrooveRole, FillRole, HandleRole } );
 }
 
-QskSliderSkinlet::~QskSliderSkinlet() = default;
+QskSliderSkinlet::~QskSliderSkinlet()
+{
+}
 
 QRectF QskSliderSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
@@ -92,32 +94,12 @@ QSGNode* QskSliderSkinlet::updateSubNode(
 QRectF QskSliderSkinlet::panelRect(
     const QskSlider* slider, const QRectF& contentsRect ) const
 {
-    using namespace QskAspect;
+    auto r = contentsRect;
 
-    const auto subControl = QskSlider::Panel;
-
-    qreal size = slider->metric( subControl | Size ); // 0: no hint
-
-    {
-        /*
-           We use MinimumHeight/MaximumHeight/Size for the "thickness" of
-           to slider even if "Height" is not the expected value for
-           vertical sliders. Maybe we should have the orientation as an aspect bit ?
-         */
-
-        const qreal minSize = slider->metric( subControl | MinimumHeight );
-        const qreal maxSize = slider->metric( subControl | MaximumHeight );
-
-        size = qMax( size, minSize );
-        if ( maxSize > minSize )
-            size = qMin( size, maxSize );
-    }
-
-    QRectF r = contentsRect;
-
+    const qreal size = slider->metric( QskSlider::Panel | QskAspect::Size ); // 0: no hint
     if ( size > 0 && size < r.height() )
     {
-        const auto alignment = slider->alignmentHint( subControl );
+        const auto alignment = slider->alignmentHint( QskSlider::Panel );
 
         if ( slider->orientation() == Qt::Horizontal )
             r = qskAlignedRectF( r, r.width(), size, alignment & Qt::AlignVertical_Mask );
@@ -173,13 +155,15 @@ QRectF QskSliderSkinlet::scaleRect(
 QRectF QskSliderSkinlet::fillRect(
     const QskSlider* slider, const QRectF& contentsRect ) const
 {
-    auto r = subControlRect( slider, contentsRect, QskSlider::Panel );
-    r = r.marginsRemoved( qskPadding( slider, QskSlider::Panel ) );
+   using Q = QskSlider;
 
-    qreal pos = slider->metric( QskSlider::Handle | QskAspect::Position );
+    auto r = subControlRect( slider, contentsRect, Q::Panel );
+    r = r.marginsRemoved( qskPadding( slider, Q::Panel ) );
+
+    qreal pos = slider->metric( Q::Handle | QskAspect::Position );
     pos = qBound( 0.0, pos, 1.0 );
 
-    auto fillRect = innerRect( slider, contentsRect, QskSlider::Fill );
+    auto fillRect = innerRect( slider, contentsRect, Q::Fill );
     if ( slider->orientation() == Qt::Horizontal )
     {
         fillRect.setLeft( r.left() );
@@ -197,7 +181,6 @@ QRectF QskSliderSkinlet::fillRect(
 QRectF QskSliderSkinlet::handleRect(
     const QskSlider* slider, const QRectF& contentsRect ) const
 {
-    using namespace QskAspect;
     using Q = QskSlider;
 
     auto r = subControlRect( slider, contentsRect, Q::Panel );
@@ -210,7 +193,7 @@ QRectF QskSliderSkinlet::handleRect(
     {
         QskSkinHintStatus status;
 
-        extent = slider->metric( Q::Handle | Size, &status );
+        extent = slider->metric( Q::Handle | QskAspect::Size, &status );
         if ( !status.isValid() )
             extent = isHorizontal ? r.height() : r.width();
     }
@@ -222,7 +205,7 @@ QRectF QskSliderSkinlet::handleRect(
             slider->marginHint( Q::Handle) );
     }
 
-    qreal pos = slider->metric( Q::Handle | Position );
+    qreal pos = slider->metric( Q::Handle | QskAspect::Position );
     pos = qBound( 0.0, pos, 1.0 );
 
     if ( slider->orientation() == Qt::Horizontal )

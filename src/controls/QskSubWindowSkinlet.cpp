@@ -111,9 +111,9 @@ qreal QskSubWindowSkinlet::titleBarHeight( const QskSubWindow* subWindow ) const
     const QFontMetricsF fm( subWindow->effectiveFont( Q::TitleBarText ) );
 
     const qreal height = fm.height() + margins.top() + margins.bottom();
-    const qreal minHeight = subWindow->metric( Q::TitleBar | QskAspect::MinimumHeight );
+    const auto strutSize = subWindow->strutSizeHint( Q::TitleBar );
 
-    return qMax( height, minHeight );
+    return qMax( height, strutSize.height() );
 }
 
 QRectF QskSubWindowSkinlet::symbolRect(

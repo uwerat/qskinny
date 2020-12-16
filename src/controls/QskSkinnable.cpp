@@ -246,6 +246,24 @@ qreal QskSkinnable::metric( QskAspect::Aspect aspect, QskSkinHintStatus* status 
     return effectiveHint( aspect | QskAspect::Metric, status ).toReal();
 }
 
+void QskSkinnable::setStrutSizeHint(
+    QskAspect::Aspect aspect, qreal width, qreal height )
+{
+    setStrutSizeHint( aspect, QSizeF( width, height ) );
+}
+
+void QskSkinnable::setStrutSizeHint( const QskAspect::Aspect aspect, const QSizeF& strut )
+{
+    m_data->hintTable.setStrutSize( aspect, strut );
+}
+
+QSizeF QskSkinnable::strutSizeHint(
+    const QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
+{
+    const auto asp = aspect | QskAspect::Metric | QskAspect::StrutSize;
+    return effectiveHint( asp, status ).value< QSizeF >();
+}
+
 void QskSkinnable::setMarginHint( QskAspect::Aspect aspect, qreal margins )
 {
     m_data->hintTable.setMargin( aspect, QskMargins( margins ) );

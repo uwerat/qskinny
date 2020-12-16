@@ -103,11 +103,9 @@ QSizeF QskPageIndicator::contentsSizeHint(
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
-    using namespace QskAspect;
-
-    const qreal sizeBullet = metric( Bullet | Size );
-    const qreal sizeCurrent = metric( Highlighted | Size );
-    const qreal spacing = metric( Panel | Spacing );
+    const qreal sizeBullet = metric( Bullet | QskAspect::Size );
+    const qreal sizeCurrent = metric( Highlighted | QskAspect::Size );
+    const qreal spacing = spacingHint( Panel );
 
     const int n = m_data->count;
 
@@ -139,11 +137,8 @@ QSizeF QskPageIndicator::contentsSizeHint(
         w = qMax( sizeCurrent, sizeBullet );
     }
 
-    const QSizeF minSize(
-        metric( Panel | MinimumWidth ),
-        metric( Panel | MinimumHeight ) );
-
-    return outerBoxSize( Panel, QSizeF( w, h ) ).expandedTo( minSize );
+    const auto hint = outerBoxSize( Panel, QSizeF( w, h ) );
+    return hint.expandedTo( strutSizeHint( Panel ) );
 }
 
 #include "moc_QskPageIndicator.cpp"

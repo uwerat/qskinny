@@ -97,11 +97,7 @@ QSizeF QskBox::contentsSizeHint(
     Qt::SizeHint which, const QSizeF& constraint ) const
 {
     if ( m_hasPanel && which == Qt::PreferredSize )
-    {
-        return QSizeF(
-            metric( Panel | QskAspect::MinimumWidth ),
-            metric( Panel | QskAspect::MinimumHeight ) );
-    }
+        return strutSizeHint( Panel );
 
     return Inherited::contentsSizeHint( which, constraint );
 }

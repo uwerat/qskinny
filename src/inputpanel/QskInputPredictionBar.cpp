@@ -37,10 +37,7 @@ namespace
 
             auto size = QFontMetricsF( font() ).size( Qt::TextSingleLine, text() );
 
-            const QSizeF minSize( metric( Panel | QskAspect::MinimumWidth ),
-                metric( Panel | QskAspect::MinimumHeight ) );
-
-            size = size.expandedTo( minSize );
+            size = size.expandedTo( strutSizeHint( Panel ) );
             size = outerBoxSize( Panel, size );
 
             return size;

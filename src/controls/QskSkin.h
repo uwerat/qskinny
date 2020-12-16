@@ -70,6 +70,10 @@ class QSK_EXPORT QskSkin : public QObject
     void setMetric( QskAspect::Aspect, qreal metric );
     qreal metric( QskAspect::Aspect ) const;
 
+    void setStrutSize( QskAspect::Aspect, const QSizeF& );
+    void setStrutSize( QskAspect::Aspect, qreal width, qreal height );
+    QSizeF strutSize( QskAspect::Aspect ) const;
+
     void setMargin( QskAspect::Aspect, const QskMargins& );
     QskMargins margin( QskAspect::Aspect ) const;
 

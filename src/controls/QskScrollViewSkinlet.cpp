@@ -229,9 +229,9 @@ QRectF QskScrollViewSkinlet::scrollHandleRect( const QskScrollView* scrollView,
     if ( !( orientation & scrollOrientations ) )
         return QRectF();
 
-    const QPointF pos = scrollView->scrollPos();
+    const auto pos = scrollView->scrollPos();
 
-    const QRectF vRect = subControlRect(
+    const auto vRect = subControlRect(
         scrollView, contentsRect, QskScrollView::Viewport );
 
     QRectF handleRect;
@@ -248,11 +248,10 @@ QRectF QskScrollViewSkinlet::scrollHandleRect( const QskScrollView* scrollView,
         const qreal y1 = pos.y() / h;
         const qreal y2 = ( pos.y() + vRect.height() ) / h;
 
-        const qreal minHandleLength =
-            scrollView->metric( Q::VerticalScrollHandle | MinimumHeight );
+        const auto strut = scrollView->strutSizeHint( Q::VerticalScrollHandle );
 
         qreal top, bottom;
-        qskAlignedHandle( y1, y2, sbRect.height(), minHandleLength, top, bottom );
+        qskAlignedHandle( y1, y2, sbRect.height(), strut.height(), top, bottom );
 
         handleRect = sbRect;
         handleRect.setTop( sbRect.y() + top );
@@ -271,11 +270,10 @@ QRectF QskScrollViewSkinlet::scrollHandleRect( const QskScrollView* scrollView,
         const qreal x1 = pos.x() / w;
         const qreal x2 = ( pos.x() + vRect.width() ) / w;
 
-        const qreal minHandleLength =
-            scrollView->metric( Q::HorizontalScrollHandle | MinimumWidth );
+        const auto strut = scrollView->strutSizeHint( Q::HorizontalScrollHandle );
 
         qreal left, right;
-        qskAlignedHandle( x1, x2, sbRect.width(), minHandleLength, left, right );
+        qskAlignedHandle( x1, x2, sbRect.width(), strut.width(), left, right );
 
         handleRect = sbRect;
         handleRect.setLeft( sbRect.x() + left );

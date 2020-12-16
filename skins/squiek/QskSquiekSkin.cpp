@@ -418,8 +418,7 @@ void QskSquiekSkin::initPushButtonHints()
 
     // Panel
 
-    setMetric( Q::Panel | MinimumWidth, qskDpiScaled( 75.0 ) );
-    setMetric( Q::Panel | MinimumHeight, qskDpiScaled( 23.0 ) );
+    setStrutSize( Q::Panel, qskDpiScaled( 75.0 ), qskDpiScaled( 23.0 ) );
 
     setMargin( Q::Panel, 0 );
     setPadding( Q::Panel, 10 );
@@ -459,8 +458,7 @@ void QskSquiekSkin::initDialogButtonHints()
     const auto& pal = m_data->palette;
 
     // panel
-    setMetric( Q::Panel | MinimumWidth, qskDpiScaled( 75.0 ) );
-    setMetric( Q::Panel | MinimumHeight, qskDpiScaled( 23.0 ) );
+    setStrutSize( Q::Panel, qskDpiScaled( 75.0 ), qskDpiScaled( 23.0 ) );
 
     setPadding( Q::Panel, 10 );
     setMetric( Q::Panel | Spacing, 4 );
@@ -498,8 +496,7 @@ void QskSquiekSkin::initTabButtonHints()
 
     const auto& pal = m_data->palette;
 
-    setMetric( Q::Panel | MinimumWidth, 30 );
-    setMetric( Q::Panel | MinimumHeight, 16 );
+    setStrutSize( Q::Panel, 30, 16 );
 
     for ( auto placement : { Top, Bottom } )
     {
@@ -719,7 +716,8 @@ void QskSquiekSkin::initInputPredictionBar()
 
     setButton( Q::ButtonPanel, Flat );
     setButton( Q::ButtonPanel | QskPushButton::Pressed, Sunken );
-    setMetric( Q::ButtonPanel | MinimumWidth, qskDpiScaled( 30.0 ) );
+
+    setStrutSize( Q::ButtonPanel, qskDpiScaled( 30.0 ), qskDpiScaled( 10.0 ) );
 
     setColor( Q::ButtonText, pal.themeForeground );
     setColor( Q::ButtonText | QskPushButton::Disabled, pal.darker200 );
@@ -779,15 +777,16 @@ void QskSquiekSkin::initScrollViewHints()
 
         setButton( subControl, Raised, bw );
 
-        // placement ???
+        const auto extent = qskDpiScaled( 40.0 );
+
         if ( subControl == Q::HorizontalScrollHandle )
         {
-            setMetric( subControl | MinimumWidth, qskDpiScaled( 40.0 ) );
+            setStrutSize( subControl, extent, 0.0 );
             setButton( subControl | Q::HorizontalHandlePressed, Sunken, bw );
         }
         else
         {
-            setMetric( subControl | MinimumHeight, qskDpiScaled( 40.0 ) );
+            setStrutSize( subControl, 0.0, extent );
             setButton( subControl | Q::VerticalHandlePressed, Sunken, bw );
         }
 
@@ -841,8 +840,8 @@ void QskSquiekSkin::initSubWindowHints()
 
     setGradient( Q::TitleBar | Q::Focused, pal.highlighted );
     setGradient( Q::TitleBar, pal.contrasted );
-    setMetric( Q::TitleBar | Spacing, 5 );
-    setMetric( Q::TitleBar | MinimumHeight, 20 );
+    setSpacing( Q::TitleBar, 5 );
+    setStrutSize( Q::TitleBar, 0, 20 );
     setBoxShape( Q::TitleBar, radius, radius, 0, 0, Qt::AbsoluteSize );
 
     // TitleBarText

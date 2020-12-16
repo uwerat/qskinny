@@ -135,14 +135,10 @@ class MySkin : public QskSkin
         setBoxBorderColors( Q::Cursor, QColor( foregroundColor ).darker( 120 ) );
         setBoxBorderMetrics( Q::Cursor, 1 );
 
-        for( auto subControl : { Q::Panel, Q::Cursor } )
-        {
-            setMetric( subControl | MinimumWidth, width );
-            setMetric( subControl | MinimumHeight, height );
-            //setPadding( subControl, +2 );
+        setStrutSize( Q::Panel, width, height );
 
-            setBoxShape( subControl, radius );
-        }
+        setBoxShape( Q::Panel, radius );
+        setBoxShape( Q::Cursor, radius );
 
         setPadding( Q::CheckedPanel, 10 );
         setPadding( Q::UncheckedPanel, 10 );

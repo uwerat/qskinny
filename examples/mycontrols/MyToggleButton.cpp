@@ -200,8 +200,7 @@ QSizeF MyToggleButton::contentsSizeHint(
     }
     else
     {
-        hint.rwidth() = metric( Panel | QskAspect::MinimumWidth );
-        hint.rheight() = metric( Panel | QskAspect::MinimumHeight );
+        hint = strutSizeHint( Panel );
     }
 
     return hint;

@@ -93,14 +93,12 @@ QSizeF QskTabButton::contentsSizeHint(
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
-    QSizeF size( metric( Panel | QskAspect::MinimumWidth ),
-        metric( Panel | QskAspect::MinimumHeight ) );
+    auto size = strutSizeHint( Panel );
 
     if ( !m_data->text.isEmpty() )
     {
         const QFontMetricsF fm( effectiveFont( Text ) );
-        const auto textSize = fm.size( Qt::TextShowMnemonic, m_data->text );
-        size += textSize;
+        size += fm.size( Qt::TextShowMnemonic, m_data->text );
     }
 
     return size;

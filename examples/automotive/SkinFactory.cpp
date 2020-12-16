@@ -73,14 +73,12 @@ namespace
                 setGradient( Q::NeedleHead, color2 );
                 setBoxBorderColors( Q::NeedleHead, color4 );
 
-                setMetric( Q::Needle | MinimumWidth, 4 );
+                setMetric( Q::Needle | Size, 4 );
                 setMetric( Q::Needle | Margin, 15 );
                 setColor( Q::Needle, color4 );
 
-                // margins between numbers and ticks:
-                setMargin( Q::Labels, 3 );
-                setMetric( Q::Labels | MinimumWidth, 3 );
-                setMetric( Q::Labels | Size, 25 ); // ticks size
+                setSpacing( Q::Labels, 3 );
+                setStrutSize( Q::Labels, 3, 25 );
                 setColor( Q::Labels, color4 );
                 setFontRole( Q::Labels, QskSkin::SmallFont );
             }
@@ -124,14 +122,12 @@ namespace
                     QskGradient( QskGradient::Diagonal, color2, color1 ) );
                 // setBoxBorderColors( Q::NeedleHead, color4 );
 
-                setMetric( Q::Needle | MinimumWidth, 2 );
+                setMetric( Q::Needle | Size, 2 );
                 setMetric( Q::Needle | Margin, 10 );
                 setColor( Q::Needle, color2 );
 
-                // margins between numbers and ticks:
-                setMargin( Q::Labels, 4 );
-                setMetric( Q::Labels | MinimumWidth, 2 );
-                setMetric( Q::Labels | Size, 15 ); // ticks size
+                setSpacing( Q::Labels, 4 );
+                setStrutSize( Q::Labels, 2, 15 );
                 setColor( Q::Labels, color4 );
                 setFontRole( Q::Labels, QskSkin::SmallFont );
             }

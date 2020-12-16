@@ -321,9 +321,7 @@ void QskMaterialSkin::initPushButtonHints()
 
     const auto& pal = m_data->palette;
 
-    setMetric( Q::Panel | MinimumWidth, qskDpiScaled( 75.0 ) );
-    setMetric( Q::Panel | MinimumHeight, qskDpiScaled( 23.0 ) );
-
+    setStrutSize( Q::Panel, qskDpiScaled( 75.0 ), qskDpiScaled( 23.0 ) );
     setSpacing( Q::Panel, 4 );
 
     const QskMargins margin( 4, 3 );
@@ -382,9 +380,8 @@ void QskMaterialSkin::initDialogButtonHints()
 
     const auto& pal = m_data->palette;
 
-    setMetric( Q::Panel | MinimumWidth, 30 );
-    setMetric( Q::Panel | MinimumHeight, 16 );
-    setMetric( Q::Panel | Spacing, 4 );
+    setStrutSize( Q::Panel, 30, 16 );
+    setSpacing( Q::Panel, 4 );
 
     setMargin( Q::Panel, QskMargins( 4, 3 ) );
     setPadding( Q::Panel, QskMargins( 10, 6 ) );
@@ -515,8 +512,7 @@ void QskMaterialSkin::initTabButtonHints()
 
     const auto& pal = m_data->palette;
 
-    setMetric( Q::Panel | MinimumWidth, 30 );
-    setMetric( Q::Panel | MinimumHeight, 16 );
+    setStrutSize( Q::Panel, 30, 16 );
 
     for ( const auto placement : { Left, Right, Top, Bottom } )
     {
@@ -662,8 +658,9 @@ void QskMaterialSkin::initScrollViewHints()
         setPadding( subControl, 0 );
     }
 
-    setMetric( Q::HorizontalScrollHandle | MinimumWidth, qskDpiScaled( 40.0 ) );
-    setMetric( Q::VerticalScrollHandle | MinimumHeight, qskDpiScaled( 40.0 ) );
+    const auto handleExtent = qskDpiScaled( 40.0 );
+    setStrutSize( Q::HorizontalScrollHandle, handleExtent, 0.0 );
+    setStrutSize( Q::VerticalScrollHandle, 0.0, handleExtent );
 
     for ( auto subControl : { Q::HorizontalScrollHandle, Q::VerticalScrollHandle } )
     {
@@ -689,7 +686,6 @@ void QskMaterialSkin::initScrollViewHints()
 
 void QskMaterialSkin::initListViewHints()
 {
-    using namespace QskAspect;
     using Q = QskListView;
 
     const auto& pal = m_data->palette;
