@@ -49,7 +49,9 @@ class QSK_EXPORT QskMargins : public QMarginsF
     void setMarginsAt( Qt::Edges, qreal ) noexcept;
     qreal marginAt( Qt::Edge ) const noexcept;
 
-    constexpr qreal length( Qt::Orientation ) const noexcept;
+    constexpr qreal width() const noexcept;
+    constexpr qreal height() const noexcept;
+    constexpr qreal extent( Qt::Orientation ) const noexcept;
 
     QskMargins interpolated( const QskMargins&, qreal progress ) const noexcept;
 
@@ -130,15 +132,24 @@ constexpr inline QskMargins QskMargins::translated( qreal dx, qreal dy ) const n
     return QskMargins( left() + dx, top() + dy, right() - dx, bottom() - dy );
 }
 
-constexpr QskMargins QskMargins::expanded( qreal dx, qreal dy ) const noexcept
+constexpr inline QskMargins QskMargins::expanded( qreal dx, qreal dy ) const noexcept
 {
     return QskMargins( left() + dx, top() + dy, right() + dx, bottom() + dy );
 }
 
-constexpr qreal QskMargins::length( Qt::Orientation orientation ) const noexcept
+constexpr inline qreal QskMargins::extent( Qt::Orientation orientation ) const noexcept
 {
-    return ( orientation == Qt::Horizontal )
-        ? ( left() + right() ) : ( top() + bottom() );
+    return ( orientation == Qt::Horizontal ) ? width() : height();
+}
+
+constexpr inline qreal QskMargins::width() const noexcept
+{
+    return left() + right();
+}
+
+constexpr inline qreal QskMargins::height() const noexcept
+{
+    return top() + bottom();
 }
 
 Q_DECLARE_TYPEINFO( QskMargins, Q_MOVABLE_TYPE );
