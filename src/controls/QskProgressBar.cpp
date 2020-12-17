@@ -188,23 +188,37 @@ QskGradient QskProgressBar::barGradient() const
     return gradientHint( QskProgressBar::Bar );
 }
 
-void QskProgressBar::setThickness( qreal thickness )
+void QskProgressBar::setExtent( qreal extent )
 {
-    // effectiveSubcontrol( QskProgressBar::Groove ) ???
-    const auto aspect = QskProgressBar::Groove | QskAspect::Size;
+    extent = qMax( extent, 0.0 );
 
-    if ( thickness != metric( aspect ) )
+    const auto aspect = effectiveSubcontrol( Groove ) | QskAspect::Size;
+
+    if ( extent != metric( aspect ) )
     {
-        setMetric( aspect, thickness );
+        setMetric( aspect, extent );
 
         resetImplicitSize();
         update();
+
+        Q_EMIT extentChanged( extent );
     }
 }
 
-qreal QskProgressBar::thickness() const
+qreal QskProgressBar::extent() const
 {
     return metric( Groove | QskAspect::Size );
+}
+
+void QskProgressBar::resetExtent()
+{
+    if ( resetMetric( Groove | QskAspect::Size ) )
+    {
+        resetImplicitSize();
+        update();
+
+        Q_EMIT extentChanged( extent() );
+    }
 }
 
 void QskProgressBar::setOrigin( qreal origin )
@@ -272,9 +286,9 @@ QSizeF QskProgressBar::contentsSizeHint( Qt::SizeHint which, const QSizeF& ) con
         return QSizeF();
 
     if ( orientation() == Qt::Horizontal )
-        return QSizeF( -1, thickness() );
+        return QSizeF( -1, extent() );
     else
-        return QSizeF( thickness(), -1 );
+        return QSizeF( extent(), -1 );
 }
 
 void QskProgressBar::componentComplete()

@@ -31,7 +31,7 @@ class QSK_EXPORT QskSeparator : public QskControl
     void setOrientation( Qt::Orientation );
     Qt::Orientation orientation() const;
 
-    void setExtent( qreal thickness );
+    void setExtent( qreal );
     void resetExtent();
     qreal extent() const;
 

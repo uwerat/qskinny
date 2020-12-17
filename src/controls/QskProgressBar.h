@@ -17,6 +17,9 @@ class QSK_EXPORT QskProgressBar : public QskBoundedControl
     Q_PROPERTY( Qt::Orientation orientation READ orientation
         WRITE setOrientation NOTIFY orientationChanged )
 
+    Q_PROPERTY( qreal extent READ extent
+        WRITE setExtent RESET resetExtent NOTIFY extentChanged )
+
     Q_PROPERTY( bool indeterminate READ isIndeterminate
         WRITE setIndeterminate NOTIFY indeterminateChanged )
 
@@ -52,8 +55,9 @@ class QSK_EXPORT QskProgressBar : public QskBoundedControl
     void resetBarGradient();
     QskGradient barGradient() const;
 
-    void setThickness( qreal );
-    qreal thickness() const;
+    void setExtent( qreal );
+    void resetExtent();
+    qreal extent() const;
 
     void resetOrigin();
     qreal origin() const;
@@ -69,6 +73,7 @@ class QSK_EXPORT QskProgressBar : public QskBoundedControl
 
   Q_SIGNALS:
     void orientationChanged( Qt::Orientation );
+    void extentChanged( qreal );
     void indeterminateChanged( bool );
     void valueChanged( qreal );
     void originChanged( qreal );

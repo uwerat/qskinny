@@ -54,7 +54,7 @@ void QskSeparator::setExtent( qreal extent )
 {
     extent = qMax( extent, 0.0 );
 
-    const auto aspect = Panel | QskAspect::Size;
+    const auto aspect = effectiveSubcontrol( Panel ) | QskAspect::Size;
 
     if ( extent != metric( aspect ) )
     {
