@@ -222,7 +222,6 @@ QRectF QskScrollViewSkinlet::viewportRect(
 QRectF QskScrollViewSkinlet::scrollHandleRect( const QskScrollView* scrollView,
     const QRectF& contentsRect, Qt::Orientation orientation ) const
 {
-    using namespace QskAspect;
     using Q = QskScrollView;
 
     const auto scrollOrientations = scrollView->scrollableOrientations();
