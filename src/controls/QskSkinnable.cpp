@@ -778,7 +778,7 @@ const char* QskSkinnable::skinStateAsPrintable( QskAspect::State state ) const
     return bytes[ counter ].constData();
 }
 
-static inline QMarginsF qskEffectivePadding( const QskSkinnable* skinnable,
+static inline QskMargins qskEffectivePadding( const QskSkinnable* skinnable,
     QskAspect::Aspect aspect, const QSizeF& size, bool inner )
 {
     const auto shape = skinnable->boxShapeHint( aspect ).toAbsolute( size );
@@ -796,7 +796,7 @@ static inline QMarginsF qskEffectivePadding( const QskSkinnable* skinnable,
     const qreal bottom = qMax( shape.radius( Qt::BottomLeftCorner ).height(),
         shape.radius( Qt::BottomRightCorner ).height() );
 
-    QMarginsF padding( left, top, right, bottom );
+    QskMargins padding( left, top, right, bottom );
 
     // half of the border goes to the inner side
     const auto borderMargins = borderMetrics.toAbsolute( size ).widths() * 0.5;
@@ -816,7 +816,7 @@ static inline QMarginsF qskEffectivePadding( const QskSkinnable* skinnable,
 
     const auto paddingHint = skinnable->paddingHint( aspect );
 
-    return QMarginsF(
+    return QskMargins(
         qMax( padding.left(), paddingHint.left() ),
         qMax( padding.top(), paddingHint.top() ),
         qMax( padding.right(), paddingHint.right() ),
@@ -833,26 +833,27 @@ QMarginsF QskSkinnable::innerPadding(
 QSizeF QskSkinnable::innerBoxSize(
     QskAspect::Aspect aspect, const QSizeF& outerBoxSize ) const
 {
-    const QMarginsF m = qskEffectivePadding( this, aspect, outerBoxSize, true );
+    const auto pd = qskEffectivePadding( this, aspect, outerBoxSize, true );
 
-    return QSizeF( outerBoxSize.width() - m.left() - m.right(),
-        outerBoxSize.height() - m.top() - m.bottom() );
+    return QSizeF( outerBoxSize.width() - pd.width(),
+        outerBoxSize.height() - pd.height() );
 }
 
 QRectF QskSkinnable::innerBox(
     QskAspect::Aspect aspect, const QRectF& outerBox ) const
 {
-    const QMarginsF m = qskEffectivePadding( this, aspect, outerBox.size(), true );
-    return outerBox.marginsRemoved( m );
+    const auto pd = qskEffectivePadding( this, aspect, outerBox.size(), true );
+    return outerBox.marginsRemoved( pd );
 }
 
 QSizeF QskSkinnable::outerBoxSize(
     QskAspect::Aspect aspect, const QSizeF& innerBoxSize ) const
 {
-    const QMarginsF m = qskEffectivePadding( this, aspect, innerBoxSize, false );
+    const auto pd = qskEffectivePadding( this, aspect, innerBoxSize, false );
 
-    return QSizeF( innerBoxSize.width() + m.left() + m.right(),
-        innerBoxSize.height() + m.top() + m.bottom() );
+    // since Qt 5.14 we would have QSizeF::grownBy !
+    return QSizeF( innerBoxSize.width() + pd.width(),
+        innerBoxSize.height() + pd.height() );
 }
 
 QRectF QskSkinnable::outerBox(
