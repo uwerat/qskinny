@@ -65,18 +65,18 @@ QRectF QskProgressBarSkinlet::subControlRect(
 
     if( ( subControl == QskProgressBar::Groove ) )
     {
-        const auto dim = bar->thickness();
+        const auto extent = bar->extent();
 
         auto rect = contentsRect;
         if ( bar->orientation() == Qt::Horizontal )
         {
-            rect.setY( rect.y() + 0.5 * ( rect.height() - dim ) );
-            rect.setHeight( dim );
+            rect.setY( rect.y() + 0.5 * ( rect.height() - extent ) );
+            rect.setHeight( extent );
         }
         else
         {
-            rect.setX( rect.x() + 0.5 * ( rect.width() - dim ) );
-            rect.setWidth( dim );
+            rect.setX( rect.x() + 0.5 * ( rect.width() - extent ) );
+            rect.setWidth( extent );
         }
 
         return rect;
