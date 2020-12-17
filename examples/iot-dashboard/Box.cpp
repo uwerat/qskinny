@@ -45,7 +45,7 @@ Box::Box( const QString& title, QQuickItem* parent )
     setAutoLayoutChildren( true );
     setBackgroundColor( Qt::white );
 
-    setMarginsHint( Panel | QskAspect::Padding, 15 );
+    setMarginHint( Panel | QskAspect::Padding, 15 );
     setPanel( true );
     setBoxShapeHint( QskBox::Panel, 6 );
 //    setBoxBorderMetricsHint( QskBox::Panel, 2 );

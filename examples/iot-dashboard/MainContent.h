@@ -34,7 +34,7 @@ class MainContent : public QskLinearBox
             QskAspect::Subcontrol subControl ) const override final;
 
     protected:
-        void geometryChanged( const QRectF&, const QRectF& ) override;
+        void geometryChangeEvent( QskGeometryChangeEvent* ) override;
 
     private:
         QList< QskLinearBox* > m_columns;

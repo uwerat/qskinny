@@ -30,9 +30,9 @@ ShadowPositioner::ShadowPositioner( QQuickItem* parent ) : QskControl( parent )
 void ShadowPositioner::setGridBox( QskGridBox* gridBox )
 {
     m_gridBox = gridBox;
-    m_rectangles.reserve( m_gridBox->count() );
+    m_rectangles.reserve( m_gridBox->elementCount() );
 
-    for( int i = 0; i < m_gridBox->count(); ++i )
+    for( int i = 0; i < m_gridBox->elementCount(); ++i )
     {
         auto* r = new ShadowedRectangle( this );
         r->setZ( 5 );
@@ -115,8 +115,8 @@ QskAspect::Subcontrol MainContent::effectiveSubcontrol( QskAspect::Subcontrol su
     return subControl;
 }
 
-void MainContent::geometryChanged( const QRectF& newGeometry, const QRectF& oldGeometry )
+void MainContent::geometryChangeEvent( QskGeometryChangeEvent* event )
 {
-    QskLinearBox::geometryChanged( newGeometry, oldGeometry );
+    QskLinearBox::geometryChangeEvent( event );
     m_shadowPositioner->polish();
 }

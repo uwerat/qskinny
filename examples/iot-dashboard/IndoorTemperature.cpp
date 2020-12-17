@@ -15,7 +15,7 @@ IndoorTemperature::IndoorTemperature( QQuickItem* parent )
     : Box( "", parent )
 {
     setPanel( true );
-    setMarginsHint( Panel | QskAspect::Padding, 8 );
+    setMarginHint( Panel | QskAspect::Padding, 8 );
     setSizePolicy( Qt::Vertical, QskSizePolicy::Maximum );
 
     auto* layout = new QskLinearBox( Qt::Horizontal, this );
@@ -37,4 +37,5 @@ IndoorTemperature::IndoorTemperature( QQuickItem* parent )
     value->setTextColor( "#929CB2" );
 
     auto* buttons = new UpAndDownButton( layout );
+    Q_UNUSED( buttons );
 }
