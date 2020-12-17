@@ -230,6 +230,12 @@ QRectF QskControl::subControlRect( QskAspect::Subcontrol subControl ) const
 }
 
 QRectF QskControl::subControlRect(
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
+{
+    return effectiveSkinlet()->subControlRect( this, contentsRect, subControl );
+}
+
+QRectF QskControl::subControlRect(
     const QSizeF& size, QskAspect::Subcontrol subControl ) const
 {
     QRectF rect( 0.0, 0.0, size.width(), size.height() );

@@ -94,6 +94,7 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     virtual QRectF focusIndicatorClipRect() const;
 
     QRectF subControlRect( QskAspect::Subcontrol ) const;
+    QRectF subControlRect( const QRectF&, QskAspect::Subcontrol ) const;
     QRectF subControlRect( const QSizeF&, QskAspect::Subcontrol ) const;
 
     void setAutoFillBackground( bool );
