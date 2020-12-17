@@ -132,7 +132,7 @@ Diagram::Diagram( QQuickItem* parent )
     , m_weekdays( new QskGridBox( this ) )
     , m_content( new DiagramContent( this ) )
 {
-    setMarginHint( Panel | QskAspect::Padding, 0 );
+    setPaddingHint( Panel, 0 );
 
     setAutoAddChildren( false );
     setAutoLayoutChildren( true );

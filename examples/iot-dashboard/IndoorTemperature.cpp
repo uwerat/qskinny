@@ -15,7 +15,7 @@ IndoorTemperature::IndoorTemperature( QQuickItem* parent )
     : Box( "", parent )
 {
     setPanel( true );
-    setMarginHint( Panel | QskAspect::Padding, 8 );
+    setPaddingHint( Panel, 8 );
     setSizePolicy( Qt::Vertical, QskSizePolicy::Maximum );
 
     auto* layout = new QskLinearBox( Qt::Horizontal, this );
