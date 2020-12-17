@@ -101,6 +101,10 @@ MainContent::MainContent( QQuickItem* parent ) : QskLinearBox( Qt::Vertical, par
     auto* lightIntensity = new LightIntensity( gridBox );
     gridBox->addItem( lightIntensity, 2, 2 );
 
+    gridBox->setColumnStretchFactor( 0, 37 ); // factors add up to 100
+    gridBox->setColumnStretchFactor( 1, 37 );
+    gridBox->setColumnStretchFactor( 2, 26 );
+
     m_shadowPositioner = new ShadowPositioner( this );
     m_shadowPositioner->setGridBox( gridBox );
 }
