@@ -257,6 +257,11 @@ void QskSkinnable::setStrutSizeHint( const QskAspect::Aspect aspect, const QSize
     m_data->hintTable.setStrutSize( aspect, strut );
 }
 
+bool QskSkinnable::resetStrutSizeHint( const QskAspect::Aspect aspect )
+{
+    return resetHint( aspect | QskAspect::Metric | QskAspect::StrutSize );
+}
+
 QSizeF QskSkinnable::strutSizeHint(
     const QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {

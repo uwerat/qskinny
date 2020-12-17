@@ -91,9 +91,10 @@ class QSK_EXPORT QskSkinnable
     int flagHint( QskAspect::Aspect ) const;
     template< typename T > T flagHint( QskAspect::Aspect, T = T() ) const;
 
-    QSizeF strutSizeHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
     void setStrutSizeHint( QskAspect::Aspect, const QSizeF& );
     void setStrutSizeHint( QskAspect::Aspect, qreal width, qreal height );
+    bool resetStrutSizeHint( QskAspect::Aspect );
+    QSizeF strutSizeHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
     void setMarginHint( QskAspect::Aspect, qreal );
     void setMarginHint( QskAspect::Aspect, const QMarginsF& );
