@@ -18,15 +18,17 @@ QSK_SUBCONTROL( CustomSlider, Decoration )
 CustomSlider::CustomSlider( QQuickItem* parentItem )
     : QskSlider( parentItem )
 {
+    using namespace QskRgb;
+
     setBoxShapeHint( Fill, 0 );
-    setGradientHint( Fill, QskRgb::Grey700 );
+    setGradientHint( Fill, Grey700 );
     setColor( Scale, qRgb( 178, 178, 178 ) ); // for the ticks
 
-    setMetric( QskSlider::Handle | QskAspect::Size, 80 );
-    setColor( QskSlider::Handle, QskRgb::Grey800 );
+    setMetric( Handle | QskAspect::Size, 80 );
+    setColor( Handle, Grey800 );
 
     for ( auto state : { Pressed, Focused | Hovered, Hovered, Focused } )
-        setColor( QskSlider::Handle | state, QskRgb::Orange600 );
+        setColor( Handle | state, Orange600 );
 
     setAnimation( QskSlider::Handle | QskAspect::Color, 1000 );
     for ( auto state : { Focused | Hovered, Hovered, Focused } )
@@ -56,5 +58,5 @@ QSizeF CustomSlider::contentsSizeHint(
 
 QRectF CustomSlider::focusIndicatorRect() const
 {
-    return subControlRect( QskSlider::Handle );
+    return subControlRect( Handle );
 }

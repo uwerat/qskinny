@@ -116,7 +116,6 @@ QSGNode* SpeedometerSkinlet::updatePanelNode(
 QSGNode* SpeedometerSkinlet::updateLabelsNode(
     const Speedometer* speedometer, QSGNode* node ) const
 {
-    using namespace QskAspect;
     using Q = Speedometer;
 
     const int labelsCount = speedometer->labels().count();
