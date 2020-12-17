@@ -48,19 +48,19 @@ QSGNode* QskSeparatorSkinlet::updateSubNode(
 QRectF QskSeparatorSkinlet::panelRect(
     const QskSeparator* separator, const QRectF& contentsRect ) const
 {
-    const qreal m = separator->metric( QskSeparator::Panel | QskAspect::Size );
+    const qreal extent = separator->extent();
 
     QRectF r;
 
     if ( separator->orientation() == Qt::Horizontal )
     {
         r.setWidth( contentsRect.width() );
-        r.setHeight( m );
+        r.setHeight( extent );
     }
     else
     {
         r.setHeight( contentsRect.height() );
-        r.setWidth( m );
+        r.setWidth( extent );
     }
 
     r.moveCenter( contentsRect.center() );
