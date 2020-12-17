@@ -391,15 +391,15 @@ void QskSquiekSkin::initPageIndicatorHints()
 
     for ( auto subControl : { Q::Bullet, Q::Highlighted } )
     {
-        setMetric( subControl | Size, qskDpiScaled( 12 ) );
+        const auto extent = qskDpiScaled( 12 );
+        setStrutSize( subControl, extent, extent );
 
-        setBoxBorderMetrics( subControl, QskBoxBorderMetrics( 50, Qt::RelativeSize ) );
+        setBoxBorderMetrics( subControl, 50, Qt::RelativeSize );
         setBoxShape( subControl, 100, Qt::RelativeSize );
-
-        setGradient( subControl,
-            ( subControl == Q::Bullet ) ? pal.darker150 : pal.lighter150 );
-
     }
+
+    setGradient( Q::Bullet, pal.darker150 );
+    setGradient( Q::Highlighted, pal.lighter150 );
 
     // no visible background panel
     setBoxBorderMetrics( Q::Panel, 0 );
@@ -604,7 +604,7 @@ void QskSquiekSkin::initSliderHints()
 
     const auto& pal = m_data->palette;
 
-    const qreal dim = 40;
+    const qreal extent = 40;
 
     // Panel
 
@@ -612,14 +612,14 @@ void QskSquiekSkin::initSliderHints()
     {
         const auto aspect = Q::Panel | placement;
 
-        setMetric( aspect | Size, dim );
+        setMetric( aspect | Size, extent );
         setBoxBorderMetrics( aspect, 0 );
         setBoxShape( aspect, 0 );
         setGradient( aspect, QskGradient() );
     }
 
-    setPadding( Q::Panel | Horizontal, QskMargins( 0.5 * dim, 0 ) );
-    setPadding( Q::Panel | Vertical, QskMargins( 0, 0.5 * dim ) );
+    setPadding( Q::Panel | Horizontal, QskMargins( 0.5 * extent, 0 ) );
+    setPadding( Q::Panel | Vertical, QskMargins( 0, 0.5 * extent ) );
 
     // Groove, Fill
 
@@ -629,17 +629,15 @@ void QskSquiekSkin::initSliderHints()
         {
             const auto aspect = subControl | placement;
 
-            setMetric( aspect | Size, 0.3 * dim );
+            setMetric( aspect | Size, 0.3 * extent );
             setPadding( aspect, 0 );
 
             setBoxBorderMetrics( aspect, 0 );
-            setBoxShape( aspect, 0.1 * dim );
-
-            if ( subControl == Q::Groove )
-                setGradient( aspect, pal.darker200 );
-            else
-                setGradient( aspect, QskGradient() ); // no filling
+            setBoxShape( aspect, 0.1 * extent );
         }
+
+        setGradient( Q::Groove | placement, pal.darker200 );
+        setGradient( Q::Fill | placement, QskGradient() ); // no filling
     }
 
     // Handle
@@ -651,7 +649,9 @@ void QskSquiekSkin::initSliderHints()
         setButton( aspect, Raised, 1 );
         setBoxShape( aspect, 20.0, Qt::RelativeSize );
         setButton( aspect | Q::Pressed, Sunken, 1 );
-        setMetric( Q::Handle | Size, 0.75 * dim );
+
+        const qreal sz = 0.75 * extent;
+        setStrutSize( aspect, sz, sz );
     }
 
     setAnimation( Q::Handle | Color, qskDuration );
@@ -669,10 +669,10 @@ void QskSquiekSkin::initTabBarHints()
     const qreal vb = 1.0; // borderWidth of the view
     const qreal pw = 1.0; // extra space for the negative padding of the buttons
 
-    setPadding( Q::Panel | Top, QskMargins( pw, 0.0, pw, vb ) );
-    setPadding( Q::Panel | Bottom, QskMargins( pw, vb, pw, 0.0 ) );
-    setPadding( Q::Panel | Left, QskMargins( 0.0, pw, vb, pw ) );
-    setPadding( Q::Panel | Right, QskMargins( vb, pw, 0.0, pw ) );
+    setPadding( Q::Panel | Top, pw, 0.0, pw, vb );
+    setPadding( Q::Panel | Bottom, pw, vb, pw, 0.0 );
+    setPadding( Q::Panel | Left, 0.0, pw, vb, pw );
+    setPadding( Q::Panel | Right, vb, pw, 0.0, pw );
 
     // when flicking
     setAnimation( Q::Panel | Metric, QskAnimationHint( 200, QEasingCurve::OutCubic ) );
@@ -706,7 +706,6 @@ void QskSquiekSkin::initInputPanelHints()
 
 void QskSquiekSkin::initInputPredictionBar()
 {
-    using namespace QskAspect;
     using Q = QskInputPredictionBar;
 
     const auto& pal = m_data->palette;

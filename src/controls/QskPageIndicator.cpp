@@ -66,7 +66,7 @@ void QskPageIndicator::setOrientation( Qt::Orientation orientation )
         resetImplicitSize();
         update();
 
-        Q_EMIT orientationChanged();
+        Q_EMIT orientationChanged( orientation );
     }
 }
 
@@ -79,7 +79,7 @@ void QskPageIndicator::setCount( int count )
         resetImplicitSize();
         update();
 
-        Q_EMIT countChanged();
+        Q_EMIT countChanged( count );
     }
 }
 
@@ -93,7 +93,7 @@ void QskPageIndicator::setCurrentIndex( qreal index )
         m_data->currentIndex = index;
         update();
 
-        Q_EMIT currentIndexChanged();
+        Q_EMIT currentIndexChanged( index );
     }
 }
 
@@ -103,8 +103,9 @@ QSizeF QskPageIndicator::contentsSizeHint(
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
-    const qreal sizeBullet = metric( Bullet | QskAspect::Size );
-    const qreal sizeCurrent = metric( Highlighted | QskAspect::Size );
+    const auto bulletSize = strutSizeHint( Bullet );
+    const auto maxSize = bulletSize.expandedTo( strutSizeHint( Highlighted ) );
+
     const qreal spacing = spacingHint( Panel );
 
     const int n = m_data->count;
@@ -116,25 +117,25 @@ QSizeF QskPageIndicator::contentsSizeHint(
     {
         if ( n > 0 )
         {
-            w += qMax( sizeCurrent, sizeBullet );
+            w += maxSize.width();
 
             if ( n > 1 )
-                w += ( n - 1 ) * ( sizeBullet + spacing );
+                w += ( n - 1 ) * ( bulletSize.width() + spacing );
         }
 
-        h = qMax( sizeCurrent, sizeBullet );
+        h = maxSize.height();
     }
     else
     {
         if ( n > 0 )
         {
-            h += qMax( sizeCurrent, sizeBullet );
+            h += maxSize.height();
 
             if ( n > 1 )
-                h += ( n - 1 ) * ( sizeBullet + spacing );
+                h += ( n - 1 ) * ( bulletSize.height() + spacing );
         }
 
-        w = qMax( sizeCurrent, sizeBullet );
+        w = maxSize.width();
     }
 
     const auto hint = outerBoxSize( Panel, QSizeF( w, h ) );

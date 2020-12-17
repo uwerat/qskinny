@@ -293,7 +293,8 @@ void QskMaterialSkin::initPageIndicatorHints()
 
     for ( auto subControl : { Q::Bullet, Q::Highlighted } )
     {
-        setMetric( subControl | Size, qskDpiScaled( 10 ) );
+        const auto extent = qskDpiScaled( 10 );
+        setStrutSize( subControl, extent, extent );
 
         // circles, without border
         setBoxShape( subControl, 100, Qt::RelativeSize );
@@ -441,17 +442,17 @@ void QskMaterialSkin::initSliderHints()
 
     const auto& pal = m_data->palette;
 
-    const qreal dim = 30;
+    const qreal extent = 30;
 
     // Panel
 
-    setMetric( Q::Panel | Size, dim );
+    setMetric( Q::Panel | Size, extent );
     setBoxShape( Q::Panel, 0 );
     setBoxBorderMetrics( Q::Panel, 0 );
     setGradient( Q::Panel, QskGradient() );
 
-    setPadding( Q::Panel | Horizontal, QskMargins( 0.5 * dim, 0 ) );
-    setPadding( Q::Panel | Vertical, QskMargins( 0, 0.5 * dim ) );
+    setPadding( Q::Panel | Horizontal, QskMargins( 0.5 * extent, 0 ) );
+    setPadding( Q::Panel | Vertical, QskMargins( 0, 0.5 * extent ) );
 
     // Groove, Fill
 
@@ -475,8 +476,9 @@ void QskMaterialSkin::initSliderHints()
     setBoxBorderMetrics( Q::Handle, 4 );
 
     // handle expanding, when being pressed
-    setMetric( Q::Handle | Size, 0.6 * dim );
-    setMetric( Q::Handle | Size | Q::Pressed, dim );
+    QSize extentSize( extent, extent );
+    setStrutSize( Q::Handle, 0.6 * extentSize );
+    setStrutSize( Q::Handle | Q::Pressed, extentSize );
 
     setGradient( Q::Handle | Q::Disabled, Grey );
     setBoxBorderColors( Q::Handle | Q::Disabled, Grey );

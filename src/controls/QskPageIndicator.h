@@ -41,9 +41,9 @@ class QSK_EXPORT QskPageIndicator : public QskControl
     void setOrientation( Qt::Orientation );
 
   Q_SIGNALS:
-    void countChanged();
-    void currentIndexChanged();
-    void orientationChanged();
+    void countChanged( int );
+    void currentIndexChanged( qreal );
+    void orientationChanged( Qt::Orientation );
 
   public Q_SLOTS:
     void setCount( int count );

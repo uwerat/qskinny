@@ -24,7 +24,7 @@ CustomSlider::CustomSlider( QQuickItem* parentItem )
     setGradientHint( Fill, Grey700 );
     setColor( Scale, qRgb( 178, 178, 178 ) ); // for the ticks
 
-    setMetric( Handle | QskAspect::Size, 80 );
+    setStrutSizeHint( Handle, 80, 80 );
     setColor( Handle, Grey800 );
 
     for ( auto state : { Pressed, Focused | Hovered, Hovered, Focused } )

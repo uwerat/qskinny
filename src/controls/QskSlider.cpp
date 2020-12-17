@@ -123,9 +123,9 @@ QSizeF QskSlider::contentsSizeHint(
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
-    const qreal dim = metric( QskSlider::Panel | QskAspect::Size );
+    const qreal extent = metric( QskSlider::Panel | QskAspect::Size );
     return ( m_data->orientation == Qt::Horizontal )
-        ? QSizeF( 4 * dim, dim ) : QSizeF( dim, 4 * dim );
+        ? QSizeF( 4 * extent, extent ) : QSizeF( extent, 4 * extent );
 }
 
 QSizeF QskSlider::handleSize() const

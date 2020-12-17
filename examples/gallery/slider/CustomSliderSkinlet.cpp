@@ -222,9 +222,13 @@ QRectF CustomSliderSkinlet::handleRect(
     handleRect.moveCenter( QPointF( fillRect.right(), handleRect.center().y() ) );
 
     if ( handleRect.left() < contentsRect.left() )
+    {
         handleRect.moveLeft( contentsRect.left() );
+    }
     else if ( handleRect.right() > contentsRect.right() )
+    {
         handleRect.moveRight( contentsRect.right() );
+    }
 
     return handleRect;
 }
@@ -327,21 +331,21 @@ QSGNode* CustomSliderSkinlet::updateDecorationNode(
 QSGNode* CustomSliderSkinlet::updateHandleNode(
     const QskSlider* slider, QSGNode* node ) const
 {
-    const QRectF handleRect = subControlRect(
-        slider, slider->contentsRect(), QskSlider::Handle );
+    const auto cr = slider->contentsRect();
+
+    const auto handleRect = subControlRect( slider, cr, QskSlider::Handle );
 
     if ( handleRect.isEmpty() )
         return nullptr;
 
-    const QRectF fillRect = subControlRect(
-        slider, slider->contentsRect(), QskSlider::Fill );
+    const auto fillRect = subControlRect( slider, cr, QskSlider::Fill );
 
     auto handleNode = static_cast< HandleNode* >( node );
     if ( handleNode == nullptr )
         handleNode = new HandleNode();
 
-    handleNode->update( handleRect, fillRect.right(),
-        slider->color( QskSlider::Handle ) );
+    const auto handleColor = slider->color( QskSlider::Handle );
+    handleNode->update( handleRect, fillRect.right(), handleColor );
 
     // finally the value label
     auto labelNode = static_cast< QskTextNode* >( handleNode->firstChild() );
@@ -359,7 +363,7 @@ QSGNode* CustomSliderSkinlet::updateHandleNode(
     auto textRect = handleRect;
     textRect.setTop( textRect.bottom() - 0.5 * ( textRect.height() - qskPeak + h ) );
 
-    const QString text = QString::number( slider->value(), 'f', 0 );
+    const auto text = QString::number( slider->value(), 'f', 0 );
 
     labelNode->setTextData( slider, text, textRect, font, QskTextOptions(),
         QskTextColors( Qt::white ), Qt::AlignHCenter, Qsk::Normal );
