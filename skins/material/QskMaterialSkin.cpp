@@ -481,7 +481,6 @@ void QskMaterialSkin::initSliderHints()
     setGradient( Q::Handle | Q::Disabled, Grey );
     setBoxBorderColors( Q::Handle | Q::Disabled, Grey );
 
-    // should be transparent, but the current renderer doesn't "cut out" the background
     setGradient( Q::Handle, pal.accentColor );
     setGradient( Q::Handle | Q::Pressed, pal.accentColor );
 
