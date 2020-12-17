@@ -75,9 +75,13 @@ class QSK_EXPORT QskSkin : public QObject
     QSizeF strutSize( QskAspect::Aspect ) const;
 
     void setMargin( QskAspect::Aspect, const QskMargins& );
+    void setMargin( QskAspect::Aspect,
+        qreal left, qreal top, qreal right, qreal bottom );
     QskMargins margin( QskAspect::Aspect ) const;
 
     void setPadding( QskAspect::Aspect, const QskMargins& );
+    void setPadding( QskAspect::Aspect,
+        qreal left, qreal top, qreal right, qreal bottom );
     QskMargins padding( QskAspect::Aspect ) const;
 
     void setSpacing( QskAspect::Aspect, qreal );
@@ -92,6 +96,9 @@ class QSK_EXPORT QskSkin : public QObject
 
     void setBoxShape( QskAspect::Aspect, const QskBoxShapeMetrics& );
     QskBoxShapeMetrics boxShape( QskAspect::Aspect ) const;
+
+    void setBoxBorderMetrics( QskAspect::Aspect,
+        qreal borderWidth, Qt::SizeMode = Qt::AbsoluteSize );
 
     void setBoxBorderMetrics( QskAspect::Aspect, qreal left, qreal top,
         qreal right, qreal bottom, Qt::SizeMode = Qt::AbsoluteSize );

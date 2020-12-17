@@ -215,6 +215,13 @@ void QskSkin::setMargin( QskAspect::Aspect aspect, const QskMargins& margins )
     m_data->hintTable.setMargin( aspect, margins );
 }
 
+void QskSkin::setMargin( QskAspect::Aspect aspect,
+    qreal left, qreal top, qreal right, qreal bottom )
+{   
+    const QskMargins margins( left, top, right, bottom );
+    m_data->hintTable.setMargin( aspect, margins );
+}
+
 QskMargins QskSkin::margin( QskAspect::Aspect aspect ) const
 {
     return m_data->hintTable.margin( aspect );
@@ -222,6 +229,13 @@ QskMargins QskSkin::margin( QskAspect::Aspect aspect ) const
 
 void QskSkin::setPadding( QskAspect::Aspect aspect, const QskMargins& padding )
 {
+    m_data->hintTable.setPadding( aspect, padding );
+}
+
+void QskSkin::setPadding( QskAspect::Aspect aspect,
+    qreal left, qreal top, qreal right, qreal bottom )
+{   
+    const QskMargins padding( left, top, right, bottom );
     m_data->hintTable.setPadding( aspect, padding );
 }
 
@@ -279,6 +293,13 @@ void QskSkin::setBoxBorderMetrics( QskAspect::Aspect aspect,
 {
     m_data->hintTable.setBoxBorder( aspect,
         QskBoxBorderMetrics( left, top, right, bottom, sizeMode ) );
+}
+
+void QskSkin::setBoxBorderMetrics( QskAspect::Aspect aspect,
+    qreal borderWidth, Qt::SizeMode sizeMode )
+{
+    m_data->hintTable.setBoxBorder(
+        aspect, QskBoxBorderMetrics( borderWidth, sizeMode ) );
 }
 
 void QskSkin::setBoxBorderMetrics(
