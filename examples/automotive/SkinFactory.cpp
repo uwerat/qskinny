@@ -64,23 +64,25 @@ namespace
                 using Q = Speedometer;
 
                 setBoxBorderMetrics( Q::Panel, 5 );
+                setBoxShape( Q::Panel, 30, Qt::RelativeSize );
                 setGradient( Q::Panel,
                     QskGradient( QskGradient::Vertical, color2, color4 ) );
                 setBoxBorderColors( Q::Panel, color3 );
 
-                setBoxBorderMetrics( Q::NeedleHead, 5 );
-                setMetric( Q::NeedleHead | Size, 10 );
-                setGradient( Q::NeedleHead, color2 );
-                setBoxBorderColors( Q::NeedleHead, color4 );
+                setBoxBorderMetrics( Q::Knob, 5 );
+                setStrutSize( Q::Knob, 20, 20 );
+                setBoxShape( Q::Knob, 100, Qt::RelativeSize );
+                setGradient( Q::Knob, color2 );
+                setBoxBorderColors( Q::Knob, color4 );
 
                 setMetric( Q::Needle | Size, 4 );
                 setMetric( Q::Needle | Margin, 15 );
                 setColor( Q::Needle, color4 );
 
-                setSpacing( Q::Labels, 3 );
-                setStrutSize( Q::Labels, 3, 25 );
-                setColor( Q::Labels, color4 );
-                setFontRole( Q::Labels, QskSkin::SmallFont );
+                setSpacing( Q::TickLabels, 3 );
+                setStrutSize( Q::TickLabels, 3, 25 );
+                setColor( Q::TickLabels, color4 );
+                setFontRole( Q::TickLabels, QskSkin::SmallFont );
             }
 
             {
@@ -113,23 +115,24 @@ namespace
                 using Q = Speedometer;
 
                 setBoxBorderMetrics( Q::Panel, 2 );
+                setBoxShape( Q::Panel, 100, Qt::RelativeSize );
                 setGradient( Q::Panel, color1 );
                 setBoxBorderColors( Q::Panel, color3 );
 
-                setBoxBorderMetrics( Q::NeedleHead, 2 );
-                setMetric( Q::NeedleHead | Size, 15 );
-                setGradient( Q::NeedleHead,
+                setBoxBorderMetrics( Q::Knob, 2 );
+                setStrutSize( Q::Knob, 30, 30 );
+                setBoxShape( Q::Knob, 100, Qt::RelativeSize );
+                setGradient( Q::Knob,
                     QskGradient( QskGradient::Diagonal, color2, color1 ) );
-                // setBoxBorderColors( Q::NeedleHead, color4 );
 
                 setMetric( Q::Needle | Size, 2 );
                 setMetric( Q::Needle | Margin, 10 );
                 setColor( Q::Needle, color2 );
 
-                setSpacing( Q::Labels, 4 );
-                setStrutSize( Q::Labels, 2, 15 );
-                setColor( Q::Labels, color4 );
-                setFontRole( Q::Labels, QskSkin::SmallFont );
+                setSpacing( Q::TickLabels, 4 );
+                setStrutSize( Q::TickLabels, 2, 15 );
+                setColor( Q::TickLabels, color4 );
+                setFontRole( Q::TickLabels, QskSkin::SmallFont );
             }
         }
     };

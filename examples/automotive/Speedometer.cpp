@@ -9,8 +9,8 @@
 #include <QskSkinnable.h>
 
 QSK_SUBCONTROL( Speedometer, Panel )
-QSK_SUBCONTROL( Speedometer, Labels )
-QSK_SUBCONTROL( Speedometer, NeedleHead )
+QSK_SUBCONTROL( Speedometer, TickLabels )
+QSK_SUBCONTROL( Speedometer, Knob )
 QSK_SUBCONTROL( Speedometer, Needle )
 
 Speedometer::Speedometer( QQuickItem* parent )
@@ -18,14 +18,14 @@ Speedometer::Speedometer( QQuickItem* parent )
 {
 }
 
-QVector< QString > Speedometer::labels() const
+QVector< QString > Speedometer::tickLabels() const
 {
-    return m_labels;
+    return m_tickLabels;
 }
 
-void Speedometer::setLabels( const QVector< QString >& labels )
+void Speedometer::setTickLabels( const QVector< QString >& labels )
 {
-    m_labels = labels;
+    m_tickLabels = labels;
 }
 
 #include "moc_Speedometer.cpp"

@@ -19,11 +19,11 @@ class SpeedometerSkinlet : public QskSkinlet
     {
         PanelRole,
         LabelsRole,
+        KnobRole,
         NeedleRole
     };
 
     Q_INVOKABLE SpeedometerSkinlet( QskSkin* skin = nullptr );
-    ~SpeedometerSkinlet() override;
 
     QRectF subControlRect( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol ) const override;
@@ -33,7 +33,9 @@ class SpeedometerSkinlet : public QskSkinlet
         quint8 nodeRole, QSGNode* node ) const override;
 
   private:
-    QSGNode* updatePanelNode( const Speedometer*, QSGNode* ) const;
+    QRectF scaleRect( const Speedometer* ) const;
+    QLineF needlePoints( const Speedometer* ) const;
+
     QSGNode* updateLabelsNode( const Speedometer*, QSGNode* ) const;
     QSGNode* updateNeedleNode( const Speedometer*, QSGNode* ) const;
 };

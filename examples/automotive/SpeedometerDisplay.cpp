@@ -60,7 +60,7 @@ namespace
             for ( int i = 0; i < labelsCount; i++ )
                 labels += QString::number( i );
 
-            setLabels( labels );
+            setTickLabels( labels );
         }
     };
 
@@ -74,7 +74,7 @@ namespace
             setMaximum( 35 );
             setValue( -90 );
 
-            constexpr int labelsCount = 23;
+            constexpr int labelsCount = 17;
 
             QVector< QString > labels;
             labels.reserve( labelsCount );
@@ -82,7 +82,7 @@ namespace
             for ( int i = 0; i < labelsCount; i++ )
                 labels.append( QString::number( i * 10 ) );
 
-            setLabels( labels );
+            setTickLabels( labels );
         }
 
         void updateValue()
@@ -101,7 +101,7 @@ namespace
             setMaximum( 345 );
             setValue( 330 );
 
-            setLabels( { "0", "", "1/2", "", "1/1" } );
+            setTickLabels( { "0", "", "1/2", "", "1/1" } );
         }
 
         void updateValue()

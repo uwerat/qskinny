@@ -13,15 +13,15 @@ class Speedometer : public QskBoundedValueInput
     Q_OBJECT
 
   public:
-    QSK_SUBCONTROLS( Panel, Labels, NeedleHead, Needle )
+    QSK_SUBCONTROLS( Panel, TickLabels, Knob, Needle )
 
     Speedometer( QQuickItem* parent = nullptr );
 
-    QVector< QString > labels() const;
-    void setLabels( const QVector< QString >& );
+    QVector< QString > tickLabels() const;
+    void setTickLabels( const QVector< QString >& );
 
   private:
-    QVector< QString > m_labels;
+    QVector< QString > m_tickLabels;
 };
 
 #endif

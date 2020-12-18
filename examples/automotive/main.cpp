@@ -11,12 +11,17 @@
 
 #include <QskSetup.h>
 #include <QskSkinManager.h>
-#include <SkinnyShortcut.h>
+#include <QskObjectCounter.h>
 
+#include <SkinnyShortcut.h>
 #include <QGuiApplication>
 
 int main( int argc, char** argv )
 {
+#ifdef ITEM_STATISTICS
+    QskObjectCounter counter( true );
+#endif
+
     qskSkinManager->setPluginPaths( QStringList() ); // no skin plugins
     qskSkinManager->registerFactory( QStringLiteral( "sample" ), new SkinFactory() );
 
