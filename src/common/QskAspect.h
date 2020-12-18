@@ -97,8 +97,6 @@ QSK_NAMESPACE( QskAspect )
     };
     QSK_ENUM( ColorPrimitive )
 
-    enum { LastPrimitive = 15 }; // max. value for all sort of primitives
-
     enum Placement : quint8
     {
         NoPlacement = 0,
