@@ -476,7 +476,7 @@ void QskMaterialSkin::initSliderHints()
     setBoxBorderMetrics( Q::Handle, 4 );
 
     // handle expanding, when being pressed
-    QSize extentSize( extent, extent );
+    const QSize extentSize( extent, extent );
     setStrutSize( Q::Handle, 0.6 * extentSize );
     setStrutSize( Q::Handle | Q::Pressed, extentSize );
 

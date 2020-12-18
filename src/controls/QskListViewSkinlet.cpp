@@ -446,7 +446,7 @@ QSGNode* QskListViewSkinlet::updateCellNode( const QskListView* listView,
     const auto alignment = listView->alignmentHint(
         QskListView::Cell, Qt::AlignVCenter | Qt::AlignLeft );
 
-    const QVariant value = listView->valueAt( row, col );
+    const auto value = listView->valueAt( row, col );
 
     if ( value.canConvert< QskGraphic >() )
     {
