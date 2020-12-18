@@ -977,7 +977,7 @@ void QskSkinnable::setSkinState( QskAspect::State newState, bool animated )
 
             const auto& skinTable = skin->hintTable();
 
-            for ( int i = 0; i <= QskAspect::LastType; i++ )
+            for ( uint i = 0; i < QskAspect::typeCount; i++ )
             {
                 const auto type = static_cast< QskAspect::Type >( i );
 
@@ -989,8 +989,10 @@ void QskSkinnable::setSkinState( QskAspect::State newState, bool animated )
                         Starting an animator for all primitives,
                         that differ between the states
                      */
-                    for ( uint primitive = 0;
-                        primitive <= QskAspect::LastPrimitive; primitive++ )
+
+                    const auto primitiveCount = QskAspect::primitiveCount( type );
+
+                    for ( uint primitive = 0; primitive < primitiveCount; primitive++ )
                     {
                         aspect.setPrimitive( type, primitive );
 

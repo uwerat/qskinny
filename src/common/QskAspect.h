@@ -51,7 +51,7 @@ QSK_NAMESPACE( QskAspect )
     };
     QSK_ENUM( Type )
 
-    enum { LastType = Color };   // max. value for all types
+    constexpr uint typeCount = 3;
 
     enum FlagPrimitive : quint8
     {
@@ -209,9 +209,9 @@ namespace QskAspect
             uint type : 3;
             uint isAnimator : 1;
 
-            uint primitive : 7;
+            uint primitive : 5;
             uint placement : 3;
-            uint reserved1 : 6;
+            uint reserved1 : 8;
 
             uint states : 16;
             uint reserved2 : 16;
@@ -537,6 +537,10 @@ namespace QskAspect
     QSK_EXPORT QByteArray subControlName( Subcontrol );
     QSK_EXPORT QVector< QByteArray > subControlNames( const QMetaObject* = nullptr );
     QSK_EXPORT QVector< Subcontrol > subControls( const QMetaObject* );
+
+    QSK_EXPORT quint8 primitiveCount( Type );
+    QSK_EXPORT void reservePrimitives( Type, quint8 count );
+
 }
 
 namespace std
@@ -556,16 +560,16 @@ Q_DECLARE_TYPEINFO( QskAspect::Aspect, Q_MOVABLE_TYPE );
 
 class QDebug;
 
-QSK_EXPORT QDebug operator<<( QDebug, const QskAspect::Aspect& );
-QSK_EXPORT QDebug operator<<( QDebug, const QskAspect::Type& );
-QSK_EXPORT QDebug operator<<( QDebug, const QskAspect::Subcontrol& );
+QSK_EXPORT QDebug operator<<( QDebug, QskAspect::Aspect );
+QSK_EXPORT QDebug operator<<( QDebug, QskAspect::Type );
+QSK_EXPORT QDebug operator<<( QDebug, QskAspect::Subcontrol );
 
-QSK_EXPORT QDebug operator<<( QDebug, const QskAspect::FlagPrimitive& );
-QSK_EXPORT QDebug operator<<( QDebug, const QskAspect::ColorPrimitive& );
-QSK_EXPORT QDebug operator<<( QDebug, const QskAspect::MetricPrimitive& );
+QSK_EXPORT QDebug operator<<( QDebug, QskAspect::FlagPrimitive );
+QSK_EXPORT QDebug operator<<( QDebug, QskAspect::ColorPrimitive );
+QSK_EXPORT QDebug operator<<( QDebug, QskAspect::MetricPrimitive );
 
-QSK_EXPORT QDebug operator<<( QDebug, const QskAspect::Placement& );
-QSK_EXPORT QDebug operator<<( QDebug, const QskAspect::State& );
+QSK_EXPORT QDebug operator<<( QDebug, QskAspect::Placement );
+QSK_EXPORT QDebug operator<<( QDebug, QskAspect::State );
 
 QSK_EXPORT void qskDebugState( QDebug, const QMetaObject*, QskAspect::State );
 QSK_EXPORT void qskDebugAspect( QDebug, const QMetaObject*, QskAspect::Aspect );

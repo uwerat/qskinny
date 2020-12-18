@@ -36,6 +36,32 @@ namespace
     };
 }
 
+static quint8 qskPrimitiveCount[ 3 ] =
+    { QskAspect::FontRole + 1, QskAspect::Border + 1, QskAspect::LinkColor + 1 };
+
+quint8 QskAspect::primitiveCount( Type type )
+{
+    return qskPrimitiveCount[ type ];
+}
+
+void QskAspect::reservePrimitives( Type type, quint8 count )
+{
+    constexpr quint8 maxCount = 1 << 5; // we have 5 bits for the primitives
+
+    Q_ASSERT( count <= maxCount );
+
+    if ( count > maxCount )
+    {
+        qWarning() << "QskAspect: having more than"
+            << maxCount << "primitives is not supported.";
+
+        count = maxCount;
+    }
+
+    if ( count > qskPrimitiveCount[ type ] )
+        qskPrimitiveCount[ type ] = count;
+}
+
 Q_GLOBAL_STATIC( AspectRegistry, qskAspectRegistry )
 
 QskAspect::State QskAspect::registerState(
@@ -201,27 +227,27 @@ static inline QDebug qskDebugEnum(
     return debug;
 }
 
-QDebug operator<<( QDebug debug, const QskAspect::Type& type )
+QDebug operator<<( QDebug debug, QskAspect::Type type )
 {
     return qskDebugEnum( debug, "Type", type );
 }
 
-QDebug operator<<( QDebug debug, const QskAspect::FlagPrimitive& primitive )
+QDebug operator<<( QDebug debug, QskAspect::FlagPrimitive primitive )
 {
     return qskDebugEnum( debug, "FlagPrimitive", primitive );
 }
 
-QDebug operator<<( QDebug debug, const QskAspect::ColorPrimitive& primitive )
+QDebug operator<<( QDebug debug, QskAspect::ColorPrimitive primitive )
 {
     return qskDebugEnum( debug, "ColorPrimitive", primitive );
 }
 
-QDebug operator<<( QDebug debug, const QskAspect::MetricPrimitive& primitive )
+QDebug operator<<( QDebug debug, QskAspect::MetricPrimitive primitive )
 {
     return qskDebugEnum( debug, "MetricPrimitive", primitive );
 }
 
-QDebug operator<<( QDebug debug, const QskAspect::Subcontrol& subControl )
+QDebug operator<<( QDebug debug, QskAspect::Subcontrol subControl )
 {
     QDebugStateSaver saver( debug );
 
@@ -233,19 +259,19 @@ QDebug operator<<( QDebug debug, const QskAspect::Subcontrol& subControl )
     return debug;
 }
 
-QDebug operator<<( QDebug debug, const QskAspect::Placement& placement )
+QDebug operator<<( QDebug debug, QskAspect::Placement placement )
 {
     qskDebugEnum( debug, "Placement", placement );
     return debug;
 }
 
-QDebug operator<<( QDebug debug, const QskAspect::State& state )
+QDebug operator<<( QDebug debug, QskAspect::State state )
 {
     qskDebugState( debug, nullptr, state );
     return debug;
 }
 
-QDebug operator<<( QDebug debug, const QskAspect::Aspect& aspect )
+QDebug operator<<( QDebug debug, QskAspect::Aspect aspect )
 {
     qskDebugAspect( debug, nullptr, aspect );
     return debug;
@@ -264,8 +290,6 @@ void qskDebugState( QDebug debug, const QMetaObject* metaObject, QskAspect::Stat
 
 void qskDebugAspect( QDebug debug, const QMetaObject* metaObject, QskAspect::Aspect aspect )
 {
-    using namespace QskAspect;
-
     QDebugStateSaver saver( debug );
 
     debug.resetFormat();
@@ -286,13 +310,13 @@ void qskDebugAspect( QDebug debug, const QMetaObject* metaObject, QskAspect::Asp
 
     switch ( aspect.type() )
     {
-        case Color:
+        case QskAspect::Color:
         {
             if ( aspect.colorPrimitive() != 0 )
                 debug << ", " << qskEnumString( "ColorPrimitive", aspect.colorPrimitive() );
             break;
         }
-        case Metric:
+        case QskAspect::Metric:
         {
             if ( aspect.metricPrimitive() != 0 )
                 debug << ", " << qskEnumString( "MetricPrimitive", aspect.metricPrimitive() );
