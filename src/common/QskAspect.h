@@ -51,6 +51,8 @@ QSK_NAMESPACE( QskAspect )
     };
     QSK_ENUM( Type )
 
+    enum { LastType = Color };   // max. value for all types
+
     enum FlagPrimitive : quint8
     {
         NoFlagPrimitive,
@@ -85,9 +87,6 @@ QSK_NAMESPACE( QskAspect )
     };
     QSK_ENUM( MetricPrimitive )
 
-    enum { LastType = Color };   // max. value for all types
-    enum { LastPrimitive = 16 }; // max. value for all sort of primitives
-
     enum ColorPrimitive : quint8
     {
         NoColorPrimitive,
@@ -97,6 +96,8 @@ QSK_NAMESPACE( QskAspect )
         LinkColor
     };
     QSK_ENUM( ColorPrimitive )
+
+    enum { LastPrimitive = 15 }; // max. value for all sort of primitives
 
     enum Placement : quint8
     {
