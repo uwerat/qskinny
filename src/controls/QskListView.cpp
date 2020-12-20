@@ -163,7 +163,7 @@ QSizeF QskListView::contentsSizeHint(
         if ( m_data->preferredWidthFromColumns )
         {
             w = scrollableSize().width();
-            w += metric( QskScrollView::VerticalScrollBar );
+            w += metric( QskScrollView::VerticalScrollBar | QskAspect::Size );
         }
     }
 
