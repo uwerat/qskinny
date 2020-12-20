@@ -561,7 +561,7 @@ bool QskSkinnable::resetHint( QskAspect::Aspect aspect )
     a.setPlacement( effectivePlacement() );
 
     if ( a.state() == QskAspect::NoState )
-        a = a | skinState();
+        a.setState( skinState() );
 
     const auto oldHint = storedHint( a );
 
@@ -573,18 +573,20 @@ bool QskSkinnable::resetHint( QskAspect::Aspect aspect )
 QVariant QskSkinnable::effectiveHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
-    aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
+    if ( const auto subControl = aspect.subControl() )
+        aspect.setSubControl( effectiveSubcontrol( subControl ) );
+
     aspect.setPlacement( effectivePlacement() );
 
     if ( aspect.isAnimator() )
         return storedHint( aspect, status );
 
-    const QVariant v = animatedValue( aspect, status );
+    const auto v = animatedValue( aspect, status );
     if ( v.isValid() )
         return v;
 
     if ( aspect.state() == QskAspect::NoState )
-        aspect = aspect | skinState();
+        aspect.setState( skinState() );
 
     return storedHint( aspect, status );
 }
@@ -1040,6 +1042,11 @@ QskSkin* QskSkinnable::effectiveSkin() const
         skin = m_data->skinlet->skin();
 
     return skin ? skin : qskSetup->skin();
+}
+
+QskAspect::Placement QskSkinnable::effectivePlacement() const
+{
+    return QskAspect::NoPlacement;
 }
 
 void QskSkinnable::updateNode( QSGNode* parentNode )

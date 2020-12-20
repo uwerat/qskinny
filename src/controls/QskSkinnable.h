@@ -221,11 +221,6 @@ inline Qt::Alignment QskSkinnable::alignmentHint(
     return flagHint< Qt::Alignment >( aspect | QskAspect::Alignment, defaultAlignment );
 }
 
-inline QskAspect::Placement QskSkinnable::effectivePlacement() const
-{
-    return QskAspect::NoPlacement;
-}
-
 inline bool QskSkinnable::resetColor( QskAspect::Aspect aspect )
 {
     return resetHint( aspect | QskAspect::Color );
