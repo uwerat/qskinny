@@ -180,6 +180,7 @@ namespace QskAspect
         constexpr State state() const noexcept;
         State topState() const noexcept;
 
+        void setState( State ) noexcept;
         void addState( State ) noexcept;
         void clearState( State ) noexcept;
         void clearStates() noexcept;
@@ -362,6 +363,11 @@ namespace QskAspect
     inline constexpr State Aspect::state() const noexcept
     {
         return static_cast< State >( m_bits.states );
+    }
+
+    inline void Aspect::setState( State state ) noexcept
+    {
+        m_bits.states = state;
     }
 
     inline void Aspect::addState( State state ) noexcept
