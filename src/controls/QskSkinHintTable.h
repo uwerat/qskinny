@@ -20,7 +20,7 @@
 
 #include <unordered_map>
 
-class QskSkinHintTable
+class QSK_EXPORT QskSkinHintTable
 {
   public:
     QskSkinHintTable();
