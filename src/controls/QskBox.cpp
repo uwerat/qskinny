@@ -53,11 +53,9 @@ void QskBox::setPadding( const QMarginsF& padding )
         qMax( qreal( padding.right() ), qreal( 0.0 ) ),
         qMax( qreal( padding.bottom() ), qreal( 0.0 ) ) );
 
-    if ( pd != this->padding() )
+    if ( pd != paddingHint( Panel ) )
     {
-        const auto subControl = effectiveSubcontrol( Panel );
-
-        setPaddingHint( subControl, pd );
+        setPaddingHint( Panel, pd );
         resetImplicitSize();
 
         if ( polishOnResize() || autoLayoutChildren() )

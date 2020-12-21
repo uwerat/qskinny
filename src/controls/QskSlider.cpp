@@ -19,12 +19,6 @@ QSK_SYSTEM_STATE( QskSlider, Pressed, QskAspect::FirstSystemState << 2 )
 QSK_SYSTEM_STATE( QskSlider, Minimum, QskAspect::FirstSystemState << 3 )
 QSK_SYSTEM_STATE( QskSlider, Maximum, QskAspect::FirstSystemState << 4 )
 
-static inline QskAspect::Aspect qskAspectPosition( const QskSlider* slider )
-{
-    const auto subControl = slider->effectiveSubcontrol( QskSlider::Handle );
-    return subControl | QskAspect::Position | QskAspect::Metric;
-}
-
 class QskSlider::PrivateData
 {
   public:
@@ -113,7 +107,7 @@ bool QskSlider::isTracking() const
 
 void QskSlider::aboutToShow()
 {
-    setMetric( qskAspectPosition( this ), valueAsRatio() );
+    setMetric( Handle | QskAspect::Position, valueAsRatio() );
     Inherited::aboutToShow();
 }
 
@@ -238,13 +232,13 @@ void QskSlider::mouseReleaseEvent( QMouseEvent* event )
 
 qreal QskSlider::handlePosition() const
 {
-    return metric( qskAspectPosition( this ) );
+    return metric( Handle | QskAspect::Position );
 }
 
 void QskSlider::moveHandle()
 {
-    const auto hint = animation( qskAspectPosition( this ) | skinState() );
-    moveHandleTo( value(), hint );
+    const auto aspect = Handle | QskAspect::Metric | QskAspect::Position;
+    moveHandleTo( value(), animationHint( aspect | skinState() ) );
 }
 
 void QskSlider::moveHandleTo( qreal value, const QskAnimationHint& hint )
@@ -252,7 +246,8 @@ void QskSlider::moveHandleTo( qreal value, const QskAnimationHint& hint )
     setSkinStateFlag( QskSlider::Minimum, value <= minimum() );
     setSkinStateFlag( QskSlider::Maximum, value >= maximum() );
 
-    const auto aspect = qskAspectPosition( this );
+    auto aspect = Handle | QskAspect::Metric | QskAspect::Position;
+
     const qreal pos = valueAsRatio( value );
 
     if ( hint.duration > 0 )
@@ -260,6 +255,10 @@ void QskSlider::moveHandleTo( qreal value, const QskAnimationHint& hint )
         const qreal oldPos = metric( aspect );
         setMetric( aspect, pos );
 
+#if 1
+        // startTransition should do this: TODO ...
+        aspect.setSubControl( effectiveSubcontrol( Handle ) );
+#endif
         startTransition( aspect, hint, oldPos, pos );
     }
     else

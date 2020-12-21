@@ -171,7 +171,7 @@ void QskTextLabel::setFontRole( int role )
 {
     const int oldRole = fontRole();
 
-    QskSkinnable::setFontRole( effectiveSubcontrol( Text ), role );
+    QskSkinnable::setFontRole( Text, role );
 
     if ( oldRole != role )
     {
@@ -189,13 +189,13 @@ int QskTextLabel::fontRole() const
 
 void QskTextLabel::setTextColor( const QColor& color )
 {
-    const QColor oldColor = textColor();
-
-    QskSkinnable::setColor( effectiveSubcontrol( Text ), color );
-
-    if ( oldColor != color )
+    if ( color != textColor() )
     {
-        update();
+        QskSkinnable::setColor( Text, color );
+
+        if ( !m_data->text.isEmpty() )
+            update();
+
         Q_EMIT textColorChanged( color );
     }
 }
@@ -212,16 +212,15 @@ Qt::Alignment QskTextLabel::alignment() const
 
 void QskTextLabel::setAlignment( Qt::Alignment alignment )
 {
-    if ( alignment == this->alignment() )
-        return;
+    if ( alignment != this->alignment() )
+    {
+        setAlignmentHint( Text, alignment );
 
-    const auto subControl = effectiveSubcontrol( Text );
-    setAlignmentHint( subControl, alignment );
+        if ( !m_data->text.isEmpty() )
+            update();
 
-    if ( m_data->text.isEmpty() )
-        update();
-
-    Q_EMIT alignmentChanged();
+        Q_EMIT alignmentChanged();
+    }
 }
 
 QFont QskTextLabel::font() const

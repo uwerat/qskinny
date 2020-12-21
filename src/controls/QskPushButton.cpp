@@ -60,12 +60,9 @@ QskPushButton::~QskPushButton()
 
 void QskPushButton::setCorner( const QskCorner& corner )
 {
-    // effectiveSubcontrol TODO ...
-    const auto aspect = Panel | QskAspect::Shape;
-
-    if ( corner.metrics() != boxShapeHint( aspect ) )
+    if ( corner.metrics() != boxShapeHint( Panel ) )
     {
-        setBoxShapeHint( aspect, corner.metrics() );
+        setBoxShapeHint( Panel, corner.metrics() );
 
         update();
         Q_EMIT cornerChanged();
@@ -74,7 +71,7 @@ void QskPushButton::setCorner( const QskCorner& corner )
 
 QskCorner QskPushButton::corner() const
 {
-    const auto shape = boxShapeHint( Panel | QskAspect::Shape );
+    const auto shape = boxShapeHint( Panel );
 
 #if 1
     QskCorner corner;

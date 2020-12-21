@@ -179,7 +179,7 @@ void QskProgressBar::resetBarGradient()
 {
     using namespace QskAspect;
 
-    if ( resetColor( Bar | Vertical ) || resetHint( Bar | Horizontal ) )
+    if ( resetColor( Bar | Vertical ) || resetColor( Bar | Horizontal ) )
         update();
 }
 
@@ -192,7 +192,7 @@ void QskProgressBar::setExtent( qreal extent )
 {
     extent = qMax( extent, 0.0 );
 
-    const auto aspect = effectiveSubcontrol( Groove ) | QskAspect::Size;
+    const auto aspect = Groove | QskAspect::Size;
 
     if ( extent != metric( aspect ) )
     {

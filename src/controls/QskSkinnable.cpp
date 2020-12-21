@@ -111,6 +111,60 @@ static inline QVariant qskTypedNullValue( const QVariant& value )
     return QVariant( vType, nullptr );
 }
 
+static inline void qskSetFlag( QskSkinnable* skinnable,
+     const QskAspect::Aspect aspect, int flag )
+{
+    skinnable->setSkinHint( aspect | QskAspect::Flag, QVariant( flag ) );
+}
+
+static inline int qskFlag( const QskSkinnable* skinnable,
+    const QskAspect::Aspect aspect, QskSkinHintStatus* status = nullptr )
+{
+    return skinnable->effectiveHint( aspect | QskAspect::Flag, status ).toInt();
+}
+
+static inline void qskSetMetric( QskSkinnable* skinnable,
+     const QskAspect::Aspect aspect, const QVariant& metric )
+{
+    skinnable->setSkinHint( aspect | QskAspect::Metric, metric );
+}
+
+template< typename T >
+static inline void qskSetMetric( QskSkinnable* skinnable,
+    QskAspect::Aspect aspect, const T& metric )
+{
+    qskSetMetric( skinnable, aspect, QVariant::fromValue( metric ) );
+}
+
+template< typename T >
+static inline T qskMetric( const QskSkinnable* skinnable,
+    QskAspect::Aspect aspect, QskSkinHintStatus* status = nullptr )
+{
+    return skinnable->effectiveHint(
+        aspect | QskAspect::Metric, status ).value< T >();
+}
+
+static inline void qskSetColor( QskSkinnable* skinnable,
+    const QskAspect::Aspect aspect, const QVariant& color )
+{
+    skinnable->setSkinHint( aspect | QskAspect::Color, color );
+}
+
+template< typename T >
+static inline void qskSetColor( QskSkinnable* skinnable,
+    const QskAspect::Aspect aspect, const T& color )
+{
+    qskSetColor( skinnable, aspect, QVariant::fromValue( color ) );
+}
+
+template< typename T >
+static inline T qskColor( const QskSkinnable* skinnable,
+    QskAspect::Aspect aspect, QskSkinHintStatus* status = nullptr )
+{
+    return skinnable->effectiveHint(
+        aspect | QskAspect::Color, status ).value< T >();
+}
+
 class QskSkinnable::PrivateData
 {
   public:
@@ -197,7 +251,7 @@ const QskSkinHintTable& QskSkinnable::hintTable() const
 
 void QskSkinnable::setFlagHint( QskAspect::Aspect aspect, int flag )
 {
-    m_data->hintTable.setHint( aspect, QVariant( flag ) );
+    qskSetFlag( this, aspect, flag );
 }
 
 int QskSkinnable::flagHint( QskAspect::Aspect aspect ) const
@@ -205,10 +259,9 @@ int QskSkinnable::flagHint( QskAspect::Aspect aspect ) const
     return effectiveHint( aspect ).toInt();
 }
 
-void QskSkinnable::setAlignmentHint(
-    QskAspect::Aspect aspect, Qt::Alignment alignment )
+void QskSkinnable::setAlignmentHint( QskAspect::Aspect aspect, Qt::Alignment alignment )
 {
-    setFlagHint( aspect | QskAspect::Alignment, alignment );
+    qskSetFlag( this, aspect | QskAspect::Alignment, alignment );
 }
 
 bool QskSkinnable::resetAlignmentHint( QskAspect::Aspect aspect )
@@ -218,138 +271,132 @@ bool QskSkinnable::resetAlignmentHint( QskAspect::Aspect aspect )
 
 void QskSkinnable::setColor( QskAspect::Aspect aspect, const QColor& color )
 {
-    m_data->hintTable.setColor( aspect, color );
+    qskSetColor( this, aspect, color );
 }
 
 void QskSkinnable::setColor( QskAspect::Aspect aspect, Qt::GlobalColor color )
 {
-    m_data->hintTable.setColor( aspect, color );
+    qskSetColor( this, aspect, QColor( color ) );
 }
 
 void QskSkinnable::setColor( QskAspect::Aspect aspect, QRgb rgb )
 {
-    m_data->hintTable.setColor( aspect, rgb );
+    qskSetColor( this, aspect, QColor::fromRgba( rgb ) );
 }
 
 QColor QskSkinnable::color( QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
-    return effectiveHint( aspect | QskAspect::Color, status ).value< QColor >();
+    return qskColor< QColor >( this, aspect, status );
 }
 
 void QskSkinnable::setMetric( QskAspect::Aspect aspect, qreal metric )
 {
-    m_data->hintTable.setMetric( aspect, metric );
+    qskSetMetric( this, aspect, metric );
 }
 
 qreal QskSkinnable::metric( QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
-    return effectiveHint( aspect | QskAspect::Metric, status ).toReal();
+    return qskMetric< qreal >( this, aspect, status );
 }
 
 void QskSkinnable::setStrutSizeHint(
     QskAspect::Aspect aspect, qreal width, qreal height )
 {
-    setStrutSizeHint( aspect, QSizeF( width, height ) );
+    qskSetMetric( this, aspect, QSizeF( width, height ) );
 }
 
 void QskSkinnable::setStrutSizeHint( const QskAspect::Aspect aspect, const QSizeF& strut )
 {
-    m_data->hintTable.setStrutSize( aspect, strut );
+    qskSetMetric( this, aspect, strut );
 }
 
 bool QskSkinnable::resetStrutSizeHint( const QskAspect::Aspect aspect )
 {
-    return resetHint( aspect | QskAspect::Metric | QskAspect::StrutSize );
+    return resetMetric( aspect | QskAspect::StrutSize );
 }
 
 QSizeF QskSkinnable::strutSizeHint(
     const QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
-    const auto asp = aspect | QskAspect::Metric | QskAspect::StrutSize;
-    return effectiveHint( asp, status ).value< QSizeF >();
+    return qskMetric< QSizeF >( this, aspect | QskAspect::StrutSize, status );
 }
 
 void QskSkinnable::setMarginHint( QskAspect::Aspect aspect, qreal margins )
 {
-    m_data->hintTable.setMargin( aspect, QskMargins( margins ) );
+    qskSetMetric( this, aspect | QskAspect::Margin, QskMargins( margins ) );
 }
 
 void QskSkinnable::setMarginHint( QskAspect::Aspect aspect, const QMarginsF& margins )
 {
-    m_data->hintTable.setMargin( aspect, margins );
+    qskSetMetric( this, aspect | QskAspect::Margin, QskMargins( margins ) );
 }
 
 bool QskSkinnable::resetMarginHint( QskAspect::Aspect aspect )
 {
-    const auto asp = aspect | QskAspect::Metric | QskAspect::Margin;
-    return resetHint( asp );
+    return resetMetric( aspect | QskAspect::Margin );
 }
 
 QMarginsF QskSkinnable::marginHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
-    const auto asp = aspect | QskAspect::Metric | QskAspect::Margin;
-    return effectiveHint( asp, status ).value< QskMargins >();
+    return qskMetric< QskMargins >( this, aspect | QskAspect::Margin, status );
 }
 
 void QskSkinnable::setPaddingHint( QskAspect::Aspect aspect, qreal padding )
 {
-    m_data->hintTable.setPadding( aspect, QskMargins( padding ) );
+    qskSetMetric( this, aspect | QskAspect::Padding, QskMargins( padding ) );
 }
 
 void QskSkinnable::setPaddingHint( QskAspect::Aspect aspect, const QMarginsF& padding )
 {
-    m_data->hintTable.setPadding( aspect, padding );
+    qskSetMetric( this, aspect | QskAspect::Padding, QskMargins( padding ) );
 }
 
 bool QskSkinnable::resetPaddingHint( QskAspect::Aspect aspect )
 {
-    const auto asp = aspect | QskAspect::Metric | QskAspect::Padding;
-    return resetHint( asp );
+    return resetMetric( aspect | QskAspect::Padding );
 }
 
 QMarginsF QskSkinnable::paddingHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
-    const auto asp = aspect | QskAspect::Metric | QskAspect::Padding;
-    return effectiveHint( asp, status ).value< QskMargins >();
+    return qskMetric< QskMargins >( this, aspect | QskAspect::Padding, status );
 }
 
 void QskSkinnable::setGradientHint(
     QskAspect::Aspect aspect, const QskGradient& gradient )
 {
-    m_data->hintTable.setGradient( aspect, gradient );
+    qskSetColor( this, aspect, gradient );
 }
 
 QskGradient QskSkinnable::gradientHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
-    return effectiveHint( aspect | QskAspect::Color, status ).value< QskGradient >();
+    return qskColor< QskGradient >( this, aspect, status );
 }
 
 void QskSkinnable::setBoxShapeHint(
     QskAspect::Aspect aspect, const QskBoxShapeMetrics& shape )
 {
-    m_data->hintTable.setBoxShape( aspect, shape );
+    qskSetMetric( this, aspect | QskAspect::Shape, shape );
 }
 
 bool QskSkinnable::resetBoxShapeHint( QskAspect::Aspect aspect )
 {
-    const auto asp = aspect | QskAspect::Metric | QskAspect::Shape;
-    return resetHint( asp );
+    return resetMetric( aspect | QskAspect::Shape );
 }
 
 QskBoxShapeMetrics QskSkinnable::boxShapeHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
-    const auto asp = aspect | QskAspect::Metric | QskAspect::Shape;
-    return effectiveHint( asp, status ).value< QskBoxShapeMetrics >();
+    return qskMetric< QskBoxShapeMetrics >(
+        this, aspect | QskAspect::Shape, status );
 }
 
 void QskSkinnable::setBoxBorderMetricsHint(
     QskAspect::Aspect aspect, const QskBoxBorderMetrics& border )
 {
-    m_data->hintTable.setBoxBorder( aspect, border );
+    qskSetMetric( this, aspect | QskAspect::Border, border );
 }
 
 bool QskSkinnable::resetBoxBorderMetricsHint( QskAspect::Aspect aspect )
@@ -361,45 +408,43 @@ bool QskSkinnable::resetBoxBorderMetricsHint( QskAspect::Aspect aspect )
 QskBoxBorderMetrics QskSkinnable::boxBorderMetricsHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
-    const auto asp = aspect | QskAspect::Metric | QskAspect::Border;
-    return effectiveHint( asp, status ).value< QskBoxBorderMetrics >();
+    return qskMetric< QskBoxBorderMetrics >(
+        this, aspect | QskAspect::Border, status );
 }
 
 void QskSkinnable::setBoxBorderColorsHint(
     QskAspect::Aspect aspect, const QskBoxBorderColors& colors )
 {
-    m_data->hintTable.setBoxBorderColors( aspect, colors );
+    qskSetColor( this, aspect | QskAspect::Border, colors );
 }
 
 bool QskSkinnable::resetBoxBorderColorsHint( QskAspect::Aspect aspect )
 {
-    const auto asp = aspect | QskAspect::Color | QskAspect::Border;
-    return resetHint( asp );
+    return resetColor( aspect | QskAspect::Border );
 }
 
 QskBoxBorderColors QskSkinnable::boxBorderColorsHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
-    const auto asp = aspect | QskAspect::Color | QskAspect::Border;
-    return effectiveHint( asp, status ).value< QskBoxBorderColors >();
+    return qskColor< QskBoxBorderColors >(
+        this, aspect | QskAspect::Border, status );
 }
 
 void QskSkinnable::setIntervalHint(
     QskAspect::Aspect aspect, const QskIntervalF& interval )
 {
-    m_data->hintTable.setInterval( aspect, interval );
+    qskSetMetric( this, aspect, interval );
 }
 
 QskIntervalF QskSkinnable::intervalHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
-    const auto hint = effectiveHint( aspect | QskAspect::Metric, status );
-    return hint.value< QskIntervalF >();
+    return qskMetric< QskIntervalF >( this, aspect, status );
 }
 
 void QskSkinnable::setSpacingHint( QskAspect::Aspect aspect, qreal spacing )
 {
-    m_data->hintTable.setSpacing( aspect, spacing );
+    qskSetMetric( this, aspect | QskAspect::Spacing, spacing );
 }
 
 bool QskSkinnable::resetSpacingHint( QskAspect::Aspect aspect )
@@ -410,18 +455,18 @@ bool QskSkinnable::resetSpacingHint( QskAspect::Aspect aspect )
 qreal QskSkinnable::spacingHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
-    return metric( aspect | QskAspect::Spacing, status );
+    return qskMetric< qreal >( this, aspect | QskAspect::Spacing, status );
 }
 
 void QskSkinnable::setFontRole( QskAspect::Aspect aspect, int role )
 {
-    m_data->hintTable.setFontRole( aspect, role );
+    qskSetFlag( this, aspect | QskAspect::FontRole, role );
 }
 
 int QskSkinnable::fontRole(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
-    return effectiveHint( aspect | QskAspect::FontRole, status ).toInt();
+    return qskFlag( this, aspect | QskAspect::FontRole, status );
 }
 
 QFont QskSkinnable::effectiveFont( QskAspect::Aspect aspect ) const
@@ -431,13 +476,13 @@ QFont QskSkinnable::effectiveFont( QskAspect::Aspect aspect ) const
 
 void QskSkinnable::setGraphicRole( QskAspect::Aspect aspect, int role )
 {
-    m_data->hintTable.setGraphicRole( aspect, role );
+    qskSetFlag( this, aspect | QskAspect::GraphicRole, role );
 }
 
 int QskSkinnable::graphicRole(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
-    return effectiveHint( aspect | QskAspect::GraphicRole, status ).toInt();
+    return qskFlag( this, aspect | QskAspect::GraphicRole, status );
 }
 
 QskColorFilter QskSkinnable::effectiveGraphicFilter(
@@ -460,7 +505,7 @@ QskColorFilter QskSkinnable::effectiveGraphicFilter(
 
     if ( !aspect.isAnimator() )
     {
-        QVariant v = animatedValue( aspect, nullptr );
+        auto v = animatedValue( aspect, nullptr );
         if ( v.canConvert< QskColorFilter >() )
             return v.value< QskColorFilter >();
 
@@ -485,13 +530,13 @@ QskColorFilter QskSkinnable::effectiveGraphicFilter(
     return effectiveSkin()->graphicFilter( hint.toInt() );
 }
 
-void QskSkinnable::setAnimation(
+void QskSkinnable::setAnimationHint(
     QskAspect::Aspect aspect, QskAnimationHint animation )
 {
     m_data->hintTable.setAnimation( aspect, animation );
 }
 
-QskAnimationHint QskSkinnable::animation(
+QskAnimationHint QskSkinnable::animationHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
     aspect.setAnimator( true );
@@ -502,7 +547,7 @@ QskAnimationHint QskSkinnable::effectiveAnimation(
     QskAspect::Type type, QskAspect::Subcontrol subControl,
     QskAspect::State state, QskSkinHintStatus* status ) const
 {
-    QskAspect::Aspect aspect = subControl | type | state;
+    auto aspect = subControl | type | state;
     aspect.setAnimator( true );
 
     QskAnimationHint hint;
@@ -543,8 +588,16 @@ QskAnimationHint QskSkinnable::effectiveAnimation(
     return hint;
 }
 
+void QskSkinnable::setSkinHint( QskAspect::Aspect aspect, const QVariant& skinHint )
+{
+    aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
+    m_data->hintTable.setHint( aspect, skinHint );
+}
+
 bool QskSkinnable::resetHint( QskAspect::Aspect aspect )
 {
+    aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
+
     if ( !m_data->hintTable.hasHint( aspect ) )
         return false;
 
@@ -557,7 +610,6 @@ bool QskSkinnable::resetHint( QskAspect::Aspect aspect )
      */
 
     auto a = aspect;
-    a.setSubControl( effectiveSubcontrol( a.subControl() ) );
     a.setPlacement( effectivePlacement() );
 
     if ( a.state() == QskAspect::NoState )
@@ -573,9 +625,7 @@ bool QskSkinnable::resetHint( QskAspect::Aspect aspect )
 QVariant QskSkinnable::effectiveHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
-    if ( const auto subControl = aspect.subControl() )
-        aspect.setSubControl( effectiveSubcontrol( subControl ) );
-
+    aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
     aspect.setPlacement( effectivePlacement() );
 
     if ( aspect.isAnimator() )

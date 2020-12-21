@@ -133,7 +133,7 @@ void QskGraphicLabel::setGraphicRole( int role )
 {
     const int oldRole = graphicRole();
 
-    QskSkinnable::setGraphicRole( effectiveSubcontrol( Graphic ), role );
+    QskSkinnable::setGraphicRole( Graphic, role );
 
     if ( role != oldRole )
     {

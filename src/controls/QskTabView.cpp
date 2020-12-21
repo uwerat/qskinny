@@ -45,7 +45,7 @@ QskTabView::QskTabView( Qsk::Position tabPosition, QQuickItem* parent )
     m_data->stackBox->setObjectName( QStringLiteral( "QskTabViewStackBox" ) );
 
 #if 1
-    const auto hint = animation( Page );
+    const auto hint = animationHint( Page );
     if ( hint.duration > 0 )
     {
         // When changing the skin, we have to update the animator. TODO ...

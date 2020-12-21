@@ -30,9 +30,9 @@ CustomSlider::CustomSlider( QQuickItem* parentItem )
     for ( auto state : { Pressed, Focused | Hovered, Hovered, Focused } )
         setColor( Handle | state, Orange600 );
 
-    setAnimation( QskSlider::Handle | QskAspect::Color, 1000 );
+    setAnimationHint( Handle | QskAspect::Color, 1000 );
     for ( auto state : { Focused | Hovered, Hovered, Focused } )
-        setAnimation( QskSlider::Handle | QskAspect::Color | state, 300 );
+        setAnimationHint( Handle | QskAspect::Color | state, 300 );
 
     // using an individual skinlet, not known by the skin
 

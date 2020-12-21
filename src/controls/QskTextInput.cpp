@@ -526,16 +526,14 @@ int QskTextInput::fontRole() const
 
 void QskTextInput::setFontRole( int role )
 {
-    const int oldRole = fontRole();
-
-    QskSkinnable::setFontRole( effectiveSubcontrol( Text ), role );
-
-    if ( oldRole != role )
+    if ( role != fontRole() )
     {
+        QskSkinnable::setFontRole( Text, role );
+
         polish();
         resetImplicitSize();
 
-        Qt::InputMethodQueries queries = Qt::ImCursorRectangle | Qt::ImFont;
+        auto queries = Qt::ImCursorRectangle | Qt::ImFont;
 #if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
         queries |= Qt::ImAnchorRectangle;
 #endif
@@ -549,9 +547,7 @@ void QskTextInput::setAlignment( Qt::Alignment alignment )
 {
     if ( alignment != this->alignment() )
     {
-        const auto subControl = effectiveSubcontrol( Text );
-        setAlignmentHint( subControl, alignment );
-
+        setAlignmentHint( Text, alignment );
         m_data->textInput->setAlignment( alignment );
 
         polish();

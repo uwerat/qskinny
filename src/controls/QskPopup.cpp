@@ -388,8 +388,7 @@ void QskPopup::setOverlay( bool on )
 {
     if ( hasOverlay() != on )
     {
-        const auto subControl = effectiveSubcontrol( QskPopup::Overlay );
-        setFlagHint( subControl | QskAspect::Style, on );
+        setFlagHint( Overlay | QskAspect::Style, on );
 
         update();
         Q_EMIT overlayChanged( on );

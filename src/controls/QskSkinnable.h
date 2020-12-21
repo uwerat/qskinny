@@ -143,9 +143,10 @@ class QSK_EXPORT QskSkinnable
 
     QskColorFilter effectiveGraphicFilter( QskAspect::Aspect ) const;
 
-    void setAnimation( QskAspect::Aspect, QskAnimationHint );
-    QskAnimationHint animation( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
+    void setAnimationHint( QskAspect::Aspect, QskAnimationHint );
+    QskAnimationHint animationHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
+    void setSkinHint( QskAspect::Aspect, const QVariant& );
     bool resetHint( QskAspect::Aspect );
 
     QskAnimationHint effectiveAnimation( QskAspect::Type, QskAspect::Subcontrol,

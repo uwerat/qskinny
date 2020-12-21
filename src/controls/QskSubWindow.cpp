@@ -62,8 +62,7 @@ void QskSubWindow::setDecorated( bool on )
     if ( on == isDecorated() )
         return;
 
-    const auto subControl = effectiveSubcontrol( QskSubWindow::Panel );
-    setFlagHint( subControl | QskAspect::Decoration, on );
+    setFlagHint( Panel | QskAspect::Decoration, on );
 
     resetImplicitSize(); // in case some parent wants to layout
 

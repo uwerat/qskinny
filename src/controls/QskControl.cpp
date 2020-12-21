@@ -185,9 +185,7 @@ void QskControl::setMargins( const QMarginsF& margins )
 
     if ( m != this->margins() )
     {
-        const auto subControl = effectiveSubcontrol( QskAspect::Control );
-
-        setMarginHint( subControl, m );
+        setMarginHint( QskAspect::Control, m );
         resetImplicitSize();
 
         Q_D( const QskControl );
