@@ -147,12 +147,12 @@ class QSK_EXPORT QskSkinnable
     QskAnimationHint animationHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 
     void setSkinHint( QskAspect::Aspect, const QVariant& );
-    bool resetHint( QskAspect::Aspect );
+    bool resetSkinHint( QskAspect::Aspect );
 
     QskAnimationHint effectiveAnimation( QskAspect::Type, QskAspect::Subcontrol,
         QskAspect::State, QskSkinHintStatus* status = nullptr ) const;
 
-    QVariant effectiveHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
+    QVariant effectiveSkinHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
     virtual QskAspect::Placement effectivePlacement() const;
 
     QskSkinHintStatus hintStatus( QskAspect::Aspect ) const;
@@ -209,7 +209,7 @@ class QSK_EXPORT QskSkinnable
 template< typename T >
 inline T QskSkinnable::flagHint( QskAspect::Aspect aspect, T defaultValue ) const
 {
-    const auto& hint = effectiveHint( aspect );
+    const auto& hint = effectiveSkinHint( aspect );
     if ( hint.isValid() && hint.canConvert< int >() )
         return static_cast< T >( hint.value< int >() );
 
@@ -224,17 +224,17 @@ inline Qt::Alignment QskSkinnable::alignmentHint(
 
 inline bool QskSkinnable::resetColor( QskAspect::Aspect aspect )
 {
-    return resetHint( aspect | QskAspect::Color );
+    return resetSkinHint( aspect | QskAspect::Color );
 }
 
 inline bool QskSkinnable::resetMetric( QskAspect::Aspect aspect )
 {
-    return resetHint( aspect | QskAspect::Metric );
+    return resetSkinHint( aspect | QskAspect::Metric );
 }
 
 inline bool QskSkinnable::resetFlagHint( QskAspect::Aspect aspect )
 {
-    return resetHint( aspect | QskAspect::Flag );
+    return resetSkinHint( aspect | QskAspect::Flag );
 }
 
 #endif

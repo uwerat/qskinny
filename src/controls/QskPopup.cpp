@@ -213,7 +213,7 @@ bool QskPopup::isFading() const
         return false;
 
     QskSkinHintStatus status;
-    (void) effectiveHint( m_data->faderAspect, &status );
+    (void) effectiveSkinHint( m_data->faderAspect, &status );
 
     return status.source == QskSkinHintStatus::Animator;
 }

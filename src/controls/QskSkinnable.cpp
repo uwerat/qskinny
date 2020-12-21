@@ -120,7 +120,7 @@ static inline void qskSetFlag( QskSkinnable* skinnable,
 static inline int qskFlag( const QskSkinnable* skinnable,
     const QskAspect::Aspect aspect, QskSkinHintStatus* status = nullptr )
 {
-    return skinnable->effectiveHint( aspect | QskAspect::Flag, status ).toInt();
+    return skinnable->effectiveSkinHint( aspect | QskAspect::Flag, status ).toInt();
 }
 
 static inline void qskSetMetric( QskSkinnable* skinnable,
@@ -140,7 +140,7 @@ template< typename T >
 static inline T qskMetric( const QskSkinnable* skinnable,
     QskAspect::Aspect aspect, QskSkinHintStatus* status = nullptr )
 {
-    return skinnable->effectiveHint(
+    return skinnable->effectiveSkinHint(
         aspect | QskAspect::Metric, status ).value< T >();
 }
 
@@ -161,7 +161,7 @@ template< typename T >
 static inline T qskColor( const QskSkinnable* skinnable,
     QskAspect::Aspect aspect, QskSkinHintStatus* status = nullptr )
 {
-    return skinnable->effectiveHint(
+    return skinnable->effectiveSkinHint(
         aspect | QskAspect::Color, status ).value< T >();
 }
 
@@ -256,7 +256,7 @@ void QskSkinnable::setFlagHint( QskAspect::Aspect aspect, int flag )
 
 int QskSkinnable::flagHint( QskAspect::Aspect aspect ) const
 {
-    return effectiveHint( aspect ).toInt();
+    return effectiveSkinHint( aspect ).toInt();
 }
 
 void QskSkinnable::setAlignmentHint( QskAspect::Aspect aspect, Qt::Alignment alignment )
@@ -401,8 +401,7 @@ void QskSkinnable::setBoxBorderMetricsHint(
 
 bool QskSkinnable::resetBoxBorderMetricsHint( QskAspect::Aspect aspect )
 {
-    const auto asp = aspect | QskAspect::Metric | QskAspect::Border;
-    return resetHint( asp );
+    return resetMetric( aspect | QskAspect::Border );
 }
 
 QskBoxBorderMetrics QskSkinnable::boxBorderMetricsHint(
@@ -540,7 +539,7 @@ QskAnimationHint QskSkinnable::animationHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
     aspect.setAnimator( true );
-    return effectiveHint( aspect, status ).value< QskAnimationHint >();
+    return effectiveSkinHint( aspect, status ).value< QskAnimationHint >();
 }
 
 QskAnimationHint QskSkinnable::effectiveAnimation(
@@ -594,7 +593,7 @@ void QskSkinnable::setSkinHint( QskAspect::Aspect aspect, const QVariant& skinHi
     m_data->hintTable.setHint( aspect, skinHint );
 }
 
-bool QskSkinnable::resetHint( QskAspect::Aspect aspect )
+bool QskSkinnable::resetSkinHint( QskAspect::Aspect aspect )
 {
     aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
 
@@ -622,7 +621,7 @@ bool QskSkinnable::resetHint( QskAspect::Aspect aspect )
     return oldHint != storedHint( a );
 }
 
-QVariant QskSkinnable::effectiveHint(
+QVariant QskSkinnable::effectiveSkinHint(
     QskAspect::Aspect aspect, QskSkinHintStatus* status ) const
 {
     aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
@@ -645,7 +644,7 @@ QskSkinHintStatus QskSkinnable::hintStatus( QskAspect::Aspect aspect ) const
 {
     QskSkinHintStatus status;
 
-    ( void ) effectiveHint( aspect, &status );
+    ( void ) effectiveSkinHint( aspect, &status );
     return status;
 }
 
