@@ -11,37 +11,12 @@
 
 #include <qmetaobject.h>
 #include <qnamespace.h>
-#include <functional>
 
-/*
-    hack to run moc over a namespace, what is not
-    yet supported with Qt 5.6
- */
-
-#ifdef Q_MOC_RUN
-
-#define QSK_NAMESPACE( name ) struct name
-#define QSK_ENUM( name ) Q_GADGET Q_ENUM( name )
-
-#else
-
-#define QSK_NAMESPACE( name ) namespace name
-#define QSK_ENUM( name ) \
-    inline constexpr const QMetaObject* qt_getEnumMetaObject(name) noexcept { return &staticMetaObject; } \
-    inline constexpr const char* qt_getEnumName(name) noexcept { return #name; }
-
-#endif
-
-QSK_NAMESPACE( QskAspect )
+class QSK_EXPORT QskAspect
 {
-    extern QSK_EXPORT const QMetaObject staticMetaObject;
+    Q_GADGET
 
-    enum Subcontrol : quint16
-    {
-        Control        = 0,
-        LastSubcontrol = ( 1 << 12 ) - 1
-    };
-    QSK_ENUM( Subcontrol )
+  public:
 
     enum Type : quint8
     {
@@ -49,9 +24,9 @@ QSK_NAMESPACE( QskAspect )
         Metric = 1,
         Color  = 2,
     };
-    QSK_ENUM( Type )
+    Q_ENUM( Type )
 
-    constexpr uint typeCount = 3;
+    static constexpr uint typeCount = 3;
 
     enum FlagPrimitive : quint8
     {
@@ -65,7 +40,7 @@ QSK_NAMESPACE( QskAspect )
         GraphicRole,
         FontRole
     };
-    QSK_ENUM( FlagPrimitive )
+    Q_ENUM( FlagPrimitive )
 
     enum MetricPrimitive : quint8
     {
@@ -85,7 +60,7 @@ QSK_NAMESPACE( QskAspect )
         Shape,
         Border
     };
-    QSK_ENUM( MetricPrimitive )
+    Q_ENUM( MetricPrimitive )
 
     enum ColorPrimitive : quint8
     {
@@ -95,7 +70,7 @@ QSK_NAMESPACE( QskAspect )
         StyleColor,
         LinkColor
     };
-    QSK_ENUM( ColorPrimitive )
+    Q_ENUM( ColorPrimitive )
 
     enum Placement : quint8
     {
@@ -109,7 +84,15 @@ QSK_NAMESPACE( QskAspect )
         Right  = 3,
         Bottom = 4
     };
-    QSK_ENUM( Placement )
+    Q_ENUM( Placement )
+
+    enum Subcontrol : quint16
+    {
+        Control        = 0,
+        LastSubcontrol = ( 1 << 12 ) - 1
+    };
+
+    Q_ENUM( Subcontrol )
 
     enum State : quint16
     {
@@ -123,448 +106,439 @@ QSK_NAMESPACE( QskAspect )
         AllUserStates    =   0x0FF0,
         AllStates        =   0xFFFF
     };
-    QSK_ENUM( State )
-}
+    Q_ENUM( State )
+
+    constexpr QskAspect() noexcept;
+    constexpr QskAspect( Subcontrol ) noexcept;
+    constexpr QskAspect( Type ) noexcept;
+    constexpr QskAspect( Placement ) noexcept;
+
+    constexpr QskAspect( const QskAspect& ) noexcept = default;
+    constexpr QskAspect( QskAspect&& ) noexcept = default;
+
+    QskAspect& operator=( const QskAspect& ) noexcept = default;
+
+    bool operator==( const QskAspect& ) const noexcept;
+    bool operator!=( const QskAspect& ) const noexcept;
+
+    bool operator<( const QskAspect& ) const noexcept;
+
+    constexpr QskAspect operator|( Subcontrol ) const noexcept;
+    constexpr QskAspect operator|( Type ) const noexcept;
+    constexpr QskAspect operator|( FlagPrimitive ) const noexcept;
+    constexpr QskAspect operator|( MetricPrimitive ) const noexcept;
+    constexpr QskAspect operator|( ColorPrimitive ) const noexcept;
+    constexpr QskAspect operator|( Placement ) const noexcept;
+    constexpr QskAspect operator|( State ) const noexcept;
+
+    constexpr quint64 value() const noexcept;
+
+    constexpr bool isAnimator() const noexcept;
+    void setAnimator( bool on ) noexcept;
+
+    constexpr Subcontrol subControl() const noexcept;
+    void setSubControl( Subcontrol ) noexcept;
+
+    constexpr Type type() const noexcept;
+    void setType( Type ) noexcept;
+
+    constexpr bool isMetric() const noexcept;
+    constexpr bool isColor() const noexcept;
+    constexpr bool isFlag() const noexcept;
+
+    constexpr Placement placement() const noexcept;
+    void setPlacement( Placement ) noexcept;
+
+    constexpr State state() const noexcept;
+    State topState() const noexcept;
+
+    void setState( State ) noexcept;
+    void addState( State ) noexcept;
+    void clearState( State ) noexcept;
+    void clearStates() noexcept;
+
+    constexpr FlagPrimitive flagPrimitive() const noexcept;
+    constexpr ColorPrimitive colorPrimitive() const noexcept;
+    constexpr MetricPrimitive metricPrimitive() const noexcept;
+
+    void setPrimitive( Type, uint primitive ) noexcept;
+    constexpr uint primitive() const noexcept;
+    void clearPrimitive() noexcept;
+
+    const char* toPrintable() const;
+
+    static State registerState( const QMetaObject*, State, const char* );
+    static Subcontrol nextSubcontrol( const QMetaObject*, const char* );
+
+    static QByteArray subControlName( Subcontrol );
+    static QVector< QByteArray > subControlNames( const QMetaObject* = nullptr );
+    static QVector< Subcontrol > subControls( const QMetaObject* );
+
+    static quint8 primitiveCount( Type );
+    static void reservePrimitives( Type, quint8 count );
+
+  private:
+    constexpr QskAspect( Subcontrol, Type, Placement ) noexcept;
+
+    constexpr QskAspect( uint subControl, uint type, bool isAnimator,
+        uint primitive, uint placement, uint states ) noexcept;
+
+    struct Bits
+    {
+        uint subControl : 12;
+
+        uint type : 3;
+        uint isAnimator : 1;
+
+        uint primitive : 5;
+        uint placement : 3;
+        uint reserved1 : 8;
+
+        uint states : 16;
+        uint reserved2 : 16;
+    };
+
+    union
+    {
+        Bits m_bits;
+        quint64 m_value;
+    };
+};
 
 QSK_DECLARE_OPERATORS_FOR_FLAGS( QskAspect::State )
 
-#undef QSK_NAMESPACE
-#undef QSK_ENUM
-
-namespace QskAspect
+inline constexpr QskAspect::QskAspect() noexcept
+    : QskAspect( Control, Flag, NoPlacement )
 {
-    class QSK_EXPORT Aspect
-    {
-      public:
-        constexpr Aspect() noexcept;
-        constexpr Aspect( Subcontrol ) noexcept;
-        constexpr Aspect( Type ) noexcept;
-        constexpr Aspect( Placement ) noexcept;
-
-        constexpr Aspect( const Aspect& ) noexcept = default;
-        constexpr Aspect( Aspect&& ) noexcept = default;
-
-        Aspect& operator=( const QskAspect::Aspect& ) noexcept = default;
-
-        bool operator==( const Aspect& ) const noexcept;
-        bool operator!=( const Aspect& ) const noexcept;
-
-        bool operator<( const Aspect& ) const noexcept;
-
-        constexpr Aspect operator|( Subcontrol ) const noexcept;
-        constexpr Aspect operator|( Type ) const noexcept;
-        constexpr Aspect operator|( FlagPrimitive ) const noexcept;
-        constexpr Aspect operator|( MetricPrimitive ) const noexcept;
-        constexpr Aspect operator|( ColorPrimitive ) const noexcept;
-        constexpr Aspect operator|( Placement ) const noexcept;
-        constexpr Aspect operator|( State ) const noexcept;
-
-        constexpr quint64 value() const noexcept;
-
-        constexpr bool isAnimator() const noexcept;
-        void setAnimator( bool on ) noexcept;
-
-        constexpr bool isMetric() const noexcept;
-        constexpr bool isColor() const noexcept;
-        constexpr bool isFlag() const noexcept;
-
-        constexpr Subcontrol subControl() const noexcept;
-        void setSubControl( Subcontrol ) noexcept;
-
-        constexpr Type type() const noexcept;
-        void setType( Type ) noexcept;
-
-        constexpr Placement placement() const noexcept;
-        void setPlacement( Placement ) noexcept;
-
-        constexpr State state() const noexcept;
-        State topState() const noexcept;
-
-        void setState( State ) noexcept;
-        void addState( State ) noexcept;
-        void clearState( State ) noexcept;
-        void clearStates() noexcept;
-
-        constexpr FlagPrimitive flagPrimitive() const noexcept;
-        constexpr ColorPrimitive colorPrimitive() const noexcept;
-        constexpr MetricPrimitive metricPrimitive() const noexcept;
-
-        void setPrimitive( Type, uint primitive ) noexcept;
-        constexpr uint primitive() const noexcept;
-        void clearPrimitive() noexcept;
-
-        const char* toPrintable() const;
-
-      private:
-        constexpr Aspect( Subcontrol, Type, Placement ) noexcept;
-
-        constexpr Aspect( uint subControl, uint type, bool isAnimator,
-            uint primitive, uint placement, uint states ) noexcept;
-
-        struct Bits
-        {
-            uint subControl : 12;
-
-            uint type : 3;
-            uint isAnimator : 1;
-
-            uint primitive : 5;
-            uint placement : 3;
-            uint reserved1 : 8;
-
-            uint states : 16;
-            uint reserved2 : 16;
-        };
-
-        union
-        {
-            Bits m_bits;
-            quint64 m_value;
-        };
-    };
-
-    inline constexpr Aspect::Aspect() noexcept
-        : Aspect( Control, Flag, NoPlacement )
-    {
-    }
-
-    inline constexpr Aspect::Aspect( Subcontrol subControl ) noexcept
-        : Aspect( subControl, Flag, NoPlacement )
-    {
-    }
-
-    inline constexpr Aspect::Aspect( Type type ) noexcept
-        : Aspect( Control, type, NoPlacement )
-    {
-    }
-
-    inline constexpr Aspect::Aspect( Placement placement ) noexcept
-        : Aspect( Control, Flag, placement )
-    {
-    }
-
-    inline constexpr Aspect::Aspect(
-            Subcontrol subControl, Type type, Placement placement ) noexcept
-        : Aspect( subControl, type, false, 0, placement, NoState )
-    {
-    }
-
-    inline constexpr Aspect::Aspect( uint subControl, uint type, bool isAnimator,
-            uint primitive, uint placement, uint states ) noexcept
-        : m_bits { subControl, type, isAnimator, primitive, placement, 0, states, 0 }
-    {
-    }
-
-    inline bool Aspect::operator==( const Aspect& other ) const noexcept
-    {
-        return m_value == other.m_value;
-    }
-
-    inline bool Aspect::operator!=( const Aspect& other ) const noexcept
-    {
-        return m_value != other.m_value;
-    }
-
-    inline bool Aspect::operator<( const Aspect& other ) const noexcept
-    {
-        return m_value < other.m_value;
-    }
-
-    inline constexpr Aspect Aspect::operator|( Subcontrol subControl ) const noexcept
-    {
-        return Aspect( subControl, m_bits.type, m_bits.isAnimator,
-            m_bits.primitive, m_bits.placement, m_bits.states );
-    }
-
-    inline constexpr Aspect Aspect::operator|( Type type ) const noexcept
-    {
-        return Aspect( m_bits.subControl, type, m_bits.isAnimator,
-            m_bits.primitive, m_bits.placement, m_bits.states );
-    }
-
-    inline constexpr Aspect Aspect::operator|( FlagPrimitive primitive ) const noexcept
-    {
-        return Aspect( m_bits.subControl, m_bits.type, m_bits.isAnimator,
-            primitive, m_bits.placement, m_bits.states );
-    }
-
-    inline constexpr Aspect Aspect::operator|( MetricPrimitive primitive ) const noexcept
-    {
-        return operator|( static_cast< FlagPrimitive >( primitive ) );
-    }
-
-    inline constexpr Aspect Aspect::operator|( ColorPrimitive primitive ) const noexcept
-    {
-        return operator|( static_cast< FlagPrimitive >( primitive ) );
-    }
-
-    inline constexpr Aspect Aspect::operator|( Placement placement ) const noexcept
-    {
-        return Aspect( m_bits.subControl, m_bits.type, m_bits.isAnimator,
-            m_bits.primitive, placement, m_bits.states );
-    }
-
-    inline constexpr Aspect Aspect::operator|( State state ) const noexcept
-    {
-        return Aspect( m_bits.subControl, m_bits.type, m_bits.isAnimator,
-            m_bits.primitive, m_bits.placement, m_bits.states | state );
-    }
-
-    inline constexpr quint64 Aspect::value() const noexcept
-    {
-        return m_value;
-    }
-
-    inline constexpr bool Aspect::isAnimator() const noexcept
-    {
-        return m_bits.isAnimator;
-    }
-
-    inline void Aspect::setAnimator( bool on ) noexcept
-    {
-        m_bits.isAnimator = on;
-    }
-
-    inline constexpr Subcontrol Aspect::subControl() const noexcept
-    {
-        return static_cast< Subcontrol >( m_bits.subControl );
-    }
-
-    inline void Aspect::setSubControl( Subcontrol subControl ) noexcept
-    {
-        m_bits.subControl = subControl;
-    }
-
-    inline constexpr Type Aspect::type() const noexcept
-    {
-        return static_cast< Type >( m_bits.type );
-    }
-
-    inline void Aspect::setType( Type type ) noexcept
-    {
-        m_bits.type = type;
-    }
-
-    inline constexpr bool Aspect::isMetric() const noexcept
-    {
-        return type() == Metric;
-    }
-
-    inline constexpr bool Aspect::isColor() const noexcept
-    {
-        return type() == Color;
-    }
-
-    inline constexpr bool Aspect::isFlag() const noexcept
-    {
-        return type() == Flag;
-    }
-
-    inline constexpr State Aspect::state() const noexcept
-    {
-        return static_cast< State >( m_bits.states );
-    }
-
-    inline void Aspect::setState( State state ) noexcept
-    {
-        m_bits.states = state;
-    }
-
-    inline void Aspect::addState( State state ) noexcept
-    {
-        m_bits.states |= state;
-    }
-
-    inline void Aspect::clearState( State state ) noexcept
-    {
-        m_bits.states &= ~state;
-    }
-
-    inline void Aspect::clearStates() noexcept
-    {
-        m_bits.states = 0;
-    }
-
-    inline constexpr FlagPrimitive Aspect::flagPrimitive() const noexcept
-    {
-        return ( m_bits.type == Flag )
-            ?  static_cast< FlagPrimitive >( m_bits.primitive )
-            : NoFlagPrimitive;
-    }
-
-    inline constexpr ColorPrimitive Aspect::colorPrimitive() const noexcept
-    {
-        return ( m_bits.type == Color )
-            ?  static_cast< ColorPrimitive >( m_bits.primitive )
-            : NoColorPrimitive;
-    }
-
-    inline constexpr MetricPrimitive Aspect::metricPrimitive() const noexcept
-    {
-        return ( m_bits.type == Metric )
-            ? static_cast< MetricPrimitive >( m_bits.primitive )
-            : NoMetricPrimitive;
-    }
-
-    inline constexpr uint Aspect::primitive() const noexcept
-    {
-        return m_bits.primitive;
-    }
-
-    inline void Aspect::setPrimitive( Type type, uint primitive ) noexcept
-    {
-        m_bits.type = type;
-        m_bits.primitive = primitive;
-    }
-
-    inline void Aspect::clearPrimitive() noexcept
-    {
-        m_bits.primitive = 0;
-    }
-
-    inline constexpr Placement Aspect::placement() const noexcept
-    {
-        return static_cast< Placement >( m_bits.placement );
-    }
-
-    inline void Aspect::setPlacement( Placement placement ) noexcept
-    {
-        m_bits.placement = placement;
-    }
-
-    inline constexpr Aspect operator|(
-        State state, const Aspect& aspect ) noexcept
-    {
-        return aspect | state;
-    }
-
-    inline constexpr Aspect operator|(
-        Subcontrol subControl, const Aspect& aspect ) noexcept
-    {
-        return aspect | subControl;
-    }
-
-    inline constexpr Aspect operator|(
-        Type type, const Aspect& aspect ) noexcept
-    {
-        return aspect | type;
-    }
-
-    inline constexpr Aspect operator|(
-        Placement placement, const Aspect& aspect ) noexcept
-    {
-        return aspect | placement;
-    }
-
-    inline constexpr Aspect operator|(
-        Subcontrol subControl, Type type ) noexcept
-    {
-        return Aspect( subControl ) | type;
-    }
-
-    inline constexpr Aspect operator|( Type type, Subcontrol subControl ) noexcept
-    {
-        return subControl | type;
-    }
-
-    inline constexpr Aspect operator|( Subcontrol subControl, State state ) noexcept
-    {
-        return Aspect( subControl ) | state;
-    }
-
-    inline constexpr Aspect operator|( Type type, Placement placement ) noexcept
-    {
-        return Aspect( type ) | placement;
-    }
-
-    inline constexpr Aspect operator|( Placement placement, Type type ) noexcept
-    {
-        return type | placement;
-    }
-
-    inline constexpr Aspect operator|( State state, Subcontrol subControl ) noexcept
-    {
-        return subControl | state;
-    }
-
-    inline constexpr Aspect operator|(
-        Subcontrol subControl, FlagPrimitive primitive ) noexcept
-    {
-        return Aspect( subControl ) | primitive;
-    }
-
-    inline constexpr Aspect operator|(
-        FlagPrimitive primitive, Subcontrol subControl ) noexcept
-    {
-        return subControl | primitive;
-    }
-
-    inline constexpr Aspect operator|(
-        Subcontrol subControl, ColorPrimitive primitive ) noexcept
-    {
-        return Aspect( subControl ) | primitive;
-    }
-
-    inline constexpr Aspect operator|(
-        ColorPrimitive primitive, Subcontrol subControl ) noexcept
-    {
-        return subControl | primitive;
-    }
-
-    inline constexpr Aspect operator|(
-        Subcontrol subControl, MetricPrimitive primitive ) noexcept
-    {
-        return Aspect( subControl ) | primitive;
-    }
-
-    inline constexpr Aspect operator|(
-        MetricPrimitive primitive, Subcontrol subControl ) noexcept
-    {
-        return subControl | primitive;
-    }
-
-    inline constexpr Aspect operator|(
-        Subcontrol subControl, Placement placement ) noexcept
-    {
-        return Aspect( subControl ) | placement;
-    }
-
-    inline constexpr Aspect operator|(
-        Placement placement, Subcontrol subControl ) noexcept
-    {
-        return subControl | placement;
-    }
-
-    QSK_EXPORT State registerState( const QMetaObject*, State, const char* );
-    QSK_EXPORT Subcontrol nextSubcontrol( const QMetaObject*, const char* );
-
-    QSK_EXPORT QByteArray subControlName( Subcontrol );
-    QSK_EXPORT QVector< QByteArray > subControlNames( const QMetaObject* = nullptr );
-    QSK_EXPORT QVector< Subcontrol > subControls( const QMetaObject* );
-
-    QSK_EXPORT quint8 primitiveCount( Type );
-    QSK_EXPORT void reservePrimitives( Type, quint8 count );
-
+}
+
+inline constexpr QskAspect::QskAspect( Subcontrol subControl ) noexcept
+    : QskAspect( subControl, Flag, NoPlacement )
+{
+}
+
+inline constexpr QskAspect::QskAspect( Type type ) noexcept
+    : QskAspect( Control, type, NoPlacement )
+{
+}
+
+inline constexpr QskAspect::QskAspect( Placement placement ) noexcept
+    : QskAspect( Control, Flag, placement )
+{
+}
+
+inline constexpr QskAspect::QskAspect(
+        Subcontrol subControl, Type type, Placement placement ) noexcept
+    : QskAspect( subControl, type, false, 0, placement, NoState )
+{
+}
+
+inline constexpr QskAspect::QskAspect( uint subControl, uint type, bool isAnimator,
+        uint primitive, uint placement, uint states ) noexcept
+    : m_bits { subControl, type, isAnimator, primitive, placement, 0, states, 0 }
+{
+}
+
+inline bool QskAspect::operator==( const QskAspect& other ) const noexcept
+{
+    return m_value == other.m_value;
+}
+
+inline bool QskAspect::operator!=( const QskAspect& other ) const noexcept
+{
+    return m_value != other.m_value;
+}
+
+inline bool QskAspect::operator<( const QskAspect& other ) const noexcept
+{
+    return m_value < other.m_value;
+}
+
+inline constexpr QskAspect QskAspect::operator|( Subcontrol subControl ) const noexcept
+{
+    return QskAspect( subControl, m_bits.type, m_bits.isAnimator,
+        m_bits.primitive, m_bits.placement, m_bits.states );
+}
+
+inline constexpr QskAspect QskAspect::operator|( Type type ) const noexcept
+{
+    return QskAspect( m_bits.subControl, type, m_bits.isAnimator,
+        m_bits.primitive, m_bits.placement, m_bits.states );
+}
+
+inline constexpr QskAspect QskAspect::operator|( FlagPrimitive primitive ) const noexcept
+{
+    return QskAspect( m_bits.subControl, m_bits.type, m_bits.isAnimator,
+        primitive, m_bits.placement, m_bits.states );
+}
+
+inline constexpr QskAspect QskAspect::operator|( MetricPrimitive primitive ) const noexcept
+{
+    return operator|( static_cast< FlagPrimitive >( primitive ) );
+}
+
+inline constexpr QskAspect QskAspect::operator|( ColorPrimitive primitive ) const noexcept
+{
+    return operator|( static_cast< FlagPrimitive >( primitive ) );
+}
+
+inline constexpr QskAspect QskAspect::operator|( Placement placement ) const noexcept
+{
+    return QskAspect( m_bits.subControl, m_bits.type, m_bits.isAnimator,
+        m_bits.primitive, placement, m_bits.states );
+}
+
+inline constexpr QskAspect QskAspect::operator|( State state ) const noexcept
+{
+    return QskAspect( m_bits.subControl, m_bits.type, m_bits.isAnimator,
+        m_bits.primitive, m_bits.placement, m_bits.states | state );
+}
+
+inline constexpr quint64 QskAspect::value() const noexcept
+{
+    return m_value;
+}
+
+inline constexpr bool QskAspect::isAnimator() const noexcept
+{
+    return m_bits.isAnimator;
+}
+
+inline void QskAspect::setAnimator( bool on ) noexcept
+{
+    m_bits.isAnimator = on;
+}
+
+inline constexpr QskAspect::Subcontrol QskAspect::subControl() const noexcept
+{
+    return static_cast< Subcontrol >( m_bits.subControl );
+}
+
+inline void QskAspect::setSubControl( Subcontrol subControl ) noexcept
+{
+    m_bits.subControl = subControl;
+}
+
+inline constexpr QskAspect::Type QskAspect::type() const noexcept
+{
+    return static_cast< Type >( m_bits.type );
+}
+
+inline void QskAspect::setType( Type type ) noexcept
+{
+    m_bits.type = type;
+}
+
+inline constexpr bool QskAspect::isMetric() const noexcept
+{
+    return type() == Metric;
+}
+
+inline constexpr bool QskAspect::isColor() const noexcept
+{
+    return type() == Color;
+}
+
+inline constexpr bool QskAspect::isFlag() const noexcept
+{
+    return type() == Flag;
+}
+
+inline constexpr QskAspect::State QskAspect::state() const noexcept
+{
+    return static_cast< State >( m_bits.states );
+}
+
+inline void QskAspect::setState( State state ) noexcept
+{
+    m_bits.states = state;
+}
+
+inline void QskAspect::addState( State state ) noexcept
+{
+    m_bits.states |= state;
+}
+
+inline void QskAspect::clearState( State state ) noexcept
+{
+    m_bits.states &= ~state;
+}
+
+inline void QskAspect::clearStates() noexcept
+{
+    m_bits.states = 0;
+}
+
+inline constexpr QskAspect::FlagPrimitive QskAspect::flagPrimitive() const noexcept
+{
+    return ( m_bits.type == Flag )
+        ?  static_cast< FlagPrimitive >( m_bits.primitive ) : NoFlagPrimitive;
+}
+
+inline constexpr QskAspect::ColorPrimitive QskAspect::colorPrimitive() const noexcept
+{
+    return ( m_bits.type == Color )
+        ?  static_cast< ColorPrimitive >( m_bits.primitive ) : NoColorPrimitive;
+}
+
+inline constexpr QskAspect::MetricPrimitive QskAspect::metricPrimitive() const noexcept
+{
+    return ( m_bits.type == Metric )
+        ? static_cast< MetricPrimitive >( m_bits.primitive ) : NoMetricPrimitive;
+}
+
+inline constexpr uint QskAspect::primitive() const noexcept
+{
+    return m_bits.primitive;
+}
+
+inline void QskAspect::setPrimitive( Type type, uint primitive ) noexcept
+{
+    m_bits.type = type;
+    m_bits.primitive = primitive;
+}
+
+inline void QskAspect::clearPrimitive() noexcept
+{
+    m_bits.primitive = 0;
+}
+
+inline constexpr QskAspect::Placement QskAspect::placement() const noexcept
+{
+    return static_cast< Placement >( m_bits.placement );
+}
+
+inline void QskAspect::setPlacement( Placement placement ) noexcept
+{
+    m_bits.placement = placement;
+}
+
+inline constexpr QskAspect operator|(
+    QskAspect::State state, const QskAspect& aspect ) noexcept
+{
+    return aspect | state;
+}
+
+inline constexpr QskAspect operator|(
+    QskAspect::Subcontrol subControl, const QskAspect& aspect ) noexcept
+{
+    return aspect | subControl;
+}
+
+inline constexpr QskAspect operator|(
+    QskAspect::Type type, const QskAspect& aspect ) noexcept
+{
+    return aspect | type;
+}
+
+inline constexpr QskAspect operator|(
+    QskAspect::Placement placement, const QskAspect& aspect ) noexcept
+{
+    return aspect | placement;
+}
+
+inline constexpr QskAspect operator|(
+    QskAspect::Subcontrol subControl, QskAspect::Type type ) noexcept
+{
+    return QskAspect( subControl ) | type;
+}
+
+inline constexpr QskAspect operator|(
+    QskAspect::Type type, QskAspect::Subcontrol subControl ) noexcept
+{
+    return subControl | type;
+}
+
+inline constexpr QskAspect operator|(
+    QskAspect::Subcontrol subControl, QskAspect::State state ) noexcept
+{
+    return QskAspect( subControl ) | state;
+}
+
+inline constexpr QskAspect operator|(
+    QskAspect::Type type, QskAspect::Placement placement ) noexcept
+{
+    return QskAspect( type ) | placement;
+}
+
+inline constexpr QskAspect operator|(
+    QskAspect::Placement placement, QskAspect::Type type ) noexcept
+{
+    return type | placement;
+}
+
+inline constexpr QskAspect operator|(
+    QskAspect::State state, QskAspect::Subcontrol subControl ) noexcept
+{
+    return subControl | state;
+}
+
+inline constexpr QskAspect operator|(
+    QskAspect::Subcontrol subControl, QskAspect::FlagPrimitive primitive ) noexcept
+{
+    return QskAspect( subControl ) | primitive;
+}
+
+inline constexpr QskAspect operator|(
+    QskAspect::FlagPrimitive primitive, QskAspect::Subcontrol subControl ) noexcept
+{
+    return subControl | primitive;
+}
+
+inline constexpr QskAspect operator|(
+    QskAspect::Subcontrol subControl, QskAspect::ColorPrimitive primitive ) noexcept
+{
+    return QskAspect( subControl ) | primitive;
+}
+
+inline constexpr QskAspect operator|(
+    QskAspect::ColorPrimitive primitive, QskAspect::Subcontrol subControl ) noexcept
+{
+    return subControl | primitive;
+}
+
+inline constexpr QskAspect operator|(
+    QskAspect::Subcontrol subControl, QskAspect::MetricPrimitive primitive ) noexcept
+{
+    return QskAspect( subControl ) | primitive;
+}
+
+inline constexpr QskAspect operator|(
+    QskAspect::MetricPrimitive primitive, QskAspect::Subcontrol subControl ) noexcept
+{
+    return subControl | primitive;
+}
+
+inline constexpr QskAspect operator|(
+    QskAspect::Subcontrol subControl, QskAspect::Placement placement ) noexcept
+{
+    return QskAspect( subControl ) | placement;
+}
+
+inline constexpr QskAspect operator|(
+    QskAspect::Placement placement, QskAspect::Subcontrol subControl ) noexcept
+{
+    return subControl | placement;
 }
 
 namespace std
 {
-    template< > struct hash< QskAspect::Aspect >
+    template< > struct hash< QskAspect >
     {
-        constexpr size_t operator()( const QskAspect::Aspect& aspect ) const noexcept
+        constexpr size_t operator()( const QskAspect& aspect ) const noexcept
         {
             return aspect.value();
         }
     };
 }
 
-Q_DECLARE_TYPEINFO( QskAspect::Aspect, Q_MOVABLE_TYPE );
+Q_DECLARE_TYPEINFO( QskAspect, Q_MOVABLE_TYPE );
 
 #ifndef QT_NO_DEBUG_STREAM
 
 class QDebug;
 
-QSK_EXPORT QDebug operator<<( QDebug, QskAspect::Aspect );
+QSK_EXPORT QDebug operator<<( QDebug, QskAspect );
 QSK_EXPORT QDebug operator<<( QDebug, QskAspect::Type );
 QSK_EXPORT QDebug operator<<( QDebug, QskAspect::Subcontrol );
 
@@ -576,7 +550,7 @@ QSK_EXPORT QDebug operator<<( QDebug, QskAspect::Placement );
 QSK_EXPORT QDebug operator<<( QDebug, QskAspect::State );
 
 QSK_EXPORT void qskDebugState( QDebug, const QMetaObject*, QskAspect::State );
-QSK_EXPORT void qskDebugAspect( QDebug, const QMetaObject*, QskAspect::Aspect );
+QSK_EXPORT void qskDebugAspect( QDebug, const QMetaObject*, QskAspect );
 
 #endif
 

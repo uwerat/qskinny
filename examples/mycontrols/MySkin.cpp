@@ -78,7 +78,7 @@ class MySkin : public QskSkin
         QRgb baseColor, QRgb baseTextColor,
         QRgb foregroundColor, QRgb foregroundTextColor )
     {
-        using namespace QskAspect;
+        using A = QskAspect;
         using Q = MyToggleButton;
 
         for( auto subControl : { Q::UncheckedLabel, Q::CheckedLabel } )
@@ -95,7 +95,7 @@ class MySkin : public QskSkin
             setColor( subControl, color2 );
 
             setAlignment( subControl, Qt::AlignCenter );
-            setAnimation( subControl | Color, animator() );
+            setAnimation( subControl | A::Color, animator() );
         }
 
         for( auto subControl : { Q::UncheckedIcon, Q::CheckedIcon } )
@@ -111,7 +111,7 @@ class MySkin : public QskSkin
             setGraphicRole( subControl, role1 );
             setGraphicRole( subControl | Q::Checked, role2 );
 
-            setAnimation( subControl | Flag, animator() );
+            setAnimation( subControl | A::Flag, animator() );
         }
 
         setGradient( Q::Panel, baseColor );
@@ -143,15 +143,15 @@ class MySkin : public QskSkin
         setPadding( Q::CheckedPanel, 10 );
         setPadding( Q::UncheckedPanel, 10 );
 
-        for( auto state : { NoState, Q::Disabled } )
+        for( auto state : { A::NoState, Q::Disabled } )
         {
-            const auto aspect = Q::Cursor | state | Position;
+            const auto aspect = Q::Cursor | state | A::Position;
 
             setMetric( aspect | Q::Checked, 0 );
             setMetric( aspect, 1 );
         }
 
-        setAnimation( Q::Cursor | Metric, animator() );
+        setAnimation( Q::Cursor | A::Metric, animator() );
     }
 
     void setGraphicFilter( int role, QRgb rgb )

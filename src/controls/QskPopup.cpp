@@ -117,7 +117,7 @@ class QskPopup::PrivateData
     InputGrabber* inputGrabber = nullptr;
 
     uint priority = 0;
-    QskAspect::Aspect faderAspect;
+    QskAspect faderAspect;
 
     int flags           : 4;
     bool isModal        : 1;
@@ -266,12 +266,12 @@ void QskPopup::updateInputGrabber()
     }
 }
 
-QskAspect::Aspect QskPopup::faderAspect() const
+QskAspect QskPopup::faderAspect() const
 {
     return m_data->faderAspect;
 }
 
-void QskPopup::setFaderAspect( QskAspect::Aspect aspect )
+void QskPopup::setFaderAspect( QskAspect aspect )
 {
     auto faderAspect = aspect;
     faderAspect.clearStates(); // animated values are always stateless
@@ -287,7 +287,7 @@ void QskPopup::setFaderAspect( QskAspect::Aspect aspect )
     m_data->faderAspect = faderAspect;
 }
 
-bool QskPopup::isTransitionAccepted( QskAspect::Aspect aspect ) const
+bool QskPopup::isTransitionAccepted( QskAspect aspect ) const
 {
     if ( isVisible() && m_data->hasFaderEffect )
     {

@@ -16,7 +16,7 @@
 OtherSlider::OtherSlider( QQuickItem* parentItem )
     : QskSlider( parentItem )
 {
-    using namespace QskAspect;
+    using A = QskAspect;
     using namespace QskRgb;
 
     const qreal h = 30;
@@ -25,17 +25,17 @@ OtherSlider::OtherSlider( QQuickItem* parentItem )
 
     // Panel
 
-    for ( auto placement : { Horizontal, Vertical } )
+    for ( auto placement : { A::Horizontal, A::Vertical } )
     {
         const auto aspect = Panel | placement;
 
-        setMetric( aspect | Size, h );
+        setMetric( aspect | A::Size, h );
         setBoxShapeHint( aspect, 4 );
         setBoxBorderMetricsHint( aspect, 1 );
         setBoxBorderColorsHint( aspect, Grey900 );
         setGradientHint( aspect, Grey400 );
 
-        if ( placement == Horizontal )
+        if ( placement == A::Horizontal )
             setPaddingHint( aspect, QskMargins( paddingW, 0 ) );
         else
             setPaddingHint( aspect, QskMargins( 0, paddingW ) );
@@ -43,11 +43,11 @@ OtherSlider::OtherSlider( QQuickItem* parentItem )
 
     // Groove
 
-    for ( auto placement : { Horizontal, Vertical } )
+    for ( auto placement : { A::Horizontal, A::Vertical } )
     {
         const auto aspect = Groove | placement;
 
-        setMetric( aspect | Size, 4 );
+        setMetric( aspect | A::Size, 4 );
         setBoxBorderMetricsHint( aspect, 0 );
         setBoxShapeHint( aspect, 1 );
 
@@ -55,15 +55,15 @@ OtherSlider::OtherSlider( QQuickItem* parentItem )
     }
 
     // no Fill
-    for ( auto placement : { Horizontal, Vertical } )
+    for ( auto placement : { A::Horizontal, A::Vertical } )
     {
         const auto aspect = Fill | placement;
-        setMetric( aspect | Size, 0 );
+        setMetric( aspect | A::Size, 0 );
     }
 
     // Handle
 
-    for ( auto placement : { Horizontal, Vertical } )
+    for ( auto placement : { A::Horizontal, A::Vertical } )
     {
         const auto aspect = Handle | placement;
 
@@ -72,12 +72,12 @@ OtherSlider::OtherSlider( QQuickItem* parentItem )
 
         const qreal m = 0.5 * std::ceil( 0.5 * ( w - h ) ) + 1;
 
-        if ( placement == Horizontal )
+        if ( placement == A::Horizontal )
             setMarginHint( aspect, QskMargins( -m, 0 ) );
         else
             setMarginHint( aspect, QskMargins( 0, -m ) );
 
-        for ( auto state : { NoState, Pressed } )
+        for ( auto state : { A::NoState, Pressed } )
         {
             setBoxBorderColorsHint( aspect | state, Grey600 );
             setGradientHint( aspect | state, Blue400 );

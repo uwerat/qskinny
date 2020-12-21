@@ -39,14 +39,14 @@ namespace
       public:
         AnimatorCandidate() = default;
 
-        inline AnimatorCandidate( QskAspect::Aspect aspect, QVariant from, QVariant to )
+        inline AnimatorCandidate( QskAspect aspect, QVariant from, QVariant to )
             : aspect( aspect )
             , from( from )
             , to( to )
         {
         }
 
-        QskAspect::Aspect aspect;
+        QskAspect aspect;
         QVariant from;
         QVariant to;
     };
@@ -198,7 +198,7 @@ namespace
             return false;
         }
 
-        inline QVariant animatedHint( QskAspect::Aspect aspect ) const
+        inline QVariant animatedHint( QskAspect aspect ) const
         {
             auto it = m_hintAnimatorMap.find( aspect );
             if ( it != m_hintAnimatorMap.cend() )
@@ -388,7 +388,7 @@ namespace
             animator.setWindow( window );
         }
 
-        inline void storeUpdateInfo( QskControl* control, QskAspect::Aspect aspect )
+        inline void storeUpdateInfo( QskControl* control, QskAspect aspect )
         {
             UpdateInfo info;
             info.control = control;
@@ -407,7 +407,7 @@ namespace
         }
 
         QQuickWindow* m_window;
-        std::unordered_map< QskAspect::Aspect, QskHintAnimator > m_hintAnimatorMap;
+        std::unordered_map< QskAspect, QskHintAnimator > m_hintAnimatorMap;
         std::unordered_map< int, QskVariantAnimator > m_graphicFilterAnimatorMap;
         std::vector< UpdateInfo > m_updateInfos; // vector: for fast iteration
     };
@@ -656,7 +656,7 @@ bool QskSkinTransition::isRunning()
 }
 
 QVariant QskSkinTransition::animatedHint(
-    const QQuickWindow* window, QskAspect::Aspect aspect )
+    const QQuickWindow* window, QskAspect aspect )
 {
     if ( qskSkinAnimator.exists() )
     {

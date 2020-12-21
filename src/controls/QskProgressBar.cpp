@@ -177,9 +177,9 @@ void QskProgressBar::setBarGradient( const QskGradient& gradient )
 
 void QskProgressBar::resetBarGradient()
 {
-    using namespace QskAspect;
+    using A = QskAspect;
 
-    if ( resetColor( Bar | Vertical ) || resetColor( Bar | Horizontal ) )
+    if ( resetColor( Bar | A::Vertical ) || resetColor( Bar | A::Horizontal ) )
         update();
 }
 

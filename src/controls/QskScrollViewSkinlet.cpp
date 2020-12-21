@@ -286,7 +286,7 @@ QRectF QskScrollViewSkinlet::scrollHandleRect( const QskScrollView* scrollView,
 QRectF QskScrollViewSkinlet::scrollBarRect( const QskScrollView* scrollView,
     const QRectF& contentsRect, Qt::Orientation orientation ) const
 {
-    using namespace QskAspect;
+    using A = QskAspect;
     using Q = QskScrollView;
 
     const auto scrollOrientations = scrollView->scrollableOrientations();
@@ -297,23 +297,23 @@ QRectF QskScrollViewSkinlet::scrollBarRect( const QskScrollView* scrollView,
 
     if ( orientation == Qt::Horizontal )
     {
-        const qreal h = scrollView->metric( Q::HorizontalScrollBar | Size );
+        const qreal h = scrollView->metric( Q::HorizontalScrollBar | A::Size );
         r.setTop( r.bottom() - h );
 
         if ( scrollOrientations & Qt::Vertical )
         {
-            const qreal w = scrollView->metric( Q::VerticalScrollBar | Size );
+            const qreal w = scrollView->metric( Q::VerticalScrollBar | A::Size );
             r.setRight( r.right() - w );
         }
     }
     else
     {
-        const qreal w = scrollView->metric( Q::VerticalScrollBar | Size );
+        const qreal w = scrollView->metric( Q::VerticalScrollBar | A::Size );
         r.setLeft( r.right() - w );
 
         if ( scrollOrientations & Qt::Horizontal )
         {
-            const qreal h = scrollView->metric( Q::HorizontalScrollBar | Size );
+            const qreal h = scrollView->metric( Q::HorizontalScrollBar | A::Size );
             r.setBottom( r.bottom() - h );
         }
     }

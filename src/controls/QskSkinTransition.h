@@ -37,7 +37,7 @@ class QSK_EXPORT QskSkinTransition
     void process();
 
     static bool isRunning();
-    static QVariant animatedHint( const QQuickWindow*, QskAspect::Aspect );
+    static QVariant animatedHint( const QQuickWindow*, QskAspect );
     static QVariant animatedGraphicFilter( const QQuickWindow*, int graphicRole );
 
   protected:

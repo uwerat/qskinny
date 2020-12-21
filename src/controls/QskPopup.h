@@ -58,8 +58,8 @@ class QSK_EXPORT QskPopup : public QskControl
     void setFaderEffect( bool );
     bool hasFaderEffect() const;
 
-    QskAspect::Aspect faderAspect() const;
-    void setFaderAspect( QskAspect::Aspect );
+    QskAspect faderAspect() const;
+    void setFaderAspect( QskAspect );
 
     virtual QRectF overlayRect() const;
 
@@ -94,7 +94,7 @@ class QSK_EXPORT QskPopup : public QskControl
         const QQuickItem::ItemChangeData& ) override;
 
     virtual QQuickItem* focusSuccessor() const;
-    bool isTransitionAccepted( QskAspect::Aspect ) const override;
+    bool isTransitionAccepted( QskAspect ) const override;
 
     void grabFocus( bool );
 

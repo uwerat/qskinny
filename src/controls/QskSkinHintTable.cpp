@@ -7,9 +7,9 @@
 
 QVariant QskSkinHintTable::invalidHint;
 
-inline const QVariant* qskResolvedHint( QskAspect::Aspect aspect,
-    const std::unordered_map< QskAspect::Aspect, QVariant >& hints,
-    QskAspect::Aspect* resolvedAspect )
+inline const QVariant* qskResolvedHint( QskAspect aspect,
+    const std::unordered_map< QskAspect, QVariant >& hints,
+    QskAspect* resolvedAspect )
 {
     const auto a = aspect;
 
@@ -85,16 +85,16 @@ QskSkinHintTable& QskSkinHintTable::operator=( const QskSkinHintTable& other )
     return *this;
 }
 
-const std::unordered_map< QskAspect::Aspect, QVariant >& QskSkinHintTable::hints() const
+const std::unordered_map< QskAspect, QVariant >& QskSkinHintTable::hints() const
 {
     if ( m_hints )
         return *m_hints;
 
-    static std::unordered_map< QskAspect::Aspect, QVariant > dummyHints;
+    static std::unordered_map< QskAspect, QVariant > dummyHints;
     return dummyHints;
 }
 
-void QskSkinHintTable::setHint( QskAspect::Aspect aspect, const QVariant& skinHint )
+void QskSkinHintTable::setHint( QskAspect aspect, const QVariant& skinHint )
 {
     if ( m_hints == nullptr )
         m_hints = new HintMap();
@@ -115,7 +115,7 @@ void QskSkinHintTable::setHint( QskAspect::Aspect aspect, const QVariant& skinHi
         m_hasStates = true;
 }
 
-bool QskSkinHintTable::removeHint( QskAspect::Aspect aspect )
+bool QskSkinHintTable::removeHint( QskAspect aspect )
 {
     if ( m_hints == nullptr )
         return false;
@@ -137,7 +137,7 @@ bool QskSkinHintTable::removeHint( QskAspect::Aspect aspect )
     return erased;
 }
 
-QVariant QskSkinHintTable::takeHint( QskAspect::Aspect aspect )
+QVariant QskSkinHintTable::takeHint( QskAspect aspect )
 {
     if ( m_hints )
     {
@@ -172,7 +172,7 @@ void QskSkinHintTable::clear()
 }
 
 const QVariant* QskSkinHintTable::resolvedHint(
-    QskAspect::Aspect aspect, QskAspect::Aspect* resolvedAspect ) const
+    QskAspect aspect, QskAspect* resolvedAspect ) const
 {
     if ( m_hints != nullptr )
         return qskResolvedHint( aspect, *m_hints, resolvedAspect );
@@ -180,9 +180,9 @@ const QVariant* QskSkinHintTable::resolvedHint(
     return nullptr;
 }
 
-QskAspect::Aspect QskSkinHintTable::resolvedAspect( QskAspect::Aspect aspect ) const
+QskAspect QskSkinHintTable::resolvedAspect( QskAspect aspect ) const
 {
-    QskAspect::Aspect a;
+    QskAspect a;
 
     if ( m_hints != nullptr )
         qskResolvedHint( aspect, *m_hints, &a );
@@ -190,8 +190,8 @@ QskAspect::Aspect QskSkinHintTable::resolvedAspect( QskAspect::Aspect aspect ) c
     return a;
 }
 
-QskAspect::Aspect QskSkinHintTable::resolvedAnimator(
-    QskAspect::Aspect aspect, QskAnimationHint& hint ) const
+QskAspect QskSkinHintTable::resolvedAnimator(
+    QskAspect aspect, QskAnimationHint& hint ) const
 {
     if ( m_hints && m_animatorCount > 0 )
     {
@@ -211,5 +211,5 @@ QskAspect::Aspect QskSkinHintTable::resolvedAnimator(
         }
     }
 
-    return QskAspect::Aspect();
+    return QskAspect();
 }

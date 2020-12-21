@@ -158,16 +158,16 @@ void QskMaterialSkin::resetColors( const QColor& accent )
 
 void QskMaterialSkin::initCommonHints()
 {
-    using namespace QskAspect;
+    using A = QskAspect;
     using Q = QskControl;
 
     const auto& pal = m_data->palette;
 
-    setPadding( Control, 4 );
+    setPadding( A::Control, 4 );
 
-    setGradient( Control, pal.baseColor );
-    setColor( Control | StyleColor, pal.textColor );
-    setColor( Control | StyleColor | Q::Disabled,
+    setGradient( A::Control, pal.baseColor );
+    setColor( A::Control | A::StyleColor, pal.textColor );
+    setColor( A::Control | A::StyleColor | Q::Disabled,
         qskShadedColor( m_data->palette.textColor, 0.6 ) );
 }
 
@@ -184,11 +184,12 @@ void QskMaterialSkin::initBoxHints()
 
 void QskMaterialSkin::initPopupHints()
 {
+    using A = QskAspect;
     using Q = QskPopup;
 
     const auto& pal = m_data->palette;
 
-    setSkinHint( Q::Overlay | QskAspect::Style, true );
+    setSkinHint( Q::Overlay | A::Style, true );
 
     const QskGradient gradient( QskGradient::Vertical,
         qskShadedColor( pal.accentColor, 0.45 ), qskShadedColor( pal.accentColor, 0.7 ) );
@@ -233,7 +234,7 @@ void QskMaterialSkin::initTextInputHints()
 
 void QskMaterialSkin::initProgressBarHints()
 {
-    using namespace QskAspect;
+    using A = QskAspect;
     using namespace QskRgb;
     using Q = QskProgressBar;
 
@@ -241,7 +242,7 @@ void QskMaterialSkin::initProgressBarHints()
 
     for ( auto subControl : { Q::Groove, Q::Bar } )
     {
-        setMetric( subControl | Size, 5 );
+        setMetric( subControl | A::Size, 5 );
         setPadding( subControl, 0 );
 
         setBoxShape( subControl, 0 );
@@ -249,7 +250,7 @@ void QskMaterialSkin::initProgressBarHints()
     }
 
     setGradient( Q::Groove, Grey );
-    setMetric( Q::Groove | Size, 5 );
+    setMetric( Q::Groove | A::Size, 5 );
     setGradient( Q::Bar, pal.accentColor );
 }
 
@@ -268,16 +269,16 @@ void QskMaterialSkin::initFocusIndicatorHints()
 
 void QskMaterialSkin::initSeparatorHints()
 {
-    using namespace QskAspect;
+    using A = QskAspect;
     using Q = QskSeparator;
 
     const auto& pal = m_data->palette;
 
-    for ( auto placement : { Horizontal, Vertical } )
+    for ( auto placement : { A::Horizontal, A::Vertical } )
     {
         const auto aspect = Q::Panel | placement;
 
-        setMetric( aspect | Size, 4 );
+        setMetric( aspect | A::Size, 4 );
         setBoxShape( Q::Panel, 0 );
         setBoxBorderMetrics( Q::Panel, 0 );
         setGradient( aspect, pal.baseColor );
@@ -286,7 +287,6 @@ void QskMaterialSkin::initSeparatorHints()
 
 void QskMaterialSkin::initPageIndicatorHints()
 {
-    using namespace QskAspect;
     using Q = QskPageIndicator;
 
     const auto& pal = m_data->palette;
@@ -316,7 +316,7 @@ void QskMaterialSkin::initPageIndicatorHints()
 
 void QskMaterialSkin::initPushButtonHints()
 {
-    using namespace QskAspect;
+    using A = QskAspect;
     using namespace QskRgb;
     using Q = QskPushButton;
 
@@ -348,12 +348,12 @@ void QskMaterialSkin::initPushButtonHints()
     setFontRole( Q::Text, ButtonFontRole );
     setAlignment( Q::Text, Qt::AlignCenter );
 
-    for ( auto state1 : { NoState, Q::Checkable, Q::Focused, Q::Focused | Q::Checkable } )
+    for ( auto state1 : { A::NoState, Q::Checkable, Q::Focused, Q::Focused | Q::Checkable } )
     {
         setBoxBorderColors( Q::Panel | Q::Hovered | state1, borderColors );
         setBoxBorderColors( Q::Panel | Q::Hovered | Q::Flat | state1, borderColors );
 
-        for ( auto state2 : { NoState, Q::Hovered } )
+        for ( auto state2 : { A::NoState, Q::Hovered } )
         {
             for ( auto state3 : { Q::Pressed, Q::Checked, Q::Checked | Q::Pressed } )
             {
@@ -368,14 +368,14 @@ void QskMaterialSkin::initPushButtonHints()
         }
     }
 
-    setAnimation( Q::Panel | Color, qskDuration );
-    setAnimation( Q::Panel | Metric, qskDuration );
-    setAnimation( Q::Text | Color, qskDuration );
+    setAnimation( Q::Panel | A::Color, qskDuration );
+    setAnimation( Q::Panel | A::Metric, qskDuration );
+    setAnimation( Q::Text | A::Color, qskDuration );
 }
 
 void QskMaterialSkin::initDialogButtonHints()
 {
-    using namespace QskAspect;
+    using A = QskAspect;
     using namespace QskRgb;
     using Q = QskDialogButton;
 
@@ -402,11 +402,11 @@ void QskMaterialSkin::initDialogButtonHints()
     setFontRole( Q::Text, ButtonFontRole );
     setAlignment( Q::Text, Qt::AlignCenter );
 
-    for ( auto state1 : { NoState, Q::Checkable, Q::Focused, Q::Focused | Q::Checkable } )
+    for ( auto state1 : { A::NoState, Q::Checkable, Q::Focused, Q::Focused | Q::Checkable } )
     {
         setBoxBorderColors( Q::Panel | Q::Hovered | state1, borderColors );
 
-        for ( auto state2 : { NoState, Q::Hovered } )
+        for ( auto state2 : { A::NoState, Q::Hovered } )
         {
             for ( auto state3 : { Q::Pressed, Q::Checked, Q::Checked | Q::Pressed } )
             {
@@ -418,9 +418,9 @@ void QskMaterialSkin::initDialogButtonHints()
         }
     }
 
-    setAnimation( Q::Panel | Color, qskDuration );
-    setAnimation( Q::Panel | Metric, qskDuration );
-    setAnimation( Q::Text | Color, qskDuration );
+    setAnimation( Q::Panel | A::Color, qskDuration );
+    setAnimation( Q::Panel | A::Metric, qskDuration );
+    setAnimation( Q::Text | A::Color, qskDuration );
 }
 
 void QskMaterialSkin::initDialogButtonBoxHints()
@@ -436,7 +436,7 @@ void QskMaterialSkin::initDialogButtonBoxHints()
 
 void QskMaterialSkin::initSliderHints()
 {
-    using namespace QskAspect;
+    using A = QskAspect;
     using namespace QskRgb;
     using Q = QskSlider;
 
@@ -446,19 +446,19 @@ void QskMaterialSkin::initSliderHints()
 
     // Panel
 
-    setMetric( Q::Panel | Size, extent );
+    setMetric( Q::Panel | A::Size, extent );
     setBoxShape( Q::Panel, 0 );
     setBoxBorderMetrics( Q::Panel, 0 );
     setGradient( Q::Panel, QskGradient() );
 
-    setPadding( Q::Panel | Horizontal, QskMargins( 0.5 * extent, 0 ) );
-    setPadding( Q::Panel | Vertical, QskMargins( 0, 0.5 * extent ) );
+    setPadding( Q::Panel | A::Horizontal, QskMargins( 0.5 * extent, 0 ) );
+    setPadding( Q::Panel | A::Vertical, QskMargins( 0, 0.5 * extent ) );
 
     // Groove, Fill
 
     for ( auto subControl : { Q::Groove, Q::Fill } )
     {
-        setMetric( subControl | Size, 5 );
+        setMetric( subControl | A::Size, 5 );
         setPadding( subControl, 0 );
 
         setBoxShape( subControl, 0 );
@@ -486,36 +486,36 @@ void QskMaterialSkin::initSliderHints()
     setGradient( Q::Handle, pal.accentColor );
     setGradient( Q::Handle | Q::Pressed, pal.accentColor );
 
-    for ( auto state : { NoState, Q::Pressed, Q::Pressed | Q::Hovered } )
+    for ( auto state : { A::NoState, Q::Pressed, Q::Pressed | Q::Hovered } )
     {
         setBoxBorderColors( Q::Handle | state, pal.accentColor );
     }
 
-    for ( auto state : { NoState, Q::Pressed, Q::Pressed | Q::Hovered } )
+    for ( auto state : { A::NoState, Q::Pressed, Q::Pressed | Q::Hovered } )
     {
         const auto aspect = Q::Handle | Q::Minimum | state;
         setGradient( aspect, Grey300 );
         setBoxBorderColors( aspect, Grey );
     }
 
-    setAnimation( Q::Handle | Metric, qskDuration );
-    setAnimation( Q::Handle | Color, qskDuration );
+    setAnimation( Q::Handle | A::Metric, qskDuration );
+    setAnimation( Q::Handle | A::Color, qskDuration );
 
     // move the handle smoothly, when using keys
-    setAnimation( Q::Handle | Metric | Position, 2 * qskDuration );
-    setAnimation( Q::Handle | Metric | Position | Q::Pressed, 0 );
+    setAnimation( Q::Handle | A::Metric | A::Position, 2 * qskDuration );
+    setAnimation( Q::Handle | A::Metric | A::Position | Q::Pressed, 0 );
 }
 
 void QskMaterialSkin::initTabButtonHints()
 {
-    using namespace QskAspect;
+    using A = QskAspect;
     using Q = QskTabButton;
 
     const auto& pal = m_data->palette;
 
     setStrutSize( Q::Panel, 30, 16 );
 
-    for ( const auto placement : { Left, Right, Top, Bottom } )
+    for ( const auto placement : { A::Left, A::Right, A::Top, A::Bottom } )
     {
         const auto aspect = Q::Panel | placement;
 
@@ -523,19 +523,19 @@ void QskMaterialSkin::initTabButtonHints()
 
         switch( placement )
         {
-            case Left:
+            case A::Left:
                 edge = Qt::RightEdge;
                 break;
 
-            case Right:
+            case A::Right:
                 edge = Qt::LeftEdge;
                 break;
 
-            case Top:
+            case A::Top:
                 edge = Qt::BottomEdge;
                 break;
 
-            case Bottom:
+            case A::Bottom:
                 edge = Qt::TopEdge;
                 break;
 
@@ -560,7 +560,7 @@ void QskMaterialSkin::initTabButtonHints()
             setBoxBorderColors( aspect | state, borderColors );
     }
 
-    setAnimation( Q::Panel | Color, qskDuration );
+    setAnimation( Q::Panel | A::Color, qskDuration );
 
     // text
     setFontRole( Q::Text, ButtonFontRole );
@@ -573,7 +573,7 @@ void QskMaterialSkin::initTabButtonHints()
 
 void QskMaterialSkin::initTabBarHints()
 {
-    using namespace QskAspect;
+    using A = QskAspect;
     using Q = QskTabBar;
 
     setBoxShape( Q::Panel, 0 );
@@ -581,7 +581,7 @@ void QskMaterialSkin::initTabBarHints()
     setGradient( Q::Panel, QskGradient() );
 
     // when flicking
-    setAnimation( Q::Panel | Metric, QskAnimationHint( 200, QEasingCurve::InCubic ) );
+    setAnimation( Q::Panel | A::Metric, QskAnimationHint( 200, QEasingCurve::InCubic ) );
 }
 
 void QskMaterialSkin::initTabViewHints()
@@ -612,7 +612,7 @@ void QskMaterialSkin::initInputPanelHints()
 
 void QskMaterialSkin::initVirtualKeyboardHints()
 {
-    using namespace QskAspect;
+    using A = QskAspect;
     using Q = QskVirtualKeyboard;
 
     const auto& pal = m_data->palette;
@@ -626,11 +626,11 @@ void QskMaterialSkin::initVirtualKeyboardHints()
     setGradient( Q::ButtonPanel, pal.darker125 );
     setBoxBorderColors( Q::ButtonPanel, pal.baseColor );
 
-    for ( auto state : { NoState, Q::Focused } )
+    for ( auto state : { A::NoState, Q::Focused } )
         setBoxBorderColors( Q::ButtonPanel | QskPushButton::Pressed | state, pal.accentColor );
 
-    setAnimation( Q::ButtonPanel | Color, qskDuration );
-    setAnimation( Q::ButtonPanel | Metric, qskDuration );
+    setAnimation( Q::ButtonPanel | A::Color, qskDuration );
+    setAnimation( Q::ButtonPanel | A::Metric, qskDuration );
 
     // panel
     setBoxShape( Q::Panel, 0 );
@@ -641,7 +641,7 @@ void QskMaterialSkin::initVirtualKeyboardHints()
 
 void QskMaterialSkin::initScrollViewHints()
 {
-    using namespace QskAspect;
+    using A = QskAspect;
     using Q = QskScrollView;
 
     const auto& pal = m_data->palette;
@@ -655,7 +655,7 @@ void QskMaterialSkin::initScrollViewHints()
 
     for ( auto subControl : { Q::HorizontalScrollBar, Q::VerticalScrollBar } )
     {
-        setMetric( subControl | Size, 12 );
+        setMetric( subControl | A::Size, 12 );
         setPadding( subControl, 0 );
     }
 
@@ -670,7 +670,7 @@ void QskMaterialSkin::initScrollViewHints()
         setGradient( subControl, pal.accentColor );
         setBoxBorderColors( subControl, QskRgb::White );
 
-        setAnimation( subControl | Color, qskDuration );
+        setAnimation( subControl | A::Color, qskDuration );
     }
 
     for ( auto subControl : {
@@ -682,7 +682,7 @@ void QskMaterialSkin::initScrollViewHints()
     }
 
     // when changing the position by QskScrollView::scrollTo
-    setAnimation( Q::Viewport | Metric, QskAnimationHint( 200, QEasingCurve::InCubic ) );
+    setAnimation( Q::Viewport | A::Metric, QskAnimationHint( 200, QEasingCurve::InCubic ) );
 }
 
 void QskMaterialSkin::initListViewHints()
@@ -703,14 +703,14 @@ void QskMaterialSkin::initListViewHints()
 
 void QskMaterialSkin::initSubWindowHints()
 {
-    using namespace QskAspect;
+    using A = QskAspect;
     using Q = QskSubWindow;
 
     const auto& pal = m_data->palette;
 
     // Panel
 
-    setSkinHint( Q::Panel | Decoration, true );
+    setSkinHint( Q::Panel | A::Decoration, true );
     setPadding( Q::Panel, 10 );
     setBoxShape( Q::Panel, 0 );
     setBoxBorderMetrics( Q::Panel, 2 );
@@ -731,7 +731,7 @@ void QskMaterialSkin::initSubWindowHints()
     setAlignment( Q::TitleBarText, Qt::AlignLeft | Qt::AlignVCenter );
 
     for ( auto subControl : { Q::Panel, Q::TitleBar, Q::TitleBarText } )
-        setAnimation( subControl | Color, qskDuration );
+        setAnimation( subControl | A::Color, qskDuration );
 
 }
 

@@ -22,8 +22,8 @@ class QSK_EXPORT QskHintAnimator : public QskVariantAnimator
     QskHintAnimator();
     ~QskHintAnimator() override;
 
-    void setAspect( QskAspect::Aspect );
-    QskAspect::Aspect aspect() const;
+    void setAspect( QskAspect );
+    QskAspect aspect() const;
 
     void setControl( QskControl* );
     QskControl* control() const;
@@ -34,7 +34,7 @@ class QSK_EXPORT QskHintAnimator : public QskVariantAnimator
     void advance( qreal value ) override;
 
   private:
-    QskAspect::Aspect m_aspect;
+    QskAspect m_aspect;
     QskAnimationHint::UpdateFlags m_updateFlags;
     QPointer< QskControl > m_control;
 };
@@ -45,11 +45,11 @@ class QSK_EXPORT QskHintAnimatorTable
     QskHintAnimatorTable();
     ~QskHintAnimatorTable();
 
-    void start( QskControl*, QskAspect::Aspect,
+    void start( QskControl*, QskAspect,
         QskAnimationHint, const QVariant& from, const QVariant& to );
 
-    const QskHintAnimator* animator( QskAspect::Aspect aspect ) const;
-    QVariant currentValue( QskAspect::Aspect ) const;
+    const QskHintAnimator* animator( QskAspect aspect ) const;
+    QVariant currentValue( QskAspect ) const;
 
     bool cleanup();
 
@@ -60,7 +60,7 @@ class QSK_EXPORT QskHintAnimatorTable
     PrivateData* m_data;
 };
 
-inline QskAspect::Aspect QskHintAnimator::aspect() const
+inline QskAspect QskHintAnimator::aspect() const
 {
     return m_aspect;
 }

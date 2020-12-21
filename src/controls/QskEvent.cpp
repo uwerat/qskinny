@@ -164,7 +164,7 @@ QskGestureEvent* QskGestureEvent::clone() const
 
 // -- QskAnimatorEvent
 
-QskAnimatorEvent::QskAnimatorEvent( QskAspect::Aspect aspect, State state )
+QskAnimatorEvent::QskAnimatorEvent( QskAspect aspect, State state )
     : QskEvent( QskEvent::Animator )
     , m_aspect( aspect )
     , m_state( state )

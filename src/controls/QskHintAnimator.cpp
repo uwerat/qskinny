@@ -101,7 +101,7 @@ QskHintAnimator::~QskHintAnimator()
 {
 }
 
-void QskHintAnimator::setAspect( QskAspect::Aspect aspect )
+void QskHintAnimator::setAspect( QskAspect aspect )
 {
     m_aspect = aspect;
 }
@@ -206,7 +206,7 @@ class QskHintAnimatorTable::PrivateData
   public:
     // we won't have many entries, so we prefer less memory over
     // using a hash table
-    std::map< QskAspect::Aspect, QskHintAnimator > map;
+    std::map< QskAspect, QskHintAnimator > map;
 };
 
 QskHintAnimatorTable::QskHintAnimatorTable()
@@ -223,7 +223,7 @@ QskHintAnimatorTable::~QskHintAnimatorTable()
 }
 
 void QskHintAnimatorTable::start( QskControl* control,
-    QskAspect::Aspect aspect, QskAnimationHint animationHint,
+    QskAspect aspect, QskAnimationHint animationHint,
     const QVariant& from, const QVariant& to )
 {
     if ( m_data == nullptr )
@@ -254,7 +254,7 @@ void QskHintAnimatorTable::start( QskControl* control,
     }
 }
 
-const QskHintAnimator* QskHintAnimatorTable::animator( QskAspect::Aspect aspect ) const
+const QskHintAnimator* QskHintAnimatorTable::animator( QskAspect aspect ) const
 {
     if ( m_data == nullptr )
         return nullptr;
@@ -266,7 +266,7 @@ const QskHintAnimator* QskHintAnimatorTable::animator( QskAspect::Aspect aspect 
     return &( it->second );
 }
 
-QVariant QskHintAnimatorTable::currentValue( QskAspect::Aspect aspect ) const
+QVariant QskHintAnimatorTable::currentValue( QskAspect aspect ) const
 {
     if ( m_data )
     {

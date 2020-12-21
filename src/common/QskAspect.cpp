@@ -14,24 +14,23 @@
 #include <string>
 #include <unordered_map>
 
-static_assert( sizeof( QskAspect::Aspect ) == sizeof( quint64 ),
+static_assert( sizeof( QskAspect ) == sizeof( quint64 ),
     "QskAspect::Aspect has to match quint64" );
 
 namespace
 {
-    using namespace QskAspect;
     using namespace std;
 
     struct StateInfo
     {
-        State state;
+        QskAspect::State state;
         QByteArray name;
     };
 
     struct AspectRegistry
     {
         QVector< QByteArray > subControlNames;
-        unordered_map< const QMetaObject*, QVector< Subcontrol > > subControlTable;
+        unordered_map< const QMetaObject*, QVector< QskAspect::Subcontrol > > subControlTable;
         unordered_map< const QMetaObject*, QVector< StateInfo > > stateTable;
     };
 }
@@ -253,7 +252,7 @@ QDebug operator<<( QDebug debug, QskAspect::Subcontrol subControl )
 
     debug.nospace();
     debug << "QskAspect::Subcontrol" << '(';
-    debug << subControlName( subControl );
+    debug << QskAspect::subControlName( subControl );
     debug << ')';
 
     return debug;
@@ -271,7 +270,7 @@ QDebug operator<<( QDebug debug, QskAspect::State state )
     return debug;
 }
 
-QDebug operator<<( QDebug debug, QskAspect::Aspect aspect )
+QDebug operator<<( QDebug debug, QskAspect aspect )
 {
     qskDebugAspect( debug, nullptr, aspect );
     return debug;
@@ -288,7 +287,7 @@ void qskDebugState( QDebug debug, const QMetaObject* metaObject, QskAspect::Stat
     debug << "QskAspect::State( " << qskStateString( metaObject, state ) << " )";
 }
 
-void qskDebugAspect( QDebug debug, const QMetaObject* metaObject, QskAspect::Aspect aspect )
+void qskDebugAspect( QDebug debug, const QMetaObject* metaObject, QskAspect aspect )
 {
     QDebugStateSaver saver( debug );
 
@@ -340,7 +339,7 @@ void qskDebugAspect( QDebug debug, const QMetaObject* metaObject, QskAspect::Asp
 
 #endif
 
-const char* QskAspect::Aspect::toPrintable() const
+const char* QskAspect::toPrintable() const
 {
     QString tmp;
 
@@ -357,7 +356,7 @@ const char* QskAspect::Aspect::toPrintable() const
     return bytes[ counter ].constData();
 }
 
-QskAspect::State QskAspect::Aspect::topState() const noexcept
+QskAspect::State QskAspect::topState() const noexcept
 {
     if ( m_bits.states == NoState )
         return NoState;

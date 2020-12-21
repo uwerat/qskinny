@@ -61,69 +61,69 @@ class QSK_EXPORT QskSkin : public QObject
 
     virtual void resetColors( const QColor& accent );
 
-    void setColor( QskAspect::Aspect, Qt::GlobalColor );
-    void setColor( QskAspect::Aspect, QRgb );
-    void setColor( QskAspect::Aspect, const QColor& );
+    void setColor( QskAspect, Qt::GlobalColor );
+    void setColor( QskAspect, QRgb );
+    void setColor( QskAspect, const QColor& );
 
-    QColor color( QskAspect::Aspect ) const;
+    QColor color( QskAspect ) const;
 
-    void setMetric( QskAspect::Aspect, qreal metric );
-    qreal metric( QskAspect::Aspect ) const;
+    void setMetric( QskAspect, qreal metric );
+    qreal metric( QskAspect ) const;
 
-    void setStrutSize( QskAspect::Aspect, const QSizeF& );
-    void setStrutSize( QskAspect::Aspect, qreal width, qreal height );
-    QSizeF strutSize( QskAspect::Aspect ) const;
+    void setStrutSize( QskAspect, const QSizeF& );
+    void setStrutSize( QskAspect, qreal width, qreal height );
+    QSizeF strutSize( QskAspect ) const;
 
-    void setMargin( QskAspect::Aspect, const QskMargins& );
-    void setMargin( QskAspect::Aspect,
+    void setMargin( QskAspect, const QskMargins& );
+    void setMargin( QskAspect,
         qreal left, qreal top, qreal right, qreal bottom );
-    QskMargins margin( QskAspect::Aspect ) const;
+    QskMargins margin( QskAspect ) const;
 
-    void setPadding( QskAspect::Aspect, const QskMargins& );
-    void setPadding( QskAspect::Aspect,
+    void setPadding( QskAspect, const QskMargins& );
+    void setPadding( QskAspect,
         qreal left, qreal top, qreal right, qreal bottom );
-    QskMargins padding( QskAspect::Aspect ) const;
+    QskMargins padding( QskAspect ) const;
 
-    void setSpacing( QskAspect::Aspect, qreal );
-    qreal spacing( QskAspect::Aspect ) const;
+    void setSpacing( QskAspect, qreal );
+    qreal spacing( QskAspect ) const;
 
-    void setGradient( QskAspect::Aspect, const QskGradient& );
-    QskGradient gradient( QskAspect::Aspect ) const;
+    void setGradient( QskAspect, const QskGradient& );
+    QskGradient gradient( QskAspect ) const;
 
-    void setBoxShape( QskAspect::Aspect, qreal radius, Qt::SizeMode = Qt::AbsoluteSize );
-    void setBoxShape( QskAspect::Aspect, qreal topLeft, qreal topRight,
+    void setBoxShape( QskAspect, qreal radius, Qt::SizeMode = Qt::AbsoluteSize );
+    void setBoxShape( QskAspect, qreal topLeft, qreal topRight,
         qreal bottomLeft, qreal bottomRight, Qt::SizeMode = Qt::AbsoluteSize );
 
-    void setBoxShape( QskAspect::Aspect, const QskBoxShapeMetrics& );
-    QskBoxShapeMetrics boxShape( QskAspect::Aspect ) const;
+    void setBoxShape( QskAspect, const QskBoxShapeMetrics& );
+    QskBoxShapeMetrics boxShape( QskAspect ) const;
 
-    void setBoxBorderMetrics( QskAspect::Aspect,
+    void setBoxBorderMetrics( QskAspect,
         qreal borderWidth, Qt::SizeMode = Qt::AbsoluteSize );
 
-    void setBoxBorderMetrics( QskAspect::Aspect, qreal left, qreal top,
+    void setBoxBorderMetrics( QskAspect, qreal left, qreal top,
         qreal right, qreal bottom, Qt::SizeMode = Qt::AbsoluteSize );
 
-    void setBoxBorderMetrics( QskAspect::Aspect, const QskBoxBorderMetrics& );
-    QskBoxBorderMetrics boxBorderMetrics( QskAspect::Aspect ) const;
+    void setBoxBorderMetrics( QskAspect, const QskBoxBorderMetrics& );
+    QskBoxBorderMetrics boxBorderMetrics( QskAspect ) const;
 
-    void setBoxBorderColors( QskAspect::Aspect, const QskBoxBorderColors& );
-    QskBoxBorderColors boxBorderColors( QskAspect::Aspect ) const;
+    void setBoxBorderColors( QskAspect, const QskBoxBorderColors& );
+    QskBoxBorderColors boxBorderColors( QskAspect ) const;
 
-    void setAnimation( QskAspect::Aspect, QskAnimationHint );
-    QskAnimationHint animation( QskAspect::Aspect ) const;
+    void setAnimation( QskAspect, QskAnimationHint );
+    QskAnimationHint animation( QskAspect ) const;
 
-    void setAlignment( QskAspect::Aspect, Qt::Alignment );
-    Qt::Alignment alignment( QskAspect::Aspect ) const;
+    void setAlignment( QskAspect, Qt::Alignment );
+    Qt::Alignment alignment( QskAspect ) const;
 
-    void setSkinHint( QskAspect::Aspect, const QVariant& hint );
-    const QVariant& skinHint( QskAspect::Aspect ) const;
+    void setSkinHint( QskAspect, const QVariant& hint );
+    const QVariant& skinHint( QskAspect ) const;
 
     void setGraphicFilter( int graphicRole, const QskColorFilter& );
     void resetGraphicFilter( int graphicRole );
     QskColorFilter graphicFilter( int graphicRole ) const;
 
-    void setFontRole( QskAspect::Aspect, int fontRole );
-    void setGraphicRole( QskAspect::Aspect, int graphicRole );
+    void setFontRole( QskAspect, int fontRole );
+    void setGraphicRole( QskAspect, int graphicRole );
 
     void setFont( int fontRole, const QFont& );
     void resetFont( int fontRole );
