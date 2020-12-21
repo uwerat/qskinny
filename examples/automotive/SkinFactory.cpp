@@ -50,8 +50,6 @@ namespace
       public:
         Skin1() 
         {
-            using namespace QskAspect;
-
             const QColor color1( "#363636" ); // Jet
             const QColor color2( "#242F40" ); // Yankees blue
             const QColor color3( "#CCA43B" ); // Satin sheet gold
@@ -75,8 +73,8 @@ namespace
                 setGradient( Q::Knob, color2 );
                 setBoxBorderColors( Q::Knob, color4 );
 
-                setMetric( Q::Needle | Size, 4 );
-                setMetric( Q::Needle | Margin, 15 );
+                setMetric( Q::Needle | QskAspect::Size, 4 );
+                setMetric( Q::Needle | QskAspect::Margin, 15 );
                 setColor( Q::Needle, color4 );
 
                 setSpacing( Q::TickLabels, 3 );
@@ -101,8 +99,6 @@ namespace
       public:
         Skin2() 
         {
-            using namespace QskAspect;
-
             const QColor color1( "#011627" ); // Maastricht blue
             const QColor color2( "#FF0022" ); // ruddy
             const QColor color3( "#41EAD4" ); // Turquoise
@@ -125,8 +121,8 @@ namespace
                 setGradient( Q::Knob,
                     QskGradient( QskGradient::Diagonal, color2, color1 ) );
 
-                setMetric( Q::Needle | Size, 2 );
-                setMetric( Q::Needle | Margin, 10 );
+                setMetric( Q::Needle | QskAspect::Size, 2 );
+                setMetric( Q::Needle | QskAspect::Margin, 10 );
                 setColor( Q::Needle, color2 );
 
                 setSpacing( Q::TickLabels, 4 );
