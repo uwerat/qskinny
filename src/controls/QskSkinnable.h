@@ -199,6 +199,9 @@ class QSK_EXPORT QskSkinnable
     const QskSkinHintTable& hintTable() const;
 
   private:
+    void startHintTransition( QskAspect::Aspect,
+        QskAnimationHint, QVariant from, QVariant to );
+
     QVariant animatedValue( QskAspect::Aspect, QskSkinHintStatus* ) const;
     const QVariant& storedHint( QskAspect::Aspect, QskSkinHintStatus* = nullptr ) const;
 

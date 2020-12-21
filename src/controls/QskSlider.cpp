@@ -255,10 +255,6 @@ void QskSlider::moveHandleTo( qreal value, const QskAnimationHint& hint )
         const qreal oldPos = metric( aspect );
         setMetric( aspect, pos );
 
-#if 1
-        // startTransition should do this: TODO ...
-        aspect.setSubControl( effectiveSubcontrol( Handle ) );
-#endif
         startTransition( aspect, hint, oldPos, pos );
     }
     else

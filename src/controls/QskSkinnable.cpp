@@ -932,6 +932,13 @@ bool QskSkinnable::isTransitionAccepted( QskAspect::Aspect aspect ) const
 void QskSkinnable::startTransition( QskAspect::Aspect aspect,
     QskAnimationHint animationHint, QVariant from, QVariant to )
 {
+    aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
+    startHintTransition( aspect, animationHint, from, to );
+}
+
+void QskSkinnable::startHintTransition( QskAspect::Aspect aspect,
+    QskAnimationHint animationHint, QVariant from, QVariant to )
+{
     if ( animationHint.duration <= 0 || ( from == to ) )
         return;
 
