@@ -17,6 +17,11 @@
 #include "QskSkinTransition.h"
 #include "QskSkinlet.h"
 
+#include "QskBoxShapeMetrics.h"
+#include "QskBoxBorderMetrics.h"
+#include "QskBoxBorderColors.h"
+#include "QskGradient.h"
+
 #include <qfont.h>
 
 #define DEBUG_MAP 0
