@@ -428,18 +428,6 @@ QskBoxBorderColors QskSkinnable::boxBorderColorsHint(
         this, aspect | QskAspect::Border, status );
 }
 
-void QskSkinnable::setIntervalHint(
-    const QskAspect aspect, const QskIntervalF& interval )
-{
-    qskSetMetric( this, aspect, interval );
-}
-
-QskIntervalF QskSkinnable::intervalHint(
-    const QskAspect aspect, QskSkinHintStatus* status ) const
-{
-    return qskMetric< QskIntervalF >( this, aspect, status );
-}
-
 void QskSkinnable::setSpacingHint( const QskAspect aspect, qreal spacing )
 {
     qskSetMetric( this, aspect | QskAspect::Spacing, spacing );

@@ -13,7 +13,6 @@
 #include "QskBoxShapeMetrics.h"
 #include "QskGradient.h"
 #include "QskMargins.h"
-#include "QskIntervalF.h"
 
 #include <qcolor.h>
 #include <qvariant.h>
@@ -59,9 +58,6 @@ class QSK_EXPORT QskSkinHintTable
 
     void setBoxBorderColors( QskAspect, const QskBoxBorderColors& );
     QskBoxBorderColors boxBorderColors( QskAspect ) const;
-
-    void setInterval( QskAspect, const QskIntervalF& );
-    QskIntervalF interval( QskAspect ) const;
 
     void setSpacing( QskAspect, qreal );
     qreal spacing( QskAspect ) const;
@@ -261,17 +257,6 @@ inline QskBoxBorderColors QskSkinHintTable::boxBorderColors( QskAspect aspect ) 
 {
     using A = QskAspect;
     return hint( aspect | A::Border | A::Color ).value< QskBoxBorderColors >();
-}
-
-inline void QskSkinHintTable::setInterval(
-    QskAspect aspect, const QskIntervalF& interval )
-{
-    setHint( aspect | QskAspect::Metric, QVariant::fromValue( interval ) );
-}
-
-inline QskIntervalF QskSkinHintTable::interval( QskAspect aspect ) const
-{
-    return hint( aspect | QskAspect::Metric ).value< QskIntervalF >();
 }
 
 inline void QskSkinHintTable::setSpacing( QskAspect aspect, qreal spacing )
