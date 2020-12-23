@@ -344,10 +344,9 @@ namespace
                 }
 
                 auto a = candidate.aspect;
-                a.clearStates();
-                a.addState( control->skinState() );
+                a.setState( control->skinState() );
 
-                const QskSkinHintStatus requestState = control->hintStatus( a );
+                const auto requestState = control->hintStatus( a );
 
                 if ( requestState.source != QskSkinHintStatus::Skin )
                 {
