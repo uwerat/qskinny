@@ -609,7 +609,7 @@ bool QskSkinnable::resetSkinHint( QskAspect aspect )
     auto a = aspect;
     a.setPlacement( effectivePlacement() );
 
-    if ( a.state() == QskAspect::NoState )
+    if ( !a.hasState() )
         a.setState( skinState() );
 
     const auto oldHint = storedHint( a );
@@ -632,7 +632,7 @@ QVariant QskSkinnable::effectiveSkinHint(
     if ( v.isValid() )
         return v;
 
-    if ( aspect.state() == QskAspect::NoState )
+    if ( !aspect.hasState() )
         aspect.setState( skinState() );
 
     return storedHint( aspect, status );
@@ -652,7 +652,7 @@ QVariant QskSkinnable::animatedValue(
 {
     QVariant v;
 
-    if ( aspect.state() == QskAspect::NoState )
+    if ( !aspect.hasState() )
     {
         /*
             The local animators were invented to be stateless

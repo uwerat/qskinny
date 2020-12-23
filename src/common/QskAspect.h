@@ -154,6 +154,7 @@ class QSK_EXPORT QskAspect
 
     void setState( State ) noexcept;
     void addState( State ) noexcept;
+    constexpr bool hasState() const noexcept;
     void clearState( State ) noexcept;
     void clearStates() noexcept;
 
@@ -357,6 +358,11 @@ inline void QskAspect::setState( State state ) noexcept
 inline void QskAspect::addState( State state ) noexcept
 {
     m_bits.states |= state;
+}
+
+inline constexpr bool QskAspect::hasState() const noexcept
+{
+    return m_bits.states;
 }
 
 inline void QskAspect::clearState( State state ) noexcept
