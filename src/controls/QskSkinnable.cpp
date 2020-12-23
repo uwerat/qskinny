@@ -516,8 +516,9 @@ QskColorFilter QskSkinnable::effectiveGraphicFilter( QskAspect aspect ) const
 }
 
 void QskSkinnable::setAnimationHint(
-    const QskAspect aspect, QskAnimationHint animation )
+    QskAspect aspect, QskAnimationHint animation )
 {
+    aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
     m_data->hintTable.setAnimation( aspect, animation );
 }
 
