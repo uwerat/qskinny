@@ -525,10 +525,9 @@ QskAspect::State QskSkin::stateMask() const
     return m_data->stateMask;
 }
 
-QskSkinlet* QskSkin::skinlet( const QskSkinnable* skinnable )
+QskSkinlet* QskSkin::skinlet( const QMetaObject* metaObject )
 {
-    for ( auto metaObject = skinnable->metaObject();
-        metaObject != nullptr; metaObject = metaObject->superClass() )
+    while ( metaObject )
     {
         auto it = m_data->skinletMap.find( metaObject );
         if ( it != m_data->skinletMap.cend() )
@@ -540,6 +539,8 @@ QskSkinlet* QskSkin::skinlet( const QskSkinnable* skinnable )
 
             return entry.skinlet;
         }
+
+        metaObject = metaObject->superClass();
     }
 
     static QskSkinlet defaultSkinlet;

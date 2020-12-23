@@ -16,7 +16,6 @@
 #include <unordered_map>
 
 class QskControl;
-class QskSkinnable;
 class QskSkinlet;
 
 class QskColorFilter;
@@ -143,7 +142,7 @@ class QSK_EXPORT QskSkin : public QObject
     void setStateMask( QskAspect::State );
     QskAspect::State stateMask() const;
 
-    QskSkinlet* skinlet( const QskSkinnable* );
+    QskSkinlet* skinlet( const QMetaObject* );
 
     const QskSkinHintTable& hintTable() const;
 

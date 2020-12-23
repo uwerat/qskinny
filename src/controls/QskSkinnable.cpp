@@ -231,7 +231,7 @@ const QskSkinlet* QskSkinnable::effectiveSkinlet() const
 {
     if ( m_data->skinlet == nullptr )
     {
-        m_data->skinlet = qskSetup->skin()->skinlet( this );
+        m_data->skinlet = qskSetup->skin()->skinlet( metaObject() );
         m_data->hasLocalSkinlet = false;
     }
 
