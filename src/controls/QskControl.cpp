@@ -146,7 +146,7 @@ void QskControl::setBackground( const QskGradient& gradient )
 {
     const auto aspect = QskAspect::Control | QskAspect::Color;
 
-    if ( hintTable().gradient( aspect ) != gradient )
+    if ( gradientHint( aspect ) != gradient )
     {
         setGradientHint( aspect, gradient );
         if ( autoFillBackground() )
