@@ -13,6 +13,8 @@
 #include "QskSkinHintTable.h"
 #include "QskStandardSymbol.h"
 
+#include "QskMargins.h"
+
 QSK_QT_PRIVATE_BEGIN
 #include <private/qguiapplication_p.h>
 QSK_QT_PRIVATE_END
@@ -156,201 +158,19 @@ QskSkin::QskSkin( QObject* parent )
     const QFont font = QGuiApplication::font();
     setupFonts( font.family(), font.weight(), font.italic() );
 
-    setMargin( QskAspect::Control, 0 );
-    setPadding( QskAspect::Control, 0 );
-    setSpacing( QskAspect::Control, 0 );
+    {
+        // some defaults
+        const auto noMargins = QVariant::fromValue( QskMargins( 0 ) );
+        const auto aspect = QskAspect::Control | QskAspect::Metric;
+
+        setSkinHint( aspect | QskAspect::Margin, noMargins );
+        setSkinHint( aspect | QskAspect::Padding, noMargins );
+        setSkinHint( aspect | QskAspect::Spacing, 0 );
+    }
 }
 
 QskSkin::~QskSkin()
 {
-}
-
-void QskSkin::setColor( QskAspect aspect, QRgb rgb )
-{
-    setSkinHint( aspect | QskAspect::Color, QColor::fromRgba( rgb ) );
-}
-
-void QskSkin::setColor( QskAspect aspect, Qt::GlobalColor color )
-{
-    setSkinHint( aspect | QskAspect::Color, QColor( color ) );
-}
-
-void QskSkin::setColor( QskAspect aspect, const QColor& color )
-{
-    setSkinHint( aspect | QskAspect::Color, color );
-}
-
-QColor QskSkin::color( QskAspect aspect ) const
-{
-    return m_data->hintTable.color( aspect );
-}
-
-void QskSkin::setMetric( QskAspect aspect, qreal metric )
-{
-    m_data->hintTable.setMetric( aspect, metric );
-}
-
-qreal QskSkin::metric( QskAspect aspect ) const
-{
-    return m_data->hintTable.metric( aspect );
-}
-
-void QskSkin::setStrutSize( QskAspect aspect, qreal width, qreal height )
-{
-    setStrutSize( aspect, QSizeF( width, height ) );
-}
-
-void QskSkin::setStrutSize( QskAspect aspect, const QSizeF& strut )
-{
-    m_data->hintTable.setStrutSize( aspect, strut );
-}
-
-QSizeF QskSkin::strutSize( QskAspect aspect ) const
-{
-    return m_data->hintTable.strutSize( aspect );
-}
-
-void QskSkin::setMargin( QskAspect aspect, const QskMargins& margins )
-{
-    m_data->hintTable.setMargin( aspect, margins );
-}
-
-void QskSkin::setMargin( QskAspect aspect,
-    qreal left, qreal top, qreal right, qreal bottom )
-{
-    const QskMargins margins( left, top, right, bottom );
-    m_data->hintTable.setMargin( aspect, margins );
-}
-
-QskMargins QskSkin::margin( QskAspect aspect ) const
-{
-    return m_data->hintTable.margin( aspect );
-}
-
-void QskSkin::setPadding( QskAspect aspect, const QskMargins& padding )
-{
-    m_data->hintTable.setPadding( aspect, padding );
-}
-
-void QskSkin::setPadding( QskAspect aspect,
-    qreal left, qreal top, qreal right, qreal bottom )
-{
-    const QskMargins padding( left, top, right, bottom );
-    m_data->hintTable.setPadding( aspect, padding );
-}
-
-QskMargins QskSkin::padding( QskAspect aspect ) const
-{
-    return m_data->hintTable.padding( aspect );
-}
-
-void QskSkin::setSpacing( QskAspect aspect, qreal spacing )
-{
-    m_data->hintTable.setSpacing( aspect, spacing );
-}
-
-qreal QskSkin::spacing( QskAspect aspect ) const
-{
-    return m_data->hintTable.spacing( aspect );
-}
-
-void QskSkin::setGradient( QskAspect aspect, const QskGradient& gradient )
-{
-    m_data->hintTable.setGradient( aspect, gradient );
-}
-
-QskGradient QskSkin::gradient( QskAspect aspect ) const
-{
-    return m_data->hintTable.gradient( aspect );
-}
-
-void QskSkin::setBoxShape( QskAspect aspect,
-    qreal radius, Qt::SizeMode sizeMode )
-{
-    m_data->hintTable.setBoxShape( aspect,
-        QskBoxShapeMetrics( radius, radius, radius, radius, sizeMode ) );
-}
-
-void QskSkin::setBoxShape( QskAspect aspect, qreal topLeft, qreal topRight,
-    qreal bottomLeft, qreal bottomRight, Qt::SizeMode sizeMode )
-{
-    m_data->hintTable.setBoxShape( aspect,
-        QskBoxShapeMetrics( topLeft, topRight, bottomLeft, bottomRight, sizeMode ) );
-}
-
-void QskSkin::setBoxShape( QskAspect aspect, const QskBoxShapeMetrics& shape )
-{
-    m_data->hintTable.setBoxShape( aspect, shape );
-}
-
-QskBoxShapeMetrics QskSkin::boxShape( QskAspect aspect ) const
-{
-    return m_data->hintTable.boxShape( aspect );
-}
-
-void QskSkin::setBoxBorderMetrics( QskAspect aspect,
-    qreal left, qreal top, qreal right, qreal bottom, Qt::SizeMode sizeMode )
-{
-    m_data->hintTable.setBoxBorder( aspect,
-        QskBoxBorderMetrics( left, top, right, bottom, sizeMode ) );
-}
-
-void QskSkin::setBoxBorderMetrics( QskAspect aspect,
-    qreal borderWidth, Qt::SizeMode sizeMode )
-{
-    m_data->hintTable.setBoxBorder(
-        aspect, QskBoxBorderMetrics( borderWidth, sizeMode ) );
-}
-
-void QskSkin::setBoxBorderMetrics(
-    QskAspect aspect, const QskBoxBorderMetrics& border )
-{
-    m_data->hintTable.setBoxBorder( aspect, border );
-}
-
-QskBoxBorderMetrics QskSkin::boxBorderMetrics( QskAspect aspect ) const
-{
-    return m_data->hintTable.boxBorder( aspect );
-}
-
-void QskSkin::setBoxBorderColors( QskAspect aspect, const QskBoxBorderColors& colors )
-{
-    m_data->hintTable.setBoxBorderColors( aspect, colors );
-}
-
-QskBoxBorderColors QskSkin::boxBorderColors( QskAspect aspect ) const
-{
-    return m_data->hintTable.boxBorderColors( aspect );
-}
-
-void QskSkin::setFontRole( QskAspect aspect, int fontRole )
-{
-    m_data->hintTable.setFontRole( aspect, fontRole );
-}
-
-void QskSkin::setGraphicRole( QskAspect aspect, int graphicRole )
-{
-    m_data->hintTable.setGraphicRole( aspect, graphicRole );
-}
-
-void QskSkin::setAnimation( QskAspect aspect, QskAnimationHint animation )
-{
-    m_data->hintTable.setAnimation( aspect, animation );
-}
-
-QskAnimationHint QskSkin::animation( QskAspect aspect ) const
-{
-    return m_data->hintTable.animation( aspect );
-}
-
-void QskSkin::setAlignment( QskAspect aspect, Qt::Alignment alignment )
-{
-    m_data->hintTable.setAlignment( aspect, alignment );
-}
-
-Qt::Alignment QskSkin::alignment( QskAspect aspect ) const
-{
-    return m_data->hintTable.alignment( aspect );
 }
 
 void QskSkin::setSkinHint( QskAspect aspect, const QVariant& skinHint )
@@ -457,7 +277,7 @@ const QskSkinHintTable& QskSkin::hintTable() const
     return m_data->hintTable;
 }
 
-QskSkinHintTable& QskSkin::skinHintTable()
+QskSkinHintTable& QskSkin::hintTable()
 {
     return m_data->hintTable;
 }

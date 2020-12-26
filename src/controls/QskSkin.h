@@ -22,15 +22,9 @@ class QskColorFilter;
 class QskGraphic;
 class QskGraphicProvider;
 
-class QskAnimationHint;
 class QskSkinHintTable;
 
 class QVariant;
-class QskMargins;
-class QskGradient;
-class QskBoxShapeMetrics;
-class QskBoxBorderMetrics;
-class QskBoxBorderColors;
 
 class QSK_EXPORT QskSkin : public QObject
 {
@@ -60,69 +54,12 @@ class QSK_EXPORT QskSkin : public QObject
 
     virtual void resetColors( const QColor& accent );
 
-    void setColor( QskAspect, Qt::GlobalColor );
-    void setColor( QskAspect, QRgb );
-    void setColor( QskAspect, const QColor& );
-
-    QColor color( QskAspect ) const;
-
-    void setMetric( QskAspect, qreal metric );
-    qreal metric( QskAspect ) const;
-
-    void setStrutSize( QskAspect, const QSizeF& );
-    void setStrutSize( QskAspect, qreal width, qreal height );
-    QSizeF strutSize( QskAspect ) const;
-
-    void setMargin( QskAspect, const QskMargins& );
-    void setMargin( QskAspect,
-        qreal left, qreal top, qreal right, qreal bottom );
-    QskMargins margin( QskAspect ) const;
-
-    void setPadding( QskAspect, const QskMargins& );
-    void setPadding( QskAspect,
-        qreal left, qreal top, qreal right, qreal bottom );
-    QskMargins padding( QskAspect ) const;
-
-    void setSpacing( QskAspect, qreal );
-    qreal spacing( QskAspect ) const;
-
-    void setGradient( QskAspect, const QskGradient& );
-    QskGradient gradient( QskAspect ) const;
-
-    void setBoxShape( QskAspect, qreal radius, Qt::SizeMode = Qt::AbsoluteSize );
-    void setBoxShape( QskAspect, qreal topLeft, qreal topRight,
-        qreal bottomLeft, qreal bottomRight, Qt::SizeMode = Qt::AbsoluteSize );
-
-    void setBoxShape( QskAspect, const QskBoxShapeMetrics& );
-    QskBoxShapeMetrics boxShape( QskAspect ) const;
-
-    void setBoxBorderMetrics( QskAspect,
-        qreal borderWidth, Qt::SizeMode = Qt::AbsoluteSize );
-
-    void setBoxBorderMetrics( QskAspect, qreal left, qreal top,
-        qreal right, qreal bottom, Qt::SizeMode = Qt::AbsoluteSize );
-
-    void setBoxBorderMetrics( QskAspect, const QskBoxBorderMetrics& );
-    QskBoxBorderMetrics boxBorderMetrics( QskAspect ) const;
-
-    void setBoxBorderColors( QskAspect, const QskBoxBorderColors& );
-    QskBoxBorderColors boxBorderColors( QskAspect ) const;
-
-    void setAnimation( QskAspect, QskAnimationHint );
-    QskAnimationHint animation( QskAspect ) const;
-
-    void setAlignment( QskAspect, Qt::Alignment );
-    Qt::Alignment alignment( QskAspect ) const;
-
     void setSkinHint( QskAspect, const QVariant& hint );
     const QVariant& skinHint( QskAspect ) const;
 
     void setGraphicFilter( int graphicRole, const QskColorFilter& );
     void resetGraphicFilter( int graphicRole );
     QskColorFilter graphicFilter( int graphicRole ) const;
-
-    void setFontRole( QskAspect, int fontRole );
-    void setGraphicRole( QskAspect, int graphicRole );
 
     void setFont( int fontRole, const QFont& );
     void resetFont( int fontRole );
@@ -145,12 +82,12 @@ class QSK_EXPORT QskSkin : public QObject
     QskSkinlet* skinlet( const QMetaObject* );
 
     const QskSkinHintTable& hintTable() const;
+    QskSkinHintTable& hintTable();
 
     const std::unordered_map< int, QFont >& fonts() const;
     const std::unordered_map< int, QskColorFilter >& graphicFilters() const;
 
   protected:
-    QskSkinHintTable& skinHintTable();
 
   private:
     void declareSkinlet( const QMetaObject* controlMetaObject,

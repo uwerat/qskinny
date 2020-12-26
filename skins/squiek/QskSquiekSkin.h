@@ -23,45 +23,6 @@ class QSK_SQUIEK_EXPORT QskSquiekSkin : public QskSkin
   private:
     void resetColors( const QColor& accent ) override;
 
-    void initHints();
-
-    void initCommonHints();
-
-    void initBoxHints();
-    void initDialogButtonHints();
-    void initDialogButtonBoxHints();
-    void initFocusIndicatorHints();
-    void initInputPanelHints();
-    void initInputPredictionBar();
-    void initVirtualKeyboardHints();
-    void initListViewHints();
-    void initPageIndicatorHints();
-    void initPopupHints();
-    void initProgressBarHints();
-    void initPushButtonHints();
-    void initScrollViewHints();
-    void initSeparatorHints();
-    void initSliderHints();
-    void initSubWindowHints();
-    void initTabButtonHints();
-    void initTabBarHints();
-    void initTabViewHints();
-    void initTextLabelHints();
-    void initTextInputHints();
-
-    enum PanelStyle
-    {
-        NoPanel,
-        Raised,
-        Sunken,
-        Plain,
-        Flat
-    };
-
-    void setSeparator( QskAspect );
-    void setButton( QskAspect, PanelStyle, qreal border = 2.0 );
-    void setPanel( QskAspect, PanelStyle );
-
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

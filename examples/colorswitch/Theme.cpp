@@ -12,19 +12,8 @@
 #include <QskSetup.h>
 #include <QskSkin.h>
 #include <QskSkinTransition.h>
-
-static void qskResetColors( QskSkin* skin, const QColor& accent )
-{
-    skin->resetColors( accent );
-
-    /*
-        The current implementation of the skins is not that good
-        and we don't have support for customizing them by a minimal set
-        of attributes. So we do some manual extra work here
-     */
-    skin->setColor( QskListView::CellSelected, accent.darker( 130 ) );
-    skin->setBoxBorderColors( QskFocusIndicator::Panel, accent.darker( 150 ) );
-}
+#include <QskSkinHintTable.h>
+#include <QskSkinHintTableEditor.h>
 
 namespace
 {
@@ -39,7 +28,18 @@ namespace
       protected:
         void updateSkin( QskSkin*, QskSkin* newSkin ) override
         {
-            qskResetColors( newSkin, m_accent );
+            newSkin->resetColors( m_accent );
+
+            /*
+                The current implementation of the skins is not that good
+                and we don't have support for customizing them by a minimal set
+                of attributes. So we do some manual extra work here
+             */
+
+            QskSkinHintTableEditor ed( &newSkin->hintTable() );
+    
+            ed.setColor( QskListView::CellSelected, m_accent.darker( 130 ) );
+            ed.setBoxBorderColors( QskFocusIndicator::Panel, m_accent.darker( 150 ) );
         }
 
       private:
@@ -49,7 +49,7 @@ namespace
 
 Theme::Theme( QObject* parent )
     : QObject( parent )
-    , m_accent( qskSetup->skin()->color( QskAspect::Color ) )
+    , m_accent( Qt::blue )
 {
     connect( qskSetup, &QskSetup::skinChanged,
         this, [ this ]( QskSkin* ) { updateColors(); } );

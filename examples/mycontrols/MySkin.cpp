@@ -9,6 +9,7 @@
 #include "MyToggleButtonSkinlet.h"
 
 #include <QskSkin.h>
+#include <QskSkinHintTableEditor.h>
 #include <QskAnimationHint.h>
 #include <QskSetup.h>
 
@@ -40,13 +41,22 @@ class MySkin : public QskSkin
         declareSkinlet< QskBox, QskBoxSkinlet >();
         declareSkinlet< QskFocusIndicator, QskFocusIndicatorSkinlet >();
         declareSkinlet< MyToggleButton, MyToggleButtonSkinlet >();
-
-#if 1
-        setGradient( QskAspect::Control, Qt::gray );
-#endif
     }
 
-    void initFocusIndicatorHints(
+  protected:
+    void setGraphicFilter( int role, QRgb rgb )
+    {
+        QskColorFilter filter;
+        filter.addColorSubstitution( QskRgb::Khaki, rgb );
+
+        QskSkin::setGraphicFilter( role, filter );
+    }
+};
+
+class MySkinEditor : public QskSkinHintTableEditor
+{
+  public:
+    void setupFocusIndicator(
         qreal border, qreal radius, qreal padding, QRgb rgb )
     {
         const auto subControl = QskFocusIndicator::Panel;
@@ -59,7 +69,7 @@ class MySkin : public QskSkin
         setBoxBorderColors( subControl, rgb );
     }
 
-    void initBoxHints(
+    void setupBox(
         qreal border, qreal radius,
         const QskBoxBorderColors& borderColors,
         const QskGradient& fillColor )
@@ -73,7 +83,7 @@ class MySkin : public QskSkin
         setPadding( subControl, 0.5 * radius );
     }
 
-    void initToggleButtonHints(
+    void setupToggleButton(
         bool raised, qreal width, qreal height, qreal radius,
         QRgb baseColor, QRgb baseTextColor,
         QRgb foregroundColor, QRgb foregroundTextColor )
@@ -154,17 +164,19 @@ class MySkin : public QskSkin
         setAnimation( Q::Cursor | A::Metric, animator() );
     }
 
-    void setGraphicFilter( int role, QRgb rgb )
+    void setAnimator( uint duration, QEasingCurve::Type type )
     {
-        QskColorFilter filter;
-        filter.addColorSubstitution( QskRgb::Khaki, rgb );
+        m_animationHint.duration = duration;
+        m_animationHint.type = type;
+    }
 
-        QskSkin::setGraphicFilter( role, filter );
+    QskAnimationHint animator() const
+    {
+        return m_animationHint;
     }
 
   private:
-
-    virtual QskAnimationHint animator() const = 0;
+    QskAnimationHint m_animationHint;
 };
 
 class MySkin1 : public MySkin
@@ -177,15 +189,17 @@ class MySkin1 : public MySkin
         setGraphicFilter( GraphicRoleNormal, Crimson );
         setGraphicFilter( GraphicRoleInverted, Gold );
 
-        initFocusIndicatorHints( 2, 3, 6, DarkBlue );
-        initBoxHints( 2, 8, DarkCyan, LightCyan );
-        initToggleButtonHints( false, 150, 120, 6,
-            AliceBlue, Black, CornflowerBlue, White );
-    }
+        MySkinEditor editor;
+        editor.setTable( &hintTable() );
+        editor.setAnimator( 200, QEasingCurve::Linear ); 
 
-    QskAnimationHint animator() const override
-    {
-        return QskAnimationHint( 200, QEasingCurve::Linear );
+        editor.setGradient( QskAspect::Control, Qt::gray );
+
+        editor.setupFocusIndicator( 2, 3, 6, DarkBlue );
+        editor.setupBox( 2, 8, DarkCyan, LightCyan );
+
+        editor.setupToggleButton( false, 150, 120, 6,
+            AliceBlue, Black, CornflowerBlue, White );
     }
 };
 
@@ -199,15 +213,17 @@ class MySkin2 : public MySkin
         setGraphicFilter( GraphicRoleNormal, HotPink );
         setGraphicFilter( GraphicRoleInverted, White );
 
-        initFocusIndicatorHints( 2, 6, 6, Crimson );
-        initBoxHints( 4, 30, LightPink, MistyRose );
-        initToggleButtonHints( true, 130, 100, 40,
-            LightPink, Black, HotPink, White );
-    }
+        MySkinEditor editor;
+        editor.setTable( &hintTable() );
+        editor.setAnimator( 100, QEasingCurve::InQuad );
 
-    QskAnimationHint animator() const override
-    {
-        return QskAnimationHint( 100, QEasingCurve::InQuad );
+        editor.setGradient( QskAspect::Control, Qt::gray );
+
+        editor.setupFocusIndicator( 2, 6, 6, Crimson );
+        editor.setupBox( 4, 30, LightPink, MistyRose );
+
+        editor.setupToggleButton( true, 130, 100, 40,
+            LightPink, Black, HotPink, White );
     }
 };
 

@@ -4,8 +4,9 @@
  *****************************************************************************/
 
 #include "QskSkinHintTable.h"
+#include "QskAnimationHint.h"
 
-QVariant QskSkinHintTable::invalidHint;
+const QVariant QskSkinHintTable::invalidHint;
 
 inline const QVariant* qskResolvedHint( QskAspect aspect,
     const std::unordered_map< QskAspect, QVariant >& hints,
@@ -111,7 +112,7 @@ void QskSkinHintTable::setHint( QskAspect aspect, const QVariant& skinHint )
         it->second = skinHint;
     }
 
-    if ( aspect.state() )
+    if ( aspect.hasState() )
         m_hasStates = true;
 }
 
@@ -212,4 +213,17 @@ QskAspect QskSkinHintTable::resolvedAnimator(
     }
 
     return QskAspect();
+}
+
+QskAnimationHint QskSkinHintTable::animation( QskAspect aspect ) const
+{
+    aspect.setAnimator( true );
+    return hint< QskAnimationHint >( aspect );
+}
+
+void QskSkinHintTable::setAnimation(
+    QskAspect aspect, QskAnimationHint animation )
+{
+    aspect.setAnimator( true );
+    setHint( aspect, animation );
 }

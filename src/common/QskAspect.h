@@ -131,6 +131,9 @@ class QSK_EXPORT QskAspect
     constexpr QskAspect operator|( Placement ) const noexcept;
     constexpr QskAspect operator|( State ) const noexcept;
 
+    constexpr QskAspect stateless() const noexcept;
+    constexpr QskAspect trunk() const noexcept;
+
     constexpr quint64 value() const noexcept;
 
     constexpr bool isAnimator() const noexcept;
@@ -293,6 +296,18 @@ inline constexpr QskAspect QskAspect::operator|( State state ) const noexcept
 {
     return QskAspect( m_bits.subControl, m_bits.type, m_bits.isAnimator,
         m_bits.primitive, m_bits.placement, m_bits.states | state );
+}
+
+inline constexpr QskAspect QskAspect::stateless() const noexcept
+{
+    return QskAspect( m_bits.subControl, m_bits.type, m_bits.isAnimator,
+        m_bits.primitive, m_bits.placement, 0 );
+}
+
+inline constexpr QskAspect QskAspect::trunk() const noexcept
+{
+    return QskAspect( m_bits.subControl, m_bits.type, m_bits.isAnimator,
+        m_bits.primitive, 0, 0 );
 }
 
 inline constexpr quint64 QskAspect::value() const noexcept

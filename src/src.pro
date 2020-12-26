@@ -170,6 +170,7 @@ HEADERS += \
     controls/QskSkin.h \
     controls/QskSkinFactory.h \
     controls/QskSkinHintTable.h \
+    controls/QskSkinHintTableEditor.h \
     controls/QskSkinManager.h \
     controls/QskSkinTransition.h \
     controls/QskSkinlet.h \
@@ -242,6 +243,7 @@ SOURCES += \
     controls/QskSimpleListBox.cpp \
     controls/QskSkin.cpp \
     controls/QskSkinHintTable.cpp \
+    controls/QskSkinHintTableEditor.cpp \
     controls/QskSkinFactory.cpp \
     controls/QskSkinManager.cpp \
     controls/QskSkinTransition.cpp \
