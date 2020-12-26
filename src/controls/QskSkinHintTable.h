@@ -53,6 +53,8 @@ class QSK_EXPORT QskSkinHintTable
     QskAspect resolvedAnimator(
         QskAspect, QskAnimationHint& ) const;
 
+    bool isResolutionMatching( QskAspect, QskAspect ) const;
+
   private:
     static const QVariant invalidHint;
 

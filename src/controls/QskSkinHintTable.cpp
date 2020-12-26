@@ -227,3 +227,69 @@ void QskSkinHintTable::setAnimation(
     aspect.setAnimator( true );
     setHint( aspect, animation );
 }
+
+bool QskSkinHintTable::isResolutionMatching(
+    QskAspect aspect1, QskAspect aspect2 ) const
+{
+    if ( aspect1 == aspect2 )
+        return true;
+
+    if ( aspect1.trunk() != aspect2.trunk() )
+        return false;
+
+    if ( !hasStates() )
+        return false;
+
+    const auto a1 = aspect1;
+    const auto a2 = aspect2;
+
+    Q_FOREVER
+    {
+        const auto s1 = aspect1.topState();
+        const auto s2 = aspect2.topState();
+
+        if ( s1 > s2 )
+        {
+            if ( hasHint( aspect1 ) )
+                return false;
+
+            aspect1.clearState( s1 );
+        }
+        else if ( s2 > s1 )
+        {
+            if ( hasHint( aspect2 ) )
+                return false;
+
+            aspect2.clearState( s2 );
+        }
+        else
+        {
+            if ( aspect1 == aspect2 )
+            {
+                if ( hasHint( aspect1 ) )
+                    return true;
+
+                if ( s1 == 0 )
+                {
+                    if ( aspect1.placement() == QskAspect::NoPlacement )
+                        return true;
+
+                    // clear the placement bits and restart with the initial state
+                    aspect1 = a1;
+                    aspect1.setPlacement( QskAspect::NoPlacement );
+
+                    aspect2 = a2;
+                    aspect2.setPlacement( QskAspect::NoPlacement );
+                }
+            }
+            else
+            {
+                if ( hasHint( aspect1 ) || hasHint( aspect2 ) )
+                    return false;
+            }
+
+            aspect1.clearState( s1 );
+            aspect2.clearState( s2 );
+        }
+    }
+}
