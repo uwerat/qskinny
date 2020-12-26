@@ -10,24 +10,25 @@
 
 #include <qbasictimer.h>
 
+// Flat/Checkable are no states - we need to get rid of them. TODO ...
 QSK_SYSTEM_STATE( QskAbstractButton, Flat, QskAspect::FirstSystemState << 1 )
 #if 1
 // Wrong: we are overlapping with the user states, TODO ...
-QSK_SYSTEM_STATE( QskAbstractButton, Checked, QskAspect::LastSystemState >> 4 )
+QSK_STATE( QskAbstractButton, Checked, QskAspect::LastUserState )
 #endif
 QSK_SYSTEM_STATE( QskAbstractButton, Pressed, QskAspect::LastSystemState >> 3 )
 QSK_SYSTEM_STATE( QskAbstractButton, Checkable, QskAspect::LastSystemState >> 2 )
 
 static QskAbstractButton* qskCheckedSibling( const QskAbstractButton* button )
 {
-    QQuickItem* parentItem = button->parentItem();
+    const auto parentItem = button->parentItem();
     if ( parentItem == nullptr )
         return nullptr;
 
     const auto siblings = parentItem->childItems();
-    for ( QQuickItem* sibling : siblings )
+    for ( auto sibling : siblings )
     {
-        if ( QskAbstractButton* btn = qobject_cast< QskAbstractButton* >( sibling ) )
+        if ( auto btn = qobject_cast< QskAbstractButton* >( sibling ) )
         {
             if ( btn != button && btn->exclusive() && btn->isChecked() )
                 return btn;

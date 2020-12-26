@@ -588,6 +588,11 @@ QSK_EXPORT void qskDebugAspect( QDebug, const QMetaObject*, QskAspect );
         QskAspect::registerState( &type::staticMetaObject, value, #type "::" #name );
 
 #define QSK_SYSTEM_STATE( type, name, value ) \
+    static_assert( \
+        ( value >= QskAspect::FirstSystemState && value < QskAspect::FirstUserState ) || \
+        ( value > QskAspect::LastUserState && value <= QskAspect::LastSystemState ), \
+        "Invalid system state" \
+    ); \
     const QskAspect::State type::name = \
         QskAspect::registerState( &type::staticMetaObject, value, #type "::" #name );
 
