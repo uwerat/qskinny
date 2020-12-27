@@ -86,9 +86,9 @@ class QSK_EXPORT QskGraphicLabel : public QskControl
     void sourceChanged();
     void mirrorChanged();
     void sourceSizeChanged();
-    void graphicRoleChanged();
-    void alignmentChanged();
-    void fillModeChanged();
+    void graphicRoleChanged( int );
+    void alignmentChanged( Qt::Alignment );
+    void fillModeChanged( FillMode );
 
   public Q_SLOTS:
     void setGraphic( const QskGraphic& );

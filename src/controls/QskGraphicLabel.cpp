@@ -138,7 +138,7 @@ void QskGraphicLabel::setGraphicRole( int role )
     if ( role != oldRole )
     {
         update();
-        Q_EMIT graphicRoleChanged();
+        Q_EMIT graphicRoleChanged( role );
     }
 }
 
@@ -213,7 +213,7 @@ void QskGraphicLabel::setFillMode( FillMode mode )
         if ( !m_data->graphic.isEmpty() )
             update();
 
-        Q_EMIT fillModeChanged();
+        Q_EMIT fillModeChanged( mode );
     }
 }
 
@@ -229,6 +229,7 @@ Qt::Alignment QskGraphicLabel::alignment() const
 
 void QskGraphicLabel::setAlignment( Qt::Alignment alignment )
 {
+    // using setAlignmentHint ...
     if ( alignment != m_data->alignment )
     {
         m_data->alignment = alignment;
@@ -236,7 +237,7 @@ void QskGraphicLabel::setAlignment( Qt::Alignment alignment )
         if ( !( m_data->sourceSize.isEmpty() || m_data->graphic.isEmpty() ) )
             update();
 
-        Q_EMIT alignmentChanged();
+        Q_EMIT alignmentChanged( alignment );
     }
 }
 
