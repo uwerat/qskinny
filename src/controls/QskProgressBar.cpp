@@ -173,6 +173,8 @@ void QskProgressBar::setBarGradient( const QskGradient& gradient )
 
     g.setOrientation( Qt::Vertical );
     setGradientHint( QskProgressBar::Bar | QskAspect::Vertical, g );
+
+    update();
 }
 
 void QskProgressBar::resetBarGradient()
