@@ -130,11 +130,11 @@ class IconGrid : public QskLinearBox
 
         for ( int i = 0; i < elementCount(); i++ )
         {
-            if ( auto item = qobject_cast< QskControl* > ( itemAtIndex( i ) ) )
+            if ( auto control = qskControlCast( itemAtIndex( i ) ) )
             {
                 // to support the optimizations in ScrollArea::updateVisibilities
-                item->setLayoutHint( RetainSizeWhenHidden, true );
-                item->setVisible( false );
+                control->setLayoutHint( RetainSizeWhenHidden, true );
+                control->setVisible( false );
             }
         }
 #endif
