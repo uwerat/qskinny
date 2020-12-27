@@ -144,7 +144,7 @@ class QSK_EXPORT QskSkinHintTableEditor
 
 inline void QskSkinHintTableEditor::setHint( QskAspect aspect, const QVariant& hint )
 {
-    return m_table->setHint( aspect, hint );
+    m_table->setHint( aspect, hint );
 }
 
 template< typename T >
