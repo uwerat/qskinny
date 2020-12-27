@@ -55,6 +55,8 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
     bool isVisibleTo( const QQuickItem* ) const;
     bool isVisibleToParent() const;
 
+    bool hasChildItems() const;
+
     QRectF geometry() const;
     QRectF rect() const;
 #if QT_VERSION < QT_VERSION_CHECK( 5, 10, 0 )
@@ -150,6 +152,11 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
 
     Q_DECLARE_PRIVATE( QskQuickItem )
 };
+
+inline bool QskQuickItem::hasChildItems() const
+{
+    return !childItems().isEmpty();
+}
 
 inline void QskQuickItem::setGeometry( const QRectF& rect )
 {
