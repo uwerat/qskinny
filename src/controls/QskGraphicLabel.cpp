@@ -133,7 +133,7 @@ void QskGraphicLabel::setGraphicRole( int role )
 {
     const int oldRole = graphicRole();
 
-    QskSkinnable::setGraphicRole( Graphic, role );
+    setGraphicRoleHint( Graphic, role );
 
     if ( role != oldRole )
     {
@@ -144,7 +144,7 @@ void QskGraphicLabel::setGraphicRole( int role )
 
 int QskGraphicLabel::graphicRole() const
 {
-    return QskSkinnable::graphicRole( Graphic );
+    return graphicRoleHint( Graphic );
 }
 
 QskColorFilter QskGraphicLabel::graphicFilter() const

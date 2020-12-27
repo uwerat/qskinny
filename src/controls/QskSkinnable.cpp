@@ -389,12 +389,17 @@ qreal QskSkinnable::spacingHint(
     return qskMetric< qreal >( this, aspect | QskAspect::Spacing, status );
 }
 
-bool QskSkinnable::setFontRole( const QskAspect aspect, int role )
+bool QskSkinnable::setFontRoleHint( const QskAspect aspect, int role )
 {
     return qskSetFlag( this, aspect | QskAspect::FontRole, role );
 }
 
-int QskSkinnable::fontRole(
+bool QskSkinnable::resetFontRoleHint( const QskAspect aspect )
+{
+    return resetFlagHint( aspect | QskAspect::FontRole );
+}
+
+int QskSkinnable::fontRoleHint(
     const QskAspect aspect, QskSkinHintStatus* status ) const
 {
     return qskFlag( this, aspect | QskAspect::FontRole, status );
@@ -402,15 +407,20 @@ int QskSkinnable::fontRole(
 
 QFont QskSkinnable::effectiveFont( const QskAspect aspect ) const
 {
-    return effectiveSkin()->font( fontRole( aspect ) );
+    return effectiveSkin()->font( fontRoleHint( aspect ) );
 }
 
-bool QskSkinnable::setGraphicRole( const QskAspect aspect, int role )
+bool QskSkinnable::setGraphicRoleHint( const QskAspect aspect, int role )
 {
     return qskSetFlag( this, aspect | QskAspect::GraphicRole, role );
 }
 
-int QskSkinnable::graphicRole(
+bool QskSkinnable::resetGraphicRoleHint( const QskAspect aspect )
+{
+    return resetFlagHint( aspect | QskAspect::GraphicRole );
+}
+
+int QskSkinnable::graphicRoleHint(
     const QskAspect aspect, QskSkinHintStatus* status ) const
 {
     return qskFlag( this, aspect | QskAspect::GraphicRole, status );

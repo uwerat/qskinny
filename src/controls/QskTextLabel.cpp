@@ -171,7 +171,7 @@ void QskTextLabel::setFontRole( int role )
 {
     const int oldRole = fontRole();
 
-    QskSkinnable::setFontRole( Text, role );
+    setFontRoleHint( Text, role );
 
     if ( oldRole != role )
     {
@@ -184,7 +184,7 @@ void QskTextLabel::setFontRole( int role )
 
 int QskTextLabel::fontRole() const
 {
-    return QskSkinnable::fontRole( Text );
+    return fontRoleHint( Text );
 }
 
 void QskTextLabel::setTextColor( const QColor& color )

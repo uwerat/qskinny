@@ -521,14 +521,14 @@ void QskTextInput::setActivationModes( ActivationModes modes )
 
 int QskTextInput::fontRole() const
 {
-    return QskSkinnable::fontRole( Text );
+    return fontRoleHint( Text );
 }
 
 void QskTextInput::setFontRole( int role )
 {
     if ( role != fontRole() )
     {
-        QskSkinnable::setFontRole( Text, role );
+        setFontRoleHint( Text, role );
 
         polish();
         resetImplicitSize();
@@ -551,7 +551,6 @@ void QskTextInput::setAlignment( Qt::Alignment alignment )
         m_data->textInput->setAlignment( alignment );
 
         polish();
-
         Q_EMIT alignmentChanged();
     }
 }
@@ -573,7 +572,9 @@ bool QskTextInput::isReadOnly() const
 
 void QskTextInput::setReadOnly( bool on )
 {
-    if ( m_data->textInput->isReadOnly() == on )
+    auto input = m_data->textInput;
+
+    if ( input->isReadOnly() == on )
         return;
 
 #if 1
@@ -581,10 +582,10 @@ void QskTextInput::setReadOnly( bool on )
     setFocusPolicy( Qt::NoFocus );
 #endif
 
-    m_data->textInput->setReadOnly( on );
+    input->setReadOnly( on );
 
     // we are killing user settings here ?
-    m_data->textInput->setFlag( QQuickItem::ItemAcceptsInputMethod, !on );
+    input->setFlag( QQuickItem::ItemAcceptsInputMethod, !on );
     qskUpdateInputMethod( this, Qt::ImEnabled );
 
     setSkinStateFlag( ReadOnly, on );

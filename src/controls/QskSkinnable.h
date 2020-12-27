@@ -183,11 +183,13 @@ class QSK_EXPORT QskSkinnable
     bool resetAlignmentHint( QskAspect );
     Qt::Alignment alignmentHint( QskAspect, Qt::Alignment = Qt::Alignment() ) const;
 
-    bool setFontRole( QskAspect, int role );
-    int fontRole( QskAspect, QskSkinHintStatus* = nullptr ) const;
+    bool setFontRoleHint( QskAspect, int role );
+    bool resetFontRoleHint( QskAspect );
+    int fontRoleHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
 
-    bool setGraphicRole( QskAspect, int role );
-    int graphicRole( QskAspect, QskSkinHintStatus* = nullptr ) const;
+    bool setGraphicRoleHint( QskAspect, int role );
+    bool resetGraphicRoleHint( QskAspect );
+    int graphicRoleHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
 
   protected:
     virtual void updateNode( QSGNode* );
