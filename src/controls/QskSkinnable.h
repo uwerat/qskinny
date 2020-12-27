@@ -75,74 +75,14 @@ class QSK_EXPORT QskSkinnable
     void setSkinlet( const QskSkinlet* skinlet );
     const QskSkinlet* skinlet() const;
 
-    void setColor( QskAspect, Qt::GlobalColor );
-    void setColor( QskAspect, QRgb );
-    void setColor( QskAspect, const QColor& );
-    bool resetColor( QskAspect );
-    QColor color( QskAspect, QskSkinHintStatus* = nullptr ) const;
-
-    void setMetric( QskAspect, qreal metric );
-    bool resetMetric( QskAspect );
-    qreal metric( QskAspect, QskSkinHintStatus* = nullptr ) const;
-
-    void setFlagHint( QskAspect, int flag );
-    bool resetFlagHint( QskAspect );
-    int flagHint( QskAspect ) const;
-    template< typename T > T flagHint( QskAspect, T = T() ) const;
-
-    void setStrutSizeHint( QskAspect, const QSizeF& );
-    void setStrutSizeHint( QskAspect, qreal width, qreal height );
-    bool resetStrutSizeHint( QskAspect );
-    QSizeF strutSizeHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
-
-    void setMarginHint( QskAspect, qreal );
-    void setMarginHint( QskAspect, const QMarginsF& );
-    bool resetMarginHint( QskAspect );
-    QMarginsF marginHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
-
-    void setPaddingHint( QskAspect, qreal );
-    void setPaddingHint( QskAspect, const QMarginsF& );
-    bool resetPaddingHint( QskAspect );
-    QMarginsF paddingHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
-
-    void setGradientHint( QskAspect, const QskGradient& );
-    QskGradient gradientHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
-
-    void setBoxShapeHint( QskAspect, const QskBoxShapeMetrics& );
-    bool resetBoxShapeHint( QskAspect );
-    QskBoxShapeMetrics boxShapeHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
-
-    void setBoxBorderMetricsHint( QskAspect, const QskBoxBorderMetrics& );
-    bool resetBoxBorderMetricsHint( QskAspect );
-    QskBoxBorderMetrics boxBorderMetricsHint(
-        QskAspect, QskSkinHintStatus* = nullptr ) const;
-
-    void setBoxBorderColorsHint( QskAspect, const QskBoxBorderColors& );
-    bool resetBoxBorderColorsHint( QskAspect );
-    QskBoxBorderColors boxBorderColorsHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
-
-    void setSpacingHint( QskAspect, qreal );
-    bool resetSpacingHint( QskAspect );
-    qreal spacingHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
-
-    void setAlignmentHint( QskAspect, Qt::Alignment );
-    bool resetAlignmentHint( QskAspect );
-    Qt::Alignment alignmentHint( QskAspect, Qt::Alignment = Qt::Alignment() ) const;
-
-    void setFontRole( QskAspect, int role );
-    int fontRole( QskAspect, QskSkinHintStatus* = nullptr ) const;
-
     QFont effectiveFont( QskAspect ) const;
-
-    void setGraphicRole( QskAspect, int role );
-    int graphicRole( QskAspect, QskSkinHintStatus* = nullptr ) const;
 
     QskColorFilter effectiveGraphicFilter( QskAspect ) const;
 
-    void setAnimationHint( QskAspect, QskAnimationHint );
+    bool setAnimationHint( QskAspect, QskAnimationHint );
     QskAnimationHint animationHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
 
-    void setSkinHint( QskAspect, const QVariant& );
+    bool setSkinHint( QskAspect, const QVariant& );
     bool resetSkinHint( QskAspect );
 
     QskAnimationHint effectiveAnimation( QskAspect::Type, QskAspect::Subcontrol,
@@ -186,6 +126,68 @@ class QSK_EXPORT QskSkinnable
 
     void setSkinState( QskAspect::State, bool animated = true );
     void setSkinStateFlag( QskAspect::State, bool on = true );
+
+    // type aware methods for accessing skin hints
+
+    bool setColor( QskAspect, Qt::GlobalColor );
+    bool setColor( QskAspect, QRgb );
+    bool setColor( QskAspect, const QColor& );
+    bool resetColor( QskAspect );
+    QColor color( QskAspect, QskSkinHintStatus* = nullptr ) const;
+
+    bool setMetric( QskAspect, qreal metric );
+    bool resetMetric( QskAspect );
+    qreal metric( QskAspect, QskSkinHintStatus* = nullptr ) const;
+
+    bool setFlagHint( QskAspect, int flag );
+    bool resetFlagHint( QskAspect );
+    int flagHint( QskAspect ) const;
+    template< typename T > T flagHint( QskAspect, T = T() ) const;
+
+    bool setStrutSizeHint( QskAspect, const QSizeF& );
+    bool setStrutSizeHint( QskAspect, qreal width, qreal height );
+    bool resetStrutSizeHint( QskAspect );
+    QSizeF strutSizeHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
+
+    bool setMarginHint( QskAspect, qreal );
+    bool setMarginHint( QskAspect, const QMarginsF& );
+    bool resetMarginHint( QskAspect );
+    QMarginsF marginHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
+
+    bool setPaddingHint( QskAspect, qreal );
+    bool setPaddingHint( QskAspect, const QMarginsF& );
+    bool resetPaddingHint( QskAspect );
+    QMarginsF paddingHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
+
+    bool setGradientHint( QskAspect, const QskGradient& );
+    QskGradient gradientHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
+
+    bool setBoxShapeHint( QskAspect, const QskBoxShapeMetrics& );
+    bool resetBoxShapeHint( QskAspect );
+    QskBoxShapeMetrics boxShapeHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
+
+    bool setBoxBorderMetricsHint( QskAspect, const QskBoxBorderMetrics& );
+    bool resetBoxBorderMetricsHint( QskAspect );
+    QskBoxBorderMetrics boxBorderMetricsHint(
+        QskAspect, QskSkinHintStatus* = nullptr ) const;
+
+    bool setBoxBorderColorsHint( QskAspect, const QskBoxBorderColors& );
+    bool resetBoxBorderColorsHint( QskAspect );
+    QskBoxBorderColors boxBorderColorsHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
+
+    bool setSpacingHint( QskAspect, qreal );
+    bool resetSpacingHint( QskAspect );
+    qreal spacingHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
+
+    bool setAlignmentHint( QskAspect, Qt::Alignment );
+    bool resetAlignmentHint( QskAspect );
+    Qt::Alignment alignmentHint( QskAspect, Qt::Alignment = Qt::Alignment() ) const;
+
+    bool setFontRole( QskAspect, int role );
+    int fontRole( QskAspect, QskSkinHintStatus* = nullptr ) const;
+
+    bool setGraphicRole( QskAspect, int role );
+    int graphicRole( QskAspect, QskSkinHintStatus* = nullptr ) const;
 
   protected:
     virtual void updateNode( QSGNode* );

@@ -6,6 +6,8 @@
 #include "QskSkinHintTable.h"
 #include "QskAnimationHint.h"
 
+#include <limits>
+
 const QVariant QskSkinHintTable::invalidHint;
 
 inline const QVariant* qskResolvedHint( QskAspect aspect,
@@ -45,16 +47,13 @@ inline const QVariant* qskResolvedHint( QskAspect aspect,
 }
 
 QskSkinHintTable::QskSkinHintTable()
-    : m_hints( nullptr )
-    , m_animatorCount( 0 )
-    , m_hasStates( false )
 {
 }
 
 QskSkinHintTable::QskSkinHintTable( const QskSkinHintTable& other )
     : m_hints( nullptr )
     , m_animatorCount( other.m_animatorCount )
-    , m_hasStates( other.m_hasStates )
+    , m_statefulCount( other.m_statefulCount )
 {
     if ( other.m_hints )
         m_hints = new HintMap( *( other.m_hints ) );
@@ -68,7 +67,7 @@ QskSkinHintTable::~QskSkinHintTable()
 QskSkinHintTable& QskSkinHintTable::operator=( const QskSkinHintTable& other )
 {
     m_animatorCount = other.m_animatorCount;
-    m_hasStates = other.m_hasStates;
+    m_statefulCount = other.m_statefulCount;
 
     if ( other.m_hints )
     {
@@ -95,7 +94,9 @@ const std::unordered_map< QskAspect, QVariant >& QskSkinHintTable::hints() const
     return dummyHints;
 }
 
-void QskSkinHintTable::setHint( QskAspect aspect, const QVariant& skinHint )
+#define QSK_ASSERT_COUNTER( x ) Q_ASSERT( x < std::numeric_limits< decltype( x ) >::max() )
+
+bool QskSkinHintTable::setHint( QskAspect aspect, const QVariant& skinHint )
 {
     if ( m_hints == nullptr )
         m_hints = new HintMap();
@@ -104,17 +105,32 @@ void QskSkinHintTable::setHint( QskAspect aspect, const QVariant& skinHint )
     if ( it == m_hints->end() )
     {
         m_hints->emplace( aspect, skinHint );
+
         if ( aspect.isAnimator() )
+        {
             m_animatorCount++;
-    }
-    else if ( it->second != skinHint )
-    {
-        it->second = skinHint;
+            QSK_ASSERT_COUNTER( m_animatorCount );
+        }
+
+        if ( aspect.hasState() )
+        {
+            m_statefulCount++;
+            QSK_ASSERT_COUNTER( m_statefulCount );
+        }
+
+        return true;
     }
 
-    if ( aspect.hasState() )
-        m_hasStates = true;
+    if ( it->second != skinHint )
+    {
+        it->second = skinHint;
+        return true;
+    }
+
+    return false;
 }
+
+#undef QSK_ASSERT_COUNTER
 
 bool QskSkinHintTable::removeHint( QskAspect aspect )
 {
@@ -127,6 +143,9 @@ bool QskSkinHintTable::removeHint( QskAspect aspect )
     {
         if ( aspect.isAnimator() )
             m_animatorCount--;
+
+        if ( aspect.hasState() )
+            m_statefulCount--;
 
         if ( m_hints->empty() )
         {
@@ -151,6 +170,9 @@ QVariant QskSkinHintTable::takeHint( QskAspect aspect )
             if ( aspect.isAnimator() )
                 m_animatorCount--;
 
+            if ( aspect.hasState() )
+                m_statefulCount--;
+
             if ( m_hints->empty() )
             {
                 delete m_hints;
@@ -170,6 +192,7 @@ void QskSkinHintTable::clear()
     m_hints = nullptr;
 
     m_animatorCount = 0;
+    m_statefulCount = 0;
 }
 
 const QVariant* QskSkinHintTable::resolvedHint(
@@ -221,11 +244,11 @@ QskAnimationHint QskSkinHintTable::animation( QskAspect aspect ) const
     return hint< QskAnimationHint >( aspect );
 }
 
-void QskSkinHintTable::setAnimation(
+bool QskSkinHintTable::setAnimation(
     QskAspect aspect, QskAnimationHint animation )
 {
     aspect.setAnimator( true );
-    setHint( aspect, animation );
+    return setHint( aspect, animation );
 }
 
 bool QskSkinHintTable::isResolutionMatching(

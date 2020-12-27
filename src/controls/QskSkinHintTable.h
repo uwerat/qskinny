@@ -23,13 +23,13 @@ class QSK_EXPORT QskSkinHintTable
 
     QskSkinHintTable& operator=( const QskSkinHintTable& );
 
-    void setAnimation( QskAspect, QskAnimationHint );
+    bool setAnimation( QskAspect, QskAnimationHint );
     QskAnimationHint animation( QskAspect ) const;
 
-    void setHint( QskAspect, const QVariant& );
+    bool setHint( QskAspect, const QVariant& );
     const QVariant& hint( QskAspect ) const;
 
-    template< typename T > void setHint( QskAspect, const T& );
+    template< typename T > bool setHint( QskAspect, const T& );
     template< typename T > T hint( QskAspect ) const;
 
     bool removeHint( QskAspect );
@@ -59,10 +59,10 @@ class QSK_EXPORT QskSkinHintTable
     static const QVariant invalidHint;
 
     typedef std::unordered_map< QskAspect, QVariant > HintMap;
-    HintMap* m_hints;
+    HintMap* m_hints = nullptr;
 
-    quint16 m_animatorCount;
-    bool m_hasStates : 1;
+    unsigned short m_animatorCount = 0;
+    unsigned short m_statefulCount = 0;
 };
 
 inline bool QskSkinHintTable::hasHints() const
@@ -72,12 +72,12 @@ inline bool QskSkinHintTable::hasHints() const
 
 inline bool QskSkinHintTable::hasStates() const
 {
-    return m_hasStates;
+    return m_statefulCount > 0;
 }
 
 inline bool QskSkinHintTable::hasAnimators() const
 {
-    return m_animatorCount;
+    return m_animatorCount > 0;
 }
 
 inline bool QskSkinHintTable::hasHint( QskAspect aspect ) const
@@ -101,9 +101,9 @@ inline const QVariant& QskSkinHintTable::hint( QskAspect aspect ) const
 }
 
 template< typename T >
-inline void QskSkinHintTable::setHint( QskAspect aspect, const T& hint )
+inline bool QskSkinHintTable::setHint( QskAspect aspect, const T& hint )
 {
-    setHint( aspect, QVariant::fromValue( hint ) );
+    return setHint( aspect, QVariant::fromValue( hint ) );
 }
 
 template< typename T >

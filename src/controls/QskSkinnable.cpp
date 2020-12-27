@@ -55,10 +55,10 @@ static inline QVariant qskTypedNullValue( const QVariant& value )
     return QVariant( vType, nullptr );
 }
 
-static inline void qskSetFlag( QskSkinnable* skinnable,
+static inline bool qskSetFlag( QskSkinnable* skinnable,
      const QskAspect aspect, int flag )
 {
-    skinnable->setSkinHint( aspect | QskAspect::Flag, QVariant( flag ) );
+    return skinnable->setSkinHint( aspect | QskAspect::Flag, QVariant( flag ) );
 }
 
 static inline int qskFlag( const QskSkinnable* skinnable,
@@ -67,17 +67,17 @@ static inline int qskFlag( const QskSkinnable* skinnable,
     return skinnable->effectiveSkinHint( aspect | QskAspect::Flag, status ).toInt();
 }
 
-static inline void qskSetMetric( QskSkinnable* skinnable,
+static inline bool qskSetMetric( QskSkinnable* skinnable,
      const QskAspect aspect, const QVariant& metric )
 {
-    skinnable->setSkinHint( aspect | QskAspect::Metric, metric );
+    return skinnable->setSkinHint( aspect | QskAspect::Metric, metric );
 }
 
 template< typename T >
-static inline void qskSetMetric( QskSkinnable* skinnable,
+static inline bool qskSetMetric( QskSkinnable* skinnable,
     QskAspect aspect, const T& metric )
 {
-    qskSetMetric( skinnable, aspect, QVariant::fromValue( metric ) );
+    return qskSetMetric( skinnable, aspect, QVariant::fromValue( metric ) );
 }
 
 template< typename T >
@@ -88,17 +88,17 @@ static inline T qskMetric( const QskSkinnable* skinnable,
         aspect | QskAspect::Metric, status ).value< T >();
 }
 
-static inline void qskSetColor( QskSkinnable* skinnable,
+static inline bool qskSetColor( QskSkinnable* skinnable,
     const QskAspect aspect, const QVariant& color )
 {
-    skinnable->setSkinHint( aspect | QskAspect::Color, color );
+    return skinnable->setSkinHint( aspect | QskAspect::Color, color );
 }
 
 template< typename T >
-static inline void qskSetColor( QskSkinnable* skinnable,
+static inline bool qskSetColor( QskSkinnable* skinnable,
     const QskAspect aspect, const T& color )
 {
-    qskSetColor( skinnable, aspect, QVariant::fromValue( color ) );
+    return qskSetColor( skinnable, aspect, QVariant::fromValue( color ) );
 }
 
 template< typename T >
@@ -193,9 +193,9 @@ const QskSkinHintTable& QskSkinnable::hintTable() const
     return m_data->hintTable;
 }
 
-void QskSkinnable::setFlagHint( const QskAspect aspect, int flag )
+bool QskSkinnable::setFlagHint( const QskAspect aspect, int flag )
 {
-    qskSetFlag( this, aspect, flag );
+    return qskSetFlag( this, aspect, flag );
 }
 
 int QskSkinnable::flagHint( const QskAspect aspect ) const
@@ -203,9 +203,9 @@ int QskSkinnable::flagHint( const QskAspect aspect ) const
     return effectiveSkinHint( aspect ).toInt();
 }
 
-void QskSkinnable::setAlignmentHint( const QskAspect aspect, Qt::Alignment alignment )
+bool QskSkinnable::setAlignmentHint( const QskAspect aspect, Qt::Alignment alignment )
 {
-    qskSetFlag( this, aspect | QskAspect::Alignment, alignment );
+    return qskSetFlag( this, aspect | QskAspect::Alignment, alignment );
 }
 
 bool QskSkinnable::resetAlignmentHint( const QskAspect aspect )
@@ -213,19 +213,19 @@ bool QskSkinnable::resetAlignmentHint( const QskAspect aspect )
     return resetFlagHint( aspect | QskAspect::Alignment );
 }
 
-void QskSkinnable::setColor( const QskAspect aspect, const QColor& color )
+bool QskSkinnable::setColor( const QskAspect aspect, const QColor& color )
 {
-    qskSetColor( this, aspect, color );
+    return qskSetColor( this, aspect, color );
 }
 
-void QskSkinnable::setColor( const QskAspect aspect, Qt::GlobalColor color )
+bool QskSkinnable::setColor( const QskAspect aspect, Qt::GlobalColor color )
 {
-    qskSetColor( this, aspect, QColor( color ) );
+    return qskSetColor( this, aspect, QColor( color ) );
 }
 
-void QskSkinnable::setColor( const QskAspect aspect, QRgb rgb )
+bool QskSkinnable::setColor( const QskAspect aspect, QRgb rgb )
 {
-    qskSetColor( this, aspect, QColor::fromRgba( rgb ) );
+    return qskSetColor( this, aspect, QColor::fromRgba( rgb ) );
 }
 
 QColor QskSkinnable::color( const QskAspect aspect, QskSkinHintStatus* status ) const
@@ -233,9 +233,9 @@ QColor QskSkinnable::color( const QskAspect aspect, QskSkinHintStatus* status ) 
     return qskColor< QColor >( this, aspect, status );
 }
 
-void QskSkinnable::setMetric( const QskAspect aspect, qreal metric )
+bool QskSkinnable::setMetric( const QskAspect aspect, qreal metric )
 {
-    qskSetMetric( this, aspect, metric );
+    return qskSetMetric( this, aspect, metric );
 }
 
 qreal QskSkinnable::metric( const QskAspect aspect, QskSkinHintStatus* status ) const
@@ -243,15 +243,15 @@ qreal QskSkinnable::metric( const QskAspect aspect, QskSkinHintStatus* status ) 
     return qskMetric< qreal >( this, aspect, status );
 }
 
-void QskSkinnable::setStrutSizeHint(
+bool QskSkinnable::setStrutSizeHint(
     const QskAspect aspect, qreal width, qreal height )
 {
-    qskSetMetric( this, aspect, QSizeF( width, height ) );
+    return qskSetMetric( this, aspect, QSizeF( width, height ) );
 }
 
-void QskSkinnable::setStrutSizeHint( const QskAspect aspect, const QSizeF& strut )
+bool QskSkinnable::setStrutSizeHint( const QskAspect aspect, const QSizeF& strut )
 {
-    qskSetMetric( this, aspect, strut );
+    return qskSetMetric( this, aspect, strut );
 }
 
 bool QskSkinnable::resetStrutSizeHint( const QskAspect aspect )
@@ -265,14 +265,14 @@ QSizeF QskSkinnable::strutSizeHint(
     return qskMetric< QSizeF >( this, aspect | QskAspect::StrutSize, status );
 }
 
-void QskSkinnable::setMarginHint( const QskAspect aspect, qreal margins )
+bool QskSkinnable::setMarginHint( const QskAspect aspect, qreal margins )
 {
-    qskSetMetric( this, aspect | QskAspect::Margin, QskMargins( margins ) );
+    return qskSetMetric( this, aspect | QskAspect::Margin, QskMargins( margins ) );
 }
 
-void QskSkinnable::setMarginHint( const QskAspect aspect, const QMarginsF& margins )
+bool QskSkinnable::setMarginHint( const QskAspect aspect, const QMarginsF& margins )
 {
-    qskSetMetric( this, aspect | QskAspect::Margin, QskMargins( margins ) );
+    return qskSetMetric( this, aspect | QskAspect::Margin, QskMargins( margins ) );
 }
 
 bool QskSkinnable::resetMarginHint( const QskAspect aspect )
@@ -286,14 +286,14 @@ QMarginsF QskSkinnable::marginHint(
     return qskMetric< QskMargins >( this, aspect | QskAspect::Margin, status );
 }
 
-void QskSkinnable::setPaddingHint( const QskAspect aspect, qreal padding )
+bool QskSkinnable::setPaddingHint( const QskAspect aspect, qreal padding )
 {
-    qskSetMetric( this, aspect | QskAspect::Padding, QskMargins( padding ) );
+    return qskSetMetric( this, aspect | QskAspect::Padding, QskMargins( padding ) );
 }
 
-void QskSkinnable::setPaddingHint( const QskAspect aspect, const QMarginsF& padding )
+bool QskSkinnable::setPaddingHint( const QskAspect aspect, const QMarginsF& padding )
 {
-    qskSetMetric( this, aspect | QskAspect::Padding, QskMargins( padding ) );
+    return qskSetMetric( this, aspect | QskAspect::Padding, QskMargins( padding ) );
 }
 
 bool QskSkinnable::resetPaddingHint( const QskAspect aspect )
@@ -307,10 +307,10 @@ QMarginsF QskSkinnable::paddingHint(
     return qskMetric< QskMargins >( this, aspect | QskAspect::Padding, status );
 }
 
-void QskSkinnable::setGradientHint(
+bool QskSkinnable::setGradientHint(
     const QskAspect aspect, const QskGradient& gradient )
 {
-    qskSetColor( this, aspect, gradient );
+    return qskSetColor( this, aspect, gradient );
 }
 
 QskGradient QskSkinnable::gradientHint(
@@ -319,10 +319,10 @@ QskGradient QskSkinnable::gradientHint(
     return qskColor< QskGradient >( this, aspect, status );
 }
 
-void QskSkinnable::setBoxShapeHint(
+bool QskSkinnable::setBoxShapeHint(
     const QskAspect aspect, const QskBoxShapeMetrics& shape )
 {
-    qskSetMetric( this, aspect | QskAspect::Shape, shape );
+    return qskSetMetric( this, aspect | QskAspect::Shape, shape );
 }
 
 bool QskSkinnable::resetBoxShapeHint( const QskAspect aspect )
@@ -337,10 +337,10 @@ QskBoxShapeMetrics QskSkinnable::boxShapeHint(
         this, aspect | QskAspect::Shape, status );
 }
 
-void QskSkinnable::setBoxBorderMetricsHint(
+bool QskSkinnable::setBoxBorderMetricsHint(
     const QskAspect aspect, const QskBoxBorderMetrics& border )
 {
-    qskSetMetric( this, aspect | QskAspect::Border, border );
+    return qskSetMetric( this, aspect | QskAspect::Border, border );
 }
 
 bool QskSkinnable::resetBoxBorderMetricsHint( const QskAspect aspect )
@@ -355,10 +355,10 @@ QskBoxBorderMetrics QskSkinnable::boxBorderMetricsHint(
         this, aspect | QskAspect::Border, status );
 }
 
-void QskSkinnable::setBoxBorderColorsHint(
+bool QskSkinnable::setBoxBorderColorsHint(
     const QskAspect aspect, const QskBoxBorderColors& colors )
 {
-    qskSetColor( this, aspect | QskAspect::Border, colors );
+    return qskSetColor( this, aspect | QskAspect::Border, colors );
 }
 
 bool QskSkinnable::resetBoxBorderColorsHint( const QskAspect aspect )
@@ -373,9 +373,9 @@ QskBoxBorderColors QskSkinnable::boxBorderColorsHint(
         this, aspect | QskAspect::Border, status );
 }
 
-void QskSkinnable::setSpacingHint( const QskAspect aspect, qreal spacing )
+bool QskSkinnable::setSpacingHint( const QskAspect aspect, qreal spacing )
 {
-    qskSetMetric( this, aspect | QskAspect::Spacing, spacing );
+    return qskSetMetric( this, aspect | QskAspect::Spacing, spacing );
 }
 
 bool QskSkinnable::resetSpacingHint( const QskAspect aspect )
@@ -389,9 +389,9 @@ qreal QskSkinnable::spacingHint(
     return qskMetric< qreal >( this, aspect | QskAspect::Spacing, status );
 }
 
-void QskSkinnable::setFontRole( const QskAspect aspect, int role )
+bool QskSkinnable::setFontRole( const QskAspect aspect, int role )
 {
-    qskSetFlag( this, aspect | QskAspect::FontRole, role );
+    return qskSetFlag( this, aspect | QskAspect::FontRole, role );
 }
 
 int QskSkinnable::fontRole(
@@ -405,9 +405,9 @@ QFont QskSkinnable::effectiveFont( const QskAspect aspect ) const
     return effectiveSkin()->font( fontRole( aspect ) );
 }
 
-void QskSkinnable::setGraphicRole( const QskAspect aspect, int role )
+bool QskSkinnable::setGraphicRole( const QskAspect aspect, int role )
 {
-    qskSetFlag( this, aspect | QskAspect::GraphicRole, role );
+    return qskSetFlag( this, aspect | QskAspect::GraphicRole, role );
 }
 
 int QskSkinnable::graphicRole(
@@ -460,11 +460,11 @@ QskColorFilter QskSkinnable::effectiveGraphicFilter( QskAspect aspect ) const
     return effectiveSkin()->graphicFilter( hint.toInt() );
 }
 
-void QskSkinnable::setAnimationHint(
+bool QskSkinnable::setAnimationHint(
     QskAspect aspect, QskAnimationHint animation )
 {
     aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
-    m_data->hintTable.setAnimation( aspect, animation );
+    return m_data->hintTable.setAnimation( aspect, animation );
 }
 
 QskAnimationHint QskSkinnable::animationHint(
@@ -519,10 +519,21 @@ QskAnimationHint QskSkinnable::effectiveAnimation(
     return hint;
 }
 
-void QskSkinnable::setSkinHint( QskAspect aspect, const QVariant& skinHint )
+bool QskSkinnable::setSkinHint( QskAspect aspect, const QVariant& skinHint )
 {
+    if ( aspect.hasState() )
+    {
+        qWarning() << "QskSkinnable::setSkinHint: setting hints with states is discouraged - "
+                      "use QskSkinTableEditor if you are sure, that you need this.";
+        qWarning() << "QskAspect:" << aspect.stateless() << skinStateAsPrintable( aspect.state() );
+
+#if 0
+        aspect.clearStates();
+#endif
+    }
+
     aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
-    m_data->hintTable.setHint( aspect, skinHint );
+    return m_data->hintTable.setHint( aspect, skinHint );
 }
 
 bool QskSkinnable::resetSkinHint( QskAspect aspect )
