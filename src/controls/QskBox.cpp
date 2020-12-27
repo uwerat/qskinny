@@ -42,16 +42,12 @@ bool QskBox::hasPanel() const
 
 void QskBox::setPadding( qreal padding )
 {
-    setPadding( QMarginsF( padding, padding, padding, padding ) );
+    setPadding( QskMargins( padding ) );
 }
 
 void QskBox::setPadding( const QMarginsF& padding )
 {
-    const QMarginsF pd(
-        qMax( qreal( padding.left() ), qreal( 0.0 ) ),
-        qMax( qreal( padding.top() ), qreal( 0.0 ) ),
-        qMax( qreal( padding.right() ), qreal( 0.0 ) ),
-        qMax( qreal( padding.bottom() ), qreal( 0.0 ) ) );
+    const auto pd = QskMargins().expandedTo( padding );
 
     if ( pd != paddingHint( Panel ) )
     {
@@ -74,7 +70,7 @@ void QskBox::resetPadding()
         if ( polishOnResize() || autoLayoutChildren() )
             polish();
 
-        Q_EMIT paddingChanged( padding() );
+        Q_EMIT paddingChanged( paddingHint( Panel ) );
     }
 }
 

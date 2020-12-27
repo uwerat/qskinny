@@ -172,16 +172,12 @@ QskGradient QskControl::background() const
 
 void QskControl::setMargins( qreal margin )
 {
-    setMargins( QMarginsF( margin, margin, margin, margin ) );
+    setMargins( QskMargins( margin ) );
 }
 
 void QskControl::setMargins( const QMarginsF& margins )
 {
-    const QMarginsF m(
-        qMax( qreal( margins.left() ), qreal( 0.0 ) ),
-        qMax( qreal( margins.top() ), qreal( 0.0 ) ),
-        qMax( qreal( margins.right() ), qreal( 0.0 ) ),
-        qMax( qreal( margins.bottom() ), qreal( 0.0 ) ) );
+    const auto m = QskMargins().expandedTo( margins );
 
     if ( m != this->margins() )
     {

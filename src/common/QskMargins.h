@@ -41,7 +41,12 @@ class QSK_EXPORT QskMargins : public QMarginsF
     constexpr QskMargins rotated() const noexcept;
 
     constexpr QskMargins translated( qreal dx, qreal dy ) const noexcept;
-    constexpr QskMargins expanded( qreal dx, qreal dy ) const noexcept;
+
+    constexpr QskMargins grownBy( qreal dx, qreal dy ) const noexcept;
+    constexpr QskMargins shrunkBy( qreal dx, qreal dy ) const noexcept;
+
+    constexpr QskMargins expandedTo( const QskMargins& ) const noexcept;
+    constexpr QskMargins boundedTo( const QskMargins& ) const noexcept;
 
     void setMargins( qreal margin ) noexcept;
     void setMargins( qreal horizontal, qreal vertical ) noexcept;
@@ -132,11 +137,35 @@ constexpr inline QskMargins QskMargins::translated( qreal dx, qreal dy ) const n
     return QskMargins( left() + dx, top() + dy, right() - dx, bottom() - dy );
 }
 
-constexpr inline QskMargins QskMargins::expanded( qreal dx, qreal dy ) const noexcept
+constexpr inline QskMargins QskMargins::grownBy( qreal dx, qreal dy ) const noexcept
 {
     return QskMargins( left() + dx, top() + dy, right() + dx, bottom() + dy );
 }
 
+constexpr inline QskMargins QskMargins::shrunkBy( qreal dx, qreal dy ) const noexcept
+{
+    return QskMargins( left() - dx, top() - dy, right() - dx, bottom() - dy );
+}
+
+constexpr inline QskMargins QskMargins::expandedTo( const QskMargins& other ) const noexcept
+{
+    return QskMargins(
+        qMax( left(), other.left() ),
+        qMax( top(), other.top() ),
+        qMax( right(), other.right() ),
+        qMax( bottom(), other.bottom() )
+    );
+}
+
+constexpr inline QskMargins QskMargins::boundedTo( const QskMargins& other ) const noexcept
+{
+    return QskMargins(
+        qMin( left(), other.left() ),
+        qMin( top(), other.top() ),
+        qMin( right(), other.right() ),
+        qMin( bottom(), other.bottom() )
+    );
+}
 constexpr inline qreal QskMargins::extent( Qt::Orientation orientation ) const noexcept
 {
     return ( orientation == Qt::Horizontal ) ? width() : height();
