@@ -49,29 +49,14 @@ void QskBox::setPadding( const QMarginsF& padding )
 {
     const auto pd = QskMargins().expandedTo( padding );
 
-    if ( pd != paddingHint( Panel ) )
-    {
-        setPaddingHint( Panel, pd );
-        resetImplicitSize();
-
-        if ( polishOnResize() || autoLayoutChildren() )
-            polish();
-
+    if ( setPaddingHint( Panel, pd ) )
         Q_EMIT paddingChanged( pd );
-    }
 }
 
 void QskBox::resetPadding()
 {
     if ( resetPaddingHint( Panel ) )
-    {
-        resetImplicitSize();
-
-        if ( polishOnResize() || autoLayoutChildren() )
-            polish();
-
         Q_EMIT paddingChanged( paddingHint( Panel ) );
-    }
 }
 
 QMarginsF QskBox::padding() const

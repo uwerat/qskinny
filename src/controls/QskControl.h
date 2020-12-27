@@ -176,7 +176,7 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
 
   Q_SIGNALS:
     void backgroundChanged();
-    void marginsChanged();
+    void marginsChanged( const QMarginsF& );
     void focusIndicatorRectChanged();
     void localeChanged( const QLocale& );
     void focusPolicyChanged();

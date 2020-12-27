@@ -386,13 +386,8 @@ bool QskPopup::testPopupFlag( PopupFlag flag ) const
 
 void QskPopup::setOverlay( bool on )
 {
-    if ( hasOverlay() != on )
-    {
-        setFlagHint( Overlay | QskAspect::Style, on );
-
-        update();
+    if ( setFlagHint( Overlay | QskAspect::Style, on ) )
         Q_EMIT overlayChanged( on );
-    }
 }
 
 bool QskPopup::hasOverlay() const

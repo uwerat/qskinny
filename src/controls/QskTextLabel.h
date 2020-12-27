@@ -16,12 +16,12 @@ class QSK_EXPORT QskTextLabel : public QskControl
     Q_PROPERTY( QString text READ text WRITE setText NOTIFY textChanged )
 
     Q_PROPERTY( int fontRole READ fontRole
-        WRITE setFontRole NOTIFY fontRoleChanged )
+        WRITE setFontRole RESET resetFontRole NOTIFY fontRoleChanged )
 
     Q_PROPERTY( QFont font READ font )
 
     Q_PROPERTY( QColor textColor READ textColor
-        WRITE setTextColor NOTIFY textColorChanged )
+        WRITE setTextColor RESET resetTextColor NOTIFY textColorChanged )
 
     Q_PROPERTY( QskTextOptions textOptions READ textOptions
         WRITE setTextOptions NOTIFY textOptionsChanged )
@@ -45,9 +45,11 @@ class QSK_EXPORT QskTextLabel : public QskControl
     QString text() const;
 
     void setFontRole( int role );
+    void resetFontRole();
     int fontRole() const;
 
     void setTextColor( const QColor& );
+    void resetTextColor();
     QColor textColor() const;
 
     void setTextOptions( const QskTextOptions& );
@@ -63,6 +65,7 @@ class QSK_EXPORT QskTextLabel : public QskControl
     Qt::TextElideMode elideMode() const;
 
     void setAlignment( Qt::Alignment );
+    void resetAlignment();
     Qt::Alignment alignment() const;
 
     QFont font() const;
@@ -74,8 +77,8 @@ class QSK_EXPORT QskTextLabel : public QskControl
     void textChanged( const QString& );
     void textColorChanged( const QColor& );
     void textOptionsChanged( const QskTextOptions& );
-    void fontRoleChanged();
-    void alignmentChanged();
+    void fontRoleChanged( int );
+    void alignmentChanged( Qt::Alignment );
     void panelChanged( bool );
 
   public Q_SLOTS:

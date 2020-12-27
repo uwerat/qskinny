@@ -519,38 +519,53 @@ void QskTextInput::setActivationModes( ActivationModes modes )
     }
 }
 
+static inline void qskUpdateInputMethodFont( const QskTextInput* input )
+{
+    auto queries = Qt::ImCursorRectangle | Qt::ImFont;
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
+    queries |= Qt::ImAnchorRectangle;
+#endif
+
+    qskUpdateInputMethod( input, queries );
+}
+
+void QskTextInput::setFontRole( int role )
+{
+    if ( setFontRoleHint( Text, role ) )
+    {
+        qskUpdateInputMethodFont( this );
+        Q_EMIT fontRoleChanged();
+    }
+}
+
+void QskTextInput::resetFontRole()
+{
+    if ( resetFontRoleHint( Text ) )
+    {
+        qskUpdateInputMethodFont( this );
+        Q_EMIT fontRoleChanged();
+    }
+}
+
 int QskTextInput::fontRole() const
 {
     return fontRoleHint( Text );
 }
 
-void QskTextInput::setFontRole( int role )
+void QskTextInput::setAlignment( Qt::Alignment alignment )
 {
-    if ( role != fontRole() )
+    if ( setAlignmentHint( Text, alignment ) )
     {
-        setFontRoleHint( Text, role );
-
-        polish();
-        resetImplicitSize();
-
-        auto queries = Qt::ImCursorRectangle | Qt::ImFont;
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
-        queries |= Qt::ImAnchorRectangle;
-#endif
-
-        qskUpdateInputMethod( this, queries );
-        Q_EMIT fontRoleChanged();
+        m_data->textInput->setAlignment( alignment );
+        Q_EMIT alignmentChanged();
     }
 }
 
-void QskTextInput::setAlignment( Qt::Alignment alignment )
+void QskTextInput::resetAlignment()
 {
-    if ( alignment != this->alignment() )
+    if ( resetAlignmentHint( Text ) )
     {
-        setAlignmentHint( Text, alignment );
-        m_data->textInput->setAlignment( alignment );
-
-        polish();
+        m_data->textInput->setAlignment( alignment() );
         Q_EMIT alignmentChanged();
     }
 }

@@ -52,35 +52,22 @@ Qt::Orientation QskSeparator::orientation() const
 
 void QskSeparator::setExtent( qreal extent )
 {
-    extent = qMax( extent, 0.0 );
+    if ( extent < 0.0 )
+        extent = 0.0;
 
-    const auto aspect = Panel | QskAspect::Size;
-
-    if ( extent != metric( aspect ) )
-    {
-        setMetric( aspect, extent );
-
-        resetImplicitSize();
-        update();
-
+    if ( setMetric( Panel | QskAspect::Size, extent ) )
         Q_EMIT extentChanged( extent );
-    }
-}
-
-qreal QskSeparator::extent() const
-{
-    return metric( Panel | QskAspect::Size );
 }
 
 void QskSeparator::resetExtent()
 {
     if ( resetMetric( Panel | QskAspect::Size ) )
-    {
-        resetImplicitSize();
-        update();
-
         Q_EMIT extentChanged( extent() );
-    }
+}
+
+qreal QskSeparator::extent() const
+{
+    return metric( Panel | QskAspect::Size );
 }
 
 QSizeF QskSeparator::contentsSizeHint(

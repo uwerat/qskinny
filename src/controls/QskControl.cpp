@@ -144,25 +144,14 @@ void QskControl::setBackgroundColor( const QColor& color )
 
 void QskControl::setBackground( const QskGradient& gradient )
 {
-    const auto aspect = QskAspect::Control | QskAspect::Color;
-
-    if ( gradientHint( aspect ) != gradient )
-    {
-        setGradientHint( aspect, gradient );
-        if ( autoFillBackground() )
-            update();
-
+    if ( setGradientHint( QskAspect::Control, gradient ) )
         Q_EMIT backgroundChanged();
-    }
 }
 
 void QskControl::resetBackground()
 {
     if ( resetColor( QskAspect::Control ) )
-    {
-        update();
         Q_EMIT backgroundChanged();
-    }
 }
 
 QskGradient QskControl::background() const
@@ -179,17 +168,10 @@ void QskControl::setMargins( const QMarginsF& margins )
 {
     const auto m = QskMargins().expandedTo( margins );
 
-    if ( m != this->margins() )
+    if ( setMarginHint( QskAspect::Control, m ) )
     {
-        setMarginHint( QskAspect::Control, m );
-        resetImplicitSize();
-
-        Q_D( const QskControl );
-        if ( polishOnResize() || d->autoLayoutChildren )
-            polish();
-
         qskSendEventTo( this, QEvent::ContentsRectChange );
-        Q_EMIT marginsChanged();
+        Q_EMIT marginsChanged( m );
     }
 }
 
@@ -197,14 +179,8 @@ void QskControl::resetMargins()
 {
     if ( resetMarginHint( QskAspect::Control ) )
     {
-        resetImplicitSize();
-
-        Q_D( const QskControl );
-        if ( polishOnResize() || d->autoLayoutChildren )
-            polish();
-
         qskSendEventTo( this, QEvent::ContentsRectChange );
-        Q_EMIT marginsChanged();
+        Q_EMIT marginsChanged( margins() );
     }
 }
 

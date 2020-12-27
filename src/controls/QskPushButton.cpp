@@ -60,13 +60,8 @@ QskPushButton::~QskPushButton()
 
 void QskPushButton::setCorner( const QskCorner& corner )
 {
-    if ( corner.metrics() != boxShapeHint( Panel ) )
-    {
-        setBoxShapeHint( Panel, corner.metrics() );
-
-        update();
+    if ( setBoxShapeHint( Panel, corner.metrics() ) )
         Q_EMIT cornerChanged();
-    }
 }
 
 QskCorner QskPushButton::corner() const

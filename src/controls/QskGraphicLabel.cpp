@@ -19,7 +19,6 @@ class QskGraphicLabel::PrivateData
     PrivateData( const QUrl& sourceUrl )
         : source( sourceUrl )
         , sourceSize( -1, -1 )
-        , alignment( Qt::AlignLeft | Qt::AlignVCenter )
         , fillMode( QskGraphicLabel::PreserveAspectFit )
         , mirror( false )
         , isSourceDirty( !sourceUrl.isEmpty() )
@@ -30,8 +29,6 @@ class QskGraphicLabel::PrivateData
     QSize sourceSize;
 
     QskGraphic graphic;
-
-    Qt::Alignment alignment;
 
     uint fillMode : 2;
     bool mirror : 1;
@@ -131,15 +128,14 @@ void QskGraphicLabel::setGraphic( const QskGraphic& graphic )
 
 void QskGraphicLabel::setGraphicRole( int role )
 {
-    const int oldRole = graphicRole();
-
-    setGraphicRoleHint( Graphic, role );
-
-    if ( role != oldRole )
-    {
-        update();
+    if ( setGraphicRoleHint( Graphic, role ) )
         Q_EMIT graphicRoleChanged( role );
-    }
+}
+
+void QskGraphicLabel::resetGraphicRole()
+{
+    if ( resetGraphicRoleHint( Graphic ) )
+        Q_EMIT graphicRoleChanged( graphicRoleHint( Graphic ) );
 }
 
 int QskGraphicLabel::graphicRole() const
@@ -222,23 +218,21 @@ QskGraphicLabel::FillMode QskGraphicLabel::fillMode() const
     return static_cast< QskGraphicLabel::FillMode >( m_data->fillMode );
 }
 
-Qt::Alignment QskGraphicLabel::alignment() const
-{
-    return m_data->alignment;
-}
-
 void QskGraphicLabel::setAlignment( Qt::Alignment alignment )
 {
-    // using setAlignmentHint ...
-    if ( alignment != m_data->alignment )
-    {
-        m_data->alignment = alignment;
-
-        if ( !( m_data->sourceSize.isEmpty() || m_data->graphic.isEmpty() ) )
-            update();
-
+    if ( setAlignmentHint( Graphic, alignment ) )
         Q_EMIT alignmentChanged( alignment );
-    }
+}
+
+void QskGraphicLabel::resetAlignment()
+{
+    if ( resetAlignmentHint( Graphic ) )
+        Q_EMIT alignmentChanged( alignment() );
+}
+
+Qt::Alignment QskGraphicLabel::alignment() const
+{
+    return alignmentHint( Graphic, Qt::AlignLeft | Qt::AlignVCenter );
 }
 
 QskGraphic QskGraphicLabel::loadSource( const QUrl& url ) const

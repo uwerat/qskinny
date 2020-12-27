@@ -23,10 +23,10 @@ class QSK_EXPORT QskGraphicLabel : public QskControl
         WRITE setSourceSize RESET resetSourceSize NOTIFY sourceSizeChanged )
 
     Q_PROPERTY( int graphicRole READ graphicRole
-        WRITE setGraphicRole NOTIFY graphicRoleChanged )
+        WRITE setGraphicRole RESET resetGraphicRole NOTIFY graphicRoleChanged )
 
     Q_PROPERTY( Qt::Alignment alignment READ alignment
-        WRITE setAlignment NOTIFY alignmentChanged )
+        WRITE setAlignment RESET resetAlignment NOTIFY alignmentChanged )
 
     Q_PROPERTY( FillMode fillMode READ fillMode
         WRITE setFillMode NOTIFY fillModeChanged )
@@ -72,6 +72,7 @@ class QSK_EXPORT QskGraphicLabel : public QskControl
     bool mirror() const;
 
     void setAlignment( Qt::Alignment );
+    void resetAlignment();
     Qt::Alignment alignment() const;
 
     void setFillMode( FillMode );
@@ -80,6 +81,7 @@ class QSK_EXPORT QskGraphicLabel : public QskControl
     bool isEmpty() const;
 
     void setGraphicRole( int role );
+    void resetGraphicRole();
     int graphicRole() const;
 
   Q_SIGNALS:

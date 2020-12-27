@@ -20,7 +20,7 @@ class QSK_EXPORT QskTextInput : public QskControl
         WRITE setDescription NOTIFY descriptionChanged )
 
     Q_PROPERTY( int fontRole READ fontRole
-        WRITE setFontRole NOTIFY fontRoleChanged )
+        WRITE setFontRole RESET resetFontRole NOTIFY fontRoleChanged )
 
     Q_PROPERTY( QFont font READ font )
 
@@ -88,9 +88,11 @@ class QSK_EXPORT QskTextInput : public QskControl
     QString description() const;
 
     void setFontRole( int role );
+    void resetFontRole();
     int fontRole() const;
 
     void setAlignment( Qt::Alignment );
+    void resetAlignment();
     Qt::Alignment alignment() const;
 
     void setActivationModes( ActivationModes );

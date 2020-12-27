@@ -109,6 +109,79 @@ static inline T qskColor( const QskSkinnable* skinnable,
         aspect | QskAspect::Color, status ).value< T >();
 }
 
+static inline void qskTriggerUpdates( QskAspect aspect, QskControl* control )
+{
+    /*
+        To put the hint into effect we have to call the usual suspects:
+
+            - resetImplicitSize
+            - polish
+            - update
+
+        The following code decides about these calls based on type/primitive
+        of the aspect. It can be expected, that it results in more calls
+        than what would be mandatory and in rare cases we might even miss necessary
+        calls. This has to be fixed by doing the call manually in the specific
+        controls.
+     */
+
+    if ( control == nullptr || aspect.isAnimator() )
+        return;
+
+    bool maybeLayout = false;
+
+    switch( aspect.type() )
+    {
+        using A = QskAspect;
+
+        case A::Metric:
+        {
+            if ( aspect.metricPrimitive() != A::Position )
+            {
+                control->resetImplicitSize();
+                maybeLayout = true;
+            }
+
+            break;
+        }
+
+        case A::Color:
+        {
+            break;
+        }
+
+        case A::Flag:
+        {
+            switch( aspect.flagPrimitive() )
+            {
+                case A::GraphicRole:
+                case A::FontRole:
+                {
+                    break;
+                }
+                case A::Alignment:
+                {
+                    maybeLayout = true;
+                    break;
+                }
+                default:
+                {
+                    control->resetImplicitSize();
+                    maybeLayout = true;
+                }
+            }
+        }
+    }
+
+    control->update(); // always
+
+    if ( maybeLayout && control->hasChildItems() )
+    {
+        if ( control->polishOnResize() || control->autoLayoutChildren() )
+            control->polish();
+    }
+}
+
 class QskSkinnable::PrivateData
 {
   public:
@@ -529,49 +602,51 @@ QskAnimationHint QskSkinnable::effectiveAnimation(
     return hint;
 }
 
-bool QskSkinnable::setSkinHint( QskAspect aspect, const QVariant& skinHint )
+static inline QskAspect qskSubstitutedAspect(
+    const QskSkinnable* skinnable, QskAspect aspect )
 {
     if ( aspect.hasState() )
     {
-        qWarning() << "QskSkinnable::setSkinHint: setting hints with states is discouraged - "
-                      "use QskSkinTableEditor if you are sure, that you need this.";
-        qWarning() << "QskAspect:" << aspect.stateless() << skinStateAsPrintable( aspect.state() );
+        qWarning() << "QskSkinnable::(re)setSkinHint: setting hints with states "
+                      "is discouraged - use QskSkinTableEditor if you are "
+                      "sure, that you need this.";
+
+        qWarning() << "QskAspect:" << aspect.stateless()
+                   << skinnable->skinStateAsPrintable( aspect.state() );
 
 #if 0
         aspect.clearStates();
 #endif
     }
 
-    aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
-    return m_data->hintTable.setHint( aspect, skinHint );
+    aspect.setSubControl( skinnable->effectiveSubcontrol( aspect.subControl() ) );
+    return aspect;
+}
+
+bool QskSkinnable::setSkinHint( QskAspect aspect, const QVariant& hint )
+{
+    aspect = qskSubstitutedAspect( this, aspect );
+
+    if ( m_data->hintTable.setHint( aspect, hint ) )
+    {
+        qskTriggerUpdates( aspect, owningControl() );
+        return true;
+    }
+
+    return false;
 }
 
 bool QskSkinnable::resetSkinHint( QskAspect aspect )
 {
-    aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
+    aspect = qskSubstitutedAspect( this, aspect );
 
-    if ( !m_data->hintTable.hasHint( aspect ) )
-        return false;
+    if ( m_data->hintTable.removeHint( aspect ) )
+    {
+        qskTriggerUpdates( aspect, owningControl() );
+        return true;
+    }
 
-    /*
-        To be able to indicate, when the resolved value has changed
-        we retrieve the value before and after removing the hint from
-        the local table. An implementation with less lookups
-        should be possible, but as reset is a low frequently called
-        operation, we prefer to keep the implementation simple.
-     */
-
-    auto a = aspect;
-    a.setPlacement( effectivePlacement() );
-
-    if ( !a.hasState() )
-        a.setState( skinState() );
-
-    const auto oldHint = storedHint( a );
-
-    m_data->hintTable.removeHint( aspect );
-
-    return oldHint != storedHint( a );
+    return false;
 }
 
 QVariant QskSkinnable::effectiveSkinHint(

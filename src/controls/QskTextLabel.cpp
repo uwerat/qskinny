@@ -169,17 +169,14 @@ Qt::TextElideMode QskTextLabel::elideMode() const
 
 void QskTextLabel::setFontRole( int role )
 {
-    const int oldRole = fontRole();
+    if ( setFontRoleHint( Text, role ) )
+        Q_EMIT fontRoleChanged( role );
+}
 
-    setFontRoleHint( Text, role );
-
-    if ( oldRole != role )
-    {
-        resetImplicitSize();
-        update();
-
-        Q_EMIT fontRoleChanged();
-    }
+void QskTextLabel::resetFontRole()
+{
+    if ( resetFontRoleHint( Text ) )
+        Q_EMIT fontRoleChanged( fontRoleHint( Text ) );
 }
 
 int QskTextLabel::fontRole() const
@@ -189,38 +186,36 @@ int QskTextLabel::fontRole() const
 
 void QskTextLabel::setTextColor( const QColor& color )
 {
-    if ( color != textColor() )
-    {
-        QskSkinnable::setColor( Text, color );
-
-        if ( !m_data->text.isEmpty() )
-            update();
-
+    if ( setColor( Text, color ) )
         Q_EMIT textColorChanged( color );
-    }
+}
+
+void QskTextLabel::resetTextColor()
+{
+    if ( resetColor( Text ) )
+        Q_EMIT textColorChanged( color( Text ) );
 }
 
 QColor QskTextLabel::textColor() const
 {
-    return QskSkinnable::color( Text );
+    return color( Text );
+}
+
+void QskTextLabel::setAlignment( Qt::Alignment alignment )
+{
+    if ( setAlignmentHint( Text, alignment ) )
+        Q_EMIT alignmentChanged( alignment );
+}
+
+void QskTextLabel::resetAlignment()
+{
+    if ( resetAlignmentHint( Text ) )
+        Q_EMIT alignmentChanged( alignment() );
 }
 
 Qt::Alignment QskTextLabel::alignment() const
 {
     return alignmentHint( Text, Qt::AlignLeft | Qt::AlignTop );
-}
-
-void QskTextLabel::setAlignment( Qt::Alignment alignment )
-{
-    if ( alignment != this->alignment() )
-    {
-        setAlignmentHint( Text, alignment );
-
-        if ( !m_data->text.isEmpty() )
-            update();
-
-        Q_EMIT alignmentChanged();
-    }
 }
 
 QFont QskTextLabel::font() const

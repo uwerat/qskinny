@@ -169,20 +169,16 @@ void QskProgressBar::setBarGradient( const QskGradient& gradient )
     auto g = gradient;
 
     g.setOrientation( Qt::Horizontal );
-    setGradientHint( QskProgressBar::Bar | QskAspect::Horizontal, g );
+    setGradientHint( Bar | QskAspect::Horizontal, g );
 
     g.setOrientation( Qt::Vertical );
-    setGradientHint( QskProgressBar::Bar | QskAspect::Vertical, g );
-
-    update();
+    setGradientHint( Bar | QskAspect::Vertical, g );
 }
 
 void QskProgressBar::resetBarGradient()
 {
-    using A = QskAspect;
-
-    if ( resetColor( Bar | A::Vertical ) || resetColor( Bar | A::Horizontal ) )
-        update();
+    resetColor( Bar | QskAspect::Vertical );
+    resetColor( Bar | QskAspect::Horizontal );
 }
 
 QskGradient QskProgressBar::barGradient() const
@@ -192,35 +188,22 @@ QskGradient QskProgressBar::barGradient() const
 
 void QskProgressBar::setExtent( qreal extent )
 {
-    extent = qMax( extent, 0.0 );
+    if ( extent < 0.0 )
+        extent = 0.0;
 
-    const auto aspect = Groove | QskAspect::Size;
-
-    if ( extent != metric( aspect ) )
-    {
-        setMetric( aspect, extent );
-
-        resetImplicitSize();
-        update();
-
+    if ( setMetric( Groove | QskAspect::Size, extent ) )
         Q_EMIT extentChanged( extent );
-    }
-}
-
-qreal QskProgressBar::extent() const
-{
-    return metric( Groove | QskAspect::Size );
 }
 
 void QskProgressBar::resetExtent()
 {
     if ( resetMetric( Groove | QskAspect::Size ) )
-    {
-        resetImplicitSize();
-        update();
-
         Q_EMIT extentChanged( extent() );
-    }
+}
+
+qreal QskProgressBar::extent() const
+{
+    return metric( Groove | QskAspect::Size );
 }
 
 void QskProgressBar::setOrigin( qreal origin )
@@ -243,6 +226,7 @@ void QskProgressBar::resetOrigin()
     if ( m_data->hasOrigin )
     {
         m_data->hasOrigin = false;
+
         update();
         Q_EMIT originChanged( origin() );
     }
