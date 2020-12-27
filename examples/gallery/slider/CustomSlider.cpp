@@ -12,6 +12,9 @@
 #include <QskGradient.h>
 #include <QskRgbValue.h>
 
+#include <QskSkinHintTable.h>
+#include <QskSkinHintTableEditor.h>
+
 QSK_SUBCONTROL( CustomSlider, Scale )
 QSK_SUBCONTROL( CustomSlider, Decoration )
 
@@ -20,19 +23,21 @@ CustomSlider::CustomSlider( QQuickItem* parentItem )
 {
     using namespace QskRgb;
 
-    setBoxShapeHint( Fill, 0 );
-    setGradientHint( Fill, Grey700 );
-    setColor( Scale, qRgb( 178, 178, 178 ) ); // for the ticks
+    QskSkinHintTableEditor ed( &hintTable() );
 
-    setStrutSizeHint( Handle, 80, 80 );
-    setColor( Handle, Grey800 );
+    ed.setBoxShape( Fill, 0 );
+    ed.setGradient( Fill, Grey700 );
+    ed.setColor( Scale, qRgb( 178, 178, 178 ) ); // for the ticks
+
+    ed.setStrutSize( Handle, 80, 80 );
+    ed.setColor( Handle, Grey800 );
 
     for ( auto state : { Pressed, Focused | Hovered, Hovered, Focused } )
-        setColor( Handle | state, Orange600 );
+        ed.setColor( Handle | state, Orange600 );
 
-    setAnimationHint( Handle | QskAspect::Color, 1000 );
+    ed.setAnimation( Handle | QskAspect::Color, 1000 );
     for ( auto state : { Focused | Hovered, Hovered, Focused } )
-        setAnimationHint( Handle | QskAspect::Color | state, 300 );
+        ed.setAnimation( Handle | QskAspect::Color | state, 300 );
 
     // using an individual skinlet, not known by the skin
 
