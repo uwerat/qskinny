@@ -276,18 +276,6 @@ void QskPushButton::changeEvent( QEvent* event )
     Inherited::changeEvent( event );
 }
 
-void QskPushButton::hoverEnterEvent( QHoverEvent* event )
-{
-    Inherited::hoverEnterEvent( event );
-    Q_EMIT hovered( true );
-}
-
-void QskPushButton::hoverLeaveEvent( QHoverEvent* event )
-{
-    Inherited::hoverLeaveEvent( event );
-    Q_EMIT hovered( false );
-}
-
 QskGraphic QskPushButton::loadGraphic( const QUrl& url ) const
 {
     return Qsk::loadGraphic( url );

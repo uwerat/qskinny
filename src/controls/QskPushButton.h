@@ -85,11 +85,7 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     void graphicSourceChanged();
     void graphicSourceSizeChanged();
 
-    void hovered( bool );
-
   protected:
-    void hoverEnterEvent( QHoverEvent* ) override;
-    void hoverLeaveEvent( QHoverEvent* ) override;
     void changeEvent( QEvent* ) override;
 
     void updateResources() override;
