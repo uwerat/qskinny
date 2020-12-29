@@ -99,7 +99,6 @@ class QSK_EXPORT QskListView : public QskScrollView
 
     void updateScrollableSize();
 
-    QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
     void componentComplete() override;
 
   private:

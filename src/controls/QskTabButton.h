@@ -49,7 +49,6 @@ class QSK_EXPORT QskTabButton : public QskAbstractButton
 
   protected:
     void changeEvent( QEvent* ) override;
-    QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
   private:
     class PrivateData;

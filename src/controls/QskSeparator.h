@@ -41,9 +41,6 @@ class QSK_EXPORT QskSeparator : public QskControl
     void orientationChanged( Qt::Orientation );
     void extentChanged( qreal );
 
-  protected:
-    QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
-
   private:
     Qt::Orientation m_orientation;
 };

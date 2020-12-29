@@ -79,7 +79,6 @@ class QSK_EXPORT QskProgressBar : public QskBoundedControl
     void originChanged( qreal );
 
   protected:
-    QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
     void componentComplete() override;
     void itemChange( ItemChange, const ItemChangeData& ) override;
 

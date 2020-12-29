@@ -92,10 +92,8 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     void hoverLeaveEvent( QHoverEvent* ) override;
     void changeEvent( QEvent* ) override;
 
-    void updateLayout() override;
+    void updateResources() override;
     virtual QskGraphic loadGraphic( const QUrl& ) const;
-
-    QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
   private:
     class PrivateData;

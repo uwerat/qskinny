@@ -220,4 +220,20 @@ QRectF QskSliderSkinlet::handleRect(
     return handleRect;
 }
 
+QSizeF QskSliderSkinlet::sizeHint( const QskSkinnable* skinnable,
+    Qt::SizeHint which, const QSizeF& ) const
+{
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
+
+    const auto slider = static_cast< const QskSlider* >( skinnable );
+
+    // strutSizeHint( ... ) ???
+    const qreal m1 = slider->metric( QskSlider::Panel | QskAspect::Size );
+    const qreal m2 = 4 * m1;
+
+    return ( slider->orientation() == Qt::Horizontal )
+        ? QSizeF( m2, m1 ) : QSizeF( m1, m2 );
+}
+
 #include "moc_QskSliderSkinlet.cpp"

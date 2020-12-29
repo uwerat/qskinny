@@ -70,20 +70,6 @@ qreal QskSeparator::extent() const
     return metric( Panel | QskAspect::Size );
 }
 
-QSizeF QskSeparator::contentsSizeHint(
-    Qt::SizeHint which, const QSizeF& ) const
-{
-    if ( which != Qt::PreferredSize )
-        return QSizeF();
-
-    const qreal m = extent();
-
-    if ( m_orientation == Qt::Horizontal )
-        return QSizeF( -1, m );
-    else
-        return QSizeF( m, -1 );
-}
-
 QskAspect::Placement QskSeparator::effectivePlacement() const
 {
     return static_cast< QskAspect::Placement >( m_orientation );

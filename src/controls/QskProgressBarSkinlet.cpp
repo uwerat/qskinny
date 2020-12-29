@@ -171,4 +171,20 @@ QRectF QskProgressBarSkinlet::barRect( const QskProgressBar* bar ) const
     return rect;
 }
 
+QSizeF QskProgressBarSkinlet::sizeHint( const QskSkinnable* skinnable,
+    Qt::SizeHint which, const QSizeF& ) const
+{
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
+
+    const auto bar = static_cast< const QskProgressBar* >( skinnable );
+
+    const auto extent = bar->extent();
+
+    if ( bar->orientation() == Qt::Horizontal )
+        return QSizeF( -1, extent );
+    else
+        return QSizeF( extent, -1 );
+}
+
 #include "moc_QskProgressBarSkinlet.cpp"

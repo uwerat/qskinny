@@ -49,9 +49,6 @@ class QSK_EXPORT QskPageIndicator : public QskControl
     void setCount( int count );
     void setCurrentIndex( qreal index );
 
-  protected:
-    QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
-
   private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

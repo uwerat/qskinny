@@ -27,6 +27,9 @@ class QSK_EXPORT QskListViewSkinlet : public QskScrollViewSkinlet
     Q_INVOKABLE QskListViewSkinlet( QskSkin* = nullptr );
     ~QskListViewSkinlet() override;
 
+    QSizeF sizeHint( const QskSkinnable*,
+        Qt::SizeHint, const QSizeF& ) const override;
+
   protected:
     enum NodeRole
     {

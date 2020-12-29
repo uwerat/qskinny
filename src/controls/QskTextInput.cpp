@@ -451,7 +451,7 @@ void QskTextInput::focusOutEvent( QFocusEvent* event )
     Inherited::focusOutEvent( event );
 }
 
-QSizeF QskTextInput::contentsSizeHint( Qt::SizeHint which, const QSizeF& ) const
+QSizeF QskTextInput::layoutSizeHint( Qt::SizeHint which, const QSizeF& ) const
 {
     if ( which != Qt::PreferredSize )
         return QSizeF();
@@ -460,11 +460,12 @@ QSizeF QskTextInput::contentsSizeHint( Qt::SizeHint which, const QSizeF& ) const
 
     input->updateMetrics();
 
-    const qreal w = input->implicitWidth();
-    const qreal h = input->implicitHeight();
+    QSizeF hint( input->implicitWidth(), input->implicitHeight() );
 
-    const auto hint = outerBoxSize( Panel, QSizeF( w, h ) );
-    return hint.expandedTo( strutSizeHint( Panel ) );
+    hint = outerBoxSize( Panel, hint );
+    hint = hint.expandedTo( strutSizeHint( Panel ) );
+
+    return hint;
 }
 
 void QskTextInput::updateLayout()

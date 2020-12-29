@@ -103,4 +103,31 @@ QSGNode* QskGraphicLabelSkinlet::updateGraphicNode(
     return node;
 }
 
+QSizeF QskGraphicLabelSkinlet::sizeHint( const QskSkinnable* skinnable,
+    Qt::SizeHint which, const QSizeF& constraint ) const
+{
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
+
+    const auto label = static_cast< const QskGraphicLabel* >( skinnable );
+
+    auto sz = label->effectiveSourceSize();
+
+    if ( !sz.isEmpty() )
+    {
+        if ( constraint.width() >= 0.0 )
+        {
+            sz.setHeight( sz.height() * constraint.width() / sz.width() );
+            sz.setWidth( -1.0 );
+        }
+        else if ( constraint.height() >= 0.0 )
+        {
+            sz.setWidth( sz.width() * constraint.height() / sz.height() );
+            sz.setHeight( -1.0 );
+        }
+    }
+
+    return sz;
+}
+
 #include "moc_QskGraphicLabelSkinlet.cpp"

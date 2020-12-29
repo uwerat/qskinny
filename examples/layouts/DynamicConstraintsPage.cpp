@@ -22,7 +22,7 @@ namespace
         void transpose();
 
       protected:
-        QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
+        QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
       private:
         qreal m_aspectRatio;
@@ -65,7 +65,7 @@ Control::Control( const char* colorName, qreal aspectRatio, QQuickItem* parent )
     setPreferredHeight( 100 );
 }
 
-QSizeF Control::contentsSizeHint(
+QSizeF Control::layoutSizeHint(
     Qt::SizeHint which, const QSizeF& constraint ) const
 {
     if ( which == Qt::PreferredSize )

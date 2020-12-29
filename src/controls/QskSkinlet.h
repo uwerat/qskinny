@@ -23,10 +23,6 @@ class QskTextOptions;
 
 class QSGNode;
 
-class QRectF;
-class QRect;
-class QSize;
-
 class QSK_EXPORT QskSkinlet
 {
     Q_GADGET
@@ -39,8 +35,11 @@ class QSK_EXPORT QskSkinlet
 
     virtual void updateNode( QskSkinnable*, QSGNode* parent ) const;
 
-    virtual QRectF subControlRect(
-        const QskSkinnable*, const QRectF&, QskAspect::Subcontrol ) const;
+    virtual QRectF subControlRect( const QskSkinnable*,
+        const QRectF&, QskAspect::Subcontrol ) const;
+
+    virtual QSizeF sizeHint( const QskSkinnable*,
+        Qt::SizeHint, const QSizeF& ) const;
 
     const QVector< quint8 >& nodeRoles() const;
 
@@ -114,6 +113,12 @@ inline QSGNode* QskSkinlet::updateSubNode(
     const QskSkinnable*, quint8, QSGNode*) const
 {
     return nullptr;
+}
+
+inline QSizeF QskSkinlet::sizeHint(
+    const QskSkinnable*, Qt::SizeHint, const QSizeF& ) const
+{
+    return QSizeF();
 }
 
 #endif

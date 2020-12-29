@@ -248,34 +248,9 @@ void QskGraphicLabel::updateResources()
     m_data->isSourceDirty = false;
 }
 
-QSizeF QskGraphicLabel::contentsSizeHint(
-    Qt::SizeHint which, const QSizeF& constraint ) const
-{
-    if ( which != Qt::PreferredSize )
-        return QSizeF();
-
-    auto sz = effectiveSourceSize();
-
-    if ( !sz.isEmpty() )
-    {
-        if ( constraint.width() >= 0.0 )
-        {
-            sz.setHeight( sz.height() * constraint.width() / sz.width() );
-            sz.setWidth( -1.0 );
-        }
-        else if ( constraint.height() >= 0.0 )
-        {
-            sz.setWidth( sz.width() * constraint.height() / sz.height() );
-            sz.setHeight( -1.0 );
-        }
-    }
-
-    return sz;
-}
-
 QSizeF QskGraphicLabel::effectiveSourceSize() const
 {
-    const QSizeF& sourceSize = m_data->sourceSize;
+    const auto& sourceSize = m_data->sourceSize;
 
     if ( sourceSize.width() >= 0 && sourceSize.height() >= 0 )
     {

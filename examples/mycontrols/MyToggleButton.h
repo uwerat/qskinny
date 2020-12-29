@@ -42,7 +42,6 @@ class MyToggleButton : public QskAbstractButton
 
   protected:
     void updateResources() override;
-    QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
   private:
     class PrivateData;

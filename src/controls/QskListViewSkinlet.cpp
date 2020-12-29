@@ -95,7 +95,7 @@ QskListViewSkinlet::~QskListViewSkinlet() = default;
 QSGNode* QskListViewSkinlet::updateContentsNode(
     const QskScrollView* scrollView, QSGNode* node ) const
 {
-    const auto* listView = static_cast< const QskListView* >( scrollView );
+    const auto listView = static_cast< const QskListView* >( scrollView );
 
     auto* listViewNode = static_cast< QskListViewNode* >( node );
     if ( listViewNode == nullptr )
@@ -480,6 +480,25 @@ QSGNode* QskListViewSkinlet::updateCellNode( const QskListView* listView,
     }
 
     return newNode;
+}
+
+QSizeF QskListViewSkinlet::sizeHint( const QskSkinnable* skinnable,
+    Qt::SizeHint which, const QSizeF& ) const
+{
+    const auto listView = static_cast< const QskListView* >( skinnable );
+
+    qreal w = -1.0; // shouldn't we return something ???
+
+    if ( which != Qt::MaximumSize )
+    {
+        if ( listView->preferredWidthFromColumns() )
+        {
+            w = listView->scrollableSize().width();
+            w += listView->metric( QskScrollView::VerticalScrollBar | QskAspect::Size );
+        }
+    }
+
+    return QSizeF( w, -1.0 );
 }
 
 #include "moc_QskListViewSkinlet.cpp"

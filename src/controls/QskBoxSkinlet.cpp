@@ -46,4 +46,15 @@ QSGNode* QskBoxSkinlet::updateSubNode(
     return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
+QSizeF QskBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
+     Qt::SizeHint which, const QSizeF& constraint ) const
+{
+    const auto box = static_cast< const QskBox* >( skinnable );
+
+    if ( box->hasPanel() && which == Qt::PreferredSize )
+        return box->strutSizeHint( QskBox::Panel );
+
+    return Inherited::sizeHint( skinnable, which, constraint );
+}
+
 #include "moc_QskBoxSkinlet.cpp"

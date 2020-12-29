@@ -87,23 +87,6 @@ QskTextOptions QskTabButton::textOptions() const
     return m_data->textOptions;
 }
 
-QSizeF QskTabButton::contentsSizeHint(
-    Qt::SizeHint which, const QSizeF& ) const
-{
-    if ( which != Qt::PreferredSize )
-        return QSizeF();
-
-    auto size = strutSizeHint( Panel );
-
-    if ( !m_data->text.isEmpty() )
-    {
-        const QFontMetricsF fm( effectiveFont( Text ) );
-        size += fm.size( Qt::TextShowMnemonic, m_data->text );
-    }
-
-    return size;
-}
-
 QRectF QskTabButton::layoutRectForSize( const QSizeF& size ) const
 {
     return innerBox( Panel, subControlRect( size, Panel ) );

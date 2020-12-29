@@ -50,17 +50,6 @@ CustomSlider::CustomSlider( QQuickItem* parentItem )
         this, &QskControl::focusIndicatorRectChanged );
 }
 
-QSizeF CustomSlider::contentsSizeHint(
-    Qt::SizeHint which, const QSizeF& constraint ) const
-{
-    auto size = Inherited::contentsSizeHint( which, constraint );
-
-    if ( which == Qt::PreferredSize && size.height() >= 0 )
-        size.setHeight( size.height() + 40 );
-
-    return size;
-}
-
 QRectF CustomSlider::focusIndicatorRect() const
 {
     return subControlRect( Handle );

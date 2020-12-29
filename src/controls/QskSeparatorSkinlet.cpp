@@ -67,4 +67,20 @@ QRectF QskSeparatorSkinlet::panelRect(
     return r;
 }
 
+QSizeF QskSeparatorSkinlet::sizeHint( const QskSkinnable* skinnable,
+    Qt::SizeHint which, const QSizeF& ) const
+{
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
+
+    const auto separator = static_cast< const QskSeparator* >( skinnable );
+
+    const qreal extent = separator->extent();
+
+    if ( separator->orientation() == Qt::Horizontal )
+        return QSizeF( -1, extent );
+    else
+        return QSizeF( extent, -1 );
+}
+
 #include "moc_QskSeparatorSkinlet.cpp"

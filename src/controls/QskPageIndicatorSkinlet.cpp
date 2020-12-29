@@ -172,4 +172,55 @@ QSGNode* QskPageIndicatorSkinlet::updateBulletsNode(
     return node;
 }
 
+QSizeF QskPageIndicatorSkinlet::sizeHint( const QskSkinnable* skinnable,
+    Qt::SizeHint which, const QSizeF& ) const
+{
+    using Q = QskPageIndicator;
+
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
+
+    const auto indicator = static_cast< const QskPageIndicator* >( skinnable );
+
+    const auto bulletSize = indicator->strutSizeHint( Q::Bullet );
+
+    const auto maxSize = bulletSize.expandedTo(
+        indicator->strutSizeHint( Q::Highlighted ) );
+
+    const qreal spacing = indicator->spacingHint( Q::Panel );
+
+    const int n = indicator->count();
+
+    qreal w = 0;
+    qreal h = 0;
+
+    if ( indicator->orientation() == Qt::Horizontal )
+    {
+        if ( n > 0 )
+        {
+            w += maxSize.width();
+
+            if ( n > 1 )
+                w += ( n - 1 ) * ( bulletSize.width() + spacing );
+        }
+
+        h = maxSize.height();
+    }
+    else
+    {
+        if ( n > 0 )
+        {
+            h += maxSize.height();
+
+            if ( n > 1 )
+                h += ( n - 1 ) * ( bulletSize.height() + spacing );
+        }
+
+        w = maxSize.width();
+    }
+
+    const auto hint = indicator->outerBoxSize( Q::Panel, QSizeF( w, h ) );
+    return hint.expandedTo( indicator->strutSizeHint( Q::Panel ) );
+}
+
 #include "moc_QskPageIndicatorSkinlet.cpp"

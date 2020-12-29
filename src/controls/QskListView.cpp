@@ -153,23 +153,6 @@ QskAspect::Subcontrol QskListView::textSubControlAt( int row, int col ) const
     return ( row == selectedRow() ) ? TextSelected : Text;
 }
 
-QSizeF QskListView::contentsSizeHint(
-    Qt::SizeHint which, const QSizeF& ) const
-{
-    qreal w = -1.0; // shouldn't we return something ???
-
-    if ( which != Qt::MaximumSize )
-    {
-        if ( m_data->preferredWidthFromColumns )
-        {
-            w = scrollableSize().width();
-            w += metric( QskScrollView::VerticalScrollBar | QskAspect::Size );
-        }
-    }
-
-    return QSizeF( w, -1.0 );
-}
-
 void QskListView::keyPressEvent( QKeyEvent* event )
 {
     if ( m_data->selectionMode == NoSelection )

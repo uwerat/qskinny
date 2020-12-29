@@ -165,4 +165,66 @@ QSGNode* QskPushButtonSkinlet::updateTextNode(
         button->text(), button->textOptions(), QskPushButton::Text );
 }
 
+QSizeF QskPushButtonSkinlet::sizeHint( const QskSkinnable* skinnable,
+    Qt::SizeHint which, const QSizeF& ) const
+{
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
+
+    const auto button = static_cast< const QskPushButton* >( skinnable );
+
+    QSizeF size( 0, 0 );
+
+    const QFontMetricsF fm( button->font() );
+
+    if ( !button->text().isEmpty() )
+    {
+        // in elide mode we might want to ignore the text width ???
+
+        size += fm.size( Qt::TextShowMnemonic, button->text() );
+    }
+
+    if ( button->hasGraphic() )
+    {
+        const auto sz = button->graphicSourceSize();
+
+        qreal w = sz.width();
+        qreal h = sz.height();
+
+        if ( w < 0.0 || h < 0.0 )
+        {
+            const auto graphic = button->graphic();
+
+            if ( !graphic.isEmpty() )
+            {
+
+                if ( ( w < 0.0 ) && ( h < 0.0 ) )
+                {
+                    // strutSizeHint( Graphic ) ???
+                    h = 1.5 * fm.height();
+                }
+
+                if ( w < 0 )
+                {
+                    w = graphic.widthForHeight( h );
+                }
+                else if ( h < 0 )
+                {
+                    h = graphic.heightForWidth( w );
+                }
+            }
+        }
+
+        const qreal padding = 2.0; // paddingHint( Graphic ) ???
+
+        size.rheight() += 2 * padding + h;
+        size.rwidth() = qMax( size.width(), w );
+    }
+
+    size = size.expandedTo( button->strutSizeHint( QskPushButton::Panel ) );
+    size = button->outerBoxSize( QskPushButton::Panel, size );
+
+    return size;
+}
+
 #include "moc_QskPushButtonSkinlet.cpp"

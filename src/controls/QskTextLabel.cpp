@@ -6,10 +6,6 @@
 #include "QskTextLabel.h"
 #include "QskAspect.h"
 #include "QskTextOptions.h"
-#include "QskTextRenderer.h"
-
-#include <qfontmetrics.h>
-#include <qmath.h>
 
 QSK_SUBCONTROL( QskTextLabel, Panel )
 QSK_SUBCONTROL( QskTextLabel, Text )
@@ -24,18 +20,15 @@ class QskTextLabel::PrivateData
         effectiveTextFormat = textOptions.format();
     }
 
-    QskTextOptions effectiveOptions() const
+    inline QskTextOptions::TextFormat effectiveFormat() const
     {
         if ( textOptions.format() != QskTextOptions::AutoText )
-            return textOptions;
+            return textOptions.format();
 
         if ( effectiveTextFormat == QskTextOptions::AutoText )
             effectiveTextFormat = textOptions.effectiveFormat( text );
 
-        QskTextOptions options = textOptions;
-        options.setFormat( effectiveTextFormat );
-
-        return options;
+        return effectiveTextFormat;
     }
 
     QString text;
@@ -140,6 +133,11 @@ QskTextOptions::TextFormat QskTextLabel::textFormat() const
     return m_data->textOptions.format();
 }
 
+QskTextOptions::TextFormat QskTextLabel::effectiveTextFormat() const
+{
+    return m_data->effectiveFormat();
+}
+
 void QskTextLabel::setWrapMode( QskTextOptions::WrapMode wrapMode )
 {
     auto options = m_data->textOptions;
@@ -221,80 +219,6 @@ Qt::Alignment QskTextLabel::alignment() const
 QFont QskTextLabel::font() const
 {
     return effectiveFont( QskTextLabel::Text );
-}
-
-QSizeF QskTextLabel::contentsSizeHint(
-    Qt::SizeHint which, const QSizeF& constraint ) const
-{
-    if ( which != Qt::PreferredSize )
-        return QSizeF();
-
-    const auto font = effectiveFont( Text );
-
-    QSizeF hint;
-
-    const qreal lineHeight = QFontMetricsF( font ).height();
-
-    if ( m_data->text.isEmpty() )
-    {
-        if ( constraint.height() < 0.0 )
-            hint.setHeight( qCeil( lineHeight ) );
-    }
-    else if ( constraint.width() >= 0.0 )
-    {
-        if ( m_data->textOptions.effectiveElideMode() != Qt::ElideNone )
-        {
-            hint.setHeight( qCeil( lineHeight ) );
-        }
-        else
-        {
-            /*
-                In case of QskTextOptions::NoWrap we could count
-                the line numbers and calculate the height from
-                lineHeight. TODO ...
-             */
-            qreal maxHeight = std::numeric_limits< qreal >::max();
-            if ( maxHeight / lineHeight > m_data->textOptions.maximumLineCount() )
-            {
-                // be careful with overflows
-                maxHeight = m_data->textOptions.maximumLineCount() * lineHeight;
-            }
-
-            QSizeF size( constraint.width(), maxHeight );
-
-            size = QskTextRenderer::textSize(
-                m_data->text, font, m_data->effectiveOptions(), size );
-
-            if ( m_data->hasPanel )
-                size = outerBoxSize( Panel, size );
-
-            hint.setHeight( qCeil( size.height() ) );
-        }
-    }
-    else if ( constraint.height() >= 0.0 )
-    {
-        const qreal maxWidth = std::numeric_limits< qreal >::max();
-
-        QSizeF size( maxWidth, constraint.height() );
-
-        size = QskTextRenderer::textSize( m_data->text, font,
-            m_data->effectiveOptions(), size );
-
-        if ( m_data->hasPanel )
-            size = outerBoxSize( Panel, size );
-
-        hint.setWidth( qCeil( size.width() ) );
-    }
-    else
-    {
-        hint = QskTextRenderer::textSize(
-            m_data->text, font, m_data->effectiveOptions() );
-
-        if ( m_data->hasPanel )
-            hint = outerBoxSize( Panel, hint );
-    }
-
-    return hint;
 }
 
 void QskTextLabel::changeEvent( QEvent* event )

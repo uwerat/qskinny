@@ -42,9 +42,6 @@ class QSK_EXPORT QskBox : public QskControl
     void panelChanged( bool );
     void paddingChanged( const QMarginsF& );
 
-  protected:
-    QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
-
   private:
     bool m_hasPanel;
 };

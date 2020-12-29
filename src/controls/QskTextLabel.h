@@ -58,6 +58,8 @@ class QSK_EXPORT QskTextLabel : public QskControl
     void setTextFormat( QskTextOptions::TextFormat );
     QskTextOptions::TextFormat textFormat() const;
 
+    QskTextOptions::TextFormat effectiveTextFormat() const;
+
     void setWrapMode( QskTextOptions::WrapMode );
     QskTextOptions::WrapMode wrapMode() const;
 
@@ -86,9 +88,6 @@ class QSK_EXPORT QskTextLabel : public QskControl
 
   protected:
     void changeEvent( QEvent* ) override;
-
-    QSizeF contentsSizeHint(
-        Qt::SizeHint, const QSizeF& ) const override;
 
   private:
     class PrivateData;

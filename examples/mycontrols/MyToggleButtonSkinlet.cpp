@@ -145,4 +145,30 @@ QSGNode* MyToggleButtonSkinlet::updateSubNode(
     }
 }
 
+QSizeF MyToggleButtonSkinlet::sizeHint( const QskSkinnable* skinnable,
+    Qt::SizeHint which, const QSizeF& constraint ) const
+{
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
+
+    QSizeF hint;
+
+    constexpr qreal aspectRatio = 4.0 / 3.0;
+
+    if ( constraint.width() >= 0.0 )
+    {
+        hint.rheight() = constraint.width() / aspectRatio;
+    }
+    else if ( constraint.height() >= 0.0 )
+    {
+        hint.rwidth() = constraint.height() * aspectRatio;
+    }
+    else
+    {
+        hint = skinnable->strutSizeHint( MyToggleButton::Panel );
+    }
+
+    return hint;
+}
+
 #include "moc_MyToggleButtonSkinlet.cpp"

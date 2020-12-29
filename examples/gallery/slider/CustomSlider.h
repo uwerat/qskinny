@@ -18,9 +18,6 @@ class CustomSlider : public QskSlider
     CustomSlider( QQuickItem* parent = nullptr );
 
     QRectF focusIndicatorRect() const override;
-
-  protected:
-    QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 };
 
 #endif

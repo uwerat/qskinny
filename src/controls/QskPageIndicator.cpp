@@ -97,49 +97,4 @@ void QskPageIndicator::setCurrentIndex( qreal index )
     }
 }
 
-QSizeF QskPageIndicator::contentsSizeHint(
-    Qt::SizeHint which, const QSizeF& ) const
-{
-    if ( which != Qt::PreferredSize )
-        return QSizeF();
-
-    const auto bulletSize = strutSizeHint( Bullet );
-    const auto maxSize = bulletSize.expandedTo( strutSizeHint( Highlighted ) );
-
-    const qreal spacing = spacingHint( Panel );
-
-    const int n = m_data->count;
-
-    qreal w = 0;
-    qreal h = 0;
-
-    if ( m_data->orientation == Qt::Horizontal )
-    {
-        if ( n > 0 )
-        {
-            w += maxSize.width();
-
-            if ( n > 1 )
-                w += ( n - 1 ) * ( bulletSize.width() + spacing );
-        }
-
-        h = maxSize.height();
-    }
-    else
-    {
-        if ( n > 0 )
-        {
-            h += maxSize.height();
-
-            if ( n > 1 )
-                h += ( n - 1 ) * ( bulletSize.height() + spacing );
-        }
-
-        w = maxSize.width();
-    }
-
-    const auto hint = outerBoxSize( Panel, QSizeF( w, h ) );
-    return hint.expandedTo( strutSizeHint( Panel ) );
-}
-
 #include "moc_QskPageIndicator.cpp"

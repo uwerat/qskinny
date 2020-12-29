@@ -951,9 +951,10 @@ void QskControl::updateResources()
 {
 }
 
-QSizeF QskControl::contentsSizeHint( Qt::SizeHint, const QSizeF& ) const
+QSizeF QskControl::contentsSizeHint(
+    Qt::SizeHint which, const QSizeF& constraint ) const
 {
-    return QSizeF();
+    return effectiveSkinlet()->sizeHint( this, which, constraint );
 }
 
 QSizeF QskControl::layoutSizeHint(

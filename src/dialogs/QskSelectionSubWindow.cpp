@@ -45,18 +45,6 @@ namespace
             connect( this, &QskSimpleListBox::entriesChanged,
                 subWindow, &QskSelectionSubWindow::entriesChanged );
         }
-
-#if 1
-        // how to find a reasonable default size ???
-        QSizeF contentsSizeHint(
-            Qt::SizeHint which, const QSizeF& ) const override
-        {
-            if ( which == Qt::PreferredSize )
-                return QSizeF( 500, 500 );
-
-            return QSizeF();
-        }
-#endif
     };
 }
 
@@ -75,6 +63,9 @@ QskSelectionSubWindow::QskSelectionSubWindow( QQuickItem* parent )
     m_data->textLabel->setVisible( false );
 
     m_data->listBox = new ListBox( this );
+#if 1
+    m_data->listBox->setPreferredSize( 500, 500 );
+#endif
 
     auto box = new QskLinearBox( Qt::Vertical );
     box->setSpacing( 10 ); // hint

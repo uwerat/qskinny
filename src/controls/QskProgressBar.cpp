@@ -266,17 +266,6 @@ qreal QskProgressBar::valueAsRatio() const
     return valueAsRatio( m_data->value );
 }
 
-QSizeF QskProgressBar::contentsSizeHint( Qt::SizeHint which, const QSizeF& ) const
-{
-    if ( which != Qt::PreferredSize )
-        return QSizeF();
-
-    if ( orientation() == Qt::Horizontal )
-        return QSizeF( -1, extent() );
-    else
-        return QSizeF( extent(), -1 );
-}
-
 void QskProgressBar::componentComplete()
 {
     Inherited::componentComplete();

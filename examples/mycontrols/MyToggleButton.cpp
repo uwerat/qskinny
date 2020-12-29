@@ -179,33 +179,6 @@ QskGraphic MyToggleButton::graphicAt( int index ) const
     return data.icon;
 }
 
-QSizeF MyToggleButton::contentsSizeHint(
-    Qt::SizeHint which, const QSizeF& constraint ) const
-{
-    if ( which != Qt::PreferredSize )
-        return QSizeF();
-
-    QSizeF hint;
-
-    // better use Minimum Width/Height hints TODO ...
-    constexpr qreal aspectRatio = 4.0 / 3.0;
-
-    if ( constraint.width() >= 0.0 )
-    {
-        hint.rheight() = constraint.width() / aspectRatio;
-    }
-    else if ( constraint.height() >= 0.0 )
-    {
-        hint.rwidth() = constraint.height() * aspectRatio;
-    }
-    else
-    {
-        hint = strutSizeHint( Panel );
-    }
-
-    return hint;
-}
-
 void MyToggleButton::updateResources()
 {
     for( int i = 0; i < 2; i++ )

@@ -100,9 +100,6 @@ class QSK_EXPORT QskGraphicLabel : public QskControl
     void updateResources() override;
     virtual QskGraphic loadSource( const QUrl& ) const;
 
-    QSizeF contentsSizeHint(
-        Qt::SizeHint, const QSizeF& constraint ) const override;
-
   private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

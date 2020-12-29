@@ -31,6 +31,17 @@ class QskPushButton::PrivateData
         textOptions.setElideMode( Qt::ElideMiddle );
     }
 
+    void ensureGraphic( const QskPushButton* button )
+    {
+        if ( isGraphicSourceDirty )
+        {
+            if ( !graphicSource.isEmpty() )
+                graphic = button->loadGraphic( graphicSource );
+
+            isGraphicSourceDirty = false;
+        }
+    }
+
     QString text;
     QskTextOptions textOptions;
 
@@ -215,6 +226,7 @@ void QskPushButton::setGraphic( const QskGraphic& graphic )
 
 QskGraphic QskPushButton::graphic() const
 {
+    m_data->ensureGraphic( this );
     return m_data->graphic;
 }
 
@@ -223,69 +235,14 @@ bool QskPushButton::hasGraphic() const
     return !( graphic().isEmpty() && graphicSource().isEmpty() );
 }
 
-void QskPushButton::updateLayout()
+void QskPushButton::updateResources()
 {
-    if ( m_data->isGraphicSourceDirty )
-    {
-        if ( !m_data->graphicSource.isEmpty() )
-            m_data->graphic = loadGraphic( m_data->graphicSource );
-
-        m_data->isGraphicSourceDirty = false;
-    }
+    m_data->ensureGraphic( this );
 }
 
 QRectF QskPushButton::layoutRectForSize( const QSizeF& size ) const
 {
     return innerBox( Panel, subControlRect( size, Panel ) );
-}
-
-QSizeF QskPushButton::contentsSizeHint( Qt::SizeHint which, const QSizeF& ) const
-{
-    if ( which != Qt::PreferredSize )
-        return QSizeF();
-
-    QSizeF size( 0, 0 );
-
-    const QFontMetricsF fm( font() );
-
-    if ( !m_data->text.isEmpty() )
-    {
-        // in elide mode we might want to ignore the text width ???
-
-        size += fm.size( Qt::TextShowMnemonic, m_data->text );
-    }
-
-    if ( m_data->isGraphicSourceDirty )
-    {
-        if ( !m_data->graphicSource.isEmpty() )
-            m_data->graphic = loadGraphic( m_data->graphicSource );
-
-        m_data->isGraphicSourceDirty = false;
-    }
-
-    if ( !m_data->graphic.isEmpty() )
-    {
-        qreal w = m_data->graphicSourceSize.width();
-        qreal h = m_data->graphicSourceSize.height();
-
-        if ( ( w < 0.0 ) && ( h < 0.0 ) )
-            h = 1.5 * fm.height();
-
-        if ( w < 0 )
-            w = m_data->graphic.widthForHeight( h );
-        else if ( h < 0 )
-            h = m_data->graphic.heightForWidth( w );
-
-        const qreal padding = 2.0; // Graphic::Padding ???
-
-        size.rheight() += 2 * padding + h;
-        size.rwidth() = qMax( size.width(), w );
-    }
-
-    size = size.expandedTo( strutSizeHint( Panel ) );
-    size = outerBoxSize( Panel, size );
-
-    return size;
 }
 
 void QskPushButton::changeEvent( QEvent* event )

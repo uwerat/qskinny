@@ -7,6 +7,10 @@
 #include "QskTextLabel.h"
 
 #include "QskTextOptions.h"
+#include "QskTextRenderer.h"
+
+#include <qfontmetrics.h>
+#include <qmath.h>
 
 QskTextLabelSkinlet::QskTextLabelSkinlet( QskSkin* skin )
     : Inherited( skin )
@@ -61,6 +65,84 @@ QSGNode* QskTextLabelSkinlet::updateSubNode(
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
+}
+
+QSizeF QskTextLabelSkinlet::sizeHint( const QskSkinnable* skinnable,
+    Qt::SizeHint which, const QSizeF& constraint ) const
+{
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
+
+    const auto label = static_cast< const QskTextLabel* >( skinnable );
+
+    const auto font = label->effectiveFont( QskTextLabel::Text );
+
+    auto textOptions = label->textOptions();
+    textOptions.setFormat( label->effectiveTextFormat() );
+
+    const auto text = label->text();
+
+    QSizeF hint;
+
+    const qreal lineHeight = QFontMetricsF( font ).height();
+
+    if ( text.isEmpty() )
+    {
+        if ( constraint.height() < 0.0 )
+            hint.setHeight( qCeil( lineHeight ) );
+    }
+    else if ( constraint.width() >= 0.0 )
+    {
+        if ( textOptions.effectiveElideMode() != Qt::ElideNone )
+        {
+            hint.setHeight( qCeil( lineHeight ) );
+        }
+        else
+        {
+            /*
+                In case of QskTextOptions::NoWrap we could count
+                the line numbers and calculate the height from
+                lineHeight. TODO ...
+             */
+            qreal maxHeight = std::numeric_limits< qreal >::max();
+            if ( maxHeight / lineHeight > textOptions.maximumLineCount() )
+            {
+                // be careful with overflows
+                maxHeight = textOptions.maximumLineCount() * lineHeight;
+            }
+
+            QSizeF size( constraint.width(), maxHeight );
+
+            size = QskTextRenderer::textSize( text, font, textOptions, size );
+
+            if ( label->hasPanel() )
+                size = label->outerBoxSize( QskTextLabel::Panel, size );
+
+            hint.setHeight( qCeil( size.height() ) );
+        }
+    }
+    else if ( constraint.height() >= 0.0 )
+    {
+        const qreal maxWidth = std::numeric_limits< qreal >::max();
+
+        QSizeF size( maxWidth, constraint.height() );
+
+        size = QskTextRenderer::textSize( text, font, textOptions, size );
+
+        if ( label->hasPanel() )
+            size = label->outerBoxSize( QskTextLabel::Panel, size );
+
+        hint.setWidth( qCeil( size.width() ) );
+    }
+    else
+    {
+        hint = QskTextRenderer::textSize( text, font, textOptions );
+
+        if ( label->hasPanel() )
+            hint = label->outerBoxSize( QskTextLabel::Panel, hint );
+    }
+
+    return hint;
 }
 
 #include "moc_QskTextLabelSkinlet.cpp"

@@ -111,17 +111,6 @@ void QskSlider::aboutToShow()
     Inherited::aboutToShow();
 }
 
-QSizeF QskSlider::contentsSizeHint(
-    Qt::SizeHint which, const QSizeF& ) const
-{
-    if ( which != Qt::PreferredSize )
-        return QSizeF();
-
-    const qreal extent = metric( QskSlider::Panel | QskAspect::Size );
-    return ( m_data->orientation == Qt::Horizontal )
-        ? QSizeF( 4 * extent, extent ) : QSizeF( extent, 4 * extent );
-}
-
 QSizeF QskSlider::handleSize() const
 {
     return handleRect().size();

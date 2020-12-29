@@ -72,13 +72,4 @@ QRectF QskBox::layoutRectForSize( const QSizeF& size ) const
     return innerBox( Panel, subControlRect( size, Panel ) );
 }
 
-QSizeF QskBox::contentsSizeHint(
-    Qt::SizeHint which, const QSizeF& constraint ) const
-{
-    if ( m_hasPanel && which == Qt::PreferredSize )
-        return strutSizeHint( Panel );
-
-    return Inherited::contentsSizeHint( which, constraint );
-}
-
 #include "moc_QskBox.cpp"

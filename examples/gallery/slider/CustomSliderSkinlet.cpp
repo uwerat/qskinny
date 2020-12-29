@@ -370,3 +370,14 @@ QSGNode* CustomSliderSkinlet::updateHandleNode(
 
     return handleNode;
 }
+
+QSizeF CustomSliderSkinlet::sizeHint( const QskSkinnable* skinnable,
+    Qt::SizeHint which, const QSizeF& constraint ) const
+{
+    auto size = Inherited::sizeHint( skinnable, which, constraint );
+
+    if ( which == Qt::PreferredSize && size.height() >= 0 )
+        size.rheight() += 40;
+
+    return size;
+}
