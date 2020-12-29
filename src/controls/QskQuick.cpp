@@ -388,7 +388,7 @@ QSizeF qskEffectiveSizeHint( const QQuickItem* item,
         "maximumSize"
     };
 
-    const QVariant v = item->property( properties[ whichHint ] );
+    const auto v = item->property( properties[ whichHint ] );
     if ( v.canConvert< QSizeF >() )
         hint = v.toSizeF();
 
