@@ -81,4 +81,41 @@ QSGNode* QskStatusIndicatorSkinlet::updateGraphicNode(
     return node;
 }
 
+QSizeF QskStatusIndicatorSkinlet::sizeHint( const QskSkinnable* skinnable,
+    Qt::SizeHint which, const QSizeF& constraint ) const
+{
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
+
+    const auto indicator = static_cast< const QskStatusIndicator* >( skinnable );
+
+    QSizeF sz;
+
+    for ( const auto status : indicator->statusList() )
+    {
+        const auto graphic = indicator->graphic( status );
+
+        if ( !graphic.isEmpty() )
+        {
+            auto hint = graphic.defaultSize();
+
+            if ( !hint.isEmpty() )
+            {
+                if ( constraint.width() >= 0.0 )
+                {
+                    hint.setHeight( sz.height() * constraint.width() / sz.width() );
+                }
+                else if ( constraint.height() >= 0.0 )
+                {
+                    hint.setWidth( sz.width() * constraint.height() / sz.height() );
+                }
+            }
+
+            sz = sz.expandedTo( hint );
+        }
+    }
+
+    return sz;
+}
+
 #include "moc_QskStatusIndicatorSkinlet.cpp"

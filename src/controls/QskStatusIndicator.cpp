@@ -54,6 +54,7 @@ class QskStatusIndicator::PrivateData
 
     int currentStatus;
     QMap< int, StatusData > map;
+    mutable QList<int> statusList;
 };
 
 QskStatusIndicator::QskStatusIndicator( QQuickItem* parent )
@@ -69,8 +70,8 @@ QskStatusIndicator::~QskStatusIndicator()
 
 QUrl QskStatusIndicator::source( int status ) const
 {
-    const auto it = m_data->map.find( status );
-    if ( it != m_data->map.end() )
+    const auto it = m_data->map.constFind( status );
+    if ( it != m_data->map.constEnd() )
         return it->source;
 
     return QUrl();
@@ -95,6 +96,8 @@ void QskStatusIndicator::setSource( int status, const QUrl& url )
     else
     {
         m_data->map.insert( status, StatusData( url ) );
+        m_data->statusList.clear();
+
         hasChanged = true;
     }
 
@@ -111,7 +114,10 @@ QskGraphic QskStatusIndicator::graphic( int status ) const
 {
     const auto it = m_data->map.find( status );
     if ( it != m_data->map.end() )
+    {
+        it->ensureGraphic( this );
         return it->graphic;
+    }
 
     return QskGraphic();
 }
@@ -135,6 +141,7 @@ void QskStatusIndicator::setGraphic( int status, const QskGraphic& graphic )
     else
     {
         m_data->map.insert( status, StatusData( graphic ) );
+        m_data->statusList.clear();
         hasChanged = true;
     }
 
@@ -151,41 +158,6 @@ QskColorFilter QskStatusIndicator::graphicFilter( int status ) const
 {
     Q_UNUSED( status )
     return effectiveGraphicFilter( QskStatusIndicator::Graphic );
-}
-
-QSizeF QskStatusIndicator::contentsSizeHint(
-    Qt::SizeHint which, const QSizeF& constraint ) const
-{
-    if ( which != Qt::PreferredSize )
-        return QSizeF();
-
-    QSizeF sz;
-
-    for ( auto& statusData : m_data->map )
-    {
-        statusData.ensureGraphic( this );
-
-        if ( !statusData.graphic.isEmpty() )
-        {
-            auto hint = statusData.graphic.defaultSize();
-
-            if ( !hint.isEmpty() )
-            {
-                if ( constraint.width() >= 0.0 )
-                {
-                    hint.setHeight( sz.height() * constraint.width() / sz.width() );
-                }
-                else if ( constraint.height() >= 0.0 )
-                {
-                    hint.setWidth( sz.width() * constraint.height() / sz.height() );
-                }
-            }
-
-            sz = sz.expandedTo( hint );
-        }
-    }
-
-    return sz;
 }
 
 int QskStatusIndicator::status() const
@@ -220,6 +192,19 @@ void QskStatusIndicator::setStatus( int status )
         polish();
 
     update();
+}
+
+QList<int> QskStatusIndicator::statusList() const
+{
+    /*
+        We should be have a QMap< int, QskGraphic >, so that
+        users can iterate over all entries without having to
+        do extra lookups for each entry. TODO ...
+     */
+    if ( m_data->statusList.isEmpty() && !m_data->map.isEmpty() )
+        m_data->statusList = m_data->map.keys();
+
+    return m_data->statusList;
 }
 
 void QskStatusIndicator::changeEvent( QEvent* event )
