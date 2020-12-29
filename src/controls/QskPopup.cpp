@@ -390,6 +390,12 @@ void QskPopup::setOverlay( bool on )
         Q_EMIT overlayChanged( on );
 }
 
+void QskPopup::resetOverlay()
+{
+    if ( resetFlagHint( Overlay | QskAspect::Style ) )
+        Q_EMIT overlayChanged( hasOverlay() );
+}
+
 bool QskPopup::hasOverlay() const
 {
     return flagHint< bool >( QskPopup::Overlay | QskAspect::Style, true );

@@ -14,7 +14,9 @@ class QSK_EXPORT QskPopup : public QskControl
 
     Q_PROPERTY( bool open READ isOpen WRITE setOpen NOTIFY openChanged )
     Q_PROPERTY( bool modal READ isModal WRITE setModal NOTIFY modalChanged )
-    Q_PROPERTY( bool overlay READ hasOverlay WRITE setOverlay NOTIFY overlayChanged )
+
+    Q_PROPERTY( bool overlay READ hasOverlay
+        WRITE setOverlay RESET resetOverlay NOTIFY overlayChanged )
 
     Q_PROPERTY( bool faderEffect READ hasFaderEffect
         WRITE setFaderEffect NOTIFY faderEffectChanged )
@@ -49,6 +51,7 @@ class QSK_EXPORT QskPopup : public QskControl
     bool isModal() const;
 
     void setOverlay( bool on = true );
+    void resetOverlay();
     bool hasOverlay() const;
 
     // allows for stacking orders based on priorities
