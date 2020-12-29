@@ -140,8 +140,7 @@ QSGNode* QskPageIndicatorSkinlet::updateBulletsNode(
     if ( node == nullptr )
         node = new QSGNode();
 
-    QRectF rect = indicator->subControlRect( QskPageIndicator::Panel );
-    rect = indicator->innerBox( QskPageIndicator::Panel, rect );
+    const auto rect = indicator->subControlContentsRect( QskPageIndicator::Panel );
 
     // index of the highlighted bullet
     int currentBullet = qRound( indicator->currentIndex() );

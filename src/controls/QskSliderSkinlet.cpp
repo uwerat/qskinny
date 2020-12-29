@@ -15,12 +15,15 @@ static inline QRectF qskInnerPanelRect(
 {
     using Q = QskSlider;
 
-    // QskSkinnable::innerBox ???
+#if 1
     auto padding = slider->paddingHint( Q::Panel );
     padding += slider->boxBorderMetricsHint( Q::Panel ).widths();
 
     auto r = slider->subControlRect( contentsRect, Q::Panel );
     r = r.marginsRemoved( padding );
+#else
+    r = slider->subControlContentsRect( contentsRect, Q::Panel );
+#endif
 
     return r;
 }

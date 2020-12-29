@@ -25,8 +25,7 @@ QRectF QskTextInputSkinlet::subControlRect( const QskSkinnable* skinnable,
     }
     else if ( subControl == QskTextInput::Text )
     {
-        const auto r = subControlRect( skinnable, contentsRect, QskTextInput::Panel );
-        return skinnable->innerBox( QskTextInput::Panel, r );
+        return skinnable->subControlContentsRect( contentsRect, QskTextInput::Panel );
     }
 
     return Inherited::subControlRect( skinnable, contentsRect, subControl );

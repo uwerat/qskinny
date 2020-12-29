@@ -43,10 +43,6 @@ class MyToggleButtonSkinlet : public QskSkinlet
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
-
-  private:
-    QRectF innerRect( const QskSkinnable*,
-        const QRectF&, QskAspect::Subcontrol ) const;
 };
 
 #endif

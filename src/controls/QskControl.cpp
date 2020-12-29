@@ -196,13 +196,7 @@ QRectF QskControl::contentsRect() const
 
 QRectF QskControl::subControlRect( QskAspect::Subcontrol subControl ) const
 {
-    return effectiveSkinlet()->subControlRect( this, contentsRect(), subControl );
-}
-
-QRectF QskControl::subControlRect(
-    const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
-{
-    return effectiveSkinlet()->subControlRect( this, contentsRect, subControl );
+    return subControlRect( contentsRect(), subControl );
 }
 
 QRectF QskControl::subControlRect(
@@ -211,7 +205,21 @@ QRectF QskControl::subControlRect(
     QRectF rect( 0.0, 0.0, size.width(), size.height() );
     rect = qskValidOrEmptyInnerRect( rect, margins() );
 
-    return effectiveSkinlet()->subControlRect( this, rect, subControl );
+    return subControlRect( rect, subControl );
+}
+
+QRectF QskControl::subControlContentsRect( QskAspect::Subcontrol subControl ) const
+{
+    return subControlContentsRect( contentsRect(), subControl );
+}
+
+QRectF QskControl::subControlContentsRect(
+    const QSizeF& size, QskAspect::Subcontrol subControl ) const
+{
+    QRectF rect( 0.0, 0.0, size.width(), size.height() );
+    rect = qskValidOrEmptyInnerRect( rect, margins() );
+
+    return subControlContentsRect( rect, subControl );
 }
 
 QLocale QskControl::locale() const

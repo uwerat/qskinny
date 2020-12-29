@@ -20,14 +20,9 @@ QskTabButtonSkinlet::~QskTabButtonSkinlet() = default;
 QRectF QskTabButtonSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
-    auto tabButton = static_cast< const QskTabButton* >( skinnable );
-
     if ( subControl == QskTabButton::Text )
     {
-        auto r = subControlRect( tabButton, contentsRect, QskTabButton::Panel );
-        r = tabButton->innerBox( QskTabButton::Panel, r );
-
-        return r;
+        return skinnable->subControlContentsRect( contentsRect, QskTabButton::Panel );
     }
     else if ( subControl == QskTabButton::Panel )
     {

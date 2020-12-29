@@ -46,21 +46,21 @@ QRectF MyToggleButtonSkinlet::subControlRect( const QskSkinnable* skinnable,
     }
     else if( subControl == Q::UncheckedPanel )
     {
-        const auto r = innerRect( skinnable, contentsRect, Q::Panel );
+        const auto r = button->subControlContentsRect( contentsRect, Q::Panel );
         return sectionRect( r, button->isInverted() ? 0 : 1 );
     }
     else if( subControl == Q::CheckedPanel )
     {
-        const auto r = innerRect( skinnable, contentsRect, Q::Panel );
+        const auto r = button->subControlContentsRect( contentsRect, Q::Panel );
         return sectionRect( r, button->isInverted() ? 1 : 0 );
     }
     else if( subControl == Q::CheckedLabel || subControl == Q::CheckedIcon )
     {
-        return innerRect( skinnable, contentsRect, Q::CheckedPanel );
+        return button->subControlContentsRect( contentsRect, Q::CheckedPanel );
     }
     else if( subControl == Q::UncheckedLabel || subControl == Q::UncheckedIcon )
     {
-        return innerRect( skinnable, contentsRect, Q::UncheckedPanel );
+        return button->subControlContentsRect( contentsRect, Q::UncheckedPanel );
     }
     else if( subControl == Q::Cursor )
     {
@@ -68,7 +68,7 @@ QRectF MyToggleButtonSkinlet::subControlRect( const QskSkinnable* skinnable,
         if ( button->isInverted() )
             position = 1.0 - position;
 
-        auto rect = innerRect( skinnable, contentsRect, Q::Panel );
+        auto rect = button->subControlContentsRect( contentsRect, Q::Panel );
 
         rect.setWidth( 0.5 * rect.width() );
         rect.moveLeft( rect.left() + position * rect.width() );
@@ -77,13 +77,6 @@ QRectF MyToggleButtonSkinlet::subControlRect( const QskSkinnable* skinnable,
     }
 
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
-}
-
-QRectF MyToggleButtonSkinlet::innerRect( const QskSkinnable* skinnable,
-    const QRectF& rect, QskAspect::Subcontrol subControl ) const
-{
-    const auto r = subControlRect( skinnable, rect, subControl );
-    return skinnable->innerBox( subControl, r );
 }
 
 QSGNode* MyToggleButtonSkinlet::updateSubNode(

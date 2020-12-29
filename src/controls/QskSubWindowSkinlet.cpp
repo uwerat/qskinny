@@ -121,8 +121,7 @@ QRectF QskSubWindowSkinlet::symbolRect(
 {
     using Q = QskSubWindow;
 
-    auto rect = subControlRect( subWindow, contentsRect, Q::TitleBar );
-    rect = subWindow->innerBox( Q::TitleBar, rect );
+    auto rect = subWindow->subControlContentsRect( contentsRect, Q::TitleBar );
 
     int w = 0;
 
@@ -143,8 +142,7 @@ QRectF QskSubWindowSkinlet::titleRect(
 {
     using Q = QskSubWindow;
 
-    auto rect = subControlRect( subWindow, contentsRect, Q::TitleBar );
-    rect = subWindow->innerBox( Q::TitleBar, rect );
+    auto rect = subWindow->subControlContentsRect( contentsRect, Q::TitleBar );
 
     if ( !rect.isEmpty() )
     {

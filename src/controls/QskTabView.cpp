@@ -320,13 +320,10 @@ void QskTabView::updateLayout()
     if ( maybeUnresized() )
         return;
 
-    m_data->tabBar->setGeometry( subControlRect( TabBar ) );
+    const auto cr = contentsRect();
 
-#if 1
-    m_data->stackBox->setGeometry( subControlRect( Page ) );
-#else
-    m_data->stackBox->setGeometry( innerBox( Page, subControlRect( Page ) ) );
-#endif
+    m_data->tabBar->setGeometry( subControlRect( cr, TabBar ) );
+    m_data->stackBox->setGeometry( subControlContentsRect( cr, Page ) );
 }
 
 #include "moc_QskTabView.cpp"

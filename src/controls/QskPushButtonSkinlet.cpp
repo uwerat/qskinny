@@ -73,8 +73,7 @@ QRectF QskPushButtonSkinlet::textRect(
 {
     // buttonShift -> TODO
 
-    QRectF r = button->innerBox( QskPushButton::Panel,
-        subControlRect( button, contentsRect, QskPushButton::Panel ) );
+    auto r = button->subControlContentsRect( contentsRect, QskPushButton::Panel );
 
     if ( button->hasGraphic() )
     {
@@ -93,8 +92,7 @@ QRectF QskPushButtonSkinlet::graphicRect(
 {
     // buttonShift -> TODO
 
-    auto r = button->innerBox( QskPushButton::Panel,
-        subControlRect( button, contentsRect, QskPushButton::Panel ) );
+    auto r = button->subControlContentsRect( contentsRect, QskPushButton::Panel );
 
     if ( !button->text().isEmpty() )
     {

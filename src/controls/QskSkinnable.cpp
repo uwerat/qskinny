@@ -893,14 +893,7 @@ static inline QskMargins qskEffectivePadding( const QskSkinnable* skinnable,
     // sin 45° ceiled : 0.70710678;
     padding *= 1.0 - 0.70710678;
 
-    const auto paddingHint = skinnable->paddingHint( aspect );
-
-    return QskMargins(
-        qMax( padding.left(), paddingHint.left() ),
-        qMax( padding.top(), paddingHint.top() ),
-        qMax( padding.right(), paddingHint.right() ),
-        qMax( padding.bottom(), paddingHint.bottom() )
-        );
+    return padding.expandedTo( skinnable->paddingHint( aspect ) );
 }
 
 QMarginsF QskSkinnable::innerPadding(
@@ -940,6 +933,18 @@ QRectF QskSkinnable::outerBox(
 {
     const auto m = qskEffectivePadding( this, aspect, innerBox.size(), false );
     return innerBox.marginsAdded( m );
+}
+
+QRectF QskSkinnable::subControlRect(
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
+{
+    return effectiveSkinlet()->subControlRect( this, contentsRect, subControl );
+}
+
+QRectF QskSkinnable::subControlContentsRect(
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
+{
+    return innerBox( subControl, subControlRect( contentsRect, subControl ) );
 }
 
 bool QskSkinnable::isTransitionAccepted( QskAspect aspect ) const

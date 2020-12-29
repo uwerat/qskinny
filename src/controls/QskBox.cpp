@@ -66,10 +66,10 @@ QMarginsF QskBox::padding() const
 
 QRectF QskBox::layoutRectForSize( const QSizeF& size ) const
 {
-    if ( !m_hasPanel )
-        return Inherited::layoutRectForSize( size );
+    if ( m_hasPanel )
+        return subControlContentsRect( size, Panel );
 
-    return innerBox( Panel, subControlRect( size, Panel ) );
+    return Inherited::layoutRectForSize( size );
 }
 
 #include "moc_QskBox.cpp"

@@ -89,7 +89,7 @@ QskTextOptions QskTabButton::textOptions() const
 
 QRectF QskTabButton::layoutRectForSize( const QSizeF& size ) const
 {
-    return innerBox( Panel, subControlRect( size, Panel ) );
+    return subControlContentsRect( size, Panel );
 }
 
 QskAspect::Placement QskTabButton::effectivePlacement() const

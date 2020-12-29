@@ -242,7 +242,7 @@ void QskPushButton::updateResources()
 
 QRectF QskPushButton::layoutRectForSize( const QSizeF& size ) const
 {
-    return innerBox( Panel, subControlRect( size, Panel ) );
+    return subControlContentsRect( size, Panel );
 }
 
 void QskPushButton::changeEvent( QEvent* event )

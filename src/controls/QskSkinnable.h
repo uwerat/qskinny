@@ -97,6 +97,9 @@ class QSK_EXPORT QskSkinnable
     const char* skinStateAsPrintable() const;
     const char* skinStateAsPrintable( QskAspect::State ) const;
 
+    QRectF subControlRect( const QRectF&, QskAspect::Subcontrol ) const;
+    QRectF subControlContentsRect( const QRectF&, QskAspect::Subcontrol ) const;
+
     QSizeF outerBoxSize( QskAspect, const QSizeF& innerBoxSize ) const;
     QSizeF innerBoxSize( QskAspect, const QSizeF& outerBoxSize ) const;
 
