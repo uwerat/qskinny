@@ -17,6 +17,8 @@ class QSK_EXPORT QskStatusIndicator : public QskControl
     Q_OBJECT
 
     Q_PROPERTY( int status READ status() WRITE setStatus NOTIFY statusChanged )
+    Q_PROPERTY( int graphicRole READ graphicRole
+        WRITE setGraphicRole RESET resetGraphicRole NOTIFY graphicRoleChanged )
 
     using Inherited = QskControl;
 
@@ -32,6 +34,10 @@ class QSK_EXPORT QskStatusIndicator : public QskControl
     QskGraphic graphic( int status ) const;
     void setGraphic( int status, const QskGraphic& );
 
+    void setGraphicRole( int role );
+    void resetGraphicRole();
+    int graphicRole() const;
+
     virtual QskColorFilter graphicFilter( int status ) const;
     virtual QskGraphic loadSource( const QUrl& ) const;
 
@@ -45,6 +51,7 @@ class QSK_EXPORT QskStatusIndicator : public QskControl
 
   Q_SIGNALS:
     void statusChanged( int status );
+    void graphicRoleChanged( int );
 
   protected:
     void changeEvent( QEvent* ) override;

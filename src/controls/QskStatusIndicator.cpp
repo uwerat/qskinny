@@ -157,7 +157,24 @@ void QskStatusIndicator::setGraphic( int status, const QskGraphic& graphic )
 QskColorFilter QskStatusIndicator::graphicFilter( int status ) const
 {
     Q_UNUSED( status )
-    return effectiveGraphicFilter( QskStatusIndicator::Graphic );
+    return effectiveGraphicFilter( Graphic );
+}
+
+void QskStatusIndicator::setGraphicRole( int role )
+{
+    if ( setGraphicRoleHint( Graphic, role ) )
+        Q_EMIT graphicRoleChanged( role );
+}
+
+void QskStatusIndicator::resetGraphicRole()
+{
+    if ( resetGraphicRoleHint( Graphic ) )
+        Q_EMIT graphicRoleChanged( graphicRoleHint( Graphic ) );
+}
+
+int QskStatusIndicator::graphicRole() const
+{
+    return graphicRoleHint( Graphic );
 }
 
 int QskStatusIndicator::status() const
