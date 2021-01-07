@@ -81,6 +81,8 @@ class QSK_EXPORT QskSkinHintTableEditor
     void setColor( QskAspect, const QColor& );
     QColor color( QskAspect ) const;
 
+    void setHGradient( QskAspect, const QColor&, const QColor& );
+    void setVGradient( QskAspect, const QColor&, const QColor& );
     void setGradient( QskAspect, const QskGradient& );
     QskGradient gradient( QskAspect ) const;
 

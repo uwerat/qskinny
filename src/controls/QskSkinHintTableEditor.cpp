@@ -115,6 +115,18 @@ QColor QskSkinHintTableEditor::color( QskAspect aspect ) const
     return colorHint<QColor>( aspect );
 }
 
+void QskSkinHintTableEditor::setHGradient(
+    QskAspect aspect, const QColor& color1, const QColor& color2 )
+{
+    setGradient( aspect, QskGradient( QskGradient::Horizontal, color1, color2 ) );
+}
+
+void QskSkinHintTableEditor::setVGradient(
+    QskAspect aspect, const QColor& color1, const QColor& color2 )
+{
+    setGradient( aspect, QskGradient( QskGradient::Vertical, color1, color2 ) );
+}
+
 void QskSkinHintTableEditor::setGradient( QskAspect aspect, const QskGradient& gradient )
 {
     setColorHint( aspect, gradient );
