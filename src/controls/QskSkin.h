@@ -87,8 +87,6 @@ class QSK_EXPORT QskSkin : public QObject
     const std::unordered_map< int, QFont >& fonts() const;
     const std::unordered_map< int, QskColorFilter >& graphicFilters() const;
 
-  protected:
-
   private:
     void declareSkinlet( const QMetaObject* controlMetaObject,
         const QMetaObject* skinMetaObject );
