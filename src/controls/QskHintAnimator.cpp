@@ -217,9 +217,7 @@ QskHintAnimatorTable::QskHintAnimatorTable()
 QskHintAnimatorTable::~QskHintAnimatorTable()
 {
     qskAnimatorGuard->unregisterTable( this );
-
-    if ( m_data )
-        delete m_data;
+    delete m_data;
 }
 
 void QskHintAnimatorTable::start( QskControl* control,

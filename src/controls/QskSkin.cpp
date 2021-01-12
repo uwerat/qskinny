@@ -196,11 +196,9 @@ void QskSkin::declareSkinlet( const QMetaObject* metaObject,
         if ( entry.metaObject != skinletMetaObject )
         {
             entry.metaObject = skinletMetaObject;
-            if ( entry.skinlet != nullptr )
-            {
-                delete entry.skinlet;
-                entry.skinlet = nullptr;
-            }
+
+            delete entry.skinlet;
+            entry.skinlet = nullptr;
         }
     }
     else

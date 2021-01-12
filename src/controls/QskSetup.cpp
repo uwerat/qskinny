@@ -144,11 +144,8 @@ void QskSetup::setup()
 
 void QskSetup::cleanup()
 {
-    if ( s_instance )
-    {
-        delete s_instance;
-        s_instance = nullptr;
-    }
+    delete s_instance;
+    s_instance = nullptr;
 }
 
 void QskSetup::setControlFlags( QskSetup::Flags flags )
