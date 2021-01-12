@@ -8,9 +8,6 @@
 
 #include "QskBoundedValueInput.h"
 
-class QSGNode;
-class QskSkin;
-
 class QSK_EXPORT QskSlider : public QskBoundedValueInput
 {
     Q_OBJECT
