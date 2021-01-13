@@ -269,8 +269,20 @@ void QskStackBox::removeItemInternal( int index, bool unparent )
 
     m_data->items.removeAt( index );
 
-    if ( index <= m_data->currentIndex )
-        Q_EMIT currentIndexChanged( --m_data->currentIndex );
+    auto& currentIndex = m_data->currentIndex;
+
+    if ( index <= currentIndex )
+    {
+        currentIndex--;
+
+        if ( currentIndex < 0 && !m_data->items.isEmpty() )
+            currentIndex = 0;
+
+        if ( currentIndex >= 0 )
+            m_data->items[ currentIndex ]->setVisible( true );
+
+        Q_EMIT currentIndexChanged( currentIndex );
+    }
 
     resetImplicitSize();
     polish();
