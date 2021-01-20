@@ -33,6 +33,7 @@ namespace
             : QskInputPanel( parent )
         {
             setAutoLayoutChildren( true );
+            setLayoutAlignmentHint( Qt::AlignCenter );
 
             m_box = new QskInputPanelBox( this );
 
@@ -243,33 +244,12 @@ class QskInputContext::PrivateData
 
         popup->setAutoLayoutChildren( true );
         popup->setTransparentForPositioner( false );
+        popup->setMargins( 5 );
         popup->setModal( true );
 
-        auto box = new QskLinearBox( popup );
-        box->addItem( panel );
-
-        const auto alignment = panel->alignment() & Qt::AlignVertical_Mask;
-        popup->setOverlay( alignment == Qt::AlignVCenter );
-
-        switch ( alignment )
-        {
-            case Qt::AlignTop:
-            {
-                box->setExtraSpacingAt( Qt::BottomEdge | Qt::LeftEdge | Qt::RightEdge );
-                break;
-            }
-            case Qt::AlignVCenter:
-            {
-                box->setMargins( QMarginsF( 5, 5, 5, 5 ) );
-                break;
-            }
-
-            case Qt::AlignBottom:
-            default:
-            {
-                box->setExtraSpacingAt( Qt::TopEdge | Qt::LeftEdge | Qt::RightEdge );
-            }
-        }
+        panel->setParentItem( popup );
+        if ( panel->parent() == nullptr )
+            panel->setParent( popup );
 
         return popup;
     }
