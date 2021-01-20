@@ -417,7 +417,7 @@ bool QskStackBox::event( QEvent* event )
     return Inherited::event( event );
 }
 
-void QskStackBox::dump()
+void QskStackBox::dump() const
 {
     auto debug = qDebug();
 

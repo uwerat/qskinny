@@ -55,7 +55,7 @@ class QSK_EXPORT QskStackBox : public QskIndexedLayoutBox
 
     QRectF geometryForItemAt( int index ) const;
 
-    void dump();
+    void dump() const;
 
   Q_SIGNALS:
     void defaultAlignmentChanged( Qt::Alignment );

@@ -484,7 +484,7 @@ bool QskGridBox::event( QEvent* event )
     return Inherited::event( event );
 }
 
-void QskGridBox::dump()
+void QskGridBox::dump() const
 {
     const auto& engine = m_data->engine;
 

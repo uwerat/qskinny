@@ -529,7 +529,7 @@ int QskLinearBox::stretchFactor( const QQuickItem* item ) const
     return stretchFactor( indexOf( item ) );
 }
 
-void QskLinearBox::dump()
+void QskLinearBox::dump() const
 {
     const auto& engine = m_data->engine;
 
