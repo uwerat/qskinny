@@ -9,6 +9,13 @@
 #include <qvariant.h>
 #include <algorithm>
 
+static void qskRegisterIntervalF()
+{
+    qRegisterMetaType< QskIntervalF >();
+}
+
+Q_CONSTRUCTOR_FUNCTION( qskRegisterIntervalF )
+
 static inline QskIntervalF qskInterpolated(
     const QskIntervalF& intv1, const QskIntervalF& intv2, qreal progress )
 {
