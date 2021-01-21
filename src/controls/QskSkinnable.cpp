@@ -182,6 +182,27 @@ static inline void qskTriggerUpdates( QskAspect aspect, QskControl* control )
     }
 }
 
+static inline QskAspect qskSubstitutedAspect(
+    const QskSkinnable* skinnable, QskAspect aspect )
+{
+    if ( aspect.hasState() )
+    {
+        qWarning() << "QskSkinnable::(re)setSkinHint: setting hints with states "
+                      "is discouraged - use QskSkinTableEditor if you are "
+                      "sure, that you need this.";
+
+        qWarning() << "QskAspect:" << aspect.stateless()
+                   << skinnable->skinStateAsPrintable( aspect.state() );
+
+#if 0
+        aspect.clearStates();
+#endif
+    }
+
+    aspect.setSubControl( skinnable->effectiveSubcontrol( aspect.subControl() ) );
+    return aspect;
+}
+
 class QskSkinnable::PrivateData
 {
   public:
@@ -319,12 +340,12 @@ qreal QskSkinnable::metric( const QskAspect aspect, QskSkinHintStatus* status ) 
 bool QskSkinnable::setStrutSizeHint(
     const QskAspect aspect, qreal width, qreal height )
 {
-    return qskSetMetric( this, aspect, QSizeF( width, height ) );
+    return qskSetMetric( this, aspect | QskAspect::StrutSize, QSizeF( width, height ) );
 }
 
 bool QskSkinnable::setStrutSizeHint( const QskAspect aspect, const QSizeF& strut )
 {
-    return qskSetMetric( this, aspect, strut );
+    return qskSetMetric( this, aspect | QskAspect::StrutSize, strut );
 }
 
 bool QskSkinnable::resetStrutSizeHint( const QskAspect aspect )
@@ -600,27 +621,6 @@ QskAnimationHint QskSkinnable::effectiveAnimation(
     }
 
     return hint;
-}
-
-static inline QskAspect qskSubstitutedAspect(
-    const QskSkinnable* skinnable, QskAspect aspect )
-{
-    if ( aspect.hasState() )
-    {
-        qWarning() << "QskSkinnable::(re)setSkinHint: setting hints with states "
-                      "is discouraged - use QskSkinTableEditor if you are "
-                      "sure, that you need this.";
-
-        qWarning() << "QskAspect:" << aspect.stateless()
-                   << skinnable->skinStateAsPrintable( aspect.state() );
-
-#if 0
-        aspect.clearStates();
-#endif
-    }
-
-    aspect.setSubControl( skinnable->effectiveSubcontrol( aspect.subControl() ) );
-    return aspect;
 }
 
 bool QskSkinnable::setSkinHint( QskAspect aspect, const QVariant& hint )
