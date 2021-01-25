@@ -39,7 +39,6 @@
 		\class QskGestureRecognizer
 		\class QskPanGestureRecognizer
 		\class QskQuick
-		\class QskQuickItem
 		\class QskSetup
 		\class QskShortcutMap
 		\class QskWindow
@@ -55,7 +54,6 @@
 
     \defgroup Themeing Themeing
     \{
-		\class QskAspect
 		\class QskBoxBorderColors
 		\class QskBoxBorderMetrics
 		\class QskBoxShapeMetrics
@@ -99,29 +97,7 @@
 		\class QskTextLabel
     \}
 
-    \defgroup Skinlets Skinlets
-    \{
-		\class QskBoxSkinlet
-		\class QskFocusIndicatorSkinlet
-		\class QskGraphicLabelSkinlet
-		\class QskListViewSkinlet
-		\class QskPageIndicatorSkinlet
-		\class QskPopupSkinlet
-		\class QskProgressBarSkinlet
-		\class QskPushButtonSkinlet
-		\class QskScrollViewSkinlet
-		\class QskSeparatorSkinlet
-		\class QskSliderSkinlet
-		\class QskStatusIndicatorSkinlet
-		\class QskSubWindowAreaSkinlet
-		\class QskSubWindowSkinlet
-		\class QskTabButtonSkinlet
-		\class QskTabViewSkinlet
-		\class QskTextInputSkinlet
-		\class QskTextLabelSkinlet
-    \}
-
-    \defgroup Container Container
+    \defgroup container Container
     \{
 		\class QskScrollArea
 		\class QskSubWindowArea

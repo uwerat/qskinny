@@ -4,66 +4,66 @@
 */
 
 /*!
-	\property bool QskIndexedLayoutBox::autoAddChildren
+    \property bool QskIndexedLayoutBox::autoAddChildren
 
-	\brief Flag controlling whether to automatically append children to the layout.
+    \brief Flag controlling whether to automatically append children to the layout.
 
-	When autoAddChildren is enabled new children are automatically
-	appended to the layout. Otherwise items have to be inserted
-	manually using addItem() or insertItem().
+    When autoAddChildren is enabled new children are automatically
+    appended to the layout. Otherwise items have to be inserted
+    manually using addItem() or insertItem().
 
-	\note Children being transparent for positioners are ignored
+    \note Children being transparent for positioners are ignored
 
-	\accessors autoAddChildren(), setAutoAddChildren(), autoAddChildrenChanged()
+    \accessors autoAddChildren(), setAutoAddChildren(), autoAddChildrenChanged()
 */
 
 /*!
-	\fn QskIndexedLayoutBox::QskIndexedLayoutBox( QQuickItem* )
+    \fn QskIndexedLayoutBox::QskIndexedLayoutBox( QQuickItem* )
 
-	\brief Constructor
+    \brief Constructor
 
-	Create a layout having autoAddChildren set to false.
+    Create a layout having autoAddChildren set to false.
 
-	\param parent Parent item
+    \param parent Parent item
 */
 
 /*!
-	\fn QskIndexedLayoutBox::~QskIndexedLayoutBox()
-	\brief Destructor
+    \fn QskIndexedLayoutBox::~QskIndexedLayoutBox()
+    \brief Destructor
 */
 
 /*!
-	\fn void QskIndexedLayoutBox::autoAddChildrenChanged()
+    \fn void QskIndexedLayoutBox::autoAddChildrenChanged()
 
-	The autoAddChildren property has changed
-	\sa setAutoAddChildren(), autoAddChildren()
+    The autoAddChildren property has changed
+    \sa setAutoAddChildren(), autoAddChildren()
 */
 
 /*!
-	\fn void QskIndexedLayoutBox::setAutoAddChildren( bool on )
+    \fn void QskIndexedLayoutBox::setAutoAddChildren( bool on )
 
-	\brief En/Disable auto appending of children
+    \brief En/Disable auto appending of children
 
-	When autoAddChildren() is enabled new children are automatically
-	appended to the layout. Otherwise items have to be inserted
-	manually using addItem() or insertItem().
+    When autoAddChildren() is enabled new children are automatically
+    appended to the layout. Otherwise items have to be inserted
+    manually using addItem() or insertItem().
 
-	\param on When true autoAddChildren is enabled
+    \param on When true autoAddChildren is enabled
 
-	\note Existing children, that have not been inserted before
-		  remain being not seen by the layout.
+    \note Existing children, that have not been inserted before
+          remain being not seen by the layout.
 */
 
 /*!
-	\fn bool QskIndexedLayoutBox::autoAddChildren() const
-	\return Value of the \ref autoAddChildren property
+    \fn bool QskIndexedLayoutBox::autoAddChildren() const
+    \return Value of the \ref autoAddChildren property
  */
 
 /*!
-	\fn void QskIndexedLayoutBox::itemChange( QQQuickItem *::ItemChange, const QQQuickItem *::ItemChangeData & )
+    \fn void QskIndexedLayoutBox::itemChange( QQQuickItem *::ItemChange, const QQQuickItem *::ItemChangeData & )
 
-	Checking ItemChildAddedChange/ItemChildRemovedChange changes to
-	implement the \ref autoAddChildren mode
+    Checking ItemChildAddedChange/ItemChildRemovedChange changes to
+    implement the \ref autoAddChildren mode
 
-	\sa autoAddChildren
+    \sa autoAddChildren
 */

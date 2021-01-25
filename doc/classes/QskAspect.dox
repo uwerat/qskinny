@@ -1,113 +1,93 @@
 /*!
-    \brief Defines a series of enum values for describing particular aspects of controls
+    \class QskAspect QskAspect.h
+    \ingroup theming
 
-    \sa QskSkinHint
-    \sa QskControl::skinHint
-    \sa QskSkin::skinHint
-*/
-namespace QskAspect
-{
-/*!
-    \var Aspect
+    \brief Lookup key for a QskSkinHintTable
 
     Used by the \ref qskskinning "skin engine" to determine how a given aspect
     of a control is drawn. While Aspect is simply a 64-bit unsigned integer, it
     is composed of smaller enum bitfields which can be ORed together to
     describe a more specific part of the user interface.
 
-    For example, the top border color of a QskPushButton while pressed is
+    For example, the border colors of a QskPushButton while pressed is
     defined by combining the State (QskAbstractButton::Pressed) with the
     Subcontrol (QskPushButton::Panel), the Primitive (Border),
-    the edge/corner (Top), and the Type (Color) as so:
+    and the Type (Color) as so:
 
-        auto aspect = QskAbstractButton::Pressed | QskPushButton::Panel | QskAspect::Border | QskAspect::Top | QskAspect::Color
+        auto aspect = QskPushButton::Panel | QskAbstractButton::Pressed | QskAspect::Color | QskAspect::Border
 
-    This `aspect` can then be passed to, e.g., QskSkin::setSkinHint as the first
-    argument.
+    \sa QskSkinnable::effectiveSkinHint(), QskSkin::skinHint()
+ */
 
-    The 64 bits in Aspect are partitioned as follows (Note: flags are
-    interpreted as single bits, while IDs are interpreted as aggregate integer
-    values):
-    0xFFFF000000000000 | 0x0000FFFF00000000          | 0x00000000FFF00000               | 0x00000000000F0000             | 0x000000000000F000                           | 0x0000000000000800           | 0x0000000000000700        | 0x00000000000000FF
-    -------------------| --------------------------- | -------------------------------- | ------------------------------ | -------------------------------------------- | ---------------------------- | ------------------------- | --------------------------
-    Unused             | QskAspect::State (16 flags) | QskAspect::Subcontrol (4096 IDs) | QskAspect::Primitive (255 IDs) | QskAspect::Corner, QskAspect::Edge (4 flags) | QskAspect::Modifier (1 flag) | QskAspect::Type (128 IDs) | QskAspect::Index (256 IDs)
+/*!
+    \enum QskAspect::Type
 
-    \note The above structure may change in the future as features are added
-    and/or sections are be expanded to accommodate wider information types.
-*/
+    \brief Represents the type of the Aspect. 
 
-/*! Represents a specific "subresource" ID, usually a FontRole or ColorRole.
-    In most cases, the default (`0`) is appropriate. */
-enum Index : std::uint8_t
-{
-    FirstIndex =     0x00,
-    LastIndex =      0xFF,
-};
+    The type categorizes the aspect to be a metric, color or "something else".
 
-/*! Represents the data type of the Aspect. The default is Flag, but
-    more commonly this will be a Color or Metric. Colors are 32-bit ARGB
-    values (see QRgb), and Metrics are `float` values typically
-    corresponding to pixel distances. */
-enum Type : std::uint16_t
-{
-    Flag =           0x0000, // default, enum / int
-    Metric =         0x0100, // float
-    Color =          0x0200, // QRgb (uint)
-};
+    Often primitives are related to a specific category. F.e QskAspect::Alignment will
+    probably always be a QskAspect::Flag, while QskAspect::Border will usually
+    be combined with QskAspect::Color and QskAspect::Metric.
 
-/*! Adds extra information to Type. Currently, the only modifier is Animator,
-    which specifies that skinhint corresponds to the animation data for this
-    Aspect. */
-enum Modifier : std::uint16_t
-{
-    Animator =       0x0800  ///< Denotes that the skin hint affects the animation timing/easing.
-};
+    Smooth transitions can be set up depending on these categories. F.e when
+    changing from daylight to darkness color schemem only values of QskAspect::Color
+    aspects need to be considered. But when changing the Look&Feel of the 
+    application all type of aspects need to be considered.
 
-/*! Used with certain Primitives (such as Border) to specify an edge. Zero or
-    more Edges can be combined to denote which edge(s) the Aspect is concerned.
-    The default value of `0` implies AllEdges. */
-enum Edge : std::uint32_t
-{
-    Left =           0x00001000,
-    Top =            0x00002000,
-    Right =          0x00004000,
-    Bottom =         0x00008000,
-    AllEdges =       Top | Left | Right | Bottom
-};
+    \var QskAspect::Type QskAspect::Flag
 
-/*! Used with certain Primitives (such as Radius) to specify a corner. Zero or
-    more Corners can be combined to denote which corner(s) the Aspect is concerned.
-    The default value of `0` implies AllCorners. */
-enum Corner : std::uint32_t
-{
-    TopLeft =        0x00001000,
-    TopRight =       0x00002000,
-    BottomRight =    0x00004000,
-    BottomLeft =     0x00008000,
-    LeftCorners =    TopLeft | BottomLeft,
-    RightCorners =   TopRight | BottomRight,
-    TopCorners =     TopLeft | TopRight,
-    BottomCorners =  BottomLeft | BottomRight,
-    AllCorners =     TopLeft | TopRight | BottomLeft | BottomRight
-};
+    Flags are all sort of attributes that are no metrics or colors - f.e
+    an alignment. A reasonable subset of possible flags is offered as
+    QskAspect::FlagPrimitive
 
-/*! The fundamental building blocks of box-like UI components, based on the
-    <a>CSS box model</a>. See QskSkinRenderer::updateBox for more information. */
-enum Primitive : std::uint32_t
-{
-    Background =     0x00000000, ///< The default primitive, the background color(s)
+    \var QskAspect::Type QskAspect::Metric
 
-    Margin =         0x00010000, ///< The margin, according to the CSS box model
-    Padding =        0x00020000, ///< The padding, according to the CSS box model
-    RadiusX =        0x00030000, ///< The horizontal corner radius, according to the CSS box model
-    RadiusY =        0x00040000, ///< The vertical corner radius, according to the CSS box model
-    Border =         0x00050000, ///< The border thickness/color, according to the CSS box model
-    Shadow =         0x00060000, ///< The shadow thickness/color, according to the CSS box model
-    Radius  =        RadiusX | RadiusY, // 0x70000 ///< Convenience enum for specifying both horizontal and vertical radii
+    Metrics are related to geometries in most cases corresponding to pixel distances.
+    Examples are the margin/padding. A reasonable subset of possible metrics
+    is offered as QskAspect::MetricPrimitive.
 
-    Fundamental =    0x00080000 // Disables edge/corner routing
-};
+    \var QskAspect::Type QskAspect::Color
 
+    Colors are all sort of color values, like fill gradients, border colors.
+ */
+
+/*!
+    \enum QskAspect::FlagPrimitive
+
+    \var QskAspect::FlagPrimitive QskAspect::NoFlagPrimitive
+    \var QskAspect::FlagPrimitive QskAspect::Alignment
+    \var QskAspect::FlagPrimitive QskAspect::Direction
+    \var QskAspect::FlagPrimitive QskAspect::Style
+    \var QskAspect::FlagPrimitive QskAspect::Decoration
+    \var QskAspect::FlagPrimitive QskAspect::GraphicRole
+    \var QskAspect::FlagPrimitive QskAspect::FontRole
+ */
+
+/*!
+    \enum QskAspect::MetricPrimitive
+
+    \var QskAspect::MetricPrimitive QskAspect::NoMetricPrimitive
+    \var QskAspect::MetricPrimitive QskAspect::StrutSize
+    \var QskAspect::MetricPrimitive QskAspect::Size
+    \var QskAspect::MetricPrimitive QskAspect::Position
+    \var QskAspect::MetricPrimitive QskAspect::Margin
+    \var QskAspect::MetricPrimitive QskAspect::Padding
+    \var QskAspect::MetricPrimitive QskAspect::Shadow
+    \var QskAspect::MetricPrimitive QskAspect::Spacing
+    \var QskAspect::MetricPrimitive QskAspect::Shape
+    \var QskAspect::MetricPrimitive QskAspect::Border
+ */
+
+/*!
+    \enum QskAspect::ColorPrimitive
+
+    \var QskAspect::ColorPrimitive QskAspect::NoColorPrimitive
+    \var QskAspect::ColorPrimitive QskAspect::TextColor
+    \var QskAspect::ColorPrimitive QskAspect::StyleColor
+    \var QskAspect::ColorPrimitive QskAspect::LinkColor
+ */
+    
 /*! For use within the rendering of a specific QskSkinnable. While the Default
     value applies to any control (and can be used as a fallback), specifying a
     Subcontrol limits the aspect's scope to that sub-component (or \em subcontrol)
@@ -134,58 +114,3 @@ enum State : std::uint64_t
     Automatic =         0x0000000000000000, ///< No specified state (the default)
     NoState =           0x0000FFFF00000000  ///< Empty state, explicitly specified. Useful in some types of animators.
 };
-
-/*! These Aspects are for convenience, providing commonly combined values
-    to limit the verbosity of combining Aspects in application code. */
-enum : Aspect
-{
-    MarginTop =      Margin | Top,                  ///< The top margin
-    MarginLeft =     Margin | Left,                 ///< The left margin
-    MarginRight =    Margin | Right,                ///< The right margin
-    MarginBottom =   Margin | Bottom,               ///< The bottom margin
-    PaddingTop =     Padding | Top,                 ///< The top padding
-    PaddingLeft =    Padding | Left,                ///< The left padding
-    PaddingRight =   Padding | Right,               ///< The right padding
-    PaddingBottom =  Padding | Bottom,              ///< The bottom padding
-    BorderTop =      Border | Top,                  ///< The top border
-    BorderLeft =     Border | Left,                 ///< The left border
-    BorderRight =    Border | Right,                ///< The right border
-    BorderBottom =   Border | Bottom,               ///< The bottom border
-    ShadowTop =      Shadow | Top,                  ///< The top shadow
-    ShadowLeft =     Shadow | Left,                 ///< The left shadow
-    ShadowRight =    Shadow | Right,                ///< The right shadow
-    ShadowBottom =   Shadow | Bottom,               ///< The bottom shadow
-
-    RadiusXTopLeft     = RadiusX | TopLeft,         ///< The top-left horizontal radius
-    RadiusXTopRight    = RadiusX | TopRight,        ///< The top-right horizontal radius
-    RadiusXBottomLeft  = RadiusX | BottomLeft,      ///< The bottom-left horizontal radius
-    RadiusXBottomRight = RadiusX | BottomRight,     ///< The bottom-right horizontal radius
-    RadiusYTopLeft     = RadiusY | TopLeft,         ///< The top-left vertical radius
-    RadiusYTopRight    = RadiusY | TopRight,        ///< The top-right vertical radius
-    RadiusYBottomLeft  = RadiusY | BottomLeft,      ///< The bottom-left vertical radius
-    RadiusYBottomRight = RadiusY | BottomRight,     ///< The bottom-right vertical radius
-
-    // Standard metrics
-    Size =            0x0000000000000000 | Fundamental | Metric, ///< A "size" placeholder, like width or height
-    Position =        0x0000000000010000 | Fundamental | Metric, ///< A "position" placeholder, like the position of a QskSlider
-    MinimumWidth =    0x0000000000020000 | Fundamental | Metric, ///< A minimum width hint
-    MinimumHeight =   0x0000000000030000 | Fundamental | Metric, ///< A minimum height hint
-    MaximumWidth =    0x0000000000040000 | Fundamental | Metric, ///< A maximum width hint
-    MaximumHeight =   0x0000000000050000 | Fundamental | Metric, ///< A maximum height hint
-    Spacing =         0x0000000000060000 | Fundamental | Metric, ///< A spacing hint, such as between rows in a QskListBox
-
-    // Standard flags
-    Alignment =       0x0000000000000000 | Fundamental | Flag, ///< A flag typically used for storing text alignments (Qt::Alignment)
-    Style =           0x0000000000010000 | Fundamental | Flag, ///< A flag for storing text style (Qsk::Style)
-    Decoration =      0x0000000000020000 | Fundamental | Flag, ///< A flag for storing decoration information
-    ColorRole =       0x0000000000060000 | Fundamental | Flag, ///< A flag for specifying a QRgb value at a given QskAspect::Index
-    FontRole =        0x0000000000070000 | Fundamental | Flag, ///< A flag for specifying a QFont value at a given QskAspect::Index
-
-    // Standard colors
-    TextColor =       0x0000000000000000 | Fundamental | Color, ///< A placeholder for text color
-    StyleColor =      0x0000000000010000 | Fundamental | Color, ///< A placeholder for text style color
-    LinkColor =       0x0000000000020000 | Fundamental | Color, ///< A placeholder for text link color
-
-    AllAspects =      0xFFFFFFFFFFFFFFFF ///< All possible bits in Aspect (useful for e.g. QskSkinnable::markDirty).
-};
-}

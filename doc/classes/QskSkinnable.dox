@@ -3,50 +3,50 @@
 */
 
 /*!
-	\fn void QskSkinnable::setSkinlet( QskSkinlet* )
+    \fn void QskSkinnable::setSkinlet( QskSkinlet* )
 
-	Allows overriding the QskControl::Skin used by this control to render its
-	contents.
+    Allows overriding the QskControl::Skin used by this control to render its
+    contents.
 
 */
 
 /*!
-	\fn const QskSkinlet* QskSkinnable::skinlet() const;
+    \fn const QskSkinlet* QskSkinnable::skinlet() const;
 
-	\return Skinlet assigned by setSkinlet().
-	\sa effectiveSkinlet()
+    \return Skinlet assigned by setSkinlet().
+    \sa effectiveSkinlet()
 */
 
 /*!
-	\fn QVariant QskSkinnable::effectiveHint( QskAspect::Aspect, QskSkinHintStatus* ) const
+    \fn QVariant QskSkinnable::effectiveHint( QskAspect::Aspect, QskSkinHintStatus* ) const
 
-	Returns the QskSkinHint value for a QskAspect::Aspect. If none is set for
-	this control, the value for QskSkin::skinHint() is returned.
+    Returns the QskSkinHint value for a QskAspect::Aspect. If none is set for
+    this control, the value for QskSkin::skinHint() is returned.
 
-	\note If a QskSkinHintProvider is animating the color when called, the returned
-		  value will be the current value, not the target value, unless a state mask
-		  is requested as part of the aspect.
+    \note If a QskSkinHintProvider is animating the color when called, the returned
+          value will be the current value, not the target value, unless a state mask
+          is requested as part of the aspect.
 
-	\param aspect Aspect
+    \param aspect Aspect
 */
 
 /*!
-	\fn qreal QskSkinnable::metric( QskAspect::Aspect, QskSkinHintStatus* ) const
+    \fn qreal QskSkinnable::metric( QskAspect::Aspect, QskSkinHintStatus* ) const
 
-	A convenience method equivalent to skinHint( aspect ).metric. The
-	QskSkinHint::TypeMask is set to QskSkinHint::Metric.
+    A convenience method equivalent to skinHint( aspect ).metric. The
+    QskSkinHint::TypeMask is set to QskSkinHint::Metric.
 */
 
 /*!
-	\fn void QskSkinnable::updateNode( QSGNode* )
+    \fn void QskSkinnable::updateNode( QSGNode* )
 
-	This method replaces the QQuickItem::updatePaintNode method as the
-	preferred paint method to override when subclassing QskControl. This allows
-	QskControl to perform some additional steps before calling updateNode(),
-	and provides a consistent parent node which subclasses can rely on.
+    This method replaces the QQuickItem::updatePaintNode method as the
+    preferred paint method to override when subclassing QskControl. This allows
+    QskControl to perform some additional steps before calling updateNode(),
+    and provides a consistent parent node which subclasses can rely on.
 
-	Subclasses should call their Skin's updateNode() method inside this method.
+    Subclasses should call their Skin's updateNode() method inside this method.
 
-	\param parentNode The parent of the nodes to be added in this method.
-	\return The parent node.
+    \param parentNode The parent of the nodes to be added in this method.
+    \return The parent node.
 */
