@@ -57,7 +57,6 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
 
     bool hasChildItems() const;
 
-    QRectF geometry() const;
     QRectF rect() const;
 #if QT_VERSION < QT_VERSION_CHECK( 5, 10, 0 )
     QSizeF size() const;
@@ -65,6 +64,7 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
     QSizeF implicitSize() const;
 
     void setGeometry( qreal x, qreal y, qreal width, qreal height );
+    QRectF geometry() const;
 
     void setPolishOnResize( bool );
     bool polishOnResize() const;
