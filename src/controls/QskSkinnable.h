@@ -138,7 +138,7 @@ class QSK_EXPORT QskSkinnable
     bool resetColor( QskAspect );
     QColor color( QskAspect, QskSkinHintStatus* = nullptr ) const;
 
-    bool setMetric( QskAspect, qreal metric );
+    bool setMetric( QskAspect, qreal );
     bool resetMetric( QskAspect );
     qreal metric( QskAspect, QskSkinHintStatus* = nullptr ) const;
 

@@ -47,7 +47,7 @@ QSGNode* QskBoxSkinlet::updateSubNode(
 }
 
 QSizeF QskBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
-     Qt::SizeHint which, const QSizeF& constraint ) const
+    Qt::SizeHint which, const QSizeF& constraint ) const
 {
     const auto box = static_cast< const QskBox* >( skinnable );
 

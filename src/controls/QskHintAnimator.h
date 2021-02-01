@@ -48,7 +48,7 @@ class QSK_EXPORT QskHintAnimatorTable
     void start( QskControl*, QskAspect,
         QskAnimationHint, const QVariant& from, const QVariant& to );
 
-    const QskHintAnimator* animator( QskAspect aspect ) const;
+    const QskHintAnimator* animator( QskAspect ) const;
     QVariant currentValue( QskAspect ) const;
 
     bool cleanup();
