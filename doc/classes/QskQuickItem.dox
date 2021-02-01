@@ -1,7 +1,7 @@
 /*!
     \class QskQuickItem QskQuickItem.h
 
-    \ingroup framework
+    \ingroup Framework
 
     QskQuickItem completes the C++ API of QQuickItem and implements some
     flags to offer better control over the operations happening in the
@@ -68,29 +68,106 @@
         testControlFlag(), setControlFlag(), resetControlFlag()
 */
 
+/*!
+    \var QskQuickItem::geometry
+
+    This property holds the geometry of the item relative to its parent item.
+	When changing the geometry, the item receives a QskEvent::GeometryChange event.
+
+    \sa geometryChangeEvent(), geometryChange()
+*/
+
+/*!
+    \var QskQuickItem::transparentForPositioners
+
+    When transparentForPositioners is set the item indicates, that it should be excluded
+    from any layout calculations. This flag is actually a concept of QQuickItem, that
+    has not been exposed to its public API.
+
+    \sa isTransparentForPositioner()
+*/
+
+/*!
+    \var QskQuickItem::tabFence
+
+    The tabFence flag can be used to create local tab focus chains. It is usually
+    used in combination with QQuickItem::ItemIsFocusScope.
+
+    QskPopup is an example where the focus tab chain is expected to continue
+    with the first child instead of leaving the popup, when reaching its end.
+
+    \sa isTabFence(), QQuickItem::ItemIsFocusScope
+*/
+
+/*!
+    \var QskQuickItem::visibleToParent
+
+	Flag indicating if an item would become visible if its parentItem() is shown.
+    The implementation relies on the internal explicitVisible flag, that has not
+    been exposed by the public API of QQuickItem.
+
+    In many situations it is important to know if an item has been explicitly hidden
+    because of a setVisible( false ) or it is a child of an item, that is in
+    an invisible state. F,e for calculating the size hint for a hidden container
+    it is necessary to know which children would stay hidden when the container
+    becomes visible.
+
+    \sa isVisibleToParent(), QQuickItem::setVisible()
+*/
+
+/*!
+    \var QskQuickItem::polishOnResize
+
+    When polishOnResize is set QQuickItem::polish() will be called automatically
+    whenevent the size of the item has been changed. This is usually necessary
+    when the item is a container and the layout of its children depends on the
+    size of the container.
+
+    \sa QskControl::updateLayout(), QskControl::autoLayoutChildren
+*/
+
+/*!
+    \var QskQuickItem::initiallyPainted
+
+    Status flag indicating that there has already been a call
+    of QQuickItem::updatePaintNode() since the item has become visible.
+
+    Before each initial call of updatePaintNode() the specific
+    hook aboutToShow() is called, that is intended to be overloaded.
+
+    \sa isInitiallyPainted(), aboutToShow()
+*/
 
 /*!
     \fn QskQuickItem::QskQuickItem
 
-    bla
+    Sets the QQuickItem::ItemHasContents flag to true.
 */
 
 *!
     \fn QskQuickItem::~QskQuickItem
 
-    \bla
+    Sets the componentComplete to false, so that its about-to-delete state is known
+    whn detaching it from parent/window.
 */
 
 /*!
     \fn QskQuickItem::className
 
-	bla
+    A convenience wrapper for metaObject()->className()
+    \return Class name
 */
 
 /*!
     \fn QskQuickItem::isVisibleTo
 
-	bla
+    The true case occurs if neither the item itself nor any parent up to but excluding
+    ancestor has been explicitly hidden.
+
+    \param ancestor Ancestor is the parentItem() hierarchy
+    \return true if this item would become visible if ancestor is shown; otherwise returns false.
+
+    \sa visibleToParent
 */
 
 /*!
@@ -332,12 +409,20 @@
 /*!
     \fn QskQuickItem::geometryChangeEvent
 
-	bla
+    For no known reason QQuickItem propagates changes of position and size
+    by calling QQuickItem::geometryChange(), instead of using events.
+
+    QskQuickItem reestablished the more powerful concept of events by sending/posting
+    events, that can be preprocessed by event filtering.
+
+    \param event Event indicating the geometry change
+
+    \sa QObject::installEventFilter(), geometryChange()
 */
+
 /*!
     \fn QskQuickItem::windowChangeEvent
 
-	bla
 */
 
 /*!
@@ -349,6 +434,12 @@
 /*!
     void \fn QskQuickItem::aboutToShow
 
-	bla
+    A specific hook that is intended to be overloaded by controls that need
+    to do some specific operations, when an item is painted the first time
+    after becoming visisble.
+
+    The default implementation is a no operation.
+
+    \sa initiallyPainted, QQuickItem::setVisible()
 */
 
