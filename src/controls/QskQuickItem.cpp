@@ -422,7 +422,7 @@ bool QskQuickItem::isUpdateNodeScheduled() const
 
 bool QskQuickItem::isInitiallyPainted() const
 {
-    return d_func()->isInitiallyPainted;
+    return d_func()->initiallyPainted;
 }
 
 bool QskQuickItem::maybeUnresized() const
@@ -755,7 +755,7 @@ void QskQuickItem::itemChange( QQuickItem::ItemChange change,
                 if ( d->controlFlags & QskQuickItem::CleanupOnVisibility )
                     d->cleanupNodes();
 
-                d->isInitiallyPainted = false;
+                d->initiallyPainted = false;
             }
 
             if ( parentItem() && parentItem()->isVisible() )
@@ -837,7 +837,7 @@ void QskQuickItem::updatePolish()
 
     d->blockedPolish = false;
 
-    if ( !d->isInitiallyPainted )
+    if ( !d->initiallyPainted )
     {
         /*
             We should find a better way for identifying, when
@@ -866,7 +866,7 @@ QSGNode* QskQuickItem::updatePaintNode( QSGNode* node, UpdatePaintNodeData* data
 
     Q_ASSERT( isVisible() || !( d->controlFlags & QskQuickItem::DeferredUpdate ) );
 
-    d->isInitiallyPainted = true;
+    d->initiallyPainted = true;
 
     if ( d->clearPreviousNodes )
     {

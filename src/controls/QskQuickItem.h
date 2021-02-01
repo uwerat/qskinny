@@ -28,6 +28,10 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
     Q_PROPERTY( bool polishOnResize READ polishOnResize
         WRITE setPolishOnResize NOTIFY itemFlagsChanged FINAL )
 
+    Q_PROPERTY( bool visibleToParent READ isVisibleToParent )
+    Q_PROPERTY( bool hasChildItems READ hasChildItems )
+    Q_PROPERTY( bool initiallyPainted READ isInitiallyPainted )
+
     using Inherited = QQuickItem;
 
   public:

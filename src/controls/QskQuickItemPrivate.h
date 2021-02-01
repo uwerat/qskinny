@@ -55,7 +55,7 @@ class QskQuickItemPrivate : public QQuickItemPrivate
     bool blockedImplicitSize : 1;
     bool clearPreviousNodes : 1;
 
-    bool isInitiallyPainted : 1;
+    bool initiallyPainted : 1;
 };
 
 #endif

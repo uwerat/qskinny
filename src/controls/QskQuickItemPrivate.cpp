@@ -25,7 +25,7 @@ QskQuickItemPrivate::QskQuickItemPrivate()
     , blockedPolish( false )
     , blockedImplicitSize( true )
     , clearPreviousNodes( false )
-    , isInitiallyPainted( false )
+    , initiallyPainted( false )
 {
     if ( controlFlags & QskQuickItem::DeferredLayout )
     {
