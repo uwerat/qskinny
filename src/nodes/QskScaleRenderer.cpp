@@ -300,15 +300,16 @@ QVariant QskScaleRenderer::labelAt( qreal pos ) const
     return QString::number( pos, 'g' );
 }
 
-qreal QskScaleRenderer::maxLabelWidth() const
+QSizeF QskScaleRenderer::boundingLabelSize() const
 {
     const auto ticks = m_tickmarks.majorTicks();
     if ( ticks.isEmpty() )
-        return 0.0;
+        return QSizeF( 0.0, 0.0 );
 
     const QFontMetricsF fm( m_font );
 
     qreal maxWidth = 0.0;
+    const qreal h = fm.height();
 
     for ( auto tick : ticks )
     {
@@ -327,12 +328,12 @@ qreal QskScaleRenderer::maxLabelWidth() const
             const auto graphic = label.value< QskGraphic >();
             if ( !graphic.isNull() )
             {
-                w = graphic.widthForHeight( fm.height() );
+                w = graphic.widthForHeight( h );
             }
         }
 
         maxWidth = qMax( w, maxWidth );
     }
 
-    return maxWidth;
+    return QSizeF( maxWidth, h );
 }
