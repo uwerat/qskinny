@@ -135,6 +135,8 @@ class QSK_EXPORT QskSkinHintTableEditor
     QskBoxBorderMetrics boxBorderMetrics( QskAspect ) const;
 
     void setBoxBorderColors( QskAspect, const QskBoxBorderColors& );
+    void setBoxBorderColors( QskAspect, const QColor& left, const QColor& top,
+        const QColor& right, const QColor& bottom );
     void removeBoxBorderColors( QskAspect );
     QskBoxBorderColors boxBorderColors( QskAspect ) const;
 

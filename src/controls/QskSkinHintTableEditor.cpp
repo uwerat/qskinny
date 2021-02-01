@@ -325,6 +325,13 @@ void QskSkinHintTableEditor::setBoxBorderColors(
     setColorHint( aspectBorder( aspect ), borderColors );
 }
 
+void QskSkinHintTableEditor::setBoxBorderColors( QskAspect aspect,
+    const QColor& left, const QColor& top, const QColor& right, const QColor& bottom )
+{
+    setColorHint( aspectBorder( aspect ),
+        QskBoxBorderColors( left, top, right, bottom ) );
+}
+
 void QskSkinHintTableEditor::removeBoxBorderColors( QskAspect aspect )
 {
     return removeColorHint( aspectBorder( aspect ) );
