@@ -235,7 +235,7 @@ void QskSlider::moveHandleTo( qreal value, const QskAnimationHint& hint )
     setSkinStateFlag( QskSlider::Minimum, value <= minimum() );
     setSkinStateFlag( QskSlider::Maximum, value >= maximum() );
 
-    auto aspect = Handle | QskAspect::Metric | QskAspect::Position;
+    const auto aspect = Handle | QskAspect::Metric | QskAspect::Position;
 
     const qreal pos = valueAsRatio( value );
 
