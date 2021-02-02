@@ -310,7 +310,7 @@ QskTabBar::~QskTabBar()
 {
 }
 
-void QskTabBar::setPosition( Qsk::Position position )
+void QskTabBar::setTabPosition( Qsk::Position position )
 {
     if ( position == m_data->position )
         return;
@@ -334,10 +334,10 @@ void QskTabBar::setPosition( Qsk::Position position )
     for ( int i = 0; i < count(); i++ )
         buttonAt( i )->update();
 
-    Q_EMIT positionChanged( position );
+    Q_EMIT tabPositionChanged( position );
 }
 
-Qsk::Position QskTabBar::position() const
+Qsk::Position QskTabBar::tabPosition() const
 {
     return static_cast< Qsk::Position >( m_data->position );
 }

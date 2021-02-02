@@ -67,7 +67,7 @@ QskTabView::QskTabView( Qsk::Position tabPosition, QQuickItem* parent )
     connect( m_data->tabBar, &QskTabBar::countChanged,
         this, &QskTabView::countChanged );
 
-    connect( m_data->tabBar, &QskTabBar::positionChanged,
+    connect( m_data->tabBar, &QskTabBar::tabPositionChanged,
         this, &QskTabView::tabPositionChanged );
 
     connect( m_data->tabBar, &QskTabBar::autoFitTabsChanged,
@@ -93,7 +93,7 @@ void QskTabView::setTabPosition( Qsk::Position position )
     if ( position == tabPosition() )
         return;
 
-    m_data->tabBar->setPosition( position );
+    m_data->tabBar->setTabPosition( position );
 
     polish();
     update();
@@ -101,7 +101,7 @@ void QskTabView::setTabPosition( Qsk::Position position )
 
 Qsk::Position QskTabView::tabPosition() const
 {
-    return m_data->tabBar->position();
+    return m_data->tabBar->tabPosition();
 }
 
 void QskTabView::setAutoFitTabs( bool on )

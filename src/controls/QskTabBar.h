@@ -16,8 +16,8 @@ class QSK_EXPORT QskTabBar : public QskBox
 {
     Q_OBJECT
 
-    Q_PROPERTY( Qsk::Position position READ position
-        WRITE setPosition NOTIFY positionChanged FINAL )
+    Q_PROPERTY( Qsk::Position tabPosition READ tabPosition
+        WRITE setTabPosition NOTIFY tabPositionChanged FINAL )
 
     Q_PROPERTY( Qt::Orientation orientation READ orientation )
 
@@ -45,8 +45,8 @@ class QSK_EXPORT QskTabBar : public QskBox
 
     ~QskTabBar() override;
 
-    void setPosition( Qsk::Position );
-    Qsk::Position position() const;
+    void setTabPosition( Qsk::Position );
+    Qsk::Position tabPosition() const;
 
     Qt::Orientation orientation() const;
 
@@ -100,7 +100,7 @@ class QSK_EXPORT QskTabBar : public QskBox
     void currentIndexChanged( int index );
     void countChanged( int );
     void textOptionsChanged( const QskTextOptions& );
-    void positionChanged( Qsk::Position );
+    void tabPositionChanged( Qsk::Position );
     void autoScrollFocusedButtonChanged( bool );
     void autoFitTabsChanged( bool );
 
