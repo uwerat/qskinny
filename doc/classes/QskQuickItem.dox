@@ -3,9 +3,9 @@
 
     \ingroup Framework
 
-    QskQuickItem completes the C++ API of QQuickItem and implements some
-    flags to offer better control over the operations happening in the
-    update cycle.
+    QskQuickItem completes the C++ API of QQuickItem and reestablishs basic
+    concepts like events. It also offers better control over the operations
+    happening in the update cycle.
  */
 
 /*!
@@ -19,17 +19,28 @@
     \var QskQuickItem::Flag QskQuickItem::DeferredUpdate
 
         Creating of sceme graph nodes is blocked when being invisible.
-        ( QQuickItem::isVisible() ).
 
-        \note Some more advanced algorithms have not yet been implemented,
-              such as viewport frustrum culling (i.e. hiding items outside of the
-              window geometry).
+        The default implementation of Qt/Quick creates scene graph nodes for all items
+        in the scene what might become a significant factor for the startup performance
+        ( and memory footprint ) of large user interfaces.
+
+        Instead of trying to work around these problems by asynchrounous instantiation
+        strategies ( QQmlIncubator ) the DeferredUpdate flag offers a much simpler
+        and obvious solution: don't instantiate before really needed.
+
+    \sa QQuickItem::isVisible()
+
+    \note Some more advanced algorithms have not yet been implemented,
+          such as viewport frustrum culling (i.e. hiding items outside of the
+          window geometry).
 
     \var QskQuickItem::Flag QskQuickItem::DeferredPolish
 
         Polishing an item ( QQuickItem::polish() ) is blocked when being invisible.
         F.e for all items being derived from QskControl the layout calculations
         happen during polishing.
+
+    \sa QQuickItem::updatePolish()
 
     \var QskQuickItem::Flag QskQuickItem::DeferredLayout
 
@@ -43,23 +54,23 @@
         When having layout code that relies on binding the implicit width/height
         the QskQuickItem::DeferredLayout flag needs to be disabled.
 
-        \note All layout classes offered by the Qt/Quick modules of the Qt Company
-              ( f.e anchors ) do require immediate updates of the implicit size. 
+    \note All layout classes offered by the Qt/Quick modules of the Qt Company
+          ( f.e anchors ) do require immediate updates of the implicit size. 
 
-        \sa QskQuickItem::resetImplicitSize()
+    \sa QskQuickItem::resetImplicitSize()
 
     \var QskQuickItem::Flag QskQuickItem::CleanupOnVisibility
 
         Delete scene graph nodes, when the item becomes hidden ( QQuickItem::isVisible() ).
         Enabling this mode will reduce the memory footprint, but comes at the cost
-        of having to recreate nodes later.
+        of having to recreate nodes once the item gets shown again.
 
     \var QskQuickItem::Flag QskQuickItem::PreferRasterForTextures
 
         When creating textures from QskGraphic, prefer the raster paint
         engine over the OpenGL paint engine.
 
-    \var DebugForceBackground
+    \var QskQuickItem::Flag QskQuickItem::DebugForceBackground
 
         Always fill the background of the item with a random color.
         \note This flag is useful when analyzing layouts.
@@ -74,7 +85,16 @@
     This property holds the geometry of the item relative to its parent item.
 	When changing the geometry, the item receives a QskEvent::GeometryChange event.
 
-    \sa geometryChangeEvent(), geometryChange()
+    \sa geometryChangeEvent(), geometryChange(), rect
+*/
+
+/*!
+    \var QskQuickItem::rect
+
+	This property returns the internal geometry of the item.
+	It equals QRect(0, 0, width(), height() ).
+
+    \sa geometryChangeEvent(), geometryChange(), geometry
 */
 
 /*!
@@ -139,6 +159,14 @@
 */
 
 /*!
+    \var QskQuickItem::hasChildItems
+
+    A property indicating if the item has child items.
+
+    \sa QQuickItem::childItems(), QQuickItem::parentItem()
+*/
+
+/*!
     \fn QskQuickItem::QskQuickItem
 
     Sets the QQuickItem::ItemHasContents flag to true.
@@ -173,86 +201,130 @@
 /*!
     \fn QskQuickItem::isVisibleToParent
 
-	bla
+    An item might be invisible because it has been explicitly hidden or
+    one of its ancestors has been hidden. isVisibleToParent() indicates
+    the first situation.
+    
+    \return true once QQuickItem::setVisible( false ) has been called
+
+	\sa visibleToParent, QQuickItem::setVisible()
 */
 
 /*!
-    \fn QskQuickItem::hasChildItems
+    \fn QskQuickItem::hasChildItems()
 
-	bla
+    \return true, if the item has child items
+    \sa hasChildItems
 */
 
 /*!
     \fn QskQuickItem::setGeometry( qreal, qreal, qreal, qreal )
 
-	bla
+	Set the position and the size of an item
+
+	\param x X ( = left ) coordinate relative to the parent item 
+	\param y Y ( = top ) coordinate relative to the parent item 
+	\param width Width
+	\param height Height
+
+	\sa geometry(), geometryChange(), QQuickItem::size(), QQuickItem::position()
 */
+
 
 /*!
     \fn QskQuickItem::setGeometry( const QRectF& )
 
-	bla
+    Set the position and the size of an item
+
+    \param rect Geometry relative to the parent item
+
+	\sa geometry(), geometryChange(), QQuickItem::size(), QQuickItem::position()
 */
 
 /*!
     \fn QskQuickItem::geometry() const
 
-	bla
+	\return Position and size relative to the parent item
+    \sa geometry, setGeometry()
 */
 
 /*!
     \fn QskQuickItem::geometryChange
 
-	bla
+    This overloaded notifier calls QQuickItem::polish() depending on the
+    polishOnResize() flag and forwards the notification to the event queue.
+
+    \sa geometryChangeEvent(), polishOnResize()
 */
 
 /*!
     \fn QskQuickItem::rect
 
-	bla
+	\return Internal geometry of the item, where the position is always at ( 0, 0 )
+    \sa geometry
 */
 
 /*!
     \fn QskQuickItem::implicitSize
 
-	bla
+    Qt/Quick offers an oversimplified layout system of Qt/Quick that is based on the
+    property bindings of implicit width and height. QSkinny restablishs a layout
+    system that can compete with what is available in the Qt/Widgets or Qt/Graphics
+    technologies.
+
+    In the QSkinny layout system the implicitSize is a synonym for what is also known
+    as sizeHint or preferredSize.
+
+    \return Implicit size, 
+
+    \note Layout code that relies on property bindings of the implicit width a height
+          needs to disable the QskQuickItem::DeferredLayout flag
+
+    \sa QQuickItem::implicitWidth(), QQuickItem::implicitHeight(),
+        QskControl::preferredSize(), QskControl::sizeHint()
 */
 
 
 /*!
     \fn QskQuickItem::setPolishOnResize
 
-	bla
+	Set or clear the polishOnResize flag.
+    \sa polishOnResize
 */
 
 /*!
     \fn QskQuickItem::polishOnResize() const
 
-	bla
+	\return Value of the polishOnResize flag
+	\sa setPolishOnResize()
 */
 
 /*!
     \fn QskQuickItem::setTransparentForPositioner
 
-	bla
+	Set or clear the transparentForPositioner flag
+	\sa isTransparentForPositioner()
 */
 
 /*!
     \fn QskQuickItem::isTransparentForPositioner
 
-	bla
+	\return Value of the transparentForPositioner flag
+	\sa transparentForPositioner
 */
 
 /*!
     \fn QskQuickItem::setTabFence
 
-	bla
+	Set or clear the tabFence property
+	\sa isTabFence()
 */
 
 /*!
     \fn QskQuickItem::isTabFence
 
-	bla
+	\return Value of the tabFence property
+	\sa setTransparentForPositioner()
 */
 
 /*!
