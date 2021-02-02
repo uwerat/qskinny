@@ -67,7 +67,7 @@ void QskQuickItemPrivate::updateControlFlags( QskQuickItem::Flags flags )
         Q_Q( QskQuickItem );
 
         const auto numBits = qCountTrailingZeroBits(
-            static_cast< quint32 >( QskQuickItem::LastFlag ) );
+            static_cast< quint32 >( QskQuickItem::DebugForceBackground ) );
 
         for ( quint32 i = 0; i <= numBits; ++i )
         {

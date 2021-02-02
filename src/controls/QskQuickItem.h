@@ -18,6 +18,7 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
     Q_OBJECT
 
     Q_PROPERTY( QRectF geometry READ geometry WRITE setGeometry )
+    Q_PROPERTY( QRectF rect READ rect )
 
     Q_PROPERTY( bool transparentForPositioners READ isTransparentForPositioner
         WRITE setTransparentForPositioner NOTIFY itemFlagsChanged )
@@ -44,9 +45,7 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
 
         PreferRasterForTextures =  1 << 4,
 
-        DebugForceBackground    =  1 << 7,
-
-        LastFlag = DebugForceBackground
+        DebugForceBackground    =  1 << 7
     };
 
     Q_ENUM( Flag )

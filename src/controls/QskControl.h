@@ -48,6 +48,7 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     Q_PROPERTY( QSizeF minimumSize READ minimumSize WRITE setMinimumSize )
     Q_PROPERTY( QSizeF maximumSize READ maximumSize WRITE setMaximumSize )
     Q_PROPERTY( QSizeF preferredSize READ preferredSize WRITE setPreferredSize )
+    Q_PROPERTY( QSizeF sizeConstraint READ sizeConstraint )
 
     using Inherited = QskQuickItem;
 
