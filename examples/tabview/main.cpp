@@ -55,6 +55,18 @@ class TabView : public QskTabView
         setCurrentIndex( 4 );
     }
 
+    void appendTab()
+    {
+        const auto text = QString( "Tab %1" ).arg( count() + 1 );
+        addTab( text, new Label( text ) );
+    }
+
+    void removeLastTab()
+    {
+        if ( count() > 0 )
+            removeTab( count() - 1 );
+    }
+
     void rotate()
     {
         const Qsk::Position pos[] = { Qsk::Top, Qsk::Right, Qsk::Bottom, Qsk::Left };
@@ -93,9 +105,19 @@ int main( int argc, char* argv[] )
     QObject::connect( autoFitButton, &QskPushButton::toggled,
         tabView, &QskTabView::setAutoFitTabs );
 
+    auto addButton = new QskPushButton( "Add" );
+    QObject::connect( addButton, &QskPushButton::clicked,
+        tabView, &TabView::appendTab );
+
+    auto removeButton = new QskPushButton( "Remove" );
+    QObject::connect( removeButton, &QskPushButton::clicked,
+        tabView, &TabView::removeLastTab );
+
     auto buttonBox = new QskLinearBox( Qt::Horizontal );
     buttonBox->addItem( rotateButton );
     buttonBox->addItem( autoFitButton );
+    buttonBox->addItem( addButton );
+    buttonBox->addItem( removeButton );
     buttonBox->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 
     auto layoutBox = new QskLinearBox( Qt::Vertical );
