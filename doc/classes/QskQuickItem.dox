@@ -73,7 +73,8 @@
     \var QskQuickItem::Flag QskQuickItem::DebugForceBackground
 
         Always fill the background of the item with a random color.
-        \note This flag is useful when analyzing layouts.
+
+    \note This flag is useful when analyzing layouts.
 
     \sa controlFlags(), setControlFlags(), resetControlFlags()
         testControlFlag(), setControlFlag(), resetControlFlag()
@@ -211,7 +212,7 @@
 */
 
 /*!
-    \fn QskQuickItem::hasChildItems()
+    \fn QskQuickItem::hasChildItems() const
 
     \return true, if the item has child items
     \sa hasChildItems
@@ -229,7 +230,6 @@
 
 	\sa geometry(), geometryChange(), QQuickItem::size(), QQuickItem::position()
 */
-
 
 /*!
     \fn QskQuickItem::setGeometry( const QRectF& )
@@ -258,7 +258,7 @@
 */
 
 /*!
-    \fn QskQuickItem::rect
+    \fn QskQuickItem::rect() const
 
 	\return Internal geometry of the item, where the position is always at ( 0, 0 )
     \sa geometry
@@ -283,7 +283,6 @@
     \sa QQuickItem::implicitWidth(), QQuickItem::implicitHeight(),
         QskControl::preferredSize(), QskControl::sizeHint()
 */
-
 
 /*!
     \fn QskQuickItem::setPolishOnResize
@@ -330,19 +329,46 @@
 /*!
     \fn QskQuickItem::setLayoutMirroring
 
-	bla
+	Change the direction how the content is layed out horizontally.
+
+	\param on True enables layoutMirroring
+    \param childrenInherit If true the mirroring behavior is propagated
+                           to all child items as well. 
+
+    Changes of this property will be indicated by a QEvent::LayoutDirectionChange.
+
+	\sa layoutMirroring, resetLayoutMirroring(), changeEvent()
+	\note In Qml the parameters are routed through the attached LayoutMirroring property
+          to have something declarative
 */
 
 /*!
     \fn QskQuickItem::resetLayoutMirroring
 
-	bla
+	Clear the layoutMirroring property
+
+	\sa setLayoutMirroring(), layoutMirroring
 */
 
 /*!
-    \fn QskQuickItem::layoutMirroring
+    \fn QskQuickItem::layoutMirroring() const
 
-	bla
+	Direction how the content is layed out horizontally.
+
+    If no value has been explicitly assigned it is inherited
+	from the closest ancestor, where the attribute has been
+    assigned with the childrenInherit parameter. If such an ancestor
+    does not exists layoutMirroring is false.
+
+	\return Inherited or explicitly assigned value
+
+    \sa setLayoutMirroring(), layoutMirroring()
+    \todo Several controls do not respect this flag
+
+	\sa setLayoutMirroring(), resetLayoutMirroring()
+    \note Several controls do not respect this flag
+	\note In Qml the parameters are routed through the attached LayoutMirroring property
+          to have something declarative
 */
 
 /*!
@@ -390,92 +416,127 @@
 /*!
     \fn QskQuickItem::classBegin
 
-	bla
+	The QML engine initilizes an item as being incomplete by
+    explicitely calling QQuickItem::classBegin(). Once the item
+    has been constructed componentComplete() is called. This way
+    temporary operations during the construction can be avoided.
+    
+    In the C++ case the item indicates being complete from
+    the beginning and both hooks are never called.
+
+	The overloaded version calls the base class and has no
+    purpose beside being an entry point for debugging.
+    
+    \sa componentComplete(), QQuickItem::isComponentComplete()
 */
 
 /*!
     \fn QskQuickItem::componentComplete
 
-	bla
+    The QML engine initilizes an item as being incomplete by
+    explicitely calling QQuickItem::classBegin(). Once the item
+    has been constructed componentComplete() is called. This way
+    temporary operations during the construction can be avoided.
+
+    In the C++ case the item indicates being complete from
+    the beginning and both hooks are never called.
+
+	The overloaded does some sanity checks in debug mode
+	and calls the base class.
+
+	\sa classBegin(), QQuickItem::isComponentComplete()
 */
 
 /*!
     \fn QskQuickItem::releaseResources
 
-	bla
+	This specific hook is called, when the item is about to be removed
+    from the window it was previously rendering to. 
+
+	The implementation stores the values needed for the following QskWindowChangeEvent.
+
+	\sa windowChangeEvent()
 */
 
 /*!
     \fn QskQuickItem::isPolishScheduled
 
-	bla
+	\return True, if the item will be polished in the next
+            scene graph update cycle.
+	\sa QQuickItem::polish(), isUpdateNodeScheduled()
 */
 
 /*!
     \fn QskQuickItem::isUpdateNodeScheduled
 
-	bla
+	\return True, if the item will update the paint node in
+            the next scene graph update cycle
 */
 
 /*!
     \fn QskQuickItem::isInitiallyPainted
 
-	bla
+    \return Value of the initiallyPainted propertyk
+	\sa initiallyPainted
 */
 
 /*!
     \fn QskQuickItem::maybeUnresized
-
-	bla
 */
 
 /*!
     \fn QskQuickItem::itemFlagsChanged
-
-	bla
-*/
-
-
-/*!
-    \fn QskQuickItem::setGeometry
-
-	bla
 */
 
 /*!
     \fn QskQuickItem::show
 
-	bla
+	An alternative way to call setVisible( true ).
+	Useful for signal/slot connections
+
+	\sa hide(), setVisible()
 */
 
 /*!
     \fn QskQuickItem::hide
 
-	bla
+	An alternative way to call setVisible( false ).
+	Useful for signal/slot connections
+
+	\sa show(), setVisible()
 */
 
 /*!
     \fn QskQuickItem::setVisible
 
-	bla
+	QQuickItem::setVisible() has been forgotten to be declared as slot.
+
+	\param on If true the item becomes visible if its parent is visible.
+              Otherwise the item is hidden.
+
+	\sa QQuickItem::isVisible(), visibleToParent
 */
 
 /*!
     \fn QskQuickItem::resetImplicitSize
 
-	bla
+	Notifies the layout system that attributes affecting the layout
+    system have changed.
+
+    If the QskQuickItem::DeferredLayout flag is enabled ( = default )
+    the cached implicitSize() gets invalidated and a QEvent::LayoutRequest is sent
+    to the parent item ( like QWidget::updateGeometry ).
+
+    Otherwise the implicitSize() gets recalculated and layout updates can
+    be executed using property bindings.
 */
 
 /*!
     \fn QskQuickItem::event
-
-	bla
 */
 
 /*!
     \fn QskQuickItem::changeEvent
-
-	bla
 */
 
 /*!
@@ -499,8 +560,6 @@
 
 /*!
     \fn QskQuickItem::itemChange
-
-	bla
 */
 
 /*!
