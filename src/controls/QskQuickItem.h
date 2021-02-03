@@ -78,7 +78,7 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
     void setTabFence( bool );
     bool isTabFence() const;
 
-    void setLayoutMirroring( bool on, bool recursive = false );
+    void setLayoutMirroring( bool on, bool childrenInherit = false );
     void resetLayoutMirroring();
     bool layoutMirroring() const;
 

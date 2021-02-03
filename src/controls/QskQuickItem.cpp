@@ -364,10 +364,19 @@ bool QskQuickItem::polishOnResize() const
 
 bool QskQuickItem::layoutMirroring() const
 {
+#if 1
+    /*
+        What about using Qt::LayoutDirection instead. It sounds
+        like a more expressive API and we do not run into conflicts
+        with the layoutMirroring() attached property for QML.
+        But what is the situation with locales, where the default direction
+        is RightToLeft ?
+     */
     return d_func()->effectiveLayoutMirror;
+#endif
 }
 
-void QskQuickItem::setLayoutMirroring( bool on, bool recursive )
+void QskQuickItem::setLayoutMirroring( bool on, bool childrenInherit )
 {
     // Again we have to deal with an existing API made for QML,
     // that is weired for C++: LayoutMirroring/QQuickLayoutMirroringAttached
@@ -379,9 +388,9 @@ void QskQuickItem::setLayoutMirroring( bool on, bool recursive )
 
     Q_D( QQuickItem );
 
-    if ( recursive != d->inheritMirrorFromItem )
+    if ( childrenInherit != d->inheritMirrorFromItem )
     {
-        d->inheritMirrorFromItem = recursive;
+        d->inheritMirrorFromItem = childrenInherit;
         d->resolveLayoutMirror();
     }
 
@@ -390,7 +399,7 @@ void QskQuickItem::setLayoutMirroring( bool on, bool recursive )
     if ( on != d->effectiveLayoutMirror )
     {
         d->setLayoutMirror( on );
-        if ( recursive )
+        if ( childrenInherit )
             d->resolveLayoutMirror();
     }
 }
