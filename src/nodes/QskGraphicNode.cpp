@@ -12,7 +12,7 @@ static inline uint qskHash(
     const QskGraphic& graphic, const QskColorFilter& colorFilter,
     QskTextureRenderer::RenderMode renderMode )
 {
-    uint hash = 0;
+    uint hash = 12000;
 
     const auto& substitutions = colorFilter.substitutions();
     if ( substitutions.size() > 0 )
@@ -21,17 +21,7 @@ static inline uint qskHash(
             substitutions.size() * sizeof( substitutions[ 0 ] ), hash );
     }
 
-    const auto& commands = graphic.commands();
-    if ( commands.size() > 0 )
-    {
-        hash = qHash( commands.constData(), hash );
-    }
-
-    hash = qHash( graphic.renderHints(), hash );
-
-    const QSizeF sz = graphic.defaultSize();
-    hash = qHashBits( &sz, sizeof( sz ), hash );
-
+    hash = graphic.hash( hash );
     hash = qHash( renderMode, hash );
 
     return hash;

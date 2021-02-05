@@ -15,6 +15,7 @@
 #include <qpainter.h>
 #include <qpainterpath.h>
 #include <qpixmap.h>
+#include <qhashfunctions.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qpainter_p.h>
@@ -328,9 +329,7 @@ class QskGraphic::PrivateData : public QSharedData
 {
   public:
     PrivateData()
-        : boundingRect( 0.0, 0.0, -1.0, -1.0 )
-        , pointRect( 0.0, 0.0, -1.0, -1.0 )
-        , commandTypes( 0 )
+        : commandTypes( 0 )
         , renderHints( 0 )
     {
     }
@@ -342,27 +341,35 @@ class QskGraphic::PrivateData : public QSharedData
         , pathInfos( other.pathInfos )
         , boundingRect( other.boundingRect )
         , pointRect( other.pointRect )
+        , modificationId( other.modificationId )
         , commandTypes( other.commandTypes )
         , renderHints( other.renderHints )
     {
     }
 
-    ~PrivateData()
-    {
-    }
-
     inline bool operator==( const PrivateData& other ) const
     {
-        return ( renderHints == other.renderHints ) &&
-            ( commands == other.commands );
+        return ( modificationId == other.modificationId ) &&
+            ( renderHints == other.renderHints ) &&
+            ( defaultSize == other.defaultSize );
+    }
+
+    inline void addCommand( const QskPainterCommand& command )
+    {
+        commands += command;
+
+        static QAtomicInteger< quint64 > nextId( 1 );
+        modificationId = nextId.fetchAndAddRelaxed( 1 );
     }
 
     QSizeF defaultSize;
     QVector< QskPainterCommand > commands;
     QVector< QskGraphicPrivate::PathInfo > pathInfos;
 
-    QRectF boundingRect;
-    QRectF pointRect;
+    QRectF boundingRect = { 0.0, 0.0, -1.0, -1.0 };
+    QRectF pointRect = { 0.0, 0.0, -1.0, -1.0 };
+
+    quint64 modificationId = 0;
 
     uint commandTypes : 4;
     uint renderHints : 4;
@@ -481,6 +488,8 @@ void QskGraphic::reset()
     m_data->boundingRect = QRectF( 0.0, 0.0, -1.0, -1.0 );
     m_data->pointRect = QRectF( 0.0, 0.0, -1.0, -1.0 );
     m_data->defaultSize = QSizeF();
+
+    m_data->modificationId = 0;
 
     delete m_paintEngine;
     m_paintEngine = nullptr;
@@ -605,9 +614,9 @@ void QskGraphic::render( QPainter* painter,
         return;
 
     const int numCommands = m_data->commands.size();
-    const QskPainterCommand* commands = m_data->commands.constData();
+    const auto commands = m_data->commands.constData();
 
-    const QTransform transform = painter->transform();
+    const auto transform = painter->transform();
     const QskGraphic::RenderHints renderHints( m_data->renderHints );
 
     painter->save();
@@ -836,16 +845,16 @@ QImage QskGraphic::toImage( qreal devicePixelRatio ) const
 
 void QskGraphic::drawPath( const QPainterPath& path )
 {
-    const QPainter* painter = paintEngine()->painter();
+    const auto painter = paintEngine()->painter();
     if ( painter == nullptr )
         return;
 
-    m_data->commands += QskPainterCommand( path );
+    m_data->addCommand( QskPainterCommand( path ) );
     m_data->commandTypes |= QskGraphic::VectorData;
 
     if ( !path.isEmpty() )
     {
-        const QPainterPath scaledPath = painter->transform().map( path );
+        const auto scaledPath = painter->transform().map( path );
 
         QRectF pointRect = scaledPath.boundingRect();
         QRectF boundingRect = pointRect;
@@ -871,7 +880,7 @@ void QskGraphic::drawPixmap( const QRectF& rect,
     if ( painter == nullptr )
         return;
 
-    m_data->commands += QskPainterCommand( rect, pixmap, subRect );
+    m_data->addCommand( QskPainterCommand( rect, pixmap, subRect ) );
     m_data->commandTypes |= QskGraphic::RasterData;
 
     const QRectF r = painter->transform().mapRect( rect );
@@ -886,7 +895,7 @@ void QskGraphic::drawImage( const QRectF& rect, const QImage& image,
     if ( painter == nullptr )
         return;
 
-    m_data->commands += QskPainterCommand( rect, image, subRect, flags );
+    m_data->addCommand( QskPainterCommand( rect, image, subRect, flags ) );
     m_data->commandTypes |= QskGraphic::RasterData;
 
     const QRectF r = painter->transform().mapRect( rect );
@@ -897,7 +906,7 @@ void QskGraphic::drawImage( const QRectF& rect, const QImage& image,
 
 void QskGraphic::updateState( const QPaintEngineState& state )
 {
-    m_data->commands += QskPainterCommand( state );
+    m_data->addCommand( QskPainterCommand( state ) );
 
     if ( state.state() & QPaintEngine::DirtyTransform )
     {
@@ -959,12 +968,13 @@ void QskGraphic::setCommands( const QVector< QskPainterCommand >& commands )
     // to calculate a proper bounding rectangle we don't simply copy
     // the commands.
 
-    const QskPainterCommand* cmds = commands.constData();
+    const auto cmds = commands.constData();
 
     const QskColorFilter noFilter;
     const QTransform noTransform;
 
     QPainter painter( this );
+
     for ( int i = 0; i < numCommands; i++ )
     {
         qskExecCommand( &painter, cmds[ i ],
@@ -972,6 +982,21 @@ void QskGraphic::setCommands( const QVector< QskPainterCommand >& commands )
     }
 
     painter.end();
+}
+
+quint64 QskGraphic::modificationId() const
+{
+    return m_data->modificationId;
+}
+
+uint QskGraphic::hash( uint seed ) const
+{
+    auto hash = qHash( m_data->renderHints, seed );
+
+    hash = qHash( m_data->defaultSize.width(), hash );
+    hash = qHash( m_data->defaultSize.height(), hash );
+
+    return qHash( m_data->modificationId, hash );
 }
 
 QskGraphic QskGraphic::fromImage( const QImage& image )
