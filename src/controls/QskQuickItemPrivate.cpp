@@ -53,7 +53,14 @@ void QskQuickItemPrivate::mirrorChange()
 
 void QskQuickItemPrivate::applyUpdateFlags( QskQuickItem::UpdateFlags flags )
 {
-    if ( flags == updateFlags )
+    /*
+        Replace all flags, that have not been set explicitely by the
+        values from flags. Flags that have been derived from the default
+        settings can be identified by a 0 in updateFlagsMask.
+     */
+    const auto oldFlags = this->updateFlags;
+
+    if ( flags == oldFlags )
         return;
 
     Q_Q( QskQuickItem );
@@ -62,10 +69,13 @@ void QskQuickItemPrivate::applyUpdateFlags( QskQuickItem::UpdateFlags flags )
     for ( uint i = 0; i < 8; i++ )
     {
         const auto flag = static_cast< QskQuickItem::UpdateFlag >( 1 << i );
-        q->applyUpdateFlag( flag, flags & flag );
+
+        if ( !( this->updateFlagsMask & flag ) )
+            q->applyUpdateFlag( flag, flags & flag );
     }
 
-    Q_EMIT q->updateFlagsChanged( q->updateFlags() );
+    if ( this->updateFlags != oldFlags )
+        Q_EMIT q->updateFlagsChanged( q->updateFlags() );
 }
 
 void QskQuickItemPrivate::layoutConstraintChanged()
