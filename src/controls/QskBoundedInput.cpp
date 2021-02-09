@@ -161,6 +161,9 @@ void QskBoundedInput::setReadOnly( bool readOnly )
     setWheelEnabled( !readOnly );
 
     Q_EMIT readOnlyChanged( readOnly );
+
+    QEvent event( QEvent::ReadOnlyChange );
+    QCoreApplication::sendEvent( this, &event );
 }
 
 bool QskBoundedInput::isReadOnly() const

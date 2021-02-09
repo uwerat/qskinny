@@ -56,7 +56,7 @@ class QSK_EXPORT QskBoundedInput : public QskBoundedControl
     void readOnlyChanged( bool );
 
   protected:
-    void keyPressEvent( QKeyEvent* event ) override;
+    void keyPressEvent( QKeyEvent* ) override;
 
 #ifndef QT_NO_WHEELEVENT
     void wheelEvent( QWheelEvent* ) override;

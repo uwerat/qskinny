@@ -19,6 +19,14 @@ QSK_SUBCONTROL( QskTextInput, TextSelected )
 QSK_SYSTEM_STATE( QskTextInput, ReadOnly, QskAspect::FirstSystemState << 1 )
 QSK_SYSTEM_STATE( QskTextInput, Editing, QskAspect::FirstSystemState << 2 )
 
+static inline void qskPropagateReadOnly( QskTextInput* input )
+{
+    Q_EMIT input->readOnlyChanged( input->isReadOnly() );
+
+    QEvent event( QEvent::ReadOnlyChange );
+    QCoreApplication::sendEvent( input, &event );
+}
+
 static inline void qskBindSignals(
     const QQuickTextInput* wrappedInput, QskTextInput* input )
 {
@@ -37,7 +45,7 @@ static inline void qskBindSignals(
         input, &QskTextInput::inputMaskChanged );
 
     QObject::connect( wrappedInput, &QQuickTextInput::readOnlyChanged,
-        input, &QskTextInput::readOnlyChanged );
+        input, [ input ] { qskPropagateReadOnly( input ); } );
 
 #if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 )
     QObject::connect( wrappedInput, &QQuickTextInput::overwriteModeChanged,
