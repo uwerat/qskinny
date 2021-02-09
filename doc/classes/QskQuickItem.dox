@@ -28,7 +28,7 @@
         strategies ( QQmlIncubator ) the DeferredUpdate flag offers a much simpler
         and obvious solution: don't instantiate before really needed.
 
-    \sa QQuickItem::isVisible()
+    \saqt QQuickItem::isVisible()
 
     \note Some more advanced algorithms have not yet been implemented,
           such as viewport frustrum culling (i.e. hiding items outside of the
@@ -36,16 +36,15 @@
 
     \var QskQuickItem::UpdateFlag QskQuickItem::DeferredPolish
 
-        Polishing an item ( QQuickItem::polish() ) is blocked when being invisible.
+        Polishing an item is blocked when being invisible.
         F.e for all items being derived from QskControl the layout calculations
         happen during polishing.
 
-    \sa QQuickItem::updatePolish()
+    \saqt QQuickItem::updatePolish(), QQuickItem::polish()
 
     \var QskQuickItem::UpdateFlag QskQuickItem::DeferredLayout
 
-        Recalculations of the implicitSize are blocked until being explicitely requested by
-        QQuickItem::implicitSize().
+        Recalculations of the implicitSize are blocked until being explicitely requested. 
 
 		When being enabled the item indicates layout relevant changes by
         sending a QEvent::LayoutRequest ( similar to QWidget ) to its parent item
@@ -58,12 +57,15 @@
           ( f.e anchors ) do require immediate updates of the implicit size. 
 
     \sa QskQuickItem::resetImplicitSize()
+    \saqt QQuickItem::implicitSize()
 
     \var QskQuickItem::UpdateFlag QskQuickItem::CleanupOnVisibility
 
-        Delete scene graph nodes, when the item becomes hidden ( QQuickItem::isVisible() ).
+        Delete scene graph nodes, when the item becomes hidden.
         Enabling this mode will reduce the memory footprint, but comes at the cost
         of having to recreate nodes once the item gets shown again.
+
+    \saqt QQuickItem::isVisible()
 
     \var QskQuickItem::UpdateFlag QskQuickItem::PreferRasterForTextures
 
@@ -76,7 +78,7 @@
 
     \note This flag is useful when analyzing layouts.
 
-    \sa updateFlags(), setUpdateFlags(), resetUpdateFlags()
+    \sa updateFlags(), resetUpdateFlags()
         testUpdateFlag(), setUpdateFlag(), resetUpdateFlag()
 */
 
@@ -118,6 +120,7 @@
     with the first child instead of leaving the popup, when reaching its end.
 
     \sa isTabFence(), QQuickItem::ItemIsFocusScope
+    \saqt QQuickItem::ItemIsFocusScope
 */
 
 /*!
@@ -133,7 +136,8 @@
     it is necessary to know which children would stay hidden when the container
     becomes visible.
 
-    \sa isVisibleToParent(), QQuickItem::setVisible()
+    \sa isVisibleToParent()
+    \saqt QQuickItem::setVisible()
 */
 
 /*!
@@ -164,7 +168,20 @@
 
     A property indicating if the item has child items.
 
-    \sa QQuickItem::childItems(), QQuickItem::parentItem()
+    \saqt QQuickItem::childItems(), QQuickItem::parentItem()
+*/
+
+/*!
+    \var QskQuickItem::updateFlags
+
+	QskQuickItem offers several tweaks to the Qt/Quick update cycle,
+    that can be en/disabled individually.
+
+	The flags are a combination from bits that have been explicitly set
+	by setUpdateFlag() and those being derived from the aapplication
+	wide default settings, that can be set with QskSetup.
+	
+    \sa QskQuickItem::UpdateFlag, QskQuickItem::updateFlags(), QskSetup::itemUpdateFlags()
 */
 
 /*!
@@ -206,9 +223,10 @@
     one of its ancestors has been hidden. isVisibleToParent() indicates
     the first situation.
     
-    \return true once QQuickItem::setVisible( false ) has been called
+    \return true once setVisible( false ) has been called
 
-	\sa visibleToParent, QQuickItem::setVisible()
+	\sa visibleToParent
+	\saqt QQuickItem::setVisible()
 */
 
 /*!
@@ -228,7 +246,8 @@
 	\param width Width
 	\param height Height
 
-	\sa geometry(), geometryChange(), QQuickItem::size(), QQuickItem::position()
+	\sa geometry(), geometryChange()
+	\saqt QQuickItem::size(), QQuickItem::position()
 */
 
 /*!
@@ -238,7 +257,8 @@
 
     \param rect Geometry relative to the parent item
 
-	\sa geometry(), geometryChange(), QQuickItem::size(), QQuickItem::position()
+	\sa geometry(), geometryChange()
+	\saqt QQuickItem::size(), QQuickItem::position()
 */
 
 /*!
@@ -280,8 +300,8 @@
     \note Layout code that relies on property bindings of the implicit width a height
           needs to disable the QskQuickItem::DeferredLayout flag
 
-    \sa QQuickItem::implicitWidth(), QQuickItem::implicitHeight(),
-        QskControl::preferredSize(), QskControl::sizeHint()
+    \sa QskControl::preferredSize(), QskControl::sizeHint()
+	\saqt QQuickItem::implicitWidth(), QQuickItem::implicitHeight()
 */
 
 /*!
@@ -372,52 +392,71 @@
 */
 
 /*!
-    \fn QskQuickItem::setUpdateFlags
-
-	bla
-*/
-
-/*!
     \fn QskQuickItem::resetUpdateFlags
 
-	bla
+	Reset all flags to the default settings 
+
+    \sa QskSetup::itemUpdateFlags(), updateFlags(), updateFlags
 */
 
 /*!
-    \fn QskQuickItem::updateFlags
+    \fn QskQuickItem::updateFlags() const
 
-	bla
+	\return Flags affecting the item update process
+	\sa testUpdateFlag(), setUpdateFlag(), updateFlags
 */
 
 /*!
     \fn QskQuickItem::setUpdateFlag
 
-	bla
+	QskQuickItem offers several tweaks to the Qt/Quick update cycle,
+	that can be en/disables individually.
+
+    The default settings for these flags are taken from QskSetup::itemUpdateFlags()
+	When calling setUpdateFlag() the value for the particular flag is decoupled
+	from the corresponding default bit - even if both bits have the same value.
+    This can be reverted by calling resetUpdateFlag()
+
+	\param flag Flag affecting the item update process
+	\param on En/Disable the behaviour related to the flag
+
+	\sa QskSetup::itemUpdateFlags(), testUpdateFlag(). updateFlags
 */
 
 /*!
     \fn QskQuickItem::resetUpdateFlag
 
-	bla
+	Reset the value for flag to the default settings from QskSetup. Future
+	changes of the corresponding bit with QskSetup::setItemUpdateFlag() will affect
+	the behaviour of this item.
+
+	\param flag Flag affecting the item update process
+	\sa QskSetup::itemUpdateFlags(), updateFlags(), testUpdateFlag(), updateFlags
 */
 
 /*!
     \fn QskQuickItem::testUpdateFlag
 
-	bla
+	\param Flag affecting the item update process
+	\return true, when the corresponding bit is effective
+
+	\sa setUpdateFlag(), QskSetup::itemUpdateFlag(), updateFlags
 */
 
 /*!
     \fn QskQuickItem::updateFlagsChanged
 
-	bla
+	Signal indicating, that the effective update flags have changed
+
+	\param flags Effective flags, might be derived in parts from QskSetup::itemUpdateFlags()
+	\sa updateFlags
 */
 
 /*!
     \fn QskQuickItem::classBegin
 
 	The QML engine initilizes an item as being incomplete by
-    explicitely calling QQuickItem::classBegin(). Once the item
+    explicitely calling classBegin(). Once the item
     has been constructed componentComplete() is called. This way
     temporary operations during the construction can be avoided.
     
@@ -427,7 +466,8 @@
 	The overloaded version calls the base class and has no
     purpose beside being an entry point for debugging.
     
-    \sa componentComplete(), QQuickItem::isComponentComplete()
+    \sa componentComplete()
+    \saqt QQuickItem::classBegin, QQuickItem::isComponentComplete()
 */
 
 /*!
@@ -444,7 +484,8 @@
 	The overloaded does some sanity checks in debug mode
 	and calls the base class.
 
-	\sa classBegin(), QQuickItem::isComponentComplete()
+	\sa classBegin()
+    \saqt QQuickItem::isComponentComplete(), QQuickItem::componentComplete
 */
 
 /*!
@@ -463,7 +504,8 @@
 
 	\return True, if the item will be polished in the next
             scene graph update cycle.
-	\sa QQuickItem::polish(), isUpdateNodeScheduled()
+	\sa isUpdateNodeScheduled()
+	\saqt QQuickItem::polish()
 */
 
 /*!
@@ -482,10 +524,26 @@
 
 /*!
     \fn QskQuickItem::maybeUnresized
+
+	Flag indicating a potential state, where the item is waiting to be
+	sized by the layout system.
+
+    Unfortunately the list of items to-be-polished is not processed
+    in top/down order and a container might be requested to calculate
+	the geometries for its children before having a proper size itself.
+
+	Some of these situations can be avoided by ignoring these requests
+	depending on the maybeUnresized flag. 
 */
 
 /*!
     \fn QskQuickItem::itemFlagsChanged
+
+	Signal indicating that at least one if the following attributes has changed:
+
+	- transparentForPositioners
+	- tabFence
+	- polishOnResize
 */
 
 /*!
@@ -514,7 +572,8 @@
 	\param on If true the item becomes visible if its parent is visible.
               Otherwise the item is hidden.
 
-	\sa QQuickItem::isVisible(), visibleToParent
+	\sa visibleToParent
+	\saqt QQuickItem::isVisible(), visibleToParent
 */
 
 /*!
@@ -533,10 +592,25 @@
 
 /*!
     \fn QskQuickItem::event
+
+    QskQuickItem handles the additional type of events.
+
+	\param event Qt event
 */
 
 /*!
     \fn QskQuickItem::changeEvent
+
+	This event handler can be reimplemented to handle state changes.
+
+	Change events include:
+
+		- QEvent::StyleChange
+		- QEvent::ContentsRectChange
+		- QEvent::EnabledChange
+		- QEvent::ReadOnlyChange
+		- QEvent::LocaleChange
+		- QEvent::ParentChange
 */
 
 /*!
@@ -550,20 +624,46 @@
 
     \param event Event indicating the geometry change
 
-    \sa QObject::installEventFilter(), geometryChange()
+    \sa geometryChange()
+    \saqt QObject::installEventFilter()
 */
 
 /*!
     \fn QskQuickItem::windowChangeEvent
 
+	This event handler can be reimplemented to handle situations, where
+	an item is added, removed or transferred between windows. It corresponds
+	to the QQuickItem::ItemSceneChange notification, but is more convenient:
+
+    - being an event it can be processed by event filtering
+    - the previous window is available 
+
+	\param event Event with the old/new windows
 */
 
 /*!
     \fn QskQuickItem::itemChange
+
+    For no obvious reason Qt/Quick has introduced an additional callback
+    mechanism beside events and signals.
+
+	\param change Indicator, to identify what has changed
+    \param changeData Extra information relating to the change
+
+	\note It is recommended to avoid using this type of notifications where possible.
+          Netter rely on overloading the corresponding  event handlers, what allows
+          application code to make use of convenient and well established concepts
+          like event filtering ( QObject::installEventFilter() ).
+
+    \note If you re-implement this method in a subclass, be sure to call
+          the overloaded method of the base class.
+
+	\sa event()
+	\saqt QQuickItem::itemChange()
 */
 
 /*!
-    void \fn QskQuickItem::aboutToShow
+    \fn QskQuickItem::aboutToShow
 
     A specific hook that is intended to be overloaded by controls that need
     to do some specific operations, when an item is painted the first time
@@ -571,6 +671,7 @@
 
     The default implementation is a no operation.
 
-    \sa initiallyPainted, QQuickItem::setVisible()
+    \sa initiallyPainted
+    \saqt QQuickItem::setVisible()
 */
 

@@ -262,7 +262,8 @@ TAB_SIZE               = 4
 ALIASES                = "accessors=\par Access functions:^^" \
                          "subcontrols=\par Subcontrols:^^" \
                          "states=\par States:^^" \
-                         "skinlet=\par Default Skinlet:^^"
+                         "skinlet=\par Default Skinlet:^^" \
+                         "saqt=\sa ^^"
 
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C sources
 # only. Doxygen will then generate output that is more tailored for C. For
