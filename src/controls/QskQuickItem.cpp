@@ -453,15 +453,6 @@ QskQuickItem::UpdateFlags QskQuickItem::updateFlags() const
     return UpdateFlags( d_func()->updateFlags );
 }
 
-void QskQuickItem::setUpdateFlags( UpdateFlags flags )
-{
-    Q_D( QskQuickItem );
-
-    // set all bits in the mask
-    d->updateFlagsMask = std::numeric_limits< decltype( d->updateFlagsMask ) >::max();
-    d->applyUpdateFlags( flags );
-}
-
 void QskQuickItem::resetUpdateFlags()
 {
     Q_D( QskQuickItem );
@@ -618,11 +609,19 @@ bool QskQuickItem::event( QEvent* event )
             changeEvent( event );
             return true;
         }
-        case QEvent::EnabledChange:
+#if 1
+        /*
+            Font/Palette changes do not fit conceptually into the themeing
+            system of qskinny. Nevertheless we are handling the corresponding
+            events - whatever it is good for.
+         */
         case QEvent::FontChange:
         case QEvent::PaletteChange:
-        case QEvent::LocaleChange:
+#endif
+
         case QEvent::ReadOnlyChange:
+        case QEvent::EnabledChange:
+        case QEvent::LocaleChange:
         case QEvent::ParentChange:
         {
             changeEvent( event );
@@ -663,17 +662,17 @@ void QskQuickItem::changeEvent( QEvent* )
 }
 
 void QskQuickItem::itemChange( QQuickItem::ItemChange change,
-    const QQuickItem::ItemChangeData& value )
+    const QQuickItem::ItemChangeData& changeData )
 {
     switch ( change )
     {
         case QQuickItem::ItemSceneChange:
         {
-            if ( value.window )
+            if ( changeData.window )
             {
                 Q_D( const QskQuickItem );
                 if ( d->updateFlags & QskQuickItem::DeferredUpdate )
-                    qskFilterWindow( value.window );
+                    qskFilterWindow( changeData.window );
             }
 
 #if 1
@@ -696,7 +695,7 @@ void QskQuickItem::itemChange( QQuickItem::ItemChange change,
 #endif
 
 #if 1
-            if ( value.window == nullptr )
+            if ( changeData.window == nullptr )
             {
                 Q_D( QskQuickItem );
 
@@ -716,7 +715,7 @@ void QskQuickItem::itemChange( QQuickItem::ItemChange change,
             }
 #endif
 
-            QskWindowChangeEvent event( oldWindow, value.window );
+            QskWindowChangeEvent event( oldWindow, changeData.window );
             QCoreApplication::sendEvent( this, &event );
 
             break;
@@ -739,7 +738,7 @@ void QskQuickItem::itemChange( QQuickItem::ItemChange change,
                 done here are totally pointless. TODO ...
              */
 #endif
-            if ( value.boolValue )
+            if ( changeData.boolValue )
             {
                 if ( d->blockedPolish )
                     polish();
@@ -779,17 +778,21 @@ void QskQuickItem::itemChange( QQuickItem::ItemChange change,
         case QQuickItem::ItemParentHasChanged:
         case QQuickItem::ItemChildAddedChange:
         case QQuickItem::ItemChildRemovedChange:
-        case ItemOpacityHasChanged:
-        case ItemActiveFocusHasChanged:
-        case ItemRotationHasChanged:
-        case ItemAntialiasingHasChanged:
-        case ItemDevicePixelRatioHasChanged:
+        {
+            // do we want to have events for thos ???
+            break;
+        }
+        case QQuickItem::ItemOpacityHasChanged:
+        case QQuickItem::ItemActiveFocusHasChanged:
+        case QQuickItem::ItemRotationHasChanged:
+        case QQuickItem::ItemAntialiasingHasChanged:
+        case QQuickItem::ItemDevicePixelRatioHasChanged:
         {
             break;
         }
     }
 
-    Inherited::itemChange( change, value );
+    Inherited::itemChange( change, changeData );
 }
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )

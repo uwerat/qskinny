@@ -33,6 +33,8 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
     Q_PROPERTY( bool hasChildItems READ hasChildItems )
     Q_PROPERTY( bool initiallyPainted READ isInitiallyPainted )
 
+    Q_PROPERTY( UpdateFlags updateFlags READ updateFlags NOTIFY updateFlagsChanged )
+
     using Inherited = QQuickItem;
 
   public:
@@ -82,7 +84,6 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
     void resetLayoutMirroring();
     bool layoutMirroring() const;
 
-    void setUpdateFlags( UpdateFlags );
     void resetUpdateFlags();
     UpdateFlags updateFlags() const;
 
