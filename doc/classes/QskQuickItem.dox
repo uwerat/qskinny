@@ -9,14 +9,14 @@
  */
 
 /*!
-    \enum QskQuickItem::Flag
+    \enum QskQuickItem::UpdateFlag
 
     Qt/Quick classes have a tendency to update items too early
     and too often. To avoid processing of unwanted operations
     QskQuickItem implements a couple of modifications, that
     can be en/disabled individually.
 
-    \var QskQuickItem::Flag QskQuickItem::DeferredUpdate
+    \var QskQuickItem::UpdateFlag QskQuickItem::DeferredUpdate
 
         Creating of sceme graph nodes is blocked when being invisible.
 
@@ -34,7 +34,7 @@
           such as viewport frustrum culling (i.e. hiding items outside of the
           window geometry).
 
-    \var QskQuickItem::Flag QskQuickItem::DeferredPolish
+    \var QskQuickItem::UpdateFlag QskQuickItem::DeferredPolish
 
         Polishing an item ( QQuickItem::polish() ) is blocked when being invisible.
         F.e for all items being derived from QskControl the layout calculations
@@ -42,7 +42,7 @@
 
     \sa QQuickItem::updatePolish()
 
-    \var QskQuickItem::Flag QskQuickItem::DeferredLayout
+    \var QskQuickItem::UpdateFlag QskQuickItem::DeferredLayout
 
         Recalculations of the implicitSize are blocked until being explicitely requested by
         QQuickItem::implicitSize().
@@ -59,25 +59,25 @@
 
     \sa QskQuickItem::resetImplicitSize()
 
-    \var QskQuickItem::Flag QskQuickItem::CleanupOnVisibility
+    \var QskQuickItem::UpdateFlag QskQuickItem::CleanupOnVisibility
 
         Delete scene graph nodes, when the item becomes hidden ( QQuickItem::isVisible() ).
         Enabling this mode will reduce the memory footprint, but comes at the cost
         of having to recreate nodes once the item gets shown again.
 
-    \var QskQuickItem::Flag QskQuickItem::PreferRasterForTextures
+    \var QskQuickItem::UpdateFlag QskQuickItem::PreferRasterForTextures
 
         When creating textures from QskGraphic, prefer the raster paint
         engine over the OpenGL paint engine.
 
-    \var QskQuickItem::Flag QskQuickItem::DebugForceBackground
+    \var QskQuickItem::UpdateFlag QskQuickItem::DebugForceBackground
 
         Always fill the background of the item with a random color.
 
     \note This flag is useful when analyzing layouts.
 
-    \sa controlFlags(), setControlFlags(), resetControlFlags()
-        testControlFlag(), setControlFlag(), resetControlFlag()
+    \sa updateFlags(), setUpdateFlags(), resetUpdateFlags()
+        testUpdateFlag(), setUpdateFlag(), resetUpdateFlag()
 */
 
 /*!
@@ -372,43 +372,43 @@
 */
 
 /*!
-    \fn QskQuickItem::setControlFlags
+    \fn QskQuickItem::setUpdateFlags
 
 	bla
 */
 
 /*!
-    \fn QskQuickItem::resetControlFlags
+    \fn QskQuickItem::resetUpdateFlags
 
 	bla
 */
 
 /*!
-    \fn QskQuickItem::controlFlags
+    \fn QskQuickItem::updateFlags
 
 	bla
 */
 
 /*!
-    \fn QskQuickItem::setControlFlag
+    \fn QskQuickItem::setUpdateFlag
 
 	bla
 */
 
 /*!
-    \fn QskQuickItem::resetControlFlag
+    \fn QskQuickItem::resetUpdateFlag
 
 	bla
 */
 
 /*!
-    \fn QskQuickItem::testControlFlag
+    \fn QskQuickItem::testUpdateFlag
 
 	bla
 */
 
 /*!
-    \fn QskQuickItem::controlFlagsChanged
+    \fn QskQuickItem::updateFlagsChanged
 
 	bla
 */

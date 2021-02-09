@@ -28,17 +28,11 @@ static inline void qskSendEventTo( QObject* object, QEvent::Type type )
     QCoreApplication::sendEvent( object, &event );
 }
 
-static inline void qskUpdateControlFlags(
-    QskQuickItem::Flags flags, QskQuickItem* item )
+static inline void qskApplyUpdateFlags(
+    QskQuickItem::UpdateFlags flags, QskQuickItem* item )
 {
     auto d = static_cast< QskQuickItemPrivate* >( QskQuickItemPrivate::get( item ) );
-    d->updateControlFlags( flags );
-}
-
-static inline quint16 qskControlFlags()
-{
-    // we are only interested in the first 8 bits
-    return static_cast< quint16 >( qskSetup->controlFlags() );
+    d->applyUpdateFlags( flags );
 }
 
 static inline void qskFilterWindow( QQuickWindow* window )
@@ -61,7 +55,7 @@ namespace
                 Its faster and saves some memory to have this registry instead
                 of setting up direct connections between qskSetup and each control
              */
-            QObject::connect( qskSetup, &QskSetup::controlFlagsChanged,
+            QObject::connect( qskSetup, &QskSetup::itemUpdateFlagsChanged,
                 qskSetup, [ this ] { updateControlFlags(); } );
 
             QObject::connect( qskSetup, &QskSetup::skinChanged,
@@ -80,10 +74,10 @@ namespace
 
         void updateControlFlags()
         {
-            const auto flags = static_cast< QskQuickItem::Flags >( qskControlFlags() );
+            const auto flags = qskSetup->itemUpdateFlags();
 
             for ( auto item : m_items )
-                qskUpdateControlFlags( flags, item );
+                qskApplyUpdateFlags( flags, item );
         }
 
         void updateSkin()
@@ -162,7 +156,7 @@ QskQuickItem::QskQuickItem( QskQuickItemPrivate& dd, QQuickItem* parent )
         this, &QskQuickItem::sendEnabledChangeEvent );
 #endif
 
-    if ( dd.controlFlags & QskQuickItem::DeferredUpdate )
+    if ( dd.updateFlags & QskQuickItem::DeferredUpdate )
         qskFilterWindow( window() );
 
     qskRegistry->insert( this );
@@ -201,7 +195,7 @@ void QskQuickItem::componentComplete()
 #if defined( QT_DEBUG )
     if ( qobject_cast< const QQuickBasePositioner* >( parent() ) )
     {
-        if ( d_func()->controlFlags & QskQuickItem::DeferredLayout )
+        if ( d_func()->updateFlags & QskQuickItem::DeferredLayout )
         {
             qWarning( "QskQuickItem in DeferredLayout mode under control of a positioner" );
         }
@@ -454,76 +448,73 @@ bool QskQuickItem::maybeUnresized() const
     return false;
 }
 
-QskQuickItem::Flags QskQuickItem::controlFlags() const
+QskQuickItem::UpdateFlags QskQuickItem::updateFlags() const
 {
-    return QskQuickItem::Flags( d_func()->controlFlags );
+    return UpdateFlags( d_func()->updateFlags );
 }
 
-void QskQuickItem::setControlFlags( Flags flags )
+void QskQuickItem::setUpdateFlags( UpdateFlags flags )
 {
     Q_D( QskQuickItem );
 
     // set all bits in the mask
-    d->controlFlagsMask = std::numeric_limits< quint16 >::max();
-    d->updateControlFlags( flags );
+    d->updateFlagsMask = std::numeric_limits< decltype( d->updateFlagsMask ) >::max();
+    d->applyUpdateFlags( flags );
 }
 
-void QskQuickItem::resetControlFlags()
+void QskQuickItem::resetUpdateFlags()
 {
     Q_D( QskQuickItem );
 
     // clear all bits in the mask
-    d->controlFlagsMask = 0;
-    d->updateControlFlags( static_cast< Flags >( qskControlFlags() ) );
+    d->updateFlagsMask = 0;
+    d->applyUpdateFlags( qskSetup->itemUpdateFlags() );
 }
 
-void QskQuickItem::setControlFlag( Flag flag, bool on )
+void QskQuickItem::setUpdateFlag( UpdateFlag flag, bool on )
 {
     Q_D( QskQuickItem );
 
-    d->controlFlagsMask |= flag;
+    d->updateFlagsMask |= flag;
 
-    if ( ( d->controlFlags & flag ) != on )
+    if ( testUpdateFlag( flag ) != on )
     {
-        updateControlFlag( flag, on );
-        Q_EMIT controlFlagsChanged();
+        applyUpdateFlag( flag, on );
+        Q_EMIT updateFlagsChanged( updateFlags() );
     }
 }
 
-void QskQuickItem::resetControlFlag( Flag flag )
+void QskQuickItem::resetUpdateFlag( UpdateFlag flag )
 {
     Q_D( QskQuickItem );
 
-    d->controlFlagsMask &= ~flag;
+    d->updateFlagsMask &= ~flag;
 
-    const bool on = qskSetup->testControlFlag( static_cast< QskSetup::Flag >( flag ) );
+    const bool on = qskSetup->testItemUpdateFlag( flag );
 
-    if ( ( d->controlFlags & flag ) != on )
+    if ( testUpdateFlag( flag ) != on )
     {
-        updateControlFlag( flag, on );
-        Q_EMIT controlFlagsChanged();
+        applyUpdateFlag( flag, on );
+        Q_EMIT updateFlagsChanged( updateFlags() );
     }
 }
 
-bool QskQuickItem::testControlFlag( Flag flag ) const
+bool QskQuickItem::testUpdateFlag( UpdateFlag flag ) const
 {
-    return d_func()->controlFlags & flag;
+    return d_func()->updateFlags & flag;
 }
 
-void QskQuickItem::updateControlFlag( uint flag, bool on )
+void QskQuickItem::applyUpdateFlag( UpdateFlag flag, bool on )
 {
     Q_D( QskQuickItem );
 
-    if ( ( flag > std::numeric_limits< quint16 >::max() ) ||
-        ( bool( d->controlFlags & flag ) == on ) )
-    {
+    if ( testUpdateFlag( flag ) == on )
         return;
-    }
 
     if ( on )
-        d->controlFlags |= flag;
+        d->updateFlags |= flag;
     else
-        d->controlFlags &= ~flag;
+        d->updateFlags &= ~flag;
 
     switch ( flag )
     {
@@ -584,7 +575,7 @@ void QskQuickItem::resetImplicitSize()
 {
     Q_D( QskQuickItem );
 
-    if ( d->controlFlags & QskQuickItem::DeferredLayout )
+    if ( d->updateFlags & QskQuickItem::DeferredLayout )
     {
         d->blockedImplicitSize = true;
         d->layoutConstraintChanged();
@@ -681,7 +672,7 @@ void QskQuickItem::itemChange( QQuickItem::ItemChange change,
             if ( value.window )
             {
                 Q_D( const QskQuickItem );
-                if ( d->controlFlags & QskQuickItem::DeferredUpdate )
+                if ( d->updateFlags & QskQuickItem::DeferredUpdate )
                     qskFilterWindow( value.window );
             }
 
@@ -753,7 +744,7 @@ void QskQuickItem::itemChange( QQuickItem::ItemChange change,
                 if ( d->blockedPolish )
                     polish();
 
-                if ( d->controlFlags & QskQuickItem::DeferredUpdate )
+                if ( d->updateFlags & QskQuickItem::DeferredUpdate )
                 {
                     if ( d->dirtyAttributes && ( d->flags & QQuickItem::ItemHasContents ) )
                         update();
@@ -761,7 +752,7 @@ void QskQuickItem::itemChange( QQuickItem::ItemChange change,
             }
             else
             {
-                if ( d->controlFlags & QskQuickItem::CleanupOnVisibility )
+                if ( d->updateFlags & QskQuickItem::CleanupOnVisibility )
                     d->cleanupNodes();
 
                 d->initiallyPainted = false;
@@ -835,7 +826,7 @@ void QskQuickItem::updatePolish()
 {
     Q_D( QskQuickItem );
 
-    if ( d->controlFlags & QskQuickItem::DeferredPolish )
+    if ( d->updateFlags & QskQuickItem::DeferredPolish )
     {
         if ( !isVisible() )
         {
@@ -873,7 +864,7 @@ QSGNode* QskQuickItem::updatePaintNode( QSGNode* node, UpdatePaintNodeData* data
 
     Q_D( QskQuickItem );
 
-    Q_ASSERT( isVisible() || !( d->controlFlags & QskQuickItem::DeferredUpdate ) );
+    Q_ASSERT( isVisible() || !( d->updateFlags & QskQuickItem::DeferredUpdate ) );
 
     d->initiallyPainted = true;
 

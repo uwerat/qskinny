@@ -36,7 +36,7 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
     using Inherited = QQuickItem;
 
   public:
-    enum Flag
+    enum UpdateFlag
     {
         DeferredUpdate          =  1 << 0,
         DeferredPolish          =  1 << 1,
@@ -48,8 +48,8 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
         DebugForceBackground    =  1 << 7
     };
 
-    Q_ENUM( Flag )
-    Q_DECLARE_FLAGS( Flags, Flag )
+    Q_ENUM( UpdateFlag )
+    Q_DECLARE_FLAGS( UpdateFlags, UpdateFlag )
 
     ~QskQuickItem() override;
 
@@ -82,13 +82,13 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
     void resetLayoutMirroring();
     bool layoutMirroring() const;
 
-    void setControlFlags( Flags );
-    void resetControlFlags();
-    Flags controlFlags() const;
+    void setUpdateFlags( UpdateFlags );
+    void resetUpdateFlags();
+    UpdateFlags updateFlags() const;
 
-    Q_INVOKABLE void setControlFlag( Flag, bool on = true );
-    Q_INVOKABLE void resetControlFlag( Flag );
-    Q_INVOKABLE bool testControlFlag( Flag ) const;
+    Q_INVOKABLE void setUpdateFlag( UpdateFlag, bool on = true );
+    Q_INVOKABLE void resetUpdateFlag( UpdateFlag );
+    Q_INVOKABLE bool testUpdateFlag( UpdateFlag ) const;
 
     void classBegin() override;
     void componentComplete() override;
@@ -102,7 +102,7 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
 
   Q_SIGNALS:
     void itemFlagsChanged();
-    void controlFlagsChanged();
+    void updateFlagsChanged( UpdateFlags );
 
   public Q_SLOTS:
     void setGeometry( const QRectF& );
@@ -144,7 +144,7 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
      */
     void childrenRect() = delete;
 
-    void updateControlFlag( uint flag, bool on );
+    void applyUpdateFlag( UpdateFlag, bool on );
     void sendEnabledChangeEvent();
 
     QSGNode* updatePaintNode( QSGNode*, UpdatePaintNodeData* ) override final;
@@ -180,7 +180,7 @@ inline QSizeF QskQuickItem::implicitSize() const
     return QSizeF( implicitWidth(), implicitHeight() );
 }
 
-Q_DECLARE_OPERATORS_FOR_FLAGS( QskQuickItem::Flags )
-Q_DECLARE_METATYPE( QskQuickItem::Flags )
+Q_DECLARE_OPERATORS_FOR_FLAGS( QskQuickItem::UpdateFlags )
+Q_DECLARE_METATYPE( QskQuickItem::UpdateFlags )
 
 #endif

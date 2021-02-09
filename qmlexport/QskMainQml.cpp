@@ -23,8 +23,8 @@ QskMain::QskMain( QObject* parent )
     connect( setup(), &QskSetup::skinChanged,
         this, &QskMain::skinChanged, Qt::QueuedConnection );
 
-    connect( setup(), &QskSetup::controlFlagsChanged,
-        this, &QskMain::controlFlagsChanged, Qt::QueuedConnection );
+    connect( setup(), &QskSetup::itemUpdateFlagsChanged,
+        this, &QskMain::itemUpdateFlagsChanged, Qt::QueuedConnection );
 }
 
 QStringList QskMain::skinList() const

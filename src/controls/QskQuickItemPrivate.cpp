@@ -6,12 +6,6 @@
 #include "QskQuickItemPrivate.h"
 #include "QskSetup.h"
 
-static inline quint16 qskControlFlags()
-{
-    // we are only interested in the first 8 bits
-    return static_cast< quint16 >( qskSetup->controlFlags() );
-}
-
 static inline void qskSendEventTo( QObject* object, QEvent::Type type )
 {
     QEvent event( type );
@@ -19,15 +13,15 @@ static inline void qskSendEventTo( QObject* object, QEvent::Type type )
 }
 
 QskQuickItemPrivate::QskQuickItemPrivate()
-    : controlFlags( qskControlFlags() )
-    , controlFlagsMask( 0 )
+    : updateFlags( qskSetup->itemUpdateFlags() )
+    , updateFlagsMask( 0 )
     , polishOnResize( false )
     , blockedPolish( false )
     , blockedImplicitSize( true )
     , clearPreviousNodes( false )
     , initiallyPainted( false )
 {
-    if ( controlFlags & QskQuickItem::DeferredLayout )
+    if ( updateFlags & QskQuickItem::DeferredLayout )
     {
         /*
             In general the geometry of an item should be the job of
@@ -57,26 +51,21 @@ void QskQuickItemPrivate::mirrorChange()
     qskSendEventTo( q_func(), QEvent::LayoutDirectionChange );
 }
 
-void QskQuickItemPrivate::updateControlFlags( QskQuickItem::Flags flags )
+void QskQuickItemPrivate::applyUpdateFlags( QskQuickItem::UpdateFlags flags )
 {
-    const auto oldFlags = controlFlags;
-    const auto newFlags = static_cast< quint16 >( flags );
+    if ( flags == updateFlags )
+        return;
 
-    if ( oldFlags != newFlags )
+    Q_Q( QskQuickItem );
+
+    Q_STATIC_ASSERT( sizeof( updateFlags ) == 1 );
+    for ( uint i = 0; i < 8; i++ )
     {
-        Q_Q( QskQuickItem );
-
-        const auto numBits = qCountTrailingZeroBits(
-            static_cast< quint32 >( QskQuickItem::DebugForceBackground ) );
-
-        for ( quint32 i = 0; i <= numBits; ++i )
-        {
-            const quint32 flag = ( 1 << i );
-            q->updateControlFlag( flag, flags & flag );
-        }
-
-        Q_EMIT q->controlFlagsChanged();
+        const auto flag = static_cast< QskQuickItem::UpdateFlag >( 1 << i );
+        q->applyUpdateFlag( flag, flags & flag );
     }
+
+    Q_EMIT q->updateFlagsChanged( q->updateFlags() );
 }
 
 void QskQuickItemPrivate::layoutConstraintChanged()

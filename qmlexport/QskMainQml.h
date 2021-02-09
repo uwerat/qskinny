@@ -13,14 +13,14 @@
 #include <qobject.h>
 #include <qqmllist.h>
 
-class QskSetupFlagsQml : public QskSetup::Flags
+class QskSetupFlagsQml : public QskQuickItem::UpdateFlags
 {
     Q_GADGET
 
   public:
     template< typename... Args >
     QskSetupFlagsQml( Args&&... args )
-        : QskSetup::Flags( std::forward< Args >( args )... )
+        : QskQuickItem::UpdateFlags( std::forward< Args >( args )... )
     {
     }
 
@@ -37,8 +37,8 @@ class QskMain : public QObject
 
     Q_PROPERTY( QStringList skinList READ skinList NOTIFY skinListChanged )
 
-    Q_PRIVATE_PROPERTY( setup(), QskSetupFlagsQml controlFlags
-        READ controlFlags WRITE setControlFlags NOTIFY controlFlagsChanged )
+    Q_PRIVATE_PROPERTY( setup(), QskSetupFlagsQml itemUpdateFlags
+        READ itemUpdateFlags WRITE setItemUpdateFlags NOTIFY itemUpdateFlagsChanged )
 
     Q_PROPERTY( QQmlListProperty< QObject > data READ data )
     Q_CLASSINFO( "DefaultProperty", "data" )
@@ -53,7 +53,7 @@ class QskMain : public QObject
     void skinListChanged(); // never emitted
     void skinChanged();
     void inputPanelChanged();
-    void controlFlagsChanged();
+    void itemUpdateFlagsChanged();
 
   private:
     static inline QskSetup* setup() { return QskSetup::instance(); }

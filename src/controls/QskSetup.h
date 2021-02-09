@@ -4,13 +4,12 @@
  *****************************************************************************/
 
 #ifndef QSK_SETUP_H
-#define QSK_SETUP_H 1
+#define QSK_SETUP_H
 
 #include "QskGlobal.h"
+#include "QskQuickItem.h"
 
 #include <qobject.h>
-#include <qqml.h>
-
 #include <memory>
 
 class QskSkin;
@@ -30,33 +29,19 @@ class QSK_EXPORT QskSetup : public QObject
     Q_OBJECT
 
   public:
-    enum Flag
-    {
-        DeferredUpdate          =  1 << 0,
-        DeferredPolish          =  1 << 1,
-        DeferredLayout          =  1 << 2,
-        CleanupOnVisibility     =  1 << 3,
-
-        PreferRasterForTextures =  1 << 4,
-
-        DebugForceBackground    =  1 << 7
-    };
-
-    Q_ENUM( Flag )
-    Q_DECLARE_FLAGS( Flags, Flag )
 
     static QskSetup* instance();
 
-    Q_INVOKABLE void setControlFlags( Flags );
-    Q_INVOKABLE void resetControlFlags();
-    Q_INVOKABLE Flags controlFlags() const;
+    void setItemUpdateFlags( QskQuickItem::UpdateFlags );
+    void resetItemUpdateFlags();
+    QskQuickItem::UpdateFlags itemUpdateFlags() const;
 
-    Q_INVOKABLE void setControlFlag( Flag, bool on = true );
-    Q_INVOKABLE void resetControlFlag( Flag );
-    Q_INVOKABLE bool testControlFlag( Flag );
+    void setItemUpdateFlag( QskQuickItem::UpdateFlag, bool on = true );
+    void resetItemUpdateFlag( QskQuickItem::UpdateFlag );
+    bool testItemUpdateFlag( QskQuickItem::UpdateFlag );
 
-    Q_INVOKABLE QskSkin* setSkin( const QString& );
-    Q_INVOKABLE QString skinName() const;
+    QskSkin* setSkin( const QString& );
+    QString skinName() const;
 
     QskSkin* skin();
 
@@ -73,7 +58,7 @@ class QSK_EXPORT QskSetup : public QObject
 
   Q_SIGNALS:
     void skinChanged( QskSkin* );
-    void controlFlagsChanged();
+    void itemUpdateFlagsChanged();
 
   private:
     QskSetup();
@@ -87,15 +72,10 @@ class QSK_EXPORT QskSetup : public QObject
     std::unique_ptr< PrivateData > m_data;
 };
 
-QML_DECLARE_TYPEINFO( QskSetup, QML_HAS_ATTACHED_PROPERTIES )
-
 inline QskSetup* QskSetup::instance()
 {
     Q_ASSERT( s_instance );
     return s_instance;
 }
-
-Q_DECLARE_OPERATORS_FOR_FLAGS( QskSetup::Flags )
-Q_DECLARE_METATYPE( QskSetup::Flags )
 
 #endif

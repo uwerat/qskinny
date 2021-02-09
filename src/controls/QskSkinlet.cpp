@@ -55,7 +55,7 @@ static inline QSGNode* qskUpdateGraphicNode(
     if ( graphicNode == nullptr )
         graphicNode = new QskGraphicNode();
 
-    if ( control->testControlFlag( QskControl::PreferRasterForTextures ) )
+    if ( control->testUpdateFlag( QskControl::PreferRasterForTextures ) )
         mode = QskTextureRenderer::Raster;
 
     /*
@@ -187,7 +187,7 @@ void QskSkinlet::updateNode( QskSkinnable* skinnable, QSGNode* parentNode ) cons
         oldNode = findChildNode( parentNode, DebugRole );
 
         newNode = nullptr;
-        if ( control->testControlFlag( QskControl::DebugForceBackground ) )
+        if ( control->testUpdateFlag( QskControl::DebugForceBackground ) )
             newNode = updateDebugNode( control, oldNode );
 
         replaceChildNode( DebugRole, parentNode, oldNode, newNode );

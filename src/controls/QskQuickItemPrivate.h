@@ -22,7 +22,7 @@ class QskQuickItemPrivate : public QQuickItemPrivate
     ~QskQuickItemPrivate() override;
 
   public:
-    void updateControlFlags( QskQuickItem::Flags );
+    void applyUpdateFlags( QskQuickItem::UpdateFlags );
 
   protected:
     virtual void layoutConstraintChanged();
@@ -46,8 +46,8 @@ class QskQuickItemPrivate : public QQuickItemPrivate
   private:
     Q_DECLARE_PUBLIC( QskQuickItem )
 
-    quint16 controlFlags;
-    quint16 controlFlagsMask;
+    quint8 updateFlags;
+    quint8 updateFlagsMask;
 
     bool polishOnResize : 1;
 

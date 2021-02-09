@@ -31,7 +31,7 @@ int main( int argc, char** argv )
         When going over QPainter for the SVGs we prefer the raster paint
         engine, simply showing better results.
      */
-    qskSetup->setControlFlag( QskSetup::PreferRasterForTextures, true );
+    qskSetup->setItemUpdateFlag( QskQuickItem::PreferRasterForTextures, true );
 
     SkinnyFont::init( &app );
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );

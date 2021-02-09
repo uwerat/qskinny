@@ -173,7 +173,7 @@ uint QskTextureRenderer::createTexture(
 #endif
     if ( renderMode == AutoDetect )
     {
-        if ( qskSetup->controlFlags() & QskSetup::PreferRasterForTextures )
+        if ( qskSetup->testItemUpdateFlag( QskQuickItem::PreferRasterForTextures ) )
             renderMode = Raster;
         else
             renderMode = OpenGL;

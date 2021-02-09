@@ -169,10 +169,8 @@ void QskQml::registerTypes()
 
     qmlRegisterUncreatableType< QskSkin >( "Skinny.Skins", 1, 0, "Skin", QString() );
 
-    QSK_REGISTER_FLAGS( QskControl::Flag );
-    QSK_REGISTER_FLAGS( QskControl::Flags );
-    QSK_REGISTER_FLAGS( QskSetup::Flag );
-    QSK_REGISTER_FLAGS( QskSetup::Flags );
+    QSK_REGISTER_FLAGS( QskQuickItem::UpdateFlag );
+    QSK_REGISTER_FLAGS( QskQuickItem::UpdateFlags );
     QSK_REGISTER_FLAGS( QskSizePolicy::Policy );
 
     QSK_REGISTER_FLAGS( QskDialog::Actions );

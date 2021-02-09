@@ -16,7 +16,7 @@ static inline bool qskIsUpdateBlocked( const QQuickItem* item )
     if ( !item->isVisible() )
     {
         if ( const auto control = qskControlCast( item ) )
-            return control->testControlFlag( QskControl::DeferredUpdate );
+            return control->testUpdateFlag( QskControl::DeferredUpdate );
     }
 
 #if 0
