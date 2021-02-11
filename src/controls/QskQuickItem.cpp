@@ -603,8 +603,13 @@ bool QskQuickItem::event( QEvent* event )
         }
         case QEvent::ContentsRectChange:
         {
+            resetImplicitSize();
+
             if ( polishOnResize() )
                 polish();
+
+            if ( flags() & QQuickItem::ItemHasContents )
+                update();
 
             changeEvent( event );
             return true;
@@ -779,9 +784,10 @@ void QskQuickItem::itemChange( QQuickItem::ItemChange change,
         case QQuickItem::ItemChildAddedChange:
         case QQuickItem::ItemChildRemovedChange:
         {
-            // do we want to have events for thos ???
+            // do we want to have events for those ???
             break;
         }
+
         case QQuickItem::ItemOpacityHasChanged:
         case QQuickItem::ItemActiveFocusHasChanged:
         case QQuickItem::ItemRotationHasChanged:

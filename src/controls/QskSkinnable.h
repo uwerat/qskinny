@@ -72,7 +72,7 @@ class QSK_EXPORT QskSkinnable
     QskSkinnable();
     virtual ~QskSkinnable();
 
-    void setSkinlet( const QskSkinlet* skinlet );
+    void setSkinlet( const QskSkinlet* );
     const QskSkinlet* skinlet() const;
 
     QFont effectiveFont( QskAspect ) const;

@@ -258,7 +258,14 @@ void QskSkinnable::setSkinlet( const QskSkinlet* skinlet )
     m_data->skinlet = skinlet;
     m_data->hasLocalSkinlet = ( skinlet != nullptr );
 
-    owningControl()->update();
+    if ( auto control = owningControl() )
+    {
+        control->resetImplicitSize();
+        control->polish();
+
+        if ( control->flags() & QQuickItem::ItemHasContents )
+            control->update();
+    }
 }
 
 const QskSkinlet* QskSkinnable::skinlet() const
