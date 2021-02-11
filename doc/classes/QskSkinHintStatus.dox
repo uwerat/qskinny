@@ -1,0 +1,72 @@
+/*!
+    \class QskSkinHintStatus QskSkinnable.h
+
+	\ingroup Framework
+
+	QskSkinHintStatus provides the information how a lookup for a skin hint had been
+	resolved and where the value has been found.
+
+	\sa QskSkinnable::effectiveSkinHint()
+*/
+
+/*!
+    \enum QskSkinHintStatus::Source
+
+    \var QskSkinHintStatus::NoSource
+
+         The lookup had failed to find a valid hint
+
+	\var QskSkinHintStatus::Skinnable
+
+         The hint has been found in the local table of the skinnable
+
+    \sa QskSkinnable::hintTable()
+
+	\var QskSkinHintStatus::Skin
+
+		The hint has been found in the table of the skin
+
+    \sa QskSkinnable::effectiveSkin(), QskSkin::hintTable()
+
+	\var QskSkinHintStatus::Animator
+
+		The hint has been taken from an animator, that is in the process
+        of interpolating between values of different states
+
+	\sa QskHintAnimator, QskSkinnable::setSkinState()
+*/
+
+/*!
+	\var QskSkinHintStatus::source
+
+		Source, where the hint has been found
+
+	\sa QskSkinHintStatus::Source
+*/
+
+/*!
+	\var QskSkinHintStatus::aspect
+
+		Resolved aspect, that lead to a successful match in one of the
+		available sources
+
+	\sa QskAspect
+
+	\note The resolved apsect usually differs from the aspect that has been
+          passed as input parameter for QskSkinnable::effectiveSkinHint()
+*/
+
+/*!
+	\fn QskSkinHintStatus::QskSkinHintStatus
+
+	Initializes the status to be invalid, by setting the source
+    to QskSkinHintStatus::NoSource
+
+	\sa isValid()
+*/
+
+/*!
+	\fn QskSkinHintStatus::isValid
+
+	\return True, when having a source > QskSkinHintStatus::NoSource
+*/
