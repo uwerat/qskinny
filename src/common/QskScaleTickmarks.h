@@ -93,4 +93,12 @@ inline bool QskScaleTickmarks::operator!=(
     return !( *this == other );
 }
 
+Q_DECLARE_METATYPE( QskScaleTickmarks )
+
+#ifndef QT_NO_DEBUG_STREAM
+
+QSK_EXPORT QDebug operator<<( QDebug, const QskScaleTickmarks& );
+
+#endif
+
 #endif

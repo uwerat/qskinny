@@ -6,12 +6,12 @@
 #include "QskScaleTickmarks.h"
 #include <algorithm>
 
-int QskScaleTickmarks::tickCount() const noexcept
+static void qskRegisterTickmarks()
 {
-    return m_ticks[ MajorTick ].count()
-        + m_ticks[ MediumTick ].count()
-        + m_ticks[ MinorTick ].count();
+    qRegisterMetaType< QskScaleTickmarks >();
 }
+
+Q_CONSTRUCTOR_FUNCTION( qskRegisterTickmarks )
 
 QskScaleTickmarks::QskScaleTickmarks()
 {
@@ -20,6 +20,14 @@ QskScaleTickmarks::QskScaleTickmarks()
 QskScaleTickmarks::~QskScaleTickmarks()
 {
 }
+
+int QskScaleTickmarks::tickCount() const noexcept
+{
+    return m_ticks[ MajorTick ].count()
+        + m_ticks[ MediumTick ].count()
+        + m_ticks[ MinorTick ].count();
+}
+
 
 int QskScaleTickmarks::tickCount( TickType type ) const noexcept
 {
@@ -65,5 +73,19 @@ bool QskScaleTickmarks::operator==( const QskScaleTickmarks& other ) const noexc
         && ( m_ticks[ 1 ] == other.m_ticks[ 1 ] )
         && ( m_ticks[ 2 ] == other.m_ticks[ 2 ] );
 }
+
+#ifndef QT_NO_DEBUG_STREAM
+
+#include <qdebug.h>
+
+QDebug operator<<( QDebug debug, const QskScaleTickmarks& tickmarks )
+{
+    debug << tickmarks.majorTicks()
+        << tickmarks.mediumTicks() << tickmarks.minorTicks();
+
+    return debug;
+}
+
+#endif
 
 #include "moc_QskScaleTickmarks.cpp"
