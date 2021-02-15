@@ -552,7 +552,8 @@
 	An alternative way to call setVisible( true ).
 	Useful for signal/slot connections
 
-	\sa hide(), setVisible()
+	\sa hide()
+	\saqt QQuickItem::setVisible()
 */
 
 /*!
@@ -561,19 +562,22 @@
 	An alternative way to call setVisible( false ).
 	Useful for signal/slot connections
 
-	\sa show(), setVisible()
+	\sa show()
+	\saqt QQuickItem::setVisible()
 */
 
 /*!
-    \fn QskQuickItem::setVisible
+    \fn QskQuickItem::setHidden
 
-	QQuickItem::setVisible() has been forgotten to be declared as slot.
+        Convenience function, equivalent to setVisible( !on ).
+        \saqt QQuickItem::setVisible()
+*/
 
-	\param on If true the item becomes visible if its parent is visible.
-              Otherwise the item is hidden.
+/*!
+    \fn QskQuickItem::setDisabled
 
-	\sa visibleToParent
-	\saqt QQuickItem::isVisible(), visibleToParent
+	Convenience function, equivalent to setEnabled( !on ).
+        \saqt QQuickItem::setEnabled()
 */
 
 /*!

@@ -110,9 +110,17 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
 
     void show();
     void hide();
-    void setVisible( bool );
+
+    void setHidden( bool );
+    void setDisabled( bool );
 
     void resetImplicitSize();
+
+#ifdef Q_MOC_RUN
+    // methods from QQuickItem, we want to be available as string based slots
+    void setVisible( bool );
+    void setEnabled( bool );
+#endif
 
   protected:
     QskQuickItem( QskQuickItemPrivate&, QQuickItem* = nullptr );

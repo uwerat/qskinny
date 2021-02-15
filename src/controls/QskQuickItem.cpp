@@ -218,10 +218,14 @@ void QskQuickItem::releaseResources()
     qskReleasedWindowCounter->setWindow( window() );
 }
 
-void QskQuickItem::setVisible( bool on )
+void QskQuickItem::setDisabled( bool on )
 {
-    // QQuickItem::setVisible is no slot
-    Inherited::setVisible( on );
+    Inherited::setEnabled( !on );
+}
+
+void QskQuickItem::setHidden( bool on )
+{
+    Inherited::setVisible( !on );
 }
 
 void QskQuickItem::show()
