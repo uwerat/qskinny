@@ -4,8 +4,26 @@
 	\ingroup Framework
 
 	QskSkinnable is the base for all objects, that can be configured by skin hints
-	and are displayed by a skinlet. In most cases one control is exactly one skinnable,
-    but conceptually it is possible to have controls, that consist of many skinnables.
+	and are displayed by a skinlet. The configuration from the skin can be overwritten by
+    adding values to the local skin hint table - it is even possible to replace the
+    skinlet individually.
+
+	In most cases a skinnable is a QskControl, but conceptually it is
+    possible to have controls, that consist of many skinnables.
+
+	\sa QskSkin, QskSkinlet, QskControl, QskSkinHintTable
+*/
+
+/*! \fn QskSkinnable::QskSkinnable()
+
+	Constructs a skinnable where all settings will be resolved from the skin
+
+	\sa effectiveSkin(), effectiveSkinlet, effectiveSkinHint
+*/
+
+/*! \fn QskSkinnable::~QskSkinnable()
+
+	Called when the skinnable is destroyed.
 */
 
 /*!
@@ -69,430 +87,357 @@
 	\sa effectiveSubcontrol(), effectivePlacement()
 */
 
-/*! \fn QskSkinnable::QskSkinnable()
-
-	bla
-*/
-
-/*! \fn QskSkinnable::~QskSkinnable()
-
-	bla
-*/
-
 /*! \fn QskSkinnable::effectiveFont
 
-	bla
+	Finds the font role for the given aspect and returns
+    the corrsponding font from the font table of the skin.
+
+	\param aspect Unresolved aspect
+	\return Font, corresponding to the resolved aspect 
+
+	\sa fontRoleHint(), effectiveSkinHint(), QskSkin::font()
 */
 
 /*! \fn QskSkinnable::effectiveGraphicFilter
 
-	bla
+	Finds the graphic role for the given aspect and returns
+	the corrsponding color filter from the skin
+
+	\param aspect Unresolved aspect
+	\return Color filter, corresponding to the resolved aspect 
+
+	\sa graphicRoleHint(), effectiveSkinHint(), QskSkin::graphicFilter()
 */
 
 /*! \fn QskSkinnable::setAnimationHint
 
-	bla
+	Insert an animation hint into the local hint table
+
+	\param aspect Unresolved aspect
+	\param hint Animation hint
+
+	\sa animationHint(), effectiveAnimation()
 */
 
 /*! \fn QskSkinnable::animationHint
-
-	bla
-*/
-
-/*! \fn QskSkinnable::setSkinHint
-
-	bla
-*/
-
-/*! \fn QskSkinnable::resetSkinHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::effectiveAnimation
 
-	bla
+	Retrieve the configuration of the animator for reaching
+	a specific state.
+
+	\param type Metric, color or something else
+	\param subControl Unsubstituted subControl
+	\param state State bits
+	\param status If status != nullptr additional informations
+                  about where the hint has been found is returned
+
+	\return Value from the hint tables
+	\sa animationHint()
+*/
+
+/*! \fn QskSkinnable::setSkinHint
+
+	Insert a hint into the local hint table
+
+	\param aspect Unresolved aspect
+	\param hint Hint, might be anything that fits into a QVariant
+                and is understood by the skinlet consuming it.
+
+	\sa effectiveSkinHint(), resetSkinHint(), QskSkinHintTable::setHint()
+*/
+
+/*! \fn QskSkinnable::resetSkinHint
+
+	Remove a hint from the local hint table
+
+	After removing the hint from the local table the hint will
+    be resolved fro the hint table of the skin.
+
+	\param aspect Unresolved aspect
+
+	\sa setSkinHint(), effectiveSkinHint()
 */
 
 /*! \fn QskSkinnable::effectivePlacement
-
-	bla
 */
 
 /*! \fn QskSkinnable::hintStatus
 
-	bla
+	\param aspect Unresolved aspect
+	\return Informations about how the aspect would be resolved
+
+	\sa effectiveSkinHint()
 */
 
 /*! \fn QskSkinnable::skinState
 
-	bla
+	\return Current state
+	\sa setSkinStateFlag(), setSkinState()
 */
 
 /*! \fn QskSkinnable::skinStateAsPrintable() const
 
-	bla
+	\return Current state as printable for debugging purposes
+	\sa skinStateAsPrintable( QskAspect::State ) const
 */
 
 /*! \fn QskSkinnable::skinStateAsPrintable( QskAspect::State ) const
 
-	bla
+	\param state State bits
+    \return state as printable for debugging purposes
+
+    \note A pointer to an internal buffer is returned, that might be
+          overwritten by subsequent calls.
 */
 
 /*! \fn QskSkinnable::subControlRect
 
-	bla
-*/
-/*! \fn QskSkinnable::subControlContentsRect
+	The same as
+	\code effectiveSkinlet()->subControlRect( this, contentsRect, subControl ); \endcode
 
-	bla
+	\param contentsRect Bounding contents rectangle
+	\param subControl Subcontrol
+
+	\sa effectiveSkinlet(), QskSkinlet::subControlRect(), QskControl::contentsRect()
+*/
+
+/*! \fn QskSkinnable::subControlContentsRect
 */
 
 /*! \fn QskSkinnable::outerBoxSize
-
-	bla
 */
 
 /*! \fn QskSkinnable::innerBoxSize
-
-	bla
 */
 
 /*! \fn QskSkinnable::innerBox
-
-	bla
 */
 
 /*! \fn QskSkinnable::outerBox
-
-	bla
 */
 
 /*! \fn QskSkinnable::innerPadding
-
-	bla
 */
 
 /*! \fn QskSkinnable::effectiveSkinlet
 
-	bla
+	\return Skinlet that has been set with setSkinlet() - or the default
+            skinlet from the skin, that had been registered for metaObject()
 */
+
 /*! \fn QskSkinnable::effectiveSkin
 
-	bla
+	\return Almost always the current skin. The only exception is when manually
+            setting a skinlet being created from a different skin.
+
+	\sa QskSetup::skin(), QskSkinlet::skin()
 */
 
 /*! \fn QskSkinnable::startTransition
-
-	bla
 */
 
 /*! \fn QskSkinnable::effectiveSubcontrol
-
-	bla
 */
 
 /*! \fn QskSkinnable::controlCast()
+	
+	Safe casting of the skinnable to a QskControl
 
-	bla
+	The operation is based on comparing metaObject()
+	with QskControl::staticMetaObject() ( similar to what qobject_cast() does )
+
+	\return Control if successful, or a nullptr otherwise
 */
 
 /*! \fn QskSkinnable::controlCast() const
 
-	bla
-*/
+	Safe casting of the skinnable to a QskControl
 
-
-/*! \fn QskSkinnable::controlCast()
-
-	bla
+    The operation is based on comparing metaObject()
+    with QskControl::staticMetaObject() ( similar to what qobject_cast() does )
+    
+    \return Control if successful, or a nullptr otherwise
 */
 
 /*! \fn QskSkinnable::owningControl
 
-	bla
+	In most cases a skinnable is one of the base classes of QskControl and
+	the owning control is the derived control. But in case of a control, that
+    is built from several skinnables this pure virtual method needs to be implemented.
+
+	\return QskControl, that is owner of the skinnable. In most
+            cases the skinnable is inherited 
 */
 
 /*! \fn QskSkinnable::metaObject
-
-	bla
 */
 
 /*! \fn QskSkinnable::debug( QskAspect ) const
-
-	bla
 */
 
 /*! \fn QskSkinnable::debug( QskAspect::State ) const
-
-	bla
 */
 
 /*! \fn QskSkinnable::debug( QDebug, QskAspect ) const
-
-	bla
 */
 
 /*! \fn QskSkinnable::debug( QDebug, QskAspect::State ) const
-
-	bla
 */
 
 /*! \fn QskSkinnable::setSkinState
-
-	bla
 */
 
 /*! \fn QskSkinnable::setSkinStateFlag
-
-	bla
 */
 
 /*! \fn QskSkinnable::setColor( QskAspect, Qt::GlobalColor )
-
-	bla
 */
 
 /*! \fn QskSkinnable::setColor( QskAspect, QRgb )
-
-	bla
 */
 
 /*! \fn QskSkinnable::setColor( QskAspect, const QColor& )
-
-	bla
 */
 
 /*! \fn QskSkinnable::resetColor
-
-	bla
 */
 
 /*! \fn QskSkinnable::color
-
-	bla
 */
 
 /*! \fn QskSkinnable::setMetric
-
-	bla
 */
 
 /*! \fn QskSkinnable::resetMetric
-
-	bla
 */
 
 /*! \fn QskSkinnable::metric
-
-	bla
 */
 
 /*! \fn QskSkinnable::setFlagHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::resetFlagHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::flagHint( QskAspect ) const
-
-	bla
 */
 
 /*! \fn template< typename T > T QskSkinnable::flagHint( QskAspect, T ) const
-
-	bla
 */
-/*! \fn QskSkinnable::setStrutSizeHint( QskAspect, const QSizeF& )
 
-	bla
+/*! \fn QskSkinnable::setStrutSizeHint( QskAspect, const QSizeF& )
 */
 
 /*! \fn QskSkinnable::setStrutSizeHint( QskAspect, qreal width, qreal height )
-
-	bla
 */
 
 /*! \fn QskSkinnable::resetStrutSizeHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::strutSizeHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::setMarginHint( QskAspect, qreal )
-
-	bla
 */
 
 /*! \fn QskSkinnable::setMarginHint( QskAspect, const QMarginsF& )
-
-	bla
 */
 
 /*! \fn QskSkinnable::resetMarginHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::marginHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::setPaddingHint( QskAspect, qreal )
-
-	bla
 */
 
 /*! \fn QskSkinnable::setPaddingHint( QskAspect, const QMarginsF& )
-
-	bla
 */
 
 /*! \fn QskSkinnable::resetPaddingHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::paddingHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::setGradientHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::gradientHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::setBoxShapeHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::resetBoxShapeHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::boxShapeHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::setBoxBorderMetricsHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::resetBoxBorderMetricsHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::boxBorderMetricsHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::setBoxBorderColorsHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::resetBoxBorderColorsHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::boxBorderColorsHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::setSpacingHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::resetSpacingHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::spacingHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::setAlignmentHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::resetAlignmentHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::alignmentHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::setFontRoleHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::resetFontRoleHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::fontRoleHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::setGraphicRoleHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::resetGraphicRoleHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::graphicRoleHint
-
-	bla
 */
 
 /*! \fn QskSkinnable::isTransitionAccepted
-
-	bla
 */
 
 /*! \fn QskSkinnable::hintTable()
-
-	bla
 */
 
 /*! \fn QskSkinnable::hintTable() const
-
-	bla
 */

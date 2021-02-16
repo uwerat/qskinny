@@ -572,10 +572,10 @@ QskColorFilter QskSkinnable::effectiveGraphicFilter( QskAspect aspect ) const
 }
 
 bool QskSkinnable::setAnimationHint(
-    QskAspect aspect, QskAnimationHint animation )
+    QskAspect aspect, QskAnimationHint hint )
 {
     aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
-    return m_data->hintTable.setAnimation( aspect, animation );
+    return m_data->hintTable.setAnimation( aspect, hint );
 }
 
 QskAnimationHint QskSkinnable::animationHint(
@@ -589,6 +589,11 @@ QskAnimationHint QskSkinnable::effectiveAnimation(
     QskAspect::Type type, QskAspect::Subcontrol subControl,
     QskAspect::State state, QskSkinHintStatus* status ) const
 {
+#if 0
+    // TODO ...
+    subControl = effectiveSubcontrol( aspect.subControl() );
+#endif
+
     auto aspect = subControl | type | state;
     aspect.setAnimator( true );
 
