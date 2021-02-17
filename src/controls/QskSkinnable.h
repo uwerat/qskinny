@@ -93,10 +93,6 @@ class QSK_EXPORT QskSkinnable
 
     QskSkinHintStatus hintStatus( QskAspect ) const;
 
-    QskAspect::State skinState() const;
-    const char* skinStateAsPrintable() const;
-    const char* skinStateAsPrintable( QskAspect::State ) const;
-
     QRectF subControlRect( const QRectF&, QskAspect::Subcontrol ) const;
     QRectF subControlContentsRect( const QRectF&, QskAspect::Subcontrol ) const;
 
@@ -129,6 +125,11 @@ class QSK_EXPORT QskSkinnable
 
     void setSkinState( QskAspect::State, bool animated = true );
     void setSkinStateFlag( QskAspect::State, bool on = true );
+
+    QskAspect::State skinState() const;
+
+    const char* skinStateAsPrintable() const;
+    const char* skinStateAsPrintable( QskAspect::State ) const;
 
     // type aware methods for accessing skin hints
 

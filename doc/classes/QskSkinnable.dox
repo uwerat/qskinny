@@ -275,33 +275,101 @@
 */
 
 /*! \fn QskSkinnable::debug( QskAspect ) const
+
+	Writes an aspect to qDebug() using the string conversions for metaObject()
+
+	\param aspect Aspect to be printed
+	\sa qskDebugAspect()
 */
 
 /*! \fn QskSkinnable::debug( QskAspect::State ) const
+
+	Writes a state to qDebug() using the string conversions for metaObject()
+    
+    \param state State to be printed
+    \sa qskDebugState()
 */
 
 /*! \fn QskSkinnable::debug( QDebug, QskAspect ) const
+
+    Writes an aspect to a stream using the string conversions for metaObject()
+    
+    \param debug Debug stream
+    \param aspect Aspect to be printed
+
+    \sa qskDebugAspect()
 */
 
 /*! \fn QskSkinnable::debug( QDebug, QskAspect::State ) const
+
+    Writes a state to a stream using the string conversions for metaObject()
+    
+    \param debug Debug stream
+    \param state State to be printed
+
+    \sa qskDebugState()
 */
 
 /*! \fn QskSkinnable::setSkinState
+
+	Set the state bits of the skinnable
+
+	Depending on the state a skinnable might have different hints affecting
+    its representation and/or behaviour.
+
+	\param newState State bits
+	\param animated If true, animators, that have been defined in the skin
+                    for newState will be started
+
+	\sa QskAspect
 */
 
 /*! \fn QskSkinnable::setSkinStateFlag
+
+	Set/Clear a state in the state bits 
+
+	\param stateFlag State bit
+	\param on true or false
+
+	\sa setSkinState(), skinState()
 */
 
 /*! \fn QskSkinnable::setColor( QskAspect, Qt::GlobalColor )
+
+	\code setSkinHint( aspect | QskAspect::Color, QVariant::fromValue( QColor( color ) ) ); \endcode
+
+	\param aspect Unresolved aspect
+	\param color Color hint
+
+	\sa setSkinHint()
 */
 
 /*! \fn QskSkinnable::setColor( QskAspect, QRgb )
+
+	\code setSkinHint( aspect | QskAspect::Color, QVariant::fromValue( QColor::fromRgba( rgb ) ) ); \endcode
+
+	\param aspect Unresolved aspect
+	\param rgb Color hint
 */
 
 /*! \fn QskSkinnable::setColor( QskAspect, const QColor& )
+
+	\code setSkinHint( aspect | QskAspect::Color, QVariant::fromValue( color ) ); \endcode
+
+	\param aspect Unresolved aspect
+	\param color Color hint
+
+	\sa setSkinHint()
 */
 
 /*! \fn QskSkinnable::resetColor
+
+	\code return resetSkinHint( aspect | QskAspect::Color ); \endcode
+
+	\param aspect Unresolved aspect
+	\return true, if an entry in the local hint table was found and removed.
+
+	\sa resetSkinHint()
 */
 
 /*! \fn QskSkinnable::color
