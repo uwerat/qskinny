@@ -161,6 +161,13 @@
 */
 
 /*! \fn QskSkinnable::effectivePlacement
+
+	The placements bits are added to an unresolved aspect when
+	inserting or looking up values in the hint table.
+
+	\return The default implementation returns QskAspect::NoPlacement;
+
+	\sa QskAspect::Placement, effectiveSkinHint()
 */
 
 /*! \fn QskSkinnable::hintStatus
@@ -171,7 +178,34 @@
 	\sa effectiveSkinHint()
 */
 
+/*! \fn QskSkinnable::setSkinState
+
+	Set the state bits of the skinnable
+
+	Depending on the state a skinnable might have different hints affecting
+    its representation and/or behaviour.
+
+	\param newState State bits
+	\param animated If true, animators, that have been defined in the skin
+                    for newState will be started
+
+	\sa QskAspect
+*/
+
+/*! \fn QskSkinnable::setSkinStateFlag
+
+	Set/Clear a state in the state bits 
+
+	\param stateFlag State bit
+	\param on true or false
+
+	\sa setSkinState(), skinState()
+*/
+
 /*! \fn QskSkinnable::skinState
+
+	The state bits are added to an unresolved aspect when
+	inserting or looking up values in the hint table.
 
 	\return Current state
 	\sa setSkinStateFlag(), setSkinState()
@@ -236,9 +270,39 @@
 */
 
 /*! \fn QskSkinnable::startTransition
+
+	Start a transition for a specific aspect, that interpolates
+	between 2 values. While the transition is in process lookups for
+	the aspect will return the current value of the interpolation.
+
+	In most cases startTransition() is called automatically, when
+	the skinState() changes and am animation is found for the new
+	state.
+
+	\param aspect Unresolved aspect, only subcontrol substitution will be done
+	\param from Start value of the transation
+
+	\sa effectiveAnimation()
 */
 
 /*! \fn QskSkinnable::effectiveSubcontrol
+
+	Subcontrol substitution is a mechanism, that is used when a variation of
+    an existing control needs to have skin hints, that can be configured
+    individually without having to reimplement a new skinlet.
+
+    F.e. a button on a toolbar is often flat with a hovering effect. In this
+    case a tool button could be derived from QskPushButton, where the
+    QskPushButton::Panel subcontrol gets substituted by a new subcontrol that
+    is defined for the tool button.
+
+	Subcontrol substitution is part of a concept that is known as
+    \ref aspectresolving "aspect resolving".
+
+	\param subControl Subcontrol
+	\return Substituted subcontrol
+
+	The default implementation is a no operation and does not substitute
 */
 
 /*! \fn QskSkinnable::controlCast()
@@ -308,30 +372,6 @@
     \param state State to be printed
 
     \sa qskDebugState()
-*/
-
-/*! \fn QskSkinnable::setSkinState
-
-	Set the state bits of the skinnable
-
-	Depending on the state a skinnable might have different hints affecting
-    its representation and/or behaviour.
-
-	\param newState State bits
-	\param animated If true, animators, that have been defined in the skin
-                    for newState will be started
-
-	\sa QskAspect
-*/
-
-/*! \fn QskSkinnable::setSkinStateFlag
-
-	Set/Clear a state in the state bits 
-
-	\param stateFlag State bit
-	\param on true or false
-
-	\sa setSkinState(), skinState()
 */
 
 /*! \fn QskSkinnable::setColor( QskAspect, Qt::GlobalColor )
