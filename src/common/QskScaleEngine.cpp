@@ -181,7 +181,6 @@ QskScaleTickmarks QskScaleEngine::divideScale(
         stepSize = divideInterval( interval.width(), maxMajorSteps );
     }
 
-
     if ( stepSize != 0.0 )
     {
         tickmarks = buildTicks( interval, stepSize, maxMinorSteps );

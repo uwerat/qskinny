@@ -34,7 +34,7 @@ class QSK_EXPORT QskScaleTickmarks
     bool operator!=( const QskScaleTickmarks& ) const noexcept;
 
     int tickCount() const noexcept;
-    int tickCount( TickType ) const noexcept;
+    Q_INVOKABLE int tickCount( TickType ) const noexcept;
 
     QVector< qreal > ticks( TickType ) const noexcept;
     void setTicks( TickType, const QVector< qreal >& );
@@ -47,6 +47,8 @@ class QSK_EXPORT QskScaleTickmarks
 
     void setMajorTicks( const QVector< qreal >& );
     QVector< qreal > majorTicks() const noexcept;
+
+    Q_INVOKABLE qreal tickAt( TickType, int index ) const;
 
     void invert();
     void reset();

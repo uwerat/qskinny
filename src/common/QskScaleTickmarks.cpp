@@ -44,6 +44,11 @@ void QskScaleTickmarks::setTicks(TickType type, const QVector< qreal >& ticks )
     m_ticks[ type ] = ticks;
 }
 
+qreal QskScaleTickmarks::tickAt( TickType type, int index ) const
+{
+    return m_ticks[ type ].at( index );
+}
+
 void QskScaleTickmarks::reset()
 {
     m_ticks[ 0 ].clear();
