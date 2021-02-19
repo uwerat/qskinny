@@ -344,6 +344,11 @@ QVector< QskGradientStop > QskGradient::stops() const
     return m_stops;
 }
 
+int QskGradient::stopCount() const
+{
+    return m_stops.count();
+}
+
 void QskGradient::setStopAt( int index, qreal stop )
 {
     if ( stop < 0.0 || stop > 1.0 )

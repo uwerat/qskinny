@@ -125,6 +125,7 @@ class QSK_EXPORT QskGradient
 
     Q_INVOKABLE qreal stopAt( int index ) const;
     Q_INVOKABLE QColor colorAt( int index ) const;
+    Q_INVOKABLE int stopCount() const;
 
   private:
     void setStopAt( int index, qreal stop );
