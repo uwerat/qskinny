@@ -98,6 +98,7 @@ class QSK_EXPORT QskTabBar : public QskBox
 
   Q_SIGNALS:
     void currentIndexChanged( int index );
+    void buttonClicked( int index );
     void countChanged( int );
     void textOptionsChanged( const QskTextOptions& );
     void tabPositionChanged( Qsk::Position );
@@ -109,6 +110,7 @@ class QSK_EXPORT QskTabBar : public QskBox
 
   private:
     void adjustCurrentIndex();
+    void handleButtonClick();
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

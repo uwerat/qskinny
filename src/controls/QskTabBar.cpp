@@ -448,6 +448,9 @@ int QskTabBar::insertTab( int index, QskTabButton* button )
 
     m_data->connectButton( button, this, true );
 
+    connect( button, &QskAbstractButton::clicked,
+       this, &QskTabBar::handleButtonClick );
+
     Q_EMIT countChanged( count() );
 
     return index;
@@ -654,6 +657,17 @@ void QskTabBar::adjustCurrentIndex()
     {
         m_data->currentIndex = index;
         Q_EMIT currentIndexChanged( index );
+    }
+}
+
+void QskTabBar::handleButtonClick()
+{
+    if ( auto button = qobject_cast< const QskTabButton* >( sender() ) )
+    {
+        const auto index = indexOf( button );
+
+        if ( index >= 0 )
+            Q_EMIT buttonClicked( index );
     }
 }
 
