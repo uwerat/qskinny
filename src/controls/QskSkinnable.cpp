@@ -350,9 +350,9 @@ bool QskSkinnable::setStrutSizeHint(
     return qskSetMetric( this, aspect | QskAspect::StrutSize, QSizeF( width, height ) );
 }
 
-bool QskSkinnable::setStrutSizeHint( const QskAspect aspect, const QSizeF& strut )
+bool QskSkinnable::setStrutSizeHint( const QskAspect aspect, const QSizeF& size )
 {
-    return qskSetMetric( this, aspect | QskAspect::StrutSize, strut );
+    return qskSetMetric( this, aspect | QskAspect::StrutSize, size );
 }
 
 bool QskSkinnable::resetStrutSizeHint( const QskAspect aspect )

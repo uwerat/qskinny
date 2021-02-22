@@ -80,9 +80,8 @@
 	\brief Find the value for a specific aspect
 
 	\param aspect Initial aspect, to feed the skin hint lookup algorithm.
-
-	\param status Optional status information, that indicates how the aspect has been
-                  resolved and where the result has been found
+	\param status Optional status information
+	\return Hint value, or an invalid QVariant if no value was found
 
 	\sa effectiveSubcontrol(), effectivePlacement()
 */
@@ -139,23 +138,33 @@
 
 /*! \fn QskSkinnable::setSkinHint
 
-	Insert a hint into the local hint table
+	\brief Insert a hint into the local hint table
 
-	\param aspect Unresolved aspect
+	Presentation, behevior and layout of the scene graph nodes are
+    affected by specific attributes - skin hints - that are configured
+    in a table of the skin. Each skinnable has its own table
+	where these attributes can be overloaded. Hints from the local
+	table have precedence over those from the skin.
+	
+	The subControl bits of the aspect might be substituted, depending on
+	the implementation of effectiveSubcontrol(). By inserting the hint
+	directly into the hintTable() the substitution can be avoided.
+
+	\param aspect Unsubstituted aspect
 	\param hint Hint, might be anything that fits into a QVariant
                 and is understood by the skinlet consuming it.
 
-	\sa effectiveSkinHint(), resetSkinHint(), QskSkinHintTable::setHint()
+	\sa effectiveSkinHint(), resetSkinHint(), hintTable()
 */
 
 /*! \fn QskSkinnable::resetSkinHint
 
-	Remove a hint from the local hint table
+	\brief Remove a hint from the local hint table
 
 	After removing the hint from the local table the hint will
     be resolved fro the hint table of the skin.
 
-	\param aspect Unresolved aspect
+	\param aspect Unsubstituted aspect
 
 	\sa setSkinHint(), effectiveSkinHint()
 */
@@ -228,31 +237,103 @@
 
 /*! \fn QskSkinnable::subControlRect
 
-	The same as
-	\code effectiveSkinlet()->subControlRect( this, contentsRect, subControl ); \endcode
+	\brief Calculate position and size of a subControl
 
-	\param contentsRect Bounding contents rectangle
-	\param subControl Subcontrol
+	A convenience method that forwards the calculation to the skinlet
+	
+	\param contentsRect Bounding rectangle for laying out the nodes of the skinnable
+	\param subControl Unsubstituted subcontrol
+	\return Geometry for the subControl
 
 	\sa effectiveSkinlet(), QskSkinlet::subControlRect(), QskControl::contentsRect()
 */
 
 /*! \fn QskSkinnable::subControlContentsRect
+
+	\brief Calculate the inner rectangle subControl
+
+	The inner rectangle a subcontrol is its geometry with paddings, indentations
+    being subtracted. F.e. the inner rectangle of QskPushButton::Panel is the
+    bounding rectangle for laying out the QskPushButton::Text and
+    QskPushButton::Graphic subcontrols.
+
+	\param contentsRect Bounding rectangle for laying out the nodes of the skinnable
+	\param subControl Unsubstituted subcontrol
+	\return Geometry for contents inside the subControl
+
+	\sa QskSkinlet::subControlRect(), innerBox()
 */
 
 /*! \fn QskSkinnable::outerBoxSize
+
+	\brief Calculate the size, when being expanded by paddings, indentations
+
+	Paddings, indentations depend on attributes for the given aspect.
+
+	\param aspect Unresolved aspect
+	\patam innerBoxSize Size to be expanded
+	\return Expanded size
+
+	The size hint for a "container" node usually depend on the hints of its
+    inner nodes. F.e the size hint for QskPushButton::Panel depends on the size hints of 
+	QskPushButton::Text and QskPushButton::Graphic. 
+
+	\sa innerBoxSize(), outerBox(), innerBox()
 */
 
 /*! \fn QskSkinnable::innerBoxSize
+
+	\brief Calculate the size, whith paddings, indentations being subtracted
+
+	Paddings, indentations depend on attributes for the given aspect.
+
+	\param aspect Unresolved aspect
+	\param outerBoxSize Size to be shrinked
+	\return Shrinked size
+
+	\sa outerBoxSize(), innerBox(), outerBox()
 */
 
 /*! \fn QskSkinnable::innerBox
+
+	\brief Calculate the rectangle, whith paddings, indentations being subtracted
+
+    Paddings, indentations depend on attributes for the given aspect.
+
+    \param aspect Unresolved aspect
+    \param outerBox Rectangle to be shrinked
+    \return Shrinked rectangle
+
+    \sa innerBoxSize(), outerBox()
 */
 
 /*! \fn QskSkinnable::outerBox
+
+    \brief Calculate the rectangle, when being expanded by paddings, indentations
+
+    Paddings, indentations depend on attributes for the given aspect.
+
+    \param aspect Unresolved aspect
+    \param innerBox Rectangle to be expanded
+    \return Expanded rectangle
+
+    The size hint for a "container" node usually depend on the hints of its
+    inner nodes. F.e the size hint for QskPushButton::Panel depends on the size hints of
+    QskPushButton::Text and QskPushButton::Graphic. 
+
+    \sa outerBoxSize(), innerBox()
 */
 
 /*! \fn QskSkinnable::innerPadding
+
+	\brief Calculate the padding from attributes for the given aspect
+
+	Beside padding hints, the radii of the shape might have an effect
+
+    \param aspect Unresolved aspect
+    \param outerBoxSize Size of the box
+
+	\return Eddective padding
 */
 
 /*! \fn QskSkinnable::effectiveSkinlet
@@ -336,6 +417,9 @@
 */
 
 /*! \fn QskSkinnable::metaObject
+
+	\return Usually the metaObject of the owning control
+	\sa owningControl()
 */
 
 /*! \fn QskSkinnable::debug( QskAspect ) const
@@ -376,172 +460,589 @@
 
 /*! \fn QskSkinnable::setColor( QskAspect, Qt::GlobalColor )
 
-	\code setSkinHint( aspect | QskAspect::Color, QVariant::fromValue( QColor( color ) ) ); \endcode
+	\brief Sets a color hint.
+
+	QskAspect::Color will be added to aspect.
 
 	\param aspect Unresolved aspect
 	\param color Color hint
 
-	\sa setSkinHint()
+	\sa setSkinHint(), QskAspect::Color
 */
 
 /*! \fn QskSkinnable::setColor( QskAspect, QRgb )
 
-	\code setSkinHint( aspect | QskAspect::Color, QVariant::fromValue( QColor::fromRgba( rgb ) ) ); \endcode
+	\brief Sets a color hint.
+
+	QskAspect::Color will be added to aspect.
 
 	\param aspect Unresolved aspect
 	\param rgb Color hint
+
+	\sa setSkinHint(), QskAspect::Color
 */
 
 /*! \fn QskSkinnable::setColor( QskAspect, const QColor& )
 
-	\code setSkinHint( aspect | QskAspect::Color, QVariant::fromValue( color ) ); \endcode
+	\brief Sets a color hint.
+
+	QskAspect::Color will be added to aspect.
 
 	\param aspect Unresolved aspect
 	\param color Color hint
 
-	\sa setSkinHint()
+	\sa setSkinHint(), QskAspect::Color
 */
 
 /*! \fn QskSkinnable::resetColor
 
-	\code return resetSkinHint( aspect | QskAspect::Color ); \endcode
+	\brief Removes a color hint from the local table
+
+	QskAspect::Color will be added to aspect.
 
 	\param aspect Unresolved aspect
 	\return true, if an entry in the local hint table was found and removed.
 
-	\sa resetSkinHint()
+	\sa resetSkinHint(), setColor()
 */
 
 /*! \fn QskSkinnable::color
+
+	\brief Retrieves a color hint
+
+	QskAspect::Color will be added to aspect.
+
+	\param aspect Unresolved aspect
+	\param status Optional status information
+	\return Color hint, or QColor() if no value hs been found
+
+	\sa effectiveSkinHint(), setColor()
 */
 
 /*! \fn QskSkinnable::setMetric
+
+    \brief Sets a metric hint
+
+	QskAspect::Metric will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \param metric Metric hint
+
+    \sa setSkinHint(), QskAspect::Metric
 */
 
 /*! \fn QskSkinnable::resetMetric
+
+	\brief Removes a metric hint from the local table
+
+    QskAspect::Metric will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \return true, if an entry in the local hint table was found and removed.
+
+    \sa resetSkinHint(), setMetric()
 */
 
 /*! \fn QskSkinnable::metric
+
+    \brief Retrieves a metric hint
+
+    QskAspect::Metric will be added to aspect.
+
+    \param aspect Unresolved aspect
+	\param status Optional status information
+
+	\return Metric, or 0 if no value was found
+
+    \sa effectiveSkinHint(), setMetric()
 */
 
 /*! \fn QskSkinnable::setFlagHint
+
+    \brief Sets a flag hint
+
+    \param aspect Unresolved aspect
+    \param flag Flag hint
+
+    \sa setSkinHint(), QskAspect::Flag
 */
 
 /*! \fn QskSkinnable::resetFlagHint
+
+    \brief Removes a flag hint from the local table
+    
+    \param aspect Unresolved aspect
+    \return true, if an entry in the local hint table was found and removed.
+    
+    \sa resetSkinHint(), setFlag()
 */
 
 /*! \fn QskSkinnable::flagHint( QskAspect ) const
+
+    \brief Retrieves a flag hint
+
+    \param aspect Unresolved aspect
+	\param status Optional status information
+	\return Flag, or an invalid QVariant in case no value was found
+
+    \sa effectiveSkinHint(), setFlag()
 */
 
 /*! \fn template< typename T > T QskSkinnable::flagHint( QskAspect, T ) const
+
+    \brief Retrieves a flag hint
+
+    \param aspect Unresolved aspect
+    \param defaultValue Default result, when no entry can be found in the hint tables
+
+    \return Flag - or defaultValue if no value had been found
+    
+    \sa resetSkinHint(), setFlag()
 */
 
 /*! \fn QskSkinnable::setStrutSizeHint( QskAspect, const QSizeF& )
+
+    \brief Sets a metric hint
+
+    QskAspect::Metric | QskAspect::StrutSize will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \param size Strut size hint
+
+    \sa setSkinHint(), QskAspect::Metric, QskAspect::StrutSize
+
 */
 
-/*! \fn QskSkinnable::setStrutSizeHint( QskAspect, qreal width, qreal height )
+/*! \fn QskSkinnable::setStrutSizeHint( QskAspect, qreal, qreal )
+
+    \brief Sets a strut size hint
+
+    QskAspect::Metric | QskAspect::StrutSize will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \param width Width of the strut size
+    \param height Height of the strut size
+
+    \sa setSkinHint(), QskAspect::Metric, QskAspect::StrutSize
 */
 
 /*! \fn QskSkinnable::resetStrutSizeHint
+
+    \brief Removes a strut size hint from the local table
+
+    QskAspect::Metric | QskAspect::StrutSize will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \return true, if an entry in the local hint table was found and removed.
+
+    \sa resetSkinHint(), setStrutSizeHint()
 */
 
 /*! \fn QskSkinnable::strutSizeHint
+
+    \brief Retrieves a strut size hint
+
+    QskAspect::Metric | QskAspect::StrutSize will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \param status Optional status information
+    \return Strut size, or QSizeF() if no value was found
+
+    \sa effectiveSkinHint(), setStrutSizeHint()
 */
 
 /*! \fn QskSkinnable::setMarginHint( QskAspect, qreal )
+
+    \brief Sets a margin hint
+
+    QskAspect::Metric | QskAspect::Margin will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \param margin Margin
+
+    \sa setSkinHint(), QskAspect::Metric, QskAspect::Margin
 */
 
 /*! \fn QskSkinnable::setMarginHint( QskAspect, const QMarginsF& )
+
+	\brief Sets a margin hint
+
+    QskAspect::Metric | QskAspect::Margin will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \param margin Margin
+    
+    \sa setSkinHint(), QskAspect::Metric, QskAspect::Margin
 */
 
 /*! \fn QskSkinnable::resetMarginHint
+
+    \brief Removes a margin hint from the local table
+
+    QskAspect::Metric | QskAspect::Margin will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \return true, if an entry in the local hint table was found and removed.
+
+    \sa resetSkinHint(), setMarginHint()
 */
 
 /*! \fn QskSkinnable::marginHint
+
+    \brief Retrieves a margin hint
+
+    QskAspect::Metric | QskAspect::Margin will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \param status Optional status information
+    \return margin, or QMarginsF() if no value was found
+
+    \sa effectiveSkinHint(), setMarginHint()
 */
 
 /*! \fn QskSkinnable::setPaddingHint( QskAspect, qreal )
+
+	\brief Sets a padding hint
+
+    QskAspect::Metric | QskAspect::Padding will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \param padding Padding
+    
+    \sa setSkinHint(), QskAspect::Metric, QskAspect::Padding
 */
 
 /*! \fn QskSkinnable::setPaddingHint( QskAspect, const QMarginsF& )
+
+	\brief Sets a padding hint
+
+    QskAspect::Metric | QskAspect::Padding will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \param padding Padding
+
+    \sa setSkinHint(), QskAspect::Metric, QskAspect::Padding
 */
 
 /*! \fn QskSkinnable::resetPaddingHint
+
+    \brief Removes a padding hint from the local table
+
+    QskAspect::Metric | QskAspect::Padding will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \return true, if an entry in the local hint table was found and removed.
+
+    \sa resetSkinHint(), setPaddingHint()
 */
 
 /*! \fn QskSkinnable::paddingHint
+
+	\brief Retrieves a padding hint
+
+    QskAspect::Metric | QskAspect::Padding will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \param status Optional status information
+    \return padding, or QMarginsF() if no value was found
+
+    \sa effectiveSkinHint(), setPaddingHint()
 */
 
 /*! \fn QskSkinnable::setGradientHint
+
+    \brief Sets a gradient as color hint
+
+    QskAspect::Color will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \param gradient Gradint
+
+    \sa setSkinHint(), QskAspect::Color
 */
 
 /*! \fn QskSkinnable::gradientHint
+
+	\brief Retrieves a color hint as gradient
+
+    QskAspect::Color will be added to aspect.
+   
+    \param aspect Unresolved aspect
+    \param status Optional status information
+    \return gradient, or QskGraient() if no value was found
+
+    \sa effectiveSkinHint(), setGradientHint()
 */
 
 /*! \fn QskSkinnable::setBoxShapeHint
+
+    \brief Sets a shape hint
+
+    QskAspect::Metric | QskAspect::Shape will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \param shape Shape
+
+    \sa setSkinHint(), QskAspect::Metric, QskAspect::Shape
 */
 
 /*! \fn QskSkinnable::resetBoxShapeHint
+
+    \brief Removes a shape hint from the local table
+
+    QskAspect::Metric | QskAspect::Shape will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \return true, if an entry in the local hint table was found and removed.
+
+    \sa resetSkinHint(), setBoxShapeHint()
 */
 
 /*! \fn QskSkinnable::boxShapeHint
+
+    \brief Retrieves a shape hint
+
+    QskAspect::Metric | QskAspect::Shape will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \param status Optional status information
+    \return shape, or QskBoxShapeMetrics() if no value was found
+
+    \sa effectiveSkinHint(), setBoxShapeHint()
 */
 
 /*! \fn QskSkinnable::setBoxBorderMetricsHint
+
+    \brief Sets a border metrics hint
+
+    QskAspect::Metric | QskAspect::Border will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \param border Border metrics
+
+    \sa setSkinHint(), QskAspect::Metric, QskAspect::Border
 */
 
 /*! \fn QskSkinnable::resetBoxBorderMetricsHint
+
+    \brief Removes a border metrics hint from the local table
+
+    QskAspect::Metric | QskAspect::Border will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \return true, if an entry in the local hint table was found and removed.
+
+    \sa resetSkinHint(), setBoxBorderMetricsHint()
 */
 
 /*! \fn QskSkinnable::boxBorderMetricsHint
+
+    \brief Retrieves a border hint
+
+    QskAspect::Metric | QskAspect::Border will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \param status Optional status information
+    \return border metrics, or QskBoxBorderMetrics() if no value was found
+
+    \sa effectiveSkinHint(), setBoxBorderMetricsHint()
 */
 
 /*! \fn QskSkinnable::setBoxBorderColorsHint
+
+    \brief Sets a border colors hint
+
+    QskAspect::Color | QskAspect::Border will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \param border Border colors
+
+    \sa setSkinHint(), QskAspect::Color, QskAspect::Border
 */
 
 /*! \fn QskSkinnable::resetBoxBorderColorsHint
+
+    \brief Removes a border colors hint from the local table
+
+    QskAspect::Color | QskAspect::Border will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \return true, if an entry in the local hint table was found and removed.
+
+    \sa resetSkinHint(), setBoxBorderColorsHint()
 */
 
 /*! \fn QskSkinnable::boxBorderColorsHint
+
+	\brief Retrieves border colors hint
+
+    QskAspect::Color | QskAspect::Border will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \param status Optional status information
+    \return border colors, or QskBoxBorderColors() if no value was found
+
+    \sa effectiveSkinHint(), setBoxBorderColorsHint()
 */
 
 /*! \fn QskSkinnable::setSpacingHint
+
+    \brief Sets a spacing hint
+
+    QskAspect::Metric | QskAspect::Spacing will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \param spacing Spacing
+
+    \sa setSkinHint(), QskAspect::Metric, QskAspect::Spacing
 */
 
 /*! \fn QskSkinnable::resetSpacingHint
+
+    \brief Removes a spacing hint from the local table
+
+    QskAspect::Metric | QskAspect::Spacing will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \return true, if an entry in the local hint table was found and removed.
+
+    \sa resetSkinHint(), setSpacingHint()
 */
 
 /*! \fn QskSkinnable::spacingHint
+
+    \brief Retrieves a spacing hint
+
+    QskAspect::Metric | QskAspect::Spacing will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \param status Optional status information
+    \return spacing, or 0 if no value was found
+
+    \sa effectiveSkinHint(), setSpacingHint()
 */
 
 /*! \fn QskSkinnable::setAlignmentHint
+
+    \brief Sets an alignment hint
+
+    QskAspect::Flag | QskAspect::Alignment will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \param alignment Alignment hint
+
+    \sa setSkinHint(), QskAspect::Flag, QskAspect::Alignment
+
 */
 
 /*! \fn QskSkinnable::resetAlignmentHint
+
+    \brief Removes an alignment hint from the local table
+
+    QskAspect::Flag | QskAspect::Alignment will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \return true, if an entry in the local hint table was found and removed.
+
+    \sa resetSkinHint(), setAlignmentHint()
 */
 
 /*! \fn QskSkinnable::alignmentHint
+
+	\brief Retrieves an alignment hint
+
+    QskAspect::Flag | QskAspect::Alignment will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \param defaultAlignment Default value
+    \return alignment, or defaultAlignment if no value was found
+
+    \sa effectiveSkinHint(), setAlignmentHint()
 */
 
 /*! \fn QskSkinnable::setFontRoleHint
+
+    \brief Sets a font role hint
+
+    QskAspect::Flag | QskAspect::FontRole will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \param role Font role
+
+    \sa setSkinHint(), QskAspect::Flag, QskAspect::FontRole
 */
 
 /*! \fn QskSkinnable::resetFontRoleHint
+
+    \brief Removes a font role hint from the local table
+
+    QskAspect::Flag | QskAspect::FontRole will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \return true, if an entry in the local hint table was found and removed.
+
+    \sa resetSkinHint(), setFontRoleHint()
 */
 
 /*! \fn QskSkinnable::fontRoleHint
+
+    \brief Retrieves a font role hint
+
+    QskAspect::Flag | QskAspect::FontRole will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \param status Optional status information
+    \return font role, or 0 if no value was found
+
+    \sa effectiveSkinHint(), setFontRoleHint()
 */
 
 /*! \fn QskSkinnable::setGraphicRoleHint
+
+    \brief Sets a graphic role hint
+
+    QskAspect::Flag | QskAspect::GraphicRole will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \param role Graphic role
+
+    \sa setSkinHint(), QskAspect::Flag, QskAspect::GraphicRole
 */
 
 /*! \fn QskSkinnable::resetGraphicRoleHint
+
+	\brief Removes a graphic role hint from the local table
+
+    QskAspect::Flag | QskAspect::GraphicRole will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \return true, if an entry in the local hint table was found and removed.
+
+    \sa resetSkinHint(), setGraphicRoleHint()
 */
 
 /*! \fn QskSkinnable::graphicRoleHint
+
+    \brief A Retrieves a graphic role hint
+
+    QskAspect::Flag | QskAspect::GraphicRole will be added to aspect.
+
+    \param aspect Unresolved aspect
+    \param status Optional status information
+    \return graphic role, or 0 if no value was found
+
+    \sa effectiveSkinHint(), setGraphicRoleHint()
 */
 
 /*! \fn QskSkinnable::isTransitionAccepted
+
+	\brief Additional check if an transition should be started
+
+	In certain situations a transition initated from state depending hints
+	needs to be avoided.
+
+	\param aspect Aspect
+	\return true, when owningControl()->isInitiallyPainted() is true
 */
 
 /*! \fn QskSkinnable::hintTable()
