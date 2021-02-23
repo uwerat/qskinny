@@ -48,7 +48,8 @@ class QSK_EXPORT QskScaleRenderer
         const QskSkinnable*, const QRectF&, QSGNode* ) const;
 
     virtual QSGNode* updateLabelsNode(
-        const QskSkinnable*, const QRectF&, QSGNode* node ) const;
+        const QskSkinnable*, const QRectF& ticksRect,
+        const QRectF& labelsRect, QSGNode* node ) const;
 
   private:
     Qt::Orientation m_orientation = Qt::Horizontal;

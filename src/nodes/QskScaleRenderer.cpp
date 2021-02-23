@@ -118,7 +118,7 @@ QSGNode* QskScaleRenderer::updateScaleNode(
 
         if ( !labelsRect.isEmpty() )
         {
-            newNode = updateLabelsNode( skinnable, labelsRect, oldNode );
+            newNode = updateLabelsNode( skinnable, tickmarksRect, labelsRect, oldNode );
             if ( newNode )
                 QskSGNode::setNodeRole( newNode, Labels );
         }
@@ -147,9 +147,10 @@ QSGNode* QskScaleRenderer::updateTicksNode(
 }
 
 QSGNode* QskScaleRenderer::updateLabelsNode(
-    const QskSkinnable* skinnable, const QRectF& rect, QSGNode* node ) const
+    const QskSkinnable* skinnable, const QRectF& tickmarksRect,
+    const QRectF& labelsRect, QSGNode* node ) const
 {
-    if ( rect.isEmpty() )
+    if ( labelsRect.isEmpty() || tickmarksRect.isEmpty() )
         return nullptr;
 
     const auto ticks = m_tickmarks.majorTicks();
@@ -161,7 +162,8 @@ QSGNode* QskScaleRenderer::updateLabelsNode(
 
     const QFontMetricsF fm( m_font );
 
-    const qreal length = ( m_orientation == Qt::Horizontal ) ? rect.width() : rect.height();
+    const qreal length = ( m_orientation == Qt::Horizontal )
+        ? tickmarksRect.width() : tickmarksRect.height();
     const qreal ratio = length / m_boundaries.width();
 
     auto nextNode = node->firstChild();
@@ -193,10 +195,10 @@ QSGNode* QskScaleRenderer::updateLabelsNode(
             {
                 const auto w = qskHorizontalAdvance( fm, text );
 
-                auto pos = tickPos - 0.5 * w;
-                pos = qBound( 0.0, pos, rect.width() - w );
+                auto pos = tickmarksRect.x() + tickPos - 0.5 * w;
+                pos = qBound( labelsRect.left(), pos, labelsRect.right() - w );
 
-                r = QRectF( rect.x() + pos, rect.y(), w, rect.height() );
+                r = QRectF( pos, labelsRect.y(), w, labelsRect.height() );
 
                 alignment = Qt::AlignLeft;
             }
@@ -204,18 +206,18 @@ QSGNode* QskScaleRenderer::updateLabelsNode(
             {
                 const auto h = fm.height();
 
+                auto pos = tickmarksRect.bottom() - ( tickPos + 0.5 * h );
+
                 /*
                     when clipping the label we can expand the clip rectangle
                     by the ascent/descent margins, as nothing gets painted there
                     anyway.
                  */
-                const qreal distTop = h - fm.ascent();
-                const qreal distBottom = fm.descent();
+                const qreal min = labelsRect.top() - ( h - fm.ascent() );
+                const qreal max = labelsRect.bottom() + fm.descent();
+                pos = qBound( min, pos, max );
 
-                auto pos = rect.height() - ( tickPos + 0.5 * h );
-                pos = qBound( -distTop, pos, rect.height() - h + distBottom );
-
-                r = QRectF( rect.x(), rect.y() + pos, rect.width(), rect.height() );
+                r = QRectF( labelsRect.x(), pos, labelsRect.width(), h );
 
                 alignment = Qt::AlignRight;
             }
@@ -253,18 +255,18 @@ QSGNode* QskScaleRenderer::updateLabelsNode(
 
             if( m_orientation == Qt::Horizontal )
             {
-                auto pos = tickPos - 0.5 * w;
-                pos = qBound( 0.0, pos, rect.width() - w );
+                auto pos = tickmarksRect.x() + tickPos - 0.5 * w;
+                pos = qBound( labelsRect.left(), pos, labelsRect.right() - w );
 
-                r = QRectF( rect.x() + pos, rect.y(), w, h );
+                r = QRectF( pos, labelsRect.y(), w, h );
                 alignment = Qt::AlignHCenter | Qt::AlignBottom;
             }
             else
             {
-                auto pos = rect.height() - ( tickPos + 0.5 * h );
-                pos = qBound( 0.0, pos, rect.height() - h );
+                auto pos = tickmarksRect.bottom() - ( tickPos + 0.5 * h );
+                pos = qBound( labelsRect.top(), pos, labelsRect.bottom() - h );
 
-                r = QRectF( rect.right() - w, rect.y() + pos, w, h );
+                r = QRectF( labelsRect.right() - w, pos, w, h );
                 alignment = Qt::AlignRight | Qt::AlignVCenter;
             }
 
