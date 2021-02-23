@@ -653,6 +653,21 @@ bool QskQuickItem::event( QEvent* event )
 
             return true;
         }
+        case QEvent::FocusIn:
+        {
+            if ( window() == nullptr )
+            {
+                /*
+                    During deconstruction of the window we run into
+                    focus changes when the items in the tree get destroyed.
+                    Calling focusInEvent() in this state does not make sense
+                    and often results in crashes in overloaded event handlers.
+                 */
+                return true;
+            }
+
+            break;
+        }
     }
 
     return Inherited::event( event );
