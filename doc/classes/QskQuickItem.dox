@@ -18,7 +18,7 @@
 
     \var QskQuickItem::UpdateFlag QskQuickItem::DeferredUpdate
 
-        Creating of sceme graph nodes is blocked when being invisible.
+        Creating of scene graph nodes is blocked when being invisible.
 
         The default implementation of Qt/Quick creates scene graph nodes for all items
         in the scene what might become a significant factor for the startup performance
@@ -44,7 +44,7 @@
 
     \var QskQuickItem::UpdateFlag QskQuickItem::DeferredLayout
 
-        Recalculations of the implicitSize are blocked until being explicitely requested. 
+        Recalculations of the implicitSize are blocked until being explicitly requested. 
 
 		When being enabled the item indicates layout relevant changes by
         sending a QEvent::LayoutRequest ( similar to QWidget ) to its parent item
@@ -144,7 +144,7 @@
     \var QskQuickItem::polishOnResize
 
     When polishOnResize is set QQuickItem::polish() will be called automatically
-    whenevent the size of the item has been changed. This is usually necessary
+    whenever the size of the item has been changed. This is usually necessary
     when the item is a container and the layout of its children depends on the
     size of the container.
 
@@ -194,7 +194,7 @@
     \fn QskQuickItem::~QskQuickItem
 
     Sets the componentComplete to false, so that its about-to-delete state is known
-    whn detaching it from parent/window.
+    when detaching it from parent/window.
 */
 
 /*!
@@ -349,7 +349,7 @@
 /*!
     \fn QskQuickItem::setLayoutMirroring
 
-	Change the direction how the content is layed out horizontally.
+	Change the direction how the content is laid out horizontally.
 
 	\param on True enables layoutMirroring
     \param childrenInherit If true the mirroring behavior is propagated
@@ -455,8 +455,8 @@
 /*!
     \fn QskQuickItem::classBegin
 
-	The QML engine initilizes an item as being incomplete by
-    explicitely calling classBegin(). Once the item
+	The QML engine initializes an item as being incomplete by
+    explicitly calling classBegin(). Once the item
     has been constructed componentComplete() is called. This way
     temporary operations during the construction can be avoided.
     
@@ -474,7 +474,7 @@
     \fn QskQuickItem::componentComplete
 
     The QML engine initilizes an item as being incomplete by
-    explicitely calling QQuickItem::classBegin(). Once the item
+    explicitly calling QQuickItem::classBegin(). Once the item
     has been constructed componentComplete() is called. This way
     temporary operations during the construction can be avoided.
 
@@ -518,7 +518,7 @@
 /*!
     \fn QskQuickItem::isInitiallyPainted
 
-    \return Value of the initiallyPainted propertyk
+    \return Value of the initiallyPainted property
 	\sa initiallyPainted
 */
 
@@ -671,7 +671,7 @@
 
     A specific hook that is intended to be overloaded by controls that need
     to do some specific operations, when an item is painted the first time
-    after becoming visisble.
+    after becoming visible.
 
     The default implementation is a no operation.
 
