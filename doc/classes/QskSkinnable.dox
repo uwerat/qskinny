@@ -43,7 +43,7 @@
         QskSkin::declareSkinlet, QskSkinlet::isOwnedBySkinnable()
 
 	\note Overriding the skinlet that has been registered in the skin
-          breaks the themeabilty of the skinnable.
+          breaks the themeability of the skinnable.
 */
 
 /*!
@@ -79,6 +79,11 @@
 
 	\brief Find the value for a specific aspect
 
+	If an animation is running for the given aspect its value will
+        be returned as hint. Then effectiveSkinHint() tries to find a hint
+        in the local table and finally tries to resolve the aspect from the
+	hint table of the skin.
+
 	\param aspect Initial aspect, to feed the skin hint lookup algorithm.
 	\param status Optional status information
 	\return Hint value, or an invalid QVariant if no value was found
@@ -89,7 +94,7 @@
 /*! \fn QskSkinnable::effectiveFont
 
 	Finds the font role for the given aspect and returns
-    the corrsponding font from the font table of the skin.
+    the corresponding font from the font table of the skin.
 
 	\param aspect Unresolved aspect
 	\return Font, corresponding to the resolved aspect 
@@ -100,7 +105,7 @@
 /*! \fn QskSkinnable::effectiveGraphicFilter
 
 	Finds the graphic role for the given aspect and returns
-	the corrsponding color filter from the skin
+	the corresponding color filter from the skin
 
 	\param aspect Unresolved aspect
 	\return Color filter, corresponding to the resolved aspect 
@@ -129,7 +134,7 @@
 	\param type Metric, color or something else
 	\param subControl Unsubstituted subControl
 	\param state State bits
-	\param status If status != nullptr additional informations
+	\param status If status != nullptr additional information
                   about where the hint has been found is returned
 
 	\return Value from the hint tables
@@ -140,7 +145,7 @@
 
 	\brief Insert a hint into the local hint table
 
-	Presentation, behevior and layout of the scene graph nodes are
+	Presentation, beheviour and layout of the scene graph nodes are
     affected by specific attributes - skin hints - that are configured
     in a table of the skin. Each skinnable has its own table
 	where these attributes can be overloaded. Hints from the local
@@ -154,7 +159,7 @@
 	\param hint Hint, might be anything that fits into a QVariant
                 and is understood by the skinlet consuming it.
 
-	\sa effectiveSkinHint(), resetSkinHint(), hintTable()
+	\sa effectiveSkinHint(), resetSkinHint(), hintTable(), QskSkinHintTableEditor()
 */
 
 /*! \fn QskSkinnable::resetSkinHint
@@ -271,7 +276,7 @@
 	Paddings, indentations depend on attributes for the given aspect.
 
 	\param aspect Unresolved aspect
-	\patam innerBoxSize Size to be expanded
+	\param innerBoxSize Size to be expanded
 	\return Expanded size
 
 	The size hint for a "container" node usually depend on the hints of its
@@ -283,13 +288,13 @@
 
 /*! \fn QskSkinnable::innerBoxSize
 
-	\brief Calculate the size, whith paddings, indentations being subtracted
+	\brief Calculate the size, with paddings, indentations being subtracted
 
 	Paddings, indentations depend on attributes for the given aspect.
 
 	\param aspect Unresolved aspect
-	\param outerBoxSize Size to be shrinked
-	\return Shrinked size
+	\param outerBoxSize Size to be shrunk
+	\return Shrunk size
 
 	\sa outerBoxSize(), innerBox(), outerBox()
 */
@@ -301,8 +306,8 @@
     Paddings, indentations depend on attributes for the given aspect.
 
     \param aspect Unresolved aspect
-    \param outerBox Rectangle to be shrinked
-    \return Shrinked rectangle
+    \param outerBox Rectangle to be shrunk
+    \return Shrunk rectangle
 
     \sa innerBoxSize(), outerBox()
 */
@@ -333,7 +338,7 @@
     \param aspect Unresolved aspect
     \param outerBoxSize Size of the box
 
-	\return Eddective padding
+	\return Effective padding
 */
 
 /*! \fn QskSkinnable::effectiveSkinlet
@@ -353,7 +358,7 @@
 /*! \fn QskSkinnable::startTransition
 
 	Start a transition for a specific aspect, that interpolates
-	between 2 values. While the transition is in process lookups for
+	between 2 values. While the transition is in process a look up for
 	the aspect will return the current value of the interpolation.
 
 	In most cases startTransition() is called automatically, when
@@ -361,7 +366,7 @@
 	state.
 
 	\param aspect Unresolved aspect, only subcontrol substitution will be done
-	\param from Start value of the transation
+	\param from Start value of the transition
 
 	\sa effectiveAnimation()
 */
@@ -378,7 +383,7 @@
     is defined for the tool button.
 
 	Subcontrol substitution is part of a concept that is known as
-    \ref aspectresolving "aspect resolving".
+    \ref aspect resolving "aspect resolving".
 
 	\param subControl Subcontrol
 	\return Substituted subcontrol
@@ -514,7 +519,7 @@
 
 	\param aspect Unresolved aspect
 	\param status Optional status information
-	\return Color hint, or QColor() if no value hs been found
+	\return Color hint, or QColor() if no value has been found
 
 	\sa effectiveSkinHint(), setColor()
 */
@@ -1038,7 +1043,7 @@
 
 	\brief Additional check if an transition should be started
 
-	In certain situations a transition initated from state depending hints
+	In certain situations a transition initiated from state depending hints
 	needs to be avoided.
 
 	\param aspect Aspect
@@ -1046,7 +1051,25 @@
 */
 
 /*! \fn QskSkinnable::hintTable()
+
+	\brief Accessor for local skin hint table
+
+	Definitions in the local hint table have precedence over those from
+	the table of the skin. Initially the local table is empty.
+
+	\return Reference to the local hint table
+
+	\sa setSkinHint(), QskSkinHintTableEditor
 */
 
 /*! \fn QskSkinnable::hintTable() const
+
+    \brief Accessor for local skin hint table
+
+    Definitions in the local hint table have precedence over those from
+    the table of the skin. Initially the local table is empty.
+
+    \return Reference to the local hint table
+
+    \sa setSkinHint(), QskSkinHintTableEditor
 */
