@@ -23,9 +23,6 @@ class QskControlPrivate : public QskQuickItemPrivate
     ~QskControlPrivate() override;
 
   private:
-    QSGTransformNode* createTransformNode() override;
-    void transformChanged() override;
-
     void setExplicitSizeHint( Qt::SizeHint, const QSizeF& );
     void resetExplicitSizeHint( Qt::SizeHint );
     QSizeF explicitSizeHint( Qt::SizeHint ) const;

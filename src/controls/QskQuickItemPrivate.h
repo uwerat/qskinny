@@ -29,6 +29,9 @@ class QskQuickItemPrivate : public QQuickItemPrivate
     virtual void implicitSizeChanged();
 
   private:
+    QSGTransformNode* createTransformNode() override;
+    void transformChanged() override;
+
     void cleanupNodes();
     void mirrorChange() override;
 

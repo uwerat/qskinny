@@ -193,6 +193,8 @@ void QskQuickItemPrivate::cleanupNodes()
     // setting the dirty flags, so that nodes will be recreated
     // the next time we participate in a scene graph update
 
+    dirtyAttributes |= QQuickItemPrivate::Transform;
+
     if ( !itemNodeInstance->matrix().isIdentity() )
         dirtyAttributes |= QQuickItemPrivate::Position;
 
@@ -229,3 +231,12 @@ void QskQuickItemPrivate::cleanupNodes()
     }
 }
 
+QSGTransformNode* QskQuickItemPrivate::createTransformNode()
+{
+    return Inherited::createTransformNode();
+}
+
+void QskQuickItemPrivate::transformChanged()
+{
+    Inherited::transformChanged();
+}

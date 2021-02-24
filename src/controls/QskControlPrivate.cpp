@@ -239,16 +239,6 @@ bool QskControlPrivate::maybeGesture( QQuickItem* child, QEvent* event )
     return q->gestureFilter( child, event );
 }
 
-QSGTransformNode* QskControlPrivate::createTransformNode()
-{
-    return Inherited::createTransformNode();
-}
-
-void QskControlPrivate::transformChanged()
-{
-    Inherited::transformChanged();
-}
-
 bool QskControlPrivate::inheritLocale( QskControl* control, const QLocale& locale )
 {
     auto d = static_cast< QskControlPrivate* >( QQuickItemPrivate::get( control ) );
