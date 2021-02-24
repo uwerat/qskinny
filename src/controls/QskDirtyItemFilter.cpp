@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #include "QskDirtyItemFilter.h"
-#include "QskControl.h"
+#include "QskQuickItem.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>
@@ -15,8 +15,8 @@ static inline bool qskIsUpdateBlocked( const QQuickItem* item )
 {
     if ( !item->isVisible() )
     {
-        if ( const auto control = qskControlCast( item ) )
-            return control->testUpdateFlag( QskControl::DeferredUpdate );
+        if ( auto qskItem = qobject_cast< const QskQuickItem* >( item ) )
+            return qskItem->testUpdateFlag( QskQuickItem::DeferredUpdate );
     }
 
 #if 0
