@@ -403,7 +403,29 @@ bool QskGestureRecognizer::processEvent(
 
                 if ( m_data->state == Pending )
                 {
-                    reject();
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 10, 0 )
+                    if ( mouseEvent->source() == Qt::MouseEventSynthesizedByQt )
+                    {
+                        /*
+                            When replaying mouse events inside of handling synthesized
+                            mouse event Qt runs into a situation where
+                            QQuickWindow::mouseGrabberItem() returns the value from the
+                            wrong input device. So we can't call reject() immediately.
+
+                            Unfortunately this introduces a gap where other events might
+                            be delivered before the QEvent::timer gets processed.
+                            In the long run it might be better to record and replay
+                            real touch events - what is necessary for multi touch gestures
+                            anyway.
+                         */
+                        qskTimerTable->stopTimer( this );
+                        qskTimerTable->startTimer( 0, this );
+                    }
+                    else
+#endif
+                    {
+                        reject();
+                    }
                 }
                 else
                 {
