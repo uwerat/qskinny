@@ -850,6 +850,21 @@ void QskQuickItem::geometryChange(
     QCoreApplication::sendEvent( this, &event );
 }
 
+void QskQuickItem::mouseUngrabEvent()
+{
+    Inherited::mouseUngrabEvent();
+}
+
+void QskQuickItem::touchUngrabEvent()
+{
+    Inherited::touchUngrabEvent();
+}
+
+void QskQuickItem::windowDeactivateEvent()
+{
+    Inherited::windowDeactivateEvent();
+}
+
 void QskQuickItem::updatePolish()
 {
     Q_D( QskQuickItem );

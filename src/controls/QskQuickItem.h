@@ -131,6 +131,10 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
     virtual void geometryChangeEvent( QskGeometryChangeEvent* );
     virtual void windowChangeEvent( QskWindowChangeEvent* );
 
+    void mouseUngrabEvent() override; 
+    void touchUngrabEvent() override;
+    void windowDeactivateEvent() override;
+
     void itemChange( ItemChange, const ItemChangeData& ) override;
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
     void geometryChange( const QRectF&, const QRectF& ) override;
