@@ -57,7 +57,7 @@ static inline QMouseEvent* qskClonedMouseEvent(
 
 static void qskGrabTouchMouse( QQuickItem* item )
 {
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 )
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 ) && QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
     auto wd = QQuickWindowPrivate::get( item->window() );
 
     if ( wd->touchMouseDevice == nullptr )

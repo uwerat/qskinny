@@ -133,7 +133,10 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
 
     void mouseUngrabEvent() override; 
     void touchUngrabEvent() override;
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
     void windowDeactivateEvent() override;
+#endif
 
     void itemChange( ItemChange, const ItemChangeData& ) override;
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )

@@ -860,10 +860,14 @@ void QskQuickItem::touchUngrabEvent()
     Inherited::touchUngrabEvent();
 }
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+
 void QskQuickItem::windowDeactivateEvent()
 {
     Inherited::windowDeactivateEvent();
 }
+
+#endif
 
 void QskQuickItem::updatePolish()
 {
