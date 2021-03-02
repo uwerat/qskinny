@@ -252,7 +252,7 @@ QskDialog::DialogCode QskDialogSubWindow::exec()
         return QskDialog::Rejected;
     }
 
-    if ( QQuickItem* mouseGrabber = window()->mouseGrabberItem() )
+    if ( auto mouseGrabber = window()->mouseGrabberItem() )
     {
         // when being called from QQuickWindow::mouseReleaseEvent
         // the mouse grabber has not yet been released.
