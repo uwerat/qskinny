@@ -161,6 +161,7 @@ class QSK_EXPORT QskTextInput : public QskControl
     void readOnlyChanged( bool );
 
     void textChanged( const QString& );
+    void displayTextChanged( const QString& );
 
 #if QT_VERSION >= QT_VERSION_CHECK( 5, 9, 0 )
     void textEdited( const QString& );

@@ -33,6 +33,9 @@ static inline void qskBindSignals(
     QObject::connect( wrappedInput, &QQuickTextInput::textChanged,
         input, [ input ] { Q_EMIT input->textChanged( input->text() ); } );
 
+    QObject::connect( wrappedInput, &QQuickTextInput::displayTextChanged,
+        input, [ input ] { Q_EMIT input->displayTextChanged( input->displayText() ); } );
+
 #if QT_VERSION >= QT_VERSION_CHECK( 5, 9, 0 )
     QObject::connect( wrappedInput, &QQuickTextInput::textEdited,
         input, [ input ] { Q_EMIT input->textEdited( input->text() ); } );
@@ -106,7 +109,7 @@ namespace
 
             if ( d->m_validator )
             {
-                QString text = d->m_text;
+                QString text = displayText();
                 int pos = d->m_cursor;
 
                 const auto state = d->m_validator->validate( text, pos );
