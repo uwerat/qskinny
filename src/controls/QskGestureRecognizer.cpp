@@ -55,6 +55,44 @@ static inline QMouseEvent* qskClonedMouseEvent(
     return clonedEvent;
 }
 
+static void qskGrabTouchMouse( QQuickItem* item )
+{
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 )
+    auto wd = QQuickWindowPrivate::get( item->window() );
+
+    if ( wd->touchMouseDevice == nullptr )
+    {
+        /*
+            For synthesized mouse events QQuickWindow sends
+            an initial QEvent::MouseButtonPress before setting
+            touchMouseDevice/touchMouseId and a call of grabMouse
+            is stored in a pointerEvent for the generic mouse device.
+            Then all following synthesized mouse events are not grabbed
+            properly.
+        */
+
+        for ( const auto event : wd->pointerEventInstances )
+        {
+            if ( auto touchEvent = event->asPointerTouchEvent() )
+            {
+                if ( touchEvent->isPressEvent() )
+                {
+                    if ( const auto p = touchEvent->point( 0 ) )
+                    {
+                        wd->touchMouseDevice = touchEvent->device();
+                        wd->touchMouseId = p->pointId();
+                    }
+
+                    break;
+                }
+            }
+        }
+    }
+#endif
+
+    item->grabMouse();
+}
+
 namespace
 {
     /*
@@ -336,7 +374,7 @@ bool QskGestureRecognizer::processEvent(
             We grab the mouse for watchedItem and indicate, that we want
             to keep it. From now on all mouse events should end up at watchedItem.
          */
-        watchedItem->grabMouse();
+        qskGrabTouchMouse( watchedItem );
         watchedItem->setKeepMouseGrab( true );
 
         m_data->timestamp = mouseEvent->timestamp();
@@ -403,29 +441,7 @@ bool QskGestureRecognizer::processEvent(
 
                 if ( m_data->state == Pending )
                 {
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 10, 0 )
-                    if ( mouseEvent->source() == Qt::MouseEventSynthesizedByQt )
-                    {
-                        /*
-                            When replaying mouse events inside of handling synthesized
-                            mouse event Qt runs into a situation where
-                            QQuickWindow::mouseGrabberItem() returns the value from the
-                            wrong input device. So we can't call reject() immediately.
-
-                            Unfortunately this introduces a gap where other events might
-                            be delivered before the QEvent::timer gets processed.
-                            In the long run it might be better to record and replay
-                            real touch events - what is necessary for multi touch gestures
-                            anyway.
-                         */
-                        qskTimerTable->stopTimer( this );
-                        qskTimerTable->startTimer( 0, this );
-                    }
-                    else
-#endif
-                    {
-                        reject();
-                    }
+                    reject();
                 }
                 else
                 {
@@ -509,18 +525,8 @@ void QskGestureRecognizer::reject()
 
         m_data->timestampProcessed = events.last()->timestamp();
 
-        QCoreApplication::sendEvent( window, events[ 0 ] );
-
-        /*
-            After resending the initial press someone else
-            might be interested in this sequence.
-         */
-
-        if ( window->mouseGrabberItem() )
-        {
-            for ( int i = 1; i < events.size(); i++ )
-                QCoreApplication::sendEvent( window, events[ i ] );
-        }
+        for ( auto event : events )
+            QCoreApplication::sendEvent( window, event );
     }
 
     m_data->isReplayingEvents = false;
@@ -535,19 +541,13 @@ void QskGestureRecognizer::reset()
 {
     qskTimerTable->stopTimer( this );
 
-    if ( auto watchedItem = m_data->watchedItem )
+    if ( auto item = m_data->watchedItem )
     {
-        watchedItem->setKeepMouseGrab( false );
-
-        if ( auto window = watchedItem->window() )
-        {
-            if ( window->mouseGrabberItem() == m_data->watchedItem )
-                watchedItem->ungrabMouse();
-        }
+        item->setKeepMouseGrab( false );
+        item->ungrabMouse();
     }
 
     m_data->pendingEvents.reset();
-
     m_data->timestamp = 0;
 
     setState( Idle );
