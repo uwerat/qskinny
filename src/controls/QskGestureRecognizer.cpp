@@ -510,7 +510,10 @@ void QskGestureRecognizer::reject()
     m_data->isReplayingEvents = true;
 
     if ( window->mouseGrabberItem() == watchedItem )
+    {
+        watchedItem->setKeepMouseGrab( false );
         watchedItem->ungrabMouse();
+    }
 
     if ( !events.isEmpty() &&
         ( events[ 0 ]->type() == QEvent::MouseButtonPress ) )
