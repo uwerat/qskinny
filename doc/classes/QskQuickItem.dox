@@ -3,7 +3,7 @@
 
     \ingroup Framework
 
-    QskQuickItem completes the C++ API of QQuickItem and reestablishs basic
+    QskQuickItem completes the C++ API of QQuickItem and re-establishs basic
     concepts like events. It also offers better control over the operations
     happening in the update cycle.
  */
@@ -46,9 +46,9 @@
 
         Recalculations of the implicitSize are blocked until being explicitly requested. 
 
-		When being enabled the item indicates layout relevant changes by
+        When being enabled the item indicates layout relevant changes by
         sending a QEvent::LayoutRequest ( similar to QWidget ) to its parent item
-		without recalculating the actual size hints ( f.e the implicitSize ).
+        without recalculating the actual size hints ( f.e the implicitSize ).
 
         When having layout code that relies on binding the implicit width/height
         the QskQuickItem::DeferredLayout flag needs to be disabled.
@@ -86,7 +86,7 @@
     \var QskQuickItem::geometry
 
     This property holds the geometry of the item relative to its parent item.
-	When changing the geometry, the item receives a QskEvent::GeometryChange event.
+    When changing the geometry, the item receives a QskEvent::GeometryChange event.
 
     \sa geometryChangeEvent(), geometryChange(), rect
 */
@@ -94,8 +94,8 @@
 /*!
     \var QskQuickItem::rect
 
-	This property returns the internal geometry of the item.
-	It equals QRect(0, 0, width(), height() ).
+    This property returns the internal geometry of the item.
+    It equals QRect(0, 0, width(), height() ).
 
     \sa geometryChangeEvent(), geometryChange(), geometry
 */
@@ -126,7 +126,7 @@
 /*!
     \var QskQuickItem::visibleToParent
 
-	Flag indicating if an item would become visible if its parentItem() is shown.
+    Flag indicating if an item would become visible if its parentItem() is shown.
     The implementation relies on the internal explicitVisible flag, that has not
     been exposed by the public API of QQuickItem.
 
@@ -174,13 +174,13 @@
 /*!
     \var QskQuickItem::updateFlags
 
-	QskQuickItem offers several tweaks to the Qt/Quick update cycle,
+    QskQuickItem offers several tweaks to the Qt/Quick update cycle,
     that can be en/disabled individually.
 
-	The flags are a combination from bits that have been explicitly set
-	by setUpdateFlag() and those being derived from the aapplication
-	wide default settings, that can be set with QskSetup.
-	
+    The flags are a combination from bits that have been explicitly set
+    by setUpdateFlag() and those being derived from the aapplication
+    wide default settings, that can be set with QskSetup.
+    
     \sa QskQuickItem::UpdateFlag, QskQuickItem::updateFlags(), QskSetup::itemUpdateFlags()
 */
 
@@ -225,8 +225,8 @@
     
     \return true once setVisible( false ) has been called
 
-	\sa visibleToParent
-	\saqt QQuickItem::setVisible()
+    \sa visibleToParent
+    \saqt QQuickItem::setVisible()
 */
 
 /*!
@@ -239,15 +239,15 @@
 /*!
     \fn QskQuickItem::setGeometry( qreal, qreal, qreal, qreal )
 
-	Set the position and the size of an item
+    Set the position and the size of an item
 
-	\param x X ( = left ) coordinate relative to the parent item 
-	\param y Y ( = top ) coordinate relative to the parent item 
-	\param width Width
-	\param height Height
+    \param x X ( = left ) coordinate relative to the parent item 
+    \param y Y ( = top ) coordinate relative to the parent item 
+    \param width Width
+    \param height Height
 
-	\sa geometry(), geometryChange()
-	\saqt QQuickItem::size(), QQuickItem::position()
+    \sa geometry(), geometryChange()
+    \saqt QQuickItem::size(), QQuickItem::position()
 */
 
 /*!
@@ -257,14 +257,14 @@
 
     \param rect Geometry relative to the parent item
 
-	\sa geometry(), geometryChange()
-	\saqt QQuickItem::size(), QQuickItem::position()
+    \sa geometry(), geometryChange()
+    \saqt QQuickItem::size(), QQuickItem::position()
 */
 
 /*!
     \fn QskQuickItem::geometry() const
 
-	\return Position and size relative to the parent item
+    \return Position and size relative to the parent item
     \sa geometry, setGeometry()
 */
 
@@ -280,7 +280,7 @@
 /*!
     \fn QskQuickItem::rect() const
 
-	\return Internal geometry of the item, where the position is always at ( 0, 0 )
+    \return Internal geometry of the item, where the position is always at ( 0, 0 )
     \sa geometry
 */
 
@@ -301,100 +301,100 @@
           needs to disable the QskQuickItem::DeferredLayout flag
 
     \sa QskControl::preferredSize(), QskControl::sizeHint()
-	\saqt QQuickItem::implicitWidth(), QQuickItem::implicitHeight()
+    \saqt QQuickItem::implicitWidth(), QQuickItem::implicitHeight()
 */
 
 /*!
     \fn QskQuickItem::setPolishOnResize
 
-	Set or clear the polishOnResize flag.
+    Set or clear the polishOnResize flag.
     \sa polishOnResize
 */
 
 /*!
     \fn QskQuickItem::polishOnResize() const
 
-	\return Value of the polishOnResize flag
-	\sa setPolishOnResize()
+    \return Value of the polishOnResize flag
+    \sa setPolishOnResize()
 */
 
 /*!
     \fn QskQuickItem::setTransparentForPositioner
 
-	Set or clear the transparentForPositioner flag
-	\sa isTransparentForPositioner()
+    Set or clear the transparentForPositioner flag
+    \sa isTransparentForPositioner()
 */
 
 /*!
     \fn QskQuickItem::isTransparentForPositioner
 
-	\return Value of the transparentForPositioner flag
-	\sa transparentForPositioner
+    \return Value of the transparentForPositioner flag
+    \sa transparentForPositioner
 */
 
 /*!
     \fn QskQuickItem::setTabFence
 
-	Set or clear the tabFence property
-	\sa isTabFence()
+    Set or clear the tabFence property
+    \sa isTabFence()
 */
 
 /*!
     \fn QskQuickItem::isTabFence
 
-	\return Value of the tabFence property
-	\sa setTransparentForPositioner()
+    \return Value of the tabFence property
+    \sa setTransparentForPositioner()
 */
 
 /*!
     \fn QskQuickItem::setLayoutMirroring
 
-	Change the direction how the content is laid out horizontally.
+    Change the direction how the content is laid out horizontally.
 
-	\param on True enables layoutMirroring
+    \param on True enables layoutMirroring
     \param childrenInherit If true the mirroring behavior is propagated
                            to all child items as well. 
 
     Changes of this property will be indicated by a QEvent::LayoutDirectionChange.
 
-	\sa layoutMirroring, resetLayoutMirroring(), changeEvent()
-	\note In Qml the parameters are routed through the attached LayoutMirroring property
+    \sa layoutMirroring, resetLayoutMirroring(), changeEvent()
+    \note In Qml the parameters are routed through the attached LayoutMirroring property
           to have something declarative
 */
 
 /*!
     \fn QskQuickItem::resetLayoutMirroring
 
-	Clear the layoutMirroring property
+    Clear the layoutMirroring property
 
-	\sa setLayoutMirroring(), layoutMirroring
+    \sa setLayoutMirroring(), layoutMirroring
 */
 
 /*!
     \fn QskQuickItem::layoutMirroring() const
 
-	Direction how the content is layed out horizontally.
+    Direction how the content is layed out horizontally.
 
     If no value has been explicitly assigned it is inherited
-	from the closest ancestor, where the attribute has been
+    from the closest ancestor, where the attribute has been
     assigned with the childrenInherit parameter. If such an ancestor
     does not exists layoutMirroring is false.
 
-	\return Inherited or explicitly assigned value
+    \return Inherited or explicitly assigned value
 
     \sa setLayoutMirroring(), layoutMirroring()
     \todo Several controls do not respect this flag
 
-	\sa setLayoutMirroring(), resetLayoutMirroring()
+    \sa setLayoutMirroring(), resetLayoutMirroring()
     \note Several controls do not respect this flag
-	\note In Qml the parameters are routed through the attached LayoutMirroring property
+    \note In Qml the parameters are routed through the attached LayoutMirroring property
           to have something declarative
 */
 
 /*!
     \fn QskQuickItem::resetUpdateFlags
 
-	Reset all flags to the default settings 
+    Reset all flags to the default settings 
 
     \sa QskSetup::itemUpdateFlags(), updateFlags(), updateFlags
 */
@@ -402,60 +402,60 @@
 /*!
     \fn QskQuickItem::updateFlags() const
 
-	\return Flags affecting the item update process
-	\sa testUpdateFlag(), setUpdateFlag(), updateFlags
+    \return Flags affecting the item update process
+    \sa testUpdateFlag(), setUpdateFlag(), updateFlags
 */
 
 /*!
     \fn QskQuickItem::setUpdateFlag
 
-	QskQuickItem offers several tweaks to the Qt/Quick update cycle,
-	that can be en/disables individually.
+    QskQuickItem offers several tweaks to the Qt/Quick update cycle,
+    that can be en/disables individually.
 
     The default settings for these flags are taken from QskSetup::itemUpdateFlags()
-	When calling setUpdateFlag() the value for the particular flag is decoupled
-	from the corresponding default bit - even if both bits have the same value.
+    When calling setUpdateFlag() the value for the particular flag is decoupled
+    from the corresponding default bit - even if both bits have the same value.
     This can be reverted by calling resetUpdateFlag()
 
-	\param flag Flag affecting the item update process
-	\param on En/Disable the behaviour related to the flag
+    \param flag Flag affecting the item update process
+    \param on En/Disable the behaviour related to the flag
 
-	\sa QskSetup::itemUpdateFlags(), testUpdateFlag(). updateFlags
+    \sa QskSetup::itemUpdateFlags(), testUpdateFlag(). updateFlags
 */
 
 /*!
     \fn QskQuickItem::resetUpdateFlag
 
-	Reset the value for flag to the default settings from QskSetup. Future
-	changes of the corresponding bit with QskSetup::setItemUpdateFlag() will affect
-	the behaviour of this item.
+    Reset the value for flag to the default settings from QskSetup. Future
+    changes of the corresponding bit with QskSetup::setItemUpdateFlag() will affect
+    the behaviour of this item.
 
-	\param flag Flag affecting the item update process
-	\sa QskSetup::itemUpdateFlags(), updateFlags(), testUpdateFlag(), updateFlags
+    \param flag Flag affecting the item update process
+    \sa QskSetup::itemUpdateFlags(), updateFlags(), testUpdateFlag(), updateFlags
 */
 
 /*!
     \fn QskQuickItem::testUpdateFlag
 
-	\param Flag affecting the item update process
-	\return true, when the corresponding bit is effective
+    \param Flag affecting the item update process
+    \return true, when the corresponding bit is effective
 
-	\sa setUpdateFlag(), QskSetup::itemUpdateFlag(), updateFlags
+    \sa setUpdateFlag(), QskSetup::itemUpdateFlag(), updateFlags
 */
 
 /*!
     \fn QskQuickItem::updateFlagsChanged
 
-	Signal indicating, that the effective update flags have changed
+    Signal indicating, that the effective update flags have changed
 
-	\param flags Effective flags, might be derived in parts from QskSetup::itemUpdateFlags()
-	\sa updateFlags
+    \param flags Effective flags, might be derived in parts from QskSetup::itemUpdateFlags()
+    \sa updateFlags
 */
 
 /*!
     \fn QskQuickItem::classBegin
 
-	The QML engine initializes an item as being incomplete by
+    The QML engine initializes an item as being incomplete by
     explicitly calling classBegin(). Once the item
     has been constructed componentComplete() is called. This way
     temporary operations during the construction can be avoided.
@@ -463,7 +463,7 @@
     In the C++ case the item indicates being complete from
     the beginning and both hooks are never called.
 
-	The overloaded version calls the base class and has no
+    The overloaded version calls the base class and has no
     purpose beside being an entry point for debugging.
     
     \sa componentComplete()
@@ -481,37 +481,37 @@
     In the C++ case the item indicates being complete from
     the beginning and both hooks are never called.
 
-	The overloaded does some sanity checks in debug mode
-	and calls the base class.
+    The overloaded does some sanity checks in debug mode
+    and calls the base class.
 
-	\sa classBegin()
+    \sa classBegin()
     \saqt QQuickItem::isComponentComplete(), QQuickItem::componentComplete
 */
 
 /*!
     \fn QskQuickItem::releaseResources
 
-	This specific hook is called, when the item is about to be removed
+    This specific hook is called, when the item is about to be removed
     from the window it was previously rendering to. 
 
-	The implementation stores the values needed for the following QskWindowChangeEvent.
+    The implementation stores the values needed for the following QskWindowChangeEvent.
 
-	\sa windowChangeEvent()
+    \sa windowChangeEvent()
 */
 
 /*!
     \fn QskQuickItem::isPolishScheduled
 
-	\return True, if the item will be polished in the next
+    \return True, if the item will be polished in the next
             scene graph update cycle.
-	\sa isUpdateNodeScheduled()
-	\saqt QQuickItem::polish()
+    \sa isUpdateNodeScheduled()
+    \saqt QQuickItem::polish()
 */
 
 /*!
     \fn QskQuickItem::isUpdateNodeScheduled
 
-	\return True, if the item will update the paint node in
+    \return True, if the item will update the paint node in
             the next scene graph update cycle
 */
 
@@ -519,51 +519,51 @@
     \fn QskQuickItem::isInitiallyPainted
 
     \return Value of the initiallyPainted property
-	\sa initiallyPainted
+    \sa initiallyPainted
 */
 
 /*!
     \fn QskQuickItem::maybeUnresized
 
-	Flag indicating a potential state, where the item is waiting to be
-	sized by the layout system.
+    Flag indicating a potential state, where the item is waiting to be
+    sized by the layout system.
 
     Unfortunately the list of items to-be-polished is not processed
     in top/down order and a container might be requested to calculate
-	the geometries for its children before having a proper size itself.
+    the geometries for its children before having a proper size itself.
 
-	Some of these situations can be avoided by ignoring these requests
-	depending on the maybeUnresized flag. 
+    Some of these situations can be avoided by ignoring these requests
+    depending on the maybeUnresized flag. 
 */
 
 /*!
     \fn QskQuickItem::itemFlagsChanged
 
-	Signal indicating that at least one if the following attributes has changed:
+    Signal indicating that at least one if the following attributes has changed:
 
-	- transparentForPositioners
-	- tabFence
-	- polishOnResize
+    - transparentForPositioners
+    - tabFence
+    - polishOnResize
 */
 
 /*!
     \fn QskQuickItem::show
 
-	An alternative way to call setVisible( true ).
-	Useful for signal/slot connections
+    An alternative way to call setVisible( true ).
+    Useful for signal/slot connections
 
-	\sa hide()
-	\saqt QQuickItem::setVisible()
+    \sa hide()
+    \saqt QQuickItem::setVisible()
 */
 
 /*!
     \fn QskQuickItem::hide
 
-	An alternative way to call setVisible( false ).
-	Useful for signal/slot connections
+    An alternative way to call setVisible( false ).
+    Useful for signal/slot connections
 
-	\sa show()
-	\saqt QQuickItem::setVisible()
+    \sa show()
+    \saqt QQuickItem::setVisible()
 */
 
 /*!
@@ -576,14 +576,14 @@
 /*!
     \fn QskQuickItem::setDisabled
 
-	Convenience function, equivalent to setEnabled( !on ).
+    Convenience function, equivalent to setEnabled( !on ).
         \saqt QQuickItem::setEnabled()
 */
 
 /*!
     \fn QskQuickItem::resetImplicitSize
 
-	Notifies the layout system that attributes affecting the layout
+    Notifies the layout system that attributes affecting the layout
     system have changed.
 
     If the QskQuickItem::DeferredLayout flag is enabled ( = default )
@@ -599,22 +599,50 @@
 
     QskQuickItem handles the additional type of events.
 
-	\param event Qt event
+    For some reason the QQuick classes introduced proprietory notfier hooks
+    instead of using the well established and powerful concept of events.
+    QskQuickItem tries to revert this decision by mapping notifications
+    to events, when possible.
+
+    The following notification events are added by QSkinny - usually with a
+    very similar to how they are used known for Qt/Widgets:
+
+    - QEvent::ContentsRectChange
+    - QEvent::LocaleChange
+    - QEvent::ParentChange
+    - QEvent::EnabledChange
+    - QEvent::ReadOnlyChange
+    - QEvent::LayoutDirectionChange
+    - QEvent::LayoutRequest
+
+    Furthermore events derived from QskEvent are used.
+
+    \param event Qt event
 */
 
 /*!
     \fn QskQuickItem::changeEvent
 
-	This event handler can be reimplemented to handle state changes.
+    This event handler can be reimplemented to handle certain state changes:
 
-	Change events include:
+        - QEvent::StyleChange
+        - QEvent::ContentsRectChange
+        - QEvent::FontChange
+        - QEvent::PaletteChange
+        - QEvent::ReadOnlyChange
+        - QEvent::EnabledChange
+        - QEvent::LocaleChange
+        - QEvent::ParentChange
+        - QEvent::LayoutDirectionChange
 
-		- QEvent::StyleChange
-		- QEvent::ContentsRectChange
-		- QEvent::EnabledChange
-		- QEvent::ReadOnlyChange
-		- QEvent::LocaleChange
-		- QEvent::ParentChange
+    
+
+    \param event Qt event
+
+    \note QEvent::PaletteChange, QEvent::FontChange are handled, but both event types
+          do not fit to the themeing concept of QSkinny and are not posted. However
+          it is possible to post them if an application has a concept, where they
+          make sense.
 */
 
 /*!
@@ -635,14 +663,14 @@
 /*!
     \fn QskQuickItem::windowChangeEvent
 
-	This event handler can be reimplemented to handle situations, where
-	an item is added, removed or transferred between windows. It corresponds
-	to the QQuickItem::ItemSceneChange notification, but is more convenient:
+    This event handler can be reimplemented to handle situations, where
+    an item is added, removed or transferred between windows. It corresponds
+    to the QQuickItem::ItemSceneChange notification, but is more convenient:
 
     - being an event it can be processed by event filtering
     - the previous window is available 
 
-	\param event Event with the old/new windows
+    \param event Event with the old/new windows
 */
 
 /*!
@@ -651,10 +679,10 @@
     For no obvious reason Qt/Quick has introduced an additional callback
     mechanism beside events and signals.
 
-	\param change Indicator, to identify what has changed
+    \param change Indicator, to identify what has changed
     \param changeData Extra information relating to the change
 
-	\note It is recommended to avoid using this type of notifications where possible.
+    \note It is recommended to avoid using this type of notifications where possible.
           Netter rely on overloading the corresponding  event handlers, what allows
           application code to make use of convenient and well established concepts
           like event filtering ( QObject::installEventFilter() ).
@@ -662,8 +690,8 @@
     \note If you re-implement this method in a subclass, be sure to call
           the overloaded method of the base class.
 
-	\sa event()
-	\saqt QQuickItem::itemChange()
+    \sa event()
+    \saqt QQuickItem::itemChange()
 */
 
 /*!
