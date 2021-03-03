@@ -589,6 +589,7 @@ void QskQuickItem::sendEnabledChangeEvent()
 bool QskQuickItem::event( QEvent* event )
 {
     const int eventType = event->type();
+    const bool hasContents = flags() & QQuickItem::ItemHasContents;
 
     switch( eventType )
     {
@@ -599,7 +600,7 @@ bool QskQuickItem::event( QEvent* event )
             resetImplicitSize();
             polish();
 
-            if ( flags() & QQuickItem::ItemHasContents )
+            if ( hasContents )
                 update();
 
             changeEvent( event );
@@ -609,10 +610,10 @@ bool QskQuickItem::event( QEvent* event )
         {
             resetImplicitSize();
 
-            if ( polishOnResize() )
+            if ( d_func()->polishOnResize )
                 polish();
 
-            if ( flags() & QQuickItem::ItemHasContents )
+            if ( hasContents )
                 update();
 
             changeEvent( event );
@@ -625,13 +626,31 @@ bool QskQuickItem::event( QEvent* event )
             events - whatever it is good for.
          */
         case QEvent::FontChange:
+        {
+            resetImplicitSize();
+            polish();
+
+            if ( hasContents )
+                update();
+
+            changeEvent( event );
+            return true;
+        }
         case QEvent::PaletteChange:
+        {
+            if ( hasContents )
+                update();
+
+            changeEvent( event );
+            return true;
+        }
 #endif
 
         case QEvent::ReadOnlyChange:
         case QEvent::EnabledChange:
         case QEvent::LocaleChange:
         case QEvent::ParentChange:
+        case QEvent::LayoutDirectionChange:
         {
             changeEvent( event );
             return true;
