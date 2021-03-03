@@ -1,12 +1,12 @@
 /*!
     \class QskSkinHintStatus QskSkinnable.h
 
-	\ingroup Framework
+    \ingroup Framework
 
-	QskSkinHintStatus provides the information how a lookup for a skin hint had been
-	resolved and where the value has been found.
+    QskSkinHintStatus provides the information how a lookup for a skin hint had been
+    resolved and where the value has been found.
 
-	\sa QskSkinnable::effectiveSkinHint()
+    \sa QskSkinnable::effectiveSkinHint()
 */
 
 /*!
@@ -16,57 +16,57 @@
 
          The lookup had failed to find a valid hint
 
-	\var QskSkinHintStatus::Skinnable
+    \var QskSkinHintStatus::Skinnable
 
          The hint has been found in the local table of the skinnable
 
     \sa QskSkinnable::hintTable()
 
-	\var QskSkinHintStatus::Skin
+    \var QskSkinHintStatus::Skin
 
-		The hint has been found in the table of the skin
+        The hint has been found in the table of the skin
 
     \sa QskSkinnable::effectiveSkin(), QskSkin::hintTable()
 
-	\var QskSkinHintStatus::Animator
+    \var QskSkinHintStatus::Animator
 
-		The hint has been taken from an animator, that is in the process
+        The hint has been taken from an animator, that is in the process
         of interpolating between values of different states
 
-	\sa QskHintAnimator, QskSkinnable::setSkinState()
+    \sa QskHintAnimator, QskSkinnable::setSkinState()
 */
 
 /*!
-	\var QskSkinHintStatus::source
+    \var QskSkinHintStatus::source
 
-		Source, where the hint has been found
+        Source, where the hint has been found
 
-	\sa QskSkinHintStatus::Source
+    \sa QskSkinHintStatus::Source
 */
 
 /*!
-	\var QskSkinHintStatus::aspect
+    \var QskSkinHintStatus::aspect
 
-		Resolved aspect, that lead to a successful match in one of the
-		available sources
+        Resolved aspect, that lead to a successful match in one of the
+        available sources
 
-	\sa QskAspect
+    \sa QskAspect
 
-	\note The resolved apsect usually differs from the aspect that has been
+    \note The resolved apsect usually differs from the aspect that has been
           passed as input parameter for QskSkinnable::effectiveSkinHint()
 */
 
 /*!
-	\fn QskSkinHintStatus::QskSkinHintStatus
+    \fn QskSkinHintStatus::QskSkinHintStatus
 
-	Initializes the status to be invalid, by setting the source
+    Initializes the status to be invalid, by setting the source
     to QskSkinHintStatus::NoSource
 
-	\sa isValid()
+    \sa isValid()
 */
 
 /*!
-	\fn QskSkinHintStatus::isValid
+    \fn QskSkinHintStatus::isValid
 
-	\return True, when having a source > QskSkinHintStatus::NoSource
+    \return True, when having a source > QskSkinHintStatus::NoSource
 */

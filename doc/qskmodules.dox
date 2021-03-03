@@ -1,179 +1,179 @@
 /*!
     \defgroup Core Core
     \{
-		\namespace QskNamespace
+        \namespace QskNamespace
 
-		\class QskCorner
-		\class QskGradient
-		\class QskIntervalF
-		\class QskMargins
-		\class QskMetaFunction
-		\class QskMetaInvokable
-		\class QskObjectCounter
-		\class QskRgbPalette
-		\class QskRgbValue
-		\class QskScaleEngine
-		\class QskScaleTickmarks
-		\class QskSizePolicy
+        \class QskCorner
+        \class QskGradient
+        \class QskIntervalF
+        \class QskMargins
+        \class QskMetaFunction
+        \class QskMetaInvokable
+        \class QskObjectCounter
+        \class QskRgbPalette
+        \class QskRgbValue
+        \class QskScaleEngine
+        \class QskScaleTickmarks
+        \class QskSizePolicy
     \}
 
     \defgroup Graphic Graphic
-	\{
-		\class QskColorFilter
-		\class QskGraphic
-		\class QskGraphicImageProvider
-		\class QskGraphicIO
-		\class QskGraphicPaintEngine
-		\class QskGraphicProvider
-		\class QskGraphicProviderMap
-		\class QskGraphicTextureFactory
-		\class QskPainterCommand
-		\class QskStandardSymbol
-	\}
+    \{
+        \class QskColorFilter
+        \class QskGraphic
+        \class QskGraphicImageProvider
+        \class QskGraphicIO
+        \class QskGraphicPaintEngine
+        \class QskGraphicProvider
+        \class QskGraphicProviderMap
+        \class QskGraphicTextureFactory
+        \class QskPainterCommand
+        \class QskStandardSymbol
+    \}
 
     \defgroup Framework Framework
     \{
-		\class QskControl
-		\class QskEvent
-		\class QskGesture
-		\class QskGestureRecognizer
-		\class QskPanGestureRecognizer
-		\class QskQuick
-		\class QskSetup
-		\class QskShortcutMap
-		\class QskWindow
+        \class QskControl
+        \class QskEvent
+        \class QskGesture
+        \class QskGestureRecognizer
+        \class QskPanGestureRecognizer
+        \class QskQuick
+        \class QskSetup
+        \class QskShortcutMap
+        \class QskWindow
     \}
 
     \defgroup Animation Animation
     \{
-		\class QskAnimator
-		\class QskAnimationHint
-		\class QskFlickAnimator
-		\class QskVariantAnimator
+        \class QskAnimator
+        \class QskAnimationHint
+        \class QskFlickAnimator
+        \class QskVariantAnimator
     \}
 
     \defgroup Themeing Themeing
     \{
-		\class QskBoxBorderColors
-		\class QskBoxBorderMetrics
-		\class QskBoxShapeMetrics
-		\class QskShadowMetrics
-		\class QskSkinFactory
-		\class QskSkin
-		\class QskSkinHintTable
-		\class QskSkinlet
-		\class QskSkinManager
-		\class QskSkinnable
-		\class QskSkinTransition
-		\class QskTextColors
-		\class QskTextOptions
+        \class QskBoxBorderColors
+        \class QskBoxBorderMetrics
+        \class QskBoxShapeMetrics
+        \class QskShadowMetrics
+        \class QskSkinFactory
+        \class QskSkin
+        \class QskSkinHintTable
+        \class QskSkinlet
+        \class QskSkinManager
+        \class QskSkinnable
+        \class QskSkinTransition
+        \class QskTextColors
+        \class QskTextOptions
     \}
 
     \defgroup Controls Controls
     \{
-		\class QskAbstractButton
-		\class QskBoundedControl
-		\class QskBoundedInput
-		\class QskBoundedRangeInput
-		\class QskBoundedValueInput
-		\class QskBox
-		\class QskFocusIndicator
-		\class QskGraphicLabel
-		\class QskHintAnimator
-		\class QskInputGrabber
-		\class QskListView
-		\class QskPageIndicator
-		\class QskPopup
-		\class QskProgressBar
-		\class QskPushButton
-		\class QskScrollBox
-		\class QskScrollView
-		\class QskSeparator
-		\class QskSimpleListBox
-		\class QskSlider
-		\class QskStatusIndicator
-		\class QskTabButton
-		\class QskTextInput
-		\class QskTextLabel
+        \class QskAbstractButton
+        \class QskBoundedControl
+        \class QskBoundedInput
+        \class QskBoundedRangeInput
+        \class QskBoundedValueInput
+        \class QskBox
+        \class QskFocusIndicator
+        \class QskGraphicLabel
+        \class QskHintAnimator
+        \class QskInputGrabber
+        \class QskListView
+        \class QskPageIndicator
+        \class QskPopup
+        \class QskProgressBar
+        \class QskPushButton
+        \class QskScrollBox
+        \class QskScrollView
+        \class QskSeparator
+        \class QskSimpleListBox
+        \class QskSlider
+        \class QskStatusIndicator
+        \class QskTabButton
+        \class QskTextInput
+        \class QskTextLabel
     \}
 
     \defgroup container Container
     \{
-		\class QskScrollArea
-		\class QskSubWindowArea
-		\class QskSubWindow
-		\class QskTabBar
-		\class QskTabView
-		\class QskGridBox
-		\class QskIndexedLayoutBox
-		\class QskLinearBox
-		\class QskStackBox
+        \class QskScrollArea
+        \class QskSubWindowArea
+        \class QskSubWindow
+        \class QskTabBar
+        \class QskTabView
+        \class QskGridBox
+        \class QskIndexedLayoutBox
+        \class QskLinearBox
+        \class QskStackBox
     \}
 
     \defgroup Layouts Layouts
     \{
-		\class QskGridLayoutEngine
-		\class QskIndexedLayoutBox
-		\class QskLayoutChain
-		\class QskLayoutEngine2D
-		\class QskLayoutHint
-		\class QskLinearLayoutEngine
+        \class QskGridLayoutEngine
+        \class QskIndexedLayoutBox
+        \class QskLayoutChain
+        \class QskLayoutEngine2D
+        \class QskLayoutHint
+        \class QskLinearLayoutEngine
     \}
 
     \defgroup Dialogs Dialogs
     \{
-		\class QskDialogButtonBox
-		\class QskDialogButton
-		\class QskDialog
-		\class QskDialogSubWindow
-		\class QskDialogWindow
-		\class QskMessageSubWindow
-		\class QskMessageWindow
-		\class QskSelectionSubWindow
-		\class QskSelectionWindow
-		\class QskSimpleListBox
+        \class QskDialogButtonBox
+        \class QskDialogButton
+        \class QskDialog
+        \class QskDialogSubWindow
+        \class QskDialogWindow
+        \class QskMessageSubWindow
+        \class QskMessageWindow
+        \class QskSelectionSubWindow
+        \class QskSelectionWindow
+        \class QskSimpleListBox
     \}
 
     \defgroup Skinlets Skinlets
     \{
-		\class QskBoxSkinlet
-		\class QskFocusIndicatorSkinlet
-		\class QskGraphicLabelSkinlet
-		\class QskListViewSkinlet
-		\class QskPageIndicatorSkinlet
-		\class QskPopupSkinlet
-		\class QskPushButtonSkinlet
-		\class QskScrollViewSkinlet
-		\class QskSeparatorSkinlet
-		\class QskSliderSkinlet
-		\class QskStatusIndicatorSkinlet
-		\class QskSubWindowAreaSkinlet
-		\class QskSubWindowSkinlet
-		\class QskTabButtonSkinlet
-		\class QskTabViewSkinlet
-		\class QskTextInputSkinlet
-		\class QskTextLabelSkinlet
-		\class QskStandardSymbol
+        \class QskBoxSkinlet
+        \class QskFocusIndicatorSkinlet
+        \class QskGraphicLabelSkinlet
+        \class QskListViewSkinlet
+        \class QskPageIndicatorSkinlet
+        \class QskPopupSkinlet
+        \class QskPushButtonSkinlet
+        \class QskScrollViewSkinlet
+        \class QskSeparatorSkinlet
+        \class QskSliderSkinlet
+        \class QskStatusIndicatorSkinlet
+        \class QskSubWindowAreaSkinlet
+        \class QskSubWindowSkinlet
+        \class QskTabButtonSkinlet
+        \class QskTabViewSkinlet
+        \class QskTextInputSkinlet
+        \class QskTextLabelSkinlet
+        \class QskStandardSymbol
     \}
 
     \defgroup Scenegraph Scenegraph
     \{
-		\class QskBoxClipNode
-		\class QskBoxNode
-		\class QskBoxRendererColorMap
-		\class QskBoxRenderer
-		\class QskGraphicNode
-		\class QskPaintedNode
-		\class QskPlainTextRenderer
-		\class QskRichTextRenderer
-		\class QskScaleRenderer
-		\class QskSGNode
-		\class QskTextNode
-		\class QskTextRenderer
-		\class QskTextureNode
-		\class QskTextureRenderer
-		\class QskTickmarksNode
-		\class QskVertex
+        \class QskBoxClipNode
+        \class QskBoxNode
+        \class QskBoxRendererColorMap
+        \class QskBoxRenderer
+        \class QskGraphicNode
+        \class QskPaintedNode
+        \class QskPlainTextRenderer
+        \class QskRichTextRenderer
+        \class QskScaleRenderer
+        \class QskSGNode
+        \class QskTextNode
+        \class QskTextRenderer
+        \class QskTextureNode
+        \class QskTextureRenderer
+        \class QskTickmarksNode
+        \class QskVertex
     \}
 
  */

@@ -1,48 +1,48 @@
 /*!
     \class QskSkinnable QskSkinnable.h
 
-	\ingroup Framework
+    \ingroup Framework
 
-	QskSkinnable is the base for all objects, that can be configured by skin hints
-	and are displayed by a skinlet. The configuration from the skin can be overwritten by
+    QskSkinnable is the base for all objects, that can be configured by skin hints
+    and are displayed by a skinlet. The configuration from the skin can be overwritten by
     adding values to the local skin hint table - it is even possible to replace the
     skinlet individually.
 
-	In most cases a skinnable is a QskControl, but conceptually it is
+    In most cases a skinnable is a QskControl, but conceptually it is
     possible to have controls, that consist of many skinnables.
 
-	\sa QskSkin, QskSkinlet, QskControl, QskSkinHintTable
+    \sa QskSkin, QskSkinlet, QskControl, QskSkinHintTable
 */
 
 /*! \fn QskSkinnable::QskSkinnable()
 
-	Constructs a skinnable where all settings will be resolved from the skin
+    Constructs a skinnable where all settings will be resolved from the skin
 
-	\sa effectiveSkin(), effectiveSkinlet, effectiveSkinHint
+    \sa effectiveSkin(), effectiveSkinlet, effectiveSkinHint
 */
 
 /*! \fn QskSkinnable::~QskSkinnable()
 
-	Called when the skinnable is destroyed.
+    Called when the skinnable is destroyed.
 */
 
 /*!
     \fn void QskSkinnable::setSkinlet
 
-	\brief Set an individual skinlet to render/display the content
+    \brief Set an individual skinlet to render/display the content
 
-	Usually all skinnables of the same type are rendered by the same instance
+    Usually all skinnables of the same type are rendered by the same instance
     of a skinlet. For rare situations it can be useful to assign a different skinlet.
 
-	When QskSkinlet::isOwnedBySkinnable() is true, the skinlet will be deleted,
+    When QskSkinlet::isOwnedBySkinnable() is true, the skinlet will be deleted,
     when the skinnable is deleted or a different skinlet gets assigned.
 
-	\param skinlet Skinlet to render/layout the skinnable.
+    \param skinlet Skinlet to render/layout the skinnable.
     
-	\sa skinlet(), effectiveSkinlet(), resetSkinlet(),
+    \sa skinlet(), effectiveSkinlet(), resetSkinlet(),
         QskSkin::declareSkinlet, QskSkinlet::isOwnedBySkinnable()
 
-	\note Overriding the skinlet that has been registered in the skin
+    \note Overriding the skinlet that has been registered in the skin
           breaks the themeability of the skinnable.
 */
 
@@ -63,7 +63,7 @@
     QskControl to perform some additional steps before calling updateNode(),
     and provides a consistent parent node which subclasses can rely on.
 
-	The default implementation simply forwards the operation to the skinlet,
+    The default implementation simply forwards the operation to the skinlet,
 
     \param parentNode The parent of the nodes to be added in this method.
 
@@ -71,56 +71,56 @@
           strategy to implement custom painting is to customize or replace
           the skinlet.
 
-	\sa QskSkinlet::updateSubNode()
+    \sa QskSkinlet::updateSubNode()
 */
 
 /*!
     \fn QskSkinnable::effectiveSkinHint
 
-	\brief Find the value for a specific aspect
+    \brief Find the value for a specific aspect
 
-	If an animation is running for the given aspect its value will
+    If an animation is running for the given aspect its value will
         be returned as hint. Then effectiveSkinHint() tries to find a hint
         in the local table and finally tries to resolve the aspect from the
-	hint table of the skin.
+    hint table of the skin.
 
-	\param aspect Initial aspect, to feed the skin hint lookup algorithm.
-	\param status Optional status information
-	\return Hint value, or an invalid QVariant if no value was found
+    \param aspect Initial aspect, to feed the skin hint lookup algorithm.
+    \param status Optional status information
+    \return Hint value, or an invalid QVariant if no value was found
 
-	\sa effectiveSubcontrol(), effectivePlacement()
+    \sa effectiveSubcontrol(), effectivePlacement()
 */
 
 /*! \fn QskSkinnable::effectiveFont
 
-	Finds the font role for the given aspect and returns
+    Finds the font role for the given aspect and returns
     the corresponding font from the font table of the skin.
 
-	\param aspect Unresolved aspect
-	\return Font, corresponding to the resolved aspect 
+    \param aspect Unresolved aspect
+    \return Font, corresponding to the resolved aspect 
 
-	\sa fontRoleHint(), effectiveSkinHint(), QskSkin::font()
+    \sa fontRoleHint(), effectiveSkinHint(), QskSkin::font()
 */
 
 /*! \fn QskSkinnable::effectiveGraphicFilter
 
-	Finds the graphic role for the given aspect and returns
-	the corresponding color filter from the skin
+    Finds the graphic role for the given aspect and returns
+    the corresponding color filter from the skin
 
-	\param aspect Unresolved aspect
-	\return Color filter, corresponding to the resolved aspect 
+    \param aspect Unresolved aspect
+    \return Color filter, corresponding to the resolved aspect 
 
-	\sa graphicRoleHint(), effectiveSkinHint(), QskSkin::graphicFilter()
+    \sa graphicRoleHint(), effectiveSkinHint(), QskSkin::graphicFilter()
 */
 
 /*! \fn QskSkinnable::setAnimationHint
 
-	Insert an animation hint into the local hint table
+    Insert an animation hint into the local hint table
 
-	\param aspect Unresolved aspect
-	\param hint Animation hint
+    \param aspect Unresolved aspect
+    \param hint Animation hint
 
-	\sa animationHint(), effectiveAnimation()
+    \sa animationHint(), effectiveAnimation()
 */
 
 /*! \fn QskSkinnable::animationHint
@@ -128,112 +128,112 @@
 
 /*! \fn QskSkinnable::effectiveAnimation
 
-	Retrieve the configuration of the animator for reaching
-	a specific state.
+    Retrieve the configuration of the animator for reaching
+    a specific state.
 
-	\param type Metric, color or something else
-	\param subControl Unsubstituted subControl
-	\param state State bits
-	\param status If status != nullptr additional information
+    \param type Metric, color or something else
+    \param subControl Unsubstituted subControl
+    \param state State bits
+    \param status If status != nullptr additional information
                   about where the hint has been found is returned
 
-	\return Value from the hint tables
-	\sa animationHint()
+    \return Value from the hint tables
+    \sa animationHint()
 */
 
 /*! \fn QskSkinnable::setSkinHint
 
-	\brief Insert a hint into the local hint table
+    \brief Insert a hint into the local hint table
 
-	Presentation, beheviour and layout of the scene graph nodes are
+    Presentation, beheviour and layout of the scene graph nodes are
     affected by specific attributes - skin hints - that are configured
     in a table of the skin. Each skinnable has its own table
-	where these attributes can be overloaded. Hints from the local
-	table have precedence over those from the skin.
-	
-	The subControl bits of the aspect might be substituted, depending on
-	the implementation of effectiveSubcontrol(). By inserting the hint
-	directly into the hintTable() the substitution can be avoided.
+    where these attributes can be overloaded. Hints from the local
+    table have precedence over those from the skin.
+    
+    The subControl bits of the aspect might be substituted, depending on
+    the implementation of effectiveSubcontrol(). By inserting the hint
+    directly into the hintTable() the substitution can be avoided.
 
-	\param aspect Unsubstituted aspect
-	\param hint Hint, might be anything that fits into a QVariant
+    \param aspect Unsubstituted aspect
+    \param hint Hint, might be anything that fits into a QVariant
                 and is understood by the skinlet consuming it.
 
-	\sa effectiveSkinHint(), resetSkinHint(), hintTable(), QskSkinHintTableEditor()
+    \sa effectiveSkinHint(), resetSkinHint(), hintTable(), QskSkinHintTableEditor()
 */
 
 /*! \fn QskSkinnable::resetSkinHint
 
-	\brief Remove a hint from the local hint table
+    \brief Remove a hint from the local hint table
 
-	After removing the hint from the local table the hint will
+    After removing the hint from the local table the hint will
     be resolved fro the hint table of the skin.
 
-	\param aspect Unsubstituted aspect
+    \param aspect Unsubstituted aspect
 
-	\sa setSkinHint(), effectiveSkinHint()
+    \sa setSkinHint(), effectiveSkinHint()
 */
 
 /*! \fn QskSkinnable::effectivePlacement
 
-	The placements bits are added to an unresolved aspect when
-	inserting or looking up values in the hint table.
+    The placements bits are added to an unresolved aspect when
+    inserting or looking up values in the hint table.
 
-	\return The default implementation returns QskAspect::NoPlacement;
+    \return The default implementation returns QskAspect::NoPlacement;
 
-	\sa QskAspect::Placement, effectiveSkinHint()
+    \sa QskAspect::Placement, effectiveSkinHint()
 */
 
 /*! \fn QskSkinnable::hintStatus
 
-	\param aspect Unresolved aspect
-	\return Informations about how the aspect would be resolved
+    \param aspect Unresolved aspect
+    \return Informations about how the aspect would be resolved
 
-	\sa effectiveSkinHint()
+    \sa effectiveSkinHint()
 */
 
 /*! \fn QskSkinnable::setSkinState
 
-	Set the state bits of the skinnable
+    Set the state bits of the skinnable
 
-	Depending on the state a skinnable might have different hints affecting
+    Depending on the state a skinnable might have different hints affecting
     its representation and/or behaviour.
 
-	\param newState State bits
-	\param animated If true, animators, that have been defined in the skin
+    \param newState State bits
+    \param animated If true, animators, that have been defined in the skin
                     for newState will be started
 
-	\sa QskAspect
+    \sa QskAspect
 */
 
 /*! \fn QskSkinnable::setSkinStateFlag
 
-	Set/Clear a state in the state bits 
+    Set/Clear a state in the state bits 
 
-	\param stateFlag State bit
-	\param on true or false
+    \param stateFlag State bit
+    \param on true or false
 
-	\sa setSkinState(), skinState()
+    \sa setSkinState(), skinState()
 */
 
 /*! \fn QskSkinnable::skinState
 
-	The state bits are added to an unresolved aspect when
-	inserting or looking up values in the hint table.
+    The state bits are added to an unresolved aspect when
+    inserting or looking up values in the hint table.
 
-	\return Current state
-	\sa setSkinStateFlag(), setSkinState()
+    \return Current state
+    \sa setSkinStateFlag(), setSkinState()
 */
 
 /*! \fn QskSkinnable::skinStateAsPrintable() const
 
-	\return Current state as printable for debugging purposes
-	\sa skinStateAsPrintable( QskAspect::State ) const
+    \return Current state as printable for debugging purposes
+    \sa skinStateAsPrintable( QskAspect::State ) const
 */
 
 /*! \fn QskSkinnable::skinStateAsPrintable( QskAspect::State ) const
 
-	\param state State bits
+    \param state State bits
     \return state as printable for debugging purposes
 
     \note A pointer to an internal buffer is returned, that might be
@@ -242,66 +242,66 @@
 
 /*! \fn QskSkinnable::subControlRect
 
-	\brief Calculate position and size of a subControl
+    \brief Calculate position and size of a subControl
 
-	A convenience method that forwards the calculation to the skinlet
-	
-	\param contentsRect Bounding rectangle for laying out the nodes of the skinnable
-	\param subControl Unsubstituted subcontrol
-	\return Geometry for the subControl
+    A convenience method that forwards the calculation to the skinlet
+    
+    \param contentsRect Bounding rectangle for laying out the nodes of the skinnable
+    \param subControl Unsubstituted subcontrol
+    \return Geometry for the subControl
 
-	\sa effectiveSkinlet(), QskSkinlet::subControlRect(), QskControl::contentsRect()
+    \sa effectiveSkinlet(), QskSkinlet::subControlRect(), QskControl::contentsRect()
 */
 
 /*! \fn QskSkinnable::subControlContentsRect
 
-	\brief Calculate the inner rectangle subControl
+    \brief Calculate the inner rectangle subControl
 
-	The inner rectangle a subcontrol is its geometry with paddings, indentations
+    The inner rectangle a subcontrol is its geometry with paddings, indentations
     being subtracted. F.e. the inner rectangle of QskPushButton::Panel is the
     bounding rectangle for laying out the QskPushButton::Text and
     QskPushButton::Graphic subcontrols.
 
-	\param contentsRect Bounding rectangle for laying out the nodes of the skinnable
-	\param subControl Unsubstituted subcontrol
-	\return Geometry for contents inside the subControl
+    \param contentsRect Bounding rectangle for laying out the nodes of the skinnable
+    \param subControl Unsubstituted subcontrol
+    \return Geometry for contents inside the subControl
 
-	\sa QskSkinlet::subControlRect(), innerBox()
+    \sa QskSkinlet::subControlRect(), innerBox()
 */
 
 /*! \fn QskSkinnable::outerBoxSize
 
-	\brief Calculate the size, when being expanded by paddings, indentations
+    \brief Calculate the size, when being expanded by paddings, indentations
 
-	Paddings, indentations depend on attributes for the given aspect.
+    Paddings, indentations depend on attributes for the given aspect.
 
-	\param aspect Unresolved aspect
-	\param innerBoxSize Size to be expanded
-	\return Expanded size
+    \param aspect Unresolved aspect
+    \param innerBoxSize Size to be expanded
+    \return Expanded size
 
-	The size hint for a "container" node usually depend on the hints of its
+    The size hint for a "container" node usually depend on the hints of its
     inner nodes. F.e the size hint for QskPushButton::Panel depends on the size hints of 
-	QskPushButton::Text and QskPushButton::Graphic. 
+    QskPushButton::Text and QskPushButton::Graphic. 
 
-	\sa innerBoxSize(), outerBox(), innerBox()
+    \sa innerBoxSize(), outerBox(), innerBox()
 */
 
 /*! \fn QskSkinnable::innerBoxSize
 
-	\brief Calculate the size, with paddings, indentations being subtracted
+    \brief Calculate the size, with paddings, indentations being subtracted
 
-	Paddings, indentations depend on attributes for the given aspect.
+    Paddings, indentations depend on attributes for the given aspect.
 
-	\param aspect Unresolved aspect
-	\param outerBoxSize Size to be shrunk
-	\return Shrunk size
+    \param aspect Unresolved aspect
+    \param outerBoxSize Size to be shrunk
+    \return Shrunk size
 
-	\sa outerBoxSize(), innerBox(), outerBox()
+    \sa outerBoxSize(), innerBox(), outerBox()
 */
 
 /*! \fn QskSkinnable::innerBox
 
-	\brief Calculate the rectangle, whith paddings, indentations being subtracted
+    \brief Calculate the rectangle, whith paddings, indentations being subtracted
 
     Paddings, indentations depend on attributes for the given aspect.
 
@@ -331,49 +331,49 @@
 
 /*! \fn QskSkinnable::innerPadding
 
-	\brief Calculate the padding from attributes for the given aspect
+    \brief Calculate the padding from attributes for the given aspect
 
-	Beside padding hints, the radii of the shape might have an effect
+    Beside padding hints, the radii of the shape might have an effect
 
     \param aspect Unresolved aspect
     \param outerBoxSize Size of the box
 
-	\return Effective padding
+    \return Effective padding
 */
 
 /*! \fn QskSkinnable::effectiveSkinlet
 
-	\return Skinlet that has been set with setSkinlet() - or the default
+    \return Skinlet that has been set with setSkinlet() - or the default
             skinlet from the skin, that had been registered for metaObject()
 */
 
 /*! \fn QskSkinnable::effectiveSkin
 
-	\return Almost always the current skin. The only exception is when manually
+    \return Almost always the current skin. The only exception is when manually
             setting a skinlet being created from a different skin.
 
-	\sa QskSetup::skin(), QskSkinlet::skin()
+    \sa QskSetup::skin(), QskSkinlet::skin()
 */
 
 /*! \fn QskSkinnable::startTransition
 
-	Start a transition for a specific aspect, that interpolates
-	between 2 values. While the transition is in process a look up for
-	the aspect will return the current value of the interpolation.
+    Start a transition for a specific aspect, that interpolates
+    between 2 values. While the transition is in process a look up for
+    the aspect will return the current value of the interpolation.
 
-	In most cases startTransition() is called automatically, when
-	the skinState() changes and am animation is found for the new
-	state.
+    In most cases startTransition() is called automatically, when
+    the skinState() changes and am animation is found for the new
+    state.
 
-	\param aspect Unresolved aspect, only subcontrol substitution will be done
-	\param from Start value of the transition
+    \param aspect Unresolved aspect, only subcontrol substitution will be done
+    \param from Start value of the transition
 
-	\sa effectiveAnimation()
+    \sa effectiveAnimation()
 */
 
 /*! \fn QskSkinnable::effectiveSubcontrol
 
-	Subcontrol substitution is a mechanism, that is used when a variation of
+    Subcontrol substitution is a mechanism, that is used when a variation of
     an existing control needs to have skin hints, that can be configured
     individually without having to reimplement a new skinlet.
 
@@ -382,28 +382,28 @@
     QskPushButton::Panel subcontrol gets substituted by a new subcontrol that
     is defined for the tool button.
 
-	Subcontrol substitution is part of a concept that is known as
+    Subcontrol substitution is part of a concept that is known as
     \ref aspect resolving "aspect resolving".
 
-	\param subControl Subcontrol
-	\return Substituted subcontrol
+    \param subControl Subcontrol
+    \return Substituted subcontrol
 
-	The default implementation is a no operation and does not substitute
+    The default implementation is a no operation and does not substitute
 */
 
 /*! \fn QskSkinnable::controlCast()
-	
-	Safe casting of the skinnable to a QskControl
+    
+    Safe casting of the skinnable to a QskControl
 
-	The operation is based on comparing metaObject()
-	with QskControl::staticMetaObject() ( similar to what qobject_cast() does )
+    The operation is based on comparing metaObject()
+    with QskControl::staticMetaObject() ( similar to what qobject_cast() does )
 
-	\return Control if successful, or a nullptr otherwise
+    \return Control if successful, or a nullptr otherwise
 */
 
 /*! \fn QskSkinnable::controlCast() const
 
-	Safe casting of the skinnable to a QskControl
+    Safe casting of the skinnable to a QskControl
 
     The operation is based on comparing metaObject()
     with QskControl::staticMetaObject() ( similar to what qobject_cast() does )
@@ -413,31 +413,31 @@
 
 /*! \fn QskSkinnable::owningControl
 
-	In most cases a skinnable is one of the base classes of QskControl and
-	the owning control is the derived control. But in case of a control, that
+    In most cases a skinnable is one of the base classes of QskControl and
+    the owning control is the derived control. But in case of a control, that
     is built from several skinnables this pure virtual method needs to be implemented.
 
-	\return QskControl, that is owner of the skinnable. In most
+    \return QskControl, that is owner of the skinnable. In most
             cases the skinnable is inherited 
 */
 
 /*! \fn QskSkinnable::metaObject
 
-	\return Usually the metaObject of the owning control
-	\sa owningControl()
+    \return Usually the metaObject of the owning control
+    \sa owningControl()
 */
 
 /*! \fn QskSkinnable::debug( QskAspect ) const
 
-	Writes an aspect to qDebug() using the string conversions for metaObject()
+    Writes an aspect to qDebug() using the string conversions for metaObject()
 
-	\param aspect Aspect to be printed
-	\sa qskDebugAspect()
+    \param aspect Aspect to be printed
+    \sa qskDebugAspect()
 */
 
 /*! \fn QskSkinnable::debug( QskAspect::State ) const
 
-	Writes a state to qDebug() using the string conversions for metaObject()
+    Writes a state to qDebug() using the string conversions for metaObject()
     
     \param state State to be printed
     \sa qskDebugState()
@@ -465,70 +465,70 @@
 
 /*! \fn QskSkinnable::setColor( QskAspect, Qt::GlobalColor )
 
-	\brief Sets a color hint.
+    \brief Sets a color hint.
 
-	QskAspect::Color will be added to aspect.
+    QskAspect::Color will be added to aspect.
 
-	\param aspect Unresolved aspect
-	\param color Color hint
+    \param aspect Unresolved aspect
+    \param color Color hint
 
-	\sa setSkinHint(), QskAspect::Color
+    \sa setSkinHint(), QskAspect::Color
 */
 
 /*! \fn QskSkinnable::setColor( QskAspect, QRgb )
 
-	\brief Sets a color hint.
+    \brief Sets a color hint.
 
-	QskAspect::Color will be added to aspect.
+    QskAspect::Color will be added to aspect.
 
-	\param aspect Unresolved aspect
-	\param rgb Color hint
+    \param aspect Unresolved aspect
+    \param rgb Color hint
 
-	\sa setSkinHint(), QskAspect::Color
+    \sa setSkinHint(), QskAspect::Color
 */
 
 /*! \fn QskSkinnable::setColor( QskAspect, const QColor& )
 
-	\brief Sets a color hint.
+    \brief Sets a color hint.
 
-	QskAspect::Color will be added to aspect.
+    QskAspect::Color will be added to aspect.
 
-	\param aspect Unresolved aspect
-	\param color Color hint
+    \param aspect Unresolved aspect
+    \param color Color hint
 
-	\sa setSkinHint(), QskAspect::Color
+    \sa setSkinHint(), QskAspect::Color
 */
 
 /*! \fn QskSkinnable::resetColor
 
-	\brief Removes a color hint from the local table
+    \brief Removes a color hint from the local table
 
-	QskAspect::Color will be added to aspect.
+    QskAspect::Color will be added to aspect.
 
-	\param aspect Unresolved aspect
-	\return true, if an entry in the local hint table was found and removed.
+    \param aspect Unresolved aspect
+    \return true, if an entry in the local hint table was found and removed.
 
-	\sa resetSkinHint(), setColor()
+    \sa resetSkinHint(), setColor()
 */
 
 /*! \fn QskSkinnable::color
 
-	\brief Retrieves a color hint
+    \brief Retrieves a color hint
 
-	QskAspect::Color will be added to aspect.
+    QskAspect::Color will be added to aspect.
 
-	\param aspect Unresolved aspect
-	\param status Optional status information
-	\return Color hint, or QColor() if no value has been found
+    \param aspect Unresolved aspect
+    \param status Optional status information
+    \return Color hint, or QColor() if no value has been found
 
-	\sa effectiveSkinHint(), setColor()
+    \sa effectiveSkinHint(), setColor()
 */
 
 /*! \fn QskSkinnable::setMetric
 
     \brief Sets a metric hint
 
-	QskAspect::Metric will be added to aspect.
+    QskAspect::Metric will be added to aspect.
 
     \param aspect Unresolved aspect
     \param metric Metric hint
@@ -538,7 +538,7 @@
 
 /*! \fn QskSkinnable::resetMetric
 
-	\brief Removes a metric hint from the local table
+    \brief Removes a metric hint from the local table
 
     QskAspect::Metric will be added to aspect.
 
@@ -555,9 +555,9 @@
     QskAspect::Metric will be added to aspect.
 
     \param aspect Unresolved aspect
-	\param status Optional status information
+    \param status Optional status information
 
-	\return Metric, or 0 if no value was found
+    \return Metric, or 0 if no value was found
 
     \sa effectiveSkinHint(), setMetric()
 */
@@ -587,8 +587,8 @@
     \brief Retrieves a flag hint
 
     \param aspect Unresolved aspect
-	\param status Optional status information
-	\return Flag, or an invalid QVariant in case no value was found
+    \param status Optional status information
+    \return Flag, or an invalid QVariant in case no value was found
 
     \sa effectiveSkinHint(), setFlag()
 */
@@ -670,7 +670,7 @@
 
 /*! \fn QskSkinnable::setMarginHint( QskAspect, const QMarginsF& )
 
-	\brief Sets a margin hint
+    \brief Sets a margin hint
 
     QskAspect::Metric | QskAspect::Margin will be added to aspect.
 
@@ -707,7 +707,7 @@
 
 /*! \fn QskSkinnable::setPaddingHint( QskAspect, qreal )
 
-	\brief Sets a padding hint
+    \brief Sets a padding hint
 
     QskAspect::Metric | QskAspect::Padding will be added to aspect.
 
@@ -719,7 +719,7 @@
 
 /*! \fn QskSkinnable::setPaddingHint( QskAspect, const QMarginsF& )
 
-	\brief Sets a padding hint
+    \brief Sets a padding hint
 
     QskAspect::Metric | QskAspect::Padding will be added to aspect.
 
@@ -743,7 +743,7 @@
 
 /*! \fn QskSkinnable::paddingHint
 
-	\brief Retrieves a padding hint
+    \brief Retrieves a padding hint
 
     QskAspect::Metric | QskAspect::Padding will be added to aspect.
 
@@ -768,7 +768,7 @@
 
 /*! \fn QskSkinnable::gradientHint
 
-	\brief Retrieves a color hint as gradient
+    \brief Retrieves a color hint as gradient
 
     QskAspect::Color will be added to aspect.
    
@@ -879,7 +879,7 @@
 
 /*! \fn QskSkinnable::boxBorderColorsHint
 
-	\brief Retrieves border colors hint
+    \brief Retrieves border colors hint
 
     QskAspect::Color | QskAspect::Border will be added to aspect.
 
@@ -954,7 +954,7 @@
 
 /*! \fn QskSkinnable::alignmentHint
 
-	\brief Retrieves an alignment hint
+    \brief Retrieves an alignment hint
 
     QskAspect::Flag | QskAspect::Alignment will be added to aspect.
 
@@ -1016,7 +1016,7 @@
 
 /*! \fn QskSkinnable::resetGraphicRoleHint
 
-	\brief Removes a graphic role hint from the local table
+    \brief Removes a graphic role hint from the local table
 
     QskAspect::Flag | QskAspect::GraphicRole will be added to aspect.
 
@@ -1041,25 +1041,25 @@
 
 /*! \fn QskSkinnable::isTransitionAccepted
 
-	\brief Additional check if an transition should be started
+    \brief Additional check if an transition should be started
 
-	In certain situations a transition initiated from state depending hints
-	needs to be avoided.
+    In certain situations a transition initiated from state depending hints
+    needs to be avoided.
 
-	\param aspect Aspect
-	\return true, when owningControl()->isInitiallyPainted() is true
+    \param aspect Aspect
+    \return true, when owningControl()->isInitiallyPainted() is true
 */
 
 /*! \fn QskSkinnable::hintTable()
 
-	\brief Accessor for local skin hint table
+    \brief Accessor for local skin hint table
 
-	Definitions in the local hint table have precedence over those from
-	the table of the skin. Initially the local table is empty.
+    Definitions in the local hint table have precedence over those from
+    the table of the skin. Initially the local table is empty.
 
-	\return Reference to the local hint table
+    \return Reference to the local hint table
 
-	\sa setSkinHint(), QskSkinHintTableEditor
+    \sa setSkinHint(), QskSkinHintTableEditor
 */
 
 /*! \fn QskSkinnable::hintTable() const
