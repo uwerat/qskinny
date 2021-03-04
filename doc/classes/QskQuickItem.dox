@@ -16,6 +16,9 @@
     QskQuickItem implements a couple of modifications, that
     can be en/disabled individually.
 
+    \sa updateFlags(), resetUpdateFlags()
+        testUpdateFlag(), setUpdateFlag(), resetUpdateFlag()
+
     \var QskQuickItem::UpdateFlag QskQuickItem::DeferredUpdate
 
         Creating of scene graph nodes is blocked when being invisible.
@@ -78,12 +81,10 @@
 
     \note This flag is useful when analyzing layouts.
 
-    \sa updateFlags(), resetUpdateFlags()
-        testUpdateFlag(), setUpdateFlag(), resetUpdateFlag()
 */
 
 /*!
-    \var QskQuickItem::geometry
+    \property QskQuickItem::geometry
 
     This property holds the geometry of the item relative to its parent item.
     When changing the geometry, the item receives a QskEvent::GeometryChange event.
@@ -92,7 +93,7 @@
 */
 
 /*!
-    \var QskQuickItem::rect
+    \property QskQuickItem::rect
 
     This property returns the internal geometry of the item.
     It equals QRect(0, 0, width(), height() ).
@@ -111,7 +112,7 @@
 */
 
 /*!
-    \var QskQuickItem::tabFence
+    \property QskQuickItem::tabFence
 
     The tabFence flag can be used to create local tab focus chains. It is usually
     used in combination with QQuickItem::ItemIsFocusScope.
@@ -124,7 +125,7 @@
 */
 
 /*!
-    \var QskQuickItem::visibleToParent
+    \property QskQuickItem::visibleToParent
 
     Flag indicating if an item would become visible if its parentItem() is shown.
     The implementation relies on the internal explicitVisible flag, that has not
@@ -141,7 +142,7 @@
 */
 
 /*!
-    \var QskQuickItem::polishOnResize
+    \property QskQuickItem::polishOnResize
 
     When polishOnResize is set QQuickItem::polish() will be called automatically
     whenever the size of the item has been changed. This is usually necessary
@@ -152,7 +153,7 @@
 */
 
 /*!
-    \var QskQuickItem::initiallyPainted
+    \property QskQuickItem::initiallyPainted
 
     Status flag indicating that there has already been a call
     of QQuickItem::updatePaintNode() since the item has become visible.
@@ -164,7 +165,7 @@
 */
 
 /*!
-    \var QskQuickItem::hasChildItems
+    \property QskQuickItem::hasChildItems
 
     A property indicating if the item has child items.
 
@@ -172,7 +173,7 @@
 */
 
 /*!
-    \var QskQuickItem::updateFlags
+    \property QskQuickItem::updateFlags
 
     QskQuickItem offers several tweaks to the Qt/Quick update cycle,
     that can be en/disabled individually.
@@ -230,7 +231,7 @@
 */
 
 /*!
-    \fn QskQuickItem::hasChildItems() const
+    \fn QskQuickItem::hasChildItems
 
     \return true, if the item has child items
     \sa hasChildItems
@@ -707,3 +708,20 @@
     \saqt QQuickItem::setVisible()
 */
 
+/*!
+    \fn QskQuickItem::mouseUngrabEvent
+
+    Notification, that is overloaded for debuging purposes, without
+    doing anything beside calling the base class.
+
+    \saqt QQuickItem::mouseUngrabEvent
+*/
+
+/*!
+    \fn QskQuickItem::touchUngrabEvent
+
+    Notification, that is overloaded for debuging purposes, without
+    doing anything beside calling the base class.
+
+    \saqt QQuickItem::touchUngrabEvent
+*/
