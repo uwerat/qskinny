@@ -640,3 +640,99 @@ void qskItemUpdateRecursive( QQuickItem* item )
     for ( auto child : children )
         qskItemUpdateRecursive( child );
 }
+
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 ) && QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+
+static const QQuickPointerTouchEvent* qskPointerPressEvent( const QQuickWindowPrivate* wd )
+{
+    for ( const auto event : wd->pointerEventInstances )
+    {
+        if ( auto touchEvent = event->asPointerTouchEvent() )
+        {
+            if ( touchEvent->isPressEvent() )
+                return touchEvent;
+        }
+    }
+
+    return nullptr;
+}
+
+#endif
+
+bool qskGrabMouse( QQuickItem* item )
+{
+    if ( item == nullptr || item->window() == nullptr )
+        return false;
+
+    if ( const auto mouseGrabber = item->window()->mouseGrabberItem() )
+    {
+        if ( mouseGrabber == item )
+            return true;
+
+        if ( mouseGrabber->keepMouseGrab() )
+        {
+            // we respect this
+            return false;
+        }
+    }
+
+    item->setKeepMouseGrab( true );
+
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 ) && QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+
+    auto wd = QQuickWindowPrivate::get( item->window() );
+    if ( wd->touchMouseDevice == nullptr )
+    {
+        /*
+            For synthesized mouse events QQuickWindow sends
+            an initial QEvent::MouseButtonPress before setting
+            touchMouseDevice/touchMouseId. As the mouse grabber is
+            stored depending on these attributes the following
+            mouse event callbacks will look for the grabber at a
+            a different place as it was stored.
+        */
+
+        if ( const auto event = qskPointerPressEvent( wd ) )
+        {
+            if ( const auto p = event->point( 0 ) )
+            {
+                wd->touchMouseDevice = event->device();
+                wd->touchMouseId = p->pointId();
+
+                item->grabMouse();
+
+                wd->touchMouseDevice = nullptr;
+                wd->touchMouseId = -1;
+
+                return true;
+            }
+        }
+    }
+#endif
+
+    item->grabMouse();
+    return true;
+}
+
+void qskUngrabMouse( QQuickItem* item )
+{
+    if ( item )
+    {
+        item->setKeepMouseGrab( false );
+
+        if ( qskIsMouseGrabber( item ) )
+            item->ungrabMouse();
+
+    }
+}
+
+bool qskIsMouseGrabber( const QQuickItem* item )
+{
+    if ( item )
+    {
+        if ( const auto window = item->window() )
+            return window->mouseGrabberItem() == item;
+    }
+
+    return false;
+}

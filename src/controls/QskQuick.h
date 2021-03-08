@@ -67,6 +67,10 @@ QSK_EXPORT const QSGNode* qskPaintNode( const QQuickItem* );
 
 QSK_EXPORT void qskItemUpdateRecursive( QQuickItem* );
 
+QSK_EXPORT bool qskGrabMouse( QQuickItem* );
+QSK_EXPORT void qskUngrabMouse( QQuickItem* );
+QSK_EXPORT bool qskIsMouseGrabber( const QQuickItem* );
+
 inline void qskSetItemGeometry(
     QQuickItem* item, qreal x, qreal y, qreal width, qreal height )
 {

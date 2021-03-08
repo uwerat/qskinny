@@ -1,5 +1,6 @@
 #include "QskGestureRecognizer.h"
 #include "QskEvent.h"
+#include "QskQuick.h"
 
 #include <qbasictimer.h>
 #include <qcoreapplication.h>
@@ -53,44 +54,6 @@ static inline QMouseEvent* qskClonedMouseEvent(
 
     clonedEvent->setAccepted( false );
     return clonedEvent;
-}
-
-static void qskGrabTouchMouse( QQuickItem* item )
-{
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 ) && QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-    auto wd = QQuickWindowPrivate::get( item->window() );
-
-    if ( wd->touchMouseDevice == nullptr )
-    {
-        /*
-            For synthesized mouse events QQuickWindow sends
-            an initial QEvent::MouseButtonPress before setting
-            touchMouseDevice/touchMouseId and a call of grabMouse
-            is stored in a pointerEvent for the generic mouse device.
-            Then all following synthesized mouse events are not grabbed
-            properly.
-        */
-
-        for ( const auto event : wd->pointerEventInstances )
-        {
-            if ( auto touchEvent = event->asPointerTouchEvent() )
-            {
-                if ( touchEvent->isPressEvent() )
-                {
-                    if ( const auto p = touchEvent->point( 0 ) )
-                    {
-                        wd->touchMouseDevice = touchEvent->device();
-                        wd->touchMouseId = p->pointId();
-                    }
-
-                    break;
-                }
-            }
-        }
-    }
-#endif
-
-    item->grabMouse();
 }
 
 namespace
@@ -348,20 +311,6 @@ bool QskGestureRecognizer::processEvent(
             return false;
         }
 
-        auto mouseGrabber = watchedItem->window()->mouseGrabberItem();
-        if ( mouseGrabber && ( mouseGrabber != watchedItem ) )
-        {
-            if ( mouseGrabber->keepMouseGrab() || mouseGrabber->keepTouchGrab() )
-            {
-                /*
-                    Another child has grabbed mouse/touch and is not willing to
-                    be intercepted: we respect this.
-                 */
-
-                return false;
-            }
-        }
-
         Qt::MouseButtons buttons = m_data->buttons;
         if ( buttons == Qt::NoButton )
             buttons = watchedItem->acceptedMouseButtons();
@@ -371,11 +320,11 @@ bool QskGestureRecognizer::processEvent(
             return false;
 
         /*
-            We grab the mouse for watchedItem and indicate, that we want
-            to keep it. From now on all mouse events should end up at watchedItem.
+            We try to grab the mouse for watchedItem and indicate, that we want
+            to keep it. Then all mouse events should end up at watchedItem.
          */
-        qskGrabTouchMouse( watchedItem );
-        watchedItem->setKeepMouseGrab( true );
+        if ( !qskGrabMouse( watchedItem ) )
+            return false;
 
         m_data->timestamp = mouseEvent->timestamp();
 
@@ -509,11 +458,7 @@ void QskGestureRecognizer::reject()
 
     m_data->isReplayingEvents = true;
 
-    if ( window->mouseGrabberItem() == watchedItem )
-    {
-        watchedItem->setKeepMouseGrab( false );
-        watchedItem->ungrabMouse();
-    }
+    qskUngrabMouse( watchedItem );
 
     if ( !events.isEmpty() &&
         ( events[ 0 ]->type() == QEvent::MouseButtonPress ) )
@@ -544,11 +489,7 @@ void QskGestureRecognizer::reset()
 {
     qskTimerTable->stopTimer( this );
 
-    if ( auto item = m_data->watchedItem )
-    {
-        item->setKeepMouseGrab( false );
-        item->ungrabMouse();
-    }
+    qskUngrabMouse( m_data->watchedItem );
 
     m_data->pendingEvents.reset();
     m_data->timestamp = 0;

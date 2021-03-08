@@ -258,7 +258,7 @@ QskDialog::DialogCode QskDialogSubWindow::exec()
         // the mouse grabber has not yet been released.
 
         if( !qskIsAncestorOf( this, mouseGrabber ) )
-            mouseGrabber->ungrabMouse();
+            qskUngrabMouse( mouseGrabber );
     }
 
     QEventLoop eventLoop;
