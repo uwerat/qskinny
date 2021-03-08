@@ -23,19 +23,21 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     Q_OBJECT
 
     Q_PROPERTY( QLocale locale READ locale
-        WRITE setLocale RESET resetLocale NOTIFY localeChanged FINAL )
+        WRITE setLocale RESET resetLocale NOTIFY localeChanged )
 
     Q_PROPERTY( bool autoFillBackground READ autoFillBackground
-        WRITE setAutoFillBackground FINAL )
+        WRITE setAutoFillBackground )
 
     Q_PROPERTY( bool autoLayoutChildren READ autoLayoutChildren
-        WRITE setAutoLayoutChildren FINAL )
+        WRITE setAutoLayoutChildren )
 
     Q_PROPERTY( Qt::FocusPolicy focusPolicy READ focusPolicy
-        WRITE setFocusPolicy NOTIFY focusPolicyChanged FINAL )
+        WRITE setFocusPolicy NOTIFY focusPolicyChanged )
 
     Q_PROPERTY( bool wheelEnabled READ isWheelEnabled
-        WRITE setWheelEnabled NOTIFY wheelEnabledChanged FINAL )
+        WRITE setWheelEnabled NOTIFY wheelEnabledChanged )
+
+    Q_PROPERTY( bool visibleToLayout READ isVisibleToLayout )
 
     Q_PROPERTY( QskMargins margins READ margins
         WRITE setMargins RESET resetMargins NOTIFY marginsChanged )
