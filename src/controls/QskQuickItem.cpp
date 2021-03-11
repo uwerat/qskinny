@@ -732,8 +732,16 @@ void QskQuickItem::itemChange( QQuickItem::ItemChange change,
                     we might end up with having a dangling pointer for
                     oldWindow->activeFocusItem().
                  */
-                QQuickWindowPrivate::get( oldWindow )->clearFocusInScope(
-                    qskNearestFocusScope( this ), this, Qt::OtherFocusReason );
+
+                auto wd = QQuickWindowPrivate::get( oldWindow );
+                if ( auto scope = qskNearestFocusScope( this ) )
+                {
+                    wd->clearFocusInScope( scope, this, Qt::OtherFocusReason );
+                }
+                else
+                {
+                    wd->activeFocusItem = nullptr;
+                }
             }
 #endif
 
