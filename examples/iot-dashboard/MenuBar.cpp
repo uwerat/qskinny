@@ -16,8 +16,6 @@ MenuItem::MenuItem( const QString& name, QQuickItem* parent ) : QskLinearBox( Qt
     setAutoLayoutChildren( true );
     setAutoAddChildren( true );
     setFixedSize( {140, 40} );
-    setMargins( {0, 0, 0, 0} );
-    setPadding( {30, 0, 30, 0} );
     setSpacing( 6 );
 
     setAcceptHoverEvents( true );
@@ -64,15 +62,13 @@ void MenuItem::setActive( bool active )
 }
 
 
+QSK_SUBCONTROL( MenuBar, Panel )
+
 MenuBar::MenuBar( QQuickItem* parent ) : QskLinearBox( Qt::Vertical, parent )
 {
+    setPanel( true );
     setSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Preferred );
-    setAutoLayoutChildren( true );
-    setAutoAddChildren( true );
     setSpacing( 8 );
-    setMargins( {0, 35, 0, 12} );
-
-    setBackgroundColor( "#6D7BFB" ); // ### style
 
     auto* mainIcon = ":/images/main-icon.png";
     QImage image( mainIcon );
@@ -82,10 +78,9 @@ MenuBar::MenuBar( QQuickItem* parent ) : QskLinearBox( Qt::Vertical, parent )
     graphicLabel->setMargins( { 50, 0, 50, 54 } );
     graphicLabel->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 
-
     m_entryStrings = { "Dashboard", "Rooms", "Devices", "Statistics", "Storage", "Members" };
 
-    for( const auto& entryString : m_entryStrings )
+    for( const auto& entryString : qAsConst( m_entryStrings ) )
     {
         auto* entry = new MenuItem( entryString, this );
         m_entries.append( entry );
@@ -96,4 +91,14 @@ MenuBar::MenuBar( QQuickItem* parent ) : QskLinearBox( Qt::Vertical, parent )
     addSpacer( 0, 1 ); // fill the space at the bottom
 
     new MenuItem( "Logout", this );
+}
+
+QskAspect::Subcontrol MenuBar::effectiveSubcontrol( QskAspect::Subcontrol subControl ) const
+{
+    if( subControl == QskBox::Panel )
+    {
+        return MenuBar::Panel;
+    }
+
+    return subControl;
 }

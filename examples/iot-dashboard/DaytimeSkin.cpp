@@ -57,6 +57,14 @@ void DaytimeSkin::initHints()
 
     QskSkinHintTableEditor ed( &hintTable() );
 
+    ed.setPadding( MenuBar::Panel, {0, 35, 0, 12} );
+    ed.setGradient( MenuBar::Panel, {"#6D7BFB"} );
+
+    ed.setPadding( MenuItem::Panel, {30, 0, 30, 0} );
+    QColor color( Qt::white );
+    color.setAlphaF( 0.09 );
+    ed.setGradient( MenuItem::Panel | QskControl::Hovered, color );
+
     ed.setGradient( MainContent::Panel, {"#fbfbfb"} );
     ed.setGradient( Box::Panel, {"#ffffff"} );
     ed.setColor( LightDisplay::Panel, "#ffffff" );
@@ -65,7 +73,4 @@ void DaytimeSkin::initHints()
     ed.setBoxBorderColors( WeekdayBox::Panel, {"#f4f4f4"} );
     ed.setColor( QskTextLabel::Text, "#000000" );
 
-    QColor color( Qt::white );
-    color.setAlphaF( 0.09 );
-    ed.setGradient( MenuItem::Panel | QskControl::Hovered, color );
 }

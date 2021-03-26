@@ -26,7 +26,12 @@ class MenuBar : public QskLinearBox
         Q_OBJECT
 
     public:
+        QSK_SUBCONTROLS( Panel )
+
         MenuBar( QQuickItem* parent );
+
+        QskAspect::Subcontrol effectiveSubcontrol(
+            QskAspect::Subcontrol subControl ) const override final;
 
     private:
         QList< QString > m_entryStrings;
