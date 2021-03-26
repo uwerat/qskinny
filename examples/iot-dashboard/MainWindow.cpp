@@ -5,13 +5,12 @@
 
 #include <QskLinearBox.h>
 
-MainWindow::MainWindow() : QskWindow()
+MainWindow::MainWindow()
+    : QskWindow()
+    , m_mainLayout( new QskLinearBox( Qt::Horizontal, contentItem() ) )
+    , m_menuBar( new MenuBar( m_mainLayout ) )
+    , m_mainContent( new MainContent( m_mainLayout ) )
 {
     setPreferredSize( { 1024, 600 } );
     setTitle( "IOT dashboard" );
-
-    m_mainLayout = new QskLinearBox( Qt::Horizontal, contentItem() );
-    m_mainLayout->setSpacing( 0 );
-    m_menuBar = new MenuBar( m_mainLayout );
-    m_mainContent = new MainContent( m_mainLayout );
 }
