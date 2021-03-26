@@ -8,19 +8,19 @@ class QskGraphicLabel;
 
 class RoundedIcon : public QskBox
 {
-    Q_OBJECT
+        Q_OBJECT
 
-public:
-    RoundedIcon(const QString& iconName, const QskGradient& gradient, QQuickItem *parent = nullptr);
+    public:
+        RoundedIcon( const QString& iconName, const QskGradient& gradient, QQuickItem* parent = nullptr );
 
-protected:
-    void updateLayout() override;
-    virtual QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
+    protected:
+        void updateLayout() override;
+        virtual QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
-private:
-    QString m_iconName;
-    QskGradient m_gradient;
-    QskGraphicLabel* m_graphicLabel = nullptr;
+    private:
+        QString m_iconName;
+        QskGradient m_gradient;
+        QskGraphicLabel* m_graphicLabel = nullptr;
 };
 
 #endif // ROUNDEDICON_H

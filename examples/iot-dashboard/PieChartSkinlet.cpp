@@ -20,7 +20,7 @@ QSGNode* PieChartSkinlet::updateSubNode( const QskSkinnable* skinnable, quint8 n
 {
     const auto pieChart = static_cast< const PieChart* >( skinnable );
 
-    switch ( nodeRole )
+    switch( nodeRole )
     {
         case PanelRole:
             return updatePanelNode( pieChart, node );
@@ -37,7 +37,7 @@ QSGNode* PieChartSkinlet::updatePanelNode( const PieChart* pieChart, QSGNode* no
 {
     auto boxNode = static_cast< QskBoxNode* >( node );
 
-    if ( boxNode == nullptr )
+    if( boxNode == nullptr )
     {
         boxNode = new QskBoxNode;
     }
@@ -69,7 +69,7 @@ QSGNode* PieChartSkinlet::updateLabelsNode( const PieChart* pieChart, QSGNode* /
 {
     const int labelsCount = pieChart->labels().count();
 
-    if ( labelsCount < 1 )
+    if( labelsCount < 1 )
     {
         return nullptr;
     }
