@@ -1,7 +1,6 @@
 #include "MainWindow.h"
 
-#include "DaytimeSkin.h"
-#include "NighttimeSkin.h"
+#include "Skin.h"
 
 #include <SkinnyFont.h>
 #include <SkinnyShortcut.h>

@@ -3,7 +3,6 @@ CONFIG += qskexample
 SOURCES += \
     Box.cpp \
     CircularProgressBar.cpp \
-    DaytimeSkin.cpp \
     Diagram.cpp \
     Humidity.cpp \
     IndoorTemperature.cpp \
@@ -11,13 +10,13 @@ SOURCES += \
     MainContent.cpp \
     MenuBar.cpp \
     MyDevices.cpp \
-    NighttimeSkin.cpp \
     PieChart.cpp \
     PieChartPainted.cpp \
     PieChartSkinlet.cpp \
     QskShadowedRectangle.cpp \
     QskShadowedRectangleSkinlet.cpp \
     RoundedIcon.cpp \
+    Skin.cpp \
     TopBar.cpp \
     UpAndDownButton.cpp \
     Usage.cpp \
@@ -27,7 +26,6 @@ SOURCES += \
 HEADERS += \
     Box.h \
     CircularProgressBar.h \
-    DaytimeSkin.h \
     Diagram.h \
     Humidity.h \
     IndoorTemperature.h \
@@ -36,13 +34,13 @@ HEADERS += \
     MainWindow.h \
     MenuBar.h \
     MyDevices.h \
-    NighttimeSkin.h \
     PieChart.h \
     PieChartPainted.h \
     PieChartSkinlet.h \
     QskShadowedRectangle.h \
     QskShadowedRectangleSkinlet.h \
     RoundedIcon.h \
+    Skin.h \
     TopBar.h \
     UpAndDownButton.h \
     Usage.h

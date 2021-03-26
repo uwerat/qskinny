@@ -1,4 +1,4 @@
-#include "DaytimeSkin.h"
+#include "Skin.h"
 
 #include "Box.h"
 #include "Diagram.h"
@@ -35,13 +35,17 @@ namespace
 
 }
 
-DaytimeSkin::DaytimeSkin( QObject* parent ) : QskSkin( parent )
+Skin::Skin( const Palette& palette, QObject* parent ) : QskSkin( parent )
 {
     declareSkinlet< QskShadowedRectangle, QskShadowedRectangleSkinlet >();
-    initHints();
+    initHints( palette );
 }
 
-void DaytimeSkin::initHints()
+Skin::~Skin()
+{
+}
+
+void Skin::initHints( const Palette& palette )
 {
     QFontDatabase db;
     db.addApplicationFont( ":/fonts/ProximaNova-Regular.otf" ); // ### use fontconfig
@@ -53,12 +57,11 @@ void DaytimeSkin::initHints()
     setFont( QskSkin::LargeFont, qskFont( 20 ) );
     setFont( QskSkin::HugeFont, qskFont( 27, true ) );
 
-    setFont( DaytimeSkin::TitleFont, qskFont( 10, true ) );
+    setFont( Skin::TitleFont, qskFont( 10, true ) );
 
     QskSkinHintTableEditor ed( &hintTable() );
 
     ed.setPadding( MenuBar::Panel, {0, 35, 0, 12} );
-    ed.setGradient( MenuBar::Panel, {"#6D7BFB"} );
 
     ed.setStrutSize( MenuItem::Panel | QskAspect::Size, {140, 40} );
     ed.setPadding( MenuItem::Panel, {30, 0, 30, 0} );
@@ -66,12 +69,13 @@ void DaytimeSkin::initHints()
     color.setAlphaF( 0.09 );
     ed.setGradient( MenuItem::Panel | QskControl::Hovered, color );
 
-    ed.setGradient( MainContent::Panel, {"#fbfbfb"} );
-    ed.setGradient( Box::Panel, {"#ffffff"} );
-    ed.setColor( LightDisplay::Panel, "#ffffff" );
-    ed.setColor( PieChartPainted::Panel, "#ffffff" );
-    ed.setGradient( RoundButton::Panel, {"#f7f7f7"} );
-    ed.setBoxBorderColors( WeekdayBox::Panel, {"#f4f4f4"} );
-    ed.setColor( QskTextLabel::Text, "#000000" );
 
+    ed.setGradient( MenuBar::Panel, palette.menuBar );
+    ed.setGradient( MainContent::Panel, palette.mainContent );
+    ed.setGradient( Box::Panel, palette.box );
+    ed.setColor( LightDisplay::Panel, palette.lightDisplay );
+    ed.setColor( PieChartPainted::Panel, palette.pieChart );
+    ed.setGradient( RoundButton::Panel, palette.roundButton );
+    ed.setBoxBorderColors( WeekdayBox::Panel, palette.weekdayBox );
+    ed.setColor( QskTextLabel::Text, palette.text );
 }
