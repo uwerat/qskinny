@@ -1,9 +1,9 @@
 #ifndef MAINCONTENT_H
 #define MAINCONTENT_H
 
+#include <QskGridBox.h>
 #include <QskLinearBox.h>
 
-class QskGridBox;
 class ShadowBox;
 class ShadowedRectangle;
 
@@ -19,6 +19,30 @@ class ShadowPositioner : public QskControl
     private:
         QskGridBox* m_gridBox;
         QVector<ShadowedRectangle*> m_rectangles;
+};
+
+class MainContentGridBox : public QskGridBox
+{
+        Q_OBJECT
+
+    public:
+        QSK_SUBCONTROLS( Panel )
+
+        MainContentGridBox( QQuickItem* parent = nullptr )
+            : QskGridBox( parent )
+        {
+        }
+
+        QskAspect::Subcontrol effectiveSubcontrol(
+            QskAspect::Subcontrol subControl ) const override final
+        {
+            if( subControl == QskGridBox::Panel )
+            {
+                return Panel;
+            }
+
+            return subControl;
+        }
 };
 
 class MainContent : public QskLinearBox

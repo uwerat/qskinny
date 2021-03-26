@@ -71,6 +71,8 @@ void Skin::initHints( const Palette& palette )
     color.setAlphaF( 0.14 );
     ed.setGradient( MenuItem::Panel | MenuItem::Active, color );
 
+    ed.setPadding( MainContentGridBox::Panel, {19, 0, 27, 24} );
+
     ed.setColor( MenuBarLabel::Text, Qt::white );
     ed.setFontRole( MenuBarLabel::Text, QskSkin::SmallFont );
 

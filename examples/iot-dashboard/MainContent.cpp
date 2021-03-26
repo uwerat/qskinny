@@ -21,6 +21,7 @@
 #include <QTimer>
 
 QSK_SUBCONTROL( MainContent, Panel )
+QSK_SUBCONTROL( MainContentGridBox, Panel )
 
 ShadowPositioner::ShadowPositioner( QQuickItem* parent ) : QskControl( parent )
 {
@@ -74,12 +75,9 @@ MainContent::MainContent( QQuickItem* parent ) : QskLinearBox( Qt::Vertical, par
     auto* topBar = new TopBar( this );
     addItem( topBar );
 
-    auto* gridBox = new QskGridBox( this );
-    gridBox->setSpacing( 15 );
-    gridBox->setMargins( {19, 0, 27, 24} );
+    auto* gridBox = new MainContentGridBox( this );
     gridBox->setPanel( true );
-    gridBox->setBoxShapeHint( QskBox::Panel, 6 );
-    gridBox->setBoxBorderMetricsHint( QskBox::Panel, 2 );
+    gridBox->setSpacing( 15 );
     addItem( gridBox );
 
     auto* usage = new Usage( gridBox );
