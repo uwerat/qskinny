@@ -8,6 +8,7 @@
 #include "QskShadowedRectangle.h"
 #include "QskShadowedRectangleSkinlet.h"
 #include "PieChartPainted.h"
+#include "TopBar.h"
 #include "UpAndDownButton.h"
 
 #include <QskBoxBorderMetrics.h>
@@ -72,6 +73,8 @@ void Skin::initHints( const Palette& palette )
     ed.setGradient( MenuItem::Panel | MenuItem::Active, color );
 
     ed.setPadding( MainContentGridBox::Panel, {19, 0, 27, 24} );
+
+    ed.setPadding( TopBar::Panel, {25, 35, 25, 0} );
 
     ed.setColor( MenuBarLabel::Text, Qt::white );
     ed.setFontRole( MenuBarLabel::Text, QskSkin::SmallFont );

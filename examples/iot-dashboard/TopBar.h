@@ -19,7 +19,20 @@ class TopBar : public QskLinearBox
         Q_OBJECT
 
     public:
+        QSK_SUBCONTROLS( Panel )
+
         TopBar( QQuickItem* parent );
+
+        QskAspect::Subcontrol effectiveSubcontrol(
+            QskAspect::Subcontrol subControl ) const override final
+        {
+            if( subControl == QskLinearBox::Panel )
+            {
+                return Panel;
+            }
+
+            return subControl;
+        }
 
     private:
         QList< TopBarItem* > m_entries;
