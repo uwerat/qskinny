@@ -69,6 +69,9 @@ void Skin::initHints( const Palette& palette )
     color.setAlphaF( 0.09 );
     ed.setGradient( MenuItem::Panel | QskControl::Hovered, color );
 
+    ed.setColor( MenuBarLabel::Text, Qt::white );
+    ed.setFontRole( MenuBarLabel::Text, QskSkin::SmallFont );
+
 
     ed.setGradient( MenuBar::Panel, palette.menuBar );
     ed.setGradient( MainContent::Panel, palette.mainContent );

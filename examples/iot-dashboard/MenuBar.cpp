@@ -8,6 +8,7 @@
 
 #include <QtGui/QImage>
 
+QSK_SUBCONTROL( MenuBarLabel, Text )
 QSK_SUBCONTROL( MenuItem, Panel )
 
 MenuItem::MenuItem( const QString& name, QQuickItem* parent ) : QskLinearBox( Qt::Horizontal, parent ),
@@ -29,9 +30,7 @@ MenuItem::MenuItem( const QString& name, QQuickItem* parent ) : QskLinearBox( Qt
     graphicLabel->setFixedWidth( 14 );
     graphicLabel->setAlignment( Qt::AlignCenter );
 
-    auto* textLabel = new QskTextLabel( name, this );
-    textLabel->setTextColor( Qt::white ); // ### style
-    textLabel->setFontRole( QskSkin::SmallFont ); // ### style
+    new MenuBarLabel( name, this );
 }
 
 QskAspect::Subcontrol MenuItem::effectiveSubcontrol( QskAspect::Subcontrol subControl ) const

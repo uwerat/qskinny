@@ -2,6 +2,31 @@
 #define MENUBAR_H
 
 #include <QskLinearBox.h>
+#include <QskTextLabel.h>
+
+class MenuBarLabel : public QskTextLabel
+{
+        Q_OBJECT
+
+    public:
+        QSK_SUBCONTROLS( Text )
+
+        MenuBarLabel( const QString& text, QQuickItem* parent = nullptr )
+            : QskTextLabel( text, parent )
+        {
+        }
+
+        QskAspect::Subcontrol effectiveSubcontrol(
+            QskAspect::Subcontrol subControl ) const override final
+        {
+            if( subControl == QskTextLabel::Text )
+            {
+                return Text;
+            }
+
+            return subControl;
+        }
+};
 
 class MenuItem : public QskLinearBox
 {
