@@ -68,6 +68,8 @@ void Skin::initHints( const Palette& palette )
     QColor color( Qt::white );
     color.setAlphaF( 0.09 );
     ed.setGradient( MenuItem::Panel | QskControl::Hovered, color );
+    color.setAlphaF( 0.14 );
+    ed.setGradient( MenuItem::Panel | MenuItem::Active, color );
 
     ed.setColor( MenuBarLabel::Text, Qt::white );
     ed.setFontRole( MenuBarLabel::Text, QskSkin::SmallFont );

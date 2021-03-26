@@ -12,6 +12,8 @@ QSK_SUBCONTROL( MenuBarGraphicLabel, Graphic )
 QSK_SUBCONTROL( MenuBarLabel, Text )
 QSK_SUBCONTROL( MenuItem, Panel )
 
+QSK_STATE( MenuItem, Active, ( QskAspect::FirstUserState << 1 ) )
+
 MenuItem::MenuItem( const QString& name, QQuickItem* parent ) : QskLinearBox( Qt::Horizontal, parent ),
     m_name( name )
 {
@@ -43,23 +45,6 @@ QskAspect::Subcontrol MenuItem::effectiveSubcontrol( QskAspect::Subcontrol subCo
     return subControl;
 }
 
-void MenuItem::setActive( bool active )
-{
-    QColor color;
-
-    if( active )
-    {
-        color = Qt::white;
-        color.setAlphaF( 0.14 );
-    }
-    else
-    {
-        color = Qt::transparent;
-    }
-
-    setBackgroundColor( color );
-}
-
 
 QSK_SUBCONTROL( MenuBar, Panel )
 
@@ -85,7 +70,7 @@ MenuBar::MenuBar( QQuickItem* parent ) : QskLinearBox( Qt::Vertical, parent )
         m_entries.append( entry );
     }
 
-    m_entries.at( m_activeEntry )->setActive( true );
+    m_entries.at( m_activeEntry )->setSkinState( MenuItem::Active );
 
     addSpacer( 0, 1 ); // fill the space at the bottom
 

@@ -59,12 +59,11 @@ class MenuItem : public QskLinearBox
 
     public:
         QSK_SUBCONTROLS( Panel )
+        QSK_STATES( Active )
 
         MenuItem( const QString& name, QQuickItem* parent );
 
         QskAspect::Subcontrol effectiveSubcontrol( QskAspect::Subcontrol subControl ) const override final;
-
-        void setActive( bool active );
 
     private:
         QString m_name;
