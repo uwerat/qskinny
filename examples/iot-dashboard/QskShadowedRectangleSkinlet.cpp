@@ -30,7 +30,7 @@ QSGNode* QskShadowedRectangleSkinlet::updateSubNode( const QskSkinnable* skinnab
     }
 }
 
-QSGNode* QskShadowedRectangleSkinlet::updateShadowNode( const QskShadowedRectangle* rectangle, QSGNode* node ) const
+QSGNode* QskShadowedRectangleSkinlet::updateShadowNode( const QskShadowedRectangle* /*rectangle*/, QSGNode* node ) const
 {
     auto shadowNode = static_cast<ShadowedRectangleNode*>( node );
 

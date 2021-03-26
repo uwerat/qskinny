@@ -65,7 +65,7 @@ QSGNode* PieChartSkinlet::updatePanelNode( const PieChart* pieChart, QSGNode* no
     return boxNode;
 }
 
-QSGNode* PieChartSkinlet::updateLabelsNode( const PieChart* pieChart, QSGNode* node ) const
+QSGNode* PieChartSkinlet::updateLabelsNode( const PieChart* pieChart, QSGNode* /*node*/ ) const
 {
     const int labelsCount = pieChart->labels().count();
 

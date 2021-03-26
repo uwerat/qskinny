@@ -35,5 +35,5 @@ Humidity::Humidity( QQuickItem* parent )
     value->setFontRole( QskSkin::HugeFont );
     value->setTextColor( "#929CB2" );
 
-    auto* buttons = new UpAndDownButton( layout );
+    /*auto* buttons =*/ new UpAndDownButton( layout );
 }

@@ -52,6 +52,6 @@ UpAndDownButton::UpAndDownButton( QQuickItem* parent )
     setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
     setSpacing( 0 );
 
-    auto* upButton = new RoundButton( Qt::TopEdge, this );
-    auto* downButton = new RoundButton( Qt::BottomEdge, this );
+    /*auto* upButton =*/ new RoundButton( Qt::TopEdge, this );
+    /*auto* downButton =*/ new RoundButton( Qt::BottomEdge, this );
 }
