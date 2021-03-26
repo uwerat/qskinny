@@ -15,7 +15,7 @@ MenuItem::MenuItem( const QString& name, QQuickItem* parent ) : QskLinearBox( Qt
 {
     setAutoLayoutChildren( true );
     setAutoAddChildren( true );
-    setFixedSize( {140, 40} );
+    setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
     setSpacing( 6 );
 
     setAcceptHoverEvents( true );

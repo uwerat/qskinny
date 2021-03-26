@@ -13,4 +13,6 @@ MainWindow::MainWindow()
 {
     setPreferredSize( { 1024, 600 } );
     setTitle( "IOT dashboard" );
+
+    m_mainLayout->setSpacing( 0 );
 }

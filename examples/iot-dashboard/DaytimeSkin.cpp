@@ -60,6 +60,7 @@ void DaytimeSkin::initHints()
     ed.setPadding( MenuBar::Panel, {0, 35, 0, 12} );
     ed.setGradient( MenuBar::Panel, {"#6D7BFB"} );
 
+    ed.setStrutSize( MenuItem::Panel | QskAspect::Size, {140, 40} );
     ed.setPadding( MenuItem::Panel, {30, 0, 30, 0} );
     QColor color( Qt::white );
     color.setAlphaF( 0.09 );
