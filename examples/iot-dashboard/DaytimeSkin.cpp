@@ -13,6 +13,7 @@
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxBorderColors.h>
 #include <QskFunctions.h>
+#include <QskSkinHintTableEditor.h>
 #include <QskTextLabel.h>
 
 #include <QFontDatabase>
@@ -54,16 +55,17 @@ void DaytimeSkin::initHints()
 
     setFont( DaytimeSkin::TitleFont, qskFont( 10, true ) );
 
+    QskSkinHintTableEditor ed( &hintTable() );
 
-    setGradient( MainContent::Panel, {"#fbfbfb"} );
-    setGradient( Box::Panel, {"#ffffff"} );
-    setColor( LightDisplay::Panel, "#ffffff" );
-    setColor( PieChartPainted::Panel, "#ffffff" );
-    setGradient( RoundButton::Panel, {"#f7f7f7"} );
-    setBoxBorderColors( WeekdayBox::Panel, {"#f4f4f4"} );
-    setColor( QskTextLabel::Text, "#000000" );
+    ed.setGradient( MainContent::Panel, {"#fbfbfb"} );
+    ed.setGradient( Box::Panel, {"#ffffff"} );
+    ed.setColor( LightDisplay::Panel, "#ffffff" );
+    ed.setColor( PieChartPainted::Panel, "#ffffff" );
+    ed.setGradient( RoundButton::Panel, {"#f7f7f7"} );
+    ed.setBoxBorderColors( WeekdayBox::Panel, {"#f4f4f4"} );
+    ed.setColor( QskTextLabel::Text, "#000000" );
 
     QColor color( Qt::white );
     color.setAlphaF( 0.09 );
-    setGradient( MenuItem::Panel | QskControl::Hovered, color );
+    ed.setGradient( MenuItem::Panel | QskControl::Hovered, color );
 }
