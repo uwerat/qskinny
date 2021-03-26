@@ -72,6 +72,8 @@ void Skin::initHints( const Palette& palette )
     ed.setColor( MenuBarLabel::Text, Qt::white );
     ed.setFontRole( MenuBarLabel::Text, QskSkin::SmallFont );
 
+    ed.setAlignment( MenuBarGraphicLabel::Graphic, Qt::AlignCenter );
+
 
     ed.setGradient( MenuBar::Panel, palette.menuBar );
     ed.setGradient( MainContent::Panel, palette.mainContent );

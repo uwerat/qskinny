@@ -1,8 +1,33 @@
 #ifndef MENUBAR_H
 #define MENUBAR_H
 
+#include <QskGraphicLabel.h>
 #include <QskLinearBox.h>
 #include <QskTextLabel.h>
+
+class MenuBarGraphicLabel : public QskGraphicLabel
+{
+        Q_OBJECT
+
+    public:
+        QSK_SUBCONTROLS( Graphic )
+
+        MenuBarGraphicLabel( const QskGraphic& graphic, QQuickItem* parent = nullptr )
+            : QskGraphicLabel( graphic, parent )
+        {
+        }
+
+        QskAspect::Subcontrol effectiveSubcontrol(
+            QskAspect::Subcontrol subControl ) const override final
+        {
+            if( subControl == QskGraphicLabel::Graphic )
+            {
+                return Graphic;
+            }
+
+            return subControl;
+        }
+};
 
 class MenuBarLabel : public QskTextLabel
 {

@@ -8,6 +8,7 @@
 
 #include <QtGui/QImage>
 
+QSK_SUBCONTROL( MenuBarGraphicLabel, Graphic )
 QSK_SUBCONTROL( MenuBarLabel, Text )
 QSK_SUBCONTROL( MenuItem, Panel )
 
@@ -25,10 +26,9 @@ MenuItem::MenuItem( const QString& name, QQuickItem* parent ) : QskLinearBox( Qt
     QString fileName = ":/images/" + name.toLower() + ".png"; // width: 14
     QImage image( fileName );
     auto graphic = QskGraphic::fromImage( image );
-    auto* graphicLabel = new QskGraphicLabel( graphic, this );
+    auto* graphicLabel = new MenuBarGraphicLabel( graphic, this );
     graphicLabel->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
     graphicLabel->setFixedWidth( 14 );
-    graphicLabel->setAlignment( Qt::AlignCenter );
 
     new MenuBarLabel( name, this );
 }
