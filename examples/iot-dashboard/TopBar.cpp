@@ -6,7 +6,7 @@
 
 #include <QTime>
 
-TopBarItem::TopBarItem(const QString& name, const QColor &textColor, const QGradient& gradient, int progress, int value, QQuickItem* parent ) : QskLinearBox( Qt::Vertical, parent ),
+TopBarItem::TopBarItem( const QString& name, const QColor& textColor, const QGradient& gradient, int progress, int value, QQuickItem* parent ) : QskLinearBox( Qt::Vertical, parent ),
     m_name( name )
 {
     setAutoLayoutChildren( true );
@@ -18,7 +18,7 @@ TopBarItem::TopBarItem(const QString& name, const QColor &textColor, const QGrad
 
     auto* pieChartAndDisplay = new QskLinearBox( Qt::Horizontal, this );
     pieChartAndDisplay->setSpacing( 10 );
-    auto* pieChart = new PieChartPainted(textColor, gradient, progress, value, pieChartAndDisplay);
+    /*auto* pieChart =*/ new PieChartPainted( textColor, gradient, progress, value, pieChartAndDisplay );
     auto* display = new QskLinearBox( Qt::Vertical, pieChartAndDisplay );
     display->setSpacing( 0 );
     display->addSpacer( 0, 1 );
