@@ -79,7 +79,7 @@ MenuBar::MenuBar( QQuickItem *parent ) : QskLinearBox( Qt::Vertical, parent )
 
     m_entryStrings = { "Dashboard", "Rooms", "Devices", "Statistics", "Storage", "Members" };
 
-    for( const auto entryString : m_entryStrings )
+    for( const auto &entryString : m_entryStrings )
     {
         auto* entry = new MenuItem( entryString, this );
         m_entries.append(entry);
