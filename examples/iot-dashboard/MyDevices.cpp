@@ -1,5 +1,5 @@
 #include "MyDevices.h"
-#include "DaytimeSkin.h"
+#include "Skin.h"
 #include "RoundedIcon.h"
 
 #include <QskGraphic.h>

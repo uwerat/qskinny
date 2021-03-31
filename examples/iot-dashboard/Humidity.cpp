@@ -1,5 +1,5 @@
 #include "Humidity.h"
-#include "DaytimeSkin.h"
+#include "Skin.h"
 #include "RoundedIcon.h"
 #include "UpAndDownButton.h"
 

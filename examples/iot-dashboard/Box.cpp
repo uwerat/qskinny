@@ -1,5 +1,5 @@
 #include "Box.h"
-#include "DaytimeSkin.h"
+#include "Skin.h"
 
 #include "src/shadowedrectangle.h"
 

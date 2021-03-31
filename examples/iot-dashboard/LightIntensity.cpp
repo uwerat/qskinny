@@ -1,5 +1,5 @@
 #include "LightIntensity.h"
-#include "DaytimeSkin.h"
+#include "Skin.h"
 
 #include <QskAnimator.h>
 #include <QskRgbValue.h>

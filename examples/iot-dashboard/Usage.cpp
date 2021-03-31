@@ -1,5 +1,5 @@
 #include "Usage.h"
-#include "DaytimeSkin.h"
+#include "Skin.h"
 
 #include <QskTextLabel.h>
 
