@@ -101,6 +101,9 @@ void Skin::initHints( const Palette& palette )
 
     // content in boxes (indoor temperature, humidity etc.):
     ed.setPadding( BoxWithButtons::Panel, 8 );
+    ed.setBoxShape( RoundedIcon::Panel, 6 );
+    ed.setVGradient( RoundedIcon::Panel | RoundedIcon::Bright, "#ff7d34", "#ff3122" );
+    ed.setVGradient( RoundedIcon::Panel, "#6776FF", "#6100FF" );
 
     // palette dependent skin hints:
     ed.setGradient( MenuBar::Panel, palette.menuBar );

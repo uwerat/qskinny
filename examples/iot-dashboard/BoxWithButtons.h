@@ -11,22 +11,9 @@ class BigRoundedIcon : public RoundedIcon
     public:
         QSK_SUBCONTROLS( Panel )
 
-        BigRoundedIcon( const QString& iconName, const QskGradient& gradient, QQuickItem* parent = nullptr )
-            : RoundedIcon( iconName, gradient, parent )
+        BigRoundedIcon( const QString& iconName, bool isBright, QQuickItem* parent = nullptr )
+            : RoundedIcon( iconName, isBright, parent )
         {
-            setGradientHint( Panel, gradient );
-            setBoxShapeHint( Panel, 6 );
-        }
-
-        QskAspect::Subcontrol effectiveSubcontrol(
-            QskAspect::Subcontrol subControl ) const override final
-        {
-            if( subControl == QskBox::Panel )
-            {
-                return Panel;
-            }
-
-            return subControl;
         }
 };
 
@@ -35,10 +22,10 @@ class BoxWithButtons : public Box
     public:
         QSK_SUBCONTROLS( Panel )
 
-        BoxWithButtons( const QString& title, const QskGradient& gradient, QQuickItem* parent = nullptr );
+        BoxWithButtons( const QString& title, bool isBright, QQuickItem* parent = nullptr );
 
         QskAspect::Subcontrol effectiveSubcontrol(
-            QskAspect::Subcontrol subControl ) const override final
+            QskAspect::Subcontrol subControl ) const override
         {
             if( subControl == QskBox::Panel )
             {
@@ -52,8 +39,10 @@ class BoxWithButtons : public Box
 class IndoorTemperature : public BoxWithButtons
 {
     public:
+        QSK_SUBCONTROLS( Panel )
+
         IndoorTemperature( QQuickItem* parent )
-            : BoxWithButtons( "Indoor Temperature", { QskGradient::Vertical, "#ff7d34", "#ff3122" }, parent )
+            : BoxWithButtons( "Indoor Temperature", true, parent )
         {
         }
 };
@@ -61,8 +50,10 @@ class IndoorTemperature : public BoxWithButtons
 class Humidity: public BoxWithButtons
 {
     public:
+        QSK_SUBCONTROLS( Panel )
+
         Humidity( QQuickItem* parent )
-            : BoxWithButtons( "Humidity", { QskGradient::Vertical, "#6776FF", "#6100FF" }, parent )
+            : BoxWithButtons( "Humidity", false, parent )
         {
         }
 };

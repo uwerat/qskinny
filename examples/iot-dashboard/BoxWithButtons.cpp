@@ -10,7 +10,10 @@ QSK_SUBCONTROL( BigRoundedIcon, Panel )
 
 QSK_SUBCONTROL( BoxWithButtons, Panel )
 
-BoxWithButtons::BoxWithButtons( const QString& title, const QskGradient& gradient, QQuickItem* parent )
+QSK_SUBCONTROL( IndoorTemperature, Panel )
+QSK_SUBCONTROL( Humidity, Panel )
+
+BoxWithButtons::BoxWithButtons( const QString& title, bool isBright, QQuickItem* parent )
     : Box( "", parent )
 {
     setPanel( true );
@@ -21,7 +24,7 @@ BoxWithButtons::BoxWithButtons( const QString& title, const QskGradient& gradien
 
     QString iconFile = title.toLower();
     iconFile = iconFile.replace( ' ', '-' );
-    auto* icon = new BigRoundedIcon( iconFile, gradient, layout );
+    auto* icon = new BigRoundedIcon( iconFile, isBright, layout );
     icon->setFixedSize( 68, 68 ); // ### fix properly
 
     auto* titleAndValue = new QskLinearBox( Qt::Vertical, layout );

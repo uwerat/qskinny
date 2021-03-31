@@ -12,8 +12,9 @@ class RoundedIcon : public QskBox
 
     public:
         QSK_SUBCONTROLS( Panel )
+        QSK_STATES( Bright ) // just to differentiate between orange and purple
 
-        RoundedIcon( const QString& iconName, const QskGradient& gradient, QQuickItem* parent = nullptr );
+        RoundedIcon( const QString& iconName, bool isBright, QQuickItem* parent = nullptr );
 
         QskAspect::Subcontrol effectiveSubcontrol(
             QskAspect::Subcontrol subControl ) const override
@@ -32,7 +33,6 @@ class RoundedIcon : public QskBox
 
     private:
         QString m_iconName;
-        QskGradient m_gradient;
         QskGraphicLabel* m_graphicLabel = nullptr;
 };
 

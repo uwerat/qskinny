@@ -14,14 +14,14 @@ namespace
     class Device : public QskLinearBox
     {
         public:
-            Device( const QString& name, const QskGradient& gradient, QQuickItem* parent )
+            Device( const QString& name, const QskGradient& gradient, QQuickItem* parent ) // ### remove gradient and style
                 : QskLinearBox( Qt::Vertical, parent )
                 , m_name( name )
             {
                 setDefaultAlignment( Qt::AlignCenter );
                 setAutoAddChildren( false );
 
-                m_icon = new RoundedIcon( QString(), gradient, this );
+                m_icon = new RoundedIcon( QString(), this );
                 m_icon->setOpacity( 0.15 );
                 m_icon->setFixedWidth( 60 );
                 addItem( m_icon );

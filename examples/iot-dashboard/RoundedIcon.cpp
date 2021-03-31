@@ -7,14 +7,19 @@
 #include <QImage>
 
 QSK_SUBCONTROL( RoundedIcon, Panel )
+QSK_STATE( RoundedIcon, Bright, ( QskAspect::FirstUserState << 1 ) )
 
-RoundedIcon::RoundedIcon( const QString& iconName, const QskGradient& gradient, QQuickItem* parent )
+RoundedIcon::RoundedIcon( const QString& iconName, bool isBright, QQuickItem* parent )
     : QskBox( parent )
     , m_iconName( iconName )
-    , m_gradient( gradient )
 {
     setPanel( true );
     setPolishOnResize( true );
+
+    if( isBright )
+    {
+        setSkinState( Bright );
+    }
 
     setSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Constrained );
 
