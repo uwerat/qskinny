@@ -86,6 +86,10 @@ void Skin::initHints( const Palette& palette )
     ed.setGradient( TopBarItem::Item3, { Qt::Horizontal, "#FFCE50", "#FF3122" } );
     ed.setGradient( TopBarItem::Item4, { Qt::Horizontal, "#6776FF", "#6100FF" } );
 
+    ed.setFontRole( TimeTitleLabel::Text, Skin::TitleFont );
+
+    ed.setFontRole( TimeLabel::Text, QskSkin::HugeFont );
+    ed.setColor( TimeLabel::Text, "#6776FF" );
 
     ed.setColor( MenuBarLabel::Text, Qt::white );
     ed.setFontRole( MenuBarLabel::Text, QskSkin::SmallFont );

@@ -6,6 +6,10 @@
 
 #include <QTime>
 
+QSK_SUBCONTROL( TimeTitleLabel, Text )
+
+QSK_SUBCONTROL( TimeLabel, Text )
+
 QSK_SUBCONTROL( TopBarItem, Item1 )
 QSK_SUBCONTROL( TopBarItem, Item2 )
 QSK_SUBCONTROL( TopBarItem, Item3 )
@@ -34,8 +38,9 @@ namespace
     }
 }
 
-TopBarItem::TopBarItem( int index, const QString& name, const QskGradient& gradient, int progress, int value, QQuickItem* parent ) : QskLinearBox( Qt::Vertical, parent ),
-    m_name( name )
+TopBarItem::TopBarItem( int index, const QString& name, const QskGradient& gradient, int progress, int value, QQuickItem* parent )
+    : QskLinearBox( Qt::Vertical, parent )
+    , m_name( name )
 {
     setAutoLayoutChildren( true );
     setAutoAddChildren( true );
@@ -49,12 +54,15 @@ TopBarItem::TopBarItem( int index, const QString& name, const QskGradient& gradi
 
     QskAspect::Subcontrol subcontrol = subcontrolForIndex( index );
     QColor textColor = color( subcontrol | QskAspect::TextColor );
-    /*auto* pieChart =*/ new PieChartPainted( textColor, gradient, progress, value, pieChartAndDisplay );
+    new PieChartPainted( textColor, gradient, progress, value, pieChartAndDisplay );
+
     auto* display = new QskLinearBox( Qt::Vertical, pieChartAndDisplay );
     display->setSpacing( 0 );
     display->addSpacer( 0, 1 );
+
     auto* displayValue = new QskTextLabel( QString::number( value ), display );
     displayValue->setFontRole( QskSkin::MediumFont );
+
     auto* displayUnit = new QskTextLabel( "kwH", display );
     displayUnit->setFontRole( QskSkin::SmallFont );
     display->addSpacer( 0, 1 );
@@ -69,7 +77,6 @@ TopBar::TopBar( QQuickItem* parent ) : QskLinearBox( Qt::Horizontal, parent )
     setSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Fixed );
 
     QStringList itemStrings = { "Living Room", "Bedroom", "Bathroom", "Kitchen" };
-
     int progressValues[] = {25, 45, 15, 86};
     int values[] = {175, 205, 115, 289};
 
@@ -83,13 +90,9 @@ TopBar::TopBar( QQuickItem* parent ) : QskLinearBox( Qt::Horizontal, parent )
     }
 
     auto* timeControl = new QskLinearBox( Qt::Vertical, this );
-    timeControl->setMargins( {0, 0, 50, 0} );
-    auto* timeTitle = new QskTextLabel( "Current time", timeControl ); // ### make bold or so
-    timeTitle->setFontRole( QskSkin::TinyFont );
+    new TimeTitleLabel( "Current time", timeControl );
 
     auto now = QTime::currentTime();
     auto timeString = now.toString();
-    auto* timeDisplay = new QskTextLabel( timeString, timeControl );
-    timeDisplay->setFontRole( QskSkin::HugeFont );
-    timeDisplay->setTextColor( "#6776FF" );
+    new TimeLabel( timeString, timeControl );
 }

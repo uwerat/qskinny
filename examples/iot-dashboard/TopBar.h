@@ -1,7 +1,57 @@
 #pragma once
 
 #include <QskLinearBox.h>
+#include <QskTextLabel.h>
+
 #include <QGradient>
+
+class TimeTitleLabel : public QskTextLabel
+{
+        Q_OBJECT
+
+    public:
+        QSK_SUBCONTROLS( Text )
+
+        TimeTitleLabel( const QString& text, QQuickItem* parent = nullptr )
+            : QskTextLabel( text, parent )
+        {
+        }
+
+        QskAspect::Subcontrol effectiveSubcontrol(
+            QskAspect::Subcontrol subControl ) const override final
+        {
+            if( subControl == QskTextLabel::Text )
+            {
+                return Text;
+            }
+
+            return subControl;
+        }
+};
+
+class TimeLabel : public QskTextLabel
+{
+        Q_OBJECT
+
+    public:
+        QSK_SUBCONTROLS( Text )
+
+        TimeLabel( const QString& text, QQuickItem* parent = nullptr )
+            : QskTextLabel( text, parent )
+        {
+        }
+
+        QskAspect::Subcontrol effectiveSubcontrol(
+            QskAspect::Subcontrol subControl ) const override final
+        {
+            if( subControl == QskTextLabel::Text )
+            {
+                return Text;
+            }
+
+            return subControl;
+        }
+};
 
 class TopBarItem : public QskLinearBox
 {
