@@ -2,6 +2,33 @@
 #define BOXWITHBUTTONS_H
 
 #include "Box.h"
+#include "RoundedIcon.h"
+
+#include <QskBoxShapeMetrics.h>
+
+class BigRoundedIcon : public RoundedIcon
+{
+    public:
+        QSK_SUBCONTROLS( Panel )
+
+        BigRoundedIcon( const QString& iconName, const QskGradient& gradient, QQuickItem* parent = nullptr )
+            : RoundedIcon( iconName, gradient, parent )
+        {
+            setGradientHint( Panel, gradient );
+            setBoxShapeHint( Panel, 6 );
+        }
+
+        QskAspect::Subcontrol effectiveSubcontrol(
+            QskAspect::Subcontrol subControl ) const override final
+        {
+            if( subControl == QskBox::Panel )
+            {
+                return Panel;
+            }
+
+            return subControl;
+        }
+};
 
 class BoxWithButtons : public Box
 {

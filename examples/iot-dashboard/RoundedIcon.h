@@ -11,7 +11,20 @@ class RoundedIcon : public QskBox
         Q_OBJECT
 
     public:
+        QSK_SUBCONTROLS( Panel )
+
         RoundedIcon( const QString& iconName, const QskGradient& gradient, QQuickItem* parent = nullptr );
+
+        QskAspect::Subcontrol effectiveSubcontrol(
+            QskAspect::Subcontrol subControl ) const override
+        {
+            if( subControl == QskBox::Panel )
+            {
+                return Panel;
+            }
+
+            return subControl;
+        }
 
     protected:
         void updateLayout() override;

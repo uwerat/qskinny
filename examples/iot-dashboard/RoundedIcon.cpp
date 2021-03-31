@@ -6,6 +6,8 @@
 
 #include <QImage>
 
+QSK_SUBCONTROL( RoundedIcon, Panel )
+
 RoundedIcon::RoundedIcon( const QString& iconName, const QskGradient& gradient, QQuickItem* parent )
     : QskBox( parent )
     , m_iconName( iconName )
@@ -13,8 +15,6 @@ RoundedIcon::RoundedIcon( const QString& iconName, const QskGradient& gradient, 
 {
     setPanel( true );
     setPolishOnResize( true );
-    setGradientHint( Panel, gradient );
-    setBoxShapeHint( Panel, 6 );
 
     setSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Constrained );
 
