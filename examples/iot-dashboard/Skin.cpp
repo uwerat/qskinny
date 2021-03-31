@@ -76,12 +76,23 @@ void Skin::initHints( const Palette& palette )
 
     ed.setPadding( TopBar::Panel, {25, 35, 25, 0} );
 
+    ed.setColor( TopBarItem::Item1 | QskAspect::TextColor, "#ff3122" );
+    ed.setColor( TopBarItem::Item2 | QskAspect::TextColor, "#6776ff" );
+    ed.setColor( TopBarItem::Item3 | QskAspect::TextColor, "#f99055" );
+    ed.setColor( TopBarItem::Item4 | QskAspect::TextColor, "#6776ff" );
+
+    ed.setGradient( TopBarItem::Item1, { Qt::Horizontal, "#FF5C00", "#FF3122" } );
+    ed.setGradient( TopBarItem::Item2, { Qt::Horizontal, "#6776FF", "#6100FF" } );
+    ed.setGradient( TopBarItem::Item3, { Qt::Horizontal, "#FFCE50", "#FF3122" } );
+    ed.setGradient( TopBarItem::Item4, { Qt::Horizontal, "#6776FF", "#6100FF" } );
+
+
     ed.setColor( MenuBarLabel::Text, Qt::white );
     ed.setFontRole( MenuBarLabel::Text, QskSkin::SmallFont );
 
     ed.setAlignment( MenuBarGraphicLabel::Graphic, Qt::AlignCenter );
 
-
+    // palette dependent skin hints:
     ed.setGradient( MenuBar::Panel, palette.menuBar );
     ed.setGradient( MainContent::Panel, palette.mainContent );
     ed.setGradient( Box::Panel, palette.box );

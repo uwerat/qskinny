@@ -2,11 +2,18 @@
 
 #include <QPainter>
 
-CircularProgressBar::CircularProgressBar( const QGradient& gradient, int progress, QQuickItem* parent )
+CircularProgressBar::CircularProgressBar( const QskGradient& gradient, int progress, QQuickItem* parent )
     : QQuickPaintedItem( parent )
-    , m_gradient( gradient )
     , m_progress( progress )
 {
+    // This is a bit hackish, but let's do this properly
+    // once QSkinny has an arch renderer in place
+    QLinearGradient g( 0, 0, 30, 0 );
+    QGradientStop stop1( 0.0, gradient.colorAt( 0 ) );
+    QGradientStop stop2( 1.0, gradient.colorAt( 1 ) );
+    g.setStops( {stop1, stop2} );
+    m_gradient = g;
+
     connect( this, &QQuickPaintedItem::contentsSizeChanged, [this]()
     {
         auto size = contentsSize();

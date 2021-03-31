@@ -73,7 +73,7 @@ class ProgressBarAnimator : public QskAnimator
         CircularProgressBar* m_progressBar;
 };
 
-PieChartPainted::PieChartPainted( const QColor& color, const QGradient& gradient, int progress, int /*value*/, QQuickItem* parent )
+PieChartPainted::PieChartPainted( const QColor& color, const QskGradient& gradient, int progress, int /*value*/, QQuickItem* parent )
     : QskControl( parent )
     , m_color( color )
     , m_gradient( gradient )

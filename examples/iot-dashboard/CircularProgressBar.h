@@ -1,13 +1,15 @@
 #ifndef CIRCULARPROGRESSBAR_H
 #define CIRCULARPROGRESSBAR_H
 
+#include <QskGradient.h>
+
 #include <QGradient>
 #include <QQuickPaintedItem>
 
 class CircularProgressBar : public QQuickPaintedItem
 {
     public:
-        CircularProgressBar( const QGradient& gradient, int progress, QQuickItem* parent = nullptr );
+        CircularProgressBar( const QskGradient& gradient, int progress, QQuickItem* parent = nullptr );
 
         virtual void paint( QPainter* painter ) override;
 

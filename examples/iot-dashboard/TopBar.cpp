@@ -6,9 +6,35 @@
 
 #include <QTime>
 
+QSK_SUBCONTROL( TopBarItem, Item1 )
+QSK_SUBCONTROL( TopBarItem, Item2 )
+QSK_SUBCONTROL( TopBarItem, Item3 )
+QSK_SUBCONTROL( TopBarItem, Item4 )
+
 QSK_SUBCONTROL( TopBar, Panel )
 
-TopBarItem::TopBarItem( const QString& name, const QColor& textColor, const QGradient& gradient, int progress, int value, QQuickItem* parent ) : QskLinearBox( Qt::Vertical, parent ),
+namespace
+{
+    QskAspect::Subcontrol subcontrolForIndex( int index )
+    {
+        switch( index )
+        {
+            case 0:
+                return TopBarItem::Item1;
+
+            case 1:
+                return TopBarItem::Item2;
+
+            case 2:
+                return TopBarItem::Item3;
+
+            default:
+                return TopBarItem::Item4;
+        }
+    }
+}
+
+TopBarItem::TopBarItem( int index, const QString& name, const QskGradient& gradient, int progress, int value, QQuickItem* parent ) : QskLinearBox( Qt::Vertical, parent ),
     m_name( name )
 {
     setAutoLayoutChildren( true );
@@ -16,10 +42,13 @@ TopBarItem::TopBarItem( const QString& name, const QColor& textColor, const QGra
     setSpacing( 15 );
 
     auto* textLabel = new QskTextLabel( name, this );
-    textLabel->setFontRole( QskSkin::SmallFont ); // ### style
+    textLabel->setFontRole( QskSkin::SmallFont );
 
     auto* pieChartAndDisplay = new QskLinearBox( Qt::Horizontal, this );
     pieChartAndDisplay->setSpacing( 10 );
+
+    QskAspect::Subcontrol subcontrol = subcontrolForIndex( index );
+    QColor textColor = color( subcontrol | QskAspect::TextColor );
     /*auto* pieChart =*/ new PieChartPainted( textColor, gradient, progress, value, pieChartAndDisplay );
     auto* display = new QskLinearBox( Qt::Vertical, pieChartAndDisplay );
     display->setSpacing( 0 );
@@ -40,25 +69,16 @@ TopBar::TopBar( QQuickItem* parent ) : QskLinearBox( Qt::Horizontal, parent )
     setSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Fixed );
 
     QStringList itemStrings = { "Living Room", "Bedroom", "Bathroom", "Kitchen" };
-    QColor textColors[] = {"#ff3122", "#6776ff", "#f99055", "#6776ff"};
-    QColor gradientColors[] = {"#FF5C00", "#FF3122",
-                               "#6776FF", "#6100FF",
-                               "#FFCE50", "#FF3122",
-//                               "#00ff00", "#ffffff", // ### remove
-                               "#6776FF", "#6100FF"
-                              };
 
     int progressValues[] = {25, 45, 15, 86};
     int values[] = {175, 205, 115, 289};
 
-    for( int a = 0; a < itemStrings.count(); a++ )
+    for( int i = 0; i < itemStrings.count(); i++ )
     {
-        QLinearGradient gradient( 0, 0, 30, 0 ); // ### do this properly and dependent on the size
-        QGradientStop stop1( 0.0, gradientColors[2 * a] );
-        QGradientStop stop2( 1.0, gradientColors[2 * a + 1] );
-        gradient.setStops( {stop1, stop2} );
+        QskAspect::Subcontrol subcontrol = subcontrolForIndex( i );
+        QskGradient gradient = gradientHint( subcontrol );
 
-        auto* item = new TopBarItem( itemStrings.at( a ), textColors[a], gradient, progressValues[a], values[a], this );
+        auto* item = new TopBarItem( i, itemStrings.at( i ), gradient, progressValues[i], values[i], this );
         m_entries.append( item );
     }
 

@@ -15,7 +15,7 @@ class PieChartPainted : public QskControl
     public:
         QSK_SUBCONTROLS( Panel )
 
-        PieChartPainted( const QColor& color, const QGradient& gradient, int progress, int value, QQuickItem* parent = nullptr );
+        PieChartPainted( const QColor& color, const QskGradient& gradient, int progress, int value, QQuickItem* parent = nullptr );
 
         QskAspect::Subcontrol effectiveSubcontrol(
             QskAspect::Subcontrol subControl ) const override final;
@@ -25,7 +25,7 @@ class PieChartPainted : public QskControl
 
     private:
         QColor m_color;
-        QGradient m_gradient;
+        QskGradient m_gradient;
         CircularProgressBar* m_progressBar;
         QskTextLabel* m_progressLabel;
         ProgressBarAnimator* m_animator;
