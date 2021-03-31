@@ -14,14 +14,14 @@ namespace
     class Device : public QskLinearBox
     {
         public:
-            Device( const QString& name, const QskGradient& gradient, QQuickItem* parent ) // ### remove gradient and style
+            Device( const QString& name, bool isBright, QQuickItem* parent )
                 : QskLinearBox( Qt::Vertical, parent )
                 , m_name( name )
             {
                 setDefaultAlignment( Qt::AlignCenter );
                 setAutoAddChildren( false );
 
-                m_icon = new RoundedIcon( QString(), this );
+                m_icon = new RoundedIcon( QString(), isBright, this );
                 m_icon->setOpacity( 0.15 );
                 m_icon->setFixedWidth( 60 );
                 addItem( m_icon );
@@ -61,18 +61,15 @@ MyDevices::MyDevices( QQuickItem* parent )
 {
     auto* content = new QskGridBox( this );
 
-    QskGradient gradient1( QskGradient::Vertical, "#FF3122", "#FF7D34" );
-    QskGradient gradient2( QskGradient::Vertical, "#6100FF", "#6776FF" );
-
-    auto* lamps = new Device( "Lamps", gradient1, content );
+    auto* lamps = new Device( "Lamps", true, content );
     content->addItem( lamps, 0, 0 );
 
-    auto* musicSystem = new Device( "Music System", gradient2, content );
+    auto* musicSystem = new Device( "Music System", false, content );
     content->addItem( musicSystem, 0, 1 );
 
-    auto* ac = new Device( "AC", gradient2, content );
+    auto* ac = new Device( "AC", false, content );
     content->addItem( ac, 1, 0 );
 
-    auto* router = new Device( "Router", gradient1, content );
+    auto* router = new Device( "Router", true, content );
     content->addItem( router, 1, 1 );
 }
