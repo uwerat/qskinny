@@ -1,6 +1,7 @@
 #include "Skin.h"
 
 #include "Box.h"
+#include "BoxWithButtons.h"
 #include "Diagram.h"
 #include "LightIntensity.h"
 #include "MainContent.h"
@@ -62,6 +63,9 @@ void Skin::initHints( const Palette& palette )
 
     QskSkinHintTableEditor ed( &hintTable() );
 
+    ed.setPadding( MainContentGridBox::Panel, {19, 0, 27, 24} );
+
+    // menu bar:
     ed.setPadding( MenuBar::Panel, {0, 35, 0, 12} );
 
     ed.setStrutSize( MenuItem::Panel | QskAspect::Size, {140, 40} );
@@ -72,8 +76,12 @@ void Skin::initHints( const Palette& palette )
     color.setAlphaF( 0.14 );
     ed.setGradient( MenuItem::Panel | MenuItem::Active, color );
 
-    ed.setPadding( MainContentGridBox::Panel, {19, 0, 27, 24} );
+    ed.setColor( MenuBarLabel::Text, Qt::white );
+    ed.setFontRole( MenuBarLabel::Text, QskSkin::SmallFont );
 
+    ed.setAlignment( MenuBarGraphicLabel::Graphic, Qt::AlignCenter );
+
+    // top bar:
     ed.setPadding( TopBar::Panel, {25, 35, 25, 0} );
 
     ed.setColor( TopBarItem::Item1 | QskAspect::TextColor, "#ff3122" );
@@ -91,10 +99,8 @@ void Skin::initHints( const Palette& palette )
     ed.setFontRole( TimeLabel::Text, QskSkin::HugeFont );
     ed.setColor( TimeLabel::Text, "#6776FF" );
 
-    ed.setColor( MenuBarLabel::Text, Qt::white );
-    ed.setFontRole( MenuBarLabel::Text, QskSkin::SmallFont );
-
-    ed.setAlignment( MenuBarGraphicLabel::Graphic, Qt::AlignCenter );
+    // content in boxes (indoor temperature, humidity etc.):
+    ed.setPadding( BoxWithButtons::Panel, 8 );
 
     // palette dependent skin hints:
     ed.setGradient( MenuBar::Panel, palette.menuBar );

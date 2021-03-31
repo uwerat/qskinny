@@ -30,7 +30,7 @@ class Box : public QskLinearBox
         Box( const QString& title, QQuickItem* parent );
 
         QskAspect::Subcontrol effectiveSubcontrol(
-            QskAspect::Subcontrol subControl ) const override final;
+            QskAspect::Subcontrol subControl ) const override;
 
     private:
         QString m_title;

@@ -2,10 +2,9 @@ CONFIG += qskexample
 
 SOURCES += \
     Box.cpp \
+    BoxWithButtons.cpp \
     CircularProgressBar.cpp \
     Diagram.cpp \
-    Humidity.cpp \
-    IndoorTemperature.cpp \
     LightIntensity.cpp \
     MainContent.cpp \
     MenuBar.cpp \
@@ -25,10 +24,9 @@ SOURCES += \
 
 HEADERS += \
     Box.h \
+    BoxWithButtons.h \
     CircularProgressBar.h \
     Diagram.h \
-    Humidity.h \
-    IndoorTemperature.h \
     LightIntensity.h \
     MainContent.h \
     MainWindow.h \

@@ -1,9 +1,8 @@
 #include "MainContent.h"
 
 #include "Box.h"
+#include "BoxWithButtons.h"
 #include "Diagram.h"
-#include "Humidity.h"
-#include "IndoorTemperature.h"
 #include "LightIntensity.h"
 #include "MyDevices.h"
 #include "PieChart.h"
