@@ -129,6 +129,8 @@ void Skin::initHints( const Palette& palette )
     // light intensity:
     ed.setGradient( LightDisplay::ColdPart, { Qt::Horizontal, "#a7b0ff", "#6776ff" } );
     ed.setGradient( LightDisplay::WarmPart, { Qt::Horizontal, "#feeeb7", "#ff3122" } );
+    ed.setFontRole( LightIntensityValueLabel::Text, QskSkin::LargeFont );
+    ed.setColor( LightIntensityValueLabel::Text, "#929cb2" );
 
     // palette dependent skin hints:
     ed.setGradient( MenuBar::Panel, palette.menuBar );

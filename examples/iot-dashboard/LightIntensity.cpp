@@ -11,6 +11,8 @@
 #include <QPainter>
 #include <QRadialGradient>
 
+QSK_SUBCONTROL( LightIntensityValueLabel, Text )
+
 QSK_SUBCONTROL( LightDisplay, Panel )
 QSK_SUBCONTROL( LightDisplay, ColdPart )
 QSK_SUBCONTROL( LightDisplay, WarmPart )
@@ -138,7 +140,7 @@ void LightDimmer::paint( QPainter* painter )
 LightDisplay::LightDisplay( QQuickItem* parent )
     : QskControl( parent )
     , m_leftLabel( new QskTextLabel( QString::number( 0 ), this ) )
-    , m_centreLabel( new QskTextLabel( QString::number( 50 ) + "%", this ) )
+    , m_centreLabel( new LightIntensityValueLabel( QString::number( 50 ) + "%", this ) )
     , m_rightLabel( new QskTextLabel( QString::number( 100 ), this ) )
     , m_dimmer( new LightDimmer( gradientHint( ColdPart ), gradientHint( WarmPart ), this ) )
     , m_animator( new DimmerAnimator( this, m_dimmer ) )
@@ -146,8 +148,6 @@ LightDisplay::LightDisplay( QQuickItem* parent )
     m_leftLabel->setSizePolicy( Qt::Horizontal, QskSizePolicy::Maximum );
     m_centreLabel->setSizePolicy( Qt::Horizontal, QskSizePolicy::Maximum );
     m_centreLabel->setZ( 1 );
-    m_centreLabel->setFontRole( QskSkin::LargeFont );
-    m_centreLabel->setTextColor( "#929cb2" );
     m_rightLabel->setSizePolicy( Qt::Horizontal, QskSizePolicy::Maximum );
     m_rightLabel->setZ( 1 );
 

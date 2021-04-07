@@ -3,11 +3,36 @@
 
 #include "Box.h"
 
+#include <QskTextLabel.h>
+
 #include <QQuickPaintedItem>
 #include <QRadialGradient>
 
 class DimmerAnimator;
 class QskTextLabel;
+
+class LightIntensityValueLabel : public QskTextLabel
+{
+        Q_OBJECT
+
+    public:
+        QSK_SUBCONTROLS( Text )
+
+        LightIntensityValueLabel( const QString& text, QQuickItem* parent ) : QskTextLabel( text, parent )
+        {
+        }
+
+        QskAspect::Subcontrol effectiveSubcontrol(
+            QskAspect::Subcontrol subControl ) const override final
+        {
+            if( subControl == QskTextLabel::Text )
+            {
+                return Text;
+            }
+
+            return subControl;
+        }
+};
 
 class LightDimmer: public QQuickPaintedItem
 {
@@ -73,7 +98,7 @@ class LightDisplay : public QskControl
 
     private:
         QskTextLabel* m_leftLabel;
-        QskTextLabel* m_centreLabel;
+        LightIntensityValueLabel* m_centreLabel;
         QskTextLabel* m_rightLabel;
         LightDimmer* m_dimmer;
         DimmerAnimator* m_animator;
