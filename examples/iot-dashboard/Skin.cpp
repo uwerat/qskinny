@@ -131,9 +131,11 @@ void Skin::initHints( const Palette& palette )
     ed.setGradient( MainContent::Panel, palette.mainContent );
     ed.setGradient( Box::Panel, palette.box );
     ed.setGradient( BoxWithButtons::Panel, palette.box );
+    ed.setGradient( Diagram::Panel, palette.box );
     ed.setColor( LightDisplay::Panel, palette.lightDisplay );
     ed.setColor( PieChartPainted::Panel, palette.pieChart );
     ed.setGradient( RoundButton::Panel, palette.roundButton );
     ed.setBoxBorderColors( WeekdayBox::Panel, palette.weekdayBox );
     ed.setColor( QskTextLabel::Text, palette.text );
+    ed.setColor( WeekdayLabel::Text, palette.text );
 }
