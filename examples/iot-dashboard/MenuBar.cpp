@@ -26,12 +26,12 @@ MenuItem::MenuItem( const QString& name, QQuickItem* parent ) : QskLinearBox( Qt
     setAcceptHoverEvents( true );
     setPanel( true );
 
-    QString fileName = ":/images/" + name.toLower() + ".png"; // width: 14
+    QString fileName = ":/images/" + name.toLower() + ".png";
     QImage image( fileName );
     auto graphic = QskGraphic::fromImage( image );
     auto* graphicLabel = new MenuBarGraphicLabel( graphic, this );
     graphicLabel->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
-    graphicLabel->setFixedWidth( 14 );
+    graphicLabel->setFixedWidth( metric( MenuBarGraphicLabel::Graphic | QskAspect::Size ) );
 
     new MenuBarLabel( name, this );
 }

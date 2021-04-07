@@ -81,6 +81,7 @@ void Skin::initHints( const Palette& palette )
 
     ed.setMargin( MenuBarTopLabel::Graphic, { 50, 0, 50, 54 } );
 
+    ed.setMetric( MenuBarGraphicLabel::Graphic | QskAspect::Size, 14 );
     ed.setAlignment( MenuBarGraphicLabel::Graphic, Qt::AlignCenter );
 
     // top bar:
