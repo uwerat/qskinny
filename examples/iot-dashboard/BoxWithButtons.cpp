@@ -6,6 +6,8 @@
 
 #include <QskTextLabel.h>
 
+QSK_SUBCONTROL( ButtonValueLabel, Text )
+
 QSK_SUBCONTROL( BoxWithButtons, Panel )
 
 QSK_SUBCONTROL( IndoorTemperature, Panel )
@@ -30,9 +32,7 @@ BoxWithButtons::BoxWithButtons( const QString& title, const QString& value, bool
     auto* titleLabel = new QskTextLabel( title, titleAndValue );
     titleLabel->setFontRole( Skin::TitleFont );
 
-    auto* valueLabel = new QskTextLabel( value, titleAndValue );
-    valueLabel->setFontRole( QskSkin::HugeFont );
-    valueLabel->setTextColor( "#929CB2" );
+    new ButtonValueLabel( value, titleAndValue );
 
     new UpAndDownButton( layout );
 }

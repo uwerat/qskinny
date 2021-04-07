@@ -100,6 +100,8 @@ void Skin::initHints( const Palette& palette )
     ed.setColor( TimeLabel::Text, "#6776FF" );
 
     // content in boxes (indoor temperature, humidity etc.):
+    ed.setFontRole( ButtonValueLabel::Text, QskSkin::HugeFont );
+    ed.setColor( ButtonValueLabel::Text, "#929cb2" );
     ed.setPadding( BoxWithButtons::Panel, 8 );
 
     ed.setBoxShape( RoundedIcon::Panel, 6 );

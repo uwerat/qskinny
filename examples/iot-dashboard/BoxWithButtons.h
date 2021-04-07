@@ -5,6 +5,30 @@
 #include "RoundedIcon.h"
 
 #include <QskBoxShapeMetrics.h>
+#include <QskTextLabel.h>
+
+class ButtonValueLabel : public QskTextLabel
+{
+        Q_OBJECT
+
+    public:
+        QSK_SUBCONTROLS( Text )
+
+        ButtonValueLabel( const QString& text, QQuickItem* parent ) : QskTextLabel( text, parent )
+        {
+        }
+
+        QskAspect::Subcontrol effectiveSubcontrol(
+            QskAspect::Subcontrol subControl ) const override final
+        {
+            if( subControl == QskTextLabel::Text )
+            {
+                return Text;
+            }
+
+            return subControl;
+        }
+};
 
 class BoxWithButtons : public Box
 {
