@@ -100,8 +100,6 @@ void Skin::initHints( const Palette& palette )
     ed.setColor( TimeLabel::Text, "#6776FF" );
 
     // content in boxes (indoor temperature, humidity etc.):
-    ed.setFontRole( ButtonValueLabel::Text, QskSkin::HugeFont );
-    ed.setColor( ButtonValueLabel::Text, "#929cb2" );
     ed.setPadding( BoxWithButtons::Panel, 8 );
 
     ed.setBoxShape( RoundedIcon::Panel, 6 );
@@ -110,6 +108,13 @@ void Skin::initHints( const Palette& palette )
     ed.setMetric( RoundedIcon::Panel | QskAspect::Size, 68 );
     ed.setMetric( RoundedIcon::Panel | RoundedIcon::Small | QskAspect::Size, 60 );
     ed.setMetric( RoundedIcon::Icon | QskAspect::Size, 36 );
+
+    ed.setFontRole( ButtonValueLabel::Text, QskSkin::HugeFont );
+    ed.setColor( ButtonValueLabel::Text, "#929cb2" );
+
+    ed.setStrutSize( RoundButton::Panel, {27, 38} );
+    ed.setBoxShape( RoundButton::Panel, {0, 0, 30, 30} );
+    ed.setBoxShape( RoundButton::Panel | RoundButton::Top, {30, 30, 0, 0} );
 
     // diagram:
     ed.setBoxBorderMetrics( WeekdayBox::Panel, {0, 0, 3, 3} );

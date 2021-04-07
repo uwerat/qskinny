@@ -10,8 +10,9 @@ class RoundButton : QskPushButton
 
     public:
         QSK_SUBCONTROLS( Panel )
+        QSK_STATES( Top )
 
-        RoundButton( Qt::Edge edge, QQuickItem* parent );
+        RoundButton( QskAspect::Placement placement, QQuickItem* parent );
 
         QskAspect::Subcontrol effectiveSubcontrol(
             QskAspect::Subcontrol subControl ) const override final;

@@ -9,31 +9,29 @@
 
 QSK_SUBCONTROL( RoundButton, Panel )
 
-RoundButton::RoundButton( Qt::Edge edge, QQuickItem* parent )
+QSK_STATE( RoundButton, Top, ( QskAspect::FirstUserState << 1 ) )
+
+RoundButton::RoundButton( QskAspect::Placement placement, QQuickItem* parent )
     : QskPushButton( parent )
 {
     setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Expanding );
-    setFixedWidth( 42 );
-    setFixedHeight( 46.31 );
 
     QskGraphic graphic;
+    QImage image;
 
-    if( edge == Qt::TopEdge )
+    if( placement == QskAspect::Top )
     {
-        setBoxShapeHint( RoundButton::Panel, {30, 30, 0, 0} );
-        QImage upImage( ":/images/up.png" );
-        graphic = QskGraphic::fromImage( upImage );
+        setSkinStateFlag( Top );
+        image.load( ":/images/up.svg" );
     }
     else
     {
-        setBoxShapeHint( RoundButton::Panel, {0, 0, 30, 30} );
-        QImage downImage( ":/images/down.png" );
-        graphic = QskGraphic::fromImage( downImage );
+        image.load( ":/images/down.svg" );
     }
 
-    graphic.setDefaultSize( {10, 5.71} );
+    setGraphicSourceSize( image.size() );
+    graphic = QskGraphic::fromImage( image );
     setGraphic( graphic );
-    setGraphicSourceSize( {10, 5.71} );
 }
 
 QskAspect::Subcontrol RoundButton::effectiveSubcontrol( QskAspect::Subcontrol subControl ) const
@@ -52,6 +50,6 @@ UpAndDownButton::UpAndDownButton( QQuickItem* parent )
     setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
     setSpacing( 0 );
 
-    /*auto* upButton =*/ new RoundButton( Qt::TopEdge, this );
-    /*auto* downButton =*/ new RoundButton( Qt::BottomEdge, this );
+    new RoundButton( QskAspect::Top, this );
+    new RoundButton( QskAspect::Bottom, this );
 }
