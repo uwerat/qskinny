@@ -6,8 +6,6 @@
 #include "LightIntensity.h"
 #include "MainContent.h"
 #include "MenuBar.h"
-#include "QskShadowedRectangle.h"
-#include "QskShadowedRectangleSkinlet.h"
 #include "PieChartPainted.h"
 #include "TopBar.h"
 #include "UpAndDownButton.h"
@@ -39,7 +37,6 @@ namespace
 
 Skin::Skin( const Palette& palette, QObject* parent ) : QskSkin( parent )
 {
-    declareSkinlet< QskShadowedRectangle, QskShadowedRectangleSkinlet >();
     initHints( palette );
 }
 

@@ -12,8 +12,6 @@ SOURCES += \
     PieChart.cpp \
     PieChartPainted.cpp \
     PieChartSkinlet.cpp \
-    QskShadowedRectangle.cpp \
-    QskShadowedRectangleSkinlet.cpp \
     RoundedIcon.cpp \
     Skin.cpp \
     TopBar.cpp \
@@ -35,8 +33,6 @@ HEADERS += \
     PieChart.h \
     PieChartPainted.h \
     PieChartSkinlet.h \
-    QskShadowedRectangle.h \
-    QskShadowedRectangleSkinlet.h \
     RoundedIcon.h \
     Skin.h \
     TopBar.h \
