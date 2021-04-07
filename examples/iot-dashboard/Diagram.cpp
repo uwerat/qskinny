@@ -14,43 +14,22 @@
 
 QSK_SUBCONTROL( WeekdayBox, Panel )
 
-WeekdayBox::WeekdayBox( QQuickItem* parent )
-    : QskBox( true, parent )
+CaptionItem::CaptionItem( const QColor& color, const QString& text, QQuickItem* parent )
+    : QskLinearBox( Qt::Horizontal, parent )
 {
-    setBoxBorderMetricsHint( WeekdayBox::Panel, {0, 0, 3, 3} );
-}
+    setSpacing( 10 );
+    auto* box = new QskBox( true, this );
+    box->setGradientHint( QskBox::Panel, color );
 
-QskAspect::Subcontrol WeekdayBox::effectiveSubcontrol( QskAspect::Subcontrol subControl ) const
-{
-    if( subControl == QskBox::Panel )
-    {
-        return WeekdayBox::Panel;
-    }
+    auto* textLabel = new QskTextLabel( text, this );
+    textLabel->setFontRole( QskSkin::TinyFont );
 
-    return subControl;
+    box->setFixedSize( 8, 8 );
+    box->setBoxShapeHint( QskBox::Panel, 4 );
 }
 
 namespace
 {
-    class CaptionItem : public QskLinearBox
-    {
-            Q_OBJECT
-        public:
-            CaptionItem( const QColor& color, const QString& text, QQuickItem* parent )
-                : QskLinearBox( Qt::Horizontal, parent )
-            {
-                setSpacing( 10 );
-                auto* box = new QskBox( true, this );
-                box->setGradientHint( QskBox::Panel, color );
-
-                auto* textLabel = new QskTextLabel( text, this );
-                textLabel->setFontRole( QskSkin::TinyFont );
-
-                box->setFixedSize( 8, 8 );
-                box->setBoxShapeHint( QskBox::Panel, 4 );
-            }
-    };
-
 
     float distance( const QPointF& pt1, const QPointF& pt2 )
     {

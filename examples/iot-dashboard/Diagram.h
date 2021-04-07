@@ -15,10 +15,27 @@ class WeekdayBox : public QskBox
     public:
         QSK_SUBCONTROLS( Panel )
 
-        WeekdayBox( QQuickItem* parent );
+        WeekdayBox( QQuickItem* parent ) : QskBox( true, parent )
+        {
+        }
 
         QskAspect::Subcontrol effectiveSubcontrol(
-            QskAspect::Subcontrol subControl ) const override final;
+            QskAspect::Subcontrol subControl ) const override final
+        {
+            if( subControl == QskBox::Panel )
+            {
+                return WeekdayBox::Panel;
+            }
+
+            return subControl;
+        }
+};
+
+class CaptionItem : public QskLinearBox
+{
+        Q_OBJECT
+    public:
+        CaptionItem( const QColor& color, const QString& text, QQuickItem* parent );
 };
 
 class Diagram : public Box

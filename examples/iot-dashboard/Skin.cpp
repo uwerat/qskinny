@@ -109,6 +109,9 @@ void Skin::initHints( const Palette& palette )
     ed.setMetric( RoundedIcon::Panel | RoundedIcon::Small | QskAspect::Size, 60 );
     ed.setMetric( RoundedIcon::Icon | QskAspect::Size, 36 );
 
+    // diagram:
+    ed.setBoxBorderMetrics( WeekdayBox::Panel, {0, 0, 3, 3} );
+
     // palette dependent skin hints:
     ed.setGradient( MenuBar::Panel, palette.menuBar );
     ed.setGradient( MainContent::Panel, palette.mainContent );
