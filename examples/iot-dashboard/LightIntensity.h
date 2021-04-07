@@ -14,7 +14,7 @@ class LightDimmer: public QQuickPaintedItem
         Q_OBJECT
 
     public:
-        LightDimmer( QQuickItem* parent );
+        LightDimmer( const QskGradient& coldGradient, const QskGradient& warmGradient, QQuickItem* parent );
 
         double thickness() const
         {
@@ -50,6 +50,8 @@ class LightDimmer: public QQuickPaintedItem
         double m_thickness = 17.57;
         QColor m_backgroundColor;
         QRadialGradient m_ringGradient;
+        QskGradient m_coldGradient;
+        QskGradient m_warmGradient;
 
         virtual void paint( QPainter* painter ) override;
 };
@@ -59,7 +61,7 @@ class LightDisplay : public QskControl
         Q_OBJECT
 
     public:
-        QSK_SUBCONTROLS( Panel )
+        QSK_SUBCONTROLS( Panel, ColdPart, WarmPart )
 
         LightDisplay( QQuickItem* parent );
 

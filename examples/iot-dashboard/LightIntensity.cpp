@@ -12,6 +12,8 @@
 #include <QRadialGradient>
 
 QSK_SUBCONTROL( LightDisplay, Panel )
+QSK_SUBCONTROL( LightDisplay, ColdPart )
+QSK_SUBCONTROL( LightDisplay, WarmPart )
 
 namespace
 {
@@ -72,8 +74,10 @@ class DimmerAnimator : public QskAnimator
         LightDimmer* m_dimmer;
 };
 
-LightDimmer::LightDimmer( QQuickItem* parent )
+LightDimmer::LightDimmer( const QskGradient& coldGradient, const QskGradient& warmGradient, QQuickItem* parent )
     : QQuickPaintedItem( parent )
+    , m_coldGradient( coldGradient )
+    , m_warmGradient( warmGradient )
 {
     connect( this, &QQuickPaintedItem::contentsSizeChanged, [this]()
     {
@@ -107,17 +111,17 @@ void LightDimmer::paint( QPainter* painter )
     int middleAngle = 16 * -90;
     int endAngle = 16 * -90;
 
-    QLinearGradient blueGradient( {thickness(), 0.0}, {thickness(), thickness()} );
-    blueGradient.setColorAt( 0, "#a7b0ff" );
-    blueGradient.setColorAt( 1, "#6776ff" );
-    painter->setBrush( blueGradient );
+    QLinearGradient coldGradient( {thickness(), 0.0}, {thickness(), thickness()} );
+    coldGradient.setColorAt( 0, m_coldGradient.colorAt( 0 ) );
+    coldGradient.setColorAt( 1, m_coldGradient.colorAt( 1 ) );
+    painter->setBrush( coldGradient );
     painter->setPen( Qt::transparent );
     painter->drawPie( outerRect, startAngle, middleAngle );
 
-    QLinearGradient redGradient( {thickness(), 0.0}, {thickness(), thickness()} );
-    redGradient.setColorAt( 0, "#feeeb7" );
-    redGradient.setColorAt( 1, "#ff3122" );
-    painter->setBrush( redGradient );
+    QLinearGradient warmGradient( {thickness(), 0.0}, {thickness(), thickness()} );
+    warmGradient.setColorAt( 0, m_warmGradient.colorAt( 0 ) );
+    warmGradient.setColorAt( 1, m_warmGradient.colorAt( 1 ) );
+    painter->setBrush( warmGradient );
     painter->drawPie( outerRect, 16 * 90, endAngle );
 
     painter->setBrush( m_backgroundColor );
@@ -136,7 +140,7 @@ LightDisplay::LightDisplay( QQuickItem* parent )
     , m_leftLabel( new QskTextLabel( QString::number( 0 ), this ) )
     , m_centreLabel( new QskTextLabel( QString::number( 50 ) + "%", this ) )
     , m_rightLabel( new QskTextLabel( QString::number( 100 ), this ) )
-    , m_dimmer( new LightDimmer( this ) )
+    , m_dimmer( new LightDimmer( gradientHint( ColdPart ), gradientHint( WarmPart ), this ) )
     , m_animator( new DimmerAnimator( this, m_dimmer ) )
 {
     m_leftLabel->setSizePolicy( Qt::Horizontal, QskSizePolicy::Maximum );

@@ -7,7 +7,7 @@ CircularProgressBar::CircularProgressBar( const QskGradient& gradient, int progr
     , m_progress( progress )
 {
     // This is a bit hackish, but let's do this properly
-    // once QSkinny has an arch renderer in place
+    // once QSkinny has an arc renderer in place
     QLinearGradient g( 0, 0, 30, 0 );
     QGradientStop stop1( 0.0, gradient.colorAt( 0 ) );
     QGradientStop stop2( 1.0, gradient.colorAt( 1 ) );

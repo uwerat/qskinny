@@ -126,6 +126,10 @@ void Skin::initHints( const Palette& palette )
 
     ed.setPadding( CaptionBox::Panel, {10, 10, 20, 0} );
 
+    // light intensity:
+    ed.setGradient( LightDisplay::ColdPart, { Qt::Horizontal, "#a7b0ff", "#6776ff" } );
+    ed.setGradient( LightDisplay::WarmPart, { Qt::Horizontal, "#feeeb7", "#ff3122" } );
+
     // palette dependent skin hints:
     ed.setGradient( MenuBar::Panel, palette.menuBar );
     ed.setGradient( MainContent::Panel, palette.mainContent );
