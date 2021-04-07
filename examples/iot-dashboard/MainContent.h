@@ -4,7 +4,6 @@
 #include <QskGridBox.h>
 #include <QskLinearBox.h>
 
-class ShadowBox;
 class ShadowedRectangle;
 
 class ShadowPositioner : public QskControl

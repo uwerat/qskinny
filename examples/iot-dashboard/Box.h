@@ -7,20 +7,6 @@
 
 class QskTextLabel;
 
-class ShadowBox : public QskControl
-{
-        Q_OBJECT
-    public:
-        ShadowBox( QQuickItem* parent = nullptr );
-
-    protected:
-        void updateLayout() override;
-
-    private:
-//        QskControl* m_control;
-        ShadowedRectangle* m_rectangle;
-};
-
 class Box : public QskLinearBox
 {
         Q_OBJECT
