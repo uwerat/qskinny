@@ -11,10 +11,10 @@ class RoundedIcon : public QskBox
         Q_OBJECT
 
     public:
-        QSK_SUBCONTROLS( Panel )
-        QSK_STATES( Bright ) // just to differentiate between orange and purple
+        QSK_SUBCONTROLS( Panel, Icon )
+        QSK_STATES( Bright, Small ) // to differentiate between orange and purple and small vs. big
 
-        RoundedIcon( const QString& iconName, bool isBright, QQuickItem* parent = nullptr );
+        RoundedIcon( const QString& iconName, bool isBright, bool isSmall, QQuickItem* parent = nullptr );
 
         QskAspect::Subcontrol effectiveSubcontrol(
             QskAspect::Subcontrol subControl ) const override

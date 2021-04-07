@@ -6,8 +6,6 @@
 
 #include <QskTextLabel.h>
 
-QSK_SUBCONTROL( BigRoundedIcon, Panel )
-
 QSK_SUBCONTROL( BoxWithButtons, Panel )
 
 QSK_SUBCONTROL( IndoorTemperature, Panel )
@@ -24,8 +22,7 @@ BoxWithButtons::BoxWithButtons( const QString& title, bool isBright, QQuickItem*
 
     QString iconFile = title.toLower();
     iconFile = iconFile.replace( ' ', '-' );
-    auto* icon = new BigRoundedIcon( iconFile, isBright, layout );
-    icon->setFixedSize( 68, 68 ); // ### fix properly
+    new RoundedIcon( iconFile, isBright, false, layout );
 
     auto* titleAndValue = new QskLinearBox( Qt::Vertical, layout );
     titleAndValue->setMargins( {0, 10, 0, 0} );

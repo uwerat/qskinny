@@ -6,17 +6,6 @@
 
 #include <QskBoxShapeMetrics.h>
 
-class BigRoundedIcon : public RoundedIcon
-{
-    public:
-        QSK_SUBCONTROLS( Panel )
-
-        BigRoundedIcon( const QString& iconName, bool isBright, QQuickItem* parent = nullptr )
-            : RoundedIcon( iconName, isBright, parent )
-        {
-        }
-};
-
 class BoxWithButtons : public Box
 {
     public:

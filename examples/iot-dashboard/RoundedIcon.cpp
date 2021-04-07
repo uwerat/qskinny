@@ -7,21 +7,30 @@
 #include <QImage>
 
 QSK_SUBCONTROL( RoundedIcon, Panel )
+QSK_SUBCONTROL( RoundedIcon, Icon )
 QSK_STATE( RoundedIcon, Bright, ( QskAspect::FirstUserState << 1 ) )
+QSK_STATE( RoundedIcon, Small, ( QskAspect::FirstUserState << 2 ) )
 
-RoundedIcon::RoundedIcon( const QString& iconName, bool isBright, QQuickItem* parent )
+RoundedIcon::RoundedIcon( const QString& iconName, bool isBright, bool isSmall, QQuickItem* parent )
     : QskBox( parent )
     , m_iconName( iconName )
 {
     setPanel( true );
     setPolishOnResize( true );
 
+    if( isSmall )
+    {
+        setSkinState( skinState() | Small );
+    }
+
+    setSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Constrained );
+    const qreal size = metric( RoundedIcon::Panel | QskAspect::Size );
+    setFixedWidth( size );
+
     if( isBright )
     {
         setSkinState( Bright );
     }
-
-    setSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Constrained );
 
     QString fileName = ":/images/" + iconName + ".png";
 
@@ -37,7 +46,8 @@ void RoundedIcon::updateLayout()
 {
     if( m_graphicLabel )
     {
-        m_graphicLabel->setSize( {36, 36} );
+        const qreal size = metric( Icon | QskAspect::Size );
+        m_graphicLabel->setSize( {size, size} );
         m_graphicLabel->setPosition( { ( width() - m_graphicLabel->width() ) / 2, ( height() - m_graphicLabel->height() ) / 2 } );
     }
 }
