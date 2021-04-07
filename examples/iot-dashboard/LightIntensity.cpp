@@ -146,7 +146,7 @@ LightDisplay::LightDisplay( QQuickItem* parent )
     m_leftLabel->setSizePolicy( Qt::Horizontal, QskSizePolicy::Maximum );
     m_centreLabel->setSizePolicy( Qt::Horizontal, QskSizePolicy::Maximum );
     m_centreLabel->setZ( 1 );
-    m_centreLabel->setFontRole( DaytimeSkin::LargeFont );
+    m_centreLabel->setFontRole( QskSkin::LargeFont );
     m_centreLabel->setTextColor( "#929cb2" );
     m_rightLabel->setSizePolicy( Qt::Horizontal, QskSizePolicy::Maximum );
     m_rightLabel->setZ( 1 );
@@ -174,7 +174,8 @@ QskAspect::Subcontrol LightDisplay::effectiveSubcontrol( QskAspect::Subcontrol s
 
 void LightDisplay::updateLayout()
 {
-    const int r = qMin( width(), height() );
+    const qreal w = width() - ( m_leftLabel->width() + m_rightLabel->width() );
+    const int r = qMin( w, height() );
     m_dimmer->setContentsSize( {r - 4, r - 4} ); // for some reason we need some padding, hence the 4
     m_dimmer->setSize( QSizeF( r, r ) );
     const qreal padding = 8;

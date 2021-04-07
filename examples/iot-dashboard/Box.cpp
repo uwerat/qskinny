@@ -68,7 +68,7 @@ Box::Box( const QString& title, QQuickItem* parent )
 //    auto* t = new QskTextLabel( "bla", r );
 
 
-    m_label->setFontRole( DaytimeSkin::TitleFont );
+    m_label->setFontRole( Skin::TitleFont );
 
     if( m_label->text().isEmpty() )
     {
