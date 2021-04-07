@@ -13,11 +13,15 @@
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxShapeMetrics.h>
 #include <QskGridBox.h>
+#include <QskSetup.h>
+#include <QskSkin.h>
 #include <QskTextLabel.h>
 
 #include "src/shadowedrectangle.h"
 
 #include <QTimer>
+
+QSK_SUBCONTROL( ShadowPositioner, Panel )
 
 QSK_SUBCONTROL( MainContent, Panel )
 QSK_SUBCONTROL( MainContentGridBox, Panel )
@@ -36,14 +40,22 @@ void ShadowPositioner::setGridBox( QskGridBox* gridBox )
     {
         auto* r = new ShadowedRectangle( this );
         r->setZ( 5 );
-        r->shadow()->setColor( Qt::black );
-        r->shadow()->setSize( 15 );
-        r->setColor( Qt::white ); // ### opacity should only be for the shadow, not the background
+        r->setColor( Qt::transparent );
+        r->shadow()->setColor( color( ShadowPositioner::Panel ) );
+
+        connect( qskSetup, &QskSetup::skinChanged, [this, r]()
+        {
+            r->shadow()->setColor( color( ShadowPositioner::Panel ) );
+        } );
+
+        r->shadow()->setSize( metric( ShadowPositioner::Panel | QskAspect::Size ) );
         r->setOpacity( 0.1 );
-        r->corners()->setTopLeft( 6 );
-        r->corners()->setTopRight( 6 );
-        r->corners()->setBottomLeft( 6 );
-        r->corners()->setBottomRight( 6 );
+
+        auto shape = boxShapeHint( ShadowPositioner::Panel );
+        r->corners()->setTopLeft( shape.radius( Qt::TopLeftCorner ).width() );
+        r->corners()->setTopRight( shape.radius( Qt::TopRightCorner ).width() );
+        r->corners()->setBottomLeft( shape.radius( Qt::BottomLeftCorner ).width() );
+        r->corners()->setBottomRight( shape.radius( Qt::BottomRightCorner ).width() );
         m_rectangles.append( r );
     }
 }

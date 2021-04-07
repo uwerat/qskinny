@@ -17,14 +17,7 @@ Box::Box( const QString& title, QQuickItem* parent )
 {
     setAutoAddChildren( true );
     setAutoLayoutChildren( true );
-    setBackgroundColor( Qt::white );
-
-    setPaddingHint( Panel, 15 );
     setPanel( true );
-    setBoxShapeHint( QskBox::Panel, 6 );
-    QskBoxBorderColors borderColors( "#dddddd" );
-    borderColors.setAlpha( 100 );
-    setBoxBorderColorsHint( QskBox::Panel, borderColors );
 
     m_label->setFontRole( Skin::TitleFont );
 

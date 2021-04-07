@@ -9,7 +9,10 @@ class ShadowedRectangle;
 class ShadowPositioner : public QskControl
 {
         Q_OBJECT
+
     public:
+        QSK_SUBCONTROLS( Panel )
+
         ShadowPositioner( QQuickItem* parent );
 
         void updateLayout() override;

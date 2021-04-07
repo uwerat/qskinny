@@ -10,9 +10,9 @@ class Skin : public QskSkin
         class Palette
         {
             public:
-                Palette( QskGradient menuBar, QskGradient mainContent, QskGradient box,
-                         QColor lightDisplay, QColor pieChart, QskGradient roundButton,
-                         QColor weekdayBox, QColor text )
+                Palette( const QskGradient& menuBar, const QskGradient& mainContent, const QskGradient& box,
+                         const QColor& lightDisplay, const QColor& pieChart, const QskGradient& roundButton,
+                         const QColor& weekdayBox, const QColor& text, const QColor& shadow )
                     : menuBar( menuBar )
                     , mainContent( mainContent )
                     , box( box )
@@ -21,6 +21,7 @@ class Skin : public QskSkin
                     , roundButton( roundButton )
                     , weekdayBox( weekdayBox )
                     , text( text )
+                    , shadow( shadow )
                 {
                 }
                 QskGradient menuBar;
@@ -31,6 +32,7 @@ class Skin : public QskSkin
                 QskGradient roundButton;
                 QColor weekdayBox;
                 QColor text;
+                QColor shadow;
         };
 
         Skin( const Palette& palette, QObject* parent = nullptr );
@@ -52,7 +54,7 @@ class DaytimeSkin : public Skin
             : Skin(
                   Skin::Palette( {"#6D7BFB"}, {"#fbfbfb"}, {"#ffffff"},
         "#ffffff", "#ffffff", {"#f7f7f7"},
-        {"#f4f4f4"}, "#000000" )
+        {"#f4f4f4"}, Qt::black, Qt::black )
         , parent )
         {
         }
@@ -65,7 +67,7 @@ class NighttimeSkin : public Skin
             : Skin(
                   Skin::Palette( {"#2937A7"}, {"#040404"}, {"#000000"},
         "#000000", "#000000", {"#0a0a0a"},
-        {"#0c0c0c"}, "#ffffff" )
+        {"#0c0c0c"}, Qt::white, Qt::white )
         , parent )
         {
         }

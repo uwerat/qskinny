@@ -65,6 +65,7 @@ void Skin::initHints( const Palette& palette )
 
     ed.setPadding( MainContentGridBox::Panel, {19, 0, 27, 24} );
 
+
     // menu bar:
     ed.setPadding( MenuBar::Panel, {0, 35, 0, 12} );
 
@@ -84,6 +85,7 @@ void Skin::initHints( const Palette& palette )
     ed.setMetric( MenuBarGraphicLabel::Graphic | QskAspect::Size, 14 );
     ed.setAlignment( MenuBarGraphicLabel::Graphic, Qt::AlignCenter );
 
+
     // top bar:
     ed.setPadding( TopBar::Panel, {25, 35, 25, 0} );
 
@@ -101,6 +103,14 @@ void Skin::initHints( const Palette& palette )
 
     ed.setFontRole( TimeLabel::Text, QskSkin::HugeFont );
     ed.setColor( TimeLabel::Text, "#6776FF" );
+
+
+    // boxes (including shadow):
+    ed.setPadding( Box::Panel, 15 );
+
+    ed.setMetric( ShadowPositioner::Panel | QskAspect::Size, 15 );
+    ed.setBoxShape( ShadowPositioner::Panel, {6, 6, 6, 6} );
+
 
     // content in boxes (indoor temperature, humidity etc.):
     ed.setPadding( BoxWithButtons::Panel, 8 );
@@ -121,6 +131,7 @@ void Skin::initHints( const Palette& palette )
     ed.setBoxShape( RoundButton::Panel, {0, 0, 30, 30} );
     ed.setBoxShape( RoundButton::Panel | RoundButton::Top, {30, 30, 0, 0} );
 
+
     // diagram:
     ed.setBoxBorderMetrics( WeekdayBox::Panel, {0, 0, 3, 3} );
 
@@ -138,11 +149,13 @@ void Skin::initHints( const Palette& palette )
 
     ed.setPadding( CaptionBox::Panel, {10, 10, 20, 0} );
 
+
     // light intensity:
     ed.setGradient( LightDisplay::ColdPart, { Qt::Horizontal, "#a7b0ff", "#6776ff" } );
     ed.setGradient( LightDisplay::WarmPart, { Qt::Horizontal, "#feeeb7", "#ff3122" } );
     ed.setFontRole( LightIntensityValueLabel::Text, QskSkin::LargeFont );
     ed.setColor( LightIntensityValueLabel::Text, "#929cb2" );
+
 
     // palette dependent skin hints:
     ed.setGradient( MenuBar::Panel, palette.menuBar );
@@ -156,4 +169,5 @@ void Skin::initHints( const Palette& palette )
     ed.setBoxBorderColors( WeekdayBox::Panel, palette.weekdayBox );
     ed.setColor( QskTextLabel::Text, palette.text );
     ed.setColor( WeekdayLabel::Text, palette.text );
+    ed.setColor( ShadowPositioner::Panel, palette.shadow );
 }
