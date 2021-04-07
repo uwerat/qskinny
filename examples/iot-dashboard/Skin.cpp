@@ -79,6 +79,8 @@ void Skin::initHints( const Palette& palette )
     ed.setColor( MenuBarLabel::Text, Qt::white );
     ed.setFontRole( MenuBarLabel::Text, QskSkin::SmallFont );
 
+    ed.setMargin( MenuBarTopLabel::Graphic, { 50, 0, 50, 54 } );
+
     ed.setAlignment( MenuBarGraphicLabel::Graphic, Qt::AlignCenter );
 
     // top bar:

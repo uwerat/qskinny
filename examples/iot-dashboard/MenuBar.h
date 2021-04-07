@@ -5,6 +5,30 @@
 #include <QskLinearBox.h>
 #include <QskTextLabel.h>
 
+class MenuBarTopLabel : public QskGraphicLabel
+{
+        Q_OBJECT
+
+    public:
+        QSK_SUBCONTROLS( Graphic )
+
+        MenuBarTopLabel( const QskGraphic& graphic, QQuickItem* parent = nullptr )
+            : QskGraphicLabel( graphic, parent )
+        {
+        }
+
+        QskAspect::Subcontrol effectiveSubcontrol(
+            QskAspect::Subcontrol subControl ) const override final
+        {
+            if( subControl == QskGraphicLabel::Graphic )
+            {
+                return Graphic;
+            }
+
+            return subControl;
+        }
+};
+
 class MenuBarGraphicLabel : public QskGraphicLabel
 {
         Q_OBJECT

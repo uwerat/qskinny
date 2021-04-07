@@ -8,6 +8,7 @@
 
 #include <QtGui/QImage>
 
+QSK_SUBCONTROL( MenuBarTopLabel, Graphic )
 QSK_SUBCONTROL( MenuBarGraphicLabel, Graphic )
 QSK_SUBCONTROL( MenuBarLabel, Text )
 QSK_SUBCONTROL( MenuItem, Panel )
@@ -57,9 +58,8 @@ MenuBar::MenuBar( QQuickItem* parent ) : QskLinearBox( Qt::Vertical, parent )
     auto* mainIcon = ":/images/main-icon.png";
     QImage image( mainIcon );
     auto graphic = QskGraphic::fromImage( image );
-    auto* graphicLabel = new QskGraphicLabel( graphic, this );
-    graphicLabel->setAlignment( Qt::AlignTop );
-    graphicLabel->setMargins( { 50, 0, 50, 54 } );
+    auto* graphicLabel = new MenuBarTopLabel( graphic, this );
+    graphicLabel->setMargins( marginHint( MenuBarTopLabel::Graphic ) );
     graphicLabel->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 
     m_entryStrings = { "Dashboard", "Rooms", "Devices", "Statistics", "Storage", "Members" };
