@@ -11,7 +11,7 @@ class BoxWithButtons : public Box
     public:
         QSK_SUBCONTROLS( Panel )
 
-        BoxWithButtons( const QString& title, bool isBright, QQuickItem* parent = nullptr );
+        BoxWithButtons( const QString& title, const QString& value, bool isBright, QQuickItem* parent = nullptr );
 
         QskAspect::Subcontrol effectiveSubcontrol(
             QskAspect::Subcontrol subControl ) const override
@@ -31,7 +31,7 @@ class IndoorTemperature : public BoxWithButtons
         QSK_SUBCONTROLS( Panel )
 
         IndoorTemperature( QQuickItem* parent )
-            : BoxWithButtons( "Indoor Temperature", true, parent )
+            : BoxWithButtons( "Indoor Temperature", "+24", true, parent )
         {
         }
 };
@@ -42,7 +42,7 @@ class Humidity: public BoxWithButtons
         QSK_SUBCONTROLS( Panel )
 
         Humidity( QQuickItem* parent )
-            : BoxWithButtons( "Humidity", false, parent )
+            : BoxWithButtons( "Humidity", "30%", false, parent )
         {
         }
 };

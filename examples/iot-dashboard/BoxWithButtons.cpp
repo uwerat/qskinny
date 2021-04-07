@@ -11,7 +11,7 @@ QSK_SUBCONTROL( BoxWithButtons, Panel )
 QSK_SUBCONTROL( IndoorTemperature, Panel )
 QSK_SUBCONTROL( Humidity, Panel )
 
-BoxWithButtons::BoxWithButtons( const QString& title, bool isBright, QQuickItem* parent )
+BoxWithButtons::BoxWithButtons( const QString& title, const QString& value, bool isBright, QQuickItem* parent )
     : Box( "", parent )
 {
     setPanel( true );
@@ -30,9 +30,9 @@ BoxWithButtons::BoxWithButtons( const QString& title, bool isBright, QQuickItem*
     auto* titleLabel = new QskTextLabel( title, titleAndValue );
     titleLabel->setFontRole( Skin::TitleFont );
 
-    auto* value = new QskTextLabel( "+24", titleAndValue );
-    value->setFontRole( QskSkin::HugeFont );
-    value->setTextColor( "#929CB2" );
+    auto* valueLabel = new QskTextLabel( value, titleAndValue );
+    valueLabel->setFontRole( QskSkin::HugeFont );
+    valueLabel->setTextColor( "#929CB2" );
 
     new UpAndDownButton( layout );
 }
