@@ -120,6 +120,12 @@ void Skin::initHints( const Palette& palette )
 
     ed.setPadding( Diagram::Panel, 0 );
 
+    ed.setFontRole( WeekdayLabel::Text, QskSkin::TinyFont );
+    ed.setPadding( WeekdayLabel::Panel, {0, 5, 0, 10} );
+    ed.setAlignment( WeekdayLabel::Text, Qt::AlignCenter );
+
+    ed.setPadding( CaptionBox::Panel, {10, 10, 20, 0} );
+
     // palette dependent skin hints:
     ed.setGradient( MenuBar::Panel, palette.menuBar );
     ed.setGradient( MainContent::Panel, palette.mainContent );

@@ -12,6 +12,8 @@
 
 #include <cmath>
 
+QSK_SUBCONTROL( WeekdayLabel, Panel )
+QSK_SUBCONTROL( WeekdayLabel, Text )
 QSK_SUBCONTROL( WeekdayBox, Panel )
 
 QSK_SUBCONTROL( CaptionColorBox, Panel )
@@ -20,6 +22,8 @@ QSK_SUBCONTROL( CaptionItem, Panel )
 QSK_STATE( CaptionItem, Water, ( QskAspect::FirstUserState << 1 ) )
 QSK_STATE( CaptionItem, Electricity, ( QskAspect::FirstUserState << 2 ) )
 QSK_STATE( CaptionItem, Gas, ( QskAspect::FirstUserState << 3 ) )
+
+QSK_SUBCONTROL( CaptionBox, Panel )
 
 QSK_SUBCONTROL( Diagram, Panel )
 
@@ -138,33 +142,26 @@ Diagram::Diagram( QQuickItem* parent )
     setAutoAddChildren( false );
     setAutoLayoutChildren( true );
 
-    m_weekdays->setDefaultAlignment( Qt::AlignCenter );
     m_weekdays->setSpacing( 0 );
     QStringList weekdays = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
 
     for( int i = 0; i < segments; ++i )
     {
         auto* box = new WeekdayBox( m_weekdays );
-//        box->setBoxBorderColorsHint( QskBox::Panel, {"#f4f4f4"} );
-//        box->setBoxBorderMetricsHint( QskBox::Panel, {0, 0, 3, 3} );
         m_weekdays->addItem( box, 0, i );
-        auto* label = new QskTextLabel( weekdays.at( i ), m_weekdays );
-        label->setFontRole( QskSkin::TinyFont );
-        label->setMargins( {0, 5, 0, 10} );
-        label->setAlignment( Qt::AlignCenter );
+        auto* label = new WeekdayLabel( weekdays.at( i ), m_weekdays );
         m_weekdays->addItem( label, 1, i );
     }
 
     addItem( m_weekdays, Qt::AlignBottom );
 
-    m_caption = new QskLinearBox( Qt::Horizontal, this );
-    addItem( m_caption, Qt::AlignRight );
-    m_caption->setSizePolicy( QskSizePolicy::Maximum, QskSizePolicy::Maximum );
-    m_caption->setMargins( {10, 10, 20, 0} );
-    m_caption->setSpacing( 30 );
-    m_caption->addItem( new CaptionItem( CaptionItem::Water, this ) );
-    m_caption->addItem( new CaptionItem( CaptionItem::Electricity, this ) );
-    m_caption->addItem( new CaptionItem( CaptionItem::Gas, this ) );
+    m_captionBox = new CaptionBox( this );
+    addItem( m_captionBox, Qt::AlignRight );
+    m_captionBox->setSizePolicy( QskSizePolicy::Maximum, QskSizePolicy::Maximum );
+    m_captionBox->setSpacing( 30 );
+    m_captionBox->addItem( new CaptionItem( CaptionItem::Water, this ) );
+    m_captionBox->addItem( new CaptionItem( CaptionItem::Electricity, this ) );
+    m_captionBox->addItem( new CaptionItem( CaptionItem::Gas, this ) );
 
     addItem( m_content );
 }
@@ -173,10 +170,10 @@ void Diagram::updateLayout()
 {
     auto* firstWeekday = static_cast<QskControl*>( m_weekdays->itemAt( 1, 0 ) );
     qreal w = size().width();
-    qreal h = size().height() - ( m_caption->size().height() + firstWeekday->size().height() );
+    qreal h = size().height() - ( m_captionBox->size().height() + firstWeekday->size().height() );
 
     m_content->setSize( { w, h } );
-    m_content->setPosition( { 0, m_caption->size().height() } );
+    m_content->setPosition( { 0, m_captionBox->size().height() } );
     m_content->update();
 }
 

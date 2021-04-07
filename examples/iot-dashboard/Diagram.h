@@ -3,10 +3,41 @@
 
 #include "Box.h"
 
+#include <QskTextLabel.h>
+
 #include <QQuickPaintedItem>
 
 class DiagramContent;
 class QskGridBox;
+
+class WeekdayLabel : public QskTextLabel
+{
+        Q_OBJECT
+
+    public:
+        QSK_SUBCONTROLS( Panel, Text )
+
+        WeekdayLabel( const QString& text, QQuickItem* parent ) : QskTextLabel( text, parent )
+        {
+            setPanel( true );
+        }
+
+        QskAspect::Subcontrol effectiveSubcontrol(
+            QskAspect::Subcontrol subControl ) const override final
+        {
+            if( subControl == QskTextLabel::Panel )
+            {
+                return Panel;
+            }
+
+            if( subControl == QskTextLabel::Text )
+            {
+                return Text;
+            }
+
+            return subControl;
+        }
+};
 
 class WeekdayBox : public QskBox
 {
@@ -65,6 +96,30 @@ class CaptionItem : public QskLinearBox
         CaptionItem( QskAspect::State state, QQuickItem* parent );
 };
 
+class CaptionBox : public QskLinearBox
+{
+        Q_OBJECT
+
+    public:
+        QSK_SUBCONTROLS( Panel )
+
+        CaptionBox( QQuickItem* parent ) : QskLinearBox( Qt::Horizontal, parent )
+        {
+            setPanel( true );
+        }
+
+        QskAspect::Subcontrol effectiveSubcontrol(
+            QskAspect::Subcontrol subControl ) const override final
+        {
+            if( subControl == QskBox::Panel )
+            {
+                return Panel;
+            }
+
+            return subControl;
+        }
+};
+
 class Diagram : public Box
 {
         Q_OBJECT
@@ -87,7 +142,7 @@ class Diagram : public Box
         }
 
     private:
-        QskLinearBox* m_caption;
+        QskLinearBox* m_captionBox;
         QskGridBox* m_weekdays;
         DiagramContent* m_content;
 };
