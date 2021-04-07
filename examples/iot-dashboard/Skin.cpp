@@ -113,6 +113,7 @@ void Skin::initHints( const Palette& palette )
     ed.setGradient( MenuBar::Panel, palette.menuBar );
     ed.setGradient( MainContent::Panel, palette.mainContent );
     ed.setGradient( Box::Panel, palette.box );
+    ed.setGradient( BoxWithButtons::Panel, palette.box );
     ed.setColor( LightDisplay::Panel, palette.lightDisplay );
     ed.setColor( PieChartPainted::Panel, palette.pieChart );
     ed.setGradient( RoundButton::Panel, palette.roundButton );
