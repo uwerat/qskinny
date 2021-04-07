@@ -112,6 +112,8 @@ void Skin::initHints( const Palette& palette )
     ed.setFontRole( ButtonValueLabel::Text, QskSkin::HugeFont );
     ed.setColor( ButtonValueLabel::Text, "#929cb2" );
 
+    ed.setPadding( TitleAndValueBox::Panel, {0, 10, 0, 0} );
+
     ed.setStrutSize( RoundButton::Panel, {27, 38} );
     ed.setBoxShape( RoundButton::Panel, {0, 0, 30, 30} );
     ed.setBoxShape( RoundButton::Panel | RoundButton::Top, {30, 30, 0, 0} );

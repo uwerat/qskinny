@@ -30,6 +30,31 @@ class ButtonValueLabel : public QskTextLabel
         }
 };
 
+class TitleAndValueBox : public QskLinearBox
+{
+        Q_OBJECT
+
+    public:
+        QSK_SUBCONTROLS( Panel )
+
+        TitleAndValueBox( Qt::Orientation orientation, QQuickItem* parent )
+            : QskLinearBox( orientation, parent )
+        {
+            setPanel( true );
+        }
+
+        QskAspect::Subcontrol effectiveSubcontrol(
+            QskAspect::Subcontrol subControl ) const override final
+        {
+            if( subControl == QskLinearBox::Panel )
+            {
+                return Panel;
+            }
+
+            return subControl;
+        }
+};
+
 class BoxWithButtons : public Box
 {
     public:

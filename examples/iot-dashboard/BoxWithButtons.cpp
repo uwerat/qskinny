@@ -8,6 +8,8 @@
 
 QSK_SUBCONTROL( ButtonValueLabel, Text )
 
+QSK_SUBCONTROL( TitleAndValueBox, Panel )
+
 QSK_SUBCONTROL( BoxWithButtons, Panel )
 
 QSK_SUBCONTROL( IndoorTemperature, Panel )
@@ -26,8 +28,7 @@ BoxWithButtons::BoxWithButtons( const QString& title, const QString& value, bool
     iconFile = iconFile.replace( ' ', '-' );
     new RoundedIcon( iconFile, isBright, false, layout );
 
-    auto* titleAndValue = new QskLinearBox( Qt::Vertical, layout );
-    titleAndValue->setMargins( {0, 10, 0, 0} );
+    auto* titleAndValue = new TitleAndValueBox( Qt::Vertical, layout );
 
     auto* titleLabel = new QskTextLabel( title, titleAndValue );
     titleLabel->setFontRole( Skin::TitleFont );
