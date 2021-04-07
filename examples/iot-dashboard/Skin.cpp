@@ -112,6 +112,14 @@ void Skin::initHints( const Palette& palette )
     // diagram:
     ed.setBoxBorderMetrics( WeekdayBox::Panel, {0, 0, 3, 3} );
 
+    ed.setMetric( CaptionColorBox::Panel | QskAspect::Size, 8 );
+    ed.setBoxShape( CaptionColorBox::Panel | QskAspect::Size, 4 );
+    ed.setGradient( CaptionColorBox::Panel | CaptionItem::Water, {"#6776ff"} );
+    ed.setGradient( CaptionColorBox::Panel | CaptionItem::Electricity, {"#ff3122"} );
+    ed.setGradient( CaptionColorBox::Panel | CaptionItem::Gas, {"#ff7d34"} );
+
+    ed.setPadding( Diagram::Panel, 0 );
+
     // palette dependent skin hints:
     ed.setGradient( MenuBar::Panel, palette.menuBar );
     ed.setGradient( MainContent::Panel, palette.mainContent );

@@ -31,11 +31,38 @@ class WeekdayBox : public QskBox
         }
 };
 
+class CaptionColorBox : public QskBox
+{
+        Q_OBJECT
+
+    public:
+        QSK_SUBCONTROLS( Panel )
+
+        CaptionColorBox( QQuickItem* parent ) : QskBox( true, parent )
+        {
+        }
+
+        QskAspect::Subcontrol effectiveSubcontrol(
+            QskAspect::Subcontrol subControl ) const override final
+        {
+            if( subControl == QskBox::Panel )
+            {
+                return Panel;
+            }
+
+            return subControl;
+        }
+};
+
 class CaptionItem : public QskLinearBox
 {
         Q_OBJECT
+
     public:
-        CaptionItem( const QColor& color, const QString& text, QQuickItem* parent );
+        QSK_SUBCONTROLS( Panel )
+        QSK_STATES( Water, Electricity, Gas )
+
+        CaptionItem( QskAspect::State state, QQuickItem* parent );
 };
 
 class Diagram : public Box
@@ -43,8 +70,21 @@ class Diagram : public Box
         Q_OBJECT
 
     public:
+        QSK_SUBCONTROLS( Panel )
+
         Diagram( QQuickItem* parent );
         void updateLayout() override;
+
+        QskAspect::Subcontrol effectiveSubcontrol(
+            QskAspect::Subcontrol subControl ) const override final
+        {
+            if( subControl == QskBox::Panel )
+            {
+                return Panel;
+            }
+
+            return subControl;
+        }
 
     private:
         QskLinearBox* m_caption;

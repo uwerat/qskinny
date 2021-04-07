@@ -14,18 +14,42 @@
 
 QSK_SUBCONTROL( WeekdayBox, Panel )
 
-CaptionItem::CaptionItem( const QColor& color, const QString& text, QQuickItem* parent )
+QSK_SUBCONTROL( CaptionColorBox, Panel )
+
+QSK_SUBCONTROL( CaptionItem, Panel )
+QSK_STATE( CaptionItem, Water, ( QskAspect::FirstUserState << 1 ) )
+QSK_STATE( CaptionItem, Electricity, ( QskAspect::FirstUserState << 2 ) )
+QSK_STATE( CaptionItem, Gas, ( QskAspect::FirstUserState << 3 ) )
+
+QSK_SUBCONTROL( Diagram, Panel )
+
+CaptionItem::CaptionItem( QskAspect::State state, QQuickItem* parent )
     : QskLinearBox( Qt::Horizontal, parent )
 {
     setSpacing( 10 );
-    auto* box = new QskBox( true, this );
-    box->setGradientHint( QskBox::Panel, color );
+    auto* box = new CaptionColorBox( this );
+    box->setSkinState( state );
+
+    QString text;
+
+    if( state == CaptionItem::Water )
+    {
+        text = "Water";
+    }
+    else if( state == CaptionItem::Electricity )
+    {
+        text = "Electricity";
+    }
+    else if( state == CaptionItem::Gas )
+    {
+        text = "Gas";
+    }
 
     auto* textLabel = new QskTextLabel( text, this );
     textLabel->setFontRole( QskSkin::TinyFont );
 
-    box->setFixedSize( 8, 8 );
-    box->setBoxShapeHint( QskBox::Panel, 4 );
+    const qreal size = metric( CaptionColorBox::Panel | QskAspect::Size );
+    box->setFixedSize( {size, size} );
 }
 
 namespace
@@ -111,8 +135,6 @@ Diagram::Diagram( QQuickItem* parent )
     , m_weekdays( new QskGridBox( this ) )
     , m_content( new DiagramContent( this ) )
 {
-    setPaddingHint( Panel, 0 );
-
     setAutoAddChildren( false );
     setAutoLayoutChildren( true );
 
@@ -140,9 +162,9 @@ Diagram::Diagram( QQuickItem* parent )
     m_caption->setSizePolicy( QskSizePolicy::Maximum, QskSizePolicy::Maximum );
     m_caption->setMargins( {10, 10, 20, 0} );
     m_caption->setSpacing( 30 );
-    m_caption->addItem( new CaptionItem( "#6776ff", "Water", this ) );
-    m_caption->addItem( new CaptionItem( "#ff3122", "Electricity", this ) );
-    m_caption->addItem( new CaptionItem( "#ff7d34", "Gas", this ) );
+    m_caption->addItem( new CaptionItem( CaptionItem::Water, this ) );
+    m_caption->addItem( new CaptionItem( CaptionItem::Electricity, this ) );
+    m_caption->addItem( new CaptionItem( CaptionItem::Gas, this ) );
 
     addItem( m_content );
 }
