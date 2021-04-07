@@ -9,6 +9,7 @@
 #include "PieChartPainted.h"
 #include "TopBar.h"
 #include "UpAndDownButton.h"
+#include "Usage.h"
 
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxBorderColors.h>
@@ -110,6 +111,9 @@ void Skin::initHints( const Palette& palette )
 
 
     // content in boxes (indoor temperature, humidity etc.):
+    ed.setFontRole( UsageSpacer::Text, QskSkin::SmallFont );
+    ed.setColor( UsageSpacer::Text, "#dddddd" );
+
     ed.setPadding( BoxWithButtons::Panel, 8 );
 
     ed.setBoxShape( RoundedIcon::Panel, 6 );

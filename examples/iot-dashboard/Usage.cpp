@@ -3,6 +3,8 @@
 
 #include <QskTextLabel.h>
 
+QSK_SUBCONTROL( UsageSpacer, Text )
+
 Usage::Usage( QQuickItem* parent )
     : Box( "Usage", parent )
 {
@@ -11,24 +13,21 @@ Usage::Usage( QQuickItem* parent )
     auto* today = new QskLinearBox( Qt::Horizontal, content );
     auto* todayText = new QskTextLabel( "Usage today", today );
     todayText->setFontRole( QskSkin::SmallFont );
-    auto* todaySpacer = new QskTextLabel( "_____", today );
-    todaySpacer->setTextColor( "#dddddd" );
+    new UsageSpacer( today );
     auto* todayValue = new QskTextLabel( "0,5 kwH", today );
     todayValue->setFontRole( QskSkin::SmallFont );
 
     auto* month = new QskLinearBox( Qt::Horizontal, content );
     auto* monthText = new QskTextLabel( "Usage this month", month );
     monthText->setFontRole( QskSkin::SmallFont );
-    auto* monthSpacer = new QskTextLabel( "_____", month );
-    monthSpacer->setTextColor( "#dddddd" );
+    new UsageSpacer( month );
     auto* monthValue = new QskTextLabel( "66 kwH", month );
     monthValue->setFontRole( QskSkin::SmallFont );
 
     auto* total = new QskLinearBox( Qt::Horizontal, content );
     auto* totalText = new QskTextLabel( "Total working hours", total );
     totalText->setFontRole( QskSkin::SmallFont );
-    auto* totalSpacer = new QskTextLabel( "_____", total );
-    totalSpacer->setTextColor( "#dddddd" );
+    new UsageSpacer( total );
     auto* totalValue = new QskTextLabel( "125 hrs", total );
     totalValue->setFontRole( QskSkin::SmallFont );
 }
