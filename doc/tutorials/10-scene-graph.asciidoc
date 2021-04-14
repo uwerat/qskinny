@@ -1,0 +1,74 @@
+---
+title: 9. Scene graph representations of controls
+layout: docs
+---
+
+:doctitle: 9. Scene graph representations of controls
+:notitle:
+
+== QSkinny - Scene graph representations of controls
+
+Each control that is displayed on the screen consists of one or more
+scene graph nodes. Those nodes can be either basic shapes like
+rectangles, or they can contain other information like positioning (used
+with transform nodes), opacity or clipping.
+
+The source code below shows a minimal example displaying a button:
+
+[source]
+....
+auto* button = new QskPushButton( "button" );
+
+QskWindow window;
+window.addItem( button );
+window.show();
+....
+
+For this example, the scene graph will contain the following nodes:
+
+.Scene graph representation of a button
+image::../images/skins-sg-1.png[Scene graph nodes for a button]
+
+The top two nodes (root and Quick root item) are created for every
+QtQuick application. The button itself consists of 5 nodes in our case:
+One root note (`button node`), one node just to group its children (just
+labeled `node`), one geometry node for drawing the background (`panel
+node`), one transform node for setting the position of the text and
+another geometry node for displaying the text (`text node`).
+
+For an explanation of the different scene graph node types, see the Qt
+documentation of
+https://doc.qt.io/qt-5/qsgnode.html#NodeType-enum[QSGNode::NodeType].
+
+The example above is the simplest form of a button, in practice there
+might be more nodes per control, for instance an opacity node or a clip
+node.
+
+Now we add more elements to the UI by putting the button inside a layout
+(`QskBox`):
+
+[source]
+....
+auto* box = new QskBox;
+auto* button = new QskPushButton( "button", box );
+
+QskWindow window;
+window.addItem( box );
+window.show();
+....
+
+Then the scene graph has the following structure:
+
+.Scene graph representation of a button inside a box
+image::../images/skins-sg-2.png[Scene graph nodes for a button in a box]
+
+Here we can see that since the box is a parent of the button, the `box
+node` is also a parent of the `button node` in the scene graph. Also, the
+box has two child nodes: The button, which is the same as in the earlier
+example, and a node for the panel of the box, in case the panel itself has a
+background color.
+
+In a more complicated UI with multiple elements and more advanced
+layouts, the number of scene graph nodes can be quite high. This is why
+QSkinny tries to create as little nodes as possible and reuse as many as
+it can.
