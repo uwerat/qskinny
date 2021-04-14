@@ -1,0 +1,62 @@
+---
+title: 6. (Scalable) graphics
+layout: docs
+---
+
+:doctitle: 6. (Scalable) graphics
+:notitle:
+
+== (Scalable) graphics
+
+QSkinny offers support for scalable graphics, i.e. rendering SVGs that
+adapt to a specific size. This means that when a graphic is embedded in
+a layout, it can change its size when the layout is growing or
+shrinking, while still maintaining a correct aspect ratio.
+
+Imagine the following code, which produces the image depicted below:
+
+[source]
+....
+auto horizontalBox = new QskLinearBox( Qt::Horizontal );
+horizontalBox->setPreferredSize( { 200, 75 } );
+
+QImage image1( ":/images/cloud.svg" );
+QskGraphic graphic1 = QskGraphic::fromImage( image1 );
+auto* label1 = new QskGraphicLabel( graphic1, horizontalBox );
+label1->setSizePolicy( QskSizePolicy::ConstrainedPreferred, QskSizePolicy::Expanding );
+
+QImage image2( ":/images/train.svg" );
+QskGraphic graphic2 = QskGraphic::fromImage( image2 );
+auto* label2 = new QskGraphicLabel( graphic2, horizontalBox );
+label2->setSizePolicy( QskSizePolicy::ConstrainedPreferred, QskSizePolicy::Expanding );
+...
+....
+
+.graphics with preferred size
+image::../images/scalable-graphics-1.png[Scalable graphics default]
+
+When resizing the window, the graphics will scale according to the size
+available in the layout:
+
+.graphics bounded by width
+image::../images/scalable-graphics-2.png[Scalable graphics bounded by width]
+
+.graphics bounded by height
+image::../images/scalable-graphics-3.png[Scalable graphics bounded by height]
+
+Since we set the horizontal size policy of the graphics to
+`ConstrainedPreferred`, the scaling is done through QskGraphic’s
+`widthForHeight()` methods to maintain the correct aspect ratio. If we
+had set the vertical policy to `ConstrainedPreferred` and the horizontal
+one to e.g. `Expanding`, the layout would have queried the
+`heightForWidth()` method instead.
+
+Of course non-scalable graphics like PNGs and JPGs are also supported:
+
+[source]
+....
+QImage image( "background.jpg" );
+QskGraphic graphic = QskGraphic::fromImage( image );
+...
+....
+

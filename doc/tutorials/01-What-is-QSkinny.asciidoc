@@ -1,0 +1,21 @@
+---
+title: 1. What is QSkinny?
+layout: docs
+---
+
+:doctitle: 1. What is QSkinny?
+:notitle:
+
+QSkinny is a UI framework based on the Qt graphic stack and written in
+{cpp}. It allows users to write their UIs in {cpp} and/or QML.
+
+.The Fendt Tractor GUI
+image::https://camo.githubusercontent.com/3eea80daf41ce6a86f08c73353d05000363c4df0/68747470733a2f2f7777772e66656e64742e636f6d2f696e742f67656e6576612d6173736574732f7769646765742f32383239312f6e6577732d332d6c6f772e6a7067[Fendt Tractor GUI]
+
+It is currently being used in the Fendt Tractor GUI project, see the
+picture above. For the Fendt Tractor GUI there is no QML used at all;
+the whole codebase is written in {cpp}. An overview of how QSkinny fits
+into the Qt architecture is depicted below:
+
+.QSkinny sits on top of QtQuick, while QML is optional
+image::../images/architecture-simple.png[QSkinny architecture]

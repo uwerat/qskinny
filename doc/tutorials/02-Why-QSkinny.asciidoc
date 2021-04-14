@@ -1,0 +1,130 @@
+---
+title: 2. Why QSkinny?
+layout: docs
+---
+
+:doctitle: 2. Why QSkinny?
+:notitle:
+
+The typical questions about QSkinny are: Why was QSkinny created? And why would
+somebody use QSkinny and not QML?
+
+Which technology to use always depends on the specific use case. However,
+QSkinny does have some advantages:
+
+== 1. It's {cpp}
+
+QSkinny is written in {cpp}, so there is no new syntax or programming paradigm
+to learn as is the case with QML. Of course QSkinny has concepts that
+new programmers need to become familiar with, but they should be understandable
+for people who know {cpp}. Especially programmers experienced with
+QtWidgets should feel comfortable with QSkinny right away.
+
+=== 1.1 Integration with other build systems / IDEs
+
+While QtCreator is the natural choice of *IDE* for Qt programmers,
+some people prefer other IDEs, e.g. Visual
+Studio (Code), Eclipse, CLion etc. Such IDEs usually don't have language support
+for QML like type completion and other features. So when using QML you are
+either bound to using QtCreator, or use another IDE and live with the fact that
+the IDE will not understand QML.
+
+When it comes to *build systems*, some QML tools might be hard to integrate:
+For instance in Visual Studio projects it is difficult to invoke the QML
+compiler through the build system.
+
+With QSkinny being written completely in {cpp}, it can be used with any IDE and
+should integrate nicely with other build systems. QSkinny is using Qt-specific
+concepts like signals and slots and invokable methods though.
+
+=== 1.2 Use {cpp} tooling for your whole codebase
+
+{cpp} has extensive tooling that assists with writing code, for instance:
+
+- gdb and other debuggers
+- valgrind
+- address sanitizer and other sanitizers
+- static code analysis tools
+- code coverage tools (e.g. gcov)
+- auto test frameworks
+- (a lot more, e.g. clang tools)
+
+E.g. QtCreator will let you know about potential problems in your code while
+you type, e.g. "unused variable", "calling a virtual method from the constructor
+of a class" etc., and it might even suggest an automatic fix for it.
+
+QML does have some tooling, but its feature set is nowhere near the support of
+{cpp}.
+
+When writing your whole codebase in {cpp} with QSkinny, the tooling can be used
+for the whole codebase, so also UI code can be debugged, auto tested for a
+CI system, and so on.
+
+In addition, {cpp} has concepts that QML as a declarative language doesn't,
+like inheritance and overloading. This makes it easier to implement concepts
+like event handling, see <<Styling>> below.
+
+
+== 2. Easy data binding
+
+When displaying data from a backend in a QML UI, that data needs to be in a
+certain format: It needs to be made readable by Qt's Meta Object system via
+`Q_PROPERTY`, `Q_INVOKABLE`, `Q_SIGNAL` and others.
+
+Also, for each model that is used in QML there typically needs to be one
+subclass of `QAbstractListModel`, which serves as an adapter class. The process
+of subclassing and implementing virtual methods can be cumbersome, and lead to
+lots of boilerplate code.
+
+QSkinny doesn't need any adaptation layer per se, the data just needs to be
+connected to the frontend with standard {cpp} functionality. Of course classes
+like the aforementioned `QAbstractListModel` can be used when it makes sense,
+but this is up to the user.
+
+
+== 3. Layouts
+
+Whe it comes to *layouts*, QSkinny has a complete concept of laying out the UI,
+or in other words: The user can determine in a fine-grained way what happens
+when there is too little or too much space available.
+Concepts like size hints, size policies, stretch factors and others are concepts
+that were already available in QtWidgets and Qt's Graphics View Framework, and
+are now supported in QSkinny.
+
+Why are layouts important? QML was created under the premise that in contrast to
+desktop UIs, embedded UIs run as fullscreen window on an embedded board and
+thus size changes will rarely happen.
+
+This is true for many cases, however layout code gets important when one of the
+following events happen:
+
+- The UI needs to run on two or more screen sizes
+- Language or style changes need to be supported
+- The window is resized, e.g. when the Android virtual keyboard pops up
+
+QSkinny allows the user to take the above use cases into account, but doesn't
+force the developer to write overly complex code: A UI written with QSkinny can
+be coded with fixed sizes for UI elements, as it is typically done in QML.
+
+
+== [[Styling]] 4. Styling / Adding custom controls
+
+Qt Quick Controls 2 support different styles, and it even comes with several
+built-in styles like a Google Material style and a Microsoft Universal style.
+
+One drawback with Qt Quick Controls 2 is that application developers can only
+add custom types in QML, not in {cpp}. This makes it cumbersome for concepts
+like event handling, as is noted in the Qt documentation:
+https://doc.qt.io/qt-5/qtquickcontrols2-differences.html[Differences with Qt Quick Controls 1,role=external,window=_blank].
+
+So an application developer who wants to add own types, as is common for medium
+to large-scale projects, will have to implement these custom types in QML.
+Since being able to use {cpp} for application logic of components seems to have been
+one reason to create Qt Quick Controls 2 (another reason being performance
+issues with Qt Quick Controls 1, see
+https://www.qt.io/blog/2015/03/31/qt-quick-controls-for-embedded[Qt Quick Controls for Embedded,role=external,window=_blank]), allowing the user to write controls in {cpp} gives the user more flexibility.
+
+QSkinny allows for implementing custom types in {cpp}; also both built-in
+components like push buttons, sliders etc. as well as custom types can be easily
+styled from {cpp}. The latter can be achieved by simply adding style
+descriptions in user code.

@@ -1,0 +1,126 @@
+---
+title: 3. Writing your first application
+layout: docs
+---
+
+:doctitle: 3. Writing your first application
+:notitle:
+
+== Writing your first application
+
+=== Building the QSkinny repository
+
+In this chapter we will write a simple QSkinny application on Linux from scratch. As a prerequisite, a recent Qt version (>= 5.6) should be available and the directory of its `qmake` binary in the current `$PATH`. The we can build the QSkinny repository with the following commands:
+
+[source,xml]
+....
+cd /home/user/dev/
+git clone https://github.com/uwerat/qskinny.git
+cd qskinny
+qmake
+make
+....
+
+This will produce the libraries `libqskinny.so` and others in the `qskinny/lib` directory. Optionally we could install the libraries to `/usr/local` via `make install`; for now we will use the ones from the local build at `/home/user/dev/qskinny/lib`. If you checked out the repository in another directory, you will have to adapt the include and library paths used below.
+
+=== Compiling our first app
+
+As a next step, we need to write our app. Let's start with a simple `main.cpp` file in a directory `myapp`:
+
+.main.cpp
+[source]
+....
+#include <SkinnyFont.h>
+#include <QskWindow.h>
+
+#include <QGuiApplication>
+
+int main( int argc, char* argv[] )
+{
+    QGuiApplication app( argc, argv );
+
+    SkinnyFont::init( &app );
+
+    QskWindow window;
+    window.show();
+
+    return app.exec();
+}
+....
+
+For now this will just create an empty window (the `QskWindow`) without any controls. Next, we need to create a `myapp.pro` file in our `myapp` directory:
+
+.myapp.pro
+[source,xml]
+....
+TEMPLATE = app
+TARGET = myapp
+
+INCLUDEPATH += /home/user/dev/qskinny/support \
+               /home/user/dev/qskinny/src/common \
+               /home/user/dev/qskinny/src/controls \
+               /home/peter/temp/qskinny/src/layouts
+
+LIBS += -L/home/user/dev/qskinny/lib -lqskinny -lqsktestsupport
+
+SOURCES += \
+    main.cpp
+....
+
+Now we can compile our app:
+
+[source,xml]
+....
+cd myapp
+qmake
+make
+....
+
+When running the app we will have to supply the `LD_LIBRARY_PATH`:
+
+[source,xml]
+....
+LD_LIBRARY_PATH=/home/user/dev/qskinny/lib ./myapp
+....
+
+This should show just an empty window.
+
+=== Adding UI controls
+
+Now that we have our app running, we can add some UI controls to it by extending the `main.cpp` file we created earlier. We will add some additional include directives, and then create a horizontal layout containing two push buttons. The layout with the two buttons will be shown in the window. Below is the complete updated source file:
+
+.main.cpp
+[source]
+....
+#include <SkinnyFont.h>
+#include <QskWindow.h>
+#include <QskLinearBox.h>
+#include <QskPushButton.h>
+
+#include <QGuiApplication>
+
+int main( int argc, char* argv[] )
+{
+    QGuiApplication app( argc, argv );
+
+    SkinnyFont::init( &app );
+
+    auto* horizontalBox = new QskLinearBox( Qt::Horizontal );
+    auto* button1 = new QskPushButton( "button 1", horizontalBox );
+    auto* button2 = new QskPushButton( "button 2", horizontalBox );
+
+    QskWindow window;
+    window.addItem( horizontalBox );
+    window.show();
+
+    return app.exec();
+}
+....
+
+Now the app is displaying the two buttons:
+
+image::../images/writing-first-application.png[An app showing two buttons]
+
+That's it; you just created a QSkinny application from scratch.
+
+For information on how the controls and layouts above behave, see the next chapters.
