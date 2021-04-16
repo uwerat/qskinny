@@ -12,6 +12,7 @@ QSK_SUBCONTROL( MenuBarTopLabel, Graphic )
 QSK_SUBCONTROL( MenuBarGraphicLabel, Graphic )
 QSK_SUBCONTROL( MenuBarLabel, Text )
 QSK_SUBCONTROL( MenuItem, Panel )
+QSK_SUBCONTROL( MenuBar, Panel )
 
 QSK_STATE( MenuItem, Active, ( QskAspect::FirstUserState << 1 ) )
 
@@ -46,8 +47,6 @@ QskAspect::Subcontrol MenuItem::effectiveSubcontrol( QskAspect::Subcontrol subCo
     return subControl;
 }
 
-
-QSK_SUBCONTROL( MenuBar, Panel )
 
 MenuBar::MenuBar( QQuickItem* parent ) : QskLinearBox( Qt::Vertical, parent )
 {
