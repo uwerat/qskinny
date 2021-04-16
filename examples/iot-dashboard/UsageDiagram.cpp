@@ -1,5 +1,7 @@
 #include "UsageDiagram.h"
 
+#include "Diagram.h"
+
 #include <QskBoxBorderColors.h>
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxShapeMetrics.h>
@@ -11,6 +13,7 @@
 #include <QPainterPath>
 
 #include <cmath>
+#include <boost/math/interpolators/cubic_b_spline.hpp>
 
 QSK_SUBCONTROL( WeekdayLabel, Panel )
 QSK_SUBCONTROL( WeekdayLabel, Text )
@@ -56,91 +59,37 @@ CaptionItem::CaptionItem( QskAspect::State state, QQuickItem* parent )
     box->setFixedSize( {size, size} );
 }
 
-namespace
-{
-
-    float distance( const QPointF& pt1, const QPointF& pt2 )
-    {
-        float hd = ( pt1.x() - pt2.x() ) * ( pt1.x() - pt2.x() );
-        float vd = ( pt1.y() - pt2.y() ) * ( pt1.y() - pt2.y() );
-        return std::sqrt( hd + vd );
-    }
-
-    QPointF getLineStart( const QPointF& pt1, const QPointF& pt2 )
-    {
-        QPointF pt;
-        float rat = 10.0 / distance( pt1, pt2 );
-
-        if( rat > 0.5 )
-        {
-            rat = 0.5;
-        }
-
-        pt.setX( ( 1.0 - rat ) * pt1.x() + rat * pt2.x() );
-        pt.setY( ( 1.0 - rat ) * pt1.y() + rat * pt2.y() );
-        return pt;
-    }
-
-    QPointF getLineEnd( const QPointF& pt1, const QPointF& pt2 )
-    {
-        QPointF pt;
-        float rat = 10.0 / distance( pt1, pt2 );
-
-        if( rat > 0.5 )
-        {
-            rat = 0.5;
-        }
-
-        pt.setX( rat * pt1.x() + ( 1.0 - rat )*pt2.x() );
-        pt.setY( rat * pt1.y() + ( 1.0 - rat )*pt2.y() );
-        return pt;
-    }
-
-    QPainterPath smoothOut( const QPainterPath& path )
-    {
-        QList<QPointF> points;
-        QPointF p;
-
-        for( int i = 0; i < path.elementCount() - 1; i++ )
-        {
-            p = QPointF( path.elementAt( i ).x, path.elementAt( i ).y );
-            points.append( p );
-        }
-
-        QPointF pt1;
-        QPointF pt2;
-        QPainterPath newPath;
-
-        for( int i = 0; i < points.count() - 1; i++ )
-        {
-            pt1 = getLineStart( points[i], points[i + 1] );
-
-            if( i == 0 )
-            {
-                newPath.moveTo( points[0] );
-            }
-            else
-            {
-                newPath.quadTo( points[i], pt1 );
-            }
-
-            pt2 = getLineEnd( points[i], points[i + 1] );
-            newPath.lineTo( pt2 );
-        }
-
-        return newPath;
-    }
-}
 
 static constexpr int segments = 7;
 
 UsageDiagram::UsageDiagram( QQuickItem* parent )
     : Box( "", parent )
+    , m_diagram( new Diagram( this ) )
     , m_weekdays( new QskGridBox( this ) )
-    , m_content( new DiagramContent( this ) )
 {
     setAutoAddChildren( false );
     setAutoLayoutChildren( true );
+
+    m_diagram->setTypes( Diagram::Line | Diagram::Area );
+    m_diagram->setChartPosition( Qsk::Bottom );
+    int number = 100;
+    QVector<QPointF> dataPoints1;
+    dataPoints1.reserve( number );
+    std::vector<qreal> yValues1 = {40, 20, 30, 50, 30, 70, 80, 100, 90, 60};
+    qreal t0 = yValues1[0];
+    qreal step = 10;
+    boost::math::cubic_b_spline<qreal> spline1( yValues1.data(), yValues1.size(), t0, step );
+
+    for( int x = 0; x < number; ++x )
+    {
+        qreal y = spline1( x );
+        dataPoints1.append( QPointF( x, y ) );
+    }
+
+    m_diagram->setDataPoints( dataPoints1 );
+    m_diagram->setYMax( 100 );
+    addItem( m_diagram );
+
 
     m_weekdays->setSpacing( 0 );
     QStringList weekdays = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
@@ -162,72 +111,6 @@ UsageDiagram::UsageDiagram( QQuickItem* parent )
     m_captionBox->addItem( new CaptionItem( CaptionItem::Water, this ) );
     m_captionBox->addItem( new CaptionItem( CaptionItem::Electricity, this ) );
     m_captionBox->addItem( new CaptionItem( CaptionItem::Gas, this ) );
-
-    addItem( m_content );
-}
-
-void UsageDiagram::updateLayout()
-{
-    auto* firstWeekday = static_cast<QskControl*>( m_weekdays->itemAt( 1, 0 ) );
-    qreal w = size().width();
-    qreal h = size().height() - ( m_captionBox->size().height() + firstWeekday->size().height() );
-
-    m_content->setSize( { w, h } );
-    m_content->setPosition( { 0, m_captionBox->size().height() } );
-    m_content->update();
-}
-
-DiagramContent::DiagramContent( QQuickItem* parent ) : QQuickPaintedItem( parent )
-{
-}
-
-void DiagramContent::paint( QPainter* painter )
-{
-    painter->setRenderHint( QPainter::Antialiasing, true );
-
-    QPair<QColor, QColor> colors[] =
-    {
-        {"#996776FF", "#116776FF"},
-        {"#aaFF3122", "#11FF3122"},
-        {"#FF7D34", "#11FF7D34"}
-    };
-
-    qreal yValues[][8] =
-    {
-        {0.8, 0.85, 0.92, 0.5, 0.88, 0.7, 0.8, 0.3},
-        {0.2, 0.6, 0.5, 0.9, 0.3, 0.4, 0.8, 0.4},
-        {0.5, 0.4, 0.7, 0.1, 0.6, 0.9, 0.3, 0.1}
-    };
-
-    for( int i = 0; i < 3; i++ )
-    {
-        QLinearGradient myGradient( {width() / 2, 0}, {width() / 2, height()} );
-        myGradient.setColorAt( 0, colors[i].first );
-        myGradient.setColorAt( 1, colors[i].second );
-        QPen myPen( Qt::transparent );
-
-        QPainterPath myPath;
-        myPath.moveTo( 0, height() );
-        myPath.lineTo( 0, 50 );
-
-        qreal stepSize = width() / segments;
-
-        for( int j = 1; j < segments; j++ )
-        {
-            qreal x1 = j * stepSize + stepSize / 2;
-            qreal y = ( 1 - yValues[i][j] ) * height();
-            myPath.lineTo( x1, y );
-        }
-
-        myPath.lineTo( width(), ( 1 - yValues[i][7] ) * height() );
-        myPath.lineTo( width(), height() );
-
-        QPainterPath smoothPath = smoothOut( myPath );
-        smoothPath.lineTo( width(), height() );
-        painter->setBrush( myGradient );
-        painter->setPen( myPen );
-        painter->drawPath( smoothPath );
-    }
 }
 
 #include "Diagram.moc"

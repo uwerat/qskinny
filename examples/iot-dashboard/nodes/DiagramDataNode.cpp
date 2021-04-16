@@ -49,8 +49,19 @@ void IdlChartNode::update( const QRectF& rect, Type type, const QColor& color, c
     m_geometry.allocate( vertexCount );
     auto vertexData = m_geometry.vertexDataAsPoint2D();
 
-    const qreal xMin = m_dataPoints.at( 0 ).x();
-    const qreal xMax = m_dataPoints.at( m_dataPoints.count() - 1 ).x();
+    qreal xMin;
+    qreal xMax;
+
+    if( m_dataPoints.count() > 0 )
+    {
+        xMin =  m_dataPoints.at( 0 ).x();
+        xMax = m_dataPoints.at( m_dataPoints.count() - 1 ).x();
+    }
+    else
+    {
+        xMin = 0;
+        xMax = 0;
+    }
 
     // ### we should have a different function for each chart type
     for( int i = 0; i < m_dataPoints.size(); ++i )

@@ -7,6 +7,7 @@
 
 #include <QQuickPaintedItem>
 
+class Diagram;
 class DiagramContent;
 class QskGridBox;
 
@@ -128,7 +129,6 @@ class UsageDiagram : public Box
         QSK_SUBCONTROLS( Panel )
 
         UsageDiagram( QQuickItem* parent );
-        void updateLayout() override;
 
         QskAspect::Subcontrol effectiveSubcontrol(
             QskAspect::Subcontrol subControl ) const override final
@@ -142,20 +142,9 @@ class UsageDiagram : public Box
         }
 
     private:
+        Diagram* m_diagram;
         QskLinearBox* m_captionBox;
         QskGridBox* m_weekdays;
-        DiagramContent* m_content;
-};
-
-class DiagramContent : public QQuickPaintedItem
-{
-        Q_OBJECT
-
-    public:
-        DiagramContent( QQuickItem* parent );
-
-        virtual void paint( QPainter* painter ) override;
-
 };
 
 #endif // USAGEDIAGRAM_H

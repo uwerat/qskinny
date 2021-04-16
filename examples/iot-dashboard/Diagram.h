@@ -1,3 +1,5 @@
+// ### copyright Uwe
+
 #pragma once
 
 #include <QskControl.h>

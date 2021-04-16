@@ -2,6 +2,8 @@
 
 #include "Box.h"
 #include "BoxWithButtons.h"
+#include "Diagram.h"
+#include "DiagramSkinlet.h"
 #include "LightIntensity.h"
 #include "MainContent.h"
 #include "MenuBar.h"
@@ -38,6 +40,8 @@ namespace
 
 Skin::Skin( const Palette& palette, QObject* parent ) : QskSkin( parent )
 {
+    declareSkinlet< Diagram, DiagramSkinlet >();
+
     initHints( palette );
 }
 
@@ -151,6 +155,11 @@ void Skin::initHints( const Palette& palette )
     ed.setPadding( CaptionBox::Panel, {10, 10, 20, 0} );
 
 
+    // new diagram:
+    ed.setMetric( Diagram::ChartLine | QskAspect::Size, 2 );
+    ed.setColor( Diagram::ChartArea, "#886776ff" );
+
+
     // light intensity:
     ed.setGradient( LightDisplay::ColdPart, { Qt::Horizontal, "#a7b0ff", "#6776ff" } );
     ed.setGradient( LightDisplay::WarmPart, { Qt::Horizontal, "#feeeb7", "#ff3122" } );
@@ -169,6 +178,7 @@ void Skin::initHints( const Palette& palette )
     ed.setGradient( RoundButton::Panel, palette.roundButton );
     ed.setBoxBorderColors( WeekdayBox::Panel, palette.weekdayBox );
     ed.setColor( QskTextLabel::Text, palette.text );
+    ed.setColor( Diagram::ChartLine, Qt::transparent );
     ed.setColor( WeekdayLabel::Text, palette.text );
     ed.setColor( ShadowPositioner::Panel, palette.shadow );
 }
