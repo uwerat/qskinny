@@ -2,7 +2,7 @@
 
 #include "Box.h"
 #include "BoxWithButtons.h"
-#include "Diagram.h"
+#include "UsageDiagram.h"
 #include "LightIntensity.h"
 #include "MyDevices.h"
 #include "PieChart.h"
@@ -104,7 +104,7 @@ MainContent::MainContent( QQuickItem* parent ) : QskLinearBox( Qt::Vertical, par
     auto* myDevices = new MyDevices( gridBox );
     gridBox->addItem( myDevices, 0, 2, 2, 1 );
 
-    auto* diagram = new Diagram( gridBox );
+    auto* diagram = new UsageDiagram( gridBox );
     gridBox->addItem( diagram, 2, 0, 0, 2 );
 
     auto* lightIntensity = new LightIntensity( gridBox );

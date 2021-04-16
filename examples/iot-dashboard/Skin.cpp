@@ -142,7 +142,7 @@ void Skin::initHints( const Palette& palette )
     ed.setGradient( CaptionColorBox::Panel | CaptionItem::Electricity, {"#ff3122"} );
     ed.setGradient( CaptionColorBox::Panel | CaptionItem::Gas, {"#ff7d34"} );
 
-    ed.setPadding( Diagram::Panel, 0 );
+    ed.setPadding( UsageDiagram::Panel, 0 );
 
     ed.setFontRole( WeekdayLabel::Text, QskSkin::TinyFont );
     ed.setPadding( WeekdayLabel::Panel, {0, 5, 0, 10} );
@@ -163,7 +163,7 @@ void Skin::initHints( const Palette& palette )
     ed.setGradient( MainContent::Panel, palette.mainContent );
     ed.setGradient( Box::Panel, palette.box );
     ed.setGradient( BoxWithButtons::Panel, palette.box );
-    ed.setGradient( Diagram::Panel, palette.box );
+    ed.setGradient( UsageDiagram::Panel, palette.box );
     ed.setColor( LightDisplay::Panel, palette.lightDisplay );
     ed.setColor( PieChartPainted::Panel, palette.pieChart );
     ed.setGradient( RoundButton::Panel, palette.roundButton );

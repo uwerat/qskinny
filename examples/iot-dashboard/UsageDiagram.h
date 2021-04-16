@@ -1,5 +1,5 @@
-#ifndef DIAGRAM_H
-#define DIAGRAM_H
+#ifndef USAGEDIAGRAM_H
+#define USAGEDIAGRAM_H
 
 #include "Box.h"
 
@@ -120,14 +120,14 @@ class CaptionBox : public QskLinearBox
         }
 };
 
-class Diagram : public Box
+class UsageDiagram : public Box
 {
         Q_OBJECT
 
     public:
         QSK_SUBCONTROLS( Panel )
 
-        Diagram( QQuickItem* parent );
+        UsageDiagram( QQuickItem* parent );
         void updateLayout() override;
 
         QskAspect::Subcontrol effectiveSubcontrol(
@@ -158,4 +158,4 @@ class DiagramContent : public QQuickPaintedItem
 
 };
 
-#endif // DIAGRAM_H
+#endif // USAGEDIAGRAM_H

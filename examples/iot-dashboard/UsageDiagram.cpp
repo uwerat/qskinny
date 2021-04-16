@@ -1,4 +1,4 @@
-#include "Diagram.h"
+#include "UsageDiagram.h"
 
 #include <QskBoxBorderColors.h>
 #include <QskBoxBorderMetrics.h>
@@ -25,7 +25,7 @@ QSK_STATE( CaptionItem, Gas, ( QskAspect::FirstUserState << 3 ) )
 
 QSK_SUBCONTROL( CaptionBox, Panel )
 
-QSK_SUBCONTROL( Diagram, Panel )
+QSK_SUBCONTROL( UsageDiagram, Panel )
 
 CaptionItem::CaptionItem( QskAspect::State state, QQuickItem* parent )
     : QskLinearBox( Qt::Horizontal, parent )
@@ -134,7 +134,7 @@ namespace
 
 static constexpr int segments = 7;
 
-Diagram::Diagram( QQuickItem* parent )
+UsageDiagram::UsageDiagram( QQuickItem* parent )
     : Box( "", parent )
     , m_weekdays( new QskGridBox( this ) )
     , m_content( new DiagramContent( this ) )
@@ -166,7 +166,7 @@ Diagram::Diagram( QQuickItem* parent )
     addItem( m_content );
 }
 
-void Diagram::updateLayout()
+void UsageDiagram::updateLayout()
 {
     auto* firstWeekday = static_cast<QskControl*>( m_weekdays->itemAt( 1, 0 ) );
     qreal w = size().width();

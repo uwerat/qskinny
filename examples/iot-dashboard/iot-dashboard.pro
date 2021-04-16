@@ -4,7 +4,7 @@ SOURCES += \
     Box.cpp \
     BoxWithButtons.cpp \
     CircularProgressBar.cpp \
-    Diagram.cpp \
+    UsageDiagram.cpp \
     LightIntensity.cpp \
     MainContent.cpp \
     MenuBar.cpp \
@@ -24,7 +24,7 @@ HEADERS += \
     Box.h \
     BoxWithButtons.h \
     CircularProgressBar.h \
-    Diagram.h \
+    UsageDiagram.h \
     LightIntensity.h \
     MainContent.h \
     MainWindow.h \
