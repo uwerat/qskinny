@@ -3,6 +3,39 @@
 #include "nodes/DiagramDataNode.h"
 #include "nodes/DiagramSegmentsNode.h"
 
+namespace
+{
+    QskAspect::Subcontrol areaForIndex( int i )
+    {
+        switch( i )
+        {
+            case 1:
+                return Diagram::ChartArea2;
+
+            case 2:
+                return Diagram::ChartArea3;
+
+            default:
+                return Diagram::ChartArea1;
+        }
+    }
+
+    QskAspect::Subcontrol lineForIndex( int i )
+    {
+        switch( i )
+        {
+            case 1:
+                return Diagram::ChartLine2;
+
+            case 2:
+                return Diagram::ChartLine3;
+
+            default:
+                return Diagram::ChartLine1;
+        }
+    }
+}
+
 DiagramSkinlet::DiagramSkinlet( QskSkin* skin )
     : QskSkinlet( skin )
 {
@@ -46,59 +79,78 @@ QSGNode* DiagramSkinlet::updateSubNode(
     return nullptr;
 }
 
-QSGNode* DiagramSkinlet::updateChartNode( const Diagram* distribution, QSGNode* node ) const
+QSGNode* DiagramSkinlet::updateChartNode( const Diagram* diagram, QSGNode* node ) const
 {
     if( node == nullptr )
     {
-        node = new IdlChartNode;
+        node = new IdlChartNode; // ### rename
     }
 
     using Q = Diagram;
-    const QRectF rect = distribution->subControlRect( Q::Chart );
-    const QVector<QPointF> dataPoints = distribution->dataPoints();
-    const qreal yMax = distribution->yMax();
-    const Qsk::Position position = distribution->chartPosition();
-    int lineWidth = distribution->metric( Diagram::ChartLine | QskAspect::Size );
+    const QRectF rect = diagram->subControlRect( Q::Chart );
+    const qreal yMax = diagram->yMax();
+    const Qsk::Position position = diagram->chartPosition();
     QVector<Diagram::Type> types = {Diagram::Line, Diagram::Area};
 
-    int nodeIndex = 0;
-
-    for( int i = 0; i < types.size(); ++i )
+    for( int i = 0; i < diagram->dataPoints().size(); ++i )
     {
-        if( distribution->types() & types.at( i ) )
+        QSGNode* chartNode;
+
+        if( node->childCount() > i )
         {
-            IdlChartNode* lineNode;
+            chartNode = node->childAtIndex( i );
+        }
+        else
+        {
+            chartNode = new QSGNode;
+            node->appendChildNode( chartNode );
+        }
 
-            if( node->childCount() > nodeIndex )
+        const QVector<QPointF> dataPoints = diagram->dataPoints().at( i );
+        int nodeIndex = 0;
+        QskAspect::Subcontrol lineSubcontrol = lineForIndex( i );
+        QskAspect::Subcontrol areaSubcontrol = areaForIndex( i );
+        int lineWidth = diagram->metric( lineSubcontrol | QskAspect::Size );
+
+        for( int j = 0; j < types.size(); ++j )
+        {
+            if( diagram->typesAt( i ) & types.at( j ) )
             {
-                lineNode = static_cast<IdlChartNode*>( node->childAtIndex( nodeIndex ) );
-            }
-            else
-            {
-                lineNode = new IdlChartNode;
-                node->appendChildNode( lineNode );
-            }
+                IdlChartNode* dataPointNode;
 
-            const IdlChartNode::Type nodeType = ( types.at( i ) == Diagram::Line ) ? IdlChartNode::Line : IdlChartNode::Area;
-            const QColor color = ( types.at( i ) == Diagram::Line ) ? distribution->color( Q::ChartLine )
-                                 : distribution->color( Q::ChartArea );
+                if( chartNode->childCount() > nodeIndex )
+                {
+                    dataPointNode = static_cast<IdlChartNode*>( chartNode->childAtIndex( nodeIndex ) );
+                }
+                else
+                {
+                    dataPointNode = new IdlChartNode;
+                    chartNode->appendChildNode( dataPointNode );
+                }
 
-            lineNode->update( rect, nodeType, color, dataPoints, yMax, position, lineWidth );
-            nodeIndex++;
+                const IdlChartNode::Type nodeType = ( types.at( j ) == Diagram::Line ) ? IdlChartNode::Line : IdlChartNode::Area;
+                const QColor color = ( types.at( j ) == Diagram::Line ) ? diagram->color( lineSubcontrol )
+                                     : diagram->color( areaSubcontrol );
+
+                dataPointNode->update( rect, nodeType, color, dataPoints, yMax, position, lineWidth );
+                nodeIndex++;
+            }
+        }
+
+        while( nodeIndex < chartNode->childCount() )
+        {
+            chartNode->removeChildNode( chartNode->childAtIndex( nodeIndex++ ) );
         }
     }
 
-    while( nodeIndex < node->childCount() )
-    {
-        node->removeChildNode( node->childAtIndex( nodeIndex++ ) );
-    }
+    // ### also check for superfluous nodes here
 
     return node;
 }
 
-QSGNode* DiagramSkinlet::updateSeparatorNode( const Diagram* discharge, QSGNode* node ) const
+QSGNode* DiagramSkinlet::updateSeparatorNode( const Diagram* diagram, QSGNode* node ) const
 {
-    const int xGridLines = discharge->xGridLines();
+    const int xGridLines = diagram->xGridLines();
 
     if( xGridLines <= 0 )
     {
@@ -113,9 +165,9 @@ QSGNode* DiagramSkinlet::updateSeparatorNode( const Diagram* discharge, QSGNode*
     }
 
     using Q = Diagram;
-    const QRectF rect = discharge->subControlRect( Q::Chart );
-    const QColor color = discharge->color( Q::Segments );
-    const QVector<QPointF> dataPoints = discharge->dataPoints();
+    const QRectF rect = diagram->subControlRect( Q::Chart );
+    const QColor color = diagram->color( Q::Segments );
+    const QVector< QVector<QPointF> > dataPoints = diagram->dataPoints();
 
     separatorNode->update( rect, color, dataPoints, xGridLines );
 

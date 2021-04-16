@@ -9,7 +9,7 @@ class IdlChartSegmentsNode : public QSGGeometryNode
     public:
         IdlChartSegmentsNode();
 
-        void update( const QRectF& rect, const QColor& color, const QVector<QPointF>& dataPoints, int xGridLines );
+        void update( const QRectF& rect, const QColor& color, const QVector< QVector<QPointF> >& dataPoints, int xGridLines );
 
     private:
         QSGFlatColorMaterial m_material;
@@ -17,6 +17,6 @@ class IdlChartSegmentsNode : public QSGGeometryNode
 
         QRectF m_rect;
         QColor m_color;
-        QVector<QPointF> m_dataPoints;
+        QVector< QVector<QPointF> > m_dataPoints;
         int m_xGridLines;
 };

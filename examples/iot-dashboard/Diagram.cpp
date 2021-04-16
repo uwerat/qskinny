@@ -9,17 +9,21 @@ class Diagram::PrivateData
         {
         }
 
-        QVector<QPointF> dataPoints;
+        QVector<QVector<QPointF> > dataPoints;
         int xGridLines = -1;
         qreal yMax = -1;
         Qsk::Position position = Qsk::Bottom;
-        Types types = Area;
+        QVector<Types> types;
 };
 
 QSK_SUBCONTROL( Diagram, Chart )
 QSK_SUBCONTROL( Diagram, Segments )
-QSK_SUBCONTROL( Diagram, ChartLine )
-QSK_SUBCONTROL( Diagram, ChartArea )
+QSK_SUBCONTROL( Diagram, ChartLine1 )
+QSK_SUBCONTROL( Diagram, ChartArea1 )
+QSK_SUBCONTROL( Diagram, ChartLine2 )
+QSK_SUBCONTROL( Diagram, ChartArea2 )
+QSK_SUBCONTROL( Diagram, ChartLine3 )
+QSK_SUBCONTROL( Diagram, ChartArea3 )
 
 Diagram::Diagram( QQuickItem* parent )
     : Inherited( parent )
@@ -31,24 +35,20 @@ Diagram::~Diagram()
 {
 }
 
-QVector<QPointF> Diagram::dataPoints() const
+QVector< QVector<QPointF> > Diagram::dataPoints() const
 {
     return m_data->dataPoints;
 }
 
-void Diagram::setDataPoints( const QVector<QPointF>& dataPoints )
+void Diagram::addDataPoints( const QVector<QPointF>& dataPoints, const Types& types )
 {
-    m_data->dataPoints = dataPoints;
+    m_data->dataPoints.append( dataPoints );
+    m_data->types.append( types );
 }
 
-Diagram::Types Diagram::types() const
+Diagram::Types Diagram::typesAt( uint pos ) const
 {
-    return m_data->types;
-}
-
-void Diagram::setTypes( Types types )
-{
-    m_data->types = types;
+    return m_data->types.at( pos );
 }
 
 qreal Diagram::yMax() const

@@ -130,6 +130,8 @@ class UsageDiagram : public Box
 
         UsageDiagram( QQuickItem* parent );
 
+        void updateLayout() override;
+
         QskAspect::Subcontrol effectiveSubcontrol(
             QskAspect::Subcontrol subControl ) const override final
         {

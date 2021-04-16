@@ -11,7 +11,7 @@ IdlChartSegmentsNode::IdlChartSegmentsNode()
     setMaterial( &m_material );
 }
 
-void IdlChartSegmentsNode::update( const QRectF& rect, const QColor& color, const QVector<QPointF>& dataPoints, int xGridLines )
+void IdlChartSegmentsNode::update( const QRectF& rect, const QColor& color, const QVector<QVector<QPointF> >& dataPoints, int xGridLines )
 {
     Q_UNUSED( rect );
 

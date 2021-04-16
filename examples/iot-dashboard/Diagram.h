@@ -12,7 +12,7 @@ class Diagram : public QskControl
         using Inherited = QskControl;
 
     public:
-        QSK_SUBCONTROLS( Chart, Segments, ChartLine, ChartArea )
+        QSK_SUBCONTROLS( Chart, Segments, ChartLine1, ChartArea1, ChartLine2, ChartArea2, ChartLine3, ChartArea3 )
 
         enum Type
         {
@@ -25,11 +25,10 @@ class Diagram : public QskControl
         Diagram( QQuickItem* parent = nullptr );
         ~Diagram() override;
 
-        QVector<QPointF> dataPoints() const;
-        void setDataPoints( const QVector<QPointF>& dataPoints );
+        QVector< QVector<QPointF> > dataPoints() const;
+        void addDataPoints( const QVector<QPointF>& dataPoints, const Types& types );
 
-        Types types() const;
-        void setTypes( Types types );
+        Types typesAt( uint pos ) const;
 
         qreal yMax() const;
         void setYMax( qreal yMax );

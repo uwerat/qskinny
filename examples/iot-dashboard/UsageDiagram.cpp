@@ -70,23 +70,33 @@ UsageDiagram::UsageDiagram( QQuickItem* parent )
     setAutoAddChildren( false );
     setAutoLayoutChildren( true );
 
-    m_diagram->setTypes( Diagram::Line | Diagram::Area );
-    m_diagram->setChartPosition( Qsk::Bottom );
     int number = 100;
-    QVector<QPointF> dataPoints1;
-    dataPoints1.reserve( number );
-    std::vector<qreal> yValues1 = {40, 20, 30, 50, 30, 70, 80, 100, 90, 60};
-    qreal t0 = yValues1[0];
-    qreal step = 10;
-    boost::math::cubic_b_spline<qreal> spline1( yValues1.data(), yValues1.size(), t0, step );
-
-    for( int x = 0; x < number; ++x )
+    std::vector< std::vector<qreal> > yValues =
     {
-        qreal y = spline1( x );
-        dataPoints1.append( QPointF( x, y ) );
+        {40, 20, 30, 50, 30, 70, 80, 100, 90, 60},
+        {15, 70, 40, 60, 10, 90, 20, 40, 45, 50},
+        {70, 40, 60, 10, 70, 20, 50, 20, 30, 40}
+    };
+
+    for( int i = 0; i < 3; ++i )
+    {
+        auto y = yValues.at( i );
+
+        QVector<QPointF> dataPoints;
+        dataPoints.reserve( number );
+        qreal t0 = y[0];
+        qreal step = 10;
+        boost::math::cubic_b_spline<qreal> spline( y.data(), y.size(), t0, step );
+
+        for( int x = 0; x < number; ++x )
+        {
+            const qreal y = spline( x );
+            dataPoints.append( QPointF( x, y ) );
+        }
+
+        m_diagram->addDataPoints( dataPoints, Diagram::Area );
     }
 
-    m_diagram->setDataPoints( dataPoints1 );
     m_diagram->setYMax( 100 );
     addItem( m_diagram );
 
@@ -111,6 +121,13 @@ UsageDiagram::UsageDiagram( QQuickItem* parent )
     m_captionBox->addItem( new CaptionItem( CaptionItem::Water, this ) );
     m_captionBox->addItem( new CaptionItem( CaptionItem::Electricity, this ) );
     m_captionBox->addItem( new CaptionItem( CaptionItem::Gas, this ) );
+}
+
+void UsageDiagram::updateLayout()
+{
+    auto weekdaysHeight = m_weekdays->preferredSize().height();
+    m_diagram->setHeight( m_diagram->height() - weekdaysHeight );
+    m_captionBox->setPosition( {0, 0} );
 }
 
 #include "Diagram.moc"

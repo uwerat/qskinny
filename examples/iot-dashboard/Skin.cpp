@@ -156,8 +156,9 @@ void Skin::initHints( const Palette& palette )
 
 
     // new diagram:
-    ed.setMetric( Diagram::ChartLine | QskAspect::Size, 2 );
-    ed.setColor( Diagram::ChartArea, "#886776ff" );
+    ed.setColor( Diagram::ChartArea1, "#886776ff" );
+    ed.setColor( Diagram::ChartArea2, "#88ff3122" );
+    ed.setColor( Diagram::ChartArea3, "#88ff7d34" );
 
 
     // light intensity:
@@ -178,7 +179,6 @@ void Skin::initHints( const Palette& palette )
     ed.setGradient( RoundButton::Panel, palette.roundButton );
     ed.setBoxBorderColors( WeekdayBox::Panel, palette.weekdayBox );
     ed.setColor( QskTextLabel::Text, palette.text );
-    ed.setColor( Diagram::ChartLine, Qt::transparent );
     ed.setColor( WeekdayLabel::Text, palette.text );
     ed.setColor( ShadowPositioner::Panel, palette.shadow );
 }
