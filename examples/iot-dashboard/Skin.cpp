@@ -2,7 +2,6 @@
 
 #include "Box.h"
 #include "BoxWithButtons.h"
-#include "Diagram.h"
 #include "LightIntensity.h"
 #include "MainContent.h"
 #include "MenuBar.h"
@@ -10,6 +9,7 @@
 #include "TopBar.h"
 #include "UpAndDownButton.h"
 #include "Usage.h"
+#include "UsageDiagram.h"
 
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxBorderColors.h>

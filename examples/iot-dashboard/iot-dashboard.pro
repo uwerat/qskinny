@@ -4,7 +4,8 @@ SOURCES += \
     Box.cpp \
     BoxWithButtons.cpp \
     CircularProgressBar.cpp \
-    UsageDiagram.cpp \
+    Diagram.cpp \
+    DiagramSkinlet.cpp \
     LightIntensity.cpp \
     MainContent.cpp \
     MenuBar.cpp \
@@ -18,13 +19,19 @@ SOURCES += \
     UpAndDownButton.cpp \
     Usage.cpp \
     main.cpp \
-    MainWindow.cpp
+    MainWindow.cpp \
+    UsageDiagram.cpp
+
+SOURCES += \
+    nodes/DiagramDataNode.cpp \
+    nodes/DiagramSegmentsNode.cpp
 
 HEADERS += \
     Box.h \
     BoxWithButtons.h \
     CircularProgressBar.h \
-    UsageDiagram.h \
+    Diagram.h \
+    DiagramSkinlet.h \
     LightIntensity.h \
     MainContent.h \
     MainWindow.h \
@@ -37,7 +44,12 @@ HEADERS += \
     Skin.h \
     TopBar.h \
     UpAndDownButton.h \
-    Usage.h
+    Usage.h \
+    UsageDiagram.h
+
+HEADERS += \
+    nodes/DiagramDataNode.h \
+    nodes/DiagramSegmentsNode.h
 
 HEADERS += \
 src/shadowedrectangle.h \
