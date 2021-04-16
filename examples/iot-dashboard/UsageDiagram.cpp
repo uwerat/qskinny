@@ -73,9 +73,9 @@ UsageDiagram::UsageDiagram( QQuickItem* parent )
     int number = 100;
     std::vector< std::vector<qreal> > yValues =
     {
-        {40, 20, 30, 50, 30, 70, 80, 100, 90, 60},
-        {15, 70, 40, 60, 10, 90, 20, 40, 45, 50},
-        {70, 40, 60, 10, 70, 20, 50, 20, 30, 40}
+        {70, 80, 60, 50, 40, 50, 75, 80, 100, 90, 60, 50},
+        {30, 15, 70, 40, 60, 10, 90, 20, 40, 45, 50, 70},
+        {10, 70, 40, 60, 10, 70, 20, 50, 20, 30, 40, 80}
     };
 
     for( int i = 0; i < 3; ++i )
@@ -91,7 +91,7 @@ UsageDiagram::UsageDiagram( QQuickItem* parent )
         for( int x = 0; x < number; ++x )
         {
             const qreal y = spline( x );
-            dataPoints.append( QPointF( x, y ) );
+            dataPoints.append( QPointF( x, qBound( 0.0, y, 100.0 ) ) );
         }
 
         m_diagram->addDataPoints( dataPoints, Diagram::Area );

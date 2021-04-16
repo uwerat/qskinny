@@ -156,9 +156,9 @@ void Skin::initHints( const Palette& palette )
 
 
     // new diagram:
-    ed.setColor( Diagram::ChartArea1, "#886776ff" );
-    ed.setColor( Diagram::ChartArea2, "#88ff3122" );
-    ed.setColor( Diagram::ChartArea3, "#88ff7d34" );
+    ed.setColor( Diagram::ChartArea1, "#666776ff" );
+    ed.setColor( Diagram::ChartArea2, "#66ff3122" );
+    ed.setColor( Diagram::ChartArea3, "#66ff7d34" );
 
 
     // light intensity:
