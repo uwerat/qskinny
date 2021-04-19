@@ -152,6 +152,36 @@ QskIntervalF QskIntervalF::extended( qreal value ) const noexcept
     return QskIntervalF( lower, upper );
 }
 
+void QskIntervalF::spanFromLowerBound( qreal value ) noexcept
+{
+    if ( !isValid() )
+    {
+        m_lowerBound = value;
+        m_upperBound = value;
+    }
+    else
+    {
+        m_lowerBound = value;
+        if ( m_lowerBound > m_upperBound )
+            m_upperBound = m_lowerBound;
+    }
+}
+
+void QskIntervalF::spanFromUpperBound( qreal value ) noexcept
+{
+    if ( !isValid() )
+    {
+        m_lowerBound = value;
+        m_upperBound = value;
+    }
+    else
+    {
+        m_upperBound = value;
+        if ( m_lowerBound > m_upperBound )
+            m_lowerBound = m_upperBound;
+    }
+}
+
 bool QskIntervalF::fuzzyContains( qreal value ) const
 {
     if ( !isValid() )
