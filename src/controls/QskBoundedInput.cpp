@@ -123,13 +123,18 @@ void QskBoundedInput::alignInput()
 
 qreal QskBoundedInput::alignedValue( qreal value ) const
 {
-    if ( m_snap )
+    value = boundedValue( value );
+
+    if ( value > minimum() && value < maximum() )
     {
-        if ( const auto step = m_stepSize )
-            value = qRound( value / step ) * step;
+        if ( m_snap && m_stepSize )
+        {
+            value = qRound( value / m_stepSize ) * m_stepSize;
+            value = boundedValue( value );
+        }
     }
 
-    return boundedValue( value );
+    return value;
 }
 
 QskIntervalF QskBoundedInput::alignedInterval( const QskIntervalF& interval ) const
