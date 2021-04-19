@@ -168,6 +168,8 @@ QSGNode* QskScaleRenderer::updateLabelsNode(
 
     auto nextNode = node->firstChild();
 
+    QRectF labelRect;
+
     for ( auto tick : ticks )
     {
         enum LabelNodeRole
@@ -184,7 +186,7 @@ QSGNode* QskScaleRenderer::updateLabelsNode(
 
         if ( label.canConvert< QString >() )
         {
-            const auto text = label.toString();
+            auto text = label.toString();
             if ( text.isEmpty() )
                 continue;
 
@@ -227,6 +229,30 @@ QSGNode* QskScaleRenderer::updateLabelsNode(
                 nextNode = qskRemoveTraillingNodes( node, nextNode );
             }
 
+            if ( !labelRect.isEmpty() && labelRect.intersects( r ) )
+            {
+                if ( tick != ticks.last() )
+                {
+                    text = QString();
+                }
+                else
+                {
+                    if ( auto obsoleteNode = nextNode
+                        ? nextNode->previousSibling() : node->lastChild() )
+                    {
+                        node->removeChildNode( obsoleteNode );
+                        if ( obsoleteNode->flags() & QSGNode::OwnedByParent )
+                            delete obsoleteNode;
+                    }
+
+                    labelRect = r;
+                }
+            }
+            else
+            {
+                labelRect = r;
+            }
+
             if ( nextNode == nullptr )
             {
                 nextNode = new QskTextNode;
@@ -246,8 +272,6 @@ QSGNode* QskScaleRenderer::updateLabelsNode(
             if ( graphic.isNull() )
                 continue;
 
-            QRectF r;
-
             const auto h = fm.height();
             const auto w = graphic.widthForHeight( h );
 
@@ -258,7 +282,7 @@ QSGNode* QskScaleRenderer::updateLabelsNode(
                 auto pos = tickmarksRect.x() + tickPos - 0.5 * w;
                 pos = qBound( labelsRect.left(), pos, labelsRect.right() - w );
 
-                r = QRectF( pos, labelsRect.y(), w, h );
+                labelRect = QRectF( pos, labelsRect.y(), w, h );
                 alignment = Qt::AlignHCenter | Qt::AlignBottom;
             }
             else
@@ -266,7 +290,7 @@ QSGNode* QskScaleRenderer::updateLabelsNode(
                 auto pos = tickmarksRect.bottom() - ( tickPos + 0.5 * h );
                 pos = qBound( labelsRect.top(), pos, labelsRect.bottom() - h );
 
-                r = QRectF( labelsRect.right() - w, pos, w, h );
+                labelRect = QRectF( labelsRect.right() - w, pos, w, h );
                 alignment = Qt::AlignRight | Qt::AlignVCenter;
             }
 
@@ -286,7 +310,7 @@ QSGNode* QskScaleRenderer::updateLabelsNode(
 
             QskSkinlet::updateGraphicNode(
                 skinnable->owningControl(), graphicNode,
-                graphic, m_colorFilter, r, alignment );
+                graphic, m_colorFilter, labelRect, alignment );
 
             nextNode = nextNode->nextSibling();
         }
