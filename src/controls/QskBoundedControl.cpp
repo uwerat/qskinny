@@ -132,6 +132,12 @@ void QskBoundedControl::componentComplete()
 
 qreal QskBoundedControl::boundedValue( qreal value ) const
 {
+    if ( qskFuzzyCompare( value, minimum() ) )
+        return minimum();
+
+    if ( qskFuzzyCompare( value, maximum() ) )
+        return maximum();
+
     return qBound( minimum(), value, maximum() );
 }
 
