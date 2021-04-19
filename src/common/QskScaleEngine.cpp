@@ -3,7 +3,7 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-// code cpoied from Qwt - with permission from the author ( = myself )
+// code cpopied from Qwt - with permission from the author ( = myself )
 
 #include "QskScaleEngine.h"
 #include "QskFunctions.h"
@@ -23,7 +23,7 @@ namespace
 
     inline int fuzzyCompare( double value1, double value2, double intervalSize )
     {
-        const double eps = qAbs( 1.0e-6 * intervalSize );
+        const double eps = std::abs( 1.0e-6 * intervalSize );
 
         if ( value2 - value1 > eps )
             return -1;
