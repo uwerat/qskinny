@@ -35,8 +35,8 @@ class QSK_EXPORT QskScaleEngine
     void setAttributes( Attributes );
     Attributes attributes() const;
 
-    QskScaleTickmarks divideScale(qreal x1, qreal x2,
-        int maxMajorSteps, int maxMinorSteps, qreal stepSize = 0.0) const;
+    QskScaleTickmarks divideScale( qreal x1, qreal x2,
+        int maxMajorSteps, int maxMinorSteps, qreal stepSize = 0.0 ) const;
 
     void autoScale( int maxNumSteps, qreal& x1, qreal& x2, qreal& stepSize ) const;
 
