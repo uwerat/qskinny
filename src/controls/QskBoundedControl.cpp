@@ -117,6 +117,7 @@ void QskBoundedControl::adjustBoundaries( bool increasing )
     }
 
     Q_EMIT boundariesChanged( boundaries() );
+    update();
 }
 
 qreal QskBoundedControl::boundaryLength() const
