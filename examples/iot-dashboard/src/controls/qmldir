@@ -1,6 +1,0 @@
-module org.kde.kirigami
-plugin kirigamiplugin
-classname KirigamiPlugin
-depends QtQuick.Controls 2.0
-depends QtGraphicalEffects 1.0
-designersupported
