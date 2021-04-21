@@ -1,3 +1,8 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2021 Uwe Rathmann
+ * This file may be used under the terms of the QSkinny License, Version 1.0
+ *****************************************************************************/
+
 #include "DiagramSkinlet.h"
 #include "Diagram.h"
 #include "nodes/DiagramDataNode.h"
