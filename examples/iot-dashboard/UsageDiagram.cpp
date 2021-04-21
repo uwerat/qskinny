@@ -127,7 +127,8 @@ void UsageDiagram::updateLayout()
 {
     auto weekdaysHeight = m_weekdays->preferredSize().height();
     m_diagram->setHeight( m_diagram->height() - weekdaysHeight );
-    m_captionBox->setPosition( {0, 0} );
+    const qreal captionX = width() - m_captionBox->width();
+    m_captionBox->setPosition( {captionX, 0} );
 }
 
 #include "Diagram.moc"
