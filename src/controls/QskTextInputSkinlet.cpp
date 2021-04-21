@@ -38,6 +38,10 @@ QSGNode* QskTextInputSkinlet::updateSubNode(
     {
         case PanelRole:
         {
+            const auto input = static_cast< const QskTextInput* >( skinnable );
+            if ( !input->hasPanel() )
+                return nullptr;
+        
             return updateBoxNode( skinnable, node, QskTextInput::Panel );
         }
     }

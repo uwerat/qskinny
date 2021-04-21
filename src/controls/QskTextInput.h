@@ -44,6 +44,9 @@ class QSK_EXPORT QskTextInput : public QskControl
         WRITE setPasswordMaskDelay RESET resetPasswordMaskDelay
         NOTIFY passwordMaskDelayChanged )
 
+    Q_PROPERTY( bool panel READ hasPanel
+        WRITE setPanel NOTIFY panelChanged FINAL )
+
     using Inherited = QskControl;
 
   public:
@@ -86,6 +89,9 @@ class QSK_EXPORT QskTextInput : public QskControl
 
     void setDescription( const QString& );
     QString description() const;
+
+    void setPanel( bool );
+    bool hasPanel() const;
 
     void setFontRole( int role );
     void resetFontRole();
@@ -159,6 +165,7 @@ class QSK_EXPORT QskTextInput : public QskControl
 
     void activationModesChanged();
     void readOnlyChanged( bool );
+    void panelChanged( bool );
 
     void textChanged( const QString& );
     void displayTextChanged( const QString& );
