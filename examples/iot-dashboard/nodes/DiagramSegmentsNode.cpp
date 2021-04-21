@@ -7,7 +7,7 @@
 
 #include <QtMath>
 
-IdlChartSegmentsNode::IdlChartSegmentsNode()
+DiagramSegmentsNode::DiagramSegmentsNode()
     : m_geometry( QSGGeometry::defaultAttributes_Point2D(), 0 )
 {
     m_geometry.setDrawingMode( GL_LINES );
@@ -16,7 +16,7 @@ IdlChartSegmentsNode::IdlChartSegmentsNode()
     setMaterial( &m_material );
 }
 
-void IdlChartSegmentsNode::update( const QRectF& rect, const QColor& color, const QVector<QVector<QPointF> >& dataPoints, int xGridLines )
+void DiagramSegmentsNode::update( const QRectF& rect, const QColor& color, const QVector<QVector<QPointF> >& dataPoints, int xGridLines )
 {
     Q_UNUSED( rect );
 

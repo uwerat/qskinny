@@ -88,7 +88,7 @@ QSGNode* DiagramSkinlet::updateChartNode( const Diagram* diagram, QSGNode* node 
 {
     if( node == nullptr )
     {
-        node = new IdlChartNode; // ### rename
+        node = new DiagramDataNode;
     }
 
     using Q = Diagram;
@@ -121,19 +121,19 @@ QSGNode* DiagramSkinlet::updateChartNode( const Diagram* diagram, QSGNode* node 
         {
             if( diagram->typesAt( i ) & types.at( j ) )
             {
-                IdlChartNode* dataPointNode;
+                DiagramDataNode* dataPointNode;
 
                 if( chartNode->childCount() > nodeIndex )
                 {
-                    dataPointNode = static_cast<IdlChartNode*>( chartNode->childAtIndex( nodeIndex ) );
+                    dataPointNode = static_cast<DiagramDataNode*>( chartNode->childAtIndex( nodeIndex ) );
                 }
                 else
                 {
-                    dataPointNode = new IdlChartNode;
+                    dataPointNode = new DiagramDataNode;
                     chartNode->appendChildNode( dataPointNode );
                 }
 
-                const IdlChartNode::Type nodeType = ( types.at( j ) == Diagram::Line ) ? IdlChartNode::Line : IdlChartNode::Area;
+                const DiagramDataNode::Type nodeType = ( types.at( j ) == Diagram::Line ) ? DiagramDataNode::Line : DiagramDataNode::Area;
                 const QColor color = ( types.at( j ) == Diagram::Line ) ? diagram->color( lineSubcontrol )
                                      : diagram->color( areaSubcontrol );
 
@@ -162,11 +162,11 @@ QSGNode* DiagramSkinlet::updateSeparatorNode( const Diagram* diagram, QSGNode* n
         return nullptr;
     }
 
-    auto* separatorNode = static_cast<IdlChartSegmentsNode*>( node );
+    auto* separatorNode = static_cast<DiagramSegmentsNode*>( node );
 
     if( separatorNode == nullptr )
     {
-        separatorNode = new IdlChartSegmentsNode;
+        separatorNode = new DiagramSegmentsNode;
     }
 
     using Q = Diagram;

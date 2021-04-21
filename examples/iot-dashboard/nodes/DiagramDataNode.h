@@ -12,7 +12,7 @@
 #include <QSGFlatColorMaterial>
 #include <QSGGeometryNode>
 
-class IdlChartNode : public QSGGeometryNode
+class DiagramDataNode : public QSGGeometryNode
 {
     public:
         enum Type
@@ -21,7 +21,7 @@ class IdlChartNode : public QSGGeometryNode
             Area,
         };
 
-        IdlChartNode();
+        DiagramDataNode();
 
         void update( const QRectF& rect, Type type, const QColor& color, const QVector<QPointF>& dataPoints, const qreal yMax, Qsk::Position position, int lineWidth );
 

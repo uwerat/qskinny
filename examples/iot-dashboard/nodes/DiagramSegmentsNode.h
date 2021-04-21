@@ -10,10 +10,10 @@
 #include <QSGFlatColorMaterial>
 #include <QSGGeometryNode>
 
-class IdlChartSegmentsNode : public QSGGeometryNode
+class DiagramSegmentsNode : public QSGGeometryNode
 {
     public:
-        IdlChartSegmentsNode();
+        DiagramSegmentsNode();
 
         void update( const QRectF& rect, const QColor& color, const QVector< QVector<QPointF> >& dataPoints, int xGridLines );
 

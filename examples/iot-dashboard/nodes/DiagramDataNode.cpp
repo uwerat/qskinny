@@ -7,15 +7,15 @@
 #include <QTransform>
 #include <QskFunctions.h>
 
-IdlChartNode::IdlChartNode()
+DiagramDataNode::DiagramDataNode()
     : m_geometry( QSGGeometry::defaultAttributes_Point2D(), 0 )
 {
     setGeometry( &m_geometry );
     setMaterial( &m_material );
 }
 
-void IdlChartNode::update( const QRectF& rect, Type type, const QColor& color, const QVector<QPointF>& dataPoints,
-                           const qreal yMax, Qsk::Position position, int lineWidth )
+void DiagramDataNode::update( const QRectF& rect, Type type, const QColor& color, const QVector<QPointF>& dataPoints,
+                              const qreal yMax, Qsk::Position position, int lineWidth )
 {
     Q_UNUSED( rect );
 
