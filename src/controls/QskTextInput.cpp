@@ -290,6 +290,7 @@ class QskTextInput::PrivateData
     QString description; // f.e. used as prompt in QskInputPanel
 
     unsigned int activationModes : 3;
+    bool hasPanel : 1;
 };
 
 QskTextInput::QskTextInput( QQuickItem* parent )
@@ -297,6 +298,7 @@ QskTextInput::QskTextInput( QQuickItem* parent )
     , m_data( new PrivateData() )
 {
     m_data->activationModes = ActivationOnMouse | ActivationOnKey;
+    m_data->hasPanel = true;
 
     setPolishOnResize( true );
     setFocusPolicy( Qt::StrongFocus );
@@ -327,6 +329,23 @@ QskTextInput::QskTextInput( const QString& text, QQuickItem* parent )
 
 QskTextInput::~QskTextInput()
 {
+}
+
+void QskTextInput::setPanel( bool on ) 
+{   
+    if ( on != m_data->hasPanel )
+    {
+        m_data->hasPanel = on;
+    
+        resetImplicitSize();
+        polish();
+        update();
+    }
+}   
+    
+bool QskTextInput::hasPanel() const
+{   
+    return m_data->hasPanel;
 }
 
 bool QskTextInput::event( QEvent* event )
@@ -473,8 +492,11 @@ QSizeF QskTextInput::layoutSizeHint( Qt::SizeHint which, const QSizeF& ) const
 
     QSizeF hint( input->implicitWidth(), input->implicitHeight() );
 
-    hint = outerBoxSize( Panel, hint );
-    hint = hint.expandedTo( strutSizeHint( Panel ) );
+    if ( m_data->hasPanel )
+    {
+        hint = outerBoxSize( Panel, hint );
+        hint = hint.expandedTo( strutSizeHint( Panel ) );
+    }
 
     return hint;
 }
