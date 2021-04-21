@@ -215,7 +215,7 @@ QPointF QskScrollView::scrollOffset( const QWheelEvent* event ) const
 
     const auto wheelPos = qskWheelPosition( event );
 
-#if QT_VERSION < 0x050e00
+#if QT_VERSION < QT_VERSION_CHECK( 5, 14, 0 )
     const auto wheelDelta = event->delta();
 #else
     const QPoint delta = event->angleDelta();
