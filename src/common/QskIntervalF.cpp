@@ -216,6 +216,12 @@ bool QskIntervalF::fuzzyContains( const QskIntervalF& interval ) const
     return true;
 }
 
+bool QskIntervalF::fuzzyIsBoundary( qreal value ) const
+{
+    return qskFuzzyCompare( value, m_lowerBound )
+        || qskFuzzyCompare( value, m_upperBound );
+}
+
 #ifndef QT_NO_DEBUG_STREAM
 
 #include <qdebug.h>
