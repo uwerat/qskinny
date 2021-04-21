@@ -8,6 +8,15 @@
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qguiapplication_p.h>
+
+#if QT_VERSION < QT_VERSION_CHECK( 5, 8, 0 )
+    #ifndef foreach
+        // qhighdpiscaling_p.h needs it
+        #define foreach Q_FOREACH
+    #endif
+#endif
+
+#include <private/qhighdpiscaling_p.h>
 QSK_QT_PRIVATE_END
 
 #include <qpa/qplatformintegration.h>
@@ -162,6 +171,13 @@ qreal qskHorizontalAdvance( const QFontMetricsF& fontMetrics, const QString& tex
 #endif
 }
 
+qreal qskGlobalScaleFactor()
+{
+    // The value of QT_SCALE_FACTOR
+    const QScreen* noScreen = nullptr;
+    return QHighDpiScaling::factor( noScreen );
+}
+
 bool qskHasPlatformWindowManagement()
 {
     if ( auto platform = QGuiApplicationPrivate::platformIntegration() )
@@ -177,20 +193,3 @@ QRect qskPlatformScreenGeometry( const QScreen* screen )
 
     return screen->handle()->geometry();
 }
-
-#if 0
-
-// does not compile with Qt 5.6 TODO ...
-
-QSK_QT_PRIVATE_BEGIN
-#include <private/qhighdpiscaling_p.h>
-QSK_QT_PRIVATE_END
-
-qreal qskGlobalScaleFactor()
-{
-    // The value of QT_SCALE_FACTOR
-    const QScreen* noScreen = nullptr;
-    return QHighDpiScaling::factor( noScreen );
-}
-
-#endif
