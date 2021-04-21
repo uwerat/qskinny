@@ -1042,6 +1042,11 @@ void QskSkinnable::setSkinStateFlag( QskAspect::State stateFlag, bool on )
     setSkinState( newState );
 }
 
+void QskSkinnable::replaceSkinState( QskAspect::State newState )
+{
+    m_data->skinState = newState;
+}
+
 void QskSkinnable::setSkinState( QskAspect::State newState, bool animated )
 {
     if ( m_data->skinState == newState )

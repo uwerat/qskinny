@@ -126,6 +126,8 @@ class QSK_EXPORT QskSkinnable
     void setSkinState( QskAspect::State, bool animated = true );
     void setSkinStateFlag( QskAspect::State, bool on = true );
 
+    void replaceSkinState( QskAspect::State );
+
     QskAspect::State skinState() const;
 
     const char* skinStateAsPrintable() const;
