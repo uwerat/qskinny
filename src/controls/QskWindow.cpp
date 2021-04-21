@@ -26,17 +26,9 @@ QSK_QT_PRIVATE_END
 
 #ifdef QSK_DEBUG_RENDER_TIMING
 
-// does not work with Qt >= 5.12 TODO ...
-
 #include <qelapsedtimer.h>
 #include <qloggingcategory.h>
 Q_LOGGING_CATEGORY( logTiming, "qsk.window.timing", QtCriticalMsg )
-
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 12, 0 )
-QSK_QT_PRIVATE_BEGIN
-#include <qpa/qplatformwindow_p.h>
-QSK_QT_PRIVATE_END
-#endif
 
 #endif
 
@@ -65,28 +57,6 @@ static QQuickItem* qskDefaultFocusItem( QQuickWindow* window )
 
     return window->contentItem()->nextItemInFocusChain( true );
 }
-
-#ifdef QSK_DEBUG_RENDER_TIMING
-static inline int qskUpdateTimerId( const QWindow* window )
-{
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 12, 0 )
-    class PlatformWindow : public QPlatformWindow
-    {
-      public:
-        int updateTimerId() const
-        {
-            return d_ptr->updateTimer.timerId();
-        }
-    };
-
-    auto platformWindow = static_cast< const PlatformWindow* >( window->handle() );
-    return platformWindow->updateTimerId();
-#else
-    auto w = const_cast< QWindow* >( window );
-    return QWindowPrivate::get( w )->updateTimer;
-#endif
-}
-#endif
 
 namespace
 {
@@ -375,26 +345,20 @@ bool QskWindow::event( QEvent* event )
             }
             break;
         }
-#ifdef QSK_DEBUG_RENDER_TIMING
-        case QEvent::Timer:
+        case QEvent::UpdateRequest:
         {
+#ifdef QSK_DEBUG_RENDER_TIMING
             if ( logTiming().isDebugEnabled() )
             {
-                const int updateTimerId = qskUpdateTimerId( this );
+                if ( !d->renderInterval.isValid() )
+                    d->renderInterval.start();
 
-                if ( static_cast< QTimerEvent* >( event )->timerId() == updateTimerId )
-                {
-                    if ( !d->renderInterval.isValid() )
-                        d->renderInterval.start();
-
-                    qCDebug( logTiming() ) << "update timer - elapsed"
-                        << d->renderInterval.restart() << this;
-                }
+                qCDebug( logTiming() ) << "update timer - elapsed"
+                    << d->renderInterval.restart() << objectName();
             }
-
+#endif
             break;
         }
-#endif
 
         default:
             break;
