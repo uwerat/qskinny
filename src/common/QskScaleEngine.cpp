@@ -3,7 +3,7 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-// code cpopied from Qwt - with permission from the author ( = myself )
+// code copied from Qwt - with permission from the author ( = myself )
 
 #include "QskScaleEngine.h"
 #include "QskFunctions.h"
