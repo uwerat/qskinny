@@ -1,5 +1,5 @@
-#ifndef CARD_H
-#define CARD_H
+#ifndef BOX_H
+#define BOX_H
 
 #include <QskLinearBox.h>
 
@@ -22,4 +22,4 @@ class Box : public QskLinearBox
         QskControl* m_content;
 };
 
-#endif // CARD_H
+#endif // BOX_H

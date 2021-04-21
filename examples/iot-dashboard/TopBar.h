@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TOPBAR_H
+#define TOPBAR_H
 
 #include <QskLinearBox.h>
 #include <QskTextLabel.h>
@@ -100,3 +101,5 @@ class TopBar : public QskLinearBox
     private:
         QList< TopBarItem* > m_entries;
 };
+
+#endif

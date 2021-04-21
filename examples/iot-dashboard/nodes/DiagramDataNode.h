@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DIAGRAMDATANODE_H
+#define DIAGRAMDATANODE_H
 
 #include <QskNamespace.h>
 
@@ -31,3 +32,5 @@ class IdlChartNode : public QSGGeometryNode
         Qsk::Position m_position;
         int m_lineWidth;
 };
+
+#endif

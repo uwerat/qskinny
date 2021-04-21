@@ -1,5 +1,5 @@
-#ifndef PIECHARTSKINLET_H
-#define PIECHARTSKINLET_H
+#ifndef PIECHART_SKINLET_H
+#define PIECHART_SKINLET_H
 
 #include <QskSkinlet.h>
 
@@ -28,4 +28,4 @@ class PieChartSkinlet : public QskSkinlet
         QSGNode* updateLabelsNode( const PieChart*, QSGNode* ) const;
 };
 
-#endif // PIECHARTSKINLET_H
+#endif // PIECHART_SKINLET_H

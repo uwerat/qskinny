@@ -1,5 +1,5 @@
-#ifndef DSKIN_H
-#define DSKIN_H
+#ifndef SKIN_H
+#define SKIN_H
 
 #include <QskGradient.h>
 #include <QskSkin.h>

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DIAGRAMSEGMENTSNODE_H
+#define DIAGRAMSEGMENTSNODE_H
 
 #include <QPolygonF>
 #include <QSGFlatColorMaterial>
@@ -20,3 +21,5 @@ class IdlChartSegmentsNode : public QSGGeometryNode
         QVector< QVector<QPointF> > m_dataPoints;
         int m_xGridLines;
 };
+
+#endif

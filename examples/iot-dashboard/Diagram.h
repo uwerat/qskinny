@@ -1,6 +1,10 @@
-// ### copyright Uwe
+/******************************************************************************
+ * QSkinny - Copyright (C) 2021 Uwe Rathmann
+ * This file may be used under the terms of the QSkinny License, Version 1.0
+ *****************************************************************************/
 
-#pragma once
+#ifndef DIAGRAM_H
+#define DIAGRAM_H
 
 #include <QskControl.h>
 #include <QskNamespace.h>
@@ -48,3 +52,5 @@ class Diagram : public QskControl
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( Diagram::Types )
+
+#endif // DIAGRAM_H
