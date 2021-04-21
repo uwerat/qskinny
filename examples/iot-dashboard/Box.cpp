@@ -1,8 +1,6 @@
 #include "Box.h"
 #include "Skin.h"
 
-#include "src/shadowedrectangle.h"
-
 #include <QskBoxBorderColors.h>
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxShapeMetrics.h>

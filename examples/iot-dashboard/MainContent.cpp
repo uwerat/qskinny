@@ -17,7 +17,7 @@
 #include <QskSkin.h>
 #include <QskTextLabel.h>
 
-#include "src/shadowedrectangle.h"
+#include "kirigami/shadowedrectangle.h"
 
 #include <QTimer>
 

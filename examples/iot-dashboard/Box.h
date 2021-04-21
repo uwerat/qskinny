@@ -1,8 +1,6 @@
 #ifndef CARD_H
 #define CARD_H
 
-#include "src/shadowedrectangle.h"
-
 #include <QskLinearBox.h>
 
 class QskTextLabel;
