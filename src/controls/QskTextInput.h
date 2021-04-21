@@ -45,7 +45,7 @@ class QSK_EXPORT QskTextInput : public QskControl
         NOTIFY passwordMaskDelayChanged )
 
     Q_PROPERTY( bool panel READ hasPanel
-        WRITE setPanel NOTIFY panelChanged FINAL )
+        WRITE setPanel NOTIFY panelChanged )
 
     using Inherited = QskControl;
 
