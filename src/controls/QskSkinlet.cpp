@@ -187,7 +187,7 @@ void QskSkinlet::updateNode( QskSkinnable* skinnable, QSGNode* parentNode ) cons
         oldNode = findChildNode( parentNode, DebugRole );
 
         newNode = nullptr;
-        if ( control->testUpdateFlag( QskControl::DebugForceBackground ) )
+        if ( control->testUpdateFlag( QskQuickItem::DebugForceBackground ) )
             newNode = updateDebugNode( control, oldNode );
 
         replaceChildNode( DebugRole, parentNode, oldNode, newNode );

@@ -661,7 +661,7 @@ bool QskLayoutEngine2D::requiresAdjustment( const QQuickItem* item ) const
     if ( auto control = qskControlCast( item ) )
     {
         constexpr auto mask =
-            QskControl::RetainSizeWhenHidden | QskControl::LayoutOutWhenHidden;
+            QskControl::RetainSizeWhenHidden | QskControl::LayoutWhenHidden;
 
         if ( control->layoutHints() & mask )
             return true;
