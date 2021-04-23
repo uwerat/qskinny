@@ -4,21 +4,55 @@
 
     \brief Base class of all controls
 
-    \states Disabled, Hovered, Focused
+    \states QskControl::Disabled, QskControl::Hovered, QskControl::Focused
+*/
+
+/*!
+    \var QskControl::Disabled
+
+        A state bit that is set, when QQuickItem::isEnabled() == false.
+
+    \extends QskAspect::State
+    \sa   QskQuickItem::setDisabled()
+    \saqt QQuickItem::enabled
+
+    \var QskControl::Hovered
+
+        A state bit that is set, when the item is hovered
+        It allows to define a specific representation in the skin,
+        when being hovered.
+
+    \saqt QQuickItem::acceptHoverEvents(), QQuickItem::hoverEnterEvent(),
+          QQuickItem::hoverLeaveEvent()
+
+    \var QskControl::Focused
+
+        A state bit that is set, when the item is the active focus item
+
+    \sa   focusPolicy
+    \saqt QQuickItem::acceptHoverEvents(), QQuickItem::focusInEvent()
+          QQuickItem::focusOutEvent()
 */
 
 /*!
     \enum QskControl::LayoutHint
 
+    Hints, that can be used by the layout code
+
     \sa setLayoutHint(), testLayoutHint(), setLayoutHints(), layoutHints()
+        setAutoLayoutChildren(), QskLinearBox, QskGridBox, QskStackBox
 
     \var QskControl::RetainSizeWhenHidden
 
-        bla
+        When being enabled the layout code should retain the necessary space
+        for the control even when it is hidden.
 
-    \var QskControl::LayoutOutWhenHidden
+    \saqt QSizePolicy::retainSizeWhenHidden()
 
-        bla
+    \var QskControl::LayoutWhenHidden
+
+        When being enabled the layout code should set the geometry
+        to the control - even if it is not visible.
 */
 
 /*!
@@ -30,8 +64,14 @@
 /*!
     \property bool QskControl::autoFillBackground
 
+    This property holds whether the background is filled automatically
+    with the background gradient.
+
     \accessors autoFillBackground(), setAutoFillBackground()
-    \sa setBackgroundColor()
+
+    \sa background()
+    \saqt QWidget::autoFillBackground
+
 */
 
 /*!
@@ -115,557 +155,520 @@
 /*!
     \fn QskControl::QskControl
 
-    bla
 */
 
 /*!
     \fn QskControl::~QskControl
 
-    bla
 */
 
 /*!
     \fn QskControl::setMargins( qreal )
 
-    bla
+    Sets the margins around the contents of the control 
+
+    The value is stored in the local hint table for the aspect:
+         QskControl::Control | QskAspect::Metric | QskAspect::Margin
+
+    \param margin Margin for all sides
+    \aspect QskControl::Control | QskAspect::Metric | QskAspect::Margin
+
+    \sa contentsRect(), margins(), QskSkinnable::setMarginHint()
 */
 
 /*!
     \fn QskControl::setMargins( const QMarginsF& )
 
-    bla
+    Sets the margins around the contents of the control 
+
+    \param margins Margins
+    \aspect QskControl::Control | QskAspect::Metric | QskAspect::Margin
+
+    \sa contentsRect(), margins()
+    \saqt QEvent::ContentsRectChange
 */
 
 /*!
     \fn QskControl::resetMargins
 
-    bla
+    Reset the margins to the default value provided from the skin
+
+    \aspect QskControl::Control | QskAspect::Metric | QskAspect::Margin
+
+    \sa contentsRect(), setMargins(), margins()
+    \saqt QEvent::ContentsRectChange
 */
 
 /*!
     \fn QskControl::margins() const
 
-    bla
+    \return margins around the contents of the control
+    \aspect QskControl::Control | QskAspect::Metric | QskAspect::Margin
+
+    \sa contentsRect(), setMargins()
+    \saqt QEvent::ContentsRectChange
 */
 
 /*!
     \fn QskControl::setBackgroundColor
 
-    bla
+    A conveninece method that enables the autoFillBackground property
+    and sets a solid color as background. Usually used for debugging
+    layout problems.
+
+    \sa setBackground(), setAutoFillBackground()
+    \sa QskQuickItem::DebugForceBackground
 */
 
 /*!
     \fn QskControl::setBackground
 
-    bla
+    Set the gradient that is used to fill the background,
+    when autoFillBackground is enabled.
+
+    \aspect QskControl::Control | QskAspect::Color
+    \sa resetBackground(), background(), autoFillBackground()
 */
 
 /*!
     \fn QskControl::resetBackground
 
-    bla
+    Reset the background gradient to the default colors from the skin 
+
+    \aspect QskControl::Control | QskAspect::Color
+    \sa setBackground(), background(), autoFillBackground()
 */
 
 /*!
     \fn QskControl::background() const
 
-    bla
+    \return Gradient that is used to fill the background,
+            when autoFillBackground is enabled.
+
+    \aspect QskControl::Control | QskAspect::Color
+    \sa setBackground(), resetBackground(), autoFillBackground()
 */
 
 /*!
     \fn QskControl::contentsRect
 
-    bla
+    \sa margins(), setMargins(), 
 */
 
 /*!
     \fn QskControl::layoutRect
 
-    bla
 */
 
 /*!
     \fn QskControl::layoutRectForSize
 
-    bla
 */
 
 /*!
     \fn QskControl::gestureRect
 
-    bla
 */
 
 /*!
     \fn QskControl::focusIndicatorRect
 
-    bla
 */
 
 /*!
     \fn QskControl::focusIndicatorClipRect
 
-    bla
 */
 
 /*!
     \fn QskControl::subControlRect( QskAspect::Subcontrol ) const
 
-    bla
 */
 
 /*!
     \fn QskControl::subControlRect( const QSizeF&, QskAspect::Subcontrol ) const
 
-    bla
 */
 
 /*!
     \fn QskControl::subControlContentsRect( QskAspect::Subcontrol ) const
 
-    bla
 */
 
 /*!
     \fn QskControl::subControlContentsRect( const QSizeF&, QskAspect::Subcontrol ) const
 
-    bla
 */
 
 /*!
     \fn QskControl::setAutoFillBackground
 
-    bla
+    Set or clear the autoFillBackground property
+    \sa autoFillBackground()
 */
 
 /*!
     \fn QskControl::autoFillBackground() const
 
-    bla
+    \return Value of the autoFillBackground property
+    \sa setAutoFillBackground()
 */
 
 /*!
     \fn QskControl::setAutoLayoutChildren
 
-    bla
+    Set or clear the autoLayoutChildren property
+    \sa autoFillBackground()
 */
 
 /*!
     \fn QskControl::autoLayoutChildren() const
 
-    bla
+    \return Value of the autoLayoutChildren property
+    \sa autoLayoutChildren()
 */
 
 /*!
     \fn QskControl::setWheelEnabled
 
-    bla
 */
 
 /*!
     \fn QskControl::isWheelEnabled
 
-    bla
 */
 
 /*!
     \fn QskControl::setFocusPolicy
 
-    bla
 */
 
 /*!
     \fn QskControl::focusPolicy() const
 
-    bla
 */
 
 /*!
     \fn QskControl::setSizePolicy( QskSizePolicy );
 
-    bla
 */
 
 /*!
     \fn QskControl::setSizePolicy( QskSizePolicy::Policy, QskSizePolicy::Policy )
 
-    bla
 */
 
 /*!
     \fn QskControl::setSizePolicy( Qt::Orientation, QskSizePolicy::Policy )
 
-    bla
 */
 
 /*!
     \fn QskControl::sizePolicy() const
 
-    bla
 */
 
 /*!
     \fn QskControl::sizePolicy( Qt::Orientation ) const
 
-    bla
 */
 
 /*!
     \fn QskControl::setLayoutAlignmentHint
 
-    bla
 */
 
 /*!
     \fn QskControl::layoutAlignmentHint
 
-    bla
 */
 
 /*!
     \fn QskControl::setLayoutHint
 
-    bla
 */
 
 /*!
     \fn QskControl::testLayoutHint
 
-    bla
 */
 
 /*!
     \fn QskControl::setLayoutHints
 
-    bla
 */
 
 /*!
     \fn QskControl::layoutHints
 
-    bla
 */
 
 /*!
     \fn QskControl::isVisibleToLayout
 
-    bla
 */
 
 /*!
     \fn QskControl::setMinimumSize( const QSizeF& )
 
-    bla
 */
 
 /*!
     \fn QskControl::setMinimumSize( qreal, qreal )
 
-    bla
 */
 
 /*!
     \fn QskControl::setMinimumWidth
 
-    bla
 */
 
 /*!
     \fn QskControl::setMinimumHeight
 
-    bla
 */
 
 /*!
     \fn QskControl::setMaximumSize( const QSizeF& )
 
-    bla
 */
 
 /*!
     \fn QskControl::setMaximumSize( qreal, qreal )
 
-    bla
 */
 
 /*!
     \fn QskControl::setMaximumWidth
 
-    bla
 */
 
 /*!
     \fn QskControl::setMaximumHeight
 
-    bla
 */
 
 /*!
     \fn QskControl::setPreferredSize( const QSizeF& )
 
-    bla
 */
 
 /*!
     \fn QskControl::setPreferredSize( qreal, qreal )
 
-    bla
 */
 
 /*!
     \fn QskControl::setPreferredWidth
 
-    bla
 */
 
 /*!
     \fn QskControl::setPreferredHeight
 
-    bla
 */
 
 /*!
     \fn QskControl::setFixedSize( const QSizeF& );
 
-    bla
 */
 
 /*!
     \fn QskControl::setFixedSize( qreal width, qreal height );
 
-    bla
 */
 
 /*!
     \fn QskControl::setFixedWidth
 
-    bla
 */
 
 /*!
     \fn QskControl::setFixedHeight
 
-    bla
 */
 
 /*!
     \fn QskControl::setExplicitSizeHint( Qt::SizeHint, const QSizeF& );
 
-    bla
 */
 
 /*!
     \fn QskControl::setExplicitSizeHint( Qt::SizeHint, qreal width, qreal height );
 
-    bla
 */
 
 /*!
     \fn QskControl::resetExplicitSizeHint
 
-    bla
 */
 
 /*!
     \fn QskControl::minimumSize() const;
 
-    bla
 */
 
 /*!
     \fn QskControl::maximumSize() const;
 
-    bla
 */
 
 /*!
     \fn QskControl::preferredSize() const;
 
-    bla
 */
 
 /*!
     \fn QskControl::explicitSizeHint
 
-    bla
 */
 
 /*!
     \fn QskControl::implicitSizeHint
 
-    bla
 */
 
 /*!
     \fn QskControl::sizeHint
 
-    bla
 */
 
 /*!
     \fn QskControl::heightForWidth
 
-    bla
 */
 
 /*!
     \fn QskControl::widthForHeight
 
-    bla
 */
 
 /*!
     \fn QskControl::effectiveSizeHint
 
-    bla
 */
 
 /*!
     \fn QskControl::sizeConstraint( Qt::SizeHint, const QSizeF& ) const
 
-    bla
 */
 
 /*!
     \fn QskControl::sizeConstraint() const
 
-    bla
 */
 
 /*!
     \fn QskControl::locale() const
 
-    bla
 */
 
 /*!
     \fn QskControl::resetLocale
 
-    bla
 */
 
 /*!
     \fn QskControl::subControls
 
-    bla
 */
 
 /*!
     \fn void QskControl::backgroundChanged
 
-    bla
 */
 
 /*!
     \fn void QskControl::marginsChanged
 
-    bla
 */
 
 /*!
     \fn void QskControl::focusIndicatorRectChanged
 
-    bla
 */
 
 /*!
     \fn void QskControl::localeChanged
 
-    bla
 */
 
 /*!
     \fn void QskControl::focusPolicyChanged
 
-    bla
 */
 
 /*!
     \fn void QskControl::wheelEnabledChanged
 
-    bla
 */
 
 /*!
     \fn void QskControl::setLocale
 
-    bla
 */
 
 /*!
     \fn bool QskControl::event
 
-    bla
 */
 
 /*!
     \fn virtual void QskControl::gestureEvent
 
-    bla
 */
 
 /*!
     \fn void QskControl::hoverEnterEvent
 
-    bla
 */
 
 /*!
     \fn void QskControl::hoverLeaveEvent
 
-    bla
 */
 
 /*!
     \fn bool QskControl::childMouseEventFilter
 
-    bla
 */
 
 /*!
     \fn virtual bool QskControl::gestureFilter
 
-    bla
 */
 
 /*!
     \fn void QskControl::itemChange
 
-    bla
 */
 
 /*!
     \fn void QskControl::geometryChange
 
-    bla
 */
 
 /*!
     \fn void QskControl::initSizePolicy
 
-    bla
 */
 
 /*!
     \fn virtual void QskControl::updateResources
 
-    bla
 */
 
 /*!
     \fn virtual void QskControl::updateLayout
 
-    bla
 */
 
 /*!
     \fn virtual QSizeF QskControl::contentsSizeHint
 
-    bla
 */
 
 /*!
     \fn virtual QSizeF QskControl::layoutSizeHint
 
-    bla
 */

@@ -455,7 +455,7 @@
     \fn QskAspect::setPrimitive
 
     Sets the primitive bits
-	\sa primitive(), clearPrimitive()
+    \sa primitive(), clearPrimitive()
 */
 
 /*!
@@ -468,8 +468,8 @@
 /*!
     \fn QskAspect::clearPrimitive()
 
-	Clears all primitive bits
-	\sa setPrimitive(), primitive()
+    Clears all primitive bits
+    \sa setPrimitive(), primitive()
 */
 
 /*!
