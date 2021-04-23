@@ -102,7 +102,6 @@ class QSK_EXPORT QskAspect
         LastUserState    = 1 << 11,
         LastSystemState  = 1 << 15,
 
-        AllUserStates    =   0x0FF0,
         AllStates        =   0xFFFF
     };
     Q_ENUM( State )
