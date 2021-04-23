@@ -1039,7 +1039,7 @@ void QskSkinnable::setSkinStateFlag( QskAspect::State stateFlag, bool on )
         ? ( m_data->skinState | stateFlag )
         : ( m_data->skinState & ~stateFlag );
 
-    setSkinState( newState );
+    setSkinState( newState, true );
 }
 
 void QskSkinnable::replaceSkinState( QskAspect::State newState )
