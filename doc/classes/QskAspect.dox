@@ -1,11 +1,11 @@
 /*!
     \class QskAspect QskAspect.h
-    \ingroup theming
+    \ingroup Themeing
 
     \brief Lookup key for a QskSkinHintTable
 
-    Used by the \ref qskskinning "skin engine" to determine how a given aspect
-    of a control is drawn. While Aspect is simply a 64-bit unsigned integer, it
+    Used by the \ref qskskinning "themeing system" to determine how a given aspect
+    of a control is drawn. While an aspect is simply a 64-bit unsigned integer, it
     is composed of smaller enum bitfields which can be ORed together to
     describe a more specific part of the user interface.
 
@@ -16,8 +16,8 @@
 
         auto aspect = QskPushButton::Panel | QskAbstractButton::Pressed | QskAspect::Color | QskAspect::Border
 
-    \sa QskSkinnable::effectiveSkinHint(), QskSkin::skinHint()
- */
+    \sa QskSkinnable::effectiveSkinHint(), QskSkinHintTable
+*/
 
 /*!
     \enum QskAspect::Type
@@ -62,7 +62,9 @@
     \var QskAspect::FlagPrimitive QskAspect::Decoration
     \var QskAspect::FlagPrimitive QskAspect::GraphicRole
     \var QskAspect::FlagPrimitive QskAspect::FontRole
- */
+
+    \sa setPrimitive(), clearPrimitive(), primitive()
+*/
 
 /*!
     \enum QskAspect::MetricPrimitive
@@ -77,7 +79,9 @@
     \var QskAspect::MetricPrimitive QskAspect::Spacing
     \var QskAspect::MetricPrimitive QskAspect::Shape
     \var QskAspect::MetricPrimitive QskAspect::Border
- */
+
+    \sa setPrimitive(), clearPrimitive(), primitive()
+*/
 
 /*!
     \enum QskAspect::ColorPrimitive
@@ -86,31 +90,435 @@
     \var QskAspect::ColorPrimitive QskAspect::TextColor
     \var QskAspect::ColorPrimitive QskAspect::StyleColor
     \var QskAspect::ColorPrimitive QskAspect::LinkColor
- */
-    
-/*! For use within the rendering of a specific QskSkinnable. While the Default
-    value applies to any control (and can be used as a fallback), specifying a
-    Subcontrol limits the aspect's scope to that sub-component (or \em subcontrol)
-    of the control. For example, the Subcontrol type QskPushButton::Panel refers
-    to the background panel of a push button. */
-enum Subcontrol : std::uint32_t
-{
-    Default =           0x00000000,
-    FirstSubcontrol =   0x00100000,
-    LastSubcontrol =    0xFFF00000
-};
 
-/*! Applies to a given aspect when the control is in a given state.
+    \sa setPrimitive(), clearPrimitive(), primitive()
+*/
+    
+/*! 
+    \enum QskAspect::Placement
+
+    The placement bits can be used to have different definitions for
+    a skinnable depending on its position or orientation. F.e a tab bar
+    looks slightly different depending on its position. 
+
+    \note flags indicating an orientation can't be used together
+          with the flags for the position
+
+    \sa QskSkinnable::effectivePlacement()
+
+    \var QskAspect::Placement QskAspect::NoPlacement
+        No specific placement bits
+
+    \var QskAspect::Placement QskAspect::Vertical
+        Indicates a vertical orientation
+        
+    \var QskAspect::Placement QskAspect::Horizontal
+        Indicates a horizontal orientation
+
+    \var QskAspect::Placement QskAspect::Top
+        Indicates a top position
+
+    \var QskAspect::Placement QskAspect::Left
+        Indicates a left position
+
+    \var QskAspect::Placement QskAspect::Right
+        Indicates a right position
+
+    \var QskAspect::Placement QskAspect::Bottom
+        Indicates a bottom position
+*/
+
+/*! 
+    \enum QskAspect::Subcontrol
+
+    For use within the rendering or layouting of a specific QskSkinnable.
+
+    While the Default value applies to any control (and can be used as a fallback),
+    specifying a Subcontrol limits the aspect's scope to that sub-component
+    (or \em subcontrol) of the control. For example, the Subcontrol type
+    QskPushButton::Panel refers to the background panel of a push button.
+
+    Beside the default values below subcontrols are defined and registered
+    using the QSK_SUBCONTROL and QSK_SUBCONTROLS macros.
+
+    \var QskAspect::Subcontrol QskAspect::Control
+        No specific subcontrol - used as fallback when resolving skin hints
+
+    \var QskAspect::Subcontrol QskAspect::LastSubcontrol
+        Highest number that fits into the reserved bits for the subcontrol
+*/
+
+/*! 
+    \enum QskAspect::State
+
+    Applies to a given aspect when the control is in a given state.
     QskSkinnable subclasses (typically QskControl subclasses) can define UI
     states, as denoted by any OR combination of State flags. For example, a
     checked QskPushButton has the QskPushButton::Checked state flag set when
-    it is checked. */
-enum State : std::uint64_t
-{
-    FirstSystemState =  0x0000000100000000, ///< The first state bit reserved for framework use
-    FirstUserState =    0x0000001000000000, ///< The first state bit reserved for application use
-    LastUserState =     0x0000080000000000, ///< The last state bit reserved for applicaiton use
-    LastSystemState =   0x0000800000000000, ///< The last state bit reserved for framework use
-    Automatic =         0x0000000000000000, ///< No specified state (the default)
-    NoState =           0x0000FFFF00000000  ///< Empty state, explicitly specified. Useful in some types of animators.
-};
+    it is checked.
+
+    The skin hint resolving algorithms is removing the state bits one by one
+    until it finds a match, what gives lower bits a higher priority. This
+    is a rather obscure and error prone approach and needs to be replaced
+    by something more user friendly. But until this has been done the state
+    bits are devided into 3 sections:
+
+        - [ QskAspect::FirstSystemState, QskAspect::FirstUserState [
+            High priority state bits
+        - [ QskAspect::FirstUserState, QskAspect::LastUserState ]
+            State bits reserved for application code
+        - ] QskAspect::LastUserState, QskAspect::LastSystemState ]
+            Low priority state bits
+
+    \var QskAspect::State QskAspect::NoState
+        No specific state
+
+    \var QskAspect::FirstSystemState QskAspect::FirstSystemState
+        First bit of the high priority bits section
+
+    \var QskAspect::FirstUserState QskAspect::FirstUserState
+        First bit of the bits being reserved for application code
+
+    \var QskAspect::LastUserState QskAspect::LastUserState
+        Last bit of the bits being reserved for application code
+
+    \var QskAspect::LastSystemState QskAspect::LastSystemState
+        Highest state bit
+
+    \var QskAspect::AllStates
+        A bit mask for setting all state bits
+*/
+
+/*!
+    \def QSK_SUBCONTROL
+*/
+
+/*!
+    \def QSK_SUBCONTROLS
+*/
+
+/*!
+    \fn QskAspect::QskAspect()
+
+    Constructs an aspect with no bits being set.
+*/
+
+/*!
+    \fn QskAspect::QskAspect( Subcontrol )
+
+    Constructs an aspect with the subcontrol bits being initialized
+    \param subControl Initial subcontrol
+*/
+
+/*!
+    \fn QskAspect::QskAspect( Type )
+
+    Constructs an aspect with the type bits being initialized
+    \param type Initial type
+*/
+
+/*!
+    \fn QskAspect::QskAspect( Placement )
+
+    Constructs an aspect with the placement bits being initialized
+    \param placement Initial placement
+*/
+
+/*!
+    \fn QskAspect::QskAspect( const QskAspect& )
+
+    Copy constructor
+*/
+
+/*!
+    \fn QskAspect::QskAspect( QskAspect&& )
+
+    Move constructor
+*/
+
+/*!
+    \fn QskAspect::operator=( const QskAspect& )
+
+    Assignment operator
+*/
+
+/*!
+    \fn QskAspect::operator==( const QskAspect& )
+
+    "Equal to" operator
+    \sa operator!=(), operator<()
+*/
+
+/*!
+    \fn QskAspect::operator!=( const QskAspect& )
+
+    "Not equal to" operator
+    \sa operator==(), operator<()
+*/
+
+/*!
+    \fn QskAspect::operator<( const QskAspect& )
+
+    "Less than" operator
+*/
+
+/*!
+    \fn QskAspect::operator|( Subcontrol ) const
+
+    Sets the subcontrol bits
+*/
+
+/*!
+    \fn QskAspect::operator|( Type ) const
+
+    Sets the type bits
+*/
+
+/*!
+    \fn QskAspect::operator|( FlagPrimitive ) const
+
+    Sets the primitive bits
+*/
+
+/*!
+    \fn QskAspect::operator|( MetricPrimitive ) const
+
+    Sets the primitive bits
+*/
+
+/*!
+    \fn QskAspect::operator|( ColorPrimitive ) const
+
+    Sets the primitive bits
+*/
+
+/*!
+    \fn QskAspect::operator|( Placement ) const
+
+    Sets the placement bits
+*/
+
+/*!
+    \fn QskAspect::operator|( State ) const
+
+    ORs state to the state bits
+    \param state Additional state bits
+*/
+
+/*!
+    \fn QskAspect::stateless
+
+    \return A copy of the aspect without the state bits
+*/
+
+/*!
+    \fn QskAspect::trunk
+
+    \return A copy of the aspect without the runtime bits ( state, placement ) bits
+*/
+
+/*!
+    \fn QskAspect::value
+
+    \returns All bits interpreted as quint64
+*/
+
+/*!
+    \fn QskAspect::isAnimator
+
+    \return true, when the animator bit is set
+*/
+
+/*!
+    \fn QskAspect::setAnimator
+
+    Set/Clear the animator bit depending on on
+*/
+
+/*!
+    \fn QskAspect::subControl
+
+    \return Subcontrol bits
+    \sa setSubControl()
+*/
+
+/*!
+    \fn QskAspect::setSubControl
+
+    Sets the subcontrol bits
+    \sa subControl()
+*/
+
+/*!
+    \fn QskAspect::type
+
+    \return Type bits
+    \sa setType()
+*/
+
+/*!
+    \fn QskAspect::setType
+
+    Sets the type bits
+    \sa type()
+*/
+
+/*!
+    \fn QskAspect::isMetric
+    \return true, if type() equals to QskAspect::Metric
+*/
+
+/*!
+    \fn QskAspect::isColor
+    \return true, if type() equals to QskAspect::Color
+*/
+
+/*!
+    \fn QskAspect::isFlag
+    \return true, if type() equals to QskAspect::Flag
+*/
+
+/*!
+    \fn QskAspect::placement
+
+    \return Placement bits
+    \sa setPlacement()
+*/
+
+/*!
+    \fn QskAspect::setPlacement
+
+    Sets the placement bits
+    \sa placement()
+*/
+
+/*!
+    \fn QskAspect::state
+
+    \return State bits
+    \sa setState()
+*/
+
+/*!
+    \fn QskAspect::topState
+
+    \return Topmost state bit
+    \sa state()
+*/
+
+/*!
+    \fn QskAspect::setState
+
+    Sets the state bits
+    \sa addState(), clearState(), hasState(), state()
+*/
+
+/*!
+    \fn QskAspect::addState
+
+    ORs state to the state bits
+    \sa setState(), clearState(), hasState(), state()
+*/
+
+/*!
+    \fn QskAspect::hasState
+    \return true, if any of the state bits is set
+*/
+
+/*!
+    \fn QskAspect::clearState
+
+    Clear the state bit for state
+    \sa setState(), addState(), hasState(), state()
+*/
+
+/*!
+    \fn QskAspect::clearStates
+
+    Clears all state bits
+    \sa clearState() setState(), addState(), hasState(), state()
+*/
+
+/*!
+    \fn QskAspect::flagPrimitive
+*/
+
+/*!
+    \fn QskAspect::colorPrimitive
+*/
+
+/*!
+    \fn QskAspect::metricPrimitive
+*/
+
+/*!
+    \fn QskAspect::setPrimitive
+
+    Sets the primitive bits
+	\sa primitive(), clearPrimitive()
+*/
+
+/*!
+    \fn QskAspect::primitive
+
+    \return Primitve bits
+    \sa setPrimitive(), clearPrimitive()
+*/
+
+/*!
+    \fn QskAspect::clearPrimitive()
+
+	Clears all primitive bits
+	\sa setPrimitive(), primitive()
+*/
+
+/*!
+    \fn QskAspect::toPrintable
+
+    \return A printable string for debug purposes
+    \note The string is internally stored in a buffer that gets reused
+          every 10 calls. If the string is not only for an immediate
+          debug statement it needs to be copied out.
+*/
+
+/*!
+    \fn QskAspect::registerState
+
+    Registers a printable string for a state.
+
+    This method is called from the QSK_STATE and QSK_SYSTEM_STATE
+    macros and is usually never called manually in application code
+*/
+
+/*!
+    \fn QskAspect::nextSubcontrol
+
+    \return Unique ( applicatio wide ) identifier
+
+    This method is called from the QSK_SUBCONTROL macro and is usually
+    never called manually in application code
+*/
+
+/*!
+    \fn QskAspect::subControlName
+
+    \return Printable string for a specfic subControl
+*/
+
+/*!
+    \fn QskAspect::subControlNames
+    \return Printable strings of all subControls for a class represented by metaObject
+*/
+
+/*!
+    \fn QskAspect::subControls
+    \return All subControls for a class represented by metaObject
+*/
+
+/*!
+    \fn QskAspect::primitiveCount
+*/
+
+/*!
+    \fn QskAspect::reservePrimitives
+*/

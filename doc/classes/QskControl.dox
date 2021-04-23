@@ -1,7 +1,6 @@
 /*!
     \class QskControl QskControl.h
-
-    \ingroup Framework
+    \ingroup Framework Controls
 
     \brief Base class of all controls
 

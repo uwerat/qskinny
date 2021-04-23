@@ -231,7 +231,7 @@
 */
 
 /*!
-    \fn QskQuickItem::hasChildItems
+    \fn QskQuickItem::hasChildItems() const
 
     \return true, if the item has child items
     \sa hasChildItems

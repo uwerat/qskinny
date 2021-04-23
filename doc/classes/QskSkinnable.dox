@@ -124,6 +124,14 @@
 */
 
 /*! \fn QskSkinnable::animationHint
+
+    Retrieve the configuration of the animator for the current state.
+
+    \param aspect Unresolved aspect
+    \param status If status != nullptr additional information
+                  about where the hint has been found is returned
+
+    \sa effectiveSkinHint()
 */
 
 /*! \fn QskSkinnable::effectiveAnimation
@@ -203,7 +211,7 @@
     \param animated If true, animators, that have been defined in the skin
                     for newState will be started
 
-    \sa QskAspect
+    \sa QskAspect, replaceSkinState()
 */
 
 /*! \fn QskSkinnable::setSkinStateFlag
@@ -214,6 +222,17 @@
     \param on true or false
 
     \sa setSkinState(), skinState()
+*/
+
+/*! \fn QskSkinnable::replaceSkinState
+
+    Overwrite the state bits of the skinnable without triggering
+    any updates. Usually used for temporary modifications when
+    retrieving skin hints.
+
+    \param newState State bits
+
+    \sa QskAspect, setSkinState()
 */
 
 /*! \fn QskSkinnable::skinState
