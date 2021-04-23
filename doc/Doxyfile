@@ -263,6 +263,7 @@ ALIASES                = "accessors=\par Access functions:^^" \
                          "subcontrols=\par Subcontrols:^^" \
                          "states=\par States:^^" \
                          "skinlet=\par Default Skinlet:^^" \
+                         "aspect=\par Aspect^^" \
                          "saqt=\sa ^^"
 
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C sources
