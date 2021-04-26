@@ -48,6 +48,7 @@
 #include <QskSetup.h>
 #include <QskSkin.h>
 #include <QskTextLabel.h>
+#include <QskQuick.h>
 
 #include "kirigami/shadowedrectangle.h"
 
@@ -101,7 +102,7 @@ void ShadowPositioner::updateLayout()
         for( int i = 0; i < m_rectangles.count(); ++i )
         {
             auto* item = m_gridBox->itemAtIndex( i );
-            m_rectangles[i]->setSize( item->size() );
+            m_rectangles[i]->setSize( qskItemSize( item ) );
             m_rectangles[i]->setPosition( mainContent->itemAtIndex( 1 )->position() + item->position() );
         }
     } );

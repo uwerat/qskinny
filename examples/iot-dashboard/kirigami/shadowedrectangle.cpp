@@ -7,8 +7,6 @@
 #include "shadowedrectangle.h"
 
 #include <QQuickWindow>
-#include <QSGRendererInterface>
-#include <QSGRectangleNode>
 
 #include "scenegraph/shadowedrectanglenode.h"
 #include "scenegraph/paintedrectangleitem.h"
@@ -284,7 +282,7 @@ void ShadowedRectangle::componentComplete()
 
 bool ShadowedRectangle::isSoftwareRendering() const
 {
-    return window() && window()->rendererInterface()->graphicsApi() == QSGRendererInterface::Software;
+    return false;
 }
 
 PaintedRectangleItem* ShadowedRectangle::softwareItem() const

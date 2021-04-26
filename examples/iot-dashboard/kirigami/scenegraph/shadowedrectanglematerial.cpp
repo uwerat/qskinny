@@ -77,7 +77,7 @@ void ShadowedRectangleShader::updateState(const QSGMaterialShader::RenderState& 
         p->setUniformValue(m_opacityLocation, state.opacity());
     }
 
-    if (!oldMaterial || newMaterial->compare(oldMaterial) != 0 || state.isCachedMaterialDataDirty()) {
+    if (!oldMaterial || newMaterial->compare(oldMaterial) != 0 ) {
         auto material = static_cast<ShadowedRectangleMaterial *>(newMaterial);
         p->setUniformValue(m_aspectLocation, material->aspect);
         p->setUniformValue(m_sizeLocation, material->size);
