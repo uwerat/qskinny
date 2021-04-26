@@ -5,8 +5,6 @@
 
 #include "Diagram.h"
 
-#include <QVectorIterator>
-
 class Diagram::PrivateData
 {
     public:
