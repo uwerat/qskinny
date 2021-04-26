@@ -4,6 +4,7 @@ TEMPLATE = subdirs
 SUBDIRS += \
     desktop \
     gallery \
+    iot-dashboard \
     layouts \
     listbox \
     messagebox \
