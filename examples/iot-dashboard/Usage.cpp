@@ -63,3 +63,5 @@ Usage::Usage( QQuickItem* parent )
     auto* totalValue = new QskTextLabel( "125 hrs", total );
     totalValue->setFontRole( QskSkin::SmallFont );
 }
+
+#include "moc_Usage.cpp"

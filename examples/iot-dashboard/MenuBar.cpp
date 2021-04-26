@@ -117,3 +117,5 @@ QskAspect::Subcontrol MenuBar::effectiveSubcontrol( QskAspect::Subcontrol subCon
 
     return subControl;
 }
+
+#include "moc_MenuBar.cpp"

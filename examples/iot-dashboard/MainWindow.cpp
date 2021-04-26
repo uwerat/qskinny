@@ -48,3 +48,5 @@ MainWindow::MainWindow()
 
     m_mainLayout->setSpacing( 0 );
 }
+
+#include "moc_MainWindow.cpp"

@@ -229,3 +229,5 @@ LightIntensity::LightIntensity( QQuickItem* parent )
 {
     new LightDisplay( this );
 }
+
+#include "moc_LightIntensity.cpp"

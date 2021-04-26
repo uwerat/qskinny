@@ -69,3 +69,5 @@ BoxWithButtons::BoxWithButtons( const QString& title, const QString& value, bool
 
     new UpAndDownButton( layout );
 }
+
+#include "moc_BoxWithButtons.cpp"
