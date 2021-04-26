@@ -376,7 +376,12 @@ void QskTextInput::keyPressEvent( QKeyEvent* event )
                     QGuiApplication::inputMethod()->commit();
 
                     if ( !( inputMethodHints() & Qt::ImhMultiLine ) )
+                    {
                         setEditing( false );
+
+                        // When returning from a virtual keyboard
+                        qskForceActiveFocus( this, Qt::PopupFocusReason );
+                    }
                 }
                 break;
             }
@@ -384,6 +389,7 @@ void QskTextInput::keyPressEvent( QKeyEvent* event )
             case Qt::Key_Escape:
             {
                 setEditing( false );
+                qskForceActiveFocus( this, Qt::PopupFocusReason );
                 break;
             }
 #endif
@@ -665,9 +671,6 @@ void QskTextInput::setEditing( bool on )
         inputMethod->reset();
 #endif
         qskInputMethodSetVisible( this, false );
-#if 1
-        qskForceActiveFocus( this, Qt::PopupFocusReason );
-#endif
     }
 
     Q_EMIT editingChanged( on );
