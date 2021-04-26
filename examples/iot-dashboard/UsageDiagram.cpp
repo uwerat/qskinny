@@ -163,4 +163,4 @@ void UsageDiagram::updateLayout()
     m_captionBox->setPosition( {captionX, 0} );
 }
 
-#include "Diagram.moc"
+#include "moc_UsageDiagram.cpp"
