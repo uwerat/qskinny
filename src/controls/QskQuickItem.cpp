@@ -720,7 +720,9 @@ void QskQuickItem::itemChange( QQuickItem::ItemChange change,
 
 #if 1
             auto oldWindow = qskReleasedWindowCounter->window();
-            if ( oldWindow && ( oldWindow->activeFocusItem() == this ) )
+
+            if ( oldWindow && oldWindow->contentItem()
+                && ( oldWindow->activeFocusItem() == this ) )
             {
                 /*
                     Removing an item from the scene might result in
