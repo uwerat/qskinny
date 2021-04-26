@@ -1,0 +1,26 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="/org/kde/kirigami/shaders">
+        <file>header_es.glsl</file>
+        <file>header_desktop.glsl</file>
+        <file>header_desktop_core.glsl</file>
+        <file>sdf.glsl</file>
+        <file>sdf_lowpower.glsl</file>
+        <file alias="sdf_core.glsl">sdf.glsl</file>
+        <file>shadowedrectangle.vert</file>
+        <file alias="shadowedrectangle_core.vert">shadowedrectangle.vert</file>
+        <file>shadowedrectangle.frag</file>
+        <file>shadowedrectangle_lowpower.frag</file>
+        <file alias="shadowedrectangle_core.frag">shadowedrectangle.frag</file>
+        <file>shadowedborderrectangle.frag</file>
+        <file>shadowedborderrectangle_lowpower.frag</file>
+        <file alias="shadowedborderrectangle_core.frag">shadowedborderrectangle.frag</file>
+        <file>shadowedtexture.frag</file>
+        <file>shadowedtexture_lowpower.frag</file>
+        <file alias="shadowedtexture_core.frag">shadowedtexture.frag</file>
+        <file>shadowedbordertexture.frag</file>
+        <file>shadowedbordertexture_lowpower.frag</file>
+        <file alias="shadowedbordertexture_core.frag">shadowedbordertexture.frag</file>
+    </qresource>
+</RCC>
+

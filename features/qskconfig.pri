@@ -45,6 +45,7 @@ use_no_rpath {
 } else {
     cross_compile {
         CONFIG *= use_install_rpath
+        QMAKE_RPATHLINKDIR *= $${QSK_PLUGIN_DIR}/skins
     } else {
         !use_install_rpath: CONFIG *= use_local_rpath
     }

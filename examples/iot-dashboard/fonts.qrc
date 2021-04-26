@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>fonts/ProximaNova-Regular.otf</file>
+        <file>fonts/ProximaNova-Semibold.otf</file>
+    </qresource>
+</RCC>
