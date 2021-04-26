@@ -66,3 +66,5 @@ QskAspect::Subcontrol Box::effectiveSubcontrol( QskAspect::Subcontrol subControl
 
     return subControl;
 }
+
+#include "moc_Box.cpp"

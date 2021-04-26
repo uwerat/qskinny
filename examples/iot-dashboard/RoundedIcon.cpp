@@ -92,3 +92,5 @@ QSizeF RoundedIcon::contentsSizeHint( Qt::SizeHint /*which*/, const QSizeF& size
 
     return ret;
 }
+
+#include "moc_RoundedIcon.cpp"

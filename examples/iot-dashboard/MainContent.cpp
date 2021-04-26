@@ -166,3 +166,5 @@ void MainContent::geometryChangeEvent( QskGeometryChangeEvent* event )
     QskLinearBox::geometryChangeEvent( event );
     m_shadowPositioner->polish();
 }
+
+#include "moc_MainContent.cpp"

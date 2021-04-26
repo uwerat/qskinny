@@ -58,3 +58,5 @@ void PieChart::setLabels( const QVector< QString >& labels )
 {
     m_labels = labels;
 }
+
+#include "moc_PieChart.cpp"

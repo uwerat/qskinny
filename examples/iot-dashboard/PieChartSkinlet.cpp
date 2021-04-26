@@ -108,3 +108,5 @@ QSGNode* PieChartSkinlet::updateLabelsNode( const PieChart* pieChart, QSGNode* /
 
     return nullptr;
 }
+
+#include "moc_PieChartSkinlet.cpp"

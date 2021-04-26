@@ -85,3 +85,5 @@ UpAndDownButton::UpAndDownButton( QQuickItem* parent )
     new RoundButton( QskAspect::Top, this );
     new RoundButton( QskAspect::Bottom, this );
 }
+
+#include "moc_UpAndDownButton.cpp"

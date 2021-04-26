@@ -128,3 +128,5 @@ TopBar::TopBar( QQuickItem* parent ) : QskLinearBox( Qt::Horizontal, parent )
     auto timeString = now.toString();
     new TimeLabel( timeString, timeControl );
 }
+
+#include "moc_TopBar.cpp"
