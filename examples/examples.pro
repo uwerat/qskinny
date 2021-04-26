@@ -4,13 +4,14 @@ TEMPLATE = subdirs
 SUBDIRS += \
     desktop \
     gallery \
-    iot-dashboard \
     layouts \
     listbox \
     messagebox \
     mycontrols \
     thumbnails \
     tabview
+
+lessThan(QT_MAJOR_VERSION, 6): SUBDIRS += iot-dashboard
 
 qtHaveModule(svg) {
 

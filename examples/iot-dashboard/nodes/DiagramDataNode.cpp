@@ -46,7 +46,13 @@ void DiagramDataNode::update( const QRectF& rect, Type type, const QColor& color
     m_position = position;
     m_type = type;
 
-    GLenum drawingMode = ( m_type == Line ) ? GL_LINES : GL_TRIANGLE_STRIP;
+    const auto drawingMode =
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 )
+        ( m_type == Line ) ? QSGGeometry::DrawLines : QSGGeometry::DrawTriangleStrip;
+#else
+        ( m_type == Line ) ? GL_LINES : GL_TRIANGLE_STRIP;
+#endif
+
     m_geometry.setDrawingMode( drawingMode );
 
     const int vertexCount = ( m_type == Line ) ? m_dataPoints.size() * 2 - 1 : m_dataPoints.size() * 2;

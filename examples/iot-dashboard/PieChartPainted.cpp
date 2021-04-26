@@ -38,6 +38,7 @@
 #include <QskSetup.h>
 #include <QskSkin.h>
 #include <QskTextLabel.h>
+#include <QskFunctions.h>
 
 #include <QFontMetricsF>
 #include <QGuiApplication>
@@ -149,11 +150,13 @@ void PieChartPainted::updateLayout()
     m_progressBar->setContentsSize( size().toSize() );
     m_progressBar->update();
 
-    auto rect = contentsRect();
-    QFontMetricsF progressMetrics( m_progressLabel->effectiveFont( QskTextLabel::Text ) );
-    auto textWidth = progressMetrics.width( m_progressLabel->text() );
+    const auto rect = layoutRect();
+
+    QFontMetricsF fm( m_progressLabel->effectiveFont( QskTextLabel::Text ) );
+    auto textWidth = qskHorizontalAdvance( fm, m_progressLabel->text() );
     auto posX = rect.width() / 2 - textWidth / 2;
-    auto posY = rect.height() / 2 - progressMetrics.height() / 2;
-    m_progressLabel->setPosition( {posX, posY} );
+    auto posY = rect.height() / 2 - fm.height() / 2;
+
+    m_progressLabel->setPosition( { posX, posY } );
     m_progressLabel->setFixedWidth( textWidth );
 }

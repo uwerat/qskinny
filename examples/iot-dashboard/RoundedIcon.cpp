@@ -37,6 +37,7 @@
 #include <QskGraphicLabel.h>
 
 #include <QImage>
+#include <QFile>
 
 QSK_SUBCONTROL( RoundedIcon, Panel )
 QSK_SUBCONTROL( RoundedIcon, Icon )
