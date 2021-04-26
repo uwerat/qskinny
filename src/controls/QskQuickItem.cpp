@@ -733,7 +733,11 @@ void QskQuickItem::itemChange( QQuickItem::ItemChange change,
                     oldWindow->activeFocusItem().
                  */
 
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 1, 0 )
+                auto wd = QQuickWindowPrivate::get( oldWindow )->deliveryAgentPrivate();
+#else           
                 auto wd = QQuickWindowPrivate::get( oldWindow );
+#endif
                 if ( auto scope = qskNearestFocusScope( this ) )
                 {
                     wd->clearFocusInScope( scope, this, Qt::OtherFocusReason );

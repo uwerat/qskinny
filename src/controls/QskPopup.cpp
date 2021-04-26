@@ -31,8 +31,11 @@ static void qskSetFocus( QQuickItem* item, bool on )
 
     if ( const auto scope = qskNearestFocusScope( item ) )
     {
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 1, 0 )
+        auto dw = QQuickItemPrivate::get( item )->deliveryAgentPrivate();
+#else
         auto dw = QQuickWindowPrivate::get( item->window() );
-
+#endif
         if ( on )
         {
             dw->setFocusInScope( scope, item, Qt::PopupFocusReason );

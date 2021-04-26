@@ -162,7 +162,12 @@ void QskScrollBox::onFocusItemChanged()
 {
     if ( window() )
     {
-        auto reason = QQuickWindowPrivate::get( window() )->lastFocusReason;
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 1, 0 )
+        auto wd = QQuickWindowPrivate::get( window() )->deliveryAgentPrivate();
+#else
+        auto wd = QQuickWindowPrivate::get( window() );
+#endif
+        auto reason = wd->lastFocusReason;
         if ( reason == Qt::TabFocusReason || reason == Qt::BacktabFocusReason )
             ensureFocusItemVisible();
     }
