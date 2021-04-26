@@ -238,8 +238,12 @@ void qskForceActiveFocus( QQuickItem* item, Qt::FocusReason reason )
     if ( item == nullptr || item->window() == nullptr )
         return;
 
-    auto wp = QQuickWindowPrivate::get( item->window() );
 
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 1, 0 )
+    auto wp = QQuickItemPrivate::get( item )->deliveryAgentPrivate();
+#else
+    auto wp = QQuickWindowPrivate::get( item->window() );
+#endif
     while ( const auto scope = qskNearestFocusScope( item ) )
     {
         wp->setFocusInScope( scope, item, reason );
