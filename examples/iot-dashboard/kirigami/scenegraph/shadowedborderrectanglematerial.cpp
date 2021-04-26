@@ -59,7 +59,7 @@ void ShadowedBorderRectangleShader::updateState(const QSGMaterialShader::RenderS
 
     auto p = program();
 
-    if (!oldMaterial || newMaterial->compare(oldMaterial) != 0 || state.isCachedMaterialDataDirty()) {
+    if (!oldMaterial || newMaterial->compare(oldMaterial) != 0 ) {
         auto material = static_cast<ShadowedBorderRectangleMaterial *>(newMaterial);
         p->setUniformValue(m_borderWidthLocation, material->borderWidth);
         p->setUniformValue(m_borderColorLocation, material->borderColor);

@@ -52,18 +52,18 @@ HEADERS += \
     nodes/DiagramSegmentsNode.h
 
 HEADERS += \
-kirigami/shadowedrectangle.h \
-kirigami/scenegraph/paintedrectangleitem.h \
-kirigami/scenegraph/shadowedborderrectanglematerial.h \
-kirigami/scenegraph/shadowedrectanglematerial.h \
-kirigami/scenegraph/shadowedrectanglenode.h
+    kirigami/shadowedrectangle.h \
+    kirigami/scenegraph/paintedrectangleitem.h \
+    kirigami/scenegraph/shadowedborderrectanglematerial.h \
+    kirigami/scenegraph/shadowedrectanglematerial.h \
+    kirigami/scenegraph/shadowedrectanglenode.h
 
 SOURCES += \
-kirigami/shadowedrectangle.cpp \
-kirigami/scenegraph/paintedrectangleitem.cpp \
-kirigami/scenegraph/shadowedborderrectanglematerial.cpp \
-kirigami/scenegraph/shadowedrectanglematerial.cpp \
-kirigami/scenegraph/shadowedrectanglenode.cpp
+    kirigami/shadowedrectangle.cpp \
+    kirigami/scenegraph/paintedrectangleitem.cpp \
+    kirigami/scenegraph/shadowedborderrectanglematerial.cpp \
+    kirigami/scenegraph/shadowedrectanglematerial.cpp \
+    kirigami/scenegraph/shadowedrectanglenode.cpp
 
 RESOURCES += \
     images.qrc \
