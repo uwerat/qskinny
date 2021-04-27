@@ -35,16 +35,17 @@ namespace
     };
 }
 
-static quint8 qskPrimitiveCount[ 3 ] =
-    { QskAspect::FontRole + 1, QskAspect::Border + 1, QskAspect::LinkColor + 1 };
+static quint8 qskPrimitiveCount = QMetaEnum::fromType< QskAspect::Primitive >().keyCount();
 
-quint8 QskAspect::primitiveCount( Type type )
+quint8 QskAspect::primitiveCount()
 {
-    return qskPrimitiveCount[ type ];
+    return qskPrimitiveCount;
 }
 
-void QskAspect::reservePrimitives( Type type, quint8 count )
+void QskAspect::reservePrimitives( quint8 count )
 {
+    // applications might need to increase the count to add additional primitives
+
     constexpr quint8 maxCount = 1 << 5; // we have 5 bits for the primitives
 
     Q_ASSERT( count <= maxCount );
@@ -57,8 +58,8 @@ void QskAspect::reservePrimitives( Type type, quint8 count )
         count = maxCount;
     }
 
-    if ( count > qskPrimitiveCount[ type ] )
-        qskPrimitiveCount[ type ] = count;
+    if ( count > qskPrimitiveCount )
+        qskPrimitiveCount = count;
 }
 
 Q_GLOBAL_STATIC( AspectRegistry, qskAspectRegistry )
@@ -231,19 +232,9 @@ QDebug operator<<( QDebug debug, QskAspect::Type type )
     return qskDebugEnum( debug, "Type", type );
 }
 
-QDebug operator<<( QDebug debug, QskAspect::FlagPrimitive primitive )
+QDebug operator<<( QDebug debug, QskAspect::Primitive primitive )
 {
-    return qskDebugEnum( debug, "FlagPrimitive", primitive );
-}
-
-QDebug operator<<( QDebug debug, QskAspect::ColorPrimitive primitive )
-{
-    return qskDebugEnum( debug, "ColorPrimitive", primitive );
-}
-
-QDebug operator<<( QDebug debug, QskAspect::MetricPrimitive primitive )
-{
-    return qskDebugEnum( debug, "MetricPrimitive", primitive );
+    return qskDebugEnum( debug, "Primitive", primitive );
 }
 
 QDebug operator<<( QDebug debug, QskAspect::Subcontrol subControl )

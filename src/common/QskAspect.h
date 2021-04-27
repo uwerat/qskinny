@@ -28,48 +28,34 @@ class QSK_EXPORT QskAspect
 
     static constexpr uint typeCount = 3;
 
-    enum FlagPrimitive : quint8
+    enum Primitive : quint8
     {
-        NoFlagPrimitive,
+        NoPrimitive = 0,
 
         Alignment,
         Direction,
         Style,
         Decoration,
         GraphicRole,
-        FontRole
-    };
-    Q_ENUM( FlagPrimitive )
+        FontRole,
 
-    enum MetricPrimitive : quint8
-    {
-        NoMetricPrimitive,
+        TextColor,
+        StyleColor,
+        LinkColor,
 
         StrutSize,
-
         Size,
         Position,
 
         Margin,
         Padding,
-        Shadow,
-
         Spacing,
 
+        Shadow,
         Shape,
         Border
     };
-    Q_ENUM( MetricPrimitive )
-
-    enum ColorPrimitive : quint8
-    {
-        NoColorPrimitive,
-
-        TextColor,
-        StyleColor,
-        LinkColor
-    };
-    Q_ENUM( ColorPrimitive )
+    Q_ENUM( Primitive )
 
     enum Placement : quint8
     {
@@ -123,9 +109,7 @@ class QSK_EXPORT QskAspect
 
     constexpr QskAspect operator|( Subcontrol ) const noexcept;
     constexpr QskAspect operator|( Type ) const noexcept;
-    constexpr QskAspect operator|( FlagPrimitive ) const noexcept;
-    constexpr QskAspect operator|( MetricPrimitive ) const noexcept;
-    constexpr QskAspect operator|( ColorPrimitive ) const noexcept;
+    constexpr QskAspect operator|( Primitive ) const noexcept;
     constexpr QskAspect operator|( Placement ) const noexcept;
     constexpr QskAspect operator|( State ) const noexcept;
 
@@ -159,13 +143,13 @@ class QSK_EXPORT QskAspect
     void clearState( State ) noexcept;
     void clearStates() noexcept;
 
-    constexpr FlagPrimitive flagPrimitive() const noexcept;
-    constexpr ColorPrimitive colorPrimitive() const noexcept;
-    constexpr MetricPrimitive metricPrimitive() const noexcept;
-
-    void setPrimitive( Type, uint primitive ) noexcept;
-    constexpr uint primitive() const noexcept;
+    constexpr Primitive primitive() const noexcept;
+    void setPrimitive( Type, Primitive primitive ) noexcept;
     void clearPrimitive() noexcept;
+
+    constexpr Primitive flagPrimitive() const noexcept;
+    constexpr Primitive colorPrimitive() const noexcept;
+    constexpr Primitive metricPrimitive() const noexcept;
 
     const char* toPrintable() const;
 
@@ -176,8 +160,8 @@ class QSK_EXPORT QskAspect
     static QVector< QByteArray > subControlNames( const QMetaObject* = nullptr );
     static QVector< Subcontrol > subControls( const QMetaObject* );
 
-    static quint8 primitiveCount( Type );
-    static void reservePrimitives( Type, quint8 count );
+    static quint8 primitiveCount();
+    static void reservePrimitives( quint8 count );
 
   private:
     constexpr QskAspect( Subcontrol, Type, Placement ) noexcept;
@@ -268,20 +252,10 @@ inline constexpr QskAspect QskAspect::operator|( Type type ) const noexcept
         m_bits.primitive, m_bits.placement, m_bits.states );
 }
 
-inline constexpr QskAspect QskAspect::operator|( FlagPrimitive primitive ) const noexcept
+inline constexpr QskAspect QskAspect::operator|( Primitive primitive ) const noexcept
 {
     return QskAspect( m_bits.subControl, m_bits.type, m_bits.isAnimator,
         primitive, m_bits.placement, m_bits.states );
-}
-
-inline constexpr QskAspect QskAspect::operator|( MetricPrimitive primitive ) const noexcept
-{
-    return operator|( static_cast< FlagPrimitive >( primitive ) );
-}
-
-inline constexpr QskAspect QskAspect::operator|( ColorPrimitive primitive ) const noexcept
-{
-    return operator|( static_cast< FlagPrimitive >( primitive ) );
 }
 
 inline constexpr QskAspect QskAspect::operator|( Placement placement ) const noexcept
@@ -388,38 +362,38 @@ inline void QskAspect::clearStates() noexcept
     m_bits.states = 0;
 }
 
-inline constexpr QskAspect::FlagPrimitive QskAspect::flagPrimitive() const noexcept
+inline constexpr QskAspect::Primitive QskAspect::primitive() const noexcept
 {
-    return ( m_bits.type == Flag )
-        ?  static_cast< FlagPrimitive >( m_bits.primitive ) : NoFlagPrimitive;
+    return static_cast< QskAspect::Primitive >( m_bits.primitive );
 }
 
-inline constexpr QskAspect::ColorPrimitive QskAspect::colorPrimitive() const noexcept
-{
-    return ( m_bits.type == Color )
-        ?  static_cast< ColorPrimitive >( m_bits.primitive ) : NoColorPrimitive;
-}
-
-inline constexpr QskAspect::MetricPrimitive QskAspect::metricPrimitive() const noexcept
-{
-    return ( m_bits.type == Metric )
-        ? static_cast< MetricPrimitive >( m_bits.primitive ) : NoMetricPrimitive;
-}
-
-inline constexpr uint QskAspect::primitive() const noexcept
-{
-    return m_bits.primitive;
-}
-
-inline void QskAspect::setPrimitive( Type type, uint primitive ) noexcept
+inline void QskAspect::setPrimitive( Type type, QskAspect::Primitive primitive ) noexcept
 {
     m_bits.type = type;
     m_bits.primitive = primitive;
 }
 
+inline constexpr QskAspect::Primitive QskAspect::flagPrimitive() const noexcept
+{
+    return ( m_bits.type == Flag )
+        ?  static_cast< Primitive >( m_bits.primitive ) : NoPrimitive;
+}
+
+inline constexpr QskAspect::Primitive QskAspect::colorPrimitive() const noexcept
+{
+    return ( m_bits.type == Color )
+        ?  static_cast< Primitive >( m_bits.primitive ) : NoPrimitive;
+}
+
+inline constexpr QskAspect::Primitive QskAspect::metricPrimitive() const noexcept
+{
+    return ( m_bits.type == Metric )
+        ? static_cast< Primitive >( m_bits.primitive ) : NoPrimitive;
+}
+
 inline void QskAspect::clearPrimitive() noexcept
 {
-    m_bits.primitive = 0;
+    m_bits.primitive = NoPrimitive;
 }
 
 inline constexpr QskAspect::Placement QskAspect::placement() const noexcept
@@ -493,37 +467,13 @@ inline constexpr QskAspect operator|(
 }
 
 inline constexpr QskAspect operator|(
-    QskAspect::Subcontrol subControl, QskAspect::FlagPrimitive primitive ) noexcept
+    QskAspect::Subcontrol subControl, QskAspect::Primitive primitive ) noexcept
 {
     return QskAspect( subControl ) | primitive;
 }
 
 inline constexpr QskAspect operator|(
-    QskAspect::FlagPrimitive primitive, QskAspect::Subcontrol subControl ) noexcept
-{
-    return subControl | primitive;
-}
-
-inline constexpr QskAspect operator|(
-    QskAspect::Subcontrol subControl, QskAspect::ColorPrimitive primitive ) noexcept
-{
-    return QskAspect( subControl ) | primitive;
-}
-
-inline constexpr QskAspect operator|(
-    QskAspect::ColorPrimitive primitive, QskAspect::Subcontrol subControl ) noexcept
-{
-    return subControl | primitive;
-}
-
-inline constexpr QskAspect operator|(
-    QskAspect::Subcontrol subControl, QskAspect::MetricPrimitive primitive ) noexcept
-{
-    return QskAspect( subControl ) | primitive;
-}
-
-inline constexpr QskAspect operator|(
-    QskAspect::MetricPrimitive primitive, QskAspect::Subcontrol subControl ) noexcept
+    QskAspect::Primitive primitive, QskAspect::Subcontrol subControl ) noexcept
 {
     return subControl | primitive;
 }
@@ -560,11 +510,7 @@ class QDebug;
 QSK_EXPORT QDebug operator<<( QDebug, QskAspect );
 QSK_EXPORT QDebug operator<<( QDebug, QskAspect::Type );
 QSK_EXPORT QDebug operator<<( QDebug, QskAspect::Subcontrol );
-
-QSK_EXPORT QDebug operator<<( QDebug, QskAspect::FlagPrimitive );
-QSK_EXPORT QDebug operator<<( QDebug, QskAspect::ColorPrimitive );
-QSK_EXPORT QDebug operator<<( QDebug, QskAspect::MetricPrimitive );
-
+QSK_EXPORT QDebug operator<<( QDebug, QskAspect::Primitive );
 QSK_EXPORT QDebug operator<<( QDebug, QskAspect::Placement );
 QSK_EXPORT QDebug operator<<( QDebug, QskAspect::State );
 
