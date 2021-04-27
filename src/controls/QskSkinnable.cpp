@@ -1077,6 +1077,7 @@ void QskSkinnable::setSkinState( QskAspect::State newState, bool animated )
     if ( control->window() && animated && isTransitionAccepted( QskAspect() ) )
     {
         const auto placement = effectivePlacement();
+        const auto primitiveCount = QskAspect::primitiveCount();
 
         const auto subControls = control->subControls();
         for ( const auto subControl : subControls )
@@ -1098,10 +1099,9 @@ void QskSkinnable::setSkinState( QskAspect::State newState, bool animated )
                         that differ between the states
                      */
 
-                    const auto primitiveCount = QskAspect::primitiveCount( type );
-
-                    for ( uint primitive = 0; primitive < primitiveCount; primitive++ )
+                    for ( uint i = 0; i < primitiveCount; i++ )
                     {
+                        const auto primitive = static_cast< QskAspect::Primitive >( i );
                         aspect.setPrimitive( type, primitive );
 
                         auto a1 = aspect | m_data->skinState;
