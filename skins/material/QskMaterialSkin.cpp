@@ -673,7 +673,6 @@ void Editor::setupSubWindow()
 
     // Panel
 
-    setFlagHint( Q::Panel | A::Decoration, true );
     setPadding( Q::Panel, 10 );
     setBoxShape( Q::Panel, 0 );
     setBoxBorderMetrics( Q::Panel, 2 );
@@ -685,15 +684,18 @@ void Editor::setupSubWindow()
 
     setBoxBorderColors( Q::Panel, colors );
 
-    // TitleBar
-    setGradient( Q::TitleBar, m_pal.darker200 );
-    setGradient( Q::TitleBar | Q::Focused, m_pal.accentColor );
+    // TitleBarPanel
+    setFlagHint( Q::TitleBarPanel | QskAspect::Style,
+        Q::TitleBar | Q::Title | Q::Symbol );
+
+    setGradient( Q::TitleBarPanel, m_pal.darker200 );
+    setGradient( Q::TitleBarPanel | Q::Focused, m_pal.accentColor );
 
     // TitleBarText
     setFontRole( Q::TitleBarText, QskSkin::SmallFont );
     setAlignment( Q::TitleBarText, Qt::AlignLeft | Qt::AlignVCenter );
 
-    for ( auto subControl : { Q::Panel, Q::TitleBar, Q::TitleBarText } )
+    for ( auto subControl : { Q::Panel, Q::TitleBarPanel, Q::TitleBarText } )
         setAnimation( subControl | A::Color, qskDuration );
 
 }
