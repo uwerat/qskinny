@@ -16,8 +16,8 @@ class QSK_EXPORT QskSubWindow : public QskPopup
 {
     Q_OBJECT
 
-    Q_PROPERTY( bool decorated READ isDecorated
-        WRITE setDecorated NOTIFY decoratedChanged )
+    Q_PROPERTY( Decorations decorations READ decorations
+        WRITE setDecorations RESET resetDecorations NOTIFY decorationsChanged )
 
     Q_PROPERTY( QString windowTitle READ windowTitle
         WRITE setWindowTitle NOTIFY windowTitleChanged )
@@ -31,29 +31,39 @@ class QSK_EXPORT QskSubWindow : public QskPopup
     Q_PROPERTY( QskGraphic windowIcon READ windowIcon
         WRITE setWindowIcon NOTIFY windowIconChanged FINAL )
 
-    Q_PROPERTY( WindowButtons windowButtons READ windowButtons
-        WRITE setWindowButtons NOTIFY windowButtonsChanged )
-
     using Inherited = QskPopup;
 
   public:
-    enum WindowButton
+    enum Decoration
     {
-        MinimizeButton = 0x1,
-        MaximizeButton = 0x2,
-        CloseButton = 0x4
+        NoDecoration   = 0,
+
+        TitleBar       = 1 << 0,
+
+        Title          = 1 << 1,
+        Symbol         = 1 << 2
+
+#if 0
+        MinimizeButton = 1 << 3,
+        MaximizeButton = 1 << 4,
+        CloseButton    = 1 << 5
+#endif
     };
 
-    Q_ENUM( WindowButton )
-    Q_DECLARE_FLAGS( WindowButtons, WindowButton )
+    Q_ENUM( Decoration )
+    Q_DECLARE_FLAGS( Decorations, Decoration )
 
-    QSK_SUBCONTROLS( Panel, TitleBar, TitleBarSymbol, TitleBarText )
+    QSK_SUBCONTROLS( Panel, TitleBarPanel, TitleBarSymbol, TitleBarText )
 
     QskSubWindow( QQuickItem* parent = nullptr );
     ~QskSubWindow() override;
 
-    void setDecorated( bool );
-    bool isDecorated() const;
+    void setDecorations( Decorations );
+    void resetDecorations();
+    Decorations decorations() const;
+
+    void setDecoration( Decoration, bool on = true );
+    bool hasDecoration( Decoration ) const;
 
     void setWindowTitleTextOptions( const QskTextOptions& );
     QskTextOptions windowTitleTextOptions() const;
@@ -70,23 +80,16 @@ class QSK_EXPORT QskSubWindow : public QskPopup
 
     bool hasWindowIcon() const;
 
-    void setWindowButtons( WindowButtons );
-    WindowButtons windowButtons() const;
-
-    void setWindowButton( WindowButton, bool on = true );
-    bool testWindowButton( WindowButton ) const;
-
     QRectF titleBarRect() const;
 
     QRectF layoutRectForSize( const QSizeF& ) const override;
 
   Q_SIGNALS:
-    void decoratedChanged();
+    void decorationsChanged( Decorations );
     void windowTitleChanged();
     void windowTitleTextOptionsChanged();
     void windowIconChanged();
     void windowIconSourceChanged();
-    void windowButtonsChanged();
 
   protected:
     bool event( QEvent* ) override;

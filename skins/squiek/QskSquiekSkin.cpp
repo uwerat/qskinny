@@ -816,7 +816,6 @@ void Editor::setupSubWindow()
 
     // Panel
 
-    setFlagHint( Q::Panel | A::Decoration, true );
     setPadding( Q::Panel, 10 );
     setBoxBorderMetrics( Q::Panel, 2 );
     setBoxShape( Q::Panel, radius, radius, 0, 0, Qt::AbsoluteSize );
@@ -828,13 +827,16 @@ void Editor::setupSubWindow()
     setBoxBorderColors( Q::Panel, borderColors );
     setGradient( Q::Panel, m_pal.lighter135 );
 
-    // TitleBar
+    // TitleBarPanel
 
-    setGradient( Q::TitleBar | Q::Focused, m_pal.highlighted );
-    setGradient( Q::TitleBar, m_pal.contrasted );
-    setSpacing( Q::TitleBar, 5 );
-    setStrutSize( Q::TitleBar, 0, 20 );
-    setBoxShape( Q::TitleBar, radius, radius, 0, 0, Qt::AbsoluteSize );
+    setFlagHint( Q::TitleBarPanel | QskAspect::Style,
+        Q::TitleBar | Q::Title | Q::Symbol );
+
+    setGradient( Q::TitleBarPanel | Q::Focused, m_pal.highlighted );
+    setGradient( Q::TitleBarPanel, m_pal.contrasted );
+    setSpacing( Q::TitleBarPanel, 5 );
+    setStrutSize( Q::TitleBarPanel, 0, 20 );
+    setBoxShape( Q::TitleBarPanel, radius, radius, 0, 0, Qt::AbsoluteSize );
 
     // TitleBarText
     setFontRole( Q::TitleBarText, QskSkin::SmallFont );
@@ -843,7 +845,7 @@ void Editor::setupSubWindow()
 
     setAlignment( Q::TitleBarText, Qt::AlignLeft | Qt::AlignVCenter );
 
-    for ( auto subControl : { Q::Panel, Q::TitleBar, Q::TitleBarText } )
+    for ( auto subControl : { Q::Panel, Q::TitleBarPanel, Q::TitleBarText } )
         setAnimation( subControl | A::Color, qskDuration );
 }
 

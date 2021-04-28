@@ -33,9 +33,7 @@ class QSK_EXPORT QskAspect
         NoPrimitive = 0,
 
         Alignment,
-        Direction,
         Style,
-        Decoration,
         GraphicRole,
         FontRole,
 

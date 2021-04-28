@@ -14,9 +14,17 @@
 #include <qurl.h>
 
 QSK_SUBCONTROL( QskSubWindow, Panel )
-QSK_SUBCONTROL( QskSubWindow, TitleBar )
+QSK_SUBCONTROL( QskSubWindow, TitleBarPanel )
 QSK_SUBCONTROL( QskSubWindow, TitleBarSymbol )
 QSK_SUBCONTROL( QskSubWindow, TitleBarText )
+
+namespace
+{
+    inline QskAspect aspectDecoration()
+    {
+        return QskSubWindow::TitleBarPanel | QskAspect::Flag | QskAspect::Style;
+    }
+}
 
 class QskSubWindow::PrivateData
 {
@@ -24,15 +32,8 @@ class QskSubWindow::PrivateData
     PrivateData()
         : isWindowIconSourceDirty( false )
     {
-        // should be available from the platform somehow. TODO ...
-
-        windowButtons = QskSubWindow::WindowButtons( QskSubWindow::MinimizeButton |
-            QskSubWindow::MaximizeButton | QskSubWindow::CloseButton );
-
         windowTitleTextOptions.setElideMode( Qt::ElideRight );
     }
-
-    QskSubWindow::WindowButtons windowButtons;
 
     QString windowTitle;
     QskTextOptions windowTitleTextOptions;
@@ -57,24 +58,38 @@ QskSubWindow::~QskSubWindow()
 {
 }
 
-void QskSubWindow::setDecorated( bool on )
+void QskSubWindow::setDecorations( Decorations decorations )
 {
-    if ( on == isDecorated() )
-        return;
-
-    setFlagHint( Panel | QskAspect::Decoration, on );
-
-    resetImplicitSize(); // in case some parent wants to layout
-
-    polish();
-    update();
-
-    Q_EMIT decoratedChanged();
+    if ( setFlagHint( aspectDecoration(), decorations ) )
+        Q_EMIT decorationsChanged( decorations );
 }
 
-bool QskSubWindow::isDecorated() const
+QskSubWindow::Decorations QskSubWindow::decorations() const
 {
-    return flagHint< bool >( Panel | QskAspect::Decoration, true );
+    return flagHint< QskSubWindow::Decorations >( aspectDecoration() );
+}
+
+void QskSubWindow::setDecoration( Decoration decoration, bool on )
+{
+    auto d = decorations();
+
+    if ( on )
+        d |= decoration;
+    else
+        d &= ~decoration;
+
+    setDecorations( d );
+}
+
+void QskSubWindow::resetDecorations()
+{
+    if ( resetFlagHint( aspectDecoration() ) )
+        Q_EMIT decorationsChanged( decorations() );
+}
+
+bool QskSubWindow::hasDecoration( Decoration decoration ) const
+{
+    return decorations() & decoration;
 }
 
 void QskSubWindow::setWindowTitle( const QString& title )
@@ -166,44 +181,9 @@ bool QskSubWindow::hasWindowIcon() const
     return !( windowIcon().isEmpty() && windowIconSource().isEmpty() );
 }
 
-
-void QskSubWindow::setWindowButtons( WindowButtons buttons )
-{
-    if ( buttons != m_data->windowButtons )
-    {
-        m_data->windowButtons = buttons;
-        update();
-
-        Q_EMIT windowButtonsChanged();
-    }
-}
-
-QskSubWindow::WindowButtons QskSubWindow::windowButtons() const
-{
-    return m_data->windowButtons;
-}
-
-void QskSubWindow::setWindowButton( WindowButton button, bool on )
-{
-    if ( on == bool( button & m_data->windowButtons ) )
-        return;
-
-    if ( on )
-        m_data->windowButtons |= button;
-    else
-        m_data->windowButtons &= ~button;
-
-    Q_EMIT windowButtonsChanged();
-}
-
-bool QskSubWindow::testWindowButton( WindowButton button ) const
-{
-    return m_data->windowButtons & button;
-}
-
 QRectF QskSubWindow::titleBarRect() const
 {
-    return subControlRect( TitleBar );
+    return subControlRect( TitleBarPanel );
 }
 
 bool QskSubWindow::event( QEvent* event )
@@ -234,7 +214,7 @@ QRectF QskSubWindow::layoutRectForSize( const QSizeF& size ) const
 {
     QRectF rect;
     rect.setSize( size );
-    rect.setTop( subControlRect( size, TitleBar ).bottom() );
+    rect.setTop( subControlRect( size, TitleBarPanel ).bottom() );
 
     return innerBox( Panel, rect );
 }

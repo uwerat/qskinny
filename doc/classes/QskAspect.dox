@@ -4,10 +4,10 @@
 
     \brief Lookup key for a QskSkinHintTable
 
-    Used by the \ref qskskinning "themeing system" to determine how a given aspect
-    of a control is drawn. While an aspect is simply a 64-bit unsigned integer, it
-    is composed of smaller enum bitfields which can be ORed together to
-    describe a more specific part of the user interface.
+    QskAspect is used by the \ref qskskinning "themeing system" to determine how
+    a given aspect of a control is drawn. While an aspect is simply a 64-bit
+	unsigned integer, it is composed of smaller enum bitfields which can be ORed
+	together to describe a more specific part of the user interface.
 
     For example, the border colors of a QskPushButton while pressed is
     defined by combining the State (QskAbstractButton::Pressed) with the
@@ -38,14 +38,12 @@
     \var QskAspect::Type QskAspect::Flag
 
     Flags are all sort of attributes that are no metrics or colors - f.e
-    an alignment. A reasonable subset of possible flags is offered as
-    QskAspect::FlagPrimitive
+    an alignment.
 
     \var QskAspect::Type QskAspect::Metric
 
     Metrics are related to geometries in most cases corresponding to pixel distances.
-    Examples are the margin/padding. A reasonable subset of possible metrics
-    is offered as QskAspect::MetricPrimitive.
+    Examples are margin/padding(s).
 
     \var QskAspect::Type QskAspect::Color
 
@@ -53,47 +51,79 @@
  */
 
 /*!
-    \enum QskAspect::FlagPrimitive
+    \enum QskAspect::Primitive
 
-    \var QskAspect::FlagPrimitive QskAspect::NoFlagPrimitive
-    \var QskAspect::FlagPrimitive QskAspect::Alignment
-    \var QskAspect::FlagPrimitive QskAspect::Direction
-    \var QskAspect::FlagPrimitive QskAspect::Style
-    \var QskAspect::FlagPrimitive QskAspect::Decoration
-    \var QskAspect::FlagPrimitive QskAspect::GraphicRole
-    \var QskAspect::FlagPrimitive QskAspect::FontRole
+    \sa setPrimitive(), clearPrimitive(), primitive(),
+        reservePrimitives(), primitiveCount()
 
-    \sa setPrimitive(), clearPrimitive(), primitive()
+    \var QskAspect::Primitive QskAspect::NoPrimitive
+		No specific primitive
+
+    \var QskAspect::Primitive QskAspect::Alignment
+		Usually used in combination with QskAspect::Flag
+
+	\sa QskSkinnable::alignmentHint(), QskSkinHintTableEditor::alignment()
+
+    \var QskAspect::Primitive QskAspect::Style
+        Usually used in combination with QskAspect::Flag
+
+    \var QskAspect::Primitive QskAspect::GraphicRole
+
+	\sa QskSkinnable::graphicRoleHint(), QskSkinHintTableEditor::graphicRole()
+
+    \var QskAspect::Primitive QskAspect::FontRole
+
+	\sa QskSkinnable::fontRoleHint(), QskSkinHintTableEditor::fontRole()
+
+    \var QskAspect::Primitive QskAspect::TextColor
+		bla
+
+    \var QskAspect::Primitive QskAspect::StyleColor
+		bla
+
+    \var QskAspect::Primitive QskAspect::LinkColor
+		bla
+
+    \var QskAspect::Primitive QskAspect::StrutSize
+		bla
+
+	\sa QskSkinnable::strutSizeHint(), QskSkinHintTableEditor::strutSize()
+
+    \var QskAspect::Primitive QskAspect::Size
+		bla
+
+    \var QskAspect::Primitive QskAspect::Position
+		bla
+
+    \var QskAspect::Primitive QskAspect::Margin
+		bla
+
+	\sa QskSkinnable::marginHint(), QskSkinHintTableEditor::margin()
+
+    \var QskAspect::Primitive QskAspect::Padding
+		bla
+
+	\sa QskSkinnable::paddingHint(), QskSkinHintTableEditor::padding()
+
+    \var QskAspect::Primitive QskAspect::Spacing
+		bla
+
+	\sa QskSkinnable::spacingHint(), QskSkinHintTableEditor::spacing()
+
+    \var QskAspect::Primitive QskAspect::Shadow
+		bla
+
+    \var QskAspect::Primitive QskAspect::Shape
+		bla
+
+	\sa QskSkinnable::boxShapeHint(), QskSkinHintTableEditor::boxShape()
+
+    \var QskAspect::Primitive QskAspect::Border
+		bla
+	\sa QskSkinnable::boxBorderMetricsHint(), QskSkinnable::boxBorderColorsHint()
+	    QskSkinHintTableEditor::boxBorderMetrics(), QskSkinHintTableEditor::boxBorderColors()
 */
 
-/*!
-    \enum QskAspect::MetricPrimitive
-
-    \var QskAspect::MetricPrimitive QskAspect::NoMetricPrimitive
-    \var QskAspect::MetricPrimitive QskAspect::StrutSize
-    \var QskAspect::MetricPrimitive QskAspect::Size
-    \var QskAspect::MetricPrimitive QskAspect::Position
-    \var QskAspect::MetricPrimitive QskAspect::Margin
-    \var QskAspect::MetricPrimitive QskAspect::Padding
-    \var QskAspect::MetricPrimitive QskAspect::Shadow
-    \var QskAspect::MetricPrimitive QskAspect::Spacing
-    \var QskAspect::MetricPrimitive QskAspect::Shape
-    \var QskAspect::MetricPrimitive QskAspect::Border
-
-    \sa setPrimitive(), clearPrimitive(), primitive()
-*/
-
-/*!
-    \enum QskAspect::ColorPrimitive
-
-    \var QskAspect::ColorPrimitive QskAspect::NoColorPrimitive
-    \var QskAspect::ColorPrimitive QskAspect::TextColor
-    \var QskAspect::ColorPrimitive QskAspect::StyleColor
-    \var QskAspect::ColorPrimitive QskAspect::LinkColor
-
-    \sa setPrimitive(), clearPrimitive(), primitive()
-*/
-    
 /*! 
     \enum QskAspect::Placement
 
@@ -275,19 +305,7 @@
 */
 
 /*!
-    \fn QskAspect::operator|( FlagPrimitive ) const
-
-    Sets the primitive bits
-*/
-
-/*!
-    \fn QskAspect::operator|( MetricPrimitive ) const
-
-    Sets the primitive bits
-*/
-
-/*!
-    \fn QskAspect::operator|( ColorPrimitive ) const
+    \fn QskAspect::operator|( Primitive ) const
 
     Sets the primitive bits
 */

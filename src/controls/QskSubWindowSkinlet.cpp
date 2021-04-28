@@ -30,7 +30,7 @@ QRectF QskSubWindowSkinlet::subControlRect( const QskSkinnable* skinnable,
     {
         return contentsRect;
     }
-    else if ( subControl == QskSubWindow::TitleBar )
+    else if ( subControl == QskSubWindow::TitleBarPanel )
     {
         return titleBarRect( subWindow, contentsRect );
     }
@@ -49,37 +49,45 @@ QRectF QskSubWindowSkinlet::subControlRect( const QskSkinnable* skinnable,
 QSGNode* QskSubWindowSkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
+    using Q = QskSubWindow;
+
     const auto subWindow = static_cast< const QskSubWindow* >( skinnable );
 
     switch ( nodeRole )
     {
         case PanelRole:
         {
-            return updateBoxNode( subWindow, node, QskSubWindow::Panel );
+            return updateBoxNode( subWindow, node, Q::Panel );
         }
         case TitleBarRole:
         {
-            if ( subWindow->isDecorated() )
-                return updateBoxNode( subWindow, node, QskSubWindow::TitleBar );
+            const auto decorations = subWindow->decorations();
+
+            if ( decorations & Q::TitleBar )
+                return updateBoxNode( subWindow, node, Q::TitleBarPanel );
 
             return nullptr;
         }
         case SymbolRole:
         {
-            if ( subWindow->isDecorated() )
+            const auto decorations = subWindow->decorations();
+
+            if ( ( decorations & Q::TitleBar ) && ( decorations & Q::Symbol ) )
             {
                 return updateGraphicNode( subWindow, node,
-                    subWindow->windowIcon(), QskSubWindow::TitleBarSymbol );
+                    subWindow->windowIcon(), Q::TitleBarSymbol );
             }
 
             return nullptr;
         }
         case TitleRole:
         {
-            if ( subWindow->isDecorated() )
+            const auto decorations = subWindow->decorations();
+
+            if ( ( decorations & Q::TitleBar ) && ( decorations & Q::Title ) )
             {
                 return updateTextNode( subWindow, node, subWindow->windowTitle(),
-                    subWindow->windowTitleTextOptions(), QskSubWindow::TitleBarText );
+                    subWindow->windowTitleTextOptions(), Q::TitleBarText );
             }
 
             return nullptr;
@@ -104,16 +112,23 @@ qreal QskSubWindowSkinlet::titleBarHeight( const QskSubWindow* subWindow ) const
 {
     using Q = QskSubWindow;
 
-    if ( !subWindow->isDecorated() )
+    const auto decorations = subWindow->decorations();
+    if ( !( decorations & Q::TitleBar ) )
         return 0;
 
-    const auto margins = subWindow->paddingHint( Q::TitleBar );
-    const QFontMetricsF fm( subWindow->effectiveFont( Q::TitleBarText ) );
+    auto height = subWindow->strutSizeHint( Q::TitleBarPanel ).height();
 
-    const qreal height = fm.height() + margins.top() + margins.bottom();
-    const auto strutSize = subWindow->strutSizeHint( Q::TitleBar );
+    if ( decorations & Q::Title )
+    {
+        const auto padding = subWindow->paddingHint( Q::TitleBarPanel );
+        const QFontMetricsF fm( subWindow->effectiveFont( Q::TitleBarText ) );
 
-    return qMax( height, strutSize.height() );
+        const qreal h = fm.height() + padding.top() + padding.bottom();
+        if ( h > height )
+            height = h;
+    }
+
+    return height;
 }
 
 QRectF QskSubWindowSkinlet::symbolRect(
@@ -121,13 +136,16 @@ QRectF QskSubWindowSkinlet::symbolRect(
 {
     using Q = QskSubWindow;
 
-    auto rect = subWindow->subControlContentsRect( contentsRect, Q::TitleBar );
+    if ( !subWindow->hasDecoration( Q::Symbol ) )
+        return QRectF();
 
-    int w = 0;
+    auto rect = subWindow->subControlContentsRect( contentsRect, Q::TitleBarPanel );
 
     if ( !rect.isEmpty() )
     {
         const auto symbol = subWindow->windowIcon();
+
+        int w = 0;
         if ( !symbol.isNull() )
             w = symbol.widthForHeight( rect.height() );
 
@@ -142,14 +160,19 @@ QRectF QskSubWindowSkinlet::titleRect(
 {
     using Q = QskSubWindow;
 
-    auto rect = subWindow->subControlContentsRect( contentsRect, Q::TitleBar );
+    if ( !subWindow->hasDecoration( Q::Title ) )
+        return QRectF();
+
+    auto rect = subWindow->subControlContentsRect( contentsRect, Q::TitleBarPanel );
 
     if ( !rect.isEmpty() )
     {
-        const auto spacing = subWindow->spacingHint( Q::TitleBar );
         const auto symbolRect = subControlRect( subWindow, rect, Q::TitleBarSymbol );
-
-        rect.setX( rect.x() + symbolRect.right() + spacing );
+        if ( !symbolRect.isEmpty() )
+        {
+            const auto spacing = subWindow->spacingHint( Q::TitleBarPanel );
+            rect.setX( symbolRect.right() + spacing );
+        }
 
 #if 0
         const QFontMetricsF fm( subWindow->effectiveFont( Q::TitleBarText ) );
