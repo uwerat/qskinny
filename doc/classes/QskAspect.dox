@@ -6,13 +6,13 @@
 
     QskAspect is used by the \ref qskskinning "themeing system" to determine how
     a given aspect of a control is drawn. While an aspect is simply a 64-bit
-	unsigned integer, it is composed of smaller enum bitfields which can be ORed
-	together to describe a more specific part of the user interface.
+    unsigned integer, it is composed of smaller enum bitfields which can be ORed
+    together to describe a more specific part of the user interface.
 
     For example, the border colors of a QskPushButton while pressed is
     defined by combining the State (QskAbstractButton::Pressed) with the
-    Subcontrol (QskPushButton::Panel), the Primitive (Border),
-    and the Type (Color) as so:
+    Subcontrol (QskPushButton::Panel), the Primitive (QskAspect::Border),
+    and the Type (QskAspect::Color) as so:
 
         auto aspect = QskPushButton::Panel | QskAbstractButton::Pressed | QskAspect::Color | QskAspect::Border
 
@@ -53,79 +53,119 @@
 /*!
     \enum QskAspect::Primitive
 
+    \brief Represents a specific element or attribute 
+
+    This enum defines an initial list of primitive elements. A primitive is a common
+    element, such as a border, font role etc.
+
+    The number of primitives can be extended by additional application
+    specific elements by using reservePrimitives()
+
     \sa setPrimitive(), clearPrimitive(), primitive(),
         reservePrimitives(), primitiveCount()
 
     \var QskAspect::Primitive QskAspect::NoPrimitive
-		No specific primitive
+        No specific primitive
 
     \var QskAspect::Primitive QskAspect::Alignment
-		Usually used in combination with QskAspect::Flag
+        Usually used in combination with QskAspect::Flag
 
-	\sa QskSkinnable::alignmentHint(), QskSkinHintTableEditor::alignment()
+    \sa QskSkinnable::alignmentHint(), QskSkinHintTableEditor::alignment()
 
     \var QskAspect::Primitive QskAspect::Style
         Usually used in combination with QskAspect::Flag
 
     \var QskAspect::Primitive QskAspect::GraphicRole
 
-	\sa QskSkinnable::graphicRoleHint(), QskSkinHintTableEditor::graphicRole()
+        A graphic role is an id that can be used to retrieve a specific
+        color filter for a graphic.
+
+    \sa QskSkinnable::graphicRoleHint(), QskSkinHintTableEditor::graphicRole(),
+        QskSkin::graphicFilter(), QskSkinnable::effectiveGraphicFilter()
 
     \var QskAspect::Primitive QskAspect::FontRole
 
-	\sa QskSkinnable::fontRoleHint(), QskSkinHintTableEditor::fontRole()
+        A font role is an id that can be used to retrieve a specific
+        font from the font table.
+
+    \sa QskSkinnable::fontRoleHint(), QskSkinHintTableEditor::fontRole()
+        QskSkin::font(), QskSkinnable::effectiveFont()
 
     \var QskAspect::Primitive QskAspect::TextColor
-		bla
+        A color for regular text
+
+    \sa QskTextColors(), QskAspect::StyleColor, QskAspect::LinkColor
 
     \var QskAspect::Primitive QskAspect::StyleColor
-		bla
+        This color is used as the outline color for outlined text,
+        and as the shadow color for raised or sunken text.
+
+    \sa QskAspect::TextColor, QskAspect::LinkColor
 
     \var QskAspect::Primitive QskAspect::LinkColor
-		bla
+        The color of links in texts.
+
+    \sa QskAspect::TextColor, QskAspect::StyleColor
 
     \var QskAspect::Primitive QskAspect::StrutSize
-		bla
+        A sensible metric - usually a QSizeF. 
 
-	\sa QskSkinnable::strutSizeHint(), QskSkinHintTableEditor::strutSize()
+        This size is usually used for layout calculations. It might be
+        interpreted as a minimum, maximum or fixed size.
+
+    \sa QskSkinnable::strutSizeHint(), QskSkinHintTableEditor::strutSize()
 
     \var QskAspect::Primitive QskAspect::Size
-		bla
+        A placeholder for defining a metric.
 
     \var QskAspect::Primitive QskAspect::Position
-		bla
+
+        A metric that is often used for animating controls ( slide in/out )
+        or handles.
 
     \var QskAspect::Primitive QskAspect::Margin
-		bla
 
-	\sa QskSkinnable::marginHint(), QskSkinHintTableEditor::margin()
+        Margins like being described in the CSS Box Model.
+
+    \sa QskSkinnable::marginHint(), QskSkinHintTableEditor::margin()
 
     \var QskAspect::Primitive QskAspect::Padding
-		bla
 
-	\sa QskSkinnable::paddingHint(), QskSkinHintTableEditor::padding()
+        Margins like being described in the CSS Box Model.
+
+    \sa QskSkinnable::paddingHint(), QskSkinHintTableEditor::padding()
 
     \var QskAspect::Primitive QskAspect::Spacing
-		bla
 
-	\sa QskSkinnable::spacingHint(), QskSkinHintTableEditor::spacing()
+        A metric, that is used by layout code for the distance between
+        elements.
+
+    \sa QskSkinnable::spacingHint(), QskSkinHintTableEditor::spacing()
 
     \var QskAspect::Primitive QskAspect::Shadow
-		bla
+
+        A primitive to define colors and metrics for shadows.
+
+    \sa QskShadowMetrics()
+
+        A primitive to define the shape of an element.
 
     \var QskAspect::Primitive QskAspect::Shape
-		bla
 
-	\sa QskSkinnable::boxShapeHint(), QskSkinHintTableEditor::boxShape()
+    \sa QskBoxShapeMetrics, QskSkinnable::boxShapeHint(), QskSkinHintTableEditor::boxShape()
 
     \var QskAspect::Primitive QskAspect::Border
-		bla
-	\sa QskSkinnable::boxBorderMetricsHint(), QskSkinnable::boxBorderColorsHint()
-	    QskSkinHintTableEditor::boxBorderMetrics(), QskSkinHintTableEditor::boxBorderColors()
+
+        A primitive to define colors and metrics for borders.
+
+    \sa QskSkinnable::boxBorderMetricsHint(), QskSkinnable::boxBorderColorsHint()
+        QskSkinHintTableEditor::boxBorderMetrics(), QskSkinHintTableEditor::boxBorderColors()
 */
 
 /*! 
     \enum QskAspect::Placement
+
+    \brief Represents an orientation or relative position
 
     The placement bits can be used to have different definitions for
     a skinnable depending on its position or orientation. F.e a tab bar
@@ -161,7 +201,7 @@
 /*! 
     \enum QskAspect::Subcontrol
 
-    For use within the rendering or layouting of a specific QskSkinnable.
+    \brief For use within the rendering or lay-outing of a specific QskSkinnable.
 
     While the Default value applies to any control (and can be used as a fallback),
     specifying a Subcontrol limits the aspect's scope to that sub-component
@@ -191,7 +231,7 @@
     until it finds a match, what gives lower bits a higher priority. This
     is a rather obscure and error prone approach and needs to be replaced
     by something more user friendly. But until this has been done the state
-    bits are devided into 3 sections:
+    bits are divided into 3 sections:
 
         - [ QskAspect::FirstSystemState, QskAspect::FirstUserState [
             High priority state bits
@@ -479,7 +519,7 @@
 /*!
     \fn QskAspect::primitive
 
-    \return Primitve bits
+    \return Primitive bits
     \sa setPrimitive(), clearPrimitive()
 */
 
@@ -511,7 +551,7 @@
 /*!
     \fn QskAspect::nextSubcontrol
 
-    \return Unique ( applicatio wide ) identifier
+    \return Unique ( application wide ) identifier
 
     This method is called from the QSK_SUBCONTROL macro and is usually
     never called manually in application code
@@ -520,7 +560,7 @@
 /*!
     \fn QskAspect::subControlName
 
-    \return Printable string for a specfic subControl
+    \return Printable string for a specific subControl
 */
 
 /*!
