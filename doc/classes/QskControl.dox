@@ -30,7 +30,7 @@
         A state bit that is set, when the item is the active focus item
 
     \sa   focusPolicy
-    \saqt QQuickItem::acceptHoverEvents(), QQuickItem::focusInEvent()
+    \saqt QQuickItem::acceptHoverEvents(), QQuickItem::focusInEvent(),
           QQuickItem::focusOutEvent()
 */
 
