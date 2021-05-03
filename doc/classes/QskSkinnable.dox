@@ -274,7 +274,7 @@
 
 /*! \fn QskSkinnable::subControlContentsRect
 
-    \brief Calculate the inner rectangle subControl
+    \brief Calculate the inner rectangle for subControl
 
     The inner rectangle a subcontrol is its geometry with paddings, indentations
     being subtracted. F.e. the inner rectangle of QskPushButton::Panel is the
