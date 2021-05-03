@@ -4,6 +4,15 @@
 
     \brief Base class of all controls
 
+    QskControl combines the themeability implemented in QskSkinnable with
+    what is needed to support a layout system, that is on par with what
+    is known from Qt/Widgets.
+
+    \todo Explain: QskQuickItem::geometry(), QskQuickItem::rect(),
+                   QQuickItem::boundingRect(), layoutRect(), contentsRect(),
+                   subControlRect(), focusIndicatorRect(), QQuickItem::clipRect(),
+                   QQuickItem::contains() 
+
     \states QskControl::Disabled, QskControl::Hovered, QskControl::Focused
 */
 
@@ -155,11 +164,15 @@
 /*!
     \fn QskControl::QskControl
 
+    Initializes the focusPolicy() to Qt::NoFocus and disables
+    processing of wheel events. The default sizePolicy is
+    QskSizePolicy::Preferred in vertical and horizontal direction.
 */
 
 /*!
     \fn QskControl::~QskControl
 
+    Destructor
 */
 
 /*!
@@ -252,52 +265,120 @@
 /*!
     \fn QskControl::contentsRect
 
-    \sa margins(), setMargins(), 
+    Returns the area inside the controls's margins.
+
+    contentsRect() is a rectangle being used for laying out scene graph nodes,
+    while layoutRect() is used for child items.
+
+    \sa margins(), setMargins(), layoutRect()
 */
 
 /*!
     \fn QskControl::layoutRect
 
+    Returns the area for laying out child items
+
+    layoutRect() is a rectangle being used for laying out child items,
+    while contentsRect() is used for scene graph nodes. 
+
+    F.e QskBox::layoutRect() returns an area that fits inside the ( maybe rounded )
+    borders, while the borders itself are rendered into the contentsRect().
+
+    The implementation relies on layoutRectForSize()
+
+    \sa layoutRectForSize(), contentsRect()
 */
 
 /*!
     \fn QskControl::layoutRectForSize
 
+    Returns the geometry where to lay out child items for a given size.
+
+    layoutRectForSize() is intended to be overloaded, when layoutRect()
+    is supposed differ from contentsRect()
+
+    \param size Size Bounding size for the control
+    \return Area, where to lay out the child items
 */
 
 /*!
     \fn QskControl::gestureRect
 
+    Returns the area where to accept gestures.
+    The default implementation returns QskQuickItem::rect().
+
+    \sa gestureFilter(), gestureEvent()
 */
 
 /*!
     \fn QskControl::focusIndicatorRect
 
+    Returns the rectangle where to draw the focus indicator
+
+    For controls, that implement some sort of internal focus chain
+    ( list boxes, sliders with more handles ... ) the rectangle might
+    change according to the state of the control.
+
+    The default implementation return contentsRect()
+
+    \sa QskFocusIndicator, focusIndicatorClipRect(), focusIndicatorRectChanged()
 */
 
 /*!
     \fn QskControl::focusIndicatorClipRect
 
+    This is a specific rectangle, that can be returned to clip the focus
+    indicator being displayed for a child item.
+
+    The default implementation return QQuickItem::contentsRect()
 */
 
 /*!
     \fn QskControl::subControlRect( QskAspect::Subcontrol ) const
 
+    Calculates the rectangle for a subcontrol from contentsRect().
+
+    \param subControl Subcontrol
+    \return Bounding rectangle for the subControl
+
+    \sa QskSkinnable::subControlRect
 */
 
 /*!
     \fn QskControl::subControlRect( const QSizeF&, QskAspect::Subcontrol ) const
 
+    Calculates the rectangle for a subcontrol inside a rectangle at the position
+    0, 0 for the given size
+
+    \param subControl Subcontrol
+    \param size Size for the control
+    \return Bounding rectangle for the subControl
+
+    \sa QskSkinnable::subControlRect
 */
 
 /*!
     \fn QskControl::subControlContentsRect( QskAspect::Subcontrol ) const
 
+    Calculate the inner rectangle for subControl calculated from contentsRect.
+
+    \param subControl Subcontrol
+    \return Inner rectangle of the subControl
+
+    \sa QskSkinnable::subControlContentsRect
 */
 
 /*!
     \fn QskControl::subControlContentsRect( const QSizeF&, QskAspect::Subcontrol ) const
 
+    Calculate the inner rectangle for subControl for a rectangle at the position
+    0, 0 for the given size
+
+    \param subControl Subcontrol
+    \param size Size for the control
+    \return Inner rectangle of the subControl
+
+    \sa QskSkinnable::subControlContentsRect
 */
 
 /*!
@@ -331,25 +412,33 @@
 /*!
     \fn QskControl::setWheelEnabled
 
+    Set or clear the wheelEnabled property
+    \sa wheelEnabled isWheelEnabled
 */
 
 /*!
     \fn QskControl::isWheelEnabled
 
+    \return Value of the wheelEnabled property
+    \sa wheelEnabled
 */
 
 /*!
     \fn QskControl::setFocusPolicy
 
+    Set the value for the focusPolicy property
+    \sa focusPolicy()
 */
 
 /*!
     \fn QskControl::focusPolicy() const
 
+    \return Value of the focusPolicy property
+    \sa focusPolicy(), setFocusPolicy()
 */
 
 /*!
-    \fn QskControl::setSizePolicy( QskSizePolicy );
+    \fn QskControl::setSizePolicy( QskSizePolicy )
 
 */
 
@@ -406,6 +495,14 @@
 /*!
     \fn QskControl::isVisibleToLayout
 
+    Return true, when the control is relevant for layout calculations
+
+    A control has an impact on the layout calutaions, when:
+
+    - isTransparentForPositioner() is false
+    - QskQuickItem::isVisibleToParent() is true, or RetainSizeWhenHidden is set
+
+    \sa isVisibleToParent(), RetainSizeWhenHidden
 */
 
 /*!
@@ -670,5 +767,4 @@
 
 /*!
     \fn virtual QSizeF QskControl::layoutSizeHint
-
 */
