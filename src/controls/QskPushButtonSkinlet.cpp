@@ -77,11 +77,24 @@ QRectF QskPushButtonSkinlet::textRect(
 
     if ( button->hasGraphic() )
     {
-        // in case of having text + graphic we put the text at the bottom
+        const auto alignment = button->alignmentHint( QskPushButton::Graphic, Qt::AlignTop );
 
-        qreal h = button->effectiveFontHeight( QskPushButton::Text );
-        if ( h < r.height() )
-            r.setTop( r.bottom() - h );
+        switch( alignment )
+        {
+            case Qt::AlignLeft:
+            {
+                const auto graphicsRect = subControlRect( button, contentsRect, QskPushButton::Graphic );
+                const auto spacing = button->metric( QskPushButton::Panel | QskAspect::Spacing );
+                r.setX( r.x() + graphicsRect.width() + spacing );
+                break;
+            }
+            default: // AlignTop
+            {
+                qreal h = QFontMetricsF( button->effectiveFont( QskPushButton::Text ) ).height();
+                if ( h < r.height() )
+                    r.setTop( r.bottom() - h );
+            }
+        }
     }
 
     return r;
@@ -94,7 +107,9 @@ QRectF QskPushButtonSkinlet::graphicRect(
 
     auto r = button->subControlContentsRect( contentsRect, QskPushButton::Panel );
 
-    if ( !button->text().isEmpty() )
+    const auto alignment = button->alignmentHint( QskPushButton::Graphic, Qt::AlignTop );
+
+    if ( !button->text().isEmpty() && alignment != Qt::AlignLeft )
     {
         const auto textRect = subControlRect( button, contentsRect, QskPushButton::Text );
         qreal h = textRect.height() + button->spacingHint( QskPushButton::Panel );
@@ -106,6 +121,7 @@ QRectF QskPushButtonSkinlet::graphicRect(
     }
 
     const auto maxSize = button->graphicSourceSize();
+
     if ( maxSize.width() >= 0 || maxSize.height() >= 0 )
     {
         // limiting the size by graphicSize
@@ -134,15 +150,31 @@ QRectF QskPushButtonSkinlet::graphicRect(
         const double scaleFactor =
             qMin( r.width() / sz.width(), r.height() / sz.height() );
 
-        // early aligning to avoid pointless operations, that finally will
-        // have no effect, when drawing to an integer based paint device
-
         const int w = qFloor( scaleFactor * sz.width() );
         const int h = qFloor( scaleFactor * sz.height() );
-        const int x = qFloor( r.center().x() - 0.5 * w );
-        const int y = qFloor( r.center().y() - 0.5 * h );
+        int x, y;
+
+        switch( alignment )
+        {
+            case Qt::AlignLeft:
+            {
+                x = r.left();
+                y = r.top();
+                break;
+            }
+            default: // AlignTop
+            {
+                // early aligning to avoid pointless operations, that finally will
+                // have no effect, when drawing to an integer based paint device
+
+                x = qFloor( r.center().x() - 0.5 * w );
+                y = qFloor( r.center().y() - 0.5 * h );
+            }
+        }
 
         r = QRectF( x, y, w, h );
+        const auto padding = button->paddingHint( QskPushButton::Graphic );
+        r = r.marginsRemoved( padding );
     }
 
     return r;
@@ -213,10 +245,24 @@ QSizeF QskPushButtonSkinlet::sizeHint( const QskSkinnable* skinnable,
             }
         }
 
-        const qreal padding = 2.0; // paddingHint( Graphic ) ???
+        const auto alignment = button->alignmentHint( QskPushButton::Graphic, Qt::AlignTop );
 
-        size.rheight() += 2 * padding + h;
-        size.rwidth() = qMax( size.width(), w );
+        const QMarginsF padding = button->paddingHint( QskPushButton::Graphic );
+
+        switch( alignment )
+        {
+            case Qt::AlignLeft:
+            {
+                size.rwidth() += padding.left() + w + padding.right();
+                size.rheight() = qMax( size.height(), h );
+                break;
+            }
+            default: // AlignTop
+            {
+                size.rheight() += padding.top() + h + padding.bottom();
+                size.rwidth() = qMax( size.width(), w );
+            }
+        }
     }
 
     size = size.expandedTo( button->strutSizeHint( QskPushButton::Panel ) );
