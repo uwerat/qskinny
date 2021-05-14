@@ -594,6 +594,9 @@ void Editor::setupPushButton()
 
     setColor( Q::Text, m_pal.themeForeground );
     setColor( Q::Text | Q::Disabled, m_pal.darker200 );
+
+    // Graphic
+    setPadding( Q::Graphic, 2 );
 }
 
 void Editor::setupDialogButton()

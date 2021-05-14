@@ -435,6 +435,9 @@ void Editor::setupPushButton()
     setGradient( Q::Panel | Q::Disabled, c1 );
 
 
+    setAlignment( Q::Graphic | A::Alignment, Qt::AlignLeft );
+    setPadding( Q::Graphic, 5 );
+
     setAnimation( Q::Panel | A::Color, qskDuration );
     setAnimation( Q::Panel | A::Metric, qskDuration );
     setAnimation( Q::Text | A::Color, qskDuration );
