@@ -428,6 +428,7 @@ void Editor::setupPushButton()
     using namespace QskRgb;
     using Q = QskPushButton;
 
+    setFlagHint( Q::Panel | QskAspect::Direction, Qsk::LeftToRight );
     setStrutSize( Q::Panel, qskDpiScaled( 75.0 ), qskDpiScaled( 23.0 ) );
     setSpacing( Q::Panel, 4 );
 
@@ -473,6 +474,8 @@ void Editor::setupPushButton()
             }
         }
     }
+
+    setPadding( Q::Graphic, 5 );
 
     setAnimation( Q::Panel | A::Color, qskDuration );
     setAnimation( Q::Panel | A::Metric, qskDuration );
