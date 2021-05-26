@@ -76,6 +76,7 @@ class QSK_EXPORT QskIntervalF
 
     constexpr bool isValid() const noexcept;
     constexpr bool isNull() const noexcept;
+    constexpr bool isEmpty() const noexcept;
 
     void invalidate() noexcept;
 
@@ -147,6 +148,11 @@ inline constexpr bool QskIntervalF::isValid() const noexcept
 inline constexpr bool QskIntervalF::isNull() const noexcept
 {
     return m_lowerBound == m_upperBound;
+}
+
+inline constexpr bool QskIntervalF::isEmpty() const noexcept
+{
+    return m_upperBound <= m_lowerBound;
 }
 
 inline void QskIntervalF::invalidate() noexcept
