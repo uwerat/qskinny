@@ -22,6 +22,8 @@ QSK_QT_PRIVATE_END
 #include <qpa/qplatformintegration.h>
 #include <qpa/qplatformscreen.h>
 
+#include <cmath>
+
 template< class Rect, class Value >
 static inline Rect qskAlignedRect( const Rect& outerRect,
     Value width, Value height, Qt::Alignment alignment )
@@ -192,4 +194,27 @@ QRect qskPlatformScreenGeometry( const QScreen* screen )
         return QRect();
 
     return screen->handle()->geometry();
+}
+
+/*
+    Due to the nature of floating point arithmetic
+    we might floor a value, that is already "aligned"
+    F.e static_cast< int >( 0.29 / 0.01 ) -> 28
+ */
+qreal qskFuzzyFloor( qreal value, qreal stepSize )
+{
+    qreal v = std::floor( value / stepSize ) * stepSize;
+    if ( qFuzzyCompare( value - v, stepSize ) )
+        v = value;
+
+    return v;
+}
+
+qreal qskFuzzyCeil( qreal value, qreal stepSize )
+{
+    qreal v = std::ceil( value / stepSize ) * stepSize;
+    if ( qFuzzyCompare( v - value, stepSize ) )
+        v = value;
+
+    return v;
 }
