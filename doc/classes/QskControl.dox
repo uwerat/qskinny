@@ -67,6 +67,13 @@
 /*!
     \property QLocale QskControl::locale
 
+    The locale of the control
+
+    As long as no special locale has been set, this is the locale
+    of the parentItem(). If none of the ancestors has a special locale
+    it is the locale of the window ( in case it is a QskWindow ).
+    Otherwise it is is the default locale. 
+
     \accessors locale(), setLocale(), resetLocale(), localeChanged()
 */
 
@@ -80,29 +87,67 @@
 
     \sa background()
     \saqt QWidget::autoFillBackground
-
 */
 
 /*!
     \property bool QskControl::autoLayoutChildren
 
+    QskControl offers basic layout functionalities that can be enabled be
+    setting the autoLayoutChildren flag. The default setting is \c false.
+
+    Auto layouting calculates and assignes the geometries of childItems()
+    - when polishing - inside of the rectangle specified by layoutRect().
+    Size and alignment of the child depends on the specific layout constraints of the child.
+
+    Child items, where the transparentForPositioners flag is set, are excluded.
+
     \accessors autoLayoutChildren(), setAutoLayoutChildren()
+
+    \sa layoutRect(), layoutHints(), layoutAlignmentHint(),
+        QskQuickItem::transparentForPositioners
+    \saqt QQuickItem::updatePolish()
+
+    \note Auto layouting is similar to what happens when putting several items
+          into the same cell of a \ref QskGridBox.
 */
 
 /*!
     \property Qt::FocusPolicy QskControl::focusPolicy
 
+    This property holds the way the control accepts keyboard focus
+
+    The default setting is \c Qt::NoFocus, accepting no keyboard inputs.
+
     \accessors focusPolicy(), setFocusPolicy(), focusPolicyChanged()
+
+    \saqt QQuickItem::activeFocusOnTab()
+
+    \note For some reason Qt/Quick only offers a crippled version of the focus
+          policy as QQuickItem::activeFocusOnTab(). The implementation in QskControl
+          is using this flag for the Qt::TabFocus bit, but also supports all
+          other bits that are known from Qt/Widgets.
 */
 
 /*!
     \property bool QskControl::wheelEnabled
 
+    This property indicates if a control is interested in receiving wheel events.
+
     \accessors isWheelEnabled(), setWheelEnabled(), wheelEnabledChanged()
+    \saqt QQuickItem::wheelEvent()
+
+    \note For some reason is QQuickItem only allows to indicate if it is
+          interested in receiving mouse/touch/hover events. The corresponding
+          functionality for wheel events might have been simply forgotten.
+
+    \note Even when wheelEnabled is set to false, QQuickWindow creates a QWheelEvent.
+          However QskSetup::eventFilter blocks delivering of this event to the control.
 */
 
 /*!
     \property bool QskControl::visibleToLayout
+
+    Allows calling isVisibleToLayout() as a property.
 
     \accessors isVisibleToLayout()
 */
@@ -162,9 +207,20 @@
 */
 
 /*!
+    \var QskControl::Control
+
+    This is a special subcontrol, that is used as fallback when no hints
+    have been defined for a specific subcontrol. F.e. when looking for
+    the gradient of QskBox::Panel and none has been defined
+    it will be resolved from this fallback subcontrol.
+
+    \sa QskSkinnable::effectiveSkinHint()
+ */
+
+/*!
     \fn QskControl::QskControl
 
-    Initializes the focusPolicy() to Qt::NoFocus and disables
+    Initializes \ref focusPolicy to Qt::NoFocus and disables
     processing of wheel events. The default sizePolicy is
     QskSizePolicy::Preferred in vertical and horizontal direction.
 */
@@ -225,7 +281,7 @@
 /*!
     \fn QskControl::setBackgroundColor
 
-    A conveninece method that enables the autoFillBackground property
+    A conveninece method that enables the \ref autoFillBackground property
     and sets a solid color as background. Usually used for debugging
     layout problems.
 
@@ -237,7 +293,7 @@
     \fn QskControl::setBackground
 
     Set the gradient that is used to fill the background,
-    when autoFillBackground is enabled.
+    when \ref autoFillBackground is enabled.
 
     \aspect QskControl::Control | QskAspect::Color
     \sa resetBackground(), background(), autoFillBackground()
@@ -384,14 +440,14 @@
 /*!
     \fn QskControl::setAutoFillBackground
 
-    Set or clear the autoFillBackground property
+    Set or clear the \ref autoFillBackground property
     \sa autoFillBackground()
 */
 
 /*!
     \fn QskControl::autoFillBackground() const
 
-    \return Value of the autoFillBackground property
+    \return Value of the \ref autoFillBackground property
     \sa setAutoFillBackground()
 */
 
@@ -405,35 +461,35 @@
 /*!
     \fn QskControl::autoLayoutChildren() const
 
-    \return Value of the autoLayoutChildren property
-    \sa autoLayoutChildren()
+    \return Value of the \ref autoLayoutChildren property
+    \sa setAutoLayoutChildren()
 */
 
 /*!
     \fn QskControl::setWheelEnabled
 
-    Set or clear the wheelEnabled property
+    Set or clear the \ref wheelEnabled property
     \sa wheelEnabled isWheelEnabled
 */
 
 /*!
     \fn QskControl::isWheelEnabled
 
-    \return Value of the wheelEnabled property
+    \return Value of the \ref wheelEnabled property
     \sa wheelEnabled
 */
 
 /*!
     \fn QskControl::setFocusPolicy
 
-    Set the value for the focusPolicy property
+    Set the value for the \ref focusPolicy property
     \sa focusPolicy()
 */
 
 /*!
     \fn QskControl::focusPolicy() const
 
-    \return Value of the focusPolicy property
+    \return Value of the \ref focusPolicy property
     \sa focusPolicy(), setFocusPolicy()
 */
 
@@ -453,8 +509,16 @@
 */
 
 /*!
+    \fn QskControl::initSizePolicy
+
+    A simpler version of setSizePolicy(), that does not send a QEvent::LayouRequest
+    to the parentItem(). It is used in constructors of derived controls.
+*/
+
+/*!
     \fn QskControl::sizePolicy() const
 
+    \return Value of the \ref sizePolicy property
 */
 
 /*!
@@ -506,113 +570,201 @@
 */
 
 /*!
+    \fn QskControl::minimumSize() const;
+    \return The explicit size hint for Qt::MinimumSize
+*/
+
+/*!
     \fn QskControl::setMinimumSize( const QSizeF& )
 
+    Sets the minimum size.
+
+    The minimum size is a synonym for the explicit size hint for Qt::MinimumSize.
+
+    \sa setExplicitSizeHint(), setMinimumWidth(), setMinimumHeight(), minimumSize()
 */
 
 /*!
     \fn QskControl::setMinimumSize( qreal, qreal )
 
+    Sets the minimum size.
+
+    The minimum size is a synonym for the explicit size hint for Qt::MinimumSize.
+
+    \sa setExplicitSizeHint(), setMinimumWidth(), setMinimumHeight(), minimumSize()
 */
 
 /*!
     \fn QskControl::setMinimumWidth
 
+    Sets the minimum width.
+
+    The minimum width is a synonym for the width of the explicit
+    size hint for Qt::MinimumSize.
+
+    \sa setExplicitSizeHint(), setMinimumSize(), setMinimumHeight(), minimumSize()
 */
 
 /*!
     \fn QskControl::setMinimumHeight
 
+    Sets the minimum height.
+    
+    The minimum height is a synonym for the height of the explicit
+    size hint for Qt::MinimumSize. 
+    
+    \sa setExplicitSizeHint(), setMinimumSize(), setMinimumWidth(), minimumSize()
+*/
+
+/*!
+    \fn QskControl::maximumSize() const;
+    \return The explicit size hint for Qt::MaximumSize
 */
 
 /*!
     \fn QskControl::setMaximumSize( const QSizeF& )
 
+    Sets the maximum size.
+
+    The maximum size is a synonym for the explicit size hint for Qt::MaximumSize.
+
+    \sa setExplicitSizeHint(), setMaximumWidth(), setMaximumHeight(), maximumSize()
 */
 
 /*!
     \fn QskControl::setMaximumSize( qreal, qreal )
 
+    Sets the maximum size.
+
+    The maximum size is a synonym for the explicit size hint for Qt::MaximumSize.
+
+    \sa setExplicitSizeHint(), setMaximumWidth(), setMaximumHeight(), maximumSize()
 */
 
 /*!
     \fn QskControl::setMaximumWidth
 
+    Sets the maximum width.
+    
+    The minimum width is a synonym for the width of the explicit
+    size hint for Qt::MaximumSize. 
+    
+    \sa setExplicitSizeHint(), setMaximumSize(), setMaximumHeight(), maximumSize()
 */
 
 /*!
     \fn QskControl::setMaximumHeight
 
+    Sets the maximum height.
+
+    The maximum height is a synonym for the height of the explicit
+    size hint for Qt::MaximumSize.
+
+    \sa setExplicitSizeHint(), setMaximumSize(), setMaximumWidth(), maximumSize()
+*/
+
+/*!
+    \fn QskControl::sizeHint() const;
+    \return The explicit size hint for Qt::PreferredSize
+
+    \note sizeHint() does exactly the same as preferredSize() and only
+          exists because of being a name, that is well known from Qt/Widgets
+*/
+
+/*!
+    \fn QskControl::preferredSize() const;
+    \return The explicit size hint for Qt::PreferredSize
 */
 
 /*!
     \fn QskControl::setPreferredSize( const QSizeF& )
 
+    Sets the preferred size.
+
+    The preferred size is a synonym for the explicit size hint for Qt::PreferredSize.
+    
+    \sa setExplicitSizeHint(), setPreferredWidth(), setPreferredHeight(), preferredSize()
 */
 
 /*!
     \fn QskControl::setPreferredSize( qreal, qreal )
 
+    Sets the preferred size.
+
+    The preferred size is a synonym for the explicit size hint for Qt::PreferredSize.
+
+    \sa setExplicitSizeHint(), setPreferredWidth(), setPreferredHeight(), preferredSize()
 */
 
 /*!
     \fn QskControl::setPreferredWidth
 
+    Sets the preferred width.
+
+    The preferred width is a synonym for the width of the explicit
+    size hint for Qt::PreferredSize.
+
+    \sa setExplicitSizeHint(), setPreferredSize(), setPreferredHeight(), preferredSize()
 */
 
 /*!
     \fn QskControl::setPreferredHeight
 
+    Sets the preferred height.
+
+    The preferred height is a synonym for the height of the explicit
+    size hint for Qt::PreferredSize.
+
+    \sa setExplicitSizeHint(), setPreferredSize(), setPreferredWidth(), preferredSize()
 */
 
 /*!
-    \fn QskControl::setFixedSize( const QSizeF& );
+    \fn QskControl::setFixedSize( const QSizeF& )
 
+    Sets the explicit size hint for Qt::PreferredSize and changes the size policy to
+    QskSizePolicy::Fixed for both orientations.
+
+    \warning 
+    The name of this method is misleading as it only sets a size hint, but does not
+    change the size as it implies. Without a layout code, that respects this value
+    it does not have any effect. However the name was chosen as with Qt/Widgets
+    there is a corresponding call with the same semantics developers might be
+    familiar with.
 */
 
 /*!
-    \fn QskControl::setFixedSize( qreal width, qreal height );
+    \fn QskControl::setFixedSize( qreal width, qreal height )
 
+    Sets the explicit size hint for Qt::PreferredSize and changes the size policy to
+    QskSizePolicy::Fixed for both orientations.
 */
 
 /*!
     \fn QskControl::setFixedWidth
 
+    Sets the width of the explicit size hint for Qt::PreferredSize and changes
+    the horizontal size policy to QskSizePolicy::Fixed. 
 */
 
 /*!
     \fn QskControl::setFixedHeight
 
+    Sets the height of the explicit size hint for Qt::PreferredSize and changes
+    the vertical size policy to QskSizePolicy::Fixed.
 */
 
 /*!
-    \fn QskControl::setExplicitSizeHint( Qt::SizeHint, const QSizeF& );
+    \fn QskControl::setExplicitSizeHint( Qt::SizeHint, const QSizeF& )
 
 */
 
 /*!
-    \fn QskControl::setExplicitSizeHint( Qt::SizeHint, qreal width, qreal height );
+    \fn QskControl::setExplicitSizeHint( Qt::SizeHint, qreal width, qreal height )
 
 */
 
 /*!
     \fn QskControl::resetExplicitSizeHint
-
-*/
-
-/*!
-    \fn QskControl::minimumSize() const;
-
-*/
-
-/*!
-    \fn QskControl::maximumSize() const;
-
-*/
-
-/*!
-    \fn QskControl::preferredSize() const;
-
 */
 
 /*!
@@ -626,18 +778,17 @@
 */
 
 /*!
-    \fn QskControl::sizeHint
-
-*/
-
-/*!
     \fn QskControl::heightForWidth
 
+    \return Preferred height for given a width.
+    \sa effectiveSizeHint(), widthForHeight()
 */
 
 /*!
     \fn QskControl::widthForHeight
 
+    \return Preferred width for given a height.
+    \sa effectiveSizeHint(), heightForWidth()
 */
 
 /*!
@@ -668,103 +819,109 @@
 /*!
     \fn QskControl::subControls
 
+    Calculates and returns a list of all effective subcontrols, that have been defined
+    for the corresponding metaObject(). This list can be used to decide if
+    a skin hint for specific subControl might have an impact on a control.
+
+    \sa QskAspect::subControls(), QskControl::effectiveSubcontrol()
 */
 
 /*!
-    \fn void QskControl::backgroundChanged
+    \fn QskControl::backgroundChanged
 
+    Signal indicating, that the value of the \ref background property has changed
+    \sa background
 */
 
 /*!
-    \fn void QskControl::marginsChanged
+    \fn QskControl::marginsChanged
 
+    Signal indicating, that the value of the \ref margins property has changed
+    \sa margins
 */
 
 /*!
-    \fn void QskControl::focusIndicatorRectChanged
+    \fn QskControl::focusIndicatorRectChanged
 
+    Signal indicating that the value of the focusIndicatorRect() has changed.
+
+    \sa focusIndicatorRect()
 */
 
 /*!
-    \fn void QskControl::localeChanged
-
-*/
-
-/*!
-    \fn void QskControl::focusPolicyChanged
-
-*/
-
-/*!
-    \fn void QskControl::wheelEnabledChanged
-
-*/
-
-/*!
-    \fn void QskControl::setLocale
-
-*/
-
-/*!
-    \fn bool QskControl::event
+    \fn QskControl::localeChanged
 
 */
 
 /*!
-    \fn virtual void QskControl::gestureEvent
+    \fn QskControl::focusPolicyChanged
+*/
+
+/*!
+    \fn QskControl::wheelEnabledChanged
+*/
+
+/*!
+    \fn QskControl::setLocale
+*/
+
+/*!
+    \fn QskControl::event
+*/
+
+/*!
+    \fn void QskControl::gestureEvent
 
 */
 
 /*!
     \fn void QskControl::hoverEnterEvent
 
+    Sets the Hovered state
 */
 
 /*!
     \fn void QskControl::hoverLeaveEvent
 
+    Clears the Hovered state
 */
 
 /*!
-    \fn bool QskControl::childMouseEventFilter
-
-*/
-
-/*!
-    \fn virtual bool QskControl::gestureFilter
+    \fn QskControl::childMouseEventFilter
 
 */
 
 /*!
-    \fn void QskControl::itemChange
+    \fn QskControl::gestureFilter
+*/
+
+/*!
+    \fn QskControl::itemChange
+
+    Overload, that updates certain QSkinny specific attributes
+*/
+
+/*!
+    \fn QskControl::geometryChange
+
+    Overload, that schedules a re-layouting of the child items when
+    autoLayoutChildren() is enabled.
+*/
+
+/*!
+    \fn QskControl::updateResources
 
 */
 
 /*!
-    \fn void QskControl::geometryChange
+    \fn QskControl::updateLayout
 
 */
 
 /*!
-    \fn void QskControl::initSizePolicy
-
+    \fn QskControl::contentsSizeHint
 */
 
 /*!
-    \fn virtual void QskControl::updateResources
-
-*/
-
-/*!
-    \fn virtual void QskControl::updateLayout
-
-*/
-
-/*!
-    \fn virtual QSizeF QskControl::contentsSizeHint
-
-*/
-
-/*!
-    \fn virtual QSizeF QskControl::layoutSizeHint
+    \fn QskControl::layoutSizeHint
 */
