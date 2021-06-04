@@ -11,7 +11,13 @@ SUBDIRS += \
     thumbnails \
     tabview
 
-lessThan(QT_MAJOR_VERSION, 6): SUBDIRS += iot-dashboard
+lessThan(QT_MAJOR_VERSION, 6) {
+
+    # the shader for the drop shadows has not yet been migrated
+    # to work with Qt 6
+
+    SUBDIRS += iotdashboard
+}
 
 qtHaveModule(svg) {
 
