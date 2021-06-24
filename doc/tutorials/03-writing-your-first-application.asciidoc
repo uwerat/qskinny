@@ -21,7 +21,7 @@ Then we can build and install QSkinny to `/opt/qskinny` with the following comma
 cd /home/user/dev/
 git clone https://github.com/uwerat/qskinny.git
 cd qskinny
-PREFIX=/opt/qskinny qmake
+PREFIX=/opt/qskinny qmake -r
 make
 sudo make install
 ....
