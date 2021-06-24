@@ -52,6 +52,7 @@ Next, we need to create a `myapp.pro` file in our `myapp` directory.
 
 .myapp.pro
 [source,xml]
+....
 TEMPLATE = app
 TARGET = myapp
 
