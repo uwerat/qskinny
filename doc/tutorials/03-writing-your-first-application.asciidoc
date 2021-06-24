@@ -30,16 +30,12 @@ As a next step, we need to write our app. Let's start with a simple `main.cpp` f
 .main.cpp
 [source]
 ....
-#include <SkinnyFont.h>
 #include <QskWindow.h>
-
 #include <QGuiApplication>
 
 int main( int argc, char* argv[] )
 {
     QGuiApplication app( argc, argv );
-
-    SkinnyFont::init( &app );
 
     QskWindow window;
     window.show();
@@ -48,20 +44,23 @@ int main( int argc, char* argv[] )
 }
 ....
 
-For now this will just create an empty window (the `QskWindow`) without any controls. Next, we need to create a `myapp.pro` file in our `myapp` directory:
+For now this will just create an empty window (the `QskWindow`) without any controls.
+Next, we need to create a `myapp.pro` file in our `myapp` directory.
+Assuming, that qskinny had been installed to "/opt/qskinny":
 
 .myapp.pro
 [source,xml]
-....
 TEMPLATE = app
 TARGET = myapp
 
-INCLUDEPATH += /home/user/dev/qskinny/support \
-               /home/user/dev/qskinny/src/common \
-               /home/user/dev/qskinny/src/controls \
-               /home/peter/temp/qskinny/src/layouts
+QT *= quick
 
-LIBS += -L/home/user/dev/qskinny/lib -lqskinny -lqsktestsupport
+QSK_ROOT=/opt/qskinny
+
+INCLUDEPATH += $${QSK_ROOT}/include 
+LIBS += -L$${QSK_ROOT}/lib -lqskinny
+
+QMAKE_RPATHDIR *= $${QSK_ROOT}/lib
 
 SOURCES += \
     main.cpp
@@ -76,11 +75,12 @@ qmake
 make
 ....
 
-When running the app we will have to supply the `LD_LIBRARY_PATH`:
+When running myapp it needs to find the skin plugins. Setting QT_PLUGIN_PATH is one
+option ( see https://doc.qt.io/qt-5/deployment-plugins.html ):
 
 [source,xml]
 ....
-LD_LIBRARY_PATH=/home/user/dev/qskinny/lib ./myapp
+QT_PLUGIN_PATH=/opt/qskinny/plugins ./myapp
 ....
 
 This should show just an empty window.
@@ -92,7 +92,6 @@ Now that we have our app running, we can add some UI controls to it by extending
 .main.cpp
 [source]
 ....
-#include <SkinnyFont.h>
 #include <QskWindow.h>
 #include <QskLinearBox.h>
 #include <QskPushButton.h>
@@ -102,8 +101,6 @@ Now that we have our app running, we can add some UI controls to it by extending
 int main( int argc, char* argv[] )
 {
     QGuiApplication app( argc, argv );
-
-    SkinnyFont::init( &app );
 
     auto* horizontalBox = new QskLinearBox( Qt::Horizontal );
     auto* button1 = new QskPushButton( "button 1", horizontalBox );
