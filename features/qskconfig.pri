@@ -8,14 +8,21 @@ QSK_VER_MIN      = 0
 QSK_VER_PAT      = 0
 QSK_VERSION      = $${QSK_VER_MAJ}.$${QSK_VER_MIN}.$${QSK_VER_PAT}
 
-QSK_INSTALL_PREFIX    = $$[QT_INSTALL_PREFIX]
+# trying the PREFIX environment variable first
 
-unix {
-    QSK_INSTALL_PREFIX    = /usr/local/qskinny-$${QSK_VERSION}
-}
+QSK_INSTALL_PREFIX = $$(PREFIX)
 
-win32 {
-    QSK_INSTALL_PREFIX    = C:/Qskinny-$${QSK_VERSION}
+isEmpty( QSK_INSTALL_PREFIX ) {
+
+    QSK_INSTALL_PREFIX    = $$[QT_INSTALL_PREFIX]
+
+    unix {
+        QSK_INSTALL_PREFIX    = /usr/local/qskinny-$${QSK_VERSION}
+    }
+
+    win32 {
+        QSK_INSTALL_PREFIX    = C:/Qskinny-$${QSK_VERSION}
+    }
 }
 
 QSK_INSTALL_DOCS      = $${QSK_INSTALL_PREFIX}/doc

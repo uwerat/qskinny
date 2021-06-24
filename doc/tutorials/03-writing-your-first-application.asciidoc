@@ -10,18 +10,21 @@ layout: docs
 
 === Building the QSkinny repository
 
-In this chapter we will write a simple QSkinny application on Linux from scratch. As a prerequisite, a recent Qt version (>= 5.6) should be available and the directory of its `qmake` binary in the current `$PATH`. The we can build the QSkinny repository with the following commands:
+In this chapter we will write a simple QSkinny application on Linux from scratch.
+As a prerequisite, a recent Qt version (>= 5.6) should be available and the directory of
+its `qmake` binary in the current `$PATH`.
+
+Then we can build and install QSkinny to `/opt/qskinny` with the following commands:
 
 [source,xml]
 ....
 cd /home/user/dev/
 git clone https://github.com/uwerat/qskinny.git
 cd qskinny
-qmake
+PREFIX=/opt/qskinny qmake
 make
+sudo make install
 ....
-
-This will produce the libraries `libqskinny.so` and others in the `qskinny/lib` directory. Optionally we could install the libraries to `/usr/local` via `make install`; for now we will use the ones from the local build at `/home/user/dev/qskinny/lib`. If you checked out the repository in another directory, you will have to adapt the include and library paths used below.
 
 === Compiling our first app
 
@@ -46,7 +49,6 @@ int main( int argc, char* argv[] )
 
 For now this will just create an empty window (the `QskWindow`) without any controls.
 Next, we need to create a `myapp.pro` file in our `myapp` directory.
-Assuming, that qskinny had been installed to "/opt/qskinny":
 
 .myapp.pro
 [source,xml]
