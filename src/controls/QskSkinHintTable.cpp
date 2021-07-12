@@ -27,9 +27,9 @@ inline const QVariant* qskResolvedHint( QskAspect aspect,
             return &it->second;
         }
 
-        if ( const auto topState = aspect.topState() )
+        if ( aspect.hasState() )
         {
-            aspect.clearState( topState );
+            aspect.clearStates();
             continue;
         }
 

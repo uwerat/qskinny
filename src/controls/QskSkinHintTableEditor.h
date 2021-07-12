@@ -30,9 +30,11 @@ class QSK_EXPORT QskSkinHintTableEditor
     // generic access
 
     void setHint( QskAspect, const QVariant& );
+    void setHint( QskAspect, const QVariant&, QskAspect::State );
     const QVariant& hint( QskAspect ) const;
 
     bool removeHint( QskAspect );
+    bool removeHint( QskAspect, QskAspect::State );
     QVariant takeHint( QskAspect );
 
     bool hasHint( QskAspect ) const;
@@ -48,6 +50,7 @@ class QSK_EXPORT QskSkinHintTableEditor
     // flag/metric/color
 
     void setFlagHint( QskAspect, const QVariant& );
+    void setFlagHint( QskAspect, const QVariant&, QskAspect::State );
     void removeFlagHint( QskAspect );
     QVariant flagHint( QskAspect ) const;
 
@@ -55,6 +58,7 @@ class QSK_EXPORT QskSkinHintTableEditor
     template< typename T > T flagHint( QskAspect ) const;
 
     void setMetricHint( QskAspect, const QVariant& );
+    void setMetricHint( QskAspect, const QVariant&, QskAspect::State );
     void removeMetricHint( QskAspect );
     QVariant metricHint( QskAspect ) const;
 
@@ -62,6 +66,7 @@ class QSK_EXPORT QskSkinHintTableEditor
     template< typename T > T metricHint( QskAspect ) const;
 
     void setColorHint( QskAspect, const QVariant& );
+    void setColorHint( QskAspect, const QVariant&, QskAspect::State );
     void removeColorHint( QskAspect );
     QVariant colorHint( QskAspect ) const;
 
@@ -84,6 +89,7 @@ class QSK_EXPORT QskSkinHintTableEditor
     void setHGradient( QskAspect, const QColor&, const QColor& );
     void setVGradient( QskAspect, const QColor&, const QColor& );
     void setGradient( QskAspect, const QskGradient& );
+    void setGradient( QskAspect, const QskGradient&, QskAspect::State state );
     QskGradient gradient( QskAspect ) const;
 
     void setStrutSize( QskAspect, const QSizeF& );
@@ -123,6 +129,7 @@ class QSK_EXPORT QskSkinHintTableEditor
     void setBoxShape( QskAspect, qreal topLeft, qreal topRight,
         qreal bottomLeft, qreal bottomRight, Qt::SizeMode = Qt::AbsoluteSize );
     void setBoxShape( QskAspect, const QskBoxShapeMetrics& );
+    void setBoxShape( QskAspect, const QskBoxShapeMetrics&, QskAspect::State );
     void removeBoxShape( QskAspect );
     QskBoxShapeMetrics boxShape( QskAspect ) const;
 
@@ -131,16 +138,29 @@ class QSK_EXPORT QskSkinHintTableEditor
     void setBoxBorderMetrics( QskAspect, qreal left, qreal top,
         qreal right, qreal bottom, Qt::SizeMode = Qt::AbsoluteSize );
     void setBoxBorderMetrics( QskAspect, const QskBoxBorderMetrics& );
+    void setBoxBorderMetrics( QskAspect, const QskBoxBorderMetrics&, QskAspect::State );
     void removeBoxBorderMetric( QskAspect );
     QskBoxBorderMetrics boxBorderMetrics( QskAspect ) const;
 
     void setBoxBorderColors( QskAspect, const QskBoxBorderColors& );
+    void setBoxBorderColors( QskAspect, const QskBoxBorderColors&, QskAspect::State );
     void setBoxBorderColors( QskAspect, const QColor& left, const QColor& top,
         const QColor& right, const QColor& bottom );
     void removeBoxBorderColors( QskAspect );
     QskBoxBorderColors boxBorderColors( QskAspect ) const;
 
   private:
+    void forAllCombinationsSetHint( QskAspect::State, QskAspect,
+        const QVariant& hint );
+    void calculateCombinationsSetHint( const std::vector< quint16 >& arr,
+        int start, int end, int index, int r,
+        QskAspect::State state, QskAspect aspect,
+        const QVariant& hint );
+    bool forAllCombinationsRemoveHint( QskAspect::State, QskAspect );
+    bool calculateCombinationsRemoveHint( const std::vector< quint16 >& arr,
+        int start, int end, int index, int r,
+        QskAspect::State state, QskAspect aspect );
+
     QskSkinHintTable* m_table = nullptr;
 };
 

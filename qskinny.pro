@@ -8,7 +8,8 @@ SUBDIRS = \
     tools \
     support \
     examples \
-    playground
+    playground \
+    tests
 
 OTHER_FILES = \
     doc/Doxyfile \
@@ -24,3 +25,4 @@ skins.depends = src
 support.depends = src skins
 examples.depends = tools support skins qmlexport
 playground.depends = tools support skins qmlexport
+tests.depends = src
