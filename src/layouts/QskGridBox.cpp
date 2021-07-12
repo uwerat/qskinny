@@ -130,7 +130,7 @@ int QskGridBox::addItem( QQuickItem* item,
 int QskGridBox::addItem( QQuickItem* item,
     int row, int column, int rowSpan, int columnSpan )
 {
-    if ( item == nullptr || row < 0 || column < 0 )
+    if ( item == nullptr || item == this || row < 0 || column < 0 )
         return -1;
 
     if ( qskIsTransparentForPositioner( item ) )
