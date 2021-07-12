@@ -185,7 +185,7 @@ void QskStackBox::addItem( QQuickItem* item, Qt::Alignment alignment )
 
 void QskStackBox::insertItem( int index, QQuickItem* item )
 {
-    if ( item == nullptr )
+    if ( item == nullptr || item == this )
         return;
 
     reparentItem( item );

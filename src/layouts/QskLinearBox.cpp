@@ -393,7 +393,7 @@ int QskLinearBox::insertItem(
 
 int QskLinearBox::insertItem( int index, QQuickItem* item )
 {
-    if ( item == nullptr )
+    if ( item == nullptr || item == this )
         return -1;
 
     if ( qskIsTransparentForPositioner( item ) )
