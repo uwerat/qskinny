@@ -116,14 +116,16 @@ void QskBoxNode::setBoxData( const QRectF& rect,
         }
     }
 
-    bool maybeFlat = false;
 
+#if 0
     /*
         Always using the same material result in a better batching
         but wastes some memory. when we have a solid color.
         Maybe its worth to introduce a flag to control the behaviour,
         but for the moment we go with performance.
      */
+
+    bool maybeFlat = true;
 
     if ( maybeFlat )
     {
@@ -134,6 +136,9 @@ void QskBoxNode::setBoxData( const QRectF& rect,
             maybeFlat = false;
         }
     }
+#else
+    bool maybeFlat = false;
+#endif
 
     QskBoxRenderer renderer;
 
