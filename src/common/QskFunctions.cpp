@@ -196,25 +196,18 @@ QRect qskPlatformScreenGeometry( const QScreen* screen )
     return screen->handle()->geometry();
 }
 
-/*
-    Due to the nature of floating point arithmetic
-    we might floor a value, that is already "aligned"
-    F.e static_cast< int >( 0.29 / 0.01 ) -> 28
- */
 qreal qskFuzzyFloor( qreal value, qreal stepSize )
 {
-    qreal v = std::floor( value / stepSize ) * stepSize;
-    if ( qFuzzyCompare( value - v, stepSize ) )
-        v = value;
+    const double eps = 1.0e-6 * stepSize;
 
-    return v;
+    value = ( value + eps ) / stepSize;
+    return std::floor( value ) * stepSize;
 }
 
 qreal qskFuzzyCeil( qreal value, qreal stepSize )
 {
-    qreal v = std::ceil( value / stepSize ) * stepSize;
-    if ( qFuzzyCompare( v - value, stepSize ) )
-        v = value;
+    const double eps = 1.0e-6 * stepSize;
 
-    return v;
+    value = ( value - eps ) / stepSize;
+    return std::ceil( value ) * stepSize;
 }
