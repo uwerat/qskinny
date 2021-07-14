@@ -190,7 +190,8 @@ inline void QskBoxShapeMetrics::setRadius(
 
 inline constexpr QSizeF QskBoxShapeMetrics::radius( Qt::Corner corner ) const noexcept
 {
-    return ( ( corner >= 0 ) && ( corner < 4 ) ) ? m_radii[ corner ] : QSizeF();
+    return ( ( static_cast< int >( corner ) >= 0 ) && ( static_cast< int >( corner ) < 4 ) )
+        ? m_radii[ corner ] : QSizeF();
 }
 
 inline void QskBoxShapeMetrics::setSizeMode( Qt::SizeMode sizeMode ) noexcept

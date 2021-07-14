@@ -195,14 +195,14 @@ QskSkin* QskSetup::setSkin( const QString& skinName )
     if ( m_data->skin && ( skinName == m_data->skinName ) )
         return m_data->skin;
 
-    QskSkin* skin = QskSkinManager::instance()->createSkin( skinName );
+    auto skin = QskSkinManager::instance()->createSkin( skinName );
     if ( skin == nullptr )
         return nullptr;
 
     if ( skin->parent() == nullptr )
         skin->setParent( this );
 
-    const QskSkin* oldSkin = m_data->skin;
+    const auto oldSkin = m_data->skin;
 
     m_data->skin = skin;
     m_data->skinName = skinName;

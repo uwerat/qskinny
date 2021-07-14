@@ -18,6 +18,7 @@ namespace
       public:
         Element( QQuickItem* item );
         Element( qreal spacing );
+        Element( const Element& );
 
         Element& operator=( const Element& );
 
@@ -61,6 +62,16 @@ Element::Element( qreal spacing )
     : m_spacing( spacing )
     , m_isSpacer( true )
 {
+}
+
+Element::Element( const Element& other )
+    : m_stretch( other.m_stretch )
+    , m_isSpacer( other.m_isSpacer )
+{
+    if ( other.m_isSpacer )
+        m_spacing = other.m_spacing;
+    else
+        m_item = other.m_item;
 }
 
 Element& Element::operator=( const Element& other )

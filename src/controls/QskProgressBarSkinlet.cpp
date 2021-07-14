@@ -63,7 +63,7 @@ QRectF QskProgressBarSkinlet::subControlRect(
 {
     const auto bar = static_cast< const QskProgressBar* >( skinnable );
 
-    if( ( subControl == QskProgressBar::Groove ) )
+    if( subControl == QskProgressBar::Groove )
     {
         const auto extent = bar->extent();
 

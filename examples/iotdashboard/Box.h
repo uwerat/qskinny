@@ -24,7 +24,6 @@ class Box : public QskLinearBox
     private:
         QString m_title;
         QskTextLabel* m_label;
-        QskControl* m_content;
 };
 
 #endif // BOX_H

@@ -10,7 +10,7 @@
 #include <QskLinearBox.h>
 #include <QskTextLabel.h>
 
-class MenuBarTopLabel : public QskGraphicLabel
+class MenuBarTopLabel final : public QskGraphicLabel
 {
         Q_OBJECT
 
@@ -23,7 +23,7 @@ class MenuBarTopLabel : public QskGraphicLabel
         }
 
         QskAspect::Subcontrol effectiveSubcontrol(
-            QskAspect::Subcontrol subControl ) const override final
+            QskAspect::Subcontrol subControl ) const override
         {
             if( subControl == QskGraphicLabel::Graphic )
             {
@@ -34,7 +34,7 @@ class MenuBarTopLabel : public QskGraphicLabel
         }
 };
 
-class MenuBarGraphicLabel : public QskGraphicLabel
+class MenuBarGraphicLabel final : public QskGraphicLabel
 {
         Q_OBJECT
 
@@ -47,7 +47,7 @@ class MenuBarGraphicLabel : public QskGraphicLabel
         }
 
         QskAspect::Subcontrol effectiveSubcontrol(
-            QskAspect::Subcontrol subControl ) const override final
+            QskAspect::Subcontrol subControl ) const override
         {
             if( subControl == QskGraphicLabel::Graphic )
             {
@@ -58,7 +58,7 @@ class MenuBarGraphicLabel : public QskGraphicLabel
         }
 };
 
-class MenuBarLabel : public QskTextLabel
+class MenuBarLabel final : public QskTextLabel
 {
         Q_OBJECT
 
@@ -71,7 +71,7 @@ class MenuBarLabel : public QskTextLabel
         }
 
         QskAspect::Subcontrol effectiveSubcontrol(
-            QskAspect::Subcontrol subControl ) const override final
+            QskAspect::Subcontrol subControl ) const override
         {
             if( subControl == QskTextLabel::Text )
             {
@@ -82,7 +82,7 @@ class MenuBarLabel : public QskTextLabel
         }
 };
 
-class MenuItem : public QskLinearBox
+class MenuItem final : public QskLinearBox
 {
         Q_OBJECT
 
@@ -92,14 +92,13 @@ class MenuItem : public QskLinearBox
 
         MenuItem( const QString& name, QQuickItem* parent );
 
-        QskAspect::Subcontrol effectiveSubcontrol( QskAspect::Subcontrol subControl ) const override final;
+        QskAspect::Subcontrol effectiveSubcontrol( QskAspect::Subcontrol ) const override;
 
     private:
         QString m_name;
-        bool m_isActive = false;
 };
 
-class MenuBar : public QskLinearBox
+class MenuBar final : public QskLinearBox
 {
         Q_OBJECT
 
@@ -109,7 +108,7 @@ class MenuBar : public QskLinearBox
         MenuBar( QQuickItem* parent );
 
         QskAspect::Subcontrol effectiveSubcontrol(
-            QskAspect::Subcontrol subControl ) const override final;
+            QskAspect::Subcontrol ) const override;
 
     private:
         QList< QString > m_entryStrings;
