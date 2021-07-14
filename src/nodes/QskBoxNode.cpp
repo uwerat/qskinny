@@ -116,7 +116,6 @@ void QskBoxNode::setBoxData( const QRectF& rect,
         }
     }
 
-
 #if 0
     /*
         Always using the same material result in a better batching
