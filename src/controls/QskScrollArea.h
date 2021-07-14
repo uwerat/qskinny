@@ -18,6 +18,9 @@ class QSK_EXPORT QskScrollArea : public QskScrollView
     Q_PROPERTY( bool itemResizable READ isItemResizable
         WRITE setItemResizable NOTIFY itemResizableChanged FINAL )
 
+    Q_PROPERTY( bool itemFocusClipping READ hasItemFocusClipping
+        WRITE setItemFocusClipping FINAL )
+
     using Inherited = QskScrollView;
 
   public:
@@ -29,6 +32,9 @@ class QSK_EXPORT QskScrollArea : public QskScrollView
 
     void setItemResizable( bool on );
     bool isItemResizable() const;
+
+    void setItemFocusClipping( bool on );
+    bool hasItemFocusClipping() const;
 
   Q_SIGNALS:
     void scrolledItemChanged();

@@ -212,6 +212,16 @@ namespace
             m_isSizeChangedEnabled = on;
         }
 
+        QRectF focusIndicatorClipRect() const override
+        {
+            if( scrollArea()->hasItemFocusClipping() )
+            {
+                return Inherited::focusIndicatorClipRect();
+            }
+
+            return QRectF();
+        }
+
       protected:
         bool event( QEvent* event ) override;
 
@@ -392,6 +402,7 @@ class QskScrollArea::PrivateData
   public:
     PrivateData()
         : isItemResizable( true )
+        , isItemFocusClipping( true )
     {
     }
 
@@ -412,6 +423,7 @@ class QskScrollArea::PrivateData
     ClipItem* clipItem = nullptr;
 
     bool isItemResizable : 1;
+    bool isItemFocusClipping : 1;
 };
 
 /*
@@ -509,6 +521,20 @@ void QskScrollArea::setItemResizable( bool on )
 bool QskScrollArea::isItemResizable() const
 {
     return m_data->isItemResizable;
+}
+
+void QskScrollArea::setItemFocusClipping( bool on )
+{
+    if( m_data->isItemFocusClipping != on )
+    {
+        m_data->isItemFocusClipping = on;
+        Q_EMIT focusIndicatorRectChanged();
+    }
+}
+
+bool QskScrollArea::hasItemFocusClipping() const
+{
+    return m_data->isItemFocusClipping;
 }
 
 void QskScrollArea::setScrolledItem( QQuickItem* item )
