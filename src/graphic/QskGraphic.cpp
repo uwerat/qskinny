@@ -1040,7 +1040,7 @@ QDebug operator<<( QDebug debug, const QskGraphic& graphic )
     debug << "\n controlPointsRect:" << graphic.boundingRect();
     debug << "\n commandTypes:" << graphic.commandTypes();
 
-    for ( const auto command : graphic.commands() )
+    for ( const auto& command : graphic.commands() )
     {
         switch ( command.type() )
         {

@@ -523,7 +523,7 @@ QSK_EXPORT void qskDebugAspect( QDebug, const QMetaObject*, QskAspect );
 
 #define QSK_STATE( type, name, value ) \
     static_assert( \
-        ( value >= QskAspect::FirstUserState ) && ( value <= QskAspect::LastUserState ), \
+        ( ( value ) >= QskAspect::FirstUserState ) && ( ( value ) <= QskAspect::LastUserState ), \
         "Invalid state" \
     ); \
     const QskAspect::State type::name = \
@@ -531,8 +531,8 @@ QSK_EXPORT void qskDebugAspect( QDebug, const QMetaObject*, QskAspect );
 
 #define QSK_SYSTEM_STATE( type, name, value ) \
     static_assert( \
-        ( value >= QskAspect::FirstSystemState && value < QskAspect::FirstUserState ) || \
-        ( value > QskAspect::LastUserState && value <= QskAspect::LastSystemState ), \
+        ( ( value ) >= QskAspect::FirstSystemState && ( value ) < QskAspect::FirstUserState ) || \
+        ( ( value ) > QskAspect::LastUserState && ( value ) <= QskAspect::LastSystemState ), \
         "Invalid system state" \
     ); \
     const QskAspect::State type::name = \

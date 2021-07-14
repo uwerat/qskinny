@@ -167,6 +167,7 @@ namespace
       public:
         Element( QQuickItem*, const QRect& );
         Element( const QSizeF& spacing, const QRect& );
+        Element( const Element& );
 
         Element& operator=( const Element& );
 
@@ -208,6 +209,16 @@ Element::Element( const QSizeF& spacing, const QRect& grid )
     , m_grid( grid )
     , m_isSpacer( true )
 {
+}
+
+Element::Element( const Element& other )
+    : m_grid( other.m_grid )
+    , m_isSpacer (other.m_isSpacer )
+{
+    if ( other.m_isSpacer )
+        m_spacing = other.m_spacing;
+    else
+        m_item = other.m_item;
 }
 
 Element& Element::operator=( const Element& other )
