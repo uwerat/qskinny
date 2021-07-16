@@ -16,6 +16,8 @@
 
 class WebView : public QQuickWebEngineView
 {
+    using Inherited = QQuickWebEngineView;
+
   public:
     WebView( const char* url, QQuickItem* parent = nullptr )
         : WebView( parent )
@@ -26,6 +28,7 @@ class WebView : public QQuickWebEngineView
     WebView( QQuickItem* parent = nullptr )
         : QQuickWebEngineView( parent )
     {
+        componentComplete();
     }
 };
 
@@ -35,11 +38,10 @@ int main( int argc, char* argv[] )
     QskObjectCounter counter( true );
 #endif
 
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-
-    QGuiApplication app( argc, argv );
-
     QtWebEngine::initialize();
+
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QGuiApplication app( argc, argv );
 
     SkinnyFont::init( &app );
     SkinnyShortcut::enable( SkinnyShortcut::Quit | SkinnyShortcut::DebugShortcuts );
