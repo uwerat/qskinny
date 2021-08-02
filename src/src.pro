@@ -183,6 +183,8 @@ HEADERS += \
     controls/QskSubWindowAreaSkinlet.h \
     controls/QskSubWindow.h \
     controls/QskSubWindowSkinlet.h \
+    controls/QskSwitchButton.h \
+    controls/QskSwitchButtonSkinlet.h \
     controls/QskTabBar.h \
     controls/QskTabButton.h \
     controls/QskTabButtonSkinlet.h \
@@ -257,6 +259,8 @@ SOURCES += \
     controls/QskSubWindowAreaSkinlet.cpp \
     controls/QskSubWindow.cpp \
     controls/QskSubWindowSkinlet.cpp \
+    controls/QskSwitchButton.cpp \
+    controls/QskSwitchButtonSkinlet.cpp \
     controls/QskTabBar.cpp \
     controls/QskTabButton.cpp \
     controls/QskTabButtonSkinlet.cpp \

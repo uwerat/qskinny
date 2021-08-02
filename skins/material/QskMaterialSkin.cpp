@@ -20,6 +20,8 @@
 #include <QskSeparator.h>
 #include <QskSlider.h>
 #include <QskSubWindow.h>
+#include <QskSwitchButton.h>
+#include <QskSwitchButtonSkinlet.h>
 #include <QskTabBar.h>
 #include <QskTabButton.h>
 #include <QskTabView.h>
@@ -107,7 +109,7 @@ namespace
 
       private:
         void setupControl();
-        
+
         void setupBox();
         void setupDialogButtonBox();
         void setupDialogButton();
@@ -123,6 +125,7 @@ namespace
         void setupSeparator();
         void setupSubWindow();
         void setupSlider();
+        void setupSwitchButton();
         void setupTabButton();
         void setupTabBar();
         void setupTabView();
@@ -152,6 +155,7 @@ void Editor::setup()
     setupSeparator();
     setupSlider();
     setupSubWindow();
+    setupSwitchButton();
     setupTabButton();
     setupTabBar();
     setupTabView();
@@ -481,6 +485,45 @@ void Editor::setupSlider()
     // move the handle smoothly, when using keys
     setAnimation( Q::Handle | A::Metric | A::Position, 2 * qskDuration );
     setAnimation( Q::Handle | A::Metric | A::Position | Q::Pressed, 0 );
+}
+
+void Editor::setupSwitchButton()
+{
+    using A = QskAspect;
+    using Q = QskSwitchButton;
+
+    const qreal radius = qskDpiScaled( 18 );
+    const qreal knopLength = radius - 4;
+
+    setBoxShape( Q::Groove, radius);
+    setStrutSize(Q::Groove, 3.4 * radius, 2 * radius);
+    setColor( Q::Groove,  m_pal.accentColor);
+    setBoxBorderColors(Q::Groove, m_pal.darker200);
+    setColor(Q::Groove | Q::Disabled, m_pal.lighter125);
+    setBoxBorderMetrics(Q::Groove, 2);
+    setBoxBorderColors(Q::Groove | Q::Disabled, m_pal.darker125);
+
+    setBoxShape( Q::Knop, knopLength);
+    setMetric(Q::Knop | A::Size,knopLength);
+    setGradient( Q::Knop, QskGradient(Qt::Vertical, m_pal.lighter150, m_pal.lighter125) );
+    setBoxBorderMetrics(Q::Knop, 2);
+    setColor(Q::Knop | Q::Disabled, m_pal.lighter125);
+    setBoxBorderColors(Q::Knop, m_pal.darker200);
+    setBoxBorderColors(Q::Knop | Q::Disabled, m_pal.darker125);
+
+    for( auto state : { A::NoState, Q::Disabled } )
+    {
+        auto aspect = Q::Knop | state | A::Position;
+
+        setMetric( aspect | Q::Checked, 0 );
+        setMetric( aspect, 1 );
+
+        aspect = Q::Groove | state | A::Color;
+        setColor( aspect | Q::Checked, m_pal.baseColor);
+    }
+
+    setAnimation( Q::Knop | A::Metric, qskDuration );
+    setAnimation( Q::Groove | A::Color, qskDuration );
 }
 
 void Editor::setupTabButton()
