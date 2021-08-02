@@ -496,24 +496,24 @@ void Editor::setupSwitchButton()
     const qreal knopLength = radius - 4;
 
     setBoxShape( Q::Groove, radius);
-    setStrutSize(Q::Groove, 3.4 * radius, 2 * radius);
-    setColor( Q::Groove,  m_pal.accentColor);
-    setBoxBorderColors(Q::Groove, m_pal.darker200);
-    setColor(Q::Groove | Q::Disabled, m_pal.lighter125);
-    setBoxBorderMetrics(Q::Groove, 2);
-    setBoxBorderColors(Q::Groove | Q::Disabled, m_pal.darker125);
+    setStrutSize( Q::Groove, 3.4 * radius, 2 * radius );
+    setColor( Q::Groove,  m_pal.accentColor );
+    setBoxBorderColors( Q::Groove, m_pal.darker200 );
+    setColor( Q::Groove | Q::Disabled, m_pal.lighter125 );
+    setBoxBorderMetrics( Q::Groove, 2 );
+    setBoxBorderColors( Q::Groove | Q::Disabled, m_pal.darker125 );
 
-    setBoxShape( Q::Knop, knopLength);
-    setMetric(Q::Knop | A::Size,knopLength);
-    setGradient( Q::Knop, QskGradient(Qt::Vertical, m_pal.lighter150, m_pal.lighter125) );
-    setBoxBorderMetrics(Q::Knop, 2);
-    setColor(Q::Knop | Q::Disabled, m_pal.lighter125);
-    setBoxBorderColors(Q::Knop, m_pal.darker200);
-    setBoxBorderColors(Q::Knop | Q::Disabled, m_pal.darker125);
+    setBoxShape( Q::Handle, knopLength );
+    setMetric( Q::Handle | A::Size,knopLength );
+    setGradient( Q::Handle, QskGradient( Qt::Vertical, m_pal.lighter150, m_pal.lighter125 ) );
+    setBoxBorderMetrics( Q::Handle, 2 );
+    setColor( Q::Handle | Q::Disabled, m_pal.lighter125 );
+    setBoxBorderColors( Q::Handle, m_pal.darker200 );
+    setBoxBorderColors( Q::Handle | Q::Disabled, m_pal.darker125 );
 
     for( auto state : { A::NoState, Q::Disabled } )
     {
-        auto aspect = Q::Knop | state | A::Position;
+        auto aspect = Q::Handle | state | A::Position;
 
         setMetric( aspect | Q::Checked, 0 );
         setMetric( aspect, 1 );
@@ -522,7 +522,7 @@ void Editor::setupSwitchButton()
         setColor( aspect | Q::Checked, m_pal.baseColor);
     }
 
-    setAnimation( Q::Knop | A::Metric, qskDuration );
+    setAnimation( Q::Handle | A::Metric, qskDuration );
     setAnimation( Q::Groove | A::Color, qskDuration );
 }
 

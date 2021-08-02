@@ -1,57 +1,79 @@
 #include "QskSwitchButton.h"
 
-QSK_SUBCONTROL( QskSwitchButton, Knop )
+QSK_SUBCONTROL( QskSwitchButton, Handle )
 QSK_SUBCONTROL( QskSwitchButton, Groove )
 
 struct QskSwitchButton::PrivateData
 {
-    PrivateData()
-        : orientation( Qt::Horizontal )
-        , layoutDirection( Qt::LeftToRight)
+    PrivateData( Qt::Orientation orientation )
+        : orientation( orientation )
     {
     }
 
+    bool inverted = false;
     Qt::Orientation orientation;
-    Qt::LayoutDirection layoutDirection;
 };
 
 QskSwitchButton::QskSwitchButton( QQuickItem* parent )
-    : QskAbstractButton(parent)
-    , m_data( new PrivateData() )
+    : QskSwitchButton( Qt::Horizontal, parent )
 {
+}
+
+QskSwitchButton::QskSwitchButton( Qt::Orientation orientation, QQuickItem* parent )
+    : QskAbstractButton( parent )
+    , m_data( new PrivateData( orientation ) )
+{   
     setCheckable( true );
+    initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 }
 
-QskSwitchButton::~QskSwitchButton() {
+QskSwitchButton::~QskSwitchButton()
+{
 }
-
 
 Qt::Orientation QskSwitchButton::orientation() const
 {
     return m_data->orientation;
 }
-void QskSwitchButton::setOrientation(Qt::Orientation orientation)
+
+void QskSwitchButton::setOrientation( Qt::Orientation orientation )
 {
-    if(m_data->orientation != orientation)
+    if( m_data->orientation != orientation )
     {
         m_data->orientation = orientation;
+
+        resetImplicitSize();
         update();
+
         Q_EMIT orientationChanged( orientation );
     }
 }
 
-Qt::LayoutDirection QskSwitchButton::layoutDirection() const
+bool QskSwitchButton::isInverted() const
 {
-    return m_data->layoutDirection;
+    return m_data->inverted;
 }
-void QskSwitchButton::setLayoutDirection(Qt::LayoutDirection layoutDirection)
+
+void QskSwitchButton::setInverted( bool on )
 {
-    if(m_data->layoutDirection != layoutDirection)
+    if( m_data->inverted != on )
     {
-        m_data->layoutDirection = layoutDirection;
+        m_data->inverted = on;
+
+        resetImplicitSize(); // in case the size hints depend on it
         update();
-        Q_EMIT layoutDirectionChanged( layoutDirection );
+
+        Q_EMIT invertedChanged( on );
     }
+}
+
+QskAspect::Placement QskSwitchButton::effectivePlacement() const
+{   
+    /*
+        So you can define different hints depending on the orientation,
+        but what about the layoutDirection ???
+     */
+    return static_cast< QskAspect::Placement >( m_data->orientation );
 }
 
 #include "moc_QskSwitchButton.cpp"
