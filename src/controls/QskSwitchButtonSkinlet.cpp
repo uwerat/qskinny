@@ -1,55 +1,57 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * This file may be used under the terms of the QSkinny License, Version 1.0
+ *****************************************************************************/
 
 #include "QskSwitchButton.h"
 #include "QskSwitchButtonSkinlet.h"
 #include "QskSGNode.h"
-QskSwitchButtonSkinlet::QskSwitchButtonSkinlet(QskSkin* skin)
+
+QskSwitchButtonSkinlet::QskSwitchButtonSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
-    setNodeRoles( { GrooveRole, KnopRole } );
+    setNodeRoles( { GrooveRole, HandleRole } );
 }
 
-QskSwitchButtonSkinlet::~QskSwitchButtonSkinlet() {}
+QskSwitchButtonSkinlet::~QskSwitchButtonSkinlet()
+{
+}
 
 QRectF QskSwitchButtonSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl) const
 {
     using Q = QskSwitchButton;
+
     const auto switchButton = static_cast< const Q* >( skinnable );
 
-    if (!switchButton)
+    if ( subControl == Q::Handle )
     {
-        return Inherited::subControlRect( skinnable, contentsRect, subControl );
-    }
+        const auto diameter = 2 * skinnable->metric( Q::Handle | QskAspect::Size );
+        const auto grooveSize = skinnable->strutSizeHint( Q::Groove );
 
-    if ( subControl == Q::Knop)
-    {
-        const auto diameter = 2 * skinnable->metric(QskSwitchButton::Knop | QskAspect::Size);
-        const auto grooveSize = skinnable->strutSizeHint(QskSwitchButton::Groove);
-        auto position = skinnable->metric( Q::Knop | QskAspect::Position );
+        auto position = skinnable->metric( Q::Handle | QskAspect::Position );
+        if( switchButton->isInverted() )
+            position = 1.0 - position;
 
-        auto rect = QRectF(0, 0, diameter, diameter);
+        auto rect = QRectF( 0, 0, diameter, diameter );
 
-        if(switchButton->layoutDirection() == Qt::RightToLeft)
+        if( switchButton->orientation() == Qt::Vertical )
         {
-            position = 1 - position;
-        }
+            if( diameter < grooveSize.height() )
+                rect.moveLeft( ( grooveSize.height() - diameter ) / 2 );
 
-        if(switchButton->orientation() == Qt::Vertical)
-        {
-            if(diameter < grooveSize.height() )
-            {
-                rect.moveLeft( ( grooveSize.height() - diameter ) / 2);
-            }
             rect.moveTop( ( grooveSize.height() - diameter ) / 2
                 + position * ( grooveSize.width() - diameter
                 - ( grooveSize.height() - diameter ) ) );
         }
         else
         {
-            if(diameter < grooveSize.height() )
-            {
-                rect.moveTop( ( grooveSize.height() - diameter ) / 2);
-            }
+            if( switchButton->layoutMirroring() )
+                position = 1.0 - position;
+
+            if( diameter < grooveSize.height() )
+                rect.moveTop( ( grooveSize.height() - diameter ) / 2 );
+
             rect.moveLeft( ( grooveSize.height() - diameter ) / 2
                 + position * ( grooveSize.width() - diameter
                 - ( grooveSize.height() - diameter ) ) );
@@ -57,27 +59,27 @@ QRectF QskSwitchButtonSkinlet::subControlRect( const QskSkinnable* skinnable,
 
         return rect;
     }
-    else if ( subControl == Q::Groove )
-    {
-        auto diameter = 2 * skinnable->metric(QskSwitchButton::Knop | QskAspect::Size);
-        const auto grooveSize = skinnable->strutSizeHint(QskSwitchButton::Groove);
-        auto result = contentsRect;
-        result.setSize( QSizeF(grooveSize.width(), grooveSize.height() ) );
 
-        if(switchButton->orientation() == Qt::Vertical )
+    if ( subControl == Q::Groove )
+    {
+        auto diameter = 2 * skinnable->metric( Q::Handle | QskAspect::Size );
+        const auto grooveSize = skinnable->strutSizeHint( Q::Groove );
+
+        auto result = contentsRect;
+        result.setSize( grooveSize );
+
+        if( switchButton->orientation() == Qt::Vertical )
         {
-            if(grooveSize.height() < diameter)
-            {
-                result.moveLeft( ( diameter - result.height() ) / 2);
-            }
+            if( grooveSize.height() < diameter )
+                result.moveLeft( ( diameter - result.height() ) / 2 );
+
             return result.transposed();
         }
         else
         {
-            if(grooveSize.height() < diameter)
-            {
-                result.moveTop( ( diameter - result.height() ) / 2);
-            }
+            if( grooveSize.height() < diameter )
+                result.moveTop( ( diameter - result.height() ) / 2 );
+
             return result;
         }
     }
@@ -88,33 +90,35 @@ QRectF QskSwitchButtonSkinlet::subControlRect( const QskSkinnable* skinnable,
 QSizeF QskSwitchButtonSkinlet::sizeHint( const QskSkinnable* skinnable,
     Qt::SizeHint, const QSizeF&) const
 {
-    const auto switchButton = static_cast< const QskSwitchButton* >( skinnable );
-    const auto diameter = 2 * skinnable->metric(QskSwitchButton::Knop | QskAspect::Size);
-    const auto grooveSize = skinnable->strutSizeHint(QskSwitchButton::Groove);
+    using Q = QskSwitchButton;
 
-    auto result = QSizeF(qMax(diameter, grooveSize.width() ),
-        qMax(diameter, grooveSize.height() ) );
-    if(switchButton->orientation() == Qt::Vertical)
-    {
-        return result.transposed();
-    }
+    const auto switchButton = static_cast< const Q* >( skinnable );
+    const auto diameter = 2 * skinnable->metric( Q::Handle | QskAspect::Size );
 
-    return result;
+    auto hint = skinnable->strutSizeHint( Q::Groove );
+    hint = hint.expandedTo( QSizeF( diameter, diameter ) );
+
+    if( switchButton->orientation() == Qt::Vertical )
+        hint.transpose();
+
+    return hint;
 }
 
 QSGNode* QskSwitchButtonSkinlet::updateSubNode( const QskSkinnable* skinnable,
     quint8 nodeRole, QSGNode* node) const
 {
-    const auto switchButton = static_cast< const QskSwitchButton* >( skinnable );
+    using Q = QskSwitchButton;
 
     switch ( nodeRole )
     {
-        case KnopRole:
-            return updateBoxNode( switchButton, node, QskSwitchButton::Knop );
+        case HandleRole:
+            return updateBoxNode( skinnable, node, Q::Handle );
 
         case GrooveRole:
-            return updateBoxNode( switchButton, node, QskSwitchButton::Groove );
+            return updateBoxNode( skinnable, node, Q::Groove );
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
+
+#include "moc_QskSwitchButtonSkinlet.cpp"
