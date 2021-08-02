@@ -3,6 +3,7 @@ TEMPLATE = subdirs
 # c++
 SUBDIRS += \
     desktop \
+    switchbuttons \
     gallery \
     layouts \
     listbox \

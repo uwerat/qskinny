@@ -21,6 +21,8 @@
 #include <QskSeparator.h>
 #include <QskSlider.h>
 #include <QskSubWindow.h>
+#include <QskSwitchButton.h>
+#include <QskSwitchButtonSkinlet.h>
 #include <QskTabBar.h>
 #include <QskTabButton.h>
 #include <QskTabView.h>
@@ -143,6 +145,7 @@ namespace
         void setupSeparator();
         void setupSlider();
         void setupSubWindow();
+        void setupSwitchButton();
         void setupTabButton();
         void setupTabBar();
         void setupTabView();
@@ -260,6 +263,7 @@ void Editor::setup()
     setupSeparator();
     setupSlider();
     setupSubWindow();
+    setupSwitchButton();
     setupTabButton();
     setupTabBar();
     setupTabView();
@@ -847,6 +851,45 @@ void Editor::setupSubWindow()
 
     for ( auto subControl : { Q::Panel, Q::TitleBarPanel, Q::TitleBarText } )
         setAnimation( subControl | A::Color, qskDuration );
+}
+
+void Editor::setupSwitchButton()
+{
+    using A = QskAspect;
+    using Q = QskSwitchButton;
+
+    const qreal radius = qskDpiScaled( 18 );
+    const qreal knopLength = radius - 4;
+
+    setBoxShape( Q::Groove, radius);
+    setStrutSize(Q::Groove, 3.4 * radius, 2 * radius);
+    setColor( Q::Groove,  m_pal.highlighted);
+    setBoxBorderColors(Q::Groove | Q::Disabled, m_pal.theme);
+    setColor(Q::Groove | Q::Disabled, m_pal.lighter110);
+    setBoxBorderMetrics(Q::Groove, 2);
+    setBoxBorderColors(Q::Groove, m_pal.darker200);
+
+    setBoxShape( Q::Knop, knopLength);
+    setMetric(Q::Knop | A::Size,knopLength);
+    setGradient( Q::Knop, QskGradient(Qt::Vertical, m_pal.lighter150, m_pal.lighter110) );
+    setBoxBorderMetrics(Q::Knop, 2);
+    setColor(Q::Knop | Q::Disabled, m_pal.lighter110);
+    setBoxBorderColors(Q::Knop, m_pal.darker200);
+    setBoxBorderColors(Q::Knop | Q::Disabled, m_pal.theme);
+
+    for( auto state : { A::NoState, Q::Disabled } )
+    {
+        auto aspect = Q::Knop | state | A::Position;
+
+        setMetric( aspect | Q::Checked, 0 );
+        setMetric( aspect, 1 );
+
+        aspect = Q::Groove | state | A::Color;
+        setColor( aspect | Q::Checked, m_pal.baseActive);
+    }
+
+    setAnimation( Q::Knop | A::Metric, qskDuration );
+    setAnimation( Q::Groove | A::Color, qskDuration );
 }
 
 class QskSquiekSkin::PrivateData

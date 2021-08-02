@@ -70,6 +70,9 @@ QSK_QT_PRIVATE_END
 #include "QskSubWindowArea.h"
 #include "QskSubWindowAreaSkinlet.h"
 
+#include "QskSwitchButton.h"
+#include "QskSwitchButtonSkinlet.h"
+
 #include "QskPageIndicator.h"
 #include "QskPageIndicatorSkinlet.h"
 
@@ -149,6 +152,7 @@ QskSkin::QskSkin( QObject* parent )
     declareSkinlet< QskStatusIndicator, QskStatusIndicatorSkinlet >();
     declareSkinlet< QskSubWindow, QskSubWindowSkinlet >();
     declareSkinlet< QskSubWindowArea, QskSubWindowAreaSkinlet >();
+    declareSkinlet< QskSwitchButton, QskSwitchButtonSkinlet >();
     declareSkinlet< QskTabButton, QskTabButtonSkinlet >();
     declareSkinlet< QskTabView, QskTabViewSkinlet >();
     declareSkinlet< QskTextLabel, QskTextLabelSkinlet >();
