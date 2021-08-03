@@ -859,33 +859,38 @@ void Editor::setupSwitchButton()
     using Q = QskSwitchButton;
 
     const qreal radius = qskDpiScaled( 18 );
-    const qreal handleLength = radius - 4;
+    const qreal handleSize = 2 * ( radius - 2 );
 
-    setBoxShape( Q::Groove, radius);
-    setStrutSize( Q::Groove, 3.4 * radius, 2 * radius );
-    setColor( Q::Groove,  m_pal.highlighted );
+    setBoxShape( Q::Groove, 100, Qt::RelativeSize );
+
+    const QSizeF grooveSize( 3.4 * radius, 2 * radius );
+    setStrutSize( Q::Groove | A::Horizontal, grooveSize );
+    setStrutSize( Q::Groove | A::Vertical, grooveSize.transposed() );
+
+    setGradient( Q::Groove, m_pal.theme );
+    setGradient( Q::Groove | Q::Checkable | Q::Checked, m_pal.highlighted );
+    setGradient( Q::Groove | Q::Checkable | Q::Disabled, m_pal.lighter150 );
+
     setBoxBorderColors( Q::Groove | Q::Disabled, m_pal.theme );
-    setColor( Q::Groove | Q::Disabled, m_pal.lighter110 );
     setBoxBorderMetrics( Q::Groove, 2 );
     setBoxBorderColors( Q::Groove, m_pal.darker200 );
 
-    setBoxShape( Q::Handle, handleLength );
-    setMetric( Q::Handle | A::Size, handleLength );
+    setBoxShape( Q::Handle, 100, Qt::RelativeSize );
+    setStrutSize( Q::Handle, handleSize, handleSize );
+
     setGradient( Q::Handle, QskGradient( Qt::Vertical, m_pal.lighter150, m_pal.lighter110 ) );
+    setGradient( Q::Handle | Q::Disabled, m_pal.lighter110 );
+
     setBoxBorderMetrics( Q::Handle, 2 );
-    setColor(Q::Handle | Q::Disabled, m_pal.lighter110 );
     setBoxBorderColors( Q::Handle, m_pal.darker200 );
     setBoxBorderColors( Q::Handle | Q::Disabled, m_pal.theme );
 
     for( auto state : { A::NoState, Q::Disabled } )
     {
-        auto aspect = Q::Handle | state | A::Position;
+        auto aspect = Q::Handle | Q::Checkable | state | A::Position;
 
-        setMetric( aspect | Q::Checked, 0 );
-        setMetric( aspect, 1 );
-
-        aspect = Q::Groove | state | A::Color;
-        setColor( aspect | Q::Checked, m_pal.baseActive);
+        setMetric( aspect, 0 );
+        setMetric( aspect | Q::Checked, 1 );
     }
 
     setAnimation( Q::Handle | A::Metric, qskDuration );

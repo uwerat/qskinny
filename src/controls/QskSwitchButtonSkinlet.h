@@ -21,11 +21,11 @@ class QSK_EXPORT QskSwitchButtonSkinlet : public QskSkinlet
         HandleRole
     };
 
-    Q_INVOKABLE QskSwitchButtonSkinlet( QskSkin* parent = nullptr );
+    Q_INVOKABLE QskSwitchButtonSkinlet( QskSkin* = nullptr );
     ~QskSwitchButtonSkinlet() override;
 
     QRectF subControlRect( const QskSkinnable*,
-        const QRectF& rect, QskAspect::Subcontrol ) const override;
+        const QRectF&, QskAspect::Subcontrol ) const override;
 
     QSizeF sizeHint( const QskSkinnable*,
         Qt::SizeHint, const QSizeF& ) const override;
@@ -33,6 +33,10 @@ class QSK_EXPORT QskSwitchButtonSkinlet : public QskSkinlet
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
+
+  private:
+    QRectF grooveRect( const QskSkinnable*, const QRectF& ) const;
+    QRectF handleRect( const QskSkinnable*, const QRectF& ) const;
 };
 
 #endif
