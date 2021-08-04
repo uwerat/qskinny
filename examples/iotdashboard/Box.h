@@ -17,9 +17,4 @@ class Box : public QskLinearBox
     QSK_SUBCONTROLS( Panel )
 
     Box( const QString& title, QQuickItem* parent = nullptr );
-
-  protected:
-
-    QskAspect::Subcontrol substitutedSubcontrol(
-        QskAspect::Subcontrol ) const override;
 };
