@@ -21,7 +21,7 @@ Box::Box( const QString& title, QQuickItem* parent )
 
     auto label = new QskTextLabel( title, this );
     label->setFontRole( Skin::TitleFont );
-    label->setVisible( !tite.isEmpty() );
+    label->setVisible( !title.isEmpty() );
 }
 
 #include "moc_Box.cpp"
