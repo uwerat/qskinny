@@ -70,7 +70,6 @@ class QSK_EXPORT QskAbstractButton : public QskControl
 
     void pressedChanged( bool );
     void checkedChanged( bool );
-    void checkableChanged( bool );
 
     void autoRepeatChanged( bool );
     void autoRepeatDelayChanged();
