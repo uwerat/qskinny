@@ -59,7 +59,7 @@ class TopBar : public QskLinearBox
   public:
     QSK_SUBCONTROLS( Panel )
 
-    TopBar( QQuickItem* parent );
+    TopBar( QQuickItem* parent = nullptr );
 
   private:
     QList< TopBarItem* > m_entries;

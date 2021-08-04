@@ -13,11 +13,13 @@
 #include "MainContent.h"
 #include "MenuBar.h"
 #include "PieChartPainted.h"
+#include "RoundedIcon.h"
 #include "TopBar.h"
-#include "UpAndDownButton.h"
-#include "Usage.h"
+#include "RoundButton.h"
+#include "UsageBox.h"
 #include "UsageDiagram.h"
 
+#include <QskBoxShapeMetrics.h>
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxBorderColors.h>
 #include <QskFunctions.h>
@@ -121,8 +123,8 @@ void Skin::initHints( const Palette& palette )
 
 
     // content in boxes (indoor temperature, humidity etc.):
-    ed.setFontRole( UsageSpacer::Text, QskSkin::SmallFont );
-    ed.setColor( UsageSpacer::Text, "#dddddd" );
+    ed.setFontRole( UsageBox::Separator, QskSkin::SmallFont );
+    ed.setColor( UsageBox::Separator, "#dddddd" );
 
     ed.setPadding( BoxWithButtons::Panel, 8 );
 
@@ -133,10 +135,10 @@ void Skin::initHints( const Palette& palette )
     ed.setMetric( RoundedIcon::Panel | RoundedIcon::Small | QskAspect::Size, 60 );
     ed.setMetric( RoundedIcon::Icon | QskAspect::Size, 36 );
 
-    ed.setFontRole( ButtonValueLabel::Text, QskSkin::HugeFont );
-    ed.setColor( ButtonValueLabel::Text, "#929cb2" );
+    ed.setFontRole( BoxWithButtons::ValueText, QskSkin::HugeFont );
+    ed.setColor( BoxWithButtons::ValueText, "#929cb2" );
 
-    ed.setPadding( TitleAndValueBox::Panel, {0, 10, 0, 0} );
+    ed.setPadding( BoxWithButtons::ValuePanel, {0, 10, 0, 0} );
 
     ed.setStrutSize( RoundButton::Panel, {27, 38} );
     ed.setBoxShape( RoundButton::Panel, {0, 0, 30, 30} );
@@ -170,8 +172,8 @@ void Skin::initHints( const Palette& palette )
     // light intensity:
     ed.setGradient( LightDisplay::ColdPart, { Qt::Horizontal, "#a7b0ff", "#6776ff" } );
     ed.setGradient( LightDisplay::WarmPart, { Qt::Horizontal, "#feeeb7", "#ff3122" } );
-    ed.setFontRole( LightIntensityValueLabel::Text, QskSkin::LargeFont );
-    ed.setColor( LightIntensityValueLabel::Text, "#929cb2" );
+    ed.setFontRole( LightDisplay::ValueText, QskSkin::LargeFont );
+    ed.setColor( LightDisplay::ValueText, "#929cb2" );
 
 
     // palette dependent skin hints:

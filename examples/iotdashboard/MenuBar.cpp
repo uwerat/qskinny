@@ -11,7 +11,7 @@
 #include <QskSkin.h>
 #include <QskTextLabel.h>
 
-#include <QtGui/QImage>
+#include <QImage>
 
 QSK_SUBCONTROL( MenuBarTopLabel, Graphic )
 QSK_SUBCONTROL( MenuBarGraphicLabel, Graphic )
@@ -23,11 +23,8 @@ QSK_STATE( MenuItem, Active, ( QskAspect::FirstUserState << 1 ) )
 
 MenuItem::MenuItem( const QString& name, QQuickItem* parent )
     : QskLinearBox( Qt::Horizontal, parent )
-    , m_name( name )
 {
-    setAutoLayoutChildren( true );
-    setAutoAddChildren( true );
-    setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
+    initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
     setSpacing( 6 );
 
     setAcceptHoverEvents( true );
@@ -38,7 +35,8 @@ MenuItem::MenuItem( const QString& name, QQuickItem* parent )
     QString fileName = ":/images/" + name.toLower() + ".png";
     QImage image( fileName );
     auto graphic = QskGraphic::fromImage( image );
-    auto* graphicLabel = new MenuBarGraphicLabel( graphic, this );
+
+    auto graphicLabel = new MenuBarGraphicLabel( graphic, this );
     graphicLabel->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
     graphicLabel->setFixedWidth( metric( MenuBarGraphicLabel::Graphic | QskAspect::Size ) );
 
@@ -51,13 +49,12 @@ MenuBar::MenuBar( QQuickItem* parent )
     setPanel( true );
     setSubcontrolProxy( QskBox::Panel, MenuBar::Panel );
 
-    setSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Preferred );
+    initSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Preferred );
     setSpacing( 8 );
 
-    auto* mainIcon = ":/images/main-icon.png";
-    QImage image( mainIcon );
-    auto graphic = QskGraphic::fromImage( image );
-    auto* graphicLabel = new MenuBarTopLabel( graphic, this );
+    auto graphic = QskGraphic::fromImage( QImage( ":/images/main-icon.png" ) );
+
+    auto graphicLabel = new MenuBarTopLabel( graphic, this );
     graphicLabel->setMargins( marginHint( MenuBarTopLabel::Graphic ) );
     graphicLabel->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 

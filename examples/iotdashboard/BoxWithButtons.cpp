@@ -4,19 +4,33 @@
  *****************************************************************************/
 
 #include "BoxWithButtons.h"
-
+#include "RoundButton.h"
 #include "RoundedIcon.h"
 #include "Skin.h"
-#include "UpAndDownButton.h"
 
 #include <QskTextLabel.h>
+#include <QskLinearBox.h>
 
-QSK_SUBCONTROL( ButtonValueLabel, Text )
-QSK_SUBCONTROL( TitleAndValueBox, Panel )
+QSK_SUBCONTROL( BoxWithButtons, ValueText )
+QSK_SUBCONTROL( BoxWithButtons, ValuePanel )
 QSK_SUBCONTROL( BoxWithButtons, Panel )
 
-QSK_SUBCONTROL( IndoorTemperature, Panel )
-QSK_SUBCONTROL( Humidity, Panel )
+namespace
+{
+    class UpAndDownBox : public QskLinearBox
+    {   
+      public:
+        UpAndDownBox( QQuickItem* parent )
+            : QskLinearBox( Qt::Vertical, parent )
+        {
+            setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
+            setSpacing( 0 );
+
+            new RoundButton( QskAspect::Top, this );
+            new RoundButton( QskAspect::Bottom, this );
+        }
+    };
+}
 
 BoxWithButtons::BoxWithButtons( const QString& title, const QString& value,
         bool isBright, QQuickItem* parent )
@@ -34,14 +48,15 @@ BoxWithButtons::BoxWithButtons( const QString& title, const QString& value,
     iconFile = iconFile.replace( ' ', '-' );
     new RoundedIcon( iconFile, isBright, false, layout );
 
-    auto* titleAndValue = new TitleAndValueBox( Qt::Vertical, layout );
+    auto titleAndValue = new QskLinearBox( Qt::Vertical, layout );
+    titleAndValue->setPanel( true );
+    titleAndValue->setSubcontrolProxy( QskBox::Panel, ValuePanel );
 
     auto* titleLabel = new QskTextLabel( title, titleAndValue );
     titleLabel->setFontRole( Skin::TitleFont );
 
-    new ButtonValueLabel( value, titleAndValue );
+    auto valueLabel = new QskTextLabel( value, titleAndValue );
+    valueLabel->setSubcontrolProxy( QskTextLabel::Text, ValueText );
 
-    new UpAndDownButton( layout );
+    new UpAndDownBox( layout );
 }
-
-#include "moc_BoxWithButtons.cpp"

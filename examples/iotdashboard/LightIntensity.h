@@ -5,102 +5,22 @@
 
 #pragma once
 
-#include "Box.h"
+#include <QskLinearBox.h>
 
-#include <QskTextLabel.h>
-
-#include <QQuickPaintedItem>
-#include <QRadialGradient>
-
-class DimmerAnimator;
 class QskTextLabel;
 
-class LightIntensityValueLabel : public QskTextLabel
+class LightDisplay : public QskLinearBox
 {
     Q_OBJECT
 
   public:
-    QSK_SUBCONTROLS( Text )
+    QSK_SUBCONTROLS( Panel, ColdPart, WarmPart, ValueText )
 
-    LightIntensityValueLabel( const QString& text, QQuickItem* parent )
-        : QskTextLabel( text, parent )
-    {
-        setSubcontrolProxy( QskTextLabel::Text, Text );
-    }
-};
-
-class LightDimmer : public QQuickPaintedItem
-{
-    Q_OBJECT
-
-  public:
-    LightDimmer( const QskGradient& coldGradient,
-        const QskGradient& warmGradient, QQuickItem* parent );
-
-    double thickness() const
-    {
-        return m_thickness;
-    }
-
-    void setThickness( double thickness )
-    {
-        m_thickness = thickness;
-    }
-
-    QColor backgroundColor() const
-    {
-        return m_backgroundColor;
-    }
-
-    void setBackgroundColor( const QColor& color )
-    {
-        m_backgroundColor = color;
-    }
-
-    QRadialGradient ringGradient() const
-    {
-        return m_ringGradient;
-    }
-
-    void setRingGradient( const QRadialGradient& gradient )
-    {
-        m_ringGradient = gradient;
-    }
-
-  private:
-    virtual void paint( QPainter* painter ) override;
-
-    double m_thickness = 17.57;
-    QColor m_backgroundColor;
-    QRadialGradient m_ringGradient;
-    QskGradient m_coldGradient;
-    QskGradient m_warmGradient;
-};
-
-class LightDisplay : public QskControl
-{
-    Q_OBJECT
-
-  public:
-    QSK_SUBCONTROLS( Panel, ColdPart, WarmPart )
-
-    LightDisplay( QQuickItem* parent );
+    LightDisplay( QQuickItem* parent = nullptr );
 
   protected:
     void updateLayout() override;
 
   private:
-    QskTextLabel* m_leftLabel;
-    LightIntensityValueLabel* m_centreLabel;
-    QskTextLabel* m_rightLabel;
-    LightDimmer* m_dimmer;
-    DimmerAnimator* m_animator;
-};
-
-class LightIntensity : public Box
-{
-    Q_OBJECT
-
-  public:
-    LightIntensity( QQuickItem* parent );
+    QskTextLabel* m_valueLabel;
 };

@@ -16,11 +16,11 @@ SOURCES += \
     RoundedIcon.cpp \
     Skin.cpp \
     TopBar.cpp \
-    UpAndDownButton.cpp \
-    Usage.cpp \
-    main.cpp \
+    RoundButton.cpp \
+    UsageBox.cpp \
+    UsageDiagram.cpp \
     MainWindow.cpp \
-    UsageDiagram.cpp
+    main.cpp \
 
 SOURCES += \
     nodes/DiagramDataNode.cpp \
@@ -43,8 +43,8 @@ HEADERS += \
     RoundedIcon.h \
     Skin.h \
     TopBar.h \
-    UpAndDownButton.h \
-    Usage.h \
+    RoundButton.h \
+    UsageBox.h \
     UsageDiagram.h
 
 HEADERS += \

@@ -119,6 +119,6 @@ void PieChartPainted::updateLayout()
     auto posX = rect.width() / 2 - textWidth / 2;
     auto posY = rect.height() / 2 - fm.height() / 2;
 
-    m_progressLabel->setPosition( { posX, posY } );
+    m_progressLabel->setPosition( posX, posY );
     m_progressLabel->setFixedWidth( textWidth );
 }

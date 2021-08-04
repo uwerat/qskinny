@@ -7,11 +7,10 @@
 
 #include "Box.h"
 
-class BoxWithButtons : public Box
+class UsageBox : public Box
 {
   public:
-    QSK_SUBCONTROLS( Panel, ValuePanel, ValueText )
+    QSK_SUBCONTROLS( Separator )
 
-    BoxWithButtons( const QString& title, const QString& value,
-        bool isBright, QQuickItem* parent = nullptr );
+    UsageBox( QQuickItem* parent = nullptr );
 };

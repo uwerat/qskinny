@@ -32,6 +32,36 @@ CircularProgressBar::CircularProgressBar( const QskGradient& gradient, int progr
     } );
 }
 
+double CircularProgressBar::width() const
+{
+    return m_width;
+}
+
+void CircularProgressBar::setWidth( double width )
+{
+    m_width = width;
+}
+
+QColor CircularProgressBar::backgroundColor() const
+{
+    return m_backgroundColor;
+}
+
+void CircularProgressBar::setBackgroundColor( const QColor& color )
+{
+    m_backgroundColor = color;
+}
+
+QRadialGradient CircularProgressBar::ringGradient() const
+{
+    return m_ringGradient;
+}
+
+void CircularProgressBar::setRingGradient( const QRadialGradient& gradient )
+{
+    m_ringGradient = gradient;
+}
+
 void CircularProgressBar::paint( QPainter* painter )
 {
     auto size = contentsSize();

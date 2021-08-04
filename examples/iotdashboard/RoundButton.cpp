@@ -3,11 +3,9 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#include "UpAndDownButton.h"
+#include "RoundButton.h"
 
-#include <QskBoxShapeMetrics.h>
 #include <QskGraphic.h>
-#include <QskGraphicIO.h>
 #include <QskPushButton.h>
 
 #include <QImage>
@@ -39,15 +37,3 @@ RoundButton::RoundButton( QskAspect::Placement placement, QQuickItem* parent )
     graphic = QskGraphic::fromImage( image );
     setGraphic( graphic );
 }
-
-UpAndDownButton::UpAndDownButton( QQuickItem* parent )
-    : QskLinearBox( Qt::Vertical, parent )
-{
-    setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
-    setSpacing( 0 );
-
-    new RoundButton( QskAspect::Top, this );
-    new RoundButton( QskAspect::Bottom, this );
-}
-
-#include "moc_UpAndDownButton.cpp"

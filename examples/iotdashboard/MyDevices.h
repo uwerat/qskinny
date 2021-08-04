@@ -10,5 +10,5 @@
 class MyDevices : public Box
 {
   public:
-    MyDevices( QQuickItem* parent );
+    MyDevices( QQuickItem* parent = nullptr );
 };
