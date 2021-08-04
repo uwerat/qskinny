@@ -13,32 +13,33 @@ class QskGraphicLabel;
 
 class RoundedIcon : public QskBox
 {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        QSK_SUBCONTROLS( Panel, Icon )
-        QSK_STATES( Bright, Small ) // to differentiate between orange and purple and small vs. big
+  public:
+    QSK_SUBCONTROLS( Panel, Icon )
+    QSK_STATES( Bright, Small ) // to differentiate between orange and purple and small vs. big
 
-        RoundedIcon( const QString& iconName, bool isBright, bool isSmall, QQuickItem* parent = nullptr );
+    RoundedIcon( const QString& iconName, bool isBright, bool isSmall,
+                 QQuickItem* parent = nullptr );
 
-        QskAspect::Subcontrol effectiveSubcontrol(
-            QskAspect::Subcontrol subControl ) const override
+    QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol subControl ) const override
+    {
+        if( subControl == QskBox::Panel )
         {
-            if( subControl == QskBox::Panel )
-            {
-                return Panel;
-            }
-
-            return subControl;
+            return Panel;
         }
 
-    protected:
-        void updateLayout() override;
-        virtual QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
+        return subControl;
+    }
 
-    private:
-        QString m_iconName;
-        QskGraphicLabel* m_graphicLabel = nullptr;
+  protected:
+    void updateLayout() override;
+    virtual QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
+
+  private:
+    QString m_iconName;
+    QskGraphicLabel* m_graphicLabel = nullptr;
 };
 
 #endif // ROUNDEDICON_H

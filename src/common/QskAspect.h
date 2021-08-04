@@ -374,13 +374,13 @@ inline void QskAspect::setPrimitive( Type type, QskAspect::Primitive primitive )
 inline constexpr QskAspect::Primitive QskAspect::flagPrimitive() const noexcept
 {
     return ( m_bits.type == Flag )
-        ?  static_cast< Primitive >( m_bits.primitive ) : NoPrimitive;
+        ? static_cast< Primitive >( m_bits.primitive ) : NoPrimitive;
 }
 
 inline constexpr QskAspect::Primitive QskAspect::colorPrimitive() const noexcept
 {
     return ( m_bits.type == Color )
-        ?  static_cast< Primitive >( m_bits.primitive ) : NoPrimitive;
+        ? static_cast< Primitive >( m_bits.primitive ) : NoPrimitive;
 }
 
 inline constexpr QskAspect::Primitive QskAspect::metricPrimitive() const noexcept

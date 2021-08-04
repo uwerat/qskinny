@@ -37,7 +37,7 @@ namespace
              */
 
             QskSkinHintTableEditor ed( &newSkin->hintTable() );
-    
+
             ed.setColor( QskListView::CellSelected, m_accent.darker( 130 ) );
             ed.setBoxBorderColors( QskFocusIndicator::Panel, m_accent.darker( 150 ) );
         }

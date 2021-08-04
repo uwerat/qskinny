@@ -10,8 +10,8 @@
 
 class MyDevices : public Box
 {
-    public:
-        MyDevices( QQuickItem* parent );
+  public:
+    MyDevices( QQuickItem* parent );
 };
 
 #endif // MYDEVICES_H

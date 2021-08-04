@@ -7,16 +7,12 @@
 
 class Diagram::PrivateData
 {
-    public:
-        PrivateData()
-        {
-        }
-
-        QVector<QVector<QPointF> > dataPoints;
-        int xGridLines = -1;
-        qreal yMax = -1;
-        Qsk::Position position = Qsk::Bottom;
-        QVector<Types> types;
+  public:
+    QVector< QVector< QPointF > > dataPoints;
+    int xGridLines = -1;
+    qreal yMax = -1;
+    Qsk::Position position = Qsk::Bottom;
+    QVector< Types > types;
 };
 
 QSK_SUBCONTROL( Diagram, Chart )
@@ -38,12 +34,12 @@ Diagram::~Diagram()
 {
 }
 
-QVector< QVector<QPointF> > Diagram::dataPoints() const
+QVector< QVector< QPointF > > Diagram::dataPoints() const
 {
     return m_data->dataPoints;
 }
 
-void Diagram::addDataPoints( const QVector<QPointF>& dataPoints, const Types& types )
+void Diagram::addDataPoints( const QVector< QPointF >& dataPoints, const Types& types )
 {
     m_data->dataPoints.append( dataPoints );
     m_data->types.append( types );

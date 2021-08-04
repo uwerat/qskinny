@@ -737,7 +737,7 @@ void QskQuickItem::itemChange( QQuickItem::ItemChange change,
 
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 1, 0 )
                 auto wd = QQuickWindowPrivate::get( oldWindow )->deliveryAgentPrivate();
-#else           
+#else
                 auto wd = QQuickWindowPrivate::get( oldWindow );
 #endif
                 if ( auto scope = qskNearestFocusScope( this ) )

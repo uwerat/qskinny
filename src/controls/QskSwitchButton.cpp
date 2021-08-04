@@ -22,7 +22,7 @@ QskSwitchButton::QskSwitchButton( QQuickItem* parent )
 QskSwitchButton::QskSwitchButton( Qt::Orientation orientation, QQuickItem* parent )
     : QskAbstractButton( parent )
     , m_data( new PrivateData( orientation ) )
-{   
+{
     initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 }
 
@@ -72,7 +72,7 @@ void QskSwitchButton::setInverted( bool on )
 }
 
 QskAspect::Placement QskSwitchButton::effectivePlacement() const
-{   
+{
     /*
         So you can define different hints depending on the orientation,
         but what about the layoutDirection ???

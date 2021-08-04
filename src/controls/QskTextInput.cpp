@@ -331,20 +331,20 @@ QskTextInput::~QskTextInput()
 {
 }
 
-void QskTextInput::setPanel( bool on ) 
-{   
+void QskTextInput::setPanel( bool on )
+{
     if ( on != m_data->hasPanel )
     {
         m_data->hasPanel = on;
-    
+
         resetImplicitSize();
         polish();
         update();
     }
-}   
-    
+}
+
 bool QskTextInput::hasPanel() const
-{   
+{
     return m_data->hasPanel;
 }
 

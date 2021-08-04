@@ -8,7 +8,8 @@
 QSK_SUBCONTROL( PieChart, Panel )
 QSK_SUBCONTROL( PieChart, Labels )
 
-PieChart::PieChart( QQuickItem* parent ) : QskControl( parent )
+PieChart::PieChart( QQuickItem* parent )
+    : QskControl( parent )
 {
 }
 

@@ -13,32 +13,32 @@
 
 class UsageSpacer : public QskTextLabel
 {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        QSK_SUBCONTROLS( Text )
+  public:
+    QSK_SUBCONTROLS( Text )
 
-        UsageSpacer( QQuickItem* parent = nullptr )
-            : QskTextLabel( "_____", parent )
+    UsageSpacer( QQuickItem* parent = nullptr )
+        : QskTextLabel( "_____", parent )
+    {
+    }
+
+    QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol subControl ) const override final
+    {
+        if( subControl == QskTextLabel::Text )
         {
+            return Text;
         }
 
-        QskAspect::Subcontrol effectiveSubcontrol(
-            QskAspect::Subcontrol subControl ) const override final
-        {
-            if( subControl == QskTextLabel::Text )
-            {
-                return Text;
-            }
-
-            return subControl;
-        }
+        return subControl;
+    }
 };
 
 class Usage : public Box
 {
-    public:
-        Usage( QQuickItem* parent );
+  public:
+    Usage( QQuickItem* parent );
 };
 
 #endif // USAGE_H

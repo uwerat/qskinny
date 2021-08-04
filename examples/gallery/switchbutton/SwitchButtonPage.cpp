@@ -29,7 +29,7 @@ void SwitchButtonPage::populate()
 
     auto label = new QskTextLabel( "Disable the switches:", hbox1 );
     label->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
-    
+
     auto button0 = new QskSwitchButton( hbox1 );
 
     auto hbox2 = new QskLinearBox( Qt::Horizontal );

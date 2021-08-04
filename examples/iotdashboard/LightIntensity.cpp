@@ -34,51 +34,51 @@ namespace
 // ### There must be an easier way to do this
 class DimmerAnimator : public QskAnimator
 {
-    public:
-        DimmerAnimator( LightDisplay* display, LightDimmer* dimmer )
-            : m_display( display )
-            , m_dimmer( dimmer )
+  public:
+    DimmerAnimator( LightDisplay* display, LightDimmer* dimmer )
+        : m_display( display )
+        , m_dimmer( dimmer )
+    {
+        QQuickWindow* w = static_cast< QQuickWindow* >( qGuiApp->allWindows().at( 0 ) );
+        setWindow( w );
+        setDuration( 500 );
+        setEasingCurve( QEasingCurve::Linear );
+        setAutoRepeat( false );
+    }
+
+    void setup() override
+    {
+        m_backgroundColor = m_display->color( LightDisplay::Panel );
+        m_ringGradient = m_dimmer->ringGradient();
+    }
+
+    void advance( qreal value ) override
+    {
+        const QColor c = m_backgroundColor;
+        const QColor c2 = invertedColor( c );
+        const QColor newColor = QskRgb::interpolated( c2, c, value );
+        m_dimmer->setBackgroundColor( newColor );
+
+        QRadialGradient gradient = m_ringGradient;
+        QRadialGradient newGradient = gradient;
+
+        for( const QGradientStop& stop : gradient.stops() )
         {
-            QQuickWindow* w = static_cast<QQuickWindow*>( qGuiApp->allWindows().at( 0 ) );
-            setWindow( w );
-            setDuration( 500 );
-            setEasingCurve( QEasingCurve::Linear );
-            setAutoRepeat( false );
+            QColor c = stop.second;
+            QColor c2 = invertedColor( c );
+            const QColor newColor = QskRgb::interpolated( c, c2, value );
+            newGradient.setColorAt( stop.first, newColor );
         }
 
-        void setup() override
-        {
-            m_backgroundColor = m_display->color( LightDisplay::Panel );
-            m_ringGradient = m_dimmer->ringGradient();
-        }
+        m_dimmer->setRingGradient( newGradient );
+        m_dimmer->update();
+    }
 
-        void advance( qreal value ) override
-        {
-            const QColor c = m_backgroundColor;
-            const QColor c2 = invertedColor( c );
-            const QColor newColor = QskRgb::interpolated( c2, c, value );
-            m_dimmer->setBackgroundColor( newColor );
-
-            QRadialGradient gradient = m_ringGradient;
-            QRadialGradient newGradient = gradient;
-
-            for( const QGradientStop& stop : gradient.stops() )
-            {
-                QColor c = stop.second;
-                QColor c2 = invertedColor( c );
-                const QColor newColor = QskRgb::interpolated( c, c2, value );
-                newGradient.setColorAt( stop.first, newColor );
-            }
-
-            m_dimmer->setRingGradient( newGradient );
-            m_dimmer->update();
-        }
-
-    private:
-        QColor m_backgroundColor;
-        QRadialGradient m_ringGradient;
-        LightDisplay* m_display;
-        LightDimmer* m_dimmer;
+  private:
+    QColor m_backgroundColor;
+    QRadialGradient m_ringGradient;
+    LightDisplay* m_display;
+    LightDimmer* m_dimmer;
 };
 
 LightDimmer::LightDimmer( const QskGradient& coldGradient, const QskGradient& warmGradient, QQuickItem* parent )

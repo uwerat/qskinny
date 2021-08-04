@@ -127,7 +127,7 @@ QRectF QskPageIndicatorSkinlet::bulletRect(
         bulletRect.moveTo( x, r.top() + adjust );
     else
         bulletRect.moveTo( r.left() + adjust, x );
-    
+
     return bulletRect;
 }
 

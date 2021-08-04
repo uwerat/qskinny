@@ -25,32 +25,33 @@ namespace
 {
     class SkinFactory : public QskSkinFactory
     {
-            Q_OBJECT
+        Q_OBJECT
 
-        public:
-            SkinFactory( QObject* parent = nullptr ) : QskSkinFactory( parent )
+      public:
+        SkinFactory( QObject* parent = nullptr )
+            : QskSkinFactory( parent )
+        {
+        }
+
+        QStringList skinNames() const override
+        {
+            return { "DaytimeSkin", "NighttimeSkin" };
+        }
+
+        QskSkin* createSkin( const QString& skinName ) override
+        {
+            if( skinName == "DaytimeSkin" )
             {
+                return new DaytimeSkin;
             }
 
-            QStringList skinNames() const override
+            if( skinName == "NighttimeSkin" )
             {
-                return { "DaytimeSkin", "NighttimeSkin" };
+                return new NighttimeSkin;
             }
 
-            QskSkin* createSkin( const QString& skinName ) override
-            {
-                if( skinName == "DaytimeSkin" )
-                {
-                    return new DaytimeSkin;
-                }
-
-                if( skinName == "NighttimeSkin" )
-                {
-                    return new NighttimeSkin;
-                }
-
-                return nullptr;
-            }
+            return nullptr;
+        }
     };
 }
 
@@ -79,7 +80,7 @@ int main( int argc, char* argv[] )
 
     // With CTRL-B you can rotate a couple of visual debug modes
     SkinnyShortcut::enable( SkinnyShortcut::RotateSkin | SkinnyShortcut::DebugBackground |
-                            SkinnyShortcut::DebugStatistics | SkinnyShortcut::Quit );
+        SkinnyShortcut::DebugStatistics | SkinnyShortcut::Quit );
 
     MainWindow window;
     window.show();

@@ -74,7 +74,8 @@ TopBarItem::TopBarItem( int index, const QString& name, const QskGradient& gradi
 
 }
 
-TopBar::TopBar( QQuickItem* parent ) : QskLinearBox( Qt::Horizontal, parent )
+TopBar::TopBar( QQuickItem* parent )
+    : QskLinearBox( Qt::Horizontal, parent )
 {
     setPanel( true );
     setAutoLayoutChildren( true );

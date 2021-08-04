@@ -191,7 +191,7 @@ class MySkin1 : public MySkin
 
         MySkinEditor editor;
         editor.setTable( &hintTable() );
-        editor.setAnimator( 200, QEasingCurve::Linear ); 
+        editor.setAnimator( 200, QEasingCurve::Linear );
 
         editor.setGradient( QskAspect::Control, Qt::gray );
 

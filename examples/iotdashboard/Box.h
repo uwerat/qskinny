@@ -12,18 +12,19 @@ class QskTextLabel;
 
 class Box : public QskLinearBox
 {
-        Q_OBJECT
-    public:
-        QSK_SUBCONTROLS( Panel )
+    Q_OBJECT
 
-        Box( const QString& title, QQuickItem* parent );
+  public:
+    QSK_SUBCONTROLS( Panel )
 
-        QskAspect::Subcontrol effectiveSubcontrol(
-            QskAspect::Subcontrol subControl ) const override;
+    Box( const QString& title, QQuickItem* parent );
 
-    private:
-        QString m_title;
-        QskTextLabel* m_label;
+    QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol subControl ) const override;
+
+  private:
+    QString m_title;
+    QskTextLabel* m_label;
 };
 
 #endif // BOX_H
