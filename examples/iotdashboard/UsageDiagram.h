@@ -25,22 +25,9 @@ class WeekdayLabel : public QskTextLabel
         : QskTextLabel( text, parent )
     {
         setPanel( true );
-    }
 
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override final
-    {
-        if( subControl == QskTextLabel::Panel )
-        {
-            return Panel;
-        }
-
-        if( subControl == QskTextLabel::Text )
-        {
-            return Text;
-        }
-
-        return subControl;
+        setSubcontrolProxy( QskTextLabel::Panel, Panel );
+        setSubcontrolProxy( QskTextLabel::Text, Text );
     }
 };
 
@@ -54,17 +41,7 @@ class WeekdayBox : public QskBox
     WeekdayBox( QQuickItem* parent ):
         QskBox( true, parent )
     {
-    }
-
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override final
-    {
-        if( subControl == QskBox::Panel )
-        {
-            return WeekdayBox::Panel;
-        }
-
-        return subControl;
+        setSubcontrolProxy( QskBox::Panel, WeekdayBox::Panel );
     }
 };
 
@@ -78,17 +55,7 @@ class CaptionColorBox : public QskBox
     CaptionColorBox( QQuickItem* parent ):
         QskBox( true, parent )
     {
-    }
-
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override final
-    {
-        if( subControl == QskBox::Panel )
-        {
-            return Panel;
-        }
-
-        return subControl;
+        setSubcontrolProxy( QskBox::Panel, Panel );
     }
 };
 
@@ -114,17 +81,7 @@ class CaptionBox : public QskLinearBox
         QskLinearBox( Qt::Horizontal, parent )
     {
         setPanel( true );
-    }
-
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override final
-    {
-        if( subControl == QskBox::Panel )
-        {
-            return Panel;
-        }
-
-        return subControl;
+        setSubcontrolProxy( QskBox::Panel, Panel );
     }
 };
 
@@ -137,18 +94,8 @@ class UsageDiagram : public Box
 
     UsageDiagram( QQuickItem* parent );
 
+  protected:
     void updateLayout() override;
-
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override final
-    {
-        if( subControl == QskBox::Panel )
-        {
-            return Panel;
-        }
-
-        return subControl;
-    }
 
   private:
     Diagram* m_diagram;

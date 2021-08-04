@@ -36,7 +36,7 @@ namespace
             setFocusPolicy( Qt::TabFocus );
         }
 
-        QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol substitutedSubcontrol(
             QskAspect::Subcontrol subControl ) const override
         {
             auto keyBoard = static_cast< const QskVirtualKeyboard* >( parent() );
@@ -47,7 +47,7 @@ namespace
             if ( subControl == QskPushButton::Text )
                 return keyBoard->effectiveSubcontrol( QskVirtualKeyboard::ButtonText );
 
-            return QskPushButton::effectiveSubcontrol( subControl );
+            return QskPushButton::substitutedSubcontrol( subControl );
         }
 
         int row() const { return m_row; }
@@ -272,7 +272,7 @@ QskVirtualKeyboard::~QskVirtualKeyboard()
 {
 }
 
-QskAspect::Subcontrol QskVirtualKeyboard::effectiveSubcontrol(
+QskAspect::Subcontrol QskVirtualKeyboard::substitutedSubcontrol(
     QskAspect::Subcontrol subControl ) const
 {
     if ( subControl == QskBox::Panel )
@@ -287,7 +287,7 @@ QskAspect::Subcontrol QskVirtualKeyboard::effectiveSubcontrol(
         return QskPushButton::Text;
 #endif
 
-    return subControl;
+    return Inherited::substitutedSubcontrol( subControl );
 }
 
 QskVirtualKeyboard::Mode QskVirtualKeyboard::mode() const

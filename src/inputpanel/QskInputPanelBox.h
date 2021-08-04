@@ -52,9 +52,6 @@ class QSK_EXPORT QskInputPanelBox : public QskBox
 
     QString inputPrompt() const;
 
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol ) const override;
-
   Q_SIGNALS:
     void panelHintsChanged();
     void inputPromptChanged( const QString& );
@@ -68,6 +65,9 @@ class QSK_EXPORT QskInputPanelBox : public QskBox
 
   protected:
     void keyPressEvent( QKeyEvent* ) override;
+
+    QskAspect::Subcontrol substitutedSubcontrol(
+        QskAspect::Subcontrol ) const override;
 
   private:
     class PrivateData;

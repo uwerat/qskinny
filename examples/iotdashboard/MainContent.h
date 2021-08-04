@@ -37,17 +37,7 @@ class MainContentGridBox : public QskGridBox
     MainContentGridBox( QQuickItem* parent = nullptr )
         : QskGridBox( parent )
     {
-    }
-
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override final
-    {
-        if( subControl == QskGridBox::Panel )
-        {
-            return Panel;
-        }
-
-        return subControl;
+        setSubcontrolProxy( QskGridBox::Panel, Panel );
     }
 };
 
@@ -59,9 +49,6 @@ class MainContent : public QskLinearBox
     QSK_SUBCONTROLS( Panel )
 
     MainContent( QQuickItem* parent );
-
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override final;
 
   protected:
     void geometryChangeEvent( QskGeometryChangeEvent* ) override;

@@ -88,6 +88,7 @@ PieChartPainted::PieChartPainted( const QColor& color, const QskGradient& gradie
     , m_animator( new ProgressBarAnimator( this, m_progressBar ) )
 {
     setAutoLayoutChildren( true );
+    setSubcontrolProxy( QskBox::Panel, PieChartPainted::Panel );
 
     auto progressText = QString::number( progress ) + " %";
     m_progressLabel->setText( progressText );
@@ -97,20 +98,8 @@ PieChartPainted::PieChartPainted( const QColor& color, const QskGradient& gradie
     const QColor c = this->color( Panel );
     m_progressBar->setBackgroundColor( c );
 
-    connect( qskSetup, &QskSetup::skinChanged, [this]()
-    {
-        m_animator->start();
-    } );
-}
-
-QskAspect::Subcontrol PieChartPainted::effectiveSubcontrol( QskAspect::Subcontrol subControl ) const
-{
-    if( subControl == QskBox::Panel )
-    {
-        return PieChartPainted::Panel;
-    }
-
-    return subControl;
+    connect( qskSetup, &QskSetup::skinChanged,
+        [this]() { m_animator->start(); } );
 }
 
 QSizeF PieChartPainted::contentsSizeHint( Qt::SizeHint /*sizeHint*/, const QSizeF& /*size*/ ) const

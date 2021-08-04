@@ -90,9 +90,6 @@ class QSK_EXPORT QskTabBar : public QskBox
 
     QskAspect::Placement effectivePlacement() const override;
 
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol ) const override;
-
   public Q_SLOTS:
     void setCurrentIndex( int index );
 
@@ -107,6 +104,9 @@ class QSK_EXPORT QskTabBar : public QskBox
 
   protected:
     void componentComplete() override;
+
+    QskAspect::Subcontrol substitutedSubcontrol(
+        QskAspect::Subcontrol ) const override;
 
   private:
     void adjustCurrentIndex();

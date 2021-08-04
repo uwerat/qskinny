@@ -9,9 +9,7 @@
 #include "CircularProgressBar.h"
 
 class ProgressBarAnimator;
-
 class QskTextLabel;
-class QQuickPaintedItem;
 
 class PieChartPainted : public QskControl
 {
@@ -21,9 +19,7 @@ class PieChartPainted : public QskControl
     PieChartPainted( const QColor&, const QskGradient&,
         int progress, int value, QQuickItem* parent = nullptr );
 
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override final;
-
+  protected:
     virtual QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
     void updateLayout() override;
 

@@ -28,7 +28,8 @@ namespace
             initSizePolicy( QskSizePolicy::Ignored, QskSizePolicy::Fixed );
         }
 
-        QskAspect::Subcontrol effectiveSubcontrol(
+      protected:
+        QskAspect::Subcontrol substitutedSubcontrol(
             QskAspect::Subcontrol subControl ) const override
         {
             if ( subControl == QskTextInput::Panel )
@@ -40,7 +41,6 @@ namespace
             return subControl;
         }
 
-      protected:
         void focusInEvent( QFocusEvent* ) override
         {
         }
@@ -174,7 +174,7 @@ QQuickItem* QskInputPanelBox::inputProxy() const
     return nullptr;
 }
 
-QskAspect::Subcontrol QskInputPanelBox::effectiveSubcontrol(
+QskAspect::Subcontrol QskInputPanelBox::substitutedSubcontrol(
     QskAspect::Subcontrol subControl ) const
 {
     if ( subControl == QskBox::Panel )

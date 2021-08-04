@@ -27,7 +27,7 @@ QskDialogButton::~QskDialogButton()
 {
 }
 
-QskAspect::Subcontrol QskDialogButton::effectiveSubcontrol(
+QskAspect::Subcontrol QskDialogButton::substitutedSubcontrol(
     QskAspect::Subcontrol subControl ) const
 {
     if ( subControl == QskPushButton::Panel )

@@ -43,7 +43,7 @@ namespace
             return size;
         }
 
-        QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol substitutedSubcontrol(
             QskAspect::Subcontrol subControl ) const override
         {
             if ( subControl == QskPushButton::Panel )
@@ -97,13 +97,13 @@ QskInputPredictionBar::~QskInputPredictionBar()
 {
 }
 
-QskAspect::Subcontrol QskInputPredictionBar::effectiveSubcontrol(
+QskAspect::Subcontrol QskInputPredictionBar::substitutedSubcontrol(
     QskAspect::Subcontrol subControl ) const
 {
     if ( subControl == QskBox::Panel )
         return QskInputPredictionBar::Panel;
 
-    return subControl;
+    return Inherited::substitutedSubcontrol( subControl );
 }
 
 void QskInputPredictionBar::setPrediction( const QStringList& candidates )

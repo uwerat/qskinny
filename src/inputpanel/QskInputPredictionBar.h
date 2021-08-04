@@ -20,9 +20,6 @@ class QSK_EXPORT QskInputPredictionBar : public QskBox
     QskInputPredictionBar( QQuickItem* parent = nullptr );
     ~QskInputPredictionBar() override;
 
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override;
-
     QStringList candidates() const;
 
   Q_SIGNALS:
@@ -32,6 +29,9 @@ class QSK_EXPORT QskInputPredictionBar : public QskBox
     void setPrediction( const QStringList& );
 
   private:
+    QskAspect::Subcontrol substitutedSubcontrol(
+        QskAspect::Subcontrol ) const override;
+
     void buttonClicked();
     void setScrollOffset( int );
 

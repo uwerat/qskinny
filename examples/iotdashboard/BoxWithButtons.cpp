@@ -12,21 +12,22 @@
 #include <QskTextLabel.h>
 
 QSK_SUBCONTROL( ButtonValueLabel, Text )
-
 QSK_SUBCONTROL( TitleAndValueBox, Panel )
-
 QSK_SUBCONTROL( BoxWithButtons, Panel )
 
 QSK_SUBCONTROL( IndoorTemperature, Panel )
 QSK_SUBCONTROL( Humidity, Panel )
 
-BoxWithButtons::BoxWithButtons( const QString& title, const QString& value, bool isBright, QQuickItem* parent )
-    : Box( "", parent )
+BoxWithButtons::BoxWithButtons( const QString& title, const QString& value,
+        bool isBright, QQuickItem* parent )
+    : Box( QString(), parent )
 {
     setPanel( true );
+    setSubcontrolProxy( QskBox::Panel, Panel );
+
     setSizePolicy( Qt::Vertical, QskSizePolicy::Maximum );
 
-    auto* layout = new QskLinearBox( Qt::Horizontal, this );
+    auto layout = new QskLinearBox( Qt::Horizontal, this );
     layout->setSpacing( 20 );
 
     QString iconFile = title.toLower();

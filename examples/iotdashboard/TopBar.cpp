@@ -47,6 +47,8 @@ TopBarItem::TopBarItem( int index, const QString& name, const QskGradient& gradi
     : QskLinearBox( Qt::Vertical, parent )
     , m_name( name )
 {
+    setSubcontrolProxy( QskLinearBox::Panel, Panel );
+
     setAutoLayoutChildren( true );
     setAutoAddChildren( true );
     setSpacing( 15 );
@@ -78,6 +80,8 @@ TopBar::TopBar( QQuickItem* parent )
     : QskLinearBox( Qt::Horizontal, parent )
 {
     setPanel( true );
+    setSubcontrolProxy( QskBox::Panel, Panel );
+
     setAutoLayoutChildren( true );
     setAutoAddChildren( true );
     setSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Fixed );

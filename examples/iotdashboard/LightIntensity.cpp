@@ -150,6 +150,8 @@ LightDisplay::LightDisplay( QQuickItem* parent )
     , m_dimmer( new LightDimmer( gradientHint( ColdPart ), gradientHint( WarmPart ), this ) )
     , m_animator( new DimmerAnimator( this, m_dimmer ) )
 {
+    setSubcontrolProxy( QskBox::Panel, LightDisplay::Panel );
+
     m_leftLabel->setSizePolicy( Qt::Horizontal, QskSizePolicy::Maximum );
     m_centreLabel->setSizePolicy( Qt::Horizontal, QskSizePolicy::Maximum );
     m_centreLabel->setZ( 1 );
@@ -165,16 +167,6 @@ LightDisplay::LightDisplay( QQuickItem* parent )
     {
         m_animator->start();
     } );
-}
-
-QskAspect::Subcontrol LightDisplay::effectiveSubcontrol( QskAspect::Subcontrol subControl ) const
-{
-    if( subControl == QskBox::Panel )
-    {
-        return LightDisplay::Panel;
-    }
-
-    return subControl;
 }
 
 void LightDisplay::updateLayout()

@@ -19,17 +19,7 @@ class MenuBarTopLabel final : public QskGraphicLabel
     MenuBarTopLabel( const QskGraphic& graphic, QQuickItem* parent = nullptr )
         : QskGraphicLabel( graphic, parent )
     {
-    }
-
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override
-    {
-        if( subControl == QskGraphicLabel::Graphic )
-        {
-            return Graphic;
-        }
-
-        return subControl;
+        setSubcontrolProxy( QskGraphicLabel::Graphic, Graphic );
     }
 };
 
@@ -43,17 +33,7 @@ class MenuBarGraphicLabel final : public QskGraphicLabel
     MenuBarGraphicLabel( const QskGraphic& graphic, QQuickItem* parent = nullptr )
         : QskGraphicLabel( graphic, parent )
     {
-    }
-
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override
-    {
-        if( subControl == QskGraphicLabel::Graphic )
-        {
-            return Graphic;
-        }
-
-        return subControl;
+        setSubcontrolProxy( QskGraphicLabel::Graphic, Graphic );
     }
 };
 
@@ -67,17 +47,7 @@ class MenuBarLabel final : public QskTextLabel
     MenuBarLabel( const QString& text, QQuickItem* parent = nullptr )
         : QskTextLabel( text, parent )
     {
-    }
-
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override
-    {
-        if( subControl == QskTextLabel::Text )
-        {
-            return Text;
-        }
-
-        return subControl;
+        setSubcontrolProxy( QskTextLabel::Text, Text );
     }
 };
 
@@ -91,8 +61,6 @@ class MenuItem final : public QskLinearBox
 
     MenuItem( const QString& name, QQuickItem* parent );
 
-    QskAspect::Subcontrol effectiveSubcontrol( QskAspect::Subcontrol ) const override;
-
   private:
     QString m_name;
 };
@@ -105,9 +73,6 @@ class MenuBar final : public QskLinearBox
     QSK_SUBCONTROLS( Panel )
 
     MenuBar( QQuickItem* parent );
-
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol ) const override;
 
   private:
     QList< QString > m_entryStrings;

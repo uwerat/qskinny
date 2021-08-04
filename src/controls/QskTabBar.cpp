@@ -671,7 +671,7 @@ void QskTabBar::handleButtonClick()
     }
 }
 
-QskAspect::Subcontrol QskTabBar::effectiveSubcontrol(
+QskAspect::Subcontrol QskTabBar::substitutedSubcontrol(
     QskAspect::Subcontrol subControl ) const
 {
     if ( subControl == QskBox::Panel )
