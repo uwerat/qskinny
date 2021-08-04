@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef PROGRESS_BAR_PAGE_H
-#define PROGRESS_BAR_PAGE_H
+#pragma once
 
 #include "Page.h"
 
@@ -16,5 +15,3 @@ class ProgressBarPage : public Page
   private:
     void populate();
 };
-
-#endif

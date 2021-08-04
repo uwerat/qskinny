@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef MY_TOGGLE_BUTTON_SKINLET_H
-#define MY_TOGGLE_BUTTON_SKINLET_H
+#pragma once
 
 #include <QskSkinlet.h>
 
@@ -44,5 +43,3 @@ class MyToggleButtonSkinlet : public QskSkinlet
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 };
-
-#endif

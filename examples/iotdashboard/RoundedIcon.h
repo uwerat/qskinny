@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef ROUNDEDICON_H
-#define ROUNDEDICON_H
+#pragma once
 
 #include <QskBox.h>
 #include <QskGradient.h>
@@ -41,5 +40,3 @@ class RoundedIcon : public QskBox
     QString m_iconName;
     QskGraphicLabel* m_graphicLabel = nullptr;
 };
-
-#endif // ROUNDEDICON_H

@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef BENCHMARK_
-#define BENCHMARK_ 1
+#pragma once
 
 class QString;
 
@@ -12,5 +11,3 @@ namespace Benchmark
 {
     bool run( const QString& svgDir );
 }
-
-#endif

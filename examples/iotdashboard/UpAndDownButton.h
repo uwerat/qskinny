@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef UPANDDOWNBUTTON_H
-#define UPANDDOWNBUTTON_H
+#pragma once
 
 #include <QskLinearBox.h>
 #include <QskPushButton.h>
@@ -30,5 +29,3 @@ class UpAndDownButton : public QskLinearBox
   public:
     UpAndDownButton( QQuickItem* parent );
 };
-
-#endif // UPANDDOWNBUTTON_H

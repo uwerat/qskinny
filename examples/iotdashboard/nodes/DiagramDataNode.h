@@ -3,8 +3,7 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef DIAGRAMDATANODE_H
-#define DIAGRAMDATANODE_H
+#pragma once
 
 #include <QskNamespace.h>
 
@@ -23,7 +22,8 @@ class DiagramDataNode : public QSGGeometryNode
 
     DiagramDataNode();
 
-    void update( const QRectF& rect, Type type, const QColor& color, const QVector< QPointF >& dataPoints, const qreal yMax, Qsk::Position position, int lineWidth );
+    void update( const QRectF&, Type, const QColor&,
+        const QVector< QPointF >&, const qreal yMax, Qsk::Position, int lineWidth );
 
   private:
     QSGFlatColorMaterial m_material;
@@ -37,5 +37,3 @@ class DiagramDataNode : public QSGGeometryNode
     Qsk::Position m_position;
     int m_lineWidth;
 };
-
-#endif

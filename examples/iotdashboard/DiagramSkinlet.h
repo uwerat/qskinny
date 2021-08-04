@@ -3,8 +3,7 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef DIAGRAM_SKINLET_H
-#define DIAGRAM_SKINLET_H
+#pragma once
 
 #include <QskSkinlet.h>
 
@@ -38,5 +37,3 @@ class DiagramSkinlet : public QskSkinlet
     QSGNode* updateChartNode( const Diagram*, QSGNode* ) const;
     QSGNode* updateSeparatorNode( const Diagram*, QSGNode* ) const;
 };
-
-#endif // DIAGRAM_SKINLET_H

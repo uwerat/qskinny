@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
 #include <QskWindow.h>
 
@@ -15,5 +14,3 @@ class MainWindow : public QskWindow
   public:
     MainWindow();
 };
-
-#endif

@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef PIECHART_SKINLET_H
-#define PIECHART_SKINLET_H
+#pragma once
 
 #include <QskSkinlet.h>
 
@@ -23,14 +22,14 @@ class PieChartSkinlet : public QskSkinlet
 
     Q_INVOKABLE PieChartSkinlet( QskSkin* skin = nullptr );
 
-    QRectF subControlRect( const QskSkinnable*, const QRectF&, QskAspect::Subcontrol ) const override;
+    QRectF subControlRect( const QskSkinnable*,
+        const QRectF&, QskAspect::Subcontrol ) const override;
 
   protected:
-    virtual QSGNode* updateSubNode( const QskSkinnable*, quint8 nodeRole, QSGNode* node ) const override;
+    virtual QSGNode* updateSubNode( const QskSkinnable*,
+        quint8 nodeRole, QSGNode* node ) const override;
 
   private:
     QSGNode* updatePanelNode( const PieChart*, QSGNode* ) const;
     QSGNode* updateLabelsNode( const PieChart*, QSGNode* ) const;
 };
-
-#endif // PIECHART_SKINLET_H

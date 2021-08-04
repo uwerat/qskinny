@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef BOXWITHBUTTONS_H
-#define BOXWITHBUTTONS_H
+#pragma once
 
 #include "Box.h"
 #include "RoundedIcon.h"
@@ -101,5 +100,3 @@ class Humidity : public BoxWithButtons
     {
     }
 };
-
-#endif // BOXWITHBUTTONS_H

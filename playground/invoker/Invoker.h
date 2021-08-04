@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef INVOKER_H
-#define INVOKER_H 1
+#pragma once
 
 #include "Callback.h"
 #include <QskMetaFunction.h>
@@ -33,5 +32,3 @@ inline void Invoker::addFunctionCall( const QskMetaFunction& function )
 {
     addFunctionCall( this, function );
 }
-
-#endif

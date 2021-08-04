@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef CIRCULARPROGRESSBAR_H
-#define CIRCULARPROGRESSBAR_H
+#pragma once
 
 #include <QskGradient.h>
 
@@ -14,7 +13,7 @@
 class CircularProgressBar : public QQuickPaintedItem
 {
   public:
-    CircularProgressBar( const QskGradient& gradient, int progress, QQuickItem* parent = nullptr );
+    CircularProgressBar( const QskGradient&, int progress, QQuickItem* parent = nullptr );
 
     virtual void paint( QPainter* painter ) override;
 
@@ -55,5 +54,3 @@ class CircularProgressBar : public QQuickPaintedItem
     double m_width = 20;
     int m_progress;
 };
-
-#endif // CIRCULARPROGRESSBAR_H

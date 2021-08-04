@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef BUTTON_BOX
-#define BUTTON_BOX 1
+#pragma once
 
 #include <QskLinearBox.h>
 #include <functional>
@@ -17,5 +16,3 @@ class ButtonBox : public QskLinearBox
     void addButton( const QString& text,
         std::function< void() > func, bool autoRepeat = false );
 };
-
-#endif

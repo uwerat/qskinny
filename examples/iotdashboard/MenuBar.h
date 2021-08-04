@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef MENUBAR_H
-#define MENUBAR_H
+#pragma once
 
 #include <QskGraphicLabel.h>
 #include <QskLinearBox.h>
@@ -115,5 +114,3 @@ class MenuBar final : public QskLinearBox
     QList< MenuItem* > m_entries;
     uint m_activeEntry = 0;
 };
-
-#endif // MENUBAR_H

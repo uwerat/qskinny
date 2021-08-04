@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef GRID_QUICK_H
-#define GRID_QUICK_H
+#pragma once
 
 #include "GridAccessor.h"
 #include <QQuickWidget>
@@ -39,5 +38,3 @@ class GridQuick : public QQuickWidget, public GridAccessor
   private:
     QQuickItem* m_grid;
 };
-
-#endif

@@ -3,8 +3,7 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef DIAGRAMSEGMENTSNODE_H
-#define DIAGRAMSEGMENTSNODE_H
+#pragma once
 
 #include <QPolygonF>
 #include <QSGFlatColorMaterial>
@@ -15,7 +14,8 @@ class DiagramSegmentsNode : public QSGGeometryNode
   public:
     DiagramSegmentsNode();
 
-    void update( const QRectF& rect, const QColor& color, const QVector< QVector< QPointF > >& dataPoints, int xGridLines );
+    void update( const QRectF&, const QColor&,
+        const QVector< QVector< QPointF > >&, int xGridLines );
 
   private:
     QSGFlatColorMaterial m_material;
@@ -26,5 +26,3 @@ class DiagramSegmentsNode : public QSGGeometryNode
     QVector< QVector< QPointF > > m_dataPoints;
     int m_xGridLines;
 };
-
-#endif

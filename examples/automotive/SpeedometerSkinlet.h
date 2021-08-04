@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef SPEEDOMETERSKINLET_H
-#define SPEEDOMETERSKINLET_H
+#pragma once
 
 #include <QskSkinlet.h>
 
@@ -39,5 +38,3 @@ class SpeedometerSkinlet : public QskSkinlet
     QSGNode* updateLabelsNode( const Speedometer*, QSGNode* ) const;
     QSGNode* updateNeedleNode( const Speedometer*, QSGNode* ) const;
 };
-
-#endif

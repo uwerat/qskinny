@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef SPEEDOMETERDISPLAY_H
-#define SPEEDOMETERDISPLAY_H
+#pragma once
 
 #include <QskLinearBox.h>
 
@@ -13,5 +12,3 @@ class SpeedometerDisplay : public QskLinearBox
   public:
     SpeedometerDisplay( QQuickItem* parent = nullptr );
 };
-
-#endif

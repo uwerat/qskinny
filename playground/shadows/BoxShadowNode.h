@@ -1,5 +1,9 @@
-#ifndef BOX_SHADOW_NODE_H
-#define BOX_SHADOW_NODE_H
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * This file may be used under the terms of the 3-clause BSD License
+ *****************************************************************************/
+
+#pragma once
 
 #include <QSGGeometryNode>
 
@@ -24,5 +28,3 @@ class BoxShadowNode : public QSGGeometryNode
   private:
     Q_DECLARE_PRIVATE( BoxShadowNode )
 };
-
-#endif

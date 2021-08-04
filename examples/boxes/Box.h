@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef BOX_H
-#define BOX_H
+#pragma once
 
 #include <QskRgbPalette.h>
 #include <QskBox.h>
@@ -59,5 +58,3 @@ class Box : public QskBox
     void setGradient( const QskGradient& gradient );
     void setGradient( const QskGradient::Orientation, QskRgbPalette::Theme );
 };
-
-#endif

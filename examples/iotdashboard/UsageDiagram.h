@@ -3,13 +3,11 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef USAGEDIAGRAM_H
-#define USAGEDIAGRAM_H
+#pragma once
 
 #include "Box.h"
 
 #include <QskTextLabel.h>
-
 #include <QQuickPaintedItem>
 
 class Diagram;
@@ -157,5 +155,3 @@ class UsageDiagram : public Box
     QskLinearBox* m_captionBox;
     QskGridBox* m_weekdays;
 };
-
-#endif // USAGEDIAGRAM_H

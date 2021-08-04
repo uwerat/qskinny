@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef SPEEDOMETER_H
-#define SPEEDOMETER_H
+#pragma once
 
 #include <QskBoundedValueInput.h>
 
@@ -23,5 +22,3 @@ class Speedometer : public QskBoundedValueInput
   private:
     QVector< QString > m_tickLabels;
 };
-
-#endif

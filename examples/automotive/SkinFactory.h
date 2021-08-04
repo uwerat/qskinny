@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef SKIN_FACTORY_H
-#define SKIN_FACTORY_H
+#pragma once
 
 #include <QskSkinFactory.h>
 
@@ -25,5 +24,3 @@ class SkinFactory : public QskSkinFactory
   public Q_SLOTS:
     void rotateSkin();
 };
-
-#endif

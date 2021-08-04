@@ -1,5 +1,9 @@
-#ifndef SHADOWED_BOX_H
-#define SHADOWED_BOX_H
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * This file may be used under the terms of the 3-clause BSD License
+ *****************************************************************************/
+
+#pragma once
 
 #include <QskControl.h>
 #include <QskBoxShapeMetrics.h>
@@ -42,5 +46,3 @@ class ShadowedBox : public QskControl
     QskGradient m_gradient;
     QskBoxShapeMetrics m_shape;
 };
-
-#endif
