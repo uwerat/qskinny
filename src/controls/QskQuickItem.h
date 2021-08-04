@@ -69,7 +69,14 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
     QSizeF implicitSize() const;
 
     void setGeometry( qreal x, qreal y, qreal width, qreal height );
+    void setGeometry( const QPointF&, const QSizeF& );
     QRectF geometry() const;
+
+    using QQuickItem::setPosition;
+    using QQuickItem::setSize;
+
+    void setPosition( qreal x, qreal y );
+    void setSize( qreal width, qreal height );
 
     void setPolishOnResize( bool );
     bool polishOnResize() const;
@@ -177,9 +184,24 @@ inline bool QskQuickItem::hasChildItems() const
     return !childItems().isEmpty();
 }
 
+inline void QskQuickItem::setGeometry( const QPointF& pos, const QSizeF& size )
+{
+    setGeometry( pos.x(), pos.y(), size.width(), size.height() );
+}
+
 inline void QskQuickItem::setGeometry( const QRectF& rect )
 {
     setGeometry( rect.x(), rect.y(), rect.width(), rect.height() );
+}
+
+inline void QskQuickItem::setPosition( qreal x, qreal y )
+{
+    QQuickItem::setPosition( QPointF( x, y ) );
+}
+
+inline void QskQuickItem::setSize( qreal width, qreal height )
+{
+    QQuickItem::setSize( QSizeF( width, height ) );
 }
 
 #if QT_VERSION < QT_VERSION_CHECK( 5, 10, 0 )
