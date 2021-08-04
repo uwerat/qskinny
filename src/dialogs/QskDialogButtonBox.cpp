@@ -111,7 +111,7 @@ Qt::Orientation QskDialogButtonBox::orientation() const
     return m_data->layoutBox->orientation();
 }
 
-QskAspect::Subcontrol QskDialogButtonBox::effectiveSubcontrol(
+QskAspect::Subcontrol QskDialogButtonBox::substitutedSubcontrol(
     QskAspect::Subcontrol subControl ) const
 {
     if ( subControl == QskBox::Panel )

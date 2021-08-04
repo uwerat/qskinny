@@ -19,6 +19,7 @@ QSK_STATE( RoundButton, Top, ( QskAspect::FirstUserState << 1 ) )
 RoundButton::RoundButton( QskAspect::Placement placement, QQuickItem* parent )
     : QskPushButton( parent )
 {
+    setSubcontrolProxy( QskPushButton::Panel, RoundButton::Panel );
     setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Expanding );
 
     QskGraphic graphic;
@@ -37,16 +38,6 @@ RoundButton::RoundButton( QskAspect::Placement placement, QQuickItem* parent )
     setGraphicSourceSize( image.size() );
     graphic = QskGraphic::fromImage( image );
     setGraphic( graphic );
-}
-
-QskAspect::Subcontrol RoundButton::effectiveSubcontrol( QskAspect::Subcontrol subControl ) const
-{
-    if( subControl == QskPushButton::Panel )
-    {
-        return RoundButton::Panel;
-    }
-
-    return subControl;
 }
 
 UpAndDownButton::UpAndDownButton( QQuickItem* parent )

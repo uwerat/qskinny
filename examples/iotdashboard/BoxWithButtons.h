@@ -21,17 +21,7 @@ class ButtonValueLabel : public QskTextLabel
     ButtonValueLabel( const QString& text, QQuickItem* parent )
         : QskTextLabel( text, parent )
     {
-    }
-
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override final
-    {
-        if( subControl == QskTextLabel::Text )
-        {
-            return Text;
-        }
-
-        return subControl;
+        setSubcontrolProxy( QskTextLabel::Text, Text );
     }
 };
 
@@ -46,17 +36,7 @@ class TitleAndValueBox : public QskLinearBox
         : QskLinearBox( orientation, parent )
     {
         setPanel( true );
-    }
-
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override final
-    {
-        if( subControl == QskLinearBox::Panel )
-        {
-            return Panel;
-        }
-
-        return subControl;
+        setSubcontrolProxy( QskLinearBox::Panel, Panel );
     }
 };
 
@@ -65,18 +45,8 @@ class BoxWithButtons : public Box
   public:
     QSK_SUBCONTROLS( Panel )
 
-    BoxWithButtons( const QString& title, const QString& value, bool isBright, QQuickItem* parent = nullptr );
-
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override
-    {
-        if( subControl == QskBox::Panel )
-        {
-            return Panel;
-        }
-
-        return subControl;
-    }
+    BoxWithButtons( const QString& title, const QString& value,
+        bool isBright, QQuickItem* parent = nullptr );
 };
 
 class IndoorTemperature : public BoxWithButtons

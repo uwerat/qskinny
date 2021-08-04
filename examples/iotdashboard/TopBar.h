@@ -20,17 +20,7 @@ class TimeTitleLabel : public QskTextLabel
     TimeTitleLabel( const QString& text, QQuickItem* parent = nullptr )
         : QskTextLabel( text, parent )
     {
-    }
-
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override final
-    {
-        if( subControl == QskTextLabel::Text )
-        {
-            return Text;
-        }
-
-        return subControl;
+        setSubcontrolProxy( QskTextLabel::Text, Text );
     }
 };
 
@@ -44,17 +34,7 @@ class TimeLabel : public QskTextLabel
     TimeLabel( const QString& text, QQuickItem* parent = nullptr )
         : QskTextLabel( text, parent )
     {
-    }
-
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override final
-    {
-        if( subControl == QskTextLabel::Text )
-        {
-            return Text;
-        }
-
-        return subControl;
+        setSubcontrolProxy( QskTextLabel::Text, Text );
     }
 };
 
@@ -65,18 +45,8 @@ class TopBarItem : public QskLinearBox
   public:
     QSK_SUBCONTROLS( Item1, Item2, Item3, Item4 )
 
-    TopBarItem( int index, const QString& name, const QskGradient& gradient, int progress, int value, QQuickItem* parent );
-
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override final
-    {
-        if( subControl == QskLinearBox::Panel )
-        {
-            return Panel;
-        }
-
-        return subControl;
-    }
+    TopBarItem( int index, const QString& name, const QskGradient& gradient,
+        int progress, int value, QQuickItem* parent );
 
   private:
     QString m_name;
@@ -90,17 +60,6 @@ class TopBar : public QskLinearBox
     QSK_SUBCONTROLS( Panel )
 
     TopBar( QQuickItem* parent );
-
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override final
-    {
-        if( subControl == QskLinearBox::Panel )
-        {
-            return Panel;
-        }
-
-        return subControl;
-    }
 
   private:
     QList< TopBarItem* > m_entries;

@@ -21,17 +21,7 @@ class IndicatorLabel final : public QskGraphicLabel
     {
         // so the skins are able to colorize them
         setGraphicRole( SkinFactory::Indicator );
-    }
-
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override
-    {
-        // so that we can set specific colors in the skin
-
-        if ( subControl == QskGraphicLabel::Graphic )
-            return ButtonBar::Indicator;
-
-        return subControl;
+        setSubcontrolProxy( QskGraphicLabel::Graphic, ButtonBar::Indicator );
     }
 };
 

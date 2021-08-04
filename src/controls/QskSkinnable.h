@@ -79,6 +79,10 @@ class QSK_EXPORT QskSkinnable
 
     QskColorFilter effectiveGraphicFilter( QskAspect ) const;
 
+    void setSubcontrolProxy( QskAspect::Subcontrol, QskAspect::Subcontrol proxy );
+    void resetSubcontrolProxy( QskAspect::Subcontrol );
+    QskAspect::Subcontrol subcontrolProxy( QskAspect::Subcontrol ) const;
+
     bool setAnimationHint( QskAspect, QskAnimationHint );
     QskAnimationHint animationHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
 
@@ -110,7 +114,7 @@ class QSK_EXPORT QskSkinnable
     void startTransition( QskAspect,
         QskAnimationHint, QVariant from, QVariant to );
 
-    virtual QskAspect::Subcontrol effectiveSubcontrol( QskAspect::Subcontrol ) const;
+    QskAspect::Subcontrol effectiveSubcontrol( QskAspect::Subcontrol ) const;
 
     QskControl* controlCast();
     const QskControl* controlCast() const;
@@ -200,6 +204,8 @@ class QSK_EXPORT QskSkinnable
   protected:
     virtual void updateNode( QSGNode* );
     virtual bool isTransitionAccepted( QskAspect ) const;
+
+    virtual QskAspect::Subcontrol substitutedSubcontrol( QskAspect::Subcontrol ) const;
 
     QskSkinHintTable& hintTable();
     const QskSkinHintTable& hintTable() const;

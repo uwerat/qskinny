@@ -16,12 +16,10 @@ class Box : public QskLinearBox
   public:
     QSK_SUBCONTROLS( Panel )
 
-    Box( const QString& title, QQuickItem* parent );
+    Box( const QString& title, QQuickItem* parent = nullptr );
 
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override;
+  protected:
 
-  private:
-    QString m_title;
-    QskTextLabel* m_label;
+    QskAspect::Subcontrol substitutedSubcontrol(
+        QskAspect::Subcontrol ) const override;
 };

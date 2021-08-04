@@ -85,11 +85,13 @@ void ShadowPositioner::updateLayout()
 MainContent::MainContent( QQuickItem* parent )
     : QskLinearBox( Qt::Vertical, parent )
 {
+    setPanel( true );
+    setSubcontrolProxy( QskBox::Panel, MainContent::Panel );
+
     setAutoAddChildren( false );
     setSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
     setDefaultAlignment( Qt::AlignTop );
     setSpacing( 24 );
-    setPanel( true );
 
     auto* topBar = new TopBar( this );
     addItem( topBar );
@@ -124,16 +126,6 @@ MainContent::MainContent( QQuickItem* parent )
 
     m_shadowPositioner = new ShadowPositioner( this );
     m_shadowPositioner->setGridBox( gridBox );
-}
-
-QskAspect::Subcontrol MainContent::effectiveSubcontrol( QskAspect::Subcontrol subControl ) const
-{
-    if( subControl == QskBox::Panel )
-    {
-        return MainContent::Panel;
-    }
-
-    return subControl;
 }
 
 void MainContent::geometryChangeEvent( QskGeometryChangeEvent* event )

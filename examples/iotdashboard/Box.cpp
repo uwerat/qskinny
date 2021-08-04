@@ -6,31 +6,27 @@
 #include "Box.h"
 #include "Skin.h"
 
-#include <QskBoxBorderColors.h>
-#include <QskBoxBorderMetrics.h>
-#include <QskBoxShapeMetrics.h>
 #include <QskTextLabel.h>
 
 QSK_SUBCONTROL( Box, Panel )
 
 Box::Box( const QString& title, QQuickItem* parent )
     : QskLinearBox( Qt::Vertical, parent )
-    , m_title( title )
-    , m_label( new QskTextLabel( m_title, this ) )
 {
     setAutoAddChildren( true );
     setAutoLayoutChildren( true );
     setPanel( true );
 
-    m_label->setFontRole( Skin::TitleFont );
+    auto label = new QskTextLabel( title, this );
+    label->setFontRole( Skin::TitleFont );
 
-    if( m_label->text().isEmpty() )
+    if( label->text().isEmpty() )
     {
-        m_label->setVisible( false );
+        label->setVisible( false );
     }
 }
 
-QskAspect::Subcontrol Box::effectiveSubcontrol( QskAspect::Subcontrol subControl ) const
+QskAspect::Subcontrol Box::substitutedSubcontrol( QskAspect::Subcontrol subControl ) const
 {
     if( subControl == QskBox::Panel )
     {

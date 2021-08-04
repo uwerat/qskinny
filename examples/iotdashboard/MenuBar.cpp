@@ -31,7 +31,9 @@ MenuItem::MenuItem( const QString& name, QQuickItem* parent )
     setSpacing( 6 );
 
     setAcceptHoverEvents( true );
+
     setPanel( true );
+    setSubcontrolProxy( QskBox::Panel, MenuItem::Panel );
 
     QString fileName = ":/images/" + name.toLower() + ".png";
     QImage image( fileName );
@@ -43,21 +45,12 @@ MenuItem::MenuItem( const QString& name, QQuickItem* parent )
     new MenuBarLabel( name, this );
 }
 
-QskAspect::Subcontrol MenuItem::effectiveSubcontrol( QskAspect::Subcontrol subControl ) const
-{
-    if( subControl == QskBox::Panel )
-    {
-        return MenuItem::Panel;
-    }
-
-    return subControl;
-}
-
-
 MenuBar::MenuBar( QQuickItem* parent )
     : QskLinearBox( Qt::Vertical, parent )
 {
     setPanel( true );
+    setSubcontrolProxy( QskBox::Panel, MenuBar::Panel );
+
     setSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Preferred );
     setSpacing( 8 );
 
@@ -81,16 +74,6 @@ MenuBar::MenuBar( QQuickItem* parent )
     addSpacer( 0, 1 ); // fill the space at the bottom
 
     new MenuItem( "Logout", this );
-}
-
-QskAspect::Subcontrol MenuBar::effectiveSubcontrol( QskAspect::Subcontrol subControl ) const
-{
-    if( subControl == QskBox::Panel )
-    {
-        return MenuBar::Panel;
-    }
-
-    return subControl;
 }
 
 #include "moc_MenuBar.cpp"

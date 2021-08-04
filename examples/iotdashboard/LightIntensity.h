@@ -25,17 +25,7 @@ class LightIntensityValueLabel : public QskTextLabel
     LightIntensityValueLabel( const QString& text, QQuickItem* parent )
         : QskTextLabel( text, parent )
     {
-    }
-
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override final
-    {
-        if( subControl == QskTextLabel::Text )
-        {
-            return Text;
-        }
-
-        return subControl;
+        setSubcontrolProxy( QskTextLabel::Text, Text );
     }
 };
 
@@ -44,7 +34,8 @@ class LightDimmer : public QQuickPaintedItem
     Q_OBJECT
 
   public:
-    LightDimmer( const QskGradient& coldGradient, const QskGradient& warmGradient, QQuickItem* parent );
+    LightDimmer( const QskGradient& coldGradient,
+        const QskGradient& warmGradient, QQuickItem* parent );
 
     double thickness() const
     {
@@ -77,13 +68,13 @@ class LightDimmer : public QQuickPaintedItem
     }
 
   private:
+    virtual void paint( QPainter* painter ) override;
+
     double m_thickness = 17.57;
     QColor m_backgroundColor;
     QRadialGradient m_ringGradient;
     QskGradient m_coldGradient;
     QskGradient m_warmGradient;
-
-    virtual void paint( QPainter* painter ) override;
 };
 
 class LightDisplay : public QskControl
@@ -94,9 +85,6 @@ class LightDisplay : public QskControl
     QSK_SUBCONTROLS( Panel, ColdPart, WarmPart )
 
     LightDisplay( QQuickItem* parent );
-
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override final;
 
   protected:
     void updateLayout() override;

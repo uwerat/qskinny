@@ -29,14 +29,14 @@ class QSK_EXPORT QskDialogButton : public QskPushButton
     void setAction( QskDialog::Action );
     QskDialog::Action action() const;
 
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol ) const override;
-
   Q_SIGNALS:
     void actionChanged();
 
   protected:
     void changeEvent( QEvent* ) override;
+
+    QskAspect::Subcontrol substitutedSubcontrol(
+        QskAspect::Subcontrol ) const override;
 
   private:
     QskDialog::Action m_action;

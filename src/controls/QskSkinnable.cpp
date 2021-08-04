@@ -23,6 +23,7 @@
 #include "QskGradient.h"
 
 #include <qfont.h>
+#include <map>
 
 #define DEBUG_MAP 0
 #define DEBUG_ANIMATOR 0
@@ -206,13 +207,6 @@ static inline QskAspect qskSubstitutedAspect(
 class QskSkinnable::PrivateData
 {
   public:
-    PrivateData()
-        : skinlet( nullptr )
-        , skinState( QskAspect::NoState )
-        , hasLocalSkinlet( false )
-    {
-    }
-
     ~PrivateData()
     {
         if ( hasLocalSkinlet )
@@ -223,12 +217,16 @@ class QskSkinnable::PrivateData
     }
 
     QskSkinHintTable hintTable;
+
     QskHintAnimatorTable animators;
 
-    const QskSkinlet* skinlet;
+    typedef std::map< QskAspect::Subcontrol, QskAspect::Subcontrol > ProxyMap;
+    ProxyMap* subcontrolProxies = nullptr;
 
-    QskAspect::State skinState;
-    bool hasLocalSkinlet : 1;
+    const QskSkinlet* skinlet = nullptr;
+
+    QskAspect::State skinState = QskAspect::NoState;
+    bool hasLocalSkinlet = false;
 };
 
 QskSkinnable::QskSkinnable()
@@ -282,6 +280,53 @@ const QskSkinlet* QskSkinnable::effectiveSkinlet() const
     }
 
     return m_data->skinlet;
+}
+
+void QskSkinnable::setSubcontrolProxy(
+    QskAspect::Subcontrol subControl, QskAspect::Subcontrol proxy )
+{
+    if ( subControl == QskAspect::Control )
+        return; // nonsense, we ignore this
+
+    if ( proxy == QskAspect::Control || subControl == proxy )
+    {
+        resetSubcontrolProxy( subControl );
+        return;
+    }
+
+    if ( m_data->subcontrolProxies == nullptr )
+        m_data->subcontrolProxies = new PrivateData::ProxyMap();
+
+    (*m_data->subcontrolProxies)[ subControl ] = proxy;
+}
+
+void QskSkinnable::resetSubcontrolProxy( QskAspect::Subcontrol subcontrol )
+{
+    if ( auto& proxies = m_data->subcontrolProxies )
+    {
+        auto it = proxies->find( subcontrol );
+        if ( it != proxies->end() )
+        {
+            proxies->erase( it );
+            if ( proxies->empty() )
+            {
+                delete proxies;
+                proxies = nullptr;
+            }
+        }
+    }
+}
+
+QskAspect::Subcontrol QskSkinnable::subcontrolProxy( QskAspect::Subcontrol subControl ) const
+{
+    if ( const auto proxies = m_data->subcontrolProxies )
+    {
+        auto it = proxies->find( subControl );
+        if ( it != proxies->end() )
+            return it->second;
+    }
+
+    return QskAspect::Control;
 }
 
 QskSkinHintTable& QskSkinnable::hintTable()
@@ -1161,6 +1206,19 @@ void QskSkinnable::updateNode( QSGNode* parentNode )
 }
 
 QskAspect::Subcontrol QskSkinnable::effectiveSubcontrol(
+    QskAspect::Subcontrol subControl ) const
+{
+    if ( const auto proxies = m_data->subcontrolProxies )
+    {
+        auto it = proxies->find( subControl );
+        if ( it != proxies->end() )
+            return it->second;
+    }
+
+    return substitutedSubcontrol( subControl );
+}
+
+QskAspect::Subcontrol QskSkinnable::substitutedSubcontrol(
     QskAspect::Subcontrol subControl ) const
 {
     // derived classes might want to redirect a sub-control

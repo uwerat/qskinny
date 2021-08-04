@@ -57,9 +57,6 @@ class QSK_EXPORT QskDialogButtonBox : public QskBox
 
     QskDialog::Action clickedAction() const;
 
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol ) const override;
-
     void setDefaultButton( QskPushButton* );
     QskPushButton* defaultButton() const;
 
@@ -82,6 +79,9 @@ class QSK_EXPORT QskDialogButtonBox : public QskBox
 
     virtual QskPushButton* createButton( QskDialog::Action ) const;
     void invalidateLayout();
+
+    QskAspect::Subcontrol substitutedSubcontrol(
+        QskAspect::Subcontrol ) const override;
 
   private:
     void onButtonClicked();

@@ -19,7 +19,6 @@ QSK_STATE( RoundedIcon, Small, ( QskAspect::FirstUserState << 2 ) )
 
 RoundedIcon::RoundedIcon( const QString& iconName, bool isBright, bool isSmall, QQuickItem* parent )
     : QskBox( parent )
-    , m_iconName( iconName )
 {
     setPanel( true );
     setPolishOnResize( true );
@@ -46,6 +45,14 @@ RoundedIcon::RoundedIcon( const QString& iconName, bool isBright, bool isSmall, 
         auto graphic = QskGraphic::fromImage( image );
         m_graphicLabel = new QskGraphicLabel( graphic, this );
     }
+}
+
+QskAspect::Subcontrol RoundedIcon::substitutedSubcontrol( QskAspect::Subcontrol subControl ) const
+{
+    if( subControl == QskBox::Panel )
+        return Panel;
+
+    return subControl;
 }
 
 void RoundedIcon::updateLayout()

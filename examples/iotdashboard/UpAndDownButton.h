@@ -17,9 +17,6 @@ class RoundButton : QskPushButton
     QSK_STATES( Top )
 
     RoundButton( QskAspect::Placement placement, QQuickItem* parent );
-
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override final;
 };
 
 class UpAndDownButton : public QskLinearBox

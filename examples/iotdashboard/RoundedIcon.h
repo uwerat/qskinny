@@ -21,22 +21,13 @@ class RoundedIcon : public QskBox
     RoundedIcon( const QString& iconName, bool isBright, bool isSmall,
                  QQuickItem* parent = nullptr );
 
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol subControl ) const override
-    {
-        if( subControl == QskBox::Panel )
-        {
-            return Panel;
-        }
-
-        return subControl;
-    }
-
   protected:
+    QskAspect::Subcontrol substitutedSubcontrol(
+        QskAspect::Subcontrol ) const override;
+
     void updateLayout() override;
     virtual QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
   private:
-    QString m_iconName;
     QskGraphicLabel* m_graphicLabel = nullptr;
 };

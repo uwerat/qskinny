@@ -35,9 +35,6 @@ class QSK_EXPORT QskVirtualKeyboard : public QskBox
 
     void updateLocale( const QLocale& );
 
-    QskAspect::Subcontrol effectiveSubcontrol(
-        QskAspect::Subcontrol ) const override;
-
     bool hasKey( int keyCode ) const;
 
   Q_SIGNALS:
@@ -47,6 +44,9 @@ class QSK_EXPORT QskVirtualKeyboard : public QskBox
   protected:
     void updateLayout() override;
     QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const override;
+
+    QskAspect::Subcontrol substitutedSubcontrol(
+        QskAspect::Subcontrol ) const override;
 
   private:
     void buttonPressed();
