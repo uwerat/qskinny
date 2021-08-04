@@ -217,7 +217,6 @@ class QskSkinnable::PrivateData
     }
 
     QskSkinHintTable hintTable;
-
     QskHintAnimatorTable animators;
 
     typedef std::map< QskAspect::Subcontrol, QskAspect::Subcontrol > ProxyMap;
@@ -297,7 +296,7 @@ void QskSkinnable::setSubcontrolProxy(
     if ( m_data->subcontrolProxies == nullptr )
         m_data->subcontrolProxies = new PrivateData::ProxyMap();
 
-    (*m_data->subcontrolProxies)[ subControl ] = proxy;
+    ( *m_data->subcontrolProxies )[ subControl ] = proxy;
 }
 
 void QskSkinnable::resetSubcontrolProxy( QskAspect::Subcontrol subcontrol )

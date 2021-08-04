@@ -27,7 +27,7 @@ BoxWithButtons::BoxWithButtons( const QString& title, const QString& value,
 
     setSizePolicy( Qt::Vertical, QskSizePolicy::Maximum );
 
-    auto layout = new QskLinearBox( Qt::Horizontal, this );
+    auto* layout = new QskLinearBox( Qt::Horizontal, this );
     layout->setSpacing( 20 );
 
     QString iconFile = title.toLower();

@@ -13,17 +13,20 @@
 
 QSK_SUBCONTROL( ButtonBar, Indicator )
 
-class IndicatorLabel final : public QskGraphicLabel
+namespace
 {
-  public:
-    IndicatorLabel( QQuickItem* parentItem = nullptr )
-        : QskGraphicLabel( parentItem )
+    class IndicatorLabel final : public QskGraphicLabel
     {
-        // so the skins are able to colorize them
-        setGraphicRole( SkinFactory::Indicator );
-        setSubcontrolProxy( QskGraphicLabel::Graphic, ButtonBar::Indicator );
-    }
-};
+      public:
+        IndicatorLabel( QQuickItem* parentItem = nullptr )
+            : QskGraphicLabel( parentItem )
+        {
+            // so the skins are able to colorize them
+            setGraphicRole( SkinFactory::Indicator );
+            setSubcontrolProxy( QskGraphicLabel::Graphic, ButtonBar::Indicator );
+        }
+    };
+}
 
 ButtonBar::ButtonBar( QQuickItem* parentItem )
     : QskLinearBox( parentItem )

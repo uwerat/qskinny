@@ -15,25 +15,13 @@ Box::Box( const QString& title, QQuickItem* parent )
 {
     setAutoAddChildren( true );
     setAutoLayoutChildren( true );
+
     setPanel( true );
+    setSubcontrolProxy( QskBox::Panel, Box::Panel );
 
     auto label = new QskTextLabel( title, this );
     label->setFontRole( Skin::TitleFont );
-
-    if( label->text().isEmpty() )
-    {
-        label->setVisible( false );
-    }
-}
-
-QskAspect::Subcontrol Box::substitutedSubcontrol( QskAspect::Subcontrol subControl ) const
-{
-    if( subControl == QskBox::Panel )
-    {
-        return Box::Panel;
-    }
-
-    return subControl;
+    label->setVisible( !tite.isEmpty() );
 }
 
 #include "moc_Box.cpp"
