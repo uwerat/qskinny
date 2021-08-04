@@ -24,6 +24,8 @@ class QSK_EXPORT QskSwitchButton : public QskAbstractButton
 
     ~QskSwitchButton() override;
 
+    bool isCheckable() const final;
+
     Qt::Orientation orientation() const;
     void setOrientation(Qt::Orientation);
 

@@ -335,7 +335,7 @@ void Editor::setupPushButton()
     setFontRole( Q::Text, ButtonFontRole );
     setAlignment( Q::Text, Qt::AlignCenter );
 
-    for ( auto state1 : { A::NoState, Q::Checkable, Q::Focused, Q::Focused | Q::Checkable } )
+    for ( auto state1 : { A::NoState, Q::Focused } )
     {
         setBoxBorderColors( Q::Panel | Q::Hovered | state1, borderColors );
         setBoxBorderColors( Q::Panel | Q::Hovered | Q::Flat | state1, borderColors );
@@ -387,7 +387,7 @@ void Editor::setupDialogButton()
     setFontRole( Q::Text, ButtonFontRole );
     setAlignment( Q::Text, Qt::AlignCenter );
 
-    for ( auto state1 : { A::NoState, Q::Checkable, Q::Focused, Q::Focused | Q::Checkable } )
+    for ( auto state1 : { A::NoState, Q::Focused } )
     {
         setBoxBorderColors( Q::Panel | Q::Hovered | state1, borderColors );
 
@@ -502,8 +502,8 @@ void Editor::setupSwitchButton()
     setStrutSize( Q::Groove | A::Vertical, grooveSize.transposed() );
 
     setGradient( Q::Groove,  m_pal.darker125 );
-    setGradient( Q::Groove | Q::Checkable | Q::Disabled, m_pal.lighter150 );
-    setGradient( Q::Groove | Q::Checkable | Q::Checked, m_pal.darker200 );
+    setGradient( Q::Groove | Q::Disabled, m_pal.lighter150 );
+    setGradient( Q::Groove | Q::Checked, m_pal.darker200 );
 
     setBoxBorderColors( Q::Groove, m_pal.darker200 );
     setBoxBorderMetrics( Q::Groove, 2 );
@@ -514,7 +514,7 @@ void Editor::setupSwitchButton()
     setBoxBorderMetrics( Q::Handle, 2 );
 
     setGradient( Q::Handle, QskGradient( Qt::Vertical, m_pal.lighter150, m_pal.lighter125 ) );
-    setGradient( Q::Handle | Q::Checkable | Q::Checked, m_pal.accentColor );
+    setGradient( Q::Handle | Q::Checked, m_pal.accentColor );
 
     setGradient( Q::Handle | Q::Disabled, m_pal.lighter125 );
     setBoxBorderColors( Q::Handle, m_pal.darker200 );
@@ -522,7 +522,7 @@ void Editor::setupSwitchButton()
 
     for( auto state : { A::NoState, Q::Disabled } )
     {
-        auto aspect = Q::Handle | Q::Checkable | state | A::Position;
+        auto aspect = Q::Handle | state | A::Position;
 
         setMetric( aspect, 0 );
         setMetric( aspect | Q::Checked, 1 );
@@ -581,7 +581,7 @@ void Editor::setupTabButton()
         setBoxBorderColors( aspect, borderColors );
 
         borderColors.setColorsAt( edge, m_pal.accentColor );
-        for ( auto state : { Q::Checked, Q::Pressed, Q::Checkable | Q::Hovered } )
+        for ( auto state : { Q::Checked, Q::Pressed, Q::Hovered } )
             setBoxBorderColors( aspect | state, borderColors );
     }
 
@@ -592,8 +592,7 @@ void Editor::setupTabButton()
     setAlignment( Q::Text, Qt::AlignCenter );
 
     setColor( Q::Text, m_pal.textColor );
-    setColor( Q::Text | Q::Checkable | Q::Disabled, qskShadedColor( m_pal.textColor, 0.6 ) );
-    setColor( Q::Text | Q::Disabled, QskRgb::Grey600 );
+    setColor( Q::Text | Q::Disabled, qskShadedColor( m_pal.textColor, 0.6 ) );
 }
 
 void Editor::setupTabBar()

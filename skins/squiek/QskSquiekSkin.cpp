@@ -437,14 +437,11 @@ void Editor::setupPushButton()
     setPadding( Q::Panel, 10 );
     setMetric( Q::Panel | A::Spacing, 4 );
 
-    for ( auto state : { A::NoState, Q::Checkable } )
-    {
-        setButton( Q::Panel | state, Raised );
-        setButton( Q::Panel | Q::Flat | Q::Hovered | state, Raised );
+    setButton( Q::Panel, Raised );
+    setButton( Q::Panel | Q::Flat | Q::Hovered, Raised );
 
-        setButton( Q::Panel | Q::Flat | state, Flat );
-        setButton( Q::Panel | Q::Flat | Q::Disabled | state, Flat );
-    }
+    setButton( Q::Panel | Q::Flat, Flat );
+    setButton( Q::Panel | Q::Flat | Q::Disabled, Flat );
 
     for ( auto state : { Q::Pressed, Q::Checked } )
     {
@@ -601,7 +598,7 @@ void Editor::setupTabButton()
     // text
     setAlignment( Q::Text, Qt::AlignCenter );
     setColor( Q::Text, m_pal.themeForeground );
-    setColor( Q::Text | Q::Checkable | Q::Disabled, m_pal.darker200 );
+    setColor( Q::Text | Q::Disabled, m_pal.darker200 );
 }
 
 void Editor::setupSlider()
@@ -868,8 +865,8 @@ void Editor::setupSwitchButton()
     setStrutSize( Q::Groove | A::Vertical, grooveSize.transposed() );
 
     setGradient( Q::Groove, m_pal.theme );
-    setGradient( Q::Groove | Q::Checkable | Q::Checked, m_pal.highlighted );
-    setGradient( Q::Groove | Q::Checkable | Q::Disabled, m_pal.lighter150 );
+    setGradient( Q::Groove | Q::Checked, m_pal.highlighted );
+    setGradient( Q::Groove | Q::Disabled, m_pal.lighter150 );
 
     setBoxBorderColors( Q::Groove | Q::Disabled, m_pal.theme );
     setBoxBorderMetrics( Q::Groove, 2 );
@@ -887,7 +884,7 @@ void Editor::setupSwitchButton()
 
     for( auto state : { A::NoState, Q::Disabled } )
     {
-        auto aspect = Q::Handle | Q::Checkable | state | A::Position;
+        auto aspect = Q::Handle | state | A::Position;
 
         setMetric( aspect, 0 );
         setMetric( aspect | Q::Checked, 1 );

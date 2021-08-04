@@ -30,6 +30,8 @@ class QSK_EXPORT QskTabButton : public QskAbstractButton
 
     ~QskTabButton() override;
 
+    bool isCheckable() const override final;
+
     void setText( const QString& text );
     QString text() const;
 
