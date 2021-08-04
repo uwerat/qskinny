@@ -12,108 +12,108 @@
 
 class MenuBarTopLabel final : public QskGraphicLabel
 {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        QSK_SUBCONTROLS( Graphic )
+  public:
+    QSK_SUBCONTROLS( Graphic )
 
-        MenuBarTopLabel( const QskGraphic& graphic, QQuickItem* parent = nullptr )
-            : QskGraphicLabel( graphic, parent )
+    MenuBarTopLabel( const QskGraphic& graphic, QQuickItem* parent = nullptr )
+        : QskGraphicLabel( graphic, parent )
+    {
+    }
+
+    QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol subControl ) const override
+    {
+        if( subControl == QskGraphicLabel::Graphic )
         {
+            return Graphic;
         }
 
-        QskAspect::Subcontrol effectiveSubcontrol(
-            QskAspect::Subcontrol subControl ) const override
-        {
-            if( subControl == QskGraphicLabel::Graphic )
-            {
-                return Graphic;
-            }
-
-            return subControl;
-        }
+        return subControl;
+    }
 };
 
 class MenuBarGraphicLabel final : public QskGraphicLabel
 {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        QSK_SUBCONTROLS( Graphic )
+  public:
+    QSK_SUBCONTROLS( Graphic )
 
-        MenuBarGraphicLabel( const QskGraphic& graphic, QQuickItem* parent = nullptr )
-            : QskGraphicLabel( graphic, parent )
+    MenuBarGraphicLabel( const QskGraphic& graphic, QQuickItem* parent = nullptr )
+        : QskGraphicLabel( graphic, parent )
+    {
+    }
+
+    QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol subControl ) const override
+    {
+        if( subControl == QskGraphicLabel::Graphic )
         {
+            return Graphic;
         }
 
-        QskAspect::Subcontrol effectiveSubcontrol(
-            QskAspect::Subcontrol subControl ) const override
-        {
-            if( subControl == QskGraphicLabel::Graphic )
-            {
-                return Graphic;
-            }
-
-            return subControl;
-        }
+        return subControl;
+    }
 };
 
 class MenuBarLabel final : public QskTextLabel
 {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        QSK_SUBCONTROLS( Text )
+  public:
+    QSK_SUBCONTROLS( Text )
 
-        MenuBarLabel( const QString& text, QQuickItem* parent = nullptr )
-            : QskTextLabel( text, parent )
+    MenuBarLabel( const QString& text, QQuickItem* parent = nullptr )
+        : QskTextLabel( text, parent )
+    {
+    }
+
+    QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol subControl ) const override
+    {
+        if( subControl == QskTextLabel::Text )
         {
+            return Text;
         }
 
-        QskAspect::Subcontrol effectiveSubcontrol(
-            QskAspect::Subcontrol subControl ) const override
-        {
-            if( subControl == QskTextLabel::Text )
-            {
-                return Text;
-            }
-
-            return subControl;
-        }
+        return subControl;
+    }
 };
 
 class MenuItem final : public QskLinearBox
 {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        QSK_SUBCONTROLS( Panel )
-        QSK_STATES( Active )
+  public:
+    QSK_SUBCONTROLS( Panel )
+    QSK_STATES( Active )
 
-        MenuItem( const QString& name, QQuickItem* parent );
+    MenuItem( const QString& name, QQuickItem* parent );
 
-        QskAspect::Subcontrol effectiveSubcontrol( QskAspect::Subcontrol ) const override;
+    QskAspect::Subcontrol effectiveSubcontrol( QskAspect::Subcontrol ) const override;
 
-    private:
-        QString m_name;
+  private:
+    QString m_name;
 };
 
 class MenuBar final : public QskLinearBox
 {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        QSK_SUBCONTROLS( Panel )
+  public:
+    QSK_SUBCONTROLS( Panel )
 
-        MenuBar( QQuickItem* parent );
+    MenuBar( QQuickItem* parent );
 
-        QskAspect::Subcontrol effectiveSubcontrol(
-            QskAspect::Subcontrol ) const override;
+    QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol ) const override;
 
-    private:
-        QList< QString > m_entryStrings;
-        QList< MenuItem* > m_entries;
-        uint m_activeEntry = 0;
+  private:
+    QList< QString > m_entryStrings;
+    QList< MenuItem* > m_entries;
+    uint m_activeEntry = 0;
 };
 
 #endif // MENUBAR_H

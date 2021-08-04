@@ -13,98 +13,98 @@
 
 class TimeTitleLabel : public QskTextLabel
 {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        QSK_SUBCONTROLS( Text )
+  public:
+    QSK_SUBCONTROLS( Text )
 
-        TimeTitleLabel( const QString& text, QQuickItem* parent = nullptr )
-            : QskTextLabel( text, parent )
+    TimeTitleLabel( const QString& text, QQuickItem* parent = nullptr )
+        : QskTextLabel( text, parent )
+    {
+    }
+
+    QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol subControl ) const override final
+    {
+        if( subControl == QskTextLabel::Text )
         {
+            return Text;
         }
 
-        QskAspect::Subcontrol effectiveSubcontrol(
-            QskAspect::Subcontrol subControl ) const override final
-        {
-            if( subControl == QskTextLabel::Text )
-            {
-                return Text;
-            }
-
-            return subControl;
-        }
+        return subControl;
+    }
 };
 
 class TimeLabel : public QskTextLabel
 {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        QSK_SUBCONTROLS( Text )
+  public:
+    QSK_SUBCONTROLS( Text )
 
-        TimeLabel( const QString& text, QQuickItem* parent = nullptr )
-            : QskTextLabel( text, parent )
+    TimeLabel( const QString& text, QQuickItem* parent = nullptr )
+        : QskTextLabel( text, parent )
+    {
+    }
+
+    QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol subControl ) const override final
+    {
+        if( subControl == QskTextLabel::Text )
         {
+            return Text;
         }
 
-        QskAspect::Subcontrol effectiveSubcontrol(
-            QskAspect::Subcontrol subControl ) const override final
-        {
-            if( subControl == QskTextLabel::Text )
-            {
-                return Text;
-            }
-
-            return subControl;
-        }
+        return subControl;
+    }
 };
 
 class TopBarItem : public QskLinearBox
 {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        QSK_SUBCONTROLS( Item1, Item2, Item3, Item4 )
+  public:
+    QSK_SUBCONTROLS( Item1, Item2, Item3, Item4 )
 
-        TopBarItem( int index, const QString& name, const QskGradient& gradient, int progress, int value, QQuickItem* parent );
+    TopBarItem( int index, const QString& name, const QskGradient& gradient, int progress, int value, QQuickItem* parent );
 
-        QskAspect::Subcontrol effectiveSubcontrol(
-            QskAspect::Subcontrol subControl ) const override final
+    QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol subControl ) const override final
+    {
+        if( subControl == QskLinearBox::Panel )
         {
-            if( subControl == QskLinearBox::Panel )
-            {
-                return Panel;
-            }
-
-            return subControl;
+            return Panel;
         }
 
-    private:
-        QString m_name;
+        return subControl;
+    }
+
+  private:
+    QString m_name;
 };
 
 class TopBar : public QskLinearBox
 {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        QSK_SUBCONTROLS( Panel )
+  public:
+    QSK_SUBCONTROLS( Panel )
 
-        TopBar( QQuickItem* parent );
+    TopBar( QQuickItem* parent );
 
-        QskAspect::Subcontrol effectiveSubcontrol(
-            QskAspect::Subcontrol subControl ) const override final
+    QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol subControl ) const override final
+    {
+        if( subControl == QskLinearBox::Panel )
         {
-            if( subControl == QskLinearBox::Panel )
-            {
-                return Panel;
-            }
-
-            return subControl;
+            return Panel;
         }
 
-    private:
-        QList< TopBarItem* > m_entries;
+        return subControl;
+    }
+
+  private:
+    QList< TopBarItem* > m_entries;
 };
 
 #endif

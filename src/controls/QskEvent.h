@@ -48,7 +48,7 @@ class QSK_EXPORT QskEvent : public QEvent
     QskEvent( QskEvent::Type type );
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-    virtual QskEvent *clone() const;
+    virtual QskEvent* clone() const;
 #endif
 
 };

@@ -32,51 +32,51 @@ namespace
 // ### There must be an easier way to do this
 class ProgressBarAnimator : public QskAnimator
 {
-    public:
-        ProgressBarAnimator( PieChartPainted* pieChart, CircularProgressBar* progressBar )
-            : m_pieChart( pieChart )
-            , m_progressBar( progressBar )
+  public:
+    ProgressBarAnimator( PieChartPainted* pieChart, CircularProgressBar* progressBar )
+        : m_pieChart( pieChart )
+        , m_progressBar( progressBar )
+    {
+        QQuickWindow* w = static_cast< QQuickWindow* >( qGuiApp->allWindows().at( 0 ) );
+        setWindow( w );
+        setDuration( 500 );
+        setEasingCurve( QEasingCurve::Linear );
+        setAutoRepeat( false );
+    }
+
+    void setup() override
+    {
+        m_backgroundColor = m_pieChart->color( PieChartPainted::Panel );
+        m_ringGradient = m_progressBar->ringGradient();
+    }
+
+    void advance( qreal value ) override
+    {
+        const QColor c = m_backgroundColor;
+        const QColor c2 = invertedColor( c );
+        const QColor newColor = QskRgb::interpolated( c2, c, value );
+        m_progressBar->setBackgroundColor( newColor );
+
+        QRadialGradient gradient = m_ringGradient;
+        QRadialGradient newGradient = gradient;
+
+        for( const QGradientStop& stop : gradient.stops() )
         {
-            QQuickWindow* w = static_cast<QQuickWindow*>( qGuiApp->allWindows().at( 0 ) );
-            setWindow( w );
-            setDuration( 500 );
-            setEasingCurve( QEasingCurve::Linear );
-            setAutoRepeat( false );
+            QColor c = stop.second;
+            QColor c2 = invertedColor( c );
+            const QColor newColor = QskRgb::interpolated( c, c2, value );
+            newGradient.setColorAt( stop.first, newColor );
         }
 
-        void setup() override
-        {
-            m_backgroundColor = m_pieChart->color( PieChartPainted::Panel );
-            m_ringGradient = m_progressBar->ringGradient();
-        }
+        m_progressBar->setRingGradient( newGradient );
+        m_progressBar->update();
+    }
 
-        void advance( qreal value ) override
-        {
-            const QColor c = m_backgroundColor;
-            const QColor c2 = invertedColor( c );
-            const QColor newColor = QskRgb::interpolated( c2, c, value );
-            m_progressBar->setBackgroundColor( newColor );
-
-            QRadialGradient gradient = m_ringGradient;
-            QRadialGradient newGradient = gradient;
-
-            for( const QGradientStop& stop : gradient.stops() )
-            {
-                QColor c = stop.second;
-                QColor c2 = invertedColor( c );
-                const QColor newColor = QskRgb::interpolated( c, c2, value );
-                newGradient.setColorAt( stop.first, newColor );
-            }
-
-            m_progressBar->setRingGradient( newGradient );
-            m_progressBar->update();
-        }
-
-    private:
-        QColor m_backgroundColor;
-        QRadialGradient m_ringGradient;
-        PieChartPainted* m_pieChart;
-        CircularProgressBar* m_progressBar;
+  private:
+    QColor m_backgroundColor;
+    QRadialGradient m_ringGradient;
+    PieChartPainted* m_pieChart;
+    CircularProgressBar* m_progressBar;
 };
 
 PieChartPainted::PieChartPainted( const QColor& color, const QskGradient& gradient, int progress, int /*value*/, QQuickItem* parent )

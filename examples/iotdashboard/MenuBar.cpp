@@ -21,8 +21,9 @@ QSK_SUBCONTROL( MenuBar, Panel )
 
 QSK_STATE( MenuItem, Active, ( QskAspect::FirstUserState << 1 ) )
 
-MenuItem::MenuItem( const QString& name, QQuickItem* parent ) : QskLinearBox( Qt::Horizontal, parent ),
-    m_name( name )
+MenuItem::MenuItem( const QString& name, QQuickItem* parent )
+    : QskLinearBox( Qt::Horizontal, parent )
+    , m_name( name )
 {
     setAutoLayoutChildren( true );
     setAutoAddChildren( true );
@@ -53,7 +54,8 @@ QskAspect::Subcontrol MenuItem::effectiveSubcontrol( QskAspect::Subcontrol subCo
 }
 
 
-MenuBar::MenuBar( QQuickItem* parent ) : QskLinearBox( Qt::Vertical, parent )
+MenuBar::MenuBar( QQuickItem* parent )
+    : QskLinearBox( Qt::Vertical, parent )
 {
     setPanel( true );
     setSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Preferred );

@@ -118,7 +118,7 @@ class QSK_EXPORT QskSkinHintTableEditor
     void setGraphicRole( QskAspect, int );
     void removeGraphicRole( QskAspect );
     int graphicRole( QskAspect ) const;
-    
+
     void setBoxShape( QskAspect, qreal radius, Qt::SizeMode = Qt::AbsoluteSize );
     void setBoxShape( QskAspect, qreal topLeft, qreal topRight,
         qreal bottomLeft, qreal bottomRight, Qt::SizeMode = Qt::AbsoluteSize );

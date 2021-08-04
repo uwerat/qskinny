@@ -56,7 +56,7 @@ static inline QVariant qskTypedNullValue( const QVariant& value )
 }
 
 static inline bool qskSetFlag( QskSkinnable* skinnable,
-     const QskAspect aspect, int flag )
+    const QskAspect aspect, int flag )
 {
     return skinnable->setSkinHint( aspect | QskAspect::Flag, QVariant( flag ) );
 }
@@ -68,7 +68,7 @@ static inline int qskFlag( const QskSkinnable* skinnable,
 }
 
 static inline bool qskSetMetric( QskSkinnable* skinnable,
-     const QskAspect aspect, const QVariant& metric )
+    const QskAspect aspect, const QVariant& metric )
 {
     return skinnable->setSkinHint( aspect | QskAspect::Metric, metric );
 }
@@ -553,7 +553,7 @@ QskColorFilter QskSkinnable::effectiveGraphicFilter( QskAspect aspect ) const
         if ( auto control = owningControl() )
         {
             v = QskSkinTransition::animatedGraphicFilter(
-                    control->window(), hint.toInt() );
+                control->window(), hint.toInt() );
 
             if ( v.canConvert< QskColorFilter >() )
             {

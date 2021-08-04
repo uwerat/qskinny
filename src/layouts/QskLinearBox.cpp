@@ -541,7 +541,7 @@ void QskLinearBox::dump() const
     const auto constraint = sizeConstraint();
 
     debug << "QskLinearBox" << engine.orientation()
-        << " w:" << constraint.width() << " h:" << constraint.height() << '\n';
+          << " w:" << constraint.width() << " h:" << constraint.height() << '\n';
 
     for ( int i = 0; i < engine.count(); i++ )
     {
@@ -551,7 +551,7 @@ void QskLinearBox::dump() const
         {
             const auto constraint = qskSizeConstraint( item, Qt::PreferredSize );
             debug << item->metaObject()->className()
-                <<  " w:" << constraint.width() << " h:" << constraint.height();
+                  << " w:" << constraint.width() << " h:" << constraint.height();
         }
         else
         {

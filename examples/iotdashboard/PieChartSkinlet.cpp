@@ -11,7 +11,8 @@
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxBorderColors.h>
 
-PieChartSkinlet::PieChartSkinlet( QskSkin* skin ) : QskSkinlet( skin )
+PieChartSkinlet::PieChartSkinlet( QskSkin* skin )
+    : QskSkinlet( skin )
 {
     setNodeRoles( { PanelRole, LabelsRole } );
 }

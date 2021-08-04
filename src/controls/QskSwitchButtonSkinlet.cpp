@@ -110,7 +110,7 @@ QRectF QskSwitchButtonSkinlet::grooveRect(
 
     size = size.expandedTo( QSize( 0.0, 0.0 ) );
 
-    QRectF r; 
+    QRectF r;
     r.setSize( size );
     r.moveCenter( contentsRect.center() );
 

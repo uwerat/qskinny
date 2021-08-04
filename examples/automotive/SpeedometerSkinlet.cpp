@@ -74,7 +74,7 @@ namespace
             auto vertexData = geometry()->vertexDataAsPoint2D();
             vertexData[ 0 ].set( line.x1(), line.y1() );
             vertexData[ 1 ].set( line.x2(), line.y2() );
-    
+
             geometry()->setLineWidth( width );
             geometry()->markVertexDataDirty();
 
@@ -104,7 +104,7 @@ QRectF SpeedometerSkinlet::subControlRect( const QskSkinnable* skinnable,
         const auto extent = qMin( contentsRect.width(), contentsRect.height() );
         r.setSize( QSizeF( extent, extent ) );
     }
-    
+
     r.moveCenter( contentsRect.center() );
 
     return r;

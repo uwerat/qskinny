@@ -82,7 +82,7 @@ void QskSkinHintTableEditor::setFlag( QskAspect aspect, int flag )
 
 int QskSkinHintTableEditor::flag( QskAspect aspect ) const
 {
-    return flagHint<int>( aspect );
+    return flagHint< int >( aspect );
 }
 
 void QskSkinHintTableEditor::setMetric( QskAspect aspect, qreal metric )
@@ -92,7 +92,7 @@ void QskSkinHintTableEditor::setMetric( QskAspect aspect, qreal metric )
 
 qreal QskSkinHintTableEditor::metric( QskAspect aspect ) const
 {
-    return metricHint<qreal>( aspect );
+    return metricHint< qreal >( aspect );
 }
 
 void QskSkinHintTableEditor::setColor( QskAspect aspect, Qt::GlobalColor color )
@@ -112,7 +112,7 @@ void QskSkinHintTableEditor::setColor( QskAspect aspect, const QColor& color )
 
 QColor QskSkinHintTableEditor::color( QskAspect aspect ) const
 {
-    return colorHint<QColor>( aspect );
+    return colorHint< QColor >( aspect );
 }
 
 void QskSkinHintTableEditor::setHGradient(
@@ -134,7 +134,7 @@ void QskSkinHintTableEditor::setGradient( QskAspect aspect, const QskGradient& g
 
 QskGradient QskSkinHintTableEditor::gradient( QskAspect aspect ) const
 {
-    return colorHint<QskGradient>( aspect );
+    return colorHint< QskGradient >( aspect );
 }
 
 void QskSkinHintTableEditor::setStrutSize( QskAspect aspect, const QSizeF& size )
@@ -231,7 +231,7 @@ Qt::Alignment QskSkinHintTableEditor::alignment( QskAspect aspect ) const
 
 void QskSkinHintTableEditor::setFontRole( QskAspect aspect, int fontRole )
 {
-    setFlagHint( aspectFontRole( aspect ), fontRole ); 
+    setFlagHint( aspectFontRole( aspect ), fontRole );
 }
 
 void QskSkinHintTableEditor::removeFontRole( QskAspect aspect )
@@ -246,7 +246,7 @@ int QskSkinHintTableEditor::fontRole( QskAspect aspect ) const
 
 void QskSkinHintTableEditor::setGraphicRole( QskAspect aspect, int graphicRole )
 {
-    setFlagHint( aspectGraphicRole( aspect ), graphicRole ); 
+    setFlagHint( aspectGraphicRole( aspect ), graphicRole );
 }
 
 void QskSkinHintTableEditor::removeGraphicRole( QskAspect aspect )

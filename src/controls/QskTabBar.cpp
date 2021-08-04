@@ -449,7 +449,7 @@ int QskTabBar::insertTab( int index, QskTabButton* button )
     m_data->connectButton( button, this, true );
 
     connect( button, &QskAbstractButton::clicked,
-       this, &QskTabBar::handleButtonClick );
+        this, &QskTabBar::handleButtonClick );
 
     Q_EMIT countChanged( count() );
 

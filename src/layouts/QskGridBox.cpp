@@ -496,8 +496,8 @@ void QskGridBox::dump() const
     const auto constraint = sizeConstraint();
 
     debug << "QskGridBox"
-        << "[" << engine.columnCount() << "," << engine.rowCount() << "] w:"
-        << constraint.width() << " h:" << constraint.height() << '\n';
+          << "[" << engine.columnCount() << "," << engine.rowCount() << "] w:"
+          << constraint.width() << " h:" << constraint.height() << '\n';
 
     for ( int i = 0; i < engine.count(); i++ )
     {
@@ -521,7 +521,7 @@ void QskGridBox::dump() const
             const auto constraint = qskSizeConstraint( item, Qt::PreferredSize );
 
             debug << item->metaObject()->className()
-                <<  " w:" << constraint.width() << " h:" << constraint.height();
+                  << " w:" << constraint.width() << " h:" << constraint.height();
         }
         else
         {

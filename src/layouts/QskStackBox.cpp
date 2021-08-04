@@ -427,7 +427,7 @@ void QskStackBox::dump() const
     const auto constraint = sizeConstraint();
 
     debug << "QskStackBox"
-        << " w:" << constraint.width() << " h:" << constraint.height() << '\n';
+          << " w:" << constraint.width() << " h:" << constraint.height() << '\n';
 
     for ( int i = 0; i < m_data->items.count(); i++ )
     {
@@ -437,7 +437,7 @@ void QskStackBox::dump() const
 
         const auto constraint = qskSizeConstraint( item, Qt::PreferredSize );
         debug << item->metaObject()->className()
-            <<  " w:" << constraint.width() << " h:" << constraint.height();
+              << " w:" << constraint.width() << " h:" << constraint.height();
 
         if ( i == m_data->currentIndex )
             debug << " [X]";

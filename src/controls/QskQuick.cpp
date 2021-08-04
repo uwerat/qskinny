@@ -694,7 +694,7 @@ bool qskGrabMouse( QQuickItem* item )
             stored depending on these attributes the following
             mouse event callbacks will look for the grabber at a
             a different place as it was stored.
-        */
+         */
 
         if ( const auto event = qskPointerPressEvent( wd ) )
         {

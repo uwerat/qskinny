@@ -32,7 +32,8 @@ QSK_SUBCONTROL( ShadowPositioner, Panel )
 QSK_SUBCONTROL( MainContent, Panel )
 QSK_SUBCONTROL( MainContentGridBox, Panel )
 
-ShadowPositioner::ShadowPositioner( QQuickItem* parent ) : QskControl( parent )
+ShadowPositioner::ShadowPositioner( QQuickItem* parent )
+    : QskControl( parent )
 {
     setAutoLayoutChildren( true );
 }
@@ -68,7 +69,7 @@ void ShadowPositioner::setGridBox( QskGridBox* gridBox )
 
 void ShadowPositioner::updateLayout()
 {
-    auto* mainContent = static_cast<QskLinearBox*>( parentItem() );
+    auto* mainContent = static_cast< QskLinearBox* >( parentItem() );
 
     QTimer::singleShot( 0, this, [this, mainContent]()
     {
@@ -81,7 +82,8 @@ void ShadowPositioner::updateLayout()
     } );
 }
 
-MainContent::MainContent( QQuickItem* parent ) : QskLinearBox( Qt::Vertical, parent )
+MainContent::MainContent( QQuickItem* parent )
+    : QskLinearBox( Qt::Vertical, parent )
 {
     setAutoAddChildren( false );
     setSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );

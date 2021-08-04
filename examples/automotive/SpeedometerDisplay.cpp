@@ -122,7 +122,7 @@ SpeedometerDisplay::SpeedometerDisplay( QQuickItem* parent )
 
     setMargins( 10 );
     setSpacing( 10 );
-    
+
     auto timer = new QTimer( this );
 
     connect( timer, &QTimer::timeout, speedometer, &Speedo::updateValue );

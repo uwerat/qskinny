@@ -54,7 +54,7 @@ class QskStatusIndicator::PrivateData
 
     int currentStatus;
     QMap< int, StatusData > map;
-    mutable QList<int> statusList;
+    mutable QList< int > statusList;
 };
 
 QskStatusIndicator::QskStatusIndicator( QQuickItem* parent )
@@ -211,7 +211,7 @@ void QskStatusIndicator::setStatus( int status )
     update();
 }
 
-QList<int> QskStatusIndicator::statusList() const
+QList< int > QskStatusIndicator::statusList() const
 {
     /*
         We should be have a QMap< int, QskGraphic >, so that

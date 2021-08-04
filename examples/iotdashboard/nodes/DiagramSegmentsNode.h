@@ -12,19 +12,19 @@
 
 class DiagramSegmentsNode : public QSGGeometryNode
 {
-    public:
-        DiagramSegmentsNode();
+  public:
+    DiagramSegmentsNode();
 
-        void update( const QRectF& rect, const QColor& color, const QVector< QVector<QPointF> >& dataPoints, int xGridLines );
+    void update( const QRectF& rect, const QColor& color, const QVector< QVector< QPointF > >& dataPoints, int xGridLines );
 
-    private:
-        QSGFlatColorMaterial m_material;
-        QSGGeometry m_geometry;
+  private:
+    QSGFlatColorMaterial m_material;
+    QSGGeometry m_geometry;
 
-        QRectF m_rect;
-        QColor m_color;
-        QVector< QVector<QPointF> > m_dataPoints;
-        int m_xGridLines;
+    QRectF m_rect;
+    QColor m_color;
+    QVector< QVector< QPointF > > m_dataPoints;
+    int m_xGridLines;
 };
 
 #endif

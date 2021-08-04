@@ -14,91 +14,92 @@
 
 class ButtonValueLabel : public QskTextLabel
 {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        QSK_SUBCONTROLS( Text )
+  public:
+    QSK_SUBCONTROLS( Text )
 
-        ButtonValueLabel( const QString& text, QQuickItem* parent ) : QskTextLabel( text, parent )
+    ButtonValueLabel( const QString& text, QQuickItem* parent )
+        : QskTextLabel( text, parent )
+    {
+    }
+
+    QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol subControl ) const override final
+    {
+        if( subControl == QskTextLabel::Text )
         {
+            return Text;
         }
 
-        QskAspect::Subcontrol effectiveSubcontrol(
-            QskAspect::Subcontrol subControl ) const override final
-        {
-            if( subControl == QskTextLabel::Text )
-            {
-                return Text;
-            }
-
-            return subControl;
-        }
+        return subControl;
+    }
 };
 
 class TitleAndValueBox : public QskLinearBox
 {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        QSK_SUBCONTROLS( Panel )
+  public:
+    QSK_SUBCONTROLS( Panel )
 
-        TitleAndValueBox( Qt::Orientation orientation, QQuickItem* parent )
-            : QskLinearBox( orientation, parent )
+    TitleAndValueBox( Qt::Orientation orientation, QQuickItem* parent )
+        : QskLinearBox( orientation, parent )
+    {
+        setPanel( true );
+    }
+
+    QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol subControl ) const override final
+    {
+        if( subControl == QskLinearBox::Panel )
         {
-            setPanel( true );
+            return Panel;
         }
 
-        QskAspect::Subcontrol effectiveSubcontrol(
-            QskAspect::Subcontrol subControl ) const override final
-        {
-            if( subControl == QskLinearBox::Panel )
-            {
-                return Panel;
-            }
-
-            return subControl;
-        }
+        return subControl;
+    }
 };
 
 class BoxWithButtons : public Box
 {
-    public:
-        QSK_SUBCONTROLS( Panel )
+  public:
+    QSK_SUBCONTROLS( Panel )
 
-        BoxWithButtons( const QString& title, const QString& value, bool isBright, QQuickItem* parent = nullptr );
+    BoxWithButtons( const QString& title, const QString& value, bool isBright, QQuickItem* parent = nullptr );
 
-        QskAspect::Subcontrol effectiveSubcontrol(
-            QskAspect::Subcontrol subControl ) const override
+    QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol subControl ) const override
+    {
+        if( subControl == QskBox::Panel )
         {
-            if( subControl == QskBox::Panel )
-            {
-                return Panel;
-            }
-
-            return subControl;
+            return Panel;
         }
+
+        return subControl;
+    }
 };
 
 class IndoorTemperature : public BoxWithButtons
 {
-    public:
-        QSK_SUBCONTROLS( Panel )
+  public:
+    QSK_SUBCONTROLS( Panel )
 
-        IndoorTemperature( QQuickItem* parent )
-            : BoxWithButtons( "Indoor Temperature", "+24", true, parent )
-        {
-        }
+    IndoorTemperature( QQuickItem* parent )
+        : BoxWithButtons( "Indoor Temperature", "+24", true, parent )
+    {
+    }
 };
 
-class Humidity: public BoxWithButtons
+class Humidity : public BoxWithButtons
 {
-    public:
-        QSK_SUBCONTROLS( Panel )
+  public:
+    QSK_SUBCONTROLS( Panel )
 
-        Humidity( QQuickItem* parent )
-            : BoxWithButtons( "Humidity", "30%", false, parent )
-        {
-        }
+    Humidity( QQuickItem* parent )
+        : BoxWithButtons( "Humidity", "30%", false, parent )
+    {
+    }
 };
 
 #endif // BOXWITHBUTTONS_H

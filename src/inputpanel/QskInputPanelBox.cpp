@@ -18,8 +18,7 @@ namespace
     class TextInputProxy final : public QskTextInput
     {
       public:
-        TextInputProxy( QskInputPanelBox* panelBox,
-                QQuickItem* parentItem = nullptr )
+        TextInputProxy( QskInputPanelBox* panelBox, QQuickItem* parentItem = nullptr )
             : QskTextInput( parentItem )
             , m_panelBox( panelBox )
         {

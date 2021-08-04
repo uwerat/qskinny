@@ -20,7 +20,8 @@ DiagramSegmentsNode::DiagramSegmentsNode()
     setMaterial( &m_material );
 }
 
-void DiagramSegmentsNode::update( const QRectF& rect, const QColor& color, const QVector<QVector<QPointF> >& dataPoints, int xGridLines )
+void DiagramSegmentsNode::update( const QRectF& rect, const QColor& color,
+    const QVector< QVector< QPointF > >& dataPoints, int xGridLines )
 {
     Q_UNUSED( rect );
 

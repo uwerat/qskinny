@@ -15,7 +15,7 @@
 QSK_SUBCONTROL( QskTabButton, Panel )
 QSK_SUBCONTROL( QskTabButton, Text )
 
-static inline QskTabBar* qskFindTabBar( QskTabButton* button )
+static inline QskTabBar* qskFindTabBar( const QskTabButton* button )
 {
     return qskFindAncestorOf< QskTabBar* >( button->parentItem() );
 }

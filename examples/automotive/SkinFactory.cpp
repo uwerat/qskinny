@@ -35,7 +35,7 @@ namespace
     class Skin : public QskSkin
     {
       public:
-        Skin() 
+        Skin()
         {
             declareSkinlet< Speedometer, SpeedometerSkinlet >();
 
@@ -49,7 +49,7 @@ namespace
     class Skin1 : public Skin
     {
       public:
-        Skin1() 
+        Skin1()
         {
             const QColor color1( "#363636" ); // Jet
             const QColor color2( "#242F40" ); // Yankees blue
@@ -100,7 +100,7 @@ namespace
     class Skin2 : public Skin
     {
       public:
-        Skin2() 
+        Skin2()
         {
             const QColor color1( "#011627" ); // Maastricht blue
             const QColor color2( "#FF0022" ); // ruddy

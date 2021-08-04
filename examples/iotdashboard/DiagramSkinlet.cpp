@@ -71,14 +71,14 @@ QSGNode* DiagramSkinlet::updateSubNode(
     switch( nodeRole )
     {
         case ChartRole:
-            {
-                return updateChartNode( discharge, node );
-            }
+        {
+            return updateChartNode( discharge, node );
+        }
 
         case SeparatorRole:
-            {
-                return updateSeparatorNode( discharge, node );
-            }
+        {
+            return updateSeparatorNode( discharge, node );
+        }
     }
 
     return nullptr;
@@ -95,7 +95,7 @@ QSGNode* DiagramSkinlet::updateChartNode( const Diagram* diagram, QSGNode* node 
     const QRectF rect = diagram->subControlRect( Q::Chart );
     const qreal yMax = diagram->yMax();
     const Qsk::Position position = diagram->chartPosition();
-    QVector<Diagram::Type> types = {Diagram::Line, Diagram::Area};
+    QVector< Diagram::Type > types = { Diagram::Line, Diagram::Area };
 
     for( int i = 0; i < diagram->dataPoints().size(); ++i )
     {
@@ -111,7 +111,7 @@ QSGNode* DiagramSkinlet::updateChartNode( const Diagram* diagram, QSGNode* node 
             node->appendChildNode( chartNode );
         }
 
-        const QVector<QPointF> dataPoints = diagram->dataPoints().at( i );
+        const QVector< QPointF > dataPoints = diagram->dataPoints().at( i );
         int nodeIndex = 0;
         QskAspect::Subcontrol lineSubcontrol = lineForIndex( i );
         QskAspect::Subcontrol areaSubcontrol = areaForIndex( i );
@@ -125,7 +125,7 @@ QSGNode* DiagramSkinlet::updateChartNode( const Diagram* diagram, QSGNode* node 
 
                 if( chartNode->childCount() > nodeIndex )
                 {
-                    dataPointNode = static_cast<DiagramDataNode*>( chartNode->childAtIndex( nodeIndex ) );
+                    dataPointNode = static_cast< DiagramDataNode* >( chartNode->childAtIndex( nodeIndex ) );
                 }
                 else
                 {
@@ -162,7 +162,7 @@ QSGNode* DiagramSkinlet::updateSeparatorNode( const Diagram* diagram, QSGNode* n
         return nullptr;
     }
 
-    auto* separatorNode = static_cast<DiagramSegmentsNode*>( node );
+    auto* separatorNode = static_cast< DiagramSegmentsNode* >( node );
 
     if( separatorNode == nullptr )
     {
@@ -172,7 +172,7 @@ QSGNode* DiagramSkinlet::updateSeparatorNode( const Diagram* diagram, QSGNode* n
     using Q = Diagram;
     const QRectF rect = diagram->subControlRect( Q::Chart );
     const QColor color = diagram->color( Q::Segments );
-    const QVector< QVector<QPointF> > dataPoints = diagram->dataPoints();
+    const QVector< QVector< QPointF > > dataPoints = diagram->dataPoints();
 
     separatorNode->update( rect, color, dataPoints, xGridLines );
 

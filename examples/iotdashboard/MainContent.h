@@ -13,63 +13,63 @@ class ShadowedRectangle;
 
 class ShadowPositioner : public QskControl
 {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        QSK_SUBCONTROLS( Panel )
+  public:
+    QSK_SUBCONTROLS( Panel )
 
-        ShadowPositioner( QQuickItem* parent );
+    ShadowPositioner( QQuickItem* parent );
 
-        void updateLayout() override;
-        void setGridBox( QskGridBox* gridBox );
+    void updateLayout() override;
+    void setGridBox( QskGridBox* gridBox );
 
-    private:
-        QskGridBox* m_gridBox;
-        QVector<ShadowedRectangle*> m_rectangles;
+  private:
+    QskGridBox* m_gridBox;
+    QVector< ShadowedRectangle* > m_rectangles;
 };
 
 class MainContentGridBox : public QskGridBox
 {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        QSK_SUBCONTROLS( Panel )
+  public:
+    QSK_SUBCONTROLS( Panel )
 
-        MainContentGridBox( QQuickItem* parent = nullptr )
-            : QskGridBox( parent )
+    MainContentGridBox( QQuickItem* parent = nullptr )
+        : QskGridBox( parent )
+    {
+    }
+
+    QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol subControl ) const override final
+    {
+        if( subControl == QskGridBox::Panel )
         {
+            return Panel;
         }
 
-        QskAspect::Subcontrol effectiveSubcontrol(
-            QskAspect::Subcontrol subControl ) const override final
-        {
-            if( subControl == QskGridBox::Panel )
-            {
-                return Panel;
-            }
-
-            return subControl;
-        }
+        return subControl;
+    }
 };
 
 class MainContent : public QskLinearBox
 {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        QSK_SUBCONTROLS( Panel )
+  public:
+    QSK_SUBCONTROLS( Panel )
 
-        MainContent( QQuickItem* parent );
+    MainContent( QQuickItem* parent );
 
-        QskAspect::Subcontrol effectiveSubcontrol(
-            QskAspect::Subcontrol subControl ) const override final;
+    QskAspect::Subcontrol effectiveSubcontrol(
+        QskAspect::Subcontrol subControl ) const override final;
 
-    protected:
-        void geometryChangeEvent( QskGeometryChangeEvent* ) override;
+  protected:
+    void geometryChangeEvent( QskGeometryChangeEvent* ) override;
 
-    private:
-        QList< QskLinearBox* > m_columns;
-        ShadowPositioner* m_shadowPositioner;
+  private:
+    QList< QskLinearBox* > m_columns;
+    ShadowPositioner* m_shadowPositioner;
 };
 
 #endif // MAINCONTENT_H

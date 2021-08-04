@@ -43,7 +43,8 @@ namespace
 
 }
 
-Skin::Skin( const Palette& palette, QObject* parent ) : QskSkin( parent )
+Skin::Skin( const Palette& palette, QObject* parent )
+    : QskSkin( parent )
 {
     declareSkinlet< Diagram, DiagramSkinlet >();
 

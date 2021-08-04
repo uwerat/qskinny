@@ -14,8 +14,9 @@ DiagramDataNode::DiagramDataNode()
     setMaterial( &m_material );
 }
 
-void DiagramDataNode::update( const QRectF& rect, Type type, const QColor& color, const QVector<QPointF>& dataPoints,
-                              const qreal yMax, Qsk::Position position, int lineWidth )
+void DiagramDataNode::update( const QRectF& rect, Type type,
+    const QColor& color, const QVector< QPointF >& dataPoints,
+    const qreal yMax, Qsk::Position position, int lineWidth )
 {
     Q_UNUSED( rect );
 
@@ -65,7 +66,7 @@ void DiagramDataNode::update( const QRectF& rect, Type type, const QColor& color
 
     if( m_dataPoints.count() > 0 )
     {
-        xMin =  m_dataPoints.at( 0 ).x();
+        xMin = m_dataPoints.at( 0 ).x();
         xMax = m_dataPoints.at( m_dataPoints.count() - 1 ).x();
     }
     else
