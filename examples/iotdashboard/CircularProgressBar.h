@@ -17,35 +17,14 @@ class CircularProgressBar : public QQuickPaintedItem
 
     virtual void paint( QPainter* painter ) override;
 
-    double width() const
-    {
-        return m_width;
-    }
+    double width() const;
+    void setWidth( double width );
 
-    void setWidth( double width )
-    {
-        m_width = width;
-    }
+    QColor backgroundColor() const;
+    void setBackgroundColor( const QColor& );
 
-    QColor backgroundColor() const
-    {
-        return m_backgroundColor;
-    }
-
-    void setBackgroundColor( const QColor& color )
-    {
-        m_backgroundColor = color;
-    }
-
-    QRadialGradient ringGradient() const
-    {
-        return m_ringGradient;
-    }
-
-    void setRingGradient( const QRadialGradient& gradient )
-    {
-        m_ringGradient = gradient;
-    }
+    QRadialGradient ringGradient() const;
+    void setRingGradient( const QRadialGradient& );
 
   private:
     QGradient m_gradient;

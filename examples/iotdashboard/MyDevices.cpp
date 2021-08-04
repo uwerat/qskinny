@@ -52,9 +52,11 @@ namespace
             // We cannot use the icon from RoundedIcon here because
             // it would inherit the transparency
             const qreal size = metric( RoundedIcon::Icon | QskAspect::Size );
-            m_graphicLabel->setSize( {size, size} );
-            m_graphicLabel->setPosition( { m_icon->position().x() + ( m_icon->width() - m_graphicLabel->width() ) / 2,
-                                           ( m_icon->position().y() + m_icon->height() - m_graphicLabel->height() ) / 2 } );
+
+            const qreal x = m_icon->x() + ( m_icon->width() - m_graphicLabel->width() ) / 2;
+            const qreal y = ( m_icon->y() + m_icon->height() - m_graphicLabel->height() ) / 2;
+
+            m_graphicLabel->setGeometry( x, y, size, size );
         }
 
       private:

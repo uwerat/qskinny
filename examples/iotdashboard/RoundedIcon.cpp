@@ -22,6 +22,7 @@ RoundedIcon::RoundedIcon( const QString& iconName, bool isBright, bool isSmall, 
 {
     setPanel( true );
     setPolishOnResize( true );
+    setSubcontrolProxy( QskBox::Panel, Panel );
 
     if( isSmall )
     {
@@ -37,7 +38,7 @@ RoundedIcon::RoundedIcon( const QString& iconName, bool isBright, bool isSmall, 
         setSkinState( Bright );
     }
 
-    QString fileName = ":/images/" + iconName + ".png";
+    const QString fileName( ":/images/" + iconName + ".png" );
 
     if( QFile::exists( fileName ) )
     {
@@ -47,21 +48,16 @@ RoundedIcon::RoundedIcon( const QString& iconName, bool isBright, bool isSmall, 
     }
 }
 
-QskAspect::Subcontrol RoundedIcon::substitutedSubcontrol( QskAspect::Subcontrol subControl ) const
-{
-    if( subControl == QskBox::Panel )
-        return Panel;
-
-    return subControl;
-}
-
 void RoundedIcon::updateLayout()
 {
     if( m_graphicLabel )
     {
-        const qreal size = metric( Icon | QskAspect::Size );
-        m_graphicLabel->setSize( {size, size} );
-        m_graphicLabel->setPosition( { ( width() - m_graphicLabel->width() ) / 2, ( height() - m_graphicLabel->height() ) / 2 } );
+        const auto size = metric( Icon | QskAspect::Size );
+
+        QRectF r( 0.0, 0.0, size, size );
+        r.moveCenter( rect().center() );
+
+        m_graphicLabel->setGeometry( r );
     }
 }
 

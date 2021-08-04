@@ -22,9 +22,6 @@ class RoundedIcon : public QskBox
                  QQuickItem* parent = nullptr );
 
   protected:
-    QskAspect::Subcontrol substitutedSubcontrol(
-        QskAspect::Subcontrol ) const override;
-
     void updateLayout() override;
     virtual QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 

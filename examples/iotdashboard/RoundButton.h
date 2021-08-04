@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include <QskLinearBox.h>
 #include <QskPushButton.h>
 
 class RoundButton : QskPushButton
@@ -16,13 +15,5 @@ class RoundButton : QskPushButton
     QSK_SUBCONTROLS( Panel )
     QSK_STATES( Top )
 
-    RoundButton( QskAspect::Placement placement, QQuickItem* parent );
-};
-
-class UpAndDownButton : public QskLinearBox
-{
-    Q_OBJECT
-
-  public:
-    UpAndDownButton( QQuickItem* parent );
+    RoundButton( QskAspect::Placement, QQuickItem* parent );
 };

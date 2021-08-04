@@ -92,7 +92,7 @@ class UsageDiagram : public Box
   public:
     QSK_SUBCONTROLS( Panel )
 
-    UsageDiagram( QQuickItem* parent );
+    UsageDiagram( QQuickItem* parent = nullptr );
 
   protected:
     void updateLayout() override;

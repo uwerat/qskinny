@@ -60,9 +60,6 @@ class MenuItem final : public QskLinearBox
     QSK_STATES( Active )
 
     MenuItem( const QString& name, QQuickItem* parent );
-
-  private:
-    QString m_name;
 };
 
 class MenuBar final : public QskLinearBox

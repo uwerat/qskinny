@@ -12,7 +12,7 @@
 #include "MyDevices.h"
 #include "PieChart.h"
 #include "TopBar.h"
-#include "Usage.h"
+#include "UsageBox.h"
 
 #include <QskBoxBorderColors.h>
 #include <QskBoxBorderMetrics.h>
@@ -32,6 +32,37 @@ QSK_SUBCONTROL( ShadowPositioner, Panel )
 QSK_SUBCONTROL( MainContent, Panel )
 QSK_SUBCONTROL( MainContentGridBox, Panel )
 
+namespace
+{
+    class IndoorTemperature : public BoxWithButtons
+    {
+      public:
+        IndoorTemperature( QQuickItem* parent = nullptr )
+            : BoxWithButtons( "Indoor Temperature", "+24", true, parent )
+        {
+        }
+    };
+
+    class Humidity : public BoxWithButtons
+    {
+      public:
+        Humidity( QQuickItem* parent = nullptr )
+            : BoxWithButtons( "Humidity", "30%", false, parent )
+        {
+        }
+    };
+
+    class LightIntensity : public Box
+    {
+      public:
+        LightIntensity( QQuickItem* parent = nullptr )
+            : Box( "Light intensity", parent )
+        {
+            new LightDisplay( this );
+        }
+    };
+}
+
 ShadowPositioner::ShadowPositioner( QQuickItem* parent )
     : QskControl( parent )
 {
@@ -45,7 +76,7 @@ void ShadowPositioner::setGridBox( QskGridBox* gridBox )
 
     for( int i = 0; i < m_gridBox->elementCount(); ++i )
     {
-        auto* r = new ShadowedRectangle( this );
+        auto r = new ShadowedRectangle( this );
         r->setZ( 5 );
         r->setColor( Qt::transparent );
         r->shadow()->setColor( color( ShadowPositioner::Panel ) );
@@ -69,15 +100,18 @@ void ShadowPositioner::setGridBox( QskGridBox* gridBox )
 
 void ShadowPositioner::updateLayout()
 {
-    auto* mainContent = static_cast< QskLinearBox* >( parentItem() );
+    auto mainContent = static_cast< QskLinearBox* >( parentItem() );
 
     QTimer::singleShot( 0, this, [this, mainContent]()
     {
+        const auto pos0 = mainContent->itemAtIndex( 1 )->position();
+
         for( int i = 0; i < m_rectangles.count(); ++i )
         {
-            auto* item = m_gridBox->itemAtIndex( i );
+            const auto item = m_gridBox->itemAtIndex( i );
+
+            m_rectangles[i]->setPosition( pos0 + item->position() );
             m_rectangles[i]->setSize( qskItemSize( item ) );
-            m_rectangles[i]->setPosition( mainContent->itemAtIndex( 1 )->position() + item->position() );
         }
     } );
 }
@@ -93,36 +127,25 @@ MainContent::MainContent( QQuickItem* parent )
     setDefaultAlignment( Qt::AlignTop );
     setSpacing( 24 );
 
-    auto* topBar = new TopBar( this );
-    addItem( topBar );
+    auto topBar = new TopBar();
 
-    auto* gridBox = new MainContentGridBox( this );
+    auto gridBox = new MainContentGridBox();
     gridBox->setPanel( true );
     gridBox->setSpacing( 15 );
-    addItem( gridBox );
 
-    auto* usage = new Usage( gridBox );
-
-    gridBox->addItem( usage, 0, 0, 2, 1 );
-
-    auto* indoorTemperature = new IndoorTemperature( gridBox );
-    gridBox->addItem( indoorTemperature, 0, 1 );
-
-    auto* humidity = new Humidity( gridBox );
-    gridBox->addItem( humidity, 1, 1 );
-
-    auto* myDevices = new MyDevices( gridBox );
-    gridBox->addItem( myDevices, 0, 2, 2, 1 );
-
-    auto* diagram = new UsageDiagram( gridBox );
-    gridBox->addItem( diagram, 2, 0, 0, 2 );
-
-    auto* lightIntensity = new LightIntensity( gridBox );
-    gridBox->addItem( lightIntensity, 2, 2 );
+    gridBox->addItem( new UsageBox(), 0, 0, 2, 1 );
+    gridBox->addItem( new IndoorTemperature(), 0, 1 );
+    gridBox->addItem( new Humidity(), 1, 1 );
+    gridBox->addItem( new MyDevices(), 0, 2, 2, 1 );
+    gridBox->addItem( new UsageDiagram(), 2, 0, 0, 2 );
+    gridBox->addItem( new LightIntensity(), 2, 2 );
 
     gridBox->setColumnStretchFactor( 0, 37 ); // factors add up to 100
     gridBox->setColumnStretchFactor( 1, 37 );
     gridBox->setColumnStretchFactor( 2, 26 );
+
+    addItem( topBar );
+    addItem( gridBox );
 
     m_shadowPositioner = new ShadowPositioner( this );
     m_shadowPositioner->setGridBox( gridBox );

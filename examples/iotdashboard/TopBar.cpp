@@ -63,17 +63,16 @@ TopBarItem::TopBarItem( int index, const QString& name, const QskGradient& gradi
     QColor textColor = color( subcontrol | QskAspect::TextColor );
     new PieChartPainted( textColor, gradient, progress, value, pieChartAndDisplay );
 
-    auto* display = new QskLinearBox( Qt::Vertical, pieChartAndDisplay );
+    auto display = new QskLinearBox( Qt::Vertical, pieChartAndDisplay );
     display->setSpacing( 0 );
     display->addSpacer( 0, 1 );
 
-    auto* displayValue = new QskTextLabel( QString::number( value ), display );
+    auto displayValue = new QskTextLabel( QString::number( value ), display );
     displayValue->setFontRole( QskSkin::MediumFont );
 
-    auto* displayUnit = new QskTextLabel( "kwH", display );
+    auto displayUnit = new QskTextLabel( "kwH", display );
     displayUnit->setFontRole( QskSkin::SmallFont );
     display->addSpacer( 0, 1 );
-
 }
 
 TopBar::TopBar( QQuickItem* parent )
@@ -86,20 +85,22 @@ TopBar::TopBar( QQuickItem* parent )
     setAutoAddChildren( true );
     setSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Fixed );
 
-    QStringList itemStrings = { "Living Room", "Bedroom", "Bathroom", "Kitchen" };
-    int progressValues[] = {25, 45, 15, 86};
-    int values[] = {175, 205, 115, 289};
+    const QStringList itemStrings = { "Living Room", "Bedroom", "Bathroom", "Kitchen" };
+    const int progressValues[] = {25, 45, 15, 86};
+    const int values[] = {175, 205, 115, 289};
 
     for( int i = 0; i < itemStrings.count(); i++ )
     {
-        QskAspect::Subcontrol subcontrol = subcontrolForIndex( i );
-        QskGradient gradient = gradientHint( subcontrol );
+        const auto subcontrol = subcontrolForIndex( i );
+        const auto gradient = gradientHint( subcontrol );
 
-        auto* item = new TopBarItem( i, itemStrings.at( i ), gradient, progressValues[i], values[i], this );
-        m_entries.append( item );
+        auto item = new TopBarItem( i, itemStrings.at( i ),
+            gradient, progressValues[i], values[i], this );
+
+        m_entries += item;
     }
 
-    auto* timeControl = new QskLinearBox( Qt::Vertical, this );
+    auto timeControl = new QskLinearBox( Qt::Vertical, this );
     new TimeTitleLabel( "Current time", timeControl );
 
     auto now = QTime::currentTime();
