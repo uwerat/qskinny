@@ -12,9 +12,6 @@ class QSK_EXPORT QskAbstractButton : public QskControl
 {
     Q_OBJECT
 
-    Q_PROPERTY( bool checkable READ isCheckable
-        WRITE setCheckable NOTIFY checkableChanged FINAL )
-
     Q_PROPERTY( bool autoRepeat READ autoRepeat
         WRITE setAutoRepeat NOTIFY autoRepeatChanged FINAL )
 
@@ -36,14 +33,12 @@ class QSK_EXPORT QskAbstractButton : public QskControl
     using Inherited = QskControl;
 
   public:
-    QSK_STATES( Flat, Checked, Pressed, Checkable )
+    QSK_STATES( Flat, Checked, Pressed )
 
     QskAbstractButton( QQuickItem* parent = nullptr );
     ~QskAbstractButton() override;
 
-    void setCheckable( bool );
-    bool isCheckable() const;
-
+    virtual bool isCheckable() const;
     bool isChecked() const;
 
     void setPressed( bool on );

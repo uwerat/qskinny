@@ -48,12 +48,16 @@ QskTabButton::QskTabButton( const QString& text, QQuickItem* parent )
     initSizePolicy( QskSizePolicy::MinimumExpanding,
         QskSizePolicy::QskSizePolicy::MinimumExpanding );
 
-    setCheckable( true );
     setExclusive( true );
 }
 
 QskTabButton::~QskTabButton()
 {
+}
+
+bool QskTabButton::isCheckable() const
+{
+    return true;
 }
 
 void QskTabButton::setText( const QString& text )

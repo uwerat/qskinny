@@ -33,6 +33,9 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
         WRITE setGraphicSourceSize RESET resetGraphicSourceSize
         NOTIFY graphicSourceSizeChanged FINAL )
 
+    Q_PROPERTY( bool checkable READ isCheckable
+        WRITE setCheckable NOTIFY checkableChanged FINAL )
+
     Q_PROPERTY( bool flat READ isFlat WRITE setFlat NOTIFY flatChanged FINAL )
     Q_PROPERTY( QskCorner corner READ corner WRITE setCorner NOTIFY cornerChanged )
 
@@ -45,6 +48,9 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     QskPushButton( const QString& text, QQuickItem* parent = nullptr );
 
     ~QskPushButton() override;
+
+    void setCheckable( bool );
+    bool isCheckable() const override final;
 
     void setCorner( const QskCorner& );
     QskCorner corner() const;
@@ -76,8 +82,8 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     void setGraphicSourceSize( const QSizeF& );
 
   Q_SIGNALS:
+    void checkableChanged( bool );
     void cornerChanged();
-    void borderWidthChanged();
     void textChanged();
     void textOptionsChanged();
     void flatChanged();

@@ -27,7 +27,7 @@ void SwitchButtonPage::populate()
     hbox1->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
     hbox1->setExtraSpacingAt( Qt::LeftEdge );
 
-    auto label = new QskTextLabel( "Disable the boxes: ", hbox1 );
+    auto label = new QskTextLabel( "Disable the switches:", hbox1 );
     label->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
     
     auto button0 = new QskSwitchButton( hbox1 );

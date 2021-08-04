@@ -23,12 +23,16 @@ QskSwitchButton::QskSwitchButton( Qt::Orientation orientation, QQuickItem* paren
     : QskAbstractButton( parent )
     , m_data( new PrivateData( orientation ) )
 {   
-    setCheckable( true );
     initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 }
 
 QskSwitchButton::~QskSwitchButton()
 {
+}
+
+bool QskSwitchButton::isCheckable() const
+{
+    return true;
 }
 
 Qt::Orientation QskSwitchButton::orientation() const

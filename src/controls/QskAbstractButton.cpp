@@ -12,12 +12,13 @@
 
 // Flat/Checkable are no states - we need to get rid of them. TODO ...
 QSK_SYSTEM_STATE( QskAbstractButton, Flat, QskAspect::FirstSystemState << 1 )
+
 #if 1
 // Wrong: we are overlapping with the user states, TODO ...
 QSK_STATE( QskAbstractButton, Checked, QskAspect::LastUserState )
 #endif
+
 QSK_SYSTEM_STATE( QskAbstractButton, Pressed, QskAspect::LastSystemState >> 3 )
-QSK_SYSTEM_STATE( QskAbstractButton, Checkable, QskAspect::LastSystemState >> 2 )
 
 static QskAbstractButton* qskCheckedSibling( const QskAbstractButton* button )
 {
@@ -82,7 +83,7 @@ void QskAbstractButton::releaseButton()
     if ( !isPressed() )
         return;
 
-    if ( skinState() & Checkable )
+    if ( isCheckable() )
     {
         // we will have toggled before released,
         // maybe there is more work to have the signals coming
@@ -136,18 +137,9 @@ void QskAbstractButton::setPressed( bool on )
     }
 }
 
-void QskAbstractButton::setCheckable( bool on )
-{
-    if ( on == isCheckable() )
-        return;
-
-    setSkinStateFlag( Checkable, on );
-    Q_EMIT checkableChanged( on );
-}
-
 bool QskAbstractButton::isCheckable() const
 {
-    return skinState() & Checkable;
+    return false;
 }
 
 void QskAbstractButton::setChecked( bool on )

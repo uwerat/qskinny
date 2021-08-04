@@ -25,7 +25,7 @@ class QskPushButton::PrivateData
   public:
     PrivateData( const QString& txt )
         : text( txt )
-        , graphicSourceSize( -1, -1 )
+        , isCheckable( false )
         , isGraphicSourceDirty( false )
     {
         textOptions.setElideMode( Qt::ElideMiddle );
@@ -50,6 +50,7 @@ class QskPushButton::PrivateData
 
     QSizeF graphicSourceSize;
 
+    bool isCheckable : 1;
     bool isGraphicSourceDirty : 1;
 };
 
@@ -67,6 +68,20 @@ QskPushButton::QskPushButton( const QString& text, QQuickItem* parent )
 
 QskPushButton::~QskPushButton()
 {
+}
+
+void QskPushButton::setCheckable( bool on )
+{
+    if ( on != m_data->isCheckable )
+    {
+        m_data->isCheckable = on;
+        Q_EMIT checkableChanged( on );
+    }
+}
+
+bool QskPushButton::isCheckable() const
+{
+    return m_data->isCheckable;
 }
 
 void QskPushButton::setCorner( const QskCorner& corner )

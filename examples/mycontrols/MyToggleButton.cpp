@@ -45,7 +45,6 @@ MyToggleButton::MyToggleButton( QQuickItem* parent )
     : Inherited( parent )
     , m_data( new PrivateData() )
 {
-    setCheckable( true );
     setAcceptHoverEvents( false );
 
     initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
@@ -53,6 +52,11 @@ MyToggleButton::MyToggleButton( QQuickItem* parent )
 
 MyToggleButton::~MyToggleButton()
 {
+}
+
+bool MyToggleButton::isCheckable() const
+{
+    return true;
 }
 
 void MyToggleButton::setInverted( bool on )

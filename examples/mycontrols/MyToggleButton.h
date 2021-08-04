@@ -23,6 +23,8 @@ class MyToggleButton : public QskAbstractButton
     MyToggleButton( QQuickItem* parent = nullptr );
     ~MyToggleButton() override;
 
+    bool isCheckable() const override final;
+
     void setTextAt( int index, const QString& );
     QString textAt( int index ) const;
 
