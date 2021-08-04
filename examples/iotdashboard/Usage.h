@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef USAGE_H
-#define USAGE_H
+#pragma once
 
 #include "Box.h"
 
@@ -40,5 +39,3 @@ class Usage : public Box
   public:
     Usage( QQuickItem* parent );
 };
-
-#endif // USAGE_H

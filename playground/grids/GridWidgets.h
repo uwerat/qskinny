@@ -3,15 +3,14 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef GRID_WIDGETS_H
-#define GRID_WIDGETS_H
+#pragma once
 
 #include "GridAccessor.h"
 #include <QWidget>
 
 class QGridLayout;
 
-class GridWidgets : public QWidget, public GridAccessor
+class GridWidgets final : public QWidget, public GridAccessor
 {
   public:
     GridWidgets( QWidget* parent = nullptr );
@@ -36,5 +35,3 @@ class GridWidgets : public QWidget, public GridAccessor
   private:
     QGridLayout* m_layout;
 };
-
-#endif

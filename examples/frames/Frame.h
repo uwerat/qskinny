@@ -3,8 +3,7 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef FRAME_H
-#define FRAME_H
+#pragma once
 
 #include "QskControl.h"
 
@@ -70,5 +69,3 @@ class Frame : public QskControl
     qreal m_frameWidth;
     qreal m_radius;
 };
-
-#endif

@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef BOX_H
-#define BOX_H
+#pragma once
 
 #include <QskLinearBox.h>
 
@@ -26,5 +25,3 @@ class Box : public QskLinearBox
     QString m_title;
     QskTextLabel* m_label;
 };
-
-#endif // BOX_H

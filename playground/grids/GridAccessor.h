@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef GRID_ACCESSOR_H
-#define GRID_ACCESSOR_H
+#pragma once
 
 #include <Qt>
 
@@ -61,5 +60,3 @@ class GridAccessor
 
     virtual QSize preferredSize() const = 0;
 };
-
-#endif

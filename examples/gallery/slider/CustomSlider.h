@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef CUSTOM_SLIDER_H
-#define CUSTOM_SLIDER_H
+#pragma once
 
 #include <QskSlider.h>
 
@@ -19,5 +18,3 @@ class CustomSlider : public QskSlider
 
     QRectF focusIndicatorRect() const override;
 };
-
-#endif

@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef THEME_H
-#define THEME_H 1
+#pragma once
 
 #include <QColor>
 #include <QObject>
@@ -34,5 +33,3 @@ class Theme : public QObject
 
     QColor m_accent;
 };
-
-#endif

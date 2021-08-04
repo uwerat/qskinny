@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef TOPBAR_H
-#define TOPBAR_H
+#pragma once
 
 #include <QskLinearBox.h>
 #include <QskTextLabel.h>
@@ -106,5 +105,3 @@ class TopBar : public QskLinearBox
   private:
     QList< TopBarItem* > m_entries;
 };
-
-#endif

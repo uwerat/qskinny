@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef MAIN_WINDOW_H_
-#define MAIN_WINDOW_H_
+#pragma once
 
 #include <QskWindow.h>
 
@@ -25,5 +24,3 @@ class MainWindow : public QskWindow
   private:
     QskTabView* m_tabView;
 };
-
-#endif

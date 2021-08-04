@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef WINDOW_H
-#define WINDOW_H 1
+#pragma once
 
 #include <QskDialog.h>
 #include <QskWindow.h>
@@ -34,5 +33,3 @@ class Window : public QskWindow
     QskLinearBox* m_layoutBox;
     Qt::Orientation m_orientation;
 };
-
-#endif

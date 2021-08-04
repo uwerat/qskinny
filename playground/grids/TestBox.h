@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef TEST_BOX_H
-#define TEST_BOX_H
+#pragma once
 
 #include "GridAccessor.h"
 #include <QWidget>
@@ -62,5 +61,3 @@ class TestBox : public QWidget, public GridAccessor
 
     int m_columnCount = 2;
 };
-
-#endif

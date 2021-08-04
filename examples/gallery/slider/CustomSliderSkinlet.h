@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef CUSTOM_SLIDER_SKINLET_H
-#define CUSTOM_SLIDER_SKINLET_H
+#pragma once
 
 #include <QskSliderSkinlet.h>
 
@@ -44,5 +43,3 @@ class CustomSliderSkinlet : public QskSliderSkinlet
     QRectF decorationRect( const QskSlider*, const QRectF& ) const;
     QRectF handleRect( const QskSlider*, const QRectF& ) const;
 };
-
-#endif

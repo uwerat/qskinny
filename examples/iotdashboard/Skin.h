@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef SKIN_H
-#define SKIN_H
+#pragma once
 
 #include <QskGradient.h>
 #include <QskSkin.h>
@@ -78,5 +77,3 @@ class NighttimeSkin : public Skin
     {
     }
 };
-
-#endif // SKIN_H

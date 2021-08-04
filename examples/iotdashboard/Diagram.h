@@ -3,8 +3,7 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef DIAGRAM_H
-#define DIAGRAM_H
+#pragma once
 
 #include <QskControl.h>
 #include <QskNamespace.h>
@@ -16,7 +15,8 @@ class Diagram : public QskControl
     using Inherited = QskControl;
 
   public:
-    QSK_SUBCONTROLS( Chart, Segments, ChartLine1, ChartArea1, ChartLine2, ChartArea2, ChartLine3, ChartArea3 )
+    QSK_SUBCONTROLS( Chart, Segments, ChartLine1, ChartArea1,
+        ChartLine2, ChartArea2, ChartLine3, ChartArea3 )
 
     enum Type
     {
@@ -30,7 +30,7 @@ class Diagram : public QskControl
     ~Diagram() override;
 
     QVector< QVector< QPointF > > dataPoints() const;
-    void addDataPoints( const QVector< QPointF >& dataPoints, const Types& types );
+    void addDataPoints( const QVector< QPointF >&, const Types& );
 
     Types typesAt( uint pos ) const;
 
@@ -41,7 +41,7 @@ class Diagram : public QskControl
     void setXGridLines( int lines );
 
     Qsk::Position chartPosition() const;
-    void setChartPosition( Qsk::Position position );
+    void setChartPosition( Qsk::Position );
 
   protected:
     QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
@@ -52,5 +52,3 @@ class Diagram : public QskControl
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( Diagram::Types )
-
-#endif // DIAGRAM_H

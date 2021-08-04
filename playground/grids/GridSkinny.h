@@ -3,15 +3,14 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef GRID_SKINNY_H
-#define GRID_SKINNY_H
+#pragma once
 
 #include "GridAccessor.h"
 #include <QQuickWidget>
 
 class QskGridBox;
 
-class GridSkinny : public QQuickWidget, public GridAccessor
+class GridSkinny final : public QQuickWidget, public GridAccessor
 {
   public:
     GridSkinny( QWidget* parent = nullptr );
@@ -36,5 +35,3 @@ class GridSkinny : public QQuickWidget, public GridAccessor
   private:
     QskGridBox* m_grid;
 };
-
-#endif

@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef MY_TOGGLE_BUTTON_H
-#define MY_TOGGLE_BUTTON_H
+#pragma once
 
 #include <QskAbstractButton.h>
 
@@ -49,5 +48,3 @@ class MyToggleButton : public QskAbstractButton
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
-
-#endif

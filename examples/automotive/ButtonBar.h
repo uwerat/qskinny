@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef BUTTON_BAR_H
-#define BUTTON_BAR_H
+#pragma once
 
 #include <QskLinearBox.h>
 
@@ -19,5 +18,3 @@ class ButtonBar : public QskLinearBox
   protected:
     QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 };
-
-#endif

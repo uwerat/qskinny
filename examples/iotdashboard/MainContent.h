@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef MAINCONTENT_H
-#define MAINCONTENT_H
+#pragma once
 
 #include <QskGridBox.h>
 #include <QskLinearBox.h>
@@ -71,5 +70,3 @@ class MainContent : public QskLinearBox
     QList< QskLinearBox* > m_columns;
     ShadowPositioner* m_shadowPositioner;
 };
-
-#endif // MAINCONTENT_H

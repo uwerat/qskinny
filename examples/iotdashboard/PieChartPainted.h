@@ -3,11 +3,9 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef PIECHARTPAINTED_H
-#define PIECHARTPAINTED_H
+#pragma once
 
 #include <QskControl.h>
-
 #include "CircularProgressBar.h"
 
 class ProgressBarAnimator;
@@ -20,7 +18,8 @@ class PieChartPainted : public QskControl
   public:
     QSK_SUBCONTROLS( Panel )
 
-    PieChartPainted( const QColor& color, const QskGradient& gradient, int progress, int value, QQuickItem* parent = nullptr );
+    PieChartPainted( const QColor&, const QskGradient&,
+        int progress, int value, QQuickItem* parent = nullptr );
 
     QskAspect::Subcontrol effectiveSubcontrol(
         QskAspect::Subcontrol subControl ) const override final;
@@ -35,5 +34,3 @@ class PieChartPainted : public QskControl
     QskTextLabel* m_progressLabel;
     ProgressBarAnimator* m_animator;
 };
-
-#endif // PIECHARTPAINTED_H

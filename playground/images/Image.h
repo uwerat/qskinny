@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef IMAGE_H
-#define IMAGE_H
+#pragma once
 
 #include "QskGlobal.h"
 
@@ -78,5 +77,3 @@ class Image : public QQuickImage
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
-
-#endif

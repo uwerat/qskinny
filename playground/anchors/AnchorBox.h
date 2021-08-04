@@ -3,8 +3,7 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef ANCHOR_BOX_H
-#define ANCHOR_BOX_H
+#pragma once
 
 #include "QskControl.h"
 
@@ -42,6 +41,3 @@ class AnchorBox : public QskControl
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
-
-#endif
-

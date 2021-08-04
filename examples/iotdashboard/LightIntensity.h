@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef LIGHTINTENSITY_H
-#define LIGHTINTENSITY_H
+#pragma once
 
 #include "Box.h"
 
@@ -117,5 +116,3 @@ class LightIntensity : public Box
   public:
     LightIntensity( QQuickItem* parent );
 };
-
-#endif // LIGHTINTENSITY_H

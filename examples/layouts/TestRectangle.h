@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef TEST_RECTANGLE
-#define TEST_RECTANGLE
+#pragma once
 
 #include <QskTextLabel.h>
 
@@ -24,5 +23,3 @@ class TestRectangle : public QskTextLabel
   private:
     QString m_colorName;
 };
-
-#endif

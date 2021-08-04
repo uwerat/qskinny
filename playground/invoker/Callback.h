@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef CALLBACK_H
-#define CALLBACK_H 1
+#pragma once
 
 #include <QskMetaInvokable.h>
 
@@ -40,5 +39,3 @@ inline const QskMetaInvokable& Callback::invokable() const
 {
     return m_invokable;
 }
-
-#endif
