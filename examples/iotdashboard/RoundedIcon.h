@@ -6,7 +6,6 @@
 #pragma once
 
 #include <QskBox.h>
-#include <QskGradient.h>
 
 class QskGraphicLabel;
 

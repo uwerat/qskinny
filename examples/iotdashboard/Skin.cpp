@@ -144,30 +144,22 @@ void Skin::initHints( const Palette& palette )
     ed.setBoxShape( RoundButton::Panel, {0, 0, 30, 30} );
     ed.setBoxShape( RoundButton::Panel | RoundButton::Top, {30, 30, 0, 0} );
 
-
     // diagram:
-    ed.setBoxBorderMetrics( WeekdayBox::Panel, {0, 0, 3, 3} );
+    ed.setBoxBorderMetrics( UsageDiagramBox::DaysBox, {0, 0, 3, 3} );
+    ed.setFontRole( UsageDiagramBox::DayText, QskSkin::TinyFont );
 
-    ed.setMetric( CaptionColorBox::Panel | QskAspect::Size, 8 );
-    ed.setBoxShape( CaptionColorBox::Panel | QskAspect::Size, 4 );
-    ed.setGradient( CaptionColorBox::Panel | CaptionItem::Water, {"#6776ff"} );
-    ed.setGradient( CaptionColorBox::Panel | CaptionItem::Electricity, {"#ff3122"} );
-    ed.setGradient( CaptionColorBox::Panel | CaptionItem::Gas, {"#ff7d34"} );
+    ed.setStrutSize( UsageDiagramLegend::Symbol, 8, 8 );
+    ed.setBoxShape( UsageDiagramLegend::Symbol, 100, Qt::RelativeSize ); // a circle
+    ed.setGradient( UsageDiagramLegend::Symbol | UsageDiagramLegend::Water, {"#6776ff"} );
+    ed.setGradient( UsageDiagramLegend::Symbol | UsageDiagramLegend::Electricity, {"#ff3122"} );
+    ed.setGradient( UsageDiagramLegend::Symbol | UsageDiagramLegend::Gas, {"#ff7d34"} );
 
-    ed.setPadding( UsageDiagram::Panel, 0 );
-
-    ed.setFontRole( WeekdayLabel::Text, QskSkin::TinyFont );
-    ed.setPadding( WeekdayLabel::Panel, {0, 5, 0, 10} );
-    ed.setAlignment( WeekdayLabel::Text, Qt::AlignCenter );
-
-    ed.setPadding( CaptionBox::Panel, {10, 10, 20, 0} );
-
+    ed.setPadding( UsageDiagramBox::Panel, 0 );
 
     // new diagram:
     ed.setColor( Diagram::ChartArea1, "#666776ff" );
     ed.setColor( Diagram::ChartArea2, "#66ff3122" );
     ed.setColor( Diagram::ChartArea3, "#66ff7d34" );
-
 
     // light intensity:
     ed.setGradient( LightDisplay::ColdPart, { Qt::Horizontal, "#a7b0ff", "#6776ff" } );
@@ -175,18 +167,17 @@ void Skin::initHints( const Palette& palette )
     ed.setFontRole( LightDisplay::ValueText, QskSkin::LargeFont );
     ed.setColor( LightDisplay::ValueText, "#929cb2" );
 
-
     // palette dependent skin hints:
     ed.setGradient( MenuBar::Panel, palette.menuBar );
     ed.setGradient( MainContent::Panel, palette.mainContent );
     ed.setGradient( Box::Panel, palette.box );
     ed.setGradient( BoxWithButtons::Panel, palette.box );
-    ed.setGradient( UsageDiagram::Panel, palette.box );
+    ed.setGradient( UsageDiagramBox::Panel, palette.box );
     ed.setColor( LightDisplay::Panel, palette.lightDisplay );
     ed.setColor( PieChartPainted::Panel, palette.pieChart );
     ed.setGradient( RoundButton::Panel, palette.roundButton );
-    ed.setBoxBorderColors( WeekdayBox::Panel, palette.weekdayBox );
+    ed.setBoxBorderColors( UsageDiagramBox::DaysBox, palette.weekdayBox );
     ed.setColor( QskTextLabel::Text, palette.text );
-    ed.setColor( WeekdayLabel::Text, palette.text );
+    ed.setColor( UsageDiagramBox::DayText, palette.text );
     ed.setColor( ShadowPositioner::Panel, palette.shadow );
 }
