@@ -28,7 +28,7 @@ class QSK_EXPORT QskInputPredictionBar : public QskBox
   public Q_SLOTS:
     void setPrediction( const QStringList& );
 
-  private:
+  protected:
     QskAspect::Subcontrol substitutedSubcontrol(
         QskAspect::Subcontrol ) const override;
 
