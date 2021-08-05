@@ -77,6 +77,7 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     ~QskControl() override;
 
     void setMargins( qreal );
+    void setMargins( qreal, qreal, qreal, qreal );
     void setMargins( const QMarginsF& );
     void resetMargins();
     QMarginsF margins() const;
