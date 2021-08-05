@@ -117,7 +117,7 @@ QskAspect::Subcontrol QskDialogButtonBox::substitutedSubcontrol(
     if ( subControl == QskBox::Panel )
         return QskDialogButtonBox::Panel;
 
-    return Inherited::effectiveSubcontrol( subControl );
+    return Inherited::substitutedSubcontrol( subControl );
 }
 
 QSizeF QskDialogButtonBox::layoutSizeHint(

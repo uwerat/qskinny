@@ -39,7 +39,7 @@ QskAspect::Subcontrol QskDialogButton::substitutedSubcontrol(
     if ( subControl == QskPushButton::Graphic )
         return QskDialogButton::Graphic;
 
-    return Inherited::effectiveSubcontrol( subControl );
+    return Inherited::substitutedSubcontrol( subControl );
 }
 
 void QskDialogButton::setAction( QskDialog::Action action )
