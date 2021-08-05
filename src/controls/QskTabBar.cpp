@@ -677,7 +677,7 @@ QskAspect::Subcontrol QskTabBar::substitutedSubcontrol(
     if ( subControl == QskBox::Panel )
         return QskTabBar::Panel;
 
-    return Inherited::effectiveSubcontrol( subControl );
+    return Inherited::substitutedSubcontrol( subControl );
 }
 
 QskAspect::Placement QskTabBar::effectivePlacement() const
