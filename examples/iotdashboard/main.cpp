@@ -4,22 +4,19 @@
  *****************************************************************************/
 
 #include "MainWindow.h"
-
 #include "Skin.h"
 
 #include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
 
-#include <QskLinearBox.h>
-#include <QskPushButton.h>
 #include <QskSetup.h>
 #include <QskShortcutMap.h>
 #include <QskSkinFactory.h>
 #include <QskSkinManager.h>
 #include <QskWindow.h>
+#include <QskObjectCounter.h>
 
 #include <QGuiApplication>
-
 
 namespace
 {
@@ -57,24 +54,21 @@ namespace
 
 int main( int argc, char* argv[] )
 {
+#ifdef ITEM_STATISTICS
+    QskObjectCounter counter( true );
+#endif
+
     QGuiApplication app( argc, argv );
 
     SkinnyFont::init( &app );
 
-    SkinFactory skinFactory;
-
+    // disable default skins
     qskSkinManager->setPluginPaths( QStringList() ); // no plugins
-
     qskSkinManager->unregisterFactory( "materialfactory" );
     qskSkinManager->unregisterFactory( "squiekfactory" );
+
     qskSkinManager->registerFactory(
-        QStringLiteral( "SampleSkinFactory" ), &skinFactory );
-
-//    QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_T ),
-//        false, skinFactory, SLOT(toggleScheme()) );
-
-//    QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL + Qt::Key_S ),
-//                                 true, &skinFactory, SLOT( rotateSkin() ) );
+        QStringLiteral( "SampleSkinFactory" ), new SkinFactory() );
 
     qskSetup->setSkin( "DaytimeSkin" );
 

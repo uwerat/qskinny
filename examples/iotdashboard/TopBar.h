@@ -8,8 +8,6 @@
 #include <QskLinearBox.h>
 #include <QskTextLabel.h>
 
-#include <QGradient>
-
 class TimeTitleLabel : public QskTextLabel
 {
     Q_OBJECT

@@ -19,9 +19,11 @@ Box::Box( const QString& title, QQuickItem* parent )
     setPanel( true );
     setSubcontrolProxy( QskBox::Panel, Box::Panel );
 
-    auto label = new QskTextLabel( title, this );
-    label->setFontRole( Skin::TitleFont );
-    label->setVisible( !title.isEmpty() );
+    if ( !title.isEmpty() )
+    {
+        auto label = new QskTextLabel( title, this );
+        label->setFontRole( Skin::TitleFont );
+    }
 }
 
 #include "moc_Box.cpp"
