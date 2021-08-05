@@ -164,6 +164,11 @@ void QskControl::setMargins( qreal margin )
     setMargins( QskMargins( margin ) );
 }
 
+void QskControl::setMargins( qreal left, qreal top, qreal right, qreal bottom )
+{
+    setMargins( QskMargins( left, top, right, bottom ) );
+}
+
 void QskControl::setMargins( const QMarginsF& margins )
 {
     const auto m = QskMargins().expandedTo( margins );
