@@ -97,7 +97,7 @@ void CircularProgressBar::paint( QPainter* painter )
     g1.setColorAt( 0.5, c0.lighter( 120 ) );
     g1.setColorAt( 1.0, c0 );
 
-    painter->setPen( QPen( g1, w ) );
+    painter->setPen( QPen( g1, w, Qt::SolidLine, Qt::FlatCap ) );
     painter->drawArc( r, startAngle, 16 * 360 );
 
     QConicalGradient g2( r.center(), 0 );
@@ -105,7 +105,7 @@ void CircularProgressBar::paint( QPainter* painter )
     g2.setColorAt( 0.5, Qt::blue );
     g2.setColorAt( 1.0, Qt::red );
 
-    painter->setPen( QPen( g2, w ) );
+    painter->setPen( QPen( g2, w, Qt::SolidLine, Qt::FlatCap ) );
     painter->drawArc( r, startAngle, endAngle );
 #endif
 }
