@@ -22,7 +22,7 @@ class QSK_EXPORT QskPaintedNode : public QskTextureNode
     virtual void paint( QPainter*, const QSizeF& ) = 0;
 
     // a hash value of '0' always results in repainting
-    virtual uint hash() = 0;
+    virtual uint hash() const = 0;
 
   private:
     class PaintHelper;
