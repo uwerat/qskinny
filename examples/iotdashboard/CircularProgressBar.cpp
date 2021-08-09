@@ -5,89 +5,190 @@
 
 #include "CircularProgressBar.h"
 
-#include <QPainter>
+#include <QskAnimator.h>
+#include <QskFunctions.h>
 
-CircularProgressBar::CircularProgressBar( const QskGradient& gradient, int progress, QQuickItem* parent )
-    : QQuickPaintedItem( parent )
-    , m_progress( progress )
+QSK_SUBCONTROL( CircularProgressBar, Groove )
+QSK_SUBCONTROL( CircularProgressBar, Bar )
+
+namespace
 {
-    // This is a bit hackish, but let's do this properly
-    // once QSkinny has an arc renderer in place
-    QLinearGradient g( 0, 0, 30, 0 );
-    QGradientStop stop1( 0.0, gradient.colorAt( 0 ) );
-    QGradientStop stop2( 1.0, gradient.colorAt( 1 ) );
-    g.setStops( {stop1, stop2} );
-    m_gradient = g;
-
-    connect( this, &QQuickPaintedItem::contentsSizeChanged, [this]()
+    class PositionAnimator : public QskAnimator
     {
-        auto size = contentsSize();
-        QRadialGradient ringGradient( size.width() / 2, size.height() / 2, 45 );
-        QGradientStop stop1( 0.0, "#c0c0c0" );
-        QGradientStop stop2( 0.5, "#f0f0f0" );
-        QGradientStop stop3( 1.0, "#c0c0c0" );
-        ringGradient.setStops( {stop1, stop2, stop3} );
+      public:
+        PositionAnimator( CircularProgressBar* progressBar )
+            : m_progressBar( progressBar )
+        {
+            setAutoRepeat( true );
+            setDuration( 1300 );
 
-        m_ringGradient = ringGradient;
-    } );
+            setWindow( progressBar->window() );
+        }
+
+        void advance( qreal value ) override
+        {
+            const auto aspect = CircularProgressBar::Bar | QskAspect::Position;
+
+            m_progressBar->setMetric( aspect, value );
+            m_progressBar->update();
+        }
+
+      private:
+        CircularProgressBar* m_progressBar;
+    };
 }
 
-double CircularProgressBar::width() const
+class CircularProgressBar::PrivateData
 {
-    return m_width;
-}
+  public:
+    void updateIndeterminateAnimator( CircularProgressBar* progressBar )
+    {
+        if ( !isIndeterminate )
+        {
+            delete animator;
+            animator = nullptr;
 
-void CircularProgressBar::setWidth( double width )
+            return;
+        }
+
+        if ( progressBar->window() && progressBar->isVisible() )
+        {
+            if ( animator == nullptr )
+                animator = new PositionAnimator( progressBar );
+
+            animator->start();
+        }
+        else
+        {
+            if ( animator )
+                animator->stop();
+        }
+    }
+
+    PositionAnimator* animator = nullptr;
+
+    qreal value = 0.0;
+    qreal origin = 0.0;
+
+    bool hasOrigin = false;
+    bool isIndeterminate = false;
+};
+
+CircularProgressBar::CircularProgressBar( qreal min, qreal max, QQuickItem* parent )
+    : QskBoundedControl( min, max, parent )
+    , m_data( new PrivateData )
 {
-    m_width = width;
+    m_data->value = minimum();
+
+    initSizePolicy( QskSizePolicy::MinimumExpanding, QskSizePolicy::MinimumExpanding );
+
+    connect( this, &QskBoundedControl::boundariesChanged,
+        this, &CircularProgressBar::adjustValue );
 }
 
-QColor CircularProgressBar::backgroundColor() const
+CircularProgressBar::CircularProgressBar( QQuickItem* parent )
+    : CircularProgressBar( 0.0, 100.0, parent )
 {
-    return m_backgroundColor;
 }
 
-void CircularProgressBar::setBackgroundColor( const QColor& color )
+bool CircularProgressBar::isIndeterminate() const
 {
-    m_backgroundColor = color;
+    return m_data->isIndeterminate;
 }
 
-QRadialGradient CircularProgressBar::ringGradient() const
+void CircularProgressBar::setIndeterminate( bool on )
 {
-    return m_ringGradient;
+    if ( on == m_data->isIndeterminate )
+        return;
+
+    m_data->isIndeterminate = on;
+    m_data->updateIndeterminateAnimator( this );
+
+    update();
+    Q_EMIT indeterminateChanged( on );
 }
 
-void CircularProgressBar::setRingGradient( const QRadialGradient& gradient )
+void CircularProgressBar::resetOrigin()
 {
-    m_ringGradient = gradient;
+    if ( m_data->hasOrigin )
+    {
+        m_data->hasOrigin = false;
+
+        update();
+        Q_EMIT originChanged( origin() );
+    }
 }
 
-void CircularProgressBar::paint( QPainter* painter )
+qreal CircularProgressBar::origin() const
 {
-    const auto size = contentsSize();
+    if ( m_data->hasOrigin )
+    {
+        return boundedValue( m_data->origin );
+    }
 
-    const int startAngle = 1440;
-    const int endAngle = -16 * ( m_progress / 100.0 ) * 360;
-
-    painter->setRenderHint( QPainter::Antialiasing, true );
-
-    const qreal w = 8.53;
-
-    const QRectF r( 0.5 * w, 0.5 * w, size.width() - w, size.height() - w );
-
-    const QColor c0 ( Qt::lightGray );
-
-    QRadialGradient g1( r.center(), qMin( r.width(), r.height() ) );
-    g1.setColorAt( 0.0, c0 );
-    g1.setColorAt( 0.5, c0.lighter( 120 ) );
-    g1.setColorAt( 1.0, c0 );
-
-    painter->setPen( QPen( g1, w, Qt::SolidLine, Qt::FlatCap ) );
-    painter->drawArc( r, startAngle, 16 * 360 );
-
-    QConicalGradient g2( r.center(), 90 );
-    g2.setStops( m_gradient.stops() );
-
-    painter->setPen( QPen( g2, w, Qt::SolidLine, Qt::FlatCap ) );
-    painter->drawArc( r, startAngle, endAngle );
+    return minimum();
 }
+
+qreal CircularProgressBar::value() const
+{
+    return m_data->value;
+}
+
+qreal CircularProgressBar::valueAsRatio() const
+{
+    return QskBoundedControl::valueAsRatio( m_data->value );
+}
+
+void CircularProgressBar::setValue( qreal value )
+{
+    if ( isComponentComplete() )
+        value = boundedValue( value );
+
+    setValueInternal( value );
+}
+
+void CircularProgressBar::setValueAsRatio( qreal ratio )
+{
+    ratio = qBound( 0.0, ratio, 1.0 );
+    setValue( minimum() + ratio * boundaryLength() );
+}
+
+void CircularProgressBar::setOrigin( qreal origin )
+{
+    if ( isComponentComplete() )
+        origin = boundedValue( origin );
+
+    if( !m_data->hasOrigin || !qskFuzzyCompare( m_data->origin, origin ) )
+    {
+        m_data->hasOrigin = true;
+        m_data->origin = origin;
+
+        update();
+        Q_EMIT originChanged( origin );
+    }
+}
+
+void CircularProgressBar::componentComplete()
+{
+    Inherited::componentComplete();
+    adjustValue();
+}
+
+void CircularProgressBar::setValueInternal( qreal value )
+{
+    if ( !qskFuzzyCompare( value, m_data->value ) )
+    {
+        m_data->value = value;
+        Q_EMIT valueChanged( value );
+
+        update();
+    }
+}
+
+void CircularProgressBar::adjustValue()
+{
+    if ( isComponentComplete() )
+        setValueInternal( boundedValue( m_data->value ) );
+}
+
+#include "moc_CircularProgressBar.cpp"
