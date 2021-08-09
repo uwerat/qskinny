@@ -104,10 +104,11 @@ void Skin::initHints( const Palette& palette )
     ed.setColor( TopBarItem::Item3 | QskAspect::TextColor, "#f99055" );
     ed.setColor( TopBarItem::Item4 | QskAspect::TextColor, "#6776ff" );
 
-    ed.setGradient( TopBarItem::Item1, { Qt::Horizontal, "#FF5C00", "#FF3122" } );
-    ed.setGradient( TopBarItem::Item2, { Qt::Horizontal, "#6776FF", "#6100FF" } );
-    ed.setGradient( TopBarItem::Item3, { Qt::Horizontal, "#FFCE50", "#FF3122" } );
-    ed.setGradient( TopBarItem::Item4, { Qt::Horizontal, "#6776FF", "#6100FF" } );
+    // conical gradients are counterclockwise, so specify the 2nd color first:
+    ed.setGradient( TopBarItem::Item1, { Qt::Horizontal, "#FF3122", "#FF5C00" } );
+    ed.setGradient( TopBarItem::Item2, { Qt::Horizontal, "#6100FF", "#6776FF" } );
+    ed.setGradient( TopBarItem::Item3, { Qt::Horizontal, "#FF3122", "#FFCE50" } );
+    ed.setGradient( TopBarItem::Item4, { Qt::Horizontal, "#6100FF", "#6776FF" } );
 
     ed.setFontRole( TimeTitleLabel::Text, Skin::TitleFont );
 

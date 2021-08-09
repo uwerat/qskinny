@@ -71,22 +71,7 @@ void CircularProgressBar::paint( QPainter* painter )
 
     painter->setRenderHint( QPainter::Antialiasing, true );
 
-#if 1
-    QRectF outerRect( {0, 0}, size );
-
-    painter->setBrush( m_ringGradient );
-    painter->setPen( m_backgroundColor );
-    painter->drawEllipse( outerRect );
-
-    painter->setBrush( m_gradient );
-    painter->drawPie( outerRect, startAngle, endAngle );
-
-    painter->setBrush( m_backgroundColor );
-    painter->setPen( m_backgroundColor );
-    QRectF innerRect( width() / 2, width() / 2, size.width() - width(), size.height() - width() );
-    painter->drawEllipse( innerRect );
-#else
-    const qreal w = 10;
+    const qreal w = 8.53;
 
     const QRectF r( 0.5 * w, 0.5 * w, size.width() - w, size.height() - w );
 
@@ -100,12 +85,9 @@ void CircularProgressBar::paint( QPainter* painter )
     painter->setPen( QPen( g1, w, Qt::SolidLine, Qt::FlatCap ) );
     painter->drawArc( r, startAngle, 16 * 360 );
 
-    QConicalGradient g2( r.center(), 0 );
-    g2.setColorAt( 0.0, Qt::red );
-    g2.setColorAt( 0.5, Qt::blue );
-    g2.setColorAt( 1.0, Qt::red );
+    QConicalGradient g2( r.center(), 90 );
+    g2.setStops( m_gradient.stops() );
 
     painter->setPen( QPen( g2, w, Qt::SolidLine, Qt::FlatCap ) );
     painter->drawArc( r, startAngle, endAngle );
-#endif
 }
