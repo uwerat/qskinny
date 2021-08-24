@@ -13,9 +13,6 @@ QSK_SUBCONTROL( Box, Panel )
 Box::Box( const QString& title, QQuickItem* parent )
     : QskLinearBox( Qt::Vertical, parent )
 {
-    setAutoAddChildren( true );
-    setAutoLayoutChildren( true );
-
     setPanel( true );
     setSubcontrolProxy( QskBox::Panel, Box::Panel );
 

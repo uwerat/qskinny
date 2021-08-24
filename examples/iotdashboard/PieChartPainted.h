@@ -20,7 +20,7 @@ class PieChartPainted : public QskControl
         int progress, int value, QQuickItem* parent = nullptr );
 
   protected:
-    virtual QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
+    QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
     void updateLayout() override;
 
   private:

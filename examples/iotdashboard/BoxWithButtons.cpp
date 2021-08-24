@@ -18,7 +18,7 @@ QSK_SUBCONTROL( BoxWithButtons, Panel )
 namespace
 {
     class UpAndDownBox : public QskLinearBox
-    {   
+    {
       public:
         UpAndDownBox( QQuickItem* parent )
             : QskLinearBox( Qt::Vertical, parent )

@@ -143,10 +143,10 @@ LightDimmer::LightDimmer( const QskGradient& coldGradient,
     , m_warmGradient( warmGradient )
 {
     connect( this, &QQuickPaintedItem::widthChanged,
-             this, &LightDimmer::updateGradient );
+        this, &LightDimmer::updateGradient );
 
     connect( this, &QQuickPaintedItem::heightChanged,
-             this, &LightDimmer::updateGradient );
+        this, &LightDimmer::updateGradient );
 }
 
 void LightDimmer::updateGradient()

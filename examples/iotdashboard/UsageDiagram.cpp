@@ -65,7 +65,7 @@ namespace
       public:
         UsageDiagram( QQuickItem* parent = nullptr )
             : Diagram( parent )
-        { 
+        {
             // These values are calculated with a boost::math::cubic_b_spline.
             // We just output the values here to get rid of the dependency:
 
@@ -126,7 +126,7 @@ namespace
 
             for( size_t i = 0; i < count; i++ )
                 points += QPointF( i, values[i] );
-                        
+
             addDataPoints( points, Diagram::Area );
         }
     };
@@ -144,7 +144,7 @@ UsageDiagramLegend::UsageDiagramLegend( QQuickItem* parent )
     addItem( new LegendItem( UsageDiagramLegend::Electricity ) );
     addItem( new LegendItem( UsageDiagramLegend::Gas ) );
 }
- 
+
 UsageDiagramBox::UsageDiagramBox( QQuickItem* parent )
     : Box( QString(), parent )
 {
@@ -158,7 +158,7 @@ UsageDiagramBox::UsageDiagramBox( QQuickItem* parent )
 
     const char* days[] = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 
-    for( size_t i = 0; i < sizeof( days ) / sizeof( days[0] ) ; i++ )
+    for( size_t i = 0; i < sizeof( days ) / sizeof( days[0] ); i++ )
     {
         auto box = new QskBox( true );
         box->setSubcontrolProxy( QskBox::Panel, UsageDiagramBox::DaysBox );

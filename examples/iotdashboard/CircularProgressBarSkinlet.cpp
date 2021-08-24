@@ -11,14 +11,11 @@
 #include <QEasingCurve>
 #include <QPainter>
 
-namespace {
+namespace
+{
     class ArcNode : public QskPaintedNode
     {
-    public:
-        ArcNode() : QskPaintedNode()
-        {
-        }
-
+      public:
         void setGradient( const QskGradient& gradient )
         {
             m_gradient = gradient;
@@ -59,7 +56,7 @@ namespace {
             m_position = position;
         }
 
-        virtual void paint( QPainter* painter, const QSizeF& size ) override
+        void paint( QPainter* painter, const QSizeF& size ) override
         {
             int startAngle;
             int spanAngle;
@@ -81,7 +78,8 @@ namespace {
 
             painter->setRenderHint( QPainter::Antialiasing, true );
 
-            const QRectF r( 0.5 * m_width, 0.5 * m_width, size.width() - m_width, size.height() - m_width );
+            const QRectF r( 0.5 * m_width, 0.5 * m_width,
+                size.width() - m_width, size.height() - m_width );
 
             QGradientStops stops;
 
@@ -109,7 +107,7 @@ namespace {
             }
         }
 
-        virtual uint hash() const override
+        uint hash() const override
         {
             uint h = qHash( m_gradientType );
             h = qHash( m_width, h );
@@ -127,7 +125,7 @@ namespace {
             return h;
         }
 
-    private:
+      private:
         QskGradient m_gradient;
         QGradient::Type m_gradientType;
         double m_width;
@@ -150,8 +148,7 @@ CircularProgressBarSkinlet::~CircularProgressBarSkinlet()
 }
 
 QRectF CircularProgressBarSkinlet::subControlRect(
-    const QskSkinnable* /*skinnable*/, const QRectF& contentsRect,
-    QskAspect::Subcontrol /*subControl*/ ) const
+    const QskSkinnable*, const QRectF& contentsRect, QskAspect::Subcontrol ) const
 {
     return contentsRect;
 }
@@ -173,7 +170,8 @@ QSGNode* CircularProgressBarSkinlet::updateSubNode(
     return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
-QSGNode* CircularProgressBarSkinlet::updateBarNode( const CircularProgressBar* bar, quint8 nodeRole, QSGNode* node ) const
+QSGNode* CircularProgressBarSkinlet::updateBarNode(
+    const CircularProgressBar* bar, quint8 nodeRole, QSGNode* node ) const
 {
     auto arcNode = static_cast< ArcNode* >( node );
 

@@ -103,7 +103,7 @@ PieChartPainted::PieChartPainted( const QColor& color, const QskGradient& gradie
         [this]() { m_animator->start(); } );
 }
 
-QSizeF PieChartPainted::contentsSizeHint( Qt::SizeHint /*sizeHint*/, const QSizeF& /*size*/ ) const
+QSizeF PieChartPainted::contentsSizeHint( Qt::SizeHint, const QSizeF& ) const
 {
     return {57, 57};
 }
