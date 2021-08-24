@@ -4,6 +4,7 @@ SOURCES += \
     Box.cpp \
     BoxWithButtons.cpp \
     CircularProgressBar.cpp \
+    CircularProgressBarSkinlet.cpp \
     Diagram.cpp \
     DiagramSkinlet.cpp \
     LightIntensity.cpp \
@@ -30,6 +31,7 @@ HEADERS += \
     Box.h \
     BoxWithButtons.h \
     CircularProgressBar.h \
+    CircularProgressBarSkinlet.h \
     Diagram.h \
     DiagramSkinlet.h \
     LightIntensity.h \
