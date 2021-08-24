@@ -17,12 +17,12 @@ class RoundedIcon : public QskBox
     QSK_SUBCONTROLS( Panel, Icon )
     QSK_STATES( Bright, Small ) // to differentiate between orange and purple and small vs. big
 
-    RoundedIcon( const QString& iconName, bool isBright, bool isSmall,
-                 QQuickItem* parent = nullptr );
+    RoundedIcon( const QString& iconName,
+        bool isBright, bool isSmall, QQuickItem* parent = nullptr );
 
   protected:
     void updateLayout() override;
-    virtual QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
+    QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
   private:
     QskGraphicLabel* m_graphicLabel = nullptr;

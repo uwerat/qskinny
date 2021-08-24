@@ -43,7 +43,9 @@ namespace
     }
 }
 
-TopBarItem::TopBarItem( int index, const QString& name, const QskGradient& gradient, int progress, int value, QQuickItem* parent )
+TopBarItem::TopBarItem(
+        int index, const QString& name, const QskGradient& gradient,
+        int progress, int value, QQuickItem* parent )
     : QskLinearBox( Qt::Vertical, parent )
     , m_name( name )
 {
@@ -81,8 +83,6 @@ TopBar::TopBar( QQuickItem* parent )
     setPanel( true );
     setSubcontrolProxy( QskBox::Panel, Panel );
 
-    setAutoLayoutChildren( true );
-    setAutoAddChildren( true );
     setSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Fixed );
 
     const QStringList itemStrings = { "Living Room", "Bedroom", "Bathroom", "Kitchen" };

@@ -43,9 +43,6 @@ class Diagram : public QskControl
     Qsk::Position chartPosition() const;
     void setChartPosition( Qsk::Position );
 
-  protected:
-    QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
-
   private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

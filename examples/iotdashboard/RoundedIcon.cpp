@@ -17,7 +17,8 @@ QSK_SUBCONTROL( RoundedIcon, Icon )
 QSK_STATE( RoundedIcon, Bright, ( QskAspect::FirstUserState << 1 ) )
 QSK_STATE( RoundedIcon, Small, ( QskAspect::FirstUserState << 2 ) )
 
-RoundedIcon::RoundedIcon( const QString& iconName, bool isBright, bool isSmall, QQuickItem* parent )
+RoundedIcon::RoundedIcon( const QString& iconName,
+        bool isBright, bool isSmall, QQuickItem* parent )
     : QskBox( parent )
 {
     setPanel( true );

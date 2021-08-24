@@ -5,6 +5,15 @@
 
 #include "Diagram.h"
 
+QSK_SUBCONTROL( Diagram, Chart )
+QSK_SUBCONTROL( Diagram, Segments )
+QSK_SUBCONTROL( Diagram, ChartLine1 )
+QSK_SUBCONTROL( Diagram, ChartArea1 )
+QSK_SUBCONTROL( Diagram, ChartLine2 )
+QSK_SUBCONTROL( Diagram, ChartArea2 )
+QSK_SUBCONTROL( Diagram, ChartLine3 )
+QSK_SUBCONTROL( Diagram, ChartArea3 )
+
 class Diagram::PrivateData
 {
   public:
@@ -14,15 +23,6 @@ class Diagram::PrivateData
     Qsk::Position position = Qsk::Bottom;
     QVector< Types > types;
 };
-
-QSK_SUBCONTROL( Diagram, Chart )
-QSK_SUBCONTROL( Diagram, Segments )
-QSK_SUBCONTROL( Diagram, ChartLine1 )
-QSK_SUBCONTROL( Diagram, ChartArea1 )
-QSK_SUBCONTROL( Diagram, ChartLine2 )
-QSK_SUBCONTROL( Diagram, ChartArea2 )
-QSK_SUBCONTROL( Diagram, ChartLine3 )
-QSK_SUBCONTROL( Diagram, ChartArea3 )
 
 Diagram::Diagram( QQuickItem* parent )
     : Inherited( parent )
@@ -78,16 +78,6 @@ Qsk::Position Diagram::chartPosition() const
 void Diagram::setChartPosition( Qsk::Position position )
 {
     m_data->position = position;
-}
-
-QSizeF Diagram::contentsSizeHint( Qt::SizeHint which, const QSizeF& ) const
-{
-    if( which != Qt::PreferredSize )
-    {
-        return QSizeF();
-    }
-
-    return {};
 }
 
 #include "moc_Diagram.cpp"

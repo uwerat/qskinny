@@ -17,12 +17,14 @@ PieChartSkinlet::PieChartSkinlet( QskSkin* skin )
     setNodeRoles( { PanelRole, LabelsRole } );
 }
 
-QRectF PieChartSkinlet::subControlRect( const QskSkinnable*, const QRectF& contentsRect, QskAspect::Subcontrol ) const
+QRectF PieChartSkinlet::subControlRect( const QskSkinnable*,
+    const QRectF& contentsRect, QskAspect::Subcontrol ) const
 {
     return contentsRect;
 }
 
-QSGNode* PieChartSkinlet::updateSubNode( const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
+QSGNode* PieChartSkinlet::updateSubNode( const QskSkinnable* skinnable,
+    quint8 nodeRole, QSGNode* node ) const
 {
     const auto pieChart = static_cast< const PieChart* >( skinnable );
 
@@ -71,7 +73,7 @@ QSGNode* PieChartSkinlet::updatePanelNode( const PieChart* pieChart, QSGNode* no
     return boxNode;
 }
 
-QSGNode* PieChartSkinlet::updateLabelsNode( const PieChart* pieChart, QSGNode* /*node*/ ) const
+QSGNode* PieChartSkinlet::updateLabelsNode( const PieChart* pieChart, QSGNode* ) const
 {
     const int labelsCount = pieChart->labels().count();
 
