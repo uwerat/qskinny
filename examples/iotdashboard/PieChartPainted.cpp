@@ -47,7 +47,6 @@ class ProgressBarAnimator : public QskAnimator
     void setup() override
     {
         m_backgroundColor = m_pieChart->color( PieChartPainted::Panel );
-        m_ringGradient = m_progressBar->ringGradient();
     }
 
     void advance( qreal value ) override
@@ -68,7 +67,6 @@ class ProgressBarAnimator : public QskAnimator
             newGradient.setColorAt( stop.first, newColor );
         }
 
-        m_progressBar->setRingGradient( newGradient );
         m_progressBar->update();
     }
 
@@ -83,12 +81,15 @@ PieChartPainted::PieChartPainted( const QColor& color, const QskGradient& gradie
     : QskControl( parent )
     , m_color( color )
     , m_gradient( gradient )
-    , m_progressBar( new CircularProgressBar( gradient, progress, this ) )
+    , m_progressBar( new CircularProgressBar( this ) )
     , m_progressLabel( new QskTextLabel( this ) )
     , m_animator( new ProgressBarAnimator( this, m_progressBar ) )
 {
     setAutoLayoutChildren( true );
     setSubcontrolProxy( QskBox::Panel, PieChartPainted::Panel );
+
+    m_progressBar->setGradientHint( CircularProgressBar::Bar, gradient );
+    m_progressBar->setValue( progress );
 
     auto progressText = QString::number( progress ) + " %";
     m_progressLabel->setText( progressText );
@@ -109,7 +110,6 @@ QSizeF PieChartPainted::contentsSizeHint( Qt::SizeHint /*sizeHint*/, const QSize
 
 void PieChartPainted::updateLayout()
 {
-    m_progressBar->setContentsSize( size().toSize() );
     m_progressBar->update();
 
     const auto rect = layoutRect();

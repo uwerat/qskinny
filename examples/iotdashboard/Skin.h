@@ -17,7 +17,8 @@ class Skin : public QskSkin
         Palette( const QskGradient& menuBar, const QskGradient& mainContent,
                 const QskGradient& box, const QColor& lightDisplay, const QColor& pieChart,
                 const QskGradient& roundButton, const QColor& weekdayBox,
-                const QColor& text, const QColor& shadow )
+                const QColor& text, const QColor& shadow,
+                const QskGradient& circularProgressBarGroove )
             : menuBar( menuBar )
             , mainContent( mainContent )
             , box( box )
@@ -27,6 +28,7 @@ class Skin : public QskSkin
             , weekdayBox( weekdayBox )
             , text( text )
             , shadow( shadow )
+            , circularProgressBarGroove( circularProgressBarGroove )
         {
         }
         QskGradient menuBar;
@@ -38,6 +40,7 @@ class Skin : public QskSkin
         QColor weekdayBox;
         QColor text;
         QColor shadow;
+        QskGradient circularProgressBarGroove;
     };
 
     Skin( const Palette& palette, QObject* parent = nullptr );
@@ -59,7 +62,8 @@ class DaytimeSkin : public Skin
         : Skin(
             Skin::Palette( {"#6D7BFB"}, {"#fbfbfb"}, {"#ffffff"},
             "#ffffff", "#ffffff", {"#f7f7f7"},
-            {"#f4f4f4"}, Qt::black, Qt::black )
+            {"#f4f4f4"}, Qt::black, Qt::black,
+            { Qt::Horizontal, { { 0.0, 0xc4c4c4 }, { 0.5, 0xf8f8f8 }, { 1.0, 0xc4c4c4 } } } )
             , parent )
     {
     }
@@ -72,7 +76,8 @@ class NighttimeSkin : public Skin
         : Skin(
             Skin::Palette( {"#2937A7"}, {"#040404"}, {"#000000"},
             "#000000", "#000000", {"#0a0a0a"},
-            {"#0c0c0c"}, Qt::white, Qt::white )
+            {"#0c0c0c"}, Qt::white, Qt::white,
+            { Qt::Horizontal, { { 0.0, 0x666666 }, { 0.5, 0x222222 }, { 1.0, 0x333333 } } } )
             , parent )
     {
     }

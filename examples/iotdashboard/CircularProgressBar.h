@@ -5,31 +5,59 @@
 
 #pragma once
 
+#include <QskBoundedControl.h>
 #include <QskGradient.h>
 
 #include <QGradient>
-#include <QQuickPaintedItem>
 
-class CircularProgressBar : public QQuickPaintedItem
+class CircularProgressBar : public QskBoundedControl
 {
+    Q_OBJECT
+
+    Q_PROPERTY( bool indeterminate READ isIndeterminate
+        WRITE setIndeterminate NOTIFY indeterminateChanged )
+
+    Q_PROPERTY( qreal origin READ origin
+        WRITE setOrigin RESET resetOrigin NOTIFY originChanged )
+
+    Q_PROPERTY( qreal value READ value WRITE setValue NOTIFY valueChanged )
+    Q_PROPERTY( qreal valueAsRatio READ valueAsRatio
+        WRITE setValueAsRatio NOTIFY valueChanged )
+
+    using Inherited = QskBoundedControl;
+
   public:
-    CircularProgressBar( const QskGradient&, int progress, QQuickItem* parent = nullptr );
+    QSK_SUBCONTROLS( Groove, Bar )
 
-    virtual void paint( QPainter* painter ) override;
+    CircularProgressBar( qreal min, qreal max, QQuickItem* parent = nullptr );
+    CircularProgressBar( QQuickItem* parent = nullptr );
 
-    double width() const;
-    void setWidth( double width );
+    bool isIndeterminate() const;
+    void setIndeterminate( bool on = true );
 
-    QColor backgroundColor() const;
-    void setBackgroundColor( const QColor& );
+    void resetOrigin();
+    qreal origin() const;
 
-    QRadialGradient ringGradient() const;
-    void setRingGradient( const QRadialGradient& );
+    qreal value() const;
+    qreal valueAsRatio() const; // [0.0, 1.0]
+
+  public Q_SLOTS:
+    void setValue( qreal );
+    void setValueAsRatio( qreal );
+    void setOrigin( qreal );
+
+  Q_SIGNALS:
+    void indeterminateChanged( bool );
+    void valueChanged( qreal );
+    void originChanged( qreal );
+
+  protected:
+    void componentComplete() override;
 
   private:
-    QGradient m_gradient;
-    QColor m_backgroundColor;
-    QRadialGradient m_ringGradient;
-    double m_width = 20;
-    int m_progress;
+    void setValueInternal( qreal value );
+    void adjustValue();
+
+    class PrivateData;
+    std::unique_ptr< PrivateData > m_data;
 };
