@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "PieChartPainted.h"
+#include "CircularProgressBar.h"
 
 #include <QskAnimator.h>
 #include <QskBox.h>
@@ -13,112 +14,61 @@
 #include <QskTextLabel.h>
 #include <QskFunctions.h>
 
-#include <QFontMetricsF>
-#include <QGuiApplication>
-#include <QQuickPaintedItem>
-#include <QQuickWindow>
-
-QSK_SUBCONTROL( PieChartPainted, Panel )
-
 namespace
 {
-    QColor invertedColor( const QColor& c )
+    class ProgressLabel : public QskTextLabel
     {
-        QColor ret = { 255 - c.red(), 255 - c.green(), 255 - c.blue()};
-        return ret;
-    }
-}
-
-// ### There must be an easier way to do this
-class ProgressBarAnimator : public QskAnimator
-{
-  public:
-    ProgressBarAnimator( PieChartPainted* pieChart, CircularProgressBar* progressBar )
-        : m_pieChart( pieChart )
-        , m_progressBar( progressBar )
-    {
-        QQuickWindow* w = static_cast< QQuickWindow* >( qGuiApp->allWindows().at( 0 ) );
-        setWindow( w );
-        setDuration( 500 );
-        setEasingCurve( QEasingCurve::Linear );
-        setAutoRepeat( false );
-    }
-
-    void setup() override
-    {
-        m_backgroundColor = m_pieChart->color( PieChartPainted::Panel );
-    }
-
-    void advance( qreal value ) override
-    {
-        const QColor c = m_backgroundColor;
-        const QColor c2 = invertedColor( c );
-        const QColor newColor = QskRgb::interpolated( c2, c, value );
-        m_progressBar->setBackgroundColor( newColor );
-
-        QRadialGradient gradient = m_ringGradient;
-        QRadialGradient newGradient = gradient;
-
-        for( const QGradientStop& stop : gradient.stops() )
+      public:
+        ProgressLabel( QQuickItem* parent )
+            : QskTextLabel( parent )
         {
-            QColor c = stop.second;
-            QColor c2 = invertedColor( c );
-            const QColor newColor = QskRgb::interpolated( c, c2, value );
-            newGradient.setColorAt( stop.first, newColor );
+            initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
+            setLayoutAlignmentHint( Qt::AlignCenter );
+            setFontRole( QskSkin::SmallFont );
         }
 
-        m_progressBar->update();
-    }
+        void setValue( int value )
+        {
+            setText( locale().toString( value ) + " " + locale().percent() );
+        }
+    };
+}
 
-  private:
-    QColor m_backgroundColor;
-    QRadialGradient m_ringGradient;
-    PieChartPainted* m_pieChart;
-    CircularProgressBar* m_progressBar;
-};
-
-PieChartPainted::PieChartPainted( const QColor& color, const QskGradient& gradient, int progress, int /*value*/, QQuickItem* parent )
+PieChartPainted::PieChartPainted( const QColor& textColor, const QskGradient& gradient,
+        int progress, QQuickItem* parent )
     : QskControl( parent )
-    , m_color( color )
-    , m_gradient( gradient )
-    , m_progressBar( new CircularProgressBar( this ) )
-    , m_progressLabel( new QskTextLabel( this ) )
-    , m_animator( new ProgressBarAnimator( this, m_progressBar ) )
 {
     setAutoLayoutChildren( true );
-    setSubcontrolProxy( QskBox::Panel, PieChartPainted::Panel );
 
-    m_progressBar->setGradientHint( CircularProgressBar::Bar, gradient );
-    m_progressBar->setValue( progress );
+    auto progressBar = new CircularProgressBar( this );
+    progressBar->setGradientHint( CircularProgressBar::Bar, gradient );
+    progressBar->setValue( progress );
 
-    auto progressText = QString::number( progress ) + " %";
-    m_progressLabel->setText( progressText );
-    m_progressLabel->setFontRole( QskSkin::SmallFont );
-    m_progressLabel->setTextColor( color );
-
-    const QColor c = this->color( Panel );
-    m_progressBar->setBackgroundColor( c );
-
-    connect( qskSetup, &QskSetup::skinChanged,
-        [this]() { m_animator->start(); } );
+    auto progressLabel = new ProgressLabel( this );
+    progressLabel->setTextColor( textColor );
+    progressLabel->setValue( progress );
 }
 
-QSizeF PieChartPainted::contentsSizeHint( Qt::SizeHint, const QSizeF& ) const
+QSizeF PieChartPainted::contentsSizeHint(
+    Qt::SizeHint which, const QSizeF& constraint ) const
 {
-    return {57, 57};
-}
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
 
-void PieChartPainted::updateLayout()
-{
-    m_progressBar->update();
+    qreal size;
 
-    const auto rect = layoutRect();
+    if ( constraint.width() > 0 )
+    {
+        size = constraint.width();
+    }
+    else if ( constraint.height() > 0 )
+    {
+        size = constraint.height();
+    }
+    else
+    {
+        size = 57;
+    }
 
-    QFontMetricsF fm( m_progressLabel->effectiveFont( QskTextLabel::Text ) );
-    auto textWidth = qskHorizontalAdvance( fm, m_progressLabel->text() );
-    auto posX = rect.width() / 2 - textWidth / 2;
-    auto posY = rect.height() / 2 - fm.height() / 2;
-
-    m_progressLabel->setPosition( posX, posY );
-    m_progressLabel->setFixedWidth( textWidth );
+    return QSizeF( size, size );
 }

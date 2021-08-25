@@ -182,7 +182,6 @@ void Skin::initHints( const Palette& palette )
     ed.setGradient( BoxWithButtons::Panel, palette.box );
     ed.setGradient( UsageDiagramBox::Panel, palette.box );
     ed.setColor( LightDisplay::Panel, palette.lightDisplay );
-    ed.setColor( PieChartPainted::Panel, palette.pieChart );
     ed.setGradient( RoundButton::Panel, palette.roundButton );
     ed.setBoxBorderColors( UsageDiagramBox::DaysBox, palette.weekdayBox );
     ed.setColor( QskTextLabel::Text, palette.text );

@@ -51,8 +51,6 @@ TopBarItem::TopBarItem(
 {
     setSubcontrolProxy( QskLinearBox::Panel, Panel );
 
-    setAutoLayoutChildren( true );
-    setAutoAddChildren( true );
     setSpacing( 15 );
 
     auto* textLabel = new QskTextLabel( name, this );
@@ -61,9 +59,12 @@ TopBarItem::TopBarItem(
     auto* pieChartAndDisplay = new QskLinearBox( Qt::Horizontal, this );
     pieChartAndDisplay->setSpacing( 10 );
 
-    QskAspect::Subcontrol subcontrol = subcontrolForIndex( index );
-    QColor textColor = color( subcontrol | QskAspect::TextColor );
-    new PieChartPainted( textColor, gradient, progress, value, pieChartAndDisplay );
+    const auto subcontrol = subcontrolForIndex( index );
+    const auto textColor = color( subcontrol | QskAspect::TextColor );
+
+    auto pieChart = new PieChartPainted(
+        textColor, gradient, progress, pieChartAndDisplay );
+    pieChart->setSizePolicy( Qt::Horizontal, QskSizePolicy::Constrained );
 
     auto display = new QskLinearBox( Qt::Vertical, pieChartAndDisplay );
     display->setSpacing( 0 );
