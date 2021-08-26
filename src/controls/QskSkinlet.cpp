@@ -448,4 +448,22 @@ QSGNode* QskSkinlet::updateGraphicNode(
     return qskUpdateGraphicNode( skinnable, node, graphic, colorFilter, rect, mirrored );
 }
 
+QSizeF QskSkinlet::hintWithoutConstraint(
+    const QSizeF& hint, const QSizeF& constraint ) const
+{
+    /*
+        This method is useful in situations, where a hint has been calculated
+        from a constraint and we want to return the calculated part only 
+     */
+    QSizeF h;
+
+    if ( constraint.width() < 0.0 )
+        h.setWidth( hint.width() );
+
+    if ( constraint.height() < 0.0 )
+        h.setHeight( hint.height() );
+
+    return h;
+}
+
 #include "moc_QskSkinlet.cpp"

@@ -11,6 +11,7 @@
 #include "QskSetup.h"
 #include "QskSkin.h"
 
+QSK_SUBCONTROL( QskGraphicLabel, Panel )
 QSK_SUBCONTROL( QskGraphicLabel, Graphic )
 
 class QskGraphicLabel::PrivateData
@@ -22,6 +23,7 @@ class QskGraphicLabel::PrivateData
         , fillMode( QskGraphicLabel::PreserveAspectFit )
         , mirror( false )
         , isSourceDirty( !sourceUrl.isEmpty() )
+        , hasPanel( false )
     {
     }
 
@@ -33,6 +35,7 @@ class QskGraphicLabel::PrivateData
     uint fillMode : 2;
     bool mirror : 1;
     bool isSourceDirty : 1;
+    bool hasPanel : 1;
 };
 
 QskGraphicLabel::QskGraphicLabel( const QUrl& source, QQuickItem* parent )
@@ -63,6 +66,24 @@ QskGraphicLabel::QskGraphicLabel( const QskGraphic& graphic, QQuickItem* parent 
 
 QskGraphicLabel::~QskGraphicLabel()
 {
+}
+
+void QskGraphicLabel::setPanel( bool on )
+{
+    if ( on == m_data->hasPanel )
+        return;
+
+    m_data->hasPanel = on;
+
+    resetImplicitSize();
+    update();
+
+    Q_EMIT panelChanged( on );
+}
+
+bool QskGraphicLabel::hasPanel() const
+{
+    return m_data->hasPanel;
 }
 
 bool QskGraphicLabel::isEmpty() const

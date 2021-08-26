@@ -31,10 +31,13 @@ class QSK_EXPORT QskGraphicLabel : public QskControl
     Q_PROPERTY( FillMode fillMode READ fillMode
         WRITE setFillMode NOTIFY fillModeChanged )
 
+    Q_PROPERTY( bool panel READ hasPanel
+        WRITE setPanel NOTIFY panelChanged )
+
     using Inherited = QskControl;
 
   public:
-    QSK_SUBCONTROLS( Graphic )
+    QSK_SUBCONTROLS( Panel, Graphic )
 
     enum FillMode
     {
@@ -84,6 +87,9 @@ class QSK_EXPORT QskGraphicLabel : public QskControl
     void resetGraphicRole();
     int graphicRole() const;
 
+    void setPanel( bool );
+    bool hasPanel() const;
+
   Q_SIGNALS:
     void sourceChanged();
     void mirrorChanged();
@@ -91,6 +97,7 @@ class QSK_EXPORT QskGraphicLabel : public QskControl
     void graphicRoleChanged( int );
     void alignmentChanged( Qt::Alignment );
     void fillModeChanged( FillMode );
+    void panelChanged( bool );
 
   public Q_SLOTS:
     void setGraphic( const QskGraphic& );
