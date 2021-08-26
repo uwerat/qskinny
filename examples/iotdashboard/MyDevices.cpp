@@ -21,48 +21,18 @@ namespace
       public:
         Device( const QString& name, bool isBright, QQuickItem* parent )
             : QskLinearBox( Qt::Vertical, parent )
-            , m_name( name )
         {
             setDefaultAlignment( Qt::AlignCenter );
-            setAutoAddChildren( false );
 
-            m_icon = new RoundedIcon( QString(), isBright, true, this );
-            m_icon->setSkinState( m_icon->skinState() | RoundedIcon::Small );
-            m_icon->setOpacity( 0.15 );
-            addItem( m_icon );
+            auto icon = new RoundedIcon( isBright, this );
+            icon->setPale( true );
+            icon->setIcon( name );
+            icon->setFixedSize( 68, 68 );
 
-            auto* textLabel = new QskTextLabel( name, this );
+            auto textLabel = new QskTextLabel( name, this );
             textLabel->setFontRole( QskSkin::TinyFont );
             textLabel->setAlignment( Qt::AlignHCenter );
-            addItem( textLabel );
-
-            auto fileName = name.toLower();
-            fileName.replace( ' ', '-' );
-            fileName = ":/images/" + fileName + ".png";
-            QImage image( fileName );
-            auto graphic = QskGraphic::fromImage( image );
-            m_graphicLabel = new QskGraphicLabel( graphic, this );
         }
-
-      protected:
-        void updateLayout() override
-        {
-            QskLinearBox::updateLayout();
-
-            // We cannot use the icon from RoundedIcon here because
-            // it would inherit the transparency
-            const qreal size = metric( RoundedIcon::Icon | QskAspect::Size );
-
-            const qreal x = m_icon->x() + ( m_icon->width() - m_graphicLabel->width() ) / 2;
-            const qreal y = ( m_icon->y() + m_icon->height() - m_graphicLabel->height() ) / 2;
-
-            m_graphicLabel->setGeometry( x, y, size, size );
-        }
-
-      private:
-        QString m_name;
-        RoundedIcon* m_icon;
-        QskGraphicLabel* m_graphicLabel;
     };
 }
 

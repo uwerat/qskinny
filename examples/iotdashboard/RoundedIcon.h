@@ -5,25 +5,20 @@
 
 #pragma once
 
-#include <QskBox.h>
+#include <QskGraphicLabel.h>
 
 class QskGraphicLabel;
 
-class RoundedIcon : public QskBox
+class RoundedIcon : public QskGraphicLabel
 {
     Q_OBJECT
 
   public:
-    QSK_SUBCONTROLS( Panel, Icon )
-    QSK_STATES( Bright, Small ) // to differentiate between orange and purple and small vs. big
+    QSK_SUBCONTROLS( Panel, PalePanel )
+    QSK_STATES( Bright ) // to differentiate between orange and purple
 
-    RoundedIcon( const QString& iconName,
-        bool isBright, bool isSmall, QQuickItem* parent = nullptr );
+    RoundedIcon( bool isBright, QQuickItem* parent = nullptr );
 
-  protected:
-    void updateLayout() override;
-    QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
-
-  private:
-    QskGraphicLabel* m_graphicLabel = nullptr;
+    void setIcon( const QString& );
+    void setPale( bool );
 };

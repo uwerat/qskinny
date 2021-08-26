@@ -127,7 +127,7 @@ void Skin::initHints( const Palette& palette )
     ed.setPadding( Box::Panel, 15 );
 
     ed.setMetric( ShadowPositioner::Panel | QskAspect::Size, 15 );
-    ed.setBoxShape( ShadowPositioner::Panel, {6, 6, 6, 6} );
+    ed.setBoxShape( ShadowPositioner::Panel, 6 );
 
 
     // content in boxes (indoor temperature, humidity etc.):
@@ -136,24 +136,35 @@ void Skin::initHints( const Palette& palette )
 
     ed.setPadding( BoxWithButtons::Panel, 8 );
 
-    ed.setBoxShape( RoundedIcon::Panel, 6 );
-    ed.setVGradient( RoundedIcon::Panel | RoundedIcon::Bright, "#ff7d34", "#ff3122" );
-    ed.setVGradient( RoundedIcon::Panel, "#6776FF", "#6100FF" );
-    ed.setMetric( RoundedIcon::Panel | QskAspect::Size, 68 );
-    ed.setMetric( RoundedIcon::Panel | RoundedIcon::Small | QskAspect::Size, 60 );
-    ed.setMetric( RoundedIcon::Icon | QskAspect::Size, 36 );
+    for ( auto subControl : { RoundedIcon::Panel, RoundedIcon::PalePanel } )
+    {
+        ed.setBoxShape( subControl, 6 );
+
+        QskGradient normal( QskGradient::Vertical, "#6776FF", "#6100FF" );
+        QskGradient bright( QskGradient::Vertical, "#ff7d34", "#ff3122" );
+
+        if ( subControl == RoundedIcon::PalePanel )
+        {
+            const uint alpha = 38;
+            normal.setAlpha( alpha );
+            bright.setAlpha( alpha );
+        }
+
+        ed.setGradient( subControl, normal );
+        ed.setGradient( subControl | RoundedIcon::Bright, bright );
+    }
 
     ed.setFontRole( BoxWithButtons::ValueText, QskSkin::HugeFont );
     ed.setColor( BoxWithButtons::ValueText, "#929cb2" );
 
-    ed.setPadding( BoxWithButtons::ValuePanel, {0, 10, 0, 0} );
+    ed.setPadding( BoxWithButtons::ValuePanel, 0, 10, 0, 0 );
 
-    ed.setStrutSize( RoundButton::Panel, {27, 38} );
-    ed.setBoxShape( RoundButton::Panel, {0, 0, 30, 30} );
-    ed.setBoxShape( RoundButton::Panel | RoundButton::Top, {30, 30, 0, 0} );
+    ed.setStrutSize( RoundButton::Panel, 27, 38 );
+    ed.setBoxShape( RoundButton::Panel, 0, 0, 30, 30 );
+    ed.setBoxShape( RoundButton::Panel | RoundButton::Top, 30, 30, 0, 0 );
 
     // diagram:
-    ed.setBoxBorderMetrics( UsageDiagramBox::DaysBox, {0, 0, 3, 3} );
+    ed.setBoxBorderMetrics( UsageDiagramBox::DaysBox, 0, 0, 3, 3 );
     ed.setFontRole( UsageDiagramBox::DayText, QskSkin::TinyFont );
 
     ed.setStrutSize( UsageDiagramLegend::Symbol, 8, 8 );

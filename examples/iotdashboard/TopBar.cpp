@@ -84,7 +84,7 @@ TopBar::TopBar( QQuickItem* parent )
     setPanel( true );
     setSubcontrolProxy( QskBox::Panel, Panel );
 
-    setSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Fixed );
+    initSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Fixed );
 
     const QStringList itemStrings = { "Living Room", "Bedroom", "Bathroom", "Kitchen" };
     const int progressValues[] = {25, 45, 15, 86};

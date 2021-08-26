@@ -5,69 +5,42 @@
 
 #include "RoundedIcon.h"
 
-#include <QskBoxShapeMetrics.h>
 #include <QskGraphic.h>
-#include <QskGraphicLabel.h>
-
 #include <QImage>
-#include <QFile>
 
 QSK_SUBCONTROL( RoundedIcon, Panel )
-QSK_SUBCONTROL( RoundedIcon, Icon )
+QSK_SUBCONTROL( RoundedIcon, PalePanel )
+
 QSK_STATE( RoundedIcon, Bright, ( QskAspect::FirstUserState << 1 ) )
-QSK_STATE( RoundedIcon, Small, ( QskAspect::FirstUserState << 2 ) )
 
-RoundedIcon::RoundedIcon( const QString& iconName,
-        bool isBright, bool isSmall, QQuickItem* parent )
-    : QskBox( parent )
+RoundedIcon::RoundedIcon( bool isBright, QQuickItem* parent )
+    : QskGraphicLabel( parent )
 {
-    setPanel( true );
-    setPolishOnResize( true );
-    setSubcontrolProxy( QskBox::Panel, Panel );
-
-    if( isSmall )
-    {
-        setSkinState( skinState() | Small );
-    }
-
-    setSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Constrained );
-    const qreal size = metric( RoundedIcon::Panel | QskAspect::Size );
-    setFixedWidth( size );
+    setAlignment( Qt::AlignCenter );
+    setFillMode( QskGraphicLabel::Pad );
 
     if( isBright )
-    {
         setSkinState( Bright );
-    }
 
-    const QString fileName( ":/images/" + iconName + ".png" );
-
-    if( QFile::exists( fileName ) )
-    {
-        QImage image( fileName );
-        auto graphic = QskGraphic::fromImage( image );
-        m_graphicLabel = new QskGraphicLabel( graphic, this );
-    }
+    setPanel( true );
+    setPale( false );
 }
 
-void RoundedIcon::updateLayout()
+void RoundedIcon::setPale( bool on )
 {
-    if( m_graphicLabel )
-    {
-        const auto size = metric( Icon | QskAspect::Size );
-
-        QRectF r( 0.0, 0.0, size, size );
-        r.moveCenter( rect().center() );
-
-        m_graphicLabel->setGeometry( r );
-    }
+    setSubcontrolProxy( QskGraphicLabel::Panel, on ? PalePanel : Panel );
 }
 
-QSizeF RoundedIcon::contentsSizeHint( Qt::SizeHint /*which*/, const QSizeF& size ) const
+void RoundedIcon::setIcon( const QString& iconName )
 {
-    QSizeF ret = size;
-    ret.setHeight( size.width() );
+    // we should use a graphic provider, TODO ...
 
-    return ret;
+    QString fileName = ":/images/";
+    fileName += iconName.toLower().replace( ' ', '-' );
+    fileName += ".png";
+
+    const QImage image( fileName );
+    setGraphic( QskGraphic::fromImage( image ) );
 }
 
 #include "moc_RoundedIcon.cpp"
