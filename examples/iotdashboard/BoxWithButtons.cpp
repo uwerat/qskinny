@@ -45,7 +45,7 @@ BoxWithButtons::BoxWithButtons( const QString& title, const QString& value,
     layout->setSpacing( 20 );
 
     auto iconLabel = new RoundedIcon( isBright, layout );
-    iconLabel->setIcon( title );
+    iconLabel->setSource( title );
     iconLabel->setFixedSize( 68, 68 );
 
     auto titleAndValue = new QskLinearBox( Qt::Vertical, layout );

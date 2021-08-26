@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "MainWindow.h"
+#include "GraphicProvider.h"
 #include "Skin.h"
 
 #include <SkinnyFont.h>
@@ -61,6 +62,8 @@ int main( int argc, char* argv[] )
     QGuiApplication app( argc, argv );
 
     SkinnyFont::init( &app );
+
+    Qsk::addGraphicProvider( QString(), new GraphicProvider() );
 
     // disable default skins
     qskSkinManager->setPluginPaths( QStringList() ); // no plugins

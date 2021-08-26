@@ -19,6 +19,5 @@ class RoundedIcon : public QskGraphicLabel
 
     RoundedIcon( bool isBright, QQuickItem* parent = nullptr );
 
-    void setIcon( const QString& );
     void setPale( bool );
 };

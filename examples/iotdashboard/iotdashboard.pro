@@ -1,5 +1,7 @@
 CONFIG += qskexample
 
+QT += svg
+
 SOURCES += \
     Box.cpp \
     BoxWithButtons.cpp \
@@ -7,6 +9,7 @@ SOURCES += \
     CircularProgressBarSkinlet.cpp \
     Diagram.cpp \
     DiagramSkinlet.cpp \
+    GraphicProvider.cpp \
     LightIntensity.cpp \
     MainContent.cpp \
     MenuBar.cpp \
@@ -34,6 +37,7 @@ HEADERS += \
     CircularProgressBarSkinlet.h \
     Diagram.h \
     DiagramSkinlet.h \
+    GraphicProvider.h \
     LightIntensity.h \
     MainContent.h \
     MainWindow.h \
