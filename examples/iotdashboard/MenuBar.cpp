@@ -5,14 +5,6 @@
 
 #include "MenuBar.h"
 
-#include <QskGraphic.h>
-#include <QskGraphicLabel.h>
-#include <QskGraphicIO.h>
-#include <QskSkin.h>
-#include <QskTextLabel.h>
-
-#include <QImage>
-
 QSK_SUBCONTROL( MenuBarTopLabel, Graphic )
 QSK_SUBCONTROL( MenuBarGraphicLabel, Graphic )
 QSK_SUBCONTROL( MenuBarLabel, Text )
@@ -32,11 +24,7 @@ MenuItem::MenuItem( const QString& name, QQuickItem* parent )
     setPanel( true );
     setSubcontrolProxy( QskBox::Panel, MenuItem::Panel );
 
-    QString fileName = ":/images/" + name.toLower() + ".png";
-    QImage image( fileName );
-    auto graphic = QskGraphic::fromImage( image );
-
-    auto graphicLabel = new MenuBarGraphicLabel( graphic, this );
+    auto graphicLabel = new MenuBarGraphicLabel( name, this );
     graphicLabel->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
     graphicLabel->setFixedWidth( metric( MenuBarGraphicLabel::Graphic | QskAspect::Size ) );
 
@@ -52,9 +40,7 @@ MenuBar::MenuBar( QQuickItem* parent )
     initSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Preferred );
     setSpacing( 8 );
 
-    auto graphic = QskGraphic::fromImage( QImage( ":/images/main-icon.png" ) );
-
-    auto graphicLabel = new MenuBarTopLabel( graphic, this );
+    auto graphicLabel = new MenuBarTopLabel( "main-icon", this );
     graphicLabel->setMargins( marginHint( MenuBarTopLabel::Graphic ) );
     graphicLabel->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 

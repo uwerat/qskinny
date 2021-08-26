@@ -20,20 +20,15 @@ RoundButton::RoundButton( QskAspect::Placement placement, QQuickItem* parent )
     setSubcontrolProxy( QskPushButton::Panel, RoundButton::Panel );
     setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Expanding );
 
-    QskGraphic graphic;
-    QImage image;
-
     if( placement == QskAspect::Top )
     {
         setSkinStateFlag( Top );
-        image.load( ":/images/up.svg" );
+        setGraphicSource( "up" );
     }
     else
     {
-        image.load( ":/images/down.svg" );
+        setGraphicSource( "down" );
     }
 
-    setGraphicSourceSize( image.size() );
-    graphic = QskGraphic::fromImage( image );
-    setGraphic( graphic );
+    setGraphicSourceSize( graphic().defaultSize() * 1.2 );
 }

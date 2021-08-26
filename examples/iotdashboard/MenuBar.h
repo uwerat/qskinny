@@ -16,8 +16,8 @@ class MenuBarTopLabel final : public QskGraphicLabel
   public:
     QSK_SUBCONTROLS( Graphic )
 
-    MenuBarTopLabel( const QskGraphic& graphic, QQuickItem* parent = nullptr )
-        : QskGraphicLabel( graphic, parent )
+    MenuBarTopLabel( const QString& icon, QQuickItem* parent = nullptr )
+        : QskGraphicLabel( icon, parent )
     {
         setSubcontrolProxy( QskGraphicLabel::Graphic, Graphic );
     }
@@ -30,8 +30,8 @@ class MenuBarGraphicLabel final : public QskGraphicLabel
   public:
     QSK_SUBCONTROLS( Graphic )
 
-    MenuBarGraphicLabel( const QskGraphic& graphic, QQuickItem* parent = nullptr )
-        : QskGraphicLabel( graphic, parent )
+    MenuBarGraphicLabel( const QString& icon, QQuickItem* parent = nullptr )
+        : QskGraphicLabel( icon, parent )
     {
         setSubcontrolProxy( QskGraphicLabel::Graphic, Graphic );
     }

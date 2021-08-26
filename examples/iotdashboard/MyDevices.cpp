@@ -26,7 +26,7 @@ namespace
 
             auto icon = new RoundedIcon( isBright, this );
             icon->setPale( true );
-            icon->setIcon( name );
+            icon->setSource( name );
             icon->setFixedSize( 68, 68 );
 
             auto textLabel = new QskTextLabel( name, this );
