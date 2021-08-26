@@ -98,6 +98,9 @@ class QSK_EXPORT QskSkinlet
     void replaceChildNode( quint8 nodeRole, QSGNode* parentNode,
         QSGNode* oldNode, QSGNode* newNode ) const;
 
+     QSizeF hintWithoutConstraint(
+        const QSizeF& hint, const QSizeF& constraint ) const;
+
   private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

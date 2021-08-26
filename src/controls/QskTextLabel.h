@@ -30,7 +30,7 @@ class QSK_EXPORT QskTextLabel : public QskControl
         WRITE setAlignment NOTIFY alignmentChanged )
 
     Q_PROPERTY( bool panel READ hasPanel
-        WRITE setPanel NOTIFY panelChanged FINAL )
+        WRITE setPanel NOTIFY panelChanged )
 
     using Inherited = QskControl;
 

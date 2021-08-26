@@ -32,7 +32,10 @@ QRectF QskTextLabelSkinlet::subControlRect( const QskSkinnable* skinnable,
         const auto label = static_cast< const QskTextLabel* >( skinnable );
 
         if ( label->hasPanel() )
-            return label->subControlContentsRect( contentsRect, QskTextLabel::Panel );
+        {
+            return label->subControlContentsRect(
+                contentsRect, QskTextLabel::Panel );
+        }
 
         return contentsRect;
     }
