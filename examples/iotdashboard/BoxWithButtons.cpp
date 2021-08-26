@@ -44,9 +44,9 @@ BoxWithButtons::BoxWithButtons( const QString& title, const QString& value,
     auto* layout = new QskLinearBox( Qt::Horizontal, this );
     layout->setSpacing( 20 );
 
-    QString iconFile = title.toLower();
-    iconFile = iconFile.replace( ' ', '-' );
-    new RoundedIcon( iconFile, isBright, false, layout );
+    auto iconLabel = new RoundedIcon( isBright, layout );
+    iconLabel->setIcon( title );
+    iconLabel->setFixedSize( 68, 68 );
 
     auto titleAndValue = new QskLinearBox( Qt::Vertical, layout );
     titleAndValue->setPanel( true );
@@ -57,6 +57,8 @@ BoxWithButtons::BoxWithButtons( const QString& title, const QString& value,
 
     auto valueLabel = new QskTextLabel( value, titleAndValue );
     valueLabel->setSubcontrolProxy( QskTextLabel::Text, ValueText );
+
+    layout->addStretch( 1 );
 
     new UpAndDownBox( layout );
 }
