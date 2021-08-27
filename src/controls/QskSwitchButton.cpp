@@ -2,6 +2,7 @@
 
 QSK_SUBCONTROL( QskSwitchButton, Handle )
 QSK_SUBCONTROL( QskSwitchButton, Groove )
+QSK_SUBCONTROL( QskSwitchButton, Ripple )
 
 struct QskSwitchButton::PrivateData
 {
