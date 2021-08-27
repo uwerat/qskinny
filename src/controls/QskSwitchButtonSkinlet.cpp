@@ -3,9 +3,8 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#include "QskSwitchButton.h"
 #include "QskSwitchButtonSkinlet.h"
-#include "QskSGNode.h"
+#include "QskSwitchButton.h"
 
 static inline qreal qskEffectivePosition( const QskSwitchButton* switchButton )
 {
@@ -64,11 +63,11 @@ QSizeF QskSwitchButtonSkinlet::sizeHint( const QskSkinnable* skinnable,
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
-    auto groovehint = skinnable->strutSizeHint( QskSwitchButton::Groove );
+    auto grooveHint = skinnable->strutSizeHint( QskSwitchButton::Groove );
     auto handleHint = skinnable->strutSizeHint( QskSwitchButton::Handle );
     auto rippleHint = skinnable->strutSizeHint( QskSwitchButton::Ripple );
 
-    auto hint = groovehint.expandedTo( groovehint + rippleHint - handleHint );
+    auto hint = grooveHint.expandedTo( grooveHint + rippleHint - handleHint );
     hint = hint.expandedTo( rippleHint );
     hint = hint.expandedTo( handleHint );
 

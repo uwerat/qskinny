@@ -522,21 +522,32 @@ void Editor::setupSwitchButton()
 
     setBoxShape( Q::Ripple, 100, Qt::RelativeSize );
     setStrutSize( Q::Ripple, 2 * handleSize, 2 * handleSize );
-    setGradient( Q::Ripple, QColor(0,0,0,0) );
+    setGradient( Q::Ripple, QskRgb::Transparent );
 
-    setGradient( Q::Ripple | Q::Checked | Q::Hovered,
-        QColor(m_pal.accentColor.red(), m_pal.accentColor.green(), m_pal.accentColor.blue(), 50) );
-    setGradient( Q::Ripple | Q::Checked | Q::Focused,
-        QColor(m_pal.accentColor.red(), m_pal.accentColor.green(), m_pal.accentColor.blue(), 100) );
-    setGradient( Q::Ripple | Q::Checked | Q::Pressed,
-        QColor(m_pal.accentColor.red(), m_pal.accentColor.green(), m_pal.accentColor.blue(), 150) );
+    for ( auto state : { Q::Hovered, Q::Focused, Q::Pressed } )
+    {
+        auto weak = m_pal.darker125;
+        auto strong = m_pal.accentColor;
 
-    setGradient( Q::Ripple | Q::Hovered,
-        QColor(m_pal.darker125.red(), m_pal.darker125.green(), m_pal.darker125.blue(), 100 ) );
-    setGradient( Q::Ripple | Q::Focused,
-        QColor(m_pal.darker125.red(), m_pal.darker125.green(), m_pal.darker125.blue(), 150 ) );
-    setGradient( Q::Ripple | Q::Pressed,
-        QColor(m_pal.darker125.red(), m_pal.darker125.green(), m_pal.darker125.blue(), 200) );
+        if ( state == Q::Hovered )
+        {
+            weak.setAlpha( 100 );
+            strong.setAlpha( 50 );
+        }
+        else if ( state == Q::Focused )
+        {
+            weak.setAlpha( 150 );
+            strong.setAlpha( 100 );
+        }
+        else
+        {
+            weak.setAlpha( 200 );
+            strong.setAlpha( 150 );
+        }
+
+        setGradient( Q::Ripple | state, weak );
+        setGradient( Q::Ripple | Q::Checked | state, strong );
+    }
 
     for( auto state : { A::NoState, Q::Disabled } )
     {
