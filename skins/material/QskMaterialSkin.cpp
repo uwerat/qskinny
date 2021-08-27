@@ -520,6 +520,24 @@ void Editor::setupSwitchButton()
     setBoxBorderColors( Q::Handle, m_pal.darker200 );
     setBoxBorderColors( Q::Handle | Q::Disabled, m_pal.darker125 );
 
+    setBoxShape( Q::Ripple, 100, Qt::RelativeSize );
+    setStrutSize( Q::Ripple, 2 * handleSize, 2 * handleSize );
+    setGradient( Q::Ripple, QColor(0,0,0,0) );
+
+    setGradient( Q::Ripple | Q::Checked | Q::Hovered,
+        QColor(m_pal.accentColor.red(), m_pal.accentColor.green(), m_pal.accentColor.blue(), 50) );
+    setGradient( Q::Ripple | Q::Checked | Q::Focused,
+        QColor(m_pal.accentColor.red(), m_pal.accentColor.green(), m_pal.accentColor.blue(), 100) );
+    setGradient( Q::Ripple | Q::Checked | Q::Pressed,
+        QColor(m_pal.accentColor.red(), m_pal.accentColor.green(), m_pal.accentColor.blue(), 150) );
+
+    setGradient( Q::Ripple | Q::Hovered,
+        QColor(m_pal.darker125.red(), m_pal.darker125.green(), m_pal.darker125.blue(), 100 ) );
+    setGradient( Q::Ripple | Q::Focused,
+        QColor(m_pal.darker125.red(), m_pal.darker125.green(), m_pal.darker125.blue(), 150 ) );
+    setGradient( Q::Ripple | Q::Pressed,
+        QColor(m_pal.darker125.red(), m_pal.darker125.green(), m_pal.darker125.blue(), 200) );
+
     for( auto state : { A::NoState, Q::Disabled } )
     {
         auto aspect = Q::Handle | state | A::Position;
