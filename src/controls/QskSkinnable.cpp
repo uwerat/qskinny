@@ -214,6 +214,8 @@ class QskSkinnable::PrivateData
             if ( skinlet && skinlet->isOwnedBySkinnable() )
                 delete skinlet;
         }
+
+        delete subcontrolProxies;
     }
 
     QskSkinHintTable hintTable;
