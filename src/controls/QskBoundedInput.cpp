@@ -173,7 +173,7 @@ void QskBoundedInput::setReadOnly( bool readOnly )
 
 bool QskBoundedInput::isReadOnly() const
 {
-    return skinState() & ReadOnly;
+    return hasSkinState( ReadOnly );
 }
 
 void QskBoundedInput::keyPressEvent( QKeyEvent* event )

@@ -207,7 +207,7 @@ void QskPopup::setOpen( bool on )
 
 bool QskPopup::isOpen() const
 {
-    return !( skinState() & QskPopup::Closed );
+    return !hasSkinState( QskPopup::Closed );
 }
 
 bool QskPopup::isFading() const

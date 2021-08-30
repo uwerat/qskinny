@@ -115,7 +115,7 @@ void QskPushButton::setFlat( bool on )
 
 bool QskPushButton::isFlat() const
 {
-    return skinState() & Flat;
+    return hasSkinState( Flat );
 }
 
 void QskPushButton::setText( const QString& text )
