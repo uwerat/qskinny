@@ -62,7 +62,7 @@ QskSlider::~QskSlider()
 
 bool QskSlider::isPressed() const
 {
-    return skinState() & Pressed;
+    return hasSkinState( Pressed );
 }
 
 void QskSlider::setOrientation( Qt::Orientation orientation )

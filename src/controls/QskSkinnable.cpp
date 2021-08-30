@@ -888,6 +888,11 @@ const QVariant& QskSkinnable::storedHint(
     return hintInvalid;
 }
 
+bool QskSkinnable::hasSkinState( QskAspect::State state ) const
+{
+    return ( m_data->skinState & state ) == state;
+}
+
 QskAspect::State QskSkinnable::skinState() const
 {
     return m_data->skinState;

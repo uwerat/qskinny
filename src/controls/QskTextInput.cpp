@@ -648,7 +648,7 @@ void QskTextInput::setReadOnly( bool on )
 
 void QskTextInput::setEditing( bool on )
 {
-    if ( isReadOnly() || on == ( skinState() & Editing ) )
+    if ( isReadOnly() || on == isEditing() )
         return;
 
     setSkinStateFlag( Editing, on );
@@ -678,7 +678,7 @@ void QskTextInput::setEditing( bool on )
 
 bool QskTextInput::isEditing() const
 {
-    return skinState() & Editing;
+    return hasSkinState( Editing );
 }
 
 void QskTextInput::ensureVisible( int position )

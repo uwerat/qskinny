@@ -132,6 +132,7 @@ class QSK_EXPORT QskSkinnable
 
     void replaceSkinState( QskAspect::State );
 
+    bool hasSkinState( QskAspect::State ) const;
     QskAspect::State skinState() const;
 
     const char* skinStateAsPrintable() const;

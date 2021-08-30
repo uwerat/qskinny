@@ -85,7 +85,7 @@ void QskAbstractButton::releaseButton()
         // maybe there is more work to have the signals coming
         // in a logical order. TODO ...
 
-        setCheckedState( !( skinState() & Checked ) );
+        setCheckedState( !hasSkinState( Checked ) );
     }
 
     setPressed( false );
@@ -99,12 +99,12 @@ void QskAbstractButton::setCheckedState( bool on )
 
 void QskAbstractButton::toggle()
 {
-    setChecked( !( skinState() & Checked ) );
+    setChecked( !isChecked() );
 }
 
 bool QskAbstractButton::isPressed() const
 {
-    return skinState() & Pressed;
+    return hasSkinState( Pressed );
 }
 
 void QskAbstractButton::setPressed( bool on )
@@ -171,7 +171,7 @@ void QskAbstractButton::setChecked( bool on )
 
 bool QskAbstractButton::isChecked() const
 {
-    return skinState() & Checked;
+    return hasSkinState( Checked );
 }
 
 void QskAbstractButton::setAutoRepeat( bool on )
