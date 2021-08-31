@@ -27,11 +27,25 @@ inline const QVariant* qskResolvedHint( QskAspect aspect,
             return &it->second;
         }
 
+#if 1
+        /*
+            We intend to remove the obscure mechanism of resolving a hint
+            by dropping the state bits ony by one in the future. Instead we
+            will have methods in QskSkinHintTableEditor, that allow
+            to set combinations of states in one call. 
+         */
         if ( const auto topState = aspect.topState() )
         {
             aspect.clearState( topState );
             continue;
         }
+#else
+        if ( aspect.hasState() )
+        {
+            aspect.clearStates();
+            continue;
+        }
+#endif
 
         if ( aspect.placement() )
         {
