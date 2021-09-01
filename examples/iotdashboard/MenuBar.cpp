@@ -52,7 +52,7 @@ MenuBar::MenuBar( QQuickItem* parent )
         m_entries.append( entry );
     }
 
-    m_entries.at( m_activeEntry )->setSkinState( MenuItem::Active );
+    m_entries.at( m_activeEntry )->setSkinStateFlag( MenuItem::Active );
 
     addSpacer( 0, 1 ); // fill the space at the bottom
 

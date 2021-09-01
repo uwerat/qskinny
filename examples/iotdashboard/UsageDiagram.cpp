@@ -34,7 +34,7 @@ namespace
             auto symbol = new QskBox( true );
             symbol->setSubcontrolProxy( QskBox::Panel, UsageDiagramLegend::Symbol );
             symbol->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
-            symbol->setSkinState( state );
+            symbol->setSkinStateFlag( state );
 
             QString text;
 
