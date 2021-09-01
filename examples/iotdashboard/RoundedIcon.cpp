@@ -17,7 +17,7 @@ RoundedIcon::RoundedIcon( bool isBright, QQuickItem* parent )
     setFillMode( QskGraphicLabel::Pad );
 
     if( isBright )
-        setSkinState( Bright );
+        setSkinStateFlag( Bright );
 
     setPanel( true );
     setPale( false );
