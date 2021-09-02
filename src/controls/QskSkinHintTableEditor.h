@@ -255,7 +255,7 @@ inline T QskSkinHintTableEditor::metricHint( QskAspect aspect ) const
 
 inline void QskSkinHintTableEditor::setColorHint( QskAspect aspect, const QVariant& hint )
 {
-    setHint( aspect | QskAspect::Metric, hint );
+    setHint( aspect | QskAspect::Color, hint );
 }
 
 template< typename T >
