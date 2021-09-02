@@ -54,9 +54,8 @@ namespace
             return false;
         }
         
-        const auto stateBit = static_cast< QskAspect::State >(
-            1 << qCountTrailingZeroBits( mask ) );
-        
+        const auto stateBit = lowestState( mask );
+
         mask &= ~stateBit;
         
         bool ret = removeHintStateMask( table, aspect, state, mask );
