@@ -14,7 +14,15 @@
 
 namespace
 {
-    inline void setHintForAllCombinations(
+    inline QskAspect::State lowestState( QskAspect::State mask )
+    {
+        using StateInt = typename std::underlying_type< QskAspect::State >::type;
+
+        const auto count = qCountTrailingZeroBits( static_cast< StateInt >( mask ) ); 
+        return static_cast< QskAspect::State >( 1 << count );
+    }
+
+    inline void setHintStateMask(
         QskSkinHintTable* table, QskAspect aspect, const QVariant& hint,
         QskAspect::State state, QskAspect::State mask )
     {
@@ -26,16 +34,15 @@ namespace
             return;
         }
 
-        const auto stateBit = static_cast< QskAspect::State >(
-            1 << qCountTrailingZeroBits( mask ) );
+        const auto stateBit = lowestState( mask );
 
         mask &= ~stateBit;
 
-        setHintForAllCombinations( table, aspect, hint, state, mask );
-        setHintForAllCombinations( table, aspect, hint, state | stateBit, mask );
+        setHintStateMask( table, aspect, hint, state, mask );
+        setHintStateMask( table, aspect, hint, state | stateBit, mask );
     }
 
-    inline bool removeHintForAllCombinations(
+    inline bool removeHintStateMask(
         QskSkinHintTable* table, QskAspect aspect,
         QskAspect::State state, QskAspect::State mask )
     {   
@@ -52,8 +59,8 @@ namespace
         
         mask &= ~stateBit;
         
-        bool ret = removeHintForAllCombinations( table, aspect, state, mask );
-        ret |= removeHintForAllCombinations( table, aspect, state | stateBit, mask );
+        bool ret = removeHintStateMask( table, aspect, state, mask );
+        ret |= removeHintStateMask( table, aspect, state | stateBit, mask );
 
         return ret;
     }
@@ -119,34 +126,34 @@ QskSkinHintTable* QskSkinHintTableEditor::table() const
     return m_table;
 }
 
-void QskSkinHintTableEditor::setHintForCombinations(
+void QskSkinHintTableEditor::setHintForAllStateCombinations(
     QskAspect aspect, const QVariant& hint, QskAspect::State stateMask )
 {
-    ::setHintForAllCombinations( m_table, aspect, hint, QskAspect::NoState, stateMask );
+    setHintStateMask( m_table, aspect, hint, QskAspect::NoState, stateMask );
 }
 
-bool QskSkinHintTableEditor::removeHintForCombinations(
+bool QskSkinHintTableEditor::removeHintForAllStateCombinations(
     QskAspect aspect, QskAspect::State stateMask )
 {
-    return ::removeHintForAllCombinations( m_table, aspect, QskAspect::NoState, stateMask );
+    return removeHintStateMask( m_table, aspect, QskAspect::NoState, stateMask );
 }
 
-void QskSkinHintTableEditor::setFlagHintForCombinations(
+void QskSkinHintTableEditor::setFlagHintForAllStateCombinations(
     QskAspect aspect, const QVariant& hint, QskAspect::State stateMask )
 {
-    setHintForCombinations( aspect | QskAspect::Flag, hint, stateMask );
+    setHintForAllStateCombinations( aspect | QskAspect::Flag, hint, stateMask );
 }
 
-void QskSkinHintTableEditor::setMetricHintForCombinations(
+void QskSkinHintTableEditor::setMetricHintForAllStateCombinations(
     QskAspect aspect, const QVariant& hint, QskAspect::State stateMask )
 {
-    setHintForCombinations( aspect | QskAspect::Metric, hint, stateMask );
+    setHintForAllStateCombinations( aspect | QskAspect::Metric, hint, stateMask );
 }
 
-void QskSkinHintTableEditor::setColorHintForCombinations(
+void QskSkinHintTableEditor::setColorHintForAllStateCombinations(
     QskAspect aspect, const QVariant& hint, QskAspect::State stateMask )
 {
-    setHintForCombinations( aspect | QskAspect::Color, hint, stateMask );
+    setHintForAllStateCombinations( aspect | QskAspect::Color, hint, stateMask );
 }
 
 void QskSkinHintTableEditor::setFlag( QskAspect aspect, int flag )
@@ -206,10 +213,10 @@ void QskSkinHintTableEditor::setGradient( QskAspect aspect, const QskGradient& g
     setColorHint( aspect, gradient );
 }
 
-void QskSkinHintTableEditor::setGradientForCombinations(
+void QskSkinHintTableEditor::setGradientForAllStateCombinations(
     QskAspect aspect, const QskGradient& gradient, QskAspect::State stateMask )
 {
-    setColorHintForCombinations( aspect, QVariant::fromValue( gradient ), stateMask );
+    setColorHintForAllStateCombinations( aspect, QVariant::fromValue( gradient ), stateMask );
 }
 
 QskGradient QskSkinHintTableEditor::gradient( QskAspect aspect ) const
@@ -359,10 +366,10 @@ void QskSkinHintTableEditor::setBoxShape(
     setMetricHint( aspectShape( aspect ), shape );
 }
 
-void QskSkinHintTableEditor::setBoxShapeForCombinations(
+void QskSkinHintTableEditor::setBoxShapeForAllStateCombinations(
     QskAspect aspect, const QskBoxShapeMetrics& shape, QskAspect::State stateMask )
 {
-    setMetricHintForCombinations(
+    setMetricHintForAllStateCombinations(
         aspectShape( aspect ), QVariant::fromValue( shape ), stateMask );
 }
 
@@ -396,10 +403,10 @@ void QskSkinHintTableEditor::setBoxBorderMetrics(
     setMetricHint( aspectBorder( aspect ), borderMetrics );
 }
 
-void QskSkinHintTableEditor::setBoxBorderMetricsForCombinations(
+void QskSkinHintTableEditor::setBoxBorderMetricsForAllStateCombinations(
     QskAspect aspect, const QskBoxBorderMetrics& borderMetrics, QskAspect::State stateMask )
 {
-    setMetricHintForCombinations( aspectBorder( aspect ),
+    setMetricHintForAllStateCombinations( aspectBorder( aspect ),
         QVariant::fromValue( borderMetrics ), stateMask );
 }
 
@@ -419,10 +426,10 @@ void QskSkinHintTableEditor::setBoxBorderColors(
     setColorHint( aspectBorder( aspect ), borderColors );
 }
 
-void QskSkinHintTableEditor::setBoxBorderColorsForCombinations(
+void QskSkinHintTableEditor::setBoxBorderColorsForAllStateCombinations(
     QskAspect aspect, const QskBoxBorderColors& borderColors, QskAspect::State stateMask )
 {
-    setColorHintForCombinations( aspectBorder( aspect ),
+    setColorHintForAllStateCombinations( aspectBorder( aspect ),
         QVariant::fromValue( borderColors ), stateMask );
 }
 
