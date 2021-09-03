@@ -32,12 +32,14 @@ CustomSlider::CustomSlider( QQuickItem* parentItem )
     ed.setStrutSize( Handle, 80, 80 );
     ed.setColor( Handle, Grey800 );
 
-    for ( auto state : { Pressed, Focused | Hovered, Hovered, Focused } )
-        ed.setColor( Handle | state, Orange600 );
+    ed.setColor( Handle | Pressed, Orange600 );
+
+    const auto mask = Focused | Hovered;
+
+    ed.setColorForAllStateCombinations( mask, Handle, Orange600 );
+    ed.setAnimationForAllStateCombinations( mask, Handle | QskAspect::Color, 300 );
 
     ed.setAnimation( Handle | QskAspect::Color, 1000 );
-    for ( auto state : { Focused | Hovered, Hovered, Focused } )
-        ed.setAnimation( Handle | QskAspect::Color | state, 300 );
 
     // using an individual skinlet, not known by the skin
 
