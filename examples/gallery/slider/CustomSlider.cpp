@@ -34,10 +34,10 @@ CustomSlider::CustomSlider( QQuickItem* parentItem )
 
     ed.setColor( Handle | Pressed, Orange600 );
 
-    const auto mask = Focused | Hovered;
+    const auto combinationMask = Focused | Hovered;
 
-    ed.setColorForAllStateCombinations( mask, Handle, Orange600 );
-    ed.setAnimationForAllStateCombinations( mask, Handle | QskAspect::Color, 300 );
+    ed.setColor( Handle, Orange600, combinationMask );
+    ed.setAnimation( Handle | QskAspect::Color, 300, combinationMask );
 
     ed.setAnimation( Handle | QskAspect::Color, 1000 );
 

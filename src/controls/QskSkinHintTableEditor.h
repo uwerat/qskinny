@@ -29,185 +29,166 @@ class QSK_EXPORT QskSkinHintTableEditor
 
     // generic access
 
-    void setHint( QskAspect, const QVariant& );
+    void setHint( QskAspect, const QVariant&,
+        QskAspect::State = QskAspect::NoState );
+
+    template< typename T > void setHint(
+        QskAspect, const T&, QskAspect::State = QskAspect::NoState );
+
     const QVariant& hint( QskAspect ) const;
+    template< typename T > T hint( QskAspect ) const;
 
-    void setHintForAllStateCombinations(
-        QskAspect::State, QskAspect, const QVariant& );
-
-    template< typename T > void setHintForAllStateCombinations(
-        QskAspect::State, QskAspect, const T& );
-
-    bool removeHint( QskAspect );
-    bool removeHintForAllStateCombinations( QskAspect::State, QskAspect );
-
+    bool removeHint( QskAspect, QskAspect::State = QskAspect::NoState );
     QVariant takeHint( QskAspect );
 
     bool hasHint( QskAspect ) const;
 
-    template< typename T > void setHint( QskAspect, const T& );
-    template< typename T > T hint( QskAspect ) const;
-
     // animation hints
 
-    void setAnimation( QskAspect, QskAnimationHint );
-    QskAnimationHint animation( QskAspect ) const;
+    void setAnimation( QskAspect, QskAnimationHint,
+        QskAspect::State = QskAspect::NoState );
 
-    void setAnimationForAllStateCombinations(
-        QskAspect::State, QskAspect, QskAnimationHint );
+    QskAnimationHint animation( QskAspect ) const;
 
     // flag
 
-    void setFlagHint( QskAspect, const QVariant& );
-    template< typename T > void setFlagHint( QskAspect, const T& );
+    void setFlagHint( QskAspect, const QVariant&,
+        QskAspect::State = QskAspect::NoState );
 
-    void setFlagHintForAllStateCombinations(
-        QskAspect::State, QskAspect, const QVariant& );
+    template< typename T > void setFlagHint( QskAspect, const T&,
+        QskAspect::State = QskAspect::NoState );
 
-    template< typename T > void setFlagHintForAllStateCombinations(
-        QskAspect::State, QskAspect, const T& );
-
-    void removeFlagHint( QskAspect );
+    void removeFlagHint( QskAspect, QskAspect::State = QskAspect::NoState );
 
     QVariant flagHint( QskAspect ) const;
     template< typename T > T flagHint( QskAspect ) const;
 
     // metric
 
-    void setMetricHint( QskAspect, const QVariant& );
-    template< typename T > void setMetricHint( QskAspect, const T& );
+    void setMetricHint( QskAspect, const QVariant&,
+        QskAspect::State = QskAspect::NoState );
 
-    void setMetricHintForAllStateCombinations(
-        QskAspect::State, QskAspect, const QVariant& );
+    template< typename T > void setMetricHint(
+        QskAspect, const T&, QskAspect::State = QskAspect::NoState );
 
-    template< typename T > void setMetricHintForAllStateCombinations(
-        QskAspect::State, QskAspect, const T& );
-
-    void removeMetricHint( QskAspect );
+    void removeMetricHint( QskAspect, QskAspect::State = QskAspect::NoState );
 
     QVariant metricHint( QskAspect ) const;
     template< typename T > T metricHint( QskAspect ) const;
 
     // color
 
-    void setColorHint( QskAspect, const QVariant& );
-    template< typename T > void setColorHint( QskAspect, const T& );
+    void setColorHint( QskAspect, const QVariant&,
+        QskAspect::State = QskAspect::NoState );
 
-    void setColorHintForAllStateCombinations(
-        QskAspect::State, QskAspect, const QVariant& );
+    template< typename T > void setColorHint(
+        QskAspect, const T&, QskAspect::State = QskAspect::NoState );
 
-    template< typename T > void setColorHintForAllStateCombinations(
-        QskAspect::State, QskAspect, const T& );
-
-    void removeColorHint( QskAspect );
+    void removeColorHint( QskAspect, QskAspect::State = QskAspect::NoState );
 
     QVariant colorHint( QskAspect ) const;
     template< typename T > T colorHint( QskAspect ) const;
 
     // type specific
 
-    void setFlag( QskAspect, int );
+    void setFlag( QskAspect, int, QskAspect::State = QskAspect::NoState );
     int flag( QskAspect ) const;
 
-    void setFlagForAllStateCombinations( QskAspect::State, QskAspect, int );
-
-    void setMetric( QskAspect, qreal metric );
+    void setMetric( QskAspect, qreal metric, QskAspect::State = QskAspect::NoState );
     qreal metric( QskAspect ) const;
 
-    void setMetricForAllStateCombinations( QskAspect::State, QskAspect, qreal );
-
-    void setColor( QskAspect, Qt::GlobalColor );
-    void setColor( QskAspect, QRgb );
-    void setColor( QskAspect, const QColor& );
-
-    void setColorForAllStateCombinations( QskAspect::State, QskAspect, Qt::GlobalColor );
-    void setColorForAllStateCombinations( QskAspect::State, QskAspect, QRgb );
-    void setColorForAllStateCombinations( QskAspect::State, QskAspect, const QColor& );
+    void setColor( QskAspect, Qt::GlobalColor, QskAspect::State = QskAspect::NoState );
+    void setColor( QskAspect, QRgb, QskAspect::State = QskAspect::NoState );
+    void setColor( QskAspect, const QColor&, QskAspect::State = QskAspect::NoState );
 
     QColor color( QskAspect ) const;
 
     // gradients
 
-    void setHGradient( QskAspect, const QColor&, const QColor& );
-    void setVGradient( QskAspect, const QColor&, const QColor& );
-    void setGradient( QskAspect, const QskGradient& );
+    void setHGradient( QskAspect, const QColor&, const QColor&,
+        QskAspect::State = QskAspect::NoState );
 
-    void setGradientForAllStateCombinations(
-        QskAspect::State, QskAspect, const QskGradient& );
+    void setVGradient( QskAspect, const QColor&, const QColor&,
+        QskAspect::State = QskAspect::NoState );
+
+    void setGradient( QskAspect, const QskGradient&,
+        QskAspect::State = QskAspect::NoState );
 
     QskGradient gradient( QskAspect ) const;
 
     // strutSize
 
-    void setStrutSize( QskAspect, const QSizeF& );
-    void setStrutSize( QskAspect, qreal width, qreal height );
+    void setStrutSize( QskAspect, const QSizeF&,
+        QskAspect::State = QskAspect::NoState );
 
-    void removeStrutSize( QskAspect );
+    void setStrutSize( QskAspect, qreal width, qreal height,
+        QskAspect::State = QskAspect::NoState );
 
-    void setStrutSizeForAllStateCombinations(
-        QskAspect::State, QskAspect, const QSizeF& );
+    void removeStrutSize( QskAspect, QskAspect::State = QskAspect::NoState );
 
     QSizeF strutSize( QskAspect ) const;
 
     // margin
 
-    void setMargin( QskAspect, const QskMargins& );
-    void setMargin( QskAspect, qreal left, qreal top, qreal right, qreal bottom );
+    void setMargin( QskAspect, const QskMargins&,
+        QskAspect::State = QskAspect::NoState );
 
-    void setMarginForAllStateCombinations(
-        QskAspect::State, QskAspect, const QskMargins& );
+    void setMargin( QskAspect,
+        qreal left, qreal top, qreal right, qreal bottom,
+        QskAspect::State = QskAspect::NoState );
 
-    void removeMargin( QskAspect );
+    void removeMargin( QskAspect, QskAspect::State = QskAspect::NoState );
 
     QskMargins margin( QskAspect ) const;
 
     // padding
 
-    void setPadding( QskAspect, const QskMargins& );
-    void setPadding( QskAspect, qreal left, qreal top, qreal right, qreal bottom );
+    void setPadding( QskAspect, const QskMargins&,
+        QskAspect::State = QskAspect::NoState );
 
-    void setPaddingForAllStateCombinations(
-        QskAspect::State, QskAspect, const QskMargins& );
+    void setPadding( QskAspect,
+        qreal left, qreal top, qreal right, qreal bottom,
+        QskAspect::State = QskAspect::NoState );
 
-    void removePadding( QskAspect );
+    void removePadding( QskAspect, QskAspect::State = QskAspect::NoState );
 
     QskMargins padding( QskAspect ) const;
 
     // spacing
 
-    void setSpacing( QskAspect, qreal );
-    void removeSpacing( QskAspect );
+    void setSpacing( QskAspect, qreal, QskAspect::State = QskAspect::NoState );
+    void removeSpacing( QskAspect, QskAspect::State = QskAspect::NoState );
     qreal spacing( QskAspect ) const;
 
     // alignment
 
-    void setAlignment( QskAspect, Qt::Alignment );
-    void removeAlignment( QskAspect );
+    void setAlignment( QskAspect, Qt::Alignment, QskAspect::State = QskAspect::NoState );
+    void removeAlignment( QskAspect, QskAspect::State = QskAspect::NoState );
     Qt::Alignment alignment( QskAspect ) const;
 
     // fontRole
 
-    void setFontRole( QskAspect, int );
-    void removeFontRole( QskAspect );
+    void setFontRole( QskAspect, int, QskAspect::State = QskAspect::NoState );
+    void removeFontRole( QskAspect, QskAspect::State = QskAspect::NoState );
     int fontRole( QskAspect ) const;
 
     // graphicRole
 
-    void setGraphicRole( QskAspect, int );
-    void removeGraphicRole( QskAspect );
+    void setGraphicRole( QskAspect, int, QskAspect::State = QskAspect::NoState );
+    void removeGraphicRole( QskAspect, QskAspect::State = QskAspect::NoState );
     int graphicRole( QskAspect ) const;
 
     // boxShape
 
     void setBoxShape( QskAspect, qreal radius, Qt::SizeMode = Qt::AbsoluteSize );
+
     void setBoxShape( QskAspect, qreal topLeft, qreal topRight,
         qreal bottomLeft, qreal bottomRight, Qt::SizeMode = Qt::AbsoluteSize );
-    void setBoxShape( QskAspect, const QskBoxShapeMetrics& );
 
-    void setBoxShapeForAllStateCombinations(
-        QskAspect::State, QskAspect, const QskBoxShapeMetrics& );
+    void setBoxShape( QskAspect, const QskBoxShapeMetrics&,
+        QskAspect::State = QskAspect::NoState );
 
-    void removeBoxShape( QskAspect );
+    void removeBoxShape( QskAspect, QskAspect::State = QskAspect::NoState );
 
     QskBoxShapeMetrics boxShape( QskAspect ) const;
 
@@ -219,24 +200,23 @@ class QSK_EXPORT QskSkinHintTableEditor
     void setBoxBorderMetrics( QskAspect, qreal left, qreal top,
         qreal right, qreal bottom, Qt::SizeMode = Qt::AbsoluteSize );
 
-    void setBoxBorderMetrics( QskAspect, const QskBoxBorderMetrics& );
-    void setBoxBorderMetricsForAllStateCombinations(
-        QskAspect::State, QskAspect, const QskBoxBorderMetrics& );
+    void setBoxBorderMetrics( QskAspect,
+        const QskBoxBorderMetrics&, QskAspect::State = QskAspect::NoState );
 
-    void removeBoxBorderMetric( QskAspect );
+    void removeBoxBorderMetric( QskAspect, QskAspect::State = QskAspect::NoState );
 
     QskBoxBorderMetrics boxBorderMetrics( QskAspect ) const;
 
     // boxBorderColors
 
-    void setBoxBorderColors( QskAspect, const QskBoxBorderColors& );
-    void setBoxBorderColorsForAllStateCombinations(
-        QskAspect::State, QskAspect, const QskBoxBorderColors& );
+    void setBoxBorderColors( QskAspect,
+        const QskBoxBorderColors&, QskAspect::State = QskAspect::NoState );
 
-    void setBoxBorderColors( QskAspect, const QColor& left, const QColor& top,
-        const QColor& right, const QColor& bottom );
+    void setBoxBorderColors( QskAspect,
+        const QColor& left, const QColor& top, const QColor& right, const QColor& bottom,
+        QskAspect::State = QskAspect::NoState );
 
-    void removeBoxBorderColors( QskAspect );
+    void removeBoxBorderColors( QskAspect, QskAspect::State = QskAspect::NoState );
     QskBoxBorderColors boxBorderColors( QskAspect ) const;
 
   private:
@@ -245,15 +225,11 @@ class QSK_EXPORT QskSkinHintTableEditor
 
 // --- generic access ---
 
-inline void QskSkinHintTableEditor::setHint( QskAspect aspect, const QVariant& hint )
-{
-    m_table->setHint( aspect, hint );
-}
-
 template< typename T >
-inline void QskSkinHintTableEditor::setHint( QskAspect aspect, const T& hint )
+inline void QskSkinHintTableEditor::setHint(
+    QskAspect aspect, const T& hint, QskAspect::State combinationMask )
 {
-    setHint( aspect, QVariant::fromValue( hint ) );
+    setHint( aspect, QVariant::fromValue( hint ), combinationMask );
 }
 
 template< typename T >
@@ -267,11 +243,6 @@ inline const QVariant& QskSkinHintTableEditor::hint( QskAspect aspect ) const
     return m_table->hint( aspect );
 }
 
-inline bool QskSkinHintTableEditor::removeHint( QskAspect aspect )
-{
-    return m_table->removeHint( aspect );
-}
-
 inline QVariant QskSkinHintTableEditor::takeHint( QskAspect aspect )
 {
     return m_table->takeHint( aspect );
@@ -282,42 +253,25 @@ inline bool QskSkinHintTableEditor::hasHint( QskAspect aspect ) const
     return m_table->hasHint( aspect );
 }
 
-template< typename T >
-void QskSkinHintTableEditor::setHintForAllStateCombinations(
-    QskAspect::State stateMask, QskAspect aspect, const T& hint )
-{
-    setHintForAllStateCombinations( stateMask, aspect, QVariant::fromValue( hint ) );
-}
-
 // --- flag ---
 
-inline void QskSkinHintTableEditor::setFlagHint( QskAspect aspect, const QVariant& hint )
+inline void QskSkinHintTableEditor::setFlagHint(
+    QskAspect aspect, const QVariant& hint, QskAspect::State combinationMask )
 {
-    setHint( aspect | QskAspect::Flag, hint );
+    setHint( aspect | QskAspect::Flag, hint, combinationMask );
 }
 
 template< typename T >
-inline void QskSkinHintTableEditor::setFlagHint( QskAspect aspect, const T& hint )
+inline void QskSkinHintTableEditor::setFlagHint(
+    QskAspect aspect, const T& hint, QskAspect::State combinationMask )
 {
-    setHint( aspect | QskAspect::Flag, hint );
+    setHint( aspect | QskAspect::Flag, hint, combinationMask );
 }
 
-inline void QskSkinHintTableEditor::setFlagHintForAllStateCombinations(
-    QskAspect::State stateMask, QskAspect aspect, const QVariant& hint )
+inline void QskSkinHintTableEditor::removeFlagHint(
+    QskAspect aspect, QskAspect::State combinationMask )
 {
-    setHintForAllStateCombinations( stateMask, aspect | QskAspect::Flag, hint );
-}
-
-template< typename T >
-inline void QskSkinHintTableEditor::setFlagHintForAllStateCombinations(
-    QskAspect::State stateMask, QskAspect aspect, const T& hint )
-{
-    setHintForAllStateCombinations( stateMask, aspect | QskAspect::Flag, hint );
-}
-
-inline void QskSkinHintTableEditor::removeFlagHint( QskAspect aspect )
-{
-    removeHint( aspect | QskAspect::Flag );
+    removeHint( aspect | QskAspect::Flag, combinationMask );
 }
 
 inline QVariant QskSkinHintTableEditor::flagHint( QskAspect aspect ) const
@@ -333,33 +287,23 @@ inline T QskSkinHintTableEditor::flagHint( QskAspect aspect ) const
 
 // --- metric ---
 
-inline void QskSkinHintTableEditor::setMetricHint( QskAspect aspect, const QVariant& hint )
+inline void QskSkinHintTableEditor::setMetricHint(
+    QskAspect aspect, const QVariant& hint, QskAspect::State combinationMask )
 {
-    setHint( aspect | QskAspect::Metric, hint );
+    setHint( aspect | QskAspect::Metric, hint, combinationMask );
 }
 
 template< typename T >
-inline void QskSkinHintTableEditor::setMetricHint( QskAspect aspect, const T& hint )
+inline void QskSkinHintTableEditor::setMetricHint(
+    QskAspect aspect, const T& hint, QskAspect::State combinationMask )
 {
-    setHint( aspect | QskAspect::Metric, hint );
+    setHint( aspect | QskAspect::Metric, hint, combinationMask );
 }
 
-inline void QskSkinHintTableEditor::setMetricHintForAllStateCombinations(
-    QskAspect::State stateMask, QskAspect aspect, const QVariant& hint )
+inline void QskSkinHintTableEditor::removeMetricHint(
+    QskAspect aspect, QskAspect::State combinationMask )
 {
-    setHintForAllStateCombinations( stateMask, aspect | QskAspect::Metric, hint );
-}
-
-template< typename T >
-inline void QskSkinHintTableEditor::setMetricHintForAllStateCombinations(
-    QskAspect::State stateMask, QskAspect aspect, const T& hint )
-{
-    setHintForAllStateCombinations( stateMask, aspect | QskAspect::Metric, hint );
-}
-
-inline void QskSkinHintTableEditor::removeMetricHint( QskAspect aspect )
-{
-    removeHint( aspect | QskAspect::Metric );
+    removeHint( aspect | QskAspect::Metric, combinationMask );
 }
 
 inline QVariant QskSkinHintTableEditor::metricHint( QskAspect aspect ) const
@@ -375,33 +319,23 @@ inline T QskSkinHintTableEditor::metricHint( QskAspect aspect ) const
 
 // --- color ---
 
-inline void QskSkinHintTableEditor::setColorHint( QskAspect aspect, const QVariant& hint )
+inline void QskSkinHintTableEditor::setColorHint(
+    QskAspect aspect, const QVariant& hint, QskAspect::State combinationMask )
 {
-    setHint( aspect | QskAspect::Color, hint );
+    setHint( aspect | QskAspect::Color, hint, combinationMask );
 }
 
 template< typename T >
-inline void QskSkinHintTableEditor::setColorHint( QskAspect aspect, const T& hint )
+inline void QskSkinHintTableEditor::setColorHint(
+    QskAspect aspect, const T& hint, QskAspect::State combinationMask )
 {
-    setHint( aspect | QskAspect::Color, hint );
+    setHint( aspect | QskAspect::Color, hint, combinationMask );
 }
 
-inline void QskSkinHintTableEditor::setColorHintForAllStateCombinations(
-    QskAspect::State stateMask, QskAspect aspect, const QVariant& hint )
-{   
-    setHintForAllStateCombinations( stateMask, aspect | QskAspect::Color, hint );
-}
-
-template< typename T >
-inline void QskSkinHintTableEditor::setColorHintForAllStateCombinations(
-    QskAspect::State stateMask, QskAspect aspect, const T& hint )
+inline void QskSkinHintTableEditor::removeColorHint(
+    QskAspect aspect, QskAspect::State combinationMask )
 {
-    setHintForAllStateCombinations( stateMask, aspect | QskAspect::Color, hint );
-}
-
-inline void QskSkinHintTableEditor::removeColorHint( QskAspect aspect )
-{
-    removeHint( aspect | QskAspect::Color );
+    removeHint( aspect | QskAspect::Color, combinationMask );
 }
 
 inline QVariant QskSkinHintTableEditor::colorHint( QskAspect aspect ) const
@@ -422,9 +356,11 @@ inline QskAnimationHint QskSkinHintTableEditor::animation( QskAspect aspect ) co
     return m_table->animation( aspect );
 }
 
-inline void QskSkinHintTableEditor::setAnimation( QskAspect aspect, QskAnimationHint hint )
+inline void QskSkinHintTableEditor::setAnimation(
+    QskAspect aspect, QskAnimationHint hint, QskAspect::State combinationMask )
 {
-    m_table->setAnimation( aspect, hint );
+    aspect.setAnimator( true );
+    setHint( aspect, hint, combinationMask );
 }
 
 #endif
