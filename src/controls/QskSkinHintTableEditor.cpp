@@ -261,7 +261,7 @@ void QskSkinHintTableEditor::setMargin( QskAspect aspect,
     QskAspect::State combinationMask )
 {
     const QskMargins margins( left, top, right, bottom );
-    setMetricHint( aspectMargin( aspect ), combinationMask );
+    setMetricHint( aspectMargin( aspect ), margins, combinationMask );
 }
 
 void QskSkinHintTableEditor::removeMargin(
