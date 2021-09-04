@@ -125,28 +125,38 @@ QskSkinHintTable* QskSkinHintTableEditor::table() const
     return m_table;
 }
 
-void QskSkinHintTableEditor::setHintForAllStateCombinations(
-    QskAspect::State stateMask, QskAspect aspect, const QVariant& hint )
+void QskSkinHintTableEditor::setHint( QskAspect aspect,
+    const QVariant& hint, QskAspect::State combinationMask )
 {
-    setHintStateMask( m_table, aspect, hint, QskAspect::NoState, stateMask );
+    if ( combinationMask == QskAspect::NoState )
+    {
+        m_table->setHint( aspect, hint );
+    }
+    else
+    {
+        setHintStateMask( m_table, aspect, hint,
+            QskAspect::NoState, combinationMask );
+    }
 }
 
-bool QskSkinHintTableEditor::removeHintForAllStateCombinations(
-    QskAspect::State stateMask, QskAspect aspect )
+bool QskSkinHintTableEditor::removeHint(
+    QskAspect aspect, QskAspect::State combinationMask )
 {
-    return removeHintStateMask( m_table, aspect, QskAspect::NoState, stateMask );
+    if ( combinationMask == QskAspect::NoState )
+    {
+        return m_table->removeHint( aspect );
+    }
+    else
+    {
+        return removeHintStateMask( m_table, aspect,
+            QskAspect::NoState, combinationMask );
+    }
 }
 
-void QskSkinHintTableEditor::setAnimationForAllStateCombinations(
-    QskAspect::State stateMask, QskAspect aspect, QskAnimationHint hint )
-{   
-    aspect.setAnimator( true );
-    setHintForAllStateCombinations( stateMask, aspect, QVariant::fromValue( hint ) );
-}
-
-void QskSkinHintTableEditor::setFlag( QskAspect aspect, int flag )
+void QskSkinHintTableEditor::setFlag(
+    QskAspect aspect, int flag, QskAspect::State combinationMask )
 {
-    setFlagHint( aspect, flag );
+    setFlagHint( aspect, flag, combinationMask );
 }
 
 int QskSkinHintTableEditor::flag( QskAspect aspect ) const
@@ -154,15 +164,10 @@ int QskSkinHintTableEditor::flag( QskAspect aspect ) const
     return flagHint< int >( aspect );
 }
 
-void QskSkinHintTableEditor::setFlagForAllStateCombinations(
-    QskAspect::State stateMask, QskAspect aspect, int flag )
+void QskSkinHintTableEditor::setMetric(
+    QskAspect aspect, qreal metric, QskAspect::State combinationMask )
 {
-    setFlagHintForAllStateCombinations( stateMask, aspect, flag );
-}
-
-void QskSkinHintTableEditor::setMetric( QskAspect aspect, qreal metric )
-{
-    setMetricHint( aspect, metric );
+    setMetricHint( aspect, metric, combinationMask );
 }
 
 qreal QskSkinHintTableEditor::metric( QskAspect aspect ) const
@@ -170,25 +175,22 @@ qreal QskSkinHintTableEditor::metric( QskAspect aspect ) const
     return metricHint< qreal >( aspect );
 }
 
-void QskSkinHintTableEditor::setMetricForAllStateCombinations(
-    QskAspect::State stateMask, QskAspect aspect, qreal metric )
+void QskSkinHintTableEditor::setColor(
+    QskAspect aspect, Qt::GlobalColor color, QskAspect::State combinationMask )
 {
-    setMetricHintForAllStateCombinations( stateMask, aspect, metric );
+    setColorHint( aspect, QColor( color ), combinationMask );
 }
 
-void QskSkinHintTableEditor::setColor( QskAspect aspect, Qt::GlobalColor color )
+void QskSkinHintTableEditor::setColor(
+    QskAspect aspect, QRgb rgb, QskAspect::State combinationMask )
 {
-    setColorHint( aspect, QColor( color ) );
+    setColorHint( aspect, QColor::fromRgba( rgb ), combinationMask );
 }
 
-void QskSkinHintTableEditor::setColor( QskAspect aspect, QRgb rgb )
+void QskSkinHintTableEditor::setColor(
+    QskAspect aspect, const QColor& color, QskAspect::State combinationMask )
 {
-    setColorHint( aspect, QColor::fromRgba( rgb ) );
-}
-
-void QskSkinHintTableEditor::setColor( QskAspect aspect, const QColor& color )
-{
-    setColorHint( aspect, color );
+    setColorHint( aspect, color, combinationMask );
 }
 
 QColor QskSkinHintTableEditor::color( QskAspect aspect ) const
@@ -196,45 +198,27 @@ QColor QskSkinHintTableEditor::color( QskAspect aspect ) const
     return colorHint< QColor >( aspect );
 }
 
-void QskSkinHintTableEditor::setColorForAllStateCombinations(
-    QskAspect::State stateMask, QskAspect aspect, Qt::GlobalColor color )
-{
-    setColorHintForAllStateCombinations( stateMask, aspect, QColor( color ) );
-}
-
-void QskSkinHintTableEditor::setColorForAllStateCombinations(
-    QskAspect::State stateMask, QskAspect aspect, QRgb rgb )
-{
-    setColorHintForAllStateCombinations( stateMask, aspect, QColor::fromRgba( rgb ) );
-}
-
-void QskSkinHintTableEditor::setColorForAllStateCombinations(
-    QskAspect::State stateMask, QskAspect aspect, const QColor& color )
-{
-    setColorHintForAllStateCombinations( stateMask, aspect, color );
-}
-
 void QskSkinHintTableEditor::setHGradient(
-    QskAspect aspect, const QColor& color1, const QColor& color2 )
+    QskAspect aspect, const QColor& color1, const QColor& color2,
+    QskAspect::State combinationMask )
 {
-    setGradient( aspect, QskGradient( QskGradient::Horizontal, color1, color2 ) );
+    const QskGradient gradient( QskGradient::Horizontal, color1, color2 );
+    setGradient( aspect, gradient, combinationMask );
 }
 
 void QskSkinHintTableEditor::setVGradient(
-    QskAspect aspect, const QColor& color1, const QColor& color2 )
+    QskAspect aspect, const QColor& color1, const QColor& color2,
+    QskAspect::State combinationMask )
 {
-    setGradient( aspect, QskGradient( QskGradient::Vertical, color1, color2 ) );
+    const QskGradient gradient( QskGradient::Vertical, color1, color2 );
+    setGradient( aspect, gradient, combinationMask );
 }
 
-void QskSkinHintTableEditor::setGradient( QskAspect aspect, const QskGradient& gradient )
+void QskSkinHintTableEditor::setGradient(
+    QskAspect aspect, const QskGradient& gradient,
+    QskAspect::State combinationMask )
 {
-    setColorHint( aspect, gradient );
-}
-
-void QskSkinHintTableEditor::setGradientForAllStateCombinations(
-    QskAspect::State stateMask, QskAspect aspect, const QskGradient& gradient )
-{
-    setColorHintForAllStateCombinations( stateMask, aspect, QVariant::fromValue( gradient ) );
+    setColorHint( aspect, gradient, combinationMask );
 }
 
 QskGradient QskSkinHintTableEditor::gradient( QskAspect aspect ) const
@@ -242,25 +226,23 @@ QskGradient QskSkinHintTableEditor::gradient( QskAspect aspect ) const
     return colorHint< QskGradient >( aspect );
 }
 
-void QskSkinHintTableEditor::setStrutSize( QskAspect aspect, const QSizeF& size )
+void QskSkinHintTableEditor::setStrutSize(
+    QskAspect aspect, const QSizeF& size, QskAspect::State combinationMask )
 {
-    setMetricHint( aspectStrutSize( aspect ), size );
+    setMetricHint( aspectStrutSize( aspect ), size, combinationMask );
 }
 
-void QskSkinHintTableEditor::setStrutSize( QskAspect aspect, qreal width, qreal height )
+void QskSkinHintTableEditor::setStrutSize(
+    QskAspect aspect, qreal width, qreal height, QskAspect::State combinationMask )
 {
-    setMetricHint( aspectStrutSize( aspect ), QSizeF( width, height ) );
+    setMetricHint( aspectStrutSize( aspect ),
+        QSizeF( width, height ), combinationMask );
 }
 
-void QskSkinHintTableEditor::setStrutSizeForAllStateCombinations(
-    QskAspect::State stateMask, QskAspect aspect, const QSizeF& size )
+void QskSkinHintTableEditor::removeStrutSize(
+    QskAspect aspect, QskAspect::State combinationMask )
 {
-    setMetricHintForAllStateCombinations( stateMask, aspectStrutSize( aspect ), size );
-}
-
-void QskSkinHintTableEditor::removeStrutSize( QskAspect aspect )
-{
-    removeMetricHint( aspectStrutSize( aspect ) );
+    removeMetricHint( aspectStrutSize( aspect ), combinationMask );
 }
 
 QSizeF QskSkinHintTableEditor::strutSize( QskAspect aspect ) const
@@ -268,26 +250,24 @@ QSizeF QskSkinHintTableEditor::strutSize( QskAspect aspect ) const
     return metricHint< QSizeF >( aspectStrutSize( aspect ) );
 }
 
-void QskSkinHintTableEditor::setMargin( QskAspect aspect, const QskMargins& margins )
+void QskSkinHintTableEditor::setMargin(
+    QskAspect aspect, const QskMargins& margins, QskAspect::State combinationMask )
 {
-    setMetricHint( aspectMargin( aspect ), margins );
+    setMetricHint( aspectMargin( aspect ), margins, combinationMask );
 }
 
 void QskSkinHintTableEditor::setMargin( QskAspect aspect,
-    qreal left, qreal top, qreal right, qreal bottom )
+    qreal left, qreal top, qreal right, qreal bottom,
+    QskAspect::State combinationMask )
 {
-    setMetricHint( aspectMargin( aspect ), QskMargins( left, top, right, bottom ) );
+    const QskMargins margins( left, top, right, bottom );
+    setMetricHint( aspectMargin( aspect ), combinationMask );
 }
 
-void QskSkinHintTableEditor::setMarginForAllStateCombinations(
-    QskAspect::State stateMask, QskAspect aspect, const QskMargins& margins )
+void QskSkinHintTableEditor::removeMargin(
+    QskAspect aspect, QskAspect::State combinationMask )
 {
-    setMetricHintForAllStateCombinations( stateMask, aspectMargin( aspect ), margins );
-}
-
-void QskSkinHintTableEditor::removeMargin( QskAspect aspect )
-{
-    removeMetricHint( aspectMargin( aspect ) );
+    removeMetricHint( aspectMargin( aspect ), combinationMask );
 }
 
 QskMargins QskSkinHintTableEditor::margin( QskAspect aspect ) const
@@ -295,26 +275,25 @@ QskMargins QskSkinHintTableEditor::margin( QskAspect aspect ) const
     return metricHint< QskMargins >( aspectMargin( aspect ) );
 }
 
-void QskSkinHintTableEditor::setPadding( QskAspect aspect, const QskMargins& padding )
+void QskSkinHintTableEditor::setPadding(
+    QskAspect aspect, const QskMargins& padding,
+    QskAspect::State combinationMask )
 {
-    setMetricHint( aspectPadding( aspect ), padding );
+    setMetricHint( aspectPadding( aspect ), padding, combinationMask );
 }
 
 void QskSkinHintTableEditor::setPadding( QskAspect aspect,
-    qreal left, qreal top, qreal right, qreal bottom )
+    qreal left, qreal top, qreal right, qreal bottom,
+    QskAspect::State combinationMask )
 {
-    setMetricHint( aspectPadding( aspect ), QskMargins( left, top, right, bottom ) );
+    QskMargins padding( left, top, right, bottom );
+    setMetricHint( aspectPadding( aspect ), padding, combinationMask );
 }
 
-void QskSkinHintTableEditor::setPaddingForAllStateCombinations(
-    QskAspect::State stateMask, QskAspect aspect, const QskMargins& margins )
+void QskSkinHintTableEditor::removePadding(
+    QskAspect aspect, QskAspect::State combinationMask )
 {
-    setMetricHintForAllStateCombinations( stateMask, aspectPadding( aspect ), margins );
-}
-
-void QskSkinHintTableEditor::removePadding( QskAspect aspect )
-{
-    removeMetricHint( aspectPadding( aspect ) );
+    removeMetricHint( aspectPadding( aspect ), combinationMask );
 }
 
 QskMargins QskSkinHintTableEditor::padding( QskAspect aspect ) const
@@ -322,14 +301,16 @@ QskMargins QskSkinHintTableEditor::padding( QskAspect aspect ) const
     return metricHint< QskMargins >( aspectPadding( aspect ) );
 }
 
-void QskSkinHintTableEditor::setSpacing( QskAspect aspect, qreal spacing )
+void QskSkinHintTableEditor::setSpacing(
+    QskAspect aspect, qreal spacing, QskAspect::State combinationMask )
 {
-    setMetricHint( aspectSpacing( aspect ), spacing );
+    setMetricHint( aspectSpacing( aspect ), spacing, combinationMask );
 }
 
-void QskSkinHintTableEditor::removeSpacing( QskAspect aspect )
+void QskSkinHintTableEditor::removeSpacing(
+    QskAspect aspect, QskAspect::State combinationMask )
 {
-    removeMetricHint( aspectSpacing( aspect ) );
+    removeMetricHint( aspectSpacing( aspect ), combinationMask );
 }
 
 qreal QskSkinHintTableEditor::spacing( QskAspect aspect ) const
@@ -337,14 +318,17 @@ qreal QskSkinHintTableEditor::spacing( QskAspect aspect ) const
     return metricHint< qreal >( aspectSpacing( aspect ) );
 }
 
-void QskSkinHintTableEditor::setAlignment( QskAspect aspect, Qt::Alignment alignment )
+void QskSkinHintTableEditor::setAlignment(
+    QskAspect aspect, Qt::Alignment alignment, QskAspect::State combinationMask )
 {
-    setFlagHint( aspectAlignment( aspect ), static_cast< int >( alignment ) );
+    setFlagHint( aspectAlignment( aspect ),
+        static_cast< int >( alignment ), combinationMask );
 }
 
-void QskSkinHintTableEditor::removeAlignment( QskAspect aspect )
+void QskSkinHintTableEditor::removeAlignment(
+    QskAspect aspect, QskAspect::State combinationMask )
 {
-    return removeFlagHint( aspectAlignment( aspect ) );
+    return removeFlagHint( aspectAlignment( aspect ), combinationMask );
 }
 
 Qt::Alignment QskSkinHintTableEditor::alignment( QskAspect aspect ) const
@@ -352,14 +336,16 @@ Qt::Alignment QskSkinHintTableEditor::alignment( QskAspect aspect ) const
     return flagHint< Qt::Alignment >( aspectAlignment( aspect ) );
 }
 
-void QskSkinHintTableEditor::setFontRole( QskAspect aspect, int fontRole )
+void QskSkinHintTableEditor::setFontRole(
+    QskAspect aspect, int fontRole, QskAspect::State combinationMask )
 {
-    setFlagHint( aspectFontRole( aspect ), fontRole );
+    setFlagHint( aspectFontRole( aspect ), fontRole, combinationMask );
 }
 
-void QskSkinHintTableEditor::removeFontRole( QskAspect aspect )
+void QskSkinHintTableEditor::removeFontRole(
+    QskAspect aspect, QskAspect::State combinationMask )
 {
-    return removeFlagHint( aspectFontRole( aspect ) );
+    return removeFlagHint( aspectFontRole( aspect ), combinationMask );
 }
 
 int QskSkinHintTableEditor::fontRole( QskAspect aspect ) const
@@ -367,14 +353,16 @@ int QskSkinHintTableEditor::fontRole( QskAspect aspect ) const
     return flagHint< int >( aspectFontRole( aspect ) );
 }
 
-void QskSkinHintTableEditor::setGraphicRole( QskAspect aspect, int graphicRole )
+void QskSkinHintTableEditor::setGraphicRole(
+    QskAspect aspect, int graphicRole, QskAspect::State combinationMask )
 {
-    setFlagHint( aspectGraphicRole( aspect ), graphicRole );
+    setFlagHint( aspectGraphicRole( aspect ), graphicRole, combinationMask );
 }
 
-void QskSkinHintTableEditor::removeGraphicRole( QskAspect aspect )
+void QskSkinHintTableEditor::removeGraphicRole(
+    QskAspect aspect, QskAspect::State combinationMask )
 {
-    return removeFlagHint( aspectGraphicRole( aspect ) );
+    return removeFlagHint( aspectGraphicRole( aspect ), combinationMask );
 }
 
 int QskSkinHintTableEditor::graphicRole( QskAspect aspect ) const
@@ -389,29 +377,24 @@ void QskSkinHintTableEditor::setBoxShape(
         QskBoxShapeMetrics( radius, sizeMode ) );
 }
 
-void QskSkinHintTableEditor::setBoxShape( QskAspect aspect, qreal topLeft, qreal topRight,
-    qreal bottomLeft, qreal bottomRight, Qt::SizeMode sizeMode )
+void QskSkinHintTableEditor::setBoxShape( QskAspect aspect,
+    qreal topLeft, qreal topRight, qreal bottomLeft, qreal bottomRight,
+    Qt::SizeMode sizeMode )
 {
     setMetricHint( aspectShape( aspect ),
         QskBoxShapeMetrics( topLeft, topRight, bottomLeft, bottomRight, sizeMode ) );
 }
 
 void QskSkinHintTableEditor::setBoxShape(
-    QskAspect aspect, const QskBoxShapeMetrics& shape )
+    QskAspect aspect, const QskBoxShapeMetrics& shape, QskAspect::State combinationMask )
 {
-    setMetricHint( aspectShape( aspect ), shape );
+    setMetricHint( aspectShape( aspect ), shape, combinationMask );
 }
 
-void QskSkinHintTableEditor::setBoxShapeForAllStateCombinations(
-    QskAspect::State stateMask, QskAspect aspect, const QskBoxShapeMetrics& shape )
+void QskSkinHintTableEditor::removeBoxShape(
+    QskAspect aspect, QskAspect::State combinationMask )
 {
-    setMetricHintForAllStateCombinations(
-        stateMask, aspectShape( aspect ), QVariant::fromValue( shape ) );
-}
-
-void QskSkinHintTableEditor::removeBoxShape( QskAspect aspect )
-{
-    return removeMetricHint( aspectShape( aspect ) );
+    return removeMetricHint( aspectShape( aspect ), combinationMask );
 }
 
 QskBoxShapeMetrics QskSkinHintTableEditor::boxShape( QskAspect aspect ) const
@@ -434,21 +417,16 @@ void QskSkinHintTableEditor::setBoxBorderMetrics( QskAspect aspect,
 }
 
 void QskSkinHintTableEditor::setBoxBorderMetrics(
-    QskAspect aspect, const QskBoxBorderMetrics& borderMetrics )
+    QskAspect aspect, const QskBoxBorderMetrics& borderMetrics,
+    QskAspect::State combinationMask )
 {
-    setMetricHint( aspectBorder( aspect ), borderMetrics );
+    setMetricHint( aspectBorder( aspect ), borderMetrics, combinationMask );
 }
 
-void QskSkinHintTableEditor::setBoxBorderMetricsForAllStateCombinations(
-    QskAspect::State stateMask, QskAspect aspect, const QskBoxBorderMetrics& borderMetrics )
+void QskSkinHintTableEditor::removeBoxBorderMetric(
+    QskAspect aspect, QskAspect::State combinationMask )
 {
-    setMetricHintForAllStateCombinations( stateMask,
-        aspectBorder( aspect ), QVariant::fromValue( borderMetrics ) );
-}
-
-void QskSkinHintTableEditor::removeBoxBorderMetric( QskAspect aspect )
-{
-    return removeMetricHint( aspectBorder( aspect ) );
+    return removeMetricHint( aspectBorder( aspect ), combinationMask );
 }
 
 QskBoxBorderMetrics QskSkinHintTableEditor::boxBorderMetrics( QskAspect aspect ) const
@@ -457,28 +435,25 @@ QskBoxBorderMetrics QskSkinHintTableEditor::boxBorderMetrics( QskAspect aspect )
 }
 
 void QskSkinHintTableEditor::setBoxBorderColors(
-    QskAspect aspect, const QskBoxBorderColors& borderColors )
+    QskAspect aspect, const QskBoxBorderColors& borderColors,
+    QskAspect::State combinationMask )
 {
-    setColorHint( aspectBorder( aspect ), borderColors );
-}
-
-void QskSkinHintTableEditor::setBoxBorderColorsForAllStateCombinations(
-    QskAspect::State stateMask, QskAspect aspect, const QskBoxBorderColors& borderColors )
-{
-    setColorHintForAllStateCombinations( stateMask, aspectBorder( aspect ),
-        QVariant::fromValue( borderColors ) );
+    setColorHint( aspectBorder( aspect ), borderColors, combinationMask );
 }
 
 void QskSkinHintTableEditor::setBoxBorderColors( QskAspect aspect,
-    const QColor& left, const QColor& top, const QColor& right, const QColor& bottom )
+    const QColor& left, const QColor& top, const QColor& right, const QColor& bottom,
+    QskAspect::State combinationMask )
 {
     setColorHint( aspectBorder( aspect ),
-        QskBoxBorderColors( left, top, right, bottom ) );
+        QskBoxBorderColors( left, top, right, bottom ),
+        combinationMask );
 }
 
-void QskSkinHintTableEditor::removeBoxBorderColors( QskAspect aspect )
+void QskSkinHintTableEditor::removeBoxBorderColors(
+    QskAspect aspect, QskAspect::State combinationMask )
 {
-    return removeColorHint( aspectBorder( aspect ) );
+    return removeColorHint( aspectBorder( aspect ), combinationMask );
 }
 
 QskBoxBorderColors QskSkinHintTableEditor::boxBorderColors( QskAspect aspect ) const
