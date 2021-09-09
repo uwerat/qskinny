@@ -16,6 +16,7 @@
 #include "QskSkinHintTable.h"
 #include "QskSkinTransition.h"
 #include "QskSkinlet.h"
+#include "QskWindow.h"
 
 #include "QskBoxShapeMetrics.h"
 #include "QskBoxBorderMetrics.h"
@@ -276,7 +277,7 @@ const QskSkinlet* QskSkinnable::effectiveSkinlet() const
 {
     if ( m_data->skinlet == nullptr )
     {
-        m_data->skinlet = qskSetup->skin()->skinlet( metaObject() );
+        m_data->skinlet = effectiveSkin()->skinlet( metaObject() );
         m_data->hasLocalSkinlet = false;
     }
 
@@ -1197,6 +1198,17 @@ QskSkin* QskSkinnable::effectiveSkin() const
 
     if ( m_data->skinlet )
         skin = m_data->skinlet->skin();
+
+    if ( skin == nullptr )
+    {
+        if ( const auto control = owningControl() )
+        {
+            if ( auto window = qobject_cast< const QskWindow* >( control->window() ) )
+            {
+                skin = window->skin();
+            }
+        }
+    }
 
     return skin ? skin : qskSetup->skin();
 }

@@ -11,6 +11,7 @@
 
 class QskWindowPrivate;
 class QskObjectAttributes;
+class QskSkin;
 
 class QSK_EXPORT QskWindow : public QQuickWindow
 {
@@ -68,6 +69,11 @@ class QSK_EXPORT QskWindow : public QQuickWindow
     // extra flag to interprete accepted events
     void setEventAcceptance( EventAcceptance );
     EventAcceptance eventAcceptance() const;
+
+    // each window might have its own skin
+    void setSkin( QskSkin* );
+    void setSkin( const QString& );
+    QskSkin* skin() const;
 
   Q_SIGNALS:
     void localeChanged( const QLocale& );
