@@ -8,6 +8,8 @@
 #include "QskEvent.h"
 #include "QskQuick.h"
 #include "QskSetup.h"
+#include "QskSkin.h"
+#include "QskSkinManager.h"
 
 #include <qmath.h>
 #include <qpointer.h>
@@ -143,6 +145,8 @@ class QskWindowPrivate : public QQuickWindowPrivate
 #ifdef QSK_DEBUG_RENDER_TIMING
     QElapsedTimer renderInterval;
 #endif
+
+    QPointer< QskSkin > skin;
 
     ChildListener contentItemListener;
     QLocale locale;
@@ -641,6 +645,37 @@ void QskWindow::setEventAcceptance( EventAcceptance acceptance )
 QskWindow::EventAcceptance QskWindow::eventAcceptance() const
 {
     return d_func()->eventAcceptance;
+}
+
+void QskWindow::setSkin( const QString& skinName )
+{
+    // we should compare the skinName with the previous one
+    auto skin = QskSkinManager::instance()->createSkin( skinName );
+    setSkin( skin );
+}
+
+void QskWindow::setSkin( QskSkin* skin )
+{
+    Q_D( QskWindow );
+
+    if ( d->skin == skin )
+        return;
+
+    if ( d->skin )
+    {
+        if ( d->skin->parent() == this )
+            delete d->skin;
+    }
+
+    if ( skin && skin->parent() == nullptr )
+        skin->setParent( this );
+
+    d->skin = skin;
+}
+
+QskSkin* QskWindow::skin() const
+{
+    return d_func()->skin;
 }
 
 #include "moc_QskWindow.cpp"
