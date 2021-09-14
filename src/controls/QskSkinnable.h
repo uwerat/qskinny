@@ -90,7 +90,7 @@ class QSK_EXPORT QskSkinnable
     bool resetSkinHint( QskAspect );
 
     QskAnimationHint effectiveAnimation( QskAspect::Type, QskAspect::Subcontrol,
-        QskAspect::State, QskSkinHintStatus* status = nullptr ) const;
+        QskAspect::States, QskSkinHintStatus* status = nullptr ) const;
 
     QVariant effectiveSkinHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
     virtual QskAspect::Placement effectivePlacement() const;
@@ -127,16 +127,16 @@ class QSK_EXPORT QskSkinnable
     void debug( QDebug, QskAspect ) const;
     void debug( QDebug, QskAspect::State ) const;
 
-    void setSkinState( QskAspect::State, bool animated = true );
+    void setSkinStates( QskAspect::States, bool animated = true );
     void setSkinStateFlag( QskAspect::State, bool on = true );
 
-    void replaceSkinState( QskAspect::State );
+    void replaceSkinStates( QskAspect::States );
 
     bool hasSkinState( QskAspect::State ) const;
-    QskAspect::State skinState() const;
+    QskAspect::States skinStates() const;
 
-    const char* skinStateAsPrintable() const;
-    const char* skinStateAsPrintable( QskAspect::State ) const;
+    const char* skinStatesAsPrintable() const;
+    const char* skinStatesAsPrintable( QskAspect::States ) const;
 
     // type aware methods for accessing skin hints
 

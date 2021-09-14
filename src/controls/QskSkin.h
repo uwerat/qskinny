@@ -76,8 +76,8 @@ class QSK_EXPORT QskSkin : public QObject
 
     virtual const int* dialogButtonLayout( Qt::Orientation ) const;
 
-    void setStateMask( QskAspect::State );
-    QskAspect::State stateMask() const;
+    void setStateMask( QskAspect::States );
+    QskAspect::States stateMask() const;
 
     QskSkinlet* skinlet( const QMetaObject* );
 

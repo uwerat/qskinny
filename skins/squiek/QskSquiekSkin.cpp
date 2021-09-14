@@ -507,7 +507,7 @@ void Editor::setupTabButton()
         setGradient( Q::Panel | placement,
             QskGradient( Qt::Vertical, m_pal.lighter125, m_pal.lighter110 ) );
 
-        for ( const auto state : { Q::Checked, Q::Checked | Q::Pressed } )
+        for ( const auto state : { Q::Checked | A::NoState, Q::Checked | Q::Pressed } )
         {
             setGradient( Q::Panel | placement | state, m_pal.lighter125 );
             setColor( Q::Text | placement | state, m_pal.themeForeground );
@@ -518,7 +518,7 @@ void Editor::setupTabButton()
     {
         setGradient( Q::Panel | placement, m_pal.lighter125 );
 
-        for ( const auto state : { Q::Checked, Q::Checked | Q::Pressed } )
+        for ( const auto state : { Q::Checked | A::NoState, Q::Checked | Q::Pressed } )
         {
             setGradient( Q::Panel | placement | state, m_pal.highlighted );
             setColor( Q::Text | placement | state, m_pal.highlightedText );
@@ -580,7 +580,7 @@ void Editor::setupTabButton()
 
         setMargin( aspect, margins0 );
 
-        for ( const auto state : { Q::Checked, Q::Checked | Q::Pressed } )
+        for ( const auto state : { Q::Checked | A::NoState, Q::Checked | Q::Pressed } )
             setMargin( aspect | state, margins1 );
 
         setPadding( aspect, padding );

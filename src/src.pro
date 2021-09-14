@@ -17,7 +17,6 @@ HEADERS += \
     common/QskBoxBorderMetrics.h \
     common/QskBoxShapeMetrics.h \
     common/QskCorner.h \
-    common/QskFlags.h \
     common/QskFunctions.h \
     common/QskGlobal.h \
     common/QskGradient.h \
@@ -34,6 +33,7 @@ HEADERS += \
     common/QskScaleTickmarks.h \
     common/QskShadowMetrics.h \
     common/QskSizePolicy.h \
+    common/QskStateCombination.h \
     common/QskTextColors.h \
     common/QskTextOptions.h
 
@@ -56,6 +56,7 @@ SOURCES += \
     common/QskScaleTickmarks.cpp \
     common/QskShadowMetrics.cpp \
     common/QskSizePolicy.cpp \
+    common/QskStateCombination.cpp \
     common/QskTextColors.cpp \
     common/QskTextOptions.cpp
 
