@@ -227,7 +227,7 @@ class QskSkinnable::PrivateData
 
     const QskSkinlet* skinlet = nullptr;
 
-    QskAspect::States skinStates = QskAspect::NoState;
+    QskAspect::States skinStates;
     bool hasLocalSkinlet = false;
 };
 
