@@ -125,7 +125,7 @@ class QskSkin::PrivateData
     std::unordered_map< const QMetaObject*, SkinletData > skinletMap;
 
     QskSkinHintTable hintTable;
-    QskAspect::State stateMask = QskAspect::AllStates;
+    QskAspect::States stateMask = QskAspect::AllStates;
 
     std::unordered_map< int, QFont > fonts;
     std::unordered_map< int, QskColorFilter > graphicFilters;
@@ -331,7 +331,7 @@ const int* QskSkin::dialogButtonLayout( Qt::Orientation orientation ) const
     return QPlatformDialogHelper::buttonLayout( orientation, policy );
 }
 
-void QskSkin::setStateMask( QskAspect::State mask )
+void QskSkin::setStateMask( QskAspect::States mask )
 {
     for ( auto state : { QskControl::Disabled, QskControl::Hovered, QskControl::Focused } )
     {
@@ -342,7 +342,7 @@ void QskSkin::setStateMask( QskAspect::State mask )
     }
 }
 
-QskAspect::State QskSkin::stateMask() const
+QskAspect::States QskSkin::stateMask() const
 {
     return m_data->stateMask;
 }

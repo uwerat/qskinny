@@ -187,14 +187,14 @@ static inline void qskTriggerUpdates( QskAspect aspect, QskControl* control )
 static inline QskAspect qskSubstitutedAspect(
     const QskSkinnable* skinnable, QskAspect aspect )
 {
-    if ( aspect.hasState() )
+    if ( aspect.hasStates() )
     {
         qWarning() << "QskSkinnable::(re)setSkinHint: setting hints with states "
                       "is discouraged - use QskSkinTableEditor if you are "
                       "sure, that you need this.";
 
         qWarning() << "QskAspect:" << aspect.stateless()
-                   << skinnable->skinStateAsPrintable( aspect.state() );
+                   << skinnable->skinStatesAsPrintable( aspect.states() );
 
 #if 0
         aspect.clearStates();
@@ -227,7 +227,7 @@ class QskSkinnable::PrivateData
 
     const QskSkinlet* skinlet = nullptr;
 
-    QskAspect::State skinState = QskAspect::NoState;
+    QskAspect::States skinStates = QskAspect::NoState;
     bool hasLocalSkinlet = false;
 };
 
@@ -582,7 +582,7 @@ QskColorFilter QskSkinnable::effectiveGraphicFilter( QskAspect aspect ) const
 
     QskSkinHintStatus status;
 
-    const auto hint = storedHint( aspect | skinState(), &status );
+    const auto hint = storedHint( aspect | skinStates(), &status );
     if ( status.isValid() )
     {
         // we need to know about how the aspect gets resolved
@@ -634,14 +634,14 @@ QskAnimationHint QskSkinnable::animationHint(
 
 QskAnimationHint QskSkinnable::effectiveAnimation(
     QskAspect::Type type, QskAspect::Subcontrol subControl,
-    QskAspect::State state, QskSkinHintStatus* status ) const
+    QskAspect::States states, QskSkinHintStatus* status ) const
 {
 #if 0
     // TODO ...
     subControl = effectiveSubcontrol( aspect.subControl() );
 #endif
 
-    auto aspect = subControl | type | state;
+    auto aspect = subControl | type | states;
     aspect.setAnimator( true );
 
     QskAnimationHint hint;
@@ -721,8 +721,8 @@ QVariant QskSkinnable::effectiveSkinHint(
     if ( v.isValid() )
         return v;
 
-    if ( !aspect.hasState() )
-        aspect.setState( skinState() );
+    if ( !aspect.hasStates() )
+        aspect.setStates( skinStates() );
 
     return storedHint( aspect, status );
 }
@@ -741,7 +741,7 @@ QVariant QskSkinnable::animatedValue(
 {
     QVariant v;
 
-    if ( !aspect.hasState() )
+    if ( !aspect.hasStates() )
     {
         /*
             The local animators were invented to be stateless
@@ -765,8 +765,8 @@ QVariant QskSkinnable::animatedValue(
 
             if ( const auto control = owningControl() )
             {
-                if ( aspect.state() == QskAspect::NoState )
-                    aspect = aspect | skinState();
+                if ( !aspect.hasStates() )
+                    aspect.setStates( skinStates() );
 
                 const auto a = aspect;
 
@@ -813,7 +813,7 @@ const QVariant& QskSkinnable::storedHint(
     const auto skin = effectiveSkin();
 
     // clearing all state bits not being handled from the skin
-    aspect.clearState( ~skin->stateMask() );
+    aspect.clearStates( ~skin->stateMask() );
 
     QskAspect resolvedAspect;
 
@@ -891,25 +891,25 @@ const QVariant& QskSkinnable::storedHint(
 
 bool QskSkinnable::hasSkinState( QskAspect::State state ) const
 {
-    return ( m_data->skinState & state ) == state;
+    return ( m_data->skinStates & state ) == state;
 }
 
-QskAspect::State QskSkinnable::skinState() const
+QskAspect::States QskSkinnable::skinStates() const
 {
-    return m_data->skinState;
+    return m_data->skinStates;
 }
 
-const char* QskSkinnable::skinStateAsPrintable() const
+const char* QskSkinnable::skinStatesAsPrintable() const
 {
-    return skinStateAsPrintable( skinState() );
+    return skinStatesAsPrintable( skinStates() );
 }
 
-const char* QskSkinnable::skinStateAsPrintable( QskAspect::State state ) const
+const char* QskSkinnable::skinStatesAsPrintable( QskAspect::States states ) const
 {
     QString tmp;
 
     QDebug debug( &tmp );
-    qskDebugState( debug, metaObject(), state );
+    qskDebugStates( debug, metaObject(), states );
 
     // we should find a better way
     static QByteArray bytes[ 10 ];
@@ -1088,20 +1088,20 @@ void QskSkinnable::startHintTransition( QskAspect aspect,
 void QskSkinnable::setSkinStateFlag( QskAspect::State stateFlag, bool on )
 {
     const auto newState = on
-        ? ( m_data->skinState | stateFlag )
-        : ( m_data->skinState & ~stateFlag );
+        ? ( m_data->skinStates | stateFlag )
+        : ( m_data->skinStates & ~stateFlag );
 
-    setSkinState( newState, true );
+    setSkinStates( newState, true );
 }
 
-void QskSkinnable::replaceSkinState( QskAspect::State newState )
+void QskSkinnable::replaceSkinStates( QskAspect::States newStates )
 {
-    m_data->skinState = newState;
+    m_data->skinStates = newStates;
 }
 
-void QskSkinnable::setSkinState( QskAspect::State newState, bool animated )
+void QskSkinnable::setSkinStates( QskAspect::States newStates, bool animated )
 {
-    if ( m_data->skinState == newState )
+    if ( m_data->skinStates == newStates )
         return;
 
     auto control = owningControl();
@@ -1117,11 +1117,11 @@ void QskSkinnable::setSkinState( QskAspect::State newState, bool animated )
     if ( skin )
     {
         const auto mask = skin->stateMask();
-        if ( ( newState & mask ) == ( m_data->skinState & mask ) )
+        if ( ( newStates & mask ) == ( m_data->skinStates & mask ) )
         {
             // the modified bits are not handled by the skin
 
-            m_data->skinState = newState;
+            m_data->skinStates = newStates;
             return;
         }
     }
@@ -1142,7 +1142,7 @@ void QskSkinnable::setSkinState( QskAspect::State newState, bool animated )
             {
                 const auto type = static_cast< QskAspect::Type >( i );
 
-                const auto hint = effectiveAnimation( type, subControl, newState );
+                const auto hint = effectiveAnimation( type, subControl, newStates );
 
                 if ( hint.duration > 0 )
                 {
@@ -1156,8 +1156,8 @@ void QskSkinnable::setSkinState( QskAspect::State newState, bool animated )
                         const auto primitive = static_cast< QskAspect::Primitive >( i );
                         aspect.setPrimitive( type, primitive );
 
-                        auto a1 = aspect | m_data->skinState;
-                        auto a2 = aspect | newState;
+                        auto a1 = aspect | m_data->skinStates;
+                        auto a2 = aspect | newStates;
 
                         bool doTransition = true;
 
@@ -1186,7 +1186,7 @@ void QskSkinnable::setSkinState( QskAspect::State newState, bool animated )
         }
     }
 
-    m_data->skinState = newState;
+    m_data->skinStates = newStates;
 
     if ( control->flags() & QQuickItem::ItemHasContents )
         control->update();
@@ -1262,7 +1262,7 @@ void QskSkinnable::debug( QDebug debug, QskAspect aspect ) const
 
 void QskSkinnable::debug( QDebug debug, QskAspect::State state ) const
 {
-    qskDebugState( debug, metaObject(), state );
+    qskDebugStates( debug, metaObject(), state );
 }
 
 void QskSkinnable::debug( QskAspect aspect ) const
@@ -1272,7 +1272,7 @@ void QskSkinnable::debug( QskAspect aspect ) const
 
 void QskSkinnable::debug( QskAspect::State state ) const
 {
-    qskDebugState( qDebug(), metaObject(), state );
+    qskDebugStates( qDebug(), metaObject(), state );
 }
 
 #ifndef QT_NO_DEBUG_STREAM

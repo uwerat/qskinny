@@ -7,7 +7,6 @@
 #define QSK_ASPECT_H
 
 #include "QskGlobal.h"
-#include "QskFlags.h"
 
 #include <qmetaobject.h>
 #include <qnamespace.h>
@@ -89,6 +88,7 @@ class QSK_EXPORT QskAspect
         AllStates        =   0xFFFF
     };
     Q_ENUM( State )
+    Q_DECLARE_FLAGS( States, State )
 
     constexpr QskAspect() noexcept;
     constexpr QskAspect( Subcontrol ) noexcept;
@@ -110,6 +110,7 @@ class QSK_EXPORT QskAspect
     constexpr QskAspect operator|( Primitive ) const noexcept;
     constexpr QskAspect operator|( Placement ) const noexcept;
     constexpr QskAspect operator|( State ) const noexcept;
+    constexpr QskAspect operator|( States ) const noexcept;
 
     constexpr QskAspect stateless() const noexcept;
     constexpr QskAspect trunk() const noexcept;
@@ -132,14 +133,15 @@ class QSK_EXPORT QskAspect
     constexpr Placement placement() const noexcept;
     void setPlacement( Placement ) noexcept;
 
-    constexpr State state() const noexcept;
-    State topState() const noexcept;
+    constexpr States states() const noexcept;
+    constexpr bool hasStates() const noexcept;
 
-    void setState( State ) noexcept;
-    void addState( State ) noexcept;
-    constexpr bool hasState() const noexcept;
+    State topState() const noexcept;
     void clearState( State ) noexcept;
-    void clearStates() noexcept;
+
+    void setStates( States ) noexcept;
+    void addStates( States ) noexcept;
+    void clearStates( States = AllStates ) noexcept;
 
     constexpr Primitive primitive() const noexcept;
     void setPrimitive( Type, Primitive primitive ) noexcept;
@@ -189,7 +191,20 @@ class QSK_EXPORT QskAspect
     };
 };
 
-QSK_DECLARE_OPERATORS_FOR_FLAGS( QskAspect::State )
+Q_DECLARE_TYPEINFO( QskAspect, Q_MOVABLE_TYPE );
+Q_DECLARE_OPERATORS_FOR_FLAGS( QskAspect::States )
+
+constexpr inline QskAspect::State operator<<( QskAspect::State a, const int b ) noexcept
+{
+    using underlying = typename std::underlying_type< QskAspect::State >::type;
+    return static_cast< QskAspect::State >( static_cast< underlying >( a ) << b );
+}
+
+constexpr inline QskAspect::State operator>>( QskAspect::State a, const int b ) noexcept
+{
+    using underlying = typename std::underlying_type< QskAspect::State >::type;
+    return static_cast< QskAspect::State >( static_cast< underlying >( a ) >> b );
+}
 
 inline constexpr QskAspect::QskAspect() noexcept
     : QskAspect( Control, Flag, NoPlacement )
@@ -268,6 +283,12 @@ inline constexpr QskAspect QskAspect::operator|( State state ) const noexcept
         m_bits.primitive, m_bits.placement, m_bits.states | state );
 }
 
+inline constexpr QskAspect QskAspect::operator|( States states ) const noexcept
+{
+    return QskAspect( m_bits.subControl, m_bits.type, m_bits.isAnimator,
+        m_bits.primitive, m_bits.placement, m_bits.states | states );
+}
+
 inline constexpr QskAspect QskAspect::stateless() const noexcept
 {
     return QskAspect( m_bits.subControl, m_bits.type, m_bits.isAnimator,
@@ -330,22 +351,22 @@ inline constexpr bool QskAspect::isFlag() const noexcept
     return type() == Flag;
 }
 
-inline constexpr QskAspect::State QskAspect::state() const noexcept
+inline constexpr QskAspect::States QskAspect::states() const noexcept
 {
-    return static_cast< State >( m_bits.states );
+    return static_cast< States >( m_bits.states );
 }
 
-inline void QskAspect::setState( State state ) noexcept
+inline void QskAspect::setStates( States states ) noexcept
 {
-    m_bits.states = state;
+    m_bits.states = states;
 }
 
-inline void QskAspect::addState( State state ) noexcept
+inline void QskAspect::addStates( States states ) noexcept
 {
-    m_bits.states |= state;
+    m_bits.states |= states;
 }
 
-inline constexpr bool QskAspect::hasState() const noexcept
+inline constexpr bool QskAspect::hasStates() const noexcept
 {
     return m_bits.states;
 }
@@ -355,9 +376,9 @@ inline void QskAspect::clearState( State state ) noexcept
     m_bits.states &= ~state;
 }
 
-inline void QskAspect::clearStates() noexcept
+inline void QskAspect::clearStates( States states ) noexcept
 {
-    m_bits.states = 0;
+    m_bits.states &= ~states;
 }
 
 inline constexpr QskAspect::Primitive QskAspect::primitive() const noexcept
@@ -411,6 +432,12 @@ inline constexpr QskAspect operator|(
 }
 
 inline constexpr QskAspect operator|(
+    QskAspect::States states, const QskAspect& aspect ) noexcept
+{
+    return aspect | states;
+}
+
+inline constexpr QskAspect operator|(
     QskAspect::Subcontrol subControl, const QskAspect& aspect ) noexcept
 {
     return aspect | subControl;
@@ -447,6 +474,12 @@ inline constexpr QskAspect operator|(
 }
 
 inline constexpr QskAspect operator|(
+    QskAspect::Subcontrol subControl, QskAspect::States states ) noexcept
+{
+    return QskAspect( subControl ) | states;
+}
+
+inline constexpr QskAspect operator|(
     QskAspect::Type type, QskAspect::Placement placement ) noexcept
 {
     return QskAspect( type ) | placement;
@@ -462,6 +495,12 @@ inline constexpr QskAspect operator|(
     QskAspect::State state, QskAspect::Subcontrol subControl ) noexcept
 {
     return subControl | state;
+}
+
+inline constexpr QskAspect operator|(
+    QskAspect::States states, QskAspect::Subcontrol subControl ) noexcept
+{
+    return subControl | states;
 }
 
 inline constexpr QskAspect operator|(
@@ -499,8 +538,6 @@ namespace std
     };
 }
 
-Q_DECLARE_TYPEINFO( QskAspect, Q_MOVABLE_TYPE );
-
 #ifndef QT_NO_DEBUG_STREAM
 
 class QDebug;
@@ -510,9 +547,9 @@ QSK_EXPORT QDebug operator<<( QDebug, QskAspect::Type );
 QSK_EXPORT QDebug operator<<( QDebug, QskAspect::Subcontrol );
 QSK_EXPORT QDebug operator<<( QDebug, QskAspect::Primitive );
 QSK_EXPORT QDebug operator<<( QDebug, QskAspect::Placement );
-QSK_EXPORT QDebug operator<<( QDebug, QskAspect::State );
+QSK_EXPORT QDebug operator<<( QDebug, QskAspect::States );
 
-QSK_EXPORT void qskDebugState( QDebug, const QMetaObject*, QskAspect::State );
+QSK_EXPORT void qskDebugStates( QDebug, const QMetaObject*, QskAspect::States );
 QSK_EXPORT void qskDebugAspect( QDebug, const QMetaObject*, QskAspect );
 
 #endif

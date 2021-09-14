@@ -227,7 +227,7 @@ qreal QskSlider::handlePosition() const
 void QskSlider::moveHandle()
 {
     const auto aspect = Handle | QskAspect::Metric | QskAspect::Position;
-    moveHandleTo( value(), animationHint( aspect | skinState() ) );
+    moveHandleTo( value(), animationHint( aspect | skinStates() ) );
 }
 
 void QskSlider::moveHandleTo( qreal value, const QskAnimationHint& hint )

@@ -342,7 +342,7 @@ void Editor::setupPushButton()
 
         for ( auto state2 : { A::NoState, Q::Hovered } )
         {
-            for ( auto state3 : { Q::Pressed, Q::Checked, Q::Checked | Q::Pressed } )
+            for ( auto state3 : { Q::Pressed | A::NoState, Q::Checked | A::NoState, Q::Checked | Q::Pressed } )
             {
                 const auto states = state1 | state2 | state3;
 
@@ -393,7 +393,7 @@ void Editor::setupDialogButton()
 
         for ( auto state2 : { A::NoState, Q::Hovered } )
         {
-            for ( auto state3 : { Q::Pressed, Q::Checked, Q::Checked | Q::Pressed } )
+            for ( auto state3 : { Q::Pressed | A::NoState, Q::Checked | A::NoState, Q::Checked | Q::Pressed } )
             {
                 const auto states = state1 | state2 | state3;
 
@@ -467,12 +467,12 @@ void Editor::setupSlider()
     setGradient( Q::Handle, m_pal.accentColor );
     setGradient( Q::Handle | Q::Pressed, m_pal.accentColor );
 
-    for ( auto state : { A::NoState, Q::Pressed, Q::Pressed | Q::Hovered } )
+    for ( auto state : { A::States(), Q::Pressed | A::NoState, Q::Pressed | Q::Hovered } )
     {
         setBoxBorderColors( Q::Handle | state, m_pal.accentColor );
     }
 
-    for ( auto state : { A::NoState, Q::Pressed, Q::Pressed | Q::Hovered } )
+    for ( auto state : { A::States(), Q::Pressed | A::NoState, Q::Pressed | Q::Hovered } )
     {
         const auto aspect = Q::Handle | Q::Minimum | state;
         setGradient( aspect, Grey300 );

@@ -36,7 +36,7 @@ inline const QVariant* qskResolvedHint( QskAspect aspect,
          */
         if ( const auto topState = aspect.topState() )
         {
-            aspect.clearState( topState );
+            aspect.clearStates( topState );
             continue;
         }
 #else
@@ -126,7 +126,7 @@ bool QskSkinHintTable::setHint( QskAspect aspect, const QVariant& skinHint )
             QSK_ASSERT_COUNTER( m_animatorCount );
         }
 
-        if ( aspect.hasState() )
+        if ( aspect.hasStates() )
         {
             m_statefulCount++;
             QSK_ASSERT_COUNTER( m_statefulCount );
@@ -158,7 +158,7 @@ bool QskSkinHintTable::removeHint( QskAspect aspect )
         if ( aspect.isAnimator() )
             m_animatorCount--;
 
-        if ( aspect.hasState() )
+        if ( aspect.hasStates() )
             m_statefulCount--;
 
         if ( m_hints->empty() )
@@ -184,7 +184,7 @@ QVariant QskSkinHintTable::takeHint( QskAspect aspect )
             if ( aspect.isAnimator() )
                 m_animatorCount--;
 
-            if ( aspect.hasState() )
+            if ( aspect.hasStates() )
                 m_statefulCount--;
 
             if ( m_hints->empty() )
@@ -243,7 +243,7 @@ QskAspect QskSkinHintTable::resolvedAnimator(
             }
 
             if ( const auto topState = aspect.topState() )
-                aspect.clearState( topState );
+                aspect.clearStates( topState );
             else
                 break;
         }
@@ -290,14 +290,14 @@ bool QskSkinHintTable::isResolutionMatching(
             if ( hasHint( aspect1 ) )
                 return false;
 
-            aspect1.clearState( s1 );
+            aspect1.clearStates( s1 );
         }
         else if ( s2 > s1 )
         {
             if ( hasHint( aspect2 ) )
                 return false;
 
-            aspect2.clearState( s2 );
+            aspect2.clearStates( s2 );
         }
         else
         {
@@ -325,8 +325,8 @@ bool QskSkinHintTable::isResolutionMatching(
                     return false;
             }
 
-            aspect1.clearState( s1 );
-            aspect2.clearState( s2 );
+            aspect1.clearStates( s1 );
+            aspect2.clearStates( s2 );
         }
     }
 }

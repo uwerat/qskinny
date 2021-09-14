@@ -172,17 +172,17 @@ static QByteArray qskStateKey( const QMetaObject* metaObject, quint16 state )
     return QByteArray();
 }
 
-static QByteArray qskStateString(
-    const QMetaObject* metaObject, QskAspect::State state )
+static QByteArray qskStatesToString(
+    const QMetaObject* metaObject, QskAspect::States states )
 {
-    if ( state == 0 )
+    if ( states == 0 )
     {
         return "NoState";
     }
 
     if ( metaObject == nullptr )
     {
-        const std::bitset< 16 > stateBits( state );
+        const std::bitset< 16 > stateBits( states );
         return stateBits.to_string().c_str();
     }
 
@@ -196,7 +196,7 @@ static QByteArray qskStateString(
     {
         const quint16 mask = 1 << i;
 
-        if ( state & mask )
+        if ( states & mask )
         {
             if ( first )
                 first = false;
@@ -206,7 +206,7 @@ static QByteArray qskStateString(
             const auto key = qskStateKey( metaObject, mask );
             if ( key.isEmpty() )
             {
-                const std::bitset< 16 > stateBits( state );
+                const std::bitset< 16 > stateBits( states );
                 stateString += stateBits.to_string().c_str();
             }
             else
@@ -255,9 +255,9 @@ QDebug operator<<( QDebug debug, QskAspect::Placement placement )
     return debug;
 }
 
-QDebug operator<<( QDebug debug, QskAspect::State state )
+QDebug operator<<( QDebug debug, QskAspect::States states )
 {
-    qskDebugState( debug, nullptr, state );
+    qskDebugStates( debug, nullptr, states );
     return debug;
 }
 
@@ -267,7 +267,8 @@ QDebug operator<<( QDebug debug, QskAspect aspect )
     return debug;
 }
 
-void qskDebugState( QDebug debug, const QMetaObject* metaObject, QskAspect::State state )
+void qskDebugStates( QDebug debug,
+    const QMetaObject* metaObject, QskAspect::States states )
 {
     QDebugStateSaver saver( debug );
 
@@ -275,7 +276,7 @@ void qskDebugState( QDebug debug, const QMetaObject* metaObject, QskAspect::Stat
     debug.noquote();
     debug.nospace();
 
-    debug << "QskAspect::State( " << qskStateString( metaObject, state ) << " )";
+    debug << "QskAspect::States( " << qskStatesToString( metaObject, states ) << " )";
 }
 
 void qskDebugAspect( QDebug debug, const QMetaObject* metaObject, QskAspect aspect )
@@ -322,8 +323,8 @@ void qskDebugAspect( QDebug debug, const QMetaObject* metaObject, QskAspect aspe
     if ( aspect.placement() != QskAspect::NoPlacement )
         debug << ", " << qskEnumString( "Placement", aspect.placement() );
 
-    if ( aspect.state() )
-        debug << ", " << qskStateString( metaObject, aspect.state() );
+    if ( aspect.hasStates() )
+        debug << ", " << qskStatesToString( metaObject, aspect.states() );
 
     debug << " )";
 }

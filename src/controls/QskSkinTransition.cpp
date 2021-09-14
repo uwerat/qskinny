@@ -344,7 +344,7 @@ namespace
                 }
 
                 auto a = candidate.aspect;
-                a.setState( control->skinState() );
+                a.setStates( control->skinStates() );
 
                 const auto requestState = control->hintStatus( a );
 
