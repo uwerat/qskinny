@@ -8,8 +8,6 @@
 
 #include "QskControl.h"
 
-class QskCorner;
-
 class QSK_EXPORT QskPageIndicator : public QskControl
 {
     Q_OBJECT
