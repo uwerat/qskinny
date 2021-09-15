@@ -168,40 +168,40 @@ static inline QVector< QskGradientStop > qskExtractedStops(
     return extracted;
 }
 
-void QskGradientStop::setPosition( qreal position )
+void QskGradientStop::setPosition( qreal position ) noexcept
 {
     m_position = position;
 }
 
-void QskGradientStop::resetPosition()
+void QskGradientStop::resetPosition() noexcept
 {
     m_position = -1.0;
 }
 
-void QskGradientStop::setColor( const QColor& color )
+void QskGradientStop::setColor( const QColor& color ) noexcept
 {
     m_color = color;
 }
 
-void QskGradientStop::resetColor()
+void QskGradientStop::resetColor() noexcept
 {
     m_color = QColor();
 }
 
-void QskGradientStop::setStop( qreal position, const QColor& color )
+void QskGradientStop::setStop( qreal position, const QColor& color ) noexcept
 {
     m_position = position;
     m_color = color;
 }
 
-uint QskGradientStop::hash( uint seed ) const
+uint QskGradientStop::hash( uint seed ) const noexcept
 {
     uint hash = qHashBits( &m_position, sizeof( m_position ), seed );
     return qHashBits( &m_color, sizeof( m_color ), hash );
 }
 
 QColor QskGradientStop::interpolated(
-    const QskGradientStop& s1, const QskGradientStop& s2, qreal position )
+    const QskGradientStop& s1, const QskGradientStop& s2, qreal position ) noexcept
 {
     if ( s1.color() == s2.color() )
         return s1.color();
