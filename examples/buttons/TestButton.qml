@@ -9,7 +9,7 @@ Qsk.PushButton
         verticalPolicy: Qsk.SizePolicy.Ignored
     }
 
-    corner
+    shape
     {
         sizeMode: Qt.RelativeSize
         aspectRatioMode: Qt.KeepAspectRatio

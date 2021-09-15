@@ -16,6 +16,19 @@ class QVariant;
 
 class QSK_EXPORT QskBoxShapeMetrics
 {
+    Q_GADGET
+
+    Q_PROPERTY( QSizeF topLeft READ topLeft WRITE setTopLeft )
+    Q_PROPERTY( QSizeF topRight READ topRight WRITE setTopRight )
+    Q_PROPERTY( QSizeF bottomLeft READ bottomLeft WRITE setBottomLeft )
+    Q_PROPERTY( QSizeF bottomRight READ bottomRight WRITE setBottomRight )
+
+    Q_PROPERTY( qreal radius READ radiusX WRITE setRadius )
+
+    Q_PROPERTY( Qt::SizeMode sizeMode READ sizeMode WRITE setSizeMode )
+    Q_PROPERTY( Qt::AspectRatioMode aspectRatioMode
+        READ aspectRatioMode WRITE setAspectRatioMode )
+
   public:
     constexpr QskBoxShapeMetrics() noexcept;
 
@@ -54,6 +67,16 @@ class QSK_EXPORT QskBoxShapeMetrics
 
     constexpr QSizeF radius( Qt::Corner ) const noexcept;
 
+    constexpr QSizeF topLeft() const noexcept;
+    constexpr QSizeF topRight() const noexcept;
+    constexpr QSizeF bottomLeft() const noexcept;
+    constexpr QSizeF bottomRight() const noexcept;
+
+    void setTopLeft( const QSizeF& ) noexcept;
+    void setTopRight( const QSizeF& ) noexcept;
+    void setBottomLeft( const QSizeF& ) noexcept;
+    void setBottomRight( const QSizeF& ) noexcept;
+
     constexpr bool isRectangle() const noexcept;
     constexpr bool isRectellipse() const noexcept;
 
@@ -76,6 +99,9 @@ class QSK_EXPORT QskBoxShapeMetrics
         const QskBoxShapeMetrics&, qreal progress ) noexcept;
 
   private:
+    // dummy getter to suppress moc warnings
+    inline qreal radiusX() const { return radius( Qt::TopLeftCorner ).width(); }
+
     inline constexpr QskBoxShapeMetrics(
             const QSizeF& topLeft, const QSizeF& topRight,
             const QSizeF& bottomLeft, const QSizeF& bottomRight,
@@ -192,6 +218,26 @@ inline constexpr QSizeF QskBoxShapeMetrics::radius( Qt::Corner corner ) const no
 {
     return ( ( static_cast< int >( corner ) >= 0 ) && ( static_cast< int >( corner ) < 4 ) )
         ? m_radii[ corner ] : QSizeF();
+}
+
+inline constexpr QSizeF QskBoxShapeMetrics::topLeft() const noexcept
+{
+    return radius( Qt::TopLeftCorner );
+}
+
+inline constexpr QSizeF QskBoxShapeMetrics::topRight() const noexcept
+{
+    return radius( Qt::TopRightCorner );
+}
+
+inline constexpr QSizeF QskBoxShapeMetrics::bottomLeft() const noexcept
+{
+    return radius( Qt::BottomLeftCorner );
+}
+
+inline constexpr QSizeF QskBoxShapeMetrics::bottomRight() const noexcept
+{
+    return radius( Qt::BottomRightCorner );
 }
 
 inline void QskBoxShapeMetrics::setSizeMode( Qt::SizeMode sizeMode ) noexcept

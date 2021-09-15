@@ -9,7 +9,7 @@
 #include "QskMainQml.h"
 #include "QskRgbValueQml.h"
 
-#include <QskCorner.h>
+#include <QskBoxShapeMetrics.h>
 #include <QskDialog.h>
 #include <QskDialogButton.h>
 #include <QskDialogButtonBox.h>
@@ -193,7 +193,7 @@ void QskQml::registerTypes()
 
         QSK_REGISTER_GADGET( QskRgbValueQml, "RgbValue" );
         QSK_REGISTER_GADGET( QskStandardSymbol, "StandardSymbol" );
-        QSK_REGISTER_GADGET( QskCorner, "Corner" );
+        QSK_REGISTER_GADGET( QskBoxShapeMetrics, "Shape" );
         QSK_REGISTER_GADGET( QskGradient, "Gradient" );
         QSK_REGISTER_GADGET( QskGradientStop, "GradientStop" );
         QSK_REGISTER_GADGET( QskIntervalF, "IntervalF" );

@@ -112,7 +112,7 @@ Qsk.Window
         {
             graphicSource: "image://shapes/Diamond/SandyBrown"
 
-            corner
+            shape
             {
                 sizeMode: Qt.RelativeSize
                 aspectRatioMode: Qt.IgnoreAspectRatio
@@ -124,7 +124,7 @@ Qsk.Window
         {
             text: "Push Me"
 
-            corner
+            shape
             {
                 sizeMode: Qt.AbsoluteSize
                 radius: 0.0
