@@ -8,7 +8,7 @@
 
 #include "QskAbstractButton.h"
 
-class QskCorner;
+class QskBoxShapeMetrics;
 class QskGraphic;
 class QskTextOptions;
 
@@ -37,7 +37,9 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
         WRITE setCheckable NOTIFY checkableChanged FINAL )
 
     Q_PROPERTY( bool flat READ isFlat WRITE setFlat NOTIFY flatChanged FINAL )
-    Q_PROPERTY( QskCorner corner READ corner WRITE setCorner NOTIFY cornerChanged )
+
+    Q_PROPERTY( QskBoxShapeMetrics shape READ shape
+                WRITE setShape RESET resetShape NOTIFY shapeChanged )
 
     using Inherited = QskAbstractButton;
 
@@ -52,8 +54,9 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     void setCheckable( bool );
     bool isCheckable() const override final;
 
-    void setCorner( const QskCorner& );
-    QskCorner corner() const;
+    void setShape( const QskBoxShapeMetrics& );
+    QskBoxShapeMetrics shape() const;
+    void resetShape();
 
     QString text() const;
 
@@ -83,7 +86,7 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
 
   Q_SIGNALS:
     void checkableChanged( bool );
-    void cornerChanged();
+    void shapeChanged();
     void textChanged();
     void textOptionsChanged();
     void flatChanged();

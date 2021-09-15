@@ -60,6 +60,26 @@ void QskBoxShapeMetrics::setRadius( Qt::Corner corner, qreal radiusX, qreal radi
         qskSetRadius( radiusX, radiusY, m_radii[ corner ] );
 }
 
+void QskBoxShapeMetrics::setTopLeft( const QSizeF& radius ) noexcept
+{
+    setRadius( Qt::TopLeftCorner, radius );
+}
+
+void QskBoxShapeMetrics::setTopRight( const QSizeF& radius ) noexcept
+{
+    setRadius( Qt::TopRightCorner, radius );
+}
+
+void QskBoxShapeMetrics::setBottomLeft( const QSizeF& radius ) noexcept
+{
+    setRadius( Qt::BottomLeftCorner, radius );
+}
+
+void QskBoxShapeMetrics::setBottomRight( const QSizeF& radius ) noexcept
+{
+    setRadius( Qt::BottomRightCorner, radius );
+}
+
 QskBoxShapeMetrics QskBoxShapeMetrics::toAbsolute( const QSizeF& size ) const noexcept
 {
     if ( m_sizeMode != Qt::RelativeSize )
@@ -161,3 +181,5 @@ QDebug operator<<( QDebug debug, const QskBoxShapeMetrics& metrics )
 }
 
 #endif
+
+#include "moc_QskBoxShapeMetrics.cpp"

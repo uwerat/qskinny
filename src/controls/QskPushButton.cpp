@@ -6,7 +6,6 @@
 #include "QskPushButton.h"
 #include "QskAspect.h"
 #include "QskBoxShapeMetrics.h"
-#include "QskCorner.h"
 #include "QskGraphic.h"
 #include "QskGraphicProvider.h"
 #include "QskSetup.h"
@@ -84,24 +83,21 @@ bool QskPushButton::isCheckable() const
     return m_data->isCheckable;
 }
 
-void QskPushButton::setCorner( const QskCorner& corner )
+void QskPushButton::setShape( const QskBoxShapeMetrics& shape )
 {
-    if ( setBoxShapeHint( Panel, corner.metrics() ) )
-        Q_EMIT cornerChanged();
+    if ( setBoxShapeHint( Panel, shape ) )
+        Q_EMIT shapeChanged();
 }
 
-QskCorner QskPushButton::corner() const
+void QskPushButton::resetShape()
 {
-    const auto shape = boxShapeHint( Panel );
+    if ( resetBoxShapeHint( Panel ) )
+        Q_EMIT shapeChanged();
+}
 
-#if 1
-    QskCorner corner;
-    corner.setRadius( shape.radius( Qt::TopLeftCorner ).width() );
-    corner.setSizeMode( shape.sizeMode() );
-    corner.setAspectRatioMode( shape.aspectRatioMode() );
-#endif
-
-    return corner;
+QskBoxShapeMetrics QskPushButton::shape() const
+{
+    return boxShapeHint( Panel );
 }
 
 void QskPushButton::setFlat( bool on )
