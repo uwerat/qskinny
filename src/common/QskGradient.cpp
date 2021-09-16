@@ -14,7 +14,6 @@
 static void qskRegisterGradient()
 {
     qRegisterMetaType< QskGradient >();
-    qRegisterMetaType< QskGradientStop >();
 
     QMetaType::registerConverter< QColor, QskGradient >(
         []( const QColor& color ) { return QskGradient( color ); } );
@@ -166,60 +165,6 @@ static inline QVector< QskGradientStop > qskExtractedStops(
     extracted += QskGradientStop( 1.0, color );
 
     return extracted;
-}
-
-void QskGradientStop::setPosition( qreal position ) noexcept
-{
-    m_position = position;
-}
-
-void QskGradientStop::resetPosition() noexcept
-{
-    m_position = -1.0;
-}
-
-void QskGradientStop::setColor( const QColor& color ) noexcept
-{
-    m_color = color;
-}
-
-void QskGradientStop::resetColor() noexcept
-{
-    m_color = QColor();
-}
-
-void QskGradientStop::setStop( qreal position, const QColor& color ) noexcept
-{
-    m_position = position;
-    m_color = color;
-}
-
-uint QskGradientStop::hash( uint seed ) const noexcept
-{
-    uint hash = qHashBits( &m_position, sizeof( m_position ), seed );
-    return qHashBits( &m_color, sizeof( m_color ), hash );
-}
-
-QColor QskGradientStop::interpolated(
-    const QskGradientStop& s1, const QskGradientStop& s2, qreal position ) noexcept
-{
-    if ( s1.color() == s2.color() )
-        return s1.color();
-
-    auto min = &s1;
-    auto max = &s2;
-
-    if ( min->position() > max->position() )
-        std::swap( min, max );
-
-    if ( position <= min->position() )
-        return min->color();
-
-    if ( position >= max->position() )
-        return max->color();
-
-    const qreal r = ( position - min->position() ) / ( max->position() - min->position() );
-    return QskRgb::interpolated( min->color(), max->color(), r );
 }
 
 QskGradient::QskGradient()
@@ -423,8 +368,7 @@ bool QskGradient::hasStopAt( qreal value ) const
 
 uint QskGradient::hash( uint seed ) const
 {
-    const int count = m_stops.size();
-    if ( count == 0 )
+    if ( m_stops.isEmpty()  )
         return seed;
 
     uint hash = qHashBits( &m_orientation, sizeof( m_orientation ), seed );
@@ -609,12 +553,6 @@ QVariant QskGradient::interpolate(
 #ifndef QT_NO_DEBUG_STREAM
 
 #include <qdebug.h>
-
-QDebug operator<<( QDebug debug, const QskGradientStop& stop )
-{
-    debug << stop.position() << ": " << stop.color();
-    return debug;
-}
 
 QDebug operator<<( QDebug debug, const QskGradient& gradient )
 {
