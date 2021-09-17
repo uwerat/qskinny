@@ -58,10 +58,10 @@ QskRgbPalette QskRgbPalette::palette( Theme theme )
     return Palette( static_cast< int >( theme ) );
 }
 
-static QVector< QskGradientStop > qskColorStops(
+static QskGradientStops qskColorStops(
     const QRgb* rgb, int count, bool discrete )
 {
-    QVector< QskGradientStop > stops;
+    QskGradientStops stops;
 
     if ( discrete )
         stops.reserve( 2 * count - 2 );
@@ -94,28 +94,28 @@ static QVector< QskGradientStop > qskColorStops(
     return stops;
 }
 
-QVector< QskGradientStop > QskRgbPalette::colorStops( bool discrete ) const
+QskGradientStops QskRgbPalette::colorStops( bool discrete ) const
 {
     return qskColorStops( m_rgb, NumWeights, discrete );
 }
 
-QVector< QskGradientStop > QskRgbPalette::colorStops( Theme theme, bool discrete )
+QskGradientStops QskRgbPalette::colorStops( Theme theme, bool discrete )
 {
     const auto pal = QskRgbPalette::palette( theme );
     return pal.colorStops( discrete );
 }
 
-QVector< QskGradientStop > QskRgbPalette::colorStops(
+QskGradientStops QskRgbPalette::colorStops(
     const QVector< QRgb >& rgb, bool discrete )
 {
     const int count = rgb.count();
 
     if ( count == 0 )
-        return QVector< QskGradientStop >();
+        return QskGradientStops();
 
     if ( count == 0 )
     {
-        QVector< QskGradientStop > stops;
+        QskGradientStops stops;
         stops.reserve( 2 );
 
         stops += QskGradientStop( 0.0, rgb[0] );
