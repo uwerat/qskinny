@@ -206,11 +206,11 @@ void QskQml::registerTypes()
     // Support (lists of) GradientStop
     QMetaType::registerConverter< QJSValue, QskGradientStop >( qskToGradientStop );
 
-    QMetaType::registerConverter< QJSValue, QVector< QskGradientStop > >(
+    QMetaType::registerConverter< QJSValue, QskGradientStops >(
 
         []( const QJSValue& value )
         {
-            QVector< QskGradientStop > stops;
+            QskGradientStops stops;
             if ( value.isArray() )
             {
                 QJSValueIterator it( value );

@@ -27,7 +27,7 @@ static inline QskGradient::Orientation qskOrientation( Qt::Orientation o )
         ? QskGradient::Vertical : QskGradient::Horizontal;
 }
 
-static inline bool qskIsGradientValid( const QVector< QskGradientStop >& stops )
+static inline bool qskIsGradientValid( const QskGradientStops& stops )
 {
     if ( stops.size() < 2 )
         return false;
@@ -52,7 +52,7 @@ static inline bool qskIsGradientValid( const QVector< QskGradientStop >& stops )
     return true;
 }
 
-static inline bool qskIsMonochrome( const QVector< QskGradientStop >& stops )
+static inline bool qskIsMonochrome( const QskGradientStops& stops )
 {
     for ( int i = 1; i < stops.size(); i++ )
     {
@@ -74,7 +74,7 @@ static inline QColor qskInterpolated(
 }
 
 static inline bool qskComparePositions(
-    const QVector< QskGradientStop >& s1, const QVector< QskGradientStop >& s2 )
+    const QskGradientStops& s1, const QskGradientStops& s2 )
 {
     if ( s1.count() != s2.count() )
         return false;
@@ -89,15 +89,15 @@ static inline bool qskComparePositions(
     return true;
 }
 
-static inline QVector< QskGradientStop > qskExpandedStops(
-    const QVector< QskGradientStop >& s1, const QVector< QskGradientStop >& s2 )
+static inline QskGradientStops qskExpandedStops(
+    const QskGradientStops& s1, const QskGradientStops& s2 )
 {
     // expand s1 by stops matching to the positions from s2
 
     if ( qskComparePositions( s1, s2 ) )
         return s1;
 
-    QVector< QskGradientStop > stops;
+    QskGradientStops stops;
 
     stops += s1.first();
 
@@ -120,10 +120,10 @@ static inline QVector< QskGradientStop > qskExpandedStops(
     return stops;
 }
 
-static inline QVector< QskGradientStop > qskExtractedStops(
-    const QVector< QskGradientStop >& stops, qreal from, qreal to )
+static inline QskGradientStops qskExtractedStops(
+    const QskGradientStops& stops, qreal from, qreal to )
 {
-    QVector< QskGradientStop > extracted;
+    QskGradientStops extracted;
 
     if ( from == to )
         extracted.reserve( 2 );
@@ -192,13 +192,13 @@ QskGradient::QskGradient( Orientation orientation,
 }
 
 QskGradient::QskGradient( Qt::Orientation orientation,
-        const QVector< QskGradientStop >& stops )
+        const QskGradientStops& stops )
     : QskGradient( qskOrientation( orientation ), stops )
 {
 }
 
 QskGradient::QskGradient( Orientation orientation,
-        const QVector< QskGradientStop >& stops )
+        const QskGradientStops& stops )
     : m_orientation( orientation )
     , m_stops( stops )
 {
@@ -272,7 +272,7 @@ void QskGradient::setColors( const QColor& startColor, const QColor& stopColor )
     m_stops.append( QskGradientStop( 1.0, stopColor ) );
 }
 
-void QskGradient::setStops( const QVector< QskGradientStop >& stops )
+void QskGradient::setStops( const QskGradientStops& stops )
 {
     if ( !qskIsGradientValid( stops ) )
     {
@@ -284,7 +284,7 @@ void QskGradient::setStops( const QVector< QskGradientStop >& stops )
     m_stops = stops;
 }
 
-QVector< QskGradientStop > QskGradient::stops() const
+QskGradientStops QskGradient::stops() const
 {
     return m_stops;
 }

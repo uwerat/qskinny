@@ -15,12 +15,14 @@
 
 class QVariant;
 
+typedef QVector< QskGradientStop > QskGradientStops;
+
 class QSK_EXPORT QskGradient
 {
     Q_GADGET
 
     Q_PROPERTY( Orientation orientation READ orientation WRITE setOrientation )
-    Q_PROPERTY( QVector< QskGradientStop > stops READ stops WRITE setStops )
+    Q_PROPERTY( QskGradientStops stops READ stops WRITE setStops )
 
     Q_PROPERTY( bool valid READ isValid )
     Q_PROPERTY( bool visible READ isVisible )
@@ -42,10 +44,10 @@ class QSK_EXPORT QskGradient
     QskGradient( QRgb );
     QskGradient( const QColor& );
 
-    QskGradient( Qt::Orientation, const QVector< QskGradientStop >& );
+    QskGradient( Qt::Orientation, const QskGradientStops& );
     QskGradient( Qt::Orientation, const QColor&, const QColor& );
 
-    QskGradient( Orientation, const QVector< QskGradientStop >& );
+    QskGradient( Orientation, const QskGradientStops& );
     QskGradient( Orientation, const QColor&, const QColor& );
 
     ~QskGradient();
@@ -66,8 +68,8 @@ class QSK_EXPORT QskGradient
     Q_INVOKABLE QColor startColor() const;
     Q_INVOKABLE QColor endColor() const;
 
-    Q_INVOKABLE void setStops( const QVector< QskGradientStop >& );
-    Q_INVOKABLE QVector< QskGradientStop > stops() const;
+    Q_INVOKABLE void setStops( const QskGradientStops& );
+    Q_INVOKABLE QskGradientStops stops() const;
 
     Q_INVOKABLE bool hasStopAt( qreal value ) const;
 
@@ -98,7 +100,7 @@ class QSK_EXPORT QskGradient
     void setColorAt( int index, const QColor& color );
 
     Orientation m_orientation;
-    QVector< QskGradientStop > m_stops;
+    QskGradientStops m_stops;
 };
 
 Q_DECLARE_METATYPE( QskGradient )

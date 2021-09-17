@@ -7,10 +7,10 @@
 #define QSK_RGB_PALETTE_H
 
 #include "QskGlobal.h"
+#include "QskGradient.h"
+
 #include <qmetaobject.h>
 #include <qcolor.h>
-
-class QskGradientStop;
 
 class QSK_EXPORT QskRgbPalette
 {
@@ -75,11 +75,11 @@ class QSK_EXPORT QskRgbPalette
         return QColor::fromRgba( rgb( weight ) );
     }
 
-    QVector< QskGradientStop > colorStops( bool discrete = false ) const;
+    QskGradientStops colorStops( bool discrete = false ) const;
 
-    static QVector< QskGradientStop > colorStops( Theme, bool discrete = false );
+    static QskGradientStops colorStops( Theme, bool discrete = false );
 
-    static QVector< QskGradientStop > colorStops(
+    static QskGradientStops colorStops(
         const QVector< QRgb >&, bool discrete = false );
 
   protected:

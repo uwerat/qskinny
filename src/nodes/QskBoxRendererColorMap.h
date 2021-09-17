@@ -148,7 +148,7 @@ namespace QskVertex
     {
       public:
         inline GradientColorIterator( qreal value1, qreal value2,
-                const QVector< QskGradientStop > stops )
+                const QskGradientStops& stops )
             : m_value1( value1 )
             , m_value2( value2 )
             , m_stops( stops )
@@ -207,7 +207,7 @@ namespace QskVertex
         }
 
         const qreal m_value1, m_value2;
-        QVector< QskGradientStop > m_stops;
+        const QskGradientStops m_stops;
 
         int m_index;
         qreal m_valueStep1, m_valueStep2, m_stepSize;
