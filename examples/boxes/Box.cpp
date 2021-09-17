@@ -164,7 +164,7 @@ void Box::setGradient( QskGradient::Orientation orientation,
 void Box::setGradient( QskGradient::Orientation orientation,
     const QColor& color1, const QColor& color2, const QColor& color3 )
 {
-    QVector< QskGradientStop > stops;
+    QskGradientStops stops;
     stops += QskGradientStop( 0.0, color1 );
     stops += QskGradientStop( 0.5, color2 );
     stops += QskGradientStop( 1.0, color3 );
