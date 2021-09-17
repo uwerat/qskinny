@@ -36,7 +36,7 @@ inline const QVariant* qskResolvedHint( QskAspect aspect,
          */
         if ( const auto topState = aspect.topState() )
         {
-            aspect.clearStates( topState );
+            aspect.clearState( topState );
             continue;
         }
 #else
@@ -243,7 +243,7 @@ QskAspect QskSkinHintTable::resolvedAnimator(
             }
 
             if ( const auto topState = aspect.topState() )
-                aspect.clearStates( topState );
+                aspect.clearState( topState );
             else
                 break;
         }
@@ -290,14 +290,14 @@ bool QskSkinHintTable::isResolutionMatching(
             if ( hasHint( aspect1 ) )
                 return false;
 
-            aspect1.clearStates( s1 );
+            aspect1.clearState( s1 );
         }
         else if ( s2 > s1 )
         {
             if ( hasHint( aspect2 ) )
                 return false;
 
-            aspect2.clearStates( s2 );
+            aspect2.clearState( s2 );
         }
         else
         {
@@ -325,8 +325,8 @@ bool QskSkinHintTable::isResolutionMatching(
                     return false;
             }
 
-            aspect1.clearStates( s1 );
-            aspect2.clearStates( s2 );
+            aspect1.clearState( s1 );
+            aspect2.clearState( s2 );
         }
     }
 }
