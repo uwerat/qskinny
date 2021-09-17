@@ -32,3 +32,5 @@ RoundButton::RoundButton( QskAspect::Placement placement, QQuickItem* parent )
 
     setGraphicSourceSize( graphic().defaultSize() * 1.2 );
 }
+
+#include "moc_RoundButton.cpp"
