@@ -1091,7 +1091,7 @@ void QskSkinnable::setSkinStateFlag( QskAspect::State stateFlag, bool on )
         ? ( m_data->skinStates | stateFlag )
         : ( m_data->skinStates & ~stateFlag );
 
-    setSkinStates( newState, true );
+    setSkinStates( newState );
 }
 
 void QskSkinnable::replaceSkinStates( QskAspect::States newStates )
@@ -1099,7 +1099,17 @@ void QskSkinnable::replaceSkinStates( QskAspect::States newStates )
     m_data->skinStates = newStates;
 }
 
-void QskSkinnable::setSkinStates( QskAspect::States newStates, bool animated )
+void QskSkinnable::addSkinStates( QskAspect::States states )
+{
+    setSkinStates( m_data->skinStates | states );
+}
+
+void QskSkinnable::clearSkinStates( QskAspect::States states )
+{
+    setSkinStates( m_data->skinStates & ~states );
+}
+
+void QskSkinnable::setSkinStates( QskAspect::States newStates )
 {
     if ( m_data->skinStates == newStates )
         return;
@@ -1126,7 +1136,7 @@ void QskSkinnable::setSkinStates( QskAspect::States newStates, bool animated )
         }
     }
 
-    if ( control->window() && animated && isTransitionAccepted( QskAspect() ) )
+    if ( control->window() && isTransitionAccepted( QskAspect() ) )
     {
         const auto placement = effectivePlacement();
         const auto primitiveCount = QskAspect::primitiveCount();
