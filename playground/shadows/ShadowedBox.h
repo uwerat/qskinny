@@ -7,6 +7,7 @@
 
 #include <QskControl.h>
 #include <QskBoxShapeMetrics.h>
+#include <QskShadowMetrics.h>
 
 class QskGradient;
 
@@ -17,19 +18,11 @@ class ShadowedBox : public QskControl
   public:
     QSK_SUBCONTROLS( Panel )
 
-    class Shadow
-    {
-      public:
-        qreal extent = 0.0;
-        qreal xOffset = 0.0;
-        qreal yOffset = 0.0;
-    };
-
     ShadowedBox(QQuickItem* parent = nullptr);
     ~ShadowedBox() override;
 
-    void setShadow( const Shadow& );
-    const Shadow& shadow() const;
+    void setShadow( const QskShadowMetrics& );
+    const QskShadowMetrics& shadow() const;
 
     void setGradient( const QskGradient& );
     const QskGradient& gradient() const;
@@ -40,9 +33,19 @@ class ShadowedBox : public QskControl
     void setShape( const QskBoxShapeMetrics& );
     const QskBoxShapeMetrics& shape() const;
 
+    void setBorderWidth( qreal width );
+    qreal borderWidth() const;
+
+    void setBorderColor( const QColor& );
+    QColor borderColor() const;
+
   private:
-    Shadow m_shadow;
+    QskShadowMetrics m_shadow;
     QColor m_shadowColor = Qt::black;
+
     QskGradient m_gradient;
     QskBoxShapeMetrics m_shape;
+
+    qreal m_borderWidth = 0.0;
+    QColor m_borderColor = Qt::black;
 };

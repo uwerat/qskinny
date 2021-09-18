@@ -73,11 +73,14 @@ QVariant QskShadowMetrics::interpolate(
 
 QRectF QskShadowMetrics::shadowRect( const QRectF& sourceRect ) const
 {
+    const auto metrics = toAbsolute( sourceRect.size() );
+    const auto extent = metrics.m_spreadRadius + metrics.m_blurRadius;
+
     return QRectF(
-        sourceRect.x() + m_offset.x() - m_spreadRadius,
-        sourceRect.y() + m_offset.y() - m_spreadRadius,
-        sourceRect.width() + 2 * m_spreadRadius,
-        sourceRect.height() + 2 * m_spreadRadius );
+        sourceRect.x() + metrics.m_offset.x() - extent,
+        sourceRect.y() + metrics.m_offset.y() - extent,
+        sourceRect.width() + 2 * extent,
+        sourceRect.height() + 2 * extent );
 }
 
 uint QskShadowMetrics::hash( uint seed ) const noexcept
