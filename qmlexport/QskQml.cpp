@@ -9,6 +9,7 @@
 #include "QskMainQml.h"
 #include "QskRgbValueQml.h"
 
+#include <QskBoxBorderMetrics.h>
 #include <QskBoxShapeMetrics.h>
 #include <QskDialog.h>
 #include <QskDialogButton.h>
@@ -30,6 +31,7 @@
 #include <QskSelectionWindow.h>
 #include <QskSeparator.h>
 #include <QskSetup.h>
+#include <QskShadowMetrics.h>
 #include <QskSimpleListBox.h>
 #include <QskSkin.h>
 #include <QskSkinManager.h>
@@ -193,7 +195,9 @@ void QskQml::registerTypes()
 
         QSK_REGISTER_GADGET( QskRgbValueQml, "RgbValue" );
         QSK_REGISTER_GADGET( QskStandardSymbol, "StandardSymbol" );
+        QSK_REGISTER_GADGET( QskBoxBorderMetrics, "BorderMetrics" );
         QSK_REGISTER_GADGET( QskBoxShapeMetrics, "Shape" );
+        QSK_REGISTER_GADGET( QskShadowMetrics, "ShadowMetrics" );
         QSK_REGISTER_GADGET( QskGradient, "Gradient" );
         QSK_REGISTER_GADGET( QskGradientStop, "GradientStop" );
         QSK_REGISTER_GADGET( QskIntervalF, "IntervalF" );

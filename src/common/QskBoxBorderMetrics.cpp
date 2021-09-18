@@ -117,3 +117,5 @@ QDebug operator<<( QDebug debug, const QskBoxBorderMetrics& metrics )
 }
 
 #endif
+
+#include "moc_QskBoxBorderMetrics.cpp"

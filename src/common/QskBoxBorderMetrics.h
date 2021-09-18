@@ -16,6 +16,11 @@ class QVariant;
 
 class QSK_EXPORT QskBoxBorderMetrics
 {
+    Q_GADGET
+
+    Q_PROPERTY( QskMargins widths READ widths WRITE setWidths )
+    Q_PROPERTY( Qt::SizeMode sizeMode READ sizeMode WRITE setSizeMode )
+
   public:
     constexpr QskBoxBorderMetrics() noexcept;
 
