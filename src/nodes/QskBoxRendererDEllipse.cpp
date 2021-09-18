@@ -91,7 +91,7 @@ namespace
             }
 
             /*
-                Finally we can precaclculate the coefficients needed for
+                Finally we can precalculate the coefficients needed for
                 evaluating points in valueAt.
              */
 
