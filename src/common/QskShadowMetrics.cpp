@@ -116,3 +116,5 @@ QDebug operator<<( QDebug debug, const QskShadowMetrics& metrics )
 }
 
 #endif
+
+#include "moc_QskShadowMetrics.cpp"
