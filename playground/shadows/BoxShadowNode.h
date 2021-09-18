@@ -21,7 +21,9 @@ class BoxShadowNode : public QSGGeometryNode
     void setRect( const QRectF& );
     void setShape( const QskBoxShapeMetrics& );
     void setColor( const QColor& );
-    void setShadow( qreal extent, qreal dx, qreal dy  );
+    void setBlurRadius( qreal );
+
+    void setClipRect( const QRectF& );
 
     void updateGeometry();
 

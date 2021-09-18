@@ -40,6 +40,10 @@ namespace
         {
             const auto box = static_cast< const ShadowedBox* >( skinnable );
 
+            const auto r = box->subControlRect( ShadowedBox::Panel );
+            if ( r.isEmpty() )
+                return nullptr;
+
             switch ( nodeRole )
             {
                 case ShadowRole:
@@ -48,17 +52,14 @@ namespace
                     if ( shadowNode == nullptr )
                         shadowNode = new BoxShadowNode();
 
-                    const auto& s = box->shadow();
-                    const qreal dx = s.extent + s.xOffset;
-                    const qreal dy = s.extent + s.yOffset;
+                    const auto& shadowMetrics = box->shadow();
 
-                    auto r = box->subControlRect( ShadowedBox::Panel );
-                    r.adjust( -dx, -dy, dx, dy );
-
-                    shadowNode->setRect( r );
+                    shadowNode->setRect( shadowMetrics.shadowRect( r ) );
                     shadowNode->setShape( box->shape() );
-                    shadowNode->setShadow( s.extent, s.xOffset, s.yOffset );
+                    shadowNode->setBlurRadius( shadowMetrics.blurRadius() );
                     shadowNode->setColor( box->shadowColor() );
+                    shadowNode->setClipRect( r );
+
                     shadowNode->updateGeometry();
 
                     return shadowNode;
@@ -69,10 +70,10 @@ namespace
                     if ( boxNode == nullptr )
                         boxNode = new QskBoxNode();
 
-                    const QRectF r = box->subControlRect( ShadowedBox::Panel );
+                    const auto r = box->subControlRect( ShadowedBox::Panel );
 
-                    boxNode->setBoxData( r, box->shape(), QskBoxBorderMetrics(),
-                        QskBoxBorderColors(), box->gradient() );
+                    boxNode->setBoxData( r, box->shape(), box->borderWidth(),
+                        box->borderColor(), box->gradient() );
 
                     return boxNode;
                 }
@@ -96,13 +97,13 @@ ShadowedBox::~ShadowedBox()
 {
 }
 
-void ShadowedBox::setShadow( const Shadow& shadow )
+void ShadowedBox::setShadow( const QskShadowMetrics& shadow )
 {
     m_shadow = shadow;
     update();
 }
 
-const ShadowedBox::Shadow& ShadowedBox::shadow() const
+const QskShadowMetrics& ShadowedBox::shadow() const
 {
     return m_shadow;
 }
@@ -138,6 +139,28 @@ void ShadowedBox::setShape( const QskBoxShapeMetrics& shape )
 const QskBoxShapeMetrics& ShadowedBox::shape() const
 {
     return m_shape;
+}
+
+void ShadowedBox::setBorderWidth( qreal width )
+{
+    m_borderWidth = qMax( width, 0.0 );
+    update();
+}
+
+qreal ShadowedBox::borderWidth() const
+{
+    return m_borderWidth;
+}
+
+void ShadowedBox::setBorderColor( const QColor& color )
+{
+    m_borderColor = color;
+    update();
+}
+
+QColor ShadowedBox::borderColor() const
+{
+    return m_borderColor;
 }
 
 #include "moc_ShadowedBox.cpp"

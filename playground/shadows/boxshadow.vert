@@ -8,6 +8,6 @@ varying mediump vec2 coord;
 
 void main()
 {
-    coord = ( -1.0 + 2.0 * in_coord ) * aspect;
+    coord = in_coord;
     gl_Position = matrix * in_vertex;
 }

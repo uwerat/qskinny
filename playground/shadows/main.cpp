@@ -5,6 +5,8 @@
 
 #include "ShadowedBox.h"
 
+#include <SkinnyShortcut.h>
+
 #include <QGuiApplication>
 #include <QskObjectCounter.h>
 #include <QskWindow.h>
@@ -18,15 +20,26 @@ class Box : public ShadowedBox
     Box( QQuickItem* parent = nullptr )
         : ShadowedBox( parent )
     {
-        Shadow shadow;
-        shadow.extent = 10;
-        shadow.xOffset = 20.0;
-        shadow.yOffset = 20.0;
+        const qreal w = 10;
+
+        QskShadowMetrics shadow;
+        //shadow.setOffset( 20.0, 20.0 );
+        shadow.setSpreadRadius( w );
+        shadow.setBlurRadius( w );
 
         setShadow( shadow );
         setShadowColor( Qt::black );
-        setGradient( Qt::darkRed );
-        setShape( QskBoxShapeMetrics( 5, 10, 15, 20 ) );
+
+        QColor c( Qt::darkRed );
+#if 0
+        c.setAlpha( 100 );
+#endif
+
+        setGradient( c );
+        setShape( QskBoxShapeMetrics( 40, 10, 15, 5 ) );
+
+        setBorderWidth( w );
+        setBorderColor( Qt::blue );
     }
 };
 
@@ -37,6 +50,8 @@ int main( int argc, char* argv[] )
 #endif
 
     QGuiApplication app( argc, argv );
+
+    SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
     auto layout = new QskLinearBox();
     layout->setPanel( true );
