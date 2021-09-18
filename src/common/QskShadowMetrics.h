@@ -16,6 +16,14 @@ class QVariant;
 
 class QSK_EXPORT QskShadowMetrics
 {
+    Q_GADGET
+
+    Q_PROPERTY( QPointF offset READ offset WRITE setOffset )
+    Q_PROPERTY( qreal spreadRadius READ spreadRadius WRITE setSpreadRadius )
+    Q_PROPERTY( qreal blurRadius READ blurRadius WRITE setBlurRadius )
+
+    Q_PROPERTY( Qt::SizeMode sizeMode READ sizeMode WRITE setSizeMode )
+
   public:
     constexpr QskShadowMetrics( const QPointF& offset = QPointF() ) noexcept;
 
