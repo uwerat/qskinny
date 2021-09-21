@@ -58,8 +58,13 @@ namespace
         {
             auto d = QQuickTextPrivate::get( this );
 
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 2, 0 )
+            d->heightValidFlag = true;
+            d->widthValidFlag = true;
+#else
             d->heightValid = true;
             d->widthValid = true;
+#endif
 
             if ( ( d->x != rect.x() ) || ( d->y != rect.y() ) )
             {

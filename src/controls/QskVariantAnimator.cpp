@@ -19,6 +19,13 @@
 #include <qvariantanimation.h>
 
 QSK_QT_PRIVATE_BEGIN
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 2, 0 )
+    #ifndef emit
+        // qvariantanimation_p.h needs it
+        #define emit
+    #endif
+#endif
+
 #include <private/qvariantanimation_p.h>
 QSK_QT_PRIVATE_END
 

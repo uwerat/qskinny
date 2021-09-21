@@ -38,7 +38,11 @@ QskQuickItemPrivate::QskQuickItemPrivate()
             but to make it working: the DeferredLayout flag needs to be disabled.
          */
 
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 2, 0 )
+        widthValidFlag = heightValidFlag = true;
+#else
         widthValid = heightValid = true;
+#endif
     }
 }
 
@@ -129,6 +133,11 @@ void QskQuickItemPrivate::setImplicitSize( qreal w, qreal h, bool doNotify )
 
     implicitWidth = w;
     implicitHeight = h;
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 2, 0 )
+    const bool widthValid = widthValidFlag;
+    const bool heightValid = heightValidFlag;
+#endif
 
     if ( !( widthValid && heightValid ) )
     {
