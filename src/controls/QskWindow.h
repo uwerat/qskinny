@@ -100,4 +100,6 @@ class QSK_EXPORT QskWindow : public QQuickWindow
     Q_DECLARE_PRIVATE( QskWindow )
 };
 
+QSK_EXPORT QskSkin* qskEffectiveSkin( const QQuickWindow* );
+
 #endif
