@@ -256,8 +256,13 @@ void QskQuickItem::setGeometry( qreal x, qreal y, qreal width, qreal height )
 
     Q_D( QQuickItem );
 
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 2, 0 )
+    d->heightValidFlag = true;
+    d->widthValidFlag = true;
+#else
     d->heightValid = true;
     d->widthValid = true;
+#endif
 
     const QRectF oldRect( d->x, d->y, d->width, d->height );
 
@@ -541,7 +546,11 @@ void QskQuickItem::applyUpdateFlag( UpdateFlag flag, bool on )
                 // Update the implicitSize and rebind the size to it.
                 // Having set the size explicitly gets lost.
 
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 2, 0 )
+                d->widthValidFlag = d->heightValidFlag = false;
+#else
                 d->widthValid = d->heightValid = false;
+#endif
                 d->updateImplicitSize( false );
             }
 
