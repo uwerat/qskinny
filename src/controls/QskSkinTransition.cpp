@@ -1,6 +1,7 @@
 #include "QskSkinTransition.h"
 #include "QskColorFilter.h"
 #include "QskControl.h"
+#include "QskWindow.h"
 #include "QskHintAnimator.h"
 #include "QskSkin.h"
 #include "QskSkinHintTable.h"
@@ -8,7 +9,6 @@
 #include <qglobalstatic.h>
 #include <qguiapplication.h>
 #include <qobject.h>
-#include <qquickwindow.h>
 #include <qvector.h>
 
 #include <unordered_map>
@@ -616,10 +616,13 @@ void QskSkinTransition::process()
         {
             if ( auto quickWindow = qobject_cast< QQuickWindow* >( window ) )
             {
-                if ( !quickWindow->isVisible() )
+                if ( !quickWindow->isVisible() ||
+                    ( qskEffectiveSkin( quickWindow ) != m_skins[ 1 ] ) )
+                {
                     continue;
+                }
 
-                auto* group = new AnimatorGroup( quickWindow );
+                auto group = new AnimatorGroup( quickWindow );
 
                 if ( doGraphicFilter )
                 {

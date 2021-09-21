@@ -678,4 +678,15 @@ QskSkin* QskWindow::skin() const
     return d_func()->skin;
 }
 
+QskSkin* qskEffectiveSkin( const QQuickWindow* window )
+{
+    if ( auto w = qobject_cast< const QskWindow* >( window ) )
+    {
+        if ( auto skin = w->skin() )
+            return skin;
+    }
+
+    return qskSetup->skin();
+}
+
 #include "moc_QskWindow.cpp"
