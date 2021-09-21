@@ -226,8 +226,11 @@ void QskQml::registerTypes()
         }
     );
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 2, 0 )
+    // how to do this with >= 6.2 TODO ...
     QQmlMetaType::registerCustomStringConverter( qMetaTypeId< QskMargins >(),
         []( const QString& s ) { return QVariant::fromValue( QskMargins( s.toDouble() ) ); } );
+#endif
 
     // Support QskSizePolicy in QML user properties
     QMetaType::registerConverter< QJSValue, QskSizePolicy >(
