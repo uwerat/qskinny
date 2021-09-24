@@ -14,6 +14,7 @@ SOURCES += \
     LightDisplaySkinlet.cpp \
     LightDisplay.cpp \
     MainContent.cpp \
+    MainItem.cpp \
     MenuBar.cpp \
     MyDevices.cpp \
     PieChart.cpp \
@@ -45,6 +46,7 @@ HEADERS += \
     LightDisplaySkinlet.h \
     LightDisplay.h \
     MainContent.h \
+    MainItem.h \
     MainWindow.h \
     MenuBar.h \
     MyDevices.h \
