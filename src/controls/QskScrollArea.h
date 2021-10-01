@@ -42,6 +42,7 @@ class QSK_EXPORT QskScrollArea : public QskScrollView
 
   protected:
     void updateLayout() override;
+    QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
   private:
     void translateItem();

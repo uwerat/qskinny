@@ -180,6 +180,20 @@ namespace
 
 namespace
 {
+    /*
+        When doing scene graph composition it is easy to insert a clip node
+        somewhere below the paint node to have all items on the viewport being clipped.
+        This is how it is done f.e. for the list boxes.
+
+        But when having QQuickItems on the viewport we run into a fundamental limitation
+        of the Qt/Quick design: node subtrees for the children have to be in parallel to
+        the paint node.
+
+        We work around this problem, by inserting an extra item between the scroll area
+        and the scrollable item. This item replaces its default clip node by its own node,
+        that references the geometry of the viewport clip node.
+     */
+
     class ClipItem final : public QskControl, public QQuickItemChangeListener
     {
         // when inheriting from QskControl we participate in node cleanups
@@ -231,16 +245,16 @@ namespace
         void itemGeometryChanged( QQuickItem*,
             QQuickGeometryChange change, const QRectF& ) override
         {
-            if ( m_isSizeChangedEnabled && change.sizeChange() )
-                scrollArea()->polish();
+            if ( change.sizeChange() )
+                scrolledItemGeometryChange();
         }
 
 #else
         void itemGeometryChanged( QQuickItem*,
             const QRectF& newRect, const QRectF& oldRect ) override
         {
-            if ( m_isSizeChangedEnabled && ( oldRect.size() != newRect.size() ) )
-                scrollArea()->polish();
+            if ( oldRect.size() != newRect.size() )
+                scrolledItemGeometryChange();
         }
 #endif
 
@@ -255,6 +269,22 @@ namespace
         inline const QskScrollArea* scrollArea() const
         {
             return static_cast< const QskScrollArea* >( parentItem() );
+        }
+
+        inline void scrolledItemGeometryChange()
+        {
+            if ( m_isSizeChangedEnabled )
+            {
+                auto area = scrollArea();
+
+                area->polish();
+
+                if ( !area->isItemResizable() )
+                {
+                    // in this mode the size hint depends on it
+                    area->resetImplicitSize();
+                }
+            }
         }
 
         const QSGClipNode* viewPortClipNode() const;
@@ -426,19 +456,6 @@ class QskScrollArea::PrivateData
     bool isItemFocusClipping : 1;
 };
 
-/*
-    When doing scene graph composition it is quite easy to insert a clip node
-    somewhere below the paint node to have all items on the viewport being clipped.
-    This is how it is done f.e. for the list boxes.
-
-    But when having QQuickItems on the viewport we run into a fundamental limitation
-    of the Qt/Quick design: node subtrees for the children have to be in parallel to
-    the paint node.
-
-    We work around this problem, by inserting an extra item between the scroll area
-    and the scrollable item. This item replaces its default clip node by its own node,
-    that references the geometry of the viewport clip node.
- */
 
 QskScrollArea::QskScrollArea( QQuickItem* parentItem )
     : Inherited( parentItem )
@@ -448,6 +465,8 @@ QskScrollArea::QskScrollArea( QQuickItem* parentItem )
 
     m_data->clipItem = new ClipItem( this );
     m_data->enableAutoTranslation( this, true );
+
+    initSizePolicy( QskSizePolicy::Ignored, QskSizePolicy::Ignored );
 }
 
 QskScrollArea::~QskScrollArea()
@@ -462,6 +481,36 @@ void QskScrollArea::updateLayout()
     // the clipItem always has the same geometry as the scroll area
     m_data->clipItem->setSize( size() );
     adjustItem();
+}
+
+QSizeF QskScrollArea::layoutSizeHint( Qt::SizeHint which, const QSizeF& constraint  ) const
+{
+    if ( which == Qt::PreferredSize )
+    {
+        if ( const auto contentItem = scrolledItem() )
+        {
+            QSizeF hint;
+
+            if ( m_data->isItemResizable )
+            {
+                hint = qskSizeConstraint( contentItem, which, constraint );
+            }
+            else
+            {
+                hint = qskItemSize( contentItem );
+            }
+
+            if ( verticalScrollBarPolicy() != Qt::ScrollBarAlwaysOff )
+                hint.rwidth() += metric( VerticalScrollBar | QskAspect::Size );
+
+            if ( horizontalScrollBarPolicy() != Qt::ScrollBarAlwaysOff )
+                hint.rheight() += metric( HorizontalScrollBar | QskAspect::Size );
+
+            return hint;
+        }
+    }
+
+    return Inherited::layoutSizeHint( which, constraint );
 }
 
 void QskScrollArea::adjustItem()
