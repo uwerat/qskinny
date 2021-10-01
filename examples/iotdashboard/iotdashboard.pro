@@ -74,4 +74,4 @@ SOURCES += \
 RESOURCES += \
     images.qrc \
     fonts.qrc \
-    kirigami/scenegraph/shaders/shaders.qrc
+    shaders.qrc

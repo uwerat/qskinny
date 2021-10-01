@@ -129,9 +129,6 @@ void Skin::initHints( const Palette& palette )
     // boxes (including shadow):
     ed.setPadding( Box::Panel, 15 );
 
-    ed.setMetric( ShadowPositioner::Panel | QskAspect::Size, 15 );
-    ed.setBoxShape( ShadowPositioner::Panel, 6 );
-
 
     // content in boxes (indoor temperature, humidity etc.):
     ed.setFontRole( UsageBox::Separator, QskSkin::SmallFont );
@@ -200,6 +197,5 @@ void Skin::initHints( const Palette& palette )
     ed.setBoxBorderColors( UsageDiagramBox::DaysBox, palette.weekdayBox );
     ed.setColor( QskTextLabel::Text, palette.text );
     ed.setColor( UsageDiagramBox::DayText, palette.text );
-    ed.setColor( ShadowPositioner::Panel, palette.shadow );
     ed.setGradient( CircularProgressBar::Groove, palette.circularProgressBarGroove );
 }
