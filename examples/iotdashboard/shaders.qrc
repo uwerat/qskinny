@@ -1,0 +1,7 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="/iotdashboard">
+        <file>shaders/boxshadow.vert</file>
+        <file>shaders/boxshadow.frag</file>
+    </qresource>
+</RCC>

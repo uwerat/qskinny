@@ -18,6 +18,7 @@ SOURCES += \
     PieChartPainted.cpp \
     PieChartSkinlet.cpp \
     RoundedIcon.cpp \
+    ShadowedBox.cpp \
     Skin.cpp \
     TopBar.cpp \
     RoundButton.cpp \
@@ -28,7 +29,8 @@ SOURCES += \
 
 SOURCES += \
     nodes/DiagramDataNode.cpp \
-    nodes/DiagramSegmentsNode.cpp
+    nodes/DiagramSegmentsNode.cpp \
+    nodes/BoxShadowNode.cpp
 
 HEADERS += \
     Box.h \
@@ -47,6 +49,7 @@ HEADERS += \
     PieChartPainted.h \
     PieChartSkinlet.h \
     RoundedIcon.h \
+    ShadowedBox.h \
     Skin.h \
     TopBar.h \
     RoundButton.h \
@@ -55,21 +58,8 @@ HEADERS += \
 
 HEADERS += \
     nodes/DiagramDataNode.h \
-    nodes/DiagramSegmentsNode.h
-
-HEADERS += \
-    kirigami/shadowedrectangle.h \
-    kirigami/scenegraph/paintedrectangleitem.h \
-    kirigami/scenegraph/shadowedborderrectanglematerial.h \
-    kirigami/scenegraph/shadowedrectanglematerial.h \
-    kirigami/scenegraph/shadowedrectanglenode.h
-
-SOURCES += \
-    kirigami/shadowedrectangle.cpp \
-    kirigami/scenegraph/paintedrectangleitem.cpp \
-    kirigami/scenegraph/shadowedborderrectanglematerial.cpp \
-    kirigami/scenegraph/shadowedrectanglematerial.cpp \
-    kirigami/scenegraph/shadowedrectanglenode.cpp
+    nodes/DiagramSegmentsNode.h \
+    nodes/BoxShadowNode.h
 
 RESOURCES += \
     images.qrc \

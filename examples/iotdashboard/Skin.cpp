@@ -16,8 +16,9 @@
 #include "MenuBar.h"
 #include "PieChartPainted.h"
 #include "RoundedIcon.h"
-#include "TopBar.h"
 #include "RoundButton.h"
+#include "ShadowedBox.h"
+#include "TopBar.h"
 #include "UsageBox.h"
 #include "UsageDiagram.h"
 
@@ -125,10 +126,8 @@ void Skin::initHints( const Palette& palette )
     ed.setFontRole( TimeLabel::Text, QskSkin::HugeFont );
     ed.setColor( TimeLabel::Text, "#6776FF" );
 
-
     // boxes (including shadow):
-    ed.setPadding( Box::Panel, 15 );
-
+    ed.setPadding( ShadowedBox::Panel, 15 );
 
     // content in boxes (indoor temperature, humidity etc.):
     ed.setFontRole( UsageBox::Separator, QskSkin::SmallFont );
