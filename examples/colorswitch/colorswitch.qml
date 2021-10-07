@@ -38,7 +38,8 @@ Main
             orientation: Qt.Horizontal
 
             spacing: 20
-            margins: 8 // so that we can see the focus frame
+            //margins: 8 // so that we can see the focus frame
+            margins { left: 8; top: 8; right: 8; bottom: 8 }
 
             SimpleListBox
             {
@@ -53,7 +54,8 @@ Main
 
             LinearBox
             {
-                margins: 10
+                // margins: 10
+                margins { left: 10; top: 10; right: 10; bottom: 10 }
                 orientation: Qt.Vertical
                 defaultAlignment: Qt.AlignCenter
                 extraSpacingAt: Qt.BottomEdge
@@ -86,7 +88,8 @@ Main
                     dimension: 3
 
                     spacing: 20
-                    margins: 20
+                    //margins: 20
+                    margins { left: 20; top: 20; right: 20; bottom: 20 }
 
                     sizePolicy
                     {
