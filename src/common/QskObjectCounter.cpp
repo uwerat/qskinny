@@ -80,17 +80,34 @@ namespace
         int maximum;
     };
 
-    class CounterData
+#if QSK_OBJECT_INFO
+    class InsertEvent : public QEvent
+    {
+      public:
+        static const auto type = static_cast< QEvent::Type >( QEvent::User + 1777 );
+
+        InsertEvent( const QObject* obj )
+            : QEvent( type )
+            , object( obj )
+        {
+        }
+
+        QPointer< const QObject > object;
+    };
+#endif
+
+    class CounterData final : public QObject
     {
       public:
         Counter counter[ 2 ];
 
 #if QSK_OBJECT_INFO
-
         void insertObjectInfo( const QObject* object )
         {
-            objectTable.insert( object,
-                { object->objectName(), object->metaObject()->className() } );
+            // object is not fully constructed here
+
+            if ( qApp && object )
+                qApp->postEvent( this, new InsertEvent( object ) );
         }
 
         void removeObjectInfo( const QObject* object )
@@ -99,6 +116,23 @@ namespace
         }
 
         QHash< const QObject*, ObjectInfo > objectTable;
+
+      protected:
+
+        bool event( QEvent *event ) override
+        {
+            if ( event->type() == InsertEvent::type )
+            {
+                auto ev = static_cast< const InsertEvent* >( event );
+                if ( const QObject* obj =  ev->object )
+                {
+                    objectTable.insert( obj,
+                        { obj->objectName(), obj->metaObject()->className() } );
+                }
+            }
+
+            return true;
+        }
 #endif
     };
 
@@ -192,11 +226,7 @@ void CounterHook::addObject( QObject* object )
             counterData->counter[ QskObjectCounter::Items ].increment();
 
 #if QSK_OBJECT_INFO
-        {
-            // object is not fully constructed here
-            QTimer::singleShot( 0, object, 
-                [ counterData, object ] { counterData->insertObjectInfo( object ); } );
-        }
+        counterData->insertObjectInfo( object );
 #endif
     }
 
