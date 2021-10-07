@@ -28,108 +28,171 @@ static inline bool qskIsItem( const QObject* object )
     return dynamic_cast< QQuickItemPrivate* >( o_p ) != nullptr;
 }
 
-static void qskStartupHook();
-static void qskAddObjectHook( QObject* );
-static void qskRemoveObjectHook( QObject* );
-
-class QskObjectCounterHook
+namespace
 {
-  public:
-    QskObjectCounterHook()
+    class Counter
     {
-        m_otherStartup = qtHookData[ QHooks::Startup ];
-        m_otherAddObject = qtHookData[ QHooks::AddQObject ];
-        m_otherRemoveObject = qtHookData[ QHooks::RemoveQObject ];
+      public:
+        Counter()
+        {
+            reset();
+        }
 
-        qtHookData[ QHooks::Startup ] = reinterpret_cast< quintptr >( &qskStartupHook );
-        qtHookData[ QHooks::AddQObject ] = reinterpret_cast< quintptr >( &qskAddObjectHook );
-        qtHookData[ QHooks::RemoveQObject ] = reinterpret_cast< quintptr >( &qskRemoveObjectHook );
-    }
+        void reset()
+        {
+            created = destroyed = current = maximum = 0;
+        }
 
-    ~QskObjectCounterHook()
+        void increment()
+        {
+            created++;
+            current++;
+
+            if ( current > maximum )
+                maximum = current;
+        }
+
+        void decrement()
+        {
+            destroyed++;
+            current--;
+        }
+
+        int created;
+        int destroyed;
+        int current;
+        int maximum;
+    };
+
+    class CounterHook
     {
-        qtHookData[ QHooks::Startup ] = m_otherStartup;
-        qtHookData[ QHooks::AddQObject ] = m_otherAddObject;
-        qtHookData[ QHooks::RemoveQObject ] = m_otherRemoveObject;
-    }
+      public:
+        CounterHook();
+        ~CounterHook();
 
-    void registerCounter( QskObjectCounter* counter, bool on )
-    {
-        if ( on )
-            m_counterSet.insert( counter );
-        else
-            m_counterSet.remove( counter );
-    }
+        void registerCounters( Counter[], bool on );
+        bool isCountersRegistered( const Counter[] ) const;
 
-    bool isCounterRegistered( const QskObjectCounter* counter ) const
-    {
-        return m_counterSet.contains( const_cast< QskObjectCounter* >( counter ) );
-    }
+        bool isActive() const;
 
-    bool isActive() const
-    {
-        return !m_counterSet.isEmpty();
-    }
+        void startup();
+        void addObject( QObject* );
+        void removeObject( QObject* );
 
-    void startup()
-    {
+        static void cleanupHook();
+
+      private:
+        static void startupHook();
+        static void addObjectHook( QObject* );
+        static void removeObjectHook( QObject* );
+
+        QSet< Counter* > m_countersSet;
+
+        quintptr m_otherStartup;
+        quintptr m_otherAddObject;
+        quintptr m_otherRemoveObject;
+    };
+}
+
+static bool qskAutoDeleteHook = false;
+static CounterHook* qskCounterHook = nullptr;
+
+CounterHook::CounterHook()
+{
+    m_otherStartup = qtHookData[ QHooks::Startup ];
+    m_otherAddObject = qtHookData[ QHooks::AddQObject ];
+    m_otherRemoveObject = qtHookData[ QHooks::RemoveQObject ];
+
+    qtHookData[ QHooks::Startup ] = reinterpret_cast< quintptr >( &startupHook );
+    qtHookData[ QHooks::AddQObject ] = reinterpret_cast< quintptr >( &addObjectHook );
+    qtHookData[ QHooks::RemoveQObject ] = reinterpret_cast< quintptr >( &removeObjectHook );
+}
+
+CounterHook::~CounterHook()
+{
+    qtHookData[ QHooks::Startup ] = m_otherStartup;
+    qtHookData[ QHooks::AddQObject ] = m_otherAddObject;
+    qtHookData[ QHooks::RemoveQObject ] = m_otherRemoveObject;
+}
+
+void CounterHook::registerCounters( Counter counters[], bool on )
+{
+    if ( on )
+        m_countersSet.insert( counters );
+    else
+        m_countersSet.remove( counters );
+}
+
+bool CounterHook::isCountersRegistered( const Counter counters[] ) const
+{
+    return m_countersSet.contains( const_cast< Counter* >( counters ) );
+}
+
+bool CounterHook::isActive() const
+{
+    return !m_countersSet.isEmpty();
+}
+
+void CounterHook::startup()
+{
 #if 0
-        qDebug() << "** QskObjectCounterHook enabled";
+    qDebug() << "** QskObjectCounterHook enabled";
 #endif
-        if ( m_otherStartup )
-            reinterpret_cast< QHooks::StartupCallback >( m_otherStartup )();
-    }
+    if ( m_otherStartup )
+        reinterpret_cast< QHooks::StartupCallback >( m_otherStartup )();
+}
 
-    void addObject( QObject* object )
+void CounterHook::addObject( QObject* object )
+{
+    const bool isItem = qskIsItem( object );
+
+    for ( auto counters : qskAsConst( m_countersSet ) )
     {
-        for ( auto counter : qskAsConst( m_counterSet ) )
-            counter->addObject( object );
+        counters[ QskObjectCounter::Objects ].increment();
 
-        if ( m_otherAddObject )
-            reinterpret_cast< QHooks::AddQObjectCallback >( m_otherAddObject )( object );
+        if ( isItem )
+            counters[ QskObjectCounter::Items ].increment();
     }
 
-    void removeObject( QObject* object )
+    if ( m_otherAddObject )
+        reinterpret_cast< QHooks::AddQObjectCallback >( m_otherAddObject )( object );
+}
+
+void CounterHook::removeObject( QObject* object )
+{
+    const bool isItem = qskIsItem( object );
+
+    for ( auto counters : qskAsConst( m_countersSet ) )
     {
-        for ( auto counter : qskAsConst( m_counterSet ) )
-            counter->removeObject( object );
+        counters[ QskObjectCounter::Objects ].decrement();
 
-        if ( m_otherRemoveObject )
-            reinterpret_cast< QHooks::RemoveQObjectCallback >( m_otherRemoveObject )( object );
+        if ( isItem )
+            counters[ QskObjectCounter::Items ].decrement();
     }
 
-    static bool autoDelete;
+    if ( m_otherRemoveObject )
+        reinterpret_cast< QHooks::RemoveQObjectCallback >( m_otherRemoveObject )( object );
+}
 
-  private:
-    QSet< QskObjectCounter* > m_counterSet;
-
-    quintptr m_otherStartup;
-    quintptr m_otherAddObject;
-    quintptr m_otherRemoveObject;
-};
-
-bool QskObjectCounterHook::autoDelete = false;
-static QskObjectCounterHook* qskCounterHook = nullptr;
-
-static void qskStartupHook()
+void CounterHook::startupHook()
 {
     if ( qskCounterHook )
         qskCounterHook->startup();
 }
 
-static void qskAddObjectHook( QObject* object )
+void CounterHook::addObjectHook( QObject* object )
 {
     if ( qskCounterHook )
         qskCounterHook->addObject( object );
 }
 
-static void qskRemoveObjectHook( QObject* object )
+void CounterHook::removeObjectHook( QObject* object )
 {
     if ( qskCounterHook )
         qskCounterHook->removeObject( object );
 }
 
-static void qskCleanupHook()
+void CounterHook::cleanupHook()
 {
     if ( qskCounterHook && !qskCounterHook->isActive() )
     {
@@ -138,18 +201,31 @@ static void qskCleanupHook()
     }
 
     // From now on we remove the hooks as soon as there are no counters
-    QskObjectCounterHook::autoDelete = true;
+    qskAutoDeleteHook = true;
 }
 
 static void qskInstallCleanupHookHandler()
 {
-    qAddPostRoutine( qskCleanupHook );
+    qAddPostRoutine( CounterHook::cleanupHook );
 }
 
 Q_COREAPP_STARTUP_FUNCTION( qskInstallCleanupHookHandler )
 
+class QskObjectCounter::PrivateData
+{
+  public:
+    PrivateData( bool debugAtDestruction )
+        : debugAtDestruction( debugAtDestruction )
+    {
+    }
+
+
+    Counter counter[ 2 ];
+    const bool debugAtDestruction;
+};
+
 QskObjectCounter::QskObjectCounter( bool debugAtDestruction )
-    : m_debugAtDestruction( debugAtDestruction )
+    : m_data( new PrivateData( debugAtDestruction ) )
 {
     setActive( true );
 }
@@ -158,7 +234,7 @@ QskObjectCounter::~QskObjectCounter()
 {
     setActive( false );
 
-    if ( m_debugAtDestruction )
+    if ( m_data->debugAtDestruction )
         dump();
 }
 
@@ -167,16 +243,16 @@ void QskObjectCounter::setActive( bool on )
     if ( on )
     {
         if ( qskCounterHook == nullptr )
-            qskCounterHook = new QskObjectCounterHook();
+            qskCounterHook = new CounterHook();
 
-        qskCounterHook->registerCounter( this, on );
+        qskCounterHook->registerCounters( m_data->counter, on );
     }
     else
     {
-        qskCounterHook->registerCounter( this, on );
+        qskCounterHook->registerCounters( m_data->counter, on );
         if ( !qskCounterHook->isActive() )
         {
-            if ( QskObjectCounterHook::autoDelete )
+            if ( qskAutoDeleteHook )
             {
                 delete qskCounterHook;
                 qskCounterHook = nullptr;
@@ -187,54 +263,38 @@ void QskObjectCounter::setActive( bool on )
 
 bool QskObjectCounter::isActive() const
 {
-    return qskCounterHook && qskCounterHook->isCounterRegistered( this );
-}
-
-void QskObjectCounter::addObject( QObject* object )
-{
-    m_counter[ Objects ].increment();
-
-    if ( qskIsItem( object ) )
-        m_counter[ Items ].increment();
-}
-
-void QskObjectCounter::removeObject( QObject* object )
-{
-    m_counter[ Objects ].decrement();
-
-    if ( qskIsItem( object ) )
-        m_counter[ Items ].decrement();
+    return qskCounterHook && qskCounterHook->isCountersRegistered( m_data->counter );
 }
 
 void QskObjectCounter::reset()
 {
-    m_counter[ Objects ].reset();
-    m_counter[ Items ].reset();
+    m_data->counter[ Objects ].reset();
+    m_data->counter[ Items ].reset();
 }
 
 int QskObjectCounter::created( ObjectType objectType ) const
 {
-    return m_counter[ objectType ].created;
+    return m_data->counter[ objectType ].created;
 }
 
 int QskObjectCounter::destroyed( ObjectType objectType ) const
 {
-    return m_counter[ objectType ].destroyed;
+    return m_data->counter[ objectType ].destroyed;
 }
 
 int QskObjectCounter::current( ObjectType objectType ) const
 {
-    return m_counter[ objectType ].current;
+    return m_data->counter[ objectType ].current;
 }
 
 int QskObjectCounter::maximum( ObjectType objectType ) const
 {
-    return m_counter[ objectType ].maximum;
+    return m_data->counter[ objectType ].maximum;
 }
 
 void QskObjectCounter::debugStatistics( QDebug debug, ObjectType objectType ) const
 {
-    const Counter& c = m_counter[ objectType ];
+    const auto& c = m_data->counter[ objectType ];
 
     QDebugStateSaver saver( debug );
     debug.nospace();

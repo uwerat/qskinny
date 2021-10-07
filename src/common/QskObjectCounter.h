@@ -7,10 +7,9 @@
 #define QSK_OBJECT_COUNTER_H
 
 #include "QskGlobal.h"
+#include <memory>
 
 class QObject;
-class QDebug;
-class QskObjectCounterHook;
 
 class QSK_EXPORT QskObjectCounter
 {
@@ -38,51 +37,16 @@ class QSK_EXPORT QskObjectCounter
     void dump() const;
 
   private:
-    friend class QskObjectCounterHook;
+    class PrivateData;
+    std::unique_ptr< PrivateData > m_data;
 
-    void addObject( QObject* );
-    void removeObject( QObject* );
-
-    class Counter
-    {
-      public:
-        Counter()
-        {
-            reset();
-        }
-
-        void reset()
-        {
-            created = destroyed = current = maximum = 0;
-        }
-
-        void increment()
-        {
-            created++;
-            current++;
-
-            if ( current > maximum )
-                maximum = current;
-        }
-
-        void decrement()
-        {
-            destroyed++;
-            current--;
-        }
-
-        int created;
-        int destroyed;
-        int current;
-        int maximum;
-    };
-
-    Counter m_counter[ 2 ];
-    const bool m_debugAtDestruction;
 };
 
 #ifndef QT_NO_DEBUG_STREAM
+
+class QDebug;
 QSK_EXPORT QDebug operator<<( QDebug, const QskObjectCounter& );
+
 #endif
 
 #endif
