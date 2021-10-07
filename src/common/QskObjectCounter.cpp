@@ -14,6 +14,13 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>
 QSK_QT_PRIVATE_END
 
+#define QSK_OBJECT_INFO 0
+
+#if QSK_OBJECT_INFO
+#include <qhash.h>
+#include <qtimer.h>
+#endif
+
 static inline bool qskIsItem( const QObject* object )
 {
     QObjectPrivate* o_p = QObjectPrivate::get( const_cast< QObject* >( object ) );
@@ -30,6 +37,15 @@ static inline bool qskIsItem( const QObject* object )
 
 namespace
 {
+#if QSK_OBJECT_INFO
+    class ObjectInfo
+    {
+      public:
+        QString name;
+        QString className;
+    };
+#endif
+
     class Counter
     {
       public:
@@ -64,14 +80,36 @@ namespace
         int maximum;
     };
 
+    class CounterData
+    {
+      public:
+        Counter counter[ 2 ];
+
+#if QSK_OBJECT_INFO
+
+        void insertObjectInfo( const QObject* object )
+        {
+            objectTable.insert( object,
+                { object->objectName(), object->metaObject()->className() } );
+        }
+
+        void removeObjectInfo( const QObject* object )
+        {
+            objectTable.remove( object );
+        }
+
+        QHash< const QObject*, ObjectInfo > objectTable;
+#endif
+    };
+
     class CounterHook
     {
       public:
         CounterHook();
         ~CounterHook();
 
-        void registerCounters( Counter[], bool on );
-        bool isCountersRegistered( const Counter[] ) const;
+        void registerCounters( CounterData*, bool on );
+        bool isCountersRegistered( const CounterData*  ) const;
 
         bool isActive() const;
 
@@ -86,7 +124,7 @@ namespace
         static void addObjectHook( QObject* );
         static void removeObjectHook( QObject* );
 
-        QSet< Counter* > m_countersSet;
+        QSet< CounterData* > m_counterDataSet;
 
         quintptr m_otherStartup;
         quintptr m_otherAddObject;
@@ -115,22 +153,22 @@ CounterHook::~CounterHook()
     qtHookData[ QHooks::RemoveQObject ] = m_otherRemoveObject;
 }
 
-void CounterHook::registerCounters( Counter counters[], bool on )
+void CounterHook::registerCounters( CounterData* data, bool on )
 {
     if ( on )
-        m_countersSet.insert( counters );
+        m_counterDataSet.insert( data );
     else
-        m_countersSet.remove( counters );
+        m_counterDataSet.remove( data );
 }
 
-bool CounterHook::isCountersRegistered( const Counter counters[] ) const
+bool CounterHook::isCountersRegistered( const CounterData* data ) const
 {
-    return m_countersSet.contains( const_cast< Counter* >( counters ) );
+    return m_counterDataSet.contains( const_cast< CounterData* >( data ) );
 }
 
 bool CounterHook::isActive() const
 {
-    return !m_countersSet.isEmpty();
+    return !m_counterDataSet.isEmpty();
 }
 
 void CounterHook::startup()
@@ -146,12 +184,20 @@ void CounterHook::addObject( QObject* object )
 {
     const bool isItem = qskIsItem( object );
 
-    for ( auto counters : qskAsConst( m_countersSet ) )
+    for ( auto counterData : qskAsConst( m_counterDataSet ) )
     {
-        counters[ QskObjectCounter::Objects ].increment();
+        counterData->counter[ QskObjectCounter::Objects ].increment();
 
         if ( isItem )
-            counters[ QskObjectCounter::Items ].increment();
+            counterData->counter[ QskObjectCounter::Items ].increment();
+
+#if QSK_OBJECT_INFO
+        {
+            // object is not fully constructed here
+            QTimer::singleShot( 0, object, 
+                [ counterData, object ] { counterData->insertObjectInfo( object ); } );
+        }
+#endif
     }
 
     if ( m_otherAddObject )
@@ -162,12 +208,16 @@ void CounterHook::removeObject( QObject* object )
 {
     const bool isItem = qskIsItem( object );
 
-    for ( auto counters : qskAsConst( m_countersSet ) )
+    for ( auto counterData : qskAsConst( m_counterDataSet ) )
     {
-        counters[ QskObjectCounter::Objects ].decrement();
+        counterData->counter[ QskObjectCounter::Objects ].decrement();
 
         if ( isItem )
-            counters[ QskObjectCounter::Items ].decrement();
+            counterData->counter[ QskObjectCounter::Items ].decrement();
+
+#if QSK_OBJECT_INFO
+        counterData->removeObjectInfo( object );
+#endif
     }
 
     if ( m_otherRemoveObject )
@@ -219,8 +269,7 @@ class QskObjectCounter::PrivateData
     {
     }
 
-
-    Counter counter[ 2 ];
+    CounterData counterData;
     const bool debugAtDestruction;
 };
 
@@ -245,11 +294,11 @@ void QskObjectCounter::setActive( bool on )
         if ( qskCounterHook == nullptr )
             qskCounterHook = new CounterHook();
 
-        qskCounterHook->registerCounters( m_data->counter, on );
+        qskCounterHook->registerCounters( &m_data->counterData, on );
     }
     else
     {
-        qskCounterHook->registerCounters( m_data->counter, on );
+        qskCounterHook->registerCounters( &m_data->counterData, on );
         if ( !qskCounterHook->isActive() )
         {
             if ( qskAutoDeleteHook )
@@ -263,38 +312,40 @@ void QskObjectCounter::setActive( bool on )
 
 bool QskObjectCounter::isActive() const
 {
-    return qskCounterHook && qskCounterHook->isCountersRegistered( m_data->counter );
+    return qskCounterHook && qskCounterHook->isCountersRegistered( &m_data->counterData );
 }
 
 void QskObjectCounter::reset()
 {
-    m_data->counter[ Objects ].reset();
-    m_data->counter[ Items ].reset();
+    auto& counters = m_data->counterData.counter;
+
+    counters[ Objects ].reset();
+    counters[ Items ].reset();
 }
 
 int QskObjectCounter::created( ObjectType objectType ) const
 {
-    return m_data->counter[ objectType ].created;
+    return m_data->counterData.counter[ objectType ].created;
 }
 
 int QskObjectCounter::destroyed( ObjectType objectType ) const
 {
-    return m_data->counter[ objectType ].destroyed;
+    return m_data->counterData.counter[ objectType ].destroyed;
 }
 
 int QskObjectCounter::current( ObjectType objectType ) const
 {
-    return m_data->counter[ objectType ].current;
+    return m_data->counterData.counter[ objectType ].current;
 }
 
 int QskObjectCounter::maximum( ObjectType objectType ) const
 {
-    return m_data->counter[ objectType ].maximum;
+    return m_data->counterData.counter[ objectType ].maximum;
 }
 
 void QskObjectCounter::debugStatistics( QDebug debug, ObjectType objectType ) const
 {
-    const auto& c = m_data->counter[ objectType ];
+    const auto& c = m_data->counterData.counter[ objectType ];
 
     QDebugStateSaver saver( debug );
     debug.nospace();
@@ -304,6 +355,26 @@ void QskObjectCounter::debugStatistics( QDebug debug, ObjectType objectType ) co
           << ", current: " << c.current
           << ", maximum: " << c.maximum;
     debug << ')';
+
+#if QSK_OBJECT_INFO
+    if ( objectType == Objects )
+    {
+        const auto& objectTable = m_data->counterData.objectTable;
+
+        if ( !objectTable.isEmpty() )
+        {
+            debug << "\n\t=== Leaks ===\n";
+            for ( auto it = objectTable.constBegin(); it != objectTable.constEnd(); ++it )
+            {
+                const auto& info = it.value();
+                debug << "\tClass: " << info.className;
+                if ( !info.name.isEmpty() )
+                    debug << " Name: " << info.name; 
+                debug << '\n';
+            }
+        }
+    }
+#endif
 }
 
 void QskObjectCounter::dump() const
