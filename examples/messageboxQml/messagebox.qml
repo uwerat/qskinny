@@ -16,7 +16,8 @@ Qsk.Window
         orientation: Qt.Horizontal
         dimension: 2
 
-        margins: 10
+        margins { left: 10; top: 10; right: 10; bottom: 10 }
+        //margins: 10
 
         Qsk.PushButton
         {
