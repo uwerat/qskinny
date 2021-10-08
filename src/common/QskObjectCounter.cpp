@@ -17,8 +17,7 @@ QSK_QT_PRIVATE_END
 #define QSK_OBJECT_INFO 0
 
 #if QSK_OBJECT_INFO
-#include <qhash.h>
-#include <qtimer.h>
+#include <qset.h>
 #endif
 
 static inline bool qskIsItem( const QObject* object )
@@ -37,15 +36,6 @@ static inline bool qskIsItem( const QObject* object )
 
 namespace
 {
-#if QSK_OBJECT_INFO
-    class ObjectInfo
-    {
-      public:
-        QString name;
-        QString className;
-    };
-#endif
-
     class Counter
     {
       public:
@@ -80,59 +70,13 @@ namespace
         int maximum;
     };
 
-#if QSK_OBJECT_INFO
-    class InsertEvent : public QEvent
-    {
-      public:
-        static const auto type = static_cast< QEvent::Type >( QEvent::User + 1777 );
-
-        InsertEvent( const QObject* obj )
-            : QEvent( type )
-            , object( obj )
-        {
-        }
-
-        QPointer< const QObject > object;
-    };
-#endif
-
     class CounterData final : public QObject
     {
       public:
         Counter counter[ 2 ];
 
 #if QSK_OBJECT_INFO
-        void insertObjectInfo( const QObject* object )
-        {
-            // object is not fully constructed here
-
-            if ( qApp && object )
-                qApp->postEvent( this, new InsertEvent( object ) );
-        }
-
-        void removeObjectInfo( const QObject* object )
-        {
-            objectTable.remove( object );
-        }
-
-        QHash< const QObject*, ObjectInfo > objectTable;
-
-      protected:
-
-        bool event( QEvent *event ) override
-        {
-            if ( event->type() == InsertEvent::type )
-            {
-                auto ev = static_cast< const InsertEvent* >( event );
-                if ( const QObject* obj =  ev->object )
-                {
-                    objectTable.insert( obj,
-                        { obj->objectName(), obj->metaObject()->className() } );
-                }
-            }
-
-            return true;
-        }
+        QSet< const QObject* > objectTable;
 #endif
     };
 
@@ -226,7 +170,7 @@ void CounterHook::addObject( QObject* object )
             counterData->counter[ QskObjectCounter::Items ].increment();
 
 #if QSK_OBJECT_INFO
-        counterData->insertObjectInfo( object );
+        counterData->objectTable.insert( object );
 #endif
     }
 
@@ -246,7 +190,7 @@ void CounterHook::removeObject( QObject* object )
             counterData->counter[ QskObjectCounter::Items ].decrement();
 
 #if QSK_OBJECT_INFO
-        counterData->removeObjectInfo( object );
+        counterData->objectTable.remove( object );
 #endif
     }
 
@@ -394,12 +338,11 @@ void QskObjectCounter::debugStatistics( QDebug debug, ObjectType objectType ) co
         if ( !objectTable.isEmpty() )
         {
             debug << "\n\t=== Leaks ===\n";
-            for ( auto it = objectTable.constBegin(); it != objectTable.constEnd(); ++it )
+            for ( const auto object : objectTable )
             {
-                const auto& info = it.value();
-                debug << "\tClass: " << info.className;
-                if ( !info.name.isEmpty() )
-                    debug << " Name: " << info.name; 
+                debug << "\tClass: " << object->metaObject()->className();
+                if ( !object->objectName().isEmpty() )
+                    debug << " Name: " << object->objectName(); 
                 debug << '\n';
             }
         }
