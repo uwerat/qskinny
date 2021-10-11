@@ -85,6 +85,8 @@ SOURCES += \
     graphic/QskStandardSymbol.cpp
 
 HEADERS += \
+    nodes/QskArcNode.h \
+    nodes/QskArcRenderer.h \
     nodes/QskBoxNode.h \
     nodes/QskBoxClipNode.h \
     nodes/QskBoxRenderer.h \
@@ -103,6 +105,7 @@ HEADERS += \
     nodes/QskVertex.h
 
 SOURCES += \
+    nodes/QskArcNode.cpp \
     nodes/QskBoxNode.cpp \
     nodes/QskBoxClipNode.cpp \
     nodes/QskBoxRendererRect.cpp \
