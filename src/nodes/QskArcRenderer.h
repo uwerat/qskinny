@@ -16,13 +16,41 @@ class QSK_EXPORT QskArcRenderer
 {
   public:
     void renderArc( const QRectF& rect, const QskGradient& gradient,
-        QGradient::Type gradientType, int startAngle, int endAngle, QPainter* );
+        QGradient::Type gradientType, double width, int startAngle,
+        int endAngle, QPainter* );
 };
 
 inline void QskArcRenderer::renderArc( const QRectF& rect,
-        const QskGradient& gradient, QGradient::Type gradientType,
-        int startAngle,  int endAngle, QPainter* painter )
+    const QskGradient& gradient, QGradient::Type gradientType, double width,
+    int startAngle, int spanAngle, QPainter* painter )
 {
+    painter->setRenderHint( QPainter::Antialiasing, true );
+
+    QGradientStops stops;
+
+    for( const QskGradientStop& stop : gradient.stops() )
+    {
+        QGradientStop s( stop.position(), stop.color() );
+        stops.append( s );
+    }
+
+    if( gradientType == QGradient::RadialGradient )
+    {
+        QRadialGradient radialGradient( rect.center(), qMin( rect.width(), rect.height() ) );
+        radialGradient.setStops( stops );
+
+        painter->setPen( QPen( radialGradient, width, Qt::SolidLine, Qt::FlatCap ) );
+        painter->drawArc( rect, startAngle * 16, spanAngle * 16 );
+    }
+    else
+    {
+        QConicalGradient conicalGradient( rect.center(), startAngle );
+        conicalGradient.setStops( stops );
+
+        painter->setPen( QPen( conicalGradient, width, Qt::SolidLine, Qt::FlatCap ) );
+        painter->drawArc( rect, startAngle * 16, spanAngle * 16 );
+    }
+
 }
 
 #endif

@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskArcNode.h"
+#include "QskArcRenderer.h"
 
 #include <QPainter>
 
@@ -47,35 +48,12 @@ void QskArcNode::paint( QPainter *painter, const QSizeF &size )
         spanAngle = -1 * ( m_value / m_maximum ) * 360;
     }
 
-    painter->setRenderHint( QPainter::Antialiasing, true );
-
     const QRectF r( 0.5 * m_width, 0.5 * m_width,
         size.width() - m_width, size.height() - m_width );
 
-    QGradientStops stops;
-
-    for( const QskGradientStop& stop : m_gradient.stops() )
-    {
-        QGradientStop s( stop.position(), stop.color() );
-        stops.append( s );
-    }
-
-    if( m_gradientType == QGradient::RadialGradient )
-    {
-        QRadialGradient radialGradient( r.center(), qMin( r.width(), r.height() ) );
-        radialGradient.setStops( stops );
-
-        painter->setPen( QPen( radialGradient, m_width, Qt::SolidLine, Qt::FlatCap ) );
-        painter->drawArc( r, startAngle * 16, spanAngle * 16 );
-    }
-    else
-    {
-        QConicalGradient conicalGradient( r.center(), startAngle );
-        conicalGradient.setStops( stops );
-
-        painter->setPen( QPen( conicalGradient, m_width, Qt::SolidLine, Qt::FlatCap ) );
-        painter->drawArc( r, startAngle * 16, spanAngle * 16 );
-    }
+    QskArcRenderer renderer;
+    renderer.renderArc( r, m_gradient, m_gradientType, m_width, startAngle, spanAngle,
+        painter );
 }
 
 uint QskArcNode::hash() const
