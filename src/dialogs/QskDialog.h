@@ -147,8 +147,6 @@ class QSK_EXPORT QskDialog : public QObject
     QskDialog();
     ~QskDialog() override;
 
-    static QskDialog* s_instance;
-
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
