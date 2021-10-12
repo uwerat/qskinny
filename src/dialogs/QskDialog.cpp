@@ -206,13 +206,8 @@ static QString qskSelectWindow(
 class QskDialog::PrivateData
 {
   public:
-    PrivateData()
-        : policy( QskDialog::TopLevelWindow )
-    {
-    }
-
     QPointer< QWindow > transientParent;
-    QskDialog::Policy policy : 2;
+    QskDialog::Policy policy = QskDialog::TopLevelWindow;
 };
 
 QskDialog::QskDialog()
@@ -226,11 +221,8 @@ QskDialog::~QskDialog()
 
 QskDialog* QskDialog::instance()
 {
-    static QskDialog* s_instance = nullptr;
-    if ( s_instance == nullptr )
-        s_instance = new QskDialog();
-
-    return s_instance;
+    static QskDialog instance;
+    return &instance;
 }
 
 void QskDialog::setPolicy( Policy policy )
