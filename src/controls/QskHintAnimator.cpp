@@ -216,7 +216,8 @@ QskHintAnimatorTable::QskHintAnimatorTable()
 
 QskHintAnimatorTable::~QskHintAnimatorTable()
 {
-    qskAnimatorGuard->unregisterTable( this );
+    if ( qskAnimatorGuard )
+        qskAnimatorGuard->unregisterTable( this );
     delete m_data;
 }
 
@@ -227,7 +228,8 @@ void QskHintAnimatorTable::start( QskControl* control,
     if ( m_data == nullptr )
     {
         m_data = new PrivateData();
-        qskAnimatorGuard->registerTable( this );
+        if ( qskAnimatorGuard )
+            qskAnimatorGuard->registerTable( this );
     }
 
     auto& animator = m_data->map[ aspect ];
