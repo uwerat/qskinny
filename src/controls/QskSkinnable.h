@@ -21,6 +21,7 @@ class QDebug;
 
 class QSGNode;
 
+class QskArcMetrics;
 class QskControl;
 class QskAnimationHint;
 class QskColorFilter;
@@ -188,6 +189,10 @@ class QSK_EXPORT QskSkinnable
     bool setBoxBorderColorsHint( QskAspect, const QskBoxBorderColors& );
     bool resetBoxBorderColorsHint( QskAspect );
     QskBoxBorderColors boxBorderColorsHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
+
+    bool setArcMetricsHint( QskAspect, const QskArcMetrics& );
+    bool resetArcMetricsHint( QskAspect );
+    QskArcMetrics arcMetricsHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
 
     bool setSpacingHint( QskAspect, qreal );
     bool resetSpacingHint( QskAspect );

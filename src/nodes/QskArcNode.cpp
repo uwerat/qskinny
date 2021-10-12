@@ -16,55 +16,28 @@ QskArcNode::~QskArcNode()
 {
 }
 
-void QskArcNode::setArcData( const QskGradient &gradient,
-    QGradient::Type gradientType, double width, double value, double origin,
-    double maximum, bool isIndeterminate, double position )
+void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& metrics,
+    const QskGradient &gradient, QQuickWindow* window )
 {
+    m_rect = rect;
+    m_metrics = metrics;
     m_gradient = gradient;
-    m_gradientType = gradientType;
-    m_width = width;
-    m_value = value;
-    m_origin = origin;
-    m_maximum = maximum;
-    m_isIndeterminate = isIndeterminate;
-    m_position = position;
+
+    update( window, QskTextureRenderer::AutoDetect, m_rect.toRect() );
 }
 
-void QskArcNode::paint( QPainter *painter, const QSizeF &size )
+void QskArcNode::paint( QPainter* painter, const QSizeF &size )
 {
-    int startAngle;
-    int spanAngle;
-
-    if( m_isIndeterminate )
-    {
-        startAngle = -1 * m_position * 360;
-        // the other option is to just set a fixed value for the
-        // span angle (or do some advanced stuff with easing curves)
-        spanAngle = qAbs( 0.5 - m_position ) * 360;
-    }
-    else
-    {
-        startAngle = 90 + -1 * ( m_origin / m_maximum ) * 360;
-        spanAngle = -1 * ( m_value / m_maximum ) * 360;
-    }
-
-    const QRectF r( 0.5 * m_width, 0.5 * m_width,
-        size.width() - m_width, size.height() - m_width );
+    const qreal w = m_metrics.width();
+    const QRectF rect( 0.5 * w, 0.5 * w, size.width() - w, size.height() - w );
 
     QskArcRenderer renderer;
-    renderer.renderArc( r, m_gradient, m_gradientType, m_width, startAngle, spanAngle,
-        painter );
+    renderer.renderArc( rect, m_metrics, m_gradient, painter );
 }
 
 uint QskArcNode::hash() const
 {
-    uint h = qHash( m_gradientType );
-    h = qHash( m_width, h );
-    h = qHash( m_value, h );
-    h = qHash( m_origin, h );
-    h = qHash( m_maximum, h );
-    h = qHash( m_isIndeterminate, h );
-    h = qHash( m_position, h );
+    uint h = m_metrics.hash();
 
     for( const QskGradientStop& stop : m_gradient.stops() )
     {

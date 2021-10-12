@@ -22,6 +22,7 @@ class QskGraphic;
 class QskTextOptions;
 
 class QSGNode;
+class QQuickWindow;
 
 class QSK_EXPORT QskSkinlet
 {
@@ -51,6 +52,13 @@ class QSK_EXPORT QskSkinlet
 
     static QSGNode* updateBoxNode( const QskSkinnable*, QSGNode*,
         const QRectF&, const QskGradient&, QskAspect::Subcontrol );
+
+    static QSGNode* updateArcNode( const QskSkinnable*, QSGNode*,
+        const QRectF&, QskAspect::Subcontrol, QQuickWindow* );
+
+    static QSGNode* updateArcNode( const QskSkinnable*, QSGNode*,
+        const QRectF&, const QskGradient&, QskAspect::Subcontrol,
+        QQuickWindow* );
 
     static QSGNode* updateTextNode( const QskSkinnable*, QSGNode*,
         const QRectF&, Qt::Alignment, const QString&, const QskTextOptions&,
@@ -84,6 +92,9 @@ class QSK_EXPORT QskSkinlet
 
     QSGNode* updateBoxNode( const QskSkinnable*, QSGNode*,
         QskAspect::Subcontrol ) const;
+
+    QSGNode* updateArcNode( const QskSkinnable*, QSGNode*,
+        QskAspect::Subcontrol, QQuickWindow* ) const;
 
     QSGNode* updateBoxClipNode( const QskSkinnable*, QSGNode*,
         QskAspect::Subcontrol ) const;

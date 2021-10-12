@@ -55,24 +55,25 @@ QSGNode* CircularProgressBarSkinlet::updateBarNode(
         arcNode = new QskArcNode();
     }
 
-    const auto subControl = ( nodeRole == GrooveRole ) ? CircularProgressBar::Groove
-                                                       : CircularProgressBar::Bar;
+    // ### for the groove case, we can just call updateArcNode directly,
+    // but not for the bar case, because we need to change the angles
+    // for the latter case, we can just set the metrics rather than having
+    // this method here
+    const auto subControl = ( nodeRole == GrooveRole ) ?
+                CircularProgressBar::Groove : CircularProgressBar::Bar;
+
+    const QRectF rect = bar->contentsRect(); // ### rather call subcontrolrect
+
+    QskArcMetrics arcMetrics = bar->arcMetricsHint( subControl );
+    const int spanAngle = ( nodeRole == GrooveRole ) ?
+                5760 : qRound( bar->valueAsRatio() * -5760 );
+    arcMetrics.setSpanAngle( spanAngle );
+
+    QQuickWindow* window = bar->window();
 
     const QskGradient gradient = bar->gradientHint( subControl );
 
-    const QGradient::Type type = ( nodeRole == GrooveRole ) ?
-        QGradient::RadialGradient : QGradient::ConicalGradient;
-
-    const double width = bar->metric( subControl | QskAspect::Size );
-    const double value = ( nodeRole == GrooveRole ) ? bar->maximum() : bar->value();
-    const double position = bar->metric( CircularProgressBar::Bar | QskAspect::Position );
-
-    arcNode->setArcData( gradient, type, width, value, bar->origin(), bar->maximum(),
-        bar->isIndeterminate(), position );
-
-    QQuickWindow* window = bar->window();
-    const QRect rect = bar->contentsRect().toRect();
-    arcNode->update( window, QskTextureRenderer::AutoDetect, rect );
+    arcNode->setArcData( rect, arcMetrics, gradient, window );
 
     return arcNode;
 }

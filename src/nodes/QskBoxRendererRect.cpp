@@ -11,6 +11,8 @@
 #include "QskGradient.h"
 #include "QskVertex.h"
 
+#include <QDebug>
+
 using namespace QskVertex;
 
 namespace
@@ -374,6 +376,13 @@ static inline void qskCreateFillOrdered( const QskBoxRenderer::Quad& rect,
                 line = QskVertex::fillOrdered( it, 0.0, 1.0, gradient, line );
             }
 
+            break;
+        }
+        case QskGradient::Radial: // fall through
+        case QskGradient::Conical:
+        {
+            qWarning() << "radial and conical gradients are only supported"
+                << "when rendering arcs";
             break;
         }
     }

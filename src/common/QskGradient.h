@@ -34,7 +34,9 @@ class QSK_EXPORT QskGradient
     {
         Horizontal,
         Vertical,
-        Diagonal
+        Diagonal,
+        Radial,
+        Conical
     };
 
     Q_ENUM( Orientation )

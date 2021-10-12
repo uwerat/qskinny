@@ -5,6 +5,7 @@
 
 #include "QskSkinlet.h"
 
+#include "QskArcNode.h"
 #include "QskAspect.h"
 #include "QskBoxBorderColors.h"
 #include "QskBoxBorderMetrics.h"
@@ -84,6 +85,12 @@ static inline bool qskIsBoxVisible( const QskBoxBorderMetrics& borderMetrics,
         return true;
 
     return !borderMetrics.isNull() && borderColors.isVisible();
+}
+
+static inline bool qskIsArcVisible( const QskArcMetrics& arcMetrics,
+    const QskGradient& gradient )
+{
+    return !arcMetrics.isNull() && gradient.isVisible();
 }
 
 static inline QskTextColors qskTextColors(
@@ -311,6 +318,49 @@ QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
     boxNode->setBoxData( boxRect, shape, borderMetrics, borderColors, fillGradient );
 
     return boxNode;
+}
+
+QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
+    QSGNode* node, QskAspect::Subcontrol subControl,
+    QQuickWindow* window ) const
+{
+    const auto rect = qskSubControlRect( this, skinnable, subControl );
+    return updateArcNode( skinnable, node, rect, subControl, window );
+}
+
+QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
+    QSGNode* node, const QRectF& rect, QskAspect::Subcontrol subControl,
+    QQuickWindow* window )
+{
+    const auto fillGradient = skinnable->gradientHint( subControl );
+    return updateArcNode( skinnable, node, rect, fillGradient, subControl,
+        window );
+}
+
+QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
+    QSGNode* node, const QRectF& rect, const QskGradient& fillGradient,
+    QskAspect::Subcontrol subControl, QQuickWindow* window )
+{
+    const auto margins = skinnable->marginHint( subControl );
+
+    const auto arcRect = rect.marginsRemoved( margins );
+    if ( arcRect.isEmpty() )
+        return nullptr;
+
+    auto arcMetrics = skinnable->arcMetricsHint( subControl );
+    arcMetrics = arcMetrics.toAbsolute( arcRect.size() );
+
+    if ( !qskIsArcVisible( arcMetrics, fillGradient ) )
+        return nullptr;
+
+    auto arcNode = static_cast< QskArcNode* >( node );
+
+    if ( arcNode == nullptr )
+        arcNode = new QskArcNode();
+
+    arcNode->setArcData( rect, arcMetrics, fillGradient, window );
+
+    return arcNode;
 }
 
 QSGNode* QskSkinlet::updateBoxClipNode( const QskSkinnable* skinnable,

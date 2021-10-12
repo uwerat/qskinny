@@ -6,10 +6,9 @@
 #ifndef QSK_ARC_NODE_H
 #define QSK_ARC_NODE_H
 
+#include "QskArcMetrics.h"
 #include "QskGradient.h"
 #include "QskPaintedNode.h"
-
-#include <QGradient>
 
 class QSK_EXPORT QskArcNode : public QskPaintedNode
 {
@@ -17,21 +16,16 @@ class QSK_EXPORT QskArcNode : public QskPaintedNode
     QskArcNode();
     ~QskArcNode() override;
 
-    void setArcData( const QskGradient&, QGradient::Type, double, double,
-        double, double, bool, double );
+    void setArcData( const QRectF&, const QskArcMetrics&, const QskGradient&,
+        QQuickWindow* );
 
     void paint( QPainter* painter, const QSizeF& size ) override;
     uint hash() const override;
 
   private:
+    QRectF m_rect;
+    QskArcMetrics m_metrics;
     QskGradient m_gradient;
-    QGradient::Type m_gradientType;
-    double m_width;
-    double m_value;
-    double m_origin;
-    double m_maximum;
-    bool m_isIndeterminate;
-    double m_position;
 };
 
 #endif

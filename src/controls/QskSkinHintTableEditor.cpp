@@ -6,6 +6,7 @@
 #include "QskSkinHintTableEditor.h"
 #include "QskSkinHintTable.h"
 
+#include "QskArcMetrics.h"
 #include "QskMargins.h"
 #include "QskBoxShapeMetrics.h"
 #include "QskBoxBorderMetrics.h"
@@ -107,6 +108,11 @@ namespace
     inline QskAspect aspectBorder( QskAspect aspect )
     {
         return aspect | QskAspect::Border;
+    }
+
+    inline QskAspect aspectArc( QskAspect aspect )
+    {
+        return aspect | QskAspect::Arc;
     }
 }
 
@@ -466,4 +472,28 @@ void QskSkinHintTableEditor::removeBoxBorderColors(
 QskBoxBorderColors QskSkinHintTableEditor::boxBorderColors( QskAspect aspect ) const
 {
     return colorHint< QskBoxBorderColors >( aspectBorder( aspect ) );
+}
+
+void QskSkinHintTableEditor::setArcMetrics( QskAspect aspect, qreal startAngle,
+    qreal endAngle, qreal width, Qt::SizeMode sizeMode )
+{
+    setMetricHint( aspectArc( aspect ),
+        QskArcMetrics( startAngle, endAngle, width, sizeMode ) );
+}
+
+void QskSkinHintTableEditor::setArcMetrics( QskAspect aspect,
+    const QskArcMetrics& arcMetrics, QskStateCombination combination )
+{
+    setMetricHint( aspectArc( aspect ), arcMetrics, combination );
+}
+
+void QskSkinHintTableEditor::removeArcMetrics( QskAspect aspect,
+    QskStateCombination combination )
+{
+    return removeMetricHint( aspectArc( aspect ), combination );
+}
+
+QskArcMetrics QskSkinHintTableEditor::arcMetrics( QskAspect aspect ) const
+{
+    return metricHint< QskArcMetrics >( aspectArc( aspect ) );
 }

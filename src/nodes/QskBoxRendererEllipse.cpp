@@ -11,6 +11,7 @@
 #include "QskBoxRendererColorMap.h"
 #include "QskBoxShapeMetrics.h"
 
+#include <qdebug.h>
 #include <qmath.h>
 #include <qsggeometry.h>
 
@@ -771,6 +772,13 @@ static inline int qskFillLineCount(
             if ( metrics.centerQuad.left >= metrics.centerQuad.right )
                 lineCount--;
 
+            break;
+        }
+        case QskGradient::Radial: // fall through
+        case QskGradient::Conical:
+        {
+            qWarning() << "radial and conical gradients are only supported"
+                << "when rendering arcs";
             break;
         }
     }
