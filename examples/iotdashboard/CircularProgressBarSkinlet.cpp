@@ -35,47 +35,20 @@ QSGNode* CircularProgressBarSkinlet::updateSubNode(
 
     switch( nodeRole )
     {
-        case GrooveRole: // fall through
+        case GrooveRole:
+        {
+            return updateArcNode( skinnable, node, CircularProgressBar::Groove,
+                bar->window() );
+        }
         case BarRole:
         {
-            return updateBarNode( bar, nodeRole, node );
+            const auto subControl = CircularProgressBar::Bar;
+            return updateArcNode( skinnable, node, CircularProgressBar::Bar,
+                bar->window() );
         }
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
-}
-
-QSGNode* CircularProgressBarSkinlet::updateBarNode(
-    const CircularProgressBar* bar, quint8 nodeRole, QSGNode* node ) const
-{
-    auto arcNode = static_cast< QskArcNode* >( node );
-
-    if( arcNode == nullptr )
-    {
-        arcNode = new QskArcNode();
-    }
-
-    // ### for the groove case, we can just call updateArcNode directly,
-    // but not for the bar case, because we need to change the angles
-    // for the latter case, we can just set the metrics rather than having
-    // this method here
-    const auto subControl = ( nodeRole == GrooveRole ) ?
-                CircularProgressBar::Groove : CircularProgressBar::Bar;
-
-    const QRectF rect = bar->contentsRect(); // ### rather call subcontrolrect
-
-    QskArcMetrics arcMetrics = bar->arcMetricsHint( subControl );
-    const int spanAngle = ( nodeRole == GrooveRole ) ?
-                5760 : qRound( bar->valueAsRatio() * -5760 );
-    arcMetrics.setSpanAngle( spanAngle );
-
-    QQuickWindow* window = bar->window();
-
-    const QskGradient gradient = bar->gradientHint( subControl );
-
-    arcNode->setArcData( rect, arcMetrics, gradient, window );
-
-    return arcNode;
 }
 
 #include "moc_CircularProgressBarSkinlet.cpp"

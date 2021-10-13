@@ -6,6 +6,7 @@
 #include "CircularProgressBar.h"
 
 #include <QskAnimator.h>
+#include <QskArcMetrics.h>
 #include <QskFunctions.h>
 
 QSK_SUBCONTROL( CircularProgressBar, Groove )
@@ -179,6 +180,14 @@ void CircularProgressBar::setValueInternal( qreal value )
     if ( !qskFuzzyCompare( value, m_data->value ) )
     {
         m_data->value = value;
+
+        // if we didn't change the metrics here we would have to
+        // add our own drawing code to the skinlet:
+        QskArcMetrics arcMetrics = arcMetricsHint( Bar );
+        const int spanAngle = qRound( valueAsRatio() * -5760 );
+        arcMetrics.setSpanAngle( spanAngle );
+        setArcMetricsHint( Bar, arcMetrics );
+
         Q_EMIT valueChanged( value );
 
         update();
