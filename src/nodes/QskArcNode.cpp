@@ -1,12 +1,10 @@
 /**********************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) 2021 Uwe Rathmann
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
 #include "QskArcNode.h"
 #include "QskArcRenderer.h"
-
-#include <QPainter>
 
 QskArcNode::QskArcNode()
 {
@@ -19,11 +17,10 @@ QskArcNode::~QskArcNode()
 void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& metrics,
     const QskGradient &gradient, QQuickWindow* window )
 {
-    m_rect = rect;
     m_metrics = metrics;
     m_gradient = gradient;
 
-    update( window, QskTextureRenderer::AutoDetect, m_rect.toRect() );
+    update( window, QskTextureRenderer::AutoDetect, rect.toRect() );
 }
 
 void QskArcNode::paint( QPainter* painter, const QSizeF &size )

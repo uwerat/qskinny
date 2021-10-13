@@ -223,8 +223,8 @@ class QSK_EXPORT QskSkinHintTableEditor
 
     // arcMetrics
 
-    void setArcMetrics( QskAspect,
-        qreal, qreal, qreal, Qt::SizeMode = Qt::AbsoluteSize );
+    void setArcMetrics( QskAspect, qreal, int, int,
+        Qt::SizeMode = Qt::AbsoluteSize );
 
     void setArcMetrics( QskAspect,
         const QskArcMetrics&, QskStateCombination = QskStateCombination() );

@@ -1,5 +1,5 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) 2021 Uwe Rathmann
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
@@ -110,8 +110,8 @@ QDebug operator<<( QDebug debug, const QskArcMetrics& metrics )
 
     debug << "Arc" << '(';
     debug << "width:" << metrics.width();
-    debug << "start angle:" << metrics.startAngle();
-    debug << "span angle:" << metrics.spanAngle();
+    debug << ", start angle:" << metrics.startAngle();
+    debug << ", span angle:" << metrics.spanAngle();
     debug << ", size mode:" << metrics.sizeMode();
     debug << ')';
 

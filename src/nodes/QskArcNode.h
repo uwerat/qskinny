@@ -1,5 +1,5 @@
 /**********************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) 2021 Uwe Rathmann
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
@@ -23,7 +23,6 @@ class QSK_EXPORT QskArcNode : public QskPaintedNode
     uint hash() const override;
 
   private:
-    QRectF m_rect;
     QskArcMetrics m_metrics;
     QskGradient m_gradient;
 };

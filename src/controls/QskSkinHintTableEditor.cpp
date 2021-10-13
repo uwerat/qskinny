@@ -474,11 +474,11 @@ QskBoxBorderColors QskSkinHintTableEditor::boxBorderColors( QskAspect aspect ) c
     return colorHint< QskBoxBorderColors >( aspectBorder( aspect ) );
 }
 
-void QskSkinHintTableEditor::setArcMetrics( QskAspect aspect, qreal startAngle,
-    qreal endAngle, qreal width, Qt::SizeMode sizeMode )
+void QskSkinHintTableEditor::setArcMetrics( QskAspect aspect, qreal width,
+    int startAngle, int spanAngle, Qt::SizeMode sizeMode )
 {
     setMetricHint( aspectArc( aspect ),
-        QskArcMetrics( startAngle, endAngle, width, sizeMode ) );
+        QskArcMetrics( width, startAngle, spanAngle, sizeMode ) );
 }
 
 void QskSkinHintTableEditor::setArcMetrics( QskAspect aspect,

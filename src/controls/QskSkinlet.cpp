@@ -344,6 +344,7 @@ QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
     const auto margins = skinnable->marginHint( subControl );
 
     const auto arcRect = rect.marginsRemoved( margins );
+
     if ( arcRect.isEmpty() )
         return nullptr;
 

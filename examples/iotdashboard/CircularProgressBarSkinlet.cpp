@@ -6,7 +6,6 @@
 #include "CircularProgressBarSkinlet.h"
 #include "CircularProgressBar.h"
 
-#include <QskArcNode.h>
 #include <QskPaintedNode.h>
 
 #include <QEasingCurve>
@@ -42,7 +41,6 @@ QSGNode* CircularProgressBarSkinlet::updateSubNode(
         }
         case BarRole:
         {
-            const auto subControl = CircularProgressBar::Bar;
             return updateArcNode( skinnable, node, CircularProgressBar::Bar,
                 bar->window() );
         }
