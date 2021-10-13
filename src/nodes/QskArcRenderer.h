@@ -10,6 +10,7 @@
 #include "QskGlobal.h"
 #include "QskGradient.h"
 
+#include <QDebug>
 #include <QPainter>
 #include <QRect>
 
@@ -34,7 +35,22 @@ void QskArcRenderer::renderArc(const QRectF& rect,
         stops.append( s );
     }
 
-    if( gradient.orientation() == QskGradient::Radial )
+    if( gradient.orientation() == QskGradient::Horizontal
+        || gradient.orientation() == QskGradient::Vertical )
+    {
+        QPointF finalStop = ( gradient.orientation() == QskGradient::Horizontal )
+            ? QPointF( rect.width(), 0 ) : QPointF( 0, rect.height() );
+
+        QLinearGradient linearGradient( { 0, 0 }, finalStop );
+        linearGradient.setStops( stops );
+        painter->setPen( QPen( linearGradient, metrics.width(), Qt::SolidLine,
+            Qt::FlatCap ) );
+    }
+    else if( gradient.orientation() == QskGradient::Diagonal )
+    {
+        qWarning() << "cannot paint a diagonal gradient with QPainter";
+    }
+    else if( gradient.orientation() == QskGradient::Radial )
     {
         QRadialGradient radialGradient( rect.center(), qMin( rect.width(),
             rect.height() ) );
@@ -50,7 +66,6 @@ void QskArcRenderer::renderArc(const QRectF& rect,
         painter->setPen( QPen( conicalGradient, metrics.width(), Qt::SolidLine,
             Qt::FlatCap ) );
     }
-    // ### add other types
 
     painter->drawArc( rect, metrics.startAngle(), metrics.spanAngle() );
 }
