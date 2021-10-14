@@ -144,7 +144,11 @@ qreal QskBoundedControl::boundedValue( qreal value ) const
 
 qreal QskBoundedControl::valueAsRatio( qreal value ) const
 {
-    return ( value - m_minimum ) / ( m_maximum - m_minimum );
+    const auto range = m_maximum - m_minimum;
+    if ( qFuzzyIsNull( range ) )
+        return 0.0;
+
+    return ( value - m_minimum ) / range;
 }
 
 qreal QskBoundedControl::valueFromRatio( qreal ratio ) const
