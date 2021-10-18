@@ -12,6 +12,7 @@ DEPENDPATH *= $${QSK_SUBDIRS}
 # DEFINES += QSK_LAYOUT_COMPAT
 
 HEADERS += \
+    common/QskArcBorderMetrics.h \
     common/QskArcMetrics.h \
     common/QskAspect.h \
     common/QskBoxBorderColors.h \
@@ -39,6 +40,7 @@ HEADERS += \
     common/QskTextOptions.h
 
 SOURCES += \
+    common/QskArcBorderMetrics.cpp \
     common/QskArcMetrics.cpp \
     common/QskAspect.cpp \
     common/QskBoxBorderColors.cpp \

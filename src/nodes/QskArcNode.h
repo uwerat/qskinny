@@ -6,6 +6,7 @@
 #ifndef QSK_ARC_NODE_H
 #define QSK_ARC_NODE_H
 
+#include "QskArcBorderMetrics.h"
 #include "QskArcMetrics.h"
 #include "QskGradient.h"
 #include "QskPaintedNode.h"
@@ -16,14 +17,15 @@ class QSK_EXPORT QskArcNode : public QskPaintedNode
     QskArcNode();
     ~QskArcNode() override;
 
-    void setArcData( const QRectF&, const QskArcMetrics&, const QskGradient&,
-        QQuickWindow* );
+    void setArcData( const QRectF&, const QskArcMetrics&,
+        const QskArcBorderMetrics&, const QskGradient&, QQuickWindow* );
 
     void paint( QPainter* painter, const QSizeF& size ) override;
     uint hash() const override;
 
   private:
     QskArcMetrics m_metrics;
+    QskArcBorderMetrics m_borderMetrics;
     QskGradient m_gradient;
 };
 

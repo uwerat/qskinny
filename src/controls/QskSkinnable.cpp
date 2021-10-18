@@ -6,6 +6,7 @@
 #include "QskSkinnable.h"
 
 #include "QskAnimationHint.h"
+#include "QskArcBorderMetrics.h"
 #include "QskArcMetrics.h"
 #include "QskAspect.h"
 #include "QskColorFilter.h"
@@ -538,6 +539,24 @@ QskArcMetrics QskSkinnable::arcMetricsHint(
 {
     return qskMetric< QskArcMetrics >(
         this, aspect | QskAspect::Shape, status );
+}
+
+bool QskSkinnable::setArcBorderMetricsHint(
+    const QskAspect aspect, const QskArcBorderMetrics& arc )
+{
+    return qskSetMetric( this, aspect | QskAspect::Border, arc );
+}
+
+bool QskSkinnable::resetArcBorderMetricsHint( const QskAspect aspect )
+{
+    return resetMetric( aspect | QskAspect::Border );
+}
+
+QskArcBorderMetrics QskSkinnable::arcBorderMetricsHint(
+    const QskAspect aspect, QskSkinHintStatus* status ) const
+{
+    return qskMetric< QskArcBorderMetrics >(
+        this, aspect | QskAspect::Border, status );
 }
 
 bool QskSkinnable::setSpacingHint( const QskAspect aspect, qreal spacing )

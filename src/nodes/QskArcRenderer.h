@@ -8,6 +8,7 @@
 
 #include "QskGlobal.h"
 
+class QskArcBorderMetrics;
 class QskArcMetrics;
 class QskGradient;
 
@@ -18,7 +19,7 @@ class QSK_EXPORT QskArcRenderer
 {
   public:
     void renderArc( const QRectF&, const QskArcMetrics&,
-        const QskGradient&, QPainter* );
+        const QskArcBorderMetrics&, const QskGradient&, QPainter* );
 };
 
 #endif

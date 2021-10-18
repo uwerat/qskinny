@@ -21,6 +21,7 @@ class QDebug;
 
 class QSGNode;
 
+class QskArcBorderMetrics;
 class QskArcMetrics;
 class QskControl;
 class QskAnimationHint;
@@ -193,6 +194,10 @@ class QSK_EXPORT QskSkinnable
     bool setArcMetricsHint( QskAspect, const QskArcMetrics& );
     bool resetArcMetricsHint( QskAspect );
     QskArcMetrics arcMetricsHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
+
+    bool setArcBorderMetricsHint( QskAspect, const QskArcBorderMetrics& );
+    bool resetArcBorderMetricsHint( QskAspect );
+    QskArcBorderMetrics arcBorderMetricsHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
 
     bool setSpacingHint( QskAspect, qreal );
     bool resetSpacingHint( QskAspect );
