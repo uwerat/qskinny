@@ -704,6 +704,11 @@ namespace
     };
 }
 
+static inline Qt::Orientation qskQtOrientation( const QskGradient& gradient )
+{
+    return ( gradient.orientation() == QskGradient::Vertical ) ? Qt::Vertical : Qt::Horizontal;
+}
+
 static inline int qskFillLineCount(
     const QskBoxRenderer::Metrics& metrics, const QskGradient& gradient )
 {
@@ -872,8 +877,7 @@ static inline void qskRenderFillRandom(
     const QskBoxRenderer::Metrics& metrics,
     const QskGradient& gradient, ColoredLine* line )
 {
-    const auto orientation =
-        ( gradient.orientation() == QskGradient::Vertical ) ? Qt::Vertical : Qt::Horizontal;
+    const auto orientation = qskQtOrientation( gradient );
 
     if ( gradient.isMonochrome() )
     {
@@ -904,8 +908,7 @@ static inline void qskRenderBoxRandom(
         }
         else
         {
-            const auto orientation = ( gradient.orientation() == QskGradient::Vertical )
-                ? Qt::Vertical : Qt::Horizontal;
+            const auto orientation = qskQtOrientation( gradient );
 
             const ColorMapGradient fillMap( gradient.startColor(), gradient.endColor() );
             qskRenderLines( metrics, orientation, borderLine, borderMap, fillLine, fillMap );
@@ -927,8 +930,7 @@ static inline void qskRenderBoxRandom(
         }
         else
         {
-            const auto orientation = ( gradient.orientation() == QskGradient::Vertical )
-                ? Qt::Vertical : Qt::Horizontal;
+            const auto orientation = qskQtOrientation( gradient );
 
             const ColorMapGradient fillMap( gradient.startColor(), gradient.endColor() );
             qskRenderLines( metrics, orientation, borderLine, tl, tr, bl, br, fillLine, fillMap );
@@ -1283,9 +1285,7 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
             if ( extraLine )
                 borderLines++;
 
-            const auto orientation = gradient.orientation() == QskGradient::Horizontal
-                ? Qt::Horizontal : Qt::Vertical;
-
+            const auto orientation = qskQtOrientation( gradient );
             qskRenderBorder( metrics, orientation, borderColors, borderLines );
 
             if ( extraLine )
