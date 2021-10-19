@@ -13,6 +13,7 @@
 
 #include <memory>
 
+class QskArcMetrics;
 class QskSkin;
 class QskControl;
 class QskSkinnable;
@@ -58,6 +59,17 @@ class QSK_EXPORT QskSkinlet
     static QSGNode* updateArcNode( const QskSkinnable*, QSGNode*,
         const QRectF&, const QskGradient&, QskAspect::Subcontrol );
 
+    static QSGNode* updateArcNode( const QskSkinnable*, QSGNode*,
+        const QRectF&, const QskGradient&, const QskArcMetrics&,
+        QskAspect::Subcontrol );
+
+    static QSGNode* updateArcNode( const QskSkinnable*, QSGNode*,
+        const QRectF&, int startAngle, int spanAngle, QskAspect::Subcontrol );
+
+    static QSGNode* updateArcNode( const QskSkinnable*, QSGNode*,
+        const QRectF&, const QskGradient&, int startAngle, int spanAngle,
+        QskAspect::Subcontrol );
+
     static QSGNode* updateTextNode( const QskSkinnable*, QSGNode*,
         const QRectF&, Qt::Alignment, const QString&, const QskTextOptions&,
         QskAspect::Subcontrol );
@@ -92,6 +104,10 @@ class QSK_EXPORT QskSkinlet
         QskAspect::Subcontrol ) const;
 
     QSGNode* updateArcNode( const QskSkinnable*, QSGNode*,
+        QskAspect::Subcontrol ) const;
+
+    QSGNode* updateArcNode( const QskSkinnable*, QSGNode*,
+        int startAngle, int spanAngle,
         QskAspect::Subcontrol ) const;
 
     QSGNode* updateBoxClipNode( const QskSkinnable*, QSGNode*,

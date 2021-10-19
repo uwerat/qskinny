@@ -181,13 +181,6 @@ void CircularProgressBar::setValueInternal( qreal value )
     {
         m_data->value = value;
 
-        // if we didn't change the metrics here we would have to
-        // add our own drawing code to the skinlet:
-        QskArcMetrics arcMetrics = arcMetricsHint( Bar );
-        const int spanAngle = qRound( valueAsRatio() * -5760 );
-        arcMetrics.setSpanAngle( spanAngle );
-        setArcMetricsHint( Bar, arcMetrics );
-
         Q_EMIT valueChanged( value );
 
         update();
