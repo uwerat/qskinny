@@ -89,10 +89,10 @@ static inline bool qskIsBoxVisible( const QskBoxBorderMetrics& borderMetrics,
 
 static inline bool qskIsArcVisible( const QskArcMetrics& arcMetrics,
     const QskArcBorderMetrics& borderMetrics,
-    const QskGradient& gradient )
+    const QskArcBorderColors& borderColors, const QskGradient& gradient )
 {
     return ( !arcMetrics.isNull() && gradient.isVisible() )
-             || !borderMetrics.isNull();
+        || ( !borderMetrics.isNull() && borderColors.isVisible() );
 }
 
 static inline QskTextColors qskTextColors(
@@ -365,7 +365,10 @@ QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
     auto arcBorderMetrics = skinnable->arcBorderMetricsHint( subControl );
     arcBorderMetrics = arcBorderMetrics.toAbsolute( arcRect.size() );
 
-    if ( !qskIsArcVisible( arcMetrics, arcBorderMetrics, fillGradient ) )
+    const auto arcBorderColors = skinnable->arcBorderColorsHint( subControl );
+
+    if ( !qskIsArcVisible( arcMetrics, arcBorderMetrics, arcBorderColors,
+        fillGradient ) )
         return nullptr;
 
     auto arcNode = static_cast< QskArcNode* >( node );
@@ -374,7 +377,7 @@ QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
         arcNode = new QskArcNode();
 
     arcNode->setArcData( rect, absoluteArcMetrics, arcBorderMetrics,
-        fillGradient, control->window() );
+        arcBorderColors, fillGradient, control->window() );
 
     return arcNode;
 }

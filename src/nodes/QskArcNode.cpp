@@ -15,11 +15,13 @@ QskArcNode::~QskArcNode()
 }
 
 void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& metrics,
-    const QskArcBorderMetrics& borderMetrics, const QskGradient &gradient,
+    const QskArcBorderMetrics& borderMetrics,
+    const QskArcBorderColors& borderColors, const QskGradient &gradient,
     QQuickWindow* window )
 {
     m_metrics = metrics;
     m_borderMetrics = borderMetrics;
+    m_borderColors = borderColors;
     m_gradient = gradient;
 
     if ( rect.isEmpty() )
@@ -37,8 +39,7 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& metrics,
             effect - even if not being visible. TODO ...
          */
 
-        // ### implement border colors
-//        hasBorder = borderColors.isVisible();
+        hasBorder = borderColors.isVisible();
     }
 
     if ( !hasBorder && !hasFill )
@@ -56,7 +57,8 @@ void QskArcNode::paint( QPainter* painter, const QSizeF &size )
 
     QskArcRenderer renderer;
 
-    renderer.renderArc( rect, m_metrics, m_borderMetrics, m_gradient, painter );
+    renderer.renderArc( rect, m_metrics, m_borderMetrics, m_borderColors,
+        m_gradient, painter );
 }
 
 uint QskArcNode::hash() const

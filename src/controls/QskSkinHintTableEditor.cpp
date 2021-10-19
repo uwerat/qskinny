@@ -6,6 +6,7 @@
 #include "QskSkinHintTableEditor.h"
 #include "QskSkinHintTable.h"
 
+#include "QskArcBorderColors.h"
 #include "QskArcBorderMetrics.h"
 #include "QskArcMetrics.h"
 #include "QskMargins.h"
@@ -518,4 +519,31 @@ void QskSkinHintTableEditor::removeArcBorderMetrics( QskAspect aspect,
 QskArcBorderMetrics QskSkinHintTableEditor::arcBorderMetrics( QskAspect aspect ) const
 {
     return metricHint< QskArcBorderMetrics >( aspectBorder( aspect ) );
+}
+
+void QskSkinHintTableEditor::setArcBorderColors(
+    QskAspect aspect, const QskArcBorderColors& borderColors,
+    QskStateCombination combination )
+{
+    setColorHint( aspectBorder( aspect ), borderColors, combination );
+}
+
+void QskSkinHintTableEditor::setArcBorderColors( QskAspect aspect,
+    const QColor& outer, const QColor& inner,
+    QskStateCombination combination )
+{
+    setColorHint( aspectBorder( aspect ),
+        QskArcBorderColors( outer, inner ),
+        combination );
+}
+
+void QskSkinHintTableEditor::removeArcBorderColors(
+    QskAspect aspect, QskStateCombination combination )
+{
+    return removeColorHint( aspectBorder( aspect ), combination );
+}
+
+QskArcBorderColors QskSkinHintTableEditor::arcBorderColors( QskAspect aspect ) const
+{
+    return colorHint< QskArcBorderColors >( aspectBorder( aspect ) );
 }

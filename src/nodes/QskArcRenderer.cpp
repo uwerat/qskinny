@@ -5,6 +5,7 @@
 
 #include "QskArcRenderer.h"
 
+#include "QskArcBorderColors.h"
 #include "QskArcBorderMetrics.h"
 #include "QskArcMetrics.h"
 #include "QskGradient.h"
@@ -14,7 +15,8 @@
 
 void QskArcRenderer::renderArc( const QRectF& rect,
     const QskArcMetrics& metrics, const QskArcBorderMetrics &borderMetrics,
-    const QskGradient& gradient, QPainter* painter )
+    const QskArcBorderColors& borderColors, const QskGradient& gradient,
+    QPainter* painter )
 {
     painter->setRenderHint( QPainter::Antialiasing, true );
 
@@ -56,7 +58,9 @@ void QskArcRenderer::renderArc( const QRectF& rect,
         // draw inner border:
         const qreal i = metrics.width() / 2;
         const auto innerRect = rect.marginsRemoved( { i, i, i, i } );
-        painter->setPen( QPen( Qt::black, borderMetrics.width( Qsk::Inner ),
+        const QColor innerColor = borderColors.color( Qsk::Inner );
+
+        painter->setPen( QPen( innerColor, borderMetrics.width( Qsk::Inner ),
             Qt::SolidLine, Qt::FlatCap ) );
         painter->drawArc( innerRect, metrics.startAngle(), metrics.spanAngle() );
     }
@@ -66,7 +70,9 @@ void QskArcRenderer::renderArc( const QRectF& rect,
         // draw outer border:
         const qreal o = ( metrics.width() - borderMetrics.width( Qsk::Outer ) ) / 2;
         const auto outerRect = rect.marginsAdded( { o, o, o, o } );
-        painter->setPen( QPen( Qt::black, borderMetrics.width( Qsk::Outer ),
+        const QColor outerColor = borderColors.color( Qsk::Outer );
+
+        painter->setPen( QPen( outerColor, borderMetrics.width( Qsk::Outer ),
             Qt::SolidLine, Qt::FlatCap ) );
         painter->drawArc( outerRect, metrics.startAngle(), metrics.spanAngle() );
     }
