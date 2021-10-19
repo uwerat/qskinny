@@ -525,19 +525,19 @@ QskBoxBorderColors QskSkinnable::boxBorderColorsHint(
 bool QskSkinnable::setArcMetricsHint(
     const QskAspect aspect, const QskArcMetrics& arc )
 {
-    return qskSetMetric( this, aspect | QskAspect::Arc, arc );
+    return qskSetMetric( this, aspect | QskAspect::Shape, arc );
 }
 
 bool QskSkinnable::resetArcMetricsHint( const QskAspect aspect )
 {
-    return resetMetric( aspect | QskAspect::Arc );
+    return resetMetric( aspect | QskAspect::Shape );
 }
 
 QskArcMetrics QskSkinnable::arcMetricsHint(
     const QskAspect aspect, QskSkinHintStatus* status ) const
 {
     return qskMetric< QskArcMetrics >(
-        this, aspect | QskAspect::Arc, status );
+        this, aspect | QskAspect::Shape, status );
 }
 
 bool QskSkinnable::setSpacingHint( const QskAspect aspect, qreal spacing )

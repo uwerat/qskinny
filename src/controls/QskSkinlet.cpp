@@ -321,26 +321,27 @@ QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
 }
 
 QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
-    QSGNode* node, QskAspect::Subcontrol subControl,
-    QQuickWindow* window ) const
+    QSGNode* node, QskAspect::Subcontrol subControl ) const
 {
     const auto rect = qskSubControlRect( this, skinnable, subControl );
-    return updateArcNode( skinnable, node, rect, subControl, window );
+    return updateArcNode( skinnable, node, rect, subControl );
 }
 
 QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
-    QSGNode* node, const QRectF& rect, QskAspect::Subcontrol subControl,
-    QQuickWindow* window )
+    QSGNode* node, const QRectF& rect, QskAspect::Subcontrol subControl )
 {
     const auto fillGradient = skinnable->gradientHint( subControl );
-    return updateArcNode( skinnable, node, rect, fillGradient, subControl,
-        window );
+    return updateArcNode( skinnable, node, rect, fillGradient, subControl );
 }
 
 QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
     QSGNode* node, const QRectF& rect, const QskGradient& fillGradient,
-    QskAspect::Subcontrol subControl, QQuickWindow* window )
+    QskAspect::Subcontrol subControl )
 {
+    const auto control = skinnable->owningControl();
+    if ( control == nullptr )
+        return nullptr;
+
     const auto margins = skinnable->marginHint( subControl );
 
     const auto arcRect = rect.marginsRemoved( margins );
@@ -359,7 +360,7 @@ QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
     if ( arcNode == nullptr )
         arcNode = new QskArcNode();
 
-    arcNode->setArcData( rect, arcMetrics, fillGradient, window );
+    arcNode->setArcData( rect, arcMetrics, fillGradient, control->window() );
 
     return arcNode;
 }

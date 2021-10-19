@@ -60,7 +60,7 @@ class DaytimeSkin : public Skin
         : Skin(
             Skin::Palette( {"#6D7BFB"}, {"#fbfbfb"}, {"#ffffff"},
             "#ffffff", {"#f7f7f7"}, {"#f4f4f4"}, Qt::black, Qt::black,
-            { QskGradient::Radial, { { 0.0, 0xc4c4c4 }, { 0.5, 0xf8f8f8 }, { 1.0, 0xc4c4c4 } } } )
+            { QskGradient::Vertical, { { 0.0, 0xc4c4c4 }, { 0.5, 0xf8f8f8 }, { 1.0, 0xc4c4c4 } } } )
             , parent )
     {
     }
@@ -73,7 +73,7 @@ class NighttimeSkin : public Skin
         : Skin(
             Skin::Palette( {"#2937A7"}, {"#040404"}, {"#000000"},
             "#000000", {"#0a0a0a"}, {"#0c0c0c"}, Qt::white, Qt::white,
-            { QskGradient::Radial, { { 0.0, 0x666666 }, { 0.5, 0x222222 }, { 1.0, 0x333333 } } } )
+            { QskGradient::Vertical, { { 0.0, 0x666666 }, { 0.5, 0x222222 }, { 1.0, 0x333333 } } } )
             , parent )
     {
     }

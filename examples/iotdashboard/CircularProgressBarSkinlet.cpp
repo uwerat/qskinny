@@ -30,19 +30,15 @@ QRectF CircularProgressBarSkinlet::subControlRect(
 QSGNode* CircularProgressBarSkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
-    const auto bar = static_cast< const CircularProgressBar* >( skinnable );
-
     switch( nodeRole )
     {
         case GrooveRole:
         {
-            return updateArcNode( skinnable, node, CircularProgressBar::Groove,
-                bar->window() );
+            return updateArcNode( skinnable, node, CircularProgressBar::Groove );
         }
         case BarRole:
         {
-            return updateArcNode( skinnable, node, CircularProgressBar::Bar,
-                bar->window() );
+            return updateArcNode( skinnable, node, CircularProgressBar::Bar );
         }
     }
 

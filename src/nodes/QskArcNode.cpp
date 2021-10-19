@@ -1,5 +1,5 @@
 /**********************************************************************
- * QSkinny - Copyright (C) 2021 Uwe Rathmann
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
@@ -36,10 +36,8 @@ uint QskArcNode::hash() const
 {
     uint h = m_metrics.hash();
 
-    for( const QskGradientStop& stop : m_gradient.stops() )
-    {
+    for( const auto& stop : m_gradient.stops() )
         h = stop.hash( h );
-    }
 
     return h;
 }

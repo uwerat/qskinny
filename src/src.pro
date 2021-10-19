@@ -108,6 +108,7 @@ HEADERS += \
 
 SOURCES += \
     nodes/QskArcNode.cpp \
+    nodes/QskArcRenderer.cpp \
     nodes/QskBoxNode.cpp \
     nodes/QskBoxClipNode.cpp \
     nodes/QskBoxRendererRect.cpp \

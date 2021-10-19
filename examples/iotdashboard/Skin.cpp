@@ -109,10 +109,10 @@ void Skin::initHints( const Palette& palette )
     ed.setColor( TopBarItem::Item4 | QskAspect::TextColor, "#6776ff" );
 
     // conical gradients are counterclockwise, so specify the 2nd color first:
-    ed.setGradient( TopBarItem::Item1, { QskGradient::Conical, "#FF3122", "#FF5C00" } );
-    ed.setGradient( TopBarItem::Item2, { QskGradient::Conical, "#6100FF", "#6776FF" } );
-    ed.setGradient( TopBarItem::Item3, { QskGradient::Conical, "#FF3122", "#FFCE50" } );
-    ed.setGradient( TopBarItem::Item4, { QskGradient::Conical, "#6100FF", "#6776FF" } );
+    ed.setGradient( TopBarItem::Item1, { QskGradient::Horizontal, "#FF3122", "#FF5C00" } );
+    ed.setGradient( TopBarItem::Item2, { QskGradient::Horizontal, "#6100FF", "#6776FF" } );
+    ed.setGradient( TopBarItem::Item3, { QskGradient::Horizontal, "#FF3122", "#FFCE50" } );
+    ed.setGradient( TopBarItem::Item4, { QskGradient::Horizontal, "#6100FF", "#6776FF" } );
 
     // the bar gradient is defined through the top bar items above
     ed.setArcMetrics( CircularProgressBar::Groove, { 8.53, 90 * 16, -360 * 16 } );
