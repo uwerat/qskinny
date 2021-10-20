@@ -73,21 +73,13 @@ QskArcMetrics QskArcMetrics::toAbsolute( const QSizeF& size ) const noexcept
     if ( m_sizeMode != Qt::RelativeSize )
         return *this;
 
-    /*
-        Being relative to what - TODO ?
-        I can imagine arcs being relative to other arcs !!!
-     */
-
     QskArcMetrics absoluted = *this;
 
-    if ( size.isEmpty() )
-    {
-        absoluted.m_width = 0;
-    }
+    const auto l = qMin( size.width(), size.height() );
+    if ( l <= 0.0 )
+        absoluted.m_width = 0.0;
     else
-    {
-        absoluted.m_width = qskAbsoluted( size.width(), absoluted.m_width );
-    }
+        absoluted.m_width = qskAbsoluted( l, absoluted.m_width );
 
     absoluted.m_sizeMode = Qt::AbsoluteSize;
 
@@ -113,11 +105,9 @@ QDebug operator<<( QDebug debug, const QskArcMetrics& metrics )
     QDebugStateSaver saver( debug );
     debug.nospace();
 
-    debug << "Arc" << '(';
-    debug << "width:" << metrics.width();
-    debug << ", start angle:" << metrics.startAngle();
-    debug << ", span angle:" << metrics.spanAngle();
-    debug << ", size mode:" << metrics.sizeMode();
+    debug << "QskArcMetrics" << '(';
+    debug << metrics.width() << ',' << metrics.sizeMode();
+    debug << ",[" << metrics.startAngle() << ',' << metrics.spanAngle() << ']';
     debug << ')';
 
     return debug;
