@@ -33,7 +33,4 @@ class CircularProgressBarSkinlet : public QskSkinlet
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
-
-  private:
-    QSGNode* updateBarNode( const CircularProgressBar*, quint8 nodeRole, QSGNode* ) const;
 };
