@@ -21,6 +21,7 @@
 #include "UsageBox.h"
 #include "UsageDiagram.h"
 
+#include <QskArcMetrics.h>
 #include <QskBoxShapeMetrics.h>
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxBorderColors.h>
@@ -108,14 +109,16 @@ void Skin::initHints( const Palette& palette )
     ed.setColor( TopBarItem::Item4 | QskAspect::TextColor, "#6776ff" );
 
     // conical gradients are counterclockwise, so specify the 2nd color first:
-    ed.setGradient( TopBarItem::Item1, { Qt::Horizontal, "#FF3122", "#FF5C00" } );
-    ed.setGradient( TopBarItem::Item2, { Qt::Horizontal, "#6100FF", "#6776FF" } );
-    ed.setGradient( TopBarItem::Item3, { Qt::Horizontal, "#FF3122", "#FFCE50" } );
-    ed.setGradient( TopBarItem::Item4, { Qt::Horizontal, "#6100FF", "#6776FF" } );
+    ed.setGradient( TopBarItem::Item1, { QskGradient::Horizontal, "#FF3122", "#FF5C00" } );
+    ed.setGradient( TopBarItem::Item2, { QskGradient::Horizontal, "#6100FF", "#6776FF" } );
+    ed.setGradient( TopBarItem::Item3, { QskGradient::Horizontal, "#FF3122", "#FFCE50" } );
+    ed.setGradient( TopBarItem::Item4, { QskGradient::Horizontal, "#6100FF", "#6776FF" } );
 
     // the bar gradient is defined through the top bar items above
-    ed.setMetricHint( CircularProgressBar::Groove | QskAspect::Size, 8.53 );
-    ed.setMetricHint( CircularProgressBar::Bar | QskAspect::Size, 8.53 );
+    ed.setArcMetrics( CircularProgressBar::Groove, { 8.53, 90 * 16, -360 * 16 } );
+    // the span angle will be set in the progress bar, we just give a dummy
+    // value here:
+    ed.setArcMetrics( CircularProgressBar::Bar, { 8.53, 90 * 16, -180 * 16 } );
 
     ed.setFontRole( TimeTitleLabel::Text, Skin::TitleFont );
 

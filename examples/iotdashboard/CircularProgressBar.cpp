@@ -6,6 +6,7 @@
 #include "CircularProgressBar.h"
 
 #include <QskAnimator.h>
+#include <QskArcMetrics.h>
 #include <QskFunctions.h>
 
 QSK_SUBCONTROL( CircularProgressBar, Groove )
@@ -179,6 +180,7 @@ void CircularProgressBar::setValueInternal( qreal value )
     if ( !qskFuzzyCompare( value, m_data->value ) )
     {
         m_data->value = value;
+
         Q_EMIT valueChanged( value );
 
         update();

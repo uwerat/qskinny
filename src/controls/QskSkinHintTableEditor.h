@@ -14,6 +14,7 @@
 #include <qcolor.h>
 #include <qvariant.h>
 
+class QskArcMetrics;
 class QskMargins;
 class QskGradient;
 class QskBoxShapeMetrics;
@@ -219,6 +220,18 @@ class QSK_EXPORT QskSkinHintTableEditor
 
     void removeBoxBorderColors( QskAspect, QskStateCombination = QskStateCombination() );
     QskBoxBorderColors boxBorderColors( QskAspect ) const;
+
+    // arcMetrics
+
+    void setArcMetrics( QskAspect, qreal, int, int,
+        Qt::SizeMode = Qt::AbsoluteSize );
+
+    void setArcMetrics( QskAspect,
+        const QskArcMetrics&, QskStateCombination = QskStateCombination() );
+
+    void removeArcMetrics( QskAspect, QskStateCombination = QskStateCombination() );
+
+    QskArcMetrics arcMetrics( QskAspect ) const;
 
   private:
     QskSkinHintTable* m_table = nullptr;
