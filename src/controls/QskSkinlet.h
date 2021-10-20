@@ -64,10 +64,10 @@ class QSK_EXPORT QskSkinlet
         QskAspect::Subcontrol );
 
     static QSGNode* updateArcNode( const QskSkinnable*, QSGNode*,
-        const QRectF&, int startAngle, int spanAngle, QskAspect::Subcontrol );
+        const QRectF&, qreal startAngle, qreal spanAngle, QskAspect::Subcontrol );
 
     static QSGNode* updateArcNode( const QskSkinnable*, QSGNode*,
-        const QRectF&, const QskGradient&, int startAngle, int spanAngle,
+        const QRectF&, const QskGradient&, qreal startAngle, qreal spanAngle,
         QskAspect::Subcontrol );
 
     static QSGNode* updateTextNode( const QskSkinnable*, QSGNode*,
@@ -107,7 +107,7 @@ class QSK_EXPORT QskSkinlet
         QskAspect::Subcontrol ) const;
 
     QSGNode* updateArcNode( const QskSkinnable*, QSGNode*,
-        int startAngle, int spanAngle,
+        qreal startAngle, qreal spanAngle,
         QskAspect::Subcontrol ) const;
 
     QSGNode* updateBoxClipNode( const QskSkinnable*, QSGNode*,

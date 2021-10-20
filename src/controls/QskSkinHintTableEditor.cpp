@@ -470,7 +470,7 @@ QskBoxBorderColors QskSkinHintTableEditor::boxBorderColors( QskAspect aspect ) c
 }
 
 void QskSkinHintTableEditor::setArcMetrics( QskAspect aspect, qreal width,
-    int startAngle, int spanAngle, Qt::SizeMode sizeMode )
+    qreal startAngle, qreal spanAngle, Qt::SizeMode sizeMode )
 {
     setMetricHint( aspectShape( aspect ),
         QskArcMetrics( width, startAngle, spanAngle, sizeMode ) );

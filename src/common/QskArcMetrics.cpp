@@ -15,13 +15,11 @@ static void qskRegisterArcMetrics()
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterArcMetrics )
 
-// copied from QskMargins.cpp, we should unify this somehwere:
 static inline qreal qskInterpolated( qreal from, qreal to, qreal ratio )
 {
     return from + ( to - from ) * ratio;
 }
 
-// copied from QskBoxBorderMetrics.cpp, we should unify this somewhere:
 static inline qreal qskAbsoluted( qreal length, qreal percentage )
 {
     // 100% means -> 0.5 of length
@@ -34,12 +32,12 @@ void QskArcMetrics::setWidth( qreal width ) noexcept
     m_width = width;
 }
 
-void QskArcMetrics::setStartAngle( int startAngle ) noexcept
+void QskArcMetrics::setStartAngle( qreal startAngle ) noexcept
 {
     m_startAngle = startAngle;
 }
 
-void QskArcMetrics::setSpanAngle( int spanAngle ) noexcept
+void QskArcMetrics::setSpanAngle( qreal spanAngle ) noexcept
 {
     m_spanAngle = spanAngle;
 }
@@ -56,7 +54,11 @@ QskArcMetrics QskArcMetrics::interpolated(
         return to;
 
     const qreal width = qskInterpolated( m_width, to.m_width, ratio );
-    return QskArcMetrics( width, m_startAngle, m_spanAngle, m_sizeMode );
+
+    const qreal s1 = qskInterpolated( m_startAngle, to.m_startAngle, ratio );
+    const qreal s2 = qskInterpolated( endAngle(), to.endAngle(), ratio );
+
+    return QskArcMetrics( width, s1, s2 - s1, m_sizeMode );
 }
 
 QVariant QskArcMetrics::interpolate(
@@ -71,18 +73,20 @@ QskArcMetrics QskArcMetrics::toAbsolute( const QSizeF& size ) const noexcept
     if ( m_sizeMode != Qt::RelativeSize )
         return *this;
 
-    QskArcMetrics absoluted = *this;
+    /*
+        Being relative to what - TODO ?
+        I can imagine arcs being relative to other arcs !!!
+     */
 
-    auto& w = absoluted.m_width;
+    QskArcMetrics absoluted = *this;
 
     if ( size.isEmpty() )
     {
-        w = 0;
+        absoluted.m_width = 0;
     }
     else
     {
-        // for now we just use the width:
-        w = qskAbsoluted( size.width(), w );
+        absoluted.m_width = qskAbsoluted( size.width(), absoluted.m_width );
     }
 
     absoluted.m_sizeMode = Qt::AbsoluteSize;
@@ -95,6 +99,7 @@ uint QskArcMetrics::hash( uint seed ) const noexcept
     uint hash = qHash( m_width, seed );
     hash = qHash( m_startAngle, hash );
     hash = qHash( m_spanAngle, hash );
+
     const int mode = m_sizeMode;
     return qHashBits( &mode, sizeof( mode ), hash );
 }
