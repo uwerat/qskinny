@@ -388,8 +388,8 @@ QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
     QskAspect::Subcontrol subControl )
 {
     const auto fillGradient = skinnable->gradientHint( subControl );
-    return updateArcNode( skinnable, node, rect, fillGradient, startAngle,
-        spanAngle, subControl );
+    return updateArcNode( skinnable, node, rect,
+        fillGradient, startAngle, spanAngle, subControl );
 }
 
 QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
@@ -400,8 +400,8 @@ QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
     arcMetrics.setStartAngle( startAngle );
     arcMetrics.setSpanAngle( spanAngle );
 
-    return updateArcNode( skinnable, node ,rect, fillGradient, arcMetrics,
-        subControl );
+    return updateArcNode( skinnable, node ,rect,
+        fillGradient, arcMetrics, subControl );
 }
 
 QSGNode* QskSkinlet::updateBoxClipNode( const QskSkinnable* skinnable,
