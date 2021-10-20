@@ -375,7 +375,7 @@ QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
 }
 
 QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
-    QSGNode* node, int startAngle, int spanAngle,
+    QSGNode* node, qreal startAngle, qreal spanAngle,
     QskAspect::Subcontrol subControl ) const
 {
     const auto rect = qskSubControlRect( this, skinnable, subControl );
@@ -384,7 +384,7 @@ QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
 }
 
 QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
-    QSGNode* node, const QRectF& rect, int startAngle, int spanAngle,
+    QSGNode* node, const QRectF& rect, qreal startAngle, qreal spanAngle,
     QskAspect::Subcontrol subControl )
 {
     const auto fillGradient = skinnable->gradientHint( subControl );
@@ -394,7 +394,7 @@ QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
 
 QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
     QSGNode* node, const QRectF& rect, const QskGradient& fillGradient,
-    int startAngle, int spanAngle, QskAspect::Subcontrol subControl )
+    qreal startAngle, qreal spanAngle, QskAspect::Subcontrol subControl )
 {
     auto arcMetrics = skinnable->arcMetricsHint( subControl );
     arcMetrics.setStartAngle( startAngle );

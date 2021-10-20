@@ -17,14 +17,13 @@ class QSK_EXPORT QskArcMetrics
     Q_GADGET
 
     Q_PROPERTY( qreal width READ width WRITE setWidth )
-    Q_PROPERTY( int startAngle READ startAngle WRITE setStartAngle )
-    Q_PROPERTY( int spanAngle READ spanAngle WRITE setSpanAngle )
+    Q_PROPERTY( qreal startAngle READ startAngle WRITE setStartAngle )
+    Q_PROPERTY( qreal spanAngle READ spanAngle WRITE setSpanAngle )
     Q_PROPERTY( Qt::SizeMode sizeMode READ sizeMode WRITE setSizeMode )
 
   public:
     constexpr QskArcMetrics() noexcept;
-
-    constexpr QskArcMetrics( qreal width, int startAngle, int spanAngle,
+    constexpr QskArcMetrics( qreal width, qreal startAngle, qreal spanAngle,
                              Qt::SizeMode = Qt::AbsoluteSize ) noexcept;
 
     bool operator==( const QskArcMetrics& ) const noexcept;
@@ -35,11 +34,13 @@ class QSK_EXPORT QskArcMetrics
     void setWidth( qreal width ) noexcept;
     constexpr qreal width() const noexcept;
 
-    void setStartAngle( int startAngle ) noexcept;
-    constexpr int startAngle() const noexcept;
+    void setStartAngle( qreal startAngle ) noexcept;
+    constexpr qreal startAngle() const noexcept;
 
-    void setSpanAngle( int spanAngle ) noexcept;
-    constexpr int spanAngle() const noexcept;
+    void setSpanAngle( qreal spanAngle ) noexcept;
+    constexpr qreal spanAngle() const noexcept;
+
+    constexpr qreal endAngle() const noexcept;
 
     void setSizeMode( Qt::SizeMode ) noexcept;
     constexpr Qt::SizeMode sizeMode() const noexcept;
@@ -56,8 +57,8 @@ class QSK_EXPORT QskArcMetrics
 
   private:
     qreal m_width;
-    int m_startAngle;
-    int m_spanAngle;
+    qreal m_startAngle;
+    qreal m_spanAngle;
     Qt::SizeMode m_sizeMode;
 };
 
@@ -69,9 +70,9 @@ inline constexpr QskArcMetrics::QskArcMetrics() noexcept
 {
 }
 
-inline constexpr QskArcMetrics::QskArcMetrics(  qreal width,
-                                                int startAngle, int spanAngle,
-                                                Qt::SizeMode sizeMode ) noexcept
+inline constexpr QskArcMetrics::QskArcMetrics(
+        qreal width, qreal startAngle, qreal spanAngle,
+        Qt::SizeMode sizeMode ) noexcept
     : m_width( width )
     , m_startAngle( startAngle )
     , m_spanAngle( spanAngle )
@@ -83,8 +84,8 @@ inline bool QskArcMetrics::operator==(
     const QskArcMetrics& other ) const noexcept
 {
     return ( qskFuzzyCompare( m_width, other.m_width )
-             && m_startAngle == other.m_startAngle
-             && m_spanAngle == other.m_spanAngle
+             && qskFuzzyCompare( m_startAngle, other.m_startAngle )
+             && qskFuzzyCompare( m_spanAngle, other.m_spanAngle )
              && m_sizeMode == other.m_sizeMode );
 }
 
@@ -96,10 +97,7 @@ inline bool QskArcMetrics::operator!=(
 
 inline constexpr bool QskArcMetrics::isNull() const noexcept
 {
-    return ( qFuzzyIsNull( m_width )
-        && m_startAngle == 0
-        && m_spanAngle == 0
-        && m_sizeMode == Qt::AbsoluteSize );
+    return qFuzzyIsNull( m_width ) || qFuzzyIsNull( m_spanAngle );
 }
 
 inline constexpr qreal QskArcMetrics::width() const noexcept
@@ -107,14 +105,19 @@ inline constexpr qreal QskArcMetrics::width() const noexcept
     return m_width;
 }
 
-inline constexpr int QskArcMetrics::startAngle() const noexcept
+inline constexpr qreal QskArcMetrics::startAngle() const noexcept
 {
     return m_startAngle;
 }
 
-inline constexpr int QskArcMetrics::spanAngle() const noexcept
+inline constexpr qreal QskArcMetrics::spanAngle() const noexcept
 {
     return m_spanAngle;
+}
+
+inline constexpr qreal QskArcMetrics::endAngle() const noexcept
+{
+    return m_startAngle + m_spanAngle;
 }
 
 inline constexpr Qt::SizeMode QskArcMetrics::sizeMode() const noexcept
