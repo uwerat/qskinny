@@ -56,8 +56,17 @@ void QskBoxNode::setBoxData( const QRectF& rect, const QskGradient& fillGradient
 
 void QskBoxNode::setBoxData( const QRectF& rect,
     const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& borderMetrics,
-    const QskBoxBorderColors& borderColors, const QskGradient& fillGradient )
+    const QskBoxBorderColors& borderColors, const QskGradient& gradient )
 {
+    QskGradient fillGradient = gradient;
+#if 1
+    // Renderer is buggy for monochrome gradients with stops. TODO ...
+    if ( fillGradient.stops().count() > 2 && fillGradient.isMonochrome() )
+    {
+        fillGradient.setColor( fillGradient.startColor() );
+    }
+#endif
+
 #if 1
     const uint metricsHash = qskMetricsHash( shape, borderMetrics );
     const uint colorsHash = qskColorsHash( borderColors, fillGradient );
