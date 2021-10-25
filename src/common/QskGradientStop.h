@@ -28,6 +28,8 @@ class QSK_EXPORT QskGradientStop
   public:
     QskGradientStop() noexcept;
     QskGradientStop( qreal position, const QColor& ) noexcept;
+    QskGradientStop( qreal position, Qt::GlobalColor ) noexcept;
+    QskGradientStop( qreal position, QRgb ) noexcept;
 
     bool operator==( const QskGradientStop& ) const noexcept;
     bool operator!=( const QskGradientStop& ) const noexcept;
@@ -64,6 +66,18 @@ inline QskGradientStop::QskGradientStop(
         qreal position, const QColor& color ) noexcept
     : m_position( position )
     , m_color( color )
+{
+}
+
+inline QskGradientStop::QskGradientStop(
+        qreal position, const Qt::GlobalColor color ) noexcept
+    : QskGradientStop( position, QColor( color ) )
+{
+}
+
+inline QskGradientStop::QskGradientStop(
+        qreal position, QRgb rgb ) noexcept
+    : QskGradientStop( position, QColor::fromRgba( rgb ) )
 {
 }
 
