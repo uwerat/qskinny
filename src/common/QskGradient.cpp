@@ -258,6 +258,7 @@ QskGradient::Orientation QskGradient::orientation() const
 
 void QskGradient::setColor( const QColor& color )
 {
+    m_stops.clear();
     m_stops.reserve( 2 );
 
     m_stops.append( QskGradientStop( 0.0, color ) );
@@ -266,6 +267,7 @@ void QskGradient::setColor( const QColor& color )
 
 void QskGradient::setColors( const QColor& startColor, const QColor& stopColor )
 {
+    m_stops.clear();
     m_stops.reserve( 2 );
 
     m_stops.append( QskGradientStop( 0.0, startColor ) );
