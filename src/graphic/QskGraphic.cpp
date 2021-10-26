@@ -1027,6 +1027,23 @@ QskGraphic QskGraphic::fromPixmap( const QPixmap& pixmap )
     return graphic;
 }
 
+QskGraphic QskGraphic::fromPixmapAsImage( const QPixmap& pixmap )
+{
+    /*
+        Using QPainter::drawPixmap in the scene graph thread leads
+        to warnings about "not being safe". This is probably not critical
+        for Qt/Quick as the main thread is waiting, when updating the
+        scene graph nodes.
+
+        It needs to be checked, what is going on, when
+        using the X11 paint engine, where QPixmap/QImage are more different.
+
+        TODO ...
+     */
+
+    return fromImage( pixmap.toImage() );
+}
+
 #ifndef QT_NO_DEBUG_STREAM
 
 #include <qdebug.h>
