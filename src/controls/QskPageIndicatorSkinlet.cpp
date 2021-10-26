@@ -56,8 +56,14 @@ QRectF QskPageIndicatorSkinlet::bulletRect(
 {
     using Q = QskPageIndicator;
 
-    const qreal szNormal = indicator->strutSizeHint( Q::Bullet ).width();
-    const qreal szHighlighted = indicator->strutSizeHint( Q::Highlighted ).width();
+    const auto szNormal = indicator->strutSizeHint( Q::Bullet );
+    const auto szHighlighted = indicator->strutSizeHint( Q::Highlighted );
+
+    const qreal wNormal = szNormal.width();
+    const qreal wHighlighted = szHighlighted.width();
+
+    const qreal hNormal = szNormal.height();
+    const qreal hHighlighted = szHighlighted.height();
 
     const auto currentIndex = indicator->currentIndex();
 
@@ -66,8 +72,11 @@ QRectF QskPageIndicatorSkinlet::bulletRect(
     if ( indexDiff > ( indicator->count() - 1 ) )
         indexDiff = ( indicator->count() - currentIndex ); // wrapping
 
-    const qreal sz0 = ( indexDiff < 1 ) ?
-        ( 1 - indexDiff ) * szHighlighted + indexDiff * szNormal : szNormal;
+    const qreal w0 = ( indexDiff < 1 ) ?
+        ( 1 - indexDiff ) * wHighlighted + indexDiff * wNormal : wNormal;
+
+    const qreal h0 = ( indexDiff < 1 ) ?
+        ( 1 - indexDiff ) * hHighlighted + indexDiff * hNormal : hNormal;
 
     const qreal spacing = indicator->spacingHint( Q::Panel );
     const bool horizontal = ( indicator->orientation() == Qt::Horizontal );
@@ -75,26 +84,29 @@ QRectF QskPageIndicatorSkinlet::bulletRect(
     qreal w, h;
     if ( horizontal )
     {
-        w = ( indicator->count() - 1 ) * ( szNormal + spacing ) + szHighlighted;
+        w = ( indicator->count() - 1 ) * ( wNormal + spacing ) + wHighlighted;
         h = rect.height();
     }
     else
     {
         w = rect.width();
-        h = ( indicator->count() - 1 ) * ( szNormal + spacing ) + szHighlighted;
+        h = ( indicator->count() - 1 ) * ( hNormal + spacing ) + hHighlighted;
     }
 
     QRectF r( 0, 0, w, h );
     r.moveCenter( rect.center() );
 
-    qreal s2;
+    qreal x2, y2;
 
     {
-        const qreal s = ( index > currentIndex ) ? szHighlighted : szNormal;
+        const qreal w = ( index > currentIndex ) ? wHighlighted : wNormal;
+        const qreal h = ( index > currentIndex ) ? hHighlighted : hNormal;
+
         if ( indexDiff < 1 && index >= currentIndex )
         {
             // scrolling from or to this bullet:
-            s2 = szNormal + qAbs( szHighlighted - szNormal ) * indexDiff;
+            x2 = wNormal + qAbs( wHighlighted - wNormal ) * indexDiff;
+            y2 = hNormal + qAbs( hHighlighted - hNormal ) * indexDiff;
         }
         else if ( ( currentIndex > ( indicator->count() - 1 ) &&
             index > ( currentIndex - indicator->count() + 1 ) ) )
@@ -104,29 +116,32 @@ QRectF QskPageIndicatorSkinlet::bulletRect(
             while ( wrappingDiff > 1 )
                 wrappingDiff -= 1;
 
-            s2 = szNormal + qAbs( szHighlighted - szNormal ) * wrappingDiff;
+            x2 = wNormal + qAbs( wHighlighted - wNormal ) * wrappingDiff;
+            y2 = hNormal + qAbs( hHighlighted - hNormal ) * wrappingDiff;
         }
         else
         {
-            s2 = s;
+            x2 = w;
+            y2 = h;
         }
     }
 
-    const qreal x = r.left() + s2 + spacing + ( index - 1 ) * ( szNormal + spacing );
+    const qreal x = r.left() + x2 + spacing + ( index - 1 ) * ( wNormal + spacing );
+    const qreal y = r.top() + y2 + spacing + ( index - 1 ) * ( hNormal + spacing );
 
     qreal adjust = ( currentIndex == index )
-        ? ( szNormal - szHighlighted ) : ( szHighlighted - szNormal );
+        ? ( wNormal - wHighlighted ) : ( wHighlighted - wNormal );
     adjust = 0.5 * qMax( 0.0, adjust );
 
     if ( indexDiff < 1 )
         adjust *= indexDiff;
 
-    QRectF bulletRect( 0.0, 0.0, sz0, sz0 );
+    QRectF bulletRect( 0.0, 0.0, w0, h0 );
 
     if ( horizontal )
         bulletRect.moveTo( x, r.top() + adjust );
     else
-        bulletRect.moveTo( r.left() + adjust, x );
+        bulletRect.moveTo( r.left() + adjust, y );
 
     return bulletRect;
 }
