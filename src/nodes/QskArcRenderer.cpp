@@ -51,29 +51,23 @@ void QskArcRenderer::renderArc( const QRectF& rect,
     }
 
     painter->setPen( QPen( brush, metrics.width(), Qt::SolidLine, Qt::FlatCap ) );
-    painter->drawArc( rect, metrics.startAngle(), metrics.spanAngle() );
 
-    if( borderMetrics.width( Qsk::Inner ) > 0 )
+    QPainterPath path( { rect.x() + rect.width() / 2, 0 } ); // 12 o'clock pos
+    path.arcMoveTo( rect, 90 );
+    path.arcTo( rect, metrics.startAngle() + 90, metrics.spanAngle() / 16 );
+
+    painter->drawPath( path );
+
+    if( !borderMetrics.isNull() )
     {
-        // draw inner border:
-        const qreal i = metrics.width() / 2;
-        const auto innerRect = rect.marginsRemoved( { i, i, i, i } );
-        const QColor innerColor = borderColors.color( Qsk::Inner );
+        QPen pen( borderColors.color( Qsk::Outer ), borderMetrics.outerWidth(),
+            Qt::SolidLine, Qt::FlatCap );
+        QPainterPathStroker stroker( pen );
+        const qreal strokerWidth = metrics.width() - borderMetrics.outerWidth();
+        stroker.setWidth( strokerWidth );
+        QPainterPath strokePath = stroker.createStroke( path );
 
-        painter->setPen( QPen( innerColor, borderMetrics.width( Qsk::Inner ),
-            Qt::SolidLine, Qt::FlatCap ) );
-        painter->drawArc( innerRect, metrics.startAngle(), metrics.spanAngle() );
-    }
-
-    if( borderMetrics.width( Qsk::Outer ) > 0 )
-    {
-        // draw outer border:
-        const qreal o = ( metrics.width() - borderMetrics.width( Qsk::Outer ) ) / 2;
-        const auto outerRect = rect.marginsAdded( { o, o, o, o } );
-        const QColor outerColor = borderColors.color( Qsk::Outer );
-
-        painter->setPen( QPen( outerColor, borderMetrics.width( Qsk::Outer ),
-            Qt::SolidLine, Qt::FlatCap ) );
-        painter->drawArc( outerRect, metrics.startAngle(), metrics.spanAngle() );
+        painter->setPen( pen );
+        painter->drawPath( strokePath );
     }
 }
