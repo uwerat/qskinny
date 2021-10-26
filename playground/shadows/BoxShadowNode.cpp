@@ -91,8 +91,14 @@ namespace
         if ( state.isOpacityDirty() )
             p->setUniformValue( m_opacityId, state.opacity() );
 
-        if ( oldMaterial == nullptr || newMaterial->compare( oldMaterial ) != 0
-            || state.isCachedMaterialDataDirty( )) 
+        bool updateMaterial = ( oldMaterial == nullptr )
+            || newMaterial->compare( oldMaterial ) != 0;
+
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 12, 0 )
+        updateMaterial |= state.isCachedMaterialDataDirty();
+#endif
+
+        if ( updateMaterial )
         {
             auto material = static_cast< const Material* >( newMaterial );
 
