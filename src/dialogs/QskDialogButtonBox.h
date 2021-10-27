@@ -72,7 +72,8 @@ class QSK_EXPORT QskDialogButtonBox : public QskBox
     void orientationChanged();
 
   protected:
-    bool event( QEvent* event ) override;
+    bool event( QEvent* ) override;
+    void itemChange( ItemChange, const ItemChangeData& ) override;
 
     void updateLayout() override;
     QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const override;
@@ -86,6 +87,7 @@ class QSK_EXPORT QskDialogButtonBox : public QskBox
   private:
     void onButtonClicked();
     void rearrangeButtons();
+    void updateTabFocusChain();
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

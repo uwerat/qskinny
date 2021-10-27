@@ -8,6 +8,8 @@
 #include "QskLinearBox.h"
 #include "QskSkin.h"
 
+#include "QskLinearLayoutEngine.h"
+
 #include <qevent.h>
 #include <qpointer.h>
 #include <qvector.h>
@@ -18,6 +20,8 @@
 QSK_QT_PRIVATE_BEGIN
 #include <private/qguiapplication_p.h>
 QSK_QT_PRIVATE_END
+
+#include <limits>
 
 QSK_SUBCONTROL( QskDialogButtonBox, Panel )
 
@@ -35,38 +39,53 @@ static inline QskDialog::ActionRole qskActionRole( QskDialog::Action action )
     return static_cast< QskDialog::ActionRole >( role );
 }
 
-static void qskAddToLayout( const QVector< QskPushButton* >& buttons,
-    bool reverse, QskLinearBox* layoutBox )
+namespace
 {
-    if ( reverse )
+    class LayoutEngine : public QskLinearLayoutEngine
     {
-        for ( int i = buttons.count() - 1; i >= 0; i-- )
-            layoutBox->addItem( buttons[ i ] );
-    }
-    else
-    {
-        for ( int i = 0; i < buttons.count(); i++ )
-            layoutBox->addItem( buttons[ i ] );
-    }
+      public:
+        LayoutEngine( Qt::Orientation orientation )
+            : QskLinearLayoutEngine( orientation, std::numeric_limits< uint >::max() )
+        {
+        }
+
+        void addStretch()
+        {
+            const auto index = insertSpacerAt( count(), 0 );
+            setStretchFactorAt( index, 1 );
+        }
+
+        void addButtons( const QVector< QskPushButton* >& buttons, bool reverse )
+        {
+            if ( reverse )
+            {
+                for ( int i = buttons.count() - 1; i >= 0; i-- )
+                    addItem( buttons[ i ] );
+            }
+            else
+            {
+                for ( int i = 0; i < buttons.count(); i++ )
+                    addItem( buttons[ i ] );
+            }
+        } 
+    };
 }
 
 class QskDialogButtonBox::PrivateData
 {
   public:
-    PrivateData()
-        : centeredButtons( false )
-        , dirtyLayout( false )
+    PrivateData( Qt::Orientation orientation )
+        : layoutEngine( orientation )
     {
     }
 
-    QskLinearBox* layoutBox = nullptr;
+    LayoutEngine layoutEngine;
+
     QVector< QskPushButton* > buttons[ QskDialog::NActionRoles ];
     QPointer< QskPushButton > defaultButton;
 
     QskDialog::Action clickedAction = QskDialog::NoAction;
-
-    bool centeredButtons : 1;
-    bool dirtyLayout : 1;
+    bool centeredButtons = false;
 };
 
 QskDialogButtonBox::QskDialogButtonBox( QQuickItem* parent )
@@ -76,10 +95,14 @@ QskDialogButtonBox::QskDialogButtonBox( QQuickItem* parent )
 
 QskDialogButtonBox::QskDialogButtonBox( Qt::Orientation orientation, QQuickItem* parent )
     : Inherited( parent )
-    , m_data( new PrivateData() )
+    , m_data( new PrivateData( orientation ) )
 {
     setPolishOnResize( true );
-    setOrientation( orientation );
+
+    if ( orientation == Qt::Horizontal )
+        initSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Fixed );
+    else
+        initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Preferred );
 }
 
 QskDialogButtonBox::~QskDialogButtonBox()
@@ -88,13 +111,10 @@ QskDialogButtonBox::~QskDialogButtonBox()
 
 void QskDialogButtonBox::setOrientation( Qt::Orientation orientation )
 {
-    if ( m_data->layoutBox && m_data->layoutBox->orientation() == orientation )
+    if ( m_data->layoutEngine.orientation() == orientation )
         return;
 
-    delete m_data->layoutBox;
-
-    m_data->layoutBox = new QskLinearBox( orientation, this );
-    m_data->layoutBox->setObjectName( QStringLiteral( "DialogButtonBoxLayout" ) );
+    m_data->layoutEngine.setOrientation( orientation );
 
     if ( orientation == Qt::Horizontal )
         setSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Fixed );
@@ -108,7 +128,7 @@ void QskDialogButtonBox::setOrientation( Qt::Orientation orientation )
 
 Qt::Orientation QskDialogButtonBox::orientation() const
 {
-    return m_data->layoutBox->orientation();
+    return m_data->layoutEngine.orientation();
 }
 
 QskAspect::Subcontrol QskDialogButtonBox::substitutedSubcontrol(
@@ -123,35 +143,38 @@ QskAspect::Subcontrol QskDialogButtonBox::substitutedSubcontrol(
 QSizeF QskDialogButtonBox::layoutSizeHint(
     Qt::SizeHint which, const QSizeF& constraint ) const
 {
-    if ( m_data->dirtyLayout )
+    if ( which == Qt::MaximumSize )
+        return QSizeF(); // unlimited
+
+    if ( ( m_data->layoutEngine.count() == 0 ) && hasChildItems() )
     {
         const_cast< QskDialogButtonBox* >( this )->rearrangeButtons();
-        m_data->dirtyLayout = false;
     }
 
-    return m_data->layoutBox->effectiveSizeHint( which, constraint );
+    return m_data->layoutEngine.sizeHint( which, constraint );
 }
 
 void QskDialogButtonBox::invalidateLayout()
 {
-    m_data->dirtyLayout = true;
-
+    m_data->layoutEngine.clear();
     resetImplicitSize();
     polish();
 }
 
 void QskDialogButtonBox::updateLayout()
 {
-    if ( m_data->dirtyLayout )
+    auto& layoutEngine = m_data->layoutEngine;
+
+    if ( ( layoutEngine.count() == 0 ) && hasChildItems() )
     {
         rearrangeButtons();
-        m_data->dirtyLayout = false;
 
-        if ( parentItem() )
+        if ( parentItem() && ( layoutEngine.count() > 0 ) )
             qskSendEventTo( parentItem(), QEvent::LayoutRequest );
     }
 
-    m_data->layoutBox->setGeometry( layoutRect() );
+    if ( !maybeUnresized() )
+        layoutEngine.setGeometries( layoutRect() );
 }
 
 void QskDialogButtonBox::rearrangeButtons()
@@ -159,14 +182,13 @@ void QskDialogButtonBox::rearrangeButtons()
     // Result differs from QDialogButtonBox. Needs more
     // investigation - TODO ...
 
-    auto layoutBox = m_data->layoutBox;
-
-    layoutBox->clear();
+    auto& layoutEngine = m_data->layoutEngine;
+    layoutEngine.clear();
 
     const int* currentLayout = effectiveSkin()->dialogButtonLayout( orientation() );
 
     if ( m_data->centeredButtons )
-        layoutBox->addStretch( 1 );
+        layoutEngine.addStretch();
 
     while ( *currentLayout != QPlatformDialogHelper::EOL )
     {
@@ -178,7 +200,7 @@ void QskDialogButtonBox::rearrangeButtons()
             case QPlatformDialogHelper::Stretch:
             {
                 if ( !m_data->centeredButtons )
-                    layoutBox->addStretch( 1 );
+                    layoutEngine.addStretch();
 
                 break;
             }
@@ -187,7 +209,7 @@ void QskDialogButtonBox::rearrangeButtons()
                 const auto& buttons = m_data->buttons[ role ];
 
                 if ( !buttons.isEmpty() )
-                    layoutBox->addItem( buttons.first() );
+                    layoutEngine.addItem( buttons.first() );
 
                 break;
             }
@@ -196,7 +218,7 @@ void QskDialogButtonBox::rearrangeButtons()
                 const auto& buttons = m_data->buttons[ QskDialog::AcceptRole ];
 
                 if ( buttons.size() > 1 )
-                    qskAddToLayout( buttons.mid( 1 ), reverse, layoutBox );
+                    layoutEngine.addButtons( buttons.mid( 1 ), reverse );
 
                 break;
             }
@@ -212,7 +234,7 @@ void QskDialogButtonBox::rearrangeButtons()
                 const auto& buttons = m_data->buttons[ role ];
 
                 if ( !buttons.isEmpty() )
-                    qskAddToLayout( buttons, reverse, layoutBox );
+                    layoutEngine.addButtons( buttons, reverse );
 
                 break;
             }
@@ -222,9 +244,29 @@ void QskDialogButtonBox::rearrangeButtons()
     }
 
     if ( m_data->centeredButtons )
-        layoutBox->addStretch( 1 );
+        layoutEngine.addStretch();
 
-    // reorganizing the tab chain ???
+    updateTabFocusChain();
+}
+
+void QskDialogButtonBox::updateTabFocusChain()
+{
+    if ( childItems().count() <= 1 )
+        return;
+
+    QQuickItem* lastItem = nullptr;
+
+    const auto& layoutEngine = m_data->layoutEngine;
+    for ( int i = 0; i < layoutEngine.count(); i++ )
+    {
+        if ( auto item = layoutEngine.itemAt( i ) )
+        {
+            if ( lastItem )
+                item->stackAfter( lastItem );
+
+            lastItem = item;
+        }
+    }
 }
 
 void QskDialogButtonBox::setCenteredButtons( bool centered )
@@ -255,14 +297,18 @@ void QskDialogButtonBox::addButton(
             button->setParent( this );
 
         /*
-            To have a proper ownership. Inserting the buttons
-            according to the layout rules will be done later
+            Order of the children according to the layout rules
+            will be done later in updateTabOrder
          */
-        button->setParentItem( m_data->layoutBox );
+        button->setParentItem( this );
 
-        connect( button, &QskPushButton::clicked, this,
-            &QskDialogButtonBox::onButtonClicked );
+        connect( button, &QskPushButton::clicked,
+            this, &QskDialogButtonBox::onButtonClicked );
 
+        connect( button, &QskPushButton::visibleChanged,
+            this, &QskDialogButtonBox::invalidateLayout );
+
+        m_data->buttons[ role ].removeOne( button );
         m_data->buttons[ role ] += button;
         invalidateLayout();
     }
@@ -277,20 +323,21 @@ void QskDialogButtonBox::addAction( QskDialog::Action action )
 
 void QskDialogButtonBox::removeButton( QskPushButton* button )
 {
-    // ChildRemove Events !!!
-
     if ( button == nullptr )
         return;
 
     for ( int i = 0; i < QskDialog::NActionRoles; i++ )
     {
-        auto& buttons = m_data->buttons[ i ];
-        if ( buttons.removeOne( button ) )
+        if ( m_data->buttons[ i ].removeOne( button ) )
         {
             disconnect( button, &QskPushButton::clicked,
                 this, &QskDialogButtonBox::onButtonClicked );
 
+            disconnect( button, &QskPushButton::visibleChanged,
+                this, &QskDialogButtonBox::invalidateLayout );
+
             invalidateLayout();
+
             return;
         }
     }
@@ -467,13 +514,41 @@ QskDialog::Action QskDialogButtonBox::clickedAction() const
 
 bool QskDialogButtonBox::event( QEvent* event )
 {
-    if ( event->type() == QEvent::LayoutRequest )
+    switch ( static_cast< int >( event->type() ) )
     {
-        if ( !m_data->dirtyLayout )
-            resetImplicitSize();
+        case QEvent::LayoutRequest:
+        {
+            invalidateLayout();
+            break;
+        }
+
+        case QEvent::LayoutDirectionChange:
+        {
+            m_data->layoutEngine.setVisualDirection(
+                layoutMirroring() ? Qt::RightToLeft : Qt::LeftToRight );
+
+            break;
+        }
+        case QEvent::ContentsRectChange:
+        {
+            polish();
+            break;
+        }
     }
 
     return Inherited::event( event );
+}
+
+void QskDialogButtonBox::itemChange(
+    QQuickItem::ItemChange change, const QQuickItem::ItemChangeData& value )
+{
+    Inherited::itemChange( change, value );
+
+    if ( change == ItemChildRemovedChange )
+    {
+        if ( auto button = qobject_cast< QskPushButton* >( value.item ) )
+            removeButton( button );
+    }
 }
 
 bool QskDialogButtonBox::isDefaultButtonKeyEvent( const QKeyEvent* event )
