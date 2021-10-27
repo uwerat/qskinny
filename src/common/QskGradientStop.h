@@ -41,7 +41,7 @@ class QSK_EXPORT QskGradientStop
     void resetPosition() noexcept;
 
     const QColor& color() const noexcept;
-    void setColor( const QColor& color ) noexcept;
+    void setColor( const QColor& ) noexcept;
     void resetColor() noexcept;
 
     static QColor interpolated(
