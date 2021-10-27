@@ -30,7 +30,7 @@ Window::Window( Qt::Orientation orientation )
 
 void Window::addBox( QskDialog::Actions actions )
 {
-    QskDialogButtonBox* box = new QskDialogButtonBox( m_orientation );
+    auto box = new QskDialogButtonBox( m_orientation );
     box->setActions( actions );
     box->setObjectName( "DialogBox" );
 
@@ -39,10 +39,10 @@ void Window::addBox( QskDialog::Actions actions )
 
 void Window::addActionBox()
 {
-    QskPushButton* flipButton = new QskPushButton( "Flip" );
-    QskPushButton* centerButton = new QskPushButton( "Center" );
+    auto flipButton = new QskPushButton( "Flip" );
+    auto centerButton = new QskPushButton( "Center" );
 
-    QskDialogButtonBox* box = new QskDialogButtonBox( m_orientation );
+    auto box = new QskDialogButtonBox( m_orientation );
     box->addButton( flipButton, QskDialog::UserRole );
     box->addButton( centerButton, QskDialog::UserRole );
     box->setObjectName( "UserBox" );
@@ -62,8 +62,8 @@ void Window::flipOrientation()
 
     m_orientation = invertedOrientation();
 
-    const QVector< QskDialogButtonBox* > boxes = dialogBoxes();
-    for ( QskDialogButtonBox* box : boxes )
+    const auto boxes = dialogBoxes();
+    for ( auto box : boxes )
     {
         box->setOrientation( m_orientation );
         box->setParent( nullptr );
@@ -79,8 +79,8 @@ void Window::flipOrientation()
 
 void Window::centerButtons()
 {
-    const QVector< QskDialogButtonBox* > boxes = dialogBoxes();
-    for ( QskDialogButtonBox* box : boxes )
+    const auto boxes = dialogBoxes();
+    for ( auto box : boxes )
         box->setCenteredButtons( !box->centeredButtons() );
 }
 
