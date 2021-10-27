@@ -166,7 +166,7 @@ void QskDialogButtonBox::rearrangeButtons()
     const int* currentLayout = effectiveSkin()->dialogButtonLayout( orientation() );
 
     if ( m_data->centeredButtons )
-        layoutBox->addStretch( 10 );
+        layoutBox->addStretch( 1 );
 
     while ( *currentLayout != QPlatformDialogHelper::EOL )
     {
