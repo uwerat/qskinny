@@ -12,8 +12,8 @@ GridBox
     background
     {
         stops: [
-            { position: 0.0, color: "White" },
-            { position: 1.0, color: "White" },
+            { position: 0.0, color: "Red" },
+            { position: 1.0, color: "Yellow" },
         ]
     }
 
