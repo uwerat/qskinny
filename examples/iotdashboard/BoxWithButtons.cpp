@@ -36,7 +36,6 @@ BoxWithButtons::BoxWithButtons( const QString& title, const QString& value,
         bool isBright, QQuickItem* parent )
     : Box( QString(), parent )
 {
-    setPanel( true );
     setSubcontrolProxy( QskBox::Panel, Panel );
 
     setSizePolicy( Qt::Vertical, QskSizePolicy::Maximum );

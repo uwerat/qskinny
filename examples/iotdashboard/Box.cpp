@@ -8,14 +8,9 @@
 
 #include <QskTextLabel.h>
 
-QSK_SUBCONTROL( Box, Panel )
-
 Box::Box( const QString& title, QQuickItem* parent )
-    : QskLinearBox( Qt::Vertical, parent )
+    : ShadowedBox( Qt::Vertical, parent )
 {
-    setPanel( true );
-    setSubcontrolProxy( QskBox::Panel, Box::Panel );
-
     if ( !title.isEmpty() )
     {
         auto label = new QskTextLabel( title, this );

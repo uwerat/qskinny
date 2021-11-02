@@ -8,25 +8,6 @@
 #include <QskGridBox.h>
 #include <QskLinearBox.h>
 
-class ShadowedRectangle;
-
-class ShadowPositioner : public QskControl
-{
-    Q_OBJECT
-
-  public:
-    QSK_SUBCONTROLS( Panel )
-
-    ShadowPositioner( QQuickItem* parent );
-
-    void updateLayout() override;
-    void setGridBox( QskGridBox* gridBox );
-
-  private:
-    QskGridBox* m_gridBox;
-    QVector< ShadowedRectangle* > m_rectangles;
-};
-
 class MainContentGridBox : public QskGridBox
 {
     Q_OBJECT
@@ -50,10 +31,6 @@ class MainContent : public QskLinearBox
 
     MainContent( QQuickItem* parent );
 
-  protected:
-    void geometryChangeEvent( QskGeometryChangeEvent* ) override;
-
   private:
     QList< QskLinearBox* > m_columns;
-    ShadowPositioner* m_shadowPositioner;
 };
