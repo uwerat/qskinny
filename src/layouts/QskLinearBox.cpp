@@ -71,7 +71,14 @@ QskLinearBox::~QskLinearBox()
     for ( int i = 0; i < engine.count(); i++ )
     {
         if ( auto item = engine.itemAt( i ) )
+        {
+            /*
+                The destructor of QQuickItem sets the parentItem of
+                all children to nullptr, what leads to visibleChanged
+                signals. So we better disconnect first.
+             */
             setItemActive( item, false );
+        }
     }
 }
 
