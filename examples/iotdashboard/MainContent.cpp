@@ -23,11 +23,7 @@
 #include <QskTextLabel.h>
 #include <QskQuick.h>
 
-#include "kirigami/shadowedrectangle.h"
-
 #include <QTimer>
-
-QSK_SUBCONTROL( ShadowPositioner, Panel )
 
 QSK_SUBCONTROL( MainContent, Panel )
 QSK_SUBCONTROL( MainContentGridBox, Panel )
@@ -63,59 +59,6 @@ namespace
     };
 }
 
-ShadowPositioner::ShadowPositioner( QQuickItem* parent )
-    : QskControl( parent )
-{
-    setAutoLayoutChildren( true );
-}
-
-void ShadowPositioner::setGridBox( QskGridBox* gridBox )
-{
-    m_gridBox = gridBox;
-    m_rectangles.reserve( m_gridBox->elementCount() );
-
-    for( int i = 0; i < m_gridBox->elementCount(); ++i )
-    {
-        auto r = new ShadowedRectangle( this );
-        r->setZ( 5 );
-        r->setColor( Qt::transparent );
-        r->shadow()->setColor( color( ShadowPositioner::Panel ) );
-
-        connect( qskSetup, &QskSetup::skinChanged, [this, r]()
-        {
-            r->shadow()->setColor( color( ShadowPositioner::Panel ) );
-        } );
-
-        r->shadow()->setSize( metric( ShadowPositioner::Panel | QskAspect::Size ) );
-        r->setOpacity( 0.1 );
-
-        auto shape = boxShapeHint( ShadowPositioner::Panel );
-        r->corners()->setTopLeft( shape.radius( Qt::TopLeftCorner ).width() );
-        r->corners()->setTopRight( shape.radius( Qt::TopRightCorner ).width() );
-        r->corners()->setBottomLeft( shape.radius( Qt::BottomLeftCorner ).width() );
-        r->corners()->setBottomRight( shape.radius( Qt::BottomRightCorner ).width() );
-        m_rectangles.append( r );
-    }
-}
-
-void ShadowPositioner::updateLayout()
-{
-    auto mainContent = static_cast< QskLinearBox* >( parentItem() );
-
-    QTimer::singleShot( 0, this, [this, mainContent]()
-    {
-        const auto pos0 = mainContent->itemAtIndex( 1 )->position();
-
-        for( int i = 0; i < m_rectangles.count(); ++i )
-        {
-            const auto item = m_gridBox->itemAtIndex( i );
-
-            m_rectangles[i]->setPosition( pos0 + item->position() );
-            m_rectangles[i]->setSize( qskItemSize( item ) );
-        }
-    } );
-}
-
 MainContent::MainContent( QQuickItem* parent )
     : QskLinearBox( Qt::Vertical, parent )
 {
@@ -146,15 +89,6 @@ MainContent::MainContent( QQuickItem* parent )
 
     addItem( topBar );
     addItem( gridBox );
-
-    m_shadowPositioner = new ShadowPositioner( this );
-    m_shadowPositioner->setGridBox( gridBox );
-}
-
-void MainContent::geometryChangeEvent( QskGeometryChangeEvent* event )
-{
-    QskLinearBox::geometryChangeEvent( event );
-    m_shadowPositioner->polish();
 }
 
 #include "moc_MainContent.cpp"
