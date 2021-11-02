@@ -79,6 +79,28 @@ class QskDialogButtonBox::PrivateData
     {
     }
 
+    static inline void connectButton( QskDialogButtonBox* box,
+        QskPushButton* button, bool on )
+    {
+        if ( on )
+        {
+            connect( button, &QskPushButton::clicked,
+                box, &QskDialogButtonBox::onButtonClicked,
+                Qt::UniqueConnection );
+
+            connect( button, &QskPushButton::visibleChanged,
+                box, &QskDialogButtonBox::invalidateLayout,
+                Qt::UniqueConnection );
+        }
+        else
+        {
+            disconnect( button, &QskPushButton::clicked,
+                box, &QskDialogButtonBox::onButtonClicked );
+
+            disconnect( button, &QskPushButton::visibleChanged,
+                box, &QskDialogButtonBox::invalidateLayout );
+        }
+    }
     LayoutEngine layoutEngine;
 
     QVector< QskPushButton* > buttons[ QskDialog::NActionRoles ];
@@ -107,6 +129,18 @@ QskDialogButtonBox::QskDialogButtonBox( Qt::Orientation orientation, QQuickItem*
 
 QskDialogButtonBox::~QskDialogButtonBox()
 {
+    for ( int i = 0; i < QskDialog::NActionRoles; i++ )
+    {
+        for ( auto button : qskAsConst( m_data->buttons[ i ] ) )
+        {
+            /*
+                The destructor of QQuickItem sets the parentItem of
+                all children to nullptr, what leads to visibleChanged
+                signals. So we better disconnect first.
+             */
+            PrivateData::connectButton( this, button, false );
+        }
+    }
 }
 
 void QskDialogButtonBox::setOrientation( Qt::Orientation orientation )
@@ -302,11 +336,7 @@ void QskDialogButtonBox::addButton(
          */
         button->setParentItem( this );
 
-        connect( button, &QskPushButton::clicked,
-            this, &QskDialogButtonBox::onButtonClicked );
-
-        connect( button, &QskPushButton::visibleChanged,
-            this, &QskDialogButtonBox::invalidateLayout );
+        PrivateData::connectButton( this, button, true );
 
         m_data->buttons[ role ].removeOne( button );
         m_data->buttons[ role ] += button;
@@ -330,11 +360,7 @@ void QskDialogButtonBox::removeButton( QskPushButton* button )
     {
         if ( m_data->buttons[ i ].removeOne( button ) )
         {
-            disconnect( button, &QskPushButton::clicked,
-                this, &QskDialogButtonBox::onButtonClicked );
-
-            disconnect( button, &QskPushButton::visibleChanged,
-                this, &QskDialogButtonBox::invalidateLayout );
+            PrivateData::connectButton( this, button, false );
 
             invalidateLayout();
 
