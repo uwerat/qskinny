@@ -18,6 +18,7 @@ class LightDisplaySkinlet : public QskSkinlet
   public:
     enum NodeRole
     {
+        PanelRole,
         GrooveRole,
         ColdPartRole,
         WarmPartRole,

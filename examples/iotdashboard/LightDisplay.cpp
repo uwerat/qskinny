@@ -18,6 +18,7 @@
 #include <QPainter>
 #include <QRadialGradient>
 
+QSK_SUBCONTROL( LightDisplay, Panel )
 QSK_SUBCONTROL( LightDisplay, Groove )
 QSK_SUBCONTROL( LightDisplay, ColdPart )
 QSK_SUBCONTROL( LightDisplay, WarmPart )
@@ -29,6 +30,44 @@ LightDisplay::LightDisplay( QQuickItem* parent )
     : QskBoundedControl( parent )
 {
     setAlignmentHint( LeftLabel, Qt::AlignRight );
+
+    // ### move to Skin:
+    setGradient( Qt::magenta );
+    setShadow( { 0, 20 } );
+    setShadowColor( 0xe5e5e5 );
+}
+
+void LightDisplay::setShadow( const QskShadowMetrics& shadow )
+{
+    m_shadow = shadow;
+    update();
+}
+
+const QskShadowMetrics& LightDisplay::shadow() const
+{
+    return m_shadow;
+}
+
+void LightDisplay::setGradient( const QskGradient& gradient )
+{
+    m_gradient = gradient;
+    update();
+}
+
+const QskGradient& LightDisplay::gradient() const
+{
+    return m_gradient;
+}
+
+void LightDisplay::setShadowColor( const QColor& color )
+{
+    m_shadowColor = color;
+    update();
+}
+
+QColor LightDisplay::shadowColor() const
+{
+    return m_shadowColor;
 }
 
 #include "moc_LightDisplay.cpp"

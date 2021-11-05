@@ -182,8 +182,7 @@ void Skin::initHints( const Palette& palette )
     ed.setColor( Diagram::ChartArea3, "#66ff7d34" );
 
     // light intensity:
-    ed.setGradient( LightDisplay::Groove, Qt::magenta );
-    ed.setArcMetrics( LightDisplay::Groove, { 10, 0, 5760 } );
+    ed.setBoxShape( LightDisplay::Panel, 100, Qt::RelativeSize );
     ed.setGradient( LightDisplay::ColdPart, { Qt::Horizontal, "#a7b0ff", "#6776ff" } );
     ed.setGradient( LightDisplay::WarmPart, { Qt::Horizontal, "#feeeb7", "#ff3122" } );
     ed.setFontRole( LightDisplay::ValueText, QskSkin::LargeFont );
@@ -195,7 +194,7 @@ void Skin::initHints( const Palette& palette )
     ed.setGradient( Box::Panel, palette.box );
     ed.setGradient( BoxWithButtons::Panel, palette.box );
     ed.setGradient( UsageDiagramBox::Panel, palette.box );
-//    ed.setColor( LightDisplay::Panel, palette.lightDisplay ); ###
+    ed.setGradient( LightDisplay::Panel, palette.box );
     ed.setGradient( RoundButton::Panel, palette.roundButton );
     ed.setBoxBorderColors( UsageDiagramBox::DaysBox, palette.weekdayBox );
     ed.setColor( QskTextLabel::Text, palette.text );

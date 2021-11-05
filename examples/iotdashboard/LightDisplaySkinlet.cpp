@@ -6,6 +6,8 @@
 #include "LightDisplaySkinlet.h"
 #include "LightDisplay.h"
 
+#include "nodes/BoxShadowNode.h"
+
 #include <QskTextOptions.h>
 
 #include <QFontMetrics>
@@ -13,8 +15,8 @@
 LightDisplaySkinlet::LightDisplaySkinlet( QskSkin* skin )
     : QskSkinlet( skin )
 {
-    setNodeRoles( { GrooveRole, WarmPartRole, ColdPartRole, ValueTextRole,
-                  LeftLabelRole, RightLabelRole } );
+    setNodeRoles( { GrooveRole, PanelRole, WarmPartRole, ColdPartRole,
+                    ValueTextRole, LeftLabelRole, RightLabelRole } );
 }
 
 LightDisplaySkinlet::~LightDisplaySkinlet()
@@ -27,7 +29,8 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
     auto* display = static_cast< const LightDisplay* >( skinnable );
     QRectF rect = contentsRect;
 
-    if( subControl == LightDisplay::Groove )
+    if( subControl == LightDisplay::Groove
+            || subControl == LightDisplay::Panel )
     {
         QSizeF size = textLabelsSize( display );
 
@@ -72,12 +75,36 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
 QSGNode* LightDisplaySkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
+    auto* display = static_cast< const LightDisplay* >( skinnable );
+
+
     switch( nodeRole )
     {
+        case PanelRole:
+        {
+            return updateBoxNode( skinnable, node, LightDisplay::Panel );
+        }
         case GrooveRole:
         {
-            return updateArcNode( skinnable, node, 0, 5760,
-                                  LightDisplay::Groove );
+            const QRectF grooveRect = display->subControlRect( LightDisplay::Groove );
+            if ( grooveRect.isEmpty() )
+                return nullptr;
+
+            auto shadowNode = static_cast< BoxShadowNode* >( node );
+            if ( shadowNode == nullptr )
+                shadowNode = new BoxShadowNode();
+
+            const auto& shadowMetrics = display->shadow();
+
+            shadowNode->setRect( shadowMetrics.shadowRect( grooveRect ) );
+            shadowNode->setShape( grooveRect.width() / 2 );
+            shadowNode->setBlurRadius( shadowMetrics.blurRadius() );
+            shadowNode->setColor( display->shadowColor() );
+            shadowNode->setClipRect( grooveRect );
+
+            shadowNode->updateGeometry();
+
+            return shadowNode;
         }
         case WarmPartRole:
         {
@@ -98,12 +125,12 @@ QSGNode* LightDisplaySkinlet::updateSubNode(
         }
         case LeftLabelRole:
         {
-            return updateTextNode( skinnable, node, QStringLiteral( "0" ), {},
+            return updateTextNode( skinnable, node, QStringLiteral( "0  " ), {},
                                    LightDisplay::LeftLabel );
         }
         case RightLabelRole:
         {
-            return updateTextNode( skinnable, node, QStringLiteral( "100" ), {},
+            return updateTextNode( skinnable, node, QStringLiteral( "  100" ), {},
                                    LightDisplay::RightLabel );
         }
     }
@@ -116,7 +143,7 @@ QSizeF LightDisplaySkinlet::textLabelsSize( const LightDisplay* display ) const
     QFont font = display->effectiveFont( LightDisplay::LeftLabel );
     QFontMetricsF fm( font );
 
-    qreal w = fm.width( QStringLiteral( "100" ) );
+    qreal w = fm.width( QStringLiteral( "  100" ) );
     qreal h = fm.height();
     return { w, h };
 }
