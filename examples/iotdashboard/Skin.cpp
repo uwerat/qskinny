@@ -11,7 +11,8 @@
 #include "CircularProgressBarSkinlet.h"
 #include "Diagram.h"
 #include "DiagramSkinlet.h"
-#include "LightIntensity.h"
+#include "LightDisplay.h"
+#include "LightDisplaySkinlet.h"
 #include "MainContent.h"
 #include "MenuBar.h"
 #include "PieChartPainted.h"
@@ -54,6 +55,7 @@ Skin::Skin( const Palette& palette, QObject* parent )
 {
     declareSkinlet< CircularProgressBar, CircularProgressBarSkinlet >();
     declareSkinlet< Diagram, DiagramSkinlet >();
+    declareSkinlet< LightDisplay, LightDisplaySkinlet >();
 
     initHints( palette );
 }
@@ -180,6 +182,8 @@ void Skin::initHints( const Palette& palette )
     ed.setColor( Diagram::ChartArea3, "#66ff7d34" );
 
     // light intensity:
+    ed.setGradient( LightDisplay::Groove, Qt::magenta );
+    ed.setArcMetrics( LightDisplay::Groove, { 10, 0, 5760 } );
     ed.setGradient( LightDisplay::ColdPart, { Qt::Horizontal, "#a7b0ff", "#6776ff" } );
     ed.setGradient( LightDisplay::WarmPart, { Qt::Horizontal, "#feeeb7", "#ff3122" } );
     ed.setFontRole( LightDisplay::ValueText, QskSkin::LargeFont );
@@ -191,7 +195,7 @@ void Skin::initHints( const Palette& palette )
     ed.setGradient( Box::Panel, palette.box );
     ed.setGradient( BoxWithButtons::Panel, palette.box );
     ed.setGradient( UsageDiagramBox::Panel, palette.box );
-    ed.setColor( LightDisplay::Panel, palette.lightDisplay );
+//    ed.setColor( LightDisplay::Panel, palette.lightDisplay ); ###
     ed.setGradient( RoundButton::Panel, palette.roundButton );
     ed.setBoxBorderColors( UsageDiagramBox::DaysBox, palette.weekdayBox );
     ed.setColor( QskTextLabel::Text, palette.text );

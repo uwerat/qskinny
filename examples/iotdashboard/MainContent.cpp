@@ -8,7 +8,7 @@
 #include "Box.h"
 #include "BoxWithButtons.h"
 #include "UsageDiagram.h"
-#include "LightIntensity.h"
+#include "LightDisplay.h"
 #include "MyDevices.h"
 #include "PieChart.h"
 #include "TopBar.h"

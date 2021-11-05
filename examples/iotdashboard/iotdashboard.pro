@@ -10,7 +10,8 @@ SOURCES += \
     Diagram.cpp \
     DiagramSkinlet.cpp \
     GraphicProvider.cpp \
-    LightIntensity.cpp \
+    LightDisplaySkinlet.cpp \
+    LightDisplay.cpp \
     MainContent.cpp \
     MenuBar.cpp \
     MyDevices.cpp \
@@ -40,7 +41,8 @@ HEADERS += \
     Diagram.h \
     DiagramSkinlet.h \
     GraphicProvider.h \
-    LightIntensity.h \
+    LightDisplaySkinlet.h \
+    LightDisplay.h \
     MainContent.h \
     MainWindow.h \
     MenuBar.h \

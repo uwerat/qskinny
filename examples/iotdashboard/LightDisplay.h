@@ -5,22 +5,14 @@
 
 #pragma once
 
-#include <QskLinearBox.h>
+#include <QskBoundedControl.h>
 
-class QskTextLabel;
-
-class LightDisplay : public QskLinearBox
+class LightDisplay : public QskBoundedControl
 {
     Q_OBJECT
 
   public:
-    QSK_SUBCONTROLS( Panel, ColdPart, WarmPart, ValueText )
+    QSK_SUBCONTROLS( Groove, ColdPart, WarmPart, ValueText, LeftLabel, RightLabel )
 
     LightDisplay( QQuickItem* parent = nullptr );
-
-  protected:
-    void updateLayout() override;
-
-  private:
-    QskTextLabel* m_valueLabel;
 };
