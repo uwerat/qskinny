@@ -124,8 +124,6 @@ QSGNode* QskProgressBarSkinlet::updateBarNode(
     if ( !gradient.isVisible() )
         return nullptr;
 
-    gradient.setOrientation( bar->orientation() );
-
     if ( !gradient.isMonochrome() )
     {
         const auto intv = qskBarInterval( bar );
