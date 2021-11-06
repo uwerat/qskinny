@@ -6,17 +6,7 @@
 #include "LightDisplay.h"
 #include "Skin.h"
 
-#include <QskAnimator.h>
-#include <QskRgbValue.h>
-#include <QskSetup.h>
-#include <QskTextLabel.h>
-#include <QskQuick.h>
-
-#include <QGuiApplication>
-#include <QQuickWindow>
-#include <QQuickPaintedItem>
-#include <QPainter>
-#include <QRadialGradient>
+#include <QskEvent.h>
 
 QSK_SUBCONTROL( LightDisplay, Panel )
 QSK_SUBCONTROL( LightDisplay, Groove )
@@ -25,6 +15,8 @@ QSK_SUBCONTROL( LightDisplay, ValueText )
 QSK_SUBCONTROL( LightDisplay, LeftLabel )
 QSK_SUBCONTROL( LightDisplay, RightLabel )
 QSK_SUBCONTROL( LightDisplay, Knob )
+
+QSK_STATE( LightDisplay, Pressed, ( QskAspect::FirstUserState << 1 ) )
 
 LightDisplay::LightDisplay( QQuickItem* parent )
     : QskBoundedValueInput( parent )
@@ -37,6 +29,11 @@ LightDisplay::LightDisplay( QQuickItem* parent )
     // ### move to Skin:
     setShadow( { 0, 20 } );
     setShadowColor( 0xe5e5e5 );
+}
+
+bool LightDisplay::isPressed() const
+{
+    return hasSkinState( Pressed );
 }
 
 void LightDisplay::setShadow( const QskShadowMetrics& shadow )
@@ -70,6 +67,40 @@ void LightDisplay::setShadowColor( const QColor& color )
 QColor LightDisplay::shadowColor() const
 {
     return m_shadowColor;
+}
+
+void LightDisplay::mousePressEvent( QMouseEvent* event )
+{
+    QRectF handleRect = subControlRect( LightDisplay::Knob );
+
+    if ( handleRect.contains( event->pos() ) )
+    {
+        setSkinStateFlag( Pressed );
+    }
+    else
+    {
+        QskBoundedValueInput::mousePressEvent( event );
+    }
+}
+
+void LightDisplay::mouseMoveEvent( QMouseEvent* event )
+{
+    if ( !isPressed() )
+        return;
+
+    // ### check if arc contains the position
+
+    const auto mousePos = qskMousePosition( event );
+    const auto rect = subControlRect( ColdAndWarmArc );
+
+    const qreal ratioX = ( mousePos.x() - rect.x() ) / rect.width();
+
+    setValueAsRatio( ratioX );
+}
+
+void LightDisplay::mouseReleaseEvent( QMouseEvent* /*event*/ )
+{
+    setSkinStateFlag( Pressed, false );
 }
 
 #include "moc_LightDisplay.cpp"

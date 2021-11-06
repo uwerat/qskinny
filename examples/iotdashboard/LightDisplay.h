@@ -15,9 +15,12 @@ class LightDisplay : public QskBoundedValueInput
 
   public:
     QSK_SUBCONTROLS( Panel, Groove, ColdAndWarmArc, ValueText, LeftLabel,
-                     RightLabel, Knob )
+                     RightLabel, Knob ) // ### rename knob to handle?
+    QSK_STATES( Pressed )
 
     LightDisplay( QQuickItem* parent = nullptr );
+
+    bool isPressed() const;
 
     void setShadow( const QskShadowMetrics& );
     const QskShadowMetrics& shadow() const;
@@ -27,6 +30,11 @@ class LightDisplay : public QskBoundedValueInput
 
     void setShadowColor( const QColor& );
     QColor shadowColor() const;
+
+  protected:
+    void mousePressEvent( QMouseEvent* e ) override;
+    void mouseMoveEvent( QMouseEvent* e ) override;
+    void mouseReleaseEvent( QMouseEvent* e ) override;
 
   private:
     QskShadowMetrics m_shadow;
