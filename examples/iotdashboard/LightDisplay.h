@@ -14,7 +14,7 @@ class LightDisplay : public QskBoundedValueInput
     Q_OBJECT
 
   public:
-    QSK_SUBCONTROLS( Panel, Groove, ColdPart, WarmPart, ValueText, LeftLabel, RightLabel )
+    QSK_SUBCONTROLS( Panel, Groove, ColdAndWarmArc, ValueText, LeftLabel, RightLabel )
 
     LightDisplay( QQuickItem* parent = nullptr );
 

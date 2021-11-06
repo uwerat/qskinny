@@ -20,8 +20,7 @@
 
 QSK_SUBCONTROL( LightDisplay, Panel )
 QSK_SUBCONTROL( LightDisplay, Groove )
-QSK_SUBCONTROL( LightDisplay, ColdPart )
-QSK_SUBCONTROL( LightDisplay, WarmPart )
+QSK_SUBCONTROL( LightDisplay, ColdAndWarmArc )
 QSK_SUBCONTROL( LightDisplay, ValueText )
 QSK_SUBCONTROL( LightDisplay, LeftLabel )
 QSK_SUBCONTROL( LightDisplay, RightLabel )

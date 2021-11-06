@@ -8,6 +8,7 @@
 
 #include "nodes/BoxShadowNode.h"
 
+#include <QskArcMetrics.h>
 #include <QskTextOptions.h>
 
 #include <QFontMetrics>
@@ -15,7 +16,7 @@
 LightDisplaySkinlet::LightDisplaySkinlet( QskSkin* skin )
     : QskSkinlet( skin )
 {
-    setNodeRoles( { GrooveRole, PanelRole, WarmPartRole, ColdPartRole,
+    setNodeRoles( { GrooveRole, PanelRole, ColdAndWarmArcRole,
                     ValueTextRole, LeftLabelRole, RightLabelRole } );
 }
 
@@ -33,21 +34,32 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
             || subControl == LightDisplay::Panel
             || subControl == LightDisplay::ValueText )
     {
-        QSizeF size = textLabelsSize( display );
+        QSizeF textSize = textLabelsSize( display );
+        QskArcMetrics arcMetrics = display->arcMetricsHint( LightDisplay::ColdAndWarmArc );
 
-        const qreal x = size.width();
-        const qreal w = contentsRect.width() - 2 * size.width();
-        const qreal y = 0;
-        const qreal h = contentsRect.height();
+        const qreal x = textSize.width() + arcMetrics.width();
+        const qreal w = contentsRect.width() - ( 2 * ( textSize.width() + arcMetrics.width() ) );
+        const qreal y = arcMetrics.width();
+        const qreal h = contentsRect.height() - 2 * arcMetrics.width();
 
         const qreal diameter = qMin( w, h );
 
         rect = QRectF( x, y, diameter, diameter );
         return rect;
     }
+    else if( subControl == LightDisplay::ColdAndWarmArc )
+    {
+        const QRectF panelRect = subControlRect( skinnable, contentsRect,
+                                                 LightDisplay::Panel );
+        auto barWidth = display->arcMetricsHint( LightDisplay::ColdAndWarmArc ).width();
+        auto rect = panelRect.marginsAdded( { barWidth, barWidth, barWidth, barWidth } );
+        return rect;
+    }
     else if( subControl == LightDisplay::LeftLabel )
     {
-        QRectF grooveRect = subControlRect( skinnable, contentsRect, LightDisplay::Groove );
+        // ### rename to panelRect?
+        const QRectF grooveRect = subControlRect( skinnable, contentsRect,
+                                                  LightDisplay::Groove );
         QSizeF size = textLabelsSize( display );
 
         rect.setWidth( size.width() );
@@ -59,14 +71,15 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
     }
     else if( subControl == LightDisplay::RightLabel )
     {
-        QRectF grooveRect = subControlRect( skinnable, contentsRect, LightDisplay::Groove );
+        QRectF arcRect = subControlRect( skinnable, contentsRect, LightDisplay::ColdAndWarmArc );
         QSizeF size = textLabelsSize( display );
 
-        rect.setX( rect.right() - size.width() );
+        rect.setX( arcRect.x() + arcRect.width() );
 
-        rect.setY( grooveRect.y() + ( grooveRect.height() - size.height() ) / 2 );
+        rect.setY( arcRect.y() + ( arcRect.height() - size.height() ) / 2 );
         rect.setHeight( size.height() );
 
+        qDebug() << "rl rect:" << rect;
         return rect;
     }
 
@@ -107,17 +120,12 @@ QSGNode* LightDisplaySkinlet::updateSubNode(
 
             return shadowNode;
         }
-        case WarmPartRole:
+        case ColdAndWarmArcRole:
         {
-//            const qreal startAngle = 90 * 16;
-//            const auto bar = static_cast< const LightDisplay* >( skinnable );
-//            const qreal spanAngle = bar->valueAsRatio() * -5760;
-//            return updateArcNode( skinnable, node, startAngle, spanAngle,
-//                LightDisplay::Bar );
-        }
-        case ColdPartRole:
-        {
-            return nullptr;
+            const qreal startAngle = 0;
+            const qreal spanAngle = 180 * 16;
+            return updateArcNode( skinnable, node, startAngle, spanAngle,
+                LightDisplay::ColdAndWarmArc );
         }
         case ValueTextRole:
         {

@@ -20,7 +20,7 @@ class LightDisplaySkinlet : public QskSkinlet
     {
         PanelRole,
         GrooveRole,
-        ColdPartRole,
+        ColdAndWarmArcRole,
         WarmPartRole,
         ValueTextRole,
         LeftLabelRole,
