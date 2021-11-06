@@ -24,6 +24,7 @@ QSK_SUBCONTROL( LightDisplay, ColdAndWarmArc )
 QSK_SUBCONTROL( LightDisplay, ValueText )
 QSK_SUBCONTROL( LightDisplay, LeftLabel )
 QSK_SUBCONTROL( LightDisplay, RightLabel )
+QSK_SUBCONTROL( LightDisplay, Knob )
 
 LightDisplay::LightDisplay( QQuickItem* parent )
     : QskBoundedValueInput( parent )

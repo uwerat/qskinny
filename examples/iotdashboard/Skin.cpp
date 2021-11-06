@@ -195,6 +195,11 @@ void Skin::initHints( const Palette& palette )
     ed.setFontRole( LightDisplay::ValueText, QskSkin::LargeFont );
     ed.setColor( LightDisplay::ValueText, "#929cb2" );
 
+    ed.setStrutSize( LightDisplay::Knob, { 15.65, 15.65 } );
+    ed.setBoxBorderMetrics( LightDisplay::Knob, 1 );
+    ed.setBoxBorderColors( LightDisplay::Knob, 0xffc4c4c4 );
+    ed.setBoxShape( LightDisplay::Knob, 100, Qt::RelativeSize );
+
     // palette dependent skin hints:
     ed.setGradient( MenuBar::Panel, palette.menuBar );
     ed.setGradient( MainContent::Panel, palette.mainContent );
@@ -202,6 +207,7 @@ void Skin::initHints( const Palette& palette )
     ed.setGradient( BoxWithButtons::Panel, palette.box );
     ed.setGradient( UsageDiagramBox::Panel, palette.box );
     ed.setGradient( LightDisplay::Panel, palette.box );
+    ed.setGradient( LightDisplay::Knob, palette.box );
     ed.setGradient( RoundButton::Panel, palette.roundButton );
     ed.setBoxBorderColors( UsageDiagramBox::DaysBox, palette.weekdayBox );
     ed.setColor( QskTextLabel::Text, palette.text );

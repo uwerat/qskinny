@@ -25,6 +25,7 @@ class LightDisplaySkinlet : public QskSkinlet
         ValueTextRole,
         LeftLabelRole,
         RightLabelRole,
+        KnobRole,
 
         RoleCount,
     };

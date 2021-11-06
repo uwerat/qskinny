@@ -12,12 +12,13 @@
 #include <QskTextOptions.h>
 
 #include <QFontMetrics>
+#include <QtMath>
 
 LightDisplaySkinlet::LightDisplaySkinlet( QskSkin* skin )
     : QskSkinlet( skin )
 {
-    setNodeRoles( { GrooveRole, PanelRole, ColdAndWarmArcRole,
-                    ValueTextRole, LeftLabelRole, RightLabelRole } );
+    setNodeRoles( { GrooveRole, PanelRole, ColdAndWarmArcRole, ValueTextRole,
+                    LeftLabelRole, RightLabelRole, KnobRole } );
 }
 
 LightDisplaySkinlet::~LightDisplaySkinlet()
@@ -79,7 +80,24 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
         rect.setY( arcRect.y() + ( arcRect.height() - size.height() ) / 2 );
         rect.setHeight( size.height() );
 
-        qDebug() << "rl rect:" << rect;
+        return rect;
+    }
+    else if( subControl == LightDisplay::Knob )
+    {
+        QRectF arcRect = subControlRect( skinnable, contentsRect, LightDisplay::ColdAndWarmArc );
+        QskArcMetrics arcMetrics = display->arcMetricsHint( LightDisplay::ColdAndWarmArc );
+        QSizeF knobSize = display->strutSizeHint( LightDisplay::Knob );
+
+        const qreal radius = ( arcRect.width() - arcMetrics.width() ) / 2;
+        const qreal angle = display->valueAsRatio() * 180;
+
+        const qreal cos = qFastCos( qDegreesToRadians( angle ) );
+        const qreal sin = qFastSin( qDegreesToRadians( angle ) );
+
+        const auto x = arcRect.center().x() - knobSize.width() / 2 - radius * cos;
+        const auto y = arcRect.center().y() - knobSize.height() / 2 - radius * sin;
+
+        rect = QRectF( x, y, knobSize.width(), knobSize.height() );
         return rect;
     }
 
@@ -143,6 +161,10 @@ QSGNode* LightDisplaySkinlet::updateSubNode(
         {
             return updateTextNode( skinnable, node, QStringLiteral( "  100" ), {},
                                    LightDisplay::RightLabel );
+        }
+        case KnobRole:
+        {
+            return updateBoxNode( skinnable, node, LightDisplay::Knob );
         }
     }
 
