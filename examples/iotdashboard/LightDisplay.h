@@ -5,11 +5,11 @@
 
 #pragma once
 
-#include <QskBoundedControl.h>
+#include <QskBoundedValueInput.h>
 #include <QskBoxShapeMetrics.h>
 #include <QskShadowMetrics.h>
 
-class LightDisplay : public QskBoundedControl
+class LightDisplay : public QskBoundedValueInput
 {
     Q_OBJECT
 

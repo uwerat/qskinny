@@ -30,7 +30,8 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
     QRectF rect = contentsRect;
 
     if( subControl == LightDisplay::Groove
-            || subControl == LightDisplay::Panel )
+            || subControl == LightDisplay::Panel
+            || subControl == LightDisplay::ValueText )
     {
         QSizeF size = textLabelsSize( display );
 
@@ -120,8 +121,10 @@ QSGNode* LightDisplaySkinlet::updateSubNode(
         }
         case ValueTextRole:
         {
-
-            return nullptr;
+            const QString valueText = QString::number( display->value(), 'f', 0 )
+                    + QStringLiteral( " %" );
+            return updateTextNode( skinnable, node, valueText, {},
+                                   LightDisplay::ValueText );
         }
         case LeftLabelRole:
         {

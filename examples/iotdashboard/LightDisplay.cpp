@@ -27,12 +27,14 @@ QSK_SUBCONTROL( LightDisplay, LeftLabel )
 QSK_SUBCONTROL( LightDisplay, RightLabel )
 
 LightDisplay::LightDisplay( QQuickItem* parent )
-    : QskBoundedControl( parent )
+    : QskBoundedValueInput( parent )
 {
     setAlignmentHint( LeftLabel, Qt::AlignRight );
+    setAlignmentHint( ValueText, Qt::AlignCenter | Qt::AlignHCenter );
+
+    setBoundaries( 0, 100 );
 
     // ### move to Skin:
-    setGradient( Qt::magenta );
     setShadow( { 0, 20 } );
     setShadowColor( 0xe5e5e5 );
 }
