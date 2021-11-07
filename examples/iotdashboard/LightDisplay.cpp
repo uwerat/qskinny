@@ -6,7 +6,10 @@
 #include "LightDisplay.h"
 #include "Skin.h"
 
+#include <QskArcMetrics.h>
 #include <QskEvent.h>
+
+#include <QtMath>
 
 QSK_SUBCONTROL( LightDisplay, Panel )
 QSK_SUBCONTROL( LightDisplay, Groove )
@@ -88,10 +91,16 @@ void LightDisplay::mouseMoveEvent( QMouseEvent* event )
     if ( !isPressed() )
         return;
 
-    // ### check if arc contains the position
-
     const auto mousePos = qskMousePosition( event );
     const auto rect = subControlRect( ColdAndWarmArc );
+
+    bool arcContainsMousePos = arcContainsPoint( rect, mousePos );
+
+    if( !arcContainsMousePos )
+    {
+        setSkinStateFlag( Pressed, false );
+        return;
+    }
 
     const qreal ratioX = ( mousePos.x() - rect.x() ) / rect.width();
 
@@ -101,6 +110,40 @@ void LightDisplay::mouseMoveEvent( QMouseEvent* event )
 void LightDisplay::mouseReleaseEvent( QMouseEvent* /*event*/ )
 {
     setSkinStateFlag( Pressed, false );
+}
+
+bool LightDisplay::arcContainsPoint( const QRectF& rect, const QPointF& point ) const
+{
+    // putting this in an own function just because it might be useful
+    // at other places in the future
+
+    const QskArcMetrics metrics = arcMetricsHint( ColdAndWarmArc );
+    const int tolerance = 10;
+
+    // 1. check angle
+    QPointF circlePos( point.x() - rect.center().x(),
+                 rect.center().y() - point.y() );
+
+    const qreal atan = qAtan2( circlePos.y(), circlePos.x() );
+    const qreal angle = qRadiansToDegrees( atan );
+    // the qAbs() actually only works for the 180 degrees case,
+    // we might want to generalize this later:
+    const bool angleWithinRange = ( qAbs( angle ) + tolerance ) > metrics.startAngle()
+            && qAbs( angle ) < ( metrics.startAngle() + metrics.spanAngle() - tolerance );
+
+    // 2. check whether point is on arc
+    const qreal radiusMax = rect.width() / 2;
+    const qreal arcWidth = metrics.width();
+    const qreal radiusMin = radiusMax - arcWidth;
+
+    const qreal polarRadius = qSqrt( qPow( circlePos.x(), 2 ) + qPow( circlePos.y(), 2 ) );
+    const bool pointOnArc = ( polarRadius + tolerance ) > radiusMin
+            && ( polarRadius - tolerance ) < radiusMax;
+
+    qDebug() << angleWithinRange << angle << pointOnArc;
+    bool ret = angleWithinRange && pointOnArc;
+
+    return ret;
 }
 
 #include "moc_LightDisplay.cpp"

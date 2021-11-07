@@ -37,6 +37,8 @@ class LightDisplay : public QskBoundedValueInput
     void mouseReleaseEvent( QMouseEvent* e ) override;
 
   private:
+    bool arcContainsPoint( const QRectF&, const QPointF& ) const;
+
     QskShadowMetrics m_shadow;
     QColor m_shadowColor = Qt::black;
 

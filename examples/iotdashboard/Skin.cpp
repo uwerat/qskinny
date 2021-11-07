@@ -184,7 +184,7 @@ void Skin::initHints( const Palette& palette )
     // light intensity:
     ed.setBoxShape( LightDisplay::Panel, 100, Qt::RelativeSize );
 
-    ed.setArcMetrics( LightDisplay::ColdAndWarmArc, 8.785, 0, 0 );
+    ed.setArcMetrics( LightDisplay::ColdAndWarmArc, 8.785, 0, 180 * 16 );
     QskGradient coldGradient( Qt::Horizontal, { { 0.0, 0xffff3122 },
                                                 { 0.2, 0xfffeeeb7 },
                                                 { 0.3, 0xffa7b0ff },
@@ -195,7 +195,7 @@ void Skin::initHints( const Palette& palette )
     ed.setFontRole( LightDisplay::ValueText, QskSkin::LargeFont );
     ed.setColor( LightDisplay::ValueText, "#929cb2" );
 
-    ed.setStrutSize( LightDisplay::Knob, { 15.65, 15.65 } );
+    ed.setStrutSize( LightDisplay::Knob, { 20, 20 } );
     ed.setBoxBorderMetrics( LightDisplay::Knob, 1 );
     ed.setBoxBorderColors( LightDisplay::Knob, 0xffc4c4c4 );
     ed.setBoxShape( LightDisplay::Knob, 100, Qt::RelativeSize );
