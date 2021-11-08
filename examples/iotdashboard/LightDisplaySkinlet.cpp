@@ -140,10 +140,7 @@ QSGNode* LightDisplaySkinlet::updateSubNode(
         }
         case ColdAndWarmArcRole:
         {
-            const qreal startAngle = 0;
-            const qreal spanAngle = 180 * 16;
-            return updateArcNode( skinnable, node, startAngle, spanAngle,
-                LightDisplay::ColdAndWarmArc );
+            return updateArcNode( skinnable, node, LightDisplay::ColdAndWarmArc );
         }
         case ValueTextRole:
         {

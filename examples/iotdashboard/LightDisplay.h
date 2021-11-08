@@ -37,6 +37,7 @@ class LightDisplay : public QskBoundedValueInput
     void mouseReleaseEvent( QMouseEvent* e ) override;
 
   private:
+    qreal angleFromPoint( const QRectF&, const QPointF& ) const;
     bool arcContainsPoint( const QRectF&, const QPointF& ) const;
 
     QskShadowMetrics m_shadow;

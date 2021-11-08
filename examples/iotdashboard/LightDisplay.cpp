@@ -102,14 +102,26 @@ void LightDisplay::mouseMoveEvent( QMouseEvent* event )
         return;
     }
 
-    const qreal ratioX = ( mousePos.x() - rect.x() ) / rect.width();
-
-    setValueAsRatio( ratioX );
+    const QskArcMetrics metrics = arcMetricsHint( ColdAndWarmArc );
+    const qreal angle = angleFromPoint( rect, mousePos );
+    qDebug() << "angle:" << angle;
+    const qreal ratio = ( metrics.spanAngle() - angle * 16 ) / metrics.spanAngle();
+    setValueAsRatio( ratio );
 }
 
 void LightDisplay::mouseReleaseEvent( QMouseEvent* /*event*/ )
 {
     setSkinStateFlag( Pressed, false );
+}
+
+qreal LightDisplay::angleFromPoint( const QRectF& rect, const QPointF& point ) const
+{
+    QPointF circlePos( point.x() - rect.center().x(),
+                 rect.center().y() - point.y() );
+
+    const qreal atan = qAtan2( circlePos.y(), circlePos.x() );
+    const qreal angle = qRadiansToDegrees( atan );
+    return angle;
 }
 
 bool LightDisplay::arcContainsPoint( const QRectF& rect, const QPointF& point ) const
@@ -118,18 +130,15 @@ bool LightDisplay::arcContainsPoint( const QRectF& rect, const QPointF& point ) 
     // at other places in the future
 
     const QskArcMetrics metrics = arcMetricsHint( ColdAndWarmArc );
-    const int tolerance = 10;
+    const int tolerance = 20;
 
     // 1. check angle
     QPointF circlePos( point.x() - rect.center().x(),
                  rect.center().y() - point.y() );
 
-    const qreal atan = qAtan2( circlePos.y(), circlePos.x() );
-    const qreal angle = qRadiansToDegrees( atan );
-    // the qAbs() actually only works for the 180 degrees case,
-    // we might want to generalize this later:
-    const bool angleWithinRange = ( qAbs( angle ) + tolerance ) > metrics.startAngle()
-            && qAbs( angle ) < ( metrics.startAngle() + metrics.spanAngle() - tolerance );
+    const qreal angle = angleFromPoint( rect, point );
+    const bool angleWithinRange = ( angle + tolerance ) > metrics.startAngle()
+            && angle < ( metrics.startAngle() + metrics.spanAngle() - tolerance );
 
     // 2. check whether point is on arc
     const qreal radiusMax = rect.width() / 2;
