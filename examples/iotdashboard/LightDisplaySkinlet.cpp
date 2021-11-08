@@ -17,8 +17,8 @@
 LightDisplaySkinlet::LightDisplaySkinlet( QskSkin* skin )
     : QskSkinlet( skin )
 {
-    setNodeRoles( { GrooveRole, PanelRole, ColdAndWarmArcRole, ValueTextRole,
-                    LeftLabelRole, RightLabelRole, KnobRole } );
+    setNodeRoles( { GrooveRole, PanelRole, ColdAndWarmArcRole, TickmarksRole,
+                    ValueTextRole, LeftLabelRole, RightLabelRole, KnobRole } );
 }
 
 LightDisplaySkinlet::~LightDisplaySkinlet()
@@ -37,11 +37,12 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
     {
         QSizeF textSize = textLabelsSize( display );
         QskArcMetrics arcMetrics = display->arcMetricsHint( LightDisplay::ColdAndWarmArc );
+        const qreal ticksWidth = display->metric( LightDisplay::Tickmarks );
 
-        const qreal x = textSize.width() + arcMetrics.width();
-        const qreal w = contentsRect.width() - ( 2 * ( textSize.width() + arcMetrics.width() ) );
-        const qreal y = arcMetrics.width();
-        const qreal h = contentsRect.height() - 2 * arcMetrics.width();
+        const qreal x = textSize.width() + arcMetrics.width() + ticksWidth;
+        const qreal w = contentsRect.width() - ( 2 * ( textSize.width() + arcMetrics.width() + ticksWidth ) );
+        const qreal y = arcMetrics.width() + ticksWidth;
+        const qreal h = contentsRect.height() - 2 * ( arcMetrics.width() + ticksWidth );
 
         const qreal diameter = qMin( w, h );
 
@@ -56,28 +57,34 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
         auto rect = panelRect.marginsAdded( { barWidth, barWidth, barWidth, barWidth } );
         return rect;
     }
+    else if( subControl == LightDisplay::Tickmarks )
+    {
+        const QRectF arcRect = subControlRect( skinnable, contentsRect,
+                                                 LightDisplay::ColdAndWarmArc );
+        auto tickWidth = display->metric( LightDisplay::Tickmarks );
+        auto rect = arcRect.marginsAdded( { tickWidth, tickWidth, tickWidth, tickWidth } );
+        return rect;
+    }
     else if( subControl == LightDisplay::LeftLabel )
     {
-        // ### rename to panelRect?
-        const QRectF grooveRect = subControlRect( skinnable, contentsRect,
-                                                  LightDisplay::Groove );
+        const QRectF ticksRect = subControlRect( skinnable, contentsRect, LightDisplay::Tickmarks );
         QSizeF size = textLabelsSize( display );
 
         rect.setWidth( size.width() );
 
-        rect.setY( grooveRect.y() + ( grooveRect.height() - size.height() ) / 2 );
+        rect.setY( ticksRect.y() + ( ticksRect.height() - size.height() ) / 2 );
         rect.setHeight( size.height() );
 
         return rect;
     }
     else if( subControl == LightDisplay::RightLabel )
     {
-        QRectF arcRect = subControlRect( skinnable, contentsRect, LightDisplay::ColdAndWarmArc );
+        QRectF ticksRect = subControlRect( skinnable, contentsRect, LightDisplay::Tickmarks );
         QSizeF size = textLabelsSize( display );
 
-        rect.setX( arcRect.x() + arcRect.width() );
+        rect.setX( ticksRect.x() + ticksRect.width() );
 
-        rect.setY( arcRect.y() + ( arcRect.height() - size.height() ) / 2 );
+        rect.setY( ticksRect.y() + ( ticksRect.height() - size.height() ) / 2 );
         rect.setHeight( size.height() );
 
         return rect;
@@ -141,6 +148,10 @@ QSGNode* LightDisplaySkinlet::updateSubNode(
         case ColdAndWarmArcRole:
         {
             return updateArcNode( skinnable, node, LightDisplay::ColdAndWarmArc );
+        }
+        case TickmarksRole:
+        {
+            return nullptr;
         }
         case ValueTextRole:
         {

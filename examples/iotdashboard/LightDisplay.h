@@ -14,8 +14,8 @@ class LightDisplay : public QskBoundedValueInput
     Q_OBJECT
 
   public:
-    QSK_SUBCONTROLS( Panel, Groove, ColdAndWarmArc, ValueText, LeftLabel,
-                     RightLabel, Knob ) // ### rename knob to handle?
+    QSK_SUBCONTROLS( Panel, Groove, ColdAndWarmArc, Tickmarks, ValueText,
+                     LeftLabel, RightLabel, Knob ) // ### rename knob to handle?
     QSK_STATES( Pressed )
 
     LightDisplay( QQuickItem* parent = nullptr );

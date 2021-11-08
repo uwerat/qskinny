@@ -14,6 +14,7 @@
 QSK_SUBCONTROL( LightDisplay, Panel )
 QSK_SUBCONTROL( LightDisplay, Groove )
 QSK_SUBCONTROL( LightDisplay, ColdAndWarmArc )
+QSK_SUBCONTROL( LightDisplay, Tickmarks )
 QSK_SUBCONTROL( LightDisplay, ValueText )
 QSK_SUBCONTROL( LightDisplay, LeftLabel )
 QSK_SUBCONTROL( LightDisplay, RightLabel )
@@ -104,7 +105,6 @@ void LightDisplay::mouseMoveEvent( QMouseEvent* event )
 
     const QskArcMetrics metrics = arcMetricsHint( ColdAndWarmArc );
     const qreal angle = angleFromPoint( rect, mousePos );
-    qDebug() << "angle:" << angle;
     const qreal ratio = ( metrics.spanAngle() - angle * 16 ) / metrics.spanAngle();
     setValueAsRatio( ratio );
 }
@@ -149,7 +149,6 @@ bool LightDisplay::arcContainsPoint( const QRectF& rect, const QPointF& point ) 
     const bool pointOnArc = ( polarRadius + tolerance ) > radiusMin
             && ( polarRadius - tolerance ) < radiusMax;
 
-    qDebug() << angleWithinRange << angle << pointOnArc;
     bool ret = angleWithinRange && pointOnArc;
 
     return ret;
