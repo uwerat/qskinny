@@ -21,6 +21,9 @@ class QSK_EXPORT QskTabView : public QskControl
     Q_PROPERTY( Qsk::Position tabPosition READ tabPosition
         WRITE setTabPosition NOTIFY tabPositionChanged FINAL )
 
+    Q_PROPERTY( Qt::Alignment tabAlignment READ tabAlignment
+        WRITE setTabAlignment NOTIFY tabAlignmentChanged FINAL )
+
     Q_PROPERTY( bool autoFitTabs READ autoFitTabs
         WRITE setAutoFitTabs NOTIFY autoFitTabsChanged FINAL )
 
@@ -46,6 +49,9 @@ class QSK_EXPORT QskTabView : public QskControl
 
     void setTabPosition( Qsk::Position );
     Qsk::Position tabPosition() const;
+
+    void setTabAlignment( Qt::Alignment );
+    Qt::Alignment tabAlignment() const;
 
     void setAutoFitTabs( bool );
     bool autoFitTabs() const;
@@ -84,6 +90,7 @@ class QSK_EXPORT QskTabView : public QskControl
     void currentIndexChanged( int index );
     void countChanged( int );
     void tabPositionChanged( Qsk::Position );
+    void tabAlignmentChanged( Qt::Alignment );
     void autoFitTabsChanged( bool );
 
   protected:

@@ -19,6 +19,9 @@ class QSK_EXPORT QskTabBar : public QskBox
     Q_PROPERTY( Qsk::Position tabPosition READ tabPosition
         WRITE setTabPosition NOTIFY tabPositionChanged FINAL )
 
+    Q_PROPERTY( Qt::Alignment tabAlignment READ tabAlignment
+        WRITE setTabAlignment NOTIFY tabAlignmentChanged FINAL )
+
     Q_PROPERTY( Qt::Orientation orientation READ orientation )
 
     Q_PROPERTY( bool autoScrollFocusButton READ autoScrollFocusButton
@@ -47,6 +50,9 @@ class QSK_EXPORT QskTabBar : public QskBox
 
     void setTabPosition( Qsk::Position );
     Qsk::Position tabPosition() const;
+
+    void setTabAlignment( Qt::Alignment );
+    Qt::Alignment tabAlignment() const;
 
     Qt::Orientation orientation() const;
 
@@ -99,6 +105,7 @@ class QSK_EXPORT QskTabBar : public QskBox
     void countChanged( int );
     void textOptionsChanged( const QskTextOptions& );
     void tabPositionChanged( Qsk::Position );
+    void tabAlignmentChanged( Qt::Alignment );
     void autoScrollFocusedButtonChanged( bool );
     void autoFitTabsChanged( bool );
 
@@ -111,6 +118,8 @@ class QSK_EXPORT QskTabBar : public QskBox
   private:
     void adjustCurrentIndex();
     void handleButtonClick();
+    void ensureSpacer( Qsk::Position position );
+    void removeSpacer( Qsk::Position position );
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

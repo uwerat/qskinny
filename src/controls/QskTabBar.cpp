@@ -40,7 +40,6 @@ namespace
             : QskLinearBox( orientation, parent )
         {
             setObjectName( QStringLiteral( "QskTabBarLayoutBox" ) );
-            setExtraSpacingAt( Qt::RightEdge | Qt::BottomEdge );
         }
 
         void restack( int currentIndex )
@@ -270,11 +269,13 @@ class QskTabBar::PrivateData
     }
 
     ScrollBox* scrollBox = nullptr;
+    QskLinearBox* alignmentBox = nullptr;
     ButtonBox* buttonBox = nullptr;
     int currentIndex = -1;
 
     QskTextOptions textOptions;
     uint position : 2;
+    Qt::Alignment alignment;
 };
 
 QskTabBar::QskTabBar( QQuickItem* parent )
@@ -298,9 +299,16 @@ QskTabBar::QskTabBar( Qsk::Position position, QQuickItem* parent )
     m_data->scrollBox = new ScrollBox( this );
     m_data->scrollBox->setOrientation( orientation );
 
-    m_data->buttonBox = new ButtonBox( orientation, m_data->scrollBox );
+    m_data->alignmentBox = new QskLinearBox( Qt::Horizontal, m_data->scrollBox );
+
+    m_data->buttonBox = new ButtonBox( orientation, m_data->alignmentBox );
     m_data->buttonBox->setSpacing( spacingHint( QskTabBar::Panel ) );
     m_data->buttonBox->setSizePolicy( QskSizePolicy::Maximum, QskSizePolicy::Maximum );
+
+    m_data->alignmentBox->setStretchFactor( m_data->buttonBox, 5 );
+
+    Qt::Alignment alignment = alignmentHint( Panel, Qt::AlignLeft | Qt::AlignTop );
+    setTabAlignment( alignment );
 
     connect( this, &QskTabBar::currentIndexChanged,
         m_data->buttonBox, &ButtonBox::restack, Qt::QueuedConnection );
@@ -323,6 +331,9 @@ void QskTabBar::setTabPosition( Qsk::Position position )
     {
         qskTransposeSizePolicy( this );
 
+        m_data->alignmentBox->setOrientation( orientation );
+        qskTransposeSizePolicy( m_data->alignmentBox );
+
         m_data->buttonBox->setOrientation( orientation );
         qskTransposeSizePolicy( m_data->buttonBox );
 
@@ -340,6 +351,42 @@ void QskTabBar::setTabPosition( Qsk::Position position )
 Qsk::Position QskTabBar::tabPosition() const
 {
     return static_cast< Qsk::Position >( m_data->position );
+}
+
+void QskTabBar::setTabAlignment( Qt::Alignment alignment )
+{
+    // we don't check for m_data->alignment, because fit tabs could have changed
+    if ( autoFitTabs() )
+        return;
+
+    m_data->alignment = alignment;
+    m_data->alignmentBox->setSizePolicy( orientation(), QskSizePolicy::Preferred );
+
+    if( ( orientation() == Qt::Horizontal && alignment & Qt::AlignLeft )
+        || ( orientation() == Qt::Vertical && alignment & Qt::AlignTop ) )
+    {
+        removeSpacer( Qsk::Left );
+        ensureSpacer( Qsk::Right );
+    }
+    else if( ( orientation() == Qt::Horizontal && alignment & Qt::AlignHCenter )
+        || ( orientation() == Qt::Vertical && alignment & Qt::AlignVCenter ) )
+    {
+        ensureSpacer( Qsk::Left );
+        ensureSpacer( Qsk::Right );
+    }
+    else if( ( orientation() == Qt::Horizontal && alignment & Qt::AlignRight )
+        || ( orientation() == Qt::Vertical && alignment & Qt::AlignBottom ) )
+    {
+        removeSpacer( Qsk::Right );
+        ensureSpacer( Qsk::Left );
+    }
+
+    Q_EMIT tabAlignmentChanged( alignment );
+}
+
+Qt::Alignment QskTabBar::tabAlignment() const
+{
+    return m_data->alignment;
 }
 
 Qt::Orientation QskTabBar::orientation() const
@@ -365,19 +412,34 @@ void QskTabBar::setAutoFitTabs( bool on )
 {
     const auto orientation = qskOrientation( m_data->position );
     int policy = m_data->buttonBox->sizePolicy( orientation );
+    int boxPolicy = m_data->alignmentBox->sizePolicy( orientation );
 
     if ( ( policy & QskSizePolicy::GrowFlag ) != on )
     {
         if ( on )
+        {
             policy |= QskSizePolicy::GrowFlag;
+            boxPolicy |= QskSizePolicy::GrowFlag;
+            removeSpacer( Qsk::Left );
+            removeSpacer( Qsk::Right );
+        }
         else
+        {
             policy &= ~QskSizePolicy::GrowFlag;
+            boxPolicy &= ~QskSizePolicy::GrowFlag;
+        }
 
         // we need operators for QskSizePolicy::Policy: TODO ...
         m_data->buttonBox->setSizePolicy(
             orientation, static_cast< QskSizePolicy::Policy >( policy ) );
 
+        m_data->alignmentBox->setSizePolicy(
+            orientation, static_cast< QskSizePolicy::Policy >( boxPolicy ) );
+
         polish();
+
+        if( !on )
+            setTabAlignment( m_data->alignment );
 
         Q_EMIT autoFitTabsChanged( on );
     }
@@ -669,6 +731,33 @@ void QskTabBar::handleButtonClick()
         if ( index >= 0 )
             Q_EMIT buttonClicked( index );
     }
+}
+
+void QskTabBar::ensureSpacer( Qsk::Position position )
+{
+    int boxPos = m_data->alignmentBox->indexOf( m_data->buttonBox );
+    int pos = ( position == Qsk::Left ) ? 0 : -1;
+
+    if( ( boxPos > 0 && position == Qsk::Left )
+        || ( boxPos < m_data->alignmentBox->elementCount() - 1 && position == Qsk::Right ) )
+    {
+        return; // nothing to do, spacer is already there
+    }
+
+    m_data->alignmentBox->insertSpacer( pos, 0, 10 );
+}
+
+void QskTabBar::removeSpacer( Qsk::Position position )
+{
+    int boxPos = m_data->alignmentBox->indexOf( m_data->buttonBox );
+    int pos = ( position == Qsk::Left ) ? boxPos - 1 : boxPos + 1;
+
+    if( pos < 0 || pos >= m_data->alignmentBox->elementCount() )
+    {
+        return; // nothing to do, no spacer there
+    }
+
+    m_data->alignmentBox->removeAt( pos );
 }
 
 QskAspect::Subcontrol QskTabBar::substitutedSubcontrol(

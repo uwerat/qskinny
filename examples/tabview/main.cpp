@@ -13,6 +13,7 @@
 #include <QskObjectCounter.h>
 #include <QskPushButton.h>
 #include <QskSkin.h>
+#include <QskSimpleListBox.h>
 #include <QskTabButton.h>
 #include <QskTabBar.h>
 #include <QskTabView.h>
@@ -53,6 +54,7 @@ class TabView : public QskTabView
 
         buttonAt( 2 )->setEnabled( false );
         setCurrentIndex( 4 );
+        setAutoFitTabs(false);
     }
 
     void appendTab()
@@ -79,6 +81,39 @@ class TabView : public QskTabView
                 break;
             }
         }
+    }
+
+    void updateAlignment( const QString& hAlignment, const QString& vAlignment )
+    {
+        Qt::Alignment alignment;
+
+        if( hAlignment == QStringLiteral( "align left" ) )
+        {
+            alignment |= Qt::AlignLeft;
+        }
+        else if( hAlignment == QStringLiteral( "align center" ) )
+        {
+            alignment |= Qt::AlignHCenter;
+        }
+        else if( hAlignment == QStringLiteral( "align right" ) )
+        {
+            alignment |= Qt::AlignRight;
+        }
+
+        if( vAlignment == QStringLiteral( "align top" ) )
+        {
+            alignment |= Qt::AlignTop;
+        }
+        else if( vAlignment == QStringLiteral( "align middle" ) )
+        {
+            alignment |= Qt::AlignVCenter;
+        }
+        else if( vAlignment == QStringLiteral( "align bottom" ) )
+        {
+            alignment |= Qt::AlignBottom;
+        }
+
+        setTabAlignment( alignment );
     }
 };
 
@@ -113,12 +148,35 @@ int main( int argc, char* argv[] )
     QObject::connect( removeButton, &QskPushButton::clicked,
         tabView, &TabView::removeLastTab );
 
+    auto hAlignmentBox = new QskSimpleListBox();
+    hAlignmentBox->append( "align left" );
+    hAlignmentBox->append( "align center" );
+    hAlignmentBox->append( "align right" );
+
+    auto vAlignmentBox = new QskSimpleListBox();
+    vAlignmentBox->append( "align top" );
+    vAlignmentBox->append( "align middle" );
+    vAlignmentBox->append( "align bottom" );
+
+    auto alignmentLambda = [ tabView, hAlignmentBox, vAlignmentBox ]()
+        {
+            tabView->updateAlignment( hAlignmentBox->selectedEntry(),
+                vAlignmentBox->selectedEntry() );
+        };
+
+    QObject::connect( hAlignmentBox, &QskSimpleListBox::selectedEntryChanged,
+        alignmentLambda );
+    QObject::connect( vAlignmentBox, &QskSimpleListBox::selectedEntryChanged,
+        alignmentLambda );
+
     auto buttonBox = new QskLinearBox( Qt::Horizontal );
     buttonBox->addItem( rotateButton );
     buttonBox->addItem( autoFitButton );
     buttonBox->addItem( addButton );
     buttonBox->addItem( removeButton );
-    buttonBox->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
+    buttonBox->addItem( hAlignmentBox );
+    buttonBox->addItem( vAlignmentBox );
+    buttonBox->setSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Fixed );
 
     auto layoutBox = new QskLinearBox( Qt::Vertical );
     layoutBox->setDefaultAlignment( Qt::AlignLeft );
