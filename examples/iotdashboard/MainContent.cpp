@@ -54,6 +54,7 @@ namespace
         LightIntensity( QQuickItem* parent = nullptr )
             : Box( "Light intensity", parent )
         {
+            addSpacer( 5 );
             auto* lightDisplay = new LightDisplay( this );
             lightDisplay->setValue( 50.0 );
         }

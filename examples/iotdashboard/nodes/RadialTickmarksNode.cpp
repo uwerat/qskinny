@@ -58,7 +58,7 @@ RadialTickmarksNode::~RadialTickmarksNode()
 }
 
 void RadialTickmarksNode::update(const QColor& color, const QRectF& rect,
-    const QskArcMetrics &arcMetrics, const QskIntervalF& boundaries,
+    const QskArcMetrics& arcMetrics, const QskIntervalF& /*boundaries*/,
     const QskScaleTickmarks& tickmarks, int lineWidth,
     Qt::Orientation /*orientation*/ )
 {
