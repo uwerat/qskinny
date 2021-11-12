@@ -7,6 +7,7 @@
 #include "LightDisplay.h"
 
 #include "nodes/BoxShadowNode.h"
+#include "nodes/RadialTickmarksNode.h"
 
 #include <QskArcMetrics.h>
 #include <QskTextOptions.h>
@@ -30,6 +31,7 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
 {
     auto* display = static_cast< const LightDisplay* >( skinnable );
     QRectF rect = contentsRect;
+    const qreal ticksSpacing = 4; // space between the ticks and the arc
 
     if( subControl == LightDisplay::Groove
             || subControl == LightDisplay::Panel
@@ -37,7 +39,7 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
     {
         QSizeF textSize = textLabelsSize( display );
         QskArcMetrics arcMetrics = display->arcMetricsHint( LightDisplay::ColdAndWarmArc );
-        const qreal ticksWidth = display->metric( LightDisplay::Tickmarks );
+        const qreal ticksWidth = display->arcMetricsHint( LightDisplay::Tickmarks ).width() + ticksSpacing;
 
         const qreal x = textSize.width() + arcMetrics.width() + ticksWidth;
         const qreal w = contentsRect.width() - ( 2 * ( textSize.width() + arcMetrics.width() + ticksWidth ) );
@@ -61,8 +63,8 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
     {
         const QRectF arcRect = subControlRect( skinnable, contentsRect,
                                                  LightDisplay::ColdAndWarmArc );
-        auto tickWidth = display->metric( LightDisplay::Tickmarks );
-        auto rect = arcRect.marginsAdded( { tickWidth, tickWidth, tickWidth, tickWidth } );
+        const qreal ticksWidth = display->arcMetricsHint( LightDisplay::Tickmarks ).width() + ticksSpacing;
+        const QRectF rect = arcRect.marginsAdded( { ticksWidth, ticksWidth, ticksWidth, ticksWidth } );
         return rect;
     }
     else if( subControl == LightDisplay::LeftLabel )
@@ -151,7 +153,22 @@ QSGNode* LightDisplaySkinlet::updateSubNode(
         }
         case TickmarksRole:
         {
-            return nullptr;
+            auto ticksNode = static_cast< RadialTickmarksNode* >( node );
+            if ( ticksNode == nullptr )
+                ticksNode = new RadialTickmarksNode();
+
+            QColor color = display->color( LightDisplay::Tickmarks );
+            QRectF ticksRect = display->subControlRect( LightDisplay::Tickmarks );
+            QskArcMetrics arcMetrics = display->arcMetricsHint( LightDisplay::Tickmarks );
+            QskIntervalF boundaries = display->boundaries();
+            QskScaleTickmarks tickmarks;
+            tickmarks.setMajorTicks( {0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5, 180 } );
+            int tickLineWidth = display->metric( LightDisplay::Tickmarks );
+
+            ticksNode->update( color, ticksRect, arcMetrics, boundaries,
+                               tickmarks, tickLineWidth, Qt::Horizontal );
+
+            return ticksNode;
         }
         case ValueTextRole:
         {

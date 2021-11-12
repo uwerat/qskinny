@@ -29,9 +29,10 @@ SOURCES += \
     main.cpp \
 
 SOURCES += \
+    nodes/BoxShadowNode.cpp \
     nodes/DiagramDataNode.cpp \
     nodes/DiagramSegmentsNode.cpp \
-    nodes/BoxShadowNode.cpp
+    nodes/RadialTickmarksNode.cpp
 
 HEADERS += \
     Box.h \
@@ -59,9 +60,10 @@ HEADERS += \
     UsageDiagram.h
 
 HEADERS += \
+    nodes/BoxShadowNode.h \
     nodes/DiagramDataNode.h \
     nodes/DiagramSegmentsNode.h \
-    nodes/BoxShadowNode.h
+    nodes/RadialTickmarksNode.h
 
 RESOURCES += \
     images.qrc \

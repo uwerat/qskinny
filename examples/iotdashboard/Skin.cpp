@@ -192,7 +192,9 @@ void Skin::initHints( const Palette& palette )
                                                 { 1.0, Qt::black } } );
     ed.setGradient( LightDisplay::ColdAndWarmArc, coldGradient );
 
-    ed.setMetric( LightDisplay::Tickmarks, 4.69 );
+    ed.setMetric( LightDisplay::Tickmarks, 1 );
+    ed.setArcMetrics( LightDisplay::Tickmarks, { 4.69, 0, 180 * 16 } );
+    ed.setColor( LightDisplay::Tickmarks, 0x55929CB2 );
 
     ed.setFontRole( LightDisplay::ValueText, QskSkin::LargeFont );
     ed.setColor( LightDisplay::ValueText, "#929cb2" );
