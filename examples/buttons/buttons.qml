@@ -23,7 +23,7 @@ Qsk.Window
         orientation: Qt.Horizontal
         dimension: 3
 
-        //margins: 10 // only possible with Qt >= 6.2
+        //margins: 10 // only possible with Qt <= 6.1
         margins { left: 10; top: 10; right: 10; bottom: 10 } 
         spacing: 10
 
