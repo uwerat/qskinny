@@ -11,7 +11,8 @@
 #include "CircularProgressBarSkinlet.h"
 #include "Diagram.h"
 #include "DiagramSkinlet.h"
-#include "LightIntensity.h"
+#include "LightDisplay.h"
+#include "LightDisplaySkinlet.h"
 #include "MainContent.h"
 #include "MenuBar.h"
 #include "PieChartPainted.h"
@@ -54,6 +55,7 @@ Skin::Skin( const Palette& palette, QObject* parent )
 {
     declareSkinlet< CircularProgressBar, CircularProgressBarSkinlet >();
     declareSkinlet< Diagram, DiagramSkinlet >();
+    declareSkinlet< LightDisplay, LightDisplaySkinlet >();
 
     initHints( palette );
 }
@@ -180,10 +182,27 @@ void Skin::initHints( const Palette& palette )
     ed.setColor( Diagram::ChartArea3, "#66ff7d34" );
 
     // light intensity:
-    ed.setGradient( LightDisplay::ColdPart, { Qt::Horizontal, "#a7b0ff", "#6776ff" } );
-    ed.setGradient( LightDisplay::WarmPart, { Qt::Horizontal, "#feeeb7", "#ff3122" } );
+    ed.setBoxShape( LightDisplay::Panel, 100, Qt::RelativeSize );
+
+    ed.setArcMetrics( LightDisplay::ColdAndWarmArc, 8.785, 0, 180 * 16 );
+    QskGradient coldGradient( Qt::Horizontal, { { 0.0, 0xffff3122 },
+                                                { 0.2, 0xfffeeeb7 },
+                                                { 0.3, 0xffa7b0ff },
+                                                { 0.5, 0xff6776ff },
+                                                { 1.0, Qt::black } } );
+    ed.setGradient( LightDisplay::ColdAndWarmArc, coldGradient );
+
+    ed.setMetric( LightDisplay::Tickmarks, 1 );
+    ed.setArcMetrics( LightDisplay::Tickmarks, { 4.69, 0, 180 * 16 } );
+    ed.setColor( LightDisplay::Tickmarks, 0x55929CB2 );
+
     ed.setFontRole( LightDisplay::ValueText, QskSkin::LargeFont );
     ed.setColor( LightDisplay::ValueText, "#929cb2" );
+
+    ed.setStrutSize( LightDisplay::Knob, { 20, 20 } );
+    ed.setBoxBorderMetrics( LightDisplay::Knob, 1 );
+    ed.setBoxBorderColors( LightDisplay::Knob, 0xffc4c4c4 );
+    ed.setBoxShape( LightDisplay::Knob, 100, Qt::RelativeSize );
 
     // palette dependent skin hints:
     ed.setGradient( MenuBar::Panel, palette.menuBar );
@@ -191,7 +210,8 @@ void Skin::initHints( const Palette& palette )
     ed.setGradient( Box::Panel, palette.box );
     ed.setGradient( BoxWithButtons::Panel, palette.box );
     ed.setGradient( UsageDiagramBox::Panel, palette.box );
-    ed.setColor( LightDisplay::Panel, palette.lightDisplay );
+    ed.setGradient( LightDisplay::Panel, palette.box );
+    ed.setGradient( LightDisplay::Knob, palette.box );
     ed.setGradient( RoundButton::Panel, palette.roundButton );
     ed.setBoxBorderColors( UsageDiagramBox::DaysBox, palette.weekdayBox );
     ed.setColor( QskTextLabel::Text, palette.text );
