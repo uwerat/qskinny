@@ -8,7 +8,7 @@
 #include "Box.h"
 #include "BoxWithButtons.h"
 #include "UsageDiagram.h"
-#include "LightIntensity.h"
+#include "LightDisplay.h"
 #include "MyDevices.h"
 #include "PieChart.h"
 #include "TopBar.h"
@@ -54,7 +54,9 @@ namespace
         LightIntensity( QQuickItem* parent = nullptr )
             : Box( "Light intensity", parent )
         {
-            new LightDisplay( this );
+            addSpacer( 5 );
+            auto* lightDisplay = new LightDisplay( this );
+            lightDisplay->setValue( 50.0 );
         }
     };
 }

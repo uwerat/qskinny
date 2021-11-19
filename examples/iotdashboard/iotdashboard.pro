@@ -10,7 +10,8 @@ SOURCES += \
     Diagram.cpp \
     DiagramSkinlet.cpp \
     GraphicProvider.cpp \
-    LightIntensity.cpp \
+    LightDisplaySkinlet.cpp \
+    LightDisplay.cpp \
     MainContent.cpp \
     MenuBar.cpp \
     MyDevices.cpp \
@@ -28,9 +29,10 @@ SOURCES += \
     main.cpp \
 
 SOURCES += \
+    nodes/BoxShadowNode.cpp \
     nodes/DiagramDataNode.cpp \
     nodes/DiagramSegmentsNode.cpp \
-    nodes/BoxShadowNode.cpp
+    nodes/RadialTickmarksNode.cpp
 
 HEADERS += \
     Box.h \
@@ -40,7 +42,8 @@ HEADERS += \
     Diagram.h \
     DiagramSkinlet.h \
     GraphicProvider.h \
-    LightIntensity.h \
+    LightDisplaySkinlet.h \
+    LightDisplay.h \
     MainContent.h \
     MainWindow.h \
     MenuBar.h \
@@ -57,9 +60,10 @@ HEADERS += \
     UsageDiagram.h
 
 HEADERS += \
+    nodes/BoxShadowNode.h \
     nodes/DiagramDataNode.h \
     nodes/DiagramSegmentsNode.h \
-    nodes/BoxShadowNode.h
+    nodes/RadialTickmarksNode.h
 
 RESOURCES += \
     images.qrc \
