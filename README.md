@@ -32,6 +32,10 @@ It might support all versions Qt >= 5.6, but you can rely on:
 - current long term supported ( LTS ) version of Qt
 - current version of Qt
 
+On debian bullseye these packages need to be installed: `build-essential
+qt-qmake qtbase5-dev qtbase5-private-dev qtdeclarative5-dev
+qtdeclarative5-private-dev libqt5svg5-dev`.
+
 If you want to know more about QSkinny - or even like to give it a specific
 direction - please contact support@qskinny.org.
 
