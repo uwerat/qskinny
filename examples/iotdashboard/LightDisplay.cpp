@@ -26,7 +26,7 @@ LightDisplay::LightDisplay( QQuickItem* parent )
     : QskBoundedValueInput( parent )
 {
     setAlignmentHint( LeftLabel, Qt::AlignRight );
-    setAlignmentHint( ValueText, Qt::AlignCenter | Qt::AlignHCenter );
+    setAlignmentHint( ValueText, Qt::AlignRight );
 
     setBoundaries( 0, 100 );
 
