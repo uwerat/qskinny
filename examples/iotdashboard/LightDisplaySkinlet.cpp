@@ -34,8 +34,7 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
     const qreal ticksSpacing = 4; // space between the ticks and the arc
 
     if( subControl == LightDisplay::Groove
-            || subControl == LightDisplay::Panel
-            || subControl == LightDisplay::ValueText )
+            || subControl == LightDisplay::Panel )
     {
         QSizeF textSize = textLabelsSize( display );
         QskArcMetrics arcMetrics = display->arcMetricsHint( LightDisplay::ColdAndWarmArc );
@@ -65,6 +64,16 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
                                                  LightDisplay::ColdAndWarmArc );
         const qreal ticksWidth = display->arcMetricsHint( LightDisplay::Tickmarks ).width() + ticksSpacing;
         const QRectF rect = arcRect.marginsAdded( { ticksWidth, ticksWidth, ticksWidth, ticksWidth } );
+        return rect;
+    }
+    else if( subControl == LightDisplay::ValueText )
+    {
+        QRectF valueTextRect = subControlRect( skinnable, contentsRect,
+                                               LightDisplay::Panel );
+        const QFontMetricsF fm( skinnable->effectiveFont( subControl ) );
+        const qreal fontWidth = fm.width( QStringLiteral( "100 %" ) );
+        const QPointF center = valueTextRect.center();
+        const QRectF rect( center.x() - fontWidth / 2, center.y() - fm.height() / 2, fontWidth, fm.height() );
         return rect;
     }
     else if( subControl == LightDisplay::LeftLabel )
