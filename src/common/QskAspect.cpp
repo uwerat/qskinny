@@ -102,7 +102,7 @@ QByteArray QskAspect::subControlName( Subcontrol subControl )
     const auto& names = qskAspectRegistry->subControlNames;
 
     const int index = subControl;
-    if ( index > 0 && index < names.size() )
+    if ( index > 0 && index <= names.size() )
         return names[ index - 1 ];
 
     return QByteArray();
