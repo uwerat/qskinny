@@ -19,7 +19,6 @@ class QSK_EXPORT QskSwitchButtonSkinlet : public QskSkinlet
     {
         GrooveRole,
         HandleRole,
-        RippleRole,
     };
 
     Q_INVOKABLE QskSwitchButtonSkinlet( QskSkin* = nullptr );
@@ -38,7 +37,6 @@ class QSK_EXPORT QskSwitchButtonSkinlet : public QskSkinlet
   private:
     QRectF grooveRect( const QskSkinnable*, const QRectF& ) const;
     QRectF handleRect( const QskSkinnable*, const QRectF& ) const;
-    QRectF rippleRect( const QskSkinnable*, const QRectF& ) const;
 };
 
 #endif

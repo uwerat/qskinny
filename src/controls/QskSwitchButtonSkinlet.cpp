@@ -3,8 +3,9 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#include "QskSwitchButtonSkinlet.h"
 #include "QskSwitchButton.h"
+#include "QskSwitchButtonSkinlet.h"
+#include "QskSGNode.h"
 
 static inline qreal qskEffectivePosition( const QskSwitchButton* switchButton )
 {
@@ -26,7 +27,7 @@ static inline qreal qskEffectivePosition( const QskSwitchButton* switchButton )
 QskSwitchButtonSkinlet::QskSwitchButtonSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
-    setNodeRoles( { GrooveRole, HandleRole, RippleRole } );
+    setNodeRoles( { GrooveRole, HandleRole } );
 }
 
 QskSwitchButtonSkinlet::~QskSwitchButtonSkinlet()
@@ -48,12 +49,6 @@ QRectF QskSwitchButtonSkinlet::subControlRect( const QskSkinnable* skinnable,
         return grooveRect( skinnable, contentsRect );
     }
 
-    if ( subControl == Q::Ripple )
-    {
-        return rippleRect( skinnable, contentsRect );
-    }
-
-
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
@@ -63,12 +58,10 @@ QSizeF QskSwitchButtonSkinlet::sizeHint( const QskSkinnable* skinnable,
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
-    auto grooveHint = skinnable->strutSizeHint( QskSwitchButton::Groove );
+    auto groovehint = skinnable->strutSizeHint( QskSwitchButton::Groove );
     auto handleHint = skinnable->strutSizeHint( QskSwitchButton::Handle );
-    auto rippleHint = skinnable->strutSizeHint( QskSwitchButton::Ripple );
 
-    auto hint = grooveHint.expandedTo( grooveHint + rippleHint - handleHint );
-    hint = hint.expandedTo( rippleHint );
+    auto hint = groovehint.expandedTo( groovehint - handleHint );
     hint = hint.expandedTo( handleHint );
 
     return hint;
@@ -81,9 +74,6 @@ QSGNode* QskSwitchButtonSkinlet::updateSubNode( const QskSkinnable* skinnable,
 
     switch ( nodeRole )
     {
-        case RippleRole:
-            return updateBoxNode( skinnable, node, Q::Ripple );
-
         case HandleRole:
             return updateBoxNode( skinnable, node, Q::Handle );
 
@@ -161,44 +151,6 @@ QRectF QskSwitchButtonSkinlet::handleRect(
 
     QRectF r;
     r.setSize( size );
-    r.moveCenter( QPointF( cx, cy ) );
-
-    return r;
-}
-
-QRectF QskSwitchButtonSkinlet::rippleRect(
-    const QskSkinnable* skinnable, const QRectF& contentsRect ) const
-{
-    using Q = QskSwitchButton;
-
-    const auto switchButton = static_cast< const Q* >( skinnable );
-
-    const auto grooveRect = subControlRect( skinnable, contentsRect, Q::Groove );
-    const auto pos = qskEffectivePosition( switchButton );
-    const auto sizeHandle = skinnable->strutSizeHint( Q::Handle );
-    const auto sizeRipple = skinnable->strutSizeHint( Q::Ripple );
-
-    qreal cx, cy;
-
-    if( switchButton->orientation() == Qt::Vertical )
-    {
-        const qreal y0 = grooveRect.y() + 0.5 * sizeHandle.height();
-        const qreal h = grooveRect.height() - sizeHandle.height();
-
-        cx = grooveRect.x() + 0.5 * grooveRect.width();
-        cy = y0 + pos * h;
-    }
-    else
-    {
-        const qreal x0 = grooveRect.x() + 0.5 * sizeHandle.width();
-        const qreal w = grooveRect.width() - sizeHandle.width();
-
-        cx = x0 + pos * w;
-        cy = grooveRect.y() + 0.5 * grooveRect.height();
-    }
-
-    QRectF r;
-    r.setSize( sizeRipple );
     r.moveCenter( QPointF( cx, cy ) );
 
     return r;
