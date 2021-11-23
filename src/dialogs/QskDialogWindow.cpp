@@ -185,8 +185,7 @@ QskDialog::DialogCode QskDialogWindow::exec()
     connect( this, &QskDialogWindow::finished, &eventLoop, &QEventLoop::quit );
     ( void ) eventLoop.exec( QEventLoop::DialogExec );
 
-    const QskDialog::DialogCode result =
-        static_cast< QskDialog::DialogCode >( m_data->result );
+    const auto result = static_cast< QskDialog::DialogCode >( m_data->result );
 
     if ( deleteOnClose )
         delete this;
