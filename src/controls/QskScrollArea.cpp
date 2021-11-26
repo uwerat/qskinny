@@ -271,6 +271,15 @@ namespace
             return static_cast< const QskScrollArea* >( parentItem() );
         }
 
+        void maybeUpdate()
+        {
+            if ( auto node = QQuickItemPrivate::get( this )->clipNode() )
+            {
+                if ( clipRect() != node->clipRect() )
+                    update();
+            }
+        }
+
         inline void scrolledItemGeometryChange()
         {
             if ( m_isSizeChangedEnabled )
@@ -297,6 +306,10 @@ namespace
     {
         setObjectName( QStringLiteral( "QskScrollAreaClipItem" ) );
         setClip( true );
+
+        // scrollbars might (dis)appear
+        connect( scrollArea, &QskScrollBox::scrollableSizeChanged,
+            this, &ClipItem::maybeUpdate );
     }
 
     ClipItem::~ClipItem()
@@ -306,7 +319,7 @@ namespace
 
     void ClipItem::updateNode( QSGNode* )
     {
-        auto* d = QQuickItemPrivate::get( this );
+        auto d = QQuickItemPrivate::get( this );
 
         if ( QQuickItemPrivate::get( scrollArea() )->dirtyAttributes &
             QQuickItemPrivate::ContentUpdateMask )
@@ -501,10 +514,16 @@ QSizeF QskScrollArea::layoutSizeHint( Qt::SizeHint which, const QSizeF& constrai
             }
 
             if ( verticalScrollBarPolicy() != Qt::ScrollBarAlwaysOff )
+            {
                 hint.rwidth() += metric( VerticalScrollBar | QskAspect::Size );
+                hint.rwidth() += metric( Panel | QskAspect::Spacing );
+            }
 
             if ( horizontalScrollBarPolicy() != Qt::ScrollBarAlwaysOff )
+            {
                 hint.rheight() += metric( HorizontalScrollBar | QskAspect::Size );
+                hint.rheight() += metric( Panel | QskAspect::Spacing );
+            }
 
             return hint;
         }
