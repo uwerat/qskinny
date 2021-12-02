@@ -368,8 +368,21 @@ QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
     if ( arcNode == nullptr )
         arcNode = new QskArcNode();
 
-    arcNode->setArcData( rect, absoluteArcMetrics, fillGradient,
-        control->window() );
+    auto r = rect;
+#if 1
+    {
+        /*
+            Fiddling around with the pixel ratio should be hidden below QskArcNode.
+            Code will break once QskArcNode is not texture based anymore. TODO ...
+         */
+
+        const auto ratio = control->window()->effectiveDevicePixelRatio();
+        absoluteArcMetrics.setWidth( absoluteArcMetrics.width() * ratio );
+        r.setSize( r.size() * ratio );
+    }
+#endif
+
+    arcNode->setArcData( r, absoluteArcMetrics, fillGradient, control->window() );
 
     return arcNode;
 }
