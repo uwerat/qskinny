@@ -360,9 +360,15 @@
     \fn QskAspect::operator|( State ) const
 
     ORs state to the state bits
-    \param state Additional state bits
+    \param state Additional state bit
 */
 
+/*!
+    \fn QskAspect::operator|( States ) const
+
+    ORs states to the state bits
+    \param states Additional state bits
+*/
 /*!
     \fn QskAspect::stateless
 
@@ -451,7 +457,7 @@
 */
 
 /*!
-    \fn QskAspect::state
+    \fn QskAspect::states
 
     \return State bits
     \sa setState()
@@ -465,21 +471,21 @@
 */
 
 /*!
-    \fn QskAspect::setState
+    \fn QskAspect::setStates
 
     Sets the state bits
     \sa addState(), clearState(), hasState(), state()
 */
 
 /*!
-    \fn QskAspect::addState
+    \fn QskAspect::addStates
 
     ORs state to the state bits
     \sa setState(), clearState(), hasState(), state()
 */
 
 /*!
-    \fn QskAspect::hasState
+    \fn QskAspect::hasStates
     \return true, if any of the state bits is set
 */
 
@@ -499,14 +505,17 @@
 
 /*!
     \fn QskAspect::flagPrimitive
+    \return primitive bits, when the aspect is a QskAspect::Flag 
 */
 
 /*!
     \fn QskAspect::colorPrimitive
+    \return primitive bits, when the aspect is a QskAspect::Color 
 */
 
 /*!
     \fn QskAspect::metricPrimitive
+    \return metric bits, when the aspect is a QskAspect::Metric 
 */
 
 /*!
