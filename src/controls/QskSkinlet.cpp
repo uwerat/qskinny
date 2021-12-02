@@ -338,29 +338,23 @@ QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
     QSGNode* node, const QRectF& rect, const QskGradient& fillGradient,
     QskAspect::Subcontrol subControl )
 {
-    auto arcMetrics = skinnable->arcMetricsHint( subControl );
-    return updateArcNode( skinnable, node ,rect, fillGradient, arcMetrics,
-        subControl );
+    const auto metrics = skinnable->arcMetricsHint( subControl );
+    const auto r = rect.marginsRemoved( skinnable->marginHint( subControl ) );
+
+    return updateArcNode( skinnable, node, r, fillGradient, metrics );
 }
 
 QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
     QSGNode* node, const QRectF& rect, const QskGradient& fillGradient,
-    const QskArcMetrics& arcMetrics, QskAspect::Subcontrol subControl )
+    const QskArcMetrics& metrics )
 {
     const auto control = skinnable->owningControl();
-    if ( control == nullptr )
+    if ( control == nullptr || rect.isEmpty() )
         return nullptr;
 
-    const auto margins = skinnable->marginHint( subControl );
+    auto absoluteMetrics = metrics.toAbsolute( rect.size() );
 
-    const auto arcRect = rect.marginsRemoved( margins );
-
-    if ( arcRect.isEmpty() )
-        return nullptr;
-
-    auto absoluteArcMetrics = arcMetrics.toAbsolute( arcRect.size() );
-
-    if ( !qskIsArcVisible( arcMetrics, fillGradient ) )
+    if ( !qskIsArcVisible( metrics, fillGradient ) )
         return nullptr;
 
     auto arcNode = static_cast< QskArcNode* >( node );
@@ -377,12 +371,12 @@ QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
          */
 
         const auto ratio = control->window()->effectiveDevicePixelRatio();
-        absoluteArcMetrics.setWidth( absoluteArcMetrics.width() * ratio );
+        absoluteMetrics.setWidth( absoluteMetrics.width() * ratio );
         r.setSize( r.size() * ratio );
     }
 #endif
 
-    arcNode->setArcData( r, absoluteArcMetrics, fillGradient, control->window() );
+    arcNode->setArcData( r, absoluteMetrics, fillGradient, control->window() );
 
     return arcNode;
 }
@@ -413,8 +407,8 @@ QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
     arcMetrics.setStartAngle( startAngle );
     arcMetrics.setSpanAngle( spanAngle );
 
-    return updateArcNode( skinnable, node ,rect,
-        fillGradient, arcMetrics, subControl );
+    const auto r = rect.marginsRemoved( skinnable->marginHint( subControl ) );
+    return updateArcNode( skinnable, node, r, fillGradient, arcMetrics );
 }
 
 QSGNode* QskSkinlet::updateBoxClipNode( const QskSkinnable* skinnable,
