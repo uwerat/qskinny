@@ -40,12 +40,16 @@ void QskArcRenderer::renderArc(const QRectF& rect,
     }
     else
     {
-        QConicalGradient gradient( rect.center(), metrics.startAngle() / 16.0 );
+        QConicalGradient gradient( rect.center(), metrics.startAngle() );
         gradient.setStops( stops );
 
         brush = gradient;
     }
 
     painter->setPen( QPen( brush, metrics.width(), Qt::SolidLine, Qt::FlatCap ) );
-    painter->drawArc( rect, metrics.startAngle(), metrics.spanAngle() );
+
+    const int startAngle = qRound( metrics.startAngle() * 16 );
+    const int spanAngle = qRound( metrics.spanAngle() * 16 );
+
+    painter->drawArc( rect, startAngle, spanAngle );
 }

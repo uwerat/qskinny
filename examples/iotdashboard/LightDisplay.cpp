@@ -105,7 +105,7 @@ void LightDisplay::mouseMoveEvent( QMouseEvent* event )
 
     const QskArcMetrics metrics = arcMetricsHint( ColdAndWarmArc );
     const qreal angle = angleFromPoint( rect, mousePos );
-    const qreal ratio = ( metrics.spanAngle() - angle * 16 ) / metrics.spanAngle();
+    const qreal ratio = ( metrics.spanAngle() - angle ) / metrics.spanAngle();
     setValueAsRatio( ratio );
 }
 

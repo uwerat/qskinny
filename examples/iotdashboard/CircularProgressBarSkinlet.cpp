@@ -38,10 +38,10 @@ QSGNode* CircularProgressBarSkinlet::updateSubNode(
         }
         case BarRole:
         {
-            const qreal startAngle = 90 * 16;
+            const qreal startAngle = 90.0;
             const auto bar = static_cast< const CircularProgressBar* >( skinnable );
-            const qreal spanAngle = bar->valueAsRatio() * -5760;
-            return updateArcNode( skinnable, node, startAngle, spanAngle,
+            const qreal spanAngle = 360.0 * bar->valueAsRatio();
+            return updateArcNode( skinnable, node, startAngle, -spanAngle,
                 CircularProgressBar::Bar );
         }
     }
