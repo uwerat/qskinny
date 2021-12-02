@@ -118,10 +118,10 @@ void Skin::initHints( const Palette& palette )
     ed.setGradient( TopBarItem::Item4, { QskGradient::Horizontal, "#6100FF", "#6776FF" } );
 
     // the bar gradient is defined through the top bar items above
-    ed.setArcMetrics( CircularProgressBar::Groove, { 8.53, 90 * 16, -360 * 16 } );
+    ed.setArcMetrics( CircularProgressBar::Groove, { 8.53, 90, -360 } );
     // the span angle will be set in the progress bar, we just give a dummy
     // value here:
-    ed.setArcMetrics( CircularProgressBar::Bar, { 8.53, 90 * 16, -180 * 16 } );
+    ed.setArcMetrics( CircularProgressBar::Bar, { 8.53, 90, -180 } );
 
     ed.setFontRole( TimeTitleLabel::Text, Skin::TitleFont );
 
@@ -184,7 +184,7 @@ void Skin::initHints( const Palette& palette )
     // light intensity:
     ed.setBoxShape( LightDisplay::Panel, 100, Qt::RelativeSize );
 
-    ed.setArcMetrics( LightDisplay::ColdAndWarmArc, 8.785, 0, 180 * 16 );
+    ed.setArcMetrics( LightDisplay::ColdAndWarmArc, 8.785, 0, 180 );
     QskGradient coldGradient( Qt::Horizontal, { { 0.0, 0xffff3122 },
                                                 { 0.2, 0xfffeeeb7 },
                                                 { 0.3, 0xffa7b0ff },
@@ -193,7 +193,7 @@ void Skin::initHints( const Palette& palette )
     ed.setGradient( LightDisplay::ColdAndWarmArc, coldGradient );
 
     ed.setMetric( LightDisplay::Tickmarks, 1 );
-    ed.setArcMetrics( LightDisplay::Tickmarks, { 4.69, 0, 180 * 16 } );
+    ed.setArcMetrics( LightDisplay::Tickmarks, { 4.69, 0, 180 } );
     ed.setColor( LightDisplay::Tickmarks, 0x55929CB2 );
 
     ed.setFontRole( LightDisplay::ValueText, QskSkin::LargeFont );
