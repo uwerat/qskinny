@@ -15,6 +15,4 @@ completing the following steps:
   The agreement for contributions is similar to the one that other projects use
   (e.g. KDE e.V.). For more information, see
   https://fsfe.org/activities/fla/fiduciary.en.html
-1. If a change contains more than ~10 lines (i.e. everything other than doc typo
-  fixes or similar), feel free to add your copyright to the files you changed.
 1. Submit your pull request for review.
