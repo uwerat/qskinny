@@ -19,6 +19,42 @@
 
 #include <QGuiApplication>
 
+namespace
+{
+    class TabView : public QskTabView
+    {
+      public:
+        TabView( QQuickItem* parent = nullptr )
+            : QskTabView( parent )
+        {
+            setMargins( 10 );
+            setTabPosition( Qsk::Left );
+            setAutoFitTabs( true );
+
+            connect( this, &QskTabView::currentIndexChanged,
+                this, &TabView::updateViewPanel );
+        } 
+
+      protected:
+        void aboutToShow() override
+        {
+            updateViewPanel();
+        }
+
+      private:
+        void updateViewPanel()
+        {
+            /*
+                We should have a better way to set individual colors
+                for each tab page background
+             */
+            
+            if ( auto page = dynamic_cast< const ::Page* >( currentItem() ) )
+                setGradientHint( QskTabView::Page, page->gradient() );
+        }
+    };
+}
+
 int main( int argc, char* argv[] )
 {
 #ifdef ITEM_STATISTICS
@@ -32,11 +68,7 @@ int main( int argc, char* argv[] )
     SkinnyFont::init( &app );
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
-    auto tabView = new QskTabView();
-
-    tabView->setMargins( 10 );
-    tabView->setTabPosition( Qsk::Left );
-    tabView->setAutoFitTabs( true );
+    auto tabView = new TabView();
 
     tabView->addTab( "Labels", new LabelPage() );
     tabView->addTab( "Sliders", new SliderPage() );

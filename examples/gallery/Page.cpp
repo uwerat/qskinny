@@ -4,25 +4,29 @@
  *****************************************************************************/
 
 #include "Page.h"
-
 #include <QskRgbValue.h>
-#include <QskBoxShapeMetrics.h>
 
 Page::Page( Qt::Orientation orientation, QQuickItem* parent )
     : QskLinearBox( orientation, parent )
+    , m_gradient( QskRgb::GhostWhite )
 {
-    setBackgroundColor( Qt::gray );
-
-    setPanel( true );
-    setBoxShapeHint( QskBox::Panel, 8 );
-    setGradient( QskRgb::GhostWhite );
-
-    setMargins( 5 );
+    setMargins( 20 );
     setPadding( 10 );
     setSpacing( 10 );
 }
 
 void Page::setGradient( const QskGradient& gradient )
 {
-    setGradientHint( QskBox::Panel, gradient );
+    if ( gradient != m_gradient )
+    {
+        m_gradient = gradient;
+
+        if ( parentItem() && isVisibleToParent() )
+            parentItem()->update();
+    }
+}
+
+QskGradient Page::gradient() const
+{
+    return m_gradient;
 }
