@@ -1,5 +1,4 @@
-QSkinny
--------
+# QSkinny
 
 The (Q)Skinny library is a framework built on top of the Qt scene graph
 and very few core classes from Qt/Quick. It offers a set of lightweight controls,
@@ -40,3 +39,20 @@ If you want to know more about QSkinny - or even like to give it a specific
 direction - please contact support@qskinny.org.
 
 ![IOT dashboard](/doc/images/iotdashboard.png)
+
+
+# Contributing to QSkinny
+
+For now QSkinny is licensed under LGPL v2.1. In the future, We want to have the
+possibility to transfer the QSkinny code to a **more permissive license**, i.e.
+any of the following or similar licenses: BSD "Simplified" License, BSD
+"Revised" License or MIT license.
+
+If you are fine with these terms, you are welcome to contribute to QSkinny by
+completing the following steps:
+
+1. Agree to the terms of the [Contributor Agreement](https://gist.github.com/peter-ha/74fead3d2b5efd4f90db4604d89f49a1).
+  You can create a pull request first, then the licensing bot will check
+  automatically whether you already signed the Agreement or not. If you have not
+  signed it yet, it will take you to the Agreement to agree.
+1. Submit your pull request for review.
