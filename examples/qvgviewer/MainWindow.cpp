@@ -18,6 +18,7 @@
 #include <QskSetup.h>
 #include <QskSkin.h>
 #include <QskTabView.h>
+#include <QskBoxShapeMetrics.h>
 
 #include <QDir>
 #include <QVariant>
@@ -34,9 +35,11 @@ class GraphicLabel : public QskGraphicLabel
     GraphicLabel( const QskGraphic& graphic, QQuickItem* parent = nullptr )
         : QskGraphicLabel( graphic, parent )
     {
-        setAlignment( Qt::AlignCenter );
-        setAutoFillBackground( true );
+        setMargins( 10 );
+        setPanel( true );
 
+        setBoxShapeHint( Panel, 8 );
+        setAlignment( Qt::AlignCenter );
         setDarknessMode( false );
     }
 
@@ -59,8 +62,7 @@ class GraphicLabel : public QskGraphicLabel
         const int duration = 500;
 
         const QskGradient oldGradient = background();
-
-        setBackground( gradient );
+        setGradientHint( Panel, gradient );
 
         // finally setup a smooth transition manually
         startTransition( QskAspect::Control | QskAspect::Color, duration,
