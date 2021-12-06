@@ -116,6 +116,70 @@ static inline QskTextColors qskTextColors(
     return c;
 }
 
+static inline QSGNode* qskUpdateBoxNode(
+    const QskSkinnable*, QSGNode* node, const QRectF& rect,
+    const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& borderMetrics,
+    const QskBoxBorderColors& borderColors, const QskGradient& gradient )
+{
+    if ( rect.isEmpty() )
+        return nullptr;
+
+    const auto absoluteMetrics = borderMetrics.toAbsolute( rect.size() );
+
+    if ( qskIsBoxVisible( absoluteMetrics, borderColors, gradient ) )
+    {
+        auto boxNode = static_cast< QskBoxNode* >( node );
+        if ( boxNode == nullptr )
+            boxNode = new QskBoxNode();
+
+        const auto absoluteShape = shape.toAbsolute( rect.size() );
+
+        boxNode->setBoxData( rect, absoluteShape,
+            absoluteMetrics, borderColors, gradient );
+
+        return boxNode;
+    }
+
+    return nullptr;
+}
+
+static inline QSGNode* qskUpdateArcNode(
+    const QskSkinnable* skinnable, QSGNode* node, const QRectF& rect,
+    const QskGradient& fillGradient, const QskArcMetrics& metrics )
+{
+    const auto control = skinnable->owningControl();
+    if ( control == nullptr || rect.isEmpty() )
+        return nullptr;
+
+    auto absoluteMetrics = metrics.toAbsolute( rect.size() );
+
+    if ( !qskIsArcVisible( metrics, fillGradient ) )
+        return nullptr;
+
+    auto arcNode = static_cast< QskArcNode* >( node );
+
+    if ( arcNode == nullptr )
+        arcNode = new QskArcNode();
+
+    auto r = rect;
+#if 1
+    {
+        /*
+            Fiddling around with the pixel ratio should be hidden below QskArcNode.
+            Code will break once QskArcNode is not texture based anymore. TODO ...
+         */
+
+        const auto ratio = control->window()->effectiveDevicePixelRatio();
+        absoluteMetrics.setWidth( absoluteMetrics.width() * ratio );
+        r.setSize( r.size() * ratio );
+    }
+#endif
+
+    arcNode->setArcData( r, absoluteMetrics, fillGradient, control->window() );
+
+    return arcNode;
+}
+
 class QskSkinlet::PrivateData
 {
   public:
@@ -300,24 +364,12 @@ QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
     if ( boxRect.isEmpty() )
         return nullptr;
 
-    auto borderMetrics = skinnable->boxBorderMetricsHint( subControl );
-    borderMetrics = borderMetrics.toAbsolute( boxRect.size() );
-
+    const auto borderMetrics = skinnable->boxBorderMetricsHint( subControl );
     const auto borderColors = skinnable->boxBorderColorsHint( subControl );
+    const auto shape = skinnable->boxShapeHint( subControl );
 
-    if ( !qskIsBoxVisible( borderMetrics, borderColors, fillGradient ) )
-        return nullptr;
-
-    auto shape = skinnable->boxShapeHint( subControl );
-    shape = shape.toAbsolute( boxRect.size() );
-
-    auto boxNode = static_cast< QskBoxNode* >( node );
-    if ( boxNode == nullptr )
-        boxNode = new QskBoxNode();
-
-    boxNode->setBoxData( boxRect, shape, borderMetrics, borderColors, fillGradient );
-
-    return boxNode;
+    return qskUpdateBoxNode( skinnable, node,
+        boxRect, shape, borderMetrics, borderColors, fillGradient );
 }
 
 QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
@@ -341,44 +393,14 @@ QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
     const auto metrics = skinnable->arcMetricsHint( subControl );
     const auto r = rect.marginsRemoved( skinnable->marginHint( subControl ) );
 
-    return updateArcNode( skinnable, node, r, fillGradient, metrics );
+    return qskUpdateArcNode( skinnable, node, r, fillGradient, metrics );
 }
 
 QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
     QSGNode* node, const QRectF& rect, const QskGradient& fillGradient,
     const QskArcMetrics& metrics )
 {
-    const auto control = skinnable->owningControl();
-    if ( control == nullptr || rect.isEmpty() )
-        return nullptr;
-
-    auto absoluteMetrics = metrics.toAbsolute( rect.size() );
-
-    if ( !qskIsArcVisible( metrics, fillGradient ) )
-        return nullptr;
-
-    auto arcNode = static_cast< QskArcNode* >( node );
-
-    if ( arcNode == nullptr )
-        arcNode = new QskArcNode();
-
-    auto r = rect;
-#if 1
-    {
-        /*
-            Fiddling around with the pixel ratio should be hidden below QskArcNode.
-            Code will break once QskArcNode is not texture based anymore. TODO ...
-         */
-
-        const auto ratio = control->window()->effectiveDevicePixelRatio();
-        absoluteMetrics.setWidth( absoluteMetrics.width() * ratio );
-        r.setSize( r.size() * ratio );
-    }
-#endif
-
-    arcNode->setArcData( r, absoluteMetrics, fillGradient, control->window() );
-
-    return arcNode;
+    return qskUpdateArcNode( skinnable, node, rect, fillGradient, metrics );
 }
 
 QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
