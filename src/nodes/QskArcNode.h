@@ -16,8 +16,8 @@ class QSK_EXPORT QskArcNode : public QskPaintedNode
     QskArcNode();
     ~QskArcNode() override;
 
-    void setArcData( const QRectF&, const QskArcMetrics&, const QskGradient&,
-        QQuickWindow* );
+    void setArcData( const QRectF&, const QskArcMetrics&,
+        const QskGradient&, QQuickWindow* );
 
     void paint( QPainter* painter, const QSizeF& size ) override;
     uint hash() const override;
