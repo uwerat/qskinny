@@ -68,58 +68,60 @@ namespace
     };
 }
 
-/*
-    We need to have at least one QObject to connect to QQuickWindow
-    updates - but then we can advance the animators manually without
-    making them heavy QObjects too.
- */
-class QskAnimatorDriver final : public QObject
+namespace
 {
-    Q_OBJECT
-
-  public:
-    QskAnimatorDriver();
-
-    void registerAnimator( QskAnimator* );
-    void unregisterAnimator( QskAnimator* );
-
-    qint64 referenceTime() const;
-
-  Q_SIGNALS:
-    void advanced( QQuickWindow* );
-    void terminated( QQuickWindow* );
-
-  private:
-    void advanceAnimators( QQuickWindow* );
-    void removeWindow( QQuickWindow* );
-    void scheduleUpdate( QQuickWindow* );
-
-    QElapsedTimer m_referenceTime;
-
-    // a sorted vector, good for iterating and good enough for look ups
-    QVector< QskAnimator* > m_animators;
-
     /*
-       Having a more than a very few windows with running animators is
-       very unlikely and using a hash table instead of a vector probably
-       creates more overhead than being good for something.
+        We need to have at least one QObject to connect to QQuickWindow
+        updates - but then we can advance the animators manually without
+        making them heavy QObjects too.
      */
-    QVector< QQuickWindow* > m_windows;
-    mutable int m_index; // current value, when iterating
-};
+    class AnimatorDriver final : public QObject
+    {
+        Q_OBJECT
 
-QskAnimatorDriver::QskAnimatorDriver()
-    : m_index( -1 )
+      public:
+        AnimatorDriver();
+
+        void registerAnimator( QskAnimator* );
+        void unregisterAnimator( QskAnimator* );
+
+        qint64 referenceTime() const;
+
+      Q_SIGNALS:
+        void advanced( QQuickWindow* );
+        void terminated( QQuickWindow* );
+
+      private:
+        void advanceAnimators( QQuickWindow* );
+        void removeWindow( QQuickWindow* );
+        void scheduleUpdate( QQuickWindow* );
+
+        QElapsedTimer m_referenceTime;
+
+        // a sorted vector, good for iterating and good enough for look ups
+        QVector< QskAnimator* > m_animators;
+
+        /*
+           Having a more than a very few windows with running animators is
+           very unlikely and using a hash table instead of a vector probably
+           creates more overhead than being good for something.
+         */
+        QVector< QQuickWindow* > m_windows;
+        mutable int m_index = -1; // current value, when iterating
+    };
+}
+
+AnimatorDriver::AnimatorDriver()
 {
     m_referenceTime.start();
 }
 
-inline qint64 QskAnimatorDriver::referenceTime() const
+inline qint64 AnimatorDriver::referenceTime() const
 {
     return m_referenceTime.elapsed();
 }
 
-void QskAnimatorDriver::registerAnimator( QskAnimator* animator )
+void AnimatorDriver::registerAnimator( QskAnimator* animator )
 {
     Q_ASSERT( animator->window() );
 
@@ -160,13 +162,13 @@ void QskAnimatorDriver::registerAnimator( QskAnimator* animator )
     }
 }
 
-void QskAnimatorDriver::scheduleUpdate( QQuickWindow* window )
+void AnimatorDriver::scheduleUpdate( QQuickWindow* window )
 {
     if ( m_windows.contains( window ) )
         window->update();
 }
 
-void QskAnimatorDriver::removeWindow( QQuickWindow* window )
+void AnimatorDriver::removeWindow( QQuickWindow* window )
 {
     window->disconnect( this );
     m_windows.removeOne( window );
@@ -180,7 +182,7 @@ void QskAnimatorDriver::removeWindow( QQuickWindow* window )
     }
 }
 
-void QskAnimatorDriver::unregisterAnimator( QskAnimator* animator )
+void AnimatorDriver::unregisterAnimator( QskAnimator* animator )
 {
     auto it = std::find( m_animators.begin(), m_animators.end(), animator );
     if ( it != m_animators.end() )
@@ -192,7 +194,7 @@ void QskAnimatorDriver::unregisterAnimator( QskAnimator* animator )
     }
 }
 
-void QskAnimatorDriver::advanceAnimators( QQuickWindow* window )
+void AnimatorDriver::advanceAnimators( QQuickWindow* window )
 {
     bool hasAnimators = false;
     bool hasTerminations = false;
@@ -231,7 +233,7 @@ void QskAnimatorDriver::advanceAnimators( QQuickWindow* window )
         Q_EMIT terminated( window );
 }
 
-Q_GLOBAL_STATIC( QskAnimatorDriver, qskAnimatorDriver )
+Q_GLOBAL_STATIC( AnimatorDriver, qskAnimatorDriver )
 Q_GLOBAL_STATIC( Statistics, qskStatistics )
 
 QskAnimator::QskAnimator()
