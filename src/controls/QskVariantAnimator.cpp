@@ -4,9 +4,11 @@
  *****************************************************************************/
 
 #include "QskVariantAnimator.h"
+#include "QskArcMetrics.h"
 #include "QskBoxBorderColors.h"
 #include "QskBoxBorderMetrics.h"
 #include "QskBoxShapeMetrics.h"
+#include "QskShadowMetrics.h"
 #include "QskColorFilter.h"
 #include "QskGradient.h"
 #include "QskMargins.h"
@@ -40,6 +42,8 @@ static void qskRegisterInterpolator()
     qRegisterAnimationInterpolator< QskBoxBorderMetrics >( QskBoxBorderMetrics::interpolate );
     qRegisterAnimationInterpolator< QskBoxBorderColors >( QskBoxBorderColors::interpolate );
     qRegisterAnimationInterpolator< QskTextColors >( QskTextColors::interpolate );
+    qRegisterAnimationInterpolator< QskShadowMetrics >( QskShadowMetrics::interpolate );
+    qRegisterAnimationInterpolator< QskArcMetrics >( QskArcMetrics::interpolate );
 }
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterInterpolator )
