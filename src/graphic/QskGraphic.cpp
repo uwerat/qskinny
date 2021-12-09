@@ -430,7 +430,7 @@ QPaintEngine* QskGraphic::paintEngine() const
 
 int QskGraphic::metric( PaintDeviceMetric deviceMetric ) const
 {
-    int value;
+    int value = 0;
 
     switch ( deviceMetric )
     {
@@ -472,9 +472,18 @@ int QskGraphic::metric( PaintDeviceMetric deviceMetric ) const
             value = qRound( metric( PdmHeight ) * 25.4 / metric( PdmDpiY ) );
             break;
         }
-        default:
-            value = 0;
+        case PdmDevicePixelRatio:
+        {
+            value = 1.0;
+            break;
+        }
+        case PdmDevicePixelRatioScaled:
+        {
+            value = metric( PdmDevicePixelRatio ) * devicePixelRatioFScale();
+            break;
+        }
     }
+
     return value;
 }
 
