@@ -255,10 +255,13 @@ class QskTextureNodePrivate final : public QSGGeometryNodePrivate
 
         const qreal ratio = window->effectiveDevicePixelRatio();
 
-        const QRectF scaledRect( rect.x(), rect.y(),
-            rect.width() / ratio, rect.height() / ratio );
+        const qreal x = int( rect.x() / ratio ) * ratio;
+        const qreal y = int( rect.y() / ratio ) * ratio;
+        const qreal w = rect.width() / ratio;
+        const qreal h = rect.height() / ratio;
 
-        QSGGeometry::updateTexturedRectGeometry( &geometry, scaledRect, r );
+        QSGGeometry::updateTexturedRectGeometry(
+            &geometry, QRectF( x, y, w, h ), r );
     }
 
     QSGGeometry geometry;
