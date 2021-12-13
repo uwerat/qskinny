@@ -422,28 +422,28 @@ static inline void qskCreateBorder(
     const QskBoxRenderer::Quad& out, const QskBoxRenderer::Quad& in,
     const QskBoxBorderColors& colors, Line* line )
 {
-    const Color colorLeft = colors.gradient( Qsk::Left ).startColor().rgb(); // ###
-    const Color colorRight = colors.gradient( Qsk::Right ).startColor().rgb(); // ###
-    const Color colorTop = colors.gradient( Qsk::Top ).startColor().rgb(); // ###
-    const Color colorBottom = colors.gradient( Qsk::Bottom ).startColor().rgb(); // ###
+    const QskGradient gradientLeft = colors.gradient( Qsk::Left );
+    const QskGradient gradientRight = colors.gradient( Qsk::Right );
+    const QskGradient gradientTop = colors.gradient( Qsk::Top );
+    const QskGradient gradientBottom = colors.gradient( Qsk::Bottom );
 
-    ( line++ )->setLine( in.right, in.bottom, out.right, out.bottom, colorBottom );
-    ( line++ )->setLine( in.left, in.bottom, out.left, out.bottom, colorBottom );
+    ( line++ )->setLine( in.right, in.bottom, out.right, out.bottom, gradientBottom.startColor() ); // ###
+    ( line++ )->setLine( in.left, in.bottom, out.left, out.bottom, gradientBottom.endColor() );
 
-    if ( colorLeft != colorBottom )
-        ( line++ )->setLine( in.left, in.bottom, out.left, out.bottom, colorLeft );
+    if ( gradientLeft != gradientBottom )
+        ( line++ )->setLine( in.left, in.bottom, out.left, out.bottom, gradientLeft.startColor() );
 
-    ( line++ )->setLine( in.left, in.top, out.left, out.top, colorLeft );
+    ( line++ )->setLine( in.left, in.top, out.left, out.top, gradientLeft.endColor() );
 
-    if ( colorTop != colorLeft )
-        ( line++ )->setLine( in.left, in.top, out.left, out.top, colorTop );
+    if ( gradientTop != gradientLeft )
+        ( line++ )->setLine( in.left, in.top, out.left, out.top, gradientTop.startColor() );
 
-    ( line++ )->setLine( in.right, in.top, out.right, out.top, colorTop );
+    ( line++ )->setLine( in.right, in.top, out.right, out.top, gradientTop.endColor() );
 
-    if ( colorRight != colorTop )
-        ( line++ )->setLine( in.right, in.top, out.right, out.top, colorRight );
+    if ( gradientRight != gradientTop )
+        ( line++ )->setLine( in.right, in.top, out.right, out.top, gradientRight.startColor() );
 
-    ( line++ )->setLine( in.right, in.bottom, out.right, out.bottom, colorRight );
+    ( line++ )->setLine( in.right, in.bottom, out.right, out.bottom, gradientRight.endColor() );
 }
 
 void QskBoxRenderer::renderRectBorder(
@@ -461,7 +461,7 @@ void QskBoxRenderer::renderRectBorder(
         return;
     }
 
-    const auto line = allocateLines< Line >( geometry, 4 + 1 );
+    const auto line = allocateLines< ColoredLine >( geometry, 4 + 1 );
     qskCreateBorderMonochrome( out, in, Color(), line );
 }
 
@@ -587,7 +587,7 @@ void QskBoxRenderer::renderRect(
         auto fillLines = line + fillLineCount;
 
         if ( bc.isMonochrome() )
-            qskCreateBorderMonochrome( rect, in, bc.gradient( Qsk::Left ).startColor().rgb(), fillLines ); // ###
+            qskCreateBorderMonochrome( rect, in, bc.gradient( Qsk::Left ).startColor().rgb(), fillLines );
         else
             qskCreateBorder( rect, in, bc, fillLines );
     }
