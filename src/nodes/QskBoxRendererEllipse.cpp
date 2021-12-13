@@ -859,17 +859,17 @@ static inline void qskRenderBorder( const QskBoxRenderer::Metrics& metrics,
 
     if ( colors.isMonochrome() )
     {
-        qskRenderBorderLines( metrics, orientation, line, BorderMapSolid( c.rgb( Qsk::Left ) ) );
+        qskRenderBorderLines( metrics, orientation, line, BorderMapSolid( c.color( Qsk::Left ).startColor().rgb() ) ); // ###
     }
     else
     {
         const int stepCount = metrics.corner[ 0 ].stepCount;
 
         qskRenderBorderLines( metrics, orientation, line,
-            BorderMapGradient( stepCount, c.rgb( Qsk::Top ), c.rgb( Qsk::Left ) ),
-            BorderMapGradient( stepCount, c.rgb( Qsk::Right ), c.rgb( Qsk::Top ) ),
-            BorderMapGradient( stepCount, c.rgb( Qsk::Left ), c.rgb( Qsk::Bottom ) ),
-            BorderMapGradient( stepCount, c.rgb( Qsk::Bottom ), c.rgb( Qsk::Right ) ) );
+            BorderMapGradient( stepCount, c.color( Qsk::Top ).startColor().rgb(), c.color( Qsk::Left ).startColor().rgb() ), // ###
+            BorderMapGradient( stepCount, c.color( Qsk::Right ).startColor().rgb(), c.color( Qsk::Top ).startColor().rgb() ), // ###
+            BorderMapGradient( stepCount, c.color( Qsk::Left ).startColor().rgb(), c.color( Qsk::Bottom ).startColor().rgb() ), // ###
+            BorderMapGradient( stepCount, c.color( Qsk::Bottom ).startColor().rgb(), c.color( Qsk::Right ).startColor().rgb() ) ); // ###
     }
 }
 
@@ -899,7 +899,7 @@ static inline void qskRenderBoxRandom(
 
     if ( bc.isMonochrome() )
     {
-        const BorderMapSolid borderMap( bc.rgb( Qsk::Left ) );
+        const BorderMapSolid borderMap( bc.color( Qsk::Left ).startColor().rgb() ); // ###
 
         if ( gradient.isMonochrome() )
         {
@@ -918,10 +918,10 @@ static inline void qskRenderBoxRandom(
     {
         const int n = metrics.corner[ 0 ].stepCount;
 
-        const BorderMapGradient tl( n, bc.rgb( Qsk::Top ), bc.rgb( Qsk::Left ) );
-        const BorderMapGradient tr( n, bc.rgb( Qsk::Right ), bc.rgb( Qsk::Top ) );
-        const BorderMapGradient bl( n, bc.rgb( Qsk::Left ), bc.rgb( Qsk::Bottom ) );
-        const BorderMapGradient br( n, bc.rgb( Qsk::Bottom ), bc.rgb( Qsk::Right ) );
+        const BorderMapGradient tl( n, bc.color( Qsk::Top ).startColor().rgb(), bc.color( Qsk::Left ).startColor().rgb() );
+        const BorderMapGradient tr( n, bc.color( Qsk::Right ).startColor().rgb(), bc.color( Qsk::Top ).startColor().rgb() );
+        const BorderMapGradient bl( n, bc.color( Qsk::Left ).startColor().rgb(), bc.color( Qsk::Bottom ).startColor().rgb() );
+        const BorderMapGradient br( n, bc.color( Qsk::Bottom ).startColor().rgb(), bc.color( Qsk::Right ).startColor().rgb() );
 
         if ( gradient.isMonochrome() )
         {

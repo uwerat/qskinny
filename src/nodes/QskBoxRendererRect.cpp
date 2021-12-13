@@ -422,10 +422,10 @@ static inline void qskCreateBorder(
     const QskBoxRenderer::Quad& out, const QskBoxRenderer::Quad& in,
     const QskBoxBorderColors& colors, Line* line )
 {
-    const Color colorLeft = colors.rgb( Qsk::Left );
-    const Color colorRight = colors.rgb( Qsk::Right );
-    const Color colorTop = colors.rgb( Qsk::Top );
-    const Color colorBottom = colors.rgb( Qsk::Bottom );
+    const Color colorLeft = colors.color( Qsk::Left ).startColor().rgb(); // ###
+    const Color colorRight = colors.color( Qsk::Right ).startColor().rgb(); // ###
+    const Color colorTop = colors.color( Qsk::Top ).startColor().rgb(); // ###
+    const Color colorBottom = colors.color( Qsk::Bottom ).startColor().rgb(); // ###
 
     ( line++ )->setLine( in.right, in.bottom, out.right, out.bottom, colorBottom );
     ( line++ )->setLine( in.left, in.bottom, out.left, out.bottom, colorBottom );
@@ -587,7 +587,7 @@ void QskBoxRenderer::renderRect(
         auto fillLines = line + fillLineCount;
 
         if ( bc.isMonochrome() )
-            qskCreateBorderMonochrome( rect, in, bc.rgb( Qsk::Left ), fillLines );
+            qskCreateBorderMonochrome( rect, in, bc.color( Qsk::Left ).startColor().rgb(), fillLines );
         else
             qskCreateBorder( rect, in, bc, fillLines );
     }

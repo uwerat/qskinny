@@ -6,6 +6,7 @@
 #ifndef QSK_BOX_BORDER_COLORS_H
 #define QSK_BOX_BORDER_COLORS_H
 
+#include "QskGradient.h"
 #include "QskNamespace.h"
 
 #include <qcolor.h>
@@ -37,12 +38,10 @@ class QSK_EXPORT QskBoxBorderColors
         const QColor& right, const QColor& bottom );
 
     void setColor( Qsk::Position, const QColor& );
-    QColor color( Qsk::Position ) const;
+    QskGradient color( Qsk::Position ) const;
 
     void setColorsAt( Qt::Edges, const QColor& );
-    QColor colorAt( Qt::Edge ) const;
-
-    QRgb rgb( Qsk::Position ) const;
+    QskGradient colorAt( Qt::Edge ) const;
 
     QskBoxBorderColors interpolated( const QskBoxBorderColors&, qreal value ) const;
 
@@ -55,8 +54,7 @@ class QSK_EXPORT QskBoxBorderColors
     bool isVisible() const;
 
   private:
-    // should be stored as QRgb
-    QColor m_colors[ 4 ];
+    QskGradient m_gradients[ 4 ];
 };
 
 inline QskBoxBorderColors::QskBoxBorderColors( Qt::GlobalColor color )
@@ -74,14 +72,9 @@ inline bool QskBoxBorderColors::operator!=( const QskBoxBorderColors& other ) co
     return !( *this == other );
 }
 
-inline QColor QskBoxBorderColors::color( Qsk::Position position ) const
+inline QskGradient QskBoxBorderColors::color( Qsk::Position position ) const
 {
-    return m_colors[ position ];
-}
-
-inline QRgb QskBoxBorderColors::rgb( Qsk::Position position ) const
-{
-    return m_colors[ position ].rgba();
+    return m_gradients[ position ];
 }
 
 #ifndef QT_NO_DEBUG_STREAM

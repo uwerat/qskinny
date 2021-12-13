@@ -171,7 +171,7 @@ void QskBoxNode::setBoxData( const QRectF& rect,
         }
         else
         {
-            flatMaterial->setColor( borderColors.color( Qsk::Left ).rgba() );
+            flatMaterial->setColor( borderColors.color( Qsk::Left ).startColor().rgba() ); // ###
             renderer.renderBorder( m_rect, shape, borderMetrics, *geometry() );
         }
     }
