@@ -26,6 +26,28 @@
 #include <qquickwindow.h>
 #include <qsgsimplerectnode.h>
 
+static inline QRectF qskSceneAlignedRect( const QQuickItem* item , const QRectF& rect )
+{
+    /*
+       Aligning rect according to scene coordinates, so that
+       we don't run into rounding issues downstream, where values
+       will be floored/ceiled ending up with a slightly different
+       aspect ratio.
+     */
+
+    const auto ratio = item->window()->devicePixelRatio();
+
+    const auto pos = item->mapToScene( rect.topLeft() ) * ratio;
+    const auto size = rect.size() * ratio;
+
+    const qreal x = qRound( pos.x() ) / ratio;
+    const qreal y = qRound( pos.y() ) / ratio;
+    const qreal w = qRound( size.width() ) / ratio;
+    const qreal h = qRound( size.height() ) / ratio;
+
+    return QRectF( item->mapFromScene( QPointF( x, y ) ), QSizeF( w, h ) );
+}
+
 static inline QRectF qskSubControlRect( const QskSkinlet* skinlet,
     const QskSkinnable* skinnable, QskAspect::Subcontrol subControl )
 {
@@ -59,19 +81,7 @@ static inline QSGNode* qskUpdateGraphicNode(
     if ( control->testUpdateFlag( QskControl::PreferRasterForTextures ) )
         mode = QskTextureRenderer::Raster;
 
-    /*
-       Aligning the rect according to scene coordinates, so that
-       we don't run into rounding issues downstream, where values
-       will be floored/ceiled ending up with a slightly different
-       aspect ratio.
-     */
-    QRectF r(
-        control->mapToScene( rect.topLeft() ),
-        rect.size() * control->window()->effectiveDevicePixelRatio() );
-
-    r = qskInnerRect( r );
-    r.moveTopLeft( control->mapFromScene( r.topLeft() ) );
-
+    const auto r = qskSceneAlignedRect( control, rect );
     graphicNode->setGraphic( control->window(), graphic,
         colorFilter, mode, r, mirrored );
 
@@ -161,20 +171,7 @@ static inline QSGNode* qskUpdateArcNode(
     if ( arcNode == nullptr )
         arcNode = new QskArcNode();
 
-    auto r = rect;
-#if 1
-    {
-        /*
-            Fiddling around with the pixel ratio should be hidden below QskArcNode.
-            Code will break once QskArcNode is not texture based anymore. TODO ...
-         */
-
-        const auto ratio = control->window()->effectiveDevicePixelRatio();
-        absoluteMetrics.setWidth( absoluteMetrics.width() * ratio );
-        r.setSize( r.size() * ratio );
-    }
-#endif
-
+    const auto r = qskSceneAlignedRect( control, rect );
     arcNode->setArcData( r, absoluteMetrics, fillGradient, control->window() );
 
     return arcNode;

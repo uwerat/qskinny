@@ -78,7 +78,7 @@ void QskGraphicNode::setGraphic(
     if ( isTextureDirty )
     {
         textureId = QskTextureRenderer::createTextureFromGraphic(
-            renderMode, textureSize, graphic, colorFilter, Qt::IgnoreAspectRatio );
+            window, renderMode, textureSize, graphic, colorFilter, Qt::IgnoreAspectRatio );
     }
 
     QskTextureNode::setTexture( window, rect, textureId, mirrored );

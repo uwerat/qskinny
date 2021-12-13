@@ -25,11 +25,13 @@
     #include <qsgtexture_platform.h>
 #endif
 
-static uint qskCreateTextureOpenGL(
+static uint qskCreateTextureOpenGL( QQuickWindow* window,
     const QSize& size, QskTextureRenderer::PaintHelper* helper )
 {
-    const int width = size.width();
-    const int height = size.height();
+    const auto ratio = window ? window->effectiveDevicePixelRatio() : 1.0;
+
+    const int width = ratio * size.width();
+    const int height = ratio * size.height();
 
     QOpenGLFramebufferObjectFormat format1;
     format1.setAttachment( QOpenGLFramebufferObject::CombinedDepthStencil );
@@ -44,6 +46,7 @@ static uint qskCreateTextureOpenGL(
 
     {
         QPainter painter( &pd );
+        painter.scale( ratio, ratio );
 
         painter.setCompositionMode( QPainter::CompositionMode_Source );
         painter.fillRect( 0, 0, width, height, Qt::transparent );
@@ -77,15 +80,26 @@ static uint qskCreateTextureOpenGL(
     return fbo.takeTexture();
 }
 
-static uint qskCreateTextureRaster(
+static uint qskCreateTextureRaster( QQuickWindow* window,
     const QSize& size, QskTextureRenderer::PaintHelper* helper )
 {
-    QImage image( size, QImage::Format_RGBA8888_Premultiplied );
+    const auto ratio = window ? window->effectiveDevicePixelRatio() : 1.0;
+
+    QImage image( size * ratio, QImage::Format_RGBA8888_Premultiplied );
     image.fill( Qt::transparent );
 
     {
         QPainter painter( &image );
+
+        /*
+            setting a devicePixelRatio for the image only works for
+            value >= 1.0. So we have to scale manually.
+         */
+        painter.scale( ratio, ratio );
+
         helper->paint( &painter, size );
+
+        image.save( "/tmp/xx.png" );
     }
 
     const auto target = QOpenGLTexture::Target2D;
@@ -165,7 +179,8 @@ QskTextureRenderer::PaintHelper::~PaintHelper()
 }
 
 uint QskTextureRenderer::createTexture(
-    RenderMode renderMode, const QSize& size, PaintHelper* helper )
+    QQuickWindow* window, RenderMode renderMode,
+    const QSize& size, PaintHelper* helper )
 {
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
     // Qt6.0.0 is buggy when using FBOs. So let's disable it for the moment TODO ...
@@ -180,13 +195,13 @@ uint QskTextureRenderer::createTexture(
     }
 
     if ( renderMode == Raster )
-        return qskCreateTextureRaster( size, helper );
+        return qskCreateTextureRaster( window, size, helper );
     else
-        return qskCreateTextureOpenGL( size, helper );
+        return qskCreateTextureOpenGL( window, size, helper );
 }
 
 uint QskTextureRenderer::createTextureFromGraphic(
-    RenderMode renderMode, const QSize& size,
+    QQuickWindow* window, RenderMode renderMode, const QSize& size,
     const QskGraphic& graphic, const QskColorFilter& colorFilter,
     Qt::AspectRatioMode aspectRatioMode )
 {
@@ -214,5 +229,5 @@ uint QskTextureRenderer::createTextureFromGraphic(
     };
 
     PaintHelper helper( graphic, colorFilter, aspectRatioMode );
-    return createTexture( renderMode, size, &helper );
+    return createTexture( window, renderMode, size, &helper );
 }
