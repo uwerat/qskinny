@@ -56,7 +56,7 @@ void QskPaintedNode::update( QQuickWindow* window,
     {
         PaintHelper helper( this );
         textureId = QskTextureRenderer::createTexture(
-            renderMode, rect.size(), &helper );
+            window, renderMode, rect.size(), &helper );
     }
 
     QskTextureNode::setTexture( window, rect, textureId );

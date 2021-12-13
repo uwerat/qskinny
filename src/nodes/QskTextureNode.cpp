@@ -1,5 +1,5 @@
 #include "QskTextureNode.h"
-#include "QskTextureRenderer.h"
+#include "QskFunctions.h"
 
 #include <qopenglfunctions.h>
 #include <qsggeometry.h>
@@ -237,7 +237,7 @@ class QskTextureNodePrivate final : public QSGGeometryNodePrivate
 
     void setTextureId( QQuickWindow*, uint id );
 
-    void updateTextureGeometry( const QQuickWindow* window )
+    void updateTextureGeometry()
     {
         QRectF r( 0, 0, 1, 1 );
 
@@ -253,15 +253,7 @@ class QskTextureNodePrivate final : public QSGGeometryNodePrivate
             r.setBottom( 0 );
         }
 
-        const qreal ratio = window->effectiveDevicePixelRatio();
-
-        const qreal x = int( rect.x() / ratio ) * ratio;
-        const qreal y = int( rect.y() / ratio ) * ratio;
-        const qreal w = rect.width() / ratio;
-        const qreal h = rect.height() / ratio;
-
-        QSGGeometry::updateTexturedRectGeometry(
-            &geometry, QRectF( x, y, w, h ), r );
+        QSGGeometry::updateTexturedRectGeometry( &geometry, rect, r );
     }
 
     QSGGeometry geometry;
@@ -301,7 +293,7 @@ void QskTextureNode::setTexture( QQuickWindow* window,
         d->rect = rect;
         d->mirrored = mirrored;
 
-        d->updateTextureGeometry( window );
+        d->updateTextureGeometry();
         markDirty( DirtyGeometry );
     }
 
