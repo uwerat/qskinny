@@ -422,10 +422,10 @@ static inline void qskCreateBorder(
     const QskBoxRenderer::Quad& out, const QskBoxRenderer::Quad& in,
     const QskBoxBorderColors& colors, Line* line )
 {
-    const Color colorLeft = colors.color( Qsk::Left ).startColor().rgb(); // ###
-    const Color colorRight = colors.color( Qsk::Right ).startColor().rgb(); // ###
-    const Color colorTop = colors.color( Qsk::Top ).startColor().rgb(); // ###
-    const Color colorBottom = colors.color( Qsk::Bottom ).startColor().rgb(); // ###
+    const Color colorLeft = colors.gradient( Qsk::Left ).startColor().rgb(); // ###
+    const Color colorRight = colors.gradient( Qsk::Right ).startColor().rgb(); // ###
+    const Color colorTop = colors.gradient( Qsk::Top ).startColor().rgb(); // ###
+    const Color colorBottom = colors.gradient( Qsk::Bottom ).startColor().rgb(); // ###
 
     ( line++ )->setLine( in.right, in.bottom, out.right, out.bottom, colorBottom );
     ( line++ )->setLine( in.left, in.bottom, out.left, out.bottom, colorBottom );
@@ -533,13 +533,13 @@ void QskBoxRenderer::renderRect(
                 // we might need extra lines to separate colors
                 // at the non closing corners
 
-                if ( bc.color( Qsk::Left ) != bc.color( Qsk::Bottom ) )
+                if ( bc.gradient( Qsk::Left ) != bc.gradient( Qsk::Bottom ) )
                     borderLineCount++;
 
-                if ( bc.color( Qsk::Top ) != bc.color( Qsk::Left ) )
+                if ( bc.gradient( Qsk::Top ) != bc.gradient( Qsk::Left ) )
                     borderLineCount++;
 
-                if ( bc.color( Qsk::Right ) != bc.color( Qsk::Top ) )
+                if ( bc.gradient( Qsk::Right ) != bc.gradient( Qsk::Top ) )
                     borderLineCount++;
             }
         }
@@ -587,7 +587,7 @@ void QskBoxRenderer::renderRect(
         auto fillLines = line + fillLineCount;
 
         if ( bc.isMonochrome() )
-            qskCreateBorderMonochrome( rect, in, bc.color( Qsk::Left ).startColor().rgb(), fillLines );
+            qskCreateBorderMonochrome( rect, in, bc.gradient( Qsk::Left ).startColor().rgb(), fillLines ); // ###
         else
             qskCreateBorder( rect, in, bc, fillLines );
     }

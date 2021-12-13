@@ -19,12 +19,13 @@ class QSK_EXPORT QskBoxBorderColors
   public:
     QskBoxBorderColors();
 
-    QskBoxBorderColors( const QColor& left, const QColor& top,
-        const QColor& right, const QColor& bottom );
+    QskBoxBorderColors( const QskGradient& left, const QskGradient& top,
+        const QskGradient& right, const QskGradient& bottom );
 
     QskBoxBorderColors( Qt::GlobalColor );
     QskBoxBorderColors( QRgb );
     QskBoxBorderColors( const QColor& );
+    QskBoxBorderColors( const QskGradient& );
 
     ~QskBoxBorderColors();
 
@@ -33,15 +34,15 @@ class QSK_EXPORT QskBoxBorderColors
 
     void setAlpha( int alpha );
 
-    void setColors( const QColor& );
-    void setColors( const QColor& left, const QColor& top,
-        const QColor& right, const QColor& bottom );
+    void setGradients( const QskGradient& );
+    void setGradients( const QskGradient& left, const QskGradient& top,
+        const QskGradient& right, const QskGradient& bottom );
 
-    void setColor( Qsk::Position, const QColor& );
-    QskGradient color( Qsk::Position ) const;
+    void setGradient( Qsk::Position, const QskGradient& );
+    QskGradient gradient( Qsk::Position ) const;
 
-    void setColorsAt( Qt::Edges, const QColor& );
-    QskGradient colorAt( Qt::Edge ) const;
+    void setGradientAt( Qt::Edges, const QskGradient& );
+    QskGradient gradientAt( Qt::Edge ) const;
 
     QskBoxBorderColors interpolated( const QskBoxBorderColors&, qreal value ) const;
 
@@ -72,7 +73,7 @@ inline bool QskBoxBorderColors::operator!=( const QskBoxBorderColors& other ) co
     return !( *this == other );
 }
 
-inline QskGradient QskBoxBorderColors::color( Qsk::Position position ) const
+inline QskGradient QskBoxBorderColors::gradient( Qsk::Position position ) const
 {
     return m_gradients[ position ];
 }

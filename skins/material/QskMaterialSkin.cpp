@@ -602,7 +602,7 @@ void Editor::setupTabButton()
         QskBoxBorderColors borderColors( QskRgb::White );
         setBoxBorderColors( aspect, borderColors );
 
-        borderColors.setColorsAt( edge, m_pal.accentColor );
+        borderColors.setGradientAt( edge, m_pal.accentColor );
         for ( auto state : { Q::Checked, Q::Pressed, Q::Hovered } )
             setBoxBorderColors( aspect | state, borderColors );
     }
@@ -750,8 +750,8 @@ void Editor::setupSubWindow()
     setGradient( Q::Panel, m_pal.baseColor );
 
     QskBoxBorderColors colors;
-    colors.setColorsAt( Qt::TopEdge | Qt::LeftEdge, m_pal.lighter125 );
-    colors.setColorsAt( Qt::RightEdge | Qt::BottomEdge, m_pal.darker200 );
+    colors.setGradientAt( Qt::TopEdge | Qt::LeftEdge, m_pal.lighter125 );
+    colors.setGradientAt( Qt::RightEdge | Qt::BottomEdge, m_pal.darker200 );
 
     setBoxBorderColors( Q::Panel, colors );
 
