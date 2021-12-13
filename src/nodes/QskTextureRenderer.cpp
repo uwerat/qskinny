@@ -98,8 +98,6 @@ static uint qskCreateTextureRaster( QQuickWindow* window,
         painter.scale( ratio, ratio );
 
         helper->paint( &painter, size );
-
-        image.save( "/tmp/xx.png" );
     }
 
     const auto target = QOpenGLTexture::Target2D;
