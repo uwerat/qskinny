@@ -365,7 +365,11 @@ static void addColoredBorderRectangles( QskLinearBox* parent )
 
     box = new Box( parent );
     box->setBorderWidth( 20 );
-    box->setBorderGradient( { Qt::Vertical, Qt::magenta, Qt::cyan } );
+    QskGradient gradient1( Qt::Vertical, { { 0.0, Qt::blue }, { 0.7, Qt::yellow }, { 1.0, Qt::darkRed } } );
+    QskGradient gradient2( Qt::Vertical, { { 0.0, Qt::black }, { 0.3, Qt::white }, { 0.7, Qt::white }, { 1.0, Qt::black } } );
+    QskGradient gradient3( Qt::green );
+    QskGradient gradient4( Qt::Vertical, Qt::magenta, Qt::cyan );
+    box->setBorderGradients( gradient1, gradient2, gradient3, gradient4 );
 }
 
 class TabView : public QskTabView

@@ -11,6 +11,8 @@
 #include "QskGradient.h"
 #include "QskVertex.h"
 
+#include <QDebug>
+
 using namespace QskVertex;
 
 namespace
@@ -427,23 +429,51 @@ static inline void qskCreateBorder(
     const QskGradient gradientTop = colors.gradient( Qsk::Top );
     const QskGradient gradientBottom = colors.gradient( Qsk::Bottom );
 
-    ( line++ )->setLine( in.right, in.bottom, out.right, out.bottom, gradientBottom.startColor() ); // ###
-    ( line++ )->setLine( in.left, in.bottom, out.left, out.bottom, gradientBottom.endColor() );
+    // qdebug
 
-    if ( gradientLeft != gradientBottom )
-        ( line++ )->setLine( in.left, in.bottom, out.left, out.bottom, gradientLeft.startColor() );
+    for( const QskGradientStop& stop : gradientBottom.stops() )
+    {
+        const Color c( stop.color() );
+        const qreal x1 = in.right - stop.position() * ( in.right - in.left );
+        const qreal x2 = out.right - stop.position() * ( out.right - out.left );
+        const qreal y1 = in.bottom;
+        const qreal y2 = out.bottom;
 
-    ( line++ )->setLine( in.left, in.top, out.left, out.top, gradientLeft.endColor() );
+        ( line++ )->setLine( x1, y1, x2, y2, c );
+    }
 
-    if ( gradientTop != gradientLeft )
-        ( line++ )->setLine( in.left, in.top, out.left, out.top, gradientTop.startColor() );
+    for( const QskGradientStop& stop : gradientLeft.stops() )
+    {
+        const Color c( stop.color() );
+        const qreal x1 = in.left;
+        const qreal x2 = out.left;
+        const qreal y1 = in.bottom + stop.position() * ( in.top - in.bottom );
+        const qreal y2 = out.bottom + stop.position() * ( out.top - out.bottom );
 
-    ( line++ )->setLine( in.right, in.top, out.right, out.top, gradientTop.endColor() );
+        ( line++ )->setLine( x1, y1, x2, y2, c );
+    }
 
-    if ( gradientRight != gradientTop )
-        ( line++ )->setLine( in.right, in.top, out.right, out.top, gradientRight.startColor() );
+    for( const QskGradientStop& stop : gradientTop.stops() )
+    {
+        const Color c( stop.color() );
+        const qreal x1 = in.left + stop.position() * ( in.right - in.left );
+        const qreal x2 = out.left + stop.position() * ( out.right - out.left );
+        const qreal y1 = in.top;
+        const qreal y2 = out.top;
 
-    ( line++ )->setLine( in.right, in.bottom, out.right, out.bottom, gradientRight.endColor() );
+        ( line++ )->setLine( x1, y1, x2, y2, c );
+    }
+
+    for( const QskGradientStop& stop : gradientRight.stops() )
+    {
+        const Color c( stop.color() );
+        const qreal x1 = in.right;
+        const qreal x2 = out.right;
+        const qreal y1 = in.bottom + stop.position() * ( in.top - in.bottom );
+        const qreal y2 = out.bottom + stop.position() * ( out.top - out.bottom );
+
+        ( line++ )->setLine( x1, y1, x2, y2, c );
+    }
 }
 
 void QskBoxRenderer::renderRectBorder(
@@ -533,17 +563,20 @@ void QskBoxRenderer::renderRect(
                 // we might need extra lines to separate colors
                 // at the non closing corners
 
-                if ( bc.gradient( Qsk::Left ) != bc.gradient( Qsk::Bottom ) )
-                    borderLineCount++;
+                // ### As an optimization we could check orientation and colors
+                // to test whether colors are the same
+                const int additionalLines = -1
+                    + bc.gradient( Qsk::Left ).stops().count() - 1
+                    + bc.gradient( Qsk::Top ).stops().count() - 1
+                    + bc.gradient( Qsk::Right ).stops().count() - 1
+                    + bc.gradient( Qsk::Bottom ).stops().count() - 1;
 
-                if ( bc.gradient( Qsk::Top ) != bc.gradient( Qsk::Left ) )
-                    borderLineCount++;
-
-                if ( bc.gradient( Qsk::Right ) != bc.gradient( Qsk::Top ) )
-                    borderLineCount++;
+                borderLineCount += qMax( additionalLines, 0 );
             }
         }
     }
+
+    qDebug() << "border lines:" << borderLineCount;
 
     auto line = allocateLines< ColoredLine >( geometry, borderLineCount + fillLineCount );
 
