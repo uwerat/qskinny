@@ -256,8 +256,8 @@
 
     Set the position and the size of an item
 
-	\param pos Position relative to the parent item
-	\param size Size of the item
+    \param pos Position relative to the parent item
+    \param size Size of the item
 */
 
 /*!
@@ -297,7 +297,7 @@
 /*!
     \fn QskQuickItem::implicitSize
 
-    Qt/Quick offers an oversimplified layout system of Qt/Quick that is based on the
+    Qt/Quick offers an oversimplified layout system that is based on the
     property bindings of implicit width and height. QSkinny restablishs a layout
     system that can compete with what is available in the Qt/Widgets or Qt/Graphics
     technologies.

@@ -246,6 +246,22 @@
 */
 
 /*!
+    \fn QskControl::setMargins( qreal, qreal, qreal, qreal )
+
+    The value is stored in the local hint table for the aspect:
+         QskControl::Control | QskAspect::Metric | QskAspect::Margin
+
+    \param left Left margin
+    \param top Top margin
+    \param right Right margin
+    \param bottom Bottom margin
+
+    \aspect QskControl::Control | QskAspect::Metric | QskAspect::Margin
+
+    \sa contentsRect(), margins(), QskSkinnable::setMarginHint()
+*/
+
+/*!
     \fn QskControl::setMargins( const QMarginsF& )
 
     Sets the margins around the contents of the control 
@@ -496,16 +512,25 @@
 /*!
     \fn QskControl::setSizePolicy( QskSizePolicy )
 
+    Set the value for the \ref sizePolicy property
 */
 
 /*!
     \fn QskControl::setSizePolicy( QskSizePolicy::Policy, QskSizePolicy::Policy )
 
+    Set the value for the \ref sizePolicy property
+
+    \param horizontalPolicy Policy for the width
+    \param verticalPolicy Policy for the height
 */
 
 /*!
     \fn QskControl::setSizePolicy( Qt::Orientation, QskSizePolicy::Policy )
 
+    Modifies the value for the \ref sizePolicy property
+
+    \param orientation Specifies which part of the policy should be changed
+    \param policy Policy for height or width
 */
 
 /*!
@@ -524,6 +549,8 @@
 /*!
     \fn QskControl::sizePolicy( Qt::Orientation ) const
 
+    \param orientation Specifies the part of the policy
+    \return Height or width related part of the \ref sizePolicy property
 */
 
 /*!
@@ -807,16 +834,6 @@
 */
 
 /*!
-    \fn QskControl::locale() const
-
-*/
-
-/*!
-    \fn QskControl::resetLocale
-
-*/
-
-/*!
     \fn QskControl::subControls
 
     Calculates and returns a list of all effective subcontrols, that have been defined
@@ -849,24 +866,66 @@
 */
 
 /*!
-    \fn QskControl::localeChanged
+    \fn QskControl::locale() const
 
-*/
-
-/*!
-    \fn QskControl::focusPolicyChanged
-*/
-
-/*!
-    \fn QskControl::wheelEnabledChanged
+    \return Value of the \ref locale property
+    \sa setLocale(), resetLocale(), localeChanged()
+    \saqt QEvent::LocaleChange
 */
 
 /*!
     \fn QskControl::setLocale
+
+    Set the \ref locale for the control and all its descendents, that do not
+    have their own locale
+
+    \sa locale(), resetLocale(), localeChanged()
+    \saqt QEvent::LocaleChange
+*/
+
+/*!
+    \fn QskControl::resetLocale
+
+    Reset the locale to be inherited from the parentItem()
+
+    \sa locale(), setLocale(), localeChanged()
+    \saqt QEvent::LocaleChange
+*/
+
+/*!
+    \fn QskControl::localeChanged
+
+    Signal indicating, that the value of the \ref locale property has changed
+
+    \sa locale
+    \saqt QEvent::LocaleChange
+*/
+
+/*!
+    \fn QskControl::focusPolicyChanged
+
+    Signal indicating, that the value of the \ref focusPolicy property has changed
+    \sa focusPolicy
+*/
+
+/*!
+    \fn QskControl::wheelEnabledChanged
+
+    Signal indicating, that the value of the \ref wheelEnabled property has changed
+    \sa wheelEnabled
 */
 
 /*!
     \fn QskControl::event
+*/
+
+/*!
+    \fn QskControl::childMouseEventFilter
+
+*/
+
+/*!
+    \fn QskControl::gestureFilter
 */
 
 /*!
@@ -878,21 +937,14 @@
     \fn void QskControl::hoverEnterEvent
 
     Sets the Hovered state
+    \sa QskControl::Hovered, hoverLeaveEvent()
 */
 
 /*!
     \fn void QskControl::hoverLeaveEvent
 
     Clears the Hovered state
-*/
-
-/*!
-    \fn QskControl::childMouseEventFilter
-
-*/
-
-/*!
-    \fn QskControl::gestureFilter
+    \sa QskControl::Hovered, hoverEnterEvent()
 */
 
 /*!

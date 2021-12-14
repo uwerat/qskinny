@@ -4,8 +4,8 @@
 
     \brief Lookup key for a QskSkinHintTable
 
-    QskAspect is used by the \ref qskskinning "themeing system" to determine how
-    a given aspect of a control is drawn. While an aspect is simply a 64-bit
+    QskAspect is used by the \ref qskskinning "themeing system" to determine a
+    a certain aspect of a QskSkinnable. While an aspect is simply a 64-bit
     unsigned integer, it is composed of smaller enum bitfields which can be ORed
     together to describe a more specific part of the user interface.
 
