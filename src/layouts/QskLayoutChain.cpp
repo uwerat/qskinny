@@ -52,21 +52,21 @@ void QskLayoutChain::shrinkCell( int index, const CellData& newCell )
         if ( newCell.stretch >= 0 )
             cell.stretch = qMax( cell.stretch, newCell.stretch );
 
-        if ( !newCell.hint.isDefault() )
+        if ( !newCell.metrics.isDefault() )
         {
-            auto& hint = cell.hint;
-            auto& newHint = newCell.hint;
+            auto& metrics = cell.metrics;
+            auto& newMetrics = newCell.metrics;
 
-            hint.setMinimum( qMax( hint.minimum(), newHint.minimum() ) );
-            hint.setPreferred( qMax( hint.preferred(), newHint.preferred() ) );
+            metrics.setMinimum( qMax( metrics.minimum(), newMetrics.minimum() ) );
+            metrics.setPreferred( qMax( metrics.preferred(), newMetrics.preferred() ) );
 
-            if ( newHint.maximum() < hint.maximum() )
+            if ( newMetrics.maximum() < metrics.maximum() )
             {
-                hint.setMaximum( newHint.maximum() );
+                metrics.setMaximum( newMetrics.maximum() );
                 cell.isShrunk = true;
             }
 
-            cell.hint.normalize();
+            cell.metrics.normalize();
         }
     }
 }
@@ -88,10 +88,10 @@ void QskLayoutChain::expandCell( int index, const CellData& newCell )
         cell.canGrow |= newCell.canGrow;
         cell.stretch = qMax( cell.stretch, newCell.stretch );
 
-        cell.hint.setSizes(
-            qMax( cell.hint.minimum(), newCell.hint.minimum() ),
-            qMax( cell.hint.preferred(), newCell.hint.preferred() ),
-            qMax( cell.hint.maximum(), newCell.hint.maximum() )
+        cell.metrics.setMetrics(
+            qMax( cell.metrics.minimum(), newCell.metrics.minimum() ),
+            qMax( cell.metrics.preferred(), newCell.metrics.preferred() ),
+            qMax( cell.metrics.maximum(), newCell.metrics.maximum() )
         );
     }
 }
@@ -121,18 +121,18 @@ void QskLayoutChain::expandCells(
     QskLayoutChain::Segments preferred;
     QskLayoutChain::Segments maximum;
 
-    const auto chainHint = chain.boundingHint();
+    const auto chainMetrics = chain.boundingMetrics();
 
-    if ( multiCell.hint.minimum() > chainHint.minimum() )
-        minimum = chain.segments( multiCell.hint.minimum() );
+    if ( multiCell.metrics.minimum() > chainMetrics.minimum() )
+        minimum = chain.segments( multiCell.metrics.minimum() );
 
-    if ( multiCell.hint.preferred() > chainHint.preferred() )
-        preferred = chain.segments( multiCell.hint.preferred() );
+    if ( multiCell.metrics.preferred() > chainMetrics.preferred() )
+        preferred = chain.segments( multiCell.metrics.preferred() );
 
-    if ( chainHint.maximum() == QskLayoutHint::unlimited )
+    if ( chainMetrics.maximum() == QskLayoutMetrics::unlimited )
     {
-        if ( multiCell.hint.maximum() < QskLayoutHint::unlimited )
-            maximum = chain.segments( multiCell.hint.maximum() );
+        if ( multiCell.metrics.maximum() < QskLayoutMetrics::unlimited )
+            maximum = chain.segments( multiCell.metrics.maximum() );
     }
 
     for ( int i = 0; i < count; i++ )
@@ -143,13 +143,13 @@ void QskLayoutChain::expandCells(
         cell.stretch = qMax( cell.stretch, multiCell.stretch );
 
         if ( !minimum.isEmpty() )
-            cell.hint.expandMinimum( minimum[i].length );
+            cell.metrics.expandMinimum( minimum[i].length );
 
         if ( !preferred.isEmpty() )
-            cell.hint.expandPreferred( preferred[i].length );
+            cell.metrics.expandPreferred( preferred[i].length );
 
         if ( !maximum.isEmpty() && !cell.isValid )
-            cell.hint.setMaximum( maximum[i].length );
+            cell.metrics.setMaximum( maximum[i].length );
 
         if ( !cell.isValid )
         {
@@ -170,28 +170,28 @@ void QskLayoutChain::finish()
 
     if ( !m_cells.empty() )
     {
-        const auto maxMaximum = QskLayoutHint::unlimited;
+        const auto maxMaximum = QskLayoutMetrics::unlimited;
 
         for ( auto& cell : m_cells )
         {
             if ( !cell.isValid )
                 continue;
 
-            minimum += cell.hint.minimum();
-            preferred += cell.hint.preferred();
+            minimum += cell.metrics.minimum();
+            preferred += cell.metrics.preferred();
 
             if ( maximum < maxMaximum )
             {
                 if ( cell.stretch == 0 && !cell.canGrow )
                 {
-                    maximum += cell.hint.preferred();
+                    maximum += cell.metrics.preferred();
                 }
                 else
                 {
-                    if ( cell.hint.maximum() == maxMaximum )
+                    if ( cell.metrics.maximum() == maxMaximum )
                         maximum = maxMaximum;
                     else
-                        maximum += cell.hint.maximum();
+                        maximum += cell.metrics.maximum();
                 }
             }
 
@@ -208,9 +208,9 @@ void QskLayoutChain::finish()
             maximum += spacing;
     }
 
-    m_boundingHint.setMinimum( minimum );
-    m_boundingHint.setPreferred( preferred );
-    m_boundingHint.setMaximum( maximum );
+    m_boundingMetrics.setMinimum( minimum );
+    m_boundingMetrics.setPreferred( preferred );
+    m_boundingMetrics.setMaximum( maximum );
 }
 
 bool QskLayoutChain::setSpacing( qreal spacing )
@@ -231,21 +231,21 @@ QskLayoutChain::Segments QskLayoutChain::segments( qreal size ) const
 
     Segments segments;
 
-    if ( size <= m_boundingHint.minimum() )
+    if ( size <= m_boundingMetrics.minimum() )
     {
         segments = distributed( Qt::MinimumSize, 0.0, 0.0 );
     }
-    else if ( size < m_boundingHint.preferred() )
+    else if ( size < m_boundingMetrics.preferred() )
     {
         segments = minimumExpanded( size );
     }
-    else if ( size <= m_boundingHint.maximum() )
+    else if ( size <= m_boundingMetrics.maximum() )
     {
         segments = preferredStretched( size );
     }
     else
     {
-        const qreal padding = size - m_boundingHint.maximum();
+        const qreal padding = size - m_boundingMetrics.maximum();
 
         qreal offset = 0.0;
         qreal extra = 0.0;;
@@ -297,10 +297,10 @@ QskLayoutChain::Segments QskLayoutChain::distributed(
 
             segment.start = offset;
 
-            qreal size = cell.hint.size( which );
+            qreal size = cell.metrics.metric( which );
 
 #if 1
-            if ( which == Qt::MaximumSize && size == QskLayoutHint::unlimited )
+            if ( which == Qt::MaximumSize && size == QskLayoutMetrics::unlimited )
             {
                 /*
                     We have some special handling in QskLayoutChain::finish,
@@ -308,7 +308,7 @@ QskLayoutChain::Segments QskLayoutChain::distributed(
                     size of a cell to the bounding maximum size.
                     No good way to have this here, TODO ...
                  */
-                size = cell.hint.size( Qt::PreferredSize );
+                size = cell.metrics.metric( Qt::PreferredSize );
             }
 #endif
 
@@ -356,8 +356,8 @@ QskLayoutChain::Segments QskLayoutChain::minimumExpanded( qreal size ) const
     qreal sumFactors = 0.0;
     QVarLengthArray< qreal > factors( m_cells.size() );
 
-    const qreal desired = m_boundingHint.preferred() - m_boundingHint.minimum();
-    const qreal available = size - m_boundingHint.minimum();
+    const qreal desired = m_boundingMetrics.preferred() - m_boundingMetrics.minimum();
+    const qreal available = size - m_boundingMetrics.minimum();
 
     for ( int i = 0; i < m_cells.size(); i++ )
     {
@@ -398,8 +398,8 @@ QskLayoutChain::Segments QskLayoutChain::minimumExpanded( qreal size ) const
         }
     }
 #else
-    const qreal factor = ( size - m_boundingHint.minimum() ) /
-        ( m_boundingHint.preferred() - m_boundingHint.minimum() );
+    const qreal factor = ( size - m_boundingMetrics.minimum() ) /
+        ( m_boundingMetrics.preferred() - m_boundingMetrics.minimum() );
 
     for ( int i = 0; i < m_cells.count(); i++ )
     {
@@ -417,8 +417,8 @@ QskLayoutChain::Segments QskLayoutChain::minimumExpanded( qreal size ) const
             fillSpacing = m_spacing;
 
             segment.start = offset;
-            segment.length = cell.hint.minimum()
-                + factor * ( cell.hint.preferred() - cell.hint.minimum() );
+            segment.length = cell.metrics.minimum()
+                + factor * ( cell.metrics.preferred() - cell.metrics.minimum() );
 
             offset += segment.length;
         }
@@ -448,7 +448,7 @@ QskLayoutChain::Segments QskLayoutChain::preferredStretched( qreal size ) const
             continue;
         }
 
-        if ( cell.hint.preferred() >= cell.hint.maximum() )
+        if ( cell.metrics.preferred() >= cell.metrics.maximum() )
         {
             factors[i] = 0.0;
         }
@@ -477,7 +477,7 @@ QskLayoutChain::Segments QskLayoutChain::preferredStretched( qreal size ) const
 
             const auto size = sumSizes * factors[i] / sumFactors;
 
-            const auto& hint = m_cells[i].hint;
+            const auto& hint = m_cells[i].metrics;
             const auto boundedSize =
                 qBound( hint.preferred(), size, hint.maximum() );
 
@@ -519,7 +519,7 @@ QskLayoutChain::Segments QskLayoutChain::preferredStretched( qreal size ) const
             if ( factor > 0.0 )
                 segment.length = sumSizes * factor / sumFactors;
             else
-                segment.length = cell.hint.preferred();
+                segment.length = cell.metrics.preferred();
         }
 
         offset += segment.length;
@@ -553,7 +553,7 @@ QDebug operator<<( QDebug debug, const QskLayoutChain::CellData& cell )
     }
     else
     {
-        debug << "( " << cell.hint << ", "
+        debug << "( " << cell.metrics << ", "
             << cell.stretch << ", " << cell.canGrow << " )";
     }
 

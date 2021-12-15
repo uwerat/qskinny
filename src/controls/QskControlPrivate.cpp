@@ -5,7 +5,7 @@
 
 #include "QskControlPrivate.h"
 #include "QskSetup.h"
-#include "QskLayoutHint.h"
+#include "QskLayoutMetrics.h"
 
 static inline void qskSendEventTo( QObject* object, QEvent::Type type )
 {
@@ -173,10 +173,10 @@ QSizeF QskControlPrivate::implicitSizeHint(
     qreal h = constraint.height();
 
     if ( w < 0.0 )
-        w = QskLayoutHint::combined( which, contentsHint.width(), layoutHint.width() );
+        w = QskLayoutMetrics::combined( which, contentsHint.width(), layoutHint.width() );
 
     if ( h < 0.0 )
-        h = QskLayoutHint::combined( which, contentsHint.height(), layoutHint.height() );
+        h = QskLayoutMetrics::combined( which, contentsHint.height(), layoutHint.height() );
 
     return QSizeF( w, h );
 }
