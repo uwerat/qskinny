@@ -506,21 +506,37 @@ namespace
     class BorderMapGradient
     {
       public:
-        inline BorderMapGradient( int stepCount, QRgb rgb1, QRgb rgb2 )
+        inline BorderMapGradient( int stepCount, const QskGradient& gradient )
             : m_stepCount( stepCount )
-            , m_color1( rgb1 )
-            , m_color2( rgb2 )
+            , m_gradient( gradient )
         {
         }
 
         inline Color colorAt( int step ) const
         {
-            return m_color1.interpolatedTo( m_color2, step / m_stepCount );
+            const qreal ratio = step / m_stepCount;
+            const auto stops = m_gradient.stops();
+
+            for( int i = 0; i < m_gradient.stopCount(); ++i )
+            {
+                const QskGradientStop stop = stops.at( i );
+
+                if( stop.position() >= ratio )
+                {
+                    const int start = ( i == 0 ) ? 0 : i - 1;
+                    const int end = ( i == 0 ) ? 1 : i;
+                    const QColor color = QskGradientStop::interpolated( stops.at( start ),
+                                                                        stops.at( end ), ratio );
+                    return Color( color );
+                }
+            }
+
+            return Color();
         }
 
       private:
         const qreal m_stepCount;
-        const Color m_color1, m_color2;
+        const QskGradient m_gradient;
     };
 
     template< class Line, class BorderValues >
@@ -866,10 +882,10 @@ static inline void qskRenderBorder( const QskBoxRenderer::Metrics& metrics,
         const int stepCount = metrics.corner[ 0 ].stepCount;
 
         qskRenderBorderLines( metrics, orientation, line,
-            BorderMapGradient( stepCount, c.gradient( Qsk::Top ).startColor().rgb(), c.gradient( Qsk::Left ).endColor().rgb() ),
-            BorderMapGradient( stepCount, c.gradient( Qsk::Right ).startColor().rgb(), c.gradient( Qsk::Top ).endColor().rgb() ),
-            BorderMapGradient( stepCount, c.gradient( Qsk::Left ).startColor().rgb(), c.gradient( Qsk::Bottom ).endColor().rgb() ),
-            BorderMapGradient( stepCount, c.gradient( Qsk::Bottom ).startColor().rgb(), c.gradient( Qsk::Right ).endColor().rgb() ) );
+            BorderMapGradient( stepCount, { Qt::Vertical, c.gradient( Qsk::Top ).startColor(), c.gradient( Qsk::Left ).endColor() } ),
+            BorderMapGradient( stepCount, { Qt::Vertical, c.gradient( Qsk::Right ).startColor(), c.gradient( Qsk::Top ).endColor() } ),
+            BorderMapGradient( stepCount, { Qt::Vertical, c.gradient( Qsk::Left ).startColor(), c.gradient( Qsk::Bottom ).endColor() } ),
+            BorderMapGradient( stepCount, { Qt::Vertical, c.gradient( Qsk::Bottom ).startColor(), c.gradient( Qsk::Right ).endColor() } ) );
     }
 }
 
@@ -918,10 +934,10 @@ static inline void qskRenderBoxRandom(
     {
         const int n = metrics.corner[ 0 ].stepCount;
 
-        const BorderMapGradient tl( n, bc.gradient( Qsk::Top ).startColor().rgb(), bc.gradient( Qsk::Left ).startColor().rgb() );
-        const BorderMapGradient tr( n, bc.gradient( Qsk::Right ).startColor().rgb(), bc.gradient( Qsk::Top ).startColor().rgb() );
-        const BorderMapGradient bl( n, bc.gradient( Qsk::Left ).startColor().rgb(), bc.gradient( Qsk::Bottom ).startColor().rgb() );
-        const BorderMapGradient br( n, bc.gradient( Qsk::Bottom ).startColor().rgb(), bc.gradient( Qsk::Right ).startColor().rgb() );
+        const BorderMapGradient tl( n, { Qt::Vertical, bc.gradient( Qsk::Top ).startColor(), bc.gradient( Qsk::Left ).startColor() } );
+        const BorderMapGradient tr( n, { Qt::Vertical, bc.gradient( Qsk::Right ).startColor(), bc.gradient( Qsk::Top ).startColor() }  );
+        const BorderMapGradient bl( n, { Qt::Vertical, bc.gradient( Qsk::Left ).startColor(), bc.gradient( Qsk::Bottom ).startColor() } );
+        const BorderMapGradient br( n, { Qt::Vertical, bc.gradient( Qsk::Bottom ).startColor(), bc.gradient( Qsk::Right ).startColor() } );
 
         if ( gradient.isMonochrome() )
         {
