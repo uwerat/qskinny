@@ -44,34 +44,20 @@ namespace QskVertex
     class ColorMapGradient
     {
       public:
-        inline ColorMapGradient( const QskGradient& gradient )
-            : m_gradient( gradient )
+        inline ColorMapGradient( Color color1, Color color2 )
+            : m_color1( color1 )
+            , m_color2( color2 )
         {
         }
 
-        inline Color colorAt( qreal ratio ) const
+        inline Color colorAt( qreal value ) const
         {
-            const auto stops = m_gradient.stops();
-
-            for( int i = 0; i < m_gradient.stopCount(); ++i )
-            {
-                const QskGradientStop stop = stops.at( i );
-
-                if( stop.position() >= ratio )
-                {
-                    const int start = ( i == 0 ) ? 0 : i - 1;
-                    const int end = ( i == 0 ) ? 1 : i;
-                    const QColor color = QskGradientStop::interpolated( stops.at( start ),
-                                                                        stops.at( end ), ratio );
-                    return Color( color );
-                }
-            }
-
-            return Color();
+            return m_color1.interpolatedTo( m_color2, value );
         }
 
       private:
-        const QskGradient m_gradient;
+        const Color m_color1;
+        const Color m_color2;
     };
 
     class ColorIterator

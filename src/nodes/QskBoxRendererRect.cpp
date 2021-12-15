@@ -604,7 +604,7 @@ void QskBoxRenderer::renderRect(
 
             if ( fillRandom )
             {
-                const ColorMapGradient colorMap( { Qt::Vertical, gd.startColor(), gd.endColor() } );
+                const ColorMapGradient colorMap( gd.startColor(), gd.endColor() );
                 qskCreateFillRandom( gd.orientation(), in, colorMap, line );
             }
             else

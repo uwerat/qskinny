@@ -902,7 +902,7 @@ static inline void qskRenderFillRandom(
     }
     else
     {
-        const ColorMapGradient map( gradient );
+        const ColorMapGradient map( gradient.startColor(), gradient.endColor() );
         qskRenderFillLines( metrics, orientation, line, map );
     }
 }
@@ -926,7 +926,7 @@ static inline void qskRenderBoxRandom(
         {
             const auto orientation = qskQtOrientation( gradient );
 
-            const ColorMapGradient fillMap( gradient );
+            const ColorMapGradient fillMap( gradient.startColor(), gradient.endColor() );
             qskRenderLines( metrics, orientation, borderLine, borderMap, fillLine, fillMap );
         }
     }
@@ -948,7 +948,7 @@ static inline void qskRenderBoxRandom(
         {
             const auto orientation = qskQtOrientation( gradient );
 
-            const ColorMapGradient fillMap( gradient );
+            const ColorMapGradient fillMap( gradient.startColor(), gradient.endColor() );
             qskRenderLines( metrics, orientation, borderLine, tl, tr, bl, br, fillLine, fillMap );
         }
     }
