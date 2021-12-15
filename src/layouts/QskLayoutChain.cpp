@@ -346,58 +346,6 @@ QskLayoutChain::Segments QskLayoutChain::minimumExpanded( qreal size ) const
         - somehow using the stretch factors
      */
 
-#if 0
-
-    /*
-         Code does not make much sense, but this is what QGridLayoutEngine does.
-         The implementation is intended to help during the migration, but is supposed
-         to be removed then TODO ...
-     */
-    qreal sumFactors = 0.0;
-    QVarLengthArray< qreal > factors( m_cells.size() );
-
-    const qreal desired = m_boundingMetrics.preferred() - m_boundingMetrics.minimum();
-    const qreal available = size - m_boundingMetrics.minimum();
-
-    for ( int i = 0; i < m_cells.size(); i++ )
-    {
-        const auto& cell = m_cells[i];
-        if ( !cell.isValid )
-        {
-            factors[i] = 0.0;
-        }
-        else
-        {
-            const qreal l = cell.hint.preferred() - cell.hint.minimum();
-
-            factors[i] = l * std::pow( available / desired, l / desired );
-            sumFactors += factors[i];
-        }
-    }
-
-    for ( int i = 0; i < m_cells.size(); i++ )
-    {
-        const auto& cell = m_cells[i];
-        auto& segment = segments[i];
-
-        if ( !cell.isValid )
-        {
-            segment.start = offset;
-            segment.length = 0.0;
-        }
-        else
-        {
-            offset += fillSpacing;
-            fillSpacing = m_spacing;
-
-            segment.start = offset;
-            segment.length = cell.hint.minimum()
-                + available * ( factors[i] / sumFactors );
-
-            offset += segment.length;
-        }
-    }
-#else
     const qreal factor = ( size - m_boundingMetrics.minimum() ) /
         ( m_boundingMetrics.preferred() - m_boundingMetrics.minimum() );
 
@@ -423,7 +371,6 @@ QskLayoutChain::Segments QskLayoutChain::minimumExpanded( qreal size ) const
             offset += segment.length;
         }
     }
-#endif
 
     return segments;
 }
