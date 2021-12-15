@@ -14,6 +14,8 @@
 #include <qmath.h>
 #include <qsggeometry.h>
 
+#include <QDebug> // ### remove
+
 using namespace QskVertex;
 
 namespace
@@ -1207,8 +1209,19 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
     const int stepCount = metrics.corner[ 0 ].stepCount;
 
     int borderLineCount = 0;
+
     if ( borderColors.isVisible() && metrics.innerQuad != metrics.outerQuad )
+    {
         borderLineCount = 4 * ( stepCount + 1 ) + 1;
+
+        const int additionalLines = -1
+            + borderColors.gradient( Qsk::Left ).stops().count() - 1
+            + borderColors.gradient( Qsk::Top ).stops().count() - 1
+            + borderColors.gradient( Qsk::Right ).stops().count() - 1
+            + borderColors.gradient( Qsk::Bottom ).stops().count() - 1;
+
+        borderLineCount += qMax( additionalLines, 0 );
+    }
 
     int lineCount = borderLineCount + fillLineCount;
 
@@ -1286,6 +1299,7 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
                 borderLines++;
 
             const auto orientation = qskQtOrientation( gradient );
+            qDebug() << "border line count:" << borderLineCount;
             qskRenderBorder( metrics, orientation, borderColors, borderLines );
 
             if ( extraLine )
