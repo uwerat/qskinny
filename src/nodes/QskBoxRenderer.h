@@ -104,6 +104,7 @@ class QSK_EXPORT QskBoxRenderer
         bool isBorderRegular;
         bool isRadiusRegular;
         bool isTotallyCropped;
+        // ### here add gradients;
     };
 
   private:

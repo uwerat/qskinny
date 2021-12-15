@@ -603,12 +603,21 @@ namespace
                     {
                         constexpr auto corner = TopLeft;
 
+                        qDebug() << "tl corners for" << j << "at coordinates"
+                                 << c[ corner ].centerX - v.dx1( corner )
+                                 <<  c[ corner ].centerY - v.dy1( corner )
+                                 << c[ corner ].centerX - v.dx2( corner )
+                                 << c[ corner ].centerY - v.dy2( corner )
+                                 << "num corner lines:" << numCornerLines;
+                                     ;
+
                         linesTL[ j ].setLine(
                             c[ corner ].centerX - v.dx1( corner ),
                             c[ corner ].centerY - v.dy1( corner ),
                             c[ corner ].centerX - v.dx2( corner ),
                             c[ corner ].centerY - v.dy2( corner ),
-                            borderMapTL.colorAt( j ) );
+                            borderMapBL.colorAt( j ) );
+//                            Color( 255, 255, 0, 255 ) );
                     }
 
                     {
@@ -631,6 +640,7 @@ namespace
                             c[ corner ].centerX - v.dx2( corner ),
                             c[ corner ].centerY + v.dy2( corner ),
                             borderMapBL.colorAt( k ) );
+//                            Color( 255, 255, 0, 255 ) );
                     }
 
                     {
