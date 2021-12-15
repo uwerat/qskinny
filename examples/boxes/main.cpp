@@ -361,9 +361,7 @@ static void addRectanglesRest( QskLinearBox* parent )
 
 static void addColoredBorderRectangles1( QskLinearBox* parent )
 {
-    Box* box;
-
-    box = new Box( parent );
+    auto* box = new Box( parent );
     box->setBorderWidth( 20 );
     QskGradient gradient1( Qt::Vertical, { { 0.0, Qt::blue },
                                            { 0.7, Qt::yellow },
@@ -412,10 +410,18 @@ static void addColoredBorderRectangles5( QskLinearBox* parent )
 
 static void addColoredBorderRectangles6( QskLinearBox* parent )
 {
-    Box* box = new Box( parent );
+    auto* box = new Box( parent );
     box->setBorderWidth( 20 );
-    QskGradient gradient( Qt::Vertical, Qt::magenta, Qt::cyan );
-    box->setBorderGradients( gradient, gradient, gradient, gradient );
+    QskGradient gradient1( Qt::Vertical, { { 0.0, Qt::blue },
+                                           { 0.7, Qt::yellow },
+                                           { 1.0, Qt::darkRed } } );
+    QskGradient gradient2( Qt::Vertical, { { 0.0, Qt::black },
+                                           { 0.3, Qt::white },
+                                           { 0.7, Qt::white },
+                                           { 1.0, Qt::black } } );
+    QskGradient gradient3( Qt::green );
+    QskGradient gradient4( Qt::Vertical, Qt::magenta, Qt::cyan );
+    box->setBorderGradients( gradient1, gradient2, gradient3, gradient4 );
     box->setShape( 30, Qt::AbsoluteSize );
 }
 

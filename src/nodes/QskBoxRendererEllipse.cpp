@@ -866,10 +866,10 @@ static inline void qskRenderBorder( const QskBoxRenderer::Metrics& metrics,
         const int stepCount = metrics.corner[ 0 ].stepCount;
 
         qskRenderBorderLines( metrics, orientation, line,
-            BorderMapGradient( stepCount, c.gradient( Qsk::Top ).startColor().rgb(), c.gradient( Qsk::Left ).startColor().rgb() ), // ###
-            BorderMapGradient( stepCount, c.gradient( Qsk::Right ).startColor().rgb(), c.gradient( Qsk::Top ).startColor().rgb() ), // ###
-            BorderMapGradient( stepCount, c.gradient( Qsk::Left ).startColor().rgb(), c.gradient( Qsk::Bottom ).startColor().rgb() ), // ###
-            BorderMapGradient( stepCount, c.gradient( Qsk::Bottom ).startColor().rgb(), c.gradient( Qsk::Right ).startColor().rgb() ) ); // ###
+            BorderMapGradient( stepCount, c.gradient( Qsk::Top ).startColor().rgb(), c.gradient( Qsk::Left ).endColor().rgb() ),
+            BorderMapGradient( stepCount, c.gradient( Qsk::Right ).startColor().rgb(), c.gradient( Qsk::Top ).endColor().rgb() ),
+            BorderMapGradient( stepCount, c.gradient( Qsk::Left ).startColor().rgb(), c.gradient( Qsk::Bottom ).endColor().rgb() ),
+            BorderMapGradient( stepCount, c.gradient( Qsk::Bottom ).startColor().rgb(), c.gradient( Qsk::Right ).endColor().rgb() ) );
     }
 }
 
@@ -1124,7 +1124,7 @@ void QskBoxRenderer::renderRectellipseBorder(
     const int stepCount = metrics.corner[ 0 ].stepCount;
     const int lineCount = 4 * ( stepCount + 1 ) + 1;
 
-    const auto line = allocateLines< Line >( geometry, lineCount );
+    const auto line = allocateLines< ColoredLine >( geometry, lineCount );
     qskRenderBorderLines( metrics, Qt::Vertical, line, BorderMapNone() );
 }
 
