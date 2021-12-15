@@ -6,7 +6,7 @@
 #ifndef QSK_LAYOUT_CHAIN_H
 #define QSK_LAYOUT_CHAIN_H
 
-#include <QskLayoutHint.h>
+#include <QskLayoutMetrics.h>
 #include <qrect.h>
 #include <qvector.h>
 
@@ -29,17 +29,17 @@ class QskLayoutChain
     class CellData
     {
       public:
-        inline qreal size( int which ) const
+        inline qreal metric( int which ) const
         {
-            return hint.size( which );
+            return metrics.metric( which );
         }
 
-        inline void setSize( int which, qreal size )
+        inline void setMetric( int which, qreal size )
         {
-            hint.setSize( which, size );
+            metrics.setMetric( which, size );
         }
 
-        QskLayoutHint hint;
+        QskLayoutMetrics metrics;
 
         int stretch = 0;
         bool canGrow = false;
@@ -73,7 +73,7 @@ class QskLayoutChain
     int fillMode() const { return m_fillMode; }
 
     Segments segments( qreal size ) const;
-    QskLayoutHint boundingHint() const { return m_boundingHint; }
+    QskLayoutMetrics boundingMetrics() const { return m_boundingMetrics; }
 
     inline qreal constraint() const { return m_constraint; }
     inline int count() const { return m_cells.size(); }
@@ -83,7 +83,7 @@ class QskLayoutChain
     Segments minimumExpanded( qreal size ) const;
     Segments preferredStretched( qreal size ) const;
 
-    QskLayoutHint m_boundingHint;
+    QskLayoutMetrics m_boundingMetrics;
     qreal m_constraint = -2.0;
 
     qreal m_spacing = 0;

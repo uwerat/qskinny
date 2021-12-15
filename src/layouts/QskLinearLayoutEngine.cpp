@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #include "QskLinearLayoutEngine.h"
-#include "QskLayoutHint.h"
+#include "QskLayoutMetrics.h"
 #include "QskLayoutChain.h"
 #include "QskSizePolicy.h"
 #include "QskQuick.h"
@@ -138,11 +138,11 @@ QskLayoutChain::CellData Element::cell(
     {
         if ( isLayoutOrientation )
         {
-            cell.hint.setMinimum( m_spacing );
-            cell.hint.setPreferred( m_spacing );
+            cell.metrics.setMinimum( m_spacing );
+            cell.metrics.setPreferred( m_spacing );
 
             if ( m_stretch <= 0 )
-                cell.hint.setMaximum( m_spacing );
+                cell.metrics.setMaximum( m_spacing );
 
             cell.stretch = qMax( m_stretch, 0 );
         }
@@ -445,7 +445,7 @@ void QskLinearLayoutEngine::setupChain( Qt::Orientation orientation,
         auto cell = element.cell( orientation, isLayoutOrientation );
 
         if ( element.item() )
-            cell.hint = layoutHint( element.item(), orientation, constraint );
+            cell.metrics = layoutMetrics( element.item(), orientation, constraint );
 
         chain.expandCell( index2, cell );
 

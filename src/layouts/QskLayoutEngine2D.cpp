@@ -5,7 +5,7 @@
 
 #include "QskLayoutEngine2D.h"
 #include "QskLayoutChain.h"
-#include "QskLayoutHint.h"
+#include "QskLayoutMetrics.h"
 #include "QskControl.h"
 #include "QskQuick.h"
 
@@ -94,7 +94,7 @@ static inline qreal qskEffectiveConstraint( const QQuickItem* item,
         value = qskEffectiveSizeHint( item, which ).height();
 
     if ( value < 0.0 )
-        value = ( which == Qt::MaximumSize ) ? QskLayoutHint::unlimited : 0.0;
+        value = ( which == Qt::MaximumSize ) ? QskLayoutMetrics::unlimited : 0.0;
 
     return value;
 }
@@ -469,19 +469,19 @@ QSizeF QskLayoutEngine2D::sizeHint(
     QSizeF hint;
 
     if ( constraint.width() <= 0.0 )
-        hint.rwidth() = columnChain.boundingHint().size( which );
+        hint.rwidth() = columnChain.boundingMetrics().metric( which );
 
     if ( constraint.height() <= 0.0 )
-        hint.rheight() = rowChain.boundingHint().size( which );
+        hint.rheight() = rowChain.boundingMetrics().metric( which );
 
     return hint;
 }
 
-QskLayoutHint QskLayoutEngine2D::layoutHint( const QQuickItem* item,
+QskLayoutMetrics QskLayoutEngine2D::layoutMetrics( const QQuickItem* item,
     Qt::Orientation orientation, qreal constraint ) const
 {
     if ( item == nullptr )
-        return QskLayoutHint();
+        return QskLayoutMetrics();
 
     const auto policy = qskSizePolicy( item ).policy( orientation );
 
@@ -522,7 +522,7 @@ QskLayoutHint QskLayoutEngine2D::layoutHint( const QQuickItem* item,
             preferred = minimum;
     }
 
-    return QskLayoutHint( minimum, preferred, maximum );
+    return QskLayoutMetrics( minimum, preferred, maximum );
 }
 
 void QskLayoutEngine2D::setupChain( Qt::Orientation orientation ) const

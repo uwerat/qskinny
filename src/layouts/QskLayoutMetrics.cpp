@@ -3,25 +3,25 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#include "QskLayoutHint.h"
+#include "QskLayoutMetrics.h"
 #include "QskControl.h"
 #include <qnamespace.h>
 #include <algorithm>
 
-void QskLayoutHint::setSize( int which, qreal size ) noexcept
+void QskLayoutMetrics::setMetric( int which, qreal metric ) noexcept
 {
     switch (which)
     {
         case Qt::MinimumSize:
-            m_minimum = size;
+            m_minimum = metric;
             break;
 
         case Qt::PreferredSize:
-            m_preferred = size;
+            m_preferred = metric;
             break;
 
         case Qt::MaximumSize:
-            m_maximum = size;
+            m_maximum = metric;
             break;
 
         default:
@@ -29,21 +29,21 @@ void QskLayoutHint::setSize( int which, qreal size ) noexcept
     }
 }
 
-void QskLayoutHint::expandTo( const QskLayoutHint& other ) noexcept
+void QskLayoutMetrics::expandTo( const QskLayoutMetrics& other ) noexcept
 {
     m_minimum = std::max( m_minimum, other.m_minimum );
     m_preferred = std::max( m_preferred, other.m_preferred );
     m_maximum = std::max( m_maximum, other.m_maximum );
 }
 
-void QskLayoutHint::normalize() noexcept
+void QskLayoutMetrics::normalize() noexcept
 {
     m_minimum = std::max( m_minimum, qreal( 0.0 ) );
     m_maximum = std::max( m_minimum, m_maximum );
     m_preferred = qBound( m_minimum, m_preferred, m_maximum );
 }
 
-qreal QskLayoutHint::combined( int which, qreal value1, qreal value2 ) noexcept
+qreal QskLayoutMetrics::combined( int which, qreal value1, qreal value2 ) noexcept
 {
     if ( which == Qt::MaximumSize )
     {
@@ -65,25 +65,25 @@ qreal QskLayoutHint::combined( int which, qreal value1, qreal value2 ) noexcept
 
 static inline QString qskHintValueString( qreal value )
 {
-    if ( value >= QskLayoutHint::unlimited )
+    if ( value >= QskLayoutMetrics::unlimited )
         return QStringLiteral( "unlimited" );
     else
         return QString::number( value );
 }
 
-QDebug operator<<( QDebug debug, const QskLayoutHint& hint )
+QDebug operator<<( QDebug debug, const QskLayoutMetrics& metrics )
 {
     QDebugStateSaver saver( debug );
     debug.nospace();
 
-    debug << "LayoutHint" << "( "
-        << qskHintValueString( hint.minimum() ) << ", "
-        << qskHintValueString( hint.preferred() ) << ", "
-        << qskHintValueString( hint.maximum() ) << " )";
+    debug << "LayoutMetrics" << "( "
+        << qskHintValueString( metrics.minimum() ) << ", "
+        << qskHintValueString( metrics.preferred() ) << ", "
+        << qskHintValueString( metrics.maximum() ) << " )";
 
     return debug;
 }
 
 #endif
 
-#include "moc_QskLayoutHint.cpp"
+#include "moc_QskLayoutMetrics.cpp"

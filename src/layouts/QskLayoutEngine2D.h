@@ -14,7 +14,7 @@
 #include <memory>
 
 class QQuickItem;
-class QskLayoutHint;
+class QskLayoutMetrics;
 
 class QskLayoutEngine2D
 {
@@ -57,7 +57,7 @@ class QskLayoutEngine2D
   protected:
 
     void layoutItem( QQuickItem*, const QRect& grid ) const;
-    QskLayoutHint layoutHint( const QQuickItem*,
+    QskLayoutMetrics layoutMetrics( const QQuickItem*,
         Qt::Orientation, qreal constraint ) const;
 
     enum

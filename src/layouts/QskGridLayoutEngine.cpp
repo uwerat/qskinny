@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #include "QskGridLayoutEngine.h"
-#include "QskLayoutHint.h"
+#include "QskLayoutMetrics.h"
 #include "QskLayoutChain.h"
 #include "QskSizePolicy.h"
 #include "QskQuick.h"
@@ -30,7 +30,7 @@ namespace
           public:
             inline bool isDefault() const
             {
-                return m_stretch < 0 && m_hint.isDefault();
+                return m_stretch < 0 && m_metrics.isDefault();
             }
 
             bool setStretch( int stretch )
@@ -43,11 +43,11 @@ namespace
                 return false;
             }
 
-            bool setHint( Qt::SizeHint which, qreal size )
+            bool setMetric( Qt::SizeHint which, qreal metric )
             {
-                if ( size != m_hint.size( which ) )
+                if ( metric != m_metrics.metric( which ) )
                 {
-                    m_hint.setSize( which, size );
+                    m_metrics.setMetric( which, metric );
                     return true;
                 }
                 return false;
@@ -56,7 +56,7 @@ namespace
             QskLayoutChain::CellData cell() const
             {
                 QskLayoutChain::CellData cell;
-                cell.hint = m_hint.normalized();
+                cell.metrics = m_metrics.normalized();
                 cell.stretch = m_stretch;
                 cell.canGrow = m_stretch != 0;
                 cell.isValid = true;
@@ -65,13 +65,13 @@ namespace
             }
 
             inline int stretch() const { return m_stretch; }
-            inline QskLayoutHint hint() const { return m_hint; }
+            inline QskLayoutMetrics metrics() const { return m_metrics; }
 
             int position = -1;
 
           private:
             int m_stretch = -1;
-            QskLayoutHint m_hint;
+            QskLayoutMetrics m_metrics;
         };
 
         int maxPosition() const
@@ -95,12 +95,12 @@ namespace
             return setValueAt( index, setStretch );
         }
 
-        bool setHintAt( int index, Qt::SizeHint which, qreal size )
+        bool setMetricAt( int index, Qt::SizeHint which, qreal size )
         {
-            auto setHint = [which, size]( Setting& s )
-                { return s.setHint( which, size ); };
+            auto setMetric = [which, size]( Setting& s )
+                { return s.setMetric( which, size ); };
 
-            return setValueAt( index, setHint );
+            return setValueAt( index, setMetric );
         }
 
         Setting settingAt( int index ) const
@@ -276,9 +276,9 @@ QskLayoutChain::CellData Element::cell( Qt::Orientation orientation ) const
         const qreal value = ( orientation == Qt::Horizontal )
             ? m_spacing.width() : m_spacing.height();
 
-        cell.hint.setMinimum( value );
-        cell.hint.setPreferred( value );
-        cell.hint.setMaximum( value );
+        cell.metrics.setMinimum( value );
+        cell.metrics.setPreferred( value );
+        cell.metrics.setMaximum( value );
     }
     else
     {
@@ -423,7 +423,7 @@ int QskGridLayoutEngine::stretchFactor(
 bool QskGridLayoutEngine::setRowSizeHint(
     int row, Qt::SizeHint which, qreal height )
 {
-    if ( !m_data->rowSettings.setHintAt( row, which, height ) )
+    if ( !m_data->rowSettings.setMetricAt( row, which, height ) )
         return false;
 
     if ( row >= m_data->rowCount )
@@ -436,13 +436,13 @@ bool QskGridLayoutEngine::setRowSizeHint(
 qreal QskGridLayoutEngine::rowSizeHint( int row, Qt::SizeHint which ) const
 {
     const auto& settings = m_data->rowSettings;
-    return settings.settingAt( row ).hint().size( which );
+    return settings.settingAt( row ).metrics().metric( which );
 }
 
 bool QskGridLayoutEngine::setColumnSizeHint(
     int column, Qt::SizeHint which, qreal width )
 {
-    if ( !m_data->columnSettings.setHintAt( column, which, width ) )
+    if ( !m_data->columnSettings.setMetricAt( column, which, width ) )
         return false;
 
     if ( column >= m_data->columnCount )
@@ -455,7 +455,7 @@ bool QskGridLayoutEngine::setColumnSizeHint(
 qreal QskGridLayoutEngine::columnSizeHint( int column, Qt::SizeHint which ) const
 {
     const auto& settings = m_data->columnSettings;
-    return settings.settingAt( column ).hint().size( which );
+    return settings.settingAt( column ).metrics().metric( which );
 }
 
 int QskGridLayoutEngine::insertItem( QQuickItem* item, const QRect& grid )
@@ -645,7 +645,7 @@ void QskGridLayoutEngine::setupChain( Qt::Orientation orientation,
 
             auto cell = element.cell( orientation );
             if ( element.item() )
-                cell.hint = layoutHint( element.item(), orientation, constraint );
+                cell.metrics = layoutMetrics( element.item(), orientation, constraint );
 
             chain.expandCell( grid.top(), cell );
         }
@@ -671,7 +671,7 @@ void QskGridLayoutEngine::setupChain( Qt::Orientation orientation,
             constraint = qskSegmentLength( constraints, grid.left(), grid.right() );
 
         auto cell = element->cell( orientation );
-        cell.hint = layoutHint( element->item(), orientation, constraint );
+        cell.metrics = layoutMetrics( element->item(), orientation, constraint );
 
         chain.expandCells( grid.top(), grid.height(), cell );
     }
