@@ -22,6 +22,20 @@ QSK_SUBCONTROL( LightDisplay, Knob )
 
 QSK_STATE( LightDisplay, Pressed, ( QskAspect::FirstUserState << 1 ) )
 
+namespace {
+    bool angleInRange( const QskArcMetrics& metrics, qreal angle )
+    {
+        return angle >= metrics.startAngle() && angle <= metrics.endAngle();
+    }
+
+    qreal angleDiff( qreal angle1, qreal angle2 )
+    {
+        // Qt wraps around at 180 degrees
+        qreal diff = qAbs( angle1 ) - qAbs( angle2 );
+        return qAbs( diff );
+    }
+}
+
 LightDisplay::LightDisplay( QQuickItem* parent )
     : QskBoundedValueInput( parent )
 {
@@ -104,8 +118,26 @@ void LightDisplay::mouseMoveEvent( QMouseEvent* event )
     }
 
     const QskArcMetrics metrics = arcMetricsHint( ColdAndWarmArc );
-    const qreal angle = angleFromPoint( rect, mousePos );
-    const qreal ratio = ( metrics.spanAngle() - angle ) / metrics.spanAngle();
+    qreal angle = angleFromPoint( rect, mousePos );
+
+    const int tolerance = 20;
+
+    if( !angleInRange( metrics, angle ) )
+    {
+        // we're slightly outside the range, but don't want to give up
+        // the Pressed state
+
+        if( angleDiff( angle, metrics.startAngle() ) < tolerance )
+        {
+            angle = metrics.startAngle();
+        }
+        else if( angleDiff( angle, metrics.endAngle() ) < tolerance )
+        {
+            angle = metrics.endAngle();
+        }
+    }
+
+    qreal ratio = ( metrics.spanAngle() - angle ) / metrics.spanAngle();
     setValueAsRatio( ratio );
 }
 
@@ -137,8 +169,10 @@ bool LightDisplay::arcContainsPoint( const QRectF& rect, const QPointF& point ) 
                  rect.center().y() - point.y() );
 
     const qreal angle = angleFromPoint( rect, point );
-    const bool angleWithinRange = ( angle + tolerance ) > metrics.startAngle()
-            && angle < ( metrics.startAngle() + metrics.spanAngle() - tolerance );
+
+    const bool angleWithinRange = angleInRange( metrics, angle )
+            || angleDiff( angle, metrics.startAngle() ) <= tolerance
+            || angleDiff( angle, metrics.endAngle() ) <= tolerance;
 
     // 2. check whether point is on arc
     const qreal radiusMax = rect.width() / 2;
