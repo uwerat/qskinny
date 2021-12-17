@@ -51,7 +51,7 @@ any of the following or similar licenses: BSD "Simplified" License, BSD
 If you are fine with these terms, you are welcome to contribute to QSkinny by
 completing the following steps:
 
-1. Agree to the terms of the [Contributor Agreement](https://gist.github.com/peter-ha/74fead3d2b5efd4f90db4604d89f49a1).
+1. Agree to the terms of the [Contributor Agreement](https://gist.github.com/uwerat/76b2f3df5e246cc468231f55f1d35e47#file-qskinny-cla-md).
   You can create a pull request first, then the licensing bot will check
   automatically whether you already signed the Agreement or not. If you have not
   signed it yet, it will take you to the Agreement to agree.
