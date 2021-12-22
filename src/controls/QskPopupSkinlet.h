@@ -19,7 +19,8 @@ class QSK_EXPORT QskPopupSkinlet : public QskSkinlet
   public:
     enum NodeRole
     {
-        OverlayRole
+        OverlayRole,
+        RoleCount
     };
 
     Q_INVOKABLE QskPopupSkinlet( QskSkin* = nullptr );

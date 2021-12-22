@@ -24,21 +24,23 @@ QskSubWindowSkinlet::~QskSubWindowSkinlet() = default;
 QRectF QskSubWindowSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
+    using Q = QskSubWindow;
+
     const auto subWindow = static_cast< const QskSubWindow* >( skinnable );
 
-    if ( subControl == QskSubWindow::Panel )
+    if ( subControl == Q::Panel )
     {
         return contentsRect;
     }
-    else if ( subControl == QskSubWindow::TitleBarPanel )
+    else if ( subControl == Q::TitleBarPanel )
     {
         return titleBarRect( subWindow, contentsRect );
     }
-    else if ( subControl == QskSubWindow::TitleBarSymbol )
+    else if ( subControl == Q::TitleBarSymbol )
     {
         return symbolRect( subWindow, contentsRect );
     }
-    else if ( subControl == QskSubWindow::TitleBarText )
+    else if ( subControl == Q::TitleBarText )
     {
         return titleRect( subWindow, contentsRect );
     }
