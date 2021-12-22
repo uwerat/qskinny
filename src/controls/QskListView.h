@@ -31,15 +31,8 @@ class QSK_EXPORT QskListView : public QskScrollView
     using Inherited = QskScrollView;
 
   public:
-    /*
-        Everything, that can have a skin state, needs to be a QskSkinnable.
-        Of course this is no option for the cells considering that we might
-        have many, many of them.
-        So for the moment we simply use Cell/Text and CellSelected/TextSelected
-        as workaround until we found a solution that fits into the design.
-        TODO ...
-     */
-    QSK_SUBCONTROLS( Cell, Text, CellSelected, TextSelected )
+    QSK_SUBCONTROLS( Cell, Text )
+    QSK_STATES( Selected )
 
     enum SelectionMode
     {
@@ -76,7 +69,6 @@ class QSK_EXPORT QskListView : public QskScrollView
 
 #if 1
     virtual QskColorFilter graphicFilterAt( int row, int col ) const;
-    virtual QskAspect::Subcontrol textSubControlAt( int row, int col ) const;
 #endif
 
   public Q_SLOTS:

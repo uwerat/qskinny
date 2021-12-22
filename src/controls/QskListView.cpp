@@ -9,8 +9,8 @@
 
 QSK_SUBCONTROL( QskListView, Cell )
 QSK_SUBCONTROL( QskListView, Text )
-QSK_SUBCONTROL( QskListView, CellSelected )
-QSK_SUBCONTROL( QskListView, TextSelected )
+
+QSK_STATE( QskListView, Selected, QskAspect::FirstUserState )
 
 class QskListView::PrivateData
 {
@@ -145,12 +145,6 @@ QskColorFilter QskListView::graphicFilterAt( int row, int col ) const
     Q_UNUSED( row );
     Q_UNUSED( col );
     return QskColorFilter();
-}
-
-QskAspect::Subcontrol QskListView::textSubControlAt( int row, int col ) const
-{
-    Q_UNUSED( col );
-    return ( row == selectedRow() ) ? TextSelected : Text;
 }
 
 void QskListView::keyPressEvent( QKeyEvent* event )

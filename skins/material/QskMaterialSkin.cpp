@@ -740,8 +740,8 @@ void Editor::setupListView()
     setColor( Q::Cell, m_pal.baseColor );
     setColor( Q::Text, m_pal.textColor );
 
-    setColor( Q::CellSelected, m_pal.accentColor );
-    setColor( Q::TextSelected, m_pal.contrastColor );
+    setColor( Q::Cell | Q::Selected, m_pal.accentColor );
+    setColor( Q::Text | Q::Selected, m_pal.contrastColor );
 }
 
 void Editor::setupSubWindow()
