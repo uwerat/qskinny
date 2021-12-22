@@ -611,6 +611,15 @@ qreal QskGraphic::widthForHeight( qreal height ) const
     return sz.width() * height / sz.height();
 }
 
+qreal QskGraphic::aspectRatio() const
+{
+    const auto sz = defaultSize();
+    if ( sz.isEmpty() )
+        return 1.0;
+
+    return sz.width() / sz.height();
+}
+
 void QskGraphic::render( QPainter* painter ) const
 {
     render( painter, QskColorFilter() );
