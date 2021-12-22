@@ -15,13 +15,36 @@
 #include <qsgsimplerectnode.h>
 #include <qtransform.h>
 
+namespace
+{
+    class StateChanger
+    {
+        public:
+            StateChanger( const QskSkinnable* skinnable, QskAspect::States states )
+                : m_skinnable( const_cast< QskSkinnable* >( skinnable ) )
+                , m_oldStates( skinnable->skinStates() )
+            {
+                if ( states )
+                    m_skinnable->replaceSkinStates( m_oldStates | states );
+            }
+         
+            ~StateChanger()
+            { 
+                if ( m_oldStates != m_skinnable->skinStates() )
+                    m_skinnable->replaceSkinStates( m_oldStates );
+            }
+    
+        private:
+            QskSkinnable* m_skinnable;
+            QskAspect::States m_oldStates; 
+    }; 
+}
+
 class QskListViewNode final : public QSGTransformNode
 {
   public:
     inline QskListViewNode( int columnCount )
         : m_columnCount( columnCount )
-        , m_rowMin( -1 )
-        , m_rowMax( -1 )
     {
         m_backgroundNode.setFlag( QSGNode::OwnedByParent, false );
         appendChildNode( &m_backgroundNode );
@@ -78,8 +101,8 @@ class QskListViewNode final : public QSGTransformNode
 
   private:
     int m_columnCount;
-    int m_rowMin;
-    int m_rowMax;
+    int m_rowMin = -1;
+    int m_rowMax = -1;
 
     QSGNode m_backgroundNode;
     QSGNode m_foregroundNode;
@@ -97,7 +120,7 @@ QSGNode* QskListViewSkinlet::updateContentsNode(
 {
     const auto listView = static_cast< const QskListView* >( scrollView );
 
-    auto* listViewNode = static_cast< QskListViewNode* >( node );
+    auto listViewNode = static_cast< QskListViewNode* >( node );
     if ( listViewNode == nullptr )
         listViewNode = new QskListViewNode( listView->columnCount() );
 
@@ -162,7 +185,8 @@ void QskListViewSkinlet::updateBackgroundNodes(
 
     if ( rowSelected >= rowMin && rowSelected <= rowMax )
     {
-        const QColor color = listView->color( QskListView::CellSelected );
+        const StateChanger stateChanger( listView, QskListView::Selected );
+        const QColor color = listView->color( QskListView::Cell );
 
         if ( rowNode == nullptr )
         {
@@ -434,6 +458,12 @@ QSGNode* QskListViewSkinlet::updateCellNode( const QskListView* listView,
 {
     using namespace QskSGNode;
 
+    QskAspect::States rowStates;
+    if ( row == listView->selectedRow() )
+        rowStates |= QskListView::Selected;
+    
+    StateChanger stateChanger( listView, rowStates );
+
     QSGNode* newNode = nullptr;
 
 #if 1
@@ -466,10 +496,8 @@ QSGNode* QskListViewSkinlet::updateCellNode( const QskListView* listView,
         if ( nodeRole( contentNode ) == TextRole )
             newNode = contentNode;
 
-        auto subControl = listView->textSubControlAt( row, col );
-
         newNode = updateTextNode( listView, newNode, rect, alignment,
-            value.toString(), listView->textOptions(), subControl );
+            value.toString(), listView->textOptions(), QskListView::Text );
 
         if ( newNode )
             setNodeRole( newNode, TextRole );

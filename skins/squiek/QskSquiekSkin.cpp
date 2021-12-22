@@ -804,8 +804,8 @@ void Editor::setupListView()
     setColor( Q::Text, m_pal.themeForeground );
     setColor( Q::Cell, m_pal.contrasted );
 
-    setColor( Q::CellSelected, m_pal.highlighted );
-    setColor( Q::TextSelected, m_pal.highlightedText );
+    setColor( Q::Cell | Q::Selected, m_pal.highlighted );
+    setColor( Q::Text | Q::Selected, m_pal.highlightedText );
 }
 
 void Editor::setupSubWindow()
