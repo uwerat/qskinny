@@ -26,7 +26,9 @@ class QSK_EXPORT QskScrollViewSkinlet : public QskSkinlet
         HorizontalScrollHandleRole,
 
         VerticalScrollBarRole,
-        VerticalScrollHandleRole
+        VerticalScrollHandleRole,
+
+        RoleCount
     };
 
     Q_INVOKABLE QskScrollViewSkinlet( QskSkin* = nullptr );
