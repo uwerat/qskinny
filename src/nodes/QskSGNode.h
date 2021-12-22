@@ -72,6 +72,15 @@ namespace QskSGNode
 
         return node;
     }
+
+    template< typename Node >
+    inline Node* ensureNode( QSGNode* node )
+    {
+        if ( node == nullptr )
+            node = new Node();
+
+        return static_cast< Node* >( node );
+    }
 }
 
 #endif

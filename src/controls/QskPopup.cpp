@@ -138,9 +138,15 @@ QskPopup::QskPopup( QQuickItem* parent )
     Inherited::setVisible( false );
     setSkinStateFlag( QskPopup::Closed );
 
-    // we need to stop event propagation
-    setAcceptedMouseButtons( Qt::AllButtons );
-    setWheelEnabled( true );
+    /*
+        We need to stop event propagation.
+
+        Unfortunatly derived classes can't use setAcceptedMouseButtons anymore.
+        Need to think about a solution TODO ...
+     */
+        
+    Inherited::setAcceptedMouseButtons( Qt::AllButtons );
+    Inherited::setWheelEnabled( true );
 
     // we don't want to be resized by layout code
     setTransparentForPositioner( true );

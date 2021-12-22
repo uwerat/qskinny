@@ -19,7 +19,7 @@ class QSK_EXPORT QskSubWindowSkinlet : public QskPopupSkinlet
   public:
     enum NodeRole
     {
-        PanelRole = QskPopupSkinlet::OverlayRole + 1,
+        PanelRole = QskPopupSkinlet::RoleCount,
         TitleBarRole,
         SymbolRole,
         TitleRole
