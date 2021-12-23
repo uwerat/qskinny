@@ -152,6 +152,8 @@ HEADERS += \
     controls/QskInputGrabber.h \
     controls/QskListView.h \
     controls/QskListViewSkinlet.h \
+    controls/QskMenu.h \
+    controls/QskMenuSkinlet.h \
     controls/QskObjectTree.h \
     controls/QskPageIndicator.h \
     controls/QskPageIndicatorSkinlet.h \
@@ -229,6 +231,8 @@ SOURCES += \
     controls/QskInputGrabber.cpp \
     controls/QskListView.cpp \
     controls/QskListViewSkinlet.cpp \
+    controls/QskMenuSkinlet.cpp \
+    controls/QskMenu.cpp \
     controls/QskObjectTree.cpp \
     controls/QskPageIndicator.cpp \
     controls/QskPageIndicatorSkinlet.cpp \

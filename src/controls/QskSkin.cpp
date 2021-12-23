@@ -37,6 +37,9 @@ QSK_QT_PRIVATE_END
 #include "QskListView.h"
 #include "QskListViewSkinlet.h"
 
+#include "QskMenu.h"
+#include "QskMenuSkinlet.h"
+
 #include "QskPopup.h"
 #include "QskPopupSkinlet.h"
 
@@ -145,6 +148,7 @@ QskSkin::QskSkin( QObject* parent )
     declareSkinlet< QskListView, QskListViewSkinlet >();
     declareSkinlet< QskPageIndicator, QskPageIndicatorSkinlet >();
     declareSkinlet< QskPopup, QskPopupSkinlet >();
+    declareSkinlet< QskMenu, QskMenuSkinlet >();
     declareSkinlet< QskPushButton, QskPushButtonSkinlet >();
     declareSkinlet< QskScrollView, QskScrollViewSkinlet >();
     declareSkinlet< QskSeparator, QskSeparatorSkinlet >();

@@ -1,4 +1,5 @@
 CONFIG += qskexample
+DEFINES += CONTEXT_MENU
 
 HEADERS += \
     MainWindow.h
