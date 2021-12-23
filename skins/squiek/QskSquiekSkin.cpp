@@ -15,6 +15,7 @@
 #include <QskInputPredictionBar.h>
 #include <QskListView.h>
 #include <QskPageIndicator.h>
+#include <QskPopup.h>
 #include <QskProgressBar.h>
 #include <QskPushButton.h>
 #include <QskScrollView.h>
