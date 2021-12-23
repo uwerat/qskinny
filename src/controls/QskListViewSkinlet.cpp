@@ -9,36 +9,12 @@
 #include "QskColorFilter.h"
 #include "QskGraphic.h"
 #include "QskSGNode.h"
+#include "QskSkinStateChanger.h"
 
 #include <qmath.h>
 #include <qsgnode.h>
 #include <qsgsimplerectnode.h>
 #include <qtransform.h>
-
-namespace
-{
-    class StateChanger
-    {
-        public:
-            StateChanger( const QskSkinnable* skinnable, QskAspect::States states )
-                : m_skinnable( const_cast< QskSkinnable* >( skinnable ) )
-                , m_oldStates( skinnable->skinStates() )
-            {
-                if ( states )
-                    m_skinnable->replaceSkinStates( m_oldStates | states );
-            }
-         
-            ~StateChanger()
-            { 
-                if ( m_oldStates != m_skinnable->skinStates() )
-                    m_skinnable->replaceSkinStates( m_oldStates );
-            }
-    
-        private:
-            QskSkinnable* m_skinnable;
-            QskAspect::States m_oldStates; 
-    }; 
-}
 
 class QskListViewNode final : public QSGTransformNode
 {
@@ -185,7 +161,7 @@ void QskListViewSkinlet::updateBackgroundNodes(
 
     if ( rowSelected >= rowMin && rowSelected <= rowMax )
     {
-        const StateChanger stateChanger( listView, QskListView::Selected );
+        const QskSkinStateChanger stateChanger( listView, QskListView::Selected );
         const QColor color = listView->color( QskListView::Cell );
 
         if ( rowNode == nullptr )
@@ -462,7 +438,7 @@ QSGNode* QskListViewSkinlet::updateCellNode( const QskListView* listView,
     if ( row == listView->selectedRow() )
         rowStates |= QskListView::Selected;
     
-    StateChanger stateChanger( listView, rowStates );
+    QskSkinStateChanger stateChanger( listView, rowStates );
 
     QSGNode* newNode = nullptr;
 
