@@ -10,7 +10,6 @@
 
 class QskListView;
 class QskListViewNode;
-class QskTextNode;
 
 class QMarginsF;
 class QSizeF;
