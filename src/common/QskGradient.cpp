@@ -145,7 +145,7 @@ static inline QskGradientStops qskExtractedStops(
         }
 
         const auto color =
-            QskGradientStop::interpolated( stops[i-1], stops[i], from );
+            QskGradientStop::interpolated( stops[i - 1], stops[i], from );
 
         extracted += QskGradientStop( 0.0, color );
     }
@@ -161,7 +161,7 @@ static inline QskGradientStops qskExtractedStops(
         extracted += QskGradientStop( pos, s.color() );
     }
 
-    const auto color = QskGradientStop::interpolated( stops[i-1], stops[i], to );
+    const auto color = QskGradientStop::interpolated( stops[i - 1], stops[i], to );
     extracted += QskGradientStop( 1.0, color );
 
     return extracted;
@@ -370,7 +370,7 @@ bool QskGradient::hasStopAt( qreal value ) const
 
 uint QskGradient::hash( uint seed ) const
 {
-    if ( m_stops.isEmpty()  )
+    if ( m_stops.isEmpty() )
         return seed;
 
     uint hash = qHashBits( &m_orientation, sizeof( m_orientation ), seed );

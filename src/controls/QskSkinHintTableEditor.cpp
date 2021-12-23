@@ -19,7 +19,7 @@ namespace
     {
         using StateInt = typename std::underlying_type< QskAspect::State >::type;
 
-        const auto count = qCountTrailingZeroBits( static_cast< StateInt >( mask ) ); 
+        const auto count = qCountTrailingZeroBits( static_cast< StateInt >( mask ) );
         return static_cast< QskAspect::State >( 1 << count );
     }
 
@@ -46,19 +46,19 @@ namespace
     inline bool removeHintStateMask(
         QskSkinHintTable* table, QskAspect aspect,
         bool noState, QskAspect::States states, QskAspect::States mask )
-    {   
+    {
         if ( mask == 0 )
-        {   
+        {
             if ( noState || states != 0 )
                 return table->removeHint( aspect | states );
-            
+
             return false;
         }
-        
+
         const auto stateLow = lowestState( mask );
-        
+
         mask &= ~stateLow;
-        
+
         bool ret = removeHintStateMask( table, aspect, noState, states, mask );
         ret |= removeHintStateMask( table, aspect, noState, states | stateLow, mask );
 

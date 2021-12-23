@@ -10,10 +10,10 @@
 #define RGB( color, weight ) color ## weight
 
 #define RGBTABLE( c ) \
-{ \
-    RGB( c, 50 ),  RGB( c, 100 ), RGB( c, 200 ), RGB( c, 300 ), RGB( c, 400 ), \
-    RGB( c, 500 ), RGB( c, 600 ), RGB( c, 700 ), RGB( c, 800 ), RGB( c, 900 )  \
-}
+    { \
+        RGB( c, 50 ),  RGB( c, 100 ), RGB( c, 200 ), RGB( c, 300 ), RGB( c, 400 ), \
+        RGB( c, 500 ), RGB( c, 600 ), RGB( c, 700 ), RGB( c, 800 ), RGB( c, 900 )  \
+    }
 
 namespace
 {
@@ -77,7 +77,7 @@ static QskGradientStops qskColorStops(
         for ( int i = 1; i < count; i++ )
         {
             const qreal pos = i * step;
-            stops += QskGradientStop( pos, rgb[i-1] );
+            stops += QskGradientStop( pos, rgb[i - 1] );
             stops += QskGradientStop( pos, rgb[i] );
         }
     }

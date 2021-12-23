@@ -144,7 +144,7 @@ QskPopup::QskPopup( QQuickItem* parent )
         Unfortunatly derived classes can't use setAcceptedMouseButtons anymore.
         Need to think about a solution TODO ...
      */
-        
+
     Inherited::setAcceptedMouseButtons( Qt::AllButtons );
     Inherited::setWheelEnabled( true );
 
