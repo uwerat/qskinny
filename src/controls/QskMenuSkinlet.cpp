@@ -52,19 +52,19 @@ static QSizeF qskIconSize( const QskMenu* menu )
     const auto hint = menu->strutSizeHint( QskMenu::Graphic );
     const qreal textHeight = QFontMetrics(
         menu->effectiveFont( QskMenu::Text ) ).height();
-    
+
     const auto h = qMax( hint.height(), textHeight );
-    
+
     qreal maxW = 0.0;
     for ( int i = 0; i < menu->count(); i++ )
     {
         const auto w = menu->graphicAt( i ).widthForHeight( h );
-        if( w > maxW ) 
+        if( w > maxW )
             maxW = w;
-    }       
-    
+    }
+
     const auto w = qMax( hint.width(), maxW );
-    
+
     return QSizeF( w, h );
 }
 
@@ -98,7 +98,7 @@ static QSGNode* qskUpdateTextNode( const QskMenu* menu,
         QskMenu::Text, Qt::AlignVCenter | Qt::AlignLeft );
 
     return QskSkinlet::updateTextNode( menu, node, rect, alignment,
-                text, menu->textOptions(), QskMenu::Text );
+        text, menu->textOptions(), QskMenu::Text );
 }
 
 static QSGNode* qskUpdateBackgroundNode( const QskMenu*, QSGNode* )
@@ -213,7 +213,7 @@ static QSGNode* qskUpdateItemsNode( const QskMenu* menu, QSGNode* rootNode )
 
             auto textRect = cellRect;
             textRect.setX( graphicRect.right() + spacing );
-        
+
             qskUpdateItemNode( menu, graphicRect, menu->graphicAt( i ),
                 textRect, menu->entryAt( i ).text, node );
         }
@@ -284,7 +284,7 @@ QSGNode* QskMenuSkinlet::updateContentsNode(
             {
                 newNode = qskUpdateItemsNode( menu, oldNode );
                 break;
-            } 
+            }
         }
 
         QskSGNode::replaceChildNode( roles, role, contentsNode, oldNode, newNode );

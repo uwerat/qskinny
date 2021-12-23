@@ -17,15 +17,15 @@ QSK_SYSTEM_STATE( QskMenu, Selected, QskAspect::FirstSystemState << 2 )
 
 class QskMenu::PrivateData
 {
-    public:
-        QVector< Entry > entries;
-        QVector< QskGraphic > icons;
+  public:
+    QVector< Entry > entries;
+    QVector< QskGraphic > icons;
 
-        QskTextOptions textOptions;
-        QPointF origin;
+    QskTextOptions textOptions;
+    QPointF origin;
 
-        int currentIndex = 0;
-        bool isPressed = false;
+    int currentIndex = 0;
+    bool isPressed = false;
 };
 
 QskMenu::QskMenu( QQuickItem* parent )
@@ -48,14 +48,14 @@ QskMenu::~QskMenu()
 }
 
 void QskMenu::setOrigin( const QPointF& origin )
-{ 
+{
     if ( origin != m_data->origin )
     {
         m_data->origin = origin;
         Q_EMIT originChanged( origin );
     }
 }
-  
+
 QPointF QskMenu::origin() const
 {
     return m_data->origin;
@@ -275,7 +275,7 @@ void QskMenu::mouseReleaseEvent( QMouseEvent* event )
 }
 
 void QskMenu::aboutToShow()
-{   
+{
     setGeometry( QRectF( m_data->origin, sizeConstraint() ) );
     Inherited::aboutToShow();
 }
@@ -293,7 +293,7 @@ void QskMenu::setSelectedIndex( int index )
 
     if ( index >= 0 )
         setCurrentIndex( index );
-    
+
     Q_EMIT triggered( index );
     close();
 }

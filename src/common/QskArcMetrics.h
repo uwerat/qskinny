@@ -84,9 +84,9 @@ inline bool QskArcMetrics::operator==(
     const QskArcMetrics& other ) const noexcept
 {
     return ( qskFuzzyCompare( m_width, other.m_width )
-             && qskFuzzyCompare( m_startAngle, other.m_startAngle )
-             && qskFuzzyCompare( m_spanAngle, other.m_spanAngle )
-             && m_sizeMode == other.m_sizeMode );
+        && qskFuzzyCompare( m_startAngle, other.m_startAngle )
+        && qskFuzzyCompare( m_spanAngle, other.m_spanAngle )
+        && m_sizeMode == other.m_sizeMode );
 }
 
 inline bool QskArcMetrics::operator!=(

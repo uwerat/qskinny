@@ -342,7 +342,7 @@ void QskObjectCounter::debugStatistics( QDebug debug, ObjectType objectType ) co
             {
                 debug << "\tClass: " << object->metaObject()->className();
                 if ( !object->objectName().isEmpty() )
-                    debug << " Name: " << object->objectName(); 
+                    debug << " Name: " << object->objectName();
                 debug << '\n';
             }
         }

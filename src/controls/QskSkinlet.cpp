@@ -26,7 +26,7 @@
 #include <qquickwindow.h>
 #include <qsgsimplerectnode.h>
 
-static inline QRectF qskSceneAlignedRect( const QQuickItem* item , const QRectF& rect )
+static inline QRectF qskSceneAlignedRect( const QQuickItem* item, const QRectF& rect )
 {
     /*
        Aligning rect according to scene coordinates, so that
@@ -568,7 +568,7 @@ QSizeF QskSkinlet::hintWithoutConstraint(
 {
     /*
         This method is useful in situations, where a hint has been calculated
-        from a constraint and we want to return the calculated part only 
+        from a constraint and we want to return the calculated part only
      */
     QSizeF h;
 

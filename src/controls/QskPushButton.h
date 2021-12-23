@@ -39,7 +39,7 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     Q_PROPERTY( bool flat READ isFlat WRITE setFlat NOTIFY flatChanged FINAL )
 
     Q_PROPERTY( QskBoxShapeMetrics shape READ shape
-                WRITE setShape RESET resetShape NOTIFY shapeChanged )
+        WRITE setShape RESET resetShape NOTIFY shapeChanged )
 
     using Inherited = QskAbstractButton;
 

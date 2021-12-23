@@ -437,7 +437,7 @@ QSGNode* QskListViewSkinlet::updateCellNode( const QskListView* listView,
     QskAspect::States rowStates;
     if ( row == listView->selectedRow() )
         rowStates |= QskListView::Selected;
-    
+
     QskSkinStateChanger stateChanger( listView, rowStates );
 
     QSGNode* newNode = nullptr;

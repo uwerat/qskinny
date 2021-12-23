@@ -67,7 +67,7 @@ namespace
                 for ( int i = 0; i < buttons.count(); i++ )
                     addItem( buttons[ i ] );
             }
-        } 
+        }
     };
 }
 

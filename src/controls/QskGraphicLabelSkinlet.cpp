@@ -151,7 +151,7 @@ QSizeF QskGraphicLabelSkinlet::sizeHint( const QskSkinnable* skinnable,
             constexpr qreal max = std::numeric_limits< int >::max();
 
             QRectF r( 0.0, 0.0, max, max );
-            
+
             if ( constraint.width() >= 0.0 )
                 r.setWidth( constraint.width() );
             else
@@ -164,7 +164,7 @@ QSizeF QskGraphicLabelSkinlet::sizeHint( const QskSkinnable* skinnable,
 
         if ( constraint.width() >= 0.0 )
             hint.setHeight( innerConstraint.width() / aspectRatio );
-        else 
+        else
             hint.setWidth( innerConstraint.height() * aspectRatio );
     }
 

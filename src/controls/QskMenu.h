@@ -19,12 +19,12 @@ class QSK_EXPORT QskMenu : public QskPopup
     Q_OBJECT
 
     Q_PROPERTY( QPointF origin READ origin
-                WRITE setOrigin NOTIFY originChanged )
+        WRITE setOrigin NOTIFY originChanged )
 
     Q_PROPERTY( int count READ count )
 
     Q_PROPERTY( int currentIndex READ currentIndex
-                WRITE setCurrentIndex NOTIFY currentIndexChanged )
+        WRITE setCurrentIndex NOTIFY currentIndexChanged )
 
     using Inherited = QskPopup;
 

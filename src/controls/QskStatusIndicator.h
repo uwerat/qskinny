@@ -44,7 +44,7 @@ class QSK_EXPORT QskStatusIndicator : public QskControl
     int status() const;
     bool hasStatus( int status ) const;
 
-    QList<int> statusList() const;
+    QList< int > statusList() const;
 
   public Q_SLOTS:
     void setStatus( int status );
