@@ -69,6 +69,23 @@ static void qskInsertChildSorted( QSGNode* parent, QSGNode* child,
         parent->prependChildNode( child );
 }
 
+void QskSGNode::setParentNode( QSGNode* node, QSGNode* parent )
+{
+    if ( node )
+    {
+        auto oldParent = node->parent();
+
+        if ( oldParent != parent )
+        {
+            if ( oldParent )
+                oldParent->removeChildNode( node );
+
+            if ( parent )
+                parent->appendChildNode( node );
+        }
+    }
+}
+
 QSGNode* QskSGNode::findChildNode( QSGNode* parent, quint8 role )
 {
     auto node = parent->firstChild();
