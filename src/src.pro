@@ -179,6 +179,7 @@ HEADERS += \
     controls/QskSkinHintTable.h \
     controls/QskSkinHintTableEditor.h \
     controls/QskSkinManager.h \
+    controls/QskSkinStateChanger.h \
     controls/QskSkinTransition.h \
     controls/QskSkinlet.h \
     controls/QskSkinnable.h \
