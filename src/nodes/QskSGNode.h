@@ -55,6 +55,8 @@ namespace QskSGNode
     // including child
     QSK_EXPORT void removeAllChildNodesFrom( QSGNode* parent, QSGNode* child );
 
+    QSK_EXPORT void setParentNode( QSGNode* child, QSGNode* parent );
+
     template< typename Node >
     inline Node* createNode( quint8 role )
     {
