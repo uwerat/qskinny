@@ -20,6 +20,10 @@
 #include <QskTabView.h>
 #include <QskBoxShapeMetrics.h>
 
+#ifdef CONTEXT_MENU
+    #include <QskMenu.h>
+#endif
+
 #include <QDir>
 #include <QVariant>
 
@@ -41,6 +45,10 @@ class GraphicLabel : public QskGraphicLabel
         setBoxShapeHint( Panel, 8 );
         setAlignment( Qt::AlignCenter );
         setDarknessMode( false );
+
+#ifdef CONTEXT_MENU
+        setAcceptedMouseButtons( Qt::LeftButton );
+#endif
     }
 
     void setDarknessMode( bool on )
@@ -71,6 +79,25 @@ class GraphicLabel : public QskGraphicLabel
         startTransition( QskGraphicLabel::Graphic | QskAspect::GraphicRole,
             duration, oldRole, graphicRole() );
     }
+
+#ifdef CONTEXT_MENU
+  protected:
+    void mousePressEvent( QMouseEvent* event ) override
+    {
+        auto menu = new QskMenu( this );
+
+        menu->addItem( "image://shapes/Rectangle/White", "Launchpad" );
+        menu->addItem( "image://shapes/Diamond/Yellow", "Manager" );
+        menu->addItem( "image://shapes/Ellipse/Red", "Setup" );
+        menu->addItem( "image://shapes/Hexagon/PapayaWhip", "Help" );
+
+        menu->setOrigin( event->localPos() );
+        menu->open();
+
+        connect( menu, &QskMenu::triggered,
+                 this, []( int index ) { qDebug() << index; } );
+    }
+#endif
 };
 
 MainWindow::MainWindow()

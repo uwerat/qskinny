@@ -8,6 +8,10 @@
 #include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
 
+#ifdef CONTEXT_MENU
+    #include <SkinnyShapeProvider.h>
+#endif
+
 #include <QskFocusIndicator.h>
 #include <QskObjectCounter.h>
 
@@ -17,6 +21,10 @@ int main( int argc, char* argv[] )
 {
 #ifdef ITEM_STATISTICS
     QskObjectCounter counter( true );
+#endif
+
+#ifdef CONTEXT_MENU
+    Qsk::addGraphicProvider( "shapes", new SkinnyShapeProvider() );
 #endif
 
     QGuiApplication app( argc, argv );

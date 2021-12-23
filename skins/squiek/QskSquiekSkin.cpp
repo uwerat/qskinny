@@ -14,6 +14,7 @@
 #include <QskInputPanelBox.h>
 #include <QskInputPredictionBar.h>
 #include <QskListView.h>
+#include <QskMenu.h>
 #include <QskPageIndicator.h>
 #include <QskPopup.h>
 #include <QskProgressBar.h>
@@ -138,6 +139,7 @@ namespace
         void setupInputPredictionBar();
         void setupVirtualKeyboard();
         void setupListView();
+        void setupMenu();
         void setupPageIndicator();
         void setupPopup();
         void setupProgressBar();
@@ -256,6 +258,7 @@ void Editor::setup()
     setupInputPredictionBar();
     setupVirtualKeyboard();
     setupListView();
+    setupMenu();
     setupPageIndicator();
     setupPopup();
     setupProgressBar();
@@ -296,6 +299,38 @@ void Editor::setupPopup()
 
     setFlagHint( Q::Overlay | A::Style, true );
     setGradient( Q::Overlay, QColor( 220, 220, 220, 150 ) );
+}
+
+void Editor::setupMenu()
+{
+    using Q = QskMenu;
+
+    const QColor c1( 78, 158, 38 );
+    const QColor c2( 15, 103, 43 );
+
+    setBoxShape( Q::Panel, 4 );
+    setVGradient( Q::Panel, c1, c2 );
+
+#if 0
+    setPadding( Q::Separator, QMarginsF( 10, 0, 10, 0 ) );
+    setMetric( Q::Separator | QskAspect::Size, 3 );
+    setVGradient( Q::Separator, c2, c1 );
+#endif
+
+    // while fading out we are in Q::Closed state
+    for ( auto state : { QskAspect::NoState, Q::Closed } )
+        setHGradient( Q::Cell | Q::Selected | state, c2, c2.lighter( 2 ) );
+
+    setPadding( Q::Cell, QskMargins( 2, 10, 2, 10 ) );
+    setSpacing( Q::Cell, 5 );
+
+    setColor( Q::Text, QColor( 255, 255, 255 ) );
+    setFontRole( Q::Text, QskSkin::SmallFont );
+
+    setMetric( Q::Panel | QskAspect::Position, 0 );
+    setMetric( Q::Panel | QskAspect::Position | QskPopup::Closed, 1 );
+
+    setAnimation( Q::Panel | QskAspect::Metric, 200 );
 }
 
 void Editor::setupTextLabel()
