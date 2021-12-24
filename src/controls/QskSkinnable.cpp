@@ -25,6 +25,7 @@
 #include "QskGradient.h"
 
 #include <qfont.h>
+#include <qfontmetrics.h>
 #include <map>
 
 #define DEBUG_MAP 0
@@ -575,6 +576,12 @@ int QskSkinnable::fontRoleHint(
 QFont QskSkinnable::effectiveFont( const QskAspect aspect ) const
 {
     return effectiveSkin()->font( fontRoleHint( aspect ) );
+}
+
+qreal QskSkinnable::effectiveFontHeight( const QskAspect aspect ) const
+{
+    const QFontMetricsF fm( effectiveFont( aspect ) );
+    return fm.height();
 }
 
 bool QskSkinnable::setGraphicRoleHint( const QskAspect aspect, int role )

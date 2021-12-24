@@ -79,7 +79,7 @@ QRectF QskPushButtonSkinlet::textRect(
     {
         // in case of having text + graphic we put the text at the bottom
 
-        qreal h = QFontMetricsF( button->effectiveFont( QskPushButton::Text ) ).height();
+        qreal h = button->effectiveFontHeight( QskPushButton::Text );
         if ( h < r.height() )
             r.setTop( r.bottom() - h );
     }
@@ -153,8 +153,8 @@ QSGNode* QskPushButtonSkinlet::updateTextNode(
 {
     const auto rect = button->subControlRect( QskPushButton::Text ).toAlignedRect();
 
-    const QFontMetricsF fm( button->effectiveFont( QskPushButton::Text ) );
-    if ( !button->clip() && ( rect.height() < fm.height() ) )
+    const auto textHeight = button->effectiveFontHeight( QskPushButton::Text );
+    if ( !button->clip() && ( rect.height() < textHeight ) )
         return nullptr;
 
     const auto alignment = button->alignmentHint( QskPushButton::Text, Qt::AlignCenter );
