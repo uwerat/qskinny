@@ -77,6 +77,7 @@ class QSK_EXPORT QskSkinnable
     const QskSkinlet* skinlet() const;
 
     QFont effectiveFont( QskAspect ) const;
+    qreal effectiveFontHeight( QskAspect ) const;
 
     QskColorFilter effectiveGraphicFilter( QskAspect ) const;
 
