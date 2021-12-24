@@ -285,10 +285,13 @@ qreal QskSimpleListBox::columnWidth( int col ) const
 
 qreal QskSimpleListBox::rowHeight() const
 {
+    const auto hint = strutSizeHint( Cell );
     const auto padding = paddingHint( Cell );
-    const QFontMetricsF fm( effectiveFont( Text ) );
 
-    return fm.height() + padding.top() + padding.bottom();
+    qreal h = effectiveFontHeight( Text );
+    h += padding.top() + padding.bottom();
+
+    return qMax( h, hint.height() );
 }
 
 #include "moc_QskSimpleListBox.cpp"
