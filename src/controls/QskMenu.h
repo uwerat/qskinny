@@ -65,7 +65,6 @@ class QSK_EXPORT QskMenu : public QskPopup
     QRectF focusIndicatorRect() const override;
 
     QRectF cellRect( int index ) const;
-    qreal cellHeight() const;
 
   Q_SIGNALS:
     void triggered( int index );

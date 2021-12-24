@@ -39,6 +39,9 @@ class QSK_EXPORT QskSkinlet
     virtual QRectF subControlRect( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol ) const;
 
+    virtual QRectF itemRect( const QskSkinnable*,
+        const QRectF&, QskAspect::Subcontrol, int index ) const;
+
     virtual QSizeF sizeHint( const QskSkinnable*,
         Qt::SizeHint, const QSizeF& ) const;
 

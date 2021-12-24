@@ -81,6 +81,23 @@ static qreal qskCellWidth( const QskMenu* menu )
     return qMax( w, minWidth );
 }
 
+static qreal qskCellHeight( const QskMenu* menu )
+{
+    using Q = QskMenu;
+
+    const auto graphicHeight = menu->strutSizeHint( Q::Graphic ).height();
+    const auto textHeight = menu->effectiveFontHeight( Q::Text );
+    const auto padding = menu->paddingHint( Q::Cell );
+
+    qreal h = qMax( graphicHeight, textHeight );
+    h += padding.top() + padding.bottom();
+
+    const auto minHeight = menu->strutSizeHint( Q::Cell ).height();
+    h = qMax( h, minHeight );
+
+    return h;
+}
+
 static QSGNode* qskUpdateGraphicNode( const QskMenu* menu,
     const QRectF& rect, const QskGraphic& graphic, QSGNode* node )
 {
@@ -233,6 +250,27 @@ QRectF QskMenuSkinlet::subControlRect(
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
+QRectF QskMenuSkinlet::itemRect(
+    const QskSkinnable* skinnable, const QRectF& contentsRect,
+    QskAspect::Subcontrol subControl, int index ) const
+{
+    if ( subControl == QskMenu::Cell )
+    {
+        const auto menu = static_cast< const QskMenu* >( skinnable );
+
+        if ( index < 0 || index >= menu->count() )
+            return QRectF();
+
+        const auto r = menu->subControlContentsRect( QskMenu::Panel );
+        const auto h = qskCellHeight( menu );
+
+        return QRectF( r.x(), r.y() + index * h, r.width(), h );
+    }
+
+    return Inherited::itemRect(
+        skinnable, contentsRect, subControl, index );
+}
+
 QSGNode* QskMenuSkinlet::updateContentsNode(
     const QskPopup* popup, QSGNode* contentsNode ) const
 {
@@ -289,7 +327,7 @@ QSizeF QskMenuSkinlet::sizeHint( const QskSkinnable* skinnable,
     const auto menu = static_cast< const QskMenu* >( skinnable );
 
     const qreal w = qskCellWidth( menu );
-    const auto h = menu->count() * menu->cellHeight();
+    const auto h = menu->count() * qskCellHeight( menu );
 
     return menu->outerBoxSize( QskMenu::Panel, QSizeF( w, h ) );
 }
