@@ -35,7 +35,7 @@ class QSK_EXPORT QskMenu : public QskPopup
         QString text;
     };
 
-    QSK_SUBCONTROLS( Panel, Cell, Text, Graphic )
+    QSK_SUBCONTROLS( Panel, Cell, Cursor, Text, Graphic )
     QSK_STATES( Selected )
 
     QskMenu( QQuickItem* parentItem = nullptr );
@@ -63,6 +63,9 @@ class QSK_EXPORT QskMenu : public QskPopup
 
     virtual QskColorFilter graphicFilterAt( int index ) const;
     QRectF focusIndicatorRect() const override;
+
+    QRectF cellRect( int index ) const;
+    qreal cellHeight() const;
 
   Q_SIGNALS:
     void triggered( int index );

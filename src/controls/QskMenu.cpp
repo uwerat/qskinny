@@ -5,13 +5,13 @@
 #include <QskGraphic.h>
 #include <QskColorFilter.h>
 
-#include <QFontMetricsF>
-#include <QVector>
+#include <qvector.h>
 
 QSK_SUBCONTROL( QskMenu, Panel )
+QSK_SUBCONTROL( QskMenu, Cell )
+QSK_SUBCONTROL( QskMenu, Cursor )
 QSK_SUBCONTROL( QskMenu, Text )
 QSK_SUBCONTROL( QskMenu, Graphic )
-QSK_SUBCONTROL( QskMenu, Cell )
 
 QSK_SYSTEM_STATE( QskMenu, Selected, QskAspect::FirstSystemState << 2 )
 
@@ -239,10 +239,12 @@ void QskMenu::traverse( int steps )
 
 int QskMenu::indexAtPosition( const QPointF& pos ) const
 {
-    const auto r = contentsRect();
-
-    if( count() > 0 && r.contains( pos ) )
-        return ( pos.y() - r.y() ) / ( r.height() / count() );
+    for ( int i = 0; i < count(); i++ )
+    {
+        // A menu never has many cells and we can simply iterate
+        if ( cellRect( i ).contains( pos ) )
+            return i;
+    }
 
     return -1;
 }
@@ -257,8 +259,12 @@ void QskMenu::mousePressEvent( QMouseEvent* event )
 {
     if ( event->button() == Qt::LeftButton )
     {
-        if ( contentsRect().contains( event->localPos() ) )
+        const auto index = indexAtPosition( event->localPos() );
+        if ( index >= 0 )
+        {
+            setCurrentIndex( index );
             m_data->isPressed = true;
+        }
     }
 }
 
@@ -268,8 +274,11 @@ void QskMenu::mouseReleaseEvent( QMouseEvent* event )
     {
         if( m_data->isPressed )
         {
-            setSelectedIndex( indexAtPosition( event->localPos() ) );
             m_data->isPressed = false;
+
+            const auto index = indexAtPosition( event->localPos() );
+            if ( index == m_data->currentIndex )
+                setSelectedIndex( index );
         }
     }
 }
@@ -296,6 +305,41 @@ void QskMenu::setSelectedIndex( int index )
 
     Q_EMIT triggered( index );
     close();
+}
+
+QRectF QskMenu::cellRect( int index ) const
+{
+    /*
+        Calculations like this one should be done in the skinlet.
+        We need an API like subControlRect( int index, ... ) TODO ...
+     */
+
+    if ( index < 0 || index >= count() )
+        return QRectF();
+
+    const auto r = subControlContentsRect( QskMenu::Panel );
+    const auto h = cellHeight();
+
+    return QRectF( r.x(), r.y() + index * h, r.width(), h );
+}
+
+qreal QskMenu::cellHeight() const
+{
+    /*
+        Calculations like this one should be done in the skinlet.
+        We need an API like subControlRect( int index, ... ) TODO ...
+     */
+    const auto graphicHeight = strutSizeHint( Graphic ).height();
+    const auto textHeight = effectiveFontHeight( Text );
+    const auto padding = paddingHint( Cell );
+
+    qreal h = qMax( graphicHeight, textHeight );
+    h += padding.top() + padding.bottom();
+
+    const auto minHeight = strutSizeHint( Cell ).height();
+    h = qMax( h, minHeight );
+
+    return h;
 }
 
 #include "moc_QskMenu.cpp"
