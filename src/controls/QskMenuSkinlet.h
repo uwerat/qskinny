@@ -23,6 +23,9 @@ class QSK_EXPORT QskMenuSkinlet : public QskPopupSkinlet
     QRectF subControlRect( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol ) const override;
 
+    QRectF itemRect( const QskSkinnable*,
+        const QRectF&, QskAspect::Subcontrol, int index ) const override;
+
     QSizeF sizeHint( const QskSkinnable*,
         Qt::SizeHint, const QSizeF& ) const override;
 

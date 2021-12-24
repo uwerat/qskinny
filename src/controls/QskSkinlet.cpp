@@ -581,4 +581,13 @@ QSizeF QskSkinlet::hintWithoutConstraint(
     return h;
 }
 
+QRectF QskSkinlet::itemRect( const QskSkinnable*,
+    const QRectF&, QskAspect::Subcontrol, int index ) const
+{
+    // When a subControl is for a unknown number of item, f.e. in a menu
+
+    Q_UNUSED( index )
+    return QRectF();
+}
+
 #include "moc_QskSkinlet.cpp"

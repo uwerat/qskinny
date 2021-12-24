@@ -4,6 +4,7 @@
 #include <QskTextOptions.h>
 #include <QskGraphic.h>
 #include <QskColorFilter.h>
+#include <QskSkinlet.h>
 
 #include <qvector.h>
 
@@ -309,37 +310,8 @@ void QskMenu::setSelectedIndex( int index )
 
 QRectF QskMenu::cellRect( int index ) const
 {
-    /*
-        Calculations like this one should be done in the skinlet.
-        We need an API like subControlRect( int index, ... ) TODO ...
-     */
-
-    if ( index < 0 || index >= count() )
-        return QRectF();
-
-    const auto r = subControlContentsRect( QskMenu::Panel );
-    const auto h = cellHeight();
-
-    return QRectF( r.x(), r.y() + index * h, r.width(), h );
-}
-
-qreal QskMenu::cellHeight() const
-{
-    /*
-        Calculations like this one should be done in the skinlet.
-        We need an API like subControlRect( int index, ... ) TODO ...
-     */
-    const auto graphicHeight = strutSizeHint( Graphic ).height();
-    const auto textHeight = effectiveFontHeight( Text );
-    const auto padding = paddingHint( Cell );
-
-    qreal h = qMax( graphicHeight, textHeight );
-    h += padding.top() + padding.bottom();
-
-    const auto minHeight = strutSizeHint( Cell ).height();
-    h = qMax( h, minHeight );
-
-    return h;
+    return effectiveSkinlet()->itemRect(
+        this, contentsRect(), QskMenu::Cell, index );
 }
 
 #include "moc_QskMenu.cpp"
