@@ -317,12 +317,11 @@ void Editor::setupMenu()
     setVGradient( Q::Separator, c2, c1 );
 #endif
 
-    // while fading out we are in Q::Closed state
-    for ( auto state : { QskAspect::NoState, Q::Closed } )
-        setHGradient( Q::Cell | Q::Selected | state, c2, c2.lighter( 2 ) );
-
     setPadding( Q::Cell, QskMargins( 2, 10, 2, 10 ) );
     setSpacing( Q::Cell, 5 );
+    setGradient( Q::Cell, Qt::transparent );
+
+    setHGradient( Q::Cursor, c2, c2.lighter( 2 ) );
 
     setColor( Q::Text, QColor( 255, 255, 255 ) );
     setFontRole( Q::Text, QskSkin::SmallFont );

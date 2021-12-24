@@ -47,11 +47,10 @@ static qreal qskMaxTextWidth( const QskMenu* menu )
     return maxWidth;
 }
 
-static QSizeF qskIconSize( const QskMenu* menu )
+static qreal qskGraphicWidth( const QskMenu* menu )
 {
     const auto hint = menu->strutSizeHint( QskMenu::Graphic );
-    const qreal textHeight = QFontMetrics(
-        menu->effectiveFont( QskMenu::Text ) ).height();
+    const qreal textHeight = menu->effectiveFontHeight( QskMenu::Text );
 
     const auto h = qMax( hint.height(), textHeight );
 
@@ -63,22 +62,23 @@ static QSizeF qskIconSize( const QskMenu* menu )
             maxW = w;
     }
 
-    const auto w = qMax( hint.width(), maxW );
-
-    return QSizeF( w, h );
+    return qMax( hint.width(), maxW );
 }
 
-static QSizeF qskItemSize( const QskMenu* menu )
+static qreal qskCellWidth( const QskMenu* menu )
 {
-    const auto spacing = menu->spacingHint( QskMenu::Cell );
-    const QskMargins padding = menu->paddingHint( QskMenu::Cell );
+    using Q = QskMenu;
 
-    const auto sz = qskIconSize( menu );
+    const auto spacing = menu->spacingHint( Q::Cell );
+    const auto padding = menu->paddingHint( Q::Cell );
 
-    const qreal h = sz.height() + padding.height();
-    const qreal w = sz.width() + spacing + qskMaxTextWidth( menu ) + padding.width();
+    auto w = qskGraphicWidth( menu )
+        + spacing + qskMaxTextWidth( menu );
 
-    return QSizeF( w, h );
+    w += padding.left() + padding.right();
+
+    const auto minWidth = menu->strutSizeHint( Q::Cell ).width();
+    return qMax( w, minWidth );
 }
 
 static QSGNode* qskUpdateGraphicNode( const QskMenu* menu,
@@ -101,41 +101,46 @@ static QSGNode* qskUpdateTextNode( const QskMenu* menu,
         text, menu->textOptions(), QskMenu::Text );
 }
 
-static QSGNode* qskUpdateBackgroundNode( const QskMenu*, QSGNode* )
+static QSGNode* qskUpdateBackgroundNode( const QskMenu* menu, QSGNode* rootNode )
 {
-    return nullptr; // TODO
-}
+    auto node = rootNode ? rootNode->firstChild() : nullptr;
+    QSGNode* lastNode = nullptr;
 
-static QRectF qskCellRect( const QskMenu* menu, int index )
-{
-    if ( index >= 0 )
+    for( int i = 0; i < menu->count(); i++ )
     {
-        auto r = menu->subControlRect( QskMenu::Panel );
-        r = menu->innerBox( QskMenu::Panel, r );
+        QSGNode* newNode = nullptr;
 
-        const auto sz = qskItemSize( menu );
+        {
+            const StateChanger stateChanger( menu, menu->currentIndex() == i );
 
-        const auto y = r.y() + index * sz.height();
-        return QRectF( r.x(), y, r.width(), sz.height() );
+            newNode = QskSkinlet::updateBoxNode(
+                menu, node, menu->cellRect( i ), QskMenu::Cell );
+        }
+
+        if ( newNode )
+        {
+            if ( newNode == node )
+            {
+                node = node->nextSibling();
+            }
+            else
+            {
+                if ( rootNode == nullptr )
+                    rootNode = new QSGNode();
+
+                if ( node )
+                    rootNode->insertChildNodeBefore( newNode, node );
+                else
+                    rootNode->appendChildNode( newNode );
+            }
+
+            lastNode = newNode;
+        }
     }
 
-    return QRectF();
-}
+    QskSGNode::removeAllChildNodesAfter( rootNode, lastNode );
 
-static QSGNode* qskUpdateCursorNode( const QskMenu* menu, QSGNode* node )
-{
-    const auto r = qskCellRect( menu, menu->currentIndex() );
-    if ( !r.isEmpty() )
-    {
-        const StateChanger stateChanger( menu, true );
-
-        auto cursorNode = QskSGNode::ensureNode< QskBoxNode >( node );
-        cursorNode->setBoxData( r, menu->gradientHint( QskMenu::Cell ) );
-
-        return cursorNode;
-    }
-
-    return nullptr;
+    return rootNode;
 }
 
 static void qskUpdateItemNode(
@@ -161,31 +166,13 @@ static void qskUpdateItemNode(
 
 static QSGNode* qskUpdateItemsNode( const QskMenu* menu, QSGNode* rootNode )
 {
-    const auto padding = menu->paddingHint( QskMenu::Cell );
     const auto spacing = menu->spacingHint( QskMenu::Cell );
-    const auto iconSize = qskIconSize( menu );
-
-    auto boundingRect = menu->subControlRect( QskMenu::Panel );
-    boundingRect = menu->innerBox( QskMenu::Panel, boundingRect );
-
-    auto itemSize = iconSize;
-    itemSize.rwidth() += spacing + qskMaxTextWidth( menu );
-
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 14, 0 )
-    itemSize = itemSize.grownBy( padding );
-#else
-    itemSize.rwidth() += padding.left() + padding.right();
-    itemSize.rheight() += padding.top() + padding.bottom();
-#endif
-
-    itemSize = itemSize.expandedTo( menu->strutSizeHint( QskMenu::Graphic ) );
+    const auto graphicWidth = qskGraphicWidth( menu );
 
     if ( rootNode == nullptr )
         rootNode = new QSGNode();
 
     QSGNode* node = nullptr;
-
-    qreal y = boundingRect.y();
 
     for( int i = 0; i < menu->count(); i++ )
     {
@@ -203,13 +190,10 @@ static QSGNode* qskUpdateItemsNode( const QskMenu* menu, QSGNode* rootNode )
         {
             const StateChanger stateChanger( menu, menu->currentIndex() == i );
 
-            QRectF cellRect( boundingRect.x(), y,
-                boundingRect.width(), itemSize.height() );
-
-            cellRect = cellRect.marginsRemoved( padding );
+            const auto cellRect = menu->cellRect( i );
 
             auto graphicRect = cellRect;
-            graphicRect.setWidth( iconSize.width() );
+            graphicRect.setWidth( graphicWidth );
 
             auto textRect = cellRect;
             textRect.setX( graphicRect.right() + spacing );
@@ -217,12 +201,8 @@ static QSGNode* qskUpdateItemsNode( const QskMenu* menu, QSGNode* rootNode )
             qskUpdateItemNode( menu, graphicRect, menu->graphicAt( i ),
                 textRect, menu->entryAt( i ).text, node );
         }
-
-        y += itemSize.height();
-
     }
 
-    // Remove trailing nodes
     QskSGNode::removeAllChildNodesAfter( rootNode, node );
 
     return rootNode;
@@ -238,9 +218,16 @@ QRectF QskMenuSkinlet::subControlRect(
     const QskSkinnable* skinnable, const QRectF& contentsRect,
     QskAspect::Subcontrol subControl ) const
 {
+    const auto menu = static_cast< const QskMenu* >( skinnable );
+
     if( subControl == QskMenu::Panel )
     {
         return contentsRect;
+    }
+
+    if( subControl == QskMenu::Cursor )
+    {
+        return menu->cellRect( menu->currentIndex() );
     }
 
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
@@ -261,7 +248,7 @@ QSGNode* QskMenuSkinlet::updateContentsNode(
     {
         auto oldNode = QskSGNode::findChildNode( contentsNode, role );
 
-        QSGNode* newNode;
+        QSGNode* newNode = nullptr;
 
         switch( role )
         {
@@ -277,7 +264,7 @@ QSGNode* QskMenuSkinlet::updateContentsNode(
             }
             case Cursor:
             {
-                newNode = qskUpdateCursorNode( menu, oldNode );
+                newNode = updateBoxNode( menu, oldNode, QskMenu::Cursor );
                 break;
             }
             case Items:
@@ -296,18 +283,15 @@ QSGNode* QskMenuSkinlet::updateContentsNode(
 QSizeF QskMenuSkinlet::sizeHint( const QskSkinnable* skinnable,
     Qt::SizeHint which, const QSizeF& ) const
 {
-    using Q = QskMenu;
-
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
     const auto menu = static_cast< const QskMenu* >( skinnable );
 
-    const auto itemSize = qskItemSize( menu );
-    const auto count = menu->count();
+    const qreal w = qskCellWidth( menu );
+    const auto h = menu->count() * menu->cellHeight();
 
-    const qreal h = count * itemSize.height();
-    return menu->outerBoxSize( Q::Panel, QSizeF( itemSize.width(), h ) );
+    return menu->outerBoxSize( QskMenu::Panel, QSizeF( w, h ) );
 }
 
 #include "moc_QskMenuSkinlet.cpp"
