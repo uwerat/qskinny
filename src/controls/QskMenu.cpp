@@ -48,6 +48,23 @@ QskMenu::~QskMenu()
 {
 }
 
+bool QskMenu::isCascading() const
+{
+    return flagHint( QskMenu::Panel | QskAspect::Style );
+}
+
+void QskMenu::setCascading( bool on )
+{
+    if ( setFlagHint( QskMenu::Panel | QskAspect::Style, on ) )
+        Q_EMIT cascadingChanged( on );
+}
+
+void QskMenu::resetCascading()
+{
+    if ( resetFlagHint( QskMenu::Panel | QskAspect::Style ) )
+        Q_EMIT cascadingChanged( isCascading() );
+}
+
 void QskMenu::setOrigin( const QPointF& origin )
 {
     if ( origin != m_data->origin )
