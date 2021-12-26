@@ -5,7 +5,7 @@
 
 #include "QskSubWindowArea.h"
 #include "QskEvent.h"
-#include "QskFunctions.h"
+#include "QskPlatform.h"
 #include "QskSubWindow.h"
 
 #include <qtimer.h>

@@ -20,6 +20,7 @@
 #include <QskSkinTransition.h>
 #include <QskSkinHintTableEditor.h>
 #include <QskSkin.h>
+#include <QskPlatform.h>
 
 #include <QEasingCurve>
 

@@ -28,6 +28,7 @@ HEADERS += \
     common/QskMetaInvokable.h \
     common/QskNamespace.h \
     common/QskObjectCounter.h \
+    common/QskPlatform.h \
     common/QskRgbValue.h \
     common/QskRgbPalette.h \
     common/QskScaleEngine.h \
@@ -52,6 +53,7 @@ SOURCES += \
     common/QskMetaFunction.cpp \
     common/QskMetaInvokable.cpp \
     common/QskObjectCounter.cpp \
+    common/QskPlatform.cpp \
     common/QskRgbValue.cpp \
     common/QskRgbPalette.cpp \
     common/QskScaleEngine.cpp \

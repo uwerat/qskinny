@@ -34,10 +34,11 @@
 #include <QskBoxBorderColors.h>
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxShapeMetrics.h>
-#include <QskFunctions.h>
 #include <QskMargins.h>
-#include <QskNamespace.h>
 #include <QskRgbValue.h>
+
+#include <QskNamespace.h>
+#include <QskPlatform.h>
 
 #if 1
 // should be defined in the public header, so that
