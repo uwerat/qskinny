@@ -180,10 +180,18 @@ qreal qskGlobalScaleFactor()
     return QHighDpiScaling::factor( noScreen );
 }
 
-bool qskHasPlatformWindowManagement()
+const QPlatformIntegration* qskPlatformIntegration()
 {
-    if ( auto platform = QGuiApplicationPrivate::platformIntegration() )
-        return platform->hasCapability( QPlatformIntegration::WindowManagement );
+    return QGuiApplicationPrivate::platformIntegration();
+}
+
+bool qskMaybeDesktopPlatform()
+{
+#if QT_CONFIG(cursor)
+    // this is what QC2 is doing for menus ?
+    if ( const auto platform = QGuiApplicationPrivate::platformIntegration() )
+        return platform->hasCapability( QPlatformIntegration::MultipleWindows );
+#endif
 
     return false;
 }
