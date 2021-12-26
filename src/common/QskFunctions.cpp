@@ -1,28 +1,8 @@
 #include "QskFunctions.h"
 
-#include <qguiapplication.h>
-#include <qmath.h>
-#include <qscreen.h>
 #include <qfont.h>
 #include <qfontmetrics.h>
-
-QSK_QT_PRIVATE_BEGIN
-#include <private/qguiapplication_p.h>
-
-#if QT_VERSION < QT_VERSION_CHECK( 5, 8, 0 )
-    #ifndef foreach
-        // qhighdpiscaling_p.h needs it
-        #define foreach Q_FOREACH
-    #endif
-#endif
-
-#include <private/qhighdpiscaling_p.h>
-QSK_QT_PRIVATE_END
-
-#include <qpa/qplatformintegration.h>
-#include <qpa/qplatformscreen.h>
-
-#include <cmath>
+#include <qmath.h>
 
 template< class Rect, class Value >
 static inline Rect qskAlignedRect( const Rect& outerRect,
@@ -142,23 +122,6 @@ QRectF qskValidOrEmptyInnerRect( const QRectF& rect, const QMarginsF& margins )
     return QRectF( x, y, w, h );
 }
 
-qreal qskDpiScaled( qreal value )
-{
-    static qreal factor = 0.0;
-
-    if ( factor <= 0.0 )
-    {
-        if ( const QScreen* screen = QGuiApplication::primaryScreen() )
-            factor = screen->logicalDotsPerInchX();
-        else
-            factor = 100.0;
-
-        factor /= 96.0;
-    }
-
-    return value * factor;
-}
-
 qreal qskHorizontalAdvance( const QFont& font, const QString& text )
 {
     return qskHorizontalAdvance( QFontMetricsF( font ), text );
@@ -171,37 +134,6 @@ qreal qskHorizontalAdvance( const QFontMetricsF& fontMetrics, const QString& tex
 #else
     return fontMetrics.width( text );
 #endif
-}
-
-qreal qskGlobalScaleFactor()
-{
-    // The value of QT_SCALE_FACTOR
-    const QScreen* noScreen = nullptr;
-    return QHighDpiScaling::factor( noScreen );
-}
-
-const QPlatformIntegration* qskPlatformIntegration()
-{
-    return QGuiApplicationPrivate::platformIntegration();
-}
-
-bool qskMaybeDesktopPlatform()
-{
-#if QT_CONFIG(cursor)
-    // this is what QC2 is doing for menus ?
-    if ( const auto platform = QGuiApplicationPrivate::platformIntegration() )
-        return platform->hasCapability( QPlatformIntegration::MultipleWindows );
-#endif
-
-    return false;
-}
-
-QRect qskPlatformScreenGeometry( const QScreen* screen )
-{
-    if ( screen == nullptr )
-        return QRect();
-
-    return screen->handle()->geometry();
 }
 
 qreal qskFuzzyFloor( qreal value, qreal stepSize )

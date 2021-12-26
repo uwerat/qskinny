@@ -9,7 +9,7 @@
 #include "QskQuick.h"
 #include "QskWindow.h"
 #include "QskEvent.h"
-#include "QskFunctions.h"
+#include "QskPlatform.h"
 
 #include <qpa/qplatformintegration.h>
 

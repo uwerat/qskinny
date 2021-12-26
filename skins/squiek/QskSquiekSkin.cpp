@@ -37,7 +37,7 @@
 #include <QskBoxBorderColors.h>
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxShapeMetrics.h>
-#include <QskFunctions.h>
+#include <QskPlatform.h>
 #include <QskGradient.h>
 #include <QskMargins.h>
 #include <QskNamespace.h>

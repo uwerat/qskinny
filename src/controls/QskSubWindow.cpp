@@ -5,7 +5,7 @@
 
 #include "QskSubWindow.h"
 #include "QskAspect.h"
-#include "QskFunctions.h"
+#include "QskPlatform.h"
 #include "QskGraphic.h"
 #include "QskGraphicProvider.h"
 #include "QskTextOptions.h"
