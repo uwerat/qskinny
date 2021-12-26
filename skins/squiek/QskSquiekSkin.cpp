@@ -311,6 +311,9 @@ void Editor::setupMenu()
     setBoxShape( Q::Panel, 4 );
     setVGradient( Q::Panel, c1, c2 );
 
+    const bool isCascading = qskMaybeDesktopPlatform();
+    setFlagHint( Q::Panel | QskAspect::Style, isCascading );
+
 #if 0
     setPadding( Q::Separator, QMarginsF( 10, 0, 10, 0 ) );
     setMetric( Q::Separator | QskAspect::Size, 3 );

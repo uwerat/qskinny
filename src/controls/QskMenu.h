@@ -21,6 +21,9 @@ class QSK_EXPORT QskMenu : public QskPopup
     Q_PROPERTY( QPointF origin READ origin
         WRITE setOrigin NOTIFY originChanged )
 
+    Q_PROPERTY( bool cascading READ isCascading WRITE setCascading
+        RESET resetCascading NOTIFY cascadingChanged )
+
     Q_PROPERTY( int count READ count )
 
     Q_PROPERTY( int currentIndex READ currentIndex
@@ -41,6 +44,10 @@ class QSK_EXPORT QskMenu : public QskPopup
     QskMenu( QQuickItem* parentItem = nullptr );
     ~QskMenu() override;
 
+    bool isCascading() const;
+    void setCascading( bool );
+    void resetCascading();
+
     void setOrigin( const QPointF& );
     QPointF origin() const;
 
@@ -49,7 +56,6 @@ class QSK_EXPORT QskMenu : public QskPopup
     void addItem( const QString& graphicSource, const QString& text );
 
     void addSeparator();
-
 
     Entry entryAt( int index ) const;
     QskGraphic graphicAt( int index ) const;
@@ -67,9 +73,11 @@ class QSK_EXPORT QskMenu : public QskPopup
     int indexAtPosition( const QPointF& ) const;
 
   Q_SIGNALS:
+    void cascadingChanged( bool );
+    void originChanged( const QPointF& );
+
     void triggered( int index );
     void currentIndexChanged( int index );
-    void originChanged( const QPointF& );
 
   public Q_SLOTS:
     void setCurrentIndex( int index );
