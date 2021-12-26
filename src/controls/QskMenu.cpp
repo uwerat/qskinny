@@ -238,18 +238,6 @@ void QskMenu::traverse( int steps )
     Q_EMIT currentIndexChanged( index );
 }
 
-int QskMenu::indexAtPosition( const QPointF& pos ) const
-{
-    for ( int i = 0; i < count(); i++ )
-    {
-        // A menu never has many cells and we can simply iterate
-        if ( cellRect( i ).contains( pos ) )
-            return i;
-    }
-
-    return -1;
-}
-
 QskColorFilter QskMenu::graphicFilterAt( int index ) const
 {
     Q_UNUSED( index );
@@ -312,6 +300,12 @@ QRectF QskMenu::cellRect( int index ) const
 {
     return effectiveSkinlet()->itemRect(
         this, contentsRect(), QskMenu::Cell, index );
+}
+
+int QskMenu::indexAtPosition( const QPointF& pos ) const
+{
+    return effectiveSkinlet()->itemIndexAt(
+        this, contentsRect(), QskMenu::Cell, pos );
 }
 
 #include "moc_QskMenu.cpp"

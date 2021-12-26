@@ -36,14 +36,17 @@ class QSK_EXPORT QskSkinlet
 
     virtual void updateNode( QskSkinnable*, QSGNode* parent ) const;
 
+    virtual QSizeF sizeHint( const QskSkinnable*,
+        Qt::SizeHint, const QSizeF& ) const;
+
     virtual QRectF subControlRect( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol ) const;
 
     virtual QRectF itemRect( const QskSkinnable*,
-        const QRectF&, QskAspect::Subcontrol, int index ) const;
+        const QRectF&, QskAspect::Subcontrol, int itemIndex ) const;
 
-    virtual QSizeF sizeHint( const QskSkinnable*,
-        Qt::SizeHint, const QSizeF& ) const;
+    virtual int itemIndexAt( const QskSkinnable*,
+        const QRectF&, QskAspect::Subcontrol, const QPointF& ) const;
 
     const QVector< quint8 >& nodeRoles() const;
 

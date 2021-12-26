@@ -271,6 +271,41 @@ QRectF QskMenuSkinlet::itemRect(
         skinnable, contentsRect, subControl, index );
 }
 
+int QskMenuSkinlet::itemIndexAt( const QskSkinnable* skinnable,
+    const QRectF& rect, QskAspect::Subcontrol subControl, const QPointF& pos ) const
+{
+    if ( subControl == QskMenu::Cell )
+    {
+        const auto menu = static_cast< const QskMenu* >( skinnable );
+
+        const auto panelRect = menu->subControlContentsRect( QskMenu::Panel );
+        if ( !panelRect.contains( pos ) )
+            return -1;
+
+        /*
+            A menu never has many items and we can simply iterate
+            without being concerned about performance issues
+         */
+
+        const auto h = qskCellHeight( menu );
+
+        auto r = panelRect;
+        r.setHeight( h );
+        
+        for ( int i = 0; i < menu->count(); i++ )
+        {
+            if ( r.contains( pos ) )
+                return i;
+
+            r.moveTop( r.bottom() );
+        }
+
+        return -1;
+    }
+
+    return Inherited::itemIndexAt( skinnable, rect, subControl, pos );
+}
+
 QSGNode* QskMenuSkinlet::updateContentsNode(
     const QskPopup* popup, QSGNode* contentsNode ) const
 {
