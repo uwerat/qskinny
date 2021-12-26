@@ -9,6 +9,9 @@
 #include "QskQuick.h"
 #include "QskWindow.h"
 #include "QskEvent.h"
+#include "QskFunctions.h"
+
+#include <qpa/qplatformintegration.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickwindow_p.h>
@@ -61,6 +64,17 @@ static inline void qskSendPopupEvent(
     }
 }
 
+static bool qskReplayMousePress()
+{
+    if ( const auto pf = qskPlatformIntegration() )
+    {
+        const auto styleHint = QPlatformIntegration::ReplayMousePressOutsidePopup;
+        return pf->styleHint( styleHint ).toBool();
+    }
+
+    return false;
+}
+
 namespace
 {
     class InputGrabber final : public QskInputGrabber
@@ -88,6 +102,11 @@ namespace
                         ( popup->popupFlags() & QskPopup::CloseOnPressOutside ) )
                     {
                         popup->close();
+
+                        if ( qskReplayMousePress() )
+                        {
+                            // TODO ...
+                        }
                     }
                 }
             }
