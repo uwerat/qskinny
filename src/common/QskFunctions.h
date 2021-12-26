@@ -15,10 +15,13 @@ class QScreen;
 class QFont;
 class QFontMetricsF;
 class QString;
+class QPlatformIntegration;
 
 QSK_EXPORT qreal qskDpiScaled( qreal value );
 QSK_EXPORT qreal qskGlobalScaleFactor();
-QSK_EXPORT bool qskHasPlatformWindowManagement();
+
+QSK_EXPORT bool qskMaybeDesktopPlatform();
+QSK_EXPORT const QPlatformIntegration* qskPlatformIntegration();
 QSK_EXPORT QRect qskPlatformScreenGeometry( const QScreen* );
 
 QSK_EXPORT QRect qskAlignedRect( const QRect& outerRect,
