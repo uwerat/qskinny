@@ -50,7 +50,6 @@ class QSK_EXPORT QskMenu : public QskPopup
 
     void addSeparator();
 
-    int indexAtPosition( const QPointF& ) const;
 
     Entry entryAt( int index ) const;
     QskGraphic graphicAt( int index ) const;
@@ -65,6 +64,7 @@ class QSK_EXPORT QskMenu : public QskPopup
     QRectF focusIndicatorRect() const override;
 
     QRectF cellRect( int index ) const;
+    int indexAtPosition( const QPointF& ) const;
 
   Q_SIGNALS:
     void triggered( int index );

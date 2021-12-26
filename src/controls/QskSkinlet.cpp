@@ -581,6 +581,12 @@ QSizeF QskSkinlet::hintWithoutConstraint(
     return h;
 }
 
+int QskSkinlet::itemIndexAt( const QskSkinnable*,
+        const QRectF&, QskAspect::Subcontrol, const QPointF& ) const
+{
+    return -1;
+}
+
 QRectF QskSkinlet::itemRect( const QskSkinnable*,
     const QRectF&, QskAspect::Subcontrol, int index ) const
 {
