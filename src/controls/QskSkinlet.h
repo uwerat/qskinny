@@ -43,7 +43,7 @@ class QSK_EXPORT QskSkinlet
         const QRectF&, QskAspect::Subcontrol ) const;
 
     virtual QRectF itemRect( const QskSkinnable*,
-        const QRectF&, QskAspect::Subcontrol, int itemIndex ) const;
+        const QRectF&, QskAspect::Subcontrol, int index ) const;
 
     virtual int itemIndexAt( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol, const QPointF& ) const;

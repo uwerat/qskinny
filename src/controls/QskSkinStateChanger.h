@@ -12,12 +12,17 @@
 class QskSkinStateChanger
 {
   public:
-    QskSkinStateChanger( const QskSkinnable*, QskAspect::States );
+    QskSkinStateChanger( const QskSkinnable*,
+        QskAspect::States = QskAspect::States() );
+
     ~QskSkinStateChanger();
+
+    void addStates( QskAspect::States );
+    void clearStates( QskAspect::States );
 
   private:
     QskSkinnable* m_skinnable;
-    QskAspect::States m_oldStates;
+    const QskAspect::States m_oldStates;
 };
 
 inline QskSkinStateChanger::QskSkinStateChanger(
@@ -25,14 +30,29 @@ inline QskSkinStateChanger::QskSkinStateChanger(
     : m_skinnable( const_cast< QskSkinnable* >( skinnable ) )
     , m_oldStates( skinnable->skinStates() )
 {
-    if ( states )
-        m_skinnable->replaceSkinStates( m_oldStates | states );
+    addStates( states );
 }
 
 inline QskSkinStateChanger::~QskSkinStateChanger()
 {
     if ( m_oldStates != m_skinnable->skinStates() )
         m_skinnable->replaceSkinStates( m_oldStates );
+}
+
+inline void QskSkinStateChanger::addStates( QskAspect::States states )
+{
+    const auto newStates = m_oldStates | states;
+
+    if ( newStates != m_skinnable->skinStates() )
+        m_skinnable->replaceSkinStates( newStates );
+}
+
+inline void QskSkinStateChanger::clearStates( QskAspect::States states )
+{
+    const auto newStates = m_oldStates & ~states;
+
+    if ( newStates != m_skinnable->skinStates() )
+        m_skinnable->replaceSkinStates( newStates );
 }
 
 #endif
