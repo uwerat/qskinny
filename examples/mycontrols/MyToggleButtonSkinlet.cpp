@@ -27,8 +27,9 @@ MyToggleButtonSkinlet::MyToggleButtonSkinlet( QskSkin* skin )
     // sorted in stacking order
 
     setNodeRoles(
-        { PanelRole, CursorRole, UncheckedPanelRole, UncheckedLabelRole,
-          UncheckedIconRole, CheckedPanelRole, CheckedLabelRole, CheckedIconRole
+        {
+            PanelRole, CursorRole, UncheckedLabelRole,
+            UncheckedGraphicRole, CheckedLabelRole, CheckedGraphicRole
         }
     );
 }
@@ -47,18 +48,18 @@ QRectF MyToggleButtonSkinlet::subControlRect( const QskSkinnable* skinnable,
     else if( subControl == Q::UncheckedPanel )
     {
         const auto r = button->subControlContentsRect( contentsRect, Q::Panel );
-        return sectionRect( r, button->isInverted() ? 0 : 1 );
+        return sectionRect( r, button->isInverted() ? 1 : 0 );
     }
     else if( subControl == Q::CheckedPanel )
     {
         const auto r = button->subControlContentsRect( contentsRect, Q::Panel );
-        return sectionRect( r, button->isInverted() ? 1 : 0 );
+        return sectionRect( r, button->isInverted() ? 0 : 1 );
     }
-    else if( subControl == Q::CheckedLabel || subControl == Q::CheckedIcon )
+    else if( subControl == Q::CheckedText || subControl == Q::CheckedGraphic )
     {
         return button->subControlContentsRect( contentsRect, Q::CheckedPanel );
     }
-    else if( subControl == Q::UncheckedLabel || subControl == Q::UncheckedIcon )
+    else if( subControl == Q::UncheckedText || subControl == Q::UncheckedGraphic )
     {
         return button->subControlContentsRect( contentsRect, Q::UncheckedPanel );
     }
@@ -96,46 +97,36 @@ QSGNode* MyToggleButtonSkinlet::updateSubNode(
         case CheckedLabelRole:
         {
             return updateTextNode(
-                button, node, button->textAt( 1 ),
-                button->textOptions(), Q::CheckedLabel );
+                button, node, button->text( true ),
+                button->textOptions(), Q::CheckedText );
         }
 
         case UncheckedLabelRole:
         {
             return updateTextNode(
-                button, node, button->textAt( 0 ),
-                button->textOptions(), Q::UncheckedLabel );
+                button, node, button->text( false ),
+                button->textOptions(), Q::UncheckedText );
         }
 
-        case CheckedIconRole:
+        case CheckedGraphicRole:
         {
             return updateGraphicNode(
-                button, node, button->graphicAt( 1 ), Q::CheckedIcon );
+                button, node, button->graphic( true ), Q::CheckedGraphic );
         }
 
-        case UncheckedIconRole:
+        case UncheckedGraphicRole:
         {
             return updateGraphicNode(
-                button, node, button->graphicAt( 0 ), Q::UncheckedIcon );
-        }
-
-        case CheckedPanelRole:
-        case UncheckedPanelRole:
-        {
-            // not implemented
-            return nullptr;
+                button, node, button->graphic( false ), Q::UncheckedGraphic );
         }
 
         case CursorRole:
         {
             return updateBoxNode( button, node, Q::Cursor );
         }
-
-        default:
-        {
-            return nullptr;
-        }
     }
+
+    return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
 QSizeF MyToggleButtonSkinlet::sizeHint( const QskSkinnable* skinnable,

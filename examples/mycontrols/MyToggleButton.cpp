@@ -13,11 +13,11 @@
 QSK_SUBCONTROL( MyToggleButton, Panel )
 QSK_SUBCONTROL( MyToggleButton, Cursor )
 QSK_SUBCONTROL( MyToggleButton, CheckedPanel )
-QSK_SUBCONTROL( MyToggleButton, CheckedLabel )
+QSK_SUBCONTROL( MyToggleButton, CheckedText )
 QSK_SUBCONTROL( MyToggleButton, UncheckedPanel )
-QSK_SUBCONTROL( MyToggleButton, UncheckedLabel )
-QSK_SUBCONTROL( MyToggleButton, CheckedIcon )
-QSK_SUBCONTROL( MyToggleButton, UncheckedIcon )
+QSK_SUBCONTROL( MyToggleButton, UncheckedText )
+QSK_SUBCONTROL( MyToggleButton, CheckedGraphic )
+QSK_SUBCONTROL( MyToggleButton, UncheckedGraphic )
 
 class MyToggleButton::PrivateData
 {
@@ -93,14 +93,9 @@ QskTextOptions MyToggleButton::textOptions() const
     return m_data->textOptions;
 }
 
-void MyToggleButton::setTextAt( int index, const QString& text )
+void MyToggleButton::setText( bool isChecked, const QString& text )
 {
-    if( index < 0 || index > 1 )
-    {
-        return;
-    }
-
-    auto& data = m_data->content[ index ];
+    auto& data = m_data->content[ isChecked ];
 
     if( !data.icon.isNull() )
     {
@@ -118,24 +113,14 @@ void MyToggleButton::setTextAt( int index, const QString& text )
     }
 }
 
-QString MyToggleButton::textAt( int index ) const
+QString MyToggleButton::text( bool isChecked ) const
 {
-    if( index < 0 || index > 1 )
-    {
-        return QString();
-    }
-
-    return m_data->content[ index ].text;
+    return m_data->content[ isChecked ].text;
 }
 
-void MyToggleButton::setIconAt( int index, const QString& icon )
+void MyToggleButton::setIcon( bool isChecked, const QString& icon )
 {
-    if( index < 0 || index > 1 )
-    {
-        return;
-    }
-
-    auto& data = m_data->content[ index ];
+    auto& data = m_data->content[ isChecked ];
 
     if( !data.text.isEmpty() )
     {
@@ -155,24 +140,14 @@ void MyToggleButton::setIconAt( int index, const QString& icon )
     }
 }
 
-QString MyToggleButton::iconAt( int index ) const
+QString MyToggleButton::icon( bool isChecked ) const
 {
-    if( index < 0 || index > 1 )
-    {
-        return QString();
-    }
-
-    return m_data->content[ index ].iconSource;
+    return m_data->content[ isChecked ].iconSource;
 }
 
-QskGraphic MyToggleButton::graphicAt( int index ) const
+QskGraphic MyToggleButton::graphic( bool isChecked ) const
 {
-    if( index < 0 || index > 1 )
-    {
-        return QskGraphic();
-    }
-
-    auto& data = const_cast< MyToggleButton* >( this )->m_data->content[ index ];
+    auto& data = const_cast< MyToggleButton* >( this )->m_data->content[ isChecked ];
 
     if( data.iconDirty )
     {
@@ -185,13 +160,8 @@ QskGraphic MyToggleButton::graphicAt( int index ) const
 
 void MyToggleButton::updateResources()
 {
-    for( int i = 0; i < 2; i++ )
-    {
-        if( m_data->content[ i ].iconDirty )
-        {
-            ( void )graphicAt( Checked );
-        }
-    }
+    (void) graphic( false );
+    (void) graphic( true );
 }
 
 #include "moc_MyToggleButton.cpp"

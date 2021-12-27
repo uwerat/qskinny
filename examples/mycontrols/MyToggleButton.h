@@ -16,24 +16,24 @@ class MyToggleButton : public QskAbstractButton
     using Inherited = QskAbstractButton;
 
   public:
-    QSK_SUBCONTROLS( Panel, Cursor, CheckedPanel, CheckedLabel, CheckedIcon,
-        UncheckedPanel, UncheckedLabel, UncheckedIcon )
+    QSK_SUBCONTROLS( Panel, Cursor, CheckedPanel, CheckedText, CheckedGraphic,
+        UncheckedPanel, UncheckedText, UncheckedGraphic )
 
     MyToggleButton( QQuickItem* parent = nullptr );
     ~MyToggleButton() override;
 
     bool isCheckable() const override final;
 
-    void setTextAt( int index, const QString& );
-    QString textAt( int index ) const;
+    void setText( bool isChecked, const QString& );
+    QString text( bool isChecked ) const;
 
-    void setIconAt( int index, const QString& icon );
-    QString iconAt( int index ) const;
+    void setIcon( bool isChecked, const QString& icon );
+    QString icon( bool isChecked ) const;
 
     void setTextOptions( const QskTextOptions& );
     QskTextOptions textOptions() const;
 
-    QskGraphic graphicAt( int index ) const;
+    QskGraphic graphic( bool isChecked ) const;
 
     void setInverted( bool );
     bool isInverted() const;
