@@ -450,7 +450,7 @@ void QskBoxRenderer::renderRectBorder(
     const QRectF& rect, const QskBoxShapeMetrics& shape,
     const QskBoxBorderMetrics& border, QSGGeometry& geometry )
 {
-    Q_UNUSED( shape );
+    Q_UNUSED( shape )
 
     const Quad out = rect;
     const Quad in = qskValidOrEmptyInnerRect( rect, border.widths() );
@@ -469,7 +469,7 @@ void QskBoxRenderer::renderRectFill(
     const QRectF& rect, const QskBoxShapeMetrics& shape,
     const QskBoxBorderMetrics& border, QSGGeometry& geometry )
 {
-    Q_UNUSED( shape );
+    Q_UNUSED( shape )
 
     const Quad in = qskValidOrEmptyInnerRect( rect, border.widths() );
 
@@ -490,7 +490,7 @@ void QskBoxRenderer::renderRect(
     const QskBoxBorderMetrics& border, const QskBoxBorderColors& borderColors,
     const QskGradient& gradient, QSGGeometry& geometry )
 {
-    Q_UNUSED( shape );
+    Q_UNUSED( shape )
 
     const Quad out = rect;
     const Quad in = qskValidOrEmptyInnerRect( rect, border.widths() );

@@ -482,7 +482,7 @@ void QskInputContext::invokeAction(
     QInputMethod::Action, int cursorPosition )
 {
     // called from qquicktextinput/qquicktextedit
-    Q_UNUSED( cursorPosition );
+    Q_UNUSED( cursorPosition )
 }
 
 void QskInputContext::commitPrediction( bool )
