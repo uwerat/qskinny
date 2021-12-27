@@ -250,7 +250,7 @@ void QskMenu::traverse( int steps )
 
 QskColorFilter QskMenu::graphicFilterAt( int index ) const
 {
-    Q_UNUSED( index );
+    Q_UNUSED( index )
     return QskColorFilter();
 }
 

@@ -142,8 +142,9 @@ QskListView::SelectionMode QskListView::selectionMode() const
 
 QskColorFilter QskListView::graphicFilterAt( int row, int col ) const
 {
-    Q_UNUSED( row );
-    Q_UNUSED( col );
+    Q_UNUSED( row )
+    Q_UNUSED( col )
+
     return QskColorFilter();
 }
 

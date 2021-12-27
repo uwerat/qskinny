@@ -956,7 +956,7 @@ void QskQuickItem::updateItemPolish()
 
 QSGNode* QskQuickItem::updatePaintNode( QSGNode* node, UpdatePaintNodeData* data )
 {
-    Q_UNUSED( data );
+    Q_UNUSED( data )
 
     Q_D( QskQuickItem );
 
