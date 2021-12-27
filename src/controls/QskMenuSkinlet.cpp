@@ -14,19 +14,6 @@
 
 #include <qfontmetrics.h>
 
-namespace
-{
-    class StateChanger : public QskSkinStateChanger
-    {
-      public:
-        inline StateChanger( const QskSkinnable* skinnable, bool isSelected )
-            : QskSkinStateChanger( skinnable, isSelected
-                    ? QskMenu::Selected : QskAspect::NoState )
-        {
-        }
-    };
-}
-
 template< class T >
 static T qskValueAt( const QskMenu* menu, int index )
 {
@@ -152,7 +139,9 @@ static QSGNode* qskUpdateBackgroundNode( const QskMenu* menu, QSGNode* rootNode 
         QSGNode* newNode = nullptr;
 
         {
-            const StateChanger stateChanger( menu, menu->currentIndex() == i );
+            QskSkinStateChanger stateChanger( menu );
+            if ( menu->currentIndex() == i )
+                stateChanger.addStates( QskMenu::Selected );
 
             newNode = QskSkinlet::updateBoxNode(
                 menu, node, menu->cellRect( i ), QskMenu::Cell );
@@ -229,7 +218,9 @@ static QSGNode* qskUpdateItemsNode( const QskMenu* menu, QSGNode* rootNode )
         }
 
         {
-            const StateChanger stateChanger( menu, menu->currentIndex() == i );
+            QskSkinStateChanger stateChanger( menu );
+            if ( menu->currentIndex() == i )
+                stateChanger.addStates( QskMenu::Selected );
 
             const auto cellRect = menu->cellRect( i );
 
