@@ -24,7 +24,7 @@ class QSK_EXPORT QskMenuSkinlet : public QskPopupSkinlet
         const QRectF&, QskAspect::Subcontrol ) const override;
 
     QRectF itemRect( const QskSkinnable*,
-        const QRectF&, QskAspect::Subcontrol, int itemIndex ) const override;
+        const QRectF&, QskAspect::Subcontrol, int index ) const override;
 
     int itemIndexAt( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol, const QPointF& ) const override;
