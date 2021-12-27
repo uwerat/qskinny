@@ -7,6 +7,7 @@
 #include <QskSkinlet.h>
 
 #include <qvector.h>
+#include <qvariant.h>
 
 QSK_SUBCONTROL( QskMenu, Panel )
 QSK_SUBCONTROL( QskMenu, Cell )
@@ -16,11 +17,20 @@ QSK_SUBCONTROL( QskMenu, Graphic )
 
 QSK_SYSTEM_STATE( QskMenu, Selected, QskAspect::FirstSystemState << 2 )
 
+namespace
+{
+    struct Entry
+    {
+        QUrl graphicSource;
+        QskGraphic graphic;
+        QString text;
+    };
+}
+
 class QskMenu::PrivateData
 {
   public:
     QVector< Entry > entries;
-    QVector< QskGraphic > icons;
 
     QskTextOptions textOptions;
     QPointF origin;
@@ -81,29 +91,17 @@ QPointF QskMenu::origin() const
 
 void QskMenu::addItem( const QUrl& graphicSource, const QString& text )
 {
-    m_data->entries += { graphicSource, text };
+    QskGraphic graphic;
+    if( !graphicSource.isEmpty() )
+        graphic = Qsk::loadGraphic( graphicSource );
 
-#if 1
-    {
-        const auto& entries = m_data->entries;
-
-        m_data->icons.clear();
-        m_data->icons.reserve( entries.count() );
-
-        for( const auto& entry : entries )
-        {
-            QskGraphic graphic;
-
-            if( !entry.iconSource.isEmpty() )
-                graphic = Qsk::loadGraphic( entry.iconSource );
-
-            m_data->icons += graphic;
-        }
-    }
-#endif
+    m_data->entries += { graphicSource, graphic, text };
 
     resetImplicitSize();
     update();
+
+    if ( isComponentComplete() )
+        countChanged( count() );
 }
 
 void QskMenu::addItem( const QString& graphicSource, const QString& text )
@@ -118,7 +116,6 @@ void QskMenu::addSeparator()
 
 void QskMenu::clear()
 {
-    m_data->icons.clear();
     m_data->entries.clear();
 }
 
@@ -127,24 +124,20 @@ int QskMenu::count() const
     return m_data->entries.count();
 }
 
-QskMenu::Entry QskMenu::entryAt( int index ) const
+QVariant QskMenu::itemAt( int index ) const
 {
-    if( index >= 0 && index <= m_data->entries.count() )
-    {
-        return m_data->entries[ index ];
-    }
+    const auto& entries = m_data->entries;
 
-    return Entry();
-}
+    if( index < 0 || index >= entries.count() )
+        return QVariant();
 
-QskGraphic QskMenu::graphicAt( int index ) const
-{
-    if( index >= 0 && index <= m_data->icons.count() )
-    {
-        return m_data->icons[ index ];
-    }
+    const auto& entry = m_data->entries[ index ];
 
-    return QskGraphic();
+    QVariantList list;
+    list += QVariant::fromValue( entry.graphic );
+    list += QVariant::fromValue( entry.text );
+
+    return list;
 }
 
 void QskMenu::setTextOptions( const QskTextOptions& textOptions )

@@ -24,7 +24,7 @@ class QSK_EXPORT QskMenu : public QskPopup
     Q_PROPERTY( bool cascading READ isCascading WRITE setCascading
         RESET resetCascading NOTIFY cascadingChanged )
 
-    Q_PROPERTY( int count READ count )
+    Q_PROPERTY( int count READ count NOTIFY countChanged )
 
     Q_PROPERTY( int currentIndex READ currentIndex
         WRITE setCurrentIndex NOTIFY currentIndexChanged )
@@ -32,12 +32,6 @@ class QSK_EXPORT QskMenu : public QskPopup
     using Inherited = QskPopup;
 
   public:
-    struct Entry
-    {
-        QUrl iconSource;
-        QString text;
-    };
-
     QSK_SUBCONTROLS( Panel, Cell, Cursor, Text, Graphic )
     QSK_STATES( Selected )
 
@@ -57,14 +51,14 @@ class QSK_EXPORT QskMenu : public QskPopup
 
     void addSeparator();
 
-    Entry entryAt( int index ) const;
-    QskGraphic graphicAt( int index ) const;
+    virtual QVariant itemAt( int ) const;
+    virtual int count() const;
+    virtual void clear();
 
     void setTextOptions( const QskTextOptions& textOptions );
     QskTextOptions textOptions() const;
 
     int currentIndex() const;
-    int count() const;
 
     virtual QskColorFilter graphicFilterAt( int index ) const;
     QRectF focusIndicatorRect() const override;
@@ -79,9 +73,10 @@ class QSK_EXPORT QskMenu : public QskPopup
     void triggered( int index );
     void currentIndexChanged( int index );
 
+    void countChanged( int );
+
   public Q_SLOTS:
     void setCurrentIndex( int index );
-    void clear();
 
   protected:
     void keyPressEvent( QKeyEvent* ) override;

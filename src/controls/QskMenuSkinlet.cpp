@@ -27,6 +27,27 @@ namespace
     };
 }
 
+template< class T >
+static T qskValueAt( const QskMenu* menu, int index )
+{
+    const auto item = menu->itemAt( index );
+
+    if ( item.canConvert< T >() )
+        return item.value< T >();
+
+    if ( item.canConvert< QVariantList >() )
+    {
+        const auto list = item.value< QVariantList >();
+        for ( const auto& value : list )
+        {
+            if ( value.canConvert< T >() )
+                return value.value< T >();
+        }
+    }
+
+    return T();
+}
+
 static qreal qskMaxTextWidth( const QskMenu* menu )
 {
     const QFontMetricsF fm( menu->effectiveFont( QskMenu::Text ) );
@@ -35,10 +56,12 @@ static qreal qskMaxTextWidth( const QskMenu* menu )
 
     for ( int i = 0; i < menu->count(); i++ )
     {
-        const auto entry = menu->entryAt( i );
-        if( !entry.text.isEmpty() )
+        const auto value = menu->itemAt( i );
+        
+        const auto text = qskValueAt< QString >( menu, i );
+        if( !text.isEmpty() )
         {
-            const auto w = qskHorizontalAdvance( fm, entry.text );
+            const auto w = qskHorizontalAdvance( fm, text );
             if( w > maxWidth )
                 maxWidth = w;
         }
@@ -57,7 +80,8 @@ static qreal qskGraphicWidth( const QskMenu* menu )
     qreal maxW = 0.0;
     for ( int i = 0; i < menu->count(); i++ )
     {
-        const auto w = menu->graphicAt( i ).widthForHeight( h );
+        const auto graphic = qskValueAt< QskGraphic >( menu, i );
+        const auto w = graphic.widthForHeight( h );
         if( w > maxW )
             maxW = w;
     }
@@ -215,8 +239,11 @@ static QSGNode* qskUpdateItemsNode( const QskMenu* menu, QSGNode* rootNode )
             auto textRect = cellRect;
             textRect.setX( graphicRect.right() + spacing );
 
-            qskUpdateItemNode( menu, graphicRect, menu->graphicAt( i ),
-                textRect, menu->entryAt( i ).text, node );
+            const auto graphic = qskValueAt< QskGraphic >( menu, i );
+            const auto text = qskValueAt< QString >( menu, i );
+
+            qskUpdateItemNode( menu, graphicRect, graphic,
+                textRect, text, node );
         }
     }
 
