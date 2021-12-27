@@ -86,8 +86,8 @@ class GraphicLabel : public QskGraphicLabel
     {
         auto menu = new QskMenu( this );
 
-        menu->addItem( "image://shapes/Rectangle/White", "Launchpad" );
-        menu->addItem( "image://shapes/Diamond/Yellow", "Manager" );
+        menu->addItem( "image://shapes/Rectangle/White", "Print" );
+        menu->addItem( "image://shapes/Diamond/Yellow", "Save As" );
         menu->addItem( "image://shapes/Ellipse/Red", "Setup" );
         menu->addItem( "image://shapes/Hexagon/PapayaWhip", "Help" );
 
