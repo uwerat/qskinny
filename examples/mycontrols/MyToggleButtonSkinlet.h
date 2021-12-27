@@ -21,13 +21,11 @@ class MyToggleButtonSkinlet : public QskSkinlet
         PanelRole,
         CursorRole,
 
-        CheckedPanelRole,
         CheckedLabelRole,
-        CheckedIconRole,
+        CheckedGraphicRole,
 
-        UncheckedPanelRole,
         UncheckedLabelRole,
-        UncheckedIconRole
+        UncheckedGraphicRole
     };
 
     Q_INVOKABLE MyToggleButtonSkinlet( QskSkin* = nullptr );

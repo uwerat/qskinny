@@ -91,32 +91,28 @@ class MySkinEditor : public QskSkinHintTableEditor
         using A = QskAspect;
         using Q = MyToggleButton;
 
-        for( auto subControl : { Q::UncheckedLabel, Q::CheckedLabel } )
+        for( auto subControl : { Q::UncheckedText, Q::CheckedText } )
         {
             QColor color1 = foregroundTextColor;
             QColor color2 = baseTextColor;
 
-            if( subControl == Q::UncheckedLabel )
-            {
+            if( subControl == Q::CheckedText )
                 std::swap( color1, color2 );
-            }
 
-            setColor( subControl | Q::Checked, color1 );
-            setColor( subControl, color2 );
+            setColor( subControl, color1 );
+            setColor( subControl | Q::Checked, color2 );
 
             setAlignment( subControl, Qt::AlignCenter );
             setAnimation( subControl | A::Color, animator() );
         }
 
-        for( auto subControl : { Q::UncheckedIcon, Q::CheckedIcon } )
+        for( auto subControl : { Q::UncheckedGraphic, Q::CheckedGraphic } )
         {
-            int role1 = MySkin::GraphicRoleNormal;
-            int role2 = MySkin::GraphicRoleInverted;
+            int role1 = MySkin::GraphicRoleInverted;
+            int role2 = MySkin::GraphicRoleNormal;
 
-            if( subControl == Q::UncheckedIcon )
-            {
+            if( subControl == Q::CheckedGraphic )
                 std::swap( role1, role2 );
-            }
 
             setGraphicRole( subControl, role1 );
             setGraphicRole( subControl | Q::Checked, role2 );
@@ -157,8 +153,8 @@ class MySkinEditor : public QskSkinHintTableEditor
         {
             const auto aspect = Q::Cursor | state | A::Position;
 
-            setMetric( aspect | Q::Checked, 0 );
-            setMetric( aspect, 1 );
+            setMetric( aspect, 0 );
+            setMetric( aspect | Q::Checked, 1 );
         }
 
         setAnimation( Q::Cursor | A::Metric, animator() );
@@ -179,66 +175,69 @@ class MySkinEditor : public QskSkinHintTableEditor
     QskAnimationHint m_animationHint;
 };
 
-class MySkin1 : public MySkin
+namespace
 {
-  public:
-    MySkin1()
+    class SkinBlue : public MySkin
     {
-        using namespace QskRgb;
+      public:
+        SkinBlue()
+        {
+            using namespace QskRgb;
 
-        setGraphicFilter( GraphicRoleNormal, Crimson );
-        setGraphicFilter( GraphicRoleInverted, Gold );
+            setGraphicFilter( GraphicRoleNormal, Crimson );
+            setGraphicFilter( GraphicRoleInverted, Gold );
 
-        MySkinEditor editor;
-        editor.setTable( &hintTable() );
-        editor.setAnimator( 200, QEasingCurve::Linear );
+            MySkinEditor editor;
+            editor.setTable( &hintTable() );
+            editor.setAnimator( 200, QEasingCurve::Linear );
 
-        editor.setGradient( QskAspect::Control, Qt::gray );
+            editor.setGradient( QskAspect::Control, Qt::gray );
 
-        editor.setupFocusIndicator( 2, 3, 6, DarkBlue );
-        editor.setupBox( 2, 8, DarkCyan, LightCyan );
+            editor.setupFocusIndicator( 2, 3, 6, DarkBlue );
+            editor.setupBox( 2, 8, DarkCyan, LightCyan );
 
-        editor.setupToggleButton( false, 150, 120, 6,
-            AliceBlue, Black, CornflowerBlue, White );
-    }
-};
+            editor.setupToggleButton( false, 150, 120, 6,
+                AliceBlue, Black, CornflowerBlue, White );
+        }
+    };
 
-class MySkin2 : public MySkin
-{
-  public:
-    MySkin2()
+    class SkinPink : public MySkin
     {
-        using namespace QskRgb;
+      public:
+        SkinPink()
+        {
+            using namespace QskRgb;
 
-        setGraphicFilter( GraphicRoleNormal, HotPink );
-        setGraphicFilter( GraphicRoleInverted, White );
+            setGraphicFilter( GraphicRoleNormal, HotPink );
+            setGraphicFilter( GraphicRoleInverted, White );
 
-        MySkinEditor editor;
-        editor.setTable( &hintTable() );
-        editor.setAnimator( 100, QEasingCurve::InQuad );
+            MySkinEditor editor;
+            editor.setTable( &hintTable() );
+            editor.setAnimator( 100, QEasingCurve::InQuad );
 
-        editor.setGradient( QskAspect::Control, Qt::gray );
+            editor.setGradient( QskAspect::Control, Qt::gray );
 
-        editor.setupFocusIndicator( 2, 6, 6, Crimson );
-        editor.setupBox( 4, 30, LightPink, MistyRose );
+            editor.setupFocusIndicator( 2, 6, 6, Crimson );
+            editor.setupBox( 4, 30, LightPink, MistyRose );
 
-        editor.setupToggleButton( true, 130, 100, 40,
-            LightPink, Black, HotPink, White );
-    }
-};
+            editor.setupToggleButton( true, 130, 100, 40,
+                LightPink, Black, HotPink, White );
+        }
+    };
+}
 
 QStringList MySkinFactory::skinNames() const
 {
-    return { QStringLiteral( "MySkin1" ), QStringLiteral( "MySkin2" ) };
+    return { QStringLiteral( "Blue" ), QStringLiteral( "Pink" ) };
 }
 
 QskSkin* MySkinFactory::createSkin( const QString& skinName )
 {
-    if ( skinName == QStringLiteral( "MySkin1" ) )
-        return new MySkin1();
+    if ( skinName == QStringLiteral( "Blue" ) )
+        return new SkinBlue();
 
-    if ( skinName == QStringLiteral( "MySkin2" ) )
-        return new MySkin2();
+    if ( skinName == QStringLiteral( "Pink" ) )
+        return new SkinPink();
 
     return nullptr;
 }

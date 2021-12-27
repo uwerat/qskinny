@@ -51,35 +51,36 @@ class ContentBox : public QskBox
         layout->setDefaultAlignment( Qt::AlignCenter );
         layout->setExtraSpacingAt( Qt::BottomEdge );
 
+        const QskSizePolicy sizePolicy(
+            QskSizePolicy::MinimumExpanding, QskSizePolicy::MinimumExpanding );
+
         {
             auto button = new MyToggleButton( layout );
-            button->setSizePolicy( QskSizePolicy::MinimumExpanding,
-                QskSizePolicy::MinimumExpanding );
-            button->setTextAt( 0, "On" );
-            button->setTextAt( 1, "Off" );
+            button->setSizePolicy( sizePolicy );
+
+            button->setText( false, "Off" );
+            button->setText( true, "On" );
         }
 
         {
             auto button = new MyToggleButton( layout );
-            button->setSizePolicy( QskSizePolicy::MinimumExpanding,
-                QskSizePolicy::MinimumExpanding );
-            button->setIconAt( 0, "image://shapes/Ring/Khaki" );
-            button->setIconAt( 1, "image://shapes/Diamond/Khaki" );
+            button->setSizePolicy( sizePolicy );
+
+            button->setIcon( false, "image://shapes/Diamond/Khaki" );
+            button->setIcon( true, "image://shapes/Ring/Khaki" );
         }
     }
 };
 
 class Window : public QskWindow
 {
-    Q_OBJECT
-
   public:
     Window()
     {
         auto button = new MyToggleButton();
 
-        button->setTextAt( 0, "Skin 1" );
-        button->setTextAt( 1, "Skin 2" );
+        button->setText( false, alternativeSkin( false ) );
+        button->setText( true, alternativeSkin( true ) );
         button->setLayoutAlignmentHint( Qt::AlignRight );
 
         auto box = new QskLinearBox( Qt::Vertical );
@@ -101,13 +102,11 @@ class Window : public QskWindow
   private:
     void setAlternativeSkin( bool on )
     {
-        const auto skinNames = qskSkinManager->skinNames();
-
         auto oldSkin = qskSetup->skin();
         if ( oldSkin->parent() == qskSetup )
             oldSkin->setParent( nullptr ); // otherwise setSkin deletes it
 
-        auto newSkin = qskSetup->setSkin( skinNames[ on ? 1 : 0 ] );
+        auto newSkin = qskSetup->setSkin( alternativeSkin( on ) );
 
         QskSkinTransition transition;
 
@@ -119,6 +118,12 @@ class Window : public QskWindow
 
         if ( oldSkin->parent() == nullptr )
             delete oldSkin;
+    }
+
+    QString alternativeSkin( bool on ) const
+    {
+        const auto skinNames = qskSkinManager->skinNames();
+        return skinNames[ on ];
     }
 };
 
@@ -148,5 +153,3 @@ int main( int argc, char* argv[] )
 
     return app.exec();
 }
-
-#include "main.moc"
