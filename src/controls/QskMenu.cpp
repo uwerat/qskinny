@@ -308,13 +308,13 @@ void QskMenu::setSelectedIndex( int index )
 
 QRectF QskMenu::cellRect( int index ) const
 {
-    return effectiveSkinlet()->subControlCell(
+    return effectiveSkinlet()->sampleRect(
         this, contentsRect(), QskMenu::Cell, index );
 }
 
 int QskMenu::indexAtPosition( const QPointF& pos ) const
 {
-    return effectiveSkinlet()->subControlCellIndexAt(
+    return effectiveSkinlet()->sampleIndexAt(
         this, contentsRect(), QskMenu::Cell, pos );
 }
 

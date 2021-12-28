@@ -15,7 +15,7 @@
 #include <qfontmetrics.h>
 
 template< class T >
-static inline QVariant qskValueAt( const QskMenu* menu, int index )
+static inline QVariant qskSampleAt( const QskMenu* menu, int index )
 {
     const auto item = menu->itemAt( index );
 
@@ -33,6 +33,13 @@ static inline QVariant qskValueAt( const QskMenu* menu, int index )
     }
 
     return QVariant();
+}
+
+template< class T >
+static inline T qskValueAt( const QskMenu* menu, int index )
+{
+    const auto sample = qskSampleAt< T >( menu, index );
+    return sample.template value< T >();
 }
 
 class QskMenuSkinlet::PrivateData
@@ -126,10 +133,10 @@ class QskMenuSkinlet::PrivateData
         qreal maxW = 0.0;
         for ( int i = 0; i < menu->count(); i++ )
         {
-            const auto value = skinlet->valueAt( menu, QskMenu::Graphic, i );
-            if ( value.canConvert< QskGraphic >() )
+            const auto sample = skinlet->sampleAt( menu, QskMenu::Graphic, i );
+            if ( sample.canConvert< QskGraphic >() )
             {
-                const auto graphic = value.value< QskGraphic >();
+                const auto graphic = sample.value< QskGraphic >();
                 if ( !graphic.isNull() )
                 {
                     const auto w = graphic.widthForHeight( h );
@@ -152,10 +159,10 @@ class QskMenuSkinlet::PrivateData
 
         for ( int i = 0; i < menu->count(); i++ )
         {
-            const auto value = skinlet->valueAt( menu, QskMenu::Text, i );
-            if ( value.canConvert< QString >() )
+            const auto sample = skinlet->sampleAt( menu, QskMenu::Text, i );
+            if ( sample.canConvert< QString >() )
             {
-                const auto text = value.value< QString >();
+                const auto text = sample.value< QString >();
                 if( !text.isEmpty() )
                 {
                     const auto w = qskHorizontalAdvance( fm, text );
@@ -234,7 +241,7 @@ QRectF QskMenuSkinlet::subControlRect(
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
-QRectF QskMenuSkinlet::subControlCell(
+QRectF QskMenuSkinlet::sampleRect(
     const QskSkinnable* skinnable, const QRectF& contentsRect,
     QskAspect::Subcontrol subControl, int index ) const
 {
@@ -252,7 +259,7 @@ QRectF QskMenuSkinlet::subControlCell(
 
     if ( subControl == QskMenu::Graphic || subControl == QskMenu::Text )
     {
-        const auto r = subControlCell( menu, contentsRect, Q::Cell, index );
+        const auto r = sampleRect( menu, contentsRect, Q::Cell, index );
         const auto graphicWidth = m_data->graphicWidth( menu );
 
         if ( subControl == QskMenu::Graphic )
@@ -276,19 +283,19 @@ QRectF QskMenuSkinlet::subControlCell(
         }
     }
 
-    return Inherited::subControlCell(
+    return Inherited::sampleRect(
         skinnable, contentsRect, subControl, index );
 }
 
-int QskMenuSkinlet::subControlCellIndexAt(
+int QskMenuSkinlet::sampleIndexAt(
     const QskSkinnable* skinnable, const QRectF& contentsRect,
     QskAspect::Subcontrol subControl, const QPointF& pos ) const
 {
     const PrivateData::CacheGuard guard( m_data.get() );
-    return Inherited::subControlCellIndexAt( skinnable, contentsRect, subControl, pos );
+    return Inherited::sampleIndexAt( skinnable, contentsRect, subControl, pos );
 }
 
-int QskMenuSkinlet::subControlCellCount(
+int QskMenuSkinlet::sampleCount(
     const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
 {
     using Q = QskMenu;
@@ -299,15 +306,15 @@ int QskMenuSkinlet::subControlCellCount(
         return menu->count();
     }
 
-    return Inherited::subControlCellCount( skinnable, subControl );
+    return Inherited::sampleCount( skinnable, subControl );
 }
 
-QskAspect::States QskMenuSkinlet::subControlCellStates(
+QskAspect::States QskMenuSkinlet::sampleStates(
     const QskSkinnable* skinnable, QskAspect::Subcontrol subControl, int index ) const
 {
     using Q = QskMenu;
 
-    auto states = Inherited::subControlCellStates( skinnable, subControl, index );
+    auto states = Inherited::sampleStates( skinnable, subControl, index );
 
     if ( subControl == Q::Cell || subControl == Q::Graphic || subControl == Q::Text )
     {
@@ -319,7 +326,7 @@ QskAspect::States QskMenuSkinlet::subControlCellStates(
     return states;
 }
 
-QVariant QskMenuSkinlet::valueAt( const QskSkinnable* skinnable,
+QVariant QskMenuSkinlet::sampleAt( const QskSkinnable* skinnable,
     QskAspect::Subcontrol subControl, int index ) const
 {
     using Q = QskMenu;
@@ -327,12 +334,12 @@ QVariant QskMenuSkinlet::valueAt( const QskSkinnable* skinnable,
     const auto menu = static_cast< const QskMenu* >( skinnable );
 
     if ( subControl == Q::Graphic )
-        return qskValueAt< QskGraphic >( menu, index );
+        return qskSampleAt< QskGraphic >( menu, index );
 
     if ( subControl == Q::Text )
-        return qskValueAt< QString >( menu, index );
+        return qskSampleAt< QString >( menu, index );
 
-    return Inherited::valueAt( skinnable, subControl, index );
+    return Inherited::sampleAt( skinnable, subControl, index );
 }
 
 QSGNode* QskMenuSkinlet::updateContentsNode(
@@ -392,14 +399,14 @@ QSGNode* QskMenuSkinlet::updateMenuNode(
     return contentsNode;
 }
 
-QSGNode* QskMenuSkinlet::updateSeriesSubNode( const QskSkinnable* skinnable,
+QSGNode* QskMenuSkinlet::updateSampleNode( const QskSkinnable* skinnable,
     QskAspect::Subcontrol subControl, int index, QSGNode* node ) const
 {
     using Q = QskMenu;
 
     auto menu = static_cast< const QskMenu* >( skinnable );
 
-    const auto rect = subControlCell( menu, menu->contentsRect(), subControl, index );
+    const auto rect = sampleRect( menu, menu->contentsRect(), subControl, index );
 
     if ( subControl == Q::Cell )
     {
@@ -408,24 +415,28 @@ QSGNode* QskMenuSkinlet::updateSeriesSubNode( const QskSkinnable* skinnable,
 
     if ( subControl == Q::Graphic )
     {
-        const auto v = qskValueAt< QskGraphic >( menu, index );
+        const auto graphic = qskValueAt< QskGraphic >( menu, index );
+        if ( graphic.isNull() )
+            return nullptr;
 
         const auto alignment = menu->alignmentHint( subControl, Qt::AlignCenter );
         const auto filter = menu->effectiveGraphicFilter( subControl );
 
         return QskSkinlet::updateGraphicNode(
-            menu, node, v.value< QskGraphic >(), filter, rect, alignment );
+            menu, node, graphic, filter, rect, alignment );
     }
 
     if ( subControl == Q::Text )
     {
-        const auto v = qskValueAt< QString >( menu, index );
+        const auto text = qskValueAt< QString >( menu, index );
+        if ( text.isEmpty() )
+            return nullptr;
 
         const auto alignment = menu->alignmentHint(
             subControl, Qt::AlignVCenter | Qt::AlignLeft );
 
         return QskSkinlet::updateTextNode( menu, node, rect, alignment,
-            v.value< QString>(), menu->textOptions(), QskMenu::Text );
+            text, menu->textOptions(), QskMenu::Text );
     }
 
     return nullptr;
@@ -440,7 +451,7 @@ QSizeF QskMenuSkinlet::sizeHint( const QskSkinnable* skinnable,
 
     const PrivateData::CacheGuard guard( m_data.get() );
 
-    const auto count = subControlCellCount( skinnable, QskMenu::Cell );
+    const auto count = sampleCount( skinnable, QskMenu::Cell );
 
     qreal w = 0.0;
     qreal h = 0.0;
