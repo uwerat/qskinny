@@ -53,6 +53,9 @@ class QSK_EXPORT QskSkinlet
     virtual QskAspect::States subControlCellStates( const QskSkinnable*,
         QskAspect::Subcontrol, int index ) const;
 
+    virtual QVariant valueAt( const QskSkinnable*,
+        QskAspect::Subcontrol, int index ) const;
+
     const QVector< quint8 >& nodeRoles() const;
 
     void setOwnedBySkinnable( bool on );
@@ -129,6 +132,12 @@ class QSK_EXPORT QskSkinlet
     QSGNode* updateGraphicNode( const QskSkinnable*, QSGNode*,
         const QskGraphic&, QskAspect::Subcontrol,
         Qt::Orientations mirrored = Qt::Orientations() ) const;
+
+    QSGNode* updateSeriesNode( const QskSkinnable*,
+        QskAspect::Subcontrol, QSGNode* ) const;
+
+    virtual QSGNode* updateSeriesSubNode( const QskSkinnable*,
+        QskAspect::Subcontrol, int index, QSGNode* ) const;
 
     void replaceChildNode( quint8 nodeRole, QSGNode* parentNode,
         QSGNode* oldNode, QSGNode* newNode ) const;
