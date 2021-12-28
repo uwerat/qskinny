@@ -24,18 +24,18 @@ class QSK_EXPORT QskMenuSkinlet : public QskPopupSkinlet
     QRectF subControlRect( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol ) const override;
 
-    QRectF subControlCell( const QskSkinnable*,
+    int sampleCount( const QskSkinnable*, QskAspect::Subcontrol ) const override;
+
+    QRectF sampleRect( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol, int index ) const override;
 
-    int subControlCellIndexAt( const QskSkinnable*,
+    int sampleIndexAt( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol, const QPointF& ) const override;
 
-    int subControlCellCount( const QskSkinnable*, QskAspect::Subcontrol ) const override;
-
-    QskAspect::States subControlCellStates( const QskSkinnable*,
+    QskAspect::States sampleStates( const QskSkinnable*,
         QskAspect::Subcontrol, int index ) const override;
 
-    QVariant valueAt( const QskSkinnable*,
+    QVariant sampleAt( const QskSkinnable*,
         QskAspect::Subcontrol, int index ) const override;
 
     QSizeF sizeHint( const QskSkinnable*,
@@ -45,7 +45,7 @@ class QSK_EXPORT QskMenuSkinlet : public QskPopupSkinlet
     QSGNode* updateContentsNode( const QskPopup*, QSGNode* ) const override;
     QSGNode* updateMenuNode( const QskSkinnable*, QSGNode* ) const;
 
-    QSGNode* updateSeriesSubNode( const QskSkinnable*,
+    QSGNode* updateSampleNode( const QskSkinnable*,
         QskAspect::Subcontrol, int index, QSGNode* ) const override;
 
   private:

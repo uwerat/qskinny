@@ -42,24 +42,30 @@ class QSK_EXPORT QskSkinlet
     virtual QRectF subControlRect( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol ) const;
 
-    virtual QRectF subControlCell( const QskSkinnable*,
+    /*
+        When having more than one instance for the
+        same QskAspect::Subcontrol it is called a sample
+     */
+    virtual QRectF sampleRect( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol, int index ) const;
 
-    virtual int subControlCellIndexAt( const QskSkinnable*,
+    virtual int sampleIndexAt( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol, const QPointF& ) const;
 
-    virtual int subControlCellCount( const QskSkinnable*, QskAspect::Subcontrol ) const;
+    virtual int sampleCount( const QskSkinnable*, QskAspect::Subcontrol ) const;
 
-    virtual QskAspect::States subControlCellStates( const QskSkinnable*,
+    virtual QskAspect::States sampleStates( const QskSkinnable*,
         QskAspect::Subcontrol, int index ) const;
 
-    virtual QVariant valueAt( const QskSkinnable*,
+    virtual QVariant sampleAt( const QskSkinnable*,
         QskAspect::Subcontrol, int index ) const;
 
     const QVector< quint8 >& nodeRoles() const;
 
     void setOwnedBySkinnable( bool on );
     bool isOwnedBySkinnable() const;
+
+    // Helper functions for creating nodes
 
     static QSGNode* updateBoxNode( const QskSkinnable*, QSGNode*,
         const QRectF&, QskAspect::Subcontrol );
@@ -136,7 +142,7 @@ class QSK_EXPORT QskSkinlet
     QSGNode* updateSeriesNode( const QskSkinnable*,
         QskAspect::Subcontrol, QSGNode* ) const;
 
-    virtual QSGNode* updateSeriesSubNode( const QskSkinnable*,
+    virtual QSGNode* updateSampleNode( const QskSkinnable*,
         QskAspect::Subcontrol, int index, QSGNode* ) const;
 
     void replaceChildNode( quint8 nodeRole, QSGNode* parentNode,
@@ -168,17 +174,17 @@ inline QSizeF QskSkinlet::sizeHint(
     return QSizeF();
 }
 
-inline QRectF QskSkinlet::subControlCell( const QskSkinnable*,
+inline QRectF QskSkinlet::sampleRect( const QskSkinnable*,
     const QRectF&, QskAspect::Subcontrol, int index ) const
 {
     Q_UNUSED( index )
     return QRectF();
 }
 
-inline int QskSkinlet::subControlCellCount(
+inline int QskSkinlet::sampleCount(
     const QskSkinnable*, QskAspect::Subcontrol ) const
 {
-    return 1;
+    return 0;
 }
 
 #endif

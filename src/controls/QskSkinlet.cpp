@@ -564,20 +564,17 @@ QSGNode* QskSkinlet::updateGraphicNode(
     return qskUpdateGraphicNode( skinnable, node, graphic, colorFilter, rect, mirrored );
 }
 
-int QskSkinlet::subControlCellIndexAt( const QskSkinnable* skinnable,
+int QskSkinlet::sampleIndexAt( const QskSkinnable* skinnable,
     const QRectF& rect, QskAspect::Subcontrol subControl, const QPointF& pos ) const
 {
-    /*
-        slow default implementation to be overloaded when
-        having many cells
-     */
+    // slow default implementation to be overloaded when having many cells
 
-    const auto cellCount = subControlCellCount( skinnable, subControl );
+    const auto count = sampleCount( skinnable, subControl );
 
-    for ( int i = 0; i < cellCount; i++ )
+    for ( int i = 0; i < count; i++ )
     {
-        const auto cellRect = subControlCell( skinnable, rect, subControl, i );
-        if ( cellRect.contains( pos ) )
+        const auto r = sampleRect( skinnable, rect, subControl, i );
+        if ( r.contains( pos ) )
             return i;
     }
 
@@ -590,19 +587,19 @@ QSGNode* QskSkinlet::updateSeriesNode( const QskSkinnable* skinnable,
     auto node = rootNode ? rootNode->firstChild() : nullptr;
     QSGNode* lastNode = nullptr;
 
-    const auto count = subControlCellCount( skinnable, subControl );
+    const auto count = sampleCount( skinnable, subControl );
 
     for( int i = 0; i < count; i++ )
     {
         QSGNode* newNode = nullptr;
 
         {
-            const auto newStates = subControlCellStates( skinnable, subControl, i );
+            const auto newStates = sampleStates( skinnable, subControl, i );
 
             QskSkinStateChanger stateChanger( skinnable );
             stateChanger.setStates( newStates );
 
-            newNode = updateSeriesSubNode( skinnable, subControl, i, node );
+            newNode = updateSampleNode( skinnable, subControl, i, node );
         }
 
         if ( newNode )
@@ -631,21 +628,21 @@ QSGNode* QskSkinlet::updateSeriesNode( const QskSkinnable* skinnable,
     return rootNode;
 }
 
-QSGNode* QskSkinlet::updateSeriesSubNode( const QskSkinnable*,
+QSGNode* QskSkinlet::updateSampleNode( const QskSkinnable*,
     QskAspect::Subcontrol, int index, QSGNode* ) const
 {
     Q_UNUSED( index )
     return nullptr;
 }
 
-QskAspect::States QskSkinlet::subControlCellStates(
+QskAspect::States QskSkinlet::sampleStates(
     const QskSkinnable* skinnable, QskAspect::Subcontrol, int index ) const
 {
     Q_UNUSED( index )
     return skinnable->skinStates();
 }
 
-QVariant QskSkinlet::valueAt( const QskSkinnable*,
+QVariant QskSkinlet::sampleAt( const QskSkinnable*,
     QskAspect::Subcontrol, int index ) const
 {
     Q_UNUSED( index )
