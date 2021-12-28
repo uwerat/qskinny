@@ -22,6 +22,7 @@
 #include "QskTextColors.h"
 #include "QskTextNode.h"
 #include "QskTextOptions.h"
+#include "QskSkinStateChanger.h"
 
 #include <qquickwindow.h>
 #include <qsgsimplerectnode.h>
@@ -563,24 +564,6 @@ QSGNode* QskSkinlet::updateGraphicNode(
     return qskUpdateGraphicNode( skinnable, node, graphic, colorFilter, rect, mirrored );
 }
 
-QSizeF QskSkinlet::hintWithoutConstraint(
-    const QSizeF& hint, const QSizeF& constraint ) const
-{
-    /*
-        This method is useful in situations, where a hint has been calculated
-        from a constraint and we want to return the calculated part only
-     */
-    QSizeF h;
-
-    if ( constraint.width() < 0.0 )
-        h.setWidth( hint.width() );
-
-    if ( constraint.height() < 0.0 )
-        h.setHeight( hint.height() );
-
-    return h;
-}
-
 int QskSkinlet::subControlCellIndexAt( const QskSkinnable* skinnable,
     const QRectF& rect, QskAspect::Subcontrol subControl, const QPointF& pos ) const
 {
@@ -601,11 +584,90 @@ int QskSkinlet::subControlCellIndexAt( const QskSkinnable* skinnable,
     return -1;
 }
 
+QSGNode* QskSkinlet::updateSeriesNode( const QskSkinnable* skinnable,
+    QskAspect::Subcontrol subControl, QSGNode* rootNode ) const
+{
+    auto node = rootNode ? rootNode->firstChild() : nullptr;
+    QSGNode* lastNode = nullptr;
+
+    const auto count = subControlCellCount( skinnable, subControl );
+
+    for( int i = 0; i < count; i++ )
+    {
+        QSGNode* newNode = nullptr;
+
+        {
+            const auto newStates = subControlCellStates( skinnable, subControl, i );
+
+            QskSkinStateChanger stateChanger( skinnable );
+            stateChanger.setStates( newStates );
+
+            newNode = updateSeriesSubNode( skinnable, subControl, i, node );
+        }
+
+        if ( newNode )
+        {
+            if ( newNode == node )
+            {
+                node = node->nextSibling();
+            }
+            else
+            {
+                if ( rootNode == nullptr )
+                    rootNode = new QSGNode();
+
+                if ( node )
+                    rootNode->insertChildNodeBefore( newNode, node );
+                else
+                    rootNode->appendChildNode( newNode );
+            }
+
+            lastNode = newNode;
+        }
+    }
+
+    QskSGNode::removeAllChildNodesAfter( rootNode, lastNode );
+
+    return rootNode;
+}
+
+QSGNode* QskSkinlet::updateSeriesSubNode( const QskSkinnable*,
+    QskAspect::Subcontrol, int index, QSGNode* ) const
+{
+    Q_UNUSED( index )
+    return nullptr;
+}
+
 QskAspect::States QskSkinlet::subControlCellStates(
     const QskSkinnable* skinnable, QskAspect::Subcontrol, int index ) const
 {
     Q_UNUSED( index )
     return skinnable->skinStates();
+}
+
+QVariant QskSkinlet::valueAt( const QskSkinnable*,
+    QskAspect::Subcontrol, int index ) const
+{
+    Q_UNUSED( index )
+    return QVariant();
+}
+
+QSizeF QskSkinlet::hintWithoutConstraint(
+    const QSizeF& hint, const QSizeF& constraint ) const
+{
+    /*
+        This method is useful in situations, where a hint has been calculated
+        from a constraint and we want to return the calculated part only
+     */
+    QSizeF h;
+
+    if ( constraint.width() < 0.0 )
+        h.setWidth( hint.width() );
+
+    if ( constraint.height() < 0.0 )
+        h.setHeight( hint.height() );
+
+    return h;
 }
 
 #include "moc_QskSkinlet.cpp"
