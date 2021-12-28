@@ -42,11 +42,16 @@ class QSK_EXPORT QskSkinlet
     virtual QRectF subControlRect( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol ) const;
 
-    virtual QRectF itemRect( const QskSkinnable*,
+    virtual QRectF subControlCell( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol, int index ) const;
 
-    virtual int itemIndexAt( const QskSkinnable*,
+    virtual int subControlCellIndexAt( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol, const QPointF& ) const;
+
+    virtual int subControlCellCount( const QskSkinnable*, QskAspect::Subcontrol ) const;
+
+    virtual QskAspect::States subControlCellStates( const QskSkinnable*,
+        QskAspect::Subcontrol, int index ) const;
 
     const QVector< quint8 >& nodeRoles() const;
 
@@ -152,6 +157,19 @@ inline QSizeF QskSkinlet::sizeHint(
     const QskSkinnable*, Qt::SizeHint, const QSizeF& ) const
 {
     return QSizeF();
+}
+
+inline QRectF QskSkinlet::subControlCell( const QskSkinnable*,
+    const QRectF&, QskAspect::Subcontrol, int index ) const
+{
+    Q_UNUSED( index )
+    return QRectF();
+}
+
+inline int QskSkinlet::subControlCellCount(
+    const QskSkinnable*, QskAspect::Subcontrol ) const
+{
+    return 1;
 }
 
 #endif

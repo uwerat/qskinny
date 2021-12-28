@@ -162,7 +162,7 @@ void QskListViewSkinlet::updateBackgroundNodes(
     if ( rowSelected >= rowMin && rowSelected <= rowMax )
     {
         QskSkinStateChanger stateChanger( listView );
-        stateChanger.addStates( QskListView::Selected );
+        stateChanger.setStates( listView->skinStates() | QskListView::Selected );
 
         const QColor color = listView->color( QskListView::Cell );
 
@@ -436,12 +436,12 @@ QSGNode* QskListViewSkinlet::updateCellNode( const QskListView* listView,
 {
     using namespace QskSGNode;
 
-    QskAspect::States rowStates;
+    auto rowStates = listView->skinStates();
     if ( row == listView->selectedRow() )
         rowStates |= QskListView::Selected;
 
     QskSkinStateChanger stateChanger( listView );
-    stateChanger.addStates( rowStates );
+    stateChanger.setStates( rowStates );
 
     QSGNode* newNode = nullptr;
 
