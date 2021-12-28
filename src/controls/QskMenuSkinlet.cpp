@@ -44,7 +44,7 @@ static qreal qskMaxTextWidth( const QskMenu* menu )
     for ( int i = 0; i < menu->count(); i++ )
     {
         const auto value = menu->itemAt( i );
-        
+
         const auto text = qskValueAt< QString >( menu, i );
         if( !text.isEmpty() )
         {
@@ -131,6 +131,10 @@ static QSGNode* qskUpdateTextNode( const QskMenu* menu,
 
 static QSGNode* qskUpdateBackgroundNode( const QskMenu* menu, QSGNode* rootNode )
 {
+    using Q = QskMenu;
+
+    const auto skinlet = menu->effectiveSkinlet();
+
     auto node = rootNode ? rootNode->firstChild() : nullptr;
     QSGNode* lastNode = nullptr;
 
@@ -140,11 +144,11 @@ static QSGNode* qskUpdateBackgroundNode( const QskMenu* menu, QSGNode* rootNode 
 
         {
             QskSkinStateChanger stateChanger( menu );
-            if ( menu->currentIndex() == i )
-                stateChanger.addStates( QskMenu::Selected );
+            stateChanger.setStates(
+                skinlet->subControlCellStates( menu, Q::Cell, i ) );
 
             newNode = QskSkinlet::updateBoxNode(
-                menu, node, menu->cellRect( i ), QskMenu::Cell );
+                menu, node, menu->cellRect( i ), Q::Cell );
         }
 
         if ( newNode )
@@ -196,15 +200,21 @@ static void qskUpdateItemNode(
 
 static QSGNode* qskUpdateItemsNode( const QskMenu* menu, QSGNode* rootNode )
 {
-    const auto spacing = menu->spacingHint( QskMenu::Cell );
+    using Q = QskMenu;
+
+    const auto skinlet = menu->effectiveSkinlet();
+
+    const auto spacing = menu->spacingHint( Q::Cell );
     const auto graphicWidth = qskGraphicWidth( menu );
+    const auto contentsRect = menu->contentsRect();
 
     if ( rootNode == nullptr )
         rootNode = new QSGNode();
 
     QSGNode* node = nullptr;
 
-    for( int i = 0; i < menu->count(); i++ )
+    const auto count = skinlet->subControlCellCount( menu, Q::Cell );
+    for( int i = 0; i < count; i++ )
     {
         if ( node == nullptr )
             node = rootNode->firstChild();
@@ -219,10 +229,11 @@ static QSGNode* qskUpdateItemsNode( const QskMenu* menu, QSGNode* rootNode )
 
         {
             QskSkinStateChanger stateChanger( menu );
-            if ( menu->currentIndex() == i )
-                stateChanger.addStates( QskMenu::Selected );
+            stateChanger.setStates(
+                skinlet->subControlCellStates( menu, Q::Cell, i ) );
 
-            const auto cellRect = menu->cellRect( i );
+            const auto cellRect = skinlet->subControlCell(
+                menu, contentsRect, Q::Cell, i );
 
             auto graphicRect = cellRect;
             graphicRect.setWidth( graphicWidth );
@@ -268,10 +279,11 @@ QRectF QskMenuSkinlet::subControlRect(
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
-QRectF QskMenuSkinlet::itemRect(
+QRectF QskMenuSkinlet::subControlCell(
     const QskSkinnable* skinnable, const QRectF& contentsRect,
     QskAspect::Subcontrol subControl, int index ) const
 {
+    // QskMenu::Text, QskMenu::Graphic ???
     if ( subControl == QskMenu::Cell )
     {
         const auto menu = static_cast< const QskMenu* >( skinnable );
@@ -285,43 +297,37 @@ QRectF QskMenuSkinlet::itemRect(
         return QRectF( r.x(), r.y() + index * h, r.width(), h );
     }
 
-    return Inherited::itemRect(
+    return Inherited::subControlCell(
         skinnable, contentsRect, subControl, index );
 }
 
-int QskMenuSkinlet::itemIndexAt( const QskSkinnable* skinnable,
-    const QRectF& rect, QskAspect::Subcontrol subControl, const QPointF& pos ) const
+int QskMenuSkinlet::subControlCellCount(
+    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
 {
+    // QskMenu::Text, QskMenu::Graphic ???
     if ( subControl == QskMenu::Cell )
     {
         const auto menu = static_cast< const QskMenu* >( skinnable );
-
-        const auto panelRect = menu->subControlContentsRect( QskMenu::Panel );
-        if ( !panelRect.contains( pos ) )
-            return -1;
-
-        /*
-            A menu never has many items and we can simply iterate
-            without being concerned about performance issues
-         */
-
-        const auto h = qskCellHeight( menu );
-
-        auto r = panelRect;
-        r.setHeight( h );
-        
-        for ( int i = 0; i < menu->count(); i++ )
-        {
-            if ( r.contains( pos ) )
-                return i;
-
-            r.moveTop( r.bottom() );
-        }
-
-        return -1;
+        return menu->count();
     }
 
-    return Inherited::itemIndexAt( skinnable, rect, subControl, pos );
+    return Inherited::subControlCellCount( skinnable, subControl );
+}
+
+QskAspect::States QskMenuSkinlet::subControlCellStates(
+    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl, int index ) const
+{
+    auto states = Inherited::subControlCellStates( skinnable, subControl, index );
+
+    // QskMenu::Text, QskMenu::Graphic ???
+    if ( subControl == QskMenu::Cell )
+    {
+        const auto menu = static_cast< const QskMenu* >( skinnable );
+        if ( menu->currentIndex() == index )
+            states |= QskMenu::Selected;
+    }
+
+    return states;
 }
 
 QSGNode* QskMenuSkinlet::updateContentsNode(

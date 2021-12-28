@@ -581,19 +581,31 @@ QSizeF QskSkinlet::hintWithoutConstraint(
     return h;
 }
 
-int QskSkinlet::itemIndexAt( const QskSkinnable*,
-        const QRectF&, QskAspect::Subcontrol, const QPointF& ) const
+int QskSkinlet::subControlCellIndexAt( const QskSkinnable* skinnable,
+    const QRectF& rect, QskAspect::Subcontrol subControl, const QPointF& pos ) const
 {
+    /*
+        slow default implementation to be overloaded when
+        having many cells
+     */
+
+    const auto cellCount = subControlCellCount( skinnable, subControl );
+
+    for ( int i = 0; i < cellCount; i++ )
+    {
+        const auto cellRect = subControlCell( skinnable, rect, subControl, i );
+        if ( cellRect.contains( pos ) )
+            return i;
+    }
+
     return -1;
 }
 
-QRectF QskSkinlet::itemRect( const QskSkinnable*,
-    const QRectF&, QskAspect::Subcontrol, int index ) const
+QskAspect::States QskSkinlet::subControlCellStates(
+    const QskSkinnable* skinnable, QskAspect::Subcontrol, int index ) const
 {
-    // When a subControl is for a unknown number of item, f.e. in a menu
-
     Q_UNUSED( index )
-    return QRectF();
+    return skinnable->skinStates();
 }
 
 #include "moc_QskSkinlet.cpp"
