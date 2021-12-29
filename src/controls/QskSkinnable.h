@@ -87,9 +87,13 @@ class QSK_EXPORT QskSkinnable
 
     bool setAnimationHint( QskAspect, QskAnimationHint );
     QskAnimationHint animationHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
+    bool hasAnimationHint( QskAspect ) const;
 
     bool setSkinHint( QskAspect, const QVariant& );
     bool resetSkinHint( QskAspect );
+
+    bool moveSkinHint( QskAspect, const QVariant& );
+    bool moveSkinHint( QskAspect, const QVariant&, const QVariant& );
 
     QskAnimationHint effectiveAnimation( QskAspect::Type, QskAspect::Subcontrol,
         QskAspect::States, QskSkinHintStatus* status = nullptr ) const;
@@ -148,10 +152,16 @@ class QSK_EXPORT QskSkinnable
     bool setColor( QskAspect, Qt::GlobalColor );
     bool setColor( QskAspect, QRgb );
     bool setColor( QskAspect, const QColor& );
+
+    bool moveColor( QskAspect, Qt::GlobalColor );
+    bool moveColor( QskAspect, QRgb );
+    bool moveColor( QskAspect, const QColor& );
+
     bool resetColor( QskAspect );
     QColor color( QskAspect, QskSkinHintStatus* = nullptr ) const;
 
     bool setMetric( QskAspect, qreal );
+    bool moveMetric( QskAspect, qreal );
     bool resetMetric( QskAspect );
     qreal metric( QskAspect, QskSkinHintStatus* = nullptr ) const;
 
@@ -159,6 +169,11 @@ class QSK_EXPORT QskSkinnable
     bool resetFlagHint( QskAspect );
     int flagHint( QskAspect ) const;
     template< typename T > T flagHint( QskAspect, T = T() ) const;
+
+    bool setPositionHint( QskAspect, qreal );
+    bool movePositionHint( QskAspect, qreal );
+    bool resetPositionHint( QskAspect );
+    qreal positionHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
 
     bool setStrutSizeHint( QskAspect, const QSizeF& );
     bool setStrutSizeHint( QskAspect, qreal width, qreal height );
