@@ -151,10 +151,10 @@ class MySkinEditor : public QskSkinHintTableEditor
 
         for( auto state : { A::NoState, Q::Disabled } )
         {
-            const auto aspect = Q::Cursor | state | A::Position;
+            const auto aspect = Q::Cursor | state;
 
-            setMetric( aspect, 0 );
-            setMetric( aspect | Q::Checked, 1 );
+            setPosition( aspect, 0 );
+            setPosition( aspect | Q::Checked, 1 );
         }
 
         setAnimation( Q::Cursor | A::Metric, animator() );

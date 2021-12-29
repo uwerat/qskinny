@@ -17,7 +17,7 @@ static inline QskIntervalF qskBarInterval( const QskProgressBar* bar )
 
     if ( bar->isIndeterminate() )
     {
-        const auto pos = bar->metric( QskProgressBar::Bar | QskAspect::Position );
+        const auto pos = bar->positionHint( QskProgressBar::Bar );
 
         static const QEasingCurve curve( QEasingCurve::InOutCubic );
 

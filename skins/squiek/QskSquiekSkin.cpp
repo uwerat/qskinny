@@ -330,8 +330,8 @@ void Editor::setupMenu()
     setColor( Q::Text, QColor( 255, 255, 255 ) );
     setFontRole( Q::Text, QskSkin::SmallFont );
 
-    setMetric( Q::Panel | A::Position, 0 );
-    setMetric( Q::Panel | A::Position | QskPopup::Closed, 1 );
+    setPosition( Q::Panel, 0 );
+    setPosition( Q::Panel | QskPopup::Closed, 1 );
 
     setAnimation( Q::Panel | A::Metric, 150 );
     setAnimation( Q::Cursor | A::Metric, 50, QEasingCurve::OutCubic );
@@ -924,10 +924,10 @@ void Editor::setupSwitchButton()
 
     for( auto state : { A::NoState, Q::Disabled } )
     {
-        auto aspect = Q::Handle | state | A::Position;
+        auto aspect = Q::Handle | state;
 
-        setMetric( aspect, 0 );
-        setMetric( aspect | Q::Checked, 1 );
+        setPosition( aspect, 0 );
+        setPosition( aspect | Q::Checked, 1 );
     }
 
     setAnimation( Q::Handle | A::Metric, qskDuration );
