@@ -22,6 +22,7 @@
 
 #ifdef CONTEXT_MENU
     #include <QskMenu.h>
+    #include <QskEvent.h>
 #endif
 
 #include <QDir>
@@ -91,7 +92,7 @@ class GraphicLabel : public QskGraphicLabel
         menu->addItem( "image://shapes/Ellipse/Red", "Setup" );
         menu->addItem( "image://shapes/Hexagon/PapayaWhip", "Help" );
 
-        menu->setOrigin( event->localPos() );
+        menu->setOrigin( qskMousePosition( event ) );
         menu->open();
 
         connect( menu, &QskMenu::triggered,
