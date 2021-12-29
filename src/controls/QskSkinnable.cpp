@@ -77,11 +77,24 @@ static inline bool qskSetMetric( QskSkinnable* skinnable,
     return skinnable->setSkinHint( aspect | QskAspect::Metric, metric );
 }
 
+static inline bool qskMoveMetric( QskSkinnable* skinnable,
+    const QskAspect aspect, const QVariant& metric )
+{
+    return skinnable->moveSkinHint( aspect | QskAspect::Metric, metric );
+}
+
 template< typename T >
 static inline bool qskSetMetric( QskSkinnable* skinnable,
     QskAspect aspect, const T& metric )
 {
     return qskSetMetric( skinnable, aspect, QVariant::fromValue( metric ) );
+}
+
+template< typename T >
+static inline bool qskMoveMetric( QskSkinnable* skinnable,
+    QskAspect aspect, const T& metric )
+{
+    return qskMoveMetric( skinnable, aspect, QVariant::fromValue( metric ) );
 }
 
 template< typename T >
@@ -98,11 +111,24 @@ static inline bool qskSetColor( QskSkinnable* skinnable,
     return skinnable->setSkinHint( aspect | QskAspect::Color, color );
 }
 
+static inline bool qskMoveColor( QskSkinnable* skinnable,
+    const QskAspect aspect, const QVariant& color )
+{
+    return skinnable->moveSkinHint( aspect | QskAspect::Color, color );
+}
+
 template< typename T >
 static inline bool qskSetColor( QskSkinnable* skinnable,
     const QskAspect aspect, const T& color )
 {
     return qskSetColor( skinnable, aspect, QVariant::fromValue( color ) );
+}
+
+template< typename T >
+static inline bool qskMoveColor( QskSkinnable* skinnable,
+    const QskAspect aspect, const T& color )
+{
+    return qskMoveColor( skinnable, aspect, QVariant::fromValue( color ) );
 }
 
 template< typename T >
@@ -378,6 +404,21 @@ bool QskSkinnable::setColor( const QskAspect aspect, QRgb rgb )
     return qskSetColor( this, aspect, QColor::fromRgba( rgb ) );
 }
 
+bool QskSkinnable::moveColor( const QskAspect aspect, const QColor& color )
+{
+    return qskMoveColor( this, aspect, color );
+}
+
+bool QskSkinnable::moveColor( const QskAspect aspect, Qt::GlobalColor color )
+{
+    return qskMoveColor( this, aspect, QColor( color ) );
+}
+
+bool QskSkinnable::moveColor( const QskAspect aspect, QRgb rgb )
+{
+    return qskMoveColor( this, aspect, QColor::fromRgba( rgb ) );
+}
+
 QColor QskSkinnable::color( const QskAspect aspect, QskSkinHintStatus* status ) const
 {
     return qskColor< QColor >( this, aspect, status );
@@ -388,9 +429,34 @@ bool QskSkinnable::setMetric( const QskAspect aspect, qreal metric )
     return qskSetMetric( this, aspect, metric );
 }
 
+bool QskSkinnable::moveMetric( QskAspect aspect, qreal metric )
+{
+    return qskMoveMetric( this, aspect, metric );
+}
+
 qreal QskSkinnable::metric( const QskAspect aspect, QskSkinHintStatus* status ) const
 {
     return qskMetric< qreal >( this, aspect, status );
+}
+
+bool QskSkinnable::setPositionHint( QskAspect aspect, qreal position )
+{
+    return qskSetMetric( this, aspect | QskAspect::Position, position );
+}
+
+bool QskSkinnable::movePositionHint( QskAspect aspect, qreal position )
+{
+    return qskMoveMetric( this, aspect | QskAspect::Position, position );
+}
+
+bool QskSkinnable::resetPositionHint( QskAspect aspect )
+{
+    return resetMetric( aspect | QskAspect::Position );
+}
+
+qreal QskSkinnable::positionHint( QskAspect aspect, QskSkinHintStatus* status ) const
+{
+    return qskMetric< qreal >( this, aspect | QskAspect::Position, status );
 }
 
 bool QskSkinnable::setStrutSizeHint(
@@ -658,6 +724,11 @@ QskAnimationHint QskSkinnable::animationHint(
     return effectiveSkinHint( aspect, status ).value< QskAnimationHint >();
 }
 
+bool QskSkinnable::hasAnimationHint( QskAspect aspect ) const
+{
+    return animationHint( aspect ).isValid();
+}
+
 QskAnimationHint QskSkinnable::effectiveAnimation(
     QskAspect::Type type, QskAspect::Subcontrol subControl,
     QskAspect::States states, QskSkinHintStatus* status ) const
@@ -761,6 +832,31 @@ QskSkinHintStatus QskSkinnable::hintStatus( QskAspect aspect ) const
     return status;
 }
 
+bool QskSkinnable::moveSkinHint( QskAspect aspect,
+    const QVariant& oldValue, const QVariant& newValue )
+{
+    if ( aspect.isAnimator() )
+        return false;
+
+    const bool ok = setSkinHint( aspect, newValue );
+
+    if ( ok && oldValue.isValid() && newValue.isValid() )
+    {
+        const auto animation = animationHint( aspect.subControl() | aspect.type() );
+        if ( animation.isValid() )
+        {
+            if ( newValue != oldValue )
+                startTransition( aspect, animation, oldValue, newValue );
+        }
+    }
+
+    return ok;
+}
+
+bool QskSkinnable::moveSkinHint( QskAspect aspect, const QVariant& value )
+{
+    return moveSkinHint( aspect, effectiveSkinHint( aspect ), value );
+}
 
 QVariant QskSkinnable::animatedValue(
     QskAspect aspect, QskSkinHintStatus* status ) const
