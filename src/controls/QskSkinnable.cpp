@@ -848,7 +848,7 @@ bool QskSkinnable::moveSkinHint( QskAspect aspect,
 
     if ( ok && oldValue.isValid() && newValue.isValid() )
     {
-        const auto animation = animationHint( aspect.subControl() | aspect.type() );
+        const auto animation = animationHint( aspect );
         if ( animation.isValid() )
         {
             if ( newValue != oldValue )
