@@ -14,6 +14,7 @@
 #include <QskFunctions.h>
 
 #include <qfontmetrics.h>
+#include <qmath.h>
 
 template< class T >
 static inline QVariant qskSampleAt( const QskMenu* menu, int index )
