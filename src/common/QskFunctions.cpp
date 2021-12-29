@@ -122,6 +122,22 @@ QRectF qskValidOrEmptyInnerRect( const QRectF& rect, const QMarginsF& margins )
     return QRectF( x, y, w, h );
 }
 
+QRectF qskInterpolatedRect( const QRectF &from, const QRectF &to, qreal progress )
+{
+    if ( progress <= 0.0 )
+        return from;
+
+    if ( progress >= 1.0 )
+        return to;
+
+    const auto x = from.x() + progress * ( to.x() - from.x() );
+    const auto y = from.y() + progress * ( to.y() - from.y() );
+    const auto w = from.width() + progress * ( to.width() - from.width() );
+    const auto h = from.height() + progress * ( to.height() - from.height() );
+
+    return QRectF( x, y, w, h );
+}
+
 qreal qskHorizontalAdvance( const QFont& font, const QString& text )
 {
     return qskHorizontalAdvance( QFontMetricsF( font ), text );
