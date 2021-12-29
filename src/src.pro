@@ -212,6 +212,7 @@ HEADERS += \
 SOURCES += \
     controls/QskAbstractButton.cpp \
     controls/QskAnimator.cpp \
+    controls/QskAnimationHint.cpp \
     controls/QskBoundedControl.cpp \
     controls/QskBoundedInput.cpp \
     controls/QskBoundedRangeInput.cpp \
