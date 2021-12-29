@@ -65,6 +65,11 @@ namespace
         return ret;
     }
 
+    inline QskAspect aspectPosition( QskAspect aspect )
+    {
+        return aspect | QskAspect::Position;
+    }
+
     inline QskAspect aspectStrutSize( QskAspect aspect )
     {
         return aspect | QskAspect::StrutSize;
@@ -231,6 +236,23 @@ void QskSkinHintTableEditor::setGradient(
 QskGradient QskSkinHintTableEditor::gradient( QskAspect aspect ) const
 {
     return colorHint< QskGradient >( aspect );
+}
+
+void QskSkinHintTableEditor::setPosition(
+    QskAspect aspect, qreal position, QskStateCombination combination )
+{
+    setMetricHint( aspectPosition( aspect ), position, combination );
+}
+
+void QskSkinHintTableEditor::removePosition(
+    QskAspect aspect, QskStateCombination combination )
+{
+    removeMetricHint( aspectPosition( aspect ), combination );
+}
+
+qreal QskSkinHintTableEditor::position( QskAspect aspect ) const
+{
+    return metricHint< qreal >( aspectPosition( aspect ) );
 }
 
 void QskSkinHintTableEditor::setStrutSize(

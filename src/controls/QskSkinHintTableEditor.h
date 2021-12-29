@@ -50,6 +50,9 @@ class QSK_EXPORT QskSkinHintTableEditor
     void setAnimation( QskAspect, QskAnimationHint,
         QskStateCombination = QskStateCombination() );
 
+    void setAnimation( QskAspect, uint duration, QEasingCurve::Type,
+        QskStateCombination = QskStateCombination() );
+
     QskAnimationHint animation( QskAspect ) const;
 
     // flag
@@ -117,6 +120,15 @@ class QSK_EXPORT QskSkinHintTableEditor
         QskStateCombination = QskStateCombination() );
 
     QskGradient gradient( QskAspect ) const;
+
+    // position
+
+    void setPosition( QskAspect, qreal,
+        QskStateCombination = QskStateCombination() );
+
+    void removePosition( QskAspect, QskStateCombination = QskStateCombination() );
+
+    qreal position( QskAspect ) const;
 
     // strutSize
 
@@ -374,6 +386,12 @@ inline void QskSkinHintTableEditor::setAnimation(
 {
     aspect.setAnimator( true );
     setHint( aspect, hint, combination );
+}
+
+inline void QskSkinHintTableEditor::setAnimation( QskAspect aspect,
+    uint duration, QEasingCurve::Type curveType, QskStateCombination combination )
+{
+    setAnimation( aspect, QskAnimationHint( duration, curveType ), combination );
 }
 
 #endif
