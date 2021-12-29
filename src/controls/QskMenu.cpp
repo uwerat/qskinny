@@ -5,6 +5,7 @@
 #include <QskGraphic.h>
 #include <QskColorFilter.h>
 #include <QskSkinlet.h>
+#include <QskEvent.h>
 
 #include <qvector.h>
 #include <qvariant.h>
@@ -256,9 +257,11 @@ QskColorFilter QskMenu::graphicFilterAt( int index ) const
 
 void QskMenu::mousePressEvent( QMouseEvent* event )
 {
+    // QGuiApplication::styleHints()->setFocusOnTouchRelease ??
+
     if ( event->button() == Qt::LeftButton )
     {
-        const auto index = indexAtPosition( event->localPos() );
+        const auto index = indexAtPosition( qskMousePosition( event ) );
         if ( index >= 0 )
         {
             setCurrentIndex( index );
@@ -275,7 +278,7 @@ void QskMenu::mouseReleaseEvent( QMouseEvent* event )
         {
             m_data->isPressed = false;
 
-            const auto index = indexAtPosition( event->localPos() );
+            const auto index = indexAtPosition( qskMousePosition( event ) );
             if ( index == m_data->currentIndex )
                 setSelectedIndex( index );
         }
