@@ -30,10 +30,8 @@ namespace
 
         void advance( qreal value ) override
         {
-            const auto aspect = QskProgressBar::Bar | QskAspect::Position;
-
-            m_progressBar->setMetric( aspect, value );
-            m_progressBar->update();
+            if ( m_progressBar->setPositionHint( QskProgressBar::Bar, value ) )
+                m_progressBar->update();
         }
 
       private:

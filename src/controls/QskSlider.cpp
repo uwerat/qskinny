@@ -107,7 +107,7 @@ bool QskSlider::isTracking() const
 
 void QskSlider::aboutToShow()
 {
-    setMetric( Handle | QskAspect::Position, valueAsRatio() );
+    setPositionHint( Handle, valueAsRatio() );
     Inherited::aboutToShow();
 }
 
@@ -221,7 +221,7 @@ void QskSlider::mouseReleaseEvent( QMouseEvent* event )
 
 qreal QskSlider::handlePosition() const
 {
-    return metric( Handle | QskAspect::Position );
+    return positionHint( Handle );
 }
 
 void QskSlider::moveHandle()
@@ -235,20 +235,19 @@ void QskSlider::moveHandleTo( qreal value, const QskAnimationHint& hint )
     setSkinStateFlag( QskSlider::Minimum, value <= minimum() );
     setSkinStateFlag( QskSlider::Maximum, value >= maximum() );
 
-    const auto aspect = Handle | QskAspect::Metric | QskAspect::Position;
-
     const qreal pos = valueAsRatio( value );
 
-    if ( hint.duration > 0 )
+    if ( hint.isValid() )
     {
-        const qreal oldPos = metric( aspect );
-        setMetric( aspect, pos );
+        const qreal oldPos = positionHint( Handle );
+        setPositionHint( Handle, pos );
 
+        const auto aspect = Handle | QskAspect::Metric | QskAspect::Position;
         startTransition( aspect, hint, oldPos, pos );
     }
     else
     {
-        setMetric( aspect, pos );
+        setPositionHint( Handle, pos );
     }
 
     update();

@@ -552,10 +552,10 @@ void Editor::setupSwitchButton()
 
     for( auto state : { A::NoState, Q::Disabled } )
     {
-        auto aspect = Q::Handle | state | A::Position;
+        auto aspect = Q::Handle | state;
 
-        setMetric( aspect, 0 );
-        setMetric( aspect | Q::Checked, 1 );
+        setPosition( aspect, 0 );
+        setPosition( aspect | Q::Checked, 1 );
     }
 
     setAnimation( Q::Handle | A::Color, qskDuration );

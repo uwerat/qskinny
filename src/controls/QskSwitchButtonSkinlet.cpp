@@ -8,7 +8,7 @@
 
 static inline qreal qskEffectivePosition( const QskSwitchButton* switchButton )
 {
-    auto pos = switchButton->metric( QskSwitchButton::Handle | QskAspect::Position );
+    auto pos = switchButton->positionHint( QskSwitchButton::Handle );
     pos = qBound( 0.0, pos, 1.0 );
 
     if( switchButton->isInverted() )

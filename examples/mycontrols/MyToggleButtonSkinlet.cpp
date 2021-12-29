@@ -65,7 +65,7 @@ QRectF MyToggleButtonSkinlet::subControlRect( const QskSkinnable* skinnable,
     }
     else if( subControl == Q::Cursor )
     {
-        auto position = skinnable->metric( Q::Cursor | QskAspect::Position );
+        auto position = skinnable->positionHint( Q::Cursor );
         if ( button->isInverted() )
             position = 1.0 - position;
 
