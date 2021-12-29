@@ -42,6 +42,11 @@ class QSK_EXPORT QskAnimationHint
     {
     }
 
+    inline constexpr bool isValid() const
+    {
+        return duration > 0;
+    }
+
     uint duration;
     QEasingCurve::Type type;
     UpdateFlags updateFlags;
@@ -50,5 +55,12 @@ class QSK_EXPORT QskAnimationHint
 Q_DECLARE_METATYPE( QskAnimationHint )
 Q_DECLARE_TYPEINFO( QskAnimationHint, Q_PRIMITIVE_TYPE );
 Q_DECLARE_OPERATORS_FOR_FLAGS( QskAnimationHint::UpdateFlags )
+
+#ifndef QT_NO_DEBUG_STREAM
+
+class QDebug;
+QSK_EXPORT QDebug operator<<( QDebug, const QskAnimationHint& );
+
+#endif
 
 #endif
