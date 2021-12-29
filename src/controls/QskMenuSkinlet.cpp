@@ -11,6 +11,7 @@
 #include <QskFunctions.h>
 #include <QskSkinStateChanger.h>
 #include <QskMargins.h>
+#include <QskFunctions.h>
 
 #include <qfontmetrics.h>
 
@@ -222,20 +223,57 @@ QskMenuSkinlet::QskMenuSkinlet( QskSkin* skin )
     appendNodeRoles( { PanelRole } );
 }
 
+QRectF QskMenuSkinlet::cursorRect(
+    const QskSkinnable* skinnable, const QRectF& contentsRect, int index ) const
+{
+    const auto count = sampleCount( skinnable, QskMenu::Cell );
+
+    auto rect = sampleRect( skinnable, contentsRect,
+        QskMenu::Cell, qBound( 0, index, count ) );
+
+    if ( index < 0 )
+        rect.setBottom( rect.top() );
+
+    if ( index >= count )
+        rect.setTop( rect.bottom() );
+
+    return rect;
+}
+
 QRectF QskMenuSkinlet::subControlRect(
     const QskSkinnable* skinnable, const QRectF& contentsRect,
     QskAspect::Subcontrol subControl ) const
 {
+    using Q = QskMenu;
+
     const auto menu = static_cast< const QskMenu* >( skinnable );
 
-    if( subControl == QskMenu::Panel )
+    if( subControl == Q::Panel )
     {
         return contentsRect;
     }
 
-    if( subControl == QskMenu::Cursor )
+    if( subControl == Q::Cursor )
     {
-        return menu->cellRect( menu->currentIndex() );
+        if ( menu->currentIndex() < 0 )
+            return QRectF();
+
+        const qreal pos = menu->positionHint( Q::Cursor );
+
+        const int pos1 = qFloor( pos );
+        const int pos2 = qCeil( pos );
+
+        auto rect = cursorRect( skinnable, contentsRect, pos1 );
+
+        if ( pos1 != pos2 )
+        {
+            const auto r = cursorRect( skinnable, contentsRect, pos2 );
+
+            const qreal ratio = ( pos - pos1 ) / ( pos2 - pos1 );
+            rect = qskInterpolatedRect( rect, r, ratio );
+        }
+
+        return rect;
     }
 
     return Inherited::subControlRect( skinnable, contentsRect, subControl );

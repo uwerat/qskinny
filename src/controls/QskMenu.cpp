@@ -36,7 +36,7 @@ class QskMenu::PrivateData
     QskTextOptions textOptions;
     QPointF origin;
 
-    int currentIndex = 0;
+    int currentIndex = -1;
     bool isPressed = false;
 };
 
@@ -157,9 +157,13 @@ QskTextOptions QskMenu::textOptions() const
 
 void QskMenu::setCurrentIndex( int index )
 {
-    if( index >= 0 && index < count()
-        && ( index != m_data->currentIndex ) )
+    if( index < 0 || index >= count() )
+        index = -1;
+
+    if( index != m_data->currentIndex )
     {
+        setPositionHint( Cursor, index );
+
         m_data->currentIndex = index;
         update();
 
@@ -239,14 +243,29 @@ void QskMenu::wheelEvent( QWheelEvent* event )
 
 void QskMenu::traverse( int steps )
 {
-    auto& index = m_data->currentIndex;
+    if ( count() == 0 || ( steps % count() == 0 ) )
+        return;
 
-    index = ( index + steps ) % count();
-    if ( index < 0 )
-        index += count();
+    auto index = m_data->currentIndex + steps;
 
-    update();
-    Q_EMIT currentIndexChanged( index );
+    auto newIndex = index % count();
+    if ( newIndex < 0 )
+        newIndex += count();
+
+    if ( hasAnimationHint( Cursor | QskAspect::Metric ) )
+    {
+        // when cycling we want slide in 
+
+        if ( index < 0 )
+            setPositionHint( Cursor, count() );
+
+        if ( index >= count() )
+            setPositionHint( Cursor, -1 );
+    
+        movePositionHint( Cursor, newIndex );
+    }
+
+    setCurrentIndex( newIndex );
 }
 
 QskColorFilter QskMenu::graphicFilterAt( int index ) const
@@ -288,6 +307,10 @@ void QskMenu::mouseReleaseEvent( QMouseEvent* event )
 void QskMenu::aboutToShow()
 {
     setGeometry( QRectF( m_data->origin, sizeConstraint() ) );
+
+    if ( m_data->currentIndex < 0 )
+        setCurrentIndex( 0 );
+
     Inherited::aboutToShow();
 }
 

@@ -49,6 +49,8 @@ class QSK_EXPORT QskMenuSkinlet : public QskPopupSkinlet
         QskAspect::Subcontrol, int index, QSGNode* ) const override;
 
   private:
+    QRectF cursorRect( const QskSkinnable*, const QRectF&, int index ) const;
+
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

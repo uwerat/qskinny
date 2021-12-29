@@ -303,6 +303,7 @@ void Editor::setupPopup()
 
 void Editor::setupMenu()
 {
+    using A = QskAspect;
     using Q = QskMenu;
 
     const QColor c1( 78, 158, 38 );
@@ -312,7 +313,7 @@ void Editor::setupMenu()
     setVGradient( Q::Panel, c1, c2 );
 
     const bool isCascading = qskMaybeDesktopPlatform();
-    setFlagHint( Q::Panel | QskAspect::Style, isCascading );
+    setFlagHint( Q::Panel | A::Style, isCascading );
 
 #if 0
     setPadding( Q::Separator, QMarginsF( 10, 0, 10, 0 ) );
@@ -329,10 +330,11 @@ void Editor::setupMenu()
     setColor( Q::Text, QColor( 255, 255, 255 ) );
     setFontRole( Q::Text, QskSkin::SmallFont );
 
-    setMetric( Q::Panel | QskAspect::Position, 0 );
-    setMetric( Q::Panel | QskAspect::Position | QskPopup::Closed, 1 );
+    setMetric( Q::Panel | A::Position, 0 );
+    setMetric( Q::Panel | A::Position | QskPopup::Closed, 1 );
 
-    setAnimation( Q::Panel | QskAspect::Metric, 200 );
+    setAnimation( Q::Panel | A::Metric, 150 );
+    setAnimation( Q::Cursor | A::Metric, 50, QEasingCurve::OutCubic );
 }
 
 void Editor::setupTextLabel()
