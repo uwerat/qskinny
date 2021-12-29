@@ -449,6 +449,12 @@ bool QskSkinnable::movePositionHint( QskAspect aspect, qreal position )
     return qskMoveMetric( this, aspect | QskAspect::Position, position );
 }
 
+bool QskSkinnable::movePositionHint( QskAspect aspect, qreal from, qreal to )
+{
+    return moveSkinHint( aspect | QskAspect::Metric | QskAspect::Position,
+        QVariant::fromValue( from ), QVariant::fromValue( to ) );
+}
+
 bool QskSkinnable::resetPositionHint( QskAspect aspect )
 {
     return resetMetric( aspect | QskAspect::Position );
