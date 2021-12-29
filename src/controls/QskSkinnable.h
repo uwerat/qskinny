@@ -172,6 +172,7 @@ class QSK_EXPORT QskSkinnable
 
     bool setPositionHint( QskAspect, qreal );
     bool movePositionHint( QskAspect, qreal );
+    bool movePositionHint( QskAspect, qreal from, qreal to );
     bool resetPositionHint( QskAspect );
     qreal positionHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
 
