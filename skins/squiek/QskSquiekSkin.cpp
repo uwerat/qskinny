@@ -334,7 +334,7 @@ void Editor::setupMenu()
     setPosition( Q::Panel | QskPopup::Closed, 1 );
 
     setAnimation( Q::Panel | A::Metric, 150 );
-    setAnimation( Q::Cursor | A::Metric, 50, QEasingCurve::OutCubic );
+    setAnimation( Q::Cursor | A::Position | A::Metric, 75, QEasingCurve::OutCubic );
 }
 
 void Editor::setupTextLabel()
