@@ -9,6 +9,7 @@
 
 #include <qvector.h>
 #include <qvariant.h>
+#include <qeventloop.h>
 
 QSK_SUBCONTROL( QskMenu, Panel )
 QSK_SUBCONTROL( QskMenu, Cell )
@@ -37,6 +38,8 @@ class QskMenu::PrivateData
     QPointF origin;
 
     int currentIndex = -1;
+    int triggeredIndex = -1;
+
     bool isPressed = false;
 };
 
@@ -328,7 +331,9 @@ void QskMenu::setSelectedIndex( int index )
     if ( index >= 0 )
         setCurrentIndex( index );
 
+    m_data->triggeredIndex = index;
     Q_EMIT triggered( index );
+
     close();
 }
 
@@ -342,6 +347,70 @@ int QskMenu::indexAtPosition( const QPointF& pos ) const
 {
     return effectiveSkinlet()->sampleIndexAt(
         this, contentsRect(), QskMenu::Cell, pos );
+}
+
+namespace
+{
+    class EventLoop : public QEventLoop
+    {
+      public:
+        EventLoop( QskMenu* menu )
+            : QEventLoop( menu )
+        {
+            /*
+                We want menu being the parent, so that the loop can be found
+                by menu->findChild< QEventLoop* >(). 
+             */
+            
+            connect( menu, &QObject::destroyed, this, &EventLoop::reject );
+            connect( menu, &QskMenu::fadingChanged, this, &EventLoop::maybeQuit );
+        }
+
+      private:
+        void reject()
+        {
+            setParent( nullptr );
+            quit();
+        }
+
+        void maybeQuit()
+        {
+            auto menu = static_cast< const QskMenu* >( parent() );
+            if ( !menu->isOpen() && !menu->isFading() )
+                quit();
+        }
+    };
+}
+
+int QskMenu::exec()
+{
+    if ( isOpen() || isFading() )
+    {
+        qWarning() << "QskMenu::exec: menu is already opened";
+        return -1;
+    }
+
+    const bool deleteOnClose = popupFlags() & QskPopup::DeleteOnClose;
+    if ( deleteOnClose )
+        setPopupFlag( QskPopup::DeleteOnClose, false );
+
+    QPointer< QskMenu > menu = this;
+    menu->open();
+
+    EventLoop loop( this );
+    (void )loop.exec( QEventLoop::DialogExec );
+
+    int result = -1;
+
+    if ( menu )
+    {
+        result = menu->m_data->triggeredIndex;
+
+        if ( deleteOnClose )
+            delete menu;
+    }
+
+    return result;
 }
 
 #include "moc_QskMenu.cpp"

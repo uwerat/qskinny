@@ -66,6 +66,8 @@ class QSK_EXPORT QskMenu : public QskPopup
     QRectF cellRect( int index ) const;
     int indexAtPosition( const QPointF& ) const;
 
+    Q_INVOKABLE int exec();
+
   Q_SIGNALS:
     void cascadingChanged( bool );
     void originChanged( const QPointF& );

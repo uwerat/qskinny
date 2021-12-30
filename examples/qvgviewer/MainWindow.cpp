@@ -85,18 +85,20 @@ class GraphicLabel : public QskGraphicLabel
   protected:
     void mousePressEvent( QMouseEvent* event ) override
     {
-        auto menu = new QskMenu( this );
+        QskMenu menu( this );
+        menu.setPopupFlag( QskPopup::DeleteOnClose, false );
 
-        menu->addItem( "image://shapes/Rectangle/White", "Print" );
-        menu->addItem( "image://shapes/Diamond/Yellow", "Save As" );
-        menu->addItem( "image://shapes/Ellipse/Red", "Setup" );
-        menu->addItem( "image://shapes/Hexagon/PapayaWhip", "Help" );
+        menu.addItem( "image://shapes/Rectangle/White", "Print" );
+        menu.addItem( "image://shapes/Diamond/Yellow", "Save As" );
+        menu.addItem( "image://shapes/Ellipse/Red", "Setup" );
+        menu.addItem( "image://shapes/Hexagon/PapayaWhip", "Help" );
 
-        menu->setOrigin( qskMousePosition( event ) );
-        menu->open();
+        menu.setOrigin( qskMousePosition( event ) );
 
-        connect( menu, &QskMenu::triggered,
-                 this, []( int index ) { qDebug() << index; } );
+        if ( int result = menu.exec() )
+        {
+            qDebug() << result;
+        }
     }
 #endif
 };
