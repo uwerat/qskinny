@@ -8,7 +8,6 @@
 #include "QskPushButton.h"
 #include "QskQuick.h"
 
-#include <qeventloop.h>
 #include <qquickwindow.h>
 #include <qpointer.h>
 
@@ -237,35 +236,8 @@ QskDialog::DialogCode QskDialogSubWindow::result() const
 
 QskDialog::DialogCode QskDialogSubWindow::exec()
 {
-    if ( priority() > 0 )
-    {
-        qWarning( "illegal call of QskDialogSubWindow::exec "
-                  "for a subwindow with non default priority." );
-    }
-
-    open();
-
-    //check for window after call to open(), because maybe a popupmanager assigns a window on open.
-    if ( window() == nullptr )
-    {
-        qWarning( "trying to exec a subwindow without window." );
-        return QskDialog::Rejected;
-    }
-
-    if ( auto mouseGrabber = window()->mouseGrabberItem() )
-    {
-        // when being called from QQuickWindow::mouseReleaseEvent
-        // the mouse grabber has not yet been released.
-
-        if( !qskIsAncestorOf( this, mouseGrabber ) )
-            qskUngrabMouse( mouseGrabber );
-    }
-
-    QEventLoop eventLoop;
-
-    connect( this, &QskDialogSubWindow::finished, &eventLoop, &QEventLoop::quit );
-    ( void ) eventLoop.exec( QEventLoop::DialogExec );
-
+    m_data->result = QskDialog::Rejected;
+    ( void ) execPopup();
     return m_data->result;
 }
 

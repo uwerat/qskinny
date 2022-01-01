@@ -95,10 +95,9 @@ class GraphicLabel : public QskGraphicLabel
 
         menu.setOrigin( qskMousePosition( event ) );
 
-        if ( int result = menu.exec() )
-        {
-            qDebug() << result;
-        }
+        const int result = menu.exec();
+        if ( result >= 0 )
+            qDebug() << "Selected:" << result;
     }
 #endif
 };

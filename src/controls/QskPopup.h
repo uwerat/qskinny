@@ -91,6 +91,7 @@ class QSK_EXPORT QskPopup : public QskControl
 
   protected:
     void aboutToShow() override;
+    int execPopup();
 
     bool event( QEvent* ) override;
     void focusInEvent( QFocusEvent* ) override;
