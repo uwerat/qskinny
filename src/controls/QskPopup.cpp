@@ -623,4 +623,72 @@ void QskPopup::windowChangeEvent( QskWindowChangeEvent* event )
     Inherited::windowChangeEvent( event );
 }
 
+int QskPopup::execPopup()
+{
+    class EventLoop : public QEventLoop
+    {
+      public:
+        EventLoop( QskPopup* popup )
+            : QEventLoop( popup )
+        {
+            /*
+                We want popup being the parent, so that the loop can be found
+                by popup->findChild< QEventLoop* >()
+             */
+
+            connect( popup, &QObject::destroyed, this, &EventLoop::reject );
+            connect( popup, &QskPopup::fadingChanged, this, &EventLoop::maybeQuit );
+            connect( popup, &QskPopup::openChanged, this, &EventLoop::maybeQuit );
+        }
+
+      private:
+        void reject()
+        {
+            setParent( nullptr );
+            QEventLoop::exit( 1 );
+        }
+
+        void maybeQuit()
+        {
+            if ( auto popup = qobject_cast< const QskPopup* >( parent() ) )
+            {
+                if ( popup->isOpen() || popup->isFading() )
+                    return;
+            }
+    
+            QEventLoop::exit( 0 );
+        }
+    };
+
+    if ( isOpen() || isFading() )
+    {
+        qWarning() << "QskPopup::exec: popup is already opened";
+        return -1;
+    }
+
+    if ( priority() > 0 )
+    {
+        qWarning( "QskPopup::exec for a popup with non default priority." );
+    }
+
+    open();
+
+    if ( window() == nullptr )
+    {
+        qWarning( "trying to exec a popup without window." );
+        return -1;
+    }
+
+    if ( auto mouseGrabber = window()->mouseGrabberItem() )
+    {   
+        // when being called from QQuickWindow::mouseReleaseEvent
+        // the mouse grabber has not yet been released.
+        
+        if( !qskIsAncestorOf( this, mouseGrabber ) )
+            qskUngrabMouse( mouseGrabber );
+    }
+
+    return EventLoop( this ).exec( QEventLoop::DialogExec );
+}
+
 #include "moc_QskPopup.cpp"
