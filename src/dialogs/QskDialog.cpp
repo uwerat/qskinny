@@ -175,7 +175,7 @@ static QString qskSelectSubWindow(
     subWindow.setEntries( entries );
     subWindow.setSelectedRow( selectedRow );
 
-    QString selectedEntry = subWindow.selectedEntry();
+    QString selectedEntry;
 
     qskSetupSubWindow( title, actions, defaultAction, &subWindow );
     if ( subWindow.exec() == QskDialog::Accepted )
@@ -313,8 +313,8 @@ QString QskDialog::select(
 {
 #if 1
     // should be parameters
-    const QskDialog::Actions actions( QskDialog::Ok | QskDialog::Cancel );
-    const QskDialog::Action defaultAction = QskDialog::Ok;
+    const auto actions = QskDialog::Ok | QskDialog::Cancel;
+    const auto defaultAction = QskDialog::Ok;
 #endif
 
     if ( m_data->policy == EmbeddedBox )
