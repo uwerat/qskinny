@@ -8,6 +8,50 @@
 
 #include "QskBoxNode.h"
 #include "QskSGNode.h"
+#include "QskFunctions.h"
+
+static inline int qskCurrentIndex( const QskPageIndicator* indicator )
+{
+    int index = qRound( indicator->currentIndex() );
+    if ( index >= indicator->count() )
+        index = 0;
+
+    return index;
+}
+
+static QRectF qskBulletRect( const QskPageIndicator* indicator,
+    const QRectF& rect, int index )
+{
+    using Q = QskPageIndicator;
+
+    /*
+        The bullets might have different sizes, but as a pager indicator
+        usually does not have many bullets we can simply iterate
+     */
+
+    const qreal spacing = indicator->spacingHint( Q::Panel );
+    const auto size = indicator->strutSizeHint( Q::Bullet );
+
+    qreal x = rect.x();
+    qreal y = rect.y();
+
+    if ( indicator->orientation() == Qt::Horizontal )
+    {
+        for ( int i = 0; i < index; i++ )
+            x += size.width() + spacing;
+
+        y += 0.5 * ( rect.height() - size.height() );
+    }
+    else
+    {
+        for ( int i = 0; i < index; i++ )
+            y += size.height() + spacing;
+
+        x += 0.5 * ( rect.width() - size.width() );
+    }
+
+    return QRectF( x, y, size.width(), size.height() );
+}
 
 QskPageIndicatorSkinlet::QskPageIndicatorSkinlet( QskSkin* skin )
     : QskSkinlet( skin )
@@ -23,9 +67,7 @@ QRectF QskPageIndicatorSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
     if ( subControl == QskPageIndicator::Panel )
-    {
         return contentsRect;
-    }
 
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
@@ -33,157 +75,75 @@ QRectF QskPageIndicatorSkinlet::subControlRect( const QskSkinnable* skinnable,
 QSGNode* QskPageIndicatorSkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
-    const auto indicator = static_cast< const QskPageIndicator* >( skinnable );
+    using Q = QskPageIndicator;
 
     switch ( nodeRole )
     {
         case PanelRole:
-        {
-            return updateBoxNode( indicator, node, QskPageIndicator::Panel );
-        }
+            return updateBoxNode( skinnable, node, Q::Panel );
 
         case BulletsRole:
-        {
-            return updateBulletsNode( indicator, node );
-        }
+            return updateSeriesNode( skinnable, Q::Bullet, node );
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
-QRectF QskPageIndicatorSkinlet::bulletRect(
-    const QskPageIndicator* indicator, const QRectF& rect, int index ) const
+int QskPageIndicatorSkinlet::sampleCount(
+    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
 {
     using Q = QskPageIndicator;
 
-    const auto szNormal = indicator->strutSizeHint( Q::Bullet );
-    const auto szHighlighted = indicator->strutSizeHint( Q::Highlighted );
-
-    const qreal wNormal = szNormal.width();
-    const qreal wHighlighted = szHighlighted.width();
-
-    const qreal hNormal = szNormal.height();
-    const qreal hHighlighted = szHighlighted.height();
-
-    const auto currentIndex = indicator->currentIndex();
-
-    // scale bullet size if we are in between a transition:
-    qreal indexDiff = qAbs( currentIndex - index );
-    if ( indexDiff > ( indicator->count() - 1 ) )
-        indexDiff = ( indicator->count() - currentIndex ); // wrapping
-
-    const qreal w0 = ( indexDiff < 1 ) ?
-        ( 1 - indexDiff ) * wHighlighted + indexDiff * wNormal : wNormal;
-
-    const qreal h0 = ( indexDiff < 1 ) ?
-        ( 1 - indexDiff ) * hHighlighted + indexDiff * hNormal : hNormal;
-
-    const qreal spacing = indicator->spacingHint( Q::Panel );
-    const bool horizontal = ( indicator->orientation() == Qt::Horizontal );
-
-    qreal w, h;
-    if ( horizontal )
+    if ( subControl == Q::Bullet )
     {
-        w = ( indicator->count() - 1 ) * ( wNormal + spacing ) + wHighlighted;
-        h = rect.height();
-    }
-    else
-    {
-        w = rect.width();
-        h = ( indicator->count() - 1 ) * ( hNormal + spacing ) + hHighlighted;
+        const auto indicator = static_cast< const QskPageIndicator* >( skinnable );
+        return indicator->count();
     }
 
-    QRectF r( 0, 0, w, h );
-    r.moveCenter( rect.center() );
-
-    qreal x2, y2;
-
-    {
-        const qreal w = ( index > currentIndex ) ? wHighlighted : wNormal;
-        const qreal h = ( index > currentIndex ) ? hHighlighted : hNormal;
-
-        if ( indexDiff < 1 && index >= currentIndex )
-        {
-            // scrolling from or to this bullet:
-            x2 = wNormal + qAbs( wHighlighted - wNormal ) * indexDiff;
-            y2 = hNormal + qAbs( hHighlighted - hNormal ) * indexDiff;
-        }
-        else if ( ( currentIndex > ( indicator->count() - 1 ) &&
-            index > ( currentIndex - indicator->count() + 1 ) ) )
-        {
-            // wrapping case:
-            qreal wrappingDiff = indexDiff;
-            while ( wrappingDiff > 1 )
-                wrappingDiff -= 1;
-
-            x2 = wNormal + qAbs( wHighlighted - wNormal ) * wrappingDiff;
-            y2 = hNormal + qAbs( hHighlighted - hNormal ) * wrappingDiff;
-        }
-        else
-        {
-            x2 = w;
-            y2 = h;
-        }
-    }
-
-    const qreal x = r.left() + x2 + spacing + ( index - 1 ) * ( wNormal + spacing );
-    const qreal y = r.top() + y2 + spacing + ( index - 1 ) * ( hNormal + spacing );
-
-    qreal adjust = ( currentIndex == index )
-        ? ( wNormal - wHighlighted ) : ( wHighlighted - wNormal );
-    adjust = 0.5 * qMax( 0.0, adjust );
-
-    if ( indexDiff < 1 )
-        adjust *= indexDiff;
-
-    QRectF bulletRect( 0.0, 0.0, w0, h0 );
-
-    if ( horizontal )
-        bulletRect.moveTo( x, r.top() + adjust );
-    else
-        bulletRect.moveTo( r.left() + adjust, y );
-
-    return bulletRect;
+    return Inherited::sampleCount( skinnable, subControl );
 }
 
-QSGNode* QskPageIndicatorSkinlet::updateBulletsNode(
-    const QskPageIndicator* indicator, QSGNode* node ) const
+QRectF QskPageIndicatorSkinlet::sampleRect( const QskSkinnable* skinnable,
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl, int index ) const
 {
-    if ( indicator->count() == 0 )
-        return nullptr;
+    using Q = QskPageIndicator;
 
-    if ( node == nullptr )
-        node = new QSGNode();
-
-    const auto rect = indicator->subControlContentsRect( QskPageIndicator::Panel );
-
-    // index of the highlighted bullet
-    int currentBullet = qRound( indicator->currentIndex() );
-    if ( currentBullet >= indicator->count() )
-        currentBullet = 0;
-
-    auto bulletNode = node->firstChild();
-    for ( int i = 0; i < indicator->count(); i++ )
+    if ( subControl == Q::Bullet )
     {
-        using Q = QskPageIndicator;
+        const auto indicator = static_cast< const QskPageIndicator* >( skinnable );
 
-        if ( i > 0 )
-            bulletNode = bulletNode->nextSibling();
-
-        if ( bulletNode == nullptr )
-            bulletNode = new QskBoxNode();
-
-        updateBoxNode( indicator, bulletNode, bulletRect( indicator, rect, i ),
-            ( i == currentBullet ) ? Q::Highlighted : Q::Bullet );
-
-        if ( bulletNode->parent() != node )
-            node->appendChildNode( bulletNode );
+        const auto rect = indicator->subControlContentsRect( Q::Panel );
+        return qskBulletRect( indicator, rect, index );
     }
 
-    // if count has decreased we need to remove superfluous nodes
-    QskSGNode::removeAllChildNodesAfter( node, bulletNode );
+    return Inherited::sampleRect( skinnable, contentsRect, subControl, index );
+}
 
-    return node;
+int QskPageIndicatorSkinlet::sampleIndexAt(
+    const QskSkinnable* skinnable, const QRectF& contentsRect,
+    QskAspect::Subcontrol subControl, const QPointF& pos ) const
+{
+    // TODO ...
+    return Inherited::sampleIndexAt( skinnable, contentsRect, subControl, pos );
+}
+
+QSGNode* QskPageIndicatorSkinlet::updateSampleNode( const QskSkinnable* skinnable,
+    QskAspect::Subcontrol subControl, int index, QSGNode* node ) const
+{
+    using Q = QskPageIndicator;
+
+    if ( subControl == Q::Bullet )
+    {
+        auto indicator = static_cast< const QskPageIndicator* >( skinnable );
+
+        const auto rect = sampleRect( indicator, indicator->contentsRect(), Q::Bullet, index );
+        const auto ratio = indicator->valueRatioAt( index );
+
+        return QskSkinlet::updateInterpolatedBoxNode( skinnable, node,
+            rect, Q::Bullet, Q::Bullet | Q::Selected, ratio );
+    }
+
+    return nullptr;
 }
 
 QSizeF QskPageIndicatorSkinlet::sizeHint( const QskSkinnable* skinnable,
@@ -196,44 +156,21 @@ QSizeF QskPageIndicatorSkinlet::sizeHint( const QskSkinnable* skinnable,
 
     const auto indicator = static_cast< const QskPageIndicator* >( skinnable );
 
-    const auto bulletSize = indicator->strutSizeHint( Q::Bullet );
-
-    const auto maxSize = bulletSize.expandedTo(
-        indicator->strutSizeHint( Q::Highlighted ) );
-
-    const qreal spacing = indicator->spacingHint( Q::Panel );
-
+    QSizeF size( 0.0, 0.0 );
     const int n = indicator->count();
 
-    qreal w = 0;
-    qreal h = 0;
-
-    if ( indicator->orientation() == Qt::Horizontal )
+    if ( n > 0 )
     {
-        if ( n > 0 )
-        {
-            w += maxSize.width();
+        size = indicator->strutSizeHint( Q::Bullet );
+        const qreal spacing = indicator->spacingHint( Q::Panel );
 
-            if ( n > 1 )
-                w += ( n - 1 ) * ( bulletSize.width() + spacing );
-        }
-
-        h = maxSize.height();
-    }
-    else
-    {
-        if ( n > 0 )
-        {
-            h += maxSize.height();
-
-            if ( n > 1 )
-                h += ( n - 1 ) * ( bulletSize.height() + spacing );
-        }
-
-        w = maxSize.width();
+        if ( indicator->orientation() == Qt::Horizontal )
+            size.rwidth() += ( n - 1 ) * ( size.width() + spacing );
+        else
+            size.rheight() += ( n - 1 ) * ( size.height() + spacing );
     }
 
-    const auto hint = indicator->outerBoxSize( Q::Panel, QSizeF( w, h ) );
+    const auto hint = indicator->outerBoxSize( Q::Panel, size );
     return hint.expandedTo( indicator->strutSizeHint( Q::Panel ) );
 }
 

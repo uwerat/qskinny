@@ -281,27 +281,19 @@ void Editor::setupPageIndicator()
 {
     using Q = QskPageIndicator;
 
-    for ( auto subControl : { Q::Bullet, Q::Highlighted } )
-    {
-        const auto extent = qskDpiScaled( 10 );
-        setStrutSize( subControl, extent, extent );
+    const auto extent = qskDpiScaled( 9 );
+    setStrutSize( Q::Bullet, extent, extent );
 
-        // circles, without border
-        setBoxShape( subControl, 100, Qt::RelativeSize );
-        setBoxBorderMetrics( subControl, 0 );
+    // circles, without border
+    setBoxShape( Q::Bullet, 100, Qt::RelativeSize );
+    setBoxBorderMetrics( Q::Bullet, 0 );
 
-        const QColor color = ( subControl == Q::Bullet )
-            ? m_pal.lighter150 : m_pal.accentColor;
+    setGradient( Q::Bullet, m_pal.lighter150 );
+    setGradient( Q::Bullet | Q::Selected, m_pal.accentColor );
 
-        setGradient( subControl, color );
-        setBoxBorderColors( subControl, color );
-    }
-
-    // no visible background panel
-    setBoxBorderMetrics( Q::Panel, 0 );
-    setGradient( Q::Panel, QskGradient() );
-
-    setSpacing( Q::Panel, 3 );
+    setSpacing( Q::Panel, 5 );
+    setPadding( Q::Panel, 0 );
+    setGradient( Q::Panel, QskGradient() ); // invisible
 }
 
 void Editor::setupPushButton()

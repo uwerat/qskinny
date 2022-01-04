@@ -18,13 +18,17 @@ class QSK_EXPORT QskPageIndicator : public QskControl
     Q_PROPERTY( qreal currentIndex READ currentIndex
         WRITE setCurrentIndex NOTIFY currentIndexChanged FINAL )
 
+    Q_PROPERTY( bool interactive READ isInteractive
+        WRITE setInteractive NOTIFY interactiveChanged FINAL )
+
     Q_PROPERTY( Qt::Orientation orientation READ orientation
         WRITE setOrientation NOTIFY orientationChanged FINAL )
 
     using Inherited = QskControl;
 
   public:
-    QSK_SUBCONTROLS( Panel, Bullet, Highlighted )
+    QSK_SUBCONTROLS( Panel, Bullet )
+    QSK_STATES( Selected )
 
     QskPageIndicator( QQuickItem* parent = nullptr );
     QskPageIndicator( int count, QQuickItem* parent = nullptr );
@@ -32,16 +36,21 @@ class QSK_EXPORT QskPageIndicator : public QskControl
     ~QskPageIndicator() override;
 
     int count() const;
-
     qreal currentIndex() const;
 
     Qt::Orientation orientation() const;
     void setOrientation( Qt::Orientation );
 
+    bool isInteractive() const;
+    void setInteractive( bool );
+
+    qreal valueRatioAt( int index ) const;
+
   Q_SIGNALS:
     void countChanged( int );
     void currentIndexChanged( qreal );
     void orientationChanged( Qt::Orientation );
+    void interactiveChanged( bool );
 
   public Q_SLOTS:
     void setCount( int count );

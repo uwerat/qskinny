@@ -8,8 +8,6 @@
 
 #include "QskSkinlet.h"
 
-class QskPageIndicator;
-
 class QSK_EXPORT QskPageIndicatorSkinlet : public QskSkinlet
 {
     Q_GADGET
@@ -32,13 +30,20 @@ class QSK_EXPORT QskPageIndicatorSkinlet : public QskSkinlet
     QSizeF sizeHint( const QskSkinnable*,
         Qt::SizeHint, const QSizeF& ) const override;
 
+    int sampleCount( const QskSkinnable*, QskAspect::Subcontrol ) const override;
+
+    QRectF sampleRect( const QskSkinnable*,
+        const QRectF&, QskAspect::Subcontrol, int index ) const override;
+
+    int sampleIndexAt( const QskSkinnable*,
+        const QRectF&, QskAspect::Subcontrol, const QPointF& ) const override;
+
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 
-  private:
-    QSGNode* updateBulletsNode( const QskPageIndicator*, QSGNode* ) const;
-    QRectF bulletRect( const QskPageIndicator*, const QRectF&, int index ) const;
+    QSGNode* updateSampleNode( const QskSkinnable*,
+        QskAspect::Subcontrol, int index, QSGNode* ) const override;
 };
 
 #endif
