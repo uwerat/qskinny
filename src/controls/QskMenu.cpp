@@ -290,7 +290,11 @@ void QskMenu::mousePressEvent( QMouseEvent* event )
             setCurrentIndex( index );
             m_data->isPressed = true;
         }
+
+        return;
     }
+
+    return Inherited::mousePressEvent( event );
 }
 
 void QskMenu::mouseReleaseEvent( QMouseEvent* event )
@@ -305,7 +309,11 @@ void QskMenu::mouseReleaseEvent( QMouseEvent* event )
             if ( index == m_data->currentIndex )
                 setSelectedIndex( index );
         }
+
+        return;
     }
+
+    return Inherited::mouseReleaseEvent( event );
 }
 
 void QskMenu::aboutToShow()

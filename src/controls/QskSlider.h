@@ -49,9 +49,9 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
     void trackingChanged( bool );
 
   protected:
-    void mousePressEvent( QMouseEvent* e ) override;
-    void mouseMoveEvent( QMouseEvent* e ) override;
-    void mouseReleaseEvent( QMouseEvent* e ) override;
+    void mousePressEvent( QMouseEvent* ) override;
+    void mouseMoveEvent( QMouseEvent* ) override;
+    void mouseReleaseEvent( QMouseEvent* ) override;
 
     QSizeF handleSize() const;
     QRectF handleRect() const;
