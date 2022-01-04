@@ -21,6 +21,10 @@ class QskGradient;
 class QskColorFilter;
 class QskGraphic;
 class QskTextOptions;
+class QskBoxShapeMetrics;
+class QskBoxBorderMetrics;
+class QskBoxBorderColors;
+class QskBoxHints;
 
 class QSGNode;
 
@@ -72,6 +76,17 @@ class QSK_EXPORT QskSkinlet
 
     static QSGNode* updateBoxNode( const QskSkinnable*, QSGNode*,
         const QRectF&, const QskGradient&, QskAspect::Subcontrol );
+
+    static QSGNode* updateBoxNode( const QskSkinnable*, QSGNode*,
+        const QRectF&, const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
+        const QskBoxBorderColors&, const QskGradient& );
+
+    static QSGNode* updateBoxNode( const QskSkinnable*, QSGNode*,
+        const QRectF&, const QskBoxHints& );
+
+    static QSGNode* updateInterpolatedBoxNode(
+        const QskSkinnable*, QSGNode*, const QRectF&,
+        QskAspect aspect1, QskAspect aspect2, qreal ratio );
 
     static QSGNode* updateArcNode( const QskSkinnable*, QSGNode*,
         const QRectF&, QskAspect::Subcontrol );

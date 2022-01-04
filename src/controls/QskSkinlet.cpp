@@ -12,6 +12,7 @@
 #include "QskBoxClipNode.h"
 #include "QskBoxNode.h"
 #include "QskBoxShapeMetrics.h"
+#include "QskBoxHints.h"
 #include "QskColorFilter.h"
 #include "QskControl.h"
 #include "QskFunctions.h"
@@ -366,6 +367,61 @@ QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
 
     return qskUpdateBoxNode( skinnable, node,
         boxRect, shape, borderMetrics, borderColors, fillGradient );
+}
+
+QSGNode* QskSkinlet::updateBoxNode(
+    const QskSkinnable* skinnable, QSGNode* node, const QRectF& rect,
+    const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& borderMetrics,
+    const QskBoxBorderColors& borderColors, const QskGradient& fillGradient )
+{
+    return qskUpdateBoxNode( skinnable, node,
+        rect, shape, borderMetrics, borderColors, fillGradient );
+}
+
+QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
+    QSGNode* node, const QRectF& rect, const QskBoxHints& hints )
+{
+    return qskUpdateBoxNode( skinnable, node, rect,
+        hints.shape, hints.borderMetrics, hints.borderColors, hints.gradient );
+}
+
+QSGNode* QskSkinlet::updateInterpolatedBoxNode(
+    const QskSkinnable* skinnable, QSGNode* node, const QRectF& rect,
+    QskAspect aspect1, QskAspect aspect2, qreal ratio )
+{
+    QskBoxHints boxHints;
+    QRectF r;
+
+    ratio = qBound( 0.0, ratio, 1.0 );
+
+    if ( qFuzzyIsNull( ratio ) )
+    {
+        const auto margins = skinnable->marginHint( aspect1 );
+        r = rect.marginsRemoved( margins );
+
+        boxHints = skinnable->boxHints( aspect1 ).toAbsolute( r.size() );
+    }
+    else if ( qFuzzyCompare( ratio, 1.0 ) )
+    {
+        const auto margins = skinnable->marginHint( aspect2 );
+        r = rect.marginsRemoved( margins );
+
+        boxHints = skinnable->boxHints( aspect2 ).toAbsolute( r.size() );
+    }
+    else
+    {
+        QskMargins margins = skinnable->marginHint( aspect1 );
+        margins = margins.interpolated( skinnable->marginHint( aspect2 ), ratio );
+
+        r = rect.marginsRemoved( margins );
+
+        const auto boxHints1 = skinnable->boxHints( aspect1 ).toAbsolute( r.size() );
+        const auto boxHints2 = skinnable->boxHints( aspect2 ).toAbsolute( r.size() );
+
+        boxHints = boxHints1.interpolated( boxHints2, ratio );
+    }
+
+    return QskSkinlet::updateBoxNode( skinnable, node, r, boxHints );
 }
 
 QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
