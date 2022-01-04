@@ -168,6 +168,17 @@ void QskStackBox::setCurrentIndex( int index )
     Q_EMIT currentIndexChanged( m_data->currentIndex );
 }
 
+qreal QskStackBox::transientIndex() const
+{
+    if ( auto animator = m_data->animator )
+    {
+        if ( animator->isRunning() )
+            return animator->transientIndex();
+    }
+
+    return currentIndex();
+}
+
 void QskStackBox::setCurrentItem( const QQuickItem* item )
 {
     setCurrentIndex( indexOf( item ) );
