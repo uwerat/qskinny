@@ -28,13 +28,20 @@ class QSK_EXPORT QskStackBoxAnimator : public QObject, public QskAnimator
     int startIndex() const;
     int endIndex() const;
 
+    qreal transientIndex() const;
+
   protected:
     QskStackBox* stackBox() const;
     QQuickItem* itemAt( int index ) const;
 
   private:
+    void advance( qreal value ) override final;
+    virtual void advanceIndex( qreal value ) = 0;
+
     int m_startIndex;
     int m_endIndex;
+
+    qreal m_transientIndex;
 };
 
 class QSK_EXPORT QskStackBoxAnimator1 : public QskStackBoxAnimator
@@ -52,7 +59,7 @@ class QSK_EXPORT QskStackBoxAnimator1 : public QskStackBoxAnimator
     bool eventFilter( QObject*, QEvent* ) override;
 
     void setup() override;
-    void advance( qreal value ) override;
+    void advanceIndex( qreal value ) override;
     void done() override;
 
   private:
@@ -74,7 +81,7 @@ class QSK_EXPORT QskStackBoxAnimator3 : public QskStackBoxAnimator
 
   protected:
     void setup() override;
-    void advance( qreal value ) override;
+    void advanceIndex( qreal value ) override;
     void done() override;
 };
 

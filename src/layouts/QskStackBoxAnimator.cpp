@@ -7,6 +7,7 @@
 #include "QskStackBox.h"
 #include "QskEvent.h"
 #include "QskQuick.h"
+#include "QskFunctions.h"
 
 static Qsk::Direction qskDirection(
     Qt::Orientation orientation, int from, int to, int itemCount )
@@ -68,7 +69,7 @@ QskStackBoxAnimator::~QskStackBoxAnimator()
 
 void QskStackBoxAnimator::setStartIndex( int index )
 {
-    m_startIndex = index;
+    m_transientIndex = m_startIndex = index;
 }
 
 void QskStackBoxAnimator::setEndIndex( int index )
@@ -95,6 +96,53 @@ QQuickItem* QskStackBoxAnimator::itemAt( int index ) const
 {
     return stackBox()->itemAtIndex(
         ( index == 0 ) ? m_startIndex : m_endIndex );
+}
+
+qreal QskStackBoxAnimator::transientIndex() const
+{
+    return m_transientIndex;
+}
+
+void QskStackBoxAnimator::advance( qreal progress )
+{
+    qreal transientIndex;
+
+    if ( qFuzzyIsNull( progress ) )
+    {
+        transientIndex = m_startIndex;
+    }
+    else if ( qFuzzyCompare( progress, 1.0 ) )
+    {
+        transientIndex = m_endIndex;
+    }
+    else
+    {
+        const auto box = stackBox();
+
+        auto startIndex = m_startIndex;
+        auto endIndex = m_endIndex;
+
+        if ( startIndex == 0 )
+        {
+            if ( endIndex == box->itemCount() - 1 )
+                startIndex += box->itemCount();
+        }
+        else if ( startIndex == box->itemCount() - 1 )
+        {
+            if ( endIndex == 0 )
+                endIndex += box->itemCount();
+        }
+
+        transientIndex = startIndex + ( endIndex - startIndex ) * progress;
+    }
+
+    if ( !qskFuzzyCompare( m_transientIndex, transientIndex ) )
+    {
+        m_transientIndex = transientIndex;
+        advanceIndex( progress );
+
+        Q_EMIT stackBox()->transientIndexChanged( m_transientIndex );
+    }
 }
 
 QskStackBoxAnimator1::QskStackBoxAnimator1( QskStackBox* parent )
@@ -141,7 +189,7 @@ void QskStackBoxAnimator1::setup()
     m_isDirty = true;
 }
 
-void QskStackBoxAnimator1::advance( qreal value )
+void QskStackBoxAnimator1::advanceIndex( qreal value )
 {
     auto stackBox = this->stackBox();
     const bool isHorizontal = m_orientation == Qt::Horizontal;
@@ -243,7 +291,7 @@ void QskStackBoxAnimator3::setup()
     }
 }
 
-void QskStackBoxAnimator3::advance( qreal value )
+void QskStackBoxAnimator3::advanceIndex( qreal value )
 {
     if ( auto item1 = itemAt( 0 ) )
         item1->setOpacity( 1.0 - value );

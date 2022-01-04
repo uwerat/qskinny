@@ -17,6 +17,9 @@ class QSK_EXPORT QskStackBox : public QskIndexedLayoutBox
     Q_PROPERTY( int currentIndex READ currentIndex
         WRITE setCurrentIndex NOTIFY currentIndexChanged )
 
+    Q_PROPERTY( qreal transientIndex READ transientIndex
+        NOTIFY transientIndexChanged )
+
     Q_PROPERTY( QQuickItem* currentItem READ currentItem
         WRITE setCurrentItem NOTIFY currentItemChanged )
 
@@ -46,6 +49,8 @@ class QSK_EXPORT QskStackBox : public QskIndexedLayoutBox
     QQuickItem* currentItem() const;
     int currentIndex() const;
 
+    qreal transientIndex() const;
+
     void setDefaultAlignment( Qt::Alignment );
     Qt::Alignment defaultAlignment() const;
 
@@ -67,6 +72,7 @@ class QSK_EXPORT QskStackBox : public QskIndexedLayoutBox
 
   Q_SIGNALS:
     void currentIndexChanged( int index );
+    void transientIndexChanged( qreal index );
     void currentItemChanged( QQuickItem* );
 
   protected:
