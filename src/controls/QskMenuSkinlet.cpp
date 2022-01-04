@@ -50,7 +50,7 @@ class QskMenuSkinlet::PrivateData
     class CacheGuard
     {
       public:
-        CacheGuard( QskMenuSkinlet::PrivateData* data )
+        CacheGuard( PrivateData* data )
             : m_data( data )
         {
             m_data->enableCache( true );
@@ -61,7 +61,7 @@ class QskMenuSkinlet::PrivateData
             m_data->enableCache( false );
         }
        private:
-        QskMenuSkinlet::PrivateData* m_data;
+        PrivateData* m_data;
     };
 
     void enableCache( bool on )
