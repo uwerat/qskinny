@@ -22,6 +22,7 @@
 #include "QskBoxShapeMetrics.h"
 #include "QskBoxBorderMetrics.h"
 #include "QskBoxBorderColors.h"
+#include "QskBoxHints.h"
 #include "QskGradient.h"
 
 #include <qfont.h>
@@ -593,6 +594,13 @@ QskBoxBorderColors QskSkinnable::boxBorderColorsHint(
 {
     return qskColor< QskBoxBorderColors >(
         this, aspect | QskAspect::Border, status );
+}
+
+QskBoxHints QskSkinnable::boxHints( QskAspect aspect ) const
+{
+    return QskBoxHints(
+        boxShapeHint( aspect ), boxBorderMetricsHint( aspect ),
+        boxBorderColorsHint( aspect ), gradientHint( aspect ) );
 }
 
 bool QskSkinnable::setArcMetricsHint(

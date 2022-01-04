@@ -17,6 +17,7 @@ HEADERS += \
     common/QskBoxBorderColors.h \
     common/QskBoxBorderMetrics.h \
     common/QskBoxShapeMetrics.h \
+    common/QskBoxHints.h \
     common/QskFunctions.h \
     common/QskGlobal.h \
     common/QskGradient.h \
@@ -45,6 +46,7 @@ SOURCES += \
     common/QskBoxBorderColors.cpp \
     common/QskBoxBorderMetrics.cpp \
     common/QskBoxShapeMetrics.cpp \
+    common/QskBoxHints.cpp \
     common/QskFunctions.cpp \
     common/QskGradient.cpp \
     common/QskGradientStop.cpp \
