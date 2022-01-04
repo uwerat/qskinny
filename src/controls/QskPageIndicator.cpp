@@ -4,12 +4,59 @@
  *****************************************************************************/
 
 #include "QskPageIndicator.h"
-#include "QskAspect.h"
+#include "QskSkinlet.h"
+#include "QskEvent.h"
 
 QSK_SUBCONTROL( QskPageIndicator, Panel )
 QSK_SUBCONTROL( QskPageIndicator, Bullet )
 
 QSK_SYSTEM_STATE( QskPageIndicator, Selected, QskAspect::FirstSystemState << 1 )
+
+static void qskSetMouseAccepted( QskPageIndicator* indicator, bool on )
+{
+    auto buttons = indicator->acceptedMouseButtons();
+
+    if ( on )
+        buttons |= Qt::LeftButton;
+    else
+        buttons &= ~Qt::LeftButton;
+        
+    indicator->setAcceptedMouseButtons( buttons );
+}
+
+static int qskKeyIncrement(
+    const QskPageIndicator* indicator, const QKeyEvent* event )
+{
+    if ( event->matches( QKeySequence::MoveToNextChar ) )
+        return 1;
+
+    if ( event->matches( QKeySequence::MoveToPreviousChar ) )
+        return -1;
+
+    const auto key = event->key();
+
+    if ( indicator->orientation() == Qt::Horizontal )
+    {
+        const bool mirrored = indicator->layoutMirroring();
+
+        if ( key == Qt::Key_Left )
+            return mirrored ? 1 : -1;
+            
+        if ( key == Qt::Key_Right )
+            return mirrored ? -1 : 1;
+    }       
+    else
+    {
+        if ( key == Qt::Key_Up )
+            return -1;
+
+        if ( key == Qt::Key_Down )
+            return 1;
+    }   
+    
+    return 0;
+}   
+
 
 class QskPageIndicator::PrivateData
 {
@@ -22,6 +69,7 @@ class QskPageIndicator::PrivateData
     }
 
     qreal currentIndex = -1;
+    int pressedIndex = -1;
 
     int count;
 
@@ -81,16 +129,20 @@ bool QskPageIndicator::isInteractive() const
 
 void QskPageIndicator::setInteractive( bool on )
 {
-    if ( on != m_data->interactive )
-    {
-        m_data->interactive = on;
+    if ( on == m_data->interactive )
+        return;
 
-        // this flag might have an impact on its representation
-        resetImplicitSize();
-        update();
+    m_data->interactive = on;
 
-        Q_EMIT interactiveChanged( on );
-    }
+    qskSetMouseAccepted( this, on );
+    setWheelEnabled( on );
+    setFocusPolicy( on ? Qt::StrongFocus : Qt::NoFocus );
+
+    // being interactive might have an impact on its representation
+    resetImplicitSize();
+    update();
+
+    Q_EMIT interactiveChanged( on );
 }
 
 void QskPageIndicator::setCount( int count )
@@ -136,9 +188,94 @@ qreal QskPageIndicator::valueRatioAt( int index ) const
     return 0.0;
 }
 
+QRectF QskPageIndicator::bulletRect( int index ) const
+{
+    return effectiveSkinlet()->sampleRect(
+        this, contentsRect(), QskPageIndicator::Bullet, index );
+}
+
+int QskPageIndicator::indexAtPosition( const QPointF& pos ) const
+{
+    return effectiveSkinlet()->sampleIndexAt(
+        this, contentsRect(), QskPageIndicator::Bullet, pos );
+}
+
 QskAspect::Placement QskPageIndicator::effectivePlacement() const
 {
     return static_cast< QskAspect::Placement >( m_data->orientation );
+}
+
+void QskPageIndicator::mousePressEvent( QMouseEvent* event )
+{
+    if ( event->button() == Qt::LeftButton )
+    {
+        const auto pos = qskMousePosition( event );
+        m_data->pressedIndex = indexAtPosition( pos );
+
+        return;
+    }
+
+    return Inherited::mousePressEvent( event );
+}
+
+void QskPageIndicator::mouseReleaseEvent( QMouseEvent* event )
+{
+    if ( event->button() == Qt::LeftButton )
+    {
+        const auto index = m_data->pressedIndex;
+        m_data->pressedIndex = -1;
+
+        if ( index >= 0 )
+        {
+            const auto pos = qskMousePosition( event );
+            if ( indexAtPosition( pos ) == index )
+                Q_EMIT pageRequested( index );
+        }
+        
+        return;
+    }
+
+    return Inherited::mouseReleaseEvent( event );
+}
+
+void QskPageIndicator::keyPressEvent( QKeyEvent* event )
+{
+    if ( const int increment = qskKeyIncrement( this, event ) )
+    {
+        if ( const auto n = m_data->count )
+        {
+            int index = m_data->currentIndex;
+            if ( index < 0 && increment < 0 )
+                index = n;
+
+            // do we need an cycling on/off attribute, TODO ...
+
+            index = ( index + increment ) % n;
+            if ( index < 0 )
+                index += n;
+
+            Q_EMIT pageRequested( index );
+        }
+
+        return;
+    }
+
+    Inherited::keyPressEvent( event );
+}
+
+void QskPageIndicator::wheelEvent( QWheelEvent* event )
+{
+#if QT_VERSION < 0x050e00
+    const int delta = event->delta();
+#else
+    const auto angleDelta = event->angleDelta();
+
+    const int delta = ( orientation() == Qt::Horizontal )
+        ? angleDelta.x() : angleDelta.y();
+#endif
+
+    Q_UNUSED( delta )
+    // TODO ...
 }
 
 #include "moc_QskPageIndicator.cpp"

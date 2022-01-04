@@ -28,6 +28,12 @@ static QRectF qskBulletRect( const QskPageIndicator* indicator,
     if ( n <= 0 || index < 0 || index >= n )
         return QRectF();
 
+    if ( indicator->layoutMirroring() )
+    {
+        if ( indicator->orientation() == Qt::Horizontal )
+            index = n - ( index + 1 );
+    }
+
     const auto size = indicator->strutSizeHint( Q::Bullet );
     const qreal spacing = indicator->spacingHint( Q::Panel );
     const auto alignment = indicator->alignmentHint( Q::Panel, Qt::AlignCenter );
