@@ -45,6 +45,8 @@ class QSK_EXPORT QskPageIndicator : public QskControl
     void setInteractive( bool );
 
     qreal valueRatioAt( int index ) const;
+    QRectF bulletRect( int index ) const;
+    int indexAtPosition( const QPointF& ) const;
 
     QskAspect::Placement effectivePlacement() const override;
 
@@ -53,10 +55,18 @@ class QSK_EXPORT QskPageIndicator : public QskControl
     void currentIndexChanged( qreal );
     void orientationChanged( Qt::Orientation );
     void interactiveChanged( bool );
+    void pageRequested( int index );
 
   public Q_SLOTS:
     void setCount( int count );
     void setCurrentIndex( qreal index );
+
+  protected:
+    void mousePressEvent( QMouseEvent* e ) override;
+    void mouseReleaseEvent( QMouseEvent* e ) override;
+
+    void keyPressEvent( QKeyEvent* ) override;
+    void wheelEvent( QWheelEvent* ) override;
 
   private:
     class PrivateData;
