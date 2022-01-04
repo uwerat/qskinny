@@ -138,6 +138,20 @@ QRectF qskInterpolatedRect( const QRectF &from, const QRectF &to, qreal progress
     return QRectF( x, y, w, h );
 }
 
+QSizeF qskInterpolatedSize( const QSizeF &from, const QSizeF &to, qreal progress )
+{
+    if ( progress <= 0.0 )
+        return from;
+
+    if ( progress >= 1.0 )
+        return to;
+
+    const auto w = from.width() + progress * ( to.width() - from.width() );
+    const auto h = from.height() + progress * ( to.height() - from.height() );
+
+    return QSizeF( w, h );
+}
+
 qreal qskHorizontalAdvance( const QFont& font, const QString& text )
 {
     return qskHorizontalAdvance( QFontMetricsF( font ), text );

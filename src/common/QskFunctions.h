@@ -33,6 +33,9 @@ QSK_EXPORT qreal qskHorizontalAdvance( const QFontMetricsF&, const QString& );
 QSK_EXPORT QRectF qskInterpolatedRect(
     const QRectF& from, const QRectF& to, qreal progress );
 
+QSK_EXPORT QSizeF qskInterpolatedSize(
+    const QSizeF& from, const QSizeF& to, qreal progress );
+
 inline QMarginsF qskMargins( const QRectF& rect, const QRectF& innerRect )
 {
     return QMarginsF(
