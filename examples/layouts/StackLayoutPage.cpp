@@ -184,13 +184,12 @@ StackLayoutPage::StackLayoutPage( QQuickItem* parent )
     auto progressBar = new ProgressBar();
     progressBar->setMargins( QMarginsF( 0, 0, 10, 0 ) );
 
-
     addItem( buttonBox );
     addItem( pageIndicator );
     addItem( box );
     addItem( progressBar, Qt::AlignRight );
 
-    connect( box, &QskStackBox::currentIndexChanged,
+    connect( box, &QskStackBox::transientIndexChanged,
         pageIndicator, &QskPageIndicator::setCurrentIndex );
 
     connect( box, &StackBox::transitionStarted,

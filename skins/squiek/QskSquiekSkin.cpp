@@ -441,27 +441,24 @@ void Editor::setupSeparator()
 
 void Editor::setupPageIndicator()
 {
-    using A = QskAspect;
     using Q = QskPageIndicator;
 
-    for ( auto subControl : { Q::Bullet, Q::Highlighted } )
-    {
-        const auto extent = qskDpiScaled( 12 );
-        setStrutSize( subControl, extent, extent );
+    const auto extent = qskDpiScaled( 8 );
+    setStrutSize( Q::Bullet, extent, extent );
 
-        setBoxBorderMetrics( subControl, 50, Qt::RelativeSize );
-        setBoxShape( subControl, 100, Qt::RelativeSize );
-    }
+    // circles, without border
+    setBoxShape( Q::Bullet, 100, Qt::RelativeSize );
+    setBoxBorderMetrics( Q::Bullet, 0 );
 
     setGradient( Q::Bullet, m_pal.darker150 );
-    setGradient( Q::Highlighted, m_pal.lighter150 );
+    setMargin( Q::Bullet, qskDpiScaled( 1 ) );
 
-    // no visible background panel
-    setBoxBorderMetrics( Q::Panel, 0 );
-    setBoxShape( Q::Panel, 2 );
-    setGradient( Q::Panel, QskGradient() );
+    setGradient( Q::Bullet | Q::Selected, m_pal.lighter150 );
+    setMargin( Q::Bullet | Q::Selected, 0 );
 
-    setMetric( Q::Panel | A::Spacing, 3 );
+    setSpacing( Q::Panel, 3 );
+    setPadding( Q::Panel, 0 );
+    setGradient( Q::Panel, QskGradient() ); // invisible
 }
 
 void Editor::setupPushButton()

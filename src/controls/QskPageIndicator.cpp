@@ -8,20 +8,24 @@
 
 QSK_SUBCONTROL( QskPageIndicator, Panel )
 QSK_SUBCONTROL( QskPageIndicator, Bullet )
-QSK_SUBCONTROL( QskPageIndicator, Highlighted )
+
+QSK_SYSTEM_STATE( QskPageIndicator, Selected, QskAspect::FirstSystemState << 1 )
 
 class QskPageIndicator::PrivateData
 {
   public:
     PrivateData( int count )
         : count( count )
-        , currentIndex( -1 )
+        , interactive( false )
         , orientation( Qt::Horizontal )
     {
     }
 
+    qreal currentIndex = -1;
+
     int count;
-    qreal currentIndex;
+
+    bool interactive : 1;
     Qt::Orientation orientation : 2;
 };
 
@@ -70,6 +74,25 @@ void QskPageIndicator::setOrientation( Qt::Orientation orientation )
     }
 }
 
+bool QskPageIndicator::isInteractive() const
+{
+    return m_data->interactive;
+}
+
+void QskPageIndicator::setInteractive( bool on )
+{
+    if ( on != m_data->interactive )
+    {
+        m_data->interactive = on;
+
+        // this flag might have an impact on its representation
+        resetImplicitSize();
+        update();
+
+        Q_EMIT interactiveChanged( on );
+    }
+}
+
 void QskPageIndicator::setCount( int count )
 {
     if ( count != m_data->count )
@@ -95,6 +118,22 @@ void QskPageIndicator::setCurrentIndex( qreal index )
 
         Q_EMIT currentIndexChanged( index );
     }
+}
+
+qreal QskPageIndicator::valueRatioAt( int index ) const
+{
+    if ( m_data->currentIndex >= 0.0 && index >= 0 )
+    {
+        qreal pos = m_data->currentIndex;
+
+        if ( index == 0 && pos > m_data->count - 1 )
+            pos -= m_data->count;
+
+        const qreal diff = 1.0 - std::abs( pos - index );
+        return std::max( diff, 0.0 );
+    }   
+    
+    return 0.0;
 }
 
 #include "moc_QskPageIndicator.cpp"
