@@ -24,30 +24,31 @@ static QRectF qskBulletRect( const QskPageIndicator* indicator,
 {
     using Q = QskPageIndicator;
 
-    /*
-        The bullets might have different sizes, but as a pager indicator
-        usually does not have many bullets we can simply iterate
-     */
+    const auto n = indicator->count();
+    if ( n <= 0 || index < 0 || index >= n )
+        return QRectF();
 
-    const qreal spacing = indicator->spacingHint( Q::Panel );
     const auto size = indicator->strutSizeHint( Q::Bullet );
+    const qreal spacing = indicator->spacingHint( Q::Panel );
+    const auto alignment = indicator->alignmentHint( Q::Panel, Qt::AlignCenter );
 
-    qreal x = rect.x();
-    qreal y = rect.y();
+    qreal x, y;
 
     if ( indicator->orientation() == Qt::Horizontal )
     {
-        for ( int i = 0; i < index; i++ )
-            x += size.width() + spacing;
-
-        y += 0.5 * ( rect.height() - size.height() );
+        const auto maxWidth = n * size.width() + ( n - 1 ) * spacing;
+        const auto r = qskAlignedRectF( rect, maxWidth, size.height(), alignment );
+    
+        x = r.x() + index * ( size.width() + spacing );
+        y = r.y();
     }
     else
     {
-        for ( int i = 0; i < index; i++ )
-            y += size.height() + spacing;
-
-        x += 0.5 * ( rect.width() - size.width() );
+        const auto maxHeight = n * size.height() + ( n - 1 ) * spacing;
+        const auto r = qskAlignedRectF( rect, maxHeight, size.height(), alignment );
+    
+        x = r.x();
+        y = r.y() + index * ( size.height() + spacing );;
     }
 
     return QRectF( x, y, size.width(), size.height() );

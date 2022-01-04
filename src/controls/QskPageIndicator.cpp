@@ -136,4 +136,9 @@ qreal QskPageIndicator::valueRatioAt( int index ) const
     return 0.0;
 }
 
+QskAspect::Placement QskPageIndicator::effectivePlacement() const
+{
+    return static_cast< QskAspect::Placement >( m_data->orientation );
+}
+
 #include "moc_QskPageIndicator.cpp"

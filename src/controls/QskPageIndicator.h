@@ -46,6 +46,8 @@ class QSK_EXPORT QskPageIndicator : public QskControl
 
     qreal valueRatioAt( int index ) const;
 
+    QskAspect::Placement effectivePlacement() const override;
+
   Q_SIGNALS:
     void countChanged( int );
     void currentIndexChanged( qreal );
