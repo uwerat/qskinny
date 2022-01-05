@@ -313,8 +313,6 @@ void QskAbstractButton::mouseMoveEvent( QMouseEvent* event )
             Q_EMIT canceled();
         }
     }
-
-    event->accept();
 }
 
 void QskAbstractButton::mousePressEvent( QMouseEvent* )
