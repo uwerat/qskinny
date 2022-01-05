@@ -400,40 +400,14 @@ void QskScrollBox::gestureEvent( QskGestureEvent* event )
 
 #ifndef QT_NO_WHEELEVENT
 
-QPointF QskScrollBox::scrollOffset( const QWheelEvent* event ) const
-{
-#if QT_VERSION < 0x050e00
-    const auto pos = event->posF();
-#else
-    const auto pos = event->position();
-#endif
-    if ( viewContentsRect().contains( pos ) )
-    {
-        /*
-             Not sure if that code makes sense, but I don't have an input device
-             that generates wheel events in both directions. TODO ...
-         */
-        return event->angleDelta();
-    }
-
-    return QPointF();
-}
-
 void QskScrollBox::wheelEvent( QWheelEvent* event )
 {
-    QPointF offset = scrollOffset( event );
-
-    if ( !offset.isNull() )
+    const auto pos = qskWheelPosition( event );
+    if ( viewContentsRect().contains( pos ) )
     {
-        constexpr qreal stepSize = 20.0; // how to find this value
-        offset *= stepSize / QWheelEvent::DefaultDeltasPerStep;
-
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
-        if ( event->inverted() )
-            offset = -offset;
-#endif
-
-        setScrollPos( m_data->scrollPos - offset );
+        const auto offset = qskScrollIncrement( event );
+        if ( !offset.isNull() )
+            setScrollPos( m_data->scrollPos - offset );
     }
 }
 

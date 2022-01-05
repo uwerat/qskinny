@@ -83,7 +83,10 @@ class QSK_EXPORT QskMenu : public QskPopup
   protected:
     void keyPressEvent( QKeyEvent* ) override;
     void keyReleaseEvent( QKeyEvent* ) override;
+
+#ifndef QT_NO_WHEELEVENT
     void wheelEvent( QWheelEvent* ) override;
+#endif
 
     void mousePressEvent( QMouseEvent* ) override;
     void mouseReleaseEvent( QMouseEvent* ) override;

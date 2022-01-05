@@ -18,9 +18,6 @@ class QSK_EXPORT QskPageIndicator : public QskControl
     Q_PROPERTY( qreal currentIndex READ currentIndex
         WRITE setCurrentIndex NOTIFY currentIndexChanged FINAL )
 
-    Q_PROPERTY( bool interactive READ isInteractive
-        WRITE setInteractive NOTIFY interactiveChanged FINAL )
-
     Q_PROPERTY( Qt::Orientation orientation READ orientation
         WRITE setOrientation NOTIFY orientationChanged FINAL )
 
@@ -63,12 +60,18 @@ class QSK_EXPORT QskPageIndicator : public QskControl
 
   protected:
     void mousePressEvent( QMouseEvent* e ) override;
+    void mouseUngrabEvent() override;
     void mouseReleaseEvent( QMouseEvent* e ) override;
 
     void keyPressEvent( QKeyEvent* ) override;
+
+#ifndef QT_NO_WHEELEVENT
     void wheelEvent( QWheelEvent* ) override;
+#endif
 
   private:
+    void incrementRequested( int );
+
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

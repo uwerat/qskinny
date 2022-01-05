@@ -12,18 +12,6 @@ QSK_SUBCONTROL( QskPageIndicator, Bullet )
 
 QSK_SYSTEM_STATE( QskPageIndicator, Selected, QskAspect::FirstSystemState << 1 )
 
-static void qskSetMouseAccepted( QskPageIndicator* indicator, bool on )
-{
-    auto buttons = indicator->acceptedMouseButtons();
-
-    if ( on )
-        buttons |= Qt::LeftButton;
-    else
-        buttons &= ~Qt::LeftButton;
-        
-    indicator->setAcceptedMouseButtons( buttons );
-}
-
 static int qskKeyIncrement(
     const QskPageIndicator* indicator, const QKeyEvent* event )
 {
@@ -63,7 +51,6 @@ class QskPageIndicator::PrivateData
   public:
     PrivateData( int count )
         : count( count )
-        , interactive( false )
         , orientation( Qt::Horizontal )
     {
     }
@@ -72,8 +59,6 @@ class QskPageIndicator::PrivateData
     int pressedIndex = -1;
 
     int count;
-
-    bool interactive : 1;
     Qt::Orientation orientation : 2;
 };
 
@@ -120,29 +105,6 @@ void QskPageIndicator::setOrientation( Qt::Orientation orientation )
 
         Q_EMIT orientationChanged( orientation );
     }
-}
-
-bool QskPageIndicator::isInteractive() const
-{
-    return m_data->interactive;
-}
-
-void QskPageIndicator::setInteractive( bool on )
-{
-    if ( on == m_data->interactive )
-        return;
-
-    m_data->interactive = on;
-
-    qskSetMouseAccepted( this, on );
-    setWheelEnabled( on );
-    setFocusPolicy( on ? Qt::StrongFocus : Qt::NoFocus );
-
-    // being interactive might have an impact on its representation
-    resetImplicitSize();
-    update();
-
-    Q_EMIT interactiveChanged( on );
 }
 
 void QskPageIndicator::setCount( int count )
@@ -209,6 +171,13 @@ void QskPageIndicator::mousePressEvent( QMouseEvent* event )
 {
     if ( event->button() == Qt::LeftButton )
     {
+        /*
+            The bullets are usually small and therefore hard to click - with
+            touch input almost impossible. It might be better to
+            increment in direction of the mouse position ?
+
+            A swipe gesture might make more sense, TODO ...
+         */
         const auto pos = qskMousePosition( event );
         m_data->pressedIndex = indexAtPosition( pos );
 
@@ -216,6 +185,11 @@ void QskPageIndicator::mousePressEvent( QMouseEvent* event )
     }
 
     return Inherited::mousePressEvent( event );
+}
+
+void QskPageIndicator::mouseUngrabEvent()
+{
+    m_data->pressedIndex = -1;
 }
 
 void QskPageIndicator::mouseReleaseEvent( QMouseEvent* event )
@@ -242,40 +216,41 @@ void QskPageIndicator::keyPressEvent( QKeyEvent* event )
 {
     if ( const int increment = qskKeyIncrement( this, event ) )
     {
-        if ( const auto n = m_data->count )
-        {
-            int index = m_data->currentIndex;
-            if ( index < 0 && increment < 0 )
-                index = n;
-
-            // do we need an cycling on/off attribute, TODO ...
-
-            index = ( index + increment ) % n;
-            if ( index < 0 )
-                index += n;
-
-            Q_EMIT pageRequested( index );
-        }
-
+        incrementRequested( increment );
         return;
     }
 
     Inherited::keyPressEvent( event );
 }
 
+#ifndef QT_NO_WHEELEVENT
+
 void QskPageIndicator::wheelEvent( QWheelEvent* event )
 {
-#if QT_VERSION < 0x050e00
-    const int delta = event->delta();
-#else
-    const auto angleDelta = event->angleDelta();
+    incrementRequested( qskWheelSteps( event ) );
+}
 
-    const int delta = ( orientation() == Qt::Horizontal )
-        ? angleDelta.x() : angleDelta.y();
 #endif
 
-    Q_UNUSED( delta )
-    // TODO ...
+void QskPageIndicator::incrementRequested( int offset )
+{
+    const auto n = m_data->count;
+
+    if ( offset == 0 || n == 0 )
+        return;
+
+    int index = m_data->currentIndex;
+    if ( index < 0 && offset < 0 )
+        index = n;
+
+    // do we need a cycling on/off attribute, TODO ...
+
+    index = ( index + offset ) % n;
+    if ( index < 0 )
+        index += n;
+
+    if ( index != m_data->currentIndex )
+        Q_EMIT pageRequested( index );
 }
 
 #include "moc_QskPageIndicator.cpp"

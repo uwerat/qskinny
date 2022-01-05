@@ -63,6 +63,17 @@ QPointF qskMouseScenePosition( const QMouseEvent* event )
 #endif
 }
 
+QPointF qskHoverPosition( const QHoverEvent* event )
+{
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+    return event->position();
+#else
+    return event->posF();
+#endif
+}
+
+#ifndef QT_NO_WHEELEVENT
+
 QPointF qskWheelPosition( const QWheelEvent* event )
 {
 #if QT_VERSION >= QT_VERSION_CHECK( 5, 14, 0 )
@@ -72,14 +83,59 @@ QPointF qskWheelPosition( const QWheelEvent* event )
 #endif
 }
 
-QPointF qskHoverPosition( const QHoverEvent* event )
-{
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-    return event->position();
-#else
-    return event->posF();
 #endif
+
+#ifndef QT_NO_WHEELEVENT
+
+qreal qskWheelSteps( const QWheelEvent* event, int orientation )
+{
+    qreal delta = 0.0;
+
+    // what about event->pixelDelta()
+    auto aDelta = event->angleDelta();
+
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
+    if ( event->inverted() )
+        aDelta.setY( -aDelta.y() );
+#endif
+
+    switch( orientation )
+    {
+        case Qt::Horizontal:
+            delta = aDelta.x();
+            break;
+
+        case Qt::Vertical:
+            delta = aDelta.y();
+            break;
+
+        default:
+            delta = aDelta.y() ? aDelta.y() : aDelta.x();
+    }
+
+    return delta / QWheelEvent::DefaultDeltasPerStep; 
 }
+
+#endif
+
+#ifndef QT_NO_WHEELEVENT
+
+QPointF qskScrollIncrement( const QWheelEvent* event )
+{
+    QPointF increment = event->pixelDelta();
+
+    if ( increment.isNull() )
+    {
+        increment = event->angleDelta() / QWheelEvent::DefaultDeltasPerStep;
+
+        constexpr qreal stepSize = 20.0; // how to find this value ???
+        increment *= stepSize;
+    }
+
+    return increment;
+}
+
+#endif
 
 QskEvent::QskEvent( QskEvent::Type type )
     : QEvent( static_cast< QEvent::Type >( type ) )

@@ -138,7 +138,16 @@ QSK_EXPORT int qskFocusChainIncrement( const QEvent* );
 // some helper to work around Qt version incompatibilities
 QSK_EXPORT QPointF qskMouseScenePosition( const QMouseEvent* );
 QSK_EXPORT QPointF qskMousePosition( const QMouseEvent* );
-QSK_EXPORT QPointF qskWheelPosition( const QWheelEvent* );
 QSK_EXPORT QPointF qskHoverPosition( const QHoverEvent* );
+
+#ifndef QT_NO_WHEELEVENT
+
+QSK_EXPORT QPointF qskWheelPosition( const QWheelEvent* );
+QSK_EXPORT qreal qskWheelSteps(
+    const QWheelEvent*, int orientation = 0 );
+
+QSK_EXPORT QPointF qskScrollIncrement( const QWheelEvent* );
+
+#endif
 
 #endif
