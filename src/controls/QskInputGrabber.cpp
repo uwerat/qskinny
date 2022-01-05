@@ -156,12 +156,14 @@ bool QskInputGrabber::event( QEvent* event )
             doBlock = isBlocking( qskMousePosition( mouseEvent ) );
             break;
         }
+#ifndef QT_NO_WHEELEVENT
         case QEvent::Wheel:
         {
             const auto wheelEvent = static_cast< QWheelEvent* >( event );
             doBlock = isBlocking( qskWheelPosition( wheelEvent ) );
             break;
         }
+#endif
         case QEvent::HoverEnter:
         case QEvent::HoverLeave:
         {

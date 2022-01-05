@@ -209,34 +209,40 @@ void QskScrollView::mouseReleaseEvent( QMouseEvent* event )
 
 #ifndef QT_NO_WHEELEVENT
 
-QPointF QskScrollView::scrollOffset( const QWheelEvent* event ) const
+void QskScrollView::wheelEvent( QWheelEvent* event )
 {
     QPointF offset;
 
-    const auto wheelPos = qskWheelPosition( event );
+    const auto pos = qskWheelPosition( event );
 
-#if QT_VERSION < QT_VERSION_CHECK( 5, 14, 0 )
-    const auto wheelDelta = event->delta();
-#else
-    const QPoint delta = event->angleDelta();
-    const int wheelDelta = ( qAbs( delta.x() ) > qAbs( delta.y() ) )
-        ? delta.x() : delta.y();
+    if ( subControlRect( VerticalScrollBar ).contains( pos ) )
+    {
+        const auto increment = qskScrollIncrement( event );
+        offset.setY( increment.y() );
+    }
+    else if ( subControlRect( HorizontalScrollBar ).contains( pos ) )
+    {
+        const auto increment = qskScrollIncrement( event );
+
+        qreal dx = increment.x();
+        if ( dx == 0 )
+        {
+            dx = increment.y();
+
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
+            if ( event->inverted() )
+                dx = -dx;
 #endif
-
-    if ( subControlRect( VerticalScrollBar ).contains( wheelPos ) )
-    {
-        offset.setY( wheelDelta );
+        }
+        offset.setX( dx );
     }
-    else if ( subControlRect( HorizontalScrollBar ).contains( wheelPos ) )
+    else if ( viewContentsRect().contains( pos ) )
     {
-        offset.setX( wheelDelta );
-    }
-    else
-    {
-        offset = Inherited::scrollOffset( event );
+        offset = qskScrollIncrement( event );
     }
 
-    return offset;
+    if ( !offset.isNull() )
+        setScrollPos( scrollPos() - offset );
 }
 
 #endif

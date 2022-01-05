@@ -6,6 +6,7 @@
 #include "QskBoundedInput.h"
 #include "QskFunctions.h"
 #include "QskIntervalF.h"
+#include "QskEvent.h"
 
 #include <cmath>
 
@@ -200,19 +201,13 @@ void QskBoundedInput::keyPressEvent( QKeyEvent* event )
 
 void QskBoundedInput::wheelEvent( QWheelEvent* event )
 {
-    if ( isReadOnly() )
+    if ( !isReadOnly() )
+    {
+        increment( qskWheelSteps( event ) * m_stepSize );
         return;
+    }
 
-#if QT_VERSION < 0x050e00
-    const int wheelDelta = event->delta();
-#else
-    const auto delta = event->angleDelta();
-    const int wheelDelta = ( qAbs( delta.x() ) > qAbs( delta.y() ) )
-        ? delta.x() : delta.y();
-#endif
-
-    const int steps = wheelDelta / QWheelEvent::DefaultDeltasPerStep;
-    increment( steps * m_stepSize );
+    Inherited::wheelEvent( event );
 }
 
 #endif

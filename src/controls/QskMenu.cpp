@@ -233,17 +233,15 @@ void QskMenu::keyReleaseEvent( QKeyEvent* )
     }
 }
 
+#ifndef QT_NO_WHEELEVENT
+
 void QskMenu::wheelEvent( QWheelEvent* event )
 {
-#if QT_VERSION < 0x050e00
-    const int delta = event->delta();
-#else
-    const int delta = event->angleDelta().y();
-#endif
-
-    // we ignore the step count and use its direction only
-    traverse( delta < 0 ? 1 : -1 );
+    const auto steps = qskWheelSteps( event );
+    traverse( -steps );
 }
+
+#endif
 
 void QskMenu::traverse( int steps )
 {
