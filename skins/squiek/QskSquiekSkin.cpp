@@ -317,9 +317,9 @@ void Editor::setupMenu()
 
 #if 0
     setPadding( Q::Separator, QMarginsF( 10, 0, 10, 0 ) );
-    setMetric( Q::Separator | QskAspect::Size, 3 );
-    setVGradient( Q::Separator, c2, c1 );
 #endif
+    setMetric( Q::Separator | A::Size, 2 );
+    setSeparator( Q::Separator | A::Horizontal );
 
     setPadding( Q::Cell, QskMargins( 2, 10, 2, 10 ) );
     setSpacing( Q::Cell, 5 );

@@ -88,10 +88,11 @@ class GraphicLabel : public QskGraphicLabel
         QskMenu menu( this );
         menu.setPopupFlag( QskPopup::DeleteOnClose, false );
 
-        menu.addItem( "image://shapes/Rectangle/White", "Print" );
-        menu.addItem( "image://shapes/Diamond/Yellow", "Save As" );
-        menu.addItem( "image://shapes/Ellipse/Red", "Setup" );
-        menu.addItem( "image://shapes/Hexagon/PapayaWhip", "Help" );
+        menu.addOption( "image://shapes/Rectangle/White", "Print" );
+        menu.addOption( "image://shapes/Diamond/Yellow", "Save As" );
+        menu.addOption( "image://shapes/Ellipse/Red", "Setup" );
+        menu.addSeparator();
+        menu.addOption( "image://shapes/Hexagon/PapayaWhip", "Help" );
 
         menu.setOrigin( qskMousePosition( event ) );
 
