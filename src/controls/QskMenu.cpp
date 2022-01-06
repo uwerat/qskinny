@@ -16,23 +16,35 @@ QSK_SUBCONTROL( QskMenu, Cell )
 QSK_SUBCONTROL( QskMenu, Cursor )
 QSK_SUBCONTROL( QskMenu, Text )
 QSK_SUBCONTROL( QskMenu, Graphic )
+QSK_SUBCONTROL( QskMenu, Separator )
 
 QSK_SYSTEM_STATE( QskMenu, Selected, QskAspect::FirstSystemState << 2 )
 
 namespace
 {
-    struct Entry
+    class Option
     {
-        QUrl graphicSource;
+      public:
+        Option( const QUrl& graphicSource, const QString& text )
+            : graphicSource( graphicSource )
+            , text( text )
+        {
+            if( !graphicSource.isEmpty() )
+                graphic = Qsk::loadGraphic( graphicSource );
+        }
+
+        const QUrl graphicSource;
+        const QString text;
+
         QskGraphic graphic;
-        QString text;
     };
 }
 
 class QskMenu::PrivateData
 {
   public:
-    QVector< Entry > entries;
+    QVector< Option > options;
+    QVector< int > separators;
 
     QskTextOptions textOptions;
     QPointF origin;
@@ -94,13 +106,9 @@ QPointF QskMenu::origin() const
     return m_data->origin;
 }
 
-void QskMenu::addItem( const QUrl& graphicSource, const QString& text )
+void QskMenu::addOption( const QUrl& graphicSource, const QString& text )
 {
-    QskGraphic graphic;
-    if( !graphicSource.isEmpty() )
-        graphic = Qsk::loadGraphic( graphicSource );
-
-    m_data->entries += { graphicSource, graphic, text };
+    m_data->options += Option( graphicSource, text );
 
     resetImplicitSize();
     update();
@@ -109,38 +117,52 @@ void QskMenu::addItem( const QUrl& graphicSource, const QString& text )
         countChanged( count() );
 }
 
-void QskMenu::addItem( const QString& graphicSource, const QString& text )
+void QskMenu::addOption( const QString& graphicSource, const QString& text )
 {
-    addItem( QUrl( graphicSource ), text );
-}
-
-void QskMenu::addSeparator()
-{
-    // TODO ...
-}
-
-void QskMenu::clear()
-{
-    m_data->entries.clear();
+    addOption( QUrl( graphicSource ), text );
 }
 
 int QskMenu::count() const
 {
-    return m_data->entries.count();
+    return m_data->options.count();
 }
 
-QVariant QskMenu::itemAt( int index ) const
+void QskMenu::addSeparator()
 {
-    const auto& entries = m_data->entries;
+    m_data->separators += m_data->options.count();
 
-    if( index < 0 || index >= entries.count() )
-        return QVariant();
+    resetImplicitSize();
+    update();
+}
 
-    const auto& entry = m_data->entries[ index ];
+int QskMenu::separatorPosition( int index ) const
+{
+    return m_data->separators.value( index, -1 );
+}
+
+int QskMenu::separatorCount() const
+{
+    return m_data->separators.count();
+}
+
+void QskMenu::clear()
+{
+    m_data->options.clear();
+    m_data->separators.clear();
+}
+
+QVariantList QskMenu::optionAt( int index ) const
+{
+    const auto& options = m_data->options;
+
+    if( index < 0 || index >= options.count() )
+        return QVariantList();
+
+    const auto& option = options[ index ];
 
     QVariantList list;
-    list += QVariant::fromValue( entry.graphic );
-    list += QVariant::fromValue( entry.text );
+    list += QVariant::fromValue( option.graphic );
+    list += QVariant::fromValue( option.text );
 
     return list;
 }
@@ -268,12 +290,6 @@ void QskMenu::traverse( int steps )
     }
 
     setCurrentIndex( newIndex );
-}
-
-QskColorFilter QskMenu::graphicFilterAt( int index ) const
-{
-    Q_UNUSED( index )
-    return QskColorFilter();
 }
 
 void QskMenu::mousePressEvent( QMouseEvent* event )
