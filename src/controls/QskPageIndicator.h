@@ -38,9 +38,6 @@ class QSK_EXPORT QskPageIndicator : public QskControl
     Qt::Orientation orientation() const;
     void setOrientation( Qt::Orientation );
 
-    bool isInteractive() const;
-    void setInteractive( bool );
-
     qreal valueRatioAt( int index ) const;
     QRectF bulletRect( int index ) const;
     int indexAtPosition( const QPointF& ) const;
@@ -51,7 +48,6 @@ class QSK_EXPORT QskPageIndicator : public QskControl
     void countChanged( int );
     void currentIndexChanged( qreal );
     void orientationChanged( Qt::Orientation );
-    void interactiveChanged( bool );
     void pageRequested( int index );
 
   public Q_SLOTS:
