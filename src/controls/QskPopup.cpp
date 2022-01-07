@@ -164,8 +164,8 @@ QskPopup::QskPopup( QQuickItem* parent )
         Need to think about a solution TODO ...
      */
 
-    Inherited::setAcceptedMouseButtons( Qt::AllButtons );
-    Inherited::setWheelEnabled( true );
+    setAcceptedMouseButtons( Qt::AllButtons );
+    setWheelEnabled( true );
 
     // we don't want to be resized by layout code
     setTransparentForPositioner( true );
@@ -175,9 +175,8 @@ QskPopup::QskPopup( QQuickItem* parent )
     setFocusPolicy( Qt::StrongFocus );
 
     /*
-        sending a notification to the window, that can
-        be used to register popups for some sort of
-        popup/window management
+        sending a notification, that can be used to register popups
+        for some sort of popup/window management
      */
     qskSendPopupEvent( window(), this, true );
 }

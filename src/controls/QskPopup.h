@@ -69,10 +69,6 @@ class QSK_EXPORT QskPopup : public QskControl
     bool isOpen() const;
     bool isFading() const;
 
-    // we always need to accept all inputs, to stop further propagation
-    void setAcceptedMouseButtons( Qt::MouseButtons ) = delete;
-    void setWheelEnabled( bool ) = delete;
-
   public Q_SLOTS:
     void open();
     void close();
