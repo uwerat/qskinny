@@ -400,15 +400,20 @@ void QskScrollBox::gestureEvent( QskGestureEvent* event )
 
 #ifndef QT_NO_WHEELEVENT
 
-void QskScrollBox::wheelEvent( QWheelEvent* event )
+QPointF QskScrollBox::scrollOffset( const QWheelEvent* event ) const
 {
     const auto pos = qskWheelPosition( event );
     if ( viewContentsRect().contains( pos ) )
-    {
-        const auto offset = qskScrollIncrement( event );
-        if ( !offset.isNull() )
-            setScrollPos( m_data->scrollPos - offset );
-    }
+        return qskScrollIncrement( event );
+
+    return QPointF();
+}
+
+void QskScrollBox::wheelEvent( QWheelEvent* event )
+{
+    const auto offset = scrollOffset( event );
+    if ( !offset.isNull() )
+        setScrollPos( m_data->scrollPos - offset );
 }
 
 #endif
