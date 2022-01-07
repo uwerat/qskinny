@@ -53,7 +53,7 @@ class QSK_EXPORT QskScrollView : public QskScrollBox
     void mouseReleaseEvent( QMouseEvent* ) override;
 
 #ifndef QT_NO_WHEELEVENT
-    void wheelEvent( QWheelEvent* ) override;
+    QPointF scrollOffset( const QWheelEvent* ) const override;
 #endif
 
   private:

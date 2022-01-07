@@ -68,6 +68,7 @@ class QSK_EXPORT QskScrollBox : public QskControl
 
 #ifndef QT_NO_WHEELEVENT
     void wheelEvent( QWheelEvent* ) override;
+    virtual QPointF scrollOffset( const QWheelEvent* ) const;
 #endif
 
     bool gestureFilter( QQuickItem*, QEvent* ) override;

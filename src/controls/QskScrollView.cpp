@@ -209,7 +209,7 @@ void QskScrollView::mouseReleaseEvent( QMouseEvent* event )
 
 #ifndef QT_NO_WHEELEVENT
 
-void QskScrollView::wheelEvent( QWheelEvent* event )
+QPointF QskScrollView::scrollOffset( const QWheelEvent* event ) const
 {
     QPointF offset;
 
@@ -236,13 +236,12 @@ void QskScrollView::wheelEvent( QWheelEvent* event )
         }
         offset.setX( dx );
     }
-    else if ( viewContentsRect().contains( pos ) )
+    else
     {
-        offset = qskScrollIncrement( event );
+        offset = Inherited::scrollOffset( event );
     }
 
-    if ( !offset.isNull() )
-        setScrollPos( scrollPos() - offset );
+    return offset;
 }
 
 #endif
