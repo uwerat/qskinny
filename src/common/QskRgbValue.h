@@ -461,6 +461,16 @@ namespace QskRgb
         return ( rgb & ColorMask ) | ( ( static_cast< uint >( alpha ) & 0xffu ) << 24 );
     }
 
+    inline QColor toTransparentF( Qt::GlobalColor color, qreal alpha )
+    {
+        return toTransparent( QColor( color ), qRound( alpha * 255 ) );
+    }
+
+    inline constexpr QRgb toTransparentF( QRgb rgb, qreal alpha ) noexcept
+    {
+        return toTransparent( rgb, qRound( alpha * 255 ) );
+    }
+
     QSK_EXPORT QRgb lighter( QRgb, int factor = 150 ) noexcept;
     QSK_EXPORT QRgb darker( QRgb, int factor = 200 ) noexcept;
 }
