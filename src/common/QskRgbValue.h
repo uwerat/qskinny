@@ -461,6 +461,11 @@ namespace QskRgb
         return ( rgb & ColorMask ) | ( ( static_cast< uint >( alpha ) & 0xffu ) << 24 );
     }
 
+    inline QColor toTransparentF( const QColor& color, qreal alpha )
+    {
+        return toTransparent( color, qRound( alpha * 255 ) );
+    }
+
     inline QColor toTransparentF( Qt::GlobalColor color, qreal alpha )
     {
         return toTransparent( QColor( color ), qRound( alpha * 255 ) );
