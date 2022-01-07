@@ -50,11 +50,16 @@ const QPlatformIntegration* qskPlatformIntegration()
 
 bool qskMaybeDesktopPlatform()
 {
-#if QT_CONFIG(cursor)
     // this is what QC2 is doing for menus ?
+
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 15, 0 )
+#if !QT_CONFIG(cursor)
+    return false;
+#endif
+#endif
+
     if ( const auto platform = QGuiApplicationPrivate::platformIntegration() )
         return platform->hasCapability( QPlatformIntegration::MultipleWindows );
-#endif
 
     return false;
 }
