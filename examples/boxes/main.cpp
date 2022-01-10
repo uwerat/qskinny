@@ -421,7 +421,7 @@ static void addColoredBorderRectangles6( QskLinearBox* parent )
                                            { 1.0, Qt::black } } );
     QskGradient gradient3( Qt::green );
     QskGradient gradient4( Qt::Vertical, Qt::magenta, Qt::cyan );
-    box->setBorderGradients( gradient1, gradient2, gradient3, gradient4 );
+    box->setBorderGradients( gradient3, gradient3, gradient3, gradient4 );
     box->setShape( 30, Qt::AbsoluteSize );
 }
 

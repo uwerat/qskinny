@@ -99,6 +99,11 @@ namespace
         int m_stepCount;
         bool m_inverted;
     };
+
+    int colorsInGradient( const QskGradient& gradient )
+    {
+        return gradient.isMonochrome() ? 1 : gradient.stops().count();
+    }
 }
 
 namespace
@@ -1224,13 +1229,15 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
     {
         borderLineCount = 4 * ( stepCount + 1 ) + 1;
 
-        const int additionalLines = -1
-            + borderColors.gradient( Qsk::Left ).stops().count() - 1
-            + borderColors.gradient( Qsk::Top ).stops().count() - 1
-            + borderColors.gradient( Qsk::Right ).stops().count() - 1
-            + borderColors.gradient( Qsk::Bottom ).stops().count() - 1;
+        const int additionalLines =
+            colorsInGradient( borderColors.gradient( Qsk::Left ) ) - 1
+            + colorsInGradient( borderColors.gradient( Qsk::Top ) ) - 1
+            + colorsInGradient( borderColors.gradient( Qsk::Right ) ) - 1
+            + colorsInGradient( borderColors.gradient( Qsk::Bottom ) ) - 1;
 
-        borderLineCount += qMax( additionalLines, 0 );
+        qDebug() << "additional lines:" << additionalLines;
+
+        borderLineCount += additionalLines;
     }
 
     int lineCount = borderLineCount + fillLineCount;
