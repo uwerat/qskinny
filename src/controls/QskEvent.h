@@ -143,10 +143,8 @@ QSK_EXPORT QPointF qskHoverPosition( const QHoverEvent* );
 #ifndef QT_NO_WHEELEVENT
 
 QSK_EXPORT QPointF qskWheelPosition( const QWheelEvent* );
-QSK_EXPORT qreal qskWheelSteps(
-    const QWheelEvent*, int orientation = 0 );
-
-QSK_EXPORT QPointF qskScrollIncrement( const QWheelEvent* );
+QSK_EXPORT qreal qskWheelSteps( const QWheelEvent* );
+QSK_EXPORT qreal qskWheelIncrement( const QWheelEvent* );
 
 #endif
 
