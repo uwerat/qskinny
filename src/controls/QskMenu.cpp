@@ -25,6 +25,8 @@ namespace
     class Option
     {
       public:
+        Option() = default; // some compilers need this
+
         Option( const QUrl& graphicSource, const QString& text )
             : graphicSource( graphicSource )
             , text( text )
