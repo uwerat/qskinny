@@ -216,6 +216,7 @@ static inline void qskTriggerUpdates( QskAspect aspect, QskControl* control )
 static inline QskAspect qskSubstitutedAspect(
     const QskSkinnable* skinnable, QskAspect aspect )
 {
+#if 0
     if ( aspect.hasStates() )
     {
         qWarning() << "QskSkinnable::(re)setSkinHint: setting hints with states "
@@ -229,6 +230,7 @@ static inline QskAspect qskSubstitutedAspect(
         aspect.clearStates();
 #endif
     }
+#endif
 
     aspect.setSubControl( skinnable->effectiveSubcontrol( aspect.subControl() ) );
     return aspect;
