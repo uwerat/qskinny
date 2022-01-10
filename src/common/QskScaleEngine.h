@@ -40,6 +40,8 @@ class QSK_EXPORT QskScaleEngine
 
     void autoScale( int maxNumSteps, qreal& x1, qreal& x2, qreal& stepSize ) const;
 
+    qreal alignedStepSize( double intervalSize, int numSteps ) const;
+
   private:
     QskIntervalF align( const QskIntervalF&, qreal stepSize ) const;
 

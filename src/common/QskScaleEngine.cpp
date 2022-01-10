@@ -64,21 +64,13 @@ namespace
         return std::floor( value ) * intervalSize;
     }
 
-    double divideEps( double intervalSize, double numSteps )
-    {
-        if ( numSteps == 0.0 || intervalSize == 0.0 )
-            return 0.0;
-
-        return ( intervalSize - ( _eps * intervalSize ) ) / numSteps;
-    }
-
     double divideInterval( double intervalSize, int numSteps )
     {
         if ( numSteps <= 0 )
             return 0.0;
 
-        const auto v = divideEps( intervalSize, numSteps );
-        if ( v == 0.0 )
+        const auto v = intervalSize / numSteps;
+        if ( qFuzzyIsNull( v ) )
             return 0.0;
 
         constexpr double base = 10.0;
@@ -89,13 +81,18 @@ namespace
 
         const double fraction = std::pow( base, lx - p );
 
-        uint n = base;
-        while ( ( n > 1 ) && ( fraction <= n / 2 ) )
-            n /= 2;
-
-        double stepSize = n * std::pow( base, p );
+        double stepSize = std::pow( base, p );
         if ( v < 0 )
             stepSize = -stepSize;
+
+        for ( const double f : { 2.0, 2.5, 5.0, 10.0 } )
+        {
+            if ( fraction <= f || qFuzzyCompare( fraction, f ) )
+            {
+                stepSize *= f;
+                break;
+            }
+        }
 
         return stepSize;
     }
@@ -353,6 +350,14 @@ void QskScaleEngine::buildMinorTicks(
                 minorTicks += alignedValue;
         }
     }
+}
+
+qreal QskScaleEngine::alignedStepSize( double intervalSize, int numSteps ) const
+{
+    if ( intervalSize <= 0.0 )
+        return 0.0;
+
+    return divideInterval( intervalSize, numSteps );
 }
 
 #include "moc_QskScaleEngine.cpp"
