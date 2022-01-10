@@ -207,7 +207,7 @@ void QskBoundedInput::wheelEvent( QWheelEvent* event )
         return;
     }
 
-    auto offset = qskWheelSteps( event ) * m_stepSize;
+    auto offset = qskWheelIncrement( event ) * m_stepSize;
     if ( event->modifiers() & ( Qt::ControlModifier | Qt::ShiftModifier ) )
         offset *= m_pageSize;
 

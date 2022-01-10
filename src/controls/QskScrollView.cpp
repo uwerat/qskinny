@@ -8,6 +8,9 @@
 #include "QskBoxBorderMetrics.h"
 #include "QskEvent.h"
 
+#include <qguiapplication.h>
+#include <qstylehints.h>
+
 QSK_SUBCONTROL( QskScrollView, Panel )
 QSK_SUBCONTROL( QskScrollView, Viewport )
 QSK_SUBCONTROL( QskScrollView, HorizontalScrollBar )
@@ -17,6 +20,15 @@ QSK_SUBCONTROL( QskScrollView, VerticalScrollHandle )
 
 QSK_SYSTEM_STATE( QskScrollView, VerticalHandlePressed, QskAspect::FirstSystemState << 1 )
 QSK_SYSTEM_STATE( QskScrollView, HorizontalHandlePressed, QskAspect::FirstSystemState << 2 )
+
+static int qskScrollLines()
+{
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 9, 0 )
+    return QGuiApplication::styleHints()->wheelScrollLines();
+#else
+    return 3;
+#endif
+}
 
 class QskScrollView::PrivateData
 {
@@ -217,24 +229,13 @@ QPointF QskScrollView::scrollOffset( const QWheelEvent* event ) const
 
     if ( subControlRect( VerticalScrollBar ).contains( pos ) )
     {
-        const auto increment = qskScrollIncrement( event );
-        offset.setY( increment.y() );
+        const auto steps = qskWheelSteps( event );
+        offset.setY( steps * qskScrollLines() );
     }
     else if ( subControlRect( HorizontalScrollBar ).contains( pos ) )
     {
-        const auto increment = qskScrollIncrement( event );
-
-        qreal dx = increment.x();
-        if ( dx == 0 )
-        {
-            dx = increment.y();
-
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
-            if ( event->inverted() )
-                dx = -dx;
-#endif
-        }
-        offset.setX( dx );
+        const auto steps = qskWheelSteps( event );
+        offset.setX( steps * qskScrollLines() );
     }
     else
     {

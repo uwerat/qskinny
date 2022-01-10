@@ -87,52 +87,31 @@ QPointF qskWheelPosition( const QWheelEvent* event )
 
 #ifndef QT_NO_WHEELEVENT
 
-qreal qskWheelSteps( const QWheelEvent* event, int orientation )
+qreal qskWheelSteps( const QWheelEvent* event )
 {
-    qreal delta = 0.0;
+    const auto angleDelta = event->angleDelta();
 
-    // what about event->pixelDelta()
-    auto aDelta = event->angleDelta();
-
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
-    if ( event->inverted() )
-        aDelta.setY( -aDelta.y() );
-#endif
-
-    switch( orientation )
-    {
-        case Qt::Horizontal:
-            delta = aDelta.x();
-            break;
-
-        case Qt::Vertical:
-            delta = aDelta.y();
-            break;
-
-        default:
-            delta = aDelta.y() ? aDelta.y() : aDelta.x();
-    }
-
+    const qreal delta = angleDelta.y() ? angleDelta.y() : angleDelta.x();
     return delta / QWheelEvent::DefaultDeltasPerStep; 
 }
 
+qreal qskWheelIncrement( const QWheelEvent* event )
+{
+    /*
+        Some controls ( f.e a spin box ) are interpreting the wheel to
+        in/decrease a value. For those the physical direction is not relevant
+        and we might have to invert the y delta.
+     */
+
+    auto angleDelta = event->angleDelta();
+
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
+    if ( event->inverted() )
+        angleDelta.setY( -angleDelta.y() );
 #endif
 
-#ifndef QT_NO_WHEELEVENT
-
-QPointF qskScrollIncrement( const QWheelEvent* event )
-{
-    QPointF increment = event->pixelDelta();
-
-    if ( increment.isNull() )
-    {
-        increment = event->angleDelta() / QWheelEvent::DefaultDeltasPerStep;
-
-        constexpr qreal stepSize = 20.0; // how to find this value ???
-        increment *= stepSize;
-    }
-
-    return increment;
+    const qreal delta = angleDelta.y() ? angleDelta.y() : angleDelta.x();
+    return delta / QWheelEvent::DefaultDeltasPerStep; 
 }
 
 #endif
