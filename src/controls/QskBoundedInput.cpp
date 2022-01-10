@@ -201,13 +201,17 @@ void QskBoundedInput::keyPressEvent( QKeyEvent* event )
 
 void QskBoundedInput::wheelEvent( QWheelEvent* event )
 {
-    if ( !isReadOnly() )
+    if ( isReadOnly() )
     {
-        increment( qskWheelSteps( event ) * m_stepSize );
+        Inherited::wheelEvent( event );
         return;
     }
 
-    Inherited::wheelEvent( event );
+    auto offset = qskWheelSteps( event ) * m_stepSize;
+    if ( event->modifiers() & ( Qt::ControlModifier | Qt::ShiftModifier ) )
+        offset *= m_pageSize;
+
+    increment( offset );
 }
 
 #endif
