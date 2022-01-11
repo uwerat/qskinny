@@ -15,23 +15,26 @@ static void qskRegisterBoxBorderColors()
 
     QMetaType::registerConverter< QColor, QskBoxBorderColors >(
         []( const QColor& color ) { return QskBoxBorderColors( color ); } );
+
+    QMetaType::registerConverter< QskGradient, QskBoxBorderColors >(
+        []( const QskGradient& gradient ) { return QskBoxBorderColors( gradient ); } );
 }
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterBoxBorderColors )
 
-static inline void qskSetGradients( const QskGradient& c, QskGradient* colors )
+static inline void qskSetGradients( const QskGradient& c, QskGradient* gradients )
 {
-    colors[ 0 ] = colors[ 1 ] = colors[ 2 ] = colors[ 3 ] = c;
+    gradients[ 0 ] = gradients[ 1 ] = gradients[ 2 ] = gradients[ 3 ] = c;
 }
 
 static inline void qskSetGradients(
     const QskGradient& left, const QskGradient& top,
-    const QskGradient& right, const QskGradient& bottom, QskGradient* colors )
+    const QskGradient& right, const QskGradient& bottom, QskGradient* gradients )
 {
-    colors[ Qsk::Left ] = left;
-    colors[ Qsk::Top ] = top;
-    colors[ Qsk::Right ] = right;
-    colors[ Qsk::Bottom ] = bottom;
+    gradients[ Qsk::Left ] = left;
+    gradients[ Qsk::Top ] = top;
+    gradients[ Qsk::Right ] = right;
+    gradients[ Qsk::Bottom ] = bottom;
 }
 
 QskBoxBorderColors::QskBoxBorderColors()

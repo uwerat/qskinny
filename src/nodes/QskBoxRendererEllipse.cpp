@@ -621,9 +621,11 @@ namespace
                             c[ corner ].centerY - v.dy1( corner ),
                             c[ corner ].centerX - v.dx2( corner ),
                             c[ corner ].centerY - v.dy2( corner ),
-                            borderMapBL.colorAt( j ) );
-//                            Color( 255, 255, 0, 255 ) );
+//                            borderMapTL.colorAt( j ) );
+                            Color( 255, 0, 0, 255 ) );
                     }
+
+                    // ### maybe here check whether gradient isn't monochrome and add lines?
 
                     {
                         constexpr auto corner = TopRight;
@@ -644,8 +646,8 @@ namespace
                             c[ corner ].centerY + v.dy1( corner ),
                             c[ corner ].centerX - v.dx2( corner ),
                             c[ corner ].centerY + v.dy2( corner ),
-                            borderMapBL.colorAt( k ) );
-//                            Color( 255, 255, 0, 255 ) );
+//                            borderMapBL.colorAt( k ) );
+                            Color( 255, 255, 0, 255 ) );
                     }
 
                     {
@@ -1235,7 +1237,7 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
             + colorsInGradient( borderColors.gradient( Qsk::Right ) ) - 1
             + colorsInGradient( borderColors.gradient( Qsk::Bottom ) ) - 1;
 
-        qDebug() << "additional lines:" << additionalLines;
+        qDebug() << "additional lines:" << additionalLines << borderColors.gradientAt(Qt::LeftEdge).stops();
 
         borderLineCount += additionalLines;
     }
