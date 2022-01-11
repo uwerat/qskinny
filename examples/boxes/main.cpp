@@ -422,7 +422,6 @@ static void addColoredBorderRectangles6( QskLinearBox* parent )
     QskGradient gradient3( Qt::green );
     QskGradient gradient4( Qt::Vertical, Qt::red, Qt::blue );
     box->setBorderGradients( gradient4, gradient3, gradient3, gradient3 );
-    qDebug() << "@@@ hint:" << gradient4.stops() << box->boxBorderColorsHint( QskBox::Panel ).gradientAt(Qt::LeftEdge).stops();
     box->setShape( 30, Qt::AbsoluteSize );
 }
 
