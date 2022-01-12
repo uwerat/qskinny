@@ -6,6 +6,14 @@
 #include "QskListView.h"
 #include "QskAspect.h"
 #include "QskColorFilter.h"
+#include "QskEvent.h"
+
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 9, 0 )
+#include <qguiapplication.h>
+#include <qstylehints.h>
+#endif
+
+#include <qmath.h>
 
 QSK_SUBCONTROL( QskListView, Cell )
 QSK_SUBCONTROL( QskListView, Text )
@@ -262,6 +270,58 @@ void QskListView::mouseReleaseEvent( QMouseEvent* event )
 {
     Inherited::mouseReleaseEvent( event );
 }
+
+#ifndef QT_NO_WHEELEVENT
+
+QPointF QskListView::scrollOffset( const QWheelEvent* event ) const
+{
+    QPointF offset;
+
+    const auto pos = qskWheelPosition( event );
+
+    if ( subControlRect( VerticalScrollBar ).contains( pos ) )
+    {
+        const auto steps = qskWheelSteps( event );
+        offset.setY( steps );
+    }
+    else if ( subControlRect( HorizontalScrollBar ).contains( pos ) )
+    {
+        const auto steps = qskWheelSteps( event );
+        offset.setX( steps );
+    }
+    else if ( viewContentsRect().contains( pos ) )
+    {
+        offset = event->angleDelta() / QWheelEvent::DefaultDeltasPerStep;
+    }
+
+    if ( offset.x() != 0.0 )
+    {
+        offset.rx() *= viewContentsRect().width(); // pagewise
+    }
+    else if ( offset.y() != 0.0 )
+    {
+        const auto viewHeight = viewContentsRect().height();
+        const qreal rowHeight = this->rowHeight();
+
+        int numLines = 3;
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 9, 0 )
+        numLines = QGuiApplication::styleHints()->wheelScrollLines();
+#endif
+
+        qreal dy = numLines * rowHeight;
+        if ( event->modifiers() & ( Qt::ControlModifier | Qt::ShiftModifier ) )
+            dy = qMax( dy, viewHeight );
+
+        // we should align to row boundaries. TODO ...
+        offset.setY( offset.y() * dy );
+    }
+
+    // using the animated scrollTo instead ?
+
+    return offset;
+}
+
+#endif
 
 void QskListView::updateScrollableSize()
 {

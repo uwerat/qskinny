@@ -89,6 +89,10 @@ class QSK_EXPORT QskListView : public QskScrollView
     void mousePressEvent( QMouseEvent* ) override;
     void mouseReleaseEvent( QMouseEvent* ) override;
 
+#ifndef QT_NO_WHEELEVENT
+    virtual QPointF scrollOffset( const QWheelEvent* ) const override;
+#endif
+
     void updateScrollableSize();
 
     void componentComplete() override;
