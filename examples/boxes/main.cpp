@@ -413,7 +413,7 @@ static void addColoredBorderRectangles6( QskLinearBox* parent )
     auto* box = new Box( parent );
     box->setBorderWidth( 20 );
     QskGradient gradient1( Qt::Vertical, { { 0.0, Qt::blue },
-                                           { 0.7, Qt::yellow },
+                                           { 0.9, Qt::yellow },
                                            { 1.0, Qt::darkRed } } );
     QskGradient gradient2( Qt::Vertical, { { 0.0, Qt::black },
                                            { 0.3, Qt::white },
@@ -502,19 +502,19 @@ int main( int argc, char* argv[] )
     SkinnyShortcut::enable( SkinnyShortcut::Quit | SkinnyShortcut::DebugShortcuts );
 
     // ### remove:
-//    auto* tabView = new TabView();
+    auto* tabView = new TabView();
 
         auto* tab5 = new QskLinearBox( Qt::Horizontal, 5 );
         tab5->setMargins( 20 );
-//        addColoredBorderRectangles1( tab5 );
-//        addColoredBorderRectangles2( tab5 );
-//        addColoredBorderRectangles3( tab5 );
-//        addColoredBorderRectangles4( tab5 );
-//        addColoredBorderRectangles5( tab5 );
+        addColoredBorderRectangles1( tab5 );
+        addColoredBorderRectangles2( tab5 );
+        addColoredBorderRectangles3( tab5 );
+        addColoredBorderRectangles4( tab5 );
+        addColoredBorderRectangles5( tab5 );
         addColoredBorderRectangles6( tab5 );
 
     QskWindow window;
-    window.addItem( tab5 );
+    window.addItem( tabView );
     window.resize( 600, 600 );
     window.show();
 
