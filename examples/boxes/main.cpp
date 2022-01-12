@@ -359,7 +359,7 @@ static void addRectanglesRest( QskLinearBox* parent )
     box->setGradient( QskGradient::Vertical, "Gainsboro", "Seashell", "LightGray" );
 }
 
-static void addColoredBorderRectangles1( QskLinearBox* parent )
+static void addColoredBorderRectangles1( QskLinearBox* parent, bool rounded )
 {
     auto* box = new Box( parent );
     box->setBorderWidth( 20 );
@@ -373,31 +373,59 @@ static void addColoredBorderRectangles1( QskLinearBox* parent )
     QskGradient gradient3( Qt::green );
     QskGradient gradient4( Qt::Vertical, Qt::magenta, Qt::cyan );
     box->setBorderGradients( gradient1, gradient2, gradient3, gradient4 );
+
+    if( rounded )
+        box->setShape( 30, Qt::AbsoluteSize );
 }
 
-static void addColoredBorderRectangles2( QskLinearBox* parent )
+static void addColoredBorderRectangles2( QskLinearBox* parent, bool rounded )
 {
     Box* box = new Box( parent );
     box->setBorderWidth( 20 );
     box->setBorderGradients( Qt::red, Qt::green, Qt::blue, Qt::yellow );
+
+    if( rounded )
+        box->setShape( 30, Qt::AbsoluteSize );
 }
 
-static void addColoredBorderRectangles3( QskLinearBox* parent )
+static void addColoredBorderRectangles3( QskLinearBox* parent, bool rounded )
 {
     Box* box = new Box( parent );
     box->setBorderWidth( 20 );
-    box->setBorderGradients( Qt::magenta, Qt::magenta, Qt::magenta, Qt::magenta );
+    QskGradient gradient1( Qt::Vertical, { { 0.0, Qt::yellow },
+                                           { 0.2, Qt::gray },
+                                           { 0.6, Qt::magenta },
+                                           { 1.0, Qt::green } } );
+    QskGradient gradient2( Qt::Vertical, { { 0.0, Qt::darkYellow },
+                                           { 0.3, Qt::darkGray },
+                                           { 1.0, Qt::darkMagenta } } );
+    QskGradient gradient3( Qt::Vertical, { { 0.0, Qt::darkGreen },
+                                           { 0.25, Qt::darkBlue },
+                                           { 0.5, Qt::darkRed },
+                                           { 0.75, Qt::yellow },
+                                           { 1.0, Qt::magenta } } );
+    QskGradient gradient4( Qt::Vertical, { { 0.0, Qt::red },
+                                           { 0.3, Qt::green },
+                                           { 0.7, Qt::blue },
+                                           { 1.0, Qt::cyan } } );
+    box->setBorderGradients( gradient1, gradient2, gradient3, gradient4 );
+
+    if( rounded )
+        box->setShape( 30, Qt::AbsoluteSize );
 }
 
-static void addColoredBorderRectangles4( QskLinearBox* parent )
+static void addColoredBorderRectangles4( QskLinearBox* parent, bool rounded )
 {
     Box* box = new Box( parent );
     box->setBorderWidth( 20 );
     QskGradient gradient( Qt::Vertical, Qt::magenta, Qt::cyan );
     box->setBorderGradients( gradient, gradient, gradient, gradient );
+
+    if( rounded )
+        box->setShape( 30, Qt::AbsoluteSize );
 }
 
-static void addColoredBorderRectangles5( QskLinearBox* parent )
+static void addColoredBorderRectangles5( QskLinearBox* parent, bool rounded )
 {
     Box* box = new Box( parent );
     box->setBorderWidth( 20 );
@@ -406,23 +434,9 @@ static void addColoredBorderRectangles5( QskLinearBox* parent )
                                           { 0.7, Qt::white },
                                           { 1.0, Qt::black } } );
     box->setBorderGradients( gradient, gradient, gradient, gradient );
-}
 
-static void addColoredBorderRectangles6( QskLinearBox* parent )
-{
-    auto* box = new Box( parent );
-    box->setBorderWidth( 20 );
-    QskGradient gradient1( Qt::Vertical, { { 0.0, Qt::blue },
-                                           { 0.9, Qt::yellow },
-                                           { 1.0, Qt::darkRed } } );
-    QskGradient gradient2( Qt::Vertical, { { 0.0, Qt::black },
-                                           { 0.3, Qt::white },
-                                           { 0.7, Qt::white },
-                                           { 1.0, Qt::black } } );
-    QskGradient gradient3( Qt::green );
-    QskGradient gradient4( Qt::Vertical, Qt::red, Qt::blue );
-    box->setBorderGradients( gradient1, gradient2, gradient3, gradient1 );
-    box->setShape( 30, Qt::AbsoluteSize );
+    if( rounded )
+        box->setShape( 30, Qt::AbsoluteSize );
 }
 
 class TabView : public QskTabView
@@ -467,12 +481,17 @@ class TabView : public QskTabView
 #endif
 
         auto* tab5 = new QskLinearBox( Qt::Horizontal, 5 );
-        addColoredBorderRectangles1( tab5 );
-        addColoredBorderRectangles2( tab5 );
-        addColoredBorderRectangles3( tab5 );
-        addColoredBorderRectangles4( tab5 );
-        addColoredBorderRectangles5( tab5 );
-        addColoredBorderRectangles6( tab5 );
+        addColoredBorderRectangles1( tab5, false );
+        addColoredBorderRectangles2( tab5, false );
+        addColoredBorderRectangles3( tab5, false );
+        addColoredBorderRectangles4( tab5, false );
+        addColoredBorderRectangles5( tab5, false );
+
+        addColoredBorderRectangles1( tab5, true );
+        addColoredBorderRectangles2( tab5, true );
+        addColoredBorderRectangles3( tab5, true );
+        addColoredBorderRectangles4( tab5, true );
+        addColoredBorderRectangles5( tab5, true );
 
         addTab( tab5 );
         setCurrentIndex( count() - 1 );
@@ -503,15 +522,6 @@ int main( int argc, char* argv[] )
 
     // ### remove:
     auto* tabView = new TabView();
-
-        auto* tab5 = new QskLinearBox( Qt::Horizontal, 5 );
-        tab5->setMargins( 20 );
-        addColoredBorderRectangles1( tab5 );
-        addColoredBorderRectangles2( tab5 );
-        addColoredBorderRectangles3( tab5 );
-        addColoredBorderRectangles4( tab5 );
-        addColoredBorderRectangles5( tab5 );
-        addColoredBorderRectangles6( tab5 );
 
     QskWindow window;
     window.addItem( tabView );
