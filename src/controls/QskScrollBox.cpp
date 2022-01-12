@@ -405,15 +405,16 @@ QPointF QskScrollBox::scrollOffset( const QWheelEvent* event ) const
     QPointF offset;
 
     const auto pos = qskWheelPosition( event );
-    if ( viewContentsRect().contains( pos ) )
+    const auto viewRect = viewContentsRect();
+
+    if ( viewRect.contains( pos ) )
     {
         offset = event->pixelDelta();
-
         if ( offset.isNull() )
-        {
             offset = event->angleDelta() / QWheelEvent::DefaultDeltasPerStep;
-            offset *= 20.0; // how to find such a value ???
-        }
+
+        offset.rx() *= viewRect.width();
+        offset.ry() *= viewRect.height();
     }
 
     return offset;

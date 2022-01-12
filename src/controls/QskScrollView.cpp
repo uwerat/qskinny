@@ -8,9 +8,6 @@
 #include "QskBoxBorderMetrics.h"
 #include "QskEvent.h"
 
-#include <qguiapplication.h>
-#include <qstylehints.h>
-
 QSK_SUBCONTROL( QskScrollView, Panel )
 QSK_SUBCONTROL( QskScrollView, Viewport )
 QSK_SUBCONTROL( QskScrollView, HorizontalScrollBar )
@@ -20,15 +17,6 @@ QSK_SUBCONTROL( QskScrollView, VerticalScrollHandle )
 
 QSK_SYSTEM_STATE( QskScrollView, VerticalHandlePressed, QskAspect::FirstSystemState << 1 )
 QSK_SYSTEM_STATE( QskScrollView, HorizontalHandlePressed, QskAspect::FirstSystemState << 2 )
-
-static int qskScrollLines()
-{
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 9, 0 )
-    return QGuiApplication::styleHints()->wheelScrollLines();
-#else
-    return 3;
-#endif
-}
 
 class QskScrollView::PrivateData
 {
@@ -226,20 +214,31 @@ QPointF QskScrollView::scrollOffset( const QWheelEvent* event ) const
     QPointF offset;
 
     const auto pos = qskWheelPosition( event );
+    const auto viewRect = viewContentsRect();
 
     if ( subControlRect( VerticalScrollBar ).contains( pos ) )
     {
         const auto steps = qskWheelSteps( event );
-        offset.setY( steps * qskScrollLines() );
+        offset.setY( steps );
     }
     else if ( subControlRect( HorizontalScrollBar ).contains( pos ) )
     {
         const auto steps = qskWheelSteps( event );
-        offset.setX( steps * qskScrollLines() );
+        offset.setX( steps );
     }
-    else
+    else if ( viewRect.contains( pos ) )
     {
-        offset = Inherited::scrollOffset( event );
+        offset = event->pixelDelta();
+        if ( offset.isNull() )
+            offset = event->angleDelta() / QWheelEvent::DefaultDeltasPerStep;
+    }
+
+    if ( !offset.isNull() )
+    {
+        const auto vs = viewRect.size() / 3.0;
+
+        offset.rx() *= vs.width();
+        offset.ry() *= vs.height();
     }
 
     return offset;
