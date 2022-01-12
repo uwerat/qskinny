@@ -575,7 +575,7 @@ namespace
         }
 
         template< class BorderMap, class FillMap >
-        inline void createLines( Qt::Orientation orientation, Line* borderLines,
+        void createLines( Qt::Orientation orientation, Line* borderLines,
             const BorderMap& borderMapTL, const BorderMap& borderMapTR,
             const BorderMap& borderMapBL, const BorderMap& borderMapBR,
             Line* fillLines, FillMap& fillMap )
@@ -600,6 +600,12 @@ namespace
                     linesTR = linesBR + numCornerLines + additionalGradientStops( borderMapBR.gradient() );
                     linesTL = linesTR + numCornerLines + additionalGradientStops( borderMapTR.gradient() );
                     linesBL = linesTL + numCornerLines + additionalGradientStops( borderMapTL.gradient() );
+
+                    qDebug() << "total additional lines:" << additionalGradientStops( borderMapBR.gradient() )
+                             << additionalGradientStops( borderMapTR.gradient() )
+                             << additionalGradientStops( borderMapTL.gradient() )
+                             << additionalGradientStops( borderMapBL.gradient() )
+                             << "corner lines:" << numCornerLines;
                 }
 
                 if ( fillLines )
@@ -762,7 +768,7 @@ namespace
                             addAdditionalLines( x1BL, y1BL, x2BL, y2BL, x1BR, y1BR, x2BR, y2BR,
                                                 borderMapBL.gradient(), linesBL + k );
                             // ###:
-                            linesBL[ k + 2 ].setLine( x1BR, y1BR, x2BR, y2BR, borderMapBR.colorAt( j ) );
+//                            linesBL[ k + 2 ] = borderLines[0];
                         }
                     }
 
@@ -854,18 +860,24 @@ namespace
             }
 
 #if 1
-//            if ( borderLines )
-//            {
-//                const int k = 4 * numCornerLines;
+            if ( borderLines )
+            {
+                const int additionalStops = additionalGradientStops( borderMapBR.gradient() )
+                         + additionalGradientStops( borderMapTR.gradient() )
+                         + additionalGradientStops( borderMapTL.gradient() )
+                         + additionalGradientStops( borderMapBL.gradient() );
+                const int k = 4 * numCornerLines + additionalStops;
 
-//                if ( orientation == Qt::Vertical )
-//                {
-//                    borderLines[ k ] = borderLines[ 0 ];
-//                    qDebug() << "setting line" << k << "to line 0";
-//                }
+                qDebug() << "presumed last line no:" << k;
+
+                if ( orientation == Qt::Vertical )
+                {
+                    borderLines[ k ] = borderLines[ 0 ];
+                    qDebug() << "setting line" << k << "to line 0";
+                }
 //                else
 //                    borderLines[ 0 ] = borderLines[ k ];
-//            }
+            }
 #endif
         }
 
@@ -1385,6 +1397,7 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
     {
         borderLineCount = 4 * ( stepCount + 1 ) + 1;
 
+        // ### when do we need an additional one?
         const int additionalLines = qMax( 0, 0
             + additionalGradientStops( borderColors.gradient( Qsk::Left ) )
             + additionalGradientStops( borderColors.gradient( Qsk::Top ) )
