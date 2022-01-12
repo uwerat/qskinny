@@ -735,6 +735,25 @@ namespace
                             addAdditionalLines( x1TR, y1TR, x2TR, y2TR, x1TL, y1TL, x2TL, y2TL,
                                                 borderMapTR.gradient(), linesTR + k );
                         }
+
+                        if( additionalGradientStops( borderMapBL.gradient() ) > 0 )
+                        {
+                            auto stops = borderMapBL.gradient().stops();
+
+                            float x1BL = c[ BottomLeft ].centerX - v.dx1( BottomLeft ),
+                            y1BL = c[ BottomLeft ].centerY + v.dy1( BottomLeft ),
+                            x2BL = c[ BottomLeft ].centerX - v.dx2( BottomLeft ),
+                            y2BL = c[ BottomLeft ].centerY + v.dy2( BottomLeft ),
+
+                            x1BR = c[ BottomRight ].centerX + v.dx1( BottomRight ),
+                            y1BR = c[ BottomRight ].centerY + v.dy1( BottomRight ),
+                            x2BR = c[ BottomRight ].centerX + v.dx2( BottomRight ),
+                            y2BR = c[ BottomRight ].centerY + v.dy2( BottomRight );
+
+                            qDebug() << "bottom:" << j << k;
+                            addAdditionalLines( x1BL, y1BL, x2BL, y2BL, x1BR, y1BR, x2BR, y2BR,
+                                                borderMapBL.gradient(), linesBL + k );
+                        }
                     }
 
                     if( j == numCornerLines - 1 )
