@@ -560,7 +560,8 @@ namespace
 
             for( int l = 1; l <= additionalStopCount; ++l )
             {
-                auto p = ( 1 - s.at( l ).position() );
+                auto p = s.at( l ).position();
+                // ### umdrehen:
                 float xStart = x11 + p * ( x21 - x11 ),
                     yStart = y11 + p * ( y21 - y11 ),
                     xEnd = x12 + p * ( x22 - x12 ),
