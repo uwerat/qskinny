@@ -570,15 +570,10 @@ namespace
             {
                 if ( borderLines )
                 {
-//                    linesBR = borderLines + additionalGradientStops( borderMapBR.gradient() );
-//                    linesTR = linesBR + numCornerLines + additionalGradientStops( borderMapTR.gradient() );
-//                    linesTL = linesTR + numCornerLines + additionalGradientStops( borderMapTL.gradient() );
-//                    linesBL = linesTL + numCornerLines + additionalGradientStops( borderMapBL.gradient() );
-
                     linesBR = borderLines;
-                    linesTR = linesBR + numCornerLines;
-                    linesTL = linesTR + numCornerLines;
-                    linesBL = linesTL + numCornerLines + 1;
+                    linesTR = linesBR + numCornerLines + additionalGradientStops( borderMapBR.gradient() );
+                    linesTL = linesTR + numCornerLines + additionalGradientStops( borderMapTR.gradient() );
+                    linesBL = linesTL + numCornerLines + additionalGradientStops( borderMapTL.gradient() );
                 }
 
                 if ( fillLines )
@@ -591,15 +586,9 @@ namespace
             {
                 if ( borderLines )
                 {
-                    qDebug() << "additional horizontal border lines:"
-                             << additionalGradientStops( borderMapTR.gradient() )
-                             << additionalGradientStops( borderMapTL.gradient() )
-                             << additionalGradientStops( borderMapBL.gradient() )
-                             << additionalGradientStops( borderMapBR.gradient() );
-
-                    linesTR = borderLines + 1 + additionalGradientStops( borderMapTR.gradient() );
-                    linesTL = linesTR + numCornerLines + additionalGradientStops( borderMapTL.gradient() );
-                    linesBL = linesTL + numCornerLines + additionalGradientStops( borderMapBL.gradient() );
+                    linesTR = borderLines;
+                    linesTL = linesTR + numCornerLines + additionalGradientStops( borderMapTR.gradient() );
+                    linesBL = linesTL + numCornerLines + additionalGradientStops( borderMapTL.gradient() );
                     linesBR = linesBL + numCornerLines + additionalGradientStops( borderMapBR.gradient() );
                 }
 
