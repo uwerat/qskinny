@@ -556,6 +556,8 @@ namespace
 
             auto s = gradient.stops();
 
+            qDebug() << "adding" << additionalStopCount << "stops";
+
             for( int l = 1; l <= additionalStopCount; ++l )
             {
                 auto p = s.at( l ).position();
@@ -564,10 +566,9 @@ namespace
                     xEnd = x12 + p * ( x22 - x12 ),
                     yEnd = y12 + p * ( y22 - y12 );
 
-                qDebug() << "start:" << x11 << y11 << x12 << y12;
-                qDebug() << "end:" << x21 << y21 << x22 << y22;
-                qDebug() << "here set line for stop" << s.at( l )
-                         << "and line number" << l << xStart << yStart << xEnd << yEnd;
+                qDebug() << "   start:" << x11 << y11 << x12 << y12;
+                qDebug() << "   end:" << x21 << y21 << x22 << y22;
+                qDebug() << "   gradient stop:" << xStart << yStart << xEnd << yEnd;
 
                 lines[ l ].setLine( xStart, yStart, xEnd, yEnd, s.at( l ).color() );
             }
@@ -660,32 +661,6 @@ namespace
 //                        }
                     }
 
-                    if( j == numCornerLines - 1 )
-                    {
-                        // we are at the end of the loop and can add additional
-                        // stops for border gradients:
-
-                        int additionalStopCount = additionalGradientStops( borderMapTL.gradient() );
-
-                        if( additionalStopCount > 0 )
-                        {
-                            auto stops = borderMapTL.gradient().stops();
-
-                            float x1TL = c[ TopLeft ].centerX - v.dx1( TopLeft ),
-                            y1TL = c[ TopLeft ].centerY - v.dy1( TopLeft ),
-                            x2TL = c[ TopLeft ].centerX - v.dx2( TopLeft ),
-                            y2TL = c[ TopLeft ].centerY - v.dy2( TopLeft ),
-
-                            x1BL = c[ BottomLeft ].centerX - v.dx1( BottomLeft ),
-                            y1BL = c[ BottomLeft ].centerY + v.dy1( BottomLeft ),
-                            x2BL = c[ BottomLeft ].centerX - v.dx2( BottomLeft ),
-                            y2BL = c[ BottomLeft ].centerY + v.dy2( BottomLeft );
-
-                            addAdditionalLines( x1TL, y1TL, x2TL, y2TL, x1BL, y1BL, x2BL, y2BL,
-                                                borderMapTL.gradient(), linesTL + j );
-                        }
-                    }
-
                     {
                         constexpr auto corner = TopRight;
 
@@ -735,6 +710,74 @@ namespace
                             c[ corner ].centerX + v.dx2( corner ),
                             c[ corner ].centerY + v.dy2( corner ),
                             borderMapBR.colorAt( j ) );
+                    }
+
+                    // at the beginning and end of the loop we can add
+                    // additional lines for border gradients:
+
+                    if( j == 0 )
+                    {
+                        if( additionalGradientStops( borderMapTR.gradient() ) > 0 )
+                        {
+                            auto stops = borderMapTR.gradient().stops();
+
+                            float x1TR = c[ TopRight ].centerX + v.dx1( TopRight ),
+                            y1TR = c[ TopRight ].centerY - v.dy1( TopRight ),
+                            x2TR = c[ TopRight ].centerX + v.dx2( TopRight ),
+                            y2TR = c[ TopRight ].centerY - v.dy2( TopRight ),
+
+                            x1TL = c[ TopLeft ].centerX - v.dx1( TopLeft ),
+                            y1TL = c[ TopLeft ].centerY - v.dy1( TopLeft ),
+                            x2TL = c[ TopLeft ].centerX - v.dx2( TopLeft ),
+                            y2TL = c[ TopLeft ].centerY - v.dy2( TopLeft );
+
+                            qDebug() << "top:" << j << k;
+                            addAdditionalLines( x1TR, y1TR, x2TR, y2TR, x1TL, y1TL, x2TL, y2TL,
+                                                borderMapTR.gradient(), linesTR + k );
+                        }
+                    }
+
+                    if( j == numCornerLines - 1 )
+                    {
+                        if( additionalGradientStops( borderMapTL.gradient() ) > 0 )
+                        {
+                            auto stops = borderMapTL.gradient().stops();
+
+                            // ### this can be simplified?
+                            float x1TL = c[ TopLeft ].centerX - v.dx1( TopLeft ),
+                            y1TL = c[ TopLeft ].centerY - v.dy1( TopLeft ),
+                            x2TL = c[ TopLeft ].centerX - v.dx2( TopLeft ),
+                            y2TL = c[ TopLeft ].centerY - v.dy2( TopLeft ),
+
+                            x1BL = c[ BottomLeft ].centerX - v.dx1( BottomLeft ),
+                            y1BL = c[ BottomLeft ].centerY + v.dy1( BottomLeft ),
+                            x2BL = c[ BottomLeft ].centerX - v.dx2( BottomLeft ),
+                            y2BL = c[ BottomLeft ].centerY + v.dy2( BottomLeft );
+
+                            qDebug() << "left:" << j << k;
+                            addAdditionalLines( x1TL, y1TL, x2TL, y2TL, x1BL, y1BL, x2BL, y2BL,
+                                                borderMapTL.gradient(), linesTL + j );
+                        }
+
+                        if( additionalGradientStops( borderMapBR.gradient() ) > 0 )
+                        {
+                            auto stops = borderMapBR.gradient().stops();
+
+                            // ### this can be simplified?
+                            float x1BR = c[ BottomRight ].centerX + v.dx1( BottomRight ),
+                            y1BR = c[ BottomRight ].centerY + v.dy1( BottomRight ),
+                            x2BR = c[ BottomRight ].centerX + v.dx2( BottomRight ),
+                            y2BR = c[ BottomRight ].centerY + v.dy2( BottomRight ),
+
+                            x1TR = c[ TopRight ].centerX + v.dx1( TopRight ),
+                            y1TR = c[ TopRight ].centerY - v.dy1( TopRight ),
+                            x2TR = c[ TopRight ].centerX + v.dx2( TopRight ),
+                            y2TR = c[ TopRight ].centerY - v.dy2( TopRight );
+
+                            qDebug() << "right:" << j << k;
+                            addAdditionalLines( x1BR, y1BR, x2BR, y2BR, x1TR, y1TR, x2TR, y2TR,
+                                                borderMapBR.gradient(), linesBR + j );
+                        }
                     }
                 }
 
