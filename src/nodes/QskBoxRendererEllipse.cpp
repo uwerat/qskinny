@@ -560,7 +560,7 @@ namespace
 
             for( int l = 1; l <= additionalStopCount; ++l )
             {
-                auto p = s.at( l ).position();
+                auto p = ( 1 - s.at( l ).position() );
                 float xStart = x11 + p * ( x21 - x11 ),
                     yStart = y11 + p * ( y21 - y11 ),
                     xEnd = x12 + p * ( x22 - x12 ),
@@ -600,12 +600,6 @@ namespace
                     linesTR = linesBR + numCornerLines + additionalGradientStops( borderMapBR.gradient() );
                     linesTL = linesTR + numCornerLines + additionalGradientStops( borderMapTR.gradient() );
                     linesBL = linesTL + numCornerLines + additionalGradientStops( borderMapTL.gradient() );
-
-                    qDebug() << "total additional lines:" << additionalGradientStops( borderMapBR.gradient() )
-                             << additionalGradientStops( borderMapTR.gradient() )
-                             << additionalGradientStops( borderMapTL.gradient() )
-                             << additionalGradientStops( borderMapBL.gradient() )
-                             << "corner lines:" << numCornerLines;
                 }
 
                 if ( fillLines )
@@ -655,16 +649,6 @@ namespace
                             c[ corner ].centerX - v.dx2( corner ),
                             c[ corner ].centerY - v.dy2( corner ),
                             borderMapTL.colorAt( j ) );
-//                            Color( 255, 0, 0, 255 ) );
-
-//                        if(j==0)
-//                        {
-//                            qDebug() << "TL first coordinates:" <<
-//                            c[ corner ].centerX - v.dx1( corner ) <<
-//                            c[ corner ].centerY - v.dy1( corner ) <<
-//                            c[ corner ].centerX - v.dx2( corner ) <<
-//                            c[ corner ].centerY - v.dy2( corner );
-//                        }
                     }
 
                     {
@@ -687,36 +671,10 @@ namespace
                             c[ corner ].centerX - v.dx2( corner ),
                             c[ corner ].centerY + v.dy2( corner ),
                             borderMapBL.colorAt( k ) );
-//                            Color( 255, 255, 0, 255 ) );
-//                        if(j==0)
-//                        {
-//                            qDebug() << "BL first coordinates:" <<
-//                            c[ corner ].centerX - v.dx1( corner ) <<
-//                            c[ corner ].centerY + v.dy1( corner ) <<
-//                            c[ corner ].centerX - v.dx2( corner ) <<
-//                            c[ corner ].centerY + v.dy2( corner );
-//                        }
-//                        if( j == numCornerLines - 1 )
-//                        {
-//                            qDebug() << "BL last coordinates:" <<
-//                            c[ corner ].centerX - v.dx1( corner ) <<
-//                            c[ corner ].centerY + v.dy1( corner ) <<
-//                            c[ corner ].centerX - v.dx2( corner ) <<
-//                            c[ corner ].centerY + v.dy2( corner );
-//                        }
-
                     }
 
                     {
                         constexpr auto corner = BottomRight;
-
-                        if(j==0)
-                            qDebug() << "first line:" <<
-                            c[ corner ].centerX + v.dx1( corner ) <<
-                            c[ corner ].centerY + v.dy1( corner ) <<
-                            c[ corner ].centerX + v.dx2( corner ) <<
-                            c[ corner ].centerY + v.dy2( corner ) <<
-                            borderMapBR.colorAt( j );
 
                         linesBR[ j ].setLine(
                             c[ corner ].centerX + v.dx1( corner ),
@@ -767,8 +725,6 @@ namespace
                             qDebug() << "bottom:" << j << k;
                             addAdditionalLines( x1BL, y1BL, x2BL, y2BL, x1BR, y1BR, x2BR, y2BR,
                                                 borderMapBL.gradient(), linesBL + k );
-                            // ###:
-//                            linesBL[ k + 2 ] = borderLines[0];
                         }
                     }
 
@@ -868,15 +824,10 @@ namespace
                          + additionalGradientStops( borderMapBL.gradient() );
                 const int k = 4 * numCornerLines + additionalStops;
 
-                qDebug() << "presumed last line no:" << k;
-
                 if ( orientation == Qt::Vertical )
-                {
                     borderLines[ k ] = borderLines[ 0 ];
-                    qDebug() << "setting line" << k << "to line 0";
-                }
-//                else
-//                    borderLines[ 0 ] = borderLines[ k ];
+                else
+                    borderLines[ 0 ] = borderLines[ k ];
             }
 #endif
         }
