@@ -704,6 +704,14 @@ namespace
                     {
                         constexpr auto corner = BottomRight;
 
+                        if(j==0)
+                            qDebug() << "first line:" <<
+                            c[ corner ].centerX + v.dx1( corner ) <<
+                            c[ corner ].centerY + v.dy1( corner ) <<
+                            c[ corner ].centerX + v.dx2( corner ) <<
+                            c[ corner ].centerY + v.dy2( corner ) <<
+                            borderMapBR.colorAt( j );
+
                         linesBR[ j ].setLine(
                             c[ corner ].centerX + v.dx1( corner ),
                             c[ corner ].centerY + v.dy1( corner ),
@@ -753,6 +761,8 @@ namespace
                             qDebug() << "bottom:" << j << k;
                             addAdditionalLines( x1BL, y1BL, x2BL, y2BL, x1BR, y1BR, x2BR, y2BR,
                                                 borderMapBL.gradient(), linesBL + k );
+                            // ###:
+                            linesBL[ k + 2 ].setLine( x1BR, y1BR, x2BR, y2BR, borderMapBR.colorAt( j ) );
                         }
                     }
 
@@ -844,15 +854,18 @@ namespace
             }
 
 #if 1
-            if ( borderLines )
-            {
-                const int k = 4 * numCornerLines;
+//            if ( borderLines )
+//            {
+//                const int k = 4 * numCornerLines;
 
-                if ( orientation == Qt::Vertical )
-                    borderLines[ k ] = borderLines[ 0 ];
-                else
-                    borderLines[ 0 ] = borderLines[ k ];
-            }
+//                if ( orientation == Qt::Vertical )
+//                {
+//                    borderLines[ k ] = borderLines[ 0 ];
+//                    qDebug() << "setting line" << k << "to line 0";
+//                }
+//                else
+//                    borderLines[ 0 ] = borderLines[ k ];
+//            }
 #endif
         }
 
@@ -1372,13 +1385,15 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
     {
         borderLineCount = 4 * ( stepCount + 1 ) + 1;
 
-        const int additionalLines = qMax( 0, -1
+        const int additionalLines = qMax( 0, 0
             + additionalGradientStops( borderColors.gradient( Qsk::Left ) )
             + additionalGradientStops( borderColors.gradient( Qsk::Top ) )
             + additionalGradientStops( borderColors.gradient( Qsk::Right ) )
             + additionalGradientStops( borderColors.gradient( Qsk::Bottom ) ) );
 
         borderLineCount += additionalLines;
+
+        qDebug() << "additional lines:" << additionalLines;
     }
 
     int lineCount = borderLineCount + fillLineCount;
