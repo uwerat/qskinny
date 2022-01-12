@@ -548,6 +548,31 @@ namespace
         {
         }
 
+        void addAdditionalLines( float x11, float y11, float x12, float y12, // start line
+                                 float x21,float y21, float x22, float y22, // end line
+                                 const QskGradient& gradient, Line* lines )
+        {
+            int additionalStopCount = additionalGradientStops( gradient );
+
+            auto s = gradient.stops();
+
+            for( int l = 1; l <= additionalStopCount; ++l )
+            {
+                auto p = s.at( l ).position();
+                float xStart = x11 + p * ( x21 - x11 ),
+                    yStart = y11 + p * ( y21 - y11 ),
+                    xEnd = x12 + p * ( x22 - x12 ),
+                    yEnd = y12 + p * ( y22 - y12 );
+
+                qDebug() << "start:" << x11 << y11 << x12 << y12;
+                qDebug() << "end:" << x21 << y21 << x22 << y22;
+                qDebug() << "here set line for stop" << s.at( l )
+                         << "and line number" << l << xStart << yStart << xEnd << yEnd;
+
+                lines[ l ].setLine( xStart, yStart, xEnd, yEnd, s.at( l ).color() );
+            }
+        }
+
         template< class BorderMap, class FillMap >
         inline void createLines( Qt::Orientation orientation, Line* borderLines,
             const BorderMap& borderMapTL, const BorderMap& borderMapTR,
@@ -635,17 +660,16 @@ namespace
 //                        }
                     }
 
-                    // ### maybe here check whether gradient isn't monochrome and add lines?
-
                     if( j == numCornerLines - 1 )
                     {
+                        // we are at the end of the loop and can add additional
+                        // stops for border gradients:
+
                         int additionalStopCount = additionalGradientStops( borderMapTL.gradient() );
 
                         if( additionalStopCount > 0 )
                         {
                             auto stops = borderMapTL.gradient().stops();
-
-                            qDebug() << "here add" << additionalStopCount << "stops" << stops;
 
                             float x1TL = c[ TopLeft ].centerX - v.dx1( TopLeft ),
                             y1TL = c[ TopLeft ].centerY - v.dy1( TopLeft ),
@@ -657,21 +681,8 @@ namespace
                             x2BL = c[ BottomLeft ].centerX - v.dx2( BottomLeft ),
                             y2BL = c[ BottomLeft ].centerY + v.dy2( BottomLeft );
 
-                            qDebug() << "TL coordinates:" << x1TL << y1TL << x2TL << y2TL;
-                            qDebug() << "BL coordinates:" << x1BL << y1BL << x2BL << y2BL;
-
-                            for( int l = 1; l <= additionalStopCount; ++l )
-                            {
-                                float xStart = x1TL + stops.at( l ).position() * ( x1BL - x1TL ),
-                                    yStart = y1TL + stops.at( l ).position() * ( y1BL - y1TL ),
-                                    xEnd = x2TL + stops.at( l ).position() * ( x2BL - x2TL ),
-                                    yEnd = y2TL + stops.at( l ).position() * ( y2BL - y2TL );
-
-                                qDebug() << "here set line for stop" << stops.at( l )
-                                         << "and line number" << j + l;
-
-                                linesTL[ j + l ].setLine( xStart, yStart, xEnd, yEnd, stops.at( l ).color() );
-                            }
+                            addAdditionalLines( x1TL, y1TL, x2TL, y2TL, x1BL, y1BL, x2BL, y2BL,
+                                                borderMapTL.gradient(), linesTL + j );
                         }
                     }
 
