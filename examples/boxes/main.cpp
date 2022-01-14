@@ -557,10 +557,8 @@ int main( int argc, char* argv[] )
         auto* tab5 = new QskLinearBox( Qt::Horizontal, 5 );
         tab5->setMargins( 20 );
         tab5->setSpacing( 20 );
-//        addColoredBorderRectangles1( tab5, false );
-//        addColoredBorderRectangles1( tab5, true );
-        addColoredBorderRectangles3( tab5, false );
-        addColoredBorderRectangles3( tab5, true );
+//        addColoredBorderRectangles1( tab5, true, Box::Unfilled );
+        addColoredBorderRectangles1( tab5, true, Box::Horizontal );
         window.addItem( tab5 );
 #endif
 

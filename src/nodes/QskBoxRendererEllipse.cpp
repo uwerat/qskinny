@@ -1001,6 +1001,7 @@ static inline void qskRenderBorder( const QskBoxRenderer::Metrics& metrics,
         auto left = c.gradient( Qsk::Left ), top = c.gradient( Qsk::Top ),
                 right = c.gradient( Qsk::Right ), bottom = c.gradient( Qsk::Bottom );
 
+        // ### I guess we could get rid of the 2 colors completely here?
         qskRenderBorderLines( metrics, orientation, line,
             BorderMapGradient( stepCount, top.startColor().rgb(), left.endColor().rgb(), left ),
             BorderMapGradient( stepCount, right.startColor().rgb(), top.endColor().rgb(), top ),
@@ -1054,10 +1055,18 @@ static inline void qskRenderBoxRandom(
     {
         const int n = metrics.corner[ 0 ].stepCount;
 
-        const BorderMapGradient tl( n, bc.gradient( Qsk::Top ).startColor().rgb(), bc.gradient( Qsk::Left ).startColor().rgb() );
-        const BorderMapGradient tr( n, bc.gradient( Qsk::Right ).startColor().rgb(), bc.gradient( Qsk::Top ).startColor().rgb() );
-        const BorderMapGradient bl( n, bc.gradient( Qsk::Left ).startColor().rgb(), bc.gradient( Qsk::Bottom ).startColor().rgb() );
-        const BorderMapGradient br( n, bc.gradient( Qsk::Bottom ).startColor().rgb(), bc.gradient( Qsk::Right ).startColor().rgb() );
+        const BorderMapGradient tl( n, bc.gradient( Qsk::Top ).startColor().rgb(),
+                                    bc.gradient( Qsk::Left ).endColor().rgb(),
+                                    borderColors.gradient( Qsk::Left ) );
+        const BorderMapGradient tr( n, bc.gradient( Qsk::Right ).startColor().rgb(),
+                                    bc.gradient( Qsk::Top ).endColor().rgb(),
+                                    borderColors.gradient( Qsk::Top ) );
+        const BorderMapGradient bl( n, bc.gradient( Qsk::Left ).startColor().rgb(),
+                                    bc.gradient( Qsk::Bottom ).endColor().rgb(),
+                                    borderColors.gradient( Qsk::Bottom ) );
+        const BorderMapGradient br( n, bc.gradient( Qsk::Bottom ).startColor().rgb(),
+                                    bc.gradient( Qsk::Right ).endColor().rgb(),
+                                    borderColors.gradient( Qsk::Right ) );
 
         if ( gradient.isMonochrome() )
         {
