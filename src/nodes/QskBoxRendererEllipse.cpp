@@ -14,8 +14,6 @@
 #include <qmath.h>
 #include <qsggeometry.h>
 
-#include <QDebug> // ### remove
-
 using namespace QskVertex;
 
 namespace
@@ -515,7 +513,7 @@ namespace
     class BorderMapGradient
     {
       public:
-        inline BorderMapGradient( int stepCount, QRgb rgb1, QRgb rgb2, const QskGradient& gradient = {} )
+        inline BorderMapGradient( int stepCount, QRgb rgb1, QRgb rgb2, const QskGradient& gradient )
             : m_stepCount( stepCount )
             , m_color1( rgb1 )
             , m_color2( rgb2 )
@@ -556,21 +554,16 @@ namespace
 
             auto s = gradient.stops();
 
-            qDebug() << "adding" << additionalStopCount << "stops";
-
-            for( int l = 1; l <= additionalStopCount; ++l )
+            for( int i = 1; i <= additionalStopCount; ++i )
             {
-                auto p = ( 1 - s.at( l ).position() );
+                auto p = ( 1 - s.at( i ).position() );
                 float xStart = x11 + p * ( x21 - x11 ),
                     yStart = y11 + p * ( y21 - y11 ),
                     xEnd = x12 + p * ( x22 - x12 ),
                     yEnd = y12 + p * ( y22 - y12 );
 
-                qDebug() << "   start:" << x11 << y11 << x12 << y12;
-                qDebug() << "   end:" << x21 << y21 << x22 << y22;
-                qDebug() << "   gradient stop:" << xStart << yStart << xEnd << yEnd;
-
-                lines[ additionalStopCount - l + 1 ].setLine( xStart, yStart, xEnd, yEnd, s.at( l ).color() );
+                lines[ additionalStopCount - i + 1 ].setLine( xStart, yStart,
+                    xEnd, yEnd, s.at( i ).color() );
             }
         }
 
@@ -597,9 +590,12 @@ namespace
                 if ( borderLines )
                 {
                     linesBR = borderLines;
-                    linesTR = linesBR + numCornerLines + additionalGradientStops( borderMapBR.gradient() );
-                    linesTL = linesTR + numCornerLines + additionalGradientStops( borderMapTR.gradient() );
-                    linesBL = linesTL + numCornerLines + additionalGradientStops( borderMapTL.gradient() );
+                    linesTR = linesBR + numCornerLines
+                        + additionalGradientStops( borderMapBR.gradient() );
+                    linesTL = linesTR + numCornerLines
+                        + additionalGradientStops( borderMapTR.gradient() );
+                    linesBL = linesTL + numCornerLines
+                        + additionalGradientStops( borderMapTL.gradient() );
                 }
 
                 if ( fillLines )
@@ -613,9 +609,12 @@ namespace
                 if ( borderLines )
                 {
                     linesTR = borderLines + 1;
-                    linesTL = linesTR + numCornerLines + additionalGradientStops( borderMapTR.gradient() );
-                    linesBL = linesTL + numCornerLines + additionalGradientStops( borderMapTL.gradient() );
-                    linesBR = linesBL + numCornerLines + additionalGradientStops( borderMapBR.gradient() );
+                    linesTL = linesTR + numCornerLines
+                        + additionalGradientStops( borderMapTR.gradient() );
+                    linesBL = linesTL + numCornerLines
+                        + additionalGradientStops( borderMapTL.gradient() );
+                    linesBR = linesBL + numCornerLines
+                        + additionalGradientStops( borderMapBR.gradient() );
                 }
 
                 if ( fillLines )
@@ -703,8 +702,8 @@ namespace
                             x2TL = c[ TopLeft ].centerX - v.dx2( TopLeft ),
                             y2TL = c[ TopLeft ].centerY - v.dy2( TopLeft );
 
-                            qDebug() << "top:" << j << k;
-                            addAdditionalLines( x1TR, y1TR, x2TR, y2TR, x1TL, y1TL, x2TL, y2TL,
+                            addAdditionalLines( x1TR, y1TR, x2TR, y2TR,
+                                                x1TL, y1TL, x2TL, y2TL,
                                                 borderMapTR.gradient(), linesTR + k );
                         }
 
@@ -722,8 +721,8 @@ namespace
                             x2BR = c[ BottomRight ].centerX + v.dx2( BottomRight ),
                             y2BR = c[ BottomRight ].centerY + v.dy2( BottomRight );
 
-                            qDebug() << "bottom:" << j << k;
-                            addAdditionalLines( x1BL, y1BL, x2BL, y2BL, x1BR, y1BR, x2BR, y2BR,
+                            addAdditionalLines( x1BL, y1BL, x2BL, y2BL,
+                                                x1BR, y1BR, x2BR, y2BR,
                                                 borderMapBL.gradient(), linesBL + k );
                         }
                     }
@@ -734,7 +733,6 @@ namespace
                         {
                             auto stops = borderMapTL.gradient().stops();
 
-                            // ### this can be simplified?
                             float x1TL = c[ TopLeft ].centerX - v.dx1( TopLeft ),
                             y1TL = c[ TopLeft ].centerY - v.dy1( TopLeft ),
                             x2TL = c[ TopLeft ].centerX - v.dx2( TopLeft ),
@@ -745,8 +743,8 @@ namespace
                             x2BL = c[ BottomLeft ].centerX - v.dx2( BottomLeft ),
                             y2BL = c[ BottomLeft ].centerY + v.dy2( BottomLeft );
 
-                            qDebug() << "left:" << j << k;
-                            addAdditionalLines( x1TL, y1TL, x2TL, y2TL, x1BL, y1BL, x2BL, y2BL,
+                            addAdditionalLines( x1TL, y1TL, x2TL, y2TL,
+                                                x1BL, y1BL, x2BL, y2BL,
                                                 borderMapTL.gradient(), linesTL + j );
                         }
 
@@ -754,7 +752,6 @@ namespace
                         {
                             auto stops = borderMapBR.gradient().stops();
 
-                            // ### this can be simplified?
                             float x1BR = c[ BottomRight ].centerX + v.dx1( BottomRight ),
                             y1BR = c[ BottomRight ].centerY + v.dy1( BottomRight ),
                             x2BR = c[ BottomRight ].centerX + v.dx2( BottomRight ),
@@ -765,8 +762,8 @@ namespace
                             x2TR = c[ TopRight ].centerX + v.dx2( TopRight ),
                             y2TR = c[ TopRight ].centerY - v.dy2( TopRight );
 
-                            qDebug() << "right:" << j << k;
-                            addAdditionalLines( x1BR, y1BR, x2BR, y2BR, x1TR, y1TR, x2TR, y2TR,
+                            addAdditionalLines( x1BR, y1BR, x2BR, y2BR,
+                                                x1TR, y1TR, x2TR, y2TR,
                                                 borderMapBR.gradient(), linesBR + j );
                         }
                     }
@@ -818,10 +815,11 @@ namespace
 #if 1
             if ( borderLines )
             {
-                const int additionalStops = additionalGradientStops( borderMapBR.gradient() )
-                         + additionalGradientStops( borderMapTR.gradient() )
-                         + additionalGradientStops( borderMapTL.gradient() )
-                         + additionalGradientStops( borderMapBL.gradient() );
+                const int additionalStops =
+                    additionalGradientStops( borderMapBR.gradient() )
+                    + additionalGradientStops( borderMapTR.gradient() )
+                    + additionalGradientStops( borderMapTL.gradient() )
+                    + additionalGradientStops( borderMapBL.gradient() );
                 const int k = 4 * numCornerLines + additionalStops;
 
                 if ( orientation == Qt::Vertical )
@@ -1001,12 +999,15 @@ static inline void qskRenderBorder( const QskBoxRenderer::Metrics& metrics,
         auto left = c.gradient( Qsk::Left ), top = c.gradient( Qsk::Top ),
                 right = c.gradient( Qsk::Right ), bottom = c.gradient( Qsk::Bottom );
 
-        // ### I guess we could get rid of the 2 colors completely here?
         qskRenderBorderLines( metrics, orientation, line,
-            BorderMapGradient( stepCount, top.startColor().rgb(), left.endColor().rgb(), left ),
-            BorderMapGradient( stepCount, right.startColor().rgb(), top.endColor().rgb(), top ),
-            BorderMapGradient( stepCount, left.startColor().rgb(), bottom.endColor().rgb(), bottom ),
-            BorderMapGradient( stepCount, bottom.startColor().rgb(), right.endColor().rgb(), right ) );
+            BorderMapGradient( stepCount, top.startColor().rgb(),
+                               left.endColor().rgb(), left ),
+            BorderMapGradient( stepCount, right.startColor().rgb(),
+                               top.endColor().rgb(), top ),
+            BorderMapGradient( stepCount, left.startColor().rgb(),
+                               bottom.endColor().rgb(), bottom ),
+            BorderMapGradient( stepCount, bottom.startColor().rgb(),
+                               right.endColor().rgb(), right ) );
     }
 }
 
@@ -1036,7 +1037,7 @@ static inline void qskRenderBoxRandom(
 
     if ( bc.isMonochrome() )
     {
-        const BorderMapSolid borderMap( bc.gradient( Qsk::Left ).startColor().rgb() ); // ###
+        const BorderMapSolid borderMap( bc.gradient( Qsk::Left ).startColor().rgb() );
 
         if ( gradient.isMonochrome() )
         {
@@ -1357,16 +1358,13 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
     {
         borderLineCount = 4 * ( stepCount + 1 ) + 1;
 
-        // ### when do we need an additional one?
-        const int additionalLines = qMax( 0, 0
-            + additionalGradientStops( borderColors.gradient( Qsk::Left ) )
+        const int additionalLines =
+            additionalGradientStops( borderColors.gradient( Qsk::Left ) )
             + additionalGradientStops( borderColors.gradient( Qsk::Top ) )
             + additionalGradientStops( borderColors.gradient( Qsk::Right ) )
-            + additionalGradientStops( borderColors.gradient( Qsk::Bottom ) ) );
+            + additionalGradientStops( borderColors.gradient( Qsk::Bottom ) );
 
         borderLineCount += additionalLines;
-
-        qDebug() << "additional lines:" << additionalLines;
     }
 
     int lineCount = borderLineCount + fillLineCount;
@@ -1445,7 +1443,6 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
                 borderLines++;
 
             const auto orientation = qskQtOrientation( gradient );
-            qDebug() << "border line count:" << borderLineCount;
             qskRenderBorder( metrics, orientation, borderColors, borderLines );
 
             if ( extraLine )

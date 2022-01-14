@@ -11,8 +11,6 @@
 #include "QskGradient.h"
 #include "QskVertex.h"
 
-#include <QDebug>
-
 using namespace QskVertex;
 
 namespace
@@ -577,8 +575,6 @@ void QskBoxRenderer::renderRect(
             }
         }
     }
-
-    qDebug() << "border lines:" << borderLineCount;
 
     auto line = allocateLines< ColoredLine >( geometry, borderLineCount + fillLineCount );
 

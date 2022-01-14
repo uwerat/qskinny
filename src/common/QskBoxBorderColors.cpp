@@ -79,7 +79,7 @@ void QskBoxBorderColors::setAlpha( int alpha )
     }
 }
 
-void QskBoxBorderColors::setGradients( const QskGradient &gradient )
+void QskBoxBorderColors::setGradients( const QskGradient& gradient )
 {
     qskSetGradients( gradient, m_gradients );
 }
@@ -90,12 +90,12 @@ void QskBoxBorderColors::setGradients( const QskGradient& left, const QskGradien
     qskSetGradients( left, top, right, bottom, m_gradients );
 }
 
-void QskBoxBorderColors::setGradient( Qsk::Position position, const QskGradient &gradient )
+void QskBoxBorderColors::setGradient( Qsk::Position position, const QskGradient& gradient )
 {
     m_gradients[ position ] = gradient;
 }
 
-void QskBoxBorderColors::setGradientAt( Qt::Edges edges, const QskGradient &gradient )
+void QskBoxBorderColors::setGradientAt( Qt::Edges edges, const QskGradient& gradient )
 {
     if ( edges & Qt::TopEdge )
         m_gradients[ Qsk::Top ] = gradient;

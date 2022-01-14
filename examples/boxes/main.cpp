@@ -451,7 +451,7 @@ static void addColoredBorderRectangles5( QskLinearBox* parent, bool rounded, Box
         box->setBackground( fillType, QskRgbPalette::Indigo );
 
     if( rounded )
-        box->setShape( 30, Qt::AbsoluteSize );
+        box->setShape( { 10, 20, 20, 40 } );
 }
 
 class TabView : public QskTabView
@@ -496,7 +496,6 @@ class TabView : public QskTabView
 #endif
 
         auto* tab5 = new QskLinearBox( Qt::Horizontal, 5 );
-        // ### also add some filling:
         addColoredBorderRectangles1( tab5, false, Box::Unfilled );
         addColoredBorderRectangles2( tab5, false, Box::Unfilled );
         addColoredBorderRectangles3( tab5, false, Box::Unfilled );
