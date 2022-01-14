@@ -521,6 +521,18 @@ class TabView : public QskTabView
         addColoredBorderRectangles4( tab5, true, Box::Horizontal );
         addColoredBorderRectangles5( tab5, true, Box::Horizontal );
 
+        addColoredBorderRectangles1( tab5, false, Box::Vertical );
+        addColoredBorderRectangles2( tab5, false, Box::Vertical );
+        addColoredBorderRectangles3( tab5, false, Box::Vertical );
+        addColoredBorderRectangles4( tab5, false, Box::Vertical );
+        addColoredBorderRectangles5( tab5, false, Box::Vertical );
+
+        addColoredBorderRectangles1( tab5, true, Box::Vertical );
+        addColoredBorderRectangles2( tab5, true, Box::Vertical );
+        addColoredBorderRectangles3( tab5, true, Box::Vertical );
+        addColoredBorderRectangles4( tab5, true, Box::Vertical );
+        addColoredBorderRectangles5( tab5, true, Box::Vertical );
+
         addTab( tab5 );
         setCurrentIndex( count() - 1 );
     }
