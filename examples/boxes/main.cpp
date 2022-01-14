@@ -364,7 +364,7 @@ static void addColoredBorderRectangles1( QskLinearBox* parent, bool rounded )
     auto* box = new Box( parent );
     box->setBorderWidth( 20 );
     QskGradient gradient1( Qt::Vertical, { { 0.0, Qt::blue },
-                                           { 0.7, Qt::yellow },
+                                           { 0.9, Qt::yellow },
                                            { 1.0, Qt::darkRed } } );
     QskGradient gradient2( Qt::Vertical, { { 0.0, Qt::black },
                                            { 0.3, Qt::white },
@@ -481,6 +481,7 @@ class TabView : public QskTabView
 #endif
 
         auto* tab5 = new QskLinearBox( Qt::Horizontal, 5 );
+        // ### also add some filling:
         addColoredBorderRectangles1( tab5, false );
         addColoredBorderRectangles2( tab5, false );
         addColoredBorderRectangles3( tab5, false );
@@ -494,7 +495,7 @@ class TabView : public QskTabView
         addColoredBorderRectangles5( tab5, true );
 
         addTab( tab5 );
-        setCurrentIndex( count() - 2 );
+        setCurrentIndex( count() - 1 );
     }
 
   private:
@@ -522,13 +523,16 @@ int main( int argc, char* argv[] )
 
     // ### remove:
     QskWindow window;
-#if 1
+#if 0
     auto* tabView = new TabView();
     window.addItem( tabView );
 #else
-        auto* tab4 = new QskLinearBox( Qt::Horizontal, 5 );
-        addTestRectangle( tab4 );
-        window.addItem( tab4 );
+        auto* tab5 = new QskLinearBox( Qt::Horizontal, 5 );
+        tab5->setMargins( 20 );
+        tab5->setSpacing( 20 );
+        addColoredBorderRectangles1( tab5, false );
+        addColoredBorderRectangles1( tab5, true );
+        window.addItem( tab5 );
 #endif
 
     window.resize( 600, 600 );
