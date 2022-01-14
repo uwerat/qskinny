@@ -464,13 +464,16 @@ static inline void qskCreateBorder(
         ( line++ )->setLine( x1, y1, x2, y2, c );
     }
 
-    for( const QskGradientStop& stop : gradientRight.stops() )
+    // ### can we make this easier somehow?
+    for( int i = gradientRight.stops().count() - 1; i >= 0; --i )
+//    for( const QskGradientStop& stop : gradientRight.stops() )
     {
+        auto stop = gradientRight.stops().at( i );
         const Color c( stop.color() );
         const qreal x1 = in.right;
         const qreal x2 = out.right;
-        const qreal y1 = in.bottom + stop.position() * ( in.top - in.bottom );
-        const qreal y2 = out.bottom + stop.position() * ( out.top - out.bottom );
+        const qreal y1 = in.bottom + (1-stop.position()) * ( in.top - in.bottom );
+        const qreal y2 = out.bottom + (1-stop.position()) * ( out.top - out.bottom );
 
         ( line++ )->setLine( x1, y1, x2, y2, c );
     }

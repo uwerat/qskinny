@@ -364,7 +364,7 @@ static void addColoredBorderRectangles1( QskLinearBox* parent, bool rounded )
     auto* box = new Box( parent );
     box->setBorderWidth( 20 );
     QskGradient gradient1( Qt::Vertical, { { 0.0, Qt::blue },
-                                           { 0.9, Qt::yellow },
+                                           { 0.7, Qt::yellow },
                                            { 1.0, Qt::darkRed } } );
     QskGradient gradient2( Qt::Vertical, { { 0.0, Qt::black },
                                            { 0.3, Qt::white },
@@ -523,7 +523,7 @@ int main( int argc, char* argv[] )
 
     // ### remove:
     QskWindow window;
-#if 0
+#if 1
     auto* tabView = new TabView();
     window.addItem( tabView );
 #else
