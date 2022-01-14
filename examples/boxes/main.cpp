@@ -397,18 +397,18 @@ static void addColoredBorderRectangles3( QskLinearBox* parent, bool rounded )
                                            { 0.6, Qt::magenta },
                                            { 1.0, Qt::green } } );
     QskGradient gradient2( Qt::Vertical, { { 0.0, Qt::darkYellow },
-                                           { 0.3, Qt::darkGray },
+                                           { 0.2, Qt::cyan },
                                            { 1.0, Qt::darkMagenta } } );
-    QskGradient gradient3( Qt::Vertical, { { 0.0, Qt::darkGreen },
-                                           { 0.25, Qt::darkBlue },
-                                           { 0.5, Qt::darkRed },
-                                           { 0.75, Qt::yellow },
-                                           { 1.0, Qt::magenta } } );
+    QskGradient gradient3( Qt::Vertical, { { 0.0, Qt::red },
+                                           { 0.25, Qt::green },
+                                           { 0.5, Qt::blue },
+                                           { 0.75, Qt::magenta },
+                                           { 1.0, Qt::cyan } } );
     QskGradient gradient4( Qt::Vertical, { { 0.0, Qt::red },
                                            { 0.3, Qt::green },
                                            { 0.7, Qt::blue },
                                            { 1.0, Qt::cyan } } );
-    box->setBorderGradients( gradient1, gradient2, gradient3, gradient4 );
+    box->setBorderGradients( gradient3, gradient3, gradient3, gradient3 );
 
     if( rounded )
         box->setShape( 30, Qt::AbsoluteSize );
@@ -530,8 +530,10 @@ int main( int argc, char* argv[] )
         auto* tab5 = new QskLinearBox( Qt::Horizontal, 5 );
         tab5->setMargins( 20 );
         tab5->setSpacing( 20 );
-        addColoredBorderRectangles1( tab5, false );
-        addColoredBorderRectangles1( tab5, true );
+//        addColoredBorderRectangles1( tab5, false );
+//        addColoredBorderRectangles1( tab5, true );
+        addColoredBorderRectangles3( tab5, false );
+        addColoredBorderRectangles3( tab5, true );
         window.addItem( tab5 );
 #endif
 

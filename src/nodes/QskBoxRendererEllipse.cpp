@@ -560,8 +560,7 @@ namespace
 
             for( int l = 1; l <= additionalStopCount; ++l )
             {
-                auto p = s.at( l ).position();
-                // ### umdrehen:
+                auto p = ( 1 - s.at( l ).position() );
                 float xStart = x11 + p * ( x21 - x11 ),
                     yStart = y11 + p * ( y21 - y11 ),
                     xEnd = x12 + p * ( x22 - x12 ),
@@ -571,7 +570,7 @@ namespace
                 qDebug() << "   end:" << x21 << y21 << x22 << y22;
                 qDebug() << "   gradient stop:" << xStart << yStart << xEnd << yEnd;
 
-                lines[ l ].setLine( xStart, yStart, xEnd, yEnd, s.at( l ).color() );
+                lines[ additionalStopCount - l + 1 ].setLine( xStart, yStart, xEnd, yEnd, s.at( l ).color() );
             }
         }
 
