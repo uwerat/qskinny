@@ -494,7 +494,7 @@ class TabView : public QskTabView
         addColoredBorderRectangles5( tab5, true );
 
         addTab( tab5 );
-        setCurrentIndex( count() - 1 );
+        setCurrentIndex( count() - 2 );
     }
 
   private:
@@ -521,10 +521,16 @@ int main( int argc, char* argv[] )
     SkinnyShortcut::enable( SkinnyShortcut::Quit | SkinnyShortcut::DebugShortcuts );
 
     // ### remove:
-    auto* tabView = new TabView();
-
     QskWindow window;
+#if 1
+    auto* tabView = new TabView();
     window.addItem( tabView );
+#else
+        auto* tab4 = new QskLinearBox( Qt::Horizontal, 5 );
+        addTestRectangle( tab4 );
+        window.addItem( tab4 );
+#endif
+
     window.resize( 600, 600 );
     window.show();
 

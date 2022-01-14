@@ -613,7 +613,7 @@ namespace
             {
                 if ( borderLines )
                 {
-                    linesTR = borderLines;
+                    linesTR = borderLines + 1;
                     linesTL = linesTR + numCornerLines + additionalGradientStops( borderMapTR.gradient() );
                     linesBL = linesTL + numCornerLines + additionalGradientStops( borderMapTL.gradient() );
                     linesBR = linesBL + numCornerLines + additionalGradientStops( borderMapBR.gradient() );
