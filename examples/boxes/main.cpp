@@ -359,7 +359,7 @@ static void addRectanglesRest( QskLinearBox* parent )
     box->setGradient( QskGradient::Vertical, "Gainsboro", "Seashell", "LightGray" );
 }
 
-static void addColoredBorderRectangles1( QskLinearBox* parent, bool rounded )
+static void addColoredBorderRectangles1( QskLinearBox* parent, bool rounded, Box::FillType fillType )
 {
     auto* box = new Box( parent );
     box->setBorderWidth( 20 );
@@ -374,21 +374,27 @@ static void addColoredBorderRectangles1( QskLinearBox* parent, bool rounded )
     QskGradient gradient4( Qt::Vertical, Qt::magenta, Qt::cyan );
     box->setBorderGradients( gradient1, gradient2, gradient3, gradient4 );
 
+    if( fillType != Box::Unfilled )
+        box->setBackground( fillType, QskRgbPalette::Indigo );
+
     if( rounded )
         box->setShape( 30, Qt::AbsoluteSize );
 }
 
-static void addColoredBorderRectangles2( QskLinearBox* parent, bool rounded )
+static void addColoredBorderRectangles2( QskLinearBox* parent, bool rounded, Box::FillType fillType )
 {
     Box* box = new Box( parent );
     box->setBorderWidth( 20 );
     box->setBorderGradients( Qt::red, Qt::green, Qt::blue, Qt::yellow );
 
+    if( fillType != Box::Unfilled )
+        box->setBackground( fillType, QskRgbPalette::Indigo );
+
     if( rounded )
         box->setShape( 30, Qt::AbsoluteSize );
 }
 
-static void addColoredBorderRectangles3( QskLinearBox* parent, bool rounded )
+static void addColoredBorderRectangles3( QskLinearBox* parent, bool rounded, Box::FillType fillType )
 {
     Box* box = new Box( parent );
     box->setBorderWidth( 20 );
@@ -410,22 +416,28 @@ static void addColoredBorderRectangles3( QskLinearBox* parent, bool rounded )
                                            { 1.0, Qt::cyan } } );
     box->setBorderGradients( gradient3, gradient3, gradient3, gradient3 );
 
+    if( fillType != Box::Unfilled )
+        box->setBackground( fillType, QskRgbPalette::Indigo );
+
     if( rounded )
         box->setShape( 30, Qt::AbsoluteSize );
 }
 
-static void addColoredBorderRectangles4( QskLinearBox* parent, bool rounded )
+static void addColoredBorderRectangles4( QskLinearBox* parent, bool rounded, Box::FillType fillType )
 {
     Box* box = new Box( parent );
     box->setBorderWidth( 20 );
     QskGradient gradient( Qt::Vertical, Qt::magenta, Qt::cyan );
     box->setBorderGradients( gradient, gradient, gradient, gradient );
 
+    if( fillType != Box::Unfilled )
+        box->setBackground( fillType, QskRgbPalette::Indigo );
+
     if( rounded )
         box->setShape( 30, Qt::AbsoluteSize );
 }
 
-static void addColoredBorderRectangles5( QskLinearBox* parent, bool rounded )
+static void addColoredBorderRectangles5( QskLinearBox* parent, bool rounded, Box::FillType fillType )
 {
     Box* box = new Box( parent );
     box->setBorderWidth( 20 );
@@ -434,6 +446,9 @@ static void addColoredBorderRectangles5( QskLinearBox* parent, bool rounded )
                                           { 0.7, Qt::white },
                                           { 1.0, Qt::black } } );
     box->setBorderGradients( gradient, gradient, gradient, gradient );
+
+    if( fillType != Box::Unfilled )
+        box->setBackground( fillType, QskRgbPalette::Indigo );
 
     if( rounded )
         box->setShape( 30, Qt::AbsoluteSize );
@@ -482,17 +497,29 @@ class TabView : public QskTabView
 
         auto* tab5 = new QskLinearBox( Qt::Horizontal, 5 );
         // ### also add some filling:
-        addColoredBorderRectangles1( tab5, false );
-        addColoredBorderRectangles2( tab5, false );
-        addColoredBorderRectangles3( tab5, false );
-        addColoredBorderRectangles4( tab5, false );
-        addColoredBorderRectangles5( tab5, false );
+        addColoredBorderRectangles1( tab5, false, Box::Unfilled );
+        addColoredBorderRectangles2( tab5, false, Box::Unfilled );
+        addColoredBorderRectangles3( tab5, false, Box::Unfilled );
+        addColoredBorderRectangles4( tab5, false, Box::Unfilled );
+        addColoredBorderRectangles5( tab5, false, Box::Unfilled );
 
-        addColoredBorderRectangles1( tab5, true );
-        addColoredBorderRectangles2( tab5, true );
-        addColoredBorderRectangles3( tab5, true );
-        addColoredBorderRectangles4( tab5, true );
-        addColoredBorderRectangles5( tab5, true );
+        addColoredBorderRectangles1( tab5, true, Box::Unfilled );
+        addColoredBorderRectangles2( tab5, true, Box::Unfilled );
+        addColoredBorderRectangles3( tab5, true, Box::Unfilled );
+        addColoredBorderRectangles4( tab5, true, Box::Unfilled );
+        addColoredBorderRectangles5( tab5, true, Box::Unfilled );
+
+        addColoredBorderRectangles1( tab5, false, Box::Horizontal );
+        addColoredBorderRectangles2( tab5, false, Box::Horizontal );
+        addColoredBorderRectangles3( tab5, false, Box::Horizontal );
+        addColoredBorderRectangles4( tab5, false, Box::Horizontal );
+        addColoredBorderRectangles5( tab5, false, Box::Horizontal );
+
+        addColoredBorderRectangles1( tab5, true, Box::Horizontal );
+        addColoredBorderRectangles2( tab5, true, Box::Horizontal );
+        addColoredBorderRectangles3( tab5, true, Box::Horizontal );
+        addColoredBorderRectangles4( tab5, true, Box::Horizontal );
+        addColoredBorderRectangles5( tab5, true, Box::Horizontal );
 
         addTab( tab5 );
         setCurrentIndex( count() - 1 );
