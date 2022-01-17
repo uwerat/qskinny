@@ -273,6 +273,25 @@ void QskListView::mouseReleaseEvent( QMouseEvent* event )
 
 #ifndef QT_NO_WHEELEVENT
 
+static qreal qskAlignedToRows( const qreal y0, qreal dy,
+    qreal rowHeight, qreal viewHeight )
+{
+    qreal y = y0 - dy;
+
+    if ( dy > 0 )
+    {
+        y = qFloor( y / rowHeight ) * rowHeight;
+    }
+    else
+    {
+        y += viewHeight;
+        y = qCeil( y / rowHeight ) * rowHeight;
+        y -= viewHeight;
+    }
+
+    return y;
+}
+
 QPointF QskListView::scrollOffset( const QWheelEvent* event ) const
 {
     QPointF offset;
@@ -300,6 +319,7 @@ QPointF QskListView::scrollOffset( const QWheelEvent* event ) const
     }
     else if ( offset.y() != 0.0 )
     {
+        const qreal y0 = scrollPos().y();
         const auto viewHeight = viewContentsRect().height();
         const qreal rowHeight = this->rowHeight();
 
@@ -312,11 +332,15 @@ QPointF QskListView::scrollOffset( const QWheelEvent* event ) const
         if ( event->modifiers() & ( Qt::ControlModifier | Qt::ShiftModifier ) )
             dy = qMax( dy, viewHeight );
 
-        // we should align to row boundaries. TODO ...
-        offset.setY( offset.y() * dy );
+        dy *= offset.y(); // multiplied by the wheelsteps
+
+        // aligning rows that enter the view
+        dy = qskAlignedToRows( y0, dy, rowHeight, viewHeight );
+
+        offset.setY( y0 - dy );
     }
 
-    // using the animated scrollTo instead ?
+    // TODO using the animated scrollTo instead ?
 
     return offset;
 }
