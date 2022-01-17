@@ -644,4 +644,14 @@ void QskScrollArea::translateItem()
     }
 }
 
+#ifndef QT_NO_WHEELEVENT
+
+QPointF QskScrollArea::scrollOffset( const QWheelEvent* event ) const
+{
+    // TODO: what to do here ???
+    return Inherited::scrollOffset( event );
+}
+
+#endif
+
 #include "moc_QskScrollArea.cpp"

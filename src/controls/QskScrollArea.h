@@ -44,6 +44,10 @@ class QSK_EXPORT QskScrollArea : public QskScrollView
     void updateLayout() override;
     QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
+#ifndef QT_NO_WHEELEVENT
+    QPointF scrollOffset( const QWheelEvent* ) const override;
+#endif
+
   private:
     void translateItem();
     void adjustItem();
