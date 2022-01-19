@@ -8,36 +8,9 @@
 
 #include "QskInputContext.h"
 
-#define HUNSPELL 0
-
-#if HUNSPELL
-#include "QskHunspellTextPredictor.h"
-#endif
-
 #include <QEvent>
 #include <QLocale>
 #include <QRectF>
-
-namespace
-{
-    class InputContextFactory final : public QskInputContextFactory
-    {
-      public:
-        QskTextPredictor* createPredictor( const QLocale& locale ) const override
-        {
-#if HUNSPELL
-            /*
-                For the moment we manage the text prediction in the context
-                plugin - but of course it has to be moved somewhere else
-             */
-            if ( locale.language() == QLocale::English )
-                return new QskHunspellTextPredictor();
-#endif
-
-            return QskInputContextFactory::createPredictor( locale );
-        }
-    };
-}
 
 /*
     QPlatformInputContext is no stable public API.
@@ -97,8 +70,7 @@ QskPlatformInputContext::QskPlatformInputContext()
     if ( context == nullptr )
     {
         context = new QskInputContext();
-        context->setFactory( new InputContextFactory() );
-
+        context->setFactory( new QskInputContextFactory() );
         QskInputContext::setInstance( context );
     }
 

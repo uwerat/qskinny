@@ -30,6 +30,8 @@ class QSK_EXPORT QskInputPanel : public QskControl
 
     virtual Qt::Alignment alignment() const;
 
+    QStringList candidates() const;
+
   public Q_SLOTS:
     void commitKey( int keyCode );
     void commitPredictiveText( int index );
@@ -38,6 +40,9 @@ class QSK_EXPORT QskInputPanel : public QskControl
     void keySelected( int keyCode );
     void predictiveTextSelected( int );
     void inputItemDestroyed();
+
+    void predictionReset();
+    void predictionRequested( const QString& text );
 
   public Q_SLOTS:
     virtual void setPrompt( const QString& );
@@ -48,9 +53,8 @@ class QSK_EXPORT QskInputPanel : public QskControl
     virtual void attachItem( QQuickItem* ) = 0;
 
   private:
+    void updatePrediction( const QString &text, const QStringList &candidates );
     void resetPredictor( const QLocale& );
-    void updatePrediction();
-
     void updateLocale( const QLocale& );
 
     class PrivateData;

@@ -10,7 +10,7 @@ INCLUDEPATH *= $${QSK_SUBDIRS}
 DEPENDPATH *= $${QSK_SUBDIRS}
 
 # CONFIG += pinyin
-CONFIG += hunspell
+# CONFIG += hunspell
 
 # DEFINES += QSK_LAYOUT_COMPAT
 
@@ -359,6 +359,8 @@ pinyin {
 
     unix {
 
+        DEFINES += PINYIN
+
         CONFIG += link_pkgconfig
         PKGCONFIG += pinyin
 
@@ -373,6 +375,8 @@ pinyin {
 hunspell {
 
     unix {
+
+        DEFINES += HUNSPELL
 
         CONFIG += link_pkgconfig
         PKGCONFIG += hunspell
