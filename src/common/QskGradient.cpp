@@ -63,6 +63,18 @@ static inline bool qskIsMonochrome( const QskGradientStops& stops )
     return true;
 }
 
+static inline bool qskIsVisible( const QskGradientStops& stops )
+{
+    for ( const auto& stop : stops )
+    {
+        const auto& c = stop.color();
+        if ( c.isValid() && c.alpha() > 0 )
+            return true;
+    }       
+
+    return false;
+}
+
 static inline QColor qskInterpolated(
     const QskGradientStop& s1, const QskGradientStop& s2, qreal pos )
 {
@@ -167,13 +179,17 @@ static inline QskGradientStops qskExtractedStops(
     return extracted;
 }
 
-QskGradient::QskGradient()
-    : m_orientation( Vertical )
+QskGradient::QskGradient( Orientation orientation )
+    : m_orientation( orientation )
+    , m_isDirty( true )
+    , m_isValid( false )
+    , m_isMonchrome( false )
+    , m_isVisible( false )
 {
 }
 
 QskGradient::QskGradient( const QColor& color )
-    : m_orientation( Vertical )
+    : QskGradient( Vertical )
 {
     setColor( color );
 }
@@ -186,22 +202,20 @@ QskGradient::QskGradient( Qt::Orientation orientation,
 
 QskGradient::QskGradient( Orientation orientation,
         const QColor& startColor, const QColor& stopColor )
-    : m_orientation( orientation )
+    : QskGradient( orientation )
 {
     setColors( startColor, stopColor );
 }
 
-QskGradient::QskGradient( Qt::Orientation orientation,
-        const QskGradientStops& stops )
+QskGradient::QskGradient( Qt::Orientation orientation, const QskGradientStops& stops )
     : QskGradient( qskOrientation( orientation ), stops )
 {
 }
 
-QskGradient::QskGradient( Orientation orientation,
-        const QskGradientStops& stops )
-    : m_orientation( orientation )
-    , m_stops( stops )
+QskGradient::QskGradient( Orientation orientation, const QskGradientStops& stops )
+    : QskGradient( orientation )
 {
+    m_stops = stops;
 }
 
 QskGradient::~QskGradient()
@@ -210,35 +224,35 @@ QskGradient::~QskGradient()
 
 bool QskGradient::isValid() const
 {
-    return qskIsGradientValid( m_stops );
+    if ( m_isDirty )
+        updateStatusBits();
+
+    return m_isValid;
 }
 
 void QskGradient::invalidate()
 {
-    m_stops.clear();
+    if ( !m_stops.isEmpty() )
+    {
+        m_stops.clear();
+        m_isDirty = true;
+    }
 }
 
 bool QskGradient::isMonochrome() const
 {
-    if ( !qskIsGradientValid( m_stops ) )
-        return true;
+    if ( m_isDirty )
+        updateStatusBits();
 
-    return qskIsMonochrome( m_stops );
+    return m_isMonchrome;
 }
 
 bool QskGradient::isVisible() const
 {
-    if ( isValid() )
-    {
-        for ( const auto& stop : m_stops )
-        {
-            const auto& c = stop.color();
-            if ( c.isValid() && c.alpha() > 0 )
-                return true;
-        }
-    }
+    if ( m_isDirty )
+        updateStatusBits();
 
-    return false;
+    return m_isVisible;
 }
 
 void QskGradient::setOrientation( Qt::Orientation orientation )
@@ -248,12 +262,8 @@ void QskGradient::setOrientation( Qt::Orientation orientation )
 
 void QskGradient::setOrientation( Orientation orientation )
 {
+    // does not change m_isDirty
     m_orientation = orientation;
-}
-
-QskGradient::Orientation QskGradient::orientation() const
-{
-    return m_orientation;
 }
 
 void QskGradient::setColor( const QColor& color )
@@ -263,6 +273,8 @@ void QskGradient::setColor( const QColor& color )
 
     m_stops.append( QskGradientStop( 0.0, color ) );
     m_stops.append( QskGradientStop( 1.0, color ) );
+
+    m_isDirty = true;
 }
 
 void QskGradient::setColors( const QColor& startColor, const QColor& stopColor )
@@ -272,6 +284,8 @@ void QskGradient::setColors( const QColor& startColor, const QColor& stopColor )
 
     m_stops.append( QskGradientStop( 0.0, startColor ) );
     m_stops.append( QskGradientStop( 1.0, stopColor ) );
+
+    m_isDirty = true;
 }
 
 void QskGradient::setStops( const QskGradientStops& stops )
@@ -284,6 +298,7 @@ void QskGradient::setStops( const QskGradientStops& stops )
     }
 
     m_stops = stops;
+    m_isDirty = true;
 }
 
 QskGradientStops QskGradient::stops() const
@@ -308,6 +323,7 @@ void QskGradient::setStopAt( int index, qreal stop )
         m_stops.resize( index + 1 );
 
     m_stops[ index ].setPosition( stop );
+    m_isDirty = true;
 }
 
 qreal QskGradient::stopAt( int index ) const
@@ -330,6 +346,7 @@ void QskGradient::setColorAt( int index, const QColor& color )
         m_stops.resize( index + 1 );
 
     m_stops[ index ].setColor( color );
+    m_isDirty = true;
 }
 
 QColor QskGradient::colorAt( int index ) const
@@ -351,6 +368,8 @@ void QskGradient::setAlpha( int alpha )
             stop.setColor( c );
         }
     }
+
+    m_isDirty = true;
 }
 
 bool QskGradient::hasStopAt( qreal value ) const
@@ -373,7 +392,9 @@ uint QskGradient::hash( uint seed ) const
     if ( m_stops.isEmpty() )
         return seed;
 
-    uint hash = qHashBits( &m_orientation, sizeof( m_orientation ), seed );
+    const auto o = orientation();
+
+    uint hash = qHashBits( &o, sizeof( o ), seed );
     for ( const auto& stop : m_stops )
         hash = stop.hash( hash );
 
@@ -410,7 +431,7 @@ QskGradient QskGradient::extracted( qreal from, qreal to ) const
     to = qMin( to, 1.0 );
 
     const auto stops = qskExtractedStops( m_stops, from, to );
-    return QskGradient( m_orientation, stops );
+    return QskGradient( orientation(), stops );
 }
 
 QskGradient QskGradient::interpolated(
@@ -449,10 +470,10 @@ QskGradient QskGradient::interpolated(
             stop.setColor( c );
         }
 
-        return QskGradient( gradient->m_orientation, stops );
+        return QskGradient( gradient->orientation(), stops );
     }
 
-    if ( qskIsMonochrome( m_stops ) )
+    if ( isMonochrome() )
     {
         // we can ignore our stops
 
@@ -465,10 +486,10 @@ QskGradient QskGradient::interpolated(
             s2[ i ].setColor( c2 );
         }
 
-        return QskGradient( to.m_orientation, s2 );
+        return QskGradient( to.orientation(), s2 );
     }
 
-    if ( qskIsMonochrome( to.m_stops ) )
+    if ( to.isMonochrome() )
     {
         // we can ignore the stops of to
 
@@ -481,7 +502,7 @@ QskGradient QskGradient::interpolated(
             s2[ i ].setColor( c2 );
         }
 
-        return QskGradient( m_orientation, s2 );
+        return QskGradient( orientation(), s2 );
     }
 
     if ( m_orientation == to.m_orientation )
@@ -502,7 +523,7 @@ QskGradient QskGradient::interpolated(
             s2[ i ].setColor( c2 );
         }
 
-        return QskGradient( m_orientation, s2 );
+        return QskGradient( orientation(), s2 );
     }
     else
     {
@@ -527,7 +548,7 @@ QskGradient QskGradient::interpolated(
                 s2[ i ].setColor( c2 );
             }
 
-            return QskGradient( m_orientation, s2 );
+            return QskGradient( orientation(), s2 );
         }
         else
         {
@@ -541,7 +562,7 @@ QskGradient QskGradient::interpolated(
                 s2[ i ].setColor( c2 );
             }
 
-            return QskGradient( to.m_orientation, s2 );
+            return QskGradient( to.orientation(), s2 );
         }
     }
 }
@@ -550,6 +571,25 @@ QVariant QskGradient::interpolate(
     const QskGradient& from, const QskGradient& to, qreal progress )
 {
     return QVariant::fromValue( from.interpolated( to, progress ) );
+}
+
+void QskGradient::updateStatusBits() const
+{
+    // doing all bits in one loop ?
+    m_isValid = qskIsGradientValid( m_stops );
+
+    if ( m_isValid )
+    {
+        m_isMonchrome = qskIsMonochrome( m_stops );
+        m_isVisible = qskIsVisible( m_stops );
+    }
+    else
+    {
+        m_isMonchrome = true;
+        m_isVisible = false;
+    }
+
+    m_isDirty = false;
 }
 
 #ifndef QT_NO_DEBUG_STREAM

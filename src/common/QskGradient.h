@@ -44,6 +44,7 @@ class QSK_EXPORT QskGradient
     Q_ENUM( Orientation )
 
     QskGradient();
+    QskGradient( Orientation );
     QskGradient( Qt::GlobalColor );
     QskGradient( QRgb );
     QskGradient( const QColor& );
@@ -103,11 +104,24 @@ class QSK_EXPORT QskGradient
     void setStopAt( int index, qreal stop );
     void setColorAt( int index, const QColor& color );
 
-    Orientation m_orientation;
+    void updateStatusBits() const;
+
     QVector< QskGradientStop > m_stops;
+
+    int m_orientation : 4;
+
+    mutable bool m_isDirty : 1;
+    mutable bool m_isValid : 1;
+    mutable bool m_isMonchrome : 1;
+    mutable bool m_isVisible : 1;
 };
 
 Q_DECLARE_METATYPE( QskGradient )
+
+inline QskGradient::QskGradient()
+    : QskGradient( Vertical )
+{
+}
 
 inline QskGradient::QskGradient( Qt::GlobalColor color )
     : QskGradient( QColor( color ) )
@@ -117,6 +131,11 @@ inline QskGradient::QskGradient( Qt::GlobalColor color )
 inline QskGradient::QskGradient( QRgb rgb )
     : QskGradient( QColor::fromRgba( rgb ) )
 {
+}
+
+inline QskGradient::Orientation QskGradient::orientation() const
+{
+    return static_cast< Orientation >( m_orientation );
 }
 
 inline QColor QskGradient::startColor() const
