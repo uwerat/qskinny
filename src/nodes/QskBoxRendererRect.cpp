@@ -397,14 +397,14 @@ static inline void qskCreateFillRandom(
 }
 
 template< class Line >
-static inline void qskCreateBorder(
+static inline void qskCreateBorderMonochrome(
     const QskBoxRenderer::Quad& out, const QskBoxRenderer::Quad& in, QRgb rgb, Line* line )
 {
-    qskCreateBorder( out, in, Color( rgb ), line );
+    qskCreateBorderMonochrome( out, in, Color( rgb ), line );
 }
 
 template< class Line >
-static inline void qskCreateBorder(
+static inline void qskCreateBorderMonochrome(
     const QskBoxRenderer::Quad& out, const QskBoxRenderer::Quad& in, Color color, Line* line )
 {
     auto l = line;
@@ -462,7 +462,7 @@ void QskBoxRenderer::renderRectBorder(
     }
 
     const auto line = allocateLines< Line >( geometry, 4 + 1 );
-    qskCreateBorder( out, in, Color(), line );
+    qskCreateBorderMonochrome( out, in, Color(), line );
 }
 
 void QskBoxRenderer::renderRectFill(
@@ -587,7 +587,7 @@ void QskBoxRenderer::renderRect(
         auto fillLines = line + fillLineCount;
 
         if ( bc.isMonochrome() )
-            qskCreateBorder( rect, in, bc.rgb( Qsk::Left ), fillLines );
+            qskCreateBorderMonochrome( rect, in, bc.rgb( Qsk::Left ), fillLines );
         else
             qskCreateBorder( rect, in, bc, fillLines );
     }
