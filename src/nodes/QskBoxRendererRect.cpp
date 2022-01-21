@@ -429,48 +429,53 @@ static inline void qskCreateBorder(
 
     // qdebug
 
-    for( const QskGradientStop& stop : gradientBottom.stops() )
+    const qreal dx1 = in.right - in.left;
+    const qreal dx2 = out.right - out.left;
+    const qreal dy1 = in.top - in.bottom;
+    const qreal dy2 = out.top - out.bottom;
+
+    for( const auto& stop : gradientBottom.stops() )
     {
         const Color c( stop.color() );
-        const qreal x1 = in.right - stop.position() * ( in.right - in.left );
-        const qreal x2 = out.right - stop.position() * ( out.right - out.left );
+        const qreal x1 = in.right - stop.position() * dx1;
+        const qreal x2 = out.right - stop.position() * dx2;
         const qreal y1 = in.bottom;
         const qreal y2 = out.bottom;
 
         ( line++ )->setLine( x1, y1, x2, y2, c );
     }
 
-    for( const QskGradientStop& stop : gradientLeft.stops() )
+    for( const auto& stop : gradientLeft.stops() )
     {
         const Color c( stop.color() );
         const qreal x1 = in.left;
         const qreal x2 = out.left;
-        const qreal y1 = in.bottom + stop.position() * ( in.top - in.bottom );
-        const qreal y2 = out.bottom + stop.position() * ( out.top - out.bottom );
+        const qreal y1 = in.bottom + stop.position() * dy1;
+        const qreal y2 = out.bottom + stop.position() * dy2;
 
         ( line++ )->setLine( x1, y1, x2, y2, c );
     }
 
-    for( const QskGradientStop& stop : gradientTop.stops() )
+    for( const auto& stop : gradientTop.stops() )
     {
         const Color c( stop.color() );
-        const qreal x1 = in.left + stop.position() * ( in.right - in.left );
-        const qreal x2 = out.left + stop.position() * ( out.right - out.left );
+        const qreal x1 = in.left + stop.position() * dx1;
+        const qreal x2 = out.left + stop.position() * dx2;
         const qreal y1 = in.top;
         const qreal y2 = out.top;
 
         ( line++ )->setLine( x1, y1, x2, y2, c );
     }
 
-    for( const QskGradientStop& stop : gradientRight.stops() )
+    for( const auto& stop : gradientRight.stops() )
     {
         const Color c( stop.color() );
         const qreal x1 = in.right;
         const qreal x2 = out.right;
         // ( 1 - stop.position() ) because we want to make the gradients go
         // around the border clock-wise:
-        const qreal y1 = in.bottom + ( 1 - stop.position() ) * ( in.top - in.bottom );
-        const qreal y2 = out.bottom + ( 1 - stop.position() ) * ( out.top - out.bottom );
+        const qreal y1 = in.bottom + ( 1 - stop.position() ) * dy1;
+        const qreal y2 = out.bottom + ( 1 - stop.position() ) * dy2;
 
         ( line++ )->setLine( x1, y1, x2, y2, c );
     }
@@ -491,7 +496,7 @@ void QskBoxRenderer::renderRectBorder(
         return;
     }
 
-    const auto line = allocateLines< ColoredLine >( geometry, 4 + 1 );
+    const auto line = allocateLines< Line >( geometry, 4 + 1 );
     qskCreateBorderMonochrome( out, in, Color(), line );
 }
 
@@ -618,7 +623,7 @@ void QskBoxRenderer::renderRect(
         auto fillLines = line + fillLineCount;
 
         if ( bc.isMonochrome() )
-            qskCreateBorderMonochrome( rect, in, bc.gradient( Qsk::Left ).startColor().rgb(), fillLines );
+            qskCreateBorderMonochrome( rect, in, bc.gradient( Qsk::Left ).startColor().rgba(), fillLines );
         else
             qskCreateBorder( rect, in, bc, fillLines );
     }

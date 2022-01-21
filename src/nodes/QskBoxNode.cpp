@@ -117,7 +117,8 @@ void QskBoxNode::setBoxData( const QRectF& rect,
     {
         if ( isFillMonochrome && isBorderMonochrome )
         {
-            if ( borderColors.gradient( Qsk::Left ) == fillGradient.startColor() )
+            if ( borderColors.gradient( Qsk::Left ).startColor()
+                 == fillGradient.startColor() )
             {
                 // we can draw border and background in one
                 hasBorder = false;

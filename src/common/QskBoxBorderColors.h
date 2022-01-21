@@ -42,7 +42,7 @@ class QSK_EXPORT QskBoxBorderColors
     QskGradient gradient( Qsk::Position ) const;
 
     void setGradientAt( Qt::Edges, const QskGradient& );
-    QskGradient gradientAt( Qt::Edge ) const;
+    const QskGradient& gradientAt( Qt::Edge ) const;
 
     QskBoxBorderColors interpolated( const QskBoxBorderColors&, qreal value ) const;
 

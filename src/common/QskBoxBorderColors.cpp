@@ -22,9 +22,9 @@ static void qskRegisterBoxBorderColors()
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterBoxBorderColors )
 
-static inline void qskSetGradients( const QskGradient& c, QskGradient* gradients )
+static inline void qskSetGradients( const QskGradient& gradient, QskGradient* gradients )
 {
-    gradients[ 0 ] = gradients[ 1 ] = gradients[ 2 ] = gradients[ 3 ] = c;
+    gradients[ 0 ] = gradients[ 1 ] = gradients[ 2 ] = gradients[ 3 ] = gradient;
 }
 
 static inline void qskSetGradients(
@@ -110,7 +110,7 @@ void QskBoxBorderColors::setGradientAt( Qt::Edges edges, const QskGradient& grad
         m_gradients[ Qsk::Bottom ] = gradient;
 }
 
-QskGradient QskBoxBorderColors::gradientAt( Qt::Edge edge ) const
+const QskGradient& QskBoxBorderColors::gradientAt( Qt::Edge edge ) const
 {
     switch ( edge )
     {
@@ -127,7 +127,8 @@ QskGradient QskBoxBorderColors::gradientAt( Qt::Edge edge ) const
             return m_gradients[ Qsk::Bottom ];
     }
 
-    return QColor();
+    static QskGradient noGradient;
+    return noGradient;
 }
 
 bool QskBoxBorderColors::isVisible() const
