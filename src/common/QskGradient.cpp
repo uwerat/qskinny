@@ -181,9 +181,9 @@ static inline QskGradientStops qskExtractedStops(
 
 QskGradient::QskGradient( Orientation orientation )
     : m_orientation( orientation )
-    , m_isDirty( true )
+    , m_isDirty( false )
     , m_isValid( false )
-    , m_isMonchrome( false )
+    , m_isMonchrome( true )
     , m_isVisible( false )
 {
 }
