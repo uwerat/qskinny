@@ -215,7 +215,7 @@ QskGradient::QskGradient( Qt::Orientation orientation, const QskGradientStops& s
 QskGradient::QskGradient( Orientation orientation, const QskGradientStops& stops )
     : QskGradient( orientation )
 {
-    m_stops = stops;
+    setStops( stops );
 }
 
 QskGradient::~QskGradient()
