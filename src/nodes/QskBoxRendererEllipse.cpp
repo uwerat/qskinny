@@ -629,7 +629,7 @@ namespace
                     linesBL = linesTL + numCornerLines
                         + additionalGradientStops( borderMapTL.gradient() );
                     linesBR = linesBL + numCornerLines
-                        + additionalGradientStops( borderMapBR.gradient() );
+                        + additionalGradientStops( borderMapBL.gradient() );
                 }
 
                 if ( fillLines )
