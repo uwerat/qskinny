@@ -80,23 +80,23 @@ void Box::setBorder( BorderType type, QskRgbPalette::Theme theme )
             break;
 
         case Flat:
-            setBorderColor( mid );
+            setBorderGradient( mid );
             break;
 
         case Raised1:
-            setBorderColors( light, light, dark, dark );
+            setBorderGradients( light, light, dark, dark );
             break;
 
         case Sunken1:
-            setBorderColors( dark, dark, light, light );
+            setBorderGradients( dark, dark, light, light );
             break;
 
         case Raised2:
-            setBorderColors( mid, light, mid, dark );
+            setBorderGradients( mid, light, mid, dark );
             break;
 
         case Sunken2:
-            setBorderColors( mid, dark, mid, light );
+            setBorderGradients( mid, dark, mid, light );
             break;
     }
 }
@@ -117,16 +117,16 @@ void Box::setShape( qreal radiusX, qreal radiusY, Qt::SizeMode sizeMode )
         QskBoxShapeMetrics( radiusX, radiusY, sizeMode ) );
 }
 
-void Box::setBorderColors( const QColor& left, const QColor& top,
-    const QColor& right, const QColor& bottom )
+void Box::setBorderGradients( const QskGradient& left, const QskGradient& top,
+    const QskGradient& right, const QskGradient& bottom )
 {
     QskBoxBorderColors colors( left, top, right, bottom );
     setBoxBorderColorsHint( QskBox::Panel, colors );
 }
 
-void Box::setBorderColor( const QColor& color )
+void Box::setBorderGradient( const QskGradient& gradient )
 {
-    setBoxBorderColorsHint( QskBox::Panel, color );
+    setBoxBorderColorsHint( QskBox::Panel, gradient );
 }
 
 void Box::setBorderWidth( qreal left, qreal top, qreal right, qreal bottom )

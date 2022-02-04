@@ -227,7 +227,8 @@ class QSK_EXPORT QskSkinHintTableEditor
         const QskBoxBorderColors&, QskStateCombination = QskStateCombination() );
 
     void setBoxBorderColors( QskAspect,
-        const QColor& left, const QColor& top, const QColor& right, const QColor& bottom,
+        const QskGradient& left, const QskGradient& top,
+        const QskGradient& right, const QskGradient& bottom,
         QskStateCombination = QskStateCombination() );
 
     void removeBoxBorderColors( QskAspect, QskStateCombination = QskStateCombination() );

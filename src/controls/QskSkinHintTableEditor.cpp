@@ -471,9 +471,9 @@ void QskSkinHintTableEditor::setBoxBorderColors(
     setColorHint( aspectBorder( aspect ), borderColors, combination );
 }
 
-void QskSkinHintTableEditor::setBoxBorderColors( QskAspect aspect,
-    const QColor& left, const QColor& top, const QColor& right, const QColor& bottom,
-    QskStateCombination combination )
+void QskSkinHintTableEditor::setBoxBorderColors(QskAspect aspect,
+    const QskGradient& left, const QskGradient& top, const QskGradient& right,
+    const QskGradient& bottom, QskStateCombination combination )
 {
     setColorHint( aspectBorder( aspect ),
         QskBoxBorderColors( left, top, right, bottom ),

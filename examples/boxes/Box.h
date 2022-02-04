@@ -39,9 +39,9 @@ class Box : public QskBox
     void setShape( qreal radius, Qt::SizeMode );
     void setShape( qreal radiusX, qreal radiusY, Qt::SizeMode );
 
-    void setBorderColor( const QColor& );
-    void setBorderColors( const QColor& left, const QColor& top,
-        const QColor& right, const QColor& bottom );
+    void setBorderGradient( const QskGradient& );
+    void setBorderGradients( const QskGradient& left, const QskGradient& top,
+        const QskGradient& right, const QskGradient& bottom );
 
     void setBorderWidth( int );
     void setBorderWidth( qreal left, qreal top, qreal right, qreal bottom );
