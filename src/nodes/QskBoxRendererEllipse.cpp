@@ -97,6 +97,26 @@ namespace
         int m_stepCount;
         bool m_inverted;
     };
+
+    int additionalGradientStops( const QskGradient& gradient )
+    {
+        return qMax( 0, gradient.stops().count() - 2 );
+    }
+
+    static inline QRgb qskRgbGradientStart( const QskGradient& gradient )
+    {
+        return gradient.startColor().rgba();
+    }
+
+    static inline QRgb qskRgbGradientEnd( const QskGradient& gradient )
+    {
+        return gradient.endColor().rgba();
+    }
+
+    static inline QRgb qskRgbBorder( const QskBoxBorderColors& borderColors )
+    {
+        return qskRgbGradientStart( borderColors.gradient( Qsk::Left ) );
+    }
 }
 
 namespace
@@ -488,6 +508,7 @@ namespace
     {
       public:
         static inline constexpr Color colorAt( int ) { return Color(); }
+        inline QskGradient gradient() const { return QskGradient(); }
     };
 
     class BorderMapSolid
@@ -499,6 +520,7 @@ namespace
         }
 
         inline Color colorAt( int ) const { return m_color; }
+        inline QskGradient gradient() const { return QskGradient(); }
 
         const Color m_color;
     };
@@ -506,10 +528,11 @@ namespace
     class BorderMapGradient
     {
       public:
-        inline BorderMapGradient( int stepCount, QRgb rgb1, QRgb rgb2 )
+        inline BorderMapGradient( int stepCount, QRgb rgb1, QRgb rgb2, const QskGradient& gradient )
             : m_stepCount( stepCount )
             , m_color1( rgb1 )
             , m_color2( rgb2 )
+            , m_gradient( gradient )
         {
         }
 
@@ -518,9 +541,15 @@ namespace
             return m_color1.interpolatedTo( m_color2, step / m_stepCount );
         }
 
+        inline QskGradient gradient() const
+        {
+            return m_gradient;
+        }
+
       private:
         const qreal m_stepCount;
         const Color m_color1, m_color2;
+        const QskGradient m_gradient;
     };
 
     template< class Line, class BorderValues >
@@ -530,6 +559,27 @@ namespace
         inline Stroker( const QskBoxRenderer::Metrics& metrics )
             : m_metrics( metrics )
         {
+        }
+
+        void addAdditionalLines( float x11, float y11, float x12, float y12, // start line
+                                 float x21,float y21, float x22, float y22, // end line
+                                 const QskGradient& gradient, Line* lines )
+        {
+            int additionalStopCount = additionalGradientStops( gradient );
+
+            auto s = gradient.stops();
+
+            for( int i = 1; i <= additionalStopCount; ++i )
+            {
+                auto p = ( 1 - s.at( i ).position() );
+                float xStart = x11 + p * ( x21 - x11 ),
+                    yStart = y11 + p * ( y21 - y11 ),
+                    xEnd = x12 + p * ( x22 - x12 ),
+                    yEnd = y12 + p * ( y22 - y12 );
+
+                lines[ additionalStopCount - i + 1 ].setLine( xStart, yStart,
+                    xEnd, yEnd, s.at( i ).color() );
+            }
         }
 
         template< class BorderMap, class FillMap >
@@ -555,9 +605,12 @@ namespace
                 if ( borderLines )
                 {
                     linesBR = borderLines;
-                    linesTR = linesBR + numCornerLines;
-                    linesTL = linesTR + numCornerLines;
-                    linesBL = linesTL + numCornerLines;
+                    linesTR = linesBR + numCornerLines
+                        + additionalGradientStops( borderMapBR.gradient() );
+                    linesTL = linesTR + numCornerLines
+                        + additionalGradientStops( borderMapTR.gradient() );
+                    linesBL = linesTL + numCornerLines
+                        + additionalGradientStops( borderMapTL.gradient() );
                 }
 
                 if ( fillLines )
@@ -571,9 +624,12 @@ namespace
                 if ( borderLines )
                 {
                     linesTR = borderLines + 1;
-                    linesTL = linesTR + numCornerLines;
-                    linesBL = linesTL + numCornerLines;
-                    linesBR = linesBL + numCornerLines;
+                    linesTL = linesTR + numCornerLines
+                        + additionalGradientStops( borderMapTR.gradient() );
+                    linesBL = linesTL + numCornerLines
+                        + additionalGradientStops( borderMapTL.gradient() );
+                    linesBR = linesBL + numCornerLines
+                        + additionalGradientStops( borderMapBL.gradient() );
                 }
 
                 if ( fillLines )
@@ -641,6 +697,83 @@ namespace
                             c[ corner ].centerY + v.dy2( corner ),
                             borderMapBR.colorAt( j ) );
                     }
+
+                    // at the beginning and end of the loop we can add
+                    // additional lines for border gradients:
+
+                    if( j == 0 )
+                    {
+                        if( additionalGradientStops( borderMapTR.gradient() ) > 0 )
+                        {
+                            float x1TR = c[ TopRight ].centerX + v.dx1( TopRight ),
+                            y1TR = c[ TopRight ].centerY - v.dy1( TopRight ),
+                            x2TR = c[ TopRight ].centerX + v.dx2( TopRight ),
+                            y2TR = c[ TopRight ].centerY - v.dy2( TopRight ),
+
+                            x1TL = c[ TopLeft ].centerX - v.dx1( TopLeft ),
+                            y1TL = c[ TopLeft ].centerY - v.dy1( TopLeft ),
+                            x2TL = c[ TopLeft ].centerX - v.dx2( TopLeft ),
+                            y2TL = c[ TopLeft ].centerY - v.dy2( TopLeft );
+
+                            addAdditionalLines( x1TR, y1TR, x2TR, y2TR,
+                                                x1TL, y1TL, x2TL, y2TL,
+                                                borderMapTR.gradient(), linesTR + k );
+                        }
+
+                        if( additionalGradientStops( borderMapBL.gradient() ) > 0 )
+                        {
+                            float x1BL = c[ BottomLeft ].centerX - v.dx1( BottomLeft ),
+                            y1BL = c[ BottomLeft ].centerY + v.dy1( BottomLeft ),
+                            x2BL = c[ BottomLeft ].centerX - v.dx2( BottomLeft ),
+                            y2BL = c[ BottomLeft ].centerY + v.dy2( BottomLeft ),
+
+                            x1BR = c[ BottomRight ].centerX + v.dx1( BottomRight ),
+                            y1BR = c[ BottomRight ].centerY + v.dy1( BottomRight ),
+                            x2BR = c[ BottomRight ].centerX + v.dx2( BottomRight ),
+                            y2BR = c[ BottomRight ].centerY + v.dy2( BottomRight );
+
+                            addAdditionalLines( x1BL, y1BL, x2BL, y2BL,
+                                                x1BR, y1BR, x2BR, y2BR,
+                                                borderMapBL.gradient(), linesBL + k );
+                        }
+                    }
+
+                    if( j == numCornerLines - 1 )
+                    {
+                        if( additionalGradientStops( borderMapTL.gradient() ) > 0 )
+                        {
+                            float x1TL = c[ TopLeft ].centerX - v.dx1( TopLeft ),
+                            y1TL = c[ TopLeft ].centerY - v.dy1( TopLeft ),
+                            x2TL = c[ TopLeft ].centerX - v.dx2( TopLeft ),
+                            y2TL = c[ TopLeft ].centerY - v.dy2( TopLeft ),
+
+                            x1BL = c[ BottomLeft ].centerX - v.dx1( BottomLeft ),
+                            y1BL = c[ BottomLeft ].centerY + v.dy1( BottomLeft ),
+                            x2BL = c[ BottomLeft ].centerX - v.dx2( BottomLeft ),
+                            y2BL = c[ BottomLeft ].centerY + v.dy2( BottomLeft );
+
+                            addAdditionalLines( x1TL, y1TL, x2TL, y2TL,
+                                                x1BL, y1BL, x2BL, y2BL,
+                                                borderMapTL.gradient(), linesTL + j );
+                        }
+
+                        if( additionalGradientStops( borderMapBR.gradient() ) > 0 )
+                        {
+                            float x1BR = c[ BottomRight ].centerX + v.dx1( BottomRight ),
+                            y1BR = c[ BottomRight ].centerY + v.dy1( BottomRight ),
+                            x2BR = c[ BottomRight ].centerX + v.dx2( BottomRight ),
+                            y2BR = c[ BottomRight ].centerY + v.dy2( BottomRight ),
+
+                            x1TR = c[ TopRight ].centerX + v.dx1( TopRight ),
+                            y1TR = c[ TopRight ].centerY - v.dy1( TopRight ),
+                            x2TR = c[ TopRight ].centerX + v.dx2( TopRight ),
+                            y2TR = c[ TopRight ].centerY - v.dy2( TopRight );
+
+                            addAdditionalLines( x1BR, y1BR, x2BR, y2BR,
+                                                x1TR, y1TR, x2TR, y2TR,
+                                                borderMapBR.gradient(), linesBR + j );
+                        }
+                    }
                 }
 
                 if ( fillLines )
@@ -689,7 +822,12 @@ namespace
 #if 1
             if ( borderLines )
             {
-                const int k = 4 * numCornerLines;
+                const int additionalStops =
+                    additionalGradientStops( borderMapBR.gradient() )
+                    + additionalGradientStops( borderMapTR.gradient() )
+                    + additionalGradientStops( borderMapTL.gradient() )
+                    + additionalGradientStops( borderMapBL.gradient() );
+                const int k = 4 * numCornerLines + additionalStops;
 
                 if ( orientation == Qt::Vertical )
                     borderLines[ k ] = borderLines[ 0 ];
@@ -859,17 +997,24 @@ static inline void qskRenderBorder( const QskBoxRenderer::Metrics& metrics,
 
     if ( colors.isMonochrome() )
     {
-        qskRenderBorderLines( metrics, orientation, line, BorderMapSolid( c.rgb( Qsk::Left ) ) );
+        qskRenderBorderLines( metrics, orientation, line, BorderMapSolid( qskRgbBorder( c ) ) );
     }
     else
     {
         const int stepCount = metrics.corner[ 0 ].stepCount;
 
+        auto left = c.gradient( Qsk::Left ), top = c.gradient( Qsk::Top ),
+                right = c.gradient( Qsk::Right ), bottom = c.gradient( Qsk::Bottom );
+
         qskRenderBorderLines( metrics, orientation, line,
-            BorderMapGradient( stepCount, c.rgb( Qsk::Top ), c.rgb( Qsk::Left ) ),
-            BorderMapGradient( stepCount, c.rgb( Qsk::Right ), c.rgb( Qsk::Top ) ),
-            BorderMapGradient( stepCount, c.rgb( Qsk::Left ), c.rgb( Qsk::Bottom ) ),
-            BorderMapGradient( stepCount, c.rgb( Qsk::Bottom ), c.rgb( Qsk::Right ) ) );
+            BorderMapGradient( stepCount, qskRgbGradientStart( top ),
+                               qskRgbGradientEnd( left ), left ),
+            BorderMapGradient( stepCount, qskRgbGradientStart( right ),
+                               qskRgbGradientEnd( top ), top ),
+            BorderMapGradient( stepCount, qskRgbGradientStart( left ),
+                               qskRgbGradientEnd( bottom ), bottom ),
+            BorderMapGradient( stepCount, qskRgbGradientStart( bottom ),
+                               qskRgbGradientEnd( right ), right ) );
     }
 }
 
@@ -899,7 +1044,7 @@ static inline void qskRenderBoxRandom(
 
     if ( bc.isMonochrome() )
     {
-        const BorderMapSolid borderMap( bc.rgb( Qsk::Left ) );
+        const BorderMapSolid borderMap( qskRgbBorder( bc.gradient( Qsk::Left ) ) );
 
         if ( gradient.isMonochrome() )
         {
@@ -918,10 +1063,17 @@ static inline void qskRenderBoxRandom(
     {
         const int n = metrics.corner[ 0 ].stepCount;
 
-        const BorderMapGradient tl( n, bc.rgb( Qsk::Top ), bc.rgb( Qsk::Left ) );
-        const BorderMapGradient tr( n, bc.rgb( Qsk::Right ), bc.rgb( Qsk::Top ) );
-        const BorderMapGradient bl( n, bc.rgb( Qsk::Left ), bc.rgb( Qsk::Bottom ) );
-        const BorderMapGradient br( n, bc.rgb( Qsk::Bottom ), bc.rgb( Qsk::Right ) );
+        auto left = bc.gradient( Qsk::Left ), top = bc.gradient( Qsk::Top ),
+                right = bc.gradient( Qsk::Right ), bottom = bc.gradient( Qsk::Bottom );
+
+        const BorderMapGradient tl( n, qskRgbGradientStart( top.startColor() ),
+                                    qskRgbGradientEnd( left.endColor() ), left );
+        const BorderMapGradient tr( n, qskRgbGradientStart( right ),
+                                    qskRgbGradientEnd( top ), top );
+        const BorderMapGradient bl( n, qskRgbGradientStart( left ),
+                                    qskRgbGradientEnd( bottom ), bottom );
+        const BorderMapGradient br( n, qskRgbGradientStart( bottom ),
+                                    qskRgbGradientEnd( right ), right );
 
         if ( gradient.isMonochrome() )
         {
@@ -1207,8 +1359,19 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
     const int stepCount = metrics.corner[ 0 ].stepCount;
 
     int borderLineCount = 0;
+
     if ( borderColors.isVisible() && metrics.innerQuad != metrics.outerQuad )
+    {
         borderLineCount = 4 * ( stepCount + 1 ) + 1;
+
+        const int additionalLines =
+            additionalGradientStops( borderColors.gradient( Qsk::Left ) )
+            + additionalGradientStops( borderColors.gradient( Qsk::Top ) )
+            + additionalGradientStops( borderColors.gradient( Qsk::Right ) )
+            + additionalGradientStops( borderColors.gradient( Qsk::Bottom ) );
+
+        borderLineCount += additionalLines;
+    }
 
     int lineCount = borderLineCount + fillLineCount;
 

@@ -422,28 +422,63 @@ static inline void qskCreateBorder(
     const QskBoxRenderer::Quad& out, const QskBoxRenderer::Quad& in,
     const QskBoxBorderColors& colors, Line* line )
 {
-    const Color colorLeft = colors.rgb( Qsk::Left );
-    const Color colorRight = colors.rgb( Qsk::Right );
-    const Color colorTop = colors.rgb( Qsk::Top );
-    const Color colorBottom = colors.rgb( Qsk::Bottom );
+    const QskGradient gradientLeft = colors.gradient( Qsk::Left );
+    const QskGradient gradientRight = colors.gradient( Qsk::Right );
+    const QskGradient gradientTop = colors.gradient( Qsk::Top );
+    const QskGradient gradientBottom = colors.gradient( Qsk::Bottom );
 
-    ( line++ )->setLine( in.right, in.bottom, out.right, out.bottom, colorBottom );
-    ( line++ )->setLine( in.left, in.bottom, out.left, out.bottom, colorBottom );
+    // qdebug
 
-    if ( colorLeft != colorBottom )
-        ( line++ )->setLine( in.left, in.bottom, out.left, out.bottom, colorLeft );
+    const qreal dx1 = in.right - in.left;
+    const qreal dx2 = out.right - out.left;
+    const qreal dy1 = in.top - in.bottom;
+    const qreal dy2 = out.top - out.bottom;
 
-    ( line++ )->setLine( in.left, in.top, out.left, out.top, colorLeft );
+    for( const auto& stop : gradientBottom.stops() )
+    {
+        const Color c( stop.color() );
+        const qreal x1 = in.right - stop.position() * dx1;
+        const qreal x2 = out.right - stop.position() * dx2;
+        const qreal y1 = in.bottom;
+        const qreal y2 = out.bottom;
 
-    if ( colorTop != colorLeft )
-        ( line++ )->setLine( in.left, in.top, out.left, out.top, colorTop );
+        ( line++ )->setLine( x1, y1, x2, y2, c );
+    }
 
-    ( line++ )->setLine( in.right, in.top, out.right, out.top, colorTop );
+    for( const auto& stop : gradientLeft.stops() )
+    {
+        const Color c( stop.color() );
+        const qreal x1 = in.left;
+        const qreal x2 = out.left;
+        const qreal y1 = in.bottom + stop.position() * dy1;
+        const qreal y2 = out.bottom + stop.position() * dy2;
 
-    if ( colorRight != colorTop )
-        ( line++ )->setLine( in.right, in.top, out.right, out.top, colorRight );
+        ( line++ )->setLine( x1, y1, x2, y2, c );
+    }
 
-    ( line++ )->setLine( in.right, in.bottom, out.right, out.bottom, colorRight );
+    for( const auto& stop : gradientTop.stops() )
+    {
+        const Color c( stop.color() );
+        const qreal x1 = in.left + stop.position() * dx1;
+        const qreal x2 = out.left + stop.position() * dx2;
+        const qreal y1 = in.top;
+        const qreal y2 = out.top;
+
+        ( line++ )->setLine( x1, y1, x2, y2, c );
+    }
+
+    for( const auto& stop : gradientRight.stops() )
+    {
+        const Color c( stop.color() );
+        const qreal x1 = in.right;
+        const qreal x2 = out.right;
+        // ( 1 - stop.position() ) because we want to make the gradients go
+        // around the border clock-wise:
+        const qreal y1 = in.bottom + ( 1 - stop.position() ) * dy1;
+        const qreal y2 = out.bottom + ( 1 - stop.position() ) * dy2;
+
+        ( line++ )->setLine( x1, y1, x2, y2, c );
+    }
 }
 
 void QskBoxRenderer::renderRectBorder(
@@ -533,14 +568,15 @@ void QskBoxRenderer::renderRect(
                 // we might need extra lines to separate colors
                 // at the non closing corners
 
-                if ( bc.color( Qsk::Left ) != bc.color( Qsk::Bottom ) )
-                    borderLineCount++;
+                // ### As an optimization we could check orientation and colors
+                // to test whether colors are the same
+                const int additionalLines = -1
+                    + bc.gradient( Qsk::Left ).stops().count() - 1
+                    + bc.gradient( Qsk::Top ).stops().count() - 1
+                    + bc.gradient( Qsk::Right ).stops().count() - 1
+                    + bc.gradient( Qsk::Bottom ).stops().count() - 1;
 
-                if ( bc.color( Qsk::Top ) != bc.color( Qsk::Left ) )
-                    borderLineCount++;
-
-                if ( bc.color( Qsk::Right ) != bc.color( Qsk::Top ) )
-                    borderLineCount++;
+                borderLineCount += qMax( additionalLines, 0 );
             }
         }
     }
@@ -587,7 +623,7 @@ void QskBoxRenderer::renderRect(
         auto fillLines = line + fillLineCount;
 
         if ( bc.isMonochrome() )
-            qskCreateBorderMonochrome( rect, in, bc.rgb( Qsk::Left ), fillLines );
+            qskCreateBorderMonochrome( rect, in, bc.gradient( Qsk::Left ).startColor().rgba(), fillLines );
         else
             qskCreateBorder( rect, in, bc, fillLines );
     }

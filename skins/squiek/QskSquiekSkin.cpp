@@ -198,23 +198,23 @@ void Editor::setButton( QskAspect aspect, PanelStyle style, qreal border )
     {
         case Raised:
         {
-            borderColors.setColorsAt( Qt::TopEdge | Qt::LeftEdge, m_pal.lighter135 );
-            borderColors.setColorsAt( Qt::RightEdge | Qt::BottomEdge, m_pal.darker200 );
+            borderColors.setGradientAt( Qt::TopEdge | Qt::LeftEdge, m_pal.lighter135 );
+            borderColors.setGradientAt( Qt::RightEdge | Qt::BottomEdge, m_pal.darker200 );
             gradient.setColors( m_pal.lighter125, m_pal.lighter110 );
 
             break;
         }
         case Sunken:
         {
-            borderColors.setColorsAt( Qt::TopEdge | Qt::LeftEdge, m_pal.darker200 );
-            borderColors.setColorsAt( Qt::RightEdge | Qt::BottomEdge, m_pal.lighter135 );
+            borderColors.setGradientAt( Qt::TopEdge | Qt::LeftEdge, m_pal.darker200 );
+            borderColors.setGradientAt( Qt::RightEdge | Qt::BottomEdge, m_pal.lighter135 );
             gradient.setColors( m_pal.lighter110, m_pal.lighter125 );
 
             break;
         }
         case Plain:
         {
-            borderColors.setColors( m_pal.darker125 );
+            borderColors.setGradients( m_pal.darker125 );
             gradient.setColor( m_pal.lighter125 );
 
             break;
@@ -225,7 +225,7 @@ void Editor::setButton( QskAspect aspect, PanelStyle style, qreal border )
             QColor noColor( m_pal.theme );
             noColor.setAlpha( 0 );
 
-            borderColors.setColors( noColor );
+            borderColors.setGradients( noColor );
             gradient.setColor( noColor );
 
             if ( style == NoPanel )
@@ -859,8 +859,8 @@ void Editor::setupSubWindow()
     setBoxShape( Q::Panel, radius, radius, 0, 0, Qt::AbsoluteSize );
 
     QskBoxBorderColors borderColors;
-    borderColors.setColorsAt( Qt::TopEdge | Qt::LeftEdge, m_pal.lighter125 );
-    borderColors.setColorsAt( Qt::RightEdge | Qt::BottomEdge, m_pal.darker200 );
+    borderColors.setGradientAt( Qt::TopEdge | Qt::LeftEdge, m_pal.lighter125 );
+    borderColors.setGradientAt( Qt::RightEdge | Qt::BottomEdge, m_pal.darker200 );
 
     setBoxBorderColors( Q::Panel, borderColors );
     setGradient( Q::Panel, m_pal.lighter135 );
