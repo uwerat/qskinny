@@ -16,34 +16,17 @@ class QSK_EXPORT QskTextPredictor : public QObject
     Q_OBJECT
 
   public:
-    enum Attribute
-    {
-        Words = 1 << 0
-    };
-
-    Q_ENUM( Attribute )
-    Q_DECLARE_FLAGS( Attributes, Attribute )
-
     ~QskTextPredictor() override;
 
+  public Q_SLOTS:
     virtual void request( const QString& text ) = 0;
     virtual void reset() = 0;
 
-    virtual int candidateCount() const = 0;
-    virtual QString candidate( int ) const = 0;
-
-    virtual QStringList candidates() const;
-
-    Attributes attributes() const;
-
   Q_SIGNALS:
-    void predictionChanged();
+    void predictionChanged( const QString& text, const QStringList& candidates );
 
   protected:
-    QskTextPredictor( Attributes, QObject* );
-
-  private:
-    const Attributes m_attributes;
+    QskTextPredictor( QObject* );
 };
 
 #endif

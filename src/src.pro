@@ -9,6 +9,9 @@ QSK_SUBDIRS = common graphic nodes controls layouts dialogs inputpanel
 INCLUDEPATH *= $${QSK_SUBDIRS}
 DEPENDPATH *= $${QSK_SUBDIRS}
 
+# CONFIG += pinyin
+# CONFIG += hunspell
+
 # DEFINES += QSK_LAYOUT_COMPAT
 
 HEADERS += \
@@ -351,6 +354,40 @@ SOURCES += \
     inputpanel/QskInputPanelBox.cpp \
     inputpanel/QskInputPredictionBar.cpp \
     inputpanel/QskVirtualKeyboard.cpp
+
+pinyin {
+
+    unix {
+
+        DEFINES += PINYIN
+
+        CONFIG += link_pkgconfig
+        PKGCONFIG += pinyin
+
+        HEADERS += \
+            inputpanel/QskPinyinTextPredictor.h
+
+        SOURCES += \
+            inputpanel/QskPinyinTextPredictor.cpp
+    }
+}
+
+hunspell {
+
+    unix {
+
+        DEFINES += HUNSPELL
+
+        CONFIG += link_pkgconfig
+        PKGCONFIG += hunspell
+
+        HEADERS += \
+            inputpanel/QskHunspellTextPredictor.h
+
+        SOURCES += \
+            inputpanel/QskHunspellTextPredictor.cpp
+    }
+}
 
 target.path    = $${QSK_INSTALL_LIBS}
 INSTALLS       = target

@@ -29,8 +29,15 @@ class QSK_EXPORT QskInputContextFactory : public QObject
     QskInputContextFactory( QObject* parent = nullptr );
     ~QskInputContextFactory() override;
 
-    virtual QskTextPredictor* createPredictor( const QLocale& ) const;
+    std::shared_ptr< QskTextPredictor > setupPredictor( const QLocale& );
     virtual QskInputPanel* createPanel() const;
+
+  protected:
+    virtual QskTextPredictor* createPredictor( const QLocale& );
+
+  private:
+    class PrivateData;
+    std::unique_ptr< PrivateData > m_data;
 };
 
 class QSK_EXPORT QskInputContext : public QObject
@@ -56,7 +63,7 @@ class QSK_EXPORT QskInputContext : public QObject
     static QskInputContext* instance();
     static void setInstance( QskInputContext* );
 
-    QskTextPredictor* textPredictor( const QLocale& locale );
+    std::shared_ptr< QskTextPredictor > textPredictor( const QLocale& locale );
 
   Q_SIGNALS:
     void activeChanged();

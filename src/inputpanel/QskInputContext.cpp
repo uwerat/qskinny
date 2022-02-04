@@ -11,6 +11,7 @@
 #include "QskLinearBox.h"
 #include "QskPopup.h"
 #include "QskQuick.h"
+#include "QskTextPredictor.h"
 #include "QskWindow.h"
 
 #include <qguiapplication.h>
@@ -23,6 +24,10 @@ QSK_QT_PRIVATE_END
 
 #include <qpa/qplatforminputcontext.h>
 #include <qpa/qplatformintegration.h>
+
+#if HUNSPELL
+#include "QskHunspellTextPredictor.h"
+#endif
 
 namespace
 {
@@ -66,6 +71,7 @@ namespace
 
         void setPrediction( const QStringList& prediction ) override
         {
+            QskInputPanel::setPrediction( prediction );
             m_box->setPrediction( prediction );
         }
 
@@ -312,10 +318,10 @@ QskInputContextFactory* QskInputContext::factory() const
     return m_data->factory;
 }
 
-QskTextPredictor* QskInputContext::textPredictor( const QLocale& locale )
+std::shared_ptr<QskTextPredictor> QskInputContext::textPredictor( const QLocale& locale )
 {
     if ( m_data->factory )
-        return m_data->factory->createPredictor( locale );
+        return m_data->factory->setupPredictor( locale );
 
     return nullptr;
 }
@@ -494,18 +500,62 @@ void QskInputContext::commitPrediction( bool )
      */
 }
 
+class QskInputContextFactory::PrivateData
+{
+  public:
+    QThread* thread = nullptr;
+    std::shared_ptr< QskTextPredictor > predictor;
+    QLocale predictorLocale;
+};
+
 QskInputContextFactory::QskInputContextFactory( QObject* parent )
     : QObject( parent )
+    , m_data( new PrivateData() )
 {
 }
 
 QskInputContextFactory::~QskInputContextFactory()
 {
+    if( m_data->thread )
+    {
+        m_data->thread->quit();
+        connect( m_data->thread, &QThread::finished, m_data->thread, &QObject::deleteLater );
+    }
 }
 
-QskTextPredictor* QskInputContextFactory::createPredictor( const QLocale& ) const
+std::shared_ptr< QskTextPredictor > QskInputContextFactory::setupPredictor( const QLocale& locale )
 {
-    return nullptr;
+    if( !m_data->predictor
+        || m_data->predictorLocale.language() != locale.language()
+        || m_data->predictorLocale.country() != locale.country() )
+    {
+        m_data->predictor = std::shared_ptr< QskTextPredictor >( createPredictor( locale ) );
+        m_data->predictorLocale = QLocale( locale.language(), locale.country() );
+
+        if( m_data->predictor )
+        {
+            if( !m_data->thread )
+            {
+                m_data->thread = new QThread();
+                m_data->thread->start();
+            }
+
+            m_data->predictor->moveToThread( m_data->thread );
+        }
+    }
+
+    return m_data->predictor;
+}
+
+QskTextPredictor* QskInputContextFactory::createPredictor( const QLocale& locale )
+{
+#if HUNSPELL
+   return new QskHunspellTextPredictor( locale );
+#else
+    Q_UNUSED( locale );
+#endif
+
+   return nullptr;
 }
 
 QskInputPanel* QskInputContextFactory::createPanel() const

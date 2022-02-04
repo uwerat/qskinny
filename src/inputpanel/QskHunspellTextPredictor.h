@@ -6,26 +6,30 @@
 #ifndef QSK_HUNSPELL_TEXT_PREDICTOR_H
 #define QSK_HUNSPELL_TEXT_PREDICTOR_H
 
-#include "QskInputContextGlobal.h"
-#include <QskTextPredictor.h>
+#include "QskTextPredictor.h"
+
+#include <QPair>
+
 #include <memory>
 
-class QSK_INPUTCONTEXT_EXPORT QskHunspellTextPredictor : public QskTextPredictor
+class QSK_EXPORT QskHunspellTextPredictor : public QskTextPredictor
 {
+    Q_OBJECT
+
     using Inherited = QskTextPredictor;
 
   public:
-    QskHunspellTextPredictor( QObject* = nullptr );
+    QskHunspellTextPredictor( const QLocale& locale, QObject* = nullptr );
     ~QskHunspellTextPredictor() override;
-
-    int candidateCount() const override;
-    QString candidate( int pos ) const override;
 
   protected:
     void request( const QString& ) override;
     void reset() override;
+    virtual QPair< QString, QString > affAndDicFile( const QString&, const QLocale& );
 
   private:
+    Q_INVOKABLE void loadDictionaries();
+
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
