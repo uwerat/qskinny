@@ -3,9 +3,6 @@ TARGET = $$qskPluginTarget(qskinputcontext)
 
 QT += gui-private
 
-# CONFIG += pinyin
-# CONFIG += hunspell
-
 CONFIG += plugin
 CONFIG += qskinny
 
