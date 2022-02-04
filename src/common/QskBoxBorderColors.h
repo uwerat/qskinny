@@ -39,7 +39,7 @@ class QSK_EXPORT QskBoxBorderColors
         const QskGradient& right, const QskGradient& bottom );
 
     void setGradient( Qsk::Position, const QskGradient& );
-    QskGradient gradient( Qsk::Position ) const;
+    const QskGradient& gradient( Qsk::Position ) const;
 
     void setGradientAt( Qt::Edges, const QskGradient& );
     const QskGradient& gradientAt( Qt::Edge ) const;
@@ -73,7 +73,7 @@ inline bool QskBoxBorderColors::operator!=( const QskBoxBorderColors& other ) co
     return !( *this == other );
 }
 
-inline QskGradient QskBoxBorderColors::gradient( Qsk::Position position ) const
+inline const QskGradient& QskBoxBorderColors::gradient( Qsk::Position position ) const
 {
     return m_gradients[ position ];
 }

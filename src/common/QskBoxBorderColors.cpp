@@ -207,11 +207,8 @@ QDebug operator<<( QDebug debug, const QskBoxBorderColors& colors )
     debug << "BoxBorderColors" << '(';
 
     debug << " L" << colors.gradient( Qsk::Left );
-
     debug << ", T" << colors.gradient( Qsk::Top );
-
     debug << ", R" << colors.gradient( Qsk::Right );
-
     debug << ", B" << colors.gradient( Qsk::Bottom );
 
     debug << " )";
