@@ -422,10 +422,10 @@ static inline void qskCreateBorder(
     const QskBoxRenderer::Quad& out, const QskBoxRenderer::Quad& in,
     const QskBoxBorderColors& colors, Line* line )
 {
-    const QskGradient gradientLeft = colors.gradient( Qsk::Left );
-    const QskGradient gradientRight = colors.gradient( Qsk::Right );
-    const QskGradient gradientTop = colors.gradient( Qsk::Top );
-    const QskGradient gradientBottom = colors.gradient( Qsk::Bottom );
+    const auto& gradientLeft = colors.gradient( Qsk::Left );
+    const auto& gradientRight = colors.gradient( Qsk::Right );
+    const auto& gradientTop = colors.gradient( Qsk::Top );
+    const auto& gradientBottom = colors.gradient( Qsk::Bottom );
 
     // qdebug
 

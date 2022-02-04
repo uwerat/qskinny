@@ -541,7 +541,7 @@ namespace
             return m_color1.interpolatedTo( m_color2, step / m_stepCount );
         }
 
-        inline QskGradient gradient() const
+        inline const QskGradient& gradient() const
         {
             return m_gradient;
         }
@@ -605,10 +605,13 @@ namespace
                 if ( borderLines )
                 {
                     linesBR = borderLines;
+
                     linesTR = linesBR + numCornerLines
                         + additionalGradientStops( borderMapBR.gradient() );
+
                     linesTL = linesTR + numCornerLines
                         + additionalGradientStops( borderMapTR.gradient() );
+
                     linesBL = linesTL + numCornerLines
                         + additionalGradientStops( borderMapTL.gradient() );
                 }
@@ -624,10 +627,13 @@ namespace
                 if ( borderLines )
                 {
                     linesTR = borderLines + 1;
+
                     linesTL = linesTR + numCornerLines
                         + additionalGradientStops( borderMapTR.gradient() );
+
                     linesBL = linesTL + numCornerLines
                         + additionalGradientStops( borderMapTL.gradient() );
+
                     linesBR = linesBL + numCornerLines
                         + additionalGradientStops( borderMapBL.gradient() );
                 }
@@ -827,6 +833,7 @@ namespace
                     + additionalGradientStops( borderMapTR.gradient() )
                     + additionalGradientStops( borderMapTL.gradient() )
                     + additionalGradientStops( borderMapBL.gradient() );
+
                 const int k = 4 * numCornerLines + additionalStops;
 
                 if ( orientation == Qt::Vertical )
