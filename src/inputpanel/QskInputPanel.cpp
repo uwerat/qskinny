@@ -10,7 +10,8 @@
 #include <qpointer.h>
 #include <qtextformat.h>
 
-namespace {
+namespace
+{
     struct Result
     {
         int key = 0;
