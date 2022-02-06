@@ -240,12 +240,11 @@ void QskQuickItemPrivate::cleanupNodes()
     }
 }
 
-QSGTransformNode* QskQuickItemPrivate::createTransformNode()
-{
-    return Inherited::createTransformNode();
-}
+/*
+    Can we do something useful with overloading:
 
-void QskQuickItemPrivate::transformChanged()
-{
-    Inherited::transformChanged();
-}
+        - QQuickItemPrivate::createTransformNode
+        - QQuickItemPrivate::transformChanged
+
+    TODO ...
+ */
