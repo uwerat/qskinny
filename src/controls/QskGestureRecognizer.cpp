@@ -14,6 +14,10 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qquickwindow_p.h>
 QSK_QT_PRIVATE_END
 
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 3, 0 )
+#include <private/qeventpoint_p.h>
+#endif
+
 static QMouseEvent* qskClonedMouseEventAt(
     const QMouseEvent* event, QPointF* localPos )
 {
@@ -25,13 +29,23 @@ static QMouseEvent* qskClonedMouseEventAt(
 #else
     auto clonedEvent = event->clone();
 
-    auto& point = QMutableEventPoint::from( clonedEvent->point( 0 ) );
-    point.detach();
-    point.setTimestamp( event->timestamp() );
-
     if ( localPos )
+    {
+#if QT_VERSION < QT_VERSION_CHECK( 6, 3, 0 )
+        auto& point = QMutableEventPoint::from( clonedEvent->point( 0 ) );
+
+        point.detach();
         point.setPosition( *localPos );
+#else
+        auto& point = clonedEvent->point( 0 );
+
+        QMutableEventPoint::detach( point );
+        QMutableEventPoint::setPosition( point, *localPos );
 #endif
+    }
+#endif
+
+    Q_ASSERT(  event->timestamp() == clonedEvent->timestamp() );
 
     return clonedEvent;
 }

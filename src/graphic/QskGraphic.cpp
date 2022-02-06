@@ -177,7 +177,7 @@ static inline void qskExecCommand(
             if ( data->flags & QPaintEngine::DirtyHints )
             {
 #if 1
-                auto state = QPainterPrivate::get( painter )->state;
+                auto& state = QPainterPrivate::get( painter )->state;
                 state->renderHints = data->renderHints;
 
                 // to trigger internal updates we have to set at least one flag

@@ -25,8 +25,6 @@ namespace
     class Option
     {
       public:
-        Option() = default; // some compilers need this
-
         Option( const QUrl& graphicSource, const QString& text )
             : graphicSource( graphicSource )
             , text( text )
@@ -35,8 +33,8 @@ namespace
                 graphic = Qsk::loadGraphic( graphicSource );
         }
 
-        const QUrl graphicSource;
-        const QString text;
+        QUrl graphicSource;
+        QString text;
 
         QskGraphic graphic;
     };
