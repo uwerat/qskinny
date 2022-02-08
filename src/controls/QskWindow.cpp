@@ -220,6 +220,18 @@ QskWindow::~QskWindow()
 #endif
 }
 
+#if QT_VERSION < QT_VERSION_CHECK( 5, 9, 0 )
+
+void QskWindow::setFlag(Qt::WindowType flag, bool on)
+{
+    if( on )
+        setFlags( flags() | flag );
+    else
+        setFlags( flags() & ~flag );
+}
+
+#endif
+
 void QskWindow::setScreen( const QString& name )
 {
     if ( !name.isEmpty() )
