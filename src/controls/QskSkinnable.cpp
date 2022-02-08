@@ -825,7 +825,9 @@ QVariant QskSkinnable::effectiveSkinHint(
     QskAspect aspect, QskSkinHintStatus* status ) const
 {
     aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
-    aspect.setPlacement( effectivePlacement() );
+
+    if ( aspect.placement() == QskAspect::NoPlacement )
+        aspect.setPlacement( effectivePlacement() );
 
     if ( aspect.isAnimator() )
         return storedHint( aspect, status );
