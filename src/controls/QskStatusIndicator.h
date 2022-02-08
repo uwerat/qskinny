@@ -30,6 +30,7 @@ class QSK_EXPORT QskStatusIndicator : public QskControl
 
     Q_INVOKABLE QUrl source( int status ) const;
     Q_INVOKABLE void setSource( int status, const QUrl& url );
+    void setSource( int status, const QString& );
 
     QskGraphic graphic( int status ) const;
     void setGraphic( int status, const QskGraphic& );

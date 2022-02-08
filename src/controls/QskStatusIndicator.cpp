@@ -77,6 +77,11 @@ QUrl QskStatusIndicator::source( int status ) const
     return QUrl();
 }
 
+void QskStatusIndicator::setSource( int status, const QString& source )
+{
+    setSource( status, QUrl( source ) );
+}
+
 void QskStatusIndicator::setSource( int status, const QUrl& url )
 {
     bool hasChanged = false;
