@@ -147,7 +147,7 @@ QSGNode* QskPageIndicatorSkinlet::updateSampleNode( const QskSkinnable* skinnabl
         const auto ratio = indicator->valueRatioAt( index );
 
         return QskSkinlet::updateInterpolatedBoxNode( skinnable, node,
-            rect, Q::Bullet, Q::Bullet | Q::Selected, ratio );
+            rect, Q::Bullet, Q::Bullet | Q::Selected | indicator->skinStates(), ratio );
     }
 
     return nullptr;
