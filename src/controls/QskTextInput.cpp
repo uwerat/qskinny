@@ -319,6 +319,9 @@ QskTextInput::QskTextInput( QQuickItem* parent )
     m_data->textInput->setAcceptedMouseButtons( Qt::NoButton );
 
     initSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Fixed );
+
+    setAcceptHoverEvents( true );
+
 }
 
 QskTextInput::QskTextInput( const QString& text, QQuickItem* parent )
