@@ -146,8 +146,14 @@ QSGNode* QskPageIndicatorSkinlet::updateSampleNode( const QskSkinnable* skinnabl
         const auto rect = sampleRect( indicator, indicator->contentsRect(), Q::Bullet, index );
         const auto ratio = indicator->valueRatioAt( index );
 
+        /*
+            QskSkinnable::effectiveSkinHint() does not add the skinStates(), when
+            the aspect already has a state. So we need add thmen here.
+         */
+        const auto selectedStates = Q::Selected | indicator->skinStates();
+
         return QskSkinlet::updateInterpolatedBoxNode( skinnable, node,
-            rect, Q::Bullet, Q::Bullet | Q::Selected | indicator->skinStates(), ratio );
+            rect, Q::Bullet, Q::Bullet | selectedStates, ratio );
     }
 
     return nullptr;
