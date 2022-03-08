@@ -11,21 +11,12 @@ QSK_SUBCONTROL( QskDialogButton, Panel )
 QSK_SUBCONTROL( QskDialogButton, Text )
 QSK_SUBCONTROL( QskDialogButton, Graphic )
 
-static QString qskButtonText(
-    const QskDialogButton* button, QskDialog::Action action )
-{
-    if ( const auto skin = button->effectiveSkin() )
-        return skin->dialogButtonText( action );
-
-    return QString();
-}
-
 QskDialogButton::QskDialogButton(
         QskDialog::Action action, QQuickItem* parent )
     : QskPushButton( parent )
     , m_action( action )
 {
-    setText( qskButtonText( this, m_action ) );
+    resetButton();
 }
 
 QskDialogButton::QskDialogButton( QQuickItem* parent )
@@ -57,7 +48,7 @@ void QskDialogButton::setAction( QskDialog::Action action )
     if ( action != m_action )
     {
         m_action = action;
-        setText( qskButtonText( this, action ) );
+        resetButton();
 
         Q_EMIT actionChanged();
     }
@@ -74,10 +65,17 @@ void QskDialogButton::changeEvent( QEvent* event )
     {
         case QEvent::LocaleChange:
         case QEvent::StyleChange:
-            setText( qskButtonText( this, m_action ) );
+            resetButton();
+            break;
     }
 
     Inherited::changeEvent( event );
+}
+
+void QskDialogButton::resetButton()
+{
+    if ( const auto skin = effectiveSkin() )
+        setText( skin->dialogButtonText( m_action ) );
 }
 
 #include "moc_QskDialogButton.cpp"
