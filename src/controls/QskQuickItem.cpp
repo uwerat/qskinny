@@ -65,6 +65,10 @@ namespace
             QObject::connect( qskSetup, &QskSetup::itemUpdateFlagsChanged,
                 qskSetup, [ this ] { updateControlFlags(); } );
 
+            /*
+                We would also need to send QEvent::StyleChange, when
+                a window has a new skin. TODO ...
+             */
             QObject::connect( qskSetup, &QskSetup::skinChanged,
                 qskSetup, [ this ] { updateSkin(); } );
         }
