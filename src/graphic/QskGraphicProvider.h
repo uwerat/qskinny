@@ -16,6 +16,10 @@ class QUrl;
 
 class QSK_EXPORT QskGraphicProvider : public QObject
 {
+    Q_OBJECT
+
+    Q_PROPERTY( int cacheSize READ cacheSize WRITE setCacheSize )
+
   public:
     QskGraphicProvider( QObject* parent = nullptr );
     ~QskGraphicProvider() override;

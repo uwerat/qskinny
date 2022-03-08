@@ -127,3 +127,5 @@ QskGraphic Qsk::loadGraphic( const QUrl& url )
 
     return graphic ? *graphic : nullGraphic;
 }
+
+#include "moc_QskGraphicProvider.cpp"
