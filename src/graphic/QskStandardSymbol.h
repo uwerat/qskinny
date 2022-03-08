@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #ifndef QSK_STANDARD_SYMBOL_H
-#define QSK_STANDARD_SYMBOL_H 1
+#define QSK_STANDARD_SYMBOL_H
 
 #include "QskGlobal.h"
 #include <qmetatype.h>
