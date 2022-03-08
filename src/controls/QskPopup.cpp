@@ -382,7 +382,11 @@ bool QskPopup::hasFaderEffect() const
 
 void QskPopup::setPopupFlags( PopupFlags flags )
 {
-    m_data->flags = flags;
+    if ( static_cast<int>(flags) != m_data->flags )
+    {
+        m_data->flags = flags;
+        updateInputGrabber();
+    }
 }
 
 QskPopup::PopupFlags QskPopup::popupFlags() const
@@ -399,11 +403,7 @@ void QskPopup::setPopupFlag( PopupFlag flag, bool on )
     else
         flags &= ~flag;
 
-    if ( flags != m_data->flags )
-    {
-        m_data->flags = flags;
-        updateInputGrabber();
-    }
+    setPopupFlags( PopupFlags( flags ) );
 }
 
 bool QskPopup::testPopupFlag( PopupFlag flag ) const
