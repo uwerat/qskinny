@@ -758,55 +758,6 @@ bool QskControl::event( QEvent* event )
 
 bool QskControl::childMouseEventFilter( QQuickItem* item, QEvent* event )
 {
-#if QT_VERSION < QT_VERSION_CHECK( 5, 10, 0 )
-
-    if ( event->type() == QEvent::MouseButtonPress )
-    {
-        auto me = static_cast< QMouseEvent* >( event );
-
-        if ( me->source() == Qt::MouseEventSynthesizedByQt )
-        {
-            /*
-                Unhandled touch events result in creating synthetic
-                mouse events. For all versions < 5.10 those events are
-                passed through childMouseEventFilter without doing the
-                extra checks, that are done for real mouse events.
-                Furthermore the coordinates are relative
-                to this - not to item.
-
-                To avoid having a different behavior between using
-                mouse and touch, we do those checks here.
-             */
-
-            auto itm = item;
-            auto pos = item->mapFromScene( me->windowPos() );
-
-            for ( itm = item; itm != this; itm = itm->parentItem() )
-            {
-                if ( itm->acceptedMouseButtons() & me->button() )
-                {
-                    if ( itm->contains( pos ) )
-                        break;
-                }
-
-                pos += QPointF( itm->x(), itm->y() );
-            }
-
-            if ( itm != item )
-            {
-                if ( itm == this )
-                    return false;
-
-                QScopedPointer< QMouseEvent > clonedEvent(
-                    QQuickWindowPrivate::cloneMouseEvent( me, &pos ) );
-
-                return d_func()->maybeGesture( itm, clonedEvent.data() );
-            }
-        }
-    }
-
-#endif
-
     return d_func()->maybeGesture( item, event );
 }
 

@@ -43,10 +43,6 @@ class QSK_EXPORT QskWindow : public QQuickWindow
     using Inherited::setScreen;
     void setScreen( const QString& );
 
-#if QT_VERSION < QT_VERSION_CHECK( 5, 9, 0 )
-    void setFlag( Qt::WindowType, bool on = true );
-#endif
-
     bool deleteOnClose() const;
     void setDeleteOnClose( bool );
 

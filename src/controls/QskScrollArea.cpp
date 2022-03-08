@@ -241,22 +241,12 @@ namespace
 
         void itemChange( ItemChange, const ItemChangeData& ) override;
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 )
         void itemGeometryChanged( QQuickItem*,
             QQuickGeometryChange change, const QRectF& ) override
         {
             if ( change.sizeChange() )
                 scrolledItemGeometryChange();
         }
-
-#else
-        void itemGeometryChanged( QQuickItem*,
-            const QRectF& newRect, const QRectF& oldRect ) override
-        {
-            if ( oldRect.size() != newRect.size() )
-                scrolledItemGeometryChange();
-        }
-#endif
 
         void updateNode( QSGNode* ) override;
 

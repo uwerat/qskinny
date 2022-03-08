@@ -173,7 +173,7 @@ void QskShortcutHandler::remove( int id )
         Finally let's check if we can disconnect
         from the destroyed signals
      */
-    for ( const auto& entry : qskAsConst( m_invokeDataMap ) )
+    for ( const auto& entry : qAsConst( m_invokeDataMap ) )
     {
         if ( item == nullptr && receiver == nullptr )
             break;
@@ -276,7 +276,7 @@ bool QskShortcutHandler::invoke( QQuickItem* item, const QKeySequence& sequence 
 {
     bool found = false;
 
-    for ( const auto& entry : qskAsConst( m_invokeDataMap ) )
+    for ( const auto& entry : qAsConst( m_invokeDataMap ) )
     {
         auto& data = entry.second;
 

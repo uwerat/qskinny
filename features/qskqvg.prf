@@ -31,40 +31,16 @@ qvgrcc.CONFIG += add_inputs_as_makefile_deps
 QRC_SHADOW_CLONE = $$shell_path( $${OUT_PWD}/${QMAKE_FILE_BASE}_shadow.qrc )
 qtPrepareTool(QMAKE_RCC, rcc, _DEP)
 
-lessThan(QT_MAJOR_VERSION, 6): lessThan(QT_MINOR_VERSION, 12) {
+equals( OUT_PWD, $${_PRO_FILE_PWD_} ) {
 
-    # Since Qt 5.12 "rcc --list" works for qvg files, that do not yet exist
-    # To get these rules working for earlier versions we derive the qvg
-    # files from the SVGSOURCES
-
-    defineReplace(qvgfiles) {
-
-        svgfiles = $$1
-
-        files =
-            for( svgfile, svgfiles) {
-                filename = $$basename( svgfile )
-                files += $$shell_path( $${QVG_DIR}/$$replace( filename, svg, qvg ) )
-            }
-
-        return( $$files )
-    }
-
-    qvgrcc.depends += $$qvgfiles( $${SVGSOURCES} )
+    qvgrcc.depend_command = $$QMAKE_RCC_DEP -list $$QMAKE_RESOURCE_FLAGS ${QMAKE_FILE_IN}
 
 } else {
 
-    equals( OUT_PWD, $${_PRO_FILE_PWD_} ) {
-
-        qvgrcc.depend_command = $$QMAKE_RCC_DEP -list $$QMAKE_RESOURCE_FLAGS ${QMAKE_FILE_IN}
-
-    } else {
-
-        qvgrcc.depend_command = \
-            $${QMAKE_COPY} ${QMAKE_FILE_IN} $${QRC_SHADOW_CLONE} && \
-            $$QMAKE_RCC_DEP -list $$QMAKE_RESOURCE_FLAGS $${QRC_SHADOW_CLONE} && \
-            $${QMAKE_DEL_FILE} $${QRC_SHADOW_CLONE}
-    }
+    qvgrcc.depend_command = \
+        $${QMAKE_COPY} ${QMAKE_FILE_IN} $${QRC_SHADOW_CLONE} && \
+        $$QMAKE_RCC_DEP -list $$QMAKE_RESOURCE_FLAGS $${QRC_SHADOW_CLONE} && \
+        $${QMAKE_DEL_FILE} $${QRC_SHADOW_CLONE}
 }
 
 equals( OUT_PWD, $${_PRO_FILE_PWD_} ) {

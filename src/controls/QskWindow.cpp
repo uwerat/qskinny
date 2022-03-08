@@ -201,36 +201,7 @@ QskWindow::QskWindow( QQuickRenderControl* renderControl, QWindow* parent )
 
 QskWindow::~QskWindow()
 {
-#if QT_VERSION < QT_VERSION_CHECK( 5, 12, 0 )
-    // When being used from Qml the item destruction would run in the most
-    // unefficient way, leading to lots of QQuickItem::ItemChildRemovedChange
-    // depending operations.
-
-    QVector< QPointer< QQuickItem > > items;
-
-    const auto children = contentItem()->childItems();
-    for ( auto child : children )
-    {
-        if ( child->parent() == contentItem() )
-            items += child;
-    }
-
-    for ( auto& item : qskAsConst( items ) )
-        delete item;
-#endif
 }
-
-#if QT_VERSION < QT_VERSION_CHECK( 5, 9, 0 )
-
-void QskWindow::setFlag(Qt::WindowType flag, bool on)
-{
-    if( on )
-        setFlags( flags() | flag );
-    else
-        setFlags( flags() & ~flag );
-}
-
-#endif
 
 void QskWindow::setScreen( const QString& name )
 {

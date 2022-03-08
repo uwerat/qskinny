@@ -316,7 +316,7 @@ void QskStackBox::autoRemoveItem( QQuickItem* item )
 
 void QskStackBox::clear( bool autoDelete )
 {
-    for ( const auto item : qskAsConst( m_data->items ) )
+    for ( const auto item : qAsConst( m_data->items ) )
     {
         if( autoDelete && ( item->parent() == this ) )
             delete item;

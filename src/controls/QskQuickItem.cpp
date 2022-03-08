@@ -157,12 +157,6 @@ QskQuickItem::QskQuickItem( QskQuickItemPrivate& dd, QQuickItem* parent )
 {
     setFlag( QQuickItem::ItemHasContents, true );
 
-#if QT_VERSION < QT_VERSION_CHECK( 5, 10, 0 )
-    // since Qt 5.10 we have QQuickItem::ItemEnabledHasChanged
-    connect( this, &QQuickItem::enabledChanged,
-        this, &QskQuickItem::sendEnabledChangeEvent );
-#endif
-
     if ( dd.updateFlags & QskQuickItem::DeferredUpdate )
         qskFilterWindow( window() );
 
@@ -180,11 +174,6 @@ QskQuickItem::~QskQuickItem()
 
     if ( qskRegistry )
         qskRegistry->remove( this );
-
-#if QT_VERSION < QT_VERSION_CHECK( 5, 10, 0 )
-    disconnect( this, &QQuickItem::enabledChanged,
-        this, &QskQuickItem::sendEnabledChangeEvent );
-#endif
 }
 
 const char* QskQuickItem::className() const
@@ -597,11 +586,6 @@ void QskQuickItem::resetImplicitSize()
     }
 }
 
-void QskQuickItem::sendEnabledChangeEvent()
-{
-    qskSendEventTo( this, QEvent::EnabledChange );
-}
-
 bool QskQuickItem::event( QEvent* event )
 {
     const int eventType = event->type();
@@ -796,7 +780,7 @@ void QskQuickItem::itemChange( QQuickItem::ItemChange change,
 #if QT_VERSION >= QT_VERSION_CHECK( 5, 10, 0 )
         case QQuickItem::ItemEnabledHasChanged:
         {
-            sendEnabledChangeEvent();
+            qskSendEventTo( this, QEvent::EnabledChange );
             break;
         }
 #endif
