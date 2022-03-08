@@ -139,6 +139,8 @@ class QSK_EXPORT QskDialog : public QObject
         const QString& title, const QString& text,
         const QStringList& entries, int selectedRow = 0 ) const;
 
+    static ActionRole actionRole( Action action );
+
   Q_SIGNALS:
     void transientParentChanged();
     void policyChanged();

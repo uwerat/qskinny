@@ -19,6 +19,8 @@
 #include <qpointer.h>
 #include <qquickwindow.h>
 
+#include <qpa/qplatformdialoghelper.h>
+
 static QskDialog::Action qskActionCandidate( const QskDialogButtonBox* buttonBox )
 {
     // not the fastest code ever, but usually we always
@@ -334,6 +336,14 @@ QString QskDialog::select(
     return qskSelectWindow( m_data->transientParent, title, text,
         actions, defaultAction, entries, selectedRow );
 
+}
+
+QskDialog::ActionRole QskDialog::actionRole( Action action )
+{
+    using Q = QPlatformDialogHelper;
+
+    const auto role = Q::buttonRole( static_cast< Q::StandardButton >( action ) );
+    return static_cast< ActionRole >( role );
 }
 
 #include "moc_QskDialog.cpp"
