@@ -15,11 +15,6 @@
 #include <qvector.h>
 
 #include <qpa/qplatformdialoghelper.h>
-#include <qpa/qplatformtheme.h>
-
-QSK_QT_PRIVATE_BEGIN
-#include <private/qguiapplication_p.h>
-QSK_QT_PRIVATE_END
 
 #include <limits>
 
@@ -29,14 +24,6 @@ static void qskSendEventTo( QObject* object, QEvent::Type type )
 {
     QEvent event( type );
     QCoreApplication::sendEvent( object, &event );
-}
-
-static inline QskDialog::ActionRole qskActionRole( QskDialog::Action action )
-{
-    const auto role = QPlatformDialogHelper::buttonRole(
-        static_cast< QPlatformDialogHelper::StandardButton >( action ) );
-
-    return static_cast< QskDialog::ActionRole >( role );
 }
 
 namespace
@@ -346,9 +333,8 @@ void QskDialogButtonBox::addButton(
 
 void QskDialogButtonBox::addAction( QskDialog::Action action )
 {
-    QskPushButton* button = createButton( action );
-    if ( button )
-        addButton( button, qskActionRole( action ) );
+    if ( auto button = createButton( action ) )
+        addButton( button, QskDialog::actionRole( action ) );
 }
 
 void QskDialogButtonBox::removeButton( QskPushButton* button )
@@ -589,17 +575,6 @@ bool QskDialogButtonBox::isDefaultButtonKeyEvent( const QKeyEvent* event )
         return ( event->key() == Qt::Key_Enter ) ||
             ( event->key() == Qt::Key_Return );
     }
-}
-
-QString QskDialogButtonBox::buttonText( QskDialog::Action action )
-{
-    // should be redirected through the skin !
-
-    const auto theme = QGuiApplicationPrivate::platformTheme();
-    QString text = theme->standardButtonText( action );
-    text = QPlatformTheme::removeMnemonics( text );
-
-    return text;
 }
 
 #include "moc_QskDialogButtonBox.cpp"
