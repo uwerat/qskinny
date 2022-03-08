@@ -26,6 +26,7 @@ class QSK_EXPORT QskFocusIndicator : public QskControl
   protected:
     void windowChangeEvent( QskWindowChangeEvent* ) override;
     virtual QRectF focusRect() const;
+    void updateFocusFrame();
 
   private:
     void onFocusItemGeometryChanged();
@@ -33,7 +34,6 @@ class QSK_EXPORT QskFocusIndicator : public QskControl
 
     void onFocusItemChanged();
     void onFocusItemDestroyed();
-    void updateFocusFrame();
 
     void connectWindow( const QQuickWindow*, bool on );
     QVector< QMetaObject::Connection > connectItem( const QQuickItem* );
