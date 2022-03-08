@@ -28,11 +28,7 @@ namespace
         LinesNode( int lineCount = 0 )
             : m_geometry( QSGGeometry::defaultAttributes_Point2D(), 2 * lineCount )
         {
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 )
             m_geometry.setDrawingMode( QSGGeometry::DrawLines );
-#else
-            m_geometry.setDrawingMode( GL_LINES );
-#endif
             m_geometry.setVertexDataPattern( QSGGeometry::StaticPattern );
 
             setGeometry( &m_geometry );

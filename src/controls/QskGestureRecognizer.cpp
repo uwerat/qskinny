@@ -130,7 +130,7 @@ namespace
         {
             Timer* timer = nullptr;
 
-            for ( auto t : qskAsConst( m_table ) )
+            for ( auto t : qAsConst( m_table ) )
             {
                 if ( t->recognizer() == nullptr ||
                     t->recognizer() == recognizer )
@@ -151,7 +151,7 @@ namespace
 
         void stopTimer( const QskGestureRecognizer* recognizer )
         {
-            for ( auto timer : qskAsConst( m_table ) )
+            for ( auto timer : qAsConst( m_table ) )
             {
                 if ( timer->recognizer() == recognizer )
                 {

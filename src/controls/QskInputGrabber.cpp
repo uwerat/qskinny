@@ -74,7 +74,6 @@ class QskInputGrabber::PrivateData final : public QQuickItemChangeListener
     }
 
   private:
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 )
     void itemGeometryChanged( QQuickItem* item,
         QQuickGeometryChange change, const QRectF& ) override
     {
@@ -88,21 +87,6 @@ class QskInputGrabber::PrivateData final : public QQuickItemChangeListener
         if ( doUpdate )
             m_grabber->updateGeometry();
     }
-#else
-    void itemGeometryChanged(
-        QQuickItem* item, const QRectF& newRect, const QRectF& oldRect ) override
-    {
-        bool doUpdate = false;
-
-        if ( item == itemAbove )
-            doUpdate = newRect.topLeft() != oldRect.topLeft();
-        else
-            doUpdate = newRect.size() != oldRect.size();
-
-        if ( doUpdate )
-            m_grabber->updateGeometry();
-    }
-#endif
 
     void itemParentChanged( QQuickItem* item, QQuickItem* parentItem ) override
     {
@@ -125,9 +109,7 @@ QskInputGrabber::QskInputGrabber( QQuickItem* parent )
     , m_data( new PrivateData( this ) )
 {
     setAcceptedMouseButtons( Qt::AllButtons );
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 10, 0 )
     setAcceptTouchEvents( true );
-#endif
     setAcceptHoverEvents( true );
 
     setTransparentForPositioner( true );

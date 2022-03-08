@@ -58,19 +58,7 @@ bool qskIsAncestorOf( const QQuickItem* item, const QQuickItem* child )
     if ( item == nullptr || child == nullptr )
         return false;
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
     return item->isAncestorOf( child );
-#else
-    while ( child )
-    {
-        if ( child == item )
-            return true;
-
-        child = child->parentItem();
-    }
-
-    return false;
-#endif
 }
 
 bool qskIsVisibleToParent( const QQuickItem* item )
@@ -645,7 +633,7 @@ void qskItemUpdateRecursive( QQuickItem* item )
         qskItemUpdateRecursive( child );
 }
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 ) && QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
 
 static const QQuickPointerTouchEvent* qskPointerPressEvent( const QQuickWindowPrivate* wd )
 {
@@ -682,7 +670,7 @@ bool qskGrabMouse( QQuickItem* item )
 
     item->setKeepMouseGrab( true );
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 ) && QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
 
     auto wd = QQuickWindowPrivate::get( item->window() );
     if ( wd->touchMouseDevice == nullptr )

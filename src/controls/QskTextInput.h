@@ -137,10 +137,8 @@ class QSK_EXPORT QskTextInput : public QskControl
     QString displayText() const;
     QString preeditText() const;
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 )
     bool overwriteMode() const;
     void setOverwriteMode( bool );
-#endif
 
     bool hasAcceptableInput() const;
     bool fixup();
@@ -170,20 +168,14 @@ class QSK_EXPORT QskTextInput : public QskControl
     void textChanged( const QString& );
     void displayTextChanged( const QString& );
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 9, 0 )
     void textEdited( const QString& );
-#endif
-
     void descriptionChanged( const QString& );
 
     void textOptionsChanged();
     void fontRoleChanged();
     void alignmentChanged();
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 )
     void overwriteModeChanged( bool );
-#endif
-
     void maximumLengthChanged( int );
 
     void echoModeChanged( EchoMode );

@@ -131,7 +131,7 @@ QskDialogButtonBox::~QskDialogButtonBox()
 {
     for ( int i = 0; i < QskDialog::NActionRoles; i++ )
     {
-        for ( auto button : qskAsConst( m_data->buttons[ i ] ) )
+        for ( auto button : qAsConst( m_data->buttons[ i ] ) )
         {
             /*
                 The destructor of QQuickItem sets the parentItem of
@@ -595,14 +595,9 @@ QString QskDialogButtonBox::buttonText( QskDialog::Action action )
 {
     // should be redirected through the skin !
 
-    const QPlatformTheme* theme = QGuiApplicationPrivate::platformTheme();
+    const auto theme = QGuiApplicationPrivate::platformTheme();
     QString text = theme->standardButtonText( action );
-
-#if QT_VERSION < QT_VERSION_CHECK( 5, 7, 0 )
-    text.remove( '&' );
-#else
     text = QPlatformTheme::removeMnemonics( text );
-#endif
 
     return text;
 }

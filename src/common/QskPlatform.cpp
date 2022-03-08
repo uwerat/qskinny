@@ -5,14 +5,6 @@
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qguiapplication_p.h>
-
-#if QT_VERSION < QT_VERSION_CHECK( 5, 8, 0 )
-    #ifndef foreach
-        // qhighdpiscaling_p.h needs it
-        #define foreach Q_FOREACH
-    #endif
-#endif
-
 #include <private/qhighdpiscaling_p.h>
 QSK_QT_PRIVATE_END
 

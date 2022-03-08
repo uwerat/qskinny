@@ -323,10 +323,7 @@ QPointF QskListView::scrollOffset( const QWheelEvent* event ) const
         const auto viewHeight = viewContentsRect().height();
         const qreal rowHeight = this->rowHeight();
 
-        int numLines = 3;
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 9, 0 )
-        numLines = QGuiApplication::styleHints()->wheelScrollLines();
-#endif
+        const int numLines = QGuiApplication::styleHints()->wheelScrollLines();
 
         qreal dy = numLines * rowHeight;
         if ( event->modifiers() & ( Qt::ControlModifier | Qt::ShiftModifier ) )

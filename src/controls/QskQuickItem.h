@@ -63,9 +63,6 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
     bool hasChildItems() const;
 
     QRectF rect() const;
-#if QT_VERSION < QT_VERSION_CHECK( 5, 10, 0 )
-    QSizeF size() const;
-#endif
     QSizeF implicitSize() const;
 
     void setGeometry( qreal x, qreal y, qreal width, qreal height );
@@ -168,7 +165,6 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
     void childrenRect() = delete;
 
     void applyUpdateFlag( UpdateFlag, bool on );
-    void sendEnabledChangeEvent();
 
     QSGNode* updatePaintNode( QSGNode*, UpdatePaintNodeData* ) override final;
     virtual QSGNode* updateItemPaintNode( QSGNode* );
@@ -203,15 +199,6 @@ inline void QskQuickItem::setSize( qreal width, qreal height )
 {
     QQuickItem::setSize( QSizeF( width, height ) );
 }
-
-#if QT_VERSION < QT_VERSION_CHECK( 5, 10, 0 )
-
-inline QSizeF QskQuickItem::size() const
-{
-    return QSizeF( width(), height() );
-}
-
-#endif
 
 inline QSizeF QskQuickItem::implicitSize() const
 {

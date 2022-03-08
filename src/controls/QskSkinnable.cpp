@@ -35,18 +35,7 @@
 
 static inline bool qskIsControl( const QskSkinnable* skinnable )
 {
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
     return skinnable->metaObject()->inherits( &QskControl::staticMetaObject );
-#else
-    for ( auto mo = skinnable->metaObject();
-        mo != nullptr; mo = mo->superClass() )
-    {
-        if ( mo == &QskControl::staticMetaObject )
-            return true;
-    }
-
-    return false;
-#endif
 }
 
 static inline QVariant qskTypedNullValue( const QVariant& value )

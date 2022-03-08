@@ -36,10 +36,8 @@ static inline void qskBindSignals(
     QObject::connect( wrappedInput, &QQuickTextInput::displayTextChanged,
         input, [ input ] { Q_EMIT input->displayTextChanged( input->displayText() ); } );
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 9, 0 )
     QObject::connect( wrappedInput, &QQuickTextInput::textEdited,
         input, [ input ] { Q_EMIT input->textEdited( input->text() ); } );
-#endif
 
     QObject::connect( wrappedInput, &QQuickTextInput::validatorChanged,
         input, &QskTextInput::validatorChanged );
@@ -50,10 +48,8 @@ static inline void qskBindSignals(
     QObject::connect( wrappedInput, &QQuickTextInput::readOnlyChanged,
         input, [ input ] { qskPropagateReadOnly( input ); } );
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 )
     QObject::connect( wrappedInput, &QQuickTextInput::overwriteModeChanged,
         input, &QskTextInput::overwriteModeChanged );
-#endif
 
     QObject::connect( wrappedInput, &QQuickTextInput::maximumLengthChanged,
         input, &QskTextInput::maximumLengthChanged );
@@ -219,9 +215,7 @@ namespace
             return;
 
         setCursorVisible( on );
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
         d->setBlinkingCursorEnabled( on );
-#endif
 
         if ( !on )
         {
@@ -561,11 +555,7 @@ void QskTextInput::setActivationModes( ActivationModes modes )
 
 static inline void qskUpdateInputMethodFont( const QskTextInput* input )
 {
-    auto queries = Qt::ImCursorRectangle | Qt::ImFont;
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
-    queries |= Qt::ImAnchorRectangle;
-#endif
-
+    const auto queries = Qt::ImCursorRectangle | Qt::ImFont | Qt::ImAnchorRectangle;
     qskUpdateInputMethod( input, queries );
 }
 
@@ -785,8 +775,6 @@ QString QskTextInput::preeditText() const
     return d->m_textLayout.preeditAreaText();
 }
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 )
-
 bool QskTextInput::overwriteMode() const
 {
     return m_data->textInput->overwriteMode();
@@ -796,8 +784,6 @@ void QskTextInput::setOverwriteMode( bool overwrite )
 {
     m_data->textInput->setOverwriteMode( overwrite );
 }
-
-#endif
 
 bool QskTextInput::hasAcceptableInput() const
 {
@@ -832,9 +818,7 @@ QVariant QskTextInput::inputMethodQuery(
         {
             return locale();
         }
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
         case Qt::ImInputItemClipRectangle:
-#endif
         case Qt::ImCursorRectangle:
         {
             QVariant v = m_data->textInput->inputMethodQuery( query, argument );

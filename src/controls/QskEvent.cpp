@@ -105,10 +105,8 @@ qreal qskWheelIncrement( const QWheelEvent* event )
 
     auto angleDelta = event->angleDelta();
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
     if ( event->inverted() )
         angleDelta.setY( -angleDelta.y() );
-#endif
 
     const qreal delta = angleDelta.y() ? angleDelta.y() : angleDelta.x();
     return delta / QWheelEvent::DefaultDeltasPerStep; 
