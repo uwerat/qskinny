@@ -781,13 +781,11 @@ void QskQuickItem::itemChange( QQuickItem::ItemChange change,
 
             break;
         }
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 10, 0 )
         case QQuickItem::ItemEnabledHasChanged:
         {
             qskSendEventTo( this, QEvent::EnabledChange );
             break;
         }
-#endif
         case QQuickItem::ItemVisibleHasChanged:
         {
             Q_D( QskQuickItem );
