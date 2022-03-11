@@ -114,7 +114,7 @@ qreal qskWheelIncrement( const QWheelEvent* event )
 
 #endif
 
-bool qskKeyMatches( const QKeyEvent* event, QKeySequence::StandardKey key )
+bool qskIsStandardKeyInput( const QKeyEvent* event, QKeySequence::StandardKey key )
 {
 #if 1
     return event->matches( key );

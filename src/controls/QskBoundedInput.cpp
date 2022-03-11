@@ -182,14 +182,14 @@ void QskBoundedInput::keyPressEvent( QKeyEvent* event )
     if ( !isReadOnly() )
     {
         if ( event->key() == Qt::Key_Up ||
-            qskKeyMatches( event, QKeySequence::MoveToNextChar ) )
+            qskIsStandardKeyInput( event, QKeySequence::MoveToNextChar ) )
         {
             increment( m_stepSize );
             return;
         }
 
         if ( event->key() == Qt::Key_Down ||
-            qskKeyMatches( event, QKeySequence::MoveToPreviousChar ) )
+            qskIsStandardKeyInput( event, QKeySequence::MoveToPreviousChar ) )
         {
             increment( -m_stepSize );
             return;

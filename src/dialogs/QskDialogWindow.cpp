@@ -249,7 +249,7 @@ void QskDialogWindow::keyPressEvent( QKeyEvent* event )
             button->click();
     }
 
-    if ( qskKeyMatches( event, QKeySequence::Cancel ) )
+    if ( qskIsStandardKeyInput( event, QKeySequence::Cancel ) )
     {
         // using shortcuts instead ???
 
