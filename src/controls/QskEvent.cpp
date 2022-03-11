@@ -114,6 +114,21 @@ qreal qskWheelIncrement( const QWheelEvent* event )
 
 #endif
 
+bool qskKeyMatches( const QKeyEvent* event, QKeySequence::StandardKey key )
+{
+#if 1
+    return event->matches( key );
+#else
+    constexpr auto mask = ~(Qt::KeypadModifier | Qt::GroupSwitchModifier);
+
+    // We should route this call through the skin. TODO
+    const auto theme = QGuiApplicationPrivate::platformTheme();
+    const auto bindings = theme->keyBindings( ( event->modifiers() | event->key() ) & mask );
+
+    return bindings.contains( QKeySequence(searchkey) );
+#endif
+}
+
 QskEvent::QskEvent( QskEvent::Type type )
     : QEvent( static_cast< QEvent::Type >( type ) )
 {
