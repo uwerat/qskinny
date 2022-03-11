@@ -15,10 +15,10 @@ QSK_SYSTEM_STATE( QskPageIndicator, Selected, QskAspect::FirstSystemState << 1 )
 static int qskKeyIncrement(
     const QskPageIndicator* indicator, const QKeyEvent* event )
 {
-    if ( event->matches( QKeySequence::MoveToNextChar ) )
+    if ( qskKeyMatches( event, QKeySequence::MoveToNextChar ) )
         return 1;
 
-    if ( event->matches( QKeySequence::MoveToPreviousChar ) )
+    if ( qskKeyMatches( event, QKeySequence::MoveToPreviousChar ) )
         return -1;
 
     const auto key = event->key();

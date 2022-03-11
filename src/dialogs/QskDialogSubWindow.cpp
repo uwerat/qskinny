@@ -7,6 +7,7 @@
 #include "QskDialogButtonBox.h"
 #include "QskPushButton.h"
 #include "QskQuick.h"
+#include "QskEvent.h"
 
 #include <qquickwindow.h>
 #include <qpointer.h>
@@ -280,7 +281,7 @@ void QskDialogSubWindow::keyPressEvent( QKeyEvent* event )
             button->click();
     }
 
-    if ( event->matches( QKeySequence::Cancel ) )
+    if ( qskKeyMatches( event, QKeySequence::Cancel ) )
     {
         // using shortcuts instead ???
 
