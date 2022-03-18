@@ -189,3 +189,14 @@ debug {
 ide: DEFINES += QT_IDE
 
 # DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x000000
+
+LOCAL_PRI=$$(QSK_LOCAL_PRI)
+
+if ( exists( $${LOCAL_PRI} ) ) {
+
+    # When not working with the Qt/Creator it is often more convenient
+    # to include the specific options of your local build, than passing
+    # them all on the command line
+
+    include( $${LOCAL_PRI} )
+}
