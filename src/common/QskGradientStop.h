@@ -11,13 +11,6 @@
 #include <qcolor.h>
 #include <qmetatype.h>
 
-#if QT_VERSION < QT_VERSION_CHECK( 5, 14, 0 )
-/*
-    since Qt >= 5.14 QColor has constexpr declarations and we could declare
-    several methods of QskGradientStop being constexpr as well. TODO ...
- */
-#endif
-
 class QSK_EXPORT QskGradientStop
 {
     Q_GADGET
@@ -26,21 +19,22 @@ class QSK_EXPORT QskGradientStop
     Q_PROPERTY( QColor color READ color WRITE setColor RESET resetColor )
 
   public:
-    QskGradientStop() noexcept;
-    QskGradientStop( qreal position, const QColor& ) noexcept;
+    constexpr QskGradientStop() noexcept;
+    constexpr QskGradientStop( qreal position, const QColor& ) noexcept;
+
     QskGradientStop( qreal position, Qt::GlobalColor ) noexcept;
     QskGradientStop( qreal position, QRgb ) noexcept;
 
-    bool operator==( const QskGradientStop& ) const noexcept;
-    bool operator!=( const QskGradientStop& ) const noexcept;
+    constexpr bool operator==( const QskGradientStop& ) const noexcept;
+    constexpr bool operator!=( const QskGradientStop& ) const noexcept;
 
     void setStop( qreal position, const QColor& ) noexcept;
 
-    qreal position() const noexcept;
+    constexpr qreal position() const noexcept;
     void setPosition( qreal position ) noexcept;
     void resetPosition() noexcept;
 
-    const QColor& color() const noexcept;
+    constexpr const QColor& color() const noexcept;
     void setColor( const QColor& ) noexcept;
     void resetColor() noexcept;
 
@@ -57,12 +51,12 @@ class QSK_EXPORT QskGradientStop
 Q_DECLARE_TYPEINFO( QskGradientStop, Q_MOVABLE_TYPE );
 Q_DECLARE_METATYPE( QskGradientStop )
 
-inline QskGradientStop::QskGradientStop() noexcept
+inline constexpr QskGradientStop::QskGradientStop() noexcept
     : m_position( -1.0 )
 {
 }
 
-inline QskGradientStop::QskGradientStop(
+inline constexpr QskGradientStop::QskGradientStop(
         qreal position, const QColor& color ) noexcept
     : m_position( position )
     , m_color( color )
@@ -81,22 +75,22 @@ inline QskGradientStop::QskGradientStop(
 {
 }
 
-inline qreal QskGradientStop::position() const noexcept
+inline constexpr qreal QskGradientStop::position() const noexcept
 {
     return m_position;
 }
 
-inline const QColor& QskGradientStop::color() const noexcept
+inline constexpr const QColor& QskGradientStop::color() const noexcept
 {
     return m_color;
 }
 
-inline bool QskGradientStop::operator==( const QskGradientStop& other ) const noexcept
+inline constexpr bool QskGradientStop::operator==( const QskGradientStop& other ) const noexcept
 {
     return ( m_position == other.m_position ) && ( m_color == other.m_color );
 }
 
-inline bool QskGradientStop::operator!=( const QskGradientStop& other ) const noexcept
+inline constexpr bool QskGradientStop::operator!=( const QskGradientStop& other ) const noexcept
 {
     return ( !( *this == other ) );
 }
