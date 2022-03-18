@@ -179,6 +179,16 @@ static inline QskGradientStops qskExtractedStops(
     return extracted;
 }
 
+static inline QskGradientStops qskGradientStops( const QGradientStops& qtStops )
+{
+    QskGradientStops stops;
+    
+    for ( const auto& s : qtStops )
+        stops += QskGradientStop( s.first, s.second );
+
+    return stops;
+}
+
 QskGradient::QskGradient( Orientation orientation )
     : m_orientation( orientation )
     , m_isDirty( false )
@@ -216,6 +226,12 @@ QskGradient::QskGradient( Orientation orientation, const QskGradientStops& stops
     : QskGradient( orientation )
 {
     setStops( stops );
+}
+
+QskGradient::QskGradient( Orientation orientation, QGradient::Preset preset )
+    : QskGradient( orientation )
+{
+    setStops( qskGradientStops( QGradient( preset ).stops() ) );
 }
 
 QskGradient::~QskGradient()

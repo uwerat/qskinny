@@ -9,7 +9,7 @@
 #include "QskGlobal.h"
 #include "QskGradientStop.h"
 
-#include <qcolor.h>
+#include <qbrush.h>
 #include <qmetatype.h>
 #include <qvector.h>
 
@@ -48,12 +48,14 @@ class QSK_EXPORT QskGradient
     QskGradient( Qt::GlobalColor );
     QskGradient( QRgb );
     QskGradient( const QColor& );
+    QskGradient( QGradient::Preset );
 
     QskGradient( Qt::Orientation, const QVector< QskGradientStop >& );
     QskGradient( Qt::Orientation, const QColor&, const QColor& );
 
     QskGradient( Orientation, const QVector< QskGradientStop >& );
     QskGradient( Orientation, const QColor&, const QColor& );
+    QskGradient( Orientation, QGradient::Preset );
 
     ~QskGradient();
 
@@ -130,6 +132,11 @@ inline QskGradient::QskGradient( Qt::GlobalColor color )
 
 inline QskGradient::QskGradient( QRgb rgb )
     : QskGradient( QColor::fromRgba( rgb ) )
+{
+}
+
+inline QskGradient::QskGradient( QGradient::Preset preset )
+    : QskGradient( Vertical, preset )
 {
 }
 
