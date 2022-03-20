@@ -455,7 +455,6 @@ void QskInputPanel::updateInputPanel( Qt::InputMethodQueries queries )
         setLocale( event.value( Qt::ImPreferredLanguage ).toLocale() );
     }
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
     if ( queries & Qt::ImInputItemClipRectangle )
     {
         /*
@@ -463,7 +462,6 @@ void QskInputPanel::updateInputPanel( Qt::InputMethodQueries queries )
             so that it does not hide the item.
          */
     }
-#endif
 }
 
 void QskInputPanel::updateLocale( const QLocale& locale )
