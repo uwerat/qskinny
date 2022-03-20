@@ -15,16 +15,21 @@
 #include <qquickwindow.h>
 
 #if defined( QT_DEBUG )
+
 QSK_QT_PRIVATE_BEGIN
+
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 2, 0 )
     #ifndef emit
-        // qvariantanimation_p.h needs it
         #define emit
+        #include <private/qabstractanimation_p.h>
+        #undef emit
     #endif
 #endif
 
 #include <private/qquickpositioners_p.h>
+
 QSK_QT_PRIVATE_END
+
 #endif
 
 #include <unordered_set>
@@ -193,9 +198,9 @@ void QskQuickItem::classBegin()
 void QskQuickItem::componentComplete()
 {
 #if defined( QT_DEBUG )
-    if ( qobject_cast< const QQuickBasePositioner* >( parent() ) )
+    if ( d_func()->updateFlags & QskQuickItem::DeferredLayout )
     {
-        if ( d_func()->updateFlags & QskQuickItem::DeferredLayout )
+        if ( qobject_cast< const QQuickBasePositioner* >( parent() ) )
         {
             qWarning( "QskQuickItem in DeferredLayout mode under control of a positioner" );
         }

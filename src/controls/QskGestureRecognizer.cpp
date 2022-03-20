@@ -11,12 +11,14 @@
 #include <qvector.h>
 
 QSK_QT_PRIVATE_BEGIN
+
 #include <private/qquickwindow_p.h>
-QSK_QT_PRIVATE_END
 
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 3, 0 )
 #include <private/qeventpoint_p.h>
 #endif
+
+QSK_QT_PRIVATE_END
 
 static QMouseEvent* qskClonedMouseEventAt(
     const QMouseEvent* event, QPointF* localPos )
