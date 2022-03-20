@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #ifndef QSK_INPUT_GRABBER_H
-#define QSK_INPUT_GRABBER_H 1
+#define QSK_INPUT_GRABBER_H
 
 #include "QskControl.h"
 

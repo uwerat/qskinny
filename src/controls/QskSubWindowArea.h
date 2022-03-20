@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #ifndef QSK_SUB_WINDOW_AREA_H
-#define QSK_SUB_WINDOW_AREA_H 1
+#define QSK_SUB_WINDOW_AREA_H
 
 #include "QskControl.h"
 
