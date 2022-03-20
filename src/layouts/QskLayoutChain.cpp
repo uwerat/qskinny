@@ -341,7 +341,7 @@ QskLayoutChain::Segments QskLayoutChain::minimumExpanded( qreal size ) const
         - according to the preferred sizes
 
         - items with a larger preferred size are stretchier: this is
-          what QSK_LAYOUT_COMPAT does ( compatible with QGridLayoutEngine )
+          what QGridLayoutEngine does
 
         - somehow using the stretch factors
      */
