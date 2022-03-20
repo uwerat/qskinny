@@ -48,11 +48,7 @@ void DiagramDataNode::update( const QRectF& rect, Type type,
     m_type = type;
 
     const auto drawingMode =
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 8, 0 )
         ( m_type == Line ) ? QSGGeometry::DrawLines : QSGGeometry::DrawTriangleStrip;
-#else
-        ( m_type == Line ) ? GL_LINES : GL_TRIANGLE_STRIP;
-#endif
 
     m_geometry.setDrawingMode( drawingMode );
 

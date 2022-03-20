@@ -7,16 +7,17 @@
 
 #include "QskGlobal.h"
 
-#ifdef QT_NO_KEYWORDS
+QSK_QT_PRIVATE_BEGIN
 
-// qquickimage_p.h uses emit
-#define emit Q_EMIT
-#include <private/qquickimage_p.h>
-#undef emit
-
+#ifndef emit
+    #define emit
+    #include <private/qquickimage_p.h>
+    #undef emit
 #else
-#include <private/qquickimage_p.h>
+    #include <private/qquickimage_p.h>
 #endif
+
+QSK_QT_PRIVATE_END
 
 #include <memory>
 

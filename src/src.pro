@@ -12,8 +12,6 @@ DEPENDPATH *= $${QSK_SUBDIRS}
 # CONFIG += pinyin
 # CONFIG += hunspell
 
-# DEFINES += QSK_LAYOUT_COMPAT
-
 HEADERS += \
     common/QskArcMetrics.h \
     common/QskAspect.h \

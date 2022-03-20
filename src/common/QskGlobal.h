@@ -17,15 +17,15 @@
 #ifdef QSK_DLL
 
 #if defined( QSK_MAKEDLL )     // create a DLL library
-#define QSK_EXPORT Q_DECL_EXPORT
+    #define QSK_EXPORT Q_DECL_EXPORT
 #else                        // use a DLL library
-#define QSK_EXPORT Q_DECL_IMPORT
+    #define QSK_EXPORT Q_DECL_IMPORT
 #endif
 
 #endif // QSK_DLL
 
 #ifndef QSK_EXPORT
-#define QSK_EXPORT
+    #define QSK_EXPORT
 #endif
 
 #define QSK_QT_PRIVATE_BEGIN \
@@ -38,11 +38,5 @@
 
 #define QSK_QT_PRIVATE_END \
     QT_WARNING_POP
-
-#ifdef Q_FALLTHROUGH
-#define QSK_FALLTHROUGH Q_FALLTHROUGH
-#else
-#define QSK_FALLTHROUGH
-#endif
 
 #endif

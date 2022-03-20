@@ -159,11 +159,7 @@ qreal qskHorizontalAdvance( const QFont& font, const QString& text )
 
 qreal qskHorizontalAdvance( const QFontMetricsF& fontMetrics, const QString& text )
 {
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 11, 0 )
     return fontMetrics.horizontalAdvance( text );
-#else
-    return fontMetrics.width( text );
-#endif
 }
 
 qreal qskFuzzyFloor( qreal value, qreal stepSize )
