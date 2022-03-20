@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #ifndef QSK_FLICK_ANIMATOR_H
-#define QSK_FLICK_ANIMATOR_H 1
+#define QSK_FLICK_ANIMATOR_H
 
 #include "QskAnimator.h"
 

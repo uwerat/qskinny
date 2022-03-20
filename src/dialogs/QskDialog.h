@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #ifndef QSK_DIALOG_H
-#define QSK_DIALOG_H 1
+#define QSK_DIALOG_H
 
 #include "QskGlobal.h"
 

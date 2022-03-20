@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #ifndef QSK_WINDOW_H
-#define QSK_WINDOW_H 1
+#define QSK_WINDOW_H
 
 #include "QskGlobal.h"
 #include <qquickwindow.h>

@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #ifndef QSK_QUICK_H
-#define QSK_QUICK_H 1
+#define QSK_QUICK_H
 
 #include "QskGlobal.h"
 #include <qnamespace.h>
