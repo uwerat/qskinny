@@ -8,8 +8,7 @@
 
 #include "QskTextPredictor.h"
 
-#include <QPair>
-
+#include <qpair.h>
 #include <memory>
 
 class QSK_EXPORT QskHunspellTextPredictor : public QskTextPredictor
