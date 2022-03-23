@@ -318,7 +318,7 @@ QskInputContextFactory* QskInputContext::factory() const
     return m_data->factory;
 }
 
-std::shared_ptr<QskTextPredictor> QskInputContext::textPredictor( const QLocale& locale )
+std::shared_ptr< QskTextPredictor > QskInputContext::textPredictor( const QLocale& locale )
 {
     if ( m_data->factory )
         return m_data->factory->setupPredictor( locale );
@@ -550,12 +550,12 @@ std::shared_ptr< QskTextPredictor > QskInputContextFactory::setupPredictor( cons
 QskTextPredictor* QskInputContextFactory::createPredictor( const QLocale& locale )
 {
 #if HUNSPELL
-   return new QskHunspellTextPredictor( locale );
+    return new QskHunspellTextPredictor( locale );
 #else
     Q_UNUSED( locale );
 #endif
 
-   return nullptr;
+    return nullptr;
 }
 
 QskInputPanel* QskInputContextFactory::createPanel() const

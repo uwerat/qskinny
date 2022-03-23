@@ -623,9 +623,14 @@ void QskBoxRenderer::renderRect(
         auto fillLines = line + fillLineCount;
 
         if ( bc.isMonochrome() )
-            qskCreateBorderMonochrome( rect, in, bc.gradient( Qsk::Left ).startColor().rgba(), fillLines );
+        {
+            const auto rgb = bc.gradient( Qsk::Left ).startColor().rgba();
+            qskCreateBorderMonochrome( rect, in, rgb, fillLines );
+        }
         else
+        {
             qskCreateBorder( rect, in, bc, fillLines );
+        }
     }
 }
 

@@ -572,8 +572,8 @@ bool QskDialogButtonBox::isDefaultButtonKeyEvent( const QKeyEvent* event )
     }
     else
     {
-        return ( event->key() == Qt::Key_Enter ) ||
-            ( event->key() == Qt::Key_Return );
+        return ( event->key() == Qt::Key_Enter )
+            || ( event->key() == Qt::Key_Return );
     }
 }
 

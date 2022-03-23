@@ -29,10 +29,10 @@ static int qskKeyIncrement(
 
         if ( key == Qt::Key_Left )
             return mirrored ? 1 : -1;
-            
+
         if ( key == Qt::Key_Right )
             return mirrored ? -1 : 1;
-    }       
+    }
     else
     {
         if ( key == Qt::Key_Up )
@@ -40,10 +40,10 @@ static int qskKeyIncrement(
 
         if ( key == Qt::Key_Down )
             return 1;
-    }   
-    
+    }
+
     return 0;
-}   
+}
 
 
 class QskPageIndicator::PrivateData
@@ -145,8 +145,8 @@ qreal QskPageIndicator::valueRatioAt( int index ) const
 
         const qreal diff = 1.0 - std::abs( pos - index );
         return std::max( diff, 0.0 );
-    }   
-    
+    }
+
     return 0.0;
 }
 
@@ -205,7 +205,7 @@ void QskPageIndicator::mouseReleaseEvent( QMouseEvent* event )
             if ( indexAtPosition( pos ) == index )
                 Q_EMIT pageRequested( index );
         }
-        
+
         return;
     }
 

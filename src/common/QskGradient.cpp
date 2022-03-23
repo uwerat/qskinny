@@ -70,7 +70,7 @@ static inline bool qskIsVisible( const QskGradientStops& stops )
         const auto& c = stop.color();
         if ( c.isValid() && c.alpha() > 0 )
             return true;
-    }       
+    }
 
     return false;
 }
@@ -182,7 +182,7 @@ static inline QskGradientStops qskExtractedStops(
 static inline QskGradientStops qskGradientStops( const QGradientStops& qtStops )
 {
     QskGradientStops stops;
-    
+
     for ( const auto& s : qtStops )
         stops += QskGradientStop( s.first, s.second );
 

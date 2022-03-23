@@ -165,14 +165,15 @@ bool LightDisplay::arcContainsPoint( const QRectF& rect, const QPointF& point ) 
     const int tolerance = 20;
 
     // 1. check angle
-    QPointF circlePos( point.x() - rect.center().x(),
-                 rect.center().y() - point.y() );
+    QPointF circlePos(
+        point.x() - rect.center().x(),
+        rect.center().y() - point.y() );
 
     const qreal angle = angleFromPoint( rect, point );
 
     const bool angleWithinRange = angleInRange( metrics, angle )
-            || angleDiff( angle, metrics.startAngle() ) <= tolerance
-            || angleDiff( angle, metrics.endAngle() ) <= tolerance;
+        || angleDiff( angle, metrics.startAngle() ) <= tolerance
+        || angleDiff( angle, metrics.endAngle() ) <= tolerance;
 
     // 2. check whether point is on arc
     const qreal radiusMax = rect.width() / 2;
@@ -181,7 +182,7 @@ bool LightDisplay::arcContainsPoint( const QRectF& rect, const QPointF& point ) 
 
     const qreal polarRadius = qSqrt( qPow( circlePos.x(), 2 ) + qPow( circlePos.y(), 2 ) );
     const bool pointOnArc = ( polarRadius + tolerance ) > radiusMin
-            && ( polarRadius - tolerance ) < radiusMax;
+        && ( polarRadius - tolerance ) < radiusMax;
 
     bool ret = angleWithinRange && pointOnArc;
 

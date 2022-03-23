@@ -24,7 +24,7 @@ class QSK_EXPORT QskArcMetrics
   public:
     constexpr QskArcMetrics() noexcept;
     constexpr QskArcMetrics( qreal width, qreal startAngle, qreal spanAngle,
-                             Qt::SizeMode = Qt::AbsoluteSize ) noexcept;
+        Qt::SizeMode = Qt::AbsoluteSize ) noexcept;
 
     bool operator==( const QskArcMetrics& ) const noexcept;
     bool operator!=( const QskArcMetrics& ) const noexcept;
