@@ -11,6 +11,7 @@
 
 #include <QskArcMetrics.h>
 #include <QskTextOptions.h>
+#include <QskScaleTickmarks.h>
 
 #include <QFontMetrics>
 #include <QtMath>
@@ -125,8 +126,7 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
 QSGNode* LightDisplaySkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
-    auto* display = static_cast< const LightDisplay* >( skinnable );
-
+    const auto* display = static_cast< const LightDisplay* >( skinnable );
 
     switch( nodeRole )
     {
@@ -166,16 +166,16 @@ QSGNode* LightDisplaySkinlet::updateSubNode(
             if ( ticksNode == nullptr )
                 ticksNode = new RadialTickmarksNode();
 
-            QColor color = display->color( LightDisplay::Tickmarks );
-            QRectF ticksRect = display->subControlRect( LightDisplay::Tickmarks );
-            QskArcMetrics arcMetrics = display->arcMetricsHint( LightDisplay::Tickmarks );
-            QskIntervalF boundaries = display->boundaries();
-            QskScaleTickmarks tickmarks;
-            tickmarks.setMajorTicks( {0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5, 180 } );
-            int tickLineWidth = display->metric( LightDisplay::Tickmarks );
+            const auto color = display->color( LightDisplay::Tickmarks );
+            const auto ticksRect = display->subControlRect( LightDisplay::Tickmarks );
+            const auto arcMetrics = display->arcMetricsHint( LightDisplay::Tickmarks );
 
-            ticksNode->update( color, ticksRect, arcMetrics, boundaries,
-                tickmarks, tickLineWidth, Qt::Horizontal );
+            QskScaleTickmarks tickmarks;
+            tickmarks.setMajorTicks( { 0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5, 180 } );
+
+            const auto tickLineWidth = display->metric( LightDisplay::Tickmarks );
+
+            ticksNode->update( color, ticksRect, arcMetrics, tickmarks, tickLineWidth );
 
             return ticksNode;
         }
@@ -207,11 +207,11 @@ QSGNode* LightDisplaySkinlet::updateSubNode(
 
 QSizeF LightDisplaySkinlet::textLabelsSize( const LightDisplay* display ) const
 {
-    QFont font = display->effectiveFont( LightDisplay::LeftLabel );
-    QFontMetricsF fm( font );
+    const QFontMetricsF fm( display->effectiveFont( LightDisplay::LeftLabel ) );
 
     qreal w = fm.width( QStringLiteral( "  100" ) );
     qreal h = fm.height();
+
     return { w, h };
 }
 

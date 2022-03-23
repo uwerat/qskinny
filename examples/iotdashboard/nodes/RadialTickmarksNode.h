@@ -5,13 +5,13 @@
 
 #pragma once
 
-#include <QskArcMetrics.h>
 #include <QskIntervalF.h>
-#include <QskScaleTickmarks.h>
 
 #include <QSGGeometryNode>
+#include <QSGFlatColorMaterial>
 
-class RadialTickmarksNodePrivate;
+class QskArcMetrics;
+class QskScaleTickmarks;
 
 class RadialTickmarksNode : public QSGGeometryNode
 {
@@ -19,9 +19,15 @@ class RadialTickmarksNode : public QSGGeometryNode
     RadialTickmarksNode();
     ~RadialTickmarksNode() override;
 
-    void update( const QColor&, const QRectF&, const QskArcMetrics&,
-        const QskIntervalF&, const QskScaleTickmarks&, int, Qt::Orientation );
+    void update( const QColor&, const QRectF&,
+        const QskArcMetrics&, const QskScaleTickmarks&, int lineWidth );
 
   private:
-    Q_DECLARE_PRIVATE( RadialTickmarksNode )
+    QSGGeometry m_geometry;
+    QSGFlatColorMaterial m_material;
+
+    QRectF m_rect;
+    int m_lineWidth = 0;
+
+    uint m_hash = 0;
 };

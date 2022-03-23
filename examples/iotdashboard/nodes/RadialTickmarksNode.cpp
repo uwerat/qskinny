@@ -5,12 +5,9 @@
 
 #include "RadialTickmarksNode.h"
 
-#include <QSGFlatColorMaterial>
+#include <QskScaleTickmarks.h>
+#include <QskArcMetrics.h>
 #include <QtMath>
-
-QSK_QT_PRIVATE_BEGIN
-#include <private/qsgnode_p.h>
-QSK_QT_PRIVATE_END
 
 static constexpr inline qreal qskTickFactor( QskScaleTickmarks::TickType type )
 {
@@ -18,65 +15,40 @@ static constexpr inline qreal qskTickFactor( QskScaleTickmarks::TickType type )
     return type == TM::MinorTick ? 0.7 : ( type == TM::MinorTick ? 0.85 : 1.0 );
 }
 
-class RadialTickmarksNodePrivate final : public QSGGeometryNodePrivate
-{
-  public:
-    RadialTickmarksNodePrivate()
-        : geometry( QSGGeometry::defaultAttributes_Point2D(), 0 )
-    {
-        geometry.setDrawingMode( QSGGeometry::DrawLines );
-        geometry.setVertexDataPattern( QSGGeometry::StaticPattern );
-    }
-
-    QSGGeometry geometry;
-    QSGFlatColorMaterial material;
-
-    QskIntervalF boundaries;
-    QskScaleTickmarks tickmarks;
-
-    QRectF rect;
-    int lineWidth = 0;
-
-    uint hash = 0;
-};
-
 RadialTickmarksNode::RadialTickmarksNode()
-    : QSGGeometryNode( *new RadialTickmarksNodePrivate )
+    : m_geometry( QSGGeometry::defaultAttributes_Point2D(), 0 )
 {
-    Q_D( RadialTickmarksNode );
+    m_geometry.setDrawingMode( QSGGeometry::DrawLines );
+    m_geometry.setVertexDataPattern( QSGGeometry::StaticPattern );
 
-    setGeometry( &d->geometry );
-    setMaterial( &d->material );
+    setGeometry( &m_geometry );
+    setMaterial( &m_material );
 }
 
 RadialTickmarksNode::~RadialTickmarksNode()
 {
 }
 
-void RadialTickmarksNode::update(const QColor& color, const QRectF& rect,
-    const QskArcMetrics& arcMetrics, const QskIntervalF& /*boundaries*/,
-    const QskScaleTickmarks& tickmarks, int lineWidth,
-    Qt::Orientation /*orientation*/ )
+void RadialTickmarksNode::update( const QColor& color, const QRectF& rect,
+    const QskArcMetrics& arcMetrics, const QskScaleTickmarks& tickmarks, int lineWidth )
 {
-    Q_D( RadialTickmarksNode );
-
-    if( lineWidth != d->lineWidth )
+    if( lineWidth != m_lineWidth )
     {
-        d->lineWidth = lineWidth;
-        d->geometry.setLineWidth( lineWidth );
+        m_lineWidth = lineWidth;
+        m_geometry.setLineWidth( lineWidth );
 
         markDirty( QSGNode::DirtyGeometry );
     }
 
     const uint hash = tickmarks.hash( 17435 );
 
-    if( ( hash != d->hash ) || ( rect != d->rect ) )
+    if( ( hash != m_hash ) || ( rect != m_rect ) )
     {
-        d->hash = hash;
-        d->rect = rect;
+        m_hash = hash;
+        m_rect = rect;
 
-        d->geometry.allocate( tickmarks.tickCount() * 2 );
-        auto vertexData = d->geometry.vertexDataAsPoint2D();
+        m_geometry.allocate( tickmarks.tickCount() * 2 );
+        auto vertexData = m_geometry.vertexDataAsPoint2D();
 
         const auto center = rect.center();
         const auto radius = 0.5 * rect.width();
@@ -113,13 +85,13 @@ void RadialTickmarksNode::update(const QColor& color, const QRectF& rect,
             }
         }
 
-        d->geometry.markVertexDataDirty();
+        m_geometry.markVertexDataDirty();
         markDirty( QSGNode::DirtyGeometry );
     }
 
-    if ( color != d->material.color() )
+    if ( color != m_material.color() )
     {
-        d->material.setColor( color );
+        m_material.setColor( color );
         markDirty( QSGNode::DirtyMaterial );
     }
 }
