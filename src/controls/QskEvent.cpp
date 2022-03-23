@@ -92,7 +92,7 @@ qreal qskWheelSteps( const QWheelEvent* event )
     const auto angleDelta = event->angleDelta();
 
     const qreal delta = angleDelta.y() ? angleDelta.y() : angleDelta.x();
-    return delta / QWheelEvent::DefaultDeltasPerStep; 
+    return delta / QWheelEvent::DefaultDeltasPerStep;
 }
 
 qreal qskWheelIncrement( const QWheelEvent* event )
@@ -109,7 +109,7 @@ qreal qskWheelIncrement( const QWheelEvent* event )
         angleDelta.setY( -angleDelta.y() );
 
     const qreal delta = angleDelta.y() ? angleDelta.y() : angleDelta.x();
-    return delta / QWheelEvent::DefaultDeltasPerStep; 
+    return delta / QWheelEvent::DefaultDeltasPerStep;
 }
 
 #endif
@@ -119,7 +119,7 @@ bool qskIsStandardKeyInput( const QKeyEvent* event, QKeySequence::StandardKey ke
 #if 1
     return event->matches( key );
 #else
-    constexpr auto mask = ~(Qt::KeypadModifier | Qt::GroupSwitchModifier);
+    constexpr auto mask = ~( Qt::KeypadModifier | Qt::GroupSwitchModifier );
 
     // We should route this call through the skin. TODO
     const auto theme = QGuiApplicationPrivate::platformTheme();

@@ -44,7 +44,7 @@ static QRectF qskBulletRect( const QskPageIndicator* indicator,
     {
         const auto maxWidth = n * size.width() + ( n - 1 ) * spacing;
         const auto r = qskAlignedRectF( rect, maxWidth, size.height(), alignment );
-    
+
         x = r.x() + index * ( size.width() + spacing );
         y = r.y();
     }
@@ -52,7 +52,7 @@ static QRectF qskBulletRect( const QskPageIndicator* indicator,
     {
         const auto maxHeight = n * size.height() + ( n - 1 ) * spacing;
         const auto r = qskAlignedRectF( rect, maxHeight, size.height(), alignment );
-    
+
         x = r.x();
         y = r.y() + index * ( size.height() + spacing );;
     }

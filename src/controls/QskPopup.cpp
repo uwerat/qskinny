@@ -382,7 +382,7 @@ bool QskPopup::hasFaderEffect() const
 
 void QskPopup::setPopupFlags( PopupFlags flags )
 {
-    if ( static_cast<int>(flags) != m_data->flags )
+    if ( static_cast< int >( flags ) != m_data->flags )
     {
         m_data->flags = flags;
         updateInputGrabber();
@@ -654,7 +654,7 @@ int QskPopup::execPopup()
                 if ( popup->isOpen() || popup->isFading() )
                     return;
             }
-    
+
             QEventLoop::exit( 0 );
         }
     };
@@ -679,10 +679,10 @@ int QskPopup::execPopup()
     }
 
     if ( auto mouseGrabber = window()->mouseGrabberItem() )
-    {   
+    {
         // when being called from QQuickWindow::mouseReleaseEvent
         // the mouse grabber has not yet been released.
-        
+
         if( !qskIsAncestorOf( this, mouseGrabber ) )
             qskUngrabMouse( mouseGrabber );
     }

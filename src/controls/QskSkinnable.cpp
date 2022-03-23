@@ -209,8 +209,7 @@ static inline QskAspect qskSubstitutedAspect(
     if ( aspect.hasStates() )
     {
         qWarning() << "QskSkinnable::(re)setSkinHint: setting hints with states "
-                      "is discouraged - use QskSkinTableEditor if you are "
-                      "sure, that you need this.";
+            "is discouraged - use QskSkinTableEditor if you are sure, that you need this.";
 
         qWarning() << "QskAspect:" << aspect.stateless()
                    << skinnable->skinStatesAsPrintable( aspect.states() );

@@ -53,7 +53,7 @@ class QSK_EXPORT QskInputPanel : public QskControl
     virtual void attachItem( QQuickItem* ) = 0;
 
   private:
-    void updatePrediction( const QString &text, const QStringList &candidates );
+    void updatePrediction( const QString&, const QStringList& candidates );
     void resetPredictor( const QLocale& );
     void updateLocale( const QLocale& );
 

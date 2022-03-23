@@ -19,7 +19,8 @@ class QskHunspellTextPredictor::PrivateData
     QLocale locale;
 };
 
-QskHunspellTextPredictor::QskHunspellTextPredictor( const QLocale &locale, QObject* object )
+QskHunspellTextPredictor::QskHunspellTextPredictor(
+        const QLocale& locale, QObject* object )
     : Inherited( object )
     , m_data( new PrivateData() )
 {
@@ -43,7 +44,8 @@ void QskHunspellTextPredictor::reset()
     }
 }
 
-QPair< QString, QString > QskHunspellTextPredictor::affAndDicFile( const QString& path, const QLocale& locale )
+QPair< QString, QString > QskHunspellTextPredictor::affAndDicFile(
+    const QString& path, const QLocale& locale )
 {
     QString prefix = QStringLiteral( "%1/%2" ).arg( path, locale.name() );
     QString affFile = prefix + QStringLiteral( ".aff" );
@@ -63,7 +65,7 @@ void QskHunspellTextPredictor::loadDictionaries()
 {
     QString userPaths = QString::fromUtf8( qgetenv( "QSK_HUNSPELL_PATH" ) );
 
-#if defined(Q_OS_WIN32)
+#if defined( Q_OS_WIN32 )
     QChar separator( ';' );
     QStringList defaultPaths;
 #else
@@ -106,7 +108,7 @@ void QskHunspellTextPredictor::request( const QString& text )
 
     char** suggestions;
 
-    QTextCodec *codec = QTextCodec::codecForName( m_data->hunspellEncoding );
+    const auto codec = QTextCodec::codecForName( m_data->hunspellEncoding );
     const QByteArray word = codec ? codec->fromUnicode( text ) : text.toUtf8();
 
     const int count = Hunspell_suggest(

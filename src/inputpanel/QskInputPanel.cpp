@@ -369,10 +369,7 @@ QskInputPanel::QskInputPanel( QQuickItem* parent )
         this, &QskInputPanel::updateLocale );
 
     connect( &m_data->keyProcessor, &KeyProcessor::keyProcessingFinished,
-             this, [this]( const Result& result )
-    {
-        m_data->handleKeyProcessingFinished( result );
-    } );
+        this, [this]( const Result& result ) { m_data->handleKeyProcessingFinished( result ); } );
 
     updateLocale( locale() );
 }
@@ -489,9 +486,9 @@ void QskInputPanel::resetPredictor( const QLocale& locale )
     {
         // text predictor lives in another thread, so these will all be QueuedConnections:
         connect( this, &QskInputPanel::predictionReset,
-                 predictor.get(), &QskTextPredictor::reset );
+            predictor.get(), &QskTextPredictor::reset );
         connect( this, &QskInputPanel::predictionRequested,
-                 predictor.get(), &QskTextPredictor::request );
+            predictor.get(), &QskTextPredictor::request );
 
         connect( predictor.get(), &QskTextPredictor::predictionChanged,
             this, &QskInputPanel::updatePrediction );

@@ -46,9 +46,9 @@ namespace
 
         int compare( const QSGMaterial* other ) const override;
 
-        QVector2D aspect = QVector2D{1.0, 1.0};
+        QVector2D aspect = QVector2D{ 1.0, 1.0 };
         float blurExtent = 0.0;
-        QVector4D radius = QVector4D{0.0, 0.0, 0.0, 0.0};
+        QVector4D radius = QVector4D{ 0.0, 0.0, 0.0, 0.0 };
         QColor color = Qt::black;
     };
 

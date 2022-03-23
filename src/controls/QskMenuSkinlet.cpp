@@ -52,7 +52,8 @@ class QskMenuSkinlet::PrivateData
         {
             m_data->enableCache( false );
         }
-       private:
+
+      private:
         PrivateData* m_data;
     };
 

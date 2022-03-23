@@ -391,7 +391,7 @@ int main( int argc, char** argv )
 
 #if 1
     /*
-        we don't need the fonts, but by calling something from 
+        we don't need the fonts, but by calling something from
         the support library initializations regarding the skins
         are loaded. TODO ...
      */

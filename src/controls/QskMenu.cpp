@@ -278,14 +278,14 @@ void QskMenu::traverse( int steps )
 
     if ( hasAnimationHint( Cursor | QskAspect::Position | QskAspect::Metric ) )
     {
-        // when cycling we want slide in 
+        // when cycling we want slide in
 
         if ( index < 0 )
             setPositionHint( Cursor, count() );
 
         if ( index >= count() )
             setPositionHint( Cursor, -1 );
-    
+
         movePositionHint( Cursor, newIndex );
     }
 
