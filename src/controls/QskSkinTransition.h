@@ -44,6 +44,8 @@ class QSK_EXPORT QskSkinTransition
     virtual void updateSkin( QskSkin*, QskSkin* );
 
   private:
+    Q_DISABLE_COPY( QskSkinTransition )
+
     QskSkin* m_skins[ 2 ];
     QskAnimationHint m_animationHint;
     Type m_mask : 2;
