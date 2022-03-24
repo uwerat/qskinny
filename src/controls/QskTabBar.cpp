@@ -219,7 +219,7 @@ namespace
 
         inline QskLinearBox* buttonBox() const
         {
-            return qobject_cast< QskLinearBox* >( childItems().first() );
+            return qobject_cast< QskLinearBox* >( childItems().constFirst() );
         }
 
         void enableAutoTranslation( bool on )
