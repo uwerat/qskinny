@@ -16,10 +16,14 @@ namespace QskObjectTree
     class Visitor
     {
       public:
+        Visitor() = default;
         virtual ~Visitor() = default;
 
         virtual bool visitDown( QObject* object ) = 0;
         virtual bool visitUp( const QObject* object ) = 0;
+
+      private:
+        Q_DISABLE_COPY( Visitor )
     };
 
     QSK_EXPORT QObjectList childNodes( const QObject* );
