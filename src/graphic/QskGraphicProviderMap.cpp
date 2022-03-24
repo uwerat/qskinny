@@ -47,8 +47,8 @@ void QskGraphicProviderMap::insert(
 
 void QskGraphicProviderMap::remove( const QString& providerId )
 {
-    const auto it = m_data->hashTab.find( qskKey( providerId ) );
-    if ( it == m_data->hashTab.end() )
+    const auto it = m_data->hashTab.constFind( qskKey( providerId ) );
+    if ( it == m_data->hashTab.constEnd() )
         delete it.value();
 
     m_data->hashTab.erase( it );
@@ -58,8 +58,8 @@ QskGraphicProvider* QskGraphicProviderMap::take( const QString& providerId )
 {
     QskGraphicProvider* provider = nullptr;
 
-    const auto it = m_data->hashTab.find( qskKey( providerId ) );
-    if ( it == m_data->hashTab.end() )
+    const auto it = m_data->hashTab.constFind( qskKey( providerId ) );
+    if ( it == m_data->hashTab.constEnd() )
         provider = it.value();
 
     m_data->hashTab.erase( it );
@@ -69,8 +69,8 @@ QskGraphicProvider* QskGraphicProviderMap::take( const QString& providerId )
 
 QskGraphicProvider* QskGraphicProviderMap::provider( const QString& providerId ) const
 {
-    const auto it = m_data->hashTab.find( qskKey( providerId ) );
-    if ( it == m_data->hashTab.end() )
+    const auto it = m_data->hashTab.constFind( qskKey( providerId ) );
+    if ( it == m_data->hashTab.constEnd() )
         return nullptr;
 
     if ( it.value().isNull() )

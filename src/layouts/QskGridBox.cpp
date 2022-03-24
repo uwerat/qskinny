@@ -79,7 +79,7 @@ static void qskUpdateFocusChain(
     }
     else
     {
-        const auto itemLast = box->childItems().last();
+        const auto itemLast = box->childItems().constLast();
         if ( itemLast != item )
             item->stackAfter( itemLast );
     }
