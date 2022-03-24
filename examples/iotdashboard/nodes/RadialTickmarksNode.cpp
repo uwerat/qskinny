@@ -9,12 +9,6 @@
 #include <QskArcMetrics.h>
 #include <QtMath>
 
-static constexpr inline qreal qskTickFactor( QskScaleTickmarks::TickType type )
-{
-    using TM = QskScaleTickmarks;
-    return type == TM::MinorTick ? 0.7 : ( type == TM::MinorTick ? 0.85 : 1.0 );
-}
-
 RadialTickmarksNode::RadialTickmarksNode()
     : m_geometry( QSGGeometry::defaultAttributes_Point2D(), 0 )
 {
