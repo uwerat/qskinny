@@ -114,7 +114,7 @@ void QskMenu::addOption( const QUrl& graphicSource, const QString& text )
     update();
 
     if ( isComponentComplete() )
-        countChanged( count() );
+        Q_EMIT countChanged( count() );
 }
 
 void QskMenu::addOption( const QString& graphicSource, const QString& text )
