@@ -106,193 +106,195 @@ static inline void qskSendKey( QQuickItem* receiver, int key )
     QCoreApplication::sendEvent( receiver, &keyRelease );
 }
 
-class KeyProcessor : public QObject
+namespace
 {
-    Q_OBJECT
-
-  public:
-    QString preedit() const
+    class KeyProcessor : public QObject
     {
-        return m_preedit;
-    }
+        Q_OBJECT
 
-    void processKey(
-        int key, Qt::InputMethodHints inputHints, QskInputPanel* panel,
-        QskTextPredictor* predictor, int spaceLeft )
-    {
-        // reset:
-        m_currentResult.isFinal = true;
-        m_currentResult.text.clear();
-        m_currentResult.key = 0;
-
-        m_predictor = predictor;
-        m_spaceLeft = spaceLeft;
-
-        // First we have to handle the control keys
-
-        switch ( key )
+      public:
+        QString preedit() const
         {
-            case Qt::Key_Backspace:
-            case Qt::Key_Muhenkan:
+            return m_preedit;
+        }
+
+        void processKey(
+            int key, Qt::InputMethodHints inputHints, QskInputPanel* panel,
+            QskTextPredictor* predictor, int spaceLeft )
+        {
+            // reset:
+            m_currentResult.isFinal = true;
+            m_currentResult.text.clear();
+            m_currentResult.key = 0;
+
+            m_predictor = predictor;
+            m_spaceLeft = spaceLeft;
+
+            // First we have to handle the control keys
+
+            switch ( key )
             {
-                if ( predictor && !m_preedit.isEmpty() )
+                case Qt::Key_Backspace:
+                case Qt::Key_Muhenkan:
                 {
-                    m_preedit.chop( 1 );
-
-                    m_currentResult.text = m_preedit;
-                    m_currentResult.isFinal = false;
-
-                    Q_EMIT panel->predictionRequested( m_preedit );
-                    // Let the input field update right away, otherwise
-                    // we'll get weird effects with fast backspace presses:
-                    Q_EMIT keyProcessingFinished( m_currentResult );
-                    return;
-                }
-                else
-                {
-                    m_currentResult.key = Qt::Key_Backspace;
-                    Q_EMIT keyProcessingFinished( m_currentResult );
-                    return;
-                }
-
-                break;
-            }
-            case Qt::Key_Return:
-            {
-                if ( predictor )
-                {
-                    if ( !m_preedit.isEmpty() )
+                    if ( predictor && !m_preedit.isEmpty() )
                     {
-                        if ( spaceLeft )
-                        {
-                            m_currentResult.text = m_preedit.left( spaceLeft );
-                            m_currentResult.isFinal = true;
-                        }
-
-                        reset();
-                        Q_EMIT keyProcessingFinished( m_currentResult );
-                        return;
-                    }
-                }
-
-                if ( !( inputHints & Qt::ImhMultiLine ) )
-                {
-                    m_currentResult.key = Qt::Key_Return;
-                    Q_EMIT keyProcessingFinished( m_currentResult );
-                    return;
-                }
-
-                break;
-            }
-            case Qt::Key_Space:
-            {
-                if ( predictor )
-                {
-                    if ( !m_preedit.isEmpty() && spaceLeft )
-                    {
-                        m_preedit += keyString( key );
-                        m_preedit = m_preedit.left( spaceLeft );
+                        m_preedit.chop( 1 );
 
                         m_currentResult.text = m_preedit;
-                        m_currentResult.isFinal = true;
+                        m_currentResult.isFinal = false;
 
-                        reset();
-
+                        Q_EMIT panel->predictionRequested( m_preedit );
+                        // Let the input field update right away, otherwise
+                        // we'll get weird effects with fast backspace presses:
                         Q_EMIT keyProcessingFinished( m_currentResult );
                         return;
                     }
+                    else
+                    {
+                        m_currentResult.key = Qt::Key_Backspace;
+                        Q_EMIT keyProcessingFinished( m_currentResult );
+                        return;
+                    }
+
+                    break;
                 }
+                case Qt::Key_Return:
+                {
+                    if ( predictor )
+                    {
+                        if ( !m_preedit.isEmpty() )
+                        {
+                            if ( spaceLeft )
+                            {
+                                m_currentResult.text = m_preedit.left( spaceLeft );
+                                m_currentResult.isFinal = true;
+                            }
 
-                break;
+                            reset();
+                            Q_EMIT keyProcessingFinished( m_currentResult );
+                            return;
+                        }
+                    }
+
+                    if ( !( inputHints & Qt::ImhMultiLine ) )
+                    {
+                        m_currentResult.key = Qt::Key_Return;
+                        Q_EMIT keyProcessingFinished( m_currentResult );
+                        return;
+                    }
+
+                    break;
+                }
+                case Qt::Key_Space:
+                {
+                    if ( predictor )
+                    {
+                        if ( !m_preedit.isEmpty() && spaceLeft )
+                        {
+                            m_preedit += keyString( key );
+                            m_preedit = m_preedit.left( spaceLeft );
+
+                            m_currentResult.text = m_preedit;
+                            m_currentResult.isFinal = true;
+
+                            reset();
+
+                            Q_EMIT keyProcessingFinished( m_currentResult );
+                            return;
+                        }
+                    }
+
+                    break;
+                }
+                case Qt::Key_Left:
+                case Qt::Key_Right:
+                case Qt::Key_Escape:
+                case Qt::Key_Cancel:
+                {
+                    m_currentResult.key = key;
+                    Q_EMIT keyProcessingFinished( m_currentResult );
+                    return;
+                }
             }
-            case Qt::Key_Left:
-            case Qt::Key_Right:
-            case Qt::Key_Escape:
-            case Qt::Key_Cancel:
+
+            const QString text = keyString( key );
+
+            if ( predictor )
             {
-                m_currentResult.key = key;
-                Q_EMIT keyProcessingFinished( m_currentResult );
-                return;
-            }
-        }
-
-        const QString text = keyString( key );
-
-        if ( predictor )
-        {
-            m_preedit += text;
-            Q_EMIT panel->predictionRequested( m_preedit );
-        }
-        else
-        {
-            m_currentResult.text = text;
-            m_currentResult.isFinal = true;
-            Q_EMIT keyProcessingFinished( m_currentResult );
-        }
-    }
-
-    void reset()
-    {
-        m_preedit.clear();
-    }
-
-    void continueProcessingKey( const QStringList& candidates )
-    {
-        if ( m_predictor )
-        {
-            if ( candidates.count() > 0 )
-            {
-                m_currentResult.text = m_preedit;
-                m_currentResult.isFinal = false;
+                m_preedit += text;
+                Q_EMIT panel->predictionRequested( m_preedit );
             }
             else
             {
-                m_currentResult.text = m_preedit.left( m_spaceLeft );
+                m_currentResult.text = text;
                 m_currentResult.isFinal = true;
-
-                m_preedit.clear();
+                Q_EMIT keyProcessingFinished( m_currentResult );
             }
         }
 
-        Q_EMIT keyProcessingFinished( m_currentResult );
-    }
-
-  Q_SIGNALS:
-    void keyProcessingFinished( const Result& result );
-
-  private:
-    inline QString keyString( int keyCode ) const
-    {
-        // Special case entry codes here, else default to the symbol
-        switch ( keyCode )
+        void reset()
         {
-            case Qt::Key_Shift:
-            case Qt::Key_CapsLock:
-            case Qt::Key_Mode_switch:
-            case Qt::Key_Backspace:
-            case Qt::Key_Muhenkan:
-                return QString();
-
-            case Qt::Key_Return:
-            case Qt::Key_Kanji:
-                return QChar( QChar::CarriageReturn );
-
-            case Qt::Key_Space:
-                return QChar( QChar::Space );
-
-            default:
-                break;
+            m_preedit.clear();
         }
 
-        return QChar( keyCode );
-    }
+        void continueProcessingKey( const QStringList& candidates )
+        {
+            if ( m_predictor )
+            {
+                if ( candidates.count() > 0 )
+                {
+                    m_currentResult.text = m_preedit;
+                    m_currentResult.isFinal = false;
+                }
+                else
+                {
+                    m_currentResult.text = m_preedit.left( m_spaceLeft );
+                    m_currentResult.isFinal = true;
 
-    QString m_preedit;
-    int m_spaceLeft = -1;
-    QskTextPredictor* m_predictor = nullptr;
-    Result m_currentResult;
-};
+                    m_preedit.clear();
+                }
+            }
 
+            Q_EMIT keyProcessingFinished( m_currentResult );
+        }
+
+      Q_SIGNALS:
+        void keyProcessingFinished( const Result& );
+
+      private:
+        inline QString keyString( int keyCode ) const
+        {
+            // Special case entry codes here, else default to the symbol
+            switch ( keyCode )
+            {
+                case Qt::Key_Shift:
+                case Qt::Key_CapsLock:
+                case Qt::Key_Mode_switch:
+                case Qt::Key_Backspace:
+                case Qt::Key_Muhenkan:
+                    return QString();
+
+                case Qt::Key_Return:
+                case Qt::Key_Kanji:
+                    return QChar( QChar::CarriageReturn );
+
+                case Qt::Key_Space:
+                    return QChar( QChar::Space );
+
+                default:
+                    break;
+            }
+
+            return QChar( keyCode );
+        }
+
+        QString m_preedit;
+        int m_spaceLeft = -1;
+        QskTextPredictor* m_predictor = nullptr;
+        Result m_currentResult;
+    };
+}
 
 class QskInputPanel::PrivateData
 {
