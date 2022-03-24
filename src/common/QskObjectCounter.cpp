@@ -70,7 +70,7 @@ namespace
         int maximum;
     };
 
-    class CounterData final : public QObject
+    class CounterData
     {
       public:
         Counter counter[ 2 ];
