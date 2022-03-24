@@ -10,15 +10,6 @@
 #include "QskSGNode.h"
 #include "QskFunctions.h"
 
-static inline int qskCurrentIndex( const QskPageIndicator* indicator )
-{
-    int index = qRound( indicator->currentIndex() );
-    if ( index >= indicator->count() )
-        index = 0;
-
-    return index;
-}
-
 static QRectF qskBulletRect( const QskPageIndicator* indicator,
     const QRectF& rect, int index )
 {
