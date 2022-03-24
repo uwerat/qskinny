@@ -30,6 +30,8 @@ class QSK_EXPORT QskGraphicProviderMap
     int size() const;
 
   private:
+    Q_DISABLE_COPY( QskGraphicProviderMap )
+
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

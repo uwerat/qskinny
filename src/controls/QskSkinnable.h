@@ -240,6 +240,8 @@ class QSK_EXPORT QskSkinnable
     const QskSkinHintTable& hintTable() const;
 
   private:
+    Q_DISABLE_COPY( QskSkinnable )
+
     void startHintTransition( QskAspect,
         QskAnimationHint, QVariant from, QVariant to );
 
