@@ -308,7 +308,7 @@ void QskMenu::mousePressEvent( QMouseEvent* event )
         return;
     }
 
-    return Inherited::mousePressEvent( event );
+    Inherited::mousePressEvent( event );
 }
 
 void QskMenu::mouseReleaseEvent( QMouseEvent* event )
@@ -327,7 +327,7 @@ void QskMenu::mouseReleaseEvent( QMouseEvent* event )
         return;
     }
 
-    return Inherited::mouseReleaseEvent( event );
+    Inherited::mouseReleaseEvent( event );
 }
 
 void QskMenu::aboutToShow()

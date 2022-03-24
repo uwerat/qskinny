@@ -756,12 +756,12 @@ int QskTextInput::passwordMaskDelay() const
 
 void QskTextInput::setPasswordMaskDelay( int ms )
 {
-    return m_data->textInput->setPasswordMaskDelay( ms );
+    m_data->textInput->setPasswordMaskDelay( ms );
 }
 
 void QskTextInput::resetPasswordMaskDelay()
 {
-    return m_data->textInput->resetPasswordMaskDelay();
+    m_data->textInput->resetPasswordMaskDelay();
 }
 
 QString QskTextInput::displayText() const
@@ -771,7 +771,7 @@ QString QskTextInput::displayText() const
 
 QString QskTextInput::preeditText() const
 {
-    auto d = QQuickTextInputPrivate::get( m_data->textInput );
+    const auto d = QQuickTextInputPrivate::get( m_data->textInput );
     return d->m_textLayout.preeditAreaText();
 }
 
