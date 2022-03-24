@@ -36,7 +36,6 @@
 #include <QskSkin.h>
 #include <QskSkinManager.h>
 #include <QskSlider.h>
-#include <QskStandardSymbol.h>
 #include <QskStatusIndicator.h>
 #include <QskSubWindow.h>
 #include <QskSubWindowArea.h>
@@ -194,7 +193,6 @@ void QskQml::registerTypes()
 #endif
 
         QSK_REGISTER_GADGET( QskRgbValueQml, "RgbValue" );
-        QSK_REGISTER_GADGET( QskStandardSymbol, "StandardSymbol" );
         QSK_REGISTER_GADGET( QskBoxBorderMetrics, "BorderMetrics" );
         QSK_REGISTER_GADGET( QskBoxShapeMetrics, "Shape" );
         QSK_REGISTER_GADGET( QskShadowMetrics, "ShadowMetrics" );

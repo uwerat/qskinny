@@ -11,11 +11,10 @@
 
 class QskGraphic;
 
-class QSK_EXPORT QskStandardSymbol
+namespace QskStandardSymbol
 {
-    Q_GADGET
+    QSK_EXPORT Q_NAMESPACE
 
-  public:
     enum Type
     {
         NoSymbol = -1,
@@ -31,9 +30,9 @@ class QSK_EXPORT QskStandardSymbol
         SymbolTypeCount
     };
 
-    Q_ENUM( Type )
+    Q_ENUM_NS( Type )
 
-    static QskGraphic graphic( Type );
-};
+    QSK_EXPORT QskGraphic graphic( Type );
+}
 
 #endif
