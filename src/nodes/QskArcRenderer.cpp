@@ -18,7 +18,7 @@ void QskArcRenderer::renderArc(const QRectF& rect,
 
     QGradientStops stops;
 
-    for( const QskGradientStop& stop : gradient.stops() )
+    for( const QskGradientStop& stop : qAsConst( gradient.stops() ) )
     {
         QGradientStop s( stop.position(), stop.color() );
         stops.append( s );
