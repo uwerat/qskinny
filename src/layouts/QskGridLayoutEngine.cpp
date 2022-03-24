@@ -116,7 +116,7 @@ namespace
 
       private:
         inline bool setValueAt( int pos,
-            const std::function< bool( Setting& ) > modify )
+            const std::function< bool( Setting& ) >& modify )
         {
             if ( pos < 0 )
                 return false;
