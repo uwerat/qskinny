@@ -52,6 +52,8 @@ class QSK_EXPORT QskScaleRenderer
         const QRectF& labelsRect, QSGNode* node ) const;
 
   private:
+    Q_DISABLE_COPY( QskScaleRenderer )
+
     Qt::Orientation m_orientation = Qt::Horizontal;
 
     QskIntervalF m_boundaries;
