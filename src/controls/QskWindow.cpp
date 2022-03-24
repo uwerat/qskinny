@@ -119,7 +119,7 @@ static inline void qskSetVisualizationMode(
 #endif
 }
 
-static inline QByteArray qskVisualizationMode( const QQuickWindow* window )
+static inline const QByteArray& qskVisualizationMode( const QQuickWindow* window )
 {
     auto d = QQuickWindowPrivate::get( const_cast< QQuickWindow* >( window ) );
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
@@ -208,7 +208,8 @@ void QskWindow::setScreen( const QString& name )
 {
     if ( !name.isEmpty() )
     {
-        for ( auto screen : QGuiApplication::screens() )
+        const auto screens = QGuiApplication::screens();
+        for ( auto screen : screens )
         {
             if ( screen->name() == name )
             {
