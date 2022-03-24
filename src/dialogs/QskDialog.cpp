@@ -47,7 +47,7 @@ static QskDialog::Action qskActionCandidate( const QskDialogButtonBox* buttonBox
 static QskDialog::DialogCode qskExec( QskDialogWindow* dialogWindow )
 {
 #if 1
-    QskFocusIndicator* focusIndicator = new QskFocusIndicator();
+    auto focusIndicator = new QskFocusIndicator();
     focusIndicator->setObjectName( QStringLiteral( "DialogFocusIndicator" ) );
     dialogWindow->addItem( focusIndicator );
 #endif
@@ -60,7 +60,7 @@ static QQuickWindow* qskSomeQuickWindow()
     // not the best code ever, but as it is a fallback only
     // maybe we should also add the stacking order
 
-    QWindowList windows = QGuiApplication::topLevelWindows();
+    const auto windows = QGuiApplication::topLevelWindows();
     for ( auto window : windows )
     {
         if ( window->isVisible() )
