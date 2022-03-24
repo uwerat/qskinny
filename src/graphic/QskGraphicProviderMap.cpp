@@ -28,7 +28,8 @@ QskGraphicProviderMap::QskGraphicProviderMap()
 
 QskGraphicProviderMap::~QskGraphicProviderMap()
 {
-    for ( auto it = m_data->hashTab.begin(); it != m_data->hashTab.end(); ++it )
+    const auto& hashTab = m_data->hashTab;
+    for ( auto it = hashTab.constBegin(); it != hashTab.constEnd(); ++it )
         delete it.value();
 }
 
