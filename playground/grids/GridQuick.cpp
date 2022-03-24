@@ -59,7 +59,7 @@ GridQuick::GridQuick( QWidget* parent )
         createQml( "import QtQuick 2.0\nimport QtQuick.Layouts 1.1\nItem { GridLayout {} }" );
     setContent( QUrl(), nullptr, contentItem );
 
-    m_grid = contentItem->childItems().first();
+    m_grid = contentItem->childItems().constFirst();
     m_grid->setProperty( "rowSpacing", 5 );
     m_grid->setProperty( "columnSpacing", 5 );
 }
@@ -78,7 +78,7 @@ void GridQuick::insert( const QByteArray& colorName,
      */
     auto layout = createQml( "import QtQuick 2.0\nimport QtQuick.Layouts 1.15\nGridLayout { Rectangle {} }" );
 
-    auto rectangle = layout->childItems().first();
+    auto rectangle = layout->childItems().constFirst();
     rectangle->setParent( nullptr );
 
     delete layout;
