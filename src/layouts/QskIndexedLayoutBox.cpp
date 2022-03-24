@@ -83,7 +83,7 @@ void QskIndexedLayoutBox::itemChange(
         }
     }
 
-    return Inherited::itemChange( change, value );
+    Inherited::itemChange( change, value );
 }
 
 void QskIndexedLayoutBox::reparentItem( QQuickItem* item )
