@@ -63,7 +63,7 @@ class QSK_EXPORT QskSkinHintTableEditor
     template< typename T > void setFlagHint( QskAspect, const T&,
         QskStateCombination = QskStateCombination() );
 
-    void removeFlagHint( QskAspect, QskStateCombination = QskStateCombination() );
+    bool removeFlagHint( QskAspect, QskStateCombination = QskStateCombination() );
 
     QVariant flagHint( QskAspect ) const;
     template< typename T > T flagHint( QskAspect ) const;
@@ -76,7 +76,7 @@ class QSK_EXPORT QskSkinHintTableEditor
     template< typename T > void setMetricHint(
         QskAspect, const T&, QskStateCombination = QskStateCombination() );
 
-    void removeMetricHint( QskAspect, QskStateCombination = QskStateCombination() );
+    bool removeMetricHint( QskAspect, QskStateCombination = QskStateCombination() );
 
     QVariant metricHint( QskAspect ) const;
     template< typename T > T metricHint( QskAspect ) const;
@@ -89,7 +89,7 @@ class QSK_EXPORT QskSkinHintTableEditor
     template< typename T > void setColorHint(
         QskAspect, const T&, QskStateCombination = QskStateCombination() );
 
-    void removeColorHint( QskAspect, QskStateCombination = QskStateCombination() );
+    bool removeColorHint( QskAspect, QskStateCombination = QskStateCombination() );
 
     QVariant colorHint( QskAspect ) const;
     template< typename T > T colorHint( QskAspect ) const;
@@ -126,7 +126,7 @@ class QSK_EXPORT QskSkinHintTableEditor
     void setPosition( QskAspect, qreal,
         QskStateCombination = QskStateCombination() );
 
-    void removePosition( QskAspect, QskStateCombination = QskStateCombination() );
+    bool removePosition( QskAspect, QskStateCombination = QskStateCombination() );
 
     qreal position( QskAspect ) const;
 
@@ -138,7 +138,7 @@ class QSK_EXPORT QskSkinHintTableEditor
     void setStrutSize( QskAspect, qreal width, qreal height,
         QskStateCombination = QskStateCombination() );
 
-    void removeStrutSize( QskAspect, QskStateCombination = QskStateCombination() );
+    bool removeStrutSize( QskAspect, QskStateCombination = QskStateCombination() );
 
     QSizeF strutSize( QskAspect ) const;
 
@@ -151,7 +151,7 @@ class QSK_EXPORT QskSkinHintTableEditor
         qreal left, qreal top, qreal right, qreal bottom,
         QskStateCombination = QskStateCombination() );
 
-    void removeMargin( QskAspect, QskStateCombination = QskStateCombination() );
+    bool removeMargin( QskAspect, QskStateCombination = QskStateCombination() );
 
     QskMargins margin( QskAspect ) const;
 
@@ -164,32 +164,32 @@ class QSK_EXPORT QskSkinHintTableEditor
         qreal left, qreal top, qreal right, qreal bottom,
         QskStateCombination = QskStateCombination() );
 
-    void removePadding( QskAspect, QskStateCombination = QskStateCombination() );
+    bool removePadding( QskAspect, QskStateCombination = QskStateCombination() );
 
     QskMargins padding( QskAspect ) const;
 
     // spacing
 
     void setSpacing( QskAspect, qreal, QskStateCombination = QskStateCombination() );
-    void removeSpacing( QskAspect, QskStateCombination = QskStateCombination() );
+    bool removeSpacing( QskAspect, QskStateCombination = QskStateCombination() );
     qreal spacing( QskAspect ) const;
 
     // alignment
 
     void setAlignment( QskAspect, Qt::Alignment, QskStateCombination = QskStateCombination() );
-    void removeAlignment( QskAspect, QskStateCombination = QskStateCombination() );
+    bool removeAlignment( QskAspect, QskStateCombination = QskStateCombination() );
     Qt::Alignment alignment( QskAspect ) const;
 
     // fontRole
 
     void setFontRole( QskAspect, int, QskStateCombination = QskStateCombination() );
-    void removeFontRole( QskAspect, QskStateCombination = QskStateCombination() );
+    bool removeFontRole( QskAspect, QskStateCombination = QskStateCombination() );
     int fontRole( QskAspect ) const;
 
     // graphicRole
 
     void setGraphicRole( QskAspect, int, QskStateCombination = QskStateCombination() );
-    void removeGraphicRole( QskAspect, QskStateCombination = QskStateCombination() );
+    bool removeGraphicRole( QskAspect, QskStateCombination = QskStateCombination() );
     int graphicRole( QskAspect ) const;
 
     // boxShape
@@ -202,7 +202,7 @@ class QSK_EXPORT QskSkinHintTableEditor
     void setBoxShape( QskAspect, const QskBoxShapeMetrics&,
         QskStateCombination = QskStateCombination() );
 
-    void removeBoxShape( QskAspect, QskStateCombination = QskStateCombination() );
+    bool removeBoxShape( QskAspect, QskStateCombination = QskStateCombination() );
 
     QskBoxShapeMetrics boxShape( QskAspect ) const;
 
@@ -217,7 +217,7 @@ class QSK_EXPORT QskSkinHintTableEditor
     void setBoxBorderMetrics( QskAspect,
         const QskBoxBorderMetrics&, QskStateCombination = QskStateCombination() );
 
-    void removeBoxBorderMetric( QskAspect, QskStateCombination = QskStateCombination() );
+    bool removeBoxBorderMetric( QskAspect, QskStateCombination = QskStateCombination() );
 
     QskBoxBorderMetrics boxBorderMetrics( QskAspect ) const;
 
@@ -231,7 +231,7 @@ class QSK_EXPORT QskSkinHintTableEditor
         const QskGradient& right, const QskGradient& bottom,
         QskStateCombination = QskStateCombination() );
 
-    void removeBoxBorderColors( QskAspect, QskStateCombination = QskStateCombination() );
+    bool removeBoxBorderColors( QskAspect, QskStateCombination = QskStateCombination() );
     QskBoxBorderColors boxBorderColors( QskAspect ) const;
 
     // arcMetrics
@@ -241,7 +241,7 @@ class QSK_EXPORT QskSkinHintTableEditor
     void setArcMetrics( QskAspect,
         const QskArcMetrics&, QskStateCombination = QskStateCombination() );
 
-    void removeArcMetrics( QskAspect, QskStateCombination = QskStateCombination() );
+    bool removeArcMetrics( QskAspect, QskStateCombination = QskStateCombination() );
 
     QskArcMetrics arcMetrics( QskAspect ) const;
 
@@ -294,10 +294,10 @@ inline void QskSkinHintTableEditor::setFlagHint(
     setHint( aspect | QskAspect::Flag, hint, combination );
 }
 
-inline void QskSkinHintTableEditor::removeFlagHint(
+inline bool QskSkinHintTableEditor::removeFlagHint(
     QskAspect aspect, QskStateCombination combination )
 {
-    removeHint( aspect | QskAspect::Flag, combination );
+    return removeHint( aspect | QskAspect::Flag, combination );
 }
 
 inline QVariant QskSkinHintTableEditor::flagHint( QskAspect aspect ) const
@@ -326,10 +326,10 @@ inline void QskSkinHintTableEditor::setMetricHint(
     setHint( aspect | QskAspect::Metric, hint, combination );
 }
 
-inline void QskSkinHintTableEditor::removeMetricHint(
+inline bool QskSkinHintTableEditor::removeMetricHint(
     QskAspect aspect, QskStateCombination combination )
 {
-    removeHint( aspect | QskAspect::Metric, combination );
+    return removeHint( aspect | QskAspect::Metric, combination );
 }
 
 inline QVariant QskSkinHintTableEditor::metricHint( QskAspect aspect ) const
@@ -358,10 +358,10 @@ inline void QskSkinHintTableEditor::setColorHint(
     setHint( aspect | QskAspect::Color, hint, combination );
 }
 
-inline void QskSkinHintTableEditor::removeColorHint(
+inline bool QskSkinHintTableEditor::removeColorHint(
     QskAspect aspect, QskStateCombination combination )
 {
-    removeHint( aspect | QskAspect::Color, combination );
+    return removeHint( aspect | QskAspect::Color, combination );
 }
 
 inline QVariant QskSkinHintTableEditor::colorHint( QskAspect aspect ) const
