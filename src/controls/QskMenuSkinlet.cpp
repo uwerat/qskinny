@@ -169,7 +169,7 @@ class QskMenuSkinlet::PrivateData
             const auto sample = skinlet->sampleAt( menu, QskMenu::Text, i );
             if ( sample.canConvert< QString >() )
             {
-                const auto text = sample.value< QString >();
+                const auto text = sample.toString();
                 if( !text.isEmpty() )
                 {
                     const auto w = qskHorizontalAdvance( fm, text );

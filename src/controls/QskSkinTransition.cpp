@@ -1,3 +1,8 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * This file may be used under the terms of the QSkinny License, Version 1.0
+ *****************************************************************************/
+
 #include "QskSkinTransition.h"
 #include "QskColorFilter.h"
 #include "QskControl.h"
@@ -40,7 +45,8 @@ namespace
       public:
         AnimatorCandidate() = default;
 
-        inline AnimatorCandidate( QskAspect aspect, QVariant from, QVariant to )
+        inline AnimatorCandidate( QskAspect aspect,
+                const QVariant& from, const QVariant& to )
             : aspect( aspect )
             , from( from )
             , to( to )
