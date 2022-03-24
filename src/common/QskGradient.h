@@ -76,7 +76,7 @@ class QSK_EXPORT QskGradient
     Q_INVOKABLE QColor endColor() const;
 
     Q_INVOKABLE void setStops( const QVector< QskGradientStop >& );
-    Q_INVOKABLE QVector< QskGradientStop > stops() const;
+    Q_INVOKABLE const QVector< QskGradientStop >& stops() const;
 
     Q_INVOKABLE bool hasStopAt( qreal value ) const;
 

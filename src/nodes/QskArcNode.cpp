@@ -36,7 +36,7 @@ uint QskArcNode::hash() const
 {
     uint h = m_metrics.hash();
 
-    for( const auto& stop : m_gradient.stops() )
+    for( const auto& stop : qAsConst( m_gradient.stops() ) )
         h = stop.hash( h );
 
     return h;

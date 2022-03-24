@@ -317,8 +317,17 @@ void QskGradient::setStops( const QskGradientStops& stops )
     m_isDirty = true;
 }
 
-QskGradientStops QskGradient::stops() const
+const QskGradientStops& QskGradient::stops() const
 {
+#if 1
+    /*
+        Returning a const& so that it is possible to write:
+            for ( const auto& stop : qAsConst( gradient.stops() ) )
+
+        Once we have changed QskGradientStop from QColor to QRgb
+        we should check if there is a better solution possible
+     */
+#endif
     return m_stops;
 }
 

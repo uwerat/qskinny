@@ -434,7 +434,7 @@ static inline void qskCreateBorder(
     const qreal dy1 = in.top - in.bottom;
     const qreal dy2 = out.top - out.bottom;
 
-    for( const auto& stop : gradientBottom.stops() )
+    for( const auto& stop : qAsConst( gradientBottom.stops() ) )
     {
         const Color c( stop.color() );
         const qreal x1 = in.right - stop.position() * dx1;
@@ -445,7 +445,7 @@ static inline void qskCreateBorder(
         ( line++ )->setLine( x1, y1, x2, y2, c );
     }
 
-    for( const auto& stop : gradientLeft.stops() )
+    for( const auto& stop : qAsConst( gradientLeft.stops() ) )
     {
         const Color c( stop.color() );
         const qreal x1 = in.left;
@@ -456,7 +456,7 @@ static inline void qskCreateBorder(
         ( line++ )->setLine( x1, y1, x2, y2, c );
     }
 
-    for( const auto& stop : gradientTop.stops() )
+    for( const auto& stop : qAsConst( gradientTop.stops() ) )
     {
         const Color c( stop.color() );
         const qreal x1 = in.left + stop.position() * dx1;
@@ -467,7 +467,7 @@ static inline void qskCreateBorder(
         ( line++ )->setLine( x1, y1, x2, y2, c );
     }
 
-    for( const auto& stop : gradientRight.stops() )
+    for( const auto& stop : qAsConst( gradientRight.stops() ) )
     {
         const Color c( stop.color() );
         const qreal x1 = in.right;
