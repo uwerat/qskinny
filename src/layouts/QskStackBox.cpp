@@ -376,7 +376,7 @@ QSizeF QskStackBox::layoutSizeHint(
     qreal w = -1.0;
     qreal h = -1.0;
 
-    for ( const auto item : m_data->items )
+    for ( const auto item : qAsConst( m_data->items ) )
     {
         /*
             We ignore the retainSizeWhenVisible flag and include all

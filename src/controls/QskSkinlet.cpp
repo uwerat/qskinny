@@ -263,7 +263,7 @@ void QskSkinlet::updateNode( QskSkinnable* skinnable, QSGNode* parentNode ) cons
         replaceChildNode( DebugRole, parentNode, oldNode, newNode );
     }
 
-    for ( const auto nodeRole : m_data->nodeRoles )
+    for ( const auto nodeRole : qAsConst( m_data->nodeRoles ) )
     {
         Q_ASSERT( nodeRole < FirstReservedRole );
 
