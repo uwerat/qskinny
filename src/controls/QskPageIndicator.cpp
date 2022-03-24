@@ -184,7 +184,7 @@ void QskPageIndicator::mousePressEvent( QMouseEvent* event )
         return;
     }
 
-    return Inherited::mousePressEvent( event );
+    Inherited::mousePressEvent( event );
 }
 
 void QskPageIndicator::mouseUngrabEvent()
@@ -209,7 +209,7 @@ void QskPageIndicator::mouseReleaseEvent( QMouseEvent* event )
         return;
     }
 
-    return Inherited::mouseReleaseEvent( event );
+    Inherited::mouseReleaseEvent( event );
 }
 
 void QskPageIndicator::keyPressEvent( QKeyEvent* event )

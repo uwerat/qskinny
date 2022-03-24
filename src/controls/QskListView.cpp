@@ -196,11 +196,13 @@ void QskListView::keyPressEvent( QKeyEvent* event )
         case Qt::Key_PageDown:
         {
             // TODO ...
-            return Inherited::keyPressEvent( event );
+            Inherited::keyPressEvent( event );
+            return;
         }
         default:
         {
-            return Inherited::keyPressEvent( event );
+            Inherited::keyPressEvent( event );
+            return;
         }
     }
 
