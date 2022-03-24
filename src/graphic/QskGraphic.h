@@ -26,6 +26,14 @@ class QDebug;
 
 class QSK_EXPORT QskGraphic : public QPaintDevice
 {
+    Q_GADGET
+
+    Q_PROPERTY( qreal aspectRatio READ aspectRatio )
+    Q_PROPERTY( QRectF boundingRect READ boundingRect )
+    Q_PROPERTY( QRectF controlPointRect READ controlPointRect )
+    Q_PROPERTY( QSizeF defaultSize READ defaultSize )
+    Q_PROPERTY( quint64 modificationId READ modificationId )
+
   public:
     enum RenderHint
     {
@@ -122,8 +130,6 @@ class QSK_EXPORT QskGraphic : public QPaintDevice
     uint hash( uint seed ) const;
 
   protected:
-    friend class QskGraphicPaintEngine;
-
     virtual QSize sizeMetrics() const;
 
     virtual void drawPath( const QPainterPath& );
@@ -142,6 +148,8 @@ class QSK_EXPORT QskGraphic : public QPaintDevice
 
     class PrivateData;
     QSharedDataPointer< PrivateData > m_data;
+
+    friend class QskGraphicPaintEngine;
     mutable QskGraphicPaintEngine* m_paintEngine;
 };
 

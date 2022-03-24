@@ -1203,3 +1203,5 @@ QDebug operator<<( QDebug debug, const QskGraphic& graphic )
 }
 
 #endif
+
+#include "moc_QskGraphic.cpp"
