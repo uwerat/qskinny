@@ -17,12 +17,10 @@ void QskArcRenderer::renderArc(const QRectF& rect,
     painter->setRenderHint( QPainter::Antialiasing, true );
 
     QGradientStops stops;
+    stops.reserve( gradient.stops().count() );
 
     for( const QskGradientStop& stop : qAsConst( gradient.stops() ) )
-    {
-        QGradientStop s( stop.position(), stop.color() );
-        stops.append( s );
-    }
+        stops += QGradientStop( stop.position(), stop.color() );
 
     /*
         horizontal is interpreted as in direction of the arc,
