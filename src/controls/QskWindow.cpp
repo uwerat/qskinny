@@ -551,7 +551,7 @@ void QskWindow::setCustomRenderMode( const char* mode )
     class RenderJob final : public QRunnable
     {
       public:
-        RenderJob( QQuickWindow* window, const QByteArray mode )
+        RenderJob( QQuickWindow* window, const QByteArray& mode )
             : m_window( window )
             , m_mode( mode )
         {
