@@ -16,6 +16,7 @@
 #include <QskBox.h>
 #include <QskLinearBox.h>
 #include <QskSkinManager.h>
+#include <QskAnimationHint.h>
 #include <QskSkinTransition.h>
 #include <QskSetup.h>
 #include <QskSkin.h>
