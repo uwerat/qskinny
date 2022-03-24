@@ -128,6 +128,7 @@ static inline QByteArray qskVisualizationMode( const QQuickWindow* window )
     return d->customRenderMode;
 #endif
 }
+
 class QskWindowPrivate : public QQuickWindowPrivate
 {
     Q_DECLARE_PUBLIC( QskWindow )
