@@ -565,16 +565,10 @@ void QskDialogButtonBox::itemChange(
 
 bool QskDialogButtonBox::isDefaultButtonKeyEvent( const QKeyEvent* event )
 {
-    if ( event->modifiers() & Qt::KeypadModifier && event->key() == Qt::Key_Enter )
-    {
-        return ( event->modifiers() & Qt::KeypadModifier )
-            && ( event->key() == Qt::Key_Enter );
-    }
-    else
-    {
-        return ( event->key() == Qt::Key_Enter )
-            || ( event->key() == Qt::Key_Return );
-    }
+    if ( !event->modifiers() )
+        return ( event->key() == Qt::Key_Enter ) || ( event->key() == Qt::Key_Return );
+
+    return ( event->modifiers() & Qt::KeypadModifier ) && ( event->key() == Qt::Key_Enter );
 }
 
 #include "moc_QskDialogButtonBox.cpp"
