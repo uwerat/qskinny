@@ -22,7 +22,7 @@ namespace
             : QskTextInput( parentItem )
             , m_panelBox( panelBox )
         {
-            setObjectName( "InputBoxProxy" );
+            setObjectName( QStringLiteral( "InputBoxProxy" ) );
 
             setFocusPolicy( Qt::NoFocus );
             initSizePolicy( QskSizePolicy::Ignored, QskSizePolicy::Fixed );

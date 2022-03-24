@@ -292,7 +292,7 @@ class QskInputContext::PrivateData
 QskInputContext::QskInputContext()
     : m_data( new PrivateData() )
 {
-    setObjectName( "InputContext" );
+    setObjectName( QStringLiteral( "InputContext" ) );
 }
 
 QskInputContext::~QskInputContext()
