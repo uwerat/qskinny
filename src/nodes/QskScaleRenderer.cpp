@@ -4,14 +4,18 @@
  *****************************************************************************/
 
 #include "QskScaleRenderer.h"
+#include "QskScaleTickmarks.h"
 #include "QskSkinlet.h"
 #include "QskSGNode.h"
 #include "QskTickmarksNode.h"
 #include "QskTextNode.h"
 #include "QskGraphicNode.h"
 #include "QskTextOptions.h"
+#include "QskTextColors.h"
 #include "QskGraphic.h"
+#include "QskColorFilter.h"
 #include "QskControl.h"
+#include "QskIntervalF.h"
 #include "QskFunctions.h"
 
 #include <qstring.h>
@@ -45,44 +49,70 @@ static inline void qskInsertRemoveChild( QSGNode* parentNode,
     }
 }
 
+class QskScaleRenderer::PrivateData
+{
+  public:
+    QskIntervalF boundaries;
+    QskScaleTickmarks tickmarks;
+
+    QColor tickColor = Qt::black;
+    qreal tickWidth = 1.0;
+
+    QFont font;
+    QskTextColors textColors;
+
+    QskColorFilter colorFilter;
+
+    Qt::Orientation orientation = Qt::Horizontal;
+};
+
+QskScaleRenderer::QskScaleRenderer()
+    : m_data( new PrivateData() )
+{
+}
+
+QskScaleRenderer::~QskScaleRenderer()
+{
+}
+
 void QskScaleRenderer::setOrientation( Qt::Orientation orientation )
 {
-    m_orientation = orientation;
+    m_data->orientation = orientation;
 }
 
 void QskScaleRenderer::setBoundaries( const QskIntervalF& boundaries )
 {
-    m_boundaries = boundaries;
+    m_data->boundaries = boundaries;
 }
 
 void QskScaleRenderer::setTickmarks( const QskScaleTickmarks& tickmarks )
 {
-    m_tickmarks = tickmarks;
+    m_data->tickmarks = tickmarks;
 }
 
 void QskScaleRenderer::setTickColor( const QColor& color )
 {
-    m_tickColor = color;
+    m_data->tickColor = color;
 }
 
 void QskScaleRenderer::setTickWidth( qreal width )
 {
-    m_tickWidth = width;
+    m_data->tickWidth = width;
 }
 
 void QskScaleRenderer::setFont( const QFont& font )
 {
-    m_font = font;
+    m_data->font = font;
 }
 
 void QskScaleRenderer::setTextColors( const QskTextColors& textColors )
 {
-    m_textColors = textColors;
+    m_data->textColors = textColors;
 }
 
 void QskScaleRenderer::setColorFilter( const QskColorFilter& colorFilter )
 {
-    m_colorFilter = colorFilter;
+    m_data->colorFilter = colorFilter;
 }
 
 QSGNode* QskScaleRenderer::updateScaleNode(
@@ -140,8 +170,8 @@ QSGNode* QskScaleRenderer::updateTicksNode(
     if( ticksNode == nullptr )
         ticksNode = new QskTickmarksNode;
 
-    ticksNode->update( m_tickColor, rect, m_boundaries,
-        m_tickmarks, m_tickWidth, m_orientation );
+    ticksNode->update( m_data->tickColor, rect, m_data->boundaries,
+        m_data->tickmarks, m_data->tickWidth, m_data->orientation );
 
     return ticksNode;
 }
@@ -153,18 +183,18 @@ QSGNode* QskScaleRenderer::updateLabelsNode(
     if ( labelsRect.isEmpty() || tickmarksRect.isEmpty() )
         return nullptr;
 
-    const auto ticks = m_tickmarks.majorTicks();
+    const auto ticks = m_data->tickmarks.majorTicks();
     if ( ticks.isEmpty() )
         return nullptr;
 
     if( node == nullptr )
         node = new QSGNode;
 
-    const QFontMetricsF fm( m_font );
+    const QFontMetricsF fm( m_data->font );
 
-    const qreal length = ( m_orientation == Qt::Horizontal )
+    const qreal length = ( m_data->orientation == Qt::Horizontal )
         ? tickmarksRect.width() : tickmarksRect.height();
-    const qreal ratio = length / m_boundaries.width();
+    const qreal ratio = length / m_data->boundaries.width();
 
     auto nextNode = node->firstChild();
 
@@ -182,7 +212,7 @@ QSGNode* QskScaleRenderer::updateLabelsNode(
         if ( label.isNull() )
             continue;
 
-        const qreal tickPos = ratio * ( tick - m_boundaries.lowerBound() );
+        const qreal tickPos = ratio * ( tick - m_data->boundaries.lowerBound() );
 
         if ( label.canConvert< QString >() )
         {
@@ -193,7 +223,7 @@ QSGNode* QskScaleRenderer::updateLabelsNode(
             QRectF r;
             Qt::Alignment alignment;
 
-            if( m_orientation == Qt::Horizontal )
+            if( m_data->orientation == Qt::Horizontal )
             {
                 const auto w = qskHorizontalAdvance( fm, text );
 
@@ -261,8 +291,8 @@ QSGNode* QskScaleRenderer::updateLabelsNode(
             }
 
             auto textNode = static_cast< QskTextNode* >( nextNode );
-            textNode->setTextData( skinnable->owningControl(), text, r, m_font,
-                QskTextOptions(), m_textColors, alignment, Qsk::Normal );
+            textNode->setTextData( skinnable->owningControl(), text, r, m_data->font,
+                QskTextOptions(), m_data->textColors, alignment, Qsk::Normal );
 
             nextNode = nextNode->nextSibling();
         }
@@ -277,7 +307,7 @@ QSGNode* QskScaleRenderer::updateLabelsNode(
 
             Qt::Alignment alignment;
 
-            if( m_orientation == Qt::Horizontal )
+            if( m_data->orientation == Qt::Horizontal )
             {
                 auto pos = tickmarksRect.x() + tickPos - 0.5 * w;
                 pos = qBound( labelsRect.left(), pos, labelsRect.right() - w );
@@ -310,7 +340,7 @@ QSGNode* QskScaleRenderer::updateLabelsNode(
 
             QskSkinlet::updateGraphicNode(
                 skinnable->owningControl(), graphicNode,
-                graphic, m_colorFilter, labelRect, alignment );
+                graphic, m_data->colorFilter, labelRect, alignment );
 
             nextNode = nextNode->nextSibling();
         }
@@ -328,11 +358,11 @@ QVariant QskScaleRenderer::labelAt( qreal pos ) const
 
 QSizeF QskScaleRenderer::boundingLabelSize() const
 {
-    const auto ticks = m_tickmarks.majorTicks();
+    const auto ticks = m_data->tickmarks.majorTicks();
     if ( ticks.isEmpty() )
         return QSizeF( 0.0, 0.0 );
 
-    const QFontMetricsF fm( m_font );
+    const QFontMetricsF fm( m_data->font );
 
     qreal maxWidth = 0.0;
     const qreal h = fm.height();
