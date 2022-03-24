@@ -170,8 +170,8 @@ namespace QskVertex
 #ifndef QT_NO_DEBUG_STREAM
 class QDebug;
 QDebug operator<<( QDebug debug, QskVertex::Color );
-QDebug operator<<( QDebug debug, QskVertex::ColoredLine );
-QDebug operator<<( QDebug debug, QskVertex::Line );
+QDebug operator<<( QDebug debug, const QskVertex::ColoredLine& );
+QDebug operator<<( QDebug debug, const QskVertex::Line& );
 #endif
 
 #endif
