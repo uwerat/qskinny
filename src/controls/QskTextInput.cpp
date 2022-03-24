@@ -802,7 +802,7 @@ QVariant QskTextInput::inputMethodQuery(
 }
 
 QVariant QskTextInput::inputMethodQuery(
-    Qt::InputMethodQuery query, QVariant argument ) const
+    Qt::InputMethodQuery query, const QVariant& argument ) const
 {
     switch ( query )
     {

@@ -144,7 +144,7 @@ class QSK_EXPORT QskTextInput : public QskControl
     bool fixup();
 
     QVariant inputMethodQuery( Qt::InputMethodQuery ) const override;
-    QVariant inputMethodQuery( Qt::InputMethodQuery, QVariant argument ) const;
+    QVariant inputMethodQuery( Qt::InputMethodQuery, const QVariant& argument ) const;
 
     bool canUndo() const;
     bool canRedo() const;
