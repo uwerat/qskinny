@@ -412,14 +412,14 @@ bool QskGradient::hasStopAt( qreal value ) const
     return false;
 }
 
-uint QskGradient::hash( uint seed ) const
+QskHashValue QskGradient::hash( QskHashValue seed ) const
 {
     if ( m_stops.isEmpty() )
         return seed;
 
     const auto o = orientation();
 
-    uint hash = qHashBits( &o, sizeof( o ), seed );
+    auto hash = qHashBits( &o, sizeof( o ), seed );
     for ( const auto& stop : m_stops )
         hash = stop.hash( hash );
 

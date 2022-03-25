@@ -56,7 +56,7 @@ class QSK_EXPORT QskShadowMetrics
 
     QRectF shadowRect( const QRectF& sourceRect ) const;
 
-    uint hash( uint seed = 0 ) const noexcept;
+    QskHashValue hash( QskHashValue seed = 0 ) const noexcept;
 
     static QVariant interpolate( const QskShadowMetrics&,
         const QskShadowMetrics&, qreal progress );

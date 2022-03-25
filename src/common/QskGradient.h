@@ -96,7 +96,7 @@ class QSK_EXPORT QskGradient
     static QVariant interpolate( const QskGradient&,
         const QskGradient&, qreal progress );
 
-    uint hash( uint seed ) const;
+    QskHashValue hash( QskHashValue seed ) const;
 
     Q_INVOKABLE qreal stopAt( int index ) const;
     Q_INVOKABLE QColor colorAt( int index ) const;

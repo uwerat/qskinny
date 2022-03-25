@@ -50,9 +50,9 @@ QskTextOptions::TextFormat QskTextOptions::effectiveFormat( const QString& text 
         return m_format;
 }
 
-uint qHash( const QskTextOptions& options, uint seed ) noexcept
+QskHashValue qHash( const QskTextOptions& options, QskHashValue seed ) noexcept
 {
-    uint hash;
+    QskHashValue hash;
 
     hash = qHash( options.maximumLineCount(), seed );
     hash = qHash( options.fontSizeMode(), hash );

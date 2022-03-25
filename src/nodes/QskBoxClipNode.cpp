@@ -9,10 +9,10 @@
 #include "QskBoxShapeMetrics.h"
 #include "QskFunctions.h"
 
-static inline uint qskMetricsHash(
+static inline QskHashValue qskMetricsHash(
     const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& border )
 {
-    uint hash = 13000;
+    QskHashValue hash = 13000;
 
     hash = shape.hash( hash );
     return border.hash( hash );
@@ -32,7 +32,7 @@ QskBoxClipNode::~QskBoxClipNode()
 void QskBoxClipNode::setBox( const QRectF& rect,
     const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& border )
 {
-    const uint hash = qskMetricsHash( shape, border );
+    const auto hash = qskMetricsHash( shape, border );
     if ( hash == m_hash && rect == m_rect )
         return;
 

@@ -55,7 +55,7 @@ class QSK_EXPORT QskBoxBorderMetrics
 
     QskBoxBorderMetrics toAbsolute( const QSizeF& ) const noexcept;
 
-    uint hash( uint seed = 0 ) const noexcept;
+    QskHashValue hash( QskHashValue seed = 0 ) const noexcept;
 
     static QVariant interpolate( const QskBoxBorderMetrics&,
         const QskBoxBorderMetrics&, qreal progress );

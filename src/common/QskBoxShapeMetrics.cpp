@@ -151,9 +151,9 @@ QVariant QskBoxShapeMetrics::interpolate(
     return QVariant::fromValue( from.interpolated( to, progress ) );
 }
 
-uint QskBoxShapeMetrics::hash( uint seed ) const noexcept
+QskHashValue QskBoxShapeMetrics::hash( QskHashValue seed ) const noexcept
 {
-    uint hash = qHash( static_cast< int >( m_sizeMode ), seed );
+    auto hash = qHash( static_cast< int >( m_sizeMode ), seed );
     return qHashBits( m_radii, sizeof( m_radii ), hash );
 }
 

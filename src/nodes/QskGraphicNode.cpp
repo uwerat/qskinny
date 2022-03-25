@@ -8,11 +8,11 @@
 #include "QskColorFilter.h"
 #include "QskPainterCommand.h"
 
-static inline uint qskHash(
+static inline QskHashValue qskHash(
     const QskGraphic& graphic, const QskColorFilter& colorFilter,
     QskTextureRenderer::RenderMode renderMode )
 {
-    uint hash = 12000;
+    QskHashValue hash = 12000;
 
     const auto& substitutions = colorFilter.substitutions();
     if ( substitutions.size() > 0 )

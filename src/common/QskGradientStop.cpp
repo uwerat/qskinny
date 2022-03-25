@@ -44,9 +44,9 @@ void QskGradientStop::setStop( qreal position, const QColor& color ) noexcept
     m_color = color;
 }
 
-uint QskGradientStop::hash( uint seed ) const noexcept
+QskHashValue QskGradientStop::hash( QskHashValue seed ) const noexcept
 {
-    uint hash = qHashBits( &m_position, sizeof( m_position ), seed );
+    auto hash = qHashBits( &m_position, sizeof( m_position ), seed );
     return qHashBits( &m_color, sizeof( m_color ), hash );
 }
 

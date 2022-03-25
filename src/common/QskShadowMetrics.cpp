@@ -83,9 +83,9 @@ QRectF QskShadowMetrics::shadowRect( const QRectF& sourceRect ) const
         sourceRect.height() + 2 * extent );
 }
 
-uint QskShadowMetrics::hash( uint seed ) const noexcept
+QskHashValue QskShadowMetrics::hash( QskHashValue seed ) const noexcept
 {
-    uint hash;
+    QskHashValue hash;
 
     hash = qHash( m_offset.x(), seed );
     hash = qHash( m_offset.y(), seed );

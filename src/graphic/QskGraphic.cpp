@@ -1007,7 +1007,7 @@ quint64 QskGraphic::modificationId() const
     return m_data->modificationId;
 }
 
-uint QskGraphic::hash( uint seed ) const
+QskHashValue QskGraphic::hash( QskHashValue seed ) const
 {
     auto hash = qHash( m_data->renderHints, seed );
 
