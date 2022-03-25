@@ -34,9 +34,14 @@ class ListBox : public QskSimpleListBox
   private:
     void populate()
     {
+        const int count = 10000;
+
         const QString format( "Row %1: The quick brown fox jumps over the lazy dog" );
+
         QStringList entries;
-        for ( int i = 0; i < 10000; i++ )
+        entries.reserve( count );
+
+        for ( int i = 0; i < count; i++ )
         {
             entries += format.arg( i + 1 );
         }
