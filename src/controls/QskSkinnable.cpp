@@ -1155,14 +1155,14 @@ bool QskSkinnable::isTransitionAccepted( QskAspect aspect ) const
 }
 
 void QskSkinnable::startTransition( QskAspect aspect,
-    QskAnimationHint animationHint, QVariant from, QVariant to )
+    QskAnimationHint animationHint, const QVariant& from, const QVariant& to )
 {
     aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
     startHintTransition( aspect, animationHint, from, to );
 }
 
 void QskSkinnable::startHintTransition( QskAspect aspect,
-    QskAnimationHint animationHint, QVariant from, QVariant to )
+    QskAnimationHint animationHint, const QVariant& from, const QVariant& to )
 {
     if ( animationHint.duration <= 0 || ( from == to ) )
         return;
@@ -1177,15 +1177,18 @@ void QskSkinnable::startHintTransition( QskAspect aspect,
         to fallback to 0.0 ). In this case we create a default one.
      */
 
-    if ( !from.isValid() )
+    auto v1 = from;
+    auto v2 = to;
+
+    if ( !v1.isValid() )
     {
-        from = qskTypedNullValue( to );
+        v1 = qskTypedNullValue( v2 );
     }
-    else if ( !to.isValid() )
+    else if ( !v2.isValid() )
     {
-        to = qskTypedNullValue( from );
+        v2 = qskTypedNullValue( v1 );
     }
-    else if ( from.userType() != to.userType() )
+    else if ( v1.userType() != v2.userType() )
     {
         return;
     }
@@ -1194,8 +1197,8 @@ void QskSkinnable::startHintTransition( QskAspect aspect,
     {
         const auto skin = effectiveSkin();
 
-        from.setValue( skin->graphicFilter( from.toInt() ) );
-        to.setValue( skin->graphicFilter( to.toInt() ) );
+        v1.setValue( skin->graphicFilter( v1.toInt() ) );
+        v2.setValue( skin->graphicFilter( v2.toInt() ) );
     }
 
     aspect.clearStates();
@@ -1208,9 +1211,9 @@ void QskSkinnable::startHintTransition( QskAspect aspect,
 
     auto animator = m_data->animators.animator( aspect );
     if ( animator && animator->isRunning() )
-        from = animator->currentValue();
+        v1 = animator->currentValue();
 
-    m_data->animators.start( control, aspect, animationHint, from, to );
+    m_data->animators.start( control, aspect, animationHint, v1, v2 );
 }
 
 void QskSkinnable::setSkinStateFlag( QskAspect::State stateFlag, bool on )

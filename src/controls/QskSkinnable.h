@@ -119,7 +119,7 @@ class QSK_EXPORT QskSkinnable
     QskSkin* effectiveSkin() const;
 
     void startTransition( QskAspect,
-        QskAnimationHint, QVariant from, QVariant to );
+        QskAnimationHint, const QVariant& from, const QVariant& to );
 
     QskAspect::Subcontrol effectiveSubcontrol( QskAspect::Subcontrol ) const;
 
@@ -243,7 +243,7 @@ class QSK_EXPORT QskSkinnable
     Q_DISABLE_COPY( QskSkinnable )
 
     void startHintTransition( QskAspect,
-        QskAnimationHint, QVariant from, QVariant to );
+        QskAnimationHint, const QVariant& from, const QVariant& to );
 
     QVariant animatedValue( QskAspect, QskSkinHintStatus* ) const;
     const QVariant& storedHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
