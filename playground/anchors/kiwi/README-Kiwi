@@ -1,0 +1,17 @@
+This code is a stripped down version of the implementation of the Cassowary constraint
+solving algorithm of the Kiwi project:
+
+	https://github.com/nucleic/kiwi
+
+All credits go to the Nucleic Development Team !
+
+For the QSkinny use case the following adjustments have been made:
+
+	- implementations moved from *.h to *.cpp files
+
+	- replacing AssocVector from the Loki Library by yet another stupid
+      implementation of a "flat map"
+
+I forgot what version of Kiwi had been used - a migration of the code
+for a more recent official version will happen soon.
+
