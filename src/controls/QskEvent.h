@@ -23,6 +23,19 @@ class QWheelEvent;
 class QHoverEvent;
 class QKeyEvent;
 
+#ifdef Q_EVENT_DISABLE_COPY
+
+    #define QSK_EVENT_DISABLE_COPY Q_EVENT_DISABLE_COPY;
+
+#else
+    #define QSK_EVENT_DISABLE_COPY(Class) \
+        protected: \
+            Class(const Class &) = default; \
+            Class(Class &&) = delete; \
+            Class &operator=(const Class &other) = default; \
+            Class &operator=(Class &&) = delete;
+#endif
+
 class QSK_EXPORT QskEvent : public QEvent
 {
   public:
@@ -53,6 +66,9 @@ class QSK_EXPORT QskEvent : public QEvent
     virtual QskEvent* clone() const;
 #endif
 
+  private:
+    QSK_EVENT_DISABLE_COPY( QskEvent )
+
 };
 
 class QSK_EXPORT QskGeometryChangeEvent : public QskEvent
@@ -69,6 +85,8 @@ class QSK_EXPORT QskGeometryChangeEvent : public QskEvent
     QskGeometryChangeEvent* clone() const override;
 
   private:
+    QSK_EVENT_DISABLE_COPY( QskGeometryChangeEvent )
+
     const QRectF m_rect;
     const QRectF m_oldRect;
 };
@@ -84,6 +102,8 @@ class QSK_EXPORT QskWindowChangeEvent : public QskEvent
     QskWindowChangeEvent* clone() const override;
 
   private:
+    QSK_EVENT_DISABLE_COPY( QskWindowChangeEvent )
+
     QQuickWindow* const m_oldWindow;
     QQuickWindow* const m_window;
 };
@@ -98,6 +118,8 @@ class QSK_EXPORT QskPopupEvent : public QskEvent
     QskPopupEvent* clone() const override;
 
   private:
+    QSK_EVENT_DISABLE_COPY( QskPopupEvent )
+
     QskPopup* const m_popup;
 };
 
@@ -111,6 +133,8 @@ class QSK_EXPORT QskGestureEvent : public QskEvent
     QskGestureEvent* clone() const override;
 
   private:
+    QSK_EVENT_DISABLE_COPY( QskGestureEvent )
+
     std::shared_ptr< const QskGesture > m_gesture;
 };
 
@@ -131,6 +155,8 @@ class QSK_EXPORT QskAnimatorEvent : public QskEvent
     QskAnimatorEvent* clone() const override;
 
   private:
+    QSK_EVENT_DISABLE_COPY( QskAnimatorEvent )
+
     const QskAspect m_aspect;
     const State m_state;
 };
