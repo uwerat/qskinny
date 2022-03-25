@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #ifndef QSK_DIALOG_H
-#define QSK_DIALOG_H 1
+#define QSK_DIALOG_H
 
 #include "QskGlobal.h"
 
@@ -138,6 +138,8 @@ class QSK_EXPORT QskDialog : public QObject
     Q_INVOKABLE QString select(
         const QString& title, const QString& text,
         const QStringList& entries, int selectedRow = 0 ) const;
+
+    static ActionRole actionRole( Action action );
 
   Q_SIGNALS:
     void transientParentChanged();

@@ -24,7 +24,7 @@ class QSK_EXPORT QskArcMetrics
   public:
     constexpr QskArcMetrics() noexcept;
     constexpr QskArcMetrics( qreal width, qreal startAngle, qreal spanAngle,
-                             Qt::SizeMode = Qt::AbsoluteSize ) noexcept;
+        Qt::SizeMode = Qt::AbsoluteSize ) noexcept;
 
     bool operator==( const QskArcMetrics& ) const noexcept;
     bool operator!=( const QskArcMetrics& ) const noexcept;
@@ -50,7 +50,7 @@ class QSK_EXPORT QskArcMetrics
 
     QskArcMetrics toAbsolute( const QSizeF& ) const noexcept;
 
-    uint hash( uint seed = 0 ) const noexcept;
+    QskHashValue hash( QskHashValue seed = 0 ) const noexcept;
 
     static QVariant interpolate( const QskArcMetrics&,
         const QskArcMetrics&, qreal progress );

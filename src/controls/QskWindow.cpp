@@ -119,7 +119,7 @@ static inline void qskSetVisualizationMode(
 #endif
 }
 
-static inline QByteArray qskVisualizationMode( const QQuickWindow* window )
+static inline const QByteArray& qskVisualizationMode( const QQuickWindow* window )
 {
     auto d = QQuickWindowPrivate::get( const_cast< QQuickWindow* >( window ) );
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
@@ -128,6 +128,7 @@ static inline QByteArray qskVisualizationMode( const QQuickWindow* window )
     return d->customRenderMode;
 #endif
 }
+
 class QskWindowPrivate : public QQuickWindowPrivate
 {
     Q_DECLARE_PUBLIC( QskWindow )
@@ -201,23 +202,6 @@ QskWindow::QskWindow( QQuickRenderControl* renderControl, QWindow* parent )
 
 QskWindow::~QskWindow()
 {
-#if QT_VERSION < QT_VERSION_CHECK( 5, 12, 0 )
-    // When being used from Qml the item destruction would run in the most
-    // unefficient way, leading to lots of QQuickItem::ItemChildRemovedChange
-    // depending operations.
-
-    QVector< QPointer< QQuickItem > > items;
-
-    const auto children = contentItem()->childItems();
-    for ( auto child : children )
-    {
-        if ( child->parent() == contentItem() )
-            items += child;
-    }
-
-    for ( auto& item : qskAsConst( items ) )
-        delete item;
-#endif
 }
 
 #if QT_VERSION < QT_VERSION_CHECK( 5, 9, 0 )
@@ -236,7 +220,8 @@ void QskWindow::setScreen( const QString& name )
 {
     if ( !name.isEmpty() )
     {
-        for ( auto screen : QGuiApplication::screens() )
+        const auto screens = QGuiApplication::screens();
+        for ( auto screen : screens )
         {
             if ( screen->name() == name )
             {
@@ -579,7 +564,7 @@ void QskWindow::setCustomRenderMode( const char* mode )
     class RenderJob final : public QRunnable
     {
       public:
-        RenderJob( QQuickWindow* window, const QByteArray mode )
+        RenderJob( QQuickWindow* window, const QByteArray& mode )
             : m_window( window )
             , m_mode( mode )
         {

@@ -1,10 +1,11 @@
 #ifndef QSK_SKIN_TRANSITION_H
 #define QSK_SKIN_TRANSITION_H
 
-#include "QskAnimationHint.h"
 #include "QskAspect.h"
+#include <memory>
 
 class QskSkin;
+class QskAnimationHint;
 class QQuickWindow;
 class QVariant;
 
@@ -44,9 +45,10 @@ class QSK_EXPORT QskSkinTransition
     virtual void updateSkin( QskSkin*, QskSkin* );
 
   private:
-    QskSkin* m_skins[ 2 ];
-    QskAnimationHint m_animationHint;
-    Type m_mask : 2;
+    Q_DISABLE_COPY( QskSkinTransition )
+
+    class PrivateData;
+    std::unique_ptr< PrivateData > m_data;
 };
 
 #endif

@@ -10,6 +10,7 @@
 
 #include <qcoreevent.h>
 #include <qrect.h>
+#include <qkeysequence.h>
 #include <memory>
 
 class QskGesture;
@@ -20,6 +21,7 @@ class QQuickItem;
 class QMouseEvent;
 class QWheelEvent;
 class QHoverEvent;
+class QKeyEvent;
 
 class QSK_EXPORT QskEvent : public QEvent
 {
@@ -147,5 +149,7 @@ QSK_EXPORT qreal qskWheelSteps( const QWheelEvent* );
 QSK_EXPORT qreal qskWheelIncrement( const QWheelEvent* );
 
 #endif
+
+QSK_EXPORT bool qskIsStandardKeyInput( const QKeyEvent*, QKeySequence::StandardKey );
 
 #endif

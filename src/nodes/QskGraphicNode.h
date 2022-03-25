@@ -28,7 +28,7 @@ class QSK_EXPORT QskGraphicNode : public QskTextureNode
     void setTexture( QQuickWindow*,
         const QRectF&, uint id, Qt::Orientations ) = delete;
 
-    uint m_hash;
+    QskHashValue m_hash;
 };
 
 #endif

@@ -21,6 +21,8 @@ QObjectList QskObjectTree::childNodes( const QObject* object )
     if ( object == nullptr )
     {
         const auto windows = QGuiApplication::topLevelWindows();
+        children.reserve( windows.count() );
+
         for ( auto window : windows )
             children += window;
     }
@@ -43,6 +45,7 @@ QObjectList QskObjectTree::childNodes( const QObject* object )
     else if ( auto item = qobject_cast< const QQuickItem* >( object ) )
     {
         const auto childItems = item->childItems();
+        children.reserve( childItems.count() );
 
         for ( auto child : childItems )
             children += child;

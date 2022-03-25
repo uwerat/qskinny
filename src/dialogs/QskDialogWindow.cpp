@@ -8,6 +8,7 @@
 #include "QskLinearBox.h"
 #include "QskPushButton.h"
 #include "QskQuick.h"
+#include "QskEvent.h"
 
 #include <qeventloop.h>
 #include <qpointer.h>
@@ -248,7 +249,7 @@ void QskDialogWindow::keyPressEvent( QKeyEvent* event )
             button->click();
     }
 
-    if ( event->matches( QKeySequence::Cancel ) )
+    if ( qskIsStandardKeyInput( event, QKeySequence::Cancel ) )
     {
         // using shortcuts instead ???
 

@@ -50,15 +50,13 @@ QskTextOptions::TextFormat QskTextOptions::effectiveFormat( const QString& text 
         return m_format;
 }
 
-uint qHash( const QskTextOptions& options, uint seed ) noexcept
+QskHashValue QskTextOptions::hash( QskHashValue seed ) const noexcept
 {
-    uint hash;
-
-    hash = qHash( options.maximumLineCount(), seed );
-    hash = qHash( options.fontSizeMode(), hash );
-    hash = qHash( options.wrapMode(), hash );
-    hash = qHash( options.format(), hash );
-    hash = qHash( options.elideMode(), hash );
+    auto hash = qHash( m_maximumLineCount, seed );
+    hash = qHash( m_fontSizeMode, hash );
+    hash = qHash( m_wrapMode, hash );
+    hash = qHash( m_format, hash );
+    hash = qHash( m_elideMode, hash );
 
     return hash;
 }

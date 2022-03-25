@@ -70,7 +70,7 @@ static inline bool qskIsVisible( const QskGradientStops& stops )
         const auto& c = stop.color();
         if ( c.isValid() && c.alpha() > 0 )
             return true;
-    }       
+    }
 
     return false;
 }
@@ -179,6 +179,17 @@ static inline QskGradientStops qskExtractedStops(
     return extracted;
 }
 
+static inline QskGradientStops qskGradientStops( const QGradientStops& qtStops )
+{
+    QskGradientStops stops;
+    stops.reserve( qtStops.count() );
+
+    for ( const auto& s : qtStops )
+        stops += QskGradientStop( s.first, s.second );
+
+    return stops;
+}
+
 QskGradient::QskGradient( Orientation orientation )
     : m_orientation( orientation )
     , m_isDirty( false )
@@ -217,6 +228,16 @@ QskGradient::QskGradient( Orientation orientation, const QskGradientStops& stops
 {
     setStops( stops );
 }
+
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 12, 0 )
+
+QskGradient::QskGradient( Orientation orientation, QGradient::Preset preset )
+    : QskGradient( orientation )
+{
+    setStops( qskGradientStops( QGradient( preset ).stops() ) );
+}
+
+#endif
 
 QskGradient::~QskGradient()
 {
@@ -301,8 +322,17 @@ void QskGradient::setStops( const QskGradientStops& stops )
     m_isDirty = true;
 }
 
-QskGradientStops QskGradient::stops() const
+const QskGradientStops& QskGradient::stops() const
 {
+#if 1
+    /*
+        Returning a const& so that it is possible to write:
+            for ( const auto& stop : qAsConst( gradient.stops() ) )
+
+        Once we have changed QskGradientStop from QColor to QRgb
+        we should check if there is a better solution possible
+     */
+#endif
     return m_stops;
 }
 
@@ -387,14 +417,14 @@ bool QskGradient::hasStopAt( qreal value ) const
     return false;
 }
 
-uint QskGradient::hash( uint seed ) const
+QskHashValue QskGradient::hash( QskHashValue seed ) const
 {
     if ( m_stops.isEmpty() )
         return seed;
 
     const auto o = orientation();
 
-    uint hash = qHashBits( &o, sizeof( o ), seed );
+    auto hash = qHashBits( &o, sizeof( o ), seed );
     for ( const auto& stop : m_stops )
         hash = stop.hash( hash );
 

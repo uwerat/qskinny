@@ -185,9 +185,9 @@ QVariant QskBoxBorderColors::interpolate(
     return QVariant::fromValue( from.interpolated( to, ratio ) );
 }
 
-uint QskBoxBorderColors::hash( uint seed ) const
+QskHashValue QskBoxBorderColors::hash( QskHashValue seed ) const
 {
-    uint h = m_gradients[ 0 ].hash( seed );
+    auto h = m_gradients[ 0 ].hash( seed );
     h = m_gradients[ 1 ].hash( h );
     h = m_gradients[ 2 ].hash( h );
     h = m_gradients[ 3 ].hash( h );

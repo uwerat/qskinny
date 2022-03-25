@@ -108,13 +108,19 @@ QPointF QskMenu::origin() const
 
 void QskMenu::addOption( const QUrl& graphicSource, const QString& text )
 {
+#if 0
+    // does not work with Qt 5.6 version of QVector. TODO ...
     m_data->options += Option( graphicSource, text );
+#else
+    Q_UNUSED( graphicSource )
+    Q_UNUSED( text )
+#endif
 
     resetImplicitSize();
     update();
 
     if ( isComponentComplete() )
-        countChanged( count() );
+        Q_EMIT countChanged( count() );
 }
 
 void QskMenu::addOption( const QString& graphicSource, const QString& text )
@@ -278,14 +284,14 @@ void QskMenu::traverse( int steps )
 
     if ( hasAnimationHint( Cursor | QskAspect::Position | QskAspect::Metric ) )
     {
-        // when cycling we want slide in 
+        // when cycling we want slide in
 
         if ( index < 0 )
             setPositionHint( Cursor, count() );
 
         if ( index >= count() )
             setPositionHint( Cursor, -1 );
-    
+
         movePositionHint( Cursor, newIndex );
     }
 
@@ -308,7 +314,7 @@ void QskMenu::mousePressEvent( QMouseEvent* event )
         return;
     }
 
-    return Inherited::mousePressEvent( event );
+    Inherited::mousePressEvent( event );
 }
 
 void QskMenu::mouseReleaseEvent( QMouseEvent* event )
@@ -327,7 +333,7 @@ void QskMenu::mouseReleaseEvent( QMouseEvent* event )
         return;
     }
 
-    return Inherited::mouseReleaseEvent( event );
+    Inherited::mouseReleaseEvent( event );
 }
 
 void QskMenu::aboutToShow()

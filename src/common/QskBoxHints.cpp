@@ -36,17 +36,17 @@ QskBoxHints QskBoxHints::interpolated(
 }
 
 #ifndef QT_NO_DEBUG_STREAM
-    
+
 #include <qdebug.h>
 
 QDebug operator<<( QDebug debug, const QskBoxHints& hints )
-{   
+{
     debug << hints.shape << hints.borderMetrics
         << hints.borderColors << hints.gradient;
 
     return debug;
 }
-    
+
 #endif
 
 #include "moc_QskBoxHints.cpp"

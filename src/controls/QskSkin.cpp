@@ -321,6 +321,20 @@ bool QskSkin::hasGraphicProvider() const
     return m_data->graphicProviders.size() > 0;
 }
 
+QString QskSkin::dialogButtonText( int action ) const
+{
+    const auto theme = QGuiApplicationPrivate::platformTheme();
+
+    auto text = theme->standardButtonText( action );
+#if QT_VERSION < QT_VERSION_CHECK( 5, 7, 0 )
+    text.remove( '&' );
+#else
+    text = QPlatformTheme::removeMnemonics( text );
+#endif
+
+    return text;
+}
+
 const int* QskSkin::dialogButtonLayout( Qt::Orientation orientation ) const
 {
     // auto policy = QPlatformDialogHelper::UnknownLayout;

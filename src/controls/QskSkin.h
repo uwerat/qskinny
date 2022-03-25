@@ -75,6 +75,7 @@ class QSK_EXPORT QskSkin : public QObject
     bool hasGraphicProvider() const;
 
     virtual const int* dialogButtonLayout( Qt::Orientation ) const;
+    virtual QString dialogButtonText( int button ) const;
 
     void setStateMask( QskAspect::States );
     QskAspect::States stateMask() const;

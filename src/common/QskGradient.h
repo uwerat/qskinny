@@ -9,7 +9,7 @@
 #include "QskGlobal.h"
 #include "QskGradientStop.h"
 
-#include <qcolor.h>
+#include <qbrush.h>
 #include <qmetatype.h>
 #include <qvector.h>
 
@@ -49,11 +49,17 @@ class QSK_EXPORT QskGradient
     QskGradient( QRgb );
     QskGradient( const QColor& );
 
+
     QskGradient( Qt::Orientation, const QVector< QskGradientStop >& );
     QskGradient( Qt::Orientation, const QColor&, const QColor& );
 
     QskGradient( Orientation, const QVector< QskGradientStop >& );
     QskGradient( Orientation, const QColor&, const QColor& );
+
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 12, 0 )
+    QskGradient( QGradient::Preset );
+    QskGradient( Orientation, QGradient::Preset );
+#endif
 
     ~QskGradient();
 
@@ -74,7 +80,7 @@ class QSK_EXPORT QskGradient
     Q_INVOKABLE QColor endColor() const;
 
     Q_INVOKABLE void setStops( const QVector< QskGradientStop >& );
-    Q_INVOKABLE QVector< QskGradientStop > stops() const;
+    Q_INVOKABLE const QVector< QskGradientStop >& stops() const;
 
     Q_INVOKABLE bool hasStopAt( qreal value ) const;
 
@@ -94,7 +100,7 @@ class QSK_EXPORT QskGradient
     static QVariant interpolate( const QskGradient&,
         const QskGradient&, qreal progress );
 
-    uint hash( uint seed ) const;
+    QskHashValue hash( QskHashValue seed ) const;
 
     Q_INVOKABLE qreal stopAt( int index ) const;
     Q_INVOKABLE QColor colorAt( int index ) const;
@@ -132,6 +138,15 @@ inline QskGradient::QskGradient( QRgb rgb )
     : QskGradient( QColor::fromRgba( rgb ) )
 {
 }
+
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 12, 0 )
+
+inline QskGradient::QskGradient( QGradient::Preset preset )
+    : QskGradient( Vertical, preset )
+{
+}
+
+#endif
 
 inline QskGradient::Orientation QskGradient::orientation() const
 {

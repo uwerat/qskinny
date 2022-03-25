@@ -22,7 +22,7 @@ class QSK_EXPORT QskBoxClipNode : public QSGClipNode
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics& );
 
   private:
-    uint m_hash;
+    QskHashValue m_hash;
     QRectF m_rect;
 
     QSGGeometry m_geometry;

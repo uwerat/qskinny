@@ -35,6 +35,8 @@ class QSK_EXPORT QskGraphicTextureFactory : public QQuickTextureFactory
     QImage image() const override;
 
   private:
+    Q_DISABLE_COPY( QskGraphicTextureFactory )
+
     QskGraphic m_graphic;
     QskColorFilter m_colorFilter;
     QSize m_size;

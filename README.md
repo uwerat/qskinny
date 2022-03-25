@@ -28,6 +28,7 @@ But so far only Linux is actively tested.
 It might support all versions Qt >= 5.6, but you can rely on:
 
 - Qt 5.6
+- Qt 5.15
 - current long term supported ( LTS ) version of Qt
 - current version of Qt
 

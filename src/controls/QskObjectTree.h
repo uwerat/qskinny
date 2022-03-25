@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #ifndef QSK_OBJECT_TREE_H
-#define QSK_OBJECT_TREE_H 1
+#define QSK_OBJECT_TREE_H
 
 #include "QskControl.h"
 #include "QskWindow.h"
@@ -16,10 +16,14 @@ namespace QskObjectTree
     class Visitor
     {
       public:
+        Visitor() = default;
         virtual ~Visitor() = default;
 
         virtual bool visitDown( QObject* object ) = 0;
         virtual bool visitUp( const QObject* object ) = 0;
+
+      private:
+        Q_DISABLE_COPY( Visitor )
     };
 
     QSK_EXPORT QObjectList childNodes( const QObject* );

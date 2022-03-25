@@ -15,11 +15,6 @@
 #include <qvector.h>
 
 #include <qpa/qplatformdialoghelper.h>
-#include <qpa/qplatformtheme.h>
-
-QSK_QT_PRIVATE_BEGIN
-#include <private/qguiapplication_p.h>
-QSK_QT_PRIVATE_END
 
 #include <limits>
 
@@ -29,14 +24,6 @@ static void qskSendEventTo( QObject* object, QEvent::Type type )
 {
     QEvent event( type );
     QCoreApplication::sendEvent( object, &event );
-}
-
-static inline QskDialog::ActionRole qskActionRole( QskDialog::Action action )
-{
-    const auto role = QPlatformDialogHelper::buttonRole(
-        static_cast< QPlatformDialogHelper::StandardButton >( action ) );
-
-    return static_cast< QskDialog::ActionRole >( role );
 }
 
 namespace
@@ -131,7 +118,7 @@ QskDialogButtonBox::~QskDialogButtonBox()
 {
     for ( int i = 0; i < QskDialog::NActionRoles; i++ )
     {
-        for ( auto button : qskAsConst( m_data->buttons[ i ] ) )
+        for ( auto button : qAsConst( m_data->buttons[ i ] ) )
         {
             /*
                 The destructor of QQuickItem sets the parentItem of
@@ -346,9 +333,8 @@ void QskDialogButtonBox::addButton(
 
 void QskDialogButtonBox::addAction( QskDialog::Action action )
 {
-    QskPushButton* button = createButton( action );
-    if ( button )
-        addButton( button, qskActionRole( action ) );
+    if ( auto button = createButton( action ) )
+        addButton( button, QskDialog::actionRole( action ) );
 }
 
 void QskDialogButtonBox::removeButton( QskPushButton* button )
@@ -579,32 +565,10 @@ void QskDialogButtonBox::itemChange(
 
 bool QskDialogButtonBox::isDefaultButtonKeyEvent( const QKeyEvent* event )
 {
-    if ( event->modifiers() & Qt::KeypadModifier && event->key() == Qt::Key_Enter )
-    {
-        return ( event->modifiers() & Qt::KeypadModifier )
-            && ( event->key() == Qt::Key_Enter );
-    }
-    else
-    {
-        return ( event->key() == Qt::Key_Enter ) ||
-            ( event->key() == Qt::Key_Return );
-    }
-}
+    if ( !event->modifiers() )
+        return ( event->key() == Qt::Key_Enter ) || ( event->key() == Qt::Key_Return );
 
-QString QskDialogButtonBox::buttonText( QskDialog::Action action )
-{
-    // should be redirected through the skin !
-
-    const QPlatformTheme* theme = QGuiApplicationPrivate::platformTheme();
-    QString text = theme->standardButtonText( action );
-
-#if QT_VERSION < QT_VERSION_CHECK( 5, 7, 0 )
-    text.remove( '&' );
-#else
-    text = QPlatformTheme::removeMnemonics( text );
-#endif
-
-    return text;
+    return ( event->modifiers() & Qt::KeypadModifier ) && ( event->key() == Qt::Key_Enter );
 }
 
 #include "moc_QskDialogButtonBox.cpp"

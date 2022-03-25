@@ -39,6 +39,8 @@ class QSK_EXPORT QskDialogButton : public QskPushButton
         QskAspect::Subcontrol ) const override;
 
   private:
+    void resetButton();
+
     QskDialog::Action m_action;
 };
 

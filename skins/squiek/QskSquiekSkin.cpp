@@ -941,7 +941,7 @@ QskSquiekSkin::QskSquiekSkin( QObject* parent )
     : Inherited( parent )
     , m_data( new PrivateData() )
 {
-    setupFonts( "DejaVuSans" );
+    setupFonts( QStringLiteral( "DejaVuSans" ) );
 
     Editor editor( &hintTable(), m_data->palette );
     editor.setup();

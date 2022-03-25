@@ -49,7 +49,7 @@ class QSK_EXPORT QskBoxBorderColors
     static QVariant interpolate( const QskBoxBorderColors&,
         const QskBoxBorderColors&, qreal ratio );
 
-    uint hash( uint seed = 0 ) const;
+    QskHashValue hash( QskHashValue seed = 0 ) const;
 
     bool isMonochrome() const;
     bool isVisible() const;

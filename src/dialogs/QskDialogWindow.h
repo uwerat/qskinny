@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #ifndef QSK_DIALOG_WINDOW_H
-#define QSK_DIALOG_WINDOW_H 1
+#define QSK_DIALOG_WINDOW_H
 
 #include "QskDialog.h"
 #include "QskWindow.h"

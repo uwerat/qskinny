@@ -167,6 +167,8 @@ class QSK_EXPORT QskSkinlet
         const QSizeF& hint, const QSizeF& constraint ) const;
 
   private:
+    Q_DISABLE_COPY( QskSkinlet )
+
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

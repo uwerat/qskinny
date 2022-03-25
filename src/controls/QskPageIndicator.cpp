@@ -15,10 +15,10 @@ QSK_SYSTEM_STATE( QskPageIndicator, Selected, QskAspect::FirstSystemState << 1 )
 static int qskKeyIncrement(
     const QskPageIndicator* indicator, const QKeyEvent* event )
 {
-    if ( event->matches( QKeySequence::MoveToNextChar ) )
+    if ( qskIsStandardKeyInput( event, QKeySequence::MoveToNextChar ) )
         return 1;
 
-    if ( event->matches( QKeySequence::MoveToPreviousChar ) )
+    if ( qskIsStandardKeyInput( event, QKeySequence::MoveToPreviousChar ) )
         return -1;
 
     const auto key = event->key();
@@ -29,10 +29,10 @@ static int qskKeyIncrement(
 
         if ( key == Qt::Key_Left )
             return mirrored ? 1 : -1;
-            
+
         if ( key == Qt::Key_Right )
             return mirrored ? -1 : 1;
-    }       
+    }
     else
     {
         if ( key == Qt::Key_Up )
@@ -40,10 +40,10 @@ static int qskKeyIncrement(
 
         if ( key == Qt::Key_Down )
             return 1;
-    }   
-    
+    }
+
     return 0;
-}   
+}
 
 
 class QskPageIndicator::PrivateData
@@ -145,8 +145,8 @@ qreal QskPageIndicator::valueRatioAt( int index ) const
 
         const qreal diff = 1.0 - std::abs( pos - index );
         return std::max( diff, 0.0 );
-    }   
-    
+    }
+
     return 0.0;
 }
 
@@ -184,7 +184,7 @@ void QskPageIndicator::mousePressEvent( QMouseEvent* event )
         return;
     }
 
-    return Inherited::mousePressEvent( event );
+    Inherited::mousePressEvent( event );
 }
 
 void QskPageIndicator::mouseUngrabEvent()
@@ -205,11 +205,11 @@ void QskPageIndicator::mouseReleaseEvent( QMouseEvent* event )
             if ( indexAtPosition( pos ) == index )
                 Q_EMIT pageRequested( index );
         }
-        
+
         return;
     }
 
-    return Inherited::mouseReleaseEvent( event );
+    Inherited::mouseReleaseEvent( event );
 }
 
 void QskPageIndicator::keyPressEvent( QKeyEvent* event )

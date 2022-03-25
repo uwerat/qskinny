@@ -32,6 +32,8 @@ class QSK_EXPORT QskGraphicImageProvider : public QQuickImageProvider
     const QskGraphic* requestGraphic( const QString& id ) const;
 
   private:
+    Q_DISABLE_COPY( QskGraphicImageProvider )
+
     const QString m_providerId;
 };
 

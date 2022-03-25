@@ -33,7 +33,7 @@ namespace
 
             connect( this, &QskTabView::currentIndexChanged,
                 this, &TabView::updateViewPanel );
-        } 
+        }
 
       protected:
         void aboutToShow() override
@@ -48,7 +48,7 @@ namespace
                 We should have a better way to set individual colors
                 for each tab page background
              */
-            
+
             if ( auto page = dynamic_cast< const ::Page* >( currentItem() ) )
                 setGradientHint( QskTabView::Page, page->gradient() );
         }

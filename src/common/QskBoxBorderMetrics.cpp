@@ -92,9 +92,9 @@ QVariant QskBoxBorderMetrics::interpolate(
     return QVariant::fromValue( from.interpolated( to, progress ) );
 }
 
-uint QskBoxBorderMetrics::hash( uint seed ) const noexcept
+QskHashValue QskBoxBorderMetrics::hash( QskHashValue seed ) const noexcept
 {
-    uint hash = qHashBits( &m_widths, sizeof( m_widths ), seed );
+    auto hash = qHashBits( &m_widths, sizeof( m_widths ), seed );
 
     const int mode = m_sizeMode;
     return qHashBits( &mode, sizeof( mode ), hash );

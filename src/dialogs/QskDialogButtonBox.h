@@ -61,7 +61,6 @@ class QSK_EXPORT QskDialogButtonBox : public QskBox
     QskPushButton* defaultButton() const;
 
     static bool isDefaultButtonKeyEvent( const QKeyEvent* );
-    static QString buttonText( QskDialog::Action );
 
   Q_SIGNALS:
     void clicked( QskPushButton* button );

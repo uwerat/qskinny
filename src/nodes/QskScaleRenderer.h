@@ -7,16 +7,18 @@
 #define QSK_SCALE_RENDERER_H
 
 #include "QskGlobal.h"
-#include "QskIntervalF.h"
-#include "QskScaleTickmarks.h"
-#include "QskTextColors.h"
-#include "QskColorFilter.h"
 
 #include <qnamespace.h>
 #include <qfont.h>
 #include <qcolor.h>
 
+#include <memory>
+
 class QskSkinnable;
+class QskIntervalF;
+class QskScaleTickmarks;
+class QskTextColors;
+class QskColorFilter;
 
 class QSGNode;
 class QVariant;
@@ -25,6 +27,9 @@ class QRectF;
 class QSK_EXPORT QskScaleRenderer
 {
   public:
+    QskScaleRenderer();
+    ~QskScaleRenderer();
+
     void setOrientation( Qt::Orientation );
 
     void setBoundaries( const QskIntervalF& );
@@ -52,18 +57,10 @@ class QSK_EXPORT QskScaleRenderer
         const QRectF& labelsRect, QSGNode* node ) const;
 
   private:
-    Qt::Orientation m_orientation = Qt::Horizontal;
+    Q_DISABLE_COPY( QskScaleRenderer )
 
-    QskIntervalF m_boundaries;
-    QskScaleTickmarks m_tickmarks;
-
-    QColor m_tickColor = Qt::black;
-    qreal m_tickWidth = 1.0;
-
-    QFont m_font;
-    QskTextColors m_textColors;
-
-    QskColorFilter m_colorFilter;
+    class PrivateData;
+    std::unique_ptr< PrivateData > m_data;
 };
 
 #endif

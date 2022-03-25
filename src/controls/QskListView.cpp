@@ -8,10 +8,8 @@
 #include "QskColorFilter.h"
 #include "QskEvent.h"
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 9, 0 )
 #include <qguiapplication.h>
 #include <qstylehints.h>
-#endif
 
 #include <qmath.h>
 
@@ -198,11 +196,13 @@ void QskListView::keyPressEvent( QKeyEvent* event )
         case Qt::Key_PageDown:
         {
             // TODO ...
-            return Inherited::keyPressEvent( event );
+            Inherited::keyPressEvent( event );
+            return;
         }
         default:
         {
-            return Inherited::keyPressEvent( event );
+            Inherited::keyPressEvent( event );
+            return;
         }
     }
 

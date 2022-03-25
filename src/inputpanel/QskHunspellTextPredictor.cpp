@@ -1,14 +1,90 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * This file may be used under the terms of the QSkinny License, Version 1.0
+ *****************************************************************************/
+
 #include "QskHunspellTextPredictor.h"
 
-#include <QDebug>
-#include <QDir>
-#include <QFileInfo>
-#include <QLocale>
-#include <QTextCodec>
-#include <QTimer>
-#include <QVector>
+#include <qlocale.h>
+#include <qtimer.h>
+#include <qfile.h>
+#include <qdir.h>
+#include <qdebug.h>
 
 #include <hunspell/hunspell.h>
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+
+#include <qtextcodec.h>
+
+namespace
+{
+    class StringConverter
+    {
+      public:
+        StringConverter( const QByteArray& encoding )
+            : m_codec( QTextCodec::codecForName( encoding ) )
+        {
+        }
+
+        inline QString fromHunspell( const char* text ) const
+        {
+            if ( m_codec )
+                return m_codec->toUnicode( text );
+
+            return QString::fromUtf8( text );
+        }
+
+        inline QByteArray toHunspell( const QString& text ) const
+        {
+            if ( m_codec )
+                return m_codec->fromUnicode( text );
+
+            return text.toUtf8();
+        }
+      private:
+        QTextCodec* m_codec;
+    };
+}
+
+#else
+
+#include <qstringconverter.h>
+
+namespace
+{
+    class StringConverter
+    {
+      public:
+        StringConverter( const QByteArray& encoding )
+            : m_decoder( encoding )
+            , m_encoder( encoding )
+        {
+        }
+
+        inline QString fromHunspell( const char* text ) const
+        {
+            if ( m_decoder.isValid() )
+                return m_decoder.decode( text );
+
+            return QString::fromUtf8( text );
+        }
+
+        inline QByteArray toHunspell( const QString& text ) const
+        {
+            if ( m_encoder.isValid() )
+                return m_encoder.encode( text );
+
+            return text.toUtf8();
+        }
+
+      private:
+        mutable QStringDecoder m_decoder;
+        mutable QStringEncoder m_encoder;
+    };
+}
+
+#endif
 
 class QskHunspellTextPredictor::PrivateData
 {
@@ -19,7 +95,8 @@ class QskHunspellTextPredictor::PrivateData
     QLocale locale;
 };
 
-QskHunspellTextPredictor::QskHunspellTextPredictor( const QLocale &locale, QObject* object )
+QskHunspellTextPredictor::QskHunspellTextPredictor(
+        const QLocale& locale, QObject* object )
     : Inherited( object )
     , m_data( new PrivateData() )
 {
@@ -43,7 +120,8 @@ void QskHunspellTextPredictor::reset()
     }
 }
 
-QPair< QString, QString > QskHunspellTextPredictor::affAndDicFile( const QString& path, const QLocale& locale )
+QPair< QString, QString > QskHunspellTextPredictor::affAndDicFile(
+    const QString& path, const QLocale& locale )
 {
     QString prefix = QStringLiteral( "%1/%2" ).arg( path, locale.name() );
     QString affFile = prefix + QStringLiteral( ".aff" );
@@ -61,19 +139,21 @@ QPair< QString, QString > QskHunspellTextPredictor::affAndDicFile( const QString
 
 void QskHunspellTextPredictor::loadDictionaries()
 {
-    QString userPaths = QString::fromUtf8( qgetenv( "QSK_HUNSPELL_PATH" ) );
-
-#if defined(Q_OS_WIN32)
-    QChar separator( ';' );
-    QStringList defaultPaths;
+    const auto splitBehavior =
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 14, 0 )
+        Qt::SkipEmptyParts;
 #else
-    QChar separator( ':' );
-    QStringList defaultPaths = { QStringLiteral( "/usr/share/hunspell" ),
-                                 QStringLiteral( "/usr/share/myspell/dicts" ) };
+        QString::SkipEmptyParts;
 #endif
 
-    QStringList paths = userPaths.split( separator, QString::SkipEmptyParts );
-    paths.append( defaultPaths );
+    const auto userPaths = QString::fromUtf8( qgetenv( "QSK_HUNSPELL_PATH" ) );
+
+    auto paths = userPaths.split( QDir::listSeparator(), splitBehavior );
+
+#if !defined( Q_OS_WIN32 )
+    paths += QStringLiteral( "/usr/share/hunspell" );
+    paths += QStringLiteral( "/usr/share/myspell/dicts" );
+#endif
 
     for( const auto& path : paths )
     {
@@ -104,21 +184,19 @@ void QskHunspellTextPredictor::request( const QString& text )
         return;
     }
 
+    StringConverter converter( m_data->hunspellEncoding );
+
     char** suggestions;
 
-    QTextCodec *codec = QTextCodec::codecForName( m_data->hunspellEncoding );
-    const QByteArray word = codec ? codec->fromUnicode( text ) : text.toUtf8();
-
-    const int count = Hunspell_suggest(
-        m_data->hunspellHandle, &suggestions, word.constData() );
+    const int count = Hunspell_suggest( m_data->hunspellHandle,
+        &suggestions, converter.toHunspell( text ).constData() );
 
     QStringList candidates;
     candidates.reserve( count );
 
     for ( int i = 0; i < count; i++ )
     {
-        const QString suggestion = codec ? codec->toUnicode( suggestions[ i ] )
-                                         : QString::fromUtf8( suggestions [ i ] );
+        const auto suggestion = converter.fromHunspell( suggestions[ i ] );
 
         if ( suggestion.startsWith( text ) )
             candidates.prepend( suggestion );
@@ -131,3 +209,5 @@ void QskHunspellTextPredictor::request( const QString& text )
     m_data->candidates = candidates;
     Q_EMIT predictionChanged( text, m_data->candidates );
 }
+
+#include "moc_QskHunspellTextPredictor.cpp"

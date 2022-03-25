@@ -15,16 +15,21 @@
 #include <qquickwindow.h>
 
 #if defined( QT_DEBUG )
+
 QSK_QT_PRIVATE_BEGIN
+
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 2, 0 )
     #ifndef emit
-        // qvariantanimation_p.h needs it
         #define emit
+        #include <private/qabstractanimation_p.h>
+        #undef emit
     #endif
 #endif
 
 #include <private/qquickpositioners_p.h>
+
 QSK_QT_PRIVATE_END
+
 #endif
 
 #include <unordered_set>
@@ -65,6 +70,10 @@ namespace
             QObject::connect( qskSetup, &QskSetup::itemUpdateFlagsChanged,
                 qskSetup, [ this ] { updateControlFlags(); } );
 
+            /*
+                We would also need to send QEvent::StyleChange, when
+                a window has a new skin. TODO ...
+             */
             QObject::connect( qskSetup, &QskSetup::skinChanged,
                 qskSetup, [ this ] { updateSkin(); } );
         }
@@ -200,9 +209,9 @@ void QskQuickItem::classBegin()
 void QskQuickItem::componentComplete()
 {
 #if defined( QT_DEBUG )
-    if ( qobject_cast< const QQuickBasePositioner* >( parent() ) )
+    if ( d_func()->updateFlags & QskQuickItem::DeferredLayout )
     {
-        if ( d_func()->updateFlags & QskQuickItem::DeferredLayout )
+        if ( qobject_cast< const QQuickBasePositioner* >( parent() ) )
         {
             qWarning( "QskQuickItem in DeferredLayout mode under control of a positioner" );
         }

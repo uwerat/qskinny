@@ -122,7 +122,7 @@ QRectF qskValidOrEmptyInnerRect( const QRectF& rect, const QMarginsF& margins )
     return QRectF( x, y, w, h );
 }
 
-QRectF qskInterpolatedRect( const QRectF &from, const QRectF &to, qreal progress )
+QRectF qskInterpolatedRect( const QRectF& from, const QRectF& to, qreal progress )
 {
     if ( progress <= 0.0 )
         return from;
@@ -138,7 +138,7 @@ QRectF qskInterpolatedRect( const QRectF &from, const QRectF &to, qreal progress
     return QRectF( x, y, w, h );
 }
 
-QSizeF qskInterpolatedSize( const QSizeF &from, const QSizeF &to, qreal progress )
+QSizeF qskInterpolatedSize( const QSizeF& from, const QSizeF& to, qreal progress )
 {
     if ( progress <= 0.0 )
         return from;

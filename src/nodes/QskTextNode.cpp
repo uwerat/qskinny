@@ -11,16 +11,16 @@
 #include <qfont.h>
 #include <qstring.h>
 
-static inline uint qskHash(
+static inline QskHashValue qskHash(
     const QString& text, const QSizeF& size, const QFont& font,
     const QskTextOptions& options, const QskTextColors& colors,
     Qt::Alignment alignment, Qsk::TextStyle textStyle )
 {
-    uint hash = 11000;
+    QskHashValue hash = 11000;
 
     hash = qHash( text, hash );
     hash = qHash( font, hash );
-    hash = qHash( options, hash );
+    hash = options.hash( hash );
     hash = qHash( alignment, hash );
     hash = qHash( textStyle, hash );
     hash = colors.hash( hash );
@@ -49,7 +49,7 @@ void QskTextNode::setTextData(
     if ( matrix != this->matrix() ) // avoid setting DirtyMatrix accidently
         setMatrix( matrix );
 
-    const uint hash = qskHash( text, rect.size(), font,
+    const auto hash = qskHash( text, rect.size(), font,
         options, colors, alignment, textStyle );
 
     if ( hash != m_hash )

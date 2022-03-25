@@ -14,6 +14,8 @@ class QskBoxBorderMetrics;
 class QskBoxBorderColors;
 class QskGradient;
 
+class QskBoxNodePrivate;
+
 class QSK_EXPORT QskBoxNode : public QSGGeometryNode
 {
   public:
@@ -29,11 +31,8 @@ class QSK_EXPORT QskBoxNode : public QSGGeometryNode
   private:
     void setMonochrome( bool on );
 
-    uint m_metricsHash;
-    uint m_colorsHash;
-    QRectF m_rect;
+    Q_DECLARE_PRIVATE( QskBoxNode )
 
-    QSGGeometry m_geometry;
 };
 
 #endif

@@ -172,10 +172,6 @@ QSGTexture* QskTextureRenderer::textureFromId(
     return texture;
 }
 
-QskTextureRenderer::PaintHelper::~PaintHelper()
-{
-}
-
 uint QskTextureRenderer::createTexture(
     QQuickWindow* window, RenderMode renderMode,
     const QSize& size, PaintHelper* helper )

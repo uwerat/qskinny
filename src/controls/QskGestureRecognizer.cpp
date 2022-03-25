@@ -11,12 +11,14 @@
 #include <qvector.h>
 
 QSK_QT_PRIVATE_BEGIN
+
 #include <private/qquickwindow_p.h>
-QSK_QT_PRIVATE_END
 
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 3, 0 )
 #include <private/qeventpoint_p.h>
 #endif
+
+QSK_QT_PRIVATE_END
 
 static QMouseEvent* qskClonedMouseEventAt(
     const QMouseEvent* event, QPointF* localPos )
@@ -130,7 +132,7 @@ namespace
         {
             Timer* timer = nullptr;
 
-            for ( auto t : qskAsConst( m_table ) )
+            for ( auto t : qAsConst( m_table ) )
             {
                 if ( t->recognizer() == nullptr ||
                     t->recognizer() == recognizer )
@@ -151,7 +153,7 @@ namespace
 
         void stopTimer( const QskGestureRecognizer* recognizer )
         {
-            for ( auto timer : qskAsConst( m_table ) )
+            for ( auto timer : qAsConst( m_table ) )
             {
                 if ( timer->recognizer() == recognizer )
                 {

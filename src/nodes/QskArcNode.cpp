@@ -32,11 +32,11 @@ void QskArcNode::paint( QPainter* painter, const QSizeF& size )
     renderer.renderArc( rect, m_metrics, m_gradient, painter );
 }
 
-uint QskArcNode::hash() const
+QskHashValue QskArcNode::hash() const
 {
-    uint h = m_metrics.hash();
+    auto h = m_metrics.hash();
 
-    for( const auto& stop : m_gradient.stops() )
+    for( const auto& stop : qAsConst( m_gradient.stops() ) )
         h = stop.hash( h );
 
     return h;

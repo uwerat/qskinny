@@ -125,7 +125,7 @@ QColor ShadowedBox::shadowColor() const
     return m_shadowColor;
 }
 
-QRectF ShadowedBox::layoutRectForSize( const QSizeF &size ) const
+QRectF ShadowedBox::layoutRectForSize( const QSizeF& size ) const
 {
     auto padding = paddingHint( Panel );
     return { padding.left() / 2, padding.top() / 2,

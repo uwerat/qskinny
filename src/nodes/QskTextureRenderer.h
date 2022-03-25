@@ -38,8 +38,13 @@ namespace QskTextureRenderer
     class QSK_EXPORT PaintHelper
     {
       public:
-        virtual ~PaintHelper();
+        PaintHelper() = default;
+        virtual ~PaintHelper() = default;
+
         virtual void paint( QPainter*, const QSize& ) = 0;
+
+      private:
+        Q_DISABLE_COPY( PaintHelper )
     };
 
     QSK_EXPORT uint createTexture(

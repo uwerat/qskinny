@@ -20,7 +20,7 @@ class QSK_EXPORT QskArcNode : public QskPaintedNode
         const QskGradient&, QQuickWindow* );
 
     void paint( QPainter* painter, const QSizeF& size ) override;
-    uint hash() const override;
+    QskHashValue hash() const override;
 
   private:
     QskArcMetrics m_metrics;

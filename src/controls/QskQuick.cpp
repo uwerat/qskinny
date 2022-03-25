@@ -649,7 +649,7 @@ void qskItemUpdateRecursive( QQuickItem* item )
 
 static const QQuickPointerTouchEvent* qskPointerPressEvent( const QQuickWindowPrivate* wd )
 {
-    for ( const auto event : wd->pointerEventInstances )
+    for ( const auto event : qAsConst( wd->pointerEventInstances ) )
     {
         if ( auto touchEvent = event->asPointerTouchEvent() )
         {

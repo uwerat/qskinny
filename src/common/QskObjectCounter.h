@@ -37,6 +37,8 @@ class QSK_EXPORT QskObjectCounter
     void dump() const;
 
   private:
+    Q_DISABLE_COPY( QskObjectCounter )
+
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 

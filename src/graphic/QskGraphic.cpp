@@ -565,7 +565,7 @@ QRectF QskGraphic::scaledBoundingRect( qreal sx, qreal sy ) const
 
     QRectF rect = transform.mapRect( m_data->pointRect );
 
-    for ( const auto& info : qskAsConst( m_data->pathInfos ) )
+    for ( const auto& info : qAsConst( m_data->pathInfos ) )
         rect |= info.scaledBoundingRect( sx, sy, scalePens );
 
     return rect;
@@ -678,7 +678,7 @@ void QskGraphic::render( QPainter* painter, const QRectF& rect,
 
     const bool scalePens = !( m_data->renderHints & RenderPensUnscaled );
 
-    for ( const auto& info : qskAsConst( m_data->pathInfos ) )
+    for ( const auto& info : qAsConst( m_data->pathInfos ) )
     {
         const qreal ssx = info.scaleFactorX(
             m_data->pointRect, rect, scalePens );
@@ -1007,7 +1007,7 @@ quint64 QskGraphic::modificationId() const
     return m_data->modificationId;
 }
 
-uint QskGraphic::hash( uint seed ) const
+QskHashValue QskGraphic::hash( QskHashValue seed ) const
 {
     auto hash = qHash( m_data->renderHints, seed );
 
@@ -1203,3 +1203,5 @@ QDebug operator<<( QDebug debug, const QskGraphic& graphic )
 }
 
 #endif
+
+#include "moc_QskGraphic.cpp"

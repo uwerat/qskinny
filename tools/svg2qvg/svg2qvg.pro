@@ -18,7 +18,7 @@ standalone {
         $${QSK_ROOT}/src/common \
         $${QSK_ROOT}/src/graphic
 
-    INCLUDEPATH *= $${QSK_DIRS}
+    INCLUDEPATH *= $${QSK_DIRS} $${QSK_OUT_ROOT}/src/$${MOC_DIR}
     DEPENDPATH  += $${QSK_DIRS}
 
     DEFINES += QSK_STANDALONE

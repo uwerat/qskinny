@@ -292,7 +292,7 @@ namespace
             m_skinMap.clear();
 
             // first we try all factories, that have been added manually
-            for ( auto it = m_factoryMap.begin(); it != m_factoryMap.end(); ++it )
+            for ( auto it = m_factoryMap.constBegin(); it != m_factoryMap.constEnd(); ++it )
             {
                 const auto& data = it.value();
 
@@ -301,7 +301,7 @@ namespace
             }
 
             // all factories from plugins are following
-            for ( auto it = m_factoryMap.begin(); it != m_factoryMap.end(); ++it )
+            for ( auto it = m_factoryMap.constBegin(); it != m_factoryMap.constEnd(); ++it )
             {
                 const auto& data = it.value();
                 if ( data.loader )
@@ -341,7 +341,7 @@ class QskSkinManager::PrivateData
     {
         if ( !pluginsRegistered )
         {
-            for ( const auto& path : qskAsConst( pluginPaths ) )
+            for ( const auto& path : qAsConst( pluginPaths ) )
                 registerPlugins( path + QStringLiteral( "/skins" ) );
 
             pluginsRegistered = true;

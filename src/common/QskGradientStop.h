@@ -11,13 +11,6 @@
 #include <qcolor.h>
 #include <qmetatype.h>
 
-#if QT_VERSION < QT_VERSION_CHECK( 5, 14, 0 )
-/*
-    since Qt >= 5.14 QColor has constexpr declarations and we could declare
-    several methods of QskGradientStop being constexpr as well. TODO ...
- */
-#endif
-
 class QSK_EXPORT QskGradientStop
 {
     Q_GADGET
@@ -47,7 +40,7 @@ class QSK_EXPORT QskGradientStop
     static QColor interpolated(
         const QskGradientStop&, const QskGradientStop&, qreal position ) noexcept;
 
-    uint hash( uint seed ) const noexcept;
+    QskHashValue hash( QskHashValue seed ) const noexcept;
 
   private:
     qreal m_position;

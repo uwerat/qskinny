@@ -17,15 +17,15 @@
 #ifdef QSK_DLL
 
 #if defined( QSK_MAKEDLL )     // create a DLL library
-#define QSK_EXPORT Q_DECL_EXPORT
+    #define QSK_EXPORT Q_DECL_EXPORT
 #else                        // use a DLL library
-#define QSK_EXPORT Q_DECL_IMPORT
+    #define QSK_EXPORT Q_DECL_IMPORT
 #endif
 
 #endif // QSK_DLL
 
 #ifndef QSK_EXPORT
-#define QSK_EXPORT
+    #define QSK_EXPORT
 #endif
 
 #define QSK_QT_PRIVATE_BEGIN \
@@ -39,27 +39,26 @@
 #define QSK_QT_PRIVATE_END \
     QT_WARNING_POP
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
+#if defined( QSK_BUILD )
 
-#define qskAsConst qAsConst
+    #if QT_VERSION < QT_VERSION_CHECK( 5, 7, 0 )
 
-#else
+        template< typename T >
+        struct QskAddConst { typedef const T Type; };
 
-template< typename T >
-struct QskAddConst { typedef const T Type; };
+        template< typename T >
+        constexpr typename QskAddConst< T >::Type& qAsConst( T& t ) noexcept { return t; }
 
-template< typename T >
-constexpr typename QskAddConst< T >::Type& qskAsConst( T& t ) noexcept { return t; }
+        template< typename T >
+        void qAsConst( const T&& ) = delete;
 
-template< typename T >
-void qskAsConst( const T&& ) = delete;
-
+    #endif
 #endif
 
-#ifdef Q_FALLTHROUGH
-#define QSK_FALLTHROUGH Q_FALLTHROUGH
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    using QskHashValue = uint;
 #else
-#define QSK_FALLTHROUGH
+    using QskHashValue = size_t;
 #endif
 
 #endif

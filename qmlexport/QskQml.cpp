@@ -36,7 +36,6 @@
 #include <QskSkin.h>
 #include <QskSkinManager.h>
 #include <QskSlider.h>
-#include <QskStandardSymbol.h>
 #include <QskStatusIndicator.h>
 #include <QskSubWindow.h>
 #include <QskSubWindowArea.h>
@@ -115,8 +114,8 @@ namespace
 static inline QskGradientStop qskToGradientStop( const QJSValue& value )
 {
     return QskGradientStop(
-        value.property( QLatin1String( "position" ) ).toNumber(),
-        value.property( QLatin1String( "color" ) ).toVariant().value< QColor >()
+        value.property( QStringLiteral( "position" ) ).toNumber(),
+        value.property( QStringLiteral( "color" ) ).toVariant().value< QColor >()
     );
 }
 
@@ -194,7 +193,6 @@ void QskQml::registerTypes()
 #endif
 
         QSK_REGISTER_GADGET( QskRgbValueQml, "RgbValue" );
-        QSK_REGISTER_GADGET( QskStandardSymbol, "StandardSymbol" );
         QSK_REGISTER_GADGET( QskBoxBorderMetrics, "BorderMetrics" );
         QSK_REGISTER_GADGET( QskBoxShapeMetrics, "Shape" );
         QSK_REGISTER_GADGET( QskShadowMetrics, "ShadowMetrics" );

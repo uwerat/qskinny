@@ -52,6 +52,8 @@ class QSK_EXPORT QskGesture
     inline State state() const { return m_state; }
 
   protected:
+    Q_DISABLE_COPY( QskGesture )
+
     QskGesture( Type type );
 
     const Type m_type;

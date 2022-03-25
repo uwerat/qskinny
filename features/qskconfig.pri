@@ -37,7 +37,7 @@ CONFIG           += no_private_qt_headers_warning
 CONFIG           += warn_on
 CONFIG           += no_keywords
 CONFIG           += silent
-CONFIG           -= depend_includepath
+#CONFIG           -= depend_includepath
 
 CONFIG           += strict_c++
 CONFIG           += c++11
@@ -64,16 +64,6 @@ RCC_DIR      = rcc
 
 QSK_CONFIG += QskDll
 
-*-g++* {
-
-    GCC_VERSION = $$system("$$QMAKE_CXX -dumpversion")
-    equals(GCC_VERSION,4) || contains(GCC_VERSION, 4.* ) {
-
-        # gcc4 is too old for certain checks
-        CONFIG -= pedantic sanitize
-    }
-}
-
 linux {
 
     pedantic {
@@ -83,16 +73,20 @@ linux {
         # Qt headers do not stand pedantic checks, so it's better
         # to exclude them by declaring them as system includes
 
+        CONFIG += qtassysteminclude
+    }
+
+    qtassysteminclude {
+
         # As most distros set QT_INSTALL_HEADERS to /usr/include we
         # would run into gcc compiler errors and better drop it
         # from the list below. Should be no problem as we don't
         # add the Qt module to our includes and therefore don't
         # need this path.
 
-        # QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
-
         QMAKE_CXXFLAGS += \
             -isystem $$[QT_INSTALL_HEADERS]/QtCore \
+            -isystem $$[QT_INSTALL_HEADERS]/QtCore/$$[QT_VERSION]/QtCore \
             -isystem $$[QT_INSTALL_HEADERS]/QtGui \
             -isystem $$[QT_INSTALL_HEADERS]/QtGui/$$[QT_VERSION]/QtGui \
             -isystem $$[QT_INSTALL_HEADERS]/QtQuick \
@@ -114,13 +108,6 @@ linux-g++ | linux-g++-64 {
 
     # QMAKE_CXXFLAGS_RELEASE  *= -Ofast
     # QMAKE_CXXFLAGS_RELEASE  *= -Os
-
-    # Some versions ( here 2.31.1 ) of the BFD linker may generate shared
-    # libraries with corrupt symbol version info which leads to
-    # "invalid version 21" errors when the corrupt shared library is used. 
-    # One possible workaround is to use the gold linker instead.
-
-    # QMAKE_LFLAGS  *= -Wl,-fuse-ld=gold
 }
 
 pedantic {
@@ -130,7 +117,7 @@ pedantic {
         QMAKE_CXXFLAGS *= -pedantic-errors
         QMAKE_CXXFLAGS *= -Wextra
         QMAKE_CXXFLAGS *= -Werror=format-security
-        QMAKE_CXXFLAGS *= -Wlogical-op
+        #QMAKE_CXXFLAGS *= -Wlogical-op
 
         # QMAKE_CXXFLAGS *= -Wconversion
         # QMAKE_CXXFLAGS *= -Wfloat-equal
@@ -172,8 +159,7 @@ sanitize {
 
     CONFIG += sanitizer 
     CONFIG += sanitize_address 
-    #CONFIG *= sanitize_memory 
-    CONFIG *= sanitize_undefined
+    # CONFIG *= sanitize_undefined
 
     linux-g++ | linux-g++-64 {
         #QMAKE_CXXFLAGS *= -fsanitize-address-use-after-scope
@@ -185,7 +171,16 @@ debug {
     DEFINES += ITEM_STATISTICS=1
 }
 
-# Help out Qt Creator
-ide: DEFINES += QT_IDE
-
 # DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x000000
+DEFINES += QSK_BUILD
+
+LOCAL_PRI=$$(QSK_LOCAL_PRI)
+
+if ( exists( $${LOCAL_PRI} ) ) {
+
+    # When not working with the Qt/Creator it is often more convenient
+    # to include the specific options of your local build, than passing
+    # them all on the command line
+
+    include( $${LOCAL_PRI} )
+}

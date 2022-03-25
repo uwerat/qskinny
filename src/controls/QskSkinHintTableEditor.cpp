@@ -244,10 +244,10 @@ void QskSkinHintTableEditor::setPosition(
     setMetricHint( aspectPosition( aspect ), position, combination );
 }
 
-void QskSkinHintTableEditor::removePosition(
+bool QskSkinHintTableEditor::removePosition(
     QskAspect aspect, QskStateCombination combination )
 {
-    removeMetricHint( aspectPosition( aspect ), combination );
+    return removeMetricHint( aspectPosition( aspect ), combination );
 }
 
 qreal QskSkinHintTableEditor::position( QskAspect aspect ) const
@@ -268,10 +268,10 @@ void QskSkinHintTableEditor::setStrutSize(
         QSizeF( width, height ), combination );
 }
 
-void QskSkinHintTableEditor::removeStrutSize(
+bool QskSkinHintTableEditor::removeStrutSize(
     QskAspect aspect, QskStateCombination combination )
 {
-    removeMetricHint( aspectStrutSize( aspect ), combination );
+    return removeMetricHint( aspectStrutSize( aspect ), combination );
 }
 
 QSizeF QskSkinHintTableEditor::strutSize( QskAspect aspect ) const
@@ -293,10 +293,10 @@ void QskSkinHintTableEditor::setMargin( QskAspect aspect,
     setMetricHint( aspectMargin( aspect ), margins, combination );
 }
 
-void QskSkinHintTableEditor::removeMargin(
+bool QskSkinHintTableEditor::removeMargin(
     QskAspect aspect, QskStateCombination combination )
 {
-    removeMetricHint( aspectMargin( aspect ), combination );
+    return removeMetricHint( aspectMargin( aspect ), combination );
 }
 
 QskMargins QskSkinHintTableEditor::margin( QskAspect aspect ) const
@@ -319,10 +319,10 @@ void QskSkinHintTableEditor::setPadding( QskAspect aspect,
     setMetricHint( aspectPadding( aspect ), padding, combination );
 }
 
-void QskSkinHintTableEditor::removePadding(
+bool QskSkinHintTableEditor::removePadding(
     QskAspect aspect, QskStateCombination combination )
 {
-    removeMetricHint( aspectPadding( aspect ), combination );
+    return removeMetricHint( aspectPadding( aspect ), combination );
 }
 
 QskMargins QskSkinHintTableEditor::padding( QskAspect aspect ) const
@@ -336,10 +336,10 @@ void QskSkinHintTableEditor::setSpacing(
     setMetricHint( aspectSpacing( aspect ), spacing, combination );
 }
 
-void QskSkinHintTableEditor::removeSpacing(
+bool QskSkinHintTableEditor::removeSpacing(
     QskAspect aspect, QskStateCombination combination )
 {
-    removeMetricHint( aspectSpacing( aspect ), combination );
+    return removeMetricHint( aspectSpacing( aspect ), combination );
 }
 
 qreal QskSkinHintTableEditor::spacing( QskAspect aspect ) const
@@ -354,7 +354,7 @@ void QskSkinHintTableEditor::setAlignment(
         static_cast< int >( alignment ), combination );
 }
 
-void QskSkinHintTableEditor::removeAlignment(
+bool QskSkinHintTableEditor::removeAlignment(
     QskAspect aspect, QskStateCombination combination )
 {
     return removeFlagHint( aspectAlignment( aspect ), combination );
@@ -371,7 +371,7 @@ void QskSkinHintTableEditor::setFontRole(
     setFlagHint( aspectFontRole( aspect ), fontRole, combination );
 }
 
-void QskSkinHintTableEditor::removeFontRole(
+bool QskSkinHintTableEditor::removeFontRole(
     QskAspect aspect, QskStateCombination combination )
 {
     return removeFlagHint( aspectFontRole( aspect ), combination );
@@ -388,7 +388,7 @@ void QskSkinHintTableEditor::setGraphicRole(
     setFlagHint( aspectGraphicRole( aspect ), graphicRole, combination );
 }
 
-void QskSkinHintTableEditor::removeGraphicRole(
+bool QskSkinHintTableEditor::removeGraphicRole(
     QskAspect aspect, QskStateCombination combination )
 {
     return removeFlagHint( aspectGraphicRole( aspect ), combination );
@@ -421,7 +421,7 @@ void QskSkinHintTableEditor::setBoxShape(
     setMetricHint( aspectShape( aspect ), shape, combination );
 }
 
-void QskSkinHintTableEditor::removeBoxShape(
+bool QskSkinHintTableEditor::removeBoxShape(
     QskAspect aspect, QskStateCombination combination )
 {
     return removeMetricHint( aspectShape( aspect ), combination );
@@ -453,7 +453,7 @@ void QskSkinHintTableEditor::setBoxBorderMetrics(
     setMetricHint( aspectBorder( aspect ), borderMetrics, combination );
 }
 
-void QskSkinHintTableEditor::removeBoxBorderMetric(
+bool QskSkinHintTableEditor::removeBoxBorderMetric(
     QskAspect aspect, QskStateCombination combination )
 {
     return removeMetricHint( aspectBorder( aspect ), combination );
@@ -480,7 +480,7 @@ void QskSkinHintTableEditor::setBoxBorderColors(QskAspect aspect,
         combination );
 }
 
-void QskSkinHintTableEditor::removeBoxBorderColors(
+bool QskSkinHintTableEditor::removeBoxBorderColors(
     QskAspect aspect, QskStateCombination combination )
 {
     return removeColorHint( aspectBorder( aspect ), combination );
@@ -504,7 +504,7 @@ void QskSkinHintTableEditor::setArcMetrics( QskAspect aspect,
     setMetricHint( aspectShape( aspect ), arcMetrics, combination );
 }
 
-void QskSkinHintTableEditor::removeArcMetrics( QskAspect aspect,
+bool QskSkinHintTableEditor::removeArcMetrics( QskAspect aspect,
     QskStateCombination combination )
 {
     return removeMetricHint( aspectShape( aspect ), combination );

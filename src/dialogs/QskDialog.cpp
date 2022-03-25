@@ -19,6 +19,8 @@
 #include <qpointer.h>
 #include <qquickwindow.h>
 
+#include <qpa/qplatformdialoghelper.h>
+
 static QskDialog::Action qskActionCandidate( const QskDialogButtonBox* buttonBox )
 {
     // not the fastest code ever, but usually we always
@@ -45,7 +47,7 @@ static QskDialog::Action qskActionCandidate( const QskDialogButtonBox* buttonBox
 static QskDialog::DialogCode qskExec( QskDialogWindow* dialogWindow )
 {
 #if 1
-    QskFocusIndicator* focusIndicator = new QskFocusIndicator();
+    auto focusIndicator = new QskFocusIndicator();
     focusIndicator->setObjectName( QStringLiteral( "DialogFocusIndicator" ) );
     dialogWindow->addItem( focusIndicator );
 #endif
@@ -58,7 +60,7 @@ static QQuickWindow* qskSomeQuickWindow()
     // not the best code ever, but as it is a fallback only
     // maybe we should also add the stacking order
 
-    QWindowList windows = QGuiApplication::topLevelWindows();
+    const auto windows = QGuiApplication::topLevelWindows();
     for ( auto window : windows )
     {
         if ( window->isVisible() )
@@ -334,6 +336,14 @@ QString QskDialog::select(
     return qskSelectWindow( m_data->transientParent, title, text,
         actions, defaultAction, entries, selectedRow );
 
+}
+
+QskDialog::ActionRole QskDialog::actionRole( Action action )
+{
+    using Q = QPlatformDialogHelper;
+
+    const auto role = Q::buttonRole( static_cast< Q::StandardButton >( action ) );
+    return static_cast< ActionRole >( role );
 }
 
 #include "moc_QskDialog.cpp"
