@@ -9,7 +9,7 @@
 #include <qhashfunctions.h>
 #include <qvariant.h>
 
-QskHashValue QskTextColors::hash( QskHashValue seed ) const
+QskHashValue QskTextColors::hash( QskHashValue seed ) const noexcept
 {
     const QRgb rgb[] = { textColor.rgba(), styleColor.rgba(), linkColor.rgba() };
     return qHashBits( rgb, sizeof( rgb ), seed );

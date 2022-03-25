@@ -63,7 +63,7 @@ void QskScaleTickmarks::invert()
     std::reverse( m_ticks[ 2 ].begin(), m_ticks[ 2 ].end() );
 }
 
-QskHashValue QskScaleTickmarks::hash( QskHashValue seed ) const
+QskHashValue QskScaleTickmarks::hash( QskHashValue seed ) const noexcept
 {
     seed = qHash( m_ticks[0], seed );
     seed = qHash( m_ticks[1], seed );

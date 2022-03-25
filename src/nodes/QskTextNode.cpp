@@ -20,7 +20,7 @@ static inline QskHashValue qskHash(
 
     hash = qHash( text, hash );
     hash = qHash( font, hash );
-    hash = qHash( options, hash );
+    hash = options.hash( hash );
     hash = qHash( alignment, hash );
     hash = qHash( textStyle, hash );
     hash = colors.hash( hash );
