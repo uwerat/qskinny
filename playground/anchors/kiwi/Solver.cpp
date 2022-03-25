@@ -1,12 +1,3 @@
-/******************************************************************************
- * This code is a stripped down version of the Cassowary constraint solving
- * algorithm. The implementation has been taken from the Kiwi project:
- *
- * Copyright (c) 2013-2017, Nucleic Development Team.
- * Distributed under the terms of the Modified BSD License.
- * https://github.com/nucleic/kiwi/blob/master/LICENSE
- *****************************************************************************/
-
 #include "Solver.h"
 #include "Constraint.h"
 #include "Variable.h"
