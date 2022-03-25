@@ -114,8 +114,8 @@ namespace
 static inline QskGradientStop qskToGradientStop( const QJSValue& value )
 {
     return QskGradientStop(
-        value.property( QLatin1String( "position" ) ).toNumber(),
-        value.property( QLatin1String( "color" ) ).toVariant().value< QColor >()
+        value.property( QStringLiteral( "position" ) ).toNumber(),
+        value.property( QStringLiteral( "color" ) ).toVariant().value< QColor >()
     );
 }
 

@@ -785,7 +785,7 @@ QskMaterialSkin::QskMaterialSkin( QObject* parent )
         QskRgb::Blue500, QskRgb::White );
 
     // Default theme colors
-    setupFonts( "Roboto" );
+    setupFonts( QStringLiteral( "Roboto" ) );
 
     auto buttonFont = font( QskSkin::DefaultFont );
     buttonFont.setCapitalization( QFont::AllUppercase );
