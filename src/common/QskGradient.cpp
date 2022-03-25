@@ -182,6 +182,7 @@ static inline QskGradientStops qskExtractedStops(
 static inline QskGradientStops qskGradientStops( const QGradientStops& qtStops )
 {
     QskGradientStops stops;
+    stops.reserve( qtStops.count() );
 
     for ( const auto& s : qtStops )
         stops += QskGradientStop( s.first, s.second );
