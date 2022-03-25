@@ -25,7 +25,7 @@ class QSK_EXPORT QskTextColors
     static QVariant interpolate( const QskTextColors&,
         const QskTextColors&, qreal ratio );
 
-    QskHashValue hash( QskHashValue seed = 0 ) const;
+    QskHashValue hash( QskHashValue seed = 0 ) const noexcept;
 
     QColor textColor;
     QColor styleColor;
