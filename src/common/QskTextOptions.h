@@ -164,7 +164,7 @@ inline constexpr bool QskTextOptions::operator!=(
     return !( *this == other );
 }
 
-QSK_EXPORT uint qHash( const QskTextOptions&, uint seed = 0 ) noexcept;
+QSK_EXPORT QskHashValue qHash( const QskTextOptions&, QskHashValue seed = 0 ) noexcept;
 
 #ifndef QT_NO_DEBUG_STREAM
 class QDebug;

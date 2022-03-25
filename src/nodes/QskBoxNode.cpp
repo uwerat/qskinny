@@ -20,19 +20,19 @@ QSK_QT_PRIVATE_END
 
 Q_GLOBAL_STATIC( QSGVertexColorMaterial, qskMaterialVertex )
 
-static inline uint qskMetricsHash(
+static inline QskHashValue qskMetricsHash(
     const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& borderMetrics )
 {
-    uint hash = 13000;
+    QskHashValue hash = 13000;
 
     hash = shape.hash( hash );
     return borderMetrics.hash( hash );
 }
 
-static inline uint qskColorsHash(
+static inline QskHashValue qskColorsHash(
     const QskBoxBorderColors& borderColors, const QskGradient& fillGradient )
 {
-    uint hash = 13000;
+    QskHashValue hash = 13000;
     hash = borderColors.hash( hash );
     return fillGradient.hash( hash );
 }
@@ -45,8 +45,8 @@ class QskBoxNodePrivate final : public QSGGeometryNodePrivate
     {
     }
 
-    uint metricsHash = 0;
-    uint colorsHash = 0;
+    QskHashValue metricsHash = 0;
+    QskHashValue colorsHash = 0;
     QRectF rect;
 
     QSGGeometry geometry;
@@ -89,8 +89,8 @@ void QskBoxNode::setBoxData( const QRectF& rect,
 #endif
 
 #if 1
-    const uint metricsHash = qskMetricsHash( shape, borderMetrics );
-    const uint colorsHash = qskColorsHash( borderColors, fillGradient );
+    const auto metricsHash = qskMetricsHash( shape, borderMetrics );
+    const auto colorsHash = qskColorsHash( borderColors, fillGradient );
 
     if ( ( metricsHash == d->metricsHash ) &&
         ( colorsHash == d->colorsHash ) && ( rect == d->rect ) )

@@ -86,9 +86,9 @@ QskArcMetrics QskArcMetrics::toAbsolute( const QSizeF& size ) const noexcept
     return absoluted;
 }
 
-uint QskArcMetrics::hash( uint seed ) const noexcept
+QskHashValue QskArcMetrics::hash( QskHashValue seed ) const noexcept
 {
-    uint hash = qHash( m_width, seed );
+    auto hash = qHash( m_width, seed );
     hash = qHash( m_startAngle, hash );
     hash = qHash( m_spanAngle, hash );
 

@@ -29,7 +29,7 @@ class QSK_EXPORT QskTextNode : public QSGTransformNode
         Qt::Alignment, Qsk::TextStyle );
 
   private:
-    uint m_hash;
+    QskHashValue m_hash;
 };
 
 #endif

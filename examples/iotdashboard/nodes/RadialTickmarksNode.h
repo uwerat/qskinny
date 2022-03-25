@@ -29,5 +29,5 @@ class RadialTickmarksNode : public QSGGeometryNode
     QRectF m_rect;
     int m_lineWidth = 0;
 
-    uint m_hash = 0;
+    QskHashValue m_hash = 0;
 };

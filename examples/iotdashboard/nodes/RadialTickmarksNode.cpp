@@ -34,7 +34,7 @@ void RadialTickmarksNode::update( const QColor& color, const QRectF& rect,
         markDirty( QSGNode::DirtyGeometry );
     }
 
-    const uint hash = tickmarks.hash( 17435 );
+    const auto hash = tickmarks.hash( 17435 );
 
     if( ( hash != m_hash ) || ( rect != m_rect ) )
     {

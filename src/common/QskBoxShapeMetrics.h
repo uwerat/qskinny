@@ -93,7 +93,7 @@ class QSK_EXPORT QskBoxShapeMetrics
 
     constexpr QskBoxShapeMetrics transposed() const noexcept;
 
-    uint hash( uint seed = 0 ) const noexcept;
+    QskHashValue hash( QskHashValue seed = 0 ) const noexcept;
 
     static QVariant interpolate( const QskBoxShapeMetrics&,
         const QskBoxShapeMetrics&, qreal progress ) noexcept;

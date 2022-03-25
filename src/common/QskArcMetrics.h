@@ -50,7 +50,7 @@ class QSK_EXPORT QskArcMetrics
 
     QskArcMetrics toAbsolute( const QSizeF& ) const noexcept;
 
-    uint hash( uint seed = 0 ) const noexcept;
+    QskHashValue hash( QskHashValue seed = 0 ) const noexcept;
 
     static QVariant interpolate( const QskArcMetrics&,
         const QskArcMetrics&, qreal progress );

@@ -39,4 +39,10 @@
 #define QSK_QT_PRIVATE_END \
     QT_WARNING_POP
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    using QskHashValue = uint;
+#else
+    using QskHashValue = size_t;
+#endif
+
 #endif

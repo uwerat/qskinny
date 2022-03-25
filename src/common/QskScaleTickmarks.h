@@ -53,7 +53,7 @@ class QSK_EXPORT QskScaleTickmarks
     void invert();
     void reset();
 
-    uint hash( uint seed = 0 ) const;
+    QskHashValue hash( QskHashValue seed = 0 ) const;
 
   private:
     QVector< qreal > m_ticks[ 3 ];

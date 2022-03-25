@@ -34,7 +34,7 @@ class QskTickmarksNodePrivate final : public QSGGeometryNodePrivate
     QRectF rect;
     int lineWidth = 0;
 
-    uint hash = 0;
+    QskHashValue hash = 0;
 };
 
 QskTickmarksNode::QskTickmarksNode()
@@ -65,7 +65,7 @@ void QskTickmarksNode::update(
         markDirty( QSGNode::DirtyGeometry );
     }
 
-    const uint hash = tickmarks.hash( 17435 );
+    const auto hash = tickmarks.hash( 17435 );
 
     if( ( hash != d->hash ) || ( rect != d->rect ) )
     {

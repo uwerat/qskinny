@@ -41,7 +41,7 @@ class QSK_EXPORT QskGradientStop
     static QColor interpolated(
         const QskGradientStop&, const QskGradientStop&, qreal position ) noexcept;
 
-    uint hash( uint seed ) const noexcept;
+    QskHashValue hash( QskHashValue seed ) const noexcept;
 
   private:
     qreal m_position;
