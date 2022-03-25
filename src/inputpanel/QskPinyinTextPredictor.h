@@ -12,6 +12,8 @@
 
 class QSK_INPUTCONTEXT_EXPORT QskPinyinTextPredictor : public QskTextPredictor
 {
+    Q_OBJECT
+
     using Inherited = QskTextPredictor;
 
   public:
