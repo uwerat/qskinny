@@ -73,7 +73,7 @@ linux {
         # Qt headers do not stand pedantic checks, so it's better
         # to exclude them by declaring them as system includes
 
-        #CONFIG += qtassysteminclude
+        CONFIG += qtassysteminclude
     }
 
     qtassysteminclude {
@@ -86,6 +86,7 @@ linux {
 
         QMAKE_CXXFLAGS += \
             -isystem $$[QT_INSTALL_HEADERS]/QtCore \
+            -isystem $$[QT_INSTALL_HEADERS]/QtCore/$$[QT_VERSION]/QtCore \
             -isystem $$[QT_INSTALL_HEADERS]/QtGui \
             -isystem $$[QT_INSTALL_HEADERS]/QtGui/$$[QT_VERSION]/QtGui \
             -isystem $$[QT_INSTALL_HEADERS]/QtQuick \
@@ -116,7 +117,7 @@ pedantic {
         QMAKE_CXXFLAGS *= -pedantic-errors
         QMAKE_CXXFLAGS *= -Wextra
         QMAKE_CXXFLAGS *= -Werror=format-security
-        QMAKE_CXXFLAGS *= -Wlogical-op
+        #QMAKE_CXXFLAGS *= -Wlogical-op
 
         # QMAKE_CXXFLAGS *= -Wconversion
         # QMAKE_CXXFLAGS *= -Wfloat-equal
