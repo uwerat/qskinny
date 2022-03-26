@@ -1,4 +1,4 @@
 {
     "FactoryId": "MaterialFactory",
-    "Skins": [ "material" ]
+    "Skins": [ "materialLight", "materialDark" ]
 }
