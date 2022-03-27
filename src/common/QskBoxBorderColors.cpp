@@ -172,8 +172,14 @@ QskBoxBorderColors QskBoxBorderColors::interpolated(
 
     for ( size_t i = 0; i < 4; i++ )
     {
-        colors.m_gradients[ i ] = colors.m_gradients[ i ].interpolated(
-            to.m_gradients[ i ], ratio );
+#if 1
+        /*
+            When one border has a width of 0 we would prefer to ignore
+            the color and use always use the other color. TODO ...
+         */
+#endif
+        auto& gradient = colors.m_gradients[ i ];
+        gradient = gradient.interpolated( to.m_gradients[ i ], ratio );
     }
 
     return colors;
