@@ -315,7 +315,9 @@ namespace
 
             for ( const auto& candidate : candidates )
             {
-                if ( !candidate.aspect.isMetric() )
+                const auto aspect = candidate.aspect;
+
+                if ( !aspect.isMetric() )
                 {
                     if ( !( control->flags() & QQuickItem::ItemHasContents ) )
                     {
@@ -325,7 +327,7 @@ namespace
                     }
                 }
 
-                const auto subControl = candidate.aspect.subControl();
+                const auto subControl = aspect.subControl();
                 if ( subControl != control->effectiveSubcontrol( subControl ) )
                 {
                     // The control uses subcontrol redirection, so we can assume it
@@ -350,7 +352,7 @@ namespace
                     }
                 }
 
-                auto a = candidate.aspect;
+                auto a = aspect;
                 a.setStates( control->skinStates() );
 
                 const auto requestState = control->hintStatus( a );
@@ -361,30 +363,32 @@ namespace
                     continue;
                 }
 
-                if ( candidate.aspect != requestState.aspect )
+                if ( aspect != requestState.aspect )
                 {
                     // the aspect was resolved to something else
                     continue;
                 }
 
-                addAnimator( control->window(), candidate, animatorHint );
-                storeUpdateInfo( control, candidate.aspect );
+                addAnimator( control->window(), aspect,
+                    candidate.from, candidate.to, animatorHint );
+
+                storeUpdateInfo( control, aspect );
             }
         }
 
-        void addAnimator( QQuickWindow* window,
-            const AnimatorCandidate& candidate, QskAnimationHint animationHint )
+        void addAnimator( QQuickWindow* window, const QskAspect aspect,
+            const QVariant& from, const QVariant& to, QskAnimationHint animationHint )
         {
-            auto it = m_hintAnimatorMap.find( candidate.aspect );
+            auto it = m_hintAnimatorMap.find( aspect );
             if ( it != m_hintAnimatorMap.end() )
                 return; // already there
 
-            it = m_hintAnimatorMap.emplace( candidate.aspect, QskHintAnimator() ).first;
+            it = m_hintAnimatorMap.emplace( aspect, QskHintAnimator() ).first;
             auto& animator = it->second;
 
-            animator.setAspect( candidate.aspect );
-            animator.setStartValue( candidate.from );
-            animator.setEndValue( candidate.to );
+            animator.setAspect( aspect );
+            animator.setStartValue( from );
+            animator.setEndValue( to );
 
             animator.setDuration( animationHint.duration );
             animator.setEasingCurve( animationHint.type );
