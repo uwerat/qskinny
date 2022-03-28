@@ -40,8 +40,9 @@ class QSK_EXPORT QskSkinHintTable
     const std::unordered_map< QskAspect, QVariant >& hints() const;
 
     bool hasAnimators() const;
-    bool hasStates() const;
     bool hasHints() const;
+
+    QskAspect::States states() const;
 
     void clear();
 
@@ -62,7 +63,7 @@ class QSK_EXPORT QskSkinHintTable
     HintMap* m_hints = nullptr;
 
     unsigned short m_animatorCount = 0;
-    unsigned short m_statefulCount = 0;
+    QskAspect::States m_states;
 };
 
 inline bool QskSkinHintTable::hasHints() const
@@ -70,9 +71,9 @@ inline bool QskSkinHintTable::hasHints() const
     return m_hints != nullptr;
 }
 
-inline bool QskSkinHintTable::hasStates() const
+inline QskAspect::States QskSkinHintTable::states() const
 {
-    return m_statefulCount > 0;
+    return m_states;
 }
 
 inline bool QskSkinHintTable::hasAnimators() const
