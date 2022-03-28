@@ -15,9 +15,7 @@
 SwitchButtonPage::SwitchButtonPage( QQuickItem* parent )
     : Page( Qt::Horizontal, parent )
 {
-    setGradient( QskRgb::AliceBlue );
     setSpacing( 40 );
-
     populate();
 }
 

@@ -30,27 +30,6 @@ namespace
             setMargins( 10 );
             setTabPosition( Qsk::Left );
             setAutoFitTabs( true );
-
-            connect( this, &QskTabView::currentIndexChanged,
-                this, &TabView::updateViewPanel );
-        }
-
-      protected:
-        void aboutToShow() override
-        {
-            updateViewPanel();
-        }
-
-      private:
-        void updateViewPanel()
-        {
-            /*
-                We should have a better way to set individual colors
-                for each tab page background
-             */
-
-            if ( auto page = dynamic_cast< const ::Page* >( currentItem() ) )
-                setGradientHint( QskTabView::Page, page->gradient() );
         }
     };
 }
