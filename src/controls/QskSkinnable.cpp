@@ -1318,12 +1318,7 @@ QskSkin* QskSkinnable::effectiveSkin() const
     if ( skin == nullptr )
     {
         if ( const auto control = owningControl() )
-        {
-            if ( auto window = qobject_cast< const QskWindow* >( control->window() ) )
-            {
-                skin = window->skin();
-            }
-        }
+            skin = qskEffectiveSkin( control->window() );
     }
 
     return skin ? skin : qskSetup->skin();
