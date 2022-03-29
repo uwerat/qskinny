@@ -104,6 +104,25 @@ void QskVariantAnimator::setup()
 {
     m_interpolator = nullptr;
 
+    if ( m_startValue.userType() != m_endValue.userType() )
+    {
+        /*
+            Convert one value so that the types are matching.
+
+            As a side effect startValue()/endValue() won't return what had
+            been set setStartValue()/setEndValue() !
+         */
+
+        if ( m_startValue.canConvert( m_endValue.userType() ) )
+        {
+            m_startValue.convert( m_endValue.userType() );
+        }
+        else if ( m_endValue.canConvert( m_startValue.userType() ) )
+        {
+            m_endValue.convert( m_startValue.userType() );
+        }
+    }
+
     const auto type = m_startValue.userType();
     if ( type == m_endValue.userType() )
     {
