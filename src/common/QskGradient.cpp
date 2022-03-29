@@ -499,6 +499,14 @@ QskGradient QskGradient::interpolated(
         return QskGradient( gradient->orientation(), stops );
     }
 
+    if ( isMonochrome() && to.isMonochrome() )
+    {
+        const auto c = QskRgb::interpolated(
+            m_stops[ 0 ].color(), to.m_stops[ 0 ].color(), value );
+
+        return QskGradient( to.orientation(), c, c );
+    }
+
     if ( isMonochrome() )
     {
         // we can ignore our stops
