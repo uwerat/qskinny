@@ -584,6 +584,11 @@ namespace std
     };
 }
 
+inline QskHashValue qHash( const QskAspect aspect, QskHashValue seed = 0 ) noexcept
+{
+    return qHash( aspect.value(), seed );
+}
+
 #ifndef QT_NO_DEBUG_STREAM
 
 class QDebug;
