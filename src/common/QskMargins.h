@@ -61,6 +61,7 @@ class QSK_EXPORT QskMargins : public QMarginsF
     QskMargins interpolated( const QskMargins&, qreal progress ) const noexcept;
 
     constexpr bool isExpanding() const noexcept;
+    constexpr bool isEquidistant() const noexcept;
 
     static QVariant interpolate( const QskMargins&,
         const QskMargins&, qreal progress ) noexcept;
@@ -179,6 +180,11 @@ constexpr inline qreal QskMargins::width() const noexcept
 constexpr inline qreal QskMargins::height() const noexcept
 {
     return top() + bottom();
+}
+
+inline constexpr bool QskMargins::isEquidistant() const noexcept
+{
+    return ( left() == top() ) && ( left() == right() ) && ( left() == bottom() );
 }
 
 Q_DECLARE_TYPEINFO( QskMargins, Q_MOVABLE_TYPE );

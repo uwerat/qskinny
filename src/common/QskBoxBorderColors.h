@@ -12,8 +12,6 @@
 #include <qcolor.h>
 #include <qmetatype.h>
 
-class QDebug;
-
 class QSK_EXPORT QskBoxBorderColors
 {
   public:
@@ -53,6 +51,7 @@ class QSK_EXPORT QskBoxBorderColors
 
     bool isMonochrome() const;
     bool isVisible() const;
+    bool isValid() const;
 
   private:
     QskGradient m_gradients[ 4 ];
@@ -80,6 +79,7 @@ inline const QskGradient& QskBoxBorderColors::gradient( Qsk::Position position )
 
 #ifndef QT_NO_DEBUG_STREAM
 
+class QDebug;
 QSK_EXPORT QDebug operator<<( QDebug, const QskBoxBorderColors& );
 
 #endif

@@ -480,4 +480,16 @@ namespace QskRgb
     QSK_EXPORT QRgb darker( QRgb, int factor = 200 ) noexcept;
 }
 
+#ifndef QT_NO_DEBUG_STREAM
+
+class QDebug;
+
+namespace QskRgb
+{
+    QSK_EXPORT void debugColor( QDebug, const QColor& );
+    QSK_EXPORT void debugColor( QDebug, QRgb );
+}
+
+#endif
+
 #endif

@@ -78,7 +78,12 @@ QColor QskGradientStop::interpolated(
 
 QDebug operator<<( QDebug debug, const QskGradientStop& stop )
 {
-    debug << stop.position() << ": " << stop.color();
+    QDebugStateSaver saver( debug );
+    debug.nospace();
+
+    debug << stop.position() << ": ";
+    QskRgb::debugColor( debug, stop.color() );
+
     return debug;
 }
 
