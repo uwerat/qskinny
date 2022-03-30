@@ -63,7 +63,6 @@ SOURCES += \
     common/QskScaleTickmarks.cpp \
     common/QskShadowMetrics.cpp \
     common/QskSizePolicy.cpp \
-    common/QskStateCombination.cpp \
     common/QskTextColors.cpp \
     common/QskTextOptions.cpp
 
