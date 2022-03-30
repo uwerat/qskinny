@@ -12,6 +12,10 @@ static void qskRegisterBoxBorderMetrics()
 {
     qRegisterMetaType< QskBoxBorderMetrics >();
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    QMetaType::registerEqualsComparator< QskBoxBorderMetrics >();
+#endif
+
     QMetaType::registerConverter< QskMargins, QskBoxBorderMetrics >(
         []( const QskMargins& margins ) { return QskBoxBorderMetrics( margins ); } );
 

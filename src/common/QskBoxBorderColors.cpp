@@ -13,6 +13,10 @@ static void qskRegisterBoxBorderColors()
 {
     qRegisterMetaType< QskBoxBorderColors >();
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    QMetaType::registerEqualsComparator< QskBoxBorderColors >();
+#endif
+
     QMetaType::registerConverter< QColor, QskBoxBorderColors >(
         []( const QColor& color ) { return QskBoxBorderColors( color ); } );
 
@@ -108,6 +112,26 @@ void QskBoxBorderColors::setGradientAt( Qt::Edges edges, const QskGradient& grad
 
     if ( edges & Qt::BottomEdge )
         m_gradients[ Qsk::Bottom ] = gradient;
+}
+
+void QskBoxBorderColors::setLeft( const QskGradient& gradient )
+{
+    m_gradients[ Qsk::Left ] = gradient;
+}
+
+void QskBoxBorderColors::setTop( const QskGradient& gradient )
+{
+    m_gradients[ Qsk::Top ] = gradient;
+}
+
+void QskBoxBorderColors::setRight( const QskGradient& gradient )
+{
+    m_gradients[ Qsk::Right ] = gradient;
+}
+
+void QskBoxBorderColors::setBottom( const QskGradient& gradient )
+{
+    m_gradients[ Qsk::Bottom ] = gradient;
 }
 
 const QskGradient& QskBoxBorderColors::gradientAt( Qt::Edge edge ) const

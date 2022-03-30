@@ -15,6 +15,10 @@ static void qskRegisterGradient()
 {
     qRegisterMetaType< QskGradient >();
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    QMetaType::registerEqualsComparator< QskGradient >();
+#endif
+
     QMetaType::registerConverter< QColor, QskGradient >(
         []( const QColor& color ) { return QskGradient( color ); } );
 }

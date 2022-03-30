@@ -12,6 +12,10 @@
 static void qskRegisterShadowMetrics()
 {
     qRegisterMetaType< QskShadowMetrics >();
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    QMetaType::registerEqualsComparator< QskShadowMetrics >();
+#endif
 }
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterShadowMetrics )
