@@ -229,6 +229,11 @@ QskGradient::QskGradient( Orientation orientation, const QskGradientStops& stops
     setStops( stops );
 }
 
+QskGradient::QskGradient( Qt::Orientation orientation, QGradient::Preset preset )
+    : QskGradient( qskOrientation( orientation ), preset )
+{
+}
+
 QskGradient::QskGradient( Orientation orientation, QGradient::Preset preset )
     : QskGradient( orientation )
 {
@@ -632,7 +637,49 @@ void QskGradient::updateStatusBits() const
 
 QDebug operator<<( QDebug debug, const QskGradient& gradient )
 {
-    debug << "GR:" << gradient.orientation() << gradient.stops().count();
+    QDebugStateSaver saver( debug );
+    debug.nospace();
+
+    debug << "Gradient";
+
+    if ( !gradient.isValid() )
+    {
+        debug << "()";
+    }
+    else
+    {
+        debug << "( ";
+
+        if ( gradient.isMonochrome() )
+        {
+            QskRgb::debugColor( debug, gradient.startColor() );
+        }
+        else
+        {
+            const char o[] = { 'H', 'V', 'D' };
+            debug << o[ gradient.orientation() ] << ", ";
+
+            if ( gradient.stops().count() == 2 )
+            {
+                QskRgb::debugColor( debug, gradient.startColor() );
+                debug << ", ";
+                QskRgb::debugColor( debug, gradient.endColor() );
+            }
+            else
+            {
+                const auto& s = gradient.stops();
+                for ( int i = 0; i < s.count(); i++ )
+                {
+                    if ( i != 0 )
+                        debug << ", ";
+
+                    debug << s[i];
+                }
+            }
+        }
+        debug << " )";
+    }
+
     return debug;
 }
 

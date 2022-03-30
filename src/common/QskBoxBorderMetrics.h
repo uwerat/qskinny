@@ -60,6 +60,8 @@ class QSK_EXPORT QskBoxBorderMetrics
     static QVariant interpolate( const QskBoxBorderMetrics&,
         const QskBoxBorderMetrics&, qreal progress );
 
+    constexpr bool isEquidistant() const noexcept;
+
   private:
     QskMargins m_widths;
     Qt::SizeMode m_sizeMode;
@@ -113,6 +115,11 @@ inline constexpr bool QskBoxBorderMetrics::operator!=(
 inline constexpr bool QskBoxBorderMetrics::isNull() const noexcept
 {
     return m_widths.isNull();
+}
+
+inline constexpr bool QskBoxBorderMetrics::isEquidistant() const noexcept
+{
+    return m_widths.isEquidistant();
 }
 
 inline constexpr const QskMargins& QskBoxBorderMetrics::widths() const noexcept
