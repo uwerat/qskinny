@@ -172,3 +172,29 @@ QRgb QskRgb::darker( QRgb rgb, int factor ) noexcept
     return QColor::fromRgba( rgb ).darker( factor ).rgba();
 }
 
+#ifndef QT_NO_DEBUG_STREAM
+
+#include <qdebug.h>
+
+void QskRgb::debugColor( QDebug debug, const QColor& color )
+{
+    debugColor( debug, color.rgba() );
+}
+
+void QskRgb::debugColor( QDebug debug, QRgb rgb )
+{
+    QDebugStateSaver saver( debug );
+    debug.nospace();
+
+    debug << '[';
+
+    debug << qRed( rgb ) << "r," << qGreen( rgb ) << "g,"
+        << qBlue( rgb ) << 'b';
+
+    if ( qAlpha( rgb ) != 255 )
+        debug << ',' << qAlpha( rgb ) << 'a';
+
+    debug << ']';
+}
+
+#endif

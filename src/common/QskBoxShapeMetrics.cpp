@@ -14,6 +14,10 @@ static void qskRegisterBoxShapeMetrics()
 {
     qRegisterMetaType< QskBoxShapeMetrics >();
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    QMetaType::registerEqualsComparator< QskBoxShapeMetrics >();
+#endif
+
     QMetaType::registerConverter< int, QskBoxShapeMetrics >(
         []( int radius ) { return QskBoxShapeMetrics( radius ); } );
 

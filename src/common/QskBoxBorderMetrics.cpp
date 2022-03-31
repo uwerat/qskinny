@@ -12,6 +12,10 @@ static void qskRegisterBoxBorderMetrics()
 {
     qRegisterMetaType< QskBoxBorderMetrics >();
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    QMetaType::registerEqualsComparator< QskBoxBorderMetrics >();
+#endif
+
     QMetaType::registerConverter< QskMargins, QskBoxBorderMetrics >(
         []( const QskMargins& margins ) { return QskBoxBorderMetrics( margins ); } );
 
@@ -109,9 +113,24 @@ QDebug operator<<( QDebug debug, const QskBoxBorderMetrics& metrics )
     QDebugStateSaver saver( debug );
     debug.nospace();
 
-    debug << "BoxBorder" << '(';
-    debug << metrics.sizeMode() << ',' << metrics.widths();
-    debug << ')';
+    debug << "BoxBorder" << "( ";
+
+    if ( metrics.sizeMode() != Qt::AbsoluteSize )
+        debug << metrics.sizeMode() << ", ";
+
+    const auto& w = metrics.widths();
+
+    if ( metrics.isEquidistant() )
+    {
+        debug << w.left();
+    }
+    else
+    {
+        const char s[] = ", ";
+        debug << w.left() << s << w.top() << s << w.right() << s << w.bottom();
+    }
+
+    debug << " )";
 
     return debug;
 }

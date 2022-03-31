@@ -21,6 +21,9 @@ class QSK_EXPORT QskStateCombination
     constexpr QskStateCombination( QskAspect::States = QskAspect::States() ) noexcept;
     constexpr QskStateCombination( Type, QskAspect::States = QskAspect::States() ) noexcept;
 
+    constexpr bool operator==( QskStateCombination ) const noexcept;
+    constexpr bool operator!=( QskStateCombination ) const noexcept;
+
     constexpr bool isNull() const noexcept;
 
     void setType( Type ) noexcept;
@@ -36,7 +39,6 @@ class QSK_EXPORT QskStateCombination
 };
 
 Q_DECLARE_TYPEINFO( QskStateCombination, Q_MOVABLE_TYPE );
-Q_DECLARE_METATYPE( QskStateCombination )
 
 constexpr inline QskStateCombination::QskStateCombination(
         QskAspect::State state ) noexcept
@@ -88,6 +90,16 @@ inline void QskStateCombination::setState( QskAspect::State state, bool on ) noe
 constexpr inline QskAspect::States QskStateCombination::states() const noexcept
 {
     return m_states;
+}
+
+constexpr bool QskStateCombination::operator==( QskStateCombination other ) const noexcept
+{
+    return ( m_type == other.m_type ) && ( m_states == other.m_states );
+}
+
+constexpr bool QskStateCombination::operator!=( QskStateCombination other ) const noexcept
+{
+    return !( *this == other );
 }
 
 #endif

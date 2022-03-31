@@ -12,6 +12,10 @@
 static void qskRegisterIntervalF()
 {
     qRegisterMetaType< QskIntervalF >();
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    QMetaType::registerEqualsComparator< QskIntervalF >();
+#endif
 }
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterIntervalF )

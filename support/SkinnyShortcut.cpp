@@ -77,30 +77,31 @@ void SkinnyShortcut::enable( Types types )
 
 void SkinnyShortcut::rotateSkin()
 {
-    const QStringList names = qskSkinManager->skinNames();
+    const auto names = qskSkinManager->skinNames();
     if ( names.size() <= 1 )
         return;
 
     int index = names.indexOf( qskSetup->skinName() );
     index = ( index + 1 ) % names.size();
 
-    QskSkin* oldSkin = qskSetup->skin();
+    auto oldSkin = qskSetup->skin();
     if ( oldSkin->parent() == qskSetup )
         oldSkin->setParent( nullptr ); // otherwise setSkin deletes it
 
-    QskSkin* newSkin = qskSetup->setSkin( names[ index ] );
+    if ( auto newSkin = qskSetup->setSkin( names[ index ] ) )
+    {
+        QskSkinTransition transition;
 
-    QskSkinTransition transition;
+        //transition.setMask( QskAspect::Color ); // Metrics are flickering -> TODO
+        transition.setSourceSkin( oldSkin );
+        transition.setTargetSkin( newSkin );
+        transition.setAnimation( 500 );
 
-    //transition.setMask( QskAspect::Color ); // Metrics are flickering -> TODO
-    transition.setSourceSkin( oldSkin );
-    transition.setTargetSkin( newSkin );
-    transition.setAnimation( 500 );
+        transition.process();
 
-    transition.process();
-
-    if ( oldSkin->parent() == nullptr )
-        delete oldSkin;
+        if ( oldSkin->parent() == nullptr )
+            delete oldSkin;
+    }
 }
 
 void SkinnyShortcut::showBackground()

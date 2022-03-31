@@ -13,6 +13,10 @@ static void qskRegisterBoxBorderColors()
 {
     qRegisterMetaType< QskBoxBorderColors >();
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    QMetaType::registerEqualsComparator< QskBoxBorderColors >();
+#endif
+
     QMetaType::registerConverter< QColor, QskBoxBorderColors >(
         []( const QColor& color ) { return QskBoxBorderColors( color ); } );
 
@@ -110,6 +114,26 @@ void QskBoxBorderColors::setGradientAt( Qt::Edges edges, const QskGradient& grad
         m_gradients[ Qsk::Bottom ] = gradient;
 }
 
+void QskBoxBorderColors::setLeft( const QskGradient& gradient )
+{
+    m_gradients[ Qsk::Left ] = gradient;
+}
+
+void QskBoxBorderColors::setTop( const QskGradient& gradient )
+{
+    m_gradients[ Qsk::Top ] = gradient;
+}
+
+void QskBoxBorderColors::setRight( const QskGradient& gradient )
+{
+    m_gradients[ Qsk::Right ] = gradient;
+}
+
+void QskBoxBorderColors::setBottom( const QskGradient& gradient )
+{
+    m_gradients[ Qsk::Bottom ] = gradient;
+}
+
 const QskGradient& QskBoxBorderColors::gradientAt( Qt::Edge edge ) const
 {
     switch ( edge )
@@ -165,6 +189,14 @@ bool QskBoxBorderColors::isMonochrome() const
         && m_gradients[ 3 ].isMonochrome();
 }
 
+bool QskBoxBorderColors::isValid() const
+{
+    return m_gradients[ 0 ].isValid()
+        || m_gradients[ 1 ].isValid()
+        || m_gradients[ 2 ].isValid()
+        || m_gradients[ 3 ].isValid();
+}
+
 QskBoxBorderColors QskBoxBorderColors::interpolated(
     const QskBoxBorderColors& to, qreal ratio ) const
 {
@@ -172,8 +204,14 @@ QskBoxBorderColors QskBoxBorderColors::interpolated(
 
     for ( size_t i = 0; i < 4; i++ )
     {
-        colors.m_gradients[ i ] = colors.m_gradients[ i ].interpolated(
-            to.m_gradients[ i ], ratio );
+#if 1
+        /*
+            When one border has a width of 0 we would prefer to ignore
+            the color and use always use the other color. TODO ...
+         */
+#endif
+        auto& gradient = colors.m_gradients[ i ];
+        gradient = gradient.interpolated( to.m_gradients[ i ], ratio );
     }
 
     return colors;
@@ -204,14 +242,44 @@ QDebug operator<<( QDebug debug, const QskBoxBorderColors& colors )
     QDebugStateSaver saver( debug );
     debug.nospace();
 
-    debug << "BoxBorderColors" << '(';
+    debug << "BoxBorderColors";
 
-    debug << " L" << colors.gradient( Qsk::Left );
-    debug << ", T" << colors.gradient( Qsk::Top );
-    debug << ", R" << colors.gradient( Qsk::Right );
-    debug << ", B" << colors.gradient( Qsk::Bottom );
+    if ( !colors.isValid() )
+    {
+        debug << "()";
+    }
+    else
+    {
+        debug << "( ";
 
-    debug << " )";
+        if ( colors.isMonochrome() )
+        {
+            const auto& gradient = colors.gradient( Qsk::Left );
+            QskRgb::debugColor( debug, gradient.startColor() );
+        }
+        else
+        {
+            const char prompts[] = { 'L', 'T', 'R', 'B' };
+
+            for ( int i = 0; i <= Qsk::Bottom; i++ )
+            {
+                if ( i != 0 )
+                    debug << ", ";
+
+                const auto& gradient = colors.gradient(
+                    static_cast< Qsk::Position >( i ) );
+
+                debug << prompts[ i ] << ": ";
+
+                if ( gradient.isValid() && gradient.isMonochrome() )
+                    QskRgb::debugColor( debug, gradient.startColor() );
+                else
+                    debug << gradient;
+            }
+        }
+
+        debug << " )";
+    }
 
     return debug;
 }
