@@ -41,12 +41,11 @@ static inline bool qskIsControl( const QskSkinnable* skinnable )
 static inline QVariant qskTypedNullValue( const QVariant& value )
 {
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-    const auto vType = static_cast< QMetaType >( value.userType() );
+    return QVariant( value.metaType() );
 #else
-    const auto vType = value.userType();
+    return QVariant( value.userType(), nullptr );
 #endif
 
-    return QVariant( vType, nullptr );
 }
 
 static inline bool qskSetFlag( QskSkinnable* skinnable,
