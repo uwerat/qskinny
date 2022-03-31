@@ -17,11 +17,7 @@ class QSK_EXPORT QskSkinHintTable
 {
   public:
     QskSkinHintTable();
-    QskSkinHintTable( const QskSkinHintTable& other );
-
     ~QskSkinHintTable();
-
-    QskSkinHintTable& operator=( const QskSkinHintTable& );
 
     bool setAnimation( QskAspect, QskAnimationHint );
     QskAnimationHint animation( QskAspect ) const;
@@ -57,6 +53,8 @@ class QSK_EXPORT QskSkinHintTable
     bool isResolutionMatching( QskAspect, QskAspect ) const;
 
   private:
+    Q_DISABLE_COPY( QskSkinHintTable )
+
     static const QVariant invalidHint;
 
     typedef std::unordered_map< QskAspect, QVariant > HintMap;

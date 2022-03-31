@@ -24,6 +24,9 @@ class QSK_EXPORT QskVariantAnimator : public QskAnimator
     void setEndValue( const QVariant& );
     QVariant endValue() const;
 
+    static bool maybeInterpolate( const QVariant&, const QVariant& );
+    static bool convertValues( QVariant&, QVariant& );
+
   protected:
     void setup() override;
     void advance( qreal value ) override;
