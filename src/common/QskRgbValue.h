@@ -461,23 +461,35 @@ namespace QskRgb
         return ( rgb & ColorMask ) | ( ( static_cast< uint >( alpha ) & 0xffu ) << 24 );
     }
 
-    inline QColor toTransparentF( const QColor& color, qreal alpha )
+    inline QColor toTransparentF( const QColor& color, qreal opacity )
     {
-        return toTransparent( color, qRound( alpha * 255 ) );
+        return toTransparent( color, qRound( opacity * 255 ) );
     }
 
-    inline QColor toTransparentF( Qt::GlobalColor color, qreal alpha )
+    inline QColor toTransparentF( Qt::GlobalColor color, qreal opacity )
     {
-        return toTransparent( QColor( color ), qRound( alpha * 255 ) );
+        return toTransparent( QColor( color ), qRound( opacity * 255 ) );
     }
 
-    inline constexpr QRgb toTransparentF( QRgb rgb, qreal alpha ) noexcept
+    inline constexpr QRgb toTransparentF( QRgb rgb, qreal opacity ) noexcept
     {
-        return toTransparent( rgb, qRound( alpha * 255 ) );
+        return toTransparent( rgb, qRound( opacity * 255 ) );
     }
 
     QSK_EXPORT QRgb lighter( QRgb, int factor = 150 ) noexcept;
     QSK_EXPORT QRgb darker( QRgb, int factor = 200 ) noexcept;
 }
+
+#ifndef QT_NO_DEBUG_STREAM
+
+class QDebug;
+
+namespace QskRgb
+{
+    QSK_EXPORT void debugColor( QDebug, const QColor& );
+    QSK_EXPORT void debugColor( QDebug, QRgb );
+}
+
+#endif
 
 #endif

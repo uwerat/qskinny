@@ -24,7 +24,7 @@ QStringList QskSquiekSkinFactory::skinNames() const
 
 QskSkin* QskSquiekSkinFactory::createSkin( const QString& skinName )
 {
-    if ( skinName.toLower() == squiekSkinName )
+    if ( QString::compare( skinName, squiekSkinName, Qt::CaseInsensitive ) == 0 )
         return new QskSquiekSkin();
 
     return nullptr;

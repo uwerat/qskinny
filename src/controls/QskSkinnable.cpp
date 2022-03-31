@@ -38,17 +38,6 @@ static inline bool qskIsControl( const QskSkinnable* skinnable )
     return skinnable->metaObject()->inherits( &QskControl::staticMetaObject );
 }
 
-static inline QVariant qskTypedNullValue( const QVariant& value )
-{
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-    const auto vType = static_cast< QMetaType >( value.userType() );
-#else
-    const auto vType = value.userType();
-#endif
-
-    return QVariant( vType, nullptr );
-}
-
 static inline bool qskSetFlag( QskSkinnable* skinnable,
     const QskAspect aspect, int flag )
 {
@@ -940,23 +929,12 @@ const QVariant& QskSkinnable::storedHint(
 {
     const auto skin = effectiveSkin();
 
-    // clearing all state bits not being handled from the skin
-    aspect.clearStates( ~skin->stateMask() );
-
     QskAspect resolvedAspect;
 
     const auto& localTable = m_data->hintTable;
     if ( localTable.hasHints() )
     {
-        auto a = aspect;
-
-        if ( !localTable.hasStates() )
-        {
-            // we don't need to clear the state bits stepwise
-            a.clearStates();
-        }
-
-        if ( const QVariant* value = localTable.resolvedHint( a, &resolvedAspect ) )
+        if ( const auto value = localTable.resolvedHint( aspect, &resolvedAspect ) )
         {
             if ( status )
             {
@@ -972,10 +950,7 @@ const QVariant& QskSkinnable::storedHint(
     const auto& skinTable = skin->hintTable();
     if ( skinTable.hasHints() )
     {
-        auto a = aspect;
-
-        const QVariant* value = skinTable.resolvedHint( a, &resolvedAspect );
-        if ( value )
+        if ( const auto value = skinTable.resolvedHint( aspect, &resolvedAspect ) )
         {
             if ( status )
             {
@@ -993,8 +968,7 @@ const QVariant& QskSkinnable::storedHint(
             aspect.setSubControl( QskAspect::Control );
             aspect.clearStates();
 
-            value = skinTable.resolvedHint( aspect, &resolvedAspect );
-            if ( value )
+            if ( const auto value = skinTable.resolvedHint( aspect, &resolvedAspect ) )
             {
                 if ( status )
                 {
@@ -1171,27 +1145,11 @@ void QskSkinnable::startHintTransition( QskAspect aspect,
     if ( control->window() == nullptr || !isTransitionAccepted( aspect ) )
         return;
 
-    /*
-        We might be invalid for one of the values, when an aspect
-        has not been defined for all states ( f.e. metrics are expected
-        to fallback to 0.0 ). In this case we create a default one.
-     */
-
     auto v1 = from;
     auto v2 = to;
 
-    if ( !v1.isValid() )
-    {
-        v1 = qskTypedNullValue( v2 );
-    }
-    else if ( !v2.isValid() )
-    {
-        v2 = qskTypedNullValue( v1 );
-    }
-    else if ( v1.userType() != v2.userType() )
-    {
+    if ( !QskVariantAnimator::convertValues( v1, v2 ) )
         return;
-    }
 
     if ( aspect.flagPrimitive() == QskAspect::GraphicRole )
     {
@@ -1257,7 +1215,8 @@ void QskSkinnable::setSkinStates( QskAspect::States newStates )
 
     if ( skin )
     {
-        const auto mask = skin->stateMask();
+        const auto mask = skin->hintTable().states() | m_data->hintTable.states();
+
         if ( ( newStates & mask ) == ( m_data->skinStates & mask ) )
         {
             // the modified bits are not handled by the skin
@@ -1297,24 +1256,13 @@ void QskSkinnable::setSkinStates( QskAspect::States newStates )
                         const auto primitive = static_cast< QskAspect::Primitive >( i );
                         aspect.setPrimitive( type, primitive );
 
-                        auto a1 = aspect | m_data->skinStates;
-                        auto a2 = aspect | newStates;
+                        const auto a1 = aspect | m_data->skinStates;
+                        const auto a2 = aspect | newStates;
 
                         bool doTransition = true;
 
-                        if ( !m_data->hintTable.hasStates() )
-                        {
-                            /*
-                                The hints are found by stripping the state bits one by
-                                one until a lookup into the hint table is successful.
-                                So for deciding whether two aspects lead to the same hint
-                                we can stop as soon as the aspects have the same state bits.
-                                This way we can reduce the number of lookups significantly
-                                for skinnables with many state bits.
-
-                             */
+                        if ( m_data->hintTable.states() == QskAspect::NoState )
                             doTransition = !skinTable.isResolutionMatching( a1, a2 );
-                        }
 
                         if ( doTransition )
                         {
@@ -1343,12 +1291,7 @@ QskSkin* QskSkinnable::effectiveSkin() const
     if ( skin == nullptr )
     {
         if ( const auto control = owningControl() )
-        {
-            if ( auto window = qobject_cast< const QskWindow* >( control->window() ) )
-            {
-                skin = window->skin();
-            }
-        }
+            skin = qskEffectiveSkin( control->window() );
     }
 
     return skin ? skin : qskSetup->skin();

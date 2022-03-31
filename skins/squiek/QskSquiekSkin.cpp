@@ -647,51 +647,38 @@ void Editor::setupSlider()
 
     // Panel
 
-    for ( auto placement : { A::Horizontal, A::Vertical } )
-    {
-        const auto aspect = Q::Panel | placement;
-
-        setMetric( aspect | A::Size, extent );
-        setBoxBorderMetrics( aspect, 0 );
-        setBoxShape( aspect, 0 );
-        setGradient( aspect, QskGradient() );
-    }
+    setMetric( Q::Panel | A::Size, extent );
+    setBoxBorderMetrics( Q::Panel, 0 );
+    setBoxShape( Q::Panel, 0 );
+    setGradient( Q::Panel, QskGradient() );
 
     setPadding( Q::Panel | A::Horizontal, QskMargins( 0.5 * extent, 0 ) );
     setPadding( Q::Panel | A::Vertical, QskMargins( 0, 0.5 * extent ) );
 
     // Groove, Fill
 
-    for ( auto placement : { A::Horizontal, A::Vertical } )
+    for ( auto subControl : { Q::Groove, Q::Fill } )
     {
-        for ( auto subControl : { Q::Groove, Q::Fill } )
-        {
-            const auto aspect = subControl | placement;
+        const auto aspect = subControl;
 
-            setMetric( aspect | A::Size, 0.3 * extent );
-            setPadding( aspect, 0 );
+        setMetric( aspect | A::Size, 0.3 * extent );
+        setPadding( aspect, 0 );
 
-            setBoxBorderMetrics( aspect, 0 );
-            setBoxShape( aspect, 0.1 * extent );
-        }
-
-        setGradient( Q::Groove | placement, m_pal.darker200 );
-        setGradient( Q::Fill | placement, QskGradient() ); // no filling
+        setBoxBorderMetrics( aspect, 0 );
+        setBoxShape( aspect, 0.1 * extent );
     }
+
+    setGradient( Q::Groove, m_pal.darker200 );
+    setGradient( Q::Fill, QskGradient() ); // no filling
 
     // Handle
 
-    for ( auto placement : { A::Horizontal, A::Vertical } )
-    {
-        const auto aspect = Q::Handle | placement;
+    setButton( Q::Handle, Raised, 1 );
+    setBoxShape( Q::Handle, 20.0, Qt::RelativeSize );
+    setButton( Q::Handle | Q::Pressed, Sunken, 1 );
 
-        setButton( aspect, Raised, 1 );
-        setBoxShape( aspect, 20.0, Qt::RelativeSize );
-        setButton( aspect | Q::Pressed, Sunken, 1 );
-
-        const qreal sz = 0.75 * extent;
-        setStrutSize( aspect, sz, sz );
-    }
+    const qreal sz = 0.75 * extent;
+    setStrutSize( Q::Handle, sz, sz );
 
     setAnimation( Q::Handle | A::Color, qskDuration );
 }

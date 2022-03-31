@@ -13,8 +13,6 @@
 SliderPage::SliderPage( QQuickItem* parentItem )
     : Page( Qt::Vertical, parentItem )
 {
-    setGradient( QskRgb::PeachPuff );
-
     setMargins( 10 );
     setSpacing( 20 );
 

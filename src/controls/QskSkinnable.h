@@ -230,6 +230,8 @@ class QSK_EXPORT QskSkinnable
     bool resetGraphicRoleHint( QskAspect );
     int graphicRoleHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
 
+    const QskSkinHintTable& hintTable() const;
+
   protected:
     virtual void updateNode( QSGNode* );
     virtual bool isTransitionAccepted( QskAspect ) const;
@@ -237,7 +239,6 @@ class QSK_EXPORT QskSkinnable
     virtual QskAspect::Subcontrol substitutedSubcontrol( QskAspect::Subcontrol ) const;
 
     QskSkinHintTable& hintTable();
-    const QskSkinHintTable& hintTable() const;
 
   private:
     Q_DISABLE_COPY( QskSkinnable )
