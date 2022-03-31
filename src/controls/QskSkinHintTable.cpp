@@ -64,39 +64,9 @@ QskSkinHintTable::QskSkinHintTable()
 {
 }
 
-QskSkinHintTable::QskSkinHintTable( const QskSkinHintTable& other )
-    : m_hints( nullptr )
-    , m_animatorCount( other.m_animatorCount )
-    , m_states( other.m_states )
-{
-    if ( other.m_hints )
-        m_hints = new HintMap( *( other.m_hints ) );
-}
-
 QskSkinHintTable::~QskSkinHintTable()
 {
     delete m_hints;
-}
-
-QskSkinHintTable& QskSkinHintTable::operator=( const QskSkinHintTable& other )
-{
-    m_animatorCount = other.m_animatorCount;
-    m_states = other.m_states;
-
-    if ( other.m_hints )
-    {
-        if ( m_hints == nullptr )
-            m_hints = new HintMap();
-
-        *m_hints = *other.m_hints;
-    }
-    else
-    {
-        delete m_hints;
-        m_hints = nullptr;
-    }
-
-    return *this;
 }
 
 const std::unordered_map< QskAspect, QVariant >& QskSkinHintTable::hints() const

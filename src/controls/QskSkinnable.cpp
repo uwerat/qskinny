@@ -38,16 +38,6 @@ static inline bool qskIsControl( const QskSkinnable* skinnable )
     return skinnable->metaObject()->inherits( &QskControl::staticMetaObject );
 }
 
-static inline QVariant qskTypedNullValue( const QVariant& value )
-{
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-    return QVariant( value.metaType() );
-#else
-    return QVariant( value.userType(), nullptr );
-#endif
-
-}
-
 static inline bool qskSetFlag( QskSkinnable* skinnable,
     const QskAspect aspect, int flag )
 {
@@ -1155,27 +1145,11 @@ void QskSkinnable::startHintTransition( QskAspect aspect,
     if ( control->window() == nullptr || !isTransitionAccepted( aspect ) )
         return;
 
-    /*
-        We might be invalid for one of the values, when an aspect
-        has not been defined for all states ( f.e. metrics are expected
-        to fallback to 0.0 ). In this case we create a default one.
-     */
-
     auto v1 = from;
     auto v2 = to;
 
-    if ( !v1.isValid() )
-    {
-        v1 = qskTypedNullValue( v2 );
-    }
-    else if ( !v2.isValid() )
-    {
-        v2 = qskTypedNullValue( v1 );
-    }
-    else if ( v1.userType() != v2.userType() )
-    {
+    if ( !QskVariantAnimator::convertValues( v1, v2 ) )
         return;
-    }
 
     if ( aspect.flagPrimitive() == QskAspect::GraphicRole )
     {
