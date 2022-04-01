@@ -6,11 +6,9 @@
 #include "ButtonPage.h"
 
 #include <QskSwitchButton.h>
-#include <QskLinearBox.h>
-#include <QskTextLabel.h>
+#include <QskPushButton.h>
 #include <QskSeparator.h>
-
-#include <QskRgbValue.h>
+#include <QskLinearBox.h>
 
 namespace
 {
@@ -18,10 +16,11 @@ namespace
     {
       public:
         ButtonBox( QQuickItem* parent = nullptr )
-            : QskLinearBox( Qt::Horizontal, parent )
+            : QskLinearBox( Qt::Horizontal, 4, parent )
         {
-            setDefaultAlignment( Qt::AlignHCenter | Qt::AlignTop );
-            setMargins( 30 );
+            setSpacing( 20 );
+            setExtraSpacingAt( Qt::BottomEdge );
+            setDefaultAlignment( Qt::AlignCenter );
 
             populate();
         }
@@ -29,20 +28,53 @@ namespace
       private:
         void populate()
         {
-            (void) new QskSwitchButton( Qt::Vertical, this );
-            (void) new QskSwitchButton( Qt::Horizontal, this );
+            const char* texts[] = { "Press Me", "Check Me" };
+            const char* graphics[] = { "diamond/khaki", "ellipse/sandybrown" };
 
-            auto button3 = new QskSwitchButton( Qt::Vertical, this );
-            button3->setInverted( true );
+            for ( int i = 0; i < 6; i++ )
+            {
+                const int index = i % 2;
 
-            auto button4 = new QskSwitchButton( Qt::Horizontal, this );
-            button4->setInverted( true );
+                auto button = new QskPushButton( this );
+                button->setCheckable( index != 0 );
+                //button->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
+
+                if ( i > 1 )
+                {
+                    auto src = QStringLiteral( "image://shapes/" ) + graphics[ index ];
+                    button->setGraphicSource( src );
+                }
+
+                if ( i < 2 || i > 3 )
+                {
+                    button->setText( texts[ index ] );
+                }
+            }
+        }
+    };
+
+    class SwitchButtonBox : public QskLinearBox
+    {
+      public:
+        SwitchButtonBox( QQuickItem* parent = nullptr )
+            : QskLinearBox( Qt::Horizontal, parent )
+        {
+            setSpacing( 20 );
+            setExtraSpacingAt( Qt::LeftEdge | Qt::RightEdge | Qt::BottomEdge );
+
+            for ( auto orientation : { Qt::Vertical, Qt::Horizontal } )
+            {
+                (void) new QskSwitchButton( orientation, this );
+
+                auto button = new QskSwitchButton( orientation, this );
+                button->setInverted( true );
+            }
         }
     };
 }
 
 ButtonPage::ButtonPage( QQuickItem* parent )
-    : Page( Qt::Horizontal, parent )
+    : Page( Qt::Vertical, parent )
 {
     setSpacing( 40 );
     populate();
@@ -50,23 +82,7 @@ ButtonPage::ButtonPage( QQuickItem* parent )
 
 void ButtonPage::populate()
 {
-    auto hbox1 = new QskLinearBox();
-    hbox1->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
-    hbox1->setExtraSpacingAt( Qt::LeftEdge );
-
-    auto label = new QskTextLabel( "Disable the switches:", hbox1 );
-    label->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
-
-    auto button0 = new QskSwitchButton( hbox1 );
-
-    auto hbox2 = new ButtonBox();
-
-    auto vbox = new QskLinearBox( Qt::Vertical, this );
-    vbox->addItem( hbox1 );
-    vbox->addItem( new QskSeparator() );
-    vbox->addItem( hbox2 );
-    vbox->setExtraSpacingAt( Qt::BottomEdge );
-
-    QObject::connect( button0, &QskSwitchButton::checkedChanged,
-        hbox2, &QskQuickItem::setDisabled );
+    new ButtonBox( this );
+    new QskSeparator( Qt::Horizontal, this );
+    new SwitchButtonBox( this );
 }

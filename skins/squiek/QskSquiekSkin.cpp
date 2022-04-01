@@ -879,7 +879,7 @@ void Editor::setupSwitchButton()
     using A = QskAspect;
     using Q = QskSwitchButton;
 
-    const qreal radius = qskDpiScaled( 18 );
+    const qreal radius = qskDpiScaled( 12 );
     const qreal handleSize = 2 * ( radius - 2 );
 
     setBoxShape( Q::Groove, 100, Qt::RelativeSize );

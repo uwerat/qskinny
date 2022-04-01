@@ -12,6 +12,7 @@
 #include "QskGraphicProviderMap.h"
 #include "QskSkinHintTable.h"
 #include "QskStandardSymbol.h"
+#include "QskPlatform.h"
 
 #include "QskMargins.h"
 
@@ -216,13 +217,14 @@ void QskSkin::declareSkinlet( const QMetaObject* metaObject,
 
 void QskSkin::setupFonts( const QString& family, int weight, bool italic )
 {
+    const int sizes[] = { 10, 15, 20, 32, 66 };
+    static_assert( sizeof( sizes ) / sizeof( sizes[ 0 ] ) == HugeFont );
+
     QFont font( family, -1, weight, italic );
 
-    const uint base = TinyFont;
     for ( int i = TinyFont; i <= HugeFont; i++ )
     {
-        // TODO: make the scaling components configurable
-        font.setPixelSize( int( std::pow( uint( i ) - base + 2, 2.5 ) ) );
+        font.setPixelSize( qskDpiScaled( sizes[i-1] ) );
         m_data->fonts[ i ] = font;
     }
 
