@@ -5,7 +5,6 @@
 
 #include "Theme.h"
 
-#include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
 
 #include <QskQml.h>
@@ -28,7 +27,6 @@ int main( int argc, char* argv[] )
 
     QGuiApplication app( argc, argv );
 
-    SkinnyFont::init( &app );
     SkinnyShortcut::enable( SkinnyShortcut::Quit |
         SkinnyShortcut::ChangeFonts | SkinnyShortcut::DebugShortcuts );
 

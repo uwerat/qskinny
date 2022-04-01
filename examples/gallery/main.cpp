@@ -8,7 +8,6 @@
 #include "slider/SliderPage.h"
 #include "switchbutton/SwitchButtonPage.h"
 
-#include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
 #include <SkinnyShapeProvider.h>
 
@@ -44,7 +43,6 @@ int main( int argc, char* argv[] )
 
     QGuiApplication app( argc, argv );
 
-    SkinnyFont::init( &app );
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
     auto tabView = new TabView();

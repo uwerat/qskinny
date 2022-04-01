@@ -5,7 +5,6 @@
 
 #include "Box.h"
 
-#include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
 
 #include <QskLinearBox.h>
@@ -555,7 +554,6 @@ int main( int argc, char* argv[] )
 
     QGuiApplication app( argc, argv );
 
-    SkinnyFont::init( &app );
     SkinnyShortcut::enable( SkinnyShortcut::Quit | SkinnyShortcut::DebugShortcuts );
 
     auto* tabView = new TabView();

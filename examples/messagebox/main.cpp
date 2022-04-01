@@ -3,7 +3,6 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
 
 #include <QFontDatabase>
@@ -126,7 +125,6 @@ int main( int argc, char* argv[] )
 
     QGuiApplication app( argc, argv );
 
-    SkinnyFont::init( &app );
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
     qskDialog->setPolicy( QskDialog::EmbeddedBox );

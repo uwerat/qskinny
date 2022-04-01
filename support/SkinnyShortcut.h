@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef SKINNY_SHORTCUT_H_
-#define SKINNY_SHORTCUT_H_
+#pragma once
 
 #include "SkinnyGlobal.h"
 #include <QObject>
@@ -34,12 +33,8 @@ class SKINNY_EXPORT SkinnyShortcut : public QObject
   private:
     SkinnyShortcut( QObject* parent = nullptr );
 
-    void rotateSkin();
-    void changeFonts( int increment );
     void showBackground();
     void debugStatistics();
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( SkinnyShortcut::Types )
-
-#endif

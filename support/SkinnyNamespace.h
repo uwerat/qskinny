@@ -3,16 +3,13 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef SKINNY_FONT_H_
-#define SKINNY_FONT_H_
+#pragma once
 
 #include "SkinnyGlobal.h"
+#include <QskAnimationHint.h>
 
-class QGuiApplication;
-
-namespace SkinnyFont
+namespace Skinny
 {
-    SKINNY_EXPORT void init( QGuiApplication* );
+    SKINNY_EXPORT void changeSkin( QskAnimationHint hint = 500 );
+    SKINNY_EXPORT void changeFonts( int increment );
 }
-
-#endif

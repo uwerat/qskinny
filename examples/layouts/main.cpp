@@ -10,7 +10,6 @@
 #include "StackLayoutPage.h"
 #include "TestRectangle.h"
 
-#include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
 
 #include <QskFocusIndicator.h>
@@ -31,7 +30,6 @@ int main( int argc, char* argv[] )
 
     QGuiApplication app( argc, argv );
 
-    SkinnyFont::init( &app );
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
     auto tabView = new QskTabView();

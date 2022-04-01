@@ -1,15 +1,11 @@
 #include "SkinnyShortcut.h"
+#include "SkinnyNamespace.h"
 
 #include <QskShortcutMap.h>
 #include <QskSetup.h>
-#include <QskSkinManager.h>
 #include <QskWindow.h>
-#include <QskAspect.h>
-#include <QskSkin.h>
 #include <QskControl.h>
 #include <QskQuick.h>
-#include <QskAnimationHint.h>
-#include <QskSkinTransition.h>
 
 #include <QQuickItem>
 #include <QKeySequence>
@@ -17,7 +13,6 @@
 #include <QSGNode>
 #include <QDebug>
 
-#include <unordered_map>
 #include <iostream>
 
 SkinnyShortcut::SkinnyShortcut( QObject* parent ):
@@ -34,17 +29,17 @@ void SkinnyShortcut::enable( Types types )
     if ( types & RotateSkin )
     {
         QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL | Qt::Key_S ),
-            false, &s_shortcut, &SkinnyShortcut::rotateSkin );
+            false, &s_shortcut, [] { Skinny::changeSkin(); } );
         cout << "CTRL-S to change the skin." << endl;
     }
 
     if ( types & ChangeFonts )
     {
         QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL | Qt::Key_F ),
-            false, &s_shortcut, [] { s_shortcut.changeFonts( +1 ); } );
+            false, &s_shortcut, [] { Skinny::changeFonts( +1 ); } );
 
         QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL | Qt::Key_G ),
-            false, &s_shortcut, [] { s_shortcut.changeFonts( -1 ); } );
+            false, &s_shortcut, [] { Skinny::changeFonts( -1 ); } );
 
         cout << "CTRL-F to increase the font size." << endl;
         cout << "CTRL-G to decrease the font size." << endl;
@@ -72,35 +67,6 @@ void SkinnyShortcut::enable( Types types )
         QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL | Qt::Key_Q ),
             false, QGuiApplication::instance(), &QGuiApplication::quit );
         cout << "CTRL-Q to terminate the application." << endl;
-    }
-}
-
-void SkinnyShortcut::rotateSkin()
-{
-    const auto names = qskSkinManager->skinNames();
-    if ( names.size() <= 1 )
-        return;
-
-    int index = names.indexOf( qskSetup->skinName() );
-    index = ( index + 1 ) % names.size();
-
-    auto oldSkin = qskSetup->skin();
-    if ( oldSkin->parent() == qskSetup )
-        oldSkin->setParent( nullptr ); // otherwise setSkin deletes it
-
-    if ( auto newSkin = qskSetup->setSkin( names[ index ] ) )
-    {
-        QskSkinTransition transition;
-
-        //transition.setMask( QskAspect::Color ); // Metrics are flickering -> TODO
-        transition.setSourceSkin( oldSkin );
-        transition.setTargetSkin( newSkin );
-        transition.setAnimation( 500 );
-
-        transition.process();
-
-        if ( oldSkin->parent() == nullptr )
-            delete oldSkin;
     }
 }
 
@@ -147,36 +113,6 @@ void SkinnyShortcut::showBackground()
             }
         }
     }
-}
-
-void SkinnyShortcut::changeFonts( int increment )
-{
-    auto skin = qskSetup->skin();
-
-    const auto fonts = skin->fonts();
-
-    for ( auto it = fonts.begin(); it != fonts.end(); ++it )
-    {
-        auto role = it->first;
-        auto font = it->second;
-
-        if ( font.pixelSize() > 0 )
-        {
-            const auto newSize = font.pixelSize() + increment;
-            if ( newSize > 0 )
-                font.setPixelSize( newSize );
-        }
-        else
-        {
-            const auto newSize = font.pointSizeF() + increment;
-            if ( newSize > 0 )
-                font.setPointSizeF( font.pointSizeF() + increment );
-        }
-
-        skin->setFont( role, font );
-    }
-
-    Q_EMIT qskSetup->skinChanged( skin );
 }
 
 static inline void countNodes( const QSGNode* node, int& counter )
