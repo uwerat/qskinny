@@ -218,7 +218,8 @@ void QskSkin::declareSkinlet( const QMetaObject* metaObject,
 void QskSkin::setupFonts( const QString& family, int weight, bool italic )
 {
     const int sizes[] = { 10, 15, 20, 32, 66 };
-    static_assert( sizeof( sizes ) / sizeof( sizes[ 0 ] ) == HugeFont );
+    static_assert( sizeof( sizes ) / sizeof( sizes[ 0 ] ) == HugeFont,
+        "QskSkin::setupFonts: bad list size." );
 
     QFont font( family, -1, weight, italic );
 
