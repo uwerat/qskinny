@@ -5,7 +5,6 @@
 
 #include "AnchorBox.h"
 
-#include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
 
 #include <QskControl.h>
@@ -153,7 +152,6 @@ int main( int argc, char* argv[] )
 
     QGuiApplication app( argc, argv );
 
-    SkinnyFont::init( &app );
     SkinnyShortcut::enable( SkinnyShortcut::Quit | SkinnyShortcut::DebugShortcuts );
 
     auto box = new MyBox();

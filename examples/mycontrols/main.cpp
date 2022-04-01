@@ -6,7 +6,6 @@
 #include "MySkin.h"
 #include "MyToggleButton.h"
 
-#include <SkinnyFont.h>
 #include <SkinnyShapeProvider.h>
 #include <SkinnyShortcut.h>
 
@@ -136,7 +135,6 @@ int main( int argc, char* argv[] )
 
     QGuiApplication app( argc, argv );
 
-    SkinnyFont::init( &app );
     SkinnyShortcut::enable( SkinnyShortcut::DebugBackground |
         SkinnyShortcut::DebugStatistics | SkinnyShortcut::Quit );
 

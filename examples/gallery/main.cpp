@@ -8,13 +8,16 @@
 #include "slider/SliderPage.h"
 #include "button/ButtonPage.h"
 
-#include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
 #include <SkinnyShapeProvider.h>
+#include <SkinnyNamespace.h>
 
 #include <QskFocusIndicator.h>
 #include <QskObjectCounter.h>
 #include <QskTabView.h>
+#include <QskTextLabel.h>
+#include <QskSwitchButton.h>
+#include <QskPushButton.h>
 #include <QskWindow.h>
 
 #include <QGuiApplication>
@@ -31,6 +34,76 @@ namespace
             setTabPosition( Qsk::Left );
             setAutoFitTabs( true );
         }
+
+        void setTabsEnabled( bool on )
+        {
+            for ( int i = 0; i < count(); i++ )
+                itemAt( i )->setEnabled( on );
+        }
+    };
+
+    /*
+        Once QskApplicationView and friends are implemented we can replace
+        Header/ApplicationWindow with it. TODO ...
+     */
+    class Header : public QskLinearBox
+    {
+        Q_OBJECT
+
+      public:
+        Header( QQuickItem* parent = nullptr )
+            : QskLinearBox( Qt::Horizontal, parent )
+        {
+            initSizePolicy( QskSizePolicy::Ignored, QskSizePolicy::Fixed );
+
+            setMargins( 10 );
+            setBackgroundColor( Qt::lightGray );
+
+            {
+                auto button = new QskPushButton( "Skin", this );
+#if 1
+                button->setFlat( true ); // until we have the section bit in QskAspect
+#endif
+
+                // transition leads to errors, when changing the tab before being completed. TODO ...
+                connect( button, &QskSwitchButton::clicked,
+                    [] { Skinny::changeSkin( 500 ); } );
+            }
+
+            addStretch( 10 );
+
+            {
+                new QskTextLabel( "Enabled", this );
+
+                auto button = new QskSwitchButton( this );
+                button->setChecked( true );
+
+                connect( button, &QskSwitchButton::toggled,
+                    this, &Header::enabledToggled );
+            }
+        }
+
+      Q_SIGNALS:
+        void enabledToggled( bool );
+    };
+
+    class ApplicationView : public QskLinearBox
+    {
+      public:
+        ApplicationView( QQuickItem* parent = nullptr )
+            : QskLinearBox( Qt::Vertical, parent )
+        {
+            auto header = new Header( this );
+
+            auto tabView = new TabView( this );
+            tabView->addTab( "Labels", new LabelPage() );
+            tabView->addTab( "Buttons", new ButtonPage() );
+            tabView->addTab( "Sliders", new SliderPage() );
+            tabView->addTab( "Progress\nBars", new ProgressBarPage() );
+
+            connect( header, &Header::enabledToggled,
+                tabView, &TabView::setTabsEnabled );
+        }
     };
 }
 
@@ -44,21 +117,15 @@ int main( int argc, char* argv[] )
 
     QGuiApplication app( argc, argv );
 
-    SkinnyFont::init( &app );
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
-    auto tabView = new TabView();
-
-    tabView->addTab( "Labels", new LabelPage() );
-    tabView->addTab( "Sliders", new SliderPage() );
-    tabView->addTab( "Progress\nBars", new ProgressBarPage() );
-    tabView->addTab( "Buttons", new ButtonPage() );
+    auto mainView = new ApplicationView();
 
     QSize size( 800, 600 );
-    size = size.expandedTo( tabView->sizeHint().toSize() );
+    size = size.expandedTo( mainView->sizeHint().toSize() );
 
     QskWindow window;
-    window.addItem( tabView );
+    window.addItem( mainView );
     window.addItem( new QskFocusIndicator() );
 
     window.resize( size );
@@ -66,3 +133,5 @@ int main( int argc, char* argv[] )
 
     return app.exec();
 }
+
+#include "main.moc"

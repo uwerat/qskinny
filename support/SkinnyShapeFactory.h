@@ -3,8 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef SKINNY_SHAPE_FACTORY_H_
-#define SKINNY_SHAPE_FACTORY_H_
+#pragma once
 
 #include "SkinnyGlobal.h"
 #include <QPainterPath>
@@ -32,5 +31,3 @@ namespace SkinnyShapeFactory
 
     SKINNY_EXPORT QPainterPath shapePath( Shape, const QSizeF& );
 }
-
-#endif

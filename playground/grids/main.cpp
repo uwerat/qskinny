@@ -5,8 +5,6 @@
 
 #include "TestBox.h"
 
-#include <SkinnyFont.h>
-
 #include <QskSizePolicy.h>
 #include <QskFunctions.h>
 
@@ -388,15 +386,6 @@ class MainWidget : public QWidget
 int main( int argc, char** argv )
 {
     QApplication app( argc, argv );
-
-#if 1
-    /*
-        we don't need the fonts, but by calling something from
-        the support library initializations regarding the skins
-        are loaded. TODO ...
-     */
-    SkinnyFont::init( &app );
-#endif
 
     int testcase = 0;
     if ( argc == 2 )
