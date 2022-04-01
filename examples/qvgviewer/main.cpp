@@ -5,7 +5,6 @@
 
 #include "MainWindow.h"
 
-#include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
 
 #ifdef CONTEXT_MENU
@@ -29,7 +28,6 @@ int main( int argc, char* argv[] )
 
     QGuiApplication app( argc, argv );
 
-    SkinnyFont::init( &app );
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
     QskFocusIndicator* focusIndicator = new QskFocusIndicator();
