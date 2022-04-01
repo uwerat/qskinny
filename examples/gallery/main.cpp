@@ -10,12 +10,14 @@
 
 #include <SkinnyShortcut.h>
 #include <SkinnyShapeProvider.h>
+#include <SkinnyNamespace.h>
 
 #include <QskFocusIndicator.h>
 #include <QskObjectCounter.h>
 #include <QskTabView.h>
 #include <QskTextLabel.h>
 #include <QskSwitchButton.h>
+#include <QskPushButton.h>
 #include <QskWindow.h>
 
 #include <QGuiApplication>
@@ -53,17 +55,32 @@ namespace
             : QskLinearBox( Qt::Horizontal, parent )
         {
             initSizePolicy( QskSizePolicy::Ignored, QskSizePolicy::Fixed );
+
             setMargins( 10 );
+            setBackgroundColor( Qt::lightGray );
+
+            {
+                auto button = new QskPushButton( "Skin", this );
+#if 1
+                button->setFlat( true ); // until we have the section bit in QskAspect
+#endif
+
+                // transition leads to errors, when changing the tab before being completed. TODO ...
+                connect( button, &QskSwitchButton::clicked,
+                    [] { Skinny::changeSkin( 500 ); } );
+            }
 
             addStretch( 10 );
 
-            new QskTextLabel( "Enabled", this );
+            {
+                new QskTextLabel( "Enabled", this );
 
-            auto button = new QskSwitchButton( this );
-            button->setChecked( true );
+                auto button = new QskSwitchButton( this );
+                button->setChecked( true );
 
-            connect( button, &QskSwitchButton::toggled,
-                this, &Header::enabledToggled );
+                connect( button, &QskSwitchButton::toggled,
+                    this, &Header::enabledToggled );
+            }
         }
 
       Q_SIGNALS:
