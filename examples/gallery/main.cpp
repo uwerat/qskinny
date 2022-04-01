@@ -6,7 +6,7 @@
 #include "label/LabelPage.h"
 #include "progressbar/ProgressBarPage.h"
 #include "slider/SliderPage.h"
-#include "switchbutton/SwitchButtonPage.h"
+#include "button/ButtonPage.h"
 
 #include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
@@ -52,7 +52,7 @@ int main( int argc, char* argv[] )
     tabView->addTab( "Labels", new LabelPage() );
     tabView->addTab( "Sliders", new SliderPage() );
     tabView->addTab( "Progress\nBars", new ProgressBarPage() );
-    tabView->addTab( "Switches", new SwitchButtonPage() );
+    tabView->addTab( "Buttons", new ButtonPage() );
 
     QSize size( 800, 600 );
     size = size.expandedTo( tabView->sizeHint().toSize() );

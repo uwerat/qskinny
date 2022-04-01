@@ -12,6 +12,35 @@
 
 #include <QskRgbValue.h>
 
+namespace
+{
+    class ButtonBox : public QskLinearBox
+    {
+      public:
+        ButtonBox( QQuickItem* parent = nullptr )
+            : QskLinearBox( Qt::Horizontal, parent )
+        {
+            setDefaultAlignment( Qt::AlignHCenter | Qt::AlignTop );
+            setMargins( 30 );
+
+            populate();
+        }
+
+      private:
+        void populate()
+        {
+            (void) new QskSwitchButton( Qt::Vertical, this );
+            (void) new QskSwitchButton( Qt::Horizontal, this );
+
+            auto button3 = new QskSwitchButton( Qt::Vertical, this );
+            button3->setInverted( true );
+
+            auto button4 = new QskSwitchButton( Qt::Horizontal, this );
+            button4->setInverted( true );
+        }
+    };
+}
+
 ButtonPage::ButtonPage( QQuickItem* parent )
     : Page( Qt::Horizontal, parent )
 {
@@ -30,18 +59,7 @@ void ButtonPage::populate()
 
     auto button0 = new QskSwitchButton( hbox1 );
 
-    auto hbox2 = new QskLinearBox( Qt::Horizontal );
-    hbox2->setDefaultAlignment( Qt::AlignHCenter | Qt::AlignTop );
-    hbox2->setMargins( 30 );
-
-    (void) new QskSwitchButton( Qt::Vertical, hbox2 );
-    (void) new QskSwitchButton( Qt::Horizontal, hbox2 );
-
-    auto button3 = new QskSwitchButton( Qt::Vertical, hbox2 );
-    button3->setInverted( true );
-
-    auto button4 = new QskSwitchButton( Qt::Horizontal, hbox2 );
-    button4->setInverted( true );
+    auto hbox2 = new ButtonBox();
 
     auto vbox = new QskLinearBox( Qt::Vertical, this );
     vbox->addItem( hbox1 );
