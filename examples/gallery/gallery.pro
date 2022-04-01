@@ -25,10 +25,10 @@ SOURCES += \
     progressbar/ProgressBarPage.cpp \
 
 HEADERS += \
-    switchbutton/SwitchButtonPage.h
+    button/ButtonPage.h
 
 SOURCES += \
-    switchbutton/SwitchButtonPage.cpp \
+    button/ButtonPage.cpp \
 
 HEADERS += \
     Page.h
