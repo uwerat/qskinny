@@ -7,10 +7,10 @@
 
 #include "Page.h"
 
-class SwitchButtonPage : public Page
+class ButtonPage : public Page
 {
   public:
-    SwitchButtonPage( QQuickItem* = nullptr );
+    ButtonPage( QQuickItem* = nullptr );
 
   private:
     void populate();
