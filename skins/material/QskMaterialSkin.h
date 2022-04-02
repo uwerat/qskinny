@@ -31,6 +31,11 @@ class QSK_MATERIAL_EXPORT QskMaterialPalette
             : QskRgb::lighter( rgb, 130 + level * 30 );
     }
 
+    inline QRgb toDisabled( const QRgb rgb ) const
+    {
+        return QskRgb::toTransparentF( rgb, this->m_disabled );
+    }
+
   public:
     QRgb primary;
     QRgb primaryVariant;
@@ -56,7 +61,9 @@ class QSK_MATERIAL_EXPORT QskMaterialPalette
     const qreal hover = 0.1;
     const qreal focused = 0.4;
     const qreal pressed = 0.5;
-    const qreal disabled = 0.3;
+
+  private:
+    const qreal m_disabled = 0.3;
 
     const Lightness m_lightness;
 };
