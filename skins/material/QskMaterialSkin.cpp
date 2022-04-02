@@ -171,6 +171,7 @@ void Editor::setupTextLabel()
 void Editor::setupTextInput()
 {
     using Q = QskTextInput;
+    using namespace QskRgb;
 
     setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignTop );
 
@@ -188,16 +189,16 @@ void Editor::setupTextInput()
 
     setBoxBorderColors( Q::Panel | Q::Focused, m_pal.primary );
 
-    setColor( Q::Panel, m_pal.elevated( m_pal.background, 1 ) );
-    setColor( Q::Panel | Q::Hovered, m_pal.elevated( m_pal.background, 2 ) );
-    setColor( Q::Panel | Q::Focused, m_pal.elevated( m_pal.background, 3 ) );
-    setColor( Q::Panel | Q::Editing, m_pal.elevated( m_pal.background, 4 ) );
+    setGradient( Q::Panel, m_pal.elevated( m_pal.background, 1 ) );
+    setGradient( Q::Panel | Q::Hovered, m_pal.elevated( m_pal.background, 2 ) );
+    setGradient( Q::Panel | Q::Focused, m_pal.elevated( m_pal.background, 3 ) );
+    setGradient( Q::Panel | Q::Editing, m_pal.elevated( m_pal.background, 4 ) );
 
-    setColor( Q::Panel | Q::Disabled,
-        QskRgb::toTransparentF( m_pal.secondaryVariantNoSaturation, m_pal.disabled ) );
-    setColor( Q::Text | Q::Disabled, QskRgb::toTransparentF( m_pal.onBackground, m_pal.disabled ) );
-    setBoxBorderColors( Q::Panel,
-        QskRgb::toTransparentF( m_pal.onBackground, m_pal.disabled ) );
+    setGradient( Q::Panel | Q::Disabled,
+        m_pal.toDisabled( m_pal.secondaryVariantNoSaturation ) );
+
+    setColor( Q::Text | Q::Disabled, m_pal.toDisabled( m_pal.onBackground ) );
+    setBoxBorderColors( Q::Panel, m_pal.toDisabled( m_pal.onBackground ) );
 }
 
 void Editor::setupProgressBar()
@@ -216,14 +217,14 @@ void Editor::setupProgressBar()
         setBoxBorderMetrics( subControl, 0 );
     }
 
-    setGradient( Q::Groove, m_pal.secondaryNoSaturation );
     setMetric( Q::Groove | A::Size, size );
-    setGradient( Q::Bar, m_pal.secondary );
+    setGradient( Q::Groove, m_pal.secondaryNoSaturation );
 
     setGradient( Q::Groove | Q::Disabled,
-        QskRgb::toTransparentF( m_pal.secondaryNoSaturation, m_pal.disabled ) );
-    setGradient( Q::Bar | Q::Disabled,
-        QskRgb::toTransparentF( m_pal.secondary, m_pal.disabled ) );
+        m_pal.toDisabled( m_pal.secondaryNoSaturation ) );
+
+    setGradient( Q::Bar, m_pal.secondary );
+    setGradient( Q::Bar | Q::Disabled, m_pal.toDisabled( m_pal.secondary ) );
 }
 
 void Editor::setupFocusIndicator()
@@ -263,9 +264,10 @@ void Editor::setupPageIndicator()
     setGradient( Q::Bullet | Q::Selected, m_pal.secondary );
 
     setGradient( Q::Bullet | Q::Disabled,
-        QskRgb::toTransparentF( m_pal.secondaryNoSaturation, m_pal.disabled ) );
+        m_pal.toDisabled( m_pal.secondaryNoSaturation ) );
+
     setGradient( Q::Bullet | Q::Selected | Q::Disabled,
-        QskRgb::toTransparentF( m_pal.secondary, m_pal.disabled ) );
+        m_pal.toDisabled( m_pal.secondary ) );
 
     setSpacing( Q::Panel, qskDpiScaled( 3 ) );
     setPadding( Q::Panel, 0 );
@@ -292,19 +294,19 @@ void Editor::setupPushButton()
     setGradient( Q::Panel | Q::Flat, White & ColorMask );
 
     setColor( Q::Text, m_pal.primary );
-    setColor( Q::Text | Q::Disabled, QskRgb::toTransparentF( m_pal.primary, 0.6 ) );
+    setColor( Q::Text | Q::Disabled, toTransparentF( m_pal.primary, 0.6 ) );
     setFontRole( Q::Text, ButtonFontRole );
     setAlignment( Q::Text, Qt::AlignCenter );
 
     setBoxBorderMetrics( Q::Panel, 1 );
     setBoxBorderColors( Q::Panel, m_pal.primary );
 
-    setBoxBorderColors( Q::Panel | Q::Disabled, QskRgb::toTransparentF( m_pal.onBackground, m_pal.disabled ) );
-    setColor( Q::Text | Q::Disabled, QskRgb::toTransparentF( m_pal.onBackground, m_pal.disabled ) );
+    setBoxBorderColors( Q::Panel | Q::Disabled, m_pal.toDisabled( m_pal.onBackground ) );
+    setColor( Q::Text | Q::Disabled, m_pal.toDisabled( m_pal.onBackground ) );
 
-    setColor( Q::Panel | Q::Hovered, QskRgb::toTransparentF( m_pal.primary, m_pal.hover ) );
-    setColor( Q::Panel | Q::Focused, QskRgb::toTransparentF( m_pal.primary, m_pal.focused ) );
-    setColor( Q::Panel | Q::Pressed, QskRgb::toTransparentF( m_pal.primary, m_pal.pressed ) );
+    setGradient( Q::Panel | Q::Hovered, toTransparentF( m_pal.primary, m_pal.hover ) );
+    setGradient( Q::Panel | Q::Focused, toTransparentF( m_pal.primary, m_pal.focused ) );
+    setGradient( Q::Panel | Q::Pressed, toTransparentF( m_pal.primary, m_pal.pressed ) );
 
     setAnimation( Q::Panel | A::Color, qskDuration );
     setAnimation( Q::Panel | A::Metric, qskDuration );
@@ -393,11 +395,11 @@ void Editor::setupSlider()
 
     setGradient( Q::Groove, QskRgb::toTransparentF( m_pal.secondary, .38 ) );
     setGradient( Q::Groove | Q::Disabled,
-        QskRgb::toTransparentF( m_pal.secondaryNoSaturation, m_pal.disabled ) );
+        m_pal.toDisabled( m_pal.secondaryNoSaturation ) );
 
     setGradient( Q::Fill, m_pal.secondary );
     setGradient( Q::Fill | Q::Disabled,
-        QskRgb::toTransparentF( m_pal.secondaryNoSaturation, m_pal.disabled ) );
+        m_pal.toDisabled( m_pal.secondaryNoSaturation ) );
 
     setBoxShape( Q::Handle, 100, Qt::RelativeSize );
     setBoxBorderMetrics( Q::Handle, 0 );
@@ -439,11 +441,9 @@ void Editor::setupSwitchButton()
     setStrutSize( Q::Groove | A::Horizontal, grooveSize );
     setStrutSize( Q::Groove | A::Vertical, grooveSize.transposed() );
 
-    setColor( Q::Groove, m_pal.secondaryNoSaturation );
-    setGradient( Q::Groove | Q::Disabled,
-        QskRgb::toTransparentF( m_pal.secondaryNoSaturation, m_pal.disabled ) );
-    setGradient( Q::Groove | Q::Checked,
-        m_pal.secondaryVariant );
+    setGradient( Q::Groove, m_pal.secondaryNoSaturation );
+    setGradient( Q::Groove | Q::Disabled, m_pal.toDisabled( m_pal.secondaryNoSaturation ) );
+    setGradient( Q::Groove | Q::Checked, m_pal.secondaryVariant );
     setGradient( Q::Groove | Q::Checked | Q::Disabled,
         QskRgb::toTransparentF( m_pal.secondaryVariant, m_pal.disabledOccupancy ) );
 
@@ -551,10 +551,10 @@ void Editor::setupTabButton()
     setColor( Q::Text | Q::Checked, m_pal.primary );
     setColor( Q::Text | Q::Hovered, m_pal.primary );
 
-    setColor( Q::Panel, m_pal.elevated( m_pal.background ) );
-    setColor( Q::Panel | Q::Hovered, QskRgb::toTransparentF( m_pal.primary, m_pal.hover ) );
-    setColor( Q::Panel | Q::Focused, QskRgb::toTransparentF( m_pal.primary, m_pal.focused ) );
-    setColor( Q::Panel | Q::Pressed, QskRgb::toTransparentF( m_pal.primary, m_pal.pressed ) );
+    setGradient( Q::Panel, m_pal.elevated( m_pal.background ) );
+    setGradient( Q::Panel | Q::Hovered, QskRgb::toTransparentF( m_pal.primary, m_pal.hover ) );
+    setGradient( Q::Panel | Q::Focused, QskRgb::toTransparentF( m_pal.primary, m_pal.focused ) );
+    setGradient( Q::Panel | Q::Pressed, QskRgb::toTransparentF( m_pal.primary, m_pal.pressed ) );
 
     setAnimation( Q::Panel | A::Color, qskDuration );
 
@@ -646,7 +646,7 @@ void Editor::setupScrollView()
     {
         setBoxShape( subControl, 3 );
         setBoxBorderMetrics( subControl, 0 );
-        setColor( subControl, QskRgb::toTransparentF(  m_pal.onBackground, m_pal.hover ) );
+        setGradient( subControl, QskRgb::toTransparentF(  m_pal.onBackground, m_pal.hover ) );
         setAnimation( subControl | A::Color, qskDuration );
     }
 
@@ -654,7 +654,7 @@ void Editor::setupScrollView()
         Q::HorizontalScrollHandle | Q::HorizontalHandlePressed,
         Q::VerticalScrollHandle | Q::VerticalHandlePressed } )
     {
-        setColor( subControl,
+        setGradient( subControl,
             QskRgb::toTransparentF(  m_pal.onBackground, m_pal.pressed ) );
     }
 
@@ -668,10 +668,10 @@ void Editor::setupListView()
 
     setPadding( Q::Cell, 0 );
 
-    setColor( Q::Cell, m_pal.background );
+    setGradient( Q::Cell, m_pal.background );
     setColor( Q::Text, m_pal.onBackground );
 
-    setColor( Q::Cell | Q::Selected, QskRgb::toTransparentF( m_pal.onBackground, m_pal.focused ) );
+    setGradient( Q::Cell | Q::Selected, QskRgb::toTransparentF( m_pal.onBackground, m_pal.focused ) );
     setColor( Q::Text | Q::Selected, m_pal.onBackground );
 }
 
