@@ -291,8 +291,6 @@ void Editor::setupPushButton()
 
     setBoxShape( Q::Panel, 5 );
 
-    setGradient( Q::Panel | Q::Flat, White & ColorMask );
-
     setColor( Q::Text, m_pal.primary );
     setColor( Q::Text | Q::Disabled, toTransparentF( m_pal.primary, 0.6 ) );
     setFontRole( Q::Text, ButtonFontRole );
@@ -307,6 +305,7 @@ void Editor::setupPushButton()
     setGradient( Q::Panel | Q::Hovered, toTransparentF( m_pal.primary, m_pal.hover ) );
     setGradient( Q::Panel | Q::Focused, toTransparentF( m_pal.primary, m_pal.focused ) );
     setGradient( Q::Panel | Q::Pressed, toTransparentF( m_pal.primary, m_pal.pressed ) );
+    setGradient( Q::Panel | Q::Flat, White & ColorMask );
 
     setAnimation( Q::Panel | A::Color, qskDuration );
     setAnimation( Q::Panel | A::Metric, qskDuration );
