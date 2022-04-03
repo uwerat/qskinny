@@ -17,6 +17,13 @@ class CheckBoxTests : public QObject
     void click();
     void toggle();
     void triState();
+    void higherGroupUpdatesLower();
+    void lowerGroupUpdatesHigher();
+    void addToGroup();
+    void addPartlyToGroup();
+    void removeFromGroup();
+    void groupMemberGetsDeleted();
+    void addTwiceToSameGroup();
 };
 
 QTEST_MAIN(CheckBoxTests)
