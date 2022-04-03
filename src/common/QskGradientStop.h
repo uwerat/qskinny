@@ -48,7 +48,10 @@ class QSK_EXPORT QskGradientStop
     QColor m_color; // using RGBA instead ?
 };
 
-Q_DECLARE_TYPEINFO( QskGradientStop, Q_MOVABLE_TYPE );
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+    Q_DECLARE_TYPEINFO( QskGradientStop, Q_RELOCATABLE_TYPE );
+#endif
+
 Q_DECLARE_METATYPE( QskGradientStop )
 
 inline constexpr QskGradientStop::QskGradientStop() noexcept
