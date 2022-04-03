@@ -53,13 +53,13 @@ Q_CONSTRUCTOR_FUNCTION( qskRegisterInterpolator )
 #endif
 
 #if defined( Q_CC_CLANG )
-#if __has_feature( address_sanitizer )
-#define QSK_DECL_INSANE __attribute__( ( no_sanitize( "undefined" ) ) )
-#endif
+    #if __has_feature( address_sanitizer )
+        #define QSK_DECL_INSANE __attribute__( ( no_sanitize( "undefined" ) ) )
+    #endif
 #endif
 
 #if !defined( QSK_DECL_INSANE )
-#define QSK_DECL_INSANE
+    #define QSK_DECL_INSANE
 #endif
 
 QSK_DECL_INSANE static inline QVariant qskInterpolate(
@@ -112,11 +112,13 @@ QskVariantAnimator::~QskVariantAnimator()
 
 void QskVariantAnimator::setStartValue( const QVariant& value )
 {
+    stop();
     m_startValue = value;
 }
 
 void QskVariantAnimator::setEndValue( const QVariant& value )
 {
+    stop();
     m_endValue = value;
 }
 
@@ -171,7 +173,7 @@ void QskVariantAnimator::setup()
 
     if ( convertValues( m_startValue, m_endValue ) )
     {
-        if (  m_startValue != m_endValue )
+        if ( m_startValue != m_endValue )
         {
             const auto id = m_startValue.userType();
 
@@ -190,6 +192,8 @@ void QskVariantAnimator::advance( qreal progress )
     {
         if ( qFuzzyCompare( progress, 1.0 ) )
             progress = 1.0;
+
+        Q_ASSERT( qskMetaType( m_startValue ) == qskMetaType( m_endValue ) );
 
         m_currentValue = qskInterpolate( m_interpolator,
             m_startValue, m_endValue, progress );
