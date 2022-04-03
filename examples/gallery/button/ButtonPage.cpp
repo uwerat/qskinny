@@ -67,7 +67,14 @@ namespace
                 (void) new QskSwitchButton( orientation, this );
 
                 auto button = new QskSwitchButton( orientation, this );
+                button->setChecked( true );
+
+                button = new QskSwitchButton( orientation, this );
                 button->setInverted( true );
+
+                button = new QskSwitchButton( orientation, this );
+                button->setInverted( true );
+                button->setChecked( true );
             }
         }
     };
