@@ -1145,11 +1145,11 @@ void QskSkinnable::startHintTransition( QskAspect aspect,
     if ( control->window() == nullptr || !isTransitionAccepted( aspect ) )
         return;
 
+    if ( !QskVariantAnimator::maybeInterpolate( from, to ) )
+        return;
+
     auto v1 = from;
     auto v2 = to;
-
-    if ( !QskVariantAnimator::convertValues( v1, v2 ) )
-        return;
 
     if ( aspect.flagPrimitive() == QskAspect::GraphicRole )
     {
