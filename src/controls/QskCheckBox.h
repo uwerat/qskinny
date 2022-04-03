@@ -25,6 +25,9 @@ class QSK_EXPORT QskCheckBox : public QskAbstractButton
     bool isTriState() const;
     bool isCheckable() const override final;
 
+    void addToGroup( QskCheckBox* groupItem );
+    void removeFromGroup( QskCheckBox* groupItem );
+
   public Q_SLOTS:
     void setCheckState( Qt::CheckState );
     void setTriState( bool triState = true );
@@ -32,8 +35,11 @@ class QSK_EXPORT QskCheckBox : public QskAbstractButton
   Q_SIGNALS:
     void checkStateChanged( Qt::CheckState );
     void isTriStateChanged( bool );
+    void removeFromAllGroupsRequested();
+
   private:
     void setCheckStateInternal( Qt::CheckState );
+    void updated();
 
     struct PrivateData;
     std::unique_ptr< PrivateData > m_data;
