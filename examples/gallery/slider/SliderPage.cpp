@@ -4,14 +4,27 @@
  *****************************************************************************/
 
 #include "SliderPage.h"
-#include "CustomSlider.h"
-#include "OtherSlider.h"
+#include <QskSlider.h>
 
-#include <QskRgbValue.h>
-#include <QskMargins.h>
+namespace
+{
+    class Slider : public QskSlider
+    {
+      public:
+        Slider( Qt::Orientation orientation, QQuickItem* parent = nullptr )
+            : QskSlider( orientation, parent )
+        {
+            setBoundaries( 0, 1000 );
 
-SliderPage::SliderPage( QQuickItem* parentItem )
-    : Page( Qt::Vertical, parentItem )
+            setPageSize( 10 );
+            setStepSize( 10 );
+            setSnap( true );
+        }
+    };
+}
+
+SliderPage::SliderPage( QQuickItem* parent )
+    : Page( Qt::Horizontal, parent )
 {
     setMargins( 10 );
     setSpacing( 20 );
@@ -35,54 +48,6 @@ SliderPage::SliderPage( QQuickItem* parentItem )
 
 void SliderPage::populate()
 {
-    {
-        auto slider = new QskSlider( this );
-
-        slider->setMinimum( 0 );
-        slider->setMaximum( 1000 );
-        slider->setPageSize( 10 );
-        slider->setStepSize( 10 );
-        slider->setSnap( true );
-    }
-
-    {
-        auto slider = new OtherSlider( this );
-
-        slider->setMinimum( 0 );
-        slider->setMaximum( 10 );
-        slider->setStepSize( 1 );
-    }
-
-
-    auto hBox = new QskLinearBox( Qt::Horizontal, this );
-
-    {
-        auto slider = new QskSlider( Qt::Vertical, hBox );
-
-        slider->setMinimum( 0 );
-        slider->setMaximum( 1000 );
-        slider->setPageSize( 10 );
-        slider->setStepSize( 10 );
-        slider->setSnap( true );
-    }
-
-    {
-        auto slider = new OtherSlider( hBox );
-        slider->setOrientation( Qt::Vertical );
-
-        slider->setMinimum( 0 );
-        slider->setMaximum( 10 );
-        slider->setStepSize( 1 );
-    }
-
-    {
-        auto slider = new CustomSlider( this );
-
-        slider->setMargins( QskMargins( 0, 15 ) );
-        slider->setSnap( true );
-        slider->setMinimum( 0 );
-        slider->setMaximum( 2000 );
-        slider->setStepSize( 10 );
-        slider->setPageSize( 10 );
-    }
+    ( void ) new Slider( Qt::Horizontal, this );
+    ( void ) new Slider( Qt::Vertical, this );
 }
