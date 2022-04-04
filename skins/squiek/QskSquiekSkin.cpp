@@ -8,6 +8,7 @@
 #include <QskSkinHintTableEditor.h>
 
 #include <QskBox.h>
+#include <QskCheckBox.h>
 #include <QskDialogButton.h>
 #include <QskDialogButtonBox.h>
 #include <QskFocusIndicator.h>
@@ -132,6 +133,7 @@ namespace
         void setupControl();
 
         void setupBox();
+        void setupCheckBox();
         void setupDialogButton();
         void setupDialogButtonBox();
         void setupFocusIndicator();
@@ -251,6 +253,7 @@ void Editor::setup()
     setupControl();
 
     setupBox();
+    setupCheckBox();
     setupDialogButtonBox();
     setupDialogButton();
     setupFocusIndicator();
@@ -290,6 +293,23 @@ void Editor::setupControl()
 void Editor::setupBox()
 {
     setPanel( QskBox::Panel, Plain );
+}
+
+void Editor::setupCheckBox()
+{
+    using Q = QskCheckBox;
+
+    const qreal size = qskDpiScaled( 26 );
+
+    setMargin( Q::Tick, QskMargins( qskDpiScaled( 5 ) ) );
+
+    setStrutSize( Q::Box, QSizeF( size, size ) );
+    setBoxShape( Q::Box, qskDpiScaled( 3 ) );
+    setBoxBorderMetrics( Q::Box, qskDpiScaled( 1 ) );
+    setBoxBorderColors( Q::Box, m_pal.darker125 );
+    setColor( Q::Box, m_pal.lighter135 );
+    setColor( Q::Box | Q::Checked, m_pal.highlighted );
+    setColor( Q::Tick, m_pal.lighter135 );
 }
 
 void Editor::setupPopup()
