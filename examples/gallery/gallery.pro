@@ -7,15 +7,9 @@ SOURCES += \
     label/LabelPage.cpp \
 
 HEADERS += \
-    slider/CustomSlider.h \
-    slider/CustomSliderSkinlet.h \
-    slider/OtherSlider.h \
     slider/SliderPage.h
 
 SOURCES += \
-    slider/CustomSlider.cpp \
-    slider/CustomSliderSkinlet.cpp \
-    slider/OtherSlider.cpp \
     slider/SliderPage.cpp
 
 HEADERS += \
