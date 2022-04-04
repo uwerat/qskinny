@@ -1,13 +1,21 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * This file may be used under the terms of the QSkinny License, Version 1.0
+ *****************************************************************************/
+
 #ifndef QSK_CHECK_BOX_SKINLET_H
 #define QSK_CHECK_BOX_SKINLET_H
 
 #include "QskSkinlet.h"
+
+class QskCheckBox;
 
 class QSK_EXPORT QskCheckBoxSkinlet : public QskSkinlet
 {
     Q_GADGET
 
     using Inherited = QskSkinlet;
+
   public:
     enum NodeRole
     {
@@ -27,6 +35,9 @@ class QSK_EXPORT QskCheckBoxSkinlet : public QskSkinlet
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
+
+  private:
+    QSGNode* updateTickNode( const QskCheckBox*, QSGNode* ) const;
 };
 
-#endif // QSK_CHECK_BOX_SKINLET_H
+#endif

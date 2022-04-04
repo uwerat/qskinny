@@ -1,3 +1,8 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * This file may be used under the terms of the QSkinny License, Version 1.0
+ *****************************************************************************/
+
 #ifndef QSK_CHECK_BOX_H
 #define QSK_CHECK_BOX_H
 
@@ -9,6 +14,7 @@ class QSK_EXPORT QskCheckBox : public QskAbstractButton
 
     Q_PROPERTY( Qt::CheckState checkState READ checkState
         WRITE setCheckState NOTIFY checkStateChanged FINAL )
+
     Q_PROPERTY( bool isTriState READ isTriState
         WRITE setTriState NOTIFY isTriStateChanged FINAL )
 
@@ -41,8 +47,8 @@ class QSK_EXPORT QskCheckBox : public QskAbstractButton
     void setCheckStateInternal( Qt::CheckState );
     void updated();
 
-    struct PrivateData;
+    class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
 
-#endif // QSK_CHECK_BOX_H
+#endif

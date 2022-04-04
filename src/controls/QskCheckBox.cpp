@@ -1,5 +1,9 @@
-#include "QskCheckBox.h"
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * This file may be used under the terms of the QSkinny License, Version 1.0
+ *****************************************************************************/
 
+#include "QskCheckBox.h"
 #include "QskAspect.h"
 
 #include <qset.h>
@@ -9,11 +13,22 @@ QSK_SUBCONTROL( QskCheckBox, Tick )
 
 QSK_SYSTEM_STATE( QskCheckBox, PartiallyChecked, QskAspect::LastUserState << 2 )
 
-struct QskCheckBox::PrivateData
+class QskCheckBox::PrivateData
 {
+  public:
+    PrivateData()
+        : checkState( Qt::Unchecked )
+        , checkStateChanging( false )
+        , toggleChanging( false )
+        , triState( false )
+    {
+    }
+
     QSet< QskAbstractButton* > group;
-    int groupItemsChecked;
-    Qt::CheckState checkState;
+
+    int groupItemsChecked = 0;
+
+    int checkState : 2;
     bool checkStateChanging : 1;
     bool toggleChanging : 1;
     bool triState : 1;
@@ -21,16 +36,13 @@ struct QskCheckBox::PrivateData
 
 QskCheckBox::QskCheckBox( QQuickItem* parent )
     : Inherited( parent )
-    , m_data( new PrivateData { QSet< QskAbstractButton* >(), 0,
-        Qt::Unchecked, false, false, false } ) {
+    , m_data( new PrivateData() )
+{
     setAcceptHoverEvents( true );
     initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 
-    connect( this, &QskCheckBox::checkedChanged, this, [ this ]( bool t )
-    {
-        setCheckStateInternal( t ? Qt::CheckState::Checked :
-        Qt::CheckState::Unchecked );
-    } );
+    connect( this, &QskCheckBox::checkedChanged, this,
+        [ this ]( bool on ) { setCheckStateInternal( on ? Qt::Checked : Qt::Unchecked ); } );
 }
 
 QskCheckBox::~QskCheckBox()
@@ -45,18 +57,15 @@ bool QskCheckBox::isCheckable() const
 
 Qt::CheckState QskCheckBox::checkState() const
 {
-    return m_data->checkState;
+    return static_cast< Qt::CheckState >( m_data->checkState );
 }
 
 void QskCheckBox::setCheckStateInternal( Qt::CheckState checkState )
 {
     if( m_data->checkStateChanging )
-    {
         return;
-    }
 
-    setSkinStateFlag( PartiallyChecked,
-        checkState == Qt::CheckState::PartiallyChecked );
+    setSkinStateFlag( PartiallyChecked, checkState == Qt::PartiallyChecked );
 
     m_data->checkState = checkState;
     Q_EMIT checkStateChanged( checkState );
@@ -68,15 +77,17 @@ void QskCheckBox::setCheckState( Qt::CheckState checkState )
         return;
 
     m_data->checkStateChanging = true;
-    if( checkState == Qt::CheckState::PartiallyChecked )
+
+    if( checkState == Qt::PartiallyChecked )
     {
         setChecked( true );
         setTriState( true );
     }
     else
     {
-        setChecked( checkState == Qt::CheckState::Checked );
+        setChecked( checkState == Qt::Checked );
     }
+
     m_data->checkStateChanging = false;
 
     setCheckStateInternal( checkState );
@@ -99,43 +110,38 @@ void QskCheckBox::setTriState( bool triState )
 void QskCheckBox::updated()
 {
     if( m_data->toggleChanging )
-    {
         return;
-    }
 
-    auto& groupItemsChecked = m_data->groupItemsChecked;
+    const auto& groupItemsChecked = m_data->groupItemsChecked;
 
     if( groupItemsChecked == m_data->group.size() )
     {
-        this->setCheckState( Qt::CheckState::Checked );
+        setCheckState( Qt::Checked );
     }
     else if ( groupItemsChecked == 0 )
     {
-        this->setCheckState( Qt::CheckState::Unchecked );
+        setCheckState( Qt::Unchecked );
     }
     else
     {
-        this->setCheckState( Qt::CheckState::PartiallyChecked );
+        setCheckState( Qt::PartiallyChecked );
     }
 }
 
-void QskCheckBox::addToGroup( QskCheckBox* groupItem ) {
+void QskCheckBox::addToGroup( QskCheckBox* groupItem )
+{
     if( m_data->group.contains( groupItem ) )
-    {
         return;
-    }
 
     m_data->group.insert( groupItem );
 
-    if( groupItem->checkState() == Qt::CheckState::Checked )
-    {
-        m_data->groupItemsChecked += 1;
-    }
+    if( groupItem->checkState() == Qt::Checked )
+        m_data->groupItemsChecked++;
 
     updated();
 
     connect( this, &QskCheckBox::checkStateChanged,
-        groupItem, [ this, groupItem ] ( Qt::CheckState checkState )
+        groupItem, [ this, groupItem ]( Qt::CheckState checkState )
     {
         if( checkState == Qt::Checked )
         {
@@ -154,7 +160,7 @@ void QskCheckBox::addToGroup( QskCheckBox* groupItem ) {
     } );
 
     connect( groupItem, &QskAbstractButton::toggled,
-        this, [ this, groupItem ] ( bool toggled )
+        this, [ this, groupItem ]( bool toggled )
     {
         auto& groupItemsChecked = m_data->groupItemsChecked;
         groupItemsChecked += toggled ? 1 : -1;
@@ -162,22 +168,16 @@ void QskCheckBox::addToGroup( QskCheckBox* groupItem ) {
     } );
 
     connect( groupItem, &QskCheckBox::removeFromAllGroupsRequested,
-        this, [ this, groupItem ] (  )
-    {
-        removeFromGroup( groupItem );
-    } );
+        this, [ this, groupItem ]( ) { removeFromGroup( groupItem ); } );
 }
 
-void QskCheckBox::removeFromGroup( QskCheckBox* groupItem ) {
+void QskCheckBox::removeFromGroup( QskCheckBox* groupItem )
+{
     if( !m_data->group.remove( groupItem ) )
-    {
         return;
-    }
 
-    if( groupItem->checkState() == Qt::CheckState::Checked )
-    {
-        m_data->groupItemsChecked -= 1;
-    }
+    if( groupItem->checkState() == Qt::Checked )
+        m_data->groupItemsChecked--;
 
     updated();
 }
