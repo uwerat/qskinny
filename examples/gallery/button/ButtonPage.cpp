@@ -7,6 +7,7 @@
 
 #include <QskSwitchButton.h>
 #include <QskPushButton.h>
+#include <QskCheckBox.h>
 #include <QskSeparator.h>
 #include <QskLinearBox.h>
 
@@ -78,6 +79,24 @@ namespace
             }
         }
     };
+
+    class CheckButtonBox : public QskLinearBox
+    { 
+      public:
+        CheckButtonBox( QQuickItem* parent = nullptr )
+            : QskLinearBox( Qt::Horizontal, parent )
+        {   
+            setSpacing( 20 );
+            setExtraSpacingAt( Qt::LeftEdge | Qt::RightEdge | Qt::BottomEdge );
+
+            for ( auto state : { Qt::Unchecked, Qt::PartiallyChecked, Qt::Checked } )
+            {
+                auto button = new QskCheckBox( this );
+                button->setTristate( true ); 
+                button->setCheckState( state );
+            }
+        }
+    };
 }
 
 ButtonPage::ButtonPage( QQuickItem* parent )
@@ -92,4 +111,6 @@ void ButtonPage::populate()
     new ButtonBox( this );
     new QskSeparator( Qt::Horizontal, this );
     new SwitchButtonBox( this );
+    new QskSeparator( Qt::Horizontal, this );
+    new CheckButtonBox( this );
 }
