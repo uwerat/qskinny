@@ -2,20 +2,25 @@
 
 #include <QskCheckBox.h>
 
-void CheckBoxTests::init() {
+void CheckBoxTests::init()
+{
     root = new QskControl();
 }
-void CheckBoxTests::cleanup() {
+
+void CheckBoxTests::cleanup()
+{
     delete root;
 }
 
-void CheckBoxTests::checkbox() {
+void CheckBoxTests::checkbox()
+{
     auto t = new QskCheckBox( root );
 
     QVERIFY( t->isCheckable() );
 }
 
-void CheckBoxTests::click() {
+void CheckBoxTests::click()
+{
     auto t = new QskCheckBox( root );
 
     QVERIFY( t->isChecked() == false );
@@ -23,7 +28,8 @@ void CheckBoxTests::click() {
     QVERIFY( t->isChecked() );
 }
 
-void CheckBoxTests::toggle() {
+void CheckBoxTests::toggle()
+{
     auto t = new QskCheckBox( root );
 
     QVERIFY( t->isChecked() == false );
@@ -34,19 +40,21 @@ void CheckBoxTests::toggle() {
     QVERIFY( t->isChecked() == false );
 }
 
-void CheckBoxTests::triState() {
+void CheckBoxTests::tristate()
+{
     auto t = new QskCheckBox( root );
 
     QVERIFY( t->isChecked() == false );
-    QVERIFY( t->isTriState() == false );
+    QVERIFY( t->isTristate() == false );
 
     t->setCheckState( Qt::CheckState::PartiallyChecked );
 
     QVERIFY( t->isChecked() == true );
-    QVERIFY( t->isTriState() == true );
+    QVERIFY( t->isTristate() == true );
 }
 
-void CheckBoxTests::higherGroupUpdatesLower() {
+void CheckBoxTests::higherGroupUpdatesLower()
+{
     auto t = new QskCheckBox( root );
     auto t1 = new QskCheckBox( root );
     auto t2 = new QskCheckBox( root );
@@ -74,7 +82,9 @@ void CheckBoxTests::higherGroupUpdatesLower() {
     QVERIFY( t3->isChecked() == false );
 
 }
-void CheckBoxTests::lowerGroupUpdatesHigher() {
+
+void CheckBoxTests::lowerGroupUpdatesHigher()
+{
     auto t = new QskCheckBox( root );
 
     auto t1 = new QskCheckBox( root );
@@ -85,7 +95,7 @@ void CheckBoxTests::lowerGroupUpdatesHigher() {
 
     t1->setChecked( true );
     QVERIFY( t->isChecked() );
-    QVERIFY( t->isTriState() );
+    QVERIFY( t->isTristate() );
     QVERIFY( t->checkState() == Qt::CheckState::PartiallyChecked );
     QVERIFY( t1->isChecked() == true );
     QVERIFY( t2->isChecked() == false );
@@ -93,27 +103,28 @@ void CheckBoxTests::lowerGroupUpdatesHigher() {
 
     t2->setChecked( true );
     QVERIFY( t->isChecked() );
-    QVERIFY( t->isTriState() );
+    QVERIFY( t->isTristate() );
     QVERIFY( t->checkState() == Qt::CheckState::Checked );
     QVERIFY( t1->isChecked() == true );
     QVERIFY( t2->isChecked() == true );
 
     t1->setChecked( false );
     QVERIFY( t->isChecked() );
-    QVERIFY( t->isTriState() );
+    QVERIFY( t->isTristate() );
     QVERIFY( t->checkState() == Qt::CheckState::PartiallyChecked );
     QVERIFY( t1->isChecked() == false );
     QVERIFY( t2->isChecked() == true );
 
     t2->setChecked( false );
     QVERIFY( t->isChecked() == false );
-    QVERIFY( t->isTriState() );
+    QVERIFY( t->isTristate() );
     QVERIFY( t->checkState() == Qt::CheckState::Unchecked );
     QVERIFY( t1->isChecked() == false );
     QVERIFY( t2->isChecked() == false );
 }
 
-void CheckBoxTests::addToGroup() {
+void CheckBoxTests::addToGroup()
+{
     auto t = new QskCheckBox( root );
 
     auto t1 = new QskCheckBox( root );
@@ -157,8 +168,8 @@ void CheckBoxTests::addPartlyToGroup() {
     QVERIFY( t1->checkState() == Qt::CheckState::PartiallyChecked );
 }
 
-
-void CheckBoxTests::removeFromGroup() {
+void CheckBoxTests::removeFromGroup()
+{
     auto t = new QskCheckBox( root );
 
     auto t1 = new QskCheckBox( root );
@@ -174,7 +185,8 @@ void CheckBoxTests::removeFromGroup() {
     QVERIFY( t->isChecked() == false );
 }
 
-void CheckBoxTests::groupMemberGetsDeleted() {
+void CheckBoxTests::groupMemberGetsDeleted()
+{
     auto t = new QskCheckBox( root );
     auto t1 = new QskCheckBox( root );
     auto t2 = new QskCheckBox( root );
@@ -189,7 +201,8 @@ void CheckBoxTests::groupMemberGetsDeleted() {
     QVERIFY( t->isChecked() == false );
 }
 
-void CheckBoxTests::addTwiceToSameGroup() {
+void CheckBoxTests::addTwiceToSameGroup()
+{
     auto t = new QskCheckBox( root );
 
     auto t1 = new QskCheckBox( root );
@@ -205,5 +218,6 @@ void CheckBoxTests::addTwiceToSameGroup() {
 
     QVERIFY( t->checkState() == Qt::CheckState::Checked );
 }
+
 #include "moc_main.cpp"
 

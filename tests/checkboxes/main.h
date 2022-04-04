@@ -16,7 +16,7 @@ class CheckBoxTests : public QObject
     void checkbox();
     void click();
     void toggle();
-    void triState();
+    void tristate();
     void higherGroupUpdatesLower();
     void lowerGroupUpdatesHigher();
     void addToGroup();
