@@ -20,7 +20,7 @@ class QskCheckBox::PrivateData
         : checkState( Qt::Unchecked )
         , checkStateChanging( false )
         , toggleChanging( false )
-        , triState( false )
+        , tristate( false )
     {
     }
 
@@ -31,7 +31,7 @@ class QskCheckBox::PrivateData
     int checkState : 2;
     bool checkStateChanging : 1;
     bool toggleChanging : 1;
-    bool triState : 1;
+    bool tristate : 1;
 };
 
 QskCheckBox::QskCheckBox( QQuickItem* parent )
@@ -81,7 +81,7 @@ void QskCheckBox::setCheckState( Qt::CheckState checkState )
     if( checkState == Qt::PartiallyChecked )
     {
         setChecked( true );
-        setTriState( true );
+        setTristate( true );
     }
     else
     {
@@ -93,17 +93,17 @@ void QskCheckBox::setCheckState( Qt::CheckState checkState )
     setCheckStateInternal( checkState );
 }
 
-bool QskCheckBox::isTriState() const
+bool QskCheckBox::isTristate() const
 {
-    return m_data->triState;
+    return m_data->tristate;
 }
 
-void QskCheckBox::setTriState( bool triState )
+void QskCheckBox::setTristate( bool tristate )
 {
-    if( m_data->triState != triState )
+    if( m_data->tristate != tristate )
     {
-        m_data->triState = triState;
-        Q_EMIT isTriStateChanged( triState );
+        m_data->tristate = tristate;
+        Q_EMIT tristateChanged( tristate );
     }
 }
 

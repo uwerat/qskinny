@@ -92,7 +92,7 @@ namespace
             for ( auto state : { Qt::Unchecked, Qt::PartiallyChecked, Qt::Checked } )
             {
                 auto button = new QskCheckBox( this );
-                button->setTriState( true ); 
+                button->setTristate( true ); 
                 button->setCheckState( state );
             }
         }

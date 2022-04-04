@@ -15,8 +15,8 @@ class QSK_EXPORT QskCheckBox : public QskAbstractButton
     Q_PROPERTY( Qt::CheckState checkState READ checkState
         WRITE setCheckState NOTIFY checkStateChanged FINAL )
 
-    Q_PROPERTY( bool isTriState READ isTriState
-        WRITE setTriState NOTIFY isTriStateChanged FINAL )
+    Q_PROPERTY( bool tristate READ isTristate
+        WRITE setTristate NOTIFY tristateChanged FINAL )
 
     using Inherited = QskAbstractButton;
 
@@ -28,19 +28,19 @@ class QSK_EXPORT QskCheckBox : public QskAbstractButton
     ~QskCheckBox() override;
 
     Qt::CheckState checkState() const;
-    bool isTriState() const;
+    bool isTristate() const;
     bool isCheckable() const override final;
 
-    void addToGroup( QskCheckBox* groupItem );
-    void removeFromGroup( QskCheckBox* groupItem );
+    void addToGroup( QskCheckBox* );
+    void removeFromGroup( QskCheckBox* );
 
   public Q_SLOTS:
     void setCheckState( Qt::CheckState );
-    void setTriState( bool triState = true );
+    void setTristate( bool triState = true );
 
   Q_SIGNALS:
     void checkStateChanged( Qt::CheckState );
-    void isTriStateChanged( bool );
+    void tristateChanged( bool );
     void removeFromAllGroupsRequested();
 
   private:
