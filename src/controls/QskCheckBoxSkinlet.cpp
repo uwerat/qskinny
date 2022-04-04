@@ -14,71 +14,51 @@ namespace
     class Tick : public QSGGeometryNode
     {
       public:
-        Tick( const QRectF& rect, const QColor& color )
-            : m_target( rect )
-            , geometry( QSGGeometry::defaultAttributes_Point2D(), 3 )
+        Tick()
+            : geometry( QSGGeometry::defaultAttributes_Point2D(), 3 )
         {
             geometry.setDrawingMode( QSGGeometry::DrawLineStrip );
             geometry.setLineWidth( 2 );
             setGeometry( &geometry );
 
-            material.setColor( color );
             setMaterial( &material );
-
-            markDirty( QSGNode::DirtyGeometry );
         }
 
-        void setColor( const QColor& color ) {
+        void setColor( const QColor& color )
+        {
             material.setColor( color );
             markDirty( QSGNode::DirtyMaterial );
         }
 
-        void makeTick()
+        void makeTick( const QRectF& rect )
         {
-            const auto x = m_target.x();
-            const auto y = m_target.y();
+            const auto x = rect.x();
+            const auto y = rect.y();
 
             auto vertexData = geometry.vertexDataAsPoint2D();
 
-            vertexData[0].set( x, y + m_target.height() / 2 );
-            vertexData[1].set( x + m_target.width() / 3, y + m_target.height() );
-            vertexData[2].set( x + m_target.width(), y );
+            vertexData[0].set( x, y + rect.height() / 2 );
+            vertexData[1].set( x + rect.width() / 3, y + rect.height() );
+            vertexData[2].set( x + rect.width(), y );
 
             markDirty( QSGNode::DirtyGeometry );
         }
 
-        void makePartially()
+        void makePartially( const QRectF& rect )
         {
-            const auto x = m_target.x();
-            const auto y = m_target.y();
+            const auto x = rect.x();
+            const auto y = rect.y();
 
             auto vertexData = geometry.vertexDataAsPoint2D();
 
-            vertexData[0].set( x, y + m_target.height() / 2 );
-            vertexData[1].set( x, y + m_target.height() / 2 );
-            vertexData[2].set( x + m_target.width(), y + m_target.height() / 2 );
-
-            markDirty( QSGNode::DirtyGeometry );
-        }
-
-        void makeEmpty()
-        {
-            const auto x = m_target.x();
-            const auto y = m_target.y();
-
-            auto vertexData = geometry.vertexDataAsPoint2D();
-
-            vertexData[0].set( x, y );
-            vertexData[1].set( x, y );
-            vertexData[2].set( x, y );
+            vertexData[0].set( x, y + rect.height() / 2 );
+            vertexData[1].set( x, y + rect.height() / 2 );
+            vertexData[2].set( x + rect.width(), y + rect.height() / 2 );
 
             markDirty( QSGNode::DirtyGeometry );
         }
 
       private:
-
-        const QRectF m_target;
-
         QSGFlatColorMaterial material;
         QSGGeometry geometry;
     };
@@ -125,35 +105,25 @@ QSGNode* QskCheckBoxSkinlet::updateTickNode(
 {
     using Q = QskCheckBox;
 
+    if ( checkBox->checkState() == Qt::Unchecked )
+        return nullptr;
+
     auto rect = checkBox->subControlRect( Q::Tick );
     rect = rect.marginsRemoved( checkBox->marginHint( Q::Tick ) );
 
     auto tick = static_cast< Tick* >( node );
     if ( tick == nullptr )
-        tick = new Tick( rect, checkBox->color( Q::Tick ) );
+        tick = new Tick();
 
-    switch ( checkBox->checkState() )
+    if ( checkBox->checkState() == Qt::PartiallyChecked )
     {
-        case Qt::Unchecked:
-
-            tick->setColor( checkBox->color( Q::Tick ) );
-            tick->makeEmpty();
-
-            break;
-
-        case Qt::PartiallyChecked:
-
-            tick->setColor( checkBox->color( Q::Tick | Q::PartiallyChecked ) );
-            tick->makePartially();
-
-            break;
-
-        case Qt::Checked:
-
-            tick->setColor( checkBox->color( Q::Tick | Q::Checked ) );
-            tick->makeTick();
-
-            break;
+        tick->setColor( checkBox->color( Q::Tick | Q::PartiallyChecked ) );
+        tick->makePartially( rect );
+    }
+    else
+    {
+        tick->setColor( checkBox->color( Q::Tick | Q::Checked ) );
+        tick->makeTick( rect );
     }
 
     return tick;
