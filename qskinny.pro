@@ -23,6 +23,7 @@ qmlexport.depends = src
 inputcontext.depends = src
 skins.depends = src
 tools.depends = src
+tests.depends = src support
 support.depends = src skins
 examples.depends = tools support skins qmlexport
 playground.depends = tools support skins qmlexport
