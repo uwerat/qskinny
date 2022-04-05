@@ -297,19 +297,24 @@ void Editor::setupBox()
 
 void Editor::setupCheckBox()
 {
+    using A = QskAspect;
     using Q = QskCheckBox;
 
     const qreal size = qskDpiScaled( 26 );
 
-    setMargin( Q::Tick, QskMargins( qskDpiScaled( 5 ) ) );
+    setStrutSize( Q::Panel, size, size );
 
-    setStrutSize( Q::Box, QSizeF( size, size ) );
-    setBoxShape( Q::Box, qskDpiScaled( 3 ) );
-    setBoxBorderMetrics( Q::Box, qskDpiScaled( 1 ) );
-    setBoxBorderColors( Q::Box, m_pal.darker125 );
-    setColor( Q::Box, m_pal.lighter135 );
-    setColor( Q::Box | Q::Checked, m_pal.highlighted );
-    setColor( Q::Tick, m_pal.lighter135 );
+    setPadding( Q::Panel, qskDpiScaled( 5 ) );
+    setBoxShape( Q::Panel, qskDpiScaled( 3 ) );
+    setBoxBorderMetrics( Q::Panel, qskDpiScaled( 1 ) );
+
+    setBoxBorderColors( Q::Panel, m_pal.darker125 );
+    setGradient( Q::Panel, m_pal.lighter135 );
+    setGradient( Q::Panel | Q::Checked, m_pal.highlighted );
+
+    setColor( Q::Indicator, m_pal.lighter135 );
+
+    setAnimation( Q::Panel | A::Color, qskDuration );
 }
 
 void Editor::setupPopup()

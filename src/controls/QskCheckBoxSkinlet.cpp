@@ -5,132 +5,129 @@
 
 #include "QskCheckBoxSkinlet.h"
 #include "QskCheckBox.h"
+#include "QskSGNode.h"
 
 #include <QSGFlatColorMaterial>
 #include <qsgnode.h>
 
 namespace
 {
-    class Tick : public QSGGeometryNode
+    class IndicatorNode : public QSGGeometryNode
     {
       public:
-        Tick()
-            : geometry( QSGGeometry::defaultAttributes_Point2D(), 3 )
+        IndicatorNode()
+            : m_geometry( QSGGeometry::defaultAttributes_Point2D(), 3 )
         {
-            geometry.setDrawingMode( QSGGeometry::DrawLineStrip );
-            geometry.setLineWidth( 2 );
-            setGeometry( &geometry );
+            m_geometry.setDrawingMode( QSGGeometry::DrawLineStrip );
+            m_geometry.setLineWidth( 2 );
+            setGeometry( &m_geometry );
 
-            setMaterial( &material );
+            setMaterial( &m_material );
         }
 
-        void setColor( const QColor& color )
+        void update( bool isPartially, const QRectF& rect, const QColor& color )
         {
-            material.setColor( color );
-            markDirty( QSGNode::DirtyMaterial );
-        }
+            if ( color != m_material.color() )
+            {
+                m_material.setColor( color );
+                markDirty( QSGNode::DirtyMaterial );
+            }
 
-        void makeTick( const QRectF& rect )
-        {
-            const auto x = rect.x();
-            const auto y = rect.y();
+            if ( rect != m_rect || isPartially != m_isPartially )
+            {
+                m_rect = rect;
+                m_isPartially = isPartially;
 
-            auto vertexData = geometry.vertexDataAsPoint2D();
+                const auto x = rect.x();
+                const auto y = rect.y();
+                const auto w = rect.width();
+                const auto h = rect.height();
 
-            vertexData[0].set( x, y + rect.height() / 2 );
-            vertexData[1].set( x + rect.width() / 3, y + rect.height() );
-            vertexData[2].set( x + rect.width(), y );
+                auto points = m_geometry.vertexDataAsPoint2D();
 
-            markDirty( QSGNode::DirtyGeometry );
-        }
-
-        void makePartially( const QRectF& rect )
-        {
-            const auto x = rect.x();
-            const auto y = rect.y();
-
-            auto vertexData = geometry.vertexDataAsPoint2D();
-
-            vertexData[0].set( x, y + rect.height() / 2 );
-            vertexData[1].set( x, y + rect.height() / 2 );
-            vertexData[2].set( x + rect.width(), y + rect.height() / 2 );
-
-            markDirty( QSGNode::DirtyGeometry );
+                if ( isPartially )
+                {
+                    points[0].set( x, y + h / 2 );
+                    points[1] = points[0];
+                    points[2].set( x + w, y + h / 2 );
+                }
+                else
+                {
+                    points[0].set( x, y + h / 2 );
+                    points[1].set( x + w / 3, y + h );
+                    points[2].set( x + w, y );
+                }
+                
+                markDirty( QSGNode::DirtyGeometry );
+            }
         }
 
       private:
-        QSGFlatColorMaterial material;
-        QSGGeometry geometry;
+        QSGFlatColorMaterial m_material;
+        QSGGeometry m_geometry;
+
+        QRectF m_rect;
+        bool m_isPartially;
     };
 }
 
 QskCheckBoxSkinlet::QskCheckBoxSkinlet( QskSkin* skin )
     : QskSkinlet( skin )
 {
-    setNodeRoles( { BoxRole, TickRole } );
+    setNodeRoles( { PanelRole, IndicatorRole } );
 }
 
 QskCheckBoxSkinlet::~QskCheckBoxSkinlet()
 {
 }
 
-QRectF QskCheckBoxSkinlet::subControlRect(
-    const QskSkinnable*, const QRectF& contentsRect, QskAspect::Subcontrol ) const
+QRectF QskCheckBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
+    if ( subControl == QskCheckBox::Indicator )
+        return skinnable->innerBox( QskCheckBox::Panel, contentsRect );
+
     return contentsRect;
 }
 
 QSGNode* QskCheckBoxSkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
+    auto checkBox = static_cast< const QskCheckBox* >( skinnable );
+
     switch( nodeRole )
     {
-        case BoxRole:
-        {
-            return updateBoxNode( skinnable, node, QskCheckBox::Box );
-        }
+        case PanelRole:
+            return updateBoxNode( skinnable, node, QskCheckBox::Panel );
 
-        case TickRole:
-        {
-            auto checkBox = static_cast< const QskCheckBox* >( skinnable );
-            return updateTickNode( checkBox, node );
-        }
+        case IndicatorRole:
+            return updateIndicatorNode( checkBox, node );
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
-QSGNode* QskCheckBoxSkinlet::updateTickNode(
+QSGNode* QskCheckBoxSkinlet::updateIndicatorNode(
     const QskCheckBox* checkBox, QSGNode* node ) const
 {
     using Q = QskCheckBox;
 
-    if ( checkBox->checkState() == Qt::Unchecked )
+    const auto state = checkBox->checkState();
+    if ( state == Qt::Unchecked )
         return nullptr;
 
-    auto rect = checkBox->subControlRect( Q::Tick );
-    rect = rect.marginsRemoved( checkBox->marginHint( Q::Tick ) );
+    const auto rect = checkBox->subControlRect( Q::Indicator );
+    if ( rect.isEmpty() )
+        return nullptr;
 
-    auto tick = static_cast< Tick* >( node );
-    if ( tick == nullptr )
-        tick = new Tick();
+    auto indicatorNode = QskSGNode::ensureNode< IndicatorNode >( node );
+    indicatorNode->update( state != Qt::Checked, rect, checkBox->color( Q::Indicator ) );
 
-    if ( checkBox->checkState() == Qt::PartiallyChecked )
-    {
-        tick->setColor( checkBox->color( Q::Tick | Q::PartiallyChecked ) );
-        tick->makePartially( rect );
-    }
-    else
-    {
-        tick->setColor( checkBox->color( Q::Tick | Q::Checked ) );
-        tick->makeTick( rect );
-    }
-
-    return tick;
+    return indicatorNode;
 }
 
 QSizeF QskCheckBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
     Qt::SizeHint, const QSizeF& ) const
 {
-    return skinnable->strutSizeHint( QskCheckBox::Box );
+    return skinnable->strutSizeHint( QskCheckBox::Panel );
 }
