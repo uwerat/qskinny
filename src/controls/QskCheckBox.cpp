@@ -8,8 +8,8 @@
 
 #include <qset.h>
 
-QSK_SUBCONTROL( QskCheckBox, Box )
-QSK_SUBCONTROL( QskCheckBox, Tick )
+QSK_SUBCONTROL( QskCheckBox, Panel )
+QSK_SUBCONTROL( QskCheckBox, Indicator )
 
 QSK_SYSTEM_STATE( QskCheckBox, PartiallyChecked, QskAspect::LastUserState << 2 )
 
@@ -28,7 +28,7 @@ class QskCheckBox::PrivateData
 
     int groupItemsChecked = 0;
 
-    int checkState : 2;
+    Qt::CheckState checkState : 2;
     bool checkStateChanging : 1;
     bool toggleChanging : 1;
     bool tristate : 1;
@@ -57,7 +57,7 @@ bool QskCheckBox::isCheckable() const
 
 Qt::CheckState QskCheckBox::checkState() const
 {
-    return static_cast< Qt::CheckState >( m_data->checkState );
+    return m_data->checkState;
 }
 
 void QskCheckBox::setCheckStateInternal( Qt::CheckState checkState )
@@ -162,8 +162,7 @@ void QskCheckBox::addToGroup( QskCheckBox* groupItem )
     connect( groupItem, &QskAbstractButton::toggled,
         this, [ this, groupItem ]( bool toggled )
     {
-        auto& groupItemsChecked = m_data->groupItemsChecked;
-        groupItemsChecked += toggled ? 1 : -1;
+        m_data->groupItemsChecked += toggled ? 1 : -1;
         updated();
     } );
 

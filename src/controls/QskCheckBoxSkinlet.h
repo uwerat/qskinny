@@ -19,8 +19,8 @@ class QSK_EXPORT QskCheckBoxSkinlet : public QskSkinlet
   public:
     enum NodeRole
     {
-        BoxRole,
-        TickRole,
+        PanelRole,
+        IndicatorRole,
     };
 
     Q_INVOKABLE QskCheckBoxSkinlet( QskSkin* = nullptr );
@@ -36,8 +36,8 @@ class QSK_EXPORT QskCheckBoxSkinlet : public QskSkinlet
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 
-  private:
-    QSGNode* updateTickNode( const QskCheckBox*, QSGNode* ) const;
+  protected:
+    virtual QSGNode* updateIndicatorNode( const QskCheckBox*, QSGNode* ) const;
 };
 
 #endif

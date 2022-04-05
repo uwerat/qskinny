@@ -135,20 +135,23 @@ void Editor::setupControl()
 
 void Editor::setupCheckBox()
 {
+    using A = QskAspect;
     using Q = QskCheckBox;
 
-    const qreal radius = qskDpiScaled( 18 );
+    const qreal size = qskDpiScaled( 18 );
 
-    setMargin( QskCheckBox::Tick, QMarginsF( 3, 5, 3, 3 ) );
-    setStrutSize( Q::Box, radius, radius );
+    setStrutSize( Q::Panel, size, size );
+    setPadding( Q::Panel, 3 );
 
-    setBoxShape( Q::Box, 2 );
+    setBoxShape( Q::Panel, 2 );
 
-    setColor( Q::Box, m_pal.secondaryNoSaturation);
-    setColor( Q::Box | Q::Checked, m_pal.secondary );
-    setGradient( Q::Box | Q::Checked | Q::Disabled, QskRgb::Grey );
+    setGradient( Q::Panel, m_pal.secondaryNoSaturation );
+    setGradient( Q::Panel | Q::Checked, m_pal.secondary );
+    setGradient( Q::Panel | Q::Checked | Q::Disabled, QskRgb::Grey );
 
-    setColor( Q::Tick, m_pal.primary );
+    setColor( Q::Indicator, m_pal.primary );
+
+    setAnimation( Q::Panel | A::Color, qskDuration );
 }
 
 void Editor::setupBox()
