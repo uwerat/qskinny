@@ -37,6 +37,11 @@ namespace
         QString text;
 
         QskGraphic graphic;
+
+#if 0
+        // TODO ...
+        bool isEnabled = true;
+#endif
     };
 }
 
@@ -75,6 +80,9 @@ QskMenu::~QskMenu()
 {
 }
 
+#if 1
+
+// has no effect as we do not offer submenus yet. TODO ...
 bool QskMenu::isCascading() const
 {
     return flagHint( QskMenu::Panel | QskAspect::Style );
@@ -91,6 +99,8 @@ void QskMenu::resetCascading()
     if ( resetFlagHint( QskMenu::Panel | QskAspect::Style ) )
         Q_EMIT cascadingChanged( isCascading() );
 }
+
+#endif
 
 void QskMenu::setOrigin( const QPointF& origin )
 {

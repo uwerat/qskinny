@@ -331,11 +331,11 @@ void Editor::setupMenu()
     using A = QskAspect;
     using Q = QskMenu;
 
-    const QColor c1( 78, 158, 38 );
-    const QColor c2( 15, 103, 43 );
+    setBoxShape( Q::Panel, qskDpiScaled( 4 ) );
+    setBoxBorderMetrics( Q::Panel, qskDpiScaled( 1 ) );
+    setBoxBorderColors( Q::Panel, m_pal.darker125 );
 
-    setBoxShape( Q::Panel, 4 );
-    setVGradient( Q::Panel, c1, c2 );
+    setGradient( Q::Panel, m_pal.lighter110 );
 
     const bool isCascading = qskMaybeDesktopPlatform();
     setFlagHint( Q::Panel | A::Style, isCascading );
@@ -343,16 +343,17 @@ void Editor::setupMenu()
 #if 0
     setPadding( Q::Separator, QMarginsF( 10, 0, 10, 0 ) );
 #endif
-    setMetric( Q::Separator | A::Size, 2 );
+    setMetric( Q::Separator | A::Size, qskDpiScaled( 2 ) );
     setSeparator( Q::Separator | A::Horizontal );
 
     setPadding( Q::Cell, QskMargins( 2, 10, 2, 10 ) );
     setSpacing( Q::Cell, 5 );
     setGradient( Q::Cell, Qt::transparent );
 
-    setHGradient( Q::Cursor, c2, c2.lighter( 2 ) );
+    setGradient( Q::Cursor, m_pal.highlighted );
 
-    setColor( Q::Text, QColor( 255, 255, 255 ) );
+    setColor( Q::Text, m_pal.contrastedText );
+    setColor( Q::Text | Q::Selected, m_pal.highlightedText );
     setFontRole( Q::Text, QskSkin::SmallFont );
 
     setPosition( Q::Panel, 0 );
