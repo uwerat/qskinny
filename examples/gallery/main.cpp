@@ -57,22 +57,16 @@ namespace
       private:
         void openMenu()
         {
-            auto pos = geometry().bottomLeft();
+            auto menu = new QskMenu( window()->contentItem() );
 
-            QskMenu menu( window()->contentItem() );
-            menu.setPopupFlag( QskPopup::DeleteOnClose, false );
+            menu->addOption( "image://shapes/Rectangle/White", "Print" );
+            menu->addOption( "image://shapes/Diamond/Yellow", "Save As" );
+            menu->addOption( "image://shapes/Ellipse/Red", "Setup" );
+            menu->addSeparator();
+            menu->addOption( "image://shapes/Hexagon/PapayaWhip", "Help" );
 
-            menu.addOption( "image://shapes/Rectangle/White", "Print" );
-            menu.addOption( "image://shapes/Diamond/Yellow", "Save As" );
-            menu.addOption( "image://shapes/Ellipse/Red", "Setup" );
-            menu.addSeparator();
-            menu.addOption( "image://shapes/Hexagon/PapayaWhip", "Help" );
-
-            menu.setOrigin( pos );
-
-            const int result = menu.exec();
-            if ( result >= 0 )
-                qDebug() << "Selected:" << result;
+            menu->setOrigin( geometry().bottomLeft() );
+            menu->open();
         }
     };
     
