@@ -20,6 +20,16 @@
 #include <unordered_map>
 #include <vector>
 
+static void qskSendStyleEventRecursive( QQuickItem* item )
+{
+    QEvent event( QEvent::StyleChange );
+    QCoreApplication::sendEvent( item, &event );
+
+    const auto children = item->childItems();
+    for ( auto child : children )
+        qskSendStyleEventRecursive( child );
+}
+
 static void qskAddCandidates( const QskSkinTransition::Type mask,
     const QskSkin* skin, QSet< QskAspect >& candidates )
 {
@@ -531,6 +541,9 @@ void ApplicationAnimator::cleanup( QQuickWindow* window )
                 m_windowAnimators.erase( it );
                 delete animator;
             }
+
+            // let the items know, that we are done
+            qskSendStyleEventRecursive( window->contentItem() );
 
             break;
         }
