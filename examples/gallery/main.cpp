@@ -18,6 +18,7 @@
 #include <QskTextLabel.h>
 #include <QskSwitchButton.h>
 #include <QskPushButton.h>
+#include <QskMenu.h>
 #include <QskWindow.h>
 
 #include <QGuiApplication>
@@ -42,6 +43,39 @@ namespace
         }
     };
 
+    class MenuButton : public QskPushButton
+    {
+      public:
+        MenuButton( const QString& text, QQuickItem* parent = nullptr )
+            : QskPushButton( text, parent )
+        {
+            setFlat( true ); // until we have the section bit in QskAspect
+
+            connect( this, &QskPushButton::pressed, this, &MenuButton::openMenu );
+        }
+
+      private:
+        void openMenu()
+        {
+            auto pos = geometry().bottomLeft();
+
+            QskMenu menu( window()->contentItem() );
+            menu.setPopupFlag( QskPopup::DeleteOnClose, false );
+
+            menu.addOption( "image://shapes/Rectangle/White", "Print" );
+            menu.addOption( "image://shapes/Diamond/Yellow", "Save As" );
+            menu.addOption( "image://shapes/Ellipse/Red", "Setup" );
+            menu.addSeparator();
+            menu.addOption( "image://shapes/Hexagon/PapayaWhip", "Help" );
+
+            menu.setOrigin( pos );
+
+            const int result = menu.exec();
+            if ( result >= 0 )
+                qDebug() << "Selected:" << result;
+        }
+    };
+    
     /*
         Once QskApplicationView and friends are implemented we can replace
         Header/ApplicationWindow with it. TODO ...
@@ -68,6 +102,10 @@ namespace
                 // transition leads to errors, when changing the tab before being completed. TODO ...
                 connect( button, &QskSwitchButton::clicked,
                     [] { Skinny::changeSkin( 500 ); } );
+            }
+
+            {
+                new MenuButton( "Menu", this );
             }
 
             addStretch( 10 );
