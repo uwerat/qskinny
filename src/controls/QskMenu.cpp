@@ -37,6 +37,11 @@ namespace
         QString text;
 
         QskGraphic graphic;
+
+#if 0
+        // TODO ...
+        bool isEnabled = true;
+#endif
     };
 }
 

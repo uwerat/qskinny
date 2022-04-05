@@ -14,6 +14,7 @@
 #include <QskFocusIndicator.h>
 #include <QskInputPanelBox.h>
 #include <QskListView.h>
+#include <QskMenu.h>
 #include <QskPageIndicator.h>
 #include <QskPushButton.h>
 #include <QskProgressBar.h>
@@ -120,6 +121,7 @@ namespace
         void setupInputPanel();
         void setupVirtualKeyboard();
         void setupListView();
+        void setupMenu();
         void setupPageIndicator();
         void setupPopup();
         void setupProgressBar();
@@ -151,6 +153,7 @@ void Editor::setup()
     setupInputPanel();
     setupVirtualKeyboard();
     setupListView();
+    setupMenu();
     setupPageIndicator();
     setupPopup();
     setupProgressBar();
@@ -221,6 +224,45 @@ void Editor::setupPopup()
         qskShadedColor( m_pal.accentColor, 0.45 ), qskShadedColor( m_pal.accentColor, 0.7 ) );
 
     setGradient( Q::Overlay, gradient );
+}
+
+void Editor::setupMenu()
+{
+    using A = QskAspect;
+    using Q = QskMenu;
+
+    setBoxShape( Q::Panel, qskDpiScaled( 4 ) );
+    setBoxBorderMetrics( Q::Panel, qskDpiScaled( 1 ) );
+    setBoxBorderColors( Q::Panel, m_pal.darker125 );
+
+    setGradient( Q::Panel, m_pal.baseColor );
+
+    const bool isCascading = qskMaybeDesktopPlatform();
+    setFlagHint( Q::Panel | A::Style, isCascading );
+
+#if 0
+    setPadding( Q::Separator, QMarginsF( 10, 0, 10, 0 ) );
+#endif
+    setMetric( Q::Separator | A::Size, qskDpiScaled( 1 ) );
+    setBoxShape( Q::Separator, 0 );
+    setBoxBorderMetrics( Q::Separator, 0 );
+    setGradient( Q::Separator, m_pal.darker125 );
+
+    setPadding( Q::Cell, QskMargins( 2, 10, 2, 10 ) );
+    setSpacing( Q::Cell, 5 );
+    setGradient( Q::Cell, Qt::transparent );
+
+    setGradient( Q::Cursor, m_pal.accentColor );
+
+    setColor( Q::Text, m_pal.textColor );
+    setColor( Q::Text | Q::Selected, m_pal.contrastColor );
+    setFontRole( Q::Text, QskSkin::SmallFont );
+
+    setPosition( Q::Panel, 0 );
+    setPosition( Q::Panel | QskPopup::Closed, 1 );
+
+    setAnimation( Q::Panel | A::Metric, 150 );
+    setAnimation( Q::Cursor | A::Position | A::Metric, 75, QEasingCurve::OutCubic );
 }
 
 void Editor::setupTextLabel()
