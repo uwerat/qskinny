@@ -25,6 +25,8 @@ namespace
     class Option
     {
       public:
+        Option() = default;
+
         Option( const QUrl& graphicSource, const QString& text )
             : graphicSource( graphicSource )
             , text( text )
@@ -118,13 +120,7 @@ QPointF QskMenu::origin() const
 
 void QskMenu::addOption( const QUrl& graphicSource, const QString& text )
 {
-#if 0
-    // does not work with Qt 5.6 version of QVector. TODO ...
     m_data->options += Option( graphicSource, text );
-#else
-    Q_UNUSED( graphicSource )
-    Q_UNUSED( text )
-#endif
 
     resetImplicitSize();
     update();
