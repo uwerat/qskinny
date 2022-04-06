@@ -6,16 +6,9 @@
 #pragma once
 
 #include <QskLinearBox.h>
-#include <QskGradient.h>
 
 class Page : public QskLinearBox
 {
   public:
     Page( Qt::Orientation, QQuickItem* parent = nullptr );
-
-    void setGradient( const QskGradient& );
-    QskGradient gradient() const;
-
-  private:
-    QskGradient m_gradient;
 };

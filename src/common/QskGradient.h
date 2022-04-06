@@ -49,7 +49,6 @@ class QSK_EXPORT QskGradient
     QskGradient( QRgb );
     QskGradient( const QColor& );
 
-
     QskGradient( Qt::Orientation, const QVector< QskGradientStop >& );
     QskGradient( Qt::Orientation, const QColor&, const QColor& );
 

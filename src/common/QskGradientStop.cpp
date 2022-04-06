@@ -14,6 +14,10 @@
 static void qskRegisterGradientStop()
 {
     qRegisterMetaType< QskGradientStop >();
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    QMetaType::registerEqualsComparator< QskGradientStop >();
+#endif
 }
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterGradientStop )
@@ -78,7 +82,12 @@ QColor QskGradientStop::interpolated(
 
 QDebug operator<<( QDebug debug, const QskGradientStop& stop )
 {
-    debug << stop.position() << ": " << stop.color();
+    QDebugStateSaver saver( debug );
+    debug.nospace();
+
+    debug << stop.position() << ": ";
+    QskRgb::debugColor( debug, stop.color() );
+
     return debug;
 }
 

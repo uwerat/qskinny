@@ -12,13 +12,13 @@ contains(QSK_CONFIG, QskDll): DEFINES += SKINNY_MAKEDLL
 
 HEADERS += \
     SkinnyGlobal.h \
-    SkinnyFont.h \
+    SkinnyNamespace.h \
     SkinnyShapeFactory.h \
     SkinnyShapeProvider.h \
     SkinnyShortcut.h
 
 SOURCES += \
-    SkinnyFont.cpp \
+    SkinnyNamespace.cpp \
     SkinnyPlugin.cpp \
     SkinnyShapeFactory.cpp \
     SkinnyShapeProvider.cpp \

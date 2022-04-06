@@ -5,12 +5,7 @@
 
 #include "MainWindow.h"
 
-#include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
-
-#ifdef CONTEXT_MENU
-    #include <SkinnyShapeProvider.h>
-#endif
 
 #include <QskFocusIndicator.h>
 #include <QskObjectCounter.h>
@@ -23,13 +18,8 @@ int main( int argc, char* argv[] )
     QskObjectCounter counter( true );
 #endif
 
-#ifdef CONTEXT_MENU
-    Qsk::addGraphicProvider( "shapes", new SkinnyShapeProvider() );
-#endif
-
     QGuiApplication app( argc, argv );
 
-    SkinnyFont::init( &app );
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
     QskFocusIndicator* focusIndicator = new QskFocusIndicator();

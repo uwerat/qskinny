@@ -3,7 +3,6 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
 
 #include <QskWindow.h>
@@ -43,7 +42,6 @@ int main( int argc, char* argv[] )
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app( argc, argv );
 
-    SkinnyFont::init( &app );
     SkinnyShortcut::enable( SkinnyShortcut::Quit | SkinnyShortcut::DebugShortcuts );
 
     QskWindow window;

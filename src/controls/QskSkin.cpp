@@ -12,6 +12,7 @@
 #include "QskGraphicProviderMap.h"
 #include "QskSkinHintTable.h"
 #include "QskStandardSymbol.h"
+#include "QskPlatform.h"
 
 #include "QskMargins.h"
 
@@ -27,6 +28,9 @@ QSK_QT_PRIVATE_END
 
 #include "QskBox.h"
 #include "QskBoxSkinlet.h"
+
+#include "QskCheckBox.h"
+#include "QskCheckBoxSkinlet.h"
 
 #include "QskFocusIndicator.h"
 #include "QskFocusIndicatorSkinlet.h"
@@ -128,7 +132,6 @@ class QskSkin::PrivateData
     std::unordered_map< const QMetaObject*, SkinletData > skinletMap;
 
     QskSkinHintTable hintTable;
-    QskAspect::States stateMask = QskAspect::AllStates;
 
     std::unordered_map< int, QFont > fonts;
     std::unordered_map< int, QskColorFilter > graphicFilters;
@@ -143,6 +146,7 @@ QskSkin::QskSkin( QObject* parent )
     declareSkinlet< QskControl, QskSkinlet >();
 
     declareSkinlet< QskBox, QskBoxSkinlet >();
+    declareSkinlet< QskCheckBox, QskCheckBoxSkinlet >();
     declareSkinlet< QskFocusIndicator, QskFocusIndicatorSkinlet >();
     declareSkinlet< QskGraphicLabel, QskGraphicLabelSkinlet >();
     declareSkinlet< QskListView, QskListViewSkinlet >();
@@ -217,13 +221,15 @@ void QskSkin::declareSkinlet( const QMetaObject* metaObject,
 
 void QskSkin::setupFonts( const QString& family, int weight, bool italic )
 {
+    const int sizes[] = { 10, 15, 20, 32, 66 };
+    static_assert( sizeof( sizes ) / sizeof( sizes[ 0 ] ) == HugeFont,
+        "QskSkin::setupFonts: bad list size." );
+
     QFont font( family, -1, weight, italic );
 
-    const uint base = TinyFont;
     for ( int i = TinyFont; i <= HugeFont; i++ )
     {
-        // TODO: make the scaling components configurable
-        font.setPixelSize( int( std::pow( uint( i ) - base + 2, 2.5 ) ) );
+        font.setPixelSize( qskDpiScaled( sizes[i-1] ) );
         m_data->fonts[ i ] = font;
     }
 
@@ -347,22 +353,6 @@ const int* QskSkin::dialogButtonLayout( Qt::Orientation orientation ) const
     }
 
     return QPlatformDialogHelper::buttonLayout( orientation, policy );
-}
-
-void QskSkin::setStateMask( QskAspect::States mask )
-{
-    for ( auto state : { QskControl::Disabled, QskControl::Hovered, QskControl::Focused } )
-    {
-        if ( mask & state )
-            m_data->stateMask |= state;
-        else
-            m_data->stateMask &= ~state;
-    }
-}
-
-QskAspect::States QskSkin::stateMask() const
-{
-    return m_data->stateMask;
 }
 
 QskSkinlet* QskSkin::skinlet( const QMetaObject* metaObject )

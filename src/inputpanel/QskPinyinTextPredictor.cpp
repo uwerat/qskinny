@@ -102,3 +102,5 @@ void QskPinyinTextPredictor::request( const QString& text )
     m_data->candidates = candidates;
     Q_EMIT predictionChanged();
 }
+
+#include "moc_QskPinyinTextPredictor.cpp"

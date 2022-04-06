@@ -7,7 +7,6 @@
 #include "SkinFactory.h"
 
 #include <SkinnyShortcut.h>
-#include <SkinnyFont.h>
 
 #include <QskSetup.h>
 #include <QskSkinManager.h>
@@ -33,7 +32,6 @@ int main( int argc, char** argv )
      */
     qskSetup->setItemUpdateFlag( QskQuickItem::PreferRasterForTextures, true );
 
-    SkinnyFont::init( &app );
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
     MainWindow window;

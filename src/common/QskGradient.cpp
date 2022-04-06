@@ -15,6 +15,10 @@ static void qskRegisterGradient()
 {
     qRegisterMetaType< QskGradient >();
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    QMetaType::registerEqualsComparator< QskGradient >();
+#endif
+
     QMetaType::registerConverter< QColor, QskGradient >(
         []( const QColor& color ) { return QskGradient( color ); } );
 }
@@ -503,6 +507,14 @@ QskGradient QskGradient::interpolated(
         return QskGradient( gradient->orientation(), stops );
     }
 
+    if ( isMonochrome() && to.isMonochrome() )
+    {
+        const auto c = QskRgb::interpolated(
+            m_stops[ 0 ].color(), to.m_stops[ 0 ].color(), value );
+
+        return QskGradient( to.orientation(), c, c );
+    }
+
     if ( isMonochrome() )
     {
         // we can ignore our stops
@@ -628,7 +640,49 @@ void QskGradient::updateStatusBits() const
 
 QDebug operator<<( QDebug debug, const QskGradient& gradient )
 {
-    debug << "GR:" << gradient.orientation() << gradient.stops().count();
+    QDebugStateSaver saver( debug );
+    debug.nospace();
+
+    debug << "Gradient";
+
+    if ( !gradient.isValid() )
+    {
+        debug << "()";
+    }
+    else
+    {
+        debug << "( ";
+
+        if ( gradient.isMonochrome() )
+        {
+            QskRgb::debugColor( debug, gradient.startColor() );
+        }
+        else
+        {
+            const char o[] = { 'H', 'V', 'D' };
+            debug << o[ gradient.orientation() ] << ", ";
+
+            if ( gradient.stops().count() == 2 )
+            {
+                QskRgb::debugColor( debug, gradient.startColor() );
+                debug << ", ";
+                QskRgb::debugColor( debug, gradient.endColor() );
+            }
+            else
+            {
+                const auto& s = gradient.stops();
+                for ( int i = 0; i < s.count(); i++ )
+                {
+                    if ( i != 0 )
+                        debug << ", ";
+
+                    debug << s[i];
+                }
+            }
+        }
+        debug << " )";
+    }
+
     return debug;
 }
 

@@ -7,7 +7,6 @@
 #include "GraphicProvider.h"
 #include "Skin.h"
 
-#include <SkinnyFont.h>
 #include <SkinnyShortcut.h>
 
 #include <QskSetup.h>
@@ -60,8 +59,6 @@ int main( int argc, char* argv[] )
 #endif
 
     QGuiApplication app( argc, argv );
-
-    SkinnyFont::init( &app );
 
     Qsk::addGraphicProvider( QString(), new GraphicProvider() );
 

@@ -7,15 +7,9 @@ SOURCES += \
     label/LabelPage.cpp \
 
 HEADERS += \
-    slider/CustomSlider.h \
-    slider/CustomSliderSkinlet.h \
-    slider/OtherSlider.h \
     slider/SliderPage.h
 
 SOURCES += \
-    slider/CustomSlider.cpp \
-    slider/CustomSliderSkinlet.cpp \
-    slider/OtherSlider.cpp \
     slider/SliderPage.cpp
 
 HEADERS += \
@@ -25,10 +19,10 @@ SOURCES += \
     progressbar/ProgressBarPage.cpp \
 
 HEADERS += \
-    switchbutton/SwitchButtonPage.h
+    button/ButtonPage.h
 
 SOURCES += \
-    switchbutton/SwitchButtonPage.cpp \
+    button/ButtonPage.cpp \
 
 HEADERS += \
     Page.h

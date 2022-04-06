@@ -12,10 +12,15 @@
 #include <qcolor.h>
 #include <qmetatype.h>
 
-class QDebug;
-
 class QSK_EXPORT QskBoxBorderColors
 {
+    Q_GADGET
+
+    Q_PROPERTY( QskGradient left READ left WRITE setLeft )
+    Q_PROPERTY( QskGradient top READ top WRITE setTop )
+    Q_PROPERTY( QskGradient right READ right WRITE setRight )
+    Q_PROPERTY( QskGradient bottom READ bottom WRITE setBottom )
+
   public:
     QskBoxBorderColors();
 
@@ -44,6 +49,18 @@ class QSK_EXPORT QskBoxBorderColors
     void setGradientAt( Qt::Edges, const QskGradient& );
     const QskGradient& gradientAt( Qt::Edge ) const;
 
+    void setLeft( const QskGradient& );
+    const QskGradient& left() const;
+
+    void setTop( const QskGradient& );
+    const QskGradient& top() const;
+
+    void setRight( const QskGradient& );
+    const QskGradient& right() const;
+
+    void setBottom( const QskGradient& );
+    const QskGradient& bottom() const;
+
     QskBoxBorderColors interpolated( const QskBoxBorderColors&, qreal value ) const;
 
     static QVariant interpolate( const QskBoxBorderColors&,
@@ -53,6 +70,7 @@ class QSK_EXPORT QskBoxBorderColors
 
     bool isMonochrome() const;
     bool isVisible() const;
+    bool isValid() const;
 
   private:
     QskGradient m_gradients[ 4 ];
@@ -78,8 +96,29 @@ inline const QskGradient& QskBoxBorderColors::gradient( Qsk::Position position )
     return m_gradients[ position ];
 }
 
+inline const QskGradient& QskBoxBorderColors::left() const
+{
+    return m_gradients[ Qsk::Left ];
+}
+
+inline const QskGradient& QskBoxBorderColors::top() const
+{
+    return m_gradients[ Qsk::Top ];
+}
+
+inline const QskGradient& QskBoxBorderColors::right() const
+{
+    return m_gradients[ Qsk::Right ];
+}
+
+inline const QskGradient& QskBoxBorderColors::bottom() const
+{
+    return m_gradients[ Qsk::Bottom ];
+}
+
 #ifndef QT_NO_DEBUG_STREAM
 
+class QDebug;
 QSK_EXPORT QDebug operator<<( QDebug, const QskBoxBorderColors& );
 
 #endif

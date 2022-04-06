@@ -301,6 +301,8 @@ QskTextInput::QskTextInput( QQuickItem* parent )
     m_data->hasPanel = true;
 
     setPolishOnResize( true );
+
+    setAcceptHoverEvents( true );
     setFocusPolicy( Qt::StrongFocus );
 
     setFlag( QQuickItem::ItemAcceptsInputMethod );

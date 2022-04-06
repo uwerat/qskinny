@@ -63,7 +63,6 @@ SOURCES += \
     common/QskScaleTickmarks.cpp \
     common/QskShadowMetrics.cpp \
     common/QskSizePolicy.cpp \
-    common/QskStateCombination.cpp \
     common/QskTextColors.cpp \
     common/QskTextOptions.cpp
 
@@ -142,6 +141,8 @@ HEADERS += \
     controls/QskBoundedValueInput.h \
     controls/QskBox.h \
     controls/QskBoxSkinlet.h \
+    controls/QskCheckBox.h \
+    controls/QskCheckBoxSkinlet.h \
     controls/QskControl.h \
     controls/QskControlPrivate.h \
     controls/QskDirtyItemFilter.h \
@@ -222,6 +223,8 @@ SOURCES += \
     controls/QskBoundedValueInput.cpp \
     controls/QskBox.cpp \
     controls/QskBoxSkinlet.cpp \
+    controls/QskCheckBox.cpp \
+    controls/QskCheckBoxSkinlet.cpp \
     controls/QskControl.cpp \
     controls/QskControlPrivate.cpp \
     controls/QskDirtyItemFilter.cpp \

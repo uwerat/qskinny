@@ -3,16 +3,15 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#ifndef SKINNY_FONT_H_
-#define SKINNY_FONT_H_
+#pragma once
 
-#include "SkinnyGlobal.h"
+#include "Page.h"
 
-class QGuiApplication;
-
-namespace SkinnyFont
+class ButtonPage : public Page
 {
-    SKINNY_EXPORT void init( QGuiApplication* );
-}
+  public:
+    ButtonPage( QQuickItem* = nullptr );
 
-#endif
+  private:
+    void populate();
+};

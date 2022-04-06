@@ -8,29 +8,51 @@
 #include <QskGraphicLabel.h>
 #include <QskSeparator.h>
 #include <QskRgbValue.h>
+#include <QskSkin.h>
 
 namespace
 {
+    class TextLabel : public QskTextLabel
+    {
+      public:
+        TextLabel( int role, QQuickItem* parent = nullptr )
+            : QskTextLabel( parent )
+        {
+            setText( textFromRole( role ) );
+            setFontRole( role );
+
+            setSizePolicy( Qt::Horizontal, QskSizePolicy::Ignored );
+        }
+
+      private:
+        QString textFromRole( int role ) const
+        {
+            static QMetaEnum metaEnum;
+
+            if ( !metaEnum.isValid() )
+            {
+                const auto& mo = QskSkin::staticMetaObject;
+                metaEnum = mo.enumerator( mo.indexOfEnumerator( "SkinFontRole" ) );
+            }
+
+            QString s( metaEnum.valueToKey( role ) );
+            s.remove( QStringLiteral( "Font" ) );
+
+            return s;
+        }
+    };
+
     class TextBox : public QskLinearBox
     {
       public:
         TextBox( QQuickItem* parent = nullptr )
-            : QskLinearBox( Qt::Vertical, 3, parent )
+            : QskLinearBox( Qt::Horizontal, 3, parent )
         {
             setMargins( 10 );
-            //setDefaultAlignment( Qt::AlignTop );
-            setExtraSpacingAt( Qt::BottomEdge );
+            setDefaultAlignment( Qt::AlignCenter );
 
-            const QStringList texts =
-                { "Default", "Tiny", "Small", "Medium", "Large", "Huge" };
-
-            for ( int i = 0; i < texts.size(); i++ )
-            {
-                auto label = new QskTextLabel( texts[ i ] + " Font", this );
-
-                //label->setPanel( true );
-                label->setFontRole( i );
-            }
+            for ( int i = 0; i <= QskSkin::HugeFont; i++ )
+                ( void ) new TextLabel( i, this );
         }
     };
 
@@ -67,7 +89,6 @@ namespace
 LabelPage::LabelPage( QQuickItem* parent )
     : Page( Qt::Vertical, parent )
 {
-    setGradient( QskRgb::AliceBlue );
     setSpacing( 40 );
 
     (void) new TextBox( this );

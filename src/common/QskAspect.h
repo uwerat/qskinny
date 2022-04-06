@@ -109,8 +109,18 @@ class QSK_EXPORT QskAspect
     constexpr QskAspect operator|( Type ) const noexcept;
     constexpr QskAspect operator|( Primitive ) const noexcept;
     constexpr QskAspect operator|( Placement ) const noexcept;
+
     constexpr QskAspect operator|( State ) const noexcept;
+    QskAspect& operator|=( State ) noexcept;
+
+    constexpr QskAspect operator&( State ) const noexcept;
+    QskAspect& operator&=( State ) noexcept;
+
     constexpr QskAspect operator|( States ) const noexcept;
+    QskAspect& operator|=( States ) noexcept;
+
+    constexpr QskAspect operator&( States ) const noexcept;
+    QskAspect& operator&=( States ) noexcept;
 
     constexpr QskAspect stateless() const noexcept;
     constexpr QskAspect trunk() const noexcept;
@@ -283,10 +293,46 @@ inline constexpr QskAspect QskAspect::operator|( State state ) const noexcept
         m_bits.primitive, m_bits.placement, m_bits.states | state );
 }
 
+inline QskAspect& QskAspect::operator|=( State state ) noexcept
+{
+    m_bits.states |= state;
+    return *this;
+}
+
+inline constexpr QskAspect QskAspect::operator&( State state ) const noexcept
+{
+    return QskAspect( m_bits.subControl, m_bits.type, m_bits.isAnimator,
+        m_bits.primitive, m_bits.placement, m_bits.states & state );
+}
+
+inline QskAspect& QskAspect::operator&=( State state ) noexcept
+{
+    m_bits.states &= state;
+    return *this;
+}
+
 inline constexpr QskAspect QskAspect::operator|( States states ) const noexcept
 {
     return QskAspect( m_bits.subControl, m_bits.type, m_bits.isAnimator,
         m_bits.primitive, m_bits.placement, m_bits.states | states );
+}
+
+inline QskAspect& QskAspect::operator|=( States states ) noexcept
+{
+    m_bits.states |= states;
+    return *this;
+}
+
+inline constexpr QskAspect QskAspect::operator&( States states ) const noexcept
+{
+    return QskAspect( m_bits.subControl, m_bits.type, m_bits.isAnimator,
+        m_bits.primitive, m_bits.placement, m_bits.states & states );
+}
+
+inline QskAspect& QskAspect::operator&=( States states ) noexcept
+{
+    m_bits.states &= states;
+    return *this;
 }
 
 inline constexpr QskAspect QskAspect::stateless() const noexcept
@@ -536,6 +582,11 @@ namespace std
             return aspect.value();
         }
     };
+}
+
+inline QskHashValue qHash( const QskAspect aspect, QskHashValue seed = 0 ) noexcept
+{
+    return qHash( aspect.value(), seed );
 }
 
 #ifndef QT_NO_DEBUG_STREAM

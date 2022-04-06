@@ -20,11 +20,6 @@
 #include <QskTabView.h>
 #include <QskBoxShapeMetrics.h>
 
-#ifdef CONTEXT_MENU
-    #include <QskMenu.h>
-    #include <QskEvent.h>
-#endif
-
 #include <QDir>
 #include <QVariant>
 
@@ -46,10 +41,6 @@ class GraphicLabel : public QskGraphicLabel
         setBoxShapeHint( Panel, 8 );
         setAlignment( Qt::AlignCenter );
         setDarknessMode( false );
-
-#ifdef CONTEXT_MENU
-        setAcceptedMouseButtons( Qt::LeftButton );
-#endif
     }
 
     void setDarknessMode( bool on )
@@ -80,27 +71,6 @@ class GraphicLabel : public QskGraphicLabel
         startTransition( QskGraphicLabel::Graphic | QskAspect::GraphicRole,
             duration, oldRole, graphicRole() );
     }
-
-#ifdef CONTEXT_MENU
-  protected:
-    void mousePressEvent( QMouseEvent* event ) override
-    {
-        QskMenu menu( this );
-        menu.setPopupFlag( QskPopup::DeleteOnClose, false );
-
-        menu.addOption( "image://shapes/Rectangle/White", "Print" );
-        menu.addOption( "image://shapes/Diamond/Yellow", "Save As" );
-        menu.addOption( "image://shapes/Ellipse/Red", "Setup" );
-        menu.addSeparator();
-        menu.addOption( "image://shapes/Hexagon/PapayaWhip", "Help" );
-
-        menu.setOrigin( qskMousePosition( event ) );
-
-        const int result = menu.exec();
-        if ( result >= 0 )
-            qDebug() << "Selected:" << result;
-    }
-#endif
 };
 
 MainWindow::MainWindow()

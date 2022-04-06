@@ -3,7 +3,6 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#include <SkinnyFont.h>
 #include <SkinnyShapeProvider.h>
 #include <SkinnyShortcut.h>
 
@@ -24,7 +23,6 @@ int main( int argc, char* argv[] )
 
     QGuiApplication app( argc, argv );
 
-    SkinnyFont::init( &app );
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
     QQmlApplicationEngine engine( QUrl( "qrc:/qml/buttons.qml" ) );

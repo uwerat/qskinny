@@ -5,13 +5,11 @@
 
 #pragma once
 
-#include "Page.h"
+#include "SkinnyGlobal.h"
+#include <QskAnimationHint.h>
 
-class SwitchButtonPage : public Page
+namespace Skinny
 {
-  public:
-    SwitchButtonPage( QQuickItem* = nullptr );
-
-  private:
-    void populate();
-};
+    SKINNY_EXPORT void changeSkin( QskAnimationHint hint = 500 );
+    SKINNY_EXPORT void changeFonts( int increment );
+}

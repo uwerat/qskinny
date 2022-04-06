@@ -24,7 +24,7 @@ QStringList QskMaterialSkinFactory::skinNames() const
 
 QskSkin* QskMaterialSkinFactory::createSkin( const QString& skinName )
 {
-    if ( skinName.toLower() == materialSkinName )
+    if ( QString::compare( skinName, materialSkinName, Qt::CaseInsensitive ) == 0 )
         return new QskMaterialSkin();
 
     return nullptr;

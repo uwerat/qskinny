@@ -144,7 +144,7 @@ QVector< QskAspect::Subcontrol > QskAspect::subControls( const QMetaObject* meta
 
 static QByteArray qskEnumString( const char* name, int value )
 {
-    const QMetaObject& mo = QskAspect::staticMetaObject;
+    const auto& mo = QskAspect::staticMetaObject;
 
     const QMetaEnum metaEnum = mo.enumerator( mo.indexOfEnumerator( name ) );
     const char* key = metaEnum.valueToKey( value );

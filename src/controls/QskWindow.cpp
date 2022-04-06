@@ -501,15 +501,15 @@ QSize QskWindow::sizeConstraint() const
         const auto children = contentItem()->childItems();
         for ( auto child : children )
         {
-            if ( auto control = qskControlCast( child ) )
+            if ( !qskIsTransparentForPositioner( child ) )
             {
-                const QSizeF itemConstraint = control->sizeConstraint();
+                const auto size = qskSizeConstraint( child, Qt::PreferredSize );
 
                 if ( doWidth )
-                    constraint.setWidth( qMax( constraint.width(), itemConstraint.width() ) );
+                    constraint.setWidth( qMax( constraint.width(), size.width() ) );
 
                 if ( doHeight )
-                    constraint.setHeight( qMax( constraint.height(), itemConstraint.height() ) );
+                    constraint.setHeight( qMax( constraint.height(), size.height() ) );
             }
         }
     }
