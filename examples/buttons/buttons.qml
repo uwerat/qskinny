@@ -6,11 +6,19 @@ Qsk.Window
 {
     id: window
     visible: true
-    // visibility: QskWindow.Minimized
 
     width: 600
     height: 600
     color: "Beige"
+
+	Component.onCompleted:
+	{
+		// very much standard: we should find a better way
+
+		var hint = sizeConstraint();
+		setMinimumWidth( hint.width )
+		setMinimumHeight( hint.height )
+	}
 
     Qsk.Shortcut
     {
