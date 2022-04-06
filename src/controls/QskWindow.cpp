@@ -492,7 +492,6 @@ QSize QskWindow::sizeConstraint() const
             if ( !qskIsTransparentForPositioner( child ) )
             {
                 const auto size = qskSizeConstraint( child, Qt::PreferredSize );
-qDebug() << child << size;
 
                 if ( doWidth )
                     constraint.setWidth( qMax( constraint.width(), size.width() ) );
