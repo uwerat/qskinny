@@ -32,7 +32,6 @@ qtHaveModule(svg) {
 SUBDIRS += \
     boxes \
     buttons \
-    colorswitch \
     frames \
     gbenchmark \
     glabels \
