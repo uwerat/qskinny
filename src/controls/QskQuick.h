@@ -48,7 +48,6 @@ QSK_EXPORT QskSizePolicy qskSizePolicy( const QQuickItem* );
 QSK_EXPORT Qt::Alignment qskLayoutAlignmentHint( const QQuickItem* );
 QSK_EXPORT bool qskRetainSizeWhenHidden( const QQuickItem* );
 
-QSK_EXPORT QSizeF qskItemSize( const QQuickItem* );
 QSK_EXPORT QRectF qskItemRect( const QQuickItem* );
 
 QSK_EXPORT QRectF qskItemGeometry( const QQuickItem* );
