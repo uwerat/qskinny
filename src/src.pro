@@ -299,7 +299,7 @@ HEADERS += \
     layouts/QskGridLayoutEngine.h \
     layouts/QskIndexedLayoutBox.h \
     layouts/QskLayoutChain.h \
-    layouts/QskLayoutEngine2D.cpp \
+    layouts/QskLayoutEngine2D.h \
     layouts/QskLayoutMetrics.h \
     layouts/QskLinearBox.h \
     layouts/QskLinearLayoutEngine.h \
