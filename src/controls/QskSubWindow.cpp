@@ -248,7 +248,7 @@ void QskSubWindow::itemChange( QQuickItem::ItemChange change,
         case QQuickItem::ItemChildAddedChange:
         case QQuickItem::ItemChildRemovedChange:
         {
-            if ( !qskIsTransparentForPositioner( value.item ) )
+            if ( qskIsVisibleToLayout( value.item ) )
             {
                 resetImplicitSize();
                 polish();

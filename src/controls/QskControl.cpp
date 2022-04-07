@@ -804,7 +804,7 @@ void QskControl::itemChange( QQuickItem::ItemChange change,
         }
         case QQuickItem::ItemChildAddedChange:
         {
-            if ( autoLayoutChildren() && !qskIsTransparentForPositioner( value.item ) )
+            if ( autoLayoutChildren() && qskIsAdjustableByLayout( value.item ) )
                 polish();
 
             break;
@@ -844,13 +844,7 @@ void QskControl::updateItemPolish()
             const auto children = childItems();
             for ( auto child : children )
             {
-                /*
-                    We don't want to resize invisible children, but then
-                    we would need to set up connections to know when a child
-                    becomes visible. So we don't use qskIsVisibleToLayout here.
-                    And what about using QskControl::LayoutOutWhenHidden ?
-                 */
-                if ( !qskIsTransparentForPositioner( child ) )
+                if ( qskIsAdjustableByLayout( child ) )
                 {
                     const auto r = qskConstrainedItemRect( child, rect );
                     qskSetItemGeometry( child, r );

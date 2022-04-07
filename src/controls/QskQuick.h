@@ -32,7 +32,9 @@ QSK_EXPORT bool qskIsPolishScheduled( const QQuickItem* );
 
 QSK_EXPORT void qskSetTransparentForPositioner( QQuickItem*, bool );
 QSK_EXPORT bool qskIsTransparentForPositioner( const QQuickItem* );
+
 QSK_EXPORT bool qskIsVisibleToLayout( const QQuickItem* );
+QSK_EXPORT bool qskIsAdjustableByLayout( const QQuickItem* );
 
 QSK_EXPORT QSizeF qskEffectiveSizeHint( const QQuickItem*,
     Qt::SizeHint, const QSizeF& constraint = QSizeF() );
