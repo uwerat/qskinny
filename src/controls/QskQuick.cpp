@@ -133,14 +133,27 @@ bool qskIsTransparentForPositioner( const QQuickItem* item )
 
 bool qskIsVisibleToLayout( const QQuickItem* item )
 {
-    if ( item )
+    if ( item == nullptr )
+        return false;
+
+    const auto d = QQuickItemPrivate::get( item );
+    return !d->isTransparentForPositioner()
+        && ( d->explicitVisible || qskRetainSizeWhenHidden( item ) );
+}
+
+bool qskIsAdjustableByLayout( const QQuickItem* item )
+{
+    if ( qskIsTransparentForPositioner( item ) )
+        return false;
+
+    bool adjustable = qskIsVisibleToParent( item );
+    if ( !adjustable )
     {
-        const auto d = QQuickItemPrivate::get( item );
-        return !d->isTransparentForPositioner()
-            && ( d->explicitVisible || qskRetainSizeWhenHidden( item ) );
+        if ( auto control = qskControlCast( item ) )
+            adjustable = control->testLayoutHint( QskControl::LayoutWhenHidden );
     }
 
-    return false;
+    return adjustable;
 }
 
 QskSizePolicy qskSizePolicy( const QQuickItem* item )
