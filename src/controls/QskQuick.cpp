@@ -16,13 +16,6 @@ QSK_QT_PRIVATE_END
 #include <qpa/qplatforminputcontext.h>
 #include <qpa/qplatformintegration.h>
 
-QSizeF qskItemSize( const QQuickItem* item )
-{
-    // obsolete for Qt >= 5.10
-    auto d = QQuickItemPrivate::get( item );
-    return QSizeF( d->width, d->height );
-}
-
 QRectF qskItemRect( const QQuickItem* item )
 {
     auto d = QQuickItemPrivate::get( item );
@@ -41,7 +34,7 @@ void qskSetItemGeometry( QQuickItem* item, const QRectF& rect )
     {
         control->setGeometry( rect );
     }
-    else
+    else if ( item )
     {
         item->setPosition( rect.topLeft() );
         item->setSize( rect.size() );
@@ -63,10 +56,10 @@ bool qskIsAncestorOf( const QQuickItem* item, const QQuickItem* child )
 
 bool qskIsVisibleToParent( const QQuickItem* item )
 {
-    if ( item )
-        return QQuickItemPrivate::get( item )->explicitVisible;
+    if ( item == nullptr )
+        return false;
 
-    return false;
+    return QQuickItemPrivate::get( item )->explicitVisible;
 }
 
 bool qskIsVisibleTo( const QQuickItem* item, const QQuickItem* ancestor )
