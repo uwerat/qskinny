@@ -350,44 +350,55 @@ Qt::Alignment QskControl::layoutAlignmentHint() const
     return static_cast< Qt::Alignment >( d_func()->layoutAlignmentHint );
 }
 
-void QskControl::setLayoutHint( LayoutHint flag, bool on )
+void QskControl::setPlacementPolicy(
+    Qsk::Visibilities visibilities, QskPlacementPolicy::Policy policy )
+{
+    auto placementPolicy = this->placementPolicy();
+    placementPolicy.setPolicy( visibilities, policy );
+
+    setPlacementPolicy( placementPolicy );
+}
+
+void QskControl::setPlacementPolicy(
+    QskPlacementPolicy::Policy visiblePolicy, QskPlacementPolicy::Policy hiddenPolicy )
+{
+    setPlacementPolicy( QskPlacementPolicy( visiblePolicy, hiddenPolicy ) );
+}
+
+void QskControl::setPlacementPolicy( QskPlacementPolicy policy )
 {
     Q_D( QskControl );
-    if ( ( d->layoutHints & flag ) != on )
+
+    if ( policy != placementPolicy() )
     {
-        if ( on )
-            d->layoutHints |= flag;
-        else
-            d->layoutHints &= ~flag;
+        d->setPlacementPolicy( true, policy.visiblePolicy() );
+        d->setPlacementPolicy( false, policy.hiddenPolicy() );
 
         d->layoutConstraintChanged();
     }
 }
 
-bool QskControl::testLayoutHint( LayoutHint hint ) const
+QskPlacementPolicy QskControl::placementPolicy() const
 {
-    return d_func()->layoutHints & hint;
+    Q_D( const QskControl );
+
+    return QskPlacementPolicy(
+        d->placementPolicy( true ), d->placementPolicy( false ) );
 }
 
-void QskControl::setLayoutHints( LayoutHints hints )
+QskPlacementPolicy::Policy QskControl::placementPolicy( Qsk::Visibility visiblity ) const
 {
-    Q_D( QskControl );
-    if ( hints != layoutHints() )
-    {
-        d->layoutHints = hints;
-        d->layoutConstraintChanged();
-    }
+    return d_func()->placementPolicy( visiblity == Qsk::Visible );
 }
 
-QskControl::LayoutHints QskControl::layoutHints() const
+QskPlacementPolicy::Policy QskControl::effectivePlacementPolicy() const
 {
-    return static_cast< LayoutHints >( d_func()->layoutHints );
+    return d_func()->placementPolicy( isVisibleToParent() );
 }
 
 bool QskControl::isVisibleToLayout() const
 {
-    return !isTransparentForPositioner()
-        && ( isVisibleToParent() || ( layoutHints() & RetainSizeWhenHidden ) );
+    return qskIsVisibleToLayout( this );
 }
 
 void QskControl::setPreferredSize( const QSizeF& size )

@@ -67,7 +67,6 @@ class QskLayoutEngine2D
     };
 
     void invalidate( int what );
-    bool requiresAdjustment( const QQuickItem* ) const;
 
   private:
     Q_DISABLE_COPY( QskLayoutEngine2D )

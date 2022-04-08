@@ -652,20 +652,3 @@ QskSizePolicy::ConstraintType QskLayoutEngine2D::constraintType() const
 
     return static_cast< QskSizePolicy::ConstraintType >( m_data->constraintType );
 }
-
-bool QskLayoutEngine2D::requiresAdjustment( const QQuickItem* item ) const
-{
-    if ( qskIsVisibleToParent( item ) )
-        return true;
-
-    if ( auto control = qskControlCast( item ) )
-    {
-        constexpr auto mask =
-            QskControl::RetainSizeWhenHidden | QskControl::LayoutWhenHidden;
-
-        if ( control->layoutHints() & mask )
-            return true;
-    }
-
-    return false;
-}

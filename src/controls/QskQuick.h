@@ -7,6 +7,8 @@
 #define QSK_QUICK_H
 
 #include "QskGlobal.h"
+#include "QskPlacementPolicy.h"
+
 #include <qnamespace.h>
 #include <qquickitem.h>
 
@@ -30,9 +32,6 @@ QSK_EXPORT bool qskIsVisibleTo( const QQuickItem* item, const QQuickItem* ancest
 QSK_EXPORT bool qskIsVisibleToParent( const QQuickItem* );
 QSK_EXPORT bool qskIsPolishScheduled( const QQuickItem* );
 
-QSK_EXPORT void qskSetTransparentForPositioner( QQuickItem*, bool );
-QSK_EXPORT bool qskIsTransparentForPositioner( const QQuickItem* );
-
 QSK_EXPORT bool qskIsVisibleToLayout( const QQuickItem* );
 QSK_EXPORT bool qskIsAdjustableByLayout( const QQuickItem* );
 
@@ -48,7 +47,11 @@ QSK_EXPORT QRectF qskConstrainedItemRect(
 
 QSK_EXPORT QskSizePolicy qskSizePolicy( const QQuickItem* );
 QSK_EXPORT Qt::Alignment qskLayoutAlignmentHint( const QQuickItem* );
-QSK_EXPORT bool qskRetainSizeWhenHidden( const QQuickItem* );
+
+QSK_EXPORT QskPlacementPolicy qskPlacementPolicy( const QQuickItem* );
+QSK_EXPORT void qskSetPlacementPolicy( QQuickItem*, QskPlacementPolicy );
+
+QSK_EXPORT QskPlacementPolicy::Policy qskEffectivePlacementPolicy( const QQuickItem* );
 
 QSK_EXPORT QRectF qskItemRect( const QQuickItem* );
 

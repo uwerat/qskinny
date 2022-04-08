@@ -63,7 +63,7 @@ QskFocusIndicator::QskFocusIndicator( QQuickItem* parent )
     : Inherited( parent ) // parentItem() might change, but parent() stays
     , m_data( new PrivateData() )
 {
-    setTransparentForPositioner( true );
+    setPlacementPolicy( QskPlacementPolicy::Ignore );
     connectWindow( window(), true );
 }
 
