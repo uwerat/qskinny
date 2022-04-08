@@ -57,7 +57,7 @@ namespace
                     points[1].set( x + w / 3, y + h );
                     points[2].set( x + w, y );
                 }
-                
+
                 markDirty( QSGNode::DirtyGeometry );
             }
         }

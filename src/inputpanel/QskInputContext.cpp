@@ -249,7 +249,7 @@ class QskInputContext::PrivateData
         auto popup = new QskPopup();
 
         popup->setAutoLayoutChildren( true );
-        popup->setTransparentForPositioner( false );
+        popup->setPlacementPolicy( QskPlacementPolicy() );
         popup->setMargins( 5 );
         popup->setModal( true );
 
