@@ -25,6 +25,15 @@
     #include <qsgtexture_platform.h>
 #endif
 
+static inline bool qskHasOpenGLRenderer( const QQuickWindow* window )
+{
+    if ( window == nullptr )
+        return false;
+
+    const auto renderer = window->rendererInterface();
+    return renderer->graphicsApi() == QSGRendererInterface::OpenGL;
+}
+
 static uint qskCreateTextureOpenGL( QQuickWindow* window,
     const QSize& size, QskTextureRenderer::PaintHelper* helper )
 {
@@ -181,19 +190,18 @@ uint QskTextureRenderer::createTexture(
     renderMode = Raster;
 #endif
 
-    if ( window && window->rendererInterface()->graphicsApi() != OpenGL )
+    if ( renderMode != Raster )
     {
-        renderMode = Raster;
+        if ( !qskHasOpenGLRenderer( window ) )
+            renderMode = Raster;
     }
-    else
+
+    if ( renderMode == AutoDetect )
     {
-        if ( renderMode == AutoDetect )
-        {
-            if ( qskSetup->testItemUpdateFlag( QskQuickItem::PreferRasterForTextures ) )
-                renderMode = Raster;
-            else
-                renderMode = OpenGL;
-        }
+        if ( qskSetup->testItemUpdateFlag( QskQuickItem::PreferRasterForTextures ) )
+            renderMode = Raster;
+        else
+            renderMode = OpenGL;
     }
 
     if ( renderMode == Raster )
