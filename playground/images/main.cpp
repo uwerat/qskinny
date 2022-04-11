@@ -14,6 +14,26 @@
 
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QQuickWindow>
+
+namespace
+{
+    class ImageProvider : public QskGraphicImageProvider
+    {
+      public:
+        ImageProvider( const QString& id )
+            : QskGraphicImageProvider( id, type() )
+        {
+        }
+
+      private:
+        static ImageType type()
+        {
+            const auto backend = QQuickWindow::sceneGraphBackend();
+            return ( backend == "software" ) ? Image : Texture;
+        }
+    };
+}
 
 int main( int argc, char* argv[] )
 {
@@ -33,12 +53,10 @@ int main( int argc, char* argv[] )
     SkinnyShortcut::enable( SkinnyShortcut::Quit |
         SkinnyShortcut::DebugShortcuts );
 
-    // image provider that falls back to the graphic provider
-    QskGraphicImageProvider* imageProvider =
-        new QskGraphicImageProvider( providerId, QQuickImageProvider::Texture );
-
     QQmlApplicationEngine engine( QUrl( "qrc:/qml/images.qml" ) );
-    engine.addImageProvider( imageProvider->graphicProviderId(), imageProvider );
+
+    // image provider that falls back to the graphic provider above
+    engine.addImageProvider( providerId, new ImageProvider( providerId ) );
 
     return app.exec();
 }
