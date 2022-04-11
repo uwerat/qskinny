@@ -180,12 +180,20 @@ uint QskTextureRenderer::createTexture(
     // Qt6.0.0 is buggy when using FBOs. So let's disable it for the moment TODO ...
     renderMode = Raster;
 #endif
-    if ( renderMode == AutoDetect )
+
+    if ( window && window->rendererInterface()->graphicsApi() != OpenGL )
     {
-        if ( qskSetup->testItemUpdateFlag( QskQuickItem::PreferRasterForTextures ) )
-            renderMode = Raster;
-        else
-            renderMode = OpenGL;
+        renderMode = Raster;
+    }
+    else
+    {
+        if ( renderMode == AutoDetect )
+        {
+            if ( qskSetup->testItemUpdateFlag( QskQuickItem::PreferRasterForTextures ) )
+                renderMode = Raster;
+            else
+                renderMode = OpenGL;
+        }
     }
 
     if ( renderMode == Raster )
