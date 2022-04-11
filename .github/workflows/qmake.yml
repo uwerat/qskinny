@@ -13,7 +13,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: install Qt
+
+    - name: Cache Qt
+      id: cache-qt
+      uses: actions/cache@v1  # not v2!
+      with:
+        path: ../Qt
+        key: ${{ runner.os }}-QtCache
+
+    - name: Install Qt
       uses: jurplel/install-qt-action@v2
       with:
         version: '5.15.2'
@@ -21,7 +29,7 @@ jobs:
         target: 'desktop'
         install-deps: 'true'
         modules: 'qtwebengine'
-        cached: 'false'
+        cached: ${{ steps.cache-qt.outputs.cache-hit }}
         setup-python: 'true'
         tools: ''
         set-env: 'true'
