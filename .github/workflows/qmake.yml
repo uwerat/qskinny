@@ -74,12 +74,12 @@ jobs:
 
     - name: Qt version
       run: qmake -v
-      shell: cmd
 
     - name: qmake
       run: qmake qskinny.pro
-      shell: cmd
 
-    - name: nmake
-      run: nmake
-      shell: cmd
+    - name: jom
+      run: |
+        Invoke-WebRequest -Uri "https://download.qt.io/official_releases/jom/jom.zip" -OutFile jom.zip
+        unzip jom.zip
+        .\jom
