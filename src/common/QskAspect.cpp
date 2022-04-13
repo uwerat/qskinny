@@ -194,7 +194,7 @@ static QByteArray qskStatesToString(
 
     for ( int i = 0; i < 16; i++ )
     {
-        const quint16 mask = 1 << i;
+        const uint mask = 1 << i;
 
         if ( states & mask )
         {
