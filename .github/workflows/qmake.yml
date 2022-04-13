@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-linux:
+    name: Linux build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Cache Qt
+      id: cache-qt
+      uses: actions/cache@v1  # not v2!
+      with:
+        path: ../Qt
+        key: ${{ runner.os }}-QtCache
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: '5.15.2'
+        host: 'linux'
+        target: 'desktop'
+        install-deps: 'true'
+        modules: 'qtwebengine'
+        cached: ${{ steps.cache-qt.outputs.cache-hit }}
+        setup-python: 'true'
+        tools: ''
+        set-env: 'true'
+        tools-only: 'false'
+
+    - name: Ubuntu and Qt version
+      run: |
+        cat /etc/issue
+        echo number of processors: $(nproc)
+        qmake -v
+    - name: qmake
+      run: qmake qskinny.pro
+    - name: make
+      run: make -j$(nproc)
+
+  build-windows:
+    name: Windows build
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Cache Qt
+      id: cache-qt
+      uses: actions/cache@v1  # not v2!
+      with:
+        path: ../Qt
+        key: ${{ runner.os }}-QtCache
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: '5.15.2'
+        host: 'windows'
+        target: 'desktop'
+        arch: 'win64_msvc2019_64'
+        install-deps: 'true'
+        modules: 'qtwebengine'
+        cached: ${{ steps.cache-qt.outputs.cache-hit }}
+        setup-python: 'true'
+        tools: ''
+        set-env: 'true'
+        tools-only: 'false'
+
+    - uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Qt version
+      run: qmake -v
+      shell: cmd
+
+    - name: qmake
+      run: qmake qskinny.pro
+      shell: cmd
+
+    - name: nmake
+      run: nmake
+      shell: cmd
