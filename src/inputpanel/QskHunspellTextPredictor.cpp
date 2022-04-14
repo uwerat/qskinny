@@ -103,7 +103,8 @@ QskHunspellTextPredictor::QskHunspellTextPredictor(
     m_data->locale = locale;
 
     // make sure we call virtual functions:
-    QTimer::singleShot( 0, this, &QskHunspellTextPredictor::loadDictionaries );
+    QMetaObject::invokeMethod( this,
+        &QskHunspellTextPredictor::loadDictionaries, Qt::QueuedConnection );
 }
 
 QskHunspellTextPredictor::~QskHunspellTextPredictor()
