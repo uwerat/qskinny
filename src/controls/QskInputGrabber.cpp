@@ -112,7 +112,7 @@ QskInputGrabber::QskInputGrabber( QQuickItem* parent )
     setAcceptTouchEvents( true );
     setAcceptHoverEvents( true );
 
-    setTransparentForPositioner( true );
+    setPlacementPolicy( QskPlacementPolicy::Ignore );
     setFlag( QQuickItem::ItemHasContents, false );
 
     m_data->setup( parent );

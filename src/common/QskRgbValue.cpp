@@ -188,8 +188,8 @@ void QskRgb::debugColor( QDebug debug, QRgb rgb )
 
     debug << '[';
 
-    debug << qRed( rgb ) << "r," << qGreen( rgb ) << "g,"
-        << qBlue( rgb ) << 'b';
+    debug << qRed( rgb ) << "r,"
+        << qGreen( rgb ) << "g," << qBlue( rgb ) << 'b';
 
     if ( qAlpha( rgb ) != 255 )
         debug << ',' << qAlpha( rgb ) << 'a';

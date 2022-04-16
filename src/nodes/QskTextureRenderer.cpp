@@ -25,6 +25,15 @@
     #include <qsgtexture_platform.h>
 #endif
 
+static inline bool qskHasOpenGLRenderer( const QQuickWindow* window )
+{
+    if ( window == nullptr )
+        return false;
+
+    const auto renderer = window->rendererInterface();
+    return renderer->graphicsApi() == QSGRendererInterface::OpenGL;
+}
+
 static uint qskCreateTextureOpenGL( QQuickWindow* window,
     const QSize& size, QskTextureRenderer::PaintHelper* helper )
 {
@@ -180,6 +189,13 @@ uint QskTextureRenderer::createTexture(
     // Qt6.0.0 is buggy when using FBOs. So let's disable it for the moment TODO ...
     renderMode = Raster;
 #endif
+
+    if ( renderMode != Raster )
+    {
+        if ( !qskHasOpenGLRenderer( window ) )
+            renderMode = Raster;
+    }
+
     if ( renderMode == AutoDetect )
     {
         if ( qskSetup->testItemUpdateFlag( QskQuickItem::PreferRasterForTextures ) )

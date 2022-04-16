@@ -5,13 +5,14 @@
 
 #include "Image.h"
 
-// QQuickImagePrivate is not exported, so we
-// we can't derive here
+QSK_QT_PRIVATE_BEGIN
+#include <private/qquickimage_p_p.h>
+QSK_QT_PRIVATE_END
 
-class Image::PrivateData
+class ImagePrivate : public QQuickImagePrivate
 {
   public:
-    PrivateData()
+    ImagePrivate()
         : sourceSizeAdjustment( false )
         , deferredUpdates( true )
         , dirtyPolish( false )
@@ -27,8 +28,7 @@ class Image::PrivateData
 };
 
 Image::Image( QQuickItem* parent )
-    : Inherited( parent )
-    , m_data( new PrivateData() )
+    : QQuickImage( *( new ImagePrivate() ), parent )
 {
 }
 
@@ -36,50 +36,48 @@ Image::~Image()
 {
 }
 
-void Image::setVisible( bool on )
-{
-    // QQuickItem::setVisible is no slot
-    Inherited::setVisible( on );
-}
-
 void Image::show()
 {
-    Inherited::setVisible( true );
+    setVisible( true );
 }
 
 void Image::hide()
 {
-    Inherited::setVisible( false );
+    setVisible( false );
 }
 
 void Image::setSourceSizeAdjustment( bool on )
 {
-    if ( on != m_data->sourceSizeAdjustment )
+    Q_D( Image );
+
+    if ( on != d->sourceSizeAdjustment )
     {
-        m_data->sourceSizeAdjustment = on;
+        d->sourceSizeAdjustment = on;
         Q_EMIT sourceSizeAdjustmentChanged();
     }
 }
 
 bool Image::sourceSizeAdjustment() const
 {
-    return m_data->sourceSizeAdjustment;
+    return d_func()->sourceSizeAdjustment;
 }
 
 void Image::setDeferredUpdates( bool on )
 {
-    if ( on != m_data->deferredUpdates )
+    Q_D( Image );
+
+    if ( on != d->deferredUpdates )
     {
-        m_data->deferredUpdates = on;
+        d->deferredUpdates = on;
 
         if ( !on )
         {
             // when having blocked updates we reschedule them
 
-            if ( m_data->dirtyPolish )
+            if ( d->dirtyPolish )
                 polish();
 
-            if ( m_data->dirtyUpdate )
+            if ( d->dirtyUpdate )
                 update();
         }
     }
@@ -87,18 +85,20 @@ void Image::setDeferredUpdates( bool on )
 
 bool Image::deferredUpdates() const
 {
-    return m_data->deferredUpdates;
+    return d_func()->deferredUpdates;
 }
 
 void Image::setSourceSize( const QSize& size )
 {
     if ( !( size.isEmpty() && sourceSize().isEmpty() ) )
-        QQuickImage::setSourceSize( size );
+        Inherited::setSourceSize( size );
 }
 
 void Image::componentComplete()
 {
-    if ( m_data->deferredUpdates && m_data->sourceSizeAdjustment )
+    Q_D( const Image );
+
+    if ( d->deferredUpdates && d->sourceSizeAdjustment )
     {
         // QQuickImage::componentComplete() calls load
         // long before we have the final geometry
@@ -119,12 +119,14 @@ void Image::itemChange( QQuickItem::ItemChange change,
 
     if ( change == ItemVisibleHasChanged )
     {
+        Q_D( const Image );
+
         if ( value.boolValue )
         {
-            if ( m_data->dirtyPolish )
+            if ( d->dirtyPolish )
                 polish();
 
-            if ( m_data->dirtyUpdate )
+            if ( d->dirtyUpdate )
                 update();
         }
     }
@@ -156,9 +158,11 @@ void Image::geometryChanged(
 
 void Image::adjustSourceSize( const QSizeF& size )
 {
-    if ( m_data->sourceSizeAdjustment )
+    Q_D( const Image );
+
+    if ( d->sourceSizeAdjustment )
     {
-        if ( m_data->deferredUpdates )
+        if ( d->deferredUpdates )
         {
             setImplicitSize( size.width(), size.height() );
             polish();
@@ -172,35 +176,39 @@ void Image::adjustSourceSize( const QSizeF& size )
 
 void Image::updatePolish()
 {
-    if ( m_data->deferredUpdates )
+    Q_D( Image );
+
+    if ( d->deferredUpdates )
     {
         if ( !isVisible() )
         {
-            m_data->dirtyPolish = true;
+            d->dirtyPolish = true;
             return;
         }
 
-        if ( m_data->sourceSizeAdjustment )
+        if ( d->sourceSizeAdjustment )
             setSourceSize( QSize( int( width() ), int( height() ) ) );
     }
 
-    m_data->dirtyPolish = false;
+    d->dirtyPolish = false;
 
     Inherited::updatePolish();
 }
 
 QSGNode* Image::updatePaintNode( QSGNode* oldNode, UpdatePaintNodeData* data )
 {
-    if ( m_data->deferredUpdates )
+    Q_D( Image );
+
+    if ( d->deferredUpdates )
     {
         if ( !isVisible() )
         {
-            m_data->dirtyUpdate = true;
+            d->dirtyUpdate = true;
             return oldNode;
         }
     }
 
-    m_data->dirtyUpdate = false;
+    d->dirtyUpdate = false;
 
     return Inherited::updatePaintNode( oldNode, data );
 }

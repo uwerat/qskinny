@@ -20,9 +20,6 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
     Q_PROPERTY( QRectF geometry READ geometry WRITE setGeometry )
     Q_PROPERTY( QRectF rect READ rect )
 
-    Q_PROPERTY( bool transparentForPositioners READ isTransparentForPositioner
-        WRITE setTransparentForPositioner NOTIFY itemFlagsChanged )
-
     Q_PROPERTY( bool tabFence READ isTabFence
         WRITE setTabFence NOTIFY itemFlagsChanged  )
 
@@ -77,9 +74,6 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
 
     void setPolishOnResize( bool );
     bool polishOnResize() const;
-
-    void setTransparentForPositioner( bool );
-    bool isTransparentForPositioner() const;
 
     void setTabFence( bool );
     bool isTabFence() const;

@@ -191,8 +191,7 @@ void Editor::setupMenu()
 
     setGradient( Q::Panel, m_pal.background );
 
-    const bool isCascading = qskMaybeDesktopPlatform();
-    setFlagHint( Q::Panel | A::Style, isCascading );
+    setFlagHint( Q::Panel | A::Style, false ); // not cascading
 
 #if 0
     setPadding( Q::Separator, QMarginsF( 10, 0, 10, 0 ) );

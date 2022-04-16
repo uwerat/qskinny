@@ -30,6 +30,7 @@ HEADERS += \
     common/QskMetaInvokable.h \
     common/QskNamespace.h \
     common/QskObjectCounter.h \
+    common/QskPlacementPolicy.h \
     common/QskPlatform.h \
     common/QskRgbValue.h \
     common/QskRgbPalette.h \
@@ -57,6 +58,7 @@ SOURCES += \
     common/QskMetaInvokable.cpp \
     common/QskObjectCounter.cpp \
     common/QskPlatform.cpp \
+    common/QskPlacementPolicy.cpp \
     common/QskRgbValue.cpp \
     common/QskRgbPalette.cpp \
     common/QskScaleEngine.cpp \
@@ -299,7 +301,7 @@ HEADERS += \
     layouts/QskGridLayoutEngine.h \
     layouts/QskIndexedLayoutBox.h \
     layouts/QskLayoutChain.h \
-    layouts/QskLayoutEngine2D.cpp \
+    layouts/QskLayoutEngine2D.h \
     layouts/QskLayoutMetrics.h \
     layouts/QskLinearBox.h \
     layouts/QskLinearLayoutEngine.h \

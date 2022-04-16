@@ -44,27 +44,6 @@
 */
 
 /*!
-    \enum QskControl::LayoutHint
-
-    Hints, that can be used by the layout code
-
-    \sa setLayoutHint(), testLayoutHint(), setLayoutHints(), layoutHints()
-        setAutoLayoutChildren(), QskLinearBox, QskGridBox, QskStackBox
-
-    \var QskControl::RetainSizeWhenHidden
-
-        When being enabled the layout code should retain the necessary space
-        for the control even when it is hidden.
-
-    \saqt QSizePolicy::retainSizeWhenHidden()
-
-    \var QskControl::LayoutWhenHidden
-
-        When being enabled the layout code should set the geometry
-        to the control - even if it is not visible.
-*/
-
-/*!
     \property QLocale QskControl::locale
 
     The locale of the control
@@ -168,6 +147,14 @@
     \property QskSizePolicy QskControl::sizePolicy
 
     \accessors sizePolicy(), setSizePolicy()
+    \sa placementPolicy
+*/
+
+/*!
+    \property QskPlacementPolicy QskControl::placementPolicy
+
+    \accessors placementPolicy(), setPlacementPolicy()
+    \sa sizePolicy, effectivePlacementPolicy()
 */
 
 /*!
@@ -554,32 +541,46 @@
 */
 
 /*!
+    \fn QskControl::setPlacementPolicy( QskPlacementPolicy )
+
+    \sa placementPolicy, effectivePlacementPolicy
+*/
+
+/*!
+    QskControl::setPlacementPolicy( QskPlacementPolicy::Policy, QskPlacementPolicy::Policy )
+
+    \sa placementPolicy, effectivePlacementPolicy
+
+/*!
+    void QskControl::setPlacementPolicy( Qsk::Visibilities, QskPlacementPolicy::Policy );
+
+    \sa placementPolicy, effectivePlacementPolicy()
+*/
+
+/*!
+    QskControl::placementPolicy() const;
+
+    \sa placementPolicy, effectivePlacementPolicy()
+*/
+
+/*!
+    QskControl::placementPolicy( Qsk::Visibility ) const;
+
+    \sa placementPolicy, effectivePlacementPolicy()
+*/
+
+/*!
+    QskControl::effectivePlacementPolicy() const;
+
+*/
+
+/*!
     \fn QskControl::setLayoutAlignmentHint
 
 */
 
 /*!
     \fn QskControl::layoutAlignmentHint
-
-*/
-
-/*!
-    \fn QskControl::setLayoutHint
-
-*/
-
-/*!
-    \fn QskControl::testLayoutHint
-
-*/
-
-/*!
-    \fn QskControl::setLayoutHints
-
-*/
-
-/*!
-    \fn QskControl::layoutHints
 
 */
 

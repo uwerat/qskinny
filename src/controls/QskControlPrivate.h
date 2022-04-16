@@ -35,6 +35,9 @@ class QskControlPrivate : public QskQuickItemPrivate
 
     bool maybeGesture( QQuickItem*, QEvent* );
 
+    QskPlacementPolicy::Policy placementPolicy( bool visible ) const noexcept;
+    void setPlacementPolicy( bool visible, QskPlacementPolicy::Policy );
+
   private:
     Q_DECLARE_PUBLIC( QskControl )
 
@@ -43,7 +46,10 @@ class QskControlPrivate : public QskQuickItemPrivate
     QLocale locale;
 
     QskSizePolicy sizePolicy;
-    int layoutHints : 4;
+
+    unsigned int visiblePlacementPolicy : 1;
+    unsigned int hiddenPlacementPolicy : 2;
+
     unsigned int layoutAlignmentHint : 8;
 
     bool explicitLocale : 1;
@@ -56,5 +62,23 @@ class QskControlPrivate : public QskQuickItemPrivate
 
     mutable bool blockLayoutRequestEvents : 1;
 };
+
+inline QskPlacementPolicy::Policy
+    QskControlPrivate::placementPolicy( const bool visible ) const noexcept
+{
+    using PP = QskPlacementPolicy;
+
+    if ( visible )
+    {
+        if ( isTransparentForPositioner() )
+            return PP::Ignore;
+
+        return this->visiblePlacementPolicy ? PP::Reserve : PP::Adjust;
+    }
+    else
+    {
+        return static_cast< PP::Policy >( this->hiddenPlacementPolicy );
+    }
+}
 
 #endif

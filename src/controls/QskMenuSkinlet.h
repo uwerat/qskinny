@@ -19,7 +19,7 @@ class QSK_EXPORT QskMenuSkinlet : public QskPopupSkinlet
     };
 
     Q_INVOKABLE QskMenuSkinlet( QskSkin* = nullptr );
-    ~QskMenuSkinlet() = default;
+    ~QskMenuSkinlet();
 
     QRectF subControlRect( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol ) const override;

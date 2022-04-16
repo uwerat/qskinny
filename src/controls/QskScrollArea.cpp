@@ -500,7 +500,7 @@ QSizeF QskScrollArea::layoutSizeHint( Qt::SizeHint which, const QSizeF& constrai
             }
             else
             {
-                hint = qskItemSize( contentItem );
+                hint = contentItem->size();
             }
 
             if ( verticalScrollBarPolicy() != Qt::ScrollBarAlwaysOff )

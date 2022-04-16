@@ -201,10 +201,12 @@ void QskStackBox::insertItem( int index, QQuickItem* item )
 
     reparentItem( item );
 
-    if ( qskIsTransparentForPositioner( item ) )
+    if ( !qskPlacementPolicy( item ).isEffective() )
     {
-        // giving a warning, or ignoring the insert ???
-        qskSetTransparentForPositioner( item, false );
+        qWarning() << "Inserting an item that is to be ignored for layouting"
+            << item->metaObject()->className();
+
+        qskSetPlacementPolicy( item, QskPlacementPolicy() );
     }
 
     const bool doAppend = ( index < 0 ) || ( index >= itemCount() );
@@ -354,16 +356,18 @@ void QskStackBox::updateLayout()
     if ( maybeUnresized() )
         return;
 
-#if 1
-    // what about QskControl::LayoutOutWhenHidden
-#endif
-
-    const auto index = m_data->currentIndex;
-
-    if ( index >= 0 )
+    for ( int i = 0; i < m_data->items.count(); i++ )
     {
-        const auto rect = geometryForItemAt( index );
-        qskSetItemGeometry( m_data->items[ index ], rect );
+        auto item = m_data->items[ i ];
+
+        const auto visibility =
+            ( i == m_data->currentIndex ) ? Qsk::Visible : Qsk::Hidden;
+
+        if ( qskPlacementPolicy( item ).isAdjusting( visibility ) )
+        {
+            const auto rect = geometryForItemAt( i );
+            qskSetItemGeometry( m_data->items[ i ], rect );
+        }
     }
 }
 

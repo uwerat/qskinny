@@ -133,7 +133,7 @@ class IconGrid : public QskLinearBox
             if ( auto control = qskControlCast( itemAtIndex( i ) ) )
             {
                 // to support the optimizations in ScrollArea::updateVisibilities
-                control->setLayoutHint( RetainSizeWhenHidden, true );
+                control->setPlacementPolicy( Qsk::Hidden, QskPlacementPolicy::Reserve );
                 control->setVisible( false );
             }
         }
@@ -158,7 +158,7 @@ class IconGrid : public QskLinearBox
         const int dim = dimension();
 
         // we know, that all items have the same size
-        const auto itemSize = qskItemSize( itemAtIndex( 0 ) );
+        const auto itemSize = itemAtIndex( 0 )->size();
 
         const int rowMin = rect.top() / ( itemSize.height() + spacing() );
         const int rowMax = rect.bottom() / ( itemSize.height() + spacing() );

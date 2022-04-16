@@ -119,7 +119,10 @@ void GridSkinny::setAlignmentAt( int index, Qt::Alignment alignment )
 void GridSkinny::setRetainSizeWhenHiddenAt( int index, bool on )
 {
     if ( auto control = qskControlCast( m_grid->itemAtIndex( index ) ) )
-        control->setLayoutHint( QskControl::RetainSizeWhenHidden, on );
+    {
+        control->setPlacementPolicy( Qsk::Hidden,
+            on ? QskPlacementPolicy::Reserve : QskPlacementPolicy::Ignore );
+    }
 }
 
 void GridSkinny::setVisibleAt( int index, bool on )

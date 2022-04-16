@@ -5,6 +5,8 @@
 
 #include "TestBox.h"
 
+#include <SkinnyNamespace.h>
+
 #include <QskSizePolicy.h>
 #include <QskFunctions.h>
 
@@ -386,6 +388,7 @@ class MainWidget : public QWidget
 int main( int argc, char** argv )
 {
     QApplication app( argc, argv );
+    Skinny::init();
 
     int testcase = 0;
     if ( argc == 2 )

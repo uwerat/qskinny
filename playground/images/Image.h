@@ -19,7 +19,7 @@ QSK_QT_PRIVATE_BEGIN
 
 QSK_QT_PRIVATE_END
 
-#include <memory>
+class ImagePrivate;
 
 class Image : public QQuickImage
 {
@@ -54,7 +54,12 @@ class Image : public QQuickImage
   public Q_SLOTS:
     void show();
     void hide();
+
+#ifdef Q_MOC_RUN
+    // methods from QQuickItem, we want to be available as string based slots
     void setVisible( bool );
+    void setEnabled( bool );
+#endif
 
   Q_SIGNALS:
     void sourceSizeAdjustmentChanged();
@@ -75,6 +80,5 @@ class Image : public QQuickImage
   private:
     void adjustSourceSize( const QSizeF& );
 
-    class PrivateData;
-    std::unique_ptr< PrivateData > m_data;
+    Q_DECLARE_PRIVATE( Image )
 };
