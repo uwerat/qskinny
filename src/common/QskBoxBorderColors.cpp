@@ -285,3 +285,5 @@ QDebug operator<<( QDebug debug, const QskBoxBorderColors& colors )
 }
 
 #endif
+
+#include "moc_QskBoxBorderColors.cpp"
