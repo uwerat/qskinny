@@ -54,7 +54,12 @@ class Image : public QQuickImage
   public Q_SLOTS:
     void show();
     void hide();
+
+#ifdef Q_MOC_RUN
+    // methods from QQuickItem, we want to be available as string based slots
     void setVisible( bool );
+    void setEnabled( bool );
+#endif
 
   Q_SIGNALS:
     void sourceSizeAdjustmentChanged();

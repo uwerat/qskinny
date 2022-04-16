@@ -1,0 +1,183 @@
+/*!
+    \class QskPlacementPolicy QskPlacementPolicy.h
+
+    \ingroup Framework
+
+    QskPlacementPolicy is a hint for layout code how to deal with
+    the geometry of an item depending on its visibility.
+
+    \sa QskControl::placementPolicy(), qskPlacementPolicy()
+*/
+
+/*!
+    \enum QskPlacementPolicy::Policy
+
+    Hint for the layout code how to deal with the geometry of an
+    item. QskPlacementPolicy has two values: one for the visible,
+    the other for the hidden state.
+
+    \var QskPlacementPolicy::Ignore
+
+         Ignore the item for all type of layout calculations
+
+    \var QskPlacementPolicy::Reserve
+
+         Reseve space without giving the item its geometry
+
+    \var QskPlacementPolicy::Adjust
+
+         Reserve space and adjust the geometry of the item
+
+    \sa visiblePolicy, hiddenPolicy
+*/
+
+/*!
+    \property QskPlacementPolicy::Policy QskPlacementPolicy::visiblePolicy
+
+    \brief Policy for the item, when being visible ( to its parent )
+
+    - QskPlacementPolicy::Ignore
+
+      For situations where a parent takes care of the geometry for its children,
+      but the specific item should be omitted. F.e a focus indicator.
+
+    - QskPlacementPolicy::Reserve
+
+      There are not many relevant scenarios for reserving space for visible items
+      without adjusting them. An example might be when an item is inside of a
+      grid box, where all the size hints should have an effect, but the final
+      alignment of the item inside of the cell has to be done manually.
+
+    - QskPlacementPolicy::Adjust:
+
+      The default value
+
+    \accessors visiblePolicy(), setVisiblePolicy()
+    \sa hiddenPolicy, QskQuickItem::isVisibleToParent(), qskIsVisibleToParent()
+
+    \note QskPlacementPolicy::Ignore is stored in the transparentForPositioner
+          bit in QQuickItem and might have an impact on Qt/Quick layout code.
+*/
+
+/*!
+    \property QskPlacementPolicy::Policy QskPlacementPolicy::hiddenPolicy
+    
+    \brief Policy for the item, when being hidden ( to its parent )
+    
+    - QskPlacementPolicy::Ignore
+    
+      The default value
+      
+    - QskPlacementPolicy::Reserve:
+
+      In combination with a visiblePolicy != QskPlacementPolicy::Ignore
+      the layout of the parent does not change, when the item is shown/hidden.
+      
+    - QskPlacementPolicy::Adjust:
+    
+      Sometimes an item wants to have its proper size even when being hidden.
+      
+    \accessors hiddenPolicy(), setHiddenPolicy()
+    \sa visiblePolicy, QskQuickItem::isVisibleToParent(), qskIsVisibleToParent()
+    
+    \note QskPlacementPolicy::Ignore is stored in the transparentForPositioner
+          bit in QQuickItem and might have an impact on Qt/Quick layout code.
+
+    \note QskPlacementPolicy::Reserve is equivalent to what is offered by
+          \saqt QSizePolicy::retainSizeWhenHidden().
+*/
+
+/*!
+    \fn QskPlacementPolicy::QskPlacementPolicy()
+
+    \brief Default constructor
+
+    QskPlacementPolicy::Adjust is set for Qsk::Visible, while
+    QskPlacementPolicy::Ignore is used for Qsk::Hidden.
+
+    \sa visiblePolicy, hiddenPolicy
+*/
+
+/*!
+    \fn QskPlacementPolicy::QskPlacementPolicy( Policy policy )
+
+    visiblePolicy and hiddenPolicy are set to policy
+*/
+
+/*!
+    \fn QskPlacementPolicy::QskPlacementPolicy( Policy visiblePolicy, Policy hiddenPolicy )
+
+    Initialization from visiblePolicy and hiddenPolicy
+*/
+
+/*! 
+    \fn QskPlacementPolicy::QskPlacementPolicy( Qsk::Visibilities visiblities, Policy policy )
+
+    Initialize visiblePolicy and hiddenPolicy depending on visiblities
+*/
+
+/*!
+    \fn QskPlacementPolicy::operator==( const QskPlacementPolicy& )
+
+    "Equal to" operator
+    \sa operator!=(), operator<()
+*/
+
+/*!
+    \fn QskPlacementPolicy::operator!=( const QskPlacementPolicy& )
+
+    "Not equal to" operator
+    \sa operator==(), operator<()
+*/
+
+/*!
+    \fn QskPlacementPolicy::setPolicy( Qsk::Visibilities, Policy )
+*/
+
+/*!
+    \fn QskPlacementPolicy::policy( Qsk::Visibility )
+*/
+
+/*!
+    \fn QskPlacementPolicy::isEffective()
+
+    \return true, when visiblePolicy or hiddenPolicy is not QskPlacementPolicy::Ignore
+    \sa isIgnoring()
+*/
+
+/*!
+    \fn QskPlacementPolicy::isIgnoring( Qsk::Visibility )
+
+    \return true, when visiblePolicy and hiddenPolicy are set to QskPlacementPolicy::Ignore
+    \sa isEffective()
+*/
+
+/*!
+    \fn QskPlacementPolicy::isAdjusting( Qsk::Visibility )
+
+    \return true, when QskPlacementPolicy::Adjust is set for the visibility
+*/
+
+/*!
+    \fn QskPlacementPolicy::setVisiblePolicy( Policy )
+
+    \sa visiblePolicy(), setHiddenPolicy()
+*/
+
+/*!
+    \fn QskPlacementPolicy::visiblePolicy()
+
+    \sa setVisiblePolicy(), hiddenPolicy()
+*/
+
+/*!
+    \fn QskPlacementPolicy::setHiddenPolicy( Policy )
+
+    \sa hiddenPolicy(), setVisiblePolicy()
+*/
+
+/*!
+    \fn QskPlacementPolicy::hiddenPolicy()
+
+    \sa setHiddenPolicy(), visiblePolicy()
+*/

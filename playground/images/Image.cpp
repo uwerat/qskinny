@@ -36,20 +36,14 @@ Image::~Image()
 {
 }
 
-void Image::setVisible( bool on )
-{
-    // QQuickItem::setVisible is no slot
-    Inherited::setVisible( on );
-}
-
 void Image::show()
 {
-    Inherited::setVisible( true );
+    setVisible( true );
 }
 
 void Image::hide()
 {
-    Inherited::setVisible( false );
+    setVisible( false );
 }
 
 void Image::setSourceSizeAdjustment( bool on )

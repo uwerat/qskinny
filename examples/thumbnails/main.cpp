@@ -133,7 +133,7 @@ class IconGrid : public QskLinearBox
             if ( auto control = qskControlCast( itemAtIndex( i ) ) )
             {
                 // to support the optimizations in ScrollArea::updateVisibilities
-                control->setLayoutHint( RetainSizeWhenHidden, true );
+                control->setPlacementPolicy( Qsk::Hidden, QskPlacementPolicy::Reserve );
                 control->setVisible( false );
             }
         }

@@ -1,0 +1,37 @@
+/*!
+    \namespace Qsk
+
+    \ingroup Framework
+
+    \brief Global definitions
+*/
+
+/*!
+    \enum Qsk::Direction
+
+    \brief This enum type specifies a horizontal ot vertical direction
+
+    \var Qsk::LeftToRight
+         Horizontally from left to right
+
+    \var Qsk::RightToLeft
+         Horizontally from right to left
+
+    \var Qsk::TopToBottom
+         Vertically from top to bottom
+
+    \var Qsk::BottomToTop
+         Vertically from bottom to top
+*/
+
+/*!
+    \enum Qsk::Visibility
+
+    \brief Visibility of an object
+
+    \var Qsk::Visible
+        The object is visible
+
+    \var Qsk::Hidden
+        The object is not visible
+*/

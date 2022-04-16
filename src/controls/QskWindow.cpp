@@ -501,7 +501,7 @@ QSize QskWindow::sizeConstraint() const
         const auto children = contentItem()->childItems();
         for ( auto child : children )
         {
-            if ( !qskIsTransparentForPositioner( child ) )
+            if ( qskIsVisibleToLayout( child ) )
             {
                 const auto size = qskSizeConstraint( child, Qt::PreferredSize );
 
@@ -539,7 +539,7 @@ void QskWindow::layoutItems()
     const auto children = contentItem()->childItems();
     for ( auto child : children )
     {
-        if ( !qskIsTransparentForPositioner( child ) )
+        if ( qskIsAdjustableByLayout( child ) )
         {
             const auto r = qskConstrainedItemRect( child, rect );
             qskSetItemGeometry( child, r );

@@ -66,6 +66,16 @@ QSK_NAMESPACE( Qsk )
         Sunken
     };
     QSK_ENUM( TextStyle )
+
+    enum Visibility
+    {
+        Visible = 1 << 0,
+        Hidden  = 1 << 1
+    };
+    QSK_ENUM( Visibility )
+
+    Q_DECLARE_FLAGS( Visibilities, Visibility )
+    Q_DECLARE_OPERATORS_FOR_FLAGS( Visibilities )
 }
 
 #undef QSK_NAMESPACE

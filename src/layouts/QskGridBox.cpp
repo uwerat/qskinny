@@ -133,12 +133,12 @@ int QskGridBox::addItem( QQuickItem* item,
     if ( item == nullptr || item == this || row < 0 || column < 0 )
         return -1;
 
-    if ( qskIsTransparentForPositioner( item ) )
+    if ( !qskPlacementPolicy( item ).isEffective() )
     {
-        qWarning() << "Inserting an item that is marked as transparent for layouting:"
+        qWarning() << "Inserting an item that is to be ignored for layouting:"
             << item->metaObject()->className();
 
-        qskSetTransparentForPositioner( item, false );
+        qskSetPlacementPolicy( item, QskPlacementPolicy() );
     }
 
     rowSpan = qMax( rowSpan, -1 );

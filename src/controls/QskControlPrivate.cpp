@@ -48,7 +48,8 @@ static inline QPointF qskScenePosition( const QMouseEvent* event )
 QskControlPrivate::QskControlPrivate()
     : explicitSizeHints( nullptr )
     , sizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Preferred )
-    , layoutHints( 0 )
+    , visiblePlacementPolicy( 0 )
+    , hiddenPlacementPolicy( 0 )
     , layoutAlignmentHint( 0 )
     , explicitLocale( false )
     , autoFillBackground( false )
@@ -263,5 +264,43 @@ void QskControlPrivate::resolveLocale( QskControl* control )
 
         qskSendEventTo( control, QEvent::LocaleChange );
         qskSetup->inheritLocale( control, locale );
+    }
+}
+
+void QskControlPrivate::setPlacementPolicy(
+    bool visible, QskPlacementPolicy::Policy policy )
+{
+    if ( visible )
+    {
+        /*
+            Ignore corresponds to transparentForPositioner() what is
+            also respected by Qt/Quick layout classes. So we use this
+            bit instead of storing it locally.
+         */
+        if ( policy == QskPlacementPolicy::Ignore )
+        {
+            this->visiblePlacementPolicy = 0;
+            setTransparentForPositioner( true );
+        }
+        else
+        {
+            this->visiblePlacementPolicy =
+                 ( policy == QskPlacementPolicy::Reserve ) ? 1 : 0;
+
+            if ( isTransparentForPositioner() )
+            {
+                /*
+                    This bit is stored in an extra data section, that
+                    gets allocated, when being used the first time.
+                    This also happens when setting it to false, what does
+                    not make much sense, when it has not been allocated before.
+                 */
+                setTransparentForPositioner( false );
+            }
+        }
+    }
+    else
+    {
+        this->hiddenPlacementPolicy = policy;
     }
 }

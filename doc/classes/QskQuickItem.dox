@@ -137,7 +137,7 @@
     it is necessary to know which children would stay hidden when the container
     becomes visible.
 
-    \sa isVisibleToParent()
+    \sa setHidden(), show(), hide(), isVisibleToParent(), qskIsVisibleToParent()
     \saqt QQuickItem::setVisible()
 */
 
@@ -226,7 +226,7 @@
     
     \return true once setVisible( false ) has been called
 
-    \sa visibleToParent
+    \sa visibleToParent(), qskIsVisibleToParent()
     \saqt QQuickItem::setVisible()
 */
 
@@ -562,7 +562,7 @@
     An alternative way to call setVisible( true ).
     Useful for signal/slot connections
 
-    \sa hide()
+    \sa hide(), setHidden()
     \saqt QQuickItem::setVisible()
 */
 
@@ -579,8 +579,10 @@
 /*!
     \fn QskQuickItem::setHidden
 
-        Convenience function, equivalent to setVisible( !on ).
-        \saqt QQuickItem::setVisible()
+     Convenience function, equivalent to setVisible( !on ).
+
+     \sa show(), hide()
+     \saqt QQuickItem::setVisible()
 */
 
 /*!

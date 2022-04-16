@@ -168,7 +168,7 @@ QskPopup::QskPopup( QQuickItem* parent )
     setWheelEnabled( true );
 
     // we don't want to be resized by layout code
-    setTransparentForPositioner( true );
+    setPlacementPolicy( QskPlacementPolicy::Ignore );
 
     setFlag( ItemIsFocusScope, true );
     setTabFence( true );

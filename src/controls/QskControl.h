@@ -11,6 +11,7 @@
 #include "QskAspect.h"
 #include "QskGradient.h"
 #include "QskSizePolicy.h"
+#include "QskPlacementPolicy.h"
 
 #include <qlocale.h>
 #include <memory>
@@ -46,6 +47,7 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
         WRITE setBackground RESET resetBackground NOTIFY backgroundChanged )
 
     Q_PROPERTY( QskSizePolicy sizePolicy READ sizePolicy WRITE setSizePolicy )
+    Q_PROPERTY( QskPlacementPolicy placementPolicy READ placementPolicy WRITE setPlacementPolicy )
 
     Q_PROPERTY( QSizeF minimumSize READ minimumSize WRITE setMinimumSize )
     Q_PROPERTY( QSizeF maximumSize READ maximumSize WRITE setMaximumSize )
@@ -56,22 +58,6 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
 
   public:
     QSK_STATES( Disabled, Hovered, Focused )
-
-    enum LayoutHint
-    {
-        // How to be treated by layouts
-        RetainSizeWhenHidden = 1 << 0,
-
-        /*
-            Adjust the item even, even when being hidden
-            Depending on the type of layout the value only works
-            in combination with RetainSizeWhenHidden
-         */
-        LayoutWhenHidden = 1 << 1
-    };
-
-    Q_ENUM( LayoutHint )
-    Q_DECLARE_FLAGS( LayoutHints, LayoutHint )
 
     QskControl( QQuickItem* parent = nullptr );
     ~QskControl() override;
@@ -117,8 +103,8 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     void setFocusPolicy( Qt::FocusPolicy );
     Qt::FocusPolicy focusPolicy() const;
 
-    void setSizePolicy( QskSizePolicy::Policy, QskSizePolicy::Policy );
     void setSizePolicy( QskSizePolicy );
+    void setSizePolicy( QskSizePolicy::Policy, QskSizePolicy::Policy );
     void setSizePolicy( Qt::Orientation, QskSizePolicy::Policy );
 
     QskSizePolicy sizePolicy() const;
@@ -128,11 +114,14 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     void setLayoutAlignmentHint( Qt::Alignment );
     Qt::Alignment layoutAlignmentHint() const;
 
-    void setLayoutHint( LayoutHint, bool on = true );
-    bool testLayoutHint( LayoutHint ) const;
+    void setPlacementPolicy( QskPlacementPolicy );
+    void setPlacementPolicy( QskPlacementPolicy::Policy, QskPlacementPolicy::Policy );
+    void setPlacementPolicy( Qsk::Visibilities, QskPlacementPolicy::Policy );
 
-    void setLayoutHints( LayoutHints );
-    LayoutHints layoutHints() const;
+    QskPlacementPolicy placementPolicy() const;
+    QskPlacementPolicy::Policy placementPolicy( Qsk::Visibility ) const;
+
+    QskPlacementPolicy::Policy effectivePlacementPolicy() const;
 
     bool isVisibleToLayout() const;
 

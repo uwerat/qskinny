@@ -229,6 +229,8 @@ QskMenuSkinlet::QskMenuSkinlet( QskSkin* skin )
     appendNodeRoles( { PanelRole } );
 }
 
+QskMenuSkinlet::~QskMenuSkinlet() = default;
+
 QRectF QskMenuSkinlet::cursorRect(
     const QskSkinnable* skinnable, const QRectF& contentsRect, int index ) const
 {
