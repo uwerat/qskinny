@@ -115,7 +115,7 @@ namespace
 
     static inline QRgb qskRgbBorder( const QskBoxBorderColors& borderColors )
     {
-        return qskRgbGradientStart( borderColors.gradient( Qsk::Left ) );
+        return qskRgbGradientStart( borderColors.left() );
     }
 }
 
@@ -1015,8 +1015,10 @@ static inline void qskRenderBorder( const QskBoxRenderer::Metrics& metrics,
     {
         const int stepCount = metrics.corner[ 0 ].stepCount;
 
-        auto left = c.gradient( Qsk::Left ), top = c.gradient( Qsk::Top ),
-            right = c.gradient( Qsk::Right ), bottom = c.gradient( Qsk::Bottom );
+        const auto& left = c.left();
+        const auto& top = c.top();
+        const auto& right = c.right();
+        const auto& bottom = c.bottom();
 
         qskRenderBorderLines( metrics, orientation, line,
             BorderMapGradient( stepCount, qskRgbGradientStart( top ), qskRgbGradientEnd( left ), left ),
@@ -1052,7 +1054,7 @@ static inline void qskRenderBoxRandom(
 
     if ( bc.isMonochrome() )
     {
-        const BorderMapSolid borderMap( qskRgbBorder( bc.gradient( Qsk::Left ) ) );
+        const BorderMapSolid borderMap( qskRgbBorder( bc.left() ) );
 
         if ( gradient.isMonochrome() )
         {
@@ -1071,8 +1073,10 @@ static inline void qskRenderBoxRandom(
     {
         const int n = metrics.corner[ 0 ].stepCount;
 
-        auto left = bc.gradient( Qsk::Left ), top = bc.gradient( Qsk::Top ),
-            right = bc.gradient( Qsk::Right ), bottom = bc.gradient( Qsk::Bottom );
+        const auto& left = bc.left();
+        const auto& top = bc.top();
+        const auto& right = bc.right();
+        const auto& bottom = bc.bottom();
 
         const BorderMapGradient tl( n, qskRgbGradientStart( top.startColor() ), qskRgbGradientEnd( left.endColor() ), left );
         const BorderMapGradient tr( n, qskRgbGradientStart( right ), qskRgbGradientEnd( top ), top );
@@ -1369,10 +1373,10 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
         borderLineCount = 4 * ( stepCount + 1 ) + 1;
 
         const int additionalLines =
-            additionalGradientStops( borderColors.gradient( Qsk::Left ) )
-            + additionalGradientStops( borderColors.gradient( Qsk::Top ) )
-            + additionalGradientStops( borderColors.gradient( Qsk::Right ) )
-            + additionalGradientStops( borderColors.gradient( Qsk::Bottom ) );
+            additionalGradientStops( borderColors.left() )
+            + additionalGradientStops( borderColors.top() )
+            + additionalGradientStops( borderColors.right() )
+            + additionalGradientStops( borderColors.bottom() );
 
         borderLineCount += additionalLines;
     }
