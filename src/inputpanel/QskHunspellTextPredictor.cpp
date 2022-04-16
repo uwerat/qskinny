@@ -140,16 +140,9 @@ QPair< QString, QString > QskHunspellTextPredictor::affAndDicFile(
 
 void QskHunspellTextPredictor::loadDictionaries()
 {
-    const auto splitBehavior =
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 14, 0 )
-        Qt::SkipEmptyParts;
-#else
-        QString::SkipEmptyParts;
-#endif
-
     const auto userPaths = QString::fromUtf8( qgetenv( "QSK_HUNSPELL_PATH" ) );
 
-    auto paths = userPaths.split( QDir::listSeparator(), splitBehavior );
+    auto paths = userPaths.split( QDir::listSeparator(), Qt::SkipEmptyParts );
 
 #if !defined( Q_OS_WIN32 )
     paths += QStringLiteral( "/usr/share/hunspell" );

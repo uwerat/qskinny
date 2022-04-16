@@ -76,11 +76,7 @@ QPointF qskHoverPosition( const QHoverEvent* event )
 
 QPointF qskWheelPosition( const QWheelEvent* event )
 {
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 14, 0 )
     return event->position();
-#else
-    return event->posF();
-#endif
 }
 
 #endif
