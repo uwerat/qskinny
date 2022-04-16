@@ -47,7 +47,8 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
         WRITE setBackground RESET resetBackground NOTIFY backgroundChanged )
 
     Q_PROPERTY( QskSizePolicy sizePolicy READ sizePolicy WRITE setSizePolicy )
-    Q_PROPERTY( QskPlacementPolicy placementPolicy READ placementPolicy WRITE setPlacementPolicy )
+    Q_PROPERTY( QskPlacementPolicy placementPolicy READ placementPolicy
+        WRITE setPlacementPolicy RESET resetPlacementPolicy )
 
     Q_PROPERTY( QSizeF minimumSize READ minimumSize WRITE setMinimumSize )
     Q_PROPERTY( QSizeF maximumSize READ maximumSize WRITE setMaximumSize )
@@ -117,6 +118,7 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     void setPlacementPolicy( QskPlacementPolicy );
     void setPlacementPolicy( QskPlacementPolicy::Policy, QskPlacementPolicy::Policy );
     void setPlacementPolicy( Qsk::Visibilities, QskPlacementPolicy::Policy );
+    void resetPlacementPolicy();
 
     QskPlacementPolicy placementPolicy() const;
     QskPlacementPolicy::Policy placementPolicy( Qsk::Visibility ) const;
