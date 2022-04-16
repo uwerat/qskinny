@@ -138,3 +138,11 @@ void Skinny::changeFonts( int increment )
     
     Q_EMIT qskSetup->skinChanged( skin );
 }
+
+void Skinny::init()
+{
+    /*
+        a dummy call - has no reason beside, that applications can load
+        the lib and all initializaion take place
+     */
+}

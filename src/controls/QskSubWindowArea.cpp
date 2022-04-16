@@ -126,8 +126,8 @@ void QskSubWindowArea::itemChange(
         {
             // the child is not fully constructed
             // and we have to delay checking for sub windows
-            QTimer::singleShot( 0, this,
-                [ this ] { qskUpdateEventFilter( this ); } );
+            QMetaObject::invokeMethod( this,
+                [ this ] { qskUpdateEventFilter( this ); }, Qt::QueuedConnection );
 
             break;
         }

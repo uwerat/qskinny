@@ -39,6 +39,16 @@ namespace Qsk
         Sunken
     };
     Q_ENUM_NS( TextStyle )
+
+    enum Visibility
+    {
+        Visible = 1 << 0,
+        Hidden  = 1 << 1
+    };
+    Q_ENUM_NS( Visibility )
+
+    Q_DECLARE_FLAGS( Visibilities, Visibility )
+    Q_DECLARE_OPERATORS_FOR_FLAGS( Visibilities )
 }
 
 #endif

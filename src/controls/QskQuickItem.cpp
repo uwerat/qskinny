@@ -323,21 +323,6 @@ QRectF QskQuickItem::geometry() const
     return QRectF( d->x, d->y, d->width, d->height );
 }
 
-void QskQuickItem::setTransparentForPositioner( bool on )
-{
-    Q_D( QQuickItem );
-    if ( on != d->isTransparentForPositioner() )
-    {
-        d->setTransparentForPositioner( on );
-        Q_EMIT itemFlagsChanged();
-    }
-}
-
-bool QskQuickItem::isTransparentForPositioner() const
-{
-    return d_func()->isTransparentForPositioner();
-}
-
 void QskQuickItem::setTabFence( bool on )
 {
     Q_D( QQuickItem );

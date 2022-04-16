@@ -183,13 +183,12 @@ static QPointer< QskInputContext > qskInputContext;
 
 static void qskSendToPlatformContext( QEvent::Type type )
 {
-    const auto platformInputContext =
-        QGuiApplicationPrivate::platformIntegration()->inputContext();
+    const auto integration = QGuiApplicationPrivate::platformIntegration();
 
-    if ( platformInputContext )
+    if ( const auto inputContext = integration->inputContext() )
     {
         QEvent event( type );
-        QCoreApplication::sendEvent( platformInputContext, &event );
+        QCoreApplication::sendEvent( inputContext, &event );
     }
 }
 
@@ -208,9 +207,12 @@ void QskInputContext::setInstance( QskInputContext* inputContext )
         qskInputContext = inputContext;
 
         if ( oldContext && oldContext->parent() == nullptr )
+        {
             delete oldContext;
 
-        qskSendToPlatformContext( QEvent::PlatformPanel );
+            // still needed with > Qt 5.15 ?
+            qskSendToPlatformContext( QEvent::PlatformPanel );
+        }
     }
 }
 
@@ -249,7 +251,7 @@ class QskInputContext::PrivateData
         auto popup = new QskPopup();
 
         popup->setAutoLayoutChildren( true );
-        popup->setTransparentForPositioner( false );
+        popup->setPlacementPolicy( QskPlacementPolicy() );
         popup->setMargins( 5 );
         popup->setModal( true );
 

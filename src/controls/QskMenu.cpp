@@ -6,6 +6,7 @@
 #include <QskColorFilter.h>
 #include <QskSkinlet.h>
 #include <QskEvent.h>
+#include <QskPlatform.h>
 
 #include <qvector.h>
 #include <qvariant.h>
@@ -85,7 +86,7 @@ QskMenu::~QskMenu()
 // has no effect as we do not offer submenus yet. TODO ...
 bool QskMenu::isCascading() const
 {
-    return flagHint( QskMenu::Panel | QskAspect::Style );
+    return flagHint( QskMenu::Panel | QskAspect::Style, qskMaybeDesktopPlatform() );
 }
 
 void QskMenu::setCascading( bool on )

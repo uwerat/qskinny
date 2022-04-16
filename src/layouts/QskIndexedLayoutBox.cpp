@@ -53,7 +53,7 @@ void QskIndexedLayoutBox::itemChange(
         {
             if ( m_data->autoAddChildren && !m_data->blockChildAddedRemoved )
             {
-                if ( !qskIsTransparentForPositioner( value.item ) )
+                if ( qskPlacementPolicy( value.item ).isEffective() )
                     autoAddItem( value.item );
             }
 

@@ -359,7 +359,7 @@ void QskLinearLayoutEngine::layoutItems()
 
         if ( auto item = element.item() )
         {
-            if ( requiresAdjustment( item ) )
+            if ( qskIsAdjustableByLayout( item ) )
             {
                 const QRect grid( col, row, 1, 1 );
                 layoutItem( item, grid );

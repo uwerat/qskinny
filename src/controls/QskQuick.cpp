@@ -16,13 +16,6 @@ QSK_QT_PRIVATE_END
 #include <qpa/qplatforminputcontext.h>
 #include <qpa/qplatformintegration.h>
 
-QSizeF qskItemSize( const QQuickItem* item )
-{
-    // obsolete for Qt >= 5.10
-    auto d = QQuickItemPrivate::get( item );
-    return QSizeF( d->width, d->height );
-}
-
 QRectF qskItemRect( const QQuickItem* item )
 {
     auto d = QQuickItemPrivate::get( item );
@@ -41,7 +34,7 @@ void qskSetItemGeometry( QQuickItem* item, const QRectF& rect )
     {
         control->setGeometry( rect );
     }
-    else
+    else if ( item )
     {
         item->setPosition( rect.topLeft() );
         item->setSize( rect.size() );
@@ -63,10 +56,10 @@ bool qskIsAncestorOf( const QQuickItem* item, const QQuickItem* child )
 
 bool qskIsVisibleToParent( const QQuickItem* item )
 {
-    if ( item )
-        return QQuickItemPrivate::get( item )->explicitVisible;
+    if ( item == nullptr )
+        return false;
 
-    return false;
+    return QQuickItemPrivate::get( item )->explicitVisible;
 }
 
 bool qskIsVisibleTo( const QQuickItem* item, const QQuickItem* ancestor )
@@ -124,30 +117,14 @@ bool qskIsShortcutScope( const QQuickItem* item )
     return item->isFocusScope() && QQuickItemPrivate::get( item )->isTabFence;
 }
 
-void qskSetTransparentForPositioner( QQuickItem* item, bool on )
-{
-    if ( item )
-        QQuickItemPrivate::get( item )->setTransparentForPositioner( on );
-}
-
-bool qskIsTransparentForPositioner( const QQuickItem* item )
-{
-    if ( item == nullptr )
-        return true;
-
-    return QQuickItemPrivate::get( item )->isTransparentForPositioner();
-}
-
 bool qskIsVisibleToLayout( const QQuickItem* item )
 {
-    if ( item )
-    {
-        const auto d = QQuickItemPrivate::get( item );
-        return !d->isTransparentForPositioner()
-            && ( d->explicitVisible || qskRetainSizeWhenHidden( item ) );
-    }
+    return qskEffectivePlacementPolicy( item ) != QskPlacementPolicy::Ignore;
+}
 
-    return false;
+bool qskIsAdjustableByLayout( const QQuickItem* item )
+{
+    return qskEffectivePlacementPolicy( item ) == QskPlacementPolicy::Adjust;
 }
 
 QskSizePolicy qskSizePolicy( const QQuickItem* item )
@@ -180,19 +157,65 @@ Qt::Alignment qskLayoutAlignmentHint( const QQuickItem* item )
     return Qt::Alignment();
 }
 
-bool qskRetainSizeWhenHidden( const QQuickItem* item )
+void qskSetPlacementPolicy( QQuickItem* item, const QskPlacementPolicy policy )
 {
+    if ( item == nullptr )
+        return;
+
     if ( auto control = qskControlCast( item ) )
-        return control->layoutHints() & QskControl::RetainSizeWhenHidden;
-
-    if ( item )
     {
-        const QVariant v = item->property( "retainSizeWhenHidden" );
-        if ( v.canConvert< bool >() )
-            return v.value< bool >();
+        control->setPlacementPolicy( policy );
     }
+    else
+    {
+        item->setProperty( "layoutPolicy", QVariant::fromValue( policy ) );
 
-    return false;
+        auto d = QQuickItemPrivate::get( item );
+
+        const bool ignore = policy.visiblePolicy() == QskPlacementPolicy::Ignore;
+        if ( ignore != d->isTransparentForPositioner() )
+            d->setTransparentForPositioner( ignore );
+
+        // sending a LayoutRequest ?
+    }
+}
+
+QskPlacementPolicy qskPlacementPolicy( const QQuickItem* item )
+{
+    if ( item == nullptr )
+        return QskPlacementPolicy( QskPlacementPolicy::Ignore, QskPlacementPolicy::Ignore );
+
+    if ( auto control = qskControlCast( item ) )
+    {
+        return control->placementPolicy();
+    }
+    else
+    {
+        QskPlacementPolicy policy;
+
+        const auto v = item->property( "layoutPolicy" );
+        if ( v.canConvert< QskPlacementPolicy >() )
+            policy = v.value< QskPlacementPolicy >();
+
+        auto d = QQuickItemPrivate::get( item );
+        if ( d->isTransparentForPositioner() )
+            policy.setVisiblePolicy( QskPlacementPolicy::Ignore );
+
+        return policy;
+    }
+}
+
+QskPlacementPolicy::Policy qskEffectivePlacementPolicy( const QQuickItem* item )
+{
+    if ( item == nullptr )
+        return QskPlacementPolicy::Ignore;
+
+    const auto policy = qskPlacementPolicy( item );
+
+    if ( qskIsVisibleToParent( item ) )
+        return policy.visiblePolicy();
+    else
+        return policy.hiddenPolicy();
 }
 
 QQuickItem* qskNearestFocusScope( const QQuickItem* item )
