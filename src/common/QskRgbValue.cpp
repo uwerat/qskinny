@@ -60,7 +60,6 @@ static inline QColor qskInterpolatedColor(
 
             return QColor::fromHsl( h, s, l, a );
         }
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 14, 0 )
         case QColor::ExtendedRgb:
         {
             const qreal r = valueF( c1.redF(), c2.redF(), ratio );
@@ -70,7 +69,6 @@ static inline QColor qskInterpolatedColor(
 
             return QColor::fromRgbF( r, g, b, a );
         }
-#endif
         case QColor::Invalid:
             break;
     }
