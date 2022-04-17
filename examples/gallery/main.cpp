@@ -32,7 +32,7 @@ namespace
             : QskTabView( parent )
         {
             setMargins( 10 );
-            setTabPosition( Qsk::Left );
+            setTabBarEdge( Qt::LeftEdge );
             setAutoFitTabs( true );
         }
 

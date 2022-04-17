@@ -16,9 +16,9 @@
 
 QSK_SUBCONTROL( QskTabBar, Panel )
 
-static inline Qt::Orientation qskOrientation( int position )
+static inline Qt::Orientation qskOrientation( Qt::Edge edge )
 {
-    if ( ( position == Qsk::Top ) || ( position == Qsk::Bottom ) )
+    if ( ( edge == Qt::TopEdge ) || ( edge == Qt::BottomEdge ) )
         return Qt::Horizontal;
     else
         return Qt::Vertical;
@@ -250,8 +250,8 @@ namespace
 class QskTabBar::PrivateData
 {
   public:
-    PrivateData( Qsk::Position position )
-        : position( position )
+    PrivateData( Qt::Edge edge )
+        : edge( edge )
     {
     }
 
@@ -274,21 +274,21 @@ class QskTabBar::PrivateData
     int currentIndex = -1;
 
     QskTextOptions textOptions;
-    uint position : 2;
+    Qt::Edge edge;
 };
 
 QskTabBar::QskTabBar( QQuickItem* parent )
-    : QskTabBar( Qsk::Top, parent )
+    : QskTabBar( Qt::TopEdge, parent )
 {
 }
 
-QskTabBar::QskTabBar( Qsk::Position position, QQuickItem* parent )
+QskTabBar::QskTabBar( Qt::Edge edge, QQuickItem* parent )
     : Inherited( parent )
-    , m_data( new PrivateData( position ) )
+    , m_data( new PrivateData( edge ) )
 {
     setAutoLayoutChildren( true );
 
-    const auto orientation = qskOrientation( position );
+    const auto orientation = qskOrientation( edge );
 
     if ( orientation == Qt::Horizontal )
         initSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Fixed );
@@ -310,14 +310,14 @@ QskTabBar::~QskTabBar()
 {
 }
 
-void QskTabBar::setTabPosition( Qsk::Position position )
+void QskTabBar::setEdge( Qt::Edge edge )
 {
-    if ( position == m_data->position )
+    if ( edge == m_data->edge )
         return;
 
-    m_data->position = position;
+    m_data->edge = edge;
 
-    const auto orientation = qskOrientation( position );
+    const auto orientation = qskOrientation( edge );
 
     if ( orientation != m_data->buttonBox->orientation() )
     {
@@ -334,17 +334,17 @@ void QskTabBar::setTabPosition( Qsk::Position position )
     for ( int i = 0; i < count(); i++ )
         buttonAt( i )->update();
 
-    Q_EMIT tabPositionChanged( position );
+    Q_EMIT edgeChanged( edge );
 }
 
-Qsk::Position QskTabBar::tabPosition() const
+Qt::Edge QskTabBar::edge() const
 {
-    return static_cast< Qsk::Position >( m_data->position );
+    return m_data->edge;
 }
 
 Qt::Orientation QskTabBar::orientation() const
 {
-    return qskOrientation( m_data->position );
+    return qskOrientation( m_data->edge );
 }
 
 void QskTabBar::setAutoScrollFocusedButton( bool on )
@@ -363,7 +363,7 @@ bool QskTabBar::autoScrollFocusButton() const
 
 void QskTabBar::setAutoFitTabs( bool on )
 {
-    const auto orientation = qskOrientation( m_data->position );
+    const auto orientation = qskOrientation( m_data->edge );
     int policy = m_data->buttonBox->sizePolicy( orientation );
 
     if ( ( policy & QskSizePolicy::GrowFlag ) != on )
@@ -682,18 +682,18 @@ QskAspect::Subcontrol QskTabBar::substitutedSubcontrol(
 
 QskAspect::Placement QskTabBar::effectivePlacement() const
 {
-    switch ( m_data->position )
+    switch ( m_data->edge )
     {
-        case Qsk::Left:
+        case Qt::LeftEdge:
             return QskAspect::Left;
 
-        case Qsk::Right:
+        case Qt::RightEdge:
             return QskAspect::Right;
 
-        case Qsk::Top:
+        case Qt::TopEdge:
             return QskAspect::Top;
 
-        case Qsk::Bottom:
+        case Qt::BottomEdge:
             return QskAspect::Bottom;
     }
 
