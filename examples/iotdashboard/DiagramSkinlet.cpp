@@ -92,10 +92,11 @@ QSGNode* DiagramSkinlet::updateChartNode( const Diagram* diagram, QSGNode* node 
     }
 
     using Q = Diagram;
+
     const QRectF rect = diagram->subControlRect( Q::Chart );
     const qreal yMax = diagram->yMax();
-    const Qsk::Position position = diagram->chartPosition();
-    QVector< Diagram::Type > types = { Diagram::Line, Diagram::Area };
+
+    const QVector< Diagram::Type > types = { Diagram::Line, Diagram::Area };
 
     for( int i = 0; i < diagram->dataPoints().size(); ++i )
     {
@@ -137,7 +138,7 @@ QSGNode* DiagramSkinlet::updateChartNode( const Diagram* diagram, QSGNode* node 
                 const QColor color = ( types.at( j ) == Diagram::Line ) ? diagram->color( lineSubcontrol )
                                      : diagram->color( areaSubcontrol );
 
-                dataPointNode->update( rect, nodeType, color, dataPoints, yMax, position, lineWidth );
+                dataPointNode->update( rect, nodeType, color, dataPoints, yMax, false, lineWidth );
                 nodeIndex++;
             }
         }
