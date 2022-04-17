@@ -16,10 +16,8 @@ DiagramDataNode::DiagramDataNode()
 
 void DiagramDataNode::update( const QRectF& rect, Type type,
     const QColor& color, const QVector< QPointF >& dataPoints,
-    const qreal yMax, Qsk::Position position, int lineWidth )
+    const qreal yMax, bool inverted, int lineWidth )
 {
-    Q_UNUSED( rect );
-
     if( color != m_color )
     {
         m_material.setColor( color );
@@ -27,8 +25,8 @@ void DiagramDataNode::update( const QRectF& rect, Type type,
         markDirty( QSGNode::DirtyMaterial );
     }
 
-    if( m_rect == rect && m_dataPoints == dataPoints && m_yMax == yMax && m_position == position
-        && m_type == type && m_lineWidth == lineWidth )
+    if( m_rect == rect && m_dataPoints == dataPoints && m_yMax == yMax
+        && m_inverted == inverted && m_type == type && m_lineWidth == lineWidth )
     {
         return;
     }
@@ -44,7 +42,7 @@ void DiagramDataNode::update( const QRectF& rect, Type type,
     m_rect = rect;
     m_dataPoints = dataPoints;
     m_yMax = yMax;
-    m_position = position;
+    m_inverted = inverted;
     m_type = type;
 
     const auto drawingMode =
@@ -76,13 +74,13 @@ void DiagramDataNode::update( const QRectF& rect, Type type,
     {
         const qreal x = ( ( m_dataPoints.at( i ).x() - xMin ) / ( xMax - xMin ) ) * rect.width();
         const qreal fraction = ( m_dataPoints.at( i ).y() / yMax ) * rect.height();
-        const qreal y = ( position == Qsk::Top ) ? fraction : rect.height() - fraction;
+        const qreal y = inverted ? fraction : rect.height() - fraction;
 
         if( m_type == Line && i < m_dataPoints.size() - 1 )
         {
             const qreal x2 = ( ( m_dataPoints.at( i + 1 ).x() - xMin ) / ( xMax - xMin ) ) * rect.width();
             const qreal fraction2 = ( m_dataPoints.at( i + 1 ).y() / yMax ) * rect.height();
-            const qreal y2 = ( position == Qsk::Top ) ? fraction2 : rect.height() - fraction2;
+            const qreal y2 = inverted ? fraction2 : rect.height() - fraction2;
             vertexData[2 * i].x = x;
             vertexData[2 * i].y = y;
 
@@ -91,7 +89,7 @@ void DiagramDataNode::update( const QRectF& rect, Type type,
         }
         else if( m_type == Area )
         {
-            const qreal y0 = ( position == Qsk::Top ) ? 0 : rect.height();
+            const qreal y0 = inverted ? 0 : rect.height();
             vertexData[2 * i].x = x;
             vertexData[2 * i].y = y;
 

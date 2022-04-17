@@ -5,8 +5,6 @@
 
 #pragma once
 
-#include <QskNamespace.h>
-
 #include <QPolygonF>
 #include <QSGFlatColorMaterial>
 #include <QSGGeometryNode>
@@ -23,7 +21,7 @@ class DiagramDataNode : public QSGGeometryNode
     DiagramDataNode();
 
     void update( const QRectF&, Type, const QColor&,
-        const QVector< QPointF >&, const qreal yMax, Qsk::Position, int lineWidth );
+        const QVector< QPointF >&, const qreal yMax, bool inverted, int lineWidth );
 
   private:
     QSGFlatColorMaterial m_material;
@@ -34,6 +32,6 @@ class DiagramDataNode : public QSGGeometryNode
     QColor m_color;
     QVector< QPointF > m_dataPoints;
     qreal m_yMax;
-    Qsk::Position m_position;
+    bool m_inverted;
     int m_lineWidth;
 };

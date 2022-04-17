@@ -20,7 +20,6 @@ class Diagram::PrivateData
     QVector< QVector< QPointF > > dataPoints;
     int xGridLines = -1;
     qreal yMax = -1;
-    Qsk::Position position = Qsk::Bottom;
     QVector< Types > types;
 };
 
@@ -68,16 +67,6 @@ int Diagram::xGridLines() const
 void Diagram::setXGridLines( int lines )
 {
     m_data->xGridLines = lines;
-}
-
-Qsk::Position Diagram::chartPosition() const
-{
-    return m_data->position;
-}
-
-void Diagram::setChartPosition( Qsk::Position position )
-{
-    m_data->position = position;
 }
 
 #include "moc_Diagram.cpp"
