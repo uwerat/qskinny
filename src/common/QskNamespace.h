@@ -22,15 +22,6 @@ namespace Qsk
     };
     Q_ENUM_NS( Direction )
 
-    enum Position
-    {
-        Top,
-        Left,
-        Right,
-        Bottom
-    };
-    Q_ENUM_NS( Position )
-
     enum TextStyle
     {
         Normal,
