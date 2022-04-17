@@ -26,40 +26,20 @@ static void qskRegisterBoxBorderColors()
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterBoxBorderColors )
 
-static inline void qskSetGradients( const QskGradient& gradient, QskGradient* gradients )
-{
-    gradients[ 0 ] = gradients[ 1 ] = gradients[ 2 ] = gradients[ 3 ] = gradient;
-}
-
-static inline void qskSetGradients(
-    const QskGradient& left, const QskGradient& top,
-    const QskGradient& right, const QskGradient& bottom, QskGradient* gradients )
-{
-    gradients[ Qsk::Left ] = left;
-    gradients[ Qsk::Top ] = top;
-    gradients[ Qsk::Right ] = right;
-    gradients[ Qsk::Bottom ] = bottom;
-}
-
 QskBoxBorderColors::QskBoxBorderColors()
 {
 }
 
 QskBoxBorderColors::QskBoxBorderColors(
-    const QskGradient& left, const QskGradient& top,
-    const QskGradient& right, const QskGradient& bottom )
+        const QskGradient& left, const QskGradient& top,
+        const QskGradient& right, const QskGradient& bottom )
+    : m_gradients { top, left, right, bottom }
 {
-    qskSetGradients( left, top, right, bottom, m_gradients );
-}
-
-QskBoxBorderColors::QskBoxBorderColors( const QColor& color )
-{
-    qskSetGradients( color, m_gradients );
 }
 
 QskBoxBorderColors::QskBoxBorderColors( const QskGradient& gradient )
+    : m_gradients { gradient, gradient, gradient, gradient }
 {
-    qskSetGradients( gradient, m_gradients );
 }
 
 QskBoxBorderColors::~QskBoxBorderColors()
@@ -85,53 +65,51 @@ void QskBoxBorderColors::setAlpha( int alpha )
 
 void QskBoxBorderColors::setGradients( const QskGradient& gradient )
 {
-    qskSetGradients( gradient, m_gradients );
+    m_gradients[ 0 ] = m_gradients[ 1 ] = m_gradients[ 2 ] = m_gradients[ 3 ] = gradient;
 }
 
 void QskBoxBorderColors::setGradients( const QskGradient& left, const QskGradient& top,
     const QskGradient& right, const QskGradient& bottom )
 {
-    qskSetGradients( left, top, right, bottom, m_gradients );
-}
-
-void QskBoxBorderColors::setGradient( Qsk::Position position, const QskGradient& gradient )
-{
-    m_gradients[ position ] = gradient;
+    m_gradients[ Top ] = top;
+    m_gradients[ Left ] = left;
+    m_gradients[ Right ] = right;
+    m_gradients[ Bottom ] = bottom;
 }
 
 void QskBoxBorderColors::setGradientAt( Qt::Edges edges, const QskGradient& gradient )
 {
     if ( edges & Qt::TopEdge )
-        m_gradients[ Qsk::Top ] = gradient;
+        m_gradients[ Top ] = gradient;
 
     if ( edges & Qt::LeftEdge )
-        m_gradients[ Qsk::Left ] = gradient;
+        m_gradients[ Left ] = gradient;
 
     if ( edges & Qt::RightEdge )
-        m_gradients[ Qsk::Right ] = gradient;
+        m_gradients[ Right ] = gradient;
 
     if ( edges & Qt::BottomEdge )
-        m_gradients[ Qsk::Bottom ] = gradient;
+        m_gradients[ Bottom ] = gradient;
 }
 
 void QskBoxBorderColors::setLeft( const QskGradient& gradient )
 {
-    m_gradients[ Qsk::Left ] = gradient;
+    m_gradients[ Left ] = gradient;
 }
 
 void QskBoxBorderColors::setTop( const QskGradient& gradient )
 {
-    m_gradients[ Qsk::Top ] = gradient;
+    m_gradients[ Top ] = gradient;
 }
 
 void QskBoxBorderColors::setRight( const QskGradient& gradient )
 {
-    m_gradients[ Qsk::Right ] = gradient;
+    m_gradients[ Right ] = gradient;
 }
 
 void QskBoxBorderColors::setBottom( const QskGradient& gradient )
 {
-    m_gradients[ Qsk::Bottom ] = gradient;
+    m_gradients[ Bottom ] = gradient;
 }
 
 const QskGradient& QskBoxBorderColors::gradientAt( Qt::Edge edge ) const
@@ -139,16 +117,16 @@ const QskGradient& QskBoxBorderColors::gradientAt( Qt::Edge edge ) const
     switch ( edge )
     {
         case Qt::TopEdge:
-            return m_gradients[ Qsk::Top ];
+            return m_gradients[ Top ];
 
         case Qt::LeftEdge:
-            return m_gradients[ Qsk::Left ];
+            return m_gradients[ Left ];
 
         case Qt::RightEdge:
-            return m_gradients[ Qsk::Right ];
+            return m_gradients[ Right ];
 
         case Qt::BottomEdge:
-            return m_gradients[ Qsk::Bottom ];
+            return m_gradients[ Bottom ];
     }
 
     static QskGradient noGradient;
@@ -254,20 +232,22 @@ QDebug operator<<( QDebug debug, const QskBoxBorderColors& colors )
 
         if ( colors.isMonochrome() )
         {
-            const auto& gradient = colors.gradient( Qsk::Left );
+            const auto& gradient = colors.gradientAt( Qt::LeftEdge );
             QskRgb::debugColor( debug, gradient.startColor() );
         }
         else
         {
-            const char prompts[] = { 'L', 'T', 'R', 'B' };
+            using namespace Qt;
 
-            for ( int i = 0; i <= Qsk::Bottom; i++ )
+            const char prompts[] = { 'L', 'T', 'R', 'B' };
+            const Edge edges[] = { LeftEdge, TopEdge, RightEdge, BottomEdge };
+
+            for ( int i = 0; i <= 4; i++ )
             {
                 if ( i != 0 )
                     debug << ", ";
 
-                const auto& gradient = colors.gradient(
-                    static_cast< Qsk::Position >( i ) );
+                const auto& gradient = colors.gradientAt( edges[i] );
 
                 debug << prompts[ i ] << ": ";
 
