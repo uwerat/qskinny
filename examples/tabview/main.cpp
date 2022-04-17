@@ -110,13 +110,14 @@ class TabView : public QskTabView
 
     void rotate()
     {
-        const Qsk::Position pos[] = { Qsk::Top, Qsk::Right, Qsk::Bottom, Qsk::Left };
+        using namespace Qt;
+        const Edge edges[] = { TopEdge, RightEdge, BottomEdge, LeftEdge };
 
         for ( int i = 0; i < 4; i++ )
         {
-            if ( tabPosition() == pos[i] )
+            if ( tabBarEdge() == edges[i] )
             {
-                setTabPosition( pos[ ( i + 1 ) % 4 ] );
+                setTabBarEdge( edges[ ( i + 1 ) % 4 ] );
                 break;
             }
         }

@@ -16,8 +16,7 @@ class QSK_EXPORT QskTabBar : public QskBox
 {
     Q_OBJECT
 
-    Q_PROPERTY( Qsk::Position tabPosition READ tabPosition
-        WRITE setTabPosition NOTIFY tabPositionChanged FINAL )
+    Q_PROPERTY( Qt::Edge edge READ edge WRITE setEdge NOTIFY edgeChanged FINAL )
 
     Q_PROPERTY( Qt::Orientation orientation READ orientation )
 
@@ -41,12 +40,12 @@ class QSK_EXPORT QskTabBar : public QskBox
     QSK_SUBCONTROLS( Panel )
 
     QskTabBar( QQuickItem* parent = nullptr );
-    QskTabBar( Qsk::Position, QQuickItem* parent = nullptr );
+    QskTabBar( Qt::Edge, QQuickItem* parent = nullptr );
 
     ~QskTabBar() override;
 
-    void setTabPosition( Qsk::Position );
-    Qsk::Position tabPosition() const;
+    void setEdge( Qt::Edge );
+    Qt::Edge edge() const;
 
     Qt::Orientation orientation() const;
 
@@ -98,7 +97,7 @@ class QSK_EXPORT QskTabBar : public QskBox
     void buttonClicked( int index );
     void countChanged( int );
     void textOptionsChanged( const QskTextOptions& );
-    void tabPositionChanged( Qsk::Position );
+    void edgeChanged( Qt::Edge );
     void autoScrollFocusedButtonChanged( bool );
     void autoFitTabsChanged( bool );
 

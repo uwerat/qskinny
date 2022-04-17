@@ -75,7 +75,8 @@ class GraphicLabel : public QskGraphicLabel
 
 MainWindow::MainWindow()
 {
-    m_tabView = new QskTabView( Qsk::Left );
+    m_tabView = new QskTabView();
+    m_tabView->setTabBarEdge( Qt::LeftEdge );
 
     const QString resourceDir( ":/qvg" );
     const QStringList icons = QDir( resourceDir ).entryList();

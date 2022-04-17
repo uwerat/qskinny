@@ -51,27 +51,27 @@ QSGNode* QskTabViewSkinlet::updateSubNode(
 QRectF QskTabViewSkinlet::pageRect(
     const QskTabView* tabView, const QRectF& rect ) const
 {
-    const QRectF barRect = subControlRect( tabView, rect, QskTabView::TabBar );
+    const auto barRect = subControlRect( tabView, rect, QskTabView::TabBar );
 
 #if 1
-    QRectF r = tabView->layoutRect();
+    auto r = tabView->layoutRect();
 #endif
 
-    switch( tabView->tabPosition() )
+    switch( tabView->tabBarEdge() )
     {
-        case Qsk::Top:
+        case Qt::TopEdge:
             r.setTop( barRect.bottom() );
             break;
 
-        case Qsk::Bottom:
+        case Qt::BottomEdge:
             r.setBottom( barRect.top() );
             break;
 
-        case Qsk::Left:
+        case Qt::LeftEdge:
             r.setLeft( barRect.right() );
             break;
 
-        case Qsk::Right:
+        case Qt::RightEdge:
             r.setRight( barRect.left() );
             break;
     }
@@ -90,21 +90,21 @@ QRectF QskTabViewSkinlet::tabBarRect(
     QRectF r = tabView->layoutRect();
 #endif
 
-    switch( tabView->tabPosition() )
+    switch( tabView->tabBarEdge() )
     {
-        case Qsk::Top:
+        case Qt::TopEdge:
             r.setHeight( barSize.height() );
             break;
 
-        case Qsk::Bottom:
+        case Qt::BottomEdge:
             r.setTop( r.bottom() - barSize.height() );
             break;
 
-        case Qsk::Left:
+        case Qt::LeftEdge:
             r.setWidth( barSize.width() );
             break;
 
-        case Qsk::Right:
+        case Qt::RightEdge:
             r.setLeft( r.right() - barSize.width() );
             break;
     }
