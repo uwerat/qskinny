@@ -159,6 +159,7 @@ HEADERS += \
     controls/QskGraphicLabel.h \
     controls/QskGraphicLabelSkinlet.h \
     controls/QskHintAnimator.h \
+    controls/QskHirachicalGroup.h \
     controls/QskInputGrabber.h \
     controls/QskListView.h \
     controls/QskListViewSkinlet.h \
@@ -245,6 +246,7 @@ SOURCES += \
     controls/QskGraphicLabel.cpp \
     controls/QskGraphicLabelSkinlet.cpp \
     controls/QskHintAnimator.cpp \
+    controls/QskHirachicalGroup.cpp \
     controls/QskInputGrabber.cpp \
     controls/QskListView.cpp \
     controls/QskListViewSkinlet.cpp \
