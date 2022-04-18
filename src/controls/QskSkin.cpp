@@ -32,6 +32,9 @@ QSK_QT_PRIVATE_END
 #include "QskCheckBox.h"
 #include "QskCheckBoxSkinlet.h"
 
+#include "QskTristateCheckBox.h"
+#include "QskTristateCheckBoxSkinlet.h"
+
 #include "QskFocusIndicator.h"
 #include "QskFocusIndicatorSkinlet.h"
 
@@ -150,6 +153,7 @@ QskSkin::QskSkin( QObject* parent )
 
     declareSkinlet< QskBox, QskBoxSkinlet >();
     declareSkinlet< QskCheckBox, QskCheckBoxSkinlet >();
+    declareSkinlet< QskTristateCheckBox, QskTristateCheckBoxSkinlet >();
     declareSkinlet< QskFocusIndicator, QskFocusIndicatorSkinlet >();
     declareSkinlet< QskGraphicLabel, QskGraphicLabelSkinlet >();
     declareSkinlet< QskListView, QskListViewSkinlet >();

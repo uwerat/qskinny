@@ -145,6 +145,8 @@ HEADERS += \
     controls/QskBoxSkinlet.h \
     controls/QskCheckBox.h \
     controls/QskCheckBoxSkinlet.h \
+    controls/QskTristateCheckBox.h \
+    controls/QskTristateCheckBoxSkinlet.h \
     controls/QskControl.h \
     controls/QskControlPrivate.h \
     controls/QskDirtyItemFilter.h \
@@ -229,6 +231,8 @@ SOURCES += \
     controls/QskBoxSkinlet.cpp \
     controls/QskCheckBox.cpp \
     controls/QskCheckBoxSkinlet.cpp \
+    controls/QskTristateCheckBox.cpp \
+    controls/QskTristateCheckBoxSkinlet.cpp \
     controls/QskControl.cpp \
     controls/QskControlPrivate.cpp \
     controls/QskDirtyItemFilter.cpp \

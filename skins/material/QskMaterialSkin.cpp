@@ -9,6 +9,7 @@
 
 #include <QskBox.h>
 #include <QskCheckBox.h>
+#include <QskTristateCheckBox.h>
 #include <QskDialogButton.h>
 #include <QskDialogButtonBox.h>
 #include <QskFocusIndicator.h>
