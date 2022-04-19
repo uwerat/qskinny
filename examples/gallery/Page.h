@@ -10,5 +10,6 @@
 class Page : public QskLinearBox
 {
   public:
+    Page( QQuickItem* parent = nullptr );
     Page( Qt::Orientation, QQuickItem* parent = nullptr );
 };

@@ -3,17 +3,15 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
+#pragma once
+
 #include "Page.h"
 
-Page::Page( QQuickItem* parent )
-    : Page( Qt::Vertical )
+class TextInputPage : public Page
 {
-}
+  public:
+    TextInputPage( QQuickItem* = nullptr );
 
-Page::Page( Qt::Orientation orientation, QQuickItem* parent )
-    : QskLinearBox( orientation, parent )
-{
-    setMargins( 20 );
-    setPadding( 10 );
-    setSpacing( 10 );
-}
+  private:
+    void populate();
+};

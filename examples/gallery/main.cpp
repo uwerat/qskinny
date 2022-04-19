@@ -7,6 +7,7 @@
 #include "progressbar/ProgressBarPage.h"
 #include "slider/SliderPage.h"
 #include "button/ButtonPage.h"
+#include "textinput/TextInputPage.h"
 
 #include <SkinnyShortcut.h>
 #include <SkinnyShapeProvider.h>
@@ -20,6 +21,7 @@
 #include <QskPushButton.h>
 #include <QskMenu.h>
 #include <QskWindow.h>
+#include <QskDialog.h>
 
 #include <QGuiApplication>
 
@@ -132,6 +134,7 @@ namespace
             tabView->addTab( "Buttons", new ButtonPage() );
             tabView->addTab( "Sliders", new SliderPage() );
             tabView->addTab( "Progress\nBars", new ProgressBarPage() );
+            tabView->addTab( "Text\nInputs", new TextInputPage() );
 
             connect( header, &Header::enabledToggled,
                 tabView, &TabView::setTabsEnabled );
@@ -146,6 +149,9 @@ int main( int argc, char* argv[] )
 #endif
 
     Qsk::addGraphicProvider( "shapes", new SkinnyShapeProvider() );
+
+    // dialogs in faked windows -> QskSubWindow
+    QskDialog::instance()->setPolicy( QskDialog::EmbeddedBox );
 
     QGuiApplication app( argc, argv );
 
