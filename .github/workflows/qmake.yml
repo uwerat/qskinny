@@ -72,8 +72,10 @@ jobs:
 
     - uses: ilammy/msvc-dev-cmd@v1
 
-    - name: Qt version
-      run: qmake -v
+    - name: Windows and Qt version
+      run: |
+        systeminfo /fo csv | ConvertFrom-Csv | select OS*, System*, Hotfix* | Format-List
+        qmake -v
 
     - name: qmake
       run: qmake qskinny.pro
