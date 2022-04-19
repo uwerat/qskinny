@@ -7,17 +7,17 @@ on:
     branches: [ master ]
 
 jobs:
-  build-linux:
-    name: Linux build
+  build-linux-qt5-15:
+    name: Linux Qt 5.15 build
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Cache Qt
-      id: cache-qt
+      id: cache-qt-5-15
       uses: actions/cache@v1  # not v2!
       with:
-        path: ../Qt
-        key: ${{ runner.os }}-QtCache
+        path: ../Qt/5.15.2
+        key: ${{ runner.os }}-QtCache-Qt5
 
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
@@ -27,7 +27,7 @@ jobs:
         target: 'desktop'
         install-deps: 'true'
         modules: 'qtwebengine'
-        cached: ${{ steps.cache-qt.outputs.cache-hit }}
+        cached: ${{ steps.cache-qt-5-15.outputs.cache-hit }}
         setup-python: 'true'
         tools: ''
         set-env: 'true'
@@ -43,17 +43,53 @@ jobs:
     - name: make
       run: make -j$(nproc)
 
-  build-windows:
-    name: Windows build
+  build-linux-qt-lts:
+    name: Linux Qt 6.2 (LTS) build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Cache Qt
+      id: cache-qt-6-2
+      uses: actions/cache@v1  # not v2!
+      with:
+        path: ../Qt/6.2.4
+        key: ${{ runner.os }}-QtCache-Qt6-2
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: '6.2.4'
+        host: 'linux'
+        target: 'desktop'
+        install-deps: 'true'
+        modules: 'qtwebengine'
+        cached: ${{ steps.cache-qt-6-2.outputs.cache-hit }}
+        setup-python: 'true'
+        tools: ''
+        set-env: 'true'
+        tools-only: 'false'
+
+    - name: Ubuntu and Qt version
+      run: |
+        cat /etc/issue
+        echo number of processors: $(nproc)
+        qmake -v
+    - name: qmake
+      run: qmake qskinny.pro
+    - name: make
+      run: make -j$(nproc)
+
+  build-windows-qt5-15:
+    name: Windows Qt 5.15 build
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
     - name: Cache Qt
-      id: cache-qt
+      id: cache-qt-5-15
       uses: actions/cache@v1  # not v2!
       with:
-        path: ../Qt
-        key: ${{ runner.os }}-QtCache
+        path: ../Qt/5.15.2
+        key: ${{ runner.os }}-QtCache-Qt5
 
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
@@ -64,7 +100,7 @@ jobs:
         arch: 'win64_msvc2019_64'
         install-deps: 'true'
         modules: 'qtwebengine'
-        cached: ${{ steps.cache-qt.outputs.cache-hit }}
+        cached: ${{ steps.cache-qt-5-15.outputs.cache-hit }}
         setup-python: 'true'
         tools: ''
         set-env: 'true'
@@ -86,17 +122,60 @@ jobs:
         unzip jom.zip
         .\jom
 
-  build-mac:
-    name: MacOS build
+  build-windows-qt-lts:
+    name: Windows Qt 6.2 (LTS) build
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Cache Qt
+      id: cache-qt-6-2
+      uses: actions/cache@v1  # not v2!
+      with:
+        path: ../Qt/6.2.4
+        key: ${{ runner.os }}-QtCache-Qt6-2
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: '6.2.4'
+        host: 'windows'
+        target: 'desktop'
+        arch: 'win64_msvc2019_64'
+        install-deps: 'true'
+        modules: 'qtwebengine'
+        cached: ${{ steps.cache-qt-6-2.outputs.cache-hit }}
+        setup-python: 'true'
+        tools: ''
+        set-env: 'true'
+        tools-only: 'false'
+
+    - uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Windows and Qt version
+      run: |
+        systeminfo /fo csv | ConvertFrom-Csv | select OS*, System*, Hotfix* | Format-List
+        qmake -v
+
+    - name: qmake
+      run: qmake qskinny.pro
+
+    - name: jom
+      run: |
+        Invoke-WebRequest -Uri "https://download.qt.io/official_releases/jom/jom.zip" -OutFile jom.zip
+        unzip jom.zip
+        .\jom
+
+  build-mac-qt5-15:
+    name: MacOS Qt 5.15 build
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
     - name: Cache Qt
-      id: cache-qt
+      id: cache-qt-5-15
       uses: actions/cache@v1  # not v2!
       with:
-        path: ../Qt
-        key: ${{ runner.os }}-QtCache
+        path: ../Qt/5.15.2
+        key: ${{ runner.os }}-QtCache-Qt5
 
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
@@ -106,7 +185,43 @@ jobs:
         target: 'desktop'
         install-deps: 'true'
         modules: 'qtwebengine'
-        cached: ${{ steps.cache-qt.outputs.cache-hit }}
+        cached: ${{ steps.cache-qt-5-15.outputs.cache-hit }}
+        setup-python: 'true'
+        tools: ''
+        set-env: 'true'
+        tools-only: 'false'
+
+    - name: MacOS and Qt version
+      run: |
+        sw_vers
+        echo number of processors: $(sysctl -n hw.ncpu)
+        qmake -v
+    - name: qmake
+      run: qmake qskinny.pro
+    - name: make
+      run: make -j$(sysctl -n hw.ncpu)
+
+  build-mac-qt-lts:
+    name: MacOS Qt 6.2 (LTS) build
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Cache Qt
+      id: cache-qt-6-2
+      uses: actions/cache@v1  # not v2!
+      with:
+        path: ../Qt/6.2.4
+        key: ${{ runner.os }}-QtCache-Qt6-2
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: '6.2.4'
+        host: 'mac'
+        target: 'desktop'
+        install-deps: 'true'
+        modules: 'qtwebengine'
+        cached: ${{ steps.cache-qt-6-2.outputs.cache-hit }}
         setup-python: 'true'
         tools: ''
         set-env: 'true'
