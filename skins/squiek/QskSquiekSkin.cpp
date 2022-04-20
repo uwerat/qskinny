@@ -346,9 +346,9 @@ void Editor::setupMenu()
     setMetric( Q::Separator | A::Size, qskDpiScaled( 2 ) );
     setSeparator( Q::Separator | A::Horizontal );
 
-    setPadding( Q::Cell, QskMargins( 2, 10, 2, 10 ) );
-    setSpacing( Q::Cell, 5 );
-    setGradient( Q::Cell, Qt::transparent );
+    setPadding( Q::Segment, QskMargins( 2, 10, 2, 10 ) );
+    setSpacing( Q::Segment, 5 );
+    setGradient( Q::Segment, Qt::transparent );
 
     setGradient( Q::Cursor, m_pal.highlighted );
 
