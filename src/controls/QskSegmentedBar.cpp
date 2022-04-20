@@ -94,9 +94,9 @@ QskSegmentedBar::QskSegmentedBar( Qt::Orientation orientation, QQuickItem* paren
     , m_data( new PrivateData( orientation ) )
 {
     if( orientation == Qt::Horizontal )
-        initSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Fixed );
+        initSizePolicy( QskSizePolicy::MinimumExpanding, QskSizePolicy::Fixed );
     else
-        initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Preferred );
+        initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::MinimumExpanding );
 
     setAcceptedMouseButtons( Qt::LeftButton );
     setWheelEnabled( true );

@@ -331,7 +331,73 @@ void Editor::setupFocusIndicator()
 
 void Editor::setupSegmentedBar()
 {
-    // TODO
+    // copied from Squiek: we need something similar to a tab bar here. TODO ...
+    using A = QskAspect;
+    using Q = QskSegmentedBar;
+
+    {
+        // Panel
+
+        setPadding( Q::Panel, 0 );
+        setSpacing( Q::Panel, 5 );
+
+        setGradient( Q::Panel, m_pal.base );
+
+        setBoxBorderMetrics( Q::Panel, 2 );
+
+        const auto c = m_pal.base;
+
+        const QskBoxBorderColors borderColors(
+            c.darker( 170 ), c.darker( 170 ),
+            c.darker( 105 ), c.darker( 105 ) );
+
+        setBoxBorderColors( Q::Panel, borderColors );
+
+        const QSize strutSize( qskDpiScaled( 100 ), qskDpiScaled( 50 ) );
+
+        setStrutSize( Q::Panel | A::Horizontal, strutSize );
+        setStrutSize( Q::Panel | A::Vertical, strutSize.transposed() );
+    }
+
+    {
+        // Segment
+
+        setPadding( Q::Segment, QskMargins( 2, 5, 2, 5 ) );
+        setGradient( Q::Segment, QskGradient() );
+    }
+
+    {
+        // Cursor
+        setGradient( Q::Cursor, m_pal.highlighted );
+        setBoxBorderColors( Q::Cursor, QColor( m_pal.highlighted ).darker( 120 ) );
+
+        setGradient( Q::Cursor | Q::Disabled, QColor( Qt::gray ).darker( 110 ) );
+        setBoxBorderColors( Q::Cursor | Q::Disabled, Qt::gray );
+
+        setAnimation( Q::Cursor | A::Metric | A::Position, 100 );
+    }
+
+    for( auto subControl : { Q::Panel, Q::Cursor } )
+        setBoxShape( subControl, 3 );
+
+    {
+        // Text
+
+        setColor( Q::Text, m_pal.themeForeground );
+        setColor( Q::Text | Q::Selected, m_pal.highlightedText );
+
+        for( auto state : { A::NoState, Q::Selected } )
+            setColor( Q::Text | state | Q::Disabled, m_pal.darker200  );
+    }
+
+    {
+        // Graphic
+
+#if 0
+        setGraphicRole( Q::Graphic, ... );
+        setStrutSize( Q::Graphic, ... );
+#endif
+    }
 }
 
 void Editor::setupSeparator()

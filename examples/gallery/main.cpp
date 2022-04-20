@@ -8,6 +8,7 @@
 #include "slider/SliderPage.h"
 #include "button/ButtonPage.h"
 #include "textinput/TextInputPage.h"
+#include "selector/SelectorPage.h"
 
 #include <SkinnyShortcut.h>
 #include <SkinnyShapeProvider.h>
@@ -135,6 +136,7 @@ namespace
             tabView->addTab( "Sliders", new SliderPage() );
             tabView->addTab( "Progress\nBars", new ProgressBarPage() );
             tabView->addTab( "Text\nInputs", new TextInputPage() );
+            tabView->addTab( "Selectors", new SelectorPage() );
 
             connect( header, &Header::enabledToggled,
                 tabView, &TabView::setTabsEnabled );
