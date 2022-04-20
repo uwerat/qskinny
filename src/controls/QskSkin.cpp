@@ -44,8 +44,14 @@ QSK_QT_PRIVATE_END
 #include "QskMenu.h"
 #include "QskMenuSkinlet.h"
 
+#include "QskPageIndicator.h"
+#include "QskPageIndicatorSkinlet.h"
+
 #include "QskPopup.h"
 #include "QskPopupSkinlet.h"
+
+#include "QskProgressBar.h"
+#include "QskProgressBarSkinlet.h"
 
 #include "QskPushButton.h"
 #include "QskPushButtonSkinlet.h"
@@ -53,8 +59,23 @@ QSK_QT_PRIVATE_END
 #include "QskScrollView.h"
 #include "QskScrollViewSkinlet.h"
 
+#include "QskSegmentedBar.h"
+#include "QskSegmentedBarSkinlet.h"
+
+#include "QskSeparator.h"
+#include "QskSeparatorSkinlet.h"
+
 #include "QskSlider.h"
 #include "QskSliderSkinlet.h"
+
+#include "QskSubWindow.h"
+#include "QskSubWindowSkinlet.h"
+
+#include "QskSubWindowArea.h"
+#include "QskSubWindowAreaSkinlet.h"
+
+#include "QskSwitchButton.h"
+#include "QskSwitchButtonSkinlet.h"
 
 #include "QskTabButton.h"
 #include "QskTabButtonSkinlet.h"
@@ -67,24 +88,6 @@ QSK_QT_PRIVATE_END
 
 #include "QskTextInput.h"
 #include "QskTextInputSkinlet.h"
-
-#include "QskSeparator.h"
-#include "QskSeparatorSkinlet.h"
-
-#include "QskSubWindow.h"
-#include "QskSubWindowSkinlet.h"
-
-#include "QskSubWindowArea.h"
-#include "QskSubWindowAreaSkinlet.h"
-
-#include "QskSwitchButton.h"
-#include "QskSwitchButtonSkinlet.h"
-
-#include "QskPageIndicator.h"
-#include "QskPageIndicatorSkinlet.h"
-
-#include "QskProgressBar.h"
-#include "QskProgressBarSkinlet.h"
 
 #include "QskStatusIndicator.h"
 #include "QskStatusIndicatorSkinlet.h"
@@ -155,6 +158,7 @@ QskSkin::QskSkin( QObject* parent )
     declareSkinlet< QskMenu, QskMenuSkinlet >();
     declareSkinlet< QskPushButton, QskPushButtonSkinlet >();
     declareSkinlet< QskScrollView, QskScrollViewSkinlet >();
+    declareSkinlet< QskSegmentedBar, QskSegmentedBarSkinlet >();
     declareSkinlet< QskSeparator, QskSeparatorSkinlet >();
     declareSkinlet< QskSlider, QskSliderSkinlet >();
     declareSkinlet< QskStatusIndicator, QskStatusIndicatorSkinlet >();
