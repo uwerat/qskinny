@@ -20,6 +20,7 @@ class QSK_EXPORT QskSeparatorSkinlet : public QskSkinlet
     enum NodeRole
     {
         PanelRole,
+        RoleCount
     };
 
     Q_INVOKABLE QskSeparatorSkinlet( QskSkin* = nullptr );

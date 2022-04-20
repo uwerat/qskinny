@@ -21,6 +21,8 @@ class QSK_EXPORT QskCheckBoxSkinlet : public QskSkinlet
     {
         PanelRole,
         IndicatorRole,
+
+        RoleCount
     };
 
     Q_INVOKABLE QskCheckBoxSkinlet( QskSkin* = nullptr );

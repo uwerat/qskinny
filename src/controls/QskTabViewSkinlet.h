@@ -19,7 +19,8 @@ class QSK_EXPORT QskTabViewSkinlet : public QskSkinlet
   public:
     enum NodeRole
     {
-        PageRole
+        PageRole,
+        RoleCount
     };
 
     Q_INVOKABLE QskTabViewSkinlet( QskSkin* = nullptr );
