@@ -6,7 +6,7 @@
 #include "Page.h"
 
 Page::Page( QQuickItem* parent )
-    : Page( Qt::Vertical )
+    : Page( Qt::Vertical, parent )
 {
 }
 
