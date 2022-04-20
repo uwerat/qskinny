@@ -147,6 +147,7 @@ namespace
         void setupProgressBar();
         void setupPushButton();
         void setupScrollView();
+        void setupSegmentedBar();
         void setupSeparator();
         void setupSlider();
         void setupSubWindow();
@@ -267,6 +268,7 @@ void Editor::setup()
     setupProgressBar();
     setupPushButton();
     setupScrollView();
+    setupSegmentedBar();
     setupSeparator();
     setupSlider();
     setupSubWindow();
@@ -463,6 +465,11 @@ void Editor::setupSeparator()
 
     setSeparator( Q::Panel | A::Horizontal );
     setSeparator( Q::Panel | A::Vertical );
+}
+
+void Editor::setupSegmentedBar()
+{
+    // TODO
 }
 
 void Editor::setupPageIndicator()

@@ -19,6 +19,7 @@
 #include <QskPushButton.h>
 #include <QskProgressBar.h>
 #include <QskScrollView.h>
+#include <QskSegmentedBar.h>
 #include <QskSeparator.h>
 #include <QskSlider.h>
 #include <QskSubWindow.h>
@@ -127,6 +128,7 @@ namespace
         void setupProgressBar();
         void setupPushButton();
         void setupScrollView();
+        void setupSegmentedBar();
         void setupSeparator();
         void setupSubWindow();
         void setupSlider();
@@ -159,6 +161,7 @@ void Editor::setup()
     setupProgressBar();
     setupPushButton();
     setupScrollView();
+    setupSegmentedBar();
     setupSeparator();
     setupSlider();
     setupSubWindow();
@@ -324,6 +327,11 @@ void Editor::setupFocusIndicator()
     setBoxBorderMetrics( Q::Panel, 2 );
     setBoxBorderColors( Q::Panel, m_pal.accentColor );
     setGradient( Q::Panel, QskGradient() );
+}
+
+void Editor::setupSegmentedBar()
+{
+    // TODO
 }
 
 void Editor::setupSeparator()
