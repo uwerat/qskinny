@@ -22,7 +22,9 @@ class QSK_EXPORT QskSliderSkinlet : public QskSkinlet
         PanelRole,
         GrooveRole,
         FillRole,
-        HandleRole
+        HandleRole,
+
+        RoleCount
     };
 
     Q_INVOKABLE QskSliderSkinlet( QskSkin* = nullptr );

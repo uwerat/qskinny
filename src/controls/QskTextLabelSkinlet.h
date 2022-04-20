@@ -17,7 +17,10 @@ class QSK_EXPORT QskTextLabelSkinlet : public QskSkinlet
   public:
     enum NodeRole
     {
-        PanelRole, TextRole
+        PanelRole,
+        TextRole,
+
+        RoleCount
     };
 
     Q_INVOKABLE QskTextLabelSkinlet( QskSkin* = nullptr );

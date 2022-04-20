@@ -18,7 +18,9 @@ class QSK_EXPORT QskTabButtonSkinlet : public QskSkinlet
     enum NodeRole
     {
         PanelRole,
-        TextRole
+        TextRole,
+
+        RoleCount
     };
 
     Q_INVOKABLE QskTabButtonSkinlet( QskSkin* = nullptr );

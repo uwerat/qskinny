@@ -19,7 +19,10 @@ class QSK_EXPORT QskGraphicLabelSkinlet : public QskSkinlet
   public:
     enum NodeRole
     {
-        PanelRole, GraphicRole
+        PanelRole,
+        GraphicRole,
+
+        RoleCount
     };
 
     Q_INVOKABLE QskGraphicLabelSkinlet( QskSkin* = nullptr );

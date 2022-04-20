@@ -20,6 +20,8 @@ class QSK_EXPORT QskSwitchButtonSkinlet : public QskSkinlet
         GrooveRole,
         HandleRole,
         RippleRole,
+
+        RoleCount
     };
 
     Q_INVOKABLE QskSwitchButtonSkinlet( QskSkin* = nullptr );

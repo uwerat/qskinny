@@ -18,7 +18,9 @@ class QSK_EXPORT QskPageIndicatorSkinlet : public QskSkinlet
     enum NodeRole
     {
         PanelRole,
-        BulletsRole
+        BulletsRole,
+
+        RoleCount
     };
 
     Q_INVOKABLE QskPageIndicatorSkinlet( QskSkin* = nullptr );

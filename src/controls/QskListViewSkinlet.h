@@ -23,6 +23,14 @@ class QSK_EXPORT QskListViewSkinlet : public QskScrollViewSkinlet
     using Inherited = QskScrollViewSkinlet;
 
   public:
+    enum NodeRole
+    {
+        TextRole,
+        GraphicRole,
+
+        RoleCount
+    };
+
     Q_INVOKABLE QskListViewSkinlet( QskSkin* = nullptr );
     ~QskListViewSkinlet() override;
 
@@ -30,12 +38,6 @@ class QSK_EXPORT QskListViewSkinlet : public QskScrollViewSkinlet
         Qt::SizeHint, const QSizeF& ) const override;
 
   protected:
-    enum NodeRole
-    {
-        TextRole,
-        GraphicRole
-    };
-
     QSGNode* updateContentsNode(
         const QskScrollView*, QSGNode* ) const override;
 
