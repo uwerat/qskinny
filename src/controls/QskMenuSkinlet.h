@@ -1,6 +1,12 @@
-#pragma once
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * This file may be used under the terms of the QSkinny License, Version 1.0
+ *****************************************************************************/
 
-#include <QskPopupSkinlet.h>
+#ifndef QSK_MENU_SKINLET_H
+#define QSK_MENU_SKINLET_H
+
+#include "QskPopupSkinlet.h"
 #include <memory>
 
 class QskMenu;
@@ -54,3 +60,5 @@ class QSK_EXPORT QskMenuSkinlet : public QskPopupSkinlet
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
+
+#endif
