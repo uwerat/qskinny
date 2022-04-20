@@ -81,18 +81,18 @@ namespace
     };
 
     class CheckButtonBox : public QskLinearBox
-    { 
+    {
       public:
         CheckButtonBox( QQuickItem* parent = nullptr )
             : QskLinearBox( Qt::Horizontal, parent )
-        {   
+        {
             setSpacing( 20 );
             setExtraSpacingAt( Qt::LeftEdge | Qt::RightEdge | Qt::BottomEdge );
 
             for ( auto state : { Qt::Unchecked, Qt::PartiallyChecked, Qt::Checked } )
             {
                 auto button = new QskCheckBox( this );
-                button->setTristate( true ); 
+                button->setTristate( true );
                 button->setCheckState( state );
             }
         }
