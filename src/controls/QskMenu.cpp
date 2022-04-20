@@ -1,12 +1,17 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * This file may be used under the terms of the QSkinny License, Version 1.0
+ *****************************************************************************/
+
 #include "QskMenu.h"
 
-#include <QskGraphicProvider.h>
-#include <QskTextOptions.h>
-#include <QskGraphic.h>
-#include <QskColorFilter.h>
-#include <QskSkinlet.h>
-#include <QskEvent.h>
-#include <QskPlatform.h>
+#include "QskGraphicProvider.h"
+#include "QskTextOptions.h"
+#include "QskGraphic.h"
+#include "QskColorFilter.h"
+#include "QskSkinlet.h"
+#include "QskEvent.h"
+#include "QskPlatform.h"
 
 #include <qvector.h>
 #include <qvariant.h>
