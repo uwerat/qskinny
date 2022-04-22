@@ -160,7 +160,7 @@ void QskCheckBox::addToGroup( QskCheckBox* groupItem )
     } );
 
     connect( groupItem, &QskAbstractButton::toggled,
-        this, [ this, groupItem ]( bool toggled )
+        this, [ this ]( bool toggled )
     {
         m_data->groupItemsChecked += toggled ? 1 : -1;
         updated();
