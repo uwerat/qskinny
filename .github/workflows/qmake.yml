@@ -7,9 +7,12 @@ on:
     branches: [ master ]
 
 jobs:
+
   build-linux-qt5-15:
     name: Linux Qt 5.15 build
     runs-on: ubuntu-latest
+    env:
+      DISPLAY: ":1"
     steps:
     - uses: actions/checkout@v2
     - name: Cache Qt
@@ -42,10 +45,32 @@ jobs:
       run: qmake qskinny.pro
     - name: make
       run: make -j$(nproc)
+    - name: Smoke test
+      run: |
+        echo starting Xvfb
+        Xvfb :1 &
+        sleep 10
+        echo starting iotdashboard
+        ./examples/bin/iotdashboard &
+        sleep 10
+        echo taking screenshot
+        import -pause 1 -window root screenshot-linux-qt5-15.jpg
+        echo killing iotdashboard
+        killall iotdashboard
+        echo killing Xvfb
+        killall Xvfb
+    - name: Upload smoke test artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: screenshot-linux-qt5-15.jpg
+        path: screenshot-linux-qt5-15.jpg
+
 
   build-linux-qt-lts:
     name: Linux Qt 6.2 (LTS) build
     runs-on: ubuntu-latest
+    env:
+      DISPLAY: ":1"
     steps:
     - uses: actions/checkout@v2
     - name: Cache Qt
@@ -80,10 +105,32 @@ jobs:
       run: qmake qskinny.pro
     - name: make
       run: make -j$(nproc)
+    - name: Smoke test
+      run: |
+        echo starting Xvfb
+        Xvfb :1 &
+        sleep 10
+        echo starting gallery
+        ./examples/bin/gallery &
+        sleep 10
+        echo taking screenshot
+        import -pause 1 -window root screenshot-linux-qt6-2.jpg
+        echo killing gallery
+        killall gallery
+        echo killing Xvfb
+        killall Xvfb
+    - name: Upload smoke test artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: screenshot-linux-qt6-2.jpg
+        path: screenshot-linux-qt6-2.jpg
+
 
   build-linux-qt-current:
     name: Linux Qt 6.3 (current) build
     runs-on: ubuntu-latest
+    env:
+      DISPLAY: ":1"
     steps:
     - uses: actions/checkout@v2
     - name: Cache Qt
@@ -118,6 +165,26 @@ jobs:
       run: qmake qskinny.pro
     - name: make
       run: make -j$(nproc)
+    - name: Smoke test
+      run: |
+        echo starting Xvfb
+        Xvfb :1 &
+        sleep 10
+        echo starting gallery
+        ./examples/bin/gallery &
+        sleep 10
+        echo taking screenshot
+        import -pause 1 -window root screenshot-linux-qt6-3.jpg
+        echo killing gallery
+        killall gallery
+        echo killing Xvfb
+        killall Xvfb
+    - name: Upload smoke test artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: screenshot-linux-qt6-3.jpg
+        path: screenshot-linux-qt6-3.jpg
+
 
   build-windows-qt5-15:
     name: Windows Qt 5.15 build
@@ -161,6 +228,18 @@ jobs:
         Invoke-WebRequest -Uri "https://download.qt.io/official_releases/jom/jom.zip" -OutFile jom.zip
         unzip jom.zip
         .\jom
+    - name: Smoke test
+      run: |
+        $Env:PATH += ";lib;plugins\skins"
+        echo "starting iotdashboard"
+        Start-Process .\examples\bin\iotdashboard
+        Start-Sleep -s 10
+    - uses: OrbitalOwen/desktop-screenshot-action@0.1
+      with:
+        file-name: 'screenshot-windows-qt5-15.jpg'
+    - name: Cleanup smoke test
+      run: taskkill /IM iotdashboard.exe /T
+
 
   build-windows-qt-lts:
     name: Windows Qt 6.2 (LTS) build
@@ -204,6 +283,18 @@ jobs:
         Invoke-WebRequest -Uri "https://download.qt.io/official_releases/jom/jom.zip" -OutFile jom.zip
         unzip jom.zip
         .\jom
+    - name: Smoke test
+      run: |
+        $Env:PATH += ";lib;plugins\skins"
+        echo "starting gallery"
+        Start-Process .\examples\bin\gallery
+        Start-Sleep -s 10
+    - uses: OrbitalOwen/desktop-screenshot-action@0.1
+      with:
+        file-name: 'screenshot-windows-qt6-2.jpg'
+    - name: Cleanup smoke test
+      run: taskkill /IM gallery.exe /T
+
 
   build-windows-qt-current:
     name: Windows Qt 6.3 (current) build
@@ -247,6 +338,18 @@ jobs:
         Invoke-WebRequest -Uri "https://download.qt.io/official_releases/jom/jom.zip" -OutFile jom.zip
         unzip jom.zip
         .\jom
+    - name: Smoke test
+      run: |
+        $Env:PATH += ";lib;plugins\skins"
+        echo "starting gallery"
+        Start-Process .\examples\bin\gallery
+        Start-Sleep -s 10
+    - uses: OrbitalOwen/desktop-screenshot-action@0.1
+      with:
+        file-name: 'screenshot-windows-qt6-3.jpg'
+    - name: Cleanup smoke test
+      run: taskkill /IM gallery.exe /T
+
 
   build-mac-qt5-15:
     name: MacOS Qt 5.15 build
@@ -283,6 +386,16 @@ jobs:
       run: qmake qskinny.pro
     - name: make
       run: make -j$(sysctl -n hw.ncpu)
+    - name: Smoke test
+      run: |
+        DYLD_LIBRARY_PATH=./lib ./examples/bin/iotdashboard.app/Contents/MacOS/iotdashboard -qwindowgeometry 1024x600+75+100 &
+        sleep 10
+    - uses: OrbitalOwen/desktop-screenshot-action@0.1
+      with:
+        file-name: 'screenshot-macos-qt5-15.jpg'
+    - name: Cleanup smoke test
+      run: killall iotdashboard
+
 
   build-mac-qt-lts:
     name: MacOS Qt 6.2 (LTS) build
@@ -319,6 +432,15 @@ jobs:
       run: qmake qskinny.pro
     - name: make
       run: make -j$(sysctl -n hw.ncpu)
+    - name: Smoke test
+      run: |
+        DYLD_LIBRARY_PATH=./lib ./examples/bin/gallery.app/Contents/MacOS/gallery -qwindowgeometry 1024x600+75+100 &
+        sleep 10
+    - uses: OrbitalOwen/desktop-screenshot-action@0.1
+      with:
+        file-name: 'screenshot-macos-qt6-2.jpg'
+    - name: Cleanup smoke test
+      run: killall gallery
 
   build-mac-qt-current:
     name: MacOS Qt 6.3 (current) build
@@ -355,3 +477,12 @@ jobs:
       run: qmake qskinny.pro
     - name: make
       run: make -j$(sysctl -n hw.ncpu)
+    - name: Smoke test
+      run: |
+        DYLD_LIBRARY_PATH=./lib ./examples/bin/gallery.app/Contents/MacOS/gallery -qwindowgeometry 1024x600+75+100 &
+        sleep 10
+    - uses: OrbitalOwen/desktop-screenshot-action@0.1
+      with:
+        file-name: 'screenshot-macos-qt6-3.jpg'
+    - name: Cleanup smoke test
+      run: killall gallery
