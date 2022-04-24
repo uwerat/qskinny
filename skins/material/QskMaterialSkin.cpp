@@ -191,20 +191,24 @@ void Editor::setupCheckBox()
     using A = QskAspect;
     using Q = QskCheckBox;
 
-    const qreal size = qskDpiScaled( 18 );
+    const qreal sizeTic = qskDpiScaled( 16 ); // - Border;
+    const qreal sizeBox = qskDpiScaled( 26 );
 
-    setStrutSize( Q::Panel, size, size );
-    setPadding( Q::Panel, 3 );
+    setStrutSize( Q::IndicatorTic, sizeTic, sizeTic );
+    setStrutSize( Q::IndicatorBox, sizeBox, sizeBox);
 
-    setBoxShape( Q::Panel, 2 );
+    setMargin( Q::Text, QskMargins( qskDpiScaled( 5 ), 0,qskDpiScaled( 5 ), 0 ) );
+    setMargin( Q::IndicatorTic, QskMargins( qskDpiScaled( 5 ) ) );
 
-    setGradient( Q::Panel, m_pal.baseColor);
-    setGradient( Q::Panel | Q::Checked, m_pal.accentColor );
-    setGradient( Q::Panel | Q::Checked | Q::Disabled, QskRgb::Grey );
+    setBoxShape( Q::IndicatorBox, qskDpiScaled( 3 ) );
+    setBoxBorderMetrics( Q::IndicatorBox, qskDpiScaled( 1 ) );
+    setBoxBorderColors( Q::IndicatorBox, m_pal.darker125 );
 
-    setColor( Q::Indicator, m_pal.contrastColor );
+    setGradient( Q::IndicatorBox | Q::Checked, m_pal.accentColor);
+    setColor( Q::IndicatorTic, m_pal.lighter200 );
+    setGradient( Q::Panel, m_pal.baseColor );
 
-    setAnimation( Q::Panel | A::Color, qskDuration );
+    setAnimation( Q::IndicatorBox | A::Color, qskDuration );
 }
 
 void Editor::setupBox()
