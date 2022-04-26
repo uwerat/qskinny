@@ -1,5 +1,2 @@
 TEMPLATE = subdirs
 
-SUBDIRS += \
-    checkboxes
-

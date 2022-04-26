@@ -25,7 +25,7 @@ namespace
             setMaterial( &m_material );
         }
 
-        void update( bool isPartially, const QRectF& rect, const QColor& color )
+        void update( const QRectF& rect, const QColor& color )
         {
             if ( color != m_material.color() )
             {
@@ -33,10 +33,9 @@ namespace
                 markDirty( QSGNode::DirtyMaterial );
             }
 
-            if ( rect != m_rect || isPartially != m_isPartially )
+            if ( rect != m_rect )
             {
                 m_rect = rect;
-                m_isPartially = isPartially;
 
                 const auto x = rect.x();
                 const auto y = rect.y();
@@ -44,19 +43,9 @@ namespace
                 const auto h = rect.height();
 
                 auto points = m_geometry.vertexDataAsPoint2D();
-
-                if ( isPartially )
-                {
-                    points[0].set( x, y + h / 2 );
-                    points[1] = points[0];
-                    points[2].set( x + w, y + h / 2 );
-                }
-                else
-                {
-                    points[0].set( x, y + h / 2 );
-                    points[1].set( x + w / 3, y + h );
-                    points[2].set( x + w, y );
-                }
+                points[0].set( x, y + h / 2 );
+                points[1].set( x + w / 3, y + h );
+                points[2].set( x + w, y );
 
                 markDirty( QSGNode::DirtyGeometry );
             }
@@ -67,7 +56,6 @@ namespace
         QSGGeometry m_geometry;
 
         QRectF m_rect;
-        bool m_isPartially;
     };
 }
 
@@ -112,8 +100,7 @@ QSGNode* QskCheckBoxSkinlet::updateIndicatorNode(
 {
     using Q = QskCheckBox;
 
-    const auto state = checkBox->checkState();
-    if ( state == Qt::Unchecked )
+    if ( checkBox->isChecked() == false )
         return nullptr;
 
     const auto rect = checkBox->subControlRect( Q::Indicator );
@@ -121,7 +108,7 @@ QSGNode* QskCheckBoxSkinlet::updateIndicatorNode(
         return nullptr;
 
     auto indicatorNode = QskSGNode::ensureNode< IndicatorNode >( node );
-    indicatorNode->update( state != Qt::Checked, rect, checkBox->color( Q::Indicator ) );
+    indicatorNode->update( rect, checkBox->color( Q::Indicator ) );
 
     return indicatorNode;
 }
