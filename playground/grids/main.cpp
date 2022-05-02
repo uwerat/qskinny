@@ -45,7 +45,7 @@ class Box : public TestBox
 
     int count() const
     {
-        return m_tests.size();
+        return static_cast< int >( m_tests.size() );
     }
 
   private:
