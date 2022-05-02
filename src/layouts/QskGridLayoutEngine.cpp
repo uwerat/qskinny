@@ -195,6 +195,13 @@ namespace
         QRect m_grid;
         bool m_isSpacer;
     };
+
+    class ElementsVector : public std::vector< Element >
+    {
+      public:
+        // to avoid warnings when assigning size_t to int
+        inline int count() const { return static_cast< int >( size() ); }
+    };
 }
 
 Element::Element( QQuickItem* item, const QRect& grid )
@@ -304,8 +311,7 @@ class QskGridLayoutEngine::PrivateData
   public:
     inline Element* elementAt( int index ) const
     {
-        const int count = this->elements.size();
-        if ( index < 0 || index >= count )
+        if ( index < 0 || index >= this->elements.count() )
             return nullptr;
 
         return const_cast< Element* >( &this->elements[index] );
@@ -340,7 +346,7 @@ class QskGridLayoutEngine::PrivateData
         rowCount = qMax( rowCount, grid.bottom() + 1 );
         columnCount = qMax( columnCount, grid.right() + 1 );
 
-        return this->elements.size() - 1;
+        return this->elements.count() - 1;
     }
 
     QRect effectiveGrid( const Element& element ) const
@@ -363,7 +369,7 @@ class QskGridLayoutEngine::PrivateData
             ? that->columnSettings : that->rowSettings;
     }
 
-    std::vector< Element > elements;
+    ElementsVector elements;
 
     Settings rowSettings;
     Settings columnSettings;
@@ -383,7 +389,7 @@ QskGridLayoutEngine::~QskGridLayoutEngine()
 
 int QskGridLayoutEngine::count() const
 {
-    return m_data->elements.size();
+    return m_data->elements.count();
 }
 
 bool QskGridLayoutEngine::setStretchFactor(
@@ -626,7 +632,7 @@ void QskGridLayoutEngine::setupChain( Qt::Orientation orientation,
         before adding those that occupy more than one cell
      */
     QVarLengthArray< const Element* > postponed;
-    postponed.reserve( m_data->elements.size() );
+    postponed.reserve( m_data->elements.count() );
 
     for ( const auto& element : m_data->elements )
     {

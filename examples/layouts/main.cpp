@@ -35,7 +35,7 @@ int main( int argc, char* argv[] )
     auto tabView = new QskTabView();
 
     tabView->setMargins( 10 );
-    tabView->setTabPosition( Qsk::Left );
+    tabView->setTabBarEdge( Qt::LeftEdge );
     tabView->setAutoFitTabs( true );
 
     tabView->addTab( "Grid Layout", new GridLayoutPage() );

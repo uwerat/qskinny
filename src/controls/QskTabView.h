@@ -18,8 +18,8 @@ class QSK_EXPORT QskTabView : public QskControl
 
     Q_PROPERTY( QskTabBar* tabBar READ tabBar )
 
-    Q_PROPERTY( Qsk::Position tabPosition READ tabPosition
-        WRITE setTabPosition NOTIFY tabPositionChanged FINAL )
+    Q_PROPERTY( Qt::Edge tabBarEdge READ tabBarEdge
+        WRITE setTabBarEdge NOTIFY tabBarEdgeChanged FINAL )
 
     Q_PROPERTY( bool autoFitTabs READ autoFitTabs
         WRITE setAutoFitTabs NOTIFY autoFitTabsChanged FINAL )
@@ -37,15 +37,13 @@ class QSK_EXPORT QskTabView : public QskControl
     QSK_SUBCONTROLS( TabBar, Page )
 
     QskTabView( QQuickItem* parent = nullptr );
-    QskTabView( Qsk::Position tabPosition, QQuickItem* parent = nullptr );
-
     ~QskTabView() override;
 
     const QskTabBar* tabBar() const;
     QskTabBar* tabBar();
 
-    void setTabPosition( Qsk::Position );
-    Qsk::Position tabPosition() const;
+    void setTabBarEdge( Qt::Edge );
+    Qt::Edge tabBarEdge() const;
 
     void setAutoFitTabs( bool );
     bool autoFitTabs() const;
@@ -83,7 +81,7 @@ class QSK_EXPORT QskTabView : public QskControl
   Q_SIGNALS:
     void currentIndexChanged( int index );
     void countChanged( int );
-    void tabPositionChanged( Qsk::Position );
+    void tabBarEdgeChanged( Qt::Edge );
     void autoFitTabsChanged( bool );
 
   protected:

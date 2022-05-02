@@ -179,6 +179,8 @@ HEADERS += \
     controls/QskScrollBox.h \
     controls/QskScrollView.h \
     controls/QskScrollViewSkinlet.h \
+    controls/QskSegmentedBar.h \
+    controls/QskSegmentedBarSkinlet.h \
     controls/QskSeparator.h \
     controls/QskSeparatorSkinlet.h \
     controls/QskSetup.h \
@@ -261,6 +263,8 @@ SOURCES += \
     controls/QskScrollBox.cpp \
     controls/QskScrollView.cpp \
     controls/QskScrollViewSkinlet.cpp \
+    controls/QskSegmentedBar.cpp \
+    controls/QskSegmentedBarSkinlet.cpp \
     controls/QskSeparator.cpp \
     controls/QskSeparatorSkinlet.cpp \
     controls/QskSetup.cpp \

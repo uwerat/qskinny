@@ -422,10 +422,10 @@ static inline void qskCreateBorder(
     const QskBoxRenderer::Quad& out, const QskBoxRenderer::Quad& in,
     const QskBoxBorderColors& colors, Line* line )
 {
-    const auto& gradientLeft = colors.gradient( Qsk::Left );
-    const auto& gradientRight = colors.gradient( Qsk::Right );
-    const auto& gradientTop = colors.gradient( Qsk::Top );
-    const auto& gradientBottom = colors.gradient( Qsk::Bottom );
+    const auto& gradientLeft = colors.left();
+    const auto& gradientRight = colors.right();
+    const auto& gradientTop = colors.top();
+    const auto& gradientBottom = colors.bottom();
 
     // qdebug
 
@@ -571,10 +571,10 @@ void QskBoxRenderer::renderRect(
                 // ### As an optimization we could check orientation and colors
                 // to test whether colors are the same
                 const int additionalLines = -1
-                    + bc.gradient( Qsk::Left ).stops().count() - 1
-                    + bc.gradient( Qsk::Top ).stops().count() - 1
-                    + bc.gradient( Qsk::Right ).stops().count() - 1
-                    + bc.gradient( Qsk::Bottom ).stops().count() - 1;
+                    + bc.left().stops().count() - 1
+                    + bc.top().stops().count() - 1
+                    + bc.right().stops().count() - 1
+                    + bc.bottom().stops().count() - 1;
 
                 borderLineCount += qMax( additionalLines, 0 );
             }
@@ -624,7 +624,7 @@ void QskBoxRenderer::renderRect(
 
         if ( bc.isMonochrome() )
         {
-            const auto rgb = bc.gradient( Qsk::Left ).startColor().rgba();
+            const auto rgb = bc.left().startColor().rgba();
             qskCreateBorderMonochrome( rect, in, rgb, fillLines );
         }
         else

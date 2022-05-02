@@ -25,6 +25,18 @@ SOURCES += \
     button/ButtonPage.cpp \
 
 HEADERS += \
+    textinput/TextInputPage.h
+
+SOURCES += \
+    textinput/TextInputPage.cpp \
+
+HEADERS += \
+    selector/SelectorPage.h
+
+SOURCES += \
+    selector/SelectorPage.cpp \
+
+HEADERS += \
     Page.h
 
 SOURCES += \

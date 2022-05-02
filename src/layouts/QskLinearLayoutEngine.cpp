@@ -50,6 +50,13 @@ namespace
         int m_stretch = -1;
         bool m_isSpacer;
     };
+
+    class ElementsVector : public std::vector< Element >
+    {
+      public:
+        // to avoid warnings when assigning size_t to int
+        inline int count() const { return static_cast< int >( size() ); }
+    };
 }
 
 Element::Element( QQuickItem* item )
@@ -164,14 +171,13 @@ class QskLinearLayoutEngine::PrivateData
 
     inline Element* elementAt( int index ) const
     {
-        const int count = this->elements.size();
-        if ( ( index < 0 ) || ( index >= count ) )
+        if ( ( index < 0 ) || ( index >= this->elements.count() ) )
             return nullptr;
 
         return const_cast< Element* >( &this->elements[index] );
     }
 
-    std::vector< Element > elements;
+    ElementsVector elements;
 
     uint dimension;
 
@@ -230,7 +236,7 @@ uint QskLinearLayoutEngine::dimension() const
 
 int QskLinearLayoutEngine::count() const
 {
-    return m_data->elements.size();
+    return m_data->elements.count();
 }
 
 bool QskLinearLayoutEngine::setStretchFactorAt( int index, int stretchFactor )
@@ -266,7 +272,7 @@ int QskLinearLayoutEngine::insertItem( QQuickItem* item, int index )
 
     if ( index < 0 || index > count() )
     {
-        index = elements.size();
+        index = elements.count();
         elements.emplace_back( item );
     }
     else
@@ -286,7 +292,7 @@ int QskLinearLayoutEngine::insertSpacerAt( int index, qreal spacing )
 
     if ( index < 0 || index > count() )
     {
-        index = elements.size();
+        index = elements.count();
         elements.emplace_back( spacing );
     }
     else
@@ -416,7 +422,7 @@ int QskLinearLayoutEngine::effectiveCount() const
         }
     }
 
-    return m_data->elements.size() - m_data->sumIgnored;
+    return m_data->elements.count() - m_data->sumIgnored;
 }
 
 void QskLinearLayoutEngine::invalidateElementCache()

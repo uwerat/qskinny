@@ -19,11 +19,7 @@ static inline QStringList qskSplitPath( const QString& s )
 {
     const auto separator = QDir::listSeparator();
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 15, 0 )
     return s.split( separator, Qt::SkipEmptyParts );
-#else
-    return s.split( separator, QString::SkipEmptyParts );
-#endif
 }
 
 /*

@@ -21,7 +21,9 @@ class QSK_EXPORT QskPushButtonSkinlet : public QskSkinlet
     {
         PanelRole,
         TextRole,
-        GraphicRole
+        GraphicRole,
+
+        RoleCount
     };
 
     Q_INVOKABLE QskPushButtonSkinlet( QskSkin* = nullptr );
