@@ -51,6 +51,9 @@
 
     static void initFonts()
     {
+        if ( !qobject_cast< QGuiApplication* >( qApp ) )
+            return; // no fonts needed
+
     #ifdef FONTCONFIG_FILE
         const char env[] = "FONTCONFIG_FILE";
         if ( !qEnvironmentVariableIsSet( env ) )

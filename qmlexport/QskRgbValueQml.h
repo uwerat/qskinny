@@ -17,9 +17,9 @@ class QskRgbValueQml
   public:
     enum Enum
     {
-#define RGB( name, value ) name = value,
+#define RGBVALUE( name, value ) name = value,
         QSK_RGB_VALUES
-#undef RGB
+#undef RGBVALUE
     };
 
     Q_ENUM( Enum )

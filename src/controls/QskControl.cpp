@@ -378,6 +378,11 @@ void QskControl::setPlacementPolicy( QskPlacementPolicy policy )
     }
 }
 
+void QskControl::resetPlacementPolicy()
+{
+    setPlacementPolicy( QskPlacementPolicy() );
+}
+
 QskPlacementPolicy QskControl::placementPolicy() const
 {
     Q_D( const QskControl );

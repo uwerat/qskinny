@@ -80,8 +80,8 @@ class QSK_EXPORT QskGeometryChangeEvent : public QskEvent
     QSK_EVENT_DISABLE_COPY( QskGeometryChangeEvent )
 
   private:
-    const QRectF m_rect;
-    const QRectF m_oldRect;
+    QRectF m_rect;
+    QRectF m_oldRect;
 };
 
 class QSK_EXPORT QskWindowChangeEvent : public QskEvent
@@ -98,8 +98,8 @@ class QSK_EXPORT QskWindowChangeEvent : public QskEvent
     QSK_EVENT_DISABLE_COPY( QskWindowChangeEvent )
 
   private:
-    QQuickWindow* const m_oldWindow;
-    QQuickWindow* const m_window;
+    QQuickWindow* m_oldWindow;
+    QQuickWindow* m_window;
 };
 
 class QSK_EXPORT QskPopupEvent : public QskEvent
@@ -115,7 +115,7 @@ class QSK_EXPORT QskPopupEvent : public QskEvent
     QSK_EVENT_DISABLE_COPY( QskPopupEvent )
 
   private:
-    QskPopup* const m_popup;
+    QskPopup* m_popup;
 };
 
 class QSK_EXPORT QskGestureEvent : public QskEvent
@@ -154,8 +154,8 @@ class QSK_EXPORT QskAnimatorEvent : public QskEvent
     QSK_EVENT_DISABLE_COPY( QskAnimatorEvent )
 
   private:
-    const QskAspect m_aspect;
-    const State m_state;
+    QskAspect m_aspect;
+    State m_state;
 };
 
 QSK_EXPORT int qskFocusChainIncrement( const QEvent* );

@@ -1,17 +1,21 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * This file may be used under the terms of the QSkinny License, Version 1.0
+ *****************************************************************************/
+
 #include "QskMenuSkinlet.h"
 #include "QskMenu.h"
 
-#include <QskBoxNode.h>
-#include <QskGraphic.h>
-#include <QskColorFilter.h>
-#include <QskGraphicNode.h>
-#include <QskTextNode.h>
-#include <QskTextOptions.h>
-#include <QskSGNode.h>
-#include <QskFunctions.h>
-#include <QskSkinStateChanger.h>
-#include <QskMargins.h>
-#include <QskFunctions.h>
+#include "QskBoxNode.h"
+#include "QskGraphic.h"
+#include "QskColorFilter.h"
+#include "QskGraphicNode.h"
+#include "QskTextNode.h"
+#include "QskTextOptions.h"
+#include "QskSGNode.h"
+#include "QskFunctions.h"
+#include "QskMargins.h"
+#include "QskFunctions.h"
 
 #include <qfontmetrics.h>
 #include <qmath.h>
@@ -60,7 +64,7 @@ class QskMenuSkinlet::PrivateData
     void enableCache( bool on )
     {
         m_isCaching = on;
-        m_cellHeight = m_cellWidth = m_graphicWidth = m_textWidth = -1.0;
+        m_segmentHeight = m_segmentWidth = m_graphicWidth = m_textWidth = -1.0;
     }
 
     inline int separatorsBefore( const QskMenu* menu, int index ) const
@@ -101,30 +105,30 @@ class QskMenuSkinlet::PrivateData
         return textWidthInternal( menu );
     }
 
-    inline qreal cellWidth( const QskMenu* menu ) const
+    inline qreal segmentWidth( const QskMenu* menu ) const
     {
         if ( m_isCaching )
         {
-            if ( m_cellWidth < 0.0 )
-                m_cellWidth = cellWidthInternal( menu );
+            if ( m_segmentWidth < 0.0 )
+                m_segmentWidth = segmentWidthInternal( menu );
 
-            return m_cellWidth;
+            return m_segmentWidth;
         }
 
-        return cellWidthInternal( menu );
+        return segmentWidthInternal( menu );
     }
 
-    inline qreal cellHeight( const QskMenu* menu ) const
+    inline qreal segmentHeight( const QskMenu* menu ) const
     {
         if ( m_isCaching )
         {
-            if ( m_cellHeight < 0.0 )
-                m_cellHeight = cellHeightInternal( menu );
+            if ( m_segmentHeight < 0.0 )
+                m_segmentHeight = segmentHeightInternal( menu );
 
-            return m_cellHeight;
+            return m_segmentHeight;
         }
 
-        return cellHeightInternal( menu );
+        return segmentHeightInternal( menu );
     }
 
   private:
@@ -182,33 +186,33 @@ class QskMenuSkinlet::PrivateData
         return maxWidth;
     }
 
-    qreal cellWidthInternal( const QskMenu* menu ) const
+    qreal segmentWidthInternal( const QskMenu* menu ) const
     {
         using Q = QskMenu;
 
-        const auto spacing = menu->spacingHint( Q::Cell );
-        const auto padding = menu->paddingHint( Q::Cell );
+        const auto spacing = menu->spacingHint( Q::Segment );
+        const auto padding = menu->paddingHint( Q::Segment );
 
         auto w = graphicWidth( menu ) + spacing + textWidth( menu );
 
         w += padding.left() + padding.right();
 
-        const auto minWidth = menu->strutSizeHint( Q::Cell ).width();
+        const auto minWidth = menu->strutSizeHint( Q::Segment ).width();
         return qMax( w, minWidth );
     }
 
-    qreal cellHeightInternal( const QskMenu* menu ) const
+    qreal segmentHeightInternal( const QskMenu* menu ) const
     {
         using Q = QskMenu;
 
         const auto graphicHeight = menu->strutSizeHint( Q::Graphic ).height();
         const auto textHeight = menu->effectiveFontHeight( Q::Text );
-        const auto padding = menu->paddingHint( Q::Cell );
+        const auto padding = menu->paddingHint( Q::Segment );
 
         qreal h = qMax( graphicHeight, textHeight );
         h += padding.top() + padding.bottom();
 
-        const auto minHeight = menu->strutSizeHint( Q::Cell ).height();
+        const auto minHeight = menu->strutSizeHint( Q::Segment ).height();
         h = qMax( h, minHeight );
 
         return h;
@@ -218,8 +222,8 @@ class QskMenuSkinlet::PrivateData
 
     mutable qreal m_graphicWidth = -1.0;
     mutable qreal m_textWidth = -1.0;
-    mutable qreal m_cellHeight = -1.0;
-    mutable qreal m_cellWidth = -1.0;
+    mutable qreal m_segmentHeight = -1.0;
+    mutable qreal m_segmentWidth = -1.0;
 };
 
 QskMenuSkinlet::QskMenuSkinlet( QskSkin* skin )
@@ -234,10 +238,10 @@ QskMenuSkinlet::~QskMenuSkinlet() = default;
 QRectF QskMenuSkinlet::cursorRect(
     const QskSkinnable* skinnable, const QRectF& contentsRect, int index ) const
 {
-    const auto count = sampleCount( skinnable, QskMenu::Cell );
+    const auto count = sampleCount( skinnable, QskMenu::Segment );
 
     auto rect = sampleRect( skinnable, contentsRect,
-        QskMenu::Cell, qBound( 0, index, count ) );
+        QskMenu::Segment, qBound( 0, index, count ) );
 
     if ( index < 0 )
         rect.setBottom( rect.top() );
@@ -295,11 +299,11 @@ QRectF QskMenuSkinlet::sampleRect(
 
     const auto menu = static_cast< const QskMenu* >( skinnable );
 
-    if ( subControl == Q::Cell )
+    if ( subControl == Q::Segment )
     {
         const auto r = menu->subControlContentsRect( Q::Panel );
 
-        auto h = m_data->cellHeight( menu );
+        auto h = m_data->segmentHeight( menu );
 
         if ( int n = m_data->separatorsBefore( menu, index ) )
         {
@@ -314,7 +318,7 @@ QRectF QskMenuSkinlet::sampleRect(
 
     if ( subControl == QskMenu::Graphic || subControl == QskMenu::Text )
     {
-        const auto r = sampleRect( menu, contentsRect, Q::Cell, index );
+        const auto r = sampleRect( menu, contentsRect, Q::Segment, index );
         const auto graphicWidth = m_data->graphicWidth( menu );
 
         if ( subControl == QskMenu::Graphic )
@@ -330,7 +334,7 @@ QRectF QskMenuSkinlet::sampleRect(
 
             if ( graphicWidth > 0.0 )
             {
-                const auto spacing = skinnable->spacingHint( Q::Cell );
+                const auto spacing = skinnable->spacingHint( Q::Segment );
                 textRect.setX( r.x() + graphicWidth + spacing );
             }
 
@@ -348,8 +352,8 @@ QRectF QskMenuSkinlet::sampleRect(
 
         if ( pos < menu->count() )
         {
-            const auto cellRect = sampleRect( skinnable, contentsRect, Q::Cell, pos );
-            r.setBottom( cellRect.top() ); // spacing ???
+            const auto segmentRect = sampleRect( skinnable, contentsRect, Q::Segment, pos );
+            r.setBottom( segmentRect.top() ); // spacing ???
         }
 
         const qreal h = menu->metric( Q::Separator | QskAspect::Size );
@@ -375,7 +379,7 @@ int QskMenuSkinlet::sampleCount(
 {
     using Q = QskMenu;
 
-    if ( subControl == Q::Cell || subControl == Q::Graphic || subControl == Q::Text )
+    if ( subControl == Q::Segment || subControl == Q::Graphic || subControl == Q::Text )
     {
         const auto menu = static_cast< const QskMenu* >( skinnable );
         return menu->count();
@@ -397,7 +401,7 @@ QskAspect::States QskMenuSkinlet::sampleStates(
 
     auto states = Inherited::sampleStates( skinnable, subControl, index );
 
-    if ( subControl == Q::Cell || subControl == Q::Graphic || subControl == Q::Text )
+    if ( subControl == Q::Segment || subControl == Q::Graphic || subControl == Q::Text )
     {
         const auto menu = static_cast< const QskMenu* >( skinnable );
         if ( menu->currentIndex() == index )
@@ -433,8 +437,8 @@ QSGNode* QskMenuSkinlet::updateContentsNode(
 QSGNode* QskMenuSkinlet::updateMenuNode(
     const QskSkinnable* skinnable, QSGNode* contentsNode ) const
 {
-    enum { Panel, Cell, Cursor, Graphic, Text, Separator };
-    static QVector< quint8 > roles = { Panel, Separator, Cell, Cursor, Graphic, Text };
+    enum { Panel, Segment, Cursor, Graphic, Text, Separator };
+    static QVector< quint8 > roles = { Panel, Separator, Segment, Cursor, Graphic, Text };
 
     if ( contentsNode == nullptr )
         contentsNode = new QSGNode();
@@ -452,9 +456,9 @@ QSGNode* QskMenuSkinlet::updateMenuNode(
                 newNode = updateBoxNode( skinnable, oldNode, QskMenu::Panel );
                 break;
             }
-            case Cell:
+            case Segment:
             {
-                newNode = updateSeriesNode( skinnable, QskMenu::Cell, oldNode );
+                newNode = updateSeriesNode( skinnable, QskMenu::Segment, oldNode );
                 break;
             }
             case Cursor:
@@ -494,7 +498,7 @@ QSGNode* QskMenuSkinlet::updateSampleNode( const QskSkinnable* skinnable,
 
     const auto rect = sampleRect( menu, menu->contentsRect(), subControl, index );
 
-    if ( subControl == Q::Cell )
+    if ( subControl == Q::Segment )
     {
         return updateBoxNode( menu, node, rect, subControl );
     }
@@ -522,7 +526,7 @@ QSGNode* QskMenuSkinlet::updateSampleNode( const QskSkinnable* skinnable,
             subControl, Qt::AlignVCenter | Qt::AlignLeft );
 
         return QskSkinlet::updateTextNode( menu, node, rect, alignment,
-            text, QskTextOptions(), Q::Text );
+            text, menu->textOptions(), Q::Text );
     }
 
     if ( subControl == Q::Separator )
@@ -547,10 +551,10 @@ QSizeF QskMenuSkinlet::sizeHint( const QskSkinnable* skinnable,
     qreal w = 0.0;
     qreal h = 0.0;
 
-    if ( const auto count = sampleCount( skinnable, Q::Cell ) )
+    if ( const auto count = sampleCount( skinnable, Q::Segment ) )
     {
-        w = m_data->cellWidth( menu );
-        h = count * m_data->cellHeight( menu );
+        w = m_data->segmentWidth( menu );
+        h = count * m_data->segmentHeight( menu );
     }
 
     if ( const auto count = sampleCount( skinnable, Q::Separator ) )

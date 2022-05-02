@@ -7,17 +7,20 @@ on:
     branches: [ master ]
 
 jobs:
-  build-linux:
-    name: Linux build
+
+  build-linux-qt5-15:
+    name: Linux Qt 5.15 build
     runs-on: ubuntu-latest
+    env:
+      DISPLAY: ":1"
     steps:
     - uses: actions/checkout@v2
     - name: Cache Qt
-      id: cache-qt
+      id: cache-qt-5-15
       uses: actions/cache@v1  # not v2!
       with:
-        path: ../Qt
-        key: ${{ runner.os }}-QtCache
+        path: ../Qt/5.15.2
+        key: ${{ runner.os }}-QtCache-Qt5
 
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
@@ -27,7 +30,7 @@ jobs:
         target: 'desktop'
         install-deps: 'true'
         modules: 'qtwebengine'
-        cached: ${{ steps.cache-qt.outputs.cache-hit }}
+        cached: ${{ steps.cache-qt-5-15.outputs.cache-hit }}
         setup-python: 'true'
         tools: ''
         set-env: 'true'
@@ -42,18 +45,158 @@ jobs:
       run: qmake qskinny.pro
     - name: make
       run: make -j$(nproc)
+    - name: Smoke test
+      run: |
+        echo starting Xvfb
+        Xvfb :1 &
+        sleep 10
+        echo starting iotdashboard
+        ./examples/bin/iotdashboard &
+        sleep 10
+        echo taking screenshot
+        import -pause 1 -window root screenshot-linux-qt5-15.jpg
+        echo killing iotdashboard
+        killall iotdashboard
+        echo killing Xvfb
+        killall Xvfb
+    - name: Upload smoke test artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: screenshot-linux-qt5-15.jpg
+        path: screenshot-linux-qt5-15.jpg
 
-  build-windows:
-    name: Windows build
+
+  build-linux-qt-lts:
+    name: Linux Qt 6.2 (LTS) build
+    runs-on: ubuntu-latest
+    env:
+      DISPLAY: ":1"
+    steps:
+    - uses: actions/checkout@v2
+    - name: Cache Qt
+      id: cache-qt-6-2
+      uses: actions/cache@v1  # not v2!
+      with:
+        path: ../Qt/6.2.4
+        key: ${{ runner.os }}-QtCache-Qt6-2
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: '6.2.4'
+        host: 'linux'
+        target: 'desktop'
+        install-deps: 'true'
+        modules: 'qtwebengine'
+        cached: ${{ steps.cache-qt-6-2.outputs.cache-hit }}
+        setup-python: 'true'
+        tools: ''
+        set-env: 'true'
+        tools-only: 'false'
+
+    - name: Install needed xkbcommon symlink
+      run: sudo apt-get install libxkbcommon-dev -y
+    - name: Ubuntu and Qt version
+      run: |
+        cat /etc/issue
+        echo number of processors: $(nproc)
+        qmake -v
+    - name: qmake
+      run: qmake qskinny.pro
+    - name: make
+      run: make -j$(nproc)
+    - name: Smoke test
+      run: |
+        echo starting Xvfb
+        Xvfb :1 &
+        sleep 10
+        echo starting gallery
+        ./examples/bin/gallery &
+        sleep 10
+        echo taking screenshot
+        import -pause 1 -window root screenshot-linux-qt6-2.jpg
+        echo killing gallery
+        killall gallery
+        echo killing Xvfb
+        killall Xvfb
+    - name: Upload smoke test artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: screenshot-linux-qt6-2.jpg
+        path: screenshot-linux-qt6-2.jpg
+
+
+  build-linux-qt-current:
+    name: Linux Qt 6.3 (current) build
+    runs-on: ubuntu-latest
+    env:
+      DISPLAY: ":1"
+    steps:
+    - uses: actions/checkout@v2
+    - name: Cache Qt
+      id: cache-qt-6-3
+      uses: actions/cache@v1  # not v2!
+      with:
+        path: ../Qt/6.3.0
+        key: ${{ runner.os }}-QtCache-Qt6-3
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: '6.3.0'
+        host: 'linux'
+        target: 'desktop'
+        install-deps: 'true'
+        modules: 'qtwebengine'
+        cached: ${{ steps.cache-qt-6-3.outputs.cache-hit }}
+        setup-python: 'true'
+        tools: ''
+        set-env: 'true'
+        tools-only: 'false'
+
+    - name: Install needed xkbcommon symlink
+      run: sudo apt-get install libxkbcommon-dev -y
+    - name: Ubuntu and Qt version
+      run: |
+        cat /etc/issue
+        echo number of processors: $(nproc)
+        qmake -v
+    - name: qmake
+      run: qmake qskinny.pro
+    - name: make
+      run: make -j$(nproc)
+    - name: Smoke test
+      run: |
+        echo starting Xvfb
+        Xvfb :1 &
+        sleep 10
+        echo starting gallery
+        ./examples/bin/gallery &
+        sleep 10
+        echo taking screenshot
+        import -pause 1 -window root screenshot-linux-qt6-3.jpg
+        echo killing gallery
+        killall gallery
+        echo killing Xvfb
+        killall Xvfb
+    - name: Upload smoke test artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: screenshot-linux-qt6-3.jpg
+        path: screenshot-linux-qt6-3.jpg
+
+
+  build-windows-qt5-15:
+    name: Windows Qt 5.15 build
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
     - name: Cache Qt
-      id: cache-qt
+      id: cache-qt-5-15
       uses: actions/cache@v1  # not v2!
       with:
-        path: ../Qt
-        key: ${{ runner.os }}-QtCache
+        path: ../Qt/5.15.2
+        key: ${{ runner.os }}-QtCache-Qt5
 
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
@@ -64,7 +207,7 @@ jobs:
         arch: 'win64_msvc2019_64'
         install-deps: 'true'
         modules: 'qtwebengine'
-        cached: ${{ steps.cache-qt.outputs.cache-hit }}
+        cached: ${{ steps.cache-qt-5-15.outputs.cache-hit }}
         setup-python: 'true'
         tools: ''
         set-env: 'true'
@@ -72,8 +215,10 @@ jobs:
 
     - uses: ilammy/msvc-dev-cmd@v1
 
-    - name: Qt version
-      run: qmake -v
+    - name: Windows and Qt version
+      run: |
+        systeminfo /fo csv | ConvertFrom-Csv | select OS*, System*, Hotfix* | Format-List
+        qmake -v
 
     - name: qmake
       run: qmake qskinny.pro
@@ -83,18 +228,140 @@ jobs:
         Invoke-WebRequest -Uri "https://download.qt.io/official_releases/jom/jom.zip" -OutFile jom.zip
         unzip jom.zip
         .\jom
+    - name: Smoke test
+      run: |
+        $Env:PATH += ";lib;plugins\skins"
+        echo "starting iotdashboard"
+        Start-Process .\examples\bin\iotdashboard
+        Start-Sleep -s 10
+    - uses: OrbitalOwen/desktop-screenshot-action@0.1
+      with:
+        file-name: 'screenshot-windows-qt5-15.jpg'
+    - name: Cleanup smoke test
+      run: taskkill /IM iotdashboard.exe /T
 
-  build-mac:
-    name: MacOS build
+
+  build-windows-qt-lts:
+    name: Windows Qt 6.2 (LTS) build
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Cache Qt
+      id: cache-qt-6-2
+      uses: actions/cache@v1  # not v2!
+      with:
+        path: ../Qt/6.2.4
+        key: ${{ runner.os }}-QtCache-Qt6-2
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: '6.2.4'
+        host: 'windows'
+        target: 'desktop'
+        arch: 'win64_msvc2019_64'
+        install-deps: 'true'
+        modules: 'qtwebengine'
+        cached: ${{ steps.cache-qt-6-2.outputs.cache-hit }}
+        setup-python: 'true'
+        tools: ''
+        set-env: 'true'
+        tools-only: 'false'
+
+    - uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Windows and Qt version
+      run: |
+        systeminfo /fo csv | ConvertFrom-Csv | select OS*, System*, Hotfix* | Format-List
+        qmake -v
+
+    - name: qmake
+      run: qmake qskinny.pro
+
+    - name: jom
+      run: |
+        Invoke-WebRequest -Uri "https://download.qt.io/official_releases/jom/jom.zip" -OutFile jom.zip
+        unzip jom.zip
+        .\jom
+    - name: Smoke test
+      run: |
+        $Env:PATH += ";lib;plugins\skins"
+        echo "starting gallery"
+        Start-Process .\examples\bin\gallery
+        Start-Sleep -s 10
+    - uses: OrbitalOwen/desktop-screenshot-action@0.1
+      with:
+        file-name: 'screenshot-windows-qt6-2.jpg'
+    - name: Cleanup smoke test
+      run: taskkill /IM gallery.exe /T
+
+
+  build-windows-qt-current:
+    name: Windows Qt 6.3 (current) build
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Cache Qt
+      id: cache-qt-6-3
+      uses: actions/cache@v1  # not v2!
+      with:
+        path: ../Qt/6.3.0
+        key: ${{ runner.os }}-QtCache-Qt6-3
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: '6.3.0'
+        host: 'windows'
+        target: 'desktop'
+        arch: 'win64_msvc2019_64'
+        install-deps: 'true'
+        modules: 'qtwebengine'
+        cached: ${{ steps.cache-qt-6-3.outputs.cache-hit }}
+        setup-python: 'true'
+        tools: ''
+        set-env: 'true'
+        tools-only: 'false'
+
+    - uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Windows and Qt version
+      run: |
+        systeminfo /fo csv | ConvertFrom-Csv | select OS*, System*, Hotfix* | Format-List
+        qmake -v
+
+    - name: qmake
+      run: qmake qskinny.pro
+
+    - name: jom
+      run: |
+        Invoke-WebRequest -Uri "https://download.qt.io/official_releases/jom/jom.zip" -OutFile jom.zip
+        unzip jom.zip
+        .\jom
+    - name: Smoke test
+      run: |
+        $Env:PATH += ";lib;plugins\skins"
+        echo "starting gallery"
+        Start-Process .\examples\bin\gallery
+        Start-Sleep -s 10
+    - uses: OrbitalOwen/desktop-screenshot-action@0.1
+      with:
+        file-name: 'screenshot-windows-qt6-3.jpg'
+    - name: Cleanup smoke test
+      run: taskkill /IM gallery.exe /T
+
+
+  build-mac-qt5-15:
+    name: MacOS Qt 5.15 build
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
     - name: Cache Qt
-      id: cache-qt
+      id: cache-qt-5-15
       uses: actions/cache@v1  # not v2!
       with:
-        path: ../Qt
-        key: ${{ runner.os }}-QtCache
+        path: ../Qt/5.15.2
+        key: ${{ runner.os }}-QtCache-Qt5
 
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
@@ -104,7 +371,7 @@ jobs:
         target: 'desktop'
         install-deps: 'true'
         modules: 'qtwebengine'
-        cached: ${{ steps.cache-qt.outputs.cache-hit }}
+        cached: ${{ steps.cache-qt-5-15.outputs.cache-hit }}
         setup-python: 'true'
         tools: ''
         set-env: 'true'
@@ -119,3 +386,103 @@ jobs:
       run: qmake qskinny.pro
     - name: make
       run: make -j$(sysctl -n hw.ncpu)
+    - name: Smoke test
+      run: |
+        DYLD_LIBRARY_PATH=./lib ./examples/bin/iotdashboard.app/Contents/MacOS/iotdashboard -qwindowgeometry 1024x600+75+100 &
+        sleep 10
+    - uses: OrbitalOwen/desktop-screenshot-action@0.1
+      with:
+        file-name: 'screenshot-macos-qt5-15.jpg'
+    - name: Cleanup smoke test
+      run: killall iotdashboard
+
+
+  build-mac-qt-lts:
+    name: MacOS Qt 6.2 (LTS) build
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Cache Qt
+      id: cache-qt-6-2
+      uses: actions/cache@v1  # not v2!
+      with:
+        path: ../Qt/6.2.4
+        key: ${{ runner.os }}-QtCache-Qt6-2
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: '6.2.4'
+        host: 'mac'
+        target: 'desktop'
+        install-deps: 'true'
+        modules: 'qtwebengine'
+        cached: ${{ steps.cache-qt-6-2.outputs.cache-hit }}
+        setup-python: 'true'
+        tools: ''
+        set-env: 'true'
+        tools-only: 'false'
+
+    - name: MacOS and Qt version
+      run: |
+        sw_vers
+        echo number of processors: $(sysctl -n hw.ncpu)
+        qmake -v
+    - name: qmake
+      run: qmake qskinny.pro
+    - name: make
+      run: make -j$(sysctl -n hw.ncpu)
+    - name: Smoke test
+      run: |
+        DYLD_LIBRARY_PATH=./lib ./examples/bin/gallery.app/Contents/MacOS/gallery -qwindowgeometry 1024x600+75+100 &
+        sleep 10
+    - uses: OrbitalOwen/desktop-screenshot-action@0.1
+      with:
+        file-name: 'screenshot-macos-qt6-2.jpg'
+    - name: Cleanup smoke test
+      run: killall gallery
+
+  build-mac-qt-current:
+    name: MacOS Qt 6.3 (current) build
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Cache Qt
+      id: cache-qt-6-3
+      uses: actions/cache@v1  # not v2!
+      with:
+        path: ../Qt/6.3.0
+        key: ${{ runner.os }}-QtCache-Qt6-3
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: '6.3.0'
+        host: 'mac'
+        target: 'desktop'
+        install-deps: 'true'
+        modules: 'qtwebengine'
+        cached: ${{ steps.cache-qt-6-3.outputs.cache-hit }}
+        setup-python: 'true'
+        tools: ''
+        set-env: 'true'
+        tools-only: 'false'
+
+    - name: MacOS and Qt version
+      run: |
+        sw_vers
+        echo number of processors: $(sysctl -n hw.ncpu)
+        qmake -v
+    - name: qmake
+      run: qmake qskinny.pro
+    - name: make
+      run: make -j$(sysctl -n hw.ncpu)
+    - name: Smoke test
+      run: |
+        DYLD_LIBRARY_PATH=./lib ./examples/bin/gallery.app/Contents/MacOS/gallery -qwindowgeometry 1024x600+75+100 &
+        sleep 10
+    - uses: OrbitalOwen/desktop-screenshot-action@0.1
+      with:
+        file-name: 'screenshot-macos-qt6-3.jpg'
+    - name: Cleanup smoke test
+      run: killall gallery

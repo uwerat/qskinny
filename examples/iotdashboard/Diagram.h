@@ -6,7 +6,6 @@
 #pragma once
 
 #include <QskControl.h>
-#include <QskNamespace.h>
 
 class Diagram : public QskControl
 {
@@ -39,9 +38,6 @@ class Diagram : public QskControl
 
     int xGridLines() const;
     void setXGridLines( int lines );
-
-    Qsk::Position chartPosition() const;
-    void setChartPosition( Qsk::Position );
 
   private:
     class PrivateData;

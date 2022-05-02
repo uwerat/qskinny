@@ -19,7 +19,8 @@ class QSK_EXPORT QskSubWindowAreaSkinlet : public QskSkinlet
   public:
     enum NodeRole
     {
-        PanelRole
+        PanelRole,
+        RoleCount
     };
 
     Q_INVOKABLE QskSubWindowAreaSkinlet( QskSkin* = nullptr );

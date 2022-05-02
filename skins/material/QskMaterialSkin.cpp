@@ -19,6 +19,7 @@
 #include <QskPushButton.h>
 #include <QskProgressBar.h>
 #include <QskScrollView.h>
+#include <QskSegmentedBar.h>
 #include <QskSeparator.h>
 #include <QskSlider.h>
 #include <QskSubWindow.h>
@@ -79,6 +80,7 @@ namespace
         void setupProgressBar();
         void setupPushButton();
         void setupScrollView();
+        void setupSegmentedBar();
         void setupSeparator();
         void setupSubWindow();
         void setupSlider();
@@ -112,6 +114,7 @@ void Editor::setup()
     setupProgressBar();
     setupPushButton();
     setupScrollView();
+    setupSegmentedBar();
     setupSeparator();
     setupSlider();
     setupSubWindow();
@@ -201,9 +204,9 @@ void Editor::setupMenu()
     setBoxBorderMetrics( Q::Separator, 0 );
     setGradient( Q::Separator, m_pal.primary );
 
-    setPadding( Q::Cell, QskMargins( 2, 10, 2, 10 ) );
-    setSpacing( Q::Cell, 5 );
-    setGradient( Q::Cell, Qt::transparent );
+    setPadding( Q::Segment, QskMargins( 2, 10, 2, 10 ) );
+    setSpacing( Q::Segment, 5 );
+    setGradient( Q::Segment, Qt::transparent );
 
     setGradient( Q::Cursor, QskRgb::toTransparentF( m_pal.onBackground, m_pal.focused ) );
 
@@ -295,6 +298,64 @@ void Editor::setupFocusIndicator()
 {
     using Q = QskFocusIndicator;
     setGradient( Q::Panel, QskGradient() );
+}
+
+void Editor::setupSegmentedBar()
+{
+    // copied from Squiek: we need something similar to a tab bar here. TODO ...
+    using A = QskAspect;
+    using Q = QskSegmentedBar;
+
+    {
+        // Panel
+
+        setPadding( Q::Panel, 0 );
+        setSpacing( Q::Panel, 5 );
+
+        setGradient( Q::Panel, m_pal.baseColor );
+
+        setBoxBorderMetrics( Q::Panel, 2 );
+        setBoxBorderColors( Q::Panel, m_pal.darker125 );
+
+        const QSize strutSize( qskDpiScaled( 100 ), qskDpiScaled( 50 ) );
+
+        setStrutSize( Q::Panel | A::Horizontal, strutSize );
+        setStrutSize( Q::Panel | A::Vertical, strutSize.transposed() );
+    }
+
+    {
+        // Segment
+
+        setPadding( Q::Segment, QskMargins( 2, 5, 2, 5 ) );
+        setGradient( Q::Segment, QskGradient() );
+    }
+
+    {
+        // Cursor
+        setGradient( Q::Cursor, m_pal.accentColor );
+        setGradient( Q::Cursor | Q::Disabled, QColor( Qt::gray ) );
+
+        setAnimation( Q::Cursor | A::Metric | A::Position, 100 );
+    }
+
+    for( auto subControl : { Q::Panel, Q::Cursor } )
+        setBoxShape( subControl, 3 );
+
+    {
+        // Text
+
+        setColor( Q::Text, m_pal.textColor );
+        setColor( Q::Text | Q::Selected, m_pal.contrastColor );
+    }
+
+    {
+        // Graphic
+
+#if 0
+        setGraphicRole( Q::Graphic, ... );
+        setStrutSize( Q::Graphic, ... );
+#endif
+    }
 }
 
 void Editor::setupSeparator()

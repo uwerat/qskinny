@@ -353,11 +353,6 @@ QskAspect::State QskAspect::topState() const noexcept
     if ( m_bits.states == NoState )
         return NoState;
 
-    /*
-        Before Qt 5.8 qCountLeadingZeroBits does not use
-        _BitScanReverse - we can live with this.
-     */
-
     const auto n = qCountLeadingZeroBits( static_cast< quint16 >( m_bits.states ) );
     return static_cast< QskAspect::State >( 1 << ( 15 - n ) );
 }

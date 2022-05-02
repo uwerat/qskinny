@@ -165,17 +165,12 @@ QSGTexture* QskTextureRenderer::textureFromId(
     texture = QNativeInterface::QSGOpenGLTexture::fromNative(
         textureId, window, size, flags );
 
-#elif QT_VERSION >= QT_VERSION_CHECK( 5, 14, 0 )
+#else
 
     const int nativeLayout = 0; // VkImageLayout in case of Vulkan
 
     texture = window->createTextureFromNativeObject(
         QQuickWindow::NativeObjectTexture, &textureId, nativeLayout, size, flags );
-
-#else
-
-    texture = window->createTextureFromId( textureId, size, flags );
-
 #endif
 
     return texture;

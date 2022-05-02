@@ -62,19 +62,12 @@ namespace
       public:
         MetaCallEvent(
                 QMetaObject::Call call, CallFunction callFunction, ushort offset,
-                ushort index, int nargs, int* types, void* args[],
-                QSemaphore* semaphore = nullptr )
-            : QMetaCallEvent( offset, index, callFunction, nullptr, -1,
-#if QT_VERSION < QT_VERSION_CHECK( 5, 14, 0 )
-                nargs, types,
-#endif
-                args, semaphore )
+                ushort index, void* args[], QSemaphore* semaphore )
+            : QMetaCallEvent( offset, index, callFunction, nullptr, -1, args, semaphore )
             , m_call( call )
             , m_callFunction( callFunction )
             , m_index( index )
         {
-            Q_UNUSED( nargs )
-            Q_UNUSED( types )
         }
 
         void placeMetaCall( QObject* object ) override
@@ -93,13 +86,12 @@ namespace
 
 static inline void qskInvokeMetaCallQueued(
     QObject* object, QMetaObject::Call call, ushort offset,
-    ushort index, int nargs, int* types, void* args[],
-    QSemaphore* semaphore = nullptr )
+    ushort index, void* args[], QSemaphore* semaphore )
 {
     const auto callFunction = object->metaObject()->d.static_metacall;
 
     auto event = new MetaCallEvent( call, callFunction,
-        offset, index, nargs, types, args, semaphore );
+        offset, index, args, semaphore );
 
     QCoreApplication::postEvent( object, event );
 }
@@ -205,7 +197,7 @@ static void qskInvokeMetaCall(
             QSemaphore semaphore;
 
             qskInvokeMetaCallQueued( receiver, call,
-                offset, index, 0, nullptr, argv, &semaphore );
+                offset, index, argv, &semaphore );
 
             semaphore.acquire();
 
@@ -216,9 +208,7 @@ static void qskInvokeMetaCall(
             if ( receiver == nullptr )
                 return;
 
-            int* types = nullptr;
             void** arguments = nullptr;
-            int argc = 0;
 
             if ( call == QMetaObject::InvokeMetaMethod )
             {
@@ -226,9 +216,8 @@ static void qskInvokeMetaCall(
                 // should be doable without QMetaMethod. TODO ...
                 const auto method = metaObject->method( offset + index );
 #endif
-                argc = method.parameterCount() + 1;
+                const int argc = method.parameterCount() + 1;
 
-                types = static_cast< int* >( malloc( argc * sizeof( int ) ) );
                 arguments = static_cast< void** >( malloc( argc * sizeof( void* ) ) );
 
                 /*
@@ -236,7 +225,6 @@ static void qskInvokeMetaCall(
                     invalid for Queued Connections.
                  */
 
-                types[ 0 ] = QMetaType::UnknownType;
                 arguments[ 0 ] = nullptr;
 
                 for ( int i = 1; i < argc; i++ )
@@ -248,8 +236,8 @@ static void qskInvokeMetaCall(
                         break;
                     }
 
-                    types[ i ] = method.parameterType( i - 1 );
-                    arguments[ i ] = qskMetaTypeCreate( types[ i ], argv[ i ] );
+                    const auto type = method.parameterType( i - 1 );
+                    arguments[ i ] = qskMetaTypeCreate( type, argv[ i ] );
                 }
             }
             else
@@ -257,26 +245,18 @@ static void qskInvokeMetaCall(
                 // should be doable without QMetaMethod. TODO ...
                 const auto property = metaObject->property( offset + index );
 
-                argc = 1;
-
-                types = static_cast< int* >( malloc( argc * sizeof( int ) ) );
-                arguments = static_cast< void** >( malloc( argc * sizeof( void* ) ) );
-
-                types[ 0 ] = property.userType();
-                arguments[ 0 ] = qskMetaTypeCreate( types[ 0 ], argv[ 0 ] );
+                arguments = static_cast< void** >( malloc( 1 * sizeof( void* ) ) );
+                arguments[ 0 ] = qskMetaTypeCreate( property.userType(), argv[ 0 ] );
             }
 
             if ( receiver.isNull() )
             {
                 // object might have died in the meantime
-                free( types );
                 free( arguments );
-
                 return;
             }
 
-            qskInvokeMetaCallQueued( object, call,
-                offset, index, argc, types, arguments );
+            qskInvokeMetaCallQueued( object, call, offset, index, arguments, nullptr );
 
             break;
         }

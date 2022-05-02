@@ -22,7 +22,9 @@ class QSK_EXPORT QskSubWindowSkinlet : public QskPopupSkinlet
         PanelRole = QskPopupSkinlet::RoleCount,
         TitleBarRole,
         SymbolRole,
-        TitleRole
+        TitleRole,
+
+        RoleCount
     };
 
     Q_INVOKABLE QskSubWindowSkinlet( QskSkin* = nullptr );

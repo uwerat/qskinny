@@ -22,7 +22,7 @@ class QSK_EXPORT QskProgressBarSkinlet : public QskSkinlet
         GrooveRole,
         BarRole,
 
-        RoleCount,
+        RoleCount
     };
 
     Q_INVOKABLE QskProgressBarSkinlet( QskSkin* = nullptr );

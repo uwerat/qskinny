@@ -1,19 +1,24 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * This file may be used under the terms of the QSkinny License, Version 1.0
+ *****************************************************************************/
+
 #include "QskMenu.h"
 
-#include <QskGraphicProvider.h>
-#include <QskTextOptions.h>
-#include <QskGraphic.h>
-#include <QskColorFilter.h>
-#include <QskSkinlet.h>
-#include <QskEvent.h>
-#include <QskPlatform.h>
+#include "QskGraphicProvider.h"
+#include "QskTextOptions.h"
+#include "QskGraphic.h"
+#include "QskColorFilter.h"
+#include "QskSkinlet.h"
+#include "QskEvent.h"
+#include "QskPlatform.h"
 
 #include <qvector.h>
 #include <qvariant.h>
 #include <qeventloop.h>
 
 QSK_SUBCONTROL( QskMenu, Panel )
-QSK_SUBCONTROL( QskMenu, Cell )
+QSK_SUBCONTROL( QskMenu, Segment )
 QSK_SUBCONTROL( QskMenu, Cursor )
 QSK_SUBCONTROL( QskMenu, Text )
 QSK_SUBCONTROL( QskMenu, Graphic )
@@ -30,8 +35,11 @@ namespace
             : graphicSource( graphicSource )
             , text( text )
         {
+#if 1
+            // lazy loading TODO ...
             if( !graphicSource.isEmpty() )
                 graphic = Qsk::loadGraphic( graphicSource );
+#endif
         }
 
         QUrl graphicSource;
@@ -287,19 +295,16 @@ void QskMenu::traverse( int steps )
     if ( newIndex < 0 )
         newIndex += count();
 
-    if ( hasAnimationHint( Cursor | QskAspect::Position | QskAspect::Metric ) )
-    {
-        // when cycling we want slide in
+    // when cycling we want slide in
 
-        if ( index < 0 )
-            setPositionHint( Cursor, count() );
+    int startIndex = m_data->currentIndex;
 
-        if ( index >= count() )
-            setPositionHint( Cursor, -1 );
+    if ( index < 0 )
+        startIndex = count();
+    else if ( index >= count() )
+        startIndex = -1;
 
-        movePositionHint( Cursor, newIndex );
-    }
-
+    movePositionHint( Cursor, startIndex, newIndex );
     setCurrentIndex( newIndex );
 }
 
@@ -374,13 +379,13 @@ void QskMenu::setSelectedIndex( int index )
 QRectF QskMenu::cellRect( int index ) const
 {
     return effectiveSkinlet()->sampleRect(
-        this, contentsRect(), QskMenu::Cell, index );
+        this, contentsRect(), QskMenu::Segment, index );
 }
 
 int QskMenu::indexAtPosition( const QPointF& pos ) const
 {
     return effectiveSkinlet()->sampleIndexAt(
-        this, contentsRect(), QskMenu::Cell, pos );
+        this, contentsRect(), QskMenu::Segment, pos );
 }
 
 int QskMenu::exec()

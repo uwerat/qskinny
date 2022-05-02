@@ -29,17 +29,12 @@ class QskTabView::PrivateData
 };
 
 QskTabView::QskTabView( QQuickItem* parent )
-    : QskTabView( Qsk::Top, parent )
-{
-}
-
-QskTabView::QskTabView( Qsk::Position tabPosition, QQuickItem* parent )
     : Inherited( parent )
     , m_data( new PrivateData() )
 {
     setPolishOnResize( true );
 
-    m_data->tabBar = new QskTabBar( tabPosition, this );
+    m_data->tabBar = new QskTabBar( Qt::TopEdge, this );
 
     m_data->stackBox = new QskStackBox( this );
     m_data->stackBox->setObjectName( QStringLiteral( "QskTabViewStackBox" ) );
@@ -67,8 +62,8 @@ QskTabView::QskTabView( Qsk::Position tabPosition, QQuickItem* parent )
     connect( m_data->tabBar, &QskTabBar::countChanged,
         this, &QskTabView::countChanged );
 
-    connect( m_data->tabBar, &QskTabBar::tabPositionChanged,
-        this, &QskTabView::tabPositionChanged );
+    connect( m_data->tabBar, &QskTabBar::edgeChanged,
+        this, &QskTabView::tabBarEdgeChanged );
 
     connect( m_data->tabBar, &QskTabBar::autoFitTabsChanged,
         this, &QskTabView::autoFitTabsChanged );
@@ -88,20 +83,14 @@ const QskTabBar* QskTabView::tabBar() const
     return m_data->tabBar;
 }
 
-void QskTabView::setTabPosition( Qsk::Position position )
+void QskTabView::setTabBarEdge( Qt::Edge edge )
 {
-    if ( position == tabPosition() )
-        return;
-
-    m_data->tabBar->setTabPosition( position );
-
-    polish();
-    update();
+    m_data->tabBar->setEdge( edge );
 }
 
-Qsk::Position QskTabView::tabPosition() const
+Qt::Edge QskTabView::tabBarEdge() const
 {
-    return m_data->tabBar->tabPosition();
+    return m_data->tabBar->edge();
 }
 
 void QskTabView::setAutoFitTabs( bool on )
@@ -310,6 +299,7 @@ bool QskTabView::event( QEvent* event )
     {
         resetImplicitSize();
         polish();
+        update();
     }
 
     return Inherited::event( event );

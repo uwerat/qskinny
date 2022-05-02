@@ -43,9 +43,6 @@ class QSK_EXPORT QskBoxBorderColors
     void setGradients( const QskGradient& left, const QskGradient& top,
         const QskGradient& right, const QskGradient& bottom );
 
-    void setGradient( Qsk::Position, const QskGradient& );
-    const QskGradient& gradient( Qsk::Position ) const;
-
     void setGradientAt( Qt::Edges, const QskGradient& );
     const QskGradient& gradientAt( Qt::Edge ) const;
 
@@ -73,16 +70,29 @@ class QSK_EXPORT QskBoxBorderColors
     bool isValid() const;
 
   private:
+    enum
+    {
+        // in order of Qt::Edge
+        Top    = 0,
+        Left   = 1,
+        Right  = 2,
+        Bottom = 3
+    };
     QskGradient m_gradients[ 4 ];
 };
 
 inline QskBoxBorderColors::QskBoxBorderColors( Qt::GlobalColor color )
-    : QskBoxBorderColors( QColor( color ) )
+    : QskBoxBorderColors( QskGradient( QColor( color ) ) )
 {
 }
 
 inline QskBoxBorderColors::QskBoxBorderColors( QRgb rgb )
-    : QskBoxBorderColors( QColor::fromRgba( rgb ) )
+    : QskBoxBorderColors( QskGradient( QColor::fromRgba( rgb ) ) )
+{
+}
+
+inline QskBoxBorderColors::QskBoxBorderColors( const QColor& color )
+    : QskBoxBorderColors( QskGradient( color ) )
 {
 }
 
@@ -91,29 +101,24 @@ inline bool QskBoxBorderColors::operator!=( const QskBoxBorderColors& other ) co
     return !( *this == other );
 }
 
-inline const QskGradient& QskBoxBorderColors::gradient( Qsk::Position position ) const
-{
-    return m_gradients[ position ];
-}
-
 inline const QskGradient& QskBoxBorderColors::left() const
 {
-    return m_gradients[ Qsk::Left ];
+    return m_gradients[ Left ];
 }
 
 inline const QskGradient& QskBoxBorderColors::top() const
 {
-    return m_gradients[ Qsk::Top ];
+    return m_gradients[ Top ];
 }
 
 inline const QskGradient& QskBoxBorderColors::right() const
 {
-    return m_gradients[ Qsk::Right ];
+    return m_gradients[ Right ];
 }
 
 inline const QskGradient& QskBoxBorderColors::bottom() const
 {
-    return m_gradients[ Qsk::Bottom ];
+    return m_gradients[ Bottom ];
 }
 
 #ifndef QT_NO_DEBUG_STREAM

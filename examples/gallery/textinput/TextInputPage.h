@@ -5,11 +5,13 @@
 
 #pragma once
 
-#include <QskLinearBox.h>
+#include "Page.h"
 
-class Page : public QskLinearBox
+class TextInputPage : public Page
 {
   public:
-    Page( QQuickItem* parent = nullptr );
-    Page( Qt::Orientation, QQuickItem* parent = nullptr );
+    TextInputPage( QQuickItem* = nullptr );
+
+  private:
+    void populate();
 };

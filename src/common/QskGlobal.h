@@ -9,6 +9,10 @@
 #include <qcompilerdetection.h>
 #include <qglobal.h>
 
+#if QT_VERSION < QT_VERSION_CHECK( 5, 15, 0 )
+    static_assert( false, "QSkinny requires Qt >= 5.15" );
+#endif
+
 // QSK_VERSION is (major << 16) + (minor << 8) + patch.
 
 #define QSK_VERSION       0x000001

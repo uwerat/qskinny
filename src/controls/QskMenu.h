@@ -32,7 +32,7 @@ class QSK_EXPORT QskMenu : public QskPopup
     using Inherited = QskPopup;
 
   public:
-    QSK_SUBCONTROLS( Panel, Cell, Cursor, Text, Graphic, Separator )
+    QSK_SUBCONTROLS( Panel, Segment, Cursor, Text, Graphic, Separator )
     QSK_STATES( Selected )
 
     QskMenu( QQuickItem* parentItem = nullptr );
@@ -45,7 +45,7 @@ class QSK_EXPORT QskMenu : public QskPopup
     void setOrigin( const QPointF& );
     QPointF origin() const;
 
-    void setTextOptions( const QskTextOptions& textOptions );
+    void setTextOptions( const QskTextOptions& );
     QskTextOptions textOptions() const;
 
     // insert, remove, functors, actions, QskGraphic ...

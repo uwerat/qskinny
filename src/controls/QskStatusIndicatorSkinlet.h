@@ -19,7 +19,8 @@ class QSK_EXPORT QskStatusIndicatorSkinlet : public QskSkinlet
   public:
     enum NodeRole
     {
-        GraphicRole
+        GraphicRole,
+        RoleCount
     };
 
     Q_INVOKABLE QskStatusIndicatorSkinlet( QskSkin* = nullptr );

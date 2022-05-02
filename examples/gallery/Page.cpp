@@ -5,6 +5,11 @@
 
 #include "Page.h"
 
+Page::Page( QQuickItem* parent )
+    : Page( Qt::Vertical, parent )
+{
+}
+
 Page::Page( Qt::Orientation orientation, QQuickItem* parent )
     : QskLinearBox( orientation, parent )
 {

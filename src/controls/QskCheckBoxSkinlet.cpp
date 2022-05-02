@@ -131,3 +131,5 @@ QSizeF QskCheckBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
 {
     return skinnable->strutSizeHint( QskCheckBox::Panel );
 }
+
+#include "moc_QskCheckBoxSkinlet.cpp"

@@ -19,7 +19,8 @@ class QSK_EXPORT QskFocusIndicatorSkinlet : public QskSkinlet
   public:
     enum NodeRole
     {
-        FrameRole
+        FrameRole,
+        RoleCount
     };
 
     Q_INVOKABLE QskFocusIndicatorSkinlet( QskSkin* = nullptr );
