@@ -50,8 +50,8 @@ class QskPlacementPolicy
     constexpr Policy hiddenPolicy() const noexcept;
 
   private:
-    Policy m_visiblePolicy : 2;
-    Policy m_hiddenPolicy : 2;
+    Policy m_visiblePolicy : 3;
+    Policy m_hiddenPolicy : 3;
 };
 
 inline constexpr QskPlacementPolicy::QskPlacementPolicy() noexcept
