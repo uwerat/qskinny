@@ -312,10 +312,9 @@ void Editor::setupSegmentedBar()
         setPadding( Q::Panel, 0 );
         setSpacing( Q::Panel, 5 );
 
-        setGradient( Q::Panel, m_pal.baseColor );
+        setGradient( Q::Panel, m_pal.elevated( m_pal.background ) );
 
-        setBoxBorderMetrics( Q::Panel, 2 );
-        setBoxBorderColors( Q::Panel, m_pal.darker125 );
+        setBoxBorderMetrics( Q::Panel, 0 );
 
         const QSize strutSize( qskDpiScaled( 100 ), qskDpiScaled( 50 ) );
 
@@ -331,9 +330,11 @@ void Editor::setupSegmentedBar()
     }
 
     {
+        const auto cursor = QskRgb::toTransparentF( m_pal.onBackground, m_pal.focused );
+
         // Cursor
-        setGradient( Q::Cursor, m_pal.accentColor );
-        setGradient( Q::Cursor | Q::Disabled, QColor( Qt::gray ) );
+        setGradient( Q::Cursor, cursor );
+        setGradient( Q::Cursor | Q::Disabled, m_pal.toDisabled( cursor ) );
 
         setAnimation( Q::Cursor | A::Metric | A::Position, 100 );
     }
@@ -344,8 +345,8 @@ void Editor::setupSegmentedBar()
     {
         // Text
 
-        setColor( Q::Text, m_pal.textColor );
-        setColor( Q::Text | Q::Selected, m_pal.contrastColor );
+        setColor( Q::Text, m_pal.onBackground );
+        setColor( Q::Text | Q::Selected, m_pal.onBackground );
     }
 
     {
