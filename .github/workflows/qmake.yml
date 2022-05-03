@@ -244,6 +244,8 @@ jobs:
   build-windows-qt-lts:
     name: Windows Qt 6.2 (LTS) build
     runs-on: windows-latest
+    env:
+      QSG_RHI_BACKEND: opengl
     steps:
     - uses: actions/checkout@v2
     - name: Cache Qt
@@ -299,6 +301,8 @@ jobs:
   build-windows-qt-current:
     name: Windows Qt 6.3 (current) build
     runs-on: windows-latest
+    env:
+      QSG_RHI_BACKEND: opengl
     steps:
     - uses: actions/checkout@v2
     - name: Cache Qt
