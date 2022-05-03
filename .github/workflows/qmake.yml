@@ -232,7 +232,7 @@ jobs:
       run: |
         $Env:PATH += ";lib;plugins\skins"
         echo "starting iotdashboard"
-        Start-Process .\examples\bin\iotdashboard
+        Start-Process .\examples\bin\iotdashboard -ArgumentList "-qwindowgeometry 1024x600+0+0"
         Start-Sleep -s 10
     - uses: OrbitalOwen/desktop-screenshot-action@0.1
       with:
@@ -287,7 +287,7 @@ jobs:
       run: |
         $Env:PATH += ";lib;plugins\skins"
         echo "starting gallery"
-        Start-Process .\examples\bin\gallery
+        Start-Process .\examples\bin\gallery -ArgumentList "-qwindowgeometry 1024x600+0+0"
         Start-Sleep -s 10
     - uses: OrbitalOwen/desktop-screenshot-action@0.1
       with:
@@ -342,7 +342,7 @@ jobs:
       run: |
         $Env:PATH += ";lib;plugins\skins"
         echo "starting gallery"
-        Start-Process .\examples\bin\gallery
+        Start-Process .\examples\bin\gallery -ArgumentList "-qwindowgeometry 1024x600+0+0"
         Start-Sleep -s 10
     - uses: OrbitalOwen/desktop-screenshot-action@0.1
       with:
