@@ -1,20 +1,20 @@
 <RCC>
     <qresource prefix="/">
-        <file>images/main-icon.png</file>
-        <file>images/dashboard.png</file>
-        <file>images/rooms.png</file>
-        <file>images/devices.png</file>
-        <file>images/statistics.png</file>
-        <file>images/storage.png</file>
-        <file>images/members.png</file>
-        <file>images/logout.png</file>
-        <file>images/indoor-temperature.png</file>
-        <file>images/humidity.png</file>
+        <file>images/main-icon.svg</file>
+        <file>images/dashboard.svg</file>
+        <file>images/rooms.svg</file>
+        <file>images/devices.svg</file>
+        <file>images/statistics.svg</file>
+        <file>images/storage.svg</file>
+        <file>images/members.svg</file>
+        <file>images/logout.svg</file>
+        <file>images/indoor-temperature.svg</file>
+        <file>images/humidity.svg</file>
         <file>images/up.svg</file>
         <file>images/down.svg</file>
-        <file>images/lamps.png</file>
-        <file>images/music-system.png</file>
-        <file>images/ac.png</file>
-        <file>images/router.png</file>
+        <file>images/lamps.svg</file>
+        <file>images/music-system.svg</file>
+        <file>images/ac.svg</file>
+        <file>images/router.svg</file>
     </qresource>
 </RCC>
