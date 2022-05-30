@@ -66,7 +66,11 @@ namespace
             menu->addOption( "image://shapes/Diamond/Yellow", "Save As" );
             menu->addOption( "image://shapes/Ellipse/Red", "Setup" );
             menu->addSeparator();
-            menu->addOption( "image://shapes/Hexagon/PapayaWhip", "Help" );
+            menu->addOption( "image://shapes/Hexagon/PapayaWhip", "Quit" );
+
+            // see https://github.com/uwerat/qskinny/issues/192
+            connect( menu, &QskMenu::triggered,
+                []( int index ) { if ( index == 3 ) qApp->quit(); } );
 
             menu->setOrigin( geometry().bottomLeft() );
             menu->open();
