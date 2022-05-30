@@ -8,8 +8,6 @@
 #include "QskSkinlet.h"
 #include "QskSGNode.h"
 #include "QskTickmarksNode.h"
-#include "QskTextNode.h"
-#include "QskGraphicNode.h"
 #include "QskTextOptions.h"
 #include "QskTextColors.h"
 #include "QskGraphic.h"
@@ -283,18 +281,20 @@ QSGNode* QskScaleRenderer::updateLabelsNode(
                 labelRect = r;
             }
 
-            if ( nextNode == nullptr )
+            nextNode = QskSkinlet::updateTextNode( skinnable, nextNode,
+                r, alignment, text, m_data->font, QskTextOptions(),
+                m_data->textColors, Qsk::Normal );
+
+            if ( nextNode )
             {
-                nextNode = new QskTextNode;
-                QskSGNode::setNodeRole( nextNode, TextNode );
-                node->appendChildNode( nextNode );
+                if ( nextNode->parent() != node )
+                {
+                    QskSGNode::setNodeRole( nextNode, TextNode );
+                    node->appendChildNode( nextNode );
+                }
+
+                nextNode = nextNode->nextSibling();
             }
-
-            auto textNode = static_cast< QskTextNode* >( nextNode );
-            textNode->setTextData( skinnable->owningControl(), text, r, m_data->font,
-                QskTextOptions(), m_data->textColors, alignment, Qsk::Normal );
-
-            nextNode = nextNode->nextSibling();
         }
         else if ( label.canConvert< QskGraphic >() )
         {
@@ -329,20 +329,19 @@ QSGNode* QskScaleRenderer::updateLabelsNode(
                 nextNode = qskRemoveTraillingNodes( node, nextNode );
             }
 
-            if ( nextNode == nullptr )
+            nextNode = QskSkinlet::updateGraphicNode(
+                skinnable, nextNode, graphic, m_data->colorFilter, labelRect, alignment );
+
+            if ( nextNode )
             {
-                nextNode = new QskGraphicNode;
-                QskSGNode::setNodeRole( nextNode, GraphicNode );
-                node->appendChildNode( nextNode );
+                if ( nextNode->parent() != node )
+                {
+                    QskSGNode::setNodeRole( nextNode, GraphicNode );
+                    node->appendChildNode( nextNode );
+                }
+
+                nextNode = nextNode->nextSibling();
             }
-
-            auto graphicNode = static_cast< QskGraphicNode* >( nextNode );
-
-            QskSkinlet::updateGraphicNode(
-                skinnable->owningControl(), graphicNode,
-                graphic, m_data->colorFilter, labelRect, alignment );
-
-            nextNode = nextNode->nextSibling();
         }
     }
 
