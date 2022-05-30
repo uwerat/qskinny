@@ -4,7 +4,10 @@
  *****************************************************************************/
 
 #include "ShadowedBox.h"
-#include "nodes/BoxShadowNode.h"
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    #include "nodes/BoxShadowNode.h"
+#endif
 
 #include <QskBoxNode.h>
 #include <QskBoxBorderMetrics.h>
@@ -47,6 +50,7 @@ namespace
 
             switch ( nodeRole )
             {
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
                 case ShadowRole:
                 {
                     auto shadowNode = static_cast< BoxShadowNode* >( node );
@@ -65,6 +69,7 @@ namespace
 
                     return shadowNode;
                 }
+#endif
                 case PanelRole:
                 {
                     auto boxNode = static_cast< QskBoxNode* >( node );
