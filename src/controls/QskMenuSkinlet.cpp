@@ -9,8 +9,6 @@
 #include "QskBoxNode.h"
 #include "QskGraphic.h"
 #include "QskColorFilter.h"
-#include "QskGraphicNode.h"
-#include "QskTextNode.h"
 #include "QskTextOptions.h"
 #include "QskSGNode.h"
 #include "QskFunctions.h"

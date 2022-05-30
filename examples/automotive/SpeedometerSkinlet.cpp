@@ -11,7 +11,6 @@
 #include <QskBoxNode.h>
 #include <QskBoxShapeMetrics.h>
 #include <QskTextColors.h>
-#include <QskTextNode.h>
 #include <QskTextOptions.h>
 #include <QskFunctions.h>
 
@@ -164,7 +163,9 @@ QSGNode* SpeedometerSkinlet::updateLabelsNode(
     const auto radius = 0.5 * scaleRect.width();
 
     const auto spacing = speedometer->spacingHint( Q::TickLabels );
-    QFontMetricsF fontMetrics( speedometer->effectiveFont( Q::TickLabels ) );
+
+    const auto font = speedometer->effectiveFont( Q::TickLabels );
+    const QFontMetricsF fontMetrics( font );
 
     auto angle = startAngle;
 
@@ -172,6 +173,9 @@ QSGNode* SpeedometerSkinlet::updateLabelsNode(
     const auto needleRadius = radius - tickSize.height();
 
     // Create a series of tickmarks from minimum to maximum
+
+    auto labelNode = ticksNode->firstChild();
+
     for ( int i = 0; i < labels.count(); ++i, angle += step )
     {
         const qreal cos = qFastCos( qDegreesToRadians( angle ) );
@@ -188,11 +192,10 @@ QSGNode* SpeedometerSkinlet::updateLabelsNode(
 
         vertexData += 2;
 
-        // only create a text node if there is a label for it:
-        if ( labels.count() > i )
-        {
-            const QString& text = labels.at( i );
+        const auto& text = labels.at( i );
 
+        if ( !text.isEmpty() )
+        {
             const auto w = qskHorizontalAdvance( fontMetrics, text );
             const auto h = fontMetrics.height();
             const auto adjustX = ( -0.5 * cos - 0.5 ) * w;
@@ -203,23 +206,17 @@ QSGNode* SpeedometerSkinlet::updateLabelsNode(
 
             const QRectF numbersRect( numbersX, numbersY, w, h );
 
-            QskTextNode* numbersNode;
+            labelNode = QskSkinlet::updateTextNode(
+                speedometer, labelNode, numbersRect, Qt::AlignCenter | Qt::AlignHCenter,
+                text, font, QskTextOptions(), QskTextColors( color ), Qsk::Normal );
 
-            if ( ticksNode->childCount() > i )
+            if ( labelNode )
             {
-                numbersNode = static_cast< QskTextNode* >( ticksNode->childAtIndex( i ) );
-            }
-            else
-            {
-                numbersNode = new QskTextNode();
-            }
+                if ( labelNode->parent() != ticksNode )
+                    ticksNode->appendChildNode( labelNode );
 
-            const auto font = speedometer->effectiveFont( Q::TickLabels );
-            numbersNode->setTextData( speedometer, text, numbersRect, font, QskTextOptions(),
-                QskTextColors( color ), Qt::AlignCenter | Qt::AlignHCenter, Qsk::Normal );
-
-            if ( ticksNode->childCount() <= i )
-                ticksNode->appendChildNode( numbersNode );
+                labelNode = labelNode->nextSibling();
+            }
         }
     }
 

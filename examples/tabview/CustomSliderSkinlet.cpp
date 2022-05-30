@@ -10,11 +10,13 @@
 #include <QskRgbValue.h>
 #include <QskSlider.h>
 #include <QskTextColors.h>
-#include <QskTextNode.h>
 #include <QskTextOptions.h>
+#include <QskSGNode.h>
+#include <QskFunctions.h>
 
 #include <QFontMetricsF>
 #include <QSGFlatColorMaterial>
+#include <QSGGeometryNode>
 
 #include <cmath>
 
@@ -287,40 +289,38 @@ QSGNode* CustomSliderSkinlet::updateDecorationNode(
 
     const int tickCount = std::floor( slider->boundaryLength() / slider->stepSize() ) + 1;
 
-    auto labelNode = static_cast< QskTextNode* >( decorationNode->firstChild() );
-
     auto stepStride = slider->stepSize() / slider->boundaryLength() * decorationRect.width();
 
     auto x = decorationRect.x();
     const auto y = decorationRect.y();
 
+    auto labelNode = decorationNode->firstChild();
+
+    const QFontMetrics fm( qskLabelFont );
+
     for ( int i = 0; i < tickCount; i += 100 )
     {
-        if ( labelNode == nullptr )
+        const auto text = QString::number( slider->minimum() + slider->stepSize() * i, 'f', 0 );
+
+        const auto w = qskHorizontalAdvance( fm, text );
+        const auto h = fm.height();
+
+        labelNode = QskSkinlet::updateTextNode( slider, labelNode,
+            QRectF( x - 0.5 * w, y, w, h ), Qt::AlignHCenter, text, qskLabelFont,
+            QskTextOptions(), QskTextColors( QskRgb::Grey700 ), Qsk::Normal );
+
+        if ( labelNode )
         {
-            labelNode = new QskTextNode;
-            decorationNode->appendChildNode( labelNode );
+            if ( labelNode->parent() != decorationNode )
+                decorationNode->appendChildNode( labelNode );
+
+            labelNode = labelNode->nextSibling();
         }
 
-        auto labelText = QString::number( slider->minimum() + slider->stepSize() * i, 'f', 0 );
-
-        labelNode->setTextData( slider, labelText, QRectF( x, y, 0, 0 ),
-            qskLabelFont, QskTextOptions(), QskTextColors( QskRgb::Grey700 ),
-            Qt::AlignHCenter, Qsk::Normal );
-
-        labelNode = static_cast< decltype( labelNode ) >( labelNode->nextSibling() );
         x += 100 * stepStride;
     }
 
-    // Remove unused labels
-    while ( labelNode )
-    {
-        auto sibling = static_cast< decltype( labelNode ) >( labelNode->nextSibling() );
-        decorationNode->removeChildNode( labelNode );
-        delete labelNode;
-        labelNode = sibling;
-    }
-
+    QskSGNode::removeAllChildNodesAfter( decorationNode, labelNode );
     return decorationNode;
 }
 
@@ -344,12 +344,6 @@ QSGNode* CustomSliderSkinlet::updateHandleNode(
     handleNode->update( handleRect, fillRect.right(), handleColor );
 
     // finally the value label
-    auto labelNode = static_cast< QskTextNode* >( handleNode->firstChild() );
-    if ( labelNode == nullptr )
-    {
-        labelNode = new QskTextNode;
-        handleNode->appendChildNode( labelNode );
-    }
 
     QFont font( QStringLiteral( "Roboto" ) );
     font.setPixelSize( 26 );
@@ -361,8 +355,12 @@ QSGNode* CustomSliderSkinlet::updateHandleNode(
 
     const auto text = QString::number( slider->value(), 'f', 0 );
 
-    labelNode->setTextData( slider, text, textRect, font, QskTextOptions(),
-        QskTextColors( Qt::white ), Qt::AlignHCenter, Qsk::Normal );
+    auto labelNode = QskSkinlet::updateTextNode( slider, handleNode->firstChild(),
+        textRect, Qt::AlignHCenter, text, font, QskTextOptions(),
+        QskTextColors( Qt::white ), Qsk::Normal );
+
+    if ( labelNode->parent() != handleNode )
+        handleNode->appendChildNode( labelNode );
 
     return handleNode;
 }
@@ -373,7 +371,7 @@ QSizeF CustomSliderSkinlet::sizeHint( const QskSkinnable* skinnable,
     auto size = Inherited::sizeHint( skinnable, which, constraint );
 
     if ( which == Qt::PreferredSize && size.height() >= 0 )
-        size.rheight() += 40;
+        size.rheight() += 60;
 
     return size;
 }

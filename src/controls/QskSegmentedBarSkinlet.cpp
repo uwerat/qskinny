@@ -6,10 +6,8 @@
 #include "QskSegmentedBarSkinlet.h"
 #include "QskSegmentedBar.h"
 
-#include "QskGraphicNode.h"
 #include "QskGraphic.h"
 #include "QskColorFilter.h"
-#include "QskTextNode.h"
 #include "QskTextOptions.h"
 #include "QskSGNode.h"
 #include "QskFunctions.h"

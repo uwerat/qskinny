@@ -7,6 +7,7 @@
 #define QSK_SKINLET_H
 
 #include "QskAspect.h"
+#include "QskNamespace.h"
 
 #include <qnamespace.h>
 #include <qrect.h>
@@ -21,6 +22,7 @@ class QskGradient;
 class QskColorFilter;
 class QskGraphic;
 class QskTextOptions;
+class QskTextColors;
 class QskBoxShapeMetrics;
 class QskBoxBorderMetrics;
 class QskBoxBorderColors;
@@ -107,6 +109,10 @@ class QSK_EXPORT QskSkinlet
     static QSGNode* updateTextNode( const QskSkinnable*, QSGNode*,
         const QRectF&, Qt::Alignment, const QString&, const QskTextOptions&,
         QskAspect::Subcontrol );
+
+    static QSGNode* updateTextNode( const QskSkinnable*, QSGNode*,
+        const QRectF&, Qt::Alignment, const QString&, const QFont&,
+        const QskTextOptions&, const QskTextColors&, Qsk::TextStyle );
 
     // keeping the aspect ratio
     static QSGNode* updateGraphicNode( const QskSkinnable*, QSGNode*,

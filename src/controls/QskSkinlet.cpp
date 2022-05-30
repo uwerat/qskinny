@@ -62,6 +62,43 @@ static inline QRectF qskSubControlRect( const QskSkinlet* skinlet,
     return QRectF();
 }
 
+static inline QSGNode* qskUpdateTextNode( const QskSkinnable* skinnable,
+    QSGNode* node, const QRectF& rect, Qt::Alignment alignment,
+    const QString& text, const QFont& font, const QskTextOptions& textOptions,
+    const QskTextColors& textColors, Qsk::TextStyle textStyle )
+{
+    if ( text.isEmpty() || rect.isEmpty() )
+        return nullptr;
+
+    auto textNode = static_cast< QskTextNode* >( node );
+    if ( textNode == nullptr )
+        textNode = new QskTextNode();
+
+    auto effectiveFont = font;
+    switch ( textOptions.fontSizeMode() )
+    {
+        case QskTextOptions::FixedSize:
+            break;
+
+        case QskTextOptions::HorizontalFit:
+            Q_UNIMPLEMENTED();
+            break;
+
+        case QskTextOptions::VerticalFit:
+            effectiveFont.setPixelSize( static_cast< int >( rect.height() * 0.5 ) );
+            break;
+
+        case QskTextOptions::Fit:
+            Q_UNIMPLEMENTED();
+            break;
+    }
+
+    textNode->setTextData( skinnable->owningControl(),
+        text, rect, effectiveFont, textOptions, textColors, alignment, textStyle );
+
+    return textNode;
+}
+
 static inline QSGNode* qskUpdateGraphicNode(
     const QskSkinnable* skinnable, QSGNode* node,
     const QskGraphic& graphic, const QskColorFilter& colorFilter,
@@ -521,6 +558,15 @@ QSGNode* QskSkinlet::updateBoxClipNode( const QskSkinnable* skinnable,
     return clipNode;
 }
 
+QSGNode* QskSkinlet::updateTextNode( const QskSkinnable* skinnable,
+    QSGNode* node, const QRectF& rect, Qt::Alignment alignment,
+    const QString& text, const QFont& font, const QskTextOptions& textOptions,
+    const QskTextColors& textColors, Qsk::TextStyle textStyle )
+{
+    return qskUpdateTextNode( skinnable, node, rect, alignment,
+        text, font, textOptions, textColors, textStyle );
+}
+
 QSGNode* QskSkinlet::updateTextNode(
     const QskSkinnable* skinnable, QSGNode* node,
     const QRectF& rect, Qt::Alignment alignment,
@@ -530,43 +576,19 @@ QSGNode* QskSkinlet::updateTextNode(
     if ( text.isEmpty() || rect.isEmpty() )
         return nullptr;
 
-    auto textNode = static_cast< QskTextNode* >( node );
-    if ( textNode == nullptr )
-        textNode = new QskTextNode();
-
-    const auto colors = qskTextColors( skinnable, subControl );
+    const auto textColors = qskTextColors( skinnable, subControl );
 
     auto textStyle = Qsk::Normal;
-    if ( colors.styleColor.alpha() == 0 )
+    if ( textColors.styleColor.alpha() == 0 )
     {
         textStyle = skinnable->flagHint< Qsk::TextStyle >(
             subControl | QskAspect::Style, Qsk::Normal );
     }
 
-    auto font = skinnable->effectiveFont( subControl );
+    const auto font = skinnable->effectiveFont( subControl );
 
-    switch ( textOptions.fontSizeMode() )
-    {
-        case QskTextOptions::FixedSize:
-            break;
-
-        case QskTextOptions::HorizontalFit:
-            Q_UNIMPLEMENTED();
-            break;
-
-        case QskTextOptions::VerticalFit:
-            font.setPixelSize( static_cast< int >( rect.height() * 0.5 ) );
-            break;
-
-        case QskTextOptions::Fit:
-            Q_UNIMPLEMENTED();
-            break;
-    }
-
-    textNode->setTextData( skinnable->owningControl(),
-        text, rect, font, textOptions, colors, alignment, textStyle );
-
-    return textNode;
+    return qskUpdateTextNode( skinnable, node, rect, alignment,
+        text, font, textOptions, textColors, textStyle );
 }
 
 QSGNode* QskSkinlet::updateTextNode(
