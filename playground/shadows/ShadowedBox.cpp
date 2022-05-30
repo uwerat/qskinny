@@ -21,6 +21,7 @@ namespace
 
         Skinlet()
         {
+            setOwnedBySkinnable( true );
             setNodeRoles( { ShadowRole, PanelRole } );
         }
 
