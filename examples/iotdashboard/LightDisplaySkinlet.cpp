@@ -6,7 +6,10 @@
 #include "LightDisplaySkinlet.h"
 #include "LightDisplay.h"
 
-#include "nodes/BoxShadowNode.h"
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    #include "nodes/BoxShadowNode.h"
+#endif
+
 #include "nodes/RadialTickmarksNode.h"
 
 #include <QskArcMetrics.h>
@@ -72,7 +75,7 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
     {
         QRectF valueTextRect = subControlRect( skinnable, contentsRect, LightDisplay::Panel );
         const QFontMetricsF fm( skinnable->effectiveFont( subControl ) );
-        const qreal fontWidth = fm.width( QStringLiteral( "100 %" ) );
+        const qreal fontWidth = qskHorizontalAdvance( fm, QStringLiteral( "100 %" ) );
         const QPointF center = valueTextRect.center();
         const QRectF rect( center.x() - fontWidth / 2, center.y() - fm.height() / 2, fontWidth, fm.height() );
         return rect;
@@ -134,6 +137,7 @@ QSGNode* LightDisplaySkinlet::updateSubNode(
         {
             return updateBoxNode( skinnable, node, LightDisplay::Panel );
         }
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
         case GrooveRole:
         {
             const QRectF grooveRect = display->subControlRect( LightDisplay::Groove );
@@ -156,6 +160,7 @@ QSGNode* LightDisplaySkinlet::updateSubNode(
 
             return shadowNode;
         }
+#endif
         case ColdAndWarmArcRole:
         {
             return updateArcNode( skinnable, node, LightDisplay::ColdAndWarmArc );
@@ -209,7 +214,7 @@ QSizeF LightDisplaySkinlet::textLabelsSize( const LightDisplay* display ) const
 {
     const QFontMetricsF fm( display->effectiveFont( LightDisplay::LeftLabel ) );
 
-    qreal w = fm.width( QStringLiteral( "  100" ) );
+    qreal w = qskHorizontalAdvance( fm, QStringLiteral( "  100" ) );
     qreal h = fm.height();
 
     return { w, h };
