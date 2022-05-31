@@ -6,17 +6,17 @@
 #ifndef QSK_PAINTED_NODE_H
 #define QSK_PAINTED_NODE_H
 
-#include "QskTextureNode.h"
 #include "QskTextureRenderer.h"
+#include <qsgnode.h>
 
-class QSK_EXPORT QskPaintedNode : public QskTextureNode
+class QSK_EXPORT QskPaintedNode : public QSGNode
 {
   public:
     QskPaintedNode();
     ~QskPaintedNode() override;
 
     void update( QQuickWindow*,
-        QskTextureRenderer::RenderMode, const QRect& );
+        QskTextureRenderer::RenderMode, const QRectF& );
 
   protected:
     virtual void paint( QPainter*, const QSizeF& ) = 0;
@@ -25,10 +25,10 @@ class QSK_EXPORT QskPaintedNode : public QskTextureNode
     virtual QskHashValue hash() const = 0;
 
   private:
-    class PaintHelper;
+    void updateImageNode( QQuickWindow*, const QRectF& );
+    void updateImageNodeGL( QQuickWindow*, const QRectF& );
 
-    void setTexture( QQuickWindow*,
-        const QRectF&, uint id, Qt::Orientations ) = delete;
+    uint32_t createTexture( QQuickWindow*, const QSize& );
 
     QskHashValue m_hash;
 };
