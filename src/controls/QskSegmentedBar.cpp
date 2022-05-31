@@ -179,7 +179,7 @@ QskAspect::Placement QskSegmentedBar::effectivePlacement() const
 
 void QskSegmentedBar::mousePressEvent( QMouseEvent* event )
 {
-    const int index = indexAtPosition( event->localPos() );
+    const int index = indexAtPosition( qskMousePosition( event ) );
 
     if( index < 0 || index >= count() || !m_data->options[ index ].isEnabled )
         return;
@@ -203,7 +203,7 @@ void QskSegmentedBar::mouseReleaseEvent( QMouseEvent* event )
     if( m_data->isPressed )
     {
         m_data->isPressed = false;
-        index = indexAtPosition( event->localPos() );
+        index = indexAtPosition( qskMousePosition( event ) );
     }
 
     if( index < 0 || !m_data->options[ index ].isEnabled )

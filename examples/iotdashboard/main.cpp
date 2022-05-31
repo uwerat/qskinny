@@ -60,6 +60,8 @@ int main( int argc, char* argv[] )
 
     QGuiApplication app( argc, argv );
 
+    qskSetup->setItemUpdateFlag( QskQuickItem::PreferRasterForTextures, true );
+
     Qsk::addGraphicProvider( QString(), new GraphicProvider() );
 
     // disable default skins
