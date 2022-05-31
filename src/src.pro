@@ -1,7 +1,11 @@
 TEMPLATE = lib
 TARGET   = $$qskLibraryTarget(qskinny)
 
-QT += quick quick-private
+QT += quick quick-private opengl-private
+
+greaterThan( QT_MAJOR_VERSION, 5 ) {
+    QT += opengl-private
+}
 
 contains(QSK_CONFIG, QskDll): DEFINES += QSK_MAKEDLL
 
