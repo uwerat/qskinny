@@ -122,7 +122,7 @@ void QskPaintedNode::setMirrored( Qt::Orientations orientations )
 {
     if ( orientations != m_mirrored )
     {
-        m_mirrored == orientations;
+        m_mirrored = orientations;
 
         if ( auto imageNode = findImageNode( this ) )
         {
