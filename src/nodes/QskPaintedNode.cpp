@@ -64,6 +64,20 @@ static GLuint qskTakeTexture( QOpenGLFramebufferObject& fbo )
     return textureId;
 }
 
+static inline QSGImageNode::TextureCoordinatesTransformMode
+    qskEffectiveTransformMode( const Qt::Orientations mirrored )
+{
+    QSGImageNode::TextureCoordinatesTransformMode mode;
+
+    if ( mirrored & Qt::Vertical )
+        mode |= QSGImageNode::MirrorVertically;
+
+    if ( mirrored & Qt::Horizontal )
+        mode |= QSGImageNode::MirrorHorizontally;
+
+    return mode;
+}
+
 namespace
 {
     const quint8 imageRole = 250; // reserved for internal use
@@ -102,6 +116,25 @@ void QskPaintedNode::setRenderHint( RenderHint renderHint )
 QskPaintedNode::RenderHint QskPaintedNode::renderHint() const
 {
     return m_renderHint;
+}
+
+void QskPaintedNode::setMirrored( Qt::Orientations orientations )
+{
+    if ( orientations != m_mirrored )
+    {
+        m_mirrored == orientations;
+
+        if ( auto imageNode = findImageNode( this ) )
+        {
+            imageNode->setTextureCoordinatesTransform(
+                qskEffectiveTransformMode( orientations ) );
+        }
+    }
+}
+
+Qt::Orientations QskPaintedNode::mirrored() const
+{
+    return m_mirrored;
 }
 
 QRectF QskPaintedNode::rect() const
@@ -145,6 +178,14 @@ void QskPaintedNode::update( QQuickWindow* window,
         else
             updateImageNode( window, rect, nodeData );
     }
+
+    imageNode = findImageNode( this );
+    if ( imageNode )
+    {
+        imageNode->setRect( rect );
+        imageNode->setTextureCoordinatesTransform(
+            qskEffectiveTransformMode( m_mirrored ) );
+    }
 }
 
 void QskPaintedNode::updateImageNode(
@@ -183,8 +224,6 @@ void QskPaintedNode::updateImageNode(
         texture->setImage( image );
     else
         imageNode->setTexture( window->createTextureFromImage( image ) );
-
-    imageNode->setRect( rect );
 }
 
 void QskPaintedNode::updateImageNodeGL(
@@ -240,8 +279,6 @@ void QskPaintedNode::updateImageNodeGL(
         texture->setTextureSize( size );
     }
 #endif
-
-    imageNode->setRect( rect );
 }
 
 uint32_t QskPaintedNode::createTexture(

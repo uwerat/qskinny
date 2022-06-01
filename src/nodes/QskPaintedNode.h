@@ -38,6 +38,9 @@ class QSK_EXPORT QskPaintedNode : public QSGNode
     void setRenderHint( RenderHint );
     RenderHint renderHint() const;
 
+    void setMirrored( Qt::Orientations );
+    Qt::Orientations mirrored() const;
+
     QRectF rect() const;
 
   protected:
@@ -55,6 +58,7 @@ class QSK_EXPORT QskPaintedNode : public QSGNode
     uint32_t createTexture( QQuickWindow*, const QSize&, const void* nodeData );
 
     RenderHint m_renderHint = OpenGL;
+    Qt::Orientations m_mirrored;
     QskHashValue m_hash = 0;
 };
 
