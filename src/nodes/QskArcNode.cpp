@@ -4,7 +4,19 @@
  *****************************************************************************/
 
 #include "QskArcNode.h"
+#include "QskArcMetrics.h"
 #include "QskArcRenderer.h"
+#include "QskGradient.h"
+
+namespace
+{
+    class ArcData
+    {
+      public:
+        const QskArcMetrics& metrics;
+        const QskGradient& gradient;
+    };
+}
 
 QskArcNode::QskArcNode()
 {
@@ -17,26 +29,28 @@ QskArcNode::~QskArcNode()
 void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& metrics,
     const QskGradient& gradient, QQuickWindow* window )
 {
-    m_metrics = metrics;
-    m_gradient = gradient;
-
-    update( window, QskTextureRenderer::AutoDetect, rect.toRect() );
+    const ArcData arcData { metrics, gradient };
+    update( window, rect.toRect(), &arcData );
 }
 
-void QskArcNode::paint( QPainter* painter, const QSizeF& size )
+void QskArcNode::paint( QPainter* painter, const QSizeF& size, const void* nodeData )
 {
-    const qreal w = m_metrics.width();
+    const auto arcData = reinterpret_cast< const ArcData* >( nodeData );
+
+    const qreal w = arcData->metrics.width();
     const QRectF rect( 0.5 * w, 0.5 * w, size.width() - w, size.height() - w );
 
     QskArcRenderer renderer;
-    renderer.renderArc( rect, m_metrics, m_gradient, painter );
+    renderer.renderArc( rect, arcData->metrics, arcData->gradient, painter );
 }
 
-QskHashValue QskArcNode::hash() const
+QskHashValue QskArcNode::hash( const void* nodeData ) const
 {
-    auto h = m_metrics.hash();
+    const auto arcData = reinterpret_cast< const ArcData* >( nodeData );
 
-    for( const auto& stop : qAsConst( m_gradient.stops() ) )
+    auto h = arcData->metrics.hash();
+
+    for( const auto& stop : qAsConst( arcData->gradient.stops() ) )
         h = stop.hash( h );
 
     return h;
