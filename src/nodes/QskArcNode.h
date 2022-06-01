@@ -6,9 +6,12 @@
 #ifndef QSK_ARC_NODE_H
 #define QSK_ARC_NODE_H
 
-#include "QskArcMetrics.h"
-#include "QskGradient.h"
 #include "QskPaintedNode.h"
+
+class QskArcMetrics;
+class QskGradient;
+
+// should be a QSGGeometryNode, TODO ..
 
 class QSK_EXPORT QskArcNode : public QskPaintedNode
 {
@@ -19,12 +22,9 @@ class QSK_EXPORT QskArcNode : public QskPaintedNode
     void setArcData( const QRectF&, const QskArcMetrics&,
         const QskGradient&, QQuickWindow* );
 
-    void paint( QPainter* painter, const QSizeF& size ) override;
-    QskHashValue hash() const override;
-
-  private:
-    QskArcMetrics m_metrics;
-    QskGradient m_gradient;
+  protected:
+    void paint( QPainter*, const QSizeF&, const void* nodeData ) override;
+    QskHashValue hash( const void* nodeData ) const override;
 };
 
 #endif

@@ -22,7 +22,11 @@ QSK_QT_PRIVATE_END
 
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
 
+#include <qquickopenglutils.h>
+
+QSK_QT_PRIVATE_BEGIN
 #include <private/qopenglframebufferobject_p.h>
+QSK_QT_PRIVATE_END
 
 static GLuint qskTakeTexture( QOpenGLFramebufferObject& fbo )
 {
@@ -76,10 +80,12 @@ namespace
 {
     const quint8 imageRole = 250; // reserved for internal use
 
-    inline QSGImageNode* findImageNode( QSGNode* parentNode )
+    inline QSGImageNode* findImageNode( const QSGNode* parentNode )
     {
-        return static_cast< QSGImageNode* >(
-            QskSGNode::findChildNode( parentNode, imageRole ) );
+        auto node = QskSGNode::findChildNode(
+            const_cast< QSGNode* >( parentNode ), imageRole );
+
+        return static_cast< QSGImageNode* >( node );
     }
 
     static inline bool qskHasOpenGLRenderer( QQuickWindow* window )
@@ -108,8 +114,24 @@ QskPaintedNode::~QskPaintedNode()
 {
 }
 
+void QskPaintedNode::setRenderHint( RenderHint renderHint )
+{
+    m_renderHint = renderHint;
+}
+
+QskPaintedNode::RenderHint QskPaintedNode::renderHint() const
+{
+    return m_renderHint;
+}
+
+QRectF QskPaintedNode::rect() const
+{
+    const auto imageNode = findImageNode( this );
+    return imageNode ? imageNode->rect() : QRectF();
+}
+
 void QskPaintedNode::update( QQuickWindow* window,
-    QskTextureRenderer::RenderMode renderMode, const QRectF& rect )
+    const QRectF& rect, const void* nodeData )
 {
     auto imageNode = findImageNode( this );
 
@@ -120,38 +142,33 @@ void QskPaintedNode::update( QQuickWindow* window,
             removeChildNode( imageNode );
             delete imageNode;
         }
+
+        return;
     }
-    else
+
+    bool isDirty = false;
+
+    const auto newHash = hash( nodeData );
+    if ( ( newHash == 0 ) || ( newHash != m_hash ) )
     {
-        bool isDirty = false;
+        m_hash = newHash;
+        isDirty = true;
+    }
 
-        const auto newHash = hash();
-        if ( ( newHash == 0 ) || ( newHash != m_hash ) )
-        {
-            m_hash = newHash;
-            isDirty = true;
-        }
+    if ( !isDirty )
+        isDirty = ( imageNode == nullptr ) || ( imageNode->rect() != rect );
 
-        if ( !isDirty )
-            isDirty = ( imageNode == nullptr ) || ( imageNode->rect() != rect );
-
-        if ( isDirty )
-        {
-            if ( renderMode != QskTextureRenderer::Raster )
-            {
-                if ( !qskHasOpenGLRenderer( window ) )
-                    renderMode = QskTextureRenderer::Raster;
-            }
-
-            if ( renderMode == QskTextureRenderer::Raster )
-                updateImageNode( window, rect );
-            else
-                updateImageNodeGL( window, rect );
-        }
+    if ( isDirty )
+    {
+        if ( ( m_renderHint == OpenGL ) && qskHasOpenGLRenderer( window ) )
+            updateImageNodeGL( window, rect, nodeData );
+        else
+            updateImageNode( window, rect, nodeData );
     }
 }
 
-void QskPaintedNode::updateImageNode( QQuickWindow* window, const QRectF& rect )
+void QskPaintedNode::updateImageNode(
+    QQuickWindow* window, const QRectF& rect, const void* nodeData )
 {
     const auto ratio = window->effectiveDevicePixelRatio();
     const auto size = rect.size() * ratio;
@@ -167,7 +184,7 @@ void QskPaintedNode::updateImageNode( QQuickWindow* window, const QRectF& rect )
             value >= 1.0. So we have to scale manually.
          */
         painter.scale( ratio, ratio );
-        paint( &painter, rect.size() );
+        paint( &painter, rect.size(), nodeData );
     }
 
     auto imageNode = findImageNode( this );
@@ -190,7 +207,8 @@ void QskPaintedNode::updateImageNode( QQuickWindow* window, const QRectF& rect )
     imageNode->setRect( rect );
 }
 
-void QskPaintedNode::updateImageNodeGL( QQuickWindow* window, const QRectF& rect )
+void QskPaintedNode::updateImageNodeGL(
+    QQuickWindow* window, const QRectF& rect, const void* nodeData )
 {
     const auto ratio = window->effectiveDevicePixelRatio();
     const QSize size( ratio * rect.width(), ratio * rect.height() );
@@ -217,7 +235,12 @@ void QskPaintedNode::updateImageNodeGL( QQuickWindow* window, const QRectF& rect
         imageNode->setTexture( texture );
     }
 
-    const auto textureId = createTexture( window, size );
+    /*
+        QQuickFramebufferObject does the FBO rendering early
+        ( QQuickWindow::beforeRendering ). However doing it below updatePaintNode
+        seems to work as well. Let's see if we run into issues ...
+     */
+    const auto textureId = createTexture( window, size, nodeData );
 
     auto rhi = QQuickWindowPrivate::get( window )->rhi;
 
@@ -241,9 +264,28 @@ void QskPaintedNode::updateImageNodeGL( QQuickWindow* window, const QRectF& rect
     imageNode->setRect( rect );
 }
 
-// this method will be moved to QskTextureRenderer. TODO ...
-uint32_t QskPaintedNode::createTexture( QQuickWindow* window, const QSize& size )
+uint32_t QskPaintedNode::createTexture(
+    QQuickWindow* window, const QSize& size, const void* nodeData )
 {
+    /*
+        Binding GL_ARRAY_BUFFER/GL_ELEMENT_ARRAY_BUFFER to 0 seems to be enough.
+
+        However - as we do not know what is finally painted and what the
+        OpenGL paint engine is doing with better reinitialize everything.
+
+        Hope this has no side effects as the context will leave the function
+        in a modified state. Otherwise we could try to change the buffers
+        only and reset them, before leaving.
+     */
+
+    window->beginExternalCommands();
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+    QQuickOpenGLUtils::resetOpenGLState();
+#else
+    window->resetOpenGLState();
+#endif
+
     auto context = QOpenGLContext::currentContext();
 
     QOpenGLFramebufferObjectFormat format1;
@@ -257,13 +299,6 @@ uint32_t QskPaintedNode::createTexture( QQuickWindow* window, const QSize& size 
     pd.setPaintFlipped( true );
 
     {
-        int bufferId;
-
-        auto gl = context->functions();
-
-        gl->glGetIntegerv( GL_ARRAY_BUFFER_BINDING, &bufferId);
-        gl->glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
         const auto ratio = window->effectiveDevicePixelRatio();
 
         QPainter painter( &pd );
@@ -273,9 +308,7 @@ uint32_t QskPaintedNode::createTexture( QQuickWindow* window, const QSize& size 
         painter.fillRect( 0, 0, size.width(), size.height(), Qt::transparent );
         painter.setCompositionMode( QPainter::CompositionMode_SourceOver );
 
-        paint( &painter, size );
-
-        gl->glBindBuffer( GL_ARRAY_BUFFER, bufferId );
+        paint( &painter, size, nodeData );
     }
 
     QOpenGLFramebufferObjectFormat format2;
@@ -287,6 +320,8 @@ uint32_t QskPaintedNode::createTexture( QQuickWindow* window, const QSize& size 
 
     QOpenGLFramebufferObject::blitFramebuffer(
         &fbo, fboRect, &multisampledFbo, fboRect );
+
+    window->endExternalCommands();
 
     return qskTakeTexture( fbo );
 }
