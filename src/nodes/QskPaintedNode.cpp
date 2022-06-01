@@ -18,15 +18,12 @@
 QSK_QT_PRIVATE_BEGIN
 #include <private/qsgplaintexture_p.h>
 #include <private/qquickwindow_p.h>
+#include <private/qopenglframebufferobject_p.h>
 QSK_QT_PRIVATE_END
 
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-
 #include <qquickopenglutils.h>
-
-QSK_QT_PRIVATE_BEGIN
-#include <private/qopenglframebufferobject_p.h>
-QSK_QT_PRIVATE_END
+#endif
 
 static GLuint qskTakeTexture( QOpenGLFramebufferObject& fbo )
 {
@@ -66,15 +63,6 @@ static GLuint qskTakeTexture( QOpenGLFramebufferObject& fbo )
 
     return textureId;
 }
-
-#else
-
-static GLuint qskTakeTexture( QOpenGLFramebufferObject& fbo )
-{
-    return fbo.takeTexture();
-}
-
-#endif
 
 namespace
 {
