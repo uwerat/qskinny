@@ -93,14 +93,6 @@ namespace
         if ( window == nullptr )
             return false;
 
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-        if ( QQuickWindowPrivate::get( window )->rhi )
-        {
-            // does not yet work with the experimental RHI implementation in Qt5
-            return false;
-        }
-#endif
-
         const auto renderer = window->rendererInterface();
         return renderer->graphicsApi() == QSGRendererInterface::OpenGL;
     }
