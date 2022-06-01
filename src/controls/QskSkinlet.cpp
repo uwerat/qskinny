@@ -7,6 +7,7 @@
 
 #include "QskArcNode.h"
 #include "QskAspect.h"
+#include "QskArcMetrics.h"
 #include "QskBoxBorderColors.h"
 #include "QskBoxBorderMetrics.h"
 #include "QskBoxClipNode.h"
@@ -24,6 +25,7 @@
 #include "QskTextNode.h"
 #include "QskTextOptions.h"
 #include "QskSkinStateChanger.h"
+#include "QskTextureRenderer.h"
 
 #include <qquickwindow.h>
 #include <qsgsimplerectnode.h>
