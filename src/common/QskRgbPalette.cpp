@@ -11,8 +11,9 @@
 
 #define RGBTABLE( c ) \
     { \
-        RGB( c, 50 ),  RGB( c, 100 ), RGB( c, 200 ), RGB( c, 300 ), RGB( c, 400 ), \
-        RGB( c, 500 ), RGB( c, 600 ), RGB( c, 700 ), RGB( c, 800 ), RGB( c, 900 )  \
+        RGB( c, 0 ),  RGB( c, 10 ), RGB( c, 20 ), RGB( c, 30 ), RGB( c, 40 ), \
+        RGB( c, 50 ), RGB( c, 60 ), RGB( c, 70 ), RGB( c, 80 ), RGB( c, 90 ), \
+        RGB( c, 95 ), RGB( c, 99 ), RGB( c, 100 ) \
     }
 
 namespace
@@ -26,25 +27,12 @@ namespace
 
             static constexpr QRgb table[][ Palette::NumWeights ] =
             {
-                RGBTABLE( Red ),
-                RGBTABLE( Pink ),
-                RGBTABLE( Purple ),
-                RGBTABLE( DeepPurple ),
-                RGBTABLE( Indigo ),
-                RGBTABLE( Blue ),
-                RGBTABLE( LightBlue ),
-                RGBTABLE( Cyan ),
-                RGBTABLE( Teal ),
-                RGBTABLE( Green ),
-                RGBTABLE( LightGreen ),
-                RGBTABLE( Lime ),
-                RGBTABLE( Yellow ),
-                RGBTABLE( Amber ),
-                RGBTABLE( Orange ),
-                RGBTABLE( DeepOrange ),
-                RGBTABLE( Brown ),
-                RGBTABLE( Grey ),
-                RGBTABLE( BlueGrey ),
+                RGBTABLE( DefaultMaterialPrimary ),
+                RGBTABLE( DefaultMaterialSecondary ),
+                RGBTABLE( DefaultMaterialTertiary ),
+                RGBTABLE( DefaultMaterialError ),
+                RGBTABLE( DefaultMaterialNeutral ),
+                RGBTABLE( DefaultMaterialNeutralVariant ),
             };
 
             const int count = sizeof( table ) / sizeof( table[ 0 ] );
