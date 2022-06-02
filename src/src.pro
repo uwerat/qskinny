@@ -111,7 +111,6 @@ HEADERS += \
     nodes/QskSGNode.h \
     nodes/QskTextNode.h \
     nodes/QskTextRenderer.h \
-    nodes/QskTextureNode.h \
     nodes/QskTextureRenderer.h \
     nodes/QskTickmarksNode.h \
     nodes/QskVertex.h
@@ -132,7 +131,6 @@ SOURCES += \
     nodes/QskSGNode.cpp \
     nodes/QskTextNode.cpp \
     nodes/QskTextRenderer.cpp \
-    nodes/QskTextureNode.cpp \
     nodes/QskTextureRenderer.cpp \
     nodes/QskTickmarksNode.cpp \
     nodes/QskVertex.cpp
