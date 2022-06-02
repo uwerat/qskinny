@@ -71,7 +71,7 @@ QskSkin* QskMaterialSkinFactory::createSkin( const QString& skinName )
         pal.secondary = 0xff03dac6;
         pal.secondaryVariant = 0xff018786;
         pal.onSecondary = QskRgb::White;
-        pal.background = QskRgb::Grey100;
+        pal.background = QskRgb::DefaultMaterialNeutral90;
         pal.onBackground = QskRgb::Black;
         pal.error = 0xffb00020;
         pal.onError = QskRgb::White;

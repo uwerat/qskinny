@@ -32,8 +32,8 @@ void Box::setBackground( FillType type, QskRgbPalette::Theme theme, bool inverte
 
     const auto pal = QskRgbPalette::palette( theme );
 
-    const QColor light = pal.color( QskRgbPalette::W300 );
-    const QColor mid = pal.color( QskRgbPalette::W600 );
+    const QColor light = pal.color( QskRgbPalette::W60 );
+    const QColor mid = pal.color( QskRgbPalette::W30 );
 
     switch ( type )
     {
@@ -64,9 +64,9 @@ void Box::setBorder( BorderType type, QskRgbPalette::Theme theme )
 
     setBorderWidth( 5 );
 
-    QColor dark = pal.color( QskRgbPalette::W700 );
-    QColor mid = pal.color( QskRgbPalette::W500 );
-    QColor light = pal.color( QskRgbPalette::W300 );
+    QColor dark = pal.color( QskRgbPalette::W30 );
+    QColor mid = pal.color( QskRgbPalette::W50 );
+    QColor light = pal.color( QskRgbPalette::W70 );
 #if 0
     dark.setAlpha( 100 );
     mid.setAlpha( 100 );
