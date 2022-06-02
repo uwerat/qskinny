@@ -307,7 +307,7 @@ QSGNode* CustomSliderSkinlet::updateDecorationNode(
 
         labelNode = QskSkinlet::updateTextNode( slider, labelNode,
             QRectF( x - 0.5 * w, y, w, h ), Qt::AlignHCenter, text, qskLabelFont,
-            QskTextOptions(), QskTextColors( QskRgb::Grey700 ), Qsk::Normal );
+            QskTextOptions(), QskTextColors( QskRgb::DefaultMaterialNeutral30 ), Qsk::Normal );
 
         if ( labelNode )
         {

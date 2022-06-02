@@ -30,10 +30,10 @@ namespace
             const auto pal = QskRgbPalette::palette( theme );
 
             QVector< QRgb > rgb;
-            rgb += pal.rgb( QskRgbPalette::W200 );
-            rgb += pal.rgb( QskRgbPalette::W400 );
-            rgb += pal.rgb( QskRgbPalette::W600 );
-            rgb += pal.rgb( QskRgbPalette::W900 );
+            rgb += pal.rgb( QskRgbPalette::W90 );
+            rgb += pal.rgb( QskRgbPalette::W60 );
+            rgb += pal.rgb( QskRgbPalette::W40 );
+            rgb += pal.rgb( QskRgbPalette::W20 );
 
             const auto stops = QskRgbPalette::colorStops( rgb, true );
 
@@ -62,19 +62,19 @@ void ProgressBarPage::populate()
 
     {
         auto bar = new ProgressBar( hBox );
-        bar->setTheme( QskRgbPalette::BlueGrey );
+        bar->setTheme( QskRgbPalette::DefaultMaterialPrimary );
         bar->setValue( 100 );
     }
 
     {
         auto bar = new ProgressBar( hBox );
-        bar->setTheme( QskRgbPalette::Blue );
+        bar->setTheme( QskRgbPalette::DefaultMaterialSecondary );
         bar->setValue( 75 );
     }
 
     {
         auto bar = new ProgressBar( hBox );
-        bar->setTheme( QskRgbPalette::Blue );
+        bar->setTheme( QskRgbPalette::DefaultMaterialSecondary );
         bar->setOrigin( 60 );
         bar->setValue( 25 );
     }
@@ -90,20 +90,20 @@ void ProgressBarPage::populate()
 
     {
         auto bar = new ProgressBar( vBox );
-        bar->setTheme( QskRgbPalette::DeepOrange );
+        bar->setTheme( QskRgbPalette::DefaultMaterialPrimary );
         bar->setValue( 100 );
     }
 
     {
         auto bar = new ProgressBar( vBox );
-        bar->setTheme( QskRgbPalette::Pink );
+        bar->setTheme( QskRgbPalette::DefaultMaterialSecondary );
         bar->setMaximum( 40 );
         bar->setValue( 25 );
     }
 
     {
         auto bar = new ProgressBar( vBox );
-        bar->setTheme( QskRgbPalette::Pink );
+        bar->setTheme( QskRgbPalette::DefaultMaterialSecondary );
         bar->setOrigin( 40 );
         bar->setValue( 10 );
     }
