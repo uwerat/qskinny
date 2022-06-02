@@ -17,6 +17,7 @@
 QSK_QT_PRIVATE_BEGIN
 #include <private/qsgplaintexture_p.h>
 #include <private/qopenglframebufferobject_p.h>
+#include <private/qquickwindow_p.h>
 QSK_QT_PRIVATE_END
 
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
