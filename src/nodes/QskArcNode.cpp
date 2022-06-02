@@ -30,10 +30,10 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& metrics,
     const QskGradient& gradient, QQuickWindow* window )
 {
     const ArcData arcData { metrics, gradient };
-    update( window, rect.toRect(), &arcData );
+    update( window, rect, QSizeF(), &arcData );
 }
 
-void QskArcNode::paint( QPainter* painter, const QSizeF& size, const void* nodeData )
+void QskArcNode::paint( QPainter* painter, const QSize& size, const void* nodeData )
 {
     const auto arcData = reinterpret_cast< const ArcData* >( nodeData );
 

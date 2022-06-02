@@ -11,6 +11,7 @@
 
 class QQuickWindow;
 class QPainter;
+class QImage;
 
 class QSK_EXPORT QskPaintedNode : public QSGNode
 {
@@ -42,20 +43,21 @@ class QSK_EXPORT QskPaintedNode : public QSGNode
     Qt::Orientations mirrored() const;
 
     QRectF rect() const;
+    QSize textureSize() const;
+
+    virtual void paint( QPainter*, const QSize&, const void* nodeData ) = 0;
 
   protected:
-    void update( QQuickWindow*, const QRectF&, const void* nodeData );
-
-    virtual void paint( QPainter*, const QSizeF&, const void* nodeData ) = 0;
+    void update( QQuickWindow*, const QRectF&, const QSizeF&, const void* nodeData );
 
     // a hash value of '0' always results in repainting
     virtual QskHashValue hash( const void* nodeData ) const = 0;
 
   private:
-    void updateImageNode( QQuickWindow*, const QRectF&, const void* nodeData );
-    void updateImageNodeGL( QQuickWindow*, const QRectF&, const void* nodeData );
+    void updateTexture( QQuickWindow*, const QSize&, const void* nodeData );
 
-    uint32_t createTexture( QQuickWindow*, const QSize&, const void* nodeData );
+    QImage createImage( QQuickWindow*, const QSize&, const void* nodeData );
+    quint32 createTextureGL( QQuickWindow*, const QSize&, const void* nodeData );
 
     RenderHint m_renderHint = OpenGL;
     Qt::Orientations m_mirrored;

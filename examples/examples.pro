@@ -26,6 +26,5 @@ SUBDIRS += \
     boxes \
     buttons \
     frames \
-    gbenchmark \
     glabels \
     messageboxQml
