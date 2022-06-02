@@ -23,7 +23,7 @@ class QSK_EXPORT QskArcNode : public QskPaintedNode
         const QskGradient&, QQuickWindow* );
 
   protected:
-    void paint( QPainter*, const QSizeF&, const void* nodeData ) override;
+    void paint( QPainter*, const QSize&, const void* nodeData ) override;
     QskHashValue hash( const void* nodeData ) const override;
 };
 
