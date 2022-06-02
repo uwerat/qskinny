@@ -19,16 +19,19 @@ class QSK_EXPORT QskRgbPalette
   public:
     enum Weight
     {
+        W0,
+        W10,
+        W20,
+        W30,
+        W40,
         W50,
+        W60,
+        W70,
+        W80,
+        W90,
+        W95,
+        W99,
         W100,
-        W200,
-        W300,
-        W400,
-        W500,
-        W600,
-        W700,
-        W800,
-        W900,
 
         NumWeights
     };
@@ -36,25 +39,12 @@ class QSK_EXPORT QskRgbPalette
 
     enum Theme
     {
-        Red,
-        Pink,
-        Purple,
-        DeepPurple,
-        Indigo,
-        Blue,
-        LightBlue,
-        Cyan,
-        Teal,
-        Green,
-        LightGreen,
-        Lime,
-        Yellow,
-        Amber,
-        Orange,
-        DeepOrange,
-        Brown,
-        Grey,
-        BlueGrey,
+        DefaultMaterialPrimary,
+        DefaultMaterialSecondary,
+        DefaultMaterialTertiary,
+        DefaultMaterialError,
+        DefaultMaterialNeutral,
+        DefaultMaterialNeutralVariant,
 
         NumThemes
     };
