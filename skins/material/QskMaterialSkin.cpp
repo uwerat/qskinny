@@ -64,8 +64,8 @@ namespace
     class ColorPalette
     {
       public:
-        ColorPalette( const QColor base = QColor::fromRgba( QskRgb::Grey100 ),
-            const QColor& accent = QColor::fromRgba( QskRgb::Blue500 ),
+        ColorPalette( const QColor base = QColor::fromRgba( QskRgb::DefaultMaterialPrimary90 ),
+            const QColor& accent = QColor::fromRgba( QskRgb::DefaultMaterialPrimary40 ),
             const QColor& contrast = QColor::fromRgba( QskRgb::White ) )
         {
             baseColor = base;
@@ -438,7 +438,7 @@ void Editor::setupPushButton()
     setMargin( Q::Panel, margin );
     setPadding( Q::Panel, padding );
 
-    const QskBoxBorderColors borderColors( Grey400, Grey300, Grey400, Grey600 );
+    const QskBoxBorderColors borderColors( DefaultMaterialPrimary40 );
 
     QskBoxBorderColors noBorderColors = borderColors;
     noBorderColors.setAlpha( 0 );
@@ -494,7 +494,7 @@ void Editor::setupDialogButton()
     setMargin( Q::Panel, QskMargins( 4, 3 ) );
     setPadding( Q::Panel, QskMargins( 10, 6 ) );
 
-    const QskBoxBorderColors borderColors( Grey400, Grey300, Grey400, Grey600 );
+    const QskBoxBorderColors borderColors( DefaultMaterialPrimary40 );
 
     QskBoxBorderColors noBorderColors = borderColors;
     noBorderColors.setAlpha( 0 );
@@ -597,7 +597,7 @@ void Editor::setupSlider()
     for ( auto state : { A::States(), Q::Pressed | A::NoState, Q::Pressed | Q::Hovered } )
     {
         const auto aspect = Q::Handle | Q::Minimum | state;
-        setGradient( aspect, Grey300 );
+        setGradient( aspect, DefaultMaterialPrimary40 );
         setBoxBorderColors( aspect, Grey );
     }
 
@@ -910,8 +910,7 @@ QskMaterialSkin::QskMaterialSkin( QObject* parent )
     : Inherited( parent )
     , m_data( new PrivateData() )
 {
-    m_data->palette = ColorPalette( QskRgb::Grey100,
-        QskRgb::Blue500, QskRgb::White );
+    m_data->palette = ColorPalette();
 
     // Default theme colors
     setupFonts( QStringLiteral( "Roboto" ) );

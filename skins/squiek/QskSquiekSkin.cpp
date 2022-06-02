@@ -89,7 +89,7 @@ namespace
                 contrasted = DarkGrey;
                 contrastedText = White;
 
-                highlighted = BlueGrey500;
+                highlighted = 0xff607d8b;
                 highlightedText = White;
 
                 base = Black;
