@@ -55,7 +55,7 @@ namespace
     class Editor : private QskSkinHintTableEditor
     {
       public:
-        Editor( QskSkinHintTable* table, const QskMaterialPalette& palette )
+        Editor( QskSkinHintTable* table, const QskMaterialTheme& palette )
             : QskSkinHintTableEditor( table )
             , m_pal( palette )
         {
@@ -91,7 +91,7 @@ namespace
         void setupTextInput();
         void setupTextLabel();
 
-        const QskMaterialPalette& m_pal;
+        const QskMaterialTheme& m_pal;
         const uint rippleSize = 30;
     };
 }
@@ -830,7 +830,94 @@ void Editor::setupSubWindow()
 
 }
 
-QskMaterialSkin::QskMaterialSkin( const QskMaterialPalette& palette, QObject* parent )
+QskMaterialTheme::QskMaterialTheme( Lightness lightness )
+    : QskMaterialTheme( lightness,
+                        {
+                        QskRgbPalette::palette( QskRgbPalette::DefaultMaterialPrimary ),
+                        QskRgbPalette::palette( QskRgbPalette::DefaultMaterialSecondary ),
+                        QskRgbPalette::palette( QskRgbPalette::DefaultMaterialTertiary ),
+                        QskRgbPalette::palette( QskRgbPalette::DefaultMaterialError ),
+                        QskRgbPalette::palette( QskRgbPalette::DefaultMaterialNeutral ),
+                        QskRgbPalette::palette( QskRgbPalette::DefaultMaterialNeutralVariant ),
+                        } )
+{
+}
+
+QskMaterialTheme::QskMaterialTheme( Lightness lightness,
+                                    std::array< QskRgbPalette, NumPaletteTypes > palettes )
+    : m_palettes( palettes )
+{
+    using Q = QskRgbPalette;
+
+    if ( lightness == Light )
+    {
+        using Q = QskRgbPalette;
+
+        primary = m_palettes[ Primary ].rgb( Q::W40 );
+        onPrimary = m_palettes[ Primary ].rgb( Q::W100 );
+        primaryContainer = m_palettes[ Primary ].rgb( Q::W90 );
+        onPrimaryContainer = m_palettes[ Primary ].rgb( Q::W10 );
+
+        primary = m_palettes[ Secondary ].rgb( Q::W40 );
+        onSecondary = m_palettes[ Secondary ].rgb( Q::W100 );
+        secondaryContainer = m_palettes[ Secondary ].rgb( Q::W90 );
+        onSecondaryContainer = m_palettes[ Secondary ].rgb( Q::W10 );
+
+        tertiary = m_palettes[ Tertiary ].rgb( Q::W40 );
+        onTertiary = m_palettes[ Tertiary ].rgb( Q::W100 );
+        tertiaryContainer = m_palettes[ Tertiary ].rgb( Q::W90 );
+        onTertiaryContainer = m_palettes[ Tertiary ].rgb( Q::W10 );
+
+        error = m_palettes[ Error ].rgb( Q::W40 );
+        onError = m_palettes[ Error ].rgb( Q::W100 );
+        errorContainer = m_palettes[ Error ].rgb( Q::W90 );
+        onErrorContainer = m_palettes[ Error ].rgb( Q::W10 );
+
+        background = m_palettes[ Neutral ].rgb( Q::W99 );
+        onBackground = m_palettes[ Neutral ].rgb( Q::W10 );
+        surface = m_palettes[ Neutral ].rgb( Q::W99 );
+        onSurface = m_palettes[ Neutral ].rgb( Q::W10 );
+
+        surfaceVariant = m_palettes[ NeutralVariant ].rgb( Q::W90 );
+        onSurfaceVariant = m_palettes[ NeutralVariant ].rgb( Q::W30 );
+        outline = m_palettes[ NeutralVariant ].rgb( Q::W50 );
+    }
+    else if ( lightness == Dark )
+    {
+        using Q = QskRgbPalette;
+
+        primary = m_palettes[ Primary ].rgb( Q::W80 );
+        onPrimary = m_palettes[ Primary ].rgb( Q::W20 );
+        primaryContainer = m_palettes[ Primary ].rgb( Q::W30 );
+        onPrimaryContainer = m_palettes[ Primary ].rgb( Q::W90 );
+
+        primary = m_palettes[ Secondary ].rgb( Q::W80 );
+        onSecondary = m_palettes[ Secondary ].rgb( Q::W20 );
+        secondaryContainer = m_palettes[ Secondary ].rgb( Q::W30 );
+        onSecondaryContainer = m_palettes[ Secondary ].rgb( Q::W90 );
+
+        tertiary = m_palettes[ Tertiary ].rgb( Q::W80 );
+        onTertiary = m_palettes[ Tertiary ].rgb( Q::W20 );
+        tertiaryContainer = m_palettes[ Tertiary ].rgb( Q::W30 );
+        onTertiaryContainer = m_palettes[ Tertiary ].rgb( Q::W90 );
+
+        error = m_palettes[ Error ].rgb( Q::W80 );
+        onError = m_palettes[ Error ].rgb( Q::W20 );
+        errorContainer = m_palettes[ Error ].rgb( Q::W30 );
+        onErrorContainer = m_palettes[ Error ].rgb( Q::W90 );
+
+        background = m_palettes[ Neutral ].rgb( Q::W10 );
+        onBackground = m_palettes[ Neutral ].rgb( Q::W90 );
+        surface = m_palettes[ Neutral ].rgb( Q::W10 );
+        onSurface = m_palettes[ Neutral ].rgb( Q::W80 );
+
+        surfaceVariant = m_palettes[ NeutralVariant ].rgb( Q::W30 );
+        onSurfaceVariant = m_palettes[ NeutralVariant ].rgb( Q::W80 );
+        outline = m_palettes[ NeutralVariant ].rgb( Q::W60 );
+    }
+}
+
+QskMaterialSkin::QskMaterialSkin( const QskMaterialTheme& palette, QObject* parent )
     : Inherited( parent )
 {
     // Default theme colors

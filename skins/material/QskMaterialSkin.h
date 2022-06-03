@@ -8,12 +8,31 @@
 
 #include "QskMaterialGlobal.h"
 #include <QskSkin.h>
-#include <QskRgbValue.h>
+#include <QskRgbPalette.h>
 
-class QSK_MATERIAL_EXPORT QskMaterialPalette
+class QSK_MATERIAL_EXPORT QskMaterialTheme
 {
   public:
-    // ### here add palettes? Or just pass them in the constructor?
+    enum Lightness
+    {
+        Light,
+        Dark
+    };
+
+    enum PaletteType
+    {
+        Primary,
+        Secondary,
+        Tertiary,
+        Error,
+        Neutral,
+        NeutralVariant,
+
+        NumPaletteTypes
+    };
+
+    QskMaterialTheme( Lightness );
+    QskMaterialTheme( Lightness, std::array< QskRgbPalette, NumPaletteTypes > );
 
     QRgb primary;
     QRgb onPrimary;
@@ -43,6 +62,9 @@ class QSK_MATERIAL_EXPORT QskMaterialPalette
     QRgb surfaceVariant;
     QRgb onSurfaceVariant;
     QRgb outline;
+
+  private:
+    std::array< QskRgbPalette, NumPaletteTypes > m_palettes;
 };
 
 class QSK_MATERIAL_EXPORT QskMaterialSkin : public QskSkin
@@ -52,8 +74,10 @@ class QSK_MATERIAL_EXPORT QskMaterialSkin : public QskSkin
     using Inherited = QskSkin;
 
   public:
-    QskMaterialSkin( const QskMaterialPalette&, QObject* parent = nullptr );
+    QskMaterialSkin( const QskMaterialTheme&, QObject* parent = nullptr );
     ~QskMaterialSkin() override;
+
+    // ### add setTheme() re-implement resetColors()
 };
 
 #endif
