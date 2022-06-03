@@ -48,6 +48,14 @@ namespace
 QskMaterialSkinFactory::QskMaterialSkinFactory( QObject* parent )
     : QskSkinFactory( parent )
 {
+    using Q = QskRgbPalette;
+
+    m_palettes[ Primary ] = Q::palette( Q::DefaultMaterialPrimary );
+    m_palettes[ Secondary ] = Q::palette( Q::DefaultMaterialSecondary );
+    m_palettes[ Tertiary ] = Q::palette( Q::DefaultMaterialTertiary );
+    m_palettes[ Error ] = Q::palette( Q::DefaultMaterialError );
+    m_palettes[ Neutral ] = Q::palette( Q::DefaultMaterialNeutral );
+    m_palettes[ NeutralVariant ] = Q::palette( Q::DefaultMaterialNeutralVariant );
 }
 
 QskMaterialSkinFactory::~QskMaterialSkinFactory()
@@ -63,9 +71,11 @@ QskSkin* QskMaterialSkinFactory::createSkin( const QString& skinName )
 {
     if ( QString::compare( skinName, materialLightSkinName, Qt::CaseInsensitive ) == 0 )
     {
-        QskMaterialPalette pal( QskMaterialPalette::Light );;
+        QskMaterialPalette pal( QskMaterialPalette::Light );
 
-        pal.primary = 0xff6200ee;
+        using Q = QskRgbPalette;
+
+        pal.primary = m_palettes[ Primary ].rgb( Q::W40 );
         pal.primaryVariant = 0xff3700b3;
         pal.onPrimary = QskRgb::White;
         pal.secondary = 0xff03dac6;

@@ -7,6 +7,7 @@
 #define QSK_MATERIAL_SKIN_FACTORY_H
 
 #include "QskMaterialGlobal.h"
+#include <QskRgbPalette.h>
 #include <QskSkinFactory.h>
 
 class QSK_MATERIAL_EXPORT QskMaterialSkinFactory : public QskSkinFactory
@@ -20,8 +21,23 @@ class QSK_MATERIAL_EXPORT QskMaterialSkinFactory : public QskSkinFactory
     QskMaterialSkinFactory( QObject* parent = nullptr );
     ~QskMaterialSkinFactory() override;
 
+    enum PaletteType
+    {
+        Primary,
+        Secondary,
+        Tertiary,
+        Error,
+        Neutral,
+        NeutralVariant,
+
+        NumPaletteTypes
+    };
+
     QStringList skinNames() const override;
     QskSkin* createSkin( const QString& skinName ) override;
+
+  private:
+    QskRgbPalette m_palettes[ NumPaletteTypes ];
 };
 
 #endif
