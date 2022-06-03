@@ -13,59 +13,36 @@
 class QSK_MATERIAL_EXPORT QskMaterialPalette
 {
   public:
-    enum Lightness
-    {
-        Light,
-        Dark
-    };
+    // ### here add palettes? Or just pass them in the constructor?
 
-    QskMaterialPalette( Lightness lightness )
-        : m_lightness( lightness )
-    {
-    }
-
-    inline QRgb elevated( const QRgb rgb, const float level = 1 ) const
-    {
-        return ( m_lightness == Light )
-            ? QskRgb::darker( rgb, 100 + level * 15 )
-            : QskRgb::lighter( rgb, 130 + level * 30 );
-    }
-
-    inline QRgb toDisabled( const QRgb rgb ) const
-    {
-        return QskRgb::toTransparentF( rgb, this->m_disabled );
-    }
-
-  public:
     QRgb primary;
-    QRgb primaryVariant;
     QRgb onPrimary;
+    QRgb primaryContainer;
+    QRgb onPrimaryContainer;
 
     QRgb secondary;
-    QRgb secondaryVariant;
     QRgb onSecondary;
+    QRgb secondaryContainer;
+    QRgb onSecondaryContainer;
 
-    QRgb background;
-    QRgb onBackground;
+    QRgb tertiary;
+    QRgb onTertiary;
+    QRgb tertiaryContainer;
+    QRgb onTertiaryContainer;
 
     QRgb error;
     QRgb onError;
+    QRgb errorContainer;
+    QRgb onErrorContainer;
 
-    QRgb primaryNoSaturation;
-    QRgb secondaryNoSaturation;
-    QRgb secondaryVariantNoSaturation;
+    QRgb background;
+    QRgb onBackground;
+    QRgb surface;
+    QRgb onSurface;
 
-    const qreal disabledOccupancy = 0.2;
-    const qreal widgetBackgroundDisabled = 0.6;
-
-    const qreal hover = 0.1;
-    const qreal focused = 0.4;
-    const qreal pressed = 0.5;
-
-  private:
-    const qreal m_disabled = 0.3;
-
-    const Lightness m_lightness;
+    QRgb surfaceVariant;
+    QRgb onSurfaceVariant;
+    QRgb outline;
 };
 
 class QSK_MATERIAL_EXPORT QskMaterialSkin : public QskSkin

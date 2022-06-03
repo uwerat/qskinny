@@ -9,42 +9,6 @@
 static const QString materialLightSkinName = QStringLiteral( "materialLight" );
 static const QString materialDarkSkinName = QStringLiteral( "materialDark" );
 
-namespace
-{
-    inline int lightnessRgb( QRgb rgb )
-    {
-        const int red = qRed( rgb );
-        const int green = qGreen( rgb );
-        const int blue = qBlue( rgb );
-
-        int min, max;
-
-        if ( red > green )
-        {
-            max = qMax( red, blue );
-            min = qMin( green, blue );
-        }
-        else
-        {
-            max = qMax( green, blue );
-            min = qMin( red, blue );
-        }
-
-        return ( max + min ) / 2;
-    }
-
-    inline QRgb toUnsaturated( QRgb rgb )
-    {
-        /*
-            a saturation of 0 results in having the lightness as r,g,b
-            Is this intended ?
-         */
-
-        const auto l = lightnessRgb( rgb );
-        return qRgba( l, l, l, qAlpha( rgb ) );
-    }
-}
-
 QskMaterialSkinFactory::QskMaterialSkinFactory( QObject* parent )
     : QskSkinFactory( parent )
 {
@@ -71,46 +35,77 @@ QskSkin* QskMaterialSkinFactory::createSkin( const QString& skinName )
 {
     if ( QString::compare( skinName, materialLightSkinName, Qt::CaseInsensitive ) == 0 )
     {
-        QskMaterialPalette pal( QskMaterialPalette::Light );
+        // ### Move this to QskMaterialSkin?
+        QskMaterialPalette pal;
 
         using Q = QskRgbPalette;
 
         pal.primary = m_palettes[ Primary ].rgb( Q::W40 );
-        pal.primaryVariant = 0xff3700b3;
-        pal.onPrimary = QskRgb::White;
-        pal.secondary = 0xff03dac6;
-        pal.secondaryVariant = 0xff018786;
-        pal.onSecondary = QskRgb::White;
-        pal.background = QskRgb::DefaultMaterialNeutral90;
-        pal.onBackground = QskRgb::Black;
-        pal.error = 0xffb00020;
-        pal.onError = QskRgb::White;
+        pal.onPrimary = m_palettes[ Primary ].rgb( Q::W100 );
+        pal.primaryContainer = m_palettes[ Primary ].rgb( Q::W90 );
+        pal.onPrimaryContainer = m_palettes[ Primary ].rgb( Q::W10 );
 
-        pal.primaryNoSaturation = toUnsaturated( pal.primary );
-        pal.secondaryNoSaturation = toUnsaturated( pal.secondary );
-        pal.secondaryVariantNoSaturation = toUnsaturated( pal.secondaryVariant );
+        pal.primary = m_palettes[ Secondary ].rgb( Q::W40 );
+        pal.onSecondary = m_palettes[ Secondary ].rgb( Q::W100 );
+        pal.secondaryContainer = m_palettes[ Secondary ].rgb( Q::W90 );
+        pal.onSecondaryContainer = m_palettes[ Secondary ].rgb( Q::W10 );
+
+        pal.tertiary = m_palettes[ Tertiary ].rgb( Q::W40 );
+        pal.onTertiary = m_palettes[ Tertiary ].rgb( Q::W100 );
+        pal.tertiaryContainer = m_palettes[ Tertiary ].rgb( Q::W90 );
+        pal.onTertiaryContainer = m_palettes[ Tertiary ].rgb( Q::W10 );
+
+        pal.error = m_palettes[ Error ].rgb( Q::W40 );
+        pal.onError = m_palettes[ Error ].rgb( Q::W100 );
+        pal.errorContainer = m_palettes[ Error ].rgb( Q::W90 );
+        pal.onErrorContainer = m_palettes[ Error ].rgb( Q::W10 );
+
+        pal.background = m_palettes[ Neutral ].rgb( Q::W99 );
+        pal.onBackground = m_palettes[ Neutral ].rgb( Q::W10 );
+        pal.surface = m_palettes[ Neutral ].rgb( Q::W99 );
+        pal.onSurface = m_palettes[ Neutral ].rgb( Q::W10 );
+
+        pal.surfaceVariant = m_palettes[ NeutralVariant ].rgb( Q::W90 );
+        pal.onSurfaceVariant = m_palettes[ NeutralVariant ].rgb( Q::W30 );
+        pal.outline = m_palettes[ NeutralVariant ].rgb( Q::W50 );
 
         return new QskMaterialSkin( pal );
     }
 
     if ( QString::compare( skinName, materialDarkSkinName, Qt::CaseInsensitive ) == 0 )
     {
-        QskMaterialPalette pal( QskMaterialPalette::Dark );
+        QskMaterialPalette pal;
 
-        pal.primary = 0xffbb86fc;
-        pal.primaryVariant = 0xff3700b3;
-        pal.onPrimary = QskRgb::Black;
-        pal.secondary = 0xff03dac6;
-        pal.secondaryVariant = 0xff018786;
-        pal.onSecondary = QskRgb::Black;
-        pal.background = 0xff121212;
-        pal.onBackground = QskRgb::White;
-        pal.error = 0xffcf6679;
-        pal.onError = QskRgb::Black;
+        using Q = QskRgbPalette;
 
-        pal.primaryNoSaturation = toUnsaturated( pal.primary );
-        pal.secondaryNoSaturation = toUnsaturated( pal.secondary );
-        pal.secondaryVariantNoSaturation = toUnsaturated( pal.secondaryVariant );
+        pal.primary = m_palettes[ Primary ].rgb( Q::W80 );
+        pal.onPrimary = m_palettes[ Primary ].rgb( Q::W20 );
+        pal.primaryContainer = m_palettes[ Primary ].rgb( Q::W30 );
+        pal.onPrimaryContainer = m_palettes[ Primary ].rgb( Q::W90 );
+
+        pal.primary = m_palettes[ Secondary ].rgb( Q::W80 );
+        pal.onSecondary = m_palettes[ Secondary ].rgb( Q::W20 );
+        pal.secondaryContainer = m_palettes[ Secondary ].rgb( Q::W30 );
+        pal.onSecondaryContainer = m_palettes[ Secondary ].rgb( Q::W90 );
+
+        pal.tertiary = m_palettes[ Tertiary ].rgb( Q::W80 );
+        pal.onTertiary = m_palettes[ Tertiary ].rgb( Q::W20 );
+        pal.tertiaryContainer = m_palettes[ Tertiary ].rgb( Q::W30 );
+        pal.onTertiaryContainer = m_palettes[ Tertiary ].rgb( Q::W90 );
+
+        pal.error = m_palettes[ Error ].rgb( Q::W80 );
+        pal.onError = m_palettes[ Error ].rgb( Q::W20 );
+        pal.errorContainer = m_palettes[ Error ].rgb( Q::W30 );
+        pal.onErrorContainer = m_palettes[ Error ].rgb( Q::W90 );
+
+        pal.background = m_palettes[ Neutral ].rgb( Q::W10 );
+        pal.onBackground = m_palettes[ Neutral ].rgb( Q::W90 );
+        pal.surface = m_palettes[ Neutral ].rgb( Q::W10 );
+        pal.onSurface = m_palettes[ Neutral ].rgb( Q::W80 );
+
+        pal.surfaceVariant = m_palettes[ NeutralVariant ].rgb( Q::W30 );
+        pal.onSurfaceVariant = m_palettes[ NeutralVariant ].rgb( Q::W80 );
+        pal.outline = m_palettes[ NeutralVariant ].rgb( Q::W60 );
 
         return new QskMaterialSkin( pal );
     }
