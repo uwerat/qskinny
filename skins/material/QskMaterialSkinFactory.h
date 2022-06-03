@@ -21,23 +21,8 @@ class QSK_MATERIAL_EXPORT QskMaterialSkinFactory : public QskSkinFactory
     QskMaterialSkinFactory( QObject* parent = nullptr );
     ~QskMaterialSkinFactory() override;
 
-    enum PaletteType
-    {
-        Primary,
-        Secondary,
-        Tertiary,
-        Error,
-        Neutral,
-        NeutralVariant,
-
-        NumPaletteTypes
-    };
-
     QStringList skinNames() const override;
     QskSkin* createSkin( const QString& skinName ) override;
-
-  private:
-    QskRgbPalette m_palettes[ NumPaletteTypes ];
 };
 
 #endif
