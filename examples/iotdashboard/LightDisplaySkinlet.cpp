@@ -6,15 +6,13 @@
 #include "LightDisplaySkinlet.h"
 #include "LightDisplay.h"
 
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-    #include "nodes/BoxShadowNode.h"
-#endif
-
 #include "nodes/RadialTickmarksNode.h"
 
 #include <QskArcMetrics.h>
 #include <QskTextOptions.h>
 #include <QskScaleTickmarks.h>
+#include <QskBoxShadowNode.h>
+#include <QskSGNode.h>
 
 #include <QFontMetrics>
 #include <QtMath>
@@ -144,9 +142,7 @@ QSGNode* LightDisplaySkinlet::updateSubNode(
             if ( grooveRect.isEmpty() )
                 return nullptr;
 
-            auto shadowNode = static_cast< BoxShadowNode* >( node );
-            if ( shadowNode == nullptr )
-                shadowNode = new BoxShadowNode();
+            auto shadowNode = QskSGNode::ensureNode< QskBoxShadowNode >( node );
 
             const auto& shadowMetrics = display->shadow();
 
