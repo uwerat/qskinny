@@ -67,7 +67,7 @@ QSizeF QskSwitchButtonSkinlet::sizeHint( const QskSkinnable* skinnable,
     auto handleHint = skinnable->strutSizeHint( QskSwitchButton::Handle );
     auto rippleHint = skinnable->strutSizeHint( QskSwitchButton::Ripple );
 
-    auto hint = grooveHint.expandedTo( grooveHint + rippleHint - handleHint );
+    auto hint = grooveHint;
     hint = hint.expandedTo( rippleHint );
     hint = hint.expandedTo( handleHint );
 
