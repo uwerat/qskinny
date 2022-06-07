@@ -82,7 +82,15 @@ class QSK_MATERIAL_EXPORT QskMaterialSkin : public QskSkin
     QskMaterialSkin( const QskMaterialTheme&, QObject* parent = nullptr );
     ~QskMaterialSkin() override;
 
+    enum FontRole
+    {
+        M3LabelLarge = QskSkin::HugeFont + 1,
+    };
+
     // ### add setTheme() re-implement resetColors()
+
+  private:
+    void setupFonts();
 };
 
 #endif
