@@ -413,7 +413,7 @@ void Editor::setupPushButton()
     using A = QskAspect;
     using Q = QskPushButton;
 
-    setStrutSize( Q::Panel, -1, qskDpiScaled( 40.0 ) );
+    setStrutSize( Q::Panel, -1, 31 );
     setSpacing( Q::Panel, qskDpiScaled( 4 ) );
     setPadding( Q::Panel, { 24, 0, 20, 0 } );
 
@@ -879,7 +879,7 @@ QskMaterialSkin::QskMaterialSkin( const QskMaterialTheme& palette, QObject* pare
     setupFonts( QStringLiteral( "Roboto" ) );
 
     auto buttonFont = font( QskSkin::DefaultFont );
-    buttonFont.setCapitalization( QFont::AllUppercase );
+    buttonFont.setPixelSize( 14 );
     setFont( ButtonFontRole, buttonFont );
 
     Editor editor( &hintTable(), palette );
