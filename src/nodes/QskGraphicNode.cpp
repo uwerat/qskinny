@@ -8,27 +8,17 @@
 #include "QskColorFilter.h"
 #include "QskPainterCommand.h"
 
-static inline QskHashValue qskHash(
-    const QskGraphic& graphic, const QskColorFilter& colorFilter,
-    QskTextureRenderer::RenderMode renderMode )
+namespace
 {
-    QskHashValue hash = 12000;
-
-    const auto& substitutions = colorFilter.substitutions();
-    if ( substitutions.size() > 0 )
+    class GraphicData
     {
-        hash = qHashBits( substitutions.constData(),
-            substitutions.size() * sizeof( substitutions[ 0 ] ), hash );
-    }
-
-    hash = graphic.hash( hash );
-    hash = qHash( renderMode, hash );
-
-    return hash;
+      public:
+        const QskGraphic& graphic;
+        const QskColorFilter& colorFilter;
+    };
 }
 
 QskGraphicNode::QskGraphicNode()
-    : m_hash( 0 )
 {
 }
 
@@ -36,14 +26,10 @@ QskGraphicNode::~QskGraphicNode()
 {
 }
 
-void QskGraphicNode::setGraphic(
-    QQuickWindow* window, const QskGraphic& graphic, const QskColorFilter& colorFilter,
-    QskTextureRenderer::RenderMode renderMode, const QRectF& rect,
-    Qt::Orientations mirrored )
+void QskGraphicNode::setGraphic( QQuickWindow* window, const QskGraphic& graphic,
+    const QskColorFilter& colorFilter, const QRectF& rect )
 {
-    bool isTextureDirty = isNull();
-
-    QSize textureSize;
+    QSizeF size;
 
     if ( graphic.commandTypes() == QskGraphic::RasterData )
     {
@@ -52,34 +38,43 @@ void QskGraphicNode::setGraphic(
             There is no benefit in rescaling it into the target rectangle
             by the CPU and creating a new texture.
          */
-        textureSize = graphic.defaultSize().toSize();
+        size = graphic.defaultSize();
     }
-    else
+
+    const GraphicData graphicData { graphic, colorFilter };
+    update( window, rect, size, &graphicData );
+}
+
+void QskGraphicNode::paint( QPainter* painter, const QSize& size, const void* nodeData )
+{
+    const auto graphicData = reinterpret_cast< const GraphicData* >( nodeData );
+
+    const auto& graphic = graphicData->graphic;
+    const auto& colorFilter = graphicData->colorFilter;
+
+    if ( graphic.commandTypes() == QskGraphic::RasterData )
     {
-        textureSize = rect.size().toSize();
-
-        if ( !isTextureDirty )
-        {
-            const auto oldRect = QskTextureNode::rect();
-            isTextureDirty = ( rect.width() != static_cast< int >( oldRect.width() ) ) ||
-                ( rect.height() != static_cast< int >( oldRect.height() ) );
-        }
+        qDebug() << size;
     }
 
-    const auto hash = qskHash( graphic, colorFilter, renderMode );
-    if ( hash != m_hash )
+    const QRectF rect( 0, 0, size.width(), size.height() );
+    graphic.render( painter, rect, colorFilter, Qt::IgnoreAspectRatio );
+}
+
+QskHashValue QskGraphicNode::hash( const void* nodeData ) const
+{
+    const auto graphicData = reinterpret_cast< const GraphicData* >( nodeData );
+
+    const auto& graphic = graphicData->graphic;
+
+    QskHashValue hash = 12000;
+
+    const auto& substitutions = graphicData->colorFilter.substitutions();
+    if ( substitutions.size() > 0 )
     {
-        m_hash = hash;
-        isTextureDirty = true;
+        hash = qHashBits( substitutions.constData(),
+            substitutions.size() * sizeof( substitutions[ 0 ] ), hash );
     }
 
-    auto textureId = QskTextureNode::textureId();
-
-    if ( isTextureDirty )
-    {
-        textureId = QskTextureRenderer::createTextureFromGraphic(
-            window, renderMode, textureSize, graphic, colorFilter, Qt::IgnoreAspectRatio );
-    }
-
-    QskTextureNode::setTexture( window, rect, textureId, mirrored );
+    return graphic.hash( hash );
 }

@@ -7,6 +7,7 @@
 
 #include "QskArcNode.h"
 #include "QskAspect.h"
+#include "QskArcMetrics.h"
 #include "QskBoxBorderColors.h"
 #include "QskBoxBorderMetrics.h"
 #include "QskBoxClipNode.h"
@@ -24,6 +25,7 @@
 #include "QskTextNode.h"
 #include "QskTextOptions.h"
 #include "QskSkinStateChanger.h"
+#include "QskTextureRenderer.h"
 
 #include <qquickwindow.h>
 #include <qsgsimplerectnode.h>
@@ -111,18 +113,17 @@ static inline QSGNode* qskUpdateGraphicNode(
     if ( control == nullptr )
         return nullptr;
 
-    auto mode = QskTextureRenderer::OpenGL;
-
     auto graphicNode = static_cast< QskGraphicNode* >( node );
     if ( graphicNode == nullptr )
         graphicNode = new QskGraphicNode();
 
-    if ( control->testUpdateFlag( QskControl::PreferRasterForTextures ) )
-        mode = QskTextureRenderer::Raster;
+    const bool useRaster = control->testUpdateFlag( QskControl::PreferRasterForTextures );
+    graphicNode->setRenderHint( useRaster ? QskPaintedNode::Raster : QskPaintedNode::OpenGL );
+
+    graphicNode->setMirrored( mirrored );
 
     const auto r = qskSceneAlignedRect( control, rect );
-    graphicNode->setGraphic( control->window(), graphic,
-        colorFilter, mode, r, mirrored );
+    graphicNode->setGraphic( control->window(), graphic, colorFilter, r );
 
     return graphicNode;
 }

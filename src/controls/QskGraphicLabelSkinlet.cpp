@@ -10,7 +10,6 @@
 #include "QskColorFilter.h"
 #include "QskFunctions.h"
 #include "QskGraphic.h"
-#include "QskTextureNode.h"
 
 QskGraphicLabelSkinlet::QskGraphicLabelSkinlet( QskSkin* skin )
     : Inherited( skin )

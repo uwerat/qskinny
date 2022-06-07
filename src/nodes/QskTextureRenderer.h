@@ -7,35 +7,15 @@
 #define QSK_TEXTURE_RENDERER_H
 
 #include "QskGlobal.h"
-#include <qnamespace.h>
 
-class QskGraphic;
-class QskColorFilter;
-
-class QPainter;
 class QSize;
+class QPainter;
 class QSGTexture;
 class QQuickWindow;
 
 namespace QskTextureRenderer
 {
-    /*
-        Raster usually provides a better antialiasing and is less buggy,
-        while OpenGL might be faster - depending on the content that has
-        to be painted.
-
-        Since Qt 5.10 X11 is back and could be an interesting option
-        with good quality and hardware accelerated performance. TODO ...
-     */
-    enum RenderMode
-    {
-        AutoDetect, // depends on QskSetup::controlFlags()
-
-        Raster,
-        OpenGL
-    };
-
-    class QSK_EXPORT PaintHelper
+    class PaintHelper
     {
       public:
         PaintHelper() = default;
@@ -47,15 +27,16 @@ namespace QskTextureRenderer
         Q_DISABLE_COPY( PaintHelper )
     };
 
-    QSK_EXPORT uint createTexture(
-        QQuickWindow*, RenderMode, const QSize&, PaintHelper* );
+    bool isOpenGLWindow( const QQuickWindow* );
 
-    QSK_EXPORT uint createTextureFromGraphic(
-        QQuickWindow*, RenderMode, const QSize&, const QskGraphic&,
-        const QskColorFilter&, Qt::AspectRatioMode );
+    void setTextureId( QQuickWindow*,
+        quint32 textureId, const QSize&, QSGTexture* );
 
-    QSK_EXPORT QSGTexture* textureFromId(
-        QQuickWindow*, uint textureId, const QSize& );
+    quint32 createPaintedTextureGL(
+        QQuickWindow*, const QSize&, QskTextureRenderer::PaintHelper* );
+
+    QSK_EXPORT QSGTexture* createPaintedTexture(
+        QQuickWindow* window, const QSize& size, PaintHelper* helper );
 }
 
 #endif

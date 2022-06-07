@@ -54,16 +54,30 @@ QSize QskGraphicTextureFactory::size() const
     return m_size;
 }
 
-
 QSGTexture* QskGraphicTextureFactory::createTexture( QQuickWindow* window ) const
 {
-    using namespace QskTextureRenderer;
+    class PaintHelper : public QskTextureRenderer::PaintHelper
+    {
+      public:
+        PaintHelper( const QskGraphic& graphic, const QskColorFilter& filter )
+            : m_graphic( graphic )
+            , m_filter( filter )
+        {
+        }
 
-    const uint textureId = createTextureFromGraphic(
-        window, QskTextureRenderer::OpenGL, m_size, m_graphic, m_colorFilter,
-        Qt::IgnoreAspectRatio );
+        void paint( QPainter* painter, const QSize& size ) override
+        {
+            const QRect rect( 0, 0, size.width(), size.height() );
+            m_graphic.render( painter, rect, m_filter );
+        }
 
-    return textureFromId( window, textureId, m_size );
+      private:
+        const QskGraphic& m_graphic;
+        const QskColorFilter& m_filter;
+    };
+
+    PaintHelper helper( m_graphic, m_colorFilter );
+    return QskTextureRenderer::createPaintedTexture( window, m_size, &helper );
 }
 
 QSize QskGraphicTextureFactory::textureSize() const
