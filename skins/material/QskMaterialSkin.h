@@ -68,14 +68,8 @@ class QSK_MATERIAL_EXPORT QskMaterialTheme
     const qreal pressedOpacity = 0.12;
     const qreal draggedOpacity = 0.16;
 
-    std::array< QskRgbPalette, NumPaletteTypes > palettes() const;
-    void setPalette( PaletteType type, const QskRgbPalette& palette );
-
   private:
-    void initColors();
-
     std::array< QskRgbPalette, NumPaletteTypes > m_palettes;
-    Lightness m_lightness;
 };
 
 class QSK_MATERIAL_EXPORT QskMaterialSkin : public QskSkin
@@ -93,13 +87,10 @@ class QSK_MATERIAL_EXPORT QskMaterialSkin : public QskSkin
         M3LabelLarge = QskSkin::HugeFont + 1,
     };
 
-    void setPalette( QskMaterialTheme::PaletteType, const QskRgbPalette& palette );
+    // ### add setTheme() re-implement resetColors()
 
   private:
-    void init( const QskMaterialTheme& palette );
     void setupFonts();
-
-    QskMaterialTheme m_theme;
 };
 
 #endif

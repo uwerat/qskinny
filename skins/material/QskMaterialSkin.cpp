@@ -809,16 +809,10 @@ QskMaterialTheme::QskMaterialTheme( Lightness lightness )
 QskMaterialTheme::QskMaterialTheme( Lightness lightness,
                                     std::array< QskRgbPalette, NumPaletteTypes > palettes )
     : m_palettes( palettes )
-    , m_lightness( lightness )
-{
-    initColors();
-}
-
-void QskMaterialTheme::initColors()
 {
     using Q = QskRgbPalette;
 
-    if ( m_lightness == Light )
+    if ( lightness == Light )
     {
         primary = m_palettes[ Primary ].rgb( Q::W40 );
         onPrimary = m_palettes[ Primary ].rgb( Q::W100 );
@@ -849,7 +843,7 @@ void QskMaterialTheme::initColors()
         onSurfaceVariant = m_palettes[ NeutralVariant ].rgb( Q::W30 );
         outline = m_palettes[ NeutralVariant ].rgb( Q::W50 );
     }
-    else if ( m_lightness == Dark )
+    else if ( lightness == Dark )
     {
         primary = m_palettes[ Primary ].rgb( Q::W80 );
         onPrimary = m_palettes[ Primary ].rgb( Q::W20 );
@@ -882,39 +876,17 @@ void QskMaterialTheme::initColors()
     }
 }
 
-std::array< QskRgbPalette, QskMaterialTheme::NumPaletteTypes > QskMaterialTheme::palettes() const
-{
-    return m_palettes;
-}
-
-void QskMaterialTheme::setPalette( PaletteType type, const QskRgbPalette& palette )
-{
-    m_palettes[ type ] = palette;
-    initColors();
-}
-
-QskMaterialSkin::QskMaterialSkin( const QskMaterialTheme& theme, QObject* parent )
+QskMaterialSkin::QskMaterialSkin( const QskMaterialTheme& palette, QObject* parent )
     : Inherited( parent )
-    , m_theme( theme )
 {
     setupFonts();
-    init( theme );
+
+    Editor editor( &hintTable(), palette );
+    editor.setup();
 }
 
 QskMaterialSkin::~QskMaterialSkin()
 {
-}
-
-void QskMaterialSkin::setPalette( QskMaterialTheme::PaletteType type,
-                                  const QskRgbPalette& palette )
-{
-    m_theme.setPalette( type, palette );
-}
-
-void QskMaterialSkin::init( const QskMaterialTheme& palette )
-{
-    Editor editor( &hintTable(), palette );
-    editor.setup();
 }
 
 void QskMaterialSkin::setupFonts()
