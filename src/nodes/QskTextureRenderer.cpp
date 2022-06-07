@@ -4,92 +4,178 @@
  *****************************************************************************/
 
 #include "QskTextureRenderer.h"
-#include "QskColorFilter.h"
-#include "QskGraphic.h"
-#include "QskSetup.h"
 
 #include <qopenglcontext.h>
-#include <qopenglextrafunctions.h>
 #include <qopenglframebufferobject.h>
-#include <qopenglfunctions.h>
 #include <qopenglpaintdevice.h>
-#include <qopengltexture.h>
 
 #include <qimage.h>
 #include <qpainter.h>
 
 #include <qquickwindow.h>
-#include <qsgtexture.h>
+
+QSK_QT_PRIVATE_BEGIN
+#include <private/qsgplaintexture_p.h>
+#include <private/qopenglframebufferobject_p.h>
+#include <private/qquickwindow_p.h>
+QSK_QT_PRIVATE_END
 
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-    #include <qsgtexture_platform.h>
+    #include <qquickopenglutils.h>
 #endif
 
-static inline bool qskHasOpenGLRenderer( const QQuickWindow* window )
+static GLuint qskTakeTexture( QOpenGLFramebufferObject& fbo )
+{
+    /*
+        See https://bugreports.qt.io/browse/QTBUG-103929
+
+        As we create a FBO for each update of a node we can't live
+        without having this ( ugly ) workaround.
+     */
+    class MyFBO
+    {
+      public:
+        virtual ~MyFBO() = default;
+        QScopedPointer< QOpenGLFramebufferObjectPrivate > d_ptr;
+    };
+
+    static_assert( sizeof( MyFBO ) == sizeof( QOpenGLFramebufferObject ),
+        "Bad cast: QOpenGLFramebufferObject does not match" );
+
+    auto& attachment = reinterpret_cast< MyFBO* >( &fbo )->d_ptr->colorAttachments[0];
+    auto guard = attachment.guard;
+
+    const auto textureId = fbo.takeTexture();
+
+    if ( guard )
+    {
+        class MyGuard : public QOpenGLSharedResourceGuard
+        {
+          public:
+            void invalidateTexture() { invalidateResource(); }
+        };
+
+        reinterpret_cast< MyGuard* >( guard )->invalidateTexture();
+    }
+
+    attachment.guard = guard;
+
+    return textureId;
+}
+
+bool QskTextureRenderer::isOpenGLWindow( const QQuickWindow* window )
 {
     if ( window == nullptr )
         return false;
 
     const auto renderer = window->rendererInterface();
-    return renderer->graphicsApi() == QSGRendererInterface::OpenGL;
+    switch( renderer->graphicsApi() )
+    {
+        case QSGRendererInterface::OpenGL:
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+        case QSGRendererInterface::OpenGLRhi:
+#endif
+            return true;
+
+        default:
+            return false;
+    }
 }
 
-static uint qskCreateTextureOpenGL( QQuickWindow* window,
-    const QSize& size, QskTextureRenderer::PaintHelper* helper )
+void QskTextureRenderer::setTextureId( QQuickWindow* window,
+    quint32 textureId, const QSize& size, QSGTexture* texture )
 {
-    const auto ratio = window ? window->effectiveDevicePixelRatio() : 1.0;
+    auto plainTexture = qobject_cast< QSGPlainTexture* >( texture );
+    if ( plainTexture == nullptr )
+        return;
 
-    const int width = ratio * size.width();
-    const int height = ratio * size.height();
+    auto rhi = QQuickWindowPrivate::get( window )->rhi;
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+    plainTexture->setTextureFromNativeTexture(
+        rhi, quint64( textureId ), 0, size, {}, {} );
+#else
+    if ( rhi )
+    {
+        // enabled with: "export QSG_RHI=1"
+        plainTexture->setTextureFromNativeObject( rhi,
+            QQuickWindow::NativeObjectTexture, &textureId, 0, size, false );
+    }
+    else
+    {
+        plainTexture->setTextureId( textureId );
+        plainTexture->setTextureSize( size );
+    }
+#endif
+}
+
+quint32 QskTextureRenderer::createPaintedTextureGL(
+    QQuickWindow* window, const QSize& size, QskTextureRenderer::PaintHelper* helper )
+{
+    /*
+        Binding GL_ARRAY_BUFFER/GL_ELEMENT_ARRAY_BUFFER to 0 seems to be enough.
+
+        However - as we do not know what is finally painted and what the
+        OpenGL paint engine is doing with better reinitialize everything.
+
+        Hope this has no side effects as the context will leave the function
+        in a modified state. Otherwise we could try to change the buffers
+        only and reset them, before leaving.
+
+        QQuickFramebufferObject does the FBO rendering early
+        ( QQuickWindow::beforeRendering ). But so far doing it below updatePaintNode
+        seems to work as well. Let's see if we run into issues ...
+     */
+
+    window->beginExternalCommands();
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+    QQuickOpenGLUtils::resetOpenGLState();
+#else
+    window->resetOpenGLState();
+#endif
+
+    auto context = QOpenGLContext::currentContext();
 
     QOpenGLFramebufferObjectFormat format1;
     format1.setAttachment( QOpenGLFramebufferObject::CombinedDepthStencil );
 
-    // ### TODO: get samples from window instead
-    format1.setSamples( QOpenGLContext::currentContext()->format().samples() );
+    format1.setSamples( context->format().samples() );
 
-    QOpenGLFramebufferObject multisampledFbo( width, height, format1 );
+    QOpenGLFramebufferObject multisampledFbo( size, format1 );
 
-    QOpenGLPaintDevice pd( width, height );
+    QOpenGLPaintDevice pd( size );
     pd.setPaintFlipped( true );
 
     {
         QPainter painter( &pd );
-        painter.scale( ratio, ratio );
 
         painter.setCompositionMode( QPainter::CompositionMode_Source );
-        painter.fillRect( 0, 0, width, height, Qt::transparent );
+        painter.fillRect( 0, 0, size.width(), size.height(), Qt::transparent );
         painter.setCompositionMode( QPainter::CompositionMode_SourceOver );
 
-        helper->paint( &painter, size );
+        const auto ratio = window->effectiveDevicePixelRatio();
 
-#if 1
-        if ( format1.samples() > 0 )
-        {
-            /*
-                Multisampling in the window surface might get lost
-                as a side effect of rendering to the FBO.
-                weired, needs to be investigated more
-             */
-            painter.setRenderHint( QPainter::Antialiasing, true );
-        }
-#endif
+        painter.scale( ratio, ratio );
+        helper->paint( &painter, size / ratio );
     }
 
     QOpenGLFramebufferObjectFormat format2;
     format2.setAttachment( QOpenGLFramebufferObject::NoAttachment );
 
-    QOpenGLFramebufferObject fbo( width, height, format2 );
+    QOpenGLFramebufferObject fbo( size, format2 );
 
-    const QRect fboRect( 0, 0, width, height );
+    const QRect fboRect( 0, 0, size.width(), size.height() );
 
     QOpenGLFramebufferObject::blitFramebuffer(
         &fbo, fboRect, &multisampledFbo, fboRect );
 
-    return fbo.takeTexture();
+    window->endExternalCommands();
+
+    return qskTakeTexture( fbo );
 }
 
-static uint qskCreateTextureRaster( QQuickWindow* window,
+static QSGTexture* qskCreateTextureRaster( QQuickWindow* window,
     const QSize& size, QskTextureRenderer::PaintHelper* helper )
 {
     const auto ratio = window ? window->effectiveDevicePixelRatio() : 1.0;
@@ -109,130 +195,26 @@ static uint qskCreateTextureRaster( QQuickWindow* window,
         helper->paint( &painter, size );
     }
 
-    const auto target = QOpenGLTexture::Target2D;
+    return window->createTextureFromImage( image, QQuickWindow::TextureHasAlphaChannel );
+}
 
-    auto context = QOpenGLContext::currentContext();
-    if ( context == nullptr )
-        return 0;
-
-    auto& f = *context->functions();
-
-    GLint oldTexture; // we can't rely on having OpenGL Direct State Access
-    f.glGetIntegerv( QOpenGLTexture::BindingTarget2D, &oldTexture );
-
-    GLuint textureId;
-    f.glGenTextures( 1, &textureId );
-
-    f.glBindTexture( target, textureId );
-
-    f.glTexParameteri( target, GL_TEXTURE_MIN_FILTER, QOpenGLTexture::Nearest );
-    f.glTexParameteri( target, GL_TEXTURE_MAG_FILTER, QOpenGLTexture::Nearest );
-
-    f.glTexParameteri( target, GL_TEXTURE_WRAP_S, QOpenGLTexture::ClampToEdge );
-    f.glTexParameteri( target, GL_TEXTURE_WRAP_T, QOpenGLTexture::ClampToEdge );
-
-    if ( QOpenGLTexture::hasFeature( QOpenGLTexture::ImmutableStorage ) )
+QSGTexture* QskTextureRenderer::createPaintedTexture(
+    QQuickWindow* window, const QSize& size, PaintHelper* helper )
+{
+    if ( isOpenGLWindow( window ) )
     {
-        auto& ef = *context->extraFunctions();
-        ef.glTexStorage2D( target, 1,
-            QOpenGLTexture::RGBA8_UNorm, image.width(), image.height() );
+        const auto textureId = createPaintedTextureGL( window, size, helper );
 
-        f.glTexSubImage2D( target, 0, 0, 0, image.width(), image.height(),
-            QOpenGLTexture::RGBA, QOpenGLTexture::UInt8, image.constBits() );
+        auto texture = new QSGPlainTexture;
+        texture->setHasAlphaChannel( true );
+        texture->setOwnsTexture( true );
+
+        setTextureId( window, textureId, size, texture );
+
+        return texture;
     }
     else
     {
-        f.glTexImage2D( target, 0, QOpenGLTexture::RGBA8_UNorm,
-            image.width(), image.height(), 0,
-            QOpenGLTexture::RGBA, QOpenGLTexture::UInt8, image.constBits() );
-    }
-
-    f.glBindTexture( target, oldTexture );
-
-    return textureId;
-}
-
-QSGTexture* QskTextureRenderer::textureFromId(
-    QQuickWindow* window, uint textureId, const QSize& size )
-{
-    const auto flags = static_cast< QQuickWindow::CreateTextureOptions >(
-        QQuickWindow::TextureHasAlphaChannel | QQuickWindow::TextureOwnsGLTexture );
-
-    QSGTexture* texture;
-
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-
-    texture = QNativeInterface::QSGOpenGLTexture::fromNative(
-        textureId, window, size, flags );
-
-#else
-
-    const int nativeLayout = 0; // VkImageLayout in case of Vulkan
-
-    texture = window->createTextureFromNativeObject(
-        QQuickWindow::NativeObjectTexture, &textureId, nativeLayout, size, flags );
-#endif
-
-    return texture;
-}
-
-uint QskTextureRenderer::createTexture(
-    QQuickWindow* window, RenderMode renderMode,
-    const QSize& size, PaintHelper* helper )
-{
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-    // Qt6.0.0 is buggy when using FBOs. So let's disable it for the moment TODO ...
-    renderMode = Raster;
-#endif
-
-    if ( renderMode != Raster )
-    {
-        if ( !qskHasOpenGLRenderer( window ) )
-            renderMode = Raster;
-    }
-
-    if ( renderMode == AutoDetect )
-    {
-        if ( qskSetup->testItemUpdateFlag( QskQuickItem::PreferRasterForTextures ) )
-            renderMode = Raster;
-        else
-            renderMode = OpenGL;
-    }
-
-    if ( renderMode == Raster )
         return qskCreateTextureRaster( window, size, helper );
-    else
-        return qskCreateTextureOpenGL( window, size, helper );
-}
-
-uint QskTextureRenderer::createTextureFromGraphic(
-    QQuickWindow* window, RenderMode renderMode, const QSize& size,
-    const QskGraphic& graphic, const QskColorFilter& colorFilter,
-    Qt::AspectRatioMode aspectRatioMode )
-{
-    class PaintHelper : public QskTextureRenderer::PaintHelper
-    {
-      public:
-        PaintHelper( const QskGraphic& graphic,
-                const QskColorFilter& filter, Qt::AspectRatioMode aspectRatioMode )
-            : m_graphic( graphic )
-            , m_filter( filter )
-            , m_aspectRatioMode( aspectRatioMode )
-        {
-        }
-
-        void paint( QPainter* painter, const QSize& size ) override
-        {
-            const QRect rect( 0, 0, size.width(), size.height() );
-            m_graphic.render( painter, rect, m_filter, m_aspectRatioMode );
-        }
-
-      private:
-        const QskGraphic& m_graphic;
-        const QskColorFilter& m_filter;
-        const Qt::AspectRatioMode m_aspectRatioMode;
-    };
-
-    PaintHelper helper( graphic, colorFilter, aspectRatioMode );
-    return createTexture( window, renderMode, size, &helper );
+    }
 }

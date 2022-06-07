@@ -3,6 +3,10 @@ TARGET   = $$qskLibraryTarget(qskinny)
 
 QT += quick quick-private
 
+greaterThan( QT_MAJOR_VERSION, 5 ) {
+    QT += opengl-private
+}
+
 contains(QSK_CONFIG, QskDll): DEFINES += QSK_MAKEDLL
 
 QSK_SUBDIRS = common graphic nodes controls layouts dialogs inputpanel
@@ -107,7 +111,6 @@ HEADERS += \
     nodes/QskSGNode.h \
     nodes/QskTextNode.h \
     nodes/QskTextRenderer.h \
-    nodes/QskTextureNode.h \
     nodes/QskTextureRenderer.h \
     nodes/QskTickmarksNode.h \
     nodes/QskVertex.h
@@ -128,7 +131,6 @@ SOURCES += \
     nodes/QskSGNode.cpp \
     nodes/QskTextNode.cpp \
     nodes/QskTextRenderer.cpp \
-    nodes/QskTextureNode.cpp \
     nodes/QskTextureRenderer.cpp \
     nodes/QskTickmarksNode.cpp \
     nodes/QskVertex.cpp
