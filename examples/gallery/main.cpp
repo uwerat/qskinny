@@ -18,6 +18,7 @@
 #include <QskObjectCounter.h>
 #include <QskTabView.h>
 #include <QskTextLabel.h>
+#include <QskSetup.h>
 #include <QskSwitchButton.h>
 #include <QskPushButton.h>
 #include <QskMenu.h>
@@ -160,6 +161,8 @@ int main( int argc, char* argv[] )
     QskDialog::instance()->setPolicy( QskDialog::EmbeddedBox );
 
     QGuiApplication app( argc, argv );
+
+    qskSetup->setItemUpdateFlag( QskQuickItem::PreferRasterForTextures, true );
 
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
