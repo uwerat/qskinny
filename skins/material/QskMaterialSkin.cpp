@@ -42,12 +42,6 @@
 #include <QskNamespace.h>
 #include <QskPlatform.h>
 
-#if 1
-// should be defined in the public header, so that
-// application code can avoid conflicts
-static const int ButtonFontRole = QskSkin::HugeFont + 77;
-#endif
-
 static const int qskDuration = 150;
 
 namespace
@@ -94,6 +88,16 @@ namespace
         const QskMaterialTheme& m_pal;
         const uint rippleSize = 40; // ### remove
     };
+
+    QFont createFont( int pixelSize, QFont::Weight weight = QFont::Normal )
+    {
+        QFont font( "Roboto" );
+        font.setPixelSize( pixelSize );
+        font.setLetterSpacing( QFont::AbsoluteSpacing, 0.1 );
+        font.setWeight( weight );
+
+        return font;
+    }
 }
 
 void Editor::setup()
@@ -425,7 +429,7 @@ void Editor::setupPushButton()
     c2.setAlphaF( 0.38 );
     setColor( Q::Text | Q::Disabled, c2 );
 
-    setFontRole( Q::Text, ButtonFontRole );
+    setFontRole( Q::Text, QskMaterialSkin::M3LabelLarge );
     setAlignment( Q::Text, Qt::AlignCenter );
 
     setGradient( Q::Panel, m_pal.primary );
@@ -463,7 +467,7 @@ void Editor::setupDialogButton()
     c2.setAlphaF( 0.38 );
     setColor( Q::Text | Q::Disabled, c2 );
 
-    setFontRole( Q::Text, ButtonFontRole );
+    setFontRole( Q::Text, QskMaterialSkin::M3LabelLarge );
     setAlignment( Q::Text, Qt::AlignCenter );
 
     for ( auto state1 : { A::NoState, Q::Focused } )
@@ -650,7 +654,7 @@ void Editor::setupTabButton()
 
     setAnimation( Q::Panel | A::Color, qskDuration );
 
-    setFontRole( Q::Text, ButtonFontRole );
+    setFontRole( Q::Text, QskMaterialSkin::M3LabelLarge );
     setAlignment( Q::Text, Qt::AlignCenter );
 }
 
@@ -875,12 +879,7 @@ QskMaterialTheme::QskMaterialTheme( Lightness lightness,
 QskMaterialSkin::QskMaterialSkin( const QskMaterialTheme& palette, QObject* parent )
     : Inherited( parent )
 {
-    // Default theme colors
-    setupFonts( QStringLiteral( "Roboto" ) );
-
-    auto buttonFont = font( QskSkin::DefaultFont );
-    buttonFont.setPixelSize( 14 );
-    setFont( ButtonFontRole, buttonFont );
+    setupFonts();
 
     Editor editor( &hintTable(), palette );
     editor.setup();
@@ -888,6 +887,13 @@ QskMaterialSkin::QskMaterialSkin( const QskMaterialTheme& palette, QObject* pare
 
 QskMaterialSkin::~QskMaterialSkin()
 {
+}
+
+void QskMaterialSkin::setupFonts()
+{
+    Inherited::setupFonts( QStringLiteral( "Roboto" ) );
+
+    setFont( M3LabelLarge, createFont( 14 ) );
 }
 
 #include "moc_QskMaterialSkin.cpp"
