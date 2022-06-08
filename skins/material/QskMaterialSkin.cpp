@@ -423,14 +423,14 @@ void Editor::setupPushButton()
 
     setBoxShape( Q::Panel, 100, Qt::RelativeSize );
 
-    setColor( Q::Text, m_pal.onPrimary );
-
-    QColor c2( m_pal.onSurface );
-    c2.setAlphaF( 0.38 );
-    setColor( Q::Text | Q::Disabled, c2 );
+    setAlignment( Q::Graphic | A::Alignment, Qt::AlignLeft );
+    setPadding( Q::Graphic, 5 );
 
     setFontRole( Q::Text, QskMaterialSkin::M3LabelLarge );
     setAlignment( Q::Text, Qt::AlignCenter );
+
+
+    // normal buttons (i.e. Filled):
 
     setGradient( Q::Panel, m_pal.primary );
 
@@ -438,9 +438,37 @@ void Editor::setupPushButton()
     c1.setAlphaF( 0.12 );
     setGradient( Q::Panel | Q::Disabled, c1 );
 
+    setColor( Q::Text, m_pal.onPrimary );
 
-    setAlignment( Q::Graphic | A::Alignment, Qt::AlignLeft );
-    setPadding( Q::Graphic, 5 );
+    QColor c2( m_pal.onSurface );
+    c2.setAlphaF( 0.38 );
+    setColor( Q::Text | Q::Disabled, c2 );
+
+
+    // Outlined and Text:
+
+    const QskStateCombination combination( QskStateCombination::Combination, Q::Outlined | Q::TextState );
+    setGradient( Q::Panel, Qt::transparent, combination );
+
+    setBoxBorderMetrics( Q::Panel, 1, { QskStateCombination::CombinationNoState, Q::Outlined } );
+    setBoxBorderColors( Q::Panel | Q::Outlined, m_pal.outline );
+
+    setGradient( Q::Panel | Q::Disabled, Qt::transparent, combination );
+    setBoxBorderColors( Q::Panel | Q::Outlined | Q::Disabled, c1 );
+
+    QColor primary08( m_pal.primary );
+    primary08.setAlphaF( 0.08 );
+    setGradient( Q::Panel | Q::Outlined, primary08,
+                 { QskStateCombination::Combination,
+                   Q::Hovered | Q::Focused | Q::Pressed } );
+    setGradient( Q::Panel | Q::TextState, primary08,
+                 { QskStateCombination::Combination,
+                   Q::Hovered | Q::Focused | Q::Pressed } );
+
+    setColor( Q::Text, m_pal.primary, combination );
+
+    setColor( Q::Text | Q::Disabled, c1, combination );
+
 
     setAnimation( Q::Panel | A::Color, qskDuration );
     setAnimation( Q::Panel | A::Metric, qskDuration );
