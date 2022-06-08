@@ -613,7 +613,7 @@ void Editor::setupSwitchButton()
 
     setBoxShape( Q::Handle, 100, Qt::RelativeSize );
     setStrutSize( Q::Handle, 16, 16 );
-    setStrutSize( Q::Handle | Q::Checked, 24, 24 );
+    setStrutSize( Q::Handle | Q::Checked, 24, 24, { QskStateCombination::CombinationNoState, Q::Disabled } );
 
     setGradient( Q::Handle, m_pal.outline );
     setGradient( Q::Handle | Q::Checked, m_pal.primaryContainer );
