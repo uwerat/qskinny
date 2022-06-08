@@ -33,7 +33,7 @@ class QSK_EXPORT QskAbstractButton : public QskControl
     using Inherited = QskControl;
 
   public:
-    QSK_STATES( Flat, Checked, Pressed )
+    QSK_STATES( Flat, Outlined, TextState, Checked, Pressed )
 
     QskAbstractButton( QQuickItem* parent = nullptr );
     ~QskAbstractButton() override;
