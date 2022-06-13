@@ -84,7 +84,8 @@ class QSK_MATERIAL_EXPORT QskMaterialSkin : public QskSkin
 
     enum FontRole
     {
-        M3LabelLarge = QskSkin::HugeFont + 1,
+        M3BodyLarge = QskSkin::HugeFont + 1,
+        M3LabelLarge,
     };
 
     // ### add setTheme() re-implement resetColors()

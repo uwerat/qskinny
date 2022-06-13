@@ -196,30 +196,32 @@ void Editor::setupMenu()
     using A = QskAspect;
     using Q = QskMenu;
 
-    setBoxShape( Q::Panel, qskDpiScaled( 4 ) );
-    setBoxBorderMetrics( Q::Panel, qskDpiScaled( 1 ) );
-    setBoxBorderColors( Q::Panel, m_pal.primary );
+    setBoxShape( Q::Panel, 4 );
+    setBoxBorderMetrics( Q::Panel, 0 );
+    setPadding( Q::Panel, 0 );
 
-    setGradient( Q::Panel, m_pal.background );
+    QColor primary08( m_pal.primary );
+    primary08.setAlphaF( 0.08 );
+    setGradient( Q::Panel, primary08 );
 
-    setFlagHint( Q::Panel | A::Style, false ); // not cascading
-
-#if 0
-    setPadding( Q::Separator, QMarginsF( 10, 0, 10, 0 ) );
-#endif
     setMetric( Q::Separator | A::Size, qskDpiScaled( 1 ) );
     setBoxShape( Q::Separator, 0 );
     setBoxBorderMetrics( Q::Separator, 0 );
-    setGradient( Q::Separator, m_pal.primary );
+    QColor primary12( m_pal.primary );
+    primary12.setAlphaF( 0.12 );
+    setGradient( Q::Separator, primary12 );
 
-    setPadding( Q::Segment, QskMargins( 2, 10, 2, 10 ) );
+    setPadding( Q::Segment, 6 );
     setSpacing( Q::Segment, 5 );
     setGradient( Q::Segment, Qt::transparent );
 
-    setGradient( Q::Cursor, m_pal.primary );
+    setGradient( Q::Cursor, primary12 );
 
-    setColor( Q::Text, m_pal.onBackground );
-    setFontRole( Q::Text, QskSkin::SmallFont );
+    setPadding( Q::Graphic, 7 );
+    setStrutSize( Q::Graphic, { 46, -1 } );
+
+    setColor( Q::Text, m_pal.onSurface );
+    setFontRole( Q::Text, QskMaterialSkin::M3BodyLarge );
 
     setPosition( Q::Panel, 0 );
     setPosition( Q::Panel | QskPopup::Closed, 1 );
@@ -921,6 +923,7 @@ void QskMaterialSkin::setupFonts()
 {
     Inherited::setupFonts( QStringLiteral( "Roboto" ) );
 
+    setFont( M3BodyLarge, createFont( 16 ) );
     setFont( M3LabelLarge, createFont( 14 ) );
 }
 
