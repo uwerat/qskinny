@@ -346,10 +346,10 @@ void QskBoxShadowNode::setBlurRadius( qreal blurRadius )
     }
 }
 
-void QskBoxShadowNode::setClipRect( const QRectF& )
+void QskBoxShadowNode::setClipShape( const QskBoxShapeMetrics& )
 {
     /*
-        Usually only the parts, that are not covered by the related rectangle
+        Usually only the parts, that are not covered by the related box
         should be painted. TODO ...
      */
 }

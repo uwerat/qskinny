@@ -59,7 +59,6 @@ namespace
                     shadowNode->setShape( box->shape() );
                     shadowNode->setBlurRadius( shadowMetrics.blurRadius() );
                     shadowNode->setColor( box->shadowColor() );
-                    shadowNode->setClipRect( r );
 
                     shadowNode->updateGeometry();
 

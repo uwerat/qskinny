@@ -5,92 +5,15 @@
 
 #include "ShadowedBox.h"
 
-#include <QskBoxNode.h>
-#include <QskBoxShadowNode.h>
-#include <QskSGNode.h>
-#include <QskBoxBorderMetrics.h>
-#include <QskBoxBorderColors.h>
 #include <QskGradient.h>
-#include <QskSkinlet.h>
-
-namespace
-{
-    class Skinlet : public QskSkinlet
-    {
-      public:
-        enum NodeRole { ShadowRole, PanelRole };
-
-        Skinlet()
-        {
-            setOwnedBySkinnable( true );
-            setNodeRoles( { ShadowRole, PanelRole } );
-        }
-
-        QRectF subControlRect( const QskSkinnable*,
-            const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const override
-        {
-            if ( subControl == ShadowedBox::Panel )
-            {
-                return contentsRect;
-            }
-
-            return QRectF();
-        }
-
-        QSGNode* updateSubNode( const QskSkinnable* skinnable,
-            quint8 nodeRole, QSGNode* node ) const override
-        {
-            const auto box = static_cast< const ShadowedBox* >( skinnable );
-
-            const auto r = box->subControlRect( ShadowedBox::Panel );
-            if ( r.isEmpty() )
-                return nullptr;
-
-            switch ( nodeRole )
-            {
-                case ShadowRole:
-                {
-                    const auto& shadowMetrics = box->shadow();
-
-                    auto shadowNode = QskSGNode::ensureNode< QskBoxShadowNode >( node );
-
-                    shadowNode->setRect( shadowMetrics.shadowRect( r ) );
-                    shadowNode->setShape( box->shape() );
-                    shadowNode->setBlurRadius( shadowMetrics.blurRadius() );
-                    shadowNode->setColor( box->shadowColor() );
-                    shadowNode->setClipRect( r );
-
-                    shadowNode->updateGeometry();
-
-                    return shadowNode;
-                }
-                case PanelRole:
-                {
-                    auto boxNode = static_cast< QskBoxNode* >( node );
-                    if ( boxNode == nullptr )
-                        boxNode = new QskBoxNode();
-
-                    const auto r = box->subControlRect( ShadowedBox::Panel );
-
-                    boxNode->setBoxData( r, box->shape(), box->borderWidth(),
-                        box->borderColor(), box->gradient() );
-
-                    return boxNode;
-                }
-            }
-
-            return nullptr;
-        }
-    };
-}
-
-QSK_SUBCONTROL( ShadowedBox, Panel )
+#include <QskShadowMetrics.h>
+#include <QskBoxShapeMetrics.h>
+#include <QskBoxBorderColors.h>
+#include <QskBoxBorderMetrics.h>
 
 ShadowedBox::ShadowedBox( QQuickItem* parentItem )
-    : QskControl( parentItem )
+    : QskBox( true, parentItem )
 {
-    setFlag( QQuickItem::ItemHasContents, true );
-    setSkinlet( new Skinlet() );
 }
 
 ShadowedBox::~ShadowedBox()
@@ -99,68 +22,32 @@ ShadowedBox::~ShadowedBox()
 
 void ShadowedBox::setShadow( const QskShadowMetrics& shadow )
 {
-    m_shadow = shadow;
-    update();
-}
-
-const QskShadowMetrics& ShadowedBox::shadow() const
-{
-    return m_shadow;
+    setShadowMetricsHint( Panel, shadow );
 }
 
 void ShadowedBox::setShadowColor( const QColor& color )
 {
-    m_shadowColor = color;
-    update();
-}
-
-QColor ShadowedBox::shadowColor() const
-{
-    return m_shadowColor;
+    setShadowColorHint( Panel, color );
 }
 
 void ShadowedBox::setGradient( const QskGradient& gradient )
 {
-    m_gradient = gradient;
-    update();
-}
-
-const QskGradient& ShadowedBox::gradient() const
-{
-    return m_gradient;
+    setGradientHint( Panel, gradient );
 }
 
 void ShadowedBox::setShape( const QskBoxShapeMetrics& shape )
 {
-    m_shape = shape;
-    update();
-}
-
-const QskBoxShapeMetrics& ShadowedBox::shape() const
-{
-    return m_shape;
+    setBoxShapeHint( Panel, shape );
 }
 
 void ShadowedBox::setBorderWidth( qreal width )
 {
-    m_borderWidth = qMax( width, 0.0 );
-    update();
+    setBoxBorderMetricsHint( Panel, width );
 }
 
-qreal ShadowedBox::borderWidth() const
+void ShadowedBox::setBorderColors( const QskBoxBorderColors& colors )
 {
-    return m_borderWidth;
-}
-
-void ShadowedBox::setBorderColor( const QColor& color )
-{
-    m_borderColor = color;
-    update();
-}
-
-QColor ShadowedBox::borderColor() const
-{
-    return m_borderColor;
+    setBoxBorderColorsHint( Panel, colors );
 }
 
 #include "moc_ShadowedBox.cpp"

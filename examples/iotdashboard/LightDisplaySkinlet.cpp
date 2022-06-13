@@ -150,7 +150,6 @@ QSGNode* LightDisplaySkinlet::updateSubNode(
             shadowNode->setShape( grooveRect.width() / 2 );
             shadowNode->setBlurRadius( shadowMetrics.blurRadius() );
             shadowNode->setColor( display->shadowColor() );
-            shadowNode->setClipRect( grooveRect );
 
             shadowNode->updateGeometry();
 

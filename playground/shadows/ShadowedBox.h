@@ -5,47 +5,27 @@
 
 #pragma once
 
-#include <QskControl.h>
-#include <QskBoxShapeMetrics.h>
-#include <QskShadowMetrics.h>
+#include <QskBox.h>
 
 class QskGradient;
+class QskShadowMetrics;
+class QskBoxShapeMetrics;
+class QskBoxBorderColors;
 
-class ShadowedBox : public QskControl
+class ShadowedBox : public QskBox
 {
     Q_OBJECT
 
   public:
-    QSK_SUBCONTROLS( Panel )
-
     ShadowedBox(QQuickItem* parent = nullptr);
     ~ShadowedBox() override;
 
-    void setShadow( const QskShadowMetrics& );
-    const QskShadowMetrics& shadow() const;
-
-    void setGradient( const QskGradient& );
-    const QskGradient& gradient() const;
-
-    void setShadowColor( const QColor& );
-    QColor shadowColor() const;
-
     void setShape( const QskBoxShapeMetrics& );
-    const QskBoxShapeMetrics& shape() const;
+    void setGradient( const QskGradient& );
 
     void setBorderWidth( qreal width );
-    qreal borderWidth() const;
+    void setBorderColors( const QskBoxBorderColors& );
 
-    void setBorderColor( const QColor& );
-    QColor borderColor() const;
-
-  private:
-    QskShadowMetrics m_shadow;
-    QColor m_shadowColor = Qt::black;
-
-    QskGradient m_gradient;
-    QskBoxShapeMetrics m_shape;
-
-    qreal m_borderWidth = 0.0;
-    QColor m_borderColor = Qt::black;
+    void setShadow( const QskShadowMetrics& );
+    void setShadowColor( const QColor& );
 };
