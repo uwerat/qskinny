@@ -21,6 +21,7 @@
 #include <QskScrollView.h>
 #include <QskSegmentedBar.h>
 #include <QskSeparator.h>
+#include <QskShadowMetrics.h>
 #include <QskSlider.h>
 #include <QskSubWindow.h>
 #include <QskSwitchButton.h>
@@ -446,6 +447,9 @@ void Editor::setupPushButton()
     c2.setAlphaF( 0.38 );
     setColor( Q::Text | Q::Disabled, c2 );
 
+    QskShadowMetrics shadow( -1, 5 );
+    setShadowMetrics( Q::Panel | Q::Hovered, shadow );
+    setShadowColor( Q::Panel | Q::Hovered, m_pal.shadow );
 
     // Outlined and Text:
 
@@ -872,6 +876,8 @@ QskMaterialTheme::QskMaterialTheme( Lightness lightness,
         surfaceVariant = m_palettes[ NeutralVariant ].rgb( Q::W90 );
         onSurfaceVariant = m_palettes[ NeutralVariant ].rgb( Q::W30 );
         outline = m_palettes[ NeutralVariant ].rgb( Q::W50 );
+
+        shadow = m_palettes[ Neutral ].rgb( Q::W0 );
     }
     else if ( lightness == Dark )
     {
@@ -903,6 +909,8 @@ QskMaterialTheme::QskMaterialTheme( Lightness lightness,
         surfaceVariant = m_palettes[ NeutralVariant ].rgb( Q::W30 );
         onSurfaceVariant = m_palettes[ NeutralVariant ].rgb( Q::W80 );
         outline = m_palettes[ NeutralVariant ].rgb( Q::W60 );
+
+        shadow = m_palettes[ Neutral ].rgb( Q::W0 );
     }
 }
 

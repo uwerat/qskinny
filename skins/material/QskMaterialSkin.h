@@ -63,6 +63,8 @@ class QSK_MATERIAL_EXPORT QskMaterialTheme
     QRgb onSurfaceVariant;
     QRgb outline;
 
+    QRgb shadow;
+
     const qreal hoverOpacity = 0.08;
     const qreal focusOpacity = 0.12;
     const qreal pressedOpacity = 0.12;
