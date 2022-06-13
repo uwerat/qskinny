@@ -11,6 +11,7 @@
 #include "QskBoxShapeMetrics.h"
 #include "QskBoxBorderMetrics.h"
 #include "QskBoxBorderColors.h"
+#include "QskShadowMetrics.h"
 #include "QskGradient.h"
 
 namespace
@@ -113,6 +114,11 @@ namespace
     inline QskAspect aspectBorder( QskAspect aspect )
     {
         return aspect | QskAspect::Border;
+    }
+
+    inline QskAspect aspectShadow( QskAspect aspect )
+    {
+        return aspect | QskAspect::Shadow;
     }
 }
 
@@ -471,13 +477,12 @@ void QskSkinHintTableEditor::setBoxBorderColors(
     setColorHint( aspectBorder( aspect ), borderColors, combination );
 }
 
-void QskSkinHintTableEditor::setBoxBorderColors(QskAspect aspect,
+void QskSkinHintTableEditor::setBoxBorderColors( QskAspect aspect,
     const QskGradient& left, const QskGradient& top, const QskGradient& right,
     const QskGradient& bottom, QskStateCombination combination )
 {
     setColorHint( aspectBorder( aspect ),
-        QskBoxBorderColors( left, top, right, bottom ),
-        combination );
+        QskBoxBorderColors( left, top, right, bottom ), combination );
 }
 
 bool QskSkinHintTableEditor::removeBoxBorderColors(
@@ -489,6 +494,30 @@ bool QskSkinHintTableEditor::removeBoxBorderColors(
 QskBoxBorderColors QskSkinHintTableEditor::boxBorderColors( QskAspect aspect ) const
 {
     return colorHint< QskBoxBorderColors >( aspectBorder( aspect ) );
+}
+
+void QskSkinHintTableEditor::setShadowMetrics( QskAspect aspect,
+    qreal spreadRadius, qreal blurRadius, const QPointF& offset, Qt::SizeMode sizeMode )
+{
+    setMetricHint( aspectShadow( aspect ),
+        QskShadowMetrics( spreadRadius, blurRadius, offset, sizeMode ) );
+}
+
+void QskSkinHintTableEditor::setShadowMetrics( QskAspect aspect,
+    const QskShadowMetrics& metrics, QskStateCombination combination )
+{
+    setMetricHint( aspectShadow( aspect ), metrics, combination );
+}
+
+bool QskSkinHintTableEditor::removeShadowMetric(
+    QskAspect aspect, QskStateCombination combination )
+{
+    return removeMetricHint( aspectShadow( aspect ), combination );
+}
+
+QskShadowMetrics QskSkinHintTableEditor::shadowMetrics( QskAspect aspect ) const
+{
+    return metricHint< QskShadowMetrics >( aspectShadow( aspect ) );
 }
 
 void QskSkinHintTableEditor::setArcMetrics( QskAspect aspect, qreal width,
