@@ -25,8 +25,9 @@ class QSK_EXPORT QskBoxShadowNode : public QSGGeometryNode
     void setColor( const QColor& );
     void setBlurRadius( qreal );
 
+    void setClipShape( const QskBoxShapeMetrics& );
+
     void updateGeometry();
-    void setClipRect( const QRectF& );
 
   private:
     Q_DECLARE_PRIVATE( QskBoxShadowNode )

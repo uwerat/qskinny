@@ -613,7 +613,8 @@ QskBoxHints QskSkinnable::boxHints( QskAspect aspect ) const
 {
     return QskBoxHints(
         boxShapeHint( aspect ), boxBorderMetricsHint( aspect ),
-        boxBorderColorsHint( aspect ), gradientHint( aspect ) );
+        boxBorderColorsHint( aspect ), gradientHint( aspect ),
+        shadowMetricsHint( aspect ), shadowColorHint( aspect ) );
 }
 
 bool QskSkinnable::setArcMetricsHint(

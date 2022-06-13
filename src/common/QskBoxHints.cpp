@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskBoxHints.h"
+#include "QskRgbValue.h"
 
 QskBoxHints::QskBoxHints()
 {
@@ -11,18 +12,22 @@ QskBoxHints::QskBoxHints()
 
 QskBoxHints::QskBoxHints(
         const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& borderMetrics,
-        const QskBoxBorderColors& borderColors, const QskGradient& gradient )
+        const QskBoxBorderColors& borderColors, const QskGradient& gradient,
+        const QskShadowMetrics& shadowMetrics, const QColor& shadowColor )
     : shape( shape )
     , borderMetrics( borderMetrics )
     , borderColors( borderColors )
     , gradient( gradient )
+    , shadowMetrics( shadowMetrics )
+    , shadowColor( shadowColor )
 {
 }
 
 QskBoxHints QskBoxHints::toAbsolute( const QSizeF& size ) const noexcept
 {
     return QskBoxHints( shape.toAbsolute( size ),
-        borderMetrics.toAbsolute( size ), borderColors, gradient );
+        borderMetrics.toAbsolute( size ), borderColors, gradient,
+        shadowMetrics.toAbsolute( size ), shadowColor );
 }
 
 QskBoxHints QskBoxHints::interpolated(
@@ -32,7 +37,9 @@ QskBoxHints QskBoxHints::interpolated(
         shape.interpolated( to.shape, value ),
         borderMetrics.interpolated( to.borderMetrics, value ),
         borderColors.interpolated( to.borderColors, value ),
-        gradient.interpolated( to.gradient, value ) );
+        gradient.interpolated( to.gradient, value ),
+        shadowMetrics.interpolated( to.shadowMetrics, value ),
+        QskRgb::interpolated( shadowColor, to.shadowColor, value ) );
 }
 
 #ifndef QT_NO_DEBUG_STREAM
@@ -42,7 +49,8 @@ QskBoxHints QskBoxHints::interpolated(
 QDebug operator<<( QDebug debug, const QskBoxHints& hints )
 {
     debug << hints.shape << hints.borderMetrics
-        << hints.borderColors << hints.gradient;
+        << hints.borderColors << hints.gradient << hints.shadowMetrics
+        << hints.shadowColor;
 
     return debug;
 }
