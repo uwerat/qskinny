@@ -323,8 +323,10 @@ QRectF QskMenuSkinlet::sampleRect(
         {
             auto graphicRect = r;
             graphicRect.setWidth( graphicWidth );
+            const auto padding = menu->paddingHint( QskMenu::Graphic );
+            graphicRect = graphicRect.marginsRemoved( padding );
 
-            return QRectF( r.x(), r.y(), graphicWidth, r.height() );
+            return graphicRect;
         }
         else
         {
