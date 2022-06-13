@@ -43,6 +43,7 @@ namespace QskSGNode
     }
 
     QSK_EXPORT QSGNode* findChildNode( QSGNode* parent, quint8 role );
+    QSK_EXPORT bool removeChildNode( QSGNode* parent, quint8 role );
 
     // nodeRoles: sort order
     QSK_EXPORT void replaceChildNode(

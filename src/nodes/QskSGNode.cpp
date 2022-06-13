@@ -100,6 +100,17 @@ QSGNode* QskSGNode::findChildNode( QSGNode* parent, quint8 role )
     return nullptr;
 }
 
+bool QskSGNode::removeChildNode( QSGNode* parent, quint8 role )
+{
+    if ( auto node = findChildNode( parent, role ) )
+    {
+        qskRemoveChildNode( parent, node );
+        return true;
+    }
+
+    return false;
+}
+
 void QskSGNode::removeAllChildNodesAfter( QSGNode* parent, QSGNode* child )
 {
     if ( parent && child && child->parent() == parent )
