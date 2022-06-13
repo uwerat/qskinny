@@ -103,6 +103,7 @@ HEADERS += \
     nodes/QskBoxClipNode.h \
     nodes/QskBoxRenderer.h \
     nodes/QskBoxRendererColorMap.h \
+    nodes/QskBoxShadowNode.h \
     nodes/QskGraphicNode.h \
     nodes/QskPaintedNode.h \
     nodes/QskPlainTextRenderer.h \
@@ -123,6 +124,7 @@ SOURCES += \
     nodes/QskBoxRendererRect.cpp \
     nodes/QskBoxRendererEllipse.cpp \
     nodes/QskBoxRendererDEllipse.cpp \
+    nodes/QskBoxShadowNode.cpp \
     nodes/QskGraphicNode.cpp \
     nodes/QskPaintedNode.cpp \
     nodes/QskPlainTextRenderer.cpp \
@@ -134,6 +136,9 @@ SOURCES += \
     nodes/QskTextureRenderer.cpp \
     nodes/QskTickmarksNode.cpp \
     nodes/QskVertex.cpp
+
+RESOURCES += \
+    nodes/shaders.qrc
 
 HEADERS += \
     controls/QskAbstractButton.h \
@@ -363,6 +368,7 @@ SOURCES += \
     inputpanel/QskInputPanelBox.cpp \
     inputpanel/QskInputPredictionBar.cpp \
     inputpanel/QskVirtualKeyboard.cpp
+
 
 pinyin {
 

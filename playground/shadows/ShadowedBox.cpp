@@ -4,9 +4,10 @@
  *****************************************************************************/
 
 #include "ShadowedBox.h"
-#include "BoxShadowNode.h"
 
 #include <QskBoxNode.h>
+#include <QskBoxShadowNode.h>
+#include <QskSGNode.h>
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxBorderColors.h>
 #include <QskGradient.h>
@@ -49,11 +50,9 @@ namespace
             {
                 case ShadowRole:
                 {
-                    auto shadowNode = static_cast< BoxShadowNode* >( node );
-                    if ( shadowNode == nullptr )
-                        shadowNode = new BoxShadowNode();
-
                     const auto& shadowMetrics = box->shadow();
+
+                    auto shadowNode = QskSGNode::ensureNode< QskBoxShadowNode >( node );
 
                     shadowNode->setRect( shadowMetrics.shadowRect( r ) );
                     shadowNode->setShape( box->shape() );
