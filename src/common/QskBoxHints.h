@@ -9,7 +9,9 @@
 #include "QskBoxBorderMetrics.h"
 #include "QskBoxBorderColors.h"
 #include "QskBoxShapeMetrics.h"
+#include "QskShadowMetrics.h"
 #include "QskGradient.h"
+#include <qcolor.h>
 
 class QSK_EXPORT QskBoxHints
 {
@@ -19,11 +21,14 @@ class QSK_EXPORT QskBoxHints
     Q_PROPERTY( QskBoxBorderMetrics borderMetrics MEMBER borderMetrics )
     Q_PROPERTY( QskBoxBorderColors borderColors MEMBER borderColors )
     Q_PROPERTY( QskGradient gradient MEMBER gradient )
+    Q_PROPERTY( QskShadowMetrics shadowMetrics MEMBER shadowMetrics )
+    Q_PROPERTY( QColor shadowColor MEMBER shadowColor )
 
   public:
     QskBoxHints();
     QskBoxHints( const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
-        const QskBoxBorderColors&, const QskGradient& );
+        const QskBoxBorderColors&, const QskGradient&,
+        const QskShadowMetrics&, const QColor& );
 
     QskBoxHints toAbsolute( const QSizeF& ) const noexcept;
 
@@ -34,6 +39,8 @@ class QSK_EXPORT QskBoxHints
     QskBoxBorderMetrics borderMetrics;
     QskBoxBorderColors borderColors;
     QskGradient gradient;
+    QskShadowMetrics shadowMetrics;
+    QColor shadowColor;
 };
 
 #ifndef QT_NO_DEBUG_STREAM
