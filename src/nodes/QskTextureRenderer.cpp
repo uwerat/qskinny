@@ -158,6 +158,18 @@ quint32 QskTextureRenderer::createPaintedTextureGL(
 
         painter.scale( ratio, ratio );
         helper->paint( &painter, size / ratio );
+
+#if 1
+        if ( format1.samples() > 0 )
+        {
+            /*
+                Multisampling in the window surface might get lost
+                as a side effect of rendering to the FBO.
+                weired, needs to be investigated more
+             */
+            painter.setRenderHint( QPainter::Antialiasing, true );
+        }
+#endif
     }
 
     QOpenGLFramebufferObjectFormat format2;
