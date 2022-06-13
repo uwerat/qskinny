@@ -22,6 +22,7 @@
 #include "QskBoxShapeMetrics.h"
 #include "QskBoxBorderMetrics.h"
 #include "QskBoxBorderColors.h"
+#include "QskShadowMetrics.h"
 #include "QskBoxHints.h"
 #include "QskGradient.h"
 
@@ -573,6 +574,39 @@ QskBoxBorderColors QskSkinnable::boxBorderColorsHint(
 {
     return qskColor< QskBoxBorderColors >(
         this, aspect | QskAspect::Border, status );
+}
+
+bool QskSkinnable::setShadowMetricsHint(
+    QskAspect aspect, const QskShadowMetrics& metrics )
+{
+    return qskSetMetric( this, aspect | QskAspect::Shadow, metrics );
+}
+
+bool QskSkinnable::resetShadowMetricsHint( QskAspect aspect )
+{
+    return resetMetric( aspect | QskAspect::Shadow );
+}
+
+QskShadowMetrics QskSkinnable::shadowMetricsHint(
+    QskAspect aspect, QskSkinHintStatus* status ) const
+{
+    return qskMetric< QskShadowMetrics >(
+        this, aspect | QskAspect::Shadow, status );
+}
+
+bool QskSkinnable::setShadowColorHint( QskAspect aspect, const QColor& color )
+{
+    return qskSetColor( this, aspect | QskAspect::Shadow, color );
+}
+
+bool QskSkinnable::resetShadowColorHint( QskAspect aspect )
+{
+    return resetColor( aspect | QskAspect::Shadow );
+}
+
+QColor QskSkinnable::shadowColorHint( QskAspect aspect, QskSkinHintStatus* status ) const
+{
+    return qskColor< QColor >( this, aspect | QskAspect::Shadow, status );
 }
 
 QskBoxHints QskSkinnable::boxHints( QskAspect aspect ) const
