@@ -5,14 +5,18 @@
 
 #include "ShadowedBox.h"
 
-#include <SkinnyShortcut.h>
-
-#include <QGuiApplication>
 #include <QskObjectCounter.h>
 #include <QskWindow.h>
 #include <QskLinearBox.h>
-#include <QskBoxShapeMetrics.h>
 #include <QskRgbValue.h>
+
+#include <QskGradient.h>
+#include <QskShadowMetrics.h>
+#include <QskBoxShapeMetrics.h>
+#include <QskBoxBorderColors.h>
+
+#include <SkinnyShortcut.h>
+#include <QGuiApplication>
 
 class Box : public ShadowedBox
 {
@@ -39,7 +43,7 @@ class Box : public ShadowedBox
         setShape( QskBoxShapeMetrics( 40, 10, 15, 5 ) );
 
         setBorderWidth( w );
-        setBorderColor( Qt::blue );
+        setBorderColors( Qt::blue );
     }
 };
 

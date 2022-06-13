@@ -110,6 +110,7 @@ HEADERS += \
     nodes/QskRichTextRenderer.h \
     nodes/QskScaleRenderer.h \
     nodes/QskSGNode.h \
+    nodes/QskShadedBoxNode.h \
     nodes/QskTextNode.h \
     nodes/QskTextRenderer.h \
     nodes/QskTextureRenderer.h \
@@ -131,6 +132,7 @@ SOURCES += \
     nodes/QskRichTextRenderer.cpp \
     nodes/QskScaleRenderer.cpp \
     nodes/QskSGNode.cpp \
+    nodes/QskShadedBoxNode.cpp \
     nodes/QskTextNode.cpp \
     nodes/QskTextRenderer.cpp \
     nodes/QskTextureRenderer.cpp \
