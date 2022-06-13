@@ -247,6 +247,20 @@ class QSK_EXPORT QskSkinHintTableEditor
 
     QskShadowMetrics shadowMetrics( QskAspect ) const;
 
+    // shadowColor
+
+    void setShadowColor( QskAspect,
+        const QColor&, QskStateCombination = QskStateCombination() );
+
+    void setShadowColor( QskAspect,
+        Qt::GlobalColor, QskStateCombination = QskStateCombination() );
+
+    void setShadowColor( QskAspect,
+        QRgb, QskStateCombination = QskStateCombination() );
+
+    bool removeShadowColor( QskAspect, QskStateCombination = QskStateCombination() );
+    QColor shadowColor( QskAspect ) const;
+
     // arcMetrics
 
     void setArcMetrics( QskAspect, qreal, qreal, qreal, Qt::SizeMode = Qt::AbsoluteSize );

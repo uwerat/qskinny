@@ -28,6 +28,7 @@ class QskColorFilter;
 class QskBoxShapeMetrics;
 class QskBoxBorderMetrics;
 class QskBoxBorderColors;
+class QskShadowMetrics;
 class QskBoxHints;
 class QskGradient;
 
@@ -207,6 +208,14 @@ class QSK_EXPORT QskSkinnable
     bool setBoxBorderColorsHint( QskAspect, const QskBoxBorderColors& );
     bool resetBoxBorderColorsHint( QskAspect );
     QskBoxBorderColors boxBorderColorsHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
+
+    bool setShadowMetricsHint( QskAspect, const QskShadowMetrics& );
+    bool resetShadowMetricsHint( QskAspect );
+    QskShadowMetrics shadowMetricsHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
+
+    bool setShadowColorHint( QskAspect, const QColor& );
+    bool resetShadowColorHint( QskAspect );
+    QColor shadowColorHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
 
     QskBoxHints boxHints( QskAspect ) const;
 
