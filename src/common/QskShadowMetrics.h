@@ -27,8 +27,10 @@ class QSK_EXPORT QskShadowMetrics
   public:
     constexpr QskShadowMetrics( const QPointF& offset = QPointF() ) noexcept;
 
+    constexpr QskShadowMetrics( qreal spreadRadius, qreal blurRadius ) noexcept;
+
     constexpr QskShadowMetrics( qreal spreadRadius, qreal blurRadius,
-        const QPointF& offset = QPointF() ) noexcept;
+        const QPointF& offset, Qt::SizeMode = Qt::AbsoluteSize ) noexcept;
 
     constexpr bool operator==( const QskShadowMetrics& ) const noexcept;
     constexpr bool operator!=( const QskShadowMetrics& ) const noexcept;
@@ -74,10 +76,19 @@ inline constexpr QskShadowMetrics::QskShadowMetrics( const QPointF& offset ) noe
 }
 
 inline constexpr QskShadowMetrics::QskShadowMetrics(
-        qreal spreadRadius, qreal blurRadius, const QPointF& offset ) noexcept
+        qreal spreadRadius, qreal blurRadius ) noexcept
+    : m_spreadRadius( spreadRadius )
+    , m_blurRadius( blurRadius )
+{
+}
+
+inline constexpr QskShadowMetrics::QskShadowMetrics(
+        qreal spreadRadius, qreal blurRadius,
+        const QPointF& offset, Qt::SizeMode sizeMode ) noexcept
     : m_offset( offset )
     , m_spreadRadius( spreadRadius )
     , m_blurRadius( blurRadius )
+    , m_sizeMode( sizeMode )
 {
 }
 

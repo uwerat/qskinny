@@ -20,6 +20,7 @@ class QskGradient;
 class QskBoxShapeMetrics;
 class QskBoxBorderMetrics;
 class QskBoxBorderColors;
+class QskShadowMetrics;
 
 class QSK_EXPORT QskSkinHintTableEditor
 {
@@ -233,6 +234,18 @@ class QSK_EXPORT QskSkinHintTableEditor
 
     bool removeBoxBorderColors( QskAspect, QskStateCombination = QskStateCombination() );
     QskBoxBorderColors boxBorderColors( QskAspect ) const;
+
+    // shadowMetrics
+
+    void setShadowMetrics( QskAspect, qreal, qreal,
+        const QPointF&, Qt::SizeMode = Qt::AbsoluteSize );
+
+    void setShadowMetrics( QskAspect, const QskShadowMetrics&,
+        QskStateCombination = QskStateCombination() );
+
+    bool removeShadowMetric( QskAspect, QskStateCombination = QskStateCombination() );
+
+    QskShadowMetrics shadowMetrics( QskAspect ) const;
 
     // arcMetrics
 
