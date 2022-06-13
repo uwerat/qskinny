@@ -520,6 +520,35 @@ QskShadowMetrics QskSkinHintTableEditor::shadowMetrics( QskAspect aspect ) const
     return metricHint< QskShadowMetrics >( aspectShadow( aspect ) );
 }
 
+void QskSkinHintTableEditor::setShadowColor( QskAspect aspect,
+    const QColor& color, QskStateCombination combination )
+{
+    setColorHint( aspectShadow( aspect ), color, combination );
+}
+
+void QskSkinHintTableEditor::setShadowColor( QskAspect aspect,
+    Qt::GlobalColor color, QskStateCombination combination )
+{
+    setColorHint( aspectShadow( aspect ), QColor( color ), combination );
+}
+
+void QskSkinHintTableEditor::setShadowColor( QskAspect aspect,
+    QRgb rgb, QskStateCombination combination )
+{
+    setColorHint( aspectShadow( aspect ), QColor::fromRgba( rgb ), combination );
+}
+
+bool QskSkinHintTableEditor::removeShadowColor(
+    QskAspect aspect, QskStateCombination combination )
+{
+    return removeColorHint( aspectShadow( aspect ), combination );
+}
+
+QColor QskSkinHintTableEditor::shadowColor( QskAspect aspect ) const
+{
+    return colorHint< QColor >( aspectShadow( aspect ) );
+}
+
 void QskSkinHintTableEditor::setArcMetrics( QskAspect aspect, qreal width,
     qreal startAngle, qreal spanAngle, Qt::SizeMode sizeMode )
 {
