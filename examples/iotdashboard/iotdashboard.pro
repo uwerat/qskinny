@@ -64,16 +64,6 @@ HEADERS += \
     nodes/DiagramSegmentsNode.h \
     nodes/RadialTickmarksNode.h
 
-lessThan(QT_MAJOR_VERSION, 6) {
-
-    # the shader for the drop shadows has not yet been migrated
-    # to work with Qt 6
-
-    SOURCES += nodes/BoxShadowNode.cpp
-    HEADERS += nodes/BoxShadowNode.h
-}
-
 RESOURCES += \
     images.qrc \
-    fonts.qrc \
-    shaders.qrc
+    fonts.qrc

@@ -5,11 +5,10 @@
 
 #include "ShadowedBox.h"
 
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-    #include "nodes/BoxShadowNode.h"
-#endif
 
 #include <QskBoxNode.h>
+#include <QskBoxShadowNode.h>
+#include <QskSGNode.h>
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxBorderColors.h>
 #include <QskGradient.h>
@@ -50,14 +49,11 @@ namespace
 
             switch ( nodeRole )
             {
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
                 case ShadowRole:
                 {
-                    auto shadowNode = static_cast< BoxShadowNode* >( node );
-                    if ( shadowNode == nullptr )
-                        shadowNode = new BoxShadowNode();
-
                     const auto& shadowMetrics = box->shadow();
+
+                    auto shadowNode = QskSGNode::ensureNode< QskBoxShadowNode >( node );
 
                     shadowNode->setRect( shadowMetrics.shadowRect( r ) );
                     shadowNode->setShape( box->shape() );
@@ -69,15 +65,11 @@ namespace
 
                     return shadowNode;
                 }
-#endif
                 case PanelRole:
                 {
-                    auto boxNode = static_cast< QskBoxNode* >( node );
-                    if ( boxNode == nullptr )
-                        boxNode = new QskBoxNode();
-
                     const auto r = box->subControlRect( ShadowedBox::Panel );
 
+                    auto boxNode = QskSGNode::ensureNode< QskBoxNode >( node );
                     boxNode->setBoxData( r, box->shape(), box->borderWidth(),
                         box->borderColor(), box->gradient() );
 

@@ -1,32 +1,35 @@
 /******************************************************************************
  * QSkinny - Copyright (C) 2016 Uwe Rathmann
- * This file may be used under the terms of the 3-clause BSD License
+ * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#pragma once
+#ifndef QSK_BOX_SHADOW_NODE_H
+#define QSK_BOX_SHADOW_NODE_H
 
+#include "QskGlobal.h"
 #include <QSGGeometryNode>
 
 class QColor;
 class QskBoxShapeMetrics;
 
-class BoxShadowNodePrivate;
+class QskBoxShadowNodePrivate;
 
-class BoxShadowNode : public QSGGeometryNode
+class QSK_EXPORT QskBoxShadowNode : public QSGGeometryNode
 {
   public:
-    BoxShadowNode();
-    ~BoxShadowNode() override;
+    QskBoxShadowNode();
+    ~QskBoxShadowNode() override;
 
     void setRect( const QRectF& );
     void setShape( const QskBoxShapeMetrics& );
     void setColor( const QColor& );
     void setBlurRadius( qreal );
 
+    void updateGeometry();
     void setClipRect( const QRectF& );
 
-    void updateGeometry();
-
   private:
-    Q_DECLARE_PRIVATE( BoxShadowNode )
+    Q_DECLARE_PRIVATE( QskBoxShadowNode )
 };
+
+#endif
