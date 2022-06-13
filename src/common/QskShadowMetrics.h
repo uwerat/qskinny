@@ -35,6 +35,8 @@ class QSK_EXPORT QskShadowMetrics
     constexpr bool operator==( const QskShadowMetrics& ) const noexcept;
     constexpr bool operator!=( const QskShadowMetrics& ) const noexcept;
 
+    bool isNull() const noexcept;
+
     void setSpreadRadius( qreal ) noexcept;
     constexpr qreal spreadRadius() const noexcept;
 
@@ -156,6 +158,12 @@ inline void QskShadowMetrics::setOffset( const QPointF& offset ) noexcept
 inline constexpr QPointF QskShadowMetrics::offset() const noexcept
 {
     return m_offset;
+}
+
+inline bool QskShadowMetrics::isNull() const noexcept
+{
+    return m_offset.isNull() &&
+        ( m_spreadRadius == 0.0 ) && ( m_blurRadius == 0.0 );
 }
 
 #ifndef QT_NO_DEBUG_STREAM
