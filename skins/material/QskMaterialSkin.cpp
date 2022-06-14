@@ -447,7 +447,7 @@ void Editor::setupPushButton()
     c2.setAlphaF( 0.38 );
     setColor( Q::Text | Q::Disabled, c2 );
 
-    QskShadowMetrics shadow( -1, 5 );
+    QskShadowMetrics shadow( -6, 20 );
     setShadowMetrics( Q::Panel | Q::Hovered, shadow );
     setShadowColor( Q::Panel | Q::Hovered, m_pal.shadow );
 
