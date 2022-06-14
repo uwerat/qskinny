@@ -14,40 +14,103 @@
 ShadowedBox::ShadowedBox( QQuickItem* parentItem )
     : QskBox( true, parentItem )
 {
+    QColor c( Qt::darkRed );
+#if 0
+    c.setAlpha( 100 );
+#endif
+
+    setGradientHint( Panel, c );
+    setBoxShapeHint( Panel, QskBoxShapeMetrics( 40, 0, 15, 0 ) );
+
+    setBoxBorderMetricsHint( Panel, 0 );
+
+#if 0
+    setBoxBorderMetricsHint( Panel, 10 );
+    setBoxBorderColorsHint( Panel, Qt::blue );
+#endif
+
+    setShadowColorHint( Panel, Qt::black );
 }
 
 ShadowedBox::~ShadowedBox()
 {
 }
 
-void ShadowedBox::setShadow( const QskShadowMetrics& shadow )
+void ShadowedBox::setOffsetX( qreal dx )
 {
-    setShadowMetricsHint( Panel, shadow );
+    auto metrics = shadowMetrics();
+    metrics.setOffsetX( dx );
+
+    setShadowMetrics( metrics );
 }
 
-void ShadowedBox::setShadowColor( const QColor& color )
+qreal ShadowedBox::offsetX() const
 {
+    return shadowMetrics().offset().x();
+}
+
+void ShadowedBox::setOffsetY( qreal dy )
+{
+    auto metrics = shadowMetrics();
+    metrics.setOffsetY( dy );
+
+    setShadowMetrics( metrics );
+}
+
+qreal ShadowedBox::offsetY() const
+{
+    return shadowMetrics().offset().y();
+}
+
+void ShadowedBox::setSpreadRadius( qreal radius )
+{
+    auto metrics = shadowMetrics();
+    metrics.setSpreadRadius( radius );
+
+    setShadowMetrics( metrics );
+}
+
+qreal ShadowedBox::spreadRadius() const
+{
+    return shadowMetrics().spreadRadius();
+}
+
+void ShadowedBox::setBlurRadius( qreal radius )
+{
+    auto metrics = shadowMetrics();
+    metrics.setBlurRadius( radius );
+
+    setShadowMetrics( metrics );
+}
+
+qreal ShadowedBox::blurRadius() const
+{
+    return shadowMetrics().blurRadius();
+}
+
+void ShadowedBox::setOpacity( qreal opacity )
+{
+    opacity = qBound( 0.0, opacity, 1.0 );
+
+    auto color = shadowColorHint( Panel );
+    color.setAlphaF( opacity );
+
     setShadowColorHint( Panel, color );
 }
 
-void ShadowedBox::setGradient( const QskGradient& gradient )
+qreal ShadowedBox::opacity() const
 {
-    setGradientHint( Panel, gradient );
+    return shadowColorHint( Panel ).alphaF();
 }
 
-void ShadowedBox::setShape( const QskBoxShapeMetrics& shape )
+QskShadowMetrics ShadowedBox::shadowMetrics() const
 {
-    setBoxShapeHint( Panel, shape );
+    return shadowMetricsHint( Panel );
 }
 
-void ShadowedBox::setBorderWidth( qreal width )
+void ShadowedBox::setShadowMetrics( const QskShadowMetrics& metrics )
 {
-    setBoxBorderMetricsHint( Panel, width );
-}
-
-void ShadowedBox::setBorderColors( const QskBoxBorderColors& colors )
-{
-    setBoxBorderColorsHint( Panel, colors );
+    setShadowMetricsHint( Panel, metrics );
 }
 
 #include "moc_ShadowedBox.cpp"
