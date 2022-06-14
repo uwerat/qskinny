@@ -99,6 +99,15 @@ namespace
 
         return font;
     }
+
+    QColor flattenedColor( const QColor& foregroundColor,
+                           const QColor& backgroundColor, qreal opacity )
+    {
+        QColor r( opacity * foregroundColor.red() + ( 1 - opacity ) * backgroundColor.red(),
+                  opacity * foregroundColor.green() + ( 1 - opacity ) * backgroundColor.green(),
+                  opacity * foregroundColor.blue() + ( 1 - opacity ) * backgroundColor.blue() );
+        return r;
+    }
 }
 
 void Editor::setup()
@@ -189,7 +198,7 @@ void Editor::setupPopup()
     using Q = QskPopup;
 
     setFlagHint( Q::Overlay | A::Style, true );
-    setGradient( Q::Overlay, m_pal.surface );
+    setGradient( Q::Overlay, Qt::transparent );
 }
 
 void Editor::setupMenu()
@@ -201,9 +210,14 @@ void Editor::setupMenu()
     setBoxBorderMetrics( Q::Panel, 0 );
     setPadding( Q::Panel, 0 );
 
-    QColor primary08( m_pal.primary );
-    primary08.setAlphaF( 0.08 );
-    setGradient( Q::Panel, primary08 );
+    // The color here is primary with an opacity of 8% - we blend that
+    // with the background, because we don't want the menu to have transparency:
+    QColor panel = flattenedColor( m_pal.primary, m_pal.background, 0.08 );
+    setGradient( Q::Panel, panel );
+
+    QskShadowMetrics elevationLight1( 106, 20 );
+    setShadowMetrics( Q::Panel | Q::Hovered, elevationLight1 );
+    setShadowColor( Q::Panel | Q::Hovered, m_pal.shadow );
 
     setMetric( Q::Separator | A::Size, qskDpiScaled( 1 ) );
     setBoxShape( Q::Separator, 0 );
@@ -447,8 +461,8 @@ void Editor::setupPushButton()
     c2.setAlphaF( 0.38 );
     setColor( Q::Text | Q::Disabled, c2 );
 
-    QskShadowMetrics shadow( -6, 20 );
-    setShadowMetrics( Q::Panel | Q::Hovered, shadow );
+    QskShadowMetrics elevationLight1( -6, 20 );
+    setShadowMetrics( Q::Panel | Q::Hovered, elevationLight1 );
     setShadowColor( Q::Panel | Q::Hovered, m_pal.shadow );
 
     // Outlined and Text:
