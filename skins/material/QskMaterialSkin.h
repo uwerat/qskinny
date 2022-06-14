@@ -10,6 +10,8 @@
 #include <QskSkin.h>
 #include <QskRgbPalette.h>
 
+#include <array>
+
 class QSK_MATERIAL_EXPORT QskMaterialTheme
 {
   public:
