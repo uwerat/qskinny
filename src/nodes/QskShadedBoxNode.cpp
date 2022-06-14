@@ -48,6 +48,8 @@ void QskShadedBoxNode::setShadowData(
             insertChildNodeBefore( m_shadowNode, &m_boxNode );
         }
 
+        m_shadowNode->setColor( color );
+
         m_shadowNode->setRect( metrics.shadowRect( rect ) );
         m_shadowNode->setShape( shape );
         m_shadowNode->setBlurRadius( metrics.blurRadius() );
