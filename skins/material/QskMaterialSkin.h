@@ -9,6 +9,7 @@
 #include "QskMaterialGlobal.h"
 #include <QskSkin.h>
 #include <QskRgbPalette.h>
+#include <QskShadowMetrics.h>
 
 #include <array>
 
@@ -66,6 +67,9 @@ class QSK_MATERIAL_EXPORT QskMaterialTheme
     QRgb outline;
 
     QRgb shadow;
+
+    QskShadowMetrics elevationLight1;
+    QskShadowMetrics elevationLight2;
 
     const qreal hoverOpacity = 0.08;
     const qreal focusOpacity = 0.12;
