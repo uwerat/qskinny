@@ -489,7 +489,6 @@ void Editor::setupPushButton()
 
     setColor( Q::Text | Q::Disabled, c1, combination );
 
-
     setAnimation( Q::Panel | A::Color, qskDuration );
     setAnimation( Q::Panel | A::Metric, qskDuration );
     setAnimation( Q::Text | A::Color, qskDuration );
