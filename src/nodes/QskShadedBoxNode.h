@@ -24,9 +24,6 @@ class QSK_EXPORT QskShadedBoxNode : public QSGNode
         const QskShadowMetrics&, const QColor& shadowColor );
 
   private:
-    void setShadowData( const QRectF&, const QskBoxShapeMetrics&,
-        const QskShadowMetrics&, const QColor& );
-
     QskBoxNode m_boxNode;
     QskBoxShadowNode* m_shadowNode = nullptr;
 };

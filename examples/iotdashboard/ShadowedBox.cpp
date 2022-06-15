@@ -55,12 +55,8 @@ namespace
 
                     auto shadowNode = QskSGNode::ensureNode< QskBoxShadowNode >( node );
 
-                    shadowNode->setRect( shadowMetrics.shadowRect( r ) );
-                    shadowNode->setShape( box->shape() );
-                    shadowNode->setBlurRadius( shadowMetrics.blurRadius() );
-                    shadowNode->setColor( box->shadowColor() );
-
-                    shadowNode->updateGeometry();
+                    shadowNode->setShadowData( shadowMetrics.shadowRect( r ),
+                        box->shape(), shadowMetrics.blurRadius(), box->shadowColor() );
 
                     return shadowNode;
                 }
