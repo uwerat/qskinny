@@ -435,6 +435,7 @@ void Editor::setupPushButton()
     using Q = QskPushButton;
 
     setFlagHint( Q::Panel | QskAspect::Direction, Qsk::LeftToRight );
+    setStrutSize( Q::Panel, -1, 31 );
     setSpacing( Q::Panel, qskDpiScaled( 4 ) );
     setPadding( Q::Panel, { 24, 0, 20, 0 } );
 
