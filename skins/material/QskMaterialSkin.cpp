@@ -434,7 +434,7 @@ void Editor::setupPushButton()
     using A = QskAspect;
     using Q = QskPushButton;
 
-    setStrutSize( Q::Panel, -1, 31 );
+    setFlagHint( Q::Panel | QskAspect::Direction, Qsk::LeftToRight );
     setSpacing( Q::Panel, qskDpiScaled( 4 ) );
     setPadding( Q::Panel, { 24, 0, 20, 0 } );
 
@@ -472,6 +472,8 @@ void Editor::setupPushButton()
 
     setBoxBorderMetrics( Q::Panel, 1, { QskStateCombination::CombinationNoState, Q::Outlined } );
     setBoxBorderColors( Q::Panel | Q::Outlined, m_pal.outline );
+
+    setPadding( Q::Graphic, 5 );
 
     setGradient( Q::Panel | Q::Disabled, Qt::transparent, combination );
     setBoxBorderColors( Q::Panel | Q::Outlined | Q::Disabled, c1 );

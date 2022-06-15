@@ -7,25 +7,34 @@
 
 #include <QskBox.h>
 
-class QskGradient;
 class QskShadowMetrics;
-class QskBoxShapeMetrics;
-class QskBoxBorderColors;
 
 class ShadowedBox : public QskBox
 {
     Q_OBJECT
 
   public:
-    ShadowedBox(QQuickItem* parent = nullptr);
+    ShadowedBox( QQuickItem* parent = nullptr );
     ~ShadowedBox() override;
 
-    void setShape( const QskBoxShapeMetrics& );
-    void setGradient( const QskGradient& );
+    qreal offsetX() const;
+    qreal offsetY() const;
 
-    void setBorderWidth( qreal width );
-    void setBorderColors( const QskBoxBorderColors& );
+    qreal spreadRadius() const;
+    qreal blurRadius() const;
 
-    void setShadow( const QskShadowMetrics& );
-    void setShadowColor( const QColor& );
+    qreal opacity() const;
+
+  public Q_SLOTS:
+    void setOffsetX( qreal );
+    void setOffsetY( qreal );
+
+    void setSpreadRadius( qreal );
+    void setBlurRadius( qreal );
+
+    void setOpacity( qreal );
+
+  private:
+    QskShadowMetrics shadowMetrics() const;
+    void setShadowMetrics( const QskShadowMetrics& );
 };
