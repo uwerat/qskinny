@@ -24,14 +24,9 @@ void QskShadedBoxNode::setBoxData( const QRectF& rect,
     const QskShadowMetrics& shadowMetrics, const QColor& shadowColor )
 {
     m_boxNode.setBoxData( rect, shape, borderMetrics, borderColors, gradient );
-    setShadowData( rect, shape, shadowMetrics, shadowColor );
-}
 
-void QskShadedBoxNode::setShadowData(
-    const QRectF& rect, const QskBoxShapeMetrics& shape,
-    const QskShadowMetrics& metrics, const QColor& color )
-{
-    if ( metrics.isNull() || !color.isValid() || color.alpha() == 0 )
+    if ( shadowMetrics.isNull()
+        || !shadowColor.isValid() || shadowColor.alpha() == 0 )
     {
         if ( m_shadowNode )
         {
@@ -48,13 +43,7 @@ void QskShadedBoxNode::setShadowData(
             insertChildNodeBefore( m_shadowNode, &m_boxNode );
         }
 
-        m_shadowNode->setColor( color );
-
-        m_shadowNode->setRect( metrics.shadowRect( rect ) );
-        m_shadowNode->setShape( shape );
-        m_shadowNode->setBlurRadius( metrics.blurRadius() );
-        m_shadowNode->setClipShape( shape );
-
-        m_shadowNode->updateGeometry();
+        m_shadowNode->setShadowData( shadowMetrics.shadowRect( rect ),
+            shape, shadowMetrics.blurRadius(), shadowColor );
     }
 }

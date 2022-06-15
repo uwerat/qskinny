@@ -268,98 +268,77 @@ QskBoxShadowNode::~QskBoxShadowNode()
 {
 }
 
-void QskBoxShadowNode::setRect( const QRectF& rect )
+void QskBoxShadowNode::setShadowData(
+    const QRectF& rect, const QskBoxShapeMetrics& shape,
+    qreal blurRadius, const QColor& color )
 {
     Q_D( QskBoxShadowNode );
 
-    if ( rect == d->rect )
-        return;
-
-    d->rect = rect;
-
-    QVector2D aspect( 1.0, 1.0 );
-
-    if ( rect.width() >= rect.height() )
-        aspect.setX( rect.width() / rect.height() );
-    else
-        aspect.setY( rect.height() / rect.width() );
-
-    if ( d->material.m_aspect != aspect )
+    if ( rect != d->rect )
     {
-        d->material.m_aspect = aspect;
-        markDirty( QSGNode::DirtyMaterial );
+        d->rect = rect;
+
+        QSGGeometry::updateTexturedRectGeometry(
+            &d->geometry, d->rect, QRectF( -0.5, -0.5, 1.0, 1.0 ) );
+
+        markDirty( QSGNode::DirtyGeometry );
+
+        QVector2D aspect( 1.0, 1.0 );
+
+        if ( rect.width() >= rect.height() )
+            aspect.setX( rect.width() / rect.height() );
+        else
+            aspect.setY( rect.height() / rect.width() );
+
+        if ( d->material.m_aspect != aspect )
+        {
+            d->material.m_aspect = aspect;
+            markDirty( QSGNode::DirtyMaterial );
+        }
     }
-}
 
-void QskBoxShadowNode::setShape( const QskBoxShapeMetrics& shape )
-{
-    Q_D( QskBoxShadowNode );
-
-    const float t = std::min( d->rect.width(), d->rect.height() );
-
-    const float r1 = shape.radius( Qt::BottomRightCorner ).width();
-    const float r2 = shape.radius( Qt::TopRightCorner ).width();
-    const float r3 = shape.radius( Qt::BottomLeftCorner ).width();
-    const float r4 = shape.radius( Qt::TopLeftCorner ).width();
-
-    const auto uniformRadius = QVector4D(
-        std::min( r1 / t, 1.0f ), std::min( r2 / t, 1.0f ),
-        std::min( r3 / t, 1.0f ), std::min( r4 / t, 1.0f ) );
-
-    if ( d->material.m_radius != uniformRadius )
     {
-        d->material.m_radius = uniformRadius;
+        const float t = std::min( d->rect.width(), d->rect.height() );
 
-        markDirty( QSGNode::DirtyMaterial );
+        const float r1 = shape.radius( Qt::BottomRightCorner ).width();
+        const float r2 = shape.radius( Qt::TopRightCorner ).width();
+        const float r3 = shape.radius( Qt::BottomLeftCorner ).width();
+        const float r4 = shape.radius( Qt::TopLeftCorner ).width();
+
+        const auto uniformRadius = QVector4D(
+            std::min( r1 / t, 1.0f ), std::min( r2 / t, 1.0f ),
+            std::min( r3 / t, 1.0f ), std::min( r4 / t, 1.0f ) );
+
+        if ( d->material.m_radius != uniformRadius )
+        {
+            d->material.m_radius = uniformRadius;
+            markDirty( QSGNode::DirtyMaterial );
+        }
     }
-}
 
-void QskBoxShadowNode::setColor( const QColor& color )
-{
-    Q_D( QskBoxShadowNode );
-
-    const auto a = color.alphaF();
-
-    const QVector4D c( color.redF() * a, color.greenF() * a, color.blueF() * a, a );
-
-    if ( d->material.m_color != c )
     {
-        d->material.m_color = c;
-        markDirty( QSGNode::DirtyMaterial );
+        if ( blurRadius <= 0.0 )
+            blurRadius = 0.0;
+
+        const float t = 0.5 * std::min( d->rect.width(), d->rect.height() );
+        const float uniformExtent = blurRadius / t;
+
+        if ( !qFuzzyCompare( d->material.m_blurExtent, uniformExtent ) )
+        {
+            d->material.m_blurExtent = uniformExtent;
+            markDirty( QSGNode::DirtyMaterial );
+        }
     }
-}
 
-void QskBoxShadowNode::setBlurRadius( qreal blurRadius )
-{
-    Q_D( QskBoxShadowNode );
-
-    if ( blurRadius <= 0.0 )
-        blurRadius = 0.0;
-
-    const float t = 0.5 * std::min( d->rect.width(), d->rect.height() );
-    const float uniformExtent = blurRadius / t;
-
-    if ( !qFuzzyCompare( d->material.m_blurExtent, uniformExtent ) )
     {
-        d->material.m_blurExtent = uniformExtent;
-        markDirty( QSGNode::DirtyMaterial );
+        const auto a = color.alphaF();
+
+        const QVector4D c( color.redF() * a, color.greenF() * a, color.blueF() * a, a );
+
+        if ( d->material.m_color != c )
+        {
+            d->material.m_color = c;
+            markDirty( QSGNode::DirtyMaterial );
+        }
     }
-}
-
-void QskBoxShadowNode::setClipShape( const QskBoxShapeMetrics& )
-{
-    /*
-        Usually only the parts, that are not covered by the related box
-        should be painted. TODO ...
-     */
-}
-
-void QskBoxShadowNode::updateGeometry()
-{
-    Q_D( QskBoxShadowNode );
-
-    QSGGeometry::updateTexturedRectGeometry(
-        &d->geometry, d->rect, QRectF( -0.5, -0.5, 1.0, 1.0 ) );
-
-    markDirty( QSGNode::DirtyGeometry );
 }
