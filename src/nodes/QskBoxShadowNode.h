@@ -20,14 +20,8 @@ class QSK_EXPORT QskBoxShadowNode : public QSGGeometryNode
     QskBoxShadowNode();
     ~QskBoxShadowNode() override;
 
-    void setRect( const QRectF& );
-    void setShape( const QskBoxShapeMetrics& );
-    void setColor( const QColor& );
-    void setBlurRadius( qreal );
-
-    void setClipShape( const QskBoxShapeMetrics& );
-
-    void updateGeometry();
+    void setShadowData( const QRectF&, const QskBoxShapeMetrics&,
+        qreal blurRadius, const QColor& );
 
   private:
     Q_DECLARE_PRIVATE( QskBoxShadowNode )
