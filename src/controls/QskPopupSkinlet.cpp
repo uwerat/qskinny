@@ -149,8 +149,15 @@ QSGNode* QskPopupSkinlet::updateExtraNode( const QskPopup* popup, QSGNode* node 
     auto rootNode = QskSGNode::ensureNode< RootNode >( node );
 
     const auto faderProgress = popup->metric( popup->faderAspect() );
+
     if ( faderProgress > 0.0 && faderProgress < 1.0 )
+    {
         rootNode->setClipRect( cr );
+    }
+    else if( faderProgress <= 0.0 )
+    {
+        rootNode->setClipRect( {} );
+    }
 
     rootNode->setTranslation( 0.0, -faderProgress * cr.height() );
 
