@@ -135,27 +135,21 @@ QSGNode* LightDisplaySkinlet::updateSubNode(
         {
             return updateBoxNode( skinnable, node, LightDisplay::Panel );
         }
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
         case GrooveRole:
         {
             const QRectF grooveRect = display->subControlRect( LightDisplay::Groove );
             if ( grooveRect.isEmpty() )
                 return nullptr;
 
-            auto shadowNode = QskSGNode::ensureNode< QskBoxShadowNode >( node );
-
             const auto& shadowMetrics = display->shadow();
+            const auto shadowRect = shadowMetrics.shadowRect( grooveRect );
 
-            shadowNode->setRect( shadowMetrics.shadowRect( grooveRect ) );
-            shadowNode->setShape( grooveRect.width() / 2 );
-            shadowNode->setBlurRadius( shadowMetrics.blurRadius() );
-            shadowNode->setColor( display->shadowColor() );
-
-            shadowNode->updateGeometry();
+            auto shadowNode = QskSGNode::ensureNode< QskBoxShadowNode >( node );
+            shadowNode->setShadowData( shadowRect, grooveRect.width() / 2,
+                shadowMetrics.blurRadius(), display->shadowColor() );
 
             return shadowNode;
         }
-#endif
         case ColdAndWarmArcRole:
         {
             return updateArcNode( skinnable, node, LightDisplay::ColdAndWarmArc );

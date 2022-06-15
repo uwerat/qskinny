@@ -12,6 +12,19 @@
 #include <qfontmetrics.h>
 #include <qmath.h>
 
+static inline Qt::Orientation qskOrientation( const QskPushButton* button )
+{
+    // For the moment we only handle the orientation TODO ...
+
+    const auto direction = button->flagHint(
+        QskPushButton::Panel | QskAspect::Direction, Qsk::LeftToRight );
+
+    if ( direction == Qsk::LeftToRight || direction == Qsk::RightToLeft )
+        return Qt::Horizontal;
+    else
+        return Qt::Vertical;
+}
+
 QskPushButtonSkinlet::QskPushButtonSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
@@ -71,29 +84,24 @@ QSGNode* QskPushButtonSkinlet::updateSubNode(
 QRectF QskPushButtonSkinlet::textRect(
     const QskPushButton* button, const QRectF& contentsRect ) const
 {
-    // buttonShift -> TODO
+    using Q = QskPushButton;
 
-    auto r = button->subControlContentsRect( contentsRect, QskPushButton::Panel );
+    auto r = button->subControlContentsRect( contentsRect, Q::Panel );
 
     if ( button->hasGraphic() )
     {
-        const auto orientation = button->flagHint( QskPushButton::Panel | QskAspect::Direction, Qsk::LeftToRight );
-
-        switch( orientation )
+        if ( qskOrientation( button ) == Qt::Horizontal )
         {
-            case Qsk::LeftToRight:
-            {
-                const auto graphicsRect = subControlRect( button, contentsRect, QskPushButton::Graphic );
-                const auto spacing = button->metric( QskPushButton::Panel | QskAspect::Spacing );
-                r.setX( r.x() + graphicsRect.width() + spacing );
-                break;
-            }
-            default: // Qsk::TopToBottom, the other ones are not handled yet
-            {
-                qreal h = button->effectiveFontHeight( QskPushButton::Text );
-                if ( h < r.height() )
-                    r.setTop( r.bottom() - h );
-            }
+            const auto graphicsRect = subControlRect( button, contentsRect, Q::Graphic );
+            const auto spacing = button->spacingHint( Q::Panel );
+
+            r.setX( r.x() + graphicsRect.width() + spacing );
+        }
+        else
+        {
+            const qreal h = button->effectiveFontHeight( Q::Text );
+            if ( h < r.height() )
+                r.setTop( r.bottom() - h );
         }
     }
 
@@ -103,17 +111,16 @@ QRectF QskPushButtonSkinlet::textRect(
 QRectF QskPushButtonSkinlet::graphicRect(
     const QskPushButton* button, const QRectF& contentsRect ) const
 {
-    // buttonShift -> TODO
+    using Q = QskPushButton;
 
-    auto r = button->subControlContentsRect( contentsRect, QskPushButton::Panel );
+    auto r = button->subControlContentsRect( contentsRect, Q::Panel );
 
-    const auto orientation = button->flagHint( QskPushButton::Panel
-                                               | QskAspect::Direction, Qsk::LeftToRight );
+    const auto orientation = qskOrientation( button );
 
-    if ( !button->text().isEmpty() && orientation == Qsk::TopToBottom )
+    if ( !button->text().isEmpty() && orientation == Qt::Vertical )
     {
-        const auto textRect = subControlRect( button, contentsRect, QskPushButton::Text );
-        qreal h = textRect.height() + button->spacingHint( QskPushButton::Panel );
+        const auto textRect = subControlRect( button, contentsRect, Q::Text );
+        qreal h = textRect.height() + button->spacingHint( Q::Panel );
 
         if ( h < r.height() )
             r.setBottom( r.bottom() - h );
@@ -142,7 +149,7 @@ QRectF QskPushButtonSkinlet::graphicRect(
         }
     }
 
-    const QSizeF sz = button->graphic().defaultSize();
+    const auto sz = button->graphic().defaultSize();
 
     if ( !( r.isEmpty() || sz.isEmpty() ) )
     {
@@ -155,29 +162,23 @@ QRectF QskPushButtonSkinlet::graphicRect(
         const int h = qFloor( scaleFactor * sz.height() );
         int x, y;
 
-        const auto orientation = button->flagHint( QskPushButton::Panel
-                                                   | QskAspect::Direction, Qsk::LeftToRight );
-
-        switch( orientation )
+        if ( orientation == Qt::Horizontal )
         {
-            case Qsk::LeftToRight:
-            {
-                x = r.left();
-                y = r.top();
-                break;
-            }
-            default: // TopToBottom
-            {
-                // early aligning to avoid pointless operations, that finally will
-                // have no effect, when drawing to an integer based paint device
+            x = r.left();
+            y = r.top();
+        }
+        else
+        {
+            // early aligning to avoid pointless operations, that finally will
+            // have no effect, when drawing to an integer based paint device
 
-                x = qFloor( r.center().x() - 0.5 * w );
-                y = qFloor( r.center().y() - 0.5 * h );
-            }
+            x = qFloor( r.center().x() - 0.5 * w );
+            y = qFloor( r.center().y() - 0.5 * h );
         }
 
         r = QRectF( x, y, w, h );
-        const auto padding = button->paddingHint( QskPushButton::Graphic );
+
+        const auto padding = button->paddingHint( Q::Graphic );
         r = r.marginsRemoved( padding );
     }
 
@@ -187,21 +188,25 @@ QRectF QskPushButtonSkinlet::graphicRect(
 QSGNode* QskPushButtonSkinlet::updateTextNode(
     const QskPushButton* button, QSGNode* node ) const
 {
-    const auto rect = button->subControlRect( QskPushButton::Text ).toAlignedRect();
+    using Q = QskPushButton;
 
-    const auto textHeight = button->effectiveFontHeight( QskPushButton::Text );
+    const auto rect = button->subControlRect( Q::Text ).toAlignedRect();
+
+    const auto textHeight = button->effectiveFontHeight( Q::Text );
     if ( !button->clip() && ( rect.height() < textHeight ) )
         return nullptr;
 
-    const auto alignment = button->alignmentHint( QskPushButton::Text, Qt::AlignCenter );
+    const auto alignment = button->alignmentHint( Q::Text, Qt::AlignCenter );
 
     return QskSkinlet::updateTextNode( button, node, rect, alignment,
-        button->text(), button->textOptions(), QskPushButton::Text );
+        button->text(), button->textOptions(), Q::Text );
 }
 
 QSizeF QskPushButtonSkinlet::sizeHint( const QskSkinnable* skinnable,
     Qt::SizeHint which, const QSizeF& ) const
 {
+    using Q = QskPushButton;
+
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
@@ -249,29 +254,23 @@ QSizeF QskPushButtonSkinlet::sizeHint( const QskSkinnable* skinnable,
             }
         }
 
-        const QMarginsF padding = button->paddingHint( QskPushButton::Graphic );
+        const auto padding = button->paddingHint( Q::Graphic );
+        const auto orientation = qskOrientation( button );
 
-        const auto orientation = button->flagHint( QskPushButton::Panel
-                                                   | QskAspect::Direction, Qsk::LeftToRight );
-
-        switch( orientation )
+        if( orientation == Qt::Horizontal )
         {
-            case Qsk::LeftToRight:
-            {
-                size.rwidth() += padding.left() + w + padding.right();
-                size.rheight() = qMax( size.height(), h );
-                break;
-            }
-            default: // TopToBottom
-            {
-                size.rheight() += padding.top() + h + padding.bottom();
-                size.rwidth() = qMax( size.width(), w );
-            }
+            size.rwidth() += padding.left() + w + padding.right();
+            size.rheight() = qMax( size.height(), h );
+        }
+        else
+        {
+            size.rheight() += padding.top() + h + padding.bottom();
+            size.rwidth() = qMax( size.width(), w );
         }
     }
 
-    size = size.expandedTo( button->strutSizeHint( QskPushButton::Panel ) );
-    size = button->outerBoxSize( QskPushButton::Panel, size );
+    size = size.expandedTo( button->strutSizeHint( Q::Panel ) );
+    size = button->outerBoxSize( Q::Panel, size );
 
     return size;
 }
