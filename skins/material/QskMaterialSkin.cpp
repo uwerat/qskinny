@@ -215,9 +215,8 @@ void Editor::setupMenu()
     QColor panel = flattenedColor( m_pal.primary, m_pal.background, 0.08 );
     setGradient( Q::Panel, panel );
 
-    QskShadowMetrics elevationLight1( 106, 20 );
-    setShadowMetrics( Q::Panel | Q::Hovered, elevationLight1 );
-    setShadowColor( Q::Panel | Q::Hovered, m_pal.shadow );
+    setShadowMetrics( Q::Panel, m_pal.elevationLight2 );
+    setShadowColor( Q::Panel, m_pal.shadow );
 
     setMetric( Q::Separator | A::Size, qskDpiScaled( 1 ) );
     setBoxShape( Q::Separator, 0 );
@@ -462,8 +461,7 @@ void Editor::setupPushButton()
     c2.setAlphaF( 0.38 );
     setColor( Q::Text | Q::Disabled, c2 );
 
-    QskShadowMetrics elevationLight1( -6, 20 );
-    setShadowMetrics( Q::Panel | Q::Hovered, elevationLight1 );
+    setShadowMetrics( Q::Panel | Q::Hovered, m_pal.elevationLight1 );
     setShadowColor( Q::Panel | Q::Hovered, m_pal.shadow );
 
     // Outlined and Text:
@@ -928,6 +926,9 @@ QskMaterialTheme::QskMaterialTheme( Lightness lightness,
 
         shadow = m_palettes[ Neutral ].rgb( Q::W0 );
     }
+
+    elevationLight1 = QskShadowMetrics( -6, 20 );
+    elevationLight2 = QskShadowMetrics( -5, 20 );
 }
 
 QskMaterialSkin::QskMaterialSkin( const QskMaterialTheme& palette, QObject* parent )
