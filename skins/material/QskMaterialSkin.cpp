@@ -336,7 +336,9 @@ void Editor::setupSegmentedBar()
         // Panel
 
         setPadding( Q::Panel, 0 );
-        setSpacing( Q::Panel, 5 );
+        setSpacing( Q::Panel, 0 );
+
+        setBoxShape( Q::Panel, 100, Qt::RelativeSize );
 
         setBoxBorderMetrics( Q::Panel, 1 );
         setBoxBorderColors( Q::Panel, m_pal.outline );
@@ -350,22 +352,30 @@ void Editor::setupSegmentedBar()
     {
         // Segment
 
-        setPadding( Q::Segment, QskMargins( 2, 5, 2, 5 ) );
+        setGradient( Q::Segment, Qt::transparent );
+
+        // ### resolve this problem:
+//        setBoxBorderMetrics( Q::Segment, 0, 0, 1, 0 );
+//        setBoxBorderColors( Q::Segment, m_pal.outline );
     }
 
     {
         // Cursor
+        setMargin( Q::Cursor, 1 );
+        setBoxShape( Q::Cursor, 0 );
+
+        setBoxShape( Q::Cursor | Q::Minimum | A::Horizontal, 100, 0, 100, 0, Qt::RelativeSize );
+        setBoxShape( Q::Cursor | Q::Maximum | A::Horizontal, 0, 100, 0, 100, Qt::RelativeSize );
+
+        setBoxShape( Q::Cursor | Q::Minimum | A::Vertical, 100, 100, 0, 0, Qt::RelativeSize );
+        setBoxShape( Q::Cursor | Q::Maximum | A::Vertical, 0, 0, 100, 100, Qt::RelativeSize );
+
         setGradient( Q::Cursor, m_pal.secondaryContainer );
         QColor c1( m_pal.onSurface );
         c1.setAlphaF( 0.12 );
         setGradient( Q::Cursor | Q::Disabled, c1 );
 
         setAnimation( Q::Cursor | A::Metric | A::Position, 100 );
-    }
-
-    for( auto subControl : { Q::Panel, Q::Cursor } )
-    {
-        setBoxShape( subControl, 100, Qt::RelativeSize );
     }
 
     {
@@ -378,10 +388,8 @@ void Editor::setupSegmentedBar()
     {
         // Graphic
 
-#if 0
-        setGraphicRole( Q::Graphic, ... );
-        setStrutSize( Q::Graphic, ... );
-#endif
+        setPadding( Q::Graphic, 10 );
+        setMargin( Q::Graphic, 10 );
     }
 }
 
