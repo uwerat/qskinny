@@ -49,7 +49,6 @@ QRectF QskSegmentedBarSkinlet::cursorRect(
         return QRectF();
 
     auto rect = subControlRect( bar, contentsRect, Q::Panel );
-    rect = bar->innerBox( Q::Panel, rect );
 
     if( rect.isEmpty() )
         return QRectF();
@@ -81,7 +80,6 @@ QRectF QskSegmentedBarSkinlet::segmentRect(
     const auto count = bar->count();
 
     auto rect = subControlRect( bar, contentsRect, Q::Panel );
-    rect = bar->innerBox( Q::Panel, rect );
 
     if( bar->orientation() == Qt::Horizontal )
     {
@@ -238,7 +236,7 @@ QRectF QskSegmentedBarSkinlet::sampleRect( const QskSkinnable* skinnable,
     if ( subControl == Q::Text || subControl == Q::Graphic )
     {
         const auto rect = sampleRect( skinnable, contentsRect, Q::Segment, index );
-        return skinnable->innerBox( Q::Segment, rect );
+        return rect;
     }
 
     return Inherited::sampleRect( skinnable, contentsRect, subControl, index );
