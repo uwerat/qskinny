@@ -33,7 +33,7 @@ class QSK_EXPORT QskSegmentedBar : public QskControl
 
   public:
     QSK_SUBCONTROLS( Panel, Segment, Cursor, Text, Graphic )
-    QSK_STATES( Selected )
+    QSK_STATES( Selected, Minimum, Maximum )
 
     QskSegmentedBar( QQuickItem* parent = nullptr );
     QskSegmentedBar( Qt::Orientation, QQuickItem* parent = nullptr );

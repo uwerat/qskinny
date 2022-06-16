@@ -22,7 +22,9 @@ QSK_SUBCONTROL( QskSegmentedBar, Cursor )
 QSK_SUBCONTROL( QskSegmentedBar, Text )
 QSK_SUBCONTROL( QskSegmentedBar, Graphic )
 
-QSK_SYSTEM_STATE( QskSegmentedBar, Selected, QskAspect::FirstSystemState << 2 )
+QSK_SYSTEM_STATE( QskSegmentedBar, Selected, QskAspect::FirstSystemState << 1 )
+QSK_SYSTEM_STATE( QskSegmentedBar, Minimum, QskAspect::FirstSystemState << 2 )
+QSK_SYSTEM_STATE( QskSegmentedBar, Maximum, QskAspect::FirstSystemState << 3 )
 
 namespace
 {
@@ -381,6 +383,9 @@ void QskSegmentedBar::setSelectedIndex( int index )
         update();
 
         Q_EMIT selectedIndexChanged( index );
+
+        setSkinStateFlag( Minimum, ( m_data->selectedIndex == 0 ) );
+        setSkinStateFlag( Maximum, ( m_data->selectedIndex == count() - 1 ) );
     }
 }
 
