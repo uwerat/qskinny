@@ -332,6 +332,8 @@ void Editor::setupSegmentedBar()
     using A = QskAspect;
     using Q = QskSegmentedBar;
 
+    const QSize strutSize( -1, 40 );
+
     {
         // Panel
 
@@ -343,8 +345,6 @@ void Editor::setupSegmentedBar()
         setBoxBorderMetrics( Q::Panel, 1 );
         setBoxBorderColors( Q::Panel, m_pal.outline );
 
-        const QSize strutSize( qskDpiScaled( -1 ), qskDpiScaled( 40 ) );
-
         setStrutSize( Q::Panel | A::Horizontal, strutSize );
         setStrutSize( Q::Panel | A::Vertical, strutSize.transposed() );
     }
@@ -353,10 +353,16 @@ void Editor::setupSegmentedBar()
         // Segment
 
         setGradient( Q::Segment, Qt::transparent );
+        setPadding( Q::Segment, 0 );
+    }
 
-        // ### resolve this problem:
-//        setBoxBorderMetrics( Q::Segment, 0, 0, 1, 0 );
-//        setBoxBorderColors( Q::Segment, m_pal.outline );
+    {
+        // Separator
+
+        setStrutSize( Q::Separator | A::Horizontal, 1, strutSize.height() );
+        setStrutSize( Q::Separator | A::Vertical, strutSize.height(), 1 );
+        setPadding( Q::Separator, 0 );
+        setGradient( Q::Separator, m_pal.outline );
     }
 
     {
@@ -380,6 +386,8 @@ void Editor::setupSegmentedBar()
 
     {
         // Text
+
+        setFontRole( Q::Text, QskMaterialSkin::M3LabelLarge );
 
         setColor( Q::Text, m_pal.onSurface );
         setColor( Q::Text | Q::Selected, m_pal.onSecondaryContainer );
