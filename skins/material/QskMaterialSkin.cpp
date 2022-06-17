@@ -943,8 +943,8 @@ QskMaterialTheme::QskMaterialTheme( Lightness lightness,
         shadow = m_palettes[ Neutral ].rgb( Q::W0 );
     }
 
-    elevationLight1 = QskShadowMetrics( -6, 20 );
-    elevationLight2 = QskShadowMetrics( -5, 20 );
+    elevationLight1 = QskShadowMetrics( -3, 5, { 0, 2 } );
+    elevationLight2 = QskShadowMetrics( -2, 8, { 0, 2 } );
 }
 
 QskMaterialSkin::QskMaterialSkin( const QskMaterialTheme& palette, QObject* parent )
