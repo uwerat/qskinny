@@ -304,9 +304,11 @@ QSGNode* QskSegmentedBarSkinlet::updateSampleNode( const QskSkinnable* skinnable
         {
             const auto graphic = value.value< QskGraphic >();
             const auto filter = bar->effectiveGraphicFilter( subControl );
+            const auto padding = bar->paddingHint( Q::Graphic );
+            const auto graphicRect = rect.marginsRemoved( padding );
 
             return QskSkinlet::updateGraphicNode(
-                bar, node, graphic, filter, rect, alignment );
+                bar, node, graphic, filter, graphicRect, alignment );
         }
 
         return nullptr;
