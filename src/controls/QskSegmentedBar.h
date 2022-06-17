@@ -32,7 +32,7 @@ class QSK_EXPORT QskSegmentedBar : public QskControl
     using Inherited = QskControl;
 
   public:
-    QSK_SUBCONTROLS( Panel, Segment, Cursor, Text, Graphic )
+    QSK_SUBCONTROLS( Panel, Segment, Separator, Cursor, Text, Graphic )
     QSK_STATES( Selected, Minimum, Maximum )
 
     QskSegmentedBar( QQuickItem* parent = nullptr );
