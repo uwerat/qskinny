@@ -329,6 +329,7 @@ void Editor::setupSegmentedBar()
 
         setBoxBorderMetrics( Q::Panel, 1 );
         setBoxBorderColors( Q::Panel, m_pal.outline );
+        setBoxBorderColors( Q::Panel | Q::Disabled, m_pal.onSurface12 );
 
         setStrutSize( Q::Panel | A::Horizontal, strutSize );
         setStrutSize( Q::Panel | A::Vertical, strutSize.transposed() );
@@ -348,6 +349,7 @@ void Editor::setupSegmentedBar()
         setStrutSize( Q::Separator | A::Vertical, strutSize.height(), 1 );
         setPadding( Q::Separator, 0 );
         setGradient( Q::Separator, m_pal.outline );
+        setColor( Q::Separator | Q::Disabled, m_pal.onSurface38 );
     }
 
     {
@@ -355,11 +357,19 @@ void Editor::setupSegmentedBar()
         setMargin( Q::Cursor, 1 );
         setBoxShape( Q::Cursor, 0 );
 
-        setBoxShape( Q::Cursor | Q::Minimum | A::Horizontal, 100, 0, 100, 0, Qt::RelativeSize );
-        setBoxShape( Q::Cursor | Q::Maximum | A::Horizontal, 0, 100, 0, 100, Qt::RelativeSize );
+        setBoxShape( Q::Cursor | Q::Minimum | A::Horizontal,
+                     { 100, 0, 100, 0, Qt::RelativeSize },
+                     { QskStateCombination::CombinationNoState, Q::Disabled } );
+        setBoxShape( Q::Cursor | Q::Maximum | A::Horizontal,
+                     { 0, 100, 0, 100, Qt::RelativeSize },
+                     { QskStateCombination::CombinationNoState, Q::Disabled } );
 
-        setBoxShape( Q::Cursor | Q::Minimum | A::Vertical, 100, 100, 0, 0, Qt::RelativeSize );
-        setBoxShape( Q::Cursor | Q::Maximum | A::Vertical, 0, 0, 100, 100, Qt::RelativeSize );
+        setBoxShape( Q::Cursor | Q::Minimum | A::Vertical,
+                     { 100, 100, 0, 0, Qt::RelativeSize },
+                     { QskStateCombination::CombinationNoState, Q::Disabled } );
+        setBoxShape( Q::Cursor | Q::Maximum | A::Vertical,
+                     { 0, 0, 100, 100, Qt::RelativeSize },
+                     { QskStateCombination::CombinationNoState, Q::Disabled } );
 
         setGradient( Q::Cursor, m_pal.secondaryContainer );
         setGradient( Q::Cursor | Q::Disabled, m_pal.onSurface12 );
@@ -374,6 +384,8 @@ void Editor::setupSegmentedBar()
 
         setColor( Q::Text, m_pal.onSurface );
         setColor( Q::Text | Q::Selected, m_pal.onSecondaryContainer );
+
+        setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
     }
 
     {
