@@ -38,6 +38,7 @@ class QSK_MATERIAL_EXPORT QskMaterialTheme
     QskMaterialTheme( Lightness, std::array< QskRgbPalette, NumPaletteTypes > );
 
     QRgb primary;
+    QColor primary12;
     QRgb onPrimary;
     QRgb primaryContainer;
     QRgb onPrimaryContainer;
@@ -61,8 +62,11 @@ class QSK_MATERIAL_EXPORT QskMaterialTheme
     QRgb onBackground;
     QRgb surface;
     QRgb onSurface;
+    QColor onSurface12;
+    QColor onSurface38;
 
     QRgb surfaceVariant;
+    QColor surfaceVariant12;
     QRgb onSurfaceVariant;
     QRgb outline;
 
