@@ -18,6 +18,7 @@
 
 QSK_SUBCONTROL( QskSegmentedBar, Panel )
 QSK_SUBCONTROL( QskSegmentedBar, Segment )
+QSK_SUBCONTROL( QskSegmentedBar, Separator )
 QSK_SUBCONTROL( QskSegmentedBar, Cursor )
 QSK_SUBCONTROL( QskSegmentedBar, Text )
 QSK_SUBCONTROL( QskSegmentedBar, Graphic )

@@ -21,6 +21,7 @@ class QSK_EXPORT QskSegmentedBarSkinlet : public QskSkinlet
     {
         PanelRole,
         SegmentRole,
+        SeparatorRole,
         CursorRole,
 
         TextRole,
@@ -57,6 +58,7 @@ class QSK_EXPORT QskSegmentedBarSkinlet : public QskSkinlet
     QSizeF segmentSizeHint( const QskSegmentedBar* ) const;
 
     QRectF segmentRect( const QskSegmentedBar*, const QRectF&, int index ) const;
+    QRectF separatorRect( const QskSegmentedBar*, const QRectF&, int index ) const;
     QRectF cursorRect( const QskSegmentedBar*, const QRectF& ) const;
 };
 
