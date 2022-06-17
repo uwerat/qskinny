@@ -166,19 +166,13 @@ void Editor::setupCheckBox()
     setGradient( Q::Panel, m_pal.background );
     setGradient( Q::Panel | Q::Checked, m_pal.primary );
 
-    QColor c3( m_pal.surfaceVariant );
-    c3.setAlphaF( 0.12 );
-    setGradient( Q::Panel | Q::Disabled, c3 );
+    setGradient( Q::Panel | Q::Disabled, m_pal.surfaceVariant12 );
 
-    QColor c1( m_pal.onSurface );
-    c1.setAlphaF( 0.12 );
-    setGradient( Q::Panel | Q::Checked | Q::Disabled, c1 );
+    setGradient( Q::Panel | Q::Checked | Q::Disabled, m_pal.onSurface12 );
 
 
     setColor( Q::Indicator | Q::Checked, m_pal.primaryContainer );
-    QColor c4( m_pal.onSurface );
-    c4.setAlphaF( 0.38 );
-    setColor( Q::Indicator | Q::Checked | Q::Disabled, c4 );
+    setColor( Q::Indicator | Q::Checked | Q::Disabled, m_pal.onSurface38 );
 
     setAnimation( Q::Panel | A::Color, qskDuration );
 }
@@ -221,15 +215,13 @@ void Editor::setupMenu()
     setMetric( Q::Separator | A::Size, qskDpiScaled( 1 ) );
     setBoxShape( Q::Separator, 0 );
     setBoxBorderMetrics( Q::Separator, 0 );
-    QColor primary12( m_pal.primary );
-    primary12.setAlphaF( 0.12 );
-    setGradient( Q::Separator, primary12 );
+    setGradient( Q::Separator, m_pal.primary12 );
 
     setPadding( Q::Segment, 6 );
     setSpacing( Q::Segment, 5 );
     setGradient( Q::Segment, Qt::transparent );
 
-    setGradient( Q::Cursor, primary12 );
+    setGradient( Q::Cursor, m_pal.primary12 );
 
     setPadding( Q::Graphic, 7 );
     setStrutSize( Q::Graphic, { 46, -1 } );
@@ -284,10 +276,8 @@ void Editor::setupTextInput()
     setGradient( Q::Panel | Q::Disabled, c1 );
     setBoxBorderMetrics( Q::Panel | Q::Disabled, 0, 0, 0, 1 );
 
-    QColor c2( m_pal.onSurface );
-    c2.setAlphaF( 0.38 ); // ### move this to the palette, we are using it all the time
-    setColor( Q::Text | Q::Disabled, c2 );
-    setBoxBorderColors( Q::Panel | Q::Disabled, c2 );
+    setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
+    setBoxBorderColors( Q::Panel | Q::Disabled, m_pal.onSurface38 );
 }
 
 void Editor::setupProgressBar()
@@ -309,15 +299,10 @@ void Editor::setupProgressBar()
     setMetric( Q::Groove | A::Size, size );
     setGradient( Q::Groove, m_pal.primaryContainer );
 
-    QColor c1( m_pal.onSurface );
-    c1.setAlphaF( 0.12 );
-    setGradient( Q::Groove | Q::Disabled, c1 );
+    setGradient( Q::Groove | Q::Disabled, m_pal.onSurface12 );
 
     setGradient( Q::Bar, m_pal.primary );
-
-    QColor c2( m_pal.onSurface );
-    c2.setAlphaF( 0.38 );
-    setGradient( Q::Bar | Q::Disabled, c2 );
+    setGradient( Q::Bar | Q::Disabled, m_pal.onSurface38 );
 }
 
 void Editor::setupFocusIndicator()
@@ -377,9 +362,7 @@ void Editor::setupSegmentedBar()
         setBoxShape( Q::Cursor | Q::Maximum | A::Vertical, 0, 0, 100, 100, Qt::RelativeSize );
 
         setGradient( Q::Cursor, m_pal.secondaryContainer );
-        QColor c1( m_pal.onSurface );
-        c1.setAlphaF( 0.12 );
-        setGradient( Q::Cursor | Q::Disabled, c1 );
+        setGradient( Q::Cursor | Q::Disabled, m_pal.onSurface12 );
 
         setAnimation( Q::Cursor | A::Metric | A::Position, 100 );
     }
@@ -431,13 +414,8 @@ void Editor::setupPageIndicator()
     setGradient( Q::Bullet, m_pal.primaryContainer );
     setGradient( Q::Bullet | Q::Selected, m_pal.primary );
 
-    QColor c1( m_pal.onSurface );
-    c1.setAlphaF( 0.12 );
-    setGradient( Q::Bullet | Q::Disabled, c1 );
-
-    QColor c2( m_pal.onSurface );
-    c2.setAlphaF( 0.38 );
-    setGradient( Q::Bullet | Q::Selected | Q::Disabled, c2 );
+    setGradient( Q::Bullet | Q::Disabled, m_pal.onSurface12 );
+    setGradient( Q::Bullet | Q::Selected | Q::Disabled, m_pal.onSurface38 );
 
     setSpacing( Q::Panel, qskDpiScaled( 3 ) );
     setPadding( Q::Panel, 0 );
@@ -466,16 +444,10 @@ void Editor::setupPushButton()
     // normal buttons (i.e. Filled):
 
     setGradient( Q::Panel, m_pal.primary );
-
-    QColor c1( m_pal.onSurface );
-    c1.setAlphaF( 0.12 );
-    setGradient( Q::Panel | Q::Disabled, c1 );
+    setGradient( Q::Panel | Q::Disabled, m_pal.onSurface12 );
 
     setColor( Q::Text, m_pal.onPrimary );
-
-    QColor c2( m_pal.onSurface );
-    c2.setAlphaF( 0.38 );
-    setColor( Q::Text | Q::Disabled, c2 );
+    setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
 
     setShadowMetrics( Q::Panel | Q::Hovered, m_pal.elevationLight1 );
     setShadowColor( Q::Panel | Q::Hovered, m_pal.shadow );
@@ -491,7 +463,7 @@ void Editor::setupPushButton()
     setPadding( Q::Graphic, 5 );
 
     setGradient( Q::Panel | Q::Disabled, Qt::transparent, combination );
-    setBoxBorderColors( Q::Panel | Q::Outlined | Q::Disabled, c1 );
+    setBoxBorderColors( Q::Panel | Q::Outlined | Q::Disabled, m_pal.onSurface12 );
 
     QColor primary08( m_pal.primary );
     primary08.setAlphaF( 0.08 );
@@ -504,7 +476,7 @@ void Editor::setupPushButton()
 
     setColor( Q::Text, m_pal.primary, combination );
 
-    setColor( Q::Text | Q::Disabled, c1, combination );
+    setColor( Q::Text | Q::Disabled, m_pal.onSurface12, combination );
 
     setAnimation( Q::Panel | A::Color, qskDuration );
     setAnimation( Q::Panel | A::Metric, qskDuration );
@@ -525,11 +497,9 @@ void Editor::setupDialogButton()
     setBoxShape( Q::Panel, 0 );
 
     setGradient( Q::Panel, m_pal.primary );
-    setColor( Q::Text, m_pal.onPrimary );
 
-    QColor c2( m_pal.onSurface );
-    c2.setAlphaF( 0.38 );
-    setColor( Q::Text | Q::Disabled, c2 );
+    setColor( Q::Text, m_pal.onPrimary );
+    setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
 
     setFontRole( Q::Text, QskMaterialSkin::M3LabelLarge );
     setAlignment( Q::Text, Qt::AlignCenter );
@@ -594,16 +564,10 @@ void Editor::setupSlider()
     setMetric( Q::Fill | A::Size, qskDpiScaled( 6 ) );
 
     setGradient( Q::Groove, m_pal.primaryContainer );
-
-    QColor c1( m_pal.onSurface );
-    c1.setAlphaF( 0.12 );
-    setGradient( Q::Groove | Q::Disabled, c1 );
+    setGradient( Q::Groove | Q::Disabled, m_pal.onSurface12 );
 
     setGradient( Q::Fill, m_pal.primary );
-
-    QColor c2( m_pal.onSurface );
-    c2.setAlphaF( 0.38 );
-    setGradient( Q::Fill | Q::Disabled, c2 );
+    setGradient( Q::Fill | Q::Disabled, m_pal.onSurface38 );
 
     setBoxShape( Q::Handle, 100, Qt::RelativeSize );
     setBoxBorderMetrics( Q::Handle, 0 );
@@ -614,7 +578,7 @@ void Editor::setupSlider()
     setGradient( Q::Handle, m_pal.primary );
     setGradient( Q::Handle | Q::Pressed, m_pal.primary );
 
-    setGradient( Q::Handle | Q::Disabled, c2 );
+    setGradient( Q::Handle | Q::Disabled, m_pal.onSurface38 );
 
     setBoxBorderMetrics( Q::Handle, qskDpiScaled( rippleSize / 2 ) );
 
@@ -634,14 +598,10 @@ void Editor::setupSwitchButton()
     setStrutSize( Q::Groove | A::Vertical, strutSize.transposed() );
     setGradient( Q::Groove, m_pal.surfaceVariant );
 
-    QColor c3( m_pal.surfaceVariant );
-    c3.setAlphaF( 0.12 );
-    setGradient( Q::Groove | Q::Disabled, c3 );
+    setGradient( Q::Groove | Q::Disabled, m_pal.surfaceVariant12 );
     setGradient( Q::Groove | Q::Checked, m_pal.primary );
 
-    QColor c1( m_pal.onSurface );
-    c1.setAlphaF( 0.12 );
-    setGradient( Q::Groove | Q::Checked | Q::Disabled, c1 );
+    setGradient( Q::Groove | Q::Checked | Q::Disabled, m_pal.onSurface12 );
     setBoxBorderMetrics( Q::Groove, 2 );
     setBoxBorderColors( Q::Groove, m_pal.outline );
 
@@ -654,9 +614,7 @@ void Editor::setupSwitchButton()
     setGradient( Q::Handle, m_pal.outline );
     setGradient( Q::Handle | Q::Checked, m_pal.primaryContainer );
 
-    QColor c2( m_pal.onSurface );
-    c2.setAlphaF( 0.38 );
-    setGradient( Q::Handle | Q::Disabled, c2 );
+    setGradient( Q::Handle | Q::Disabled, m_pal.onSurface38 );
     setGradient( Q::Handle | Q::Disabled | Q::Checked, m_pal.surface );
 
     // just to keep the strut size the same at all times:
@@ -698,10 +656,7 @@ void Editor::setupTabButton()
     setStrutSize( Q::Panel, 64, 64 );
 
     setColor( Q::Text, m_pal.onSurfaceVariant );
-
-    QColor c2( m_pal.onSurface );
-    c2.setAlphaF( 0.38 );
-    setColor( Q::Text | Q::Disabled, c2 );
+    setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
 
     setColor( Q::Text | Q::Checked, m_pal.primary );
     setColor( Q::Text | Q::Hovered, m_pal.primary );
@@ -942,6 +897,18 @@ QskMaterialTheme::QskMaterialTheme( Lightness lightness,
 
         shadow = m_palettes[ Neutral ].rgb( Q::W0 );
     }
+
+    primary12 = primary;
+    primary12.setAlphaF( 0.12 );
+
+    onSurface12 = onSurface;
+    onSurface12.setAlphaF( 0.12 );
+
+    onSurface38 = onSurface;
+    onSurface38.setAlphaF( 0.38 );
+
+    surfaceVariant12 = surfaceVariant;
+    surfaceVariant12.setAlphaF( 0.12 );
 
     elevationLight1 = QskShadowMetrics( -3, 5, { 0, 2 } );
     elevationLight2 = QskShadowMetrics( -2, 8, { 0, 2 } );
