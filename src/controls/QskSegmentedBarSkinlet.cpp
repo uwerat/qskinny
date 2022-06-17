@@ -18,7 +18,7 @@
 QskSegmentedBarSkinlet::QskSegmentedBarSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
-    setNodeRoles( { PanelRole, SegmentRole, CursorRole, TextRole, GraphicRole  } );
+    setNodeRoles( { PanelRole, SegmentRole, SeparatorRole, CursorRole, TextRole, GraphicRole  } );
 }
 
 QskSegmentedBarSkinlet::~QskSegmentedBarSkinlet() = default;
@@ -99,6 +99,34 @@ QRectF QskSegmentedBarSkinlet::segmentRect(
     return rect;
 }
 
+QRectF QskSegmentedBarSkinlet::separatorRect(
+    const QskSegmentedBar* bar, const QRectF& contentsRect, int index ) const
+{
+    using Q = QskSegmentedBar;
+
+    auto rect = segmentRect( bar, contentsRect, index );
+
+    auto sh = bar->sizeHint();
+
+    const QSizeF strutSize = bar->strutSizeHint( Q::Separator );
+
+    if( bar->orientation() == Qt::Horizontal )
+    {
+        rect.setLeft( rect.right() );
+        rect.setSize( { strutSize.width(), sh.height() } );
+    }
+    else
+    {
+        rect.setTop( rect.bottom() );
+        rect.setSize( { sh.width(), strutSize.height() } );
+    }
+
+    const auto padding = bar->paddingHint( Q::Separator );
+    rect = rect.marginsRemoved( padding );
+
+    return rect;
+}
+
 QSGNode* QskSegmentedBarSkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
@@ -114,6 +142,9 @@ QSGNode* QskSegmentedBarSkinlet::updateSubNode(
 
         case SegmentRole:
             return updateSeriesNode( skinnable, Q::Segment, node );
+
+        case SeparatorRole:
+            return updateSeriesNode( skinnable, Q::Separator, node );
 
         case TextRole:
             return updateSeriesNode( skinnable, Q::Text, node );
@@ -226,11 +257,16 @@ QRectF QskSegmentedBarSkinlet::sampleRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl, int index ) const
 {
     using Q = QskSegmentedBar;
+    const auto bar = static_cast< const QskSegmentedBar* >( skinnable );
 
     if ( subControl == Q::Segment )
     {
-        const auto bar = static_cast< const QskSegmentedBar* >( skinnable );
         return segmentRect( bar, contentsRect, index );
+    }
+
+    if ( subControl == Q::Separator )
+    {
+        return separatorRect( bar, contentsRect, index );
     }
 
     if ( subControl == Q::Text || subControl == Q::Graphic )
@@ -279,6 +315,20 @@ QSGNode* QskSegmentedBarSkinlet::updateSampleNode( const QskSkinnable* skinnable
     if ( subControl == Q::Segment )
     {
         return updateBoxNode( skinnable, node, rect, subControl );
+    }
+
+    if( subControl == Q::Separator )
+    {
+        if( index == bar->count() - 1 )
+        {
+            return nullptr;
+        }
+        else
+        {
+            const auto rect = sampleRect( bar, bar->contentsRect(), subControl, index );
+
+            return updateBoxNode( skinnable, node, rect, subControl );
+        }
     }
 
     const auto alignment = bar->alignmentHint( subControl, Qt::AlignCenter );
