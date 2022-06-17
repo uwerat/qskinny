@@ -9,6 +9,7 @@
 
 #include <qtransform.h>
 #include <qsgnode.h>
+#include <qquickwindow.h>
 
 namespace
 {
@@ -24,22 +25,20 @@ namespace
 
         void setClipRect( const QRectF& rect )
         {
-            if ( rect.isValid() )
+            if ( m_clipNode == nullptr )
             {
-                if ( m_clipNode == nullptr )
-                {
-                    m_clipNode = new QSGClipNode();
-                    m_clipNode->setFlag( QSGNode::OwnedByParent, false );
-                    m_clipNode->setIsRectangular( true );
-                }
+                m_clipNode = new QSGClipNode();
+                m_clipNode->setFlag( QSGNode::OwnedByParent, false );
+                m_clipNode->setIsRectangular( true );
+            }
 
-                m_clipNode->setClipRect( rect );
-            }
-            else
-            {
-                delete m_clipNode;
-                m_clipNode = nullptr;
-            }
+            m_clipNode->setClipRect( rect );
+        }
+
+        void resetClip()
+        {
+            delete m_clipNode;
+            m_clipNode = nullptr;
         }
 
         void setTranslation( qreal dx, qreal dy )
@@ -149,8 +148,17 @@ QSGNode* QskPopupSkinlet::updateExtraNode( const QskPopup* popup, QSGNode* node 
     auto rootNode = QskSGNode::ensureNode< RootNode >( node );
 
     const auto faderProgress = popup->metric( popup->faderAspect() );
-    if ( faderProgress > 0.0 && faderProgress < 1.0 )
-        rootNode->setClipRect( cr );
+    if ( faderProgress > 0.0 && faderProgress <= 1.0 )
+    {
+        auto clipRect = QRectF( popup->mapFromScene( QPointF() ), popup->window()->size() );
+        clipRect.setTop( cr.top() );
+
+        rootNode->setClipRect( clipRect );
+    }
+    else
+    {
+        rootNode->resetClip();
+    }
 
     rootNode->setTranslation( 0.0, -faderProgress * cr.height() );
 
