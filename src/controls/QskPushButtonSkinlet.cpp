@@ -8,6 +8,7 @@
 
 #include "QskGraphic.h"
 #include "QskTextOptions.h"
+#include "QskFunctions.h"
 
 #include <qfontmetrics.h>
 #include <qmath.h>
@@ -87,22 +88,25 @@ QRectF QskPushButtonSkinlet::textRect(
     using Q = QskPushButton;
 
     auto r = button->subControlContentsRect( contentsRect, Q::Panel );
+    if ( r.isEmpty() || !button->hasGraphic() )
+        return r;
 
-    if ( button->hasGraphic() )
+    /*
+        For horizontal layouts Text depends on Graphic, while
+        for vertical Graphic depends on Text. Confusing ...
+     */
+    if ( qskOrientation( button ) == Qt::Horizontal )
     {
-        if ( qskOrientation( button ) == Qt::Horizontal )
-        {
-            const auto graphicsRect = subControlRect( button, contentsRect, Q::Graphic );
-            const auto spacing = button->spacingHint( Q::Panel );
+        const auto graphicsRect = subControlRect( button, contentsRect, Q::Graphic );
+        const auto spacing = button->spacingHint( Q::Panel );
 
-            r.setX( r.x() + graphicsRect.width() + spacing );
-        }
-        else
-        {
-            const qreal h = button->effectiveFontHeight( Q::Text );
-            if ( h < r.height() )
-                r.setTop( r.bottom() - h );
-        }
+        r.setX( r.x() + graphicsRect.width() + spacing );
+    }
+    else
+    {
+        const qreal h = button->effectiveFontHeight( Q::Text );
+        if ( h < r.height() )
+            r.setTop( r.bottom() - h );
     }
 
     return r;
@@ -114,18 +118,20 @@ QRectF QskPushButtonSkinlet::graphicRect(
     using Q = QskPushButton;
 
     auto r = button->subControlContentsRect( contentsRect, Q::Panel );
+    if ( r.isEmpty() || button->text().isEmpty() )
+        return r;
 
     const auto orientation = qskOrientation( button );
 
-    if ( !button->text().isEmpty() && orientation == Qt::Vertical )
+    if ( orientation == Qt::Vertical )
     {
         const auto textRect = subControlRect( button, contentsRect, Q::Text );
-        qreal h = textRect.height() + button->spacingHint( Q::Panel );
+        const auto h = textRect.height() + button->spacingHint( Q::Panel );
 
-        if ( h < r.height() )
-            r.setBottom( r.bottom() - h );
-        else
-            r.setHeight( 0 );
+        if ( h > r.height() )
+            return QRectF();
+
+        r.setBottom( r.bottom() - h );
     }
 
     const auto maxSize = button->graphicSourceSize();
@@ -149,37 +155,20 @@ QRectF QskPushButtonSkinlet::graphicRect(
         }
     }
 
-    const auto sz = button->graphic().defaultSize();
+    r = r.marginsRemoved( button->paddingHint( Q::Graphic ) );
 
-    if ( !( r.isEmpty() || sz.isEmpty() ) )
+    if ( !r.isEmpty() )
     {
-        // inner rectangle according to the aspect ratio
-
-        const double scaleFactor =
-            qMin( r.width() / sz.width(), r.height() / sz.height() );
-
-        const int w = qFloor( scaleFactor * sz.width() );
-        const int h = qFloor( scaleFactor * sz.height() );
-        int x, y;
-
-        if ( orientation == Qt::Horizontal )
+        auto sz = button->graphic().defaultSize();
+        if ( !sz.isEmpty() )
         {
-            x = r.left();
-            y = r.top();
+            sz.scale( r.size(), Qt::KeepAspectRatio );
+        
+            const auto align = ( orientation == Qt::Horizontal )
+                ? ( Qt::AlignLeft | Qt::AlignTop ) : Qt::AlignCenter;
+
+            r = qskAlignedRectF( r, sz.width(), sz.height(), align );
         }
-        else
-        {
-            // early aligning to avoid pointless operations, that finally will
-            // have no effect, when drawing to an integer based paint device
-
-            x = qFloor( r.center().x() - 0.5 * w );
-            y = qFloor( r.center().y() - 0.5 * h );
-        }
-
-        r = QRectF( x, y, w, h );
-
-        const auto padding = button->paddingHint( Q::Graphic );
-        r = r.marginsRemoved( padding );
     }
 
     return r;

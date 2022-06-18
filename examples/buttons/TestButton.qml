@@ -5,15 +5,15 @@ Qsk.PushButton
 {
     sizePolicy
     {
-        // long texts, should not have an effect
+        // avoid the effect of long texts
         horizontalPolicy: Qsk.SizePolicy.Ignored
         verticalPolicy: Qsk.SizePolicy.Ignored
     }
 
-	  minimumSize
-	  {
+    minimumSize
+    {
         width: 80
-		    height: 60
+        height: 60
     }
 
     shape
