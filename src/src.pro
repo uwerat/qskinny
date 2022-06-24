@@ -27,6 +27,7 @@ HEADERS += \
     common/QskGlobal.h \
     common/QskGradient.h \
     common/QskGradientStop.h \
+    common/QskHctColor.h \
     common/QskIntervalF.h \
     common/QskMargins.h \
     common/QskMetaFunction.h \
@@ -56,6 +57,7 @@ SOURCES += \
     common/QskFunctions.cpp \
     common/QskGradient.cpp \
     common/QskGradientStop.cpp \
+    common/QskHctColor.cpp \
     common/QskIntervalF.cpp \
     common/QskMargins.cpp \
     common/QskMetaFunction.cpp \
