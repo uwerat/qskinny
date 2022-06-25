@@ -30,7 +30,7 @@
 
             QVector< QRgb > pal;
             for ( int tone = 0; tone <= 100; tone += 10 )
-                pal += rgbFromHct( hue, chroma, tone );
+                pal += QskHctColor::rgb( hue, chroma, tone );
 
             return pal;
         }
