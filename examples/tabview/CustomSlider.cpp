@@ -26,17 +26,17 @@ CustomSlider::CustomSlider( QQuickItem* parentItem )
     QskSkinHintTableEditor ed( &hintTable() );
 
     ed.setBoxShape( Fill, 0 );
-    ed.setGradient( Fill, Grey700 );
+    ed.setGradient( Fill, QskRgb::DimGray );
     ed.setColor( Scale, qRgb( 178, 178, 178 ) ); // for the ticks
 
     ed.setStrutSize( Handle, 80, 80 );
-    ed.setColor( Handle, Grey800 );
+    ed.setColor( Handle, QskRgb::DimGray );
 
-    ed.setColor( Handle | Pressed, Orange600 );
+    ed.setColor( Handle | Pressed, QskRgb::Orange );
 
     const auto combinationMask = Focused | Hovered;
 
-    ed.setColor( Handle, Orange600, combinationMask );
+    ed.setColor( Handle, QskRgb::Orange, combinationMask );
     ed.setAnimation( Handle | QskAspect::Color, 300, combinationMask );
 
     ed.setAnimation( Handle | QskAspect::Color, 1000 );

@@ -61,11 +61,21 @@ static inline QColor qskShadedColor( const QColor color, qreal opacity )
 
 namespace
 {
+#if 1
+    // temporary definitions, will be removed when moving to M(aterial)3
+    constexpr const QRgb Grey100 = 0xfff5f5f5;
+    constexpr const QRgb Grey300 = 0xffe0e0e0;
+    constexpr const QRgb Grey400 = 0xffbdbdbd;
+    constexpr const QRgb Grey500 = 0xff9e9e9e;
+    constexpr const QRgb Grey600 = 0xff757575;
+    constexpr const QRgb Blue500 = 0xff2196f3;
+#endif
+
     class ColorPalette
     {
       public:
-        ColorPalette( const QColor base = QColor::fromRgba( QskRgb::Grey100 ),
-            const QColor& accent = QColor::fromRgba( QskRgb::Blue500 ),
+        ColorPalette( const QColor base = QColor::fromRgba( Grey100 ),
+            const QColor& accent = QColor::fromRgba( Blue500 ),
             const QColor& contrast = QColor::fromRgba( QskRgb::White ) )
         {
             baseColor = base;
@@ -910,8 +920,7 @@ QskMaterialSkin::QskMaterialSkin( QObject* parent )
     : Inherited( parent )
     , m_data( new PrivateData() )
 {
-    m_data->palette = ColorPalette( QskRgb::Grey100,
-        QskRgb::Blue500, QskRgb::White );
+    m_data->palette = ColorPalette( Grey100, Blue500, QskRgb::White );
 
     // Default theme colors
     setupFonts( QStringLiteral( "Roboto" ) );
