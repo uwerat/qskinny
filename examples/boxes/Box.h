@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include <QskRgbPalette.h>
 #include <QskBox.h>
 
 class Box : public QskBox
@@ -32,8 +31,10 @@ class Box : public QskBox
 
     Box( QQuickItem* parentItem = nullptr );
 
-    void setBackground( FillType, QskRgbPalette::Theme, bool inverted = false );
-    void setBorder( BorderType type, QskRgbPalette::Theme );
+    void setBackground( FillType, QRgb, bool inverted = false );
+    void setBackground( FillType, QGradient::Preset, bool inverted = false );
+
+    void setBorder( BorderType type, QRgb );
 
     void setShape( const QskBoxShapeMetrics& );
     void setShape( qreal radius, Qt::SizeMode );
@@ -55,6 +56,6 @@ class Box : public QskBox
     void setGradient( QskGradient::Orientation,
         const QColor&, const QColor&, const QColor& );
 
-    void setGradient( const QskGradient& gradient );
-    void setGradient( const QskGradient::Orientation, QskRgbPalette::Theme );
+    void setGradient( const QskGradient& );
+    void setGradient( const QskGradient::Orientation, QRgb );
 };

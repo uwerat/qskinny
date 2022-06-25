@@ -38,7 +38,6 @@ HEADERS += \
     common/QskPlacementPolicy.h \
     common/QskPlatform.h \
     common/QskRgbValue.h \
-    common/QskRgbPalette.h \
     common/QskScaleEngine.h \
     common/QskScaleTickmarks.h \
     common/QskShadowMetrics.h \
@@ -66,7 +65,6 @@ SOURCES += \
     common/QskPlatform.cpp \
     common/QskPlacementPolicy.cpp \
     common/QskRgbValue.cpp \
-    common/QskRgbPalette.cpp \
     common/QskScaleEngine.cpp \
     common/QskScaleTickmarks.cpp \
     common/QskShadowMetrics.cpp \
