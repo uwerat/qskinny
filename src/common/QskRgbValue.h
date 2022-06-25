@@ -133,7 +133,7 @@
     RGBVALUE( Red, 0xffff0000 ) \
     RGBVALUE( RosyBrown, 0xffbc8f8f ) \
     RGBVALUE( RoyalBlue, 0xff4169e1 ) \
-    RGBVALUE( SaddleBown, 0xff8b4513 ) \
+    RGBVALUE( SaddleBrown, 0xff8b4513 ) \
     RGBVALUE( Salmon, 0xfffa8072 ) \
     RGBVALUE( SandyBrown, 0xfff4a460 ) \
     RGBVALUE( SeaGreen, 0xff2e8b57 ) \
