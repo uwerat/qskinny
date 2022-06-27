@@ -7,7 +7,6 @@
 #include "QskLayoutQml.h"
 #include "QskShortcutQml.h"
 #include "QskMainQml.h"
-#include "QskRgbValueQml.h"
 
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxShapeMetrics.h>
@@ -192,7 +191,6 @@ void QskQml::registerTypes()
         WarningBlocker warningBlocker;
 #endif
 
-        QSK_REGISTER_GADGET( QskRgbValueQml, "RgbValue" );
         QSK_REGISTER_GADGET( QskBoxBorderMetrics, "BorderMetrics" );
         QSK_REGISTER_GADGET( QskBoxShapeMetrics, "Shape" );
         QSK_REGISTER_GADGET( QskShadowMetrics, "ShadowMetrics" );

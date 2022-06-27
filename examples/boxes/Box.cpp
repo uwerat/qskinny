@@ -8,7 +8,7 @@
 #include <QskBoxBorderColors.h>
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxShapeMetrics.h>
-#include <QskRgbPalette.h>
+#include <QskHctColor.h>
 
 Box::Box( QQuickItem* parentItem )
     : QskBox( parentItem )
@@ -22,7 +22,7 @@ Box::Box( QQuickItem* parentItem )
     setGradientHint( QskBox::Panel, QskGradient() );
 }
 
-void Box::setBackground( FillType type, QskRgbPalette::Theme theme, bool inverted )
+void Box::setBackground( FillType type, QGradient::Preset preset, bool inverted )
 {
     if ( type == Unfilled )
     {
@@ -30,59 +30,85 @@ void Box::setBackground( FillType type, QskRgbPalette::Theme theme, bool inverte
         return;
     }
 
-    const auto pal = QskRgbPalette::palette( theme );
+    QskGradient gradient( preset );
 
-    const QColor light = pal.color( QskRgbPalette::W60 );
-    const QColor mid = pal.color( QskRgbPalette::W30 );
-
-    switch ( type )
+    if ( type == Solid )
     {
-        case Unfilled:
-            setGradient( QskGradient() );
-            break;
+        const auto& stops = gradient.stops();
 
-        case Solid:
-            setGradient( mid );
-            break;
+        const auto color = QskGradientStop::interpolated(
+            stops.first(), stops.last(), 0.5 );
 
-        default:
-        {
-            const auto orientation =
-                static_cast< QskGradient::Orientation >( type - 2 );
+        setGradient( QskGradient( color ) );
+    }
+    else
+    {
+        const auto orientation =
+            static_cast< QskGradient::Orientation >( type - 2 );
 
-            if ( inverted )
-                setGradient( orientation, mid, light );
-            else
-                setGradient( orientation, light, mid );
-        }
+        gradient.setOrientation( orientation );
+
+        if ( inverted )
+            gradient.reverse();
+
+        setGradient( gradient );
     }
 }
 
-void Box::setBorder( BorderType type, QskRgbPalette::Theme theme )
+void Box::setBackground( FillType type, const QRgb base, bool inverted )
 {
-    const auto pal = QskRgbPalette::palette( theme );
+    if ( type == Unfilled )
+    {
+        setGradient( QskGradient() );
+        return;
+    }
 
+    double hue, chroma;
+    QskHctColor::getHueAndChroma( base, hue, chroma );
+
+    if ( type == Solid )
+    {
+        setGradient( QskHctColor::rgb( hue, chroma, 50 ) );
+    }
+    else
+    {
+        const auto dark = QskHctColor::rgb( hue, chroma, 40 );
+        const auto light = QskHctColor::rgb( hue, chroma, 70 );
+
+        const auto orientation =
+            static_cast< QskGradient::Orientation >( type - 2 );
+
+        if ( inverted )
+            setGradient( orientation, dark, light );
+        else
+            setGradient( orientation, light, dark );
+    }
+}
+
+void Box::setBorder( BorderType type, const QRgb base )
+{
     setBorderWidth( 5 );
 
-    QColor dark = pal.color( QskRgbPalette::W30 );
-    QColor mid = pal.color( QskRgbPalette::W50 );
-    QColor light = pal.color( QskRgbPalette::W70 );
-#if 0
-    dark.setAlpha( 100 );
-    mid.setAlpha( 100 );
-    light.setAlpha( 100 );
-#endif
-
-    switch ( type )
+    switch ( static_cast< int >( type ) )
     {
         case NoBorder:
             setBorderWidth( 0 );
-            break;
+            return;
 
         case Flat:
-            setBorderGradient( mid );
-            break;
+            setBorderGradient( base );
+            return;
+    }
 
+    double hue, chroma;
+    QskHctColor::getHueAndChroma( base, hue, chroma );
+
+    const auto dark = QskHctColor::rgb( hue, chroma, 40 );
+    const auto mid = QskHctColor::rgb( hue, chroma, 65 );
+    const auto light = QskHctColor::rgb( hue, chroma, 90 );
+
+    switch ( static_cast< int >( type ) )
+    {
         case Raised1:
             setBorderGradients( light, light, dark, dark );
             break;
@@ -178,8 +204,19 @@ void Box::setGradient( const QskGradient& gradient )
 }
 
 void Box::setGradient(
-    const QskGradient::Orientation orientation, QskRgbPalette::Theme theme )
+    const QskGradient::Orientation orientation, const QRgb base )
 {
-    const auto pal = QskRgbPalette::palette( theme );
-    setGradient( QskGradient( orientation, pal.colorStops( true ) ) );
+    double hue, chroma;
+    QskHctColor::getHueAndChroma( base, hue, chroma );
+
+    QVector< QRgb > rgb;
+    rgb.reserve( 10 );
+
+    for ( int i = 0; i < 10; i++ )
+    {
+        const auto tone = 90 - i * 7;
+        rgb += QskHctColor::rgb( hue, chroma, tone );
+    }
+
+    setGradient( QskGradient( orientation, QskGradient::colorStops( rgb, true ) ) );
 }

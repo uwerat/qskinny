@@ -27,6 +27,7 @@ HEADERS += \
     common/QskGlobal.h \
     common/QskGradient.h \
     common/QskGradientStop.h \
+    common/QskHctColor.h \
     common/QskIntervalF.h \
     common/QskMargins.h \
     common/QskMetaFunction.h \
@@ -37,7 +38,6 @@ HEADERS += \
     common/QskPlacementPolicy.h \
     common/QskPlatform.h \
     common/QskRgbValue.h \
-    common/QskRgbPalette.h \
     common/QskScaleEngine.h \
     common/QskScaleTickmarks.h \
     common/QskShadowMetrics.h \
@@ -56,6 +56,7 @@ SOURCES += \
     common/QskFunctions.cpp \
     common/QskGradient.cpp \
     common/QskGradientStop.cpp \
+    common/QskHctColor.cpp \
     common/QskIntervalF.cpp \
     common/QskMargins.cpp \
     common/QskMetaFunction.cpp \
@@ -64,7 +65,6 @@ SOURCES += \
     common/QskPlatform.cpp \
     common/QskPlacementPolicy.cpp \
     common/QskRgbValue.cpp \
-    common/QskRgbPalette.cpp \
     common/QskScaleEngine.cpp \
     common/QskScaleTickmarks.cpp \
     common/QskShadowMetrics.cpp \

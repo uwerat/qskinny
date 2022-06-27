@@ -8,7 +8,7 @@
 #include <QskGraphicProvider.h>
 #include <QskGraphic.h>
 #include <QskGradient.h>
-#include <QskRgbPalette.h>
+#include <QskHctColor.h>
 #include <QskRgbValue.h>
 
 namespace
@@ -25,17 +25,18 @@ namespace
             setBoundaries( 0, 100 );
         }
 
-        void setTheme( QskRgbPalette::Theme theme )
+        void setTheme( const QRgb base )
         {
-            const auto pal = QskRgbPalette::palette( theme );
+            double hue, chroma;
+            QskHctColor::getHueAndChroma( base, hue, chroma );
 
             QVector< QRgb > rgb;
-            rgb += pal.rgb( QskRgbPalette::W90 );
-            rgb += pal.rgb( QskRgbPalette::W60 );
-            rgb += pal.rgb( QskRgbPalette::W40 );
-            rgb += pal.rgb( QskRgbPalette::W20 );
+            rgb += QskHctColor::rgb( hue, chroma, 75 );
+            rgb += QskHctColor::rgb( hue, chroma, 60 );
+            rgb += QskHctColor::rgb( hue, chroma, 45 );
+            rgb += QskHctColor::rgb( hue, chroma, 30 );
 
-            const auto stops = QskRgbPalette::colorStops( rgb, true );
+            const auto stops = QskGradient::colorStops( rgb, true );
 
             setBarGradient( QskGradient( orientation(), stops ) );
         }
@@ -62,19 +63,19 @@ void ProgressBarPage::populate()
 
     {
         auto bar = new ProgressBar( hBox );
-        bar->setTheme( QskRgbPalette::DefaultMaterialPrimary );
+        bar->setTheme( QskRgb::LightSteelBlue );
         bar->setValue( 100 );
     }
 
     {
         auto bar = new ProgressBar( hBox );
-        bar->setTheme( QskRgbPalette::DefaultMaterialSecondary );
+        bar->setTheme( QskRgb::DodgerBlue );
         bar->setValue( 75 );
     }
 
     {
         auto bar = new ProgressBar( hBox );
-        bar->setTheme( QskRgbPalette::DefaultMaterialSecondary );
+        bar->setTheme( QskRgb::DodgerBlue );
         bar->setOrigin( 60 );
         bar->setValue( 25 );
     }
@@ -90,20 +91,20 @@ void ProgressBarPage::populate()
 
     {
         auto bar = new ProgressBar( vBox );
-        bar->setTheme( QskRgbPalette::DefaultMaterialPrimary );
+        bar->setTheme( QskRgb::OrangeRed );
         bar->setValue( 100 );
     }
 
     {
         auto bar = new ProgressBar( vBox );
-        bar->setTheme( QskRgbPalette::DefaultMaterialSecondary );
+        bar->setTheme( QskRgb::DeepPink );
         bar->setMaximum( 40 );
         bar->setValue( 25 );
     }
 
     {
         auto bar = new ProgressBar( vBox );
-        bar->setTheme( QskRgbPalette::DefaultMaterialSecondary );
+        bar->setTheme( QskRgb::DeepPink );
         bar->setOrigin( 40 );
         bar->setValue( 10 );
     }
