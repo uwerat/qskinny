@@ -63,17 +63,16 @@ void Box::setBackground( FillType type, const QRgb base, bool inverted )
         return;
     }
 
-    double hue, chroma;
-    QskHctColor::getHueAndChroma( base, hue, chroma );
+    const QskHctColor htcColor( base );
 
     if ( type == Solid )
     {
-        setGradient( QskHctColor::rgb( hue, chroma, 50 ) );
+        setGradient( htcColor.toned( 50 ).rgb() );
     }
     else
     {
-        const auto dark = QskHctColor::rgb( hue, chroma, 40 );
-        const auto light = QskHctColor::rgb( hue, chroma, 70 );
+        const auto dark = htcColor.toned( 40 ).rgb();
+        const auto light = htcColor.toned( 70 ).rgb();
 
         const auto orientation =
             static_cast< QskGradient::Orientation >( type - 2 );
@@ -100,12 +99,11 @@ void Box::setBorder( BorderType type, const QRgb base )
             return;
     }
 
-    double hue, chroma;
-    QskHctColor::getHueAndChroma( base, hue, chroma );
+    const QskHctColor htcColor( base );
 
-    const auto dark = QskHctColor::rgb( hue, chroma, 40 );
-    const auto mid = QskHctColor::rgb( hue, chroma, 65 );
-    const auto light = QskHctColor::rgb( hue, chroma, 90 );
+    const auto dark = htcColor.toned( 40 ).rgb();
+    const auto mid = htcColor.toned( 65 ).rgb();
+    const auto light = htcColor.toned( 90 ).rgb();
 
     switch ( static_cast< int >( type ) )
     {
@@ -206,17 +204,13 @@ void Box::setGradient( const QskGradient& gradient )
 void Box::setGradient(
     const QskGradient::Orientation orientation, const QRgb base )
 {
-    double hue, chroma;
-    QskHctColor::getHueAndChroma( base, hue, chroma );
+    const QskHctColor hctColor( base );
 
     QVector< QRgb > rgb;
     rgb.reserve( 10 );
 
     for ( int i = 0; i < 10; i++ )
-    {
-        const auto tone = 90 - i * 7;
-        rgb += QskHctColor::rgb( hue, chroma, tone );
-    }
+        rgb += hctColor.toned( 90 - i * 7 ).rgb();
 
     setGradient( QskGradient( orientation, QskGradient::colorStops( rgb, true ) ) );
 }
