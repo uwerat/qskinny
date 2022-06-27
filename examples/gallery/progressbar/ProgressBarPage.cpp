@@ -27,14 +27,13 @@ namespace
 
         void setTheme( const QRgb base )
         {
-            double hue, chroma;
-            QskHctColor::getHueAndChroma( base, hue, chroma );
+            const QskHctColor hctColor( base );
 
             QVector< QRgb > rgb;
-            rgb += QskHctColor::rgb( hue, chroma, 75 );
-            rgb += QskHctColor::rgb( hue, chroma, 60 );
-            rgb += QskHctColor::rgb( hue, chroma, 45 );
-            rgb += QskHctColor::rgb( hue, chroma, 30 );
+            rgb += hctColor.toned( 75 ).rgb();
+            rgb += hctColor.toned( 60 ).rgb();
+            rgb += hctColor.toned( 45 ).rgb();
+            rgb += hctColor.toned( 30 ).rgb();
 
             const auto stops = QskGradient::colorStops( rgb, true );
 

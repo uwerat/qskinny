@@ -349,6 +349,21 @@ static inline int delinearized( double rgbComponent )
     return qBound( 0, qRound( v * 255 ), 255 );
 }
 
+static inline double labF( double t )
+{
+    constexpr double e = 216.0 / 24389.0;
+
+    if ( t > e )
+    {
+        return pow( t, 1.0 / 3.0 );
+    }
+    else
+    {
+        constexpr double kappa = 24389.0 / 27.0;
+        return ( kappa * t + 16 ) / 116;
+    }
+}
+
 static inline double labInvf( double ft )
 {
     const double e = 216.0 / 24389.0;
@@ -732,7 +747,7 @@ static QRgb findResultByJ( double hueRadians, double chroma, double y )
     return 0;
 }
 
-QRgb QskHctColor::rgb( double hue, double chroma, double tone )
+static inline QRgb getRgb( double hue, double chroma, double tone )
 {
     if ( chroma < 0.0001 || tone < 0.0001 || tone > 99.9999 )
         return argbFromLstar( tone );
@@ -778,7 +793,7 @@ static XYZ xyzFromArgb( QRgb rgb)
     return matrixMultiply( xyz, SRGB_TO_XYZ );
 }
 
-void QskHctColor::getHueAndChroma( QRgb rgb, double& hue, double& chroma )
+static void getHTC( QRgb rgb, double& hue, double& chroma, double& tone )
 {
     ViewingConditions vc;
 
@@ -832,4 +847,54 @@ void QskHctColor::getHueAndChroma( QRgb rgb, double& hue, double& chroma )
 
         chroma = alpha * sqrt(J / 100.0);
     }
+
+    {
+        tone = 116.0 * labF( y / 100.0 ) - 16.0;
+    }
 }
+
+QskHctColor::QskHctColor( QRgb rgb )
+{
+    getHTC( rgb, m_hue, m_chroma, m_tone );
+}
+
+void QskHctColor::setHue( qreal hue )
+{
+    m_hue = fmod( hue, 360.0 );
+    if ( m_hue < 0.0 )
+        m_hue += 360.0;
+}
+
+void QskHctColor::setChroma( qreal chroma ) noexcept
+{
+    m_chroma = ( chroma < 0.0 ) ? 0.0 : chroma;
+}
+
+void QskHctColor::setTone( qreal tone ) noexcept
+{
+    m_tone = qBound( 0.0, tone, 100.0 );
+}
+
+void QskHctColor::setRgb( QRgb rgb )
+{
+    getHTC( rgb, m_hue, m_chroma, m_tone );
+}
+
+QRgb QskHctColor::rgb() const
+{
+    return getRgb( m_hue, m_chroma, m_tone );
+}
+
+#ifndef QT_NO_DEBUG_STREAM
+
+#include <qdebug.h>
+
+QDebug operator<<( QDebug debug, const QskHctColor& color )
+{
+    debug.nospace() << "HTC("
+        << color.hue() << "," << color.chroma() << "," << color.tone() << ")";
+
+    return debug.space();
+}
+
+#endif
