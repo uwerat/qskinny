@@ -47,6 +47,16 @@ static const int qskDuration = 150;
 
 namespace
 {
+#if 1
+    // temporary definitions, will be removed when moving to M(aterial)3
+    constexpr const QRgb Grey100 = 0xfff5f5f5;
+    constexpr const QRgb Grey300 = 0xffe0e0e0;
+    constexpr const QRgb Grey400 = 0xffbdbdbd;
+    constexpr const QRgb Grey500 = 0xff9e9e9e;
+    constexpr const QRgb Grey600 = 0xff757575;
+    constexpr const QRgb Blue500 = 0xff2196f3;
+#endif
+
     class Editor : private QskSkinHintTableEditor
     {
       public:

@@ -37,8 +37,8 @@ OtherSlider::OtherSlider( QQuickItem* parentItem )
         ed.setMetric( aspect | A::Size, h );
         ed.setBoxShape( aspect, 4 );
         ed.setBoxBorderMetrics( aspect, 1 );
-        ed.setBoxBorderColors( aspect, DefaultMaterialNeutral10 );
-        ed.setGradient( aspect, DefaultMaterialNeutral60 );
+        ed.setBoxBorderColors( aspect, DimGray );
+        ed.setGradient( aspect, Silver );
 
         if ( placement == A::Horizontal )
             ed.setPadding( aspect, QskMargins( paddingW, 0 ) );
@@ -84,8 +84,8 @@ OtherSlider::OtherSlider( QQuickItem* parentItem )
 
         for ( auto state : { A::NoState, Pressed } )
         {
-            ed.setBoxBorderColors( aspect | state, DefaultMaterialNeutral40 );
-            ed.setGradient( aspect | state, DefaultMaterialPrimary60 );
+            ed.setBoxBorderColors( aspect | state, SlateGrey );
+            ed.setGradient( aspect | state, DodgerBlue );
         }
     }
 }

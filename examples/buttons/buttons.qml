@@ -11,14 +11,14 @@ Qsk.Window
     height: 600
     color: "Beige"
 
-	Component.onCompleted:
-	{
-		// very much standard: we should find a better way
+    Component.onCompleted:
+    {
+        // very much standard: we should find a better way
 
-		var hint = sizeConstraint();
-		setMinimumWidth( hint.width )
-		setMinimumHeight( hint.height )
-	}
+        var hint = sizeConstraint();
+        setMinimumWidth( hint.width )
+        setMinimumHeight( hint.height )
+    }
 
     Qsk.Shortcut
     {
