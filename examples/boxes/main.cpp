@@ -109,15 +109,15 @@ static void addRectangles3( QskLinearBox* parent )
 
     box = new MyRectangle( parent );
     box->setBorder( Box::Raised1, borderTheme );
-    box->setGradient( DefaultMaterialNeutral60 );
+    box->setGradient( Grey400 );
 
     box = new MyRectangle( parent );
     box->setBorder( Box::Sunken1, borderTheme );
-    box->setGradient( QskGradient::Diagonal, DefaultMaterialNeutral60, DefaultMaterialNeutral50 );
+    box->setGradient( QskGradient::Diagonal, Grey400, Grey500 );
 
     box = new MyRectangle( parent );
     box->setBorder( Box::Raised2, borderTheme );
-    box->setGradient( QskGradient::Vertical, DefaultMaterialNeutral60, DefaultMaterialNeutral50 );
+    box->setGradient( QskGradient::Vertical, Grey400, Grey500 );
 
     box = new MyRectangle( parent );
     box->setBorder( Box::Raised2, borderTheme );
@@ -159,15 +159,15 @@ static void addRectangles6( QskLinearBox* parent )
 
     box = new MyRoundedRectangle( parent );
     box->setBorder( Box::Raised1, borderTheme );
-    box->setGradient( DefaultMaterialNeutral60 );
+    box->setGradient( Grey400 );
 
     box = new MyRoundedRectangle( parent );
     box->setBorder( Box::Sunken1, borderTheme );
-    box->setGradient( QskGradient::Diagonal, DefaultMaterialNeutral60, DefaultMaterialNeutral50 );
+    box->setGradient( QskGradient::Diagonal, Grey400, Grey500 );
 
     box = new MyRoundedRectangle( parent );
     box->setBorder( Box::Raised2, borderTheme );
-    box->setGradient( QskGradient::Vertical, DefaultMaterialNeutral60, DefaultMaterialNeutral50 );
+    box->setGradient( QskGradient::Vertical, Grey400, Grey500 );
 
     box = new MyRoundedRectangle( parent );
     box->setBorder( Box::Raised2, borderTheme );
@@ -209,15 +209,15 @@ static void addRectangles9( QskLinearBox* parent )
 
     box = new MyEllipse( parent );
     box->setBorder( Box::Raised1, borderTheme );
-    box->setGradient( DefaultMaterialNeutral60 );
+    box->setGradient( Grey400 );
 
     box = new MyEllipse( parent );
     box->setBorder( Box::Sunken1, borderTheme );
-    box->setGradient( QskGradient::Diagonal, DefaultMaterialNeutral60, DefaultMaterialNeutral50 );
+    box->setGradient( QskGradient::Diagonal, Grey400, Grey500 );
 
     box = new MyEllipse( parent );
     box->setBorder( Box::Raised2, borderTheme );
-    box->setGradient( QskGradient::Vertical, DefaultMaterialNeutral60, DefaultMaterialNeutral50 );
+    box->setGradient( QskGradient::Vertical, Grey400, Grey500 );
 
     box = new MyEllipse( parent );
     box->setBorder( Box::Raised2, borderTheme );

@@ -47,16 +47,6 @@ static const int qskDuration = 150;
 
 namespace
 {
-#if 1
-    // temporary definitions, will be removed when moving to M(aterial)3
-    constexpr const QRgb Grey100 = 0xfff5f5f5;
-    constexpr const QRgb Grey300 = 0xffe0e0e0;
-    constexpr const QRgb Grey400 = 0xffbdbdbd;
-    constexpr const QRgb Grey500 = 0xff9e9e9e;
-    constexpr const QRgb Grey600 = 0xff757575;
-    constexpr const QRgb Blue500 = 0xff2196f3;
-#endif
-
     class Editor : private QskSkinHintTableEditor
     {
       public:
@@ -836,88 +826,86 @@ void Editor::setupSubWindow()
 
 QskMaterialTheme::QskMaterialTheme( Lightness lightness )
     : QskMaterialTheme( lightness,
-                        {
-                        QskRgbPalette::palette( QskRgbPalette::DefaultMaterialPrimary ),
-                        QskRgbPalette::palette( QskRgbPalette::DefaultMaterialSecondary ),
-                        QskRgbPalette::palette( QskRgbPalette::DefaultMaterialTertiary ),
-                        QskRgbPalette::palette( QskRgbPalette::DefaultMaterialError ),
-                        QskRgbPalette::palette( QskRgbPalette::DefaultMaterialNeutral ),
-                        QskRgbPalette::palette( QskRgbPalette::DefaultMaterialNeutralVariant ),
+                        { // default Material colors:
+                        0xff6750A4,
+                        0xff625B71,
+                        0xff7D5260,
+                        0xffB3261E,
+                        0xff605D62,
+                        0xff605D66,
                         } )
 {
 }
 
-QskMaterialTheme::QskMaterialTheme( Lightness lightness,
-                                    std::array< QskRgbPalette, NumPaletteTypes > palettes )
+QskMaterialTheme::QskMaterialTheme(Lightness lightness,
+                                    std::array<QskHctColor, NumPaletteTypes> palettes )
     : m_palettes( palettes )
 {
-    using Q = QskRgbPalette;
-
     if ( lightness == Light )
     {
-        primary = m_palettes[ Primary ].rgb( Q::W40 );
-        onPrimary = m_palettes[ Primary ].rgb( Q::W100 );
-        primaryContainer = m_palettes[ Primary ].rgb( Q::W90 );
-        onPrimaryContainer = m_palettes[ Primary ].rgb( Q::W10 );
+        primary = m_palettes[ Primary ].toned( 40 ).rgb();
+        onPrimary = m_palettes[ Primary ].toned( 100 ).rgb();
+        primaryContainer = m_palettes[ Primary ].toned( 90 ).rgb();
+        onPrimaryContainer = m_palettes[ Primary ].toned( 10 ).rgb();
 
-        secondary = m_palettes[ Secondary ].rgb( Q::W40 );
-        onSecondary = m_palettes[ Secondary ].rgb( Q::W100 );
-        secondaryContainer = m_palettes[ Secondary ].rgb( Q::W90 );
-        onSecondaryContainer = m_palettes[ Secondary ].rgb( Q::W10 );
+        secondary = m_palettes[ Secondary ].toned( 40 ).rgb();
+        onSecondary = m_palettes[ Secondary ].toned( 100 ).rgb();
+        secondaryContainer = m_palettes[ Secondary ].toned( 90 ).rgb();
+        onSecondaryContainer = m_palettes[ Secondary ].toned( 10 ).rgb();
 
-        tertiary = m_palettes[ Tertiary ].rgb( Q::W40 );
-        onTertiary = m_palettes[ Tertiary ].rgb( Q::W100 );
-        tertiaryContainer = m_palettes[ Tertiary ].rgb( Q::W90 );
-        onTertiaryContainer = m_palettes[ Tertiary ].rgb( Q::W10 );
+        tertiary = m_palettes[ Tertiary ].toned( 40 ).rgb();
+        onTertiary = m_palettes[ Tertiary ].toned( 100 ).rgb();
+        tertiaryContainer = m_palettes[ Tertiary ].toned( 90 ).rgb();
+        onTertiaryContainer = m_palettes[ Tertiary ].toned( 10 ).rgb();
 
-        error = m_palettes[ Error ].rgb( Q::W40 );
-        onError = m_palettes[ Error ].rgb( Q::W100 );
-        errorContainer = m_palettes[ Error ].rgb( Q::W90 );
-        onErrorContainer = m_palettes[ Error ].rgb( Q::W10 );
+        error = m_palettes[ Error ].toned( 40 ).rgb();
+        onError = m_palettes[ Error ].toned( 100 ).rgb();
+        errorContainer = m_palettes[ Error ].toned( 90 ).rgb();
+        onErrorContainer = m_palettes[ Error ].toned( 10 ).rgb();
 
-        background = m_palettes[ Neutral ].rgb( Q::W99 );
-        onBackground = m_palettes[ Neutral ].rgb( Q::W10 );
-        surface = m_palettes[ Neutral ].rgb( Q::W99 );
-        onSurface = m_palettes[ Neutral ].rgb( Q::W10 );
+        background = m_palettes[ Neutral ].toned( 99 ).rgb();
+        onBackground = m_palettes[ Neutral ].toned( 10 ).rgb();
+        surface = m_palettes[ Neutral ].toned( 99 ).rgb();
+        onSurface = m_palettes[ Neutral ].toned( 10 ).rgb();
 
-        surfaceVariant = m_palettes[ NeutralVariant ].rgb( Q::W90 );
-        onSurfaceVariant = m_palettes[ NeutralVariant ].rgb( Q::W30 );
-        outline = m_palettes[ NeutralVariant ].rgb( Q::W50 );
+        surfaceVariant = m_palettes[ NeutralVariant ].toned( 90 ).rgb();
+        onSurfaceVariant = m_palettes[ NeutralVariant ].toned( 30 ).rgb();
+        outline = m_palettes[ NeutralVariant ].toned( 50 ).rgb();
 
-        shadow = m_palettes[ Neutral ].rgb( Q::W0 );
+        shadow = m_palettes[ Neutral ].toned( 0 ).rgb();
     }
     else if ( lightness == Dark )
     {
-        primary = m_palettes[ Primary ].rgb( Q::W80 );
-        onPrimary = m_palettes[ Primary ].rgb( Q::W20 );
-        primaryContainer = m_palettes[ Primary ].rgb( Q::W30 );
-        onPrimaryContainer = m_palettes[ Primary ].rgb( Q::W90 );
+        primary = m_palettes[ Primary ].toned( 80 ).rgb();
+        onPrimary = m_palettes[ Primary ].toned( 20 ).rgb();
+        primaryContainer = m_palettes[ Primary ].toned( 30 ).rgb();
+        onPrimaryContainer = m_palettes[ Primary ].toned( 90 ).rgb();
 
-        secondary = m_palettes[ Secondary ].rgb( Q::W80 );
-        onSecondary = m_palettes[ Secondary ].rgb( Q::W20 );
-        secondaryContainer = m_palettes[ Secondary ].rgb( Q::W30 );
-        onSecondaryContainer = m_palettes[ Secondary ].rgb( Q::W90 );
+        secondary = m_palettes[ Secondary ].toned( 80 ).rgb();
+        onSecondary = m_palettes[ Secondary ].toned( 20 ).rgb();
+        secondaryContainer = m_palettes[ Secondary ].toned( 30 ).rgb();
+        onSecondaryContainer = m_palettes[ Secondary ].toned( 90 ).rgb();
 
-        tertiary = m_palettes[ Tertiary ].rgb( Q::W80 );
-        onTertiary = m_palettes[ Tertiary ].rgb( Q::W20 );
-        tertiaryContainer = m_palettes[ Tertiary ].rgb( Q::W30 );
-        onTertiaryContainer = m_palettes[ Tertiary ].rgb( Q::W90 );
+        tertiary = m_palettes[ Tertiary ].toned( 80 ).rgb();
+        onTertiary = m_palettes[ Tertiary ].toned( 20 ).rgb();
+        tertiaryContainer = m_palettes[ Tertiary ].toned( 30 ).rgb();
+        onTertiaryContainer = m_palettes[ Tertiary ].toned( 90 ).rgb();
 
-        error = m_palettes[ Error ].rgb( Q::W80 );
-        onError = m_palettes[ Error ].rgb( Q::W20 );
-        errorContainer = m_palettes[ Error ].rgb( Q::W30 );
-        onErrorContainer = m_palettes[ Error ].rgb( Q::W90 );
+        error = m_palettes[ Error ].toned( 80 ).rgb();
+        onError = m_palettes[ Error ].toned( 20 ).rgb();
+        errorContainer = m_palettes[ Error ].toned( 30 ).rgb();
+        onErrorContainer = m_palettes[ Error ].toned( 90 ).rgb();
 
-        background = m_palettes[ Neutral ].rgb( Q::W10 );
-        onBackground = m_palettes[ Neutral ].rgb( Q::W90 );
-        surface = m_palettes[ Neutral ].rgb( Q::W10 );
-        onSurface = m_palettes[ Neutral ].rgb( Q::W80 );
+        background = m_palettes[ Neutral ].toned( 10 ).rgb();
+        onBackground = m_palettes[ Neutral ].toned( 90 ).rgb();
+        surface = m_palettes[ Neutral ].toned( 10 ).rgb();
+        onSurface = m_palettes[ Neutral ].toned( 80 ).rgb();
 
-        surfaceVariant = m_palettes[ NeutralVariant ].rgb( Q::W30 );
-        onSurfaceVariant = m_palettes[ NeutralVariant ].rgb( Q::W80 );
-        outline = m_palettes[ NeutralVariant ].rgb( Q::W60 );
+        surfaceVariant = m_palettes[ NeutralVariant ].toned( 30 ).rgb();
+        onSurfaceVariant = m_palettes[ NeutralVariant ].toned( 80 ).rgb();
+        outline = m_palettes[ NeutralVariant ].toned( 60 ).rgb();
 
-        shadow = m_palettes[ Neutral ].rgb( Q::W0 );
+        shadow = m_palettes[ Neutral ].toned( 0 ).rgb();
     }
 
     primary12 = primary;

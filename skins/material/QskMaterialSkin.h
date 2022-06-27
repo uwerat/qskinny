@@ -7,8 +7,9 @@
 #define QSK_MATERIAL_SKIN_H
 
 #include "QskMaterialGlobal.h"
+
+#include <QskHctColor.h>
 #include <QskSkin.h>
-#include <QskRgbPalette.h>
 #include <QskShadowMetrics.h>
 
 #include <array>
@@ -35,7 +36,7 @@ class QSK_MATERIAL_EXPORT QskMaterialTheme
     };
 
     QskMaterialTheme( Lightness );
-    QskMaterialTheme( Lightness, std::array< QskRgbPalette, NumPaletteTypes > );
+    QskMaterialTheme( Lightness, std::array< QskHctColor, NumPaletteTypes > );
 
     QRgb primary;
     QColor primary12;
@@ -81,7 +82,7 @@ class QSK_MATERIAL_EXPORT QskMaterialTheme
     const qreal draggedOpacity = 0.16;
 
   private:
-    std::array< QskRgbPalette, NumPaletteTypes > m_palettes;
+    std::array< QskHctColor, NumPaletteTypes > m_palettes;
 };
 
 class QSK_MATERIAL_EXPORT QskMaterialSkin : public QskSkin
@@ -99,8 +100,6 @@ class QSK_MATERIAL_EXPORT QskMaterialSkin : public QskSkin
         M3BodyLarge = QskSkin::HugeFont + 1,
         M3LabelLarge,
     };
-
-    // ### add setTheme() re-implement resetColors()
 
   private:
     void setupFonts();

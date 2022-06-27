@@ -7,7 +7,6 @@
 #define QSK_MATERIAL_SKIN_FACTORY_H
 
 #include "QskMaterialGlobal.h"
-#include <QskRgbPalette.h>
 #include <QskSkinFactory.h>
 
 class QSK_MATERIAL_EXPORT QskMaterialSkinFactory : public QskSkinFactory
