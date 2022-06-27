@@ -9,15 +9,6 @@
 #include "QskGlobal.h"
 #include <qcolor.h>
 
-    RGBVALUE( DefaultMaterialError95,  0xffFCEEEE ) \
-    RGBVALUE( DefaultMaterialError99,  0xffFFFBF9 ) \
-    RGBVALUE( DefaultMaterialError100, 0xffFFFFFF ) \
-    RGBVALUE( DefaultMaterialNeutral95,  0xffF4EFF4 ) \
-    RGBVALUE( DefaultMaterialNeutral99,  0xffFFFBFE ) \
-    RGBVALUE( DefaultMaterialNeutral100, 0xffFFFFFF ) \
-    RGBVALUE( DefaultMaterialNeutralVariant95,  0xffF5EEFA ) \
-    RGBVALUE( DefaultMaterialNeutralVariant99,  0xffFFFBFE ) \
-    RGBVALUE( DefaultMaterialNeutralVariant100, 0xffFFFFFF ) \
 namespace QskRgb
 {
     /* Web colors */
