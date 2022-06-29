@@ -458,7 +458,7 @@ void Editor::setupPushButton()
     setBoxBorderColors( Q::Panel, noBorderColors );
 
     setGradient( Q::Panel, White );
-    setGradient( Q::Panel | Q::Flat, White & ColorMask );
+    setGradient( Q::Panel | A::Header, White & ColorMask );
 
     setColor( Q::Text, m_pal.textColor );
     setColor( Q::Text | Q::Disabled, qskShadedColor( m_pal.textColor, 0.6 ) );
@@ -468,7 +468,7 @@ void Editor::setupPushButton()
     for ( auto state1 : { A::NoState, Q::Focused } )
     {
         setBoxBorderColors( Q::Panel | Q::Hovered | state1, borderColors );
-        setBoxBorderColors( Q::Panel | Q::Hovered | Q::Flat | state1, borderColors );
+        setBoxBorderColors( Q::Panel | Q::Hovered | A::Header | state1, borderColors );
 
         for ( auto state2 : { A::NoState, Q::Hovered } )
         {
@@ -479,8 +479,8 @@ void Editor::setupPushButton()
                 setGradient( Q::Panel | states, m_pal.accentColor );
                 setColor( Q::Text | states, White );
 
-                setGradient( Q::Panel | Q::Flat | states, m_pal.accentColor );
-                setColor( Q::Text | Q::Flat | states, White );
+                setGradient( Q::Panel | A::Header | states, m_pal.accentColor );
+                setColor( Q::Text | A::Header | states, White );
             }
         }
     }
