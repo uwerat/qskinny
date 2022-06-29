@@ -34,6 +34,9 @@ Q_LOGGING_CATEGORY( logTiming, "qsk.window.timing", QtCriticalMsg )
 
 #endif
 
+extern QLocale qskInheritedLocale( const QObject* );
+extern void qskInheritLocale( QObject*, const QLocale& );
+
 static void qskResolveLocale( QskWindow* );
 static bool qskEnforcedSkin = false;
 
@@ -423,7 +426,7 @@ void QskWindow::setLocale( const QLocale& locale )
     {
         d->locale = locale;
         qskSendEventTo( this, QEvent::LocaleChange );
-        qskSetup->inheritLocale( this, locale );
+        qskInheritLocale( this, locale );
     }
 }
 
@@ -452,14 +455,14 @@ static void qskResolveLocale( QskWindow* window )
 {
     auto d = static_cast< QskWindowPrivate* >( QQuickWindowPrivate::get( window ) );
 
-    const QLocale locale = qskSetup->inheritedLocale( window );
+    const auto locale = qskInheritedLocale( window );
 
     if ( d->locale != locale )
     {
         d->locale = locale;
         qskSendEventTo( window, QEvent::LocaleChange );
 
-        qskSetup->inheritLocale( window, locale );
+        qskInheritLocale( window, locale );
     }
 }
 

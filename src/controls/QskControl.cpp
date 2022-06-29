@@ -38,6 +38,7 @@ QskControl::QskControl( QQuickItem* parent )
     {
         // inheriting attributes from parent
         QskControlPrivate::resolveLocale( this );
+        QskControlPrivate::resolveSection( this );
     }
 }
 
@@ -240,9 +241,12 @@ void QskControl::setLocale( const QLocale& locale )
 
     if ( d->locale != locale )
     {
+        extern void qskInheritLocale( QObject*, const QLocale& );
+
         d->locale = locale;
         qskSendEventTo( this, QEvent::LocaleChange );
-        qskSetup->inheritLocale( this, locale );
+
+        qskInheritLocale( this, locale );
     }
 }
 
@@ -255,6 +259,47 @@ void QskControl::resetLocale()
         d->explicitLocale = false;
         QskControlPrivate::resolveLocale( this );
     }
+}
+
+void QskControl::setSection( QskAspect::Section section )
+{
+    if ( section > QskAspect::LastSection )
+    {
+        qWarning() << "Trying to set an invalid section, ignored";
+        return;
+    }
+
+    Q_D( QskControl );
+
+    d->explicitSection = true;
+
+    if ( d->section != section )
+    {
+        extern void qskInheritSection( QskControl*, const QskAspect::Section );
+
+        d->section = section;
+
+        update();
+        resetImplicitSize();
+
+        qskInheritSection( this, section );
+    }
+}
+
+void QskControl::resetSection()
+{
+    Q_D( QskControl );
+
+    if ( d->explicitSection )
+    {
+        d->explicitSection = false;
+        QskControlPrivate::resolveSection( this );
+    }
+}
+
+QskAspect::Section QskControl::section() const
+{
+    return static_cast< QskAspect::Section >( d_func()->section );
 }
 
 void QskControl::initSizePolicy(
@@ -809,6 +854,9 @@ void QskControl::itemChange( QQuickItem::ItemChange change,
             {
                 if ( !d_func()->explicitLocale )
                     QskControlPrivate::resolveLocale( this );
+
+                if ( !d_func()->explicitSection )
+                    QskControlPrivate::resolveSection( this );
             }
 
 #if 1

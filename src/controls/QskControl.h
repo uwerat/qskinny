@@ -26,6 +26,9 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     Q_PROPERTY( QLocale locale READ locale
         WRITE setLocale RESET resetLocale NOTIFY localeChanged )
 
+    Q_PROPERTY( QskAspect::Section section READ section
+        WRITE setSection RESET resetSection NOTIFY sectionChanged )
+
     Q_PROPERTY( bool autoFillBackground READ autoFillBackground
         WRITE setAutoFillBackground )
 
@@ -104,6 +107,10 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     void setFocusPolicy( Qt::FocusPolicy );
     Qt::FocusPolicy focusPolicy() const;
 
+    void setSection( QskAspect::Section );
+    void resetSection();
+    QskAspect::Section section() const override final;
+
     void setSizePolicy( QskSizePolicy );
     void setSizePolicy( QskSizePolicy::Policy, QskSizePolicy::Policy );
     void setSizePolicy( Qt::Orientation, QskSizePolicy::Policy );
@@ -175,6 +182,7 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
 
   Q_SIGNALS:
     void backgroundChanged();
+    void sectionChanged( QskAspect::Section );
     void marginsChanged( const QMarginsF& );
     void focusIndicatorRectChanged();
     void localeChanged( const QLocale& );

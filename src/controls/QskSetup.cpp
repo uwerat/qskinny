@@ -7,7 +7,6 @@
 #include "QskControl.h"
 #include "QskControlPrivate.h"
 #include "QskGraphicProviderMap.h"
-#include "QskObjectTree.h"
 #include "QskSkin.h"
 #include "QskSkinManager.h"
 #include "QskWindow.h"
@@ -73,43 +72,6 @@ static void qskApplicationFilter()
 
 Q_CONSTRUCTOR_FUNCTION( qskApplicationHook )
 Q_COREAPP_STARTUP_FUNCTION( qskApplicationFilter )
-
-extern bool qskInheritLocale( QskWindow*, const QLocale& );
-
-namespace
-{
-    class VisitorLocale final : public QskObjectTree::ResolveVisitor< QLocale >
-    {
-      public:
-        VisitorLocale()
-            : ResolveVisitor< QLocale >( "locale" )
-        {
-        }
-
-      private:
-        bool setImplicitValue( QskControl* control,
-            const QLocale& locale ) override
-        {
-            return QskControlPrivate::inheritLocale( control, locale );
-        }
-
-        bool setImplicitValue( QskWindow* window,
-            const QLocale& locale ) override
-        {
-            return qskInheritLocale( window, locale );
-        }
-
-        QLocale value( const QskControl* control ) const override
-        {
-            return control->locale();
-        }
-
-        QLocale value( const QskWindow* window ) const override
-        {
-            return window->locale();
-        }
-    };
-}
 
 class QskSetup::PrivateData
 {
@@ -252,23 +214,6 @@ QskGraphicProvider* QskSetup::graphicProvider( const QString& providerId ) const
     }
 
     return m_data->graphicProviders.provider( providerId );
-}
-
-QLocale QskSetup::inheritedLocale( const QObject* object )
-{
-    VisitorLocale visitor;
-    visitor.setResolveValue( QLocale() );
-
-    QskObjectTree::traverseUp( const_cast< QObject* >( object ), visitor );
-    return visitor.resolveValue();
-}
-
-void QskSetup::inheritLocale( QObject* object, const QLocale& locale )
-{
-    VisitorLocale visitor;
-    visitor.setResolveValue( locale );
-
-    QskObjectTree::traverseDown( object, visitor );
 }
 
 bool QskSetup::eventFilter( QObject* object, QEvent* event )
