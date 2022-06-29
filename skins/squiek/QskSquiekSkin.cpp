@@ -574,15 +574,15 @@ void Editor::setupPushButton()
     setMetric( Q::Panel | A::Spacing, 4 );
 
     setButton( Q::Panel, Raised );
-    setButton( Q::Panel | Q::Flat | Q::Hovered, Raised );
+    setButton( Q::Panel | A::Header | Q::Hovered, Raised );
 
-    setButton( Q::Panel | Q::Flat, Flat );
-    setButton( Q::Panel | Q::Flat | Q::Disabled, Flat );
+    setButton( Q::Panel | A::Header, Flat );
+    setButton( Q::Panel | A::Header | Q::Disabled, Flat );
 
     for ( auto state : { Q::Pressed, Q::Checked } )
     {
         setButton( Q::Panel | state, Sunken );
-        setButton( Q::Panel | Q::Flat | state, Sunken );
+        setButton( Q::Panel | A::Header | state, Sunken );
     }
 
     setAnimation( Q::Panel | A::Color, qskDuration );

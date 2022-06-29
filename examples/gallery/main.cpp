@@ -52,8 +52,6 @@ namespace
         MenuButton( const QString& text, QQuickItem* parent = nullptr )
             : QskPushButton( text, parent )
         {
-            setFlat( true ); // until we have the section bit in QskAspect
-
             connect( this, &QskPushButton::pressed, this, &MenuButton::openMenu );
         }
 
@@ -91,14 +89,13 @@ namespace
         {
             initSizePolicy( QskSizePolicy::Ignored, QskSizePolicy::Fixed );
 
+            setSection( QskAspect::Header );
+
             setMargins( 10 );
             setBackgroundColor( Qt::lightGray );
 
             {
                 auto button = new QskPushButton( "Skin", this );
-#if 1
-                button->setFlat( true ); // until we have the section bit in QskAspect
-#endif
 
                 // transition leads to errors, when changing the tab before being completed. TODO ...
                 connect( button, &QskSwitchButton::clicked,
