@@ -103,6 +103,8 @@ class QSK_EXPORT QskSkinnable
     QVariant effectiveSkinHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
     virtual QskAspect::Placement effectivePlacement() const;
 
+    virtual QskAspect::Section section() const;
+
     QskSkinHintStatus hintStatus( QskAspect ) const;
 
     QRectF subControlRect( const QRectF&, QskAspect::Subcontrol ) const;

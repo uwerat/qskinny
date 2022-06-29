@@ -295,6 +295,9 @@ void qskDebugAspect( QDebug debug, const QMetaObject* metaObject, QskAspect aspe
     else
         debug << subControlName;
 
+    if ( aspect.section() != QskAspect::Body )
+        debug << ", " << qskEnumString( "Section", aspect.section() );
+
     debug << ", " << qskEnumString( "Type", aspect.type() );
     if ( aspect.isAnimator() )
         debug << "(A)";
@@ -338,7 +341,7 @@ const char* QskAspect::toPrintable() const
     QDebug debug( &tmp );
     debug << *this;
 
-    // we should find a better impementation
+    // we should find a better implementation
     static QByteArray bytes[ 10 ];
     static int counter = 0;
 

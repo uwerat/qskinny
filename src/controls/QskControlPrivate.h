@@ -18,6 +18,9 @@ class QskControlPrivate : public QskQuickItemPrivate
     static bool inheritLocale( QskControl*, const QLocale& );
     static void resolveLocale( QskControl* );
 
+    static bool inheritSection( QskControl*, QskAspect::Section );
+    static void resolveSection( QskControl* );
+
   protected:
     QskControlPrivate();
     ~QskControlPrivate() override;
@@ -51,8 +54,10 @@ class QskControlPrivate : public QskQuickItemPrivate
     unsigned int hiddenPlacementPolicy : 2;
 
     unsigned int layoutAlignmentHint : 8;
+    unsigned int section : 4;
 
     bool explicitLocale : 1;
+    bool explicitSection : 1;
 
     bool autoFillBackground : 1;
     bool autoLayoutChildren : 1;
