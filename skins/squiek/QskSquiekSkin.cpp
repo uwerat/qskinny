@@ -320,7 +320,8 @@ void Editor::setupCheckBox()
     setGradient( Q::Box | Q::Disabled, m_pal.lighter110 );
     setBoxBorderColors( Q::Box, m_pal.theme );
 
-    setColor( Q::Indicator, m_pal.lighter135 );
+    setColor( Q::Indicator, m_pal.darker200 );
+    setColor( Q::Indicator | Q::Checked, m_pal.lighter135 );
 
     setFlagHint( Q::Text | Q::Disabled | A::Style, Qsk::Sunken );
     setColor( Q::Text, m_pal.themeForeground );

@@ -214,7 +214,8 @@ void Editor::setupCheckBox()
     setGradient( Q::Box | Q::Checked, m_pal.accentColor );
     setGradient( Q::Box | Q::Disabled, QskRgb::Grey );
 
-    setColor( Q::Indicator, m_pal.contrastColor );
+    setColor( Q::Indicator | Q::Checked, m_pal.contrastColor );
+    setColor( Q::Indicator, m_pal.textColor );
 
     setColor( Q::Text, m_pal.textColor );
     setColor( Q::Text | Q::Disabled, qskShadedColor( m_pal.textColor, 0.6 ) );
