@@ -5,62 +5,12 @@
 
 #include "QskCheckBoxSkinlet.h"
 #include "QskCheckBox.h"
-#include "QskSGNode.h"
 #include "QskTextOptions.h"
 #include "QskFunctions.h"
-
-#include <QSGFlatColorMaterial>
-#include <qsgnode.h>
-
-namespace
-{
-    class IndicatorNode : public QSGGeometryNode
-    {
-      public:
-        IndicatorNode()
-            : m_geometry( QSGGeometry::defaultAttributes_Point2D(), 3 )
-        {
-            m_geometry.setDrawingMode( QSGGeometry::DrawLineStrip );
-            m_geometry.setLineWidth( 2 );
-            setGeometry( &m_geometry );
-
-            setMaterial( &m_material );
-        }
-
-        void update( const QRectF& rect, const QColor& color )
-        {
-            if ( color != m_material.color() )
-            {
-                m_material.setColor( color );
-                markDirty( QSGNode::DirtyMaterial );
-            }
-
-            if ( rect != m_rect )
-            {
-                m_rect = rect;
-
-                const auto x = rect.x();
-                const auto y = rect.y();
-                const auto w = rect.width();
-                const auto h = rect.height();
-
-                auto points = m_geometry.vertexDataAsPoint2D();
-
-                points[0].set( x, y + h / 2 );
-                points[1].set( x + w / 3, y + h );
-                points[2].set( x + w, y );
-
-                markDirty( QSGNode::DirtyGeometry );
-            }
-        }
-
-      private:
-        QSGFlatColorMaterial m_material;
-        QSGGeometry m_geometry;
-
-        QRectF m_rect;
-    };
-}
+#include "QskGraphic.h"
+#include "QskStandardSymbol.h"
+#include "QskColorFilter.h"
+#include "QskSkin.h"
 
 QskCheckBoxSkinlet::QskCheckBoxSkinlet( QskSkin* skin )
     : QskSkinlet( skin )
@@ -161,19 +111,31 @@ QSGNode* QskCheckBoxSkinlet::updateSubNode(
 QSGNode* QskCheckBoxSkinlet::updateIndicatorNode(
     const QskCheckBox* checkBox, QSGNode* node ) const
 {
-    using Q = QskCheckBox;
-
+    auto symbol = QskStandardSymbol::CheckMark;
     if ( !checkBox->isChecked() )
-        return nullptr;
+    {
+#if 0
+        symbol = QskStandardSymbol::NoSymbol;
+#else
+        symbol = QskStandardSymbol::CrossMark;
+#endif
+    }
 
-    const auto rect = checkBox->subControlRect( Q::Indicator );
-    if ( rect.isEmpty() )
-        return nullptr;
+    auto graphic = checkBox->effectiveSkin()->symbol( symbol );
 
-    auto indicatorNode = QskSGNode::ensureNode< IndicatorNode >( node );
-    indicatorNode->update( rect, checkBox->color( Q::Indicator ) );
+#if 1
+    /*
+        Our default skins do not have the concept of colorRoles 
+        implemented. Until then we do the recoloring manually here
+     */
+    QskColorFilter filter;
+    filter.addColorSubstitution( Qt::black,
+        checkBox->color( QskCheckBox::Indicator ).rgba() );
 
-    return indicatorNode;
+    graphic = QskGraphic::fromGraphic( graphic, filter );
+#endif
+
+    return updateGraphicNode( checkBox, node, graphic, QskCheckBox::Indicator );
 }
 
 QSGNode* QskCheckBoxSkinlet::updateTextNode(
