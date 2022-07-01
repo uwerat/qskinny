@@ -201,20 +201,27 @@ void Editor::setupCheckBox()
     using A = QskAspect;
     using Q = QskCheckBox;
 
+    setSpacing( Q::Panel, 5 );
+
     const qreal size = qskDpiScaled( 18 );
 
-    setStrutSize( Q::Panel, size, size );
-    setPadding( Q::Panel, 3 );
+    setStrutSize( Q::Box, size, size );
+    setPadding( Q::Box, 3 );
 
-    setBoxShape( Q::Panel, 2 );
+    setBoxShape( Q::Box, 2 );
 
-    setGradient( Q::Panel, m_pal.baseColor);
-    setGradient( Q::Panel | Q::Checked, m_pal.accentColor );
-    setGradient( Q::Panel | Q::Checked | Q::Disabled, QskRgb::Grey );
+    setGradient( Q::Box, m_pal.baseColor);
+    setGradient( Q::Box | Q::Checked, m_pal.accentColor );
+    setGradient( Q::Box | Q::Disabled, QskRgb::Grey );
 
     setColor( Q::Indicator, m_pal.contrastColor );
 
-    setAnimation( Q::Panel | A::Color, qskDuration );
+    setColor( Q::Text, m_pal.textColor );
+    setColor( Q::Text | Q::Disabled, qskShadedColor( m_pal.textColor, 0.6 ) );
+    setFontRole( Q::Text, ButtonFontRole );
+
+    setAnimation( Q::Box | A::Color, qskDuration );
+    setAnimation( Q::Text | A::Color, qskDuration );
 }
 
 void Editor::setupBox()

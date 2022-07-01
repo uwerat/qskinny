@@ -203,7 +203,7 @@ QSizeF QskPushButtonSkinlet::sizeHint( const QskSkinnable* skinnable,
 
     QSizeF size( 0, 0 );
 
-    const QFontMetricsF fm( button->font() );
+    const QFontMetricsF fm( button->effectiveFont( QskPushButton::Text ) );
 
     if ( !button->text().isEmpty() )
     {

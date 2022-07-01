@@ -6,6 +6,8 @@
 #include "QskCheckBoxSkinlet.h"
 #include "QskCheckBox.h"
 #include "QskSGNode.h"
+#include "QskTextOptions.h"
+#include "QskFunctions.h"
 
 #include <QSGFlatColorMaterial>
 #include <qsgnode.h>
@@ -25,7 +27,7 @@ namespace
             setMaterial( &m_material );
         }
 
-        void update( bool isPartially, const QRectF& rect, const QColor& color )
+        void update( const QRectF& rect, const QColor& color )
         {
             if ( color != m_material.color() )
             {
@@ -33,10 +35,9 @@ namespace
                 markDirty( QSGNode::DirtyMaterial );
             }
 
-            if ( rect != m_rect || isPartially != m_isPartially )
+            if ( rect != m_rect )
             {
                 m_rect = rect;
-                m_isPartially = isPartially;
 
                 const auto x = rect.x();
                 const auto y = rect.y();
@@ -45,18 +46,9 @@ namespace
 
                 auto points = m_geometry.vertexDataAsPoint2D();
 
-                if ( isPartially )
-                {
-                    points[0].set( x, y + h / 2 );
-                    points[1] = points[0];
-                    points[2].set( x + w, y + h / 2 );
-                }
-                else
-                {
-                    points[0].set( x, y + h / 2 );
-                    points[1].set( x + w / 3, y + h );
-                    points[2].set( x + w, y );
-                }
+                points[0].set( x, y + h / 2 );
+                points[1].set( x + w / 3, y + h );
+                points[2].set( x + w, y );
 
                 markDirty( QSGNode::DirtyGeometry );
             }
@@ -67,14 +59,13 @@ namespace
         QSGGeometry m_geometry;
 
         QRectF m_rect;
-        bool m_isPartially;
     };
 }
 
 QskCheckBoxSkinlet::QskCheckBoxSkinlet( QskSkin* skin )
     : QskSkinlet( skin )
 {
-    setNodeRoles( { PanelRole, IndicatorRole } );
+    setNodeRoles( { BoxRole, IndicatorRole, TextRole } );
 }
 
 QskCheckBoxSkinlet::~QskCheckBoxSkinlet()
@@ -84,10 +75,64 @@ QskCheckBoxSkinlet::~QskCheckBoxSkinlet()
 QRectF QskCheckBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
-    if ( subControl == QskCheckBox::Indicator )
-        return skinnable->innerBox( QskCheckBox::Panel, contentsRect );
+    const auto checkBox = static_cast< const QskCheckBox* >( skinnable );
+
+    if ( subControl == QskCheckBox::Panel )
+    {
+        return contentsRect;
+    }
+    else if ( subControl == QskCheckBox::Box )
+    {
+        return boxRect( checkBox, contentsRect );
+    }
+    else if ( subControl == QskCheckBox::Indicator )
+    {
+        const auto boxRect = subControlRect( skinnable, contentsRect, QskCheckBox::Box );
+        return skinnable->innerBox( QskCheckBox::Box, boxRect );
+
+        return skinnable->innerBox( QskCheckBox::Box, contentsRect );
+    }
+    else if ( subControl == QskCheckBox::Text )
+    {
+        return textRect( checkBox, contentsRect );
+    }
 
     return contentsRect;
+}
+
+QRectF QskCheckBoxSkinlet::textRect(
+    const QskCheckBox* checkBox, const QRectF& contentsRect ) const
+{
+    const auto boxRect = subControlRect( checkBox, contentsRect, QskCheckBox::Box );
+    const qreal spacing = checkBox->spacingHint( QskCheckBox::Panel );
+
+    auto r = subControlRect( checkBox, contentsRect, QskCheckBox::Panel );
+    r = checkBox->innerBox( QskCheckBox::Panel, r );
+
+    if ( checkBox->layoutMirroring() )
+        r.setRight( boxRect.left() - spacing );
+    else
+        r.setLeft( boxRect.right() + spacing  );
+
+    return r;
+}
+
+QRectF QskCheckBoxSkinlet::boxRect(
+    const QskCheckBox* checkBox, const QRectF& contentsRect ) const
+{
+    const auto size = checkBox->strutSizeHint( QskCheckBox::Box );
+
+    auto r = checkBox->innerBox( QskCheckBox::Panel, contentsRect );
+
+    if ( checkBox->layoutMirroring() )
+        r.setLeft( r.right() - size.width() );
+    else
+        r.setWidth( size.width() );
+
+    r.setTop( r.top() + 0.5 * ( r.height() - size.height() ) );
+    r.setHeight( size.height() );
+
+    return r;
 }
 
 QSGNode* QskCheckBoxSkinlet::updateSubNode(
@@ -100,8 +145,14 @@ QSGNode* QskCheckBoxSkinlet::updateSubNode(
         case PanelRole:
             return updateBoxNode( skinnable, node, QskCheckBox::Panel );
 
+        case BoxRole:
+            return updateBoxNode( skinnable, node, QskCheckBox::Box );
+
         case IndicatorRole:
             return updateIndicatorNode( checkBox, node );
+
+        case TextRole:
+            return updateTextNode( checkBox, node );
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
@@ -112,8 +163,7 @@ QSGNode* QskCheckBoxSkinlet::updateIndicatorNode(
 {
     using Q = QskCheckBox;
 
-    const auto state = checkBox->checkState();
-    if ( state == Qt::Unchecked )
+    if ( !checkBox->isChecked() )
         return nullptr;
 
     const auto rect = checkBox->subControlRect( Q::Indicator );
@@ -121,15 +171,54 @@ QSGNode* QskCheckBoxSkinlet::updateIndicatorNode(
         return nullptr;
 
     auto indicatorNode = QskSGNode::ensureNode< IndicatorNode >( node );
-    indicatorNode->update( state != Qt::Checked, rect, checkBox->color( Q::Indicator ) );
+    indicatorNode->update( rect, checkBox->color( Q::Indicator ) );
 
     return indicatorNode;
 }
 
-QSizeF QskCheckBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
-    Qt::SizeHint, const QSizeF& ) const
+QSGNode* QskCheckBoxSkinlet::updateTextNode(
+    const QskCheckBox* checkBox, QSGNode* node ) const
 {
-    return skinnable->strutSizeHint( QskCheckBox::Panel );
+    using Q = QskCheckBox;
+
+    const auto rect = checkBox->subControlRect( Q::Text );
+    const auto alignH = checkBox->layoutMirroring() ? Qt::AlignRight : Qt::AlignLeft;
+
+    QskTextOptions textOptions;
+    textOptions.setElideMode( Qt::ElideMiddle );
+
+    return QskSkinlet::updateTextNode( checkBox, node, rect, alignH | Qt::AlignVCenter,
+        checkBox->text(), textOptions, QskCheckBox::Text );
+}
+
+QSizeF QskCheckBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
+    Qt::SizeHint which, const QSizeF& ) const
+{
+    using Q = QskCheckBox;
+
+    if ( which == Qt::MaximumSize )
+        return QSizeF();
+
+    auto checkBox = static_cast< const QskCheckBox* >( skinnable );
+
+    auto size = skinnable->strutSizeHint( QskCheckBox::Box );
+    size = skinnable->outerBoxSize( Q::Panel, size );
+
+    auto text = checkBox->text();
+    if ( !text.isEmpty() )
+    {
+        qreal extra = skinnable->spacingHint( Q::Panel );
+
+        if ( which == Qt::MinimumSize )
+            text = 'W';
+
+        const auto font = skinnable->effectiveFont( Q::Text );
+        extra += qskHorizontalAdvance( font, text );
+
+        size.setWidth( size.width() + extra );
+    }
+
+    return size.expandedTo( skinnable->strutSizeHint( Q::Panel ) );
 }
 
 #include "moc_QskCheckBoxSkinlet.cpp"
