@@ -1068,6 +1068,21 @@ QskGraphic QskGraphic::fromPixmapAsImage( const QPixmap& pixmap )
     return fromImage( pixmap.toImage() );
 }
 
+QskGraphic QskGraphic::fromGraphic(
+    const QskGraphic& graphic, const QskColorFilter& colorFilter )
+{
+    if ( colorFilter.isIdentity() )
+        return graphic;
+
+    QskGraphic recoloredGraphic;
+
+    QPainter painter( &recoloredGraphic );
+    graphic.render( &painter, colorFilter );
+    painter.end();
+    
+    return recoloredGraphic;
+}
+
 #ifndef QT_NO_DEBUG_STREAM
 
 #include <qdebug.h>
