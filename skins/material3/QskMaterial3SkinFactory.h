@@ -6,10 +6,10 @@
 #ifndef QSK_MATERIAL_SKIN_FACTORY_H
 #define QSK_MATERIAL_SKIN_FACTORY_H
 
-#include "QskMaterialGlobal.h"
+#include "QskMaterial3Global.h"
 #include <QskSkinFactory.h>
 
-class QSK_MATERIAL_EXPORT QskMaterialSkinFactory : public QskSkinFactory
+class QSK_MATERIAL3_EXPORT QskMaterial3SkinFactory : public QskSkinFactory
 {
     Q_OBJECT
 
@@ -17,8 +17,8 @@ class QSK_MATERIAL_EXPORT QskMaterialSkinFactory : public QskSkinFactory
     Q_INTERFACES( QskSkinFactory )
 
   public:
-    QskMaterialSkinFactory( QObject* parent = nullptr );
-    ~QskMaterialSkinFactory() override;
+    QskMaterial3SkinFactory( QObject* parent = nullptr );
+    ~QskMaterial3SkinFactory() override;
 
     QStringList skinNames() const override;
     QskSkin* createSkin( const QString& skinName ) override;
