@@ -12,41 +12,32 @@ class QSK_EXPORT QskCheckBox : public QskAbstractButton
 {
     Q_OBJECT
 
-    Q_PROPERTY( Qt::CheckState checkState READ checkState
-        WRITE setCheckState NOTIFY checkStateChanged FINAL )
-
-    Q_PROPERTY( bool tristate READ isTristate
-        WRITE setTristate NOTIFY tristateChanged FINAL )
+    Q_PROPERTY( QString text READ text WRITE setText NOTIFY textChanged FINAL )
 
     using Inherited = QskAbstractButton;
 
   public:
-    QSK_SUBCONTROLS( Panel, Indicator )
-    QSK_STATES( PartiallyChecked )
+    QSK_SUBCONTROLS( Panel, Box, Indicator, Text )
 
     QskCheckBox( QQuickItem* parent = nullptr );
+    QskCheckBox( const QString&, QQuickItem* parent = nullptr );
+
     ~QskCheckBox() override;
 
-    Qt::CheckState checkState() const;
-    bool isTristate() const;
+    QString text() const;
+
     bool isCheckable() const override final;
 
-    void addToGroup( QskCheckBox* );
-    void removeFromGroup( QskCheckBox* );
-
   public Q_SLOTS:
-    void setCheckState( Qt::CheckState );
-    void setTristate( bool triState = true );
+    void setText( const QString& );
 
   Q_SIGNALS:
-    void checkStateChanged( Qt::CheckState );
-    void tristateChanged( bool );
-    void removeFromAllGroupsRequested();
+    void textChanged();
+
+  protected:
+    void changeEvent( QEvent* ) override;
 
   private:
-    void setCheckStateInternal( Qt::CheckState );
-    void updated();
-
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

@@ -838,6 +838,9 @@ QVariant QskSkinnable::effectiveSkinHint(
 {
     aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
 
+    if ( aspect.section() == QskAspect::Body )
+        aspect.setSection( section() );
+
     if ( aspect.placement() == QskAspect::NoPlacement )
         aspect.setPlacement( effectivePlacement() );
 
@@ -1335,6 +1338,11 @@ QskSkin* QskSkinnable::effectiveSkin() const
 QskAspect::Placement QskSkinnable::effectivePlacement() const
 {
     return QskAspect::NoPlacement;
+}
+
+QskAspect::Section QskSkinnable::section() const
+{
+    return QskAspect::Body;
 }
 
 void QskSkinnable::updateNode( QSGNode* parentNode )

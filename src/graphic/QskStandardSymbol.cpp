@@ -187,6 +187,25 @@ static void qskInformationGraphic( QPainter* painter )
     painter->drawPath( path );
 }
 
+static void qskCheckMarkGraphic( QPainter* painter )
+{
+    QPainterPath path;
+
+    path.moveTo( 0.0, 0.5 );
+    path.lineTo( 0.33, 1.0 );
+    path.lineTo( 1.0, 0.0 );
+
+    painter->setPen( QPen( Qt::black, 0.2 ) );
+    painter->drawPath( path );
+}
+
+static void qskCrossMarkGraphic( QPainter* painter )
+{
+    painter->setPen( QPen( Qt::black, 0.2 ) );
+    painter->drawLine( 0.0, 0.0, 1.0, 1.0 );
+    painter->drawLine( 0.0, 1.0, 1.0, 0.0 );
+}
+
 QskGraphic QskStandardSymbol::graphic( Type symbolType )
 {
     static QskGraphic graphics[ SymbolTypeCount ];
@@ -227,9 +246,23 @@ QskGraphic QskStandardSymbol::graphic( Type symbolType )
                 break;
             }
             case QskStandardSymbol::Information:
-            default:
             {
                 qskInformationGraphic( &painter );
+                break;
+            }
+            case QskStandardSymbol::CheckMark:
+            {
+                qskCheckMarkGraphic( &painter );
+                break;
+            }
+            case QskStandardSymbol::CrossMark:
+            {
+                qskCrossMarkGraphic( &painter );
+                break;
+            }
+            case QskStandardSymbol::NoSymbol:
+            case QskStandardSymbol::SymbolTypeCount:
+            {
                 break;
             }
         }

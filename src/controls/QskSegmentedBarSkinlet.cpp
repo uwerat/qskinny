@@ -18,7 +18,8 @@
 QskSegmentedBarSkinlet::QskSegmentedBarSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
-    setNodeRoles( { PanelRole, SegmentRole, SeparatorRole, CursorRole, TextRole, GraphicRole  } );
+    setNodeRoles( { PanelRole, SegmentRole, SeparatorRole,
+        CursorRole, TextRole, GraphicRole  } );
 }
 
 QskSegmentedBarSkinlet::~QskSegmentedBarSkinlet() = default;
@@ -103,6 +104,9 @@ QRectF QskSegmentedBarSkinlet::separatorRect(
     const QskSegmentedBar* bar, const QRectF& contentsRect, int index ) const
 {
     using Q = QskSegmentedBar;
+
+    if( index == bar->count() - 1 )
+        return QRectF(); // no separator behind the last segment
 
     auto rect = segmentRect( bar, contentsRect, index );
 
@@ -312,23 +316,9 @@ QSGNode* QskSegmentedBarSkinlet::updateSampleNode( const QskSkinnable* skinnable
 
     const auto rect = sampleRect( bar, bar->contentsRect(), subControl, index );
 
-    if ( subControl == Q::Segment )
+    if ( subControl == Q::Segment || subControl == Q::Separator )
     {
         return updateBoxNode( skinnable, node, rect, subControl );
-    }
-
-    if( subControl == Q::Separator )
-    {
-        if( index == bar->count() - 1 )
-        {
-            return nullptr;
-        }
-        else
-        {
-            const auto rect = sampleRect( bar, bar->contentsRect(), subControl, index );
-
-            return updateBoxNode( skinnable, node, rect, subControl );
-        }
     }
 
     const auto alignment = bar->alignmentHint( subControl, Qt::AlignCenter );

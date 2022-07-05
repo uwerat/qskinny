@@ -27,6 +27,9 @@ namespace QskStandardSymbol
         Critical,
         Question,
 
+        CheckMark,
+        CrossMark,
+
         SymbolTypeCount
     };
 

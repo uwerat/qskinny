@@ -20,7 +20,9 @@ class QSK_EXPORT QskCheckBoxSkinlet : public QskSkinlet
     enum NodeRole
     {
         PanelRole,
+        BoxRole,
         IndicatorRole,
+        TextRole,
 
         RoleCount
     };
@@ -38,8 +40,12 @@ class QSK_EXPORT QskCheckBoxSkinlet : public QskSkinlet
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 
-  protected:
-    virtual QSGNode* updateIndicatorNode( const QskCheckBox*, QSGNode* ) const;
+  private:
+    QRectF textRect( const QskCheckBox*, const QRectF& ) const;
+    QRectF boxRect( const QskCheckBox*, const QRectF& ) const;
+    
+    QSGNode* updateIndicatorNode( const QskCheckBox*, QSGNode* ) const;
+    QSGNode* updateTextNode( const QskCheckBox*, QSGNode* ) const;
 };
 
 #endif

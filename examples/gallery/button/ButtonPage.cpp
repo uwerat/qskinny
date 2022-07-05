@@ -32,7 +32,7 @@ namespace
             const char* texts[] = { "Press Me", "Check Me", "Outlined", "Text" };
             const char* graphics[] = { "diamond/khaki", "ellipse/sandybrown" };
 
-            for ( int i = 0; i < 8; i++ )
+            for ( int i = 0; i < 6; i++ )
             {
                 const int index = i % 2;
 
@@ -48,16 +48,6 @@ namespace
                 if ( i < 2 || ( i > 3 && i < 6 ) )
                 {
                     button->setText( texts[ index ] );
-                }
-                else if( i == 6 )
-                {
-                    button->setSkinStateFlag( QskAbstractButton::Outlined );
-                    button->setText( texts[ 2 ] );
-                }
-                else if( i == 7 )
-                {
-                    button->setSkinStateFlag( QskAbstractButton::TextState );
-                    button->setText( texts[ 3 ] );
                 }
             }
         }
@@ -95,15 +85,14 @@ namespace
         CheckButtonBox( QQuickItem* parent = nullptr )
             : QskLinearBox( Qt::Horizontal, parent )
         {
-            setSpacing( 20 );
+            setSpacing( 40 );
             setExtraSpacingAt( Qt::LeftEdge | Qt::RightEdge | Qt::BottomEdge );
 
-            for ( auto state : { Qt::Unchecked, Qt::PartiallyChecked, Qt::Checked } )
-            {
-                auto button = new QskCheckBox( this );
-                button->setTristate( true );
-                button->setCheckState( state );
-            }
+            auto button1 = new QskCheckBox( "Options 1", this );
+            button1->setChecked( true );
+
+            auto button2 = new QskCheckBox( "Options 2", this );
+            button2->setLayoutMirroring( true );
         }
     };
 }

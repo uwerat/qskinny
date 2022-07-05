@@ -16,8 +16,6 @@ class QskSkin;
 class QQuickItem;
 class QskGraphicProvider;
 
-class QLocale;
-
 #if defined( qskSetup )
 #undef qskSetup
 #endif
@@ -50,9 +48,6 @@ class QSK_EXPORT QskSetup : public QObject
 
     static void setup();
     static void cleanup();
-
-    QLocale inheritedLocale( const QObject* );
-    void inheritLocale( QObject*, const QLocale& );
 
     static QskSetup* qmlAttachedProperties( QObject* );
 

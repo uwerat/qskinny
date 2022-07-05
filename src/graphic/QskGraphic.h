@@ -125,6 +125,7 @@ class QSK_EXPORT QskGraphic : public QPaintDevice
     static QskGraphic fromImage( const QImage& );
     static QskGraphic fromPixmap( const QPixmap& );
     static QskGraphic fromPixmapAsImage( const QPixmap& );
+    static QskGraphic fromGraphic( const QskGraphic&, const QskColorFilter& );
 
     quint64 modificationId() const;
     QskHashValue hash( QskHashValue seed ) const;
