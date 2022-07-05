@@ -809,10 +809,10 @@ void Editor::setupListView()
 {
     using Q = QskListView;
 
-    setPadding( Q::Cell, 0 );
+    setPadding( Q::Cell, { 16, 12, 16, 12 } );
 
     setGradient( Q::Cell, m_pal.surface );
-    setColor( Q::Text, m_pal.onSurfaceVariant );
+    setColor( Q::Text, m_pal.onSurface );
 
     setGradient( Q::Cell | Q::Selected, m_pal.secondaryContainer );
     setColor( Q::Text | Q::Selected, m_pal.onSecondaryContainer );
