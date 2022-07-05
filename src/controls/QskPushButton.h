@@ -36,8 +36,6 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     Q_PROPERTY( bool checkable READ isCheckable
         WRITE setCheckable NOTIFY checkableChanged FINAL )
 
-    Q_PROPERTY( bool flat READ isFlat WRITE setFlat NOTIFY flatChanged FINAL )
-
     Q_PROPERTY( QskBoxShapeMetrics shape READ shape
         WRITE setShape RESET resetShape NOTIFY shapeChanged )
 
@@ -70,9 +68,6 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
 
     void resetGraphicSourceSize();
 
-    void setFlat( bool );
-    bool isFlat() const;
-
     QFont font() const;
 
     QRectF layoutRectForSize( const QSizeF& ) const override;
@@ -89,7 +84,6 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     void shapeChanged();
     void textChanged();
     void textOptionsChanged();
-    void flatChanged();
     void graphicChanged();
     void graphicSourceChanged();
     void graphicSourceSizeChanged();

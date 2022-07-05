@@ -6,6 +6,8 @@
 #include "QskControlPrivate.h"
 #include "QskSetup.h"
 #include "QskLayoutMetrics.h"
+#include "QskObjectTree.h"
+#include "QskWindow.h"
 
 static inline void qskSendEventTo( QObject* object, QEvent::Type type )
 {
@@ -20,6 +22,108 @@ static inline QPointF qskScenePosition( const QMouseEvent* event )
 #else
     return event->windowPos();
 #endif
+}
+
+extern bool qskInheritLocale( QskWindow*, const QLocale& );
+
+namespace
+{
+    class VisitorLocale final : public QskObjectTree::ResolveVisitor< QLocale >
+    {
+      public:
+        VisitorLocale()
+            : ResolveVisitor< QLocale >( "locale" )
+        {
+        }
+
+      private:
+        bool setImplicitValue( QskControl* control,
+            const QLocale& locale ) override
+        {
+            return QskControlPrivate::inheritLocale( control, locale );
+        }
+
+        bool setImplicitValue( QskWindow* window,
+            const QLocale& locale ) override
+        {
+            return qskInheritLocale( window, locale );
+        }
+
+        QLocale value( const QskControl* control ) const override
+        {
+            return control->locale();
+        }
+
+        QLocale value( const QskWindow* window ) const override
+        {
+            return window->locale();
+        }
+    };
+
+    class VisitorSection final : public QskObjectTree::ResolveVisitor< QskAspect::Section >
+    {
+      public:
+        VisitorSection()
+            : ResolveVisitor< QskAspect::Section >( "section" )
+        {
+        }
+
+      private:
+        bool setImplicitValue( QskControl* control,
+            const QskAspect::Section& section ) override
+        {
+            return QskControlPrivate::inheritSection( control, section );
+        }
+
+        bool setImplicitValue( QskWindow*, const QskAspect::Section& ) override
+        {
+            return true;
+        }
+
+        QskAspect::Section value( const QskControl* control ) const override
+        {
+            return control->section();
+        }
+
+        QskAspect::Section value( const QskWindow* ) const override
+        {
+            return QskAspect::Body;
+        }
+    };
+}
+
+QLocale qskInheritedLocale( const QObject* object )
+{
+    VisitorLocale visitor;
+    visitor.setResolveValue( QLocale() );
+
+    QskObjectTree::traverseUp( const_cast< QObject* >( object ), visitor );
+    return visitor.resolveValue();
+}
+
+void qskInheritLocale( QObject* object, const QLocale& locale )
+{
+    VisitorLocale visitor;
+    visitor.setResolveValue( locale );
+
+    QskObjectTree::traverseDown( object, visitor );
+}
+
+static QskAspect::Section qskInheritedSection( const QskControl* control )
+{
+    VisitorSection visitor;
+    visitor.setResolveValue( QskAspect::Body );
+
+    QskObjectTree::traverseUp( const_cast< QskControl* >( control ), visitor );
+    return visitor.resolveValue();
+}
+
+void qskInheritSection( QskControl* control, QskAspect::Section section )
+{
+    VisitorSection visitor;
+    visitor.setResolveValue( section );
+
+    QskObjectTree::traverseDown( control, visitor );
 }
 
 /*
@@ -52,6 +156,7 @@ QskControlPrivate::QskControlPrivate()
     , hiddenPlacementPolicy( 0 )
     , layoutAlignmentHint( 0 )
     , explicitLocale( false )
+    , explicitSection( false )
     , autoFillBackground( false )
     , autoLayoutChildren( false )
     , focusPolicy( Qt::NoFocus )
@@ -255,7 +360,7 @@ bool QskControlPrivate::inheritLocale( QskControl* control, const QLocale& local
 
 void QskControlPrivate::resolveLocale( QskControl* control )
 {
-    const auto locale = qskSetup->inheritedLocale( control );
+    const auto locale = qskInheritedLocale( control );
 
     auto d = static_cast< QskControlPrivate* >( QQuickItemPrivate::get( control ) );
     if ( d->locale != locale )
@@ -263,7 +368,39 @@ void QskControlPrivate::resolveLocale( QskControl* control )
         d->locale = locale;
 
         qskSendEventTo( control, QEvent::LocaleChange );
-        qskSetup->inheritLocale( control, locale );
+        qskInheritLocale( control, locale );
+    }
+}
+
+bool QskControlPrivate::inheritSection(
+    QskControl* control, const QskAspect::Section section )
+{
+    auto d = static_cast< QskControlPrivate* >( QQuickItemPrivate::get( control ) );
+
+    if ( d->explicitSection || d->section == section )
+        return true;
+
+    d->section = section;
+
+    control->update();
+    control->resetImplicitSize();
+
+    return false;
+}
+
+void QskControlPrivate::resolveSection( QskControl* control )
+{
+    const auto section = qskInheritedSection( control );
+
+    auto d = static_cast< QskControlPrivate* >( QQuickItemPrivate::get( control ) );
+    if ( d->section != section )
+    {
+        d->section = section;
+
+        control->update();
+        control->resetImplicitSize();
+
+        qskInheritSection( control, section );
     }
 }
 

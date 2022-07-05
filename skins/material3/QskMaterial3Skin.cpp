@@ -464,32 +464,6 @@ void Editor::setupPushButton()
     setShadowMetrics( Q::Panel | Q::Hovered, m_pal.elevationLight1 );
     setShadowColor( Q::Panel | Q::Hovered, m_pal.shadow );
 
-    // Outlined and Text:
-
-    const QskStateCombination combination( QskStateCombination::Combination, Q::Outlined | Q::TextState );
-    setGradient( Q::Panel, Qt::transparent, combination );
-
-    setBoxBorderMetrics( Q::Panel, 1, { QskStateCombination::CombinationNoState, Q::Outlined } );
-    setBoxBorderColors( Q::Panel | Q::Outlined, m_pal.outline );
-
-    setPadding( Q::Graphic, 5 );
-
-    setGradient( Q::Panel | Q::Disabled, Qt::transparent, combination );
-    setBoxBorderColors( Q::Panel | Q::Outlined | Q::Disabled, m_pal.onSurface12 );
-
-    QColor primary08( m_pal.primary );
-    primary08.setAlphaF( 0.08 );
-    setGradient( Q::Panel | Q::Outlined, primary08,
-                 { QskStateCombination::Combination,
-                   Q::Hovered | Q::Focused | Q::Pressed } );
-    setGradient( Q::Panel | Q::TextState, primary08,
-                 { QskStateCombination::Combination,
-                   Q::Hovered | Q::Focused | Q::Pressed } );
-
-    setColor( Q::Text, m_pal.primary, combination );
-
-    setColor( Q::Text | Q::Disabled, m_pal.onSurface12, combination );
-
     setAnimation( Q::Panel | A::Color, qskDuration );
     setAnimation( Q::Panel | A::Metric, qskDuration );
     setAnimation( Q::Text | A::Color, qskDuration );

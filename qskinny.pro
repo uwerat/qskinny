@@ -7,7 +7,6 @@ SUBDIRS = \
     qmlexport \
     tools \
     support \
-    tests \
     examples \
     playground
 

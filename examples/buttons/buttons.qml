@@ -96,8 +96,7 @@ Qsk.Window
         {
             text: "Check Me"
 
-            flat: true
-
+            section: Qsk.Aspect.Header
             checkable: true
         }
 
@@ -105,14 +104,14 @@ Qsk.Window
         {
             text: "Push Me"
 
-            flat: true
+            section: Qsk.Aspect.Header
         }
 
         TestButton
         {
             text: "Disabled"
 
-            flat: true
+            section: Qsk.Aspect.Header
             enabled: false
         }
 

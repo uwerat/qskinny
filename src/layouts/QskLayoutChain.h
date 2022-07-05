@@ -39,12 +39,12 @@ class QskLayoutChain
             metrics.setMetric( which, size );
         }
 
-        QskLayoutMetrics metrics;
-
         int stretch = 0;
         bool canGrow = false;
         bool isShrunk = false;
         bool isValid = false;
+
+        QskLayoutMetrics metrics;
     };
 
     enum FillMode

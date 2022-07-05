@@ -305,19 +305,29 @@ void Editor::setupCheckBox()
 
     const qreal size = qskDpiScaled( 26 );
 
-    setStrutSize( Q::Panel, size, size );
+    setSpacing( Q::Panel, qskDpiScaled( 5 ) );
 
-    setPadding( Q::Panel, qskDpiScaled( 5 ) );
-    setBoxShape( Q::Panel, qskDpiScaled( 3 ) );
-    setBoxBorderMetrics( Q::Panel, qskDpiScaled( 1 ) );
+    setStrutSize( Q::Box, size, size );
 
-    setBoxBorderColors( Q::Panel, m_pal.darker125 );
-    setGradient( Q::Panel, m_pal.lighter135 );
-    setGradient( Q::Panel | Q::Checked, m_pal.highlighted );
+    setPadding( Q::Box, qskDpiScaled( 5 ) );
+    setBoxShape( Q::Box, qskDpiScaled( 3 ) );
+    setBoxBorderMetrics( Q::Box, qskDpiScaled( 1 ) );
 
-    setColor( Q::Indicator, m_pal.lighter135 );
+    setBoxBorderColors( Q::Box, m_pal.darker125 );
+    setGradient( Q::Box, m_pal.lighter135 );
+    setGradient( Q::Box | Q::Checked, m_pal.highlighted );
 
-    setAnimation( Q::Panel | A::Color, qskDuration );
+    setGradient( Q::Box | Q::Disabled, m_pal.lighter110 );
+    setBoxBorderColors( Q::Box, m_pal.theme );
+
+    setColor( Q::Indicator, m_pal.darker200 );
+    setColor( Q::Indicator | Q::Checked, m_pal.lighter135 );
+
+    setFlagHint( Q::Text | Q::Disabled | A::Style, Qsk::Sunken );
+    setColor( Q::Text, m_pal.themeForeground );
+    setColor( Q::Text | Q::Disabled, m_pal.darker200 );
+
+    setAnimation( Q::Box | A::Color, qskDuration );
 }
 
 void Editor::setupPopup()
@@ -574,15 +584,15 @@ void Editor::setupPushButton()
     setMetric( Q::Panel | A::Spacing, 4 );
 
     setButton( Q::Panel, Raised );
-    setButton( Q::Panel | Q::Flat | Q::Hovered, Raised );
+    setButton( Q::Panel | A::Header | Q::Hovered, Raised );
 
-    setButton( Q::Panel | Q::Flat, Flat );
-    setButton( Q::Panel | Q::Flat | Q::Disabled, Flat );
+    setButton( Q::Panel | A::Header, Flat );
+    setButton( Q::Panel | A::Header | Q::Disabled, Flat );
 
     for ( auto state : { Q::Pressed, Q::Checked } )
     {
         setButton( Q::Panel | state, Sunken );
-        setButton( Q::Panel | Q::Flat | state, Sunken );
+        setButton( Q::Panel | A::Header | state, Sunken );
     }
 
     setAnimation( Q::Panel | A::Color, qskDuration );

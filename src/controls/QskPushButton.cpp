@@ -100,20 +100,6 @@ QskBoxShapeMetrics QskPushButton::shape() const
     return boxShapeHint( Panel );
 }
 
-void QskPushButton::setFlat( bool on )
-{
-    if ( on != isFlat() )
-    {
-        setSkinStateFlag( Flat, on );
-        Q_EMIT flatChanged();
-    }
-}
-
-bool QskPushButton::isFlat() const
-{
-    return hasSkinState( Flat );
-}
-
 void QskPushButton::setText( const QString& text )
 {
     if ( text != m_data->text )

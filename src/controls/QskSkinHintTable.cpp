@@ -14,7 +14,7 @@ inline const QVariant* qskResolvedHint( QskAspect aspect,
     const std::unordered_map< QskAspect, QVariant >& hints,
     QskAspect* resolvedAspect )
 {
-    const auto a = aspect;
+    auto a = aspect;
 
     Q_FOREVER
     {
@@ -52,6 +52,16 @@ inline const QVariant* qskResolvedHint( QskAspect aspect,
             // clear the placement bits and restart
             aspect = a;
             aspect.setPlacement( QskAspect::NoPlacement );
+
+            continue;
+        }
+
+        if ( aspect.section() != QskAspect::Body )
+        {
+            // try to resolve from QskAspect::Body
+
+            a.setSection( QskAspect::Body );
+            aspect = a;
 
             continue;
         }

@@ -8,6 +8,7 @@
 #include "QskShortcutQml.h"
 #include "QskMainQml.h"
 
+#include <QskAspect.h>
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxShapeMetrics.h>
 #include <QskDialog.h>
@@ -201,6 +202,7 @@ void QskQml::registerTypes()
         QSK_REGISTER_GADGET( QskSizePolicy, "SizePolicy" );
         QSK_REGISTER_GADGET( QskTextOptions, "TextOptions" );
         QSK_REGISTER_GADGET( QskMargins, "Margins" );
+        QSK_REGISTER_GADGET( QskAspect, "Aspect" );
     }
 
     // Support (lists of) GradientStop
