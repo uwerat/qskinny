@@ -571,7 +571,8 @@ void Editor::setupSlider()
     setGradient( Q::Handle, m_pal.primary );
     setGradient( Q::Handle | Q::Pressed, m_pal.primary );
 
-    setGradient( Q::Handle | Q::Disabled, m_pal.onSurface38 );
+    const auto disabledColor = flattenedColor( m_pal.onSurface, m_pal.background, 0.38 );
+    setGradient( Q::Handle | Q::Disabled, disabledColor );
 
     setStrutSize( Q::Ripple, { 40, 40 } );
     setBoxShape( Q::Ripple, 100, Qt::RelativeSize );
