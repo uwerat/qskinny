@@ -75,6 +75,7 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
 
     QskShadowMetrics elevationLight1;
     QskShadowMetrics elevationLight2;
+    QskShadowMetrics elevationLight3;
 
     const qreal hoverOpacity = 0.08;
     const qreal focusOpacity = 0.12;
@@ -98,6 +99,7 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
     enum FontRole
     {
         M3BodyLarge = QskSkin::HugeFont + 1,
+        M3HeadlineSmall,
         M3LabelLarge,
     };
 
