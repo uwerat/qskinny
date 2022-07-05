@@ -96,10 +96,6 @@ QskSegmentedBar::QskSegmentedBar( Qt::Orientation orientation, QQuickItem* paren
     : Inherited( parent )
     , m_data( new PrivateData( orientation ) )
 {
-    auto direction = ( orientation == Qt::Horizontal )
-        ? Qsk::LeftToRight : Qsk::TopToBottom;
-    setFlagHint( Panel | QskAspect::Direction, direction );
-
     if( orientation == Qt::Horizontal )
         initSizePolicy( QskSizePolicy::MinimumExpanding, QskSizePolicy::Fixed );
     else
@@ -123,10 +119,6 @@ void QskSegmentedBar::setOrientation( Qt::Orientation orientation )
     {
         setSizePolicy( sizePolicy( Qt::Vertical ), sizePolicy( Qt::Horizontal ) );
         m_data->orientation = orientation;
-
-        auto direction = ( orientation == Qt::Horizontal )
-            ? Qsk::LeftToRight : Qsk::TopToBottom;
-        setFlagHint( Panel | QskAspect::Direction, direction );
 
         resetImplicitSize();
         update();
