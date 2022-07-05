@@ -155,26 +155,28 @@ void Editor::setupCheckBox()
     using A = QskAspect;
     using Q = QskCheckBox;
 
-    setStrutSize( Q::Panel, 24, 24 );
+    setSpacing( Q::Panel, 10 );
 
-    setPadding( Q::Panel, 6 );
-    setBoxShape( Q::Panel, 2 );
-    setBoxBorderMetrics( Q::Panel, 2 );
-    setBoxBorderColors( Q::Panel, m_pal.onBackground );
-    setBoxBorderMetrics( Q::Panel | Q::Checked, 0 );
+    setStrutSize( Q::Box, 24, 24 );
 
-    setGradient( Q::Panel, m_pal.background );
-    setGradient( Q::Panel | Q::Checked, m_pal.primary );
+    setPadding( Q::Box, 6 );
+    setBoxShape( Q::Box, 2 );
+    setBoxBorderMetrics( Q::Box, 2 );
+    setBoxBorderColors( Q::Box, m_pal.onBackground );
+    setBoxBorderMetrics( Q::Box | Q::Checked, 0 );
 
-    setGradient( Q::Panel | Q::Disabled, m_pal.surfaceVariant12 );
+    setGradient( Q::Box, m_pal.background );
+    setGradient( Q::Box | Q::Checked, m_pal.primary );
+    setGradient( Q::Box | Q::Disabled, m_pal.surfaceVariant12 );
+    setGradient( Q::Box | Q::Checked | Q::Disabled, m_pal.onSurface12 );
 
-    setGradient( Q::Panel | Q::Checked | Q::Disabled, m_pal.onSurface12 );
-
-
-    setColor( Q::Indicator | Q::Checked, m_pal.primaryContainer );
+    setColor( Q::Indicator, m_pal.background );
+    setColor( Q::Indicator | Q::Checked, m_pal.onPrimary );
     setColor( Q::Indicator | Q::Checked | Q::Disabled, m_pal.onSurface38 );
 
-    setAnimation( Q::Panel | A::Color, qskDuration );
+    setColor( Q::Text, m_pal.onBackground );
+
+    setAnimation( Q::Box | A::Color, qskDuration );
 }
 
 void Editor::setupBox()
