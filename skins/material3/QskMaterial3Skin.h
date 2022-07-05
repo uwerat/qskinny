@@ -3,10 +3,10 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef QSK_MATERIAL_SKIN_H
-#define QSK_MATERIAL_SKIN_H
+#ifndef QSK_MATERIAL3_SKIN_H
+#define QSK_MATERIAL3_SKIN_H
 
-#include "QskMaterialGlobal.h"
+#include "QskMaterial3Global.h"
 
 #include <QskHctColor.h>
 #include <QskSkin.h>
@@ -14,7 +14,7 @@
 
 #include <array>
 
-class QSK_MATERIAL_EXPORT QskMaterialTheme
+class QSK_MATERIAL3_EXPORT QskMaterial3Theme
 {
   public:
     enum Lightness
@@ -35,8 +35,8 @@ class QSK_MATERIAL_EXPORT QskMaterialTheme
         NumPaletteTypes
     };
 
-    QskMaterialTheme( Lightness );
-    QskMaterialTheme( Lightness, std::array< QskHctColor, NumPaletteTypes > );
+    QskMaterial3Theme( Lightness );
+    QskMaterial3Theme( Lightness, std::array< QskHctColor, NumPaletteTypes > );
 
     QRgb primary;
     QColor primary12;
@@ -85,15 +85,15 @@ class QSK_MATERIAL_EXPORT QskMaterialTheme
     std::array< QskHctColor, NumPaletteTypes > m_palettes;
 };
 
-class QSK_MATERIAL_EXPORT QskMaterialSkin : public QskSkin
+class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
 {
     Q_OBJECT
 
     using Inherited = QskSkin;
 
   public:
-    QskMaterialSkin( const QskMaterialTheme&, QObject* parent = nullptr );
-    ~QskMaterialSkin() override;
+    QskMaterial3Skin( const QskMaterial3Theme&, QObject* parent = nullptr );
+    ~QskMaterial3Skin() override;
 
     enum FontRole
     {

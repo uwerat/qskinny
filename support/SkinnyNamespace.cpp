@@ -20,7 +20,7 @@
 #if defined( ENSURE_SKINS )
 
     #include <squiek/QskSquiekSkinFactory.h>
-    #include <material/QskMaterialSkinFactory.h>
+    #include <material3/QskMaterial3SkinFactory.h>
 
     static void initSkins()
     {
@@ -32,7 +32,7 @@
              */
 
             qskSkinManager->registerFactory( "SquiekFactory", new QskSquiekSkinFactory() );
-            qskSkinManager->registerFactory( "MaterialFactory", new QskMaterialSkinFactory() );
+            qskSkinManager->registerFactory( "Material3Factory", new QskMaterial3SkinFactory() );
 
             qWarning() << "Couldn't find skin plugins, adding some manually.";
         }

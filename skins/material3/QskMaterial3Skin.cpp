@@ -3,7 +3,7 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#include "QskMaterialSkin.h"
+#include "QskMaterial3Skin.h"
 
 #include <QskSkinHintTableEditor.h>
 
@@ -50,7 +50,7 @@ namespace
     class Editor : private QskSkinHintTableEditor
     {
       public:
-        Editor( QskSkinHintTable* table, const QskMaterialTheme& palette )
+        Editor( QskSkinHintTable* table, const QskMaterial3Theme& palette )
             : QskSkinHintTableEditor( table )
             , m_pal( palette )
         {
@@ -86,7 +86,7 @@ namespace
         void setupTextInput();
         void setupTextLabel();
 
-        const QskMaterialTheme& m_pal;
+        const QskMaterial3Theme& m_pal;
         const uint rippleSize = 40; // ### remove
     };
 
@@ -227,7 +227,7 @@ void Editor::setupMenu()
     setStrutSize( Q::Graphic, { 46, -1 } );
 
     setColor( Q::Text, m_pal.onSurface );
-    setFontRole( Q::Text, QskMaterialSkin::M3BodyLarge );
+    setFontRole( Q::Text, QskMaterial3Skin::M3BodyLarge );
 
     setPosition( Q::Panel, 0 );
     setPosition( Q::Panel | QskPopup::Closed, 1 );
@@ -380,7 +380,7 @@ void Editor::setupSegmentedBar()
     {
         // Text
 
-        setFontRole( Q::Text, QskMaterialSkin::M3LabelLarge );
+        setFontRole( Q::Text, QskMaterial3Skin::M3LabelLarge );
 
         setColor( Q::Text, m_pal.onSurface );
         setColor( Q::Text | Q::Selected, m_pal.onSecondaryContainer );
@@ -449,7 +449,7 @@ void Editor::setupPushButton()
     setAlignment( Q::Graphic | A::Alignment, Qt::AlignLeft );
     setPadding( Q::Graphic, 5 );
 
-    setFontRole( Q::Text, QskMaterialSkin::M3LabelLarge );
+    setFontRole( Q::Text, QskMaterial3Skin::M3LabelLarge );
     setAlignment( Q::Text, Qt::AlignCenter );
 
 
@@ -513,7 +513,7 @@ void Editor::setupDialogButton()
     setColor( Q::Text, m_pal.onPrimary );
     setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
 
-    setFontRole( Q::Text, QskMaterialSkin::M3LabelLarge );
+    setFontRole( Q::Text, QskMaterial3Skin::M3LabelLarge );
     setAlignment( Q::Text, Qt::AlignCenter );
 
     for ( auto state1 : { A::NoState, Q::Focused } )
@@ -685,7 +685,7 @@ void Editor::setupTabButton()
 
     setAnimation( Q::Panel | A::Color, qskDuration );
 
-    setFontRole( Q::Text, QskMaterialSkin::M3LabelLarge );
+    setFontRole( Q::Text, QskMaterial3Skin::M3LabelLarge );
     setAlignment( Q::Text, Qt::AlignCenter );
 }
 
@@ -824,8 +824,8 @@ void Editor::setupSubWindow()
 
 }
 
-QskMaterialTheme::QskMaterialTheme( Lightness lightness )
-    : QskMaterialTheme( lightness,
+QskMaterial3Theme::QskMaterial3Theme( Lightness lightness )
+    : QskMaterial3Theme( lightness,
                         { // default Material colors:
                         0xff6750A4,
                         0xff625B71,
@@ -837,7 +837,7 @@ QskMaterialTheme::QskMaterialTheme( Lightness lightness )
 {
 }
 
-QskMaterialTheme::QskMaterialTheme(Lightness lightness,
+QskMaterial3Theme::QskMaterial3Theme(Lightness lightness,
                                     std::array<QskHctColor, NumPaletteTypes> palettes )
     : m_palettes( palettes )
 {
@@ -924,7 +924,7 @@ QskMaterialTheme::QskMaterialTheme(Lightness lightness,
     elevationLight2 = QskShadowMetrics( -2, 8, { 0, 2 } );
 }
 
-QskMaterialSkin::QskMaterialSkin( const QskMaterialTheme& palette, QObject* parent )
+QskMaterial3Skin::QskMaterial3Skin( const QskMaterial3Theme& palette, QObject* parent )
     : Inherited( parent )
 {
     setupFonts();
@@ -933,11 +933,11 @@ QskMaterialSkin::QskMaterialSkin( const QskMaterialTheme& palette, QObject* pare
     editor.setup();
 }
 
-QskMaterialSkin::~QskMaterialSkin()
+QskMaterial3Skin::~QskMaterial3Skin()
 {
 }
 
-void QskMaterialSkin::setupFonts()
+void QskMaterial3Skin::setupFonts()
 {
     Inherited::setupFonts( QStringLiteral( "Roboto" ) );
 
@@ -945,4 +945,4 @@ void QskMaterialSkin::setupFonts()
     setFont( M3LabelLarge, createFont( 14 ) );
 }
 
-#include "moc_QskMaterialSkin.cpp"
+#include "moc_QskMaterial3Skin.cpp"

@@ -4,17 +4,17 @@ CONFIG += qskinny
 TEMPLATE = lib
 QSK_PLUGIN_SUBDIR = skins
 
-TARGET = $$qskPluginTarget(materialskin)
-DEFINES += QSK_MATERIAL_MAKEDLL
+TARGET = $$qskPluginTarget(material3skin)
+DEFINES += QSK_MATERIAL3_MAKEDLL
 
 HEADERS += \
-    QskMaterialGlobal.h \
-    QskMaterialSkin.h \
-    QskMaterialSkinFactory.h
+    QskMaterial3Global.h \
+    QskMaterial3Skin.h \
+    QskMaterial3SkinFactory.h
 
 SOURCES += \
-    QskMaterialSkin.cpp \
-    QskMaterialSkinFactory.cpp
+    QskMaterial3Skin.cpp \
+    QskMaterial3SkinFactory.cpp
 
 OTHER_FILES += metadata.json
 

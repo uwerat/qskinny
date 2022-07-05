@@ -40,7 +40,7 @@ ensure_skins {
     use_local_rpath: QMAKE_RPATHDIR *= $${QSK_PLUGIN_DIR}/skins
 
     qskAddLibrary($${QSK_PLUGIN_DIR}/skins, squiekskin)
-    qskAddLibrary($${QSK_PLUGIN_DIR}/skins, materialskin)
+    qskAddLibrary($${QSK_PLUGIN_DIR}/skins, material3skin)
 }
 
 fontconfig {
