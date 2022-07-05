@@ -759,38 +759,51 @@ void Editor::setupSlider()
 
     // Panel
 
-    setMetric( Q::Panel | A::Size, extent );
-    setBoxBorderMetrics( Q::Panel, 0 );
-    setBoxShape( Q::Panel, 0 );
-    setGradient( Q::Panel, QskGradient() );
+    for ( auto placement : { A::Horizontal, A::Vertical } )
+    {
+        const auto aspect = Q::Panel | placement;
+
+        setMetric( aspect | A::Size, extent );
+        setBoxBorderMetrics( aspect, 0 );
+        setBoxShape( aspect, 0 );
+        setGradient( aspect, QskGradient() );
+    }
 
     setPadding( Q::Panel | A::Horizontal, QskMargins( 0.5 * extent, 0 ) );
     setPadding( Q::Panel | A::Vertical, QskMargins( 0, 0.5 * extent ) );
 
     // Groove, Fill
 
-    for ( auto subControl : { Q::Groove, Q::Fill } )
+    for ( auto placement : { A::Horizontal, A::Vertical } )
     {
-        const auto aspect = subControl;
+        for ( auto subControl : { Q::Groove, Q::Fill } )
+        {
+            const auto aspect = subControl | placement;
 
-        setMetric( aspect | A::Size, 0.3 * extent );
-        setPadding( aspect, 0 );
+            setMetric( aspect | A::Size, 0.3 * extent );
+            setPadding( aspect, 0 );
 
-        setBoxBorderMetrics( aspect, 0 );
-        setBoxShape( aspect, 0.1 * extent );
+            setBoxBorderMetrics( aspect, 0 );
+            setBoxShape( aspect, 0.1 * extent );
+        }
+
+        setGradient( Q::Groove | placement, m_pal.darker200 );
+        setGradient( Q::Fill | placement, QskGradient() ); // no filling
     }
-
-    setGradient( Q::Groove, m_pal.darker200 );
-    setGradient( Q::Fill, QskGradient() ); // no filling
 
     // Handle
 
-    setButton( Q::Handle, Raised, 1 );
-    setBoxShape( Q::Handle, 20.0, Qt::RelativeSize );
-    setButton( Q::Handle | Q::Pressed, Sunken, 1 );
+    for ( auto placement : { A::Horizontal, A::Vertical } )
+    {
+        const auto aspect = Q::Handle | placement;
 
-    const qreal sz = 0.75 * extent;
-    setStrutSize( Q::Handle, sz, sz );
+        setButton( aspect, Raised, 1 );
+        setBoxShape( aspect, 20.0, Qt::RelativeSize );
+        setButton( aspect | Q::Pressed, Sunken, 1 );
+
+        const qreal sz = 0.75 * extent;
+        setStrutSize( aspect, sz, sz );
+    }
 
     setAnimation( Q::Handle | A::Color, qskDuration );
 }
