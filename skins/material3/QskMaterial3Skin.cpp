@@ -87,7 +87,6 @@ namespace
         void setupTextLabel();
 
         const QskMaterial3Theme& m_pal;
-        const uint rippleSize = 40; // ### remove
     };
 
     QFont createFont( int pixelSize, QFont::Weight weight = QFont::Normal )
@@ -567,15 +566,18 @@ void Editor::setupSlider()
     setBoxShape( Q::Handle, 100, Qt::RelativeSize );
     setBoxBorderMetrics( Q::Handle, 0 );
 
-    setStrutSize( Q::Handle, qskDpiScaled( 20 + rippleSize ),
-        qskDpiScaled( 20 + rippleSize ) );
+    setStrutSize( Q::Handle, { 20, 20 } );
 
     setGradient( Q::Handle, m_pal.primary );
     setGradient( Q::Handle | Q::Pressed, m_pal.primary );
 
     setGradient( Q::Handle | Q::Disabled, m_pal.onSurface38 );
 
-    setBoxBorderMetrics( Q::Handle, qskDpiScaled( rippleSize / 2 ) );
+    setStrutSize( Q::Ripple, { 40, 40 } );
+    setBoxShape( Q::Ripple, 100, Qt::RelativeSize );
+    setGradient( Q::Ripple, Qt::transparent );
+    setGradient( Q::Ripple | Q::Hovered, m_pal.primary12 );
+    setGradient( Q::Ripple | Q::Pressed, m_pal.primary12 );
 
     // move the handle smoothly, when using keys
     setAnimation( Q::Handle | A::Metric | A::Position, 2 * qskDuration );
