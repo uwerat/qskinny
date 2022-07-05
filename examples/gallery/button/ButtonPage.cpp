@@ -29,7 +29,7 @@ namespace
       private:
         void populate()
         {
-            const char* texts[] = { "Press Me", "Check Me", "Outlined", "Text" };
+            const char* texts[] = { "Press Me", "Check Me" };
             const char* graphics[] = { "diamond/khaki", "ellipse/sandybrown" };
 
             for ( int i = 0; i < 6; i++ )
@@ -37,15 +37,16 @@ namespace
                 const int index = i % 2;
 
                 auto button = new QskPushButton( this );
-                button->setCheckable( index != 0 && index < 6 );
+                button->setCheckable( index != 0 );
                 //button->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 
-                if ( i > 1 && i < 6 )
+                if ( i > 1 )
                 {
                     auto src = QStringLiteral( "image://shapes/" ) + graphics[ index ];
                     button->setGraphicSource( src );
                 }
-                if ( i < 2 || ( i > 3 && i < 6 ) )
+
+                if ( i < 2 || i > 3 )
                 {
                     button->setText( texts[ index ] );
                 }
