@@ -522,7 +522,7 @@ void Editor::setupDialogButtonBox()
 {
     using Q = QskDialogButtonBox;
 
-    setGradient( Q::Panel, m_pal.background );
+    setGradient( Q::Panel, m_pal.secondaryContainer );
     setBoxShape( Q::Panel, 0 );
     setBoxBorderMetrics( Q::Panel, 0 );
 }
@@ -825,23 +825,26 @@ void Editor::setupSubWindow()
 
     // Panel
 
-    setPadding( Q::Panel, 10 );
-    setBoxShape( Q::Panel, 0 );
-    setBoxBorderMetrics( Q::Panel, 2 );
-    setGradient( Q::Panel, m_pal.onBackground );
-
-    setBoxBorderColors( Q::Panel, m_pal.primary );
+    setPadding( Q::Panel, { 24, 0, 24, 24 } );
+    setStrutSize( Q::Panel, { 280, -1 } );
+    setBoxShape( Q::Panel, 28 );
+    setBoxBorderMetrics( Q::Panel, 0 );
+    setGradient( Q::Panel, m_pal.secondaryContainer );
+    setShadowMetrics( Q::Panel, m_pal.elevationLight3 );
+    setShadowColor( Q::Panel, m_pal.shadow );
 
     // TitleBarPanel
+    setBoxShape( Q::TitleBarPanel, 28 );
+    setPadding( Q::TitleBarPanel, { 24, 24, 24, 16 } );
     setFlagHint( Q::TitleBarPanel | QskAspect::Style,
         Q::TitleBar | Q::Title | Q::Symbol );
 
-    setGradient( Q::TitleBarPanel, m_pal.surface );
-    setGradient( Q::TitleBarPanel | Q::Focused, m_pal.surfaceVariant );
+    setGradient( Q::TitleBarPanel, m_pal.secondaryContainer );
 
     // TitleBarText
-    setFontRole( Q::TitleBarText, QskSkin::SmallFont );
-    setAlignment( Q::TitleBarText, Qt::AlignLeft | Qt::AlignVCenter );
+    setFontRole( Q::TitleBarText, QskMaterial3Skin::M3HeadlineSmall );
+    setColor( Q::TitleBarText, m_pal.onSurface );
+    setAlignment( Q::TitleBarText, Qt::AlignCenter );
 
     for ( auto subControl : { Q::Panel, Q::TitleBarPanel, Q::TitleBarText } )
         setAnimation( subControl | A::Color, qskDuration );
@@ -946,6 +949,7 @@ QskMaterial3Theme::QskMaterial3Theme(Lightness lightness,
 
     elevationLight1 = QskShadowMetrics( -3, 5, { 0, 2 } );
     elevationLight2 = QskShadowMetrics( -2, 8, { 0, 2 } );
+    elevationLight3 = QskShadowMetrics( -1, 11, { 0, 2 } );
 }
 
 QskMaterial3Skin::QskMaterial3Skin( const QskMaterial3Theme& palette, QObject* parent )
@@ -966,6 +970,7 @@ void QskMaterial3Skin::setupFonts()
     Inherited::setupFonts( QStringLiteral( "Roboto" ) );
 
     setFont( M3BodyLarge, createFont( 16 ) );
+    setFont( M3HeadlineSmall, createFont( 28 ) );
     setFont( M3LabelLarge, createFont( 14 ) );
 }
 
