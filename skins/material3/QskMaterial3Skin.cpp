@@ -460,11 +460,18 @@ void Editor::setupPushButton()
     setGradient( Q::Panel, m_pal.primary );
     setGradient( Q::Panel | Q::Disabled, m_pal.onSurface12 );
 
-    setColor( Q::Text, m_pal.onPrimary );
-    setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
-
+    QColor hoverColor = flattenedColor( m_pal.onPrimary, m_pal.primary, 0.08 );
+    setGradient( Q::Panel | Q::Hovered, hoverColor );
     setShadowMetrics( Q::Panel | Q::Hovered, m_pal.elevationLight1 );
     setShadowColor( Q::Panel | Q::Hovered, m_pal.shadow );
+
+    QColor focusColor = flattenedColor( m_pal.onPrimary, m_pal.primary, 0.12 );
+    setGradient( Q::Panel | Q::Focused, focusColor );
+
+    setGradient( Q::Panel | Q::Pressed, focusColor );
+
+    setColor( Q::Text, m_pal.onPrimary );
+    setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
 
     setAnimation( Q::Panel | A::Color, qskDuration );
     setAnimation( Q::Panel | A::Metric, qskDuration );
