@@ -66,6 +66,7 @@ int main( int argc, char* argv[] )
 
     // disable default skins
     qskSkinManager->setPluginPaths( QStringList() ); // no plugins
+    qskSkinManager->unregisterFactory( "materialfactory" );
     qskSkinManager->unregisterFactory( "material3factory" );
     qskSkinManager->unregisterFactory( "squiekfactory" );
 
