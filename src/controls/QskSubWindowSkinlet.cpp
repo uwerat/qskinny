@@ -21,6 +21,31 @@ QskSubWindowSkinlet::QskSubWindowSkinlet( QskSkin* skin )
 
 QskSubWindowSkinlet::~QskSubWindowSkinlet() = default;
 
+QSizeF QskSubWindowSkinlet::sizeHint( const QskSkinnable* skinnable,
+    Qt::SizeHint, const QSizeF& size ) const
+{
+    using Q = QskSubWindow;
+
+    const auto subWindow = static_cast< const QskSubWindow* >( skinnable );
+
+    auto panelSize = subWindow->strutSizeHint( QskSubWindow::Panel );
+    auto s = size.expandedTo( panelSize );
+
+    const auto decorations = subWindow->decorations();
+
+    if ( ( decorations & Q::TitleBar ) && ( decorations & Q::Title ) )
+    {
+        auto titleBarSize = subWindow->strutSizeHint( QskSubWindow::TitleBarPanel );
+        if( titleBarSize.isValid() )
+        {
+            s = s.expandedTo( { titleBarSize.width(), 0 } );
+            s.rheight() += titleBarSize.height();
+        }
+    }
+
+    return s;
+}
+
 QRectF QskSubWindowSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {

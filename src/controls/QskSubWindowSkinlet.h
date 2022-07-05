@@ -30,6 +30,9 @@ class QSK_EXPORT QskSubWindowSkinlet : public QskPopupSkinlet
     Q_INVOKABLE QskSubWindowSkinlet( QskSkin* = nullptr );
     ~QskSubWindowSkinlet() override;
 
+    virtual QSizeF sizeHint( const QskSkinnable*,
+        Qt::SizeHint, const QSizeF& ) const override;
+
     QRectF subControlRect( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol ) const override;
 
