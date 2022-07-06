@@ -1,6 +1,6 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
- * This file may be used under the terms of the QSkinny License, Version 1.0
+ * QSkinny - Copyright (C) 2022 Edelhirsch Software GmbH
+ * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
 #ifndef QSK_MATERIAL3_SKIN_H
