@@ -98,7 +98,8 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
 
     enum FontRole
     {
-        M3BodyLarge = QskSkin::HugeFont + 1,
+        M3BodyMedium = QskSkin::HugeFont + 1,
+        M3BodyLarge,
         M3HeadlineSmall,
         M3LabelLarge,
     };
