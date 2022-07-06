@@ -640,7 +640,7 @@ void Editor::setupTabButton()
     using A = QskAspect;
     using Q = QskTabButton;
 
-    setStrutSize( Q::Panel, 64, 64 );
+    setStrutSize( Q::Panel, 48, 48 );
     setGradient( Q::Panel, m_pal.surface );
 
     setColor( Q::Text, m_pal.onSurfaceVariant );
