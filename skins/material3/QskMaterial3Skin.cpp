@@ -164,7 +164,6 @@ void Editor::setupControl()
 
 void Editor::setupCheckBox()
 {
-    using A = QskAspect;
     using Q = QskCheckBox;
 
     setSpacing( Q::Panel, 10 );
