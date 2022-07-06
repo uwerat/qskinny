@@ -606,16 +606,10 @@ void Editor::setupSwitchButton()
     setStrutSize( Q::Ripple, 40, 40 );
     setGradient( Q::Ripple, Qt::transparent );
 
-    QColor c4( m_pal.surface );
-    c4.setAlphaF( m_pal.focusOpacity );
-    setGradient( Q::Ripple | Q::Hovered, c4 );
-
-    QColor c5( m_pal.primary );
-    c5.setAlphaF( m_pal.focusOpacity );
-    setGradient( Q::Ripple | Q::Hovered | Q::Checked, c5 );
     setStrutSize( Q::Ripple | Q::Hovered, 40, 40 );
     setBoxShape( Q::Ripple, 100, Qt::RelativeSize );
-    setStrutSize( Q::Ripple | Q::Hovered | Q::Checked, 40, 40 );
+    setGradient( Q::Ripple | Q::Hovered, stateLayerColor( m_pal.onSurface, m_pal.focusOpacity ) );
+    setGradient( Q::Ripple | Q::Hovered | Q::Checked, stateLayerColor( m_pal.primary, m_pal.focusOpacity ) );
 
     setBoxBorderColors( Q::Handle, m_pal.outline );
     setBoxBorderColors( Q::Handle | Q::Checked, m_pal.primary );
