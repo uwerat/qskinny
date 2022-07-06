@@ -12,6 +12,7 @@
 #include <QskDialogButton.h>
 #include <QskDialogButtonBox.h>
 #include <QskFocusIndicator.h>
+#include <QskFunctions.h>
 #include <QskInputPanelBox.h>
 #include <QskListView.h>
 #include <QskMenu.h>
@@ -89,11 +90,16 @@ namespace
         const QskMaterial3Theme& m_pal;
     };
 
-    QFont createFont( int pixelSize, QFont::Weight weight = QFont::Normal )
+    QFont createFont( int pixelSize, qreal tracking, QFont::Weight weight )
     {
         QFont font( "Roboto" );
         font.setPixelSize( pixelSize );
-        font.setLetterSpacing( QFont::AbsoluteSpacing, 0.1 );
+
+        if( !qskFuzzyCompare( tracking, 0.0 ) )
+        {
+            font.setLetterSpacing( QFont::AbsoluteSpacing, tracking );
+        }
+
         font.setWeight( weight );
 
         return font;
@@ -228,7 +234,7 @@ void Editor::setupMenu()
     setStrutSize( Q::Graphic, { 46, -1 } );
 
     setColor( Q::Text, m_pal.onSurface );
-    setFontRole( Q::Text, QskMaterial3Skin::M3BodyLarge );
+    setFontRole( Q::Text, QskMaterial3Skin::M3BodyMedium );
 
     setPosition( Q::Panel, 0 );
     setPosition( Q::Panel | QskPopup::Closed, 1 );
@@ -969,9 +975,10 @@ void QskMaterial3Skin::setupFonts()
 {
     Inherited::setupFonts( QStringLiteral( "Roboto" ) );
 
-    setFont( M3BodyLarge, createFont( 16 ) );
-    setFont( M3HeadlineSmall, createFont( 28 ) );
-    setFont( M3LabelLarge, createFont( 14 ) );
+    setFont( M3BodyMedium, createFont( 14, 0.25, QFont::Normal ) );
+    setFont( M3BodyLarge, createFont( 16, 0.5, QFont::Normal ) );
+    setFont( M3HeadlineSmall, createFont( 28, 0.0, QFont::Normal ) );
+    setFont( M3LabelLarge, createFont( 14, 0.1, QFont::Medium ) );
 }
 
 #include "moc_QskMaterial3Skin.cpp"
