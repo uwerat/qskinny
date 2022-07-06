@@ -187,8 +187,6 @@ void Editor::setupCheckBox()
     setColor( Q::Indicator | Q::Checked | Q::Disabled, m_pal.onSurface38 );
 
     setColor( Q::Text, m_pal.onBackground );
-
-    setAnimation( Q::Box | A::Color, qskDuration );
 }
 
 void Editor::setupBox()
