@@ -113,6 +113,13 @@ namespace
                   opacity * foregroundColor.blue() + ( 1 - opacity ) * backgroundColor.blue() );
         return r;
     }
+
+    QColor stateLayerColor( QRgb rgb, qreal opacity )
+    {
+        QColor c( rgb );
+        c.setAlphaF( opacity );
+        return c;
+    }
 }
 
 void Editor::setup()
@@ -485,43 +492,19 @@ void Editor::setupPushButton()
 
 void Editor::setupDialogButton()
 {
-    using A = QskAspect;
     using Q = QskDialogButton;
 
-    setStrutSize( Q::Panel, 30, 16 );
-    setSpacing( Q::Panel, 4 );
+    setStrutSize( Q::Panel, 48, -1 );
+    setSpacing( Q::Panel, 8 );
+    setPadding( Q::Panel, { 12, 13, 12, 13 } );
+    setBoxShape( Q::Panel, 100, Qt::RelativeSize );
+    setGradient( Q::Panel, m_pal.secondaryContainer );
 
-    setMargin( Q::Panel, QskMargins( 4, 3 ) );
-    setPadding( Q::Panel, QskMargins( 10, 6 ) );
+    setGradient( Q::Panel | Q::Hovered, stateLayerColor( m_pal.primary, m_pal.hoverOpacity ) );
+    setGradient( Q::Panel | Q::Pressed, stateLayerColor( m_pal.primary, m_pal.pressedOpacity ) );
 
-    setBoxShape( Q::Panel, 0 );
-
-    setGradient( Q::Panel, m_pal.primary );
-
-    setColor( Q::Text, m_pal.onPrimary );
-    setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
-
+    setColor( Q::Text, m_pal.primary );
     setFontRole( Q::Text, QskMaterial3Skin::M3LabelLarge );
-    setAlignment( Q::Text, Qt::AlignCenter );
-
-    for ( auto state1 : { A::NoState, Q::Focused } )
-    {
-        for ( auto state2 : { A::NoState, Q::Hovered } )
-        {
-            for ( auto state3 : { Q::Pressed | A::NoState,
-                                  Q::Checked | A::NoState, Q::Checked | Q::Pressed } )
-            {
-                const auto states = state1 | state2 | state3;
-
-                setGradient( Q::Panel | states, m_pal.secondary );
-                setColor( Q::Text | states, m_pal.onSecondary );
-            }
-        }
-    }
-
-    setAnimation( Q::Panel | A::Color, qskDuration );
-    setAnimation( Q::Panel | A::Metric, qskDuration );
-    setAnimation( Q::Text | A::Color, qskDuration );
 }
 
 void Editor::setupDialogButtonBox()
