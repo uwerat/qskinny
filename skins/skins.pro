@@ -2,4 +2,5 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     squiek \
-    material
+    material \
+    material3
