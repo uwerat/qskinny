@@ -31,7 +31,7 @@ static inline QRectF qskInnerPanelRect(
 QskSliderSkinlet::QskSliderSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
-    setNodeRoles( { PanelRole, GrooveRole, FillRole, HandleRole } );
+    setNodeRoles( { PanelRole, GrooveRole, FillRole, HandleRole, RippleRole } );
 }
 
 QskSliderSkinlet::~QskSliderSkinlet()
@@ -68,6 +68,11 @@ QRectF QskSliderSkinlet::subControlRect( const QskSkinnable* skinnable,
         return scaleRect( slider, contentsRect );
     }
 
+    if ( subControl == QskSlider::Ripple )
+    {
+        return rippleRect( slider, contentsRect );
+    }
+
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
@@ -96,6 +101,11 @@ QSGNode* QskSliderSkinlet::updateSubNode(
         case HandleRole:
         {
             return updateBoxNode( slider, node, QskSlider::Handle );
+        }
+
+        case RippleRole:
+        {
+            return updateBoxNode( slider, node, QskSlider::Ripple );
         }
     }
 
@@ -221,6 +231,18 @@ QRectF QskSliderSkinlet::handleRect(
     handleRect = handleRect.marginsRemoved( slider->marginHint( Q::Handle ) );
 
     return handleRect;
+}
+
+QRectF QskSliderSkinlet::rippleRect(
+    const QskSlider* slider, const QRectF& rect ) const
+{
+    auto r = handleRect( slider, rect );
+    auto rippleSize = slider->strutSizeHint( QskSlider::Ripple );
+    auto handleSize = slider->strutSizeHint( QskSlider::Handle );
+    auto w = ( rippleSize.width() - handleSize.width() ) / 2,
+            h = ( rippleSize.height() - handleSize.height() ) / 2;
+    r = r.marginsAdded( { w, h, w, h } );
+    return r;
 }
 
 QSizeF QskSliderSkinlet::sizeHint( const QskSkinnable* skinnable,
