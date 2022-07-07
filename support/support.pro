@@ -41,6 +41,7 @@ ensure_skins {
 
     qskAddLibrary($${QSK_PLUGIN_DIR}/skins, squiekskin)
     qskAddLibrary($${QSK_PLUGIN_DIR}/skins, materialskin)
+    qskAddLibrary($${QSK_PLUGIN_DIR}/skins, material3skin)
 }
 
 fontconfig {

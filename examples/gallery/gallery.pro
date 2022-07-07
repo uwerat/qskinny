@@ -37,6 +37,12 @@ SOURCES += \
     selector/SelectorPage.cpp \
 
 HEADERS += \
+    dialog/DialogPage.h
+
+SOURCES += \
+    dialog/DialogPage.cpp \
+
+HEADERS += \
     Page.h
 
 SOURCES += \
