@@ -9,10 +9,13 @@
 
 #include <QskBox.h>
 #include <QskCheckBox.h>
+#include <QskColorFilter.h>
 #include <QskDialogButton.h>
 #include <QskDialogButtonBox.h>
 #include <QskFocusIndicator.h>
 #include <QskFunctions.h>
+#include <QskGraphic.h>
+#include <QskGraphicProvider.h>
 #include <QskInputPanelBox.h>
 #include <QskListView.h>
 #include <QskMenu.h>
@@ -24,6 +27,7 @@
 #include <QskSeparator.h>
 #include <QskShadowMetrics.h>
 #include <QskSlider.h>
+#include <QskStandardSymbol.h>
 #include <QskSubWindow.h>
 #include <QskSwitchButton.h>
 #include <QskSwitchButtonSkinlet.h>
@@ -43,6 +47,9 @@
 
 #include <QskNamespace.h>
 #include <QskPlatform.h>
+
+#include <QPainter>
+#include <QtSvg/QSvgRenderer>
 
 static const int qskDuration = 150;
 
@@ -88,6 +95,28 @@ namespace
         void setupTextLabel();
 
         const QskMaterial3Theme& m_pal;
+    };
+
+    class Material3GraphicProvider final : public QskGraphicProvider
+    {
+      protected:
+        const QskGraphic* loadGraphic( const QString& id ) const override
+        {
+            static QString scope = QStringLiteral( ":/icons/" );
+            const QString file = scope + id + QStringLiteral( "_24px.svg" );
+
+            QskGraphic graphic;
+            QSvgRenderer renderer;
+
+            if ( renderer.load( file ) )
+            {
+                QPainter painter( &graphic );
+                renderer.render( &painter );
+                painter.end();
+            }
+
+            return graphic.isNull() ? nullptr : new QskGraphic( graphic );
+        }
     };
 
     QFont createFont( int pixelSize, qreal tracking, QFont::Weight weight )
@@ -165,6 +194,7 @@ void Editor::setupControl()
 void Editor::setupCheckBox()
 {
     using Q = QskCheckBox;
+    using M3 = QskMaterial3Skin;
 
     setSpacing( Q::Panel, 10 );
 
@@ -174,16 +204,17 @@ void Editor::setupCheckBox()
     setBoxShape( Q::Box, 2 );
     setBoxBorderMetrics( Q::Box, 2 );
     setBoxBorderColors( Q::Box, m_pal.onBackground );
+    setBoxBorderColors( Q::Box | Q::Disabled, stateLayerColor( m_pal.onBackground, m_pal.disabledContentOpacity ) );
     setBoxBorderMetrics( Q::Box | Q::Checked, 0 );
 
     setGradient( Q::Box, m_pal.background );
     setGradient( Q::Box | Q::Checked, m_pal.primary );
-    setGradient( Q::Box | Q::Disabled, m_pal.surfaceVariant12 );
-    setGradient( Q::Box | Q::Checked | Q::Disabled, m_pal.onSurface12 );
+    setGradient( Q::Box | Q::Disabled, stateLayerColor( m_pal.surfaceVariant, m_pal.disabledContainerOpacity ) );
+    setGradient( Q::Box | Q::Checked | Q::Disabled, stateLayerColor( m_pal.onSurface, m_pal.disabledContainerOpacity ) );
 
-    setColor( Q::Indicator, m_pal.background );
-    setColor( Q::Indicator | Q::Checked, m_pal.onPrimary );
-    setColor( Q::Indicator | Q::Checked | Q::Disabled, m_pal.onSurface38 );
+    setGraphicRole( Q::Indicator, M3::GraphicRoleBackground );
+    setGraphicRole( Q::Indicator | Q::Checked, M3::GraphicRoleOnPrimary );
+    setGraphicRole( Q::Indicator | Q::Checked | Q::Disabled, M3::GraphicRoleOnSurfaceDisabled );
 
     setColor( Q::Text, m_pal.onBackground );
 }
@@ -840,8 +871,8 @@ QskMaterial3Theme::QskMaterial3Theme( Lightness lightness )
 {
 }
 
-QskMaterial3Theme::QskMaterial3Theme(Lightness lightness,
-                                    std::array<QskHctColor, NumPaletteTypes> palettes )
+QskMaterial3Theme::QskMaterial3Theme( Lightness lightness,
+                                      std::array<QskHctColor, NumPaletteTypes> palettes )
     : m_palettes( palettes )
 {
     if ( lightness == Light )
@@ -931,7 +962,9 @@ QskMaterial3Theme::QskMaterial3Theme(Lightness lightness,
 QskMaterial3Skin::QskMaterial3Skin( const QskMaterial3Theme& palette, QObject* parent )
     : Inherited( parent )
 {
+    setupGraphicFilters( palette );
     setupFonts();
+    addGraphicProvider( "material3", new Material3GraphicProvider );
 
     Editor editor( &hintTable(), palette );
     editor.setup();
@@ -939,6 +972,41 @@ QskMaterial3Skin::QskMaterial3Skin( const QskMaterial3Theme& palette, QObject* p
 
 QskMaterial3Skin::~QskMaterial3Skin()
 {
+}
+
+QskGraphic QskMaterial3Skin::symbol( int symbolType ) const
+{
+    switch( symbolType )
+    {
+    case QskStandardSymbol::Cancel:
+        return Qsk::loadGraphic( "image://material3/cancel" );
+    case QskStandardSymbol::Critical:
+        return Qsk::loadGraphic( "image://material3/error" );
+    case QskStandardSymbol::CheckMark:
+        return Qsk::loadGraphic( "image://material3/check" );
+    case QskStandardSymbol::CrossMark:
+        return {}; // not existant in Material
+    default:
+        return Inherited::symbol( symbolType );
+    }
+}
+
+void QskMaterial3Skin::setupGraphicFilters( const QskMaterial3Theme& palette )
+{
+    QRgb defaultColor( 0xff1f1f1f );
+
+    QskColorFilter backgroundFilter;
+    backgroundFilter.addColorSubstitution( defaultColor, palette.background );
+    QskSkin::setGraphicFilter( GraphicRoleBackground, backgroundFilter );
+
+    QskColorFilter onPrimaryFilter;
+    onPrimaryFilter.addColorSubstitution( defaultColor, palette.onPrimary );
+    QskSkin::setGraphicFilter( GraphicRoleOnPrimary, onPrimaryFilter );
+
+    QskColorFilter disabledFilter;
+    QColor onSurfaceDisabledColor = stateLayerColor( palette.onSurface, palette.disabledContentOpacity );
+    disabledFilter.addColorSubstitution( defaultColor, onSurfaceDisabledColor.rgba() );
+    QskSkin::setGraphicFilter( GraphicRoleOnSurfaceDisabled, disabledFilter );
 }
 
 void QskMaterial3Skin::setupFonts()

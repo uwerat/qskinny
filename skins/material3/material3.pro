@@ -4,6 +4,8 @@ CONFIG += qskinny
 TEMPLATE = lib
 QSK_PLUGIN_SUBDIR = skins
 
+QT += svg
+
 TARGET = $$qskPluginTarget(material3skin)
 DEFINES += QSK_MATERIAL3_MAKEDLL
 
@@ -21,3 +23,5 @@ OTHER_FILES += metadata.json
 target.path    = $${QSK_INSTALL_PLUGINS}/$${QSK_PLUGIN_SUBDIR}
 INSTALLS       = target
 
+RESOURCES += \
+    icons.qrc

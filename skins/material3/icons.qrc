@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/cancel_24px.svg</file>
+        <file>icons/check_24px.svg</file>
+        <file>icons/error_24px.svg</file>
+    </qresource>
+</RCC>

@@ -81,6 +81,8 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
     const qreal focusOpacity = 0.12;
     const qreal pressedOpacity = 0.12;
     const qreal draggedOpacity = 0.16;
+    const qreal disabledContainerOpacity = 0.12;
+    const qreal disabledContentOpacity = 0.38;
 
   private:
     std::array< QskHctColor, NumPaletteTypes > m_palettes;
@@ -96,6 +98,15 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
     QskMaterial3Skin( const QskMaterial3Theme&, QObject* parent = nullptr );
     ~QskMaterial3Skin() override;
 
+    virtual QskGraphic symbol( int symbolType ) const override;
+
+    enum GraphicRole
+    {
+        GraphicRoleBackground,
+        GraphicRoleOnPrimary,
+        GraphicRoleOnSurfaceDisabled,
+    };
+
     enum FontRole
     {
         M3BodyMedium = QskSkin::HugeFont + 1,
@@ -105,6 +116,7 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
     };
 
   private:
+    void setupGraphicFilters( const QskMaterial3Theme& );
     void setupFonts();
 };
 
