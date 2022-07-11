@@ -36,6 +36,16 @@
 
             qWarning() << "Couldn't find skin plugins, adding some manually.";
         }
+
+#if 1
+        /*
+             QskSkinManager is sorting in alphabetic order, but we want to have
+             the light material skin as initial skin. TODO ...
+         */
+        const auto names = qskSkinManager->skinNames();
+        if ( names.count() > 1 )
+            qskSetup->setSkin( names[1] );
+#endif
     }
 
     Q_COREAPP_STARTUP_FUNCTION( initSkins )
