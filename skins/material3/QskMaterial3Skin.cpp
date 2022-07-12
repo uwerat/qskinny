@@ -812,7 +812,7 @@ void Editor::setupSubWindow()
     setShadowColor( Q::Panel, m_pal.shadow );
 
     // TitleBarPanel
-    setBoxShape( Q::TitleBarPanel, 28 );
+    setBoxShape( Q::TitleBarPanel, { 28, 28, 0, 0 } );
     setPadding( Q::TitleBarPanel, { 24, 24, 24, 16 } );
     setFlagHint( Q::TitleBarPanel | QskAspect::Style,
         Q::TitleBar | Q::Title | Q::Symbol );
