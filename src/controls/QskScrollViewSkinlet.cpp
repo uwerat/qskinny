@@ -41,7 +41,7 @@ static void qskAlignedHandle( qreal start, qreal end,
 QskScrollViewSkinlet::QskScrollViewSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
-    setNodeRoles( { ViewportRole, ContentsRootRole,
+    setNodeRoles( { PanelRole, ViewportRole, ContentsRootRole,
         HorizontalScrollBarRole, HorizontalScrollHandleRole,
         VerticalScrollBarRole, VerticalScrollHandleRole } );
 }
@@ -93,6 +93,10 @@ QSGNode* QskScrollViewSkinlet::updateSubNode(
 
     switch ( nodeRole )
     {
+        case PanelRole:
+        {
+            return updateBoxNode( skinnable, node, QskScrollView::Panel );
+        }
         case ViewportRole:
         {
             return updateBoxNode( skinnable, node, QskScrollView::Viewport );
