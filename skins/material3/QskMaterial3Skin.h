@@ -62,6 +62,12 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
     QRgb background;
     QRgb onBackground;
     QRgb surface;
+    QColor surface1;
+    QColor surface2;
+    QColor surface3;
+    QColor surface4;
+    QColor surface5;
+
     QRgb onSurface;
     QColor onSurface12;
     QColor onSurface38;

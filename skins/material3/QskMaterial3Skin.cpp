@@ -191,10 +191,11 @@ void Editor::setupCheckBox()
 void Editor::setupBox()
 {
     using Q = QskBox;
+    using A = QskAspect;
 
     setGradient( Q::Panel, m_pal.background );
-    setBoxShape( Q::Panel, 14 );
-    setBoxBorderMetrics( Q::Panel, 0 );
+    setGradient( Q::Panel | A::Header, m_pal.surface2 );
+    setGradient( Q::Panel | A::Footer, m_pal.surface2 );
 }
 
 void Editor::setupPopup()
@@ -635,6 +636,7 @@ void Editor::setupTabButton()
     setGradient( Q::Panel, m_pal.surface );
 
     setColor( Q::Text, m_pal.onSurfaceVariant );
+    setColor( Q::Text | A::Footer, m_pal.onSecondaryContainer );
     setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
 
     setColor( Q::Text | Q::Checked, m_pal.primary );
@@ -686,6 +688,15 @@ void Editor::setupTabButton()
     setGradient( Q::Panel | Q::Focused, c );
     c.setAlphaF( m_pal.pressedOpacity );
     setGradient( Q::Panel | Q::Pressed, c );
+
+    setGradient( Q::Panel | A::Footer, m_pal.surface2 );
+    setGradient( Q::Panel | A::Footer | Q::Checked, m_pal.secondaryContainer );
+    setGradient( Q::Panel | A::Footer | Q::Hovered, stateLayerColor( m_pal.onSurfaceVariant, m_pal.hoverOpacity ) );
+    setGradient( Q::Panel | A::Footer | Q::Hovered | Q::Checked, stateLayerColor( m_pal.onSurface, m_pal.hoverOpacity ) );
+    setGradient( Q::Panel | A::Footer | Q::Focused, stateLayerColor( m_pal.onSurfaceVariant, m_pal.focusOpacity ) );
+    setGradient( Q::Panel | A::Footer | Q::Focused | Q::Checked, stateLayerColor( m_pal.onSurface, m_pal.focusOpacity ) );
+    setGradient( Q::Panel | A::Footer | Q::Pressed, stateLayerColor( m_pal.onSurfaceVariant, m_pal.pressedOpacity ) );
+    setGradient( Q::Panel | A::Footer | Q::Pressed | Q::Checked, stateLayerColor( m_pal.onSurface, m_pal.pressedOpacity ) );
 
     setAnimation( Q::Panel | A::Color, qskDuration );
 
@@ -915,6 +926,12 @@ QskMaterial3Theme::QskMaterial3Theme(Lightness lightness,
 
     primary12 = primary;
     primary12.setAlphaF( 0.12 );
+
+    surface1 = flattenedColor( primary, background, 0.05 );
+    surface2 = flattenedColor( primary, background, 0.08 );
+    surface3 = flattenedColor( primary, background, 0.11 );
+    surface4 = flattenedColor( primary, background, 0.12 );
+    surface5 = flattenedColor( primary, background, 0.14 );
 
     onSurface12 = onSurface;
     onSurface12.setAlphaF( 0.12 );
