@@ -757,6 +757,8 @@ void Editor::setupScrollView()
     using A = QskAspect;
     using Q = QskScrollView;
 
+    setGradient( Q::Panel, m_pal.background );
+
     setGradient( Q::Viewport, m_pal.secondaryContainer );
 
     for ( auto subControl : { Q::HorizontalScrollBar, Q::VerticalScrollBar } )
