@@ -40,9 +40,9 @@ namespace
         TabView( QQuickItem* parent = nullptr )
             : QskTabView( parent )
         {
-            setMargins( 10 );
-            setTabBarEdge( Qt::LeftEdge );
+            setTabBarEdge( Qt::BottomEdge );
             setAutoFitTabs( true );
+            setSection( QskAspect::Footer );
         }
 
         void setTabsEnabled( bool on )
@@ -162,11 +162,9 @@ namespace
             : QskLinearBox( Qt::Horizontal, parent )
         {
             initSizePolicy( QskSizePolicy::Ignored, QskSizePolicy::Fixed );
+            setPanel( true );
 
             setSection( QskAspect::Header );
-
-            setMargins( 10 );
-            setBackgroundColor( Qt::lightGray );
 
             new FileButton( "File", this );
             new SkinButton( "Skin", this );
@@ -194,6 +192,8 @@ namespace
         ApplicationView( QQuickItem* parent = nullptr )
             : QskLinearBox( Qt::Vertical, parent )
         {
+            setSpacing( 0 );
+
             auto header = new Header( this );
 
             auto tabView = new TabView( this );
