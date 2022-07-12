@@ -203,7 +203,7 @@ void Editor::setupPopup()
     using Q = QskPopup;
 
     setFlagHint( Q::Overlay | A::Style, true );
-    setGradient( Q::Overlay, Qt::transparent );
+    setGradient( Q::Overlay, stateLayerColor( m_pal.outline, 0.8 ) );
 }
 
 void Editor::setupMenu()
