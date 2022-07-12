@@ -146,6 +146,7 @@ HEADERS += \
     controls/QskAbstractButton.h \
     controls/QskAnimationHint.h \
     controls/QskAnimator.h \
+    controls/QskApplicationView.h \
     controls/QskBoundedControl.h \
     controls/QskBoundedInput.h \
     controls/QskBoundedRangeInput.h \
@@ -230,6 +231,7 @@ SOURCES += \
     controls/QskAbstractButton.cpp \
     controls/QskAnimator.cpp \
     controls/QskAnimationHint.cpp \
+    controls/QskApplicationView.cpp \
     controls/QskBoundedControl.cpp \
     controls/QskBoundedInput.cpp \
     controls/QskBoundedRangeInput.cpp \
