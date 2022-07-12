@@ -15,6 +15,7 @@
 #include <SkinnyShapeProvider.h>
 #include <SkinnyNamespace.h>
 
+#include <QskApplicationView.h>
 #include <QskFocusIndicator.h>
 #include <QskObjectCounter.h>
 #include <QskTabView.h>
@@ -42,7 +43,6 @@ namespace
         {
             setTabBarEdge( Qt::BottomEdge );
             setAutoFitTabs( true );
-            setSection( QskAspect::Footer );
         }
 
         void setTabsEnabled( bool on )
@@ -164,8 +164,6 @@ namespace
             initSizePolicy( QskSizePolicy::Ignored, QskSizePolicy::Fixed );
             setPanel( true );
 
-            setSection( QskAspect::Header );
-
             new FileButton( "File", this );
             new SkinButton( "Skin", this );
 
@@ -186,14 +184,12 @@ namespace
         void enabledToggled( bool );
     };
 
-    class ApplicationView : public QskLinearBox
+    class ApplicationView : public QskApplicationView
     {
       public:
         ApplicationView( QQuickItem* parent = nullptr )
-            : QskLinearBox( Qt::Vertical, parent )
+            : QskApplicationView( parent )
         {
-            setSpacing( 0 );
-
             auto header = new Header( this );
 
             auto tabView = new TabView( this );
@@ -207,6 +203,9 @@ namespace
 
             connect( header, &Header::enabledToggled,
                 tabView, &TabView::setTabsEnabled );
+
+            setHeader( header );
+            setFooter( tabView );
         }
     };
 }
