@@ -19,6 +19,7 @@ class QSK_EXPORT QskScrollViewSkinlet : public QskSkinlet
   public:
     enum NodeRole
     {
+        PanelRole,
         ViewportRole,
         ContentsRootRole,
 
