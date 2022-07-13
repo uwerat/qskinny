@@ -6,6 +6,7 @@
 #include "QskPushButtonSkinlet.h"
 #include "QskPushButton.h"
 
+#include "QskAnimationHint.h"
 #include "QskGraphic.h"
 #include "QskTextOptions.h"
 #include "QskFunctions.h"
@@ -29,7 +30,7 @@ static inline Qt::Orientation qskOrientation( const QskPushButton* button )
 QskPushButtonSkinlet::QskPushButtonSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
-    setNodeRoles( { PanelRole, GraphicRole, TextRole } );
+    setNodeRoles( { PanelRole, RippleRole, GraphicRole, TextRole } );
 }
 
 QskPushButtonSkinlet::~QskPushButtonSkinlet() = default;
@@ -51,6 +52,17 @@ QRectF QskPushButtonSkinlet::subControlRect( const QskSkinnable* skinnable,
     {
         return contentsRect;
     }
+    else if ( subControl == QskPushButton::Ripple )
+    {
+        const auto clickPos = button->effectiveSkinHint( QskPushButton::Ripple | QskAspect::Position ).toPointF();
+        const auto ratio = button->metric( QskPushButton::Ripple | QskAspect::Size );
+        const auto w = contentsRect.width() * ratio;
+        const auto h = contentsRect.height() * ratio;
+        const auto x = clickPos.x() - w;
+        const auto y = clickPos.y() - h;
+        const QRectF r( x, y, w * 2, h * 2 );
+        return r.intersected( contentsRect );
+    }
 
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
@@ -65,6 +77,19 @@ QSGNode* QskPushButtonSkinlet::updateSubNode(
         case PanelRole:
         {
             return updateBoxNode( button, node, QskPushButton::Panel );
+        }
+
+        case RippleRole:
+        {
+            if( button->hasAnimationHint( QskPushButton::Ripple | QskAspect::Color )
+                    && button->metric( QskPushButton::Ripple | QskAspect::Size ) > 0.0 )
+            {
+                return updateBoxNode( button, node, QskPushButton::Ripple );
+            }
+            else
+            {
+                return nullptr;
+            }
         }
 
         case TextRole:
