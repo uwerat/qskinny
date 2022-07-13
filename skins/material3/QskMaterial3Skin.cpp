@@ -479,11 +479,16 @@ void Editor::setupPushButton()
 
     setGradient( Q::Panel | Q::Pressed, focusColor );
 
+    // we cannot use relative size here because the rect changes size during the animation:
+    setBoxShape( Q::Ripple, 15.5 );
+    setGradient( Q::Ripple, stateLayerColor( m_pal.onPrimary, m_pal.hoverOpacity ) );
+
     setColor( Q::Text, m_pal.onPrimary );
     setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
 
     setAnimation( Q::Panel | A::Color, qskDuration );
     setAnimation( Q::Panel | A::Metric, qskDuration );
+    setAnimation( Q::Ripple | A::Color, qskDuration );
     setAnimation( Q::Text | A::Color, qskDuration );
 }
 
