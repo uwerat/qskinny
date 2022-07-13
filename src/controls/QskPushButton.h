@@ -42,7 +42,7 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     using Inherited = QskAbstractButton;
 
   public:
-    QSK_SUBCONTROLS( Panel, Text, Graphic )
+    QSK_SUBCONTROLS( Panel, Ripple, Text, Graphic )
 
     QskPushButton( QQuickItem* parent = nullptr );
     QskPushButton( const QString& text, QQuickItem* parent = nullptr );
@@ -90,6 +90,7 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
 
   protected:
     void changeEvent( QEvent* ) override;
+    void mousePressEvent( QMouseEvent* ) override;
 
     void updateResources() override;
     virtual QskGraphic loadGraphic( const QUrl& ) const;
