@@ -12,10 +12,40 @@
 #include <QskAnimationHint.h>
 
 #include <QGuiApplication>
-#include <QDebug>
+#include <QByteArray>
 
 #define STRINGIFY(x) #x
 #define STRING(x) STRINGIFY(x)
+
+#if defined( PLUGIN_PATH )
+
+#include <QByteArray>
+#include <QDir>
+
+#define STRINGIFY(x) #x
+#define STRING(x) STRINGIFY(x)
+
+static int initPluginPath()
+{
+    const char env[] = "QT_PLUGIN_PATH";
+
+    QByteArray value = qgetenv( env );
+    if ( !value.isEmpty() )
+    {
+        if ( QChar( value.at( value.size() - 1 ) ) != QDir::listSeparator() )
+            value += QDir::listSeparator().toLatin1();
+    }
+
+    value += STRING( PLUGIN_PATH );
+
+    qputenv( env, value );
+    return 0;
+}
+
+// some plugins are loaded before entering QCoreApplication
+static bool pluginPath = initPluginPath();
+
+#endif // PLUGIN_PATH
 
 #if defined( ENSURE_SKINS )
 

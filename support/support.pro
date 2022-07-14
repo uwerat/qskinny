@@ -19,7 +19,6 @@ HEADERS += \
 
 SOURCES += \
     SkinnyNamespace.cpp \
-    SkinnyPlugin.cpp \
     SkinnyShapeFactory.cpp \
     SkinnyShapeProvider.cpp \
     SkinnyShortcut.cpp
