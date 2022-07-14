@@ -82,7 +82,7 @@ DashboardPage::DashboardPage( QQuickItem* parent )
     gridBox->addItem( new IndoorTemperature(), 0, 1 );
     gridBox->addItem( new Humidity(), 1, 1 );
     gridBox->addItem( new MyDevices(), 0, 2, 2, 1 );
-    gridBox->addItem( new UsageDiagramBox(), 2, 0, 0, 2 );
+    gridBox->addItem( new UsageDiagramBox( QString(), new UsageDiagram ), 2, 0, 0, 2 );
     gridBox->addItem( new LightIntensity(), 2, 2 );
 
     gridBox->setColumnStretchFactor( 0, 37 ); // factors add up to 100

@@ -23,5 +23,6 @@ class MainItem : public QskControl
     private:
         QskStackBox* m_cube;
         QskLinearBox* m_mainLayout;
+        QskLinearBox* m_otherLayout;
         QskPanGestureRecognizer m_panRecognizer;
 };

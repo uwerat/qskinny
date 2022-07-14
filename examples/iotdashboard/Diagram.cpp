@@ -8,11 +8,14 @@
 QSK_SUBCONTROL( Diagram, Chart )
 QSK_SUBCONTROL( Diagram, Segments )
 QSK_SUBCONTROL( Diagram, ChartLine1 )
-QSK_SUBCONTROL( Diagram, ChartArea1 )
 QSK_SUBCONTROL( Diagram, ChartLine2 )
-QSK_SUBCONTROL( Diagram, ChartArea2 )
 QSK_SUBCONTROL( Diagram, ChartLine3 )
+QSK_SUBCONTROL( Diagram, ChartArea1 )
+QSK_SUBCONTROL( Diagram, ChartArea2 )
 QSK_SUBCONTROL( Diagram, ChartArea3 )
+QSK_SUBCONTROL( Diagram, ChartBar1 )
+QSK_SUBCONTROL( Diagram, ChartBar2 )
+QSK_SUBCONTROL( Diagram, ChartBar3 )
 
 class Diagram::PrivateData
 {
