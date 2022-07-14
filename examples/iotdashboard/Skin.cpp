@@ -182,6 +182,18 @@ void Skin::initHints( const Palette& palette )
     ed.setColor( Diagram::ChartArea2, "#66ff3122" );
     ed.setColor( Diagram::ChartArea3, "#66ff7d34" );
 
+    ed.setColor( Diagram::ChartBar1, 0xff6776ff );
+    ed.setColor( Diagram::ChartBar2, 0xffff3122 );
+    ed.setColor( Diagram::ChartBar3, 0xffff7d34 );
+
+    ed.setStrutSize( Diagram::ChartBar1, { 6, -1 } );
+    ed.setStrutSize( Diagram::ChartBar2, { 6, -1 } );
+    ed.setStrutSize( Diagram::ChartBar3, { 6, -1 } );
+
+    ed.setBoxShape( Diagram::ChartBar1, { 100, 100, 0, 0, Qt::RelativeSize } );
+    ed.setBoxShape( Diagram::ChartBar2, { 100, 100, 0, 0, Qt::RelativeSize } );
+    ed.setBoxShape( Diagram::ChartBar3, { 100, 100, 0, 0, Qt::RelativeSize } );
+
     // light intensity:
     ed.setBoxShape( LightDisplay::Panel, 100, Qt::RelativeSize );
 

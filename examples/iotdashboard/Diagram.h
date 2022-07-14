@@ -14,13 +14,16 @@ class Diagram : public QskControl
     using Inherited = QskControl;
 
   public:
-    QSK_SUBCONTROLS( Chart, Segments, ChartLine1, ChartArea1,
-        ChartLine2, ChartArea2, ChartLine3, ChartArea3 )
+    QSK_SUBCONTROLS( Chart, Segments,
+                     ChartLine1, ChartArea1, ChartLine2,
+                     ChartArea2, ChartLine3, ChartArea3,
+                     ChartBar1, ChartBar2, ChartBar3 )
 
     enum Type
     {
         Line = 0x01,
         Area = 0x02,
+        Bar = 0x04,
     };
 
     Q_DECLARE_FLAGS( Types, Type )
