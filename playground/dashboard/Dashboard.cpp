@@ -3,23 +3,20 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#include "SpeedometerDisplay.h"
-#include "Speedometer.h"
+#include "Dashboard.h"
+#include "Dial.h"
 
 #include <QskTextLabel.h>
 
-#include <QTime>
 #include <QTimer>
-
-#include <cstdlib>
 
 namespace
 {
-    class Dial : public Speedometer
+    class DashboardDial : public Dial
     {
       public:
-        Dial( const QString& title, QQuickItem* parent = nullptr )
-            : Speedometer( parent )
+        DashboardDial( const QString& title, QQuickItem* parent = nullptr )
+            : Dial( parent )
         {
             setPolishOnResize( true );
             m_label = new QskTextLabel( title, this );
@@ -42,11 +39,11 @@ namespace
         QskTextLabel* m_label;
     };
 
-    class RevCounter : public Dial
+    class RevCounter : public DashboardDial
     {
       public:
         RevCounter( QQuickItem* parent = nullptr )
-            : Dial( "x 1000 min^-1", parent )
+            : DashboardDial( "x 1000 min^-1", parent )
         {
             setMinimum( 145 );
             setMaximum( 305 );
@@ -64,11 +61,11 @@ namespace
         }
     };
 
-    class Speedo : public Dial
+    class SpeedoMeter : public DashboardDial
     {
       public:
-        Speedo( QQuickItem* parent = nullptr )
-            : Dial( "km/h", parent )
+        SpeedoMeter( QQuickItem* parent = nullptr )
+            : DashboardDial( "km/h", parent )
         {
             setMinimum( -215 );
             setMaximum( 35 );
@@ -91,11 +88,11 @@ namespace
         }
     };
 
-    class FuelGauge : public Dial
+    class FuelGauge : public DashboardDial
     {
       public:
         FuelGauge( QQuickItem* parent = nullptr )
-            : Dial( "fuel", parent )
+            : DashboardDial( "fuel", parent )
         {
             setMinimum( 195 );
             setMaximum( 345 );
@@ -111,13 +108,11 @@ namespace
     };
 }
 
-SpeedometerDisplay::SpeedometerDisplay( QQuickItem* parent )
+Dashboard::Dashboard( QQuickItem* parent )
     : QskLinearBox( Qt::Horizontal, parent )
 {
-    std::srand( static_cast< uint >( QTime::currentTime().msec() ) );
-
     (void ) new RevCounter( this );
-    auto speedometer = new Speedo( this );
+    auto speedometer = new SpeedoMeter( this );
     auto fuelGauge = new FuelGauge( this );
 
     setMargins( 10 );
@@ -125,7 +120,7 @@ SpeedometerDisplay::SpeedometerDisplay( QQuickItem* parent )
 
     auto timer = new QTimer( this );
 
-    connect( timer, &QTimer::timeout, speedometer, &Speedo::updateValue );
+    connect( timer, &QTimer::timeout, speedometer, &SpeedoMeter::updateValue );
     connect( timer, &QTimer::timeout, fuelGauge, &FuelGauge::updateValue );
 
     timer->setInterval( 16 );

@@ -7,8 +7,8 @@
 
 #include <QskLinearBox.h>
 
-class SpeedometerDisplay : public QskLinearBox
+class Dashboard : public QskLinearBox
 {
   public:
-    SpeedometerDisplay( QQuickItem* parent = nullptr );
+    Dashboard( QQuickItem* parent = nullptr );
 };

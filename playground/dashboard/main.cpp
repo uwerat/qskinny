@@ -3,17 +3,40 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#include "MainWindow.h"
+#include "Dashboard.h"
 #include "SkinFactory.h"
 
 #include <SkinnyShortcut.h>
 
-#include <QskSetup.h>
+#include <QskWindow.h>
 #include <QskSkinManager.h>
 #include <QskObjectCounter.h>
 
-#include <SkinnyShortcut.h>
+#include <QskGraphic.h>
+#include <QskGraphicIO.h>
+#include <QskGraphicLabel.h>
+
 #include <QGuiApplication>
+
+namespace
+{
+    class Window : public QskWindow
+    {
+      public:
+        Window()
+        { 
+            setAutoLayoutChildren( true );
+
+            const QImage image( QStringLiteral( ":/images/background.jpg" ) );
+
+            auto backgroundImage = new QskGraphicLabel( contentItem() );
+            backgroundImage->setGraphic( QskGraphic::fromImage( image ) );
+            backgroundImage->setFillMode( QskGraphicLabel::Stretch );
+
+            (void ) new Dashboard( contentItem() );
+        }
+    };
+}
 
 int main( int argc, char** argv )
 {
@@ -26,15 +49,9 @@ int main( int argc, char** argv )
 
     QGuiApplication app( argc, argv );
 
-    /*
-        When going over QPainter for the SVGs we prefer the raster paint
-        engine, simply showing better results.
-     */
-    qskSetup->setItemUpdateFlag( QskQuickItem::PreferRasterForTextures, true );
-
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
-    MainWindow window;
+    Window window;
     window.show();
 
     return app.exec();
