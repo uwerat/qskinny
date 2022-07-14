@@ -8,18 +8,10 @@ SUBDIRS += \
     listbox \
     messagebox \
     mycontrols \
+    qvgviewer \
     thumbnails \
     tabview \
     iotdashboard
-
-qtHaveModule(svg) {
-
-    # when checking in qvg files we could drop the svg dependency 
-
-    SUBDIRS += \
-        automotive \
-        qvgviewer
-}
 
 # qml
 SUBDIRS += \
