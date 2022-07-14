@@ -8,12 +8,12 @@ SOURCES += \
     BoxWithButtons.cpp \
     CircularProgressBar.cpp \
     CircularProgressBarSkinlet.cpp \
+    DashboardPage.cpp \
     Diagram.cpp \
     DiagramSkinlet.cpp \
     GraphicProvider.cpp \
     LightDisplaySkinlet.cpp \
     LightDisplay.cpp \
-    MainContent.cpp \
     MainItem.cpp \
     MenuBar.cpp \
     MyDevices.cpp \
@@ -45,7 +45,7 @@ HEADERS += \
     GraphicProvider.h \
     LightDisplaySkinlet.h \
     LightDisplay.h \
-    MainContent.h \
+    DashboardPage.h \
     MainItem.h \
     MainWindow.h \
     MenuBar.h \

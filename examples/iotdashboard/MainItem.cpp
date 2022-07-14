@@ -1,6 +1,6 @@
 #include "MainItem.h"
 
-#include "MainContent.h"
+#include "DashboardPage.h"
 #include "MenuBar.h"
 
 #include <QskGesture.h>
@@ -28,7 +28,7 @@ MainItem::MainItem( QQuickItem* parent )
     m_mainLayout->setSpacing( 0 );
 
     (void) new MenuBar( m_mainLayout );
-    (void) new MainContent( m_mainLayout );
+    (void) new DashboardPage( m_mainLayout );
 
     m_cube->addItem( m_mainLayout );
 }

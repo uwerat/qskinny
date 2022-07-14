@@ -3,7 +3,7 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#include "MainContent.h"
+#include "DashboardPage.h"
 
 #include "Box.h"
 #include "BoxWithButtons.h"
@@ -25,7 +25,7 @@
 
 #include <QTimer>
 
-QSK_SUBCONTROL( MainContent, Panel )
+QSK_SUBCONTROL( DashboardPage, Panel )
 QSK_SUBCONTROL( MainContentGridBox, Panel )
 
 namespace
@@ -61,11 +61,11 @@ namespace
     };
 }
 
-MainContent::MainContent( QQuickItem* parent )
+DashboardPage::DashboardPage( QQuickItem* parent )
     : QskLinearBox( Qt::Vertical, parent )
 {
     setPanel( true );
-    setSubcontrolProxy( QskBox::Panel, MainContent::Panel );
+    setSubcontrolProxy( QskBox::Panel, DashboardPage::Panel );
 
     setAutoAddChildren( false );
     setSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
@@ -93,4 +93,4 @@ MainContent::MainContent( QQuickItem* parent )
     addItem( gridBox );
 }
 
-#include "moc_MainContent.cpp"
+#include "moc_DashboardPage.cpp"
