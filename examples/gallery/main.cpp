@@ -24,6 +24,11 @@
 #include <QskMenu.h>
 #include <QskWindow.h>
 #include <QskDialog.h>
+#include <QskSkinManager.h>
+#include <QskSkin.h>
+#include <QskSkinTransition.h>
+#include <QskAnimationHint.h>
+#include <QskSetup.h>
 
 #include <QGuiApplication>
 
@@ -61,6 +66,77 @@ namespace
         {
             auto menu = new QskMenu( window()->contentItem() );
 
+            populateMenu( menu );
+
+            menu->setOrigin( geometry().bottomLeft() );
+            menu->open();
+        }
+
+        virtual void populateMenu( QskMenu* ) = 0;
+    };
+
+    class SkinButton final : public MenuButton
+    {
+      public:
+        SkinButton( const QString& text, QQuickItem* parent = nullptr )
+            : MenuButton( text, parent )
+        {
+        }
+
+      private:
+        void populateMenu( QskMenu* menu ) override
+        {
+            const auto names = qskSkinManager->skinNames();
+
+            for ( const auto& name : names )
+                menu->addOption( QUrl(), name );
+
+            if ( const auto index = names.indexOf( qskSetup->skinName() ) )
+                menu->setCurrentIndex( index );
+
+            connect( menu, &QskMenu::triggered, this, &SkinButton::changeSkin );
+        }
+
+        void changeSkin( int index )
+        {
+            const auto names = qskSkinManager->skinNames();
+            if ( index < 0 || index >= names.size() )
+                return;
+
+            if ( index == names.indexOf( qskSetup->skinName() ) )
+                return;
+
+            auto oldSkin = qskSetup->skin();
+            if ( oldSkin->parent() == qskSetup )
+                oldSkin->setParent( nullptr ); // otherwise setSkin deletes it
+
+            if ( auto newSkin = qskSetup->setSkin( names[ index ] ) )
+            {
+                QskSkinTransition transition;
+
+                transition.setSourceSkin( oldSkin );
+                transition.setTargetSkin( newSkin );
+                transition.setAnimation( 500 );
+
+                transition.process();
+
+                if ( oldSkin->parent() == nullptr )
+                    delete oldSkin;
+            }
+        }
+    };
+
+    class FileButton final : public MenuButton
+    {
+      public:
+        FileButton( const QString& text, QQuickItem* parent = nullptr )
+            : MenuButton( text, parent )
+        {
+        }
+
+      private:
+        void populateMenu( QskMenu* menu ) override
+        {
             menu->addOption( "image://shapes/Rectangle/White", "Print" );
             menu->addOption( "image://shapes/Diamond/Yellow", "Save As" );
             menu->addOption( "image://shapes/Ellipse/Red", "Setup" );
@@ -70,12 +146,9 @@ namespace
             // see https://github.com/uwerat/qskinny/issues/192
             connect( menu, &QskMenu::triggered,
                 []( int index ) { if ( index == 3 ) qApp->quit(); } );
-
-            menu->setOrigin( geometry().bottomLeft() );
-            menu->open();
         }
     };
-    
+
     /*
         Once QskApplicationView and friends are implemented we can replace
         Header/ApplicationWindow with it. TODO ...
@@ -95,17 +168,8 @@ namespace
             setMargins( 10 );
             setBackgroundColor( Qt::lightGray );
 
-            {
-                auto button = new QskPushButton( "Skin", this );
-
-                // transition leads to errors, when changing the tab before being completed. TODO ...
-                connect( button, &QskSwitchButton::clicked,
-                    [] { Skinny::changeSkin( 500 ); } );
-            }
-
-            {
-                new MenuButton( "Menu", this );
-            }
+            new FileButton( "File", this );
+            new SkinButton( "Skin", this );
 
             addStretch( 10 );
 
