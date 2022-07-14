@@ -1,4 +1,4 @@
-CONFIG += qskexample qskqvg
+CONFIG += qskexample
 
 HEADERS += \
     SkinFactory.h \

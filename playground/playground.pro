@@ -2,7 +2,7 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     anchors \
-    dashboard \
+    dials \
     dialogbuttons \
     invoker \
     inputpanel \
