@@ -7,14 +7,14 @@
 
 #include <QskBoundedValueInput.h>
 
-class Speedometer : public QskBoundedValueInput
+class Dial : public QskBoundedValueInput
 {
     Q_OBJECT
 
   public:
     QSK_SUBCONTROLS( Panel, TickLabels, Knob, Needle )
 
-    Speedometer( QQuickItem* parent = nullptr );
+    Dial( QQuickItem* parent = nullptr );
 
     QVector< QString > tickLabels() const;
     void setTickLabels( const QVector< QString >& );

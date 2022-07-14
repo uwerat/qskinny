@@ -3,29 +3,29 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#include "Speedometer.h"
+#include "Dial.h"
 
 #include <QskSkinlet.h>
 #include <QskSkinnable.h>
 
-QSK_SUBCONTROL( Speedometer, Panel )
-QSK_SUBCONTROL( Speedometer, TickLabels )
-QSK_SUBCONTROL( Speedometer, Knob )
-QSK_SUBCONTROL( Speedometer, Needle )
+QSK_SUBCONTROL( Dial, Panel )
+QSK_SUBCONTROL( Dial, TickLabels )
+QSK_SUBCONTROL( Dial, Knob )
+QSK_SUBCONTROL( Dial, Needle )
 
-Speedometer::Speedometer( QQuickItem* parent )
+Dial::Dial( QQuickItem* parent )
     : QskBoundedValueInput( parent )
 {
 }
 
-QVector< QString > Speedometer::tickLabels() const
+QVector< QString > Dial::tickLabels() const
 {
     return m_tickLabels;
 }
 
-void Speedometer::setTickLabels( const QVector< QString >& labels )
+void Dial::setTickLabels( const QVector< QString >& labels )
 {
     m_tickLabels = labels;
 }
 
-#include "moc_Speedometer.cpp"
+#include "moc_Dial.cpp"

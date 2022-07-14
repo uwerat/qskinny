@@ -3,8 +3,8 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#include "SpeedometerSkinlet.h"
-#include "Speedometer.h"
+#include "DialSkinlet.h"
+#include "Dial.h"
 
 #include <QskBoxBorderColors.h>
 #include <QskBoxBorderMetrics.h>
@@ -78,20 +78,20 @@ namespace
     };
 }
 
-SpeedometerSkinlet::SpeedometerSkinlet( QskSkin* skin )
+DialSkinlet::DialSkinlet( QskSkin* skin )
     : QskSkinlet( skin )
 {
     setNodeRoles( { PanelRole, NeedleRole, KnobRole, LabelsRole } );
 }
 
-QRectF SpeedometerSkinlet::subControlRect( const QskSkinnable* skinnable,
+QRectF DialSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subcontrol ) const
 {
     QRectF r;
 
-    if ( subcontrol == Speedometer::Knob )
+    if ( subcontrol == Dial::Knob )
     {
-        const auto size = skinnable->strutSizeHint( Speedometer::Knob );
+        const auto size = skinnable->strutSizeHint( Dial::Knob );
         r.setSize( size );
     }
     else
@@ -105,18 +105,18 @@ QRectF SpeedometerSkinlet::subControlRect( const QskSkinnable* skinnable,
     return r;
 }
 
-QSGNode* SpeedometerSkinlet::updateSubNode(
+QSGNode* DialSkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
-    const auto speedometer = static_cast< const Speedometer* >( skinnable );
+    const auto speedometer = static_cast< const Dial* >( skinnable );
 
     switch ( nodeRole )
     {
         case PanelRole:
-            return updateBoxNode( speedometer, node, Speedometer::Panel );
+            return updateBoxNode( speedometer, node, Dial::Panel );
 
         case KnobRole:
-            return updateBoxNode( speedometer, node, Speedometer::Knob );
+            return updateBoxNode( speedometer, node, Dial::Knob );
 
         case NeedleRole:
             return updateNeedleNode( speedometer, node );
@@ -130,12 +130,12 @@ QSGNode* SpeedometerSkinlet::updateSubNode(
     }
 }
 
-QSGNode* SpeedometerSkinlet::updateLabelsNode(
-    const Speedometer* speedometer, QSGNode* node ) const
+QSGNode* DialSkinlet::updateLabelsNode(
+    const Dial* dial, QSGNode* node ) const
 {
-    using Q = Speedometer;
+    using Q = Dial;
 
-    const auto labels = speedometer->tickLabels();
+    const auto labels = dial->tickLabels();
 
     // ### actually, we could draw labels with only one entry
     if ( labels.count() <= 1 )
@@ -145,11 +145,11 @@ QSGNode* SpeedometerSkinlet::updateLabelsNode(
     if ( ticksNode == nullptr )
         ticksNode = new TicksNode();
 
-    const auto color = speedometer->color( Q::TickLabels );
+    const auto color = dial->color( Q::TickLabels );
     ticksNode->setColor( color );
 
-    const auto startAngle = speedometer->minimum();
-    const auto endAngle = speedometer->maximum();
+    const auto startAngle = dial->minimum();
+    const auto endAngle = dial->maximum();
     const auto step = ( endAngle - startAngle ) / ( labels.count() - 1 );
 
     auto geometry = ticksNode->geometry();
@@ -157,19 +157,19 @@ QSGNode* SpeedometerSkinlet::updateLabelsNode(
 
     auto vertexData = geometry->vertexDataAsPoint2D();
 
-    auto scaleRect = this->scaleRect( speedometer );
+    auto scaleRect = this->scaleRect( dial );
 
     const auto center = scaleRect.center();
     const auto radius = 0.5 * scaleRect.width();
 
-    const auto spacing = speedometer->spacingHint( Q::TickLabels );
+    const auto spacing = dial->spacingHint( Q::TickLabels );
 
-    const auto font = speedometer->effectiveFont( Q::TickLabels );
+    const auto font = dial->effectiveFont( Q::TickLabels );
     const QFontMetricsF fontMetrics( font );
 
     auto angle = startAngle;
 
-    const auto tickSize = speedometer->strutSizeHint( Q::TickLabels );
+    const auto tickSize = dial->strutSizeHint( Q::TickLabels );
     const auto needleRadius = radius - tickSize.height();
 
     // Create a series of tickmarks from minimum to maximum
@@ -207,7 +207,7 @@ QSGNode* SpeedometerSkinlet::updateLabelsNode(
             const QRectF numbersRect( numbersX, numbersY, w, h );
 
             labelNode = QskSkinlet::updateTextNode(
-                speedometer, labelNode, numbersRect, Qt::AlignCenter | Qt::AlignHCenter,
+                dial, labelNode, numbersRect, Qt::AlignCenter | Qt::AlignHCenter,
                 text, font, QskTextOptions(), QskTextColors( color ), Qsk::Normal );
 
             if ( labelNode )
@@ -228,48 +228,47 @@ QSGNode* SpeedometerSkinlet::updateLabelsNode(
     return ticksNode;
 }
 
-QSGNode* SpeedometerSkinlet::updateNeedleNode(
-    const Speedometer* speedometer, QSGNode* node ) const
+QSGNode* DialSkinlet::updateNeedleNode(
+    const Dial* dial, QSGNode* node ) const
 {
-    using Q = Speedometer;
+    using Q = Dial;
 
     auto needleNode = static_cast< NeedleNode* >( node );
     if ( needleNode == nullptr )
         needleNode = new NeedleNode();
 
-    const auto line = needlePoints( speedometer );
-    const auto width = speedometer->metric( Q::Needle | QskAspect::Size );
+    const auto line = needlePoints( dial );
+    const auto width = dial->metric( Q::Needle | QskAspect::Size );
 
     needleNode->setData( line, width * 2 );
-    needleNode->setColor( speedometer->color( Q::Needle ) );
+    needleNode->setColor( dial->color( Q::Needle ) );
 
     return needleNode;
 }
 
-QRectF SpeedometerSkinlet::scaleRect( const Speedometer* speedometer ) const
+QRectF DialSkinlet::scaleRect( const Dial* dial ) const
 {
-    using Q = Speedometer;
+    using Q = Dial;
 
-    const auto margins = speedometer->marginHint( Q::Panel );
+    const auto margins = dial->marginHint( Q::Panel );
 
-    auto r = speedometer->subControlRect( Q::Panel );
+    auto r = dial->subControlRect( Q::Panel );
     r = r.marginsRemoved( margins );
 
     return r;
 }
 
-QLineF SpeedometerSkinlet::needlePoints( const Speedometer* speedometer ) const
+QLineF DialSkinlet::needlePoints( const Dial* dial ) const
 {
-    const auto r = scaleRect( speedometer );
-    const auto margin = speedometer->metric(
-        Speedometer::Needle | QskAspect::Margin );
+    const auto r = scaleRect( dial );
+    const auto margin = dial->metric( Dial::Needle | QskAspect::Margin );
 
     QLineF line;
     line.setP1( r.center() );
     line.setLength( 0.5 * r.width() - margin );
-    line.setAngle( -speedometer->value() );
+    line.setAngle( -dial->value() );
 
     return line;
 }
 
-#include "moc_SpeedometerSkinlet.cpp"
+#include "moc_DialSkinlet.cpp"

@@ -7,9 +7,9 @@
 
 #include <QskSkinlet.h>
 
-class Speedometer;
+class Dial;
 
-class SpeedometerSkinlet : public QskSkinlet
+class DialSkinlet : public QskSkinlet
 {
     Q_GADGET
 
@@ -22,7 +22,7 @@ class SpeedometerSkinlet : public QskSkinlet
         NeedleRole
     };
 
-    Q_INVOKABLE SpeedometerSkinlet( QskSkin* skin = nullptr );
+    Q_INVOKABLE DialSkinlet( QskSkin* skin = nullptr );
 
     QRectF subControlRect( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol ) const override;
@@ -32,9 +32,9 @@ class SpeedometerSkinlet : public QskSkinlet
         quint8 nodeRole, QSGNode* node ) const override;
 
   private:
-    QRectF scaleRect( const Speedometer* ) const;
-    QLineF needlePoints( const Speedometer* ) const;
+    QRectF scaleRect( const Dial* ) const;
+    QLineF needlePoints( const Dial* ) const;
 
-    QSGNode* updateLabelsNode( const Speedometer*, QSGNode* ) const;
-    QSGNode* updateNeedleNode( const Speedometer*, QSGNode* ) const;
+    QSGNode* updateLabelsNode( const Dial*, QSGNode* ) const;
+    QSGNode* updateNeedleNode( const Dial*, QSGNode* ) const;
 };
