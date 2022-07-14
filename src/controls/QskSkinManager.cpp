@@ -93,7 +93,7 @@ namespace
                 const auto skinNames = factoryData.value( TokenSkins ).toArray();
 
                 for ( const auto& name : skinNames )
-                    m_skinNames += name.toString().toLower();
+                    m_skinNames += name.toString();
             }
 
             return !m_skinNames.isEmpty();

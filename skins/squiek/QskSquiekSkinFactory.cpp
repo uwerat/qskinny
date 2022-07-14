@@ -6,7 +6,7 @@
 #include "QskSquiekSkinFactory.h"
 #include "QskSquiekSkin.h"
 
-static const QString squiekSkinName = QStringLiteral( "squiek" );
+static const QString squiekSkinName = QStringLiteral( "Squiek" );
 
 QskSquiekSkinFactory::QskSquiekSkinFactory( QObject* parent )
     : QskSkinFactory( parent )
