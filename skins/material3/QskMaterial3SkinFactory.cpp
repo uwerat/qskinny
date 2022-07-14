@@ -6,8 +6,8 @@
 #include "QskMaterial3SkinFactory.h"
 #include "QskMaterial3Skin.h"
 
-static const QString materialLightSkinName = QStringLiteral( "material3Light" );
-static const QString materialDarkSkinName = QStringLiteral( "material3Dark" );
+static const QString materialLightSkinName = QStringLiteral( "Material3 Light" );
+static const QString materialDarkSkinName = QStringLiteral( "Material3 Dark" );
 
 QskMaterial3SkinFactory::QskMaterial3SkinFactory( QObject* parent )
     : QskSkinFactory( parent )
