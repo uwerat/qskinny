@@ -6,6 +6,7 @@
 #pragma once
 
 #include "Box.h"
+#include "Diagram.h"
 
 class UsageDiagramLegend : public QskLinearBox
 {
@@ -16,6 +17,15 @@ class UsageDiagramLegend : public QskLinearBox
     UsageDiagramLegend( QQuickItem* parent = nullptr );
 };
 
+class UsageDiagram : public Diagram
+{
+  public:
+    UsageDiagram( QQuickItem* parent = nullptr );
+
+  private:
+    void addCurve( const qreal values[], const size_t count );
+};
+
 class UsageDiagramBox : public Box
 {
     Q_OBJECT
@@ -23,5 +33,5 @@ class UsageDiagramBox : public Box
   public:
     QSK_SUBCONTROLS( Panel, DaysBox, DayText )
 
-    UsageDiagramBox( QQuickItem* parent = nullptr );
+    UsageDiagramBox( const QString& title, Diagram* diagram, QQuickItem* parent = nullptr );
 };

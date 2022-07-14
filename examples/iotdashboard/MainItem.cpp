@@ -2,6 +2,7 @@
 
 #include "DashboardPage.h"
 #include "MenuBar.h"
+#include "RoomsPage.h"
 
 #include <QskGesture.h>
 #include <QskEvent.h>
@@ -16,6 +17,7 @@ MainItem::MainItem( QQuickItem* parent )
     : QskControl( parent )
     , m_cube( new QskStackBox( false, this ) )
     , m_mainLayout( new QskLinearBox( Qt::Horizontal, m_cube ) )
+    , m_otherLayout( new QskLinearBox( Qt::Horizontal, m_cube ) )
 {
     setAutoLayoutChildren( true );
     setAcceptedMouseButtons( Qt::LeftButton );
@@ -27,10 +29,18 @@ MainItem::MainItem( QQuickItem* parent )
 
     m_mainLayout->setSpacing( 0 );
 
+    m_otherLayout->setSpacing( 0 );
+
     (void) new MenuBar( m_mainLayout );
     (void) new DashboardPage( m_mainLayout );
 
+    (void) new MenuBar( m_otherLayout );
+    (void) new RoomsPage( m_otherLayout );
+
     m_cube->addItem( m_mainLayout );
+    m_cube->addItem( m_otherLayout );
+
+    m_cube->setCurrentItem( m_mainLayout );
 }
 
 void MainItem::gestureEvent( QskGestureEvent* event )
