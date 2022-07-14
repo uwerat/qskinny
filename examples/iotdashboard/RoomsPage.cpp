@@ -3,17 +3,17 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#include "DashboardPage.h"
+#include "RoomsPage.h"
 
 #include "Box.h"
 #include "BoxWithButtons.h"
-#include "UsageDiagram.h"
-#include "LightDisplay.h"
 #include "GridBox.h"
+#include "LightDisplay.h"
 #include "MyDevices.h"
 #include "PieChart.h"
 #include "TopBar.h"
 #include "UsageBox.h"
+#include "UsageDiagram.h"
 
 #include <QskBoxBorderColors.h>
 #include <QskBoxBorderMetrics.h>
@@ -26,7 +26,7 @@
 
 #include <QTimer>
 
-QSK_SUBCONTROL( DashboardPage, Panel )
+QSK_SUBCONTROL( RoomsPage, Panel )
 
 namespace
 {
@@ -61,11 +61,11 @@ namespace
     };
 }
 
-DashboardPage::DashboardPage( QQuickItem* parent )
+RoomsPage::RoomsPage( QQuickItem* parent )
     : QskLinearBox( Qt::Vertical, parent )
 {
     setPanel( true );
-    setSubcontrolProxy( QskBox::Panel, DashboardPage::Panel );
+    setSubcontrolProxy( QskBox::Panel, RoomsPage::Panel );
 
     setAutoAddChildren( false );
     setSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
@@ -79,11 +79,6 @@ DashboardPage::DashboardPage( QQuickItem* parent )
     gridBox->setSpacing( 15 );
 
     gridBox->addItem( new UsageBox(), 0, 0, 2, 1 );
-    gridBox->addItem( new IndoorTemperature(), 0, 1 );
-    gridBox->addItem( new Humidity(), 1, 1 );
-    gridBox->addItem( new MyDevices(), 0, 2, 2, 1 );
-    gridBox->addItem( new UsageDiagramBox(), 2, 0, 0, 2 );
-    gridBox->addItem( new LightIntensity(), 2, 2 );
 
     gridBox->setColumnStretchFactor( 0, 37 ); // factors add up to 100
     gridBox->setColumnStretchFactor( 1, 37 );
@@ -93,4 +88,4 @@ DashboardPage::DashboardPage( QQuickItem* parent )
     addItem( gridBox );
 }
 
-#include "moc_DashboardPage.cpp"
+#include "moc_RoomsPage.cpp"

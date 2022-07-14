@@ -8,15 +8,16 @@
 #include <QskGridBox.h>
 #include <QskLinearBox.h>
 
-class DashboardPage : public QskLinearBox
+class MainContentGridBox : public QskGridBox
 {
     Q_OBJECT
 
   public:
     QSK_SUBCONTROLS( Panel )
 
-    DashboardPage( QQuickItem* parent );
-
-  private:
-    QList< QskLinearBox* > m_columns;
+    MainContentGridBox( QQuickItem* parent = nullptr )
+        : QskGridBox( parent )
+    {
+        setSubcontrolProxy( QskGridBox::Panel, Panel );
+    }
 };

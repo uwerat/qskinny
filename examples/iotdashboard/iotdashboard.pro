@@ -12,6 +12,7 @@ SOURCES += \
     Diagram.cpp \
     DiagramSkinlet.cpp \
     GraphicProvider.cpp \
+    GridBox.cpp \
     LightDisplaySkinlet.cpp \
     LightDisplay.cpp \
     MainItem.cpp \
@@ -20,6 +21,7 @@ SOURCES += \
     PieChart.cpp \
     PieChartPainted.cpp \
     PieChartSkinlet.cpp \
+    RoomsPage.cpp \
     RoundedIcon.cpp \
     ShadowedBox.cpp \
     Skin.cpp \
@@ -43,6 +45,7 @@ HEADERS += \
     Diagram.h \
     DiagramSkinlet.h \
     GraphicProvider.h \
+    GridBox.h \
     LightDisplaySkinlet.h \
     LightDisplay.h \
     DashboardPage.h \
@@ -53,6 +56,7 @@ HEADERS += \
     PieChart.h \
     PieChartPainted.h \
     PieChartSkinlet.h \
+    RoomsPage.h \
     RoundedIcon.h \
     ShadowedBox.h \
     Skin.h \
