@@ -22,14 +22,14 @@ class MainContentGridBox : public QskGridBox
     }
 };
 
-class MainContent : public QskLinearBox
+class DashboardPage : public QskLinearBox
 {
     Q_OBJECT
 
   public:
     QSK_SUBCONTROLS( Panel )
 
-    MainContent( QQuickItem* parent );
+    DashboardPage( QQuickItem* parent );
 
   private:
     QList< QskLinearBox* > m_columns;
