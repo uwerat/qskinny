@@ -34,7 +34,7 @@ QskTabView::QskTabView( QQuickItem* parent )
 {
     setPolishOnResize( true );
 
-    m_data->tabBar = new QskTabBar( Qt::TopEdge, this );
+    m_data->tabBar = new QskTabBar( this );
 
     m_data->stackBox = new QskStackBox( this );
     m_data->stackBox->setObjectName( QStringLiteral( "QskTabViewStackBox" ) );

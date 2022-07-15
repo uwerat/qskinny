@@ -712,6 +712,8 @@ void Editor::setupTabBar()
     setGradient( Q::Panel, m_pal.secondaryContainer );
     setPadding( Q::Panel, 0 );
 
+    setFlagHint( Q::Panel | A::Style, Qt::BottomEdge );
+
     // when flicking
     setAnimation( Q::Panel | A::Metric, QskAnimationHint( 200, QEasingCurve::InCubic ) );
 }

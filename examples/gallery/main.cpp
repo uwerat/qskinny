@@ -41,7 +41,6 @@ namespace
         TabView( QQuickItem* parent = nullptr )
             : QskTabView( parent )
         {
-            setTabBarEdge( Qt::BottomEdge );
             setAutoFitTabs( true );
         }
 
