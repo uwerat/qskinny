@@ -4,6 +4,8 @@
  *****************************************************************************/
 
 #include "QskPushButton.h"
+#include "QskAnimationHint.h"
+#include "QskAnimator.h"
 #include "QskAspect.h"
 #include "QskBoxShapeMetrics.h"
 #include "QskGraphic.h"
@@ -16,8 +18,40 @@
 #include <qfontmetrics.h>
 
 QSK_SUBCONTROL( QskPushButton, Panel )
+QSK_SUBCONTROL( QskPushButton, Ripple )
 QSK_SUBCONTROL( QskPushButton, Text )
 QSK_SUBCONTROL( QskPushButton, Graphic )
+
+namespace
+{
+    class ClickAnimator : public QskAnimator
+    {
+      public:
+        ClickAnimator()
+            : QskAnimator()
+        {
+        }
+
+        void setButton( QskPushButton* button )
+        {
+            m_button = button;
+        }
+
+      protected:
+        void advance( qreal value ) override
+        {
+            m_button->setMetric( QskPushButton::Ripple | QskAspect::Size, value );
+        }
+
+        void done() override
+        {
+            m_button->setMetric( QskPushButton::Ripple | QskAspect::Size, 0.0 );
+        }
+
+      private:
+        QskPushButton* m_button;
+    };
+}
 
 class QskPushButton::PrivateData
 {
@@ -48,6 +82,9 @@ class QskPushButton::PrivateData
     QskGraphic graphic;
 
     QSizeF graphicSourceSize;
+
+    ClickAnimator clickAnimator;
+    qreal rippleSize = 0.0;
 
     bool isCheckable : 1;
     bool isGraphicSourceDirty : 1;
@@ -271,6 +308,24 @@ void QskPushButton::changeEvent( QEvent* event )
     }
 
     Inherited::changeEvent( event );
+}
+
+void QskPushButton::mousePressEvent( QMouseEvent* event )
+{
+    Inherited::mousePressEvent( event );
+
+    const auto hint = animationHint( Ripple | QskAspect::Color );
+
+    if( hint.isValid() )
+    {
+        setSkinHint( Ripple | QskAspect::Position, event->pos() );
+
+        m_data->clickAnimator.setWindow( window() );
+        m_data->clickAnimator.setButton( this );
+        m_data->clickAnimator.setDuration( hint.duration );
+        m_data->clickAnimator.setEasingCurve( hint.type );
+        m_data->clickAnimator.start();
+    }
 }
 
 QskGraphic QskPushButton::loadGraphic( const QUrl& url ) const
