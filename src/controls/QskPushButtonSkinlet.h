@@ -20,6 +20,7 @@ class QSK_EXPORT QskPushButtonSkinlet : public QskSkinlet
     enum NodeRole
     {
         PanelRole,
+        RippleRole,
         TextRole,
         GraphicRole,
 
