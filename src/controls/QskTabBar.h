@@ -16,7 +16,8 @@ class QSK_EXPORT QskTabBar : public QskBox
 {
     Q_OBJECT
 
-    Q_PROPERTY( Qt::Edge edge READ edge WRITE setEdge NOTIFY edgeChanged FINAL )
+    Q_PROPERTY( Qt::Edge edge READ edge
+        WRITE setEdge RESET resetEdge NOTIFY edgeChanged FINAL )
 
     Q_PROPERTY( Qt::Orientation orientation READ orientation )
 
@@ -45,6 +46,7 @@ class QSK_EXPORT QskTabBar : public QskBox
     ~QskTabBar() override;
 
     void setEdge( Qt::Edge );
+    void resetEdge();
     Qt::Edge edge() const;
 
     Qt::Orientation orientation() const;
