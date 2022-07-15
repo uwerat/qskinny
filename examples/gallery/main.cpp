@@ -192,8 +192,8 @@ namespace
             auto header = new Header( this );
 
             auto tabView = new TabView( this );
-            tabView->addTab( "Labels", new LabelPage() );
             tabView->addTab( "Buttons", new ButtonPage() );
+            tabView->addTab( "Labels", new LabelPage() );
             tabView->addTab( "Sliders", new SliderPage() );
             tabView->addTab( "Progress\nBars", new ProgressBarPage() );
             tabView->addTab( "Text\nInputs", new TextInputPage() );
@@ -204,7 +204,7 @@ namespace
                 tabView, &TabView::setTabsEnabled );
 
             setHeader( header );
-            setFooter( tabView );
+            setBody( tabView );
         }
     };
 }
