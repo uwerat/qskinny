@@ -40,6 +40,7 @@
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxShapeMetrics.h>
 #include <QskMargins.h>
+#include <QskRgbValue.h>
 
 #include <QskNamespace.h>
 #include <QskPlatform.h>
@@ -105,20 +106,15 @@ namespace
         return font;
     }
 
-    QColor flattenedColor( const QColor& foregroundColor,
-                           const QColor& backgroundColor, qreal opacity )
+    inline QRgb flattenedColor(
+        QRgb foregroundColor, QRgb backgroundColor, qreal ratio )
     {
-        QColor r( opacity * foregroundColor.red() + ( 1 - opacity ) * backgroundColor.red(),
-                  opacity * foregroundColor.green() + ( 1 - opacity ) * backgroundColor.green(),
-                  opacity * foregroundColor.blue() + ( 1 - opacity ) * backgroundColor.blue() );
-        return r;
+        return QskRgb::interpolated( backgroundColor, foregroundColor, ratio );
     }
 
-    QColor stateLayerColor( QRgb rgb, qreal opacity )
+    inline QRgb stateLayerColor( QRgb rgb, qreal opacity )
     {
-        QColor c( rgb );
-        c.setAlphaF( opacity );
-        return c;
+        return QskRgb::toTransparentF( rgb, opacity );
     }
 }
 
@@ -218,7 +214,7 @@ void Editor::setupMenu()
 
     // The color here is primary with an opacity of 8% - we blend that
     // with the background, because we don't want the menu to have transparency:
-    QColor panel = flattenedColor( m_pal.primary, m_pal.background, 0.08 );
+    const auto panel = flattenedColor( m_pal.primary, m_pal.background, 0.08 );
     setGradient( Q::Panel, panel );
 
     setShadowMetrics( Q::Panel, m_pal.elevationLight2 );
@@ -283,8 +279,7 @@ void Editor::setupTextInput()
 
     setGradient( Q::Panel, m_pal.surfaceVariant );
 
-    QColor c1( m_pal.onSurface );
-    c1.setAlphaF( 0.04 );
+    const auto c1 = QskRgb::toTransparentF( m_pal.onSurface, 0.04 );
     setGradient( Q::Panel | Q::Disabled, c1 );
     setBoxBorderMetrics( Q::Panel | Q::Disabled, 0, 0, 0, 1 );
 
@@ -470,12 +465,13 @@ void Editor::setupPushButton()
     setGradient( Q::Panel, m_pal.primary );
     setGradient( Q::Panel | Q::Disabled, m_pal.onSurface12 );
 
-    QColor hoverColor = flattenedColor( m_pal.onPrimary, m_pal.primary, 0.08 );
+    const auto hoverColor = flattenedColor( m_pal.onPrimary, m_pal.primary, 0.08 );
+
     setGradient( Q::Panel | Q::Hovered, hoverColor );
     setShadowMetrics( Q::Panel | Q::Hovered, m_pal.elevationLight1 );
     setShadowColor( Q::Panel | Q::Hovered, m_pal.shadow );
 
-    QColor focusColor = flattenedColor( m_pal.onPrimary, m_pal.primary, 0.12 );
+    const auto focusColor = flattenedColor( m_pal.onPrimary, m_pal.primary, 0.12 );
     setGradient( Q::Panel | Q::Focused, focusColor );
 
     setGradient( Q::Panel | Q::Pressed, focusColor );
@@ -681,13 +677,14 @@ void Editor::setupTabButton()
         setBoxBorderColors( aspect | Q::Checked, borderColors );
     }
 
-    QColor c( m_pal.surface );
-    c.setAlphaF( m_pal.hoverOpacity );
-    setGradient( Q::Panel | Q::Hovered, c );
-    c.setAlphaF( m_pal.focusOpacity );
-    setGradient( Q::Panel | Q::Focused, c );
-    c.setAlphaF( m_pal.pressedOpacity );
-    setGradient( Q::Panel | Q::Pressed, c );
+    setGradient( Q::Panel | Q::Hovered,
+        QskRgb::toTransparentF( m_pal.surface, m_pal.hoverOpacity ) );
+
+    setGradient( Q::Panel | Q::Focused, 
+        QskRgb::toTransparentF( m_pal.surface, m_pal.focusOpacity ) );
+
+    setGradient( Q::Panel | Q::Pressed,
+        QskRgb::toTransparentF( m_pal.surface, m_pal.pressedOpacity ) );
 
     setGradient( Q::Panel | A::Footer, m_pal.surface2 );
     setGradient( Q::Panel | A::Footer | Q::Checked, m_pal.secondaryContainer );
@@ -924,8 +921,7 @@ QskMaterial3Theme::QskMaterial3Theme(Lightness lightness,
         shadow = m_palettes[ Neutral ].toned( 0 ).rgb();
     }
 
-    primary12 = primary;
-    primary12.setAlphaF( 0.12 );
+    primary12 = QskRgb::toTransparentF( primary, 0.12 );
 
     surface1 = flattenedColor( primary, background, 0.05 );
     surface2 = flattenedColor( primary, background, 0.08 );
@@ -933,14 +929,10 @@ QskMaterial3Theme::QskMaterial3Theme(Lightness lightness,
     surface4 = flattenedColor( primary, background, 0.12 );
     surface5 = flattenedColor( primary, background, 0.14 );
 
-    onSurface12 = onSurface;
-    onSurface12.setAlphaF( 0.12 );
+    onSurface12 = QskRgb::toTransparentF( onSurface, 0.12 );
+    onSurface38 = QskRgb::toTransparentF( onSurface, 0.38 );
 
-    onSurface38 = onSurface;
-    onSurface38.setAlphaF( 0.38 );
-
-    surfaceVariant12 = surfaceVariant;
-    surfaceVariant12.setAlphaF( 0.12 );
+    surfaceVariant12 = QskRgb::toTransparentF( surfaceVariant, 0.12 );
 
     elevationLight1 = QskShadowMetrics( -3, 5, { 0, 2 } );
     elevationLight2 = QskShadowMetrics( -2, 8, { 0, 2 } );
