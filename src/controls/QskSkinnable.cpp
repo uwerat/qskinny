@@ -904,7 +904,36 @@ QVariant QskSkinnable::animatedValue(
             But that might change ...
          */
 
-        v = m_data->animators.currentValue( aspect );
+        auto a = aspect;
+
+        Q_FOREVER
+        {
+            v = m_data->animators.currentValue( aspect );
+
+            if ( !v.isValid() )
+            {
+                if ( aspect.placement() )
+                {
+                    // clear the placement bits and restart
+                    aspect = a;
+                    aspect.setPlacement( QskAspect::NoPlacement );
+
+                    continue;
+                }
+            }
+
+            if ( aspect.section() != QskAspect::Body )
+            {
+                // try to resolve from QskAspect::Body
+
+                a.setSection( QskAspect::Body );
+                aspect = a;
+
+                continue;
+            }
+
+            break;
+        }
     }
 
     if ( !v.isValid() )
@@ -923,7 +952,7 @@ QVariant QskSkinnable::animatedValue(
                 if ( !aspect.hasStates() )
                     aspect.setStates( skinStates() );
 
-                const auto a = aspect;
+                auto a = aspect;
 
                 Q_FOREVER
                 {
@@ -945,6 +974,16 @@ QVariant QskSkinnable::animatedValue(
 
                             continue;
                         }
+                    }
+
+                    if ( aspect.section() != QskAspect::Body )
+                    {
+                        // try to resolve from QskAspect::Body
+
+                        a.setSection( QskAspect::Body );
+                        aspect = a;
+
+                        continue;
                     }
 
                     break;
