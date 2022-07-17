@@ -318,7 +318,7 @@ void QskPushButton::mousePressEvent( QMouseEvent* event )
 
     if( hint.isValid() )
     {
-        setSkinHint( Ripple | QskAspect::Position, event->pos() );
+        setSkinHint( Ripple | QskAspect::Metric | QskAspect::Position, event->pos() );
 
         m_data->clickAnimator.setWindow( window() );
         m_data->clickAnimator.setButton( this );

@@ -38,30 +38,40 @@ QskPushButtonSkinlet::~QskPushButtonSkinlet() = default;
 QRectF QskPushButtonSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
+    using Q = QskPushButton;
+
     const auto button = static_cast< const QskPushButton* >( skinnable );
 
-    if ( subControl == QskPushButton::Text )
+    if ( subControl == Q::Text )
     {
         return textRect( button, contentsRect );
     }
-    else if ( subControl == QskPushButton::Graphic )
+    else if ( subControl == Q::Graphic )
     {
         return graphicRect( button, contentsRect );
     }
-    else if ( subControl == QskPushButton::Panel )
+    else if ( subControl == Q::Panel )
     {
         return contentsRect;
     }
-    else if ( subControl == QskPushButton::Ripple )
+    else if ( subControl == Q::Ripple )
     {
-        const auto clickPos = button->effectiveSkinHint( QskPushButton::Ripple | QskAspect::Position ).toPointF();
-        const auto ratio = button->metric( QskPushButton::Ripple | QskAspect::Size );
+        const auto ratio = button->metric( Q::Ripple | QskAspect::Size );
+        if ( ratio <= 0.0 )
+            return QRectF();
+
+        const auto clickPos = button->effectiveSkinHint(
+            Q::Ripple | QskAspect::Metric | QskAspect::Position ).toPointF();
+
         const auto w = contentsRect.width() * ratio;
         const auto h = contentsRect.height() * ratio;
         const auto x = clickPos.x() - w;
         const auto y = clickPos.y() - h;
+
         const QRectF r( x, y, w * 2, h * 2 );
-        return r.intersected( contentsRect );
+
+        const auto clipRect = subControlRect( skinnable, contentsRect, Q::Panel );
+        return r.intersected( clipRect );
     }
 
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
@@ -81,15 +91,7 @@ QSGNode* QskPushButtonSkinlet::updateSubNode(
 
         case RippleRole:
         {
-            if( button->hasAnimationHint( QskPushButton::Ripple | QskAspect::Color )
-                    && button->metric( QskPushButton::Ripple | QskAspect::Size ) > 0.0 )
-            {
-                return updateBoxNode( button, node, QskPushButton::Ripple );
-            }
-            else
-            {
-                return nullptr;
-            }
+            return updateBoxNode( button, node, QskPushButton::Ripple );
         }
 
         case TextRole:
