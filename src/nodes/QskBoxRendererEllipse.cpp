@@ -1315,9 +1315,18 @@ void QskBoxRenderer::renderRectellipseFill(
 
     const int stepCount = metrics.corner[ 0 ].stepCount;
 
-    int lineCount = 2 * ( stepCount + 1 );
+    int lineCount = 2 * stepCount;
+
     if ( metrics.centerQuad.top >= metrics.centerQuad.bottom )
+    {
+        // we need an extra line connecting the top/bottom corners
         lineCount++;
+    }
+    else
+    {
+        // for some reason we have 2 more lines for true ellipses ??
+        lineCount += 2;
+    }
 
     const auto line = allocateLines< Line >( geometry, lineCount );
     qskRenderFillLines( metrics, Qt::Vertical, line, ColorMapNone() );
