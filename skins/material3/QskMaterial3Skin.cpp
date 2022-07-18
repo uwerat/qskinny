@@ -476,8 +476,6 @@ void Editor::setupPushButton()
 
     setGradient( Q::Panel | Q::Pressed, focusColor );
 
-    // we cannot use relative size here because the rect changes size during the animation:
-    setBoxShape( Q::Ripple, 15.5 );
     setGradient( Q::Ripple, stateLayerColor( m_pal.onPrimary, m_pal.hoverOpacity ) );
 
     setColor( Q::Text, m_pal.onPrimary );

@@ -10,6 +10,7 @@
 #include "QskGraphic.h"
 #include "QskTextOptions.h"
 #include "QskFunctions.h"
+#include "QskSGNode.h"
 
 #include <qfontmetrics.h>
 #include <qmath.h>
@@ -38,40 +39,26 @@ QskPushButtonSkinlet::~QskPushButtonSkinlet() = default;
 QRectF QskPushButtonSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
-    using Q = QskPushButton;
-
     const auto button = static_cast< const QskPushButton* >( skinnable );
 
-    if ( subControl == Q::Text )
+    if ( subControl == QskPushButton::Text )
     {
         return textRect( button, contentsRect );
     }
-    else if ( subControl == Q::Graphic )
+
+    if ( subControl == QskPushButton::Graphic )
     {
         return graphicRect( button, contentsRect );
     }
-    else if ( subControl == Q::Panel )
+
+    if ( subControl == QskPushButton::Panel )
     {
         return contentsRect;
     }
-    else if ( subControl == Q::Ripple )
+
+    if ( subControl == QskPushButton::Ripple )
     {
-        const auto ratio = button->metric( Q::Ripple | QskAspect::Size );
-        if ( ratio <= 0.0 )
-            return QRectF();
-
-        const auto clickPos = button->effectiveSkinHint(
-            Q::Ripple | QskAspect::Metric | QskAspect::Position ).toPointF();
-
-        const auto w = contentsRect.width() * ratio;
-        const auto h = contentsRect.height() * ratio;
-        const auto x = clickPos.x() - w;
-        const auto y = clickPos.y() - h;
-
-        const QRectF r( x, y, w * 2, h * 2 );
-
-        const auto clipRect = subControlRect( skinnable, contentsRect, Q::Panel );
-        return r.intersected( clipRect );
+        return rippleRect( button, contentsRect );
     }
 
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
@@ -91,7 +78,7 @@ QSGNode* QskPushButtonSkinlet::updateSubNode(
 
         case RippleRole:
         {
-            return updateBoxNode( button, node, QskPushButton::Ripple );
+            return updateRippleNode( button, node );
         }
 
         case TextRole:
@@ -201,6 +188,29 @@ QRectF QskPushButtonSkinlet::graphicRect(
     return r;
 }
 
+QRectF QskPushButtonSkinlet::rippleRect(
+    const QskPushButton* button, const QRectF& contentsRect ) const
+{
+    using Q = QskPushButton;
+
+    const auto ratio = button->metric( Q::Ripple | QskAspect::Size );
+    if ( ratio <= 0.0 )
+        return QRectF();
+
+    const auto pos = button->effectiveSkinHint(
+        Q::Ripple | QskAspect::Metric | QskAspect::Position ).toPointF();
+
+    const auto w = contentsRect.width() * ratio;
+    const auto h = contentsRect.height() * ratio;
+    const auto x = pos.x() - w;
+    const auto y = pos.y() - h;
+
+    const QRectF r( x, y, w * 2, h * 2 );
+
+    const auto clipRect = subControlRect( button, contentsRect, Q::Panel );
+    return r.intersected( clipRect );
+}
+
 QSGNode* QskPushButtonSkinlet::updateTextNode(
     const QskPushButton* button, QSGNode* node ) const
 {
@@ -216,6 +226,34 @@ QSGNode* QskPushButtonSkinlet::updateTextNode(
 
     return QskSkinlet::updateTextNode( button, node, rect, alignment,
         button->text(), button->textOptions(), Q::Text );
+}
+
+QSGNode* QskPushButtonSkinlet::updateRippleNode(
+    const QskPushButton* button, QSGNode* node ) const
+{
+    using Q = QskPushButton;
+
+    const auto rippleRect = button->subControlRect( Q::Ripple );
+    if ( rippleRect.isEmpty() )
+        return nullptr;
+
+    auto clipNode = updateBoxClipNode( button, node,
+        button->subControlRect( Q::Panel ), Q::Panel );
+
+    if ( clipNode )
+    {
+        auto boxNode = QskSGNode::findChildNode( clipNode, RippleRole );
+        boxNode = updateBoxNode( button, boxNode, rippleRect, Q::Ripple );
+
+        if ( boxNode == nullptr )
+            return nullptr;
+
+        QskSGNode::setNodeRole( boxNode, RippleRole );
+        if ( boxNode->parent() != clipNode )
+            clipNode->appendChildNode( boxNode );
+    }
+        
+    return clipNode;
 }
 
 QSizeF QskPushButtonSkinlet::sizeHint( const QskSkinnable* skinnable,
