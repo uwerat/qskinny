@@ -193,22 +193,21 @@ QRectF QskPushButtonSkinlet::rippleRect(
 {
     using Q = QskPushButton;
 
+    QRectF rect;
+
     const auto ratio = button->metric( Q::Ripple | QskAspect::Size );
-    if ( ratio <= 0.0 )
-        return QRectF();
+    if ( ratio > 0.0 )
+    {
+        const auto pos = button->effectiveSkinHint(
+            Q::Ripple | QskAspect::Metric | QskAspect::Position ).toPointF();
 
-    const auto pos = button->effectiveSkinHint(
-        Q::Ripple | QskAspect::Metric | QskAspect::Position ).toPointF();
+        const auto panelRect = subControlRect( button, contentsRect, Q::Panel );
 
-    const auto w = contentsRect.width() * ratio;
-    const auto h = contentsRect.height() * ratio;
-    const auto x = pos.x() - w;
-    const auto y = pos.y() - h;
-
-    const QRectF r( x, y, w * 2, h * 2 );
-
-    const auto clipRect = subControlRect( button, contentsRect, Q::Panel );
-    return r.intersected( clipRect );
+        rect.setSize( 2.0 * panelRect.size() * ratio );
+        rect.moveCenter( pos );
+    }
+    
+    return rect;
 }
 
 QSGNode* QskPushButtonSkinlet::updateTextNode(
