@@ -543,9 +543,7 @@ QSGNode* QskSkinlet::updateBoxClipNode( const QskSkinnable* skinnable,
 QSGNode* QskSkinlet::updateBoxClipNode( const QskSkinnable* skinnable,
     QSGNode* node, const QRectF& rect, QskAspect::Subcontrol subControl )
 {
-    auto clipNode = static_cast< QskBoxClipNode* >( node );
-    if ( clipNode == nullptr )
-        clipNode = new QskBoxClipNode();
+    auto clipNode = QskSGNode::ensureNode< QskBoxClipNode >( node );
 
     const auto margins = skinnable->marginHint( subControl );
 
