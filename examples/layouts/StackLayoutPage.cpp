@@ -61,6 +61,22 @@ namespace
             Q_EMIT transitionStarted( animator->duration() );
         }
 
+        void incrementFlipping( int offset )
+        {
+            auto animator = dynamic_cast< QskStackBoxAnimator2* >( this->animator() );
+
+            if ( animator == nullptr )
+            {
+                animator = new QskStackBoxAnimator2( this );
+                animator->setDuration( 800 );
+            }
+
+            setAnimator( animator );
+            setCurrentIndex( incrementedIndex( offset ) );
+
+            Q_EMIT transitionStarted( animator->duration() );
+        }
+
         void incrementScrolling( Qt::Orientation orientation, int offset )
         {
             auto animator = dynamic_cast< QskStackBoxAnimator1* >( this->animator() );
@@ -171,7 +187,8 @@ StackLayoutPage::StackLayoutPage( QQuickItem* parent )
     buttonBox->addButton( ">>", [ box ]() { box->incrementScrolling( Qt::Horizontal, -1 ); } );
     buttonBox->addButton( "^", [ box ]() { box->incrementScrolling( Qt::Vertical, -1 ); } );
     buttonBox->addButton( "v", [ box ]() { box->incrementScrolling( Qt::Vertical, +1 ); } );
-    buttonBox->addButton( "Fading", [ box ]() { box->incrementFading( +1 ); } );
+    buttonBox->addButton( "Fade", [ box ]() { box->incrementFading( +1 ); } );
+    buttonBox->addButton( "Flip", [ box ]() { box->incrementFlipping( +1 ); } );
 
     // page indicator
 

@@ -71,6 +71,20 @@ class QSK_EXPORT QskStackBoxAnimator1 : public QskStackBoxAnimator
     bool m_hasClip : 1;
 };
 
+class QSK_EXPORT QskStackBoxAnimator2 : public QskStackBoxAnimator
+{
+    Q_OBJECT
+
+  public:
+    QskStackBoxAnimator2( QskStackBox* );
+    ~QskStackBoxAnimator2() override;
+
+  protected:
+    void setup() override;
+    void advanceIndex( qreal value ) override;
+    void done() override;
+};
+
 class QSK_EXPORT QskStackBoxAnimator3 : public QskStackBoxAnimator
 {
     Q_OBJECT
