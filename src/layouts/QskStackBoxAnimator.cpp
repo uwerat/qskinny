@@ -9,6 +9,10 @@
 #include "QskQuick.h"
 #include "QskFunctions.h"
 
+QSK_QT_PRIVATE_BEGIN
+#include <private/qquickitem_p.h>
+QSK_QT_PRIVATE_END
+
 static Qsk::Direction qskDirection(
     Qt::Orientation orientation, int from, int to, int itemCount )
 {
@@ -54,6 +58,59 @@ static Qsk::Direction qskDirection(
     }
 
     return direction;
+}
+
+namespace
+{
+    class Rotation : public QQuickTransform
+    {
+        Q_OBJECT
+
+    public:
+        Rotation( qreal angle, QQuickItem* item )
+            : QQuickTransform( item )
+            , m_angle( angle )
+        {
+            prependToItem( item );
+        }
+
+        void setAngle( qreal angle )
+        {
+            m_angle = angle;
+            update();
+        }
+
+        void applyTo( QMatrix4x4* matrix) const override
+        {
+            if ( const auto item = qobject_cast< QQuickItem* >( parent() ) )
+            {
+                const auto dx = 0.5 * item->width();
+                const auto dy = 0.5 * item->height();
+
+                QTransform transform;
+                transform.translate( dx, dy );
+                transform.rotate( m_angle, Qt::XAxis );
+                transform.translate( -dx, -dy );
+
+                *matrix *= transform;
+            }
+        }
+
+        static Rotation* find( const QQuickItem* item )
+        {
+            const auto& transforms = QQuickItemPrivate::get( item )->transforms;
+            for ( const auto& t : transforms )
+            {
+                if ( auto rotation = qobject_cast< Rotation* >( t ) )
+                    return rotation;
+            }
+
+            return nullptr;
+        }
+
+    private:
+        qreal m_angle = 0.0;
+    };
 }
 
 QskStackBoxAnimator::QskStackBoxAnimator( QskStackBox* parent )
@@ -273,6 +330,69 @@ bool QskStackBoxAnimator1::eventFilter( QObject* object, QEvent* event )
     return QObject::eventFilter( object, event );
 }
 
+QskStackBoxAnimator2::QskStackBoxAnimator2( QskStackBox* parent )
+    : QskStackBoxAnimator( parent )
+{
+}
+
+QskStackBoxAnimator2::~QskStackBoxAnimator2()
+{
+}
+
+void QskStackBoxAnimator2::setup()
+{
+    if ( auto item = itemAt( 0 ) )
+        ( void ) new Rotation( 0.0, item );
+
+    if ( auto item = itemAt( 1 ) )
+        ( void ) new Rotation( 90.0, item );
+}
+
+void QskStackBoxAnimator2::advanceIndex( qreal value )
+{
+    if ( value < 0.5 )
+    {
+        if ( auto item = itemAt( 0 ) )
+        {
+            auto rotation = Rotation::find( item );
+            rotation->setAngle( value * 180.0 );
+            item->setVisible( true );
+        }
+
+        if ( auto item = itemAt( 1 ) )
+        {
+            item->setVisible( false );
+        }
+    }
+    else
+    {
+        if ( auto item = itemAt( 0 ) )
+        {
+            item->setVisible( false );
+        }
+
+        if ( auto item = itemAt( 1 ) )
+        {
+            auto rotation = Rotation::find( item );
+            rotation->setAngle( ( 1.0 - value ) * -180.0 );
+
+            item->setVisible( true );
+        }
+    }
+}
+
+void QskStackBoxAnimator2::done()
+{
+    for ( int i = 0; i < 2; i++ )
+    {
+        if ( auto item = itemAt( i ) )
+        {
+            delete Rotation::find( item );
+            item->setVisible( i == 1 ); // not here !!
+        }
+    }
+}
+
 QskStackBoxAnimator3::QskStackBoxAnimator3( QskStackBox* parent )
     : QskStackBoxAnimator( parent )
 {
@@ -313,3 +433,4 @@ void QskStackBoxAnimator3::done()
 }
 
 #include "moc_QskStackBoxAnimator.cpp"
+#include "QskStackBoxAnimator.moc"
