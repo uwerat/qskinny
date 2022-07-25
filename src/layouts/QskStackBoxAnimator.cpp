@@ -67,19 +67,19 @@ namespace
         Q_OBJECT
 
       public:
-        RotationTransform( Qt::Axis axis, qreal angle, QQuickItem* item )
+        RotationTransform( Qt::Axis axis, qreal radians, QQuickItem* item )
             : QQuickTransform( item )
             , m_axis( axis )
-            , m_angle( angle )
+            , m_radians( radians )
         {
             prependToItem( item );
         }
 
-        void setAngle( qreal angle )
+        void setRadians( qreal radians )
         {
-            if ( m_angle != angle )
+            if ( m_radians != radians )
             {
-                m_angle = angle;
+                m_radians = radians;
                 update();
             }
         }
@@ -93,17 +93,16 @@ namespace
 
                 QTransform transform;
                 transform.translate( dx, dy );
-                transform.rotate( m_angle, m_axis );
+                transform.rotateRadians( m_radians, m_axis );
                 transform.translate( -dx, -dy );
 
                 *matrix *= transform;
             }
         }
 
-
       private:
         const Qt::Axis m_axis;
-        qreal m_angle = 0.0;
+        qreal m_radians;
     };
 
     static RotationTransform* qskFindRotationTransform( const QQuickItem* item )
@@ -382,22 +381,22 @@ void QskStackBoxAnimator2::setup()
         ( void ) new RotationTransform( axis, 0.0, item );
 
     if ( auto item = itemAt( 1 ) )
-        ( void ) new RotationTransform( axis, 90.0, item );
+        ( void ) new RotationTransform( axis, M_PI_2, item );
 }
 
 void QskStackBoxAnimator2::advanceIndex( qreal value )
 {
-    auto degrees = value * 180.0;
+    auto radians = value * M_PI;
 
-    if ( degrees < 90.0 && degrees > -90.0 )
+    if ( radians < M_PI_2 && radians > -M_PI_2 )
     {
         if ( auto item = itemAt( 0 ) )
         {
             if ( !m_inverted )
-                degrees = 360.0 - degrees;
+                radians = 2 * M_PI - radians;
 
             auto rotation = qskFindRotationTransform( item );
-            rotation->setAngle( degrees );
+            rotation->setRadians( radians );
 
             item->setVisible( true );
         }
@@ -416,12 +415,12 @@ void QskStackBoxAnimator2::advanceIndex( qreal value )
 
         if ( auto item = itemAt( 1 ) )
         {
-            degrees = degrees - 180.0;
+            radians = radians - M_PI;
             if ( !m_inverted )
-                degrees = 360.0 - degrees;
+                radians = 2 * M_PI - radians;
 
             auto rotation = qskFindRotationTransform( item );
-            rotation->setAngle( degrees );
+            rotation->setRadians( radians );
 
             item->setVisible( true );
         }
