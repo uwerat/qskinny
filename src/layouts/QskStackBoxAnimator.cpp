@@ -62,13 +62,14 @@ static Qsk::Direction qskDirection(
 
 namespace
 {
-    class Rotation : public QQuickTransform
+    class RotationTransform : public QQuickTransform
     {
         Q_OBJECT
 
-    public:
-        Rotation( qreal angle, QQuickItem* item )
+      public:
+        RotationTransform( Qt::Axis axis, qreal angle, QQuickItem* item )
             : QQuickTransform( item )
+            , m_axis( axis )
             , m_angle( angle )
         {
             prependToItem( item );
@@ -76,8 +77,11 @@ namespace
 
         void setAngle( qreal angle )
         {
-            m_angle = angle;
-            update();
+            if ( m_angle != angle )
+            {
+                m_angle = angle;
+                update();
+            }
         }
 
         void applyTo( QMatrix4x4* matrix) const override
@@ -89,28 +93,30 @@ namespace
 
                 QTransform transform;
                 transform.translate( dx, dy );
-                transform.rotate( m_angle, Qt::XAxis );
+                transform.rotate( m_angle, m_axis );
                 transform.translate( -dx, -dy );
 
                 *matrix *= transform;
             }
         }
 
-        static Rotation* find( const QQuickItem* item )
-        {
-            const auto& transforms = QQuickItemPrivate::get( item )->transforms;
-            for ( const auto& t : transforms )
-            {
-                if ( auto rotation = qobject_cast< Rotation* >( t ) )
-                    return rotation;
-            }
 
-            return nullptr;
-        }
-
-    private:
+      private:
+        const Qt::Axis m_axis;
         qreal m_angle = 0.0;
     };
+
+    static RotationTransform* qskFindRotationTransform( const QQuickItem* item )
+    {
+        const auto& transforms = QQuickItemPrivate::get( item )->transforms;
+        for ( const auto& t : transforms )
+        {
+            if ( auto transform = qobject_cast< RotationTransform* >( t ) )
+                return transform;
+        }
+
+        return nullptr;
+    }
 }
 
 QskStackBoxAnimator::QskStackBoxAnimator( QskStackBox* parent )
@@ -219,9 +225,7 @@ void QskStackBoxAnimator1::setOrientation( Qt::Orientation orientation )
 {
     if ( m_orientation != orientation )
     {
-#if 1
         stop();
-#endif
         m_orientation = orientation;
     }
 }
@@ -332,6 +336,8 @@ bool QskStackBoxAnimator1::eventFilter( QObject* object, QEvent* event )
 
 QskStackBoxAnimator2::QskStackBoxAnimator2( QskStackBox* parent )
     : QskStackBoxAnimator( parent )
+    , m_orientation( Qt::Horizontal )
+    , m_inverted( false )
 {
 }
 
@@ -339,23 +345,60 @@ QskStackBoxAnimator2::~QskStackBoxAnimator2()
 {
 }
 
+void QskStackBoxAnimator2::setOrientation( Qt::Orientation orientation )
+{
+    if ( m_orientation != orientation )
+    {
+        stop();
+        m_orientation = orientation;
+    }
+}
+
+Qt::Orientation QskStackBoxAnimator2::orientation() const
+{
+    return m_orientation;
+}
+
+void QskStackBoxAnimator2::setInverted( bool on )
+{
+    if ( m_inverted != on )
+    {
+        stop();
+        m_inverted = on;
+    }
+}
+
+bool QskStackBoxAnimator2::isInverted() const
+{
+    return m_inverted;
+}
+
 void QskStackBoxAnimator2::setup()
 {
+    const auto axis = ( m_orientation == Qt::Horizontal )
+        ? Qt::YAxis : Qt::XAxis;
+
     if ( auto item = itemAt( 0 ) )
-        ( void ) new Rotation( 0.0, item );
+        ( void ) new RotationTransform( axis, 0.0, item );
 
     if ( auto item = itemAt( 1 ) )
-        ( void ) new Rotation( 90.0, item );
+        ( void ) new RotationTransform( axis, 90.0, item );
 }
 
 void QskStackBoxAnimator2::advanceIndex( qreal value )
 {
-    if ( value < 0.5 )
+    auto degrees = value * 180.0;
+
+    if ( degrees < 90.0 && degrees > -90.0 )
     {
         if ( auto item = itemAt( 0 ) )
         {
-            auto rotation = Rotation::find( item );
-            rotation->setAngle( value * 180.0 );
+            if ( !m_inverted )
+                degrees = 360.0 - degrees;
+
+            auto rotation = qskFindRotationTransform( item );
+            rotation->setAngle( degrees );
+
             item->setVisible( true );
         }
 
@@ -373,8 +416,12 @@ void QskStackBoxAnimator2::advanceIndex( qreal value )
 
         if ( auto item = itemAt( 1 ) )
         {
-            auto rotation = Rotation::find( item );
-            rotation->setAngle( ( 1.0 - value ) * -180.0 );
+            degrees = degrees - 180.0;
+            if ( !m_inverted )
+                degrees = 360.0 - degrees;
+
+            auto rotation = qskFindRotationTransform( item );
+            rotation->setAngle( degrees );
 
             item->setVisible( true );
         }
@@ -387,8 +434,8 @@ void QskStackBoxAnimator2::done()
     {
         if ( auto item = itemAt( i ) )
         {
-            delete Rotation::find( item );
-            item->setVisible( i == 1 ); // not here !!
+            delete qskFindRotationTransform( item );
+            item->setVisible( i == 1 );
         }
     }
 }

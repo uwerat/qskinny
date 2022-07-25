@@ -68,7 +68,10 @@ namespace
             if ( animator == nullptr )
             {
                 animator = new QskStackBoxAnimator2( this );
-                animator->setDuration( 800 );
+                animator->setOrientation( Qt::Vertical );
+                animator->setInverted( true );
+                animator->setEasingCurve( QEasingCurve::InOutBack );
+                animator->setDuration( 2000 );
             }
 
             setAnimator( animator );

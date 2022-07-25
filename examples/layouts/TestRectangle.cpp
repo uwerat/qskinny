@@ -4,11 +4,14 @@
  *****************************************************************************/
 
 #include "TestRectangle.h"
+#include <QskSkin.h>
 
 TestRectangle::TestRectangle( QQuickItem* parent )
     : QskTextLabel( parent )
 {
     setAlignment( Qt::AlignCenter );
+    setFontRole( QskSkin::HugeFont );
+    setTextColor( Qt::white );
 
     setPreferredSize( 10, 10 );
     initSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Minimum );

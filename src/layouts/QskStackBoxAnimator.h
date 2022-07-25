@@ -48,6 +48,8 @@ class QSK_EXPORT QskStackBoxAnimator1 : public QskStackBoxAnimator
 {
     Q_OBJECT
 
+    Q_PROPERTY( Qt::Orientation orientation READ orientation WRITE setOrientation )
+
   public:
     QskStackBoxAnimator1( QskStackBox* );
     ~QskStackBoxAnimator1() override;
@@ -75,14 +77,27 @@ class QSK_EXPORT QskStackBoxAnimator2 : public QskStackBoxAnimator
 {
     Q_OBJECT
 
+    Q_PROPERTY( Qt::Orientation orientation READ orientation WRITE setOrientation )
+    Q_PROPERTY( bool inverted READ isInverted WRITE setInverted )
+
   public:
     QskStackBoxAnimator2( QskStackBox* );
     ~QskStackBoxAnimator2() override;
+
+    void setOrientation( Qt::Orientation );
+    Qt::Orientation orientation() const;
+
+    void setInverted( bool );
+    bool isInverted() const;
 
   protected:
     void setup() override;
     void advanceIndex( qreal value ) override;
     void done() override;
+
+  private:
+    Qt::Orientation m_orientation : 2;
+    bool m_inverted : 1;
 };
 
 class QSK_EXPORT QskStackBoxAnimator3 : public QskStackBoxAnimator
