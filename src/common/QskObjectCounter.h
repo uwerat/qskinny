@@ -41,7 +41,6 @@ class QSK_EXPORT QskObjectCounter
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
-
 };
 
 #ifndef QT_NO_DEBUG_STREAM
