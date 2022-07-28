@@ -43,25 +43,25 @@ namespace
             initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 
             setAlignment( Qt::AlignTop | Qt::AlignHCenter );
-            updateSourceSize();
+            updatePreferredSize();
         }
 
       protected:
         void changeEvent( QEvent* event ) override
         {
             if ( event->type() == QEvent::FontChange )
-                updateSourceSize();
+                updatePreferredSize();
 
             QskGraphicLabel::changeEvent( event );
         }
 
       private:
-        void updateSourceSize()
+        void updatePreferredSize()
         {
             // when there is no explicit size known,
             // we always adjust the icon according to the font
 
-            if ( sourceSize().isEmpty() )
+            if ( graphicStrutSize().isEmpty() )
             {
                 const QFont font = effectiveFont( QskTextLabel::Text );
                 setPreferredSize( -1.0, 1.5 * QFontMetricsF( font ).height() );

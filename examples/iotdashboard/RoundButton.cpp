@@ -30,7 +30,7 @@ RoundButton::RoundButton( QskAspect::Placement placement, QQuickItem* parent )
         setGraphicSource( "down" );
     }
 
-    setGraphicSourceSize( graphic().defaultSize() * 1.2 );
+    setGraphicStrutSize( graphic().defaultSize() * 1.2 );
 }
 
 #include "moc_RoundButton.cpp"

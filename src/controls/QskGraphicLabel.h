@@ -19,8 +19,9 @@ class QSK_EXPORT QskGraphicLabel : public QskControl
 
     Q_PROPERTY( bool mirror READ mirror WRITE setMirror NOTIFY mirrorChanged )
 
-    Q_PROPERTY( QSize sourceSize READ sourceSize
-        WRITE setSourceSize RESET resetSourceSize NOTIFY sourceSizeChanged )
+    Q_PROPERTY( QSizeF graphicStrutSize READ graphicStrutSize
+        WRITE setGraphicStrutSize RESET resetGraphicStrutSize
+        NOTIFY graphicStrutSizeChanged )
 
     Q_PROPERTY( int graphicRole READ graphicRole
         WRITE setGraphicRole RESET resetGraphicRole NOTIFY graphicRoleChanged )
@@ -66,9 +67,10 @@ class QSK_EXPORT QskGraphicLabel : public QskControl
     void setSource( const QString& source );
     void setSource( const QUrl& url );
 
-    void setSourceSize( const QSize& size );
-    void resetSourceSize();
-    QSize sourceSize() const;
+    void setGraphicStrutSize( const QSizeF& size );
+    QSizeF graphicStrutSize() const;
+    void resetGraphicStrutSize();
+
     QSizeF effectiveSourceSize() const;
 
     void setMirror( bool on );
@@ -93,7 +95,7 @@ class QSK_EXPORT QskGraphicLabel : public QskControl
   Q_SIGNALS:
     void sourceChanged();
     void mirrorChanged();
-    void sourceSizeChanged();
+    void graphicStrutSizeChanged();
     void graphicRoleChanged( int );
     void alignmentChanged( Qt::Alignment );
     void fillModeChanged( FillMode );

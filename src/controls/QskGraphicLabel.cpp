@@ -19,7 +19,6 @@ class QskGraphicLabel::PrivateData
   public:
     PrivateData( const QUrl& sourceUrl )
         : source( sourceUrl )
-        , sourceSize( -1, -1 )
         , fillMode( QskGraphicLabel::PreserveAspectFit )
         , mirror( false )
         , isSourceDirty( !sourceUrl.isEmpty() )
@@ -28,8 +27,6 @@ class QskGraphicLabel::PrivateData
     }
 
     QUrl source;
-    QSize sourceSize;
-
     QskGraphic graphic;
 
     uint fillMode : 2;
@@ -126,7 +123,7 @@ void QskGraphicLabel::setGraphic( const QskGraphic& graphic )
 {
     if ( m_data->graphic != graphic )
     {
-        const bool keepImplicitSize = m_data->sourceSize.isValid()
+        const bool keepImplicitSize = graphicStrutSize().isValid()
             || ( m_data->graphic.defaultSize() == graphic.defaultSize() );
 
         m_data->graphic = graphic;
@@ -178,7 +175,7 @@ void QskGraphicLabel::setMirror( bool on )
     {
         m_data->mirror = on;
 
-        if ( !( m_data->sourceSize.isEmpty() || m_data->graphic.isEmpty() ) )
+        if ( !( graphicStrutSize().isEmpty() || m_data->graphic.isEmpty() ) )
             update();
 
         Q_EMIT mirrorChanged();
@@ -190,35 +187,28 @@ bool QskGraphicLabel::mirror() const
     return m_data->mirror;
 }
 
-void QskGraphicLabel::setSourceSize( const QSize& size )
+void QskGraphicLabel::setGraphicStrutSize( const QSizeF& size )
 {
-    QSize sz = size;
+    auto newSize = size;
+    if ( newSize.width() < 0.0 )
+        newSize.setWidth( -1.0 );
 
-    if ( sz.width() < 0 )
-        sz.setWidth( -1 );
+    if ( newSize.height() < 0.0 )
+        newSize.setHeight( -1.0 );
 
-    if ( sz.height() < 0 )
-        sz.setHeight( -1 );
-
-    if ( m_data->sourceSize != sz )
-    {
-        m_data->sourceSize = sz;
-
-        resetImplicitSize();
-        update();
-
-        Q_EMIT sourceSizeChanged();
-    }
+    if ( setStrutSizeHint( Graphic, newSize ) )
+        Q_EMIT graphicStrutSizeChanged();
 }
 
-QSize QskGraphicLabel::sourceSize() const
+QSizeF QskGraphicLabel::graphicStrutSize() const
 {
-    return m_data->sourceSize;
+    return strutSizeHint( Graphic );
 }
 
-void QskGraphicLabel::resetSourceSize()
+void QskGraphicLabel::resetGraphicStrutSize()
 {
-    setSourceSize( QSize( -1, -1 ) );
+    if ( resetStrutSizeHint( Graphic ) )
+        Q_EMIT graphicStrutSizeChanged();
 }
 
 void QskGraphicLabel::setFillMode( FillMode mode )
@@ -271,12 +261,12 @@ void QskGraphicLabel::updateResources()
 
 QSizeF QskGraphicLabel::effectiveSourceSize() const
 {
-    const auto& sourceSize = m_data->sourceSize;
+    const auto strutSize = graphicStrutSize();
 
-    if ( sourceSize.width() >= 0 && sourceSize.height() >= 0 )
+    if ( strutSize.width() >= 0 && strutSize.height() >= 0 )
     {
         // the size has been explicitly set
-        return sourceSize;
+        return strutSize;
     }
 
     if ( !m_data->source.isEmpty() && m_data->isSourceDirty )
@@ -291,23 +281,23 @@ QSizeF QskGraphicLabel::effectiveSourceSize() const
     {
         const QSizeF defaultSize = m_data->graphic.defaultSize();
 
-        if ( sourceSize.width() <= 0 && sourceSize.height() <= 0 )
+        if ( strutSize.width() <= 0 && strutSize.height() <= 0 )
         {
             // size is derived from the default size
             sz = defaultSize;
         }
-        else if ( sourceSize.width() <= 0 )
+        else if ( strutSize.width() <= 0 )
         {
             // only the height has been given
-            const qreal f = sourceSize.height() / defaultSize.height();
+            const qreal f = strutSize.height() / defaultSize.height();
             sz.setWidth( f * defaultSize.width() );
-            sz.setHeight( sourceSize.height() );
+            sz.setHeight( strutSize.height() );
         }
         else
         {
             // only the width has been given
-            const qreal f = sourceSize.width() / defaultSize.width();
-            sz.setWidth( sourceSize.width() );
+            const qreal f = strutSize.width() / defaultSize.width();
+            sz.setWidth( strutSize.width() );
             sz.setHeight( f * defaultSize.height() );
         }
     }
