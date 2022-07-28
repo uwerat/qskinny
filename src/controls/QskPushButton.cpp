@@ -49,8 +49,6 @@ class QskPushButton::PrivateData
     QUrl graphicSource;
     QskGraphic graphic;
 
-    QSizeF graphicSourceSize;
-
     bool isCheckable : 1;
     bool isGraphicSourceDirty : 1;
 };
@@ -140,15 +138,16 @@ QskTextOptions QskPushButton::textOptions() const
 
 QFont QskPushButton::font() const
 {
-    return effectiveFont( QskPushButton::Text );
+    return effectiveFont( Text );
 }
 
-void QskPushButton::resetGraphicSourceSize()
+void QskPushButton::resetGraphicStrutSize()
 {
-    setGraphicSourceSize( QSizeF( -1.0, -1.0 ) );
+    if ( resetStrutSizeHint( Graphic ) )
+        Q_EMIT graphicStrutSizeChanged();
 }
 
-void QskPushButton::setGraphicSourceSize( const QSizeF& size )
+void QskPushButton::setGraphicStrutSize( const QSizeF& size )
 {
     auto newSize = size;
     if ( newSize.width() < 0.0 )
@@ -157,21 +156,13 @@ void QskPushButton::setGraphicSourceSize( const QSizeF& size )
     if ( newSize.height() < 0.0 )
         newSize.setHeight( -1.0 );
 
-    if ( size != m_data->graphicSourceSize )
-    {
-        m_data->graphicSourceSize = size;
-
-        resetImplicitSize();
-        polish();
-        update();
-
-        Q_EMIT graphicSourceSizeChanged();
-    }
+    if ( setStrutSizeHint( Graphic, newSize ) )
+        Q_EMIT graphicStrutSizeChanged();
 }
 
-QSizeF QskPushButton::graphicSourceSize() const
+QSizeF QskPushButton::graphicStrutSize() const
 {
-    return m_data->graphicSourceSize;
+    return strutSizeHint( Graphic );
 }
 
 void QskPushButton::setGraphicSource( const QUrl& url )

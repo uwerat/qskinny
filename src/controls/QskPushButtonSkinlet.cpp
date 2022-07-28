@@ -148,7 +148,7 @@ QRectF QskPushButtonSkinlet::graphicRect(
         r.setBottom( r.bottom() - h );
     }
 
-    const auto maxSize = button->graphicSourceSize();
+    const auto maxSize = button->strutSizeHint( Q::Graphic );
 
     if ( maxSize.width() >= 0 || maxSize.height() >= 0 )
     {
@@ -278,7 +278,7 @@ QSizeF QskPushButtonSkinlet::sizeHint( const QskSkinnable* skinnable,
 
     if ( button->hasGraphic() )
     {
-        const auto sz = button->graphicSourceSize();
+        const auto sz = button->strutSizeHint( Q::Graphic );
 
         qreal w = sz.width();
         qreal h = sz.height();

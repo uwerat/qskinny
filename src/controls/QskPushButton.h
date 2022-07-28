@@ -29,9 +29,9 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     Q_PROPERTY( QskGraphic graphic READ graphic
         WRITE setGraphic NOTIFY graphicChanged FINAL )
 
-    Q_PROPERTY( QSizeF graphicSourceSize READ graphicSourceSize
-        WRITE setGraphicSourceSize RESET resetGraphicSourceSize
-        NOTIFY graphicSourceSizeChanged FINAL )
+    Q_PROPERTY( QSizeF graphicStrutSize READ graphicStrutSize
+        WRITE setGraphicStrutSize RESET resetGraphicStrutSize
+        NOTIFY graphicStrutSizeChanged FINAL )
 
     Q_PROPERTY( bool checkable READ isCheckable
         WRITE setCheckable NOTIFY checkableChanged FINAL )
@@ -61,12 +61,13 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     void setTextOptions( const QskTextOptions& );
     QskTextOptions textOptions() const;
 
+    void setGraphicStrutSize( const QSizeF& );
+    QSizeF graphicStrutSize() const;
+    void resetGraphicStrutSize();
+
     QUrl graphicSource() const;
-    QSizeF graphicSourceSize() const;
     QskGraphic graphic() const;
     bool hasGraphic() const;
-
-    void resetGraphicSourceSize();
 
     QFont font() const;
 
@@ -77,16 +78,17 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     void setGraphicSource( const QUrl& );
     void setGraphicSource( const QString& );
     void setGraphic( const QskGraphic& );
-    void setGraphicSourceSize( const QSizeF& );
 
   Q_SIGNALS:
     void checkableChanged( bool );
     void shapeChanged();
+
     void textChanged();
     void textOptionsChanged();
+
     void graphicChanged();
     void graphicSourceChanged();
-    void graphicSourceSizeChanged();
+    void graphicStrutSizeChanged();
 
   protected:
     void changeEvent( QEvent* ) override;
