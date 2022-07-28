@@ -640,7 +640,7 @@ QRectF qskConstrainedItemRect( const QQuickItem* item,
     const QRectF& rect, Qt::Alignment alignment )
 {
     const auto size = qskConstrainedItemSize( item, rect.size() );
-    return qskAlignedRectF( rect, size.width(), size.height(), alignment );
+    return qskAlignedRectF( rect, size, alignment );
 }
 
 void qskItemUpdateRecursive( QQuickItem* item )

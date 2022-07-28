@@ -636,7 +636,7 @@ QSGNode* QskSkinlet::updateGraphicNode(
     const auto size = graphic.defaultSize().scaled(
         rect.size(), Qt::KeepAspectRatio );
 
-    const auto r = qskAlignedRectF( rect, size.width(), size.height(), alignment );
+    const auto r = qskAlignedRectF( rect, size, alignment );
     return qskUpdateGraphicNode( skinnable, node, graphic, colorFilter, r, mirrored );
 }
 

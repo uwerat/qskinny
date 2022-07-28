@@ -36,6 +36,18 @@ QSK_EXPORT QRectF qskInterpolatedRect(
 QSK_EXPORT QSizeF qskInterpolatedSize(
     const QSizeF& from, const QSizeF& to, qreal progress );
 
+inline QRect qskAlignedRect( const QRect& outerRect,
+    const QSize& size, Qt::Alignment alignment )
+{
+    return qskAlignedRect( outerRect, size.width(), size.height(), alignment );
+}
+
+inline QRectF qskAlignedRectF( const QRectF& outerRect,
+    const QSizeF& size, Qt::Alignment alignment )
+{
+    return qskAlignedRectF( outerRect, size.width(), size.height(), alignment );
+}
+
 inline QMarginsF qskMargins( const QRectF& rect, const QRectF& innerRect )
 {
     return QMarginsF(
