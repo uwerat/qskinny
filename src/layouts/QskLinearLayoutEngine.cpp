@@ -25,12 +25,6 @@ namespace
         qreal spacing() const;
         QQuickItem* item() const;
 
-        Qt::Alignment alignment() const;
-        void setAlignment( Qt::Alignment );
-
-        bool retainSizeWhenHidden() const;
-        void setRetainSizeWhenHidden( bool );
-
         int stretch() const;
         void setStretch( int );
 
