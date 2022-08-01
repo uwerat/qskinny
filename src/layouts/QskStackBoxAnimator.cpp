@@ -67,9 +67,14 @@ namespace
         Q_OBJECT
 
       public:
-        RotationTransform( Qt::Axis axis, qreal radians, QQuickItem* item )
+        RotationTransform( Qt::Axis axis, qreal dx1, qreal dy1, qreal dx2,
+                           qreal dy2, qreal radians, QQuickItem* item )
             : QQuickTransform( item )
             , m_axis( axis )
+            , m_dx1( dx1 )
+            , m_dy1( dy1 )
+            , m_dx2( dx2 )
+            , m_dy2( dy2 )
             , m_radians( radians )
         {
             prependToItem( item );
@@ -84,17 +89,34 @@ namespace
             }
         }
 
-        void applyTo( QMatrix4x4* matrix) const override
+        void setPreTransform( qreal dx1, qreal dy1 )
+        {
+            if( !qskFuzzyCompare( dx1, m_dx1 ) || !qskFuzzyCompare( dy1, m_dy1 ) )
+            {
+                m_dx1 = dx1;
+                m_dy1 = dy1;
+                update();
+            }
+        }
+
+        void setPostTransform( qreal dx2, qreal dy2 )
+        {
+            if( !qskFuzzyCompare( dx2, m_dx2 ) || !qskFuzzyCompare( dy2, m_dy2 ) )
+            {
+                m_dx2 = dx2;
+                m_dy2 = dy2;
+                update();
+            }
+        }
+
+        void applyTo( QMatrix4x4* matrix ) const override
         {
             if ( const auto item = qobject_cast< QQuickItem* >( parent() ) )
             {
-                const auto dx = 0.5 * item->width();
-                const auto dy = 0.5 * item->height();
-
                 QTransform transform;
-                transform.translate( dx, dy );
+                transform.translate( m_dx1, m_dy1 );
                 transform.rotateRadians( m_radians, m_axis );
-                transform.translate( -dx, -dy );
+                transform.translate( m_dx2, m_dy2 );
 
                 *matrix *= transform;
             }
@@ -102,6 +124,10 @@ namespace
 
       private:
         const Qt::Axis m_axis;
+        qreal m_dx1;
+        qreal m_dy1;
+        qreal m_dx2;
+        qreal m_dy2;
         qreal m_radians;
     };
 
@@ -376,12 +402,19 @@ void QskStackBoxAnimator2::setup()
 {
     const auto axis = ( m_orientation == Qt::Horizontal )
         ? Qt::YAxis : Qt::XAxis;
-
     if ( auto item = itemAt( 0 ) )
-        ( void ) new RotationTransform( axis, 0.0, item );
+    {
+        const auto dx = 0.5 * item->width();
+        const auto dy = 0.5 * item->height();
+        ( void ) new RotationTransform( axis, dx, dy, -dx, -dy, 0.0, item );
+    }
 
     if ( auto item = itemAt( 1 ) )
-        ( void ) new RotationTransform( axis, M_PI_2, item );
+    {
+        const auto dx = 0.5 * item->width();
+        const auto dy = 0.5 * item->height();
+        ( void ) new RotationTransform( axis, dx, dy, -dx, -dy, M_PI_2, item );
+    }
 }
 
 void QskStackBoxAnimator2::advanceIndex( qreal value )
@@ -474,6 +507,182 @@ void QskStackBoxAnimator3::done()
         {
             item->setOpacity( 1.0 );
             item->setVisible( i == 1 ); // not here !!
+        }
+    }
+}
+
+QskStackBoxAnimator4::QskStackBoxAnimator4( QskStackBox* parent )
+    : QskStackBoxAnimator( parent )
+    , m_orientation( Qt::Horizontal )
+    , m_inverted( false )
+{
+}
+
+QskStackBoxAnimator4::~QskStackBoxAnimator4()
+{
+}
+
+void QskStackBoxAnimator4::setOrientation( Qt::Orientation orientation )
+{
+    if ( m_orientation != orientation )
+    {
+        stop();
+        m_orientation = orientation;
+    }
+}
+
+Qt::Orientation QskStackBoxAnimator4::orientation() const
+{
+    return m_orientation;
+}
+
+void QskStackBoxAnimator4::setInverted( bool on )
+{
+    if ( m_inverted != on )
+    {
+        stop();
+        m_inverted = on;
+    }
+}
+
+bool QskStackBoxAnimator4::isInverted() const
+{
+    return m_inverted;
+}
+
+void QskStackBoxAnimator4::setup()
+{
+    const auto axis = ( m_orientation == Qt::Horizontal )
+        ? Qt::YAxis : Qt::XAxis;
+
+    if ( auto item = itemAt( 0 ) )
+    {
+        ( void ) new RotationTransform( axis, 0.0, 0.0, 0.0, 0.0, 0.0, item );
+        item->setVisible( true );
+    }
+
+    if ( auto item = itemAt( 1 ) )
+    {
+        ( void ) new RotationTransform( axis, 0.0, 0.0, 0.0, 0.0, -M_PI_2, item );
+        item->setVisible( true );
+    }
+}
+
+void QskStackBoxAnimator4::advanceIndex( qreal value )
+{
+    if ( auto item = itemAt( 0 ) )
+    {
+        auto rotation = qskFindRotationTransform( item );
+
+        qreal dx1, dy1, radians, dx2, dy2;
+
+        if( orientation() == Qt::Horizontal )
+        {
+            const auto w = item->parentItem() ? item->parentItem()->width() : item->width();
+
+            if( isInverted() )
+            {
+                dx1 = ( w - item->x() ) * value;
+                radians = -M_PI_2 * value;
+                dx2 = 0.0;
+            }
+            else
+            {
+                dx1 = w * ( 1 - value ) - item->x() * value;
+                radians = M_PI_2 * value;
+                dx2 = -w;
+            }
+
+            dy1 = 0.5 * item->height();
+            dy2 = -dy1;
+        }
+        else
+        {
+            const auto h = item->parentItem() ? item->parentItem()->height() : item->height();
+
+            dx1 = 0.5 * item->width();
+            dx2 = -dx1;
+
+            if( isInverted() )
+            {
+                dy1 = ( h - item->y() ) * value;
+                radians = -M_PI_2 * value;
+                dy2 = 0.0;
+            }
+            else
+            {
+                dy1 = h * ( 1 - value ) - item->y() * value;
+                radians = M_PI_2 * value;
+                dy2 = -h;
+            }
+        }
+
+        rotation->setPreTransform( dx1, dy1 );
+        rotation->setRadians( radians );
+        rotation->setPostTransform( dx2, dy2 );
+    }
+
+    if ( auto item = itemAt( 1 ) )
+    {
+        auto rotation = qskFindRotationTransform( item );
+
+        qreal dx1, dy1, radians, dx2, dy2;
+
+        if( orientation() == Qt::Horizontal )
+        {
+            const auto w = item->parentItem() ? item->parentItem()->width() : item->width();
+
+            if( isInverted() )
+            {
+                dx1 = w * value - item->x() * ( 1 - value );
+                radians = -M_PI_2 * ( value - 1 );
+                dx2 = -w;
+            }
+            else
+            {
+                dx1 = ( item->width() + item->x() ) * ( 1 - value );
+                radians = M_PI_2 * ( value - 1 );
+                dx2 = 0.0;
+            }
+
+            dy1 = 0.5 * item->height();
+            dy2 = -dy1;
+        }
+        else
+        {
+            const auto h = item->parentItem() ? item->parentItem()->height() : item->height();
+
+            dx1 = 0.5 * item->width();
+            dx2 = -dx1;
+
+            if( isInverted() )
+            {
+                dy1 = h * value - item->y() * ( 1 - value );
+                radians = -M_PI_2 * ( value - 1 );
+                dy2 = -h;
+            }
+            else
+            {
+                dy1 = ( item->height() + item->y() ) * ( 1 - value );
+                radians = M_PI_2 * ( value - 1 );
+                dy2 = 0.0;
+            }
+        }
+
+        rotation->setPreTransform( dx1, dy1 );
+        rotation->setRadians( radians );
+        rotation->setPostTransform( dx2, dy2 );
+    }
+}
+
+void QskStackBoxAnimator4::done()
+{
+    for ( int i = 0; i < 2; i++ )
+    {
+        if ( auto item = itemAt( i ) )
+        {
+            delete qskFindRotationTransform( item );
+            item->setVisible( i == 1 );
         }
     }
 }

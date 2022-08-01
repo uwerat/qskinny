@@ -80,6 +80,25 @@ namespace
             Q_EMIT transitionStarted( animator->duration() );
         }
 
+        void incrementCubeEffect( int offset )
+        {
+            auto animator = dynamic_cast< QskStackBoxAnimator4* >( this->animator() );
+
+            if ( animator == nullptr )
+            {
+                animator = new QskStackBoxAnimator4( this );
+                animator->setOrientation( Qt::Horizontal );
+                animator->setInverted( false );
+                animator->setEasingCurve( QEasingCurve::Linear );
+                animator->setDuration( 2000 );
+            }
+
+            setAnimator( animator );
+            setCurrentIndex( incrementedIndex( offset ) );
+
+            Q_EMIT transitionStarted( animator->duration() );
+        }
+
         void incrementScrolling( Qt::Orientation orientation, int offset )
         {
             auto animator = dynamic_cast< QskStackBoxAnimator1* >( this->animator() );
@@ -192,6 +211,7 @@ StackLayoutPage::StackLayoutPage( QQuickItem* parent )
     buttonBox->addButton( "v", [ box ]() { box->incrementScrolling( Qt::Vertical, +1 ); } );
     buttonBox->addButton( "Fade", [ box ]() { box->incrementFading( +1 ); } );
     buttonBox->addButton( "Flip", [ box ]() { box->incrementFlipping( +1 ); } );
+    buttonBox->addButton( "Cube", [ box ]() { box->incrementCubeEffect( +1 ); } );
 
     // page indicator
 
