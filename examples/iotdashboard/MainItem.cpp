@@ -7,15 +7,61 @@
 #include <QskGesture.h>
 #include <QskEvent.h>
 #include <QskLinearBox.h>
-#include <QskStackBox.h>
+#include <QskStackBoxAnimator.h>
 
 #include <QQuickFramebufferObject>
 #include <QGuiApplication>
 #include <QQuickWindow>
 
+Cube::Cube( QQuickItem* parent )
+    : QskStackBox( false, parent )
+{
+}
+
+void Cube::startAnimation( Qsk::Direction direction )
+{
+    auto animator = dynamic_cast< QskStackBoxAnimator4* >( this->animator() );
+
+    if ( animator == nullptr )
+    {
+        animator = new QskStackBoxAnimator4( this );
+        animator->setEasingCurve( QEasingCurve::InOutQuad );
+        animator->setDuration( 1000 );
+    }
+
+    const auto orientation = ( direction == Qsk::LeftToRight || direction == Qsk::RightToLeft )
+            ? Qt::Horizontal : Qt::Vertical;
+    animator->setOrientation( orientation );
+
+    const bool inverted = ( direction == Qsk::LeftToRight || direction == Qsk::TopToBottom );
+    animator->setInverted( inverted );
+
+    setAnimator( animator );
+
+    int newIndex;
+
+    switch( direction )
+    {
+    case Qsk::LeftToRight:
+    case Qsk::TopToBottom:
+        newIndex = currentIndex() + 1;
+        break;
+    case Qsk::RightToLeft:
+    case Qsk::BottomToTop:
+        newIndex = currentIndex() - 1;
+        break;
+    }
+
+    newIndex %= itemCount();
+    if( newIndex < 0 )
+        newIndex += itemCount();
+
+    setCurrentIndex( newIndex );
+}
+
 MainItem::MainItem( QQuickItem* parent )
     : QskControl( parent )
-    , m_cube( new QskStackBox( false, this ) )
+    , m_cube( new Cube( this ) )
     , m_mainLayout( new QskLinearBox( Qt::Horizontal, m_cube ) )
     , m_otherLayout( new QskLinearBox( Qt::Horizontal, m_cube ) )
 {
@@ -23,7 +69,7 @@ MainItem::MainItem( QQuickItem* parent )
     setAcceptedMouseButtons( Qt::LeftButton );
     setFiltersChildMouseEvents( true );
 
-    m_panRecognizer.setOrientations( Qt::Horizontal );
+    m_panRecognizer.setOrientations( Qt::Horizontal | Qt::Vertical );
     m_panRecognizer.setMinDistance( 50 );
     m_panRecognizer.setWatchedItem( this );
 
@@ -45,9 +91,25 @@ MainItem::MainItem( QQuickItem* parent )
 
 void MainItem::gestureEvent( QskGestureEvent* event )
 {
-    if( event->gesture()->state() == QskGesture::Finished )
+    if( event->gesture()->state() == QskGesture::Finished
+            && event->gesture()->type() == QskGesture::Pan )
     {
-        // ### here start animation
+        auto* panGesture = static_cast< const QskPanGesture* >( event->gesture().get() );
+
+        const auto delta = panGesture->origin() - panGesture->position();
+
+        Qsk::Direction direction;
+
+        if( qAbs( delta.x() ) > qAbs( delta.y() ) )
+        {
+            direction = ( delta.x() < 0 ) ? Qsk::LeftToRight : Qsk::RightToLeft;
+        }
+        else
+        {
+            direction = ( delta.y() < 0 ) ? Qsk::TopToBottom : Qsk::BottomToTop;
+        }
+
+        m_cube->startAnimation( direction );
     }
 }
 

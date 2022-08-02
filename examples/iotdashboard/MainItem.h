@@ -2,12 +2,19 @@
 
 #include <QskControl.h>
 #include <QskPanGestureRecognizer.h>
+#include <QskStackBox.h>
 
 #include <QQuickWindow>
 
 class QskBox;
 class QskLinearBox;
-class QskStackBox;
+
+class Cube : public QskStackBox
+{
+    public:
+        explicit Cube( QQuickItem* parent = nullptr );
+        void startAnimation( Qsk::Direction direction );
+};
 
 class MainItem : public QskControl
 {
@@ -21,7 +28,7 @@ class MainItem : public QskControl
         void gestureEvent( QskGestureEvent* ) override final;
 
     private:
-        QskStackBox* m_cube;
+        Cube* m_cube;
         QskLinearBox* m_mainLayout;
         QskLinearBox* m_otherLayout;
         QskPanGestureRecognizer m_panRecognizer;
