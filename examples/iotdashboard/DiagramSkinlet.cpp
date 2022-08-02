@@ -8,7 +8,10 @@
 #include "nodes/DiagramDataNode.h"
 #include "nodes/DiagramSegmentsNode.h"
 
+#include <QskBoxBorderColors.h>
+#include <QskBoxBorderMetrics.h>
 #include <QskBoxNode.h>
+#include <QskBoxShapeMetrics.h>
 
 namespace
 {
@@ -159,17 +162,21 @@ QSGNode* DiagramSkinlet::updateChartNode( const Diagram* diagram, QSGNode* node 
                         const auto size = diagram->strutSizeHint( barSubcontrol );
                         const qreal xMin = dataPoints.at( 0 ).x();
                         const qreal xMax = dataPoints.at( dataPoints.count() - 1 ).x();
-                        const qreal x = ( ( dataPoint.x() - xMin ) / ( xMax - xMin ) ) * rect.width()
-                                + i * size.width();
+                        const qreal spacing = 3;
+                        const qreal sectionWidth = rect.width() / dataPoints.count();
+                        const qreal sectionOffset = ( sectionWidth
+                                                      - ( diagram->dataPoints().count() * size.width()
+                                                          + ( ( diagram->dataPoints().count() - 1 ) * spacing ) ) ) / 2;
+                        const qreal x = ( ( dataPoint.x() - xMin ) / ( xMax - xMin + 1 ) ) * rect.width()
+                                + sectionOffset + i * ( size.width() + spacing );
                         const qreal fraction = ( dataPoint.y() / yMax ) * rect.height();
                         const qreal y = rect.height() - fraction;
 
                         QRectF barRect( x, y, size.width(), fraction );
                         color = diagram->color( barSubcontrol );
 
-                        qDebug() << x << y << nodeIndex;
-
-                        barNode->setBoxData( barRect, color );
+                        const auto shape = diagram->boxShapeHint( barSubcontrol );
+                        barNode->setBoxData( barRect, shape, {}, {}, color );
                     }
                 }
                 else
