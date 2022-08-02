@@ -5,15 +5,8 @@
 
 #include "RoomsPage.h"
 
-#include "Box.h"
-#include "BoxWithButtons.h"
 #include "Diagram.h"
 #include "GridBox.h"
-#include "LightDisplay.h"
-#include "MyDevices.h"
-#include "PieChart.h"
-#include "TopBar.h"
-#include "UsageBox.h"
 #include "UsageDiagram.h"
 
 #include <QskBoxBorderColors.h>
@@ -34,39 +27,27 @@ namespace
     class RoomsDiagram : public Diagram
     {
       public:
-        RoomsDiagram( QQuickItem* parent = nullptr )
+        RoomsDiagram( const QVector< qreal >& water,
+                      const QVector< qreal >& electricity,
+                      const QVector< qreal >& gas,
+                      QQuickItem* parent = nullptr )
             : Diagram( parent )
         {
-            const qreal water[] =
-            {
-                10, 20, 30, 40, 50, 60, 70
-            };
+            addCurve( water );
+            addCurve( electricity );
+            addCurve( gas );
 
-            const qreal electricity[] =
-            {
-                10, 20, 30, 40, 50, 60, 70
-            };
-
-            const qreal gas[] =
-            {
-                10, 20, 30, 40, 50, 60, 70
-            };
-
-            addCurve( water, sizeof( water ) / sizeof( qreal ) );
-            addCurve( electricity, sizeof( electricity ) / sizeof( qreal ) );
-            addCurve( gas, sizeof( gas ) / sizeof( qreal ) );
-
-            setYMax( 100 );
+            setYMax( 20 );
         }
 
       private:
-        void addCurve( const qreal values[], const size_t count )
+        void addCurve( const QVector< qreal >& values )
         {
             QVector< QPointF > points;
-            points.reserve( count );
+            points.reserve( values.count() );
 
-            for( size_t i = 0; i < count; i++ )
-                points += QPointF( i, values[i] );
+            for( int i = 0; i < values.count(); i++ )
+                points += QPointF( i, values.at( i ) );
 
             addDataPoints( points, Diagram::Bar );
         }
@@ -89,10 +70,29 @@ RoomsPage::RoomsPage( QQuickItem* parent )
     gridBox->setPanel( true );
     gridBox->setSpacing( 15 );
 
-    gridBox->addItem( new UsageDiagramBox( "Living Room", new RoomsDiagram() ), 0, 0 );
-    gridBox->addItem( new UsageDiagramBox( "Bedroom", new RoomsDiagram() ), 0, 1 );
-    gridBox->addItem( new UsageDiagramBox( "Bathroom", new RoomsDiagram() ), 1, 0 );
-    gridBox->addItem( new UsageDiagramBox( "Kitchen", new RoomsDiagram() ), 1, 1 );
+    const QVector< qreal > livingRoomWater = { 5, 8, 13, 2, 3, 9, 11 };
+    const QVector< qreal > livingRoomElectricity = { 1, 8, 7, 4, 12, 6, 5 };
+    const QVector< qreal > livingRoomGas = { 10, 11, 5, 8, 3, 1, 7 };
+    auto livingRoomDiagram = new RoomsDiagram( livingRoomWater, livingRoomElectricity, livingRoomGas );
+    gridBox->addItem( new UsageDiagramBox( "Living Room", livingRoomDiagram ), 0, 0 );
+
+    const QVector< qreal > bedroomWater = { 8, 6, 11, 2, 5, 4, 9 };
+    const QVector< qreal > bedroomElectricity = { 4, 5, 6, 1, 9, 12, 10 };
+    const QVector< qreal > bedroomGas = { 7, 3, 9, 8, 10, 13, 2 };
+    auto bedroomDiagram = new RoomsDiagram( bedroomWater, bedroomElectricity, bedroomGas );
+    gridBox->addItem( new UsageDiagramBox( "Bedroom", bedroomDiagram ), 0, 1 );
+
+    const QVector< qreal > bathroomWater = { 5, 1, 1, 10, 8, 9, 13 };
+    const QVector< qreal > bathroomElectricity = { 3, 4, 1, 6, 10, 7, 2 };
+    const QVector< qreal > bathroomGas = { 9, 11, 3, 8, 1, 10, 10 };
+    auto bathroomDiagram = new RoomsDiagram( bathroomWater, bathroomElectricity, bathroomGas );
+    gridBox->addItem( new UsageDiagramBox( "Bathroom", bathroomDiagram ), 1, 0 );
+
+    const QVector< qreal > kitchenWater = { 4, 3, 9, 1, 12, 13, 5 };
+    const QVector< qreal > kitchenElectricity = { 8, 5, 7, 13, 2, 1, 6 };
+    const QVector< qreal > kitchenGas = { 9, 13, 12, 1, 8, 5, 3 };
+    auto kitchenDiagram = new RoomsDiagram( kitchenWater, kitchenElectricity, kitchenGas );
+    gridBox->addItem( new UsageDiagramBox( "Kitchen", kitchenDiagram ), 1, 1 );
 
     addItem( gridBox );
 }
