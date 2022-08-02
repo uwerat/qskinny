@@ -190,9 +190,9 @@ void Skin::initHints( const Palette& palette )
     ed.setStrutSize( Diagram::ChartBar2, { 6, -1 } );
     ed.setStrutSize( Diagram::ChartBar3, { 6, -1 } );
 
-    ed.setBoxShape( Diagram::ChartBar1, { 100, 100, 0, 0, Qt::RelativeSize } );
-    ed.setBoxShape( Diagram::ChartBar2, { 100, 100, 0, 0, Qt::RelativeSize } );
-    ed.setBoxShape( Diagram::ChartBar3, { 100, 100, 0, 0, Qt::RelativeSize } );
+    ed.setBoxShape( Diagram::ChartBar1, { 3, 3, 0, 0 } );
+    ed.setBoxShape( Diagram::ChartBar2, { 3, 3, 0, 0 } );
+    ed.setBoxShape( Diagram::ChartBar3, { 3, 3, 0, 0 } );
 
     // light intensity:
     ed.setBoxShape( LightDisplay::Panel, 100, Qt::RelativeSize );
