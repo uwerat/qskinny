@@ -109,7 +109,8 @@ void MainItem::gestureEvent( QskGestureEvent* event )
             direction = ( delta.y() < 0 ) ? Qsk::TopToBottom : Qsk::BottomToTop;
         }
 
-        m_cube->startAnimation( direction );
+        // ### uncomment once animations are working:
+//        m_cube->startAnimation( direction );
     }
 }
 
