@@ -20,13 +20,17 @@ Cube::Cube( QQuickItem* parent )
 
 void Cube::startAnimation( Qsk::Direction direction )
 {
-    auto animator = dynamic_cast< QskStackBoxAnimator4* >( this->animator() );
+    using Animator = QskStackBoxAnimator4;
+
+    auto animator = qobject_cast< Animator* >( this->animator() );
 
     if ( animator == nullptr )
     {
-        animator = new QskStackBoxAnimator4( this );
+        animator = new Animator( this );
         animator->setEasingCurve( QEasingCurve::InOutQuad );
         animator->setDuration( 1000 );
+
+        setAnimator( animator );
     }
 
     const auto orientation = ( direction == Qsk::LeftToRight || direction == Qsk::RightToLeft )
@@ -36,20 +40,18 @@ void Cube::startAnimation( Qsk::Direction direction )
     const bool inverted = ( direction == Qsk::LeftToRight || direction == Qsk::TopToBottom );
     animator->setInverted( inverted );
 
-    setAnimator( animator );
-
     int newIndex;
 
     switch( direction )
     {
-    case Qsk::LeftToRight:
-    case Qsk::TopToBottom:
-        newIndex = currentIndex() + 1;
-        break;
-    case Qsk::RightToLeft:
-    case Qsk::BottomToTop:
-        newIndex = currentIndex() - 1;
-        break;
+        case Qsk::LeftToRight:
+        case Qsk::TopToBottom:
+            newIndex = currentIndex() + 1;
+            break;
+        case Qsk::RightToLeft:
+        case Qsk::BottomToTop:
+            newIndex = currentIndex() - 1;
+            break;
     }
 
     newIndex %= itemCount();
@@ -109,8 +111,7 @@ void MainItem::gestureEvent( QskGestureEvent* event )
             direction = ( delta.y() < 0 ) ? Qsk::TopToBottom : Qsk::BottomToTop;
         }
 
-        // ### uncomment once animations are working:
-//        m_cube->startAnimation( direction );
+        m_cube->startAnimation( direction );
     }
 }
 
