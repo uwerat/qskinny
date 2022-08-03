@@ -105,12 +105,12 @@ QRectF QskPushButtonSkinlet::textRect(
     if ( r.isEmpty() || !button->hasGraphic() )
         return r;
 
-    /*
-        For horizontal layouts Text depends on Graphic, while
-        for vertical Graphic depends on Text. Confusing ...
-     */
     if ( qskOrientation( button ) == Qt::Horizontal )
     {
+        /*
+            For horizontal layouts Text depends on Graphic, while
+            for vertical Graphic depends on Text. Confusing ...
+         */
         const auto graphicsRect = subControlRect( button, contentsRect, Q::Graphic );
         const auto spacing = button->spacingHint( Q::Panel );
 
@@ -136,9 +136,17 @@ QRectF QskPushButtonSkinlet::graphicRect(
         return r;
 
     const auto orientation = qskOrientation( button );
+    const auto maxSize = button->strutSizeHint( Q::Graphic );
+
+    const qreal maxW = maxSize.width();
+    const qreal maxH = maxSize.height();
 
     if ( orientation == Qt::Vertical )
     {
+        /*
+            For horizontal layouts Text depends on Graphic, while
+            for vertical Graphic depends on Text. Confusing ...
+         */
         const auto textRect = subControlRect( button, contentsRect, Q::Text );
         const auto h = textRect.height() + button->spacingHint( Q::Panel );
 
@@ -146,26 +154,38 @@ QRectF QskPushButtonSkinlet::graphicRect(
             return QRectF();
 
         r.setBottom( r.bottom() - h );
-    }
 
-    const auto maxSize = button->strutSizeHint( Q::Graphic );
-
-    if ( maxSize.width() >= 0 || maxSize.height() >= 0 )
-    {
-        // limiting the size by graphicSize
-        const qreal maxW = maxSize.width();
-        const qreal maxH = maxSize.height();
-
-        if ( maxW >= 0.0 && maxW < r.width() )
+        if ( maxW >= 0 || maxH >= 0 )
         {
-            r.setX( r.center().x() - 0.5 * maxW );
-            r.setWidth( maxW );
+            // limiting the size by maxSize
+
+            if ( maxW >= 0.0 && maxW < r.width() )
+            {
+                r.setX( r.center().x() - 0.5 * maxW );
+                r.setWidth( maxW );
+            }
+
+            if ( maxH >= 0.0 && maxH < r.height() )
+            {
+                r.setY( r.center().y() - 0.5 * maxH );
+                r.setHeight( maxH );
+            }
         }
-
-        if ( maxH >= 0.0 && maxH < r.height() )
+    }
+    else
+    {
+        if ( maxW >= 0 || maxH >= 0 )
         {
-            r.setY( r.center().y() - 0.5 * maxH );
-            r.setHeight( maxH );
+            if ( maxW >= 0.0 && maxW < r.width() )
+            {
+                r.setWidth( maxW );
+            }
+
+            if ( maxH >= 0.0 && maxH < r.height() )
+            {
+                r.setY( r.center().y() - 0.5 * maxH );
+                r.setHeight( maxH );
+            }
         }
     }
 
@@ -178,10 +198,10 @@ QRectF QskPushButtonSkinlet::graphicRect(
         {
             sz.scale( r.size(), Qt::KeepAspectRatio );
         
-            const auto align = ( orientation == Qt::Horizontal )
-                ? ( Qt::AlignLeft | Qt::AlignTop ) : Qt::AlignCenter;
-
-            r = qskAlignedRectF( r, sz.width(), sz.height(), align );
+            if ( orientation == Qt::Vertical )
+                r = qskAlignedRectF( r, sz, Qt::AlignCenter );
+            else
+                r = qskAlignedRectF( r, sz, Qt::AlignLeft | Qt::AlignVCenter );
         }
     }
 
@@ -267,7 +287,7 @@ QSizeF QskPushButtonSkinlet::sizeHint( const QskSkinnable* skinnable,
 
     QSizeF size( 0, 0 );
 
-    const QFontMetricsF fm( button->effectiveFont( QskPushButton::Text ) );
+    const QFontMetricsF fm( button->effectiveFont( Q::Text ) );
 
     if ( !button->text().isEmpty() )
     {
@@ -278,47 +298,20 @@ QSizeF QskPushButtonSkinlet::sizeHint( const QskSkinnable* skinnable,
 
     if ( button->hasGraphic() )
     {
-        const auto sz = button->strutSizeHint( Q::Graphic );
-
-        qreal w = sz.width();
-        qreal h = sz.height();
-
-        if ( w < 0.0 || h < 0.0 )
-        {
-            const auto graphic = button->graphic();
-
-            if ( !graphic.isEmpty() )
-            {
-
-                if ( ( w < 0.0 ) && ( h < 0.0 ) )
-                {
-                    // strutSizeHint( Graphic ) ???
-                    h = 1.5 * fm.height();
-                }
-
-                if ( w < 0 )
-                {
-                    w = graphic.widthForHeight( h );
-                }
-                else if ( h < 0 )
-                {
-                    h = graphic.heightForWidth( w );
-                }
-            }
-        }
+        const auto hint = graphicSizeHint( button );
 
         const auto padding = button->paddingHint( Q::Graphic );
         const auto orientation = qskOrientation( button );
 
         if( orientation == Qt::Horizontal )
         {
-            size.rwidth() += padding.left() + w + padding.right();
-            size.rheight() = qMax( size.height(), h );
+            size.rwidth() += padding.left() + hint.width() + padding.right();
+            size.rheight() = qMax( size.height(), hint.height() );
         }
         else
         {
-            size.rheight() += padding.top() + h + padding.bottom();
-            size.rwidth() = qMax( size.width(), w );
+            size.rheight() += padding.top() + hint.height() + padding.bottom();
+            size.rwidth() = qMax( size.width(), hint.width() );
         }
     }
 
@@ -326,6 +319,34 @@ QSizeF QskPushButtonSkinlet::sizeHint( const QskSkinnable* skinnable,
     size = button->outerBoxSize( Q::Panel, size );
 
     return size;
+}
+
+QSizeF QskPushButtonSkinlet::graphicSizeHint( const QskPushButton* button ) const
+{
+    using Q = QskPushButton;
+
+    auto size = button->strutSizeHint( Q::Graphic );
+    if ( !size.isEmpty() )
+        return size;
+
+    const auto& graphic = button->graphic();
+
+    auto w = size.width();
+    auto h = size.height();
+
+    if ( w > 0.0 )
+    {
+        h = graphic.heightForWidth( w );
+    }
+    else
+    {
+        if ( h <= 0.0 )
+            h = 1.5 * button->effectiveFontHeight( Q::Text );
+
+        w = graphic.widthForHeight( h );
+    }
+
+    return QSizeF( w, h );
 }
 
 #include "moc_QskPushButtonSkinlet.cpp"

@@ -230,6 +230,31 @@ void QskPushButton::updateResources()
     m_data->ensureGraphic( this );
 }
 
+QskAspect::Placement QskPushButton::effectivePlacement() const
+{
+    if ( hasGraphic() && !text().isEmpty() )
+    {
+        // for the moment we only support the direction. TODO ...
+
+        auto aspect = Panel | QskAspect::Direction;
+        aspect.setPlacement( QskAspect::Vertical ); // to avoid recursions TODO ...
+
+        const auto dir = flagHint( aspect, Qsk::LeftToRight );
+        switch( dir )
+        {
+            case Qsk::LeftToRight:
+            case Qsk::RightToLeft:
+                return QskAspect::Horizontal;
+
+            case Qsk::TopToBottom:
+            case Qsk::BottomToTop:
+                return QskAspect::Vertical;
+        }
+    }
+
+    return Inherited::effectivePlacement();
+}
+
 QRectF QskPushButton::layoutRectForSize( const QSizeF& size ) const
 {
     return subControlContentsRect( size, Panel );

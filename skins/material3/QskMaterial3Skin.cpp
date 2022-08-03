@@ -45,10 +45,44 @@
 #include <QskNamespace.h>
 #include <QskPlatform.h>
 
+#include <qguiapplication.h>
+#include <qscreen.h>
+
 static const int qskDuration = 150;
 
 namespace
 {
+    // see: https://en.wikipedia.org/wiki/Device-independent_pixel
+    inline qreal dpToPixels( long double value )
+    {
+        static qreal factor = -1.0;
+
+        if ( factor < 0.0 )
+        {
+            factor = 1.0;
+
+#if 0
+            if ( const auto screen = QGuiApplication::primaryScreen() )
+            {
+                // is this calculation correct ? TODO ...
+                factor = screen->logicalDotsPerInch() / 160.0;
+            }
+#endif
+        }
+
+        return value * factor;
+    }
+
+    inline double operator ""_dp( long double value )
+    {
+        return dpToPixels( value );
+    }
+
+    inline double operator ""_dp( unsigned long long int value )
+    {
+        return dpToPixels( value );
+    }
+
     class Editor : private QskSkinHintTableEditor
     {
       public:
@@ -453,12 +487,16 @@ void Editor::setupPushButton()
 
     setBoxShape( Q::Panel, 100, Qt::RelativeSize );
 
-    setAlignment( Q::Graphic | A::Alignment, Qt::AlignLeft );
-    setPadding( Q::Graphic, 5 );
+    setAlignment( Q::Graphic | A::Alignment, Qt::AlignCenter );
+    setStrutSize( Q::Graphic, 24_dp, 24_dp );
+    setPadding( Q::Graphic, 0 );
 
     setFontRole( Q::Text, QskMaterial3Skin::M3LabelLarge );
-    setAlignment( Q::Text, Qt::AlignCenter );
+    setPadding( Q::Text, 0 );
 
+    setAlignment( Q::Text | A::Alignment, Qt::AlignCenter );
+    setAlignment( Q::Text | A::Alignment | A::Horizontal,
+        Qt::AlignLeft | Qt::AlignVCenter );
 
     // normal buttons (i.e. Filled):
 
