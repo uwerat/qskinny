@@ -5,99 +5,10 @@
 
 #include "QskLayoutEngine2D.h"
 #include "QskLayoutChain.h"
-#include "QskLayoutMetrics.h"
-#include "QskControl.h"
-#include "QskQuick.h"
+#include "QskLayoutElement.h"
+#include "QskFunctions.h"
 
 #include <qguiapplication.h>
-
-static QSizeF qskItemConstraint( const QQuickItem* item, const QSizeF& constraint )
-{
-    QSizeF hint( 0, 0 );
-
-    const auto sizePolicy = qskSizePolicy( item );
-
-    const auto constraintType = sizePolicy.constraintType();
-    const auto which = Qt::PreferredSize;
-
-    if ( constraintType != QskSizePolicy::Unconstrained )
-    {
-        const quint32 growFlags = QskSizePolicy::GrowFlag | QskSizePolicy::ExpandFlag;
-
-        if ( constraint.width() > 0 ) // && constrainedType == HeightForWidth ??
-        {
-            qreal w = constraint.width();
-
-            if ( !( sizePolicy.policy( Qt::Horizontal ) & growFlags ) )
-            {
-                const auto maxW = qskEffectiveSizeHint( item, which ).width();
-
-                if ( maxW >= 0.0 )
-                    w = qMin( w, maxW );
-            }
-
-            hint.setWidth( w );
-            hint.setHeight( qskHeightForWidth( item, which, w ) );
-        }
-        else if ( constraint.height() > 0 ) // && constrainedType == WidthForHeight ??
-        {
-            qreal h = constraint.height();
-
-            if ( !( sizePolicy.policy( Qt::Vertical ) & growFlags ) )
-            {
-                const auto maxH = qskEffectiveSizeHint( item, which ).height();
-
-                if ( maxH >= 0.0 )
-                    h = qMin( h, maxH );
-            }
-
-            hint.setWidth( qskWidthForHeight( item, which, h ) );
-            hint.setHeight( h );
-        }
-        else
-        {
-            hint = qskEffectiveSizeHint( item, which );
-
-            if ( constraintType == QskSizePolicy::WidthForHeight )
-                hint.setWidth( qskWidthForHeight( item, which, hint.height() ) );
-            else
-                hint.setHeight( qskHeightForWidth( item, which, hint.width() ) );
-        }
-    }
-    else
-    {
-        hint = qskEffectiveSizeHint( item, which );
-    }
-
-    hint = hint.expandedTo( QSizeF( 0.0, 0.0 ) );
-
-    return hint;
-}
-
-static inline qreal qskLayoutConstraint( const QQuickItem* item,
-    Qt::Orientation orientation, qreal constraint )
-{
-    if ( orientation == Qt::Horizontal )
-        return qskItemConstraint( item, QSizeF( -1.0, constraint ) ).width();
-    else
-        return qskItemConstraint( item, QSizeF( constraint, -1.0 ) ).height();
-}
-
-static inline qreal qskEffectiveConstraint( const QQuickItem* item,
-    Qt::SizeHint which, Qt::Orientation orientation )
-{
-    qreal value;
-
-    if ( orientation == Qt::Horizontal )
-        value = qskEffectiveSizeHint( item, which ).width();
-    else
-        value = qskEffectiveSizeHint( item, which ).height();
-
-    if ( value < 0.0 )
-        value = ( which == Qt::MaximumSize ) ? QskLayoutMetrics::unlimited : 0.0;
-
-    return value;
-}
 
 namespace
 {
@@ -289,25 +200,6 @@ bool QskLayoutEngine2D::setExtraSpacingAt( Qt::Edges edges )
     return true;
 }
 
-int QskLayoutEngine2D::indexOf( const QQuickItem* item ) const
-{
-    if ( item )
-    {
-        /*
-           indexOf is often called after inserting an item to
-           set additinal properties. So we search in reverse order
-         */
-
-        for ( int i = count() - 1; i >= 0; --i )
-        {
-            if ( itemAt( i ) == item )
-                return i;
-        }
-    }
-
-    return -1;
-}
-
 Qt::Edges QskLayoutEngine2D::extraSpacingAt() const
 {
     return static_cast< Qt::Edges >( m_data->extraSpacingAt );
@@ -343,26 +235,30 @@ void QskLayoutEngine2D::setGeometries( const QRectF& rect )
     m_data->layoutData = nullptr;
 }
 
-void QskLayoutEngine2D::layoutItem( QQuickItem* item, const QRect& grid ) const
+QRectF QskLayoutEngine2D::geometryAt(
+    const QskLayoutElement* element, const QRect& grid ) const
 {
-    auto layoutData = m_data->layoutData;
+    const auto layoutData = m_data->layoutData;
 
-    if ( layoutData == nullptr || item == nullptr )
-        return;
-
-    auto alignment = qskLayoutAlignmentHint( item );
-    alignment = m_data->effectiveAlignment( alignment );
-
-    auto rect = layoutData->geometryAt( grid );
-    rect = qskConstrainedItemRect( item, rect, alignment );
-
-    if ( layoutData->direction == Qt::RightToLeft )
+    if ( layoutData && element )
     {
-        const auto& r = layoutData->rect;
-        rect.moveRight( r.right() - ( rect.left() - r.left() ) );
+        auto rect = layoutData->geometryAt( grid );
+
+        const auto size = element->constrainedSize( rect.size() );
+        const auto alignment = m_data->effectiveAlignment( element->alignment() );
+
+        rect = qskAlignedRectF( rect, size, alignment );
+
+        if ( layoutData->direction == Qt::RightToLeft )
+        {
+            const auto& r = layoutData->rect;
+            rect.moveRight( r.right() - ( rect.left() - r.left() ) );
+        }
+
+        return rect;
     }
 
-    qskSetItemGeometry( item, rect );
+    return QRectF( 0, 0, -1, -1 );
 }
 
 qreal QskLayoutEngine2D::widthForHeight( qreal height ) const
@@ -421,7 +317,7 @@ QSizeF QskLayoutEngine2D::sizeHint(
             if ( constraint.height() >= 0 || constraint.width() >= 0 )
             {
                 /*
-                    As none of the items have the Constrained flag the constraint
+                    As none of the elements has the Constrained flag the constraint
                     will have no effect and we ignore it to make use of the cached
                     results from unconstrained requests
                  */
@@ -475,54 +371,6 @@ QSizeF QskLayoutEngine2D::sizeHint(
         hint.rheight() = rowChain.boundingMetrics().metric( which );
 
     return hint;
-}
-
-QskLayoutMetrics QskLayoutEngine2D::layoutMetrics( const QQuickItem* item,
-    Qt::Orientation orientation, qreal constraint ) const
-{
-    if ( item == nullptr )
-        return QskLayoutMetrics();
-
-    const auto policy = qskSizePolicy( item ).policy( orientation );
-
-    if ( constraint >= 0.0 )
-    {
-        if ( !( policy & QskSizePolicy::ConstrainedFlag ) )
-            constraint = -1.0;
-    }
-
-    qreal minimum, preferred, maximum;
-
-    const auto expandFlags = QskSizePolicy::GrowFlag | QskSizePolicy::ExpandFlag;
-
-    if ( ( policy & QskSizePolicy::ShrinkFlag ) &&
-        ( policy & expandFlags ) && ( policy & QskSizePolicy::IgnoreFlag ) )
-    {
-        // we don't need to calculate the preferred size
-
-        minimum = qskEffectiveConstraint( item, Qt::MinimumSize, orientation );
-        maximum = qskEffectiveConstraint( item, Qt::MaximumSize, orientation );
-        preferred = minimum;
-    }
-    else
-    {
-        preferred = qskLayoutConstraint( item, orientation, constraint );
-
-        if ( policy & QskSizePolicy::ShrinkFlag )
-            minimum = qskEffectiveConstraint( item, Qt::MinimumSize, orientation );
-        else
-            minimum = preferred;
-
-        if ( policy & expandFlags )
-            maximum = qskEffectiveConstraint( item, Qt::MaximumSize, orientation );
-        else
-            maximum = preferred;
-
-        if ( policy & QskSizePolicy::IgnoreFlag )
-            preferred = minimum;
-    }
-
-    return QskLayoutMetrics( minimum, preferred, maximum );
 }
 
 void QskLayoutEngine2D::setupChain( Qt::Orientation orientation ) const
@@ -631,7 +479,7 @@ QskSizePolicy::ConstraintType QskLayoutEngine2D::constraintType() const
 
         for ( int i = 0; i < count(); i++ )
         {
-            const auto type = qskSizePolicy( itemAt( i ) ).constraintType();
+            const auto type = sizePolicyAt( i ).constraintType();
 
             if ( type != QskSizePolicy::Unconstrained )
             {

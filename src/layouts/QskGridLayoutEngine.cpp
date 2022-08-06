@@ -6,6 +6,7 @@
 #include "QskGridLayoutEngine.h"
 #include "QskLayoutMetrics.h"
 #include "QskLayoutChain.h"
+#include "QskLayoutElement.h"
 #include "QskSizePolicy.h"
 #include "QskQuick.h"
 
@@ -162,6 +163,13 @@ namespace
 
 namespace
 {
+    inline QskLayoutMetrics qskItemMetrics(
+        QQuickItem* item, Qt::Orientation orientation, qreal constraint )
+    {
+        const QskItemLayoutElement layoutItem( item );
+        return layoutItem.metrics( orientation, constraint );
+    }
+
     class Element
     {
       public:
@@ -543,6 +551,30 @@ QQuickItem* QskGridLayoutEngine::itemAt( int index ) const
     return nullptr;
 }
 
+QskSizePolicy QskGridLayoutEngine::sizePolicyAt( int index ) const
+{
+    return qskSizePolicy( itemAt( index ) );
+}
+
+int QskGridLayoutEngine::indexOf( const QQuickItem* item ) const
+{
+    if ( item )
+    {
+        /*
+           indexOf is often called after inserting an item to
+           set additinal properties. So we search in reverse order
+         */
+
+        for ( int i = count() - 1; i >= 0; --i )
+        {
+            if ( itemAt( i ) == item )
+                return i;
+        }
+    }
+
+    return -1;
+}
+
 QSizeF QskGridLayoutEngine::spacerAt( int index ) const
 {
     if ( const auto element = m_data->elementAt( index ) )
@@ -601,7 +633,12 @@ void QskGridLayoutEngine::layoutItems()
         if ( qskIsAdjustableByLayout( item ) )
         {
             const auto grid = m_data->effectiveGrid( element );
-            layoutItem( item, grid );
+
+            const QskItemLayoutElement layoutElement( item );
+
+            const auto rect = geometryAt( &layoutElement, grid );
+            if ( rect.size().isValid() )
+                qskSetItemGeometry( item, rect );
         }
     }
 }
@@ -650,8 +687,9 @@ void QskGridLayoutEngine::setupChain( Qt::Orientation orientation,
                 constraint = qskSegmentLength( constraints, grid.left(), grid.right() );
 
             auto cell = element.cell( orientation );
+
             if ( element.item() )
-                cell.metrics = layoutMetrics( element.item(), orientation, constraint );
+                cell.metrics = qskItemMetrics( element.item(), orientation, constraint );
 
             chain.expandCell( grid.top(), cell );
         }
@@ -677,7 +715,7 @@ void QskGridLayoutEngine::setupChain( Qt::Orientation orientation,
             constraint = qskSegmentLength( constraints, grid.left(), grid.right() );
 
         auto cell = element->cell( orientation );
-        cell.metrics = layoutMetrics( element->item(), orientation, constraint );
+        cell.metrics = qskItemMetrics( element->item(), orientation, constraint );
 
         chain.expandCells( grid.top(), grid.height(), cell );
     }

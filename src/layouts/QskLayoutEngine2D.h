@@ -13,8 +13,7 @@
 #include <qnamespace.h>
 #include <memory>
 
-class QQuickItem;
-class QskLayoutMetrics;
+class QskLayoutElement;
 
 class QskLayoutEngine2D
 {
@@ -23,10 +22,6 @@ class QskLayoutEngine2D
     virtual ~QskLayoutEngine2D();
 
     virtual int count() const = 0;
-
-    virtual QQuickItem* itemAt( int index ) const = 0;
-
-    int indexOf( const QQuickItem* ) const;
 
     int rowCount() const;
     int columnCount() const;
@@ -55,10 +50,7 @@ class QskLayoutEngine2D
     void setGeometries( const QRectF& );
 
   protected:
-
-    void layoutItem( QQuickItem*, const QRect& grid ) const;
-    QskLayoutMetrics layoutMetrics( const QQuickItem*,
-        Qt::Orientation, qreal constraint ) const;
+    QRectF geometryAt( const QskLayoutElement*, const QRect& grid ) const;
 
     enum
     {
@@ -78,6 +70,8 @@ class QskLayoutEngine2D
 
     virtual void invalidateElementCache() = 0;
     QskSizePolicy::ConstraintType constraintType() const;
+
+    virtual QskSizePolicy sizePolicyAt( int index ) const = 0;
 
     void setupChain( Qt::Orientation ) const;
     void setupChain( Qt::Orientation, const QskLayoutChain::Segments& ) const;

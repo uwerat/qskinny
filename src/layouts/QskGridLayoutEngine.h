@@ -39,11 +39,13 @@ class QskGridLayoutEngine : public QskLayoutEngine2D
     bool removeAt( int index );
     bool clear();
 
-    QQuickItem* itemAt( int index ) const override final;
+    QQuickItem* itemAt( int index ) const;
     QSizeF spacerAt( int index ) const;
 
     QQuickItem* itemAt( int row, int column ) const;
     int indexAt( int row, int column ) const;
+
+    int indexOf( const QQuickItem* ) const;
 
     bool setGridAt( int index, const QRect& );
     QRect gridAt( int index ) const;
@@ -53,6 +55,7 @@ class QskGridLayoutEngine : public QskLayoutEngine2D
     void transpose();
 
   private:
+    QskSizePolicy sizePolicyAt( int index ) const override final;
     void layoutItems() override;
     int effectiveCount( Qt::Orientation ) const override;
 

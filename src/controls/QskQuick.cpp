@@ -6,6 +6,7 @@
 #include "QskQuick.h"
 #include "QskControl.h"
 #include "QskFunctions.h"
+#include "QskLayoutElement.h"
 #include <qquickitem.h>
 
 QSK_QT_PRIVATE_BEGIN
@@ -419,221 +420,23 @@ QSizeF qskEffectiveSizeHint( const QQuickItem* item,
     return hint;
 }
 
-static QSizeF qskBoundedConstraint( const QQuickItem* item,
-    const QSizeF& constraint, QskSizePolicy policy )
-{
-    Qt::Orientation orientation;
-
-    if ( constraint.width() >= 0.0 )
-    {
-        orientation = Qt::Horizontal;
-    }
-    else if ( constraint.height() >= 0.0 )
-    {
-        orientation = Qt::Vertical;
-    }
-    else
-    {
-        return constraint;
-    }
-
-    const auto whichMin = policy.effectiveSizeHintType( Qt::MinimumSize, orientation );
-    const auto whichMax = policy.effectiveSizeHintType( Qt::MaximumSize, orientation );
-
-    const auto hintMin = qskEffectiveSizeHint( item, whichMin );
-    const auto hintMax = ( whichMax == whichMin )
-        ? hintMin : qskEffectiveSizeHint( item, whichMax );
-
-    QSizeF size = constraint;
-
-    if ( orientation == Qt::Horizontal )
-    {
-        if ( hintMax.width() >= 0.0 )
-            size.rwidth() = qMin( size.width(), hintMax.width() );
-
-        size.rwidth() = qMax( size.width(), hintMin.width() );
-    }
-    else
-    {
-        if ( hintMax.height() >= 0.0 )
-            size.rheight() = qMin( size.height(), hintMax.height() );
-
-        size.rheight() = qMax( size.height(), hintMin.height() );
-    }
-
-    return size;
-}
-
 QSizeF qskSizeConstraint( const QQuickItem* item,
     Qt::SizeHint which, const QSizeF& constraint )
 {
     if ( item == nullptr )
         return QSizeF( 0, 0 );
 
-    if ( constraint.isValid() )
-        return constraint;
-
-    auto policy = qskSizePolicy( item );
-
-    bool ignoreWidth = false;
-    bool ignoreHeight = false;
-
-    if ( which == Qt::PreferredSize )
-    {
-        /*
-            First we are checking the IgnoreFlag, to avoid doing
-            pointless calculations.
-         */
-        ignoreWidth = policy.policy( Qt::Horizontal ) & QskSizePolicy::IgnoreFlag;
-        ignoreHeight = policy.policy( Qt::Vertical ) & QskSizePolicy::IgnoreFlag;
-
-        if ( ( ignoreWidth && ignoreHeight )
-            || ( ignoreWidth && constraint.height() >= 0.0 )
-            || ( ignoreHeight && constraint.width() >= 0.0 ) )
-        {
-            return QSizeF();
-        }
-    }
-
-    const auto whichH = policy.effectiveSizeHintType( which, Qt::Horizontal );
-    const auto whichV = policy.effectiveSizeHintType( which, Qt::Vertical );
-
-    QSizeF size;
-
-    int constraintType = QskSizePolicy::Unconstrained;
-
-    /*
-        We apply a constraint - even, when the policy is unconstrained.
-        Do we really want to do this ???
-     */
-    if ( constraint.height() >= 0.0 )
-    {
-        const auto c = qskBoundedConstraint( item, constraint, policy );
-        size = qskEffectiveSizeHint( item, whichV, c );
-
-        if ( ( whichH != whichV ) || ( size.height() != c.height() ) )
-            constraintType = QskSizePolicy::WidthForHeight;
-    }
-    else if ( constraint.width() >= 0.0 )
-    {
-        const auto c = qskBoundedConstraint( item, constraint, policy );
-        size = qskEffectiveSizeHint( item, whichH, c );
-
-        if ( ( whichV != whichH ) || ( size.width() != c.height() ) )
-            constraintType = QskSizePolicy::HeightForWidth;
-    }
-    else
-    {
-        constraintType = policy.constraintType();
-
-        switch( constraintType )
-        {
-            case QskSizePolicy::WidthForHeight:
-            {
-                size = qskEffectiveSizeHint( item, whichV );
-                break;
-            }
-            case QskSizePolicy::HeightForWidth:
-            {
-                size = qskEffectiveSizeHint( item, whichH );
-                break;
-            }
-            default:
-            {
-                if ( whichV != whichH )
-                {
-                    if ( !ignoreWidth )
-                        size.rwidth() = qskEffectiveSizeHint( item, whichH ).width();
-
-                    if ( !ignoreHeight )
-                        size.rheight() = qskEffectiveSizeHint( item, whichV ).height();
-                }
-                else
-                {
-                    size = qskEffectiveSizeHint( item, whichH );
-                }
-            }
-        }
-    }
-
-    switch( constraintType )
-    {
-        case QskSizePolicy::HeightForWidth:
-        {
-            const QSizeF c( size.width(), -1.0 );
-            size.rheight() = qskEffectiveSizeHint( item, whichV, c ).height();
-            break;
-        }
-        case QskSizePolicy::WidthForHeight:
-        {
-            const QSizeF c( -1.0, size.height() );
-            size.rwidth() = qskEffectiveSizeHint( item, whichH, c ).width();
-            break;
-        }
-    }
-
-    if ( ignoreWidth || constraint.width() >= 0.0 )
-        size.rwidth() = -1.0;
-
-    if ( ignoreHeight || constraint.height() >= 0.0 )
-        size.rheight() = -1.0;
-
-    return size;
+    const QskItemLayoutElement layoutElement( item );
+    return layoutElement.sizeConstraint( which, constraint );
 }
 
 QSizeF qskConstrainedItemSize( const QQuickItem* item, const QSizeF& size )
 {
-    if ( item == nullptr || ( size.width() <= 0.0 && size.height() <= 0.0 ) )
+    if ( item == nullptr )
         return QSizeF( 0.0, 0.0 );
 
-    QSizeF min, max;
-
-    const auto policy = qskSizePolicy( item );
-
-    switch( policy.constraintType() )
-    {
-        case QskSizePolicy::WidthForHeight:
-        {
-            const auto constraint = qskBoundedConstraint( item,
-                QSizeF( -1.0, size.height() ), policy );
-
-            min = qskSizeConstraint( item, Qt::MinimumSize, constraint );
-            max = qskSizeConstraint( item, Qt::MaximumSize, constraint );
-
-            min.rheight() = max.rheight() = constraint.height();
-            break;
-        }
-        case QskSizePolicy::HeightForWidth:
-        {
-            const auto constraint = qskBoundedConstraint( item,
-                QSizeF( size.width(), -1.0 ), policy );
-
-            min = qskSizeConstraint( item, Qt::MinimumSize, constraint );
-            max = qskSizeConstraint( item, Qt::MaximumSize, constraint );
-
-            min.rwidth() = max.rwidth() = constraint.width();
-            break;
-        }
-        default:
-        {
-            min = qskSizeConstraint( item, Qt::MinimumSize, QSizeF() );
-            max = qskSizeConstraint( item, Qt::MaximumSize, QSizeF() );
-        }
-    }
-
-    qreal width = size.width();
-    qreal height = size.height();
-
-    if ( max.width() >= 0.0 )
-        width = qMin( width, max.width() );
-
-    if ( max.height() >= 0.0 )
-        height = qMin( height, max.height() );
-
-    width = qMax( width, min.width() );
-    height = qMax( height, min.height() );
-
-    return QSizeF( width, height );
+    const QskItemLayoutElement layoutElement( item );
+    return layoutElement.constrainedSize( size );
 }
 
 QRectF qskConstrainedItemRect( const QQuickItem* item,

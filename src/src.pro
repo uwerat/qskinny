@@ -317,6 +317,7 @@ HEADERS += \
     layouts/QskIndexedLayoutBox.h \
     layouts/QskLayoutChain.h \
     layouts/QskLayoutEngine2D.h \
+    layouts/QskLayoutElement.h \
     layouts/QskLayoutMetrics.h \
     layouts/QskLinearBox.h \
     layouts/QskLinearLayoutEngine.h \
@@ -329,6 +330,7 @@ SOURCES += \
     layouts/QskIndexedLayoutBox.cpp \
     layouts/QskLayoutChain.cpp \
     layouts/QskLayoutEngine2D.cpp \
+    layouts/QskLayoutElement.cpp \
     layouts/QskLayoutMetrics.cpp \
     layouts/QskLinearBox.cpp \
     layouts/QskLinearLayoutEngine.cpp \
