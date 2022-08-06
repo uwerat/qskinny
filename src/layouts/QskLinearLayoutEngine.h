@@ -39,7 +39,9 @@ class QskLinearLayoutEngine : public QskLayoutEngine2D
     bool removeAt( int index );
     bool clear();
 
-    QQuickItem* itemAt( int index ) const override final;
+    int indexOf( const QQuickItem* ) const;
+
+    QQuickItem* itemAt( int index ) const;
     qreal spacerAt( int index ) const;
 
     bool setStretchFactorAt( int index, int stretchFactor );
@@ -48,6 +50,7 @@ class QskLinearLayoutEngine : public QskLayoutEngine2D
   private:
     Q_DISABLE_COPY(QskLinearLayoutEngine)
 
+    QskSizePolicy sizePolicyAt( int index ) const override final;
     void layoutItems() override;
 
     int effectiveCount() const;

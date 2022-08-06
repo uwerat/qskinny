@@ -6,6 +6,7 @@
 #include "QskLinearLayoutEngine.h"
 #include "QskLayoutMetrics.h"
 #include "QskLayoutChain.h"
+#include "QskLayoutElement.h"
 #include "QskSizePolicy.h"
 #include "QskQuick.h"
 
@@ -13,6 +14,13 @@
 
 namespace
 {
+    inline QskLayoutMetrics qskItemMetrics(
+        QQuickItem* item, Qt::Orientation orientation, qreal constraint )
+    {
+        const QskItemLayoutElement layoutItem( item );
+        return layoutItem.metrics( orientation, constraint );
+    }
+
     class Element
     {
       public:
@@ -331,6 +339,30 @@ bool QskLinearLayoutEngine::clear()
     return true;
 }
 
+QskSizePolicy QskLinearLayoutEngine::sizePolicyAt( int index ) const
+{
+    return qskSizePolicy( itemAt( index ) );
+}
+
+int QskLinearLayoutEngine::indexOf( const QQuickItem* item ) const
+{
+    if ( item )
+    {
+        /*
+           indexOf is often called after inserting an item to
+           set additinal properties. So we search in reverse order
+         */
+
+        for ( int i = count() - 1; i >= 0; --i )
+        {
+            if ( itemAt( i ) == item )
+                return i;
+        }
+    }
+
+    return -1;
+}
+
 QQuickItem* QskLinearLayoutEngine::itemAt( int index ) const
 {
     if ( const auto element = m_data->elementAt( index ) )
@@ -362,7 +394,12 @@ void QskLinearLayoutEngine::layoutItems()
             if ( qskIsAdjustableByLayout( item ) )
             {
                 const QRect grid( col, row, 1, 1 );
-                layoutItem( item, grid );
+
+                const QskItemLayoutElement layoutElement( item );
+
+                const auto rect = geometryAt( &layoutElement, grid );
+                if ( rect.size().isValid() )
+                    qskSetItemGeometry( item, rect );
             }
         }
 
@@ -445,7 +482,7 @@ void QskLinearLayoutEngine::setupChain( Qt::Orientation orientation,
         auto cell = element.cell( orientation, isLayoutOrientation );
 
         if ( element.item() )
-            cell.metrics = layoutMetrics( element.item(), orientation, constraint );
+            cell.metrics = qskItemMetrics( element.item(), orientation, constraint );
 
         chain.expandCell( index2, cell );
 
