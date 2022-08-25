@@ -46,8 +46,8 @@ QSGNode* QskTabButtonSkinlet::updateSubNode(
 
         case TextRole:
         {
-            return updateTextNode( tabButton, node, tabButton->text(),
-                tabButton->textOptions(), QskTabButton::Text );
+            return updateTextNode( tabButton, node,
+                tabButton->text(), QskTabButton::Text );
         }
     }
 

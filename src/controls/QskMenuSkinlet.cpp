@@ -525,8 +525,8 @@ QSGNode* QskMenuSkinlet::updateSampleNode( const QskSkinnable* skinnable,
         const auto alignment = menu->alignmentHint(
             subControl, Qt::AlignVCenter | Qt::AlignLeft );
 
-        return QskSkinlet::updateTextNode( menu, node, rect, alignment,
-            text, menu->textOptions(), Q::Text );
+        return QskSkinlet::updateTextNode( menu, node, rect,
+            alignment, text, Q::Text );
     }
 
     if ( subControl == Q::Separator )

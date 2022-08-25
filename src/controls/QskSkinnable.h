@@ -29,6 +29,7 @@ class QskBoxShapeMetrics;
 class QskBoxBorderMetrics;
 class QskBoxBorderColors;
 class QskShadowMetrics;
+class QskTextOptions;
 class QskBoxHints;
 class QskGradient;
 
@@ -232,6 +233,10 @@ class QSK_EXPORT QskSkinnable
     bool setAlignmentHint( QskAspect, Qt::Alignment );
     bool resetAlignmentHint( QskAspect );
     Qt::Alignment alignmentHint( QskAspect, Qt::Alignment = Qt::Alignment() ) const;
+
+    bool setTextOptionsHint( QskAspect, const QskTextOptions& );
+    bool resetTextOptionsHint( QskAspect );
+    QskTextOptions textOptionsHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
 
     bool setFontRoleHint( QskAspect, int role );
     bool resetFontRoleHint( QskAspect );

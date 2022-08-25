@@ -107,8 +107,7 @@ class QSK_EXPORT QskSkinlet
         QskAspect::Subcontrol );
 
     static QSGNode* updateTextNode( const QskSkinnable*, QSGNode*,
-        const QRectF&, Qt::Alignment, const QString&, const QskTextOptions&,
-        QskAspect::Subcontrol );
+        const QRectF&, Qt::Alignment, const QString&, QskAspect::Subcontrol );
 
     static QSGNode* updateTextNode( const QskSkinnable*, QSGNode*,
         const QRectF&, Qt::Alignment, const QString&, const QFont&,
@@ -154,7 +153,7 @@ class QSK_EXPORT QskSkinlet
         QskAspect::Subcontrol ) const;
 
     QSGNode* updateTextNode( const QskSkinnable*, QSGNode*,
-        const QString&, const QskTextOptions&, QskAspect::Subcontrol ) const;
+        const QString&, QskAspect::Subcontrol ) const;
 
     QSGNode* updateGraphicNode( const QskSkinnable*, QSGNode*,
         const QskGraphic&, QskAspect::Subcontrol,

@@ -331,7 +331,7 @@ QSGNode* QskSegmentedBarSkinlet::updateSampleNode( const QskSkinnable* skinnable
             const auto text = value.value< QString >();
 
             return QskSkinlet::updateTextNode( bar, node,
-                rect, alignment, text, bar->textOptions(), Q::Text );
+                rect, alignment, text, Q::Text );
         }
 
         return nullptr;

@@ -46,6 +46,8 @@ class QSK_EXPORT QskAspect
         Alignment,
         Direction,
         Style,
+        Option,
+
         GraphicRole,
         FontRole,
 

@@ -216,6 +216,7 @@ void Editor::setupCheckBox()
     setColor( Q::Indicator | Q::Checked | Q::Disabled, m_pal.onSurface38 );
 
     setColor( Q::Text, m_pal.onBackground );
+    setTextOptions( Q::Text, Qt::ElideMiddle, QskTextOptions::NoWrap );
 }
 
 void Editor::setupBox()
@@ -422,11 +423,13 @@ void Editor::setupSegmentedBar()
         // Text
 
         setFontRole( Q::Text, QskMaterial3Skin::M3LabelLarge );
+        setTextOptions( Q::Text, Qt::ElideMiddle, QskTextOptions::NoWrap );
 
         setColor( Q::Text, m_pal.onSurface );
         setColor( Q::Text | Q::Selected, m_pal.onSecondaryContainer );
 
         setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
+
     }
 
     {
@@ -518,6 +521,8 @@ void Editor::setupPushButton()
 
     setColor( Q::Text, m_pal.onPrimary );
     setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
+
+    setTextOptions( Q::Text, Qt::ElideMiddle, QskTextOptions::NoWrap );
 
     setAnimation( Q::Panel | A::Color, qskDuration );
     setAnimation( Q::Panel | A::Metric, qskDuration );
@@ -874,6 +879,8 @@ void Editor::setupSubWindow()
     setFontRole( Q::TitleBarText, QskMaterial3Skin::M3HeadlineSmall );
     setColor( Q::TitleBarText, m_pal.onSurface );
     setAlignment( Q::TitleBarText, Qt::AlignCenter );
+
+    setTextOptions( Q::TitleBarText, Qt::ElideRight, QskTextOptions::NoWrap );
 
     for ( auto subControl : { Q::Panel, Q::TitleBarPanel, Q::TitleBarText } )
         setAnimation( subControl | A::Color, qskDuration );

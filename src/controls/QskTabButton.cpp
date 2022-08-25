@@ -29,7 +29,6 @@ class QskTabButton::PrivateData
     }
 
     QString text;
-    QskTextOptions textOptions;
     QPointer< QskTabBar > tabBar;
 };
 
@@ -77,18 +76,21 @@ QString QskTabButton::text() const
     return m_data->text;
 }
 
-void QskTabButton::setTextOptions( const QskTextOptions& options )
+void QskTabButton::setTextOptions( const QskTextOptions& textOptions )
 {
-    if ( options != m_data->textOptions )
-    {
-        m_data->textOptions = options;
+    if ( setTextOptionsHint( Text, textOptions ) )
         Q_EMIT textOptionsChanged();
-    }
 }
 
 QskTextOptions QskTabButton::textOptions() const
 {
-    return m_data->textOptions;
+    return textOptionsHint( Text );
+}
+
+void QskTabButton::resetTextOptions()
+{   
+    if ( resetTextOptionsHint( Text ) )
+        Q_EMIT textOptionsChanged();
 }
 
 QRectF QskTabButton::layoutRectForSize( const QSizeF& size ) const

@@ -88,8 +88,8 @@ QSGNode* QskSubWindowSkinlet::updateSubNode(
 
             if ( ( decorations & Q::TitleBar ) && ( decorations & Q::Title ) )
             {
-                return updateTextNode( subWindow, node, subWindow->windowTitle(),
-                    subWindow->windowTitleTextOptions(), Q::TitleBarText );
+                return updateTextNode( subWindow, node,
+                    subWindow->windowTitle(), Q::TitleBarText );
             }
 
             return nullptr;

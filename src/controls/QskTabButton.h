@@ -18,7 +18,7 @@ class QSK_EXPORT QskTabButton : public QskAbstractButton
     Q_PROPERTY( QString text READ text WRITE setText NOTIFY textChanged FINAL )
 
     Q_PROPERTY( QskTextOptions textOptions READ textOptions
-        WRITE setTextOptions NOTIFY textOptionsChanged )
+        WRITE setTextOptions RESET resetTextOptions NOTIFY textOptionsChanged )
 
     using Inherited = QskAbstractButton;
 
@@ -37,6 +37,7 @@ class QSK_EXPORT QskTabButton : public QskAbstractButton
 
     void setTextOptions( const QskTextOptions& );
     QskTextOptions textOptions() const;
+    void resetTextOptions();
 
     QRectF layoutRectForSize( const QSizeF& ) const override;
 

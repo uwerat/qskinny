@@ -120,6 +120,11 @@ namespace
     {
         return aspect | QskAspect::Shadow;
     }
+
+    inline QskAspect aspectOption( QskAspect aspect )
+    {
+        return aspect | QskAspect::Option;
+    }
 }
 
 QskSkinHintTableEditor::QskSkinHintTableEditor( QskSkinHintTable* table )
@@ -571,4 +576,32 @@ bool QskSkinHintTableEditor::removeArcMetrics( QskAspect aspect,
 QskArcMetrics QskSkinHintTableEditor::arcMetrics( QskAspect aspect ) const
 {
     return metricHint< QskArcMetrics >( aspectShape( aspect ) );
+}
+
+void QskSkinHintTableEditor::setTextOptions( QskAspect aspect,
+    Qt::TextElideMode elideMode, QskTextOptions::WrapMode wrapMode,
+    QskStateCombination combination )
+{
+    QskTextOptions options;
+    options.setElideMode( elideMode );
+    options.setWrapMode( wrapMode );
+
+    setTextOptions( aspect, options, combination );
+}
+
+void QskSkinHintTableEditor::setTextOptions( QskAspect aspect,
+        const QskTextOptions& textOptions, QskStateCombination combination )
+{
+    setFlagHint( aspectOption( aspect ), textOptions, combination );
+}
+
+bool QskSkinHintTableEditor::removeTextOptions(
+    QskAspect aspect, QskStateCombination combination )
+{
+    return removeFlagHint( aspectOption( aspect ), combination );
+}
+
+QskTextOptions QskSkinHintTableEditor::textOptions( QskAspect aspect ) const
+{
+    return flagHint< QskTextOptions >( aspectOption( aspect ) );
 }

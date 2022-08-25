@@ -146,11 +146,8 @@ QSGNode* QskCheckBoxSkinlet::updateTextNode(
     const auto rect = checkBox->subControlRect( Q::Text );
     const auto alignH = checkBox->layoutMirroring() ? Qt::AlignRight : Qt::AlignLeft;
 
-    QskTextOptions textOptions;
-    textOptions.setElideMode( Qt::ElideMiddle );
-
     return QskSkinlet::updateTextNode( checkBox, node, rect, alignH | Qt::AlignVCenter,
-        checkBox->text(), textOptions, QskCheckBox::Text );
+        checkBox->text(), QskCheckBox::Text );
 }
 
 QSizeF QskCheckBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
