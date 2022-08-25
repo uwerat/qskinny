@@ -97,15 +97,13 @@ QSGNode* MyToggleButtonSkinlet::updateSubNode(
         case CheckedLabelRole:
         {
             return updateTextNode(
-                button, node, button->text( true ),
-                button->textOptions(), Q::CheckedText );
+                button, node, button->text( true ), Q::CheckedText );
         }
 
         case UncheckedLabelRole:
         {
             return updateTextNode(
-                button, node, button->text( false ),
-                button->textOptions(), Q::UncheckedText );
+                button, node, button->text( false ), Q::UncheckedText );
         }
 
         case CheckedGraphicRole:

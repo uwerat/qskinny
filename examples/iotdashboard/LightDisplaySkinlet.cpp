@@ -177,17 +177,17 @@ QSGNode* LightDisplaySkinlet::updateSubNode(
         {
             const QString valueText = QString::number( display->value(), 'f', 0 )
                     + QStringLiteral( " %" );
-            return updateTextNode( skinnable, node, valueText, {},
+            return updateTextNode( skinnable, node, valueText,
                                    LightDisplay::ValueText );
         }
         case LeftLabelRole:
         {
-            return updateTextNode( skinnable, node, QStringLiteral( "0  " ), {},
+            return updateTextNode( skinnable, node, QStringLiteral( "0  " ),
                                    LightDisplay::LeftLabel );
         }
         case RightLabelRole:
         {
-            return updateTextNode( skinnable, node, QStringLiteral( "  100" ), {},
+            return updateTextNode( skinnable, node, QStringLiteral( "  100" ),
                                    LightDisplay::RightLabel );
         }
         case KnobRole:

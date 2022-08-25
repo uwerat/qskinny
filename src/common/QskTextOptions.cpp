@@ -6,6 +6,13 @@
 #include "QskTextOptions.h"
 #include <qtextdocument.h>
 
+static void qskRegisterTextOptions()
+{   
+    qRegisterMetaType< QskTextOptions >();
+}       
+    
+Q_CONSTRUCTOR_FUNCTION( qskRegisterTextOptions )
+
 int QskTextOptions::textFlags() const noexcept
 {
     int flags = 0;

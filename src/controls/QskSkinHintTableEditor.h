@@ -10,6 +10,7 @@
 #include "QskSkinHintTable.h"
 #include "QskAnimationHint.h"
 #include "QskStateCombination.h"
+#include "QskTextOptions.h"
 
 #include <qcolor.h>
 #include <qvariant.h>
@@ -271,6 +272,18 @@ class QSK_EXPORT QskSkinHintTableEditor
     bool removeArcMetrics( QskAspect, QskStateCombination = QskStateCombination() );
 
     QskArcMetrics arcMetrics( QskAspect ) const;
+
+    // text options flag
+
+    void setTextOptions( QskAspect,
+        Qt::TextElideMode, QskTextOptions::WrapMode,
+        QskStateCombination = QskStateCombination() );
+
+    void setTextOptions( QskAspect,
+        const QskTextOptions&, QskStateCombination = QskStateCombination() );
+
+    bool removeTextOptions( QskAspect, QskStateCombination = QskStateCombination() );
+    QskTextOptions textOptions( QskAspect ) const;
 
   private:
     QskSkinHintTable* m_table = nullptr;

@@ -24,7 +24,7 @@ class QSK_EXPORT QskTextLabel : public QskControl
         WRITE setTextColor RESET resetTextColor NOTIFY textColorChanged )
 
     Q_PROPERTY( QskTextOptions textOptions READ textOptions
-        WRITE setTextOptions NOTIFY textOptionsChanged )
+        WRITE setTextOptions RESET resetTextOptions NOTIFY textOptionsChanged )
 
     Q_PROPERTY( Qt::Alignment alignment READ alignment
         WRITE setAlignment NOTIFY alignmentChanged )
@@ -54,6 +54,7 @@ class QSK_EXPORT QskTextLabel : public QskControl
 
     void setTextOptions( const QskTextOptions& );
     QskTextOptions textOptions() const;
+    void resetTextOptions();
 
     void setTextFormat( QskTextOptions::TextFormat );
     QskTextOptions::TextFormat textFormat() const;

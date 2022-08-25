@@ -60,7 +60,6 @@ class QskMenu::PrivateData
     QVector< Option > options;
     QVector< int > separators;
 
-    QskTextOptions textOptions;
     QPointF origin;
 
     // current/selected are not well defined yet, TODO ...
@@ -188,16 +187,12 @@ QVariantList QskMenu::optionAt( int index ) const
 
 void QskMenu::setTextOptions( const QskTextOptions& textOptions )
 {
-    if( textOptions != m_data->textOptions )
-    {
-        m_data->textOptions = textOptions;
-        update();
-    }
+    setTextOptionsHint( Text, textOptions );
 }
 
 QskTextOptions QskMenu::textOptions() const
 {
-    return m_data->textOptions;
+    return textOptionsHint( Text );
 }
 
 void QskMenu::setCurrentIndex( int index )

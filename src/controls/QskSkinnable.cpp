@@ -25,6 +25,7 @@
 #include "QskShadowMetrics.h"
 #include "QskBoxHints.h"
 #include "QskGradient.h"
+#include "QskTextOptions.h"
 
 #include <qfont.h>
 #include <qfontmetrics.h>
@@ -649,6 +650,25 @@ qreal QskSkinnable::spacingHint(
     const QskAspect aspect, QskSkinHintStatus* status ) const
 {
     return qskMetric< qreal >( this, aspect | QskAspect::Spacing, status );
+}
+
+bool QskSkinnable::setTextOptionsHint(
+    const QskAspect aspect, const QskTextOptions& options )
+{
+    return setSkinHint( aspect | QskAspect::Flag | QskAspect::Option,
+        QVariant::fromValue( options ) );
+}
+
+bool QskSkinnable::resetTextOptionsHint( const QskAspect aspect )
+{
+    return resetFlagHint( aspect | QskAspect::Option );
+}
+
+QskTextOptions QskSkinnable::textOptionsHint(
+    const QskAspect aspect, QskSkinHintStatus* status ) const
+{
+    return effectiveSkinHint(
+        aspect | QskAspect::Flag | QskAspect::Option, status ).value< QskTextOptions >();
 }
 
 bool QskSkinnable::setFontRoleHint( const QskAspect aspect, int role )

@@ -476,7 +476,7 @@ QSGNode* QskListViewSkinlet::updateCellNode( const QskListView* listView,
             newNode = contentNode;
 
         newNode = updateTextNode( listView, newNode, rect, alignment,
-            value.toString(), listView->textOptions(), QskListView::Text );
+            value.toString(), QskListView::Text );
 
         if ( newNode )
             setNodeRole( newNode, TextRole );

@@ -32,11 +32,9 @@ class QskSubWindow::PrivateData
     PrivateData()
         : isWindowIconSourceDirty( false )
     {
-        windowTitleTextOptions.setElideMode( Qt::ElideRight );
     }
 
     QString windowTitle;
-    QskTextOptions windowTitleTextOptions;
 
     QUrl windowIconSource;
     QskGraphic windowIcon;
@@ -110,18 +108,13 @@ QString QskSubWindow::windowTitle() const
 
 void QskSubWindow::setWindowTitleTextOptions( const QskTextOptions& options )
 {
-    if ( options != m_data->windowTitleTextOptions )
-    {
-        m_data->windowTitleTextOptions = options;
-
-        update();
+    if ( setTextOptionsHint( TitleBarText, options ) )
         Q_EMIT windowTitleTextOptionsChanged();
-    }
 }
 
 QskTextOptions QskSubWindow::windowTitleTextOptions() const
 {
-    return m_data->windowTitleTextOptions;
+    return textOptionsHint( TitleBarText );
 }
 
 void QskSubWindow::setWindowIconSource( const QString& url )

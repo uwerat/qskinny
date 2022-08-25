@@ -29,7 +29,6 @@ class QskPushButton::PrivateData
         , isCheckable( false )
         , isGraphicSourceDirty( false )
     {
-        textOptions.setElideMode( Qt::ElideMiddle );
     }
 
     void ensureGraphic( const QskPushButton* button )
@@ -44,7 +43,6 @@ class QskPushButton::PrivateData
     }
 
     QString text;
-    QskTextOptions textOptions;
 
     QUrl graphicSource;
     QskGraphic graphic;
@@ -118,22 +116,21 @@ QString QskPushButton::text() const
     return m_data->text;
 }
 
-void QskPushButton::setTextOptions( const QskTextOptions& options )
+void QskPushButton::setTextOptions( const QskTextOptions& textOptions )
 {
-    if ( options != m_data->textOptions )
-    {
-        m_data->textOptions = options;
-
-        resetImplicitSize();
-        update();
-
+    if ( setTextOptionsHint( Text, textOptions ) )
         Q_EMIT textOptionsChanged();
-    }
 }
 
 QskTextOptions QskPushButton::textOptions() const
 {
-    return m_data->textOptions;
+    return textOptionsHint( Text );
+}
+
+void QskPushButton::resetTextOptions()
+{
+    if ( resetTextOptionsHint( Text ) )
+        Q_EMIT textOptionsChanged();
 }
 
 QFont QskPushButton::font() const

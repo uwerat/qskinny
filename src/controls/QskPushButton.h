@@ -21,7 +21,7 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     Q_PROPERTY( QFont font READ font )
 
     Q_PROPERTY( QskTextOptions textOptions READ textOptions
-        WRITE setTextOptions NOTIFY textOptionsChanged )
+        WRITE setTextOptions RESET resetTextOptions NOTIFY textOptionsChanged )
 
     Q_PROPERTY( QUrl graphicSource READ graphicSource
         WRITE setGraphicSource NOTIFY graphicSourceChanged FINAL )
@@ -60,6 +60,7 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
 
     void setTextOptions( const QskTextOptions& );
     QskTextOptions textOptions() const;
+    void resetTextOptions();
 
     void setGraphicStrutSize( const QSizeF& );
     QSizeF graphicStrutSize() const;

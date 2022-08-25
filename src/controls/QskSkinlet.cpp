@@ -587,13 +587,13 @@ QSGNode* QskSkinlet::updateTextNode( const QskSkinnable* skinnable,
 QSGNode* QskSkinlet::updateTextNode(
     const QskSkinnable* skinnable, QSGNode* node,
     const QRectF& rect, Qt::Alignment alignment,
-    const QString& text, const QskTextOptions& textOptions,
-    QskAspect::Subcontrol subControl )
+    const QString& text, QskAspect::Subcontrol subControl )
 {
     if ( text.isEmpty() || rect.isEmpty() )
         return nullptr;
 
     const auto textColors = qskTextColors( skinnable, subControl );
+    const auto textOptions = skinnable->textOptionsHint( subControl );
 
     auto textStyle = Qsk::Normal;
     if ( textColors.styleColor.alpha() == 0 )
@@ -610,14 +610,13 @@ QSGNode* QskSkinlet::updateTextNode(
 
 QSGNode* QskSkinlet::updateTextNode(
     const QskSkinnable* skinnable, QSGNode* node,
-    const QString& text, const QskTextOptions& textOptions,
-    QskAspect::Subcontrol subControl ) const
+    const QString& text, QskAspect::Subcontrol subControl ) const
 {
     const auto rect = qskSubControlRect( this, skinnable, subControl );
     const auto alignment = skinnable->alignmentHint( subControl, Qt::AlignLeft );
 
     return updateTextNode( skinnable, node,
-        rect, alignment, text, textOptions, subControl );
+        rect, alignment, text, subControl );
 }
 
 QSGNode* QskSkinlet::updateGraphicNode(

@@ -13,27 +13,15 @@ QSK_SUBCONTROL( QskTextLabel, Text )
 class QskTextLabel::PrivateData
 {
   public:
-    PrivateData( const QString& txt )
+    PrivateData( const QString& txt, QskTextOptions::TextFormat textFormat  )
         : text( txt )
+        , effectiveTextFormat( textFormat )
         , hasPanel( false )
     {
-        effectiveTextFormat = textOptions.format();
-    }
-
-    inline QskTextOptions::TextFormat effectiveFormat() const
-    {
-        if ( textOptions.format() != QskTextOptions::AutoText )
-            return textOptions.format();
-
-        if ( effectiveTextFormat == QskTextOptions::AutoText )
-            effectiveTextFormat = textOptions.effectiveFormat( text );
-
-        return effectiveTextFormat;
     }
 
     QString text;
 
-    QskTextOptions textOptions;
     mutable QskTextOptions::TextFormat effectiveTextFormat;
 
     bool hasPanel : 1;
@@ -46,7 +34,7 @@ QskTextLabel::QskTextLabel( QQuickItem* parent )
 
 QskTextLabel::QskTextLabel( const QString& text, QQuickItem* parent )
     : Inherited( parent )
-    , m_data( new PrivateData( text ) )
+    , m_data( new PrivateData( text, textOptions().format() ) )
 {
     initSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Fixed );
 }
@@ -79,7 +67,7 @@ void QskTextLabel::setText( const QString& text )
         return;
 
     m_data->text = text;
-    m_data->effectiveTextFormat = m_data->textOptions.format();
+    m_data->effectiveTextFormat = textOptions().format();
 
     resetImplicitSize();
     update();
@@ -92,37 +80,38 @@ QString QskTextLabel::text() const
     return m_data->text;
 }
 
-void QskTextLabel::setTextOptions( const QskTextOptions& options )
+void QskTextLabel::setTextOptions( const QskTextOptions& textOptions )
 {
-    if ( options == m_data->textOptions )
-        return;
-
+    if ( setTextOptionsHint( Text, textOptions ) )
+    {
 #if 0
-    // we are killing user settings of the policy this way ??
+        // we are killing user settings of the policy this way ??
 
-    const QskSizePolicy::Policy policy = ( options.wrapMode() == QTextOption::NoWrap )
-        ? QskSizePolicy::Minimum : QskSizePolicy::Preferred;
+        const QskSizePolicy::Policy policy = ( options.wrapMode() == QTextOption::NoWrap )
+            ? QskSizePolicy::Minimum : QskSizePolicy::Preferred;
 
-    setSizePolicy( policy, sizePolicy().verticalPolicy() );
+        setSizePolicy( policy, sizePolicy().verticalPolicy() );
 #endif
 
-    m_data->effectiveTextFormat = options.format();
-    m_data->textOptions = options;
-
-    resetImplicitSize();
-    update();
-
-    Q_EMIT textOptionsChanged( options );
+        m_data->effectiveTextFormat = textOptions.format();
+        Q_EMIT textOptionsChanged( textOptions );
+    }
 }
 
 QskTextOptions QskTextLabel::textOptions() const
 {
-    return m_data->textOptions;
+    return textOptionsHint( Text );
+}
+
+void QskTextLabel::resetTextOptions()
+{   
+    if ( resetTextOptionsHint( Text ) )
+        Q_EMIT textOptionsChanged( textOptions() );
 }
 
 void QskTextLabel::setTextFormat( QskTextOptions::TextFormat format )
 {
-    auto options = m_data->textOptions;
+    auto options = textOptions();
     options.setFormat( format );
 
     setTextOptions( options );
@@ -130,31 +119,38 @@ void QskTextLabel::setTextFormat( QskTextOptions::TextFormat format )
 
 QskTextOptions::TextFormat QskTextLabel::textFormat() const
 {
-    return m_data->textOptions.format();
+    return textOptions().format();
 }
 
 QskTextOptions::TextFormat QskTextLabel::effectiveTextFormat() const
 {
-    return m_data->effectiveFormat();
+    const auto options = textOptions();
+
+    if ( options.format() != QskTextOptions::AutoText )
+        return options.format();
+
+    if ( m_data->effectiveTextFormat == QskTextOptions::AutoText )
+        m_data->effectiveTextFormat = options.effectiveFormat( m_data->text );
+
+    return m_data->effectiveTextFormat;
 }
 
 void QskTextLabel::setWrapMode( QskTextOptions::WrapMode wrapMode )
 {
-    auto options = m_data->textOptions;
+    auto options = textOptions();
     options.setWrapMode( wrapMode );
 
     setTextOptions( options );
-
 }
 
 QskTextOptions::WrapMode QskTextLabel::wrapMode() const
 {
-    return m_data->textOptions.wrapMode();
+    return textOptions().wrapMode();
 }
 
 void QskTextLabel::setElideMode( Qt::TextElideMode elideMode )
 {
-    auto options = m_data->textOptions;
+    auto options = textOptions();
     options.setElideMode( elideMode );
 
     setTextOptions( options );
@@ -162,7 +158,7 @@ void QskTextLabel::setElideMode( Qt::TextElideMode elideMode )
 
 Qt::TextElideMode QskTextLabel::elideMode() const
 {
-    return m_data->textOptions.elideMode();
+    return textOptions().elideMode();
 }
 
 void QskTextLabel::setFontRole( int role )

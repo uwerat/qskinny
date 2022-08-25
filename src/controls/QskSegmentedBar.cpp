@@ -60,7 +60,6 @@ class QskSegmentedBar::PrivateData
     PrivateData( Qt::Orientation orientation )
         : orientation( orientation )
     {
-        textOptions.setElideMode( Qt::ElideMiddle );
     }
 
     void addOption( QskSegmentedBar* bar, const Option& option )
@@ -77,8 +76,6 @@ class QskSegmentedBar::PrivateData
     }
 
     QVector< Option > options;
-
-    QskTextOptions textOptions;
 
     int selectedIndex = -1;
     int currentIndex = -1;
@@ -132,16 +129,12 @@ Qt::Orientation QskSegmentedBar::orientation() const
 
 void QskSegmentedBar::setTextOptions( const QskTextOptions& textOptions )
 {
-    if( textOptions != m_data->textOptions )
-    {
-        m_data->textOptions = textOptions;
-        update();
-    }
+    setTextOptionsHint( Text, textOptions );
 }
 
 QskTextOptions QskSegmentedBar::textOptions() const
 {
-    return m_data->textOptions;
+    return textOptionsHint( Text );
 }
 
 int QskSegmentedBar::addText( const QString& text )

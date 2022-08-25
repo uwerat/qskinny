@@ -29,7 +29,6 @@ class QskListView::PrivateData
     {
     }
 
-    QskTextOptions textOptions;
     bool preferredWidthFromColumns : 1;
     bool alternatingRowColors : 1;
     SelectionMode selectionMode : 4;
@@ -81,18 +80,16 @@ bool QskListView::alternatingRowColors() const
 
 void QskListView::setTextOptions( const QskTextOptions& textOptions )
 {
-    if ( textOptions != m_data->textOptions )
+    if ( setTextOptionsHint( Text, textOptions ) )
     {
-        m_data->textOptions = textOptions;
         updateScrollableSize();
-
         Q_EMIT textOptionsChanged();
     }
 }
 
 QskTextOptions QskListView::textOptions() const
 {
-    return m_data->textOptions;
+    return textOptionsHint( Text );
 }
 
 void QskListView::setSelectedRow( int row )

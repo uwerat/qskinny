@@ -323,6 +323,8 @@ void Editor::setupCheckBox()
     setColor( Q::Indicator, m_pal.darker200 );
     setColor( Q::Indicator | Q::Checked, m_pal.lighter135 );
 
+    setTextOptions( Q::Text, Qt::ElideMiddle, QskTextOptions::NoWrap );
+
     setFlagHint( Q::Text | Q::Disabled | A::Style, Qsk::Sunken );
     setColor( Q::Text, m_pal.themeForeground );
     setColor( Q::Text | Q::Disabled, m_pal.darker200 );
@@ -531,6 +533,8 @@ void Editor::setupSegmentedBar()
     {
         // Text
 
+        setTextOptions( Q::Text, Qt::ElideMiddle, QskTextOptions::NoWrap );
+
         setColor( Q::Text, m_pal.themeForeground );
         setColor( Q::Text | Q::Selected, m_pal.highlightedText );
 
@@ -599,6 +603,9 @@ void Editor::setupPushButton()
     setAnimation( Q::Panel | A::Metric, qskDuration );
 
     // Text
+
+    setTextOptions( Q::Text, Qt::ElideMiddle, QskTextOptions::NoWrap );
+
     setFlagHint( Q::Text | Q::Disabled | A::Style, Qsk::Sunken );
     setAlignment( Q::Text, Qt::AlignCenter );
 
@@ -989,6 +996,9 @@ void Editor::setupSubWindow()
     setBoxShape( Q::TitleBarPanel, radius, radius, 0, 0, Qt::AbsoluteSize );
 
     // TitleBarText
+
+    setTextOptions( Q::TitleBarText, Qt::ElideRight, QskTextOptions::NoWrap );
+
     setFontRole( Q::TitleBarText, QskSkin::SmallFont );
     setColor( Q::TitleBarText | Q::Focused, m_pal.highlightedText );
     setColor( Q::TitleBarText, m_pal.themeForeground );

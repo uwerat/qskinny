@@ -243,8 +243,8 @@ QSGNode* QskPushButtonSkinlet::updateTextNode(
 
     const auto alignment = button->alignmentHint( Q::Text, Qt::AlignCenter );
 
-    return QskSkinlet::updateTextNode( button, node, rect, alignment,
-        button->text(), button->textOptions(), Q::Text );
+    return QskSkinlet::updateTextNode( button, node, rect,
+        alignment, button->text(), Q::Text );
 }
 
 QSGNode* QskPushButtonSkinlet::updateRippleNode(
