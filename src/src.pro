@@ -322,7 +322,8 @@ HEADERS += \
     layouts/QskLinearBox.h \
     layouts/QskLinearLayoutEngine.h \
     layouts/QskStackBoxAnimator.h \
-    layouts/QskStackBox.h
+    layouts/QskStackBox.h \
+    layouts/QskSubcontrolLayoutEngine.h
 
 SOURCES += \
     layouts/QskGridBox.cpp \
@@ -335,7 +336,8 @@ SOURCES += \
     layouts/QskLinearBox.cpp \
     layouts/QskLinearLayoutEngine.cpp \
     layouts/QskStackBoxAnimator.cpp \
-    layouts/QskStackBox.cpp
+    layouts/QskStackBox.cpp \
+    layouts/QskSubcontrolLayoutEngine.cpp
 
 HEADERS += \
     dialogs/QskDialog.h \

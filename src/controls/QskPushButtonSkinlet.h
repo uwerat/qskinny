@@ -45,8 +45,6 @@ class QSK_EXPORT QskPushButtonSkinlet : public QskSkinlet
     QRectF graphicRect( const QskPushButton*, const QRectF& ) const;
     QRectF rippleRect( const QskPushButton*, const QRectF& ) const;
 
-    QSizeF graphicSizeHint( const QskPushButton* ) const;
-
     QSGNode* updateTextNode( const QskPushButton*, QSGNode* ) const;
     QSGNode* updateRippleNode( const QskPushButton*, QSGNode* ) const;
 };

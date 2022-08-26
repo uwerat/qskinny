@@ -115,10 +115,16 @@ Qsk.Window
             enabled: false
         }
 
-
         TestButton
         {
             graphicSource: "image://shapes/Diamond/SandyBrown"
+
+            graphicStrutSize
+            {
+                // no strutSize, so that the graphic is adjustd
+                width: -1
+                height : -1
+            }
 
             shape
             {

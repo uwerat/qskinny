@@ -607,13 +607,15 @@ void Editor::setupPushButton()
     setTextOptions( Q::Text, Qt::ElideMiddle, QskTextOptions::NoWrap );
 
     setFlagHint( Q::Text | Q::Disabled | A::Style, Qsk::Sunken );
-    setAlignment( Q::Text, Qt::AlignCenter );
+
+    setAlignment( Q::Text | A::Vertical, Qt::AlignCenter );
+    setAlignment( Q::Text | A::Horizontal, Qt::AlignLeft | Qt::AlignVCenter );
 
     setColor( Q::Text, m_pal.themeForeground );
     setColor( Q::Text | Q::Disabled, m_pal.darker200 );
 
     // Graphic
-    setPadding( Q::Graphic, 2 );
+    setAlignment( Q::Graphic, Qt::AlignCenter );
 }
 
 void Editor::setupDialogButton()
