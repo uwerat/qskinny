@@ -8,12 +8,8 @@
 
 #include "QskAnimationHint.h"
 #include "QskGraphic.h"
-#include "QskTextOptions.h"
-#include "QskFunctions.h"
+#include "QskSubcontrolLayoutEngine.h"
 #include "QskSGNode.h"
-
-#include <qfontmetrics.h>
-#include <qmath.h>
 
 static inline Qt::Orientation qskOrientation( const QskPushButton* button )
 {
@@ -26,6 +22,76 @@ static inline Qt::Orientation qskOrientation( const QskPushButton* button )
         return Qt::Horizontal;
     else
         return Qt::Vertical;
+}
+
+namespace
+{
+    class LayoutEngine : public QskSubcontrolLayoutEngine
+    {
+      public:
+        LayoutEngine( const QskPushButton* button )
+            : QskSubcontrolLayoutEngine( qskOrientation( button ) )
+        {
+            using Q = QskPushButton;
+
+            const auto graphicSourceSize = button->graphic().defaultSize();
+
+            const bool hasText = !button->text().isEmpty();
+            const bool hasGraphic = !graphicSourceSize.isEmpty();
+
+            auto graphicElement = new GraphicElement( button, Q::Graphic );
+            graphicElement->setSourceSize( graphicSourceSize );
+            graphicElement->setIgnored( !hasGraphic );
+
+            auto textElement = new TextElement( button, Q::Text );
+            textElement->setText( button->text() );
+            textElement->setIgnored( !hasText );
+
+            using SP = QskSizePolicy;
+
+            if ( hasText && !hasGraphic )
+            {
+                textElement->setSizePolicy( SP::Preferred, SP::Constrained );
+            }
+            else if ( hasGraphic && !hasText )
+            {
+                const auto size = graphicElement->effectiveStrutSize();
+
+                if ( !size.isEmpty() )
+                    graphicElement->setFixedSize( size );
+                else
+                    graphicElement->setSizePolicy( SP::Ignored, SP::ConstrainedExpanding );
+            }
+            else if ( hasText && hasGraphic )
+            {
+                if ( orientation() == Qt::Horizontal )
+                {
+                    graphicElement->setSizePolicy( SP::Constrained, SP::Fixed );
+                    textElement->setSizePolicy( SP::Preferred, SP::Preferred );
+                }
+                else
+                {
+                    graphicElement->setSizePolicy( SP::Fixed, SP::Fixed );
+                    textElement->setSizePolicy( SP::Preferred, SP::Constrained );
+                }
+
+                auto size = graphicElement->effectiveStrutSize();
+
+                if ( size.isEmpty() )
+                {
+                    const auto h = 1.5 * button->effectiveFontHeight( Q::Text );
+
+                    size.setWidth( graphicElement->widthForHeight( h ) );
+                    size.setHeight( h );
+                }
+
+                graphicElement->setPreferredSize( size );
+            }
+
+            setElementAt( 0, graphicElement );
+            setElementAt( 1, textElement );
+        }
+    };
 }
 
 QskPushButtonSkinlet::QskPushButtonSkinlet( QskSkin* skin )
@@ -101,29 +167,12 @@ QRectF QskPushButtonSkinlet::textRect(
 {
     using Q = QskPushButton;
 
-    auto r = button->subControlContentsRect( contentsRect, Q::Panel );
-    if ( r.isEmpty() || !button->hasGraphic() )
-        return r;
+    const auto r = button->subControlContentsRect( contentsRect, Q::Panel );
 
-    if ( qskOrientation( button ) == Qt::Horizontal )
-    {
-        /*
-            For horizontal layouts Text depends on Graphic, while
-            for vertical Graphic depends on Text. Confusing ...
-         */
-        const auto graphicsRect = subControlRect( button, contentsRect, Q::Graphic );
-        const auto spacing = button->spacingHint( Q::Panel );
+    LayoutEngine layoutEngine( button );
+    layoutEngine.setGeometries( r );
 
-        r.setX( r.x() + graphicsRect.width() + spacing );
-    }
-    else
-    {
-        const qreal h = button->effectiveFontHeight( Q::Text );
-        if ( h < r.height() )
-            r.setTop( r.bottom() - h );
-    }
-
-    return r;
+    return layoutEngine.elementAt( 1 )->geometry();
 }
 
 QRectF QskPushButtonSkinlet::graphicRect(
@@ -131,81 +180,12 @@ QRectF QskPushButtonSkinlet::graphicRect(
 {
     using Q = QskPushButton;
 
-    auto r = button->subControlContentsRect( contentsRect, Q::Panel );
-    if ( r.isEmpty() || button->text().isEmpty() )
-        return r;
+    const auto r = button->subControlContentsRect( contentsRect, Q::Panel );
 
-    const auto orientation = qskOrientation( button );
-    const auto maxSize = button->strutSizeHint( Q::Graphic );
+    LayoutEngine layoutEngine( button );
+    layoutEngine.setGeometries( r );
 
-    const qreal maxW = maxSize.width();
-    const qreal maxH = maxSize.height();
-
-    if ( orientation == Qt::Vertical )
-    {
-        /*
-            For horizontal layouts Text depends on Graphic, while
-            for vertical Graphic depends on Text. Confusing ...
-         */
-        const auto textRect = subControlRect( button, contentsRect, Q::Text );
-        const auto h = textRect.height() + button->spacingHint( Q::Panel );
-
-        if ( h > r.height() )
-            return QRectF();
-
-        r.setBottom( r.bottom() - h );
-
-        if ( maxW >= 0 || maxH >= 0 )
-        {
-            // limiting the size by maxSize
-
-            if ( maxW >= 0.0 && maxW < r.width() )
-            {
-                r.setX( r.center().x() - 0.5 * maxW );
-                r.setWidth( maxW );
-            }
-
-            if ( maxH >= 0.0 && maxH < r.height() )
-            {
-                r.setY( r.center().y() - 0.5 * maxH );
-                r.setHeight( maxH );
-            }
-        }
-    }
-    else
-    {
-        if ( maxW >= 0 || maxH >= 0 )
-        {
-            if ( maxW >= 0.0 && maxW < r.width() )
-            {
-                r.setWidth( maxW );
-            }
-
-            if ( maxH >= 0.0 && maxH < r.height() )
-            {
-                r.setY( r.center().y() - 0.5 * maxH );
-                r.setHeight( maxH );
-            }
-        }
-    }
-
-    r = r.marginsRemoved( button->paddingHint( Q::Graphic ) );
-
-    if ( !r.isEmpty() )
-    {
-        auto sz = button->graphic().defaultSize();
-        if ( !sz.isEmpty() )
-        {
-            sz.scale( r.size(), Qt::KeepAspectRatio );
-        
-            if ( orientation == Qt::Vertical )
-                r = qskAlignedRectF( r, sz, Qt::AlignCenter );
-            else
-                r = qskAlignedRectF( r, sz, Qt::AlignLeft | Qt::AlignVCenter );
-        }
-    }
-
-    return r;
+    return layoutEngine.elementAt( 0 )->geometry();
 }
 
 QRectF QskPushButtonSkinlet::rippleRect(
@@ -226,7 +206,7 @@ QRectF QskPushButtonSkinlet::rippleRect(
         rect.setSize( 2.0 * panelRect.size() * ratio );
         rect.moveCenter( pos );
     }
-    
+
     return rect;
 }
 
@@ -271,7 +251,7 @@ QSGNode* QskPushButtonSkinlet::updateRippleNode(
         if ( boxNode->parent() != clipNode )
             clipNode->appendChildNode( boxNode );
     }
-        
+
     return clipNode;
 }
 
@@ -285,68 +265,14 @@ QSizeF QskPushButtonSkinlet::sizeHint( const QskSkinnable* skinnable,
 
     const auto button = static_cast< const QskPushButton* >( skinnable );
 
-    QSizeF size( 0, 0 );
+    LayoutEngine layoutEngine( button );
 
-    const QFontMetricsF fm( button->effectiveFont( Q::Text ) );
-
-    if ( !button->text().isEmpty() )
-    {
-        // in elide mode we might want to ignore the text width ???
-
-        size += fm.size( Qt::TextShowMnemonic, button->text() );
-    }
-
-    if ( button->hasGraphic() )
-    {
-        const auto hint = graphicSizeHint( button );
-
-        const auto padding = button->paddingHint( Q::Graphic );
-        const auto orientation = qskOrientation( button );
-
-        if( orientation == Qt::Horizontal )
-        {
-            size.rwidth() += padding.left() + hint.width() + padding.right();
-            size.rheight() = qMax( size.height(), hint.height() );
-        }
-        else
-        {
-            size.rheight() += padding.top() + hint.height() + padding.bottom();
-            size.rwidth() = qMax( size.width(), hint.width() );
-        }
-    }
+    auto size = layoutEngine.sizeHint( which, QSizeF() );
 
     size = size.expandedTo( button->strutSizeHint( Q::Panel ) );
     size = button->outerBoxSize( Q::Panel, size );
 
     return size;
-}
-
-QSizeF QskPushButtonSkinlet::graphicSizeHint( const QskPushButton* button ) const
-{
-    using Q = QskPushButton;
-
-    auto size = button->strutSizeHint( Q::Graphic );
-    if ( !size.isEmpty() )
-        return size;
-
-    const auto& graphic = button->graphic();
-
-    auto w = size.width();
-    auto h = size.height();
-
-    if ( w > 0.0 )
-    {
-        h = graphic.heightForWidth( w );
-    }
-    else
-    {
-        if ( h <= 0.0 )
-            h = 1.5 * button->effectiveFontHeight( Q::Text );
-
-        w = graphic.widthForHeight( h );
-    }
-
-    return QSizeF( w, h );
 }
 
 #include "moc_QskPushButtonSkinlet.cpp"

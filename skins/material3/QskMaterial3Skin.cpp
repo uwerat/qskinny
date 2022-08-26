@@ -490,16 +490,15 @@ void Editor::setupPushButton()
 
     setBoxShape( Q::Panel, 100, Qt::RelativeSize );
 
-    setAlignment( Q::Graphic | A::Alignment, Qt::AlignCenter );
+    setAlignment( Q::Graphic, Qt::AlignCenter );
     setStrutSize( Q::Graphic, 24_dp, 24_dp );
     setPadding( Q::Graphic, 0 );
 
     setFontRole( Q::Text, QskMaterial3Skin::M3LabelLarge );
     setPadding( Q::Text, 0 );
 
-    setAlignment( Q::Text | A::Alignment, Qt::AlignCenter );
-    setAlignment( Q::Text | A::Alignment | A::Horizontal,
-        Qt::AlignLeft | Qt::AlignVCenter );
+    setAlignment( Q::Text | A::Vertical, Qt::AlignCenter );
+    setAlignment( Q::Text | A::Horizontal, Qt::AlignLeft | Qt::AlignVCenter );
 
     // normal buttons (i.e. Filled):
 

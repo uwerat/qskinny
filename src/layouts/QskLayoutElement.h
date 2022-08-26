@@ -28,16 +28,16 @@ class QskLayoutElement
 
     QSizeF sizeConstraint( Qt::SizeHint, const QSizeF& constraint ) const;
 
-  private:
-    Q_DISABLE_COPY( QskLayoutElement )
-
-    qreal metric( Qt::Orientation, Qt::SizeHint, qreal constraint ) const;
-
     virtual QSizeF sizeHint( Qt::SizeHint,
         const QSizeF& constraint = QSizeF() ) const = 0;
 
     qreal heightForWidth( qreal ) const;
     qreal widthForHeight( qreal ) const;
+
+  private:
+    Q_DISABLE_COPY( QskLayoutElement )
+
+    qreal metric( Qt::Orientation, Qt::SizeHint, qreal constraint ) const;
 
     qreal boundedSize( Qt::Orientation, qreal ) const;
 };
