@@ -143,6 +143,10 @@ QSizeF QskSubcontrolLayoutEngine::TextElement::implicitSize( const QSizeF& const
     const auto font = skinnable()->effectiveFont( subControl() );
     const auto textOptions = skinnable()->textOptionsHint( subControl() );
 
+#if 0
+    // what about skinnable()->strutSizeHint( subControl() ); ????
+#endif
+
     QSizeF hint;
 
     const qreal lineHeight = QFontMetricsF( font ).height();
@@ -306,6 +310,16 @@ bool QskSubcontrolLayoutEngine::setOrientation( Qt::Orientation orientation )
 Qt::Orientation QskSubcontrolLayoutEngine::orientation() const
 {
     return m_data->orientation;
+}
+
+void QskSubcontrolLayoutEngine::setSpacing( qreal spacing )
+{
+    Inherited::setSpacing( spacing, Qt::Horizontal | Qt::Vertical );
+}
+
+qreal QskSubcontrolLayoutEngine::spacing() const
+{
+    return Inherited::spacing( m_data->orientation );
 }
 
 void QskSubcontrolLayoutEngine::setElementAt( int index, LayoutElement* element )

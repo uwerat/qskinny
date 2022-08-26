@@ -22,6 +22,8 @@ class QskSkinnable;
  */
 class QskSubcontrolLayoutEngine : public QskLayoutEngine2D
 {
+    using Inherited = QskLayoutEngine2D;
+
   public:
     class LayoutElement : public QskLayoutElement
     {
@@ -115,6 +117,9 @@ class QskSubcontrolLayoutEngine : public QskLayoutEngine2D
 
     Qt::Orientation orientation() const;
     bool setOrientation( Qt::Orientation );
+
+    void setSpacing( qreal );
+    qreal spacing() const;
 
     void setElementAt( int index, LayoutElement* );
     LayoutElement* elementAt( int ) const;

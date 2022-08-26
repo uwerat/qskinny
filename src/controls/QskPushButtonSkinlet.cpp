@@ -34,6 +34,8 @@ namespace
         {
             using Q = QskPushButton;
 
+            setSpacing( button->spacingHint( Q::Panel ) );
+
             const auto graphicSourceSize = button->graphic().defaultSize();
 
             const bool hasText = !button->text().isEmpty();
