@@ -124,7 +124,15 @@ class QskSubcontrolLayoutEngine : public QskLayoutEngine2D
     void setElementAt( int index, LayoutElement* );
     LayoutElement* elementAt( int ) const;
 
+    LayoutElement* element( QskAspect::Subcontrol ) const;
+
     int count() const override final;
+
+    void setGraphicTextElements( const QskSkinnable*,
+        QskAspect::Subcontrol, const QString& text,
+        QskAspect::Subcontrol, const QSizeF& graphicSize );
+
+    QRectF subControlRect( QskAspect::Subcontrol ) const;
 
   private:
     QskSizePolicy sizePolicyAt( int index ) const override;
