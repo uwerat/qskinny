@@ -91,7 +91,13 @@ void QskTextureRenderer::setTextureId( QQuickWindow* window,
 
     auto rhi = QQuickWindowPrivate::get( window )->rhi;
 
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 4, 0 )
+
+    const uint nativeFormat = 0;
+    plainTexture->setTextureFromNativeTexture(
+        rhi, quint64( textureId ), 0, nativeFormat, size, {}, {} );
+
+#elif QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
     plainTexture->setTextureFromNativeTexture(
         rhi, quint64( textureId ), 0, size, {}, {} );
 #else
