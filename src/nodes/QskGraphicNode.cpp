@@ -52,11 +52,6 @@ void QskGraphicNode::paint( QPainter* painter, const QSize& size, const void* no
     const auto& graphic = graphicData->graphic;
     const auto& colorFilter = graphicData->colorFilter;
 
-    if ( graphic.commandTypes() == QskGraphic::RasterData )
-    {
-        qDebug() << size;
-    }
-
     const QRectF rect( 0, 0, size.width(), size.height() );
     graphic.render( painter, rect, colorFilter, Qt::IgnoreAspectRatio );
 }
