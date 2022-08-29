@@ -141,6 +141,8 @@ int main( int argc, char* argv[] )
     Qsk::addGraphicProvider( "shapes", new SkinnyShapeProvider() );
 
     qskSkinManager->setPluginPaths( QStringList() ); // no plugins
+    qskSkinManager->unregisterFactories(); // get rid of the factories of the support lib
+
     qskSkinManager->registerFactory(
         QStringLiteral( "MySkinFactory" ), new MySkinFactory() );
 
