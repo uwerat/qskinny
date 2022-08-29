@@ -45,9 +45,6 @@ class QskSubcontrolLayoutEngine : public QskLayoutEngine2D
 
         virtual Qt::Alignment alignment() const override;
 
-        inline void setIgnored( bool on ) { m_ignored = on; }
-        inline bool isIgnored() const { return m_ignored; }
-
         inline void setStretch( int stretch ) { m_stretch = stretch; }
         inline int stretch() const { return m_stretch; }
 
@@ -121,9 +118,8 @@ class QskSubcontrolLayoutEngine : public QskLayoutEngine2D
     void setSpacing( qreal );
     qreal spacing() const;
 
-    void setElementAt( int index, LayoutElement* );
+    void addElement( LayoutElement* );
     LayoutElement* elementAt( int ) const;
-
     LayoutElement* element( QskAspect::Subcontrol ) const;
 
     int count() const override final;

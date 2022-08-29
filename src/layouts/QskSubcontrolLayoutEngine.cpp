@@ -276,10 +276,11 @@ class QskSubcontrolLayoutEngine::PrivateData
     PrivateData( Qt::Orientation orientation )
         : orientation( orientation )
     {
+        elements.reserve( 2 ); // often Graphic + Text
     }
 
     Qt::Orientation orientation;
-    LayoutElement* elements[2] = {};
+    QVector< LayoutElement* > elements;
 };
 
 QskSubcontrolLayoutEngine::QskSubcontrolLayoutEngine( Qt::Orientation orientation )
@@ -290,8 +291,7 @@ QskSubcontrolLayoutEngine::QskSubcontrolLayoutEngine( Qt::Orientation orientatio
 
 QskSubcontrolLayoutEngine::~QskSubcontrolLayoutEngine()
 {
-    for ( auto element : m_data->elements )
-        delete element;
+    qDeleteAll( m_data->elements );
 }
 
 bool QskSubcontrolLayoutEngine::setOrientation( Qt::Orientation orientation )
@@ -326,24 +326,52 @@ void QskSubcontrolLayoutEngine::setGraphicTextElements( const QskSkinnable* skin
     QskAspect::Subcontrol textSubcontrol, const QString& text,
     QskAspect::Subcontrol graphicSubControl, const QSizeF& graphicSize )
 {
-    const bool hasText = !text.isEmpty();
-    const bool hasGraphic = !graphicSize.isEmpty();
+    /*
+        QskSubcontrolLayoutEngine was initially created to support the
+        situation of an icon and a text, that can be found at several places
+        in conrols. This method supports to set up such a layout without
+        having to deal with the details of the layout classes.
+     */
 
-    auto graphicElement = new GraphicElement( skinnable, graphicSubControl );
-    graphicElement->setSourceSize( graphicSize );
-    graphicElement->setIgnored( !hasGraphic );
+    GraphicElement* graphicElement = nullptr;
+    if ( !graphicSize.isEmpty() && ( graphicSubControl != QskAspect::Control ) )
+    {
+        graphicElement = dynamic_cast< GraphicElement * >( element( graphicSubControl ) );
+        if ( graphicElement == nullptr )
+        {
+            graphicElement = new GraphicElement( skinnable, graphicSubControl );
+            m_data->elements.prepend( graphicElement );
+        }
 
-    auto textElement = new TextElement( skinnable, textSubcontrol );
-    textElement->setText( text );
-    textElement->setIgnored( !hasText );
+        graphicElement->setSourceSize( graphicSize );
+    }
+
+    TextElement* textElement = nullptr;
+    if ( !text.isEmpty() && ( graphicSubControl != QskAspect::Control ) )
+    {
+        textElement = dynamic_cast< TextElement* >( element( textSubcontrol ) );
+        if ( textElement == nullptr )
+        {
+            textElement = new TextElement( skinnable, textSubcontrol );
+            m_data->elements.append( textElement );
+        }
+
+        textElement->setText( text );
+    }
+
+    /*
+        Now the difficult part: setting up size policies and the preferred size.
+        The code below is probably not the final word - let's see what type of
+        default settings we need most often. TODO ...
+     */
 
     using SP = QskSizePolicy;
 
-    if ( hasText && !hasGraphic )
+    if ( textElement && graphicElement == nullptr )
     {
         textElement->setSizePolicy( SP::Preferred, SP::Constrained );
     }
-    else if ( hasGraphic && !hasText )
+    else if ( graphicElement && textElement == nullptr )
     {
         const auto size = graphicElement->effectiveStrutSize();
 
@@ -352,7 +380,7 @@ void QskSubcontrolLayoutEngine::setGraphicTextElements( const QskSkinnable* skin
         else
             graphicElement->setSizePolicy( SP::Ignored, SP::ConstrainedExpanding );
     }
-    else if ( hasText && hasGraphic )
+    else if ( textElement && graphicElement )
     {
         if ( orientation() == Qt::Horizontal )
         {
@@ -377,18 +405,11 @@ void QskSubcontrolLayoutEngine::setGraphicTextElements( const QskSkinnable* skin
 
         graphicElement->setPreferredSize( size );
     }
-
-    setElementAt( 0, graphicElement );
-    setElementAt( 1, textElement );
 }
 
-void QskSubcontrolLayoutEngine::setElementAt( int index, LayoutElement* element )
+void QskSubcontrolLayoutEngine::addElement( LayoutElement* element )
 {
-    if ( index >= 0 && index < count() )
-    {
-        delete m_data->elements[ index ];
-        m_data->elements[ index ] = element;
-    }
+    m_data->elements += element;
 }
 
 QskSubcontrolLayoutEngine::LayoutElement* QskSubcontrolLayoutEngine::elementAt( int index ) const
@@ -432,24 +453,20 @@ void QskSubcontrolLayoutEngine::layoutItems()
     int row = 0;
     int col = 0;
 
+    int& index = m_data->orientation == Qt::Horizontal ? col : row;
+
     for ( auto element : m_data->elements )
     {
-        if ( element && !element->isIgnored() )
-        {
-            const auto rect = geometryAt( element, QRect( col, row, 1, 1 ) );
-            element->setGeometry( rect );
+        const auto rect = geometryAt( element, QRect( col, row, 1, 1 ) );
+        element->setGeometry( rect );
 
-            if ( m_data->orientation == Qt::Horizontal )
-                col++;
-            else
-                row++;
-        }
+        index++;
     }
 }
 
 int QskSubcontrolLayoutEngine::effectiveCount( Qt::Orientation orientation ) const
 {
-    return ( orientation == m_data->orientation ) ? 2 : 1;
+    return ( orientation == m_data->orientation ) ? m_data->elements.count() : 1;
 }
 
 QRectF QskSubcontrolLayoutEngine::subControlRect( QskAspect::Subcontrol subControl ) const
@@ -474,12 +491,9 @@ void QskSubcontrolLayoutEngine::setupChain( Qt::Orientation orientation,
 
     for ( auto element : m_data->elements )
     {
-        if ( element == nullptr || element->isIgnored() )
-            continue;
-
         qreal constraint = -1.0;
         if ( !constraints.isEmpty() )
-            constraint = constraints[index1].length;
+            constraint = constraints[ index1 ].length;
 
         const auto cell = qskCell( element, orientation, isLayoutOrientation, constraint );
         chain.expandCell( index2, cell );
