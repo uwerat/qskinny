@@ -322,6 +322,66 @@ qreal QskSubcontrolLayoutEngine::spacing() const
     return Inherited::spacing( m_data->orientation );
 }
 
+void QskSubcontrolLayoutEngine::setGraphicTextElements( const QskSkinnable* skinnable,
+    QskAspect::Subcontrol textSubcontrol, const QString& text,
+    QskAspect::Subcontrol graphicSubControl, const QSizeF& graphicSize )
+{
+    const bool hasText = !text.isEmpty();
+    const bool hasGraphic = !graphicSize.isEmpty();
+
+    auto graphicElement = new GraphicElement( skinnable, graphicSubControl );
+    graphicElement->setSourceSize( graphicSize );
+    graphicElement->setIgnored( !hasGraphic );
+
+    auto textElement = new TextElement( skinnable, textSubcontrol );
+    textElement->setText( text );
+    textElement->setIgnored( !hasText );
+
+    using SP = QskSizePolicy;
+
+    if ( hasText && !hasGraphic )
+    {
+        textElement->setSizePolicy( SP::Preferred, SP::Constrained );
+    }
+    else if ( hasGraphic && !hasText )
+    {
+        const auto size = graphicElement->effectiveStrutSize();
+
+        if ( !size.isEmpty() )
+            graphicElement->setFixedSize( size );
+        else
+            graphicElement->setSizePolicy( SP::Ignored, SP::ConstrainedExpanding );
+    }
+    else if ( hasText && hasGraphic )
+    {
+        if ( orientation() == Qt::Horizontal )
+        {
+            graphicElement->setSizePolicy( SP::Constrained, SP::Fixed );
+            textElement->setSizePolicy( SP::Preferred, SP::Preferred );
+        }
+        else
+        {
+            graphicElement->setSizePolicy( SP::Fixed, SP::Fixed );
+            textElement->setSizePolicy( SP::Preferred, SP::Constrained );
+        }
+
+        auto size = graphicElement->effectiveStrutSize();
+
+        if ( size.isEmpty() )
+        {
+            const auto h = 1.5 * skinnable->effectiveFontHeight( textSubcontrol );
+
+            size.setWidth( graphicElement->widthForHeight( h ) );
+            size.setHeight( h );
+        }
+
+        graphicElement->setPreferredSize( size );
+    }
+
+    setElementAt( 0, graphicElement );
+    setElementAt( 1, textElement );
+}
+
 void QskSubcontrolLayoutEngine::setElementAt( int index, LayoutElement* element )
 {
     if ( index >= 0 && index < count() )
@@ -335,6 +395,18 @@ QskSubcontrolLayoutEngine::LayoutElement* QskSubcontrolLayoutEngine::elementAt( 
 {
     if ( index >= 0 && index < count() )
         return m_data->elements[ index ];
+
+    return nullptr;
+}
+
+QskSubcontrolLayoutEngine::LayoutElement* QskSubcontrolLayoutEngine::element(
+    QskAspect::Subcontrol subControl ) const
+{
+    for ( auto element : m_data->elements )
+    {
+        if ( element->subControl() == subControl )
+            return element;
+    }
 
     return nullptr;
 }
@@ -378,6 +450,14 @@ void QskSubcontrolLayoutEngine::layoutItems()
 int QskSubcontrolLayoutEngine::effectiveCount( Qt::Orientation orientation ) const
 {
     return ( orientation == m_data->orientation ) ? 2 : 1;
+}
+
+QRectF QskSubcontrolLayoutEngine::subControlRect( QskAspect::Subcontrol subControl ) const
+{
+    if ( const auto el = element( subControl ) )
+        return el->geometry();
+
+    return QRectF( 0.0, 0.0, -1.0, -1.0 ); // something invalid
 }
 
 void QskSubcontrolLayoutEngine::invalidateElementCache()

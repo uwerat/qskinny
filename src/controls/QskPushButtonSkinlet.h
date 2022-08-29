@@ -41,8 +41,6 @@ class QSK_EXPORT QskPushButtonSkinlet : public QskSkinlet
         quint8 nodeRole, QSGNode* ) const override;
 
   private:
-    QRectF textRect( const QskPushButton*, const QRectF& ) const;
-    QRectF graphicRect( const QskPushButton*, const QRectF& ) const;
     QRectF rippleRect( const QskPushButton*, const QRectF& ) const;
 
     QSGNode* updateTextNode( const QskPushButton*, QSGNode* ) const;

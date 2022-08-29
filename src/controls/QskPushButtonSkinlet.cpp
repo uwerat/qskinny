@@ -32,66 +32,11 @@ namespace
         LayoutEngine( const QskPushButton* button )
             : QskSubcontrolLayoutEngine( qskOrientation( button ) )
         {
-            using Q = QskPushButton;
+            setSpacing( button->spacingHint( QskPushButton::Panel ) );
 
-            setSpacing( button->spacingHint( Q::Panel ) );
-
-            const auto graphicSourceSize = button->graphic().defaultSize();
-
-            const bool hasText = !button->text().isEmpty();
-            const bool hasGraphic = !graphicSourceSize.isEmpty();
-
-            auto graphicElement = new GraphicElement( button, Q::Graphic );
-            graphicElement->setSourceSize( graphicSourceSize );
-            graphicElement->setIgnored( !hasGraphic );
-
-            auto textElement = new TextElement( button, Q::Text );
-            textElement->setText( button->text() );
-            textElement->setIgnored( !hasText );
-
-            using SP = QskSizePolicy;
-
-            if ( hasText && !hasGraphic )
-            {
-                textElement->setSizePolicy( SP::Preferred, SP::Constrained );
-            }
-            else if ( hasGraphic && !hasText )
-            {
-                const auto size = graphicElement->effectiveStrutSize();
-
-                if ( !size.isEmpty() )
-                    graphicElement->setFixedSize( size );
-                else
-                    graphicElement->setSizePolicy( SP::Ignored, SP::ConstrainedExpanding );
-            }
-            else if ( hasText && hasGraphic )
-            {
-                if ( orientation() == Qt::Horizontal )
-                {
-                    graphicElement->setSizePolicy( SP::Constrained, SP::Fixed );
-                    textElement->setSizePolicy( SP::Preferred, SP::Preferred );
-                }
-                else
-                {
-                    graphicElement->setSizePolicy( SP::Fixed, SP::Fixed );
-                    textElement->setSizePolicy( SP::Preferred, SP::Constrained );
-                }
-
-                auto size = graphicElement->effectiveStrutSize();
-
-                if ( size.isEmpty() )
-                {
-                    const auto h = 1.5 * button->effectiveFontHeight( Q::Text );
-
-                    size.setWidth( graphicElement->widthForHeight( h ) );
-                    size.setHeight( h );
-                }
-
-                graphicElement->setPreferredSize( size );
-            }
-
-            setElementAt( 0, graphicElement );
-            setElementAt( 1, textElement );
+            setGraphicTextElements( button,
+                QskPushButton::Text, button->text(),
+                QskPushButton::Graphic, button->graphic().defaultSize() );
         }
     };
 }
@@ -107,24 +52,26 @@ QskPushButtonSkinlet::~QskPushButtonSkinlet() = default;
 QRectF QskPushButtonSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
+    using Q = QskPushButton;
+
     const auto button = static_cast< const QskPushButton* >( skinnable );
 
-    if ( subControl == QskPushButton::Text )
+    if ( ( subControl == Q::Text ) || ( subControl == Q::Graphic ) )
     {
-        return textRect( button, contentsRect );
+        const auto r = button->subControlContentsRect( contentsRect, Q::Panel );
+            
+        LayoutEngine layoutEngine( button );
+        layoutEngine.setGeometries( r );
+
+        return layoutEngine.subControlRect( subControl );
     }
 
-    if ( subControl == QskPushButton::Graphic )
-    {
-        return graphicRect( button, contentsRect );
-    }
-
-    if ( subControl == QskPushButton::Panel )
+    if ( subControl == Q::Panel )
     {
         return contentsRect;
     }
 
-    if ( subControl == QskPushButton::Ripple )
+    if ( subControl == Q::Ripple )
     {
         return rippleRect( button, contentsRect );
     }
@@ -135,13 +82,15 @@ QRectF QskPushButtonSkinlet::subControlRect( const QskSkinnable* skinnable,
 QSGNode* QskPushButtonSkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
+    using Q = QskPushButton;
+
     const auto button = static_cast< const QskPushButton* >( skinnable );
 
     switch ( nodeRole )
     {
         case PanelRole:
         {
-            return updateBoxNode( button, node, QskPushButton::Panel );
+            return updateBoxNode( button, node, Q::Panel );
         }
 
         case RippleRole:
@@ -156,38 +105,11 @@ QSGNode* QskPushButtonSkinlet::updateSubNode(
 
         case GraphicRole:
         {
-            return updateGraphicNode( button, node,
-                button->graphic(), QskPushButton::Graphic );
+            return updateGraphicNode( button, node, button->graphic(), Q::Graphic );
         }
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
-}
-
-QRectF QskPushButtonSkinlet::textRect(
-    const QskPushButton* button, const QRectF& contentsRect ) const
-{
-    using Q = QskPushButton;
-
-    const auto r = button->subControlContentsRect( contentsRect, Q::Panel );
-
-    LayoutEngine layoutEngine( button );
-    layoutEngine.setGeometries( r );
-
-    return layoutEngine.elementAt( 1 )->geometry();
-}
-
-QRectF QskPushButtonSkinlet::graphicRect(
-    const QskPushButton* button, const QRectF& contentsRect ) const
-{
-    using Q = QskPushButton;
-
-    const auto r = button->subControlContentsRect( contentsRect, Q::Panel );
-
-    LayoutEngine layoutEngine( button );
-    layoutEngine.setGeometries( r );
-
-    return layoutEngine.elementAt( 0 )->geometry();
 }
 
 QRectF QskPushButtonSkinlet::rippleRect(
