@@ -347,7 +347,7 @@ void QskSubcontrolLayoutEngine::setGraphicTextElements( const QskSkinnable* skin
     }
 
     TextElement* textElement = nullptr;
-    if ( !text.isEmpty() && ( graphicSubControl != QskAspect::Control ) )
+    if ( !text.isEmpty() && ( textSubcontrol != QskAspect::Control ) )
     {
         textElement = dynamic_cast< TextElement* >( element( textSubcontrol ) );
         if ( textElement == nullptr )
@@ -445,7 +445,7 @@ QskSizePolicy QskSubcontrolLayoutEngine::sizePolicyAt( int index ) const
 
 int QskSubcontrolLayoutEngine::count() const
 {
-    return sizeof( m_data->elements ) / sizeof( m_data->elements[0] );
+    return m_data->elements.count(); 
 }
 
 void QskSubcontrolLayoutEngine::layoutItems()
@@ -466,7 +466,12 @@ void QskSubcontrolLayoutEngine::layoutItems()
 
 int QskSubcontrolLayoutEngine::effectiveCount( Qt::Orientation orientation ) const
 {
-    return ( orientation == m_data->orientation ) ? m_data->elements.count() : 1;
+    const auto count = m_data->elements.count();
+
+    if ( orientation == m_data->orientation )
+        return count;
+    else
+        return ( count >= 1 ) ? 1 : 0;
 }
 
 QRectF QskSubcontrolLayoutEngine::subControlRect( QskAspect::Subcontrol subControl ) const
