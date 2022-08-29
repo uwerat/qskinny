@@ -482,6 +482,11 @@ void QskSkinManager::unregisterFactory( const QString& factoryId )
     m_data->factoryMap.removeFactory( factoryId.toLower() );
 }
 
+void QskSkinManager::unregisterFactories()
+{
+    m_data->factoryMap.reset();
+}
+
 QStringList QskSkinManager::skinNames() const
 {
     m_data->ensurePlugins();

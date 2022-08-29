@@ -35,6 +35,7 @@ class QSK_EXPORT QskSkinManager : public QObject
 
     void registerFactory( const QString& factoryId, QskSkinFactory* );
     void unregisterFactory( const QString& factoryId );
+    void unregisterFactories();
 
     QStringList skinNames() const;
 
