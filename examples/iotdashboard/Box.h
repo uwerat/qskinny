@@ -5,12 +5,14 @@
 
 #pragma once
 
-#include "ShadowedBox.h"
+#include <QskLinearBox.h>
 
-class Box : public ShadowedBox
+class Box : public QskLinearBox
 {
     Q_OBJECT
 
   public:
+    QSK_SUBCONTROLS( Panel )
+
     Box( const QString& title, QQuickItem* parent = nullptr );
 };

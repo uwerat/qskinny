@@ -16,10 +16,8 @@
 #include "LightDisplaySkinlet.h"
 #include "DashboardPage.h"
 #include "MenuBar.h"
-#include "PieChartPainted.h"
 #include "RoundedIcon.h"
 #include "RoundButton.h"
-#include "ShadowedBox.h"
 #include "TopBar.h"
 #include "UsageBox.h"
 #include "UsageDiagram.h"
@@ -29,6 +27,7 @@
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxBorderColors.h>
 #include <QskFunctions.h>
+#include <QskShadowMetrics.h>
 #include <QskSkinHintTableEditor.h>
 #include <QskTextLabel.h>
 
@@ -129,8 +128,8 @@ void Skin::initHints( const Palette& palette )
     ed.setFontRole( TimeLabel::Text, QskSkin::HugeFont );
     ed.setColor( TimeLabel::Text, "#6776FF" );
 
-    // boxes (including shadow):
-    ed.setPadding( ShadowedBox::Panel, 15 );
+    // boxes:
+    ed.setPadding( Box::Panel, 8 );
 
     // content in boxes (indoor temperature, humidity etc.):
     ed.setFontRole( UsageBox::Separator, QskSkin::SmallFont );
@@ -220,9 +219,20 @@ void Skin::initHints( const Palette& palette )
     // palette dependent skin hints:
     ed.setGradient( MenuBar::Panel, palette.menuBar );
     ed.setGradient( DashboardPage::Panel, palette.mainContent );
-    ed.setGradient( Box::Panel, palette.box );
+
+    ed.setColor( Box::Panel, palette.box.startColor() );
+    QskShadowMetrics shadowMetrics( 0, 10 );
+    ed.setShadowMetrics( Box::Panel, shadowMetrics );
+    ed.setShadowColor( Box::Panel, palette.shadow );
+
     ed.setGradient( BoxWithButtons::Panel, palette.box );
+    ed.setShadowMetrics( BoxWithButtons::Panel, shadowMetrics );
+    ed.setShadowColor( BoxWithButtons::Panel, palette.shadow );
+
     ed.setGradient( UsageDiagramBox::Panel, palette.box );
+    ed.setShadowMetrics( UsageDiagramBox::Panel, shadowMetrics );
+    ed.setShadowColor( UsageDiagramBox::Panel, palette.shadow );
+
     ed.setGradient( LightDisplay::Panel, palette.box );
     ed.setGradient( LightDisplay::Knob, palette.box );
     ed.setGradient( RoundButton::Panel, palette.roundButton );
