@@ -23,7 +23,6 @@ SOURCES += \
     PieChartSkinlet.cpp \
     RoomsPage.cpp \
     RoundedIcon.cpp \
-    ShadowedBox.cpp \
     Skin.cpp \
     TopBar.cpp \
     RoundButton.cpp \
@@ -58,7 +57,6 @@ HEADERS += \
     PieChartSkinlet.h \
     RoomsPage.h \
     RoundedIcon.h \
-    ShadowedBox.h \
     Skin.h \
     TopBar.h \
     RoundButton.h \
