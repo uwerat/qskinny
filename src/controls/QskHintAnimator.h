@@ -19,19 +19,21 @@ class QSK_EXPORT QskHintAnimator : public QskVariantAnimator
     using Inherited = QskVariantAnimator;
 
   public:
-    QskHintAnimator();
+    QskHintAnimator() noexcept;
     ~QskHintAnimator() override;
 
-    void setAspect( QskAspect );
-    QskAspect aspect() const;
+    void setAspect( QskAspect ) noexcept;
+    QskAspect aspect() const noexcept;
 
-    void setControl( QskControl* );
-    QskControl* control() const;
+    void setControl( QskControl* ) noexcept;
+    QskControl* control() const noexcept;
 
-    void setUpdateFlags( QskAnimationHint::UpdateFlags );
-    QskAnimationHint::UpdateFlags updateFlags() const;
+    void setUpdateFlags( QskAnimationHint::UpdateFlags ) noexcept;
+    QskAnimationHint::UpdateFlags updateFlags() const noexcept;
 
     void advance( qreal value ) override;
+
+    bool operator<( const QskHintAnimator& ) const noexcept;
 
   private:
     QskAspect m_aspect;
@@ -60,19 +62,24 @@ class QSK_EXPORT QskHintAnimatorTable
     PrivateData* m_data;
 };
 
-inline QskAspect QskHintAnimator::aspect() const
+inline QskAspect QskHintAnimator::aspect() const noexcept
 {
     return m_aspect;
 }
 
-inline QskAnimationHint::UpdateFlags QskHintAnimator::updateFlags() const
+inline QskAnimationHint::UpdateFlags QskHintAnimator::updateFlags() const noexcept
 {
     return m_updateFlags;
 }
 
-inline QskControl* QskHintAnimator::control() const
+inline QskControl* QskHintAnimator::control() const noexcept
 {
     return m_control;
+}
+
+inline bool QskHintAnimator::operator<( const QskHintAnimator& other ) const noexcept
+{
+    return m_aspect < other.m_aspect;
 }
 
 #endif

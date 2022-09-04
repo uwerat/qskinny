@@ -93,7 +93,7 @@ static inline bool qskCheckReceiverThread( const QObject* receiver )
     return ( thread == QThread::currentThread() );
 }
 
-QskHintAnimator::QskHintAnimator()
+QskHintAnimator::QskHintAnimator() noexcept
 {
 }
 
@@ -101,24 +101,24 @@ QskHintAnimator::~QskHintAnimator()
 {
 }
 
-void QskHintAnimator::setAspect( QskAspect aspect )
+void QskHintAnimator::setAspect( QskAspect aspect ) noexcept
 {
     m_aspect = aspect;
 }
 
-void QskHintAnimator::setUpdateFlags( QskAnimationHint::UpdateFlags flags )
+void QskHintAnimator::setUpdateFlags( QskAnimationHint::UpdateFlags flags ) noexcept
 {
     m_updateFlags = flags;
 }
 
-void QskHintAnimator::setControl( QskControl* control )
+void QskHintAnimator::setControl( QskControl* control ) noexcept
 {
     m_control = control;
 }
 
 void QskHintAnimator::advance( qreal progress )
 {
-    const QVariant oldValue = currentValue();
+    const auto oldValue = currentValue();
 
     Inherited::advance( progress );
 
