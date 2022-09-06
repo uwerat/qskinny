@@ -204,13 +204,11 @@ namespace
 class QskHintAnimatorTable::PrivateData
 {
   public:
-    // we won't have many entries, so we prefer less memory over
-    // using a hash table
+    // we could use a std::set< QskHintAnimator > instead
     std::map< QskAspect, QskHintAnimator > map;
 };
 
 QskHintAnimatorTable::QskHintAnimatorTable()
-    : m_data( nullptr )
 {
 }
 
@@ -218,6 +216,7 @@ QskHintAnimatorTable::~QskHintAnimatorTable()
 {
     if ( qskAnimatorGuard )
         qskAnimatorGuard->unregisterTable( this );
+
     delete m_data;
 }
 
@@ -228,6 +227,7 @@ void QskHintAnimatorTable::start( QskControl* control,
     if ( m_data == nullptr )
     {
         m_data = new PrivateData();
+
         if ( qskAnimatorGuard )
             qskAnimatorGuard->registerTable( this );
     }

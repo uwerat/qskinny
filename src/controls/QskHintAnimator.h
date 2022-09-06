@@ -54,12 +54,13 @@ class QSK_EXPORT QskHintAnimatorTable
     QVariant currentValue( QskAspect ) const;
 
     bool cleanup();
+    bool isEmpty() const;
 
   private:
     void reset();
 
     class PrivateData;
-    PrivateData* m_data;
+    PrivateData* m_data = nullptr;
 };
 
 inline QskAspect QskHintAnimator::aspect() const noexcept
@@ -80,6 +81,11 @@ inline QskControl* QskHintAnimator::control() const noexcept
 inline bool QskHintAnimator::operator<( const QskHintAnimator& other ) const noexcept
 {
     return m_aspect < other.m_aspect;
+}
+
+inline bool QskHintAnimatorTable::isEmpty() const
+{
+    return m_data == nullptr;
 }
 
 #endif
