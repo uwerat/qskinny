@@ -916,7 +916,7 @@ QVariant QskSkinnable::animatedValue(
 {
     QVariant v;
 
-    if ( !aspect.hasStates() )
+    if ( !m_data->animators.isEmpty() && !aspect.hasStates() )
     {
         /*
             The local animators were invented to be stateless
