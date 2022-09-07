@@ -18,17 +18,6 @@ BlurredBox::BlurredBox( QQuickItem* parentItem )
 
 BlurredBox::~BlurredBox() = default;
 
-void BlurredBox::setShape( const QskBoxShapeMetrics& shape )
-{
-    m_shape = shape;
-    update();
-}
-
-const QskBoxShapeMetrics& BlurredBox::shape() const
-{
-    return m_shape;
-}
-
 QRectF BlurredBox::rectOnScreen() const
 {
     return mapRectToScene( contentsRect() );

@@ -23,9 +23,6 @@ class BlurredBox : public QskBox
 
     QRectF layoutRectForSize( const QSizeF& size ) const override;
 
-    void setShape( const QskBoxShapeMetrics& );
-    const QskBoxShapeMetrics& shape() const;
-
     QRectF rectOnScreen() const;
     QRectF rectOfScreen() const;
 

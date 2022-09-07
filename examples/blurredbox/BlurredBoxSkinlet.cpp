@@ -29,10 +29,11 @@ QSGNode* BlurredBoxSkinlet::updateSubNode(
     switch ( nodeRole )
     {
         case PanelRole:
-            auto blurred = QskSGNode::ensureNode< BlurredBoxNode >( node );
-            auto rectOfScreen = box->rectOfScreen();
-            auto rectOnScreen = box->rectOnScreen();
-            blurred->setBlurData( r, box->shape(), rectOfScreen, rectOnScreen,
+            auto* const blurred = QskSGNode::ensureNode< BlurredBoxNode >( node );
+            const auto rectOfScreen = box->rectOfScreen();
+            const auto rectOnScreen = box->rectOnScreen();
+            const auto boxShapeHint = box->boxShapeHint(BlurredBox::Panel);
+            blurred->setBlurData( r, boxShapeHint, rectOfScreen, rectOnScreen,
                 static_cast< float >( box->opacity() ), box->blurDirections(), box->blurQuality(),
                 box->blurSize() );
             return blurred;

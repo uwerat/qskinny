@@ -28,7 +28,8 @@ MainWindow::MainWindow()
     auto* const stack = new QskStackBox( layout );
     stack->setAutoLayoutChildren( true );
     auto* const blurred = new BlurredBox( stack );
-    blurred->setShape( { 40, 40, 40, 40 } );
+    blurred->setBlurSize( 16.0 );
+    blurred->setBoxShapeHint(BlurredBox::Panel, { 40, 40, 40, 40 });
     auto* const l = new QskLinearBox( Qt::Vertical, layout );
     stack->addItem( l );
 
@@ -147,7 +148,7 @@ void MainWindow::createBlurCornerRadiiControls( BlurredBox* blurred, QskLinearBo
     slider->setMinimum( 0.0 );
     slider->setMaximum( 80.0 );
     connect( slider, &QskSlider::valueChanged, [ blurred, bar, label ]( qreal value ) {
-        auto shape = blurred->shape();
+        auto shape = blurred->boxShapeHint(BlurredBox::Panel);
         const auto format = tr( "Corner Radius" ) + " ( %1 )";
 
         switch ( bar->currentIndex() )
@@ -167,11 +168,11 @@ void MainWindow::createBlurCornerRadiiControls( BlurredBox* blurred, QskLinearBo
         }
 
         label->setText( format.arg( value ) );
-        blurred->setShape( shape );
+        blurred->setBoxShapeHint(BlurredBox::Panel, shape );
         blurred->update();
     } );
     connect( bar, &QskSegmentedBar::currentIndexChanged, [ blurred, slider ]( int index ) {
-        const auto shape = blurred->shape();
+        const auto shape = blurred->boxShapeHint(BlurredBox::Panel);
 
         switch ( index )
         {
@@ -189,7 +190,7 @@ void MainWindow::createBlurCornerRadiiControls( BlurredBox* blurred, QskLinearBo
                 break;
         }
     } );
-    slider->setValue( blurred->shape().topLeft().width() );
+    slider->setValue( blurred->boxShapeHint(BlurredBox::Panel).topLeft().width() );
     bar->setSelectedIndex( TL );
     bar->setCurrentIndex( TL );
 }
