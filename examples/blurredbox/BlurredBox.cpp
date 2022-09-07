@@ -43,13 +43,6 @@ void BlurredBox::geometryChangeEvent( QskGeometryChangeEvent* e )
     update();
 }
 
-QRectF BlurredBox::layoutRectForSize( const QSizeF& size ) const
-{
-    auto padding = paddingHint( Panel );
-    return { padding.left() / 2, padding.top() / 2, size.width() - padding.right(),
-        size.height() - padding.bottom() };
-}
-
 float BlurredBox::blurDirections() const
 {
     return m_blurDirections;

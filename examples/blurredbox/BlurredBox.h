@@ -21,8 +21,6 @@ class BlurredBox : public QskBox
     BlurredBox( QQuickItem* parent = nullptr );
     ~BlurredBox() override;
 
-    QRectF layoutRectForSize( const QSizeF& size ) const override;
-
     QRectF rectOnScreen() const;
     QRectF rectOfScreen() const;
 
