@@ -75,7 +75,7 @@ void MainWindow::createBlurDirectionsControls( BlurredBox* blurred, QskLinearBox
     auto* const slider = new QskSlider( Qt::Horizontal, layout );
     slider->setMinimum( 16.0 );
     slider->setMaximum( 32.0 );
-    connect( slider, &QskSlider::valueChanged, [ blurred, label ]( qreal value ) {
+    connect( slider, &QskSlider::valueChanged, slider, [ blurred, label ]( qreal value ) {
         blurred->setBlurDirections( static_cast< float >( value ) );
         label->setText( QString( tr( "Blur Directions" ) + " ( %1 )" ).arg( value ) );
     } );
@@ -90,7 +90,7 @@ void MainWindow::createBlurQualityControls( BlurredBox* blurred, QskLinearBox* l
     auto* const slider = new QskSlider( Qt::Horizontal, layout );
     slider->setMinimum( 4.0 );
     slider->setMaximum( 16.0 );
-    connect( slider, &QskSlider::valueChanged, [ blurred, label ]( qreal value ) {
+    connect( slider, &QskSlider::valueChanged, slider, [ blurred, label ]( qreal value ) {
         blurred->setBlurQuality( static_cast< float >( value ) );
         label->setText( QString( tr( "Blur Quality" ) + " ( %1 )" ).arg( value ) );
     } );
@@ -105,7 +105,7 @@ void MainWindow::createBlurSizeControls( BlurredBox* blurred, QskLinearBox* layo
     auto* const slider = new QskSlider( Qt::Horizontal, layout );
     slider->setMinimum( 4.0 );
     slider->setMaximum( 32.0 );
-    connect( slider, &QskSlider::valueChanged, [ blurred, label ]( qreal value ) {
+    connect( slider, &QskSlider::valueChanged, slider, [ blurred, label ]( qreal value ) {
         blurred->setBlurSize( static_cast< float >( value ) );
         label->setText( QString( tr( "Blur Size" ) + " ( %1 )" ).arg( value ) );
     } );
@@ -120,7 +120,7 @@ void MainWindow::createBlurOpacityControls( BlurredBox* blurred, QskLinearBox* l
     auto* const slider = new QskSlider( Qt::Horizontal, layout );
     slider->setMinimum( 0.0 );
     slider->setMaximum( 1.0 );
-    connect( slider, &QskSlider::valueChanged, [ blurred, label ]( qreal value ) {
+    connect( slider, &QskSlider::valueChanged, slider, [ blurred, label ]( qreal value ) {
         blurred->setOpacity( value );
         label->setText( QString( tr( "Blur Opacity" ) + " ( %1 )" ).arg( value ) );
     } );
@@ -147,7 +147,7 @@ void MainWindow::createBlurCornerRadiiControls( BlurredBox* blurred, QskLinearBo
     auto* const slider = new QskSlider( Qt::Horizontal, layout );
     slider->setMinimum( 0.0 );
     slider->setMaximum( 80.0 );
-    connect( slider, &QskSlider::valueChanged, [ blurred, bar, label ]( qreal value ) {
+    connect( slider, &QskSlider::valueChanged, slider, [ blurred, bar, label ]( qreal value ) {
         auto shape = blurred->boxShapeHint(BlurredBox::Panel);
         const auto format = tr( "Corner Radius" ) + " ( %1 )";
 
@@ -171,7 +171,7 @@ void MainWindow::createBlurCornerRadiiControls( BlurredBox* blurred, QskLinearBo
         blurred->setBoxShapeHint(BlurredBox::Panel, shape );
         blurred->update();
     } );
-    connect( bar, &QskSegmentedBar::currentIndexChanged, [ blurred, slider ]( int index ) {
+    connect( bar, &QskSegmentedBar::currentIndexChanged, slider, [ blurred, slider ]( int index ) {
         const auto shape = blurred->boxShapeHint(BlurredBox::Panel);
 
         switch ( index )
