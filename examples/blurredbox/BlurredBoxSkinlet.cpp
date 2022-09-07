@@ -4,7 +4,6 @@
 
 BlurredBoxSkinlet::BlurredBoxSkinlet()
 {
-    setOwnedBySkinnable( true );
     setNodeRoles( { PanelRole } );
 }
 

@@ -10,8 +10,9 @@ class BlurredBoxSkinlet;
 BlurredBox::BlurredBox( QQuickItem* parentItem )
     : QskBox( parentItem )
 {
-    setFlag( QQuickItem::ItemHasContents, true );
-    setSkinlet( new BlurredBoxSkinlet() );
+    auto* const skinlet = new BlurredBoxSkinlet();
+    skinlet->setOwnedBySkinnable( true );
+    setSkinlet( skinlet );
     setPolishOnResize( true );
 }
 
