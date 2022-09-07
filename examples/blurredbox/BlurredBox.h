@@ -41,9 +41,6 @@ class BlurredBox : public QskBox
     void blurSizeChanged( float );
 
   private:
-    QskBoxShapeMetrics m_shape;
-    qreal m_borderWidth = 0.0;
-    QColor m_borderColor = Qt::black;
     float m_blurDirections = 32.0;
     float m_blurQuality = 8.0;
     float m_blurSize = 8.0;
