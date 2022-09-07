@@ -28,7 +28,7 @@ MainWindow::MainWindow()
     auto* const stack = new QskStackBox( layout );
     stack->setAutoLayoutChildren( true );
     auto* const blurred = new BlurredBox( stack );
-    blurred->setBlurSize( 16.0 );
+    blurred->setBlurSize( 20.0 );
     blurred->setBoxShapeHint(BlurredBox::Panel, { 40, 40, 40, 40 });
     auto* const l = new QskLinearBox( Qt::Vertical, layout );
     stack->addItem( l );
