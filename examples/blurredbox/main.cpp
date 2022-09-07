@@ -19,8 +19,6 @@ int main( int argc, char* argv[] )
 
     QGuiApplication app( argc, argv );
 
-    qskSetup->setItemUpdateFlag( QskQuickItem::PreferRasterForTextures, true );
-
     // disable default skins
     qskSkinManager->setPluginPaths( QStringList() ); // no plugins
 
