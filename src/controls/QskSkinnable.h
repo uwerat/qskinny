@@ -258,6 +258,7 @@ class QSK_EXPORT QskSkinnable
   private:
     Q_DISABLE_COPY( QskSkinnable )
 
+    bool startHintTransitions( QskAspect::States, QskAspect::States );
     void startHintTransition( QskAspect,
         QskAnimationHint, const QVariant& from, const QVariant& to );
 
