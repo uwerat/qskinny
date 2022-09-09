@@ -7,10 +7,6 @@
 #include "QskDialogButtonBox.h"
 #include "QskSkin.h"
 
-QSK_SUBCONTROL( QskDialogButton, Panel )
-QSK_SUBCONTROL( QskDialogButton, Text )
-QSK_SUBCONTROL( QskDialogButton, Graphic )
-
 QskDialogButton::QskDialogButton(
         QskDialog::Action action, QQuickItem* parent )
     : QskPushButton( parent )
@@ -26,21 +22,6 @@ QskDialogButton::QskDialogButton( QQuickItem* parent )
 
 QskDialogButton::~QskDialogButton()
 {
-}
-
-QskAspect::Subcontrol QskDialogButton::substitutedSubcontrol(
-    QskAspect::Subcontrol subControl ) const
-{
-    if ( subControl == QskPushButton::Panel )
-        return QskDialogButton::Panel;
-
-    if ( subControl == QskPushButton::Text )
-        return QskDialogButton::Text;
-
-    if ( subControl == QskPushButton::Graphic )
-        return QskDialogButton::Graphic;
-
-    return Inherited::substitutedSubcontrol( subControl );
 }
 
 void QskDialogButton::setAction( QskDialog::Action action )

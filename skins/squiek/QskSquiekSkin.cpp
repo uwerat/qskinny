@@ -9,7 +9,6 @@
 
 #include <QskBox.h>
 #include <QskCheckBox.h>
-#include <QskDialogButton.h>
 #include <QskDialogButtonBox.h>
 #include <QskFocusIndicator.h>
 #include <QskInputPanelBox.h>
@@ -135,7 +134,6 @@ namespace
 
         void setupBox();
         void setupCheckBox();
-        void setupDialogButton();
         void setupDialogButtonBox();
         void setupFocusIndicator();
         void setupInputPanel();
@@ -257,7 +255,6 @@ void Editor::setup()
     setupBox();
     setupCheckBox();
     setupDialogButtonBox();
-    setupDialogButton();
     setupFocusIndicator();
     setupInputPanel();
     setupInputPredictionBar();
@@ -616,31 +613,6 @@ void Editor::setupPushButton()
 
     // Graphic
     setAlignment( Q::Graphic, Qt::AlignCenter );
-}
-
-void Editor::setupDialogButton()
-{
-    using A = QskAspect;
-    using Q = QskDialogButton;
-
-    // panel
-    setStrutSize( Q::Panel, qskDpiScaled( 75.0 ), qskDpiScaled( 23.0 ) );
-
-    setPadding( Q::Panel, 10 );
-    setMetric( Q::Panel | A::Spacing, 4 );
-
-    setButton( Q::Panel, Raised );
-    setButton( Q::Panel | Q::Pressed, Sunken );
-
-    setAnimation( Q::Panel | A::Color, qskDuration );
-    setAnimation( Q::Panel | A::Metric, qskDuration );
-
-    // text
-    setFlagHint( Q::Text | Q::Disabled | A::Style, Qsk::Sunken );
-    setAlignment( Q::Text, Qt::AlignCenter );
-
-    setColor( Q::Text, m_pal.themeForeground );
-    setColor( Q::Text | Q::Disabled, m_pal.darker200 );
 }
 
 void Editor::setupDialogButtonBox()

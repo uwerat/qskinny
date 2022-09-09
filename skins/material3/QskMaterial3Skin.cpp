@@ -9,7 +9,6 @@
 
 #include <QskBox.h>
 #include <QskCheckBox.h>
-#include <QskDialogButton.h>
 #include <QskDialogButtonBox.h>
 #include <QskFocusIndicator.h>
 #include <QskFunctions.h>
@@ -126,7 +125,6 @@ namespace
         void setupBox();
         void setupCheckBox();
         void setupDialogButtonBox();
-        void setupDialogButton();
         void setupFocusIndicator();
         void setupInputPanel();
         void setupVirtualKeyboard();
@@ -185,7 +183,6 @@ void Editor::setup()
     setupBox();
     setupCheckBox();
     setupDialogButtonBox();
-    setupDialogButton();
     setupFocusIndicator();
     setupInputPanel();
     setupVirtualKeyboard();
@@ -553,23 +550,6 @@ void Editor::setupPushButton()
     setAnimation( Q::Panel | A::Metric, qskDuration );
     setAnimation( Q::Ripple | A::Color, qskDuration );
     setAnimation( Q::Text | A::Color, qskDuration );
-}
-
-void Editor::setupDialogButton()
-{
-    using Q = QskDialogButton;
-
-    setStrutSize( Q::Panel, 48_dp, -1 );
-    setSpacing( Q::Panel, 8_dp );
-    setPadding( Q::Panel, { 12_dp, 13_dp, 12_dp, 13_dp } );
-    setBoxShape( Q::Panel, 100, Qt::RelativeSize );
-    setGradient( Q::Panel, m_pal.secondaryContainer );
-
-    setGradient( Q::Panel | Q::Hovered, stateLayerColor( m_pal.primary, m_pal.hoverOpacity ) );
-    setGradient( Q::Panel | Q::Pressed, stateLayerColor( m_pal.primary, m_pal.pressedOpacity ) );
-
-    setColor( Q::Text, m_pal.primary );
-    setFontRole( Q::Text, QskMaterial3Skin::M3LabelLarge );
 }
 
 void Editor::setupDialogButtonBox()
