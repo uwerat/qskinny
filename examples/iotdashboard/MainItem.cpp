@@ -136,3 +136,5 @@ bool MainItem::gestureFilter( QQuickItem* item, QEvent* event )
 
     return recognizer.processEvent( item, event, false );
 }
+
+#include "moc_MainItem.cpp"
