@@ -261,7 +261,8 @@ class QSK_EXPORT QskSkinnable
     void startHintTransition( QskAspect,
         QskAnimationHint, const QVariant& from, const QVariant& to );
 
-    QVariant animatedValue( QskAspect, QskSkinHintStatus* ) const;
+    QVariant animatedHint( QskAspect, QskSkinHintStatus* ) const;
+    QVariant interpolatedHint( QskAspect, QskSkinHintStatus* ) const;
     const QVariant& storedHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
 
     class PrivateData;

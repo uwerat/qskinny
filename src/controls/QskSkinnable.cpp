@@ -737,7 +737,8 @@ QskColorFilter QskSkinnable::effectiveGraphicFilter(
     aspect.setSection( QskAspect::Body );
     aspect.setPlacement( QskAspect::NoPlacement );
 
-    const auto v = animatedValue( aspect, nullptr );
+    const auto v = animatedHint( aspect, nullptr );
+
     if ( v.canConvert< QskColorFilter >() )
         return v.value< QskColorFilter >();
 
@@ -866,21 +867,32 @@ QVariant QskSkinnable::effectiveSkinHint(
 {
     aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
 
+    if ( !( aspect.isAnimator() || aspect.hasStates() ) )
+    {
+        const auto v = animatedHint( aspect, status );
+        if ( v.isValid() )
+            return v;
+    }
+
     if ( aspect.section() == QskAspect::Body )
         aspect.setSection( section() );
 
     if ( aspect.placement() == QskAspect::NoPlacement )
         aspect.setPlacement( effectivePlacement() );
 
-    if ( aspect.isAnimator() )
-        return storedHint( aspect, status );
-
-    const auto v = animatedValue( aspect, status );
-    if ( v.isValid() )
-        return v;
-
     if ( !aspect.hasStates() )
         aspect.setStates( skinStates() );
+
+    if ( !aspect.isAnimator() && QskSkinTransition::isRunning() )
+    {
+        /*
+            The skin has changed and the hints are interpolated
+            between the old and the new one over time
+         */
+        const auto v = interpolatedHint( aspect, status );
+        if ( v.isValid() )
+            return v;
+    }
 
     return storedHint( aspect, status );
 }
@@ -919,12 +931,12 @@ bool QskSkinnable::moveSkinHint( QskAspect aspect, const QVariant& value )
     return moveSkinHint( aspect, effectiveSkinHint( aspect ), value );
 }
 
-QVariant QskSkinnable::animatedValue(
+QVariant QskSkinnable::animatedHint(
     QskAspect aspect, QskSkinHintStatus* status ) const
 {
     QVariant v;
 
-    if ( !m_data->animators.isEmpty() && !aspect.hasStates() )
+    if ( !m_data->animators.isEmpty() )
     {
         /*
             The local animators were invented to be stateless
@@ -932,92 +944,65 @@ QVariant QskSkinnable::animatedValue(
             But that might change ...
          */
 
-        auto a = aspect;
+         v = m_data->animators.currentValue( aspect );
+    }
 
-        Q_FOREVER
+    if ( status && v.isValid() )
+    {
+        status->source = QskSkinHintStatus::Animator;
+        status->aspect = aspect;
+    }
+
+    return v;
+}
+
+QVariant QskSkinnable::interpolatedHint(
+    QskAspect aspect, QskSkinHintStatus* status ) const
+{
+    if ( !QskSkinTransition::isRunning() || m_data->hintTable.hasHint( aspect ) )
+        return QVariant();
+
+    const auto control = owningControl();
+    if ( control == nullptr )
+        return QVariant();
+
+    QVariant v;
+
+    auto a = aspect;
+
+    Q_FOREVER
+    {
+        v = QskSkinTransition::animatedHint( control->window(), aspect );
+
+        if ( !v.isValid() )
         {
-            v = m_data->animators.currentValue( aspect );
-
-            if ( !v.isValid() )
+            if ( const auto topState = aspect.topState() )
             {
-                if ( aspect.placement() )
-                {
-                    // clear the placement bits and restart
-                    aspect = a;
-                    aspect.setPlacement( QskAspect::NoPlacement );
-
-                    continue;
-                }
-            }
-
-            if ( aspect.section() != QskAspect::Body )
-            {
-                // try to resolve from QskAspect::Body
-
-                a.setSection( QskAspect::Body );
-                aspect = a;
-
+                aspect.clearState( aspect.topState() );
                 continue;
             }
 
-            break;
-        }
-    }
-
-    if ( !v.isValid() )
-    {
-        if ( QskSkinTransition::isRunning() &&
-            !m_data->hintTable.hasHint( aspect ) )
-        {
-            /*
-               Next we check for values from the skin. Those
-               animators are usually from global skin/color changes
-               and are state aware
-             */
-
-            if ( const auto control = owningControl() )
+            if ( aspect.placement() )
             {
-                if ( !aspect.hasStates() )
-                    aspect.setStates( skinStates() );
+                // clear the placement bits and restart
+                aspect = a;
+                aspect.setPlacement( QskAspect::NoPlacement );
 
-                auto a = aspect;
-
-                Q_FOREVER
-                {
-                    v = QskSkinTransition::animatedHint( control->window(), aspect );
-
-                    if ( !v.isValid() )
-                    {
-                        if ( const auto topState = aspect.topState() )
-                        {
-                            aspect.clearState( aspect.topState() );
-                            continue;
-                        }
-
-                        if ( aspect.placement() )
-                        {
-                            // clear the placement bits and restart
-                            aspect = a;
-                            aspect.setPlacement( QskAspect::NoPlacement );
-
-                            continue;
-                        }
-                    }
-
-                    if ( aspect.section() != QskAspect::Body )
-                    {
-                        // try to resolve from QskAspect::Body
-
-                        a.setSection( QskAspect::Body );
-                        aspect = a;
-
-                        continue;
-                    }
-
-                    break;
-                }
+                continue;
             }
         }
+
+        if ( a.section() != QskAspect::Body )
+        {
+            // try to resolve with the default section
+
+            a.setSection( QskAspect::Body );
+            aspect = a;
+
+            continue;
+        }
+
+        break;
     }
 
     if ( status && v.isValid() )
@@ -1264,9 +1249,15 @@ void QskSkinnable::startHintTransition( QskAspect aspect,
         v2.setValue( skin->graphicFilter( v2.toInt() ) );
     }
 
+    /*
+        We do not need the extra bits that would slow down resolving
+        the effective aspect in animatedHint.
+     */
+
     aspect.clearStates();
+    aspect.setSection( QskAspect::Body );
+    aspect.setPlacement( QskAspect::NoPlacement );
     aspect.setAnimator( false );
-    aspect.setPlacement( effectivePlacement() );
 
 #if DEBUG_ANIMATOR
     qDebug() << aspect << animationHint.duration;
@@ -1333,13 +1324,16 @@ void QskSkinnable::setSkinStates( QskAspect::States newStates )
 
     if ( control->window() && isTransitionAccepted( QskAspect() ) )
     {
-        const auto placement = effectivePlacement();
+        QskAspect aspect;
+        aspect.setPlacement( effectivePlacement() );
+        aspect.setSection( section() );
+
         const auto primitiveCount = QskAspect::primitiveCount();
 
         const auto subControls = control->subControls();
         for ( const auto subControl : subControls )
         {
-            auto aspect = subControl | placement;
+            aspect.setSubControl( subControl );
 
             const auto& skinTable = skin->hintTable();
 
