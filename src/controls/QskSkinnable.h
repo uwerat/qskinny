@@ -79,10 +79,9 @@ class QSK_EXPORT QskSkinnable
     void setSkinlet( const QskSkinlet* );
     const QskSkinlet* skinlet() const;
 
-    QFont effectiveFont( QskAspect ) const;
-    qreal effectiveFontHeight( QskAspect ) const;
-
-    QskColorFilter effectiveGraphicFilter( QskAspect ) const;
+    QFont effectiveFont( QskAspect::Subcontrol ) const;
+    qreal effectiveFontHeight( QskAspect::Subcontrol ) const;
+    QskColorFilter effectiveGraphicFilter( QskAspect::Subcontrol ) const;
 
     void setSubcontrolProxy( QskAspect::Subcontrol, QskAspect::Subcontrol proxy );
     void resetSubcontrolProxy( QskAspect::Subcontrol );

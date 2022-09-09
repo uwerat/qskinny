@@ -687,14 +687,14 @@ int QskSkinnable::fontRoleHint(
     return qskFlag( this, aspect | QskAspect::FontRole, status );
 }
 
-QFont QskSkinnable::effectiveFont( const QskAspect aspect ) const
+QFont QskSkinnable::effectiveFont( const QskAspect::Subcontrol subControl ) const
 {
-    return effectiveSkin()->font( fontRoleHint( aspect ) );
+    return effectiveSkin()->font( fontRoleHint( subControl ) );
 }
 
-qreal QskSkinnable::effectiveFontHeight( const QskAspect aspect ) const
+qreal QskSkinnable::effectiveFontHeight( const QskAspect::Subcontrol subControl ) const
 {
-    const QFontMetricsF fm( effectiveFont( aspect ) );
+    const QFontMetricsF fm( effectiveFont( subControl ) );
     return fm.height();
 }
 
@@ -714,44 +714,52 @@ int QskSkinnable::graphicRoleHint(
     return qskFlag( this, aspect | QskAspect::GraphicRole, status );
 }
 
-QskColorFilter QskSkinnable::effectiveGraphicFilter( QskAspect aspect ) const
+QskColorFilter QskSkinnable::effectiveGraphicFilter(
+    const QskAspect::Subcontrol subControl ) const
 {
-    aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
+    /*
+        Usually we find the graphic role and return the related filter
+        from the skin. But as we can't interpolate between graphic roles
+        the corresponding animators interpolate the filters.
+     */
+
+    QskAspect aspect( effectiveSubcontrol( subControl ) | QskAspect::GraphicRole );
+    aspect.setSection( section() );
     aspect.setPlacement( effectivePlacement() );
-    aspect = aspect | QskAspect::GraphicRole;
 
     QskSkinHintStatus status;
 
     const auto hint = storedHint( aspect | skinStates(), &status );
-    if ( status.isValid() )
-    {
-        // we need to know about how the aspect gets resolved
-        // before checking for animators
+    if ( !status.isValid() )
+        return QskColorFilter();
 
-        aspect.setSubControl( status.aspect.subControl() );
-    }
+    aspect.setSubControl( status.aspect.subControl() );
+    aspect.setSection( QskAspect::Body );
+    aspect.setPlacement( QskAspect::NoPlacement );
 
-    if ( !aspect.isAnimator() )
+    const auto v = animatedValue( aspect, nullptr );
+    if ( v.canConvert< QskColorFilter >() )
+        return v.value< QskColorFilter >();
+
+    if ( auto control = owningControl() )
     {
-        auto v = animatedValue( aspect, nullptr );
+        const auto graphicRole = hint.toInt();
+
+        const auto v = QskSkinTransition::animatedGraphicFilter(
+            control->window(), graphicRole );
+
         if ( v.canConvert< QskColorFilter >() )
-            return v.value< QskColorFilter >();
-
-        if ( auto control = owningControl() )
         {
-            v = QskSkinTransition::animatedGraphicFilter(
-                control->window(), hint.toInt() );
-
-            if ( v.canConvert< QskColorFilter >() )
-            {
-                /*
-                    As it is hard to find out which controls depend
-                    on the animated graphic filters we reschedule
-                    our updates here.
-                 */
-                control->update();
-                return v.value< QskColorFilter >();
-            }
+#if 1
+            /*
+                Design flaw: the animators for the skin transition do not
+                know about the controls, that are affected from the color
+                filter. As a workaround we schedule the update in the
+                getter: TODO ...
+             */
+            control->update();
+#endif
+            return v.value< QskColorFilter >();
         }
     }
 
@@ -1359,7 +1367,16 @@ void QskSkinnable::setSkinStates( QskAspect::States newStates )
                         bool doTransition = true;
 
                         if ( m_data->hintTable.states() == QskAspect::NoState )
+                        {
+                            /*
+                                In case we have no state aware aspects in the local
+                                table we can avoid starting animators for aspects,
+                                that are finally resolved from the same hint in
+                                the skin table.
+                             */
+                            
                             doTransition = !skinTable.isResolutionMatching( a1, a2 );
+                        }
 
                         if ( doTransition )
                         {
