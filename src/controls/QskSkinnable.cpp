@@ -1303,6 +1303,7 @@ void QskSkinnable::setSkinStates( QskAspect::States newStates )
 
 #if DEBUG_STATE
     const auto className = control ? control->className() : "QskSkinnable";
+
     qDebug() << className << ":"
         << skinStateAsPrintable( m_data->skinState ) << "->"
         << skinStateAsPrintable( newState );
@@ -1310,12 +1311,22 @@ void QskSkinnable::setSkinStates( QskAspect::States newStates )
 
     if ( control && control->window() )
     {
-        const bool needUpdate = startHintTransitions( m_data->skinStates, newStates );
-        if ( needUpdate )
+        if ( const auto skin = effectiveSkin() )
         {
-            if ( control->flags() & QQuickItem::ItemHasContents )
-                control->update();
+            const auto mask = m_data->hintTable.states() | skin->hintTable().states();
+            if ( ( newStates & mask ) != ( m_data->skinStates & mask ) )
+            {
+                /*
+                    When there are no aspects for the changed state bits we know
+                    that there won't be any animated transitions
+                 */
+
+                startHintTransitions( m_data->skinStates, newStates );
+            }
         }
+
+        if ( control->flags() & QQuickItem::ItemHasContents )
+            control->update();
     }
 
     m_data->skinStates = newStates;
@@ -1324,22 +1335,6 @@ void QskSkinnable::setSkinStates( QskAspect::States newStates )
 bool QskSkinnable::startHintTransitions(
     QskAspect::States oldStates, QskAspect::States newStates )
 {
-    const auto skin = effectiveSkin();
-    auto control = owningControl();
-
-    if ( skin == nullptr || control == nullptr || control->window() == nullptr )
-        return false;
-
-    const auto mask = m_data->hintTable.states() | skin->hintTable().states();
-    if ( ( newStates & mask ) == ( oldStates & mask ) )
-    {
-        /*
-            When there are no aspects for the changed state bits we know
-            that there won't be any animated transitions
-         */
-        return false;
-    }
-
     if ( !isTransitionAccepted( QskAspect() ) )
     {
         // the control does not like any animated transition at the moment
@@ -1351,6 +1346,9 @@ bool QskSkinnable::startHintTransitions(
     QskAspect aspect;
     aspect.setPlacement( effectivePlacement() );
     aspect.setSection( section() );
+
+    const auto skin = effectiveSkin();
+    const auto control = owningControl();
 
     const auto primitiveCount = QskAspect::primitiveCount();
 
@@ -1379,7 +1377,7 @@ bool QskSkinnable::startHintTransitions(
                     const auto primitive = static_cast< QskAspect::Primitive >( i );
                     aspect.setPrimitive( type, primitive );
 
-                    const auto a1 = aspect | m_data->skinStates;
+                    const auto a1 = aspect | oldStates;
                     const auto a2 = aspect | newStates;
 
                     bool doTransition = true;
