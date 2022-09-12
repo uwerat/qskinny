@@ -63,7 +63,6 @@ class QskSubcontrolLayoutEngine : public QskLayoutEngine2D
         virtual QSizeF implicitSize( const QSizeF& ) const = 0;
 
         int m_stretch = -1;
-        bool m_ignored = false;
 
         QskSizePolicy m_sizePolicy;
 
