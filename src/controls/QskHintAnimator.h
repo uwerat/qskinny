@@ -19,7 +19,7 @@ class QSK_EXPORT QskHintAnimator : public QskVariantAnimator
     using Inherited = QskVariantAnimator;
 
   public:
-    QskHintAnimator() noexcept;
+    QskHintAnimator( QskAspect = QskAspect() ) noexcept;
     ~QskHintAnimator() override;
 
     void setAspect( QskAspect ) noexcept;
@@ -40,6 +40,13 @@ class QSK_EXPORT QskHintAnimator : public QskVariantAnimator
     QskAnimationHint::UpdateFlags m_updateFlags;
     QPointer< QskControl > m_control;
 };
+
+#ifndef QT_NO_DEBUG_STREAM
+
+class QDebug;
+QSK_EXPORT QDebug operator<<( QDebug, const QskHintAnimator& );
+
+#endif
 
 class QSK_EXPORT QskHintAnimatorTable
 {
