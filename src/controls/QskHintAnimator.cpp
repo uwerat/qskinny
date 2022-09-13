@@ -92,6 +92,11 @@ static inline bool qskCheckReceiverThread( const QObject* receiver )
     return ( thread == QThread::currentThread() );
 }
 
+QskHintAnimator::QskHintAnimator() noexcept
+    : m_index( -1 )
+{
+}
+
 QskHintAnimator::QskHintAnimator( const QskAspect aspect, int index ) noexcept
     : m_aspect( aspect )
     , m_index( index )

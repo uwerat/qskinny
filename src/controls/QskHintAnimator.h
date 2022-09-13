@@ -19,7 +19,7 @@ class QSK_EXPORT QskHintAnimator : public QskVariantAnimator
     using Inherited = QskVariantAnimator;
 
   public:
-    QskHintAnimator() noexcept = default;
+    QskHintAnimator() noexcept;
     QskHintAnimator( QskAspect, int index ) noexcept;
 
     ~QskHintAnimator() override;
@@ -42,7 +42,7 @@ class QSK_EXPORT QskHintAnimator : public QskVariantAnimator
 
   private:
     QskAspect m_aspect;
-    int m_index = -1;
+    int m_index;
     QskAnimationHint::UpdateFlags m_updateFlags;
     QPointer< QskControl > m_control;
 };
