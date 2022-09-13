@@ -482,6 +482,8 @@ void Editor::setupSegmentedBar()
     using A = QskAspect;
     using Q = QskSegmentedBar;
 
+    const uint duration = 100;
+
     {
         // Panel
 
@@ -521,7 +523,7 @@ void Editor::setupSegmentedBar()
         setGradient( Q::Cursor | Q::Disabled, QColor( Qt::gray ).darker( 110 ) );
         setBoxBorderColors( Q::Cursor | Q::Disabled, Qt::gray );
 
-        setAnimation( Q::Cursor | A::Metric | A::Position, 100 );
+        setAnimation( Q::Cursor | A::Metric | A::Position, duration );
     }
 
     for( auto subControl : { Q::Panel, Q::Cursor } )
@@ -537,6 +539,8 @@ void Editor::setupSegmentedBar()
 
         for( auto state : { A::NoState, Q::Selected } )
             setColor( Q::Text | state | Q::Disabled, m_pal.darker200  );
+
+        setAnimation( Q::Text | A::Color, duration );
     }
 
     {

@@ -92,8 +92,9 @@ static inline bool qskCheckReceiverThread( const QObject* receiver )
     return ( thread == QThread::currentThread() );
 }
 
-QskHintAnimator::QskHintAnimator( const QskAspect aspect ) noexcept
+QskHintAnimator::QskHintAnimator( const QskAspect aspect, int index ) noexcept
     : m_aspect( aspect )
+    , m_index( index )
 {
 }
 
@@ -104,6 +105,11 @@ QskHintAnimator::~QskHintAnimator()
 void QskHintAnimator::setAspect( const QskAspect aspect ) noexcept
 {
     m_aspect = aspect;
+}
+
+void QskHintAnimator::setIndex( int index ) noexcept
+{
+    m_index = index;
 }
 
 void QskHintAnimator::setUpdateFlags( QskAnimationHint::UpdateFlags flags ) noexcept
@@ -167,11 +173,14 @@ QDebug operator<<( QDebug debug, const QskHintAnimator& animator )
 
     debug << animator.aspect() << ", " << animator.endValue().typeName() << ", ";
 
+    if ( animator.index() >= 0 )
+        debug << animator.index() << ", ";
+
     if ( animator.isRunning() )
         debug << "R: " << animator.duration() << ", " << animator.elapsed();
     else
         debug << "S" << animator.duration();
-        
+
     if ( auto control = animator.control() )
         debug << ", " << control->className() << ", " << (void*) control;
 
@@ -192,28 +201,46 @@ namespace
             qDeleteAll( *this );
         }
 
-        inline const QskHintAnimator* find( const QskAspect aspect  ) const
+        inline const QskHintAnimator* find( const QskAspect aspect, int index  ) const
         {
-            auto it = std::lower_bound( cbegin(), cend(), aspect, lessThan );
-            if ( it != cend() && (*it)->aspect() == aspect )
-                return *it;
+            const Key key { aspect, index };
+
+            auto it = std::lower_bound( cbegin(), cend(), key, lessThan );
+            if ( it != cend() )
+            {
+                if ( ( ( *it )->aspect() == aspect ) && ( ( *it )->index() == index ) )
+                    return *it;
+            }
 
             return nullptr;
         }
 
-        inline QskHintAnimator* findOrInsert( const QskAspect aspect )
+        inline QskHintAnimator* findOrInsert( const QskAspect aspect, int index )
         {
-            auto it = std::lower_bound( begin(), end(), aspect, lessThan );
-            if ( it == end() || (*it)->aspect() != aspect )
-                it = insert( it, new QskHintAnimator( aspect ) );
+            const Key key { aspect, index };
+
+            auto it = std::lower_bound( begin(), end(), key, lessThan );
+            if ( it == end() || ( *it )->aspect() != aspect || ( *it )->index() != index )
+            {
+                it = insert( it, new QskHintAnimator( aspect, index ) );
+            }
 
             return *it;
         }
 
       private:
-        static inline bool lessThan( const QskHintAnimator* animator, const QskAspect& aspect )
+        struct Key
         {
-            return animator->aspect() < aspect;
+            QskAspect aspect;
+            int index;
+        };
+
+        static inline bool lessThan( const QskHintAnimator* animator, const Key& key )
+        {
+            if ( animator->aspect() == key.aspect )
+                return animator->index() < key.index;
+
+            return animator->aspect() < key.aspect;
         }
     };
 
@@ -281,7 +308,7 @@ QskHintAnimatorTable::~QskHintAnimatorTable()
 }
 
 void QskHintAnimatorTable::start( QskControl* control,
-    QskAspect aspect, QskAnimationHint animationHint,
+    const QskAspect aspect, int index, QskAnimationHint animationHint,
     const QVariant& from, const QVariant& to )
 {
     if ( m_data == nullptr )
@@ -292,7 +319,7 @@ void QskHintAnimatorTable::start( QskControl* control,
             qskAnimatorGuard->registerTable( this );
     }
 
-    auto animator = m_data->animators.findOrInsert( aspect );
+    auto animator = m_data->animators.findOrInsert( aspect, index );
 
     animator->setStartValue( from );
     animator->setEndValue( to );
@@ -308,24 +335,24 @@ void QskHintAnimatorTable::start( QskControl* control,
 
     if ( qskCheckReceiverThread( control ) )
     {
-        QskAnimatorEvent event( aspect, QskAnimatorEvent::Started );
+        QskAnimatorEvent event( aspect, index, QskAnimatorEvent::Started );
         QCoreApplication::sendEvent( control, &event );
     }
 }
 
-const QskHintAnimator* QskHintAnimatorTable::animator( QskAspect aspect ) const
+const QskHintAnimator* QskHintAnimatorTable::animator( QskAspect aspect, int index ) const
 {
     if ( m_data )
-        return m_data->animators.find( aspect );
+        return m_data->animators.find( aspect, index );
 
     return nullptr;
 }
 
-QVariant QskHintAnimatorTable::currentValue( QskAspect aspect ) const
+QVariant QskHintAnimatorTable::currentValue( QskAspect aspect, int index ) const
 {
     if ( m_data )
     {
-        if ( auto animator = m_data->animators.find( aspect ) )
+        if ( auto animator = m_data->animators.find( aspect, index ) )
         {
             if ( animator->isRunning() )
                 return animator->currentValue();
@@ -340,7 +367,7 @@ bool QskHintAnimatorTable::cleanup()
     if ( m_data == nullptr )
         return true;
 
-    auto &animators = m_data->animators;
+    auto& animators = m_data->animators;
 
     for ( auto it = animators.begin(); it != animators.end(); )
     {
@@ -351,6 +378,7 @@ bool QskHintAnimatorTable::cleanup()
         {
             const auto control = animator->control();
             const auto aspect = animator->aspect();
+            const auto index = animator->index();
 
             delete animator;
 
@@ -360,7 +388,9 @@ bool QskHintAnimatorTable::cleanup()
             {
                 if ( qskCheckReceiverThread( control ) )
                 {
-                    auto event = new QskAnimatorEvent( aspect, QskAnimatorEvent::Terminated );
+                    auto event = new QskAnimatorEvent(
+                        aspect, index, QskAnimatorEvent::Terminated );
+
                     QCoreApplication::postEvent( control, event );
                 }
             }

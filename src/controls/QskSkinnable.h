@@ -124,6 +124,9 @@ class QSK_EXPORT QskSkinnable
     void startTransition( QskAspect,
         QskAnimationHint, const QVariant& from, const QVariant& to );
 
+    void startTransition( QskAspect, int index,
+        QskAnimationHint, const QVariant& from, const QVariant& to );
+
     QskAspect::Subcontrol effectiveSubcontrol( QskAspect::Subcontrol ) const;
 
     QskControl* controlCast();
@@ -247,6 +250,8 @@ class QSK_EXPORT QskSkinnable
 
     const QskSkinHintTable& hintTable() const;
 
+    bool startHintTransitions( QskAspect::States, QskAspect::States, int index = -1 );
+
   protected:
     virtual void updateNode( QSGNode* );
     virtual bool isTransitionAccepted( QskAspect ) const;
@@ -258,8 +263,7 @@ class QSK_EXPORT QskSkinnable
   private:
     Q_DISABLE_COPY( QskSkinnable )
 
-    bool startHintTransitions( QskAspect::States, QskAspect::States );
-    void startHintTransition( QskAspect,
+    void startHintTransition( QskAspect, int index,
         QskAnimationHint, const QVariant& from, const QVariant& to );
 
     QVariant animatedHint( QskAspect, QskSkinHintStatus* ) const;

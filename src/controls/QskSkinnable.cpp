@@ -938,13 +938,11 @@ QVariant QskSkinnable::animatedHint(
 
     if ( !m_data->animators.isEmpty() )
     {
-        /*
-            The local animators were invented to be stateless
-            and we never have an aspect with a state here.
-            But that might change ...
-         */
+        const int index = effectiveSkinlet()->animatorIndex();
 
-         v = m_data->animators.currentValue( aspect );
+        v = m_data->animators.currentValue( aspect, index );
+        if ( !v.isValid() && index >= 0 )
+            v = m_data->animators.currentValue( aspect, -1 );
     }
 
     if ( status && v.isValid() )
@@ -1221,11 +1219,17 @@ bool QskSkinnable::isTransitionAccepted( QskAspect aspect ) const
 void QskSkinnable::startTransition( QskAspect aspect,
     QskAnimationHint animationHint, const QVariant& from, const QVariant& to )
 {
-    aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
-    startHintTransition( aspect, animationHint, from, to );
+    startTransition( aspect, -1, animationHint, from, to );
 }
 
-void QskSkinnable::startHintTransition( QskAspect aspect,
+void QskSkinnable::startTransition( QskAspect aspect, int index,
+    QskAnimationHint animationHint, const QVariant& from, const QVariant& to )
+{
+    aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
+    startHintTransition( aspect, index, animationHint, from, to );
+}
+
+void QskSkinnable::startHintTransition( QskAspect aspect, int index,
     QskAnimationHint animationHint, const QVariant& from, const QVariant& to )
 {
     if ( animationHint.duration <= 0 || ( from == to ) )
@@ -1263,11 +1267,11 @@ void QskSkinnable::startHintTransition( QskAspect aspect,
     qDebug() << aspect << animationHint.duration;
 #endif
 
-    auto animator = m_data->animators.animator( aspect );
+    auto animator = m_data->animators.animator( aspect, index );
     if ( animator && animator->isRunning() )
         v1 = animator->currentValue();
 
-    m_data->animators.start( control, aspect, animationHint, v1, v2 );
+    m_data->animators.start( control, aspect, index, animationHint, v1, v2 );
 }
 
 void QskSkinnable::setSkinStateFlag( QskAspect::State stateFlag, bool on )
@@ -1333,7 +1337,7 @@ void QskSkinnable::setSkinStates( QskAspect::States newStates )
 }
 
 bool QskSkinnable::startHintTransitions(
-    QskAspect::States oldStates, QskAspect::States newStates )
+    QskAspect::States oldStates, QskAspect::States newStates, int index )
 {
     if ( !isTransitionAccepted( QskAspect() ) )
     {
@@ -1390,13 +1394,13 @@ bool QskSkinnable::startHintTransitions(
                             that are finally resolved from the same hint in
                             the skin table.
                          */
-                        
+
                         doTransition = !skinTable.isResolutionMatching( a1, a2 );
                     }
 
                     if ( doTransition )
                     {
-                        startHintTransition( aspect, hint,
+                        startHintTransition( aspect, index, hint,
                             storedHint( a1 ), storedHint( a2 ) );
 
                         started = true;

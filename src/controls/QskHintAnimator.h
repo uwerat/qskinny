@@ -19,11 +19,16 @@ class QSK_EXPORT QskHintAnimator : public QskVariantAnimator
     using Inherited = QskVariantAnimator;
 
   public:
-    QskHintAnimator( QskAspect = QskAspect() ) noexcept;
+    QskHintAnimator() noexcept = default;
+    QskHintAnimator( QskAspect, int index ) noexcept;
+
     ~QskHintAnimator() override;
 
     void setAspect( QskAspect ) noexcept;
     QskAspect aspect() const noexcept;
+
+    void setIndex( int ) noexcept;
+    int index() const noexcept;
 
     void setControl( QskControl* ) noexcept;
     QskControl* control() const noexcept;
@@ -37,6 +42,7 @@ class QSK_EXPORT QskHintAnimator : public QskVariantAnimator
 
   private:
     QskAspect m_aspect;
+    int m_index = -1;
     QskAnimationHint::UpdateFlags m_updateFlags;
     QPointer< QskControl > m_control;
 };
@@ -54,11 +60,11 @@ class QSK_EXPORT QskHintAnimatorTable
     QskHintAnimatorTable();
     ~QskHintAnimatorTable();
 
-    void start( QskControl*, QskAspect,
+    void start( QskControl*, QskAspect, int index,
         QskAnimationHint, const QVariant& from, const QVariant& to );
 
-    const QskHintAnimator* animator( QskAspect ) const;
-    QVariant currentValue( QskAspect ) const;
+    const QskHintAnimator* animator( QskAspect, int index = -1 ) const;
+    QVariant currentValue( QskAspect, int index = -1 ) const;
 
     bool cleanup();
     bool isEmpty() const;
@@ -73,6 +79,11 @@ class QSK_EXPORT QskHintAnimatorTable
 inline QskAspect QskHintAnimator::aspect() const noexcept
 {
     return m_aspect;
+}
+
+inline int QskHintAnimator::index() const noexcept
+{
+    return m_index;
 }
 
 inline QskAnimationHint::UpdateFlags QskHintAnimator::updateFlags() const noexcept

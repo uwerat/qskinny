@@ -371,6 +371,7 @@ void QskSegmentedBar::setSelectedIndex( int index )
 
     if( index != m_data->selectedIndex )
     {
+        const auto oldIndex = m_data->selectedIndex;
         m_data->selectedIndex = index;
 
         movePositionHint( Cursor, index );
@@ -380,6 +381,14 @@ void QskSegmentedBar::setSelectedIndex( int index )
 
         setSkinStateFlag( Minimum, ( m_data->selectedIndex == 0 ) );
         setSkinStateFlag( Maximum, ( m_data->selectedIndex == count() - 1 ) );
+
+        const auto states = skinStates();
+
+        if ( oldIndex >= 0 )
+            startHintTransitions( states | Selected, states, oldIndex );
+
+        if ( index >= 0 )
+            startHintTransitions( states, states | Selected, index );
     }
 }
 

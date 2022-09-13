@@ -143,9 +143,10 @@ class QSK_EXPORT QskAnimatorEvent : public QskEvent
         Terminated
     };
 
-    QskAnimatorEvent( QskAspect aspect, State state );
+    QskAnimatorEvent( QskAspect aspect, int index, State state );
 
     inline QskAspect aspect() const { return m_aspect; }
+    inline int index() const { return m_index; }
     inline State state() const { return m_state; }
 
     QskAnimatorEvent* clone() const override;
@@ -155,6 +156,7 @@ class QSK_EXPORT QskAnimatorEvent : public QskEvent
 
   private:
     QskAspect m_aspect;
+    int m_index;
     State m_state;
 };
 
