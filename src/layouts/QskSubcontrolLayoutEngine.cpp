@@ -336,7 +336,7 @@ void QskSubcontrolLayoutEngine::setGraphicTextElements( const QskSkinnable* skin
     GraphicElement* graphicElement = nullptr;
     if ( !graphicSize.isEmpty() && ( graphicSubControl != QskAspect::Control ) )
     {
-        graphicElement = dynamic_cast< GraphicElement * >( element( graphicSubControl ) );
+        graphicElement = dynamic_cast< GraphicElement* >( element( graphicSubControl ) );
         if ( graphicElement == nullptr )
         {
             graphicElement = new GraphicElement( skinnable, graphicSubControl );
@@ -445,7 +445,7 @@ QskSizePolicy QskSubcontrolLayoutEngine::sizePolicyAt( int index ) const
 
 int QskSubcontrolLayoutEngine::count() const
 {
-    return m_data->elements.count(); 
+    return m_data->elements.count();
 }
 
 void QskSubcontrolLayoutEngine::layoutItems()

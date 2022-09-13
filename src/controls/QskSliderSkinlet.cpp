@@ -236,12 +236,15 @@ QRectF QskSliderSkinlet::handleRect(
 QRectF QskSliderSkinlet::rippleRect(
     const QskSlider* slider, const QRectF& rect ) const
 {
+    const auto rippleSize = slider->strutSizeHint( QskSlider::Ripple );
+    const auto handleSize = slider->strutSizeHint( QskSlider::Handle );
+
+    const auto w = ( rippleSize.width() - handleSize.width() ) / 2;
+    const auto h = ( rippleSize.height() - handleSize.height() ) / 2;
+
     auto r = handleRect( slider, rect );
-    auto rippleSize = slider->strutSizeHint( QskSlider::Ripple );
-    auto handleSize = slider->strutSizeHint( QskSlider::Handle );
-    auto w = ( rippleSize.width() - handleSize.width() ) / 2,
-            h = ( rippleSize.height() - handleSize.height() ) / 2;
     r = r.marginsAdded( { w, h, w, h } );
+
     return r;
 }
 

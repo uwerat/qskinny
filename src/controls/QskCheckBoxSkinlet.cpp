@@ -125,7 +125,7 @@ QSGNode* QskCheckBoxSkinlet::updateIndicatorNode(
 
 #if 1
     /*
-        Our default skins do not have the concept of colorRoles 
+        Our default skins do not have the concept of colorRoles
         implemented. Until then we do the recoloring manually here
      */
     QskColorFilter filter;

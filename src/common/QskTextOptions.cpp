@@ -7,10 +7,10 @@
 #include <qtextdocument.h>
 
 static void qskRegisterTextOptions()
-{   
+{
     qRegisterMetaType< QskTextOptions >();
-}       
-    
+}
+
 Q_CONSTRUCTOR_FUNCTION( qskRegisterTextOptions )
 
 int QskTextOptions::textFlags() const noexcept

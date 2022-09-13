@@ -12,7 +12,7 @@
 /*
     For M(aterial)3 the new HTC color system has been created, that
     is based on H(ue), (C)hroma, (T)one:
- 
+
         https://material.io/blog/science-of-color-design
 
     This system allows to create color palettes by varying the tone
@@ -80,8 +80,10 @@ inline constexpr QskHctColor QskHctColor::toned( qreal tone ) const noexcept
 }
 
 #ifndef QT_NO_DEBUG_STREAM
+
     class QDebug;
     QSK_EXPORT QDebug operator<<( QDebug, const QskHctColor& );
+
 #endif
 
 #endif

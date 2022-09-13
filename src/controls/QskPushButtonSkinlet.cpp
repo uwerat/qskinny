@@ -59,7 +59,7 @@ QRectF QskPushButtonSkinlet::subControlRect( const QskSkinnable* skinnable,
     if ( ( subControl == Q::Text ) || ( subControl == Q::Graphic ) )
     {
         const auto r = button->subControlContentsRect( contentsRect, Q::Panel );
-            
+
         LayoutEngine layoutEngine( button );
         layoutEngine.setGeometries( r );
 

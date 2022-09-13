@@ -68,7 +68,7 @@ namespace
 
       public:
         RotationTransform( Qt::Axis axis, qreal dx1, qreal dy1, qreal dx2,
-                           qreal dy2, qreal radians, QQuickItem* item )
+                qreal dy2, qreal radians, QQuickItem* item )
             : QQuickTransform( item )
             , m_axis( axis )
             , m_dx1( dx1 )

@@ -88,7 +88,7 @@ QskTextOptions QskTabButton::textOptions() const
 }
 
 void QskTabButton::resetTextOptions()
-{   
+{
     if ( resetTextOptionsHint( Text ) )
         Q_EMIT textOptionsChanged();
 }

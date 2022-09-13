@@ -422,7 +422,7 @@ void QskControlPrivate::setPlacementPolicy(
         else
         {
             this->visiblePlacementPolicy =
-                 ( policy == QskPlacementPolicy::Reserve ) ? 1 : 0;
+                ( policy == QskPlacementPolicy::Reserve ) ? 1 : 0;
 
             if ( isTransparentForPositioner() )
             {
