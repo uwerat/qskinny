@@ -1,5 +1,7 @@
 #include "MainWindow.h"
 #include "BlurredBox.h"
+#include "BlurredBoxTextureProvider.h"
+#include "BlurredBoxSkinlet.h"
 
 #include <QColor>
 #include <QskLinearBox.h>
@@ -7,64 +9,70 @@
 
 #include <QskGraphic.h>
 #include <QskGraphicLabel.h>
+#include <QskGridBox.h>
 #include <QskSegmentedBar.h>
 #include <QskShortcutMap.h>
 #include <QskSkin.h>
 #include <QskSlider.h>
 #include <QskTextInput.h>
 #include <QskTextLabel.h>
+#include <QQuickItemGrabResult>
+#include <QSGTextureProvider>
+#include <QskAnimator.h>
+#include <QskBoxShapeMetrics.h>
+#include <QskPushButton.h>
 
-MainWindow::MainWindow()
+#include <memory>
+
+class BlurredBoxAnimator : public QskAnimator{
+public:
+    BlurredBoxAnimator(BlurredBox& blurred): m_blurred(blurred) {
+
+    }
+    void advance(qreal value) override
+    {        
+        m_blurred.setOpacity(value);
+    }
+
+    void done() override {
+        delete this;
+    }
+private:
+    BlurredBox& m_blurred;
+};
+
+enum Layers : int { BACKGROUND = 1, BLURRED = 2, CONTROLS = 3 };
+
+MainWindow::MainWindow() : m_stack(new QskStackBox(contentItem()))
 {
-    constexpr QSize size = { 1280, 720 };
+    constexpr auto width = 1280;
+    constexpr auto height = 720;
+    constexpr QSize size = { width, height };
     setMinimumSize( size );
     setMaximumSize( size );
     setTitle( tr( "Blurring" ) );
+
+    m_stack->setAutoLayoutChildren(true);
     createBackground();
 
-    // create a centered, blurred and rounded rectangle
-    auto* const layout = new QskLinearBox( Qt::Vertical, contentItem() );
-    layout->setMargins( 40 );
-    auto* const stack = new QskStackBox( layout );
-    stack->setAutoLayoutChildren( true );
-    auto* const blurred = new BlurredBox( stack );
-    blurred->setBlurSize( 20.0 );
-    blurred->setBoxShapeHint(BlurredBox::Panel, { 40, 40, 40, 40 });
-    auto* const l = new QskLinearBox( Qt::Vertical, layout );
-    stack->addItem( l );
-
-    // create controls to change the rectangle
-    l->addSpacer( 10, 1 );
-    createBlurDirectionsControls( blurred, l );
-    createBlurQualityControls( blurred, l );
-    createBlurSizeControls( blurred, l );
-    createBlurOpacityControls( blurred, l );
-    createBlurCornerRadiiControls( blurred, l );
-    l->addSpacer( 10, 1 );
-    createShortcutNote( l );
-    l->addSpacer( 10, 1 );
-    return;
+    QskShortcutMap::addShortcut( Qt::CTRL | Qt::Key_O, false, contentItem(), [this](){
+        createOverlay();
+    });
 }
 
 void MainWindow::createBackground()
 {
     // create a brackground image
-    auto* const graphic = new QskGraphicLabel( contentItem() );
+    auto* const graphic = new QskGraphicLabel( m_stack );
+    graphic->setZ(BACKGROUND);
     graphic->setFillMode( QskGraphicLabel::FillMode::Stretch );
     graphic->setAlignment( Qt::AlignCenter );
 
-    // callback for rotating through the background images
-    auto updateBackground = [ this, graphic ]() {
-        static unsigned int index = 2;
-        index = 1 + ( index + 1 ) % 3;
-        const QImage image( QString( ":/backgrounds/background%1.jpg" ).arg( index ) );
-        graphic->setGraphic( QskGraphic::fromImage( image ) );
-        update();
-    };
-    updateBackground();
-
-    QKeySequence keys( Qt::CTRL | Qt::Key_Space );
-    QskShortcutMap::addShortcut( keys, false, contentItem(), updateBackground );
+    static int index = 0;
+    const QImage image( QString( ":/backgrounds/background%1.jpg" ).arg( 1 + index++  ) );
+    graphic->setGraphic( QskGraphic::fromImage( image ) );
+    m_stack->addItem(graphic);
+    update();
 }
 
 void MainWindow::createBlurDirectionsControls( BlurredBox* blurred, QskLinearBox* layout )
@@ -103,7 +111,7 @@ void MainWindow::createBlurSizeControls( BlurredBox* blurred, QskLinearBox* layo
     label->setTextColor( Qt::white );
     label->setFontRole( QskSkin::MediumFont );
     auto* const slider = new QskSlider( Qt::Horizontal, layout );
-    slider->setMinimum( 4.0 );
+    slider->setMinimum( 0.0 );
     slider->setMaximum( 32.0 );
     connect( slider, &QskSlider::valueChanged, slider, [ blurred, label ]( qreal value ) {
         blurred->setBlurSize( static_cast< float >( value ) );
@@ -201,6 +209,45 @@ void MainWindow::createShortcutNote( QskLinearBox* layout )
     auto* const label = new QskTextLabel( text, layout );
     label->setTextColor( Qt::white );
     label->setFontRole( QskSkin::LargeFont );
+}
+
+void MainWindow::createOverlay()
+{
+    auto* const skinlet = new BlurredBoxSkinlet(std::make_shared<BlurredBoxTextureProvider>(this));
+    skinlet->setOwnedBySkinnable(true);
+
+    auto* blurredLayout = new QskLinearBox(m_stack);
+    blurredLayout->setZ(BLURRED);
+
+    auto* const blurred = new BlurredBox(blurredLayout);
+    blurred->setBoxShapeHint(BlurredBox::Panel, { 40, 40, 40, 40 });
+    blurred->setBlurQuality(20);
+    blurred->setBlurDirections(32);
+    blurred->setBlurSize(16);
+    blurred->setSkinlet(skinlet);
+    blurred->setMargins(80);
+
+    auto* const animator = new BlurredBoxAnimator(*blurred);
+    animator->setDuration(200);
+    animator->setWindow(this);
+    animator->start();
+
+    auto* const controlsLayout = new QskLinearBox( Qt::Vertical, m_stack );
+    controlsLayout->setZ(CONTROLS);
+    controlsLayout->setMargins(80);
+
+    // create controls to change the rectangle
+    controlsLayout->addSpacer( 10, 1 );
+    createBlurDirectionsControls( blurred, controlsLayout );
+    createBlurQualityControls( blurred, controlsLayout );
+    createBlurSizeControls( blurred, controlsLayout );
+    createBlurOpacityControls( blurred, controlsLayout );
+    createBlurCornerRadiiControls( blurred, controlsLayout );
+    controlsLayout->addSpacer( 10, 1 );
+    createShortcutNote( controlsLayout );
+    controlsLayout->addSpacer( 10, 1 );
+
+    update();
 }
 
 #include "moc_MainWindow.cpp"

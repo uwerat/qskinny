@@ -1,7 +1,9 @@
 #include "BlurredBox.h"
 #include "BlurredBoxSkinlet.h"
+#include "BlurredBoxTextureProvider.h"
 
 #include <QQuickWindow>
+#include <limits>
 
 QSK_SUBCONTROL( BlurredBox, Panel )
 
@@ -10,32 +12,10 @@ class BlurredBoxSkinlet;
 BlurredBox::BlurredBox( QQuickItem* parentItem )
     : QskBox( parentItem )
 {
-    auto* const skinlet = new BlurredBoxSkinlet();
-    skinlet->setOwnedBySkinnable( true );
-    setSkinlet( skinlet );
     setPolishOnResize( true );
 }
 
 BlurredBox::~BlurredBox() = default;
-
-QRectF BlurredBox::rectOnScreen() const
-{
-    return mapRectToScene( contentsRect() );
-}
-
-QRectF BlurredBox::rectOfScreen() const
-{
-    // find root node and get its rectangle
-    auto* root = parentItem();
-
-    while ( root && root->parentItem() )
-    {
-        root = root->parentItem();
-    }
-
-    const auto rootRect = this->window()->contentItem()->boundingRect();
-    return rootRect;
-}
 
 void BlurredBox::geometryChangeEvent( QskGeometryChangeEvent* e )
 {
@@ -55,7 +35,7 @@ void BlurredBox::setBlurDirections( float newBlurDirections )
         return;
     }
 
-    m_blurDirections = newBlurDirections;
+    m_blurDirections = std::max(newBlurDirections, std::numeric_limits<float>::min());
     update();
     Q_EMIT blurDirectionsChanged( m_blurDirections );
 }
@@ -72,7 +52,7 @@ void BlurredBox::setBlurQuality( float newBlurQuality )
         return;
     }
 
-    m_blurQuality = newBlurQuality;
+    m_blurQuality = std::max(newBlurQuality, std::numeric_limits<float>::min());
     update();
     Q_EMIT blurQualityChanged( m_blurQuality );
 }

@@ -4,7 +4,6 @@
 BlurredBoxMaterial::BlurredBoxMaterial()
 {
     setFlag( QSGMaterial::Blending, true );
-    setFlag( QSGMaterial::SupportsRhiShader, true );
 }
 
 QSGMaterialShader* BlurredBoxMaterial::createShader() const
@@ -20,12 +19,16 @@ QSGMaterialType* BlurredBoxMaterial::type() const
 
 int BlurredBoxMaterial::compare( const QSGMaterial* other ) const
 {
-    auto material = dynamic_cast< const BlurredBoxMaterial* >( other );
+    const auto* const material = dynamic_cast< const BlurredBoxMaterial* >( other );
 
-    if ( material->m_rectOfScreen != m_rectOfScreen || material->m_rectOnScreen != m_rectOnScreen ||
-         !qFuzzyCompare( material->m_rectCornerRadii, m_rectCornerRadii ) ||
-         material->m_opacity != m_opacity || material->m_blurDirections != m_blurDirections ||
-         material->m_blurQuality != m_blurQuality || material->m_blurSize != m_blurSize )
+    if ( material->m_rectCornerRadii != m_rectCornerRadii ||
+         material->m_rectAspect != m_rectAspect ||
+         material->m_opacity != m_opacity ||
+         material->m_blurDirections != m_blurDirections ||
+         material->m_blurQuality != m_blurQuality ||
+         material->m_blurRadius != m_blurRadius  ||
+         material->m_edgeSoftness != m_edgeSoftness ||
+         material->m_texture.get() != m_texture.get())
     {
         return 1;
     }

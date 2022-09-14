@@ -15,9 +15,10 @@ class BlurredBoxMaterialShader final : public QSGMaterialShader
     int m_matrixId = -1;
     int m_rectOpacityId = -1;
     int m_rectCornerRadiiId = -1;
-    int m_rectOfScreen = -1;
-    int m_rectOnScreen = -1;
+    int m_rectAspect = -1;
     int m_blurDirectionsId = -1;
     int m_blurQualityId = -1;
-    int m_blurSizeId = -1;
+    int m_blurRadiusId = -1;
+    int m_textureId = -1;
+    int m_edgeSoftnessId = -1;
 };

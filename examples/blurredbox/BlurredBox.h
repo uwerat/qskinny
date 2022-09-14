@@ -1,12 +1,11 @@
 #pragma once
 
 #include <QskBox.h>
-#include <QskBoxShapeMetrics.h>
-#include <QskShadowMetrics.h>
 
 class QskGradient;
+class QSGTexture;
 
-class BlurredBox : public QskBox
+class BlurredBox final : public QskBox
 {
     Q_OBJECT
     Q_PROPERTY( float blurDirections READ blurDirections WRITE setBlurDirections NOTIFY
@@ -20,9 +19,6 @@ class BlurredBox : public QskBox
 
     BlurredBox( QQuickItem* parent = nullptr );
     ~BlurredBox() override;
-
-    QRectF rectOnScreen() const;
-    QRectF rectOfScreen() const;
 
     void geometryChangeEvent( QskGeometryChangeEvent* ) override;
 

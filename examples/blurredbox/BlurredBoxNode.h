@@ -1,20 +1,20 @@
 #pragma once
 
 #include <QSGGeometryNode>
+#include "BlurredBoxTextureProvider.h"
 
-class QColor;
 class QskBoxShapeMetrics;
-
 class BlurredBoxNodePrivate;
 
-class BlurredBoxNode : public QSGGeometryNode
+class BlurredBoxNode final : public QSGGeometryNode
 {
   public:
     BlurredBoxNode();
 
-    void setBlurData( const QRectF&, const QskBoxShapeMetrics&, const QRectF& rectOfScreen,
-        const QRectF& rectOnScreen, float opacity, float blurDirections, float blurQuality,
-        float blurSize );
+    void preprocess() override;
+
+    void setBlurData( const QRectF&, const QskBoxShapeMetrics&, const QRectF& rectOnScreen, float opacity, float blurDirections, float blurQuality,
+        float blurSize , BlurredBoxTextureProvider* textureProvider);
 
   private:
     Q_DECLARE_PRIVATE( BlurredBoxNode )

@@ -1,3 +1,9 @@
+#include <QOpenGLContext>
+#include <QOpenGLFunctions>
+#include <QOpenGLTexture>
+#include <QImage>
+#include <QSGTexture>
+
 #include "BlurredBoxMaterialShader.h"
 #include "BlurredBoxMaterial.h"
 
@@ -22,11 +28,12 @@ void BlurredBoxMaterialShader::initialize()
     m_matrixId = p->uniformLocation( "matrix" );
     m_rectOpacityId = p->uniformLocation( "rectOpacity" );
     m_rectCornerRadiiId = p->uniformLocation( "rectCornerRadii" );
+    m_rectAspect = p->uniformLocation( "rectAspect" );
     m_blurDirectionsId = p->uniformLocation( "blurDirections" );
-    m_blurQualityId = p->uniformLocation( "blurQuality" );
-    m_rectOnScreen = p->uniformLocation( "rectOnScreen" );
-    m_rectOfScreen = p->uniformLocation( "rectOfScreen" );
-    m_blurSizeId = p->uniformLocation( "blurSize" );
+    m_blurQualityId = p->uniformLocation( "blurQuality" );    
+    m_blurRadiusId = p->uniformLocation( "blurRadius" );
+    m_textureId = p->uniformLocation( "txr" );
+    m_edgeSoftnessId = p->uniformLocation( "edgeSoftness" );
 }
 
 void BlurredBoxMaterialShader::updateState(
@@ -45,18 +52,25 @@ void BlurredBoxMaterialShader::updateState(
     }
 
     bool updateMaterial = ( oldMaterial == nullptr ) || newMaterial->compare( oldMaterial ) != 0;
-
     updateMaterial |= state.isCachedMaterialDataDirty();
 
-    if ( updateMaterial )
+    if ( !updateMaterial )
     {
-        auto material = dynamic_cast< const BlurredBoxMaterial* >( newMaterial );
+        return;
+    }
 
+    if(const auto* const material = dynamic_cast< const BlurredBoxMaterial* >( newMaterial ))
+    {
         p->setUniformValue( m_rectCornerRadiiId, material->m_rectCornerRadii );
-        p->setUniformValue( m_rectOfScreen, material->m_rectOfScreen );
-        p->setUniformValue( m_rectOnScreen, material->m_rectOnScreen );
+        p->setUniformValue( m_rectAspect, material->m_rectAspect );
         p->setUniformValue( m_blurDirectionsId, material->m_blurDirections );
         p->setUniformValue( m_blurQualityId, material->m_blurQuality );
-        p->setUniformValue( m_blurSizeId, material->m_blurSize );
+        p->setUniformValue( m_blurRadiusId, material->m_blurRadius );
+        p->setUniformValue( m_edgeSoftnessId, material->m_edgeSoftness );
+        p->setUniformValue( m_textureId, 0 /* GL_TEXTURE0 */);
+
+        auto* const f = QOpenGLContext::currentContext()->functions();
+        f->glActiveTexture(GL_TEXTURE0);
+        material->m_texture->bind();
     }
 }

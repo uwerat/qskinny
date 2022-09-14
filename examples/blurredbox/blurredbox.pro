@@ -1,6 +1,7 @@
 CONFIG += qskexample
+CONFIG += opengl
 
-QT += quick_private # TODO: examples should not use private headers
+QT += quick_private opengl-private # TODO: examples should not use private headers
 
 SOURCES += \
     main.cpp \
@@ -10,6 +11,7 @@ SOURCES += \
     BlurredBoxMaterialShader.cpp \
     BlurredBoxNode.cpp \
     BlurredBoxSkinlet.cpp \
+    BlurredBoxTextureProvider.cpp
 
 HEADERS += \
     MainWindow.h \
@@ -18,6 +20,7 @@ HEADERS += \
     BlurredBoxMaterialShader.h \
     BlurredBoxNode.h \
     BlurredBoxSkinlet.h \
+    BlurredBoxTextureProvider.h
 
 RESOURCES += \
     blurringshaders.qrc

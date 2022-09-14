@@ -1,10 +1,21 @@
 #include "BlurredBoxSkinlet.h"
 #include "BlurredBox.h"
 #include "BlurredBoxNode.h"
+#include "BlurredBoxTextureProvider.h"
 
-BlurredBoxSkinlet::BlurredBoxSkinlet()
+#include <QskSGNode.h>
+#include <QskBoxShapeMetrics.h>
+
+#include <utility>
+
+BlurredBoxSkinlet::BlurredBoxSkinlet(std::shared_ptr<BlurredBoxTextureProvider> textureProvider) : m_textureProvider(std::move(textureProvider))
 {
     setNodeRoles( { PanelRole } );
+}
+
+BlurredBoxSkinlet::~BlurredBoxSkinlet()
+{
+    m_textureProvider = nullptr;
 }
 
 QRectF BlurredBoxSkinlet::subControlRect(
@@ -30,12 +41,11 @@ QSGNode* BlurredBoxSkinlet::updateSubNode(
     {
         case PanelRole:
             auto* const blurred = QskSGNode::ensureNode< BlurredBoxNode >( node );
-            const auto rectOfScreen = box->rectOfScreen();
-            const auto rectOnScreen = box->rectOnScreen();
             const auto boxShapeHint = box->boxShapeHint(BlurredBox::Panel);
-            blurred->setBlurData( r, boxShapeHint, rectOfScreen, rectOnScreen,
+            const auto rectOnScreen = box->mapRectToScene( box->contentsRect() );
+            blurred->setBlurData( r, boxShapeHint, rectOnScreen,
                 static_cast< float >( box->opacity() ), box->blurDirections(), box->blurQuality(),
-                box->blurSize() );
+                box->blurSize(), m_textureProvider.get());
             return blurred;
     }
 
