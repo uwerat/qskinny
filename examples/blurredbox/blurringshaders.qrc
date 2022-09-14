@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>shaders/blurredbox.vert</file>
+        <file>shaders/blurredbox.frag</file>
+        <file>backgrounds/background1.jpg</file>
+        <file>backgrounds/background2.jpg</file>
+        <file>backgrounds/background3.jpg</file>        
+    </qresource>
+</RCC>

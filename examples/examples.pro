@@ -2,6 +2,7 @@ TEMPLATE = subdirs
 
 # c++
 SUBDIRS += \
+    blurredbox \
     desktop \
     gallery \
     layouts \
