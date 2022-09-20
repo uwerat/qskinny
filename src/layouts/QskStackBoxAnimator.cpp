@@ -565,75 +565,79 @@ void QskStackBoxAnimator4::setup()
 
 void QskStackBoxAnimator4::advanceIndex( qreal value )
 {
-    if ( auto item = itemAt( 0 ) )
-    {
-        const auto transform = transformation( item, false, value );
+    auto item1 = itemAt( 1 );
+    auto item2 = itemAt( 0 );
 
-        auto rotation = qskFindTransform< QuickTransform >( item );
+    if ( isInverted() )
+        std::swap( item1, item2 );
+
+    const qreal posEdge = isInverted() ? value : 1.0 - value;
+
+    if ( item1 )
+    {
+        const auto transform = transformation( item1, false, posEdge );
+
+        auto rotation = qskFindTransform< QuickTransform >( item1 );
         rotation->setTransform( transform );
     }
 
-    if ( auto item = itemAt( 1 ) )
+    if ( item2 )
     {
-        const auto transform = transformation( item, true, value );
+        const auto transform = transformation( item2, true, posEdge );
 
-        auto rotation = qskFindTransform< QuickTransform >( item );
+        auto rotation = qskFindTransform< QuickTransform >( item2 );
         rotation->setTransform( transform );
     }
 }
 
 QTransform QskStackBoxAnimator4::transformation(
-    const QQuickItem* item, bool increasing, qreal value ) const
+    const QQuickItem* item, bool first, qreal posEdge ) const
 {
-    const qreal v = increasing ? value : 1.0 - value;
+    /*
+        first: left or top item
+        posEdge: position of the edge in the range of [0-1]
+             ( left->right, top->bottom ).
+     */
 
-    qreal radians = M_PI_2 * ( 1.0 - v );
-    if ( increasing != isInverted() )
-        radians = -radians;
+    const qreal radians = M_PI_2 * ( 1.0 - posEdge );
 
     QTransform transform;
 
     if( orientation() == Qt::Horizontal )
     {
-        qreal dx1, dx2;
+        const qreal dx = posEdge * ( item->x() + item->width() );
+        const qreal dy = 0.5 * item->height();
 
-        if ( increasing == isInverted() )
+        if ( first )
         {
-            dx1 = item->width() * v - item->x() * ( 1.0 - v );
-            dx2 = -item->width();
+            transform.translate( -item->x() + dx, dy );
+            transform.rotateRadians( radians, Qt::YAxis );
+            transform.translate( -item->width(), -dy );
         }
         else
         {
-            dx1 = ( item->x() + item->width() ) * ( 1.0 - v );
-            dx2 = 0.0;
-        }
-
-        const qreal h2 = 0.5 * item->height();
-
-        transform.translate( dx1, h2 );
-        transform.rotateRadians( radians, Qt::YAxis );
-        transform.translate( dx2, -h2 );
+            transform.translate( dx, dy );
+            transform.rotateRadians( radians - M_PI_2, Qt::YAxis );
+            transform.translate( 0.0, -dy );
+        } 
     }
     else
     {
-        qreal dy1, dy2;
+        const qreal dx = 0.5 * item->width();
+        const qreal dy = posEdge * ( item->y() + item->height() );
 
-        if ( increasing == isInverted() )
+        if ( first )
         {
-            dy1 = item->height() * v - item->y() * ( 1.0 - v );
-            dy2 = -item->height();
+            transform.translate( dx, -item->y() + dy );
+            transform.rotateRadians( radians, Qt::XAxis );
+            transform.translate( -dx, -item->height() );
         }
         else
         {
-            dy1 = ( item->y() + item->height() ) * ( 1.0 - v );
-            dy2 = 0.0;
+            transform.translate( dx, dy );
+            transform.rotateRadians( radians - M_PI_2, Qt::XAxis );
+            transform.translate( -dx, 0.0 );
         }
-
-        const qreal w2 = 0.5 * item->width();
-
-        transform.translate( w2, dy1 );
-        transform.rotateRadians( radians, Qt::XAxis );
-        transform.translate( -w2, dy2 );
     }
 
     return transform;
