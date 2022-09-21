@@ -687,6 +687,9 @@ int QskPopup::execPopup()
             qskUngrabMouse( mouseGrabber );
     }
 
+     auto dw = QQuickWindowPrivate::get( window() );
+     dw->touchMouseId = -1;
+
     return EventLoop( this ).exec( QEventLoop::DialogExec );
 }
 
