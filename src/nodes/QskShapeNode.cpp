@@ -27,7 +27,7 @@ static void qskUpdateGeometry( const QPainterPath& path, QSGGeometry& geometry )
 
     geometry.allocate( ts.vertices.size(), ts.indices.size() );
 
-    auto vertexData = geometry.vertexDataAsPoint2D();
+    auto vertexData = reinterpret_cast< float* >( geometry.vertexData() );
     const auto points = ts.vertices.constData();
 
     /*
@@ -37,7 +37,7 @@ static void qskUpdateGeometry( const QPainterPath& path, QSGGeometry& geometry )
      */
 
     for ( int i = 0; i < ts.vertices.count(); ++i )
-        vertexData[i].set( points[i * 2], points[i * 2 + 1] );
+        vertexData[i] = points[i];
 
     memcpy( geometry.indexData(), ts.indices.data(),
         ts.indices.size() * sizeof( quint16 ) );
