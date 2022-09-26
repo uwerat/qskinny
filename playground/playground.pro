@@ -6,9 +6,9 @@ SUBDIRS += \
     dialogbuttons \
     invoker \
     inputpanel \
-    images
-
-SUBDIRS += shadows
+    images \
+    shadows \
+    shapes
 
 qtHaveModule(webengine) {
 
