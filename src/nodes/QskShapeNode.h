@@ -14,7 +14,7 @@ class QPainterPath;
 
 class QskShapeNodePrivate;
 
-class QskShapeNode : public QSGGeometryNode
+class QSK_EXPORT QskShapeNode : public QSGGeometryNode
 {
   public:
     QskShapeNode();
