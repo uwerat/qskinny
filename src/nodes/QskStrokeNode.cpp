@@ -50,19 +50,18 @@ void QskStrokeNode::updateNode( const QPainterPath& path, const QPen& pen )
 
     if ( true ) // For the moment we always update the geometry. TODO ...
     {
-        const QVectorPath& vectorPath = qtVectorPathForPath(path);
-
         QTriangulatingStroker stroker;
 
         if ( pen.style() == Qt::SolidLine )
         {
             // clipRect, renderHint are ignored in QTriangulatingStroker::process
-            stroker.process( vectorPath, pen, {}, {} );
+            stroker.process( qtVectorPathForPath( path ), pen, {}, {} );
         }
         else
         {
             QDashedStrokeProcessor dashStroker;
-            dashStroker.process( vectorPath, pen, QRectF(), {} ); // empty rect: no clipping
+            dashStroker.process( qtVectorPathForPath( path ),
+                pen, QRectF(), {} ); // empty rect: no clipping
 
             const QVectorPath dashedVectorPath( dashStroker.points(),
                 dashStroker.elementCount(), dashStroker.elementTypes(), 0 );
