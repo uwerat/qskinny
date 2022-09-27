@@ -30,6 +30,8 @@ class ShapeItem : public QskControl
     void updateNode( QSGNode* ) override;
 
   private:
+    QPainterPath scaledPath( const QRectF& ) const;
+
     QPen m_pen;
     QColor m_fillColor;
     QPainterPath m_path;

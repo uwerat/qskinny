@@ -31,6 +31,7 @@ int main( int argc, char* argv[] )
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
     QskWindow window;
+    window.setColor( Qt::gray );
 
     auto shapeItem = new ShapeItem();
 

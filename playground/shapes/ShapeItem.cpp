@@ -65,68 +65,73 @@ void ShapeItem::updateNode( QSGNode* parentNode )
 {
     enum NodeRole
     {
-        ShapeRole,
-        StrokeRole
+        FillRole,
+        BorderRole
     };
 
-    const auto pathRect = m_path.controlPointRect();
     const auto rect = contentsRect();
-
-#if 1
-    QTransform transform;
-    transform.translate( rect.left(), rect.top() );
-
-    transform.scale( rect.width() / pathRect.width(),
-        rect.height() / pathRect.height() );
 
     /*
         The triangulators in the nodes are able to do transformations
         on the fly. TODO ...
      */
-    const auto effectivePath = transform.map( m_path );
-#endif
+    const auto path = scaledPath( rect );
 
-    auto shapeNode = static_cast< QskShapeNode* >(
-        QskSGNode::findChildNode( parentNode, ShapeRole ) );
+    auto fillNode = static_cast< QskShapeNode* >(
+        QskSGNode::findChildNode( parentNode, FillRole ) );
 
-    if ( pathRect.isEmpty() || rect.isEmpty() )
+    if ( path.isEmpty() || rect.isEmpty() )
     {
-        delete shapeNode;
+        delete fillNode;
     }
     else
     {
-        if ( shapeNode == nullptr )
+        if ( fillNode == nullptr )
         {
-            shapeNode = new QskShapeNode;
-            QskSGNode::setNodeRole( shapeNode, ShapeRole );
+            fillNode = new QskShapeNode;
+            QskSGNode::setNodeRole( fillNode, FillRole );
         }
 
-        shapeNode->updateNode( effectivePath, m_fillColor );
+        fillNode->updateNode( path, m_fillColor );
 
-        if ( shapeNode->parent() != parentNode )
-            parentNode->prependChildNode( shapeNode );
+        if ( fillNode->parent() != parentNode )
+            parentNode->prependChildNode( fillNode );
     }
 
-    auto strokeNode = static_cast< QskStrokeNode* >(
-        QskSGNode::findChildNode( parentNode, StrokeRole ) );
+    auto borderNode = static_cast< QskStrokeNode* >(
+        QskSGNode::findChildNode( parentNode, BorderRole ) );
 
-    if ( pathRect.isEmpty() || rect.isEmpty() )
+    if ( path.isEmpty() || rect.isEmpty() )
     {
-        delete strokeNode;
+        delete borderNode;
     }
     else
     {
-        if ( strokeNode == nullptr )
+        if ( borderNode == nullptr )
         {
-            strokeNode = new QskStrokeNode;
-            QskSGNode::setNodeRole( strokeNode, StrokeRole );
+            borderNode = new QskStrokeNode;
+            QskSGNode::setNodeRole( borderNode, BorderRole );
         }
 
-        strokeNode->updateNode( effectivePath, m_pen );
+        borderNode->updateNode( path, m_pen );
 
-        if ( strokeNode->parent() != parentNode )
-            parentNode->appendChildNode( strokeNode );
+        if ( borderNode->parent() != parentNode )
+            parentNode->appendChildNode( borderNode );
     }
+}
+
+QPainterPath ShapeItem::scaledPath( const QRectF& rect ) const
+{
+    // does not center properly. TODO
+    const auto pw = 2 * m_pen.width();
+
+    const auto pathRect = m_path.controlPointRect();
+    const auto r = rect.adjusted( pw, pw, -pw, -pw );
+
+    auto transform = QTransform::fromTranslate( r.left(), r.top() );
+    transform.scale( r.width() / pathRect.width(), r.height() / pathRect.height() );
+
+    return transform.map( m_path );
 }
 
 #include "moc_ShapeItem.cpp"
