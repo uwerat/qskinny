@@ -33,18 +33,15 @@ QPen ShapeItem::pen() const
     return m_pen;
 }
 
-void ShapeItem::setFillColor( const QColor& color )
+void ShapeItem::setGradient( const QColor& c1, const QColor& c2 )
 {
-    if ( color != m_fillColor )
+    if ( c1 != m_fillColor[0] || c2 != m_fillColor[1] )
     {
-        m_fillColor = color;
+        m_fillColor[0] = c1;
+        m_fillColor[1] = c2;
+
         update();
     }
-}
-
-QColor ShapeItem::fillColor() const
-{
-    return m_fillColor;
 }
 
 void ShapeItem::setPath( const QPainterPath& path )
@@ -92,7 +89,20 @@ void ShapeItem::updateNode( QSGNode* parentNode )
             QskSGNode::setNodeRole( fillNode, FillRole );
         }
 
-        fillNode->updateNode( path, m_fillColor );
+        if ( m_fillColor[0] != m_fillColor[1] )
+        {
+            QLinearGradient gradient;
+            gradient.setStart( rect.topLeft() );
+            gradient.setFinalStop( rect.bottomRight() );
+            gradient.setColorAt( 0.0, m_fillColor[0] );
+            gradient.setColorAt( 1.0, m_fillColor[1] );
+
+            fillNode->updateNode( path, &gradient );
+        }
+        else
+        {
+            fillNode->updateNode( path, m_fillColor[0] );
+        }
 
         if ( fillNode->parent() != parentNode )
             parentNode->prependChildNode( fillNode );

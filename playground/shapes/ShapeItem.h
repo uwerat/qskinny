@@ -20,8 +20,7 @@ class ShapeItem : public QskControl
     void setPen( const QPen& );
     QPen pen() const;
 
-    void setFillColor( const QColor& );
-    QColor fillColor() const;
+    void setGradient( const QColor&, const QColor& );
 
     void setPath( const QPainterPath& );
     QPainterPath path() const;
@@ -33,6 +32,6 @@ class ShapeItem : public QskControl
     QPainterPath scaledPath( const QRectF& ) const;
 
     QPen m_pen;
-    QColor m_fillColor;
+    QColor m_fillColor[2];
     QPainterPath m_path;
 };

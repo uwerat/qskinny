@@ -3,6 +3,12 @@ TARGET   = $$qskLibraryTarget(qskinny)
 
 QT += quick quick-private
 
+# We need quickshapes for the shaders for the gradients only,
+# As those shaders are more or less trivial # it might be better
+# to implement our own shaders to get rid of this extra module dependency
+
+QT += quickshapes-private
+
 greaterThan( QT_MAJOR_VERSION, 5 ) {
     QT += opengl-private
 }
@@ -111,8 +117,9 @@ HEADERS += \
     nodes/QskScaleRenderer.h \
     nodes/QskSGNode.h \
     nodes/QskShadedBoxNode.h \
-    nodes/QskShapeNode.h \
     nodes/QskStrokeNode.h \
+    nodes/QskShapeNode.h \
+    nodes/QskGradientMaterial.h \
     nodes/QskTextNode.h \
     nodes/QskTextRenderer.h \
     nodes/QskTextureRenderer.h \
@@ -135,8 +142,9 @@ SOURCES += \
     nodes/QskScaleRenderer.cpp \
     nodes/QskSGNode.cpp \
     nodes/QskShadedBoxNode.cpp \
-    nodes/QskShapeNode.cpp \
     nodes/QskStrokeNode.cpp \
+    nodes/QskShapeNode.cpp \
+    nodes/QskGradientMaterial.cpp \
     nodes/QskTextNode.cpp \
     nodes/QskTextRenderer.cpp \
     nodes/QskTextureRenderer.cpp \

@@ -36,8 +36,8 @@ int main( int argc, char* argv[] )
     auto shapeItem = new ShapeItem();
 
     shapeItem->setPath( path( SkinnyShapeFactory::Hexagon ) );
-    shapeItem->setPen( QPen( Qt::darkBlue, 20 ) );
-    shapeItem->setFillColor( Qt::darkYellow );
+    shapeItem->setPen( QPen( Qt::darkCyan, 20 ) );
+    shapeItem->setGradient( Qt::red, Qt::blue );
 
     window.addItem( shapeItem );
     window.resize( 600, 600 );
