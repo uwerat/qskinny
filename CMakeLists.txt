@@ -28,12 +28,12 @@ message(STATUS "Qt5_VERSION_PATCH: ${Qt5_VERSION_PATCH}")
 
 add_subdirectory(src)
 add_subdirectory(skins)
-#TODO
-#add_subdirectory(inputcontext)
+add_subdirectory(inputcontext)
 add_subdirectory(qmlexport)
 add_subdirectory(tools)
 add_subdirectory(support)
 add_subdirectory(examples)
+#TODO
 #add_subdirectory(playground)
 
 #TODO
