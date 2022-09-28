@@ -1,0 +1,185 @@
+############################################################################
+# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# This file may be used under the terms of the QSkinny License, Version 1.0
+############################################################################
+
+set(QSK_VER_MAJ 0)
+set(QSK_VER_MIN 0)
+set(QSK_VER_PAT 0)
+set(QSK_VERSION ${QSK_VER_MAJ}.${QSK_VER_MIN}.${QSK_VER_PAT})
+
+# trying the PREFIX environment variable first
+set(QSK_INSTALL_PREFIX = $ENV{PREFIX}) # TODO still required?
+
+if("${QSK_INSTALL_PREFIX}" STREQUAL "")
+    set(QSK_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}") # TODO where does QT_INSTALL_PREFIX come from?
+
+    if (UNIX)
+        set(QSK_INSTALL_PREFIX /usr/local/qskinny-${QSK_VERSION})
+    endif()
+
+    if (MSVC)
+        set(QSK_INSTALL_PREFIX C:/Qskinny-${QSK_VERSION})
+    endif()
+endif()
+
+set(QSK_INSTALL_DOCS      doc)
+set(QSK_INSTALL_HEADERS   include)
+set(QSK_INSTALL_LIBS      lib)
+set(QSK_INSTALL_BINS      bin)
+set(QSK_INSTALL_PLUGINS   plugins)
+set(QSK_INSTALL_EXAMPLES  examples)
+
+# TODO find compiler flag equivalent
+list(APPEND CONFIG        no_private_qt_headers_warning)
+list(APPEND CONFIG        warn_on)
+list(APPEND CONFIG        no_keywords)
+list(APPEND CONFIG        silent)
+#list(APPEND CONFIG           -= depend_includepath) # TODO was -=
+list(APPEND CONFIG        strict_c++)
+list(APPEND CONFIG        c++11)
+list(APPEND CONFIG        pedantic)
+list(APPEND CONFIG        hide_symbols)
+#list(APPEND CONFIG           += debug)
+#list(APPEND CONFIG           += sanitize)
+
+# TODO
+# use_no_rpath {
+#     CONFIG -= use_local_rpath use_install_rpath
+# } else {
+#     cross_compile {
+#         CONFIG *= use_install_rpath
+#         QMAKE_RPATHLINKDIR *= $${QSK_PLUGIN_DIR}/skins
+#     } else {
+#         !use_install_rpath: CONFIG *= use_local_rpath
+#     }
+# }
+
+set(MOC_DIR      moc)
+set(OBJECTS_DIR  obj)
+set(RCC_DIR      rcc)
+
+list(APPEND QSK_CONFIG QskDll)
+
+option(QskDll "build qskinny as shared library" ON)
+
+if(UNIX AND NOT APPLE)
+    set(LINUX TRUE)
+endif()
+
+if(LINUX) 
+
+    if ("pedantic" IN_LIST CONFIG)
+
+        add_compile_definitions(QT_STRICT_ITERATORS)
+
+        # Qt headers do not stand pedantic checks, so it's better
+        # to exclude them by declaring them as system includes
+
+        list(APPEND CONFIG qtassysteminclude)
+    endif()
+
+    if ("qtassysteminclude" IN_LIST CONFIG)
+
+        # As most distros set QT_INSTALL_HEADERS to /usr/include we
+        # would run into gcc compiler errors and better drop it
+        # from the list below. Should be no problem as we don't
+        # add the Qt module to our includes and therefore don't
+        # need this path.
+
+        # TODO
+        # QMAKE_CXXFLAGS += \
+        #     -isystem $$[QT_INSTALL_HEADERS]/QtCore \
+        #     -isystem $$[QT_INSTALL_HEADERS]/QtCore/$$[QT_VERSION]/QtCore \
+        #     -isystem $$[QT_INSTALL_HEADERS]/QtGui \
+        #     -isystem $$[QT_INSTALL_HEADERS]/QtGui/$$[QT_VERSION]/QtGui \
+        #     -isystem $$[QT_INSTALL_HEADERS]/QtQuick \
+        #     -isystem $$[QT_INSTALL_HEADERS]/QtQuick/$$[QT_VERSION]/QtQuick \
+        #     -isystem $$[QT_INSTALL_HEADERS]/QtQml \
+        #     -isystem $$[QT_INSTALL_HEADERS]/QtQml/$$[QT_VERSION]/QtQml \
+    endif()
+endif()
+
+if ("${CMAKE_CXX_COMPILER}" MATCHES ".*linux-g\\+\\+" OR "${CMAKE_CXX_COMPILER}" MATCHES ".*linux-g\\+\\+-64")
+    # --- optional optimzations
+    if (CMAKE_BUILD_TYPE EQUAL "Debug")
+        set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -O0) # TODO check if still required
+    else()
+        set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -O3 -ffast-math) # TODO check if still required
+    endif()
+endif()
+
+if ("pedantic" IN_LIST CONFIG)
+    if ("${CMAKE_CXX_COMPILER}" MATCHES ".*linux-g\\+\\+" OR "${CMAKE_CXX_COMPILER}" MATCHES ".*linux-g\\+\\+-64")
+        set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -pedantic-errors)
+        set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wextra)
+        set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Werror=format-security)
+        #QMAKE_CXXFLAGS *= -Wlogical-op
+
+        # QMAKE_CXXFLAGS *= -Wconversion
+        # QMAKE_CXXFLAGS *= -Wfloat-equal
+        # QMAKE_CXXFLAGS *= -Wshadow
+
+        set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wsuggest-override)
+        # QMAKE_CXXFLAGS *= -Wsuggest-final-types
+        # QMAKE_CXXFLAGS *= -Wsuggest-final-methods
+
+        # QMAKE_CXXFLAGS *= -fanalyzer
+    endif()
+
+    if ("${CMAKE_CXX_COMPILER}" MATCHES ".*linux-clang")
+
+        #QMAKE_CXXFLAGS *= -pedantic-errors
+
+        #QMAKE_CXXFLAGS *= -Weverything
+        #QMAKE_CXXFLAGS *= -Wno-c++98-compat-pedantic
+        #QMAKE_CXXFLAGS *= -Wno-global-constructors
+        #QMAKE_CXXFLAGS *= -Wno-exit-time-destructors
+        #QMAKE_CXXFLAGS *= -Wno-padded
+        #QMAKE_CXXFLAGS *= -Wno-float-equal
+        #QMAKE_CXXFLAGS *= -Wno-undefined-reinterpret-cast
+        #QMAKE_CXXFLAGS *= -Wno-deprecated
+        #QMAKE_CXXFLAGS *= -Wno-switch-enum
+        #QMAKE_CXXFLAGS *= -Wno-keyword-macro
+        #QMAKE_CXXFLAGS *= -Wno-old-style-cast
+        #QMAKE_CXXFLAGS *= -Wno-used-but-marked-unused
+        #QMAKE_CXXFLAGS *= -Wno-weak-vtables
+        #QMAKE_CXXFLAGS *= -Wno-shadow
+        #QMAKE_CXXFLAGS *= -Wno-double-promotion
+        #QMAKE_CXXFLAGS *= -Wno-conversion
+        #QMAKE_CXXFLAGS *= -Wno-documentation-unknown-command
+        #QMAKE_CXXFLAGS *= -Wno-unused-macros
+    endif()
+endif()
+
+if ("sanitize" IN_LIST CONFIG)
+
+    list(APPEND CONFIG sanitizer)
+    list(APPEND CONFIG sanitize_address)
+    # CONFIG *= sanitize_undefined
+
+    if ("${CMAKE_CXX_COMPILER}" MATCHES ".*linux-g\\+\\+" OR "${CMAKE_CXX_COMPILER}" MATCHES ".*linux-g\\+\\+-64")
+        #QMAKE_CXXFLAGS *= -fsanitize-address-use-after-scope
+        #QMAKE_LFLAGS *= -fsanitize-address-use-after-scope
+    endif()
+endif()
+
+if (CMAKE_BUILD_TYPE EQUAL "Debug")
+    add_compile_definitions(ITEM_STATISTICS=1)
+endif()
+
+# DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x000000
+
+set(LOCAL_PRI $ENV{QSK_LOCAL_PRI})
+
+if (${LOCAL_PRI}) # TODO not empty check
+
+    if(EXISTS  ${LOCAL_PRI})
+
+        # When not working with the Qt/Creator it is often more convenient
+        # to include the specific options of your local build, than passing
+        # them all on the command line
+
+        include(${LOCAL_PRI})
+    endif()
+endif()
