@@ -1,16 +1,15 @@
-TEMPLATE = subdirs
+#add_subdirectory(anchors)
+#add_subdirectory(dials)
+add_subdirectory(dialogbuttons)
+#add_subdirectory(invoker)
+#add_subdirectory(inputpanel)
+#add_subdirectory(images)
+#add_subdirectory(shadows)
 
-    SUBDIRS += anchors dials dialogbuttons invoker inputpanel images
+if(TARGET Qt5::WebEngine) # TODO check how to add optionally
+    #add_subdirectory(webview)
+endif()
 
-        SUBDIRS +=
-    shadows
-
-        qtHaveModule(webengine){
-
-            SUBDIRS += webview
-       }
-
-qtHaveModule(quickwidgets)
-{
-    SUBDIRS += grids
-}
+if(TARGET Qt5::QuickWidgets) # TODO check how to add optionally
+    #add_subdirectory(grids)
+endif()

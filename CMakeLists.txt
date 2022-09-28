@@ -33,8 +33,7 @@ add_subdirectory(qmlexport)
 add_subdirectory(tools)
 add_subdirectory(support)
 add_subdirectory(examples)
-#TODO
-#add_subdirectory(playground)
+add_subdirectory(playground)
 
 #TODO
 #OTHER_FILES =
