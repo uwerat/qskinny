@@ -17,28 +17,6 @@ list(APPEND TARGET_SOURCES
     SkinnyShortcut.cpp)
 
 # TODO
-# ensure_skins{
-# 
-# #Enabling fall back code, that inserts some skin factories manually
-# #when not finding skin factories as plugins
-# 
-#     INCLUDEPATH *= $${QSK_ROOT} / skins DEPENDPATH *=
-#     $${QSK_ROOT} /
-#     skins
-# 
-#         target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_SOURCE_DIR} / skins)
-# 
-#             target_compile_definitions(${TARGET_NAME} PRIVATE ENSURE_SKINS)
-# 
-#     use_install_rpath : QMAKE_RPATHDIR *=
-#     $${QSK_INSTALL_PLUGINS} / skins use_local_rpath : QMAKE_RPATHDIR *=
-#     $${QSK_PLUGIN_DIR} / skins
-# 
-#                                qskAddLibrary($${QSK_PLUGIN_DIR} / skins, squiekskin)
-#                                    qskAddLibrary($${QSK_PLUGIN_DIR} / skins, material3skin)
-# }
-
-# TODO
 #fontconfig{
 #
 #    QSK_FONTDIR = $${PWD} / fonts QSK_FONTCACHEDIR =
@@ -80,5 +58,20 @@ target_compile_definitions(${TARGET_NAME}
 target_include_directories(${TARGET_NAME}
    PUBLIC
        ${CMAKE_CURRENT_LIST_DIR})
+
+option(ensure_skins "Enabling fall back code, that inserts some skin factories manually when not finding skin factories as plugins" ON)
+
+if(ensure_skins)
+    target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/skins)
+    target_compile_definitions(${TARGET_NAME} PRIVATE ENSURE_SKINS)
+
+    # TODO
+    # use_install_rpath: QMAKE_RPATHDIR *= $${QSK_INSTALL_PLUGINS}/skins
+    # use_local_rpath: QMAKE_RPATHDIR *= $${QSK_PLUGIN_DIR}/skins
+    target_link_libraries(${TARGET_NAME}
+        PRIVATE
+            squiekskin
+            material3skin)
+endif()
 
 install(TARGETS ${TARGET_NAME} DESTINATION lib) # TODO unify lib install directory
