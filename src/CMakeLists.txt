@@ -1,4 +1,5 @@
 include(${CMAKE_SOURCE_DIR}/features/qskconfig.cmake)
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/qskinny-macros.cmake)
 
 #TODO
 #QSK_SUBDIRS = common graphic nodes controls layouts dialogs inputpanel
