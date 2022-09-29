@@ -192,9 +192,7 @@ void ShapeItem::updateNode( QSGNode* parentNode )
         }
 
         const auto transform = ::transformForRects( pathRect, rect );
-
-        const auto scaledPath = transform.map( m_path );
-        borderNode->updateNode( scaledPath, pen );
+        borderNode->updateNode( m_path, transform, pen );
     }
     else
     {

@@ -33,11 +33,13 @@ QskStrokeNode::QskStrokeNode()
     setMaterial( &d->material );
 }
 
-void QskStrokeNode::updateNode( const QPainterPath& path, const QPen& pen )
+void QskStrokeNode::updateNode(
+    const QPainterPath& path, const QTransform& transform,  const QPen& pen )
 {
     Q_D( QskStrokeNode );
 
-    if ( path.isEmpty() || ( pen.style() == Qt::NoPen ) || ( pen.color().alpha() == 0 ) )
+    if ( path.isEmpty() || ( pen.style() == Qt::NoPen ) ||
+        !pen.color().isValid() || ( pen.color().alpha() == 0 ) )
     {
         if ( d->geometry.vertexCount() > 0 )
         {
@@ -50,18 +52,33 @@ void QskStrokeNode::updateNode( const QPainterPath& path, const QPen& pen )
 
     if ( true ) // For the moment we always update the geometry. TODO ...
     {
+        /*
+            Unfortunately QTriangulatingStroker does not offer on the fly
+            transformations - like with qTriangulate. TODO ...
+         */
+        const auto scaledPath = transform.map( path );
+
         QTriangulatingStroker stroker;
+#if 0
+        // can we do something useful with this factor ???
+        stroker.setInvScale( 1.0 );
+#endif
 
         if ( pen.style() == Qt::SolidLine )
         {
             // clipRect, renderHint are ignored in QTriangulatingStroker::process
-            stroker.process( qtVectorPathForPath( path ), pen, {}, {} );
+            stroker.process( qtVectorPathForPath( scaledPath ), pen, {}, {} );
         }
         else
         {
+            constexpr QRectF clipRect; // empty rect: no clipping
+
             QDashedStrokeProcessor dashStroker;
-            dashStroker.process( qtVectorPathForPath( path ),
-                pen, QRectF(), {} ); // empty rect: no clipping
+#if 0
+            // can we do something useful with this factor ???
+            dashStroker.setInvScale( 1.0 );
+#endif
+            dashStroker.process( qtVectorPathForPath( scaledPath ), pen, clipRect, {} );
 
             const QVectorPath dashedVectorPath( dashStroker.points(),
                 dashStroker.elementCount(), dashStroker.elementTypes(), 0 );

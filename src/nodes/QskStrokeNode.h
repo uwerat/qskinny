@@ -19,7 +19,7 @@ class QSK_EXPORT QskStrokeNode : public QSGGeometryNode
   public:
     QskStrokeNode();
 
-    void updateNode( const QPainterPath&, const QPen& );
+    void updateNode( const QPainterPath&, const QTransform&, const QPen& );
 
   private:
     Q_DECLARE_PRIVATE( QskStrokeNode )
