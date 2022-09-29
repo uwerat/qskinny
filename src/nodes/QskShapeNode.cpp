@@ -15,9 +15,10 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qtriangulator_p.h>
 QSK_QT_PRIVATE_END
 
-static void qskUpdateGeometry( const QPainterPath& path, QSGGeometry& geometry )
+static void qskUpdateGeometry( const QPainterPath& path,
+    const QTransform& transform, QSGGeometry& geometry )
 {
-    const auto ts = qTriangulate( path, QTransform(), 1, false );
+    const auto ts = qTriangulate( path, transform, 1, false );
 
 #if 1
     geometry.allocate( ts.vertices.size(), ts.indices.size() );
@@ -118,7 +119,8 @@ QskShapeNode::QskShapeNode()
     setFlag( QSGNode::OwnsMaterial, true );
 }
 
-void QskShapeNode::updateNode( const QPainterPath& path, const QColor& color )
+void QskShapeNode::updateNode( const QPainterPath& path,
+    const QTransform& transform, const QColor& color )
 {
     Q_D( QskShapeNode );
 
@@ -130,7 +132,7 @@ void QskShapeNode::updateNode( const QPainterPath& path, const QColor& color )
 
     if ( true ) // For the moment we always update the geometry. TODO ...
     {
-        qskUpdateGeometry( path, d->geometry );
+        qskUpdateGeometry( path, transform, d->geometry );
         markDirty( QSGNode::DirtyGeometry );
     }
 
@@ -150,7 +152,8 @@ void QskShapeNode::updateNode( const QPainterPath& path, const QColor& color )
     }
 }
 
-void QskShapeNode::updateNode( const QPainterPath& path, const QGradient* gradient )
+void QskShapeNode::updateNode( const QPainterPath& path,
+    const QTransform& transform, const QGradient* gradient )
 {
     if ( path.isEmpty() || !qskIsGradientVisible( gradient ) )
     {
@@ -160,7 +163,7 @@ void QskShapeNode::updateNode( const QPainterPath& path, const QGradient* gradie
 
     if ( qskIsGradientMonochrome( gradient ) )
     {
-        updateNode( path, gradient->stops().first().first );
+        updateNode( path, transform, gradient->stops().first().first );
         return;
     }
 
@@ -168,7 +171,7 @@ void QskShapeNode::updateNode( const QPainterPath& path, const QGradient* gradie
 
     if ( true ) // For the moment we always update the geometry. TODO ...
     {
-        qskUpdateGeometry( path, d->geometry );
+        qskUpdateGeometry( path, transform, d->geometry );
         markDirty( QSGNode::DirtyGeometry );
     }
 
@@ -182,3 +185,4 @@ void QskShapeNode::updateNode( const QPainterPath& path, const QGradient* gradie
     if ( gradientMaterial->updateGradient( gradient ) )
         markDirty( QSGNode::DirtyMaterial );
 }
+

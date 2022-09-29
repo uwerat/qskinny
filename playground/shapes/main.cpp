@@ -7,6 +7,7 @@
 
 #include <QskObjectCounter.h>
 #include <QskWindow.h>
+#include <QskRgbValue.h>
 
 #include <SkinnyShortcut.h>
 #include <SkinnyShapeFactory.h>
@@ -18,6 +19,29 @@ namespace
     {
         return SkinnyShapeFactory::shapePath( shape, QSizeF( 50, 50 ) );
     }
+
+    class Pen : public QPen
+    {
+      public:
+        Pen( const QColor& color )
+            : QPen( color )
+        {
+            setCosmetic( true );
+            setWidth( isCosmetic() ? 8 : 2 );
+
+            setJoinStyle( Qt::MiterJoin );
+
+            //setStyle( Qt::NoPen );
+            //setStyle( Qt::DashLine );
+
+            //setAlpha( 100 );
+        }
+
+        void setAlpha( int alpha )
+        {
+            setColor( QskRgb::toTransparent( color(), alpha ) );
+        }
+    };
 }
 
 int main( int argc, char* argv[] )
@@ -36,8 +60,9 @@ int main( int argc, char* argv[] )
     auto shapeItem = new ShapeItem();
 
     shapeItem->setPath( path( SkinnyShapeFactory::Hexagon ) );
-    shapeItem->setPen( QPen( Qt::darkCyan, 20 ) );
-    shapeItem->setGradient( Qt::red, Qt::blue );
+
+    shapeItem->setPen( Pen( QColorConstants::Svg::indigo ) );
+    shapeItem->setGradient( QGradient::PhoenixStart );
 
     window.addItem( shapeItem );
     window.resize( 600, 600 );

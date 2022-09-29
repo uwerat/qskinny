@@ -9,6 +9,38 @@
 #include <QskShapeNode.h>
 #include <QskSGNode.h>
 
+static inline QTransform transformForRects( const QRectF& r1, const QRectF& r2 )
+{
+    return QTransform::fromTranslate( -r1.x(), -r1.y() )
+        * QTransform::fromScale( r2.width() / r1.width(), r2.height() / r1.height() )
+        * QTransform::fromTranslate( r2.x(), r2.y() );
+}
+
+static inline bool isVisible( const QColor& color )
+{
+    return color.isValid() && ( color.alpha() > 0 );
+}
+
+static inline bool isVisible( const QPen& pen )
+{
+    return ( pen.style() != Qt::NoPen ) && isVisible( pen.color() );
+}
+
+static inline QPen cosmeticPen( const QPen& pen, const QSizeF& size1, const QSizeF& size2 )
+{
+    if ( pen.isCosmetic() || pen.widthF() <= 0.0 || size2.isEmpty() )
+        return pen;
+
+    const auto f = qMin( size1.width() / size2.width(),
+        size1.height() / size2.height() );
+
+    auto newPen = pen;
+    newPen.setWidthF( pen.widthF() * f );
+    newPen.setCosmetic( true );
+
+    return newPen;
+}
+
 ShapeItem::ShapeItem( QQuickItem* parent )
     : QskControl( parent )
 {
@@ -44,6 +76,16 @@ void ShapeItem::setGradient( const QColor& c1, const QColor& c2 )
     }
 }
 
+void ShapeItem::setGradient( QGradient::Preset preset )
+{
+    const auto stops = QGradient( preset ).stops();
+    if ( !stops.isEmpty() )
+    {
+        // gradients with more than 2 clors do not work TODO ...
+        setGradient( stops.first().second, stops.last().second );
+    }
+}
+
 void ShapeItem::setPath( const QPainterPath& path )
 {
     if ( path != m_path )
@@ -67,27 +109,42 @@ void ShapeItem::updateNode( QSGNode* parentNode )
     };
 
     const auto rect = contentsRect();
-
-    /*
-        The triangulators in the nodes are able to do transformations
-        on the fly. TODO ...
-     */
-    const auto path = scaledPath( rect );
+    const auto pathRect = m_path.controlPointRect();
 
     auto fillNode = static_cast< QskShapeNode* >(
         QskSGNode::findChildNode( parentNode, FillRole ) );
 
-    if ( path.isEmpty() || rect.isEmpty() )
+    auto borderNode = static_cast< QskStrokeNode* >(
+        QskSGNode::findChildNode( parentNode, BorderRole ) );
+
+    if ( rect.isEmpty() || pathRect.isEmpty() )
     {
         delete fillNode;
+        delete borderNode;
+
+        return;
     }
-    else
+
+    const auto pen = ::cosmeticPen( m_pen, rect.size(), pathRect.size() );
+
+    if ( ::isVisible( m_fillColor[0] ) || ::isVisible( m_fillColor[1] ) )
     {
         if ( fillNode == nullptr )
         {
             fillNode = new QskShapeNode;
             QskSGNode::setNodeRole( fillNode, FillRole );
+
+            parentNode->prependChildNode( fillNode );
         }
+
+        auto fillRect = rect;
+        if ( pen.style() != Qt::NoPen )
+        {
+            const auto pw2 = 0.5 * pen.widthF();
+            fillRect.adjust( pw2, pw2, -pw2, -pw2 );
+        }
+
+        const auto transform = ::transformForRects( pathRect, fillRect );
 
         if ( m_fillColor[0] != m_fillColor[1] )
         {
@@ -97,51 +154,52 @@ void ShapeItem::updateNode( QSGNode* parentNode )
             gradient.setColorAt( 0.0, m_fillColor[0] );
             gradient.setColorAt( 1.0, m_fillColor[1] );
 
-            fillNode->updateNode( path, &gradient );
+            fillNode->updateNode( m_path, transform, &gradient );
         }
         else
         {
-            fillNode->updateNode( path, m_fillColor[0] );
+            fillNode->updateNode( m_path, transform, m_fillColor[0] );
         }
-
-        if ( fillNode->parent() != parentNode )
-            parentNode->prependChildNode( fillNode );
-    }
-
-    auto borderNode = static_cast< QskStrokeNode* >(
-        QskSGNode::findChildNode( parentNode, BorderRole ) );
-
-    if ( path.isEmpty() || rect.isEmpty() )
-    {
-        delete borderNode;
     }
     else
     {
+        delete fillNode;
+    }
+
+    if ( ::isVisible( pen ) )
+    {
+        if ( pen.widthF() > 1.0 )
+        {
+            if ( !( pen.isSolid() && pen.color().alpha() == 255 ) )
+            {
+                /*
+                    We might end up with overlapping parts
+                    at corners with angles < 180°
+
+                    What about translating the stroke into
+                    a path ( QPainterPathStroker ) and using
+                    a QskShapeNode then. TODO ...
+                 */
+            }
+        }
+
         if ( borderNode == nullptr )
         {
             borderNode = new QskStrokeNode;
             QskSGNode::setNodeRole( borderNode, BorderRole );
+
+            parentNode->appendChildNode( borderNode );
         }
 
-        borderNode->updateNode( path, m_pen );
+        const auto transform = ::transformForRects( pathRect, rect );
 
-        if ( borderNode->parent() != parentNode )
-            parentNode->appendChildNode( borderNode );
+        const auto scaledPath = transform.map( m_path );
+        borderNode->updateNode( scaledPath, pen );
     }
-}
-
-QPainterPath ShapeItem::scaledPath( const QRectF& rect ) const
-{
-    // does not center properly. TODO
-    const auto pw = 2 * m_pen.width();
-
-    const auto pathRect = m_path.controlPointRect();
-    const auto r = rect.adjusted( pw, pw, -pw, -pw );
-
-    auto transform = QTransform::fromTranslate( r.left(), r.top() );
-    transform.scale( r.width() / pathRect.width(), r.height() / pathRect.height() );
-
-    return transform.map( m_path );
+    else
+    {
+        delete borderNode;
+    }
 }
 
 #include "moc_ShapeItem.cpp"

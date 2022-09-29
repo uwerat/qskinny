@@ -8,6 +8,7 @@
 #include <QskControl.h>
 #include <QPen>
 #include <QPainterPath>
+#include <QGradient>
 
 class ShapeItem : public QskControl
 {
@@ -21,6 +22,7 @@ class ShapeItem : public QskControl
     QPen pen() const;
 
     void setGradient( const QColor&, const QColor& );
+    void setGradient( QGradient::Preset );
 
     void setPath( const QPainterPath& );
     QPainterPath path() const;
