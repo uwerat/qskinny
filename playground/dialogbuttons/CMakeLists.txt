@@ -17,4 +17,4 @@ target_link_libraries(${TARGET_NAME}
 set_target_properties(${TARGET_NAME}
     PROPERTIES
         AUTOMOC ON
-        FOLDER examples)
+        FOLDER playground)

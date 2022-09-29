@@ -15,12 +15,17 @@ list(APPEND TARGET_SOURCES
 
 add_library(${TARGET_NAME} SHARED ${TARGET_SOURCES} ${TARGET_HEADERS})
 
-set_target_properties(${TARGET_NAME} PROPERTIES
-   AUTOMOC ON)
+set_target_properties(${TARGET_NAME}
+    PROPERTIES
+        AUTOMOC ON)
 
 target_link_libraries(${TARGET_NAME}
     PRIVATE
-        qskinny)
+    qskinny)
+
+target_include_directories(${TARGET_NAME}
+   PUBLIC
+       ${CMAKE_CURRENT_LIST_DIR})
 
 if(QskDll)
     target_compile_definitions(${TARGET_NAME}

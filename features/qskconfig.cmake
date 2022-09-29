@@ -3,13 +3,10 @@
 # This file may be used under the terms of the QSkinny License, Version 1.0
 ############################################################################
 
-set(QSK_VER_MAJ 0)
-set(QSK_VER_MIN 0)
-set(QSK_VER_PAT 0)
-set(QSK_VERSION ${QSK_VER_MAJ}.${QSK_VER_MIN}.${QSK_VER_PAT})
+set(QSK_VERSION ${CMAKE_PROJECT_VERSION})
 
 # trying the PREFIX environment variable first
-set(QSK_INSTALL_PREFIX = $ENV{PREFIX}) # TODO still required?
+set(QSK_INSTALL_PREFIX $ENV{PREFIX}) # TODO still required?
 
 if("${QSK_INSTALL_PREFIX}" STREQUAL "")
     set(QSK_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}") # TODO where does QT_INSTALL_PREFIX come from?
@@ -58,8 +55,6 @@ list(APPEND CONFIG        hide_symbols)
 set(MOC_DIR      moc)
 set(OBJECTS_DIR  obj)
 set(RCC_DIR      rcc)
-
-list(APPEND QSK_CONFIG QskDll)
 
 option(QskDll "build qskinny as shared library" ON)
 
@@ -114,41 +109,37 @@ if ("pedantic" IN_LIST CONFIG)
         set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -pedantic-errors)
         set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wextra)
         set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Werror=format-security)
-        #QMAKE_CXXFLAGS *= -Wlogical-op
-
-        # QMAKE_CXXFLAGS *= -Wconversion
-        # QMAKE_CXXFLAGS *= -Wfloat-equal
-        # QMAKE_CXXFLAGS *= -Wshadow
-
         set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wsuggest-override)
-        # QMAKE_CXXFLAGS *= -Wsuggest-final-types
-        # QMAKE_CXXFLAGS *= -Wsuggest-final-methods
-
-        # QMAKE_CXXFLAGS *= -fanalyzer
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wlogical-op)
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wconversion)
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wfloat-equal)
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wshadow)
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wsuggest-final-types)
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wsuggest-final-methods)
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -fanalyzer)
     endif()
 
     if ("${CMAKE_CXX_COMPILER}" MATCHES ".*linux-clang")
 
-        #QMAKE_CXXFLAGS *= -pedantic-errors
-
-        #QMAKE_CXXFLAGS *= -Weverything
-        #QMAKE_CXXFLAGS *= -Wno-c++98-compat-pedantic
-        #QMAKE_CXXFLAGS *= -Wno-global-constructors
-        #QMAKE_CXXFLAGS *= -Wno-exit-time-destructors
-        #QMAKE_CXXFLAGS *= -Wno-padded
-        #QMAKE_CXXFLAGS *= -Wno-float-equal
-        #QMAKE_CXXFLAGS *= -Wno-undefined-reinterpret-cast
-        #QMAKE_CXXFLAGS *= -Wno-deprecated
-        #QMAKE_CXXFLAGS *= -Wno-switch-enum
-        #QMAKE_CXXFLAGS *= -Wno-keyword-macro
-        #QMAKE_CXXFLAGS *= -Wno-old-style-cast
-        #QMAKE_CXXFLAGS *= -Wno-used-but-marked-unused
-        #QMAKE_CXXFLAGS *= -Wno-weak-vtables
-        #QMAKE_CXXFLAGS *= -Wno-shadow
-        #QMAKE_CXXFLAGS *= -Wno-double-promotion
-        #QMAKE_CXXFLAGS *= -Wno-conversion
-        #QMAKE_CXXFLAGS *= -Wno-documentation-unknown-command
-        #QMAKE_CXXFLAGS *= -Wno-unused-macros
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -pedantic-errors)
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Weverything)
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wno-c++98-compat-pedantic)
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wno-global-constructors)
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wno-exit-time-destructors)
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wno-padded)
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wno-float-equal)
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wno-undefined-reinterpret-cast)
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wno-deprecated)
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wno-switch-enum)
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wno-keyword-macro)
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wno-old-style-cast)
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wno-used-but-marked-unused)
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wno-weak-vtables)
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wno-shadow)
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wno-double-promotion)
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wno-conversion)
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wno-documentation-unknown-command)
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wno-unused-macros)
     endif()
 endif()
 
@@ -159,7 +150,7 @@ if ("sanitize" IN_LIST CONFIG)
     # CONFIG *= sanitize_undefined
 
     if ("${CMAKE_CXX_COMPILER}" MATCHES ".*linux-g\\+\\+" OR "${CMAKE_CXX_COMPILER}" MATCHES ".*linux-g\\+\\+-64")
-        #QMAKE_CXXFLAGS *= -fsanitize-address-use-after-scope
+        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -fsanitize-address-use-after-scope)
         #QMAKE_LFLAGS *= -fsanitize-address-use-after-scope
     endif()
 endif()
