@@ -69,12 +69,16 @@ list(APPEND TARGET_RESSOURCES
 
 set(TARGET_NAME iotdashboard)
 
-add_executable(${TARGET_NAME} ${TARGET_SOURCES} ${TARGET_HEADERS} ${TARGET_RESSOURCES})
+add_executable(${TARGET_NAME}
+    ${TARGET_SOURCES}
+    ${TARGET_HEADERS}
+    ${TARGET_RESSOURCES})
 
-set_target_properties(${TARGET_NAME} PROPERTIES
-   AUTOMOC ON
-   AUTORCC ON
-   FOLDER examples)
+set_target_properties(${TARGET_NAME}
+    PROPERTIES
+        AUTOMOC ON
+        AUTORCC ON
+        FOLDER examples)
 
 target_link_libraries(${TARGET_NAME}
     PRIVATE
