@@ -229,9 +229,8 @@ namespace
     class GradientMaterial : public QskGradientMaterial
     {
       public:
-        GradientMaterial( QGradient::Type type,
-                const QGradientStops& stops, QGradient::Spread spread )
-            : QskGradientMaterial( type, stops, spread )
+        GradientMaterial( QGradient::Type type )
+            : QskGradientMaterial( type )
         {
             setFlag( Blending | RequiresFullMatrix );
 
@@ -355,16 +354,39 @@ namespace
     class LinearMaterial final : public GradientMaterial
     {
       public:
-        LinearMaterial(
-                const QGradientStops& stops, QGradient::Spread spread,
-                const QPointF& start, const QPointF& stop )
-            : GradientMaterial( QGradient::LinearGradient, stops, spread )
-            , m_start( start )
-            , m_stop( stop )
+        LinearMaterial()
+            : GradientMaterial( QGradient::LinearGradient )
         {
         }
 
-        QSGMaterialShader* createShader() const override;
+        bool setGradient( const QLinearGradient* gradient )
+        {
+            bool changed = false;
+
+            if ( gradient->stops() != stops() )
+            {
+                setStops( gradient->stops() );
+                changed = true;
+            }
+
+            if ( gradient->spread() != spread() )
+            {
+                setSpread( gradient->spread() );
+                changed = true;
+            }
+
+            const QVector2D start( gradient->start() );
+            const QVector2D stop( gradient->finalStop() );
+
+            if ( m_start != start || m_stop != stop )
+            {
+                m_start = start;
+                m_stop = stop;
+                changed = true;
+            }
+
+            return changed;
+        }
 
         QSGMaterialType* type() const override
         {
@@ -382,8 +404,10 @@ namespace
                 return GradientMaterial::compare( other );
         }
 
-        const QVector2D m_start;
-        const QVector2D m_stop;
+        QSGMaterialShader* createShader() const override;
+
+        QVector2D m_start;
+        QVector2D m_stop;
     };
 
 #ifdef SHADER_GL
@@ -485,24 +509,56 @@ namespace
     class RadialMaterial final : public GradientMaterial
     {
       public:
-        RadialMaterial(
-                const QGradientStops& stops, QGradient::Spread spread,
-                const QPointF& center, qreal centerRadius,
-                const QPointF& focalPoint, qreal focalRadius )
-            : GradientMaterial( QGradient::RadialGradient, stops, spread )
-            , m_center( center )
-            , m_focalPoint( focalPoint )
-            , m_centerRadius( centerRadius )
-            , m_focalRadius( focalRadius )
+        RadialMaterial()
+            : GradientMaterial( QGradient::RadialGradient )
         {
         }
-
-        QSGMaterialShader* createShader() const override;
 
         QSGMaterialType* type() const override
         {
             static QSGMaterialType type;
             return &type;
+        }
+
+        bool setGradient( const QRadialGradient* gradient )
+        {
+            bool changed = false;
+
+            if ( gradient->stops() != stops() )
+            {
+                setStops( gradient->stops() );
+                changed = true;
+            }
+
+            if ( gradient->spread() != spread() )
+            {
+                setSpread( gradient->spread() );
+                changed = true;
+            }
+
+            const QVector2D center( gradient->center() );
+            const float centerRadius = gradient->centerRadius();
+
+            if ( ( center != m_center ) || ( m_centerRadius != centerRadius ) )
+            {
+                m_center = center;
+                m_centerRadius = centerRadius;
+
+                changed = true;
+            }
+
+            const QVector2D focalPoint( gradient->focalPoint() );
+            const float focalRadius = gradient->focalRadius();
+
+            if ( ( focalPoint != m_focalPoint ) || ( focalRadius != m_focalRadius ) )
+            {
+                m_focalPoint = focalPoint;
+                m_focalRadius = focalRadius;
+
+                changed = true;
+            }
+
+            return changed;
         }
 
         int compare( const QSGMaterial* other ) const override
@@ -522,10 +578,12 @@ namespace
             }
         }
 
-        const QVector2D m_center;
-        const QVector2D m_focalPoint;
-        const float m_centerRadius;
-        const float m_focalRadius;
+        QSGMaterialShader* createShader() const override;
+
+        QVector2D m_center;
+        QVector2D m_focalPoint;
+        float m_centerRadius = 0.0;
+        float m_focalRadius = 0.0;
     };
 
 #ifdef SHADER_GL
@@ -650,20 +708,39 @@ namespace
     class ConicalMaterial final : public GradientMaterial
     {
       public:
-        ConicalMaterial( const QGradientStops& stops,
-                const QPointF& center, qreal angle )
-            : GradientMaterial( QGradient::ConicalGradient, stops, QGradient::PadSpread )
-            , m_center( center )
-            , m_radians( -qDegreesToRadians( angle ) )
+        ConicalMaterial()
+            : GradientMaterial( QGradient::ConicalGradient )
         {
         }
-
-        QSGMaterialShader* createShader() const override;
 
         QSGMaterialType* type() const override
         {
             static QSGMaterialType type;
             return &type;
+        }
+
+        bool setGradient( const QConicalGradient* gradient )
+        {
+            bool changed = false;
+
+            if ( gradient->stops() != stops() )
+            {
+                setStops( gradient->stops() );
+                changed = true;
+            }
+
+            const QVector2D center( gradient->center() );
+            const float radians = -qDegreesToRadians( gradient->angle() );
+
+            if ( center != m_center || radians != m_radians )
+            {
+                m_center = center;
+                m_radians = radians;
+
+                changed = true;
+            }
+
+            return changed;
         }
 
         int compare( const QSGMaterial* other ) const override
@@ -676,8 +753,10 @@ namespace
                 return GradientMaterial::compare( other );
         }
 
-        const QVector2D m_center;
-        const float m_radians;
+        QSGMaterialShader* createShader() const override;
+
+        QVector2D m_center;
+        float m_radians = 0.0;
     };
 
 #ifdef SHADER_GL
@@ -774,39 +853,65 @@ namespace
     }
 }
 
-QskGradientMaterial* QskGradientMaterial::create( const QGradient* gradient )
+QskGradientMaterial::QskGradientMaterial( QGradient::Type type )
+    : m_gradientType( type )
 {
+}
+
+template< typename Material >
+inline Material* qskEnsureMaterial( QskGradientMaterial* material )
+{
+    if ( material == nullptr )
+        material = new Material();
+
+    return static_cast< Material* >( material );
+}
+
+bool QskGradientMaterial::updateGradient( const QGradient* gradient )
+{
+    Q_ASSERT( gradient && gradient->type() == m_gradientType );
+
+    if ( gradient == nullptr || gradient->type() != m_gradientType )
+        return false;
+
     switch ( static_cast< int >( gradient->type() ) )
     {
         case QGradient::LinearGradient:
         {
-            auto linearGradient = static_cast< const QLinearGradient* >( gradient );
-
-            return new LinearMaterial(
-                linearGradient->stops(), linearGradient->spread(),
-                linearGradient->start(), linearGradient->finalStop() );
+            auto material = static_cast< LinearMaterial* >( this );
+            return material->setGradient( static_cast< const QLinearGradient* >( gradient ) );
         }
 
         case QGradient::RadialGradient:
         {
-            auto radialGradient = static_cast< const QRadialGradient* >( gradient );
-
-            return new RadialMaterial(
-                radialGradient->stops(), radialGradient->spread(),
-                radialGradient->center(), radialGradient->centerRadius(),
-                radialGradient->focalPoint(), radialGradient->focalRadius() );
+            auto material = static_cast< RadialMaterial* >( this );
+            return material->setGradient( static_cast< const QRadialGradient* >( gradient ) );
         }
 
         case QGradient::ConicalGradient:
         {
-            auto conicalGradient = static_cast< const QConicalGradient* >( gradient );
-
-            return new ConicalMaterial( conicalGradient->stops(),
-                conicalGradient->center(), conicalGradient->angle() );
+            auto material = static_cast< ConicalMaterial* >( this );
+            return material->setGradient( static_cast< const QConicalGradient* >( gradient ) );
         }
     }
 
-    return nullptr;
+    return false;
 }
 
+QskGradientMaterial* QskGradientMaterial::createMaterial( QGradient::Type gradientType )
+{
+    switch ( gradientType )
+    {
+        case QGradient::LinearGradient:
+            return new LinearMaterial();
 
+        case QGradient::RadialGradient:
+            return new RadialMaterial();
+
+        case QGradient::ConicalGradient:
+            return new ConicalMaterial();
+
+        default:
+            return nullptr;
+    }
+}

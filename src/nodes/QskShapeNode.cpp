@@ -56,6 +56,46 @@ static void qskUpdateGeometry( const QPainterPath& path, QSGGeometry& geometry )
 #endif
 }
 
+static inline void qskResetGeometry( QskShapeNode* node )
+{
+    auto g = node->geometry();
+    if ( g->vertexCount() > 0 )
+    {
+        g->allocate( 0 );
+        node->markDirty( QSGNode::DirtyGeometry );
+    }
+}
+
+static inline bool qskIsGradientVisible( const QGradient* gradient )
+{
+    if ( gradient && gradient->type() != QGradient::NoGradient )
+    {
+        for ( const auto stop : gradient->stops() )
+        {
+            if ( stop.second.alpha() > 0 )
+                return true;
+        }
+    }
+
+    return false;
+}
+
+static inline bool qskIsGradientMonochrome( const QGradient* gradient )
+{
+    if ( gradient && gradient->type() != QGradient::NoGradient )
+    {
+        const auto stops = gradient->stops();
+
+        for ( int i = 1; i < stops.count(); i++ )
+        {
+            if ( stops[i].second != stops[i - 1].second )
+                return false;
+        }
+    }
+
+    return true;
+}
+
 class QskShapeNodePrivate final : public QSGGeometryNodePrivate
 {
   public:
@@ -66,7 +106,7 @@ class QskShapeNodePrivate final : public QSGGeometryNodePrivate
     }
 
     QSGGeometry geometry;
-    QSGMaterial* material = nullptr;
+    QGradient::Type gradientType = QGradient::NoGradient;
 };
 
 QskShapeNode::QskShapeNode()
@@ -80,33 +120,65 @@ QskShapeNode::QskShapeNode()
 
 void QskShapeNode::updateNode( const QPainterPath& path, const QColor& color )
 {
+    Q_D( QskShapeNode );
+
+    if ( path.isEmpty() || !color.isValid() || color.alpha() == 0 )
+    {
+        qskResetGeometry( this );
+        return;
+    }
+
     if ( true ) // For the moment we always update the geometry. TODO ...
     {
-        qskUpdateGeometry( path, *geometry() );
+        qskUpdateGeometry( path, d->geometry );
         markDirty( QSGNode::DirtyGeometry );
     }
 
-    if ( true ) // For the moment we always update the material
+    if ( material() == nullptr || d->gradientType != QGradient::NoGradient )
     {
-        auto material = new QSGFlatColorMaterial();
-        material->setColor( color );
+        setMaterial( new QSGFlatColorMaterial() );
+        d->gradientType = QGradient::NoGradient;
+    }
 
-        setMaterial( material );
+    const auto c = color.toRgb();
+
+    auto colorMaterial = static_cast< QSGFlatColorMaterial* >( material() );
+    if ( colorMaterial->color() != c )
+    {
+        colorMaterial->setColor( c );
         markDirty( QSGNode::DirtyMaterial );
     }
 }
 
 void QskShapeNode::updateNode( const QPainterPath& path, const QGradient* gradient )
 {
+    if ( path.isEmpty() || !qskIsGradientVisible( gradient ) )
+    {
+        qskResetGeometry( this );
+        return;
+    }
+
+    if ( qskIsGradientMonochrome( gradient ) )
+    {
+        updateNode( path, gradient->stops().first().first );
+        return;
+    }
+
+    Q_D( QskShapeNode );
+
     if ( true ) // For the moment we always update the geometry. TODO ...
     {
-        qskUpdateGeometry( path, *geometry() );
+        qskUpdateGeometry( path, d->geometry );
         markDirty( QSGNode::DirtyGeometry );
     }
 
-    if ( true ) // For the moment we always update the material
+    if ( ( material() == nullptr ) || gradient->type() != d->gradientType )
     {
-        setMaterial( QskGradientMaterial::create( gradient ) );
-        markDirty( QSGNode::DirtyMaterial );
+        setMaterial( QskGradientMaterial::createMaterial( gradient->type() ) );
+        d->gradientType = gradient->type();
     }
+
+    auto gradientMaterial = static_cast< QskGradientMaterial* >( material() );
+    if ( gradientMaterial->updateGradient( gradient ) )
+        markDirty( QSGNode::DirtyMaterial );
 }

@@ -13,34 +13,40 @@
 class QSK_EXPORT QskGradientMaterial : public QSGMaterial
 {
   public:
-    static QskGradientMaterial* create( const QGradient* );
+    static QskGradientMaterial* createMaterial( QGradient::Type );
 
+    bool updateGradient( const QGradient* );
     QGradient::Type gradientType() const;
 
     const QGradientStops& stops() const;
     QGradient::Spread spread() const;
 
   protected:
-    QskGradientMaterial( QGradient::Type,
-        const QGradientStops&, QGradient::Spread );
+    QskGradientMaterial( QGradient::Type );
+
+    void setStops( const QGradientStops& );
+    void setSpread( QGradient::Spread );
 
   private:
     const QGradient::Type m_gradientType;
-    const QGradientStops m_stops;
-    const QGradient::Spread m_spread;
-};
 
-inline QskGradientMaterial::QskGradientMaterial( QGradient::Type type,
-        const QGradientStops& stops, QGradient::Spread spread )
-    : m_gradientType( type )
-    , m_stops( stops )
-    , m_spread( spread )
-{
-}
+    QGradientStops m_stops;
+    QGradient::Spread m_spread = QGradient::PadSpread;
+};
 
 inline QGradient::Type QskGradientMaterial::gradientType() const
 {
     return m_gradientType;
+}
+
+inline void QskGradientMaterial::setStops( const QGradientStops& stops )
+{
+    m_stops = stops;
+}
+
+inline void QskGradientMaterial::setSpread( QGradient::Spread spread )
+{
+    m_spread = spread;
 }
 
 inline const QGradientStops& QskGradientMaterial::stops() const
