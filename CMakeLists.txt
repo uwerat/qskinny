@@ -22,10 +22,13 @@ set(Qt5Widgets_FIND_COMPONENTS       Private CACHE STRING "force include private
 set(Qt5_DIR "C:/.conan/ea20b9/1/lib/cmake/Qt5") # TODO pass in externally
 find_package(Qt5 REQUIRED COMPONENTS Core Gui Opengl Quick Quickwidgets Svg Webengine WebengineCore Widgets)
 
-message(STATUS "Qt5_VERSION      : ${Qt5_VERSION}")
-message(STATUS "Qt5_VERSION_MAJOR: ${Qt5_VERSION_MAJOR}")
-message(STATUS "Qt5_VERSION_MINOR: ${Qt5_VERSION_MINOR}")
-message(STATUS "Qt5_VERSION_PATCH: ${Qt5_VERSION_PATCH}")
+# define install directories
+set(QSK_INSTALL_DOCS     doc)
+set(QSK_INSTALL_HEADERS  include)
+set(QSK_INSTALL_LIBS     lib)
+set(QSK_INSTALL_BINS     bin)
+set(QSK_INSTALL_PLUGINS  plugins)
+set(QSK_INSTALL_EXAMPLES examples)
 
 add_subdirectory(src)
 add_subdirectory(skins)

@@ -20,13 +20,6 @@ if("${QSK_INSTALL_PREFIX}" STREQUAL "")
     endif()
 endif()
 
-set(QSK_INSTALL_DOCS      doc)
-set(QSK_INSTALL_HEADERS   include)
-set(QSK_INSTALL_LIBS      lib)
-set(QSK_INSTALL_BINS      bin)
-set(QSK_INSTALL_PLUGINS   plugins)
-set(QSK_INSTALL_EXAMPLES  examples)
-
 # TODO find compiler flag equivalent
 list(APPEND CONFIG        no_private_qt_headers_warning)
 list(APPEND CONFIG        warn_on)
