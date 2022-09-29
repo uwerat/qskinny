@@ -1,5 +1,20 @@
-CONFIG += qskexample
-target_link_libraries(${TARGET_NAME} PRIVATE webengine webengine-private webenginecore-private core-private)
 
 list(APPEND TARGET_SOURCES
-    main.cpp
+    main.cpp)
+
+set(TARGET_NAME webview)
+
+add_executable(${TARGET_NAME}
+    ${TARGET_SOURCES})
+
+target_link_libraries(${TARGET_NAME}
+    PRIVATE
+        qskinny
+        qsktestsupport
+        Qt5::WebEngine
+        Qt5::WebEnginePrivate)
+
+set_target_properties(${TARGET_NAME}
+    PROPERTIES
+        AUTOMOC ON
+        FOLDER playground)

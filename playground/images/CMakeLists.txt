@@ -1,15 +1,27 @@
-CONFIG += qskexample qskqmlexport
-
-target_link_libraries(${TARGET_NAME}
-    PRIVATE
-        Qt5::QuickPrivate)
-
 list(APPEND TARGET_RESSOURCES
-    images.qrc
+    images.qrc)
 
 list(APPEND TARGET_HEADERS
-    Image.h
+    Image.h)
 
 list(APPEND TARGET_SOURCES
     Image.cpp
-    main.cpp
+    main.cpp)
+
+set(TARGET_NAME images)
+
+add_executable(${TARGET_NAME}
+    ${TARGET_SOURCES}
+    ${TARGET_HEADERS}
+    ${TARGET_RESSOURCES})
+
+target_link_libraries(${TARGET_NAME}
+    PRIVATE
+        qskinny
+        qskqmlexport
+        qsktestsupport)
+
+set_target_properties(${TARGET_NAME}
+    PROPERTIES
+        AUTOMOC ON
+        FOLDER playground)

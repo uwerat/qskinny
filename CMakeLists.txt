@@ -39,7 +39,7 @@ add_subdirectory(support)
 add_subdirectory(examples)
 add_subdirectory(playground)
 
-#TODO
+#TODO add doxygen support
 #OTHER_FILES =
 #doc / Doxyfile
 #doc/*.dox
@@ -47,12 +47,3 @@ add_subdirectory(playground)
 #     doc/classes/*.dox
 #     doc/classes/*.metadox
 #     TODO
-
-# TODO
-# qmlexport.depends = src
-# inputcontext.depends = src
-# skins.depends = src
-# tools.depends = src
-# support.depends = src skins
-# examples.depends = tools support skins qmlexport
-# playground.depends = tools support skins qmlexport

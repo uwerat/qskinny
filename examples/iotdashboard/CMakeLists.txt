@@ -85,8 +85,3 @@ target_link_libraries(${TARGET_NAME}
         qskinny
         qsktestsupport
         Qt5::Svg)
-
-# TODO: examples should not use private headers
-target_link_libraries(${TARGET_NAME}
-    PRIVATE
-        Qt5::QuickPrivate) # TODO why not transive by qskinny target
