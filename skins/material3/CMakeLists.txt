@@ -25,6 +25,7 @@ if(QskDll)
 endif()
 
 set_target_properties(${TARGET_NAME} PROPERTIES
-    AUTOMOC ON)
+    AUTOMOC ON
+    FOLDER skins)
 
 install(TARGETS ${TARGET_NAME} DESTINATION ${QSK_INSTALL_PLUGINS}/${QSK_PLUGIN_SUBDIR})
