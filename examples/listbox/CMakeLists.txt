@@ -1,4 +1,17 @@
-CONFIG += qskexample
-
 list(APPEND TARGET_SOURCES
-    main.cpp
+    main.cpp)
+
+set(TARGET_NAME listbox)
+
+add_executable(${TARGET_NAME} ${TARGET_SOURCES} ${TARGET_HEADERS} ${TARGET_RESSOURCES})
+
+set_target_properties(${TARGET_NAME}
+    PROPERTIES
+        AUTOMOC ON
+        AUTORCC ON
+        FOLDER examples)
+
+target_link_libraries(${TARGET_NAME}
+    PRIVATE
+        qskinny
+        qsktestsupport)

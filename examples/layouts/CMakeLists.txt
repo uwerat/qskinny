@@ -1,7 +1,5 @@
-CONFIG += qskexample qskqmlexport
-
 list(APPEND TARGET_RESSOURCES
-    layouts.qrc
+    layouts.qrc)
 
 list(APPEND TARGET_HEADERS
     TestRectangle.h
@@ -10,7 +8,7 @@ list(APPEND TARGET_HEADERS
     GridLayoutPage.h
     LinearLayoutPage.h
     DynamicConstraintsPage.h
-    StackLayoutPage.h
+    StackLayoutPage.h)
 
 list(APPEND TARGET_SOURCES
     TestRectangle.cpp
@@ -20,4 +18,20 @@ list(APPEND TARGET_SOURCES
     LinearLayoutPage.cpp
     DynamicConstraintsPage.cpp
     StackLayoutPage.cpp
-    main.cpp
+    main.cpp)
+
+set(TARGET_NAME layouts)
+
+add_executable(${TARGET_NAME} ${TARGET_SOURCES} ${TARGET_HEADERS} ${TARGET_RESSOURCES})
+
+set_target_properties(${TARGET_NAME}
+    PROPERTIES
+        AUTOMOC ON
+        AUTORCC ON
+        FOLDER examples)
+
+target_link_libraries(${TARGET_NAME}
+    PRIVATE
+        qskinny
+        qskqmlexport
+        qsktestsupport)
