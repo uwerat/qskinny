@@ -116,6 +116,7 @@ QskShapeNode::QskShapeNode()
     Q_D( QskShapeNode );
 
     setGeometry( &d->geometry );
+    setMaterial( new QSGFlatColorMaterial() );
     setFlag( QSGNode::OwnsMaterial, true );
 }
 
