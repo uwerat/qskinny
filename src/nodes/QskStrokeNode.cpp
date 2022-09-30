@@ -58,32 +58,36 @@ void QskStrokeNode::updateNode(
          */
         const auto scaledPath = transform.map( path );
 
+        auto effectivePen = pen;
+
+        if ( !effectivePen.isCosmetic() )
+        {
+            const auto scaleFactor = qMin( transform.m11(), transform.m22() );
+            if ( scaleFactor != 1.0 )
+            {
+                effectivePen.setWidth( effectivePen.widthF() * scaleFactor );
+                effectivePen.setCosmetic( false );
+            }
+        }
+
         QTriangulatingStroker stroker;
-#if 0
-        // can we do something useful with this factor ???
-        stroker.setInvScale( 1.0 );
-#endif
 
         if ( pen.style() == Qt::SolidLine )
         {
             // clipRect, renderHint are ignored in QTriangulatingStroker::process
-            stroker.process( qtVectorPathForPath( scaledPath ), pen, {}, {} );
+            stroker.process( qtVectorPathForPath( scaledPath ), effectivePen, {}, {} );
         }
         else
         {
             constexpr QRectF clipRect; // empty rect: no clipping
 
             QDashedStrokeProcessor dashStroker;
-#if 0
-            // can we do something useful with this factor ???
-            dashStroker.setInvScale( 1.0 );
-#endif
-            dashStroker.process( qtVectorPathForPath( scaledPath ), pen, clipRect, {} );
+            dashStroker.process( qtVectorPathForPath( scaledPath ), effectivePen, clipRect, {} );
 
             const QVectorPath dashedVectorPath( dashStroker.points(),
                 dashStroker.elementCount(), dashStroker.elementTypes(), 0 );
 
-            stroker.process( dashedVectorPath, pen, {}, {} );
+            stroker.process( dashedVectorPath, effectivePen, {}, {} );
         }
 
         d->geometry.allocate( stroker.vertexCount() );

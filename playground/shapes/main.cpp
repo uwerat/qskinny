@@ -26,7 +26,7 @@ namespace
         Pen( const QColor& color )
             : QPen( color )
         {
-            setCosmetic( true );
+            //setCosmetic( true );
             setWidth( isCosmetic() ? 8 : 2 );
 
             setJoinStyle( Qt::MiterJoin );

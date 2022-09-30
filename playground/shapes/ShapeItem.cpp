@@ -26,19 +26,20 @@ static inline bool isVisible( const QPen& pen )
     return ( pen.style() != Qt::NoPen ) && isVisible( pen.color() );
 }
 
-static inline QPen cosmeticPen( const QPen& pen, const QSizeF& size1, const QSizeF& size2 )
+static inline qreal effectivePenWidth(
+    const QPen& pen, const QRectF& r1, const QRectF& r2 )
 {
-    if ( pen.isCosmetic() || pen.widthF() <= 0.0 || size2.isEmpty() )
-        return pen;
+    qreal width = pen.widthF();
 
-    const auto f = qMin( size1.width() / size2.width(),
-        size1.height() / size2.height() );
+    if ( !pen.isCosmetic() )
+    {
+        const qreal sx = r1.width() / r2.width();
+        const qreal sy = r1.height() / r2.height();
 
-    auto newPen = pen;
-    newPen.setWidthF( pen.widthF() * f );
-    newPen.setCosmetic( true );
+        width *= std::min( sx, sy );
+    }
 
-    return newPen;
+    return width;
 }
 
 ShapeItem::ShapeItem( QQuickItem* parent )
@@ -125,8 +126,6 @@ void ShapeItem::updateNode( QSGNode* parentNode )
         return;
     }
 
-    const auto pen = ::cosmeticPen( m_pen, rect.size(), pathRect.size() );
-
     if ( ::isVisible( m_fillColor[0] ) || ::isVisible( m_fillColor[1] ) )
     {
         if ( fillNode == nullptr )
@@ -138,9 +137,9 @@ void ShapeItem::updateNode( QSGNode* parentNode )
         }
 
         auto fillRect = rect;
-        if ( pen.style() != Qt::NoPen )
+        if ( m_pen.style() != Qt::NoPen )
         {
-            const auto pw2 = 0.5 * pen.widthF();
+            const auto pw2 = 0.5 * ::effectivePenWidth( m_pen, rect, pathRect );
             fillRect.adjust( pw2, pw2, -pw2, -pw2 );
         }
 
@@ -166,11 +165,12 @@ void ShapeItem::updateNode( QSGNode* parentNode )
         delete fillNode;
     }
 
-    if ( ::isVisible( pen ) )
+    if ( ::isVisible( m_pen ) )
     {
-        if ( pen.widthF() > 1.0 )
+#if 0
+        if ( m_pen.widthF() > 1.0 )
         {
-            if ( !( pen.isSolid() && pen.color().alpha() == 255 ) )
+            if ( !( m_pen.isSolid() && m_pen.color().alpha() == 255 ) )
             {
                 /*
                     We might end up with overlapping parts
@@ -182,6 +182,7 @@ void ShapeItem::updateNode( QSGNode* parentNode )
                  */
             }
         }
+#endif
 
         if ( borderNode == nullptr )
         {
@@ -192,7 +193,7 @@ void ShapeItem::updateNode( QSGNode* parentNode )
         }
 
         const auto transform = ::transformForRects( pathRect, rect );
-        borderNode->updateNode( m_path, transform, pen );
+        borderNode->updateNode( m_path, transform, m_pen );
     }
     else
     {
