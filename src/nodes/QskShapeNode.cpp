@@ -108,6 +108,13 @@ class QskShapeNodePrivate final : public QSGGeometryNodePrivate
 
     QSGGeometry geometry;
     QGradient::Type gradientType = QGradient::NoGradient;
+
+    /*
+        Is there a better way to find out if the path has changed
+        beside storing a copy ( even, when internally with Copy On Write ) ?
+     */
+    QPainterPath path;
+    QTransform transform;
 };
 
 QskShapeNode::QskShapeNode()
@@ -127,12 +134,17 @@ void QskShapeNode::updateNode( const QPainterPath& path,
 
     if ( path.isEmpty() || !color.isValid() || color.alpha() == 0 )
     {
+        d->path = QPainterPath();
         qskResetGeometry( this );
+        
         return;
     }
 
-    if ( true ) // For the moment we always update the geometry. TODO ...
+    if ( ( transform != d->transform ) || ( path != d->path ) )
     {
+        d->path = path;
+        d->transform = transform;
+
         qskUpdateGeometry( path, transform, d->geometry );
         markDirty( QSGNode::DirtyGeometry );
     }
@@ -156,9 +168,13 @@ void QskShapeNode::updateNode( const QPainterPath& path,
 void QskShapeNode::updateNode( const QPainterPath& path,
     const QTransform& transform, const QGradient* gradient )
 {
+    Q_D( QskShapeNode );
+
     if ( path.isEmpty() || !qskIsGradientVisible( gradient ) )
     {
+        d->path = QPainterPath();
         qskResetGeometry( this );
+
         return;
     }
 
@@ -168,15 +184,16 @@ void QskShapeNode::updateNode( const QPainterPath& path,
         return;
     }
 
-    Q_D( QskShapeNode );
-
-    if ( true ) // For the moment we always update the geometry. TODO ...
+    if ( ( transform != d->transform ) || ( path != d->path ) )
     {
+        d->path = path;
+        d->transform = transform;
+
         qskUpdateGeometry( path, transform, d->geometry );
         markDirty( QSGNode::DirtyGeometry );
     }
 
-    if ( ( material() == nullptr ) || gradient->type() != d->gradientType )
+    if ( ( material() == nullptr ) || ( gradient->type() != d->gradientType ) )
     {
         setMaterial( QskGradientMaterial::createMaterial( gradient->type() ) );
         d->gradientType = gradient->type();
