@@ -705,10 +705,10 @@ namespace
 
 namespace
 {
-    class ConicalMaterial final : public GradientMaterial
+    class ConicMaterial final : public GradientMaterial
     {
       public:
-        ConicalMaterial()
+        ConicMaterial()
             : GradientMaterial( QGradient::ConicalGradient )
         {
         }
@@ -745,7 +745,7 @@ namespace
 
         int compare( const QSGMaterial* other ) const override
         {
-            const auto mat = static_cast< const ConicalMaterial* >( other );
+            const auto mat = static_cast< const ConicMaterial* >( other );
 
             if ( ( m_center != mat->m_center ) || qskFuzzyCompare( m_radians, mat->m_radians ) )
                 return QSGMaterial::compare( other );
@@ -760,10 +760,10 @@ namespace
     };
 
 #ifdef SHADER_GL
-    class ConicalShaderGL final : public GradientShaderGL
+    class ConicShaderGL final : public GradientShaderGL
     {
       public:
-        ConicalShaderGL()
+        ConicShaderGL()
         {
             setShaderFiles( "conicalgradient" );
         }
@@ -778,7 +778,7 @@ namespace
 
         void updateUniformValues( const GradientMaterial* newMaterial ) override
         {
-            auto material = static_cast< const ConicalMaterial* >( newMaterial );
+            auto material = static_cast< const ConicMaterial* >( newMaterial );
 
             program()->setUniformValue( m_radiansId, material->m_radians );
             program()->setUniformValue( m_centerPointId, material->m_center );
@@ -791,10 +791,10 @@ namespace
 #endif
 
 #ifdef SHADER_RHI
-    class ConicalShaderRhi final : public GradientShaderRhi
+    class ConicShaderRhi final : public GradientShaderRhi
     {
       public:
-        ConicalShaderRhi()
+        ConicShaderRhi()
         {
             setShaderFiles( "conicalgradient" );
         }
@@ -802,8 +802,8 @@ namespace
         bool updateUniformData( RenderState& state,
             QSGMaterial* newMaterial, QSGMaterial* oldMaterial ) override
         {
-            auto matNew = static_cast< ConicalMaterial* >( newMaterial );
-            auto matOld = static_cast< ConicalMaterial* >( oldMaterial );
+            auto matNew = static_cast< ConicMaterial* >( newMaterial );
+            auto matOld = static_cast< ConicMaterial* >( oldMaterial );
 
             Q_ASSERT( state.uniformData()->size() >= 80 );
 
@@ -843,13 +843,13 @@ namespace
     };
 #endif
 
-    QSGMaterialShader* ConicalMaterial::createShader() const
+    QSGMaterialShader* ConicMaterial::createShader() const
     {
 #ifdef SHADER_GL
         if ( !( flags() & QSGMaterial::RhiShaderWanted ) )
-            return new ConicalShaderGL;
+            return new ConicShaderGL;
 #endif
-        return new ConicalShaderRhi;
+        return new ConicShaderRhi;
     }
 }
 
@@ -890,7 +890,7 @@ bool QskGradientMaterial::updateGradient( const QGradient* gradient )
 
         case QGradient::ConicalGradient:
         {
-            auto material = static_cast< ConicalMaterial* >( this );
+            auto material = static_cast< ConicMaterial* >( this );
             return material->setGradient( static_cast< const QConicalGradient* >( gradient ) );
         }
     }
@@ -909,7 +909,7 @@ QskGradientMaterial* QskGradientMaterial::createMaterial( QGradient::Type gradie
             return new RadialMaterial();
 
         case QGradient::ConicalGradient:
-            return new ConicalMaterial();
+            return new ConicMaterial();
 
         default:
             return nullptr;
