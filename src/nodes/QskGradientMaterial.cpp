@@ -327,23 +327,23 @@ namespace
         }
 
         void updateSampledImage( RenderState& state, int binding,
-            QSGTexture** texture, QSGMaterial* newMaterial, QSGMaterial*) override final
+            QSGTexture* textures[], QSGMaterial* newMaterial, QSGMaterial*) override final
         {
             if ( binding != 1 )
                 return;
 
             auto material = static_cast< const GradientMaterial* >( newMaterial );
 
-            auto txt = TextureCache::instance()->texture(
+            auto texture = TextureCache::instance()->texture(
                 state.rhi(), material->stops(), material->spread() );
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-            txt->updateRhiTexture( state.rhi(), state.resourceUpdateBatch() );
+            texture->updateRhiTexture( state.rhi(), state.resourceUpdateBatch() );
 #else
-            txt->commitTextureOperations( state.rhi(), state.resourceUpdateBatch() );
+            texture->commitTextureOperations( state.rhi(), state.resourceUpdateBatch() );
 #endif
 
-            *texture = txt;
+            textures[0] = texture;
         }
     };
 #endif
