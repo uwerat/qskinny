@@ -5,10 +5,12 @@
 
 #pragma once
 
+#include "Gradient.h"
 #include <QskControl.h>
 #include <QPen>
 #include <QPainterPath>
-#include <QGradient>
+
+class Gradient;
 
 class ShapeItem : public QskControl
 {
@@ -21,8 +23,8 @@ class ShapeItem : public QskControl
     void setPen( const QPen& );
     QPen pen() const;
 
-    void setGradient( const QColor&, const QColor& );
-    void setGradient( QGradient::Preset );
+    void setGradient( const Gradient& );
+    const Gradient& gradient() const;
 
     void setPath( const QPainterPath& );
     QPainterPath path() const;
@@ -34,6 +36,6 @@ class ShapeItem : public QskControl
     QPainterPath scaledPath( const QRectF& ) const;
 
     QPen m_pen;
-    QColor m_fillColor[2];
+    Gradient m_gradient;
     QPainterPath m_path;
 };

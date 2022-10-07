@@ -42,10 +42,93 @@ static inline qreal effectivePenWidth(
     return width;
 }
 
+namespace
+{
+    class ShapeNode : public QskShapeNode
+    {
+      public:
+        void updateShape( const QPainterPath& path,
+            const QTransform& transform, const QRectF& rect, const Gradient& gradient )
+        {
+            if ( gradient.isMonochrome() )
+            {
+                updateNode( path, transform, gradient.stops().first().color() );
+                return;
+            }
+
+            /*
+                Stupid code to map Gradient -> QGradient
+                Can be removed once Gradient has been merged into QskGradient.
+             */
+
+            switch( static_cast<int>( gradient.type() ) )
+            {
+                case QGradient::LinearGradient:
+                {
+                    const auto& g = gradient.asLinearGradient();
+
+                    const qreal x1 = rect.left() + g.start().x() * rect.width();
+                    const qreal y1 = rect.top() + g.start().y() * rect.height();
+
+                    const qreal x2 = rect.left() + g.stop().x() * rect.width();
+                    const qreal y2 = rect.top() + g.stop().y() * rect.height();
+
+#if 0
+                    QTransform t2( rect.width(), 0, 0, rect.height(), rect.x(), rect.y());
+#endif
+                    QLinearGradient qgradient( x1, y1, x2, y2 );
+                    qgradient.setSpread( g.spread() );
+                    qgradient.setStops( g.qtStops() );
+
+                    updateNode( path, transform, &qgradient );
+
+                    break;
+                }
+                case QGradient::RadialGradient:
+                {
+                    const auto& g = gradient.asRadialGradient();
+
+                    const qreal x = rect.left() + g.center().x() * rect.width();
+                    const qreal y = rect.top() + g.center().y() * rect.height();
+                    const qreal r = g.centerRadius() * qMin( rect.width(), rect.height() ); 
+
+                    const qreal fx = rect.left() + g.focalPoint().x() * rect.width();
+                    const qreal fy = rect.top() + g.focalPoint().y() * rect.height();
+                    const qreal fr = g.focalRadius() * qMin( rect.width(), rect.height() ); 
+
+                    QRadialGradient qgradient( x, y, r, fx, fy, fr );
+                    qgradient.setSpread( g.spread() );
+                    qgradient.setStops( g.qtStops() );
+
+                    updateNode( path, transform, &qgradient );
+
+                    break;
+                }
+                case QGradient::ConicalGradient:
+                {
+                    const auto& g = gradient.asConicGradient();
+
+                    const qreal x = rect.left() + g.center().x() * rect.width();
+                    const qreal y = rect.top() + g.center().y() * rect.height();
+
+                    QConicalGradient qgradient( x, y, g.degrees() );
+                    //qgradient.setSpread( g.spread() );
+                    qgradient.setStops( g.qtStops() );
+
+                    updateNode( path, transform, &qgradient );
+
+                    break;
+                }
+            }
+        }
+    };
+}
+
 ShapeItem::ShapeItem( QQuickItem* parent )
     : QskControl( parent )
 {
     setMargins( 20 );
+    setSizePolicy( QskSizePolicy::Ignored, QskSizePolicy::Ignored );
 }
 
 ShapeItem::~ShapeItem()
@@ -66,25 +149,18 @@ QPen ShapeItem::pen() const
     return m_pen;
 }
 
-void ShapeItem::setGradient( const QColor& c1, const QColor& c2 )
+void ShapeItem::setGradient( const Gradient& gradient )
 {
-    if ( c1 != m_fillColor[0] || c2 != m_fillColor[1] )
+    if ( gradient != m_gradient )
     {
-        m_fillColor[0] = c1;
-        m_fillColor[1] = c2;
-
+        m_gradient = gradient;
         update();
     }
 }
 
-void ShapeItem::setGradient( QGradient::Preset preset )
+const Gradient& ShapeItem::gradient() const
 {
-    const auto stops = QGradient( preset ).stops();
-    if ( !stops.isEmpty() )
-    {
-        // gradients with more than 2 clors do not work TODO ...
-        setGradient( stops.first().second, stops.last().second );
-    }
+    return m_gradient;
 }
 
 void ShapeItem::setPath( const QPainterPath& path )
@@ -112,7 +188,7 @@ void ShapeItem::updateNode( QSGNode* parentNode )
     const auto rect = contentsRect();
     const auto pathRect = m_path.controlPointRect();
 
-    auto fillNode = static_cast< QskShapeNode* >(
+    auto fillNode = static_cast< ShapeNode* >(
         QskSGNode::findChildNode( parentNode, FillRole ) );
 
     auto borderNode = static_cast< QskStrokeNode* >(
@@ -126,11 +202,11 @@ void ShapeItem::updateNode( QSGNode* parentNode )
         return;
     }
 
-    if ( ::isVisible( m_fillColor[0] ) || ::isVisible( m_fillColor[1] ) )
+    if ( m_gradient.isVisible() )
     {
         if ( fillNode == nullptr )
         {
-            fillNode = new QskShapeNode;
+            fillNode = new ShapeNode;
             QskSGNode::setNodeRole( fillNode, FillRole );
 
             parentNode->prependChildNode( fillNode );
@@ -144,21 +220,7 @@ void ShapeItem::updateNode( QSGNode* parentNode )
         }
 
         const auto transform = ::transformForRects( pathRect, fillRect );
-
-        if ( m_fillColor[0] != m_fillColor[1] )
-        {
-            QLinearGradient gradient;
-            gradient.setStart( rect.topLeft() );
-            gradient.setFinalStop( rect.bottomRight() );
-            gradient.setColorAt( 0.0, m_fillColor[0] );
-            gradient.setColorAt( 1.0, m_fillColor[1] );
-
-            fillNode->updateNode( m_path, transform, &gradient );
-        }
-        else
-        {
-            fillNode->updateNode( m_path, transform, m_fillColor[0] );
-        }
+        fillNode->updateShape( m_path, transform, fillRect, m_gradient );
     }
     else
     {

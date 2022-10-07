@@ -8,6 +8,7 @@
 #include <QskObjectCounter.h>
 #include <QskWindow.h>
 #include <QskRgbValue.h>
+#include <QskLinearBox.h>
 
 #include <SkinnyShortcut.h>
 #include <SkinnyShapeFactory.h>
@@ -42,6 +43,68 @@ namespace
             setColor( QskRgb::toTransparent( color(), alpha ) );
         }
     };
+
+    class Box : public QskLinearBox
+    {
+      public:
+        Box( QQuickItem* parent = nullptr )
+            : QskLinearBox( Qt::Horizontal, 2, parent )
+        {
+            {
+                auto shapeItem = new ShapeItem( this );
+
+                shapeItem->setPath( path( SkinnyShapeFactory::Hexagon ) );
+                shapeItem->setPen( Pen( QColorConstants::Svg::indigo ) );
+
+                LinearGradient gradient( 0.0, 0.0, 0.2, 0.5 );
+                gradient.setSpread( QGradient::ReflectSpread );
+                gradient.setStops( QGradient::PhoenixStart );
+
+                shapeItem->setGradient( gradient );
+            }
+
+            {
+                auto shapeItem = new ShapeItem( this );
+
+                shapeItem->setPath( path( SkinnyShapeFactory::Ellipse ) );
+
+                RadialGradient gradient( 0.5, 0.5, 0.5 );
+                gradient.setSpread( QGradient::RepeatSpread );
+
+#if 1
+                QVector< QskGradientStop > stops;
+
+                stops += QskGradientStop( 0.0, Qt::green );
+                stops += QskGradientStop( 0.2, Qt::green );
+                stops += QskGradientStop( 0.201, Qt::red );
+                stops += QskGradientStop( 0.4, Qt::red );
+                stops += QskGradientStop( 0.401, Qt::yellow );
+                stops += QskGradientStop( 0.6, Qt::yellow );
+                stops += QskGradientStop( 0.601, Qt::cyan );
+                stops += QskGradientStop( 0.8, Qt::cyan );
+                stops += QskGradientStop( 0.801, Qt::darkCyan );
+                stops += QskGradientStop( 1.0, Qt::darkCyan );
+
+                gradient.setStops( stops );
+#else
+                gradient.setStops( QGradient::DirtyBeauty );
+#endif
+
+                shapeItem->setGradient( gradient );
+            }
+
+            {
+                auto shapeItem = new ShapeItem( this );
+
+                shapeItem->setPath( path( SkinnyShapeFactory::Arc ) );
+
+                ConicGradient gradient( 0.5, 0.5, -60.0 );
+                gradient.setStops( QGradient::BurningSpring );
+
+                shapeItem->setGradient( gradient );
+            }
+        }
+    };
 }
 
 int main( int argc, char* argv[] )
@@ -56,16 +119,8 @@ int main( int argc, char* argv[] )
 
     QskWindow window;
     window.setColor( Qt::gray );
-
-    auto shapeItem = new ShapeItem();
-
-    shapeItem->setPath( path( SkinnyShapeFactory::Hexagon ) );
-
-    shapeItem->setPen( Pen( QColorConstants::Svg::indigo ) );
-    shapeItem->setGradient( QGradient::PhoenixStart );
-
-    window.addItem( shapeItem );
-    window.resize( 600, 600 );
+    window.addItem( new Box() );
+    window.resize( 800, 600 );
     window.show();
 
     return app.exec();
