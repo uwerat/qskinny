@@ -25,6 +25,7 @@ namespace SkinnyShapeFactory
         Ring,
         Star,
         Hexagon,
+        Arc,
 
         ShapeCount
     };
