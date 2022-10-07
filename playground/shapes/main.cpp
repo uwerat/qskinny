@@ -71,7 +71,6 @@ namespace
                 RadialGradient gradient( 0.5, 0.5, 0.5 );
                 gradient.setSpread( QGradient::RepeatSpread );
 
-#if 1
                 QVector< QskGradientStop > stops;
 
                 stops += QskGradientStop( 0.0, Qt::green );
@@ -86,9 +85,6 @@ namespace
                 stops += QskGradientStop( 1.0, Qt::darkCyan );
 
                 gradient.setStops( stops );
-#else
-                gradient.setStops( QGradient::DirtyBeauty );
-#endif
 
                 shapeItem->setGradient( gradient );
             }
@@ -100,6 +96,18 @@ namespace
 
                 ConicGradient gradient( 0.5, 0.5, -60.0 );
                 gradient.setStops( QGradient::BurningSpring );
+
+                shapeItem->setGradient( gradient );
+            }
+
+            {
+                auto shapeItem = new ShapeItem( this );
+
+                shapeItem->setPath( path( SkinnyShapeFactory::Ellipse ) );
+
+                RadialGradient gradient( 0.5, 0.5, 0.5 );
+                gradient.setSpread( QGradient::RepeatSpread );
+                gradient.setStops( QGradient::DirtyBeauty );
 
                 shapeItem->setGradient( gradient );
             }
