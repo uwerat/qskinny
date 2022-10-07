@@ -40,7 +40,7 @@ void Cube::startAnimation( Qsk::Direction direction )
     const bool inverted = ( direction == Qsk::LeftToRight || direction == Qsk::TopToBottom );
     animator->setInverted( inverted );
 
-    int newIndex;
+    int newIndex = 0;
 
     switch( direction )
     {
