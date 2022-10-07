@@ -536,16 +536,8 @@ namespace
                 changed = true;
             }
 
-            const QVector2D center( gradient->center() );
+            const QVector2D focalToCenter( gradient->center() - gradient->focalPoint() );
             const float centerRadius = gradient->centerRadius();
-
-            if ( ( center != m_center ) || ( m_centerRadius != centerRadius ) )
-            {
-                m_center = center;
-                m_centerRadius = centerRadius;
-
-                changed = true;
-            }
 
             const QVector2D focalPoint( gradient->focalPoint() );
             const float focalRadius = gradient->focalRadius();
@@ -558,6 +550,14 @@ namespace
                 changed = true;
             }
 
+            if ( ( focalToCenter != m_focalToCenter ) || ( m_centerRadius != centerRadius ) )
+            {
+                m_focalToCenter = focalToCenter;
+                m_centerRadius = centerRadius;
+
+                changed = true;
+            }
+
             return changed;
         }
 
@@ -565,8 +565,8 @@ namespace
         {
             const auto mat = static_cast< const RadialMaterial* >( other );
 
-            if ( ( m_center != mat->m_center )
-                || ( m_focalPoint != mat->m_focalPoint )
+            if ( ( m_focalPoint != mat->m_focalPoint )
+                || ( m_focalToCenter != mat->m_focalToCenter )
                 || qskFuzzyCompare( m_centerRadius, mat->m_centerRadius )
                 || qskFuzzyCompare( m_focalRadius, mat->m_focalRadius ) )
             {
@@ -580,8 +580,8 @@ namespace
 
         QSGMaterialShader* createShader() const override;
 
-        QVector2D m_center;
         QVector2D m_focalPoint;
+        QVector2D m_focalToCenter;
         float m_centerRadius = 0.0;
         float m_focalRadius = 0.0;
     };
@@ -661,9 +661,9 @@ namespace
                 changed = true;
             }
 
-            if ( matOld == nullptr || matNew->m_focalPoint != matOld->m_focalPoint )
+            if ( matOld == nullptr || matNew->m_focalToCenter != matOld->m_focalToCenter )
             {
-                memcpy( data + 72, &matNew->m_focalPoint, 8 );
+                memcpy( data + 72, &matNew->m_focalToCenter, 8 );
                 changed = true;
             }
 
@@ -675,7 +675,7 @@ namespace
 
             if ( matOld == nullptr || matNew->m_focalRadius != matOld->m_focalRadius )
             {
-                memcpy( data + 84, &matOld->m_focalRadius, 4 );
+                memcpy( data + 84, &matNew->m_focalRadius, 4 );
                 changed = true;
             }
 
