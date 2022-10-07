@@ -6,6 +6,31 @@
 #include "Gradient.h"
 #include <cassert>
 
+Gradient::Gradient( const Gradient& other ) noexcept
+    : m_stops( other.m_stops )
+    , m_values{ other.m_values[0], other.m_values[1], other.m_values[2],
+        other.m_values[3], other.m_values[4], other.m_values[5] }
+    , m_type( other.m_type )
+    , m_spread( other.m_spread )
+{
+}
+
+Gradient& Gradient::operator=( const Gradient& other ) noexcept
+{
+    m_type = other.m_type;
+    m_spread = other.m_spread;
+    m_stops = other.m_stops;
+
+    m_values[0] = other.m_values[0];
+    m_values[1] = other.m_values[1];
+    m_values[2] = other.m_values[2];
+    m_values[3] = other.m_values[3];
+    m_values[4] = other.m_values[4];
+    m_values[5] = other.m_values[5];
+
+    return *this;
+}
+
 bool Gradient::operator==( const Gradient& other ) const noexcept
 {
     if ( m_type != other.m_type )
@@ -210,12 +235,12 @@ void RadialGradient::setFocalPoint( qreal x, qreal y ) noexcept
     m_values[4] = y;
 }
 
-constexpr void RadialGradient::setCenterRadius( qreal radius ) noexcept
+void RadialGradient::setCenterRadius( qreal radius ) noexcept
 {
     m_values[2] = radius;
 }
 
-constexpr void RadialGradient::setFocalRadius( qreal radius ) noexcept
+void RadialGradient::setFocalRadius( qreal radius ) noexcept
 {
     m_values[5] = radius;
 }

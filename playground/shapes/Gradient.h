@@ -22,8 +22,10 @@ class ConicGradient;
 class Gradient
 {
   public:
-    constexpr Gradient() noexcept = default;
-    Gradient( const Gradient& ) noexcept = default;
+    Gradient() noexcept = default;
+    Gradient( const Gradient& ) noexcept;
+
+    Gradient& operator=( const Gradient& ) noexcept;
 
     bool operator==( const Gradient& ) const noexcept;
     bool operator!=( const Gradient& ) const noexcept;
@@ -60,8 +62,8 @@ class Gradient
     friend class RadialGradient;
     friend class ConicGradient;
 
-    constexpr Gradient( QGradient::Type ) noexcept;
-    constexpr Gradient( QGradient::Type,
+    Gradient( QGradient::Type ) noexcept;
+    Gradient( QGradient::Type,
         qreal, qreal, qreal, qreal, qreal, qreal ) noexcept;
 
     QVector< QskGradientStop > m_stops;
@@ -80,9 +82,9 @@ class Gradient
 class LinearGradient : public Gradient
 {
   public:
-    constexpr LinearGradient() noexcept;
-    constexpr LinearGradient( const QPointF&, const QPointF& ) noexcept;
-    constexpr LinearGradient( qreal x1, qreal y1, qreal x2, qreal y2 ) noexcept;
+    LinearGradient() noexcept;
+    LinearGradient( const QPointF&, const QPointF& ) noexcept;
+    LinearGradient( qreal x1, qreal y1, qreal x2, qreal y2 ) noexcept;
 
     void setStart(const QPointF& start) noexcept;
     void setStart( qreal x, qreal y ) noexcept;
@@ -104,15 +106,15 @@ QDebug operator<<( QDebug, const Gradient& );
 class RadialGradient : public Gradient
 {
   public:
-    constexpr RadialGradient() noexcept;
+    RadialGradient() noexcept;
 
-    constexpr RadialGradient( const QPointF& center, qreal radius ) noexcept;
-    constexpr RadialGradient( qreal cx, qreal cy, qreal radius ) noexcept;
+    RadialGradient( const QPointF& center, qreal radius ) noexcept;
+    RadialGradient( qreal cx, qreal cy, qreal radius ) noexcept;
 
-    constexpr RadialGradient( const QPointF& center, qreal centerRadius,
+    RadialGradient( const QPointF& center, qreal centerRadius,
         const QPointF& focalPoint, qreal focalRadius = 0.0 ) noexcept;
 
-    constexpr RadialGradient(qreal cx, qreal cy, qreal centerRadius,
+    RadialGradient(qreal cx, qreal cy, qreal centerRadius,
         qreal fx, qreal fy, qreal focalRadius = 0.0 ) noexcept;
 
     constexpr QPointF center() const noexcept;
@@ -124,18 +126,18 @@ class RadialGradient : public Gradient
     void setFocalPoint( qreal x, qreal y ) noexcept;
 
     constexpr qreal centerRadius() const noexcept;
-    constexpr void setCenterRadius( qreal radius ) noexcept;
+    void setCenterRadius( qreal radius ) noexcept;
 
     constexpr qreal focalRadius() const noexcept;
-    constexpr void setFocalRadius( qreal radius ) noexcept;
+    void setFocalRadius( qreal radius ) noexcept;
 };
 
 class ConicGradient : public Gradient
 {
   public:
-    constexpr ConicGradient() noexcept;
-    constexpr ConicGradient( const QPointF&, qreal degrees ) noexcept;
-    constexpr ConicGradient( qreal cx, qreal cy, qreal degrees ) noexcept;
+    ConicGradient() noexcept;
+    ConicGradient( const QPointF&, qreal degrees ) noexcept;
+    ConicGradient( qreal cx, qreal cy, qreal degrees ) noexcept;
 
     constexpr QPointF center() const noexcept;
     void setCenter(const QPointF& center) noexcept;
@@ -145,12 +147,12 @@ class ConicGradient : public Gradient
     void setDegrees(qreal ) noexcept;
 };
 
-constexpr Gradient::Gradient( QGradient::Type type ) noexcept
+inline Gradient::Gradient( QGradient::Type type ) noexcept
     : m_type( type )
 {
 }
 
-constexpr Gradient::Gradient( QGradient::Type type,
+inline Gradient::Gradient( QGradient::Type type,
         qreal v1, qreal v2, qreal v3,
         qreal v4 = 0.0, qreal v5 = 0.0, qreal v6 = 0.0  ) noexcept
     : m_values{ v1, v2, v3, v4, v5, v6 }
@@ -183,18 +185,18 @@ inline constexpr QGradient::Spread Gradient::spread() const noexcept
     return m_spread;
 }
 
-inline constexpr LinearGradient::LinearGradient() noexcept
+inline LinearGradient::LinearGradient() noexcept
     : Gradient( QGradient::LinearGradient, 0.0, 0.0, 1.0, 1.0 )
 {
 }
 
-inline constexpr LinearGradient::LinearGradient(
+inline LinearGradient::LinearGradient(
         const QPointF& start, const QPointF& stop ) noexcept
     : LinearGradient( start.x(), start.y(), stop.x(), stop.y() )
 {
 }
 
-inline constexpr LinearGradient::LinearGradient(
+inline LinearGradient::LinearGradient(
         qreal x1, qreal y1, qreal x2, qreal y2 ) noexcept
     : Gradient( QGradient::LinearGradient, x1, y1, x2, y2 )
 {
@@ -210,12 +212,12 @@ inline constexpr QPointF LinearGradient::stop() const noexcept
     return QPointF( m_values[2], m_values[3] );
 }
 
-inline constexpr RadialGradient::RadialGradient() noexcept
+inline RadialGradient::RadialGradient() noexcept
     : Gradient( QGradient::RadialGradient, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0 )
 {
 }
 
-inline constexpr RadialGradient::RadialGradient(
+inline RadialGradient::RadialGradient(
         const QPointF& center, qreal radius,
         const QPointF& focalPoint, qreal focalRadius ) noexcept
     : RadialGradient( center.x(), center.y(), radius,
@@ -223,19 +225,19 @@ inline constexpr RadialGradient::RadialGradient(
 {
 }
 
-inline constexpr RadialGradient::RadialGradient(
+inline RadialGradient::RadialGradient(
         const QPointF& center, qreal radius ) noexcept
     : RadialGradient( center.x(), center.y(), radius )
 {
 }
 
-inline constexpr RadialGradient::RadialGradient(
+inline RadialGradient::RadialGradient(
         qreal cx, qreal cy, qreal radius ) noexcept
     : RadialGradient( cx, cy, radius, cx, cy, 0.0 )
 {
 }
 
-inline constexpr RadialGradient::RadialGradient(
+inline RadialGradient::RadialGradient(
         qreal cx, qreal cy, qreal radius,
         qreal fx, qreal fy, qreal focalRadius  ) noexcept
     : Gradient( QGradient::RadialGradient, cx, cy, radius, fx, fy, focalRadius )
@@ -262,18 +264,18 @@ inline constexpr qreal RadialGradient::focalRadius() const noexcept
     return m_values[5];
 }
 
-inline constexpr ConicGradient::ConicGradient() noexcept
+inline ConicGradient::ConicGradient() noexcept
     : Gradient( QGradient::ConicalGradient, 0.0, 0.0, 0.0 )
 {
 }
 
-inline constexpr ConicGradient::ConicGradient(
+inline ConicGradient::ConicGradient(
         const QPointF& center, qreal degrees ) noexcept
     : ConicGradient( center.x(), center.y(), degrees )
 {
 }
 
-inline constexpr ConicGradient::ConicGradient(
+inline ConicGradient::ConicGradient(
         qreal cx, qreal cy, qreal degrees ) noexcept
     : Gradient( QGradient::ConicalGradient, cx, cy, degrees )
 {

@@ -601,8 +601,8 @@ namespace
 
             auto p = program();
 
-            m_centerPointId = p->uniformLocation( "translationPoint" );
-            m_focalPointId = p->uniformLocation( "focalToCenter" );
+            m_focalPointId = p->uniformLocation( "translationPoint" );
+            m_focalToCenterId = p->uniformLocation( "focalToCenter" );
             m_centerRadiusId = p->uniformLocation( "centerRadius" );
             m_focalRadiusId = p->uniformLocation( "focalRadius" );
         }
@@ -613,14 +613,14 @@ namespace
 
             auto p = program();
 
-            p->setUniformValue( m_centerPointId, material->m_center );
+            p->setUniformValue( m_focalToCenterId, material->m_focalToCenter );
             p->setUniformValue( m_centerRadiusId, material->m_centerRadius);
             p->setUniformValue( m_focalRadiusId, material->m_focalRadius);
             p->setUniformValue( m_focalPointId, material->m_focalPoint);
         }
 
       private:
-        int m_centerPointId = -1;
+        int m_focalToCenterId = -1;
         int m_focalPointId = -1;
         int m_centerRadiusId = -1;
         int m_focalRadiusId = -1;
