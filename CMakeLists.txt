@@ -19,7 +19,7 @@ set(Qt5WebEngine_FIND_COMPONENTS     Private CACHE STRING "force include private
 set(Qt5WebEngineCore_FIND_COMPONENTS Private CACHE STRING "force include private headers" FORCE)
 set(Qt5Widgets_FIND_COMPONENTS       Private CACHE STRING "force include private headers" FORCE)
 
-set(Qt5_DIR "C:/.conan/ea20b9/1/lib/cmake/Qt5") # TODO pass in externally
+set(Qt5_DIR "C:/.conan/ea20b9/1/lib/cmake/Qt5" CACHE PATH "") # TODO pass in externally
 find_package(Qt5 REQUIRED COMPONENTS Core Gui Opengl Quick Quickwidgets Svg Webengine WebengineCore Widgets)
 
 # define install directories
