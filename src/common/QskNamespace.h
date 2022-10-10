@@ -11,7 +11,11 @@
 
 namespace Qsk
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    Q_NAMESPACE_EXPORT(QSK_EXPORT)
+#else
     QSK_EXPORT Q_NAMESPACE
+#endif
 
     enum Direction
     {
