@@ -414,7 +414,7 @@ if (Qt5_VERSION_MAJOR VERSION_GREATER "5")
     target_link_libraries(${TARGET_NAME} PRIVATE Qt5::Opengl)
 endif()
 
-if(QskDll)
+if(BUILD_QSKDLL)
     target_compile_definitions(${TARGET_NAME}
         PUBLIC
             QSK_DLL

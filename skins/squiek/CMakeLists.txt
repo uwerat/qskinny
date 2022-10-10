@@ -20,7 +20,7 @@ target_link_libraries(${TARGET_NAME}
     PRIVATE
         qskinny)
 
-if(QskDll)
+if(BUILD_QSKDLL)
     target_compile_definitions(${TARGET_NAME}
         PRIVATE
             QSK_SQUIEK_MAKEDLL)

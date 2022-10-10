@@ -49,7 +49,7 @@ set(MOC_DIR      moc)
 set(OBJECTS_DIR  obj)
 set(RCC_DIR      rcc)
 
-option(QskDll "build qskinny as shared library" ON)
+option(BUILD_QSKDLL "build qskinny as shared library" ON)
 
 if(UNIX AND NOT APPLE)
     set(LINUX TRUE)

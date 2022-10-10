@@ -15,7 +15,7 @@ list(APPEND TARGET_OTHER_FILES
 
 add_library(${TARGET_NAME} SHARED ${TARGET_SOURCES} ${TARGET_HEADERS} ${TARGET_OTHER_FILES})
 
-if(QskDll)
+if(BUILD_QSKDLL)
     target_compile_definitions(${TARGET_NAME}
         PRIVATE
             QSK_INPUTCONTEXT_MAKEDLL)

@@ -27,7 +27,7 @@ target_include_directories(${TARGET_NAME}
    PUBLIC
        ${CMAKE_CURRENT_LIST_DIR})
 
-if(QskDll)
+if(BUILD_QSKDLL)
     target_compile_definitions(${TARGET_NAME}
         PRIVATE
             QSK_QML_MAKEDLL)

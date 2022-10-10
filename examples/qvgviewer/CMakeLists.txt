@@ -39,9 +39,9 @@ target_link_libraries(${TARGET_NAME}
         qskinny
         qsktestsupport)
 
-option(autoqvg "enable automatic qvg commpilation" OFF)
+option(ENABLE_AUTOQVG "enable automatic qvg commpilation" OFF)
 
-if(autoqvg)
+if(ENABLE_AUTOQVG)
     svg2qvg(${CMAKE_CURRENT_LIST_DIR}/svg/01.01.10.svg
             ${CMAKE_CURRENT_LIST_DIR}/qvg/01.01.10.qvg)
     svg2qvg(${CMAKE_CURRENT_LIST_DIR}/svg/01.03.04q.svg

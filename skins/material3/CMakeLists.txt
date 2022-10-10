@@ -18,7 +18,7 @@ add_library(${TARGET_NAME} SHARED ${TARGET_HEADERS} ${TARGET_SOURCES} ${TARGET_O
 
 target_link_libraries(${TARGET_NAME} PRIVATE qskinny)
 
-if(QskDll)
+if(BUILD_QSKDLL)
     target_compile_definitions(${TARGET_NAME}
         PRIVATE
             QSK_MATERIAL3_MAKEDLL)

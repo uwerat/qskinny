@@ -45,7 +45,7 @@ target_link_libraries(${TARGET_NAME}
    PRIVATE
        qskinny)
 
-if (QskDll)
+if (BUILD_QSKDLL)
     target_compile_definitions(${TARGET_NAME}
         PRIVATE
             SKINNY_MAKEDLL)
@@ -59,9 +59,9 @@ target_include_directories(${TARGET_NAME}
    PUBLIC
        ${CMAKE_CURRENT_LIST_DIR})
 
-option(ensure_skins "Enabling fall back code, that inserts some skin factories manually when not finding skin factories as plugins" ON)
+option(ENABLE_ENSURE_SKINS "Enabling fall back code, that inserts some skin factories manually when not finding skin factories as plugins" ON)
 
-if(ensure_skins)
+if(ENABLE_ENSURE_SKINS)
     target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/skins)
     target_compile_definitions(${TARGET_NAME} PRIVATE ENSURE_SKINS)
 
