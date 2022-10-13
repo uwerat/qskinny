@@ -71,7 +71,7 @@ static inline bool qskIsGradientVisible( const QGradient* gradient )
 {
     if ( gradient && gradient->type() != QGradient::NoGradient )
     {
-        for ( const auto stop : gradient->stops() )
+        for ( const auto& stop : gradient->stops() )
         {
             if ( stop.second.alpha() > 0 )
                 return true;
@@ -166,7 +166,8 @@ void QskShapeNode::updateNode( const QPainterPath& path,
 }
 
 void QskShapeNode::updateNode( const QPainterPath& path,
-    const QTransform& transform, const QGradient* gradient )
+    const QTransform& transform, const QRectF& rect,
+    const QGradient* gradient, qreal extraValue )
 {
     Q_D( QskShapeNode );
 
@@ -200,7 +201,7 @@ void QskShapeNode::updateNode( const QPainterPath& path,
     }
 
     auto gradientMaterial = static_cast< QskGradientMaterial* >( material() );
-    if ( gradientMaterial->updateGradient( gradient ) )
+    if ( gradientMaterial->updateGradient( rect, gradient, extraValue ) )
         markDirty( QSGNode::DirtyMaterial );
 }
 

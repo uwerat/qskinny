@@ -3,12 +3,6 @@ TARGET   = $$qskLibraryTarget(qskinny)
 
 QT += quick quick-private
 
-# We need quickshapes for the shaders for the gradients only,
-# As those shaders are more or less trivial # it might be better
-# to implement our own shaders to get rid of this extra module dependency
-
-QT += quickshapes-private
-
 greaterThan( QT_MAJOR_VERSION, 5 ) {
     QT += opengl-private
 }

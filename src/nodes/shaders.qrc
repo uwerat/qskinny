@@ -1,9 +1,26 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
     <qresource prefix="/qskinny/">
+
         <file>shaders/boxshadow.vert.qsb</file>
         <file>shaders/boxshadow.frag.qsb</file>
         <file>shaders/boxshadow.vert</file>
         <file>shaders/boxshadow.frag</file>
+
+        <file>shaders/gradientconic.vert.qsb</file>
+        <file>shaders/gradientconic.frag.qsb</file>
+        <file>shaders/gradientconic.vert</file>
+        <file>shaders/gradientconic.frag</file>
+
+        <file>shaders/gradientradial.vert.qsb</file>
+        <file>shaders/gradientradial.frag.qsb</file>
+        <file>shaders/gradientradial.vert</file>
+        <file>shaders/gradientradial.frag</file>
+
+        <file>shaders/gradientlinear.vert.qsb</file>
+        <file>shaders/gradientlinear.frag.qsb</file>
+        <file>shaders/gradientlinear.vert</file>
+        <file>shaders/gradientlinear.frag</file>
+
     </qresource>
 </RCC>

@@ -67,20 +67,11 @@ namespace
                 {
                     const auto& g = gradient.asLinearGradient();
 
-                    const qreal x1 = rect.left() + g.start().x() * rect.width();
-                    const qreal y1 = rect.top() + g.start().y() * rect.height();
-
-                    const qreal x2 = rect.left() + g.stop().x() * rect.width();
-                    const qreal y2 = rect.top() + g.stop().y() * rect.height();
-
-#if 0
-                    QTransform t2( rect.width(), 0, 0, rect.height(), rect.x(), rect.y());
-#endif
-                    QLinearGradient qgradient( x1, y1, x2, y2 );
+                    QLinearGradient qgradient( g.start(), g.stop() );
                     qgradient.setSpread( g.spread() );
                     qgradient.setStops( g.qtStops() );
 
-                    updateNode( path, transform, &qgradient );
+                    updateNode( path, transform, rect, &qgradient );
 
                     break;
                 }
@@ -88,19 +79,11 @@ namespace
                 {
                     const auto& g = gradient.asRadialGradient();
 
-                    const qreal x = rect.left() + g.center().x() * rect.width();
-                    const qreal y = rect.top() + g.center().y() * rect.height();
-                    const qreal r = g.centerRadius() * qMin( rect.width(), rect.height() ); 
-
-                    const qreal fx = rect.left() + g.focalPoint().x() * rect.width();
-                    const qreal fy = rect.top() + g.focalPoint().y() * rect.height();
-                    const qreal fr = g.focalRadius() * qMin( rect.width(), rect.height() ); 
-
-                    QRadialGradient qgradient( x, y, r, fx, fy, fr );
+                    QRadialGradient qgradient( g.center(), g.radius() );
                     qgradient.setSpread( g.spread() );
                     qgradient.setStops( g.qtStops() );
 
-                    updateNode( path, transform, &qgradient );
+                    updateNode( path, transform, rect, &qgradient );
 
                     break;
                 }
@@ -108,14 +91,16 @@ namespace
                 {
                     const auto& g = gradient.asConicGradient();
 
-                    const qreal x = rect.left() + g.center().x() * rect.width();
-                    const qreal y = rect.top() + g.center().y() * rect.height();
-
-                    QConicalGradient qgradient( x, y, g.degrees() );
-                    //qgradient.setSpread( g.spread() );
+                    QConicalGradient qgradient( g.center(), g.startAngle() );
+                    qgradient.setSpread( g.spread() );
                     qgradient.setStops( g.qtStops() );
 
-                    updateNode( path, transform, &qgradient );
+                    /*
+                        Once ConicGradient has become QskConicGradient we do not
+                        need QConicalGradient anymore and passing the spanAngle
+                        as extra parameter can go away.
+                     */
+                    updateNode( path, transform, rect, &qgradient, g.spanAngle() );
 
                     break;
                 }

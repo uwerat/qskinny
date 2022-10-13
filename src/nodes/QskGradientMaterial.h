@@ -15,7 +15,7 @@ class QSK_EXPORT QskGradientMaterial : public QSGMaterial
   public:
     static QskGradientMaterial* createMaterial( QGradient::Type );
 
-    bool updateGradient( const QGradient* );
+    bool updateGradient( const QRectF&, const QGradient*, qreal );
     QGradient::Type gradientType() const;
 
     const QGradientStops& stops() const;

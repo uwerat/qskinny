@@ -1,12 +1,21 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * This file may be used under the terms of the QSkinny License, Version 1.0
+ *****************************************************************************/
+
 #include "QskGradientMaterial.h"
 #include "QskFunctions.h"
 #include "QskRgbValue.h"
+
+#include <qcoreapplication.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qrhi_p.h>
 #include <private/qdrawhelper_p.h>
 #include <private/qsgplaintexture_p.h>
 QSK_QT_PRIVATE_END
+
+#include <cmath>
 
 // RHI shaders are supported by Qt 5.15 and Qt 6.x
 #define SHADER_RHI
@@ -23,106 +32,33 @@ QSK_QT_PRIVATE_END
     using RhiShader = QSGMaterialShader;
 #endif
 
-/*
-    The shaders for the gradient are implemented in the quickshapes module
-    Beside them we do not need this module.
- */
-
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-
-    QSK_QT_PRIVATE_BEGIN
-        #ifndef signals
-            #define signals Q_SIGNALS
-        #endif
-        #include <private/qquickshape_p.h>
-    QSK_QT_PRIVATE_END
-
-    static void QQuickShapes_initializeModule()
-    {
-        QQuickShapesModule::defineModule();
-    }
-
-#else
-    extern void QQuickShapes_initializeModule();
-#endif
-
-Q_CONSTRUCTOR_FUNCTION( QQuickShapes_initializeModule )
-
 namespace
 {
-    /*
-        Qt offers QGradient compatible shaders in the quickshapes module.
-        So why reimplementing the wheel ...
-
-        Those shaders ( f.e lineargradient.frag ) want to have a lookup table
-        with the interpolated colors, being uploaded as a texture.
-        A 1 dimensional 256x1 texture is how Chrome, Firefox, and Android render
-        gradients - so let's do the same.
-     */
-    class GradientImage : public QImage
-    {
-      public:
-        GradientImage( const QGradientStops& stops )
-            : QImage( 256, 1, QImage::Format_RGBA8888_Premultiplied )
-        {
-            constexpr int numColors = 256;
-            auto colorTable = reinterpret_cast< uint* >( bits() );
-
-            int index1, index2;
-            QRgb rgb1, rgb2;
-
-            index1 = index2 = qRound( stops[0].first * numColors );
-            rgb1 = rgb2 = stops[0].second.rgba();
-
-            if ( index1 > 0 )
-            {
-                const auto v = value( rgb1 );
-
-                for ( int i = 0; i < index1; i++ )
-                    colorTable[i] = v;
-            }
-
-            for ( int i = 1; i < stops.count(); i++ )
-            {
-                const auto& stop = stops[i];
-
-                index2 = qRound( stop.first * numColors );
-                rgb2 = stop.second.rgba();
-
-                const auto n = index2 - index1;
-
-                for ( int j = 0; j < n; j++ )
-                {
-                    const auto rgb = QskRgb::interpolated( rgb1, rgb2, qreal( j ) / n );
-                    colorTable[ index1 + j] = value( rgb );
-                }
-
-                index1 = index2;
-                rgb1 = rgb2;
-            }
-
-            if ( index1 < numColors - 1 )
-            {
-                const auto v = value( rgb1 );
-
-                for ( int i = index1; i < numColors ; i++ )
-                    colorTable[i] = v;
-            }
-        }
-
-      private:
-        inline uint value( const QRgb rgb ) const
-        {
-            return ARGB2RGBA( qPremultiply( rgb ) );
-        }
-    };
-
     class GradientTexture : public QSGPlainTexture
     {
       public:
         GradientTexture( const QGradientStops& stops, QGradient::Spread spread )
         {
-            setImage( GradientImage( stops ) );
+#if 1
+            /*
+                Once we got rid of QGradient we will have QskGradientStops
+                ( like in the gradients branch ). For the moment we have to copy
+             */
+
+            QskGradientStops qskStops;
+            qskStops.reserve( stops.size() );
+
+            for ( const auto& s : stops )
+                qskStops += QskGradientStop( s.first, s.second );
+#endif
+            /*
+                Qt creates tables of 1024 colors, while Chrome, Firefox, and Android
+                seem to use 256 colors only ( according to maybe outdated sources
+                from the internet ),
+             */
+
+
+            setImage( QskRgb::colorTable( 256, qskStops ) );
 
             const auto wrapMode = this->wrapMode( spread );
 
@@ -183,10 +119,9 @@ namespace
                 s_instance = new TextureCache();
 
                 /*
-                    For OpenGL we coud fiddle around with QOpenGLSharedResource
-                    while with RHI we would have QRhi::addCleanupCallback
-
-                    But let's keep things simple for the moment. TODO ...
+                    For RHI we have QRhi::addCleanupCallback, but with
+                    OpenGL we have to fiddle around with QOpenGLSharedResource
+                    So let's keep things simple for the moment. TODO ...
                  */
                 qAddPostRoutine( cleanup );
             }
@@ -209,6 +144,17 @@ namespace
             {
                 texture = new GradientTexture( stops, spread );
                 m_hashTable[ key ] = texture;
+
+                if ( rhi != nullptr )
+                {
+                    auto myrhi = ( QRhi* )rhi;
+
+                    if ( !m_rhiTable.contains( myrhi ) )
+                    {
+                        myrhi->addCleanupCallback( TextureCache::cleanupRhi );
+                        m_rhiTable += myrhi;
+                    }
+                }
             }
 
             return texture;
@@ -220,7 +166,29 @@ namespace
             delete instance();
         }
 
+        static void cleanupRhi( const QRhi *rhi )
+        {
+            auto cache = instance();
+
+            auto& table = cache->m_hashTable;
+            for ( auto it = table.begin(); it != table.end(); )
+            {
+                if ( it.key().rhi == rhi )
+                {
+                    delete it.value();
+                    it = table.erase( it );
+                }
+                else
+                {
+                    ++it;
+                }
+            }
+
+            cache->m_rhiTable.removeAll( rhi );
+        }
+
         QHash< TextureHashKey, GradientTexture* > m_hashTable;
+        QVector< const QRhi* > m_rhiTable;
     };
 }
 
@@ -269,7 +237,7 @@ namespace
       public:
         void setShaderFiles( const char* name )
         {
-            static const QString root( ":/qt-project.org/shapes/shaders/" );
+            static const QString root( ":/qskinny/shaders/" );
 
             setShaderSourceFile( QOpenGLShader::Vertex, root + name + ".vert" );
             setShaderSourceFile( QOpenGLShader::Fragment, root + name + ".frag" );
@@ -320,7 +288,7 @@ namespace
       public:
         void setShaderFiles( const char* name )
         {
-            static const QString root( ":/qt-project.org/shapes/shaders_ng/" );
+            static const QString root( ":/qskinny/shaders/" );
 
             setShaderFileName( VertexStage, root + name + ".vert.qsb" );
             setShaderFileName( FragmentStage, root + name + ".frag.qsb" );
@@ -359,29 +327,35 @@ namespace
         {
         }
 
-        bool setGradient( const QLinearGradient* gradient )
+        bool setGradient( const QRectF& rect, const QLinearGradient& gradient )
         {
             bool changed = false;
 
-            if ( gradient->stops() != stops() )
+            if ( gradient.stops() != stops() )
             {
-                setStops( gradient->stops() );
+                setStops( gradient.stops() );
                 changed = true;
             }
 
-            if ( gradient->spread() != spread() )
+            if ( gradient.spread() != spread() )
             {
-                setSpread( gradient->spread() );
+                setSpread( gradient.spread() );
                 changed = true;
             }
 
-            const QVector2D start( gradient->start() );
-            const QVector2D stop( gradient->finalStop() );
+#if 0
+            QTransform transform( rect.width(), 0, 0, rect.height(), rect.x(), rect.y());
+#endif
 
-            if ( m_start != start || m_stop != stop )
+            const QVector4D gradientRect(
+                rect.left() + gradient.start().x() * rect.width(),
+                rect.top() + gradient.start().y() * rect.height(), 
+                gradient.finalStop().x() * rect.width(),
+                gradient.finalStop().y() * rect.height() );
+
+            if ( m_gradientRect != gradientRect )
             {
-                m_start = start;
-                m_stop = stop;
+                m_gradientRect = gradientRect;
                 changed = true;
             }
 
@@ -398,7 +372,7 @@ namespace
         {
             const auto mat = static_cast< const LinearMaterial* >( other );
 
-            if ( ( m_start != mat->m_start ) || ( m_stop != mat->m_stop ) )
+            if ( m_gradientRect != mat->m_gradientRect )
                 return QSGMaterial::compare( other );
             else
                 return GradientMaterial::compare( other );
@@ -406,8 +380,7 @@ namespace
 
         QSGMaterialShader* createShader() const override;
 
-        QVector2D m_start;
-        QVector2D m_stop;
+        QVector4D m_gradientRect;
     };
 
 #ifdef SHADER_GL
@@ -416,28 +389,23 @@ namespace
       public:
         LinearShaderGL()
         {
-            setShaderFiles( "lineargradient" );
+            setShaderFiles( "gradientlinear" );
         }
 
         void initialize() override
         {
             GradientShaderGL::initialize();
-
-            m_startId = program()->uniformLocation( "gradStart" );
-            m_stopId = program()->uniformLocation( "gradEnd" );
+            m_rectId = program()->uniformLocation( "rect" );
         }
 
         void updateUniformValues( const GradientMaterial* newMaterial ) override
         {
             auto material = static_cast< const LinearMaterial* >( newMaterial );
-
-            program()->setUniformValue( m_startId, material->m_start );
-            program()->setUniformValue( m_stopId, material->m_stop );
+            program()->setUniformValue( m_rectId, material->m_gradientRect );
         }
 
       private:
-        int m_startId = -1;
-        int m_stopId = -1;
+        int m_rectId = -1;
     };
 #endif
 
@@ -447,7 +415,7 @@ namespace
       public:
         LinearShaderRhi()
         {
-            setShaderFiles( "lineargradient" );
+            setShaderFiles( "gradientlinear" );
         }
 
         bool updateUniformData( RenderState& state,
@@ -469,15 +437,9 @@ namespace
                 changed = true;
             }
 
-            if ( matOld == nullptr || matNew->m_start != matOld->m_start )
+            if ( matOld == nullptr || matNew->m_gradientRect != matOld->m_gradientRect )
             {
-                memcpy( data + 64, &matNew->m_start, 8 );
-                changed = true;
-            }
-
-            if ( matOld == nullptr || matNew->m_stop != matOld->m_stop )
-            {
-                memcpy( data + 72, &matNew->m_stop, 8 );
+                memcpy( data + 64, &matNew->m_gradientRect, 16 );
                 changed = true;
             }
 
@@ -520,40 +482,35 @@ namespace
             return &type;
         }
 
-        bool setGradient( const QRadialGradient* gradient )
+        bool setGradient( const QRectF& rect, const QRadialGradient& gradient )
         {
             bool changed = false;
 
-            if ( gradient->stops() != stops() )
+            if ( gradient.stops() != stops() )
             {
-                setStops( gradient->stops() );
+                setStops( gradient.stops() );
                 changed = true;
             }
 
-            if ( gradient->spread() != spread() )
+            if ( gradient.spread() != spread() )
             {
-                setSpread( gradient->spread() );
+                setSpread( gradient.spread() );
                 changed = true;
             }
 
-            const QVector2D focalToCenter( gradient->center() - gradient->focalPoint() );
-            const float centerRadius = gradient->centerRadius();
+            const auto& center = gradient.center();
+            const auto r = gradient.radius();
 
-            const QVector2D focalPoint( gradient->focalPoint() );
-            const float focalRadius = gradient->focalRadius();
+            const QVector2D pos(
+                rect.left() + center.x() * rect.width(),
+                rect.top() + center.y() * rect.height() );
 
-            if ( ( focalPoint != m_focalPoint ) || ( focalRadius != m_focalRadius ) )
+            const QVector2D radius( r * rect.width(), r * rect.height() );
+
+            if ( ( pos != m_center ) || ( m_radius != radius ) )
             {
-                m_focalPoint = focalPoint;
-                m_focalRadius = focalRadius;
-
-                changed = true;
-            }
-
-            if ( ( focalToCenter != m_focalToCenter ) || ( m_centerRadius != centerRadius ) )
-            {
-                m_focalToCenter = focalToCenter;
-                m_centerRadius = centerRadius;
+                m_center = pos;
+                m_radius = radius;
 
                 changed = true;
             }
@@ -565,10 +522,7 @@ namespace
         {
             const auto mat = static_cast< const RadialMaterial* >( other );
 
-            if ( ( m_focalPoint != mat->m_focalPoint )
-                || ( m_focalToCenter != mat->m_focalToCenter )
-                || qskFuzzyCompare( m_centerRadius, mat->m_centerRadius )
-                || qskFuzzyCompare( m_focalRadius, mat->m_focalRadius ) )
+            if ( ( m_center != mat->m_center ) || ( m_radius != mat->m_radius ) )
             {
                 return QSGMaterial::compare( other );
             }
@@ -580,10 +534,8 @@ namespace
 
         QSGMaterialShader* createShader() const override;
 
-        QVector2D m_focalPoint;
-        QVector2D m_focalToCenter;
-        float m_centerRadius = 0.0;
-        float m_focalRadius = 0.0;
+        QVector2D m_center;
+        QVector2D m_radius;
     };
 
 #ifdef SHADER_GL
@@ -592,7 +544,7 @@ namespace
       public:
         RadialShaderGL()
         {
-            setShaderFiles( "radialgradient" );
+            setShaderFiles( "gradientradial" );
         }
 
         void initialize() override
@@ -601,10 +553,8 @@ namespace
 
             auto p = program();
 
-            m_focalPointId = p->uniformLocation( "translationPoint" );
-            m_focalToCenterId = p->uniformLocation( "focalToCenter" );
-            m_centerRadiusId = p->uniformLocation( "centerRadius" );
-            m_focalRadiusId = p->uniformLocation( "focalRadius" );
+            m_centerCoordId = p->uniformLocation( "centerCoord" );
+            m_radiusId = p->uniformLocation( "radius" );
         }
 
         void updateUniformValues( const GradientMaterial* newMaterial ) override
@@ -613,17 +563,13 @@ namespace
 
             auto p = program();
 
-            p->setUniformValue( m_focalToCenterId, material->m_focalToCenter );
-            p->setUniformValue( m_centerRadiusId, material->m_centerRadius);
-            p->setUniformValue( m_focalRadiusId, material->m_focalRadius);
-            p->setUniformValue( m_focalPointId, material->m_focalPoint);
+            p->setUniformValue( m_centerCoordId, material->m_center );
+            p->setUniformValue( m_radiusId, material->m_radius );
         }
 
       private:
-        int m_focalToCenterId = -1;
-        int m_focalPointId = -1;
-        int m_centerRadiusId = -1;
-        int m_focalRadiusId = -1;
+        int m_centerCoordId = -1;
+        int m_radiusId = -1;
     };
 #endif
 
@@ -633,7 +579,7 @@ namespace
       public:
         RadialShaderRhi()
         {
-            setShaderFiles( "radialgradient" );
+            setShaderFiles( "gradientradial" );
         }
 
         bool updateUniformData( RenderState& state,
@@ -642,7 +588,7 @@ namespace
             auto matNew = static_cast< RadialMaterial* >( newMaterial );
             auto matOld = static_cast< RadialMaterial* >( oldMaterial );
 
-            Q_ASSERT( state.uniformData()->size() >= 92 );
+            Q_ASSERT( state.uniformData()->size() >= 84 );
 
             auto data = state.uniformData()->data();
             bool changed = false;
@@ -655,34 +601,22 @@ namespace
                 changed = true;
             }
 
-            if ( matOld == nullptr || matNew->m_focalPoint != matOld->m_focalPoint )
+            if ( matOld == nullptr || matNew->m_center != matOld->m_center )
             {
-                memcpy( data + 64, &matNew->m_focalPoint, 8 );
+                memcpy( data + 64, &matNew->m_center, 8 );
                 changed = true;
             }
 
-            if ( matOld == nullptr || matNew->m_focalToCenter != matOld->m_focalToCenter )
+            if ( matOld == nullptr || matNew->m_radius != matOld->m_radius )
             {
-                memcpy( data + 72, &matNew->m_focalToCenter, 8 );
-                changed = true;
-            }
-
-            if ( matOld == nullptr || matNew->m_centerRadius != matOld->m_centerRadius )
-            {
-                memcpy( data + 80, &matNew->m_centerRadius, 4);
-                changed = true;
-            }
-
-            if ( matOld == nullptr || matNew->m_focalRadius != matOld->m_focalRadius )
-            {
-                memcpy( data + 84, &matNew->m_focalRadius, 4 );
+                memcpy( data + 72, &matNew->m_radius, 8 );
                 changed = true;
             }
 
             if ( state.isOpacityDirty() )
             {
                 const float opacity = state.opacity();
-                memcpy( data + 88, &opacity, 4 );
+                memcpy( data + 80, &opacity, 4 );
 
                 changed = true;
             }
@@ -719,23 +653,44 @@ namespace
             return &type;
         }
 
-        bool setGradient( const QConicalGradient* gradient )
+        bool setGradient( const QRectF& rect, const QConicalGradient& gradient, qreal spanAngle )
         {
             bool changed = false;
 
-            if ( gradient->stops() != stops() )
+            if ( gradient.stops() != stops() )
             {
-                setStops( gradient->stops() );
+                setStops( gradient.stops() );
                 changed = true;
             }
 
-            const QVector2D center( gradient->center() );
-            const float radians = -qDegreesToRadians( gradient->angle() );
+            if ( gradient.spread() != spread() )
+            {
+                setSpread( gradient.spread() );
+                changed = true;
+            }
 
-            if ( center != m_center || radians != m_radians )
+            const QVector2D center(
+                rect.left() + gradient.center().x() * rect.width(),
+                rect.top() + gradient.center().y() * rect.height() );
+
+            // Angles as ratio of a rotation
+
+            float start = fmod( gradient.angle(), 360.0 ) / 360.0;
+            if ( start < 0.0)
+                start += 1.0;
+
+            const float span = fmod( spanAngle, 360.0 ) / 360.0;
+
+            if ( center != m_center )
             {
                 m_center = center;
-                m_radians = radians;
+                changed = true;
+            }
+
+            if ( ( start != m_start ) || ( span != m_span ) )
+            {
+                m_start = start;
+                m_span = span;
 
                 changed = true;
             }
@@ -747,16 +702,21 @@ namespace
         {
             const auto mat = static_cast< const ConicMaterial* >( other );
 
-            if ( ( m_center != mat->m_center ) || qskFuzzyCompare( m_radians, mat->m_radians ) )
+            if ( ( m_center != mat->m_center )
+                || qskFuzzyCompare( m_start, mat->m_start )
+                || qskFuzzyCompare( m_span, mat->m_span ) )
+            {
                 return QSGMaterial::compare( other );
-            else
-                return GradientMaterial::compare( other );
+            }
+
+            return GradientMaterial::compare( other );
         }
 
         QSGMaterialShader* createShader() const override;
 
         QVector2D m_center;
-        float m_radians = 0.0;
+        float m_start = 0.0;
+        float m_span = 1.0;
     };
 
 #ifdef SHADER_GL
@@ -765,28 +725,31 @@ namespace
       public:
         ConicShaderGL()
         {
-            setShaderFiles( "conicalgradient" );
+            setShaderFiles( "gradientconic" );
         }
 
         void initialize() override
         {
             GradientShaderGL::initialize();
 
-            m_radiansId = program()->uniformLocation( "angle" );
-            m_centerPointId = program()->uniformLocation( "translationPoint" );
+            m_centerCoordId = program()->uniformLocation( "centerCoord" );
+            m_startId = program()->uniformLocation( "start" );
+            m_spanId = program()->uniformLocation( "span" );
         }
 
         void updateUniformValues( const GradientMaterial* newMaterial ) override
         {
             auto material = static_cast< const ConicMaterial* >( newMaterial );
 
-            program()->setUniformValue( m_radiansId, material->m_radians );
-            program()->setUniformValue( m_centerPointId, material->m_center );
+            program()->setUniformValue( m_centerCoordId, material->m_center );
+            program()->setUniformValue( m_startId, material->m_start );
+            program()->setUniformValue( m_spanId, material->m_span );
         }
 
       private:
-        int m_radiansId = -1;
-        int m_centerPointId = -1;
+        int m_centerCoordId = -1;
+        int m_startId = -1;
+        int m_spanId = -1;
     };
 #endif
 
@@ -796,7 +759,7 @@ namespace
       public:
         ConicShaderRhi()
         {
-            setShaderFiles( "conicalgradient" );
+            setShaderFiles( "gradientconic" );
         }
 
         bool updateUniformData( RenderState& state,
@@ -805,7 +768,7 @@ namespace
             auto matNew = static_cast< ConicMaterial* >( newMaterial );
             auto matOld = static_cast< ConicMaterial* >( oldMaterial );
 
-            Q_ASSERT( state.uniformData()->size() >= 80 );
+            Q_ASSERT( state.uniformData()->size() >= 84 );
 
             auto data = state.uniformData()->data();
             bool changed = false;
@@ -824,16 +787,22 @@ namespace
                 changed = true;
             }
 
-            if ( matOld == nullptr || matNew->m_radians != matOld->m_radians )
+            if ( matOld == nullptr || matNew->m_start != matOld->m_start )
             {
-                memcpy( data + 72, &matNew->m_radians, 4 );
+                memcpy( data + 72, &matNew->m_start, 4 );
+                changed = true;
+            }
+
+            if ( matOld == nullptr || matNew->m_span != matOld->m_span )
+            {
+                memcpy( data + 76, &matNew->m_span, 4 );
                 changed = true;
             }
 
             if ( state.isOpacityDirty() )
             {
                 const float opacity = state.opacity();
-                memcpy( data + 76, &opacity, 4 );
+                memcpy( data + 80, &opacity, 4 );
 
                 changed = true;
             }
@@ -867,31 +836,42 @@ inline Material* qskEnsureMaterial( QskGradientMaterial* material )
     return static_cast< Material* >( material );
 }
 
-bool QskGradientMaterial::updateGradient( const QGradient* gradient )
+bool QskGradientMaterial::updateGradient(
+    const QRectF& rect, const QGradient* g, qreal extraValue )
 {
-    Q_ASSERT( gradient && gradient->type() == m_gradientType );
+    Q_ASSERT( g );
 
-    if ( gradient == nullptr || gradient->type() != m_gradientType )
+    if ( g == nullptr )
         return false;
 
-    switch ( static_cast< int >( gradient->type() ) )
+    auto& gradient = *g;
+
+    Q_ASSERT( gradient.type() == m_gradientType );
+
+    if ( gradient.type() != m_gradientType )
+        return false;
+
+    switch ( static_cast< int >( gradient.type() ) )
     {
         case QGradient::LinearGradient:
         {
             auto material = static_cast< LinearMaterial* >( this );
-            return material->setGradient( static_cast< const QLinearGradient* >( gradient ) );
+            return material->setGradient( rect,
+                *reinterpret_cast< const QLinearGradient* >( g ) );
         }
 
         case QGradient::RadialGradient:
         {
             auto material = static_cast< RadialMaterial* >( this );
-            return material->setGradient( static_cast< const QRadialGradient* >( gradient ) );
+            return material->setGradient( rect,
+                *reinterpret_cast< const QRadialGradient* >( g ) );
         }
 
         case QGradient::ConicalGradient:
         {
             auto material = static_cast< ConicMaterial* >( this );
-            return material->setGradient( static_cast< const QConicalGradient* >( gradient ) );
+            return material->setGradient( rect,
+                *reinterpret_cast< const QConicalGradient* >( g ), extraValue );
         }
     }
 
