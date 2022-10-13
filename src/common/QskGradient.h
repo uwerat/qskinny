@@ -11,7 +11,6 @@
 
 #include <qbrush.h>
 #include <qmetatype.h>
-#include <qvector.h>
 
 class QVariant;
 
@@ -19,7 +18,6 @@ class QVariant;
     Don't use QskGradientStops for definitions seen by moc
     Otherwise exporting these interfaces to QML does not work.
  */
-typedef QVector< QskGradientStop > QskGradientStops;
 
 class QSK_EXPORT QskGradient
 {

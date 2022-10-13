@@ -10,6 +10,7 @@
 
 #include <qcolor.h>
 #include <qmetatype.h>
+#include <qvector.h>
 
 class QSK_EXPORT QskGradientStop
 {
@@ -38,6 +39,8 @@ class QSK_EXPORT QskGradientStop
     void setColor( const QColor& ) noexcept;
     void resetColor() noexcept;
 
+    QRgb rgb() const noexcept;
+
     static QColor interpolated(
         const QskGradientStop&, const QskGradientStop&, qreal position ) noexcept;
 
@@ -53,6 +56,8 @@ class QSK_EXPORT QskGradientStop
 #endif
 
 Q_DECLARE_METATYPE( QskGradientStop )
+
+typedef QVector< QskGradientStop > QskGradientStops;
 
 inline constexpr QskGradientStop::QskGradientStop() noexcept
     : m_position( -1.0 )
@@ -86,6 +91,11 @@ inline constexpr qreal QskGradientStop::position() const noexcept
 inline constexpr const QColor& QskGradientStop::color() const noexcept
 {
     return m_color;
+}
+
+inline QRgb QskGradientStop::rgb() const noexcept
+{
+    return m_color.rgba();
 }
 
 inline constexpr bool QskGradientStop::operator==( const QskGradientStop& other ) const noexcept
