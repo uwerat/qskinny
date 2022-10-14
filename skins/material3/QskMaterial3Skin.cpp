@@ -98,10 +98,12 @@ namespace
         return value * factor;
     }
 
+#if 0
     inline double operator ""_dp( long double value )
     {
         return dpToPixels( value );
     }
+#endif
 
     inline double operator ""_dp( unsigned long long int value )
     {
