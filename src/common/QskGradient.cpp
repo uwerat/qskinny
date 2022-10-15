@@ -679,7 +679,7 @@ QskGradientStops QskGradient::colorStops(
     if ( count == 0 )
         return QskGradientStops();
 
-    if ( count == 0 )
+    if ( count == 1 )
     {
         QskGradientStops stops;
         stops.reserve( 2 );
