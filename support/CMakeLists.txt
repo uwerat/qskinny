@@ -36,13 +36,17 @@ list(APPEND TARGET_SOURCES
 
 set(TARGET_NAME qsktestsupport)
 
-add_library(${TARGET_NAME} SHARED ${TARGET_SOURCES} ${TARGET_HEADERS})
+if (BUILD_QSKDLL)
+    add_library(${TARGET_NAME} SHARED ${TARGET_SOURCES} ${TARGET_HEADERS})
+else()
+    add_library(${TARGET_NAME} STATIC ${TARGET_SOURCES} ${TARGET_HEADERS})
+endif()
 
 set_target_properties(${TARGET_NAME} PROPERTIES
    AUTOMOC ON)
 
 target_link_libraries(${TARGET_NAME}
-   PRIVATE
+   PUBLIC
        qskinny)
 
 if (BUILD_QSKDLL)

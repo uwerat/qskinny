@@ -12,9 +12,10 @@
 class QSK_MATERIAL3_EXPORT QskMaterial3SkinFactory : public QskSkinFactory
 {
     Q_OBJECT
-
+#if defined( QSK_MATERIAL3_MAKEDLL )
     Q_PLUGIN_METADATA( IID QskSkinFactoryIID FILE "metadata.json" )
     Q_INTERFACES( QskSkinFactory )
+#endif
 
   public:
     QskMaterial3SkinFactory( QObject* parent = nullptr );
