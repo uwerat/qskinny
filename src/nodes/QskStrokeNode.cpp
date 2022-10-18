@@ -90,7 +90,8 @@ void QskStrokeNode::updateNode(
             stroker.process( dashedVectorPath, effectivePen, {}, {} );
         }
 
-        d->geometry.allocate( stroker.vertexCount() );
+        // 2 vertices for each point
+        d->geometry.allocate( stroker.vertexCount() / 2 );
 
         memcpy( d->geometry.vertexData(), stroker.vertices(),
             stroker.vertexCount() * sizeof( float ) );
