@@ -1,15 +1,15 @@
 attribute vec4 vertexCoord;
 
 uniform mat4 matrix;
-uniform vec4 rect;
+uniform vec4 vector;
 
 varying float colorIndex;
 
 void main()
 {
-    highp vec2 l = vertexCoord.xy - rect.xy;
-    highp vec2 size = rect.zw;
+    highp vec2 pos = vertexCoord.xy - vector.xy;
+    highp vec2 span = vector.zw;
 
-    colorIndex = dot( l, size ) / dot( size, size );
+    colorIndex = dot( pos, span ) / dot( span, span );
     gl_Position = matrix * vertexCoord;
 }

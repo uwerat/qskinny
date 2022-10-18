@@ -347,15 +347,15 @@ namespace
             QTransform transform( rect.width(), 0, 0, rect.height(), rect.x(), rect.y());
 #endif
 
-            const QVector4D gradientRect(
+            const QVector4D vector(
                 rect.left() + gradient.start().x() * rect.width(),
                 rect.top() + gradient.start().y() * rect.height(), 
                 gradient.finalStop().x() * rect.width(),
                 gradient.finalStop().y() * rect.height() );
 
-            if ( m_gradientRect != gradientRect )
+            if ( m_gradientVector != vector )
             {
-                m_gradientRect = gradientRect;
+                m_gradientVector = vector;
                 changed = true;
             }
 
@@ -372,7 +372,7 @@ namespace
         {
             const auto mat = static_cast< const LinearMaterial* >( other );
 
-            if ( m_gradientRect != mat->m_gradientRect )
+            if ( m_gradientVector != mat->m_gradientVector )
                 return QSGMaterial::compare( other );
             else
                 return GradientMaterial::compare( other );
@@ -380,7 +380,11 @@ namespace
 
         QSGMaterialShader* createShader() const override;
 
-        QVector4D m_gradientRect;
+        /*
+            xy: position
+            zw: relative to position ( sign matters )
+         */
+        QVector4D m_gradientVector;
     };
 
 #ifdef SHADER_GL
@@ -395,17 +399,17 @@ namespace
         void initialize() override
         {
             GradientShaderGL::initialize();
-            m_rectId = program()->uniformLocation( "rect" );
+            m_vectorId = program()->uniformLocation( "vector" );
         }
 
         void updateUniformValues( const GradientMaterial* newMaterial ) override
         {
             auto material = static_cast< const LinearMaterial* >( newMaterial );
-            program()->setUniformValue( m_rectId, material->m_gradientRect );
+            program()->setUniformValue( m_vectorId, material->m_gradientVector );
         }
 
       private:
-        int m_rectId = -1;
+        int m_vectorId = -1;
     };
 #endif
 
@@ -437,9 +441,9 @@ namespace
                 changed = true;
             }
 
-            if ( matOld == nullptr || matNew->m_gradientRect != matOld->m_gradientRect )
+            if ( matOld == nullptr || matNew->m_gradientVector != matOld->m_gradientVector )
             {
-                memcpy( data + 64, &matNew->m_gradientRect, 16 );
+                memcpy( data + 64, &matNew->m_gradientVector, 16 );
                 changed = true;
             }
 
