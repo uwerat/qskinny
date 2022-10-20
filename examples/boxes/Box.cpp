@@ -9,6 +9,7 @@
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxShapeMetrics.h>
 #include <QskHctColor.h>
+#include <QskRgbValue.h>
 
 Box::Box( QQuickItem* parentItem )
     : QskBox( parentItem )
@@ -34,10 +35,8 @@ void Box::setBackground( FillType type, QGradient::Preset preset, bool inverted 
 
     if ( type == Solid )
     {
-        const auto& stops = gradient.stops();
-
-        const auto color = QskGradientStop::interpolated(
-            stops.first(), stops.last(), 0.5 );
+        const auto color = QskRgb::interpolated(
+            gradient.startColor(), gradient.endColor(), 0.5 );
 
         setGradient( QskGradient( color ) );
     }
