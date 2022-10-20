@@ -693,6 +693,17 @@ QskGradientStops QskGradient::colorStops(
     return qskColorStops( rgb.constData(), count, discrete );
 }
 
+QGradientStops QskGradient::qtStops() const
+{
+    QGradientStops qstops;
+    qstops.reserve( m_stops.count() );
+
+    for ( const auto& stop : m_stops )
+        qstops += { stop.position(), stop.color() };
+
+    return qstops;
+}
+
 #ifndef QT_NO_DEBUG_STREAM
 
 #include <qdebug.h>

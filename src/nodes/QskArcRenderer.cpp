@@ -16,12 +16,6 @@ void QskArcRenderer::renderArc(const QRectF& rect,
 {
     painter->setRenderHint( QPainter::Antialiasing, true );
 
-    QGradientStops stops;
-    stops.reserve( gradient.stops().count() );
-
-    for( const auto& stop : qAsConst( gradient.stops() ) )
-        stops += QGradientStop( stop.position(), stop.color() );
-
     /*
         horizontal is interpreted as in direction of the arc,
         while vertical means from the inner to the outer border
@@ -31,17 +25,17 @@ void QskArcRenderer::renderArc(const QRectF& rect,
 
     if( gradient.orientation() == QskGradient::Vertical )
     {
-        QRadialGradient gradient( rect.center(), qMin( rect.width(), rect.height() ) );
-        gradient.setStops( stops );
+        QRadialGradient radial( rect.center(), qMin( rect.width(), rect.height() ) );
+        radial.setStops( gradient.qtStops() );
 
-        brush = gradient;
+        brush = radial;
     }
     else
     {
-        QConicalGradient gradient( rect.center(), metrics.startAngle() );
-        gradient.setStops( stops );
+        QConicalGradient conical( rect.center(), metrics.startAngle() );
+        conical.setStops( gradient.qtStops() );
 
-        brush = gradient;
+        brush = conical;
     }
 
     painter->setPen( QPen( brush, metrics.width(), Qt::SolidLine, Qt::FlatCap ) );

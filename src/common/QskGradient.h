@@ -101,6 +101,8 @@ class QSK_EXPORT QskGradient
     Q_INVOKABLE QColor colorAt( int index ) const;
     Q_INVOKABLE int stopCount() const;
 
+    QGradientStops qtStops() const;
+
     static QskGradientStops colorStops(
         const QVector< QRgb >&, bool discrete = false );
 
