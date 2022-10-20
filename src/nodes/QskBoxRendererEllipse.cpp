@@ -561,25 +561,38 @@ namespace
         {
         }
 
+        inline void setAdditionalLine(
+            float x11, float y11, float x12, float y12,
+            float dx1, float dy1, float dx2, float dy2,
+            const QskGradientStop& stop, Line* line )
+        {
+            const auto pos = 1.0 - stop.position();
+
+            const float x1 = x11 + pos * dx1;
+            const float y1 = y11 + pos * dy1;
+            const float x2 = x12 + pos * dx2;
+            const float y2 = y12 + pos * dy2;
+
+            line->setLine( x1, y1, x2, y2, stop.color() );
+        }
+
         void addAdditionalLines(
             float x11, float y11, float x12, float y12, // start line
             float x21, float y21, float x22, float y22, // end line
             const QskGradient& gradient, Line* lines )
         {
-            int additionalStopCount = additionalGradientStops( gradient );
+            const float dx1 = x21 - x11;
+            const float dy1 = y21 - y11;
+            const float dx2 = x22 - x12;
+            const float dy2 = y22 - y12;
 
-            auto s = gradient.stops();
+            const auto stops = gradient.stops();
 
-            for( int i = 1; i <= additionalStopCount; ++i )
+            auto line = lines + additionalGradientStops( gradient );
+
+            for( int i = 1; i < stops.count() - 1; i++ )
             {
-                auto p = ( 1 - s.at( i ).position() );
-                float xStart = x11 + p * ( x21 - x11 ),
-                    yStart = y11 + p * ( y21 - y11 ),
-                    xEnd = x12 + p * ( x22 - x12 ),
-                    yEnd = y12 + p * ( y22 - y12 );
-
-                lines[ additionalStopCount - i + 1 ].setLine( xStart, yStart,
-                    xEnd, yEnd, s.at( i ).color() );
+                setAdditionalLine( x11, y11, x12, y12, dx1, dy1, dx2, dy2, stops[i], line-- );
             }
         }
 

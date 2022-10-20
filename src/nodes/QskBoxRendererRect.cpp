@@ -422,62 +422,57 @@ static inline void qskCreateBorder(
     const QskBoxRenderer::Quad& out, const QskBoxRenderer::Quad& in,
     const QskBoxBorderColors& colors, Line* line )
 {
-    const auto& gradientLeft = colors.left();
-    const auto& gradientRight = colors.right();
-    const auto& gradientTop = colors.top();
-    const auto& gradientBottom = colors.bottom();
-
-    // qdebug
-
     const qreal dx1 = in.right - in.left;
     const qreal dx2 = out.right - out.left;
     const qreal dy1 = in.top - in.bottom;
     const qreal dy2 = out.top - out.bottom;
 
-    for( const auto& stop : qAsConst( gradientBottom.stops() ) )
     {
-        const Color c( stop.color() );
-        const qreal x1 = in.right - stop.position() * dx1;
-        const qreal x2 = out.right - stop.position() * dx2;
-        const qreal y1 = in.bottom;
-        const qreal y2 = out.bottom;
+        const auto stops = colors.bottom().stops();
 
-        ( line++ )->setLine( x1, y1, x2, y2, c );
+        for( const auto& stop : stops )
+        {
+            const qreal x1 = in.right - stop.position() * dx1;
+            const qreal x2 = out.right - stop.position() * dx2;
+
+            ( line++ )->setLine( x1, in.bottom, x2, out.bottom, stop.color() );
+        }
     }
 
-    for( const auto& stop : qAsConst( gradientLeft.stops() ) )
     {
-        const Color c( stop.color() );
-        const qreal x1 = in.left;
-        const qreal x2 = out.left;
-        const qreal y1 = in.bottom + stop.position() * dy1;
-        const qreal y2 = out.bottom + stop.position() * dy2;
+        const auto stops = colors.left().stops();
 
-        ( line++ )->setLine( x1, y1, x2, y2, c );
+        for( const auto& stop : stops )
+        {
+            const qreal y1 = in.bottom + stop.position() * dy1;
+            const qreal y2 = out.bottom + stop.position() * dy2;
+
+            ( line++ )->setLine( in.left, y1, out.left, y2, stop.color() );
+        }
     }
 
-    for( const auto& stop : qAsConst( gradientTop.stops() ) )
     {
-        const Color c( stop.color() );
-        const qreal x1 = in.left + stop.position() * dx1;
-        const qreal x2 = out.left + stop.position() * dx2;
-        const qreal y1 = in.top;
-        const qreal y2 = out.top;
+        const auto stops = colors.top().stops();
 
-        ( line++ )->setLine( x1, y1, x2, y2, c );
+        for( const auto& stop : stops )
+        {
+            const qreal x1 = in.left + stop.position() * dx1;
+            const qreal x2 = out.left + stop.position() * dx2;
+
+            ( line++ )->setLine( x1, in.top, x2, out.top, stop.color() );
+        }
     }
 
-    for( const auto& stop : qAsConst( gradientRight.stops() ) )
     {
-        const Color c( stop.color() );
-        const qreal x1 = in.right;
-        const qreal x2 = out.right;
-        // ( 1 - stop.position() ) because we want to make the gradients go
-        // around the border clock-wise:
-        const qreal y1 = in.bottom + ( 1 - stop.position() ) * dy1;
-        const qreal y2 = out.bottom + ( 1 - stop.position() ) * dy2;
+        const auto stops = colors.right().stops();
 
-        ( line++ )->setLine( x1, y1, x2, y2, c );
+        for( const auto& stop : stops )
+        {
+            const qreal y1 = in.bottom + ( 1 - stop.position() ) * dy1;
+            const qreal y2 = out.bottom + ( 1 - stop.position() ) * dy2;
+
+            ( line++ )->setLine( in.right, y1, out.right, y2, stop.color() );
+        }
     }
 }
 
@@ -531,7 +526,7 @@ void QskBoxRenderer::renderRect(
     const Quad in = qskValidOrEmptyInnerRect( rect, border.widths() );
 
     int fillLineCount = 0;
-    if ( !in.isEmpty() )
+    if ( gradient.isValid() && !in.isEmpty() )
     {
         fillLineCount = gradient.stops().count();
 
