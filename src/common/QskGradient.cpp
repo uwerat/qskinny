@@ -382,42 +382,12 @@ int QskGradient::stopCount() const
     return m_stops.count();
 }
 
-void QskGradient::setStopAt( int index, qreal stop )
-{
-    if ( stop < 0.0 || stop > 1.0 )
-    {
-        qWarning( "Invalid gradient stop: %g, must be in the range [0,1]", stop );
-        return;
-    }
-
-    if ( index >= m_stops.size() )
-        m_stops.resize( index + 1 );
-
-    m_stops[ index ].setPosition( stop );
-    m_isDirty = true;
-}
-
 qreal QskGradient::stopAt( int index ) const
 {
     if ( index >= m_stops.size() )
         return -1.0;
 
     return m_stops[ index ].position();
-}
-
-void QskGradient::setColorAt( int index, const QColor& color )
-{
-    if ( !color.isValid() )
-    {
-        qWarning( "Invalid gradient color" );
-        return;
-    }
-
-    if ( index >= m_stops.size() )
-        m_stops.resize( index + 1 );
-
-    m_stops[ index ].setColor( color );
-    m_isDirty = true;
 }
 
 QColor QskGradient::colorAt( int index ) const

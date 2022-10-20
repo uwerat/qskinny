@@ -107,9 +107,6 @@ class QSK_EXPORT QskGradient
         const QVector< QRgb >&, bool discrete = false );
 
   private:
-    void setStopAt( int index, qreal stop );
-    void setColorAt( int index, const QColor& color );
-
     void updateStatusBits() const;
 
     QVector< QskGradientStop > m_stops;
