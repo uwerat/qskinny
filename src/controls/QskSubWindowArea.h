@@ -8,7 +8,6 @@
 
 #include "QskControl.h"
 
-class QskGradient;
 class QskSubWindow;
 
 class QSK_EXPORT QskSubWindowArea : public QskControl
