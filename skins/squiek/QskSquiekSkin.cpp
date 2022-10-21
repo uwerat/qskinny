@@ -193,8 +193,7 @@ void Editor::setButton( QskAspect aspect, PanelStyle style, qreal border )
 #endif
     QskBoxBorderColors borderColors;
 
-    QskGradient gradient;
-    gradient.setOrientation( QskGradient::Vertical );
+    QskGradient gradient( QskGradient::Vertical );
 
     switch ( style )
     {
@@ -1012,7 +1011,7 @@ void Editor::setupSwitchButton()
     setBoxShape( Q::Handle, 100, Qt::RelativeSize );
     setStrutSize( Q::Handle, handleSize, handleSize );
 
-    setGradient( Q::Handle, QskGradient( Qt::Vertical, m_pal.lighter150, m_pal.lighter110 ) );
+    setVGradient( Q::Handle, m_pal.lighter150, m_pal.lighter110 );
     setGradient( Q::Handle | Q::Disabled, m_pal.lighter110 );
 
     setBoxBorderMetrics( Q::Handle, 2 );
