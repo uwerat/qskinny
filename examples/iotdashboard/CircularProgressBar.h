@@ -6,9 +6,6 @@
 #pragma once
 
 #include <QskBoundedControl.h>
-#include <QskGradient.h>
-
-#include <QGradient>
 
 class CircularProgressBar : public QskBoundedControl
 {

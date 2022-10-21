@@ -9,7 +9,6 @@
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxNode.h>
 #include <QskBoxShapeMetrics.h>
-#include <QskGradient.h>
 #include <QskSGNode.h>
 
 static inline qreal effectiveRadius( const QRectF& rect, qreal percentage )
