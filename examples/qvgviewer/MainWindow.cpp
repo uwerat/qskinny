@@ -50,12 +50,12 @@ class GraphicLabel : public QskGraphicLabel
         QskGradient gradient;
         if ( on )
         {
-            gradient.setColor( qRgb( 40, 40, 40 ) );
+            gradient = QskGradient( qRgb( 40, 40, 40 ) );
             setGraphicRole( Inverted );
         }
         else
         {
-            gradient.setColor( QskRgb::Wheat );
+            gradient = QskGradient( QskRgb::Wheat );
             setGraphicRole( Normal );
         }
 
