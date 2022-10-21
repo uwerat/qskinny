@@ -526,7 +526,7 @@ void QskBoxRenderer::renderRect(
     const Quad in = qskValidOrEmptyInnerRect( rect, border.widths() );
 
     int fillLineCount = 0;
-    if ( gradient.isValid() && !in.isEmpty() )
+    if ( gradient.isVisible() && !in.isEmpty() )
     {
         fillLineCount = gradient.stops().count();
 
