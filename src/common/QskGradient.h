@@ -98,15 +98,10 @@ class QSK_EXPORT QskGradient
 
     QskHashValue hash( QskHashValue seed ) const;
 
-    Q_INVOKABLE qreal stopAt( int index ) const;
-    Q_INVOKABLE QColor colorAt( int index ) const;
+    Q_INVOKABLE qreal stopAt( int index ) const noexcept;
+    Q_INVOKABLE QColor colorAt( int index ) const noexcept;
 
-    Q_INVOKABLE int stopCount() const;
-
-    QGradientStops qtStops() const;
-
-    static QskGradientStops colorStops(
-        const QVector< QRgb >&, bool discrete = false );
+    Q_INVOKABLE int stopCount() const noexcept;
 
   private:
     void updateStatusBits() const;

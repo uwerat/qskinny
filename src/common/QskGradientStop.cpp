@@ -8,6 +8,7 @@
 
 #include <qhashfunctions.h>
 #include <qvariant.h>
+#include <qbrush.h>
 
 #include <algorithm>
 
@@ -94,3 +95,128 @@ QDebug operator<<( QDebug debug, const QskGradientStop& stop )
 #endif
 
 #include "moc_QskGradientStop.cpp"
+
+// some helper functions around QskGradientStops
+
+bool qskIsVisible( const QskGradientStops& stops ) noexcept
+{
+    for ( const auto& stop : stops )
+    {
+        const auto& c = stop.color();
+        if ( c.isValid() && c.alpha() > 0 )
+            return true;
+    }
+
+    return false;
+}
+
+bool qskIsMonochrome( const QskGradientStops& stops ) noexcept
+{
+    for ( int i = 1; i < stops.size(); i++ )
+    {
+        if ( stops[ i ].color() != stops[ 0 ].color() )
+            return false;
+    }
+
+    return true;
+}
+
+QskGradientStops qskTransparentGradientStops( const QskGradientStops& stops, qreal ratio )
+{
+    auto newStops = stops;
+
+    for ( auto& stop : newStops )
+    {
+        auto c = stop.color();
+        c.setAlpha( c.alpha() * ratio );
+
+        stop.setColor( c );
+    }
+
+    return newStops;
+}
+
+QVector< QskGradientStop > qskBuildGradientStops( const QGradientStops& qtStops )
+{
+    QVector< QskGradientStop > stops;
+    stops.reserve( qtStops.count() );
+
+    for ( const auto& s : qtStops )
+        stops += QskGradientStop( s.first, s.second );
+
+    return stops;
+}
+
+template< typename T >
+static inline QVector< QskGradientStop > qskCreateStops(
+    const QVector< T > colors, bool discrete )
+{
+    QVector< QskGradientStop > stops;
+
+    const auto count = colors.count();
+    if ( count == 0 )
+        return stops;
+
+    if ( count == 1 )
+    {
+        stops.reserve( 2 );
+
+        stops += QskGradientStop( 0.0, colors[0] );
+        stops += QskGradientStop( 1.0, colors[0] );
+
+        return stops;
+    }
+
+    if ( discrete )
+    {
+        const auto step = 1.0 / count;
+        stops.reserve( 2 * count - 2 );
+
+        stops += QskGradientStop( 0.0, colors[0] );
+
+        for ( int i = 1; i < count; i++ )
+        {
+            const qreal pos = i * step;
+            stops += QskGradientStop( pos, colors[i - 1] );
+            stops += QskGradientStop( pos, colors[i] );
+        }
+
+        stops += QskGradientStop( 1.0, colors[count - 1] );
+    }
+    else
+    {
+        const auto step = 1.0 / ( count - 1 );
+        stops.reserve( count );
+
+        stops += QskGradientStop( 0.0, colors[0] );
+
+        for ( int i = 1; i < count - 1; i++ )
+            stops += QskGradientStop( i * step, colors[i] );
+
+        stops += QskGradientStop( 1.0, colors[count - 1] );
+    }
+
+    return stops;
+}
+
+QskGradientStops qskBuildGradientStops( const QVector< QRgb >& colors, bool discrete )
+{
+    return qskCreateStops( colors, discrete );
+}
+
+QskGradientStops qskBuildGradientStops( const QVector< QColor >& colors, bool discrete )
+{
+    return qskCreateStops( colors, discrete );
+}
+
+QGradientStops qskToQGradientStops( const QskGradientStops& stops )
+{
+    QGradientStops qstops;
+    qstops.reserve( stops.count() );
+
+    for ( const auto& stop : stops )
+        qstops += { stop.position(), stop.color() };
+
+    return qstops;
+}
+

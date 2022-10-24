@@ -23,17 +23,19 @@ void QskArcRenderer::renderArc(const QRectF& rect,
 
     QBrush brush;
 
+    const auto qStops = qskToQGradientStops( gradient.stops() );
+
     if( gradient.orientation() == QskGradient::Vertical )
     {
         QRadialGradient radial( rect.center(), qMin( rect.width(), rect.height() ) );
-        radial.setStops( gradient.qtStops() );
+        radial.setStops( qStops );
 
         brush = radial;
     }
     else
     {
         QConicalGradient conical( rect.center(), metrics.startAngle() );
-        conical.setStops( gradient.qtStops() );
+        conical.setStops( qStops );
 
         brush = conical;
     }

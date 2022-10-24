@@ -9,8 +9,6 @@
 #include <qhashfunctions.h>
 #include <qvariant.h>
 
-#include <algorithm>
-
 static void qskRegisterGradient()
 {
     qRegisterMetaType< QskGradient >();
@@ -37,9 +35,7 @@ static inline bool qskIsGradientValid( const QskGradientStops& stops )
         return false;
 
     if ( stops.first().position() != 0.0 || stops.last().position() != 1.0 )
-    {
         return false;
-    }
 
     if ( !stops.first().color().isValid() )
         return false;
@@ -54,29 +50,6 @@ static inline bool qskIsGradientValid( const QskGradientStops& stops )
     }
 
     return true;
-}
-
-static inline bool qskIsMonochrome( const QskGradientStops& stops )
-{
-    for ( int i = 1; i < stops.size(); i++ )
-    {
-        if ( stops[ i ].color() != stops[ 0 ].color() )
-            return false;
-    }
-
-    return true;
-}
-
-static inline bool qskIsVisible( const QskGradientStops& stops )
-{
-    for ( const auto& stop : stops )
-    {
-        const auto& c = stop.color();
-        if ( c.isValid() && c.alpha() > 0 )
-            return true;
-    }
-
-    return false;
 }
 
 static inline QColor qskInterpolated(
@@ -183,53 +156,6 @@ static inline QskGradientStops qskExtractedStops(
     return extracted;
 }
 
-static inline QskGradientStops qskGradientStops( const QGradientStops& qtStops )
-{
-    QskGradientStops stops;
-    stops.reserve( qtStops.count() );
-
-    for ( const auto& s : qtStops )
-        stops += QskGradientStop( s.first, s.second );
-
-    return stops;
-}
-
-static inline QskGradientStops qskColorStops(
-    const QRgb* rgb, int count, bool discrete )
-{
-    QskGradientStops stops;
-
-    if ( discrete )
-        stops.reserve( 2 * count - 2 );
-    else
-        stops.reserve( count );
-
-    stops += QskGradientStop( 0.0, rgb[0] );
-
-    if ( discrete )
-    {
-        const auto step = 1.0 / count;
-
-        for ( int i = 1; i < count; i++ )
-        {
-            const qreal pos = i * step;
-            stops += QskGradientStop( pos, rgb[i - 1] );
-            stops += QskGradientStop( pos, rgb[i] );
-        }
-    }
-    else
-    {
-        const auto step = 1.0 / ( count - 1 );
-
-        for ( int i = 1; i < count - 1; i++ )
-            stops += QskGradientStop( i * step, rgb[i] );
-    }
-
-    stops += QskGradientStop( 1.0, rgb[count - 1] );
-
-    return stops;
-}
-
 QskGradient::QskGradient( Orientation orientation ) noexcept
     : m_orientation( orientation )
     , m_isDirty( false )
@@ -277,7 +203,7 @@ QskGradient::QskGradient( Qt::Orientation orientation, QGradient::Preset preset 
 QskGradient::QskGradient( Orientation orientation, QGradient::Preset preset )
     : QskGradient( orientation )
 {
-    setStops( qskGradientStops( QGradient( preset ).stops() ) );
+    setStops( qskBuildGradientStops( QGradient( preset ).stops() ) );
 }
 
 QskGradient::~QskGradient()
@@ -380,20 +306,35 @@ void QskGradient::setStops( const QskGradientStops& stops )
     m_isDirty = true;
 }
 
-int QskGradient::stopCount() const
+int QskGradient::stopCount() const noexcept
 {
     return m_stops.count();
 }
 
-qreal QskGradient::stopAt( int index ) const
+qreal QskGradient::stopAt( int index ) const noexcept
 {
-    if ( index >= m_stops.size() )
+    if ( index < 0 || index >= m_stops.size() )
         return -1.0;
 
     return m_stops[ index ].position();
 }
 
-QColor QskGradient::colorAt( int index ) const
+bool QskGradient::hasStopAt( qreal value ) const noexcept
+{
+    // better use binary search TODO ...
+    for ( auto& stop : m_stops )
+    {
+        if ( stop.position() == value )
+            return true;
+
+        if ( stop.position() > value )
+            break;
+    }
+
+    return false;
+}
+
+QColor QskGradient::colorAt( int index ) const noexcept
 {
     if ( index >= m_stops.size() )
         return QColor();
@@ -414,21 +355,6 @@ void QskGradient::setAlpha( int alpha )
     }
 
     m_isDirty = true;
-}
-
-bool QskGradient::hasStopAt( qreal value ) const noexcept
-{
-    // better use binary search TODO ...
-    for ( auto& stop : m_stops )
-    {
-        if ( stop.position() == value )
-            return true;
-
-        if ( stop.position() > value )
-            break;
-    }
-
-    return false;
 }
 
 void QskGradient::reverse()
@@ -611,39 +537,6 @@ QVariant QskGradient::interpolate(
     return QVariant::fromValue( from.interpolated( to, progress ) );
 }
 
-QskGradientStops QskGradient::colorStops(
-    const QVector< QRgb >& rgb, bool discrete )
-{
-    const int count = rgb.count();
-
-    if ( count == 0 )
-        return QskGradientStops();
-
-    if ( count == 1 )
-    {
-        QskGradientStops stops;
-        stops.reserve( 2 );
-
-        stops += QskGradientStop( 0.0, rgb[0] );
-        stops += QskGradientStop( 1.0, rgb[0] );
-
-        return stops;
-    }
-
-    return qskColorStops( rgb.constData(), count, discrete );
-}
-
-QGradientStops QskGradient::qtStops() const
-{
-    QGradientStops qstops;
-    qstops.reserve( m_stops.count() );
-
-    for ( const auto& stop : m_stops )
-        qstops += { stop.position(), stop.color() };
-
-    return qstops;
-}
-
 void QskGradient::clearStops()
 {
     if ( !m_stops.isEmpty() )
@@ -655,9 +548,6 @@ void QskGradient::clearStops()
 
 QskHashValue QskGradient::hash( QskHashValue seed ) const
 {
-    if ( m_stops.isEmpty() )
-        return seed;
-
     const auto o = orientation();
 
     auto hash = qHashBits( &o, sizeof( o ), seed );
@@ -666,7 +556,6 @@ QskHashValue QskGradient::hash( QskHashValue seed ) const
 
     return hash;
 }
-
 
 #ifndef QT_NO_DEBUG_STREAM
 
@@ -704,13 +593,13 @@ QDebug operator<<( QDebug debug, const QskGradient& gradient )
             }
             else
             {
-                const auto& s = gradient.stops();
-                for ( int i = 0; i < s.count(); i++ )
+                const auto& stops = gradient.stops();
+                for ( int i = 0; i < stops.count(); i++ )
                 {
                     if ( i != 0 )
                         debug << ", ";
 
-                    debug << s[i];
+                    debug << stops[i];
                 }
             }
         }

@@ -205,11 +205,11 @@ void Box::setGradient(
 {
     const QskHctColor hctColor( base );
 
-    QVector< QRgb > rgb;
-    rgb.reserve( 10 );
+    QVector< QRgb > colors;
+    colors.reserve( 10 );
 
     for ( int i = 0; i < 10; i++ )
-        rgb += hctColor.toned( 90 - i * 7 ).rgb();
+        colors += hctColor.toned( 90 - i * 7 ).rgb();
 
-    setGradient( QskGradient( orientation, QskGradient::colorStops( rgb, true ) ) );
+    setGradient( QskGradient( orientation, qskBuildGradientStops( colors, true ) ) );
 }
