@@ -201,7 +201,7 @@ void Editor::setButton( QskAspect aspect, PanelStyle style, qreal border )
         {
             borderColors.setGradientAt( Qt::TopEdge | Qt::LeftEdge, m_pal.lighter135 );
             borderColors.setGradientAt( Qt::RightEdge | Qt::BottomEdge, m_pal.darker200 );
-            gradient.setColors( m_pal.lighter125, m_pal.lighter110 );
+            gradient.setStops( m_pal.lighter125, m_pal.lighter110 );
 
             break;
         }
@@ -209,14 +209,14 @@ void Editor::setButton( QskAspect aspect, PanelStyle style, qreal border )
         {
             borderColors.setGradientAt( Qt::TopEdge | Qt::LeftEdge, m_pal.darker200 );
             borderColors.setGradientAt( Qt::RightEdge | Qt::BottomEdge, m_pal.lighter135 );
-            gradient.setColors( m_pal.lighter110, m_pal.lighter125 );
+            gradient.setStops( m_pal.lighter110, m_pal.lighter125 );
 
             break;
         }
         case Plain:
         {
             borderColors.setGradients( m_pal.darker125 );
-            gradient.setColor( m_pal.lighter125 );
+            gradient.setStops( m_pal.lighter125 );
 
             break;
         }
@@ -227,7 +227,7 @@ void Editor::setButton( QskAspect aspect, PanelStyle style, qreal border )
             noColor.setAlpha( 0 );
 
             borderColors.setGradients( noColor );
-            gradient.setColor( noColor );
+            gradient.setStops( noColor );
 
             if ( style == NoPanel )
                 border = 0;

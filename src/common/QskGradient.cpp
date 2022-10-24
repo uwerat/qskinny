@@ -230,7 +230,7 @@ static inline QskGradientStops qskColorStops(
     return stops;
 }
 
-QskGradient::QskGradient( Orientation orientation )
+QskGradient::QskGradient( Orientation orientation ) noexcept
     : m_orientation( orientation )
     , m_isDirty( false )
     , m_isValid( false )
@@ -242,7 +242,7 @@ QskGradient::QskGradient( Orientation orientation )
 QskGradient::QskGradient( const QColor& color )
     : QskGradient( Vertical )
 {
-    setColor( color );
+    setStops( color );
 }
 
 QskGradient::QskGradient( Qt::Orientation orientation,
@@ -255,7 +255,7 @@ QskGradient::QskGradient( Orientation orientation,
         const QColor& startColor, const QColor& stopColor )
     : QskGradient( orientation )
 {
-    setColors( startColor, stopColor );
+    setStops( startColor, stopColor );
 }
 
 QskGradient::QskGradient( Qt::Orientation orientation, const QskGradientStops& stops )
@@ -284,7 +284,31 @@ QskGradient::~QskGradient()
 {
 }
 
-bool QskGradient::isValid() const
+bool QskGradient::operator==( const QskGradient& other ) const noexcept
+{
+    return ( m_orientation == other.m_orientation ) && ( m_stops == other.m_stops );
+}
+
+void QskGradient::updateStatusBits() const
+{
+    // doing all bits in one loop ?
+    m_isValid = qskIsGradientValid( m_stops );
+
+    if ( m_isValid )
+    {
+        m_isMonchrome = qskIsMonochrome( m_stops );
+        m_isVisible = qskIsVisible( m_stops );
+    }
+    else
+    {
+        m_isMonchrome = true;
+        m_isVisible = false;
+    }
+
+    m_isDirty = false;
+}
+
+bool QskGradient::isValid() const noexcept
 {
     if ( m_isDirty )
         updateStatusBits();
@@ -292,16 +316,7 @@ bool QskGradient::isValid() const
     return m_isValid;
 }
 
-void QskGradient::invalidate()
-{
-    if ( !m_stops.isEmpty() )
-    {
-        m_stops.clear();
-        m_isDirty = true;
-    }
-}
-
-bool QskGradient::isMonochrome() const
+bool QskGradient::isMonochrome() const noexcept
 {
     if ( m_isDirty )
         updateStatusBits();
@@ -309,7 +324,7 @@ bool QskGradient::isMonochrome() const
     return m_isMonchrome;
 }
 
-bool QskGradient::isVisible() const
+bool QskGradient::isVisible() const noexcept
 {
     if ( m_isDirty )
         updateStatusBits();
@@ -317,18 +332,18 @@ bool QskGradient::isVisible() const
     return m_isVisible;
 }
 
-void QskGradient::setOrientation( Qt::Orientation orientation )
+void QskGradient::setOrientation( Qt::Orientation orientation ) noexcept
 {
     setOrientation( qskOrientation( orientation ) );
 }
 
-void QskGradient::setOrientation( Orientation orientation )
+void QskGradient::setOrientation( Orientation orientation ) noexcept
 {
     // does not change m_isDirty
     m_orientation = orientation;
 }
 
-void QskGradient::setColor( const QColor& color )
+void QskGradient::setStops( const QColor& color )
 {
     m_stops.clear();
     m_stops.reserve( 2 );
@@ -339,7 +354,7 @@ void QskGradient::setColor( const QColor& color )
     m_isDirty = true;
 }
 
-void QskGradient::setColors( const QColor& startColor, const QColor& stopColor )
+void QskGradient::setStops( const QColor& startColor, const QColor& stopColor )
 {
     m_stops.clear();
     m_stops.reserve( 2 );
@@ -352,29 +367,17 @@ void QskGradient::setColors( const QColor& startColor, const QColor& stopColor )
 
 void QskGradient::setStops( const QskGradientStops& stops )
 {
-    if ( !qskIsGradientValid( stops ) )
+    if ( !stops.isEmpty() && !qskIsGradientValid( stops ) )
     {
         qWarning( "Invalid gradient stops" );
-        invalidate();
-        return;
+        m_stops.clear();
+    }
+    else
+    {
+        m_stops = stops;
     }
 
-    m_stops = stops;
     m_isDirty = true;
-}
-
-const QskGradientStops& QskGradient::stops() const
-{
-#if 1
-    /*
-        Returning a const& so that it is possible to write:
-            for ( const auto& stop : qAsConst( gradient.stops() ) )
-
-        Once we have changed QskGradientStop from QColor to QRgb
-        we should check if there is a better solution possible
-     */
-#endif
-    return m_stops;
 }
 
 int QskGradient::stopCount() const
@@ -413,7 +416,7 @@ void QskGradient::setAlpha( int alpha )
     m_isDirty = true;
 }
 
-bool QskGradient::hasStopAt( qreal value ) const
+bool QskGradient::hasStopAt( qreal value ) const noexcept
 {
     // better use binary search TODO ...
     for ( auto& stop : m_stops )
@@ -426,20 +429,6 @@ bool QskGradient::hasStopAt( qreal value ) const
     }
 
     return false;
-}
-
-QskHashValue QskGradient::hash( QskHashValue seed ) const
-{
-    if ( m_stops.isEmpty() )
-        return seed;
-
-    const auto o = orientation();
-
-    auto hash = qHashBits( &o, sizeof( o ), seed );
-    for ( const auto& stop : m_stops )
-        hash = stop.hash( hash );
-
-    return hash;
 }
 
 void QskGradient::reverse()
@@ -622,25 +611,6 @@ QVariant QskGradient::interpolate(
     return QVariant::fromValue( from.interpolated( to, progress ) );
 }
 
-void QskGradient::updateStatusBits() const
-{
-    // doing all bits in one loop ?
-    m_isValid = qskIsGradientValid( m_stops );
-
-    if ( m_isValid )
-    {
-        m_isMonchrome = qskIsMonochrome( m_stops );
-        m_isVisible = qskIsVisible( m_stops );
-    }
-    else
-    {
-        m_isMonchrome = true;
-        m_isVisible = false;
-    }
-
-    m_isDirty = false;
-}
-
 QskGradientStops QskGradient::colorStops(
     const QVector< QRgb >& rgb, bool discrete )
 {
@@ -673,6 +643,30 @@ QGradientStops QskGradient::qtStops() const
 
     return qstops;
 }
+
+void QskGradient::clearStops()
+{
+    if ( !m_stops.isEmpty() )
+    {
+        m_stops.clear();
+        m_isDirty = true;
+    }
+}
+
+QskHashValue QskGradient::hash( QskHashValue seed ) const
+{
+    if ( m_stops.isEmpty() )
+        return seed;
+
+    const auto o = orientation();
+
+    auto hash = qHashBits( &o, sizeof( o ), seed );
+    for ( const auto& stop : m_stops )
+        hash = stop.hash( hash );
+
+    return hash;
+}
+
 
 #ifndef QT_NO_DEBUG_STREAM
 

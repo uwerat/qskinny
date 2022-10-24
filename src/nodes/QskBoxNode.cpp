@@ -84,7 +84,7 @@ void QskBoxNode::setBoxData( const QRectF& rect,
     // Renderer is buggy for monochrome gradients with stops. TODO ...
     if ( fillGradient.stops().count() > 2 && fillGradient.isMonochrome() )
     {
-        fillGradient.setColor( fillGradient.startColor() );
+        fillGradient.setStops( fillGradient.startColor() );
     }
 #endif
 

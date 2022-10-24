@@ -38,11 +38,11 @@ class QSK_EXPORT QskGradient
         Vertical,
         Diagonal
     };
-
     Q_ENUM( Orientation )
 
-    QskGradient();
-    QskGradient( Orientation );
+    QskGradient() noexcept = default;
+
+    QskGradient( Orientation ) noexcept;
     QskGradient( Qt::GlobalColor );
     QskGradient( QRgb );
     QskGradient( const QColor& );
@@ -58,31 +58,32 @@ class QSK_EXPORT QskGradient
 
     ~QskGradient();
 
-    void setOrientation( Qt::Orientation );
-    void setOrientation( Orientation );
-    Orientation orientation() const;
+    bool operator==( const QskGradient& ) const noexcept;
+    bool operator!=( const QskGradient& ) const noexcept;
 
-    bool isValid() const;
-    Q_INVOKABLE void invalidate();
+    void setOrientation( Qt::Orientation ) noexcept;
+    void setOrientation( Orientation ) noexcept;
+    Orientation orientation() const noexcept;
 
-    bool operator==( const QskGradient& ) const;
-    bool operator!=( const QskGradient& ) const;
-
-    void setColor( const QColor& );
-    void setColors( const QColor&, const QColor& );
-
-    Q_INVOKABLE QColor startColor() const;
-    Q_INVOKABLE QColor endColor() const;
+    bool isValid() const noexcept;
+    bool isMonochrome() const noexcept;
+    bool isVisible() const noexcept;
 
     Q_INVOKABLE void setStops( const QVector< QskGradientStop >& );
-    Q_INVOKABLE const QVector< QskGradientStop >& stops() const;
+    Q_INVOKABLE const QVector< QskGradientStop >& stops() const noexcept;
 
-    Q_INVOKABLE bool hasStopAt( qreal value ) const;
+    void setStops( const QColor& );
+    void setStops( const QColor&, const QColor& );
+    void setStops( QGradient::Preset );
+
+    void clearStops();
+
+    Q_INVOKABLE bool hasStopAt( qreal value ) const noexcept;
+
+    Q_INVOKABLE QColor startColor() const noexcept;
+    Q_INVOKABLE QColor endColor() const noexcept;
 
     void setAlpha( int alpha );
-
-    bool isMonochrome() const;
-    bool isVisible() const;
 
     void reverse();
     QskGradient reversed() const;
@@ -99,6 +100,7 @@ class QSK_EXPORT QskGradient
 
     Q_INVOKABLE qreal stopAt( int index ) const;
     Q_INVOKABLE QColor colorAt( int index ) const;
+
     Q_INVOKABLE int stopCount() const;
 
     QGradientStops qtStops() const;
@@ -109,22 +111,18 @@ class QSK_EXPORT QskGradient
   private:
     void updateStatusBits() const;
 
+  private:
     QVector< QskGradientStop > m_stops;
 
-    int m_orientation : 4;
+    Orientation m_orientation = Vertical;
 
-    mutable bool m_isDirty : 1;
-    mutable bool m_isValid : 1;
-    mutable bool m_isMonchrome : 1;
-    mutable bool m_isVisible : 1;
+    mutable bool m_isDirty = false;
+    mutable bool m_isValid = false;
+    mutable bool m_isMonchrome = true;
+    mutable bool m_isVisible = false;
 };
 
 Q_DECLARE_METATYPE( QskGradient )
-
-inline QskGradient::QskGradient()
-    : QskGradient( Vertical )
-{
-}
 
 inline QskGradient::QskGradient( Qt::GlobalColor color )
     : QskGradient( QColor( color ) )
@@ -141,29 +139,38 @@ inline QskGradient::QskGradient( QGradient::Preset preset )
 {
 }
 
-inline QskGradient::Orientation QskGradient::orientation() const
-{
-    return static_cast< Orientation >( m_orientation );
-}
-
-inline QColor QskGradient::startColor() const
-{
-    return ( m_stops.size() >= 2 ) ? m_stops.first().color() : QColor();
-}
-
-inline QColor QskGradient::endColor() const
-{
-    return ( m_stops.size() >= 2 ) ? m_stops.last().color() : QColor();
-}
-
-inline bool QskGradient::operator==( const QskGradient& other ) const
-{
-    return ( m_orientation == other.m_orientation ) && ( m_stops == other.m_stops );
-}
-
-inline bool QskGradient::operator!=( const QskGradient& other ) const
+inline bool QskGradient::operator!=( const QskGradient& other ) const noexcept
 {
     return ( !( *this == other ) );
+}
+
+inline QskGradient::Orientation QskGradient::orientation() const noexcept
+{
+    return m_orientation;
+}
+
+inline const QskGradientStops& QskGradient::stops() const noexcept
+{
+#if 1
+    /*
+        Returning a const& so that it is possible to write:
+            for ( const auto& stop : qAsConst( gradient.stops() ) )
+
+        Once we have changed QskGradientStop from QColor to QRgb
+        we should check if there is a better solution possible
+     */
+#endif
+    return m_stops;
+}
+
+inline QColor QskGradient::startColor() const noexcept
+{
+    return m_stops.isEmpty() ? QColor() : m_stops.first().color();
+}
+
+inline QColor QskGradient::endColor() const noexcept
+{
+    return m_stops.isEmpty() ? QColor() : m_stops.last().color();
 }
 
 #ifndef QT_NO_DEBUG_STREAM
