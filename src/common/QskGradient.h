@@ -100,7 +100,7 @@ class QSK_EXPORT QskGradient
     Q_INVOKABLE qreal stopAt( int index ) const noexcept;
     Q_INVOKABLE QColor colorAt( int index ) const noexcept;
 
-    Q_INVOKABLE int stopCount() const noexcept;
+    int stepCount() const noexcept;
 
   private:
     void updateStatusBits() const;

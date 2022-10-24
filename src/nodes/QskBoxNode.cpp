@@ -88,7 +88,6 @@ void QskBoxNode::setBoxData( const QRectF& rect,
     }
 #endif
 
-#if 1
     const auto metricsHash = qskMetricsHash( shape, borderMetrics );
     const auto colorsHash = qskColorsHash( borderColors, fillGradient );
 
@@ -104,7 +103,6 @@ void QskBoxNode::setBoxData( const QRectF& rect,
 
     markDirty( QSGNode::DirtyMaterial );
     markDirty( QSGNode::DirtyGeometry );
-#endif
 
     if ( rect.isEmpty() )
     {
@@ -112,7 +110,7 @@ void QskBoxNode::setBoxData( const QRectF& rect,
         return;
     }
 
-    bool hasFill = fillGradient.isValid();
+    bool hasFill = fillGradient.isVisible();
 
     bool hasBorder = !borderMetrics.isNull();
     if ( hasBorder )

@@ -430,6 +430,12 @@ static inline void qskCreateBorder(
     {
         const auto stops = colors.bottom().stops();
 
+        if ( stops.first().position() > 0.0 )
+        {
+            ( line++ )->setLine( in.right, in.bottom,
+                out.right, out.bottom, stops.first().color() );
+        }
+
         for( const auto& stop : stops )
         {
             const qreal x1 = in.right - stop.position() * dx1;
@@ -437,10 +443,22 @@ static inline void qskCreateBorder(
 
             ( line++ )->setLine( x1, in.bottom, x2, out.bottom, stop.color() );
         }
+
+        if ( stops.last().position() < 1.0 )
+        {
+            ( line++ )->setLine( in.left, in.bottom,
+                out.left, out.bottom, stops.last().color() );
+        }
     }
 
     {
         const auto stops = colors.left().stops();
+
+        if ( stops.first().position() > 0.0 )
+        {
+            ( line++ )->setLine( in.left, in.bottom,
+                out.left, out.bottom, stops.first().color() );
+        }
 
         for( const auto& stop : stops )
         {
@@ -449,10 +467,22 @@ static inline void qskCreateBorder(
 
             ( line++ )->setLine( in.left, y1, out.left, y2, stop.color() );
         }
+
+        if ( stops.last().position() < 1.0 )
+        {
+            ( line++ )->setLine( in.left, in.top,
+                out.left, out.top, stops.last().color() );
+        }
     }
 
     {
         const auto stops = colors.top().stops();
+
+        if ( stops.first().position() > 0.0 )
+        {
+            ( line++ )->setLine( in.left, in.top,
+                out.left, out.top, stops.first().color() );
+        }
 
         for( const auto& stop : stops )
         {
@@ -461,10 +491,22 @@ static inline void qskCreateBorder(
 
             ( line++ )->setLine( x1, in.top, x2, out.top, stop.color() );
         }
+
+        if ( stops.last().position() < 1.0 )
+        {
+            ( line++ )->setLine( in.right, in.top,
+                out.right, out.top, stops.last().color() );
+        }
     }
 
     {
         const auto stops = colors.right().stops();
+
+        if ( stops.first().position() > 0.0 )
+        {
+            ( line++ )->setLine( in.right, in.top,
+                out.right, out.top, stops.first().color() );
+        }
 
         for( const auto& stop : stops )
         {
@@ -473,6 +515,12 @@ static inline void qskCreateBorder(
 
             ( line++ )->setLine( in.right, y1, out.right, y2, stop.color() );
         }
+
+        if ( stops.last().position() < 1.0 )
+        {
+            ( line++ )->setLine( in.right, in.bottom,
+                out.right, out.bottom, stops.last().color() );
+        } 
     }
 }
 
@@ -528,7 +576,7 @@ void QskBoxRenderer::renderRect(
     int fillLineCount = 0;
     if ( gradient.isVisible() && !in.isEmpty() )
     {
-        fillLineCount = gradient.stops().count();
+        fillLineCount = gradient.stepCount() + 1;
 
         if ( gradient.orientation() == QskGradient::Diagonal )
         {
@@ -566,10 +614,10 @@ void QskBoxRenderer::renderRect(
                 // ### As an optimization we could check orientation and colors
                 // to test whether colors are the same
                 const int additionalLines = -1
-                    + bc.left().stops().count() - 1
-                    + bc.top().stops().count() - 1
-                    + bc.right().stops().count() - 1
-                    + bc.bottom().stops().count() - 1;
+                    + bc.left().stepCount()
+                    + bc.top().stepCount()
+                    + bc.right().stepCount()
+                    + bc.bottom().stepCount();
 
                 borderLineCount += qMax( additionalLines, 0 );
             }
@@ -589,7 +637,7 @@ void QskBoxRenderer::renderRect(
         }
         else
         {
-            bool fillRandom = gd.stops().count() <= 2;
+            bool fillRandom = gd.stepCount() <= 1;
             if ( fillRandom )
             {
                 /*

@@ -153,16 +153,25 @@ namespace QskVertex
             , m_value2( value2 )
             , m_stops( stops )
         {
-            Q_ASSERT( stops.size() > 2 );
+            if ( stops.first().position() > 0.0 )
+            {
+                m_color1 = m_color2 = stops[ 0 ].color();
+                m_index = 0;
+            }
+            else
+            {
+                m_color1 = stops[ 0 ].color();
+                m_color2 = stops[ 1 ].color();
+                m_index = 1;
+            }
 
-            m_color1 = stops[ 0 ].color();
-            m_color2 = stops[ 1 ].color();
+            m_finalIndex = m_stops.count() - 1;
+            if ( stops.last().position() < 1.0 )
+                m_finalIndex++;
 
             m_valueStep1 = value1;
-            m_valueStep2 = valueAt( stops[ 1 ].position() );
+            m_valueStep2 = valueAt( stops[ m_index ].position() );
             m_stepSize = m_valueStep2 - m_valueStep1;
-
-            m_index = 1;
         }
 
         inline qreal value() const
@@ -183,13 +192,24 @@ namespace QskVertex
 
         inline bool advance()
         {
-            const auto& stop = m_stops[ ++m_index ];
+            m_index++;
 
             m_color1 = m_color2;
-            m_color2 = stop.color();
-
             m_valueStep1 = m_valueStep2;
-            m_valueStep2 = valueAt( stop.position() );
+
+            if ( m_index >= m_stops.count() )
+            {
+                m_color2 = m_color1;
+                m_valueStep2 = valueAt( 1.0 );
+            }
+            else
+            {
+                const auto& stop = m_stops[ m_index ];
+
+                m_color2 = stop.color();
+                m_valueStep2 = valueAt( stop.position() );
+            }
+
             m_stepSize = m_valueStep2 - m_valueStep1;
 
             return !isDone();
@@ -197,7 +217,7 @@ namespace QskVertex
 
         inline bool isDone() const
         {
-            return m_index >= m_stops.count() - 1;
+            return m_index >= m_finalIndex;
         }
 
       private:
@@ -209,7 +229,7 @@ namespace QskVertex
         const qreal m_value1, m_value2;
         const QskGradientStops m_stops;
 
-        int m_index;
+        int m_index, m_finalIndex;
         qreal m_valueStep1, m_valueStep2, m_stepSize;
         Color m_color1, m_color2;
     };
@@ -237,7 +257,7 @@ namespace QskVertex
     ColoredLine* fillOrdered( ContourIterator& contourIt,
         qreal value1, qreal value2, const QskGradient& gradient, ColoredLine* line )
     {
-        if ( gradient.stops().size() == 2 )
+        if ( gradient.stepCount() == 1 )
         {
             if ( value2 == 1.0 && value1 == 0.0 )
             {

@@ -100,7 +100,7 @@ namespace
 
     int additionalGradientStops( const QskGradient& gradient )
     {
-        return qMax( 0, gradient.stops().count() - 2 );
+        return qMax( 0, gradient.stepCount() - 1 );
     }
 }
 
@@ -575,9 +575,25 @@ namespace
 
             auto line = lines + additionalGradientStops( gradient );
 
+            {
+                const auto &stop = stops.first();
+
+                if ( stop.position() > 0.0 )
+                    setAdditionalLine( x11, y11, x12, y12, dx1, dy1, dx2, dy2, stop, line-- );
+            }
+
             for( int i = 1; i < stops.count() - 1; i++ )
             {
                 setAdditionalLine( x11, y11, x12, y12, dx1, dy1, dx2, dy2, stops[i], line-- );
+            }
+
+            {
+                const auto &stop = stops.last();
+
+                if ( stop.position() < 1.0 )
+                {
+                    setAdditionalLine( x11, y11, x12, y12, dx1, dy1, dx2, dy2, stop, line-- );
+                }
             }
         }
 
@@ -931,7 +947,7 @@ static inline int qskFillLineCount(
     // adding vertexes for the stops - beside the first/last
 
     if ( !gradient.isMonochrome() )
-        lineCount += gradient.stops().size() - 2;
+        lineCount += gradient.stepCount() - 1;
 
     return lineCount;
 }
@@ -1339,7 +1355,7 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
         {
             // degenerated to a rectangle
 
-            fillLineCount = gradient.stops().count();
+            fillLineCount = gradient.stepCount() + 1;
 
 #if 1
             // code copied from QskBoxRendererRect.cpp TODO ...
@@ -1411,7 +1427,7 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
         }
         else if ( !gradient.isMonochrome() )
         {
-            if ( gradient.stops().count() > 2 ||
+            if ( gradient.stepCount() > 1 ||
                 gradient.orientation() == QskGradient::Diagonal )
             {
                 fillRandom = false;

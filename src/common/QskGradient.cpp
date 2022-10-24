@@ -31,10 +31,10 @@ static inline QskGradient::Orientation qskOrientation( Qt::Orientation o )
 
 static inline bool qskIsGradientValid( const QskGradientStops& stops )
 {
-    if ( stops.size() < 2 )
+    if ( stops.isEmpty() )
         return false;
 
-    if ( stops.first().position() != 0.0 || stops.last().position() != 1.0 )
+    if ( stops.first().position() < 0.0 || stops.last().position() > 1.0 )
         return false;
 
     if ( !stops.first().color().isValid() )
@@ -200,9 +200,20 @@ void QskGradient::setStops( const QskGradientStops& stops )
     m_isDirty = true;
 }
 
-int QskGradient::stopCount() const noexcept
+int QskGradient::stepCount() const noexcept
 {
-    return m_stops.count();
+    if ( !isValid() )
+        return 0;
+
+    int steps = m_stops.count() - 1;
+
+    if ( m_stops.first().position() > 0.0 )
+        steps++;
+
+    if ( m_stops.last().position() < 1.0 )
+        steps++;
+
+    return steps;
 }
 
 qreal QskGradient::stopAt( int index ) const noexcept
