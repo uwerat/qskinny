@@ -6,7 +6,6 @@
 #ifndef QSK_GRADIENT_H
 #define QSK_GRADIENT_H
 
-#include "QskGlobal.h"
 #include "QskGradientStop.h"
 
 #include <qbrush.h>
@@ -88,13 +87,13 @@ class QSK_EXPORT QskGradient
     void reverse();
     QskGradient reversed() const;
 
-    // all stops between [from, to] with positions streched into [0,1]
-    QskGradient extracted( qreal from, qreal start ) const;
-
     QskGradient interpolated( const QskGradient&, qreal value ) const;
 
     static QVariant interpolate( const QskGradient&,
         const QskGradient&, qreal progress );
+
+    // all stops between [from, to] with positions streched into [0,1]
+    QskGradient extracted( qreal from, qreal start ) const;
 
     QskHashValue hash( QskHashValue seed ) const;
 
@@ -136,7 +135,7 @@ inline QskGradient::QskGradient( QGradient::Preset preset )
 
 inline bool QskGradient::operator!=( const QskGradient& other ) const noexcept
 {
-    return ( !( *this == other ) );
+    return !( *this == other );
 }
 
 inline QskGradient::Orientation QskGradient::orientation() const noexcept

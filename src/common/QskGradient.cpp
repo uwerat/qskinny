@@ -52,108 +52,12 @@ static inline bool qskIsGradientValid( const QskGradientStops& stops )
     return true;
 }
 
-static inline QColor qskInterpolated(
-    const QskGradientStop& s1, const QskGradientStop& s2, qreal pos )
+static inline bool qskCanBeInterpolated( const QskGradient& from, const QskGradient& to )
 {
-    if ( s1.color() == s2.color() )
-        return s1.color();
+    if ( from.isMonochrome() || to.isMonochrome() )
+        return true;
 
-    const qreal ratio = ( pos - s1.position() ) / ( s2.position() - s1.position() );
-    return QskRgb::interpolated( s1.color(), s2.color(), ratio );
-}
-
-static inline bool qskComparePositions(
-    const QskGradientStops& s1, const QskGradientStops& s2 )
-{
-    if ( s1.count() != s2.count() )
-        return false;
-
-    // the first is always at 0.0, the last at 1.0
-    for ( int i = 1; i < s1.count() - 1; i++ )
-    {
-        if ( s1[ i ].position() != s2[ i ].position() )
-            return false;
-    }
-
-    return true;
-}
-
-static inline QskGradientStops qskExpandedStops(
-    const QskGradientStops& s1, const QskGradientStops& s2 )
-{
-    // expand s1 by stops matching to the positions from s2
-
-    if ( qskComparePositions( s1, s2 ) )
-        return s1;
-
-    QskGradientStops stops;
-
-    stops += s1.first();
-
-    int i = 1, j = 1;
-    while ( ( i < s1.count() - 1 ) || ( j < s2.count() - 1 ) )
-    {
-        if ( s1[ i ].position() < s2[ j ].position() )
-        {
-            stops += s1[ i++ ];
-        }
-        else
-        {
-            const qreal pos = s2[ j++ ].position();
-            stops += QskGradientStop( pos, qskInterpolated( s1[ i - 1 ], s1[ i ], pos ) );
-        }
-    }
-
-    stops += s1.last();
-
-    return stops;
-}
-
-static inline QskGradientStops qskExtractedStops(
-    const QskGradientStops& stops, qreal from, qreal to )
-{
-    QskGradientStops extracted;
-
-    if ( from == to )
-        extracted.reserve( 2 );
-    else
-        extracted.reserve( stops.size() );
-
-    int i = 0;
-
-    if ( from == 0.0 )
-    {
-        extracted += QskGradientStop( 0.0, stops[i++].color() );
-    }
-    else
-    {
-        for ( i = 1; i < stops.count(); i++ )
-        {
-            if ( stops[i].position() > from )
-                break;
-        }
-
-        const auto color =
-            QskGradientStop::interpolated( stops[i - 1], stops[i], from );
-
-        extracted += QskGradientStop( 0.0, color );
-    }
-
-    for ( ; i < stops.count(); i++ )
-    {
-        const auto& s = stops[i];
-
-        if ( s.position() >= to )
-            break;
-
-        const auto pos = ( s.position() - from ) / ( to - from );
-        extracted += QskGradientStop( pos, s.color() );
-    }
-
-    const auto color = QskGradientStop::interpolated( stops[i - 1], stops[i], to );
-    extracted += QskGradientStop( 1.0, color );
-
-    return extracted;
+    return from.orientation() == to.orientation();
 }
 
 QskGradient::QskGradient( Orientation orientation ) noexcept
@@ -271,23 +175,13 @@ void QskGradient::setOrientation( Orientation orientation ) noexcept
 
 void QskGradient::setStops( const QColor& color )
 {
-    m_stops.clear();
-    m_stops.reserve( 2 );
-
-    m_stops.append( QskGradientStop( 0.0, color ) );
-    m_stops.append( QskGradientStop( 1.0, color ) );
-
+    m_stops = { { 0.0, color }, { 1.0, color } };
     m_isDirty = true;
 }
 
-void QskGradient::setStops( const QColor& startColor, const QColor& stopColor )
+void QskGradient::setStops( const QColor& color1, const QColor& color2 )
 {
-    m_stops.clear();
-    m_stops.reserve( 2 );
-
-    m_stops.append( QskGradientStop( 0.0, startColor ) );
-    m_stops.append( QskGradientStop( 1.0, stopColor ) );
-
+    m_stops = { { 0.0, color1 }, { 1.0, color2 } };
     m_isDirty = true;
 }
 
@@ -377,158 +271,75 @@ QskGradient QskGradient::reversed() const
 
 QskGradient QskGradient::extracted( qreal from, qreal to ) const
 {
-    if ( from > to )
-        return QskGradient( m_orientation );
+    auto gradient = *this;
 
-    if ( isMonochrome() || ( from <= 0.0 && to >= 1.0 ) )
-        return *this;
+    if ( !isValid() || ( from > to ) || ( from > 1.0 ) )
+    {
+        gradient.clearStops();
+    }
+    else if ( isMonochrome() )
+    {
+        from = qMax( from, 0.0 );
+        to = qMin( to, 1.0 );
 
-    from = qMax( from, 0.0 );
-    to = qMin( to, 1.0 );
+        const auto color = m_stops.first().color();
 
-    const auto stops = qskExtractedStops( m_stops, from, to );
-    return QskGradient( orientation(), stops );
+        gradient.setStops( { { from, color }, { to, color } } );
+    }
+    else
+    {
+        gradient.setStops( qskExtractedGradientStops( m_stops, from, to ) );
+    }
+
+    return gradient;
 }
 
-QskGradient QskGradient::interpolated(
-    const QskGradient& to, qreal value ) const
+QskGradient QskGradient::interpolated( const QskGradient& to, qreal ratio ) const
 {
-    if ( !( isValid() && to.isValid() ) )
+    if ( !isValid() && !to.isValid() )
+        return to;
+
+    QskGradient gradient;
+
+    if ( qskCanBeInterpolated( *this, to ) )
     {
-        if ( !isValid() && !to.isValid() )
-            return to;
+        // We simply interpolate stops
 
-        qreal progress;
-        const QskGradient* gradient;
+        gradient.setOrientation( to.orientation() );
 
-        if ( to.isValid() )
-        {
-            progress = value;
-            gradient = &to;
-        }
-        else
-        {
-            progress = 1.0 - value;
-            gradient = this;
-        }
-
-        /*
-            We interpolate as if the invalid gradient would be
-            a transparent version of the valid gradient
-         */
-
-        auto stops = gradient->m_stops;
-        for ( auto& stop : stops )
-        {
-            auto c = stop.color();
-            c.setAlpha( c.alpha() * progress );
-
-            stop.setColor( c );
-        }
-
-        return QskGradient( gradient->orientation(), stops );
-    }
-
-    if ( isMonochrome() && to.isMonochrome() )
-    {
-        const auto c = QskRgb::interpolated(
-            m_stops[ 0 ].color(), to.m_stops[ 0 ].color(), value );
-
-        return QskGradient( to.orientation(), c, c );
-    }
-
-    if ( isMonochrome() )
-    {
-        // we can ignore our stops
-
-        const auto c = m_stops[ 0 ].color();
-
-        auto s2 = to.m_stops;
-        for ( int i = 0; i < s2.count(); i++ )
-        {
-            const auto c2 = QskRgb::interpolated( c, s2[ i ].color(), value );
-            s2[ i ].setColor( c2 );
-        }
-
-        return QskGradient( to.orientation(), s2 );
-    }
-
-    if ( to.isMonochrome() )
-    {
-        // we can ignore the stops of to
-
-        const auto c = to.m_stops[ 0 ].color();
-
-        auto s2 = m_stops;
-        for ( int i = 0; i < s2.count(); i++ )
-        {
-            const auto c2 = QskRgb::interpolated( s2[ i ].color(), c, value );
-            s2[ i ].setColor( c2 );
-        }
-
-        return QskGradient( orientation(), s2 );
-    }
-
-    if ( m_orientation == to.m_orientation )
-    {
-        /*
-            we need to have the same number of stops
-            at the same positions
-         */
-
-        const auto s1 = qskExpandedStops( m_stops, to.m_stops );
-        auto s2 = qskExpandedStops( to.m_stops, m_stops );
-
-        for ( int i = 0; i < s1.count(); i++ )
-        {
-            const auto c2 = QskRgb::interpolated(
-                s1[ i ].color(), s2[ i ].color(), value );
-
-            s2[ i ].setColor( c2 );
-        }
-
-        return QskGradient( orientation(), s2 );
+        gradient.setStops( qskInterpolatedGradientStops(
+            m_stops, isMonochrome(),
+            to.m_stops, to.isMonochrome(), ratio ) );
     }
     else
     {
         /*
             The interpolation is devided into 2 steps. First we
-            interpolate into a monochrome gradient and then change
-            the orientation before we continue in direction of the
-            final gradient.
+            interpolate into a monochrome gradient and then
+            recolor the gradient towards the target gradient
+            This will always result in a smooth transition - even, when
+            interpolating between different gradient types
          */
 
-        const auto c = m_stops[ 0 ].color();
+        const auto c = QskRgb::interpolated( startColor(), to.startColor(), 0.5 );
 
-        if ( value <= 0.5 )
+        if ( ratio < 0.5 )
         {
-            auto s2 = m_stops;
+            const auto r = 2.0 * ratio;
 
-            for ( int i = 0; i < s2.count(); i++ )
-            {
-                const auto c2 = QskRgb::interpolated(
-                    s2[ i ].color(), c, 2 * value );
-
-                s2[ i ].setColor( c2 );
-            }
-
-            return QskGradient( orientation(), s2 );
+            gradient.setOrientation( orientation() );
+            gradient.setStops( qskInterpolatedGradientStops( m_stops, c, r ) );
         }
         else
         {
-            auto s2 = to.m_stops;
+            const auto r = 2.0 * ( ratio - 0.5 );
 
-            for ( int i = 0; i < s2.count(); i++ )
-            {
-                const auto c2 = QskRgb::interpolated(
-                    c, s2[ i ].color(), 2 * ( value - 0.5 ) );
-
-                s2[ i ].setColor( c2 );
-            }
-
-            return QskGradient( to.orientation(), s2 );
+            gradient.setOrientation( to.orientation() );
+            gradient.setStops( qskInterpolatedGradientStops( c, to.m_stops, r ) );
         }
     }
+
+    return gradient;
 }
 
 QVariant QskGradient::interpolate(

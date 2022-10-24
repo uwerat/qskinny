@@ -127,6 +127,22 @@ typedef QVector< QskGradientStop > QskGradientStops;
 QSK_EXPORT bool qskIsMonochrome( const QskGradientStops& ) noexcept;
 QSK_EXPORT bool qskIsVisible( const QskGradientStops& ) noexcept;
 
+QSK_EXPORT QskGradientStops qskInterpolatedGradientStops(
+    const QskGradientStops&, bool, const QskGradientStops&, bool,
+    qreal ratio );
+
+QSK_EXPORT QskGradientStops qskInterpolatedGradientStops(
+    const QskGradientStops&, const QColor&, qreal ratio );
+
+QSK_EXPORT QskGradientStops qskInterpolatedGradientStops(
+    const QColor&, const QskGradientStops&, qreal ratio );
+
+QSK_EXPORT QskGradientStops qskTransparentGradientStops(
+    const QskGradientStops&, qreal ratio );
+
+QSK_EXPORT QskGradientStops qskExtractedGradientStops(
+    const QskGradientStops&, qreal from, qreal to );
+
 QSK_EXPORT QskGradientStops qskBuildGradientStops(
     const QVector< QRgb >&, bool discrete = false );
 

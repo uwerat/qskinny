@@ -98,6 +98,15 @@ QDebug operator<<( QDebug debug, const QskGradientStop& stop )
 
 // some helper functions around QskGradientStops
 
+static inline QColor qskInterpolatedColor(
+    const QskGradientStops& stops, int index1, int index2, qreal position )
+{
+    index1 = qBound( 0, index1, stops.count() - 1 );
+    index2 = qBound( 0, index2, stops.count() - 1 );
+
+    return QskGradientStop::interpolated( stops[ index1 ], stops[ index2 ], position );
+}
+
 bool qskIsVisible( const QskGradientStops& stops ) noexcept
 {
     for ( const auto& stop : stops )
@@ -133,7 +142,173 @@ QskGradientStops qskTransparentGradientStops( const QskGradientStops& stops, qre
         stop.setColor( c );
     }
 
+    return stops;
+}
+
+QskGradientStops qskInterpolatedGradientStops(
+    const QskGradientStops& stops, const QColor& color, qreal ratio )
+{
+    auto newStops = stops;
+
+    for ( auto& stop : newStops )
+        stop.setColor( QskRgb::interpolated( stop.color(), color, ratio ) );
+
     return newStops;
+}
+
+QskGradientStops qskInterpolatedGradientStops(
+    const QColor& color, const QskGradientStops& stops, qreal ratio )
+{
+    auto newStops = stops;
+
+    for ( auto& stop : newStops )
+        stop.setColor( QskRgb::interpolated( color, stop.color(), ratio ) );
+
+    return newStops;
+}
+
+static QskGradientStops qskInterpolatedStops(
+    const QskGradientStops& from, const QskGradientStops& to, qreal ratio )
+{
+    /*
+        We have to insert interpolated stops for all positions
+        that can be found in s1 and s2. So in case there is no
+        stop at a specific position of the other stops we
+        have to calculate one temporarily before interpolating.
+     */
+    QVector< QskGradientStop > stops;
+
+    int i = 0, j = 0;
+    while ( ( i < from.count() ) || ( j < to.count() ) )
+    {
+        qreal pos;
+        QColor c1, c2;
+
+        if ( i == from.count() )
+        {
+            c1 = from.last().color();
+            c2 = to[j].color();
+            pos = to[j++].position();
+        }
+        else if ( j == to.count() )
+        {
+            c1 = from[i].color();
+            c2 = to.last().color();
+            pos = from[i++].position();
+        }
+        else
+        {
+            c1 = from[i].color();
+            c2 = to[j].color();
+
+            const qreal dpos = from[i].position() - to[j].position();
+
+            if ( qFuzzyIsNull( dpos ) )
+            {
+                pos = from[i++].position();
+                j++;
+            }
+            else if ( dpos < 0.0 )
+            {
+                pos = from[i++].position();
+
+                if ( j > 0 )
+                {
+                    const auto& stop = to[j - 1];
+                    c2 = QskRgb::interpolated( stop.color(), c2, pos - stop.position() );
+                }
+            }
+            else
+            {
+                pos = to[j++].position();
+
+                if ( i > 0 )
+                {
+                    const auto& stop = from[i - 1];
+                    c1 = QskRgb::interpolated( stop.color(), c1, pos - stop.position() );
+                }
+            }
+        }
+
+        stops += QskGradientStop( pos, QskRgb::interpolated( c1, c2, ratio ) );
+    }
+
+    return stops;
+}
+
+QskGradientStops qskInterpolatedGradientStops(
+    const QskGradientStops& from, bool fromIsMonochrome,
+    const QskGradientStops& to, bool toIsMonochrome, qreal ratio )
+{
+    if ( from.isEmpty() && to.isEmpty() )
+        return QskGradientStops();
+
+    if ( from.isEmpty() )
+        return qskTransparentGradientStops( to, ratio );
+
+    if ( to.isEmpty() )
+        return qskTransparentGradientStops( from, 1.0 - ratio );
+
+    if ( fromIsMonochrome && toIsMonochrome )
+    {
+        const auto c = QskRgb::interpolated(
+            from[ 0 ].color(), to[ 0 ].color(), ratio );
+
+        return { { 0.0, c }, { 1.0, c } };
+    }
+
+    if ( fromIsMonochrome )
+    {
+        return qskInterpolatedGradientStops( from[ 0 ].color(), to, ratio );
+    }
+
+    if ( toIsMonochrome )
+    {
+        return qskInterpolatedGradientStops( from, to[ 0 ].color(), ratio );
+    }
+
+    return qskInterpolatedStops( from, to, ratio );
+}
+
+QskGradientStops qskExtractedGradientStops(
+    const QskGradientStops& stops, qreal from, qreal to )
+{
+    if ( ( from > to ) || ( from > 1.0 ) || stops.isEmpty() )
+        return QskGradientStops();
+
+    if ( ( from <= 0.0 ) && ( to >= 1.0 ) )
+        return stops;
+
+    from = qMax( from, 0.0 );
+    to = qMin( to, 1.0 );
+
+    QVector< QskGradientStop > extracted;
+    extracted.reserve( stops.count() );
+
+    int i = 0;
+
+    for ( ; i < stops.count(); i++ )
+    {
+        if ( stops[i].position() > from )
+            break;
+    }
+
+    extracted += QskGradientStop( 0.0,
+        qskInterpolatedColor( stops, i - 1, i, from ) );
+
+    for ( ; i < stops.count(); i++ )
+    {
+        if ( stops[i].position() >= to )
+            break;
+
+        const auto pos = ( stops[i].position() - from ) / ( to - from );
+        extracted += QskGradientStop( pos, stops[i].color() );
+    }
+
+    extracted += QskGradientStop( 1.0,
+        qskInterpolatedColor( stops, i, i + 1, to ) );
+
+    return extracted;
 }
 
 QVector< QskGradientStop > qskBuildGradientStops( const QGradientStops& qtStops )
