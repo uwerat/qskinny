@@ -345,36 +345,27 @@ namespace
 static inline void qskCreateFillOrdered( const QskBoxRenderer::Quad& rect,
     const QskGradient& gradient, ColoredLine* line )
 {
-    switch ( gradient.orientation() )
+    if ( gradient.isHorizontal() )
     {
-        case QskGradient::Horizontal:
+        HRectIterator it( rect );
+        line = QskVertex::fillOrdered( it, rect.left, rect.right, gradient, line );
+    }
+    else if ( gradient.isVertical() )
+    {
+        VRectIterator it( rect );
+        line = QskVertex::fillOrdered( it, rect.top, rect.bottom, gradient, line );
+    }
+    else
+    {
+        if ( rect.width == rect.height )
         {
-            HRectIterator it( rect );
-            line = QskVertex::fillOrdered( it, rect.left, rect.right, gradient, line );
-
-            break;
+            DSquareIterator it( rect );
+            line = QskVertex::fillOrdered( it, 0.0, 1.0, gradient, line );
         }
-        case QskGradient::Vertical:
+        else
         {
-            VRectIterator it( rect );
-            line = QskVertex::fillOrdered( it, rect.top, rect.bottom, gradient, line );
-
-            break;
-        }
-        case QskGradient::Diagonal:
-        {
-            if ( rect.width == rect.height )
-            {
-                DSquareIterator it( rect );
-                line = QskVertex::fillOrdered( it, 0.0, 1.0, gradient, line );
-            }
-            else
-            {
-                DRectIterator it( rect );
-                line = QskVertex::fillOrdered( it, 0.0, 1.0, gradient, line );
-            }
-
-            break;
+            DRectIterator it( rect );
+            line = QskVertex::fillOrdered( it, 0.0, 1.0, gradient, line );
         }
     }
 }
@@ -578,7 +569,7 @@ void QskBoxRenderer::renderRect(
     {
         fillLineCount = gradient.stepCount() + 1;
 
-        if ( gradient.orientation() == QskGradient::Diagonal )
+        if ( gradient.isTilted() )
         {
             if ( in.width == in.height )
             {
@@ -645,7 +636,7 @@ void QskBoxRenderer::renderRect(
                     but we didn't implement a random fill algo for
                     diagonal gradients yet.
                  */
-                fillRandom = gd.orientation() != QskGradient::Diagonal;
+                fillRandom = !gd.isTilted();
             }
 
             if ( fillRandom )

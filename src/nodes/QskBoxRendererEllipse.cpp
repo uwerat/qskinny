@@ -870,7 +870,7 @@ namespace
 
 static inline Qt::Orientation qskQtOrientation( const QskGradient& gradient )
 {
-    return ( gradient.orientation() == QskGradient::Vertical ) ? Qt::Vertical : Qt::Horizontal;
+    return gradient.isVertical() ? Qt::Vertical : Qt::Horizontal;
 }
 
 static inline int qskFillLineCount(
@@ -883,65 +883,56 @@ static inline int qskFillLineCount(
 
     int lineCount = 0;
 
-    switch ( gradient.orientation() )
+    if ( gradient.isTilted() )
     {
-        case QskGradient::Diagonal:
-        {
-            lineCount += 2 * ( stepCount + 1 );
+        lineCount += 2 * ( stepCount + 1 );
 
-            if ( metrics.centerQuad.left >= metrics.centerQuad.right )
-                lineCount--;
+        if ( metrics.centerQuad.left >= metrics.centerQuad.right )
+            lineCount--;
 
-            if ( metrics.centerQuad.top >= metrics.centerQuad.bottom )
-                lineCount--;
+        if ( metrics.centerQuad.top >= metrics.centerQuad.bottom )
+            lineCount--;
 
-            /*
-                For diagonal lines the points at the opposite
-                side are no points interpolating the outline.
-                So we need to insert interpolating lines on both sides
-             */
+        /*
+            For diagonal lines the points at the opposite
+            side are no points interpolating the outline.
+            So we need to insert interpolating lines on both sides
+         */
 
-            lineCount *= 2; // a real ellipse could be done with lineCount lines: TODO ...
+        lineCount *= 2; // a real ellipse could be done with lineCount lines: TODO ...
 
 #if 1
-            /*
-                The termination of the fill algorithm is a bit random
-                and might result in having an additional line.
-                Until this effect is completely understood, we better
-                reserve memory for this to avoid crashes.
-             */
+        /*
+            The termination of the fill algorithm is a bit random
+            and might result in having an additional line.
+            Until this effect is completely understood, we better
+            reserve memory for this to avoid crashes.
+         */
 
-            lineCount++; // happens in a corner case - needs to be understood: TODO
+        lineCount++; // happens in a corner case - needs to be understood: TODO
 #endif
+    }
+    else if ( gradient.isVertical() )
+    {
+        lineCount += qMax( metrics.corner[ TopLeft ].stepCount,
+            metrics.corner[ TopRight ].stepCount ) + 1;
 
-            break;
-        }
-        case QskGradient::Vertical:
-        {
-            lineCount += qMax( metrics.corner[ TopLeft ].stepCount,
-                metrics.corner[ TopRight ].stepCount ) + 1;
+        lineCount += qMax( metrics.corner[ BottomLeft ].stepCount,
+            metrics.corner[ BottomRight ].stepCount ) + 1;
 
-            lineCount += qMax( metrics.corner[ BottomLeft ].stepCount,
-                metrics.corner[ BottomRight ].stepCount ) + 1;
+        if ( metrics.centerQuad.top >= metrics.centerQuad.bottom )
+            lineCount--;
+    }
+    else if ( gradient.isHorizontal() )
+    {
+        lineCount += qMax( metrics.corner[ TopLeft ].stepCount,
+            metrics.corner[ BottomLeft ].stepCount ) + 1;
 
-            if ( metrics.centerQuad.top >= metrics.centerQuad.bottom )
-                lineCount--;
+        lineCount += qMax( metrics.corner[ TopRight ].stepCount,
+            metrics.corner[ BottomRight ].stepCount ) + 1;
 
-            break;
-        }
-        case QskGradient::Horizontal:
-        {
-            lineCount += qMax( metrics.corner[ TopLeft ].stepCount,
-                metrics.corner[ BottomLeft ].stepCount ) + 1;
-
-            lineCount += qMax( metrics.corner[ TopRight ].stepCount,
-                metrics.corner[ BottomRight ].stepCount ) + 1;
-
-            if ( metrics.centerQuad.left >= metrics.centerQuad.right )
-                lineCount--;
-
-            break;
-        }
+        if ( metrics.centerQuad.left >= metrics.centerQuad.right )
+            lineCount--;
     }
 
     // adding vertexes for the stops - beside the first/last
@@ -1117,7 +1108,7 @@ static inline void qskRenderFillOrdered(
         implemented TODO ...
      */
 
-    if ( gradient.orientation() == QskGradient::Horizontal )
+    if ( gradient.isHorizontal() )
     {
         HRectEllipseIterator it( metrics );
         QskVertex::fillOrdered( it, r.left, r.right, gradient, lines );
@@ -1360,7 +1351,7 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
 #if 1
             // code copied from QskBoxRendererRect.cpp TODO ...
 
-            if ( gradient.orientation() == QskGradient::Diagonal )
+            if ( gradient.isTilted() )
             {
                 if ( metrics.centerQuad.width == metrics.centerQuad.height )
                 {
@@ -1403,8 +1394,7 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
     bool extraLine = false;
     if ( borderLineCount > 0 && fillLineCount > 0 )
     {
-        if ( !gradient.isMonochrome() &&
-            ( gradient.orientation() == QskGradient::Diagonal ) )
+        if ( !gradient.isMonochrome() && gradient.isTilted() )
         {
             /*
                 The filling ends at 45° and we have no implementation
@@ -1427,11 +1417,8 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
         }
         else if ( !gradient.isMonochrome() )
         {
-            if ( gradient.stepCount() > 1 ||
-                gradient.orientation() == QskGradient::Diagonal )
-            {
+            if ( gradient.stepCount() > 1 || gradient.isTilted() )
                 fillRandom = false;
-            }
         }
 
         if ( fillRandom )
@@ -1460,7 +1447,7 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
             {
                 renderRectFill( metrics.innerQuad, gradient, line );
             }
-            else if ( gradient.orientation() == QskGradient::Diagonal )
+            else if ( gradient.isTilted() )
             {
                 renderDiagonalFill( metrics, gradient, fillLineCount, line );
             }
@@ -1496,7 +1483,7 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
             {
                 renderRectFill( metrics.innerQuad, gradient, line );
             }
-            else if ( gradient.orientation() == QskGradient::Diagonal )
+            else if ( gradient.isTilted() )
             {
                 renderDiagonalFill( metrics, gradient, fillLineCount, line );
             }

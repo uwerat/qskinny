@@ -64,6 +64,10 @@ class QSK_EXPORT QskGradient
     void setOrientation( Orientation ) noexcept;
     Orientation orientation() const noexcept;
 
+    bool isHorizontal() const noexcept;
+    bool isVertical() const noexcept;
+    bool isTilted() const noexcept;
+
     bool isValid() const noexcept;
     bool isMonochrome() const noexcept;
     bool isVisible() const noexcept;
@@ -141,6 +145,21 @@ inline bool QskGradient::operator!=( const QskGradient& other ) const noexcept
 inline QskGradient::Orientation QskGradient::orientation() const noexcept
 {
     return m_orientation;
+}
+
+inline bool QskGradient::isHorizontal() const noexcept
+{
+    return orientation() == Horizontal;
+}
+
+inline bool QskGradient::isVertical() const noexcept
+{
+    return orientation() == Vertical;
+}
+
+inline bool QskGradient::isTilted() const noexcept
+{
+    return orientation() == Diagonal;
 }
 
 inline const QskGradientStops& QskGradient::stops() const noexcept
