@@ -883,7 +883,29 @@ static inline int qskFillLineCount(
 
     int lineCount = 0;
 
-    if ( gradient.isTilted() )
+    if ( gradient.isVertical() )
+    {
+        lineCount += qMax( metrics.corner[ TopLeft ].stepCount,
+            metrics.corner[ TopRight ].stepCount ) + 1;
+
+        lineCount += qMax( metrics.corner[ BottomLeft ].stepCount,
+            metrics.corner[ BottomRight ].stepCount ) + 1;
+
+        if ( metrics.centerQuad.top >= metrics.centerQuad.bottom )
+            lineCount--;
+    }
+    else if ( gradient.isHorizontal() )
+    {
+        lineCount += qMax( metrics.corner[ TopLeft ].stepCount,
+            metrics.corner[ BottomLeft ].stepCount ) + 1;
+
+        lineCount += qMax( metrics.corner[ TopRight ].stepCount,
+            metrics.corner[ BottomRight ].stepCount ) + 1;
+
+        if ( metrics.centerQuad.left >= metrics.centerQuad.right )
+            lineCount--;
+    }
+    else
     {
         lineCount += 2 * ( stepCount + 1 );
 
@@ -911,28 +933,6 @@ static inline int qskFillLineCount(
 
         lineCount++; // happens in a corner case - needs to be understood: TODO
 #endif
-    }
-    else if ( gradient.isVertical() )
-    {
-        lineCount += qMax( metrics.corner[ TopLeft ].stepCount,
-            metrics.corner[ TopRight ].stepCount ) + 1;
-
-        lineCount += qMax( metrics.corner[ BottomLeft ].stepCount,
-            metrics.corner[ BottomRight ].stepCount ) + 1;
-
-        if ( metrics.centerQuad.top >= metrics.centerQuad.bottom )
-            lineCount--;
-    }
-    else if ( gradient.isHorizontal() )
-    {
-        lineCount += qMax( metrics.corner[ TopLeft ].stepCount,
-            metrics.corner[ BottomLeft ].stepCount ) + 1;
-
-        lineCount += qMax( metrics.corner[ TopRight ].stepCount,
-            metrics.corner[ BottomRight ].stepCount ) + 1;
-
-        if ( metrics.centerQuad.left >= metrics.centerQuad.right )
-            lineCount--;
     }
 
     // adding vertexes for the stops - beside the first/last
