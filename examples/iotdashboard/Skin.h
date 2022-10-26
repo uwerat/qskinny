@@ -16,7 +16,6 @@ class Skin : public QskSkin
         QskGradient menuBar;
         QskGradient mainContent;
         QskGradient box;
-        QColor lightDisplay;
         QskGradient roundButton;
         QColor weekdayBox;
         QColor text;

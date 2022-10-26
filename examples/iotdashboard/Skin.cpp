@@ -243,12 +243,11 @@ void Skin::initHints( const Palette& palette )
 Skin::Palette DaytimeSkin::palette() const
 {
     return {
-        { 0xff6d7bfb },
-        { 0xfffbfbfb },
-        { Qt::white },
+        0xff6d7bfb,
+        0xfffbfbfb,
         Qt::white,
-        { 0xfff7f7f7 },
-        { 0xfff4f4f4 },
+        0xfff7f7f7,
+        0xfff4f4f4,
         Qt::black,
         0xffe5e5e5,
         { Qt::Vertical, { { 0.0, 0xffc4c4c4 }, { 0.5, 0xfff8f8f8 }, { 1.0, 0xffc4c4c4 } } }
@@ -258,12 +257,11 @@ Skin::Palette DaytimeSkin::palette() const
 Skin::Palette NighttimeSkin::palette() const
 {
     return {
-        { 0xff2937A7 },
-        { 0xff040404 },
-        { Qt::black },
+        0xff2937A7,
+        0xff040404,
         Qt::black,
-        { 0xff0a0a0a },
-        { 0xff0c0c0c },
+        0xff0a0a0a,
+        0xff0c0c0c,
         Qt::white,
         0xff1a1a1a,
         { Qt::Vertical, { { 0.0, 0xff666666 }, { 0.5, 0xff222222 }, { 1.0, 0xff333333 } } }
