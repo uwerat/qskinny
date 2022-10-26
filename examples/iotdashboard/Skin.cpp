@@ -106,16 +106,16 @@ void Skin::initHints( const Palette& palette )
     // top bar:
     ed.setPadding( TopBar::Panel, {25, 35, 25, 0} );
 
-    ed.setColor( TopBarItem::Item1 | QskAspect::TextColor, "#ff3122" );
-    ed.setColor( TopBarItem::Item2 | QskAspect::TextColor, "#6776ff" );
-    ed.setColor( TopBarItem::Item3 | QskAspect::TextColor, "#f99055" );
-    ed.setColor( TopBarItem::Item4 | QskAspect::TextColor, "#6776ff" );
+    ed.setColor( TopBarItem::Item1 | QskAspect::TextColor, 0xffff3122 );
+    ed.setColor( TopBarItem::Item2 | QskAspect::TextColor, 0xff6776ff );
+    ed.setColor( TopBarItem::Item3 | QskAspect::TextColor, 0xfff99055 );
+    ed.setColor( TopBarItem::Item4 | QskAspect::TextColor, 0xff6776ff );
 
     // conical gradients are counterclockwise, so specify the 2nd color first:
-    ed.setHGradient( TopBarItem::Item1, "#FF3122", "#FF5C00" );
-    ed.setHGradient( TopBarItem::Item2, "#6100FF", "#6776FF" );
-    ed.setHGradient( TopBarItem::Item3, "#FF3122", "#FFCE50" );
-    ed.setHGradient( TopBarItem::Item4, "#6100FF", "#6776FF" );
+    ed.setHGradient( TopBarItem::Item1, 0xffff3122, 0xffff5c00 );
+    ed.setHGradient( TopBarItem::Item2, 0xff6100ff, 0xff6776ff );
+    ed.setHGradient( TopBarItem::Item3, 0xffff3122, 0xffffce50 );
+    ed.setHGradient( TopBarItem::Item4, 0xff6100ff, 0xff6776ff );
 
     // the bar gradient is defined through the top bar items above
     ed.setArcMetrics( CircularProgressBar::Groove, { 8.53, 90, -360 } );
@@ -126,14 +126,14 @@ void Skin::initHints( const Palette& palette )
     ed.setFontRole( TimeTitleLabel::Text, Skin::TitleFont );
 
     ed.setFontRole( TimeLabel::Text, QskSkin::HugeFont );
-    ed.setColor( TimeLabel::Text, "#6776FF" );
+    ed.setColor( TimeLabel::Text, 0xff6776ff );
 
     // boxes:
     ed.setPadding( Box::Panel, 8 );
 
     // content in boxes (indoor temperature, humidity etc.):
     ed.setFontRole( UsageBox::Separator, QskSkin::SmallFont );
-    ed.setColor( UsageBox::Separator, "#dddddd" );
+    ed.setColor( UsageBox::Separator, 0xffdddddd );
 
     ed.setPadding( BoxWithButtons::Panel, 8 );
 
@@ -141,8 +141,8 @@ void Skin::initHints( const Palette& palette )
     {
         ed.setBoxShape( subControl, 6 );
 
-        QskGradient normal( QskGradient::Vertical, "#6776FF", "#6100FF" );
-        QskGradient bright( QskGradient::Vertical, "#ff7d34", "#ff3122" );
+        QskGradient normal( Qt::Vertical, 0xff6776ff, 0xff6100ff );
+        QskGradient bright( Qt::Vertical, 0xffff7d34, 0xffff3122 );
 
         if ( subControl == RoundedIcon::PalePanel )
         {
@@ -156,7 +156,7 @@ void Skin::initHints( const Palette& palette )
     }
 
     ed.setFontRole( BoxWithButtons::ValueText, QskSkin::HugeFont );
-    ed.setColor( BoxWithButtons::ValueText, "#929cb2" );
+    ed.setColor( BoxWithButtons::ValueText, 0xff929cb2 );
 
     ed.setPadding( BoxWithButtons::ValuePanel, 0, 10, 0, 0 );
 
@@ -170,16 +170,16 @@ void Skin::initHints( const Palette& palette )
 
     ed.setStrutSize( UsageDiagramLegend::Symbol, 8, 8 );
     ed.setBoxShape( UsageDiagramLegend::Symbol, 100, Qt::RelativeSize ); // a circle
-    ed.setGradient( UsageDiagramLegend::Symbol | UsageDiagramLegend::Water, {"#6776ff"} );
-    ed.setGradient( UsageDiagramLegend::Symbol | UsageDiagramLegend::Electricity, {"#ff3122"} );
-    ed.setGradient( UsageDiagramLegend::Symbol | UsageDiagramLegend::Gas, {"#ff7d34"} );
+    ed.setGradient( UsageDiagramLegend::Symbol | UsageDiagramLegend::Water, { 0xff6776ff } );
+    ed.setGradient( UsageDiagramLegend::Symbol | UsageDiagramLegend::Electricity, { 0xffff3122 } );
+    ed.setGradient( UsageDiagramLegend::Symbol | UsageDiagramLegend::Gas, { 0xffff7d34 } );
 
     ed.setPadding( UsageDiagramBox::Panel, 0 );
 
     // new diagram:
-    ed.setColor( Diagram::ChartArea1, "#666776ff" );
-    ed.setColor( Diagram::ChartArea2, "#66ff3122" );
-    ed.setColor( Diagram::ChartArea3, "#66ff7d34" );
+    ed.setColor( Diagram::ChartArea1, 0x666776ff );
+    ed.setColor( Diagram::ChartArea2, 0x66ff3122 );
+    ed.setColor( Diagram::ChartArea3, 0x66ff7d34 );
 
     ed.setColor( Diagram::ChartBar1, 0xff6776ff );
     ed.setColor( Diagram::ChartBar2, 0xffff3122 );
@@ -197,19 +197,17 @@ void Skin::initHints( const Palette& palette )
     ed.setBoxShape( LightDisplay::Panel, 100, Qt::RelativeSize );
 
     ed.setArcMetrics( LightDisplay::ColdAndWarmArc, 8.785, 0, 180 );
-    QskGradient coldGradient( Qt::Horizontal, { { 0.0, 0xffff3122 },
-                                                { 0.2, 0xfffeeeb7 },
-                                                { 0.3, 0xffa7b0ff },
-                                                { 0.5, 0xff6776ff },
-                                                { 1.0, Qt::black } } );
+    QskGradient coldGradient( Qt::Horizontal,
+        { { 0.0, 0xffff3122 }, { 0.2, 0xfffeeeb7 },
+          { 0.3, 0xffa7b0ff }, { 0.5, 0xff6776ff }, { 1.0, Qt::black } } );
     ed.setGradient( LightDisplay::ColdAndWarmArc, coldGradient );
 
     ed.setMetric( LightDisplay::Tickmarks, 1 );
     ed.setArcMetrics( LightDisplay::Tickmarks, { 4.69, 0, 180 } );
-    ed.setColor( LightDisplay::Tickmarks, 0x55929CB2 );
+    ed.setColor( LightDisplay::Tickmarks, 0x55929cb2 );
 
     ed.setFontRole( LightDisplay::ValueText, QskSkin::LargeFont );
-    ed.setColor( LightDisplay::ValueText, "#929cb2" );
+    ed.setColor( LightDisplay::ValueText, 0xff929cb2 );
 
     ed.setStrutSize( LightDisplay::Knob, { 20, 20 } );
     ed.setBoxBorderMetrics( LightDisplay::Knob, 1 );
@@ -240,4 +238,34 @@ void Skin::initHints( const Palette& palette )
     ed.setColor( QskTextLabel::Text, palette.text );
     ed.setColor( UsageDiagramBox::DayText, palette.text );
     ed.setGradient( CircularProgressBar::Groove, palette.circularProgressBarGroove );
+}
+
+Skin::Palette DaytimeSkin::palette() const
+{
+    return {
+        { 0xff6d7bfb },
+        { 0xfffbfbfb },
+        { Qt::white },
+        Qt::white,
+        { 0xfff7f7f7 },
+        { 0xfff4f4f4 },
+        Qt::black,
+        0xffe5e5e5,
+        { Qt::Vertical, { { 0.0, 0xffc4c4c4 }, { 0.5, 0xfff8f8f8 }, { 1.0, 0xffc4c4c4 } } }
+    };
+}
+
+Skin::Palette NighttimeSkin::palette() const
+{
+    return {
+        { 0xff2937A7 },
+        { 0xff040404 },
+        { Qt::black },
+        Qt::black,
+        { 0xff0a0a0a },
+        { 0xff0c0c0c },
+        Qt::white,
+        0xff1a1a1a,
+        { Qt::Vertical, { { 0.0, 0xff666666 }, { 0.5, 0xff222222 }, { 1.0, 0xff333333 } } }
+    };
 }
