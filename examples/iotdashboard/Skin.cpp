@@ -218,7 +218,7 @@ void Skin::initHints( const Palette& palette )
     ed.setGradient( MenuBar::Panel, palette.menuBar );
     ed.setGradient( DashboardPage::Panel, palette.mainContent );
 
-    ed.setColor( Box::Panel, palette.box.startColor() );
+    ed.setColor( Box::Panel, palette.box );
     QskShadowMetrics shadowMetrics( 0, 10 );
     ed.setShadowMetrics( Box::Panel, shadowMetrics );
     ed.setShadowColor( Box::Panel, palette.shadow );

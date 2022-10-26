@@ -13,10 +13,10 @@ class Skin : public QskSkin
   public:
     struct Palette
     {
-        QskGradient menuBar;
-        QskGradient mainContent;
-        QskGradient box;
-        QskGradient roundButton;
+        QColor menuBar;
+        QColor mainContent;
+        QColor box;
+        QColor roundButton;
         QColor weekdayBox;
         QColor text;
         QColor shadow;

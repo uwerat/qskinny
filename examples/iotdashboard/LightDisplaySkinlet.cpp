@@ -37,8 +37,8 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
 
     if( subControl == LightDisplay::Groove || subControl == LightDisplay::Panel )
     {
-        QSizeF textSize = textLabelsSize( display );
-        QskArcMetrics arcMetrics = display->arcMetricsHint( LightDisplay::ColdAndWarmArc );
+        const auto textSize = textLabelsSize( display );
+        const auto arcMetrics = display->arcMetricsHint( LightDisplay::ColdAndWarmArc );
         const qreal ticksWidth = display->arcMetricsHint( LightDisplay::Tickmarks ).width() + ticksSpacing;
 
         const qreal x = textSize.width() + arcMetrics.width() + ticksWidth;
@@ -81,7 +81,7 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
     else if( subControl == LightDisplay::LeftLabel )
     {
         const QRectF ticksRect = subControlRect( skinnable, contentsRect, LightDisplay::Tickmarks );
-        QSizeF size = textLabelsSize( display );
+        const auto size = textLabelsSize( display );
 
         rect.setWidth( size.width() );
 
@@ -92,8 +92,8 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
     }
     else if( subControl == LightDisplay::RightLabel )
     {
-        QRectF ticksRect = subControlRect( skinnable, contentsRect, LightDisplay::Tickmarks );
-        QSizeF size = textLabelsSize( display );
+        const auto ticksRect = subControlRect( skinnable, contentsRect, LightDisplay::Tickmarks );
+        const auto size = textLabelsSize( display );
 
         rect.setX( ticksRect.x() + ticksRect.width() );
 
@@ -104,9 +104,9 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
     }
     else if( subControl == LightDisplay::Knob )
     {
-        QRectF arcRect = subControlRect( skinnable, contentsRect, LightDisplay::ColdAndWarmArc );
-        QskArcMetrics arcMetrics = display->arcMetricsHint( LightDisplay::ColdAndWarmArc );
-        QSizeF knobSize = display->strutSizeHint( LightDisplay::Knob );
+        const auto arcRect = subControlRect( skinnable, contentsRect, LightDisplay::ColdAndWarmArc );
+        const auto arcMetrics = display->arcMetricsHint( LightDisplay::ColdAndWarmArc );
+        const auto knobSize = display->strutSizeHint( LightDisplay::Knob );
 
         const qreal radius = ( arcRect.width() - arcMetrics.width() ) / 2;
         const qreal angle = display->valueAsRatio() * 180;

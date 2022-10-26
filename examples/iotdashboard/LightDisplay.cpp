@@ -117,7 +117,7 @@ void LightDisplay::mouseMoveEvent( QMouseEvent* event )
         return;
     }
 
-    const QskArcMetrics metrics = arcMetricsHint( ColdAndWarmArc );
+    const auto metrics = arcMetricsHint( ColdAndWarmArc );
     qreal angle = angleFromPoint( rect, mousePos );
 
     const int tolerance = 20;
@@ -161,7 +161,7 @@ bool LightDisplay::arcContainsPoint( const QRectF& rect, const QPointF& point ) 
     // putting this in an own function just because it might be useful
     // at other places in the future
 
-    const QskArcMetrics metrics = arcMetricsHint( ColdAndWarmArc );
+    const auto metrics = arcMetricsHint( ColdAndWarmArc );
     const int tolerance = 20;
 
     // 1. check angle

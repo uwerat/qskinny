@@ -6,7 +6,6 @@
 #include "CircularProgressBar.h"
 
 #include <QskAnimator.h>
-#include <QskArcMetrics.h>
 #include <QskFunctions.h>
 
 QSK_SUBCONTROL( CircularProgressBar, Groove )
