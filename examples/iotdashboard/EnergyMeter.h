@@ -7,10 +7,10 @@
 
 #include <QskControl.h>
 
-class PieChartPainted : public QskControl
+class EnergyMeter : public QskControl
 {
   public:
-    PieChartPainted( const QColor&, const QskGradient&,
+    EnergyMeter( const QColor&, const QskGradient&,
         int progress, QQuickItem* parent = nullptr );
 
   protected:

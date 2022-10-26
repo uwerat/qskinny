@@ -3,23 +3,18 @@
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
-#include "PieChartPainted.h"
+#include "EnergyMeter.h"
 #include "CircularProgressBar.h"
 
-#include <QskAnimator.h>
-#include <QskBox.h>
-#include <QskRgbValue.h>
-#include <QskSetup.h>
-#include <QskSkin.h>
 #include <QskTextLabel.h>
-#include <QskFunctions.h>
+#include <QskSkin.h>
 
 namespace
 {
-    class ProgressLabel : public QskTextLabel
+    class ValueLabel : public QskTextLabel
     {
       public:
-        ProgressLabel( QQuickItem* parent )
+        ValueLabel( QQuickItem* parent )
             : QskTextLabel( parent )
         {
             initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
@@ -34,22 +29,22 @@ namespace
     };
 }
 
-PieChartPainted::PieChartPainted( const QColor& textColor, const QskGradient& gradient,
-        int progress, QQuickItem* parent )
+EnergyMeter::EnergyMeter( const QColor& textColor,
+        const QskGradient& gradient, int value, QQuickItem* parent )
     : QskControl( parent )
 {
     setAutoLayoutChildren( true );
 
-    auto progressBar = new CircularProgressBar( this );
-    progressBar->setGradientHint( CircularProgressBar::Bar, gradient );
-    progressBar->setValue( progress );
+    auto valueBar = new CircularProgressBar( this );
+    valueBar->setGradientHint( CircularProgressBar::Bar, gradient );
+    valueBar->setValue( value );
 
-    auto progressLabel = new ProgressLabel( this );
-    progressLabel->setTextColor( textColor );
-    progressLabel->setValue( progress );
+    auto valueLabel = new ValueLabel( this );
+    valueLabel->setTextColor( textColor );
+    valueLabel->setValue( value );
 }
 
-QSizeF PieChartPainted::contentsSizeHint(
+QSizeF EnergyMeter::contentsSizeHint(
     Qt::SizeHint which, const QSizeF& constraint ) const
 {
     if ( which != Qt::PreferredSize )

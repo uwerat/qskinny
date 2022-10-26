@@ -11,6 +11,7 @@ SOURCES += \
     DashboardPage.cpp \
     Diagram.cpp \
     DiagramSkinlet.cpp \
+    EnergyMeter.cpp \
     GraphicProvider.cpp \
     GridBox.cpp \
     LightDisplaySkinlet.cpp \
@@ -18,7 +19,6 @@ SOURCES += \
     MainItem.cpp \
     MenuBar.cpp \
     MyDevices.cpp \
-    PieChartPainted.cpp \
     RoomsPage.cpp \
     RoundedIcon.cpp \
     Skin.cpp \
@@ -41,6 +41,7 @@ HEADERS += \
     CircularProgressBarSkinlet.h \
     Diagram.h \
     DiagramSkinlet.h \
+    EnergyMeter.h \
     GraphicProvider.h \
     GridBox.h \
     LightDisplaySkinlet.h \
@@ -50,7 +51,6 @@ HEADERS += \
     MainWindow.h \
     MenuBar.h \
     MyDevices.h \
-    PieChartPainted.h \
     RoomsPage.h \
     RoundedIcon.h \
     Skin.h \

@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #include "TopBar.h"
-#include "PieChartPainted.h"
+#include "EnergyMeter.h"
 
 #include <QskSkin.h>
 #include <QskTextLabel.h>
@@ -62,7 +62,7 @@ TopBarItem::TopBarItem(
     const auto subcontrol = subcontrolForIndex( index );
     const auto textColor = color( subcontrol | QskAspect::TextColor );
 
-    auto pieChart = new PieChartPainted(
+    auto pieChart = new EnergyMeter(
         textColor, gradient, progress, pieChartAndDisplay );
     pieChart->setSizePolicy( Qt::Horizontal, QskSizePolicy::Constrained );
 
