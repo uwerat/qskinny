@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "SliderPage.h"
+#include "LinearGradientSlider.h"
 #include <QskSlider.h>
 
 namespace
@@ -50,4 +51,7 @@ void SliderPage::populate()
 {
     ( void ) new Slider( Qt::Horizontal, this );
     ( void ) new Slider( Qt::Vertical, this );
+
+    ( void ) new LinearGradientSlider( Qt::Horizontal, this );
+    ( void ) new LinearGradientSlider( Qt::Vertical, this );
 }

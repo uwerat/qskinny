@@ -45,6 +45,12 @@ SOURCES += \
 HEADERS += \
     Page.h
 
+HEADERS += \
+    slider/LinearGradientSlider.h \
+
+SOURCES += \
+    slider/LinearGradientSlider.cpp \
+
 SOURCES += \
     Page.cpp \
     main.cpp
