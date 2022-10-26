@@ -11,7 +11,6 @@
 #include "LightDisplay.h"
 #include "GridBox.h"
 #include "MyDevices.h"
-#include "PieChart.h"
 #include "TopBar.h"
 #include "UsageBox.h"
 
