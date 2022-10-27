@@ -50,6 +50,8 @@ set(OBJECTS_DIR  obj)
 set(RCC_DIR      rcc)
 
 option(BUILD_QSKDLL "build qskinny as shared library" ON)
+option(ENABLE_PINYIN "enable romanization system for standard mandarin chinese" ON)
+option(ENABLE_HUNSPELL "enable spell checker" ON)
 
 if(UNIX AND NOT APPLE)
     set(LINUX TRUE)

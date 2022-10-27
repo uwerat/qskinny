@@ -37,7 +37,10 @@ int main( int argc, char* argv[] )
     QskObjectCounter counter( true );
 #endif
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    // namespace QtWebEngine doesn't exist in Qt6: https://doc.qt.io/qt-5/qtwebengine.html
     QtWebEngine::initialize();
+#endif
 
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app( argc, argv );

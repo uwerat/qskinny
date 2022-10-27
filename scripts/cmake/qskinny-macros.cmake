@@ -1,4 +1,4 @@
-if(TARGET Qt5::Svg)
+if(TARGET ${Qt}::Svg)
     ## @param SVG_FILENAME absolute filename to the svg
     ## @param QVG_FILENAME absolute filename to the qvg
     function(svg2qvg SVG_FILENAME QVG_FILENAME)
@@ -8,7 +8,7 @@ if(TARGET Qt5::Svg)
             COMMAND svg2qvg ${SVG_FILENAME} ${QVG_FILENAME}
             OUTPUT ${QVG_FILENAME}
             DEPENDS ${SVG_FILENAME}
-            WORKING_DIRECTORY $<TARGET_FILE_DIR:Qt5::Svg>
+            WORKING_DIRECTORY $<TARGET_FILE_DIR:${Qt}::Svg>
             COMMENT "Compiling ${SVG_FILENAME} to ${QVG_FILENAME}")
     endfunction()
 endif()

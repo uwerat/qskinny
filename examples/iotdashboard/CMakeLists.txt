@@ -84,4 +84,4 @@ target_link_libraries(${TARGET_NAME}
     PRIVATE
         qskinny
         qsktestsupport
-        Qt5::Svg)
+        ${Qt}::Svg)

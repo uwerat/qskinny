@@ -1,14 +1,6 @@
 include(${CMAKE_SOURCE_DIR}/features/qskconfig.cmake)
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/qskinny-macros.cmake)
 
-#TODO
-#QSK_SUBDIRS = common graphic nodes controls layouts dialogs inputpanel
-#INCLUDEPATH *= $${QSK_SUBDIRS}
-#DEPENDPATH *= $${QSK_SUBDIRS}
-
-#CONFIG += pinyin
-#CONFIG += hunspell
-
 list(APPEND TARGET_HEADERS
     common/QskArcMetrics.h
     common/QskAspect.h
@@ -65,7 +57,7 @@ list(APPEND TARGET_SOURCES
     common/QskTextColors.cpp
     common/QskTextOptions.cpp)
 
-list(APPEND TARGET_HEADERS #TODO why separate
+list(APPEND TARGET_HEADERS
     graphic/QskColorFilter.h
     graphic/QskGraphic.h
     graphic/QskGraphicImageProvider.h
@@ -370,41 +362,31 @@ list(APPEND TARGET_SOURCES
     inputpanel/QskInputPredictionBar.cpp
     inputpanel/QskVirtualKeyboard.cpp)
 
-#TODO
-#pinyin {
-#
-#unix {
-#
-#target_compile_definitions(${TARGET_NAME} PRIVATE PINYIN)
-#
-#CONFIG += link_pkgconfig
-#PKGCONFIG += pinyin
-#
-#HEADERS +=
-#inputpanel/QskPinyinTextPredictor.h
-#
-#SOURCES +=
-#inputpanel/QskPinyinTextPredictor.cpp
-#}
-#}
+if(ENABLE_PINYIN)
+    if(UNIX)
+        target_compile_definitions(${TARGET_NAME} PRIVATE PINYIN) # TODO required?
+        # TODO CONFIG += link_pkgconfig PKGCONFIG += pinyin
+        list(APPEND TARGET_HEADERS
+            inputpanel/QskPinyinTextPredictor.h)
 
-#TODO
-#hunspell {
-#
-#unix {
-#
-#target_compile_definitions(${TARGET_NAME} PRIVATE HUNSPELL)
-#
-#CONFIG += link_pkgconfig
-#PKGCONFIG += hunspell
-#
-#HEADERS +=
-#inputpanel/QskHunspellTextPredictor.h
-#
-#SOURCES +=
-#inputpanel/QskHunspellTextPredictor.cpp
-#}
-#}
+        list(APPEND TARGET_SOURCES
+            inputpanel/QskPinyinTextPredictor.cpp)
+    else()
+        message(WARNING "Feature 'pinyin' currently only available for UNIX!")
+    endif()
+endif()
+
+if(ENABLE_HUNSPELL)
+    if(UNIX)
+        # TODO CONFIG += link_pkgconfig PKGCONFIG += hunspell
+        list(APPEND TARGET_HEADERS
+            inputpanel/QskHunspellTextPredictor.h)
+        list(APPEND TARGET_SOURCES
+            inputpanel/QskHunspellTextPredictor.cpp)
+    else()
+        message(WARNING "Feature 'hunspell' currently only available for UNIX!")
+    endif()
+endif()
 
 set(TARGET_NAME qskinny)
 
@@ -412,10 +394,6 @@ if(BUILD_QSKDLL)
     add_library(${TARGET_NAME} SHARED ${TARGET_SOURCES} ${TARGET_HEADERS} ${TARGET_RESSOURCES})
 else()
     add_library(${TARGET_NAME} STATIC ${TARGET_SOURCES} ${TARGET_HEADERS} ${TARGET_RESSOURCES})
-endif()
-
-if (Qt5_VERSION_MAJOR VERSION_GREATER "5")
-    target_link_libraries(${TARGET_NAME} PRIVATE Qt5::Opengl)
 endif()
 
 if(BUILD_QSKDLL)
@@ -438,10 +416,17 @@ target_include_directories(${TARGET_NAME}
 
 target_link_libraries(${TARGET_NAME}
     PUBLIC
-        Qt5::Core
-        Qt5::CorePrivate
-        Qt5::Quick
-        Qt5::QuickPrivate)
+        ${Qt}::Core
+        ${Qt}::CorePrivate
+        ${Qt}::Quick
+        ${Qt}::QuickPrivate)
+
+if (Qt_VERSION_MAJOR VERSION_GREATER "5")
+    target_link_libraries(${TARGET_NAME}
+        PUBLIC
+            ${Qt}::OpenGL
+            ${Qt}::OpenGLPrivate)
+endif()
 
 set_target_properties(${TARGET_NAME}
     PROPERTIES

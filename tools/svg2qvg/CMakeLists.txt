@@ -26,14 +26,14 @@ if(BUILD_SVG2QVG_STANDALONE)
 
     target_link_libraries(${TARGET_NAME}
         PRIVATE
-            Qt5::Gui
-            Qt5::GuiPrivate
-            Qt5::Svg)
+            ${Qt}::Gui
+            ${Qt}::GuiPrivate
+            ${Qt}::Svg)
 else()
     target_link_libraries(${TARGET_NAME}
         PRIVATE
             qskinny
-            Qt5::Svg)
+            ${Qt}::Svg)
 endif()
 
 install(TARGETS ${TARGET_NAME} DESTINATION ${TARGET_INSTALL_SUFFIX})

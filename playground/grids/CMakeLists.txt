@@ -35,7 +35,7 @@ target_link_libraries(${TARGET_NAME}
     PRIVATE
         qskinny
         qsktestsupport
-        Qt5::QuickWidgets)
+        ${Qt}::QuickWidgets)
 
 set_target_properties(${TARGET_NAME}
     PROPERTIES
