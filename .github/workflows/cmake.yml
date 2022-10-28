@@ -8,13 +8,13 @@ on:
   workflow_dispatch:
     inputs:
       qtversion:
-        description: 'Select either Qt5 or Qt6'
+        description: "Select either Qt5 or Qt6"
         required: false
-        default: 'Qt5'
+        default: "Qt5"
         type: choice
         options:
-        - Qt5
-        - Qt6
+          - Qt5
+          - Qt6
 
 jobs:
   build:
@@ -34,6 +34,7 @@ jobs:
               environment_script: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
               archiver: "7z a",
               generators: "Visual Studio 17 2022",
+              qtcmakedir: "../Qt/5.15.2/msvc2019_64/lib/cmake/Qt5", # TODO find better solution
             }
           - {
               name: "Windows 2019 MSVC",
@@ -45,6 +46,7 @@ jobs:
               environment_script: "C:/Program Files/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
               archiver: "7z a",
               generators: "Visual Studio 16 2019",
+              qtcmakedir: "../Qt/5.15.2/msvc2019_64/lib/cmake/Qt5", # TODO find better solution
             }
           - {
               name: "Windows Latest MinGW",
@@ -187,7 +189,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
             -G "${{ matrix.config.generators }}" \
             -DCMAKE_INSTALL_PREFIX:PATH=instdir
-            -DQt5_DIR:PATH=%Qt5_DIR%
+            -DQt5_DIR:PATH=${{ matrix.config.qtcmakedir }}
       - name: Build
         shell: bash
         run: cmake --build . --config ${{ matrix.config.build_type }}
