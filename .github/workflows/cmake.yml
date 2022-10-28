@@ -2,9 +2,9 @@ name: CMake Build Matrix
 
 on:
   push:
-    branches: [ cmake ]
+    branches: [cmake]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build:
@@ -13,69 +13,69 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        config: 
-        - {
-            name: "Windows Latest MSVC",
-            os: windows-latest,
-            artifact: "windows_msvc.7z",
-            build_type: "Release",
-            cc: "cl",
-            cxx: "cl",
-            environment_script: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
-            archiver: "7z a",
-            generators: "Visual Studio 17 2022"
-          }
-        - {
-            name: "Windows 2019 MSVC",
-            os: windows-2019,
-            artifact: "windows_msvc.7z",
-            build_type: "Release",
-            cc: "cl",
-            cxx: "cl",
-            environment_script: "C:/Program Files/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
-            archiver: "7z a",
-            generators: "Visual Studio 16 2019"
-          }
-        - {
-            name: "Windows Latest MinGW",
-            os: windows-latest,
-            artifact: "windows_mingw.7z",
-            build_type: "Release",
-            cc: "gcc",
-            cxx: "g++",
-            archiver: "7z a",
-            generators: "Ninja"
-          }
-        - {
-            name: "Ubuntu_Latest_GCC",
-            os: ubuntu-latest,
-            artifact: "ubuntu_gcc.7z",
-            build_type: "Release",
-            cc: "gcc",
-            cxx: "g++",
-            archiver: "7z a",
-            generators: "Ninja"
-          }
-        - {
-            name: "Ubuntu_GCC_9",
-            os: ubuntu-latest,
-            artifact: "ubuntu_gcc9.7z",
-            build_type: "Release",
-            cc: "gcc",
-            cxx: "g++",
-            archiver: "7z a",
-            generators: "Ninja"
-          }
-        - {
-            name: "macOS Latest Clang",
-            os: macos-latest,
-            artifact: "macos_clang.7z",
-            build_type: "Release",
-            cc: "clang",
-            cxx: "clang++",
-            archiver: "7za a",
-            generators: "Ninja"
-          }
+        config:
+          - {
+              name: "Windows Latest MSVC",
+              os: windows-latest,
+              artifact: "windows_msvc.7z",
+              build_type: "Release",
+              cc: "cl",
+              cxx: "cl",
+              environment_script: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
+              archiver: "7z a",
+              generators: "Visual Studio 17 2022",
+            }
+          - {
+              name: "Windows 2019 MSVC",
+              os: windows-2019,
+              artifact: "windows_msvc.7z",
+              build_type: "Release",
+              cc: "cl",
+              cxx: "cl",
+              environment_script: "C:/Program Files/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
+              archiver: "7z a",
+              generators: "Visual Studio 16 2019",
+            }
+          - {
+              name: "Windows Latest MinGW",
+              os: windows-latest,
+              artifact: "windows_mingw.7z",
+              build_type: "Release",
+              cc: "gcc",
+              cxx: "g++",
+              archiver: "7z a",
+              generators: "Ninja",
+            }
+          - {
+              name: "Ubuntu_Latest_GCC",
+              os: ubuntu-latest,
+              artifact: "ubuntu_gcc.7z",
+              build_type: "Release",
+              cc: "gcc",
+              cxx: "g++",
+              archiver: "7z a",
+              generators: "Ninja",
+            }
+          - {
+              name: "Ubuntu_GCC_9",
+              os: ubuntu-latest,
+              artifact: "ubuntu_gcc9.7z",
+              build_type: "Release",
+              cc: "gcc",
+              cxx: "g++",
+              archiver: "7z a",
+              generators: "Ninja",
+            }
+          - {
+              name: "macOS Latest Clang",
+              os: macos-latest,
+              artifact: "macos_clang.7z",
+              build_type: "Release",
+              cc: "clang",
+              cxx: "clang++",
+              archiver: "7za a",
+              generators: "Ninja",
+            }
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -142,7 +142,30 @@ jobs:
           brew install p7zip cmake ninja
           ninja --version
           cmake --version
-          
+
+      - uses: actions/checkout@v2
+      - name: Cache Qt
+        id: cache-qt-5-15
+        uses: actions/cache@v1 # not v2!
+        with:
+          path: ../Qt/5.15.2 # TODO use absolute paths
+          key: ${{ runner.os }}-QtCache-Qt5
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2
+        with:
+          version: "5.15.2"
+          #host: "windows"
+          target: "desktop"
+          #arch: "win64_msvc2019_64"
+          install-deps: "true"
+          modules: "qtwebengine"
+          cached: ${{ steps.cache-qt-5-15.outputs.cache-hit }}
+          setup-python: "false"
+          tools: ""
+          set-env: "true"
+          tools-only: "false"
+
       - name: Configure
         shell: bash
         run: |
@@ -153,7 +176,8 @@ jobs:
             -B . \
             -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
             -G "${{ matrix.config.generators }}" \
-            -DCMAKE_INSTALL_PREFIX:PATH=instdir
+            -DCMAKE_INSTALL_PREFIX:PATH=instdir \
+            -DQt5_DIR:PATH=../Qt/5.15.2/msvc2019_64/lib/cmake/Qt5
       - name: Build
         shell: bash
         run: cmake --build . --config ${{ matrix.config.build_type }}
