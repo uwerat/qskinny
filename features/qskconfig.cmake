@@ -50,8 +50,8 @@ set(OBJECTS_DIR  obj)
 set(RCC_DIR      rcc)
 
 option(BUILD_QSKDLL "build qskinny as shared library" ON)
-option(ENABLE_PINYIN "enable romanization system for standard mandarin chinese" ON)
-option(ENABLE_HUNSPELL "enable spell checker" ON)
+option(ENABLE_PINYIN "enable romanization system for standard mandarin chinese" OFF) # TODO try find pkg-config
+option(ENABLE_HUNSPELL "enable spell checker" OFF) # TODO try find pkg-config
 
 if(UNIX AND NOT APPLE)
     set(LINUX TRUE)
@@ -77,7 +77,7 @@ if(LINUX)
         # add the Qt module to our includes and therefore don't
         # need this path.
 
-        # TODO
+        # TODO find solution for all platforms
         # QMAKE_CXXFLAGS += \
         #     -isystem $$[QT_INSTALL_HEADERS]/QtCore \
         #     -isystem $$[QT_INSTALL_HEADERS]/QtCore/$$[QT_VERSION]/QtCore \
