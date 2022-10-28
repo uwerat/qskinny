@@ -6,6 +6,15 @@ on:
   pull_request:
     branches: [master]
   workflow_dispatch:
+    inputs:
+      qtversion:
+        description: 'Select either Qt5 or Qt6'
+        required: false
+        default: 'Qt5'
+        type: choice
+        options:
+        - Qt5
+        - Qt6
 
 jobs:
   build:
