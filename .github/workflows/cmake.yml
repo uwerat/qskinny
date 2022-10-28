@@ -188,8 +188,8 @@ jobs:
             -B . \
             -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
             -G "${{ matrix.config.generators }}" \
-            -DCMAKE_INSTALL_PREFIX:PATH=instdir
-            -DQt5_DIR:PATH=${{ matrix.config.qtcmakedir }}
+            -DCMAKE_INSTALL_PREFIX:PATH=instdir \
+            -DQt5_DIR:PATH="${{ matrix.config.qtcmakedir }}"
       - name: Build
         shell: bash
         run: cmake --build . --config ${{ matrix.config.build_type }}
