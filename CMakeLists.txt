@@ -39,6 +39,7 @@ endif()
 if("${Qt5_DIR}" STREQUAL "" AND "${Qt6_DIR}" STREQUAL "")
     message(FATAL_ERROR "Neither Qt5_DIR nor Qt6_DIR defined!")
 else()
+    # TODO ckeck find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
     if(NOT "${Qt5_DIR}" STREQUAL "")
         find_package(Qt5 REQUIRED COMPONENTS Core Gui OpenGL Quick Quickwidgets Svg Webengine WebengineCore Widgets)
         set(Qt Qt${Qt5_VERSION_MAJOR}) # TODO find better solution for Qt namespace
@@ -88,4 +89,3 @@ add_subdirectory(playground)
 #     doc/*.metadox
 #     doc/classes/*.dox
 #     doc/classes/*.metadox
-#     TODO
