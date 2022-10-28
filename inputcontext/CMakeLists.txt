@@ -1,7 +1,3 @@
-# TODO
-# CONFIG += plugin
-# CONFIG += qskinny
-
 set(TARGET_NAME qskinputcontext)
 
 list(APPEND TARGET_HEADERS
@@ -17,9 +13,9 @@ if(ENABLE_PINYIN)
     if(UNIX)
         # TODO CONFIG += link_pkgconfig PKGCONFIG += pinyin
         list(APPEND TARGET_HEADERS
-            QskPinyinTextPredictor.h)
+            ${CMAKE_SOURCE_DIR}/src/inputpanel/QskPinyinTextPredictor.h)
         list(APPEND TARGET_SOURCES
-            QskPinyinTextPredictor.cpp)
+            ${CMAKE_SOURCE_DIR}/src/inputpanel/QskPinyinTextPredictor.cpp)
     else()
         message(WARNING "Feature 'pinyin' currently only available for UNIX!")
     endif()
@@ -29,9 +25,9 @@ if(ENABLE_HUNSPELL)
     if(UNIX)
         # TODO CONFIG += link_pkgconfig PKGCONFIG += hunspell
         list(APPEND TARGET_HEADERS
-            QskHunspellTextPredictor.h)
+            ${CMAKE_SOURCE_DIR}/src/inputpanel/QskHunspellTextPredictor.h)
         list(APPEND TARGET_SOURCES
-            QskHunspellTextPredictor.cpp)
+            ${CMAKE_SOURCE_DIR}/src/inputpanel/QskHunspellTextPredictor.cpp)
     else()
         message(WARNING "Feature 'hunspell' currently only available for UNIX!")
     endif()
