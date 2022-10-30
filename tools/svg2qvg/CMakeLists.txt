@@ -25,7 +25,7 @@ if(BUILD_SVG2QVG_STANDALONE)
     else()
         target_include_directories(${TARGET_NAME}
             PRIVATE
-                ${qskinny_AUTOGEN_DIR})
+                ${qskinny_AUTOGEN_DIR}/include)
     endif()
 
     target_include_directories(${TARGET_NAME}
