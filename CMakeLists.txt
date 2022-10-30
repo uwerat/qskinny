@@ -41,7 +41,7 @@ if("${Qt5_DIR}" STREQUAL "" AND "${Qt6_DIR}" STREQUAL "")
 else()
     # TODO ckeck find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
     if(NOT "${Qt5_DIR}" STREQUAL "")
-        find_package(Qt5 REQUIRED COMPONENTS Core Gui OpenGL Quick QuickWidgets Svg Webengine WebengineCore Widgets)
+        find_package(Qt5 REQUIRED COMPONENTS Core Gui OpenGL Quick QuickWidgets Svg WebEngine WebEngineCore Widgets)
         set(Qt Qt${Qt5_VERSION_MAJOR}) # TODO find better solution for Qt namespace
         set(Qt_VERSION       ${Qt5_VERSION})
         set(Qt_VERSION_MAJOR ${Qt5_VERSION_MAJOR})
