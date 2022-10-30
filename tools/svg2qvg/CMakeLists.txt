@@ -8,6 +8,11 @@ add_executable(${TARGET_NAME} ${TARGET_SOURCES})
 
 if(BUILD_SVG2QVG_STANDALONE)
 
+    # NOTE: when building standalone some moc files are transitively required.
+    #       These files are being created by the qskinny build, hence we add an explicit dependency.
+    #       E.g. main.cpp -> #include <QskGraphic.cpp> -> #include "moc_QskGraphic.cpp"
+    add_dependencies(${TARGET_NAME} qskinny)
+
     get_target_property(qskinny_AUTOGEN_DIR qskinny AUTOGEN_BUILD_DIR)
     if (EXISTS ${qskinny_AUTOGEN_DIR})
     else()
