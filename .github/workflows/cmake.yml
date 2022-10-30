@@ -67,6 +67,7 @@ jobs:
               cxx: "g++",
               archiver: "7z a",
               generators: "Ninja",
+              qtcmakedir: "../Qt/5.15.2/gcc_64/lib/cmake/Qt5", # TODO find better solution
             }
           - {
               name: "Ubuntu_GCC_9",
@@ -77,6 +78,7 @@ jobs:
               cxx: "g++",
               archiver: "7z a",
               generators: "Ninja",
+              qtcmakedir: "../Qt/5.15.2/gcc_64/lib/cmake/Qt5", # TODO find better solution
             }
           - {
               name: "macOS Latest Clang",
