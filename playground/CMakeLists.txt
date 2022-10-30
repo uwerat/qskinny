@@ -6,12 +6,18 @@ add_subdirectory(inputpanel)
 add_subdirectory(images)
 add_subdirectory(shadows)
 
-# if(TARGET ${Qt}::WebEngine) # TODO check how to add optionally
-if(TRUE)
-    add_subdirectory(webview)
+if (Qt_VERSION_MAJOR VERSION_EQUAL "6")
+    if(TARGET ${Qt}::WebEngineCore)
+        if(TARGET ${Qt}::WebEngineQuick)
+            add_subdirectory(webview)
+        endif()
+    endif()
+elseif(Qt_VERSION VERSION_EQUAL "5")
+    if(TARGET ${Qt}::WebEngine)
+        add_subdirectory(webview)
+    endif()
 endif()
 
-# if(TARGET ${Qt}::QuickWidgets) # TODO check how to add optionally
-if(TRUE)
+if(TARGET ${Qt}::QuickWidgets)
     add_subdirectory(grids)
 endif()
