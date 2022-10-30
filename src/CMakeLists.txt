@@ -431,7 +431,13 @@ endif()
 set_target_properties(${TARGET_NAME}
     PROPERTIES
         AUTOMOC ON
-        AUTORCC ON)
+        AUTORCC ON
+        FOLDER libs)
+
+# TODO hack for standalone qvg2svg
+set_target_properties(${TARGET_NAME}
+    PROPERTIES
+        AUTOGEN_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/qskinny_autogen/include)
 
 install(TARGETS ${TARGET_NAME} DESTINATION ${QSK_INSTALL_LIBS})
 install(FILES ${TARGET_HEADERS} DESTINATION ${QSK_INSTALL_HEADERS})

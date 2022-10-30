@@ -13,17 +13,25 @@ if(BUILD_SVG2QVG_STANDALONE)
     #       E.g. main.cpp -> #include <QskGraphic.cpp> -> #include "moc_QskGraphic.cpp"
     add_dependencies(${TARGET_NAME} qskinny)
 
+    # TODO hack for standalone qvg2svg
     get_target_property(qskinny_AUTOGEN_DIR qskinny AUTOGEN_BUILD_DIR)
-    if (EXISTS ${qskinny_AUTOGEN_DIR})
+    if (${qskinny_AUTOGEN_DIR} STREQUAL "")
+        message(FATAL_ERROR "Directory '${qskinny_AUTOGEN_DIR}' doesn't exist")
+    endif()
+
+    # TODO fix multi configuration generators
+    if(CMAKE_GENERATOR MATCHES "Visual Studio.*")
+        add_definitions("/I${qskinny_AUTOGEN_DIR}/include_\$(Configuration)")
     else()
-        set(qskinny_AUTOGEN_DIR ${CMAKE_BINARY_DIR}/src/qskinny_autogen/include_$<CONFIG>) # TODO
+        target_include_directories(${TARGET_NAME}
+            PRIVATE
+                ${qskinny_AUTOGEN_DIR})
     endif()
 
     target_include_directories(${TARGET_NAME}
         PRIVATE
             ${CMAKE_SOURCE_DIR}/src/common
-            ${CMAKE_SOURCE_DIR}/src/graphic
-            ${qskinny_AUTOGEN_DIR})
+            ${CMAKE_SOURCE_DIR}/src/graphic)
 
     target_compile_definitions(${TARGET_NAME}
         PRIVATE
@@ -40,5 +48,9 @@ else()
             qskinny
             ${Qt}::Svg)
 endif()
+
+set_target_properties(${TARGET_NAME}
+    PROPERTIES
+        FOLDER tools)
 
 install(TARGETS ${TARGET_NAME} DESTINATION ${TARGET_INSTALL_SUFFIX})
