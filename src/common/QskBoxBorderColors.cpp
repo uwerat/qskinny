@@ -188,8 +188,8 @@ QskBoxBorderColors QskBoxBorderColors::interpolated(
             the color and use always use the other color. TODO ...
          */
 #endif
-        auto& gradient = colors.m_gradients[ i ];
-        gradient = gradient.interpolated( to.m_gradients[ i ], ratio );
+        colors.m_gradients[ i ] =
+            m_gradients[ i ].interpolated( to.m_gradients[ i ], ratio );
     }
 
     return colors;

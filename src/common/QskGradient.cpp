@@ -319,9 +319,10 @@ QskGradient QskGradient::interpolated( const QskGradient& to, qreal ratio ) cons
 
         gradient = to;
 
-        gradient.setStops( qskInterpolatedGradientStops(
-            m_stops, isMonochrome(),
-            to.m_stops, to.isMonochrome(), ratio ) );
+        const auto stops = qskInterpolatedGradientStops(
+            m_stops, isMonochrome(), to.m_stops, to.isMonochrome(), ratio );
+
+        gradient.setStops( stops );
 
         for ( uint i = 0; i < sizeof( m_values ) / sizeof( m_values[0] ); i++ )
             gradient.m_values[i] = m_values[i] + ratio * ( to.m_values[i] - m_values[i] );
