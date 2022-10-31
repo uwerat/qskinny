@@ -5,16 +5,6 @@ on:
     branches: [cmake]
   pull_request:
     branches: [master]
-  workflow_dispatch:
-    inputs:
-      qtversion:
-        description: "Select either Qt5 or Qt6"
-        required: false
-        default: "Qt5"
-        type: choice
-        options:
-          - Qt5
-          - Qt6
 
 jobs:
   build:
@@ -25,7 +15,7 @@ jobs:
       matrix:
         config:
           - {
-              name: "Windows Latest MSVC",
+              name: "Windows Latest MSVC Qt5",
               os: windows-latest,
               artifact: "windows_msvc.7z",
               build_type: "Release",
@@ -37,7 +27,7 @@ jobs:
               qtcmakedir: "../Qt/5.15.2/msvc2019_64/lib/cmake/Qt5", # TODO find better solution
             }
           - {
-              name: "Windows 2019 MSVC",
+              name: "Windows 2019 MSVC Qt5",
               os: windows-2019,
               artifact: "windows_msvc.7z",
               build_type: "Release",
@@ -49,18 +39,7 @@ jobs:
               qtcmakedir: "../Qt/5.15.2/msvc2019_64/lib/cmake/Qt5", # TODO find better solution
             }
           - {
-              name: "Windows Latest MinGW",
-              os: windows-latest,
-              artifact: "windows_mingw.7z",
-              build_type: "Release",
-              cc: "gcc",
-              cxx: "g++",
-              archiver: "7z a",
-              generators: "Ninja",
-              qtcmakedir: "../Qt/5.15.2/mingw81_64/lib/cmake/Qt5", # TODO find better solution
-            }
-          - {
-              name: "Ubuntu_Latest_GCC",
+              name: "Ubuntu_Latest_GCC Qt5",
               os: ubuntu-latest,
               artifact: "ubuntu_gcc.7z",
               build_type: "Release",
@@ -71,7 +50,7 @@ jobs:
               qtcmakedir: "../Qt/5.15.2/gcc_64/lib/cmake/Qt5", # TODO find better solution
             }
           - {
-              name: "Ubuntu_GCC_9",
+              name: "Ubuntu_GCC_9 Qt5",
               os: ubuntu-latest,
               artifact: "ubuntu_gcc9.7z",
               build_type: "Release",
@@ -82,7 +61,7 @@ jobs:
               qtcmakedir: "../Qt/5.15.2/gcc_64/lib/cmake/Qt5", # TODO find better solution
             }
           - {
-              name: "macOS Latest Clang",
+              name: "macOS Latest Clang Qt5",
               os: macos-latest,
               artifact: "macos_clang.7z",
               build_type: "Release",
@@ -160,20 +139,43 @@ jobs:
           cmake --version
 
       - uses: actions/checkout@v2
+
+      - name: Version Delegate Qt5 MSVC
+        if: "endsWith(matrix.config.name, 'Qt5') && contains(matrix.config.name, 'MSVC')"
+        id: version-delegate
+        run: |
+          echo "Qt_VERSION=5.15.2" >> $GITHUB_OUTPUT
+          echo "Qt_DIR_KEY=Qt5_DIR" >> $GITHUB_OUTPUT
+          echo "Qt_DIR_VALUE=../Qt/5.15.2/msvc2019_64/lib/cmake/Qt5" >> $GITHUB_OUTPUT
+
+      - name: Version Delegate Qt5 GCC
+        if: "endsWith(matrix.config.name, 'Qt5') && contains(matrix.config.name, 'GCC')"
+        id: version-delegate
+        run: |
+          echo "Qt_VERSION=5.15.2" >> $GITHUB_OUTPUT
+          echo "Qt_DIR_KEY=Qt5_DIR" >> $GITHUB_OUTPUT
+          echo "Qt_DIR_VALUE=../Qt/5.15.2/gcc_64/lib/cmake/Qt5" >> $GITHUB_OUTPUT
+
+      - name: Version Delegate Qt5 Clang
+        if: "endsWith(matrix.config.name, 'Qt5') && contains(matrix.config.name, 'Clang')"
+        id: version-delegate
+        run: |
+          echo "Qt_VERSION=5.15.2" >> $GITHUB_OUTPUT
+          echo "Qt_DIR_KEY=Qt5_DIR" >> $GITHUB_OUTPUT
+          echo "Qt_DIR_VALUE=../Qt/5.15.2/gcc_64/lib/cmake/Qt5" >> $GITHUB_OUTPUT
+
       - name: Cache Qt
         id: cache-qt-5-15
         uses: actions/cache@v1 # not v2!
         with:
-          path: ../Qt/5.15.2 # TODO use absolute paths
+          path: ../Qt/5.15.2
           key: ${{ runner.os }}-QtCache-Qt5
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
           version: "5.15.2"
-          #host: "windows"
           target: "desktop"
-          #arch: "win64_msvc2019_64"
           install-deps: "true"
           modules: "qtwebengine"
           cached: ${{ steps.cache-qt-5-15.outputs.cache-hit }}
@@ -193,7 +195,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
             -G "${{ matrix.config.generators }}" \
             -DCMAKE_INSTALL_PREFIX:PATH=instdir \
-            -DQt5_DIR:PATH="${{ matrix.config.qtcmakedir }}"
+            -D${{ steps.version-delegate.outputs.Qt_DIR_KEY }}:PATH="${{ steps.version-delegate.outputs.Qt_DIR_VALUE }}"
       - name: Build
         shell: bash
         run: cmake --build . --config ${{ matrix.config.build_type }}

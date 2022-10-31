@@ -50,6 +50,8 @@ set(OBJECTS_DIR  obj)
 set(RCC_DIR      rcc)
 
 option(BUILD_QSKDLL "build qskinny as shared library" ON)
+option(BUILD_EXAMPLES "build qskinny examples" ON)
+option(BUILD_PLAYGROUND "build qskinny playground" ON)
 option(ENABLE_PINYIN "enable romanization system for standard mandarin chinese" OFF) # TODO try find pkg-config
 option(ENABLE_HUNSPELL "enable spell checker" OFF) # TODO try find pkg-config
 
