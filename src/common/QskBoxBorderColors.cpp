@@ -242,7 +242,7 @@ QDebug operator<<( QDebug debug, const QskBoxBorderColors& colors )
             const char prompts[] = { 'L', 'T', 'R', 'B' };
             const Edge edges[] = { LeftEdge, TopEdge, RightEdge, BottomEdge };
 
-            for ( int i = 0; i <= 4; i++ )
+            for ( int i = 0; i < 4; i++ )
             {
                 if ( i != 0 )
                     debug << ", ";
