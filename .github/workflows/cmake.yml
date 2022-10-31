@@ -32,6 +32,23 @@ jobs:
                 },
             }
           - {
+              name: "Windows Latest MSVC Qt6",
+              os: windows-latest,
+              artifact: "windows_msvc.7z",
+              build_type: "Release",
+              cc: "cl",
+              cxx: "cl",
+              environment_script: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
+              archiver: "7z a",
+              generators: "Visual Studio 17 2022",
+              cmake:
+                {
+                  qtversion: "6.2.4",
+                  qtdirkey: "Qt6_DIR",
+                  qtdirvalue: "../Qt/6.2.4/msvc2019_64/lib/cmake/Qt6",
+                },
+            }
+          - {
               name: "Windows 2019 MSVC Qt5",
               os: windows-2019,
               artifact: "windows_msvc.7z",
@@ -82,6 +99,22 @@ jobs:
                 },
             }
           - {
+              name: "Ubuntu_Latest_GCC Qt6",
+              os: ubuntu-latest,
+              artifact: "ubuntu_gcc.7z",
+              build_type: "Release",
+              cc: "gcc",
+              cxx: "g++",
+              archiver: "7z a",
+              generators: "Ninja",
+              cmake:
+                {
+                  qtversion: "6.2.4",
+                  qtdirkey: "Qt6_DIR",
+                  qtdirvalue: "../Qt/6.2.4/gcc_64/lib/cmake/Qt6",
+                },
+            }
+          - {
               name: "Ubuntu_GCC_9 Qt5",
               os: ubuntu-latest,
               artifact: "ubuntu_gcc9.7z",
@@ -98,6 +131,22 @@ jobs:
                 },
             }
           - {
+              name: "Ubuntu_GCC_9 Qt6",
+              os: ubuntu-latest,
+              artifact: "ubuntu_gcc9.7z",
+              build_type: "Release",
+              cc: "gcc",
+              cxx: "g++",
+              archiver: "7z a",
+              generators: "Ninja",
+              cmake:
+                {
+                  qtversion: "6.2.4",
+                  qtdirkey: "Qt6_DIR",
+                  qtdirvalue: "../Qt/6.2.4/gcc_64/lib/cmake/Qt6",
+                },
+            }
+          - {
               name: "macOS Latest Clang Qt5",
               os: macos-latest,
               artifact: "macos_clang.7z",
@@ -111,6 +160,22 @@ jobs:
                   qtversion: "5.15.2",
                   qtdirkey: "Qt5_DIR",
                   qtdirvalue: "../Qt/5.15.2/clang_64/lib/cmake/Qt5",
+                },
+            }
+          - {
+              name: "macOS Latest Clang Qt6",
+              os: macos-latest,
+              artifact: "macos_clang.7z",
+              build_type: "Release",
+              cc: "clang",
+              cxx: "clang++",
+              archiver: "7za a",
+              generators: "Ninja",
+              cmake:
+                {
+                  qtversion: "6.2.4",
+                  qtdirkey: "Qt6_DIR",
+                  qtdirvalue: "../Qt/6.2.4/clang_64/lib/cmake/Qt6",
                 },
             }
 
