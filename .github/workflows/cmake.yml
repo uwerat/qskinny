@@ -49,6 +49,23 @@ jobs:
                 },
             }
           - {
+              name: "Windows 2019 MSVC Qt6",
+              os: windows-2019,
+              artifact: "windows_msvc.7z",
+              build_type: "Release",
+              cc: "cl",
+              cxx: "cl",
+              environment_script: "C:/Program Files/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
+              archiver: "7z a",
+              generators: "Visual Studio 16 2019",
+              cmake:
+                {
+                  qtversion: "6.2.4",
+                  qtdirkey: "Qt6_DIR",
+                  qtdirvalue: "../Qt/6.2.4/msvc2019_64/lib/cmake/Qt6",
+                },
+            }
+          - {
               name: "Ubuntu_Latest_GCC Qt5",
               os: ubuntu-latest,
               artifact: "ubuntu_gcc.7z",
@@ -165,14 +182,24 @@ jobs:
 
       - uses: actions/checkout@v2
 
-      - name: Cache Qt
+      - name: Cache Qt5
+        if: endsWith(matrix.config.name, 'Qt5')
         id: cache-qt-5-15
         uses: actions/cache@v1 # not v2!
         with:
           path: ../Qt/5.15.2
           key: ${{ runner.os }}-QtCache-Qt5
 
-      - name: Install Qt
+      - name: Cache Qt6
+        if: endsWith(matrix.config.name, 'Qt6')
+        id: cache-qt-6-2
+        uses: actions/cache@v1 # not v2!
+        with:
+          path: ../Qt/6.2.4
+          key: ${{ runner.os }}-QtCache-Qt6
+
+      - name: Install Qt5
+        if: endsWith(matrix.config.name, 'Qt5')
         uses: jurplel/install-qt-action@v3
         with:
           version: "5.15.2"
@@ -180,6 +207,20 @@ jobs:
           install-deps: "true"
           modules: "qtwebengine"
           cached: ${{ steps.cache-qt-5-15.outputs.cache-hit }}
+          setup-python: "false"
+          tools: ""
+          set-env: "true"
+          tools-only: "false"
+
+      - name: Install Qt6
+        if: endsWith(matrix.config.name, 'Qt6')
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: "6.2.4"
+          target: "desktop"
+          install-deps: "true"
+          modules: "qtwebengine"
+          cached: ${{ steps.cache-qt-6-2.outputs.cache-hit }}
           setup-python: "false"
           tools: ""
           set-env: "true"
