@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #include "QskBoxRenderer.h"
-#include "QskGradient.h"
+#include "QskLinearGradient.h"
 
 #include "QskBoxBorderColors.h"
 #include "QskBoxBorderMetrics.h"
@@ -868,13 +868,13 @@ namespace
     };
 }
 
-static inline Qt::Orientation qskQtOrientation( const QskGradient& gradient )
+static inline Qt::Orientation qskQtOrientation( const QskLinearGradient& gradient )
 {
     return gradient.isVertical() ? Qt::Vertical : Qt::Horizontal;
 }
 
 static inline int qskFillLineCount(
-    const QskBoxRenderer::Metrics& metrics, const QskGradient& gradient )
+    const QskBoxRenderer::Metrics& metrics, const QskLinearGradient& gradient )
 {
     const int stepCount = metrics.corner[ 0 ].stepCount;
 
@@ -1029,7 +1029,7 @@ static inline void qskRenderBorder( const QskBoxRenderer::Metrics& metrics,
 
 static inline void qskRenderFillRandom(
     const QskBoxRenderer::Metrics& metrics,
-    const QskGradient& gradient, ColoredLine* line )
+    const QskLinearGradient& gradient, ColoredLine* line )
 {
     const auto orientation = qskQtOrientation( gradient );
 
@@ -1047,7 +1047,7 @@ static inline void qskRenderFillRandom(
 
 static inline void qskRenderBoxRandom(
     const QskBoxRenderer::Metrics& metrics, const QskBoxBorderColors& borderColors,
-    const QskGradient& gradient, ColoredLine* fillLine, ColoredLine* borderLine )
+    const QskLinearGradient& gradient, ColoredLine* fillLine, ColoredLine* borderLine )
 {
     const auto& bc = borderColors;
 
@@ -1099,7 +1099,7 @@ static inline void qskRenderBoxRandom(
 
 static inline void qskRenderFillOrdered(
     const QskBoxRenderer::Metrics& metrics,
-    const QskGradient& gradient, ColoredLine* lines )
+    const QskLinearGradient& gradient, ColoredLine* lines )
 {
     const auto& r = metrics.innerQuad;
 
@@ -1333,7 +1333,7 @@ void QskBoxRenderer::renderRectellipseFill(
 
 void QskBoxRenderer::renderRectellipse( const QRectF& rect,
     const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& border,
-    const QskBoxBorderColors& borderColors, const QskGradient& gradient,
+    const QskBoxBorderColors& borderColors, const QskLinearGradient& gradient,
     QSGGeometry& geometry )
 {
     const Metrics metrics( rect, shape, border );

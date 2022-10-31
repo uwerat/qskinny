@@ -6,7 +6,6 @@
 #include "QskProgressBar.h"
 
 #include "QskIntervalF.h"
-#include "QskGradient.h"
 #include "QskFunctions.h"
 #include "QskAnimator.h"
 #include "QskAspect.h"
@@ -163,20 +162,12 @@ QskAspect::Placement QskProgressBar::effectivePlacement() const
 
 void QskProgressBar::setBarGradient( const QskGradient& gradient )
 {
-    // An API where we set the stops only would be more accurate TODO ...
-    auto g = gradient;
-
-    g.setOrientation( Qt::Horizontal );
-    setGradientHint( Bar | QskAspect::Horizontal, g );
-
-    g.setOrientation( Qt::Vertical );
-    setGradientHint( Bar | QskAspect::Vertical, g );
+    setGradientHint( Bar, gradient );
 }
 
 void QskProgressBar::resetBarGradient()
 {
-    resetColor( Bar | QskAspect::Vertical );
-    resetColor( Bar | QskAspect::Horizontal );
+    resetColor( Bar );
 }
 
 QskGradient QskProgressBar::barGradient() const

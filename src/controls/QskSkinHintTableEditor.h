@@ -118,6 +118,9 @@ class QSK_EXPORT QskSkinHintTableEditor
     void setVGradient( QskAspect, const QColor&, const QColor&,
         QskStateCombination = QskStateCombination() );
 
+    void setGradient( QskAspect, const QColor&, const QColor&,
+        QskStateCombination = QskStateCombination() );
+
     void setGradient( QskAspect, const QskGradient&,
         QskStateCombination = QskStateCombination() );
 

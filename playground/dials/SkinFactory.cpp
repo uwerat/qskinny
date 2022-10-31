@@ -14,6 +14,7 @@
 #include <QskSkin.h>
 #include <QskPlatform.h>
 #include <QskRgbValue.h>
+#include <QskLinearGradient.h>
 
 namespace
 {
@@ -57,7 +58,7 @@ namespace
                 ed.setStrutSize( Q::Knob, 30, 30 );
                 ed.setBoxShape( Q::Knob, 100, Qt::RelativeSize );
                 ed.setGradient( Q::Knob,
-                    QskGradient( QskGradient::Diagonal, rgb2, rgb1 ) );
+                    QskLinearGradient( 0.0, 0.0, 1.0, 1.0, rgb2, rgb1 ) );
 
                 ed.setMetric( Q::Needle | QskAspect::Size, 2 );
                 ed.setMetric( Q::Needle | QskAspect::Margin, 10 );

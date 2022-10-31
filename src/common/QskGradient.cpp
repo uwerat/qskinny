@@ -6,7 +6,6 @@
 #include "QskGradient.h"
 #include "QskRgbValue.h"
 
-#include <qhashfunctions.h>
 #include <qvariant.h>
 
 static void qskRegisterGradient()
@@ -22,12 +21,6 @@ static void qskRegisterGradient()
 }
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterGradient )
-
-static inline QskGradient::Orientation qskOrientation( Qt::Orientation o )
-{
-    return ( o == Qt::Vertical )
-        ? QskGradient::Vertical : QskGradient::Horizontal;
-}
 
 static inline bool qskIsGradientValid( const QskGradientStops& stops )
 {
@@ -57,66 +50,74 @@ static inline bool qskCanBeInterpolated( const QskGradient& from, const QskGradi
     if ( from.isMonochrome() || to.isMonochrome() )
         return true;
 
-    return from.orientation() == to.orientation();
-}
-
-QskGradient::QskGradient( Orientation orientation ) noexcept
-    : m_orientation( orientation )
-    , m_isDirty( false )
-    , m_isValid( false )
-    , m_isMonchrome( true )
-    , m_isVisible( false )
-{
+    return from.type() == to.type();
 }
 
 QskGradient::QskGradient( const QColor& color )
-    : QskGradient( Vertical )
 {
     setStops( color );
 }
 
-QskGradient::QskGradient( Qt::Orientation orientation,
-        const QColor& startColor, const QColor& stopColor )
-    : QskGradient( qskOrientation( orientation ), startColor, stopColor )
+QskGradient::QskGradient( const QColor& color1, const QColor& color2 )
 {
+    setStops( color1, color2 );
 }
 
-QskGradient::QskGradient( Orientation orientation,
-        const QColor& startColor, const QColor& stopColor )
-    : QskGradient( orientation )
+QskGradient::QskGradient( QGradient::Preset preset )
 {
-    setStops( startColor, stopColor );
+    setStops( qskBuildGradientStops( QGradient( preset ).stops() ) );
 }
 
-QskGradient::QskGradient( Qt::Orientation orientation, const QskGradientStops& stops )
-    : QskGradient( qskOrientation( orientation ), stops )
-{
-}
-
-QskGradient::QskGradient( Orientation orientation, const QskGradientStops& stops )
-    : QskGradient( orientation )
+QskGradient::QskGradient( const QVector< QskGradientStop >& stops )
 {
     setStops( stops );
 }
 
-QskGradient::QskGradient( Qt::Orientation orientation, QGradient::Preset preset )
-    : QskGradient( qskOrientation( orientation ), preset )
+QskGradient::QskGradient( const QskGradient& other ) noexcept
+    : m_stops( other.m_stops )
+    , m_values{ other.m_values[0], other.m_values[1],
+        other.m_values[2], other.m_values[3], }
+    , m_type( other.m_type )
+    , m_spread( other.m_spread )
+    , m_isDirty( other.m_isDirty )
+    , m_isValid( other.m_isValid )
+    , m_isMonchrome( other.m_isMonchrome )
+    , m_isVisible( other.m_isVisible )
 {
-}
-
-QskGradient::QskGradient( Orientation orientation, QGradient::Preset preset )
-    : QskGradient( orientation )
-{
-    setStops( qskBuildGradientStops( QGradient( preset ).stops() ) );
 }
 
 QskGradient::~QskGradient()
 {
 }
 
+QskGradient& QskGradient::operator=( const QskGradient& other ) noexcept
+{
+    m_type = other.m_type;
+    m_spread = other.m_spread;
+    m_stops = other.m_stops;
+
+    m_values[0] = other.m_values[0];
+    m_values[1] = other.m_values[1];
+    m_values[2] = other.m_values[2];
+    m_values[3] = other.m_values[3];
+
+    m_isDirty = other.m_isDirty;
+    m_isValid = other.m_isValid;
+    m_isMonchrome = other.m_isMonchrome;
+    m_isVisible = other.m_isVisible;
+
+    return *this;
+}
+
 bool QskGradient::operator==( const QskGradient& other ) const noexcept
 {
-    return ( m_orientation == other.m_orientation ) && ( m_stops == other.m_stops );
+    return ( m_type == other.m_type )
+           && ( m_spread == other.m_spread )
+           && ( m_values[0] == other.m_values[0] )
+           && ( m_values[1] == other.m_values[1] )
+           && ( m_values[2] == other.m_values[2] )
+           && ( m_values[3] == other.m_values[3] )
+           && ( m_stops == other.m_stops );
 }
 
 void QskGradient::updateStatusBits() const
@@ -162,17 +163,6 @@ bool QskGradient::isVisible() const noexcept
     return m_isVisible;
 }
 
-void QskGradient::setOrientation( Qt::Orientation orientation ) noexcept
-{
-    setOrientation( qskOrientation( orientation ) );
-}
-
-void QskGradient::setOrientation( Orientation orientation ) noexcept
-{
-    // does not change m_isDirty
-    m_orientation = orientation;
-}
-
 void QskGradient::setStops( const QColor& color )
 {
     m_stops = { { 0.0, color }, { 1.0, color } };
@@ -183,6 +173,12 @@ void QskGradient::setStops( const QColor& color1, const QColor& color2 )
 {
     m_stops = { { 0.0, color1 }, { 1.0, color2 } };
     m_isDirty = true;
+}
+
+void QskGradient::setStops( QGradient::Preset preset )
+{
+    const auto stops = qskBuildGradientStops( QGradient( preset ).stops() );
+    setStops( stops );
 }
 
 void QskGradient::setStops( const QskGradientStops& stops )
@@ -262,6 +258,11 @@ void QskGradient::setAlpha( int alpha )
     m_isDirty = true;
 }
 
+void QskGradient::setSpread( QGradient::Spread spread )
+{
+    m_spread = spread;
+}
+
 void QskGradient::reverse()
 {
     if ( isMonochrome() )
@@ -314,13 +315,16 @@ QskGradient QskGradient::interpolated( const QskGradient& to, qreal ratio ) cons
 
     if ( qskCanBeInterpolated( *this, to ) )
     {
-        // We simply interpolate stops
+        // We simply interpolate stops and values
 
-        gradient.setOrientation( to.orientation() );
+        gradient = to;
 
         gradient.setStops( qskInterpolatedGradientStops(
             m_stops, isMonochrome(),
             to.m_stops, to.isMonochrome(), ratio ) );
+
+        for ( uint i = 0; i < sizeof( m_values ) / sizeof( m_values[0] ); i++ )
+            gradient.m_values[i] = m_values[i] + ratio * ( to.m_values[i] - m_values[i] );
     }
     else
     {
@@ -338,14 +342,14 @@ QskGradient QskGradient::interpolated( const QskGradient& to, qreal ratio ) cons
         {
             const auto r = 2.0 * ratio;
 
-            gradient.setOrientation( orientation() );
+            gradient = *this;
             gradient.setStops( qskInterpolatedGradientStops( m_stops, c, r ) );
         }
         else
         {
             const auto r = 2.0 * ( ratio - 0.5 );
 
-            gradient.setOrientation( to.orientation() );
+            gradient = to;
             gradient.setStops( qskInterpolatedGradientStops( c, to.m_stops, r ) );
         }
     }
@@ -370,13 +374,55 @@ void QskGradient::clearStops()
 
 QskHashValue QskGradient::hash( QskHashValue seed ) const
 {
-    const auto o = orientation();
+    auto hash = qHashBits( &m_type, sizeof( m_type ), seed );
 
-    auto hash = qHashBits( &o, sizeof( o ), seed );
+    if ( m_type != Stops )
+        hash = qHashBits( m_values, sizeof( m_values ), seed );
+
     for ( const auto& stop : m_stops )
         hash = stop.hash( hash );
 
     return hash;
+}
+
+#include "QskLinearGradient.h"
+#include "QskRadialGradient.h"
+#include "QskConicGradient.h"
+
+QskLinearGradient& QskGradient::asLinearGradient()
+{
+    assert( m_type == QskGradient::Linear );
+    return *reinterpret_cast< QskLinearGradient* >( this );
+}
+
+const QskLinearGradient& QskGradient::asLinearGradient() const
+{
+    assert( m_type == QskGradient::Linear );
+    return *reinterpret_cast< const QskLinearGradient* >( this );
+}
+
+QskRadialGradient& QskGradient::asRadialGradient()
+{
+    assert( m_type == QskGradient::Radial );
+    return *reinterpret_cast< QskRadialGradient* >( this );
+}
+
+const QskRadialGradient& QskGradient::asRadialGradient() const
+{
+    assert( m_type == QskGradient::Radial );
+    return *reinterpret_cast< const QskRadialGradient* >( this );
+}
+
+QskConicGradient& QskGradient::asConicGradient()
+{
+    assert( m_type == QskGradient::Conic );
+    return *reinterpret_cast< QskConicGradient* >( this );
+}
+
+const QskConicGradient& QskGradient::asConicGradient() const
+{
+    assert( m_type == QskGradient::Conic );
+    return *reinterpret_cast< const QskConicGradient* >( this );
 }
 
 #ifndef QT_NO_DEBUG_STREAM
@@ -388,45 +434,95 @@ QDebug operator<<( QDebug debug, const QskGradient& gradient )
     QDebugStateSaver saver( debug );
     debug.nospace();
 
-    debug << "Gradient";
+    debug << "QskGradient( ";
 
-    if ( !gradient.isValid() )
+    switch ( gradient.type() )
     {
-        debug << "()";
+        case QskGradient::Linear:
+        {
+            debug << "L(";
+
+            const auto& g = gradient.asLinearGradient();
+            debug << g.start().x() << "," << g.start().y()
+                << "," << g.stop().x() << "," << g.stop().y() << ")";
+
+            break;
+        }
+
+        case QskGradient::Radial:
+        {
+            debug << "R(";
+
+            const auto& g = gradient.asRadialGradient();
+
+            debug << g.center().x() << "," << g.center().y()
+                << "," << g.radius() << ")";
+
+            break;
+        }
+
+        case QskGradient::Conic:
+        {
+            debug << "C(";
+
+            const auto& g = gradient.asConicGradient();
+
+            debug << g.center().x() << "," << g.center().y()
+                << ",[" << g.startAngle() << "," << g.spanAngle() << "])";
+            break;
+        }
+
+        case QskGradient::Stops:
+        {
+            debug << "S()";
+            break;
+        }
+    }
+
+    if ( gradient.stops().isEmpty() )
+    {
+        debug << " ()";
     }
     else
     {
-        debug << "( ";
-
         if ( gradient.isMonochrome() )
         {
-            QskRgb::debugColor( debug, gradient.startColor() );
+            debug << ' ';
+            const auto color = gradient.stops().first().color();
+            QskRgb::debugColor( debug, color );
         }
         else
         {
-            const char o[] = { 'H', 'V', 'D' };
-            debug << o[ gradient.orientation() ] << ", ";
+            debug << " ( ";
 
-            if ( gradient.stops().count() == 2 )
+            const auto& stops = gradient.stops();
+            for ( int i = 0; i < stops.count(); i++ )
             {
-                QskRgb::debugColor( debug, gradient.startColor() );
-                debug << ", ";
-                QskRgb::debugColor( debug, gradient.endColor() );
-            }
-            else
-            {
-                const auto& stops = gradient.stops();
-                for ( int i = 0; i < stops.count(); i++ )
-                {
-                    if ( i != 0 )
-                        debug << ", ";
+                if ( i != 0 )
+                    debug << ", ";
 
-                    debug << stops[i];
-                }
+                debug << stops[i];
             }
+
+            debug << " )";
         }
-        debug << " )";
     }
+
+    switch( gradient.spread() )
+    {
+        case QGradient::RepeatSpread:
+            debug << " RP";
+            break;
+
+        case QGradient::ReflectSpread:
+            debug << " RF";
+            break;
+
+        case QGradient::PadSpread:
+            break;
+    }
+
+    debug << " )";
 
     return debug;
 }

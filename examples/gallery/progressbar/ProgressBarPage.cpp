@@ -35,8 +35,7 @@ namespace
             colors += hctColor.toned( 45 ).rgb();
             colors += hctColor.toned( 30 ).rgb();
 
-            setBarGradient( QskGradient( orientation(), 
-                qskBuildGradientStops( colors, true ) ) );
+            setBarGradient( qskBuildGradientStops( colors, true ) );
         }
     };
 }

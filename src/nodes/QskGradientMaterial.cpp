@@ -7,7 +7,9 @@
 #include "QskFunctions.h"
 #include "QskRgbValue.h"
 
-#include <qcoreapplication.h>
+#include "QskLinearGradient.h"
+#include "QskRadialGradient.h"
+#include "QskConicGradient.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qrhi_p.h>
@@ -15,6 +17,7 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qsgplaintexture_p.h>
 QSK_QT_PRIVATE_END
 
+#include <qcoreapplication.h>
 #include <cmath>
 
 // RHI shaders are supported by Qt 5.15 and Qt 6.x
@@ -37,28 +40,15 @@ namespace
     class GradientTexture : public QSGPlainTexture
     {
       public:
-        GradientTexture( const QGradientStops& stops, QGradient::Spread spread )
+        GradientTexture( const QskGradientStops& stops, QGradient::Spread spread )
         {
-#if 1
-            /*
-                Once we got rid of QGradient we will have QskGradientStops
-                ( like in the gradients branch ). For the moment we have to copy
-             */
-
-            QskGradientStops qskStops;
-            qskStops.reserve( stops.size() );
-
-            for ( const auto& s : stops )
-                qskStops += QskGradientStop( s.first, s.second );
-#endif
             /*
                 Qt creates tables of 1024 colors, while Chrome, Firefox, and Android
                 seem to use 256 colors only ( according to maybe outdated sources
                 from the internet ),
              */
 
-
-            setImage( QskRgb::colorTable( 256, qskStops ) );
+            setImage( QskRgb::colorTable( 256, stops ) );
 
             const auto wrapMode = this->wrapMode( spread );
 
@@ -94,7 +84,7 @@ namespace
         }
 
         const void* rhi;
-        const QGradientStops stops;
+        const QskGradientStops stops;
         const QGradient::Spread spread;
     };
 
@@ -103,7 +93,7 @@ namespace
         size_t valus = seed + key.spread;
 
         for ( const auto& stop : key.stops )
-            valus += stop.second.rgba();
+            valus += stop.rgb();
 
         return valus;
     }
@@ -135,7 +125,7 @@ namespace
         }
 
         GradientTexture* texture( const void* rhi,
-            const QGradientStops& stops, QGradient::Spread spread )
+            const QskGradientStops& stops, QGradient::Spread spread )
         {
             const TextureHashKey key { rhi, stops, spread };
 
@@ -197,7 +187,7 @@ namespace
     class GradientMaterial : public QskGradientMaterial
     {
       public:
-        GradientMaterial( QGradient::Type type )
+        GradientMaterial( QskGradient::Type type )
             : QskGradientMaterial( type )
         {
             setFlag( Blending | RequiresFullMatrix );
@@ -323,11 +313,11 @@ namespace
     {
       public:
         LinearMaterial()
-            : GradientMaterial( QGradient::LinearGradient )
+            : GradientMaterial( QskGradient::Linear )
         {
         }
 
-        bool setGradient( const QRectF& rect, const QLinearGradient& gradient )
+        bool setGradient( const QRectF& rect, const QskLinearGradient& gradient )
         {
             bool changed = false;
 
@@ -350,8 +340,8 @@ namespace
             const QVector4D vector(
                 rect.left() + gradient.start().x() * rect.width(),
                 rect.top() + gradient.start().y() * rect.height(), 
-                gradient.finalStop().x() * rect.width(),
-                gradient.finalStop().y() * rect.height() );
+                gradient.stop().x() * rect.width(),
+                gradient.stop().y() * rect.height() );
 
             if ( m_gradientVector != vector )
             {
@@ -476,7 +466,7 @@ namespace
     {
       public:
         RadialMaterial()
-            : GradientMaterial( QGradient::RadialGradient )
+            : GradientMaterial( QskGradient::Radial )
         {
         }
 
@@ -486,7 +476,7 @@ namespace
             return &type;
         }
 
-        bool setGradient( const QRectF& rect, const QRadialGradient& gradient )
+        bool setGradient( const QRectF& rect, const QskRadialGradient& gradient )
         {
             bool changed = false;
 
@@ -647,7 +637,7 @@ namespace
     {
       public:
         ConicMaterial()
-            : GradientMaterial( QGradient::ConicalGradient )
+            : GradientMaterial( QskGradient::Conic )
         {
         }
 
@@ -657,7 +647,7 @@ namespace
             return &type;
         }
 
-        bool setGradient( const QRectF& rect, const QConicalGradient& gradient, qreal spanAngle )
+        bool setGradient( const QRectF& rect, const QskConicGradient& gradient )
         {
             bool changed = false;
 
@@ -679,11 +669,11 @@ namespace
 
             // Angles as ratio of a rotation
 
-            float start = fmod( gradient.angle(), 360.0 ) / 360.0;
+            float start = fmod( gradient.startAngle(), 360.0 ) / 360.0;
             if ( start < 0.0)
                 start += 1.0;
 
-            const float span = fmod( spanAngle, 360.0 ) / 360.0;
+            const float span = fmod( gradient.spanAngle(), 360.0 ) / 360.0;
 
             if ( center != m_center )
             {
@@ -826,7 +816,7 @@ namespace
     }
 }
 
-QskGradientMaterial::QskGradientMaterial( QGradient::Type type )
+QskGradientMaterial::QskGradientMaterial( QskGradient::Type type )
     : m_gradientType( type )
 {
 }
@@ -840,59 +830,54 @@ inline Material* qskEnsureMaterial( QskGradientMaterial* material )
     return static_cast< Material* >( material );
 }
 
-bool QskGradientMaterial::updateGradient(
-    const QRectF& rect, const QGradient* g, qreal extraValue )
+bool QskGradientMaterial::updateGradient( const QRectF& rect, const QskGradient& gradient )
 {
-    Q_ASSERT( g );
-
-    if ( g == nullptr )
-        return false;
-
-    auto& gradient = *g;
-
     Q_ASSERT( gradient.type() == m_gradientType );
 
     if ( gradient.type() != m_gradientType )
         return false;
 
-    switch ( static_cast< int >( gradient.type() ) )
+    switch ( gradient.type() )
     {
-        case QGradient::LinearGradient:
+        case QskGradient::Linear:
         {
             auto material = static_cast< LinearMaterial* >( this );
-            return material->setGradient( rect,
-                *reinterpret_cast< const QLinearGradient* >( g ) );
+            return material->setGradient( rect, gradient.asLinearGradient() );
         }
 
-        case QGradient::RadialGradient:
+        case QskGradient::Radial:
         {
             auto material = static_cast< RadialMaterial* >( this );
-            return material->setGradient( rect,
-                *reinterpret_cast< const QRadialGradient* >( g ) );
+            return material->setGradient( rect, gradient.asRadialGradient() );
         }
 
-        case QGradient::ConicalGradient:
+        case QskGradient::Conic:
         {
             auto material = static_cast< ConicMaterial* >( this );
-            return material->setGradient( rect,
-                *reinterpret_cast< const QConicalGradient* >( g ), extraValue );
+            return material->setGradient( rect, gradient.asConicGradient() );
+        }
+
+        default:
+        {
+            qWarning( "Invalid gradient type" );
+            break;
         }
     }
 
     return false;
 }
 
-QskGradientMaterial* QskGradientMaterial::createMaterial( QGradient::Type gradientType )
+QskGradientMaterial* QskGradientMaterial::createMaterial( QskGradient::Type gradientType )
 {
     switch ( gradientType )
     {
-        case QGradient::LinearGradient:
+        case QskGradient::Linear:
             return new LinearMaterial();
 
-        case QGradient::RadialGradient:
+        case QskGradient::Radial:
             return new RadialMaterial();
 
-        case QGradient::ConicalGradient:
+        case QskGradient::Conic:
             return new ConicMaterial();
 
         default:

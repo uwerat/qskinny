@@ -26,6 +26,7 @@
 #include <QskBoxShapeMetrics.h>
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxBorderColors.h>
+#include <QskLinearGradient.h>
 #include <QskFunctions.h>
 #include <QskShadowMetrics.h>
 #include <QskSkinHintTableEditor.h>
@@ -111,11 +112,11 @@ void Skin::initHints( const Palette& palette )
     ed.setColor( TopBarItem::Item3 | QskAspect::TextColor, 0xfff99055 );
     ed.setColor( TopBarItem::Item4 | QskAspect::TextColor, 0xff6776ff );
 
-    // conical gradients are counterclockwise, so specify the 2nd color first:
-    ed.setHGradient( TopBarItem::Item1, 0xffff3122, 0xffff5c00 );
-    ed.setHGradient( TopBarItem::Item2, 0xff6100ff, 0xff6776ff );
-    ed.setHGradient( TopBarItem::Item3, 0xffff3122, 0xffffce50 );
-    ed.setHGradient( TopBarItem::Item4, 0xff6100ff, 0xff6776ff );
+    // arcs are counterclockwise, so specify the 2nd color first:
+    ed.setGradient( TopBarItem::Item1, 0xffff3122, 0xffff5c00 );
+    ed.setGradient( TopBarItem::Item2, 0xff6100ff, 0xff6776ff );
+    ed.setGradient( TopBarItem::Item3, 0xffff3122, 0xffffce50 );
+    ed.setGradient( TopBarItem::Item4, 0xff6100ff, 0xff6776ff );
 
     // the bar gradient is defined through the top bar items above
     ed.setArcMetrics( CircularProgressBar::Groove, { 8.53, 90, -360 } );
@@ -141,8 +142,8 @@ void Skin::initHints( const Palette& palette )
     {
         ed.setBoxShape( subControl, 6 );
 
-        QskGradient normal( Qt::Vertical, 0xff6776ff, 0xff6100ff );
-        QskGradient bright( Qt::Vertical, 0xffff7d34, 0xffff3122 );
+        QskLinearGradient normal( Qt::Vertical, 0xff6776ff, 0xff6100ff );
+        QskLinearGradient bright( Qt::Vertical, 0xffff7d34, 0xffff3122 );
 
         if ( subControl == RoundedIcon::PalePanel )
         {
@@ -197,9 +198,9 @@ void Skin::initHints( const Palette& palette )
     ed.setBoxShape( LightDisplay::Panel, 100, Qt::RelativeSize );
 
     ed.setArcMetrics( LightDisplay::ColdAndWarmArc, 8.785, 0, 180 );
-    QskGradient coldGradient( Qt::Horizontal,
-        { { 0.0, 0xffff3122 }, { 0.2, 0xfffeeeb7 },
-          { 0.3, 0xffa7b0ff }, { 0.5, 0xff6776ff }, { 1.0, Qt::black } } );
+    const QskGradient coldGradient(
+        { { 0.0, 0xffff3122 }, { 0.2, 0xfffeeeb7 }, { 0.3, 0xffa7b0ff },
+          { 0.5, 0xff6776ff }, { 1.0, Qt::black } } );
     ed.setGradient( LightDisplay::ColdAndWarmArc, coldGradient );
 
     ed.setMetric( LightDisplay::Tickmarks, 1 );
@@ -250,7 +251,7 @@ Skin::Palette DaytimeSkin::palette() const
         0xfff4f4f4,
         Qt::black,
         0xffe5e5e5,
-        { Qt::Vertical, { { 0.0, 0xffc4c4c4 }, { 0.5, 0xfff8f8f8 }, { 1.0, 0xffc4c4c4 } } }
+        { { { 0.0, 0xffc4c4c4 }, { 0.5, 0xfff8f8f8 }, { 1.0, 0xffc4c4c4 } } }
     };
 }
 
@@ -264,6 +265,6 @@ Skin::Palette NighttimeSkin::palette() const
         0xff0c0c0c,
         Qt::white,
         0xff1a1a1a,
-        { Qt::Vertical, { { 0.0, 0xff666666 }, { 0.5, 0xff222222 }, { 1.0, 0xff333333 } } }
+        { { { 0.0, 0xff666666 }, { 0.5, 0xff222222 }, { 1.0, 0xff333333 } } }
     };
 }

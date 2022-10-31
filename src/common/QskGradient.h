@@ -11,6 +11,10 @@
 #include <qbrush.h>
 #include <qmetatype.h>
 
+class QskLinearGradient;
+class QskRadialGradient;
+class QskConicGradient;
+
 class QVariant;
 
 /*
@@ -22,7 +26,6 @@ class QSK_EXPORT QskGradient
 {
     Q_GADGET
 
-    Q_PROPERTY( Orientation orientation READ orientation WRITE setOrientation )
     Q_PROPERTY( QVector< QskGradientStop > stops READ stops WRITE setStops )
 
     Q_PROPERTY( bool valid READ isValid )
@@ -30,43 +33,35 @@ class QSK_EXPORT QskGradient
     Q_PROPERTY( bool monochrome READ isMonochrome )
 
   public:
-    // TODO: radial/canonical gradients + other diagonal linear gradients
-    enum Orientation
+    enum Type
     {
-        Horizontal,
-        Vertical,
-        Diagonal
+        Stops,
+
+        Linear,
+        Radial,
+        Conic
     };
-    Q_ENUM( Orientation )
+    Q_ENUM( Type )
 
     QskGradient() noexcept = default;
 
-    QskGradient( Orientation ) noexcept;
     QskGradient( Qt::GlobalColor );
     QskGradient( QRgb );
     QskGradient( const QColor& );
+    QskGradient( const QColor&, const QColor& );
     QskGradient( QGradient::Preset );
+    QskGradient( const QVector< QskGradientStop >& );
 
-    QskGradient( Qt::Orientation, const QVector< QskGradientStop >& );
-    QskGradient( Qt::Orientation, const QColor&, const QColor& );
-    QskGradient( Qt::Orientation, QGradient::Preset );
-
-    QskGradient( Orientation, const QVector< QskGradientStop >& );
-    QskGradient( Orientation, const QColor&, const QColor& );
-    QskGradient( Orientation, QGradient::Preset );
+    QskGradient( const QskGradient& ) noexcept;
 
     ~QskGradient();
+
+    QskGradient& operator=( const QskGradient& ) noexcept;
 
     bool operator==( const QskGradient& ) const noexcept;
     bool operator!=( const QskGradient& ) const noexcept;
 
-    void setOrientation( Qt::Orientation ) noexcept;
-    void setOrientation( Orientation ) noexcept;
-    Orientation orientation() const noexcept;
-
-    bool isHorizontal() const noexcept;
-    bool isVertical() const noexcept;
-    bool isTilted() const noexcept;
+    QskGradient::Type type() const noexcept;
 
     bool isValid() const noexcept;
     bool isMonochrome() const noexcept;
@@ -88,6 +83,9 @@ class QSK_EXPORT QskGradient
 
     void setAlpha( int alpha );
 
+    void setSpread( QGradient::Spread );
+    QGradient::Spread spread() const noexcept;
+
     void reverse();
     QskGradient reversed() const;
 
@@ -106,13 +104,37 @@ class QSK_EXPORT QskGradient
 
     int stepCount() const noexcept;
 
+    QskLinearGradient& asLinearGradient();
+    const QskLinearGradient& asLinearGradient() const;
+
+    QskRadialGradient& asRadialGradient();
+    const QskRadialGradient& asRadialGradient() const;
+
+    QskConicGradient& asConicGradient();
+    const QskConicGradient& asConicGradient() const;
+
   private:
+    friend class QskLinearGradient;
+    friend class QskRadialGradient;
+    friend class QskConicGradient;
+
+    QskGradient( Type ) noexcept;
+    QskGradient( Type, qreal, qreal, qreal, qreal ) noexcept;
+
     void updateStatusBits() const;
 
   private:
     QVector< QskGradientStop > m_stops;
 
-    Orientation m_orientation = Vertical;
+    /*
+        Linear: x1, y1, x2, y2
+        Radial: centerX, centerY, radius, n/a
+        Conic: centerX, centerY, startAngle, spanAngle
+     */
+    qreal m_values[4] = {};
+
+    Type m_type = Stops;
+    QGradient::Spread m_spread = QGradient::PadSpread;
 
     mutable bool m_isDirty = false;
     mutable bool m_isValid = false;
@@ -121,6 +143,18 @@ class QSK_EXPORT QskGradient
 };
 
 Q_DECLARE_METATYPE( QskGradient )
+
+inline QskGradient::QskGradient( QskGradient::Type type ) noexcept
+    : m_type( type )
+{
+}
+
+inline QskGradient::QskGradient( QskGradient::Type type,
+        qreal v1, qreal v2, qreal v3, qreal v4  ) noexcept
+    : m_values{ v1, v2, v3, v4 }
+    , m_type( type )
+{
+}
 
 inline QskGradient::QskGradient( Qt::GlobalColor color )
     : QskGradient( QColor( color ) )
@@ -132,34 +166,14 @@ inline QskGradient::QskGradient( QRgb rgb )
 {
 }
 
-inline QskGradient::QskGradient( QGradient::Preset preset )
-    : QskGradient( Vertical, preset )
-{
-}
-
 inline bool QskGradient::operator!=( const QskGradient& other ) const noexcept
 {
     return !( *this == other );
 }
 
-inline QskGradient::Orientation QskGradient::orientation() const noexcept
+inline QskGradient::Type QskGradient::type() const noexcept
 {
-    return m_orientation;
-}
-
-inline bool QskGradient::isHorizontal() const noexcept
-{
-    return orientation() == Horizontal;
-}
-
-inline bool QskGradient::isVertical() const noexcept
-{
-    return orientation() == Vertical;
-}
-
-inline bool QskGradient::isTilted() const noexcept
-{
-    return orientation() == Diagonal;
+    return m_type;
 }
 
 inline const QskGradientStops& QskGradient::stops() const noexcept
@@ -184,6 +198,11 @@ inline QColor QskGradient::startColor() const noexcept
 inline QColor QskGradient::endColor() const noexcept
 {
     return m_stops.isEmpty() ? QColor() : m_stops.last().color();
+}
+
+inline QGradient::Spread QskGradient::spread() const noexcept
+{
+    return m_spread;
 }
 
 #ifndef QT_NO_DEBUG_STREAM

@@ -37,6 +37,66 @@ static inline QskHashValue qskColorsHash(
     return fillGradient.hash( hash );
 }
 
+#if 1
+
+#include "QskLinearGradient.h"
+
+static inline QskLinearGradient qskEffectiveGradient( const QskGradient& gradient )
+{
+    QskLinearGradient g;
+
+    if ( gradient.isVisible() )
+    {
+        if ( gradient.isMonochrome() )
+        {
+            g.setStops( gradient.startColor() );
+        }
+        else
+        {
+            switch( gradient.type() )
+            {
+                case QskGradient::Linear:
+                {
+                    const auto& linearGradient = gradient.asLinearGradient();
+
+                    if ( linearGradient.isVertical() )
+                    {
+                        g.setOrientation( Qt::Vertical );
+                    }
+                    else if ( linearGradient.isHorizontal() )
+                    {
+                        g.setOrientation( Qt::Horizontal );
+                    }
+                    else
+                    {
+                        g.setStart( 0.0, 0.0 );
+                        g.setStop( 1.0, 1.0 );
+                    }
+
+                    g.setStops( gradient.stops() );
+                    break;
+                }
+                case QskGradient::Radial:
+                case QskGradient::Conic:
+                {   
+                    qWarning() << "QskBoxNode does not support radial/conic gradients";
+                    g.setStops( Qt::black );
+                    break;
+                }
+                case QskGradient::Stops:
+                {
+                    g.setStops( gradient.stops() );
+                    break;
+                }
+            }
+        }
+    }
+
+    return g;
+}
+
+#endif
+
 class QskBoxNodePrivate final : public QSGGeometryNodePrivate
 {
   public:
@@ -79,13 +139,16 @@ void QskBoxNode::setBoxData( const QRectF& rect,
 {
     Q_D( QskBoxNode );
 
-    QskGradient fillGradient = gradient;
+    /*
+        QskBoxRenderer supports certain linear gradients only. 
+        For everything else we would have to use a QskGradientMaterial instead.
+
+        As a temporary solution we simply "convert" gradient into a
+        simple QskLinearGradient so that at least something is happening.
+        TODO ...
+     */
 #if 1
-    // Renderer is buggy for monochrome gradients with stops. TODO ...
-    if ( fillGradient.stops().count() > 2 && fillGradient.isMonochrome() )
-    {
-        fillGradient.setStops( fillGradient.startColor() );
-    }
+    const auto fillGradient = qskEffectiveGradient( gradient );
 #endif
 
     const auto metricsHash = qskMetricsHash( shape, borderMetrics );

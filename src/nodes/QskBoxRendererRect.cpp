@@ -8,7 +8,7 @@
 #include "QskBoxRenderer.h"
 #include "QskBoxRendererColorMap.h"
 #include "QskFunctions.h"
-#include "QskGradient.h"
+#include "QskLinearGradient.h"
 #include "QskVertex.h"
 
 using namespace QskVertex;
@@ -343,7 +343,7 @@ namespace
 }
 
 static inline void qskCreateFillOrdered( const QskBoxRenderer::Quad& rect,
-    const QskGradient& gradient, ColoredLine* line )
+    const QskLinearGradient& gradient, ColoredLine* line )
 {
     if ( gradient.isHorizontal() )
     {
@@ -371,11 +371,10 @@ static inline void qskCreateFillOrdered( const QskBoxRenderer::Quad& rect,
 }
 
 template< class ColorMap, class Line >
-static inline void qskCreateFillRandom(
-    QskGradient::Orientation orientation,
+static inline void qskCreateFillRandom( Qt::Orientation orientation,
     const QskBoxRenderer::Quad& r, const ColorMap& map, Line* line )
 {
-    if ( orientation == QskGradient::Vertical )
+    if ( orientation == Qt::Vertical )
     {
         ( line++ )->setLine( r.left, r.top, r.right, r.top, map.colorAt( 0.0 ) );
         ( line++ )->setLine( r.left, r.bottom, r.right, r.bottom, map.colorAt( 1.0 ) );
@@ -549,15 +548,13 @@ void QskBoxRenderer::renderRectFill(
     }
 
     const auto line = allocateLines< Line >( geometry, 2 );
-
-    qskCreateFillRandom( QskGradient::Vertical,
-        in, ColorMapSolid( Color() ), line );
+    qskCreateFillRandom( Qt::Vertical, in, ColorMapSolid( Color() ), line );
 }
 
 void QskBoxRenderer::renderRect(
     const QRectF& rect, const QskBoxShapeMetrics& shape,
     const QskBoxBorderMetrics& border, const QskBoxBorderColors& borderColors,
-    const QskGradient& gradient, QSGGeometry& geometry )
+    const QskLinearGradient& gradient, QSGGeometry& geometry )
 {
     Q_UNUSED( shape )
 
@@ -624,7 +621,7 @@ void QskBoxRenderer::renderRect(
         if ( gd.isMonochrome() )
         {
             const ColorMapSolid colorMap( gd.startColor() );
-            qskCreateFillRandom( QskGradient::Vertical, in, colorMap, line );
+            qskCreateFillRandom( Qt::Vertical, in, colorMap, line );
         }
         else
         {
@@ -641,8 +638,10 @@ void QskBoxRenderer::renderRect(
 
             if ( fillRandom )
             {
+                const auto orientation = gd.isVertical() ? Qt::Vertical : Qt::Horizontal;
+
                 const ColorMapGradient colorMap( gd.startColor(), gd.endColor() );
-                qskCreateFillRandom( gd.orientation(), in, colorMap, line );
+                qskCreateFillRandom( orientation, in, colorMap, line );
             }
             else
             {
@@ -669,7 +668,7 @@ void QskBoxRenderer::renderRect(
 }
 
 void QskBoxRenderer::renderRectFill( const QskBoxRenderer::Quad& rect,
-    const QskGradient& gradient, QskVertex::ColoredLine* line )
+    const QskLinearGradient& gradient, QskVertex::ColoredLine* line )
 {
     qskCreateFillOrdered( rect, gradient, line );
 }

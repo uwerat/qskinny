@@ -9,7 +9,7 @@
 #include "QskGlobal.h"
 #include <qsgnode.h>
 
-class QGradient;
+class QskGradient;
 class QColor;
 class QPainterPath;
 
@@ -21,7 +21,7 @@ class QSK_EXPORT QskShapeNode : public QSGGeometryNode
     QskShapeNode();
 
     void updateNode( const QPainterPath&, const QTransform&,
-        const QRectF&, const QGradient*, qreal = 0.0 );
+        const QRectF&, const QskGradient& );
 
     void updateNode( const QPainterPath&,
         const QTransform&, const QColor& );

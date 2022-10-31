@@ -42,73 +42,6 @@ static inline qreal effectivePenWidth(
     return width;
 }
 
-namespace
-{
-    class ShapeNode : public QskShapeNode
-    {
-      public:
-        void updateShape( const QPainterPath& path,
-            const QTransform& transform, const QRectF& rect, const Gradient& gradient )
-        {
-            if ( gradient.isMonochrome() )
-            {
-                updateNode( path, transform, gradient.stops().first().color() );
-                return;
-            }
-
-            /*
-                Stupid code to map Gradient -> QGradient
-                Can be removed once Gradient has been merged into QskGradient.
-             */
-
-            switch( static_cast<int>( gradient.type() ) )
-            {
-                case QGradient::LinearGradient:
-                {
-                    const auto& g = gradient.asLinearGradient();
-
-                    QLinearGradient qgradient( g.start(), g.stop() );
-                    qgradient.setSpread( g.spread() );
-                    qgradient.setStops( g.qtStops() );
-
-                    updateNode( path, transform, rect, &qgradient );
-
-                    break;
-                }
-                case QGradient::RadialGradient:
-                {
-                    const auto& g = gradient.asRadialGradient();
-
-                    QRadialGradient qgradient( g.center(), g.radius() );
-                    qgradient.setSpread( g.spread() );
-                    qgradient.setStops( g.qtStops() );
-
-                    updateNode( path, transform, rect, &qgradient );
-
-                    break;
-                }
-                case QGradient::ConicalGradient:
-                {
-                    const auto& g = gradient.asConicGradient();
-
-                    QConicalGradient qgradient( g.center(), g.startAngle() );
-                    qgradient.setSpread( g.spread() );
-                    qgradient.setStops( g.qtStops() );
-
-                    /*
-                        Once ConicGradient has become QskConicGradient we do not
-                        need QConicalGradient anymore and passing the spanAngle
-                        as extra parameter can go away.
-                     */
-                    updateNode( path, transform, rect, &qgradient, g.spanAngle() );
-
-                    break;
-                }
-            }
-        }
-    };
-}
-
 ShapeItem::ShapeItem( QQuickItem* parent )
     : QskControl( parent )
 {
@@ -134,7 +67,7 @@ QPen ShapeItem::pen() const
     return m_pen;
 }
 
-void ShapeItem::setGradient( const Gradient& gradient )
+void ShapeItem::setGradient( const QskGradient& gradient )
 {
     if ( gradient != m_gradient )
     {
@@ -143,7 +76,7 @@ void ShapeItem::setGradient( const Gradient& gradient )
     }
 }
 
-const Gradient& ShapeItem::gradient() const
+const QskGradient& ShapeItem::gradient() const
 {
     return m_gradient;
 }
@@ -173,7 +106,7 @@ void ShapeItem::updateNode( QSGNode* parentNode )
     const auto rect = contentsRect();
     const auto pathRect = m_path.controlPointRect();
 
-    auto fillNode = static_cast< ShapeNode* >(
+    auto fillNode = static_cast< QskShapeNode* >(
         QskSGNode::findChildNode( parentNode, FillRole ) );
 
     auto borderNode = static_cast< QskStrokeNode* >(
@@ -191,7 +124,7 @@ void ShapeItem::updateNode( QSGNode* parentNode )
     {
         if ( fillNode == nullptr )
         {
-            fillNode = new ShapeNode;
+            fillNode = new QskShapeNode;
             QskSGNode::setNodeRole( fillNode, FillRole );
 
             parentNode->prependChildNode( fillNode );
@@ -205,7 +138,7 @@ void ShapeItem::updateNode( QSGNode* parentNode )
         }
 
         const auto transform = ::transformForRects( pathRect, fillRect );
-        fillNode->updateShape( m_path, transform, fillRect, m_gradient );
+        fillNode->updateNode( m_path, transform, fillRect, m_gradient );
     }
     else
     {

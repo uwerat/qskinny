@@ -12,6 +12,7 @@
 
 class QskBoxBorderMetrics;
 class QskBoxBorderColors;
+class QskLinearGradient;
 class QskGradient;
 
 class QSGGeometry;
@@ -32,7 +33,7 @@ class QSK_EXPORT QskBoxRenderer
 
     void renderBox( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
-        const QskBoxBorderColors&, const QskGradient&, QSGGeometry& );
+        const QskBoxBorderColors&, const QskLinearGradient&, QSGGeometry& );
 
     class Quad
     {
@@ -115,7 +116,7 @@ class QSK_EXPORT QskBoxRenderer
 
     void renderRect( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
-        const QskBoxBorderColors&, const QskGradient&, QSGGeometry& );
+        const QskBoxBorderColors&, const QskLinearGradient&, QSGGeometry& );
 
     void renderRectellipseFill( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&, QSGGeometry& );
@@ -125,12 +126,12 @@ class QSK_EXPORT QskBoxRenderer
 
     void renderRectellipse( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
-        const QskBoxBorderColors&, const QskGradient&, QSGGeometry& );
+        const QskBoxBorderColors&, const QskLinearGradient&, QSGGeometry& );
 
     void renderDiagonalFill( const Metrics&, const QskGradient&,
         int lineCount, QskVertex::ColoredLine* );
 
-    void renderRectFill( const Quad&, const QskGradient&, QskVertex::ColoredLine* );
+    void renderRectFill( const Quad&, const QskLinearGradient&, QskVertex::ColoredLine* );
 };
 
 inline void QskBoxRenderer::renderBorder(
@@ -155,7 +156,7 @@ inline void QskBoxRenderer::renderFill(
 
 inline void QskBoxRenderer::renderBox( const QRectF& rect,
     const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& border,
-    const QskBoxBorderColors& borderColors, const QskGradient& gradient,
+    const QskBoxBorderColors& borderColors, const QskLinearGradient& gradient,
     QSGGeometry& geometry )
 {
     if ( shape.isRectangle() )

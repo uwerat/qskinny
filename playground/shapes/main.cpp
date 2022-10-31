@@ -4,13 +4,15 @@
  *****************************************************************************/
 
 #include "ShapeItem.h"
-#include "Gradient.h"
 
 #include <QskObjectCounter.h>
 #include <QskWindow.h>
 #include <QskRgbValue.h>
 #include <QskLinearBox.h>
 #include <QskTabView.h>
+#include <QskLinearGradient.h>
+#include <QskRadialGradient.h>
+#include <QskConicGradient.h>
 
 #include <SkinnyShortcut.h>
 #include <SkinnyShapeFactory.h>
@@ -63,9 +65,32 @@ namespace
                 shapeItem->setPath( path( SkinnyShapeFactory::Hexagon ) );
                 shapeItem->setPen( pen( QColorConstants::Svg::indigo ) );
 
-                LinearGradient gradient( 0.0, 0.0, 0.2, 0.5 );
+                QskLinearGradient gradient( 0.0, 0.0, 0.2, 0.5, QGradient::PhoenixStart );
                 gradient.setSpread( QGradient::ReflectSpread );
-                gradient.setStops( QGradient::PhoenixStart );
+
+                shapeItem->setGradient( gradient );
+            }
+
+            {
+                auto shapeItem = new ShapeItem( this );
+                shapeItem->setPath( path( SkinnyShapeFactory::Star ) );
+
+                const QVector< QskGradientStop > stops =
+                    { { 0.5, QskRgb::RoyalBlue }, { 0.5, QskRgb::LemonChiffon } };
+
+                QskLinearGradient gradient( 0.0, 0.0, 0.05, 0.1, stops );
+                gradient.setSpread( QGradient::RepeatSpread );
+
+                shapeItem->setGradient( gradient );
+            }
+            {
+                auto shapeItem = new ShapeItem( this );
+                shapeItem->setPath( path( SkinnyShapeFactory::Rectangle ) );
+
+                const QVector< QskGradientStop > stops =
+                    { { 0.5, QskRgb::MediumVioletRed }, { 0.5, QskRgb::Navy } };
+
+                QskLinearGradient gradient( 0.5, 0.0, 0.5, 0.5, stops );
 
                 shapeItem->setGradient( gradient );
             }
@@ -84,11 +109,9 @@ namespace
                 shapeItem->setPath( path( SkinnyShapeFactory::Rectangle ) );
                 shapeItem->setPen( pen( QColorConstants::Svg::indigo ) );
 
-                RadialGradient gradient( 0.5, 0.5, 0.5 );
-
+                QskRadialGradient gradient;
+                gradient.setStops( QskRgb::LightYellow, QskRgb::MidnightBlue );
                 gradient.setSpread( QGradient::PadSpread );
-                gradient.setStops( QColorConstants::Svg::lightyellow,
-                    QColorConstants::Svg::midnightblue );
 
                 shapeItem->setGradient( gradient );
             }
@@ -97,23 +120,22 @@ namespace
 
                 shapeItem->setPath( path( SkinnyShapeFactory::Ellipse ) );
 
-                RadialGradient gradient( 0.5, 0.5, 0.5 );
-                gradient.setSpread( QGradient::PadSpread );
 
                 QVector< QskGradientStop > stops;
 
                 stops += QskGradientStop( 0.0, Qt::green );
                 stops += QskGradientStop( 0.2, Qt::green );
-                stops += QskGradientStop( 0.201, Qt::red );
+                stops += QskGradientStop( 0.2, Qt::red );
                 stops += QskGradientStop( 0.4, Qt::red );
-                stops += QskGradientStop( 0.401, Qt::yellow );
+                stops += QskGradientStop( 0.4, Qt::yellow );
                 stops += QskGradientStop( 0.6, Qt::yellow );
-                stops += QskGradientStop( 0.601, Qt::cyan );
+                stops += QskGradientStop( 0.6, Qt::cyan );
                 stops += QskGradientStop( 0.8, Qt::cyan );
-                stops += QskGradientStop( 0.801, Qt::darkCyan );
+                stops += QskGradientStop( 0.8, Qt::darkCyan );
                 stops += QskGradientStop( 1.0, Qt::darkCyan );
 
-                gradient.setStops( stops );
+                QskRadialGradient gradient( stops );
+                gradient.setSpread( QGradient::PadSpread );
 
                 shapeItem->setGradient( gradient );
             }
@@ -121,13 +143,10 @@ namespace
                 auto shapeItem = new ShapeItem( this );
 
                 shapeItem->setPath( path( SkinnyShapeFactory::Rectangle ) );
-                shapeItem->setPen( pen( QColorConstants::Svg::indigo ) );
+                shapeItem->setPen( pen( QskRgb::Indigo ) );
 
-                RadialGradient gradient( 0.5, 0.5, 0.25 );
-                gradient.setCenter( 0.5, 0.7 );
-
+                QskRadialGradient gradient( 0.5, 0.7, 0.25, QGradient::LilyMeadow );
                 gradient.setSpread( QGradient::RepeatSpread );
-                gradient.setStops( QGradient::LilyMeadow );
 
                 shapeItem->setGradient( gradient );
             }
@@ -135,12 +154,10 @@ namespace
                 auto shapeItem = new ShapeItem( this );
 
                 shapeItem->setPath( path( SkinnyShapeFactory::Rectangle ) );
-                shapeItem->setPen( pen( QColorConstants::Svg::indigo ) );
+                shapeItem->setPen( pen( QskRgb::Indigo ) );
 
-                RadialGradient gradient( 0.6, 0.4, 0.1 );
-
+                QskRadialGradient gradient( 0.6, 0.4, 0.1, Qt::red, Qt::blue );
                 gradient.setSpread( QGradient::ReflectSpread );
-                gradient.setStops( Qt::red, Qt::blue );
 
                 shapeItem->setGradient( gradient );
             }
@@ -158,7 +175,7 @@ namespace
 
                 shapeItem->setPath( path( SkinnyShapeFactory::Ellipse ) );
 
-                ConicGradient gradient( 0.5, 0.5, 30.0, 60.0 );
+                QskConicGradient gradient( 0.5, 0.5, 30.0, 60.0 );
                 gradient.setSpread( QGradient::ReflectSpread );
                 gradient.setStops( QGradient::JuicyPeach );
 
@@ -169,7 +186,7 @@ namespace
 
                 shapeItem->setPath( path( SkinnyShapeFactory::TriangleUp ) );
 
-                ConicGradient gradient( 0.5, 0.5, 30.0, 60.0 );
+                QskConicGradient gradient( 0.5, 0.5, 30.0, 60.0 );
                 gradient.setSpread( QGradient::RepeatSpread );
                 gradient.setStops( QGradient::WinterNeva );
 
@@ -180,7 +197,7 @@ namespace
 
                 shapeItem->setPath( path( SkinnyShapeFactory::Arc ) );
 
-                ConicGradient gradient( 0.5, 0.5, 300.0, -240.0 );
+                QskConicGradient gradient( 0.5, 0.5, 300.0, -240.0 );
                 gradient.setStops( QGradient::SpikyNaga );
 
                 shapeItem->setGradient( gradient );
@@ -190,7 +207,7 @@ namespace
 
                 shapeItem->setPath( path( SkinnyShapeFactory::Diamond ) );
 
-                ConicGradient gradient( 0.5, 0.5, 45.0, 180.0 );
+                QskConicGradient gradient( 0.5, 0.5, 45.0, 180.0 );
                 gradient.setStops( QGradient::FabledSunset );
                 gradient.setSpread( QGradient::ReflectSpread );
 

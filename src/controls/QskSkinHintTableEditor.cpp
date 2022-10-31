@@ -12,7 +12,7 @@
 #include "QskBoxBorderMetrics.h"
 #include "QskBoxBorderColors.h"
 #include "QskShadowMetrics.h"
-#include "QskGradient.h"
+#include "QskLinearGradient.h"
 
 namespace
 {
@@ -225,7 +225,7 @@ void QskSkinHintTableEditor::setHGradient(
     QskAspect aspect, const QColor& color1, const QColor& color2,
     QskStateCombination combination )
 {
-    const QskGradient gradient( QskGradient::Horizontal, color1, color2 );
+    const QskLinearGradient gradient( Qt::Horizontal, color1, color2 );
     setGradient( aspect, gradient, combination );
 }
 
@@ -233,8 +233,16 @@ void QskSkinHintTableEditor::setVGradient(
     QskAspect aspect, const QColor& color1, const QColor& color2,
     QskStateCombination combination )
 {
-    const QskGradient gradient( QskGradient::Vertical, color1, color2 );
+    const QskLinearGradient gradient( Qt::Vertical, color1, color2 );
     setGradient( aspect, gradient, combination );
+}
+
+void QskSkinHintTableEditor::setGradient(
+    QskAspect aspect, const QColor& color1, const QColor& color2,
+    QskStateCombination combination )
+{
+    const QskGradient gradient( color1, color2 );
+    setColorHint( aspect, gradient , combination );
 }
 
 void QskSkinHintTableEditor::setGradient(

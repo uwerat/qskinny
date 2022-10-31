@@ -61,7 +61,7 @@ class GraphicLabel : public QskGraphicLabel
 
         const int duration = 500;
 
-        const QskGradient oldGradient = background();
+        const auto oldGradient = background();
         setGradientHint( Panel, gradient );
 
         // finally setup a smooth transition manually

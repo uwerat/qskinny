@@ -39,7 +39,7 @@
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxShapeMetrics.h>
 #include <QskPlatform.h>
-#include <QskGradient.h>
+#include <QskLinearGradient.h>
 #include <QskMargins.h>
 #include <QskNamespace.h>
 #include <QskRgbValue.h>
@@ -176,10 +176,10 @@ namespace
 
 void Editor::setSeparator( QskAspect aspect )
 {
-    QskGradient gradient( QskGradient::Vertical, m_pal.lighter110, m_pal.darker125 );
+    QskLinearGradient gradient( Qt::Vertical, m_pal.lighter110, m_pal.darker125 );
 
     if ( aspect.placement() == QskAspect::Vertical )
-        gradient.setOrientation( QskGradient::Horizontal );
+        gradient.setOrientation( Qt::Horizontal );
 
     setGradient( aspect, gradient );
     setBoxShape( aspect, 0 );
@@ -193,7 +193,7 @@ void Editor::setButton( QskAspect aspect, PanelStyle style, qreal border )
 #endif
     QskBoxBorderColors borderColors;
 
-    QskGradient gradient( QskGradient::Vertical );
+    QskLinearGradient gradient( Qt::Vertical );
 
     switch ( style )
     {
@@ -637,8 +637,7 @@ void Editor::setupTabButton()
 
     for ( auto placement : { A::Top, A::Bottom } )
     {
-        setGradient( Q::Panel | placement,
-            QskGradient( Qt::Vertical, m_pal.lighter125, m_pal.lighter110 ) );
+        setVGradient( Q::Panel | placement, m_pal.lighter125, m_pal.lighter110 );
 
         for ( const auto state : { Q::Checked | A::NoState, Q::Checked | Q::Pressed } )
         {

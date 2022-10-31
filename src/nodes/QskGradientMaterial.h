@@ -7,39 +7,39 @@
 #define QSK_GRADIENT_MATERIAL
 
 #include "QskGlobal.h"
-#include <qbrush.h>
+#include "QskGradient.h"
 #include <qsgmaterial.h>
 
 class QSK_EXPORT QskGradientMaterial : public QSGMaterial
 {
   public:
-    static QskGradientMaterial* createMaterial( QGradient::Type );
+    static QskGradientMaterial* createMaterial( QskGradient::Type );
 
-    bool updateGradient( const QRectF&, const QGradient*, qreal );
-    QGradient::Type gradientType() const;
+    bool updateGradient( const QRectF&, const QskGradient& );
+    QskGradient::Type gradientType() const;
 
-    const QGradientStops& stops() const;
+    const QskGradientStops& stops() const;
     QGradient::Spread spread() const;
 
   protected:
-    QskGradientMaterial( QGradient::Type );
+    QskGradientMaterial( QskGradient::Type );
 
-    void setStops( const QGradientStops& );
+    void setStops( const QskGradientStops& );
     void setSpread( QGradient::Spread );
 
   private:
-    const QGradient::Type m_gradientType;
+    const QskGradient::Type m_gradientType;
 
-    QGradientStops m_stops;
+    QskGradientStops m_stops;
     QGradient::Spread m_spread = QGradient::PadSpread;
 };
 
-inline QGradient::Type QskGradientMaterial::gradientType() const
+inline QskGradient::Type QskGradientMaterial::gradientType() const
 {
     return m_gradientType;
 }
 
-inline void QskGradientMaterial::setStops( const QGradientStops& stops )
+inline void QskGradientMaterial::setStops( const QskGradientStops& stops )
 {
     m_stops = stops;
 }
@@ -49,7 +49,7 @@ inline void QskGradientMaterial::setSpread( QGradient::Spread spread )
     m_spread = spread;
 }
 
-inline const QGradientStops& QskGradientMaterial::stops() const
+inline const QskGradientStops& QskGradientMaterial::stops() const
 {
     return m_stops;
 }

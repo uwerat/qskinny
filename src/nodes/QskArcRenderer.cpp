@@ -5,27 +5,30 @@
 
 #include "QskArcRenderer.h"
 #include "QskArcMetrics.h"
-#include "QskGradient.h"
+#include "QskLinearGradient.h"
 
 #include <qpainter.h>
 #include <qrect.h>
 
 void QskArcRenderer::renderArc(const QRectF& rect,
-    const QskArcMetrics& metrics, const QskGradient& gradient,
-    QPainter* painter )
+    const QskArcMetrics& metrics, const QskGradient& gradient, QPainter* painter )
 {
-    painter->setRenderHint( QPainter::Antialiasing, true );
+    bool isRadial = false;
 
-    /*
-        horizontal is interpreted as in direction of the arc,
-        while vertical means from the inner to the outer border
-     */
+    if ( gradient.type() == QskGradient::Linear )
+    {
+        /*
+            Horizontal is interpreted as conic ( in direction of the arc ),
+            while Vertical means radial ( inner to outer border )
+         */
+        isRadial = gradient.asLinearGradient().isVertical();
+    }
 
     QBrush brush;
 
     const auto qStops = qskToQGradientStops( gradient.stops() );
 
-    if( gradient.orientation() == QskGradient::Vertical )
+    if( isRadial )
     {
         QRadialGradient radial( rect.center(), qMin( rect.width(), rect.height() ) );
         radial.setStops( qStops );
@@ -40,6 +43,7 @@ void QskArcRenderer::renderArc(const QRectF& rect,
         brush = conical;
     }
 
+    painter->setRenderHint( QPainter::Antialiasing, true );
     painter->setPen( QPen( brush, metrics.width(), Qt::SolidLine, Qt::FlatCap ) );
 
     const int startAngle = qRound( metrics.startAngle() * 16 );
