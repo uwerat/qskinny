@@ -48,6 +48,10 @@ else()
         set(Qt_VERSION_MINOR ${Qt5_VERSION_MINOR})
         set(Qt_VERSION_PATCH ${Qt5_VERSION_PATCH})
     elseif(NOT "${Qt6_DIR}" STREQUAL "")
+
+        string(REPLACE "/lib/cmake/Qt6" "" Qt6_PREFIX_DIR "${Qt6_DIR}")
+        set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${Qt6_PREFIX_DIR})
+
         find_package(Qt6 REQUIRED COMPONENTS Core Gui OpenGL Quick QuickWidgets Svg Widgets)
         find_package(Qt6 OPTIONAL_COMPONENTS QuickWidgets WebEngineCore WebEngineQuick)
         set(Qt Qt${Qt6_VERSION_MAJOR})

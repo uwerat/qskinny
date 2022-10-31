@@ -29,7 +29,6 @@ jobs:
                   qtversion: "5.15.2",
                   qtdirkey: "Qt5_DIR",
                   qtdirvalue: "../Qt/5.15.2/msvc2019_64/lib/cmake/Qt5",
-                  qtprefixdir: "../Qt/5.15.2/msvc2019_64",
                 },
             }
           - {
@@ -47,7 +46,6 @@ jobs:
                   qtversion: "6.2.4",
                   qtdirkey: "Qt6_DIR",
                   qtdirvalue: "../Qt/6.2.4/msvc2019_64/lib/cmake/Qt6",
-                  qtprefixdir: "../Qt/6.2.4/msvc2019_64",
                 },
             }
           - {
@@ -65,7 +63,6 @@ jobs:
                   qtversion: "5.15.2",
                   qtdirkey: "Qt5_DIR",
                   qtdirvalue: "../Qt/5.15.2/msvc2019_64/lib/cmake/Qt5",
-                  qtprefixdir: "../Qt/5.15.2/msvc2019_64",
                 },
             }
           - {
@@ -83,7 +80,6 @@ jobs:
                   qtversion: "6.2.4",
                   qtdirkey: "Qt6_DIR",
                   qtdirvalue: "../Qt/6.2.4/msvc2019_64/lib/cmake/Qt6",
-                  qtprefixdir: "../Qt/6.2.4/msvc2019_64",
                 },
             }
           - {
@@ -98,9 +94,8 @@ jobs:
               cmake:
                 {
                   qtversion: "5.15.2",
-                  qtdirkey: "Qt5_DIR",                  
+                  qtdirkey: "Qt5_DIR",
                   qtdirvalue: "../Qt/5.15.2/gcc_64/lib/cmake/Qt5",
-                  qtprefixdir: "../Qt/5.15.2/gcc_64",
                 },
             }
           - {
@@ -117,7 +112,6 @@ jobs:
                   qtversion: "6.2.4",
                   qtdirkey: "Qt6_DIR",
                   qtdirvalue: "../Qt/6.2.4/gcc_64/lib/cmake/Qt6",
-                  qtprefixdir: "../Qt/6.2.4/gcc_64",
                 },
             }
           - {
@@ -134,7 +128,6 @@ jobs:
                   qtversion: "5.15.2",
                   qtdirkey: "Qt5_DIR",
                   qtdirvalue: "../Qt/5.15.2/gcc_64/lib/cmake/Qt5",
-                  qtprefixdir: "../Qt/5.15.2/gcc_64",
                 },
             }
           - {
@@ -151,7 +144,6 @@ jobs:
                   qtversion: "6.2.4",
                   qtdirkey: "Qt6_DIR",
                   qtdirvalue: "../Qt/6.2.4/gcc_64/lib/cmake/Qt6",
-                  qtprefixdir: "../Qt/6.2.4/gcc_64",
                 },
             }
           - {
@@ -168,7 +160,6 @@ jobs:
                   qtversion: "5.15.2",
                   qtdirkey: "Qt5_DIR",
                   qtdirvalue: "../Qt/5.15.2/clang_64/lib/cmake/Qt5",
-                  qtprefixdir: "../Qt/5.15.2/clang_64",
                 },
             }
           - {
@@ -185,7 +176,6 @@ jobs:
                   qtversion: "6.2.4",
                   qtdirkey: "Qt6_DIR",
                   qtdirvalue: "../Qt/6.2.4/clang_64/lib/cmake/Qt6",
-                  qtprefixdir: "../Qt/6.2.4/clang_64",
                 },
             }
 
@@ -312,7 +302,6 @@ jobs:
             -G "${{ matrix.config.generators }}" \
             -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
             -DCMAKE_INSTALL_PREFIX:PATH=instdir \
-            -DCMAKE_PREFIX_PATH:PATH="${{ matrix.config.cmake.qtprefixdir }}" \
             -D${{ matrix.config.cmake.qtdirkey }}:PATH="${{ matrix.config.cmake.qtdirvalue }}"
       - name: Build
         shell: bash
