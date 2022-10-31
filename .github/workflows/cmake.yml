@@ -245,6 +245,10 @@ jobs:
           ninja --version
           cmake --version
 
+      - name: Install needed xkbcommon symlink
+        if: startsWith(matrix.config.name, 'Ubuntu') && endsWith(matrix.config.name, 'Qt6')
+        run: sudo apt-get install libxkbcommon-dev -y
+
       - uses: actions/checkout@v2
 
       - name: Cache Qt5
