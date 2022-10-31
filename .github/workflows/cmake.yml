@@ -196,7 +196,7 @@ jobs:
         # cmd "${{ matrix.config.environment_script }}"
 
       - name: Install dependencies on ubuntu
-        if: startsWith(matrix.config.name, 'Ubuntu_Latest_GCC')
+        if: startsWith(matrix.config.name, 'Ubuntu Latest GCC')
         run: |
           sudo apt-get update
           sudo apt-get install ninja-build cmake
@@ -204,7 +204,7 @@ jobs:
           cmake --version
           gcc --version
       - name: Install dependencies on ubuntu9
-        if: startsWith(matrix.config.name, 'Ubuntu_GCC_9')
+        if: startsWith(matrix.config.name, 'Ubuntu GCC 9')
         run: |
           echo Update gcc-9 =======================================================================
           echo gcc version before
