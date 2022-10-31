@@ -309,8 +309,8 @@ jobs:
           cmake \
             -S . \
             -B . \
-            -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
             -G "${{ matrix.config.generators }}" \
+            -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
             -DCMAKE_INSTALL_PREFIX:PATH=instdir \
             -DCMAKE_PREFIX_PATH:PATH="${{ matrix.config.cmake.qtprefixdir }}" \
             -D${{ matrix.config.cmake.qtdirkey }}:PATH="${{ matrix.config.cmake.qtdirvalue }}"
