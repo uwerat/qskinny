@@ -176,12 +176,7 @@ namespace
 
 void Editor::setSeparator( QskAspect aspect )
 {
-    QskLinearGradient gradient( Qt::Vertical, m_pal.lighter110, m_pal.darker125 );
-
-    if ( aspect.placement() == QskAspect::Vertical )
-        gradient.setOrientation( Qt::Horizontal );
-
-    setGradient( aspect, gradient );
+    setGradient( aspect, m_pal.lighter110, m_pal.darker125 );
     setBoxShape( aspect, 0 );
     setBoxBorderMetrics( aspect, 0 );
 }
@@ -351,11 +346,8 @@ void Editor::setupMenu()
     const bool isCascading = qskMaybeDesktopPlatform();
     setFlagHint( Q::Panel | A::Style, isCascading );
 
-#if 0
-    setPadding( Q::Separator, QMarginsF( 10, 0, 10, 0 ) );
-#endif
     setMetric( Q::Separator | A::Size, qskDpiScaled( 2 ) );
-    setSeparator( Q::Separator | A::Horizontal );
+    setSeparator( Q::Separator );
 
     setPadding( Q::Segment, QskMargins( 2, 10, 2, 10 ) );
     setSpacing( Q::Segment, 5 );
@@ -471,9 +463,7 @@ void Editor::setupSeparator()
     using Q = QskSeparator;
 
     setMetric( Q::Panel | A::Size, 4 );
-
-    setSeparator( Q::Panel | A::Horizontal );
-    setSeparator( Q::Panel | A::Vertical );
+    setSeparator( Q::Panel );
 }
 
 void Editor::setupSegmentedBar()

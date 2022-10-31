@@ -6,6 +6,7 @@
 #include "QskSeparatorSkinlet.h"
 #include "QskSeparator.h"
 
+#include "QskLinearGradient.h"
 #include "QskAspect.h"
 
 QskSeparatorSkinlet::QskSeparatorSkinlet( QskSkin* skin )
@@ -38,7 +39,21 @@ QSGNode* QskSeparatorSkinlet::updateSubNode(
     {
         case PanelRole:
         {
-            return updateBoxNode( separator, node, QskSeparator::Panel );
+            using Q = QskSeparator;
+
+            const auto rect = separator->subControlRect( Q::Panel );
+
+            auto gradient = separator->gradientHint( Q::Panel );
+            if ( ( gradient.type() == QskGradient::Stops ) && !gradient.isMonochrome() )
+            {
+                // gradient in opposite orientation
+                const auto orientation = ( separator->orientation() == Qt::Vertical )
+                    ? Qt::Horizontal : Qt::Vertical;
+
+                gradient = QskLinearGradient( orientation, gradient.stops() );
+            }
+
+            return updateBoxNode( separator, node, rect, gradient, Q::Panel );
         }
     }
 
