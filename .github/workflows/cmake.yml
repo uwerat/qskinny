@@ -57,6 +57,7 @@ jobs:
               cxx: "g++",
               archiver: "7z a",
               generators: "Ninja",
+              qtcmakedir: "../Qt/5.15.2/mingw81_64/lib/cmake/Qt5", # TODO find better solution
             }
           - {
               name: "Ubuntu_Latest_GCC",
@@ -89,6 +90,7 @@ jobs:
               cxx: "clang++",
               archiver: "7za a",
               generators: "Ninja",
+              qtcmakedir: "../Qt/5.15.2/clang_64/lib/cmake/Qt5", # TODO find better solution
             }
 
     steps:
