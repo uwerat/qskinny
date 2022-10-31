@@ -83,7 +83,7 @@ jobs:
                 },
             }
           - {
-              name: "Ubuntu_Latest_GCC Qt5",
+              name: "Ubuntu Latest GCC Qt5",
               os: ubuntu-latest,
               artifact: "ubuntu_gcc.7z",
               build_type: "Release",
@@ -99,7 +99,7 @@ jobs:
                 },
             }
           - {
-              name: "Ubuntu_Latest_GCC Qt6",
+              name: "Ubuntu Latest GCC Qt6",
               os: ubuntu-latest,
               artifact: "ubuntu_gcc.7z",
               build_type: "Release",
@@ -115,7 +115,7 @@ jobs:
                 },
             }
           - {
-              name: "Ubuntu_GCC_9 Qt5",
+              name: "Ubuntu GCC 9 Qt5",
               os: ubuntu-latest,
               artifact: "ubuntu_gcc9.7z",
               build_type: "Release",
@@ -131,7 +131,7 @@ jobs:
                 },
             }
           - {
-              name: "Ubuntu_GCC_9 Qt6",
+              name: "Ubuntu GCC 9 Qt6",
               os: ubuntu-latest,
               artifact: "ubuntu_gcc9.7z",
               build_type: "Release",
