@@ -39,17 +39,15 @@ target_link_libraries(${TARGET_NAME}
         qskinny
         qsktestsupport)
 
-option(ENABLE_AUTOQVG "enable automatic qvg compilation" OFF)
-
 if(ENABLE_AUTOQVG)
-    svg2qvg(${CMAKE_CURRENT_LIST_DIR}/svg/01.01.10.svg
-            ${CMAKE_CURRENT_LIST_DIR}/qvg/01.01.10.qvg)
-    svg2qvg(${CMAKE_CURRENT_LIST_DIR}/svg/01.03.04q.svg
-            ${CMAKE_CURRENT_LIST_DIR}/qvg/01.03.04q.qvg)
-    svg2qvg(${CMAKE_CURRENT_LIST_DIR}/svg/01.08.05q.svg
-            ${CMAKE_CURRENT_LIST_DIR}/qvg/01.08.05q.qvg)
-    svg2qvg(${CMAKE_CURRENT_LIST_DIR}/svg/01.25.18.svg
-            ${CMAKE_CURRENT_LIST_DIR}/qvg/01.25.18.qvg)
+    qsk_svg2qvg(${CMAKE_CURRENT_LIST_DIR}/svg/01.01.10.svg
+                ${CMAKE_CURRENT_LIST_DIR}/qvg/01.01.10.qvg)
+    qsk_svg2qvg(${CMAKE_CURRENT_LIST_DIR}/svg/01.03.04q.svg
+                ${CMAKE_CURRENT_LIST_DIR}/qvg/01.03.04q.qvg)
+    qsk_svg2qvg(${CMAKE_CURRENT_LIST_DIR}/svg/01.08.05q.svg
+                ${CMAKE_CURRENT_LIST_DIR}/qvg/01.08.05q.qvg)
+    qsk_svg2qvg(${CMAKE_CURRENT_LIST_DIR}/svg/01.25.18.svg
+                ${CMAKE_CURRENT_LIST_DIR}/qvg/01.25.18.qvg)
 else()
     # When cross compiling we need to have the svg2qvg tool being
     # compiled for the build environment - not for the one of the target.

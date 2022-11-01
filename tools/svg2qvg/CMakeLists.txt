@@ -1,8 +1,5 @@
 set(TARGET_NAME svg2qvg)
-set(TARGET_INSTALL_SUFFIX bin/tools)
 set(TARGET_SOURCES main.cpp)
-
-option(BUILD_SVG2QVG_STANDALONE "If 'ON' application won't be linked against qskinny library" ON)
 
 add_executable(${TARGET_NAME} ${TARGET_SOURCES})
 
@@ -53,4 +50,4 @@ set_target_properties(${TARGET_NAME}
     PROPERTIES
         FOLDER tools)
 
-install(TARGETS ${TARGET_NAME} DESTINATION ${TARGET_INSTALL_SUFFIX})
+install(TARGETS ${TARGET_NAME})

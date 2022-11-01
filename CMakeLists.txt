@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16.3)
 
-project(qskinny VERSION 999.99.9) # TODO get from git branch name or 
+project(QSkinny VERSION 999.99.9) # TODO get from git branch name or 
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -36,30 +36,26 @@ else()
     endif()
 endif()
 
-if("${Qt5_DIR}" STREQUAL "" AND "${Qt6_DIR}" STREQUAL "")
-    message(FATAL_ERROR "Neither Qt5_DIR nor Qt6_DIR defined!")
-else()
-    if(NOT "${Qt5_DIR}" STREQUAL "")
-        find_package(Qt5 REQUIRED COMPONENTS Core Gui OpenGL Quick Svg Widgets)
-        find_package(Qt5 OPTIONAL_COMPONENTS QuickWidgets WebEngine WebEngineCore)
-        set(Qt Qt${Qt5_VERSION_MAJOR})
-        set(Qt_VERSION       ${Qt5_VERSION})
-        set(Qt_VERSION_MAJOR ${Qt5_VERSION_MAJOR})
-        set(Qt_VERSION_MINOR ${Qt5_VERSION_MINOR})
-        set(Qt_VERSION_PATCH ${Qt5_VERSION_PATCH})
-    elseif(NOT "${Qt6_DIR}" STREQUAL "")
+if(NOT "${Qt5_DIR}" STREQUAL "")
+    find_package(Qt5 REQUIRED COMPONENTS Core Gui OpenGL Quick Svg Widgets)
+    find_package(Qt5 OPTIONAL_COMPONENTS QuickWidgets WebEngine WebEngineCore)
+    set(Qt Qt${Qt5_VERSION_MAJOR})
+    set(Qt_VERSION       ${Qt5_VERSION})
+    set(Qt_VERSION_MAJOR ${Qt5_VERSION_MAJOR})
+    set(Qt_VERSION_MINOR ${Qt5_VERSION_MINOR})
+    set(Qt_VERSION_PATCH ${Qt5_VERSION_PATCH})
+elseif(NOT "${Qt6_DIR}" STREQUAL "")
 
-        string(REPLACE "/lib/cmake/Qt6" "" Qt6_PREFIX_DIR "${Qt6_DIR}")
-        set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${Qt6_PREFIX_DIR})
+    string(REPLACE "/lib/cmake/Qt6" "" Qt6_PREFIX_DIR "${Qt6_DIR}")
+    set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${Qt6_PREFIX_DIR})
 
-        find_package(Qt6 REQUIRED COMPONENTS Core Gui OpenGL Quick QuickWidgets Svg Widgets)
-        find_package(Qt6 OPTIONAL_COMPONENTS QuickWidgets WebEngineCore WebEngineQuick)
-        set(Qt Qt${Qt6_VERSION_MAJOR})
-        set(Qt_VERSION       ${Qt6_VERSION})
-        set(Qt_VERSION_MAJOR ${Qt6_VERSION_MAJOR})
-        set(Qt_VERSION_MINOR ${Qt6_VERSION_MINOR})
-        set(Qt_VERSION_PATCH ${Qt6_VERSION_PATCH})
-    endif()
+    find_package(Qt6 REQUIRED COMPONENTS Core Gui OpenGL Quick QuickWidgets Svg Widgets)
+    find_package(Qt6 OPTIONAL_COMPONENTS QuickWidgets WebEngineCore WebEngineQuick)
+    set(Qt Qt${Qt6_VERSION_MAJOR})
+    set(Qt_VERSION       ${Qt6_VERSION})
+    set(Qt_VERSION_MAJOR ${Qt6_VERSION_MAJOR})
+    set(Qt_VERSION_MINOR ${Qt6_VERSION_MINOR})
+    set(Qt_VERSION_PATCH ${Qt6_VERSION_PATCH})
 endif()
 
 if(TRUE)
@@ -70,13 +66,21 @@ if(TRUE)
 endif()
 
 # define install directories
-
 set(QSK_INSTALL_DOCS     doc)
 set(QSK_INSTALL_HEADERS  include)
 set(QSK_INSTALL_LIBS     lib)
 set(QSK_INSTALL_BINS     bin)
 set(QSK_INSTALL_PLUGINS  plugins)
 set(QSK_INSTALL_EXAMPLES examples)
+
+# define debug postfix globally
+set(CMAKE_DEBUG_POSTFIX d)
+# define binary install directory globally
+set(CMAKE_INSTALL_BINDIR ${QSK_INSTALL_BINS}$<$<CONFIG:Debug>:/debug>)
+# define library install directory globally
+# set(CMAKE_INSTALL_LIBDIR lib$<$<CONFIG:Debug>:/debug>)
+# define install rpath globally
+set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/${QSK_INSTALL_LIBS})
 
 add_subdirectory(src)
 add_subdirectory(skins)
@@ -98,3 +102,46 @@ endif()
 #     doc/*.metadox
 #     doc/classes/*.dox
 #     doc/classes/*.metadox
+
+set(PACKAGE_NAME      ${PROJECT_NAME})
+set(PACKAGE_VERSION   ${CMAKE_PROJECT_VERSION})
+set(PACKAGE_NAMESPACE Qsk)
+set(PACKAGE_LOCATION  lib/cmake/${PROJECT_NAME})
+
+install(TARGETS qskinny EXPORT ${PACKAGE_NAME}Targets
+    LIBRARY DESTINATION  ${QSK_INSTALL_LIBS}
+    ARCHIVE DESTINATION  ${QSK_INSTALL_LIBS}
+    RUNTIME DESTINATION  ${QSK_INSTALL_LIBS}
+    INCLUDES DESTINATION ${QSK_INSTALL_HEADERS})
+
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}/${PACKAGE_NAME}ConfigVersion.cmake
+    VERSION ${PACKAGE_VERSION}
+    COMPATIBILITY AnyNewerVersion)
+
+export(EXPORT ${PACKAGE_NAME}Targets
+    FILE ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}/${PACKAGE_NAME}Targets.cmake
+    NAMESPACE ${PACKAGE_NAMESPACE}::)
+
+configure_file(cmake/${PACKAGE_NAME}Config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}/${PACKAGE_NAME}Config.cmake
+    COPYONLY)
+
+install(EXPORT ${PACKAGE_NAME}Targets
+    FILE
+        ${PACKAGE_NAME}Targets.cmake
+    NAMESPACE
+        ${PACKAGE_NAMESPACE}::
+    DESTINATION
+        ${PACKAGE_LOCATION})
+
+install(
+    FILES
+        cmake/${PACKAGE_NAME}Config.cmake
+        cmake/${PACKAGE_NAME}Macros.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}/${PACKAGE_NAME}ConfigVersion.cmake
+    DESTINATION
+        ${PACKAGE_LOCATION}
+    COMPONENT
+        Devel)

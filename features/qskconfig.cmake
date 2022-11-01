@@ -45,15 +45,15 @@ list(APPEND CONFIG        hide_symbols)
 #     }
 # }
 
-set(MOC_DIR      moc)
-set(OBJECTS_DIR  obj)
-set(RCC_DIR      rcc)
-
-option(BUILD_QSKDLL "build qskinny as shared library" ON)
-option(BUILD_EXAMPLES "build qskinny examples" ON)
-option(BUILD_PLAYGROUND "build qskinny playground" ON)
-option(ENABLE_PINYIN "enable romanization system for standard mandarin chinese" OFF) # TODO try find pkg-config
-option(ENABLE_HUNSPELL "enable spell checker" OFF) # TODO try find pkg-config
+option(BUILD_QSKDLL             "Build qskinny as shared library" ON)
+option(BUILD_EXAMPLES           "Build qskinny examples" ON)
+option(BUILD_PLAYGROUND         "Build qskinny playground" ON)
+option(BUILD_SVG2QVG_STANDALONE "If 'ON' application won't be linked against qskinny library" ON)
+option(ENABLE_PINYIN            "Enable romanization system for standard mandarin chinese" OFF) # TODO try find pkg-config
+option(ENABLE_HUNSPELL          "Enable spell checker" OFF) # TODO try find pkg-config
+option(ENABLE_FONT_CONFIG       "Enable font config for font caching" ON)
+option(ENABLE_ENSURE_SKINS      "Enabling fall back code, that inserts some skin factories manually when not finding skin factories as plugins" ON)
+option(ENABLE_AUTOQVG           "enable automatic qvg compilation" ON)
 
 if(UNIX AND NOT APPLE)
     set(LINUX TRUE)

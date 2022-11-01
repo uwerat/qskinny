@@ -1,7 +1,7 @@
 if(TARGET ${Qt}::Svg)
     ## @param SVG_FILENAME absolute filename to the svg
     ## @param QVG_FILENAME absolute filename to the qvg
-    function(svg2qvg SVG_FILENAME QVG_FILENAME)
+    function(qsk_svg2qvg SVG_FILENAME QVG_FILENAME)
         get_filename_component(QVG_FILENAME ${QVG_FILENAME} ABSOLUTE)
         get_filename_component(SVG_FILENAME ${SVG_FILENAME} ABSOLUTE)
         add_custom_command(

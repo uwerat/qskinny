@@ -1,8 +1,3 @@
-# TODO
-# CONFIG += ensure_skins 
-# CONFIG += fontconfig
-# CONFIG += qskinny
-
 list(APPEND TARGET_HEADERS
     SkinnyGlobal.h
     SkinnyNamespace.h
@@ -16,30 +11,26 @@ list(APPEND TARGET_SOURCES
     SkinnyShapeProvider.cpp
     SkinnyShortcut.cpp)
 
-# TODO
-#fontconfig{
-#
-#    QSK_FONTDIR = $${PWD} / fonts QSK_FONTCACHEDIR =
-#                      $${OUT_PWD} / fontconfig QSK_FONTCONF_FILE =
-#                          $${QSK_FONTCACHEDIR} / fonts.conf
-#
-#                                                       QSK_FONTCONF_DATA =
-#                              "$$cat($${PWD}/fonts.conf.in, false)" QSK_FONTCONF_DATA = $$replace(
-#                                  QSK_FONTCONF_DATA, FONTCACHEDIR, $${QSK_FONTCACHEDIR})
-#                                  QSK_FONTCONF_DATA = $$replace(
-#                                      QSK_FONTCONF_DATA, FONTDIR, $${QSK_FONTDIR})
-#                                      write_file($${QSK_FONTCONF_FILE}, QSK_FONTCONF_DATA)
-#
-#                                          DEFINES +=
-#    FONTCONFIG_FILE = $$clean_path($$QSK_FONTCONF_FILE)
-#}
-
 set(TARGET_NAME qsktestsupport)
 
 if (BUILD_QSKDLL)
     add_library(${TARGET_NAME} SHARED ${TARGET_SOURCES} ${TARGET_HEADERS})
 else()
     add_library(${TARGET_NAME} STATIC ${TARGET_SOURCES} ${TARGET_HEADERS})
+endif()
+
+if(ENABLE_FONT_CONFIG)
+    set(QSK_FONTDIR       ${CMAKE_CURRENT_LIST_DIR}/fonts)
+    set(QSK_FONTCACHEDIR  ${CMAKE_CURRENT_BINARY_DIR}/fontconfig)
+    set(QSK_FONTCONF_FILE ${QSK_FONTCACHEDIR}/fonts.conf)
+
+    configure_file(fonts.conf.cmake.in ${QSK_FONTCONF_FILE}
+        @ONLY
+        NEWLINE_STYLE LF)
+
+    target_compile_definitions(${TARGET_NAME}
+        PRIVATE
+            FONTCONFIG_FILE=${QSK_FONTCONF_FILE})
 endif()
 
 set_target_properties(${TARGET_NAME} PROPERTIES
@@ -57,13 +48,11 @@ endif()
 
 target_compile_definitions(${TARGET_NAME}
     PRIVATE
-        PLUGIN_PATH=${CMAKE_INSTALL_PREFIX}/skins)
+        PLUGIN_PATH=${CMAKE_INSTALL_PREFIX}/skins) # TODO this'll work only locally since CMAKE_INSTALL_PREFIX is an absolute path
 
 target_include_directories(${TARGET_NAME}
    PUBLIC
        ${CMAKE_CURRENT_LIST_DIR})
-
-option(ENABLE_ENSURE_SKINS "Enabling fall back code, that inserts some skin factories manually when not finding skin factories as plugins" ON)
 
 if(ENABLE_ENSURE_SKINS)
     target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/skins)

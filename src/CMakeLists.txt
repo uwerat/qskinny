@@ -1,5 +1,5 @@
 include(${CMAKE_SOURCE_DIR}/features/qskconfig.cmake)
-include(${CMAKE_SOURCE_DIR}/scripts/cmake/qskinny-macros.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/QSkinnyMacros.cmake)
 
 list(APPEND TARGET_HEADERS
     common/QskArcMetrics.h
@@ -406,13 +406,18 @@ endif()
 
 target_include_directories(${TARGET_NAME}
     PUBLIC
-        common
-        graphic
-        nodes
-        controls
-        layouts
-        dialogs
-        inputpanel)
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/common>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/common>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/graphic>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/nodes>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/controls>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/layouts>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/dialogs>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/inputpanel>)
+
+target_include_directories(${TARGET_NAME}
+    INTERFACE
+        $<INSTALL_INTERFACE:${QSK_INSTALL_HEADERS}>)
 
 target_link_libraries(${TARGET_NAME}
     PUBLIC
@@ -438,6 +443,3 @@ set_target_properties(${TARGET_NAME}
 set_target_properties(${TARGET_NAME}
     PROPERTIES
         AUTOGEN_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/qskinny_autogen)
-
-install(TARGETS ${TARGET_NAME} DESTINATION ${QSK_INSTALL_LIBS})
-install(FILES ${TARGET_HEADERS} DESTINATION ${QSK_INSTALL_HEADERS})
