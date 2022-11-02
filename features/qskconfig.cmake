@@ -53,7 +53,7 @@ option(ENABLE_PINYIN            "Enable romanization system for standard mandari
 option(ENABLE_HUNSPELL          "Enable spell checker" OFF) # TODO try find pkg-config
 option(ENABLE_FONT_CONFIG       "Enable font config for font caching" ON)
 option(ENABLE_ENSURE_SKINS      "Enabling fall back code, that inserts some skin factories manually when not finding skin factories as plugins" ON)
-option(ENABLE_AUTOQVG           "enable automatic qvg compilation" ON)
+option(ENABLE_AUTOQVG           "enable automatic qvg compilation" OFF)
 
 if(UNIX AND NOT APPLE)
     set(LINUX TRUE)
