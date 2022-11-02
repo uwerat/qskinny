@@ -80,7 +80,7 @@ set(CMAKE_INSTALL_BINDIR ${QSK_INSTALL_BINS}$<$<CONFIG:Debug>:/debug>)
 # define library install directory globally
 # set(CMAKE_INSTALL_LIBDIR lib$<$<CONFIG:Debug>:/debug>)
 # define install rpath globally
-set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/${QSK_INSTALL_LIBS})
+# set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/${QSK_INSTALL_LIBS})
 
 add_subdirectory(src)
 add_subdirectory(skins)

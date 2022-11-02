@@ -20,7 +20,7 @@ jobs:
               artifact: "windows_msvc.7z",
               build_type: "Release",
               cc: "cl",
-              cxx: "cl",
+              cxx: "cl",              
               environment_script: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
               archiver: "7z a",
               generators: "Visual Studio 17 2022",
@@ -91,6 +91,7 @@ jobs:
               cxx: "g++",
               archiver: "7z a",
               generators: "Ninja",
+              env: { DISPLAY: ":1" },
               cmake:
                 {
                   qtversion: "5.15.2",
@@ -107,6 +108,7 @@ jobs:
               cxx: "g++",
               archiver: "7z a",
               generators: "Ninja",
+              env: { DISPLAY: ":1" },
               cmake:
                 {
                   qtversion: "6.2.4",
@@ -123,6 +125,7 @@ jobs:
               cxx: "g++",
               archiver: "7z a",
               generators: "Ninja",
+              env: { DISPLAY: ":1" },
               cmake:
                 {
                   qtversion: "5.15.2",
@@ -139,6 +142,7 @@ jobs:
               cxx: "g++",
               archiver: "7z a",
               generators: "Ninja",
+              env: { DISPLAY: ":1" },
               cmake:
                 {
                   qtversion: "6.2.4",
