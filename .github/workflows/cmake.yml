@@ -20,7 +20,7 @@ jobs:
               artifact: "windows_msvc.7z",
               build_type: "Release",
               cc: "cl",
-              cxx: "cl",              
+              cxx: "cl",
               environment_script: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
               archiver: "7z a",
               generators: "Visual Studio 17 2022",
@@ -299,6 +299,16 @@ jobs:
           set-env: "true"
           tools-only: "false"
 
+      - name: Install hunspell for Ubuntu
+        if: startsWith(matrix.config.name, 'Ubuntu')
+        run: |
+          sudo apt-get install -y libhunspell-dev
+
+      - name: Install pinyin for Ubuntu
+        if: startsWith(matrix.config.name, 'Ubuntu')
+        run: |
+          sudo apt-get install -y libimepinyin-dev
+
       - name: Configure
         shell: bash
         run: |
@@ -310,7 +320,10 @@ jobs:
             -G "${{ matrix.config.generators }}" \
             -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
             -DCMAKE_INSTALL_PREFIX:PATH=instdir \
-            -D${{ matrix.config.cmake.qtdirkey }}:PATH="${{ matrix.config.cmake.qtdirvalue }}"
+            -D${{ matrix.config.cmake.qtdirkey }}:PATH="${{ matrix.config.cmake.qtdirvalue }}" \
+            -DENABLE_HUNSPELL:BOOL=ON \
+            -DENABLE_PINYIN:BOOL=ON
+
       - name: Build
         shell: bash
         run: cmake --build . --config ${{ matrix.config.build_type }}

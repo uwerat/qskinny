@@ -58,6 +58,26 @@ elseif(NOT "${Qt6_DIR}" STREQUAL "")
     set(Qt_VERSION_PATCH ${Qt6_VERSION_PATCH})
 endif()
 
+# optional package hunspell
+if(NOT UNIX AND ENABLE_HUNSPELL)
+    message(WARNING "Feature 'hunspell' only available for UNIX!")
+    unset(ENABLE_HUNSPELL CACHE)
+endif()
+
+# optional package pinyin
+if(NOT UNIX AND ENABLE_PINYIN)
+    message(WARNING "Feature 'pinyin' only available for UNIX!")
+    unset(ENABLE_PINYIN CACHE)
+endif()
+
+if(ENABLE_HUNSPELL)
+    include(cmake/QSkinnyOptionalHunspell.cmake)
+endif()
+
+if(ENABLE_PINYIN)
+    include(cmake/QSkinnyOptionalPinyin.cmake)
+endif()
+
 if(TRUE)
     message(STATUS "\${Qt}              : ${Qt}")
     message(STATUS "\${Qt_VERSION_MAJOR}: ${Qt_VERSION_MAJOR}")

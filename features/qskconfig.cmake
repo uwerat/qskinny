@@ -49,8 +49,8 @@ option(BUILD_QSKDLL             "Build qskinny as shared library" ON)
 option(BUILD_EXAMPLES           "Build qskinny examples" ON)
 option(BUILD_PLAYGROUND         "Build qskinny playground" ON)
 option(BUILD_SVG2QVG_STANDALONE "If 'ON' application won't be linked against qskinny library" ON)
-option(ENABLE_PINYIN            "Enable romanization system for standard mandarin chinese" OFF) # TODO try find pkg-config
-option(ENABLE_HUNSPELL          "Enable spell checker" OFF) # TODO try find pkg-config
+option(ENABLE_PINYIN            "UNIX ONLY OPTION: Enable romanization system for standard mandarin chinese" OFF)
+option(ENABLE_HUNSPELL          "UNIX ONLY OPTION: Enable spell checker" OFF)
 option(ENABLE_FONT_CONFIG       "Enable font config for font caching" ON)
 option(ENABLE_ENSURE_SKINS      "Enabling fall back code, that inserts some skin factories manually when not finding skin factories as plugins" ON)
 option(ENABLE_AUTOQVG           "enable automatic qvg compilation" OFF)

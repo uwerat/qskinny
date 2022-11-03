@@ -363,29 +363,18 @@ list(APPEND TARGET_SOURCES
     inputpanel/QskVirtualKeyboard.cpp)
 
 if(ENABLE_PINYIN)
-    if(UNIX)
-        target_compile_definitions(${TARGET_NAME} PRIVATE PINYIN) # TODO required?
-        # TODO CONFIG += link_pkgconfig PKGCONFIG += pinyin
-        list(APPEND TARGET_HEADERS
-            inputpanel/QskPinyinTextPredictor.h)
+    list(APPEND TARGET_HEADERS
+        inputpanel/QskPinyinTextPredictor.h)
 
-        list(APPEND TARGET_SOURCES
-            inputpanel/QskPinyinTextPredictor.cpp)
-    else()
-        message(WARNING "Feature 'pinyin' currently only available for UNIX!")
-    endif()
+    list(APPEND TARGET_SOURCES
+        inputpanel/QskPinyinTextPredictor.cpp)
 endif()
 
 if(ENABLE_HUNSPELL)
-    if(UNIX)
-        # TODO CONFIG += link_pkgconfig PKGCONFIG += hunspell
-        list(APPEND TARGET_HEADERS
-            inputpanel/QskHunspellTextPredictor.h)
-        list(APPEND TARGET_SOURCES
-            inputpanel/QskHunspellTextPredictor.cpp)
-    else()
-        message(WARNING "Feature 'hunspell' currently only available for UNIX!")
-    endif()
+    list(APPEND TARGET_HEADERS
+        inputpanel/QskHunspellTextPredictor.h)
+    list(APPEND TARGET_SOURCES
+        inputpanel/QskHunspellTextPredictor.cpp)
 endif()
 
 set(TARGET_NAME qskinny)
@@ -431,6 +420,20 @@ if (Qt_VERSION_MAJOR VERSION_GREATER "5")
         PUBLIC
             ${Qt}::OpenGL
             ${Qt}::OpenGLPrivate)
+endif()
+
+if(ENABLE_HUNSPELL)
+    target_link_libraries(${TARGET_NAME}
+        PRIVATE
+            hunspell)
+endif()
+
+if(ENABLE_PINYIN)
+    target_compile_definitions(${TARGET_NAME} PRIVATE PINYIN)
+
+    target_link_libraries(${TARGET_NAME}
+        PRIVATE
+            pinyin)
 endif()
 
 set_target_properties(${TARGET_NAME}

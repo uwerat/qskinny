@@ -10,30 +10,32 @@ list(APPEND TARGET_OTHER_FILES
     metadata.json)
 
 if(ENABLE_PINYIN)
-    if(UNIX)
-        # TODO CONFIG += link_pkgconfig PKGCONFIG += pinyin
-        list(APPEND TARGET_HEADERS
-            ${CMAKE_SOURCE_DIR}/src/inputpanel/QskPinyinTextPredictor.h)
-        list(APPEND TARGET_SOURCES
-            ${CMAKE_SOURCE_DIR}/src/inputpanel/QskPinyinTextPredictor.cpp)
-    else()
-        message(WARNING "Feature 'pinyin' currently only available for UNIX!")
-    endif()
+    list(APPEND TARGET_HEADERS
+        ${CMAKE_SOURCE_DIR}/src/inputpanel/QskPinyinTextPredictor.h)
+    list(APPEND TARGET_SOURCES
+        ${CMAKE_SOURCE_DIR}/src/inputpanel/QskPinyinTextPredictor.cpp)
 endif()
 
 if(ENABLE_HUNSPELL)
-    if(UNIX)
-        # TODO CONFIG += link_pkgconfig PKGCONFIG += hunspell
-        list(APPEND TARGET_HEADERS
-            ${CMAKE_SOURCE_DIR}/src/inputpanel/QskHunspellTextPredictor.h)
-        list(APPEND TARGET_SOURCES
-            ${CMAKE_SOURCE_DIR}/src/inputpanel/QskHunspellTextPredictor.cpp)
-    else()
-        message(WARNING "Feature 'hunspell' currently only available for UNIX!")
-    endif()
+    list(APPEND TARGET_HEADERS
+        ${CMAKE_SOURCE_DIR}/src/inputpanel/QskHunspellTextPredictor.h)
+    list(APPEND TARGET_SOURCES
+        ${CMAKE_SOURCE_DIR}/src/inputpanel/QskHunspellTextPredictor.cpp)
 endif()
 
 add_library(${TARGET_NAME} SHARED ${TARGET_SOURCES} ${TARGET_HEADERS} ${TARGET_OTHER_FILES})
+
+if(ENABLE_PINYIN)
+    target_link_libraries(${TARGET_NAME}
+        PRIVATE
+            pinyin)
+endif()
+
+if(ENABLE_HUNSPELL)
+    target_link_libraries(${TARGET_NAME}
+        PRIVATE
+            hunspell)
+endif()
 
 if(BUILD_QSKDLL)
     target_compile_definitions(${TARGET_NAME}
