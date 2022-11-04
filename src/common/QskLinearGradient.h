@@ -12,8 +12,10 @@ class QSK_EXPORT QskLinearGradient : public QskGradient
 {
     Q_GADGET
 
-    Q_PROPERTY( QPointF start READ start WRITE setStart )
-    Q_PROPERTY( QPointF stop READ stop WRITE setStop )
+    Q_PROPERTY( qreal x1 READ x1 WRITE setX1 )
+    Q_PROPERTY( qreal y1 READ y1 WRITE setY1 )
+    Q_PROPERTY( qreal x2 READ x2 WRITE setX2 )
+    Q_PROPERTY( qreal y2 READ y2 WRITE setY2 )
 
   public:
     QskLinearGradient() noexcept;
@@ -72,10 +74,16 @@ class QSK_EXPORT QskLinearGradient : public QskGradient
     QPointF stop() const noexcept;
 
     qreal x1() const noexcept;
+    void setX1( qreal ) noexcept;
+
     qreal y1() const noexcept;
+    void setY1( qreal ) noexcept;
 
     qreal x2() const noexcept;
+    void setX2( qreal ) noexcept;
+
     qreal y2() const noexcept;
+    void setY2( qreal ) noexcept;
 };
 
 inline QskLinearGradient::QskLinearGradient() noexcept

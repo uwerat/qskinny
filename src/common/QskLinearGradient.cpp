@@ -118,6 +118,26 @@ void QskLinearGradient::setStop( qreal x, qreal y ) noexcept
     m_values[3] = y;
 }
 
+void QskLinearGradient::setX1( qreal x ) noexcept
+{
+    m_values[0] = x;
+}
+
+void QskLinearGradient::setY1( qreal y ) noexcept
+{
+    m_values[1] = y;
+}
+
+void QskLinearGradient::setX2( qreal x ) noexcept
+{
+    m_values[2] = x;
+}
+
+void QskLinearGradient::setY2( qreal y ) noexcept
+{
+    m_values[3] = y;
+}
+
 void QskLinearGradient::setInterval( Qt::Orientation orientation, qreal from, qreal to )
 {
     if ( orientation == Qt::Vertical )
