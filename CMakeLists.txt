@@ -8,6 +8,8 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+include(${CMAKE_SOURCE_DIR}/features/qskconfig.cmake)
+
 if("${Qt5_DIR}" STREQUAL "" AND "${Qt6_DIR}" STREQUAL "")
     message(FATAL_ERROR "Neither Qt5_DIR nor Qt6_DIR defined!")
 else()
@@ -59,13 +61,13 @@ elseif(NOT "${Qt6_DIR}" STREQUAL "")
 endif()
 
 # optional package hunspell
-if(NOT UNIX AND ENABLE_HUNSPELL)
+if(NOT LINUX AND ENABLE_HUNSPELL)
     message(WARNING "Feature 'hunspell' only available for UNIX!")
     unset(ENABLE_HUNSPELL CACHE)
 endif()
 
 # optional package pinyin
-if(NOT UNIX AND ENABLE_PINYIN)
+if(NOT LINUX AND ENABLE_PINYIN)
     message(WARNING "Feature 'pinyin' only available for UNIX!")
     unset(ENABLE_PINYIN CACHE)
 endif()
@@ -160,6 +162,8 @@ install(
     FILES
         cmake/${PACKAGE_NAME}Config.cmake
         cmake/${PACKAGE_NAME}Macros.cmake
+        cmake/${PACKAGE_NAME}OptionalHunspell.cmake
+        cmake/${PACKAGE_NAME}OptionalPinyin.cmake
         ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}/${PACKAGE_NAME}ConfigVersion.cmake
     DESTINATION
         ${PACKAGE_LOCATION}

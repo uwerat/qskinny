@@ -28,7 +28,8 @@ add_library(${TARGET_NAME} SHARED ${TARGET_SOURCES} ${TARGET_HEADERS} ${TARGET_O
 if(ENABLE_PINYIN)
     target_link_libraries(${TARGET_NAME}
         PRIVATE
-            pinyin)
+            pinyin
+            Fcitx5::Utils)
 endif()
 
 if(ENABLE_HUNSPELL)

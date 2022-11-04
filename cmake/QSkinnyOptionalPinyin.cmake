@@ -2,7 +2,7 @@ find_package(PkgConfig)
 pkg_check_modules(PKG_PINYIN QUIET pinyin)
 find_path(PINYIN_INCLUDE_DIRS
         NAMES pinyinime.h
-        PATH_SUFFIXES pinyin LibIME/libime/pinyin
+        PATH_SUFFIXES pinyin LibIME LibIME/libime/pinyin
         HINTS ${PKG_PINYIN_INCLUDE_DIRS})
 find_library(PINYIN_LIBRARIES
             NAMES ${PKG_PINYIN_LIBRARIES} IMEPinyin imepinyin ime libime libimepinyin
@@ -18,3 +18,6 @@ set_target_properties(pinyin PROPERTIES IMPORTED_LOCATION ${PINYIN_LIBRARIES})
 target_include_directories(pinyin
     INTERFACE
         ${PINYIN_INCLUDE_DIRS})
+
+find_package(LibIMEPinyin REQUIRED)
+find_package(Fcitx5Utils REQUIRED)

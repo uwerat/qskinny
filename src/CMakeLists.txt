@@ -1,4 +1,3 @@
-include(${CMAKE_SOURCE_DIR}/features/qskconfig.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/QSkinnyMacros.cmake)
 
 list(APPEND TARGET_HEADERS
@@ -396,13 +395,12 @@ endif()
 target_include_directories(${TARGET_NAME}
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/common>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/common>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/graphic>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/nodes>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/controls>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/layouts>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/dialogs>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/inputpanel>)
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/graphic>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/inputpanel>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/layouts>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/nodes>)
 
 target_include_directories(${TARGET_NAME}
     INTERFACE
@@ -433,7 +431,12 @@ if(ENABLE_PINYIN)
 
     target_link_libraries(${TARGET_NAME}
         PRIVATE
-            pinyin)
+            pinyin
+            Fcitx5::Utils)
+
+    target_include_directories(${TARGET_NAME}
+        PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/inputcontext>)
 endif()
 
 set_target_properties(${TARGET_NAME}

@@ -39,6 +39,10 @@ On debian bullseye these packages need to be installed: `build-essential
 qt-qmake qtbase5-dev qtbase5-private-dev qtdeclarative5-dev
 qtdeclarative5-private-dev libqt5svg5-dev`.
 
+> Optional: When enabling the `hunspell` feature the following package needs to be installed: `libhunspell-dev`
+
+> Optional: When enabling the `pinyin` feature the following package needs to be installed: `libimepinyin-dev`
+
 If you want to know more about QSkinny - or even like to give it a specific
 direction - please contact support@qskinny.org.
 
