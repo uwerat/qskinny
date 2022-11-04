@@ -27,10 +27,13 @@ class QSK_EXPORT QskGradient
     Q_GADGET
 
     Q_PROPERTY( QVector< QskGradientStop > stops READ stops WRITE setStops )
+    // Q_PROPERTY( QQmlListProperty<QQuickGradientStop> stops READ stops )
 
     Q_PROPERTY( bool valid READ isValid )
     Q_PROPERTY( bool visible READ isVisible )
     Q_PROPERTY( bool monochrome READ isMonochrome )
+
+    Q_CLASSINFO( "DefaultProperty", "stops" )
 
   public:
     enum Type
