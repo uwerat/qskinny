@@ -26,8 +26,13 @@ class QSK_EXPORT QskGradient
 {
     Q_GADGET
 
+    Q_PROPERTY( Type type READ type )
+
+    Q_PROPERTY( QVector< qreal > linear READ linear WRITE setLinear )
+    Q_PROPERTY( QVector< qreal > conic READ linear WRITE setConic )
+    Q_PROPERTY( QVector< qreal > radial READ radial WRITE setRadial )
+
     Q_PROPERTY( QVector< QskGradientStop > stops READ stops WRITE setStops )
-    // Q_PROPERTY( QQmlListProperty<QQuickGradientStop> stops READ stops )
 
     Q_PROPERTY( bool valid READ isValid )
     Q_PROPERTY( bool visible READ isVisible )
@@ -125,6 +130,17 @@ class QSK_EXPORT QskGradient
     QskGradient( Type, qreal, qreal, qreal, qreal ) noexcept;
 
     void updateStatusBits() const;
+
+  private:
+    // for QML
+    QVector< qreal > linear() const;
+    void setLinear( const QVector< qreal >& );
+
+    QVector< qreal > radial() const;
+    void setRadial( const QVector< qreal >& );
+
+    QVector< qreal > conic() const;
+    void setConic( const QVector< qreal >& );
 
   private:
     QVector< QskGradientStop > m_stops;

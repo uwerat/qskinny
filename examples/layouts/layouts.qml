@@ -11,6 +11,8 @@ GridBox
 
     background
     {
+        linear: [ 0.0, 0.0, 1.0, 0.0 ]
+
         stops: [
             { position: 0.0, color: "Red" },
             { position: 1.0, color: "Yellow" },

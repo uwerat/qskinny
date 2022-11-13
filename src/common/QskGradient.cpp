@@ -386,6 +386,68 @@ QskHashValue QskGradient::hash( QskHashValue seed ) const
     return hash;
 }
 
+void QskGradient::setLinear( const QVector< qreal >& params )
+{
+    Q_ASSERT( params.size() == 4 );
+
+    m_type = Linear;
+
+    m_values[0] = params[0];
+    m_values[1] = params[1];
+    m_values[2] = params[2];
+    m_values[3] = params[3];
+}
+
+QVector< qreal > QskGradient::linear() const
+{
+    Q_ASSERT( m_type == Linear );
+    return { m_values[0], m_values[1], m_values[2], m_values[3] };
+}
+    
+void QskGradient::setRadial( const QVector< qreal >& params )
+{   
+    Q_ASSERT( params.size() == 3 );
+
+    m_type = Radial;
+
+    m_values[0] = params[0];
+    m_values[1] = params[1];
+    m_values[2] = params[2];
+    m_values[3] = 0.0;
+}
+
+QVector< qreal > QskGradient::radial() const
+{
+    Q_ASSERT( m_type == Radial );
+    return { m_values[0], m_values[1], m_values[2] };
+}
+    
+void QskGradient::setConic( const QVector< qreal >& params )
+{   
+    Q_ASSERT( params.size() >= 2 && params.size() <= 4 );
+
+    m_type = Linear;
+
+    m_values[0] = params[0];
+    m_values[1] = params[1];
+
+    if ( params.size() > 2 )
+        m_values[2] = params[2];
+    else
+        m_values[2] = 0.0;
+
+    if ( params.size() == 4 )
+        m_values[3] = params[3];
+    else
+        m_values[2] = 360.0;
+}
+
+QVector< qreal > QskGradient::conic() const
+{
+    Q_ASSERT( m_type == Conic );
+    return { m_values[0], m_values[1], m_values[2], m_values[3] };
+}
+
 #include "QskLinearGradient.h"
 #include "QskRadialGradient.h"
 #include "QskConicGradient.h"
