@@ -34,7 +34,7 @@ Qsk.Window
             {
                 source: modelData
 
-                sourceSize.width: 100 // width according to aspect ratio
+                graphicStrutSize.width: 100 // height: according to aspect ratio
                 fillMode: Qsk.GraphicLabel.PreserveAspectFit
                 alignment: Qt.AlignCenter
                 //mirror: true
