@@ -12,11 +12,11 @@ layout( std140, binding = 0 ) uniform buf
     float opacity;
 } ubuf;
 
-layout( binding = 1 ) uniform sampler2D palette;
+layout( binding = 1 ) uniform sampler2D colorRamp;
 
 vec4 colorAt( highp float value )
 {
-    return texture( palette, vec2( value, 0.0 ) );
+    return texture( colorRamp, vec2( value, 0.0 ) );
 }
 
 void main()

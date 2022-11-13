@@ -37,10 +37,10 @@ QSK_QT_PRIVATE_END
 
 namespace
 {
-    class GradientTexture : public QSGPlainTexture
+    class ColorRamp : public QSGPlainTexture
     {
       public:
-        GradientTexture( const QskGradientStops& stops, QGradient::Spread spread )
+        ColorRamp( const QskGradientStops& stops, QGradient::Spread spread )
         {
             /*
                 Qt creates tables of 1024 colors, while Chrome, Firefox, and Android
@@ -75,10 +75,10 @@ namespace
         }
     };
 
-    class TextureHashKey
+    class ColorRampHashKey
     {
       public:
-        inline bool operator==( const TextureHashKey& other ) const
+        inline bool operator==( const ColorRampHashKey& other ) const
         {
             return rhi == other.rhi && spread == other.spread && stops == other.stops;
         }
@@ -88,7 +88,7 @@ namespace
         const QGradient::Spread spread;
     };
 
-    inline size_t qHash( const TextureHashKey& key, size_t seed = 0 )
+    inline size_t qHash( const ColorRampHashKey& key, size_t seed = 0 )
     {
         size_t valus = seed + key.spread;
 
@@ -98,15 +98,15 @@ namespace
         return valus;
     }
 
-    class TextureCache
+    class ColorRampCache
     {
       public:
-        static TextureCache* instance()
+        static ColorRampCache* instance()
         {
-            static TextureCache* s_instance = nullptr;
+            static ColorRampCache* s_instance = nullptr;
             if ( s_instance == nullptr )
             {
-                s_instance = new TextureCache();
+                s_instance = new ColorRampCache();
 
                 /*
                     For RHI we have QRhi::addCleanupCallback, but with
@@ -119,20 +119,20 @@ namespace
             return s_instance;
         }
 
-        ~TextureCache()
+        ~ColorRampCache()
         {
             qDeleteAll( m_hashTable );
         }
 
-        GradientTexture* texture( const void* rhi,
+        ColorRamp* colorRamp( const void* rhi,
             const QskGradientStops& stops, QGradient::Spread spread )
         {
-            const TextureHashKey key { rhi, stops, spread };
+            const ColorRampHashKey key { rhi, stops, spread };
 
             auto texture = m_hashTable[key];
             if ( texture == nullptr )
             {
-                texture = new GradientTexture( stops, spread );
+                texture = new ColorRamp( stops, spread );
                 m_hashTable[ key ] = texture;
 
                 if ( rhi != nullptr )
@@ -141,7 +141,7 @@ namespace
 
                     if ( !m_rhiTable.contains( myrhi ) )
                     {
-                        myrhi->addCleanupCallback( TextureCache::cleanupRhi );
+                        myrhi->addCleanupCallback( ColorRampCache::cleanupRhi );
                         m_rhiTable += myrhi;
                     }
                 }
@@ -177,7 +177,7 @@ namespace
             cache->m_rhiTable.removeAll( rhi );
         }
 
-        QHash< TextureHashKey, GradientTexture* > m_hashTable;
+        QHash< ColorRampHashKey, ColorRamp* > m_hashTable;
         QVector< const QRhi* > m_rhiTable;
     };
 }
@@ -253,9 +253,9 @@ namespace
 
             updateUniformValues( material );
 
-            auto texture = TextureCache::instance()->texture(
+            auto colorRamp = ColorRampCache::instance()->colorRamp(
                 nullptr, material->stops(), material->spread() );
-            texture->bind();
+            colorRamp->bind();
         }
 
         char const* const* attributeNames() const override final
@@ -292,16 +292,16 @@ namespace
 
             auto material = static_cast< const GradientMaterial* >( newMaterial );
 
-            auto texture = TextureCache::instance()->texture(
+            auto colorRamp = ColorRampCache::instance()->colorRamp(
                 state.rhi(), material->stops(), material->spread() );
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-            texture->updateRhiTexture( state.rhi(), state.resourceUpdateBatch() );
+            colorRamp->updateRhiTexture( state.rhi(), state.resourceUpdateBatch() );
 #else
-            texture->commitTextureOperations( state.rhi(), state.resourceUpdateBatch() );
+            colorRamp->commitTextureOperations( state.rhi(), state.resourceUpdateBatch() );
 #endif
 
-            textures[0] = texture;
+            textures[0] = colorRamp;
         }
     };
 #endif
