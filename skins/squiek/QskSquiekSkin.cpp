@@ -39,7 +39,6 @@
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxShapeMetrics.h>
 #include <QskPlatform.h>
-#include <QskLinearGradient.h>
 #include <QskMargins.h>
 #include <QskNamespace.h>
 #include <QskRgbValue.h>
@@ -188,7 +187,8 @@ void Editor::setButton( QskAspect aspect, PanelStyle style, qreal border )
 #endif
     QskBoxBorderColors borderColors;
 
-    QskLinearGradient gradient( Qt::Vertical );
+    QskGradient gradient;
+    gradient.setLinearDirection( Qt::Vertical );
 
     switch ( style )
     {

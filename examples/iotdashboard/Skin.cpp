@@ -26,7 +26,6 @@
 #include <QskBoxShapeMetrics.h>
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxBorderColors.h>
-#include <QskLinearGradient.h>
 #include <QskFunctions.h>
 #include <QskShadowMetrics.h>
 #include <QskSkinHintTableEditor.h>
@@ -142,8 +141,11 @@ void Skin::initHints( const Palette& palette )
     {
         ed.setBoxShape( subControl, 6 );
 
-        QskLinearGradient normal( Qt::Vertical, 0xff6776ff, 0xff6100ff );
-        QskLinearGradient bright( Qt::Vertical, 0xffff7d34, 0xffff3122 );
+        QskGradient normal( 0xff6776ff, 0xff6100ff );
+        normal.setLinearDirection( Qt::Vertical );
+
+        QskGradient bright( 0xffff7d34, 0xffff3122 );
+        bright.setLinearDirection( Qt::Vertical );
 
         if ( subControl == RoundedIcon::PalePanel )
         {

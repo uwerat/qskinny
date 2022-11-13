@@ -7,7 +7,7 @@
 #include "QskProgressBar.h"
 #include "QskIntervalF.h"
 #include "QskBoxBorderMetrics.h"
-#include "QskLinearGradient.h"
+#include "QskGradientDirection.h"
 
 #include <qeasingcurve.h>
 #include <cmath>
@@ -141,10 +141,11 @@ QSGNode* QskProgressBarSkinlet::updateBarNode(
 
         const auto intv = qskBarInterval( bar );
 
-        auto stops = qskExtractedGradientStops( gradient.stops(),
+        const auto stops = qskExtractedGradientStops( gradient.stops(),
             intv.lowerBound(), intv.upperBound() );
 
-        gradient = QskLinearGradient( bar->orientation(), stops );
+        gradient.setStops( stops );
+        gradient.setLinearDirection( bar->orientation() );
         if ( bar->orientation() == Qt::Vertical || bar->layoutMirroring() )
             gradient.reverse();
     }

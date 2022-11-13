@@ -26,10 +26,8 @@ HEADERS += \
     common/QskFunctions.h \
     common/QskGlobal.h \
     common/QskGradient.h \
+    common/QskGradientDirection.h \
     common/QskGradientStop.h \
-    common/QskConicGradient.h \
-    common/QskLinearGradient.h \
-    common/QskRadialGradient.h \
     common/QskHctColor.h \
     common/QskIntervalF.h \
     common/QskMargins.h \
@@ -58,9 +56,7 @@ SOURCES += \
     common/QskBoxHints.cpp \
     common/QskFunctions.cpp \
     common/QskGradient.cpp \
-    common/QskConicGradient.cpp \
-    common/QskLinearGradient.cpp \
-    common/QskRadialGradient.cpp \
+    common/QskGradientDirection.cpp \
     common/QskGradientStop.cpp \
     common/QskHctColor.cpp \
     common/QskIntervalF.cpp \

@@ -14,7 +14,6 @@
 #include "QskFunctions.h"
 #include "QskMargins.h"
 #include "QskFunctions.h"
-#include "QskLinearGradient.h"
 
 #include <qfontmetrics.h>
 #include <qmath.h>
@@ -534,7 +533,7 @@ QSGNode* QskMenuSkinlet::updateSampleNode( const QskSkinnable* skinnable,
     {
         auto gradient = menu->gradientHint( subControl );
         if ( ( gradient.type() == QskGradient::Stops ) && !gradient.isMonochrome() )
-            gradient = QskLinearGradient( Qt::Vertical, gradient.stops() );
+            gradient.setLinearDirection( Qt::Vertical );
 
         return updateBoxNode( menu, node, rect, gradient, subControl );
     }

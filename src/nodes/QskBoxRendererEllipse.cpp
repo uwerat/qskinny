@@ -4,12 +4,12 @@
  *****************************************************************************/
 
 #include "QskBoxRenderer.h"
-#include "QskLinearGradient.h"
 
 #include "QskBoxBorderColors.h"
 #include "QskBoxBorderMetrics.h"
 #include "QskBoxRendererColorMap.h"
 #include "QskBoxShapeMetrics.h"
+#include "QskGradientDirection.h"
 
 #include <qmath.h>
 #include <qsggeometry.h>
@@ -868,13 +868,13 @@ namespace
     };
 }
 
-static inline Qt::Orientation qskQtOrientation( const QskLinearGradient& gradient )
+static inline Qt::Orientation qskQtOrientation( const QskGradient& gradient )
 {
-    return gradient.isVertical() ? Qt::Vertical : Qt::Horizontal;
+    return gradient.linearDirection().isVertical() ? Qt::Vertical : Qt::Horizontal;
 }
 
 static inline int qskFillLineCount(
-    const QskBoxRenderer::Metrics& metrics, const QskLinearGradient& gradient )
+    const QskBoxRenderer::Metrics& metrics, const QskGradient& gradient )
 {
     const int stepCount = metrics.corner[ 0 ].stepCount;
 
@@ -883,7 +883,9 @@ static inline int qskFillLineCount(
 
     int lineCount = 0;
 
-    if ( gradient.isVertical() )
+    const auto dir = gradient.linearDirection();
+
+    if ( dir.isVertical() )
     {
         lineCount += qMax( metrics.corner[ TopLeft ].stepCount,
             metrics.corner[ TopRight ].stepCount ) + 1;
@@ -894,7 +896,7 @@ static inline int qskFillLineCount(
         if ( metrics.centerQuad.top >= metrics.centerQuad.bottom )
             lineCount--;
     }
-    else if ( gradient.isHorizontal() )
+    else if ( dir.isHorizontal() )
     {
         lineCount += qMax( metrics.corner[ TopLeft ].stepCount,
             metrics.corner[ BottomLeft ].stepCount ) + 1;
@@ -1029,7 +1031,7 @@ static inline void qskRenderBorder( const QskBoxRenderer::Metrics& metrics,
 
 static inline void qskRenderFillRandom(
     const QskBoxRenderer::Metrics& metrics,
-    const QskLinearGradient& gradient, ColoredLine* line )
+    const QskGradient& gradient, ColoredLine* line )
 {
     const auto orientation = qskQtOrientation( gradient );
 
@@ -1047,7 +1049,7 @@ static inline void qskRenderFillRandom(
 
 static inline void qskRenderBoxRandom(
     const QskBoxRenderer::Metrics& metrics, const QskBoxBorderColors& borderColors,
-    const QskLinearGradient& gradient, ColoredLine* fillLine, ColoredLine* borderLine )
+    const QskGradient& gradient, ColoredLine* fillLine, ColoredLine* borderLine )
 {
     const auto& bc = borderColors;
 
@@ -1099,7 +1101,7 @@ static inline void qskRenderBoxRandom(
 
 static inline void qskRenderFillOrdered(
     const QskBoxRenderer::Metrics& metrics,
-    const QskLinearGradient& gradient, ColoredLine* lines )
+    const QskGradient& gradient, ColoredLine* lines )
 {
     const auto& r = metrics.innerQuad;
 
@@ -1108,7 +1110,7 @@ static inline void qskRenderFillOrdered(
         implemented TODO ...
      */
 
-    if ( gradient.isHorizontal() )
+    if ( gradient.linearDirection().isHorizontal() )
     {
         HRectEllipseIterator it( metrics );
         QskVertex::fillOrdered( it, r.left, r.right, gradient, lines );
@@ -1333,7 +1335,7 @@ void QskBoxRenderer::renderRectellipseFill(
 
 void QskBoxRenderer::renderRectellipse( const QRectF& rect,
     const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& border,
-    const QskBoxBorderColors& borderColors, const QskLinearGradient& gradient,
+    const QskBoxBorderColors& borderColors, const QskGradient& gradient,
     QSGGeometry& geometry )
 {
     const Metrics metrics( rect, shape, border );
@@ -1351,7 +1353,7 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
 #if 1
             // code copied from QskBoxRendererRect.cpp TODO ...
 
-            if ( gradient.isTilted() )
+            if ( gradient.linearDirection().isTilted() )
             {
                 if ( metrics.centerQuad.width == metrics.centerQuad.height )
                 {
@@ -1394,7 +1396,7 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
     bool extraLine = false;
     if ( borderLineCount > 0 && fillLineCount > 0 )
     {
-        if ( !gradient.isMonochrome() && gradient.isTilted() )
+        if ( !gradient.isMonochrome() && gradient.linearDirection().isTilted() )
         {
             /*
                 The filling ends at 45° and we have no implementation
@@ -1417,7 +1419,7 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
         }
         else if ( !gradient.isMonochrome() )
         {
-            if ( gradient.stepCount() > 1 || gradient.isTilted() )
+            if ( gradient.stepCount() > 1 || gradient.linearDirection().isTilted() )
                 fillRandom = false;
         }
 
@@ -1447,7 +1449,7 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
             {
                 renderRectFill( metrics.innerQuad, gradient, line );
             }
-            else if ( gradient.isTilted() )
+            else if ( gradient.linearDirection().isTilted() )
             {
                 renderDiagonalFill( metrics, gradient, fillLineCount, line );
             }
@@ -1483,7 +1485,7 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
             {
                 renderRectFill( metrics.innerQuad, gradient, line );
             }
-            else if ( gradient.isTilted() )
+            else if ( gradient.linearDirection().isTilted() )
             {
                 renderDiagonalFill( metrics, gradient, fillLineCount, line );
             }

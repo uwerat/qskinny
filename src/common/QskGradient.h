@@ -11,9 +11,9 @@
 #include <qbrush.h>
 #include <qmetatype.h>
 
-class QskLinearGradient;
-class QskRadialGradient;
-class QskConicGradient;
+class QskLinearDirection;
+class QskRadialDirection;
+class QskConicDirection;
 
 class QVariant;
 
@@ -27,10 +27,6 @@ class QSK_EXPORT QskGradient
     Q_GADGET
 
     Q_PROPERTY( Type type READ type )
-
-    Q_PROPERTY( QVector< qreal > linear READ linear WRITE setLinear )
-    Q_PROPERTY( QVector< qreal > conic READ linear WRITE setConic )
-    Q_PROPERTY( QVector< qreal > radial READ radial WRITE setRadial )
 
     Q_PROPERTY( QVector< QskGradientStop > stops READ stops WRITE setStops )
 
@@ -70,6 +66,24 @@ class QSK_EXPORT QskGradient
     bool operator!=( const QskGradient& ) const noexcept;
 
     QskGradient::Type type() const noexcept;
+
+    void setLinearDirection( const QskLinearDirection& );
+    void setLinearDirection( qreal, qreal, qreal, qreal );
+    void setLinearDirection( Qt::Orientation );
+    QskLinearDirection linearDirection() const;
+
+    void setRadialDirection( const QskRadialDirection& );
+    void setRadialDirection( const qreal x, qreal y, qreal radius );
+    void setRadialDirection();
+
+    QskRadialDirection radialDirection() const;
+
+    void setConicDirection( qreal, qreal );
+    void setConicDirection( qreal, qreal, qreal, qreal = 360.0 );
+    void setConicDirection( const QskConicDirection& );
+    QskConicDirection conicDirection() const;
+
+    void resetDirection();
 
     bool isValid() const noexcept;
     bool isMonochrome() const noexcept;
@@ -112,35 +126,32 @@ class QSK_EXPORT QskGradient
 
     int stepCount() const noexcept;
 
-    QskLinearGradient& asLinearGradient();
-    const QskLinearGradient& asLinearGradient() const;
-
-    QskRadialGradient& asRadialGradient();
-    const QskRadialGradient& asRadialGradient() const;
-
-    QskConicGradient& asConicGradient();
-    const QskConicGradient& asConicGradient() const;
-
   private:
-    friend class QskLinearGradient;
-    friend class QskRadialGradient;
-    friend class QskConicGradient;
-
-    QskGradient( Type ) noexcept;
-    QskGradient( Type, qreal, qreal, qreal, qreal ) noexcept;
-
     void updateStatusBits() const;
 
   private:
-    // for QML
-    QVector< qreal > linear() const;
-    void setLinear( const QVector< qreal >& );
 
-    QVector< qreal > radial() const;
-    void setRadial( const QVector< qreal >& );
+#if 1
+    /*
+        Couldn't find a way how to assign a struct to another struct
+        that is used as proprty from QML without creating extra QObjects. 
+        So for the moment we are using lists, that are more
+        error prone and less intuitive. Let's see if some day we will have
+        the QML system being capable of this. TODO ...
+     */
+    Q_PROPERTY( QVector< qreal > linear READ linearAsList WRITE setLinearAsList )
+    Q_PROPERTY( QVector< qreal > conic READ conicAsList WRITE setConicAsList )
+    Q_PROPERTY( QVector< qreal > radial READ radialAsList WRITE setRadialAsList )
 
-    QVector< qreal > conic() const;
-    void setConic( const QVector< qreal >& );
+    QVector< qreal > linearAsList() const;
+    void setLinearAsList( const QVector< qreal >& );
+
+    QVector< qreal > radialAsList() const;
+    void setRadialAsList( const QVector< qreal >& );
+
+    QVector< qreal > conicAsList() const;
+    void setConicAsList( const QVector< qreal >& );
+#endif
 
   private:
     QVector< QskGradientStop > m_stops;
@@ -162,18 +173,6 @@ class QSK_EXPORT QskGradient
 };
 
 Q_DECLARE_METATYPE( QskGradient )
-
-inline QskGradient::QskGradient( QskGradient::Type type ) noexcept
-    : m_type( type )
-{
-}
-
-inline QskGradient::QskGradient( QskGradient::Type type,
-        qreal v1, qreal v2, qreal v3, qreal v4  ) noexcept
-    : m_values{ v1, v2, v3, v4 }
-    , m_type( type )
-{
-}
 
 inline QskGradient::QskGradient( Qt::GlobalColor color )
     : QskGradient( QColor( color ) )

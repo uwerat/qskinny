@@ -6,10 +6,7 @@
 #include "QskGradientMaterial.h"
 #include "QskFunctions.h"
 #include "QskRgbValue.h"
-
-#include "QskLinearGradient.h"
-#include "QskRadialGradient.h"
-#include "QskConicGradient.h"
+#include "QskGradientDirection.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qrhi_p.h>
@@ -317,7 +314,7 @@ namespace
         {
         }
 
-        bool setGradient( const QRectF& rect, const QskLinearGradient& gradient )
+        bool setGradient( const QRectF& rect, const QskGradient& gradient )
         {
             bool changed = false;
 
@@ -337,11 +334,13 @@ namespace
             QTransform transform( rect.width(), 0, 0, rect.height(), rect.x(), rect.y());
 #endif
 
+            const auto dir = gradient.linearDirection();
+
             const QVector4D vector(
-                rect.left() + gradient.start().x() * rect.width(),
-                rect.top() + gradient.start().y() * rect.height(), 
-                gradient.stop().x() * rect.width(),
-                gradient.stop().y() * rect.height() );
+                rect.left() + dir.start().x() * rect.width(),
+                rect.top() + dir.start().y() * rect.height(), 
+                dir.stop().x() * rect.width(),
+                dir.stop().y() * rect.height() );
 
             if ( m_gradientVector != vector )
             {
@@ -476,7 +475,7 @@ namespace
             return &type;
         }
 
-        bool setGradient( const QRectF& rect, const QskRadialGradient& gradient )
+        bool setGradient( const QRectF& rect, const QskGradient& gradient )
         {
             bool changed = false;
 
@@ -492,14 +491,14 @@ namespace
                 changed = true;
             }
 
-            const auto& center = gradient.center();
-            const auto r = gradient.radius();
+            const auto dir = gradient.radialDirection();
 
             const QVector2D pos(
-                rect.left() + center.x() * rect.width(),
-                rect.top() + center.y() * rect.height() );
+                rect.left() + dir.center().x() * rect.width(),
+                rect.top() + dir.center().y() * rect.height() );
 
-            const QVector2D radius( r * rect.width(), r * rect.height() );
+            const QVector2D radius( dir.radius() * rect.width(),
+                dir.radius() * rect.height() );
 
             if ( ( pos != m_center ) || ( m_radius != radius ) )
             {
@@ -647,7 +646,7 @@ namespace
             return &type;
         }
 
-        bool setGradient( const QRectF& rect, const QskConicGradient& gradient )
+        bool setGradient( const QRectF& rect, const QskGradient& gradient )
         {
             bool changed = false;
 
@@ -663,17 +662,19 @@ namespace
                 changed = true;
             }
 
+            const auto dir = gradient.conicDirection();
+
             const QVector2D center(
-                rect.left() + gradient.center().x() * rect.width(),
-                rect.top() + gradient.center().y() * rect.height() );
+                rect.left() + dir.center().x() * rect.width(),
+                rect.top() + dir.center().y() * rect.height() );
 
             // Angles as ratio of a rotation
 
-            float start = fmod( gradient.startAngle(), 360.0 ) / 360.0;
+            float start = fmod( dir.startAngle(), 360.0 ) / 360.0;
             if ( start < 0.0)
                 start += 1.0;
 
-            const float span = fmod( gradient.spanAngle(), 360.0 ) / 360.0;
+            const float span = fmod( dir.spanAngle(), 360.0 ) / 360.0;
 
             if ( center != m_center )
             {
@@ -842,19 +843,19 @@ bool QskGradientMaterial::updateGradient( const QRectF& rect, const QskGradient&
         case QskGradient::Linear:
         {
             auto material = static_cast< LinearMaterial* >( this );
-            return material->setGradient( rect, gradient.asLinearGradient() );
+            return material->setGradient( rect, gradient );
         }
 
         case QskGradient::Radial:
         {
             auto material = static_cast< RadialMaterial* >( this );
-            return material->setGradient( rect, gradient.asRadialGradient() );
+            return material->setGradient( rect, gradient );
         }
 
         case QskGradient::Conic:
         {
             auto material = static_cast< ConicMaterial* >( this );
-            return material->setGradient( rect, gradient.asConicGradient() );
+            return material->setGradient( rect, gradient );
         }
 
         default:

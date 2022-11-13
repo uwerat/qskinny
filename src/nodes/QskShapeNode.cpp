@@ -6,7 +6,7 @@
 #include "QskShapeNode.h"
 #include "QskGradientMaterial.h"
 #include "QskGradient.h"
-#include "QskLinearGradient.h"
+#include "QskGradientDirection.h"
 
 #include <qsgflatcolormaterial.h>
 
@@ -19,7 +19,13 @@ QSK_QT_PRIVATE_END
 static inline QskGradient qskEffectiveGradient( const QskGradient& gradient )
 {
     if ( gradient.type() == QskGradient::Stops )
-        return QskLinearGradient( Qt::Vertical, gradient.stops() );
+    {
+        QskGradient g;
+        g.setLinearDirection( Qt::Vertical );
+        g.setStops( gradient.stops() );
+
+        return g;
+    }
 
     return gradient;
 }

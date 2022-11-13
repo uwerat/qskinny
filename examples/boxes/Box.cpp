@@ -10,9 +10,8 @@
 #include <QskBoxShapeMetrics.h>
 #include <QskHctColor.h>
 #include <QskRgbValue.h>
-#include <QskLinearGradient.h>
 
-static inline void setStartStop( Box::FillType type, QskLinearGradient& gradient )
+static inline void setStartStop( Box::FillType type, QskGradient& gradient )
 {
     qreal x1 = 0.0, y1 = 0.0, x2 = 0.0, y2 = 0.0;
 
@@ -22,8 +21,7 @@ static inline void setStartStop( Box::FillType type, QskLinearGradient& gradient
     if ( type != Box::Vertical )
         x2 = 1.0;
 
-    gradient.setStart( x1, y1 );
-    gradient.setStop( x2, y2 );
+    gradient.setLinearDirection( x1, y1, x2, y2 );
 }
 
 Box::Box( QQuickItem* parentItem )
@@ -46,7 +44,7 @@ void Box::setWebGradient( FillType type, QGradient::Preset preset, bool inverted
         return;
     }
 
-    QskLinearGradient gradient( preset );
+    QskGradient gradient( preset );
 
     if ( type == Solid )
     {
@@ -72,7 +70,7 @@ void Box::setTonalGradient( FillType type, const QRgb base, bool inverted )
         return;
     }
 
-    QskLinearGradient gradient;
+    QskGradient gradient;
 
     const QskHctColor htcColor( base );
     if ( type == Solid )
@@ -101,7 +99,7 @@ void Box::setTonalPalette( FillType type, const QRgb base )
         return;
     }
 
-    QskLinearGradient gradient;
+    QskGradient gradient;
     setStartStop( type, gradient );
 
     {
@@ -211,7 +209,7 @@ void Box::setGradient( Qt::GlobalColor color )
 
 void Box::setGradient( const QColor& color )
 {
-    setPanelGradient( QskLinearGradient( color ) );
+    setPanelGradient( QskGradient( color ) );
 }
 
 void Box::setGradient( FillType fillType,
@@ -237,7 +235,7 @@ void Box::setGradient( FillType fillType,
 
 void Box::setGradient( FillType fillType, const QskGradientStops& stops )
 {
-    QskLinearGradient gradient( stops );
+    QskGradient gradient( stops );
     setStartStop( fillType, gradient );
 
     setPanelGradient( gradient );

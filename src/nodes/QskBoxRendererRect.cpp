@@ -8,7 +8,7 @@
 #include "QskBoxRenderer.h"
 #include "QskBoxRendererColorMap.h"
 #include "QskFunctions.h"
-#include "QskLinearGradient.h"
+#include "QskGradientDirection.h"
 #include "QskVertex.h"
 
 using namespace QskVertex;
@@ -343,14 +343,16 @@ namespace
 }
 
 static inline void qskCreateFillOrdered( const QskBoxRenderer::Quad& rect,
-    const QskLinearGradient& gradient, ColoredLine* line )
+    const QskGradient& gradient, ColoredLine* line )
 {
-    if ( gradient.isHorizontal() )
+    const auto dir = gradient.linearDirection();
+
+    if ( dir.isHorizontal() )
     {
         HRectIterator it( rect );
         line = QskVertex::fillOrdered( it, rect.left, rect.right, gradient, line );
     }
-    else if ( gradient.isVertical() )
+    else if ( dir.isVertical() )
     {
         VRectIterator it( rect );
         line = QskVertex::fillOrdered( it, rect.top, rect.bottom, gradient, line );
@@ -554,7 +556,7 @@ void QskBoxRenderer::renderRectFill(
 void QskBoxRenderer::renderRect(
     const QRectF& rect, const QskBoxShapeMetrics& shape,
     const QskBoxBorderMetrics& border, const QskBoxBorderColors& borderColors,
-    const QskLinearGradient& gradient, QSGGeometry& geometry )
+    const QskGradient& gradient, QSGGeometry& geometry )
 {
     Q_UNUSED( shape )
 
@@ -566,7 +568,7 @@ void QskBoxRenderer::renderRect(
     {
         fillLineCount = gradient.stepCount() + 1;
 
-        if ( gradient.isTilted() )
+        if ( gradient.linearDirection().isTilted() )
         {
             if ( in.width == in.height )
             {
@@ -633,12 +635,13 @@ void QskBoxRenderer::renderRect(
                     but we didn't implement a random fill algo for
                     diagonal gradients yet.
                  */
-                fillRandom = !gd.isTilted();
+                fillRandom = !gd.linearDirection().isTilted();
             }
 
             if ( fillRandom )
             {
-                const auto orientation = gd.isVertical() ? Qt::Vertical : Qt::Horizontal;
+                const auto orientation = gd.linearDirection().isVertical()
+                    ? Qt::Vertical : Qt::Horizontal;
 
                 const ColorMapGradient colorMap( gd.startColor(), gd.endColor() );
                 qskCreateFillRandom( orientation, in, colorMap, line );
@@ -668,7 +671,7 @@ void QskBoxRenderer::renderRect(
 }
 
 void QskBoxRenderer::renderRectFill( const QskBoxRenderer::Quad& rect,
-    const QskLinearGradient& gradient, QskVertex::ColoredLine* line )
+    const QskGradient& gradient, QskVertex::ColoredLine* line )
 {
     qskCreateFillOrdered( rect, gradient, line );
 }

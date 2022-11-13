@@ -5,7 +5,8 @@
 
 #include "QskArcRenderer.h"
 #include "QskArcMetrics.h"
-#include "QskLinearGradient.h"
+#include "QskGradient.h"
+#include "QskGradientDirection.h"
 
 #include <qpainter.h>
 #include <qrect.h>
@@ -21,7 +22,7 @@ void QskArcRenderer::renderArc(const QRectF& rect,
             Horizontal is interpreted as conic ( in direction of the arc ),
             while Vertical means radial ( inner to outer border )
          */
-        isRadial = gradient.asLinearGradient().isVertical();
+        isRadial = gradient.linearDirection().isVertical();
     }
 
     QBrush brush;

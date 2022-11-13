@@ -5,6 +5,7 @@
 
 #include "QskGradient.h"
 #include "QskRgbValue.h"
+#include "QskGradientDirection.h"
 
 #include <qvariant.h>
 
@@ -386,7 +387,104 @@ QskHashValue QskGradient::hash( QskHashValue seed ) const
     return hash;
 }
 
-void QskGradient::setLinear( const QVector< qreal >& params )
+void QskGradient::setLinearDirection( Qt::Orientation orientation )
+{
+    setLinearDirection( QskLinearDirection( orientation ) );
+}
+
+void QskGradient::setLinearDirection( qreal x1, qreal y1, qreal x2, qreal y2 )
+{
+    setLinearDirection( QskLinearDirection( x1, y1, x2, y2 ) );
+}
+
+void QskGradient::setLinearDirection( const QskLinearDirection& direction )
+{
+    m_type = Linear;
+
+    m_values[0] = direction.x1();
+    m_values[1] = direction.y1();
+    m_values[2] = direction.x2();
+    m_values[3] = direction.y2();
+}
+
+QskLinearDirection QskGradient::linearDirection() const
+{
+    Q_ASSERT( m_type == Linear );
+
+    if ( m_type != Linear )
+        return QskLinearDirection();
+
+    return QskLinearDirection( m_values[0], m_values[1], m_values[2], m_values[3] );
+}
+
+void QskGradient::setRadialDirection()
+{
+    setRadialDirection( QskRadialDirection() );
+}
+
+void QskGradient::setRadialDirection( const qreal x, qreal y, qreal radius )
+{
+    setRadialDirection( QskRadialDirection( x, y, radius ) );
+}
+
+void QskGradient::setRadialDirection( const QskRadialDirection& direction )
+{
+    m_type = Radial;
+
+    m_values[0] = direction.center().x();
+    m_values[1] = direction.center().y();
+    m_values[2] = direction.radius();
+    m_values[3] = 0.0;
+}
+
+QskRadialDirection QskGradient::radialDirection() const
+{
+    Q_ASSERT( m_type == Radial );
+
+    if ( m_type != Radial )
+        return QskRadialDirection();
+
+    return QskRadialDirection( m_values[0], m_values[1], m_values[2] );
+}
+
+void QskGradient::setConicDirection( qreal x, qreal y )
+{
+    setConicDirection( QskConicDirection( x, y ) );
+}
+
+void QskGradient::setConicDirection( qreal x, qreal y,
+    qreal startAngle, qreal spanAngle )
+{
+    setConicDirection( QskConicDirection( x, y, startAngle, spanAngle ) );
+}
+
+void QskGradient::setConicDirection( const QskConicDirection& direction )
+{
+    m_type = Conic;
+
+    m_values[0] = direction.center().x();
+    m_values[1] = direction.center().y();
+    m_values[2] = direction.startAngle();
+    m_values[3] = direction.spanAngle();
+}
+
+QskConicDirection QskGradient::conicDirection() const
+{
+    Q_ASSERT( m_type == Conic );
+
+    if ( m_type != Conic )
+        return QskConicDirection();
+
+    return QskConicDirection( m_values[0], m_values[1], m_values[2], m_values[3] );
+}
+
+void QskGradient::resetDirection()
+{
+    m_type = Stops;
+    m_values[0] = m_values[1] = m_values[2] = m_values[3] = 0.0;
+}
+
+void QskGradient::setLinearAsList( const QVector< qreal >& params )
 {
     Q_ASSERT( params.size() == 4 );
 
@@ -398,13 +496,13 @@ void QskGradient::setLinear( const QVector< qreal >& params )
     m_values[3] = params[3];
 }
 
-QVector< qreal > QskGradient::linear() const
+QVector< qreal > QskGradient::linearAsList() const
 {
     Q_ASSERT( m_type == Linear );
     return { m_values[0], m_values[1], m_values[2], m_values[3] };
 }
     
-void QskGradient::setRadial( const QVector< qreal >& params )
+void QskGradient::setRadialAsList( const QVector< qreal >& params )
 {   
     Q_ASSERT( params.size() == 3 );
 
@@ -416,17 +514,17 @@ void QskGradient::setRadial( const QVector< qreal >& params )
     m_values[3] = 0.0;
 }
 
-QVector< qreal > QskGradient::radial() const
+QVector< qreal > QskGradient::radialAsList() const
 {
     Q_ASSERT( m_type == Radial );
     return { m_values[0], m_values[1], m_values[2] };
 }
     
-void QskGradient::setConic( const QVector< qreal >& params )
+void QskGradient::setConicAsList( const QVector< qreal >& params )
 {   
     Q_ASSERT( params.size() >= 2 && params.size() <= 4 );
 
-    m_type = Linear;
+    m_type = Conic;
 
     m_values[0] = params[0];
     m_values[1] = params[1];
@@ -442,50 +540,10 @@ void QskGradient::setConic( const QVector< qreal >& params )
         m_values[2] = 360.0;
 }
 
-QVector< qreal > QskGradient::conic() const
+QVector< qreal > QskGradient::conicAsList() const
 {
     Q_ASSERT( m_type == Conic );
     return { m_values[0], m_values[1], m_values[2], m_values[3] };
-}
-
-#include "QskLinearGradient.h"
-#include "QskRadialGradient.h"
-#include "QskConicGradient.h"
-
-QskLinearGradient& QskGradient::asLinearGradient()
-{
-    assert( m_type == QskGradient::Linear );
-    return *reinterpret_cast< QskLinearGradient* >( this );
-}
-
-const QskLinearGradient& QskGradient::asLinearGradient() const
-{
-    assert( m_type == QskGradient::Linear );
-    return *reinterpret_cast< const QskLinearGradient* >( this );
-}
-
-QskRadialGradient& QskGradient::asRadialGradient()
-{
-    assert( m_type == QskGradient::Radial );
-    return *reinterpret_cast< QskRadialGradient* >( this );
-}
-
-const QskRadialGradient& QskGradient::asRadialGradient() const
-{
-    assert( m_type == QskGradient::Radial );
-    return *reinterpret_cast< const QskRadialGradient* >( this );
-}
-
-QskConicGradient& QskGradient::asConicGradient()
-{
-    assert( m_type == QskGradient::Conic );
-    return *reinterpret_cast< QskConicGradient* >( this );
-}
-
-const QskConicGradient& QskGradient::asConicGradient() const
-{
-    assert( m_type == QskGradient::Conic );
-    return *reinterpret_cast< const QskConicGradient* >( this );
 }
 
 #ifndef QT_NO_DEBUG_STREAM
@@ -505,9 +563,9 @@ QDebug operator<<( QDebug debug, const QskGradient& gradient )
         {
             debug << "L(";
 
-            const auto& g = gradient.asLinearGradient();
-            debug << g.start().x() << "," << g.start().y()
-                << "," << g.stop().x() << "," << g.stop().y() << ")";
+            const auto dir = gradient.linearDirection();
+            debug << dir.start().x() << "," << dir.start().y()
+                << "," << dir.stop().x() << "," << dir.stop().y() << ")";
 
             break;
         }
@@ -516,10 +574,10 @@ QDebug operator<<( QDebug debug, const QskGradient& gradient )
         {
             debug << "R(";
 
-            const auto& g = gradient.asRadialGradient();
+            const auto dir = gradient.radialDirection();
 
-            debug << g.center().x() << "," << g.center().y()
-                << "," << g.radius() << ")";
+            debug << dir.center().x() << "," << dir.center().y()
+                << "," << dir.radius() << ")";
 
             break;
         }
@@ -528,10 +586,10 @@ QDebug operator<<( QDebug debug, const QskGradient& gradient )
         {
             debug << "C(";
 
-            const auto& g = gradient.asConicGradient();
+            const auto dir = gradient.conicDirection();
 
-            debug << g.center().x() << "," << g.center().y()
-                << ",[" << g.startAngle() << "," << g.spanAngle() << "])";
+            debug << dir.center().x() << "," << dir.center().y()
+                << ",[" << dir.startAngle() << "," << dir.spanAngle() << "])";
             break;
         }
 

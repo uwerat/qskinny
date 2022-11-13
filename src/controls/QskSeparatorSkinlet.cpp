@@ -6,7 +6,7 @@
 #include "QskSeparatorSkinlet.h"
 #include "QskSeparator.h"
 
-#include "QskLinearGradient.h"
+#include "QskGradientDirection.h"
 #include "QskAspect.h"
 
 QskSeparatorSkinlet::QskSeparatorSkinlet( QskSkin* skin )
@@ -50,7 +50,7 @@ QSGNode* QskSeparatorSkinlet::updateSubNode(
                 const auto orientation = ( separator->orientation() == Qt::Vertical )
                     ? Qt::Horizontal : Qt::Vertical;
 
-                gradient = QskLinearGradient( orientation, gradient.stops() );
+                gradient.setLinearDirection( orientation );
             }
 
             return updateBoxNode( separator, node, rect, gradient, Q::Panel );

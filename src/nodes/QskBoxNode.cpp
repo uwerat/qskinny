@@ -9,6 +9,7 @@
 #include "QskBoxRenderer.h"
 #include "QskBoxShapeMetrics.h"
 #include "QskGradient.h"
+#include "QskGradientDirection.h"
 
 #include <qglobalstatic.h>
 #include <qsgflatcolormaterial.h>
@@ -39,56 +40,53 @@ static inline QskHashValue qskColorsHash(
 
 #if 1
 
-#include "QskLinearGradient.h"
 
-static inline QskLinearGradient qskEffectiveGradient( const QskGradient& gradient )
+static inline QskGradient qskEffectiveGradient( const QskGradient& gradient )
 {
-    QskLinearGradient g;
+    QskGradient g;
 
     if ( gradient.isVisible() )
     {
         if ( gradient.isMonochrome() )
         {
+            g.setLinearDirection( Qt::Vertical );
             g.setStops( gradient.startColor() );
         }
         else
         {
+
             switch( gradient.type() )
             {
                 case QskGradient::Linear:
                 {
-                    const auto& linearGradient = gradient.asLinearGradient();
+                    auto dir = gradient.linearDirection();
 
-                    if ( linearGradient.isVertical() )
+                    if ( dir.isTilted() )
                     {
-                        g.setOrientation( Qt::Vertical );
-                    }
-                    else if ( linearGradient.isHorizontal() )
-                    {
-                        g.setOrientation( Qt::Horizontal );
-                    }
-                    else
-                    {
-                        g.setStart( 0.0, 0.0 );
-                        g.setStop( 1.0, 1.0 );
+                        dir.setStart( 0.0, 0.0 );
+                        dir.setStop( 1.0, 1.0 );
                     }
 
-                    g.setStops( gradient.stops() );
+                    g.setLinearDirection( dir );
+
                     break;
                 }
                 case QskGradient::Radial:
                 case QskGradient::Conic:
                 {   
                     qWarning() << "QskBoxNode does not support radial/conic gradients";
-                    g.setStops( Qt::black );
+                    g.setLinearDirection( Qt::Vertical );
+
                     break;
                 }
                 case QskGradient::Stops:
                 {
-                    g.setStops( gradient.stops() );
+                    g.setLinearDirection( Qt::Vertical );
                     break;
                 }
             }
+
+            g.setStops( gradient.stops() );
         }
     }
 
