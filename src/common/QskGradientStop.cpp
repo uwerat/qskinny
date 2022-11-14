@@ -54,6 +54,12 @@ void QskGradientStop::setStop( qreal position, const QColor& color ) noexcept
     m_color = color;
 }
 
+void QskGradientStop::setStop( qreal position, Qt::GlobalColor color ) noexcept
+{
+    m_position = position;
+    m_color = color;
+}
+
 QskHashValue QskGradientStop::hash( QskHashValue seed ) const noexcept
 {
     auto hash = qHashBits( &m_position, sizeof( m_position ), seed );

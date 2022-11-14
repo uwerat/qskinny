@@ -33,6 +33,7 @@ class QSK_EXPORT QskGradientStop
     constexpr bool operator!=( const QskGradientStop& ) const noexcept;
 
     void setStop( qreal position, const QColor& ) noexcept;
+    void setStop( qreal position, Qt::GlobalColor ) noexcept;
     void setStop( qreal position, QRgb ) noexcept;
 
     constexpr qreal position() const noexcept;
