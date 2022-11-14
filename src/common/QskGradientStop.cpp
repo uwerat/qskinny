@@ -43,6 +43,11 @@ void QskGradientStop::resetColor() noexcept
     m_color = QColor();
 }
 
+void QskGradientStop::setRgb( QRgb rgb ) noexcept
+{
+    m_color = QColor::fromRgba( rgb );
+}
+
 void QskGradientStop::setStop( qreal position, const QColor& color ) noexcept
 {
     m_position = position;

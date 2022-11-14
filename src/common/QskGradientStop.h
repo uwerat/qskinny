@@ -22,7 +22,7 @@ class QSK_EXPORT QskGradientStop
     Q_PROPERTY( QColor color READ color WRITE setColor RESET resetColor )
 
   public:
-    constexpr QskGradientStop() noexcept;
+    constexpr QskGradientStop() noexcept = default;
     constexpr QskGradientStop( qreal position, const QColor& ) noexcept;
     constexpr QskGradientStop( const QGradientStop& ) noexcept;
 
@@ -33,6 +33,7 @@ class QSK_EXPORT QskGradientStop
     constexpr bool operator!=( const QskGradientStop& ) const noexcept;
 
     void setStop( qreal position, const QColor& ) noexcept;
+    void setStop( qreal position, QRgb ) noexcept;
 
     constexpr qreal position() const noexcept;
     void setPosition( qreal position ) noexcept;
@@ -42,6 +43,7 @@ class QSK_EXPORT QskGradientStop
     void setColor( const QColor& ) noexcept;
     void resetColor() noexcept;
 
+    void setRgb( QRgb ) noexcept;
     QRgb rgb() const noexcept;
 
     static QColor interpolated(
@@ -50,8 +52,8 @@ class QSK_EXPORT QskGradientStop
     QskHashValue hash( QskHashValue seed ) const noexcept;
 
   private:
-    qreal m_position;
-    QColor m_color; // using RGBA instead ?
+    qreal m_position = -1.0;
+    QColor m_color; // using QRgb instead ?
 };
 
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
@@ -59,11 +61,6 @@ class QSK_EXPORT QskGradientStop
 #endif
 
 Q_DECLARE_METATYPE( QskGradientStop )
-
-inline constexpr QskGradientStop::QskGradientStop() noexcept
-    : m_position( -1.0 )
-{
-}
 
 inline constexpr QskGradientStop::QskGradientStop(
         qreal position, const QColor& color ) noexcept
