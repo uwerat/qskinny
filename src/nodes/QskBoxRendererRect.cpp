@@ -425,7 +425,7 @@ static inline void qskCreateBorder(
         if ( stops.first().position() > 0.0 )
         {
             ( line++ )->setLine( in.right, in.bottom,
-                out.right, out.bottom, stops.first().color() );
+                out.right, out.bottom, stops.first().rgb() );
         }
 
         for( const auto& stop : stops )
@@ -433,13 +433,13 @@ static inline void qskCreateBorder(
             const qreal x1 = in.right - stop.position() * dx1;
             const qreal x2 = out.right - stop.position() * dx2;
 
-            ( line++ )->setLine( x1, in.bottom, x2, out.bottom, stop.color() );
+            ( line++ )->setLine( x1, in.bottom, x2, out.bottom, stop.rgb() );
         }
 
         if ( stops.last().position() < 1.0 )
         {
             ( line++ )->setLine( in.left, in.bottom,
-                out.left, out.bottom, stops.last().color() );
+                out.left, out.bottom, stops.last().rgb() );
         }
     }
 
@@ -449,7 +449,7 @@ static inline void qskCreateBorder(
         if ( stops.first().position() > 0.0 )
         {
             ( line++ )->setLine( in.left, in.bottom,
-                out.left, out.bottom, stops.first().color() );
+                out.left, out.bottom, stops.first().rgb() );
         }
 
         for( const auto& stop : stops )
@@ -457,13 +457,13 @@ static inline void qskCreateBorder(
             const qreal y1 = in.bottom + stop.position() * dy1;
             const qreal y2 = out.bottom + stop.position() * dy2;
 
-            ( line++ )->setLine( in.left, y1, out.left, y2, stop.color() );
+            ( line++ )->setLine( in.left, y1, out.left, y2, stop.rgb() );
         }
 
         if ( stops.last().position() < 1.0 )
         {
             ( line++ )->setLine( in.left, in.top,
-                out.left, out.top, stops.last().color() );
+                out.left, out.top, stops.last().rgb() );
         }
     }
 
@@ -473,7 +473,7 @@ static inline void qskCreateBorder(
         if ( stops.first().position() > 0.0 )
         {
             ( line++ )->setLine( in.left, in.top,
-                out.left, out.top, stops.first().color() );
+                out.left, out.top, stops.first().rgb() );
         }
 
         for( const auto& stop : stops )
@@ -481,13 +481,13 @@ static inline void qskCreateBorder(
             const qreal x1 = in.left + stop.position() * dx1;
             const qreal x2 = out.left + stop.position() * dx2;
 
-            ( line++ )->setLine( x1, in.top, x2, out.top, stop.color() );
+            ( line++ )->setLine( x1, in.top, x2, out.top, stop.rgb() );
         }
 
         if ( stops.last().position() < 1.0 )
         {
             ( line++ )->setLine( in.right, in.top,
-                out.right, out.top, stops.last().color() );
+                out.right, out.top, stops.last().rgb() );
         }
     }
 
@@ -497,7 +497,7 @@ static inline void qskCreateBorder(
         if ( stops.first().position() > 0.0 )
         {
             ( line++ )->setLine( in.right, in.top,
-                out.right, out.top, stops.first().color() );
+                out.right, out.top, stops.first().rgb() );
         }
 
         for( const auto& stop : stops )
@@ -505,13 +505,13 @@ static inline void qskCreateBorder(
             const qreal y1 = in.bottom + ( 1 - stop.position() ) * dy1;
             const qreal y2 = out.bottom + ( 1 - stop.position() ) * dy2;
 
-            ( line++ )->setLine( in.right, y1, out.right, y2, stop.color() );
+            ( line++ )->setLine( in.right, y1, out.right, y2, stop.rgb() );
         }
 
         if ( stops.last().position() < 1.0 )
         {
             ( line++ )->setLine( in.right, in.bottom,
-                out.right, out.bottom, stops.last().color() );
+                out.right, out.bottom, stops.last().rgb() );
         } 
     }
 }

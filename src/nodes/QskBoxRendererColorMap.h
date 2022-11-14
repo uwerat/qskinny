@@ -155,13 +155,13 @@ namespace QskVertex
         {
             if ( stops.first().position() > 0.0 )
             {
-                m_color1 = m_color2 = stops[ 0 ].color();
+                m_color1 = m_color2 = stops[ 0 ].rgb();
                 m_index = 0;
             }
             else
             {
-                m_color1 = stops[ 0 ].color();
-                m_color2 = stops[ 1 ].color();
+                m_color1 = stops[ 0 ].rgb();
+                m_color2 = stops[ 1 ].rgb();
                 m_index = 1;
             }
 
@@ -206,7 +206,7 @@ namespace QskVertex
             {
                 const auto& stop = m_stops[ m_index ];
 
-                m_color2 = stop.color();
+                m_color2 = stop.rgb();
                 m_valueStep2 = valueAt( stop.position() );
             }
 

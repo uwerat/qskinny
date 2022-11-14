@@ -558,7 +558,7 @@ namespace
             const float x2 = x12 + pos * dx2;
             const float y2 = y12 + pos * dy2;
 
-            line->setLine( x1, y1, x2, y2, stop.color() );
+            line->setLine( x1, y1, x2, y2, stop.rgb() );
         }
 
         void addAdditionalLines(
