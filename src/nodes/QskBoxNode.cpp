@@ -50,7 +50,7 @@ static inline QskGradient qskEffectiveGradient( const QskGradient& gradient )
         if ( gradient.isMonochrome() )
         {
             g.setLinearDirection( Qt::Vertical );
-            g.setStops( gradient.startColor() );
+            g.setStops( gradient.rgbStart() );
         }
         else
         {
@@ -197,7 +197,7 @@ void QskBoxNode::setBoxData( const QRectF& rect,
     {
         if ( isFillMonochrome && isBorderMonochrome )
         {
-            if ( borderColors.left().startColor() == fillGradient.startColor() )
+            if ( borderColors.left().rgbStart() == fillGradient.rgbStart() )
             {
                 // we can draw border and background in one
                 hasBorder = false;
@@ -246,12 +246,12 @@ void QskBoxNode::setBoxData( const QRectF& rect,
 
         if ( hasFill )
         {
-            flatMaterial->setColor( fillGradient.startColor() );
+            flatMaterial->setColor( fillGradient.rgbStart() );
             renderer.renderFill( d->rect, shape, QskBoxBorderMetrics(), *geometry() );
         }
         else
         {
-            flatMaterial->setColor( borderColors.left().startColor().rgba() );
+            flatMaterial->setColor( borderColors.left().rgbStart() );
             renderer.renderBorder( d->rect, shape, borderMetrics, *geometry() );
         }
     }

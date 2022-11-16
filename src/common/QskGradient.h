@@ -103,6 +103,9 @@ class QSK_EXPORT QskGradient
     Q_INVOKABLE QColor startColor() const noexcept;
     Q_INVOKABLE QColor endColor() const noexcept;
 
+    QRgb rgbStart() const;
+    QRgb rgbEnd() const;
+
     void setAlpha( int alpha );
 
     void setSpread( QGradient::Spread );
@@ -216,6 +219,16 @@ inline QColor QskGradient::startColor() const noexcept
 inline QColor QskGradient::endColor() const noexcept
 {
     return m_stops.isEmpty() ? QColor() : m_stops.last().color();
+}
+
+inline QRgb QskGradient::rgbStart() const
+{
+    return m_stops.isEmpty() ? qRgba( 0, 0, 0, 255 ) : m_stops.first().rgb();
+}
+
+inline QRgb QskGradient::rgbEnd() const
+{
+    return m_stops.isEmpty() ? qRgba( 0, 0, 0, 255 ) : m_stops.last().rgb();
 }
 
 inline QGradient::Spread QskGradient::spread() const noexcept

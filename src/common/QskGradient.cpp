@@ -609,8 +609,7 @@ QDebug operator<<( QDebug debug, const QskGradient& gradient )
         if ( gradient.isMonochrome() )
         {
             debug << ' ';
-            const auto color = gradient.stops().first().color();
-            QskRgb::debugColor( debug, color );
+            QskRgb::debugColor( debug, gradient.rgbStart() );
         }
         else
         {

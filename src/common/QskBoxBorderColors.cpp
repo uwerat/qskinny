@@ -233,7 +233,7 @@ QDebug operator<<( QDebug debug, const QskBoxBorderColors& colors )
         if ( colors.isMonochrome() )
         {
             const auto& gradient = colors.gradientAt( Qt::LeftEdge );
-            QskRgb::debugColor( debug, gradient.startColor() );
+            QskRgb::debugColor( debug, gradient.rgbStart() );
         }
         else
         {
@@ -252,7 +252,7 @@ QDebug operator<<( QDebug debug, const QskBoxBorderColors& colors )
                 debug << prompts[ i ] << ": ";
 
                 if ( gradient.isValid() && gradient.isMonochrome() )
-                    QskRgb::debugColor( debug, gradient.startColor() );
+                    QskRgb::debugColor( debug, gradient.rgbStart() );
                 else
                     debug << gradient;
             }

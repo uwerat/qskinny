@@ -500,7 +500,7 @@ namespace
     {
       public:
         inline BorderMapSolid( const QskBoxBorderColors& colors )
-            : m_color( colors.left().startColor() )
+            : m_color( colors.left().rgbStart() )
         {
         }
 
@@ -515,8 +515,8 @@ namespace
       public:
         inline BorderMapGradient( int stepCount, const QskGradient& gradient1, const QskGradient& gradient2 )
             : m_stepCount( stepCount )
-            , m_color1( gradient1.startColor() )
-            , m_color2( gradient2.endColor() )
+            , m_color1( gradient1.rgbStart() )
+            , m_color2( gradient2.rgbEnd() )
             , m_gradient( gradient2 )
         {
         }
@@ -1037,12 +1037,12 @@ static inline void qskRenderFillRandom(
 
     if ( gradient.isMonochrome() )
     {
-        const ColorMapSolid map( gradient.startColor() );
+        const ColorMapSolid map( gradient.rgbStart() );
         qskRenderFillLines( metrics, orientation, line, map );
     }
     else
     {
-        const ColorMapGradient map( gradient.startColor(), gradient.endColor() );
+        const ColorMapGradient map( gradient.rgbStart(), gradient.rgbEnd() );
         qskRenderFillLines( metrics, orientation, line, map );
     }
 }
@@ -1059,14 +1059,14 @@ static inline void qskRenderBoxRandom(
 
         if ( gradient.isMonochrome() )
         {
-            const ColorMapSolid fillMap( gradient.startColor() );
+            const ColorMapSolid fillMap( gradient.rgbStart() );
             qskRenderLines( metrics, Qt::Vertical, borderLine, borderMap, fillLine, fillMap );
         }
         else
         {
             const auto orientation = qskQtOrientation( gradient );
 
-            const ColorMapGradient fillMap( gradient.startColor(), gradient.endColor() );
+            const ColorMapGradient fillMap( gradient.rgbStart(), gradient.rgbEnd() );
             qskRenderLines( metrics, orientation, borderLine, borderMap, fillLine, fillMap );
         }
     }
@@ -1086,14 +1086,14 @@ static inline void qskRenderBoxRandom(
 
         if ( gradient.isMonochrome() )
         {
-            const ColorMapSolid fillMap( gradient.startColor() );
+            const ColorMapSolid fillMap( gradient.rgbStart() );
             qskRenderLines( metrics, Qt::Vertical, borderLine, tl, tr, bl, br, fillLine, fillMap );
         }
         else
         {
             const auto orientation = qskQtOrientation( gradient );
 
-            const ColorMapGradient fillMap( gradient.startColor(), gradient.endColor() );
+            const ColorMapGradient fillMap( gradient.rgbStart(), gradient.rgbEnd() );
             qskRenderLines( metrics, orientation, borderLine, tl, tr, bl, br, fillLine, fillMap );
         }
     }

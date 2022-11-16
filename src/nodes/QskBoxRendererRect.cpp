@@ -622,7 +622,7 @@ void QskBoxRenderer::renderRect(
 
         if ( gd.isMonochrome() )
         {
-            const ColorMapSolid colorMap( gd.startColor() );
+            const ColorMapSolid colorMap( gd.rgbStart() );
             qskCreateFillRandom( Qt::Vertical, in, colorMap, line );
         }
         else
@@ -643,7 +643,7 @@ void QskBoxRenderer::renderRect(
                 const auto orientation = gd.linearDirection().isVertical()
                     ? Qt::Vertical : Qt::Horizontal;
 
-                const ColorMapGradient colorMap( gd.startColor(), gd.endColor() );
+                const ColorMapGradient colorMap( gd.rgbStart(), gd.rgbEnd() );
                 qskCreateFillRandom( orientation, in, colorMap, line );
             }
             else
@@ -660,7 +660,7 @@ void QskBoxRenderer::renderRect(
 
         if ( bc.isMonochrome() )
         {
-            const auto rgb = bc.left().startColor().rgba();
+            const auto rgb = bc.left().rgbStart();
             qskCreateBorderMonochrome( rect, in, rgb, fillLines );
         }
         else

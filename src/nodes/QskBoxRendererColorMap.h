@@ -261,13 +261,13 @@ namespace QskVertex
         {
             if ( value2 == 1.0 && value1 == 0.0 )
             {
-                TwoColorIterator01 colorIt( gradient.startColor(), gradient.endColor() );
+                TwoColorIterator01 colorIt( gradient.rgbStart(), gradient.rgbEnd() );
                 line = fillOrdered( contourIt, colorIt, line );
             }
             else
             {
                 TwoColorIterator colorIt( value1, value2,
-                    gradient.startColor(), gradient.endColor() );
+                    gradient.rgbStart(), gradient.rgbEnd() );
 
                 line = fillOrdered( contourIt, colorIt, line );
             }
