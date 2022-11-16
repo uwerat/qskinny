@@ -7,14 +7,15 @@
 #include "QskFunctions.h"
 #include "QskRgbValue.h"
 #include "QskGradientDirection.h"
+#include "QskColorRamp.h"
+
+#include <qsgtexture.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qrhi_p.h>
 #include <private/qdrawhelper_p.h>
-#include <private/qsgplaintexture_p.h>
 QSK_QT_PRIVATE_END
 
-#include <qcoreapplication.h>
 #include <cmath>
 
 // RHI shaders are supported by Qt 5.15 and Qt 6.x
@@ -31,153 +32,6 @@ QSK_QT_PRIVATE_END
 #else
     using RhiShader = QSGMaterialShader;
 #endif
-
-namespace
-{
-    class ColorRamp : public QSGPlainTexture
-    {
-      public:
-        ColorRamp( const QskGradientStops& stops, QGradient::Spread spread )
-        {
-            /*
-                Qt creates tables of 1024 colors, while Chrome, Firefox, and Android
-                seem to use 256 colors only ( according to maybe outdated sources
-                from the internet ),
-             */
-
-            setImage( QskRgb::colorTable( 256, stops ) );
-
-            const auto wrapMode = this->wrapMode( spread );
-
-            setHorizontalWrapMode( wrapMode );
-            setVerticalWrapMode( wrapMode );
-
-            setFiltering( QSGTexture::Linear );
-        };
-
-      private:
-        static inline QSGTexture::WrapMode wrapMode( QGradient::Spread spread )
-        {
-            switch ( spread )
-            {
-                case QGradient::RepeatSpread:
-                    return QSGTexture::Repeat;
-
-                case QGradient::ReflectSpread:
-                    return QSGTexture::MirroredRepeat;
-
-                default:
-                    return QSGTexture::ClampToEdge;
-            }
-        }
-    };
-
-    class ColorRampHashKey
-    {
-      public:
-        inline bool operator==( const ColorRampHashKey& other ) const
-        {
-            return rhi == other.rhi && spread == other.spread && stops == other.stops;
-        }
-
-        const void* rhi;
-        const QskGradientStops stops;
-        const QGradient::Spread spread;
-    };
-
-    inline size_t qHash( const ColorRampHashKey& key, size_t seed = 0 )
-    {
-        size_t valus = seed + key.spread;
-
-        for ( const auto& stop : key.stops )
-            valus += stop.rgb();
-
-        return valus;
-    }
-
-    class ColorRampCache
-    {
-      public:
-        static ColorRampCache* instance()
-        {
-            static ColorRampCache* s_instance = nullptr;
-            if ( s_instance == nullptr )
-            {
-                s_instance = new ColorRampCache();
-
-                /*
-                    For RHI we have QRhi::addCleanupCallback, but with
-                    OpenGL we have to fiddle around with QOpenGLSharedResource
-                    So let's keep things simple for the moment. TODO ...
-                 */
-                qAddPostRoutine( cleanup );
-            }
-
-            return s_instance;
-        }
-
-        ~ColorRampCache()
-        {
-            qDeleteAll( m_hashTable );
-        }
-
-        ColorRamp* colorRamp( const void* rhi,
-            const QskGradientStops& stops, QGradient::Spread spread )
-        {
-            const ColorRampHashKey key { rhi, stops, spread };
-
-            auto texture = m_hashTable[key];
-            if ( texture == nullptr )
-            {
-                texture = new ColorRamp( stops, spread );
-                m_hashTable[ key ] = texture;
-
-                if ( rhi != nullptr )
-                {
-                    auto myrhi = ( QRhi* )rhi;
-
-                    if ( !m_rhiTable.contains( myrhi ) )
-                    {
-                        myrhi->addCleanupCallback( ColorRampCache::cleanupRhi );
-                        m_rhiTable += myrhi;
-                    }
-                }
-            }
-
-            return texture;
-        }
-
-      private:
-        static void cleanup()
-        {
-            delete instance();
-        }
-
-        static void cleanupRhi( const QRhi *rhi )
-        {
-            auto cache = instance();
-
-            auto& table = cache->m_hashTable;
-            for ( auto it = table.begin(); it != table.end(); )
-            {
-                if ( it.key().rhi == rhi )
-                {
-                    delete it.value();
-                    it = table.erase( it );
-                }
-                else
-                {
-                    ++it;
-                }
-            }
-
-            cache->m_rhiTable.removeAll( rhi );
-        }
-
-        QHash< ColorRampHashKey, ColorRamp* > m_hashTable;
-        QVector< const QRhi* > m_rhiTable;
-    };
-}
 
 namespace
 {
@@ -215,6 +69,8 @@ namespace
 
         virtual QSGMaterialShader* createShader() const = 0;
 #endif
+
+        virtual bool setGradient( const QRectF&, const QskGradient& ) = 0;
     };
 
 #ifdef SHADER_GL
@@ -250,9 +106,9 @@ namespace
 
             updateUniformValues( material );
 
-            auto colorRamp = ColorRampCache::instance()->colorRamp(
+            auto texture = QskColorRamp::texture(
                 nullptr, material->stops(), material->spread() );
-            colorRamp->bind();
+            texture->bind();
         }
 
         char const* const* attributeNames() const override final
@@ -282,23 +138,23 @@ namespace
         }
 
         void updateSampledImage( RenderState& state, int binding,
-            QSGTexture* textures[], QSGMaterial* newMaterial, QSGMaterial*) override final
+            QSGTexture* textures[], QSGMaterial* newMaterial, QSGMaterial* ) override final
         {
             if ( binding != 1 )
                 return;
 
             auto material = static_cast< const GradientMaterial* >( newMaterial );
 
-            auto colorRamp = ColorRampCache::instance()->colorRamp(
+            auto texture = QskColorRamp::texture(
                 state.rhi(), material->stops(), material->spread() );
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-            colorRamp->updateRhiTexture( state.rhi(), state.resourceUpdateBatch() );
+            texture->updateRhiTexture( state.rhi(), state.resourceUpdateBatch() );
 #else
-            colorRamp->commitTextureOperations( state.rhi(), state.resourceUpdateBatch() );
+            texture->commitTextureOperations( state.rhi(), state.resourceUpdateBatch() );
 #endif
 
-            textures[0] = colorRamp;
+            textures[0] = texture;
         }
     };
 #endif
@@ -314,7 +170,7 @@ namespace
         {
         }
 
-        bool setGradient( const QRectF& rect, const QskGradient& gradient )
+        bool setGradient( const QRectF& rect, const QskGradient& gradient ) override
         {
             bool changed = false;
 
@@ -475,7 +331,7 @@ namespace
             return &type;
         }
 
-        bool setGradient( const QRectF& rect, const QskGradient& gradient )
+        bool setGradient( const QRectF& rect, const QskGradient& gradient ) override
         {
             bool changed = false;
 
@@ -646,7 +502,7 @@ namespace
             return &type;
         }
 
-        bool setGradient( const QRectF& rect, const QskGradient& gradient )
+        bool setGradient( const QRectF& rect, const QskGradient& gradient ) override
         {
             bool changed = false;
 
@@ -835,33 +691,20 @@ bool QskGradientMaterial::updateGradient( const QRectF& rect, const QskGradient&
 {
     Q_ASSERT( gradient.type() == m_gradientType );
 
-    if ( gradient.type() != m_gradientType )
-        return false;
-
-    switch ( gradient.type() )
+    if ( gradient.type() == m_gradientType )
     {
-        case QskGradient::Linear:
+        switch ( gradient.type() )
         {
-            auto material = static_cast< LinearMaterial* >( this );
-            return material->setGradient( rect, gradient );
-        }
+            case QskGradient::Linear:
+            case QskGradient::Radial:
+            case QskGradient::Conic:
+            {
+                auto material = static_cast< GradientMaterial* >( this );
+                return material->setGradient( rect, gradient );
+            }
 
-        case QskGradient::Radial:
-        {
-            auto material = static_cast< RadialMaterial* >( this );
-            return material->setGradient( rect, gradient );
-        }
-
-        case QskGradient::Conic:
-        {
-            auto material = static_cast< ConicMaterial* >( this );
-            return material->setGradient( rect, gradient );
-        }
-
-        default:
-        {
-            qWarning( "Invalid gradient type" );
-            break;
+            default:
+                qWarning( "Invalid gradient type" );
         }
     }
 
