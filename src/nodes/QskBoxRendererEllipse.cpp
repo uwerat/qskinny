@@ -1312,8 +1312,7 @@ void QskBoxRenderer::renderRectellipseFill(
         const QRectF r( metrics.innerQuad.left, metrics.innerQuad.top,
             metrics.innerQuad.width, metrics.innerQuad.height );
 
-        renderRectFill( r, QskBoxShapeMetrics(),
-            QskBoxBorderMetrics(), geometry );
+        renderRectFill( r, QskBoxBorderMetrics(), geometry );
 
         return;
     }

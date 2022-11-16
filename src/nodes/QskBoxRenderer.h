@@ -108,13 +108,12 @@ class QSK_EXPORT QskBoxRenderer
 
   private:
     void renderRectFill( const QRectF&,
-        const QskBoxShapeMetrics&, const QskBoxBorderMetrics&, QSGGeometry& );
+        const QskBoxBorderMetrics&, QSGGeometry& );
 
     void renderRectBorder( const QRectF&,
-        const QskBoxShapeMetrics&, const QskBoxBorderMetrics&, QSGGeometry& );
+        const QskBoxBorderMetrics&, QSGGeometry& );
 
-    void renderRect( const QRectF&,
-        const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
+    void renderRect( const QRectF&, const QskBoxBorderMetrics&,
         const QskBoxBorderColors&, const QskGradient&, QSGGeometry& );
 
     void renderRectellipseFill( const QRectF&,
@@ -138,7 +137,7 @@ inline void QskBoxRenderer::renderBorder(
     const QskBoxBorderMetrics& border, QSGGeometry& geometry )
 {
     if ( shape.isRectangle() )
-        renderRectBorder( rect, shape, border, geometry );
+        renderRectBorder( rect, border, geometry );
     else
         renderRectellipseBorder( rect, shape, border, geometry );
 }
@@ -148,7 +147,7 @@ inline void QskBoxRenderer::renderFill(
     const QskBoxBorderMetrics& border, QSGGeometry& geometry )
 {
     if ( shape.isRectangle() )
-        renderRectFill( rect, shape, border, geometry );
+        renderRectFill( rect, border, geometry );
     else
         renderRectellipseFill( rect, shape, border, geometry );
 }
@@ -159,7 +158,7 @@ inline void QskBoxRenderer::renderBox( const QRectF& rect,
     QSGGeometry& geometry )
 {
     if ( shape.isRectangle() )
-        renderRect( rect, shape, border, borderColors, gradient, geometry );
+        renderRect( rect, border, borderColors, gradient, geometry );
     else
         renderRectellipse( rect, shape, border, borderColors, gradient, geometry );
 }

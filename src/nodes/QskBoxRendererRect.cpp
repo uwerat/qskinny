@@ -516,12 +516,9 @@ static inline void qskCreateBorder(
     }
 }
 
-void QskBoxRenderer::renderRectBorder(
-    const QRectF& rect, const QskBoxShapeMetrics& shape,
+void QskBoxRenderer::renderRectBorder( const QRectF& rect,
     const QskBoxBorderMetrics& border, QSGGeometry& geometry )
 {
-    Q_UNUSED( shape )
-
     const Quad out = rect;
     const Quad in = qskValidOrEmptyInnerRect( rect, border.widths() );
 
@@ -535,12 +532,9 @@ void QskBoxRenderer::renderRectBorder(
     qskCreateBorderMonochrome( out, in, Color(), line );
 }
 
-void QskBoxRenderer::renderRectFill(
-    const QRectF& rect, const QskBoxShapeMetrics& shape,
+void QskBoxRenderer::renderRectFill( const QRectF& rect, 
     const QskBoxBorderMetrics& border, QSGGeometry& geometry )
 {
-    Q_UNUSED( shape )
-
     const Quad in = qskValidOrEmptyInnerRect( rect, border.widths() );
 
     if ( in.isEmpty() )
@@ -553,13 +547,10 @@ void QskBoxRenderer::renderRectFill(
     qskCreateFillRandom( Qt::Vertical, in, ColorMapSolid(), line );
 }
 
-void QskBoxRenderer::renderRect(
-    const QRectF& rect, const QskBoxShapeMetrics& shape,
+void QskBoxRenderer::renderRect( const QRectF& rect,
     const QskBoxBorderMetrics& border, const QskBoxBorderColors& borderColors,
     const QskGradient& gradient, QSGGeometry& geometry )
 {
-    Q_UNUSED( shape )
-
     const Quad out = rect;
     const Quad in = qskValidOrEmptyInnerRect( rect, border.widths() );
 
