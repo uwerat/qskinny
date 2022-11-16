@@ -92,7 +92,10 @@ class QSK_EXPORT QskGradient
     Q_INVOKABLE void setStops( const QVector< QskGradientStop >& );
     Q_INVOKABLE const QVector< QskGradientStop >& stops() const noexcept;
 
+    void setStops( const QRgb );
+    void setStops( Qt::GlobalColor );
     void setStops( const QColor& );
+
     void setStops( const QColor&, const QColor& );
     void setStops( QGradient::Preset );
 
@@ -209,6 +212,16 @@ inline const QskGradientStops& QskGradient::stops() const noexcept
      */
 #endif
     return m_stops;
+}
+
+inline void QskGradient::setStops( QRgb rgb )
+{
+    setStops( QColor::fromRgba( rgb ) );
+}
+
+inline void QskGradient::setStops( Qt::GlobalColor color )
+{
+    setStops( QColor( color ) );
 }
 
 inline QColor QskGradient::startColor() const noexcept
