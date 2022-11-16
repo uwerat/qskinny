@@ -18,8 +18,8 @@ class QSK_EXPORT QskGradientStop
 {
     Q_GADGET
 
-    Q_PROPERTY( qreal position READ position WRITE setPosition RESET resetPosition )
-    Q_PROPERTY( QColor color READ color WRITE setColor RESET resetColor )
+    Q_PROPERTY( qreal position READ position WRITE setPosition )
+    Q_PROPERTY( QColor color READ color WRITE setColor )
 
   public:
     constexpr QskGradientStop() noexcept = default;
@@ -38,11 +38,9 @@ class QSK_EXPORT QskGradientStop
 
     constexpr qreal position() const noexcept;
     void setPosition( qreal position ) noexcept;
-    void resetPosition() noexcept;
 
     constexpr const QColor& color() const noexcept;
     void setColor( const QColor& ) noexcept;
-    void resetColor() noexcept;
 
     void setRgb( QRgb ) noexcept;
     QRgb rgb() const noexcept;

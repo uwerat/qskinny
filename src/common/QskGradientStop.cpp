@@ -28,19 +28,9 @@ void QskGradientStop::setPosition( qreal position ) noexcept
     m_position = position;
 }
 
-void QskGradientStop::resetPosition() noexcept
-{
-    m_position = -1.0;
-}
-
 void QskGradientStop::setColor( const QColor& color ) noexcept
 {
     m_color = color;
-}
-
-void QskGradientStop::resetColor() noexcept
-{
-    m_color = QColor();
 }
 
 void QskGradientStop::setRgb( QRgb rgb ) noexcept
