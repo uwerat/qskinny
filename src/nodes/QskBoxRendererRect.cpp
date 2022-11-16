@@ -550,7 +550,7 @@ void QskBoxRenderer::renderRectFill(
     }
 
     const auto line = allocateLines< Line >( geometry, 2 );
-    qskCreateFillRandom( Qt::Vertical, in, ColorMapSolid( Color() ), line );
+    qskCreateFillRandom( Qt::Vertical, in, ColorMapSolid(), line );
 }
 
 void QskBoxRenderer::renderRect(
@@ -618,16 +618,14 @@ void QskBoxRenderer::renderRect(
 
     if ( fillLineCount > 0 )
     {
-        const auto& gd = gradient;
-
-        if ( gd.isMonochrome() )
+        if ( gradient.isMonochrome() )
         {
-            const ColorMapSolid colorMap( gd.rgbStart() );
+            const ColorMapSolid colorMap( gradient );
             qskCreateFillRandom( Qt::Vertical, in, colorMap, line );
         }
         else
         {
-            bool fillRandom = gd.stepCount() <= 1;
+            bool fillRandom = gradient.stepCount() <= 1;
             if ( fillRandom )
             {
                 /*
@@ -635,20 +633,20 @@ void QskBoxRenderer::renderRect(
                     but we didn't implement a random fill algo for
                     diagonal gradients yet.
                  */
-                fillRandom = !gd.linearDirection().isTilted();
+                fillRandom = !gradient.linearDirection().isTilted();
             }
 
             if ( fillRandom )
             {
-                const auto orientation = gd.linearDirection().isVertical()
+                const auto orientation = gradient.linearDirection().isVertical()
                     ? Qt::Vertical : Qt::Horizontal;
 
-                const ColorMapGradient colorMap( gd.rgbStart(), gd.rgbEnd() );
+                const ColorMapGradient colorMap( gradient );
                 qskCreateFillRandom( orientation, in, colorMap, line );
             }
             else
             {
-                qskCreateFillOrdered( in, gd, line );
+                qskCreateFillOrdered( in, gradient, line );
             }
         }
     }

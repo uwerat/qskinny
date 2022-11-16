@@ -27,8 +27,10 @@ namespace QskVertex
     class ColorMapSolid
     {
       public:
-        constexpr inline ColorMapSolid( Color color )
-            : m_color( color )
+        constexpr inline ColorMapSolid() = default;
+
+        inline ColorMapSolid( const QskGradient& gradient )
+            : m_color( gradient.rgbStart() )
         {
         }
 
@@ -44,9 +46,9 @@ namespace QskVertex
     class ColorMapGradient
     {
       public:
-        inline ColorMapGradient( Color color1, Color color2 )
-            : m_color1( color1 )
-            , m_color2( color2 )
+        inline ColorMapGradient( const QskGradient& gradient )
+            : m_color1( gradient.rgbStart() )
+            , m_color2( gradient.rgbEnd() )
         {
         }
 
