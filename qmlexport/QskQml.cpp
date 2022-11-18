@@ -23,6 +23,7 @@
 #include <QskLayoutMetrics.h>
 #include <QskMargins.h>
 #include <QskMessageWindow.h>
+#include <QskPlacementPolicy.h>
 #include <QskPopup.h>
 #include <QskProgressBar.h>
 #include <QskPushButton.h>
@@ -36,6 +37,7 @@
 #include <QskSkin.h>
 #include <QskSkinManager.h>
 #include <QskSlider.h>
+#include <QskStandardSymbol.h>
 #include <QskStatusIndicator.h>
 #include <QskSubWindow.h>
 #include <QskSubWindowArea.h>
@@ -47,28 +49,79 @@
 #include <QskVirtualKeyboard.h>
 #include <QskWindow.h>
 
-#include <qjsvalueiterator.h>
-#include <qstringlist.h>
+#if QT_VERSION < QT_VERSION_CHECK( 5, 14, 0 )
+#include <qqmlengine.h>
+#endif
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qqmlmetatype_p.h>
 QSK_QT_PRIVATE_END
 
 #define QSK_MODULE_NAME "Skinny"
+#define QSK_VERSION_MAJOR 1
+#define QSK_VERSION_MINOR 0
 
 #define QSK_REGISTER( className, typeName ) \
-    qmlRegisterType< className >( QSK_MODULE_NAME, 1, 0, typeName );
+    registerType< className >( typeName );
 
 #define QSK_REGISTER_GADGET( className, typeName ) \
-    qmlRegisterUncreatableType< className >( QSK_MODULE_NAME, 1, 0, typeName, QString() )
+    registerGadget< className >( typeName )
+
+#define QSK_REGISTER_NAMESPACE( className, typeName ) \
+    registerStaticMetaObject( className::staticMetaObject, typeName )
+
+#define QSK_REGISTER_SINGLETON( className, typeName, singleton ) \
+    registerSingleton< className >( typeName, singleton );
 
 // Required for QFlags to be constructed from an enum value
 #define QSK_REGISTER_FLAGS( Type ) \
     QMetaType::registerConverter< int, Type >([] ( int value ) { return Type( value ); })
 
-#define QSK_REGISTER_SINGLETON( className, typeName, singleton ) \
-    qmlRegisterSingletonType< className >( QSK_MODULE_NAME, 1, 0, typeName, \
-        [] ( QQmlEngine*, QJSEngine* ) { return dynamic_cast< QObject* >( singleton ); } )
+namespace
+{
+    template < typename T >
+    inline int registerType( const char *qmlName )
+    {
+        return qmlRegisterType< T >( QSK_MODULE_NAME,
+            QSK_VERSION_MAJOR, QSK_VERSION_MINOR, qmlName );
+    }
+
+    template < typename T >
+    inline int registerGadget( const char *qmlName )
+    {
+        return qmlRegisterUncreatableType< T >( QSK_MODULE_NAME,
+            QSK_VERSION_MAJOR, QSK_VERSION_MINOR, qmlName, QString() );
+    }
+
+    inline int registerStaticMetaObject( const QMetaObject &metaObject, const char *qmlName )
+    {
+        return qmlRegisterUncreatableMetaObject( metaObject, QSK_MODULE_NAME,
+            QSK_VERSION_MAJOR, QSK_VERSION_MINOR, qmlName, QString() );
+    }
+
+#if QT_VERSION < QT_VERSION_CHECK( 5, 14, 0 )
+    template < typename T >
+    inline int registerSingleton( const char *typeName, QObject* singleton )
+    {
+        auto callback =
+            [] ( QQmlEngine*, QJSEngine* )
+            {
+                QQmlEngine::setObjectOwnership( singleton, QQmlEngine::CppOwnership );
+                return singleton;
+            };
+
+        return qmlRegisterSingletonType< T >( QSK_MODULE_NAME,
+            QSK_VERSION_MAJOR, QSK_VERSION_MINOR, typeName, callback );
+    }
+#else
+    template < typename T >
+    inline int registerSingleton( const char *typeName, QObject* singleton )
+    {
+        return qmlRegisterSingletonInstance( QSK_MODULE_NAME,
+            QSK_VERSION_MAJOR, QSK_VERSION_MINOR, typeName, singleton );
+    }
+#endif
+}
 
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
 
@@ -110,7 +163,7 @@ namespace
 
 #endif
 
-static inline QskGradientStop qskToGradientStop( const QJSValue& value )
+static inline QskGradientStop qskJSToGradientStop( const QJSValue& value )
 {
     return QskGradientStop(
         value.property( QStringLiteral( "position" ) ).toNumber(),
@@ -196,6 +249,7 @@ void QskQml::registerTypes()
         QSK_REGISTER_GADGET( QskShadowMetrics, "ShadowMetrics" );
         QSK_REGISTER_GADGET( QskGradient, "Gradient" );
         QSK_REGISTER_GADGET( QskGradientStop, "GradientStop" );
+        QSK_REGISTER_GADGET( QskPlacementPolicy, "PlacementPolicy" );
         QSK_REGISTER_GADGET( QskIntervalF, "IntervalF" );
         QSK_REGISTER_GADGET( QskLayoutMetrics, "LayoutMetrics" );
         QSK_REGISTER_GADGET( QskSizePolicy, "SizePolicy" );
@@ -204,50 +258,13 @@ void QskQml::registerTypes()
         QSK_REGISTER_GADGET( QskAspect, "Aspect" );
     }
 
-    // Support (lists of) GradientStop
-    QMetaType::registerConverter< QJSValue, QskGradientStop >( qskToGradientStop );
+    QSK_REGISTER_NAMESPACE( QskStandardSymbol, "StandardSymbol" );
 
-#if 0
-    QMetaType::registerConverter< QJSValue, QskGradientStops >(
-
-        []( const QJSValue& value )
-        {
-            QskGradientStops stops;
-            if ( value.isArray() )
-            {
-                QJSValueIterator it( value );
-
-                while ( it.next() && it.hasNext() )
-                    stops.append( qskToGradientStop( it.value() ) );
-            }
-            return stops;
-        }
-    );
-#endif
+    QMetaType::registerConverter< QJSValue, QskGradientStop >( qskJSToGradientStop );
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 2, 0 )
     // how to do this with >= 6.2 TODO ...
     QQmlMetaType::registerCustomStringConverter( qMetaTypeId< QskMargins >(),
         []( const QString& s ) { return QVariant::fromValue( QskMargins( s.toDouble() ) ); } );
-#endif
-
-    // Support QskSizePolicy in QML user properties
-    QMetaType::registerConverter< QJSValue, QskSizePolicy >(
-        []( const QJSValue& value )
-        {
-            return QskSizePolicy(
-                static_cast< QskSizePolicy::Policy >( value.property( 0 ).toInt() ),
-                static_cast< QskSizePolicy::Policy >( value.property( 1 ).toInt() ) );
-        }
-    );
-
-#if 1
-    QMetaType::registerConverter< int, QskSizePolicy >(
-        []( int value )
-        {
-            const auto policy = static_cast< QskSizePolicy::Policy >( value );
-            return QskSizePolicy( policy, policy );
-        }
-    );
 #endif
 }
