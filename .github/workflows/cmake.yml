@@ -298,7 +298,7 @@ jobs:
           version: "5.15.2"
           target: "desktop"
           install-deps: "true"
-          modules: "qtwebengine qtpositioning"
+          modules: "qtwebengine"
           cached: ${{ steps.cache-qt-5-15.outputs.cache-hit }}
           setup-python: "false"
           tools: ""
@@ -312,7 +312,7 @@ jobs:
           version: "6.2.4"
           target: "desktop"
           install-deps: "true"
-          modules: "qtwebengine qtpositioning"
+          modules: "qtwebengine"
           cached: ${{ steps.cache-qt-6-2.outputs.cache-hit }}
           setup-python: "false"
           tools: ""
