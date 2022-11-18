@@ -17,6 +17,17 @@
 static_assert( sizeof( QskAspect ) == sizeof( quint64 ),
     "QskAspect::Aspect has to match quint64" );
 
+static void qskRegisterAspect()
+{
+    qRegisterMetaType< QskAspect >();
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    QMetaType::registerEqualsComparator< QskAspect >();
+#endif
+}
+
+Q_CONSTRUCTOR_FUNCTION( qskRegisterAspect )
+
 namespace
 {
     using namespace std;

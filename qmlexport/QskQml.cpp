@@ -60,7 +60,6 @@ QSK_QT_PRIVATE_END
     qmlRegisterType< className >( QSK_MODULE_NAME, 1, 0, typeName );
 
 #define QSK_REGISTER_GADGET( className, typeName ) \
-    qRegisterMetaType< className >(); \
     qmlRegisterUncreatableType< className >( QSK_MODULE_NAME, 1, 0, typeName, QString() )
 
 // Required for QFlags to be constructed from an enum value
@@ -208,6 +207,7 @@ void QskQml::registerTypes()
     // Support (lists of) GradientStop
     QMetaType::registerConverter< QJSValue, QskGradientStop >( qskToGradientStop );
 
+#if 0
     QMetaType::registerConverter< QJSValue, QskGradientStops >(
 
         []( const QJSValue& value )
@@ -223,6 +223,7 @@ void QskQml::registerTypes()
             return stops;
         }
     );
+#endif
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 2, 0 )
     // how to do this with >= 6.2 TODO ...
