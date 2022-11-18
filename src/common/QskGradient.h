@@ -89,8 +89,8 @@ class QSK_EXPORT QskGradient
     bool isMonochrome() const noexcept;
     bool isVisible() const noexcept;
 
-    Q_INVOKABLE void setStops( const QVector< QskGradientStop >& );
-    Q_INVOKABLE const QVector< QskGradientStop >& stops() const noexcept;
+    void setStops( const QVector< QskGradientStop >& );
+    const QVector< QskGradientStop >& stops() const noexcept;
 
     void setStops( const QRgb );
     void setStops( Qt::GlobalColor );
