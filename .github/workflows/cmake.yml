@@ -342,7 +342,7 @@ jobs:
 
       - name: Install ( QSkinny ) Strip
         shell: bash
-        run: cmake --install . --strip
+        run: cmake --install qskinny_build --prefix qskinny_install --strip --config ${{ matrix.config.build_type }}
 
       - name: Configure ( CMake Integration Test )
         shell: bash
