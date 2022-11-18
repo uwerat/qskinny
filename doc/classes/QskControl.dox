@@ -57,18 +57,6 @@
 */
 
 /*!
-    \property bool QskControl::autoFillBackground
-
-    This property holds whether the background is filled automatically
-    with the background gradient.
-
-    \accessors autoFillBackground(), setAutoFillBackground()
-
-    \sa background()
-    \saqt QWidget::autoFillBackground
-*/
-
-/*!
     \property bool QskControl::autoLayoutChildren
 
     QskControl offers basic layout functionalities that can be enabled be
@@ -223,11 +211,8 @@
 
     Sets the margins around the contents of the control 
 
-    The value is stored in the local hint table for the aspect:
-         QskControl::Control | QskAspect::Metric | QskAspect::Margin
-
     \param margin Margin for all sides
-    \aspect QskControl::Control | QskAspect::Metric | QskAspect::Margin
+    \aspect QskControl::Background | QskAspect::Metric | QskAspect::Padding
 
     \sa contentsRect(), margins(), QskSkinnable::setMarginHint()
 */
@@ -235,15 +220,14 @@
 /*!
     \fn QskControl::setMargins( qreal, qreal, qreal, qreal )
 
-    The value is stored in the local hint table for the aspect:
-         QskControl::Control | QskAspect::Metric | QskAspect::Margin
+    Sets the margins around the contents of the control 
 
     \param left Left margin
     \param top Top margin
     \param right Right margin
     \param bottom Bottom margin
 
-    \aspect QskControl::Control | QskAspect::Metric | QskAspect::Margin
+    \aspect QskControl::Background | QskAspect::Metric | QskAspect::Padding
 
     \sa contentsRect(), margins(), QskSkinnable::setMarginHint()
 */
@@ -254,7 +238,7 @@
     Sets the margins around the contents of the control 
 
     \param margins Margins
-    \aspect QskControl::Control | QskAspect::Metric | QskAspect::Margin
+    \aspect QskControl::Background | QskAspect::Metric | QskAspect::Padding
 
     \sa contentsRect(), margins()
     \saqt QEvent::ContentsRectChange
@@ -265,7 +249,7 @@
 
     Reset the margins to the default value provided from the skin
 
-    \aspect QskControl::Control | QskAspect::Metric | QskAspect::Margin
+    \aspect QskControl::Background | QskAspect::Metric | QskAspect::Padding
 
     \sa contentsRect(), setMargins(), margins()
     \saqt QEvent::ContentsRectChange
@@ -275,7 +259,7 @@
     \fn QskControl::margins() const
 
     \return margins around the contents of the control
-    \aspect QskControl::Control | QskAspect::Metric | QskAspect::Margin
+    \aspect QskControl::Background | QskAspect::Metric | QskAspect::Padding
 
     \sa contentsRect(), setMargins()
     \saqt QEvent::ContentsRectChange
@@ -284,11 +268,12 @@
 /*!
     \fn QskControl::setBackgroundColor
 
-    A conveninece method that enables the \ref autoFillBackground property
-    and sets a solid color as background. Usually used for debugging
-    layout problems.
+    A conveninece method for setting a monochrome gradient as background. Often used
+    for debugging layout problems.
 
-    \sa setBackground(), setAutoFillBackground()
+    \aspect QskControl::Background | QskAspect::Color
+
+    \sa setBackground()
     \sa QskQuickItem::DebugForceBackground
 */
 
@@ -296,10 +281,9 @@
     \fn QskControl::setBackground
 
     Set the gradient that is used to fill the background,
-    when \ref autoFillBackground is enabled.
 
-    \aspect QskControl::Control | QskAspect::Color
-    \sa resetBackground(), background(), autoFillBackground()
+    \aspect QskControl::Background | QskAspect::Color
+    \sa resetBackground(), background(), setBackgroundColor
 */
 
 /*!
@@ -307,18 +291,17 @@
 
     Reset the background gradient to the default colors from the skin 
 
-    \aspect QskControl::Control | QskAspect::Color
-    \sa setBackground(), background(), autoFillBackground()
+    \aspect QskControl::Background | QskAspect::Color
+    \sa setBackground(), setBackgroundColor(), background()
 */
 
 /*!
     \fn QskControl::background() const
 
-    \return Gradient that is used to fill the background,
-            when autoFillBackground is enabled.
+    \return Gradient that is used to fill the background
 
-    \aspect QskControl::Control | QskAspect::Color
-    \sa setBackground(), resetBackground(), autoFillBackground()
+    \aspect QskControl::Background | QskAspect::Color
+    \sa setBackground(), setBackgroundColor(), resetBackground()
 */
 
 /*!
@@ -328,6 +311,8 @@
 
     contentsRect() is a rectangle being used for laying out scene graph nodes,
     while layoutRect() is used for child items.
+
+    \aspect QskControl::Background | QskAspect::Metric | QskAspect::Padding
 
     \sa margins(), setMargins(), layoutRect()
 */
@@ -441,24 +426,10 @@
 */
 
 /*!
-    \fn QskControl::setAutoFillBackground
-
-    Set or clear the \ref autoFillBackground property
-    \sa autoFillBackground()
-*/
-
-/*!
-    \fn QskControl::autoFillBackground() const
-
-    \return Value of the \ref autoFillBackground property
-    \sa setAutoFillBackground()
-*/
-
-/*!
     \fn QskControl::setAutoLayoutChildren
 
     Set or clear the autoLayoutChildren property
-    \sa autoFillBackground()
+    \sa autoLayoutChildren()
 */
 
 /*!

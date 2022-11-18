@@ -313,10 +313,7 @@ void QskSkinlet::updateNode( QskSkinnable* skinnable, QSGNode* parentNode ) cons
         // background
 
         oldNode = findChildNode( parentNode, BackgroundRole );
-
-        newNode = nullptr;
-        if ( control->autoFillBackground() )
-            newNode = updateBackgroundNode( control, oldNode );
+        newNode = updateBackgroundNode( control, oldNode );
 
         replaceChildNode( BackgroundRole, parentNode, oldNode, newNode );
 

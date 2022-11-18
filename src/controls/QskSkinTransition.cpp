@@ -416,15 +416,7 @@ inline bool WindowAnimator::isControlAffected( const QskControl* control,
         return false;
     }
 
-    if ( subControl == QskAspect::NoSubcontrol )
-    {
-        if ( !control->autoFillBackground() )
-        {
-            // no need to animate the background unless we show it
-            return false;
-        }
-    }
-    else
+    if ( subControl != QskAspect::NoSubcontrol )
     {
         if ( !subControls.contains( subControl ) )
         {
