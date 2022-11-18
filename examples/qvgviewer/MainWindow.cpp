@@ -61,14 +61,14 @@ class GraphicLabel : public QskGraphicLabel
 
         const int duration = 500;
 
-        const auto oldGradient = background();
+        const auto oldGradient = gradientHint( Panel );
         setGradientHint( Panel, gradient );
 
         // finally setup a smooth transition manually
-        startTransition( QskAspect::Control | QskAspect::Color, duration,
+        startTransition( Panel | QskAspect::Color, duration,
             QVariant::fromValue( oldGradient ), QVariant::fromValue( gradient ) );
 
-        startTransition( QskGraphicLabel::Graphic | QskAspect::GraphicRole,
+        startTransition( Graphic | QskAspect::GraphicRole,
             duration, oldRole, graphicRole() );
     }
 };
