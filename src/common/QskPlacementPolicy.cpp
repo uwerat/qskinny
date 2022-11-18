@@ -5,6 +5,17 @@
 
 #include "QskPlacementPolicy.h"
 
+static void qskRegisterPlacementPolicy()
+{
+    qRegisterMetaType< QskPlacementPolicy >();
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    QMetaType::registerEqualsComparator< QskPlacementPolicy >();
+#endif
+}
+
+Q_CONSTRUCTOR_FUNCTION( qskRegisterPlacementPolicy )
+
 #ifndef QT_NO_DEBUG_STREAM
 
 #include <qdebug.h>
