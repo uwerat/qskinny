@@ -555,13 +555,13 @@ QDebug operator<<( QDebug debug, const QskGradient& gradient )
     QDebugStateSaver saver( debug );
     debug.nospace();
 
-    debug << "QskGradient( ";
+    debug << "QskGradient(";
 
     switch ( gradient.type() )
     {
         case QskGradient::Linear:
         {
-            debug << "L(";
+            debug << " L(";
 
             const auto dir = gradient.linearDirection();
             debug << dir.start().x() << "," << dir.start().y()
@@ -572,7 +572,7 @@ QDebug operator<<( QDebug debug, const QskGradient& gradient )
 
         case QskGradient::Radial:
         {
-            debug << "R(";
+            debug << " R(";
 
             const auto dir = gradient.radialDirection();
 
@@ -584,7 +584,7 @@ QDebug operator<<( QDebug debug, const QskGradient& gradient )
 
         case QskGradient::Conic:
         {
-            debug << "C(";
+            debug << " C(";
 
             const auto dir = gradient.conicDirection();
 
@@ -595,16 +595,11 @@ QDebug operator<<( QDebug debug, const QskGradient& gradient )
 
         case QskGradient::Stops:
         {
-            debug << "S()";
             break;
         }
     }
 
-    if ( gradient.stops().isEmpty() )
-    {
-        debug << " ()";
-    }
-    else
+    if ( !gradient.stops().isEmpty() )
     {
         if ( gradient.isMonochrome() )
         {
