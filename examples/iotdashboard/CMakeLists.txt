@@ -80,8 +80,22 @@ set_target_properties(${TARGET_NAME}
         AUTORCC ON
         FOLDER examples)
 
-target_link_libraries(${TARGET_NAME}
-    PRIVATE
-        qskinny
-        qsktestsupport
-        ${Qt}::Svg)
+if(TARGET Qsk::qskinny) 
+    # integration test
+    # - qsktestsupport doesn't exists
+    # - qskinny has a namespace Qsk
+    target_link_libraries(${TARGET_NAME}
+        PRIVATE
+            Qsk::qskinny
+            ${Qt}::Svg)
+else()
+    target_link_libraries(${TARGET_NAME}
+        PRIVATE
+            qskinny
+            qsktestsupport
+            ${Qt}::Svg)
+
+    target_compile_definitions(${TARGET_NAME}
+        PRIVATE
+            USE_SHORTCUTS)
+endif()

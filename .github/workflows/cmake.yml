@@ -1,5 +1,11 @@
 name: CMake Build Matrix
 
+# Directories
+# - $GITHUB_WORKSPACE/qskinny_source     : Checkout directory for qskinny sources
+# - $GITHUB_WORKSPACE/qskinny_build      : Build directory for QSkinny CMake
+# - $GITHUB_WORKSPACE/qskinny_install    : Install directory for QSkinny package
+# - $GITHUB_WORKSPACE/qskinny_build_test : Build directory for QSkinny CMake integration test
+
 on:
   push:
     branches: [cmake]
@@ -185,12 +191,16 @@ jobs:
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - name: Git Checkout 
+        uses: actions/checkout@v3
+        with:
+          path: qskinny_source
 
       - name: Print env
         run: |
           echo github.event.action: ${{ github.event.action }}
           echo github.event_name: ${{ github.event_name }}
+
       - name: Install dependencies on windows
         if: startsWith(matrix.config.os, 'windows')
         run: |
@@ -207,6 +217,7 @@ jobs:
           ninja --version
           cmake --version
           gcc --version
+
       - name: Install dependencies on ubuntu9
         if: startsWith(matrix.config.name, 'Ubuntu GCC 9')
         run: |
@@ -242,6 +253,7 @@ jobs:
           sudo update-alternatives --install /usr/bin/cmake cmake /opt/cmake/bin/cmake 1 --force
           echo cmake version after
           cmake --version
+
       - name: Install dependencies on macos
         if: startsWith(matrix.config.os, 'macos')
         run: |
@@ -253,7 +265,15 @@ jobs:
         if: startsWith(matrix.config.name, 'Ubuntu') && endsWith(matrix.config.name, 'Qt6')
         run: sudo apt-get install libxkbcommon-dev -y
 
-      - uses: actions/checkout@v2
+      - name: Install hunspell for Ubuntu
+        if: false && startsWith(matrix.config.name, 'Ubuntu')
+        run: |
+          sudo apt-get install -y libhunspell-dev
+
+      - name: Install pinyin for Ubuntu
+        if: false && startsWith(matrix.config.name, 'Ubuntu')
+        run: |
+          sudo apt-get install -y libimepinyin-dev
 
       - name: Cache Qt5
         if: endsWith(matrix.config.name, 'Qt5')
@@ -278,7 +298,7 @@ jobs:
           version: "5.15.2"
           target: "desktop"
           install-deps: "true"
-          modules: "qtwebengine"
+          modules: "qtwebengine qtpositioning"
           cached: ${{ steps.cache-qt-5-15.outputs.cache-hit }}
           setup-python: "false"
           tools: ""
@@ -292,49 +312,53 @@ jobs:
           version: "6.2.4"
           target: "desktop"
           install-deps: "true"
-          modules: "qtwebengine"
+          modules: "qtwebengine qtpositioning"
           cached: ${{ steps.cache-qt-6-2.outputs.cache-hit }}
           setup-python: "false"
           tools: ""
           set-env: "true"
           tools-only: "false"
 
-      - name: Install hunspell for Ubuntu
-        if: startsWith(matrix.config.name, 'Ubuntu')
-        run: |
-          sudo apt-get install -y libhunspell-dev
-
-      - name: Install pinyin for Ubuntu
-        if: startsWith(matrix.config.name, 'Ubuntu')
-        run: |
-          sudo apt-get install -y libimepinyin-dev
-
-      - name: Configure
+      - name: Configure ( QSkinny )
         shell: bash
         run: |
-          mkdir build
-          mkdir instdir
+          mkdir qskinny_build
+          mkdir qskinny_install
           cmake \
-            -S . \
-            -B . \
+            -S qskinny_source \
+            -B qskinny_build \
             -G "${{ matrix.config.generators }}" \
             -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
-            -DCMAKE_INSTALL_PREFIX:PATH=instdir \
-            -D${{ matrix.config.cmake.qtdirkey }}:PATH="${{ matrix.config.cmake.qtdirvalue }}" \
-            -DENABLE_HUNSPELL:BOOL=ON \
-            -DENABLE_PINYIN:BOOL=ON
+            -DCMAKE_INSTALL_PREFIX:PATH=qskinny_install \
+            -D${{ matrix.config.cmake.qtdirkey }}:PATH="${{ matrix.config.cmake.qtdirvalue }}"
 
-      - name: Build
+      - name: Build ( QSkinny )
         shell: bash
-        run: cmake --build . --config ${{ matrix.config.build_type }}
+        run: cmake --build qskinny_build --config ${{ matrix.config.build_type }}
 
       #- name: Tests
       #  shell: bash
       #  run: ctest -j14 -C Release -T test --output-on-failure
 
-      # - name: Install Strip
-      #   shell: bash
-      #   run: cmake --install . --strip
+      - name: Install ( QSkinny ) Strip
+        shell: bash
+        run: cmake --install . --strip
+
+      - name: Configure ( CMake Integration Test )
+        shell: bash
+        run: |
+          mkdir qskinny_build_test
+          cmake \
+            -S qskinny_source/examples/iotdashboard_smoketest \
+            -B qskinny_build_test \
+            -G "${{ matrix.config.generators }}" \
+            -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
+            -D${{ matrix.config.cmake.qtdirkey }}:PATH="${{ matrix.config.cmake.qtdirvalue }}" \
+            -DQSkinny_DIR:PATH=qskinny_install/lib/cmake/QSkinny
+
+      - name: Build ( CMake Integration Test )
+        shell: bash
+        run: cmake --build qskinny_build_test --config ${{ matrix.config.build_type }}
 
       # - name: Pack
       #   shell: bash

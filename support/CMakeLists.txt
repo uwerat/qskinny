@@ -48,7 +48,7 @@ endif()
 
 target_compile_definitions(${TARGET_NAME}
     PRIVATE
-        PLUGIN_PATH=${CMAKE_INSTALL_PREFIX}/skins) # TODO this'll work only locally since CMAKE_INSTALL_PREFIX is an absolute path
+        PLUGIN_PATH=${CMAKE_INSTALL_PREFIX}/skins)
 
 target_include_directories(${TARGET_NAME}
    PUBLIC
@@ -58,13 +58,10 @@ if(ENABLE_ENSURE_SKINS)
     target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/skins)
     target_compile_definitions(${TARGET_NAME} PRIVATE ENSURE_SKINS)
 
-    # TODO
-    # use_install_rpath: QMAKE_RPATHDIR *= $${QSK_INSTALL_PLUGINS}/skins
-    # use_local_rpath: QMAKE_RPATHDIR *= $${QSK_PLUGIN_DIR}/skins
     target_link_libraries(${TARGET_NAME}
         PRIVATE
             squiekskin
             material3skin)
 endif()
 
-install(TARGETS ${TARGET_NAME} DESTINATION lib) # TODO unify lib install directory
+install(TARGETS ${TARGET_NAME} DESTINATION ${QSK_INSTALL_LIBS})

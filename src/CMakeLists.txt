@@ -449,3 +449,8 @@ set_target_properties(${TARGET_NAME}
 set_target_properties(${TARGET_NAME}
     PROPERTIES
         AUTOGEN_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/qskinny_autogen)
+
+list(TRANSFORM TARGET_HEADERS PREPEND "${CMAKE_CURRENT_LIST_DIR}/")
+set_target_properties(${TARGET_NAME}
+    PROPERTIES
+        PUBLIC_HEADER "${TARGET_HEADERS}")

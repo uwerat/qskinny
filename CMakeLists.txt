@@ -99,10 +99,6 @@ set(QSK_INSTALL_EXAMPLES examples)
 set(CMAKE_DEBUG_POSTFIX d)
 # define binary install directory globally
 set(CMAKE_INSTALL_BINDIR ${QSK_INSTALL_BINS}$<$<CONFIG:Debug>:/debug>)
-# define library install directory globally
-# set(CMAKE_INSTALL_LIBDIR lib$<$<CONFIG:Debug>:/debug>)
-# define install rpath globally
-# set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/${QSK_INSTALL_LIBS})
 
 add_subdirectory(src)
 add_subdirectory(skins)
@@ -131,10 +127,11 @@ set(PACKAGE_NAMESPACE Qsk)
 set(PACKAGE_LOCATION  lib/cmake/${PROJECT_NAME})
 
 install(TARGETS qskinny EXPORT ${PACKAGE_NAME}Targets
-    LIBRARY DESTINATION  ${QSK_INSTALL_LIBS}
-    ARCHIVE DESTINATION  ${QSK_INSTALL_LIBS}
-    RUNTIME DESTINATION  ${QSK_INSTALL_LIBS}
-    INCLUDES DESTINATION ${QSK_INSTALL_HEADERS})
+    LIBRARY DESTINATION       ${QSK_INSTALL_LIBS}
+    ARCHIVE DESTINATION       ${QSK_INSTALL_LIBS}
+    RUNTIME DESTINATION       ${QSK_INSTALL_LIBS}
+    INCLUDES DESTINATION      ${QSK_INSTALL_HEADERS}
+    PUBLIC_HEADER DESTINATION ${QSK_INSTALL_HEADERS})
 
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(

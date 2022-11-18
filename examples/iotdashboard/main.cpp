@@ -7,7 +7,9 @@
 #include "GraphicProvider.h"
 #include "Skin.h"
 
+#ifdef USE_SHORTCUTS
 #include <SkinnyShortcut.h>
+#endif
 
 #include <QskSetup.h>
 #include <QskShortcutMap.h>
@@ -75,9 +77,11 @@ int main( int argc, char* argv[] )
 
     qskSetup->setSkin( "DaytimeSkin" );
 
+#ifdef USE_SHORTCUTS
     // With CTRL-B you can rotate a couple of visual debug modes
     SkinnyShortcut::enable( SkinnyShortcut::RotateSkin | SkinnyShortcut::DebugBackground |
         SkinnyShortcut::DebugStatistics | SkinnyShortcut::Quit );
+#endif
 
     MainWindow window;
     window.show();
