@@ -177,7 +177,7 @@ QskSkin::QskSkin( QObject* parent )
     {
         // some defaults
         const auto noMargins = QVariant::fromValue( QskMargins( 0 ) );
-        const auto aspect = QskAspect::Control | QskAspect::Metric;
+        const auto aspect = QskAspect::NoSubcontrol | QskAspect::Metric;
 
         setSkinHint( aspect | QskAspect::Margin, noMargins );
         setSkinHint( aspect | QskAspect::Padding, noMargins );

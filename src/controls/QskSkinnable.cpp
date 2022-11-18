@@ -211,7 +211,7 @@ static inline QskAspect qskSubstitutedAspect(
     }
 #endif
 
-    aspect.setSubControl( skinnable->effectiveSubcontrol( aspect.subControl() ) );
+    aspect.setSubcontrol( skinnable->effectiveSubcontrol( aspect.subControl() ) );
     return aspect;
 }
 
@@ -297,10 +297,10 @@ const QskSkinlet* QskSkinnable::effectiveSkinlet() const
 void QskSkinnable::setSubcontrolProxy(
     QskAspect::Subcontrol subControl, QskAspect::Subcontrol proxy )
 {
-    if ( subControl == QskAspect::Control )
+    if ( subControl == QskAspect::NoSubcontrol )
         return; // nonsense, we ignore this
 
-    if ( proxy == QskAspect::Control || subControl == proxy )
+    if ( proxy == QskAspect::NoSubcontrol || subControl == proxy )
     {
         resetSubcontrolProxy( subControl );
         return;
@@ -338,7 +338,7 @@ QskAspect::Subcontrol QskSkinnable::subcontrolProxy( QskAspect::Subcontrol subCo
             return it->second;
     }
 
-    return QskAspect::Control;
+    return QskAspect::NoSubcontrol;
 }
 
 QskSkinHintTable& QskSkinnable::hintTable()
@@ -733,7 +733,7 @@ QskColorFilter QskSkinnable::effectiveGraphicFilter(
     if ( !status.isValid() )
         return QskColorFilter();
 
-    aspect.setSubControl( status.aspect.subControl() );
+    aspect.setSubcontrol( status.aspect.subControl() );
     aspect.setSection( QskAspect::Body );
     aspect.setPlacement( QskAspect::NoPlacement );
 
@@ -770,7 +770,7 @@ QskColorFilter QskSkinnable::effectiveGraphicFilter(
 bool QskSkinnable::setAnimationHint(
     QskAspect aspect, QskAnimationHint hint )
 {
-    aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
+    aspect.setSubcontrol( effectiveSubcontrol( aspect.subControl() ) );
     return m_data->hintTable.setAnimation( aspect, hint );
 }
 
@@ -865,7 +865,7 @@ bool QskSkinnable::resetSkinHint( QskAspect aspect )
 QVariant QskSkinnable::effectiveSkinHint(
     QskAspect aspect, QskSkinHintStatus* status ) const
 {
-    aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
+    aspect.setSubcontrol( effectiveSubcontrol( aspect.subControl() ) );
 
     if ( !( aspect.isAnimator() || aspect.hasStates() ) )
     {
@@ -1049,11 +1049,11 @@ const QVariant& QskSkinnable::storedHint(
             return *value;
         }
 
-        if ( aspect.subControl() != QskAspect::Control )
+        if ( aspect.hasSubcontrol() )
         {
             // trying to resolve something from the skin default settings
 
-            aspect.setSubControl( QskAspect::Control );
+            aspect.clearSubcontrol();
             aspect.clearStates();
 
             if ( const auto value = skinTable.resolvedHint( aspect, &resolvedAspect ) )
@@ -1225,7 +1225,7 @@ void QskSkinnable::startTransition( QskAspect aspect,
 void QskSkinnable::startTransition( QskAspect aspect, int index,
     QskAnimationHint animationHint, const QVariant& from, const QVariant& to )
 {
-    aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
+    aspect.setSubcontrol( effectiveSubcontrol( aspect.subControl() ) );
     startHintTransition( aspect, index, animationHint, from, to );
 }
 
@@ -1359,7 +1359,7 @@ bool QskSkinnable::startHintTransitions(
     const auto subControls = control->subControls();
     for ( const auto subControl : subControls )
     {
-        aspect.setSubControl( subControl );
+        aspect.setSubcontrol( subControl );
 
         const auto& skinTable = skin->hintTable();
 

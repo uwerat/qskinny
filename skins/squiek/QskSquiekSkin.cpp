@@ -277,11 +277,11 @@ void Editor::setupControl()
     using A = QskAspect;
     using Q = QskControl;
 
-    setPadding( A::Control, 4 );
+    setPadding( A::NoSubcontrol, 4 );
 
-    setGradient( A::Control, m_pal.lighter135 );
-    setColor( A::Control | A::StyleColor, m_pal.themeForeground );
-    setColor( A::Control | A::StyleColor | Q::Disabled, m_pal.theme );
+    setGradient( A::NoSubcontrol, m_pal.lighter135 );
+    setColor( A::NoSubcontrol | A::StyleColor, m_pal.themeForeground );
+    setColor( A::NoSubcontrol | A::StyleColor | Q::Disabled, m_pal.theme );
 }
 
 void Editor::setupBox()

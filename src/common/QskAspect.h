@@ -85,7 +85,7 @@ class QSK_EXPORT QskAspect
 
     enum Subcontrol : quint16
     {
-        Control        = 0,
+        NoSubcontrol   = 0,
         LastSubcontrol = ( 1 << 12 ) - 1
     };
 
@@ -150,7 +150,9 @@ class QSK_EXPORT QskAspect
     void setAnimator( bool on ) noexcept;
 
     constexpr Subcontrol subControl() const noexcept;
-    void setSubControl( Subcontrol ) noexcept;
+    void setSubcontrol( Subcontrol ) noexcept;
+    constexpr bool hasSubcontrol() const noexcept;
+    void clearSubcontrol() noexcept;
 
     constexpr Section section() const noexcept;
     void setSection( Section ) noexcept;
@@ -241,7 +243,7 @@ constexpr inline QskAspect::State operator>>( QskAspect::State a, const int b ) 
 }
 
 inline constexpr QskAspect::QskAspect() noexcept
-    : QskAspect( Control, Body, Flag, NoPlacement )
+    : QskAspect( NoSubcontrol, Body, Flag, NoPlacement )
 {
 }
 
@@ -251,17 +253,17 @@ inline constexpr QskAspect::QskAspect( Subcontrol subControl ) noexcept
 }
 
 inline constexpr QskAspect::QskAspect( Section section ) noexcept
-    : QskAspect( Control, section, Flag, NoPlacement )
+    : QskAspect( NoSubcontrol, section, Flag, NoPlacement )
 {
 }
 
 inline constexpr QskAspect::QskAspect( Type type ) noexcept
-    : QskAspect( Control, Body, type, NoPlacement )
+    : QskAspect( NoSubcontrol, Body, type, NoPlacement )
 {
 }
 
 inline constexpr QskAspect::QskAspect( Placement placement ) noexcept
-    : QskAspect( Control, Body, Flag, placement )
+    : QskAspect( NoSubcontrol, Body, Flag, placement )
 {
 }
 
@@ -402,9 +404,19 @@ inline constexpr QskAspect::Subcontrol QskAspect::subControl() const noexcept
     return static_cast< Subcontrol >( m_bits.subControl );
 }
 
-inline void QskAspect::setSubControl( Subcontrol subControl ) noexcept
+inline void QskAspect::setSubcontrol( Subcontrol subControl ) noexcept
 {
     m_bits.subControl = subControl;
+}
+
+inline constexpr bool QskAspect::hasSubcontrol() const noexcept
+{
+    return m_bits.subControl != 0;
+}
+
+inline void QskAspect::clearSubcontrol() noexcept
+{
+    m_bits.subControl = 0;
 }
 
 inline constexpr QskAspect::Section QskAspect::section() const noexcept

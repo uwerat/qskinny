@@ -211,10 +211,10 @@ void Editor::setupControl()
 {
     using A = QskAspect;
 
-    setPadding( A::Control, 11_dp );
+    setPadding( A::NoSubcontrol, 11_dp );
 
-    setGradient( A::Control, m_pal.background );
-    setColor( A::Control | A::StyleColor, m_pal.onBackground );
+    setGradient( A::NoSubcontrol, m_pal.background );
+    setColor( A::NoSubcontrol | A::StyleColor, m_pal.onBackground );
 }
 
 void Editor::setupCheckBox()

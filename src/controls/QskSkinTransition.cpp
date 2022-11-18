@@ -416,7 +416,7 @@ inline bool WindowAnimator::isControlAffected( const QskControl* control,
         return false;
     }
 
-    if ( subControl == QskAspect::Control )
+    if ( subControl == QskAspect::NoSubcontrol )
     {
         if ( !control->autoFillBackground() )
         {

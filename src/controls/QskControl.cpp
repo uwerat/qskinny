@@ -145,19 +145,19 @@ void QskControl::setBackgroundColor( const QColor& color )
 
 void QskControl::setBackground( const QskGradient& gradient )
 {
-    if ( setGradientHint( QskAspect::Control, gradient ) )
+    if ( setGradientHint( QskAspect::NoSubcontrol, gradient ) )
         Q_EMIT backgroundChanged();
 }
 
 void QskControl::resetBackground()
 {
-    if ( resetColor( QskAspect::Control ) )
+    if ( resetColor( QskAspect::NoSubcontrol ) )
         Q_EMIT backgroundChanged();
 }
 
 QskGradient QskControl::background() const
 {
-    return gradientHint( QskAspect::Control );
+    return gradientHint( QskAspect::NoSubcontrol );
 }
 
 void QskControl::setMargins( qreal margin )
@@ -174,7 +174,7 @@ void QskControl::setMargins( const QMarginsF& margins )
 {
     const auto m = QskMargins().expandedTo( margins );
 
-    if ( setMarginHint( QskAspect::Control, m ) )
+    if ( setMarginHint( QskAspect::NoSubcontrol, m ) )
     {
         qskSendEventTo( this, QEvent::ContentsRectChange );
         Q_EMIT marginsChanged( m );
@@ -183,7 +183,7 @@ void QskControl::setMargins( const QMarginsF& margins )
 
 void QskControl::resetMargins()
 {
-    if ( resetMarginHint( QskAspect::Control ) )
+    if ( resetMarginHint( QskAspect::NoSubcontrol ) )
     {
         qskSendEventTo( this, QEvent::ContentsRectChange );
         Q_EMIT marginsChanged( margins() );
@@ -192,7 +192,7 @@ void QskControl::resetMargins()
 
 QMarginsF QskControl::margins() const
 {
-    return marginHint( QskAspect::Control );
+    return marginHint( QskAspect::NoSubcontrol );
 }
 
 QRectF QskControl::contentsRect() const

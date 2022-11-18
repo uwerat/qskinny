@@ -334,7 +334,7 @@ void QskSubcontrolLayoutEngine::setGraphicTextElements( const QskSkinnable* skin
      */
 
     GraphicElement* graphicElement = nullptr;
-    if ( !graphicSize.isEmpty() && ( graphicSubControl != QskAspect::Control ) )
+    if ( !graphicSize.isEmpty() && ( graphicSubControl != QskAspect::NoSubcontrol ) )
     {
         graphicElement = dynamic_cast< GraphicElement* >( element( graphicSubControl ) );
         if ( graphicElement == nullptr )
@@ -347,7 +347,7 @@ void QskSubcontrolLayoutEngine::setGraphicTextElements( const QskSkinnable* skin
     }
 
     TextElement* textElement = nullptr;
-    if ( !text.isEmpty() && ( textSubcontrol != QskAspect::Control ) )
+    if ( !text.isEmpty() && ( textSubcontrol != QskAspect::NoSubcontrol ) )
     {
         textElement = dynamic_cast< TextElement* >( element( textSubcontrol ) );
         if ( textElement == nullptr )
