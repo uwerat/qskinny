@@ -191,8 +191,6 @@ namespace
             editor.setTable( &hintTable() );
             editor.setAnimator( 200, QEasingCurve::Linear );
 
-            editor.setGradient( QskAspect::Control, Qt::gray );
-
             editor.setupFocusIndicator( 2, 3, 6, DarkBlue );
             editor.setupBox( 2, 8, DarkCyan, LightCyan );
 
@@ -214,8 +212,6 @@ namespace
             MySkinEditor editor;
             editor.setTable( &hintTable() );
             editor.setAnimator( 100, QEasingCurve::InQuad );
-
-            editor.setGradient( QskAspect::Control, Qt::gray );
 
             editor.setupFocusIndicator( 2, 6, 6, Crimson );
             editor.setupBox( 4, 30, LightPink, MistyRose );
