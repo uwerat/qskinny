@@ -6,8 +6,8 @@ Qsk.PushButton
     sizePolicy
     {
         // avoid the effect of long texts
-        horizontalPolicy: Qsk.SizePolicy.Ignored
-        verticalPolicy: Qsk.SizePolicy.Ignored
+        horizontal: Qsk.SizePolicy.Ignored
+        vertical: Qsk.SizePolicy.Ignored
     }
 
     minimumSize
