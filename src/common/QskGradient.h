@@ -142,8 +142,10 @@ class QSK_EXPORT QskGradient
         Couldn't find a way how to assign a struct to another struct
         that is used as proprty from QML without creating extra QObjects. 
         So for the moment we are using lists, that are more
-        error prone and less intuitive. Let's see if some day we will have
-        the QML system being capable of this. TODO ...
+        error prone and less intuitive. 
+
+        Maybe we can do something better using qmlRegisterCustomType, where we
+        can register our own QQmlCustomParser. TODO ...
      */
     Q_PROPERTY( QVector< qreal > linear READ linearAsList WRITE setLinearAsList )
     Q_PROPERTY( QVector< qreal > conic READ conicAsList WRITE setConicAsList )
