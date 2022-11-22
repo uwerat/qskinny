@@ -22,15 +22,6 @@ add_executable(${TARGET_NAME}
     ${TARGET_SOURCES}
     ${TARGET_HEADERS})
 
-# TODO
-#linux {
-#    pedantic
-#    {
-#        QMAKE_CXXFLAGS += -isystem $$[ QT_INSTALL_HEADERS ] / QtQuickWidgets QMAKE_CXXFLAGS +=
-#            -isystem $$[ QT_INSTALL_HEADERS ] / QtWidgets
-#   }
-#}
-
 target_link_libraries(${TARGET_NAME}
     PRIVATE
         qskinny
