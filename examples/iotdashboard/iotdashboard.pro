@@ -1,7 +1,7 @@
 CONFIG += qskexample
 
 QT += svg
-QT += quick_private # TODO: examples should not use private headers
+#QT += quick_private # TODO: examples should not use private headers
 
 SOURCES += \
     Box.cpp \
