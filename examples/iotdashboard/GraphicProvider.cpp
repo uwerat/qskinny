@@ -6,10 +6,8 @@
 #include "GraphicProvider.h"
 
 #include <QskGraphic.h>
+#include <QskGraphicIO.h>
 
-#include <QSvgRenderer>
-#include <QPainter>
-#include <QImage>
 #include <QFile>
 
 const inline QString pathName( const QString& baseName, const QString& suffix )
@@ -23,7 +21,7 @@ const inline QString pathName( const QString& baseName, const QString& suffix )
 
 const QskGraphic* GraphicProvider::loadGraphic( const QString& id ) const
 {
-    static QString scope = QStringLiteral( ":/images/" );
+    static QString scope = QStringLiteral( ":/images/qvg/" );
 
     QString baseName = scope;
     baseName += id.toLower().replace( ' ', '-' );
@@ -31,30 +29,12 @@ const QskGraphic* GraphicProvider::loadGraphic( const QString& id ) const
     auto path = pathName( baseName, QString() );
 
     if ( path.isEmpty() )
-        path = pathName( baseName, ".png" );
-
-    if ( path.isEmpty() )
-        path = pathName( baseName, ".svg" );
+        path = pathName( baseName, ".qvg" );
 
     QskGraphic graphic;
 
     if ( !path.isEmpty() )
-    {
-        if ( path.endsWith( ".png" ) )
-        {
-            graphic = QskGraphic::fromImage( QImage( path ) );
-        }
-        else
-        {
-            QSvgRenderer renderer;
-            if ( renderer.load( path ) )
-            {
-                QPainter painter( &graphic );
-                renderer.render( &painter );
-                painter.end();
-            }
-        }
-    }
+        graphic = QskGraphicIO::read( path );
 
     return graphic.isNull() ? nullptr : new QskGraphic( graphic );
 }

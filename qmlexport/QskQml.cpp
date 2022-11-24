@@ -125,11 +125,9 @@ namespace
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
         registerUncreatableType< T >( className );
 #else
-        // the class name without the "Qsk" prefix
-
         /*
             According to the QML naming rules uncreatables have to
-            start with a lowercase letter ( since Qt6 ) , while namespaces
+            start with a lowercase letter ( since Qt6 ), while namespaces
             and creatable items usually start with a upper letter.
             This results in an odd naming scheme for the enums defined inside of gadgets.
 
@@ -140,7 +138,11 @@ namespace
             enums are removed from the first and everything else than the enums from
             the second. TODO ...
          */
-        registerUncreatableMetaObject( T::staticMetaObject, className );
+
+        if ( T::staticMetaObject.enumeratorCount() > 0 )
+        {
+            registerUncreatableMetaObject( T::staticMetaObject, className );
+        }
 
         QByteArray name = className;
         name.data()[0] = std::tolower( name.data()[0] );

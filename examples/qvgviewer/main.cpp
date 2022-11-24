@@ -22,7 +22,7 @@ int main( int argc, char* argv[] )
 
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
-    QskFocusIndicator* focusIndicator = new QskFocusIndicator();
+    auto focusIndicator = new QskFocusIndicator();
     focusIndicator->setObjectName( "FocusIndicator" );
 
     MainWindow window;
