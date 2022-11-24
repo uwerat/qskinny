@@ -98,8 +98,6 @@ QSGNode* DiagramSkinlet::updateChartNode( const Diagram* diagram, QSGNode* node 
     const QRectF rect = diagram->subControlRect( Q::Chart );
     const qreal yMax = diagram->yMax();
 
-    const QVector< Diagram::Type > types = { Diagram::Line, Diagram::Area, Diagram::Bar };
-
     for( int i = 0; i < diagram->dataPoints().size(); ++i )
     {
         QSGNode* chartNode;
@@ -122,10 +120,8 @@ QSGNode* DiagramSkinlet::updateChartNode( const Diagram* diagram, QSGNode* node 
 
         int lineWidth = diagram->metric( lineSubcontrol | QskAspect::Size );
 
-        for( int j = 0; j < types.size(); ++j )
+        for( const auto type : { Diagram::Line, Diagram::Area, Diagram::Bar } )
         {
-            const auto type = types.at( j );
-
             if( diagram->typesAt( i ) & type )
             {
                 QColor color;
@@ -208,9 +204,8 @@ QSGNode* DiagramSkinlet::updateChartNode( const Diagram* diagram, QSGNode* node 
 
                     dataPointNode->update( rect, nodeType, color, dataPoints, yMax, false, lineWidth );
                 }
+                nodeIndex++;
             }
-
-            nodeIndex++;
         }
 
         while( nodeIndex < chartNode->childCount() )
