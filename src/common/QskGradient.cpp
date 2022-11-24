@@ -412,7 +412,7 @@ QskLinearDirection QskGradient::linearDirection() const
     Q_ASSERT( m_type == Linear );
 
     if ( m_type != Linear )
-        return QskLinearDirection();
+        return QskLinearDirection( 0.0, 0.0, 0.0, 0.0 );
 
     return QskLinearDirection( m_values[0], m_values[1], m_values[2], m_values[3] );
 }
@@ -442,7 +442,7 @@ QskRadialDirection QskGradient::radialDirection() const
     Q_ASSERT( m_type == Radial );
 
     if ( m_type != Radial )
-        return QskRadialDirection();
+        return QskRadialDirection( 0.5, 0.5, 0.0 );
 
     return QskRadialDirection( m_values[0], m_values[1], m_values[2] );
 }
@@ -473,7 +473,7 @@ QskConicDirection QskGradient::conicDirection() const
     Q_ASSERT( m_type == Conic );
 
     if ( m_type != Conic )
-        return QskConicDirection();
+        return QskConicDirection( 0.5, 0.5, 0.0, 0.0 );
 
     return QskConicDirection( m_values[0], m_values[1], m_values[2], m_values[3] );
 }
@@ -498,7 +498,9 @@ void QskGradient::setLinearAsList( const QVector< qreal >& params )
 
 QVector< qreal > QskGradient::linearAsList() const
 {
-    Q_ASSERT( m_type == Linear );
+    if ( m_type != Linear )
+        return { 0.0, 0.0, 0.0, 0.0 };
+
     return { m_values[0], m_values[1], m_values[2], m_values[3] };
 }
     
@@ -516,7 +518,9 @@ void QskGradient::setRadialAsList( const QVector< qreal >& params )
 
 QVector< qreal > QskGradient::radialAsList() const
 {
-    Q_ASSERT( m_type == Radial );
+    if ( m_type != Radial )
+        return { 0.5, 0.5, 0.0 };
+
     return { m_values[0], m_values[1], m_values[2] };
 }
     
@@ -542,7 +546,9 @@ void QskGradient::setConicAsList( const QVector< qreal >& params )
 
 QVector< qreal > QskGradient::conicAsList() const
 {
-    Q_ASSERT( m_type == Conic );
+    if ( m_type != Conic )
+        return { 0.5, 0.5, 0.0, 0.0 };
+
     return { m_values[0], m_values[1], m_values[2], m_values[3] };
 }
 
