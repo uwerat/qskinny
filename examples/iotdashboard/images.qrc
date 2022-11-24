@@ -1,20 +1,20 @@
 <RCC>
-    <qresource prefix="/">
-        <file>images/main-icon.svg</file>
-        <file>images/dashboard.svg</file>
-        <file>images/rooms.svg</file>
-        <file>images/devices.svg</file>
-        <file>images/statistics.svg</file>
-        <file>images/storage.svg</file>
-        <file>images/members.svg</file>
-        <file>images/logout.svg</file>
-        <file>images/indoor-temperature.svg</file>
-        <file>images/humidity.svg</file>
-        <file>images/up.svg</file>
-        <file>images/down.svg</file>
-        <file>images/lamps.svg</file>
-        <file>images/music-system.svg</file>
-        <file>images/ac.svg</file>
-        <file>images/router.svg</file>
+    <qresource>
+        <file>images/qvg/main-icon.qvg</file>
+        <file>images/qvg/dashboard.qvg</file>
+        <file>images/qvg/rooms.qvg</file>
+        <file>images/qvg/devices.qvg</file>
+        <file>images/qvg/statistics.qvg</file>
+        <file>images/qvg/storage.qvg</file>
+        <file>images/qvg/members.qvg</file>
+        <file>images/qvg/logout.qvg</file>
+        <file>images/qvg/indoor-temperature.qvg</file>
+        <file>images/qvg/humidity.qvg</file>
+        <file>images/qvg/up.qvg</file>
+        <file>images/qvg/down.qvg</file>
+        <file>images/qvg/lamps.qvg</file>
+        <file>images/qvg/music-system.qvg</file>
+        <file>images/qvg/ac.qvg</file>
+        <file>images/qvg/router.qvg</file>
     </qresource>
 </RCC>
