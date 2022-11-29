@@ -4,7 +4,7 @@ import Test 1.0
 
 GridBox
 {
-    //margins: 10 // only possible with Qt <= 6.1
+    //margins: 10 // only possible with Qt <= 6.1 || Qt >= 6.5
     margins { left: 10; top: 10; right: 10; bottom: 10 }
 
     background

@@ -66,6 +66,14 @@ QSK_QT_PRIVATE_END
 #define QSK_VERSION_MAJOR 1
 #define QSK_VERSION_MINOR 0
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 3, 0 )
+    #define QSK_STRUCT_VERSION 0
+#elif QT_VERSION < QT_VERSION_CHECK( 6, 5, 0 )
+    #define QSK_STRUCT_VERSION 1
+#else
+    #define QSK_STRUCT_VERSION 2
+#endif
+
 // Required for QFlags to be constructed from an enum value
 #define QSK_REGISTER_FLAGS( Type ) \
     QMetaType::registerConverter< int, Type >( []( int value ) { return Type( value ); } )
@@ -79,33 +87,185 @@ namespace
     }
 
     /*
-        There are several undocumented methods for QML registrations in qqml.h
-        f.e qmlRegisterCustomType, where you can pass your own parser.  TODO ..
+        ClassInfo corresponds to the most reecent QQmlPrivate::RegisterType
+        ( structVersion: 2 introduced with Qt 6.5 )
      */
+    class ClassInfo
+    {
+      public:
+
+        template< typename T >
+        void setTypeInfo()
+        {
+            using namespace QQmlPrivate;
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+            const char* className = T::staticMetaObject.className(); \
+
+            const int nameLen = int(strlen(className) ); \
+            const int listLen = int(strlen("QQmlListProperty<") ); \
+
+            QVarLengthArray< char,64 > listName(listLen + nameLen + 2); \
+            memcpy(listName.data(), "QQmlListProperty<", size_t(listLen) ); \
+            memcpy(listName.data() + listLen, className, size_t(nameLen) ); \
+            listName[listLen + nameLen] = '>'; \
+            listName[listLen + nameLen + 1] = '\0';
+
+            typeId = qMetaTypeId< T* >( );
+            listId = qRegisterNormalizedMetaType< QQmlListProperty< T > >( listName.constData() );
+#else
+            if constexpr (std::is_base_of_v< QObject, T >)
+            {
+                typeId = QMetaType::fromType< T* >( );
+                listId = QMetaType::fromType< QQmlListProperty< T > >( );
+            }
+            else
+            {
+                typeId = QMetaType::fromType< T >( );
+                listId = QMetaType::fromType< QList< T > >( );
+            }
+
+            createValueType = ValueType< T, void >::create;
+#endif
+
+
+            parserStatusCast = StaticCastSelector< T,QQmlParserStatus >::cast();
+            valueSourceCast = StaticCastSelector< T,QQmlPropertyValueSource >::cast();
+            valueInterceptorCast = StaticCastSelector< T,QQmlPropertyValueInterceptor >::cast();
+#if QSK_STRUCT_VERSION >= 1
+            finalizerCast = StaticCastSelector< T,QQmlFinalizerHook >::cast();
+#endif
+        }
+
+      public:
+        const int structVersion = QSK_STRUCT_VERSION;
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+        QMetaType typeId;
+        QMetaType listId;
+#else
+        int typeId = 0;
+        int listId = 0;
+#endif
+
+        int objectSize = 0;
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+        void ( *create )( void* ) = nullptr;
+#else
+        void ( *create )( void*, void* ) = nullptr;
+        void* const userdata = nullptr; // unused
+#endif
+
+        const QString noCreationReason; // unused
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+        /*
+            This one was introdued with Qt 6.x, but never worked
+            as expected. With Qt 6.5 it has been replaced by adding
+            the creationMethod that is triggering to look for
+            invokable constructors.
+            Let's check if it makes any sense to initialize it below
+	        at all. TODO ...
+         */
+        QVariant ( *createValueType )( const QJSValue& ) = nullptr;
+#endif
+
+        const char* const uri = QSK_MODULE_NAME;
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+        const QTypeRevision version =
+            QTypeRevision::fromVersion( QSK_VERSION_MAJOR, QSK_VERSION_MINOR );
+#else
+        const int versionMajor = QSK_VERSION_MAJOR;
+        const int versionMinor = QSK_VERSION_MINOR;
+#endif
+        const char* elementName = nullptr;
+        const QMetaObject* metaObject = nullptr;
+
+        /*
+            We do not use attached properties as it always comes with
+            creating extra QObjects.
+         */
+        QObject* (* const attachedPropertiesFunction)( QObject* ) = nullptr;
+        const QMetaObject* const attachedPropertiesMetaObject = nullptr;
+
+        int parserStatusCast = -1;
+        int valueSourceCast = -1;
+        int valueInterceptorCast = -1;
+
+        /*
+            We do not use extensions as it always comes with
+            creating extra QObjects.
+         */
+        QObject* (* const extensionObjectCreate )( QObject* ) = nullptr;
+        const QMetaObject* const extensionMetaObject = nullptr;
+
+        QQmlCustomParser* const customParser = nullptr; // unused
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+        const QTypeRevision revision = QTypeRevision::zero();
+#else
+        const int revision = 0;
+#endif
+        int finalizerCast = -1;
+
+        const int creationMethod = 2; // ValueTypeCreationMethod::Structured
+    };
 
     template< typename T >
     inline int registerType( const char* qmlName )
     {
-        return qmlRegisterType< T >(
-            QSK_MODULE_NAME, QSK_VERSION_MAJOR, QSK_VERSION_MINOR,
-            qmlName );
+        using namespace QQmlPrivate;
+
+        ClassInfo type;
+
+        type.setTypeInfo< T >();
+
+        type.objectSize = sizeof( T );
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+        type.create = Constructors< T >::createInto;
+#else
+        type.create = createInto< T >;
+#endif
+
+        type.elementName = qmlName;
+        type.metaObject = & T::staticMetaObject;
+
+        return qmlregister( TypeRegistration, & type );
     }
 
     template< typename T >
     inline int registerUncreatableType( const char* qmlName )
     {
-        return qmlRegisterUncreatableType< T >(
-            QSK_MODULE_NAME, QSK_VERSION_MAJOR, QSK_VERSION_MINOR,
-            qmlName, QString() );
+        using namespace QQmlPrivate;
+
+        ClassInfo type;
+
+        type.setTypeInfo< T >( );
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+        type.objectSize = sizeof( T );
+        type.create = Constructors< T >::createInto;
+#endif
+
+        type.elementName = qmlName;
+        type.metaObject = & T::staticMetaObject;
+
+        return qmlregister( TypeRegistration, & type );
     }
 
     int registerUncreatableMetaObject(
         const QMetaObject& staticMetaObject, const char* qmlName )
     {
-        return qmlRegisterUncreatableMetaObject(
-            staticMetaObject,
-            QSK_MODULE_NAME, QSK_VERSION_MAJOR, QSK_VERSION_MINOR,
-            qmlName, QString() );
+        using namespace QQmlPrivate;
+
+        ClassInfo type;
+
+        type.elementName = qmlName;
+        type.metaObject = & staticMetaObject;
+
+        return qmlregister( TypeRegistration, & type );
     }
 
     template< typename T >
@@ -188,12 +348,6 @@ static inline QskGradientStop qskJSToGradientStop( const QJSValue& value )
 
 void QskQml::registerTypes()
 {
-#if 0
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-    qmlRegisterRevision< QQuickItem, 6 >( QSK_MODULE_NAME, 1, 0 );
-#endif
-#endif
-
     qmlRegisterUncreatableType< QskSetup >( QSK_MODULE_NAME, 1, 0, "Setup", QString() );
     qmlRegisterUncreatableType< QskSkin >( QSK_MODULE_NAME, 1, 0, "Skin", QString() );
     qRegisterMetaType< QskSkin* >();
