@@ -6,6 +6,7 @@
 #include "QskGradient.h"
 #include "QskRgbValue.h"
 #include "QskGradientDirection.h"
+#include "QskFunctions.h"
 
 #include <qvariant.h>
 
@@ -135,6 +136,34 @@ void QskGradient::updateStatusBits() const
     {
         m_isMonchrome = true;
         m_isVisible = false;
+    }
+
+    if ( m_isVisible )
+    {
+        switch( m_type )
+        {
+            case Linear:
+            {
+                m_isVisible = !( qskFuzzyCompare( m_values[0], m_values[2] )
+                    && qskFuzzyCompare( m_values[1], m_values[3] ) );
+                break;
+            }
+
+            case Radial:
+            {
+                m_isVisible = m_values[2] > 0.0; // radius
+                break;
+            }
+
+            case Conic:
+            {
+                m_isVisible = !qFuzzyIsNull( m_values[3] ); // spanAngle
+                break;
+            }
+
+            default:
+                break;
+        }
     }
 
     m_isDirty = false;
@@ -417,11 +446,6 @@ QskLinearDirection QskGradient::linearDirection() const
     return QskLinearDirection( m_values[0], m_values[1], m_values[2], m_values[3] );
 }
 
-void QskGradient::setRadialDirection()
-{
-    setRadialDirection( QskRadialDirection() );
-}
-
 void QskGradient::setRadialDirection( const qreal x, qreal y, qreal radius )
 {
     setRadialDirection( QskRadialDirection( x, y, radius ) );
@@ -476,6 +500,31 @@ QskConicDirection QskGradient::conicDirection() const
         return QskConicDirection( 0.5, 0.5, 0.0, 0.0 );
 
     return QskConicDirection( m_values[0], m_values[1], m_values[2], m_values[3] );
+}
+
+void QskGradient::setDirection( Type type )
+{
+    if ( type == m_type )
+        return;
+
+    switch( type )
+    {
+        case Linear:
+            setLinearDirection( QskLinearDirection() );
+            break;
+
+        case Radial:
+            setRadialDirection( QskRadialDirection() );
+            break;
+
+        case Conic:
+            setConicDirection( QskConicDirection() );
+            break;
+
+        case Stops:
+            resetDirection();
+            break;
+    }
 }
 
 void QskGradient::resetDirection()

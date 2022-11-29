@@ -74,8 +74,6 @@ class QSK_EXPORT QskGradient
 
     void setRadialDirection( const QskRadialDirection& );
     void setRadialDirection( const qreal x, qreal y, qreal radius );
-    void setRadialDirection();
-
     QskRadialDirection radialDirection() const;
 
     void setConicDirection( qreal, qreal );
@@ -83,6 +81,7 @@ class QSK_EXPORT QskGradient
     void setConicDirection( const QskConicDirection& );
     QskConicDirection conicDirection() const;
 
+    void setDirection( Type );
     void resetDirection();
 
     bool isValid() const noexcept;
@@ -138,18 +137,14 @@ class QSK_EXPORT QskGradient
   private:
 
 #if 1
-    /*
-        Couldn't find a way how to assign a struct to another struct
-        that is used as proprty from QML without creating extra QObjects. 
-        So for the moment we are using lists, that are more
-        error prone and less intuitive. 
-
-        Maybe we can do something better using qmlRegisterCustomType, where we
-        can register our own QQmlCustomParser. TODO ...
-     */
     Q_PROPERTY( QVector< qreal > linear READ linearAsList WRITE setLinearAsList )
     Q_PROPERTY( QVector< qreal > conic READ conicAsList WRITE setConicAsList )
     Q_PROPERTY( QVector< qreal > radial READ radialAsList WRITE setRadialAsList )
+#else
+    Q_PROPERTY( QskLinearDirection linear READ linearDirection WRITE setLinearDirection )
+    Q_PROPERTY( QskConicDirection conic READ conicDirection WRITE setConicDirection )
+    Q_PROPERTY( QskRadialDirection radial READ radialDirection WRITE setRadialDirection )
+#endif
 
     QVector< qreal > linearAsList() const;
     void setLinearAsList( const QVector< qreal >& );
@@ -159,7 +154,6 @@ class QSK_EXPORT QskGradient
 
     QVector< qreal > conicAsList() const;
     void setConicAsList( const QVector< qreal >& );
-#endif
 
   private:
     QVector< QskGradientStop > m_stops;

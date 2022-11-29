@@ -18,6 +18,7 @@
 #include <QskDialogWindow.h>
 #include <QskFocusIndicator.h>
 #include <QskGradient.h>
+#include <QskGradientDirection.h>
 #include <QskGraphicLabel.h>
 #include <QskIntervalF.h>
 #include <QskLayoutMetrics.h>
@@ -252,9 +253,13 @@ void QskQml::registerTypes()
     registerGadget< QskLayoutMetrics >();
     registerGadget< QskMargins >();
 
-    registerGadget< QskAspect >();
     registerGadget< QskGradient >();
     registerGadget< QskGradientStop >();
+    registerGadget< QskLinearDirection >();
+    registerGadget< QskConicDirection >();
+    registerGadget< QskRadialDirection >();
+
+    registerGadget< QskAspect >();
     registerGadget< QskPlacementPolicy >();
     registerGadget< QskSizePolicy >();
     registerGadget< QskTextOptions >();

@@ -69,7 +69,8 @@ class QSK_EXPORT QskConicDirection
 {
     Q_GADGET
 
-    Q_PROPERTY( QPointF center READ center WRITE setCenter )
+    Q_PROPERTY( qreal x READ x WRITE setX )
+    Q_PROPERTY( qreal y READ y WRITE setY )
     Q_PROPERTY( qreal startAngle READ startAngle WRITE setStartAngle )
     Q_PROPERTY( qreal spanAngle READ spanAngle WRITE setSpanAngle )
 
@@ -86,6 +87,12 @@ class QSK_EXPORT QskConicDirection
     constexpr QPointF center() const noexcept;
     void setCenter(const QPointF& center) noexcept;
     void setCenter(qreal x, qreal y) noexcept;
+
+    void setX( qreal ) noexcept;
+    constexpr qreal x() const noexcept;
+
+    void setY( qreal ) noexcept;
+    constexpr qreal y() const noexcept;
 
     constexpr qreal startAngle() const noexcept;
     void setStartAngle( qreal ) noexcept;
@@ -104,7 +111,8 @@ class QSK_EXPORT QskRadialDirection
 {
     Q_GADGET
 
-    Q_PROPERTY( QPointF center READ center WRITE setCenter )
+    Q_PROPERTY( qreal x READ x WRITE setX )
+    Q_PROPERTY( qreal y READ y WRITE setY )
     Q_PROPERTY( qreal radius READ radius WRITE setRadius )
 
   public:
@@ -116,6 +124,12 @@ class QSK_EXPORT QskRadialDirection
     constexpr QPointF center() const noexcept;
     void setCenter(const QPointF& center) noexcept;
     void setCenter(qreal x, qreal y) noexcept;
+
+    void setX( qreal ) noexcept;
+    constexpr qreal x() const noexcept;
+
+    void setY( qreal ) noexcept;
+    constexpr qreal y() const noexcept;
 
     constexpr qreal radius() const noexcept;
     void setRadius( qreal radius ) noexcept;
@@ -242,6 +256,16 @@ inline constexpr qreal QskConicDirection::spanAngle() const noexcept
     return m_spanAngle;
 }
 
+inline constexpr qreal QskConicDirection::x() const noexcept
+{
+    return m_x;
+}
+
+inline constexpr qreal QskConicDirection::y() const noexcept
+{
+    return m_y;
+}
+
 inline constexpr QskRadialDirection::QskRadialDirection(
         qreal x, qreal y, qreal radius ) noexcept
     : m_x( x )
@@ -259,6 +283,16 @@ inline constexpr QskRadialDirection::QskRadialDirection(
 inline constexpr QPointF QskRadialDirection::center() const noexcept
 {
     return QPointF( m_x, m_y );
+}
+
+inline constexpr qreal QskRadialDirection::x() const noexcept
+{
+    return m_x;
+}
+
+inline constexpr qreal QskRadialDirection::y() const noexcept
+{
+    return m_y;
 }
 
 inline constexpr qreal QskRadialDirection::radius() const noexcept

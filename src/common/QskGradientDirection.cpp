@@ -5,6 +5,15 @@
 
 #include "QskGradientDirection.h"
 
+static void qskRegisterGradientDirection()
+{
+    qRegisterMetaType< QskLinearDirection >();
+    qRegisterMetaType< QskConicDirection >();
+    qRegisterMetaType< QskRadialDirection >();
+}
+
+Q_CONSTRUCTOR_FUNCTION( qskRegisterGradientDirection )
+
 // -- QskLinearDirection
 
 void QskLinearDirection::setOrientation( Qt::Orientation orientation  ) noexcept
@@ -89,6 +98,16 @@ void QskConicDirection::setCenter( qreal x, qreal y ) noexcept
     m_y = y;
 }
 
+void QskConicDirection::setX( qreal x ) noexcept
+{
+    m_x = x;
+}
+
+void QskConicDirection::setY( qreal y ) noexcept
+{
+    m_y = y;
+}
+
 void QskConicDirection::setStartAngle( qreal degrees ) noexcept
 {
     m_startAngle = degrees;
@@ -110,6 +129,16 @@ void QskRadialDirection::setCenter( const QPointF& center ) noexcept
 void QskRadialDirection::setCenter( qreal x, qreal y ) noexcept
 {
     m_x = x;
+    m_y = y;
+}
+
+void QskRadialDirection::setX( qreal x ) noexcept
+{
+    m_x = x;
+}
+
+void QskRadialDirection::setY( qreal y ) noexcept
+{
     m_y = y;
 }
 

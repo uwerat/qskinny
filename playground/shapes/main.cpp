@@ -136,7 +136,7 @@ namespace
                 stops += QskGradientStop( 1.0, Qt::darkCyan );
 
                 QskGradient gradient( stops );
-                gradient.setRadialDirection();
+                gradient.setDirection( QskGradient::Radial );
                 gradient.setSpread( QGradient::PadSpread );
 
                 shapeItem->setGradient( gradient );
@@ -148,7 +148,7 @@ namespace
                 shapeItem->setPen( pen( QskRgb::Indigo ) );
 
                 QskGradient gradient( QGradient::LilyMeadow );
-                gradient.setRadialDirection( QskRadialDirection( 0.5, 0.7, 0.25 ) );
+                gradient.setRadialDirection( 0.5, 0.7, 0.25 );
                 gradient.setSpread( QGradient::RepeatSpread );
 
                 shapeItem->setGradient( gradient );
