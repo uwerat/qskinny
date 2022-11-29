@@ -11,6 +11,8 @@
 #include "QskFunctions.h"
 #include "QskGraphic.h"
 
+#include <QtMath>
+
 QskGraphicLabelSkinlet::QskGraphicLabelSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
@@ -96,7 +98,7 @@ QRect QskGraphicLabelSkinlet::graphicRect(
     }
 
     return qskAlignedRect( graphicRect,
-        ( int ) sz.width(), ( int ) sz.height(), label->alignment() );
+        qCeil( sz.width() ), qCeil( sz.height() ), label->alignment() );
 }
 
 QSGNode* QskGraphicLabelSkinlet::updateGraphicNode(
