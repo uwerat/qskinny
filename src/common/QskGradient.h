@@ -28,6 +28,10 @@ class QSK_EXPORT QskGradient
 
     Q_PROPERTY( Type type READ type )
 
+    Q_PROPERTY( QskLinearDirection linear READ linearDirection WRITE setLinearDirection )
+    Q_PROPERTY( QskConicDirection conic READ conicDirection WRITE setConicDirection )
+    Q_PROPERTY( QskRadialDirection radial READ radialDirection WRITE setRadialDirection )
+
     Q_PROPERTY( QVector< QskGradientStop > stops READ stops WRITE setStops )
 
     Q_PROPERTY( bool valid READ isValid )
@@ -133,27 +137,6 @@ class QSK_EXPORT QskGradient
 
   private:
     void updateStatusBits() const;
-
-  private:
-
-#if 1
-    Q_PROPERTY( QVector< qreal > linear READ linearAsList WRITE setLinearAsList )
-    Q_PROPERTY( QVector< qreal > conic READ conicAsList WRITE setConicAsList )
-    Q_PROPERTY( QVector< qreal > radial READ radialAsList WRITE setRadialAsList )
-#else
-    Q_PROPERTY( QskLinearDirection linear READ linearDirection WRITE setLinearDirection )
-    Q_PROPERTY( QskConicDirection conic READ conicDirection WRITE setConicDirection )
-    Q_PROPERTY( QskRadialDirection radial READ radialDirection WRITE setRadialDirection )
-#endif
-
-    QVector< qreal > linearAsList() const;
-    void setLinearAsList( const QVector< qreal >& );
-
-    QVector< qreal > radialAsList() const;
-    void setRadialAsList( const QVector< qreal >& );
-
-    QVector< qreal > conicAsList() const;
-    void setConicAsList( const QVector< qreal >& );
 
   private:
     QVector< QskGradientStop > m_stops;

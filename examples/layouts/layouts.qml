@@ -7,15 +7,15 @@ GridBox
     //margins: 10 // only possible with Qt <= 6.1 || Qt >= 6.5
     margins { left: 10; top: 10; right: 10; bottom: 10 }
 
-    background
-    {
-        linear: [ 0.0, 0.0, 1.0, 0.0 ]
+    background:
+    ({
+        linear: { x1: 0, y1: 0, x2: 1, y2: 1 }, // diagonal
 
         stops: [
             { position: 0.0, color: "Red" },
-            { position: 1.0, color: "Yellow" },
+            { position: 1.0, color: "Yellow" }
         ]
-    }
+    })
 
     TestRectangle
     {
