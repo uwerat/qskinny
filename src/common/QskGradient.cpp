@@ -9,6 +9,7 @@
 #include "QskFunctions.h"
 
 #include <qvariant.h>
+#include <qdebug.h>
 
 static void qskRegisterGradient()
 {
