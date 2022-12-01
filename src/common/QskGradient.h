@@ -16,6 +16,7 @@ class QskRadialDirection;
 class QskConicDirection;
 
 class QVariant;
+class QGradient;
 
 class QSK_EXPORT QskGradient
 {
@@ -64,6 +65,8 @@ class QSK_EXPORT QskGradient
     QskGradient( const QColor&, const QColor& );
     QskGradient( QGradient::Preset );
     QskGradient( const QskGradientStops& );
+
+    QskGradient( const QGradient* );
 
     QskGradient( const QskGradient& ) noexcept;
 
@@ -139,6 +142,8 @@ class QSK_EXPORT QskGradient
     Q_INVOKABLE QColor colorAt( int index ) const noexcept;
 
     int stepCount() const noexcept;
+
+    QGradient* toQGradient() const;
 
   private:
     void updateStatusBits() const;
