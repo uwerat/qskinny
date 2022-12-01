@@ -151,6 +151,15 @@ namespace
                     }
                 }
             }
+            else if ( v.isNumber() )
+            {
+                if ( it.name() == QStringLiteral( "spread" ) )
+                {
+                    const auto s = v.toNumber();
+                    if ( s >= QskGradient::PadSpread && s <= QskGradient::RepeatSpread )
+                        gradient.setSpread( static_cast< QskGradient::Spread >( s ) );
+                }
+            }
         }
 
         return gradient;

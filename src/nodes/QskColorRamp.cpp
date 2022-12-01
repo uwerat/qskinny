@@ -18,7 +18,7 @@ namespace
     class Texture : public QSGPlainTexture
     {
       public:
-        Texture( const QskGradientStops& stops, QGradient::Spread spread )
+        Texture( const QskGradientStops& stops, QskGradient::Spread spread )
         {
             /*
                 Qt creates tables of 1024 colors, while Chrome, Firefox, and Android
@@ -37,14 +37,14 @@ namespace
         };
 
       private:
-        static inline QSGTexture::WrapMode wrapMode( QGradient::Spread spread )
+        static inline QSGTexture::WrapMode wrapMode( QskGradient::Spread spread )
         {
             switch ( spread )
             {
-                case QGradient::RepeatSpread:
+                case QskGradient::RepeatSpread:
                     return QSGTexture::Repeat;
 
-                case QGradient::ReflectSpread:
+                case QskGradient::ReflectSpread:
                     return QSGTexture::MirroredRepeat;
 
                 default:
@@ -63,7 +63,7 @@ namespace
 
         const void* rhi;
         const QskGradientStops stops;
-        const QGradient::Spread spread;
+        const QskGradient::Spread spread;
     };
 
     inline size_t qHash( const HashKey& key, size_t seed = 0 )
@@ -84,7 +84,7 @@ namespace
         void cleanupRhi( const QRhi* );
 
         Texture* texture( const void* rhi,
-            const QskGradientStops&, QGradient::Spread );
+            const QskGradientStops&, QskGradient::Spread );
 
       private:
         QHash< HashKey, Texture* > m_hashTable;
@@ -107,7 +107,7 @@ static void qskCleanupRhi( const QRhi* rhi )
 }
 
 Texture* Cache::texture( const void* rhi,
-    const QskGradientStops& stops, QGradient::Spread spread )
+    const QskGradientStops& stops, QskGradient::Spread spread )
 {
     const HashKey key { rhi, stops, spread };
 
@@ -151,7 +151,7 @@ void Cache::cleanupRhi( const QRhi* rhi )
 }
 
 QSGTexture* QskColorRamp::texture( const void* rhi,
-    const QskGradientStops& stops, QGradient::Spread spread )
+    const QskGradientStops& stops, QskGradient::Spread spread )
 {
     if ( s_cache == nullptr )
     {

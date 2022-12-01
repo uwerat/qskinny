@@ -288,7 +288,7 @@ void QskGradient::setAlpha( int alpha )
     m_isDirty = true;
 }
 
-void QskGradient::setSpread( QGradient::Spread spread )
+void QskGradient::setSpread( Spread spread )
 {
     m_spread = spread;
 }
@@ -612,15 +612,15 @@ QDebug operator<<( QDebug debug, const QskGradient& gradient )
 
     switch( gradient.spread() )
     {
-        case QGradient::RepeatSpread:
+        case QskGradient::RepeatSpread:
             debug << " RP";
             break;
 
-        case QGradient::ReflectSpread:
+        case QskGradient::ReflectSpread:
             debug << " RF";
             break;
 
-        case QGradient::PadSpread:
+        case QskGradient::PadSpread:
             break;
     }
 

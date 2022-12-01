@@ -65,7 +65,7 @@ namespace
 
                 QskGradient gradient( QGradient::PhoenixStart );
                 gradient.setLinearDirection( 0.0, 0.0, 0.2, 0.5 );
-                gradient.setSpread( QGradient::ReflectSpread );
+                gradient.setSpread( QskGradient::ReflectSpread );
 
                 shapeItem->setGradient( gradient );
             }
@@ -79,7 +79,7 @@ namespace
 
                 QskGradient gradient( stops );
                 gradient.setLinearDirection( 0.0, 0.0, 0.05, 0.1 );
-                gradient.setSpread( QGradient::RepeatSpread );
+                gradient.setSpread( QskGradient::RepeatSpread );
 
                 shapeItem->setGradient( gradient );
             }
@@ -112,7 +112,7 @@ namespace
 
                 QskGradient gradient( QskRgb::LightYellow, QskRgb::MidnightBlue );
                 gradient.setRadialDirection( QskRadialDirection() );
-                gradient.setSpread( QGradient::PadSpread );
+                gradient.setSpread( QskGradient::PadSpread );
 
                 shapeItem->setGradient( gradient );
             }
@@ -137,7 +137,7 @@ namespace
 
                 QskGradient gradient( stops );
                 gradient.setDirection( QskGradient::Radial );
-                gradient.setSpread( QGradient::PadSpread );
+                gradient.setSpread( QskGradient::PadSpread );
 
                 shapeItem->setGradient( gradient );
             }
@@ -149,7 +149,7 @@ namespace
 
                 QskGradient gradient( QGradient::LilyMeadow );
                 gradient.setRadialDirection( 0.5, 0.7, 0.25 );
-                gradient.setSpread( QGradient::RepeatSpread );
+                gradient.setSpread( QskGradient::RepeatSpread );
 
                 shapeItem->setGradient( gradient );
             }
@@ -161,7 +161,7 @@ namespace
 
                 QskGradient gradient( Qt::red, Qt::blue );
                 gradient.setRadialDirection( 0.6, 0.4, 0.1 );
-                gradient.setSpread( QGradient::ReflectSpread );
+                gradient.setSpread( QskGradient::ReflectSpread );
 
                 shapeItem->setGradient( gradient );
             }
@@ -181,7 +181,7 @@ namespace
 
                 QskGradient gradient( QGradient::JuicyPeach );
                 gradient.setConicDirection( 0.5, 0.5, 30.0, 60.0 );
-                gradient.setSpread( QGradient::ReflectSpread );
+                gradient.setSpread( QskGradient::ReflectSpread );
 
                 shapeItem->setGradient( gradient );
             }
@@ -192,7 +192,7 @@ namespace
 
                 QskGradient gradient( QGradient::WinterNeva );
                 gradient.setConicDirection( 0.5, 0.5, 30.0, 60.0 );
-                gradient.setSpread( QGradient::RepeatSpread );
+                gradient.setSpread( QskGradient::RepeatSpread );
 
                 shapeItem->setGradient( gradient );
             }
@@ -213,7 +213,7 @@ namespace
 
                 QskGradient gradient( QGradient::FabledSunset );
                 gradient.setConicDirection( 0.5, 0.5, 45.0, 180.0 );
-                gradient.setSpread( QGradient::ReflectSpread );
+                gradient.setSpread( QskGradient::ReflectSpread );
 
                 shapeItem->setGradient( gradient );
             }

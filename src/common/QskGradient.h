@@ -17,11 +17,6 @@ class QskConicDirection;
 
 class QVariant;
 
-/*
-    Don't use QskGradientStops for definitions seen by moc
-    Otherwise exporting these interfaces to QML does not work.
- */
-
 class QSK_EXPORT QskGradient
 {
     Q_GADGET
@@ -32,7 +27,9 @@ class QSK_EXPORT QskGradient
     Q_PROPERTY( QskConicDirection conic READ conicDirection WRITE setConicDirection )
     Q_PROPERTY( QskRadialDirection radial READ radialDirection WRITE setRadialDirection )
 
-    Q_PROPERTY( QVector< QskGradientStop > stops READ stops WRITE setStops )
+    Q_PROPERTY( QskGradientStops stops READ stops WRITE setStops )
+
+    Q_PROPERTY( Spread spread READ spread WRITE setSpread )
 
     Q_PROPERTY( bool valid READ isValid )
     Q_PROPERTY( bool visible READ isVisible )
@@ -51,6 +48,14 @@ class QSK_EXPORT QskGradient
     };
     Q_ENUM( Type )
 
+    enum Spread
+    {
+        PadSpread,
+        ReflectSpread,
+        RepeatSpread
+    };
+    Q_ENUM( Spread )
+
     QskGradient() noexcept = default;
 
     QskGradient( Qt::GlobalColor );
@@ -58,7 +63,7 @@ class QSK_EXPORT QskGradient
     QskGradient( const QColor& );
     QskGradient( const QColor&, const QColor& );
     QskGradient( QGradient::Preset );
-    QskGradient( const QVector< QskGradientStop >& );
+    QskGradient( const QskGradientStops& );
 
     QskGradient( const QskGradient& ) noexcept;
 
@@ -92,8 +97,8 @@ class QSK_EXPORT QskGradient
     bool isMonochrome() const noexcept;
     bool isVisible() const noexcept;
 
-    void setStops( const QVector< QskGradientStop >& );
-    const QVector< QskGradientStop >& stops() const noexcept;
+    void setStops( const QskGradientStops& );
+    const QskGradientStops& stops() const noexcept;
 
     void setStops( const QRgb );
     void setStops( Qt::GlobalColor );
@@ -114,8 +119,8 @@ class QSK_EXPORT QskGradient
 
     void setAlpha( int alpha );
 
-    void setSpread( QGradient::Spread );
-    QGradient::Spread spread() const noexcept;
+    void setSpread( Spread );
+    Spread spread() const noexcept;
 
     void reverse();
     QskGradient reversed() const;
@@ -139,7 +144,7 @@ class QSK_EXPORT QskGradient
     void updateStatusBits() const;
 
   private:
-    QVector< QskGradientStop > m_stops;
+    QskGradientStops m_stops;
 
     /*
         Linear: x1, y1, x2, y2
@@ -149,7 +154,7 @@ class QSK_EXPORT QskGradient
     qreal m_values[4] = {};
 
     Type m_type = Stops;
-    QGradient::Spread m_spread = QGradient::PadSpread;
+    Spread m_spread = PadSpread;
 
     mutable bool m_isDirty = false;
     mutable bool m_isValid = false;
@@ -223,7 +228,7 @@ inline QRgb QskGradient::rgbEnd() const
     return m_stops.isEmpty() ? qRgba( 0, 0, 0, 255 ) : m_stops.last().rgb();
 }
 
-inline QGradient::Spread QskGradient::spread() const noexcept
+inline QskGradient::Spread QskGradient::spread() const noexcept
 {
     return m_spread;
 }

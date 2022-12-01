@@ -7,15 +7,13 @@
 #define QSK_COLOR_RAMP_H
 
 #include "QskGlobal.h"
-#include "QskGradientStop.h"
-
-#include <qbrush.h>
+#include "QskGradient.h"
 
 class QSGTexture;
 
 namespace QskColorRamp
 {
-    QSGTexture* texture( const void* rhi, const QskGradientStops&, QGradient::Spread );
+    QSGTexture* texture( const void* rhi, const QskGradientStops&, QskGradient::Spread );
 }
 
 #endif
