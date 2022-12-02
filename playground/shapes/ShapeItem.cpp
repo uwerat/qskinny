@@ -4,10 +4,15 @@
  *****************************************************************************/
 
 #include "ShapeItem.h"
+#include "Stroke.h"
 
+#include <QskGradient.h>
 #include <QskStrokeNode.h>
 #include <QskShapeNode.h>
 #include <QskSGNode.h>
+
+#include <qpainterpath.h>
+#include <qpen.h>
 
 static inline QTransform transformForRects( const QRectF& r1, const QRectF& r2 )
 {
@@ -16,22 +21,12 @@ static inline QTransform transformForRects( const QRectF& r1, const QRectF& r2 )
         * QTransform::fromTranslate( r2.x(), r2.y() );
 }
 
-static inline bool isVisible( const QColor& color )
+static inline qreal effectiveStrokeWidth(
+    const Stroke& stroke, const QRectF& r1, const QRectF& r2 )
 {
-    return color.isValid() && ( color.alpha() > 0 );
-}
+    qreal width = qMax( stroke.width(), 0.0 );
 
-static inline bool isVisible( const QPen& pen )
-{
-    return ( pen.style() != Qt::NoPen ) && isVisible( pen.color() );
-}
-
-static inline qreal effectivePenWidth(
-    const QPen& pen, const QRectF& r1, const QRectF& r2 )
-{
-    qreal width = pen.widthF();
-
-    if ( !pen.isCosmetic() )
+    if ( !stroke.isCosmetic() )
     {
         const qreal sx = r1.width() / r2.width();
         const qreal sy = r1.height() / r2.height();
@@ -42,8 +37,23 @@ static inline qreal effectivePenWidth(
     return width;
 }
 
+class ShapeItem::PrivateData
+{
+  public:
+    inline PrivateData()
+        : stroke( Qt::black, -1.0 ) // no stroke
+        , gradient( Qt::white )
+    {
+    }
+
+    Stroke stroke;
+    QskGradient gradient;
+    QPainterPath path;
+};
+
 ShapeItem::ShapeItem( QQuickItem* parent )
     : QskControl( parent )
+    , m_data( new PrivateData() )
 {
     setMargins( 20 );
     setSizePolicy( QskSizePolicy::Ignored, QskSizePolicy::Ignored );
@@ -53,46 +63,72 @@ ShapeItem::~ShapeItem()
 {
 }
 
-void ShapeItem::setPen( const QPen& pen )
+void ShapeItem::setStroke( const QColor& color, qreal width )
 {
-    if ( pen != m_pen )
+    setStroke( Stroke( color, width ) );
+}
+
+void ShapeItem::setStroke( const Stroke& stroke )
+{
+    if ( stroke != m_data->stroke )
     {
-        m_pen = pen;
+        m_data->stroke = stroke;
         update();
+
+        Q_EMIT strokeChanged( m_data->stroke );
     }
 }
 
-QPen ShapeItem::pen() const
+void ShapeItem::resetStroke()
 {
-    return m_pen;
+    setStroke( Stroke( Qt::black, -1.0 ) );
+}
+
+Stroke ShapeItem::stroke() const
+{
+    return m_data->stroke;
 }
 
 void ShapeItem::setGradient( const QskGradient& gradient )
 {
-    if ( gradient != m_gradient )
+    if ( gradient != m_data->gradient )
     {
-        m_gradient = gradient;
+        m_data->gradient = gradient;
         update();
+
+        Q_EMIT gradientChanged( m_data->gradient );
     }
 }
 
-const QskGradient& ShapeItem::gradient() const
+void ShapeItem::resetGradient()
 {
-    return m_gradient;
+    setGradient( Qt::white );
+}
+
+QskGradient ShapeItem::gradient() const
+{
+    return m_data->gradient;
 }
 
 void ShapeItem::setPath( const QPainterPath& path )
 {
-    if ( path != m_path )
+    if ( path != m_data->path )
     {
-        m_path = path;
+        m_data->path = path;
         update();
+
+        Q_EMIT pathChanged( m_data->path );
     }
+}
+
+void ShapeItem::resetPath()
+{
+    setPath( QPainterPath() );
 }
 
 QPainterPath ShapeItem::path() const
 {
-    return m_path;
+    return m_data->path;
 }
 
 void ShapeItem::updateNode( QSGNode* parentNode )
@@ -104,7 +140,7 @@ void ShapeItem::updateNode( QSGNode* parentNode )
     };
 
     const auto rect = contentsRect();
-    const auto pathRect = m_path.controlPointRect();
+    const auto pathRect = m_data->path.controlPointRect();
 
     auto fillNode = static_cast< QskShapeNode* >(
         QskSGNode::findChildNode( parentNode, FillRole ) );
@@ -120,7 +156,7 @@ void ShapeItem::updateNode( QSGNode* parentNode )
         return;
     }
 
-    if ( m_gradient.isVisible() )
+    if ( m_data->gradient.isVisible() )
     {
         if ( fillNode == nullptr )
         {
@@ -131,26 +167,31 @@ void ShapeItem::updateNode( QSGNode* parentNode )
         }
 
         auto fillRect = rect;
-        if ( m_pen.style() != Qt::NoPen )
-        {
-            const auto pw2 = 0.5 * ::effectivePenWidth( m_pen, rect, pathRect );
-            fillRect.adjust( pw2, pw2, -pw2, -pw2 );
-        }
+#if 0
+        /*
+            when the stroke is not opaque ( transparent color or dashed ) we
+            would see, that the filling is not inside. But simply adjusting
+            by the half of the stroke width is only correct for rectangles. TODO ...
+         */
+        const auto pw2 = 0.5 * ::effectiveStrokeWidth( m_data->stroke, rect, pathRect );
+        fillRect.adjust( pw2, pw2, -pw2, -pw2 );
+#endif
 
         const auto transform = ::transformForRects( pathRect, fillRect );
-        fillNode->updateNode( m_path, transform, fillRect, m_gradient );
+        fillNode->updateNode( m_data->path, transform, fillRect, m_data->gradient );
     }
     else
     {
         delete fillNode;
     }
 
-    if ( ::isVisible( m_pen ) )
+    if ( m_data->stroke.isVisible() )
     {
+        const auto pen = m_data->stroke.toPen();
 #if 0
-        if ( m_pen.widthF() > 1.0 )
+        if ( pen.widthF() > 1.0 )
         {
-            if ( !( m_pen.isSolid() && m_pen.color().alpha() == 255 ) )
+            if ( !( pen.isSolid() && pen.color().alpha() == 255 ) )
             {
                 /*
                     We might end up with overlapping parts
@@ -173,7 +214,7 @@ void ShapeItem::updateNode( QSGNode* parentNode )
         }
 
         const auto transform = ::transformForRects( pathRect, rect );
-        borderNode->updateNode( m_path, transform, m_pen );
+        borderNode->updateNode( m_data->path, transform, pen );
     }
     else
     {

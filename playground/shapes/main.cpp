@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "ShapeItem.h"
+#include "Stroke.h"
 
 #include <QskObjectCounter.h>
 #include <QskWindow.h>
@@ -28,21 +29,21 @@ namespace
         }
 
       protected:
-        static QPen pen( const QColor& color )
+        static Stroke createStroke( const QColor& color )
         {
-            QPen p( color );
+            Stroke stroke( color );
 #if 0
-            p.setCosmetic( true );
+            stroke.setCosmetic( true );
 #endif
 
-            p.setWidth( p.isCosmetic() ? 8 : 2 );
-            p.setJoinStyle( Qt::MiterJoin );
+            stroke.setWidth( stroke.isCosmetic() ? 8 : 2 );
+            stroke.setJoinStyle( Stroke::MiterJoin );
 
 #if 0
-            p.setStyle( Qt::DashLine );
-            p.setColor( QskRgb::toTransparent( color(), alpha ) );
+            stroke.setLineStyle( Stroke::DashLine );
+            stroke.setColor( QskRgb::toTransparent( color(), alpha ) );
 #endif
-            return p;
+            return stroke;
         }
 
         static QPainterPath path( SkinnyShapeFactory::Shape shape )
@@ -61,7 +62,7 @@ namespace
                 auto shapeItem = new ShapeItem( this );
 
                 shapeItem->setPath( path( SkinnyShapeFactory::Hexagon ) );
-                shapeItem->setPen( pen( QColorConstants::Svg::indigo ) );
+                shapeItem->setStroke( createStroke( QColorConstants::Svg::indigo ) );
 
                 QskGradient gradient( QGradient::PhoenixStart );
                 gradient.setLinearDirection( 0.0, 0.0, 0.2, 0.5 );
@@ -72,7 +73,9 @@ namespace
 
             {
                 auto shapeItem = new ShapeItem( this );
+
                 shapeItem->setPath( path( SkinnyShapeFactory::Star ) );
+                shapeItem->setStroke( Qt::black );
 
                 const QVector< QskGradientStop > stops =
                     { { 0.5, QskRgb::RoyalBlue }, { 0.5, QskRgb::LemonChiffon } };
@@ -85,7 +88,9 @@ namespace
             }
             {
                 auto shapeItem = new ShapeItem( this );
+
                 shapeItem->setPath( path( SkinnyShapeFactory::Rectangle ) );
+                shapeItem->setStroke( Qt::black );
 
                 const QVector< QskGradientStop > stops =
                     { { 0.5, QskRgb::MediumVioletRed }, { 0.5, QskRgb::Navy } };
@@ -108,7 +113,7 @@ namespace
                 auto shapeItem = new ShapeItem( this );
 
                 shapeItem->setPath( path( SkinnyShapeFactory::Rectangle ) );
-                shapeItem->setPen( pen( QColorConstants::Svg::indigo ) );
+                shapeItem->setStroke( createStroke( QColorConstants::Svg::indigo ) );
 
                 QskGradient gradient( QskRgb::LightYellow, QskRgb::MidnightBlue );
                 gradient.setRadialDirection( QskRadialDirection() );
@@ -120,7 +125,7 @@ namespace
                 auto shapeItem = new ShapeItem( this );
 
                 shapeItem->setPath( path( SkinnyShapeFactory::Ellipse ) );
-
+                shapeItem->setStroke( Qt::black );
 
                 QVector< QskGradientStop > stops;
 
@@ -145,7 +150,7 @@ namespace
                 auto shapeItem = new ShapeItem( this );
 
                 shapeItem->setPath( path( SkinnyShapeFactory::Rectangle ) );
-                shapeItem->setPen( pen( QskRgb::Indigo ) );
+                shapeItem->setStroke( createStroke( QskRgb::Indigo ) );
 
                 QskGradient gradient( QGradient::LilyMeadow );
                 gradient.setRadialDirection( 0.5, 0.7, 0.25 );
@@ -157,7 +162,7 @@ namespace
                 auto shapeItem = new ShapeItem( this );
 
                 shapeItem->setPath( path( SkinnyShapeFactory::Rectangle ) );
-                shapeItem->setPen( pen( QskRgb::Indigo ) );
+                shapeItem->setStroke( createStroke( QskRgb::Indigo ) );
 
                 QskGradient gradient( Qt::red, Qt::blue );
                 gradient.setRadialDirection( 0.6, 0.4, 0.1 );
@@ -178,6 +183,7 @@ namespace
                 auto shapeItem = new ShapeItem( this );
 
                 shapeItem->setPath( path( SkinnyShapeFactory::Ellipse ) );
+                shapeItem->setStroke( Qt::black );
 
                 QskGradient gradient( QGradient::JuicyPeach );
                 gradient.setConicDirection( 0.5, 0.5, 30.0, 60.0 );
@@ -189,6 +195,7 @@ namespace
                 auto shapeItem = new ShapeItem( this );
 
                 shapeItem->setPath( path( SkinnyShapeFactory::TriangleUp ) );
+                shapeItem->setStroke( Qt::black );
 
                 QskGradient gradient( QGradient::WinterNeva );
                 gradient.setConicDirection( 0.5, 0.5, 30.0, 60.0 );
@@ -198,6 +205,7 @@ namespace
             }
             {
                 auto shapeItem = new ShapeItem( this );
+                shapeItem->setStroke( Qt::black );
 
                 shapeItem->setPath( path( SkinnyShapeFactory::Arc ) );
 
