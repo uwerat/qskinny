@@ -6,7 +6,6 @@
 #include "Stroke.h"
 #include <QPen>
 
-#if 0
 Stroke::Stroke( const QPen& pen ) noexcept
     : m_width( pen.widthF() )
     , m_miterLimit( pen.miterLimit() )
@@ -17,8 +16,6 @@ Stroke::Stroke( const QPen& pen ) noexcept
     , m_cosmetic( pen.isCosmetic() )
 {
 }
-
-#endif
 
 void Stroke::setColor( const QColor& color ) noexcept
 {

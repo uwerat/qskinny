@@ -40,8 +40,8 @@ namespace
             stroke.setJoinStyle( Stroke::MiterJoin );
 
 #if 0
-            stroke.setLineStyle( Stroke::DashLine );
-            stroke.setColor( QskRgb::toTransparent( color(), alpha ) );
+            // stroke.setLineStyle( Stroke::DashLine );
+            stroke.setColor( QskRgb::toTransparent( color, 100 ) );
 #endif
             return stroke;
         }

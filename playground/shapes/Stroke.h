@@ -50,9 +50,7 @@ class Stroke
 
     Stroke() noexcept = default;
     Stroke( const QColor&, qreal width = 1.0 ) noexcept;
-#if 0
     Stroke( const QPen& ) noexcept;
-#endif
 
     bool operator==( const Stroke& ) const noexcept;
     bool operator!=( const Stroke& ) const noexcept;
