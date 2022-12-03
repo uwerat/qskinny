@@ -27,7 +27,7 @@ static inline int registerValueType( const char* qmlName )
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
     QByteArray name = qmlName;
     name.data()[0] = std::tolower( name.data()[0] );
-    registerType< T >( name.constData() );
+    return registerType< T >( name.constData() );
 #else
     return qmlRegisterUncreatableType< T >( "Shapes", 1, 0, qmlName, QString() );
 #endif
