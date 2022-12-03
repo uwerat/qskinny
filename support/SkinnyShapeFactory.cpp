@@ -175,3 +175,5 @@ QPainterPath SkinnyShapeFactory::shapePath( Shape shape, const QSizeF& size )
     path.closeSubpath();
     return path;
 }
+
+#include "moc_SkinnyShapeFactory.cpp"
