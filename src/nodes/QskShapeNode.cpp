@@ -165,7 +165,7 @@ void QskShapeNode::updateNode( const QPainterPath& path,
 
     if ( gradient.isMonochrome()  )
     {
-        updateNode( path, transform, gradient.stops().first().color() );
+        updateNode( path, transform, gradient.startColor() );
         return;
     }
 
