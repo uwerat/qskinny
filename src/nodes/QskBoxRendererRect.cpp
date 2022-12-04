@@ -665,14 +665,17 @@ void QskBoxRenderer::renderRectFill( const QskBoxRenderer::Quad& rect,
     qskCreateFillOrdered( rect, gradient, line );
 }
 
-QPainterPath QskBoxRenderer::fillPathRect( const QRectF& rect,
+QVector< qreal > QskBoxRenderer::fillPathRect( const QRectF& rect,
     const QskBoxBorderMetrics& border ) const
 {
     const auto r = border.adjustedRect( rect );
+    if ( r.isEmpty() )
+        return QVector< qreal >();
 
-    QPainterPath path;
-    if ( !r.isEmpty() )
-        path.addRect( r );
+    const qreal x1 = r.left();
+    const qreal x2 = r.right();
+    const qreal y1 = r.top();
+    const qreal y2 = r.bottom();
 
-    return path;
+    return { x1, y1, x2, y1, x2, y2, x1, y2, x1, y1 };
 }  

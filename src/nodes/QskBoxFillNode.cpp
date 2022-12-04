@@ -12,7 +12,6 @@
 #include "QskBoxRenderer.h"
 
 #include <qsgflatcolormaterial.h>
-#include <qpainterpath.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qsgnode_p.h>
@@ -44,9 +43,11 @@ static inline QskGradient qskEffectiveGradient( const QskGradient& gradient )
     return gradient;
 }
 
-static void qskUpdateGeometry( const QPainterPath& path, QSGGeometry& geometry )
+static void qskUpdateGeometry( const QVector< qreal > path, QSGGeometry& geometry )
 {
-    const auto ts = qTriangulate( path, QTransform(), 1, false );
+    const auto hints = QVectorPath::PolygonHint | QVectorPath::OddEvenFill;
+    const auto ts = qTriangulate(
+        path.constData(), path.size() / 2, hints, QTransform(), false );
 
     /*
         As we have to iterate over the vertex buffer to copy qreal to float

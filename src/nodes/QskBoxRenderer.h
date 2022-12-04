@@ -9,14 +9,13 @@
 #include "QskBoxShapeMetrics.h"
 
 #include <qrect.h>
-#include <qpainterpath.h>
+#include <qvector.h>
 
 class QskBoxBorderMetrics;
 class QskBoxBorderColors;
 class QskGradient;
 
 class QSGGeometry;
-class QPainterPath;
 
 namespace QskVertex
 {
@@ -36,7 +35,7 @@ class QSK_EXPORT QskBoxRenderer
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
         const QskBoxBorderColors&, const QskGradient&, QSGGeometry& );
 
-    QPainterPath fillPath( const QRectF&, 
+    QVector< qreal > fillPath( const QRectF&, 
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics& ) const;
 
     class Quad
@@ -136,9 +135,9 @@ class QSK_EXPORT QskBoxRenderer
 
     void renderRectFill( const Quad&, const QskGradient&, QskVertex::ColoredLine* );
 
-    QPainterPath fillPathRect( const QRectF&, const QskBoxBorderMetrics& ) const;
+    QVector< qreal > fillPathRect( const QRectF&, const QskBoxBorderMetrics& ) const;
 
-    QPainterPath fillPathRectellipse( const QRectF&, 
+    QVector< qreal > fillPathRectellipse( const QRectF&, 
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics& ) const;
 };
 
@@ -173,7 +172,7 @@ inline void QskBoxRenderer::renderBox( const QRectF& rect,
         renderRectellipse( rect, shape, border, borderColors, gradient, geometry );
 }
 
-inline QPainterPath QskBoxRenderer::fillPath( const QRectF& rect, 
+inline QVector< qreal > QskBoxRenderer::fillPath( const QRectF& rect, 
     const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& border ) const
 {
     if ( shape.isRectangle() )

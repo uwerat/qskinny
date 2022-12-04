@@ -1510,35 +1510,32 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
     }
 }
 
-QPainterPath QskBoxRenderer::fillPathRectellipse( const QRectF& rect,
+QVector< qreal > QskBoxRenderer::fillPathRectellipse( const QRectF& rect,
     const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& border ) const
 {
-    QPainterPath path;
-
     const Metrics metrics( rect, shape, border );
     BorderValues v( metrics );
+
+    const auto totalSteps = metrics.corner[0].stepCount
+        + metrics.corner[1].stepCount
+        + metrics.corner[2].stepCount
+        + metrics.corner[3].stepCount;
+
+    QVector< qreal > path;
+    path.resize( 2 * ( totalSteps + 4 ) );
+
+    auto p = path.data();
 
     {
         constexpr auto id = TopLeft;
         const auto& c = metrics.corner[ id ];
 
-        {
-            v.setAngle( 0.0, 1.0 );
-
-            const auto x = c.centerX - v.dx1( id );
-            const auto y = c.centerY - v.dy1( id );
-
-            path.moveTo( x, y ); 
-        }
-
         for ( ArcIterator it( c.stepCount, false ); !it.isDone(); ++it )
         {
             v.setAngle( it.cos(), it.sin() );
 
-            const auto x = c.centerX - v.dx1( id );
-            const auto y = c.centerY - v.dy1( id );
-
-            path.lineTo( x, y ); 
+            *p++ = c.centerX - v.dx1( id );
+            *p++ =c.centerY - v.dy1( id );
         }
     }
     {
@@ -1549,10 +1546,8 @@ QPainterPath QskBoxRenderer::fillPathRectellipse( const QRectF& rect,
         {
             v.setAngle( it.cos(), it.sin() );
 
-            const auto x = c.centerX - v.dx1( id );
-            const auto y = c.centerY + v.dy1( id );
-
-            path.lineTo( x, y );
+            *p++ = c.centerX - v.dx1( id );
+            *p++ = c.centerY + v.dy1( id );
         }
     }
     {
@@ -1563,10 +1558,8 @@ QPainterPath QskBoxRenderer::fillPathRectellipse( const QRectF& rect,
         {
             v.setAngle( it.cos(), it.sin() );
 
-            const auto x = c.centerX + v.dx1( id );
-            const auto y = c.centerY + v.dy1( id );
-
-            path.lineTo( x, y );
+            *p++ = c.centerX + v.dx1( id );
+            *p++ = c.centerY + v.dy1( id );
         }
     }
     {
@@ -1577,14 +1570,10 @@ QPainterPath QskBoxRenderer::fillPathRectellipse( const QRectF& rect,
         {
             v.setAngle( it.cos(), it.sin() );
 
-            const auto x = c.centerX + v.dx1( id );
-            const auto y = c.centerY - v.dy1( id );
-
-            path.lineTo( x, y ); 
+            *p++ = c.centerX + v.dx1( id );
+            *p++ = c.centerY - v.dy1( id );
         }
     }
-
-    path.closeSubpath();
 
     return path;
 }
