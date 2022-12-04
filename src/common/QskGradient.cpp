@@ -618,7 +618,7 @@ QGradient* QskGradient::toQGradient() const
 
         case Conic:
         {
-            if ( m_values[4] != 360.0 )
+            if ( m_values[3] != 360.0 )
             {
                 qWarning() <<
                     "QskGradient: spanAngle got lost, when converting to QConicalGradient";
