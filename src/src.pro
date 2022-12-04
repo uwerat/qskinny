@@ -103,6 +103,7 @@ HEADERS += \
     nodes/QskArcRenderer.h \
     nodes/QskBoxNode.h \
     nodes/QskBoxClipNode.h \
+    nodes/QskBoxFillNode.h \
     nodes/QskBoxRenderer.h \
     nodes/QskBoxRendererColorMap.h \
     nodes/QskBoxShadowNode.h \
@@ -128,6 +129,7 @@ SOURCES += \
     nodes/QskArcRenderer.cpp \
     nodes/QskBoxNode.cpp \
     nodes/QskBoxClipNode.cpp \
+    nodes/QskBoxFillNode.cpp \
     nodes/QskBoxRendererRect.cpp \
     nodes/QskBoxRendererEllipse.cpp \
     nodes/QskBoxRendererDEllipse.cpp \

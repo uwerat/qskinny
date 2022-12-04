@@ -3,30 +3,33 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef QSK_SHADED_BOX_NODE_H
-#define QSK_SHADED_BOX_NODE_H
+#ifndef QSK_BOX_FILL_NODE_H
+#define QSK_BOX_FILL_NODE_H
 
 #include "QskGlobal.h"
 #include <qsgnode.h>
 
-class QskShadowMetrics;
+class QskGradient;
 class QskBoxShapeMetrics;
 class QskBoxBorderMetrics;
-class QskBoxBorderColors;
-class QskGradient;
-class QskShadowMetrics;
-class QColor;
 
-class QSK_EXPORT QskShadedBoxNode : public QSGNode
+class QskBoxFillNodePrivate;
+
+class QSK_EXPORT QskBoxFillNode : public QSGGeometryNode
 {
   public:
-    QskShadedBoxNode();
-    ~QskShadedBoxNode() override;
+    QskBoxFillNode();
 
-    void setBoxData( const QRectF&,
+    void updateNode( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
-        const QskBoxBorderColors&, const QskGradient&,
-        const QskShadowMetrics&, const QColor& shadowColor );
+        const QskGradient& );
+
+    void updateNode( const QRectF&,
+        const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
+        const QColor& );
+
+  private:
+    Q_DECLARE_PRIVATE( QskBoxFillNode )
 };
 
 #endif
