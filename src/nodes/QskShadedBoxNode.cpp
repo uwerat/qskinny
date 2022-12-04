@@ -49,14 +49,6 @@ inline Node* qskNode( QSGNode* parentNode, quint8 role )
     return node;
 }
 
-static inline void qskInsertNode( QSGNode* parentNode, QSGNode* node )
-{
-    static const QVector< quint8 > roles = { ShadowRole, BoxRole, FillRole };
-
-    QskSGNode::replaceChildNode( roles, QskSGNode::nodeRole( node ),
-        parentNode, nullptr, node );
-}
-
 static inline bool qskIsBoxGradient( const QskGradient& gradient )
 {
     if ( !gradient.isVisible() || gradient.isMonochrome() )
