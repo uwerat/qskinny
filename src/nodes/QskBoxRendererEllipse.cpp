@@ -1509,3 +1509,82 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
         qskRenderBorder( metrics, Qt::Vertical, borderColors, line );
     }
 }
+
+QPainterPath QskBoxRenderer::fillPathRectellipse( const QRectF& rect,
+    const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& border ) const
+{
+    QPainterPath path;
+
+    const Metrics metrics( rect, shape, border );
+    BorderValues v( metrics );
+
+    {
+        constexpr auto id = TopLeft;
+        const auto& c = metrics.corner[ id ];
+
+        {
+            v.setAngle( 0.0, 1.0 );
+
+            const auto x = c.centerX - v.dx1( id );
+            const auto y = c.centerY - v.dy1( id );
+
+            path.moveTo( x, y ); 
+        }
+
+        for ( ArcIterator it( c.stepCount, false ); !it.isDone(); ++it )
+        {
+            v.setAngle( it.cos(), it.sin() );
+
+            const auto x = c.centerX - v.dx1( id );
+            const auto y = c.centerY - v.dy1( id );
+
+            path.lineTo( x, y ); 
+        }
+    }
+    {
+        constexpr auto id = BottomLeft;
+        const auto& c = metrics.corner[ id ];
+
+        for ( ArcIterator it( c.stepCount, true ); !it.isDone(); ++it )
+        {
+            v.setAngle( it.cos(), it.sin() );
+
+            const auto x = c.centerX - v.dx1( id );
+            const auto y = c.centerY + v.dy1( id );
+
+            path.lineTo( x, y );
+        }
+    }
+    {
+        constexpr auto id = BottomRight;
+        const auto& c = metrics.corner[ id ];
+
+        for ( ArcIterator it( c.stepCount, false ); !it.isDone(); ++it )
+        {
+            v.setAngle( it.cos(), it.sin() );
+
+            const auto x = c.centerX + v.dx1( id );
+            const auto y = c.centerY + v.dy1( id );
+
+            path.lineTo( x, y );
+        }
+    }
+    {
+        constexpr auto id = TopRight;
+        const auto& c = metrics.corner[ id ];
+
+        for ( ArcIterator it( c.stepCount, true ); !it.isDone(); ++it )
+        {
+            v.setAngle( it.cos(), it.sin() );
+
+            const auto x = c.centerX + v.dx1( id );
+            const auto y = c.centerY - v.dy1( id );
+
+            path.lineTo( x, y ); 
+        }
+    }
+
+    path.closeSubpath();
+
+    return path;
+}
