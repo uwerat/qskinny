@@ -10,6 +10,7 @@
 #include "QskBoxShapeMetrics.h"
 #include "QskBoxBorderMetrics.h"
 #include "QskBoxRenderer.h"
+#include "QskSGNode.h"
 
 #include <qsgflatcolormaterial.h>
 
@@ -39,16 +40,6 @@ static inline QskGradient qskEffectiveGradient( const QskGradient& gradient )
     }
 
     return gradient;
-}
-
-static inline void qskResetGeometry( QskBoxFillNode* node )
-{
-    auto g = node->geometry();
-    if ( g->vertexCount() > 0 )
-    {
-        g->allocate( 0 );
-        node->markDirty( QSGNode::DirtyGeometry );
-    }
 }
 
 class QskBoxFillNodePrivate final : public QSGGeometryNodePrivate
@@ -86,7 +77,7 @@ void QskBoxFillNode::updateNode(
     {
         d->rect = QRectF();
         d->metricsHash = 0;
-        qskResetGeometry( this );
+        QskSGNode::resetGeometry( this );
 
         return;
     }

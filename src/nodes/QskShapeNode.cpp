@@ -7,6 +7,7 @@
 #include "QskGradientMaterial.h"
 #include "QskGradient.h"
 #include "QskGradientDirection.h"
+#include "QskSGNode.h"
 
 #include <qsgflatcolormaterial.h>
 
@@ -73,16 +74,6 @@ static void qskUpdateGeometry( const QPainterPath& path,
 #endif
 }
 
-static inline void qskResetGeometry( QskShapeNode* node )
-{
-    auto g = node->geometry();
-    if ( g->vertexCount() > 0 )
-    {
-        g->allocate( 0 );
-        node->markDirty( QSGNode::DirtyGeometry );
-    }
-}
-
 class QskShapeNodePrivate final : public QSGGeometryNodePrivate
 {
   public:
@@ -122,7 +113,7 @@ void QskShapeNode::updateNode( const QPainterPath& path,
     {
         d->path = QPainterPath();
         d->transform = QTransform();
-        qskResetGeometry( this );
+        QskSGNode::resetGeometry( this );
 
         return;
     }
