@@ -109,6 +109,7 @@ HEADERS += \
     nodes/QskBoxRendererColorMap.h \
     nodes/QskBoxShadowNode.h \
     nodes/QskColorRamp.h \
+    nodes/QskGradientNode.h \
     nodes/QskGraphicNode.h \
     nodes/QskPaintedNode.h \
     nodes/QskPlainTextRenderer.h \
@@ -136,6 +137,7 @@ SOURCES += \
     nodes/QskBoxRendererDEllipse.cpp \
     nodes/QskBoxShadowNode.cpp \
     nodes/QskColorRamp.cpp \
+    nodes/QskGradientNode.cpp \
     nodes/QskGraphicNode.cpp \
     nodes/QskPaintedNode.cpp \
     nodes/QskPlainTextRenderer.cpp \
