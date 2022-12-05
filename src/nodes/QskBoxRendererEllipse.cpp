@@ -1301,7 +1301,7 @@ void QskBoxRenderer::renderRectellipseFill(
 
     if ( ( metrics.innerQuad.width <= 0 ) || ( metrics.innerQuad.height <= 0 ) )
     {
-        allocateLines< Line >( geometry, 0 );
+        geometry.allocate( 0 );
         return;
     }
 
@@ -1309,31 +1309,119 @@ void QskBoxRenderer::renderRectellipseFill(
     {
         // degenerated to a rectangle
 
-        const QRectF r( metrics.innerQuad.left, metrics.innerQuad.top,
-            metrics.innerQuad.width, metrics.innerQuad.height );
+        geometry.allocate( 4 );
 
-        renderRectFill( r, QskBoxBorderMetrics(), geometry );
+        const auto& quad = metrics.innerQuad;
+
+        auto p = geometry.vertexDataAsPoint2D();
+        p[0].set( quad.left, quad.top );
+        p[1].set( quad.right, quad.top );
+        p[2].set( quad.left, quad.bottom );
+        p[3].set( quad.right, quad.bottom );
 
         return;
     }
 
-    const int stepCount = metrics.corner[ 0 ].stepCount;
+    /*
+        Unfortunately QSGGeometry::DrawTriangleFan is no longer supported with
+        Qt6 and we have to go with DrawTriangleStrip, duplicating the center with
+        each each vertex.
+     */
 
-    int lineCount = 2 * stepCount;
+    const auto numPoints =
+        metrics.corner[0].stepCount + metrics.corner[1].stepCount
+        + metrics.corner[2].stepCount + metrics.corner[3].stepCount + 4;
 
-    if ( metrics.centerQuad.top >= metrics.centerQuad.bottom )
+    /*
+        points: center point + interpolated corner points
+        indexes: lines between the center and each point, where
+                 the first line needs to be appended to close the filling
+     */
+
+    geometry.allocate( 1 + numPoints, 2 * ( numPoints + 1 ) );
+
+    Q_ASSERT( geometry.sizeOfIndex() == 2 );
+
+    auto p = geometry.vertexDataAsPoint2D();
+    auto idx = geometry.indexDataAsUShort();
+
+    int i = 0;
+ 
+    p[i++].set( rect.x() + 0.5 * rect.width(), rect.y() + 0.5 * rect.height() );
+
+    BorderValues v( metrics );
+
     {
-        // we need an extra line connecting the top/bottom corners
-        lineCount++;
+        constexpr auto id = TopLeft;
+        const auto& c = metrics.corner[ id ];
+
+        for ( ArcIterator it( c.stepCount, false ); !it.isDone(); ++it )
+        {
+            *idx++ = 0;
+            *idx++ = i;
+
+            v.setAngle( it.cos(), it.sin() );
+            p[i++].set( c.centerX - v.dx1( id ), c.centerY - v.dy1( id ) );
+        }
     }
-    else
     {
-        // for some reason we have 2 more lines for true ellipses ??
-        lineCount += 2;
+        constexpr auto id = BottomLeft;
+        const auto& c = metrics.corner[ id ];
+
+        for ( ArcIterator it( c.stepCount, true ); !it.isDone(); ++it )
+        {
+            *idx++ = 0;
+            *idx++ = i;
+
+            v.setAngle( it.cos(), it.sin() );
+            p[i++].set( c.centerX - v.dx1( id ), c.centerY + v.dy1( id ) );
+        }
+    }
+    {
+        constexpr auto id = BottomRight;
+        const auto& c = metrics.corner[ id ];
+
+        for ( ArcIterator it( c.stepCount, false ); !it.isDone(); ++it )
+        {
+            *idx++ = 0;
+            *idx++ = i;
+
+            v.setAngle( it.cos(), it.sin() );
+            p[i++].set( c.centerX + v.dx1( id ), c.centerY + v.dy1( id ) );
+        }
+    }
+    {
+        constexpr auto id = TopRight;
+        const auto& c = metrics.corner[ id ];
+
+        for ( ArcIterator it( c.stepCount, true ); !it.isDone(); ++it )
+        {
+            *idx++ = 0;
+            *idx++ = i;
+
+            v.setAngle( it.cos(), it.sin() );
+            p[i++].set( c.centerX + v.dx1( id ), c.centerY - v.dy1( id ) );
+        }
     }
 
-    const auto line = allocateLines< Line >( geometry, lineCount );
-    qskRenderFillLines( metrics, Qt::Vertical, line, ColorMapNone() );
+    *idx++ = 0;
+    *idx++ = 1;
+
+#if 0
+    {
+        auto p = geometry.vertexDataAsPoint2D();
+
+        qDebug() << "Vertexes:" << geometry.vertexCount();
+        for ( int i = 0; i < geometry.vertexCount(); i++ )
+            qDebug() << "\t" << i << p[i].x << p[i].y;
+
+        auto idx = geometry.indexDataAsUShort();
+
+        qDebug() << "Indexes:" << geometry.indexCount();
+        for ( int i = 0; i < geometry.indexCount(); i++ )
+            qDebug() << "\t" << i << idx[i];
+    }
+#endif
 }
 
 void QskBoxRenderer::renderRectellipse( const QRectF& rect,
@@ -1508,72 +1596,4 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
 #endif
         qskRenderBorder( metrics, Qt::Vertical, borderColors, line );
     }
-}
-
-QVector< qreal > QskBoxRenderer::fillPathRectellipse( const QRectF& rect,
-    const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& border ) const
-{
-    const Metrics metrics( rect, shape, border );
-    BorderValues v( metrics );
-
-    const auto totalSteps = metrics.corner[0].stepCount
-        + metrics.corner[1].stepCount
-        + metrics.corner[2].stepCount
-        + metrics.corner[3].stepCount;
-
-    QVector< qreal > path;
-    path.resize( 2 * ( totalSteps + 4 ) );
-
-    auto p = path.data();
-
-    {
-        constexpr auto id = TopLeft;
-        const auto& c = metrics.corner[ id ];
-
-        for ( ArcIterator it( c.stepCount, false ); !it.isDone(); ++it )
-        {
-            v.setAngle( it.cos(), it.sin() );
-
-            *p++ = c.centerX - v.dx1( id );
-            *p++ =c.centerY - v.dy1( id );
-        }
-    }
-    {
-        constexpr auto id = BottomLeft;
-        const auto& c = metrics.corner[ id ];
-
-        for ( ArcIterator it( c.stepCount, true ); !it.isDone(); ++it )
-        {
-            v.setAngle( it.cos(), it.sin() );
-
-            *p++ = c.centerX - v.dx1( id );
-            *p++ = c.centerY + v.dy1( id );
-        }
-    }
-    {
-        constexpr auto id = BottomRight;
-        const auto& c = metrics.corner[ id ];
-
-        for ( ArcIterator it( c.stepCount, false ); !it.isDone(); ++it )
-        {
-            v.setAngle( it.cos(), it.sin() );
-
-            *p++ = c.centerX + v.dx1( id );
-            *p++ = c.centerY + v.dy1( id );
-        }
-    }
-    {
-        constexpr auto id = TopRight;
-        const auto& c = metrics.corner[ id ];
-
-        for ( ArcIterator it( c.stepCount, true ); !it.isDone(); ++it )
-        {
-            v.setAngle( it.cos(), it.sin() );
-
-            *p++ = c.centerX + v.dx1( id );
-            *p++ = c.centerY - v.dy1( id );
-        }
-    }
-
-    return path;
 }

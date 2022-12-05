@@ -535,16 +535,22 @@ void QskBoxRenderer::renderRectBorder( const QRectF& rect,
 void QskBoxRenderer::renderRectFill( const QRectF& rect, 
     const QskBoxBorderMetrics& border, QSGGeometry& geometry )
 {
-    const Quad in = qskValidOrEmptyInnerRect( rect, border.widths() );
+    const Quad quad = qskValidOrEmptyInnerRect( rect, border.widths() );
 
-    if ( in.isEmpty() )
+    if ( quad.isEmpty() )
     {
-        allocateLines< Line >( geometry, 0 );
+        geometry.allocate( 0 );
         return;
     }
 
-    const auto line = allocateLines< Line >( geometry, 2 );
-    qskCreateFillRandom( Qt::Vertical, in, ColorMapSolid(), line );
+    geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
+    geometry.allocate( 4 );
+
+    auto p = geometry.vertexDataAsPoint2D();
+    p[0].set( quad.left, quad.top );
+    p[1].set( quad.right, quad.top );
+    p[2].set( quad.left, quad.bottom );
+    p[3].set( quad.right, quad.bottom );
 }
 
 void QskBoxRenderer::renderRect( const QRectF& rect,
@@ -664,18 +670,3 @@ void QskBoxRenderer::renderRectFill( const QskBoxRenderer::Quad& rect,
 {
     qskCreateFillOrdered( rect, gradient, line );
 }
-
-QVector< qreal > QskBoxRenderer::fillPathRect( const QRectF& rect,
-    const QskBoxBorderMetrics& border ) const
-{
-    const auto r = border.adjustedRect( rect );
-    if ( r.isEmpty() )
-        return QVector< qreal >();
-
-    const qreal x1 = r.left();
-    const qreal x2 = r.right();
-    const qreal y1 = r.top();
-    const qreal y2 = r.bottom();
-
-    return { x1, y1, x2, y1, x2, y2, x1, y2, x1, y1 };
-}  

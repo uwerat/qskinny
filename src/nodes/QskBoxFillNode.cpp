@@ -15,8 +15,6 @@
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qsgnode_p.h>
-#include <private/qvectorpath_p.h>
-#include <private/qtriangulator_p.h>
 QSK_QT_PRIVATE_END
 
 static inline QskHashValue qskMetricsHash(
@@ -43,35 +41,6 @@ static inline QskGradient qskEffectiveGradient( const QskGradient& gradient )
     return gradient;
 }
 
-static void qskUpdateGeometry( const QVector< qreal > path, QSGGeometry& geometry )
-{
-    const auto hints = QVectorPath::PolygonHint | QVectorPath::OddEvenFill;
-    const auto ts = qTriangulate(
-        path.constData(), path.size() / 2, hints, QTransform(), false );
-
-    /*
-        As we have to iterate over the vertex buffer to copy qreal to float
-        anyway we reorder and drop the index buffer.
-
-        QTriangleSet:
-
-        vertices: (x[i[n]], y[i[n]]), (x[j[n]], y[j[n]]), (x[k[n]], y[k[n]]), n = 0, 1, ...
-        QVector<qreal> vertices; // [x[0], y[0], x[1], y[1], x[2], ...]
-        QVector<quint16> indices; // [i[0], j[0], k[0], i[1], j[1], k[1], i[2], ...]
-     */
-    const auto points = ts.vertices.constData();
-    const auto indices = reinterpret_cast< const quint16* >( ts.indices.data() );
-
-    geometry.allocate( ts.indices.size() );
-
-    auto vertexData = geometry.vertexDataAsPoint2D();
-    for ( int i = 0; i < ts.indices.size(); i++ )
-    {
-        const int j = 2 * indices[i];
-        vertexData[i].set( points[j], points[j + 1] );
-    }
-}
-
 static inline void qskResetGeometry( QskBoxFillNode* node )
 {
     auto g = node->geometry();
@@ -88,7 +57,6 @@ class QskBoxFillNodePrivate final : public QSGGeometryNodePrivate
     QskBoxFillNodePrivate()
         : geometry( QSGGeometry::defaultAttributes_Point2D(), 0 )
     {
-        geometry.setDrawingMode( QSGGeometry::DrawTriangles );
     }
 
     QskHashValue metricsHash = 0;
@@ -138,17 +106,7 @@ void QskBoxFillNode::updateNode(
 
     if ( dirtyGeometry )
     {
-        const auto path = QskBoxRenderer().fillPath(
-            rect, shapeMetrics, borderMetrics );
-
-        if ( path.isEmpty() )
-        {
-            qskResetGeometry( this );
-            return;
-        }
-
-        qskUpdateGeometry( path, d->geometry );
-
+        QskBoxRenderer().renderFill( rect, shapeMetrics, borderMetrics, d->geometry );
         markDirty( QSGNode::DirtyGeometry );
     }
 
