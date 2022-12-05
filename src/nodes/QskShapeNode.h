@@ -23,9 +23,6 @@ class QSK_EXPORT QskShapeNode : public QSGGeometryNode
     void updateNode( const QPainterPath&, const QTransform&,
         const QRectF&, const QskGradient& );
 
-    void updateNode( const QPainterPath&,
-        const QTransform&, const QColor& );
-
   private:
     Q_DECLARE_PRIVATE( QskShapeNode )
 };
