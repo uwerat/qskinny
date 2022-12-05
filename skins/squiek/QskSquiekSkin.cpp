@@ -868,6 +868,7 @@ void Editor::setupScrollView()
     using Q = QskScrollView;
 
     setMetric( Q::Panel | A::Spacing, 4 );
+    setGradient( Q::Panel, QskGradient() );
 
     setBoxBorderMetrics( Q::Viewport, 2 );
     setBoxShape( Q::Viewport, 8 );
