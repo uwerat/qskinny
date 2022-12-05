@@ -38,7 +38,7 @@ inline Node* qskNode( QSGNode* parentNode, quint8 role )
 {
     using namespace QskSGNode;
 
-    auto node = static_cast< Node* > ( findChildNode( parentNode, ShadowRole ) );
+    auto node = static_cast< Node* > ( findChildNode( parentNode, role ) );
 
     if ( node == nullptr )
     {
