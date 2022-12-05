@@ -7,11 +7,6 @@
 #define QSK_QML_HPP
 
 #include <qqml.h>
-
-#if QT_VERSION < QT_VERSION_CHECK( 5, 14, 0 )
-    #include <qqmlengine.h>
-#endif
-
 #include <ctype.h>
 
 #define QSK_MODULE_NAME "Skinny"
@@ -273,20 +268,8 @@ namespace QskQml
     {
         const auto name = classNameQml( T::staticMetaObject );
 
-#if QT_VERSION < QT_VERSION_CHECK( 5, 14, 0 )
-        auto callback =
-            []( QQmlEngine*, QJSEngine* )
-            {
-                QQmlEngine::setObjectOwnership( singleton, QQmlEngine::CppOwnership );
-                return singleton;
-            };
-
-        return qmlRegisterSingletonType< T >( QSK_MODULE_NAME,
-            QSK_VERSION_MAJOR, QSK_VERSION_MINOR, name, callback );
-#else
         return qmlRegisterSingletonInstance( QSK_MODULE_NAME,
             QSK_VERSION_MAJOR, QSK_VERSION_MINOR, name, singleton );
-#endif
     }
 }
 

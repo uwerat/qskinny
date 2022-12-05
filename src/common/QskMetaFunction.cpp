@@ -55,11 +55,7 @@ int QskMetaFunction::FunctionCall::typeInfo() const
 int QskMetaFunction::FunctionCall::refCount() const
 {
     auto that = const_cast< FunctionCall* >( this );
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 14, 0 )
     return reinterpret_cast< SlotObject* >( that )->ref.loadRelaxed();
-#else
-    return reinterpret_cast< SlotObject* >( that )->ref.load();
-#endif
 }
 
 QskMetaFunction::QskMetaFunction()
