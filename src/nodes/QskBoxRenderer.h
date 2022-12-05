@@ -36,6 +36,8 @@ class QSK_EXPORT QskBoxRenderer
     static void renderRect( const QRectF&, const QskGradient&, QSGGeometry& );
     static void renderRect( const QRectF&, QSGGeometry& );
 
+    static bool isGradientSupported( const QskGradient& );
+
     class Quad
     {
       public:

@@ -7,6 +7,7 @@
 #include "QskBoxFillNode.h"
 #include "QskBoxShadowNode.h"
 #include "QskBoxRectangleNode.h"
+#include "QskBoxRenderer.h"
 #include "QskSGNode.h"
 
 #include "QskGradient.h"
@@ -49,37 +50,6 @@ inline Node* qskNode( QSGNode* parentNode, quint8 role )
     return node;
 }
 
-static inline bool qskIsBoxGradient( const QskGradient& gradient )
-{
-    if ( !gradient.isVisible() || gradient.isMonochrome() )
-        return true;
-
-    switch( gradient.type() )
-    {
-        case QskGradient::Linear:
-        {
-            auto dir = gradient.linearDirection();
-
-            if ( dir.isTilted() )
-            {
-                // only diagonal from topLeft to bottomRight
-                return ( dir.x1() == dir.x2() ) && ( dir.y1() == dir.y2() );
-            }
-
-            return true;
-        }
-        case QskGradient::Radial:
-        case QskGradient::Conic:
-        {
-            return false;
-        }
-        default:
-        {
-            return true;
-        }
-    }
-}
-
 QskBoxNode::QskBoxNode()
 {
 }
@@ -113,7 +83,7 @@ void QskBoxNode::updateNode( const QRectF& rect,
         However the border is always done with a QskBoxRectangleNode
      */
 
-    if ( qskIsBoxGradient( gradient ) )
+    if ( QskBoxRenderer::isGradientSupported( gradient ) )
     {
         rectNode = qskNode< QskBoxRectangleNode >( this, BoxRole );
         rectNode->updateNode( rect, shape, borderMetrics, borderColors, gradient );

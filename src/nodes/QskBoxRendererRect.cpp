@@ -681,3 +681,35 @@ void QskBoxRenderer::renderRectFill( const QskBoxRenderer::Quad& rect,
 {
     qskCreateFillOrdered( rect, gradient, line );
 }
+
+bool QskBoxRenderer::isGradientSupported( const QskGradient& gradient )
+{
+    if ( !gradient.isVisible() || gradient.isMonochrome() )
+        return true;
+
+    switch( gradient.type() )
+    {
+        case QskGradient::Linear:
+        {
+            auto dir = gradient.linearDirection();
+
+            if ( dir.isTilted() )
+            {
+                // only diagonal from topLeft to bottomRight
+                return ( dir.x1() == dir.x2() ) && ( dir.y1() == dir.y2() );
+            }
+
+            return true;
+        }
+        case QskGradient::Radial:
+        case QskGradient::Conic:
+        {
+            return false;
+        }
+        default:
+        {
+            return true;
+        }
+    }
+}
+
