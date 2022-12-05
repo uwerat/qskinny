@@ -16,7 +16,7 @@
 #include <QFontMetrics>
 #include <QLineF>
 #include <QSGFlatColorMaterial>
-#include <QSGGeometry>
+#include <QSGGeometryNode>
 #include <QtMath>
 
 namespace
