@@ -90,7 +90,7 @@ void QskBoxFillNode::updateNode(
 
     if ( dirtyGeometry )
     {
-        QskBoxRenderer().renderFill( rect, shapeMetrics, borderMetrics, d->geometry );
+        QskBoxRenderer::renderFill( rect, shapeMetrics, borderMetrics, d->geometry );
         markDirty( QSGNode::DirtyGeometry );
     }
 

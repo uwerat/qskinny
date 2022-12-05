@@ -23,15 +23,18 @@ namespace QskVertex
 class QSK_EXPORT QskBoxRenderer
 {
   public:
-    void renderBorder( const QRectF&,
+    static void renderBorder( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&, QSGGeometry& );
 
-    void renderFill( const QRectF&,
+    static void renderFill( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&, QSGGeometry& );
 
-    void renderBox( const QRectF&,
+    static void renderBox( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
         const QskBoxBorderColors&, const QskGradient&, QSGGeometry& );
+
+    static void renderRect( const QRectF&, const QskGradient&, QSGGeometry& );
+    static void renderRect( const QRectF&, QSGGeometry& );
 
     class Quad
     {
@@ -106,29 +109,29 @@ class QSK_EXPORT QskBoxRenderer
     };
 
   private:
-    void renderRectFill( const QRectF&,
+    static void renderRectFill( const QRectF&,
         const QskBoxBorderMetrics&, QSGGeometry& );
 
-    void renderRectBorder( const QRectF&,
+    static void renderRectBorder( const QRectF&,
         const QskBoxBorderMetrics&, QSGGeometry& );
 
-    void renderRect( const QRectF&, const QskBoxBorderMetrics&,
+    static void renderRect( const QRectF&, const QskBoxBorderMetrics&,
         const QskBoxBorderColors&, const QskGradient&, QSGGeometry& );
 
-    void renderRectellipseFill( const QRectF&,
+    static void renderRectellipseFill( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&, QSGGeometry& );
 
-    void renderRectellipseBorder( const QRectF&,
+    static void renderRectellipseBorder( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&, QSGGeometry& );
 
-    void renderRectellipse( const QRectF&,
+    static void renderRectellipse( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
         const QskBoxBorderColors&, const QskGradient&, QSGGeometry& );
 
-    void renderDiagonalFill( const Metrics&, const QskGradient&,
+    static void renderDiagonalFill( const Metrics&, const QskGradient&,
         int lineCount, QskVertex::ColoredLine* );
 
-    void renderRectFill( const Quad&, const QskGradient&, QskVertex::ColoredLine* );
+    static void renderRectFill( const Quad&, const QskGradient&, QskVertex::ColoredLine* );
 };
 
 inline void QskBoxRenderer::renderBorder(

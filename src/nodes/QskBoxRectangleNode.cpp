@@ -19,7 +19,7 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qsgnode_p.h>
 QSK_QT_PRIVATE_END
 
-Q_GLOBAL_STATIC( QSGVertexColorMaterial, qskMaterialVertex )
+Q_GLOBAL_STATIC( QSGVertexColorMaterial, qskMaterialColorVertex )
 
 static inline QskHashValue qskMetricsHash(
     const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& borderMetrics )
@@ -73,7 +73,7 @@ static inline QskGradient qskEffectiveGradient( const QskGradient& gradient )
                 }
                 case QskGradient::Radial:
                 case QskGradient::Conic:
-                {   
+                {
                     qWarning() << "QskBoxRectangleNode does not support radial/conic gradients";
                     g.setLinearDirection( Qt::Vertical );
 
@@ -115,13 +115,13 @@ QskBoxRectangleNode::QskBoxRectangleNode()
 {
     Q_D( QskBoxRectangleNode );
 
-    setMaterial( qskMaterialVertex );
+    setMaterial( qskMaterialColorVertex );
     setGeometry( &d->geometry );
 }
 
 QskBoxRectangleNode::~QskBoxRectangleNode()
 {
-    if ( material() != qskMaterialVertex )
+    if ( material() != qskMaterialColorVertex )
         delete material();
 }
 
@@ -139,7 +139,7 @@ void QskBoxRectangleNode::updateNode( const QRectF& rect,
     Q_D( QskBoxRectangleNode );
 
     /*
-        QskBoxRenderer supports certain linear gradients only. 
+        QskBoxRenderer supports certain linear gradients only.
         For everything else we would have to use a QskGradientMaterial instead.
 
         As a temporary solution we simply "convert" gradient into a
@@ -229,13 +229,11 @@ void QskBoxRectangleNode::updateNode( const QRectF& rect,
     bool maybeFlat = false;
 #endif
 
-    QskBoxRenderer renderer;
-
     if ( !maybeFlat )
     {
         setMonochrome( false );
 
-        renderer.renderBox( d->rect, shape, borderMetrics,
+        QskBoxRenderer::renderBox( d->rect, shape, borderMetrics,
             borderColors, fillGradient, *geometry() );
     }
     else
@@ -248,12 +246,12 @@ void QskBoxRectangleNode::updateNode( const QRectF& rect,
         if ( hasFill )
         {
             flatMaterial->setColor( fillGradient.rgbStart() );
-            renderer.renderFill( d->rect, shape, QskBoxBorderMetrics(), *geometry() );
+            QskBoxRenderer::renderFill( d->rect, shape, QskBoxBorderMetrics(), *geometry() );
         }
         else
         {
             flatMaterial->setColor( borderColors.left().rgbStart() );
-            renderer.renderBorder( d->rect, shape, borderMetrics, *geometry() );
+            QskBoxRenderer::renderBorder( d->rect, shape, borderMetrics, *geometry() );
         }
     }
 }
@@ -262,7 +260,7 @@ void QskBoxRectangleNode::setMonochrome( bool on )
 {
     const auto material = this->material();
 
-    if ( on == ( material != qskMaterialVertex ) )
+    if ( on == ( material != qskMaterialColorVertex ) )
         return;
 
     Q_D( QskBoxRectangleNode );
@@ -278,7 +276,7 @@ void QskBoxRectangleNode::setMonochrome( bool on )
     }
     else
     {
-        setMaterial( qskMaterialVertex );
+        setMaterial( qskMaterialColorVertex );
         delete material;
 
         const QSGGeometry g( QSGGeometry::defaultAttributes_ColoredPoint2D(), 0 );

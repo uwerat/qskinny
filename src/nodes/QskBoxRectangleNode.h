@@ -32,7 +32,6 @@ class QSK_EXPORT QskBoxRectangleNode : public QSGGeometryNode
     void setMonochrome( bool on );
 
     Q_DECLARE_PRIVATE( QskBoxRectangleNode )
-
 };
 
 #endif

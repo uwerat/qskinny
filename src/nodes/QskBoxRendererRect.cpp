@@ -543,7 +543,6 @@ void QskBoxRenderer::renderRectFill( const QRectF& rect,
         return;
     }
 
-    geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
     geometry.allocate( 4 );
 
     auto p = geometry.vertexDataAsPoint2D();
@@ -551,6 +550,18 @@ void QskBoxRenderer::renderRectFill( const QRectF& rect,
     p[1].set( quad.right, quad.top );
     p[2].set( quad.left, quad.bottom );
     p[3].set( quad.right, quad.bottom );
+}
+
+void QskBoxRenderer::renderRect( const QRectF& rect,
+    const QskGradient& gradient, QSGGeometry& geometry )
+{
+    renderRect( rect, QskBoxBorderMetrics(),
+        QskBoxBorderColors(), gradient, geometry );
+}
+
+void QskBoxRenderer::renderRect( const QRectF& rect, QSGGeometry& geometry )
+{
+    renderRectFill( rect, QskBoxBorderMetrics(), geometry );
 }
 
 void QskBoxRenderer::renderRect( const QRectF& rect,
