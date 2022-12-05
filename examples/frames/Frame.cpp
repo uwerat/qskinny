@@ -7,7 +7,7 @@
 
 #include <QskBoxBorderColors.h>
 #include <QskBoxBorderMetrics.h>
-#include <QskBoxNode.h>
+#include <QskBoxRectangleNode.h>
 #include <QskBoxShapeMetrics.h>
 #include <QskSGNode.h>
 
@@ -98,7 +98,7 @@ void Frame::updateNode( QSGNode* parentNode )
 
     const quint8 nodeRole = 0;
 
-    auto node = static_cast< QskBoxNode* >(
+    auto node = static_cast< QskBoxRectangleNode* >(
         QskSGNode::findChildNode( parentNode, nodeRole ) );
 
     const QRectF rect = contentsRect();
@@ -110,7 +110,7 @@ void Frame::updateNode( QSGNode* parentNode )
 
     if ( node == nullptr )
     {
-        node = new QskBoxNode;
+        node = new QskBoxRectangleNode;
         QskSGNode::setNodeRole( node, nodeRole );
     }
 
@@ -120,7 +120,7 @@ void Frame::updateNode( QSGNode* parentNode )
         parentNode->appendChildNode( node );
 }
 
-void Frame::updateFrameNode( const QRectF& rect, QskBoxNode* node )
+void Frame::updateFrameNode( const QRectF& rect, QskBoxRectangleNode* node )
 {
     const QColor dark = m_color.darker( 150 );
     const QColor light = m_color.lighter( 150 );
@@ -150,7 +150,7 @@ void Frame::updateFrameNode( const QRectF& rect, QskBoxNode* node )
     const QskBoxBorderColors borderColors( c1, c1, c2, c2 );
     const qreal radius = effectiveRadius( rect, m_radius );
 
-    node->setBoxData( rect, radius, m_frameWidth, borderColors, m_color );
+    node->updateNode( rect, radius, m_frameWidth, borderColors, m_color );
 }
 
 #include "moc_Frame.cpp"

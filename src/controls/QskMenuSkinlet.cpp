@@ -6,7 +6,6 @@
 #include "QskMenuSkinlet.h"
 #include "QskMenu.h"
 
-#include "QskBoxNode.h"
 #include "QskGraphic.h"
 #include "QskColorFilter.h"
 #include "QskTextOptions.h"

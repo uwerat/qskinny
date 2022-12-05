@@ -7,7 +7,7 @@
 
 #include "QskControl.h"
 
-class QskBoxNode;
+class QskBoxRectangleNode;
 
 class Frame : public QskControl
 {
@@ -62,7 +62,7 @@ class Frame : public QskControl
     void updateNode( QSGNode* ) override;
 
   private:
-    void updateFrameNode( const QRectF&, QskBoxNode* );
+    void updateFrameNode( const QRectF&, QskBoxRectangleNode* );
 
     Style m_style;
     QColor m_color;

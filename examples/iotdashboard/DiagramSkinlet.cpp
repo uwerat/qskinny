@@ -10,7 +10,7 @@
 
 #include <QskBoxBorderColors.h>
 #include <QskBoxBorderMetrics.h>
-#include <QskBoxNode.h>
+#include <QskBoxRectangleNode.h>
 #include <QskBoxShapeMetrics.h>
 
 namespace
@@ -142,15 +142,15 @@ QSGNode* DiagramSkinlet::updateChartNode( const Diagram* diagram, QSGNode* node 
 
                     for( int k = 0; k < dataPoints.size(); ++k )
                     {
-                        QskBoxNode* barNode;
+                        QskBoxRectangleNode* barNode;
 
                         if( barsNode->childCount() > k )
                         {
-                            barNode = static_cast< QskBoxNode* >( barsNode->childAtIndex( k ) );
+                            barNode = static_cast< QskBoxRectangleNode* >( barsNode->childAtIndex( k ) );
                         }
                         else
                         {
-                            barNode = new QskBoxNode;
+                            barNode = new QskBoxRectangleNode;
                             barsNode->appendChildNode( barNode );
                         }
 
@@ -172,7 +172,7 @@ QSGNode* DiagramSkinlet::updateChartNode( const Diagram* diagram, QSGNode* node 
                         color = diagram->color( barSubcontrol );
 
                         const auto shape = diagram->boxShapeHint( barSubcontrol );
-                        barNode->setBoxData( barRect, shape, {}, {}, color );
+                        barNode->updateNode( barRect, shape, {}, {}, color );
                     }
                 }
                 else
