@@ -10,8 +10,14 @@
 #include <qsgnode.h>
 
 class QskGradient;
+class QskBoxShapeMetrics;
 class QskRectangleNodePrivate;
 
+/*
+    QskRectangleNode is for rounded rectangles without a border.
+    Depending on the type of gradient it uses a different
+    material/geometry combination.
+ */
 class QSK_EXPORT QskRectangleNode : public QSGGeometryNode
 {
   public:
@@ -19,6 +25,7 @@ class QSK_EXPORT QskRectangleNode : public QSGGeometryNode
     ~QskRectangleNode() override;
 
     void updateNode( const QRectF&, const QskGradient& );
+    void updateNode( const QRectF&, const QskBoxShapeMetrics&, const QskGradient& );
 
   private:
     Q_DECLARE_PRIVATE( QskRectangleNode )

@@ -553,18 +553,6 @@ void QskBoxRenderer::renderRectFill( const QRectF& rect,
 }
 
 void QskBoxRenderer::renderRect( const QRectF& rect,
-    const QskGradient& gradient, QSGGeometry& geometry )
-{
-    renderRect( rect, QskBoxBorderMetrics(),
-        QskBoxBorderColors(), gradient, geometry );
-}
-
-void QskBoxRenderer::renderRect( const QRectF& rect, QSGGeometry& geometry )
-{
-    renderRectFill( rect, QskBoxBorderMetrics(), geometry );
-}
-
-void QskBoxRenderer::renderRect( const QRectF& rect,
     const QskBoxBorderMetrics& border, const QskBoxBorderColors& borderColors,
     const QskGradient& gradient, QSGGeometry& geometry )
 {

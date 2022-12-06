@@ -9,6 +9,10 @@
 #include "QskBoxRenderer.h"
 #include "QskGradientMaterial.h"
 
+#include "QskBoxBorderMetrics.h"
+#include "QskBoxBorderColors.h"
+#include "QskBoxShapeMetrics.h"
+
 #include <qglobalstatic.h>
 #include <qsgvertexcolormaterial.h>
 
@@ -33,6 +37,21 @@ static inline QskGradient qskEffectiveGradient( const QskGradient& gradient )
     return gradient;
 }
 
+static inline void qskUpdateColoredPoint2D( const QRectF& rect,
+    const QskBoxShapeMetrics& shape, const QskGradient& gradient,
+    QSGGeometry& geometry )
+{
+    QskBoxRenderer::renderBox( rect, shape,
+        QskBoxBorderMetrics(), QskBoxBorderColors(), gradient, geometry );
+}
+
+static inline void qskUpdatePoint2D( const QRectF& rect,
+    const QskBoxShapeMetrics& shape, QSGGeometry& geometry )
+{
+    QskBoxRenderer::renderFill( rect, shape,
+        QskBoxBorderMetrics(), geometry );
+}
+
 class QskRectangleNodePrivate final : public QSGGeometryNodePrivate
 {
   public:
@@ -41,10 +60,21 @@ class QskRectangleNodePrivate final : public QSGGeometryNodePrivate
     {
     }
 
+    inline void resetValues()
+    {
+        rect = QRectF();
+        shape = QskBoxShapeMetrics();
+        gradientHash = 0;
+        metricsHash = 0;
+    }
+
     QSGGeometry geometry;
 
     QRectF rect;
+    QskBoxShapeMetrics shape;
+
     QskHashValue gradientHash = 0;
+    QskHashValue metricsHash = 0;
 
     int gradientType = -1;
 };
@@ -65,29 +95,38 @@ QskRectangleNode::~QskRectangleNode()
 void QskRectangleNode::updateNode(
     const QRectF& rect, const QskGradient& gradient )
 {
+    updateNode( rect, QskBoxShapeMetrics(), gradient );
+}
+
+void QskRectangleNode::updateNode(
+    const QRectF& rect, const QskBoxShapeMetrics& shape, const QskGradient& gradient )
+{
     Q_D( QskRectangleNode );
 
     if ( rect.isEmpty() || !gradient.isVisible() )
     {
-        d->rect = QRectF();
-        d->gradientHash = 0;
+        d->resetValues();
         QskSGNode::resetGeometry( this );
 
         return;
     }
 
     const auto effectiveGradient = qskEffectiveGradient( gradient );
+    const auto effectiveShape = shape.toAbsolute( rect.size() );
 
     const auto gradientHash = effectiveGradient.hash( 54228 );
+    const auto metricsHash = effectiveShape.hash( 44564 );
 
-    const bool dirtyGradient = gradientHash != d->gradientHash;
-    const bool dirtyRect = rect != d->rect;
+    const bool dirtyColors = gradientHash != d->gradientHash;
+    const bool dirtyMetrics = ( rect != d->rect ) || ( metricsHash != d->metricsHash );
 
-    if ( !( dirtyGradient || dirtyRect ) )
+    if ( !( dirtyColors || dirtyMetrics ) )
         return;
 
     d->gradientHash = gradientHash;
+    d->metricsHash = metricsHash;
     d->rect = rect;
+    d->shape = effectiveShape;
 
     if ( QskBoxRenderer::isGradientSupported( effectiveGradient ) )
     {
@@ -128,9 +167,10 @@ void QskRectangleNode::updateNode(
             Colors are added to the vertices, while the material does
             not depend on the gradient at all
          */
-        if ( dirtyRect || dirtyGradient )
+        if ( dirtyMetrics || dirtyColors )
         {
-            QskBoxRenderer::renderRect( rect, effectiveGradient, d->geometry );
+            qskUpdateColoredPoint2D( rect, effectiveShape,
+                effectiveGradient, d->geometry );
             markDirty( QSGNode::DirtyGeometry );
         }
     }
@@ -142,13 +182,13 @@ void QskRectangleNode::updateNode(
             Monochrome gradients or QskGradient::Stops are supported by the
             QskBoxRenderer. So we don't need to handle them here.
          */
-        if ( dirtyRect )
+        if ( dirtyMetrics )
         {
-            QskBoxRenderer::renderRect( rect, d->geometry );
+            qskUpdatePoint2D( rect, effectiveShape, d->geometry );
             markDirty( QSGNode::DirtyGeometry );
         }
 
-        if ( dirtyGradient )
+        if ( dirtyColors )
         {
             const auto gradientType = effectiveGradient.type();
 

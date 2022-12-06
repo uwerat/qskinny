@@ -40,7 +40,6 @@ static inline QskHashValue qskColorsHash(
 
 #if 1
 
-
 static inline QskGradient qskEffectiveGradient( const QskGradient& gradient )
 {
     QskGradient g;
@@ -139,16 +138,10 @@ void QskBoxRectangleNode::updateNode( const QRectF& rect,
     Q_D( QskBoxRectangleNode );
 
     /*
-        QskBoxRenderer supports certain linear gradients only.
-        For everything else we would have to use a QskGradientMaterial instead.
-
-        As a temporary solution we simply "convert" gradient into a
-        simple QskLinearGradient so that at least something is happening.
-        TODO ...
+        We supports certain linear gradients only.
+        Everything else has to be done using QskRectangleNode
      */
-#if 1
     const auto fillGradient = qskEffectiveGradient( gradient );
-#endif
 
     const auto metricsHash = qskMetricsHash( shape, borderMetrics );
     const auto colorsHash = qskColorsHash( borderColors, fillGradient );
