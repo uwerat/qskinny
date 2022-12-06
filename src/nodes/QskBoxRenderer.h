@@ -29,7 +29,7 @@ class QSK_EXPORT QskBoxRenderer
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
         const QskBoxBorderColors&, const QskGradient&, QSGGeometry& );
 
-    static bool isGradientSupported( const QskGradient& );
+    static bool isGradientSupported( const QskBoxShapeMetrics&, const QskGradient& );
 
     class Metrics
     {

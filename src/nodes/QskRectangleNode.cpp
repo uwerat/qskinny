@@ -128,7 +128,7 @@ void QskRectangleNode::updateNode(
     d->rect = rect;
     d->shape = effectiveShape;
 
-    if ( QskBoxRenderer::isGradientSupported( effectiveGradient ) )
+    if ( QskBoxRenderer::isGradientSupported( effectiveShape, effectiveGradient ) )
     {
         if ( material() != qskMaterialColorVertex )
         {

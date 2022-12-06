@@ -663,7 +663,8 @@ void QskBoxRenderer::renderRectFill( const QskVertex::Quad& rect,
     qskCreateFillOrdered( rect, gradient, line );
 }
 
-bool QskBoxRenderer::isGradientSupported( const QskGradient& gradient )
+bool QskBoxRenderer::isGradientSupported(
+    const QskBoxShapeMetrics&, const QskGradient& gradient )
 {
     if ( !gradient.isVisible() || gradient.isMonochrome() )
         return true;
