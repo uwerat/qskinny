@@ -13,7 +13,7 @@
 
 namespace QskVertex
 {
-    class QSK_EXPORT Color
+    class Color
     {
       public:
         constexpr Color() noexcept;
@@ -31,75 +31,6 @@ namespace QskVertex
 
         unsigned char r, g, b, a;
     };
-
-    class QSK_EXPORT Line
-    {
-      public:
-        inline void setLine( float x1, float y1, float x2, float y2 ) noexcept
-        {
-            p1.set( x1, y1 );
-            p2.set( x2, y2 );
-        }
-
-        inline void setHLine( float x1, float x2, float y ) noexcept
-        {
-            setLine( x1, y, x2, y );
-        }
-
-        inline void setVLine( float x, float y1, float y2 ) noexcept
-        {
-            setLine( x, y1, x, y2 );
-        }
-
-        inline void setLine( float x1, float y1, float x2, float y2, Color ) noexcept
-        {
-            /* The color parameter makes no sense, but is useful
-               when being using from templated code
-             */
-            setLine( x1, y1, x2, y2 );
-        }
-
-        QSGGeometry::Point2D p1;
-        QSGGeometry::Point2D p2;
-    };
-
-    class QSK_EXPORT ColoredLine
-    {
-      public:
-        inline void setLine( float x1, float y1, Color c1,
-            float x2, float y2, Color c2 ) noexcept
-        {
-            p1.set( x1, y1, c1.r, c1.g, c1.b, c1.a );
-            p2.set( x2, y2, c2.r, c2.g, c2.b, c2.a );
-        }
-
-        inline void setLine( float x1, float y1, float x2, float y2, Color color ) noexcept
-        {
-            setLine( x1, y1, color, x2, y2, color );
-        }
-
-        inline void setHLine( qreal x1, qreal x2, qreal y, Color color ) noexcept
-        {
-            setLine( x1, y, color, x2, y, color );
-        }
-
-        inline void setVLine( qreal x, qreal y1, qreal y2, Color color ) noexcept
-        {
-            setLine( x, y1, color, x, y2, color );
-        }
-
-        QSGGeometry::ColoredPoint2D p1;
-        QSGGeometry::ColoredPoint2D p2;
-    };
-
-    template< class Line >
-    static inline Line* allocateLines( QSGGeometry& geometry, int lineCount )
-    {
-        geometry.allocate( 2 * lineCount ); // 2 points per line
-        return reinterpret_cast< Line* >( geometry.vertexData() );
-    }
-
-    void QSK_EXPORT debugGeometry( const QSGGeometry& );
 
     inline constexpr Color::Color() noexcept
         : r( 0 )
@@ -167,11 +98,134 @@ namespace QskVertex
     }
 }
 
+namespace QskVertex
+{
+    class Line
+    {
+      public:
+        inline void setLine( float x1, float y1, float x2, float y2 ) noexcept
+        {
+            p1.set( x1, y1 );
+            p2.set( x2, y2 );
+        }
+
+        inline void setHLine( float x1, float x2, float y ) noexcept
+        {
+            setLine( x1, y, x2, y );
+        }
+
+        inline void setVLine( float x, float y1, float y2 ) noexcept
+        {
+            setLine( x, y1, x, y2 );
+        }
+
+        inline void setLine( float x1, float y1, float x2, float y2, Color ) noexcept
+        {
+            /* The color parameter makes no sense, but is useful
+               when being using from templated code
+             */
+            setLine( x1, y1, x2, y2 );
+        }
+
+        QSGGeometry::Point2D p1;
+        QSGGeometry::Point2D p2;
+    };
+
+    class ColoredLine
+    {
+      public:
+        inline void setLine( float x1, float y1, Color c1,
+            float x2, float y2, Color c2 ) noexcept
+        {
+            p1.set( x1, y1, c1.r, c1.g, c1.b, c1.a );
+            p2.set( x2, y2, c2.r, c2.g, c2.b, c2.a );
+        }
+
+        inline void setLine( float x1, float y1, float x2, float y2, Color color ) noexcept
+        {
+            setLine( x1, y1, color, x2, y2, color );
+        }
+
+        inline void setHLine( qreal x1, qreal x2, qreal y, Color color ) noexcept
+        {
+            setLine( x1, y, color, x2, y, color );
+        }
+
+        inline void setVLine( qreal x, qreal y1, qreal y2, Color color ) noexcept
+        {
+            setLine( x, y1, color, x, y2, color );
+        }
+
+        QSGGeometry::ColoredPoint2D p1;
+        QSGGeometry::ColoredPoint2D p2;
+    };
+
+    template< class Line >
+    static inline Line* allocateLines( QSGGeometry& geometry, int lineCount )
+    {
+        geometry.allocate( 2 * lineCount ); // 2 points per line
+        return reinterpret_cast< Line* >( geometry.vertexData() );
+    }
+}
+
+namespace QskVertex
+{
+    class Quad
+    {
+      public:
+        constexpr Quad() noexcept = default;
+
+        inline constexpr Quad( const QRectF& rect ) noexcept
+            : left( rect.left() )
+            , top( rect.top() )
+            , right( rect.right() )
+            , bottom( rect.bottom() )
+            , width( rect.width() )
+            , height( rect.height() )
+        {
+        }
+
+        inline constexpr bool operator==( const Quad& other ) const noexcept
+        {
+            return
+                ( left == other.left ) &&
+                ( right == other.right ) &&
+                ( top == other.top ) &&
+                ( bottom == other.bottom );
+        }
+
+        inline constexpr bool operator!=( const Quad& other ) const noexcept
+        {
+            return !( *this == other );
+        }
+
+        inline constexpr bool isEmpty() const noexcept
+        {
+            return ( width <= 0 ) || ( height <= 0 );
+        }
+
+        qreal left = 0.0;
+        qreal top = 0.0;
+        qreal right = 0.0;
+        qreal bottom = 0.0;
+        qreal width = 0.0;
+        qreal height = 0.0;
+    };
+}
+
+namespace QskVertex
+{
+    void debugGeometry( const QSGGeometry& );
+}
+
 #ifndef QT_NO_DEBUG_STREAM
-class QDebug;
-QDebug operator<<( QDebug debug, QskVertex::Color );
-QDebug operator<<( QDebug debug, const QskVertex::ColoredLine& );
-QDebug operator<<( QDebug debug, const QskVertex::Line& );
+
+    class QDebug;
+
+    QDebug operator<<( QDebug debug, QskVertex::Color );
+    QDebug operator<<( QDebug debug, const QskVertex::ColoredLine& );
+    QDebug operator<<( QDebug debug, const QskVertex::Line& );
+
 #endif
 
 #endif

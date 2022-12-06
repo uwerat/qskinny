@@ -7,6 +7,7 @@
 #define QSK_BOX_RENDERER_H
 
 #include "QskBoxShapeMetrics.h"
+#include "QskVertex.h"
 #include <qrect.h>
 
 class QskBoxBorderMetrics;
@@ -14,11 +15,6 @@ class QskBoxBorderColors;
 class QskGradient;
 
 class QSGGeometry;
-
-namespace QskVertex
-{
-    class ColoredLine;
-}
 
 class QSK_EXPORT QskBoxRenderer
 {
@@ -35,60 +31,15 @@ class QSK_EXPORT QskBoxRenderer
 
     static bool isGradientSupported( const QskGradient& );
 
-    class Quad
-    {
-      public:
-        inline constexpr Quad() noexcept
-            : left( 0.0 )
-            , top( 0.0 )
-            , right( 0.0 )
-            , bottom( 0.0 )
-            , width( 0.0 )
-            , height( 0.0 )
-        {
-        }
-
-        inline constexpr Quad( const QRectF& rect ) noexcept
-            : left( rect.left() )
-            , top( rect.top() )
-            , right( rect.right() )
-            , bottom( rect.bottom() )
-            , width( rect.width() )
-            , height( rect.height() )
-        {
-        }
-
-        inline constexpr bool operator==( const Quad& other ) const noexcept
-        {
-            return
-                ( left == other.left ) &&
-                ( right == other.right ) &&
-                ( top == other.top ) &&
-                ( bottom == other.bottom );
-        }
-
-        inline constexpr bool operator!=( const Quad& other ) const noexcept
-        {
-            return !( *this == other );
-        }
-
-        inline constexpr bool isEmpty() const noexcept
-        {
-            return ( width <= 0 ) || ( height <= 0 );
-        }
-
-        qreal left, top, right, bottom, width, height;
-    };
-
     class Metrics
     {
       public:
         Metrics( const QRectF&, const QskBoxShapeMetrics&, const QskBoxBorderMetrics& );
 
-        Quad outerQuad;
-        Quad innerQuad;
+        QskVertex::Quad outerQuad;
+        QskVertex::Quad innerQuad;
 #if 1
-        Quad centerQuad; // to be removed
+        QskVertex::Quad centerQuad; // to be removed
 #endif
 
         struct Corner
@@ -130,7 +81,8 @@ class QSK_EXPORT QskBoxRenderer
     static void renderDiagonalFill( const Metrics&, const QskGradient&,
         int lineCount, QskVertex::ColoredLine* );
 
-    static void renderRectFill( const Quad&, const QskGradient&, QskVertex::ColoredLine* );
+    static void renderRectFill( const QskVertex::Quad&,
+        const QskGradient&, QskVertex::ColoredLine* );
 };
 
 inline void QskBoxRenderer::renderBorder(

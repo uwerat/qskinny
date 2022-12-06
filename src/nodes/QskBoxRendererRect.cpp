@@ -18,7 +18,7 @@ namespace
     class VRectIterator
     {
       public:
-        inline VRectIterator( const QskBoxRenderer::Quad& rect )
+        inline VRectIterator( const Quad& rect )
             : m_rect( rect )
             , m_value( rect.top )
         {
@@ -53,14 +53,14 @@ namespace
         }
 
       private:
-        const QskBoxRenderer::Quad& m_rect;
+        const Quad& m_rect;
         qreal m_value;
     };
 
     class HRectIterator
     {
       public:
-        inline HRectIterator( const QskBoxRenderer::Quad& rect )
+        inline HRectIterator( const Quad& rect )
             : m_rect( rect )
             , m_value( rect.left )
         {
@@ -95,14 +95,14 @@ namespace
         }
 
       private:
-        const QskBoxRenderer::Quad& m_rect;
+        const Quad& m_rect;
         qreal m_value;
     };
 
     class DSquareIterator
     {
       public:
-        inline DSquareIterator( const QskBoxRenderer::Quad& rect )
+        inline DSquareIterator( const Quad& rect )
             : m_rect( rect )
             , m_step( 0 )
         {
@@ -171,14 +171,14 @@ namespace
         }
 
       private:
-        const QskBoxRenderer::Quad& m_rect;
+        const Quad& m_rect;
         int m_step;
     };
 
     class DRectIterator
     {
       public:
-        inline DRectIterator( const QskBoxRenderer::Quad& rect )
+        inline DRectIterator( const Quad& rect )
             : m_rect( rect )
             , m_step( 0 )
         {
@@ -332,7 +332,7 @@ namespace
         }
 
       private:
-        const QskBoxRenderer::Quad& m_rect;
+        const Quad& m_rect;
 
         qreal m_fx, m_fy;
         qreal m_lx, m_ly;
@@ -342,7 +342,7 @@ namespace
     };
 }
 
-static inline void qskCreateFillOrdered( const QskBoxRenderer::Quad& rect,
+static inline void qskCreateFillOrdered( const Quad& rect,
     const QskGradient& gradient, ColoredLine* line )
 {
     const auto dir = gradient.linearDirection();
@@ -374,7 +374,7 @@ static inline void qskCreateFillOrdered( const QskBoxRenderer::Quad& rect,
 
 template< class ColorMap, class Line >
 static inline void qskCreateFillRandom( Qt::Orientation orientation,
-    const QskBoxRenderer::Quad& r, const ColorMap& map, Line* line )
+    const Quad& r, const ColorMap& map, Line* line )
 {
     if ( orientation == Qt::Vertical )
     {
@@ -390,14 +390,7 @@ static inline void qskCreateFillRandom( Qt::Orientation orientation,
 
 template< class Line >
 static inline void qskCreateBorderMonochrome(
-    const QskBoxRenderer::Quad& out, const QskBoxRenderer::Quad& in, QRgb rgb, Line* line )
-{
-    qskCreateBorderMonochrome( out, in, Color( rgb ), line );
-}
-
-template< class Line >
-static inline void qskCreateBorderMonochrome(
-    const QskBoxRenderer::Quad& out, const QskBoxRenderer::Quad& in, Color color, Line* line )
+    const Quad& out, const Quad& in, Color color, Line* line )
 {
     auto l = line;
 
@@ -411,7 +404,7 @@ static inline void qskCreateBorderMonochrome(
 
 template< class Line >
 static inline void qskCreateBorder(
-    const QskBoxRenderer::Quad& out, const QskBoxRenderer::Quad& in,
+    const Quad& out, const Quad& in,
     const QskBoxBorderColors& colors, Line* line )
 {
     const qreal dx1 = in.right - in.left;
@@ -655,7 +648,7 @@ void QskBoxRenderer::renderRect( const QRectF& rect,
         if ( bc.isMonochrome() )
         {
             const auto rgb = bc.left().rgbStart();
-            qskCreateBorderMonochrome( rect, in, rgb, fillLines );
+            qskCreateBorderMonochrome( rect, in, Color( rgb ), fillLines );
         }
         else
         {
@@ -664,7 +657,7 @@ void QskBoxRenderer::renderRect( const QRectF& rect,
     }
 }
 
-void QskBoxRenderer::renderRectFill( const QskBoxRenderer::Quad& rect,
+void QskBoxRenderer::renderRectFill( const QskVertex::Quad& rect,
     const QskGradient& gradient, QskVertex::ColoredLine* line )
 {
     qskCreateFillOrdered( rect, gradient, line );
