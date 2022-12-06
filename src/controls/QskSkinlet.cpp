@@ -19,9 +19,9 @@
 #include "QskControl.h"
 #include "QskFunctions.h"
 #include "QskGradient.h"
-#include "QskGradientNode.h"
 #include "QskGraphicNode.h"
 #include "QskGraphic.h"
+#include "QskRectangleNode.h"
 #include "QskSGNode.h"
 #include "QskTextColors.h"
 #include "QskTextNode.h"
@@ -351,11 +351,9 @@ QSGNode* QskSkinlet::updateBackgroundNode(
     if ( !gradient.isValid() )
         return nullptr;
 
-    auto rectNode = static_cast< QskGradientNode* >( node );
-    if ( rectNode == nullptr )
-        rectNode = new QskGradientNode();
-
+    auto rectNode = QskSGNode::ensureNode< QskRectangleNode >( node );
     rectNode->updateNode( rect, gradient );
+
     return rectNode;
 }
 

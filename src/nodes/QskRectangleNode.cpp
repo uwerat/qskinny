@@ -3,7 +3,7 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#include "QskGradientNode.h"
+#include "QskRectangleNode.h"
 #include "QskGradient.h"
 #include "QskSGNode.h"
 #include "QskBoxRenderer.h"
@@ -33,10 +33,10 @@ static inline QskGradient qskEffectiveGradient( const QskGradient& gradient )
     return gradient;
 }
 
-class QskGradientNodePrivate final : public QSGGeometryNodePrivate
+class QskRectangleNodePrivate final : public QSGGeometryNodePrivate
 {
   public:
-    QskGradientNodePrivate()
+    QskRectangleNodePrivate()
         : geometry( QSGGeometry::defaultAttributes_ColoredPoint2D(), 0 )
     {
     }
@@ -49,23 +49,23 @@ class QskGradientNodePrivate final : public QSGGeometryNodePrivate
     int gradientType = -1;
 };
 
-QskGradientNode::QskGradientNode()
-    : QSGGeometryNode( *new QskGradientNodePrivate )
+QskRectangleNode::QskRectangleNode()
+    : QSGGeometryNode( *new QskRectangleNodePrivate )
 {
-    Q_D( QskGradientNode );
+    Q_D( QskRectangleNode );
 
     setFlag( OwnsMaterial, true );
     setGeometry( &d->geometry );
 }
 
-QskGradientNode::~QskGradientNode()
+QskRectangleNode::~QskRectangleNode()
 {
 }
 
-void QskGradientNode::updateNode(
+void QskRectangleNode::updateNode(
     const QRectF& rect, const QskGradient& gradient )
 {
-    Q_D( QskGradientNode );
+    Q_D( QskRectangleNode );
 
     if ( rect.isEmpty() || !gradient.isVisible() )
     {
