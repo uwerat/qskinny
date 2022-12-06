@@ -83,7 +83,7 @@ void QskBoxFillNode::updateNode(
     }
 
     const auto metricsHash = qskMetricsHash( shapeMetrics, borderMetrics );
-    const bool dirtyGeometry = ( metricsHash != d->metricsHash ) || ( rect == d->rect );
+    const bool dirtyGeometry = ( metricsHash != d->metricsHash ) || ( rect != d->rect );
 
     d->metricsHash = metricsHash;
     d->rect = rect;
