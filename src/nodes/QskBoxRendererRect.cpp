@@ -677,7 +677,8 @@ bool QskBoxRenderer::isGradientSupported( const QskGradient& gradient )
             if ( dir.isTilted() )
             {
                 // only diagonal from topLeft to bottomRight
-                return ( dir.x1() == dir.x2() ) && ( dir.y1() == dir.y2() );
+                return ( dir.x1() == 0.0 ) && ( dir.y1() == 0.0 )
+                    && ( dir.x2() == 1.0 ) && ( dir.y2() == 1.0 );
             }
 
             return true;
