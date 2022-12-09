@@ -138,10 +138,10 @@ namespace
         qreal m_dx1, m_dy1, m_dx2, m_dy2;
     };
 
-    class BorderValues
+    class BorderValuesNonUniform
     {
       public:
-        inline BorderValues( const QskBoxRenderer::Metrics& metrics )
+        inline BorderValuesNonUniform( const QskBoxRenderer::Metrics& metrics )
             : m_uniform( metrics.isRadiusRegular )
         {
             for ( int i = 0; i < 4; i++ )
@@ -964,7 +964,7 @@ static inline void qskRenderLines(
     }
     else
     {
-        Stroker< Line, BorderValues > stroker( metrics );
+        Stroker< Line, BorderValuesNonUniform > stroker( metrics );
         stroker.createLines( orientation, borderLines,
             borderMapTL, borderMapTR, borderMapBL, borderMapBR,
             fillLines, fillMap );
@@ -1349,7 +1349,7 @@ void QskBoxRenderer::renderRectellipseFill(
  
     p[i++].set( rect.x() + 0.5 * rect.width(), rect.y() + 0.5 * rect.height() );
 
-    BorderValues v( metrics );
+    BorderValuesNonUniform v( metrics );
 
     {
         constexpr auto id = TopLeft;
@@ -1442,8 +1442,6 @@ void QskBoxRenderer::renderRectellipse( const QRectF& rect,
             fillLineCount = gradient.stepCount() + 1;
 
 #if 1
-            // code copied from QskBoxRendererRect.cpp TODO ...
-
             if ( gradient.linearDirection().isTilted() )
             {
                 if ( metrics.centerQuad.width == metrics.centerQuad.height )
