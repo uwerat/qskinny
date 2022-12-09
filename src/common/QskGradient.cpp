@@ -76,18 +76,15 @@ QskGradient::QskGradient( const QVector< QskGradientStop >& stops )
     setStops( stops );
 }
 
-QskGradient::QskGradient( const QGradient* qGradient )
+QskGradient::QskGradient( const QGradient& qGradient )
 {
-    if ( qGradient == nullptr )
-        return;
-
-    switch( qGradient->type() )
+    switch( qGradient.type() )
     {
         case QGradient::LinearGradient:
         {
             m_type = Linear;
 
-            const auto g = static_cast< const QLinearGradient* >( qGradient );
+            const auto g = static_cast< const QLinearGradient* >( &qGradient );
 
             m_values[0] = g->start().x();
             m_values[1] = g->start().y();
@@ -100,7 +97,7 @@ QskGradient::QskGradient( const QGradient* qGradient )
         {
             m_type = Radial;
 
-            const auto g = static_cast< const QRadialGradient* >( qGradient );
+            const auto g = static_cast< const QRadialGradient* >( &qGradient );
 
             if ( ( g->center() != g->focalPoint() ) || ( g->radius() != g->focalRadius() ) )
                 qWarning() << "QskGradient: extended radial gradients are not supported.";
@@ -116,7 +113,7 @@ QskGradient::QskGradient( const QGradient* qGradient )
         {
             m_type = Conic;
 
-            const auto g = static_cast< const QConicalGradient* >( qGradient );
+            const auto g = static_cast< const QConicalGradient* >( &qGradient );
 
             m_values[0] = g->center().x();
             m_values[1] = g->center().y();
@@ -132,8 +129,8 @@ QskGradient::QskGradient( const QGradient* qGradient )
         }
     }
 
-    m_spread = static_cast< Spread >( qGradient->spread() );
-    m_stops = qskBuildGradientStops( qGradient->stops() );
+    m_spread = static_cast< Spread >( qGradient.spread() );
+    setStops( qskBuildGradientStops( qGradient.stops() ) );
 }
 
 QskGradient::QskGradient( const QskGradient& other ) noexcept
@@ -594,26 +591,26 @@ void QskGradient::resetDirection()
     m_values[0] = m_values[1] = m_values[2] = m_values[3] = 0.0;
 }
 
-QGradient* QskGradient::toQGradient() const
+QGradient QskGradient::toQGradient() const
 {
-    QGradient* qGradient = nullptr;
-
     switch( m_type )
     {
         case Linear:
         {
-            qGradient = new QLinearGradient(
-                m_values[0], m_values[1], m_values[2], m_values[3] );
+            QLinearGradient g( m_values[0], m_values[1], m_values[2], m_values[3] );
+            g.setSpread( static_cast< QGradient::Spread >( m_spread ) );
+            g.setStops( qskToQGradientStops( m_stops ) );
 
-            break;
+            return g;
         }
 
         case Radial:
         {
-            qGradient = new QRadialGradient(
-                m_values[0], m_values[1], m_values[2] );
+            QRadialGradient g( m_values[0], m_values[1], m_values[2] );
+            g.setSpread( static_cast< QGradient::Spread >( m_spread ) );
+            g.setStops( qskToQGradientStops( m_stops ) );
 
-            break;
+            return g;
         }
 
         case Conic:
@@ -624,22 +621,22 @@ QGradient* QskGradient::toQGradient() const
                     "QskGradient: spanAngle got lost, when converting to QConicalGradient";
             }
 
-            qGradient = new QConicalGradient(
-                m_values[0], m_values[1], m_values[2] );
+            QConicalGradient g( m_values[0], m_values[1], m_values[2] );
+            g.setSpread( static_cast< QGradient::Spread >( m_spread ) );
+            g.setStops( qskToQGradientStops( m_stops ) );
 
-            break;
+            return g;
         }
 
         default:
         {
-            qGradient = new QGradient();
+            QGradient g;
+            g.setSpread( static_cast< QGradient::Spread >( m_spread ) );
+            g.setStops( qskToQGradientStops( m_stops ) );
+
+            return g;
         }
     }
-
-    qGradient->setSpread( static_cast< QGradient::Spread >( m_spread ) );
-    qGradient->setStops( qskToQGradientStops( m_stops ) );
-
-    return qGradient;
 }
 
 #ifndef QT_NO_DEBUG_STREAM

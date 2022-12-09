@@ -66,7 +66,7 @@ class QSK_EXPORT QskGradient
     QskGradient( QGradient::Preset );
     QskGradient( const QskGradientStops& );
 
-    QskGradient( const QGradient* );
+    QskGradient( const QGradient& );
 
     QskGradient( const QskGradient& ) noexcept;
 
@@ -143,7 +143,7 @@ class QSK_EXPORT QskGradient
 
     int stepCount() const noexcept;
 
-    QGradient* toQGradient() const;
+    QGradient toQGradient() const;
 
   private:
     void updateStatusBits() const;
