@@ -19,5 +19,6 @@ qtHaveModule(webengine) {
 qtHaveModule(quickwidgets) {
 
     SUBDIRS += \
-        grids
+        grids \
+        gradients
 }
