@@ -4,8 +4,6 @@
  *****************************************************************************/
 
 #include "QskBoxRenderer.h"
-#include "QskRectRenderer.h"
-#include "QskRoundedRectRenderer.h"
 #include "QskBoxShapeMetrics.h"
 
 #include "QskGradient.h"

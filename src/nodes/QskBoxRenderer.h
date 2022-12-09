@@ -6,15 +6,15 @@
 #ifndef QSK_BOX_RENDERER_H
 #define QSK_BOX_RENDERER_H
 
-#include "QskBoxShapeMetrics.h"
 #include "QskVertex.h"
-#include <qrect.h>
 
 class QskBoxBorderMetrics;
 class QskBoxBorderColors;
+class QskBoxShapeMetrics;
 class QskGradient;
 
 class QSGGeometry;
+class QRectF;
 
 class QSK_EXPORT QskBoxRenderer
 {
@@ -84,36 +84,5 @@ class QSK_EXPORT QskBoxRenderer
     static void renderRectFill( const QskVertex::Quad&,
         const QskGradient&, QskVertex::ColoredLine* );
 };
-
-inline void QskBoxRenderer::renderBorder(
-    const QRectF& rect, const QskBoxShapeMetrics& shape,
-    const QskBoxBorderMetrics& border, QSGGeometry& geometry )
-{
-    if ( shape.isRectangle() )
-        renderRectBorder( rect, border, geometry );
-    else
-        renderRectellipseBorder( rect, shape, border, geometry );
-}
-
-inline void QskBoxRenderer::renderFill(
-    const QRectF& rect, const QskBoxShapeMetrics& shape,
-    const QskBoxBorderMetrics& border, QSGGeometry& geometry )
-{
-    if ( shape.isRectangle() )
-        renderRectFill( rect, border, geometry );
-    else
-        renderRectellipseFill( rect, shape, border, geometry );
-}
-
-inline void QskBoxRenderer::renderBox( const QRectF& rect,
-    const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& border,
-    const QskBoxBorderColors& borderColors, const QskGradient& gradient,
-    QSGGeometry& geometry )
-{
-    if ( shape.isRectangle() )
-        renderRect( rect, border, borderColors, gradient, geometry );
-    else
-        renderRectellipse( rect, shape, border, borderColors, gradient, geometry );
-}
 
 #endif

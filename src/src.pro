@@ -132,6 +132,7 @@ SOURCES += \
     nodes/QskBoxClipNode.cpp \
     nodes/QskBoxFillNode.cpp \
     nodes/QskBoxRectangleNode.cpp \
+    nodes/QskBoxRenderer.cpp \
     nodes/QskBoxRendererRect.cpp \
     nodes/QskBoxRendererEllipse.cpp \
     nodes/QskBoxRendererDEllipse.cpp \
