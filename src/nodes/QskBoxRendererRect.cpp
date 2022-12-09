@@ -114,12 +114,7 @@ namespace
         {
             const auto v = it.value();
 
-            if ( v == 0.5 )
-            {
-                // this line is also a contour line, so we can skip it
-                return;
-            }
-            else if ( v < 0.5 )
+            if ( v <= 0.5 )
             {
                 const qreal dt = m_rect.width * 2 * v;
 
@@ -559,16 +554,11 @@ void QskBoxRenderer::renderRect( const QRectF& rect,
 
         if ( gradient.linearDirection().isTilted() )
         {
-            if ( in.width == in.height )
-            {
-                if ( !gradient.hasStopAt( 0.5 ) )
-                    fillLineCount++;
-            }
-            else
-            {
-                // we might need extra lines for the corners
-                fillLineCount += 2;
-            }
+            // extra lines for the corners
+
+            fillLineCount++;
+            if ( in.width != in.height )
+                fillLineCount++;
         }
     }
 
