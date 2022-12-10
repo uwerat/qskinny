@@ -94,8 +94,8 @@ class GradientBox: public QWidget
         m_qskBox = new BoxQsk();
 
         auto layout = new QHBoxLayout( this );
-        layout->addWidget( m_qskBox );
         layout->addWidget( m_qtBox );
+        layout->addWidget( m_qskBox );
 
         showGradient( { Qt::green, Qt::red, Qt::yellow, Qt::cyan, Qt::darkCyan } );
     }
@@ -116,7 +116,8 @@ class GradientBox: public QWidget
             stops += { ( i + 1 ) * step, colors[i] };
         }
 
-        QLinearGradient gradient( 0.0, 0.0, 0.0, 1.0 );
+        QLinearGradient gradient( 0.0, 0.0, 0.5, 0.5 );
+        gradient.setSpread( QGradient::ReflectSpread );
         gradient.setStops( stops );
 
         showGradient( gradient );

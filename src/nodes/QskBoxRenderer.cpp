@@ -43,32 +43,33 @@ void QskBoxRenderer::renderBox( const QRectF& rect,
 bool QskBoxRenderer::isGradientSupported(
     const QskBoxShapeMetrics&, const QskGradient& gradient )
 {
-    if ( !gradient.isVisible() || gradient.isMonochrome() )
-        return true;
-
-    switch( gradient.type() )
+    if ( !gradient.isVisible() || gradient.isMonochrome()
+        || ( gradient.type() == QskGradient::Stops ) )
     {
-        case QskGradient::Linear:
-        {
-            auto dir = gradient.linearDirection();
+        return true;
+    }
 
-            if ( dir.isTilted() )
+    if ( gradient.type() == QskGradient::Linear )
+    {
+        const auto dir = gradient.linearDirection();
+
+        if ( dir.isTilted() )
+        {
+            if ( dir.x1() == 0.0 && dir.y1() == 0.0
+                && dir.x2() == 1.0 && dir.y2() == 1.0 )
             {
-                // only diagonal from topLeft to bottomRight
-                return ( dir.x1() == 0.0 ) && ( dir.y1() == 0.0 )
-                    && ( dir.x2() == 1.0 ) && ( dir.y2() == 1.0 );
+                return true;
             }
+        }
+        else
+        {
+            if ( dir.x1() == 0.0 && dir.x2() == 1.0 )
+                return true;
 
-            return true;
-        }
-        case QskGradient::Radial:
-        case QskGradient::Conic:
-        {
-            return false;
-        }
-        default:
-        {
-            return true;
+            if ( dir.y1() == 0.0 && dir.y2() == 1.0 )
+                return true;
         }
     }
+
+    return false;
 }

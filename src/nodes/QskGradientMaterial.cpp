@@ -180,6 +180,12 @@ namespace
                 changed = true;
             }
 
+            /*
+                When having a gradient, that does not need spreading
+                we could set QskGradient::PadSpread to potentally reduce
+                the number of color ramps. TODO ...
+             */
+
             if ( gradient.spread() != spread() )
             {
                 setSpread( gradient.spread() );

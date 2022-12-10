@@ -188,7 +188,8 @@ void QskRectangleNode::updateNode(
             markDirty( QSGNode::DirtyGeometry );
         }
 
-        if ( dirtyColors )
+        // dirtyMetrics: the shader also depends on the target rectangle !
+        if ( dirtyColors || dirtyMetrics )
         {
             const auto gradientType = effectiveGradient.type();
 
