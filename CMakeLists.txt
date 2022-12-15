@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16.3)
 
-project(QSkinny VERSION 999.99.9) # TODO get from git branch name or 
+project(QSkinny VERSION 999.99.9)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -10,34 +10,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 include(${CMAKE_SOURCE_DIR}/features/qskconfig.cmake)
 
-if("${Qt5_DIR}" STREQUAL "" AND "${Qt6_DIR}" STREQUAL "")
-    message(FATAL_ERROR "Neither Qt5_DIR nor Qt6_DIR defined!")
-else()
-    # force include Qt's private headers
-    if(NOT "${Qt5_DIR}" STREQUAL "")
-        #set(Qt5Core_FIND_COMPONENTS          Private CACHE STRING "force include private headers" FORCE)
-        #set(Qt5Gui_FIND_COMPONENTS           Private CACHE STRING "force include private headers" FORCE)
-        #set(Qt5OpenGL_FIND_COMPONENTS        Private CACHE STRING "force include private headers" FORCE)
-        #set(Qt5Quick_FIND_COMPONENTS         Private CACHE STRING "force include private headers" FORCE)
-        #set(Qt5QuickWidgets_FIND_COMPONENTS  Private CACHE STRING "force include private headers" FORCE)
-        #set(Qt5Svg_FIND_COMPONENTS           Private CACHE STRING "force include private headers" FORCE)
-        #set(Qt5WebEngine_FIND_COMPONENTS     Private CACHE STRING "force include private headers" FORCE)
-        #set(Qt5WebEngineCore_FIND_COMPONENTS Private CACHE STRING "force include private headers" FORCE)
-        #set(Qt5Widgets_FIND_COMPONENTS       Private CACHE STRING "force include private headers" FORCE)
-    elseif(NOT "${Qt6_DIR}" STREQUAL "")
-        #set(Qt6Core_FIND_COMPONENTS          Private CACHE STRING "force include private headers" FORCE)
-        #set(Qt6Gui_FIND_COMPONENTS           Private CACHE STRING "force include private headers" FORCE)
-        #set(Qt6OpenGL_FIND_COMPONENTS        Private CACHE STRING "force include private headers" FORCE)
-        #set(Qt6Quick_FIND_COMPONENTS         Private CACHE STRING "force include private headers" FORCE)
-        #set(Qt6QuickWidgets_FIND_COMPONENTS  Private CACHE STRING "force include private headers" FORCE)
-        #set(Qt6Svg_FIND_COMPONENTS           Private CACHE STRING "force include private headers" FORCE)
-        #set(Qt6WebEngine_FIND_COMPONENTS     Private CACHE STRING "force include private headers" FORCE)
-        #set(Qt6WebEngineCore_FIND_COMPONENTS Private CACHE STRING "force include private headers" FORCE)
-        #set(Qt6WebEngineQuick_FIND_COMPONENTS Private CACHE STRING "force include private headers" FORCE)
-        #set(Qt6Widgets_FIND_COMPONENTS       Private CACHE STRING "force include private headers" FORCE)
-    endif()
-endif()
-
+# find either Qt5 or Qt6 requred and optional components
 if(NOT "${Qt5_DIR}" STREQUAL "")
     find_package(Qt5 REQUIRED COMPONENTS Core Gui OpenGL Quick Svg Widgets)
     find_package(Qt5 OPTIONAL_COMPONENTS QuickWidgets WebEngine WebEngineCore)
@@ -47,17 +20,17 @@ if(NOT "${Qt5_DIR}" STREQUAL "")
     set(Qt_VERSION_MINOR ${Qt5_VERSION_MINOR})
     set(Qt_VERSION_PATCH ${Qt5_VERSION_PATCH})
 elseif(NOT "${Qt6_DIR}" STREQUAL "")
-
     string(REPLACE "/lib/cmake/Qt6" "" Qt6_PREFIX_DIR "${Qt6_DIR}")
     set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${Qt6_PREFIX_DIR})
-
     find_package(Qt6 REQUIRED COMPONENTS Core Gui OpenGL Quick QuickWidgets Svg Widgets)
-    find_package(Qt6 OPTIONAL_COMPONENTS QuickWidgets WebEngineCore WebEngineQuick)
+    find_package(Qt6 OPTIONAL_COMPONENTS QuickWidgets WebEngineCore WebEngineQuick) # check optional QuickWidgets Svg Widgets 
     set(Qt Qt${Qt6_VERSION_MAJOR})
     set(Qt_VERSION       ${Qt6_VERSION})
     set(Qt_VERSION_MAJOR ${Qt6_VERSION_MAJOR})
     set(Qt_VERSION_MINOR ${Qt6_VERSION_MINOR})
     set(Qt_VERSION_PATCH ${Qt6_VERSION_PATCH})
+else()
+    message(FATAL_ERROR "Neither Qt5_DIR nor Qt6_DIR defined!")
 endif()
 
 # optional package hunspell
@@ -78,13 +51,6 @@ endif()
 
 if(ENABLE_PINYIN)
     include(cmake/QSkinnyOptionalPinyin.cmake)
-endif()
-
-if(TRUE)
-    message(STATUS "\${Qt}              : ${Qt}")
-    message(STATUS "\${Qt_VERSION_MAJOR}: ${Qt_VERSION_MAJOR}")
-    message(STATUS "\${Qt_VERSION_MINOR}: ${Qt_VERSION_MINOR}")
-    message(STATUS "\${Qt_VERSION_PATCH}: ${Qt_VERSION_PATCH}")
 endif()
 
 # define install directories
