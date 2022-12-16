@@ -275,6 +275,11 @@ jobs:
         run: |
           sudo apt-get install -y libimepinyin-dev
 
+      - name: Install imagemagick for Ubuntu
+        if: startsWith(matrix.config.name, 'Ubuntu')
+        run: |
+          sudo apt-get install -y imagemagick
+
       - name: Cache Qt5
         if: endsWith(matrix.config.name, 'Qt5')
         id: cache-qt-5-15
@@ -344,7 +349,13 @@ jobs:
         shell: bash
         run: cmake --install qskinny_build --prefix qskinny_install --strip --config ${{ matrix.config.build_type }}
 
-      # run the iot examples from build directory using install binaries
+      - name: Smoke test ( QSkinny ) on MacOS
+        if: startsWith(matrix.config.name, 'macOS')
+        run: |
+          echo "starting iotdashboard"
+          DYLD_LIBRARY_PATH=./qskinny_install/lib:./qskinny_install/plugins/skins ./qskinny_build/examples/iotdashboard/iotdashboard.app/Contents/MacOS/iotdashboard -qwindowgeometry 1024x600+75+100 &
+          sleep 10
+
       - name: Smoke Test ( QSkinny ) on Windows
         if: startsWith(matrix.config.name, 'Windows')
         run: |
@@ -354,15 +365,35 @@ jobs:
           Start-Process qskinny_build\examples\iotdashboard\Release\iotdashboard.exe -ArgumentList "-qwindowgeometry 1024x600+0+0"
           Start-Sleep -s 10
 
-      # take a screenshot of the example
+      - name: Smoke test ( QSkinny ) on Ubuntu
+        if: startsWith(matrix.config.name, 'Ubuntu')
+        run: |
+          echo starting Xvfb
+          Xvfb :1 &
+          sleep 10
+          echo starting iotdashboard
+          ./qskinny_build/examples/iotdashboard/iotdashboard &
+          sleep 10
+
       - uses: OrbitalOwen/desktop-screenshot-action@0.1
         with:
-          file-name: 'screenshot-windows-qt5-15.jpg'
+          file-name: format('Screenshot {0} {1}.jpg', matrix.config.name, matrix.config.cmake.qtversion)
 
-      # kill the previously started task
       - name: Smoke Test Cleanup ( QSkinny ) on Windows
         if: startsWith(matrix.config.name, 'Windows')
-        run: taskkill /IM iotdashboard.exe /T
+        run: |
+          taskkill /IM iotdashboard.exe /T
+
+      - name: Smoke Test Cleanup ( QSkinny ) on MacOS
+        if: startsWith(matrix.config.name, 'macOS')
+        run: |
+          killall iotdashboard
+
+      - name: Smoke Test Cleanup ( QSkinny ) on Ubuntu
+        if: startsWith(matrix.config.name, 'Ubuntu')
+        run: |
+          killall gallery
+          killall Xvfb
 
       - name: Configure ( CMake Integration Test )
         shell: bash
