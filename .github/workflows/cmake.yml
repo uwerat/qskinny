@@ -351,7 +351,7 @@ jobs:
 
       - name: Smoke test screenshot artifact
         run: |
-          echo "SCREENSHOT_FILENAME=$(echo "Screenshot ${{ matrix.config.name }} Qt ${{ matrix.config.cmake.qtversion }}" | sed -e "s/ /-/g")" >> $GITHUB_ENV
+          echo "SCREENSHOT_FILENAME=$(echo "Screenshot ${{ matrix.config.name }} ${{ matrix.config.cmake.qtversion }}" | sed -e "s/ /-/g")" >> $GITHUB_ENV
           echo $SCREENSHOT_FILENAME
 
       - name: Smoke test ( QSkinny ) on MacOS
@@ -382,7 +382,7 @@ jobs:
 
       - uses: OrbitalOwen/desktop-screenshot-action@0.1
         with:
-          file-name: $SCREENSHOT_FILENAME
+          file-name: ${{ env.SCREENSHOT_FILENAME }}
 
       - name: Smoke Test Cleanup ( QSkinny ) on Windows
         if: startsWith(matrix.config.name, 'Windows')
