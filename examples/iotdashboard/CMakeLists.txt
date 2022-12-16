@@ -69,7 +69,7 @@ list(APPEND TARGET_RESSOURCES
 
 set(TARGET_NAME iotdashboard)
 
-add_executable(${TARGET_NAME}
+add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE
     ${TARGET_SOURCES}
     ${TARGET_HEADERS}
     ${TARGET_RESSOURCES})

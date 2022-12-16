@@ -18,7 +18,7 @@ list(APPEND TARGET_SOURCES
 
 set(TARGET_NAME grid)
 
-add_executable(${TARGET_NAME}
+add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE
     ${TARGET_SOURCES}
     ${TARGET_HEADERS})
 

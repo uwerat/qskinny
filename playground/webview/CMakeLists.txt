@@ -4,7 +4,7 @@ list(APPEND TARGET_SOURCES
 
 set(TARGET_NAME webview)
 
-add_executable(${TARGET_NAME}
+add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE
     ${TARGET_SOURCES})
 
 target_link_libraries(${TARGET_NAME}

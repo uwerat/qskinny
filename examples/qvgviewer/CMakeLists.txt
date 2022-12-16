@@ -22,7 +22,7 @@ list(APPEND TARGET_QVGS
 
 set(TARGET_NAME qvgviewer)
 
-add_executable(${TARGET_NAME}
+add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE
     ${TARGET_SOURCES}
     ${TARGET_HEADERS}
     ${TARGET_RESSOURCES}
