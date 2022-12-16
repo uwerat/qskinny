@@ -377,6 +377,8 @@ jobs:
 
       - name: Smoke test ( QSkinny ) on Ubuntu
         if: startsWith(matrix.config.name, 'Ubuntu')
+        env:
+          DISPLAY: ":1"
         run: |
           echo starting Xvfb
           Xvfb :1 &
