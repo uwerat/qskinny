@@ -344,6 +344,26 @@ jobs:
         shell: bash
         run: cmake --install qskinny_build --prefix qskinny_install --strip --config ${{ matrix.config.build_type }}
 
+      # run the iot examples from build directory using install binaries
+      - name: Smoke Test ( QSkinny ) on Windows
+        if: startsWith(matrix.config.name, 'Windows')
+        run: |
+          echo "$GITHUB_WORKSPACE/qskinny_install/lib" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          echo "$GITHUB_WORKSPACE/qskinny_install/plugins/skins" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          echo "starting iotdashboard"
+          Start-Process $GITHUB_WORKSPACE/qskinny_build/examples/iotdashboard -ArgumentList "-qwindowgeometry 1024x600+0+0"
+          Start-Sleep -s 10
+
+      # take a screenshot of the example
+      - uses: OrbitalOwen/desktop-screenshot-action@0.1
+        with:
+          file-name: 'screenshot-windows-qt5-15.jpg'
+
+      # kill the previously started task
+      - name: Smoke Test Cleanup ( QSkinny ) on Windows
+        if: startsWith(matrix.config.name, 'Windows')
+        run: taskkill /IM iotdashboard.exe /T
+
       - name: Configure ( CMake Integration Test )
         shell: bash
         run: |
