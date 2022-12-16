@@ -36,6 +36,7 @@ jobs:
                   qtdirkey: "Qt5_DIR",
                   qtdirvalue: "../Qt/5.15.2/msvc2019_64/lib/cmake/Qt5",
                 },
+              screenshot_filename: "windows-latest-msvc-qt-5-15-2.jpg",
             }
           - {
               name: "Windows Latest MSVC Qt6",
@@ -53,6 +54,7 @@ jobs:
                   qtdirkey: "Qt6_DIR",
                   qtdirvalue: "../Qt/6.2.4/msvc2019_64/lib/cmake/Qt6",
                 },
+              screenshot_filename: "windows-latest-msvc-qt-6-2-4.jpg",
             }
           - {
               name: "Windows 2019 MSVC Qt5",
@@ -70,6 +72,7 @@ jobs:
                   qtdirkey: "Qt5_DIR",
                   qtdirvalue: "../Qt/5.15.2/msvc2019_64/lib/cmake/Qt5",
                 },
+              screenshot_filename: "windows-2019-msvc-qt-5-15-2.jpg",
             }
           - {
               name: "Windows 2019 MSVC Qt6",
@@ -87,6 +90,7 @@ jobs:
                   qtdirkey: "Qt6_DIR",
                   qtdirvalue: "../Qt/6.2.4/msvc2019_64/lib/cmake/Qt6",
                 },
+              screenshot_filename: "windows-2019-msvc-qt-6-2-4.jpg",
             }
           - {
               name: "Ubuntu Latest GCC Qt5",
@@ -104,6 +108,7 @@ jobs:
                   qtdirkey: "Qt5_DIR",
                   qtdirvalue: "../Qt/5.15.2/gcc_64/lib/cmake/Qt5",
                 },
+              screenshot_filename: "ubuntu-latest-gcc-qt-5-15-2.jpg",
             }
           - {
               name: "Ubuntu Latest GCC Qt6",
@@ -121,6 +126,7 @@ jobs:
                   qtdirkey: "Qt6_DIR",
                   qtdirvalue: "../Qt/6.2.4/gcc_64/lib/cmake/Qt6",
                 },
+              screenshot_filename: "ubuntu-latest-gcc-qt-6-2-4.jpg",
             }
           - {
               name: "Ubuntu GCC 9 Qt5",
@@ -138,6 +144,7 @@ jobs:
                   qtdirkey: "Qt5_DIR",
                   qtdirvalue: "../Qt/5.15.2/gcc_64/lib/cmake/Qt5",
                 },
+              screenshot_filename: "ubuntu-latest-gcc-9-qt-5-15-2.jpg",
             }
           - {
               name: "Ubuntu GCC 9 Qt6",
@@ -155,6 +162,7 @@ jobs:
                   qtdirkey: "Qt6_DIR",
                   qtdirvalue: "../Qt/6.2.4/gcc_64/lib/cmake/Qt6",
                 },
+              screenshot_filename: "ubuntu-latest-gcc-9-qt-6-2-4.jpg",
             }
           - {
               name: "macOS Latest Clang Qt5",
@@ -171,6 +179,7 @@ jobs:
                   qtdirkey: "Qt5_DIR",
                   qtdirvalue: "../Qt/5.15.2/clang_64/lib/cmake/Qt5",
                 },
+              screenshot_filename: "macos-latest-clang-qt-5-15-2.jpg",
             }
           - {
               name: "macOS Latest Clang Qt6",
@@ -187,11 +196,12 @@ jobs:
                   qtdirkey: "Qt6_DIR",
                   qtdirvalue: "../Qt/6.2.4/clang_64/lib/cmake/Qt6",
                 },
+              screenshot_filename: "macos-latest-clang-qt-6-2-4.jpg",
             }
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - name: Git Checkout 
+      - name: Git Checkout
         uses: actions/checkout@v3
         with:
           path: qskinny_source
@@ -349,11 +359,6 @@ jobs:
         shell: bash
         run: cmake --install qskinny_build --prefix qskinny_install --strip --config ${{ matrix.config.build_type }}
 
-      - name: Smoke test screenshot artifact
-        run: |
-          echo "SCREENSHOT_FILENAME=$(echo "Screenshot ${{ matrix.config.name }} ${{ matrix.config.cmake.qtversion }}" | sed -e "s/ /-/g")" >> $GITHUB_ENV
-          echo $SCREENSHOT_FILENAME
-
       - name: Smoke test ( QSkinny ) on MacOS
         if: startsWith(matrix.config.name, 'macOS')
         run: |
@@ -382,7 +387,7 @@ jobs:
 
       - uses: OrbitalOwen/desktop-screenshot-action@0.1
         with:
-          file-name: ${{ env.SCREENSHOT_FILENAME }}
+          file-name: ${{ matrix.config.screenshot_filename }}
 
       - name: Smoke Test Cleanup ( QSkinny ) on Windows
         if: startsWith(matrix.config.name, 'Windows')
