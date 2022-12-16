@@ -349,6 +349,11 @@ jobs:
         shell: bash
         run: cmake --install qskinny_build --prefix qskinny_install --strip --config ${{ matrix.config.build_type }}
 
+      - name: Smoke test screenshot artifact
+        run: |
+          echo "SCREENSHOT_FILENAME=$(echo "Screenshot ${{ matrix.config.name }} Qt ${{ matrix.config.cmake.qtversion }}" | sed -e "s/ /-/g")" >> $GITHUB_ENV
+          echo $SCREENSHOT_FILENAME
+
       - name: Smoke test ( QSkinny ) on MacOS
         if: startsWith(matrix.config.name, 'macOS')
         run: |
@@ -377,7 +382,7 @@ jobs:
 
       - uses: OrbitalOwen/desktop-screenshot-action@0.1
         with:
-          file-name: format('Screenshot {0} {1}.jpg', matrix.config.name, matrix.config.cmake.qtversion)
+          file-name: $SCREENSHOT_FILENAME
 
       - name: Smoke Test Cleanup ( QSkinny ) on Windows
         if: startsWith(matrix.config.name, 'Windows')
@@ -392,7 +397,7 @@ jobs:
       - name: Smoke Test Cleanup ( QSkinny ) on Ubuntu
         if: startsWith(matrix.config.name, 'Ubuntu')
         run: |
-          killall gallery
+          killall iotdashboard
           killall Xvfb
 
       - name: Configure ( CMake Integration Test )
