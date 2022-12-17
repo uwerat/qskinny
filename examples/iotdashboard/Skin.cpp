@@ -29,6 +29,7 @@
 #include <QskFunctions.h>
 #include <QskShadowMetrics.h>
 #include <QskSkinHintTableEditor.h>
+#include <QskStateCombination.h>
 #include <QskTextLabel.h>
 
 #include <QFontDatabase>
@@ -237,6 +238,10 @@ void Skin::initHints( const Palette& palette )
     ed.setGradient( LightDisplay::Panel, palette.box );
     ed.setGradient( LightDisplay::Knob, palette.box );
     ed.setGradient( RoundButton::Panel, palette.roundButton );
+    ed.setGradient( RoundButton::Panel | QskAbstractButton::Pressed, palette.roundButtonPressed,
+                    { QskStateCombination::CombinationNoState, RoundButton::Top } );
+    ed.setAnimation( RoundButton::Panel | QskAspect::Color, 100 );
+
     ed.setBoxBorderColors( UsageDiagramBox::DaysBox, palette.weekdayBox );
     ed.setColor( QskTextLabel::Text, palette.text );
     ed.setColor( UsageDiagramBox::DayText, palette.text );
@@ -250,6 +255,7 @@ Skin::Palette DaytimeSkin::palette() const
         0xfffbfbfb,
         Qt::white,
         0xfff7f7f7,
+        0xffe5e5e5,
         0xfff4f4f4,
         Qt::black,
         0xffe5e5e5,
@@ -264,6 +270,7 @@ Skin::Palette NighttimeSkin::palette() const
         0xff040404,
         Qt::black,
         0xff0a0a0a,
+        0xff1a1a1a,
         0xff0c0c0c,
         Qt::white,
         0xff1a1a1a,

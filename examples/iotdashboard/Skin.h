@@ -17,6 +17,7 @@ class Skin : public QskSkin
         QColor mainContent;
         QColor box;
         QColor roundButton;
+        QColor roundButtonPressed;
         QColor weekdayBox;
         QColor text;
         QColor shadow;

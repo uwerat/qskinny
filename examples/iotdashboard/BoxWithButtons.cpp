@@ -19,6 +19,8 @@ namespace
 {
     class UpAndDownBox : public QskLinearBox
     {
+        Q_OBJECT
+
       public:
         UpAndDownBox( QQuickItem* parent )
             : QskLinearBox( Qt::Vertical, parent )
@@ -26,15 +28,25 @@ namespace
             setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
             setSpacing( 0 );
 
-            new RoundButton( QskAspect::Top, this );
-            new RoundButton( QskAspect::Bottom, this );
+            auto* const topButton = new RoundButton( QskAspect::Top, this );
+            connect( topButton, &QskPushButton::clicked, this, &UpAndDownBox::increase );
+
+            auto* const bottomButton = new RoundButton( QskAspect::Bottom, this );
+            connect( bottomButton, &QskPushButton::clicked, this, &UpAndDownBox::decrease );
         }
+
+      Q_SIGNALS:
+        void increase();
+        void decrease();
     };
 }
 
-BoxWithButtons::BoxWithButtons( const QString& title, const QString& value,
-        bool isBright, QQuickItem* parent )
+BoxWithButtons::BoxWithButtons( const QString& title, const QString &prefix,
+                                const int initialValue, const QString &suffix,
+                                bool isBright, QQuickItem* parent )
     : Box( QString(), parent )
+    , m_prefix( prefix )
+    , m_suffix( suffix )
 {
     setSubcontrolProxy( QskBox::Panel, Panel );
 
@@ -54,10 +66,30 @@ BoxWithButtons::BoxWithButtons( const QString& title, const QString& value,
     auto* titleLabel = new QskTextLabel( title, titleAndValue );
     titleLabel->setFontRole( Skin::TitleFont );
 
-    auto valueLabel = new QskTextLabel( value, titleAndValue );
-    valueLabel->setSubcontrolProxy( QskTextLabel::Text, ValueText );
+    m_valueLabel = new QskTextLabel( titleAndValue );
+    m_valueLabel->setSubcontrolProxy( QskTextLabel::Text, ValueText );
+    setValue( initialValue );
 
     layout->addStretch( 1 );
 
-    new UpAndDownBox( layout );
+    auto* const upAndDownBox = new UpAndDownBox( layout );
+
+    connect( upAndDownBox, &UpAndDownBox::increase, this, [this]()
+    {
+        setValue( m_value + 1 );
+    } );
+
+    connect( upAndDownBox, &UpAndDownBox::decrease, this, [this]()
+    {
+        setValue( m_value - 1 );
+    } );
 }
+
+void BoxWithButtons::setValue( const int value )
+{
+    m_value = qBound( 0, value, 100 );
+    const QString text = m_prefix + QString::number( m_value ) + m_suffix;
+    m_valueLabel->setText( text );
+}
+
+#include "BoxWithButtons.moc"
