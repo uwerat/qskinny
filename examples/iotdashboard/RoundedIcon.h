@@ -5,17 +5,20 @@
 
 #pragma once
 
-#include <QskGraphicLabel.h>
+#include <QskPushButton.h>
 
-class QskGraphicLabel;
-
-class RoundedIcon : public QskGraphicLabel
+class RoundedIcon : public QskPushButton
 {
     Q_OBJECT
 
   public:
-    QSK_SUBCONTROLS( Panel, PalePanel )
+    QSK_SUBCONTROLS( Panel, PalePanel, Graphic )
     QSK_STATES( Bright ) // to differentiate between orange and purple
+
+    enum {
+        NormalRole,
+        CheckedRole,
+    } GraphicRole;
 
     RoundedIcon( bool isBright, QQuickItem* parent = nullptr );
 

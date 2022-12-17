@@ -22,6 +22,7 @@ class Skin : public QskSkin
         QColor text;
         QColor shadow;
         QskGradient circularProgressBarGroove;
+        QRgb deviceGraphic;
     };
 
     Skin( const Palette& palette, QObject* parent = nullptr );

@@ -26,6 +26,7 @@
 #include <QskBoxShapeMetrics.h>
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxBorderColors.h>
+#include <QskColorFilter.h>
 #include <QskFunctions.h>
 #include <QskShadowMetrics.h>
 #include <QskSkinHintTableEditor.h>
@@ -148,11 +149,31 @@ void Skin::initHints( const Palette& palette )
         QskGradient bright( 0xffff7d34, 0xffff3122 );
         bright.setLinearDirection( Qt::Vertical );
 
-        if ( subControl == RoundedIcon::PalePanel )
+        if ( subControl == RoundedIcon::PalePanel ) // My Devices section
         {
             const uint alpha = 38;
             normal.setAlpha( alpha );
             bright.setAlpha( alpha );
+
+            auto pressedNormal = normal;
+            pressedNormal.setAlpha( 10 );
+            auto pressedBright = bright;
+            pressedBright.setAlpha( 10 );
+
+            const int duration = 300;
+
+            ed.setGradient( RoundedIcon::PalePanel | QskAbstractButton::Checked, pressedNormal );
+            ed.setGradient( RoundedIcon::PalePanel | RoundedIcon::Bright | QskAbstractButton::Checked, pressedBright );
+            ed.setAnimation( RoundedIcon::PalePanel | QskAspect::Color, duration );
+
+            ed.setGraphicRole( RoundedIcon::Graphic, RoundedIcon::NormalRole );
+            ed.setGraphicRole( RoundedIcon::Graphic | QskAbstractButton::Checked, RoundedIcon::CheckedRole,
+                               { QskStateCombination::CombinationNoState, RoundedIcon::Bright } );
+            ed.setAnimation( RoundedIcon::Graphic, duration );
+
+            QskColorFilter filter;
+            filter.addColorSubstitution( 0xff606675, palette.deviceGraphic ); // color comes from the SVG
+            setGraphicFilter( RoundedIcon::CheckedRole, filter );
         }
 
         ed.setGradient( subControl, normal );
@@ -259,7 +280,8 @@ Skin::Palette DaytimeSkin::palette() const
         0xfff4f4f4,
         Qt::black,
         0xffe5e5e5,
-        { { { 0.0, 0xffc4c4c4 }, { 0.5, 0xfff8f8f8 }, { 1.0, 0xffc4c4c4 } } }
+        { { { 0.0, 0xffc4c4c4 }, { 0.5, 0xfff8f8f8 }, { 1.0, 0xffc4c4c4 } } },
+        0xffdddddd,
     };
 }
 
@@ -274,6 +296,7 @@ Skin::Palette NighttimeSkin::palette() const
         0xff0c0c0c,
         Qt::white,
         0xff1a1a1a,
-        { { { 0.0, 0xff666666 }, { 0.5, 0xff222222 }, { 1.0, 0xff333333 } } }
+        { { { 0.0, 0xff666666 }, { 0.5, 0xff222222 }, { 1.0, 0xff333333 } } },
+        0xff222222,
     };
 }
