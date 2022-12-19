@@ -200,7 +200,6 @@ jobs:
             }
 
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Git Checkout
         uses: actions/checkout@v3
         with:
@@ -217,7 +216,6 @@ jobs:
           choco install ninja cmake
           ninja --version
           cmake --version
-        # cmd "${{ matrix.config.environment_script }}"
 
       - name: Install dependencies on ubuntu
         if: startsWith(matrix.config.name, 'Ubuntu Latest GCC')
@@ -429,6 +427,7 @@ jobs:
       #   run: |
       #     ls -laR
       #     ${{ matrix.config.archiver }} ../${{ matrix.config.artifact }} .
+      
       # - name: Upload
       #   uses: actions/upload-artifact@v1
       #   with:

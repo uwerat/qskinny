@@ -15,7 +15,7 @@ list(APPEND TARGET_OTHER_FILES
     metadata.json)
 
 if(BUILD_QSKDLL)
-    add_library(${TARGET_NAME} SHARED ${TARGET_HEADERS} ${TARGET_SOURCES} ${TARGET_OTHER_FILES}) # TODO remove lib files during installation?
+    add_library(${TARGET_NAME} SHARED ${TARGET_HEADERS} ${TARGET_SOURCES} ${TARGET_OTHER_FILES})
 else()
     add_library(${TARGET_NAME} STATIC ${TARGET_HEADERS} ${TARGET_SOURCES} ${TARGET_OTHER_FILES})
 endif()
