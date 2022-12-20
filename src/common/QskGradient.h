@@ -144,6 +144,7 @@ class QSK_EXPORT QskGradient
     int stepCount() const noexcept;
 
     QGradient toQGradient() const;
+    QGradient toQGradient( const QRectF& ) const;
 
   private:
     void updateStatusBits() const;

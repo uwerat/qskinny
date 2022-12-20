@@ -598,6 +598,7 @@ QGradient QskGradient::toQGradient() const
         case Linear:
         {
             QLinearGradient g( m_values[0], m_values[1], m_values[2], m_values[3] );
+            g.setCoordinateMode( QGradient::ObjectMode );
             g.setSpread( static_cast< QGradient::Spread >( m_spread ) );
             g.setStops( qskToQGradientStops( m_stops ) );
 
@@ -607,6 +608,7 @@ QGradient QskGradient::toQGradient() const
         case Radial:
         {
             QRadialGradient g( m_values[0], m_values[1], m_values[2] );
+            g.setCoordinateMode( QGradient::ObjectMode );
             g.setSpread( static_cast< QGradient::Spread >( m_spread ) );
             g.setStops( qskToQGradientStops( m_stops ) );
 
@@ -622,6 +624,7 @@ QGradient QskGradient::toQGradient() const
             }
 
             QConicalGradient g( m_values[0], m_values[1], m_values[2] );
+            g.setCoordinateMode( QGradient::ObjectMode );
             g.setSpread( static_cast< QGradient::Spread >( m_spread ) );
             g.setStops( qskToQGradientStops( m_stops ) );
 
@@ -631,12 +634,78 @@ QGradient QskGradient::toQGradient() const
         default:
         {
             QGradient g;
+            g.setCoordinateMode( QGradient::ObjectMode );
             g.setSpread( static_cast< QGradient::Spread >( m_spread ) );
             g.setStops( qskToQGradientStops( m_stops ) );
 
             return g;
         }
     }
+}
+
+QGradient QskGradient::toQGradient( const QRectF& rect ) const
+{
+    auto qGradient = toQGradient();
+
+    if ( qGradient.coordinateMode() != QGradient::ObjectMode )
+        return qGradient;
+
+    const qreal x = rect.x();
+    const qreal y = rect.y();
+    const qreal w = rect.width();
+    const qreal h = rect.height();
+
+    switch( qGradient.type() )
+    {
+        case QGradient::LinearGradient:
+        {
+            auto& g = *static_cast< QLinearGradient* >( &qGradient );
+
+            const auto x1 = x + g.start().x() * w;
+            const auto y1 = y + g.start().y() * h;
+            const auto x2 = x + g.finalStop().x() * w;
+            const auto y2 = y + g.finalStop().y() * h;
+
+            g.setStart( x1, y1 );
+            g.setFinalStop( x2, y2 );
+
+            break;
+        }
+        case QGradient::RadialGradient:
+        {
+            auto& g = *static_cast< QRadialGradient* >( &qGradient );
+
+            const qreal x0 = x + g.center().x() * w;
+            const qreal y0 = y + g.center().y() * h;
+
+            const qreal rx = w * g.radius() * w;
+            const qreal ry = w * g.radius() * h;
+
+            g.setCenter( x0, y0 );
+            g.setFocalPoint( x0, y0 );
+
+            g.setCenterRadius( qMin( rx, ry ) );
+            g.setFocalRadius( qMin( rx, ry ) );
+
+            break;
+        }
+        case QGradient::ConicalGradient:
+        {
+            auto& g = *static_cast< QConicalGradient* >( &qGradient );
+
+            const qreal x0 = x + g.center().x() * w;
+            const qreal y0 = y + g.center().y() * h;
+
+            g.setCenter( x0, y0 );
+
+            break;
+        }
+        default:
+            break;
+    }
+
+    qGradient.setCoordinateMode( QGradient::LogicalMode );
+    return qGradient;
 }
 
 #ifndef QT_NO_DEBUG_STREAM
