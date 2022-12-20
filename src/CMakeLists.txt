@@ -413,7 +413,7 @@ target_link_libraries(${TARGET_NAME}
         Qt::Quick
         Qt::QuickPrivate)
 
-if (Qt_VERSION_MAJOR VERSION_GREATER "5")
+if (QT_VERSION_MAJOR VERSION_GREATER "5")
     target_link_libraries(${TARGET_NAME}
         PUBLIC
             Qt::OpenGL

@@ -353,7 +353,8 @@ jobs:
             -G "${{ matrix.config.generators }}" \
             -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
             -DCMAKE_INSTALL_PREFIX:PATH=qskinny_install \
-            -DCMAKE_PREFIX_PATH:PATH="${{ matrix.config.cmake.qtprefixpath }}"
+            -DCMAKE_PREFIX_PATH:PATH="${{ matrix.config.cmake.qtprefixpath }}" \
+            -D${{ matrix.config.cmake.qtdirkey }}:PATH="${{ matrix.config.cmake.qtdirvalue }}"
 
       - name: Build ( QSkinny )
         shell: bash
@@ -425,6 +426,7 @@ jobs:
             -G "${{ matrix.config.generators }}" \
             -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
             -DCMAKE_PREFIX_PATH:PATH="${{ matrix.config.cmake.qtprefixpath }}" \
+            -D${{ matrix.config.cmake.qtdirkey }}:PATH="${{ matrix.config.cmake.qtdirvalue }}" \
             -DQSkinny_DIR:PATH=$GITHUB_WORKSPACE/qskinny_install/lib/cmake/QSkinny
 
       - name: Build ( CMake Integration Test )

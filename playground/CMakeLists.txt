@@ -6,7 +6,7 @@ add_subdirectory(inputpanel)
 add_subdirectory(images)
 add_subdirectory(shadows)
 
-if (Qt_VERSION_MAJOR VERSION_EQUAL "6")
+if (QT_VERSION_MAJOR VERSION_EQUAL "6")
     if(TARGET Qt::WebEngineCore)
         if(TARGET Qt::WebEngineQuick)
             add_subdirectory(webview)
