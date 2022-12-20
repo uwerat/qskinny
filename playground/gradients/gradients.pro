@@ -1,16 +1,18 @@
 CONFIG += qskexample
 
-QT += widgets quickwidgets
-
-HEADERS += 
+HEADERS += \
+    GradientView.h
 
 SOURCES += \
+    GradientView.cpp \
     main.cpp
 
-linux {
+qtHaveModule(quickshapes_private) {
 
-    pedantic {
-        QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]/QtQuickWidgets
-        QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]/QtWidgets
-    }
+    QT += quickshapes_private
+
+    HEADERS += GradientQuickShape.h
+    SOURCES += GradientQuickShape.cpp
+
+    DEFINES += SHAPE_GRADIENT
 }

@@ -4,6 +4,7 @@ SUBDIRS += \
     anchors \
     dials \
     dialogbuttons \
+    gradients \
     invoker \
     inputpanel \
     images \
@@ -19,6 +20,5 @@ qtHaveModule(webengine) {
 qtHaveModule(quickwidgets) {
 
     SUBDIRS += \
-        grids \
-        gradients
+        grids
 }
