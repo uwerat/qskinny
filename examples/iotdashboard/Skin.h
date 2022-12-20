@@ -17,10 +17,14 @@ class Skin : public QskSkin
         QColor mainContent;
         QColor box;
         QColor roundButton;
+        QColor roundButtonPressed;
         QColor weekdayBox;
         QColor text;
         QColor shadow;
+        QColor lightDisplayKnobBorder;
+        QskGradient lightDisplayColdAndWarmArc;
         QskGradient circularProgressBarGroove;
+        QRgb deviceGraphic;
     };
 
     Skin( const Palette& palette, QObject* parent = nullptr );

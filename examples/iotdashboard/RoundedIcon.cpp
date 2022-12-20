@@ -7,25 +7,24 @@
 
 QSK_SUBCONTROL( RoundedIcon, Panel )
 QSK_SUBCONTROL( RoundedIcon, PalePanel )
+QSK_SUBCONTROL( RoundedIcon, Graphic )
 
 QSK_STATE( RoundedIcon, Bright, ( QskAspect::FirstUserState << 1 ) )
 
 RoundedIcon::RoundedIcon( bool isBright, QQuickItem* parent )
-    : QskGraphicLabel( parent )
+    : QskPushButton( parent )
 {
-    setAlignment( Qt::AlignCenter );
-    setFillMode( QskGraphicLabel::Pad );
-
     if( isBright )
         setSkinStateFlag( Bright );
 
-    setPanel( true );
     setPale( false );
+
+    setSubcontrolProxy( QskPushButton::Graphic, Graphic );
 }
 
 void RoundedIcon::setPale( bool on )
 {
-    setSubcontrolProxy( QskGraphicLabel::Panel, on ? PalePanel : Panel );
+    setSubcontrolProxy( QskPushButton::Panel, on ? PalePanel : Panel );
 }
 
 #include "moc_RoundedIcon.cpp"

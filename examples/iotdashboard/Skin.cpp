@@ -16,6 +16,7 @@
 #include "LightDisplaySkinlet.h"
 #include "DashboardPage.h"
 #include "MenuBar.h"
+#include "RoomsPage.h"
 #include "RoundedIcon.h"
 #include "RoundButton.h"
 #include "TopBar.h"
@@ -26,9 +27,11 @@
 #include <QskBoxShapeMetrics.h>
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxBorderColors.h>
+#include <QskColorFilter.h>
 #include <QskFunctions.h>
 #include <QskShadowMetrics.h>
 #include <QskSkinHintTableEditor.h>
+#include <QskStateCombination.h>
 #include <QskTextLabel.h>
 
 #include <QFontDatabase>
@@ -147,11 +150,31 @@ void Skin::initHints( const Palette& palette )
         QskGradient bright( 0xffff7d34, 0xffff3122 );
         bright.setLinearDirection( Qt::Vertical );
 
-        if ( subControl == RoundedIcon::PalePanel )
+        if ( subControl == RoundedIcon::PalePanel ) // My Devices section
         {
             const uint alpha = 38;
             normal.setAlpha( alpha );
             bright.setAlpha( alpha );
+
+            auto pressedNormal = normal;
+            pressedNormal.setAlpha( 10 );
+            auto pressedBright = bright;
+            pressedBright.setAlpha( 10 );
+
+            const int duration = 300;
+
+            ed.setGradient( RoundedIcon::PalePanel | QskAbstractButton::Checked, pressedNormal );
+            ed.setGradient( RoundedIcon::PalePanel | RoundedIcon::Bright | QskAbstractButton::Checked, pressedBright );
+            ed.setAnimation( RoundedIcon::PalePanel | QskAspect::Color, duration );
+
+            ed.setGraphicRole( RoundedIcon::Graphic, RoundedIcon::NormalRole );
+            ed.setGraphicRole( RoundedIcon::Graphic | QskAbstractButton::Checked, RoundedIcon::CheckedRole,
+                               { QskStateCombination::CombinationNoState, RoundedIcon::Bright } );
+            ed.setAnimation( RoundedIcon::Graphic, duration );
+
+            QskColorFilter filter;
+            filter.addColorSubstitution( 0xff606675, palette.deviceGraphic ); // color comes from the SVG
+            setGraphicFilter( RoundedIcon::CheckedRole, filter );
         }
 
         ed.setGradient( subControl, normal );
@@ -200,10 +223,6 @@ void Skin::initHints( const Palette& palette )
     ed.setBoxShape( LightDisplay::Panel, 100, Qt::RelativeSize );
 
     ed.setArcMetrics( LightDisplay::ColdAndWarmArc, 8.785, 0, 180 );
-    const QskGradient coldGradient(
-        { { 0.0, 0xffff3122 }, { 0.2, 0xfffeeeb7 }, { 0.3, 0xffa7b0ff },
-          { 0.5, 0xff6776ff }, { 1.0, Qt::black } } );
-    ed.setGradient( LightDisplay::ColdAndWarmArc, coldGradient );
 
     ed.setMetric( LightDisplay::Tickmarks, 1 );
     ed.setArcMetrics( LightDisplay::Tickmarks, { 4.69, 0, 180 } );
@@ -214,12 +233,12 @@ void Skin::initHints( const Palette& palette )
 
     ed.setStrutSize( LightDisplay::Knob, { 20, 20 } );
     ed.setBoxBorderMetrics( LightDisplay::Knob, 1 );
-    ed.setBoxBorderColors( LightDisplay::Knob, 0xffc4c4c4 );
     ed.setBoxShape( LightDisplay::Knob, 100, Qt::RelativeSize );
 
     // palette dependent skin hints:
     ed.setGradient( MenuBar::Panel, palette.menuBar );
     ed.setGradient( DashboardPage::Panel, palette.mainContent );
+    ed.setGradient( RoomsPage::Panel, palette.mainContent );
 
     ed.setColor( Box::Panel, palette.box );
     QskShadowMetrics shadowMetrics( 0, 10 );
@@ -236,7 +255,18 @@ void Skin::initHints( const Palette& palette )
 
     ed.setGradient( LightDisplay::Panel, palette.box );
     ed.setGradient( LightDisplay::Knob, palette.box );
+    ed.setGradient( LightDisplay::ColdAndWarmArc, palette.lightDisplayColdAndWarmArc );
+    ed.setBoxBorderColors( LightDisplay::Knob, palette.lightDisplayKnobBorder );
+    ed.setShadowMetrics( LightDisplay::Groove, { 0, 20 } );
+    ed.setShadowColor( LightDisplay::Groove, palette.shadow );
+    ed.setGradient( LightDisplay::Groove, palette.box );
+    ed.setBoxShape( LightDisplay::Groove, 100, Qt::RelativeSize );
+
     ed.setGradient( RoundButton::Panel, palette.roundButton );
+    ed.setGradient( RoundButton::Panel | QskAbstractButton::Pressed, palette.roundButtonPressed,
+                    { QskStateCombination::CombinationNoState, RoundButton::Top } );
+    ed.setAnimation( RoundButton::Panel | QskAspect::Color, 100 );
+
     ed.setBoxBorderColors( UsageDiagramBox::DaysBox, palette.weekdayBox );
     ed.setColor( QskTextLabel::Text, palette.text );
     ed.setColor( UsageDiagramBox::DayText, palette.text );
@@ -250,10 +280,15 @@ Skin::Palette DaytimeSkin::palette() const
         0xfffbfbfb,
         Qt::white,
         0xfff7f7f7,
+        0xffe5e5e5,
         0xfff4f4f4,
         Qt::black,
         0xffe5e5e5,
-        { { { 0.0, 0xffc4c4c4 }, { 0.5, 0xfff8f8f8 }, { 1.0, 0xffc4c4c4 } } }
+        0xffc4c4c4,
+        { { { 0.0, 0xffff3122 }, { 0.2, 0xfffeeeb7 }, { 0.3, 0xffa7b0ff },
+                { 0.5, 0xff6776ff }, { 1.0, Qt::black } } },
+        { { { 0.0, 0xffc4c4c4 }, { 0.5, 0xfff8f8f8 }, { 1.0, 0xffc4c4c4 } } },
+        0xffdddddd,
     };
 }
 
@@ -264,9 +299,14 @@ Skin::Palette NighttimeSkin::palette() const
         0xff040404,
         Qt::black,
         0xff0a0a0a,
+        0xff1a1a1a,
         0xff0c0c0c,
         Qt::white,
-        0xff1a1a1a,
-        { { { 0.0, 0xff666666 }, { 0.5, 0xff222222 }, { 1.0, 0xff333333 } } }
+        0xff4a4a4a,
+        0xff555555,
+        { { { 0.0, 0xff991100 }, { 0.2, 0xff9a7a57 },
+                { 0.5, 0xff3726af }, { 1.0, Qt::black } } },
+        { { { 0.0, 0xff666666 }, { 0.5, 0xff222222 }, { 1.0, 0xff333333 } } },
+        0xff222222,
     };
 }
