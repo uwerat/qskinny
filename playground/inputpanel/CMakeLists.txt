@@ -3,7 +3,7 @@ list(APPEND TARGET_SOURCES
 
 set(TARGET_NAME inputpanel)
 
-add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE
+qt_add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE
     ${TARGET_SOURCES})
 
 target_link_libraries(${TARGET_NAME}

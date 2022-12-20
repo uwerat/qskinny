@@ -1,7 +1,7 @@
 set(TARGET_NAME svg2qvg)
 set(TARGET_SOURCES main.cpp)
 
-add_executable(${TARGET_NAME} ${TARGET_SOURCES})
+qt_add_executable(${TARGET_NAME} ${TARGET_SOURCES})
 
 if(BUILD_SVG2QVG_STANDALONE)
 
@@ -36,14 +36,14 @@ if(BUILD_SVG2QVG_STANDALONE)
 
     target_link_libraries(${TARGET_NAME}
         PRIVATE
-            ${Qt}::Gui
-            ${Qt}::GuiPrivate
-            ${Qt}::Svg)
+            Qt::Gui
+            Qt::GuiPrivate
+            Qt::Svg)
 else()
     target_link_libraries(${TARGET_NAME}
         PRIVATE
             qskinny
-            ${Qt}::Svg)
+            Qt::Svg)
 endif()
 
 set_target_properties(${TARGET_NAME}

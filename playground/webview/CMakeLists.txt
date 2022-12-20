@@ -4,7 +4,7 @@ list(APPEND TARGET_SOURCES
 
 set(TARGET_NAME webview)
 
-add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE
+qt_add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE
     ${TARGET_SOURCES})
 
 target_link_libraries(${TARGET_NAME}
@@ -15,13 +15,13 @@ target_link_libraries(${TARGET_NAME}
 if (Qt_VERSION_MAJOR VERSION_GREATER "5")
     target_link_libraries(${TARGET_NAME}
         PRIVATE
-            ${Qt}::WebEngineQuick
-            ${Qt}::WebEngineQuickPrivate)
+            Qt::WebEngineQuick
+            Qt::WebEngineQuickPrivate)
 else()
     target_link_libraries(${TARGET_NAME}
         PRIVATE
-            ${Qt}::WebEngine
-            ${Qt}::WebEnginePrivate)
+            Qt::WebEngine
+            Qt::WebEnginePrivate)
 endif()
 
 set_target_properties(${TARGET_NAME}

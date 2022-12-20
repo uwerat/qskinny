@@ -3,7 +3,7 @@ list(APPEND TARGET_SOURCES
 
 set(TARGET_NAME messagebox)
 
-add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE ${TARGET_SOURCES})
+qt_add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE ${TARGET_SOURCES})
 
 set_target_properties(${TARGET_NAME}
     PROPERTIES

@@ -7,7 +7,7 @@ list(APPEND TARGET_SOURCES
     Window.cpp
     main.cpp)
 
-add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE ${TARGET_SOURCES} ${TARGET_HEADERS})
+qt_add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE ${TARGET_SOURCES} ${TARGET_HEADERS})
 
 target_link_libraries(${TARGET_NAME}
    PRIVATE

@@ -379,9 +379,9 @@ endif()
 set(TARGET_NAME qskinny)
 
 if(BUILD_QSKDLL)
-    add_library(${TARGET_NAME} SHARED ${TARGET_SOURCES} ${TARGET_HEADERS} ${TARGET_RESSOURCES})
+    qt_add_library(${TARGET_NAME} SHARED ${TARGET_SOURCES} ${TARGET_HEADERS} ${TARGET_RESSOURCES})
 else()
-    add_library(${TARGET_NAME} STATIC ${TARGET_SOURCES} ${TARGET_HEADERS} ${TARGET_RESSOURCES})
+    qt_add_library(${TARGET_NAME} STATIC ${TARGET_SOURCES} ${TARGET_HEADERS} ${TARGET_RESSOURCES})
 endif()
 
 if(BUILD_QSKDLL)
@@ -408,16 +408,16 @@ target_include_directories(${TARGET_NAME}
 
 target_link_libraries(${TARGET_NAME}
     PUBLIC
-        ${Qt}::Core
-        ${Qt}::CorePrivate
-        ${Qt}::Quick
-        ${Qt}::QuickPrivate)
+        Qt::Core
+        Qt::CorePrivate
+        Qt::Quick
+        Qt::QuickPrivate)
 
 if (Qt_VERSION_MAJOR VERSION_GREATER "5")
     target_link_libraries(${TARGET_NAME}
         PUBLIC
-            ${Qt}::OpenGL
-            ${Qt}::OpenGLPrivate)
+            Qt::OpenGL
+            Qt::OpenGLPrivate)
 endif()
 
 if(ENABLE_HUNSPELL)

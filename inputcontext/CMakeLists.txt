@@ -23,7 +23,7 @@ if(ENABLE_HUNSPELL)
         ${CMAKE_SOURCE_DIR}/src/inputpanel/QskHunspellTextPredictor.cpp)
 endif()
 
-add_library(${TARGET_NAME} SHARED ${TARGET_SOURCES} ${TARGET_HEADERS} ${TARGET_OTHER_FILES})
+qt_add_library(${TARGET_NAME} SHARED ${TARGET_SOURCES} ${TARGET_HEADERS} ${TARGET_OTHER_FILES})
 
 if(ENABLE_PINYIN)
     target_link_libraries(${TARGET_NAME}
@@ -47,7 +47,7 @@ endif()
 target_link_libraries(${TARGET_NAME}
     PRIVATE
         qskinny
-        ${Qt}::GuiPrivate)
+        Qt::GuiPrivate)
 
 set_target_properties(${TARGET_NAME} PROPERTIES
     AUTOMOC ON)

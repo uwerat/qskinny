@@ -9,7 +9,7 @@ list(APPEND TARGET_SOURCES
 
 set(TARGET_NAME invoker)
 
-add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE
+qt_add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE
     ${TARGET_SOURCES}
     ${TARGET_HEADERS})
 

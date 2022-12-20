@@ -7,7 +7,7 @@ list(APPEND TARGET_SOURCES
 
 set(TARGET_NAME shadows)
 
-add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE
+qt_add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE
     ${TARGET_HEADERS}
     ${TARGET_SOURCES})
 

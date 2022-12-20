@@ -69,7 +69,7 @@ list(APPEND TARGET_RESSOURCES
 
 set(TARGET_NAME iotdashboard)
 
-add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE
+qt_add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE
     ${TARGET_SOURCES}
     ${TARGET_HEADERS}
     ${TARGET_RESSOURCES})
@@ -87,13 +87,13 @@ if(TARGET Qsk::qskinny)
     target_link_libraries(${TARGET_NAME}
         PRIVATE
             Qsk::qskinny
-            ${Qt}::Svg)
+            Qt::Svg)
 else()
     target_link_libraries(${TARGET_NAME}
         PRIVATE
             qskinny
             qsktestsupport
-            ${Qt}::Svg)
+            Qt::Svg)
 
     target_compile_definitions(${TARGET_NAME}
         PRIVATE

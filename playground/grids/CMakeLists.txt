@@ -18,7 +18,7 @@ list(APPEND TARGET_SOURCES
 
 set(TARGET_NAME grid)
 
-add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE
+qt_add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE
     ${TARGET_SOURCES}
     ${TARGET_HEADERS})
 
@@ -26,7 +26,7 @@ target_link_libraries(${TARGET_NAME}
     PRIVATE
         qskinny
         qsktestsupport
-        ${Qt}::QuickWidgets)
+        Qt::QuickWidgets)
 
 set_target_properties(${TARGET_NAME}
     PROPERTIES
