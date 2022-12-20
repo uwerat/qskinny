@@ -16,6 +16,7 @@
 #include "LightDisplaySkinlet.h"
 #include "DashboardPage.h"
 #include "MenuBar.h"
+#include "RoomsPage.h"
 #include "RoundedIcon.h"
 #include "RoundButton.h"
 #include "TopBar.h"
@@ -242,6 +243,7 @@ void Skin::initHints( const Palette& palette )
     // palette dependent skin hints:
     ed.setGradient( MenuBar::Panel, palette.menuBar );
     ed.setGradient( DashboardPage::Panel, palette.mainContent );
+    ed.setGradient( RoomsPage::Panel, palette.mainContent );
 
     ed.setColor( Box::Panel, palette.box );
     QskShadowMetrics shadowMetrics( 0, 10 );
