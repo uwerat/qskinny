@@ -136,7 +136,7 @@ class QSK_EXPORT QskGradient
     // all stops between [from, to] with positions streched into [0,1]
     QskGradient extracted( qreal from, qreal start ) const;
 
-    QskHashValue hash( QskHashValue seed ) const;
+    QskHashValue hash( QskHashValue seed = 0 ) const;
 
     Q_INVOKABLE qreal stopAt( int index ) const noexcept;
     Q_INVOKABLE QColor colorAt( int index ) const noexcept;
