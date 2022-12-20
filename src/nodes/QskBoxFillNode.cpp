@@ -76,6 +76,11 @@ QskBoxFillNode::QskBoxFillNode()
     setFlag( QSGNode::OwnsMaterial, true );
 }
 
+void QskBoxFillNode::updateNode( const QRectF& rect, const QskGradient& gradient )
+{
+    updateNode( rect, QskBoxShapeMetrics(), QskBoxBorderMetrics(), gradient );
+}
+
 void QskBoxFillNode::updateNode(
     const QRectF& rect, const QskBoxShapeMetrics& shapeMetrics,
     const QskBoxBorderMetrics& borderMetrics, const QskGradient& gradient )

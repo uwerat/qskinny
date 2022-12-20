@@ -24,6 +24,8 @@ class QSK_EXPORT QskBoxFillNode : public QSGGeometryNode
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
         const QskGradient& );
 
+    void updateNode( const QRectF&, const QskGradient& );
+
   private:
     Q_DECLARE_PRIVATE( QskBoxFillNode )
 };
