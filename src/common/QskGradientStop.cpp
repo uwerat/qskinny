@@ -387,12 +387,25 @@ QskGradientStops qskBuildGradientStops( const QVector< QColor >& colors, bool di
 
 QGradientStops qskToQGradientStops( const QskGradientStops& stops )
 {
-    QGradientStops qstops;
-    qstops.reserve( stops.count() );
+    QGradientStops qStops;
+    qStops.reserve( stops.count() );
 
     for ( const auto& stop : stops )
-        qstops += { stop.position(), stop.color() };
+    {
+        QPair<qreal, QColor> qStop = { stop.position(), stop.color() };
 
-    return qstops;
+        if ( !qStops.isEmpty() && qStops.last().first == qStop.first )
+        {
+            /*
+                QGradient removes stops at the same position. So we have to insert
+                an invisible dummy offset
+             */
+            qStop.first += 0.00001;
+        }
+
+        qStops += qStop;
+    }
+
+    return qStops;
 }
 
