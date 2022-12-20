@@ -10,10 +10,8 @@
 
 QSK_QT_PRIVATE_BEGIN
 
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-    #ifndef signals
-        #define signals Q_SIGNALS
-    #endif
+#ifndef signals
+    #define signals Q_SIGNALS
 #endif
 
 #include <private/qquickitem_p.h>
