@@ -260,6 +260,11 @@ void Skin::initHints( const Palette& palette )
 
     ed.setGradient( LightDisplay::Panel, palette.box );
     ed.setGradient( LightDisplay::Knob, palette.box );
+    ed.setShadowMetrics( LightDisplay::Groove, { 0, 20 } );
+    ed.setShadowColor( LightDisplay::Groove, palette.shadow );
+    ed.setGradient( LightDisplay::Groove, palette.box );
+    ed.setBoxShape( LightDisplay::Groove, 100, Qt::RelativeSize );
+
     ed.setGradient( RoundButton::Panel, palette.roundButton );
     ed.setGradient( RoundButton::Panel | QskAbstractButton::Pressed, palette.roundButtonPressed,
                     { QskStateCombination::CombinationNoState, RoundButton::Top } );
@@ -297,7 +302,7 @@ Skin::Palette NighttimeSkin::palette() const
         0xff1a1a1a,
         0xff0c0c0c,
         Qt::white,
-        0xff1a1a1a,
+        0xff4a4a4a,
         { { { 0.0, 0xff666666 }, { 0.5, 0xff222222 }, { 1.0, 0xff333333 } } },
         0xff222222,
     };

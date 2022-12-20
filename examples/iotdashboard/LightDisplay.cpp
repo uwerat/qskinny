@@ -43,26 +43,11 @@ LightDisplay::LightDisplay( QQuickItem* parent )
     setAlignmentHint( ValueText, Qt::AlignRight );
 
     setBoundaries( 0, 100 );
-
-    // ### move to Skin:
-    setShadow( { 0, 20 } );
-    setShadowColor( 0xe5e5e5 );
 }
 
 bool LightDisplay::isPressed() const
 {
     return hasSkinState( Pressed );
-}
-
-void LightDisplay::setShadow( const QskShadowMetrics& shadow )
-{
-    m_shadow = shadow;
-    update();
-}
-
-const QskShadowMetrics& LightDisplay::shadow() const
-{
-    return m_shadow;
 }
 
 void LightDisplay::setGradient( const QskGradient& gradient )
@@ -74,17 +59,6 @@ void LightDisplay::setGradient( const QskGradient& gradient )
 const QskGradient& LightDisplay::gradient() const
 {
     return m_gradient;
-}
-
-void LightDisplay::setShadowColor( const QColor& color )
-{
-    m_shadowColor = color;
-    update();
-}
-
-QColor LightDisplay::shadowColor() const
-{
-    return m_shadowColor;
 }
 
 void LightDisplay::mousePressEvent( QMouseEvent* event )

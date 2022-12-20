@@ -22,14 +22,8 @@ class LightDisplay : public QskBoundedValueInput
 
     bool isPressed() const;
 
-    void setShadow( const QskShadowMetrics& );
-    const QskShadowMetrics& shadow() const;
-
     void setGradient( const QskGradient& );
     const QskGradient& gradient() const;
-
-    void setShadowColor( const QColor& );
-    QColor shadowColor() const;
 
   protected:
     void mousePressEvent( QMouseEvent* e ) override;
