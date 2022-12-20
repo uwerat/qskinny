@@ -35,6 +35,7 @@ jobs:
                   qtversion: "5.15.2",
                   qtdirkey: "Qt5_DIR",
                   qtdirvalue: "../Qt/5.15.2/msvc2019_64/lib/cmake/Qt5",
+                  qtprefixpath: "../Qt/5.15.2/msvc2019_64",
                 },
               screenshot_filename: "windows-latest-msvc-qt-5-15-2.jpg",
             }
@@ -53,6 +54,7 @@ jobs:
                   qtversion: "6.2.4",
                   qtdirkey: "Qt6_DIR",
                   qtdirvalue: "../Qt/6.2.4/msvc2019_64/lib/cmake/Qt6",
+                  qtprefixpath: "../Qt/6.2.4/msvc2019_64",
                 },
               screenshot_filename: "windows-latest-msvc-qt-6-2-4.jpg",
             }
@@ -71,6 +73,7 @@ jobs:
                   qtversion: "5.15.2",
                   qtdirkey: "Qt5_DIR",
                   qtdirvalue: "../Qt/5.15.2/msvc2019_64/lib/cmake/Qt5",
+                  qtprefixpath: "../Qt/5.15.2/msvc2019_64",
                 },
               screenshot_filename: "windows-2019-msvc-qt-5-15-2.jpg",
             }
@@ -89,6 +92,7 @@ jobs:
                   qtversion: "6.2.4",
                   qtdirkey: "Qt6_DIR",
                   qtdirvalue: "../Qt/6.2.4/msvc2019_64/lib/cmake/Qt6",
+                  qtprefixpath: "../Qt/6.2.4/msvc2019_64",
                 },
               screenshot_filename: "windows-2019-msvc-qt-6-2-4.jpg",
             }
@@ -107,6 +111,7 @@ jobs:
                   qtversion: "5.15.2",
                   qtdirkey: "Qt5_DIR",
                   qtdirvalue: "../Qt/5.15.2/gcc_64/lib/cmake/Qt5",
+                  qtprefixpath: "../Qt/5.15.2/gcc_64",
                 },
               screenshot_filename: "ubuntu-latest-gcc-qt-5-15-2.jpg",
             }
@@ -125,6 +130,7 @@ jobs:
                   qtversion: "6.2.4",
                   qtdirkey: "Qt6_DIR",
                   qtdirvalue: "../Qt/6.2.4/gcc_64/lib/cmake/Qt6",
+                  qtprefixpath: "../Qt/6.2.4/gcc_64",
                 },
               screenshot_filename: "ubuntu-latest-gcc-qt-6-2-4.jpg",
             }
@@ -143,6 +149,7 @@ jobs:
                   qtversion: "5.15.2",
                   qtdirkey: "Qt5_DIR",
                   qtdirvalue: "../Qt/5.15.2/gcc_64/lib/cmake/Qt5",
+                  qtprefixpath: "../Qt/5.15.2/gcc_64",
                 },
               screenshot_filename: "ubuntu-latest-gcc-9-qt-5-15-2.jpg",
             }
@@ -161,6 +168,7 @@ jobs:
                   qtversion: "6.2.4",
                   qtdirkey: "Qt6_DIR",
                   qtdirvalue: "../Qt/6.2.4/gcc_64/lib/cmake/Qt6",
+                  qtprefixpath: "../Qt/6.2.4/gcc_64",
                 },
               screenshot_filename: "ubuntu-latest-gcc-9-qt-6-2-4.jpg",
             }
@@ -178,6 +186,7 @@ jobs:
                   qtversion: "5.15.2",
                   qtdirkey: "Qt5_DIR",
                   qtdirvalue: "../Qt/5.15.2/clang_64/lib/cmake/Qt5",
+                  qtprefixpath: "../Qt/5.15.2/clang_64",
                 },
               screenshot_filename: "macos-latest-clang-qt-5-15-2.jpg",
             }
@@ -195,6 +204,7 @@ jobs:
                   qtversion: "6.2.4",
                   qtdirkey: "Qt6_DIR",
                   qtdirvalue: "../Qt/6.2.4/clang_64/lib/cmake/Qt6",
+                  qtprefixpath: "../Qt/6.2.4/clang_64",
                 },
               screenshot_filename: "macos-latest-clang-qt-6-2-4.jpg",
             }
@@ -343,7 +353,7 @@ jobs:
             -G "${{ matrix.config.generators }}" \
             -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
             -DCMAKE_INSTALL_PREFIX:PATH=qskinny_install \
-            -D${{ matrix.config.cmake.qtdirkey }}:PATH="${{ matrix.config.cmake.qtdirvalue }}"
+            -DCMAKE_PREFIX_PATH:PATH="${{ matrix.config.cmake.qtprefixpath }}"
 
       - name: Build ( QSkinny )
         shell: bash
@@ -414,7 +424,7 @@ jobs:
             -B qskinny_build_test \
             -G "${{ matrix.config.generators }}" \
             -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
-            -D${{ matrix.config.cmake.qtdirkey }}:PATH="${{ matrix.config.cmake.qtdirvalue }}" \
+            -DCMAKE_PREFIX_PATH:PATH="${{ matrix.config.cmake.qtprefixpath }}" \
             -DQSkinny_DIR:PATH=$GITHUB_WORKSPACE/qskinny_install/lib/cmake/QSkinny
 
       - name: Build ( CMake Integration Test )
