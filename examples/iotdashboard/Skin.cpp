@@ -223,10 +223,6 @@ void Skin::initHints( const Palette& palette )
     ed.setBoxShape( LightDisplay::Panel, 100, Qt::RelativeSize );
 
     ed.setArcMetrics( LightDisplay::ColdAndWarmArc, 8.785, 0, 180 );
-    const QskGradient coldGradient(
-        { { 0.0, 0xffff3122 }, { 0.2, 0xfffeeeb7 }, { 0.3, 0xffa7b0ff },
-          { 0.5, 0xff6776ff }, { 1.0, Qt::black } } );
-    ed.setGradient( LightDisplay::ColdAndWarmArc, coldGradient );
 
     ed.setMetric( LightDisplay::Tickmarks, 1 );
     ed.setArcMetrics( LightDisplay::Tickmarks, { 4.69, 0, 180 } );
@@ -237,7 +233,6 @@ void Skin::initHints( const Palette& palette )
 
     ed.setStrutSize( LightDisplay::Knob, { 20, 20 } );
     ed.setBoxBorderMetrics( LightDisplay::Knob, 1 );
-    ed.setBoxBorderColors( LightDisplay::Knob, 0xffc4c4c4 );
     ed.setBoxShape( LightDisplay::Knob, 100, Qt::RelativeSize );
 
     // palette dependent skin hints:
@@ -260,6 +255,8 @@ void Skin::initHints( const Palette& palette )
 
     ed.setGradient( LightDisplay::Panel, palette.box );
     ed.setGradient( LightDisplay::Knob, palette.box );
+    ed.setGradient( LightDisplay::ColdAndWarmArc, palette.lightDisplayColdAndWarmArc );
+    ed.setBoxBorderColors( LightDisplay::Knob, palette.lightDisplayKnobBorder );
     ed.setShadowMetrics( LightDisplay::Groove, { 0, 20 } );
     ed.setShadowColor( LightDisplay::Groove, palette.shadow );
     ed.setGradient( LightDisplay::Groove, palette.box );
@@ -287,6 +284,9 @@ Skin::Palette DaytimeSkin::palette() const
         0xfff4f4f4,
         Qt::black,
         0xffe5e5e5,
+        0xffc4c4c4,
+        { { { 0.0, 0xffff3122 }, { 0.2, 0xfffeeeb7 }, { 0.3, 0xffa7b0ff },
+                { 0.5, 0xff6776ff }, { 1.0, Qt::black } } },
         { { { 0.0, 0xffc4c4c4 }, { 0.5, 0xfff8f8f8 }, { 1.0, 0xffc4c4c4 } } },
         0xffdddddd,
     };
@@ -303,6 +303,9 @@ Skin::Palette NighttimeSkin::palette() const
         0xff0c0c0c,
         Qt::white,
         0xff4a4a4a,
+        0xff555555,
+        { { { 0.0, 0xff991100 }, { 0.2, 0xff9a7a57 },
+                { 0.5, 0xff3726af }, { 1.0, Qt::black } } },
         { { { 0.0, 0xff666666 }, { 0.5, 0xff222222 }, { 1.0, 0xff333333 } } },
         0xff222222,
     };

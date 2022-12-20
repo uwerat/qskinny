@@ -21,6 +21,8 @@ class Skin : public QskSkin
         QColor weekdayBox;
         QColor text;
         QColor shadow;
+        QColor lightDisplayKnobBorder;
+        QskGradient lightDisplayColdAndWarmArc;
         QskGradient circularProgressBarGroove;
         QRgb deviceGraphic;
     };
