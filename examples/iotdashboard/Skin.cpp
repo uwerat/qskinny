@@ -90,7 +90,7 @@ void Skin::initHints( const Palette& palette )
     ed.setPadding( MenuBar::Panel, {0, 35, 0, 12} );
 
     ed.setStrutSize( MenuItem::Panel | QskAspect::Size, {140, 40} );
-    ed.setPadding( MenuItem::Panel, {30, 0, 30, 0} );
+    ed.setPadding( MenuItem::Panel, {30, 16, 30, 16} );
     QColor color( Qt::white );
     color.setAlphaF( 0.09 );
     ed.setGradient( MenuItem::Panel | QskControl::Hovered, color );
@@ -100,7 +100,7 @@ void Skin::initHints( const Palette& palette )
     ed.setColor( MenuBarLabel::Text, Qt::white );
     ed.setFontRole( MenuBarLabel::Text, QskSkin::SmallFont );
 
-    ed.setMargin( MenuBarTopLabel::Graphic, { 50, 0, 50, 54 } );
+    ed.setMargin( MenuBarTopLabel::Graphic, { 50, 5, 50, 65 } );
 
     ed.setMetric( MenuBarGraphicLabel::Graphic | QskAspect::Size, 14 );
     ed.setAlignment( MenuBarGraphicLabel::Graphic, Qt::AlignCenter );

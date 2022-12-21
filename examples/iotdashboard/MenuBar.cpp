@@ -38,7 +38,7 @@ MenuBar::MenuBar( QQuickItem* parent )
     setSubcontrolProxy( QskBox::Panel, MenuBar::Panel );
 
     initSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Preferred );
-    setSpacing( 8 );
+    setSpacing( 0 );
 
     auto graphicLabel = new MenuBarTopLabel( "main-icon", this );
     graphicLabel->setMargins( marginHint( MenuBarTopLabel::Graphic ) );
