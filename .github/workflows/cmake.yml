@@ -224,7 +224,7 @@ jobs:
         if: startsWith(matrix.config.os, 'windows')
         run: |
           choco install ninja 
-          choco install cmake --version=3.16.0
+          choco install cmake --version=3.16.3
           ninja --version
           cmake --version
 
