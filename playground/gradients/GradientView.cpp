@@ -11,9 +11,12 @@
 
 #include <QskPaintedNode.h>
 #include <QskRectangleNode.h>
-#include <QskBoxFillNode.h>
+#include <QskBoxRectangleNode.h>
 #include <QskGradient.h>
 #include <QskGradientDirection.h>
+#include <QskBoxRenderer.h>
+#include <QskBoxShapeMetrics.h>
+#include <QskTextLabel.h>
 
 #include <QBrush>
 #include <QPainter>
@@ -32,6 +35,11 @@ namespace
     class PaintedNode final : public QskPaintedNode
     {
       public:
+        PaintedNode()
+        {
+            setRenderHint( QskPaintedNode::Raster );
+        }
+
         void updateNode( QQuickWindow* window,
             const QRectF& rect, const QskGradient& gradient )
         {
@@ -53,6 +61,49 @@ namespace
             painter->fillRect( rect, gradient->toQGradient( rect ) );
         }
     };
+
+    class InfoLabel : public QskTextLabel
+    {
+      public:
+        InfoLabel( GradientView::NodeType nodeType, QQuickItem* parent )
+            : QskTextLabel( parent )
+        {
+            QString text;
+
+            switch( nodeType )
+            {
+                case GradientView::Painted:
+                    text = "QskPaintedNode";
+                    break;
+
+                case GradientView::Rectangle:
+                    text = "QskRectangleNode";
+                    break;
+
+                case GradientView::BoxFill:
+                    text = "QskBoxRectangleNode";
+                    break;
+
+        #ifdef SHAPE_GRADIENT
+                case GradientView::Shape:
+                    text = "QQuickShapeGenericNode";
+                    break;
+        #endif
+
+                default:
+                    break;
+            }
+
+            if ( !text.isEmpty() )
+            {
+                QColor c( Qt::white );
+                c.setAlpha( 200 );
+                setBackgroundColor( c );
+
+                setText( text );
+            }
+        }
+    };
 }
 
 GradientView::GradientView( NodeType nodeType, QQuickItem* parent )
@@ -60,6 +111,10 @@ GradientView::GradientView( NodeType nodeType, QQuickItem* parent )
     , m_nodeType( nodeType )
 {
     setFlag( QQuickItem::ItemHasContents, true );
+
+    auto label = new InfoLabel( nodeType, this );
+    label->setPosition( 10, 10 );
+    label->setSize( label->sizeHint() );
 }
 
 GradientView::NodeType GradientView::GradientView::nodeType() const
@@ -110,7 +165,14 @@ QSGNode* GradientView::updatePaintNode(
         }
         case BoxFill:
         {
-            auto node = gradientNode< QskBoxFillNode >( oldNode );
+            if ( !QskBoxRenderer::isGradientSupported(
+                QskBoxShapeMetrics(), m_gradient ) )
+            {
+                delete oldNode;
+                return nullptr;
+            }
+
+            auto node = gradientNode< QskBoxRectangleNode >( oldNode );
             node->updateNode( rect, m_gradient );
 
             return node;
