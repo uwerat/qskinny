@@ -650,10 +650,7 @@ QGradient QskGradient::toQGradient( const QRectF& rect ) const
     if ( qGradient.coordinateMode() != QGradient::ObjectMode )
         return qGradient;
 
-    const qreal x = rect.x();
-    const qreal y = rect.y();
-    const qreal w = rect.width();
-    const qreal h = rect.height();
+    const QTransform transform( rect.width(), 0, 0, rect.height(), rect.x(), rect.y() );
 
     switch( qGradient.type() )
     {
@@ -661,13 +658,8 @@ QGradient QskGradient::toQGradient( const QRectF& rect ) const
         {
             auto& g = *static_cast< QLinearGradient* >( &qGradient );
 
-            const auto x1 = x + g.start().x() * w;
-            const auto y1 = y + g.start().y() * h;
-            const auto x2 = x + g.finalStop().x() * w;
-            const auto y2 = y + g.finalStop().y() * h;
-
-            g.setStart( x1, y1 );
-            g.setFinalStop( x2, y2 );
+            g.setStart( transform.map( g.start() ) );
+            g.setFinalStop( transform.map( g.finalStop() ) );
 
             break;
         }
@@ -675,28 +667,23 @@ QGradient QskGradient::toQGradient( const QRectF& rect ) const
         {
             auto& g = *static_cast< QRadialGradient* >( &qGradient );
 
-            const qreal x0 = x + g.center().x() * w;
-            const qreal y0 = y + g.center().y() * h;
+            const auto center = transform.map( g.center() );
 
-            const qreal rx = w * g.radius() * w;
-            const qreal ry = w * g.radius() * h;
+            const qreal radius = qMin( g.radius() * rect.width(),
+                g.radius() * rect.height() );
 
-            g.setCenter( x0, y0 );
-            g.setFocalPoint( x0, y0 );
+            g.setCenter( center );
+            g.setFocalPoint( center );
 
-            g.setCenterRadius( qMin( rx, ry ) );
-            g.setFocalRadius( qMin( rx, ry ) );
+            g.setCenterRadius( radius );
+            g.setFocalRadius( radius );
 
             break;
         }
         case QGradient::ConicalGradient:
         {
             auto& g = *static_cast< QConicalGradient* >( &qGradient );
-
-            const qreal x0 = x + g.center().x() * w;
-            const qreal y0 = y + g.center().y() * h;
-
-            g.setCenter( x0, y0 );
+            g.setCenter( transform.map( g.center() ) );
 
             break;
         }
