@@ -46,7 +46,7 @@ namespace
 
             QskGradient gradient;
             gradient.setLinearDirection( 0.0, 0.0, 1.0, 1.0 );
-            gradient.setSpread( QskGradient::RepeatSpread );
+            gradient.setSpreadMode( QskGradient::RepeatSpread );
             gradient.setStops( stops );
 
             showGradient( gradient );

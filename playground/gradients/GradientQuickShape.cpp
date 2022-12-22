@@ -115,7 +115,7 @@ namespace
             }
 
             shapeGradient->setSpread(
-                static_cast< QQuickShapeGradient::SpreadMode >( gradient.spread() ) );
+                static_cast< QQuickShapeGradient::SpreadMode >( gradient.spreadMode() ) );
 
             /*
                 QQuickGradient has been made in the early days of Qt5 for the QML

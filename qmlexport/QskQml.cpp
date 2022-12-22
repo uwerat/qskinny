@@ -153,11 +153,14 @@ namespace
             }
             else if ( v.isNumber() )
             {
-                if ( it.name() == QStringLiteral( "spread" ) )
+                if ( it.name() == QStringLiteral( "spreadMode" ) )
                 {
                     const auto s = v.toNumber();
                     if ( s >= QskGradient::PadSpread && s <= QskGradient::RepeatSpread )
-                        gradient.setSpread( static_cast< QskGradient::Spread >( s ) );
+                    {
+                        gradient.setSpreadMode(
+                            static_cast< QskGradient::SpreadMode >( s ) );
+                    }
                 }
             }
         }

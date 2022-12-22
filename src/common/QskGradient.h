@@ -30,7 +30,7 @@ class QSK_EXPORT QskGradient
 
     Q_PROPERTY( QskGradientStops stops READ stops WRITE setStops )
 
-    Q_PROPERTY( Spread spread READ spread WRITE setSpread )
+    Q_PROPERTY( SpreadMode spreadMode READ spreadMode WRITE setSpreadMode )
 
     Q_PROPERTY( bool valid READ isValid )
     Q_PROPERTY( bool visible READ isVisible )
@@ -49,13 +49,13 @@ class QSK_EXPORT QskGradient
     };
     Q_ENUM( Type )
 
-    enum Spread
+    enum SpreadMode
     {
         PadSpread,
         ReflectSpread,
         RepeatSpread
     };
-    Q_ENUM( Spread )
+    Q_ENUM( SpreadMode )
 
     QskGradient() noexcept = default;
 
@@ -122,8 +122,8 @@ class QSK_EXPORT QskGradient
 
     void setAlpha( int alpha );
 
-    void setSpread( Spread );
-    Spread spread() const noexcept;
+    void setSpreadMode( SpreadMode );
+    SpreadMode spreadMode() const noexcept;
 
     void reverse();
     QskGradient reversed() const;
@@ -160,7 +160,7 @@ class QSK_EXPORT QskGradient
     qreal m_values[4] = {};
 
     Type m_type = Stops;
-    Spread m_spread = PadSpread;
+    SpreadMode m_spreadMode = PadSpread;
 
     mutable bool m_isDirty = false;
     mutable bool m_isValid = false;
@@ -234,9 +234,9 @@ inline QRgb QskGradient::rgbEnd() const
     return m_stops.isEmpty() ? qRgba( 0, 0, 0, 255 ) : m_stops.last().rgb();
 }
 
-inline QskGradient::Spread QskGradient::spread() const noexcept
+inline QskGradient::SpreadMode QskGradient::spreadMode() const noexcept
 {
-    return m_spread;
+    return m_spreadMode;
 }
 
 #ifndef QT_NO_DEBUG_STREAM

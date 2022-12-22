@@ -129,7 +129,7 @@ QskGradient::QskGradient( const QGradient& qGradient )
         }
     }
 
-    m_spread = static_cast< Spread >( qGradient.spread() );
+    m_spreadMode = static_cast< SpreadMode >( qGradient.spread() );
     setStops( qskBuildGradientStops( qGradient.stops() ) );
 }
 
@@ -138,7 +138,7 @@ QskGradient::QskGradient( const QskGradient& other ) noexcept
     , m_values{ other.m_values[0], other.m_values[1],
         other.m_values[2], other.m_values[3], }
     , m_type( other.m_type )
-    , m_spread( other.m_spread )
+    , m_spreadMode( other.m_spreadMode )
     , m_isDirty( other.m_isDirty )
     , m_isValid( other.m_isValid )
     , m_isMonchrome( other.m_isMonchrome )
@@ -153,7 +153,7 @@ QskGradient::~QskGradient()
 QskGradient& QskGradient::operator=( const QskGradient& other ) noexcept
 {
     m_type = other.m_type;
-    m_spread = other.m_spread;
+    m_spreadMode = other.m_spreadMode;
     m_stops = other.m_stops;
 
     m_values[0] = other.m_values[0];
@@ -172,7 +172,7 @@ QskGradient& QskGradient::operator=( const QskGradient& other ) noexcept
 bool QskGradient::operator==( const QskGradient& other ) const noexcept
 {
     return ( m_type == other.m_type )
-           && ( m_spread == other.m_spread )
+           && ( m_spreadMode == other.m_spreadMode )
            && ( m_values[0] == other.m_values[0] )
            && ( m_values[1] == other.m_values[1] )
            && ( m_values[2] == other.m_values[2] )
@@ -346,9 +346,9 @@ void QskGradient::setAlpha( int alpha )
     m_isDirty = true;
 }
 
-void QskGradient::setSpread( Spread spread )
+void QskGradient::setSpreadMode( SpreadMode spreadMode )
 {
-    m_spread = spread;
+    m_spreadMode = spreadMode;
 }
 
 void QskGradient::reverse()
@@ -593,26 +593,20 @@ void QskGradient::resetDirection()
 
 QGradient QskGradient::toQGradient() const
 {
-    switch( m_type )
+    QGradient g;
+
+    switch( static_cast< int >( m_type ) )
     {
         case Linear:
         {
-            QLinearGradient g( m_values[0], m_values[1], m_values[2], m_values[3] );
-            g.setCoordinateMode( QGradient::ObjectMode );
-            g.setSpread( static_cast< QGradient::Spread >( m_spread ) );
-            g.setStops( qskToQGradientStops( m_stops ) );
-
-            return g;
+            g = QLinearGradient( m_values[0], m_values[1], m_values[2], m_values[3] );
+            break;
         }
 
         case Radial:
         {
-            QRadialGradient g( m_values[0], m_values[1], m_values[2] );
-            g.setCoordinateMode( QGradient::ObjectMode );
-            g.setSpread( static_cast< QGradient::Spread >( m_spread ) );
-            g.setStops( qskToQGradientStops( m_stops ) );
-
-            return g;
+            g = QRadialGradient( m_values[0], m_values[1], m_values[2] );
+            break;
         }
 
         case Conic:
@@ -623,24 +617,17 @@ QGradient QskGradient::toQGradient() const
                     "QskGradient: spanAngle got lost, when converting to QConicalGradient";
             }
 
-            QConicalGradient g( m_values[0], m_values[1], m_values[2] );
-            g.setCoordinateMode( QGradient::ObjectMode );
-            g.setSpread( static_cast< QGradient::Spread >( m_spread ) );
-            g.setStops( qskToQGradientStops( m_stops ) );
-
-            return g;
-        }
-
-        default:
-        {
-            QGradient g;
-            g.setCoordinateMode( QGradient::ObjectMode );
-            g.setSpread( static_cast< QGradient::Spread >( m_spread ) );
-            g.setStops( qskToQGradientStops( m_stops ) );
-
-            return g;
+            g = QConicalGradient( m_values[0], m_values[1], m_values[2] );
+            break;
         }
     }
+
+    g.setCoordinateMode( QGradient::ObjectMode );
+
+    g.setSpread( static_cast< QGradient::Spread >( m_spreadMode ) );
+    g.setStops( qskToQGradientStops( m_stops ) );
+
+    return g;
 }
 
 QGradient QskGradient::toQGradient( const QRectF& rect ) const
@@ -772,7 +759,7 @@ QDebug operator<<( QDebug debug, const QskGradient& gradient )
         }
     }
 
-    switch( gradient.spread() )
+    switch( gradient.spreadMode() )
     {
         case QskGradient::RepeatSpread:
             debug << " RP";

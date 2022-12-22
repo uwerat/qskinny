@@ -18,7 +18,7 @@ namespace
     class Texture : public QSGPlainTexture
     {
       public:
-        Texture( const QskGradientStops& stops, QskGradient::Spread spread )
+        Texture( const QskGradientStops& stops, QskGradient::SpreadMode spreadMode )
         {
             /*
                 Qt creates tables of 1024 colors, while Chrome, Firefox, and Android
@@ -28,7 +28,7 @@ namespace
 
             setImage( QskRgb::colorTable( 256, stops ) );
 
-            const auto wrapMode = this->wrapMode( spread );
+            const auto wrapMode = this->wrapMode( spreadMode );
 
             setHorizontalWrapMode( wrapMode );
             setVerticalWrapMode( wrapMode );
@@ -37,9 +37,9 @@ namespace
         };
 
       private:
-        static inline QSGTexture::WrapMode wrapMode( QskGradient::Spread spread )
+        static inline QSGTexture::WrapMode wrapMode( QskGradient::SpreadMode spreadMode )
         {
-            switch ( spread )
+            switch ( spreadMode )
             {
                 case QskGradient::RepeatSpread:
                     return QSGTexture::Repeat;
@@ -58,17 +58,17 @@ namespace
       public:
         inline bool operator==( const HashKey& other ) const
         {
-            return rhi == other.rhi && spread == other.spread && stops == other.stops;
+            return rhi == other.rhi && spreadMode == other.spreadMode && stops == other.stops;
         }
 
         const void* rhi;
         const QskGradientStops stops;
-        const QskGradient::Spread spread;
+        const QskGradient::SpreadMode spreadMode;
     };
 
     inline size_t qHash( const HashKey& key, size_t seed = 0 )
     {
-        size_t values = seed + key.spread;
+        size_t values = seed + key.spreadMode;
 
         for ( const auto& stop : key.stops )
             values += stop.rgb();
@@ -84,7 +84,7 @@ namespace
         void cleanupRhi( const QRhi* );
 
         Texture* texture( const void* rhi,
-            const QskGradientStops&, QskGradient::Spread );
+            const QskGradientStops&, QskGradient::SpreadMode );
 
       private:
         QHash< HashKey, Texture* > m_hashTable;
@@ -107,14 +107,14 @@ static void qskCleanupRhi( const QRhi* rhi )
 }
 
 Texture* Cache::texture( const void* rhi,
-    const QskGradientStops& stops, QskGradient::Spread spread )
+    const QskGradientStops& stops, QskGradient::SpreadMode spreadMode )
 {
-    const HashKey key { rhi, stops, spread };
+    const HashKey key { rhi, stops, spreadMode };
 
     auto texture = m_hashTable[key];
     if ( texture == nullptr )
     {
-        texture = new Texture( stops, spread );
+        texture = new Texture( stops, spreadMode );
         m_hashTable[ key ] = texture;
 
         if ( rhi != nullptr )
@@ -151,7 +151,7 @@ void Cache::cleanupRhi( const QRhi* rhi )
 }
 
 QSGTexture* QskColorRamp::texture( const void* rhi,
-    const QskGradientStops& stops, QskGradient::Spread spread )
+    const QskGradientStops& stops, QskGradient::SpreadMode spreadMode )
 {
     if ( s_cache == nullptr )
     {
@@ -166,5 +166,5 @@ QSGTexture* QskColorRamp::texture( const void* rhi,
         qAddPostRoutine( qskCleanupCache );
     }
 
-    return s_cache->texture( rhi, stops, spread );
+    return s_cache->texture( rhi, stops, spreadMode );
 }

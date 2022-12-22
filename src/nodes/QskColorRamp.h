@@ -13,7 +13,8 @@ class QSGTexture;
 
 namespace QskColorRamp
 {
-    QSGTexture* texture( const void* rhi, const QskGradientStops&, QskGradient::Spread );
+    QSGTexture* texture( const void* rhi,
+        const QskGradientStops&, QskGradient::SpreadMode );
 }
 
 #endif

@@ -19,19 +19,19 @@ class QSK_EXPORT QskGradientMaterial : public QSGMaterial
     QskGradient::Type gradientType() const;
 
     const QskGradientStops& stops() const;
-    QskGradient::Spread spread() const;
+    QskGradient::SpreadMode spreadMode() const;
 
   protected:
     QskGradientMaterial( QskGradient::Type );
 
     void setStops( const QskGradientStops& );
-    void setSpread( QskGradient::Spread );
+    void setSpreadMode( QskGradient::SpreadMode );
 
   private:
     const QskGradient::Type m_gradientType;
 
     QskGradientStops m_stops;
-    QskGradient::Spread m_spread = QskGradient::PadSpread;
+    QskGradient::SpreadMode m_spreadMode = QskGradient::PadSpread;
 };
 
 inline QskGradient::Type QskGradientMaterial::gradientType() const
@@ -44,9 +44,9 @@ inline void QskGradientMaterial::setStops( const QskGradientStops& stops )
     m_stops = stops;
 }
 
-inline void QskGradientMaterial::setSpread( QskGradient::Spread spread )
+inline void QskGradientMaterial::setSpreadMode( QskGradient::SpreadMode spreadMode )
 {
-    m_spread = spread;
+    m_spreadMode = spreadMode;
 }
 
 inline const QskGradientStops& QskGradientMaterial::stops() const
@@ -54,9 +54,9 @@ inline const QskGradientStops& QskGradientMaterial::stops() const
     return m_stops;
 }
 
-inline QskGradient::Spread QskGradientMaterial::spread() const
+inline QskGradient::SpreadMode QskGradientMaterial::spreadMode() const
 {
-    return m_spread;
+    return m_spreadMode;
 }
 
 #endif

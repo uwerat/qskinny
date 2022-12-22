@@ -26,7 +26,7 @@ Qsk.Window
             gradient:
             ({
                 linear: { x1: 0, y1: 0, x2: 0.2, y2: 0.5 },
-                spread: Qsk.Gradient.ReflectSpread,
+                spreadMode: Qsk.Gradient.ReflectSpread,
 
                 // PhonixStart
                 stops: [
@@ -44,7 +44,7 @@ Qsk.Window
             gradient:
             ({
                 linear: { x1: 0, y1: 0, x2: 0.05, y2: 0.1 },
-                spread: Qsk.Gradient.RepeatSpread,
+                spreadMode: Qsk.Gradient.RepeatSpread,
 
                 stops: [
                     { position: 0.5, color: "RoyalBlue" },
@@ -85,7 +85,7 @@ Qsk.Window
             gradient:
             ({
                 conic: { x: 0.5, y: 0.5, startAngle: 30, spanAngle: 60 },
-                spread: Qsk.Gradient.ReflectSpread,
+                spreadMode: Qsk.Gradient.ReflectSpread,
 
                 // JuicyPeach
                 stops: [
@@ -103,7 +103,7 @@ Qsk.Window
             gradient:
             ({
                 conic: { x: 0.5, y: 0.5, startAngle: 30, spanAngle: 60 },
-                spread: Qsk.Gradient.RepeatSpread,
+                spreadMode: Qsk.Gradient.RepeatSpread,
 
                 // WinterNeva
                 stops: [
@@ -144,7 +144,7 @@ Qsk.Window
             gradient:
             ({
                 conic: { x: 0.5, y: 0.5, startAngle: 45, spanAngle: 180 },
-                spread: Qsk.Gradient.ReflectSpread,
+                spreadMode: Qsk.Gradient.ReflectSpread,
 
                 // FabledSunset
                 stops: [
@@ -188,7 +188,7 @@ Qsk.Window
             gradient:
             ({
                 radial: { x: 0.5, y: 0.5, radius: 0.5 },
-                spread: Qsk.Gradient.PadSpread,
+                spreadMode: Qsk.Gradient.PadSpread,
 
                 stops: [
                     { position: 0.0, color: "lime" },
@@ -213,7 +213,7 @@ Qsk.Window
             gradient:
             ({
                 radial: { x: 0.5, y: 0.7, radius: 0.25 },
-                spread: Qsk.Gradient.RepeatSpread,
+                spreadMode: Qsk.Gradient.RepeatSpread,
 
                 // LilyMeadow
                 stops: [
@@ -232,7 +232,7 @@ Qsk.Window
             gradient:
             ({
                 radial: { x: 0.6, y: 0.4, radius: 0.1 },
-                spread: Qsk.Gradient.ReflectSpread,
+                spreadMode: Qsk.Gradient.ReflectSpread,
 
                 stops: [
                     { position: 0.0, color: "red" },

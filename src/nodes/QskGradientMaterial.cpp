@@ -52,7 +52,7 @@ namespace
         {
             const auto mat = static_cast< const GradientMaterial* >( other );
 
-            if ( ( spread() == mat->spread() ) && ( stops() == mat->stops() ) )
+            if ( ( spreadMode() == mat->spreadMode() ) && ( stops() == mat->stops() ) )
                 return 0;
 
             return QSGMaterial::compare( other );
@@ -107,7 +107,7 @@ namespace
             updateUniformValues( material );
 
             auto texture = QskColorRamp::texture(
-                nullptr, material->stops(), material->spread() );
+                nullptr, material->stops(), material->spreadMode() );
             texture->bind();
         }
 
@@ -146,7 +146,7 @@ namespace
             auto material = static_cast< const GradientMaterial* >( newMaterial );
 
             auto texture = QskColorRamp::texture(
-                state.rhi(), material->stops(), material->spread() );
+                state.rhi(), material->stops(), material->spreadMode() );
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
             texture->updateRhiTexture( state.rhi(), state.resourceUpdateBatch() );
@@ -186,9 +186,9 @@ namespace
                 the number of color ramps. TODO ...
              */
 
-            if ( gradient.spread() != spread() )
+            if ( gradient.spreadMode() != spreadMode() )
             {
-                setSpread( gradient.spread() );
+                setSpreadMode( gradient.spreadMode() );
                 changed = true;
             }
 
@@ -347,9 +347,9 @@ namespace
                 changed = true;
             }
 
-            if ( gradient.spread() != spread() )
+            if ( gradient.spreadMode() != spreadMode() )
             {
-                setSpread( gradient.spread() );
+                setSpreadMode( gradient.spreadMode() );
                 changed = true;
             }
 
@@ -518,9 +518,9 @@ namespace
                 changed = true;
             }
 
-            if ( gradient.spread() != spread() )
+            if ( gradient.spreadMode() != spreadMode() )
             {
-                setSpread( gradient.spread() );
+                setSpreadMode( gradient.spreadMode() );
                 changed = true;
             }
 
