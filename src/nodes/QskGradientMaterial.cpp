@@ -526,18 +526,31 @@ namespace
                 rect.left() + dir.center().x() * rect.width(),
                 rect.top() + dir.center().y() * rect.height() );
 
+            if ( center != m_center )
+            {
+                m_center = center;
+                changed = true;
+            }
+
             // Angles as ratio of a rotation
 
             float start = fmod( dir.startAngle(), 360.0 ) / 360.0;
             if ( start < 0.0)
                 start += 1.0;
 
-            const float span = fmod( dir.spanAngle(), 360.0 ) / 360.0;
+            float span;
 
-            if ( center != m_center )
+            if ( dir.spanAngle() >= 360.0 )
             {
-                m_center = center;
-                changed = true;
+                span = 1.0;
+            }
+            else if ( dir.spanAngle() <= -360.0 )
+            {
+                span = -1.0;
+            }
+            else
+            {
+                span = fmod( dir.spanAngle(), 360.0 ) / 360.0;
             }
 
             if ( ( start != m_start ) || ( span != m_span ) )
