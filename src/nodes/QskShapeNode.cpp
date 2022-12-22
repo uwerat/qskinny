@@ -17,21 +17,6 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qtriangulator_p.h>
 QSK_QT_PRIVATE_END
 
-static inline QskGradient qskEffectiveGradient( const QskGradient& gradient )
-{
-    if ( gradient.type() == QskGradient::Stops || gradient.isMonochrome() )
-    {
-        // the shader for linear gradients is the fastest
-        QskGradient g;
-        g.setLinearDirection( Qt::Vertical );
-        g.setStops( gradient.stops() );
-
-        return g;
-    }
-
-    return gradient;
-}
-
 static void qskUpdateGeometry( const QPainterPath& path,
     const QTransform& transform, QSGGeometry& geometry )
 {
@@ -146,7 +131,7 @@ void QskShapeNode::updateNode( const QPainterPath& path,
     }
     else
     {
-        const auto effectiveGradient = qskEffectiveGradient( gradient );
+        const auto effectiveGradient = gradient.effectiveGradient();
         const auto gradientType = effectiveGradient.type();
 
         if ( ( material() == nullptr ) || ( gradientType != d->gradientType ) )

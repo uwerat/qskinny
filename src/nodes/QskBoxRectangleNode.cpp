@@ -42,50 +42,31 @@ static inline QskHashValue qskColorsHash(
 
 static inline QskGradient qskEffectiveGradient( const QskGradient& gradient )
 {
-    QskGradient g;
+    auto g = gradient.effectiveGradient();
 
-    if ( gradient.isVisible() )
+    switch( static_cast< int >( g.type() ) )
     {
-        if ( gradient.isMonochrome() )
+        case QskGradient::Linear:
         {
-            g.setLinearDirection( Qt::Vertical );
-            g.setStops( gradient.rgbStart() );
-        }
-        else
-        {
+            auto dir = gradient.linearDirection();
 
-            switch( gradient.type() )
+            if ( dir.isTilted() )
             {
-                case QskGradient::Linear:
-                {
-                    auto dir = gradient.linearDirection();
+                dir.setStart( 0.0, 0.0 );
+                dir.setStop( 1.0, 1.0 );
 
-                    if ( dir.isTilted() )
-                    {
-                        dir.setStart( 0.0, 0.0 );
-                        dir.setStop( 1.0, 1.0 );
-                    }
-
-                    g.setLinearDirection( dir );
-
-                    break;
-                }
-                case QskGradient::Radial:
-                case QskGradient::Conic:
-                {
-                    qWarning() << "QskBoxRectangleNode does not support radial/conic gradients";
-                    g.setLinearDirection( Qt::Vertical );
-
-                    break;
-                }
-                case QskGradient::Stops:
-                {
-                    g.setLinearDirection( Qt::Vertical );
-                    break;
-                }
+                g.setLinearDirection( dir );
             }
 
-            g.setStops( gradient.stops() );
+            break;
+        }
+        case QskGradient::Radial:
+        case QskGradient::Conic:
+        {
+            qWarning() << "QskBoxRectangleNode does not support radial/conic gradients";
+            g.setDirection( QskGradient::Linear );
+
+            break;
         }
     }
 

@@ -22,21 +22,6 @@ QSK_QT_PRIVATE_END
 
 Q_GLOBAL_STATIC( QSGVertexColorMaterial, qskMaterialColorVertex )
 
-static inline QskGradient qskEffectiveGradient( const QskGradient& gradient )
-{
-    if ( gradient.type() == QskGradient::Stops || gradient.isMonochrome() )
-    {
-        // the shader for linear gradients is the fastest
-        QskGradient g;
-        g.setLinearDirection( Qt::Vertical );
-        g.setStops( gradient.stops() );
-
-        return g;
-    }
-
-    return gradient;
-}
-
 static inline void qskUpdateColoredPoint2D( const QRectF& rect,
     const QskBoxShapeMetrics& shape, const QskGradient& gradient,
     QSGGeometry& geometry )
@@ -111,7 +96,7 @@ void QskRectangleNode::updateNode(
         return;
     }
 
-    const auto effectiveGradient = qskEffectiveGradient( gradient );
+    const auto effectiveGradient = gradient.effectiveGradient();
     const auto effectiveShape = shape.toAbsolute( rect.size() );
 
     const auto gradientHash = effectiveGradient.hash( 54228 );

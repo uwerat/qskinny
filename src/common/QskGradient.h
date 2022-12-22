@@ -149,6 +149,8 @@ class QSK_EXPORT QskGradient
     QskGradient stretchedTo( const QSizeF& ) const;
     QskGradient stretchedTo( const QRectF& ) const;
 
+    QskGradient effectiveGradient() const;
+
     static QVariant interpolate( const QskGradient&,
         const QskGradient&, qreal progress );
 

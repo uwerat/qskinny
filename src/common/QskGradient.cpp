@@ -699,6 +699,21 @@ void QskGradient::resetDirection()
     m_values[0] = m_values[1] = m_values[2] = m_values[3] = 0.0;
 }
 
+QskGradient QskGradient::effectiveGradient() const
+{
+    if ( ( m_type == QskGradient::Stops ) || isMonochrome() )
+    {
+        // the shader for linear gradients is the fastest
+
+        QskGradient g = *this;
+        g.setDirection( QskGradient::Linear );
+
+        return g;
+    }
+
+    return *this;
+}
+
 QGradient QskGradient::toQGradient() const
 {
     QGradient g;

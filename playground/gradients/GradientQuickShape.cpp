@@ -51,17 +51,18 @@ namespace
 
       private:
         QQuickShapeGradient* createShapeGradient(
-            const QRectF& rect, QskGradient gradient ) const
+            const QRectF& rect, const QskGradient& gradient ) const
         {
             QQuickShapeGradient* shapeGradient = nullptr;
 
-            gradient.stretchTo( rect );
+            auto effectiveGradient = gradient.effectiveGradient();
+            effectiveGradient.stretchTo( rect );
 
             switch( static_cast< int >( gradient.type() ) )
             {
                 case QskGradient::Linear:
                 {
-                    const auto dir = gradient.linearDirection();
+                    const auto dir = effectiveGradient.linearDirection();
 
                     auto g = new QQuickShapeLinearGradient();
 
@@ -76,7 +77,7 @@ namespace
 
                 case QskGradient::Radial:
                 {
-                    const auto dir = gradient.radialDirection();
+                    const auto dir = effectiveGradient.radialDirection();
 
                     auto g = new QQuickShapeRadialGradient();
 
@@ -94,7 +95,7 @@ namespace
 
                 case QskGradient::Conic:
                 {
-                    const auto dir = gradient.conicDirection();
+                    const auto dir = effectiveGradient.conicDirection();
 
                     auto g = new QQuickShapeConicalGradient();
 

@@ -27,21 +27,6 @@ static inline QskHashValue qskMetricsHash(
     return borderMetrics.hash( hash );
 }
 
-static inline QskGradient qskEffectiveGradient( const QskGradient& gradient )
-{
-    if ( gradient.type() == QskGradient::Stops || gradient.isMonochrome() )
-    {
-        // the shader for linear gradients is the fastest
-        QskGradient g;
-        g.setLinearDirection( Qt::Vertical );
-        g.setStops( gradient.stops() );
-
-        return g;
-    }
-
-    return gradient;
-}
-
 class QskBoxFillNodePrivate final : public QSGGeometryNodePrivate
 {
   public:
@@ -137,7 +122,7 @@ void QskBoxFillNode::updateNode(
 
         if ( dirtyColors || dirtyMetrics )
         {
-            const auto effectiveGradient = qskEffectiveGradient( gradient );
+            const auto effectiveGradient = gradient.effectiveGradient();
             const auto gradientType = effectiveGradient.type();
 
             if ( ( material() == nullptr ) || ( gradientType != d->gradientType ) )
