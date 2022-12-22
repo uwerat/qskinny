@@ -69,7 +69,7 @@ class QSK_EXPORT QskGradient
     };
     Q_ENUM( StretchMode )
 
-    QskGradient() noexcept = default;
+    QskGradient() noexcept;
 
     QskGradient( Qt::GlobalColor );
     QskGradient( QRgb );
@@ -177,17 +177,28 @@ class QSK_EXPORT QskGradient
      */
     qreal m_values[4] = {};
 
-    Type m_type = Stops;
-    SpreadMode m_spreadMode = PadSpread;
-    StretchMode m_stretchMode = StretchToSize;
+    unsigned int m_type : 3;
+    unsigned int m_spreadMode : 3;
+    unsigned int m_stretchMode : 3;
 
-    mutable bool m_isDirty = false;
-    mutable bool m_isValid = false;
-    mutable bool m_isMonchrome = true;
-    mutable bool m_isVisible = false;
+    mutable bool m_isDirty : 1;
+    mutable bool m_isValid : 1;
+    mutable bool m_isMonchrome : 1;
+    mutable bool m_isVisible : 1;
 };
 
 Q_DECLARE_METATYPE( QskGradient )
+
+inline QskGradient::QskGradient() noexcept
+    : m_type( Stops )
+    , m_spreadMode( PadSpread )
+    , m_stretchMode( StretchToSize )
+    , m_isDirty( false )
+    , m_isValid( false )
+    , m_isMonchrome( true )
+    , m_isVisible( false )
+{
+}
 
 inline QskGradient::QskGradient( Qt::GlobalColor color )
     : QskGradient( QColor( color ) )
@@ -206,7 +217,7 @@ inline bool QskGradient::operator!=( const QskGradient& other ) const noexcept
 
 inline QskGradient::Type QskGradient::type() const noexcept
 {
-    return m_type;
+    return static_cast< Type >( m_type );
 }
 
 inline const QskGradientStops& QskGradient::stops() const noexcept
@@ -255,12 +266,12 @@ inline QRgb QskGradient::rgbEnd() const
 
 inline QskGradient::SpreadMode QskGradient::spreadMode() const noexcept
 {
-    return m_spreadMode;
+    return static_cast< SpreadMode >( m_spreadMode );
 }
 
 inline QskGradient::StretchMode QskGradient::stretchMode() const noexcept
 {
-    return m_stretchMode;
+    return static_cast< StretchMode >( m_stretchMode );
 }
 
 #ifndef QT_NO_DEBUG_STREAM

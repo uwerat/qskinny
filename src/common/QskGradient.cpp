@@ -77,26 +77,31 @@ static inline QTransform qskTransformForRect( int stretch, const QRectF& rect )
 }
     
 QskGradient::QskGradient( const QColor& color )
+    : QskGradient()
 {
     setStops( color );
 }
 
 QskGradient::QskGradient( const QColor& color1, const QColor& color2 )
+    : QskGradient()
 {
     setStops( color1, color2 );
 }
 
 QskGradient::QskGradient( QGradient::Preset preset )
+    : QskGradient()
 {
     setStops( qskBuildGradientStops( QGradient( preset ).stops() ) );
 }
 
 QskGradient::QskGradient( const QVector< QskGradientStop >& stops )
+    : QskGradient()
 {
     setStops( stops );
 }
 
 QskGradient::QskGradient( const QGradient& qGradient )
+    : QskGradient()
 {
     switch( qGradient.type() )
     {
@@ -421,8 +426,7 @@ void QskGradient::stretchTo( const QRectF& rect )
             transform.map( m_values[0], m_values[1], &m_values[0], &m_values[1] );
 
 #if 1
-            const auto radius = transform.map( QPointF( m_values[2], m_values[2] ) );
-            m_values[2] = qMin( radius.x(), radius.y() );
+            m_values[2] *= qMin( rect.width(), rect.height() );
 #endif
 
             break;
