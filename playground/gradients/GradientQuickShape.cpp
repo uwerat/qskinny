@@ -87,7 +87,6 @@ namespace
                     g->setFocalY( dir.y() );
 
                     g->setCenterRadius( dir.radius() );
-                    g->setFocalRadius( dir.radius() );
 
                     shapeGradient = g;
                     break;
