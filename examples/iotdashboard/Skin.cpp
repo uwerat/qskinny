@@ -87,23 +87,25 @@ void Skin::initHints( const Palette& palette )
 
 
     // menu bar:
-    ed.setPadding( MenuBar::Panel, {0, 35, 0, 12} );
-
-    ed.setStrutSize( MenuItem::Panel | QskAspect::Size, {140, 40} );
-    ed.setPadding( MenuItem::Panel, {30, 16, 30, 16} );
-    QColor color( Qt::white );
-    color.setAlphaF( 0.09 );
-    ed.setGradient( MenuItem::Panel | QskControl::Hovered, color );
-    color.setAlphaF( 0.14 );
-    ed.setGradient( MenuItem::Panel | MenuItem::Active, color );
-
-    ed.setColor( MenuBarLabel::Text, Qt::white );
-    ed.setFontRole( MenuBarLabel::Text, QskSkin::SmallFont );
-
     ed.setMargin( MenuBarTopLabel::Graphic, { 50, 5, 50, 65 } );
 
-    ed.setMetric( MenuBarGraphicLabel::Graphic | QskAspect::Size, 14 );
-    ed.setAlignment( MenuBarGraphicLabel::Graphic, Qt::AlignCenter );
+    ed.setPadding( MenuBar::Panel, {0, 35, 0, 12} );
+
+    ed.setStrutSize( MenuButton::Panel | QskAspect::Size, {140, 40} );
+    QColor color( Qt::white );
+    color.setAlphaF( 0.09 );
+    ed.setGradient( MenuButton::Panel | QskControl::Hovered, color );
+    color.setAlphaF( 0.14 );
+    ed.setGradient( MenuButton::Panel | MenuButton::Checked, color );
+    ed.setSpacing( MenuButton::Panel, 10 );
+
+    ed.setColor( MenuButton::Text, Qt::white );
+    ed.setFontRole( MenuButton::Text, QskSkin::SmallFont );
+    ed.setAlignment( MenuButton::Text, Qt::AlignLeft | Qt::AlignVCenter );
+
+    ed.setPadding( MenuButton::Graphic, { 30, 0, 0, 0 } );
+    ed.setStrutSize( MenuButton::Graphic, { 14, -1 } );
+    ed.setAlignment( MenuButton::Graphic, Qt::AlignCenter );
 
 
     // top bar:

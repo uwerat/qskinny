@@ -13,6 +13,32 @@
 #include <QGuiApplication>
 #include <QQuickWindow>
 
+namespace
+{
+    Qsk::Direction direction( const int from, const int to )
+    {
+        if( from < Cube::Top ) // side
+        {
+            if( to < Cube::Top ) // side to side
+            {
+                return ( to > from ) ? Qsk::LeftToRight : Qsk::RightToLeft; // ### 2x case
+            }
+            else
+            {
+                return ( to == Cube::Top ) ? Qsk::BottomToTop : Qsk::TopToBottom; // ### 2x case
+            }
+        }
+        else if( from == Cube::Top )
+        {
+            return Qsk::TopToBottom; // ### 2x case
+        }
+        else
+        {
+            return Qsk::BottomToTop; // ### 2x case
+        }
+    }
+}
+
 Cube::Cube( QQuickItem* parent )
     : QskStackBox( false, parent )
 {
@@ -66,6 +92,7 @@ MainItem::MainItem( QQuickItem* parent )
     , m_cube( new Cube( this ) )
     , m_mainLayout( new QskLinearBox( Qt::Horizontal, m_cube ) )
     , m_otherLayout( new QskLinearBox( Qt::Horizontal, m_cube ) )
+    , m_currentIndex( 0 )
 {
     setAutoLayoutChildren( true );
     setAcceptedMouseButtons( Qt::LeftButton );
@@ -79,10 +106,12 @@ MainItem::MainItem( QQuickItem* parent )
 
     m_otherLayout->setSpacing( 0 );
 
-    (void) new MenuBar( m_mainLayout );
+    m_mainMenuBar = new MenuBar( m_mainLayout );
+    connect( m_mainMenuBar, &MenuBar::pageChangeRequested, this, &MainItem::switchToPage );
     (void) new DashboardPage( m_mainLayout );
 
-    (void) new MenuBar( m_otherLayout );
+    m_otherMenuBar = new MenuBar( m_otherLayout );
+    connect( m_otherMenuBar, &MenuBar::pageChangeRequested, this, &MainItem::switchToPage );
     (void) new RoomsPage( m_otherLayout );
 
     m_cube->addItem( m_mainLayout );
@@ -135,6 +164,18 @@ bool MainItem::gestureFilter( QQuickItem* item, QEvent* event )
     }
 
     return recognizer.processEvent( item, event, false );
+}
+
+void MainItem::switchToPage( const int index )
+{
+    if( m_currentIndex == index )
+        return;
+
+    const auto d = direction( m_currentIndex, index );
+    m_cube->startAnimation( d );
+    m_mainMenuBar->setActivePage( index );
+    m_otherMenuBar->setActivePage( index );
+    m_currentIndex = index;
 }
 
 #include "moc_MainItem.cpp"

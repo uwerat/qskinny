@@ -6,33 +6,29 @@
 #include "MenuBar.h"
 
 QSK_SUBCONTROL( MenuBarTopLabel, Graphic )
-QSK_SUBCONTROL( MenuBarGraphicLabel, Graphic )
-QSK_SUBCONTROL( MenuBarLabel, Text )
-QSK_SUBCONTROL( MenuItem, Panel )
+
+QSK_SUBCONTROL( MenuButton, Panel )
+QSK_SUBCONTROL( MenuButton, Text )
+QSK_SUBCONTROL( MenuButton, Graphic )
+
 QSK_SUBCONTROL( MenuBar, Panel )
 
-QSK_STATE( MenuItem, Active, ( QskAspect::FirstUserState << 1 ) )
-
-MenuItem::MenuItem( const QString& name, QQuickItem* parent )
-    : QskLinearBox( Qt::Horizontal, parent )
+MenuButton::MenuButton( const QString& name, QQuickItem* parent )
+    : QskPushButton( name, parent )
 {
+    setCheckable( true );
     initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
-    setSpacing( 6 );
 
-    setAcceptHoverEvents( true );
+    setSubcontrolProxy( QskPushButton::Panel, MenuButton::Panel );
+    setSubcontrolProxy( QskPushButton::Text, MenuButton::Text );
+    setSubcontrolProxy( QskPushButton::Graphic, MenuButton::Graphic );
 
-    setPanel( true );
-    setSubcontrolProxy( QskBox::Panel, MenuItem::Panel );
-
-    auto graphicLabel = new MenuBarGraphicLabel( name, this );
-    graphicLabel->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
-    graphicLabel->setFixedWidth( metric( MenuBarGraphicLabel::Graphic | QskAspect::Size ) );
-
-    new MenuBarLabel( name, this );
+    setGraphicSource( name );
 }
 
 MenuBar::MenuBar( QQuickItem* parent )
     : QskLinearBox( Qt::Vertical, parent )
+    , m_currentIndex( 0 )
 {
     setPanel( true );
     setSubcontrolProxy( QskBox::Panel, MenuBar::Panel );
@@ -46,17 +42,30 @@ MenuBar::MenuBar( QQuickItem* parent )
 
     m_entryStrings = { "Dashboard", "Rooms", "Devices", "Statistics", "Storage", "Members" };
 
-    for( const auto& entryString : qAsConst( m_entryStrings ) )
+    for( int i = 0; i < m_entryStrings.count(); ++i )
     {
-        auto* entry = new MenuItem( entryString, this );
-        m_entries.append( entry );
+        auto* button = new MenuButton( m_entryStrings.at( i ), this );
+
+        connect( button, &QskPushButton::pressed, this, [ this, i ]()
+        {
+            Q_EMIT pageChangeRequested( i );
+        } );
+
+        m_entries.append( button );
     }
 
-    m_entries.at( m_activeEntry )->setSkinStateFlag( MenuItem::Active );
+    m_entries.at( m_currentIndex )->setChecked( true );
 
     addSpacer( 0, 1 ); // fill the space at the bottom
 
-    new MenuItem( "Logout", this );
+    new MenuButton( "Logout", this );
+}
+
+void MenuBar::setActivePage( const int index )
+{
+    m_entries.at( m_currentIndex )->setChecked( false );
+    m_currentIndex = index;
+    m_entries.at( m_currentIndex )->setChecked( true );
 }
 
 #include "moc_MenuBar.cpp"
