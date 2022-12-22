@@ -44,30 +44,22 @@ static inline QskGradient qskEffectiveGradient( const QskGradient& gradient )
 {
     auto g = gradient.effectiveGradient();
 
-    switch( static_cast< int >( g.type() ) )
+    if ( g.type() == QskGradient::Linear )
     {
-        case QskGradient::Linear:
+        auto dir = g.linearDirection();
+
+        if ( dir.isTilted() )
         {
-            auto dir = gradient.linearDirection();
+            dir.setStart( 0.0, 0.0 );
+            dir.setStop( 1.0, 1.0 );
 
-            if ( dir.isTilted() )
-            {
-                dir.setStart( 0.0, 0.0 );
-                dir.setStop( 1.0, 1.0 );
-
-                g.setLinearDirection( dir );
-            }
-
-            break;
+            g.setLinearDirection( dir );
         }
-        case QskGradient::Radial:
-        case QskGradient::Conic:
-        {
-            qWarning() << "QskBoxRectangleNode does not support radial/conic gradients";
-            g.setDirection( QskGradient::Linear );
-
-            break;
-        }
+    }
+    else
+    {
+        qWarning() << "QskBoxRectangleNode does not support radial/conic gradients";
+        g.setDirection( QskGradient::Linear );
     }
 
     return g;
