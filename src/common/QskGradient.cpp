@@ -565,10 +565,12 @@ void QskGradient::clearStops()
 
 QskHashValue QskGradient::hash( QskHashValue seed ) const
 {
-    auto hash = qHashBits( &m_type, sizeof( m_type ), seed );
+    auto hash = qHash( m_type, seed );
+    hash = qHash( m_spreadMode, seed );
+    hash = qHash( m_stretchMode, seed );
 
     if ( m_type != Stops )
-        hash = qHashBits( m_values, sizeof( m_values ), seed );
+        hash = qHashBits( m_values, sizeof( m_values ), hash );
 
     for ( const auto& stop : m_stops )
         hash = stop.hash( hash );
