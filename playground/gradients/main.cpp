@@ -45,8 +45,22 @@ namespace
             }
 
             QskGradient gradient;
+#if 1
             gradient.setLinearDirection( 0.0, 0.0, 1.0, 1.0 );
-            gradient.setSpreadMode( QskGradient::RepeatSpread );
+#endif
+#if 0
+            gradient.setLinearDirection( 0.2, 0.2, 0.7, 0.5 );
+            gradient.setSpreadMode( QskGradient::PadSpread );
+#endif
+#if 0
+            gradient.setRadialDirection( 0.25, 0.75, 0.25 );
+            gradient.setSpreadMode( QskGradient::ReflectSpread );
+#endif
+#if 0
+            gradient.setConicDirection( 0.25, 0.75, 0, 90 );
+            gradient.setSpreadMode( QskGradient::ReflectSpread );
+#endif
+
             gradient.setStops( stops );
 
             showGradient( gradient );
