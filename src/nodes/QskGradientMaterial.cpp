@@ -192,17 +192,13 @@ namespace
                 changed = true;
             }
 
-#if 0
-            QTransform transform( rect.width(), 0, 0, rect.height(), rect.x(), rect.y());
-#endif
-
             const auto dir = gradient.linearDirection();
 
             const QVector4D vector(
-                rect.left() + dir.start().x() * rect.width(),
-                rect.top() + dir.start().y() * rect.height(), 
-                dir.stop().x() * rect.width(),
-                dir.stop().y() * rect.height() );
+                rect.left() + dir.x1() * rect.width(),
+                rect.top() + dir.y1() * rect.height(), 
+                ( dir.x2() - dir.x1() ) * rect.width(),
+                ( dir.y2() - dir.y1() ) * rect.height() );
 
             if ( m_gradientVector != vector )
             {
