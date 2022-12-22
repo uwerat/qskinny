@@ -18,8 +18,8 @@ class GradientView : public QQuickItem
     enum NodeType
     {
         Painted,
-        Rectangle,
         BoxFill,
+        BoxRectangle,
 #ifdef SHAPE_GRADIENT
         Shape,
 #endif

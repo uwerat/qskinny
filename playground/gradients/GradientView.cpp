@@ -10,7 +10,7 @@
 #endif
 
 #include <QskPaintedNode.h>
-#include <QskRectangleNode.h>
+#include <QskBoxFillNode.h>
 #include <QskBoxRectangleNode.h>
 #include <QskGradient.h>
 #include <QskGradientDirection.h>
@@ -76,12 +76,12 @@ namespace
                     text = "QskPaintedNode";
                     break;
 
-                case GradientView::Rectangle:
-                    text = "QskRectangleNode";
+                case GradientView::BoxRectangle:
+                    text = "QskBoxRectangleNode";
                     break;
 
                 case GradientView::BoxFill:
-                    text = "QskBoxRectangleNode";
+                    text = "QskBoxFillNode";
                     break;
 
         #ifdef SHAPE_GRADIENT
@@ -156,14 +156,14 @@ QSGNode* GradientView::updatePaintNode(
 
             return node;
         }
-        case Rectangle:
+        case BoxFill:
         {
-            auto node = gradientNode< QskRectangleNode >( oldNode );
+            auto node = gradientNode< QskBoxFillNode >( oldNode );
             node->updateNode( rect, m_gradient );
 
             return node;
         }
-        case BoxFill:
+        case BoxRectangle:
         {
             if ( !QskBoxRenderer::isGradientSupported(
                 QskBoxShapeMetrics(), m_gradient ) )
