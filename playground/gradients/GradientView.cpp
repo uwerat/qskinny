@@ -58,7 +58,7 @@ namespace
             const auto gradient = reinterpret_cast< const QskGradient* >( nodeData );
             const QRect rect( 0, 0, size.width(), size.height() );
 
-            painter->fillRect( rect, gradient->toQGradient( rect ) );
+            painter->fillRect( rect, gradient->stretchedTo( rect ).toQGradient() );
         }
     };
 

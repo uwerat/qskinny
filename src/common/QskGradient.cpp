@@ -56,6 +56,26 @@ static inline bool qskCanBeInterpolated( const QskGradient& from, const QskGradi
     return from.type() == to.type();
 }
 
+static inline QTransform qskTransformForRect( int stretch, const QRectF& rect )
+{
+    const qreal x = rect.x();
+    const qreal y = rect.y();
+    const qreal w = rect.width();
+    const qreal h = rect.height();
+
+    switch( stretch )
+    {
+        case QskGradient::StretchToHeight:
+            return QTransform( h, 0, 0, h, x, y );
+
+        case QskGradient::StretchToWidth:
+            return QTransform( w, 0, 0, w, x, y );
+
+        default:
+            return QTransform( w, 0, 0, h, x, y );
+    }
+}
+    
 QskGradient::QskGradient( const QColor& color )
 {
     setStops( color );
@@ -130,6 +150,27 @@ QskGradient::QskGradient( const QGradient& qGradient )
     }
 
     m_spreadMode = static_cast< SpreadMode >( qGradient.spread() );
+
+    switch( qGradient.coordinateMode() )
+    {
+        case QGradient::ObjectMode:
+        case QGradient::ObjectBoundingMode:
+
+            m_stretchMode = StretchToSize;
+            break;
+
+        case QGradient::LogicalMode:
+
+            m_stretchMode = NoStretch;
+            break;
+
+        case QGradient::StretchToDeviceMode:
+        {
+            qWarning() << "QskGradient: StretchToDeviceMode is not supportd.";
+            m_stretchMode = NoStretch;
+        }
+    }
+
     setStops( qskBuildGradientStops( qGradient.stops() ) );
 }
 
@@ -139,6 +180,7 @@ QskGradient::QskGradient( const QskGradient& other ) noexcept
         other.m_values[2], other.m_values[3], }
     , m_type( other.m_type )
     , m_spreadMode( other.m_spreadMode )
+    , m_stretchMode( other.m_stretchMode )
     , m_isDirty( other.m_isDirty )
     , m_isValid( other.m_isValid )
     , m_isMonchrome( other.m_isMonchrome )
@@ -154,6 +196,7 @@ QskGradient& QskGradient::operator=( const QskGradient& other ) noexcept
 {
     m_type = other.m_type;
     m_spreadMode = other.m_spreadMode;
+    m_stretchMode = other.m_stretchMode;
     m_stops = other.m_stops;
 
     m_values[0] = other.m_values[0];
@@ -173,6 +216,7 @@ bool QskGradient::operator==( const QskGradient& other ) const noexcept
 {
     return ( m_type == other.m_type )
            && ( m_spreadMode == other.m_spreadMode )
+           && ( m_stretchMode == other.m_stretchMode )
            && ( m_values[0] == other.m_values[0] )
            && ( m_values[1] == other.m_values[1] )
            && ( m_values[2] == other.m_values[2] )
@@ -349,6 +393,64 @@ void QskGradient::setAlpha( int alpha )
 void QskGradient::setSpreadMode( SpreadMode spreadMode )
 {
     m_spreadMode = spreadMode;
+}
+
+void QskGradient::setStretchMode( StretchMode stretchMode )
+{
+    m_stretchMode = stretchMode;
+}
+
+void QskGradient::stretchTo( const QRectF& rect )
+{
+    if ( m_stretchMode == NoStretch || m_type == Stops || rect.isEmpty() )
+        return; // nothing to do
+
+    const auto transform = qskTransformForRect( m_stretchMode, rect );
+
+    switch( static_cast< int >( m_type ) )
+    {
+        case Linear:
+        {
+            transform.map( m_values[0], m_values[1], &m_values[0], &m_values[1] );
+            transform.map( m_values[2], m_values[3], &m_values[2], &m_values[3] );
+
+            break;
+        }
+        case Radial:
+        {
+            transform.map( m_values[0], m_values[1], &m_values[0], &m_values[1] );
+
+#if 1
+            const auto radius = transform.map( QPointF( m_values[2], m_values[2] ) );
+            m_values[2] = qMin( radius.x(), radius.y() );
+#endif
+
+            break;
+        }
+        case Conic:
+        {
+            transform.map( m_values[0], m_values[1], &m_values[0], &m_values[1] );
+            break;
+        }
+    }
+
+    m_stretchMode = NoStretch;
+}
+
+QskGradient QskGradient::stretchedTo( const QSizeF& size ) const
+{
+    return stretchedTo( QRectF( 0.0, 0.0, size.width(), size.height() ) );
+}
+
+QskGradient QskGradient::stretchedTo( const QRectF& rect ) const
+{
+    if ( m_stretchMode == NoStretch )
+        return *this;
+
+    QskGradient g = *this;
+    g.stretchTo( rect );
+
+    return g;
 }
 
 void QskGradient::reverse()
@@ -622,64 +724,13 @@ QGradient QskGradient::toQGradient() const
         }
     }
 
-    g.setCoordinateMode( QGradient::ObjectMode );
+    g.setCoordinateMode( m_stretchMode == NoStretch 
+        ? QGradient::LogicalMode : QGradient::ObjectMode );
 
     g.setSpread( static_cast< QGradient::Spread >( m_spreadMode ) );
     g.setStops( qskToQGradientStops( m_stops ) );
 
     return g;
-}
-
-QGradient QskGradient::toQGradient( const QRectF& rect ) const
-{
-    auto qGradient = toQGradient();
-
-    if ( qGradient.coordinateMode() != QGradient::ObjectMode )
-        return qGradient;
-
-    const QTransform transform( rect.width(), 0, 0, rect.height(), rect.x(), rect.y() );
-
-    switch( qGradient.type() )
-    {
-        case QGradient::LinearGradient:
-        {
-            auto& g = *static_cast< QLinearGradient* >( &qGradient );
-
-            g.setStart( transform.map( g.start() ) );
-            g.setFinalStop( transform.map( g.finalStop() ) );
-
-            break;
-        }
-        case QGradient::RadialGradient:
-        {
-            auto& g = *static_cast< QRadialGradient* >( &qGradient );
-
-            const auto center = transform.map( g.center() );
-
-            const qreal radius = qMin( g.radius() * rect.width(),
-                g.radius() * rect.height() );
-
-            g.setCenter( center );
-            g.setFocalPoint( center );
-
-            g.setCenterRadius( radius );
-            g.setFocalRadius( radius );
-
-            break;
-        }
-        case QGradient::ConicalGradient:
-        {
-            auto& g = *static_cast< QConicalGradient* >( &qGradient );
-            g.setCenter( transform.map( g.center() ) );
-
-            break;
-        }
-        default:
-            break;
-    }
-
-    qGradient.setCoordinateMode( QGradient::LogicalMode );
-    return qGradient;
 }
 
 #ifndef QT_NO_DEBUG_STREAM
@@ -757,6 +808,21 @@ QDebug operator<<( QDebug debug, const QskGradient& gradient )
 
             debug << " )";
         }
+    }
+
+    switch( static_cast< int >( gradient.stretchMode() ) )
+    {
+        case QskGradient::StretchToSize:
+            debug << " SS";
+            break;
+
+        case QskGradient::StretchToHeight:
+            debug << " SH";
+            break;
+
+        case QskGradient::StretchToWidth:
+            debug << " SW";
+            break;
     }
 
     switch( gradient.spreadMode() )

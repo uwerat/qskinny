@@ -51,67 +51,60 @@ namespace
 
       private:
         QQuickShapeGradient* createShapeGradient(
-            const QRectF& rect, const QskGradient& gradient ) const
+            const QRectF& rect, QskGradient gradient ) const
         {
-
             QQuickShapeGradient* shapeGradient = nullptr;
 
-            const auto qtGradient = gradient.toQGradient( rect );
+            gradient.stretchTo( rect );
 
-            switch( qtGradient.type() )
+            switch( static_cast< int >( gradient.type() ) )
             {
-                case QGradient::LinearGradient:
+                case QskGradient::Linear:
                 {
-                    auto& linearGradient =
-                        *static_cast< const QLinearGradient* >( &qtGradient );
+                    const auto dir = gradient.linearDirection();
 
                     auto g = new QQuickShapeLinearGradient();
 
-                    g->setX1( linearGradient.start().x() );
-                    g->setY1( linearGradient.start().y() );
-                    g->setX2( linearGradient.finalStop().x() );
-                    g->setY2( linearGradient.finalStop().y() );
+                    g->setX1( dir.x1() );
+                    g->setY1( dir.y1() );
+                    g->setX2( dir.x2() );
+                    g->setY2( dir.y2() );
 
                     shapeGradient = g;
                     break;
                 }
 
-                case QGradient::RadialGradient:
+                case QskGradient::Radial:
                 {
-                    auto& radialGradient =
-                        *static_cast< const QRadialGradient* >( &qtGradient );
+                    const auto dir = gradient.radialDirection();
 
                     auto g = new QQuickShapeRadialGradient();
 
-                    g->setCenterX( radialGradient.center().x() );
-                    g->setCenterY( radialGradient.center().y() );
-                    g->setFocalX( radialGradient.center().x() );
-                    g->setFocalY( radialGradient.center().y() );
+                    g->setCenterX( dir.x() );
+                    g->setCenterY( dir.y() );
+                    g->setFocalX( dir.x() );
+                    g->setFocalY( dir.y() );
 
-                    g->setCenterRadius( radialGradient.radius() );
-                    g->setFocalRadius( radialGradient.radius() );
+                    g->setCenterRadius( dir.radius() );
+                    g->setFocalRadius( dir.radius() );
 
                     shapeGradient = g;
                     break;
                 }
 
-                case QGradient::ConicalGradient:
+                case QskGradient::Conic:
                 {
-                    auto& conicalGradient =
-                        *static_cast< const QConicalGradient* >( &qtGradient );
+                    const auto dir = gradient.conicDirection();
 
                     auto g = new QQuickShapeConicalGradient();
 
-                    g->setCenterX( conicalGradient.center().x() );
-                    g->setCenterY( conicalGradient.center().y() );
-                    g->setAngle( conicalGradient.angle() );
+                    g->setCenterX( dir.x() );
+                    g->setCenterY( dir.y() );
+                    g->setAngle( dir.startAngle() ); // dir.spanAngle() is not supported
 
                     shapeGradient = g;
                     break;
                 }
-
-                default:
-                    break;
             }
 
             shapeGradient->setSpread(

@@ -31,6 +31,7 @@ class QSK_EXPORT QskGradient
     Q_PROPERTY( QskGradientStops stops READ stops WRITE setStops )
 
     Q_PROPERTY( SpreadMode spreadMode READ spreadMode WRITE setSpreadMode )
+    Q_PROPERTY( StretchMode stretchMode READ stretchMode WRITE setStretchMode )
 
     Q_PROPERTY( bool valid READ isValid )
     Q_PROPERTY( bool visible READ isVisible )
@@ -56,6 +57,17 @@ class QSK_EXPORT QskGradient
         RepeatSpread
     };
     Q_ENUM( SpreadMode )
+
+    enum StretchMode
+    {
+        NoStretch,
+
+        StretchToHeight,
+        StretchToWidth,
+
+        StretchToSize
+    };
+    Q_ENUM( StretchMode )
 
     QskGradient() noexcept = default;
 
@@ -125,10 +137,17 @@ class QSK_EXPORT QskGradient
     void setSpreadMode( SpreadMode );
     SpreadMode spreadMode() const noexcept;
 
+    void setStretchMode( StretchMode );
+    StretchMode stretchMode() const noexcept;
+
     void reverse();
     QskGradient reversed() const;
 
     QskGradient interpolated( const QskGradient&, qreal value ) const;
+
+    void stretchTo( const QRectF& );
+    QskGradient stretchedTo( const QSizeF& ) const;
+    QskGradient stretchedTo( const QRectF& ) const;
 
     static QVariant interpolate( const QskGradient&,
         const QskGradient&, qreal progress );
@@ -144,7 +163,6 @@ class QSK_EXPORT QskGradient
     int stepCount() const noexcept;
 
     QGradient toQGradient() const;
-    QGradient toQGradient( const QRectF& ) const;
 
   private:
     void updateStatusBits() const;
@@ -161,6 +179,7 @@ class QSK_EXPORT QskGradient
 
     Type m_type = Stops;
     SpreadMode m_spreadMode = PadSpread;
+    StretchMode m_stretchMode = StretchToSize;
 
     mutable bool m_isDirty = false;
     mutable bool m_isValid = false;
@@ -237,6 +256,11 @@ inline QRgb QskGradient::rgbEnd() const
 inline QskGradient::SpreadMode QskGradient::spreadMode() const noexcept
 {
     return m_spreadMode;
+}
+
+inline QskGradient::StretchMode QskGradient::stretchMode() const noexcept
+{
+    return m_stretchMode;
 }
 
 #ifndef QT_NO_DEBUG_STREAM
