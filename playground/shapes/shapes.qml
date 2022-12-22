@@ -60,7 +60,7 @@ Qsk.Window
 
             gradient:
             ({
-                linear: { x1: 0.5, y1: 0, x2: 0.5, y2: 0.5 },
+                linear: { x1: 0.3, y1: 0.7, x2: 0.75, y2: 0.3 },
     
                 stops: [
                     { position: 0.5, color: "MediumVioletRed" },

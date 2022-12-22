@@ -63,7 +63,7 @@ namespace
                     { { 0.5, QskRgb::MediumVioletRed }, { 0.5, QskRgb::Navy } };
 
                 QskGradient gradient( stops );
-                gradient.setLinearDirection( 0.5, 0.0, 0.5, 0.5 );
+                gradient.setLinearDirection( 0.3, 0.7, 0.75, 0.3 );
 
                 shapeItem->setGradient( gradient );
             }
