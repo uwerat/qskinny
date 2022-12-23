@@ -105,7 +105,8 @@ namespace
         return QskRadialDirection(
             value.property( QStringLiteral( "x" ) ).toNumber(),
             value.property( QStringLiteral( "y" ) ).toNumber(),
-            value.property( QStringLiteral( "radius" ) ).toNumber() );
+            value.property( QStringLiteral( "radiusX" ) ).toNumber(),
+            value.property( QStringLiteral( "radiusY" ) ).toNumber() );
     }
 
     QskGradient toGradient( const QJSValue& value )

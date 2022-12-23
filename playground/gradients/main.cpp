@@ -53,7 +53,7 @@ namespace
             gradient.setSpreadMode( QskGradient::PadSpread );
 #endif
 #if 0
-            gradient.setRadialDirection( 0.25, 0.75, 0.25 );
+            gradient.setRadialDirection( 0.25, 0.75, 0.25, 0.0 );
             gradient.setSpreadMode( QskGradient::ReflectSpread );
 #endif
 #if 0

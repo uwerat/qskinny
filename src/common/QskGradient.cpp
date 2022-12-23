@@ -56,24 +56,14 @@ static inline bool qskCanBeInterpolated( const QskGradient& from, const QskGradi
     return from.type() == to.type();
 }
 
-static inline QTransform qskTransformForRect( int stretch, const QRectF& rect )
+static inline QTransform qskTransformForRect( int, const QRectF& rect )
 {
     const qreal x = rect.x();
     const qreal y = rect.y();
     const qreal w = rect.width();
     const qreal h = rect.height();
 
-    switch( stretch )
-    {
-        case QskGradient::StretchToHeight:
-            return QTransform( h, 0, 0, h, x, y );
-
-        case QskGradient::StretchToWidth:
-            return QTransform( w, 0, 0, w, x, y );
-
-        default:
-            return QTransform( w, 0, 0, h, x, y );
-    }
+    return QTransform( w, 0, 0, h, x, y );
 }
     
 QskGradient::QskGradient( const QColor& color )
@@ -129,8 +119,7 @@ QskGradient::QskGradient( const QGradient& qGradient )
 
             m_values[0] = g->focalPoint().x();
             m_values[1] = g->focalPoint().y();
-            m_values[2] = g->focalRadius();
-            m_values[3] = 0.0;
+            m_values[3] = m_values[2] = g->focalRadius();
 
             break;
         }
@@ -258,7 +247,7 @@ void QskGradient::updateStatusBits() const
 
             case Radial:
             {
-                m_isVisible = m_values[2] > 0.0; // radius
+                m_isVisible = m_values[2] > 0.0 || m_values[3] > 0.0; // radius
                 break;
             }
 
@@ -425,9 +414,25 @@ void QskGradient::stretchTo( const QRectF& rect )
         {
             transform.map( m_values[0], m_values[1], &m_values[0], &m_values[1] );
 
-#if 1
-            m_values[2] *= qMin( rect.width(), rect.height() );
-#endif
+            qreal rx = qMax( m_values[2], 0.0 );
+            qreal ry = qMax( m_values[3], 0.0 );
+
+            if ( rx == 0.0 || ry == 0.0 )
+            {
+                /*
+                    It would be more logical if the scaling happens according
+                    the width, when rx is set ad v.v. But fitting the circle is
+                    probably, what most use cases need - and how to specify
+                    this. Maybe by introducing another stretchMode ... TODO
+                 */
+                const qreal r = qMin( rect.width(), rect.height() ) * qMax( rx, ry );
+                m_values[2] = m_values[3] = r;
+            }
+            else
+            {
+                m_values[2] = rx * rect.width();
+                m_values[3] = ry * rect.height();
+            }
 
             break;
         }
@@ -617,14 +622,18 @@ void QskGradient::setRadialDirection( const qreal x, qreal y, qreal radius )
     setRadialDirection( QskRadialDirection( x, y, radius ) );
 }
 
+void QskGradient::setRadialDirection( const qreal x, qreal y,qreal radiusX, qreal radiusY )
+{
+    setRadialDirection( QskRadialDirection( x, y, radiusX, radiusY ) );
+}
 void QskGradient::setRadialDirection( const QskRadialDirection& direction )
 {
     m_type = Radial;
 
     m_values[0] = direction.center().x();
     m_values[1] = direction.center().y();
-    m_values[2] = direction.radius();
-    m_values[3] = 0.0;
+    m_values[2] = direction.radiusX();
+    m_values[3] = direction.radiusY();
 }
 
 QskRadialDirection QskGradient::radialDirection() const
@@ -634,7 +643,7 @@ QskRadialDirection QskGradient::radialDirection() const
     if ( m_type != Radial )
         return QskRadialDirection( 0.5, 0.5, 0.0 );
 
-    return QskRadialDirection( m_values[0], m_values[1], m_values[2] );
+    return QskRadialDirection( m_values[0], m_values[1], m_values[2], m_values[3] );
 }
 
 void QskGradient::setConicDirection( qreal x, qreal y )
@@ -785,7 +794,7 @@ QDebug operator<<( QDebug debug, const QskGradient& gradient )
             const auto dir = gradient.radialDirection();
 
             debug << dir.center().x() << "," << dir.center().y()
-                << "," << dir.radius() << ")";
+                << "," << dir.radiusX() << dir.radiusY() << ")";
 
             break;
         }
@@ -831,19 +840,9 @@ QDebug operator<<( QDebug debug, const QskGradient& gradient )
         }
     }
 
-    switch( static_cast< int >( gradient.stretchMode() ) )
+    if ( gradient.stretchMode() == QskGradient::StretchToSize )
     {
-        case QskGradient::StretchToSize:
-            debug << " SS";
-            break;
-
-        case QskGradient::StretchToHeight:
-            debug << " SH";
-            break;
-
-        case QskGradient::StretchToWidth:
-            debug << " SW";
-            break;
+        debug << " SS";
     }
 
     switch( gradient.spreadMode() )

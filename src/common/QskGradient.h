@@ -61,10 +61,6 @@ class QSK_EXPORT QskGradient
     enum StretchMode
     {
         NoStretch,
-
-        StretchToHeight,
-        StretchToWidth,
-
         StretchToSize
     };
     Q_ENUM( StretchMode )
@@ -98,6 +94,7 @@ class QSK_EXPORT QskGradient
 
     void setRadialDirection( const QskRadialDirection& );
     void setRadialDirection( const qreal x, qreal y, qreal radius );
+    void setRadialDirection( const qreal x, qreal y, qreal radiusX, qreal radiusY );
     QskRadialDirection radialDirection() const;
 
     void setConicDirection( qreal, qreal );
@@ -174,7 +171,7 @@ class QSK_EXPORT QskGradient
 
     /*
         Linear: x1, y1, x2, y2
-        Radial: centerX, centerY, radius, n/a
+        Radial: centerX, centerY, radiusX, radiusY
         Conic: centerX, centerY, startAngle, spanAngle
      */
     qreal m_values[4] = {};

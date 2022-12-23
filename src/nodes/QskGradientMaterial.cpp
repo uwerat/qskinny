@@ -70,7 +70,7 @@ namespace
         virtual QSGMaterialShader* createShader() const = 0;
 #endif
 
-        virtual bool setGradient( const QRectF&, const QskGradient& ) = 0;
+        virtual bool setGradient( const QskGradient& ) = 0;
     };
 
 #ifdef SHADER_GL
@@ -170,7 +170,7 @@ namespace
         {
         }
 
-        bool setGradient( const QRectF& rect, const QskGradient& gradient ) override
+        bool setGradient( const QskGradient& gradient ) override
         {
             bool changed = false;
 
@@ -194,11 +194,8 @@ namespace
 
             const auto dir = gradient.linearDirection();
 
-            const QVector4D vector(
-                rect.left() + dir.x1() * rect.width(),
-                rect.top() + dir.y1() * rect.height(), 
-                ( dir.x2() - dir.x1() ) * rect.width(),
-                ( dir.y2() - dir.y1() ) * rect.height() );
+            const QVector4D vector( dir.x1(), dir.y1(),
+                dir.x2() - dir.x1(), dir.y2() - dir.y1() );
 
             if ( m_gradientVector != vector )
             {
@@ -333,7 +330,7 @@ namespace
             return &type;
         }
 
-        bool setGradient( const QRectF& rect, const QskGradient& gradient ) override
+        bool setGradient( const QskGradient& gradient ) override
         {
             bool changed = false;
 
@@ -351,12 +348,8 @@ namespace
 
             const auto dir = gradient.radialDirection();
 
-            const QVector2D pos(
-                rect.left() + dir.center().x() * rect.width(),
-                rect.top() + dir.center().y() * rect.height() );
-
-            const QVector2D radius( dir.radius() * rect.width(),
-                dir.radius() * rect.height() );
+            const QVector2D pos( dir.x(), dir.y() );
+            const QVector2D radius( dir.radiusX(), dir.radiusY() );
 
             if ( ( pos != m_center ) || ( m_radius != radius ) )
             {
@@ -504,7 +497,7 @@ namespace
             return &type;
         }
 
-        bool setGradient( const QRectF& rect, const QskGradient& gradient ) override
+        bool setGradient( const QskGradient& gradient ) override
         {
             bool changed = false;
 
@@ -522,9 +515,7 @@ namespace
 
             const auto dir = gradient.conicDirection();
 
-            const QVector2D center(
-                rect.left() + dir.center().x() * rect.width(),
-                rect.top() + dir.center().y() * rect.height() );
+            const QVector2D center( dir.x(), dir.y() );
 
             if ( center != m_center )
             {
@@ -715,7 +706,7 @@ bool QskGradientMaterial::updateGradient( const QRectF& rect, const QskGradient&
             case QskGradient::Conic:
             {
                 auto material = static_cast< GradientMaterial* >( this );
-                return material->setGradient( rect, gradient );
+                return material->setGradient( gradient.stretchedTo( rect ) );
             }
 
             default:

@@ -82,7 +82,7 @@ namespace
                 shapeItem->setBorder( QskRgb::Indigo );
 
                 QskGradient gradient( QskRgb::LightYellow, QskRgb::MidnightBlue );
-                gradient.setRadialDirection( QskRadialDirection() );
+                gradient.setRadialDirection( QskRadialDirection( 0.7, 0.3, 0.25, 0.0 ) );
                 gradient.setSpreadMode( QskGradient::PadSpread );
 
                 shapeItem->setGradient( gradient );

@@ -171,7 +171,7 @@ Qsk.Window
 
             gradient:
             ({
-                radial: { x: 0.5, y: 0.5, radius: 0.5 },
+                radial: { x: 0.7, y: 0.3, radiusX: 0.25, radiusY: 0.0 },
 
                 stops: [
                     { position: 0.0, color: "LightYellow" },
@@ -187,7 +187,7 @@ Qsk.Window
 
             gradient:
             ({
-                radial: { x: 0.5, y: 0.5, radius: 0.5 },
+                radial: { x: 0.5, y: 0.5, radiusX: 0.5, radiusY: 0.5 },
                 spreadMode: Qsk.Gradient.PadSpread,
 
                 stops: [
@@ -212,7 +212,7 @@ Qsk.Window
 
             gradient:
             ({
-                radial: { x: 0.5, y: 0.7, radius: 0.25 },
+                radial: { x: 0.5, y: 0.7, radiusX: 0.25, radiusY: 0.25 },
                 spreadMode: Qsk.Gradient.RepeatSpread,
 
                 // LilyMeadow
@@ -231,7 +231,7 @@ Qsk.Window
 
             gradient:
             ({
-                radial: { x: 0.6, y: 0.4, radius: 0.1 },
+                radial: { x: 0.6, y: 0.4, radiusX: 0.1, radiusY: 0.1 },
                 spreadMode: Qsk.Gradient.ReflectSpread,
 
                 stops: [

@@ -142,9 +142,25 @@ void QskRadialDirection::setY( qreal y ) noexcept
     m_y = y;
 }
 
+void QskRadialDirection::setRadiusX( qreal radius ) noexcept
+{
+    m_radiusX = radius;
+}
+
+void QskRadialDirection::setRadiusY( qreal radius ) noexcept
+{
+    m_radiusY = radius;
+}
+
 void QskRadialDirection::setRadius( qreal radius ) noexcept
 {
-    m_radius = radius;
+    m_radiusX = m_radiusY = radius;
+}
+
+void QskRadialDirection::setRadius( qreal radiusX, qreal radiusY ) noexcept
+{
+    m_radiusX = radiusX;
+    m_radiusY = radiusY;
 }
 
 #include "moc_QskGradientDirection.cpp"
