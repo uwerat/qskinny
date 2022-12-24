@@ -552,7 +552,7 @@ void QskBoxRenderer::renderRect( const QRectF& rect,
     {
         fillLineCount = gradient.stepCount() + 1;
 
-        if ( gradient.linearDirection().isTilted() )
+        if ( !gradient.isMonochrome() && gradient.linearDirection().isTilted() )
         {
             // extra lines for the corners
 
