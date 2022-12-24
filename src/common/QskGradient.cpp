@@ -679,9 +679,6 @@ QskConicDirection QskGradient::conicDirection() const
 
 void QskGradient::setDirection( Type type )
 {
-    if ( type == m_type )
-        return;
-
     switch( type )
     {
         case Linear:
