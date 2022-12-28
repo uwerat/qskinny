@@ -18,12 +18,43 @@ Q_CONSTRUCTOR_FUNCTION( qskRegisterGradientDirection )
 
 void QskLinearDirection::setOrientation( Qt::Orientation orientation  ) noexcept
 {
+    m_x1 = m_y1 = 0.0;
     setStart( 0.0, 0.0 );
 
     if ( orientation == Qt::Vertical )
-        setStop( 0.0, 1.0 );
+    {
+        m_x2 = 0.0;
+        m_y2 = 1.0;
+    }
     else
-        setStop( 1.0, 0.0 );
+    {
+        m_x2 = 1.0;
+        m_y2 = 0.0;
+    }
+}
+
+void QskLinearDirection::setVector( const QLineF& vector ) noexcept
+{
+    m_x1 = vector.x1();
+    m_y1 = vector.y1();
+    m_x2 = vector.x2();
+    m_y2 = vector.y2();
+}
+
+void QskLinearDirection::setVector( const QPointF& start, const QPointF& stop ) noexcept
+{
+    m_x1 = start.x();
+    m_y1 = start.y();
+    m_x2 = stop.x();
+    m_y2 = stop.y();
+}
+
+void QskLinearDirection::setVector( qreal x1, qreal y1, qreal x2, qreal y2 ) noexcept
+{
+    m_x1 = x1;
+    m_y1 = y1;
+    m_x2 = x2;
+    m_y2 = y2;
 }
 
 void QskLinearDirection::setStart( const QPointF& pos ) noexcept

@@ -10,6 +10,9 @@
 
 #include <qmetatype.h>
 #include <qpoint.h>
+#include <qline.h>
+
+class QLineF;
 
 class QSK_EXPORT QskLinearDirection
 {
@@ -25,8 +28,15 @@ class QSK_EXPORT QskLinearDirection
 
     constexpr QskLinearDirection( Qt::Orientation ) noexcept;
 
+    constexpr QskLinearDirection( const QLineF& ) noexcept;
     constexpr QskLinearDirection( const QPointF&, const QPointF& ) noexcept;
     constexpr QskLinearDirection( qreal x1, qreal y1, qreal x2, qreal y2 ) noexcept;
+
+    void setVector( const QLineF& ) noexcept;
+    void setVector( const QPointF&, const QPointF& ) noexcept;
+    void setVector( qreal x1, qreal y1, qreal x2, qreal y2 ) noexcept;
+
+    constexpr QLineF vector() const noexcept;
 
     void setStart( const QPointF& ) noexcept;
     void setStart( qreal x, qreal y ) noexcept;
@@ -156,6 +166,11 @@ inline constexpr QskLinearDirection::QskLinearDirection(
 {
 }
 
+inline constexpr QskLinearDirection::QskLinearDirection( const QLineF& vector ) noexcept
+    : QskLinearDirection( vector.x1(), vector.y1(), vector.x2(), vector.y2() )
+{
+}
+
 inline constexpr QskLinearDirection::QskLinearDirection(
         const QPointF& start, const QPointF& stop ) noexcept
     : QskLinearDirection( start.x(), start.y(), stop.x(), stop.y() )
@@ -189,6 +204,11 @@ inline constexpr qreal QskLinearDirection::x2() const noexcept
 inline constexpr qreal QskLinearDirection::y2() const noexcept
 {
     return m_y2;
+}
+
+inline constexpr QLineF QskLinearDirection::vector() const noexcept
+{
+    return QLineF( m_x1, m_y1, m_x2, m_y2 );
 }
 
 inline constexpr QPointF QskLinearDirection::start() const noexcept
