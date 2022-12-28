@@ -45,12 +45,20 @@ namespace
             }
 
             QskGradient gradient;
-#if 1
-            gradient.setLinearDirection( 0.0, 0.0, 1.0, 1.0 );
+#if 0
+            gradient.setLinearDirection( 0.0, 1.0, 1.0, 0.0 );
 #endif
 #if 0
+            gradient.setLinearDirection( 1.0, 1.0, 0.0, 0.0 );
+#endif
+#if 1
             gradient.setLinearDirection( 0.2, 0.2, 0.7, 0.5 );
-            gradient.setSpreadMode( QskGradient::PadSpread );
+#endif
+#if 0
+            gradient.setLinearDirection( -0.2, -0.1, 1.2, 1.3 );
+#endif
+#if 0
+            gradient.setLinearDirection( 0.5, -0.5, 0.5, 1.5 );
 #endif
 #if 0
             gradient.setRadialDirection( 0.25, 0.75, 0.25, 0.0 );
@@ -88,7 +96,7 @@ int main( int argc, char** argv )
 
     QskWindow window;
     window.addItem( new MainView() );
-    window.resize( 600, 600 );
+    window.resize( 800, 600 );
     window.show();
 
     return app.exec();

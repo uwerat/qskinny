@@ -106,6 +106,8 @@ HEADERS += \
     nodes/QskBoxFillNode.h \
     nodes/QskBoxRectangleNode.h \
     nodes/QskBoxRenderer.h \
+    nodes/QskRectRenderer.h \
+    nodes/QskRoundedRectRenderer.h \
     nodes/QskBoxRendererColorMap.h \
     nodes/QskBoxShadowNode.h \
     nodes/QskColorRamp.h \
@@ -133,8 +135,8 @@ SOURCES += \
     nodes/QskBoxFillNode.cpp \
     nodes/QskBoxRectangleNode.cpp \
     nodes/QskBoxRenderer.cpp \
-    nodes/QskBoxRendererRect.cpp \
-    nodes/QskBoxRendererEllipse.cpp \
+    nodes/QskRectRenderer.cpp \
+    nodes/QskRoundedRectRenderer.cpp \
     nodes/QskBoxRendererDEllipse.cpp \
     nodes/QskBoxShadowNode.cpp \
     nodes/QskColorRamp.cpp \

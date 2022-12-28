@@ -3,7 +3,7 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#include "QskBoxRenderer.h"
+#include "QskRoundedRectRenderer.h"
 #include "QskBoxRendererColorMap.h"
 #include "QskGradient.h"
 #include "QskVertex.h"
@@ -44,7 +44,7 @@ namespace
     class ValueCurve
     {
       public:
-        ValueCurve( const QskBoxRenderer::Metrics& m )
+        ValueCurve( const QskRoundedRectRenderer::Metrics& m )
         {
             /*
                 The slopes of the value line and those for the fill lines.
@@ -127,7 +127,7 @@ namespace
         {
         }
 
-        void setup( const QskBoxRenderer::Metrics& metrics,
+        void setup( const QskRoundedRectRenderer::Metrics& metrics,
             bool isLeading, bool clockwise,
             qreal cos, qreal cosStep, qreal sin, qreal sinStep,
             qreal x1, qreal y1, qreal v1, qreal x2, qreal y2, qreal v2 )
@@ -167,7 +167,9 @@ namespace
 
         inline const ContourLine& contourLine() const { return m_contourLine; }
 
-        inline void advance( const QskBoxRenderer::Metrics& metrics, const ValueCurve& curve )
+        inline void advance(
+            const QskRoundedRectRenderer::Metrics& metrics,
+            const ValueCurve& curve )
         {
             if ( m_isDone )
                 return;
@@ -318,7 +320,7 @@ namespace
         static constexpr qreal m_eps = 1e-4;
 
         inline void setCorner(
-            Qt::Corner corner, const QskBoxRenderer::Metrics& metrics )
+            Qt::Corner corner, const QskRoundedRectRenderer::Metrics& metrics )
         {
             m_corner = corner;
             const auto& c = metrics.corner[ corner ];
@@ -412,7 +414,7 @@ namespace
     class OutlineIterator
     {
       public:
-        OutlineIterator( const QskBoxRenderer::Metrics& metrics,
+        OutlineIterator( const QskRoundedRectRenderer::Metrics& metrics,
                 const ValueCurve& curve, bool clockwise )
             : m_metrics( metrics )
             , m_curve( curve )
@@ -549,7 +551,7 @@ namespace
             line->setLine( x1, y1, x2, y2, color );
         }
 
-        const QskBoxRenderer::Metrics& m_metrics;
+        const QskRoundedRectRenderer::Metrics& m_metrics;
         const ValueCurve& m_curve;
 
         /*
@@ -564,23 +566,23 @@ namespace
     {
       public:
         DRectellipseIterator(
-                const QskBoxRenderer::Metrics& metrics, const ValueCurve& curve )
+                const QskRoundedRectRenderer::Metrics& metrics,
+                const ValueCurve& curve )
             : m_left( metrics, curve, false )
             , m_right( metrics, curve, true )
         {
             m_next = ( m_left.value() < m_right.value() ) ? &m_left : &m_right;
         }
 
-        template< class ColorIterator >
-        inline void setGradientLine( const ColorIterator& it, ColoredLine* line )
+        inline bool setGradientLine( qreal value, Color color, ColoredLine* line )
         {
-            m_next->setLineAt( it.value(), it.color(), line );
+            m_next->setLineAt( value, color, line );
+            return true;
         }
 
-        template< class ColorIterator >
-        inline void setContourLine( const ColorIterator& it, ColoredLine* line )
+        inline void setContourLine( Color color, ColoredLine* line )
         {
-            m_next->setLine( it.colorAt( m_next->value() ), line );
+            m_next->setLine( color, line );
         }
 
         inline qreal value() const
@@ -602,13 +604,13 @@ namespace
     };
 }
 
-void QskBoxRenderer::renderDiagonalFill( const QskBoxRenderer::Metrics& metrics,
+void QskRoundedRectRenderer::renderDiagonalFill( const QskRoundedRectRenderer::Metrics& metrics,
     const QskGradient& gradient, int fillLineCount, QskVertex::ColoredLine* lines )
 {
     const ValueCurve curve( metrics );
 
     DRectellipseIterator it( metrics, curve );
-    auto line = QskVertex::fillOrdered( it, 0.0, 1.0, gradient, lines );
+    auto line = QskVertex::fillOrdered( it, gradient, lines );
 
     /*
         There are a couple of reasons, why less points have been rendered

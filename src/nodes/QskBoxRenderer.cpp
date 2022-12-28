@@ -4,6 +4,8 @@
  *****************************************************************************/
 
 #include "QskBoxRenderer.h"
+#include "QskRectRenderer.h"
+#include "QskRoundedRectRenderer.h"
 #include "QskBoxShapeMetrics.h"
 
 #include "QskGradient.h"
@@ -14,9 +16,9 @@ void QskBoxRenderer::renderBorder(
     const QskBoxBorderMetrics& border, QSGGeometry& geometry )
 {
     if ( shape.isRectangle() )
-        renderRectBorder( rect, border, geometry );
+        QskRectRenderer::renderBorder( rect, border, geometry );
     else
-        renderRectellipseBorder( rect, shape, border, geometry );
+        QskRoundedRectRenderer::renderRectellipseBorder( rect, shape, border, geometry );
 }
 
 void QskBoxRenderer::renderFill(
@@ -24,9 +26,9 @@ void QskBoxRenderer::renderFill(
     const QskBoxBorderMetrics& border, QSGGeometry& geometry )
 {
     if ( shape.isRectangle() )
-        renderRectFill( rect, border, geometry );
+        QskRectRenderer::renderFill( rect, border, geometry );
     else
-        renderRectellipseFill( rect, shape, border, geometry );
+        QskRoundedRectRenderer::renderRectellipseFill( rect, shape, border, geometry );
 }
 
 void QskBoxRenderer::renderBox( const QRectF& rect,
@@ -35,39 +37,68 @@ void QskBoxRenderer::renderBox( const QRectF& rect,
     QSGGeometry& geometry )
 {
     if ( shape.isRectangle() )
-        renderRect( rect, border, borderColors, gradient, geometry );
+    {
+        QskRectRenderer::renderRect(
+            rect, border, borderColors, gradient, geometry );
+    }
     else
-        renderRectellipse( rect, shape, border, borderColors, gradient, geometry );
+    {
+        QskRoundedRectRenderer::renderRectellipse(
+            rect, shape, border, borderColors, gradient, geometry );
+    }
 }
 
 bool QskBoxRenderer::isGradientSupported(
-    const QskBoxShapeMetrics&, const QskGradient& gradient )
+    const QskBoxShapeMetrics& shape, const QskGradient& gradient )
 {
-    if ( !gradient.isVisible() || gradient.isMonochrome()
-        || ( gradient.type() == QskGradient::Stops ) )
-    {
+    if ( !gradient.isVisible() || gradient.isMonochrome() )
         return true;
+
+    if ( gradient.spreadMode() != QskGradient::PadSpread )
+    {
+        // Only true if the situation requires spreading TODO ...
+        return false;
     }
 
-    if ( gradient.type() == QskGradient::Linear )
+    switch( gradient.type() )
     {
-        const auto dir = gradient.linearDirection();
-
-        if ( dir.isTilted() )
+        case QskGradient::Stops:
         {
-            if ( dir.x1() == 0.0 && dir.y1() == 0.0
-                && dir.x2() == 1.0 && dir.y2() == 1.0 )
+            // will be rendered as vertical linear gradient
+            return true;
+        }
+        case QskGradient::Linear:
+        {
+            if ( shape.isRectangle() )
             {
+                // rectangles are fully supported
                 return true;
             }
-        }
-        else
-        {
-            if ( dir.x1() == 0.0 && dir.x2() == 1.0 )
-                return true;
+            else
+            {
+                /*
+                    For rounded rectangles we currently support
+                    only the most common use cases. TODO ...
+                 */
 
-            if ( dir.y1() == 0.0 && dir.y2() == 1.0 )
-                return true;
+                const auto dir = gradient.linearDirection();
+                if ( dir.isTilted() )
+                {
+                    return ( dir.x1() == 0.0 && dir.x2() == 0.0 )
+                        && ( dir.y1() == 1.0 && dir.y2() == 1.0 );
+                }
+                else
+                {
+                    return ( dir.x1() == 0.0 && dir.x2() == 1.0 )
+                        || ( dir.y1() == 0.0 && dir.y2() == 1.0 );
+                }
+            }
+        }
+
+        default:
+        {
+            // Radial/Conical gradients have to be done with QskGradientMaterial
+            return false;
         }
     }
 

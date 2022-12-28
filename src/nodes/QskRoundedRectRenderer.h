@@ -3,8 +3,8 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef QSK_BOX_RENDERER_H
-#define QSK_BOX_RENDERER_H
+#ifndef QSK_ROUNDED_RECT_RENDERER_H
+#define QSK_ROUNDED_RECT_RENDERER_H
 
 #include "QskVertex.h"
 
@@ -16,21 +16,8 @@ class QskGradient;
 class QSGGeometry;
 class QRectF;
 
-class QSK_EXPORT QskBoxRenderer
+namespace QskRoundedRectRenderer
 {
-  public:
-    static void renderBorder( const QRectF&,
-        const QskBoxShapeMetrics&, const QskBoxBorderMetrics&, QSGGeometry& );
-
-    static void renderFill( const QRectF&,
-        const QskBoxShapeMetrics&, const QskBoxBorderMetrics&, QSGGeometry& );
-
-    static void renderBox( const QRectF&,
-        const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
-        const QskBoxBorderColors&, const QskGradient&, QSGGeometry& );
-
-    static bool isGradientSupported( const QskBoxShapeMetrics&, const QskGradient& );
-
     class Metrics
     {
       public:
@@ -58,19 +45,18 @@ class QSK_EXPORT QskBoxRenderer
         bool isTotallyCropped;
     };
 
-  private:
-    static void renderRectellipseFill( const QRectF&,
+    void renderRectellipseFill( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&, QSGGeometry& );
 
-    static void renderRectellipseBorder( const QRectF&,
+    void renderRectellipseBorder( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&, QSGGeometry& );
 
-    static void renderRectellipse( const QRectF&,
+    void renderRectellipse( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
         const QskBoxBorderColors&, const QskGradient&, QSGGeometry& );
 
-    static void renderDiagonalFill( const Metrics&, const QskGradient&,
+    void renderDiagonalFill( const Metrics&, const QskGradient&,
         int lineCount, QskVertex::ColoredLine* );
-};
+}
 
 #endif
