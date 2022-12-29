@@ -88,6 +88,42 @@ namespace QskVertex
         }
     };
 
+    class SimpleColorIterator : public ColorIterator
+    {
+      public:
+        inline SimpleColorIterator( const QColor& color )
+            : m_color1( color )
+            , m_color2( color )
+            , m_isMonochrome( true )
+        {
+        }
+
+        inline SimpleColorIterator( const QColor& color1, const QColor& color2 )
+            : m_color1( color1 )
+            , m_color2( color2 )
+            , m_isMonochrome( false )
+        {
+        }
+
+        inline Color colorAt( qreal value ) const
+        {
+            /*
+                When having only 1 color or 2 colors at 0.0/1.0 only we do not
+                need gradient lines. So all what this iterator has to provide is
+                an implementation of colorAt to colourize the contour lines.
+             */
+
+            if ( m_isMonochrome )
+                return m_color1;
+
+            return m_color1.interpolatedTo( m_color2, value );
+        }
+
+      private:
+        const Color m_color1, m_color2;
+        const bool m_isMonochrome;
+    };
+
     class GradientColorIterator : public ColorIterator
     {
       public:
@@ -197,7 +233,7 @@ namespace QskVertex
     {
         if ( gradient.stepCount() == 1 )
         {
-            GradientColorIterator colorIt( gradient.stops() );
+            SimpleColorIterator colorIt( gradient.rgbStart(), gradient.rgbEnd() );
             line = fillOrdered( contourIt, colorIt, line );
         }
         else
