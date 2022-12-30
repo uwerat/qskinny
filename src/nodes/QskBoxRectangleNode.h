@@ -28,6 +28,9 @@ class QSK_EXPORT QskBoxRectangleNode : public QSGGeometryNode
 
     void updateNode( const QRectF& rect, const QskGradient& );
 
+    void updateNode( const QRectF& rect,
+        const QskBoxShapeMetrics&, const QskGradient& );
+
   private:
     void setMonochrome( bool on );
 

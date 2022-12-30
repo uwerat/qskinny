@@ -93,6 +93,13 @@ void QskBoxRectangleNode::updateNode(
 }
 
 void QskBoxRectangleNode::updateNode( const QRectF& rect,
+    const QskBoxShapeMetrics& shape, const QskGradient& fillGradient )
+{
+    updateNode( rect, shape, QskBoxBorderMetrics(),
+        QskBoxBorderColors(), fillGradient );
+}
+
+void QskBoxRectangleNode::updateNode( const QRectF& rect,
     const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& borderMetrics,
     const QskBoxBorderColors& borderColors, const QskGradient& gradient )
 {
