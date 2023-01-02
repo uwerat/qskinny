@@ -1,8 +1,12 @@
 #include "MainItem.h"
 
 #include "DashboardPage.h"
+#include "DevicesPage.h"
 #include "MenuBar.h"
+#include "MembersPage.h"
 #include "RoomsPage.h"
+#include "StatisticsPage.h"
+#include "StoragePage.h"
 
 #include <QskGesture.h>
 #include <QskEvent.h>
@@ -108,9 +112,17 @@ MainItem::MainItem( QQuickItem* parent )
 
     auto* const dashboardPage = new DashboardPage( m_cube );
     auto* const roomsPage = new RoomsPage( m_cube );
+    auto* const devicesPage = new DevicesPage( m_cube );
+    auto* const statisticsPage = new StatisticsPage( m_cube );
+    auto* const storagePage = new StoragePage( m_cube );
+    auto* const membersPage = new MembersPage( m_cube );
 
     m_cube->addItem( dashboardPage );
     m_cube->addItem( roomsPage );
+    m_cube->addItem( devicesPage );
+    m_cube->addItem( statisticsPage );
+    m_cube->addItem( storagePage );
+    m_cube->addItem( membersPage );
 
     m_cube->setCurrentItem( dashboardPage );
 }
