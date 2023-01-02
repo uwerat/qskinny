@@ -65,7 +65,6 @@ void MenuBar::setActivePage( const int index )
 {
     m_entries.at( m_currentIndex )->setChecked( false );
     m_currentIndex = index;
-    m_entries.at( m_currentIndex )->setChecked( true );
 }
 
 #include "moc_MenuBar.cpp"

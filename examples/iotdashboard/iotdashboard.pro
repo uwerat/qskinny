@@ -6,6 +6,7 @@ SOURCES += \
     CircularProgressBar.cpp \
     CircularProgressBarSkinlet.cpp \
     DashboardPage.cpp \
+    DevicesPage.cpp \
     Diagram.cpp \
     DiagramSkinlet.cpp \
     EnergyMeter.cpp \
@@ -14,16 +15,19 @@ SOURCES += \
     LightDisplaySkinlet.cpp \
     LightDisplay.cpp \
     MainItem.cpp \
+    MainWindow.cpp \
     MenuBar.cpp \
+    MembersPage.cpp \
     MyDevices.cpp \
     RoomsPage.cpp \
     RoundedIcon.cpp \
     Skin.cpp \
+    StatisticsPage.cpp \
+    StoragePage.cpp \
     TopBar.cpp \
     RoundButton.cpp \
     UsageBox.cpp \
     UsageDiagram.cpp \
-    MainWindow.cpp \
     main.cpp \
 
 SOURCES += \
@@ -44,13 +48,17 @@ HEADERS += \
     LightDisplaySkinlet.h \
     LightDisplay.h \
     DashboardPage.h \
+    DevicesPage.h \
     MainItem.h \
     MainWindow.h \
+    MembersPage.h \
     MenuBar.h \
     MyDevices.h \
     RoomsPage.h \
     RoundedIcon.h \
     Skin.h \
+    StatisticsPage.h \
+    StoragePage.h \
     TopBar.h \
     RoundButton.h \
     UsageBox.h \
