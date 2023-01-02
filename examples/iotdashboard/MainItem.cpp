@@ -16,39 +16,73 @@
 #include <QQuickFramebufferObject>
 #include <QGuiApplication>
 #include <QQuickWindow>
+#include <QtMath>
 
-namespace
+#include <QTimer>
+
+Cube::Position Cube::s_neighbors[ Cube::NumPositions ][ 4 ] =
 {
-    Qsk::Direction direction( const int from, const int to )
-    {
-        if( from < Cube::Top ) // side
-        {
-            if( to < Cube::Top ) // side to side
-            {
-                return ( to > from ) ? Qsk::LeftToRight : Qsk::RightToLeft; // ### 2x case
-            }
-            else
-            {
-                return ( to == Cube::Top ) ? Qsk::BottomToTop : Qsk::TopToBottom; // ### 2x case
-            }
-        }
-        else if( from == Cube::Top )
-        {
-            return Qsk::TopToBottom; // ### 2x case
-        }
-        else
-        {
-            return Qsk::BottomToTop; // ### 2x case
-        }
-    }
-}
+    // Left:
+    { Cube::Back, // Right
+      Cube::Front, // Left
+      Cube::Top, // Bottom
+      Cube::Bottom }, // Top
+
+    // Right:
+    { Cube::Front,
+      Cube::Back,
+      Cube::Top,
+      Cube::Bottom },
+
+    // Top:
+    { Cube::Left,
+      Cube::Right,
+      Cube::Back,
+      Cube::Front },
+
+    // Bottom:
+    { Cube::Left,
+      Cube::Right,
+      Cube::Front,
+      Cube::Back },
+
+    // Front:
+    { Cube::Left,
+      Cube::Right,
+      Cube::Top,
+      Cube::Bottom },
+
+    // Back:
+    { Cube::Left,
+      Cube::Right,
+      Cube::Top,
+      Cube::Bottom },
+};
 
 Cube::Cube( QQuickItem* parent )
     : QskStackBox( false, parent )
+    , m_currentPosition( Front )
 {
+    // The code below covers the case where we need 2 cube movements to get
+    // to the desired position.
+    // We use transientIndexChanged here to be sure to start a new transition
+    // at the end; indexChanged doesn't work here.
+
+    connect( this, &QskStackBox::transientIndexChanged, this, [ this ]( qreal position )
+    {
+        const bool animationIsFinished = ( position == qFloor( position ) );
+
+        if( animationIsFinished && position != m_currentPosition )
+        {
+            QTimer::singleShot( 0, this, [this]()
+            {
+                switchToPosition( m_currentPosition );
+            } );
+        }
+    } );
 }
 
-void Cube::startAnimation( Qsk::Direction direction )
+void Cube::startAnimation( Qsk::Direction direction, int position )
 {
     using Animator = QskStackBoxAnimator4;
 
@@ -70,25 +104,45 @@ void Cube::startAnimation( Qsk::Direction direction )
     const bool inverted = ( direction == Qsk::LeftToRight || direction == Qsk::TopToBottom );
     animator->setInverted( inverted );
 
-    int newIndex = 0;
+    setCurrentIndex( position );
+}
 
-    switch( direction )
+void Cube::switchPosition( const Qsk::Direction direction )
+{
+    const auto position = s_neighbors[ m_currentPosition ][ direction ];
+    switchToPosition( position );
+}
+
+void Cube::switchToPosition( const Position position )
+{
+    if( currentIndex() == position )
+        return;
+
+    m_currentPosition = static_cast< Position >( position );
+
+    const auto from = static_cast< Cube::Position >( currentIndex() );
+    const auto d = direction( from, m_currentPosition );
+
+    startAnimation( d, position );
+    Q_EMIT cubeIndexChanged( position );
+}
+
+Qsk::Direction Cube::direction( const Position from, const Position to )
+{
+    // if direct neighbor: use that direction
+    // otherwise: we need 2 swipes, direction doesn't matter, so choose right to left
+
+    const auto neighbors = s_neighbors[ from ];
+
+    for( int i = 0; i < 4; ++i )
     {
-        case Qsk::LeftToRight:
-        case Qsk::TopToBottom:
-            newIndex = currentIndex() + 1;
-            break;
-        case Qsk::RightToLeft:
-        case Qsk::BottomToTop:
-            newIndex = currentIndex() - 1;
-            break;
+        if( neighbors[ i ] == to )
+        {
+            return static_cast< Qsk::Direction >( i );
+        }
     }
 
-    newIndex %= itemCount();
-    if( newIndex < 0 )
-        newIndex += itemCount();
-
-    setCurrentIndex( newIndex );
+    return Qsk::RightToLeft;
 }
 
 MainItem::MainItem( QQuickItem* parent )
@@ -96,7 +150,6 @@ MainItem::MainItem( QQuickItem* parent )
     , m_mainLayout( new QskLinearBox( Qt::Horizontal, this ) )
     , m_menuBar( new MenuBar( m_mainLayout ) )
     , m_cube( new Cube( m_mainLayout ) )
-    , m_currentIndex( 0 )
 {
     setAutoLayoutChildren( true );
     setAcceptedMouseButtons( Qt::LeftButton );
@@ -108,7 +161,11 @@ MainItem::MainItem( QQuickItem* parent )
 
     m_mainLayout->setSpacing( 0 );
 
-    connect( m_menuBar, &MenuBar::pageChangeRequested, this, &MainItem::switchToPage );
+    connect( m_menuBar, &MenuBar::pageChangeRequested, this, [this]( int index )
+    {
+        const auto position = static_cast< Cube::Position >( index );
+        m_cube->switchToPosition( position );
+    } );
 
     auto* const dashboardPage = new DashboardPage( m_cube );
     auto* const roomsPage = new RoomsPage( m_cube );
@@ -117,13 +174,14 @@ MainItem::MainItem( QQuickItem* parent )
     auto* const storagePage = new StoragePage( m_cube );
     auto* const membersPage = new MembersPage( m_cube );
 
-    m_cube->addItem( dashboardPage );
-    m_cube->addItem( roomsPage );
-    m_cube->addItem( devicesPage );
-    m_cube->addItem( statisticsPage );
-    m_cube->addItem( storagePage );
-    m_cube->addItem( membersPage );
+    m_cube->insertItem( Cube::Left, statisticsPage );
+    m_cube->insertItem( Cube::Right, roomsPage );
+    m_cube->insertItem( Cube::Top, storagePage );
+    m_cube->insertItem( Cube::Bottom, membersPage );
+    m_cube->insertItem( Cube::Front, dashboardPage );
+    m_cube->insertItem( Cube::Back, devicesPage );
 
+    // the current item needs to be the one at the Front:
     m_cube->setCurrentItem( dashboardPage );
 }
 
@@ -132,7 +190,7 @@ void MainItem::gestureEvent( QskGestureEvent* event )
     if( event->gesture()->state() == QskGesture::Finished
             && event->gesture()->type() == QskGesture::Pan )
     {
-        auto* panGesture = static_cast< const QskPanGesture* >( event->gesture().get() );
+        const auto* panGesture = static_cast< const QskPanGesture* >( event->gesture().get() );
 
         const auto delta = panGesture->origin() - panGesture->position();
 
@@ -147,7 +205,7 @@ void MainItem::gestureEvent( QskGestureEvent* event )
             direction = ( delta.y() < 0 ) ? Qsk::TopToBottom : Qsk::BottomToTop;
         }
 
-        m_cube->startAnimation( direction );
+        m_cube->switchPosition( direction );
     }
 }
 
@@ -171,17 +229,6 @@ bool MainItem::gestureFilter( QQuickItem* item, QEvent* event )
     }
 
     return recognizer.processEvent( item, event, false );
-}
-
-void MainItem::switchToPage( const int index )
-{
-    if( m_currentIndex == index )
-        return;
-
-    const auto d = direction( m_currentIndex, index );
-    m_cube->startAnimation( d );
-    m_menuBar->setActivePage( index );
-    m_currentIndex = index;
 }
 
 #include "moc_MainItem.cpp"
