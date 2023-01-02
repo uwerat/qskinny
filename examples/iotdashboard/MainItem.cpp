@@ -89,9 +89,9 @@ void Cube::startAnimation( Qsk::Direction direction )
 
 MainItem::MainItem( QQuickItem* parent )
     : QskControl( parent )
-    , m_cube( new Cube( this ) )
-    , m_mainLayout( new QskLinearBox( Qt::Horizontal, m_cube ) )
-    , m_otherLayout( new QskLinearBox( Qt::Horizontal, m_cube ) )
+    , m_mainLayout( new QskLinearBox( Qt::Horizontal, this ) )
+    , m_menuBar( new MenuBar( m_mainLayout ) )
+    , m_cube( new Cube( m_mainLayout ) )
     , m_currentIndex( 0 )
 {
     setAutoLayoutChildren( true );
@@ -104,20 +104,15 @@ MainItem::MainItem( QQuickItem* parent )
 
     m_mainLayout->setSpacing( 0 );
 
-    m_otherLayout->setSpacing( 0 );
+    connect( m_menuBar, &MenuBar::pageChangeRequested, this, &MainItem::switchToPage );
 
-    m_mainMenuBar = new MenuBar( m_mainLayout );
-    connect( m_mainMenuBar, &MenuBar::pageChangeRequested, this, &MainItem::switchToPage );
-    (void) new DashboardPage( m_mainLayout );
+    auto* const dashboardPage = new DashboardPage( m_cube );
+    auto* const roomsPage = new RoomsPage( m_cube );
 
-    m_otherMenuBar = new MenuBar( m_otherLayout );
-    connect( m_otherMenuBar, &MenuBar::pageChangeRequested, this, &MainItem::switchToPage );
-    (void) new RoomsPage( m_otherLayout );
+    m_cube->addItem( dashboardPage );
+    m_cube->addItem( roomsPage );
 
-    m_cube->addItem( m_mainLayout );
-    m_cube->addItem( m_otherLayout );
-
-    m_cube->setCurrentItem( m_mainLayout );
+    m_cube->setCurrentItem( dashboardPage );
 }
 
 void MainItem::gestureEvent( QskGestureEvent* event )
@@ -173,8 +168,7 @@ void MainItem::switchToPage( const int index )
 
     const auto d = direction( m_currentIndex, index );
     m_cube->startAnimation( d );
-    m_mainMenuBar->setActivePage( index );
-    m_otherMenuBar->setActivePage( index );
+    m_menuBar->setActivePage( index );
     m_currentIndex = index;
 }
 
