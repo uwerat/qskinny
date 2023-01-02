@@ -42,11 +42,9 @@ class MainItem : public QskControl
     private:
         void switchToPage( const int index );
 
-        MenuBar* m_mainMenuBar;
-        MenuBar* m_otherMenuBar;
-        Cube* m_cube;
         QskLinearBox* m_mainLayout;
-        QskLinearBox* m_otherLayout;
+        MenuBar* m_menuBar;
+        Cube* m_cube;
         QskPanGestureRecognizer m_panRecognizer;
         int m_currentIndex;
 };
