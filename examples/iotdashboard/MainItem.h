@@ -41,7 +41,7 @@ class Cube : public QskStackBox
         Qsk::Direction direction( const Position from, const Position to ) const;
         void doSwitch( Qsk::Direction direction, Position position );
 
-        Position m_currentPosition;
+        Position m_destination;
         Position m_previousPosition;
 
         static Position s_neighbors[ NumPositions ][ 4 ];
