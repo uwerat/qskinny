@@ -50,7 +50,6 @@ class MenuBar final : public QskLinearBox
     void setActivePage( const int index );
 
   private:
-    QList< QString > m_entryStrings;
     QList< MenuButton* > m_entries;
     uint m_currentIndex;
 };

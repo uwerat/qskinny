@@ -23,45 +23,46 @@
 Cube::Position Cube::s_neighbors[ Cube::NumPositions ][ 4 ] =
 {
     // Left:
-    { Cube::Back, // Right
-      Cube::Front, // Left
-      Cube::Top, // Bottom
-      Cube::Bottom }, // Top
+    { Cube::BackPos, // Left
+      Cube::FrontPos, // Right
+      Cube::TopPos, // Top
+      Cube::BottomPos }, // Bottom
 
     // Right:
-    { Cube::Front,
-      Cube::Back,
-      Cube::Top,
-      Cube::Bottom },
+    { Cube::FrontPos,
+      Cube::BackPos,
+      Cube::TopPos,
+      Cube::BottomPos },
 
     // Top:
-    { Cube::Left,
-      Cube::Right,
-      Cube::Back,
-      Cube::Front },
+    { Cube::LeftPos,
+      Cube::RightPos,
+      Cube::BackPos,
+      Cube::FrontPos },
 
     // Bottom:
-    { Cube::Left,
-      Cube::Right,
-      Cube::Front,
-      Cube::Back },
+    { Cube::LeftPos,
+      Cube::RightPos,
+      Cube::FrontPos,
+      Cube::BackPos },
 
     // Front:
-    { Cube::Left,
-      Cube::Right,
-      Cube::Top,
-      Cube::Bottom },
+    { Cube::LeftPos,
+      Cube::RightPos,
+      Cube::TopPos,
+      Cube::BottomPos },
 
     // Back:
-    { Cube::Left,
-      Cube::Right,
-      Cube::Top,
-      Cube::Bottom },
+    { Cube::RightPos,
+      Cube::LeftPos,
+      Cube::TopPos,
+      Cube::BottomPos },
 };
 
 Cube::Cube( QQuickItem* parent )
     : QskStackBox( false, parent )
-    , m_currentPosition( Front )
+    , m_currentPosition( FrontPos )
+    , m_previousPosition( FrontPos )
 {
     // The code below covers the case where we need 2 cube movements to get
     // to the desired position.
@@ -82,8 +83,11 @@ Cube::Cube( QQuickItem* parent )
     } );
 }
 
-void Cube::startAnimation( Qsk::Direction direction, int position )
+void Cube::doSwitch( Qsk::Direction direction, Position position )
 {
+    m_previousPosition = m_currentPosition;
+    m_currentPosition = position;
+
     using Animator = QskStackBoxAnimator4;
 
     auto animator = qobject_cast< Animator* >( this->animator() );
@@ -105,12 +109,33 @@ void Cube::startAnimation( Qsk::Direction direction, int position )
     animator->setInverted( inverted );
 
     setCurrentIndex( position );
+    Q_EMIT cubeIndexChanged( position ); // ### do we need this?
 }
 
 void Cube::switchPosition( const Qsk::Direction direction )
 {
-    const auto position = s_neighbors[ m_currentPosition ][ direction ];
-    switchToPosition( position );
+    // ### needs to go to the other function:
+
+    // keep track of from where we went to top and bottom,
+    // so that going up and down will result in going back
+    // to the same position:
+    // (We don't want to model the complete cube logic with
+    // keeping track of the edges here, because that doesn't
+    // make sense wrt. being upside down etc.)
+
+    Position position;
+
+    if( ( m_currentPosition == TopPos && direction == Qsk::BottomToTop )
+            || ( m_currentPosition == BottomPos && direction == Qsk::TopToBottom ) )
+    {
+        position = m_previousPosition;
+    }
+    else
+    {
+        position = neighbor( m_currentPosition, direction );
+    }
+
+    doSwitch( direction, position );
 }
 
 void Cube::switchToPosition( const Position position )
@@ -118,16 +143,19 @@ void Cube::switchToPosition( const Position position )
     if( currentIndex() == position )
         return;
 
-    m_currentPosition = static_cast< Position >( position );
+    const auto from = static_cast< Position >( currentIndex() );
+    const auto direction = this->direction( from, m_currentPosition );
 
-    const auto from = static_cast< Cube::Position >( currentIndex() );
-    const auto d = direction( from, m_currentPosition );
-
-    startAnimation( d, position );
-    Q_EMIT cubeIndexChanged( position );
+    doSwitch( direction, position );
 }
 
-Qsk::Direction Cube::direction( const Position from, const Position to )
+Cube::Position Cube::neighbor( const Position position, const Qsk::Direction direction ) const
+{
+    const auto n = s_neighbors[ position ][ direction ];
+    return n;
+}
+
+Qsk::Direction Cube::direction( const Position from, const Position to ) const
 {
     // if direct neighbor: use that direction
     // otherwise: we need 2 swipes, direction doesn't matter, so choose right to left
@@ -174,12 +202,12 @@ MainItem::MainItem( QQuickItem* parent )
     auto* const storagePage = new StoragePage( m_cube );
     auto* const membersPage = new MembersPage( m_cube );
 
-    m_cube->insertItem( Cube::Left, statisticsPage );
-    m_cube->insertItem( Cube::Right, roomsPage );
-    m_cube->insertItem( Cube::Top, storagePage );
-    m_cube->insertItem( Cube::Bottom, membersPage );
-    m_cube->insertItem( Cube::Front, dashboardPage );
-    m_cube->insertItem( Cube::Back, devicesPage );
+    m_cube->insertItem( Cube::LeftPos, statisticsPage );
+    m_cube->insertItem( Cube::RightPos, roomsPage );
+    m_cube->insertItem( Cube::TopPos, storagePage );
+    m_cube->insertItem( Cube::BottomPos, membersPage );
+    m_cube->insertItem( Cube::FrontPos, dashboardPage );
+    m_cube->insertItem( Cube::BackPos, devicesPage );
 
     // the current item needs to be the one at the Front:
     m_cube->setCurrentItem( dashboardPage );
