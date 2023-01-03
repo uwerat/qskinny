@@ -63,6 +63,7 @@ Cube::Cube( QQuickItem* parent )
     : QskStackBox( false, parent )
     , m_destination( FrontPos )
     , m_previousPosition( FrontPos )
+    , m_isIntermediateHop( false )
 {
     // The code below covers the case where we need 2 cube movements to get
     // to the desired position.
@@ -73,15 +74,11 @@ Cube::Cube( QQuickItem* parent )
     {
         const bool animationIsFinished = ( position == qFloor( position ) );
 
-        if( animationIsFinished)
-        {
-            qDebug() << "finished." << position << m_destination << ( position == m_destination );
-        }
-
         if( animationIsFinished && position != m_destination )
         {
             QTimer::singleShot( 0, this, [this]()
             {
+                m_isIntermediateHop = true;
                 switchToPosition( m_destination );
             } );
         }
@@ -90,8 +87,6 @@ Cube::Cube( QQuickItem* parent )
 
 void Cube::doSwitch( Qsk::Direction direction, Position position )
 {
-    m_previousPosition = m_destination;
-
     using Animator = QskStackBoxAnimator4;
 
     auto animator = qobject_cast< Animator* >( this->animator() );
@@ -99,11 +94,25 @@ void Cube::doSwitch( Qsk::Direction direction, Position position )
     if ( animator == nullptr )
     {
         animator = new Animator( this );
-        animator->setEasingCurve( QEasingCurve::InOutQuad );
         animator->setDuration( 1000 );
-
         setAnimator( animator );
     }
+
+    if( position == m_destination && !m_isIntermediateHop ) // 1 hop
+    {
+        animator->setEasingCurve( QEasingCurve::InOutQuad );
+    }
+    else if( !m_isIntermediateHop ) // 1st of 2 hops
+    {
+        animator->setEasingCurve( QEasingCurve::InQuad );
+    }
+    else // 2nd of 2 hops
+    {
+        animator->setEasingCurve( QEasingCurve::OutQuad );
+        m_isIntermediateHop = false;
+    }
+
+    m_previousPosition = m_destination;
 
     const auto orientation = ( direction == Qsk::LeftToRight || direction == Qsk::RightToLeft )
             ? Qt::Horizontal : Qt::Vertical;
@@ -140,17 +149,21 @@ void Cube::switchPosition( const Qsk::Direction direction )
 
 void Cube::switchToPosition( const Position position )
 {
-    if( currentIndex() == position )
+    if( currentPosition() == position )
         return;
 
     m_destination = position;
 
     const auto from = static_cast< Position >( currentIndex() );
     const auto direction = this->direction( from, position );
-    const auto currentPosition = static_cast< Position >( currentIndex() );
-    const auto intermediatePosition = neighbor( currentPosition, direction );
+    const auto intermediatePosition = neighbor( currentPosition(), direction );
 
     doSwitch( direction, intermediatePosition );
+}
+
+Cube::Position Cube::currentPosition() const
+{
+    return static_cast< Position >( currentIndex() );
 }
 
 Cube::Position Cube::neighbor( const Position position, const Qsk::Direction direction ) const

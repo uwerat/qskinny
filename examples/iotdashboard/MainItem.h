@@ -37,12 +37,14 @@ class Cube : public QskStackBox
         void cubeIndexChanged( const int index );
 
     private:
+        Position currentPosition() const;
         Position neighbor( const Position position, const Qsk::Direction direction ) const;
         Qsk::Direction direction( const Position from, const Position to ) const;
         void doSwitch( Qsk::Direction direction, Position position );
 
         Position m_destination;
         Position m_previousPosition;
+        bool m_isIntermediateHop;
 
         static Position s_neighbors[ NumPositions ][ 4 ];
 };
