@@ -40,11 +40,11 @@ MenuBar::MenuBar( QQuickItem* parent )
     graphicLabel->setMargins( marginHint( MenuBarTopLabel::Graphic ) );
     graphicLabel->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 
-    m_entryStrings = { "Dashboard", "Rooms", "Devices", "Statistics", "Storage", "Members" };
+    QVector< QString > entryStrings = { "Dashboard", "Rooms", "Devices", "Statistics", "Storage", "Members" };
 
-    for( int i = 0; i < m_entryStrings.count(); ++i )
+    for( int i = 0; i < entryStrings.count(); ++i )
     {
-        auto* button = new MenuButton( m_entryStrings.at( i ), this );
+        auto* button = new MenuButton( entryStrings.at( i ), this );
 
         connect( button, &QskPushButton::pressed, this, [ this, i ]()
         {

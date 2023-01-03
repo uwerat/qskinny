@@ -16,14 +16,15 @@ class Cube : public QskStackBox
 
     public:
         enum Position {
-            Left,
-            Right,
-            Top,
-            Bottom,
-            Front,
-            Back,
+            LeftPos,
+            RightPos,
+            TopPos,
+            BottomPos,
+            FrontPos,
+            BackPos,
             NumPositions
         };
+        Q_ENUM( Position )
 
         explicit Cube( QQuickItem* parent = nullptr );
 
@@ -36,10 +37,12 @@ class Cube : public QskStackBox
         void cubeIndexChanged( const int index );
 
     private:
-        Qsk::Direction direction( const Position from, const Position to );
-        void startAnimation( Qsk::Direction direction, int position );
+        Position neighbor( const Position position, const Qsk::Direction direction ) const;
+        Qsk::Direction direction( const Position from, const Position to ) const;
+        void doSwitch( Qsk::Direction direction, Position position );
 
-        Cube::Position m_currentPosition;
+        Position m_currentPosition;
+        Position m_previousPosition;
 
         static Position s_neighbors[ NumPositions ][ 4 ];
 };
