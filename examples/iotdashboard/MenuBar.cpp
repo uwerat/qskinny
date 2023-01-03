@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "MenuBar.h"
+#include "MainItem.h"
 
 QSK_SUBCONTROL( MenuBarTopLabel, Graphic )
 
@@ -40,21 +41,35 @@ MenuBar::MenuBar( QQuickItem* parent )
     graphicLabel->setMargins( marginHint( MenuBarTopLabel::Graphic ) );
     graphicLabel->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 
-    QVector< QString > entryStrings = { "Dashboard", "Rooms", "Devices", "Statistics", "Storage", "Members" };
-
-    for( int i = 0; i < entryStrings.count(); ++i )
+    // ### unify the information with the one from MainItem
+    QVector< QPair< Cube::Position, QString > > entries =
     {
-        auto* button = new MenuButton( entryStrings.at( i ), this );
+        { Cube::FrontPos, "Dashboard" },
+        { Cube::RightPos, "Rooms" },
+        { Cube::BackPos, "Devices" },
+        { Cube::LeftPos, "Statistics" },
+        { Cube::TopPos, "Storage" },
+        { Cube::BottomPos, "Members" },
+    };
 
-        connect( button, &QskPushButton::pressed, this, [ this, i ]()
+    for( const auto& entry : entries )
+    {
+        auto* button = new MenuButton( entry.second, this );
+        m_buttons.append( button );
+
+        connect( button, &QskPushButton::pressed, this, [ this, entry ]()
         {
-            Q_EMIT pageChangeRequested( i );
-        } );
+            for( auto* button : qAsConst( m_buttons ) )
+            {
+                // the right button will be set to checked after this
+                button->setChecked( false );
+            }
 
-        m_entries.append( button );
+            Q_EMIT pageChangeRequested( entry.first );
+        } );
     }
 
-    m_entries.at( m_currentIndex )->setChecked( true );
+    m_buttons.at( m_currentIndex )->setChecked( true );
 
     addSpacer( 0, 1 ); // fill the space at the bottom
 
@@ -63,7 +78,7 @@ MenuBar::MenuBar( QQuickItem* parent )
 
 void MenuBar::setActivePage( const int index )
 {
-    m_entries.at( m_currentIndex )->setChecked( false );
+    m_buttons.at( m_currentIndex )->setChecked( false );
     m_currentIndex = index;
 }
 

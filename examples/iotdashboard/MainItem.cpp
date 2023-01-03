@@ -61,7 +61,7 @@ Cube::Position Cube::s_neighbors[ Cube::NumPositions ][ 4 ] =
 
 Cube::Cube( QQuickItem* parent )
     : QskStackBox( false, parent )
-    , m_currentPosition( FrontPos )
+    , m_destination( FrontPos )
     , m_previousPosition( FrontPos )
 {
     // The code below covers the case where we need 2 cube movements to get
@@ -73,11 +73,16 @@ Cube::Cube( QQuickItem* parent )
     {
         const bool animationIsFinished = ( position == qFloor( position ) );
 
-        if( animationIsFinished && position != m_currentPosition )
+        if( animationIsFinished)
+        {
+            qDebug() << "finished." << position << m_destination << ( position == m_destination );
+        }
+
+        if( animationIsFinished && position != m_destination )
         {
             QTimer::singleShot( 0, this, [this]()
             {
-                switchToPosition( m_currentPosition );
+                switchToPosition( m_destination );
             } );
         }
     } );
@@ -85,8 +90,7 @@ Cube::Cube( QQuickItem* parent )
 
 void Cube::doSwitch( Qsk::Direction direction, Position position )
 {
-    m_previousPosition = m_currentPosition;
-    m_currentPosition = position;
+    m_previousPosition = m_destination;
 
     using Animator = QskStackBoxAnimator4;
 
@@ -109,13 +113,11 @@ void Cube::doSwitch( Qsk::Direction direction, Position position )
     animator->setInverted( inverted );
 
     setCurrentIndex( position );
-    Q_EMIT cubeIndexChanged( position ); // ### do we need this?
+    Q_EMIT cubeIndexChanged( position );
 }
 
 void Cube::switchPosition( const Qsk::Direction direction )
 {
-    // ### needs to go to the other function:
-
     // keep track of from where we went to top and bottom,
     // so that going up and down will result in going back
     // to the same position:
@@ -123,19 +125,17 @@ void Cube::switchPosition( const Qsk::Direction direction )
     // keeping track of the edges here, because that doesn't
     // make sense wrt. being upside down etc.)
 
-    Position position;
-
-    if( ( m_currentPosition == TopPos && direction == Qsk::BottomToTop )
-            || ( m_currentPosition == BottomPos && direction == Qsk::TopToBottom ) )
+    if( ( m_destination == TopPos && direction == Qsk::BottomToTop )
+            || ( m_destination == BottomPos && direction == Qsk::TopToBottom ) )
     {
-        position = m_previousPosition;
+        m_destination = m_previousPosition; // ### doesn't work completely yet
     }
     else
     {
-        position = neighbor( m_currentPosition, direction );
+        m_destination = neighbor( m_destination, direction );
     }
 
-    doSwitch( direction, position );
+    doSwitch( direction, m_destination );
 }
 
 void Cube::switchToPosition( const Position position )
@@ -143,10 +143,14 @@ void Cube::switchToPosition( const Position position )
     if( currentIndex() == position )
         return;
 
-    const auto from = static_cast< Position >( currentIndex() );
-    const auto direction = this->direction( from, m_currentPosition );
+    m_destination = position;
 
-    doSwitch( direction, position );
+    const auto from = static_cast< Position >( currentIndex() );
+    const auto direction = this->direction( from, position );
+    const auto currentPosition = static_cast< Position >( currentIndex() );
+    const auto intermediatePosition = neighbor( currentPosition, direction );
+
+    doSwitch( direction, intermediatePosition );
 }
 
 Cube::Position Cube::neighbor( const Position position, const Qsk::Direction direction ) const
