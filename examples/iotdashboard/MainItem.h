@@ -45,6 +45,9 @@ class Cube : public QskStackBox
         // might be different from indexChanged:
         void cubeIndexChanged( const int index );
 
+    protected:
+        void keyPressEvent( QKeyEvent* event ) override;
+
     private:
         Position currentPosition() const;
         Position neighbor( const Position position, const Qsk::Direction direction ) const;
@@ -68,6 +71,7 @@ class MainItem : public QskControl
         MainItem( QQuickItem* parent = nullptr );
 
     protected:
+        bool eventFilter(QObject *obj, QEvent *event) override final;
         bool gestureFilter( QQuickItem*, QEvent* ) override final;
         void gestureEvent( QskGestureEvent* ) override final;
 
