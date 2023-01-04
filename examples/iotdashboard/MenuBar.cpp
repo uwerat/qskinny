@@ -4,7 +4,8 @@
  *****************************************************************************/
 
 #include "MenuBar.h"
-#include "MainItem.h"
+
+#include <QTimer>
 
 QSK_SUBCONTROL( MenuBarTopLabel, Graphic )
 
@@ -29,7 +30,7 @@ MenuButton::MenuButton( const QString& name, QQuickItem* parent )
 
 MenuBar::MenuBar( QQuickItem* parent )
     : QskLinearBox( Qt::Vertical, parent )
-    , m_currentIndex( 0 )
+    , m_currentIndex( Cube::FrontPos )
 {
     setPanel( true );
     setSubcontrolProxy( QskBox::Panel, MenuBar::Panel );
@@ -42,7 +43,7 @@ MenuBar::MenuBar( QQuickItem* parent )
     graphicLabel->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 
     // ### unify the information with the one from MainItem
-    QVector< QPair< Cube::Position, QString > > entries =
+    const QVector< QPair< Cube::Position, QString > > entries =
     {
         { Cube::FrontPos, "Dashboard" },
         { Cube::RightPos, "Rooms" },
@@ -55,7 +56,7 @@ MenuBar::MenuBar( QQuickItem* parent )
     for( const auto& entry : entries )
     {
         auto* button = new MenuButton( entry.second, this );
-        m_buttons.append( button );
+        m_buttons[ entry.first ] = button;
 
         connect( button, &QskPushButton::pressed, this, [ this, entry ]()
         {
@@ -69,8 +70,6 @@ MenuBar::MenuBar( QQuickItem* parent )
         } );
     }
 
-    m_buttons.at( m_currentIndex )->setChecked( true );
-
     addSpacer( 0, 1 ); // fill the space at the bottom
 
     new MenuButton( "Logout", this );
@@ -78,8 +77,13 @@ MenuBar::MenuBar( QQuickItem* parent )
 
 void MenuBar::setActivePage( const int index )
 {
-    m_buttons.at( m_currentIndex )->setChecked( false );
+    m_buttons[ m_currentIndex ]->setChecked( false );
     m_currentIndex = index;
+
+    QTimer::singleShot( 0, this, [this]()
+    {
+        m_buttons[ m_currentIndex ]->setChecked( true );
+    } );
 }
 
 #include "moc_MenuBar.cpp"

@@ -122,6 +122,11 @@ Cube::Cube( QQuickItem* parent )
             } );
         }
     } );
+
+    QTimer::singleShot( 0, this, [this]()
+    {
+        Q_EMIT cubeIndexChanged( m_destination );
+    } );
 }
 
 void Cube::doSwitch( Qsk::Direction direction, Position position )
@@ -161,7 +166,11 @@ void Cube::doSwitch( Qsk::Direction direction, Position position )
     updateEdge( direction, position );
 
     setCurrentIndex( position );
-    Q_EMIT cubeIndexChanged( position ); // ### connect to menu bar
+
+    if( position == m_destination )
+    {
+        Q_EMIT cubeIndexChanged( position );
+    }
 }
 
 void Cube::switchPosition( const Qsk::Direction direction )
@@ -248,8 +257,7 @@ MainItem::MainItem( QQuickItem* parent )
         m_cube->switchToPosition( position );
     } );
 
-    // ### fix:
-//    connect( m_cube, &QskStackBox::currentIndexChanged, m_menuBar, &MenuBar::setActivePage );
+    connect( m_cube, &Cube::cubeIndexChanged, m_menuBar, &MenuBar::setActivePage );
 
     auto* const dashboardPage = new DashboardPage( m_cube );
     auto* const roomsPage = new RoomsPage( m_cube );
