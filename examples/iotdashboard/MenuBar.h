@@ -10,6 +10,8 @@
 #include <QskPushButton.h>
 #include <QskTextLabel.h>
 
+#include "MainItem.h"
+
 class MenuBarTopLabel final : public QskGraphicLabel
 {
     Q_OBJECT
@@ -50,6 +52,6 @@ class MenuBar final : public QskLinearBox
     void setActivePage( const int index );
 
   private:
-    QVector< MenuButton* > m_buttons;
+    MenuButton* m_buttons[ Cube::NumPositions ];
     uint m_currentIndex;
 };
