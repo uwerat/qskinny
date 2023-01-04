@@ -15,11 +15,20 @@ class Cube : public QskStackBox
     Q_OBJECT
 
     public:
+        enum Edge {
+            LeftEdge = Qsk::LeftToRight,
+            RightEdge = Qsk::RightToLeft,
+            TopEdge = Qsk::TopToBottom,
+            BottomEdge = Qsk::BottomToTop,
+            NumEdges
+        };
+        Q_ENUM( Edge )
+
         enum Position {
-            LeftPos,
-            RightPos,
-            TopPos,
-            BottomPos,
+            LeftPos = LeftEdge,
+            RightPos = RightEdge,
+            TopPos = TopEdge,
+            BottomPos = BottomEdge,
             FrontPos,
             BackPos,
             NumPositions
@@ -40,13 +49,15 @@ class Cube : public QskStackBox
         Position currentPosition() const;
         Position neighbor( const Position position, const Qsk::Direction direction ) const;
         Qsk::Direction direction( const Position from, const Position to ) const;
+        void updateEdge( Qsk::Direction direction, Position position );
         void doSwitch( Qsk::Direction direction, Position position );
 
         Position m_destination;
-        Position m_previousPosition;
+        Edge m_currentEdge;
         bool m_isIntermediateHop;
 
-        static Position s_neighbors[ NumPositions ][ 4 ];
+        static QPair< Position, Edge > s_neighbors[ NumPositions ][ NumEdges ];
+        static Edge s_edgeTransformations[ NumEdges ][ NumEdges ];
 };
 
 class MainItem : public QskControl

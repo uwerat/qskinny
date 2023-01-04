@@ -20,49 +20,88 @@
 
 #include <QTimer>
 
-Cube::Position Cube::s_neighbors[ Cube::NumPositions ][ 4 ] =
+QPair< Cube::Position, Cube::Edge > Cube::s_neighbors[ Cube::NumPositions ][ Cube::NumEdges ] =
 {
-    // Left:
-    { Cube::BackPos, // Left
-      Cube::FrontPos, // Right
-      Cube::TopPos, // Top
-      Cube::BottomPos }, // Bottom
+    // neighbors of Left side:
+    {
+        { Cube::BackPos, Cube::BottomEdge }, // going Left
+        { Cube::FrontPos, Cube::BottomEdge }, // going Right
+        { Cube::TopPos, Cube::LeftEdge }, // going Top
+        { Cube::BottomPos, Cube::RightEdge } // going Bottom
+    },
 
     // Right:
-    { Cube::FrontPos,
-      Cube::BackPos,
-      Cube::TopPos,
-      Cube::BottomPos },
+    {
+        { Cube::FrontPos, Cube::BottomEdge },
+        { Cube::BackPos, Cube::BottomEdge },
+        { Cube::TopPos, Cube::RightEdge },
+        { Cube::BottomPos, Cube::LeftEdge }
+    },
 
     // Top:
-    { Cube::LeftPos,
-      Cube::RightPos,
-      Cube::BackPos,
-      Cube::FrontPos },
+    {
+        { Cube::LeftPos, Cube::RightEdge },
+        { Cube::RightPos, Cube::LeftEdge },
+        { Cube::BackPos, Cube::TopEdge },
+        { Cube::FrontPos, Cube::BottomEdge }
+    },
 
     // Bottom:
-    { Cube::LeftPos,
-      Cube::RightPos,
-      Cube::FrontPos,
-      Cube::BackPos },
+    {
+        { Cube::LeftPos, Cube::LeftEdge },
+        { Cube::RightPos, Cube::RightEdge },
+        { Cube::FrontPos, Cube::BottomEdge },
+        { Cube::BackPos, Cube::TopEdge }
+    },
 
     // Front:
-    { Cube::LeftPos,
-      Cube::RightPos,
-      Cube::TopPos,
-      Cube::BottomPos },
+    {
+        { Cube::LeftPos, Cube::BottomEdge },
+        { Cube::RightPos, Cube::BottomEdge },
+        { Cube::TopPos, Cube::BottomEdge },
+        { Cube::BottomPos, Cube::BottomEdge }
+    },
 
     // Back:
-    { Cube::RightPos,
-      Cube::LeftPos,
-      Cube::TopPos,
-      Cube::BottomPos },
+    {
+        { Cube::RightPos, Cube::BottomEdge },
+        { Cube::LeftPos, Cube::BottomEdge },
+        { Cube::TopPos, Cube::TopEdge },
+        { Cube::BottomPos, Cube::BottomEdge }
+    }
+};
+
+Cube::Edge Cube::s_edgeTransformations[ Cube::NumEdges ][ Cube::NumEdges ] =
+{
+    // current edge is LeftEdge:
+    { Cube::TopEdge, // Left
+      Cube::BottomEdge, // Right
+      Cube::RightEdge, // Top
+      Cube::LeftEdge }, // Bottom
+
+    // Right:
+    { Cube::BottomEdge,
+      Cube::TopEdge,
+      Cube::LeftEdge,
+      Cube::RightEdge },
+
+    // Top:
+    { Cube::RightEdge,
+      Cube::LeftEdge,
+      Cube::BottomEdge,
+      Cube::TopEdge },
+
+    // Bottom:
+    { Cube::LeftEdge,
+      Cube::RightEdge,
+      Cube::TopEdge,
+      Cube::BottomEdge }
 };
 
 Cube::Cube( QQuickItem* parent )
     : QskStackBox( false, parent )
     , m_destination( FrontPos )
-    , m_previousPosition( FrontPos )
+    , m_currentEdge( BottomEdge )
     , m_isIntermediateHop( false )
 {
     // The code below covers the case where we need 2 cube movements to get
@@ -112,8 +151,6 @@ void Cube::doSwitch( Qsk::Direction direction, Position position )
         m_isIntermediateHop = false;
     }
 
-    m_previousPosition = m_destination;
-
     const auto orientation = ( direction == Qsk::LeftToRight || direction == Qsk::RightToLeft )
             ? Qt::Horizontal : Qt::Vertical;
     animator->setOrientation( orientation );
@@ -121,28 +158,15 @@ void Cube::doSwitch( Qsk::Direction direction, Position position )
     const bool inverted = ( direction == Qsk::LeftToRight || direction == Qsk::TopToBottom );
     animator->setInverted( inverted );
 
+    updateEdge( direction, position );
+
     setCurrentIndex( position );
-    Q_EMIT cubeIndexChanged( position );
+    Q_EMIT cubeIndexChanged( position ); // ### connect to menu bar
 }
 
 void Cube::switchPosition( const Qsk::Direction direction )
 {
-    // keep track of from where we went to top and bottom,
-    // so that going up and down will result in going back
-    // to the same position:
-    // (We don't want to model the complete cube logic with
-    // keeping track of the edges here, because that doesn't
-    // make sense wrt. being upside down etc.)
-
-    if( ( m_destination == TopPos && direction == Qsk::BottomToTop )
-            || ( m_destination == BottomPos && direction == Qsk::TopToBottom ) )
-    {
-        m_destination = m_previousPosition; // ### doesn't work completely yet
-    }
-    else
-    {
-        m_destination = neighbor( m_destination, direction );
-    }
+    m_destination = neighbor( currentPosition(), direction );
 
     doSwitch( direction, m_destination );
 }
@@ -154,11 +178,10 @@ void Cube::switchToPosition( const Position position )
 
     m_destination = position;
 
-    const auto from = static_cast< Position >( currentIndex() );
-    const auto direction = this->direction( from, position );
-    const auto intermediatePosition = neighbor( currentPosition(), direction );
+    const auto direction = this->direction( currentPosition(), position );
+    const auto nextPosition = neighbor( currentPosition(), direction );
 
-    doSwitch( direction, intermediatePosition );
+    doSwitch( direction, nextPosition );
 }
 
 Cube::Position Cube::currentPosition() const
@@ -168,7 +191,8 @@ Cube::Position Cube::currentPosition() const
 
 Cube::Position Cube::neighbor( const Position position, const Qsk::Direction direction ) const
 {
-    const auto n = s_neighbors[ position ][ direction ];
+    const auto index = s_edgeTransformations[ m_currentEdge ][ direction ];
+    const auto n = s_neighbors[ position ][ index ].first;
     return n;
 }
 
@@ -179,15 +203,27 @@ Qsk::Direction Cube::direction( const Position from, const Position to ) const
 
     const auto neighbors = s_neighbors[ from ];
 
-    for( int i = 0; i < 4; ++i )
+    for( int i = 0; i < NumEdges; ++i )
     {
-        if( neighbors[ i ] == to )
+        if( neighbors[ i ].first == to )
         {
             return static_cast< Qsk::Direction >( i );
         }
     }
 
     return Qsk::RightToLeft;
+}
+
+void Cube::updateEdge( Qsk::Direction direction, Position position )
+{
+    m_currentEdge = s_neighbors[ currentPosition() ][ direction ].second;
+
+    // When going back to Front, Left etc., switch back to
+    // the bottom edge, otherwise it gets to confusing:
+    if( position != TopPos && position != BottomPos )
+    {
+        m_currentEdge = BottomEdge;
+    }
 }
 
 MainItem::MainItem( QQuickItem* parent )
@@ -211,6 +247,9 @@ MainItem::MainItem( QQuickItem* parent )
         const auto position = static_cast< Cube::Position >( index );
         m_cube->switchToPosition( position );
     } );
+
+    // ### fix:
+//    connect( m_cube, &QskStackBox::currentIndexChanged, m_menuBar, &MenuBar::setActivePage );
 
     auto* const dashboardPage = new DashboardPage( m_cube );
     auto* const roomsPage = new RoomsPage( m_cube );
