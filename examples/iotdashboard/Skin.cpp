@@ -19,6 +19,7 @@
 #include "RoomsPage.h"
 #include "RoundedIcon.h"
 #include "RoundButton.h"
+#include "StoragePage.h"
 #include "TopBar.h"
 #include "UsageBox.h"
 #include "UsageDiagram.h"
@@ -241,6 +242,7 @@ void Skin::initHints( const Palette& palette )
     ed.setGradient( MenuBar::Panel, palette.menuBar );
     ed.setGradient( DashboardPage::Panel, palette.mainContent );
     ed.setGradient( RoomsPage::Panel, palette.mainContent );
+    ed.setGradient( StoragePage::Panel, palette.mainContent );
 
     ed.setColor( Box::Panel, palette.box );
     QskShadowMetrics shadowMetrics( 0, 10 );

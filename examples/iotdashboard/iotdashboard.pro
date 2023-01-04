@@ -28,6 +28,9 @@ SOURCES += \
     RoundButton.cpp \
     UsageBox.cpp \
     UsageDiagram.cpp \
+    StoragePage.cpp \
+    StorageMeter.cpp \
+    StorageBar.cpp \
     main.cpp \
 
 SOURCES += \
@@ -62,7 +65,10 @@ HEADERS += \
     TopBar.h \
     RoundButton.h \
     UsageBox.h \
-    UsageDiagram.h
+    UsageDiagram.h \
+    StoragePage.h \
+    StorageMeter.h \
+    StorageBar.h \
 
 HEADERS += \
     nodes/DiagramDataNode.h \
