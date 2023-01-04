@@ -74,25 +74,42 @@ bool QskBoxRenderer::isGradientSupported(
                 // rectangles are fully supported
                 return true;
             }
+
+            const auto dir = gradient.linearDirection();
+
+            if ( dir.isTilted() )
+            {
+                return ( dir.x1() == 0.0 && dir.x2() == 0.0 )
+                    && ( dir.y1() == 1.0 && dir.y2() == 1.0 );
+            }
             else
             {
-                /*
-                    For rounded rectangles we currently support
-                    only the most common use cases. TODO ...
-                 */
+                // different radii at oppsoite corners are not implemented TODO ...
 
-                const auto dir = gradient.linearDirection();
-                if ( dir.isTilted() )
+                const auto r1 = shape.radius( Qt::TopLeftCorner );
+                const auto r2 = shape.radius( Qt::TopRightCorner );
+                const auto r3 = shape.radius( Qt::BottomLeftCorner );
+                const auto r4 = shape.radius( Qt::BottomRightCorner );
+
+                if ( dir.isHorizontal() )
                 {
-                    return ( dir.x1() == 0.0 && dir.x2() == 0.0 )
-                        && ( dir.y1() == 1.0 && dir.y2() == 1.0 );
+                    if ( dir.x1() == 0.0 && dir.x2() == 1.0 )
+                    {
+                        return ( r1.width() == r3.width() )
+                            && ( r2.width() == r4.width() );
+                    }
                 }
                 else
                 {
-                    return ( dir.x1() == 0.0 && dir.x2() == 1.0 )
-                        || ( dir.y1() == 0.0 && dir.y2() == 1.0 );
+                    if ( dir.y1() == 0.0 && dir.y2() == 1.0 )
+                    {
+                        return ( r1.height() == r2.height() )
+                            && ( r3.height() == r4.height() );
+                    }
                 }
             }
+
+            return false;
         }
 
         default:
