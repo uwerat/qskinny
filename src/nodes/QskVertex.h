@@ -10,6 +10,7 @@
 
 #include <qcolor.h>
 #include <qsggeometry.h>
+#include <qmath.h>
 
 namespace QskVertex
 {
@@ -210,6 +211,81 @@ namespace QskVertex
         qreal bottom = 0.0;
         qreal width = 0.0;
         qreal height = 0.0;
+    };
+}
+
+namespace
+{
+    class ArcIterator
+    {
+      public:
+        inline ArcIterator() = default;
+
+        inline ArcIterator( int stepCount, bool inverted = false )
+        {
+            reset( stepCount, inverted );
+        }
+
+        void reset( int stepCount, bool inverted )
+        {
+            m_inverted = inverted;
+
+            if ( inverted )
+            {
+                m_cos = 1.0;
+                m_sin = 0.0;
+            }
+            else
+            {
+                m_cos = 0.0;
+                m_sin = 1.0;
+            }
+
+            m_stepIndex = 0;
+            m_stepCount = stepCount;
+
+            const double angleStep = M_PI_2 / stepCount;
+            m_cosStep = qFastCos( angleStep );
+            m_sinStep = qFastSin( angleStep );
+        }
+
+        inline bool isInverted() const { return m_inverted; }
+
+        inline double cos() const { return m_cos; }
+        inline double sin() const { return m_inverted ? -m_sin : m_sin; }
+
+        inline int step() const { return m_stepIndex; }
+        inline int stepCount() const { return m_stepCount; }
+        inline bool isDone() const { return m_stepIndex > m_stepCount; }
+
+        inline void increment()
+        {
+            const double cos0 = m_cos;
+
+            m_cos = m_cos * m_cosStep + m_sin * m_sinStep;
+            m_sin = m_sin * m_cosStep - cos0 * m_sinStep;
+
+            ++m_stepIndex;
+        }
+
+        inline void operator++() { increment(); }
+
+        static int segmentHint( double radius )
+        {
+            const double arcLength = radius * M_PI_2;
+            return qBound( 3, qCeil( arcLength / 3.0 ), 18 ); // every 3 pixels
+        }
+
+      private:
+        double m_cos;
+        double m_sin;
+
+        int m_stepIndex;
+        double m_cosStep;
+        double m_sinStep;
+
+        int m_stepCount;
+        bool m_inverted;
     };
 }
 

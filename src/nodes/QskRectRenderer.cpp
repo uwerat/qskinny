@@ -132,9 +132,6 @@ namespace
 
         inline bool setGradientLine( qreal value, Color color, ColoredLine* line )
         {
-            if ( value <= m_corners[0].value || value >= m_corners[3].value )
-                return false;
-
             const qreal m = m_v.dy / m_v.dx;
 
             const qreal x = m_v.x + m_v.dx * value;
@@ -253,19 +250,19 @@ namespace
 }
 
 static ColoredLine* qskAddFillLines( const Quad& rect,
-    const QskGradient& gradient, ColoredLine* line )
+    const QskGradient& gradient, int lineCount, ColoredLine* line )
 {
     const auto dir = gradient.linearDirection();
 
     if ( dir.isTilted() )
     {
         DRectIterator it( rect, dir.vector() );
-        line = QskVertex::fillOrdered( it, gradient, line );
+        line = QskVertex::fillOrdered( it, gradient, lineCount, line );
     }
     else
     {
         HVRectIterator it( rect, dir.vector() );
-        line = QskVertex::fillOrdered( it, gradient, line );
+        line = QskVertex::fillOrdered( it, gradient, lineCount, line );
     }
 
     return line;
@@ -410,9 +407,9 @@ void QskRectRenderer::renderBorder( const QRectF& rect,
 }
 
 void QskRectRenderer::renderFill0( const QskVertex::Quad& rect,
-    const QskGradient& gradient, QskVertex::ColoredLine* line )
+    const QskGradient& gradient, int lineCount, QskVertex::ColoredLine* line )
 {
-    qskAddFillLines( rect, gradient, line );
+    qskAddFillLines( rect, gradient, lineCount, line );
 }
 
 void QskRectRenderer::renderFill( const QRectF& rect,
@@ -477,10 +474,10 @@ void QskRectRenderer::renderRect( const QRectF& rect,
         }
     }
 
-    const auto line = allocateLines< ColoredLine >(
+    const auto lines = allocateLines< ColoredLine >(
         geometry, borderLineCount + fillLineCount );
 
-    auto l = line;
+    auto l = lines;
 
     if ( fillLineCount > 0 )
     {
@@ -493,12 +490,14 @@ void QskRectRenderer::renderRect( const QRectF& rect,
         }
         else
         {
-            if ( gradient.stepCount() <= 1 && !gradient.linearDirection().isTilted() )
+            const auto dir = gradient.linearDirection();
+
+            if ( gradient.stepCount() <= 1 && !dir.isTilted() )
             {
                 const auto c1 = gradient.rgbStart();
                 const auto c2 = gradient.rgbEnd();
 
-                if ( gradient.linearDirection().isVertical() )
+                if ( dir.isVertical() )
                 {
                     ( l++ )->setHLine( rect.left(), rect.right(), rect.top(), c1 );
                     ( l++ )->setHLine( rect.left(), rect.right(), rect.bottom(), c2 );
@@ -511,27 +510,11 @@ void QskRectRenderer::renderRect( const QRectF& rect,
             }
             else
             {
-                l = qskAddFillLines( in, gradient, l );
+                l = qskAddFillLines( in, gradient, fillLineCount, l );
             }
         }
 
-        if ( l < line + fillLineCount )
-        {
-            /*
-                When the the vector exceeds [ 0.0, 1.0 ] we might have
-                gradient lines lying outside the rectangle.
-                Precalculating this effect would save some memory - however
-                these corner cases are not worth to make the implementation
-                even more complicated.
-                So let's fill the memory with duplicates of the final
-                contour line instead.
-             */
-            const auto& llast = *( l - 1 );
-            while ( l < line + fillLineCount )
-                *l++ = llast;
-        }
-
-        Q_ASSERT( l - line == fillLineCount );
+        Q_ASSERT( l - lines == fillLineCount );
     }
 
     if ( borderLineCount > 0 )
@@ -546,6 +529,6 @@ void QskRectRenderer::renderRect( const QRectF& rect,
             l = qskAddBorderLines( rect, in, borderColors, l );
         }
 
-        Q_ASSERT( l - line == borderLineCount + fillLineCount );
+        Q_ASSERT( l - lines == borderLineCount + fillLineCount );
     }
 }

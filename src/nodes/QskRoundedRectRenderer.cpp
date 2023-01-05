@@ -27,78 +27,6 @@ namespace
         BottomRight = Qt::BottomRightCorner
     };
 
-    class ArcIterator
-    {
-      public:
-        inline ArcIterator() = default;
-
-        inline ArcIterator( int stepCount, bool inverted = false )
-        {
-            reset( stepCount, inverted );
-        }
-
-        void reset( int stepCount, bool inverted )
-        {
-            m_inverted = inverted;
-
-            if ( inverted )
-            {
-                m_cos = 1.0;
-                m_sin = 0.0;
-            }
-            else
-            {
-                m_cos = 0.0;
-                m_sin = 1.0;
-            }
-
-            m_stepIndex = 0;
-            m_stepCount = stepCount;
-
-            const double angleStep = M_PI_2 / stepCount;
-            m_cosStep = qFastCos( angleStep );
-            m_sinStep = qFastSin( angleStep );
-        }
-
-        inline bool isInverted() const { return m_inverted; }
-
-        inline double cos() const { return m_cos; }
-        inline double sin() const { return m_inverted ? -m_sin : m_sin; }
-
-        inline int step() const { return m_stepIndex; }
-        inline int stepCount() const { return m_stepCount; }
-        inline bool isDone() const { return m_stepIndex > m_stepCount; }
-
-        inline void increment()
-        {
-            const double cos0 = m_cos;
-
-            m_cos = m_cos * m_cosStep + m_sin * m_sinStep;
-            m_sin = m_sin * m_cosStep - cos0 * m_sinStep;
-
-            ++m_stepIndex;
-        }
-
-        inline void operator++() { increment(); }
-
-        static int segmentHint( double radius )
-        {
-            const double arcLength = radius * M_PI_2;
-            return qBound( 3, qCeil( arcLength / 3.0 ), 18 ); // every 3 pixels
-        }
-
-      private:
-        double m_cos;
-        double m_sin;
-
-        int m_stepIndex;
-        double m_cosStep;
-        double m_sinStep;
-
-        int m_stepCount;
-        bool m_inverted;
-    };
-
     int additionalGradientStops( const QskGradient& gradient )
     {
         return qMax( 0, gradient.stepCount() - 1 );
@@ -205,7 +133,8 @@ namespace
             { return m_uniform ? m_outer[ 0 ].dy : m_outer[ pos ].dy; }
 
       private:
-        bool m_uniform;
+        const bool m_uniform;
+
         class Values
         {
           public:
@@ -882,8 +811,6 @@ static inline Qt::Orientation qskQtOrientation( const QskGradient& gradient )
 static inline int qskFillLineCount(
     const QskRoundedRectRenderer::Metrics& metrics, const QskGradient& gradient )
 {
-    const int stepCount = metrics.corner[ 0 ].stepCount;
-
     if ( !gradient.isVisible() )
         return 0;
 
@@ -915,7 +842,7 @@ static inline int qskFillLineCount(
     }
     else
     {
-        lineCount += 2 * ( stepCount + 1 );
+        lineCount += 2 * ( metrics.corner[ 0 ].stepCount + 1 );
 
         if ( metrics.centerQuad.left >= metrics.centerQuad.right )
             lineCount--;
@@ -1111,7 +1038,7 @@ static inline void qskRenderBoxRandom(
 
 static inline void qskRenderFillOrdered(
     const QskRoundedRectRenderer::Metrics& metrics,
-    const QskGradient& gradient, ColoredLine* lines )
+    const QskGradient& gradient, int lineCount, ColoredLine* lines )
 {
     /*
         The algo for irregular radii at opposite corners is not yet
@@ -1121,12 +1048,12 @@ static inline void qskRenderFillOrdered(
     if ( gradient.linearDirection().isHorizontal() )
     {
         HRectEllipseIterator it( metrics );
-        QskVertex::fillOrdered( it, gradient, lines );
+        QskVertex::fillOrdered( it, gradient, lineCount, lines );
     }
     else
     {
         VRectEllipseIterator it( metrics );
-        QskVertex::fillOrdered( it, gradient, lines );
+        QskVertex::fillOrdered( it, gradient, lineCount, lines );
     }
 }
 
@@ -1434,6 +1361,7 @@ void QskRoundedRectRenderer::renderRectellipse( const QRectF& rect,
     QSGGeometry& geometry )
 {
     const Metrics metrics( rect, shape, border );
+    const auto isTilted = gradient.linearDirection().isTilted();
 
     int fillLineCount = 0;
 
@@ -1446,7 +1374,7 @@ void QskRoundedRectRenderer::renderRectellipse( const QRectF& rect,
             fillLineCount = gradient.stepCount() + 1;
 
 #if 1
-            if ( gradient.linearDirection().isTilted() )
+            if ( isTilted )
             {
                 if ( metrics.centerQuad.width == metrics.centerQuad.height )
                 {
@@ -1489,7 +1417,7 @@ void QskRoundedRectRenderer::renderRectellipse( const QRectF& rect,
     bool extraLine = false;
     if ( borderLineCount > 0 && fillLineCount > 0 )
     {
-        if ( !gradient.isMonochrome() && gradient.linearDirection().isTilted() )
+        if ( !gradient.isMonochrome() && isTilted )
         {
             /*
                 The filling ends at 45° and we have no implementation
@@ -1501,7 +1429,7 @@ void QskRoundedRectRenderer::renderRectellipse( const QRectF& rect,
         }
     }
 
-    auto line = allocateLines< ColoredLine >( geometry, lineCount );
+    auto lines = allocateLines< ColoredLine >( geometry, lineCount );
 
     bool fillRandom = true;
     if ( fillLineCount > 0 )
@@ -1512,7 +1440,7 @@ void QskRoundedRectRenderer::renderRectellipse( const QRectF& rect,
         }
         else if ( !gradient.isMonochrome() )
         {
-            if ( gradient.stepCount() > 1 || gradient.linearDirection().isTilted() )
+            if ( gradient.stepCount() > 1 || isTilted )
                 fillRandom = false;
         }
 
@@ -1534,24 +1462,25 @@ void QskRoundedRectRenderer::renderRectellipse( const QRectF& rect,
         if ( fillRandom )
         {
             qskRenderBoxRandom( metrics, borderColors,
-                gradient, line, line + fillLineCount );
+                gradient, lines, lines + fillLineCount );
         }
         else
         {
             if ( metrics.isTotallyCropped )
             {
-                QskRectRenderer::renderFill0( metrics.innerQuad, gradient, line );
+                QskRectRenderer::renderFill0( metrics.innerQuad,
+                    gradient, fillLineCount, lines );
             }
-            else if ( gradient.linearDirection().isTilted() )
+            else if ( isTilted )
             {
-                renderDiagonalFill( metrics, gradient, fillLineCount, line );
+                renderDiagonalFill( metrics, gradient, fillLineCount, lines );
             }
             else
             {
-                qskRenderFillOrdered( metrics, gradient, line );
+                qskRenderFillOrdered( metrics, gradient, fillLineCount, lines );
             }
 
-            auto borderLines = line + fillLineCount;
+            auto borderLines = lines + fillLineCount;
             if ( extraLine )
                 borderLines++;
 
@@ -1560,7 +1489,7 @@ void QskRoundedRectRenderer::renderRectellipse( const QRectF& rect,
 
             if ( extraLine )
             {
-                const auto l = line + fillLineCount;
+                const auto l = lines + fillLineCount;
                 l[ 0 ].p1 = l[ -1 ].p2;
                 l[ 0 ].p2 = l[ 1 ].p1;
             }
@@ -1570,21 +1499,22 @@ void QskRoundedRectRenderer::renderRectellipse( const QRectF& rect,
     {
         if ( fillRandom )
         {
-            qskRenderFillRandom( metrics, gradient, line );
+            qskRenderFillRandom( metrics, gradient, lines );
         }
         else
         {
             if ( metrics.isTotallyCropped )
             {
-                QskRectRenderer::renderFill0( metrics.innerQuad, gradient, line );
+                QskRectRenderer::renderFill0( metrics.innerQuad,
+                    gradient, fillLineCount, lines );
             }
-            else if ( gradient.linearDirection().isTilted() )
+            else if ( isTilted )
             {
-                renderDiagonalFill( metrics, gradient, fillLineCount, line );
+                renderDiagonalFill( metrics, gradient, fillLineCount, lines );
             }
             else
             {
-                qskRenderFillOrdered( metrics, gradient, line );
+                qskRenderFillOrdered( metrics, gradient, fillLineCount, lines );
             }
         }
     }
@@ -1596,6 +1526,6 @@ void QskRoundedRectRenderer::renderRectellipse( const QRectF& rect,
             border colors, we could treat it like filling without border. TODO ...
          */
 #endif
-        qskRenderBorder( metrics, Qt::Vertical, borderColors, line );
+        qskRenderBorder( metrics, Qt::Vertical, borderColors, lines );
     }
 }

@@ -610,7 +610,7 @@ void QskRoundedRectRenderer::renderDiagonalFill( const QskRoundedRectRenderer::M
     const ValueCurve curve( metrics );
 
     DRectellipseIterator it( metrics, curve );
-    auto line = QskVertex::fillOrdered( it, gradient, lines );
+    auto line = QskVertex::fillOrdered( it, gradient, -1, lines );
 
     /*
         There are a couple of reasons, why less points have been rendered

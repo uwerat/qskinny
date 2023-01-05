@@ -205,44 +205,77 @@ namespace QskVertex
         Color m_color1, m_color2;
     };
 
+    inline ColoredLine* fillUp( ColoredLine* lines, const ColoredLine& l, int count )
+    {
+        for ( int i = 0; i < count; i++ )
+            *lines++ = l;
+
+        return lines;
+    }
+
     template< class ContourIterator, class ColorIterator >
     ColoredLine* fillOrdered( ContourIterator& contourIt,
-        ColorIterator& colorIt, ColoredLine* line )
+        ColorIterator& colorIt, int lineCount, ColoredLine* lines )
     {
+       /*
+            When the the vector exceeds [ 0.0, 1.0 ] we might have
+            gradient lines lying outside the contour.
+            This effect could be precalculated - however we might end
+            up difficult code with potential bugs.
+
+            So we allow the allocation code to ignore the effect by
+            adding duplicates of the last line.
+        */
+        const auto value0 = contourIt.value();
+        ColoredLine* l = lines;
+
         do
         {
             while ( !colorIt.isDone() && ( colorIt.value() < contourIt.value() ) )
             {
-                if ( contourIt.setGradientLine( colorIt.value(), colorIt.color(), line ) )
-                    line++;
+                const auto value = colorIt.value();
+
+                /*
+                    When having a gradient vector below 0.0 we
+                    will have gradient lines outside of the contour
+                 */
+
+                if ( value > value0 )
+                    contourIt.setGradientLine( value, colorIt.color(), l++ );
 
                 colorIt.advance();
             }
 
             const auto color = colorIt.colorAt( contourIt.value() );
-            contourIt.setContourLine( color, line++ );
+            contourIt.setContourLine( color, l++ );
 
         } while ( contourIt.advance() );
 
-        return line;
+        if ( lineCount >= 0 )
+        {
+            if ( const auto count = lineCount - ( l - lines ) )
+                l = QskVertex::fillUp( l, *( l - 1 ), count );
+        }
+
+        return l;
     }
 
     template< class ContourIterator >
     ColoredLine* fillOrdered( ContourIterator& contourIt,
-        const QskGradient& gradient, ColoredLine* line )
+        const QskGradient& gradient, int lineCount, ColoredLine* lines )
     {
         if ( gradient.stepCount() == 1 )
         {
             SimpleColorIterator colorIt( gradient.rgbStart(), gradient.rgbEnd() );
-            line = fillOrdered( contourIt, colorIt, line );
+            lines = fillOrdered( contourIt, colorIt, lineCount, lines );
         }
         else
         {
             GradientColorIterator colorIt( gradient.stops() );
-            line = fillOrdered( contourIt, colorIt, line );
+            lines = fillOrdered( contourIt, colorIt, lineCount, lines );
         }
 
-        return line;
+        return lines;
     }
 }
 

@@ -39,7 +39,7 @@ namespace QskVertex
 namespace QskRectRenderer
 {
     void renderFill0( const QskVertex::Quad&,
-        const QskGradient&, QskVertex::ColoredLine* );
+        const QskGradient&, int lineCount, QskVertex::ColoredLine* );
 }
 
 #endif
