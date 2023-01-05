@@ -42,8 +42,9 @@ class StoragePage final : public QskLinearBox
 
         QString title;
         QString description;
-        Media distribution{};
+        Media distribution;
     };
 
-    void addRow( Storage storage );
+    void addRow( const QString& title, const QString& description,
+        qreal pictures, qreal music, qreal videos, qreal documents, qreal others );
 };

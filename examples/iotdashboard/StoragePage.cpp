@@ -55,15 +55,26 @@ StoragePage::StoragePage( QQuickItem* const parent )
 
     setSubcontrolProxy( QskBox::Panel, StoragePage::Panel );
 
-    addRow( { "Backup (B:)", "Used for daily backups", { 0.1, 0.1, 0.1, 0.02, 0.01 } } );
-    addRow( { "Share (S:)", "Used for sharing files publicly", { 0.05, 0.05, 0.2, 0.2, 0.01 } } );
-    addRow( { "Exchange (X:)", "Used for exchanging large files", { 0.1, 0.1, 0.1, 0.1, 0.5 } } );
+    addRow( "Backup (B:)", "Used for daily backups", 0.1, 0.1, 0.1, 0.02, 0.01 );
+    addRow( "Share (S:)", "Used for sharing files publicly", 0.05, 0.05, 0.2, 0.2, 0.01 );
+    addRow( "Exchange (X:)", "Used for exchanging large files", 0.1, 0.1, 0.1, 0.1, 0.5 );
 
     addSpacer( 1, 99 );
 }
 
-void StoragePage::addRow( Storage storage )
+void StoragePage::addRow( const QString& title, const QString& description,
+    qreal pictures, qreal music, qreal videos, qreal documents, qreal others )
 {
+    Storage storage;
+
+    storage.title = title;
+    storage.description = description;
+    storage.distribution.pictures = pictures;
+    storage.distribution.music = music;
+    storage.distribution.videos = videos;
+    storage.distribution.documents = documents;
+    storage.distribution.others = others;
+
     auto* const box = new Box( "Network Storage", this );
     auto* const layout = new QskLinearBox( Qt::Horizontal, box );
     auto* const left = new QskLinearBox( Qt::Vertical, layout );
@@ -81,12 +92,12 @@ void StoragePage::addRow( Storage storage )
     meter->setMinimumSize( 64, 64 );
     meter->setMaximumSize( 64, 64 );
 
-    auto* const title = new QskTextLabel( storage.title, center );
-    title->setFontRole( QskSkin::LargeFont );
+    auto* const maintitle = new QskTextLabel( storage.title, center );
+    maintitle->setFontRole( QskSkin::LargeFont );
     auto* const subtitle = new QskTextLabel( storage.description, center );
     subtitle->setFontRole( QskSkin::MediumFont );
 
-    const auto media = storage.distribution;
+    const auto& media = storage.distribution;
 
     auto* const bar = new StorageBar( right );
     bar->setPictures( media.pictures );
