@@ -1,14 +1,22 @@
+/******************************************************************************
+ * Copyright (C) 2022 Edelhirsch Software GmbH
+ * This file may be used under the terms of the 3-clause BSD License
+ *****************************************************************************/
+
 #pragma once
 
-#include "EnergyMeter.h"
-#include <QskGradient.h>
+#include "CircularProgressBar.h"
+#include <QskControl.h>
 
-class StorageMeter final : public EnergyMeter
+class StorageMeter final : public CircularProgressBar
 {
   public:
-    QSK_SUBCONTROLS( Fill )
-    explicit StorageMeter(QQuickItem* parent = nullptr) noexcept;
-    qreal progress() const noexcept;
+    QSK_SUBCONTROLS( Status )
+    explicit StorageMeter( QQuickItem* parent = nullptr ) noexcept;
   public Q_SLOTS:
-    void setProgress(qreal progress) noexcept;
+    void setValue( qreal value );
+
+  private:
+    QSizeF contentsSizeHint( Qt::SizeHint which, const QSizeF& constraint ) const override;
+    class QskTextLabel* label = nullptr;
 };

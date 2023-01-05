@@ -74,6 +74,8 @@ class CircularProgressBar::PrivateData
     bool isIndeterminate = false;
 };
 
+CircularProgressBar::~CircularProgressBar() = default;
+
 CircularProgressBar::CircularProgressBar( qreal min, qreal max, QQuickItem* parent )
     : QskBoundedControl( min, max, parent )
     , m_data( new PrivateData )

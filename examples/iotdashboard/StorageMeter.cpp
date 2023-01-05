@@ -1,46 +1,65 @@
+/******************************************************************************
+ * Copyright (C) 2022 Edelhirsch Software GmbH
+ * This file may be used under the terms of the 3-clause BSD License
+ *****************************************************************************/
+
 #include "StorageMeter.h"
 #include "CircularProgressBar.h"
+#include <QskSkin.h>
 #include <QskTextLabel.h>
 
-QSK_SUBCONTROL( StorageMeter, Fill )
+QSK_SUBCONTROL( StorageMeter, Status )
 
-StorageMeter::StorageMeter(QQuickItem *parent) noexcept
-    : EnergyMeter(QColor{}, QskGradient{}, 0, parent)
+namespace
 {
-  const auto gradient = gradientHint(StorageMeter::Fill);
-  setGradientHint(StorageMeter::Fill, QskGradient(QskGradientStops{
-    {0.0,Qt::green},
-    {0.5,"darkorange"},
-    {1.0,Qt::red}
-  }));
+    inline QString make_text( const QLocale& locale, const qreal value )
+    {
+        return locale.toString( static_cast< int >( value ) ) + " " + locale.percent();
+    }
 }
 
-qreal StorageMeter::progress() const noexcept
+StorageMeter::StorageMeter( QQuickItem* parent ) noexcept
+    : CircularProgressBar( parent )
+    , label( new QskTextLabel( this ) )
 {
-  if( auto* const bar = findChild<CircularProgressBar*>() )
-  {
-    return bar->value() / 100.0;
-  }
-  return 0.0;
+    setAutoLayoutChildren( true );
+    setSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Constrained );
+
+    label->setText( make_text( locale(), value() ) );
+    label->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
+    label->setLayoutAlignmentHint( Qt::AlignCenter );
+    label->setFontRole( QskSkin::SmallFont );
 }
 
-void StorageMeter::setProgress(qreal progress) noexcept
+void StorageMeter::setValue( const qreal value )
 {
-  const auto value = qBound(0.0, progress, 1.0);
-
-  const auto gradient = gradientHint(StorageMeter::Fill);
-
-  const auto color = gradient.extracted( value, value ).startColor();
-
-  if( auto* const bar = findChild<CircularProgressBar*>() )
-  {
-    bar->setGradientHint( CircularProgressBar::Bar, {color, color.darker(100)});
-    bar->setValue(value * 100.0);
-  }
-
-  if ( auto* const label = findChild<QskTextLabel*>() )
-  {
+    const auto gradient = gradientHint( StorageMeter::Status );
+    const auto color = gradient.extracted( value / 100.0, value / 100.0 ).startColor();
+    setGradientHint( StorageMeter::Bar, { color, color.lighter() } );
+    CircularProgressBar::setValue( value );
     label->setTextColor( color );
-    label->setText(  locale().toString( static_cast<int>(value * 100.0) ) + " " + locale().percent()  );
-  }
+    label->setText( make_text( locale(), value ) );
+}
+
+QSizeF StorageMeter::contentsSizeHint( Qt::SizeHint which, const QSizeF& constraint ) const
+{
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
+
+    qreal size;
+
+    if ( constraint.width() > 0 )
+    {
+        size = constraint.width();
+    }
+    else if ( constraint.height() > 0 )
+    {
+        size = constraint.height();
+    }
+    else
+    {
+        size = 57;
+    }
+
+    return QSizeF( size, size );
 }
