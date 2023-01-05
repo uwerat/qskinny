@@ -23,7 +23,6 @@ SOURCES += \
     RoundedIcon.cpp \
     Skin.cpp \
     StatisticsPage.cpp \
-    StoragePage.cpp \
     TopBar.cpp \
     RoundButton.cpp \
     UsageBox.cpp \
@@ -62,7 +61,6 @@ HEADERS += \
     RoundedIcon.h \
     Skin.h \
     StatisticsPage.h \
-    StoragePage.h \
     TopBar.h \
     RoundButton.h \
     UsageBox.h \
