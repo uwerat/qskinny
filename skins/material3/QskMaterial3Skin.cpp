@@ -151,10 +151,10 @@ namespace
         const QskMaterial3Theme& m_pal;
     };
 
-    QFont createFont( int pixelSize, qreal tracking, QFont::Weight weight )
+    QFont createFont( const QString& name, int lineHeight, int size, qreal tracking, QFont::Weight weight )
     {
-        QFont font( "Roboto" );
-        font.setPixelSize( pixelSize );
+        QFont font( name, size );
+        font.setPixelSize( lineHeight );
 
         if( !qskFuzzyCompare( tracking, 0.0 ) )
         {
@@ -509,14 +509,14 @@ void Editor::setupPushButton()
     using Q = QskPushButton;
 
     setFlagHint( Q::Panel | QskAspect::Direction, Qsk::LeftToRight );
-    setStrutSize( Q::Panel, -1, 31_dp );
+    setStrutSize( Q::Panel, -1, 40_dp );
     setSpacing( Q::Panel, 4_dp );
-    setPadding( Q::Panel, { 24_dp, 0, 20_dp, 0 } );
+    setPadding( Q::Panel, { 24_dp, 0, 24_dp, 0 } );
 
     setBoxShape( Q::Panel, 100, Qt::RelativeSize );
 
     setAlignment( Q::Graphic, Qt::AlignCenter );
-    setStrutSize( Q::Graphic, 24_dp, 24_dp );
+    setStrutSize( Q::Graphic, 18_dp, 18_dp );
     setPadding( Q::Graphic, 0 );
 
     setFontRole( Q::Text, QskMaterial3Skin::M3LabelLarge );
@@ -1013,10 +1013,10 @@ void QskMaterial3Skin::setupFonts()
 {
     Inherited::setupFonts( QStringLiteral( "Roboto" ) );
 
-    setFont( M3BodyMedium, createFont( 14_dp, 0.25, QFont::Normal ) );
-    setFont( M3BodyLarge, createFont( 16_dp, 0.5, QFont::Normal ) );
-    setFont( M3HeadlineSmall, createFont( 28_dp, 0.0, QFont::Normal ) );
-    setFont( M3LabelLarge, createFont( 14_dp, 0.1, QFont::Medium ) );
+    setFont( M3BodyMedium, createFont( QStringLiteral( "Roboto Regular"), 20_dp, 14_dp, 0.25, QFont::Normal ) );
+    setFont( M3BodyLarge, createFont( QStringLiteral( "Roboto Medium" ), 24_dp, 16_dp, 0.5, QFont::Normal ) );
+    setFont( M3HeadlineSmall, createFont( QStringLiteral( "Roboto Regular" ), 32_dp, 28_dp, 0.0, QFont::Normal ) );
+    setFont( M3LabelLarge, createFont( "Roboto Medium", 20_dp, 14_dp, 0.1, QFont::Medium ) );
 }
 
 #include "moc_QskMaterial3Skin.cpp"
