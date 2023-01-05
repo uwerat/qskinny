@@ -752,8 +752,10 @@ static inline int qskFillLineCount(
         lineCount += qMax( metrics.corner[ BottomLeft ].stepCount,
             metrics.corner[ BottomRight ].stepCount ) + 1;
 
+#if 0
         if ( metrics.centerQuad.top >= metrics.centerQuad.bottom )
             lineCount--;
+#endif
     }
     else if ( dir.isHorizontal() )
     {
@@ -763,8 +765,10 @@ static inline int qskFillLineCount(
         lineCount += qMax( metrics.corner[ TopRight ].stepCount,
             metrics.corner[ BottomRight ].stepCount ) + 1;
 
+#if 0
         if ( metrics.centerQuad.left >= metrics.centerQuad.right )
             lineCount--;
+#endif
     }
     else
     {
