@@ -43,9 +43,6 @@ namespace
 
         inline bool setGradientLine( qreal value, Color color, ColoredLine* line )
         {
-            if ( value <= m_values[0] || value >= m_values[1] )
-                return false;
-
             const auto v = m_t + value * m_dt;
 
             if ( m_vertical )
@@ -209,17 +206,17 @@ namespace
         {
             if( m_step == 0 || m_step == 3 )
             {
-                const auto& p = m_corners[m_step].pos;
+                const auto& p = m_corners[ m_step ].pos;
                 line->setLine( p.x(), p.y(), p.x(), p.y(), color );
             }
             else
             {
                 const qreal m = m_v.dy / m_v.dx;
 
-                auto p1 = m_corners[m_step - 1].pos;
-                const auto& p2 = m_corners[m_step].pos;
+                auto p1 = m_corners[ m_step - 1 ].pos;
+                const auto& p2 = m_corners[ m_step ].pos;
 
-                if ( p1.x() == m_corners[m_step + 1].pos.x() )
+                if ( p1.x() == m_corners[ m_step + 1 ].pos.x() )
                     p1.ry() = p2.y() + ( p2.x() - p1.x() ) / m;
                 else
                     p1.rx() = p2.x() + ( p2.y() - p1.y() ) * m;

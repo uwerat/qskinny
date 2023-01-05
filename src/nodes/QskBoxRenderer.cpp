@@ -69,13 +69,15 @@ bool QskBoxRenderer::isGradientSupported(
         }
         case QskGradient::Linear:
         {
+            const auto dir = gradient.linearDirection();
+            if ( dir.x1() > dir.x2() || dir.y1() > dir.y2() )
+                return false;
+
             if ( shape.isRectangle() )
             {
                 // rectangles are fully supported
                 return true;
             }
-
-            const auto dir = gradient.linearDirection();
 
             if ( dir.isTilted() )
             {
@@ -84,29 +86,31 @@ bool QskBoxRenderer::isGradientSupported(
             }
             else
             {
-                // different radii at oppsoite corners are not implemented TODO ...
-
-                const auto r1 = shape.radius( Qt::TopLeftCorner );
-                const auto r2 = shape.radius( Qt::TopRightCorner );
-                const auto r3 = shape.radius( Qt::BottomLeftCorner );
-                const auto r4 = shape.radius( Qt::BottomRightCorner );
+                qreal r1, r2, r3, r4;
 
                 if ( dir.isHorizontal() )
                 {
-                    if ( dir.x1() == 0.0 && dir.x2() == 1.0 )
-                    {
-                        return ( r1.width() == r3.width() )
-                            && ( r2.width() == r4.width() );
-                    }
+                    r1 = shape.radius( Qt::TopLeftCorner ).width();
+                    r2 = shape.radius( Qt::BottomLeftCorner ).width();
+                    r3 = shape.radius( Qt::TopRightCorner ).width();
+                    r4 = shape.radius( Qt::BottomRightCorner ).width();
                 }
                 else
                 {
-                    if ( dir.y1() == 0.0 && dir.y2() == 1.0 )
-                    {
-                        return ( r1.height() == r2.height() )
-                            && ( r3.height() == r4.height() );
-                    }
+                    r1 = shape.radius( Qt::TopLeftCorner ).height();
+                    r2 = shape.radius( Qt::TopRightCorner ).height();
+                    r3 = shape.radius( Qt::BottomLeftCorner ).height();
+                    r4 = shape.radius( Qt::BottomRightCorner ).height();
                 }
+
+                if ( ( r1 <= 0.0 || r2 <= 0.0 ) && ( r3 <= 0.0 || r4 <= 0.0 ) )
+                {
+                    // one of the corners is not rounded
+                    return true;
+                }
+
+                // different radii at opposite corners are not implemented TODO ...
+                return ( r1 == r2 ) && ( r3 == r4 );
             }
 
             return false;

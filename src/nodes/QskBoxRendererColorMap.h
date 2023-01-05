@@ -217,15 +217,15 @@ namespace QskVertex
     ColoredLine* fillOrdered( ContourIterator& contourIt,
         ColorIterator& colorIt, int lineCount, ColoredLine* lines )
     {
-       /*
-            When the the vector exceeds [ 0.0, 1.0 ] we might have
-            gradient lines lying outside the contour.
-            This effect could be precalculated - however we might end
-            up difficult code with potential bugs.
+        /*
+             When the the vector exceeds [ 0.0, 1.0 ] we might have
+             gradient lines lying outside the contour.
+             This effect could be precalculated - however we might end
+             up difficult code with potential bugs.
 
-            So we allow the allocation code to ignore the effect by
-            adding duplicates of the last line.
-        */
+             So we allow the allocation code to ignore the effect by
+             adding duplicates of the last line.
+         */
         const auto value0 = contourIt.value();
         ColoredLine* l = lines;
 
