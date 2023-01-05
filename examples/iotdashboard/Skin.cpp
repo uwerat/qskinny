@@ -9,27 +9,31 @@
 #include "BoxWithButtons.h"
 #include "CircularProgressBar.h"
 #include "CircularProgressBarSkinlet.h"
+#include "DashboardPage.h"
 #include "Diagram.h"
 #include "DiagramSkinlet.h"
 #include "GridBox.h"
 #include "LightDisplay.h"
 #include "LightDisplaySkinlet.h"
-#include "DashboardPage.h"
 #include "MenuBar.h"
 #include "RoomsPage.h"
-#include "RoundedIcon.h"
 #include "RoundButton.h"
+#include "RoundedIcon.h"
+#include "StorageBar.h"
+#include "StorageBarSkinlet.h"
+#include "StorageMeter.h"
 #include "StoragePage.h"
 #include "TopBar.h"
 #include "UsageBox.h"
 #include "UsageDiagram.h"
 
 #include <QskArcMetrics.h>
-#include <QskBoxShapeMetrics.h>
-#include <QskBoxBorderMetrics.h>
 #include <QskBoxBorderColors.h>
+#include <QskBoxBorderMetrics.h>
+#include <QskBoxShapeMetrics.h>
 #include <QskColorFilter.h>
 #include <QskFunctions.h>
+#include <QskProgressBar.h>
 #include <QskShadowMetrics.h>
 #include <QskSkinHintTableEditor.h>
 #include <QskStateCombination.h>
@@ -43,7 +47,7 @@ namespace
     {
         QFont font( "Proxima Nova" );
 
-        if( semiBold )
+        if ( semiBold )
         {
             font.setWeight( QFont::Bold );
         }
@@ -51,7 +55,6 @@ namespace
         font.setPointSizeF( pointSize /*/ qskDpiScaled( 1.0 )*/ );
         return font;
     }
-
 }
 
 Skin::Skin( const Palette& palette, QObject* parent )
@@ -60,6 +63,7 @@ Skin::Skin( const Palette& palette, QObject* parent )
     declareSkinlet< CircularProgressBar, CircularProgressBarSkinlet >();
     declareSkinlet< Diagram, DiagramSkinlet >();
     declareSkinlet< LightDisplay, LightDisplaySkinlet >();
+    declareSkinlet< StorageBar, StorageBarSkinlet >();
 
     initHints( palette );
 }
@@ -84,8 +88,7 @@ void Skin::initHints( const Palette& palette )
 
     QskSkinHintTableEditor ed( &hintTable() );
 
-    ed.setPadding( MainContentGridBox::Panel, {19, 0, 27, 24} );
-
+    ed.setPadding( MainContentGridBox::Panel, { 19, 0, 27, 24 } );
 
     // menu bar:
     ed.setMargin( MenuBarTopLabel::Graphic, { 50, 5, 50, 65 } );
@@ -110,7 +113,7 @@ void Skin::initHints( const Palette& palette )
 
 
     // top bar:
-    ed.setPadding( TopBar::Panel, {25, 35, 25, 0} );
+    ed.setPadding( TopBar::Panel, { 25, 35, 25, 0 } );
 
     ed.setColor( TopBarItem::Item1 | QskAspect::TextColor, 0xffff3122 );
     ed.setColor( TopBarItem::Item2 | QskAspect::TextColor, 0xff6776ff );
@@ -167,16 +170,20 @@ void Skin::initHints( const Palette& palette )
             const int duration = 300;
 
             ed.setGradient( RoundedIcon::PalePanel | QskAbstractButton::Checked, pressedNormal );
-            ed.setGradient( RoundedIcon::PalePanel | RoundedIcon::Bright | QskAbstractButton::Checked, pressedBright );
+            ed.setGradient(
+                RoundedIcon::PalePanel | RoundedIcon::Bright | QskAbstractButton::Checked,
+                pressedBright );
             ed.setAnimation( RoundedIcon::PalePanel | QskAspect::Color, duration );
 
             ed.setGraphicRole( RoundedIcon::Graphic, RoundedIcon::NormalRole );
-            ed.setGraphicRole( RoundedIcon::Graphic | QskAbstractButton::Checked, RoundedIcon::CheckedRole,
-                               { QskStateCombination::CombinationNoState, RoundedIcon::Bright } );
+            ed.setGraphicRole( RoundedIcon::Graphic | QskAbstractButton::Checked,
+                RoundedIcon::CheckedRole,
+                { QskStateCombination::CombinationNoState, RoundedIcon::Bright } );
             ed.setAnimation( RoundedIcon::Graphic, duration );
 
             QskColorFilter filter;
-            filter.addColorSubstitution( 0xff606675, palette.deviceGraphic ); // color comes from the SVG
+            filter.addColorSubstitution(
+                0xff606675, palette.deviceGraphic ); // color comes from the SVG
             setGraphicFilter( RoundedIcon::CheckedRole, filter );
         }
 
@@ -268,7 +275,7 @@ void Skin::initHints( const Palette& palette )
 
     ed.setGradient( RoundButton::Panel, palette.roundButton );
     ed.setGradient( RoundButton::Panel | QskAbstractButton::Pressed, palette.roundButtonPressed,
-                    { QskStateCombination::CombinationNoState, RoundButton::Top } );
+        { QskStateCombination::CombinationNoState, RoundButton::Top } );
     ed.setAnimation( RoundButton::Panel | QskAspect::Color, 100 );
 
     ed.setBoxBorderColors( UsageDiagramBox::DaysBox, palette.weekdayBox );
@@ -278,6 +285,26 @@ void Skin::initHints( const Palette& palette )
     auto grooveGradient = palette.circularProgressBarGroove;
     grooveGradient.setDirection( QskGradient::Linear );
     ed.setGradient( CircularProgressBar::Groove, grooveGradient );
+
+    // storage bar
+    {
+        const auto make_gradient = []( const QColor color ) -> QskGradient {
+            return { color.lighter(), color };
+        };
+        ed.setGradient( StorageBar::Pictures, make_gradient( "#FFBE0B" ) );
+        ed.setGradient( StorageBar::Music, make_gradient( "#FB5607" ) );
+        ed.setGradient( StorageBar::Videos, make_gradient( "#FF006E" ) );
+        ed.setGradient( StorageBar::Documents, make_gradient( "#8338EC" ) );
+        ed.setGradient( StorageBar::Others, make_gradient( "#3A86FF" ) );
+        ed.setGradient( StorageBar::Free, make_gradient( "lightgray" ) );
+    }
+
+    // storage meter
+    {
+        ed.setGradient( StorageMeter::Status,
+            { { { 0.00, "#00ff00" }, { 0.33, "#00ff00" }, { 0.33, "#ffaf00" }, { 0.66, "#ffaf00" },
+                { 0.66, "#ff0000" }, { 1.00, "#ff0000" } } } );
+    }
 }
 
 Skin::Palette DaytimeSkin::palette() const
@@ -292,8 +319,8 @@ Skin::Palette DaytimeSkin::palette() const
         Qt::black,
         0xffe5e5e5,
         0xffc4c4c4,
-        { { { 0.0, 0xffff3122 }, { 0.2, 0xfffeeeb7 }, { 0.3, 0xffa7b0ff },
-                { 0.5, 0xff6776ff }, { 1.0, Qt::black } } },
+        { { { 0.0, 0xffff3122 }, { 0.2, 0xfffeeeb7 }, { 0.3, 0xffa7b0ff }, { 0.5, 0xff6776ff },
+            { 1.0, Qt::black } } },
         { { { 0.0, 0xffc4c4c4 }, { 0.5, 0xfff8f8f8 }, { 1.0, 0xffc4c4c4 } } },
         0xffdddddd,
     };
@@ -311,8 +338,7 @@ Skin::Palette NighttimeSkin::palette() const
         Qt::white,
         0xff4a4a4a,
         0xff555555,
-        { { { 0.0, 0xff991100 }, { 0.2, 0xff9a7a57 },
-                { 0.5, 0xff3726af }, { 1.0, Qt::black } } },
+        { { { 0.0, 0xff991100 }, { 0.2, 0xff9a7a57 }, { 0.5, 0xff3726af }, { 1.0, Qt::black } } },
         { { { 0.0, 0xff666666 }, { 0.5, 0xff222222 }, { 1.0, 0xff333333 } } },
         0xff222222,
     };

@@ -31,6 +31,7 @@ SOURCES += \
     StoragePage.cpp \
     StorageMeter.cpp \
     StorageBar.cpp \
+    StorageBarSkinlet.cpp \
     main.cpp \
 
 SOURCES += \
@@ -69,6 +70,7 @@ HEADERS += \
     StoragePage.h \
     StorageMeter.h \
     StorageBar.h \
+    StorageBarSkinlet.h \
 
 HEADERS += \
     nodes/DiagramDataNode.h \
