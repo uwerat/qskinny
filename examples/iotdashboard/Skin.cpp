@@ -272,7 +272,10 @@ void Skin::initHints( const Palette& palette )
     ed.setBoxBorderColors( UsageDiagramBox::DaysBox, palette.weekdayBox );
     ed.setColor( QskTextLabel::Text, palette.text );
     ed.setColor( UsageDiagramBox::DayText, palette.text );
-    ed.setGradient( CircularProgressBar::Groove, palette.circularProgressBarGroove );
+
+    auto grooveGradient = palette.circularProgressBarGroove;
+    grooveGradient.setDirection( QskGradient::Linear );
+    ed.setGradient( CircularProgressBar::Groove, grooveGradient );
 }
 
 Skin::Palette DaytimeSkin::palette() const
