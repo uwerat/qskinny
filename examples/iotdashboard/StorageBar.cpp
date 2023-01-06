@@ -116,3 +116,5 @@ qreal StorageBar::free() const
 {
     return 1.0 - m_pictures - m_music - m_videos - m_documents - m_others;
 }
+
+#include "moc_StorageBar.cpp"

@@ -103,3 +103,5 @@ QSGNode* StorageBarSkinlet::updateSubNode(
             return Inherited::updateSubNode( skinnable, nodeRole, node );
     }
 }
+
+#include "moc_StorageBarSkinlet.cpp"
