@@ -12,6 +12,9 @@
 #include <QskDialogButtonBox.h>
 #include <QskFocusIndicator.h>
 #include <QskFunctions.h>
+#include <QskGraphic.h>
+#include <QskGraphicIO.h>
+#include <QskGraphicProvider.h>
 #include <QskInputPanelBox.h>
 #include <QskListView.h>
 #include <QskMenu.h>
@@ -23,6 +26,7 @@
 #include <QskSeparator.h>
 #include <QskShadowMetrics.h>
 #include <QskSlider.h>
+#include <QskStandardSymbol.h>
 #include <QskSubWindow.h>
 #include <QskSwitchButton.h>
 #include <QskSwitchButtonSkinlet.h>
@@ -98,12 +102,10 @@ namespace
         return value * factor;
     }
 
-#if 0
     inline double operator ""_dp( long double value )
     {
         return dpToPixels( value );
     }
-#endif
 
     inline double operator ""_dp( unsigned long long int value )
     {
@@ -221,11 +223,11 @@ void Editor::setupCheckBox()
 {
     using Q = QskCheckBox;
 
-    setSpacing( Q::Panel, 10_dp );
+    setSpacing( Q::Panel, 40_dp );
 
     setStrutSize( Q::Box, 24_dp, 24_dp );
 
-    setPadding( Q::Box, 6_dp );
+    setPadding( Q::Box, 4_dp );
     setBoxShape( Q::Box, 2_dp );
     setBoxBorderMetrics( Q::Box, 2_dp );
     setBoxBorderColors( Q::Box, m_pal.onBackground );
@@ -242,6 +244,14 @@ void Editor::setupCheckBox()
 
     setColor( Q::Text, m_pal.onBackground );
     setTextOptions( Q::Text, Qt::ElideMiddle, QskTextOptions::NoWrap );
+
+    setStrutSize( Q::Ripple, { 53.33_dp, 53.33_dp } );
+    setBoxShape( Q::Ripple, 100, Qt::RelativeSize );
+    setGradient( Q::Ripple, Qt::transparent );
+    setGradient( Q::Ripple | Q::Hovered | Q::Checked, m_pal.primary8 );
+    setGradient( Q::Ripple | Q::Hovered, m_pal.onSurface8 );
+    setGradient( Q::Ripple | Q::Hovered | Q::Pressed, m_pal.primary12 );
+    setGradient( Q::Ripple | Q::Pressed, m_pal.primary12 );
 }
 
 void Editor::setupBox()
@@ -978,6 +988,7 @@ QskMaterial3Theme::QskMaterial3Theme(Lightness lightness,
         shadow = m_palettes[ Neutral ].toned( 0 ).rgb();
     }
 
+    primary8 = QskRgb::toTransparentF( primary, 0.08 );
     primary12 = QskRgb::toTransparentF( primary, 0.12 );
 
     surface1 = flattenedColor( primary, background, 0.05 );
@@ -986,6 +997,7 @@ QskMaterial3Theme::QskMaterial3Theme(Lightness lightness,
     surface4 = flattenedColor( primary, background, 0.12 );
     surface5 = flattenedColor( primary, background, 0.14 );
 
+    onSurface8 = QskRgb::toTransparentF( onSurface, 0.08 );
     onSurface12 = QskRgb::toTransparentF( onSurface, 0.12 );
     onSurface38 = QskRgb::toTransparentF( onSurface, 0.38 );
 
@@ -996,9 +1008,24 @@ QskMaterial3Theme::QskMaterial3Theme(Lightness lightness,
     elevationLight3 = QskShadowMetrics( -1, 11, { 0, 2 } );
 }
 
+QskMaterial3GraphicProvder::QskMaterial3GraphicProvder( QObject* parent )
+    : Inherited( parent )
+{
+}
+
+const QskGraphic* QskMaterial3GraphicProvder::loadGraphic( const QString& id ) const
+{
+    const QString name = QString( ":/icons/qvg/%1.qvg" ).arg( id );
+    const QskGraphic graphic = QskGraphicIO::read( name );
+
+    return graphic.isNull() ? nullptr : new QskGraphic( graphic );
+}
+
 QskMaterial3Skin::QskMaterial3Skin( const QskMaterial3Theme& palette, QObject* parent )
     : Inherited( parent )
 {
+    addGraphicProvider( {}, new QskMaterial3GraphicProvder() );
+
     setupFonts();
 
     Editor editor( &hintTable(), palette );
@@ -1007,6 +1034,24 @@ QskMaterial3Skin::QskMaterial3Skin( const QskMaterial3Theme& palette, QObject* p
 
 QskMaterial3Skin::~QskMaterial3Skin()
 {
+}
+
+QskGraphic QskMaterial3Skin::symbol( int symbolType ) const
+{
+    switch ( symbolType )
+    {
+    case QskStandardSymbol::CheckMark:
+    {
+        const auto* provider = graphicProvider( {} );
+        return *( provider->requestGraphic( "check_small" ) );
+    }
+    case QskStandardSymbol::CrossMark:
+    {
+        return {};
+    }
+    default:
+        return Inherited::symbol( symbolType );
+    }
 }
 
 void QskMaterial3Skin::setupFonts()

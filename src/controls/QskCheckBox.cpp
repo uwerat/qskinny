@@ -9,6 +9,7 @@ QSK_SUBCONTROL( QskCheckBox, Panel )
 QSK_SUBCONTROL( QskCheckBox, Box )
 QSK_SUBCONTROL( QskCheckBox, Indicator )
 QSK_SUBCONTROL( QskCheckBox, Text )
+QSK_SUBCONTROL( QskCheckBox, Ripple )
 
 class QskCheckBox::PrivateData
 {
