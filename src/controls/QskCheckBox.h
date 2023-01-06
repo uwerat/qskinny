@@ -17,7 +17,7 @@ class QSK_EXPORT QskCheckBox : public QskAbstractButton
     using Inherited = QskAbstractButton;
 
   public:
-    QSK_SUBCONTROLS( Panel, Box, Indicator, Text )
+    QSK_SUBCONTROLS( Panel, Box, Indicator, Text, Ripple )
 
     QskCheckBox( QQuickItem* parent = nullptr );
     QskCheckBox( const QString&, QQuickItem* parent = nullptr );
