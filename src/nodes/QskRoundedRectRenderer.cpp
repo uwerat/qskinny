@@ -207,19 +207,25 @@ namespace
             : m_metrics( metrics )
             , m_vertical( vector.x1() == vector.x2() )
         {
-            const auto& c = metrics.corner;
+            const auto& mc = metrics.corner;
 
             auto v = m_values;
 
             if ( m_vertical )
             {
-                v[0].setCorner( Qt::Horizontal, false, c[TopLeft] );
-                v[1].setCorner( Qt::Horizontal, true, c[TopRight] );
-                v[2].setCorner( Qt::Vertical, false, c[TopLeft] );
+                const int c[] = { TopLeft, TopRight, BottomLeft, BottomRight };
 
-                v[3].setCorner( Qt::Horizontal, false, c[BottomLeft] );
-                v[4].setCorner( Qt::Horizontal, true, c[BottomRight] );
-                v[5].setCorner( Qt::Vertical, true, c[BottomLeft] );
+                v[0].setCorner( Qt::Horizontal, false, mc[ c[0] ] );
+                v[1].setCorner( Qt::Horizontal, true, mc[ c[1] ] );
+
+                const int idx1 = ( v[0].stepCount >= v[1].stepCount ) ? 0 : 1;
+                v[2].setCorner( Qt::Vertical, false, mc[ c[idx1] ] );
+
+                v[3].setCorner( Qt::Horizontal, false, mc[ c[2] ] );
+                v[4].setCorner( Qt::Horizontal, true, mc[ c[3] ] );
+
+                const int idx2 = ( v[3].stepCount >= v[4].stepCount ) ? 2 : 3;
+                v[5].setCorner( Qt::Vertical, true, mc[ c[idx2] ] );
 
                 m_pos0 = metrics.innerQuad.top;
                 m_size = metrics.innerQuad.height;
@@ -229,13 +235,19 @@ namespace
             }
             else
             {
-                v[0].setCorner( Qt::Vertical, false, c[TopLeft] );
-                v[1].setCorner( Qt::Vertical, true, c[BottomLeft] );
-                v[2].setCorner( Qt::Horizontal, false, c[TopLeft] );
+                const int c[] = { TopLeft, BottomLeft, TopRight, BottomRight };
 
-                v[3].setCorner( Qt::Vertical, false, c[TopRight] );
-                v[4].setCorner( Qt::Vertical, true, c[BottomRight] );
-                v[5].setCorner( Qt::Horizontal, true, c[TopRight] );
+                v[0].setCorner( Qt::Vertical, false, mc[ c[0] ] );
+                v[1].setCorner( Qt::Vertical, true, mc[ c[1] ] );
+
+                const int idx1 = ( v[0].stepCount >= v[1].stepCount ) ? 0 : 1;
+                v[2].setCorner( Qt::Horizontal, false, mc[ c[idx1] ] );
+
+                v[3].setCorner( Qt::Vertical, false, mc[ c[2] ] );
+                v[4].setCorner( Qt::Vertical, true, mc[ c[3] ] );
+
+                const int idx2 = ( v[3].stepCount >= v[4].stepCount ) ? 2 : 3;
+                v[5].setCorner( Qt::Horizontal, true, mc[ c[idx2] ] );
 
                 m_pos0 = metrics.innerQuad.left;
                 m_size = metrics.innerQuad.width;
@@ -752,10 +764,8 @@ static inline int qskFillLineCount(
         lineCount += qMax( metrics.corner[ BottomLeft ].stepCount,
             metrics.corner[ BottomRight ].stepCount ) + 1;
 
-#if 0
         if ( metrics.centerQuad.top >= metrics.centerQuad.bottom )
             lineCount--;
-#endif
     }
     else if ( dir.isHorizontal() )
     {
@@ -765,10 +775,8 @@ static inline int qskFillLineCount(
         lineCount += qMax( metrics.corner[ TopRight ].stepCount,
             metrics.corner[ BottomRight ].stepCount ) + 1;
 
-#if 0
         if ( metrics.centerQuad.left >= metrics.centerQuad.right )
             lineCount--;
-#endif
     }
     else
     {
