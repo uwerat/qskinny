@@ -84,7 +84,7 @@ namespace
     {
       public:
         CheckButtonBox( QQuickItem* parent = nullptr )
-            : QskLinearBox( Qt::Horizontal, parent )
+            : QskLinearBox( Qt::Horizontal, 2, parent )
         {
             setSpacing( 40 );
             setExtraSpacingAt( Qt::LeftEdge | Qt::RightEdge | Qt::BottomEdge );
@@ -94,6 +94,9 @@ namespace
 
             auto button2 = new QskCheckBox( "Options 2", this );
             button2->setLayoutMirroring( true );
+
+            auto button3 = new QskCheckBox( "Error", this );
+            button3->setSkinStateFlag( QskCheckBox::Error );
         }
     };
 }

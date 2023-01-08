@@ -57,6 +57,8 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
     QRgb onTertiaryContainer;
 
     QRgb error;
+    QRgb error8;
+    QRgb error12;
     QRgb onError;
     QRgb errorContainer;
     QRgb onErrorContainer;
@@ -120,6 +122,13 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
 
     virtual QskGraphic symbol( int symbolType ) const override;
 
+    enum GraphicRole
+    {
+        GraphicRoleOnError,
+        GraphicRoleOnPrimary,
+        GraphicRoleSurface,
+    };
+
     enum FontRole
     {
         M3BodyMedium = QskSkin::HugeFont + 1,
@@ -130,6 +139,7 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
 
   private:
     void setupFonts();
+    void setupGraphicFilters( const QskMaterial3Theme& palette );
 };
 
 #endif
