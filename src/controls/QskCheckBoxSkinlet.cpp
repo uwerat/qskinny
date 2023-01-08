@@ -147,19 +147,6 @@ QSGNode* QskCheckBoxSkinlet::updateIndicatorNode(
     }
 
     auto graphic = checkBox->effectiveSkin()->symbol( symbol );
-
-#if 1
-    /*
-        Our default skins do not have the concept of colorRoles
-        implemented. Until then we do the recoloring manually here
-     */
-    QskColorFilter filter;
-    filter.addColorSubstitution( Qt::black,
-        checkBox->color( QskCheckBox::Indicator ).rgba() );
-
-    graphic = QskGraphic::fromGraphic( graphic, filter );
-#endif
-
     return updateGraphicNode( checkBox, node, graphic, QskCheckBox::Indicator );
 }
 
