@@ -11,7 +11,7 @@
 
 namespace Qsk
 {
-    QSK_EXPORT Q_NAMESPACE
+    Q_NAMESPACE_EXPORT( QSK_EXPORT )
 
     enum Direction
     {

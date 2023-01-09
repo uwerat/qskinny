@@ -10,7 +10,7 @@
 
 namespace SkinnyShapeFactory
 {
-    SKINNY_EXPORT Q_NAMESPACE
+    Q_NAMESPACE_EXPORT( SKINNY_EXPORT )
 
     // a couple of standard painter paths, that can
     // be used for testing
