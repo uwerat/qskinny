@@ -25,9 +25,7 @@ namespace QskRoundedRectRenderer
 
         QskVertex::Quad outerQuad;
         QskVertex::Quad innerQuad;
-#if 1
-        QskVertex::Quad centerQuad; // to be removed
-#endif
+        QskVertex::Quad centerQuad;
 
         struct Corner
         {
@@ -45,16 +43,17 @@ namespace QskRoundedRectRenderer
         bool isTotallyCropped;
     };
 
-    void renderRectellipseFill( const QRectF&,
+    void renderFill( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&, QSGGeometry& );
 
-    void renderRectellipseBorder( const QRectF&,
+    void renderBorder( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&, QSGGeometry& );
 
-    void renderRectellipse( const QRectF&,
+    void renderRect( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
         const QskBoxBorderColors&, const QskGradient&, QSGGeometry& );
 
+    // QskBoxRendererDEllipse.cpp
     void renderDiagonalFill( const Metrics&, const QskGradient&,
         int lineCount, QskVertex::ColoredLine* );
 }

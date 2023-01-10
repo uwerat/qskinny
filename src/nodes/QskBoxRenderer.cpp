@@ -42,7 +42,7 @@ void QskBoxRenderer::renderBorder(
     if ( shape.isRectangle() )
         QskRectRenderer::renderBorder( rect, border, geometry );
     else
-        QskRoundedRectRenderer::renderRectellipseBorder( rect, shape, border, geometry );
+        QskRoundedRectRenderer::renderBorder( rect, shape, border, geometry );
 }
 
 void QskBoxRenderer::renderFill(
@@ -52,7 +52,7 @@ void QskBoxRenderer::renderFill(
     if ( shape.isRectangle() )
         QskRectRenderer::renderFill( rect, border, geometry );
     else
-        QskRoundedRectRenderer::renderRectellipseFill( rect, shape, border, geometry );
+        QskRoundedRectRenderer::renderFill( rect, shape, border, geometry );
 }
 
 void QskBoxRenderer::renderBox( const QRectF& rect,
@@ -69,7 +69,7 @@ void QskBoxRenderer::renderBox( const QRectF& rect,
     }
     else
     {
-        QskRoundedRectRenderer::renderRectellipse(
+        QskRoundedRectRenderer::renderRect(
             rect, shape, border, borderColors, gradientN, geometry );
     }
 }

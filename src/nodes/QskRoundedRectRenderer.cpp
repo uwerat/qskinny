@@ -1157,7 +1157,7 @@ QskRoundedRectRenderer::Metrics::Metrics( const QRectF& rect,
         ( borderRight == borderBottom );
 }
 
-void QskRoundedRectRenderer::renderRectellipseBorder(
+void QskRoundedRectRenderer::renderBorder(
     const QRectF& rect, const QskBoxShapeMetrics& shape,
     const QskBoxBorderMetrics& border, QSGGeometry& geometry )
 {
@@ -1176,7 +1176,7 @@ void QskRoundedRectRenderer::renderRectellipseBorder(
     qskRenderBorderLines( metrics, Qt::Vertical, line, BorderMapNone() );
 }
 
-void QskRoundedRectRenderer::renderRectellipseFill(
+void QskRoundedRectRenderer::renderFill(
     const QRectF& rect, const QskBoxShapeMetrics& shape,
     const QskBoxBorderMetrics& border, QSGGeometry& geometry )
 {
@@ -1307,7 +1307,7 @@ void QskRoundedRectRenderer::renderRectellipseFill(
 #endif
 }
 
-void QskRoundedRectRenderer::renderRectellipse( const QRectF& rect,
+void QskRoundedRectRenderer::renderRect( const QRectF& rect,
     const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& border,
     const QskBoxBorderColors& borderColors, const QskGradient& gradient,
     QSGGeometry& geometry )
