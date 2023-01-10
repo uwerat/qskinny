@@ -81,8 +81,8 @@ bool QskBoxRenderer::isGradientSupported(
 
             if ( dir.isTilted() )
             {
-                return ( dir.x1() == 0.0 && dir.x2() == 0.0 )
-                    && ( dir.y1() == 1.0 && dir.y2() == 1.0 );
+                return ( dir.x1() == 0.0 ) && ( dir.x2() == 1.0 )
+                    && ( dir.y1() == 0.0 ) && ( dir.y2() == 1.0 );
             }
             else
             {
