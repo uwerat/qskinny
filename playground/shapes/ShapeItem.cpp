@@ -14,12 +14,16 @@
 #include <qpainterpath.h>
 #include <qpen.h>
 
+#define STROKE_ADJUSTMENT 0
+
 static inline QTransform transformForRects( const QRectF& r1, const QRectF& r2 )
 {
     return QTransform::fromTranslate( -r1.x(), -r1.y() )
         * QTransform::fromScale( r2.width() / r1.width(), r2.height() / r1.height() )
         * QTransform::fromTranslate( r2.x(), r2.y() );
 }
+
+#if STROKE_ADJUSTMENT
 
 static inline qreal effectiveStrokeWidth(
     const Stroke& stroke, const QRectF& r1, const QRectF& r2 )
@@ -36,6 +40,8 @@ static inline qreal effectiveStrokeWidth(
 
     return width;
 }
+
+#endif
 
 class ShapeItem::PrivateData
 {
@@ -167,7 +173,8 @@ void ShapeItem::updateNode( QSGNode* parentNode )
         }
 
         auto fillRect = rect;
-#if 0
+
+#if STROKE_ADJUSTMENT
         /*
             when the stroke is not opaque ( transparent color or dashed ) we
             would see, that the filling is not inside. But simply adjusting
