@@ -152,80 +152,47 @@ namespace
         Values m_outer[ 4 ];
     };
 
-    class CornerValues
+    class Vector1D
     {
       public:
-        inline void setCorner( Qt::Orientation orientation, bool increasing,
-            const QskRoundedRectRenderer::Metrics::Corner& c )
+        Vector1D() = default;
+
+        inline constexpr Vector1D( qreal origin, qreal length )
+            : origin( origin )
+            , length( length )
         {
-            if ( orientation == Qt::Horizontal )
-            {
-                m_center = c.centerX;
-                m_radius = c.radiusInnerX;
-            }
-            else
-            {
-                m_center = c.centerY;
-                m_radius = c.radiusInnerY;
-            }
-
-            const qreal f = increasing ? 1.0 : -1.0;
-
-            if ( m_radius < 0.0 )
-            {
-                m_center += m_radius * f;
-                m_radius = 0.0;
-            }
-            else
-            {
-                m_radius *= f;
-            }
-
-            stepCount = c.stepCount;
         }
 
-        qreal valueAt( qreal fv ) const
+        inline qreal valueAt( qreal t ) const
         {
-            return m_center + fv * m_radius;
+            return origin + t * length;
         }
 
-        int stepCount;
-
-      private:
-        qreal m_center = 0.0;
-        qreal m_radius = 0.0;
+        qreal origin = 0.0;
+        qreal length = 0.0;
     };
 }
 
 namespace
 {
+    /*
+        A contour iterator for vertical and horizontal linear gradients.
+        The radii in direction of the gradient need to match at the
+        opening and at the closing sides,
+     */
     class HVRectEllipseIterator
     {
       public:
         HVRectEllipseIterator(
                 const QskRoundedRectRenderer::Metrics& metrics, const QLineF& vector )
-            : m_metrics( metrics )
-            , m_vertical( vector.x1() == vector.x2() )
+            : m_vertical( vector.x1() == vector.x2() )
         {
-            const auto& mc = metrics.corner;
-
-            auto v = m_values;
+            const int* c;
 
             if ( m_vertical )
             {
-                const int c[] = { TopLeft, TopRight, BottomLeft, BottomRight };
-
-                v[0].setCorner( Qt::Horizontal, false, mc[ c[0] ] );
-                v[1].setCorner( Qt::Horizontal, true, mc[ c[1] ] );
-
-                const int idx1 = ( v[0].stepCount >= v[1].stepCount ) ? 0 : 1;
-                v[2].setCorner( Qt::Vertical, false, mc[ c[idx1] ] );
-
-                v[3].setCorner( Qt::Horizontal, false, mc[ c[2] ] );
-                v[4].setCorner( Qt::Horizontal, true, mc[ c[3] ] );
-
-                const int idx2 = ( v[3].stepCount >= v[4].stepCount ) ? 2 : 3;
-                v[5].setCorner( Qt::Vertical, true, mc[ c[idx2] ] );
+                static const int cV[] = { TopLeft, TopRight, BottomLeft, BottomRight };
+                c = cV;
 
                 m_pos0 = metrics.innerQuad.top;
                 m_size = metrics.innerQuad.height;
@@ -235,19 +202,8 @@ namespace
             }
             else
             {
-                const int c[] = { TopLeft, BottomLeft, TopRight, BottomRight };
-
-                v[0].setCorner( Qt::Vertical, false, mc[ c[0] ] );
-                v[1].setCorner( Qt::Vertical, true, mc[ c[1] ] );
-
-                const int idx1 = ( v[0].stepCount >= v[1].stepCount ) ? 0 : 1;
-                v[2].setCorner( Qt::Horizontal, false, mc[ c[idx1] ] );
-
-                v[3].setCorner( Qt::Vertical, false, mc[ c[2] ] );
-                v[4].setCorner( Qt::Vertical, true, mc[ c[3] ] );
-
-                const int idx2 = ( v[3].stepCount >= v[4].stepCount ) ? 2 : 3;
-                v[5].setCorner( Qt::Horizontal, true, mc[ c[idx2] ] );
+                static const int cH[] = { TopLeft, BottomLeft, TopRight, BottomRight };
+                c = cH;
 
                 m_pos0 = metrics.innerQuad.left;
                 m_size = metrics.innerQuad.width;
@@ -256,19 +212,37 @@ namespace
                 m_dt = vector.dx() * m_size;
             }
 
-            m_v1.from = v[0].valueAt( 1.0 );
-            m_v1.to = v[1].valueAt( 1.0 );
+            const auto& mc1 = metrics.corner[ c[0] ];
+            const auto& mc2 = metrics.corner[ c[1] ];
+            const auto& mc3 = ( mc1.stepCount >= mc2.stepCount ) ? mc1 : mc2;
+
+            const auto& mc4 = metrics.corner[ c[2] ];
+            const auto& mc5 = metrics.corner[ c[3] ];
+            const auto& mc6 = ( mc4.stepCount >= mc5.stepCount ) ? mc4 : mc5;
+
+            m_vector[0] = vectorAt( !m_vertical, false, mc1 );
+            m_vector[1] = vectorAt( !m_vertical, true, mc2 );
+            m_vector[2] = vectorAt( m_vertical, false, mc3 );
+
+            m_vector[3] = vectorAt( !m_vertical, false, mc4 );
+            m_vector[4] = vectorAt( !m_vertical, true, mc5 );
+            m_vector[5] = vectorAt( m_vertical, true, mc6 );
+
+            m_stepCounts[0] = mc3.stepCount;
+            m_stepCounts[1] = mc6.stepCount;
+
+            m_v1.from = m_vector[0].valueAt( 1.0 );
+            m_v1.to = m_vector[1].valueAt( 1.0 );
             m_v1.pos = m_pos0;
 
             m_v2 = m_v1;
 
-            const auto stepCount = qMax( v[0].stepCount, v[1].stepCount );
-            m_arcIterator.reset( stepCount, false );
+            m_arcIterator.reset( m_stepCounts[0], false );
         }
 
         inline bool advance()
         {
-            auto v = m_values;
+            auto v = m_vector;
 
             if ( m_arcIterator.step() == m_arcIterator.stepCount() )
             {
@@ -278,8 +252,7 @@ namespace
                     return false;
                 }
 
-                const auto stepCount = qMax( v[3].stepCount, v[4].stepCount );
-                m_arcIterator.reset( stepCount, true );
+                m_arcIterator.reset( m_stepCounts[1], true );
 
                 const qreal pos1 = v[2].valueAt( 0.0 );
                 const qreal pos2 = v[5].valueAt( 0.0 );
@@ -337,6 +310,37 @@ namespace
 
       private:
 
+        inline Vector1D vectorAt( bool vertical, bool increasing,
+            const QskRoundedRectRenderer::Metrics::Corner& c ) const
+        {
+            qreal center, radius;
+
+            if ( vertical )
+            {
+                center = c.centerY;
+                radius = c.radiusInnerY;
+            }
+            else
+            {
+                center = c.centerX;
+                radius = c.radiusInnerX;
+            }
+
+            const qreal f = increasing ? 1.0 : -1.0;
+
+            if ( radius < 0.0 )
+            {
+                center += radius * f;
+                radius = 0.0;
+            }
+            else
+            {
+                radius *= f;
+            }
+
+            return { center, radius };
+        }
+
         inline void setLine( qreal from, qreal to, qreal pos,
             Color color, ColoredLine* line )
         {
@@ -346,13 +350,29 @@ namespace
                 line->setLine( pos, from, pos, to, color );
         }
 
-        const QskRoundedRectRenderer::Metrics& m_metrics;
         const bool m_vertical;
 
+        int m_stepCounts[2];
         ArcIterator m_arcIterator;
 
-        CornerValues m_values[6];
-        struct { qreal from, to, pos; } m_v1, m_v2;
+        /*
+            This iterator supports shapes, where we have the same radius in
+            direction of the gradient ( exception: one corner is not rounded ).
+            However we allow having different radii opposite to the direction
+            of the gradient. So we have 3 center/radius pairs to calculate the
+            interpolating contour lines at both ends ( opening/closing ).
+         */
+        Vector1D m_vector[6];
+
+        /*
+            position of the previous and following contour line, so that
+            the positions of the gradiet lines in between can be calculated.
+         */
+        struct
+        {
+            qreal from, to; // opposite to the direction of the gradient
+            qreal pos;      // in direction of the gradient
+        } m_v1, m_v2;
 
         qreal m_pos0, m_size;
         qreal m_t, m_dt; // to translate into gradient values
