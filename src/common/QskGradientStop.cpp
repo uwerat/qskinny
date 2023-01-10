@@ -312,6 +312,17 @@ QskGradientStops qskExtractedGradientStops(
     return extracted;
 }
 
+QskGradientStops qskRevertedGradientStops( const QskGradientStops& stops )
+{
+    QVector< QskGradientStop > s;
+    s.reserve( stops.count() );
+
+    for ( auto it = stops.crbegin(); it != stops.crend(); ++it )
+        s += QskGradientStop( 1.0 - it->position(), it->color() );
+
+    return s;
+}
+
 QVector< QskGradientStop > qskBuildGradientStops( const QGradientStops& qtStops )
 {
     QVector< QskGradientStop > stops;

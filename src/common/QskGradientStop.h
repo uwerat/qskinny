@@ -145,6 +145,8 @@ QSK_EXPORT QskGradientStops qskBuildGradientStops(
 QSK_EXPORT QskGradientStops qskBuildGradientStops(
     const QVector< QColor >&, bool discrete = false );
 
+QSK_EXPORT QskGradientStops qskRevertedGradientStops( const QskGradientStops& );
+
 QSK_EXPORT QskGradientStops qskBuildGradientStops( const QVector< QGradientStop >& );
 QSK_EXPORT QVector< QGradientStop > qskToQGradientStops( const QVector< QskGradientStop >& );
 

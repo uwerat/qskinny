@@ -11,6 +11,30 @@
 #include "QskGradient.h"
 #include "QskGradientDirection.h"
 
+static inline QskGradient qskNormalizedGradient( const QskGradient gradient )
+{
+    const auto dir = gradient.linearDirection();
+    if ( !dir.isTilted() )
+    {
+        /*
+            Dealing with inverted gradient vectors makes the code even
+            more unreadable. So we simply invert stops/vector instead.
+         */
+        if ( ( dir.x1() > dir.x2() ) || ( dir.y1() > dir.y2() ) )
+        {
+            QskGradient g = gradient;
+            g.setLinearDirection( dir.x2(), dir.y2(), dir.x1(), dir.y1() );
+
+            if ( !g.isMonochrome() )
+                g.setStops( qskRevertedGradientStops( gradient.stops() ) );
+
+            return g;
+        }
+    }
+
+    return gradient;
+}
+
 void QskBoxRenderer::renderBorder(
     const QRectF& rect, const QskBoxShapeMetrics& shape,
     const QskBoxBorderMetrics& border, QSGGeometry& geometry )
@@ -36,15 +60,17 @@ void QskBoxRenderer::renderBox( const QRectF& rect,
     const QskBoxBorderColors& borderColors, const QskGradient& gradient,
     QSGGeometry& geometry )
 {
+    const auto gradientN = qskNormalizedGradient( gradient );
+
     if ( shape.isRectangle() )
     {
         QskRectRenderer::renderRect(
-            rect, border, borderColors, gradient, geometry );
+            rect, border, borderColors, gradientN, geometry );
     }
     else
     {
         QskRoundedRectRenderer::renderRectellipse(
-            rect, shape, border, borderColors, gradient, geometry );
+            rect, shape, border, borderColors, gradientN, geometry );
     }
 }
 
@@ -70,8 +96,6 @@ bool QskBoxRenderer::isGradientSupported(
         case QskGradient::Linear:
         {
             const auto dir = gradient.linearDirection();
-            if ( dir.x1() > dir.x2() || dir.y1() > dir.y2() )
-                return false;
 
             if ( shape.isRectangle() )
             {
