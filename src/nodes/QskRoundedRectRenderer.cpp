@@ -27,9 +27,15 @@ namespace
         BottomRight = Qt::BottomRightCorner
     };
 
-    int additionalGradientStops( const QskGradient& gradient )
+    inline int additionalGradientStops( const QskGradient& gradient )
     {
         return qMax( 0, gradient.stepCount() - 1 );
+    }
+
+    template< class BorderMap >
+    inline int extraStops( const BorderMap& borderMap )
+    {
+        return additionalGradientStops( borderMap.gradient() );
     }
 }
 
@@ -439,54 +445,126 @@ namespace
         {
         }
 
-        inline void setAdditionalLine(
-            float x11, float y11, float x12, float y12,
-            float dx1, float dy1, float dx2, float dy2,
-            const QskGradientStop& stop, Line* line )
+       inline void setGradientLine(
+            const QskVertex::Line& l, float dx1, float dy1, float dx2, float dy2,
+            const QskGradientStop& stop, Line* line ) const
         {
-            const auto pos = 1.0 - stop.position();
+            const auto pos = stop.position();
 
-            const float x1 = x11 + pos * dx1;
-            const float y1 = y11 + pos * dy1;
-            const float x2 = x12 + pos * dx2;
-            const float y2 = y12 + pos * dy2;
+            const float x1 = l.p1.x + pos * dx1;
+            const float y1 = l.p1.y + pos * dy1;
+            const float x2 = l.p2.x + pos * dx2;
+            const float y2 = l.p2.y + pos * dy2;
 
             line->setLine( x1, y1, x2, y2, stop.rgb() );
         }
 
-        void addAdditionalLines(
-            float x11, float y11, float x12, float y12, // start line
-            float x21, float y21, float x22, float y22, // end line
-            const QskGradient& gradient, Line* lines )
+        inline void addGradientLines( const BorderValues& v, int c1,
+            const QskGradient& gradient, Line* lines ) const
         {
-            const float dx1 = x21 - x11;
-            const float dy1 = y21 - y11;
-            const float dx2 = x22 - x12;
-            const float dy2 = y22 - y12;
+            QskVertex::Line from, to;
+
+            const auto& c = m_metrics.corner;
+
+            switch( c1 )
+            {
+                case TopLeft:
+                {
+                    const auto c2 = BottomLeft;
+
+                    to.p1.x = c[ c1 ].centerX - v.dx1( c1 );
+                    to.p1.y = c[ c1 ].centerY - v.dy1( c1 );
+                    to.p2.x = c[ c1 ].centerX - v.dx2( c1 );
+                    to.p2.y = c[ c1 ].centerY - v.dy2( c1 );
+
+                    from.p1.x = c[ c2 ].centerX - v.dx1( c2 );
+                    from.p1.y = c[ c2 ].centerY + v.dy1( c2 );
+                    from.p2.x = c[ c2 ].centerX - v.dx2( c2 );
+                    from.p2.y = c[ c2 ].centerY + v.dy2( c2 );
+
+                    break;
+                }
+                case TopRight:
+                {
+                    const auto c2 = TopLeft;
+
+                    to.p1.x = c[ c1 ].centerX + v.dx1( c1 );
+                    to.p1.y = c[ c1 ].centerY - v.dy1( c1 );
+                    to.p2.x = c[ c1 ].centerX + v.dx2( c1 );
+                    to.p2.y = c[ c1 ].centerY - v.dy2( c1 );
+
+                    from.p1.x = c[ c2 ].centerX - v.dx1( c2 );
+                    from.p1.y = c[ c2 ].centerY - v.dy1( c2 );
+                    from.p2.x = c[ c2 ].centerX - v.dx2( c2 );
+                    from.p2.y = c[ c2 ].centerY - v.dy2( c2 );
+
+                    break;
+                }
+                case BottomLeft:
+                {
+                    const auto c2 = BottomRight;
+
+                    to.p1.x = c[ c1 ].centerX - v.dx1( c1 );
+                    to.p1.y = c[ c1 ].centerY + v.dy1( c1 );
+                    to.p2.x = c[ c1 ].centerX - v.dx2( c1 );
+                    to.p2.y = c[ c1 ].centerY + v.dy2( c1 );
+
+                    from.p1.x = c[ c2 ].centerX + v.dx1( c2 );
+                    from.p1.y = c[ c2 ].centerY + v.dy1( c2 );
+                    from.p2.x = c[ c2 ].centerX + v.dx2( c2 );
+                    from.p2.y = c[ c2 ].centerY + v.dy2( c2 );
+
+                    break;
+                }
+                case BottomRight:
+                {
+                    const auto c2 = TopRight;
+
+                    to.p1.x = c[ c1 ].centerX + v.dx1( c1 );
+                    to.p1.y = c[ c1 ].centerY + v.dy1( c1 );
+                    to.p2.x = c[ c1 ].centerX + v.dx2( c1 );
+                    to.p2.y = c[ c1 ].centerY + v.dy2( c1 );
+
+                    from.p1.x = c[ c2 ].centerX + v.dx1( c2 );
+                    from.p1.y = c[ c2 ].centerY - v.dy1( c2 );
+                    from.p2.x = c[ c2 ].centerX + v.dx2( c2 );
+                    from.p2.y = c[ c2 ].centerY - v.dy2( c2 );
+
+                    break;
+                }
+            }
+
+            addGradientLines( from, to, gradient, lines );
+        }
+
+        void addGradientLines( QskVertex::Line& from, QskVertex::Line& to,
+            const QskGradient& gradient, Line* lines ) const
+        {
+            Q_ASSERT( gradient.stepCount() > 0 );
+
+            const float dx1 = to.p1.x - from.p1.x;
+            const float dy1 = to.p1.y - from.p1.y;
+            const float dx2 = to.p2.x - from.p2.x;
+            const float dy2 = to.p2.y - from.p2.y;
 
             const auto stops = gradient.stops();
 
-            auto line = lines + additionalGradientStops( gradient );
+            auto line = lines;
+            {
+                const auto& stop = stops.last();
+
+                if ( stop.position() < 1.0 )
+                    setGradientLine( from, dx1, dy1, dx2, dy2, stop, ++line );
+            }
+
+            for( int i = stops.count() - 2; i >= 1; i-- )
+                setGradientLine( from, dx1, dy1, dx2, dy2, stops[i], ++line );
 
             {
                 const auto& stop = stops.first();
 
                 if ( stop.position() > 0.0 )
-                    setAdditionalLine( x11, y11, x12, y12, dx1, dy1, dx2, dy2, stop, line-- );
-            }
-
-            for( int i = 1; i < stops.count() - 1; i++ )
-            {
-                setAdditionalLine( x11, y11, x12, y12, dx1, dy1, dx2, dy2, stops[i], line-- );
-            }
-
-            {
-                const auto& stop = stops.last();
-
-                if ( stop.position() < 1.0 )
-                {
-                    setAdditionalLine( x11, y11, x12, y12, dx1, dy1, dx2, dy2, stop, line-- );
-                }
+                    setGradientLine( from, dx1, dy1, dx2, dy2, stop, ++line );
             }
         }
 
@@ -513,15 +591,9 @@ namespace
                 if ( borderLines )
                 {
                     linesBR = borderLines;
-
-                    linesTR = linesBR + numCornerLines
-                        + additionalGradientStops( borderMapBR.gradient() );
-
-                    linesTL = linesTR + numCornerLines
-                        + additionalGradientStops( borderMapTR.gradient() );
-
-                    linesBL = linesTL + numCornerLines
-                        + additionalGradientStops( borderMapTL.gradient() );
+                    linesTR = linesBR + numCornerLines + extraStops( borderMapBR );
+                    linesTL = linesTR + numCornerLines + extraStops( borderMapTR );
+                    linesBL = linesTL + numCornerLines + extraStops( borderMapTL );
                 }
 
                 if ( fillLines )
@@ -535,15 +607,9 @@ namespace
                 if ( borderLines )
                 {
                     linesTR = borderLines + 1;
-
-                    linesTL = linesTR + numCornerLines
-                        + additionalGradientStops( borderMapTR.gradient() );
-
-                    linesBL = linesTL + numCornerLines
-                        + additionalGradientStops( borderMapTL.gradient() );
-
-                    linesBR = linesBL + numCornerLines
-                        + additionalGradientStops( borderMapBL.gradient() );
+                    linesTL = linesTR + numCornerLines + extraStops( borderMapTR );
+                    linesBL = linesTL + numCornerLines + extraStops( borderMapTL );
+                    linesBR = linesBL + numCornerLines + extraStops( borderMapBL );
                 }
 
                 if ( fillLines )
@@ -617,78 +683,30 @@ namespace
 
                     if( j == 0 )
                     {
-                        if( additionalGradientStops( borderMapTR.gradient() ) > 0 )
+                        if( extraStops( borderMapTR ) > 0 )
                         {
-                            float x1TR = c[ TopRight ].centerX + v.dx1( TopRight ),
-                                y1TR = c[ TopRight ].centerY - v.dy1( TopRight ),
-                                x2TR = c[ TopRight ].centerX + v.dx2( TopRight ),
-                                y2TR = c[ TopRight ].centerY - v.dy2( TopRight ),
-
-                                x1TL = c[ TopLeft ].centerX - v.dx1( TopLeft ),
-                                y1TL = c[ TopLeft ].centerY - v.dy1( TopLeft ),
-                                x2TL = c[ TopLeft ].centerX - v.dx2( TopLeft ),
-                                y2TL = c[ TopLeft ].centerY - v.dy2( TopLeft );
-
-                            addAdditionalLines(
-                                x1TR, y1TR, x2TR, y2TR,
-                                x1TL, y1TL, x2TL, y2TL,
+                            addGradientLines( v, TopRight,
                                 borderMapTR.gradient(), linesTR + k );
                         }
 
-                        if( additionalGradientStops( borderMapBL.gradient() ) > 0 )
+                        if( extraStops( borderMapBL ) > 0 )
                         {
-                            float x1BL = c[ BottomLeft ].centerX - v.dx1( BottomLeft ),
-                                y1BL = c[ BottomLeft ].centerY + v.dy1( BottomLeft ),
-                                x2BL = c[ BottomLeft ].centerX - v.dx2( BottomLeft ),
-                                y2BL = c[ BottomLeft ].centerY + v.dy2( BottomLeft ),
-
-                                x1BR = c[ BottomRight ].centerX + v.dx1( BottomRight ),
-                                y1BR = c[ BottomRight ].centerY + v.dy1( BottomRight ),
-                                x2BR = c[ BottomRight ].centerX + v.dx2( BottomRight ),
-                                y2BR = c[ BottomRight ].centerY + v.dy2( BottomRight );
-
-                            addAdditionalLines(
-                                x1BL, y1BL, x2BL, y2BL,
-                                x1BR, y1BR, x2BR, y2BR,
+                            addGradientLines( v, BottomLeft,
                                 borderMapBL.gradient(), linesBL + k );
                         }
                     }
 
                     if( j == numCornerLines - 1 )
                     {
-                        if( additionalGradientStops( borderMapTL.gradient() ) > 0 )
+                        if( extraStops( borderMapTL ) > 0 )
                         {
-                            float x1TL = c[ TopLeft ].centerX - v.dx1( TopLeft ),
-                                y1TL = c[ TopLeft ].centerY - v.dy1( TopLeft ),
-                                x2TL = c[ TopLeft ].centerX - v.dx2( TopLeft ),
-                                y2TL = c[ TopLeft ].centerY - v.dy2( TopLeft ),
-
-                                x1BL = c[ BottomLeft ].centerX - v.dx1( BottomLeft ),
-                                y1BL = c[ BottomLeft ].centerY + v.dy1( BottomLeft ),
-                                x2BL = c[ BottomLeft ].centerX - v.dx2( BottomLeft ),
-                                y2BL = c[ BottomLeft ].centerY + v.dy2( BottomLeft );
-
-                            addAdditionalLines(
-                                x1TL, y1TL, x2TL, y2TL,
-                                x1BL, y1BL, x2BL, y2BL,
+                            addGradientLines( v, TopLeft,
                                 borderMapTL.gradient(), linesTL + j );
                         }
 
-                        if( additionalGradientStops( borderMapBR.gradient() ) > 0 )
+                        if( extraStops( borderMapBR ) > 0 )
                         {
-                            float x1BR = c[ BottomRight ].centerX + v.dx1( BottomRight ),
-                                y1BR = c[ BottomRight ].centerY + v.dy1( BottomRight ),
-                                x2BR = c[ BottomRight ].centerX + v.dx2( BottomRight ),
-                                y2BR = c[ BottomRight ].centerY + v.dy2( BottomRight ),
-
-                                x1TR = c[ TopRight ].centerX + v.dx1( TopRight ),
-                                y1TR = c[ TopRight ].centerY - v.dy1( TopRight ),
-                                x2TR = c[ TopRight ].centerX + v.dx2( TopRight ),
-                                y2TR = c[ TopRight ].centerY - v.dy2( TopRight );
-
-                            addAdditionalLines(
-                                x1BR, y1BR, x2BR, y2BR,
-                                x1TR, y1TR, x2TR, y2TR,
+                            addGradientLines( v, BottomRight,
                                 borderMapBR.gradient(), linesBR + j );
                         }
                     }
@@ -740,13 +758,9 @@ namespace
 #if 1
             if ( borderLines )
             {
-                const int additionalStops =
-                    additionalGradientStops( borderMapBR.gradient() )
-                    + additionalGradientStops( borderMapTR.gradient() )
-                    + additionalGradientStops( borderMapTL.gradient() )
-                    + additionalGradientStops( borderMapBL.gradient() );
-
-                const int k = 4 * numCornerLines + additionalStops;
+                const int k = 4 * numCornerLines
+                    + extraStops( borderMapBR ) + extraStops( borderMapTR )
+                    + extraStops( borderMapTL ) + extraStops( borderMapBL );
 
                 if ( orientation == Qt::Vertical )
                     borderLines[ k ] = borderLines[ 0 ];
