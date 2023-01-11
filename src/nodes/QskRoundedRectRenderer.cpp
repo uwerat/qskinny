@@ -1157,7 +1157,7 @@ QskRoundedRectRenderer::Metrics::Metrics( const QRectF& rect,
         ( borderRight == borderBottom );
 }
 
-void QskRoundedRectRenderer::renderBorder(
+void QskRoundedRectRenderer::renderBorderGeometry(
     const QRectF& rect, const QskBoxShapeMetrics& shape,
     const QskBoxBorderMetrics& border, QSGGeometry& geometry )
 {
@@ -1176,7 +1176,7 @@ void QskRoundedRectRenderer::renderBorder(
     qskRenderBorderLines( metrics, Qt::Vertical, line, BorderMapNone() );
 }
 
-void QskRoundedRectRenderer::renderFill(
+void QskRoundedRectRenderer::renderFillGeometry(
     const QRectF& rect, const QskBoxShapeMetrics& shape,
     const QskBoxBorderMetrics& border, QSGGeometry& geometry )
 {
@@ -1205,10 +1205,27 @@ void QskRoundedRectRenderer::renderFill(
         return;
     }
 
+#if 0
+    if ( metrics.isBorderRegular && metrics.isRadiusRegular )
+    {
+        int lineCount += metrics.corner[ TopLeft ].stepCount +
+            metrics.corner[ BottomLeft ].stepCount;
+
+        if ( metrics.centerQuad.top >= metrics.centerQuad.bottom )
+            lineCount--;
+
+        geometry.allocate( 2 * lineCount );
+
+        // TODO ...
+        qskRenderLines( metrics, Qt::Vertical, ... );
+        return;
+    }
+#endif
+
     /*
         Unfortunately QSGGeometry::DrawTriangleFan is no longer supported with
         Qt6 and we have to go with DrawTriangleStrip, duplicating the center with
-        each each vertex.
+        each vertex.
      */
 
     const auto numPoints =
@@ -1289,22 +1306,6 @@ void QskRoundedRectRenderer::renderFill(
 
     *idx++ = 0;
     *idx++ = 1;
-
-#if 0
-    {
-        auto p = geometry.vertexDataAsPoint2D();
-
-        qDebug() << "Vertexes:" << geometry.vertexCount();
-        for ( int i = 0; i < geometry.vertexCount(); i++ )
-            qDebug() << "\t" << i << p[i].x << p[i].y;
-
-        auto idx = geometry.indexDataAsUShort();
-
-        qDebug() << "Indexes:" << geometry.indexCount();
-        for ( int i = 0; i < geometry.indexCount(); i++ )
-            qDebug() << "\t" << i << idx[i];
-    }
-#endif
 }
 
 void QskRoundedRectRenderer::renderRect( const QRectF& rect,

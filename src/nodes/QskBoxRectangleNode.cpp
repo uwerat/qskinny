@@ -207,12 +207,14 @@ void QskBoxRectangleNode::updateNode( const QRectF& rect,
         if ( hasFill )
         {
             flatMaterial->setColor( fillGradient.rgbStart() );
-            QskBoxRenderer::renderFill( d->rect, shape, QskBoxBorderMetrics(), *geometry() );
+            QskBoxRenderer::renderFillGeometry(
+                d->rect, shape, QskBoxBorderMetrics(), *geometry() );
         }
         else
         {
             flatMaterial->setColor( borderColors.left().rgbStart() );
-            QskBoxRenderer::renderBorder( d->rect, shape, borderMetrics, *geometry() );
+            QskBoxRenderer::renderBorderGeometry(
+                d->rect, shape, borderMetrics, *geometry() );
         }
     }
 }

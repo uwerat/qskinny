@@ -7,6 +7,8 @@
 #include "QskRectRenderer.h"
 #include "QskRoundedRectRenderer.h"
 #include "QskBoxShapeMetrics.h"
+#include "QskBoxBorderMetrics.h"
+#include "QskBoxBorderColors.h"
 
 #include "QskGradient.h"
 #include "QskGradientDirection.h"
@@ -35,24 +37,42 @@ static inline QskGradient qskNormalizedGradient( const QskGradient gradient )
     return gradient;
 }
 
-void QskBoxRenderer::renderBorder(
+void QskBoxRenderer::renderBorderGeometry(
     const QRectF& rect, const QskBoxShapeMetrics& shape,
     const QskBoxBorderMetrics& border, QSGGeometry& geometry )
 {
+    geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
+
     if ( shape.isRectangle() )
-        QskRectRenderer::renderBorder( rect, border, geometry );
+        QskRectRenderer::renderBorderGeometry( rect, border, geometry );
     else
-        QskRoundedRectRenderer::renderBorder( rect, shape, border, geometry );
+        QskRoundedRectRenderer::renderBorderGeometry( rect, shape, border, geometry );
 }
 
-void QskBoxRenderer::renderFill(
+void QskBoxRenderer::renderFillGeometry(
+    const QRectF& rect, const QskBoxShapeMetrics& shape, QSGGeometry& geometry )
+{
+    renderFillGeometry( rect, shape, QskBoxBorderMetrics(), geometry );
+}
+
+void QskBoxRenderer::renderFillGeometry(
     const QRectF& rect, const QskBoxShapeMetrics& shape,
     const QskBoxBorderMetrics& border, QSGGeometry& geometry )
 {
+    geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
+
     if ( shape.isRectangle() )
-        QskRectRenderer::renderFill( rect, border, geometry );
+        QskRectRenderer::renderFillGeometry( rect, border, geometry );
     else
-        QskRoundedRectRenderer::renderFill( rect, shape, border, geometry );
+        QskRoundedRectRenderer::renderFillGeometry( rect, shape, border, geometry );
+}
+
+void QskBoxRenderer::renderBox( const QRectF& rect,
+    const QskBoxShapeMetrics& shape, const QskGradient& gradient,
+    QSGGeometry& geometry )
+{
+    renderBox( rect, shape, QskBoxBorderMetrics(),
+        QskBoxBorderColors(), gradient, geometry );
 }
 
 void QskBoxRenderer::renderBox( const QRectF& rect,
@@ -60,6 +80,8 @@ void QskBoxRenderer::renderBox( const QRectF& rect,
     const QskBoxBorderColors& borderColors, const QskGradient& gradient,
     QSGGeometry& geometry )
 {
+    geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
+
     const auto gradientN = qskNormalizedGradient( gradient );
 
     if ( shape.isRectangle() )

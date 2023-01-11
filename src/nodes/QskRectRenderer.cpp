@@ -387,7 +387,7 @@ static inline Line* qskAddBorderLines(
     return line;
 }
 
-void QskRectRenderer::renderBorder( const QRectF& rect,
+void QskRectRenderer::renderBorderGeometry( const QRectF& rect,
     const QskBoxBorderMetrics& border, QSGGeometry& geometry )
 {
     const Quad out = rect;
@@ -409,7 +409,7 @@ void QskRectRenderer::renderFill0( const QskVertex::Quad& rect,
     qskAddFillLines( rect, gradient, lineCount, line );
 }
 
-void QskRectRenderer::renderFill( const QRectF& rect,
+void QskRectRenderer::renderFillGeometry( const QRectF& rect,
     const QskBoxBorderMetrics& border, QSGGeometry& geometry )
 {
     const Quad quad = qskValidOrEmptyInnerRect( rect, border.widths() );

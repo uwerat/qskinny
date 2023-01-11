@@ -43,10 +43,10 @@ namespace QskRoundedRectRenderer
         bool isTotallyCropped;
     };
 
-    void renderFill( const QRectF&,
+    void renderFillGeometry( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&, QSGGeometry& );
 
-    void renderBorder( const QRectF&,
+    void renderBorderGeometry( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&, QSGGeometry& );
 
     void renderRect( const QRectF&,

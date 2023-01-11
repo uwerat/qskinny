@@ -17,10 +17,10 @@ class QRectF;
 
 namespace QskRectRenderer
 {
-    void renderBorder( const QRectF&,
+    void renderBorderGeometry( const QRectF&,
         const QskBoxBorderMetrics&, QSGGeometry& );
 
-    void renderFill( const QRectF&,
+    void renderFillGeometry( const QRectF&,
         const QskBoxBorderMetrics&, QSGGeometry& );
 
     void renderRect( const QRectF&, const QskBoxBorderMetrics&,

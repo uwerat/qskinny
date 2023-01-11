@@ -7,11 +7,8 @@
 #include "QskGradient.h"
 #include "QskSGNode.h"
 #include "QskBoxRenderer.h"
-#include "QskGradientMaterial.h"
-
-#include "QskBoxBorderMetrics.h"
-#include "QskBoxBorderColors.h"
 #include "QskBoxShapeMetrics.h"
+#include "QskGradientMaterial.h"
 
 #include <qglobalstatic.h>
 #include <qsgvertexcolormaterial.h>
@@ -21,21 +18,6 @@ QSK_QT_PRIVATE_BEGIN
 QSK_QT_PRIVATE_END
 
 Q_GLOBAL_STATIC( QSGVertexColorMaterial, qskMaterialColorVertex )
-
-static inline void qskUpdateColoredPoint2D( const QRectF& rect,
-    const QskBoxShapeMetrics& shape, const QskGradient& gradient,
-    QSGGeometry& geometry )
-{
-    QskBoxRenderer::renderBox( rect, shape,
-        QskBoxBorderMetrics(), QskBoxBorderColors(), gradient, geometry );
-}
-
-static inline void qskUpdatePoint2D( const QRectF& rect,
-    const QskBoxShapeMetrics& shape, QSGGeometry& geometry )
-{
-    QskBoxRenderer::renderFill( rect, shape,
-        QskBoxBorderMetrics(), geometry );
-}
 
 class QskRectangleNodePrivate final : public QSGGeometryNodePrivate
 {
@@ -154,8 +136,9 @@ void QskRectangleNode::updateNode(
          */
         if ( dirtyMetrics || dirtyColors )
         {
-            qskUpdateColoredPoint2D( rect, effectiveShape,
-                effectiveGradient, d->geometry );
+            QskBoxRenderer::renderBox( rect,
+                effectiveShape, effectiveGradient, d->geometry );
+
             markDirty( QSGNode::DirtyGeometry );
         }
     }
@@ -169,7 +152,7 @@ void QskRectangleNode::updateNode(
          */
         if ( dirtyMetrics )
         {
-            qskUpdatePoint2D( rect, effectiveShape, d->geometry );
+            QskBoxRenderer::renderFillGeometry( rect, effectiveShape, d->geometry );
             markDirty( QSGNode::DirtyGeometry );
         }
 
