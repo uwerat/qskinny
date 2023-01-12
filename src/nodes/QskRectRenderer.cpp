@@ -41,7 +41,7 @@ namespace
             }
         }
 
-        inline bool setGradientLine( qreal value, Color color, ColoredLine* line )
+        inline void setGradientLine( qreal value, Color color, ColoredLine* line )
         {
             const auto v = m_t + value * m_dt;
 
@@ -49,8 +49,6 @@ namespace
                 line->setHLine( m_rect.left, m_rect.right, v, color );
             else
                 line->setVLine( v, m_rect.top, m_rect.bottom, color );
-
-            return true;
         }
 
         inline void setContourLine( Color color, ColoredLine* line )
@@ -127,7 +125,7 @@ namespace
                 qSwap( m_corners[1], m_corners[2] );
         }
 
-        inline bool setGradientLine( qreal value, Color color, ColoredLine* line )
+        inline void setGradientLine( qreal value, Color color, ColoredLine* line )
         {
             const qreal m = m_v.dy / m_v.dx;
 
@@ -198,8 +196,6 @@ namespace
                 line->setLine( p1.x(), p1.y(), p2.x(), p2.y(), color );
             else
                 line->setLine( p2.x(), p2.y(), p1.x(), p1.y(), color );
-
-            return true;
         }
 
         inline void setContourLine( Color color, ColoredLine* line )

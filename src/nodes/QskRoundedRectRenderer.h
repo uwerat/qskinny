@@ -16,33 +16,10 @@ class QskGradient;
 class QSGGeometry;
 class QRectF;
 
+namespace QskRoundedRect { class Metrics; }
+
 namespace QskRoundedRectRenderer
 {
-    class Metrics
-    {
-      public:
-        Metrics( const QRectF&, const QskBoxShapeMetrics&, const QskBoxBorderMetrics& );
-
-        QskVertex::Quad outerQuad;
-        QskVertex::Quad innerQuad;
-        QskVertex::Quad centerQuad;
-
-        struct Corner
-        {
-            bool isCropped;
-            qreal centerX, centerY;
-            qreal radiusX, radiusY;
-            qreal radiusInnerX, radiusInnerY;
-
-            int stepCount;
-
-        } corner[ 4 ];
-
-        bool isBorderRegular;
-        bool isRadiusRegular;
-        bool isTotallyCropped;
-    };
-
     void renderFillGeometry( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&, QSGGeometry& );
 
@@ -54,8 +31,8 @@ namespace QskRoundedRectRenderer
         const QskBoxBorderColors&, const QskGradient&, QSGGeometry& );
 
     // QskBoxRendererDEllipse.cpp
-    void renderDiagonalFill( const Metrics&, const QskGradient&,
-        int lineCount, QskVertex::ColoredLine* );
+    void renderDiagonalFill( const QskRoundedRect::Metrics&,
+        const QskGradient&, int lineCount, QskVertex::ColoredLine* );
 }
 
 #endif

@@ -241,10 +241,7 @@ namespace QskVertex
                  */
 
                 if ( value > value0 )
-                {
-                    if ( contourIt.setGradientLine( value, colorIt.color(), l ) )
-                        l++;
-                }
+                    contourIt.setGradientLine( value, colorIt.color(), l++ );
 
                 colorIt.advance();
             }

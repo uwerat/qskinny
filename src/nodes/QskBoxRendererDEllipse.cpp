@@ -5,6 +5,7 @@
 
 #include "QskRoundedRectRenderer.h"
 #include "QskBoxRendererColorMap.h"
+#include "QskRoundedRect.h"
 #include "QskGradient.h"
 #include "QskVertex.h"
 
@@ -44,7 +45,7 @@ namespace
     class ValueCurve
     {
       public:
-        ValueCurve( const QskRoundedRectRenderer::Metrics& m )
+        ValueCurve( const QskRoundedRect::Metrics& m )
         {
             /*
                 The slopes of the value line and those for the fill lines.
@@ -127,7 +128,7 @@ namespace
         {
         }
 
-        void setup( const QskRoundedRectRenderer::Metrics& metrics,
+        void setup( const QskRoundedRect::Metrics& metrics,
             bool isLeading, bool clockwise,
             qreal cos, qreal cosStep, qreal sin, qreal sinStep,
             qreal x1, qreal y1, qreal v1, qreal x2, qreal y2, qreal v2 )
@@ -168,7 +169,7 @@ namespace
         inline const ContourLine& contourLine() const { return m_contourLine; }
 
         inline void advance(
-            const QskRoundedRectRenderer::Metrics& metrics,
+            const QskRoundedRect::Metrics& metrics,
             const ValueCurve& curve )
         {
             if ( m_isDone )
@@ -320,7 +321,7 @@ namespace
         static constexpr qreal m_eps = 1e-4;
 
         inline void setCorner(
-            Qt::Corner corner, const QskRoundedRectRenderer::Metrics& metrics )
+            Qt::Corner corner, const QskRoundedRect::Metrics& metrics )
         {
             m_corner = corner;
             const auto& c = metrics.corner[ corner ];
@@ -414,7 +415,7 @@ namespace
     class OutlineIterator
     {
       public:
-        OutlineIterator( const QskRoundedRectRenderer::Metrics& metrics,
+        OutlineIterator( const QskRoundedRect::Metrics& metrics,
                 const ValueCurve& curve, bool clockwise )
             : m_metrics( metrics )
             , m_curve( curve )
@@ -551,7 +552,7 @@ namespace
             line->setLine( x1, y1, x2, y2, color );
         }
 
-        const QskRoundedRectRenderer::Metrics& m_metrics;
+        const QskRoundedRect::Metrics& m_metrics;
         const ValueCurve& m_curve;
 
         /*
@@ -566,18 +567,16 @@ namespace
     {
       public:
         DRectellipseIterator(
-                const QskRoundedRectRenderer::Metrics& metrics,
-                const ValueCurve& curve )
+                const QskRoundedRect::Metrics& metrics, const ValueCurve& curve )
             : m_left( metrics, curve, false )
             , m_right( metrics, curve, true )
         {
             m_next = ( m_left.value() < m_right.value() ) ? &m_left : &m_right;
         }
 
-        inline bool setGradientLine( qreal value, Color color, ColoredLine* line )
+        inline void setGradientLine( qreal value, Color color, ColoredLine* line )
         {
             m_next->setLineAt( value, color, line );
-            return true;
         }
 
         inline void setContourLine( Color color, ColoredLine* line )
@@ -604,7 +603,7 @@ namespace
     };
 }
 
-void QskRoundedRectRenderer::renderDiagonalFill( const QskRoundedRectRenderer::Metrics& metrics,
+void QskRoundedRectRenderer::renderDiagonalFill( const QskRoundedRect::Metrics& metrics,
     const QskGradient& gradient, int fillLineCount, QskVertex::ColoredLine* lines )
 {
     const ValueCurve curve( metrics );
