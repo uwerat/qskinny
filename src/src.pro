@@ -109,7 +109,6 @@ HEADERS += \
     nodes/QskRectRenderer.h \
     nodes/QskRoundedRectRenderer.h \
     nodes/QskRoundedRect.h \
-    nodes/QskRoundedRect.hpp \
     nodes/QskBoxRendererColorMap.h \
     nodes/QskBoxShadowNode.h \
     nodes/QskColorRamp.h \
@@ -139,6 +138,7 @@ SOURCES += \
     nodes/QskBoxRenderer.cpp \
     nodes/QskRectRenderer.cpp \
     nodes/QskRoundedRectRenderer.cpp \
+    nodes/QskRoundedRect.cpp \
     nodes/QskBoxRendererDEllipse.cpp \
     nodes/QskBoxShadowNode.cpp \
     nodes/QskColorRamp.cpp \

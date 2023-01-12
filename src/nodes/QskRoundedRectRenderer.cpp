@@ -325,118 +325,16 @@ static inline int qskFillLineCount(
 static inline void qskRenderBorder( const QskRoundedRect::Metrics& metrics,
     Qt::Orientation orientation, const QskBoxBorderColors& colors, ColoredLine* lines )
 {
-    using namespace QskRoundedRect;
-
-    Stroker< ColoredLine > stroker( metrics );
-
-    if ( colors.isMonochrome() )
-    {
-        const BorderMapSolid map( colors.left().rgbStart() );
-        const BorderMaps< BorderMapSolid > borderMaps( map );
-
-        stroker.createBorderLines( orientation, lines, borderMaps );
-    }
-    else
-    {
-        const int n = metrics.corner[ 0 ].stepCount;
-
-        const BorderMaps< BorderMapGradient > borderMaps(
-            BorderMapGradient( n, colors.top(), colors.left() ),
-            BorderMapGradient( n, colors.right(), colors.top() ),
-            BorderMapGradient( n, colors.left(), colors.bottom() ),
-            BorderMapGradient( n, colors.bottom(), colors.right() ) );
-
-        stroker.createBorderLines( orientation, lines, borderMaps );
-    }
-}
-
-static inline void qskRenderUniformFill(
-    const QskRoundedRect::Metrics& metrics,
-    const QskGradient& gradient, ColoredLine* lines )
-{
-    using namespace QskRoundedRect;
-
-    Q_ASSERT( gradient.stepCount() <= 1 );
-    Q_ASSERT( metrics.isRadiusRegular );
-
-    const auto orientation = qskQtOrientation( gradient );
-
-    if ( gradient.isMonochrome() )
-    {
-        const ColorMapSolid map( gradient );
-
-        Stroker< ColoredLine > stroker( metrics );
-        stroker.createFillLines( orientation, lines, map );
-    }
-    else
-    {
-        const ColorMapGradient map( gradient );
-
-        Stroker< ColoredLine > stroker( metrics );
-        stroker.createFillLines( orientation, lines, map );
-    }
+    QskRoundedRect::Stroker stroker( metrics );
+    stroker.createBorderLines( orientation, lines, colors );
 }
 
 static inline void qskRenderUniformBox(
     const QskRoundedRect::Metrics& metrics, const QskBoxBorderColors& borderColors,
     const QskGradient& gradient, ColoredLine* fillLines, ColoredLine* borderLines )
 {
-    using namespace QskRoundedRect;
-
-    Q_ASSERT( gradient.stepCount() <= 1 );
-    Q_ASSERT( metrics.isRadiusRegular );
-
-    Stroker< ColoredLine > stroker( metrics );
-
-    const auto& bc = borderColors;
-
-    if ( bc.isMonochrome() )
-    {
-        const BorderMapSolid borderMap( bc.left().rgbStart() );
-        const BorderMaps< BorderMapSolid > borderMaps( borderMap );
-
-        if ( gradient.isMonochrome() )
-        {
-            const ColorMapSolid fillMap( gradient );
-
-            stroker.createUniformBox( Qt::Vertical,
-                borderLines, borderMaps, fillLines, fillMap );
-        }
-        else
-        {
-            const ColorMapGradient fillMap( gradient );
-
-            stroker.createUniformBox( qskQtOrientation( gradient ),
-                borderLines, borderMaps, fillLines, fillMap );
-        }
-    }
-    else
-    {
-        const int n = metrics.corner[ 0 ].stepCount;
-
-        const BorderMaps< BorderMapGradient > borderMaps
-        (
-            BorderMapGradient( n, bc.top(), bc.left() ),
-            BorderMapGradient( n, bc.right(), bc.top() ),
-            BorderMapGradient( n, bc.left(), bc.bottom() ),
-            BorderMapGradient( n, bc.bottom(), bc.right() )
-        );
-
-        if ( gradient.isMonochrome() )
-        {
-            const ColorMapSolid fillMap( gradient );
-
-            stroker.createUniformBox( Qt::Vertical,
-                borderLines, borderMaps, fillLines, fillMap );
-        }
-        else
-        {
-            const ColorMapGradient fillMap( gradient );
-
-            stroker.createUniformBox( qskQtOrientation( gradient ),
-                borderLines, borderMaps, fillLines, fillMap );
-        }
-    }
+    QskRoundedRect::Stroker stroker( metrics );
+    stroker.createUniformBox( borderLines, borderColors, fillLines, gradient );
 }
 
 static inline void qskRenderFillOrdered(
@@ -471,7 +369,7 @@ void QskRoundedRectRenderer::renderBorderGeometry(
 
     const auto lines = allocateLines< Line >( geometry, lineCount );
 
-    QskRoundedRect::Stroker< Line > stroker( metrics );
+    QskRoundedRect::Stroker stroker( metrics );
     stroker.createBorderLines( lines );
 }
 
@@ -660,7 +558,7 @@ void QskRoundedRectRenderer::renderRect( const QRectF& rect,
     if ( borderColors.isVisible() && metrics.innerQuad != metrics.outerQuad )
     {
         borderLineCount = 4 * ( stepCount + 1 ) + 1;
-        borderLineCount += additionalGradientStops( borderColors );
+        borderLineCount += extraBorderStops( borderColors );
     }
 
     int lineCount = borderLineCount + fillLineCount;
@@ -750,7 +648,8 @@ void QskRoundedRectRenderer::renderRect( const QRectF& rect,
     {
         if ( isUniform )
         {
-            qskRenderUniformFill( metrics, gradient, lines );
+            QskRoundedRect::Stroker stroker( metrics );
+            stroker.createFillLines( lines, gradient );
         }
         else
         {

@@ -15,53 +15,6 @@ class QskBoxShapeMetrics;
 
 namespace QskVertex
 {
-    class ColorMapNone
-    {
-      public:
-        constexpr inline Color colorAt( qreal ) const
-        {
-            return Color();
-        }
-    };
-
-    class ColorMapSolid
-    {
-      public:
-        constexpr inline ColorMapSolid() = default;
-
-        inline ColorMapSolid( const QskGradient& gradient )
-            : m_color( gradient.rgbStart() )
-        {
-        }
-
-        inline Color colorAt( qreal ) const
-        {
-            return m_color;
-        }
-
-      private:
-        const Color m_color;
-    };
-
-    class ColorMapGradient
-    {
-      public:
-        inline ColorMapGradient( const QskGradient& gradient )
-            : m_color1( gradient.rgbStart() )
-            , m_color2( gradient.rgbEnd() )
-        {
-        }
-
-        inline Color colorAt( qreal value ) const
-        {
-            return m_color1.interpolatedTo( m_color2, value );
-        }
-
-      private:
-        const Color m_color1;
-        const Color m_color2;
-    };
-
     class ColorIterator
     {
       public:

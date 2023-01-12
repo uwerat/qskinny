@@ -3,14 +3,15 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef QSK_SCALE_RENDERER_H
-#define QSK_SCALE_RENDERER_H
+#ifndef QSK_ROUNDED_RECT_H
+#define QSK_ROUNDED_RECT_H
 
 #include "QskVertex.h"
 #include "QskRoundedRectRenderer.h"
 
 class QskBoxShapeMetrics;
 class QskBoxBorderMetrics;
+class QskBoxBorderColors;
 
 namespace QskRoundedRect
 {
@@ -22,8 +23,7 @@ namespace QskRoundedRect
         BottomRight = Qt::BottomRightCorner
     };
 
-    int additionalGradientStops( const QskGradient& );
-    int additionalGradientStops( const QskBoxBorderColors& );
+    int extraBorderStops( const QskBoxBorderColors& );
 
     class Metrics
     {
@@ -50,69 +50,39 @@ namespace QskRoundedRect
         bool isTotallyCropped;
     };
 
-    class BorderMapNone
-    {
-      public:
-        static inline constexpr QskVertex::Color colorAt( int ) { return QskVertex::Color(); }
-        inline QskGradient gradient() const { return QskGradient(); }
-    };
-
-    class BorderMapSolid
-    {
-      public:
-        inline BorderMapSolid( const QskVertex::Color color ): m_color( color ) {}
-        inline QskVertex::Color colorAt( int ) const { return m_color; }
-        inline QskGradient gradient() const { return QskGradient(); }
-
-        const QskVertex::Color m_color;
-    };
-
-    class BorderMapGradient
-    {
-      public:
-        BorderMapGradient( int stepCount,
-                const QskGradient& gradient1, const QskGradient& gradient2 )
-            : m_stepCount( stepCount )
-            , m_color1( gradient1.rgbStart() )
-            , m_color2( gradient2.rgbEnd() )
-            , m_gradient( gradient2 )
-        {
-        }
-
-        inline QskVertex::Color colorAt( int step ) const
-            { return m_color1.interpolatedTo( m_color2, step / m_stepCount ); }
-
-        inline const QskGradient& gradient() const { return m_gradient; }
-
-      private:
-        const qreal m_stepCount;
-        const QskVertex::Color m_color1, m_color2;
-        const QskGradient m_gradient;
-    };
-
-    template< class T >
-    class BorderMaps
-    {
-      public:
-        BorderMaps( const T& );
-        BorderMaps( const T&, const T&, const T&, const T& );
-
-        int extraStops( int index ) const;
-        inline int extraStops() const;
-
-        T maps[4];
-    };
-
     class BorderValues
     {
       public:
         BorderValues( const Metrics& );
         void setAngle( qreal cos, qreal sin );
 
-        qreal dx1( int pos ) const;
-        qreal dy1( int pos ) const;
-        qreal dx2( int pos ) const;
-        qreal dy2( int pos ) const;
+        inline qreal dx1( int pos ) const
+        {
+            return m_isUniform ? m_uniform.dx1 : m_multi.inner[ pos].dx;
+        }
+
+        inline qreal dy1( int pos ) const
+        {
+            return m_isUniform ? m_uniform.dy1 : m_multi.inner[ pos ].dy;
+        }
+
+        inline qreal dx2( int pos ) const
+        {
+            if ( m_isUniform )
+                return m_uniform.dx2;
+
+            const auto outer = m_multi.outer;
+            return m_metrics.isRadiusRegular ? outer[ 0 ].dx : outer[ pos ].dx;
+        }
+
+        inline qreal dy2( int pos ) const
+        {
+            if ( m_isUniform )
+                return m_uniform.dy2;
+
+            const auto outer = m_multi.outer;
+            return m_metrics.isRadiusRegular ? outer[ 0 ].dy : outer[ pos ].dy;
+        }
 
       private:
         const Metrics& m_metrics;
@@ -146,37 +116,30 @@ namespace QskRoundedRect
         };
     };
 
-    template< class L >
     class Stroker
     {
       public:
-        Stroker( const Metrics& );
+        inline Stroker( const Metrics& metrics )
+            : m_metrics( metrics )
+        {
+        }
 
-        void createBorderLines( L* ) const;
+        void createBorderLines( QskVertex::Line* ) const;
 
-        template< class FillMap >
-        void createFillLines( Qt::Orientation, L*, FillMap& ) const;
+        void createFillLines( QskVertex::ColoredLine*, const QskGradient& ) const;
 
-        template< class BorderMap >
-        void createBorderLines( Qt::Orientation, L*,
-            const BorderMaps< BorderMap >& ) const;
+        void createBorderLines( Qt::Orientation,
+            QskVertex::ColoredLine*, const QskBoxBorderColors& ) const;
 
-        template< class BorderMap, class FillMap >
-        inline void createUniformBox( Qt::Orientation, L*,
-            const BorderMaps< BorderMap >&, L*, FillMap& ) const;
+        void createUniformBox( QskVertex::ColoredLine*, const QskBoxBorderColors&,
+            QskVertex::ColoredLine*, const QskGradient& ) const;
 
       private:
-        void setBorderGradientLine( const QskVertex::Line&,
-            float dx1, float dy1, float dx2, float dy2,
-            const QskGradientStop&, L* ) const;
-
         void setBorderGradientLines( const BorderValues&,
-            int corner, const QskGradient&, L* ) const;
+            int corner, const QskGradient&, QskVertex::ColoredLine* ) const;
 
         const Metrics& m_metrics;
     };
 }
-
-#include "QskRoundedRect.hpp"
 
 #endif

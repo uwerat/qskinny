@@ -3,34 +3,117 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef QSK_SCALE_RENDERER_HPP
-#define QSK_SCALE_RENDERER_HPP
-
-#include "QskRoundedRectRenderer.h"
+#include "QskRoundedRect.h"
+#include "QskGradient.h"
+#include "QskGradientDirection.h"
 #include "QskBoxShapeMetrics.h"
-#include "QskBoxBorderMetrics.h"
 #include "QskBoxBorderColors.h"
+#include "QskBoxBorderMetrics.h"
 
-#include <qsggeometry.h>
-
-inline int QskRoundedRect::additionalGradientStops( const QskGradient& gradient )
+namespace
 {
-    return qMax( 0, gradient.stepCount() - 1 );
+    Qt::Orientation orientationOf( const QskGradient& gradient )
+    {
+        if ( gradient.isMonochrome() )
+            return Qt::Vertical;
+
+        return gradient.linearDirection().isVertical()
+            ? Qt::Vertical : Qt::Horizontal;
+    }
+
+    inline int extraStops( const QskGradient& gradient )
+    {
+        return qMax( 0, gradient.stepCount() - 1 );
+    }
+
+    inline void setBorderGradientLine(
+        const QskVertex::Line& l, float dx1, float dy1, float dx2, float dy2,
+        const QskGradientStop& stop, QskVertex::ColoredLine* lines )
+    {
+        const auto pos = stop.position();
+
+        const float x1 = l.p1.x + pos * dx1;
+        const float y1 = l.p1.y + pos * dy1;
+        const float x2 = l.p2.x + pos * dx2;
+        const float y2 = l.p2.y + pos * dy2;
+
+        lines->setLine( x1, y1, x2, y2, stop.rgb() );
+    }
+
+    class ColorMap
+    {
+      public:
+        inline ColorMap( const QskGradient& gradient )
+            : m_isMonochrome( gradient.isMonochrome() )
+            , m_color1( gradient.rgbStart() )
+            , m_color2( gradient.rgbEnd() )
+        {
+        }
+
+        inline QskVertex::Color colorAt( qreal value ) const
+        {
+            if ( m_isMonochrome )
+                return m_color1;
+            else
+                return m_color1.interpolatedTo( m_color2, value );
+        }
+
+      private:
+        const bool m_isMonochrome;
+        const QskVertex::Color m_color1;
+        const QskVertex::Color m_color2;
+    };
+
+    class BorderMap
+    {
+      public:
+        inline BorderMap( int stepCount, const QskGradient& g1, const QskGradient& g2 )
+            : m_stepCount( stepCount )
+            , m_color1( g1.rgbStart() )
+            , m_color2( g2.rgbEnd() )
+        {
+        }
+
+        inline QskVertex::Color colorAt( int step ) const
+        {
+            if ( m_color1 == m_color2 )
+                return m_color1;
+            else
+                return m_color1.interpolatedTo( m_color2, step / m_stepCount );
+        }
+
+      private:
+        const qreal m_stepCount;
+        const QskVertex::Color m_color1, m_color2;
+    };
+
+    class BorderMaps
+    {
+      public:
+        inline BorderMaps( int stepCount, const QskBoxBorderColors& colors )
+            : maps{
+                { stepCount, colors.top(), colors.left() },
+                { stepCount, colors.right(), colors.top() },
+                { stepCount, colors.left(), colors.bottom() },
+                { stepCount, colors.bottom(), colors.right() } }
+        {
+        }
+
+        const BorderMap maps[4];
+    };
 }
 
-inline int QskRoundedRect::additionalGradientStops( const QskBoxBorderColors& bc )
+int QskRoundedRect::extraBorderStops( const QskBoxBorderColors& bc )
 {
-    return additionalGradientStops( bc.left() )
-        + additionalGradientStops( bc.top() )
-        + additionalGradientStops( bc.right() )
-        + additionalGradientStops( bc.bottom() );
+    return extraStops( bc.left() ) + extraStops( bc.top() )
+        + extraStops( bc.right() ) + extraStops( bc.bottom() );
 }
 
-inline QskRoundedRect::Metrics::Metrics( const QRectF& rect,
+
+QskRoundedRect::Metrics::Metrics( const QRectF& rect,
         const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& border )
     : outerQuad( rect )
 {
-
     isRadiusRegular = shape.isRectellipse();
 
     for ( int i = 0; i < 4; i++ )
@@ -174,33 +257,8 @@ inline QskRoundedRect::Metrics::Metrics( const QRectF& rect,
         ( borderTop == borderRight ) &&
         ( borderRight == borderBottom );
 }
-template< class T >
-inline QskRoundedRect::BorderMaps< T >::BorderMaps( const T& map )
-    : maps{ map, map, map, map }
-{
-}
 
-template< class T >
-inline QskRoundedRect::BorderMaps< T >::BorderMaps(
-        const T& tl, const T& tr, const T& bl, const T& br )
-    : maps{ tl, tr, bl, br }
-{
-}
-
-template< class T >
-inline int QskRoundedRect::BorderMaps< T >::extraStops( int index ) const
-{
-    return additionalGradientStops( maps[index].gradient() );
-}
-
-template< class T >
-inline int QskRoundedRect::BorderMaps< T >::extraStops() const
-{
-    return extraStops( 0 ) + extraStops( 1 ) + extraStops( 2 ) + extraStops( 3 );
-}
-
-inline QskRoundedRect::BorderValues::BorderValues(
-        const QskRoundedRect::Metrics& metrics )
+QskRoundedRect::BorderValues::BorderValues( const QskRoundedRect::Metrics& metrics )
     : m_metrics( metrics )
     , m_isUniform( metrics.isBorderRegular && metrics.isRadiusRegular )
 {
@@ -251,7 +309,7 @@ inline QskRoundedRect::BorderValues::BorderValues(
     }
 }
 
-inline void QskRoundedRect::BorderValues::setAngle( qreal cos, qreal sin )
+void QskRoundedRect::BorderValues::setAngle( qreal cos, qreal sin )
 {
     if ( m_isUniform )
     {
@@ -286,58 +344,9 @@ inline void QskRoundedRect::BorderValues::setAngle( qreal cos, qreal sin )
     }
 }
 
-inline qreal QskRoundedRect::BorderValues::dx1( int pos ) const
-{
-    return m_isUniform ? m_uniform.dx1 : m_multi.inner[ pos].dx;
-}
-
-inline qreal QskRoundedRect::BorderValues::dy1( int pos ) const
-{
-    return m_isUniform ? m_uniform.dy1 : m_multi.inner[ pos ].dy;
-}
-
-inline qreal QskRoundedRect::BorderValues::dx2( int pos ) const
-{
-    if ( m_isUniform )
-        return m_uniform.dx2;
-
-    const auto outer = m_multi.outer;
-    return m_metrics.isRadiusRegular ? outer[ 0 ].dx : outer[ pos ].dx;
-}
-
-inline qreal QskRoundedRect::BorderValues::dy2( int pos ) const
-{
-    if ( m_isUniform )
-        return m_uniform.dy2;
-
-    const auto outer = m_multi.outer;
-    return m_metrics.isRadiusRegular ? outer[ 0 ].dy : outer[ pos ].dy;
-}
-
-template< class L >
-inline QskRoundedRect::Stroker< L >::Stroker( const QskRoundedRect::Metrics& metrics )
-    : m_metrics( metrics )
-{
-}
-
-template< class L >
-inline void QskRoundedRect::Stroker< L >::setBorderGradientLine(
-    const QskVertex::Line& l, float dx1, float dy1, float dx2, float dy2,
-    const QskGradientStop& stop, L* line ) const
-{
-    const auto pos = stop.position();
-
-    const float x1 = l.p1.x + pos * dx1;
-    const float y1 = l.p1.y + pos * dy1;
-    const float x2 = l.p2.x + pos * dx2;
-    const float y2 = l.p2.y + pos * dy2;
-
-    line->setLine( x1, y1, x2, y2, stop.rgb() );
-}
-
-template< class L >
-inline void QskRoundedRect::Stroker< L >::setBorderGradientLines( const BorderValues& v, int c1,
-    const QskGradient& gradient, L* lines ) const
+void QskRoundedRect::Stroker::setBorderGradientLines(
+    const BorderValues& v, int c1, const QskGradient& gradient,
+    QskVertex::ColoredLine* lines ) const
 {
     if( gradient.stepCount() <= 1 )
     {
@@ -443,8 +452,7 @@ inline void QskRoundedRect::Stroker< L >::setBorderGradientLines( const BorderVa
     }
 }
 
-template< class L >
-inline void QskRoundedRect::Stroker< L >::createBorderLines( L* lines ) const
+void QskRoundedRect::Stroker::createBorderLines( QskVertex::Line* lines ) const
 {
     Q_ASSERT( m_metrics.isRadiusRegular );
 
@@ -453,10 +461,10 @@ inline void QskRoundedRect::Stroker< L >::createBorderLines( L* lines ) const
     const int stepCount = c[ 0 ].stepCount;
     const int numCornerLines = stepCount + 1;
 
-    L* linesBR = lines;
-    L* linesTR = linesBR + numCornerLines;
-    L* linesTL = linesTR + numCornerLines;
-    L* linesBL = linesTL + numCornerLines;
+    QskVertex::Line* linesBR = lines;
+    QskVertex::Line* linesTR = linesBR + numCornerLines;
+    QskVertex::Line* linesTL = linesTR + numCornerLines;
+    QskVertex::Line* linesBL = linesTL + numCornerLines;
 
     BorderValues v( m_metrics );
 
@@ -515,17 +523,20 @@ inline void QskRoundedRect::Stroker< L >::createBorderLines( L* lines ) const
     lines[ 4 * numCornerLines ] = lines[ 0 ];
 }
 
-template< class L > template< class FillMap >
-inline void QskRoundedRect::Stroker< L >::createFillLines(
-    Qt::Orientation orientation, L* lines, FillMap& fillMap ) const
+void QskRoundedRect::Stroker::createFillLines(
+    QskVertex::ColoredLine* lines, const QskGradient& gradient ) const
 {
     Q_ASSERT( m_metrics.isRadiusRegular );
+    Q_ASSERT( gradient.isValid() && gradient.stepCount() <= 1 );
+
+    ColorMap fillMap( gradient );
 
     const auto& c = m_metrics.corner;
     const int stepCount = c[ 0 ].stepCount;
 
     int numLines = 2 * stepCount + 1;
 
+    const auto orientation = orientationOf( gradient );
     if ( orientation == Qt::Vertical )
     {
         if ( m_metrics.centerQuad.top < m_metrics.centerQuad.bottom )
@@ -588,35 +599,34 @@ inline void QskRoundedRect::Stroker< L >::createFillLines(
     }
 }
 
-template< class L >
-template< class BorderMap >
-inline void QskRoundedRect::Stroker< L >::createBorderLines(
-    Qt::Orientation orientation, L* borderLines,
-    const BorderMaps< BorderMap >& borderMaps ) const
+void QskRoundedRect::Stroker::createBorderLines(
+    Qt::Orientation orientation, QskVertex::ColoredLine* lines,
+    const QskBoxBorderColors& colors ) const
 {
     const auto& c = m_metrics.corner;
 #if 1
-    // not correct for BorderValuesMulti TODO ...
     const int stepCount = c[ 0 ].stepCount;
 #endif
 
-    L* linesBR, * linesTR, * linesTL, * linesBL;
+    const BorderMaps borderMaps( stepCount, colors );
+
+    QskVertex::ColoredLine* linesBR, * linesTR, * linesTL, * linesBL;
 
     const int numCornerLines = stepCount + 1;
 
     if ( orientation == Qt::Vertical )
     {
-        linesBR = borderLines;
-        linesTR = linesBR + numCornerLines + borderMaps.extraStops( BottomRight );
-        linesTL = linesTR + numCornerLines + borderMaps.extraStops( TopRight );
-        linesBL = linesTL + numCornerLines + borderMaps.extraStops( TopLeft );
+        linesBR = lines;
+        linesTR = linesBR + numCornerLines + extraStops( colors.right() );
+        linesTL = linesTR + numCornerLines + extraStops( colors.top() );
+        linesBL = linesTL + numCornerLines + extraStops( colors.left() );
     }
     else
     {
-        linesTR = borderLines + 1;
-        linesTL = linesTR + numCornerLines + borderMaps.extraStops( TopRight );
-        linesBL = linesTL + numCornerLines + borderMaps.extraStops( TopLeft );
-        linesBR = linesBL + numCornerLines + borderMaps.extraStops( BottomLeft );
+        linesTR = lines + 1;
+        linesTL = linesTR + numCornerLines + extraStops( colors.top() );
+        linesBL = linesTL + numCornerLines + extraStops( colors.left() );
+        linesBR = linesBL + numCornerLines + extraStops( colors.bottom() );
     }
 
     BorderValues v( m_metrics );
@@ -680,52 +690,56 @@ inline void QskRoundedRect::Stroker< L >::createBorderLines(
     v.setAngle( 0.0, 1.0 );
 
     setBorderGradientLines( v, TopRight,
-        borderMaps.maps[ TopRight ].gradient(), linesTR + numCornerLines );
+        colors.top(), linesTR + numCornerLines );
 
     setBorderGradientLines( v, BottomLeft,
-        borderMaps.maps[ BottomLeft ].gradient(), linesBL + numCornerLines );
+        colors.bottom(), linesBL + numCornerLines );
 
     v.setAngle( 1.0, 0.0 );
 
     setBorderGradientLines( v, TopLeft,
-        borderMaps.maps[ TopLeft ].gradient(), linesTL + numCornerLines );
+        colors.left(), linesTL + numCornerLines );
 
     setBorderGradientLines( v, BottomRight,
-        borderMaps.maps[ BottomRight ].gradient(), linesBR + numCornerLines );
+        colors.right(), linesBR + numCornerLines );
 
-    const int k = 4 * numCornerLines + borderMaps.extraStops();
+    const int k = 4 * numCornerLines + extraBorderStops( colors );
 
     if ( orientation == Qt::Vertical )
-        borderLines[ k ] = borderLines[ 0 ];
+        lines[ k ] = lines[ 0 ];
     else
-        borderLines[ 0 ] = borderLines[ k ];
+        lines[ 0 ] = lines[ k ];
 }
 
-template< class L >
-template< class BorderMap, class FillMap >
-inline void QskRoundedRect::Stroker< L >::createUniformBox(
-    Qt::Orientation orientation, L* borderLines,
-    const BorderMaps< BorderMap >& borderMaps, L* fillLines, FillMap& fillMap ) const
+void QskRoundedRect::Stroker::createUniformBox(
+    QskVertex::ColoredLine* borderLines, const QskBoxBorderColors& borderColors,
+    QskVertex::ColoredLine* fillLines, const QskGradient& gradient ) const
 {
     Q_ASSERT( m_metrics.isRadiusRegular );
+    Q_ASSERT( gradient.isValid() && gradient.stepCount() <= 1 );
+
+    const ColorMap fillMap( gradient );
 
     const auto& c = m_metrics.corner;
     const int stepCount = c[ 0 ].stepCount;
 
-    L* linesBR, * linesTR, * linesTL, * linesBL;
+    const BorderMaps borderMaps( stepCount, borderColors );
+
+    QskVertex::ColoredLine* linesBR, * linesTR, * linesTL, * linesBL;
     linesBR = linesTR = linesTL = linesBL = nullptr;
 
     const int numCornerLines = stepCount + 1;
     int numFillLines = fillLines ? 2 * numCornerLines : 0;
 
+    const auto orientation = orientationOf( gradient );
     if ( orientation == Qt::Vertical )
     {
         if ( borderLines )
         {
             linesBR = borderLines;
-            linesTR = linesBR + numCornerLines + borderMaps.extraStops( BottomRight );
-            linesTL = linesTR + numCornerLines + borderMaps.extraStops( TopRight );
-            linesBL = linesTL + numCornerLines + borderMaps.extraStops( TopLeft );
+            linesTR = linesBR + numCornerLines + extraStops( borderColors.right() );
+            linesTL = linesTR + numCornerLines + extraStops( borderColors.top() );
+            linesBL = linesTL + numCornerLines + extraStops( borderColors.left() );
         }
 
         if ( fillLines )
@@ -739,9 +753,9 @@ inline void QskRoundedRect::Stroker< L >::createUniformBox(
         if ( borderLines )
         {
             linesTR = borderLines + 1;
-            linesTL = linesTR + numCornerLines + borderMaps.extraStops( TopRight );
-            linesBL = linesTL + numCornerLines + borderMaps.extraStops( TopLeft );
-            linesBR = linesBL + numCornerLines + borderMaps.extraStops( BottomLeft );
+            linesTL = linesTR + numCornerLines + extraStops( borderColors.top() );
+            linesBL = linesTL + numCornerLines + extraStops( borderColors.left() );
+            linesBR = linesBL + numCornerLines + extraStops( borderColors.bottom() );
         }
 
         if ( fillLines )
@@ -859,20 +873,20 @@ inline void QskRoundedRect::Stroker< L >::createUniformBox(
         v.setAngle( 0.0, 1.0 );
 
         setBorderGradientLines( v, TopRight,
-            borderMaps.maps[ TopRight ].gradient(), linesTR + numCornerLines );
+            borderColors.top(), linesTR + numCornerLines );
 
         setBorderGradientLines( v, BottomLeft,
-            borderMaps.maps[ BottomLeft ].gradient(), linesBL + numCornerLines );
+            borderColors.bottom(), linesBL + numCornerLines );
 
         v.setAngle( 1.0, 0.0 );
 
         setBorderGradientLines( v, TopLeft,
-            borderMaps.maps[ TopLeft ].gradient(), linesTL + numCornerLines );
+            borderColors.left(), linesTL + numCornerLines );
 
         setBorderGradientLines( v, BottomRight,
-            borderMaps.maps[ BottomRight ].gradient(), linesBR + numCornerLines );
+            borderColors.right(), linesBR + numCornerLines );
 
-        const int k = 4 * numCornerLines + borderMaps.extraStops();
+        const int k = 4 * numCornerLines + extraBorderStops( borderColors );
 
         if ( orientation == Qt::Vertical )
             borderLines[ k ] = borderLines[ 0 ];
@@ -880,5 +894,3 @@ inline void QskRoundedRect::Stroker< L >::createUniformBox(
             borderLines[ 0 ] = borderLines[ k ];
     }
 }
-
-#endif
