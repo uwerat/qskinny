@@ -30,7 +30,6 @@ namespace
         void populate()
         {
             const char* texts[] = { "Press Me", "Check Me" };
-            const char* graphics[] = { "diamond/khaki", "ellipse/sandybrown" };
 
             for ( int i = 0; i < 6; i++ )
             {
@@ -42,7 +41,7 @@ namespace
 
                 if ( i > 1 )
                 {
-                    auto src = QStringLiteral( "image://shapes/" ) + graphics[ index ];
+                    auto src = QStringLiteral( "plus" );
                     button->setGraphicSource( src );
                 }
 

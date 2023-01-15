@@ -559,20 +559,20 @@ void Editor::setupPushButton()
 
     setFlagHint( Q::Panel | QskAspect::Direction, Qsk::LeftToRight );
     setStrutSize( Q::Panel, -1, 40_dp );
-    setSpacing( Q::Panel, 4_dp );
+    setSpacing( Q::Panel, 8_dp );
     setPadding( Q::Panel, { 24_dp, 0, 24_dp, 0 } );
 
     setBoxShape( Q::Panel, 100, Qt::RelativeSize );
 
     setAlignment( Q::Graphic, Qt::AlignCenter );
     setStrutSize( Q::Graphic, 18_dp, 18_dp );
-    setPadding( Q::Graphic, 0 );
+    setPadding( Q::Graphic, { 0, 0, 8_dp, 0 } );
+    setGraphicRole( Q::Graphic, QskMaterial3Skin::GraphicRoleOnPrimary );
 
     setFontRole( Q::Text, QskMaterial3Skin::M3LabelLarge );
     setPadding( Q::Text, 0 );
 
-    setAlignment( Q::Text | A::Vertical, Qt::AlignCenter );
-    setAlignment( Q::Text | A::Horizontal, Qt::AlignLeft | Qt::AlignVCenter );
+    setAlignment( Q::Text, Qt::AlignCenter );
 
     // normal buttons (i.e. Filled):
 
