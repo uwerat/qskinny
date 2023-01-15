@@ -48,3 +48,6 @@ HEADERS += \
 SOURCES += \
     Page.cpp \
     main.cpp
+
+RESOURCES += \
+    icons.qrc \
