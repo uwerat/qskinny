@@ -192,9 +192,9 @@ QSizeF QskPushButtonSkinlet::sizeHint( const QskSkinnable* skinnable,
     LayoutEngine layoutEngine( button );
 
     auto size = layoutEngine.sizeHint( which, QSizeF() );
-
-    size = size.expandedTo( button->strutSizeHint( Q::Panel ) );
     size = button->outerBoxSize( Q::Panel, size );
+    size = size.expandedTo( button->strutSizeHint( Q::Panel ) );
+    size = size.grownBy( skinnable->marginHint( Q::Panel ) );
 
     return size;
 }
