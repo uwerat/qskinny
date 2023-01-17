@@ -1176,10 +1176,7 @@ QSizeF QskSkinnable::outerBoxSize(
     QskAspect aspect, const QSizeF& innerBoxSize ) const
 {
     const auto pd = qskEffectivePadding( this, aspect, innerBoxSize, false );
-
-    // since Qt 5.14 we would have QSizeF::grownBy !
-    return QSizeF( innerBoxSize.width() + pd.width(),
-        innerBoxSize.height() + pd.height() );
+    return innerBoxSize.grownBy( pd );
 }
 
 QRectF QskSkinnable::outerBox(
