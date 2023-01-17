@@ -250,12 +250,12 @@ static ColoredLine* qskAddFillLines( const Quad& rect,
     if ( dir.isTilted() )
     {
         DRectIterator it( rect, dir.vector() );
-        line = QskVertex::fillOrdered( it, gradient, lineCount, line );
+        line = QskVertex::fillBox( it, gradient, lineCount, line );
     }
     else
     {
         HVRectIterator it( rect, dir.vector() );
-        line = QskVertex::fillOrdered( it, gradient, lineCount, line );
+        line = QskVertex::fillBox( it, gradient, lineCount, line );
     }
 
     return line;

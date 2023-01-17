@@ -214,7 +214,7 @@ namespace QskVertex
     }
 
     template< class ContourIterator >
-    ColoredLine* fillOrdered( ContourIterator& contourIt,
+    ColoredLine* fillBox( ContourIterator& contourIt,
         const QskGradient& gradient, int lineCount, ColoredLine* lines )
     {
         if ( gradient.stepCount() == 1 )

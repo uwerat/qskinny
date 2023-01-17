@@ -39,6 +39,7 @@ namespace
         qreal origin = 0.0;
         qreal length = 0.0;
     };
+
     /*
         A contour iterator for vertical and horizontal linear gradients.
         The radii in direction of the gradient need to match at the
@@ -349,7 +350,7 @@ static inline void qskRenderFillOrdered(
     const auto dir = gradient.linearDirection();
 
     HVRectEllipseIterator it( metrics, dir.vector() );
-    QskVertex::fillOrdered( it, gradient, lineCount,lines );
+    QskVertex::fillBox( it, gradient, lineCount,lines );
 }
 
 void QskRoundedRectRenderer::renderBorderGeometry(
