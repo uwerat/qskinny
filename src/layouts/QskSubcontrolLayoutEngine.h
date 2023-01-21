@@ -127,6 +127,8 @@ class QskSubcontrolLayoutEngine : public QskLayoutEngine2D
         QskAspect::Subcontrol, const QString& text,
         QskAspect::Subcontrol, const QSizeF& graphicSize );
 
+    void setFixedContent( QskAspect::Subcontrol, Qt::Orientation, Qt::Alignment );
+
     QRectF subControlRect( QskAspect::Subcontrol ) const;
 
   private:

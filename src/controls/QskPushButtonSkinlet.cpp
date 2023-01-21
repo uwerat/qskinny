@@ -37,6 +37,9 @@ namespace
             setGraphicTextElements( button,
                 QskPushButton::Text, button->text(),
                 QskPushButton::Graphic, button->graphic().defaultSize() );
+
+            const auto alignment = button->alignmentHint( QskPushButton::Panel, Qt::AlignCenter );
+            setFixedContent( QskPushButton::Text, Qt::Horizontal, alignment );
         }
     };
 }

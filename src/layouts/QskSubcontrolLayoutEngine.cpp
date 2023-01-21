@@ -407,6 +407,54 @@ void QskSubcontrolLayoutEngine::setGraphicTextElements( const QskSkinnable* skin
     }
 }
 
+void QskSubcontrolLayoutEngine::setFixedContent( QskAspect::Subcontrol subcontrol, Qt::Orientation orientation, Qt::Alignment alignment )
+{
+    if( auto* e = element( subcontrol ) )
+    {
+        e->setSizePolicy( QskSizePolicy::Fixed, e->sizePolicy().verticalPolicy() );
+    }
+
+    Qt::Edges extraSpacing;
+
+    switch( orientation )
+    {
+    case Qt::Horizontal:
+        extraSpacing |= ( extraSpacingAt() & ( Qt::TopEdge | Qt::BottomEdge ) );
+
+        if( alignment & Qt::AlignLeft )
+        {
+            extraSpacing |= Qt::RightEdge;
+        }
+        else if( alignment & Qt::AlignRight )
+        {
+            extraSpacing |= Qt::LeftEdge;
+        }
+        else if( alignment & Qt::AlignHCenter )
+        {
+            extraSpacing |= Qt::LeftEdge | Qt::RightEdge;
+        }
+        break;
+    case Qt::Vertical:
+        extraSpacing |= ( extraSpacingAt() & ( Qt::LeftEdge | Qt::RightEdge ) );
+
+        if( alignment & Qt::AlignTop )
+        {
+            extraSpacing |= Qt::BottomEdge;
+        }
+        else if( alignment & Qt::AlignBottom )
+        {
+            extraSpacing |= Qt::TopEdge;
+        }
+        else if( alignment & Qt::AlignVCenter )
+        {
+            extraSpacing |= Qt::TopEdge | Qt::BottomEdge;
+        }
+        break;
+    }
+
+    setExtraSpacingAt( extraSpacing );
+}
+
 void QskSubcontrolLayoutEngine::addElement( LayoutElement* element )
 {
     m_data->elements += element;
