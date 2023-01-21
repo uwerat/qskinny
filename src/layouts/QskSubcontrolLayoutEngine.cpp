@@ -11,6 +11,7 @@
 #include "QskMargins.h"
 #include "QskTextOptions.h"
 
+#include <qdebug.h>
 #include <qfont.h>
 #include <qfontmetrics.h>
 #include <qmath.h>

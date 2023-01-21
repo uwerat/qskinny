@@ -433,13 +433,15 @@ void Editor::setupSegmentedBar()
     using A = QskAspect;
     using Q = QskSegmentedBar;
 
-    const QSize strutSize( -1, 40_dp );
+    const QSize panelStrutSize( -1, 48_dp );
+    const QSize segmentStrutSize( 48_dp, 40_dp );
 
     {
-        // Panel
+        // Container
 
+        setGradient( Q::Panel, Qt::transparent ); // ### background
         setPadding( Q::Panel, 0 );
-        setSpacing( Q::Panel, 0 );
+        setSpacing( Q::Panel, 8_dp ); // ### messes up the cursor
 
         setBoxShape( Q::Panel, 100, Qt::RelativeSize );
 
@@ -447,22 +449,24 @@ void Editor::setupSegmentedBar()
         setBoxBorderColors( Q::Panel, m_pal.outline );
         setBoxBorderColors( Q::Panel | Q::Disabled, m_pal.onSurface12 );
 
-        setStrutSize( Q::Panel | A::Horizontal, strutSize );
-        setStrutSize( Q::Panel | A::Vertical, strutSize.transposed() );
+        setStrutSize( Q::Panel | A::Horizontal, panelStrutSize );
+        setStrutSize( Q::Panel | A::Vertical, panelStrutSize.transposed() );
     }
 
     {
         // Segment
 
-        setGradient( Q::Segment, Qt::transparent );
+        setStrutSize( Q::Segment | A::Horizontal, segmentStrutSize );
+        setStrutSize( Q::Segment | A::Vertical, segmentStrutSize.transposed() );
+        setGradient( Q::Segment, Qt::transparent ); // ### background
         setPadding( Q::Segment, 0 );
     }
 
     {
         // Separator
 
-        setStrutSize( Q::Separator | A::Horizontal, 1_dp, strutSize.height() );
-        setStrutSize( Q::Separator | A::Vertical, strutSize.height(), 1_dp );
+        setStrutSize( Q::Separator | A::Horizontal, 1_dp, segmentStrutSize.height() );
+        setStrutSize( Q::Separator | A::Vertical, segmentStrutSize.height(), 1_dp );
         setPadding( Q::Separator, 0 );
         setGradient( Q::Separator, m_pal.outline );
         setColor( Q::Separator | Q::Disabled, m_pal.onSurface38 );
@@ -470,7 +474,6 @@ void Editor::setupSegmentedBar()
 
     {
         // Cursor
-        setMargin( Q::Cursor, 1_dp );
         setBoxShape( Q::Cursor, 0 );
 
         setBoxShape( Q::Cursor | Q::Minimum | A::Horizontal,
@@ -489,7 +492,6 @@ void Editor::setupSegmentedBar()
 
         setGradient( Q::Cursor, m_pal.secondaryContainer );
         setGradient( Q::Cursor | Q::Disabled, m_pal.onSurface12 );
-
         setAnimation( Q::Cursor | A::Metric | A::Position, 100 );
     }
 
@@ -509,8 +511,8 @@ void Editor::setupSegmentedBar()
     {
         // Graphic
 
-        setPadding( Q::Graphic, 10_dp );
-        setMargin( Q::Graphic, 10_dp );
+        setPadding( Q::Graphic, 0_dp );
+        setStrutSize( Q::Graphic, { 18_dp, 18_dp } );
     }
 }
 

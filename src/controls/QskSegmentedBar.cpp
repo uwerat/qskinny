@@ -149,6 +149,22 @@ int QskSegmentedBar::addGraphic( const QUrl& graphicSource )
     return count() - 1;
 }
 
+int QskSegmentedBar::addGraphicAndText( const QUrl& graphicSource, const QString& text )
+{
+    m_data->addOption( this, Option( graphicSource, text ) );
+    return count() - 1;
+}
+
+QString QskSegmentedBar::textAt( int index ) const
+{
+    return m_data->options.at( index ).text;
+}
+
+QskGraphic QskSegmentedBar::graphicAt( int index ) const
+{
+    return m_data->options.at( index ).graphic;
+}
+
 QVariant QskSegmentedBar::optionAt( int index ) const
 {
     const auto& options = m_data->options;

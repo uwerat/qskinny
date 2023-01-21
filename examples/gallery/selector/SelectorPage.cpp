@@ -19,31 +19,33 @@ namespace
             orientation = ( orientation == Qt::Horizontal )
                 ? Qt::Vertical : Qt::Horizontal;
 
+            const char* texts[] =
+            {
+                "airport",
+                "flight",
+                "pizza",
+                "soccer"
+            };
+
             {
                 auto bar = new QskSegmentedBar( orientation, this );
 
-                bar->addText( "Option 1" );
-                bar->addText( "Option 2" );
-                bar->addText( "Option 3" );
-                bar->addText( "Option 4" );
+                for ( const auto text: texts )
+                    bar->addText( text );
             }
 
             {
-                const auto prefix = QStringLiteral( "image://shapes/" );
-
                 const char* icons[] =
                 {
-                    "rectangle/crimson",
-                    "triangleright/thistle",
-                    "ellipse/khaki",
-                    "ring/sandybrown",
-                    "star/darkviolet",
-                    "hexagon/darkslategray"
+                    "airport_shuttle",
+                    "flight",
+                    "local_pizza",
+                    "sports_soccer"
                 };
 
                 auto bar = new QskSegmentedBar( orientation, this );
-                for ( const auto icon : icons )
-                    bar->addGraphic( prefix + icon );
+                for ( uint i = 0; i < sizeof( icons ) / sizeof( icons[ 0 ] ); ++i )
+                    bar->addGraphicAndText( QUrl( QString( icons[ i ] ) ), texts[ i ] );
             }
 
             setExtraSpacingAt( Qt::LeftEdge | Qt::BottomEdge );

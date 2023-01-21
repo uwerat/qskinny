@@ -8,18 +8,50 @@
 
 #include "QskGraphic.h"
 #include "QskColorFilter.h"
-#include "QskTextOptions.h"
-#include "QskSGNode.h"
 #include "QskFunctions.h"
+#include "QskSubcontrolLayoutEngine.h"
 
 #include <qfontmetrics.h>
 #include <qmath.h>
 
+static inline Qt::Orientation qskOrientation( const QskSegmentedBar* bar )
+{
+    // For the moment we only handle the orientation TODO ...
+
+    const auto direction = bar->flagHint(
+        QskSegmentedBar::Panel | QskAspect::Direction, Qsk::LeftToRight );
+
+    if ( direction == Qsk::LeftToRight || direction == Qsk::RightToLeft )
+        return Qt::Horizontal;
+    else
+        return Qt::Vertical;
+}
+
+namespace
+{
+    class LayoutEngine : public QskSubcontrolLayoutEngine
+    {
+      public:
+        LayoutEngine( const QskSegmentedBar* bar, int index )
+            : QskSubcontrolLayoutEngine( qskOrientation( bar ) )
+        {
+            setSpacing( bar->spacingHint( QskSegmentedBar::Panel ) );
+
+            setGraphicTextElements( bar,
+                QskSegmentedBar::Text, bar->textAt( index ),
+                QskSegmentedBar::Graphic, bar->graphicAt( index ).defaultSize() );
+
+            const auto alignment = bar->alignmentHint( QskSegmentedBar::Panel, Qt::AlignCenter );
+            setFixedContent( QskSegmentedBar::Text, Qt::Horizontal, alignment );
+        }
+    };
+}
+
 QskSegmentedBarSkinlet::QskSegmentedBarSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
-    setNodeRoles( { PanelRole, SegmentRole, SeparatorRole,
-        CursorRole, TextRole, GraphicRole  } );
+    setNodeRoles( { CursorRole, PanelRole, SegmentRole,
+                    SeparatorRole, TextRole, GraphicRole  } );
 }
 
 QskSegmentedBarSkinlet::~QskSegmentedBarSkinlet() = default;
@@ -115,7 +147,7 @@ QRectF QskSegmentedBarSkinlet::separatorRect(
 
     if( bar->orientation() == Qt::Horizontal )
     {
-        rect.setLeft( rect.right() );
+        rect.setLeft( rect.right() ); // ### *0.5 or so?
         rect.setSize( { strutSize.width(), sh.height() } );
     }
     else
@@ -137,11 +169,11 @@ QSGNode* QskSegmentedBarSkinlet::updateSubNode(
 
     switch( nodeRole )
     {
-        case PanelRole:
-            return updateBoxNode( skinnable, node, Q::Panel );
-
         case CursorRole:
             return updateBoxNode( skinnable, node, Q::Cursor );
+
+        case PanelRole:
+            return updateBoxNode( skinnable, node, Q::Panel );
 
         case SegmentRole:
             return updateSeriesNode( skinnable, Q::Segment, node );
@@ -159,56 +191,29 @@ QSGNode* QskSegmentedBarSkinlet::updateSubNode(
     return nullptr;
 }
 
-QSizeF QskSegmentedBarSkinlet::segmentSizeHint( const QskSegmentedBar* bar ) const
+QSizeF QskSegmentedBarSkinlet::segmentSizeHint( const QskSegmentedBar* bar, Qt::SizeHint which ) const
 {
-    qreal widthMax = 0;
-    qreal graphicRatioMax = 0;
+    using Q = QskSegmentedBar;
 
-    const QFontMetricsF fm( bar->effectiveFont( QskSegmentedBar::Text ) );
+    QSizeF sizeMax;
 
     for ( int i = 0; i < bar->count(); i++ )
     {
-        const auto value = bar->optionAt( i );
+        LayoutEngine layoutEngine( bar, i );
 
-        if ( value.canConvert< QskGraphic >() )
+        const auto size = layoutEngine.sizeHint( which, QSizeF() );
+
+        if( size.width() > sizeMax.width() )
         {
-            const auto graphic = value.value< QskGraphic >();
-
-            if ( !graphic.isNull() )
-            {
-                const auto sz = graphic.defaultSize();
-
-                if( sz.isValid() )
-                {
-                    const qreal ratio = sz.width() / sz.height();
-
-                    if( graphicRatioMax < ratio )
-                        graphicRatioMax = ratio;
-                }
-            }
-        }
-        else if ( value.canConvert< QString >() )
-        {
-            const auto text = value.value< QString >();
-            if ( !text.isEmpty() )
-            {
-                const auto sz = fm.size( Qt::TextShowMnemonic, text );
-
-                if( sz.width() > widthMax )
-                    widthMax = sz.width();
-            }
+            sizeMax = size;
         }
     }
 
-    if( graphicRatioMax > 0 )
-    {
-        const qreal w = fm.height() * graphicRatioMax;
+    sizeMax = bar->outerBoxSize( Q::Segment, sizeMax );
+    sizeMax = sizeMax.expandedTo( bar->strutSizeHint( Q::Segment ) );
+    sizeMax = sizeMax.grownBy( bar->marginHint( Q::Segment ) );
 
-        if( w > widthMax )
-            widthMax = w;
-    }
-
-    return bar->outerBoxSize( QskSegmentedBar::Segment, QSizeF( widthMax, fm.height() ) );
+    return sizeMax;
 }
 
 QSizeF QskSegmentedBarSkinlet::sizeHint( const QskSkinnable* skinnable,
@@ -231,7 +236,7 @@ QSizeF QskSegmentedBarSkinlet::sizeHint( const QskSkinnable* skinnable,
         const qreal spacing = skinnable->spacingHint( Q::Panel );
 
         const auto bar = static_cast< const QskSegmentedBar* >( skinnable );
-        const auto segmentSize = segmentSizeHint( bar );
+        const auto segmentSize = segmentSizeHint( bar, which );
 
         if( bar->orientation() == Qt::Horizontal )
         {
@@ -275,7 +280,10 @@ QRectF QskSegmentedBarSkinlet::sampleRect( const QskSkinnable* skinnable,
     if ( subControl == Q::Text || subControl == Q::Graphic )
     {
         const auto rect = sampleRect( skinnable, contentsRect, Q::Segment, index );
-        return rect;
+
+        LayoutEngine layoutEngine( bar, index );
+        layoutEngine.setGeometries( rect );
+        return layoutEngine.subControlRect( subControl );
     }
 
     return Inherited::sampleRect( skinnable, contentsRect, subControl, index );
@@ -324,11 +332,10 @@ QSGNode* QskSegmentedBarSkinlet::updateSampleNode( const QskSkinnable* skinnable
 
     if ( subControl == Q::Text )
     {
-        const auto value = bar->optionAt( index );
-        if ( value.canConvert< QString >() )
-        {
-            const auto text = value.value< QString >();
+        const auto text = bar->textAt( index );
 
+        if( !text.isEmpty() )
+        {
             return QskSkinlet::updateTextNode( bar, node,
                 rect, alignment, text, Q::Text );
         }
@@ -338,10 +345,10 @@ QSGNode* QskSegmentedBarSkinlet::updateSampleNode( const QskSkinnable* skinnable
 
     if ( subControl == Q::Graphic )
     {
-        const auto value = bar->optionAt( index );
-        if ( value.canConvert< QskGraphic >() )
+        const auto graphic = bar->graphicAt( index );
+
+        if( !graphic.isEmpty() )
         {
-            const auto graphic = value.value< QskGraphic >();
             const auto filter = bar->effectiveGraphicFilter( subControl );
             const auto padding = bar->paddingHint( Q::Graphic );
             const auto graphicRect = rect.marginsRemoved( padding );
