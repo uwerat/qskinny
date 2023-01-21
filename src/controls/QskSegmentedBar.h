@@ -48,6 +48,10 @@ class QSK_EXPORT QskSegmentedBar : public QskControl
 
     int addText( const QString& );
     int addGraphic( const QUrl& );
+    int addGraphicAndText( const QUrl&, const QString& );
+
+    QString textAt( int ) const;
+    QskGraphic graphicAt( int ) const;
 
     void clear();
 

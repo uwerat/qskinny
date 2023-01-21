@@ -55,7 +55,7 @@ class QSK_EXPORT QskSegmentedBarSkinlet : public QskSkinlet
         QskAspect::Subcontrol, int index, QSGNode* ) const override;
 
   private:
-    QSizeF segmentSizeHint( const QskSegmentedBar* ) const;
+    QSizeF segmentSizeHint(const QskSegmentedBar*, Qt::SizeHint ) const;
 
     QRectF segmentRect( const QskSegmentedBar*, const QRectF&, int index ) const;
     QRectF separatorRect( const QskSegmentedBar*, const QRectF&, int index ) const;
