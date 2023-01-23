@@ -205,6 +205,11 @@ namespace QskVertex
             return ( width <= 0 ) || ( height <= 0 );
         }
 
+        inline operator QRectF() const
+        {
+            return QRectF( left, top, width, height );
+        }
+
         qreal left = 0.0;
         qreal top = 0.0;
         qreal right = 0.0;
@@ -226,7 +231,7 @@ namespace
             reset( stepCount, inverted );
         }
 
-        void reset( int stepCount, bool inverted )
+        void reset( int stepCount, bool inverted = false )
         {
             m_inverted = inverted;
 
