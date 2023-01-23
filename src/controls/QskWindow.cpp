@@ -143,6 +143,7 @@ class QskWindowPrivate : public QQuickWindowPrivate
         , explicitLocale( false )
         , deleteOnClose( false )
         , autoLayoutChildren( true )
+        , showedOnce( false )
     {
     }
 
@@ -163,6 +164,7 @@ class QskWindowPrivate : public QQuickWindowPrivate
     bool explicitLocale : 1;
     bool deleteOnClose : 1;
     bool autoLayoutChildren : 1;
+    bool showedOnce : 1;
 };
 
 QskWindow::QskWindow( QWindow* parent )
@@ -303,15 +305,33 @@ bool QskWindow::event( QEvent* event )
     {
         case QEvent::Show:
         {
-            if ( size().isEmpty() )
+            if ( !d->showedOnce )
             {
-                QSize sz = sizeConstraint();
-                if ( !sz.isEmpty() )
-                {
-                    sz = sz.expandedTo( minimumSize() );
-                    sz = sz.boundedTo( maximumSize() );
+                d->showedOnce = true;
 
-                    resize( sz );
+                /*
+                    When a window has a platform window its size is taken
+                    from the platform window - otherwise from d->geometry.
+                    A top level window that has not been shown does not have
+                    a platform window yet and therefore any size set before calling
+                    QWindow::show() is stored there.
+
+                    Starting with Qt 6.5 an initial default size is set to the platform
+                    window ( at least QXcbWindow ) before the Show event is sent
+                    and we can't rely on QWindow::size() anymore. But even if d->geometry
+                    is not used anymore we can initialize depending on it.
+                 */
+
+                if ( d->geometry.size().isEmpty() )
+                {
+                    QSize sz = sizeConstraint();
+                    if ( !sz.isEmpty() )
+                    {
+                        sz = sz.expandedTo( minimumSize() );
+                        sz = sz.boundedTo( maximumSize() );
+
+                        resize( sz );
+                    }
                 }
             }
 
