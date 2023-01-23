@@ -68,6 +68,8 @@ class QSK_EXPORT QskLinearDirection
     constexpr qreal y2() const noexcept;
     void setY2( qreal ) noexcept;
 
+    bool contains( const QRectF& ) const;
+
   private:
     qreal m_x1 = 0.0;
     qreal m_y1 = 0.0;

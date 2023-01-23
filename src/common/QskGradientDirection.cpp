@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskGradientDirection.h"
+#include <qrect.h>
 
 static void qskRegisterGradientDirection()
 {
@@ -113,6 +114,66 @@ void QskLinearDirection::setInterval( Qt::Orientation orientation, qreal from, q
         m_x1 = from;
         m_x2 = to;
     }
+}
+
+static inline bool qskIntersectsTop(
+    qreal vx, qreal vy, qreal m, const QRectF& rect )
+{
+    const auto cx = vx - ( vy - rect.top() ) / m;
+    return cx > rect.left() && cx < rect.right();
+}
+
+static inline bool qskIntersectsBottom(
+    qreal vx, qreal vy, qreal m, const QRectF& rect )
+{
+    const auto cx = vx - ( vy - rect.bottom() ) / m;
+    return cx > rect.left() && cx < rect.right();
+}
+
+static inline bool qskIntersectsLeft(
+    qreal vx, qreal vy, qreal m, const QRectF& rect )
+{
+    const qreal cy = vy - ( vx - rect.left() ) * m;
+    return ( cy > rect.top() && cy < rect.bottom() );
+}
+
+static inline bool qskIntersectsRight(
+    qreal vx, qreal vy, qreal m, const QRectF& rect )
+{
+    const qreal cy = vy - ( vx - rect.right() ) * m;
+    return ( cy > rect.top() && cy < rect.bottom() );
+}
+
+bool QskLinearDirection::contains( const QRectF& rect ) const
+{
+    if ( m_y1 == m_y2 )
+    {
+        return ( m_x1 <= rect.left() && m_x2 >= rect.right() )
+            || ( m_x1 >= rect.right() && m_x2 <= rect.left() );
+    }
+
+
+    if ( m_x1 == m_x2 )
+    {
+        return ( m_y1 <= rect.top() && m_y2 >= rect.bottom() )
+            || ( m_y1 >= rect.bottom() && m_y2 <= rect.top() );
+    }
+
+    // are the normal vectors intersecting ?
+
+    const auto m = ( m_x2 - m_x1 ) / ( m_y1 - m_y2 ); // slope of the normal vectors
+
+    const bool intersecting =
+        qskIntersectsLeft( m_x1, m_y1, m, rect ) ||
+        qskIntersectsRight( m_x1, m_y1, m, rect ) ||
+        qskIntersectsTop( m_x1, m_y1, m, rect ) ||
+        qskIntersectsBottom( m_x1, m_y1, m, rect ) ||
+        qskIntersectsLeft( m_x2, m_y2, m, rect ) ||
+        qskIntersectsRight( m_x2, m_y2, m, rect ) ||
+        qskIntersectsTop( m_x2, m_y2, m, rect ) ||
+        qskIntersectsBottom( m_x2, m_y2, m, rect );
+
+    return !intersecting;
 }
 
 // -- QskConicDirection
