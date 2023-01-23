@@ -151,6 +151,8 @@ void QskLayoutChain::expandCells(
         if ( !maximum.isEmpty() && !cell.isValid )
             cell.metrics.setMaximum( maximum[i].length );
 
+        cell.metrics.normalize();
+
         if ( !cell.isValid )
         {
             cell.isValid = true;
