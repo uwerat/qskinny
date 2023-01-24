@@ -257,18 +257,20 @@ namespace QskGraphicPrivate
         }
 
         inline double scaleFactorX( const QRectF& pathRect,
-            const QRectF& targetRect, bool scalePens ) const
+            const QRectF& targetRect, const QRectF& graphicBoundingRect, bool scalePens ) const
         {
             if ( pathRect.width() <= 0.0 )
                 return 0.0;
 
             const QPointF p0 = m_pointRect.center();
 
-            const qreal l = qAbs( pathRect.left() - p0.x() );
-            const qreal r = qAbs( pathRect.right() - p0.x() );
+            const auto p = pathRect.united( m_boundingRect );
+
+            const qreal l = qAbs( p.left() - p0.x() );
+            const qreal r = qAbs( p.right() - p0.x() );
 
             const double w = 2.0 * qMin( l, r ) *
-                targetRect.width() / pathRect.width();
+                targetRect.width() / graphicBoundingRect.width();
 
             double sx;
             if ( scalePens && m_scalablePen )
@@ -288,18 +290,20 @@ namespace QskGraphicPrivate
         }
 
         inline double scaleFactorY( const QRectF& pathRect,
-            const QRectF& targetRect, bool scalePens ) const
+            const QRectF& targetRect, const QRectF& graphicBoundingRect, bool scalePens ) const
         {
             if ( pathRect.height() <= 0.0 )
                 return 0.0;
 
             const QPointF p0 = m_pointRect.center();
 
-            const qreal t = qAbs( pathRect.top() - p0.y() );
-            const qreal b = qAbs( pathRect.bottom() - p0.y() );
+            const auto p = pathRect.united( m_boundingRect );
+
+            const qreal t = qAbs( p.top() - p0.y() );
+            const qreal b = qAbs( p.bottom() - p0.y() );
 
             const double h = 2.0 * qMin( t, b ) *
-                targetRect.height() / pathRect.height();
+                targetRect.height() / graphicBoundingRect.height();
 
             double sy;
             if ( scalePens && m_scalablePen )
@@ -680,14 +684,14 @@ void QskGraphic::render( QPainter* painter, const QRectF& rect,
 
     for ( const auto& info : qAsConst( m_data->pathInfos ) )
     {
-        const qreal ssx = info.scaleFactorX(
-            m_data->pointRect, rect, scalePens );
+        const qreal ssx = info.scaleFactorX( m_data->pointRect,
+            rect, m_data->boundingRect, scalePens );
 
         if ( ssx > 0.0 )
             sx = qMin( sx, ssx );
 
-        const qreal ssy = info.scaleFactorY(
-            m_data->pointRect, rect, scalePens );
+        const qreal ssy = info.scaleFactorY( m_data->pointRect,
+            rect, m_data->boundingRect, scalePens );
 
         if ( ssy > 0.0 )
             sy = qMin( sy, ssy );
@@ -702,15 +706,15 @@ void QskGraphic::render( QPainter* painter, const QRectF& rect,
         sx = sy = qMax( sx, sy );
     }
 
-    const auto& pr = m_data->pointRect;
+    const auto& br = m_data->boundingRect;
     const auto rc = rect.center();
 
     QTransform tr;
     tr.translate(
-        rc.x() - 0.5 * sx * pr.width(),
-        rc.y() - 0.5 * sy * pr.height() );
+        rc.x() - 0.5 * sx * br.width(),
+        rc.y() - 0.5 * sy * br.height() );
     tr.scale( sx, sy );
-    tr.translate( -pr.x(), -pr.y() );
+    tr.translate( -br.x(), -br.y() );
 
     const auto transform = painter->transform();
 
@@ -1079,7 +1083,7 @@ QskGraphic QskGraphic::fromGraphic(
     QPainter painter( &recoloredGraphic );
     graphic.render( &painter, colorFilter );
     painter.end();
-    
+
     return recoloredGraphic;
 }
 
