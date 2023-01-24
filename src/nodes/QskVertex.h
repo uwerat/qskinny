@@ -10,6 +10,7 @@
 
 #include <qcolor.h>
 #include <qsggeometry.h>
+#include <qline.h>
 #include <qmath.h>
 
 namespace QskVertex
@@ -145,6 +146,16 @@ namespace QskVertex
         inline void setLine( float x1, float y1, float x2, float y2, Color color ) noexcept
         {
             setLine( x1, y1, color, x2, y2, color );
+        }
+
+        inline void setLine( const QPointF& p1, const QPointF& p2, Color color ) noexcept
+        {
+            setLine( p1.x(), p1.y(), color, p2.x(), p2.y(), color );
+        }
+
+        inline void setLine( const QLineF& line, Color color ) noexcept
+        {
+            setLine( line.x1(), line.y1(), color, line.x2(), line.y2(), color );
         }
 
         inline void setHLine( qreal x1, qreal x2, qreal y, Color color ) noexcept
