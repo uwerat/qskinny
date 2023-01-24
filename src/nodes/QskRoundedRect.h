@@ -43,7 +43,7 @@ namespace QskRoundedRect
 
             int stepCount;
 
-        } corner[ 4 ];
+        } corners[ 4 ];
 
         bool isBorderRegular;
         bool isRadiusRegular;

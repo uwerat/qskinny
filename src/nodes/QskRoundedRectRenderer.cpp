@@ -79,12 +79,12 @@ namespace
                 m_dt = vector.dx() * m_size;
             }
 
-            const auto& mc1 = metrics.corner[ c[0] ];
-            const auto& mc2 = metrics.corner[ c[1] ];
+            const auto& mc1 = metrics.corners[ c[0] ];
+            const auto& mc2 = metrics.corners[ c[1] ];
             const auto& mc3 = ( mc1.stepCount >= mc2.stepCount ) ? mc1 : mc2;
 
-            const auto& mc4 = metrics.corner[ c[2] ];
-            const auto& mc5 = metrics.corner[ c[3] ];
+            const auto& mc4 = metrics.corners[ c[2] ];
+            const auto& mc5 = metrics.corners[ c[3] ];
             const auto& mc6 = ( mc4.stepCount >= mc5.stepCount ) ? mc4 : mc5;
 
             m_vector[0] = vectorAt( !m_vertical, false, mc1 );
@@ -265,29 +265,29 @@ static inline int qskFillLineCount(
 
     if ( dir.isVertical() )
     {
-        lineCount += qMax( metrics.corner[ TopLeft ].stepCount,
-            metrics.corner[ TopRight ].stepCount ) + 1;
+        lineCount += qMax( metrics.corners[ TopLeft ].stepCount,
+            metrics.corners[ TopRight ].stepCount ) + 1;
 
-        lineCount += qMax( metrics.corner[ BottomLeft ].stepCount,
-            metrics.corner[ BottomRight ].stepCount ) + 1;
+        lineCount += qMax( metrics.corners[ BottomLeft ].stepCount,
+            metrics.corners[ BottomRight ].stepCount ) + 1;
 
         if ( metrics.centerQuad.top >= metrics.centerQuad.bottom )
             lineCount--;
     }
     else if ( dir.isHorizontal() )
     {
-        lineCount += qMax( metrics.corner[ TopLeft ].stepCount,
-            metrics.corner[ BottomLeft ].stepCount ) + 1;
+        lineCount += qMax( metrics.corners[ TopLeft ].stepCount,
+            metrics.corners[ BottomLeft ].stepCount ) + 1;
 
-        lineCount += qMax( metrics.corner[ TopRight ].stepCount,
-            metrics.corner[ BottomRight ].stepCount ) + 1;
+        lineCount += qMax( metrics.corners[ TopRight ].stepCount,
+            metrics.corners[ BottomRight ].stepCount ) + 1;
 
         if ( metrics.centerQuad.left >= metrics.centerQuad.right )
             lineCount--;
     }
     else
     {
-        lineCount += 2 * ( metrics.corner[ 0 ].stepCount + 1 );
+        lineCount += 2 * ( metrics.corners[ 0 ].stepCount + 1 );
 
         if ( metrics.centerQuad.left >= metrics.centerQuad.right )
             lineCount--;
@@ -365,7 +365,7 @@ void QskRoundedRectRenderer::renderBorderGeometry(
         return;
     }
 
-    const int stepCount = metrics.corner[ 0 ].stepCount;
+    const int stepCount = metrics.corners[ 0 ].stepCount;
     const int lineCount = 4 * ( stepCount + 1 ) + 1;
 
     const auto lines = allocateLines< Line >( geometry, lineCount );
@@ -430,8 +430,8 @@ void QskRoundedRectRenderer::renderFillGeometry(
      */
 
     const auto numPoints =
-        metrics.corner[0].stepCount + metrics.corner[1].stepCount
-        + metrics.corner[2].stepCount + metrics.corner[3].stepCount + 4;
+        metrics.corners[0].stepCount + metrics.corners[1].stepCount
+        + metrics.corners[2].stepCount + metrics.corners[3].stepCount + 4;
 
     /*
         points: center point + interpolated corner points
@@ -454,7 +454,7 @@ void QskRoundedRectRenderer::renderFillGeometry(
 
     {
         constexpr auto id = TopLeft;
-        const auto& c = metrics.corner[ id ];
+        const auto& c = metrics.corners[ id ];
 
         for ( ArcIterator it( c.stepCount, false ); !it.isDone(); ++it )
         {
@@ -467,7 +467,7 @@ void QskRoundedRectRenderer::renderFillGeometry(
     }
     {
         constexpr auto id = BottomLeft;
-        const auto& c = metrics.corner[ id ];
+        const auto& c = metrics.corners[ id ];
 
         for ( ArcIterator it( c.stepCount, true ); !it.isDone(); ++it )
         {
@@ -480,7 +480,7 @@ void QskRoundedRectRenderer::renderFillGeometry(
     }
     {
         constexpr auto id = BottomRight;
-        const auto& c = metrics.corner[ id ];
+        const auto& c = metrics.corners[ id ];
 
         for ( ArcIterator it( c.stepCount, false ); !it.isDone(); ++it )
         {
@@ -493,7 +493,7 @@ void QskRoundedRectRenderer::renderFillGeometry(
     }
     {
         constexpr auto id = TopRight;
-        const auto& c = metrics.corner[ id ];
+        const auto& c = metrics.corners[ id ];
 
         for ( ArcIterator it( c.stepCount, true ); !it.isDone(); ++it )
         {
@@ -552,7 +552,7 @@ void QskRoundedRectRenderer::renderRect( const QRectF& rect,
         }
     }
 
-    const int stepCount = metrics.corner[ 0 ].stepCount;
+    const int stepCount = metrics.corners[ 0 ].stepCount;
 
     int borderLineCount = 0;
 

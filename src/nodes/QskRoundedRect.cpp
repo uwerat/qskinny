@@ -118,7 +118,7 @@ QskRoundedRect::Metrics::Metrics( const QRectF& rect,
 
     for ( int i = 0; i < 4; i++ )
     {
-        auto& c = corner[ i ];
+        auto& c = corners[ i ];
 
         const QSizeF radius = shape.radius( static_cast< Qt::Corner >( i ) );
         c.radiusX = qBound( 0.0, radius.width(), 0.5 * outerQuad.width );
@@ -149,17 +149,17 @@ QskRoundedRect::Metrics::Metrics( const QRectF& rect,
         }
     }
 
-    centerQuad.left = qMax( corner[ TopLeft ].centerX,
-        corner[ BottomLeft ].centerX );
+    centerQuad.left = qMax( corners[ TopLeft ].centerX,
+        corners[ BottomLeft ].centerX );
 
-    centerQuad.right = qMin( corner[ TopRight ].centerX,
-        corner[ BottomRight ].centerX );
+    centerQuad.right = qMin( corners[ TopRight ].centerX,
+        corners[ BottomRight ].centerX );
 
-    centerQuad.top = qMax( corner[ TopLeft ].centerY,
-        corner[ TopRight ].centerY );
+    centerQuad.top = qMax( corners[ TopLeft ].centerY,
+        corners[ TopRight ].centerY );
 
-    centerQuad.bottom = qMin( corner[ BottomLeft ].centerY,
-        corner[ BottomRight ].centerY );
+    centerQuad.bottom = qMin( corners[ BottomLeft ].centerY,
+        corners[ BottomRight ].centerY );
 
     centerQuad.width = centerQuad.right - centerQuad.left;
     centerQuad.height = centerQuad.bottom - centerQuad.top;
@@ -200,7 +200,7 @@ QskRoundedRect::Metrics::Metrics( const QRectF& rect,
 
     for ( int i = 0; i < 4; i++ )
     {
-        auto& c = corner[ i ];
+        auto& c = corners[ i ];
 
         switch ( i )
         {
@@ -245,10 +245,10 @@ QskRoundedRect::Metrics::Metrics( const QRectF& rect,
     }
 
     isTotallyCropped =
-        corner[ TopLeft ].isCropped &&
-        corner[ TopRight ].isCropped &&
-        corner[ BottomRight ].isCropped &&
-        corner[ BottomLeft ].isCropped;
+        corners[ TopLeft ].isCropped &&
+        corners[ TopRight ].isCropped &&
+        corners[ BottomRight ].isCropped &&
+        corners[ BottomLeft ].isCropped;
 
     // number of steps for iterating over the corners
 
@@ -264,7 +264,7 @@ QskRoundedRect::BorderValues::BorderValues( const QskRoundedRect::Metrics& metri
 {
     if ( m_isUniform )
     {
-        const auto& c = metrics.corner[ 0 ];
+        const auto& c = metrics.corners[ 0 ];
 
         m_uniform.dx1 = c.radiusInnerX;
         m_uniform.dy1 = c.radiusInnerY;
@@ -273,7 +273,7 @@ QskRoundedRect::BorderValues::BorderValues( const QskRoundedRect::Metrics& metri
     {
         for ( int i = 0; i < 4; i++ )
         {
-            const auto& c = metrics.corner[ i ];
+            const auto& c = metrics.corners[ i ];
 
             auto& inner = m_multi.inner[ i ];
             auto& outer = m_multi.outer[ i ];
@@ -313,7 +313,7 @@ void QskRoundedRect::BorderValues::setAngle( qreal cos, qreal sin )
 {
     if ( m_isUniform )
     {
-        const auto& c = m_metrics.corner[ 0 ];
+        const auto& c = m_metrics.corners[ 0 ];
 
         if ( !c.isCropped )
         {
@@ -356,7 +356,7 @@ void QskRoundedRect::Stroker::setBorderGradientLines(
 
     QskVertex::Line from, to;
 
-    const auto& c = m_metrics.corner;
+    const auto& c = m_metrics.corners;
 
     switch( c1 )
     {
@@ -456,7 +456,7 @@ void QskRoundedRect::Stroker::createBorderLines( QskVertex::Line* lines ) const
 {
     Q_ASSERT( m_metrics.isRadiusRegular );
 
-    const auto& c = m_metrics.corner;
+    const auto& c = m_metrics.corners;
 
     const int stepCount = c[ 0 ].stepCount;
     const int numCornerLines = stepCount + 1;
@@ -531,7 +531,7 @@ void QskRoundedRect::Stroker::createFillLines(
 
     ColorMap fillMap( gradient );
 
-    const auto& c = m_metrics.corner;
+    const auto& c = m_metrics.corners;
     const int stepCount = c[ 0 ].stepCount;
 
     int numLines = 2 * stepCount + 1;
@@ -603,7 +603,7 @@ void QskRoundedRect::Stroker::createBorderLines(
     Qt::Orientation orientation, QskVertex::ColoredLine* lines,
     const QskBoxBorderColors& colors ) const
 {
-    const auto& c = m_metrics.corner;
+    const auto& c = m_metrics.corners;
 #if 1
     const int stepCount = c[ 0 ].stepCount;
 #endif
@@ -720,7 +720,7 @@ void QskRoundedRect::Stroker::createUniformBox(
 
     const ColorMap fillMap( gradient );
 
-    const auto& c = m_metrics.corner;
+    const auto& c = m_metrics.corners;
     const int stepCount = c[ 0 ].stepCount;
 
     const BorderMaps borderMaps( stepCount, borderColors );

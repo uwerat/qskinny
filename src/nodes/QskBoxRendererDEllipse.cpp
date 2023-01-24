@@ -61,7 +61,7 @@ namespace
 
             qreal xt, yt;
             {
-                const auto& c = m.corner[ Qt::TopLeftCorner ];
+                const auto& c = m.corners[ Qt::TopLeftCorner ];
 
                 const qreal k = c.radiusInnerY / c.radiusInnerX * md;
                 const qreal u = ::sqrt( 1.0 + k * k );
@@ -152,12 +152,12 @@ namespace
 
             if ( clockwise )
             {
-                if ( x2 >= metrics.corner[ Qt::TopRightCorner ].centerX )
+                if ( x2 >= metrics.corners[ Qt::TopRightCorner ].centerX )
                     setCorner( Qt::TopRightCorner, metrics );
             }
             else
             {
-                if ( y2 >= metrics.corner[ Qt::BottomLeftCorner ].centerY )
+                if ( y2 >= metrics.corners[ Qt::BottomLeftCorner ].centerY )
                     setCorner( Qt::BottomLeftCorner, metrics );
             }
         }
@@ -177,7 +177,7 @@ namespace
 
             using namespace Qt;
 
-            const auto& corners = metrics.corner;
+            const auto& corners = metrics.corners;
             const auto& c = corners[ m_corner ];
 
             m_contourLine.p1 = m_contourLine.p2;
@@ -324,7 +324,7 @@ namespace
             Qt::Corner corner, const QskRoundedRect::Metrics& metrics )
         {
             m_corner = corner;
-            const auto& c = metrics.corner[ corner ];
+            const auto& c = metrics.corners[ corner ];
 
             const double angleStep = M_PI_2 / c.stepCount;
 
@@ -420,7 +420,7 @@ namespace
             : m_metrics( metrics )
             , m_curve( curve )
         {
-            const auto& c = metrics.corner[ Qt::TopLeftCorner ];
+            const auto& c = metrics.corners[ Qt::TopLeftCorner ];
 
 #if 1
             // This does not need to be done twice !!!
