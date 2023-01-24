@@ -68,6 +68,17 @@ class QSK_EXPORT QskLinearDirection
     constexpr qreal y2() const noexcept;
     void setY2( qreal ) noexcept;
 
+    /*
+        In direction of the gradient vector, where 0.0 corresponds to
+        points on the perpendicular at the start and 1.0 to points on
+        the perpendicular of the end point ( normalized projection ).
+
+        Also corresponds to the positions of the color stops and can be
+        used it calculate the color at a specific position.
+     */
+    qreal valueAt( const QPointF& ) const;
+    qreal valueAt( qreal x, qreal y ) const;
+
     bool contains( const QRectF& ) const;
 
   private:
@@ -226,8 +237,7 @@ inline constexpr QPointF QskLinearDirection::stop() const noexcept
 inline constexpr bool QskLinearDirection::isOriented(
     Qt::Orientation orientation ) const noexcept
 {
-    return ( orientation == Qt::Horizontal )
-        ? isHorizontal() : isVertical();
+    return ( orientation == Qt::Horizontal ) ? isHorizontal() : isVertical();
 }
 
 inline constexpr bool QskLinearDirection::isHorizontal() const noexcept
@@ -243,6 +253,17 @@ inline constexpr bool QskLinearDirection::isVertical() const noexcept
 inline constexpr bool QskLinearDirection::isTilted() const noexcept
 {
     return ( m_x1 != m_x2 ) && ( m_y1 != m_y2 );
+}
+
+inline qreal QskLinearDirection::valueAt( const QPointF& pos ) const
+{
+    return valueAt( pos.x(), pos.y() );
+}
+
+inline qreal QskLinearDirection::valueAt( qreal x, qreal y ) const
+{
+    const qreal d = ( m_x2 - m_x1 ) * ( m_y2 - m_y1 );
+    return ( ( x - m_x1 ) * ( y - m_y1 ) + d ) / ( d + d );
 }
 
 inline constexpr QskConicDirection::QskConicDirection(
