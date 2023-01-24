@@ -20,6 +20,8 @@
 
 #include <QGuiApplication>
 
+#define TONAL_GRADIENTS 1
+
 namespace
 {
     // Some leftover definitions from M(aterial)2. TODO ...
@@ -83,7 +85,11 @@ static void addRectangles1( QskLinearBox* parent )
                         Box::Horizontal, Box::Vertical, Box::Diagonal } )
     {
         auto* rectangle = new MyRectangle( parent );
+#if TONAL_GRADIENTS
         rectangle->setTonalGradient( type, QskRgb::Teal );
+#else
+        rectangle->setGradient( type, Qt::red, Qt::blue );
+#endif
     }
 }
 
@@ -94,7 +100,11 @@ static void addRectangles2( QskLinearBox* parent )
     {
         auto* rectangle = new MyRectangle( parent );
         rectangle->setBorder( Box::Flat, QskRgb::SaddleBrown );
+#if TONAL_GRADIENTS
         rectangle->setWebGradient( type, QGradient::SunnyMorning );
+#else
+        rectangle->setGradient( type, Qt::red, Qt::blue );
+#endif
     }
 }
 
@@ -133,7 +143,11 @@ static void addRectangles4( QskLinearBox* parent )
         Box::Horizontal, Box::Vertical, Box::Diagonal } )
     {
         auto* box = new MyRoundedRectangle( parent );
+#if TONAL_GRADIENTS
         box->setTonalGradient( type, QskRgb::OrangeRed );
+#else
+        box->setGradient( type, Qt::red, Qt::blue );
+#endif
     }
 }
 
@@ -144,7 +158,11 @@ static void addRectangles5( QskLinearBox* parent )
     {
         auto* box = new MyRoundedRectangle( parent );
         box->setBorder( Box::Flat, QskRgb::RoyalBlue );
+#if TONAL_GRADIENTS
         box->setTonalGradient( type, QskRgb::DeepPink );
+#else
+        box->setGradient( type, Qt::red, Qt::blue );
+#endif
     }
 }
 
@@ -413,19 +431,31 @@ static void addColoredBorderRectangles3( QskLinearBox* parent, bool rounded, Box
 
     QskGradientStops stops[4];
 
-    stops[0] = { { 0.0, Qt::yellow }, { 0.2, Qt::gray },
-        { 0.6, Qt::magenta }, { 1.0, Qt::green } };
+    stops[0] = {
+        { 0.3, Qt::yellow },
+        { 0.3, Qt::gray }, { 0.7, Qt::gray },
+        { 0.7, Qt::green }
+    };
 
-    stops[1] = { { 0.0, Qt::darkYellow }, { 0.2, Qt::cyan }, { 1.0, Qt::darkMagenta } };
+    stops[1] = {
+        { 0.3, Qt::darkYellow },
+        { 0.3, Qt::cyan }, { 0.7, Qt::cyan },
+        { 0.7, Qt::darkMagenta }
+    };
 
-    stops[2] = { { 0.0, Qt::red }, { 0.25, Qt::green },
-        { 0.5, Qt::blue }, { 0.75, Qt::magenta }, { 1.0, Qt::cyan } };
+    stops[2] = {
+        { 0.3, Qt::red },
+        { 0.3, Qt::blue }, { 0.7, Qt::blue },
+        { 0.7, Qt::darkMagenta }
+    };
 
-    stops[3] = { { 0.0, Qt::red }, { 0.3, Qt::green },
-        { 0.7, Qt::blue }, { 1.0, Qt::cyan } };
+    stops[3] = {
+        { 0.3, Qt::darkYellow },
+        { 0.3, Qt::darkRed }, { 0.7, Qt::darkRed },
+        { 0.7, Qt::darkBlue }
+    };
 
     box->setBorderGradients( stops[0], stops[1], stops[2], stops[3] );
-    //box->setBorderGradients( stops[2], stops[2], stops[2], stops[2] );
 
     if( fillType != Box::Unfilled )
         box->setTonalGradient( fillType, QskRgb::CornflowerBlue );
