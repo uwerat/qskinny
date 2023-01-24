@@ -122,6 +122,14 @@ void QskShapeNode::updateNode( const QPainterPath& path,
 
         const auto color = gradient.startColor().toRgb();
 
+        /*
+            We might want to use QSGVertexColorMaterial to improve the "batchability"
+            as this material does not depend on the specific colors. It could even be
+            batched with QskBoxNodes, that are usually using QSGVertexColorMaterial as well.
+
+            However we would have to store the color information for each vertex.
+            For the moment we prefer less memory over better "batchability".
+         */
         auto mat = static_cast< QSGFlatColorMaterial* >( material() );
         if ( mat->color() != color )
         {
