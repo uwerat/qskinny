@@ -71,10 +71,10 @@ class QSK_EXPORT QskLinearDirection
     /*
         In direction of the gradient vector, where 0.0 corresponds to
         points on the perpendicular at the start and 1.0 to points on
-        the perpendicular of the end point ( normalized projection ).
+        the perpendicular of the end point. 
 
         Also corresponds to the positions of the color stops and can be
-        used it calculate the color at a specific position.
+        used to calculate the color at a specific position.
      */
     qreal valueAt( const QPointF& ) const;
     qreal valueAt( qreal x, qreal y ) const;
@@ -262,8 +262,12 @@ inline qreal QskLinearDirection::valueAt( const QPointF& pos ) const
 
 inline qreal QskLinearDirection::valueAt( qreal x, qreal y ) const
 {
-    const qreal d = ( m_x2 - m_x1 ) * ( m_y2 - m_y1 );
-    return ( ( x - m_x1 ) * ( y - m_y1 ) + d ) / ( d + d );
+    // we could cache these values TODO ..
+    const qreal dx = m_x2 - m_x1;
+    const qreal dy = m_y2 - m_y1;
+    const qreal dot = dx * dx + dy * dy;
+
+    return ( ( x - m_x1 ) * dx + ( y - m_y1 ) * dy ) / dot;
 }
 
 inline constexpr QskConicDirection::QskConicDirection(
