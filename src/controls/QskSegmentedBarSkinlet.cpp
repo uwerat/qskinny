@@ -77,23 +77,22 @@ QRectF QskSegmentedBarSkinlet::segmentRect(
 {
     using Q = QskSegmentedBar;
 
-    const auto spacing = bar->spacingHint( Q::Panel );
     const auto count = bar->count();
 
     auto rect = subControlRect( bar, contentsRect, Q::Panel );
 
     if( bar->orientation() == Qt::Horizontal )
     {
-        const qreal w = ( rect.width() - ( count - 1 ) * spacing ) / count;
+        const qreal w = rect.width() / count;
 
-        rect.setLeft( index * ( w + spacing ) );
+        rect.setLeft( index * w );
         rect.setWidth( w );
     }
     else
     {
-        const qreal h = ( rect.height() - ( count - 1 ) * spacing ) / count;
+        const qreal h = rect.height() / count;
 
-        rect.setTop( index * ( h + spacing ) );
+        rect.setTop( index *  h );
         rect.setHeight( h );
     }
 
