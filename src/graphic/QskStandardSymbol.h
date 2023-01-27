@@ -30,6 +30,8 @@ namespace QskStandardSymbol
         CheckMark,
         CrossMark,
 
+        SegmentedBarCheckMark,
+
         SymbolTypeCount
     };
 
