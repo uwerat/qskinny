@@ -9,6 +9,7 @@
 #include "QskGraphic.h"
 #include "QskColorFilter.h"
 #include "QskFunctions.h"
+#include "QskStandardSymbol.h"
 #include "QskSubcontrolLayoutEngine.h"
 
 #include <qfontmetrics.h>
@@ -29,6 +30,19 @@ static inline Qt::Orientation qskOrientation( const QskSegmentedBar* bar )
 
 namespace
 {
+    QskGraphic graphicAt( const QskSegmentedBar* bar, const int index )
+    {
+        // note: It is a Material 3 peculiarity that the selected element
+        // always has the checkmark symbol. If we ever have another style
+        // implementing this control we should put this code into a
+        // subclass.
+        const auto graphic = ( bar->selectedIndex() == index )
+                ? QskStandardSymbol::graphic( QskStandardSymbol::CheckMark )
+                : bar->graphicAt( index );
+
+        return graphic;
+    }
+
     class LayoutEngine : public QskSubcontrolLayoutEngine
     {
       public:
@@ -39,7 +53,7 @@ namespace
 
             setGraphicTextElements( bar,
                 QskSegmentedBar::Text, bar->textAt( index ),
-                QskSegmentedBar::Graphic, bar->graphicAt( index ).defaultSize() );
+                QskSegmentedBar::Graphic, graphicAt( bar, index ).defaultSize() );
 
             const auto alignment = bar->alignmentHint( QskSegmentedBar::Panel, Qt::AlignCenter );
             setFixedContent( QskSegmentedBar::Text, Qt::Horizontal, alignment );
@@ -201,6 +215,14 @@ QSizeF QskSegmentedBarSkinlet::segmentSizeHint( const QskSegmentedBar* bar, Qt::
     {
         LayoutEngine layoutEngine( bar, i );
 
+        const auto graphic = QskStandardSymbol::graphic( QskStandardSymbol::CheckMark );
+
+        // We want to know how big the element can grow when it is selected,
+        // i.e. when it has the checkmark symbol:
+        layoutEngine.setGraphicTextElements( bar,
+            QskSegmentedBar::Text, bar->textAt( i ),
+            QskSegmentedBar::Graphic, graphic.defaultSize() );
+
         const auto size = layoutEngine.sizeHint( which, QSizeF() );
 
         if( size.width() > sizeMax.width() )
@@ -345,7 +367,7 @@ QSGNode* QskSegmentedBarSkinlet::updateSampleNode( const QskSkinnable* skinnable
 
     if ( subControl == Q::Graphic )
     {
-        const auto graphic = bar->graphicAt( index );
+        const auto graphic = graphicAt( bar, index );
 
         if( !graphic.isEmpty() )
         {
