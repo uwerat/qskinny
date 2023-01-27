@@ -126,6 +126,9 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
     {
         GraphicRoleOnError,
         GraphicRoleOnPrimary,
+        GraphicRoleOnSecondaryContainer,
+        GraphicRoleOnSurface,
+        GraphicRoleOnSurface38,
         GraphicRoleSurface,
     };
 

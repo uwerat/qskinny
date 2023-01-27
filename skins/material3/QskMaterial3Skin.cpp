@@ -439,9 +439,9 @@ void Editor::setupSegmentedBar()
     {
         // Container
 
-        setGradient( Q::Panel, Qt::transparent ); // ### background
+        setGradient( Q::Panel, Qt::transparent );
         setPadding( Q::Panel, 0 );
-        setSpacing( Q::Panel, 8_dp ); // ### messes up the cursor
+        setSpacing( Q::Panel, 8_dp );
 
         setBoxShape( Q::Panel, 100, Qt::RelativeSize );
 
@@ -458,8 +458,9 @@ void Editor::setupSegmentedBar()
 
         setStrutSize( Q::Segment | A::Horizontal, segmentStrutSize );
         setStrutSize( Q::Segment | A::Vertical, segmentStrutSize.transposed() );
-        setGradient( Q::Segment, Qt::transparent ); // ### background
-        setPadding( Q::Segment, 0 );
+        setGradient( Q::Segment, Qt::transparent );
+        setPadding( Q::Segment | A::Horizontal, { 12_dp, 0, 12_dp, 0 } );
+        setPadding( Q::Segment | A::Vertical, { 0, 12_dp, 0, 12_dp } );
     }
 
     {
@@ -469,7 +470,7 @@ void Editor::setupSegmentedBar()
         setStrutSize( Q::Separator | A::Vertical, segmentStrutSize.height(), 1_dp );
         setPadding( Q::Separator, 0 );
         setGradient( Q::Separator, m_pal.outline );
-        setColor( Q::Separator | Q::Disabled, m_pal.onSurface38 );
+        setColor( Q::Separator | Q::Disabled, m_pal.onSurface12 );
     }
 
     {
@@ -492,7 +493,6 @@ void Editor::setupSegmentedBar()
 
         setGradient( Q::Cursor, m_pal.secondaryContainer );
         setGradient( Q::Cursor | Q::Disabled, m_pal.onSurface12 );
-        setAnimation( Q::Cursor | A::Metric | A::Position, 100 );
     }
 
     {
@@ -513,6 +513,10 @@ void Editor::setupSegmentedBar()
 
         setPadding( Q::Graphic, 0_dp );
         setStrutSize( Q::Graphic, { 18_dp, 18_dp } );
+
+        setGraphicRole( Q::Graphic, QskMaterial3Skin::GraphicRoleOnSurface );
+        setGraphicRole( Q::Graphic | Q::Selected, QskMaterial3Skin::GraphicRoleOnSecondaryContainer );
+        setGraphicRole( Q::Graphic | Q::Disabled, QskMaterial3Skin::GraphicRoleOnSurface38 );
     }
 }
 
@@ -1116,9 +1120,21 @@ void QskMaterial3Skin::setupGraphicFilters( const QskMaterial3Theme& palette )
     onPrimaryFilter.addColorSubstitution( Qt::white, palette.onPrimary );
     setGraphicFilter( GraphicRoleOnPrimary, onPrimaryFilter );
 
+    QskColorFilter onSecondaryContainerFilter;
+    onSecondaryContainerFilter.addColorSubstitution( Qt::white, palette.onSecondaryContainer );
+    setGraphicFilter( GraphicRoleOnSecondaryContainer, onSecondaryContainerFilter );
+
     QskColorFilter onErrorFilter;
     onErrorFilter.addColorSubstitution( Qt::white, palette.onError );
     setGraphicFilter( GraphicRoleOnError, onErrorFilter );
+
+    QskColorFilter onSurfaceFilter;
+    onSurfaceFilter.addColorSubstitution( Qt::white, palette.onSurface );
+    setGraphicFilter( GraphicRoleOnSurface, onSurfaceFilter );
+
+    QskColorFilter onSurfaceFilter38;
+    onSurfaceFilter38.addColorSubstitution( Qt::white, palette.onSurface38 );
+    setGraphicFilter( GraphicRoleOnSurface38, onSurfaceFilter38 );
 
     QskColorFilter surfaceFilter;
     surfaceFilter.addColorSubstitution( Qt::white, palette.surface );
