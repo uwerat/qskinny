@@ -1090,6 +1090,11 @@ QskGraphic QskMaterial3Skin::symbol( int symbolType ) const
     {
         return {};
     }
+    case QskStandardSymbol::SegmentedBarCheckMark:
+    {
+        const auto* provider = graphicProvider( {} );
+        return *( provider->requestGraphic( "segmented-button-check" ) );
+    }
     default:
         return Inherited::symbol( symbolType );
     }

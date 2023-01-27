@@ -9,6 +9,7 @@
 #include "QskGraphic.h"
 #include "QskColorFilter.h"
 #include "QskFunctions.h"
+#include "QskSkin.h"
 #include "QskStandardSymbol.h"
 #include "QskSubcontrolLayoutEngine.h"
 
@@ -37,7 +38,7 @@ namespace
         // implementing this control we should put this code into a
         // subclass.
         const auto graphic = ( bar->selectedIndex() == index )
-                ? QskStandardSymbol::graphic( QskStandardSymbol::CheckMark )
+                ? bar->effectiveSkin()->symbol( QskStandardSymbol::SegmentedBarCheckMark )
                 : bar->graphicAt( index );
 
         return graphic;
@@ -215,7 +216,7 @@ QSizeF QskSegmentedBarSkinlet::segmentSizeHint( const QskSegmentedBar* bar, Qt::
     {
         LayoutEngine layoutEngine( bar, i );
 
-        const auto graphic = QskStandardSymbol::graphic( QskStandardSymbol::CheckMark );
+        const auto graphic = bar->effectiveSkin()->symbol( QskStandardSymbol::SegmentedBarCheckMark );
 
         // We want to know how big the element can grow when it is selected,
         // i.e. when it has the checkmark symbol:
