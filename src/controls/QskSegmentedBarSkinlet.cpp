@@ -16,19 +16,6 @@
 #include <qfontmetrics.h>
 #include <qmath.h>
 
-static inline Qt::Orientation qskOrientation( const QskSegmentedBar* bar )
-{
-    // For the moment we only handle the orientation TODO ...
-
-    const auto direction = bar->flagHint(
-        QskSegmentedBar::Panel | QskAspect::Direction, Qsk::LeftToRight );
-
-    if ( direction == Qsk::LeftToRight || direction == Qsk::RightToLeft )
-        return Qt::Horizontal;
-    else
-        return Qt::Vertical;
-}
-
 namespace
 {
     QskGraphic graphicAt( const QskSegmentedBar* bar, const int index )
@@ -48,7 +35,7 @@ namespace
     {
       public:
         LayoutEngine( const QskSegmentedBar* bar, int index )
-            : QskSubcontrolLayoutEngine( qskOrientation( bar ) )
+            : QskSubcontrolLayoutEngine( bar->orientation() )
         {
             setSpacing( bar->spacingHint( QskSegmentedBar::Panel ) );
 
@@ -56,8 +43,11 @@ namespace
                 QskSegmentedBar::Text, bar->textAt( index ),
                 QskSegmentedBar::Graphic, graphicAt( bar, index ).defaultSize() );
 
-            const auto alignment = bar->alignmentHint( QskSegmentedBar::Panel, Qt::AlignCenter );
-            setFixedContent( QskSegmentedBar::Text, Qt::Horizontal, alignment );
+            if( bar->orientation() == Qt::Horizontal )
+            {
+                const auto alignment = bar->alignmentHint( QskSegmentedBar::Panel, Qt::AlignCenter );
+                setFixedContent( QskSegmentedBar::Text, Qt::Horizontal, alignment );
+            }
         }
     };
 }

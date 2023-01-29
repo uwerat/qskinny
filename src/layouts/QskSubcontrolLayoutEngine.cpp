@@ -390,7 +390,7 @@ void QskSubcontrolLayoutEngine::setGraphicTextElements( const QskSkinnable* skin
         }
         else
         {
-            graphicElement->setSizePolicy( SP::Fixed, SP::Fixed );
+            graphicElement->setSizePolicy( SP::Preferred, SP::Fixed );
             textElement->setSizePolicy( SP::Preferred, SP::Constrained );
         }
 
