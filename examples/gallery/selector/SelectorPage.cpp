@@ -31,7 +31,7 @@ namespace
                 auto bar = new QskSegmentedBar( orientation, this );
 
                 for ( const auto text: texts )
-                    bar->addText( text );
+                    bar->addOption( {}, text );
             }
 
             {
@@ -45,7 +45,7 @@ namespace
 
                 auto bar = new QskSegmentedBar( orientation, this );
                 for ( uint i = 0; i < sizeof( icons ) / sizeof( icons[ 0 ] ); ++i )
-                    bar->addGraphicAndText( QUrl( QString( icons[ i ] ) ), texts[ i ] );
+                    bar->addOption( QUrl( QString( icons[ i ] ) ), texts[ i ] );
             }
 
             setExtraSpacingAt( Qt::LeftEdge | Qt::BottomEdge );

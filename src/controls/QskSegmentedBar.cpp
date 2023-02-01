@@ -137,35 +137,13 @@ QskTextOptions QskSegmentedBar::textOptions() const
     return textOptionsHint( Text );
 }
 
-int QskSegmentedBar::addText( const QString& text )
-{
-    m_data->addOption( this, Option( QUrl(), text ) );
-    return count() - 1;
-}
-
-int QskSegmentedBar::addGraphic( const QUrl& graphicSource )
-{
-    m_data->addOption( this, Option( graphicSource, QString() ) );
-    return count() - 1;
-}
-
-int QskSegmentedBar::addGraphicAndText( const QUrl& graphicSource, const QString& text )
+int QskSegmentedBar::addOption( const QUrl& graphicSource, const QString& text )
 {
     m_data->addOption( this, Option( graphicSource, text ) );
     return count() - 1;
 }
 
-QString QskSegmentedBar::textAt( int index ) const
-{
-    return m_data->options.at( index ).text;
-}
-
-QskGraphic QskSegmentedBar::graphicAt( int index ) const
-{
-    return m_data->options.at( index ).graphic;
-}
-
-QVariant QskSegmentedBar::optionAt( int index ) const
+QVariantList QskSegmentedBar::optionAt( int index ) const
 {
     const auto& options = m_data->options;
 
@@ -174,14 +152,11 @@ QVariant QskSegmentedBar::optionAt( int index ) const
 
     const auto& option = options[ index ];
 
-    QVariant value;
+    QVariantList list;
+    list += QVariant::fromValue( option.graphic );
+    list += QVariant::fromValue( option.text );
 
-    if ( option.graphicSource.isValid() )
-        value = QVariant::fromValue( option.graphic );
-    else
-        value = QVariant::fromValue( option.text );
-
-    return value;
+    return list;
 }
 
 QskAspect::Placement QskSegmentedBar::effectivePlacement() const
