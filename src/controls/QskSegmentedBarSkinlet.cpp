@@ -18,6 +18,28 @@
 
 namespace
 {
+#if 1 // unify with the implementation from QskMenu
+    template< class T >
+    static inline QVariant qskSampleAt( const QskSegmentedBar* bar, int index )
+    {
+        const auto list = bar->optionAt( index );
+        for ( const auto& value : list )
+        {
+            if ( value.canConvert< T >() )
+                return value;
+        }
+
+        return QVariant();
+    }
+
+    template< class T >
+    static inline T qskValueAt( const QskSegmentedBar* bar, int index )
+    {
+        const auto sample = qskSampleAt< T >( bar, index );
+        return sample.template value< T >();
+    }
+#endif
+
     QskGraphic graphicAt( const QskSegmentedBar* bar, const int index )
     {
         // note: It is a Material 3 peculiarity that the selected element
@@ -26,7 +48,7 @@ namespace
         // subclass.
         const auto graphic = ( bar->selectedIndex() == index )
                 ? bar->effectiveSkin()->symbol( QskStandardSymbol::SegmentedBarCheckMark )
-                : bar->graphicAt( index );
+                : qskValueAt< QskGraphic >( bar, index );
 
         return graphic;
     }
@@ -40,7 +62,7 @@ namespace
             setSpacing( bar->spacingHint( QskSegmentedBar::Panel ) );
 
             setGraphicTextElements( bar,
-                QskSegmentedBar::Text, bar->textAt( index ),
+                QskSegmentedBar::Text, qskValueAt< QString >( bar, index ),
                 QskSegmentedBar::Graphic, graphicAt( bar, index ).defaultSize() );
 
             if( bar->orientation() == Qt::Horizontal )
@@ -211,7 +233,7 @@ QSizeF QskSegmentedBarSkinlet::segmentSizeHint( const QskSegmentedBar* bar, Qt::
         // We want to know how big the element can grow when it is selected,
         // i.e. when it has the checkmark symbol:
         layoutEngine.setGraphicTextElements( bar,
-            QskSegmentedBar::Text, bar->textAt( i ),
+            QskSegmentedBar::Text, qskValueAt< QString >( bar, i ),
             QskSegmentedBar::Graphic, graphic.defaultSize() );
 
         const auto size = layoutEngine.sizeHint( which, QSizeF() );
@@ -345,7 +367,7 @@ QSGNode* QskSegmentedBarSkinlet::updateSampleNode( const QskSkinnable* skinnable
 
     if ( subControl == Q::Text )
     {
-        const auto text = bar->textAt( index );
+        const auto text = qskValueAt< QString >( bar, index );
 
         if( !text.isEmpty() )
         {
