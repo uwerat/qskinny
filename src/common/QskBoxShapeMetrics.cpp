@@ -113,6 +113,7 @@ QskBoxShapeMetrics QskBoxShapeMetrics::toAbsolute( const QSizeF& size ) const no
             {
                 if ( m_aspectRatioMode != Qt::IgnoreAspectRatio )
                 {
+#if 0
                     if ( ( m_aspectRatioMode == Qt::KeepAspectRatioByExpanding ) &&
                         ( radius.width() >= radius.height() ) )
                     {
@@ -122,8 +123,20 @@ QskBoxShapeMetrics QskBoxShapeMetrics::toAbsolute( const QSizeF& size ) const no
                     {
                         ry = rx * radius.height() / radius.width();
                     }
-                }
 
+#else
+                    if ( m_aspectRatioMode == Qt::KeepAspectRatio )
+                    {
+                        rx = std::min( rx, ry );
+                        ry = std::min( rx, ry );
+                    }
+                    else
+                    {
+                        rx = std::max( rx, ry );
+                        ry = std::max( rx, ry );
+                    }
+#endif
+                }
                 radius.rwidth() = rx;
                 radius.rheight() = ry;
             }
