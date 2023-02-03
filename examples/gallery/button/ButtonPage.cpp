@@ -50,6 +50,69 @@ namespace
                     button->setText( texts[ index ] );
                 }
             }
+
+            addSpacer( 0 );
+            addSpacer( 0 );
+
+            auto* outlinedButton1 = new QskPushButton( this );
+            outlinedButton1->setEmphasis( QskPushButton::LowEmphasis );
+            outlinedButton1->setGraphicSource( "plus" );
+            outlinedButton1->setText( "Outlined" );
+
+            auto* outlinedButton2 = new QskPushButton( this );
+            outlinedButton2->setEmphasis( QskPushButton::LowEmphasis );
+            outlinedButton2->setText( "Outlined" );
+
+            auto* outlinedButton3 = new QskPushButton( this );
+            outlinedButton3->setEmphasis( QskPushButton::LowEmphasis );
+            outlinedButton3->setGraphicSource( "plus" );
+
+            addSpacer( 0 );
+
+            auto* textButton1 = new QskPushButton( this );
+            textButton1->setEmphasis( QskPushButton::VeryLowEmphasis );
+            textButton1->setGraphicSource( "plus" );
+            textButton1->setText( "Text" );
+
+            auto* textButton2 = new QskPushButton( this );
+            textButton2->setEmphasis( QskPushButton::VeryLowEmphasis );
+            textButton2->setText( "Text" );
+
+            auto* textButton3 = new QskPushButton( this );
+            textButton3->setEmphasis( QskPushButton::VeryLowEmphasis );
+            textButton3->setGraphicSource( "plus" );
+
+            addSpacer( 0 );
+
+            auto* elevatedButton1 = new QskPushButton( this );
+            elevatedButton1->setEmphasis( QskPushButton::HighEmphasis );
+            elevatedButton1->setGraphicSource( "plus" );
+            elevatedButton1->setText( "Elevated" );
+
+            auto* elevatedButton2 = new QskPushButton( this );
+            elevatedButton2->setEmphasis( QskPushButton::HighEmphasis );
+            elevatedButton2->setText( "Elevated" );
+
+            auto* elevatedButton3 = new QskPushButton( this );
+            elevatedButton3->setEmphasis( QskPushButton::HighEmphasis );
+            elevatedButton3->setGraphicSource( "plus" );
+
+            addSpacer( 0 );
+
+            auto* tonalButton1 = new QskPushButton( this );
+            tonalButton1->setEmphasis( QskPushButton::VeryHighEmphasis );
+            tonalButton1->setGraphicSource( "plus" );
+            tonalButton1->setText( "Tonal" );
+
+            auto* tonalButton2 = new QskPushButton( this );
+            tonalButton2->setEmphasis( QskPushButton::VeryHighEmphasis );
+            tonalButton2->setText( "Tonal" );
+
+            auto* tonalButton3 = new QskPushButton( this );
+            tonalButton3->setEmphasis( QskPushButton::VeryHighEmphasis );
+            tonalButton3->setGraphicSource( "plus" );
+
+            addSpacer( 0 );
         }
     };
 

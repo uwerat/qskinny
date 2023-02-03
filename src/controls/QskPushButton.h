@@ -49,11 +49,11 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
 
     enum Emphasis
     {   
-        Emphasis1 = -2,
-        Emphasis2 = -1,
-        Emphasis3 = 0,
-        Emphasis4 = 1,
-        Emphasis5 = 2
+        VeryLowEmphasis = -2,
+        LowEmphasis = -1,
+        NoEmphasis = 0,
+        HighEmphasis = 1,
+        VeryHighEmphasis = 2
     };
     Q_ENUM( Emphasis )
 

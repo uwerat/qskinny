@@ -41,7 +41,7 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
     QskMaterial3Theme( Lightness, std::array< QskHctColor, NumPaletteTypes > );
 
     QRgb primary;
-    QRgb primary8;
+    QRgb primary8; // ### rename to primaryHovered or so?
     QRgb primary12;
     QRgb onPrimary;
     QRgb primaryContainer;
@@ -51,6 +51,8 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
     QRgb onSecondary;
     QRgb secondaryContainer;
     QRgb onSecondaryContainer;
+    QRgb onSecondaryContainer8;
+    QRgb onSecondaryContainer12;
 
     QRgb tertiary;
     QRgb onTertiary;
@@ -85,9 +87,10 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
 
     QRgb shadow;
 
-    QskShadowMetrics elevationLight1;
-    QskShadowMetrics elevationLight2;
-    QskShadowMetrics elevationLight3;
+    QskShadowMetrics elevation0;
+    QskShadowMetrics elevation1;
+    QskShadowMetrics elevation2;
+    QskShadowMetrics elevation3;
 
     const qreal hoverOpacity = 0.08;
     const qreal focusOpacity = 0.12;
@@ -133,6 +136,7 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
         GraphicRoleOnSurface,
         GraphicRoleOnSurface38,
         GraphicRoleOnSurfaceVariant,
+        GraphicRolePrimary,
         GraphicRoleSurface,
     };
 
@@ -143,6 +147,12 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
         M3HeadlineSmall,
         M3LabelLarge,
     };
+
+    static constexpr QskAspect::Variation Filled = QskAspect::NoVariation;
+    static constexpr QskAspect::Variation Tonal = QskAspect::Huge;
+    static constexpr QskAspect::Variation Elevated = QskAspect::Large;
+    static constexpr QskAspect::Variation Outlined = QskAspect::Small;
+    static constexpr QskAspect::Variation Text = QskAspect::Tiny;
 
   private:
     void setupFonts();
