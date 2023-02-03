@@ -33,7 +33,7 @@ class QSK_EXPORT QskBoxShapeMetrics
     {
         // How to scale, when translating to Qt::AbsoluteSize
         RoundedRectangle,
-        Ellipsoid
+        Ellipse
     };
     Q_ENUM( ScalingMode );
 
