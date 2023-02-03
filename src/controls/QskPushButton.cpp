@@ -26,7 +26,7 @@ class QskPushButton::PrivateData
         : text( txt )
         , isCheckable( false )
         , isGraphicSourceDirty( false )
-        , emphasis( Emphasis3 )
+        , emphasis( NoEmphasis )
     {
     }
 
@@ -245,16 +245,16 @@ QskAspect::Variation QskPushButton::effectiveVariation() const
 {
     switch( m_data->emphasis )
     {
-        case Emphasis1:
+        case VeryLowEmphasis:
             return QskAspect::Tiny;
 
-        case Emphasis2:
+        case LowEmphasis:
             return QskAspect::Small;
 
-        case Emphasis4:
+        case HighEmphasis:
             return QskAspect::Large;
 
-        case Emphasis5:
+        case VeryHighEmphasis:
             return QskAspect::Huge;
 
         default:
