@@ -32,8 +32,8 @@ class QSK_EXPORT QskBoxShapeMetrics
     enum ScalingMode
     {
         // How to scale, when translating to Qt::AbsoluteSize
-        RoundedRectangle,
-        Ellipse
+        Circular,
+        Elliptic
     };
     Q_ENUM( ScalingMode );
 
@@ -127,7 +127,7 @@ class QSK_EXPORT QskBoxShapeMetrics
 inline constexpr QskBoxShapeMetrics::QskBoxShapeMetrics() noexcept
     : m_radii{ { 0.0, 0.0 }, { 0.0, 0.0 }, { 0.0, 0.0 }, { 0.0, 0.0 } }
     , m_sizeMode( Qt::AbsoluteSize )
-    , m_scalingMode( RoundedRectangle )
+    , m_scalingMode( Circular )
 {
 }
 
@@ -142,7 +142,7 @@ inline constexpr QskBoxShapeMetrics::QskBoxShapeMetrics(
     : m_radii{ { radiusX, radiusY }, { radiusX, radiusY },
         { radiusX, radiusY }, { radiusX, radiusY } }
     , m_sizeMode( sizeMode )
-    , m_scalingMode( RoundedRectangle )
+    , m_scalingMode( Circular )
 {
 }
 
@@ -151,7 +151,7 @@ inline constexpr QskBoxShapeMetrics::QskBoxShapeMetrics( qreal topLeft, qreal to
     : m_radii{ { topLeft, topLeft }, { topRight, topRight },
         { bottomLeft, bottomLeft }, { bottomRight, bottomRight } }
     , m_sizeMode( sizeMode )
-    , m_scalingMode( RoundedRectangle )
+    , m_scalingMode( Circular )
 {
 }
 

@@ -72,6 +72,7 @@ static void addTestRectangle( QskLinearBox* parent )
     box->setBorderWidth( 10, 20, 40, 20 );
 
     QskBoxShapeMetrics shape( 50, Qt::RelativeSize );
+    shape.setScalingMode( QskBoxShapeMetrics::Elliptic );
     shape.setRadius( Qt::BottomRightCorner, 30 );
     shape.setRadius( Qt::TopRightCorner, 70 );
 

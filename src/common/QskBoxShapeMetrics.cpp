@@ -100,7 +100,7 @@ QskBoxShapeMetrics QskBoxShapeMetrics::toAbsolute( const QSizeF& size ) const no
         return absoluted;
     }
 
-    if ( m_scalingMode == RoundedRectangle )
+    if ( m_scalingMode == Circular )
     {
         for ( int i = 0; i < 4; i++ )
         {
