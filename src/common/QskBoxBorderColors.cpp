@@ -152,19 +152,24 @@ bool QskBoxBorderColors::isVisible() const
 
 bool QskBoxBorderColors::isMonochrome() const
 {
-    if ( m_gradients[ 1 ] != m_gradients[ 0 ] )
-        return false;
-
-    if ( m_gradients[ 2 ] != m_gradients[ 1 ] )
-        return false;
-
-    if ( m_gradients[ 3 ] != m_gradients[ 2 ] )
-        return false;
-
-    return m_gradients[ 0 ].isMonochrome()
+    if ( m_gradients[ 0 ].isMonochrome()
         && m_gradients[ 1 ].isMonochrome()
         && m_gradients[ 2 ].isMonochrome()
-        && m_gradients[ 3 ].isMonochrome();
+        && m_gradients[ 3 ].isMonochrome() )
+    {
+        if ( m_gradients[ 1 ].rgbStart() != m_gradients[ 0 ].rgbStart() )
+            return false;
+
+        if ( m_gradients[ 2 ].rgbStart() != m_gradients[ 1 ].rgbStart() )
+            return false;
+
+        if ( m_gradients[ 3 ].rgbStart() != m_gradients[ 2 ].rgbStart() )
+            return false;
+
+        return true;
+    }
+
+    return false;
 }
 
 bool QskBoxBorderColors::isValid() const
