@@ -68,6 +68,9 @@ class QSK_EXPORT QskLinearDirection
     constexpr qreal y2() const noexcept;
     void setY2( qreal ) noexcept;
 
+    qreal dx() const noexcept;
+    qreal dy() const noexcept;
+
     /*
         In direction of the gradient vector, where 0.0 corresponds to
         points on the perpendicular at the start and 1.0 to points on
@@ -82,10 +85,16 @@ class QSK_EXPORT QskLinearDirection
     bool contains( const QRectF& ) const;
 
   private:
+    void precalculate() const noexcept;
+
     qreal m_x1 = 0.0;
     qreal m_y1 = 0.0;
     qreal m_x2 = 0.0;
     qreal m_y2 = 1.0;
+
+    mutable qreal m_dx = 0.0;
+    mutable qreal m_dy = 0.0;
+    mutable qreal m_dot = -1.0;
 };
 
 class QSK_EXPORT QskConicDirection
@@ -219,6 +228,22 @@ inline constexpr qreal QskLinearDirection::y2() const noexcept
     return m_y2;
 }
 
+inline qreal QskLinearDirection::dx() const noexcept
+{
+    if ( m_dot < 0.0 )
+        precalculate();
+
+    return m_dx;
+}
+
+inline qreal QskLinearDirection::dy() const noexcept
+{
+    if ( m_dot < 0.0 )
+        precalculate();
+
+    return m_dy;
+}
+
 inline constexpr QLineF QskLinearDirection::vector() const noexcept
 {
     return QLineF( m_x1, m_y1, m_x2, m_y2 );
@@ -262,12 +287,10 @@ inline qreal QskLinearDirection::valueAt( const QPointF& pos ) const
 
 inline qreal QskLinearDirection::valueAt( qreal x, qreal y ) const
 {
-    // we could cache these values TODO ..
-    const qreal dx = m_x2 - m_x1;
-    const qreal dy = m_y2 - m_y1;
-    const qreal dot = dx * dx + dy * dy;
+    if ( m_dot < 0.0 )
+        precalculate();
 
-    return ( ( x - m_x1 ) * dx + ( y - m_y1 ) * dy ) / dot;
+    return ( ( x - m_x1 ) * m_dx + ( y - m_y1 ) * m_dy ) / m_dot;
 }
 
 inline constexpr QskConicDirection::QskConicDirection(

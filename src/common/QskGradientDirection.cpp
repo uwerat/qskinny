@@ -40,6 +40,7 @@ void QskLinearDirection::setVector( const QLineF& vector ) noexcept
     m_y1 = vector.y1();
     m_x2 = vector.x2();
     m_y2 = vector.y2();
+    m_dot = -1.0;
 }
 
 void QskLinearDirection::setVector( const QPointF& start, const QPointF& stop ) noexcept
@@ -48,6 +49,7 @@ void QskLinearDirection::setVector( const QPointF& start, const QPointF& stop ) 
     m_y1 = start.y();
     m_x2 = stop.x();
     m_y2 = stop.y();
+    m_dot = -1.0;
 }
 
 void QskLinearDirection::setVector( qreal x1, qreal y1, qreal x2, qreal y2 ) noexcept
@@ -56,50 +58,59 @@ void QskLinearDirection::setVector( qreal x1, qreal y1, qreal x2, qreal y2 ) noe
     m_y1 = y1;
     m_x2 = x2;
     m_y2 = y2;
+    m_dot = -1.0;
 }
 
 void QskLinearDirection::setStart( const QPointF& pos ) noexcept
 {
     m_x1 = pos.x();
     m_y1 = pos.y();
+    m_dot = -1.0;
 }
 
 void QskLinearDirection::setStart( qreal x, qreal y ) noexcept
 {
     m_x1 = x;
     m_y1 = y;
+    m_dot = -1.0;
 }
 
 void QskLinearDirection::setStop( const QPointF& pos ) noexcept
 {
     m_x2 = pos.x();
     m_y2 = pos.y();
+    m_dot = -1.0;
 }
 
 void QskLinearDirection::setStop( qreal x, qreal y ) noexcept
 {
     m_x2 = x;
     m_y2 = y;
+    m_dot = -1.0;
 }
 
 void QskLinearDirection::setX1( qreal x ) noexcept
 {
     m_x1 = x;
+    m_dot = -1.0;
 }
 
 void QskLinearDirection::setY1( qreal y ) noexcept
 {
     m_y1 = y;
+    m_dot = -1.0;
 }
 
 void QskLinearDirection::setX2( qreal x ) noexcept
 {
     m_x2 = x;
+    m_dot = -1.0;
 }
 
 void QskLinearDirection::setY2( qreal y ) noexcept
 {
     m_y2 = y;
+    m_dot = -1.0;
 }
 
 void QskLinearDirection::setInterval( Qt::Orientation orientation, qreal from, qreal to )
@@ -114,6 +125,14 @@ void QskLinearDirection::setInterval( Qt::Orientation orientation, qreal from, q
         m_x1 = from;
         m_x2 = to;
     }
+    m_dot = -1.0;
+}
+
+void QskLinearDirection::precalculate() const noexcept
+{
+    m_dx = m_x2 - m_x1;
+    m_dy = m_y2 - m_y1; 
+    m_dot = m_dx * m_dx + m_dy * m_dy;
 }
 
 static inline bool qskIntersectsTop(
@@ -133,14 +152,14 @@ static inline bool qskIntersectsBottom(
 static inline bool qskIntersectsLeft(
     qreal vx, qreal vy, qreal m, const QRectF& rect )
 {
-    const qreal cy = vy - ( vx - rect.left() ) * m;
+    const auto cy = vy - ( vx - rect.left() ) * m;
     return ( cy > rect.top() && cy < rect.bottom() );
 }
 
 static inline bool qskIntersectsRight(
     qreal vx, qreal vy, qreal m, const QRectF& rect )
 {
-    const qreal cy = vy - ( vx - rect.right() ) * m;
+    const auto cy = vy - ( vx - rect.right() ) * m;
     return ( cy > rect.top() && cy < rect.bottom() );
 }
 
@@ -151,7 +170,6 @@ bool QskLinearDirection::contains( const QRectF& rect ) const
         return ( m_x1 <= rect.left() && m_x2 >= rect.right() )
             || ( m_x1 >= rect.right() && m_x2 <= rect.left() );
     }
-
 
     if ( m_x1 == m_x2 )
     {
