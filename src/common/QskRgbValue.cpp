@@ -244,7 +244,8 @@ QImage QskRgb::colorTable( int size, const QskGradientStops& stops )
 
         const auto n = index2 - index1;
 
-        for ( int j = 0; j < n; j++ )
+        values[ index1 ] = ARGB2RGBA( rgb1 );
+        for ( int j = 1; j < n; j++ )
         {
             const auto rgb = QskRgb::interpolated( rgb1, rgb2, qreal( j ) / ( n - 1 ) );
             values[ index1 + j] = ARGB2RGBA( rgb );

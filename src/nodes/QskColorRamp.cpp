@@ -26,7 +26,8 @@ namespace
                 from the internet ),
              */
 
-            setImage( QskRgb::colorTable( 256, stops ) );
+            const int size = qBound( 256, 2 * stops.count(), 1024 );
+            setImage( QskRgb::colorTable( size, stops ) );
 
             const auto wrapMode = this->wrapMode( spreadMode );
 
