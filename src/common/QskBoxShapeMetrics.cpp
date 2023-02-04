@@ -89,45 +89,32 @@ QskBoxShapeMetrics QskBoxShapeMetrics::toAbsolute( const QSizeF& size ) const no
     if ( m_sizeMode != Qt::RelativeSize )
         return *this;
 
-    QskBoxShapeMetrics absoluted = *this;
-    absoluted.m_sizeMode = Qt::AbsoluteSize;
-
     if ( size.isEmpty() )
-    {
-        for ( int i = 0; i < 4; i++ )
-            absoluted.m_radii[ i ] = QSizeF( 0.0, 0.0 );
+        return QskBoxShapeMetrics();
 
-        return absoluted;
-    }
+    QskBoxShapeMetrics shape = *this;
+    shape.m_sizeMode = Qt::AbsoluteSize;
 
-    if ( m_scalingMode == Circular )
+    for ( int i = 0; i < 4; i++ )
     {
-        for ( int i = 0; i < 4; i++ )
+        auto& radius = shape.m_radii[ i ];
+
+        if ( radius.isEmpty() )
         {
-            auto& radius = absoluted.m_radii[ i ];
+            radius.rheight() = radius.rwidth() = 0.0;
+            continue;
+        }
 
-            const qreal rx = qskAbsoluted( size.width(), radius.width() );
-            const qreal ry = qskAbsoluted( size.height(), radius.height() );
+        const qreal rx = qskAbsoluted( size.width(), radius.width() );
+        const qreal ry = qskAbsoluted( size.height(), radius.height() );
 
+        if ( m_scalingMode == Circular )
+        {
             radius.rheight() = radius.rwidth() = std::min( rx, ry );
         }
-    }
-    else
-    {
-        const auto ratio = size.height() / size.width();
-
-        for ( int i = 0; i < 4; i++ )
+        else
         {
-            auto& radius = absoluted.m_radii[ i ];
-
-            const qreal rx = qskAbsoluted( size.width(), radius.width() );
-            const qreal ry = qskAbsoluted( size.height(), radius.height() );
-
-            if ( rx <= 0.0 || ry <= 0.0 )
-            {
-                radius.rwidth() = radius.rheight() = 0.0;
-                continue;
-            }
+            const auto ratio = radius.height() / radius.width();
 
             if ( ratio >= 1.0 )
             {
@@ -142,7 +129,7 @@ QskBoxShapeMetrics QskBoxShapeMetrics::toAbsolute( const QSizeF& size ) const no
         }
     }
 
-    return absoluted;
+    return shape;
 }
 
 QskBoxShapeMetrics QskBoxShapeMetrics::interpolated(
