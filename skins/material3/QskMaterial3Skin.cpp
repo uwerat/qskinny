@@ -566,6 +566,7 @@ void Editor::setupSegmentedBar()
 
         setGradient( Q::Cursor, m_pal.secondaryContainer );
         setGradient( Q::Cursor | Q::Disabled, m_pal.onSurface12 );
+        setGradient( Q::Cursor | Q::Hovered, stateLayerColor( m_pal.onSurface, m_pal.hoverOpacity ) );
 
         setBoxBorderMetrics( Q::Cursor, 1_dp );
         setBoxBorderColors( Q::Cursor, Qt::transparent );
