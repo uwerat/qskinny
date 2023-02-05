@@ -572,6 +572,13 @@ void Editor::setupSegmentedBar()
     }
 
     {
+        // Splash
+        setBoxShape( Q::Splash, 20_dp );
+        setGradient( Q::Splash, stateLayerColor( m_pal.onSecondaryContainer, m_pal.pressedOpacity ) );
+        setAnimation( Q::Splash | A::Color, qskDuration );
+    }
+
+    {
         // Text
 
         setFontRole( Q::Text, QskMaterial3Skin::M3LabelLarge );
