@@ -139,7 +139,7 @@ QRectF QskPushButtonSkinlet::rippleRect(
 
         const auto panelRect = subControlRect( button, contentsRect, Q::Panel );
 
-        rect.setSize( 2.0 * panelRect.size() * ratio );
+        rect.setSize( { 2.0 * panelRect.width() * ratio, panelRect.height() * 2.0 } );
         rect.moveCenter( pos );
     }
 
