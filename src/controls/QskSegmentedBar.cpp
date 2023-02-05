@@ -24,7 +24,8 @@ QSK_SUBCONTROL( QskSegmentedBar, Cursor )
 QSK_SUBCONTROL( QskSegmentedBar, Text )
 QSK_SUBCONTROL( QskSegmentedBar, Icon )
 
-QSK_SYSTEM_STATE( QskSegmentedBar, Selected, QskAspect::FirstSystemState << 1 )
+QSK_SYSTEM_STATE( QskSegmentedBar, Selected, QskAspect::FirstSystemState )
+QSK_SYSTEM_STATE( QskSegmentedBar, Pressed, QskAspect::FirstSystemState << 1 )
 QSK_SYSTEM_STATE( QskSegmentedBar, Minimum, QskAspect::FirstSystemState << 2 )
 QSK_SYSTEM_STATE( QskSegmentedBar, Maximum, QskAspect::FirstSystemState << 3 )
 
@@ -172,7 +173,7 @@ void QskSegmentedBar::mousePressEvent( QMouseEvent* event )
 
     if( hint.isValid() )
     {
-        setSkinHint( Splash | A::Metric | A::Position, event->pos() );
+        setSkinHint( Splash | A::Metric | A::Position, qskMousePosition( event ) );
         startTransition( Splash | A::Metric | A::Size, hint, 0.0, 1.0 );
     }
 }
