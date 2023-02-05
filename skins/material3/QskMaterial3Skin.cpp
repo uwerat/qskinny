@@ -631,6 +631,7 @@ void Editor::setupPushButton()
     setSpacing( Q::Panel, 8_dp );
     setPadding( Q::Panel, { 24_dp, 0, 24_dp, 0 } );
     setBoxShape( Q::Panel, 100, Qt::RelativeSize );
+    setShadowColor( Q::Panel, m_pal.shadow );
 
     setStrutSize( Q::Icon, 18_dp, 18_dp );
     setPadding( Q::Icon, { 0, 0, 8_dp, 0 } );
@@ -639,8 +640,7 @@ void Editor::setupPushButton()
     setFontRole( Q::Text, QskMaterial3Skin::M3LabelLarge );
     setPadding( Q::Text, 0 );
 
-    setShadowColor( Q::Panel, m_pal.shadow );
-
+    setBoxShape( Q::Splash, 40_dp );
     setAnimation( Q::Splash | QskAspect::Color, qskDuration );
 
 
