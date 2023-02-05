@@ -10,12 +10,14 @@
 #include "QskEvent.h"
 #include "QskSkinlet.h"
 #include "QskAspect.h"
+#include "QskAnimationHint.h"
 
 #include <QGuiApplication>
 #include <QStyleHints>
 #include <QFontMetricsF>
 
 QSK_SUBCONTROL( QskSegmentedBar, Panel )
+QSK_SUBCONTROL( QskSegmentedBar, Splash )
 QSK_SUBCONTROL( QskSegmentedBar, Segment )
 QSK_SUBCONTROL( QskSegmentedBar, Separator )
 QSK_SUBCONTROL( QskSegmentedBar, Cursor )
@@ -148,6 +150,8 @@ QskAspect::Variation QskSegmentedBar::effectiveVariation() const
 
 void QskSegmentedBar::mousePressEvent( QMouseEvent* event )
 {
+    using A = QskAspect;
+
     const int index = indexAtPosition( qskMousePosition( event ) );
 
     if( isSegmentEnabled( index ) )
@@ -162,6 +166,14 @@ void QskSegmentedBar::mousePressEvent( QMouseEvent* event )
                     setCurrentIndex( index );
             }
         }
+    }
+
+    const auto hint = animationHint( Splash | A::Color );
+
+    if( hint.isValid() )
+    {
+        setSkinHint( Splash | A::Metric | A::Position, event->pos() );
+        startTransition( Splash | A::Metric | A::Size, hint, 0.0, 1.0 );
     }
 }
 
