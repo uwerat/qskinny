@@ -78,14 +78,14 @@ void QskBoxNode::updateNode( const QRectF& rect,
     }
 
     /*
-        QskBoxRectangleNode supports vertical/horizontal and many tilted 
+        QskBoxRectangleNode supports vertical/horizontal and many tilted
         linear gradients.  If our gradient doesn't fall into this category
         we use a QskBoxFillNode.
 
         However the border is always done with a QskBoxRectangleNode
      */
 
-    if ( QskBoxRenderer::isGradientSupported( shape, gradient ) )
+    if ( QskBox::isGradientSupported( shape, gradient ) )
     {
         rectNode = qskNode< QskBoxRectangleNode >( this, BoxRole );
         rectNode->updateNode( rect, shape, borderMetrics, borderColors, gradient );

@@ -77,7 +77,12 @@ static void addTestRectangle( QskLinearBox* parent )
     shape.setRadius( Qt::TopRightCorner, 70 );
 
     box->setShape( shape );
+
+#if TONAL_GRADIENTS
     box->setTonalPalette( Box::Diagonal, QskRgb::DodgerBlue );
+#else
+    box->setGradient( Box::Diagonal, QskRgb::DodgerBlue, QskRgb::DarkSlateBlue );
+#endif
 }
 
 static void addRectangles1( QskLinearBox* parent )
@@ -391,7 +396,8 @@ static void addRectanglesRest( QskLinearBox* parent )
     box->setGradient( Box::Vertical, Gainsboro, Seashell, LightGray );
 }
 
-static void addColoredBorderRectangles1( QskLinearBox* parent, bool rounded, Box::FillType fillType )
+static void addColoredBorderRectangles1( QskLinearBox* parent,
+    bool rounded, Box::FillType fillType )
 {
     auto* box = new Box( parent );
     box->setBorderWidth( 20 );

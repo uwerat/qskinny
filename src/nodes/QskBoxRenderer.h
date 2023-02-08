@@ -16,7 +16,7 @@ class QskGradient;
 class QSGGeometry;
 class QRectF;
 
-namespace QskBoxRenderer
+namespace QskBox
 {
     /*
         Filling the geometry without any color information:
@@ -38,7 +38,7 @@ namespace QskBoxRenderer
     /*
         Filling the geometry usually with color information:
             see QSGGeometry::defaultAttributes_ColoredPoint2D()
-    */
+     */
     QSK_EXPORT bool isGradientSupported( const QskBoxShapeMetrics&, const QskGradient& );
 
     QSK_EXPORT void renderBox( const QRectF&,

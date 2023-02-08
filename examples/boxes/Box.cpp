@@ -235,7 +235,20 @@ void Box::setGradient( FillType fillType,
 
 void Box::setGradient( FillType fillType, const QskGradientStops& stops )
 {
-    QskGradient gradient( stops );
+    QskGradient gradient;
+
+    if ( fillType == Solid )
+    {
+        const auto color = QskRgb::interpolated(
+            stops.first().rgb(), stops.last().rgb(), 0.5 );
+
+        gradient.setStops( color );
+    }
+    else if ( fillType != Unfilled )
+    {
+        gradient.setStops( stops );
+    }
+
     setStartStop( fillType, gradient );
 
     setPanelGradient( gradient );

@@ -16,6 +16,8 @@
 #include <QskGradientDirection.h>
 #include <QskBoxRenderer.h>
 #include <QskBoxShapeMetrics.h>
+#include <QskBoxBorderMetrics.h>
+#include <QskBoxBorderColors.h>
 #include <QskTextLabel.h>
 
 #include <QBrush>
@@ -165,15 +167,17 @@ QSGNode* GradientView::updatePaintNode(
         }
         case BoxRectangle:
         {
-            if ( !QskBoxRenderer::isGradientSupported(
-                QskBoxShapeMetrics(), m_gradient ) )
+            QskBoxShapeMetrics shape;
+            shape.setRadius( 80 );
+
+            if ( !QskBox::isGradientSupported( shape, m_gradient ) )
             {
                 delete oldNode;
                 return nullptr;
             }
 
             auto node = gradientNode< QskBoxRectangleNode >( oldNode );
-            node->updateNode( rect, m_gradient );
+            node->updateNode( rect, shape, m_gradient );
 
             return node;
         }

@@ -95,7 +95,7 @@ void QskRectangleNode::updateNode(
     d->rect = rect;
     d->shape = effectiveShape;
 
-    if ( QskBoxRenderer::isGradientSupported( effectiveShape, effectiveGradient ) )
+    if ( QskBox::isGradientSupported( effectiveShape, effectiveGradient ) )
     {
         if ( material() != qskMaterialColorVertex )
         {
@@ -136,7 +136,7 @@ void QskRectangleNode::updateNode(
          */
         if ( dirtyMetrics || dirtyColors )
         {
-            QskBoxRenderer::renderBox( rect,
+            QskBox::renderBox( rect,
                 effectiveShape, effectiveGradient, d->geometry );
 
             markDirty( QSGNode::DirtyGeometry );
@@ -152,7 +152,7 @@ void QskRectangleNode::updateNode(
          */
         if ( dirtyMetrics )
         {
-            QskBoxRenderer::renderFillGeometry( rect, effectiveShape, d->geometry );
+            QskBox::renderFillGeometry( rect, effectiveShape, d->geometry );
             markDirty( QSGNode::DirtyGeometry );
         }
 

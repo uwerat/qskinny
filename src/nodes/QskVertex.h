@@ -182,56 +182,6 @@ namespace QskVertex
 
 namespace QskVertex
 {
-    class Quad
-    {
-      public:
-        constexpr Quad() noexcept = default;
-
-        inline constexpr Quad( const QRectF& rect ) noexcept
-            : left( rect.left() )
-            , top( rect.top() )
-            , right( rect.right() )
-            , bottom( rect.bottom() )
-            , width( rect.width() )
-            , height( rect.height() )
-        {
-        }
-
-        inline constexpr bool operator==( const Quad& other ) const noexcept
-        {
-            return
-                ( left == other.left ) &&
-                ( right == other.right ) &&
-                ( top == other.top ) &&
-                ( bottom == other.bottom );
-        }
-
-        inline constexpr bool operator!=( const Quad& other ) const noexcept
-        {
-            return !( *this == other );
-        }
-
-        inline constexpr bool isEmpty() const noexcept
-        {
-            return ( width <= 0 ) || ( height <= 0 );
-        }
-
-        inline operator QRectF() const
-        {
-            return QRectF( left, top, width, height );
-        }
-
-        qreal left = 0.0;
-        qreal top = 0.0;
-        qreal right = 0.0;
-        qreal bottom = 0.0;
-        qreal width = 0.0;
-        qreal height = 0.0;
-    };
-}
-
-namespace
-{
     class ArcIterator
     {
       public:
@@ -276,12 +226,41 @@ namespace
 
         inline void increment()
         {
-            const double cos0 = m_cos;
+            if ( ++m_stepIndex >= m_stepCount )
+            {
+                if ( m_stepIndex == m_stepCount )
+                {
+                    /*
+                        Doubles are not numerical stable and the small errors,
+                        sum up when iterating in steps. To avoid having to deal with
+                        fuzzy compares we manually fix cos/sin at the end.
+                     */
+                    if ( m_inverted )
+                    {
+                        m_cos = 0.0;
+                        m_sin = -1.0;
+                    }
+                    else
+                    {
+                        m_cos = 1.0;
+                        m_sin = 0.0;
+                    }
+                }
+            }
+            else
+            {
+                const double cos0 = m_cos;
 
-            m_cos = m_cos * m_cosStep + m_sin * m_sinStep;
-            m_sin = m_sin * m_cosStep - cos0 * m_sinStep;
+                m_cos = m_cos * m_cosStep + m_sin * m_sinStep;
+                m_sin = m_sin * m_cosStep - cos0 * m_sinStep;
+            }
+        }
 
-            ++m_stepIndex;
+        inline void decrement()
+        {
+            revert();
+            increment();
+            revert();
         }
 
         inline void operator++() { increment(); }
@@ -290,6 +269,22 @@ namespace
         {
             const double arcLength = radius * M_PI_2;
             return qBound( 3, qCeil( arcLength / 3.0 ), 18 ); // every 3 pixels
+        }
+
+        inline void revert()
+        {
+            m_inverted = !m_inverted;
+            m_stepIndex = m_stepCount - m_stepIndex;
+
+            m_sin = -m_sin;
+        }
+
+        ArcIterator reverted() const
+        {
+            ArcIterator it = *this;
+            it.revert();
+
+            return it;
         }
 
       private:
