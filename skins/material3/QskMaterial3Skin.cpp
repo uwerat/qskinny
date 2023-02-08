@@ -23,6 +23,7 @@
 #include <QskPageIndicator.h>
 #include <QskPushButton.h>
 #include <QskProgressBar.h>
+#include <QskRadioBox.h>
 #include <QskScrollView.h>
 #include <QskSegmentedBar.h>
 #include <QskSeparator.h>
@@ -139,6 +140,7 @@ namespace
         void setupPageIndicator();
         void setupPopup();
         void setupProgressBar();
+        void setupRadioBox();
         void setupPushButton();
         void setupScrollView();
         void setupSegmentedBar();
@@ -199,6 +201,7 @@ void Editor::setup()
     setupPopup();
     setupProgressBar();
     setupPushButton();
+    setupRadioBox();
     setupScrollView();
     setupSegmentedBar();
     setupSeparator();
@@ -461,6 +464,40 @@ void Editor::setupProgressBar()
 
     setGradient( Q::Bar, m_pal.primary );
     setGradient( Q::Bar | Q::Disabled, m_pal.onSurface38 );
+}
+
+void Editor::setupRadioBox()
+{
+    using Q = QskRadioBox;
+    using A = QskAspect;
+
+    setStrutSize( Q::Text, {100, 20 });
+    setStrutSize( Q::Radio, {20, 20 });
+    setStrutSize( Q::Symbol, {10, 10 });
+    setStrutSize( Q::Ripple | Q::Focused, { 40, 40 });
+
+    setSpacing(Q::Panel, 10);
+
+    setColor( Q::Text, m_pal.onBackground );
+    
+    setBoxShape(Q::Radio, 20);
+    setBoxBorderMetrics( Q::Radio, 2_dp );
+    setBoxBorderColors( Q::Radio, m_pal.onBackground );
+    setBoxBorderColors( Q::Radio | Q::Selected, m_pal.primary );
+
+    setBoxShape(Q::Ripple, 40);
+    
+    setColor( Q::Symbol, m_pal.primary );
+    setColor( Q::Ripple | Q::Focused,
+	      stateLayerColor( m_pal.onSurface, m_pal.focusOpacity ) );
+    setColor( Q::Ripple | Q::Selected | Q::Focused,
+	      //	      stateLayerColor( m_pal.primary, m_pal.focusOpacity ) );
+	      Qt::red);
+
+    setMargin( Q::Text, QskMargins(10, 0,0,0));
+
+    setAlignment( Q::Text, Qt::AlignBottom );
+    setAnimation(Q::Ripple | A::Metric, 1000);
 }
 
 void Editor::setupFocusIndicator()
