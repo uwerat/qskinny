@@ -2,7 +2,6 @@
 
 #include <QskBoxBorderColors.h>
 #include <QskBoxBorderMetrics.h>
-#include <QskLinearDirection.h>
 
 LinearGradientSlider::LinearGradientSlider( QQuickItem* parent )
     : LinearGradientSlider( Qt::Horizontal, parent )
@@ -22,8 +21,8 @@ LinearGradientSlider::LinearGradientSlider( Qt::Orientation orientation, QQuickI
         { 1.0000, QColor::fromRgb( 255, 0, 0 ) },
     };
 
-    const QskGradient gradient( gradientStop );
-    gradient.setLinearDirection({orientation});
+    QskGradient gradient( gradientStop );
+    gradient.setLinearDirection( orientation );
     setColor( Inherited::Fill, Qt::transparent );
     setGradientHint( Inherited::Groove, gradient );
     setBoxBorderColorsHint( Inherited::Handle, Qt::white );
