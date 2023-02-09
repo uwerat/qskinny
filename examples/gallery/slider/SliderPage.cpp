@@ -30,7 +30,11 @@ SliderPage::SliderPage( QQuickItem* parent )
     setMargins( 10 );
     setSpacing( 20 );
 
-    populate();
+    auto* const left = new QskLinearBox( Qt::Vertical, this );
+    auto* const right = new QskLinearBox( Qt::Horizontal, this );
+
+    populate( Qt::Horizontal, left );
+    populate( Qt::Vertical, right );
 
     const auto sliders = findChildren< QskSlider* >();
 
@@ -38,8 +42,7 @@ SliderPage::SliderPage( QQuickItem* parent )
     {
         slider->setLayoutAlignmentHint( Qt::AlignCenter );
 
-        slider->setValue( slider->minimum() +
-            0.5 * ( slider->maximum() - slider->minimum() ) );
+        slider->setValue( slider->minimum() + 0.5 * ( slider->maximum() - slider->minimum() ) );
 #if 0
         connect( slider, &QskSlider::valueChanged,
             []( qreal value ) { qDebug() << value; } );
@@ -47,11 +50,8 @@ SliderPage::SliderPage( QQuickItem* parent )
     }
 }
 
-void SliderPage::populate()
+void SliderPage::populate( Qt::Orientation orientation, QQuickItem* parent )
 {
-    ( void ) new Slider( Qt::Horizontal, this );
-    ( void ) new Slider( Qt::Vertical, this );
-
-    ( void ) new LinearGradientSlider( Qt::Horizontal, this );
-    ( void ) new LinearGradientSlider( Qt::Vertical, this );
+    ( void ) new Slider( orientation, parent );
+    ( void ) new LinearGradientSlider( orientation, parent );
 }

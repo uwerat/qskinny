@@ -13,5 +13,5 @@ class SliderPage : public Page
     SliderPage( QQuickItem* = nullptr );
 
   private:
-    void populate();
+    void populate( Qt::Orientation orientation, QQuickItem* parent );
 };
