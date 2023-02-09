@@ -2,6 +2,7 @@
 
 #include <QskBoxBorderColors.h>
 #include <QskBoxBorderMetrics.h>
+#include <QskLinearDirection.h>
 
 LinearGradientSlider::LinearGradientSlider( QQuickItem* parent )
     : LinearGradientSlider( Qt::Horizontal, parent )
@@ -21,7 +22,8 @@ LinearGradientSlider::LinearGradientSlider( Qt::Orientation orientation, QQuickI
         { 1.0000, QColor::fromRgb( 255, 0, 0 ) },
     };
 
-    const QskGradient gradient( orientation, gradientStop );
+    const QskGradient gradient( gradientStop );
+    gradient.setLinearDirection({orientation});
     setColor( Inherited::Fill, Qt::transparent );
     setGradientHint( Inherited::Groove, gradient );
     setBoxBorderColorsHint( Inherited::Handle, Qt::white );
@@ -31,21 +33,10 @@ LinearGradientSlider::LinearGradientSlider( Qt::Orientation orientation, QQuickI
         value = this->orientation() == Qt::Horizontal ? value : 1.0 - value;
         const auto selectedColor = gradient.extracted( value, value ).startColor();
         setColor( Inherited::Handle, selectedColor );
-        setSelectedColor( selectedColor );
     } );
 }
 
 const QColor& LinearGradientSlider::selectedColor() const
 {
     return m_selectedColor;
-}
-
-void LinearGradientSlider::setSelectedColor( const QColor& newSelectedColor )
-{
-    if ( m_selectedColor == newSelectedColor )
-    {
-        return;
-    }
-    m_selectedColor = newSelectedColor;
-    Q_EMIT selectedColorChanged();
 }
