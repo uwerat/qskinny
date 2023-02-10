@@ -56,6 +56,8 @@ QskSegmentedBar::QskSegmentedBar( Qt::Orientation orientation, QQuickItem* paren
     : Inherited( parent )
     , m_data( new PrivateData( orientation ) )
 {
+    setAcceptHoverEvents( true );
+
     if( orientation == Qt::Horizontal )
         initSizePolicy( QskSizePolicy::MinimumExpanding, QskSizePolicy::Fixed );
     else
@@ -271,6 +273,30 @@ void QskSegmentedBar::keyReleaseEvent( QKeyEvent* event )
     }
 
     Inherited::keyReleaseEvent( event );
+}
+
+void QskSegmentedBar::hoverEnterEvent( QHoverEvent* event )
+{
+    using A = QskAspect;
+
+    setSkinHint( Segment | A::Metric | A::Position, qskHoverPosition( event ) );
+    update();
+}
+
+void QskSegmentedBar::hoverMoveEvent( QHoverEvent* event )
+{
+    using A = QskAspect;
+
+    setSkinHint( Segment | A::Metric | A::Position, qskHoverPosition( event ) );
+    update();
+}
+
+void QskSegmentedBar::hoverLeaveEvent( QHoverEvent* event )
+{
+    using A = QskAspect;
+
+    setSkinHint( Segment | A::Metric | A::Position, QPointF() );
+    update();
 }
 
 void QskSegmentedBar::focusInEvent( QFocusEvent* event )

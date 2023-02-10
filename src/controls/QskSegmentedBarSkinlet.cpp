@@ -355,13 +355,46 @@ QskAspect::States QskSegmentedBarSkinlet::sampleStates(
     const QskSkinnable* skinnable, QskAspect::Subcontrol subControl, int index ) const
 {
     using Q = QskSegmentedBar;
+    using A = QskAspect;
 
     auto states = Inherited::sampleStates( skinnable, subControl, index );
 
-    if ( subControl == Q::Segment || subControl == Q::Icon || subControl == Q::Text )
-    {
-        const auto bar = static_cast< const QskSegmentedBar* >( skinnable );
+    const auto* bar = static_cast< const QskSegmentedBar* >( skinnable );
 
+    if ( subControl == Q::Segment )
+    {
+        const auto cursorPos = bar->effectiveSkinHint( Q::Segment | A::Metric | A::Position ).toPointF();
+
+        if( !cursorPos.isNull() && bar->indexAtPosition( cursorPos ) == index )
+        {
+            states |= Q::Hovered;
+        }
+        else
+        {
+            states &= ~Q::Hovered;
+        }
+
+        if( bar->count() > 0 )
+        {
+            if( index == 0 )
+            {
+                states &= ~Q::Maximum;
+                states |= Q::Minimum;
+            }
+            else if( index == bar->count() - 1 )
+            {
+                states &= ~Q::Minimum;
+                states |= Q::Maximum;
+            }
+            else
+            {
+                states &= ~Q::Minimum;
+                states &= ~Q::Maximum;
+            }
+        }
+    }
+    else if( subControl == Q::Icon || subControl == Q::Text || subControl == Q::Cursor )
+    {
         if ( bar->isSegmentEnabled( index ) )
         {
             if ( bar->selectedIndex() == index )
