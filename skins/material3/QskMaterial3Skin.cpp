@@ -516,8 +516,25 @@ void Editor::setupSegmentedBar()
         setStrutSize( Q::Segment | A::Horizontal, segmentStrutSize );
         setStrutSize( Q::Segment | A::Vertical, segmentStrutSize.transposed() );
         setGradient( Q::Segment, Qt::transparent );
+        setGradient( Q::Segment | Q::Hovered, m_pal.onSurface12,
+                     { QskStateCombination::CombinationNoState, Q::Minimum | Q::Maximum | Q::Selected } );
         setPadding( Q::Segment | A::Horizontal, 12_dp, 0, 12_dp, 0 );
         setPadding( Q::Segment | A::Vertical, 0, 12_dp, 0, 12_dp );
+
+        setBoxShape( Q::Segment, 0 );
+        setBoxShape( Q::Segment | Q::Minimum | A::Horizontal,
+                     { 100, 0, 100, 0, Qt::RelativeSize },
+                     { QskStateCombination::CombinationNoState, Q::Disabled } );
+        setBoxShape( Q::Segment | Q::Maximum | A::Horizontal,
+                     { 0, 100, 0, 100, Qt::RelativeSize },
+                     { QskStateCombination::CombinationNoState, Q::Disabled } );
+
+        setBoxShape( Q::Segment | Q::Minimum | A::Vertical,
+                     { 100, 100, 0, 0, Qt::RelativeSize },
+                     { QskStateCombination::CombinationNoState, Q::Disabled } );
+        setBoxShape( Q::Segment | Q::Maximum | A::Vertical,
+                     { 0, 0, 100, 100, Qt::RelativeSize },
+                     { QskStateCombination::CombinationNoState, Q::Disabled } );
     }
 
     {

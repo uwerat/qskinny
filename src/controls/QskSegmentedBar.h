@@ -94,6 +94,10 @@ class QSK_EXPORT QskSegmentedBar : public QskControl
     void keyPressEvent( QKeyEvent* ) override;
     void keyReleaseEvent( QKeyEvent* ) override;
 
+    void hoverEnterEvent( QHoverEvent* ) override;
+    void hoverMoveEvent( QHoverEvent* ) override;
+    void hoverLeaveEvent( QHoverEvent* ) override;
+
     void focusInEvent( QFocusEvent* ) override;
 
   private:
