@@ -171,10 +171,10 @@ QRectF QskRadioBoxSkinlet::sampleRect( const QskSkinnable* skinnable,
 
 QskAspect::States QskRadioBoxSkinlet::sampleStates( const QskSkinnable* skinnable,
 				QskAspect::Subcontrol subControl, int index ) const {
-    auto radioButtons = static_cast<const QskRadioBox*>( skinnable );
+    auto radio = static_cast<const QskRadioBox*>( skinnable );
     auto states =  Inherited::sampleStates( skinnable, subControl, index );
 
-    if( radioButtons->selectedIndex() == index ) {
+    if( radio->selectedIndex() == index ) {
 	return states | Q::Selected;
     }
 
@@ -183,33 +183,33 @@ QskAspect::States QskRadioBoxSkinlet::sampleStates( const QskSkinnable* skinnabl
 
 QSGNode* QskRadioBoxSkinlet::updateSampleNode(  const QskSkinnable* skinnable,
     QskAspect::Subcontrol subcontrol, int index, QSGNode* node ) const {
-    auto radioButtons = static_cast<const QskRadioBox*>( skinnable );
+    auto radio = static_cast<const QskRadioBox*>( skinnable );
 
-    auto rect = sampleRect( skinnable, radioButtons->contentsRect(),
+    auto rect = sampleRect( skinnable, radio->contentsRect(),
         subcontrol, index );
     
     if( subcontrol == Q::Text ) {
-	return QskSkinlet::updateTextNode( radioButtons,
+	return QskSkinlet::updateTextNode( radio,
 				node,
 				rect,
 				Qt::AlignLeft,
-				radioButtons->items()[index],
+				radio->items()[index],
 				subcontrol);
     } else if (subcontrol == Q::Button) {
-	return QskSkinlet::updateBoxNode(radioButtons,
+	return QskSkinlet::updateBoxNode(radio,
 					 node,
 					 rect,
 					 subcontrol);
     } else if( subcontrol == Q::Symbol ) {
         auto symbol = QskStandardSymbol::NoSymbol;
-	auto color = radioButtons->color( subcontrol ).rgb();
+	auto color = radio->color( subcontrol ).rgb();
 
-	if( radioButtons->selectedIndex() == index ) {
+	if( radio->selectedIndex() == index ) {
 	    symbol = QskStandardSymbol::Bullet;
-	    color = radioButtons->color( subcontrol | Q::Selected ).rgb();
+	    color = radio->color( subcontrol | Q::Selected ).rgb();
 	}
     
-	auto graphic = radioButtons->effectiveSkin()->symbol( symbol );
+	auto graphic = radio->effectiveSkin()->symbol( symbol );
 
 	/*
         Our default skins do not have the concept of colorRoles
@@ -220,7 +220,7 @@ QSGNode* QskRadioBoxSkinlet::updateSampleNode(  const QskSkinnable* skinnable,
 
 	QskGraphic::fromGraphic( graphic, filter );
 
-	return updateGraphicNode( radioButtons, node, graphic, filter, rect );
+	return updateGraphicNode( radio, node, graphic, filter, rect );
     }
 
     return node;
