@@ -134,18 +134,16 @@ QRectF QskRadioBoxSkinlet::textRect( const QskRadioBox* radio,
     auto spacing = radio->spacingHint(Q::Panel);
     auto lh = lineHeight( radio );
     const auto textMargins = radio->marginHint( Q::Text );
-    
-    result.setSize( { radio->strutSizeHint( Q::Text ).width(), lh } );
-
 
     result.moveTop( index * ( lh + spacing )
 		    + lh - radio->effectiveFontHeight(Q::Text)
 		    + textMargins.top());
 
-    if(!radio->layoutMirroring()) {
-	auto symbolWidth = buttonRect( radio, Q::Symbol, rect, index ).width();
-	auto radioWidth = buttonRect( radio, Q::Button, rect, index ).width();
-	result.moveLeft( qMax(symbolWidth, radioWidth) + textMargins.left());
+    if( !radio->layoutMirroring() ) {
+	auto maxWidth = qMax( buttonRect( radio, Q::Symbol, rect, index ).width(),
+			      buttonRect( radio, Q::Button, rect, index ).width());
+
+	result.moveLeft( maxWidth + textMargins.left());
     }
 
     return result;
