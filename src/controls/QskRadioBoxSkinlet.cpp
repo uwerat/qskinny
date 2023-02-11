@@ -29,15 +29,7 @@ QRectF QskRadioBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
     auto radio = static_cast<const QskRadioBox*>( skinnable );
 
     if( subcontrol == Q::Ripple ) {
-	auto result = contentsRect;
-	auto lh = lineHeight( radio );
-	auto spacing = radio->spacingHint(Q::Panel);
-	result.setSize( radio->strutSizeHint( subcontrol ) );
-	result.moveTop( (lh + spacing) * radio->focusedIndex()
-			- (result.size().height() - lh ) / 2);
-	result.moveLeft(( radio->strutSizeHint( Q::Button ).width()
-			  - result.width()) /2);
-	return result;
+	return buttonRect(radio, Q::Ripple, contentsRect, radio->focusedIndex());
     } 
 
     return contentsRect;
@@ -124,11 +116,13 @@ QRectF QskRadioBoxSkinlet::buttonRect( const QskRadioBox* radio,
     result.moveTop( ( lineHeight( radio ) + spacing ) * index
 		    + (lineHeight(radio) - result.size().height()) / 2);
 
+    auto maxWidth = qMax(radio->strutSizeHint( Q::Button ).width(),
+			 radio->strutSizeHint( Q::Symbol ).width());
+    
     if( radio->layoutMirroring() ) {
-	result.moveRight( rect.width() );
+	result.moveRight( rect.width() - (maxWidth - result.width())/2);
     } else {
-	result.moveLeft((radio->strutSizeHint( Q::Button ).width()
-			 - result.width()) / 2);
+	result.moveLeft((maxWidth - result.width()) / 2);
     }
  
     return result;
