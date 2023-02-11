@@ -8,9 +8,9 @@ QSK_SUBCONTROL( QskRadioBox, Symbol )
 QSK_SUBCONTROL( QskRadioBox, Text )
 QSK_SUBCONTROL( QskRadioBox, Ripple )
 
-QSK_STATE( QskRadioBox, Selected, QskAspect::FirstUserState )
-QSK_STATE( QskRadioBox, Pressed, QskAspect::FirstUserState << 1)
-QSK_STATE( QskRadioBox, Focused, QskAspect::FirstUserState << 2)
+QSK_STATE( QskRadioBox, Selected, QskAspect::FirstUserState << 1)
+QSK_STATE( QskRadioBox, Pressed, QskAspect::FirstUserState << 2)
+QSK_STATE( QskRadioBox, Focused, QskAspect::FirstUserState << 3)
 
 class QskRadioBox::PrivateData {
 public:
