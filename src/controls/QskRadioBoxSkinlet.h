@@ -15,7 +15,7 @@ class QSK_EXPORT QskRadioBoxSkinlet : public QskSkinlet
   enum NodeRole
     {
       PanelRole,
-      RadioRole,
+      ButtonRole,
       SymbolRole,
       TextRole,
       RippleRole,
@@ -38,7 +38,7 @@ class QSK_EXPORT QskRadioBoxSkinlet : public QskSkinlet
         const QRectF&, QskAspect::Subcontrol, int index ) const override;
 
     QRectF textRect( const QskRadioBox*, const QRectF&, int ) const;
-    QRectF radioRect( const QskRadioBox*, const QskAspect::Subcontrol target, const QRectF&, int ) const;
+    QRectF buttonRect( const QskRadioBox*, const QskAspect::Subcontrol target, const QRectF&, int ) const;
 
     QskAspect::States sampleStates( const QskSkinnable*,
         QskAspect::Subcontrol, int index ) const override;

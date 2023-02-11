@@ -3,7 +3,7 @@
 #include <qnamespace.h>
 
 QSK_SUBCONTROL( QskRadioBox, Panel )
-QSK_SUBCONTROL( QskRadioBox, Radio )
+QSK_SUBCONTROL( QskRadioBox, Button )
 QSK_SUBCONTROL( QskRadioBox, Symbol )
 QSK_SUBCONTROL( QskRadioBox, Text )
 QSK_SUBCONTROL( QskRadioBox, Ripple )

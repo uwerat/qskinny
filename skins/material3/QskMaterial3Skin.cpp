@@ -472,7 +472,7 @@ void Editor::setupRadioBox()
     using A = QskAspect;
 
     setStrutSize( Q::Text, {100, 20 });
-    setStrutSize( Q::Radio, {20, 20 });
+    setStrutSize( Q::Button, {20, 20 });
     setStrutSize( Q::Symbol, {10, 10 });
     setStrutSize( Q::Ripple | Q::Focused, { 40, 40 });
 
@@ -480,10 +480,10 @@ void Editor::setupRadioBox()
 
     setColor( Q::Text, m_pal.onBackground );
     
-    setBoxShape(Q::Radio, 20);
-    setBoxBorderMetrics( Q::Radio, 2_dp );
-    setBoxBorderColors( Q::Radio, m_pal.onBackground );
-    setBoxBorderColors( Q::Radio | Q::Selected, m_pal.primary );
+    setBoxShape(Q::Button, 20);
+    setBoxBorderMetrics( Q::Button, 2_dp );
+    setBoxBorderColors( Q::Button, m_pal.onBackground );
+    setBoxBorderColors( Q::Button | Q::Selected, m_pal.primary );
 
     setBoxShape(Q::Ripple, 40);
     
