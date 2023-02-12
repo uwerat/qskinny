@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskMaterial3Skin.h"
+#include "QskTextOptions.h"
 
 #include <QskSkinHintTableEditor.h>
 
@@ -471,10 +472,9 @@ void Editor::setupRadioBox()
     using Q = QskRadioBox;
     using A = QskAspect;
 
-    setStrutSize( Q::Text, {100, 20 });
     setStrutSize( Q::Button, {20, 20 });
     setStrutSize( Q::Symbol, {10, 10 });
-    setStrutSize( Q::Ripple | Q::Focused, { 40, 40 });
+    setStrutSize( Q::Ripple, { 40, 40 });
 
     setSpacing(Q::Panel, 10);
 
@@ -486,18 +486,17 @@ void Editor::setupRadioBox()
     setBoxBorderColors( Q::Button | Q::Selected, m_pal.primary );
 
     setBoxShape(Q::Ripple, 40);
-    
-    setColor( Q::Symbol, m_pal.primary );
-    setColor( Q::Ripple | Q::Focused,
-	      stateLayerColor( m_pal.onSurface, m_pal.focusOpacity ) );
-    setColor( Q::Ripple | Q::Selected | Q::Focused,
-	      //	      stateLayerColor( m_pal.primary, m_pal.focusOpacity ) );
-	      Qt::red);
 
+
+    setColor( Q::Symbol, m_pal.primary );
+    setColor( Q::Ripple, stateLayerColor( m_pal.onSurface, m_pal.focusOpacity ) );
+    setColor( Q::Ripple | Q::Selected, stateLayerColor( m_pal.primary, m_pal.focusOpacity ) );
+	
     setMargin( Q::Text, QskMargins(10, 0,0,0));
 
     setAlignment( Q::Text, Qt::AlignBottom );
-    setAnimation(Q::Ripple | A::Metric, 1000);
+
+    setAnimation( Q::Ripple | A::Metric | A::Position, qskDuration );
 }
 
 void Editor::setupFocusIndicator()

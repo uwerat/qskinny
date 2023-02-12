@@ -31,7 +31,6 @@ class QSK_EXPORT QskRadioBox : public QskControl
     
     const QStringList& items() const;
     int selectedIndex() const;
-    int focusedIndex() const;
     int pressedIndex() const;
 
   public Q_SLOTS:

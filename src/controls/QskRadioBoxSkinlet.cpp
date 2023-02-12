@@ -3,6 +3,7 @@
 #include "QskAspect.h"
 #include "QskRadioBox.h"
 
+#include "QskSkinStateChanger.h"
 #include "QskStandardSymbol.h"
 #include "QskColorFilter.h"
 #include "QskGraphic.h"
@@ -23,13 +24,31 @@ QskRadioBoxSkinlet::~QskRadioBoxSkinlet()
 {
 }
 
+QskAspect::States statesForIndex(const QskRadioBox* radio, int index) {
+    auto states = radio->skinStates();
+    
+    if( radio->selectedIndex() == index ) {
+	states |= Q::Selected;
+    }
+
+    if( radio->pressedIndex() == index ) {
+	states |= Q::Pressed;
+    }
+
+    if( radio->positionHint( Q::Ripple ) == index ) {
+	states |= Q::Focused;
+    }
+
+    return states;
+}
+
 QRectF QskRadioBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subcontrol) const
 {
     auto radio = static_cast<const QskRadioBox*>( skinnable );
 
     if( subcontrol == Q::Ripple ) {
-	return buttonRect(radio, Q::Ripple, contentsRect, radio->focusedIndex());
+	return buttonRect(radio, Q::Ripple, contentsRect, radio->positionHint(Q::Ripple));
     } 
 
     return contentsRect;
@@ -83,7 +102,12 @@ QSGNode* QskRadioBoxSkinlet::updateSubNode( const QskSkinnable* skinnable,
 	    return updateSeriesNode( radio, Q::Text, node );
 
         case RippleRole:
+	{
+	    QskSkinStateChanger cleaner( radio );
+	    cleaner.setStates( statesForIndex( radio, radio->positionHint( Q::Ripple ) ) );
+
 	    return updateBoxNode( radio, node, Q::Ripple );
+	}
     };
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
@@ -108,10 +132,11 @@ int QskRadioBoxSkinlet::sampleCount( const QskSkinnable* skinnable,
 
 QRectF QskRadioBoxSkinlet::buttonRect( const QskRadioBox* radio,
 				      const QskAspect::Subcontrol target, 
-				      const QRectF& rect, int index ) const {
+				      const QRectF& rect, double index ) const {
     if( index < 0 ) {
 	return QRectF();
     }
+
     auto result = rect;
     result.setSize( radio->strutSizeHint( target ) );
 
@@ -169,19 +194,7 @@ QskAspect::States QskRadioBoxSkinlet::sampleStates( const QskSkinnable* skinnabl
     auto radio = static_cast<const QskRadioBox*>( skinnable );
     auto states =  Inherited::sampleStates( skinnable, subControl, index );
 
-    if( radio->selectedIndex() == index ) {
-	states |= Q::Selected;
-    }
-
-    if( radio->pressedIndex() == index ) {
-	states |= Q::Pressed;
-    }
-
-    if( radio->focusedIndex() == index ) {
-	states |= Q::Focused;
-    }
-
-    return states;
+    return states | statesForIndex( radio, index );
 }
 
 QSGNode* QskRadioBoxSkinlet::updateSampleNode(  const QskSkinnable* skinnable,
@@ -199,10 +212,10 @@ QSGNode* QskRadioBoxSkinlet::updateSampleNode(  const QskSkinnable* skinnable,
 				radio->items()[index],
 				subcontrol);
     } else if (subcontrol == Q::Button) {
-	return QskSkinlet::updateBoxNode(radio,
-					 node,
-					 rect,
-					 subcontrol);
+	return QskSkinlet::updateBoxNode( radio,
+					  node,
+					  rect,
+					  subcontrol );
     } else if( subcontrol == Q::Symbol ) {
         auto symbol = QskStandardSymbol::NoSymbol;
 	auto color = radio->color( subcontrol ).rgb();
