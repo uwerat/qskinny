@@ -109,6 +109,9 @@ int QskRadioBoxSkinlet::sampleCount( const QskSkinnable* skinnable,
 QRectF QskRadioBoxSkinlet::buttonRect( const QskRadioBox* radio,
 				      const QskAspect::Subcontrol target, 
 				      const QRectF& rect, int index ) const {
+    if( index < 0 ) {
+	return QRectF();
+    }
     auto result = rect;
     result.setSize( radio->strutSizeHint( target ) );
 
