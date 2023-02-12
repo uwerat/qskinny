@@ -170,7 +170,15 @@ QskAspect::States QskRadioBoxSkinlet::sampleStates( const QskSkinnable* skinnabl
     auto states =  Inherited::sampleStates( skinnable, subControl, index );
 
     if( radio->selectedIndex() == index ) {
-	return states | Q::Selected;
+	states |= Q::Selected;
+    }
+
+    if( radio->pressedIndex() == index ) {
+	states |= Q::Pressed;
+    }
+
+    if( radio->focusedIndex() == index ) {
+	states |= Q::Focused;
     }
 
     return states;

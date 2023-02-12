@@ -66,6 +66,10 @@ int QskRadioBox::focusedIndex() const {
     return m_data->focusedIndex;
 }
 
+int QskRadioBox::pressedIndex() const {
+    return m_data->pressedIndex;
+}
+
 void QskRadioBox::setSelectedIndex( int index ) {
     if( index == m_data->selectedIndex
     	|| index >= m_data->items.count() ) {

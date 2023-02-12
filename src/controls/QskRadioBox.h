@@ -29,9 +29,10 @@ class QSK_EXPORT QskRadioBox : public QskControl
     QskRadioBox( const QStringList&, QQuickItem* parent = nullptr );
     QskRadioBox( const QStringList&, int, QQuickItem* parent = nullptr );
     
-    int selectedIndex() const;
     const QStringList& items() const;
+    int selectedIndex() const;
     int focusedIndex() const;
+    int pressedIndex() const;
 
   public Q_SLOTS:
     void setSelectedIndex( int );
