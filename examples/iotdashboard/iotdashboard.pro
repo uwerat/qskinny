@@ -1,34 +1,36 @@
 CONFIG += qskexample
 
-QT += svg
-QT += quick_private # TODO: examples should not use private headers
-
 SOURCES += \
     Box.cpp \
     BoxWithButtons.cpp \
     CircularProgressBar.cpp \
     CircularProgressBarSkinlet.cpp \
     DashboardPage.cpp \
+    DevicesPage.cpp \
     Diagram.cpp \
     DiagramSkinlet.cpp \
+    EnergyMeter.cpp \
     GraphicProvider.cpp \
     GridBox.cpp \
     LightDisplaySkinlet.cpp \
     LightDisplay.cpp \
     MainItem.cpp \
+    MainWindow.cpp \
     MenuBar.cpp \
+    MembersPage.cpp \
     MyDevices.cpp \
-    PieChart.cpp \
-    PieChartPainted.cpp \
-    PieChartSkinlet.cpp \
     RoomsPage.cpp \
     RoundedIcon.cpp \
     Skin.cpp \
+    StatisticsPage.cpp \
     TopBar.cpp \
     RoundButton.cpp \
     UsageBox.cpp \
     UsageDiagram.cpp \
-    MainWindow.cpp \
+    StoragePage.cpp \
+    StorageMeter.cpp \
+    StorageBar.cpp \
+    StorageBarSkinlet.cpp \
     main.cpp \
 
 SOURCES += \
@@ -43,25 +45,30 @@ HEADERS += \
     CircularProgressBarSkinlet.h \
     Diagram.h \
     DiagramSkinlet.h \
+    EnergyMeter.h \
     GraphicProvider.h \
     GridBox.h \
     LightDisplaySkinlet.h \
     LightDisplay.h \
     DashboardPage.h \
+    DevicesPage.h \
     MainItem.h \
     MainWindow.h \
+    MembersPage.h \
     MenuBar.h \
     MyDevices.h \
-    PieChart.h \
-    PieChartPainted.h \
-    PieChartSkinlet.h \
     RoomsPage.h \
     RoundedIcon.h \
     Skin.h \
+    StatisticsPage.h \
     TopBar.h \
     RoundButton.h \
     UsageBox.h \
-    UsageDiagram.h
+    UsageDiagram.h \
+    StoragePage.h \
+    StorageMeter.h \
+    StorageBar.h \
+    StorageBarSkinlet.h \
 
 HEADERS += \
     nodes/DiagramDataNode.h \

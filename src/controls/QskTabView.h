@@ -53,11 +53,11 @@ class QSK_EXPORT QskTabView : public QskControl
     int addTab( QskTabButton*, QQuickItem* );
     int insertTab( int index, QskTabButton*, QQuickItem* );
 
-    int addTab( const QString&, QQuickItem* );
-    int insertTab( int index, const QString&, QQuickItem* );
+    Q_INVOKABLE int addTab( const QString&, QQuickItem* );
+    Q_INVOKABLE int insertTab( int index, const QString&, QQuickItem* );
 
-    void removeTab( int index );
-    void clear( bool autoDelete = false );
+    Q_INVOKABLE void removeTab( int index );
+    Q_INVOKABLE void clear( bool autoDelete = false );
 
     QQuickItem* itemAt( int index ) const;
     QskTabButton* buttonAt( int index ) const;

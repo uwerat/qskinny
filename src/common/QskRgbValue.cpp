@@ -5,6 +5,13 @@
 
 #include "QskRgbValue.h"
 
+#include <qeasingcurve.h>
+#include <qimage.h>
+
+QSK_QT_PRIVATE_BEGIN
+#include <private/qdrawhelper_p.h>
+QSK_QT_PRIVATE_END
+
 namespace
 {
     inline int value( int from, int to, qreal ratio )
@@ -196,3 +203,96 @@ void QskRgb::debugColor( QDebug debug, QRgb rgb )
 }
 
 #endif
+
+QImage QskRgb::colorTable( int size, const QskGradientStops& stops )
+{
+    if ( size == 0 || stops.isEmpty() )
+        return QImage();
+
+    QImage image( size, 1, QImage::Format_RGBA8888_Premultiplied );
+
+    if ( stops.size() == 1 )
+    {
+        const auto rgb = ARGB2RGBA( qPremultiply( stops[0].rgb() ) );
+        image.fill( rgb );
+
+        return image;
+    }
+
+    auto values = reinterpret_cast< uint* >( image.bits() );
+
+    int index1, index2;
+    QRgb rgb1, rgb2;
+
+    index1 = index2 = qRound( stops[0].position() * size );
+    rgb1 = rgb2 = qPremultiply( stops[0].rgb() );
+
+    if ( index1 > 0 )
+    {
+        const auto v = ARGB2RGBA( rgb1 );
+
+        for ( int i = 0; i < index1; i++ )
+            values[i] = v;
+    }
+
+    for ( int i = 1; i < stops.count(); i++ )
+    {
+        const auto& stop = stops[i];
+
+        index2 = qRound( stop.position() * size );
+        rgb2 = qPremultiply( stop.rgb() );
+
+        const auto n = index2 - index1;
+
+        values[ index1 ] = ARGB2RGBA( rgb1 );
+        for ( int j = 1; j < n; j++ )
+        {
+            const auto rgb = QskRgb::interpolated( rgb1, rgb2, qreal( j ) / ( n - 1 ) );
+            values[ index1 + j] = ARGB2RGBA( rgb );
+        }
+
+        index1 = index2;
+        rgb1 = rgb2;
+    }
+
+    if ( index1 < size - 1 )
+    {
+        const auto v = ARGB2RGBA( rgb1 );
+
+        for ( int i = index1; i < size ; i++ )
+            values[i] = v;
+    }
+
+    return image;
+}
+
+QImage QskRgb::colorTable( const int size,
+    QRgb rgb1, QRgb rgb2, const QEasingCurve& curve )
+{
+    if ( size == 0 )
+        return QImage();
+
+    rgb1 = qPremultiply( rgb1 );
+    rgb2 = qPremultiply( rgb2 );
+
+    QImage image( size, 1, QImage::Format_RGBA8888_Premultiplied );
+
+    if ( rgb1 == rgb2 )
+    {
+        image.fill( ARGB2RGBA( rgb1 ) );
+        return image;
+    }
+
+    auto values = reinterpret_cast< uint* >( image.bits() );
+
+    for ( int i = 0; i < size; i++ )
+    {
+        qreal progress = curve.valueForProgress( qreal( i ) / ( size - 1 ) );
+        progress = qBound( 0.0, progress, 1.0 );
+
+        auto rgb = QskRgb::interpolated( rgb1, rgb2, progress );
+        values[i] = ARGB2RGBA( rgb );
+    }
+
+    return image;
+}

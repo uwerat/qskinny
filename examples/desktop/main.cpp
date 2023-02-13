@@ -7,13 +7,13 @@
 #include <SkinnyShortcut.h>
 
 #include <QskAspect.h>
-#include <QskGradient.h>
 #include <QskGraphicLabel.h>
 #include <QskObjectCounter.h>
 #include <QskShortcutMap.h>
 #include <QskSubWindow.h>
 #include <QskSubWindowArea.h>
 #include <QskWindow.h>
+#include <QskRgbValue.h>
 
 #include <QDebug>
 #include <QGuiApplication>
@@ -57,9 +57,11 @@ int main( int argc, char* argv[] )
 
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
+    QskGradient gradient( QskRgb::DarkSlateGray, QskRgb::LightSlateGray );
+    gradient.setLinearDirection( 0.0, 0.0, 1.0, 1.0 );
+
     QskSubWindowArea* area = new QskSubWindowArea();
-    area->setGradientHint( QskSubWindowArea::Panel,
-        QskGradient( QskGradient::Diagonal, "DarkSlateGray", "LightSlateGray" ) );
+    area->setGradientHint( QskSubWindowArea::Panel, gradient );
 
     QRectF windowRect( 0, 0, 250, 250 );
 

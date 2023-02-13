@@ -29,9 +29,6 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     Q_PROPERTY( QskAspect::Section section READ section
         WRITE setSection RESET resetSection NOTIFY sectionChanged )
 
-    Q_PROPERTY( bool autoFillBackground READ autoFillBackground
-        WRITE setAutoFillBackground )
-
     Q_PROPERTY( bool autoLayoutChildren READ autoLayoutChildren
         WRITE setAutoLayoutChildren )
 
@@ -61,6 +58,7 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     using Inherited = QskQuickItem;
 
   public:
+    QSK_SUBCONTROLS( Background )
     QSK_STATES( Disabled, Hovered, Focused )
 
     QskControl( QQuickItem* parent = nullptr );
@@ -72,11 +70,11 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     void resetMargins();
     QMarginsF margins() const;
 
-    void setBackgroundColor( const QColor& );
-
     void setBackground( const QskGradient& );
     void resetBackground();
     QskGradient background() const;
+
+    void setBackgroundColor( const QColor& );
 
     QRectF contentsRect() const;
     QRectF layoutRect() const;
@@ -94,9 +92,6 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     using QskSkinnable::subControlContentsRect;
     QRectF subControlContentsRect( QskAspect::Subcontrol ) const;
     QRectF subControlContentsRect( const QSizeF&, QskAspect::Subcontrol ) const;
-
-    void setAutoFillBackground( bool );
-    bool autoFillBackground() const;
 
     void setAutoLayoutChildren( bool );
     bool autoLayoutChildren() const;

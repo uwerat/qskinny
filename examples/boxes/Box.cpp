@@ -9,6 +9,20 @@
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxShapeMetrics.h>
 #include <QskHctColor.h>
+#include <QskRgbValue.h>
+
+static inline void setStartStop( Box::FillType type, QskGradient& gradient )
+{
+    qreal x1 = 0.0, y1 = 0.0, x2 = 0.0, y2 = 0.0;
+
+    if ( type != Box::Horizontal )
+        y2 = 1.0;
+
+    if ( type != Box::Vertical )
+        x2 = 1.0;
+
+    gradient.setLinearDirection( x1, y1, x2, y2 );
+}
 
 Box::Box( QQuickItem* parentItem )
     : QskBox( parentItem )
@@ -19,14 +33,14 @@ Box::Box( QQuickItem* parentItem )
     setBoxShapeHint( QskBox::Panel, QskBoxShapeMetrics() );
     setBoxBorderMetricsHint( QskBox::Panel, QskBoxBorderMetrics() );
     setBoxBorderColorsHint( QskBox::Panel, QskBoxBorderColors() );
-    setGradientHint( QskBox::Panel, QskGradient() );
+    setPanelGradient( QskGradient() );
 }
 
-void Box::setBackground( FillType type, QGradient::Preset preset, bool inverted )
+void Box::setWebGradient( FillType type, QGradient::Preset preset, bool inverted )
 {
     if ( type == Unfilled )
     {
-        setGradient( QskGradient() );
+        setPanelGradient( QskGradient() );
         return;
     }
 
@@ -34,54 +48,73 @@ void Box::setBackground( FillType type, QGradient::Preset preset, bool inverted 
 
     if ( type == Solid )
     {
-        const auto& stops = gradient.stops();
+        const auto color = QskRgb::interpolated(
+            gradient.startColor(), gradient.endColor(), 0.5 );
 
-        const auto color = QskGradientStop::interpolated(
-            stops.first(), stops.last(), 0.5 );
-
-        setGradient( QskGradient( color ) );
+        gradient.setStops( color );
     }
-    else
-    {
-        const auto orientation =
-            static_cast< QskGradient::Orientation >( type - 2 );
 
-        gradient.setOrientation( orientation );
+    setStartStop( type, gradient );
 
-        if ( inverted )
-            gradient.reverse();
+    if ( inverted )
+        gradient.reverse();
 
-        setGradient( gradient );
-    }
+    setPanelGradient( gradient );
 }
 
-void Box::setBackground( FillType type, const QRgb base, bool inverted )
+void Box::setTonalGradient( FillType type, const QRgb base, bool inverted )
 {
     if ( type == Unfilled )
     {
-        setGradient( QskGradient() );
+        setPanelGradient( QskGradient() );
         return;
     }
 
-    const QskHctColor htcColor( base );
+    QskGradient gradient;
 
+    const QskHctColor htcColor( base );
     if ( type == Solid )
     {
-        setGradient( htcColor.toned( 50 ).rgb() );
+        gradient.setStops( htcColor.toned( 50 ).rgb() );
     }
-    else
+    else if ( type != Unfilled )
     {
-        const auto dark = htcColor.toned( 40 ).rgb();
-        const auto light = htcColor.toned( 70 ).rgb();
-
-        const auto orientation =
-            static_cast< QskGradient::Orientation >( type - 2 );
-
-        if ( inverted )
-            setGradient( orientation, dark, light );
-        else
-            setGradient( orientation, light, dark );
+        gradient.setStops( htcColor.toned( 70 ).rgb(),
+            htcColor.toned( 40 ).rgb() );
     }
+
+    setStartStop( type, gradient );
+
+    if ( inverted )
+        gradient.reverse();
+
+    setPanelGradient( gradient );
+}
+
+void Box::setTonalPalette( FillType type, const QRgb base )
+{
+    if ( type == Unfilled || type == Solid )
+    {
+        setTonalGradient( type, base );
+        return;
+    }
+
+    QskGradient gradient;
+    setStartStop( type, gradient );
+
+    {
+        const QskHctColor hctColor( base );
+
+        QVector< QRgb > colors;
+        colors.reserve( 10 );
+
+        for ( int i = 0; i < 10; i++ )
+            colors += hctColor.toned( 90 - i * 7 ).rgb();
+
+        gradient.setStops( qskBuildGradientStops( colors, true ) );
+    }
+
+    setPanelGradient( gradient );
 }
 
 void Box::setBorder( BorderType type, const QRgb base )
@@ -166,26 +199,30 @@ void Box::setBorderWidth( int width )
 
 void Box::setGradient( QRgb rgb )
 {
-    setGradient( QskGradient( QColor::fromRgba( rgb ) ) );
+    setGradient( QColor::fromRgba( rgb ) );
 }
 
 void Box::setGradient( Qt::GlobalColor color )
 {
-    setGradient( QskGradient( color ) );
+    setGradient( QColor( color ) );
 }
 
 void Box::setGradient( const QColor& color )
 {
-    setGradient( QskGradient( color ) );
+    setPanelGradient( QskGradient( color ) );
 }
 
-void Box::setGradient( QskGradient::Orientation orientation,
+void Box::setGradient( FillType fillType,
     const QColor& color1, const QColor& color2 )
 {
-    setGradient( QskGradient( orientation, color1, color2 ) );
+    QskGradientStops stops;
+    stops += QskGradientStop( 0.0, color1 );
+    stops += QskGradientStop( 1.0, color2 );
+    
+    setGradient( fillType, stops );
 }
 
-void Box::setGradient( QskGradient::Orientation orientation,
+void Box::setGradient( FillType fillType,
     const QColor& color1, const QColor& color2, const QColor& color3 )
 {
     QskGradientStops stops;
@@ -193,24 +230,31 @@ void Box::setGradient( QskGradient::Orientation orientation,
     stops += QskGradientStop( 0.5, color2 );
     stops += QskGradientStop( 1.0, color3 );
 
-    setGradient( QskGradient( orientation, stops ) );
+    setGradient( fillType, stops );
 }
 
-void Box::setGradient( const QskGradient& gradient )
+void Box::setGradient( FillType fillType, const QskGradientStops& stops )
+{
+    QskGradient gradient;
+
+    if ( fillType == Solid )
+    {
+        const auto color = QskRgb::interpolated(
+            stops.first().rgb(), stops.last().rgb(), 0.5 );
+
+        gradient.setStops( color );
+    }
+    else if ( fillType != Unfilled )
+    {
+        gradient.setStops( stops );
+    }
+
+    setStartStop( fillType, gradient );
+
+    setPanelGradient( gradient );
+}
+
+void Box::setPanelGradient( const QskGradient& gradient )
 {
     setGradientHint( QskBox::Panel, gradient );
-}
-
-void Box::setGradient(
-    const QskGradient::Orientation orientation, const QRgb base )
-{
-    const QskHctColor hctColor( base );
-
-    QVector< QRgb > rgb;
-    rgb.reserve( 10 );
-
-    for ( int i = 0; i < 10; i++ )
-        rgb += hctColor.toned( 90 - i * 7 ).rgb();
-
-    setGradient( QskGradient( orientation, QskGradient::colorStops( rgb, true ) ) );
 }

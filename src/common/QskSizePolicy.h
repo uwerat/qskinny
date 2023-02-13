@@ -14,11 +14,8 @@ class QSK_EXPORT QskSizePolicy
 {
     Q_GADGET
 
-    Q_PROPERTY( Policy horizontalPolicy
-        READ horizontalPolicy WRITE setHorizontalPolicy )
-
-    Q_PROPERTY( Policy verticalPolicy
-        READ verticalPolicy WRITE setVerticalPolicy )
+    Q_PROPERTY( Policy horizontal READ horizontalPolicy WRITE setHorizontalPolicy )
+    Q_PROPERTY( Policy vertical READ verticalPolicy WRITE setVerticalPolicy )
 
   public:
     enum Flag
@@ -63,7 +60,7 @@ class QSK_EXPORT QskSizePolicy
     Q_ENUM( Policy )
     Q_ENUM( ConstraintType )
 
-    constexpr QskSizePolicy() noexcept;
+    constexpr QskSizePolicy() noexcept = default;
     constexpr QskSizePolicy( Policy horizontalPolicy, Policy verticalPolicy ) noexcept;
 
     constexpr bool operator==( const QskSizePolicy& ) const noexcept;
@@ -88,15 +85,9 @@ class QSK_EXPORT QskSizePolicy
     void transpose() noexcept;
 
   private:
-    unsigned char m_horizontalPolicy;
-    unsigned char m_verticalPolicy;
+    unsigned char m_horizontalPolicy = Ignored;
+    unsigned char m_verticalPolicy = Ignored;
 };
-
-inline constexpr QskSizePolicy::QskSizePolicy() noexcept
-    : m_horizontalPolicy( Ignored )
-    , m_verticalPolicy( Ignored )
-{
-}
 
 inline constexpr QskSizePolicy::QskSizePolicy(
         Policy horizontalPolicy, Policy verticalPolicy ) noexcept

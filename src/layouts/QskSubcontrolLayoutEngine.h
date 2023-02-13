@@ -63,7 +63,6 @@ class QskSubcontrolLayoutEngine : public QskLayoutEngine2D
         virtual QSizeF implicitSize( const QSizeF& ) const = 0;
 
         int m_stretch = -1;
-        bool m_ignored = false;
 
         QskSizePolicy m_sizePolicy;
 
@@ -127,6 +126,8 @@ class QskSubcontrolLayoutEngine : public QskLayoutEngine2D
     void setGraphicTextElements( const QskSkinnable*,
         QskAspect::Subcontrol, const QString& text,
         QskAspect::Subcontrol, const QSizeF& graphicSize );
+
+    void setFixedContent( QskAspect::Subcontrol, Qt::Orientation, Qt::Alignment );
 
     QRectF subControlRect( QskAspect::Subcontrol ) const;
 

@@ -211,7 +211,7 @@ static inline QskAspect qskSubstitutedAspect(
     }
 #endif
 
-    aspect.setSubControl( skinnable->effectiveSubcontrol( aspect.subControl() ) );
+    aspect.setSubcontrol( skinnable->effectiveSubcontrol( aspect.subControl() ) );
     return aspect;
 }
 
@@ -297,10 +297,10 @@ const QskSkinlet* QskSkinnable::effectiveSkinlet() const
 void QskSkinnable::setSubcontrolProxy(
     QskAspect::Subcontrol subControl, QskAspect::Subcontrol proxy )
 {
-    if ( subControl == QskAspect::Control )
+    if ( subControl == QskAspect::NoSubcontrol )
         return; // nonsense, we ignore this
 
-    if ( proxy == QskAspect::Control || subControl == proxy )
+    if ( proxy == QskAspect::NoSubcontrol || subControl == proxy )
     {
         resetSubcontrolProxy( subControl );
         return;
@@ -338,7 +338,7 @@ QskAspect::Subcontrol QskSkinnable::subcontrolProxy( QskAspect::Subcontrol subCo
             return it->second;
     }
 
-    return QskAspect::Control;
+    return QskAspect::NoSubcontrol;
 }
 
 QskSkinHintTable& QskSkinnable::hintTable()
@@ -687,14 +687,14 @@ int QskSkinnable::fontRoleHint(
     return qskFlag( this, aspect | QskAspect::FontRole, status );
 }
 
-QFont QskSkinnable::effectiveFont( const QskAspect aspect ) const
+QFont QskSkinnable::effectiveFont( const QskAspect::Subcontrol subControl ) const
 {
-    return effectiveSkin()->font( fontRoleHint( aspect ) );
+    return effectiveSkin()->font( fontRoleHint( subControl ) );
 }
 
-qreal QskSkinnable::effectiveFontHeight( const QskAspect aspect ) const
+qreal QskSkinnable::effectiveFontHeight( const QskAspect::Subcontrol subControl ) const
 {
-    const QFontMetricsF fm( effectiveFont( aspect ) );
+    const QFontMetricsF fm( effectiveFont( subControl ) );
     return fm.height();
 }
 
@@ -714,44 +714,53 @@ int QskSkinnable::graphicRoleHint(
     return qskFlag( this, aspect | QskAspect::GraphicRole, status );
 }
 
-QskColorFilter QskSkinnable::effectiveGraphicFilter( QskAspect aspect ) const
+QskColorFilter QskSkinnable::effectiveGraphicFilter(
+    const QskAspect::Subcontrol subControl ) const
 {
-    aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
+    /*
+        Usually we find the graphic role and return the related filter
+        from the skin. But as we can't interpolate between graphic roles
+        the corresponding animators interpolate the filters.
+     */
+
+    QskAspect aspect( effectiveSubcontrol( subControl ) | QskAspect::GraphicRole );
+    aspect.setSection( section() );
     aspect.setPlacement( effectivePlacement() );
-    aspect = aspect | QskAspect::GraphicRole;
 
     QskSkinHintStatus status;
 
     const auto hint = storedHint( aspect | skinStates(), &status );
-    if ( status.isValid() )
-    {
-        // we need to know about how the aspect gets resolved
-        // before checking for animators
+    if ( !status.isValid() )
+        return QskColorFilter();
 
-        aspect.setSubControl( status.aspect.subControl() );
-    }
+    aspect.setSubcontrol( status.aspect.subControl() );
+    aspect.setSection( QskAspect::Body );
+    aspect.setPlacement( QskAspect::NoPlacement );
 
-    if ( !aspect.isAnimator() )
+    const auto v = animatedHint( aspect, nullptr );
+
+    if ( v.canConvert< QskColorFilter >() )
+        return v.value< QskColorFilter >();
+
+    if ( auto control = owningControl() )
     {
-        auto v = animatedValue( aspect, nullptr );
+        const auto graphicRole = hint.toInt();
+
+        const auto v = QskSkinTransition::animatedGraphicFilter(
+            control->window(), graphicRole );
+
         if ( v.canConvert< QskColorFilter >() )
-            return v.value< QskColorFilter >();
-
-        if ( auto control = owningControl() )
         {
-            v = QskSkinTransition::animatedGraphicFilter(
-                control->window(), hint.toInt() );
-
-            if ( v.canConvert< QskColorFilter >() )
-            {
-                /*
-                    As it is hard to find out which controls depend
-                    on the animated graphic filters we reschedule
-                    our updates here.
-                 */
-                control->update();
-                return v.value< QskColorFilter >();
-            }
+#if 1
+            /*
+                Design flaw: the animators for the skin transition do not
+                know about the controls, that are affected from the color
+                filter. As a workaround we schedule the update in the
+                getter: TODO ...
+             */
+            control->update();
+#endif
+            return v.value< QskColorFilter >();
         }
     }
 
@@ -761,7 +770,7 @@ QskColorFilter QskSkinnable::effectiveGraphicFilter( QskAspect aspect ) const
 bool QskSkinnable::setAnimationHint(
     QskAspect aspect, QskAnimationHint hint )
 {
-    aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
+    aspect.setSubcontrol( effectiveSubcontrol( aspect.subControl() ) );
     return m_data->hintTable.setAnimation( aspect, hint );
 }
 
@@ -856,7 +865,14 @@ bool QskSkinnable::resetSkinHint( QskAspect aspect )
 QVariant QskSkinnable::effectiveSkinHint(
     QskAspect aspect, QskSkinHintStatus* status ) const
 {
-    aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
+    aspect.setSubcontrol( effectiveSubcontrol( aspect.subControl() ) );
+
+    if ( !( aspect.isAnimator() || aspect.hasStates() ) )
+    {
+        const auto v = animatedHint( aspect, status );
+        if ( v.isValid() )
+            return v;
+    }
 
     if ( aspect.section() == QskAspect::Body )
         aspect.setSection( section() );
@@ -864,15 +880,19 @@ QVariant QskSkinnable::effectiveSkinHint(
     if ( aspect.placement() == QskAspect::NoPlacement )
         aspect.setPlacement( effectivePlacement() );
 
-    if ( aspect.isAnimator() )
-        return storedHint( aspect, status );
-
-    const auto v = animatedValue( aspect, status );
-    if ( v.isValid() )
-        return v;
-
     if ( !aspect.hasStates() )
         aspect.setStates( skinStates() );
+
+    if ( !aspect.isAnimator() && QskSkinTransition::isRunning() )
+    {
+        /*
+            The skin has changed and the hints are interpolated
+            between the old and the new one over time
+         */
+        const auto v = interpolatedHint( aspect, status );
+        if ( v.isValid() )
+            return v;
+    }
 
     return storedHint( aspect, status );
 }
@@ -911,105 +931,76 @@ bool QskSkinnable::moveSkinHint( QskAspect aspect, const QVariant& value )
     return moveSkinHint( aspect, effectiveSkinHint( aspect ), value );
 }
 
-QVariant QskSkinnable::animatedValue(
+QVariant QskSkinnable::animatedHint(
     QskAspect aspect, QskSkinHintStatus* status ) const
 {
     QVariant v;
 
-    if ( !aspect.hasStates() )
+    if ( !m_data->animators.isEmpty() )
     {
-        /*
-            The local animators were invented to be stateless
-            and we never have an aspect with a state here.
-            But that might change ...
-         */
+        const int index = effectiveSkinlet()->animatorIndex();
 
-        auto a = aspect;
+        v = m_data->animators.currentValue( aspect, index );
+        if ( !v.isValid() && index >= 0 )
+            v = m_data->animators.currentValue( aspect, -1 );
+    }
 
-        Q_FOREVER
+    if ( status && v.isValid() )
+    {
+        status->source = QskSkinHintStatus::Animator;
+        status->aspect = aspect;
+    }
+
+    return v;
+}
+
+QVariant QskSkinnable::interpolatedHint(
+    QskAspect aspect, QskSkinHintStatus* status ) const
+{
+    if ( !QskSkinTransition::isRunning() || m_data->hintTable.hasHint( aspect ) )
+        return QVariant();
+
+    const auto control = owningControl();
+    if ( control == nullptr )
+        return QVariant();
+
+    QVariant v;
+
+    auto a = aspect;
+
+    Q_FOREVER
+    {
+        v = QskSkinTransition::animatedHint( control->window(), aspect );
+
+        if ( !v.isValid() )
         {
-            v = m_data->animators.currentValue( aspect );
-
-            if ( !v.isValid() )
+            if ( const auto topState = aspect.topState() )
             {
-                if ( aspect.placement() )
-                {
-                    // clear the placement bits and restart
-                    aspect = a;
-                    aspect.setPlacement( QskAspect::NoPlacement );
-
-                    continue;
-                }
-            }
-
-            if ( aspect.section() != QskAspect::Body )
-            {
-                // try to resolve from QskAspect::Body
-
-                a.setSection( QskAspect::Body );
-                aspect = a;
-
+                aspect.clearState( aspect.topState() );
                 continue;
             }
 
-            break;
-        }
-    }
-
-    if ( !v.isValid() )
-    {
-        if ( QskSkinTransition::isRunning() &&
-            !m_data->hintTable.hasHint( aspect ) )
-        {
-            /*
-               Next we check for values from the skin. Those
-               animators are usually from global skin/color changes
-               and are state aware
-             */
-
-            if ( const auto control = owningControl() )
+            if ( aspect.placement() )
             {
-                if ( !aspect.hasStates() )
-                    aspect.setStates( skinStates() );
+                // clear the placement bits and restart
+                aspect = a;
+                aspect.setPlacement( QskAspect::NoPlacement );
 
-                auto a = aspect;
-
-                Q_FOREVER
-                {
-                    v = QskSkinTransition::animatedHint( control->window(), aspect );
-
-                    if ( !v.isValid() )
-                    {
-                        if ( const auto topState = aspect.topState() )
-                        {
-                            aspect.clearState( aspect.topState() );
-                            continue;
-                        }
-
-                        if ( aspect.placement() )
-                        {
-                            // clear the placement bits and restart
-                            aspect = a;
-                            aspect.setPlacement( QskAspect::NoPlacement );
-
-                            continue;
-                        }
-                    }
-
-                    if ( aspect.section() != QskAspect::Body )
-                    {
-                        // try to resolve from QskAspect::Body
-
-                        a.setSection( QskAspect::Body );
-                        aspect = a;
-
-                        continue;
-                    }
-
-                    break;
-                }
+                continue;
             }
         }
+
+        if ( a.section() != QskAspect::Body )
+        {
+            // try to resolve with the default section
+
+            a.setSection( QskAspect::Body );
+            aspect = a;
+
+            continue;
+        }
+
+        break;
     }
 
     if ( status && v.isValid() )
@@ -1058,11 +1049,11 @@ const QVariant& QskSkinnable::storedHint(
             return *value;
         }
 
-        if ( aspect.subControl() != QskAspect::Control )
+        if ( aspect.hasSubcontrol() )
         {
             // trying to resolve something from the skin default settings
 
-            aspect.setSubControl( QskAspect::Control );
+            aspect.clearSubcontrol();
             aspect.clearStates();
 
             if ( const auto value = skinTable.resolvedHint( aspect, &resolvedAspect ) )
@@ -1185,10 +1176,7 @@ QSizeF QskSkinnable::outerBoxSize(
     QskAspect aspect, const QSizeF& innerBoxSize ) const
 {
     const auto pd = qskEffectivePadding( this, aspect, innerBoxSize, false );
-
-    // since Qt 5.14 we would have QSizeF::grownBy !
-    return QSizeF( innerBoxSize.width() + pd.width(),
-        innerBoxSize.height() + pd.height() );
+    return innerBoxSize.grownBy( pd );
 }
 
 QRectF QskSkinnable::outerBox(
@@ -1228,11 +1216,17 @@ bool QskSkinnable::isTransitionAccepted( QskAspect aspect ) const
 void QskSkinnable::startTransition( QskAspect aspect,
     QskAnimationHint animationHint, const QVariant& from, const QVariant& to )
 {
-    aspect.setSubControl( effectiveSubcontrol( aspect.subControl() ) );
-    startHintTransition( aspect, animationHint, from, to );
+    startTransition( aspect, -1, animationHint, from, to );
 }
 
-void QskSkinnable::startHintTransition( QskAspect aspect,
+void QskSkinnable::startTransition( QskAspect aspect, int index,
+    QskAnimationHint animationHint, const QVariant& from, const QVariant& to )
+{
+    aspect.setSubcontrol( effectiveSubcontrol( aspect.subControl() ) );
+    startHintTransition( aspect, index, animationHint, from, to );
+}
+
+void QskSkinnable::startHintTransition( QskAspect aspect, int index,
     QskAnimationHint animationHint, const QVariant& from, const QVariant& to )
 {
     if ( animationHint.duration <= 0 || ( from == to ) )
@@ -1256,19 +1250,25 @@ void QskSkinnable::startHintTransition( QskAspect aspect,
         v2.setValue( skin->graphicFilter( v2.toInt() ) );
     }
 
+    /*
+        We do not need the extra bits that would slow down resolving
+        the effective aspect in animatedHint.
+     */
+
     aspect.clearStates();
+    aspect.setSection( QskAspect::Body );
+    aspect.setPlacement( QskAspect::NoPlacement );
     aspect.setAnimator( false );
-    aspect.setPlacement( effectivePlacement() );
 
 #if DEBUG_ANIMATOR
     qDebug() << aspect << animationHint.duration;
 #endif
 
-    auto animator = m_data->animators.animator( aspect );
+    auto animator = m_data->animators.animator( aspect, index );
     if ( animator && animator->isRunning() )
         v1 = animator->currentValue();
 
-    m_data->animators.start( control, aspect, animationHint, v1, v2 );
+    m_data->animators.start( control, aspect, index, animationHint, v1, v2 );
 }
 
 void QskSkinnable::setSkinStateFlag( QskAspect::State stateFlag, bool on )
@@ -1303,79 +1303,111 @@ void QskSkinnable::setSkinStates( QskAspect::States newStates )
     auto control = owningControl();
 
 #if DEBUG_STATE
-    qDebug() << control->className() << ":"
+    const auto className = control ? control->className() : "QskSkinnable";
+
+    qDebug() << className << ":"
         << skinStateAsPrintable( m_data->skinState ) << "->"
         << skinStateAsPrintable( newState );
 #endif
 
-    const auto skin = effectiveSkin();
-
-    if ( skin )
+    if ( control && control->window() )
     {
-        const auto mask = skin->hintTable().states() | m_data->hintTable.states();
-
-        if ( ( newStates & mask ) == ( m_data->skinStates & mask ) )
+        if ( const auto skin = effectiveSkin() )
         {
-            // the modified bits are not handled by the skin
+            const auto mask = m_data->hintTable.states() | skin->hintTable().states();
+            if ( ( newStates & mask ) != ( m_data->skinStates & mask ) )
+            {
+                /*
+                    When there are no aspects for the changed state bits we know
+                    that there won't be any animated transitions
+                 */
 
-            m_data->skinStates = newStates;
-            return;
+                startHintTransitions( m_data->skinStates, newStates );
+            }
         }
+
+        if ( control->flags() & QQuickItem::ItemHasContents )
+            control->update();
     }
 
-    if ( control->window() && isTransitionAccepted( QskAspect() ) )
+    m_data->skinStates = newStates;
+}
+
+bool QskSkinnable::startHintTransitions(
+    QskAspect::States oldStates, QskAspect::States newStates, int index )
+{
+    if ( !isTransitionAccepted( QskAspect() ) )
     {
-        const auto placement = effectivePlacement();
-        const auto primitiveCount = QskAspect::primitiveCount();
+        // the control does not like any animated transition at the moment
+        return false;
+    }
 
-        const auto subControls = control->subControls();
-        for ( const auto subControl : subControls )
+    bool started = false; // at least one transition has been started
+
+    QskAspect aspect;
+    aspect.setPlacement( effectivePlacement() );
+    aspect.setSection( section() );
+
+    const auto skin = effectiveSkin();
+    const auto control = owningControl();
+
+    const auto primitiveCount = QskAspect::primitiveCount();
+
+    const auto subControls = control->subControls();
+    for ( const auto subControl : subControls )
+    {
+        aspect.setSubcontrol( subControl );
+
+        const auto& skinTable = skin->hintTable();
+
+        for ( uint i = 0; i < QskAspect::typeCount; i++ )
         {
-            auto aspect = subControl | placement;
+            const auto type = static_cast< QskAspect::Type >( i );
 
-            const auto& skinTable = skin->hintTable();
+            const auto hint = effectiveAnimation( type, subControl, newStates );
 
-            for ( uint i = 0; i < QskAspect::typeCount; i++ )
+            if ( hint.duration > 0 )
             {
-                const auto type = static_cast< QskAspect::Type >( i );
+                /*
+                    Starting an animator for all primitives,
+                    that differ between the states
+                 */
 
-                const auto hint = effectiveAnimation( type, subControl, newStates );
-
-                if ( hint.duration > 0 )
+                for ( uint i = 0; i < primitiveCount; i++ )
                 {
-                    /*
-                        Starting an animator for all primitives,
-                        that differ between the states
-                     */
+                    const auto primitive = static_cast< QskAspect::Primitive >( i );
+                    aspect.setPrimitive( type, primitive );
 
-                    for ( uint i = 0; i < primitiveCount; i++ )
+                    const auto a1 = aspect | oldStates;
+                    const auto a2 = aspect | newStates;
+
+                    bool doTransition = true;
+
+                    if ( m_data->hintTable.states() == QskAspect::NoState )
                     {
-                        const auto primitive = static_cast< QskAspect::Primitive >( i );
-                        aspect.setPrimitive( type, primitive );
+                        /*
+                            In case we have no state aware aspects in the local
+                            table we can avoid starting animators for aspects,
+                            that are finally resolved from the same hint in
+                            the skin table.
+                         */
 
-                        const auto a1 = aspect | m_data->skinStates;
-                        const auto a2 = aspect | newStates;
+                        doTransition = !skinTable.isResolutionMatching( a1, a2 );
+                    }
 
-                        bool doTransition = true;
+                    if ( doTransition )
+                    {
+                        startHintTransition( aspect, index, hint,
+                            storedHint( a1 ), storedHint( a2 ) );
 
-                        if ( m_data->hintTable.states() == QskAspect::NoState )
-                            doTransition = !skinTable.isResolutionMatching( a1, a2 );
-
-                        if ( doTransition )
-                        {
-                            startHintTransition( aspect, hint,
-                                storedHint( a1 ), storedHint( a2 ) );
-                        }
+                        started = true;
                     }
                 }
             }
         }
     }
 
-    m_data->skinStates = newStates;
-
-    if ( control->flags() & QQuickItem::ItemHasContents )
-        control->update();
+    return started;
 }
 
 QskSkin* QskSkinnable::effectiveSkin() const

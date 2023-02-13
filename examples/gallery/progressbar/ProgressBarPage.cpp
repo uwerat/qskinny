@@ -29,15 +29,13 @@ namespace
         {
             const QskHctColor hctColor( base );
 
-            QVector< QRgb > rgb;
-            rgb += hctColor.toned( 75 ).rgb();
-            rgb += hctColor.toned( 60 ).rgb();
-            rgb += hctColor.toned( 45 ).rgb();
-            rgb += hctColor.toned( 30 ).rgb();
+            QVector< QRgb > colors;
+            colors += hctColor.toned( 75 ).rgb();
+            colors += hctColor.toned( 60 ).rgb();
+            colors += hctColor.toned( 45 ).rgb();
+            colors += hctColor.toned( 30 ).rgb();
 
-            const auto stops = QskGradient::colorStops( rgb, true );
-
-            setBarGradient( QskGradient( orientation(), stops ) );
+            setBarGradient( qskBuildGradientStops( colors, true ) );
         }
     };
 }

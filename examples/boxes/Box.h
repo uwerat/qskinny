@@ -31,9 +31,6 @@ class Box : public QskBox
 
     Box( QQuickItem* parentItem = nullptr );
 
-    void setBackground( FillType, QRgb, bool inverted = false );
-    void setBackground( FillType, QGradient::Preset, bool inverted = false );
-
     void setBorder( BorderType type, QRgb );
 
     void setShape( const QskBoxShapeMetrics& );
@@ -51,11 +48,15 @@ class Box : public QskBox
     void setGradient( Qt::GlobalColor );
     void setGradient( const QColor& );
 
-    void setGradient( QskGradient::Orientation, const QColor&, const QColor& );
+    void setGradient( FillType, const QColor&, const QColor& );
+    void setGradient( FillType, const QColor&, const QColor&, const QColor& );
+    void setGradient( FillType, const QskGradientStops& );
 
-    void setGradient( QskGradient::Orientation,
-        const QColor&, const QColor&, const QColor& );
+    void setTonalGradient( FillType, QRgb, bool inverted = false );
+    void setWebGradient( FillType, QGradient::Preset, bool inverted = false );
 
-    void setGradient( const QskGradient& );
-    void setGradient( const QskGradient::Orientation, QRgb );
+    void setTonalPalette( FillType, QRgb );
+
+  private:
+    void setPanelGradient( const QskGradient& );
 };

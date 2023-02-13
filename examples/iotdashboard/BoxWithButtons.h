@@ -7,11 +7,22 @@
 
 #include "Box.h"
 
+class QskTextLabel;
+
 class BoxWithButtons : public Box
 {
   public:
     QSK_SUBCONTROLS( Panel, ValuePanel, ValueText )
 
-    BoxWithButtons( const QString& title, const QString& value,
-        bool isBright, QQuickItem* parent = nullptr );
+    BoxWithButtons( const QString& title, const QString& prefix,
+                    const int initialValue, const QString& suffix,
+                    bool isBright, QQuickItem* parent = nullptr );
+
+  private:
+    void setValue( const int value );
+
+    const QString m_prefix;
+    int m_value;
+    const QString m_suffix;
+    QskTextLabel* m_valueLabel;
 };

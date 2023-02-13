@@ -19,25 +19,40 @@ class QSK_EXPORT QskHintAnimator : public QskVariantAnimator
     using Inherited = QskVariantAnimator;
 
   public:
-    QskHintAnimator();
+    QskHintAnimator() noexcept;
+    QskHintAnimator( QskAspect, int index ) noexcept;
+
     ~QskHintAnimator() override;
 
-    void setAspect( QskAspect );
-    QskAspect aspect() const;
+    void setAspect( QskAspect ) noexcept;
+    QskAspect aspect() const noexcept;
 
-    void setControl( QskControl* );
-    QskControl* control() const;
+    void setIndex( int ) noexcept;
+    int index() const noexcept;
 
-    void setUpdateFlags( QskAnimationHint::UpdateFlags );
-    QskAnimationHint::UpdateFlags updateFlags() const;
+    void setControl( QskControl* ) noexcept;
+    QskControl* control() const noexcept;
+
+    void setUpdateFlags( QskAnimationHint::UpdateFlags ) noexcept;
+    QskAnimationHint::UpdateFlags updateFlags() const noexcept;
 
     void advance( qreal value ) override;
 
+    bool operator<( const QskHintAnimator& ) const noexcept;
+
   private:
     QskAspect m_aspect;
+    int m_index;
     QskAnimationHint::UpdateFlags m_updateFlags;
     QPointer< QskControl > m_control;
 };
+
+#ifndef QT_NO_DEBUG_STREAM
+
+class QDebug;
+QSK_EXPORT QDebug operator<<( QDebug, const QskHintAnimator& );
+
+#endif
 
 class QSK_EXPORT QskHintAnimatorTable
 {
@@ -45,34 +60,50 @@ class QSK_EXPORT QskHintAnimatorTable
     QskHintAnimatorTable();
     ~QskHintAnimatorTable();
 
-    void start( QskControl*, QskAspect,
+    void start( QskControl*, QskAspect, int index,
         QskAnimationHint, const QVariant& from, const QVariant& to );
 
-    const QskHintAnimator* animator( QskAspect ) const;
-    QVariant currentValue( QskAspect ) const;
+    const QskHintAnimator* animator( QskAspect, int index = -1 ) const;
+    QVariant currentValue( QskAspect, int index = -1 ) const;
 
     bool cleanup();
+    bool isEmpty() const;
 
   private:
     void reset();
 
     class PrivateData;
-    PrivateData* m_data;
+    PrivateData* m_data = nullptr;
 };
 
-inline QskAspect QskHintAnimator::aspect() const
+inline QskAspect QskHintAnimator::aspect() const noexcept
 {
     return m_aspect;
 }
 
-inline QskAnimationHint::UpdateFlags QskHintAnimator::updateFlags() const
+inline int QskHintAnimator::index() const noexcept
+{
+    return m_index;
+}
+
+inline QskAnimationHint::UpdateFlags QskHintAnimator::updateFlags() const noexcept
 {
     return m_updateFlags;
 }
 
-inline QskControl* QskHintAnimator::control() const
+inline QskControl* QskHintAnimator::control() const noexcept
 {
     return m_control;
+}
+
+inline bool QskHintAnimator::operator<( const QskHintAnimator& other ) const noexcept
+{
+    return m_aspect < other.m_aspect;
+}
+
+inline bool QskHintAnimatorTable::isEmpty() const
+{
+    return m_data == nullptr;
 }
 
 #endif

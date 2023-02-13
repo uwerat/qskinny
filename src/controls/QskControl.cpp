@@ -19,6 +19,8 @@
 #include <qlocale.h>
 #include <qvector.h>
 
+QSK_SUBCONTROL( QskControl, Background )
+
 QSK_SYSTEM_STATE( QskControl, Disabled, QskAspect::FirstSystemState )
 QSK_SYSTEM_STATE( QskControl, Hovered, QskAspect::LastSystemState >> 1 )
 QSK_SYSTEM_STATE( QskControl, Focused, QskAspect::LastSystemState )
@@ -55,21 +57,6 @@ QskControl::~QskControl()
 
     }
 #endif
-}
-
-void QskControl::setAutoFillBackground( bool on )
-{
-    Q_D( QskControl );
-    if ( on != d->autoFillBackground )
-    {
-        d->autoFillBackground = on;
-        update();
-    }
-}
-
-bool QskControl::autoFillBackground() const
-{
-    return d_func()->autoFillBackground;
 }
 
 void QskControl::setAutoLayoutChildren( bool on )
@@ -139,25 +126,24 @@ Qt::FocusPolicy QskControl::focusPolicy() const
 
 void QskControl::setBackgroundColor( const QColor& color )
 {
-    setAutoFillBackground( true );
     setBackground( QskGradient( color ) );
 }
 
 void QskControl::setBackground( const QskGradient& gradient )
 {
-    if ( setGradientHint( QskAspect::Control, gradient ) )
+    if ( setGradientHint( QskControl::Background, gradient ) )
         Q_EMIT backgroundChanged();
 }
 
 void QskControl::resetBackground()
 {
-    if ( resetColor( QskAspect::Control ) )
+    if ( resetColor( QskControl::Background ) )
         Q_EMIT backgroundChanged();
 }
 
 QskGradient QskControl::background() const
 {
-    return gradientHint( QskAspect::Control );
+    return gradientHint( QskControl::Background );
 }
 
 void QskControl::setMargins( qreal margin )
@@ -174,7 +160,7 @@ void QskControl::setMargins( const QMarginsF& margins )
 {
     const auto m = QskMargins().expandedTo( margins );
 
-    if ( setMarginHint( QskAspect::Control, m ) )
+    if ( setPaddingHint( QskControl::Background, m ) )
     {
         qskSendEventTo( this, QEvent::ContentsRectChange );
         Q_EMIT marginsChanged( m );
@@ -183,7 +169,7 @@ void QskControl::setMargins( const QMarginsF& margins )
 
 void QskControl::resetMargins()
 {
-    if ( resetMarginHint( QskAspect::Control ) )
+    if ( resetPaddingHint( QskControl::Background ) )
     {
         qskSendEventTo( this, QEvent::ContentsRectChange );
         Q_EMIT marginsChanged( margins() );
@@ -192,7 +178,7 @@ void QskControl::resetMargins()
 
 QMarginsF QskControl::margins() const
 {
-    return marginHint( QskAspect::Control );
+    return paddingHint( QskControl::Background );
 }
 
 QRectF QskControl::contentsRect() const

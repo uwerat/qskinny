@@ -15,7 +15,7 @@
 QskCheckBoxSkinlet::QskCheckBoxSkinlet( QskSkin* skin )
     : QskSkinlet( skin )
 {
-    setNodeRoles( { BoxRole, IndicatorRole, TextRole } );
+    setNodeRoles( { BoxRole, IndicatorRole, TextRole, RippleRole } );
 }
 
 QskCheckBoxSkinlet::~QskCheckBoxSkinlet()
@@ -45,6 +45,11 @@ QRectF QskCheckBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
     else if ( subControl == QskCheckBox::Text )
     {
         return textRect( checkBox, contentsRect );
+    }
+
+    if ( subControl == QskCheckBox::Ripple )
+    {
+        return rippleRect( checkBox, contentsRect );
     }
 
     return contentsRect;
@@ -85,6 +90,21 @@ QRectF QskCheckBoxSkinlet::boxRect(
     return r;
 }
 
+QRectF QskCheckBoxSkinlet::rippleRect(
+    const QskCheckBox* checkBox, const QRectF& rect ) const
+{
+    const auto rippleSize = checkBox->strutSizeHint( QskCheckBox::Ripple );
+    const auto boxSize = checkBox->strutSizeHint( QskCheckBox::Box );
+
+    const auto w = ( rippleSize.width() - boxSize.width() ) / 2;
+    const auto h = ( rippleSize.height() - boxSize.height() ) / 2;
+
+    auto r = boxRect( checkBox, rect );
+    r = r.marginsAdded( { w, h, w, h } );
+
+    return r;
+}
+
 QSGNode* QskCheckBoxSkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
@@ -103,6 +123,11 @@ QSGNode* QskCheckBoxSkinlet::updateSubNode(
 
         case TextRole:
             return updateTextNode( checkBox, node );
+
+        case RippleRole:
+        {
+            return updateBoxNode( checkBox, node, QskCheckBox::Ripple );
+        }
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
@@ -122,19 +147,6 @@ QSGNode* QskCheckBoxSkinlet::updateIndicatorNode(
     }
 
     auto graphic = checkBox->effectiveSkin()->symbol( symbol );
-
-#if 1
-    /*
-        Our default skins do not have the concept of colorRoles 
-        implemented. Until then we do the recoloring manually here
-     */
-    QskColorFilter filter;
-    filter.addColorSubstitution( Qt::black,
-        checkBox->color( QskCheckBox::Indicator ).rgba() );
-
-    graphic = QskGraphic::fromGraphic( graphic, filter );
-#endif
-
     return updateGraphicNode( checkBox, node, graphic, QskCheckBox::Indicator );
 }
 

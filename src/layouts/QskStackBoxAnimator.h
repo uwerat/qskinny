@@ -13,6 +13,7 @@
 
 class QskStackBox;
 class QQuickItem;
+class QTransform;
 
 class QSK_EXPORT QskStackBoxAnimator : public QObject, public QskAnimator
 {
@@ -137,6 +138,8 @@ class QSK_EXPORT QskStackBoxAnimator4 : public QskStackBoxAnimator
     void done() override;
 
   private:
+    QTransform transformation( const QQuickItem*, bool increasing, qreal value ) const;
+
     Qt::Orientation m_orientation : 2;
     bool m_inverted : 1;
 };

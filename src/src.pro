@@ -26,6 +26,7 @@ HEADERS += \
     common/QskFunctions.h \
     common/QskGlobal.h \
     common/QskGradient.h \
+    common/QskGradientDirection.h \
     common/QskGradientStop.h \
     common/QskHctColor.h \
     common/QskIntervalF.h \
@@ -55,6 +56,7 @@ SOURCES += \
     common/QskBoxHints.cpp \
     common/QskFunctions.cpp \
     common/QskGradient.cpp \
+    common/QskGradientDirection.cpp \
     common/QskGradientStop.cpp \
     common/QskHctColor.cpp \
     common/QskIntervalF.cpp \
@@ -101,16 +103,25 @@ HEADERS += \
     nodes/QskArcRenderer.h \
     nodes/QskBoxNode.h \
     nodes/QskBoxClipNode.h \
+    nodes/QskBoxFillNode.h \
+    nodes/QskBoxRectangleNode.h \
     nodes/QskBoxRenderer.h \
-    nodes/QskBoxRendererColorMap.h \
+    nodes/QskBoxMetrics.h \
+    nodes/QskBoxBasicStroker.h \
+    nodes/QskBoxGradientStroker.h \
+    nodes/QskBoxColorMap.h \
     nodes/QskBoxShadowNode.h \
+    nodes/QskColorRamp.h \
     nodes/QskGraphicNode.h \
     nodes/QskPaintedNode.h \
     nodes/QskPlainTextRenderer.h \
+    nodes/QskRectangleNode.h \
     nodes/QskRichTextRenderer.h \
     nodes/QskScaleRenderer.h \
     nodes/QskSGNode.h \
-    nodes/QskShadedBoxNode.h \
+    nodes/QskStrokeNode.h \
+    nodes/QskShapeNode.h \
+    nodes/QskGradientMaterial.h \
     nodes/QskTextNode.h \
     nodes/QskTextRenderer.h \
     nodes/QskTextureRenderer.h \
@@ -122,17 +133,24 @@ SOURCES += \
     nodes/QskArcRenderer.cpp \
     nodes/QskBoxNode.cpp \
     nodes/QskBoxClipNode.cpp \
-    nodes/QskBoxRendererRect.cpp \
-    nodes/QskBoxRendererEllipse.cpp \
-    nodes/QskBoxRendererDEllipse.cpp \
+    nodes/QskBoxFillNode.cpp \
+    nodes/QskBoxRectangleNode.cpp \
+    nodes/QskBoxRenderer.cpp \
+    nodes/QskBoxMetrics.cpp \
+    nodes/QskBoxBasicStroker.cpp \
+    nodes/QskBoxGradientStroker.cpp \
     nodes/QskBoxShadowNode.cpp \
+    nodes/QskColorRamp.cpp \
     nodes/QskGraphicNode.cpp \
     nodes/QskPaintedNode.cpp \
     nodes/QskPlainTextRenderer.cpp \
+    nodes/QskRectangleNode.cpp \
     nodes/QskRichTextRenderer.cpp \
     nodes/QskScaleRenderer.cpp \
     nodes/QskSGNode.cpp \
-    nodes/QskShadedBoxNode.cpp \
+    nodes/QskStrokeNode.cpp \
+    nodes/QskShapeNode.cpp \
+    nodes/QskGradientMaterial.cpp \
     nodes/QskTextNode.cpp \
     nodes/QskTextRenderer.cpp \
     nodes/QskTextureRenderer.cpp \

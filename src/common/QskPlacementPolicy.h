@@ -10,7 +10,7 @@
 #include "QskNamespace.h"
 #include <qmetaobject.h>
 
-class QskPlacementPolicy
+class QSK_EXPORT QskPlacementPolicy
 {
     Q_GADGET
 

@@ -7,6 +7,9 @@ CONFIG += qskinny
 contains(QSK_CONFIG, QskDll): DEFINES += QSK_QML_MAKEDLL
 
 HEADERS += \
+    QskQml.hpp
+
+HEADERS += \
     QskQmlGlobal.h \
     QskShortcutQml.h \
     QskLayoutQml.h \

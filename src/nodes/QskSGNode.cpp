@@ -166,3 +166,18 @@ void QskSGNode::replaceChildNode(
             delete oldNode;
     }
 }
+
+void QskSGNode::resetGeometry( QSGGeometryNode* node )
+{
+    if ( node )
+    {
+        if ( auto g = node->geometry() )
+        {
+            if ( g->vertexCount() > 0 || g->indexCount() > 0 )
+            {
+                g->allocate( 0, 0 );
+                node->markDirty( QSGNode::DirtyGeometry );
+            }
+        }
+    }
+}

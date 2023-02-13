@@ -79,10 +79,9 @@ class QSK_EXPORT QskSkinnable
     void setSkinlet( const QskSkinlet* );
     const QskSkinlet* skinlet() const;
 
-    QFont effectiveFont( QskAspect ) const;
-    qreal effectiveFontHeight( QskAspect ) const;
-
-    QskColorFilter effectiveGraphicFilter( QskAspect ) const;
+    QFont effectiveFont( QskAspect::Subcontrol ) const;
+    qreal effectiveFontHeight( QskAspect::Subcontrol ) const;
+    QskColorFilter effectiveGraphicFilter( QskAspect::Subcontrol ) const;
 
     void setSubcontrolProxy( QskAspect::Subcontrol, QskAspect::Subcontrol proxy );
     void resetSubcontrolProxy( QskAspect::Subcontrol );
@@ -123,6 +122,9 @@ class QSK_EXPORT QskSkinnable
     QskSkin* effectiveSkin() const;
 
     void startTransition( QskAspect,
+        QskAnimationHint, const QVariant& from, const QVariant& to );
+
+    void startTransition( QskAspect, int index,
         QskAnimationHint, const QVariant& from, const QVariant& to );
 
     QskAspect::Subcontrol effectiveSubcontrol( QskAspect::Subcontrol ) const;
@@ -248,6 +250,8 @@ class QSK_EXPORT QskSkinnable
 
     const QskSkinHintTable& hintTable() const;
 
+    bool startHintTransitions( QskAspect::States, QskAspect::States, int index = -1 );
+
   protected:
     virtual void updateNode( QSGNode* );
     virtual bool isTransitionAccepted( QskAspect ) const;
@@ -259,10 +263,11 @@ class QSK_EXPORT QskSkinnable
   private:
     Q_DISABLE_COPY( QskSkinnable )
 
-    void startHintTransition( QskAspect,
+    void startHintTransition( QskAspect, int index,
         QskAnimationHint, const QVariant& from, const QVariant& to );
 
-    QVariant animatedValue( QskAspect, QskSkinHintStatus* ) const;
+    QVariant animatedHint( QskAspect, QskSkinHintStatus* ) const;
+    QVariant interpolatedHint( QskAspect, QskSkinHintStatus* ) const;
     const QVariant& storedHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
 
     class PrivateData;

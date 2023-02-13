@@ -10,10 +10,12 @@
 
 #include <qcolor.h>
 #include <qsggeometry.h>
+#include <qline.h>
+#include <qmath.h>
 
 namespace QskVertex
 {
-    class QSK_EXPORT Color
+    class Color
     {
       public:
         constexpr Color() noexcept;
@@ -31,75 +33,6 @@ namespace QskVertex
 
         unsigned char r, g, b, a;
     };
-
-    class QSK_EXPORT Line
-    {
-      public:
-        inline void setLine( float x1, float y1, float x2, float y2 ) noexcept
-        {
-            p1.set( x1, y1 );
-            p2.set( x2, y2 );
-        }
-
-        inline void setHLine( float x1, float x2, float y ) noexcept
-        {
-            setLine( x1, y, x2, y );
-        }
-
-        inline void setVLine( float x, float y1, float y2 ) noexcept
-        {
-            setLine( x, y1, x, y2 );
-        }
-
-        inline void setLine( float x1, float y1, float x2, float y2, Color ) noexcept
-        {
-            /* The color parameter makes no sense, but is useful
-               when being using from templated code
-             */
-            setLine( x1, y1, x2, y2 );
-        }
-
-        QSGGeometry::Point2D p1;
-        QSGGeometry::Point2D p2;
-    };
-
-    class QSK_EXPORT ColoredLine
-    {
-      public:
-        inline void setLine( float x1, float y1, Color c1,
-            float x2, float y2, Color c2 ) noexcept
-        {
-            p1.set( x1, y1, c1.r, c1.g, c1.b, c1.a );
-            p2.set( x2, y2, c2.r, c2.g, c2.b, c2.a );
-        }
-
-        inline void setLine( float x1, float y1, float x2, float y2, Color color ) noexcept
-        {
-            setLine( x1, y1, color, x2, y2, color );
-        }
-
-        inline void setHLine( qreal x1, qreal x2, qreal y, Color color ) noexcept
-        {
-            setLine( x1, y, color, x2, y, color );
-        }
-
-        inline void setVLine( qreal x, qreal y1, qreal y2, Color color ) noexcept
-        {
-            setLine( x, y1, color, x, y2, color );
-        }
-
-        QSGGeometry::ColoredPoint2D p1;
-        QSGGeometry::ColoredPoint2D p2;
-    };
-
-    template< class Line >
-    static inline Line* allocateLines( QSGGeometry& geometry, int lineCount )
-    {
-        geometry.allocate( 2 * lineCount ); // 2 points per line
-        return reinterpret_cast< Line* >( geometry.vertexData() );
-    }
-
-    void QSK_EXPORT debugGeometry( const QSGGeometry& );
 
     inline constexpr Color::Color() noexcept
         : r( 0 )
@@ -167,11 +100,219 @@ namespace QskVertex
     }
 }
 
+namespace QskVertex
+{
+    class Line
+    {
+      public:
+        inline void setLine( float x1, float y1, float x2, float y2 ) noexcept
+        {
+            p1.set( x1, y1 );
+            p2.set( x2, y2 );
+        }
+
+        inline void setHLine( float x1, float x2, float y ) noexcept
+        {
+            setLine( x1, y, x2, y );
+        }
+
+        inline void setVLine( float x, float y1, float y2 ) noexcept
+        {
+            setLine( x, y1, x, y2 );
+        }
+
+        inline void setLine( float x1, float y1, float x2, float y2, Color ) noexcept
+        {
+            /* The color parameter makes no sense, but is useful
+               when being using from templated code
+             */
+            setLine( x1, y1, x2, y2 );
+        }
+
+        QSGGeometry::Point2D p1;
+        QSGGeometry::Point2D p2;
+    };
+
+    class ColoredLine
+    {
+      public:
+        inline void setLine( float x1, float y1, Color c1,
+            float x2, float y2, Color c2 ) noexcept
+        {
+            p1.set( x1, y1, c1.r, c1.g, c1.b, c1.a );
+            p2.set( x2, y2, c2.r, c2.g, c2.b, c2.a );
+        }
+
+        inline void setLine( float x1, float y1, float x2, float y2, Color color ) noexcept
+        {
+            setLine( x1, y1, color, x2, y2, color );
+        }
+
+        inline void setLine( const QPointF& p1, const QPointF& p2, Color color ) noexcept
+        {
+            setLine( p1.x(), p1.y(), color, p2.x(), p2.y(), color );
+        }
+
+        inline void setLine( const QLineF& line, Color color ) noexcept
+        {
+            setLine( line.x1(), line.y1(), color, line.x2(), line.y2(), color );
+        }
+
+        inline void setHLine( qreal x1, qreal x2, qreal y, Color color ) noexcept
+        {
+            setLine( x1, y, color, x2, y, color );
+        }
+
+        inline void setVLine( qreal x, qreal y1, qreal y2, Color color ) noexcept
+        {
+            setLine( x, y1, color, x, y2, color );
+        }
+
+        QSGGeometry::ColoredPoint2D p1;
+        QSGGeometry::ColoredPoint2D p2;
+    };
+
+    template< class Line >
+    static inline Line* allocateLines( QSGGeometry& geometry, int lineCount )
+    {
+        geometry.allocate( 2 * lineCount ); // 2 points per line
+        return reinterpret_cast< Line* >( geometry.vertexData() );
+    }
+}
+
+namespace QskVertex
+{
+    class ArcIterator
+    {
+      public:
+        inline ArcIterator() = default;
+
+        inline ArcIterator( int stepCount, bool inverted = false )
+        {
+            reset( stepCount, inverted );
+        }
+
+        void reset( int stepCount, bool inverted = false )
+        {
+            m_inverted = inverted;
+
+            if ( inverted )
+            {
+                m_cos = 1.0;
+                m_sin = 0.0;
+            }
+            else
+            {
+                m_cos = 0.0;
+                m_sin = 1.0;
+            }
+
+            m_stepIndex = 0;
+            m_stepCount = stepCount;
+
+            const double angleStep = M_PI_2 / stepCount;
+            m_cosStep = qFastCos( angleStep );
+            m_sinStep = qFastSin( angleStep );
+        }
+
+        inline bool isInverted() const { return m_inverted; }
+
+        inline double cos() const { return m_cos; }
+        inline double sin() const { return m_inverted ? -m_sin : m_sin; }
+
+        inline int step() const { return m_stepIndex; }
+        inline int stepCount() const { return m_stepCount; }
+        inline bool isDone() const { return m_stepIndex > m_stepCount; }
+
+        inline void increment()
+        {
+            if ( ++m_stepIndex >= m_stepCount )
+            {
+                if ( m_stepIndex == m_stepCount )
+                {
+                    /*
+                        Doubles are not numerical stable and the small errors,
+                        sum up when iterating in steps. To avoid having to deal with
+                        fuzzy compares we manually fix cos/sin at the end.
+                     */
+                    if ( m_inverted )
+                    {
+                        m_cos = 0.0;
+                        m_sin = -1.0;
+                    }
+                    else
+                    {
+                        m_cos = 1.0;
+                        m_sin = 0.0;
+                    }
+                }
+            }
+            else
+            {
+                const double cos0 = m_cos;
+
+                m_cos = m_cos * m_cosStep + m_sin * m_sinStep;
+                m_sin = m_sin * m_cosStep - cos0 * m_sinStep;
+            }
+        }
+
+        inline void decrement()
+        {
+            revert();
+            increment();
+            revert();
+        }
+
+        inline void operator++() { increment(); }
+
+        static int segmentHint( double radius )
+        {
+            const double arcLength = radius * M_PI_2;
+            return qBound( 3, qCeil( arcLength / 3.0 ), 18 ); // every 3 pixels
+        }
+
+        inline void revert()
+        {
+            m_inverted = !m_inverted;
+            m_stepIndex = m_stepCount - m_stepIndex;
+
+            m_sin = -m_sin;
+        }
+
+        ArcIterator reverted() const
+        {
+            ArcIterator it = *this;
+            it.revert();
+
+            return it;
+        }
+
+      private:
+        double m_cos;
+        double m_sin;
+
+        int m_stepIndex;
+        double m_cosStep;
+        double m_sinStep;
+
+        int m_stepCount;
+        bool m_inverted;
+    };
+}
+
+namespace QskVertex
+{
+    void debugGeometry( const QSGGeometry& );
+}
+
 #ifndef QT_NO_DEBUG_STREAM
-class QDebug;
-QDebug operator<<( QDebug debug, QskVertex::Color );
-QDebug operator<<( QDebug debug, const QskVertex::ColoredLine& );
-QDebug operator<<( QDebug debug, const QskVertex::Line& );
+
+    class QDebug;
+
+    QDebug operator<<( QDebug debug, QskVertex::Color );
+    QDebug operator<<( QDebug debug, const QskVertex::ColoredLine& );
+    QDebug operator<<( QDebug debug, const QskVertex::Line& );
+
 #endif
 
 #endif

@@ -19,7 +19,6 @@ class QSK_EXPORT QskDialogButton : public QskPushButton
     using Inherited = QskPushButton;
 
   public:
-    QSK_SUBCONTROLS( Panel, Text, Graphic )
 
     QskDialogButton( QskDialog::Action, QQuickItem* parent = nullptr );
     QskDialogButton( QQuickItem* parent = nullptr );
@@ -34,9 +33,6 @@ class QSK_EXPORT QskDialogButton : public QskPushButton
 
   protected:
     void changeEvent( QEvent* ) override;
-
-    QskAspect::Subcontrol substitutedSubcontrol(
-        QskAspect::Subcontrol ) const override;
 
   private:
     void resetButton();

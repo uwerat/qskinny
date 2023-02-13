@@ -8,6 +8,7 @@
 
 #include "QskMaterial3Global.h"
 
+#include <QskGraphicProvider.h>
 #include <QskHctColor.h>
 #include <QskSkin.h>
 #include <QskShadowMetrics.h>
@@ -39,6 +40,7 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
     QskMaterial3Theme( Lightness, std::array< QskHctColor, NumPaletteTypes > );
 
     QRgb primary;
+    QRgb primary8;
     QRgb primary12;
     QRgb onPrimary;
     QRgb primaryContainer;
@@ -55,6 +57,8 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
     QRgb onTertiaryContainer;
 
     QRgb error;
+    QRgb error8;
+    QRgb error12;
     QRgb onError;
     QRgb errorContainer;
     QRgb onErrorContainer;
@@ -69,6 +73,7 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
     QRgb surface5;
 
     QRgb onSurface;
+    QRgb onSurface8;
     QRgb onSurface12;
     QRgb onSurface38;
 
@@ -92,6 +97,19 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
     std::array< QskHctColor, NumPaletteTypes > m_palettes;
 };
 
+class QSK_MATERIAL3_EXPORT QskMaterial3GraphicProvder : public QskGraphicProvider
+{
+    Q_OBJECT
+
+    using Inherited = QskGraphicProvider;
+
+  public:
+    QskMaterial3GraphicProvder( QObject* parent = nullptr );
+
+  protected:
+    virtual const QskGraphic* loadGraphic( const QString& id ) const override;
+};
+
 class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
 {
     Q_OBJECT
@@ -101,6 +119,18 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
   public:
     QskMaterial3Skin( const QskMaterial3Theme&, QObject* parent = nullptr );
     ~QskMaterial3Skin() override;
+
+    virtual QskGraphic symbol( int symbolType ) const override;
+
+    enum GraphicRole
+    {
+        GraphicRoleOnError,
+        GraphicRoleOnPrimary,
+        GraphicRoleOnSecondaryContainer,
+        GraphicRoleOnSurface,
+        GraphicRoleOnSurface38,
+        GraphicRoleSurface,
+    };
 
     enum FontRole
     {
@@ -112,6 +142,7 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
 
   private:
     void setupFonts();
+    void setupGraphicFilters( const QskMaterial3Theme& palette );
 };
 
 #endif

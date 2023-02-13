@@ -46,8 +46,7 @@ class QSK_EXPORT QskSegmentedBar : public QskControl
     void setTextOptions( const QskTextOptions& );
     QskTextOptions textOptions() const;
 
-    int addText( const QString& );
-    int addGraphic( const QUrl& );
+    int addOption( const QUrl&, const QString& );
 
     void clear();
 
@@ -56,7 +55,7 @@ class QSK_EXPORT QskSegmentedBar : public QskControl
 
     int count() const;
 
-    QVariant optionAt( int ) const;
+    QVariantList optionAt( int ) const;
 
     void setSegmentEnabled( int, bool );
     bool isSegmentEnabled( int ) const;

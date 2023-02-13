@@ -4,12 +4,12 @@
  *****************************************************************************/
 
 #include "MyDevices.h"
-#include "Skin.h"
 #include "RoundedIcon.h"
 
 #include <QskGraphic.h>
 #include <QskGraphicLabel.h>
 #include <QskGridBox.h>
+#include <QskSkin.h>
 #include <QskTextLabel.h>
 
 #include <QImage>
@@ -26,8 +26,10 @@ namespace
 
             auto icon = new RoundedIcon( isBright, this );
             icon->setPale( true );
-            icon->setSource( name );
+            icon->setGraphicSource( name );
+            icon->setGraphicStrutSize( { 36, 36 } );
             icon->setFixedSize( 68, 68 );
+            icon->setCheckable( true );
 
             auto textLabel = new QskTextLabel( name, this );
             textLabel->setFontRole( QskSkin::TinyFont );

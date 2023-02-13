@@ -7,7 +7,10 @@
 
 #include <QskGraphicLabel.h>
 #include <QskLinearBox.h>
+#include <QskPushButton.h>
 #include <QskTextLabel.h>
+
+#include "MainItem.h"
 
 class MenuBarTopLabel final : public QskGraphicLabel
 {
@@ -23,43 +26,14 @@ class MenuBarTopLabel final : public QskGraphicLabel
     }
 };
 
-class MenuBarGraphicLabel final : public QskGraphicLabel
+class MenuButton final : public QskPushButton
 {
     Q_OBJECT
 
   public:
-    QSK_SUBCONTROLS( Graphic )
+    QSK_SUBCONTROLS( Panel, Text, Graphic )
 
-    MenuBarGraphicLabel( const QString& icon, QQuickItem* parent = nullptr )
-        : QskGraphicLabel( icon, parent )
-    {
-        setSubcontrolProxy( QskGraphicLabel::Graphic, Graphic );
-    }
-};
-
-class MenuBarLabel final : public QskTextLabel
-{
-    Q_OBJECT
-
-  public:
-    QSK_SUBCONTROLS( Text )
-
-    MenuBarLabel( const QString& text, QQuickItem* parent = nullptr )
-        : QskTextLabel( text, parent )
-    {
-        setSubcontrolProxy( QskTextLabel::Text, Text );
-    }
-};
-
-class MenuItem final : public QskLinearBox
-{
-    Q_OBJECT
-
-  public:
-    QSK_SUBCONTROLS( Panel )
-    QSK_STATES( Active )
-
-    MenuItem( const QString& name, QQuickItem* parent );
+    MenuButton( const QString& name, QQuickItem* parent );
 };
 
 class MenuBar final : public QskLinearBox
@@ -71,8 +45,13 @@ class MenuBar final : public QskLinearBox
 
     MenuBar( QQuickItem* parent );
 
+  Q_SIGNALS:
+    void pageChangeRequested( const int index );
+
+  public Q_SLOTS:
+    void setActivePage( const int index );
+
   private:
-    QList< QString > m_entryStrings;
-    QList< MenuItem* > m_entries;
-    uint m_activeEntry = 0;
+    MenuButton* m_buttons[ Cube::NumPositions ];
+    uint m_currentIndex;
 };

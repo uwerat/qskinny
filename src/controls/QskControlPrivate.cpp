@@ -157,7 +157,6 @@ QskControlPrivate::QskControlPrivate()
     , layoutAlignmentHint( 0 )
     , explicitLocale( false )
     , explicitSection( false )
-    , autoFillBackground( false )
     , autoLayoutChildren( false )
     , focusPolicy( Qt::NoFocus )
     , isWheelEnabled( false )
@@ -422,7 +421,7 @@ void QskControlPrivate::setPlacementPolicy(
         else
         {
             this->visiblePlacementPolicy =
-                 ( policy == QskPlacementPolicy::Reserve ) ? 1 : 0;
+                ( policy == QskPlacementPolicy::Reserve ) ? 1 : 0;
 
             if ( isTransparentForPositioner() )
             {

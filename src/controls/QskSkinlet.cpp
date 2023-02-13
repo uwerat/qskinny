@@ -10,9 +10,9 @@
 #include "QskArcMetrics.h"
 #include "QskBoxBorderColors.h"
 #include "QskBoxBorderMetrics.h"
-#include "QskBoxClipNode.h"
 #include "QskBoxNode.h"
-#include "QskShadedBoxNode.h"
+#include "QskBoxClipNode.h"
+#include "QskBoxRectangleNode.h"
 #include "QskBoxShapeMetrics.h"
 #include "QskBoxHints.h"
 #include "QskColorFilter.h"
@@ -21,6 +21,7 @@
 #include "QskGradient.h"
 #include "QskGraphicNode.h"
 #include "QskGraphic.h"
+#include "QskRectangleNode.h"
 #include "QskSGNode.h"
 #include "QskTextColors.h"
 #include "QskTextNode.h"
@@ -175,7 +176,7 @@ static inline QskTextColors qskTextColors(
     return c;
 }
 
-static inline QSGNode* qskUpdateShadedBoxNode(
+static inline QSGNode* qskUpdateBoxNode(
     const QskSkinnable*, QSGNode* node, const QRectF& rect,
     const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& borderMetrics,
     const QskBoxBorderColors& borderColors, const QskGradient& gradient,
@@ -190,14 +191,14 @@ static inline QSGNode* qskUpdateShadedBoxNode(
 
     if ( qskIsBoxVisible( absoluteMetrics, borderColors, gradient ) )
     {
-        auto boxNode = static_cast< QskShadedBoxNode* >( node );
+        auto boxNode = static_cast< QskBoxNode* >( node );
         if ( boxNode == nullptr )
-            boxNode = new QskShadedBoxNode();
+            boxNode = new QskBoxNode();
 
         const auto absoluteShape = shape.toAbsolute( size );
         const auto absoluteShadowMetrics = shadowMetrics.toAbsolute( size );
 
-        boxNode->setBoxData( rect, absoluteShape, absoluteMetrics,
+        boxNode->updateNode( rect, absoluteShape, absoluteMetrics,
             borderColors, gradient, absoluteShadowMetrics, shadowColor );
 
         return boxNode;
@@ -242,6 +243,8 @@ class QskSkinlet::PrivateData
     QskSkin* skin;
     QVector< quint8 > nodeRoles;
 
+    int animatorIndex = -1;
+
     bool ownedBySkinnable : 1;
 };
 
@@ -267,6 +270,21 @@ void QskSkinlet::setOwnedBySkinnable( bool on )
 bool QskSkinlet::isOwnedBySkinnable() const
 {
     return m_data->ownedBySkinnable;
+}
+
+void QskSkinlet::setAnimatorIndex( int index )
+{
+    m_data->animatorIndex = index;
+}
+
+void QskSkinlet::resetAnimatorIndex()
+{
+    m_data->animatorIndex = -1;
+}
+
+int QskSkinlet::animatorIndex() const
+{
+    return m_data->animatorIndex;
 }
 
 void QskSkinlet::setNodeRoles( const QVector< quint8 >& nodeRoles )
@@ -296,10 +314,7 @@ void QskSkinlet::updateNode( QskSkinnable* skinnable, QSGNode* parentNode ) cons
         // background
 
         oldNode = findChildNode( parentNode, BackgroundRole );
-
-        newNode = nullptr;
-        if ( control->autoFillBackground() )
-            newNode = updateBackgroundNode( control, oldNode );
+        newNode = updateBackgroundNode( control, oldNode );
 
         replaceChildNode( BackgroundRole, parentNode, oldNode, newNode );
 
@@ -336,12 +351,10 @@ QSGNode* QskSkinlet::updateBackgroundNode(
     if ( !gradient.isValid() )
         return nullptr;
 
-    auto boxNode = static_cast< QskBoxNode* >( node );
-    if ( boxNode == nullptr )
-        boxNode = new QskBoxNode();
+    auto rectNode = QskSGNode::ensureNode< QskRectangleNode >( node );
+    rectNode->updateNode( rect, gradient );
 
-    boxNode->setBoxData( rect, gradient );
-    return boxNode;
+    return rectNode;
 }
 
 QSGNode* QskSkinlet::updateDebugNode(
@@ -418,7 +431,7 @@ QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
     const auto shadowMetrics = skinnable->shadowMetricsHint( subControl );
     const auto shadowColor = skinnable->shadowColorHint( subControl );
 
-    return qskUpdateShadedBoxNode( skinnable, node,
+    return qskUpdateBoxNode( skinnable, node,
         boxRect, shape, borderMetrics, borderColors, fillGradient,
         shadowMetrics, shadowColor );
 }
@@ -428,7 +441,7 @@ QSGNode* QskSkinlet::updateBoxNode(
     const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& borderMetrics,
     const QskBoxBorderColors& borderColors, const QskGradient& fillGradient )
 {
-    return qskUpdateShadedBoxNode( skinnable, node,
+    return qskUpdateBoxNode( skinnable, node,
         rect, shape, borderMetrics, borderColors, fillGradient,
         QskShadowMetrics(), QColor() );
 }
@@ -436,7 +449,7 @@ QSGNode* QskSkinlet::updateBoxNode(
 QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
     QSGNode* node, const QRectF& rect, const QskBoxHints& hints )
 {
-    return qskUpdateShadedBoxNode( skinnable, node, rect,
+    return qskUpdateBoxNode( skinnable, node, rect,
         hints.shape, hints.borderMetrics, hints.borderColors, hints.gradient,
         hints.shadowMetrics, hints.shadowColor );
 }
@@ -692,6 +705,25 @@ QSGNode* QskSkinlet::updateSeriesNode( const QskSkinnable* skinnable,
 
             QskSkinStateChanger stateChanger( skinnable );
             stateChanger.setStates( newStates );
+
+            class IndexChanger
+            {
+              public:
+                inline IndexChanger( const QskSkinlet* skinlet, int index )
+                    : m_skinlet( const_cast< QskSkinlet* >( skinlet ) )
+                {
+                    m_skinlet->setAnimatorIndex( index );
+                }
+
+                inline ~IndexChanger()
+                {
+                    m_skinlet->resetAnimatorIndex();
+                }
+              private:
+                QskSkinlet* m_skinlet;
+            };
+
+            IndexChanger indexChanger( this, i );
 
             newNode = updateSampleNode( skinnable, subControl, i, node );
         }

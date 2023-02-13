@@ -30,7 +30,6 @@ namespace
         void populate()
         {
             const char* texts[] = { "Press Me", "Check Me" };
-            const char* graphics[] = { "diamond/khaki", "ellipse/sandybrown" };
 
             for ( int i = 0; i < 6; i++ )
             {
@@ -42,7 +41,7 @@ namespace
 
                 if ( i > 1 )
                 {
-                    auto src = QStringLiteral( "image://shapes/" ) + graphics[ index ];
+                    auto src = QStringLiteral( "plus" );
                     button->setGraphicSource( src );
                 }
 
@@ -84,7 +83,7 @@ namespace
     {
       public:
         CheckButtonBox( QQuickItem* parent = nullptr )
-            : QskLinearBox( Qt::Horizontal, parent )
+            : QskLinearBox( Qt::Horizontal, 2, parent )
         {
             setSpacing( 40 );
             setExtraSpacingAt( Qt::LeftEdge | Qt::RightEdge | Qt::BottomEdge );
@@ -94,6 +93,9 @@ namespace
 
             auto button2 = new QskCheckBox( "Options 2", this );
             button2->setLayoutMirroring( true );
+
+            auto button3 = new QskCheckBox( "Error", this );
+            button3->setSkinStateFlag( QskCheckBox::Error );
         }
     };
 }

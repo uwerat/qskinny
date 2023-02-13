@@ -7,7 +7,12 @@
 #define QSK_RGB_VALUE_H
 
 #include "QskGlobal.h"
+#include "QskGradientStop.h"
+
 #include <qcolor.h>
+
+class QEasingCurve;
+class QImage;
 
 namespace QskRgb
 {
@@ -205,6 +210,17 @@ namespace QskRgb
 
     QSK_EXPORT QRgb lighter( QRgb, int factor = 150 ) noexcept;
     QSK_EXPORT QRgb darker( QRgb, int factor = 200 ) noexcept;
+}
+
+namespace QskRgb
+{
+    /*
+        One dimensional array of colors ( height is always 1 ) of
+        Format_RGBA8888_Premultiplied
+     */
+
+    QSK_EXPORT QImage colorTable( int size, const QskGradientStops& );
+    QSK_EXPORT QImage colorTable( int size, QRgb, QRgb, const QEasingCurve& );
 }
 
 #ifndef QT_NO_DEBUG_STREAM

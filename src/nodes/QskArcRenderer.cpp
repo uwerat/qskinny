@@ -6,44 +6,45 @@
 #include "QskArcRenderer.h"
 #include "QskArcMetrics.h"
 #include "QskGradient.h"
+#include "QskGradientDirection.h"
 
 #include <qpainter.h>
 #include <qrect.h>
 
 void QskArcRenderer::renderArc(const QRectF& rect,
-    const QskArcMetrics& metrics, const QskGradient& gradient,
-    QPainter* painter )
+    const QskArcMetrics& metrics, const QskGradient& gradient, QPainter* painter )
 {
-    painter->setRenderHint( QPainter::Antialiasing, true );
+    bool isRadial = false;
 
-    QGradientStops stops;
-    stops.reserve( gradient.stops().count() );
-
-    for( const QskGradientStop& stop : qAsConst( gradient.stops() ) )
-        stops += QGradientStop( stop.position(), stop.color() );
-
-    /*
-        horizontal is interpreted as in direction of the arc,
-        while vertical means from the inner to the outer border
-     */
+    if ( gradient.type() == QskGradient::Linear )
+    {
+        /*
+            Horizontal is interpreted as conic ( in direction of the arc ),
+            while Vertical means radial ( inner to outer border )
+         */
+        isRadial = gradient.linearDirection().isVertical();
+    }
 
     QBrush brush;
 
-    if( gradient.orientation() == QskGradient::Vertical )
-    {
-        QRadialGradient gradient( rect.center(), qMin( rect.width(), rect.height() ) );
-        gradient.setStops( stops );
+    const auto qStops = qskToQGradientStops( gradient.stops() );
 
-        brush = gradient;
+    if( isRadial )
+    {
+        QRadialGradient radial( rect.center(), qMin( rect.width(), rect.height() ) );
+        radial.setStops( qStops );
+
+        brush = radial;
     }
     else
     {
-        QConicalGradient gradient( rect.center(), metrics.startAngle() );
-        gradient.setStops( stops );
+        QConicalGradient conical( rect.center(), metrics.startAngle() );
+        conical.setStops( qStops );
 
-        brush = gradient;
+        brush = conical;
     }
 
+    painter->setRenderHint( QPainter::Antialiasing, true );
     painter->setPen( QPen( brush, metrics.width(), Qt::SolidLine, Qt::FlatCap ) );
 
     const int startAngle = qRound( metrics.startAngle() * 16 );

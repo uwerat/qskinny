@@ -89,48 +89,47 @@ QskBoxShapeMetrics QskBoxShapeMetrics::toAbsolute( const QSizeF& size ) const no
     if ( m_sizeMode != Qt::RelativeSize )
         return *this;
 
-    QskBoxShapeMetrics absoluted = *this;
-
     if ( size.isEmpty() )
+        return QskBoxShapeMetrics();
+
+    QskBoxShapeMetrics shape = *this;
+    shape.m_sizeMode = Qt::AbsoluteSize;
+
+    for ( int i = 0; i < 4; i++ )
     {
-        for ( int i = 0; i < 4; i++ )
-            absoluted.m_radii[ i ] = QSizeF( 0.0, 0.0 );
-    }
-    else
-    {
-        for ( int i = 0; i < 4; i++ )
+        auto& radius = shape.m_radii[ i ];
+
+        if ( radius.isEmpty() )
         {
-            auto& radius = absoluted.m_radii[ i ];
+            radius.rheight() = radius.rwidth() = 0.0;
+            continue;
+        }
 
-            const qreal rx = qskAbsoluted( size.width(), radius.width() );
-            const qreal ry = qskAbsoluted( size.height(), radius.height() );
+        const qreal rx = qskAbsoluted( size.width(), radius.width() );
+        const qreal ry = qskAbsoluted( size.height(), radius.height() );
 
-            switch ( m_aspectRatioMode )
+        if ( m_scalingMode == Circular )
+        {
+            radius.rheight() = radius.rwidth() = std::min( rx, ry );
+        }
+        else
+        {
+            const auto ratio = radius.height() / radius.width();
+
+            if ( ratio >= 1.0 )
             {
-                case Qt::IgnoreAspectRatio:
-                {
-                    radius.rwidth() = rx;
-                    radius.rheight() = ry;
-                    break;
-                }
-                case Qt::KeepAspectRatio:
-                {
-                    radius.rwidth() = std::min( rx, ry );
-                    radius.rheight() = std::min( rx, ry );
-                    break;
-                }
-                case Qt::KeepAspectRatioByExpanding:
-                {
-                    radius.rwidth() = std::max( rx, ry );
-                    radius.rheight() = std::max( rx, ry );
-                    break;
-                }
+                radius.rwidth() = ry / ratio;
+                radius.rheight() = ry;
+            }
+            else
+            {
+                radius.rwidth() = rx;
+                radius.rheight() = rx * ratio;
             }
         }
     }
-    absoluted.m_sizeMode = Qt::AbsoluteSize;
 
-    return absoluted;
+    return shape;
 }
 
 QskBoxShapeMetrics QskBoxShapeMetrics::interpolated(
@@ -146,7 +145,7 @@ QskBoxShapeMetrics QskBoxShapeMetrics::interpolated(
         qskInterpolatedSize( m_radii[ 1 ], to.m_radii[ 1 ], ratio ),
         qskInterpolatedSize( m_radii[ 2 ], to.m_radii[ 2 ], ratio ),
         qskInterpolatedSize( m_radii[ 3 ], to.m_radii[ 3 ], ratio ),
-        to.m_sizeMode, to.m_aspectRatioMode );
+        to.m_sizeMode, to.m_scalingMode );
 }
 
 QVariant QskBoxShapeMetrics::interpolate(

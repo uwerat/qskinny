@@ -6,115 +6,179 @@
 #ifndef QSK_GRADIENT_H
 #define QSK_GRADIENT_H
 
-#include "QskGlobal.h"
 #include "QskGradientStop.h"
 
 #include <qbrush.h>
 #include <qmetatype.h>
-#include <qvector.h>
+
+class QskLinearDirection;
+class QskRadialDirection;
+class QskConicDirection;
 
 class QVariant;
-
-/*
-    Don't use QskGradientStops for definitions seen by moc
-    Otherwise exporting these interfaces to QML does not work.
- */
-typedef QVector< QskGradientStop > QskGradientStops;
+class QGradient;
 
 class QSK_EXPORT QskGradient
 {
     Q_GADGET
 
-    Q_PROPERTY( Orientation orientation READ orientation WRITE setOrientation )
-    Q_PROPERTY( QVector< QskGradientStop > stops READ stops WRITE setStops )
+    Q_PROPERTY( Type type READ type )
+
+    Q_PROPERTY( QskLinearDirection linear READ linearDirection WRITE setLinearDirection )
+    Q_PROPERTY( QskConicDirection conic READ conicDirection WRITE setConicDirection )
+    Q_PROPERTY( QskRadialDirection radial READ radialDirection WRITE setRadialDirection )
+
+    Q_PROPERTY( QskGradientStops stops READ stops WRITE setStops )
+
+    Q_PROPERTY( SpreadMode spreadMode READ spreadMode WRITE setSpreadMode )
+    Q_PROPERTY( StretchMode stretchMode READ stretchMode WRITE setStretchMode )
 
     Q_PROPERTY( bool valid READ isValid )
     Q_PROPERTY( bool visible READ isVisible )
     Q_PROPERTY( bool monochrome READ isMonochrome )
 
+    Q_CLASSINFO( "DefaultProperty", "stops" )
+
   public:
-    // TODO: radial/canonical gradients + other diagonal linear gradients
-    enum Orientation
+    enum Type
     {
-        Horizontal,
-        Vertical,
-        Diagonal
+        Stops,
+
+        Linear,
+        Radial,
+        Conic
     };
+    Q_ENUM( Type )
 
-    Q_ENUM( Orientation )
+    enum SpreadMode
+    {
+        PadSpread,
+        ReflectSpread,
+        RepeatSpread
+    };
+    Q_ENUM( SpreadMode )
 
-    QskGradient();
-    QskGradient( Orientation );
+    enum StretchMode
+    {
+        NoStretch,
+        StretchToSize
+    };
+    Q_ENUM( StretchMode )
+
+    QskGradient() noexcept;
+
     QskGradient( Qt::GlobalColor );
     QskGradient( QRgb );
     QskGradient( const QColor& );
+    QskGradient( const QColor&, const QColor& );
     QskGradient( QGradient::Preset );
+    QskGradient( const QskGradientStops& );
 
-    QskGradient( Qt::Orientation, const QVector< QskGradientStop >& );
-    QskGradient( Qt::Orientation, const QColor&, const QColor& );
-    QskGradient( Qt::Orientation, QGradient::Preset );
+    QskGradient( const QGradient& );
 
-    QskGradient( Orientation, const QVector< QskGradientStop >& );
-    QskGradient( Orientation, const QColor&, const QColor& );
-    QskGradient( Orientation, QGradient::Preset );
+    QskGradient( const QskGradient& ) noexcept;
 
     ~QskGradient();
 
-    void setOrientation( Qt::Orientation );
-    void setOrientation( Orientation );
-    Orientation orientation() const;
+    QskGradient& operator=( const QskGradient& ) noexcept;
 
-    bool isValid() const;
-    Q_INVOKABLE void invalidate();
+    bool operator==( const QskGradient& ) const noexcept;
+    bool operator!=( const QskGradient& ) const noexcept;
 
-    bool operator==( const QskGradient& ) const;
-    bool operator!=( const QskGradient& ) const;
+    QskGradient::Type type() const noexcept;
 
-    void setColor( const QColor& );
-    void setColors( const QColor&, const QColor& );
+    void setLinearDirection( const QskLinearDirection& );
+    void setLinearDirection( qreal, qreal, qreal, qreal );
+    void setLinearDirection( Qt::Orientation );
+    QskLinearDirection linearDirection() const;
 
-    Q_INVOKABLE QColor startColor() const;
-    Q_INVOKABLE QColor endColor() const;
+    void setRadialDirection( const QskRadialDirection& );
+    void setRadialDirection( const qreal x, qreal y, qreal radius );
+    void setRadialDirection( const qreal x, qreal y, qreal radiusX, qreal radiusY );
+    QskRadialDirection radialDirection() const;
 
-    Q_INVOKABLE void setStops( const QVector< QskGradientStop >& );
-    Q_INVOKABLE const QVector< QskGradientStop >& stops() const;
+    void setConicDirection( qreal, qreal );
+    void setConicDirection( qreal, qreal, qreal, qreal = 360.0 );
+    void setConicDirection( const QskConicDirection& );
+    QskConicDirection conicDirection() const;
 
-    Q_INVOKABLE bool hasStopAt( qreal value ) const;
+    void setDirection( Type );
+    void resetDirection();
+
+    bool isValid() const noexcept;
+    bool isMonochrome() const noexcept;
+    bool isVisible() const noexcept;
+
+    void setStops( const QskGradientStops& );
+    const QskGradientStops& stops() const noexcept;
+
+    void setStops( const QRgb );
+    void setStops( Qt::GlobalColor );
+    void setStops( const QColor& );
+
+    void setStops( const QColor&, const QColor& );
+    void setStops( QGradient::Preset );
+
+    void clearStops();
+
+    Q_INVOKABLE bool hasStopAt( qreal value ) const noexcept;
+
+    Q_INVOKABLE QColor startColor() const noexcept;
+    Q_INVOKABLE QColor endColor() const noexcept;
+
+    QRgb rgbStart() const;
+    QRgb rgbEnd() const;
 
     void setAlpha( int alpha );
 
-    bool isMonochrome() const;
-    bool isVisible() const;
+    void setSpreadMode( SpreadMode );
+    SpreadMode spreadMode() const noexcept;
+
+    void setStretchMode( StretchMode );
+    StretchMode stretchMode() const noexcept;
 
     void reverse();
     QskGradient reversed() const;
 
-    // all stops between [from, to] with positions streched into [0,1]
-    QskGradient extracted( qreal from, qreal start ) const;
-
     QskGradient interpolated( const QskGradient&, qreal value ) const;
+
+    void stretchTo( const QRectF& );
+    QskGradient stretchedTo( const QSizeF& ) const;
+    QskGradient stretchedTo( const QRectF& ) const;
+
+    QskGradient effectiveGradient() const;
 
     static QVariant interpolate( const QskGradient&,
         const QskGradient&, qreal progress );
 
-    QskHashValue hash( QskHashValue seed ) const;
+    // all stops between [from, to] with positions streched into [0,1]
+    QskGradient extracted( qreal from, qreal start ) const;
 
-    Q_INVOKABLE qreal stopAt( int index ) const;
-    Q_INVOKABLE QColor colorAt( int index ) const;
-    Q_INVOKABLE int stopCount() const;
+    QskHashValue hash( QskHashValue seed = 0 ) const;
 
-    static QskGradientStops colorStops(
-        const QVector< QRgb >&, bool discrete = false );
+    Q_INVOKABLE qreal stopAt( int index ) const noexcept;
+    Q_INVOKABLE QColor colorAt( int index ) const noexcept;
+
+    int stepCount() const noexcept;
+
+    QGradient toQGradient() const;
 
   private:
-    void setStopAt( int index, qreal stop );
-    void setColorAt( int index, const QColor& color );
-
     void updateStatusBits() const;
 
-    QVector< QskGradientStop > m_stops;
+  private:
+    QskGradientStops m_stops;
 
-    int m_orientation : 4;
+    /*
+        Linear: x1, y1, x2, y2
+        Radial: centerX, centerY, radiusX, radiusY
+        Conic: centerX, centerY, startAngle, spanAngle
+     */
+    qreal m_values[4] = {};
+
+    unsigned int m_type : 3;
+    unsigned int m_spreadMode : 3;
+    unsigned int m_stretchMode : 3;
 
     mutable bool m_isDirty : 1;
     mutable bool m_isValid : 1;
@@ -124,8 +188,14 @@ class QSK_EXPORT QskGradient
 
 Q_DECLARE_METATYPE( QskGradient )
 
-inline QskGradient::QskGradient()
-    : QskGradient( Vertical )
+inline QskGradient::QskGradient() noexcept
+    : m_type( Stops )
+    , m_spreadMode( PadSpread )
+    , m_stretchMode( StretchToSize )
+    , m_isDirty( false )
+    , m_isValid( false )
+    , m_isMonchrome( true )
+    , m_isVisible( false )
 {
 }
 
@@ -139,34 +209,68 @@ inline QskGradient::QskGradient( QRgb rgb )
 {
 }
 
-inline QskGradient::QskGradient( QGradient::Preset preset )
-    : QskGradient( Vertical, preset )
+inline bool QskGradient::operator!=( const QskGradient& other ) const noexcept
 {
+    return !( *this == other );
 }
 
-inline QskGradient::Orientation QskGradient::orientation() const
+inline QskGradient::Type QskGradient::type() const noexcept
 {
-    return static_cast< Orientation >( m_orientation );
+    return static_cast< Type >( m_type );
 }
 
-inline QColor QskGradient::startColor() const
+inline const QskGradientStops& QskGradient::stops() const noexcept
 {
-    return ( m_stops.size() >= 2 ) ? m_stops.first().color() : QColor();
+#if 1
+    /*
+        Returning a const& so that it is possible to write:
+            for ( const auto& stop : qAsConst( gradient.stops() ) )
+
+        Once we have changed QskGradientStop from QColor to QRgb
+        we should check if there is a better solution possible
+     */
+#endif
+    return m_stops;
 }
 
-inline QColor QskGradient::endColor() const
+inline void QskGradient::setStops( QRgb rgb )
 {
-    return ( m_stops.size() >= 2 ) ? m_stops.last().color() : QColor();
+    setStops( QColor::fromRgba( rgb ) );
 }
 
-inline bool QskGradient::operator==( const QskGradient& other ) const
+inline void QskGradient::setStops( Qt::GlobalColor color )
 {
-    return ( m_orientation == other.m_orientation ) && ( m_stops == other.m_stops );
+    setStops( QColor( color ) );
 }
 
-inline bool QskGradient::operator!=( const QskGradient& other ) const
+inline QColor QskGradient::startColor() const noexcept
 {
-    return ( !( *this == other ) );
+    return m_stops.isEmpty() ? QColor() : m_stops.first().color();
+}
+
+inline QColor QskGradient::endColor() const noexcept
+{
+    return m_stops.isEmpty() ? QColor() : m_stops.last().color();
+}
+
+inline QRgb QskGradient::rgbStart() const
+{
+    return m_stops.isEmpty() ? qRgba( 0, 0, 0, 255 ) : m_stops.first().rgb();
+}
+
+inline QRgb QskGradient::rgbEnd() const
+{
+    return m_stops.isEmpty() ? qRgba( 0, 0, 0, 255 ) : m_stops.last().rgb();
+}
+
+inline QskGradient::SpreadMode QskGradient::spreadMode() const noexcept
+{
+    return static_cast< SpreadMode >( m_spreadMode );
+}
+
+inline QskGradient::StretchMode QskGradient::stretchMode() const noexcept
+{
+    return static_cast< StretchMode >( m_stretchMode );
 }
 
 #ifndef QT_NO_DEBUG_STREAM

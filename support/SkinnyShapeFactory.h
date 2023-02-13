@@ -10,6 +10,8 @@
 
 namespace SkinnyShapeFactory
 {
+    Q_NAMESPACE_EXPORT( SKINNY_EXPORT )
+
     // a couple of standard painter paths, that can
     // be used for testing
 
@@ -25,6 +27,7 @@ namespace SkinnyShapeFactory
         Ring,
         Star,
         Hexagon,
+        Arc,
 
         ShapeCount
     };

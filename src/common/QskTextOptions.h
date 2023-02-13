@@ -31,6 +31,7 @@ class QSK_EXPORT QskTextOptions
         VerticalFit,
         Fit
     };
+    Q_ENUM( FontSizeMode )
 
     enum WrapMode
     {

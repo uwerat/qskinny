@@ -1,16 +1,22 @@
 #include "QskMargins.h"
 #include <qvariant.h>
 
-static void qskRegisterConverter()
+static void qskRegisterMargins()
 {
+    qRegisterMetaType< QskMargins >();
+
     QMetaType::registerConverter< int, QskMargins >(
         []( int value ) { return QskMargins( value ); } );
 
     QMetaType::registerConverter< qreal, QskMargins >(
         []( qreal value ) { return QskMargins( value ); } );
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    QMetaType::registerEqualsComparator< QskMargins >();
+#endif
 }
 
-Q_CONSTRUCTOR_FUNCTION( qskRegisterConverter )
+Q_CONSTRUCTOR_FUNCTION( qskRegisterMargins )
 
 static inline qreal qskInterpolated( qreal from, qreal to, qreal ratio )
 {

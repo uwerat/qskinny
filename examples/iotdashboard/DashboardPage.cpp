@@ -11,7 +11,6 @@
 #include "LightDisplay.h"
 #include "GridBox.h"
 #include "MyDevices.h"
-#include "PieChart.h"
 #include "TopBar.h"
 #include "UsageBox.h"
 
@@ -34,7 +33,7 @@ namespace
     {
       public:
         IndoorTemperature( QQuickItem* parent = nullptr )
-            : BoxWithButtons( "Indoor Temperature", "+24", true, parent )
+            : BoxWithButtons( "Indoor Temperature", "+", 24, {}, true, parent )
         {
         }
     };
@@ -43,7 +42,7 @@ namespace
     {
       public:
         Humidity( QQuickItem* parent = nullptr )
-            : BoxWithButtons( "Humidity", "30%", false, parent )
+            : BoxWithButtons( "Humidity", {}, 30, "%", false, parent )
         {
         }
     };

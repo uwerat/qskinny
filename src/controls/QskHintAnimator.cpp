@@ -12,7 +12,6 @@
 #include <qthread.h>
 
 #include <algorithm>
-#include <map>
 #include <vector>
 
 #define ALIGN_VALUES 0
@@ -93,7 +92,14 @@ static inline bool qskCheckReceiverThread( const QObject* receiver )
     return ( thread == QThread::currentThread() );
 }
 
-QskHintAnimator::QskHintAnimator()
+QskHintAnimator::QskHintAnimator() noexcept
+    : m_index( -1 )
+{
+}
+
+QskHintAnimator::QskHintAnimator( const QskAspect aspect, int index ) noexcept
+    : m_aspect( aspect )
+    , m_index( index )
 {
 }
 
@@ -101,24 +107,29 @@ QskHintAnimator::~QskHintAnimator()
 {
 }
 
-void QskHintAnimator::setAspect( QskAspect aspect )
+void QskHintAnimator::setAspect( const QskAspect aspect ) noexcept
 {
     m_aspect = aspect;
 }
 
-void QskHintAnimator::setUpdateFlags( QskAnimationHint::UpdateFlags flags )
+void QskHintAnimator::setIndex( int index ) noexcept
+{
+    m_index = index;
+}
+
+void QskHintAnimator::setUpdateFlags( QskAnimationHint::UpdateFlags flags ) noexcept
 {
     m_updateFlags = flags;
 }
 
-void QskHintAnimator::setControl( QskControl* control )
+void QskHintAnimator::setControl( QskControl* control ) noexcept
 {
     m_control = control;
 }
 
 void QskHintAnimator::advance( qreal progress )
 {
-    const QVariant oldValue = currentValue();
+    const auto oldValue = currentValue();
 
     Inherited::advance( progress );
 
@@ -154,8 +165,90 @@ void QskHintAnimator::advance( qreal progress )
     }
 }
 
+#ifndef QT_NO_DEBUG_STREAM
+
+#include <qdebug.h>
+
+QDebug operator<<( QDebug debug, const QskHintAnimator& animator )
+{
+    QDebugStateSaver saver( debug );
+    debug.nospace();
+
+    debug << "Animator" << "( ";
+
+    debug << animator.aspect() << ", " << animator.endValue().typeName() << ", ";
+
+    if ( animator.index() >= 0 )
+        debug << animator.index() << ", ";
+
+    if ( animator.isRunning() )
+        debug << "R: " << animator.duration() << ", " << animator.elapsed();
+    else
+        debug << "S" << animator.duration();
+
+    if ( auto control = animator.control() )
+        debug << ", " << control->className() << ", " << (void*) control;
+
+    debug << " )";
+
+    return debug;
+}
+
+#endif
+
 namespace
 {
+    class AnimatorMap : public std::vector< QskHintAnimator* >
+    {
+      public:
+        ~AnimatorMap()
+        {
+            qDeleteAll( *this );
+        }
+
+        inline const QskHintAnimator* find( const QskAspect aspect, int index  ) const
+        {
+            const Key key { aspect, index };
+
+            auto it = std::lower_bound( cbegin(), cend(), key, lessThan );
+            if ( it != cend() )
+            {
+                if ( ( ( *it )->aspect() == aspect ) && ( ( *it )->index() == index ) )
+                    return *it;
+            }
+
+            return nullptr;
+        }
+
+        inline QskHintAnimator* findOrInsert( const QskAspect aspect, int index )
+        {
+            const Key key { aspect, index };
+
+            auto it = std::lower_bound( begin(), end(), key, lessThan );
+            if ( it == end() || ( *it )->aspect() != aspect || ( *it )->index() != index )
+            {
+                it = insert( it, new QskHintAnimator( aspect, index ) );
+            }
+
+            return *it;
+        }
+
+      private:
+        struct Key
+        {
+            QskAspect aspect;
+            int index;
+        };
+
+        static inline bool lessThan( const QskHintAnimator* animator, const Key& key )
+        {
+            if ( animator->aspect() == key.aspect )
+                return animator->index() < key.index;
+
+            return animator->aspect() < key.aspect;
+        }
+    };
+
     class AnimatorGuard final : public QObject
     {
         Q_OBJECT
@@ -204,13 +297,10 @@ namespace
 class QskHintAnimatorTable::PrivateData
 {
   public:
-    // we won't have many entries, so we prefer less memory over
-    // using a hash table
-    std::map< QskAspect, QskHintAnimator > map;
+    AnimatorMap animators; // a flat map
 };
 
 QskHintAnimatorTable::QskHintAnimatorTable()
-    : m_data( nullptr )
 {
 }
 
@@ -218,64 +308,59 @@ QskHintAnimatorTable::~QskHintAnimatorTable()
 {
     if ( qskAnimatorGuard )
         qskAnimatorGuard->unregisterTable( this );
+
     delete m_data;
 }
 
 void QskHintAnimatorTable::start( QskControl* control,
-    QskAspect aspect, QskAnimationHint animationHint,
+    const QskAspect aspect, int index, QskAnimationHint animationHint,
     const QVariant& from, const QVariant& to )
 {
     if ( m_data == nullptr )
     {
         m_data = new PrivateData();
+
         if ( qskAnimatorGuard )
             qskAnimatorGuard->registerTable( this );
     }
 
-    auto& animator = m_data->map[ aspect ];
+    auto animator = m_data->animators.findOrInsert( aspect, index );
 
-    animator.setAspect( aspect );
-    animator.setStartValue( from );
-    animator.setEndValue( to );
+    animator->setStartValue( from );
+    animator->setEndValue( to );
 
-    animator.setDuration( animationHint.duration );
-    animator.setEasingCurve( animationHint.type );
-    animator.setUpdateFlags( animationHint.updateFlags );
+    animator->setDuration( animationHint.duration );
+    animator->setEasingCurve( animationHint.type );
+    animator->setUpdateFlags( animationHint.updateFlags );
 
-    animator.setControl( control );
-    animator.setWindow( control->window() );
+    animator->setControl( control );
+    animator->setWindow( control->window() );
 
-    animator.start();
+    animator->start();
 
     if ( qskCheckReceiverThread( control ) )
     {
-        QskAnimatorEvent event( aspect, QskAnimatorEvent::Started );
+        QskAnimatorEvent event( aspect, index, QskAnimatorEvent::Started );
         QCoreApplication::sendEvent( control, &event );
     }
 }
 
-const QskHintAnimator* QskHintAnimatorTable::animator( QskAspect aspect ) const
+const QskHintAnimator* QskHintAnimatorTable::animator( QskAspect aspect, int index ) const
 {
-    if ( m_data == nullptr )
-        return nullptr;
+    if ( m_data )
+        return m_data->animators.find( aspect, index );
 
-    auto it = m_data->map.find( aspect );
-    if ( it == m_data->map.end() )
-        return nullptr;
-
-    return &( it->second );
+    return nullptr;
 }
 
-QVariant QskHintAnimatorTable::currentValue( QskAspect aspect ) const
+QVariant QskHintAnimatorTable::currentValue( QskAspect aspect, int index ) const
 {
     if ( m_data )
     {
-        const auto it = m_data->map.find( aspect );
-        if ( it != m_data->map.cend() )
+        if ( auto animator = m_data->animators.find( aspect, index ) )
         {
-            const auto& animator = it->second;
-            if ( animator.isRunning() )
-                return animator.currentValue();
+            if ( animator->isRunning() )
+                return animator->currentValue();
         }
     }
 
@@ -287,21 +372,30 @@ bool QskHintAnimatorTable::cleanup()
     if ( m_data == nullptr )
         return true;
 
-    for ( auto it = m_data->map.begin(); it != m_data->map.end(); )
-    {
-        // remove all terminated animators
-        if ( !it->second.isRunning() )
-        {
-            auto control = it->second.control();
-            auto aspect = it->first;
+    auto& animators = m_data->animators;
 
-            it = m_data->map.erase( it );
+    for ( auto it = animators.begin(); it != animators.end(); )
+    {
+        auto animator = *it;
+
+        // remove all terminated animators
+        if ( !animator->isRunning() )
+        {
+            const auto control = animator->control();
+            const auto aspect = animator->aspect();
+            const auto index = animator->index();
+
+            delete animator;
+
+            it = animators.erase( it );
 
             if ( control )
             {
                 if ( qskCheckReceiverThread( control ) )
                 {
-                    auto event = new QskAnimatorEvent( aspect, QskAnimatorEvent::Terminated );
+                    auto event = new QskAnimatorEvent(
+                        aspect, index, QskAnimatorEvent::Terminated );
+
                     QCoreApplication::postEvent( control, event );
                 }
             }
@@ -312,7 +406,7 @@ bool QskHintAnimatorTable::cleanup()
         }
     }
 
-    if ( m_data->map.empty() )
+    if ( animators.empty() )
     {
         delete m_data;
         m_data = nullptr;

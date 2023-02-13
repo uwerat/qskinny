@@ -4,6 +4,8 @@
  *****************************************************************************/
 
 #include "QskQml.h"
+#include "QskQml.hpp"
+
 #include "QskLayoutQml.h"
 #include "QskShortcutQml.h"
 #include "QskMainQml.h"
@@ -18,11 +20,13 @@
 #include <QskDialogWindow.h>
 #include <QskFocusIndicator.h>
 #include <QskGradient.h>
+#include <QskGradientDirection.h>
 #include <QskGraphicLabel.h>
 #include <QskIntervalF.h>
 #include <QskLayoutMetrics.h>
 #include <QskMargins.h>
 #include <QskMessageWindow.h>
+#include <QskPlacementPolicy.h>
 #include <QskPopup.h>
 #include <QskProgressBar.h>
 #include <QskPushButton.h>
@@ -36,6 +40,7 @@
 #include <QskSkin.h>
 #include <QskSkinManager.h>
 #include <QskSlider.h>
+#include <QskStandardSymbol.h>
 #include <QskStatusIndicator.h>
 #include <QskSubWindow.h>
 #include <QskSubWindowArea.h>
@@ -47,128 +52,182 @@
 #include <QskVirtualKeyboard.h>
 #include <QskWindow.h>
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 2, 0 )
+    QSK_QT_PRIVATE_BEGIN
+        #include <private/qqmlmetatype_p.h>
+    QSK_QT_PRIVATE_END
+#endif
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 5, 0 )
+
+#include <qjsvalue.h>
 #include <qjsvalueiterator.h>
-#include <qstringlist.h>
-
-QSK_QT_PRIVATE_BEGIN
-#include <private/qqmlmetatype_p.h>
-QSK_QT_PRIVATE_END
-
-#define QSK_MODULE_NAME "Skinny"
-
-#define QSK_REGISTER( className, typeName ) \
-    qmlRegisterType< className >( QSK_MODULE_NAME, 1, 0, typeName );
-
-#define QSK_REGISTER_GADGET( className, typeName ) \
-    qRegisterMetaType< className >(); \
-    qmlRegisterUncreatableType< className >( QSK_MODULE_NAME, 1, 0, typeName, QString() )
-
-// Required for QFlags to be constructed from an enum value
-#define QSK_REGISTER_FLAGS( Type ) \
-    QMetaType::registerConverter< int, Type >([] ( int value ) { return Type( value ); })
-
-#define QSK_REGISTER_SINGLETON( className, typeName, singleton ) \
-    qmlRegisterSingletonType< className >( QSK_MODULE_NAME, 1, 0, typeName, \
-        [] ( QQmlEngine*, QJSEngine* ) { return dynamic_cast< QObject* >( singleton ); } )
-
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-
-#include <qloggingcategory.h>
 
 namespace
 {
-    class WarningBlocker
+    /*
+        Since Qt 6.5 we have QML_STRUCTURED_VALUE and do not need to
+        write our own converter.
+
+        However: we should also be able to implement a generic converter from the
+        metatype information: TODO ...
+
+        For the moment we have these converters:
+     */
+    QskGradientStop toGradientStop( const QJSValue& value )
     {
-      public:
-        WarningBlocker()
-        {
-            m_oldFilter = QLoggingCategory::installFilter( &WarningBlocker::filter );
-        }
+        return QskGradientStop(
+            value.property( QStringLiteral( "position" ) ).toNumber(),
+            value.property( QStringLiteral( "color" ) ).toVariant().value< QColor >()
+        );
+    }
 
-        ~WarningBlocker()
-        {
-            QLoggingCategory::installFilter( m_oldFilter );
-        }
+    QskLinearDirection toLinearDirection( const QJSValue& value )
+    {
+        return QskLinearDirection(
+            value.property( QStringLiteral( "x1" ) ).toNumber(),
+            value.property( QStringLiteral( "y1" ) ).toNumber(),
+            value.property( QStringLiteral( "x2" ) ).toNumber(),
+            value.property( QStringLiteral( "y2" ) ).toNumber() );
+    }
 
-      private:
+    QskConicDirection toConicDirection( const QJSValue& value )
+    {
+        return QskConicDirection(
+            value.property( QStringLiteral( "x" ) ).toNumber(),
+            value.property( QStringLiteral( "y" ) ).toNumber(),
+            value.property( QStringLiteral( "startAngle" ) ).toNumber(),
+            value.property( QStringLiteral( "spanAngle" ) ).toNumber() );
+    }
 
-        static void filter( QLoggingCategory* category )
+    QskRadialDirection toRadialDirection( const QJSValue& value )
+    {
+        return QskRadialDirection(
+            value.property( QStringLiteral( "x" ) ).toNumber(),
+            value.property( QStringLiteral( "y" ) ).toNumber(),
+            value.property( QStringLiteral( "radiusX" ) ).toNumber(),
+            value.property( QStringLiteral( "radiusY" ) ).toNumber() );
+    }
+
+    QskGradient toGradient( const QJSValue& value )
+    {
+        QskGradient gradient;
+
+        QJSValueIterator it( value );
+
+        while ( it.hasNext() )
         {
-            if ( qstrcmp( category->categoryName(), "qt.qml.typeregistration" ) == 0 )
+            it.next();
+
+            auto v = it.value();
+
+            if ( v.isObject() )
             {
-                category->setEnabled( QtWarningMsg, false);
-                return;
-            }
+                if ( v.isArray() )
+                {
+                    if ( it.name() == QStringLiteral( "stops" ) )
+                    {
+                        QskGradientStops stops;
 
-            m_oldFilter(category);
+                        const int n = v.property( QStringLiteral( "length" ) ).toInt();
+                        for ( int i = 0; i < n; i++ )
+                            stops += toGradientStop( v.property( i ) );
+
+                        gradient.setStops( stops );
+                    }
+                }
+                else
+                {
+                    if ( it.name() == QStringLiteral( "linear" ) )
+                    {
+                        gradient.setLinearDirection( toLinearDirection( v ) );
+                    }
+                    else if ( it.name() == QStringLiteral( "conic" ) )
+                    {
+                        gradient.setConicDirection( toConicDirection( v ) );
+                    }
+                    else if ( it.name() == QStringLiteral( "radial" ) )
+                    {
+                        gradient.setRadialDirection( toRadialDirection( v ) );
+                    }
+                }
+            }
+            else if ( v.isNumber() )
+            {
+                if ( it.name() == QStringLiteral( "spreadMode" ) )
+                {
+                    const auto s = v.toNumber();
+                    if ( s >= QskGradient::PadSpread && s <= QskGradient::RepeatSpread )
+                    {
+                        gradient.setSpreadMode(
+                            static_cast< QskGradient::SpreadMode >( s ) );
+                    }
+                }
+            }
         }
 
-        static QLoggingCategory::CategoryFilter m_oldFilter;
-    };
+        return gradient;
+    }
 
-    QLoggingCategory::CategoryFilter WarningBlocker::m_oldFilter;
+    void registerJSConverters()
+    {
+        QMetaType::registerConverter< QJSValue, QskGradient >( toGradient );
+        QMetaType::registerConverter< QJSValue, QskLinearDirection >( toLinearDirection );
+        QMetaType::registerConverter< QJSValue, QskConicDirection >( toConicDirection );
+        QMetaType::registerConverter< QJSValue, QskRadialDirection >( toRadialDirection );
+        QMetaType::registerConverter< QJSValue, QskGradientStop >( toGradientStop );
+    }
 }
 
 #endif
-
-static inline QskGradientStop qskToGradientStop( const QJSValue& value )
-{
-    return QskGradientStop(
-        value.property( QStringLiteral( "position" ) ).toNumber(),
-        value.property( QStringLiteral( "color" ) ).toVariant().value< QColor >()
-    );
-}
 
 void QskQml::registerTypes()
 {
-#if 0
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-    qmlRegisterRevision< QQuickItem, 6 >( QSK_MODULE_NAME, 1, 0 );
-#endif
-#endif
-
     qmlRegisterUncreatableType< QskSetup >( QSK_MODULE_NAME, 1, 0, "Setup", QString() );
     qmlRegisterUncreatableType< QskSkin >( QSK_MODULE_NAME, 1, 0, "Skin", QString() );
     qRegisterMetaType< QskSkin* >();
 
-    QSK_REGISTER( QskMain, "Main" );
-    QSK_REGISTER( QskShortcutQml, "Shortcut" );
+    registerObject< QskMain >();
+    registerObject< QskShortcutQml >( "Shortcut" );
 
-    QSK_REGISTER( QskWindow, "Window" );
+    registerObject< QskWindow >();
 
-    QSK_REGISTER( QskDialogWindow, "DialogWindow" );
-    QSK_REGISTER( QskMessageWindow, "MessageWindow" );
-    QSK_REGISTER( QskSelectionWindow, "SelectionWindow" );
+    registerObject< QskDialogWindow >();
+    registerObject< QskMessageWindow >();
+    registerObject< QskSelectionWindow >();
 
-    QSK_REGISTER( QskGridBoxQml, "GridBox" );
-    QSK_REGISTER( QskLinearBoxQml, "LinearBox" );
+    registerObject< QskGridBoxQml >( "GridBox" );
+    registerObject< QskLinearBoxQml >( "LinearBox" );
 
-    QSK_REGISTER( QskControl, "Control" );
-    QSK_REGISTER( QskGraphicLabel, "GraphicLabel" );
-    QSK_REGISTER( QskVirtualKeyboard, "VirtualKeyboard" );
-    QSK_REGISTER( QskTextLabel, "TextLabel" );
-    QSK_REGISTER( QskTabButton, "TabButton" );
-    QSK_REGISTER( QskTabBar, "TabBar" );
-    QSK_REGISTER( QskTabView, "TabView" );
-    QSK_REGISTER( QskFocusIndicator, "FocusIndicator" );
-    QSK_REGISTER( QskSeparator, "Separator" );
-    QSK_REGISTER( QskProgressBar, "ProgressBar" );
-    QSK_REGISTER( QskPushButton, "PushButton" );
-    QSK_REGISTER( QskScrollView, "ScrollView" );
-    QSK_REGISTER( QskScrollArea, "ScrollArea" );
-    QSK_REGISTER( QskSlider, "Slider" );
-    QSK_REGISTER( QskSimpleListBox, "SimpleListBox" );
-    QSK_REGISTER( QskDialogButton, "DialogButton" );
-    QSK_REGISTER( QskDialogButtonBox, "DialogButtonBox" );
-    QSK_REGISTER( QskPopup, "Popup" );
-    QSK_REGISTER( QskStatusIndicator, "StatusIndicator" );
-    QSK_REGISTER( QskSubWindow, "SubWindow" );
-    QSK_REGISTER( QskSubWindowArea, "SubWindowArea" );
-    QSK_REGISTER( QskDialogSubWindow, "DialogSubWindow" );
+    registerObject< QskControl >();
+    registerObject< QskGraphicLabel >();
+    registerObject< QskVirtualKeyboard >();
+    registerObject< QskTextLabel >();
+    registerObject< QskTabButton >();
+    registerObject< QskTabBar >();
+    registerObject< QskTabView >();
+    registerObject< QskFocusIndicator >();
+    registerObject< QskSeparator >();
+    registerObject< QskProgressBar >();
+    registerObject< QskPushButton >();
+    registerObject< QskScrollView >();
+    registerObject< QskScrollArea >();
+    registerObject< QskSlider >();
+    registerObject< QskSimpleListBox >();
+    registerObject< QskDialogButton >();
+    registerObject< QskDialogButtonBox >();
+    registerObject< QskPopup >();
+    registerObject< QskStatusIndicator >();
+    registerObject< QskSubWindow >();
+    registerObject< QskSubWindowArea >();
+    registerObject< QskDialogSubWindow >();
 
-    QSK_REGISTER_SINGLETON( QskDialog, "Dialog", QskDialog::instance() );
+    registerSingleton< QskDialog >( QskDialog::instance() );
 
-    qmlRegisterUncreatableType< QskSkin >( "Skinny.Skins", 1, 0, "Skin", QString() );
+#if 0
+    qmlRegisterUncreatableType< QskSkin >( "Skinny.Skins",
+        QSK_VERSION_MAJOR, QSK_VERSION_MINOR, "Skin", QString() );
+#endif
 
     QSK_REGISTER_FLAGS( QskQuickItem::UpdateFlag );
     QSK_REGISTER_FLAGS( QskQuickItem::UpdateFlags );
@@ -176,77 +235,39 @@ void QskQml::registerTypes()
 
     QSK_REGISTER_FLAGS( QskDialog::Actions );
 
-    {
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-        /*
-            The QML engine warns about registering uncreatables with names starting with
-            a capital letter. But as those classes usually appear only as scope for
-            local enums in QML, we do want to have capitals. f.e.:
+    registerGadget< QskBoxBorderMetrics >();
+    registerGadget< QskBoxShapeMetrics >();
+    registerGadget< QskShadowMetrics >();
+    registerGadget< QskIntervalF >();
+    registerGadget< QskLayoutMetrics >();
+    registerGadget< QskMargins >();
 
-                - "policy.horizonalPolicy : SizePolicy::Minimum".
+    registerGadget< QskGradient >();
+    registerGadget< QskGradientStop >();
+    registerGadget< QskLinearDirection >();
+    registerGadget< QskConicDirection >();
+    registerGadget< QskRadialDirection >();
 
-            Maybe we need to introduce some dummy gadgets exposing the enums
-            in capital letters by using QML_FOREIGN_NAMESPACE, while the
-            original gadget is exposed in lower letters. TODO ...
-         */
-        WarningBlocker warningBlocker;
+    registerGadget< QskAspect >();
+    registerGadget< QskPlacementPolicy >();
+    registerGadget< QskSizePolicy >();
+    registerGadget< QskTextOptions >();
+
+    registerNamespace( QskStandardSymbol::staticMetaObject );
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 5, 0 )
+    registerJSConverters();
 #endif
 
-        QSK_REGISTER_GADGET( QskBoxBorderMetrics, "BorderMetrics" );
-        QSK_REGISTER_GADGET( QskBoxShapeMetrics, "Shape" );
-        QSK_REGISTER_GADGET( QskShadowMetrics, "ShadowMetrics" );
-        QSK_REGISTER_GADGET( QskGradient, "Gradient" );
-        QSK_REGISTER_GADGET( QskGradientStop, "GradientStop" );
-        QSK_REGISTER_GADGET( QskIntervalF, "IntervalF" );
-        QSK_REGISTER_GADGET( QskLayoutMetrics, "LayoutMetrics" );
-        QSK_REGISTER_GADGET( QskSizePolicy, "SizePolicy" );
-        QSK_REGISTER_GADGET( QskTextOptions, "TextOptions" );
-        QSK_REGISTER_GADGET( QskMargins, "Margins" );
-        QSK_REGISTER_GADGET( QskAspect, "Aspect" );
-    }
-
-    // Support (lists of) GradientStop
-    QMetaType::registerConverter< QJSValue, QskGradientStop >( qskToGradientStop );
-
-    QMetaType::registerConverter< QJSValue, QskGradientStops >(
-
-        []( const QJSValue& value )
-        {
-            QskGradientStops stops;
-            if ( value.isArray() )
-            {
-                QJSValueIterator it( value );
-
-                while ( it.next() && it.hasNext() )
-                    stops.append( qskToGradientStop( it.value() ) );
-            }
-            return stops;
-        }
-    );
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 2, 0 )
-    // how to do this with >= 6.2 TODO ...
+    /*
+        Since Qt 6.5 invokable constructors are accessible from QML, something
+        what was possibe until Qt 6.2 with string converters. For Qt [6.2,6.4]
+        we do not have any solution.
+     */
+
     QQmlMetaType::registerCustomStringConverter( qMetaTypeId< QskMargins >(),
         []( const QString& s ) { return QVariant::fromValue( QskMargins( s.toDouble() ) ); } );
-#endif
-
-    // Support QskSizePolicy in QML user properties
-    QMetaType::registerConverter< QJSValue, QskSizePolicy >(
-        []( const QJSValue& value )
-        {
-            return QskSizePolicy(
-                static_cast< QskSizePolicy::Policy >( value.property( 0 ).toInt() ),
-                static_cast< QskSizePolicy::Policy >( value.property( 1 ).toInt() ) );
-        }
-    );
-
-#if 1
-    QMetaType::registerConverter< int, QskSizePolicy >(
-        []( int value )
-        {
-            const auto policy = static_cast< QskSizePolicy::Policy >( value );
-            return QskSizePolicy( policy, policy );
-        }
-    );
 #endif
 }

@@ -6,7 +6,6 @@
 #include "CircularProgressBar.h"
 
 #include <QskAnimator.h>
-#include <QskArcMetrics.h>
 #include <QskFunctions.h>
 
 QSK_SUBCONTROL( CircularProgressBar, Groove )
@@ -74,6 +73,8 @@ class CircularProgressBar::PrivateData
     bool hasOrigin = false;
     bool isIndeterminate = false;
 };
+
+CircularProgressBar::~CircularProgressBar() = default;
 
 CircularProgressBar::CircularProgressBar( qreal min, qreal max, QQuickItem* parent )
     : QskBoundedControl( min, max, parent )

@@ -309,7 +309,7 @@ void QskTabBar::setEdge( Qt::Edge edge )
 {
     const auto oldEdge = this->edge();
 
-    setFlagHint( Panel | QskAspect::Style, edge ); 
+    setFlagHint( Panel | QskAspect::Style, edge );
 
     if ( edge == oldEdge )
         return;

@@ -8,6 +8,17 @@
 #include <qnamespace.h>
 #include <algorithm>
 
+static void qskRegisterLayoutMetrics()
+{
+    qRegisterMetaType< QskLayoutMetrics >();
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    QMetaType::registerEqualsComparator< QskLayoutMetrics >();
+#endif
+}
+
+Q_CONSTRUCTOR_FUNCTION( qskRegisterLayoutMetrics )
+
 void QskLayoutMetrics::setMetric( int which, qreal metric ) noexcept
 {
     switch (which)

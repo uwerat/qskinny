@@ -7,6 +7,7 @@
 
 #include <qhashfunctions.h>
 #include <qvariant.h>
+#include <qrect.h>
 
 static void qskRegisterBoxBorderMetrics()
 {
@@ -77,6 +78,15 @@ QskBoxBorderMetrics QskBoxBorderMetrics::toAbsolute( const QSizeF& size ) const 
     absoluted.m_sizeMode = Qt::AbsoluteSize;
 
     return absoluted;
+}
+
+QRectF QskBoxBorderMetrics::adjustedRect( const QRectF& rect ) const
+{
+    if ( m_sizeMode == Qt::AbsoluteSize )
+        return rect.marginsRemoved( m_widths );
+
+    const auto m = toAbsolute( rect.size() );
+    return rect.marginsRemoved( m.m_widths );
 }
 
 QskBoxBorderMetrics QskBoxBorderMetrics::interpolated(

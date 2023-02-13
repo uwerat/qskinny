@@ -41,12 +41,11 @@ static inline QBrush qskSubstitutedBrush(
 {
     QBrush newBrush;
 
-    const QGradient* gradient = brush.gradient();
-    if ( gradient )
+    if ( const auto gradient = brush.gradient() )
     {
         bool isModified = false;
 
-        QGradientStops stops = gradient->stops();
+        auto stops = gradient->stops();
         for ( auto& stop : stops )
         {
             const QColor c = qskSubstitutedColor( substitions, stop.second );
@@ -61,7 +60,7 @@ static inline QBrush qskSubstitutedBrush(
         {
             newBrush = brush;
 
-            QGradient* newGradient = const_cast< QGradient* >( newBrush.gradient() );
+            auto newGradient = const_cast< QGradient* >( newBrush.gradient() );
             newGradient->setStops( stops );
         }
     }
@@ -167,7 +166,7 @@ QPen QskColorFilter::substituted( const QPen& pen ) const
     if ( m_substitutions.isEmpty() || pen.style() == Qt::NoPen )
         return pen;
 
-    const QBrush newBrush = qskSubstitutedBrush( m_substitutions, pen.brush() );
+    const auto newBrush = qskSubstitutedBrush( m_substitutions, pen.brush() );
     if ( newBrush.style() == Qt::NoBrush )
         return pen;
 
@@ -181,7 +180,7 @@ QBrush QskColorFilter::substituted( const QBrush& brush ) const
     if ( m_substitutions.isEmpty() || brush.style() == Qt::NoBrush )
         return brush;
 
-    const QBrush newBrush = qskSubstitutedBrush( m_substitutions, brush );
+    const auto newBrush = qskSubstitutedBrush( m_substitutions, brush );
     return ( newBrush.style() != Qt::NoBrush ) ? newBrush : brush;
 }
 

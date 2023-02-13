@@ -26,10 +26,17 @@ class QSK_EXPORT QskBoxShapeMetrics
     Q_PROPERTY( qreal radius READ radiusX WRITE setRadius )
 
     Q_PROPERTY( Qt::SizeMode sizeMode READ sizeMode WRITE setSizeMode )
-    Q_PROPERTY( Qt::AspectRatioMode aspectRatioMode
-        READ aspectRatioMode WRITE setAspectRatioMode )
+    Q_PROPERTY( ScalingMode scalingMode READ scalingMode WRITE setScalingMode )
 
   public:
+    enum ScalingMode
+    {
+        // How to scale, when translating to Qt::AbsoluteSize
+        Circular,
+        Elliptic
+    };
+    Q_ENUM( ScalingMode );
+
     constexpr QskBoxShapeMetrics() noexcept;
 
     constexpr QskBoxShapeMetrics( qreal topLeft, qreal topRight,
@@ -83,8 +90,8 @@ class QSK_EXPORT QskBoxShapeMetrics
     void setSizeMode( Qt::SizeMode ) noexcept;
     constexpr Qt::SizeMode sizeMode() const noexcept;
 
-    void setAspectRatioMode( Qt::AspectRatioMode ) noexcept;
-    constexpr Qt::AspectRatioMode aspectRatioMode() const noexcept;
+    void setScalingMode( ScalingMode ) noexcept;
+    constexpr ScalingMode scalingMode() const noexcept;
 
     QskBoxShapeMetrics interpolated(
         const QskBoxShapeMetrics&, qreal value ) const noexcept;
@@ -105,22 +112,22 @@ class QSK_EXPORT QskBoxShapeMetrics
     inline constexpr QskBoxShapeMetrics(
             const QSizeF& topLeft, const QSizeF& topRight,
             const QSizeF& bottomLeft, const QSizeF& bottomRight,
-            Qt::SizeMode sizeMode, Qt::AspectRatioMode aspectRatioMode ) noexcept
+            Qt::SizeMode sizeMode, ScalingMode scalingMode ) noexcept
         : m_radii{ topLeft, topRight, bottomLeft, bottomRight }
         , m_sizeMode( sizeMode )
-        , m_aspectRatioMode( aspectRatioMode )
+        , m_scalingMode( scalingMode )
     {
     }
 
     QSizeF m_radii[ 4 ];
     Qt::SizeMode m_sizeMode : 2;
-    Qt::AspectRatioMode m_aspectRatioMode : 2;
+    ScalingMode m_scalingMode : 1;
 };
 
 inline constexpr QskBoxShapeMetrics::QskBoxShapeMetrics() noexcept
     : m_radii{ { 0.0, 0.0 }, { 0.0, 0.0 }, { 0.0, 0.0 }, { 0.0, 0.0 } }
     , m_sizeMode( Qt::AbsoluteSize )
-    , m_aspectRatioMode( Qt::KeepAspectRatio )
+    , m_scalingMode( Circular )
 {
 }
 
@@ -135,7 +142,7 @@ inline constexpr QskBoxShapeMetrics::QskBoxShapeMetrics(
     : m_radii{ { radiusX, radiusY }, { radiusX, radiusY },
         { radiusX, radiusY }, { radiusX, radiusY } }
     , m_sizeMode( sizeMode )
-    , m_aspectRatioMode( Qt::KeepAspectRatio )
+    , m_scalingMode( Circular )
 {
 }
 
@@ -144,7 +151,7 @@ inline constexpr QskBoxShapeMetrics::QskBoxShapeMetrics( qreal topLeft, qreal to
     : m_radii{ { topLeft, topLeft }, { topRight, topRight },
         { bottomLeft, bottomLeft }, { bottomRight, bottomRight } }
     , m_sizeMode( sizeMode )
-    , m_aspectRatioMode( Qt::KeepAspectRatio )
+    , m_scalingMode( Circular )
 {
 }
 
@@ -152,7 +159,7 @@ inline constexpr bool QskBoxShapeMetrics::operator==(
     const QskBoxShapeMetrics& other ) const noexcept
 {
     return ( m_sizeMode == other.m_sizeMode )
-        && ( m_aspectRatioMode == other.m_aspectRatioMode )
+        && ( m_scalingMode == other.m_scalingMode )
         && ( m_radii[ 0 ] == other.m_radii[ 0 ] )
         && ( m_radii[ 1 ] == other.m_radii[ 1 ] )
         && ( m_radii[ 2 ] == other.m_radii[ 2 ] )
@@ -250,15 +257,15 @@ inline constexpr Qt::SizeMode QskBoxShapeMetrics::sizeMode() const noexcept
     return m_sizeMode;
 }
 
-inline void QskBoxShapeMetrics::setAspectRatioMode(
-    Qt::AspectRatioMode aspectRatioMode ) noexcept
+inline void QskBoxShapeMetrics::setScalingMode( ScalingMode scalingMode ) noexcept
 {
-    m_aspectRatioMode = aspectRatioMode;
+    m_scalingMode = scalingMode;
 }
 
-inline constexpr Qt::AspectRatioMode QskBoxShapeMetrics::aspectRatioMode() const noexcept
+inline constexpr QskBoxShapeMetrics::ScalingMode
+    QskBoxShapeMetrics::scalingMode() const noexcept
 {
-    return m_aspectRatioMode;
+    return m_scalingMode;
 }
 
 inline constexpr bool QskBoxShapeMetrics::isRectellipse() const noexcept
@@ -281,7 +288,7 @@ inline constexpr QskBoxShapeMetrics QskBoxShapeMetrics::transposed() const noexc
     return QskBoxShapeMetrics(
         m_radii[ 0 ].transposed(), m_radii[ 1 ].transposed(),
         m_radii[ 2 ].transposed(), m_radii[ 3 ].transposed(),
-        m_sizeMode, m_aspectRatioMode );
+        m_sizeMode, m_scalingMode );
 }
 
 #ifndef QT_NO_DEBUG_STREAM

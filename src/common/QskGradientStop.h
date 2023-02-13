@@ -10,17 +10,21 @@
 
 #include <qcolor.h>
 #include <qmetatype.h>
+#include <qvector.h>
+
+typedef QPair< qreal, QColor > QGradientStop;
 
 class QSK_EXPORT QskGradientStop
 {
     Q_GADGET
 
-    Q_PROPERTY( qreal position READ position WRITE setPosition RESET resetPosition )
-    Q_PROPERTY( QColor color READ color WRITE setColor RESET resetColor )
+    Q_PROPERTY( qreal position READ position WRITE setPosition )
+    Q_PROPERTY( QColor color READ color WRITE setColor )
 
   public:
-    constexpr QskGradientStop() noexcept;
+    constexpr QskGradientStop() noexcept = default;
     constexpr QskGradientStop( qreal position, const QColor& ) noexcept;
+    constexpr QskGradientStop( const QGradientStop& ) noexcept;
 
     QskGradientStop( qreal position, Qt::GlobalColor ) noexcept;
     QskGradientStop( qreal position, QRgb ) noexcept;
@@ -29,14 +33,17 @@ class QSK_EXPORT QskGradientStop
     constexpr bool operator!=( const QskGradientStop& ) const noexcept;
 
     void setStop( qreal position, const QColor& ) noexcept;
+    void setStop( qreal position, Qt::GlobalColor ) noexcept;
+    void setStop( qreal position, QRgb ) noexcept;
 
     constexpr qreal position() const noexcept;
     void setPosition( qreal position ) noexcept;
-    void resetPosition() noexcept;
 
     constexpr const QColor& color() const noexcept;
     void setColor( const QColor& ) noexcept;
-    void resetColor() noexcept;
+
+    void setRgb( QRgb ) noexcept;
+    QRgb rgb() const noexcept;
 
     static QColor interpolated(
         const QskGradientStop&, const QskGradientStop&, qreal position ) noexcept;
@@ -44,8 +51,8 @@ class QSK_EXPORT QskGradientStop
     QskHashValue hash( QskHashValue seed ) const noexcept;
 
   private:
-    qreal m_position;
-    QColor m_color; // using RGBA instead ?
+    qreal m_position = -1.0;
+    QColor m_color; // using QRgb instead ?
 };
 
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
@@ -53,11 +60,6 @@ class QSK_EXPORT QskGradientStop
 #endif
 
 Q_DECLARE_METATYPE( QskGradientStop )
-
-inline constexpr QskGradientStop::QskGradientStop() noexcept
-    : m_position( -1.0 )
-{
-}
 
 inline constexpr QskGradientStop::QskGradientStop(
         qreal position, const QColor& color ) noexcept
@@ -78,6 +80,11 @@ inline QskGradientStop::QskGradientStop(
 {
 }
 
+inline constexpr QskGradientStop::QskGradientStop( const QGradientStop& qtStop ) noexcept
+    : QskGradientStop( qtStop.first, qtStop.second )
+{
+}
+
 inline constexpr qreal QskGradientStop::position() const noexcept
 {
     return m_position;
@@ -86,6 +93,11 @@ inline constexpr qreal QskGradientStop::position() const noexcept
 inline constexpr const QColor& QskGradientStop::color() const noexcept
 {
     return m_color;
+}
+
+inline QRgb QskGradientStop::rgb() const noexcept
+{
+    return m_color.rgba();
 }
 
 inline constexpr bool QskGradientStop::operator==( const QskGradientStop& other ) const noexcept
@@ -105,5 +117,37 @@ class QDebug;
 QSK_EXPORT QDebug operator<<( QDebug, const QskGradientStop& );
 
 #endif
+
+typedef QVector< QskGradientStop > QskGradientStops;
+
+QSK_EXPORT bool qskIsMonochrome( const QskGradientStops& ) noexcept;
+QSK_EXPORT bool qskIsVisible( const QskGradientStops& ) noexcept;
+
+QSK_EXPORT QskGradientStops qskInterpolatedGradientStops(
+    const QskGradientStops&, bool, const QskGradientStops&, bool,
+    qreal ratio );
+
+QSK_EXPORT QskGradientStops qskInterpolatedGradientStops(
+    const QskGradientStops&, const QColor&, qreal ratio );
+
+QSK_EXPORT QskGradientStops qskInterpolatedGradientStops(
+    const QColor&, const QskGradientStops&, qreal ratio );
+
+QSK_EXPORT QskGradientStops qskTransparentGradientStops(
+    const QskGradientStops&, qreal ratio );
+
+QSK_EXPORT QskGradientStops qskExtractedGradientStops(
+    const QskGradientStops&, qreal from, qreal to );
+
+QSK_EXPORT QskGradientStops qskBuildGradientStops(
+    const QVector< QRgb >&, bool discrete = false );
+
+QSK_EXPORT QskGradientStops qskBuildGradientStops(
+    const QVector< QColor >&, bool discrete = false );
+
+QSK_EXPORT QskGradientStops qskRevertedGradientStops( const QskGradientStops& );
+
+QSK_EXPORT QskGradientStops qskBuildGradientStops( const QVector< QGradientStop >& );
+QSK_EXPORT QVector< QGradientStop > qskToQGradientStops( const QVector< QskGradientStop >& );
 
 #endif

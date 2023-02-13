@@ -5,58 +5,85 @@
 
 #include "MenuBar.h"
 
+#include <QTimer>
+
 QSK_SUBCONTROL( MenuBarTopLabel, Graphic )
-QSK_SUBCONTROL( MenuBarGraphicLabel, Graphic )
-QSK_SUBCONTROL( MenuBarLabel, Text )
-QSK_SUBCONTROL( MenuItem, Panel )
+
+QSK_SUBCONTROL( MenuButton, Panel )
+QSK_SUBCONTROL( MenuButton, Text )
+QSK_SUBCONTROL( MenuButton, Graphic )
+
 QSK_SUBCONTROL( MenuBar, Panel )
 
-QSK_STATE( MenuItem, Active, ( QskAspect::FirstUserState << 1 ) )
-
-MenuItem::MenuItem( const QString& name, QQuickItem* parent )
-    : QskLinearBox( Qt::Horizontal, parent )
+MenuButton::MenuButton( const QString& name, QQuickItem* parent )
+    : QskPushButton( name, parent )
 {
+    setCheckable( true );
     initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
-    setSpacing( 6 );
 
-    setAcceptHoverEvents( true );
+    setSubcontrolProxy( QskPushButton::Panel, MenuButton::Panel );
+    setSubcontrolProxy( QskPushButton::Text, MenuButton::Text );
+    setSubcontrolProxy( QskPushButton::Graphic, MenuButton::Graphic );
 
-    setPanel( true );
-    setSubcontrolProxy( QskBox::Panel, MenuItem::Panel );
-
-    auto graphicLabel = new MenuBarGraphicLabel( name, this );
-    graphicLabel->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
-    graphicLabel->setFixedWidth( metric( MenuBarGraphicLabel::Graphic | QskAspect::Size ) );
-
-    new MenuBarLabel( name, this );
+    setGraphicSource( name );
 }
 
 MenuBar::MenuBar( QQuickItem* parent )
     : QskLinearBox( Qt::Vertical, parent )
+    , m_currentIndex( Cube::FrontPos )
 {
     setPanel( true );
     setSubcontrolProxy( QskBox::Panel, MenuBar::Panel );
 
-    initSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Preferred );
-    setSpacing( 8 );
+    initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Preferred );
+    setSpacing( 0 );
 
     auto graphicLabel = new MenuBarTopLabel( "main-icon", this );
     graphicLabel->setMargins( marginHint( MenuBarTopLabel::Graphic ) );
     graphicLabel->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 
-    m_entryStrings = { "Dashboard", "Rooms", "Devices", "Statistics", "Storage", "Members" };
-
-    for( const auto& entryString : qAsConst( m_entryStrings ) )
+    // ### unify the information with the one from MainItem
+    const QVector< QPair< Cube::Position, QString > > entries =
     {
-        auto* entry = new MenuItem( entryString, this );
-        m_entries.append( entry );
-    }
+        { Cube::FrontPos, "Dashboard" },
+        { Cube::RightPos, "Rooms" },
+        { Cube::BackPos, "Devices" },
+        { Cube::LeftPos, "Statistics" },
+        { Cube::TopPos, "Storage" },
+        { Cube::BottomPos, "Members" },
+    };
 
-    m_entries.at( m_activeEntry )->setSkinStateFlag( MenuItem::Active );
+    for( const auto& entry : entries )
+    {
+        auto* button = new MenuButton( entry.second, this );
+        m_buttons[ entry.first ] = button;
+
+        connect( button, &QskPushButton::pressed, this, [ this, entry ]()
+        {
+            for( auto* button : qAsConst( m_buttons ) )
+            {
+                // the right button will be set to checked after this
+                button->setChecked( false );
+            }
+
+            Q_EMIT pageChangeRequested( entry.first );
+        } );
+    }
 
     addSpacer( 0, 1 ); // fill the space at the bottom
 
-    new MenuItem( "Logout", this );
+    new MenuButton( "Logout", this );
+}
+
+void MenuBar::setActivePage( const int index )
+{
+    m_buttons[ m_currentIndex ]->setChecked( false );
+    m_currentIndex = index;
+
+    QTimer::singleShot( 0, this, [this]()
+    {
+        m_buttons[ m_currentIndex ]->setChecked( true );
+    } );
 }
 
 #include "moc_MenuBar.cpp"

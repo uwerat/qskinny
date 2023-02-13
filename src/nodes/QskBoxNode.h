@@ -9,30 +9,24 @@
 #include "QskGlobal.h"
 #include <qsgnode.h>
 
+class QskShadowMetrics;
 class QskBoxShapeMetrics;
 class QskBoxBorderMetrics;
 class QskBoxBorderColors;
 class QskGradient;
+class QskShadowMetrics;
+class QColor;
 
-class QskBoxNodePrivate;
-
-class QSK_EXPORT QskBoxNode : public QSGGeometryNode
+class QSK_EXPORT QskBoxNode : public QSGNode
 {
   public:
     QskBoxNode();
     ~QskBoxNode() override;
 
-    void setBoxData( const QRectF&,
+    void updateNode( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
-        const QskBoxBorderColors&, const QskGradient& );
-
-    void setBoxData( const QRectF& rect, const QskGradient& );
-
-  private:
-    void setMonochrome( bool on );
-
-    Q_DECLARE_PRIVATE( QskBoxNode )
-
+        const QskBoxBorderColors&, const QskGradient&,
+        const QskShadowMetrics&, const QColor& shadowColor );
 };
 
 #endif

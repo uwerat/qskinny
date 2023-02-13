@@ -7,7 +7,7 @@
 
 #include <QskPushButton.h>
 
-class RoundButton : QskPushButton
+class RoundButton : public QskPushButton
 {
     Q_OBJECT
 

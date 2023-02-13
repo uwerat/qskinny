@@ -8,7 +8,6 @@
 
 #include <QskBoxBorderColors.h>
 #include <QskBoxBorderMetrics.h>
-#include <QskBoxNode.h>
 #include <QskBoxShapeMetrics.h>
 #include <QskTextColors.h>
 #include <QskTextOptions.h>
@@ -17,6 +16,7 @@
 #include <QFontMetrics>
 #include <QLineF>
 #include <QSGFlatColorMaterial>
+#include <QSGGeometryNode>
 #include <QtMath>
 
 namespace

@@ -9,7 +9,6 @@
 
 #include <QskBox.h>
 #include <QskCheckBox.h>
-#include <QskDialogButton.h>
 #include <QskDialogButtonBox.h>
 #include <QskFocusIndicator.h>
 #include <QskInputPanelBox.h>
@@ -40,7 +39,6 @@
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxShapeMetrics.h>
 #include <QskPlatform.h>
-#include <QskGradient.h>
 #include <QskMargins.h>
 #include <QskNamespace.h>
 #include <QskRgbValue.h>
@@ -135,7 +133,6 @@ namespace
 
         void setupBox();
         void setupCheckBox();
-        void setupDialogButton();
         void setupDialogButtonBox();
         void setupFocusIndicator();
         void setupInputPanel();
@@ -178,12 +175,7 @@ namespace
 
 void Editor::setSeparator( QskAspect aspect )
 {
-    QskGradient gradient( QskGradient::Vertical, m_pal.lighter110, m_pal.darker125 );
-
-    if ( aspect.placement() == QskAspect::Vertical )
-        gradient.setOrientation( QskGradient::Horizontal );
-
-    setGradient( aspect, gradient );
+    setGradient( aspect, m_pal.lighter110, m_pal.darker125 );
     setBoxShape( aspect, 0 );
     setBoxBorderMetrics( aspect, 0 );
 }
@@ -196,7 +188,7 @@ void Editor::setButton( QskAspect aspect, PanelStyle style, qreal border )
     QskBoxBorderColors borderColors;
 
     QskGradient gradient;
-    gradient.setOrientation( QskGradient::Vertical );
+    gradient.setLinearDirection( Qt::Vertical );
 
     switch ( style )
     {
@@ -204,7 +196,7 @@ void Editor::setButton( QskAspect aspect, PanelStyle style, qreal border )
         {
             borderColors.setGradientAt( Qt::TopEdge | Qt::LeftEdge, m_pal.lighter135 );
             borderColors.setGradientAt( Qt::RightEdge | Qt::BottomEdge, m_pal.darker200 );
-            gradient.setColors( m_pal.lighter125, m_pal.lighter110 );
+            gradient.setStops( m_pal.lighter125, m_pal.lighter110 );
 
             break;
         }
@@ -212,14 +204,14 @@ void Editor::setButton( QskAspect aspect, PanelStyle style, qreal border )
         {
             borderColors.setGradientAt( Qt::TopEdge | Qt::LeftEdge, m_pal.darker200 );
             borderColors.setGradientAt( Qt::RightEdge | Qt::BottomEdge, m_pal.lighter135 );
-            gradient.setColors( m_pal.lighter110, m_pal.lighter125 );
+            gradient.setStops( m_pal.lighter110, m_pal.lighter125 );
 
             break;
         }
         case Plain:
         {
             borderColors.setGradients( m_pal.darker125 );
-            gradient.setColor( m_pal.lighter125 );
+            gradient.setStops( m_pal.lighter125 );
 
             break;
         }
@@ -230,7 +222,7 @@ void Editor::setButton( QskAspect aspect, PanelStyle style, qreal border )
             noColor.setAlpha( 0 );
 
             borderColors.setGradients( noColor );
-            gradient.setColor( noColor );
+            gradient.setStops( noColor );
 
             if ( style == NoPanel )
                 border = 0;
@@ -257,7 +249,6 @@ void Editor::setup()
     setupBox();
     setupCheckBox();
     setupDialogButtonBox();
-    setupDialogButton();
     setupFocusIndicator();
     setupInputPanel();
     setupInputPredictionBar();
@@ -286,11 +277,11 @@ void Editor::setupControl()
     using A = QskAspect;
     using Q = QskControl;
 
-    setPadding( A::Control, 4 );
+    setPadding( A::NoSubcontrol, 4 );
 
-    setGradient( A::Control, m_pal.lighter135 );
-    setColor( A::Control | A::StyleColor, m_pal.themeForeground );
-    setColor( A::Control | A::StyleColor | Q::Disabled, m_pal.theme );
+    setGradient( A::NoSubcontrol, m_pal.lighter135 );
+    setColor( A::NoSubcontrol | A::StyleColor, m_pal.themeForeground );
+    setColor( A::NoSubcontrol | A::StyleColor | Q::Disabled, m_pal.theme );
 }
 
 void Editor::setupBox()
@@ -355,11 +346,8 @@ void Editor::setupMenu()
     const bool isCascading = qskMaybeDesktopPlatform();
     setFlagHint( Q::Panel | A::Style, isCascading );
 
-#if 0
-    setPadding( Q::Separator, QMarginsF( 10, 0, 10, 0 ) );
-#endif
     setMetric( Q::Separator | A::Size, qskDpiScaled( 2 ) );
-    setSeparator( Q::Separator | A::Horizontal );
+    setSeparator( Q::Separator );
 
     setPadding( Q::Segment, QskMargins( 2, 10, 2, 10 ) );
     setSpacing( Q::Segment, 5 );
@@ -475,15 +463,15 @@ void Editor::setupSeparator()
     using Q = QskSeparator;
 
     setMetric( Q::Panel | A::Size, 4 );
-
-    setSeparator( Q::Panel | A::Horizontal );
-    setSeparator( Q::Panel | A::Vertical );
+    setSeparator( Q::Panel );
 }
 
 void Editor::setupSegmentedBar()
 {
     using A = QskAspect;
     using Q = QskSegmentedBar;
+
+    const uint duration = 100;
 
     {
         // Panel
@@ -524,7 +512,7 @@ void Editor::setupSegmentedBar()
         setGradient( Q::Cursor | Q::Disabled, QColor( Qt::gray ).darker( 110 ) );
         setBoxBorderColors( Q::Cursor | Q::Disabled, Qt::gray );
 
-        setAnimation( Q::Cursor | A::Metric | A::Position, 100 );
+        setAnimation( Q::Cursor | A::Metric | A::Position, duration );
     }
 
     for( auto subControl : { Q::Panel, Q::Cursor } )
@@ -540,6 +528,8 @@ void Editor::setupSegmentedBar()
 
         for( auto state : { A::NoState, Q::Selected } )
             setColor( Q::Text | state | Q::Disabled, m_pal.darker200  );
+
+        setAnimation( Q::Text | A::Color, duration );
     }
 
     {
@@ -618,31 +608,6 @@ void Editor::setupPushButton()
     setAlignment( Q::Graphic, Qt::AlignCenter );
 }
 
-void Editor::setupDialogButton()
-{
-    using A = QskAspect;
-    using Q = QskDialogButton;
-
-    // panel
-    setStrutSize( Q::Panel, qskDpiScaled( 75.0 ), qskDpiScaled( 23.0 ) );
-
-    setPadding( Q::Panel, 10 );
-    setMetric( Q::Panel | A::Spacing, 4 );
-
-    setButton( Q::Panel, Raised );
-    setButton( Q::Panel | Q::Pressed, Sunken );
-
-    setAnimation( Q::Panel | A::Color, qskDuration );
-    setAnimation( Q::Panel | A::Metric, qskDuration );
-
-    // text
-    setFlagHint( Q::Text | Q::Disabled | A::Style, Qsk::Sunken );
-    setAlignment( Q::Text, Qt::AlignCenter );
-
-    setColor( Q::Text, m_pal.themeForeground );
-    setColor( Q::Text | Q::Disabled, m_pal.darker200 );
-}
-
 void Editor::setupDialogButtonBox()
 {
     using Q = QskDialogButtonBox;
@@ -662,8 +627,7 @@ void Editor::setupTabButton()
 
     for ( auto placement : { A::Top, A::Bottom } )
     {
-        setGradient( Q::Panel | placement,
-            QskGradient( Qt::Vertical, m_pal.lighter125, m_pal.lighter110 ) );
+        setVGradient( Q::Panel | placement, m_pal.lighter125, m_pal.lighter110 );
 
         for ( const auto state : { Q::Checked | A::NoState, Q::Checked | Q::Pressed } )
         {
@@ -904,6 +868,7 @@ void Editor::setupScrollView()
     using Q = QskScrollView;
 
     setMetric( Q::Panel | A::Spacing, 4 );
+    setGradient( Q::Panel, QskGradient() );
 
     setBoxBorderMetrics( Q::Viewport, 2 );
     setBoxShape( Q::Viewport, 8 );
@@ -1036,7 +1001,7 @@ void Editor::setupSwitchButton()
     setBoxShape( Q::Handle, 100, Qt::RelativeSize );
     setStrutSize( Q::Handle, handleSize, handleSize );
 
-    setGradient( Q::Handle, QskGradient( Qt::Vertical, m_pal.lighter150, m_pal.lighter110 ) );
+    setVGradient( Q::Handle, m_pal.lighter150, m_pal.lighter110 );
     setGradient( Q::Handle | Q::Disabled, m_pal.lighter110 );
 
     setBoxBorderMetrics( Q::Handle, 2 );

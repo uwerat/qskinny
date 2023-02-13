@@ -174,15 +174,21 @@ QskSkin::QskSkin( QObject* parent )
     const QFont font = QGuiApplication::font();
     setupFonts( font.family(), font.weight(), font.italic() );
 
+    const auto noMargins = QVariant::fromValue( QskMargins( 0 ) );
+
     {
         // some defaults
-        const auto noMargins = QVariant::fromValue( QskMargins( 0 ) );
-        const auto aspect = QskAspect::Control | QskAspect::Metric;
+        const auto aspect = QskAspect::NoSubcontrol | QskAspect::Metric;
 
         setSkinHint( aspect | QskAspect::Margin, noMargins );
         setSkinHint( aspect | QskAspect::Padding, noMargins );
         setSkinHint( aspect | QskAspect::Spacing, 0 );
     }
+
+    setSkinHint( QskControl::Background | QskAspect::Metric | QskAspect::Padding, noMargins );
+
+    setSkinHint( QskControl::Background | QskAspect::Color,
+        QVariant::fromValue( QskGradient() ) );
 }
 
 QskSkin::~QskSkin()

@@ -260,6 +260,11 @@ QskGraphic QskStandardSymbol::graphic( Type symbolType )
                 qskCrossMarkGraphic( &painter );
                 break;
             }
+            case QskStandardSymbol::SegmentedBarCheckMark:
+            {
+                qskCheckMarkGraphic( &painter );
+                break;
+            }
             case QskStandardSymbol::NoSymbol:
             case QskStandardSymbol::SymbolTypeCount:
             {

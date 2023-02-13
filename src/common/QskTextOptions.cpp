@@ -7,10 +7,14 @@
 #include <qtextdocument.h>
 
 static void qskRegisterTextOptions()
-{   
+{
     qRegisterMetaType< QskTextOptions >();
-}       
-    
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    QMetaType::registerEqualsComparator< QskTextOptions >();
+#endif
+}
+
 Q_CONSTRUCTOR_FUNCTION( qskRegisterTextOptions )
 
 int QskTextOptions::textFlags() const noexcept

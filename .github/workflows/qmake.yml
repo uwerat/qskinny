@@ -127,28 +127,28 @@ jobs:
 
 
   build-linux-qt-current:
-    name: Linux Qt 6.3 (current) build
+    name: Linux Qt 6.4 (current) build
     runs-on: ubuntu-latest
     env:
       DISPLAY: ":1"
     steps:
     - uses: actions/checkout@v2
     - name: Cache Qt
-      id: cache-qt-6-3
+      id: cache-qt-6-4
       uses: actions/cache@v1  # not v2!
       with:
-        path: ../Qt/6.3.0
-        key: ${{ runner.os }}-QtCache-Qt6-3
+        path: ../Qt/6.4.1
+        key: ${{ runner.os }}-QtCache-Qt6-4
 
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
       with:
-        version: '6.3.0'
+        version: '6.4.1'
         host: 'linux'
         target: 'desktop'
         install-deps: 'true'
         modules: 'qtwebengine'
-        cached: ${{ steps.cache-qt-6-3.outputs.cache-hit }}
+        cached: ${{ steps.cache-qt-6-4.outputs.cache-hit }}
         setup-python: 'true'
         tools: ''
         set-env: 'true'
@@ -174,7 +174,7 @@ jobs:
         ./examples/bin/gallery &
         sleep 10
         echo taking screenshot
-        import -pause 1 -window root screenshot-linux-qt6-3.jpg
+        import -pause 1 -window root screenshot-linux-qt6-4.jpg
         echo killing gallery
         killall gallery
         echo killing Xvfb
@@ -182,8 +182,8 @@ jobs:
     - name: Upload smoke test artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: screenshot-linux-qt6-3.jpg
-        path: screenshot-linux-qt6-3.jpg
+        name: screenshot-linux-qt6-4.jpg
+        path: screenshot-linux-qt6-4.jpg
 
 
   build-windows-qt5-15:
@@ -297,27 +297,27 @@ jobs:
 
 
   build-windows-qt-current:
-    name: Windows Qt 6.3 (current) build
+    name: Windows Qt 6.4 (current) build
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
     - name: Cache Qt
-      id: cache-qt-6-3
+      id: cache-qt-6-4
       uses: actions/cache@v1  # not v2!
       with:
-        path: ../Qt/6.3.0
-        key: ${{ runner.os }}-QtCache-Qt6-3
+        path: ../Qt/6.4.1
+        key: ${{ runner.os }}-QtCache-Qt6-4
 
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
       with:
-        version: '6.3.0'
+        version: '6.4.1'
         host: 'windows'
         target: 'desktop'
         arch: 'win64_msvc2019_64'
         install-deps: 'true'
         modules: 'qtwebengine'
-        cached: ${{ steps.cache-qt-6-3.outputs.cache-hit }}
+        cached: ${{ steps.cache-qt-6-4.outputs.cache-hit }}
         setup-python: 'true'
         tools: ''
         set-env: 'true'
@@ -346,7 +346,7 @@ jobs:
         Start-Sleep -s 10
     - uses: OrbitalOwen/desktop-screenshot-action@0.1
       with:
-        file-name: 'screenshot-windows-qt6-3.jpg'
+        file-name: 'screenshot-windows-qt6-4.jpg'
     - name: Cleanup smoke test
       run: taskkill /IM gallery.exe /T
 
@@ -443,26 +443,26 @@ jobs:
       run: killall gallery
 
   build-mac-qt-current:
-    name: MacOS Qt 6.3 (current) build
+    name: MacOS Qt 6.4 (current) build
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
     - name: Cache Qt
-      id: cache-qt-6-3
+      id: cache-qt-6-4
       uses: actions/cache@v1  # not v2!
       with:
-        path: ../Qt/6.3.0
-        key: ${{ runner.os }}-QtCache-Qt6-3
+        path: ../Qt/6.4.1
+        key: ${{ runner.os }}-QtCache-Qt6-4
 
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
       with:
-        version: '6.3.0'
+        version: '6.4.1'
         host: 'mac'
         target: 'desktop'
         install-deps: 'true'
         modules: 'qtwebengine'
-        cached: ${{ steps.cache-qt-6-3.outputs.cache-hit }}
+        cached: ${{ steps.cache-qt-6-4.outputs.cache-hit }}
         setup-python: 'true'
         tools: ''
         set-env: 'true'
@@ -483,6 +483,6 @@ jobs:
         sleep 10
     - uses: OrbitalOwen/desktop-screenshot-action@0.1
       with:
-        file-name: 'screenshot-macos-qt6-3.jpg'
+        file-name: 'screenshot-macos-qt6-4.jpg'
     - name: Cleanup smoke test
       run: killall gallery

@@ -6,7 +6,6 @@
 #include "QskPageIndicatorSkinlet.h"
 #include "QskPageIndicator.h"
 
-#include "QskBoxNode.h"
 #include "QskSGNode.h"
 #include "QskFunctions.h"
 

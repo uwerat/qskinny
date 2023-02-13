@@ -26,7 +26,7 @@ Qsk.Window
 
             focus: true
 
-            sizePolicy.verticalPolicy: Qsk.SizePolicy.MinimumExpanding
+            sizePolicy.vertical: Qsk.SizePolicy.MinimumExpanding
 
             onClicked:
             {
@@ -42,7 +42,7 @@ Qsk.Window
             id: informationButton
             text: "Information"
 
-            sizePolicy.verticalPolicy: Qsk.SizePolicy.MinimumExpanding
+            sizePolicy.vertical: Qsk.SizePolicy.MinimumExpanding
 
             onClicked:
             {
@@ -57,7 +57,7 @@ Qsk.Window
             id: questionButton
             text: "Question"
 
-            sizePolicy.verticalPolicy: Qsk.SizePolicy.MinimumExpanding
+            sizePolicy.vertical: Qsk.SizePolicy.MinimumExpanding
 
             onClicked:
             {
@@ -78,7 +78,7 @@ Qsk.Window
             id: warningButton
             text: "Warning"
 
-            sizePolicy.verticalPolicy: Qsk.SizePolicy.MinimumExpanding
+            sizePolicy.vertical: Qsk.SizePolicy.MinimumExpanding
 
             onClicked:
             {
@@ -93,7 +93,7 @@ Qsk.Window
             id: criticalButton
             text: "Critical"
 
-            sizePolicy.verticalPolicy: Qsk.SizePolicy.MinimumExpanding
+            sizePolicy.vertical: Qsk.SizePolicy.MinimumExpanding
 
             onClicked:
             {
@@ -108,7 +108,7 @@ Qsk.Window
             id: selectionButton
             text: "Selection"
             
-            sizePolicy.verticalPolicy: Qsk.SizePolicy.MinimumExpanding
+            sizePolicy.vertical: Qsk.SizePolicy.MinimumExpanding
             
             onClicked:
             {   

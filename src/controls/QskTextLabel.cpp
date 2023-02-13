@@ -104,7 +104,7 @@ QskTextOptions QskTextLabel::textOptions() const
 }
 
 void QskTextLabel::resetTextOptions()
-{   
+{
     if ( resetTextOptionsHint( Text ) )
         Q_EMIT textOptionsChanged( textOptions() );
 }

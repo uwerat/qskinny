@@ -59,7 +59,6 @@ class QskControlPrivate : public QskQuickItemPrivate
     bool explicitLocale : 1;
     bool explicitSection : 1;
 
-    bool autoFillBackground : 1;
     bool autoLayoutChildren : 1;
 
     uint focusPolicy : 4;

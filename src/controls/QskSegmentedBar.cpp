@@ -137,19 +137,13 @@ QskTextOptions QskSegmentedBar::textOptions() const
     return textOptionsHint( Text );
 }
 
-int QskSegmentedBar::addText( const QString& text )
+int QskSegmentedBar::addOption( const QUrl& graphicSource, const QString& text )
 {
-    m_data->addOption( this, Option( QUrl(), text ) );
+    m_data->addOption( this, Option( graphicSource, text ) );
     return count() - 1;
 }
 
-int QskSegmentedBar::addGraphic( const QUrl& graphicSource )
-{
-    m_data->addOption( this, Option( graphicSource, QString() ) );
-    return count() - 1;
-}
-
-QVariant QskSegmentedBar::optionAt( int index ) const
+QVariantList QskSegmentedBar::optionAt( int index ) const
 {
     const auto& options = m_data->options;
 
@@ -158,14 +152,11 @@ QVariant QskSegmentedBar::optionAt( int index ) const
 
     const auto& option = options[ index ];
 
-    QVariant value;
+    QVariantList list;
+    list += QVariant::fromValue( option.graphic );
+    list += QVariant::fromValue( option.text );
 
-    if ( option.graphicSource.isValid() )
-        value = QVariant::fromValue( option.graphic );
-    else
-        value = QVariant::fromValue( option.text );
-
-    return value;
+    return list;
 }
 
 QskAspect::Placement QskSegmentedBar::effectivePlacement() const
@@ -371,6 +362,7 @@ void QskSegmentedBar::setSelectedIndex( int index )
 
     if( index != m_data->selectedIndex )
     {
+        const auto oldIndex = m_data->selectedIndex;
         m_data->selectedIndex = index;
 
         movePositionHint( Cursor, index );
@@ -380,6 +372,14 @@ void QskSegmentedBar::setSelectedIndex( int index )
 
         setSkinStateFlag( Minimum, ( m_data->selectedIndex == 0 ) );
         setSkinStateFlag( Maximum, ( m_data->selectedIndex == count() - 1 ) );
+
+        const auto states = skinStates();
+
+        if ( oldIndex >= 0 )
+            startHintTransitions( states | Selected, states, oldIndex );
+
+        if ( index >= 0 )
+            startHintTransitions( states, states | Selected, index );
     }
 }
 

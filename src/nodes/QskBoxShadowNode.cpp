@@ -230,12 +230,12 @@ int Material::compare( const QSGMaterial* other ) const
 {
     auto material = static_cast< const Material* >( other );
 
-    if ( material->m_color != m_color
-        || material->m_aspect != m_aspect
-        || !qFuzzyCompare(material->m_blurExtent, m_blurExtent)
-        || !qFuzzyCompare(material->m_radius, m_radius) )
+    if ( ( material->m_color == m_color )
+        && ( material->m_aspect == m_aspect )
+        && qFuzzyCompare(material->m_blurExtent, m_blurExtent)
+        && qFuzzyCompare(material->m_radius, m_radius) )
     {
-        return 1;
+        return 0;
     }
 
     return QSGMaterial::compare( other );

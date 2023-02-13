@@ -9,10 +9,13 @@
 
 #include <QskBox.h>
 #include <QskCheckBox.h>
-#include <QskDialogButton.h>
+#include <QskColorFilter.h>
 #include <QskDialogButtonBox.h>
 #include <QskFocusIndicator.h>
 #include <QskFunctions.h>
+#include <QskGraphic.h>
+#include <QskGraphicIO.h>
+#include <QskGraphicProvider.h>
 #include <QskInputPanelBox.h>
 #include <QskListView.h>
 #include <QskMenu.h>
@@ -24,6 +27,7 @@
 #include <QskSeparator.h>
 #include <QskShadowMetrics.h>
 #include <QskSlider.h>
+#include <QskStandardSymbol.h>
 #include <QskSubWindow.h>
 #include <QskSwitchButton.h>
 #include <QskSwitchButtonSkinlet.h>
@@ -126,7 +130,6 @@ namespace
         void setupBox();
         void setupCheckBox();
         void setupDialogButtonBox();
-        void setupDialogButton();
         void setupFocusIndicator();
         void setupInputPanel();
         void setupVirtualKeyboard();
@@ -151,10 +154,10 @@ namespace
         const QskMaterial3Theme& m_pal;
     };
 
-    QFont createFont( int pixelSize, qreal tracking, QFont::Weight weight )
+    QFont createFont( const QString& name, int lineHeight, int size, qreal tracking, QFont::Weight weight )
     {
-        QFont font( "Roboto" );
-        font.setPixelSize( pixelSize );
+        QFont font( name, size );
+        font.setPixelSize( lineHeight );
 
         if( !qskFuzzyCompare( tracking, 0.0 ) )
         {
@@ -185,7 +188,6 @@ void Editor::setup()
     setupBox();
     setupCheckBox();
     setupDialogButtonBox();
-    setupDialogButton();
     setupFocusIndicator();
     setupInputPanel();
     setupVirtualKeyboard();
@@ -212,37 +214,83 @@ void Editor::setupControl()
 {
     using A = QskAspect;
 
-    setPadding( A::Control, 11_dp );
+    setPadding( A::NoSubcontrol, 11_dp );
 
-    setGradient( A::Control, m_pal.background );
-    setColor( A::Control | A::StyleColor, m_pal.onBackground );
+    setGradient( A::NoSubcontrol, m_pal.background );
+    setColor( A::NoSubcontrol | A::StyleColor, m_pal.onBackground );
 }
 
 void Editor::setupCheckBox()
 {
+    // skin hints are ordered according to
+    // https://m3.material.io/components/checkbox/specs
+
     using Q = QskCheckBox;
 
-    setSpacing( Q::Panel, 10_dp );
+    setSpacing( Q::Panel, 40_dp );
 
-    setStrutSize( Q::Box, 24_dp, 24_dp );
-
-    setPadding( Q::Box, 6_dp );
+    setStrutSize( Q::Box, 18_dp, 18_dp );
     setBoxShape( Q::Box, 2_dp );
-    setBoxBorderMetrics( Q::Box, 2_dp );
-    setBoxBorderColors( Q::Box, m_pal.onBackground );
+
+    setBoxBorderColors( Q::Box, m_pal.onSurface );
+#if 1
+    // hack: if border metrics == box shape, alpha value will be discarded
+    setBoxBorderMetrics( Q::Box, 1.99_dp );
+#endif
+
+    setGradient( Q::Box, m_pal.background ); // not mentioned in the specs, but needed for animation
+    setGradient( Q::Box | Q::Checked, m_pal.primary );
     setBoxBorderMetrics( Q::Box | Q::Checked, 0 );
 
-    setGradient( Q::Box, m_pal.background );
-    setGradient( Q::Box | Q::Checked, m_pal.primary );
-    setGradient( Q::Box | Q::Disabled, m_pal.surfaceVariant12 );
-    setGradient( Q::Box | Q::Checked | Q::Disabled, m_pal.onSurface12 );
+    setPadding( Q::Box, 3_dp ); // "icon size"
 
-    setColor( Q::Indicator, m_pal.background );
-    setColor( Q::Indicator | Q::Checked, m_pal.onPrimary );
-    setColor( Q::Indicator | Q::Checked | Q::Disabled, m_pal.onSurface38 );
+    setGraphicRole( Q::Indicator, QskMaterial3Skin::GraphicRoleOnPrimary );
 
-    setColor( Q::Text, m_pal.onBackground );
-    setTextOptions( Q::Text, Qt::ElideMiddle, QskTextOptions::NoWrap );
+    setBoxBorderColors( Q::Box | Q::Error, m_pal.error );
+
+    setGradient( Q::Box | Q::Checked | Q::Error, m_pal.error );
+
+    setGraphicRole( Q::Indicator | Q::Error, QskMaterial3Skin::GraphicRoleOnError );
+
+    setStrutSize( Q::Ripple, { 40_dp, 40_dp } );
+    setBoxShape( Q::Ripple, 100, Qt::RelativeSize );
+    setGradient( Q::Ripple, Qt::transparent );
+
+    setColor( Q::Text, m_pal.onBackground ); // not mentioned in the specs
+
+    // States
+
+    // 2. Disabled
+
+    setBoxBorderColors( Q::Box | Q::Disabled, m_pal.onSurface38 );
+    setBoxShape( Q::Box | Q::Disabled, 2_dp );
+
+    setGradient( Q::Box | Q::Disabled | Q::Checked, m_pal.onSurface38 );
+    setGradient( Q::Box | Q::Disabled | Q::Checked | Q::Error, m_pal.onSurface38 );
+
+    setGraphicRole( Q::Indicator | Q::Disabled | Q::Checked, QskMaterial3Skin::GraphicRoleSurface );
+
+    // 3. Hovered
+
+    setGradient( Q::Ripple | Q::Hovered | Q::Checked, m_pal.primary8 );
+    setGradient( Q::Ripple | Q::Hovered, m_pal.onSurface8 );
+    setGradient( Q::Ripple | Q::Error | Q::Hovered, m_pal.error8 );
+    setGradient( Q::Ripple | Q::Error | Q::Hovered | Q::Checked, m_pal.error8 );
+
+    // 4. Focused
+
+    setGradient( Q::Ripple | Q::Focused | Q::Checked, m_pal.primary12 );
+    setGradient( Q::Ripple | Q::Focused, m_pal.onSurface12 );
+    setGradient( Q::Ripple | Q::Error | Q::Focused, m_pal.error12 );
+    setGradient( Q::Ripple | Q::Error | Q::Focused | Q::Checked, m_pal.error12 );
+
+    // 5. Pressed
+
+    setGradient( Q::Ripple | Q::Pressed, m_pal.primary12 );
+    setGradient( Q::Ripple | Q::Pressed | Q::Checked, m_pal.primary12 );
+    setGradient( Q::Ripple | Q::Hovered | Q::Pressed, m_pal.primary12 );
+    setGradient( Q::Ripple | Q::Error | Q::Pressed, m_pal.error12 );
+    setGradient( Q::Ripple | Q::Error | Q::Pressed | Q::Checked, m_pal.error12 );
 }
 
 void Editor::setupBox()
@@ -385,13 +433,15 @@ void Editor::setupSegmentedBar()
     using A = QskAspect;
     using Q = QskSegmentedBar;
 
-    const QSize strutSize( -1, 40_dp );
+    const QSize panelStrutSize( -1, 48_dp );
+    const QSize segmentStrutSize( 48_dp, 40_dp );
 
     {
-        // Panel
+        // Container
 
+        setGradient( Q::Panel, Qt::transparent );
         setPadding( Q::Panel, 0 );
-        setSpacing( Q::Panel, 0 );
+        setSpacing( Q::Panel, 8_dp );
 
         setBoxShape( Q::Panel, 100, Qt::RelativeSize );
 
@@ -399,30 +449,32 @@ void Editor::setupSegmentedBar()
         setBoxBorderColors( Q::Panel, m_pal.outline );
         setBoxBorderColors( Q::Panel | Q::Disabled, m_pal.onSurface12 );
 
-        setStrutSize( Q::Panel | A::Horizontal, strutSize );
-        setStrutSize( Q::Panel | A::Vertical, strutSize.transposed() );
+        setStrutSize( Q::Panel | A::Horizontal, panelStrutSize );
+        setStrutSize( Q::Panel | A::Vertical, panelStrutSize.transposed() );
     }
 
     {
         // Segment
 
+        setStrutSize( Q::Segment | A::Horizontal, segmentStrutSize );
+        setStrutSize( Q::Segment | A::Vertical, segmentStrutSize.transposed() );
         setGradient( Q::Segment, Qt::transparent );
-        setPadding( Q::Segment, 0 );
+        setPadding( Q::Segment | A::Horizontal, { 12_dp, 0, 12_dp, 0 } );
+        setPadding( Q::Segment | A::Vertical, { 0, 12_dp, 0, 12_dp } );
     }
 
     {
         // Separator
 
-        setStrutSize( Q::Separator | A::Horizontal, 1_dp, strutSize.height() );
-        setStrutSize( Q::Separator | A::Vertical, strutSize.height(), 1_dp );
+        setStrutSize( Q::Separator | A::Horizontal, 1_dp, segmentStrutSize.height() );
+        setStrutSize( Q::Separator | A::Vertical, segmentStrutSize.height(), 1_dp );
         setPadding( Q::Separator, 0 );
         setGradient( Q::Separator, m_pal.outline );
-        setColor( Q::Separator | Q::Disabled, m_pal.onSurface38 );
+        setColor( Q::Separator | Q::Disabled, m_pal.onSurface12 );
     }
 
     {
         // Cursor
-        setMargin( Q::Cursor, 1_dp );
         setBoxShape( Q::Cursor, 0 );
 
         setBoxShape( Q::Cursor | Q::Minimum | A::Horizontal,
@@ -441,8 +493,6 @@ void Editor::setupSegmentedBar()
 
         setGradient( Q::Cursor, m_pal.secondaryContainer );
         setGradient( Q::Cursor | Q::Disabled, m_pal.onSurface12 );
-
-        setAnimation( Q::Cursor | A::Metric | A::Position, 100 );
     }
 
     {
@@ -461,8 +511,12 @@ void Editor::setupSegmentedBar()
     {
         // Graphic
 
-        setPadding( Q::Graphic, 10_dp );
-        setMargin( Q::Graphic, 10_dp );
+        setPadding( Q::Graphic, 0_dp );
+        setStrutSize( Q::Graphic, { 18_dp, 18_dp } );
+
+        setGraphicRole( Q::Graphic, QskMaterial3Skin::GraphicRoleOnSurface );
+        setGraphicRole( Q::Graphic | Q::Selected, QskMaterial3Skin::GraphicRoleOnSecondaryContainer );
+        setGraphicRole( Q::Graphic | Q::Disabled, QskMaterial3Skin::GraphicRoleOnSurface38 );
     }
 }
 
@@ -510,21 +564,17 @@ void Editor::setupPushButton()
     using Q = QskPushButton;
 
     setFlagHint( Q::Panel | QskAspect::Direction, Qsk::LeftToRight );
-    setStrutSize( Q::Panel, -1, 31_dp );
-    setSpacing( Q::Panel, 4_dp );
-    setPadding( Q::Panel, { 24_dp, 0, 20_dp, 0 } );
-
+    setStrutSize( Q::Panel, -1, 40_dp );
+    setSpacing( Q::Panel, 8_dp );
+    setPadding( Q::Panel, { 24_dp, 0, 24_dp, 0 } );
     setBoxShape( Q::Panel, 100, Qt::RelativeSize );
 
-    setAlignment( Q::Graphic, Qt::AlignCenter );
-    setStrutSize( Q::Graphic, 24_dp, 24_dp );
-    setPadding( Q::Graphic, 0 );
+    setStrutSize( Q::Graphic, 18_dp, 18_dp );
+    setPadding( Q::Graphic, { 0, 0, 8_dp, 0 } );
+    setGraphicRole( Q::Graphic, QskMaterial3Skin::GraphicRoleOnPrimary );
 
     setFontRole( Q::Text, QskMaterial3Skin::M3LabelLarge );
     setPadding( Q::Text, 0 );
-
-    setAlignment( Q::Text | A::Vertical, Qt::AlignCenter );
-    setAlignment( Q::Text | A::Horizontal, Qt::AlignLeft | Qt::AlignVCenter );
 
     // normal buttons (i.e. Filled):
 
@@ -553,23 +603,6 @@ void Editor::setupPushButton()
     setAnimation( Q::Panel | A::Metric, qskDuration );
     setAnimation( Q::Ripple | A::Color, qskDuration );
     setAnimation( Q::Text | A::Color, qskDuration );
-}
-
-void Editor::setupDialogButton()
-{
-    using Q = QskDialogButton;
-
-    setStrutSize( Q::Panel, 48_dp, -1 );
-    setSpacing( Q::Panel, 8_dp );
-    setPadding( Q::Panel, { 12_dp, 13_dp, 12_dp, 13_dp } );
-    setBoxShape( Q::Panel, 100, Qt::RelativeSize );
-    setGradient( Q::Panel, m_pal.secondaryContainer );
-
-    setGradient( Q::Panel | Q::Hovered, stateLayerColor( m_pal.primary, m_pal.hoverOpacity ) );
-    setGradient( Q::Panel | Q::Pressed, stateLayerColor( m_pal.primary, m_pal.pressedOpacity ) );
-
-    setColor( Q::Text, m_pal.primary );
-    setFontRole( Q::Text, QskMaterial3Skin::M3LabelLarge );
 }
 
 void Editor::setupDialogButtonBox()
@@ -925,8 +958,8 @@ QskMaterial3Theme::QskMaterial3Theme( Lightness lightness )
 {
 }
 
-QskMaterial3Theme::QskMaterial3Theme(Lightness lightness,
-                                    std::array<QskHctColor, NumPaletteTypes> palettes )
+QskMaterial3Theme::QskMaterial3Theme( Lightness lightness,
+                                      std::array< QskHctColor, NumPaletteTypes > palettes )
     : m_palettes( palettes )
 {
     if ( lightness == Light )
@@ -996,7 +1029,11 @@ QskMaterial3Theme::QskMaterial3Theme(Lightness lightness,
         shadow = m_palettes[ Neutral ].toned( 0 ).rgb();
     }
 
+    primary8 = QskRgb::toTransparentF( primary, 0.08 );
     primary12 = QskRgb::toTransparentF( primary, 0.12 );
+
+    error8 = QskRgb::toTransparentF( error, 0.08 );
+    error12 = QskRgb::toTransparentF( error, 0.12 );
 
     surface1 = flattenedColor( primary, background, 0.05 );
     surface2 = flattenedColor( primary, background, 0.08 );
@@ -1004,6 +1041,7 @@ QskMaterial3Theme::QskMaterial3Theme(Lightness lightness,
     surface4 = flattenedColor( primary, background, 0.12 );
     surface5 = flattenedColor( primary, background, 0.14 );
 
+    onSurface8 = QskRgb::toTransparentF( onSurface, 0.08 );
     onSurface12 = QskRgb::toTransparentF( onSurface, 0.12 );
     onSurface38 = QskRgb::toTransparentF( onSurface, 0.38 );
 
@@ -1014,10 +1052,26 @@ QskMaterial3Theme::QskMaterial3Theme(Lightness lightness,
     elevationLight3 = QskShadowMetrics( -1, 11, { 0, 2 } );
 }
 
+QskMaterial3GraphicProvder::QskMaterial3GraphicProvder( QObject* parent )
+    : Inherited( parent )
+{
+}
+
+const QskGraphic* QskMaterial3GraphicProvder::loadGraphic( const QString& id ) const
+{
+    const QString name = QString( ":/icons/qvg/%1.qvg" ).arg( id );
+    const QskGraphic graphic = QskGraphicIO::read( name );
+
+    return graphic.isNull() ? nullptr : new QskGraphic( graphic );
+}
+
 QskMaterial3Skin::QskMaterial3Skin( const QskMaterial3Theme& palette, QObject* parent )
     : Inherited( parent )
 {
+    addGraphicProvider( {}, new QskMaterial3GraphicProvder() );
+
     setupFonts();
+    setupGraphicFilters( palette );
 
     Editor editor( &hintTable(), palette );
     editor.setup();
@@ -1027,14 +1081,64 @@ QskMaterial3Skin::~QskMaterial3Skin()
 {
 }
 
+QskGraphic QskMaterial3Skin::symbol( int symbolType ) const
+{
+    switch ( symbolType )
+    {
+    case QskStandardSymbol::CheckMark:
+    {
+        const auto* provider = graphicProvider( {} );
+        return *( provider->requestGraphic( "check_small" ) );
+    }
+    case QskStandardSymbol::CrossMark:
+    {
+        return {};
+    }
+    case QskStandardSymbol::SegmentedBarCheckMark:
+    {
+        const auto* provider = graphicProvider( {} );
+        return *( provider->requestGraphic( "segmented-button-check" ) );
+    }
+    default:
+        return Inherited::symbol( symbolType );
+    }
+}
+
 void QskMaterial3Skin::setupFonts()
 {
     Inherited::setupFonts( QStringLiteral( "Roboto" ) );
 
-    setFont( M3BodyMedium, createFont( 14_dp, 0.25, QFont::Normal ) );
-    setFont( M3BodyLarge, createFont( 16_dp, 0.5, QFont::Normal ) );
-    setFont( M3HeadlineSmall, createFont( 28_dp, 0.0, QFont::Normal ) );
-    setFont( M3LabelLarge, createFont( 14_dp, 0.1, QFont::Medium ) );
+    setFont( M3BodyMedium, createFont( QStringLiteral( "Roboto Regular"), 20_dp, 14_dp, 0.25, QFont::Normal ) );
+    setFont( M3BodyLarge, createFont( QStringLiteral( "Roboto Medium" ), 24_dp, 16_dp, 0.5, QFont::Normal ) );
+    setFont( M3HeadlineSmall, createFont( QStringLiteral( "Roboto Regular" ), 32_dp, 28_dp, 0.0, QFont::Normal ) );
+    setFont( M3LabelLarge, createFont( "Roboto Medium", 20_dp, 14_dp, 0.1, QFont::Medium ) );
+}
+
+void QskMaterial3Skin::setupGraphicFilters( const QskMaterial3Theme& palette )
+{
+    QskColorFilter onPrimaryFilter;
+    onPrimaryFilter.addColorSubstitution( Qt::white, palette.onPrimary );
+    setGraphicFilter( GraphicRoleOnPrimary, onPrimaryFilter );
+
+    QskColorFilter onSecondaryContainerFilter;
+    onSecondaryContainerFilter.addColorSubstitution( Qt::white, palette.onSecondaryContainer );
+    setGraphicFilter( GraphicRoleOnSecondaryContainer, onSecondaryContainerFilter );
+
+    QskColorFilter onErrorFilter;
+    onErrorFilter.addColorSubstitution( Qt::white, palette.onError );
+    setGraphicFilter( GraphicRoleOnError, onErrorFilter );
+
+    QskColorFilter onSurfaceFilter;
+    onSurfaceFilter.addColorSubstitution( Qt::white, palette.onSurface );
+    setGraphicFilter( GraphicRoleOnSurface, onSurfaceFilter );
+
+    QskColorFilter onSurfaceFilter38;
+    onSurfaceFilter38.addColorSubstitution( Qt::white, palette.onSurface38 );
+    setGraphicFilter( GraphicRoleOnSurface38, onSurfaceFilter38 );
+
+    QskColorFilter surfaceFilter;
+    surfaceFilter.addColorSubstitution( Qt::white, palette.surface );
+    setGraphicFilter( GraphicRoleSurface, surfaceFilter );
 }
 
 #include "moc_QskMaterial3Skin.cpp"

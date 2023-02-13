@@ -6,9 +6,6 @@
 #pragma once
 
 #include <QskBoundedControl.h>
-#include <QskGradient.h>
-
-#include <QGradient>
 
 class CircularProgressBar : public QskBoundedControl
 {
@@ -31,6 +28,7 @@ class CircularProgressBar : public QskBoundedControl
 
     CircularProgressBar( qreal min, qreal max, QQuickItem* parent = nullptr );
     CircularProgressBar( QQuickItem* parent = nullptr );
+    ~CircularProgressBar();
 
     bool isIndeterminate() const;
     void setIndeterminate( bool on = true );

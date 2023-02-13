@@ -11,6 +11,7 @@
 #include "QskMargins.h"
 #include "QskTextOptions.h"
 
+#include <qdebug.h>
 #include <qfont.h>
 #include <qfontmetrics.h>
 #include <qmath.h>
@@ -334,9 +335,9 @@ void QskSubcontrolLayoutEngine::setGraphicTextElements( const QskSkinnable* skin
      */
 
     GraphicElement* graphicElement = nullptr;
-    if ( !graphicSize.isEmpty() && ( graphicSubControl != QskAspect::Control ) )
+    if ( !graphicSize.isEmpty() && ( graphicSubControl != QskAspect::NoSubcontrol ) )
     {
-        graphicElement = dynamic_cast< GraphicElement * >( element( graphicSubControl ) );
+        graphicElement = dynamic_cast< GraphicElement* >( element( graphicSubControl ) );
         if ( graphicElement == nullptr )
         {
             graphicElement = new GraphicElement( skinnable, graphicSubControl );
@@ -347,7 +348,7 @@ void QskSubcontrolLayoutEngine::setGraphicTextElements( const QskSkinnable* skin
     }
 
     TextElement* textElement = nullptr;
-    if ( !text.isEmpty() && ( textSubcontrol != QskAspect::Control ) )
+    if ( !text.isEmpty() && ( textSubcontrol != QskAspect::NoSubcontrol ) )
     {
         textElement = dynamic_cast< TextElement* >( element( textSubcontrol ) );
         if ( textElement == nullptr )
@@ -389,7 +390,7 @@ void QskSubcontrolLayoutEngine::setGraphicTextElements( const QskSkinnable* skin
         }
         else
         {
-            graphicElement->setSizePolicy( SP::Fixed, SP::Fixed );
+            graphicElement->setSizePolicy( SP::Preferred, SP::Fixed );
             textElement->setSizePolicy( SP::Preferred, SP::Constrained );
         }
 
@@ -405,6 +406,54 @@ void QskSubcontrolLayoutEngine::setGraphicTextElements( const QskSkinnable* skin
 
         graphicElement->setPreferredSize( size );
     }
+}
+
+void QskSubcontrolLayoutEngine::setFixedContent( QskAspect::Subcontrol subcontrol, Qt::Orientation orientation, Qt::Alignment alignment )
+{
+    if( auto* e = element( subcontrol ) )
+    {
+        e->setSizePolicy( QskSizePolicy::Fixed, e->sizePolicy().verticalPolicy() );
+    }
+
+    Qt::Edges extraSpacing;
+
+    switch( orientation )
+    {
+    case Qt::Horizontal:
+        extraSpacing |= ( extraSpacingAt() & ( Qt::TopEdge | Qt::BottomEdge ) );
+
+        if( alignment & Qt::AlignLeft )
+        {
+            extraSpacing |= Qt::RightEdge;
+        }
+        else if( alignment & Qt::AlignRight )
+        {
+            extraSpacing |= Qt::LeftEdge;
+        }
+        else if( alignment & Qt::AlignHCenter )
+        {
+            extraSpacing |= Qt::LeftEdge | Qt::RightEdge;
+        }
+        break;
+    case Qt::Vertical:
+        extraSpacing |= ( extraSpacingAt() & ( Qt::LeftEdge | Qt::RightEdge ) );
+
+        if( alignment & Qt::AlignTop )
+        {
+            extraSpacing |= Qt::BottomEdge;
+        }
+        else if( alignment & Qt::AlignBottom )
+        {
+            extraSpacing |= Qt::TopEdge;
+        }
+        else if( alignment & Qt::AlignVCenter )
+        {
+            extraSpacing |= Qt::TopEdge | Qt::BottomEdge;
+        }
+        break;
+    }
+
+    setExtraSpacingAt( extraSpacing );
 }
 
 void QskSubcontrolLayoutEngine::addElement( LayoutElement* element )
@@ -445,7 +494,7 @@ QskSizePolicy QskSubcontrolLayoutEngine::sizePolicyAt( int index ) const
 
 int QskSubcontrolLayoutEngine::count() const
 {
-    return m_data->elements.count(); 
+    return m_data->elements.count();
 }
 
 void QskSubcontrolLayoutEngine::layoutItems()

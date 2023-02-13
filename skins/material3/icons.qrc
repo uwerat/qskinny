@@ -1,0 +1,6 @@
+<RCC>
+    <qresource>
+        <file>icons/qvg/check_small.qvg</file>
+        <file>icons/qvg/segmented-button-check.qvg</file>
+    </qresource>
+</RCC>

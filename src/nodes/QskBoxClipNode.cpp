@@ -49,7 +49,7 @@ void QskBoxClipNode::setBox( const QRectF& rect,
     else
     {
         setIsRectangular( false );
-        QskBoxRenderer().renderFill( rect, shape, border, m_geometry );
+        QskBox::renderFillGeometry( rect, shape, border, m_geometry );
     }
 
     /*

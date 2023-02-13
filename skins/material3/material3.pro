@@ -16,8 +16,10 @@ SOURCES += \
     QskMaterial3Skin.cpp \
     QskMaterial3SkinFactory.cpp
 
+RESOURCES += \
+    icons.qrc \
+
 OTHER_FILES += metadata.json
 
 target.path    = $${QSK_INSTALL_PLUGINS}/$${QSK_PLUGIN_SUBDIR}
 INSTALLS       = target
-

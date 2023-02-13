@@ -56,8 +56,10 @@ namespace
                 ed.setBoxBorderMetrics( Q::Knob, 2 );
                 ed.setStrutSize( Q::Knob, 30, 30 );
                 ed.setBoxShape( Q::Knob, 100, Qt::RelativeSize );
-                ed.setGradient( Q::Knob,
-                    QskGradient( QskGradient::Diagonal, rgb2, rgb1 ) );
+
+                QskGradient gradient( rgb2, rgb1 );
+                gradient.setLinearDirection( 0.0, 0.0, 1.0, 1.0 );
+                ed.setGradient( Q::Knob, gradient );
 
                 ed.setMetric( Q::Needle | QskAspect::Size, 2 );
                 ed.setMetric( Q::Needle | QskAspect::Margin, 10 );

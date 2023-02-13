@@ -84,6 +84,8 @@ namespace QskSGNode
 
         return static_cast< Node* >( node );
     }
+
+    void resetGeometry( QSGGeometryNode* );
 }
 
 #endif

@@ -7,7 +7,7 @@
 #define QSK_BOX_SHADOW_NODE_H
 
 #include "QskGlobal.h"
-#include <QSGGeometryNode>
+#include <qsgnode.h>
 
 class QColor;
 class QskBoxShapeMetrics;

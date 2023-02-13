@@ -11,6 +11,17 @@
 
 #include <utility>
 
+static void qskRegisterSizePolicy()
+{
+    qRegisterMetaType< QskSizePolicy >();
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    QMetaType::registerEqualsComparator< QskSizePolicy >();
+#endif
+}
+
+Q_CONSTRUCTOR_FUNCTION( qskRegisterSizePolicy )
+
 QskSizePolicy::ConstraintType QskSizePolicy::constraintType() const noexcept
 {
     constexpr unsigned char mask = IgnoreFlag | ConstrainedFlag;

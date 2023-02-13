@@ -50,25 +50,25 @@ class GraphicLabel : public QskGraphicLabel
         QskGradient gradient;
         if ( on )
         {
-            gradient.setColor( qRgb( 40, 40, 40 ) );
+            gradient = QskGradient( qRgb( 40, 40, 40 ) );
             setGraphicRole( Inverted );
         }
         else
         {
-            gradient.setColor( QskRgb::Wheat );
+            gradient = QskGradient( QskRgb::Wheat );
             setGraphicRole( Normal );
         }
 
         const int duration = 500;
 
-        const QskGradient oldGradient = background();
+        const auto oldGradient = gradientHint( Panel );
         setGradientHint( Panel, gradient );
 
         // finally setup a smooth transition manually
-        startTransition( QskAspect::Control | QskAspect::Color, duration,
+        startTransition( Panel | QskAspect::Color, duration,
             QVariant::fromValue( oldGradient ), QVariant::fromValue( gradient ) );
 
-        startTransition( QskGraphicLabel::Graphic | QskAspect::GraphicRole,
+        startTransition( Graphic | QskAspect::GraphicRole,
             duration, oldRole, graphicRole() );
     }
 };

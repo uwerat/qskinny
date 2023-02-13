@@ -49,9 +49,7 @@ QskHashValue QskArcNode::hash( const void* nodeData ) const
     const auto arcData = reinterpret_cast< const ArcData* >( nodeData );
 
     auto h = arcData->metrics.hash();
-
-    for( const auto& stop : qAsConst( arcData->gradient.stops() ) )
-        h = stop.hash( h );
+    return arcData->gradient.hash( h );
 
     return h;
 }
