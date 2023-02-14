@@ -324,6 +324,8 @@ void Editor::setupMenu()
     setBoxBorderMetrics( Q::Panel, 0 );
     setPadding( Q::Panel, 0 );
 
+    setGradient( Q::Overlay, Qt::transparent );
+
     // The color here is primary with an opacity of 8% - we blend that
     // with the background, because we don't want the menu to have transparency:
     const auto panel = flattenedColor( m_pal.primary, m_pal.background, 0.08 );

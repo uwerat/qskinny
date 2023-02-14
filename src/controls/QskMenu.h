@@ -32,7 +32,7 @@ class QSK_EXPORT QskMenu : public QskPopup
     using Inherited = QskPopup;
 
   public:
-    QSK_SUBCONTROLS( Panel, Segment, Cursor, Text, Graphic, Separator )
+    QSK_SUBCONTROLS( Overlay, Panel, Segment, Cursor, Text, Graphic, Separator )
     QSK_STATES( Selected )
 
     QskMenu( QQuickItem* parentItem = nullptr );
