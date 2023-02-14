@@ -472,27 +472,25 @@ void Editor::setupRadioBox()
     using Q = QskRadioBox;
     using A = QskAspect;
 
-    setStrutSize( Q::Button, {20, 20 });
-    setStrutSize( Q::Symbol, {10, 10 });
-    setStrutSize( Q::Ripple, { 40, 40 });
-
-    setSpacing(Q::Panel, 10);
-
-    setColor( Q::Text, m_pal.onBackground );
+    setSpacing(Q::Panel, 10_dp);
     
-    setBoxShape(Q::Button, 20);
+    setStrutSize( Q::Button, { 20_dp, 20_dp });
+    setStrutSize( Q::Symbol, { 10_dp, 10_dp });
+    setStrutSize( Q::Ripple, { 40_dp, 40_dp });
+    
+    setBoxShape(Q::Button, 20_dp);
+    setBoxShape(Q::Ripple, 40_dp);
     setBoxBorderMetrics( Q::Button, 2_dp );
+
     setBoxBorderColors( Q::Button, m_pal.onBackground );
     setBoxBorderColors( Q::Button | Q::Selected, m_pal.primary );
 
-    setBoxShape(Q::Ripple, 40);
-
-
+    setColor( Q::Text, m_pal.onBackground );
     setColor( Q::Symbol, m_pal.primary );
     setColor( Q::Ripple, stateLayerColor( m_pal.onSurface, m_pal.focusOpacity ) );
     setColor( Q::Ripple | Q::Selected, stateLayerColor( m_pal.primary, m_pal.focusOpacity ) );
 	
-    setMargin( Q::Text, QskMargins(10, 0,0,0));
+    setMargin( Q::Text, QskMargins( 10_dp, 0, 0, 0 ));
 
     setAlignment( Q::Text, Qt::AlignBottom );
 
