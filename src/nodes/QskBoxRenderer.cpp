@@ -193,8 +193,7 @@ void QskBox::renderBox( const QRectF& rect,
 
         const int fillCount = fillStroker.lineCount();
         const int borderCount = borderStroker.borderCount();
-
-        const int extraLine = ( fillCount && borderCount && !metrics.isOutsideRounded ) ? 1 : 0;
+        const int extraLine = ( fillCount && borderCount ) ? 1 : 0;
 
         auto lines = qskAllocateColoredLines(
             geometry, fillCount + borderCount + extraLine );
