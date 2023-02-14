@@ -1,7 +1,9 @@
 #include "QskRadioBox.h"
 #include "QskEvent.h"
 #include "QskAnimationHint.h"
+#include "QskSkinlet.h"
 
+#include <qglobal.h>
 #include <qnamespace.h>
 
 QSK_SUBCONTROL( QskRadioBox, Panel )
@@ -18,6 +20,7 @@ class QskRadioBox::PrivateData {
 public:
     QStringList items;
     int selectedIndex = -1;
+    int focusedIndex = -1;
     int pressedIndex = -1;
 };
 
@@ -37,7 +40,7 @@ QskRadioBox::QskRadioBox( QQuickItem* parent ) :
 	}
     });
 
-    setPositionHint( Ripple, -1 );
+    setFocusedIndex( -1 );
 }
 
 QskRadioBox::QskRadioBox( const QStringList& list, QQuickItem* parent ) :
@@ -55,6 +58,37 @@ QskRadioBox::QskRadioBox( const QStringList& items,
     {
 	m_data->selectedIndex = selectedIndex;
     }
+}
+
+QRectF QskRadioBox::focusIndicatorRect() const {
+    if( m_data->focusedIndex > -1) {
+
+	auto textRect = effectiveSkinlet()->sampleRect( this,
+	    contentsRect(), QskRadioBox::Text, m_data->focusedIndex );
+
+	auto buttonRect = effectiveSkinlet()->sampleRect( this,
+	       contentsRect(), QskRadioBox::Button, m_data->focusedIndex );
+
+	auto result = QRectF(
+	   qMin( textRect.x(), buttonRect.x() ),
+           qMin( textRect.y(), buttonRect.y() ),
+           buttonRect.width() + textRect.width(),
+	   qMax( buttonRect.height(), textRect.height() ));
+
+	if( layoutMirroring() ) {
+	    result.setWidth(
+		result.width() + marginHint( Text ).right()
+		+ marginHint( Button ).left() );
+	} else {
+	    result.setWidth(
+		result.width() + marginHint( Text ).left()
+		+ marginHint( Button ).right() );
+	}
+
+	return result;
+    }
+
+    return QRectF();
 }
 
 int QskRadioBox::selectedIndex() const {
@@ -92,6 +126,10 @@ void QskRadioBox::setItems( const QStringList& items ){
     m_data->items = items;
     itemsChanged( items );
     setSelectedIndex( m_data->selectedIndex );
+
+    if( m_data->focusedIndex > items.size() ) {
+	setFocusedIndex( 0 );
+    }
 }
 
 void QskRadioBox::keyPressEvent( QKeyEvent* event )
@@ -101,36 +139,36 @@ void QskRadioBox::keyPressEvent( QKeyEvent* event )
     case Qt::Key_Up:
     case Qt::Key_Left:
 	m_data->selectedIndex = qMax(m_data->selectedIndex - 1, 0);
-	setPositionHint( Ripple, m_data->selectedIndex );
+	setFocusedIndex( m_data->selectedIndex );
 	event->setAccepted( true );
 	update();
 	return;
     case Qt::Key_Down:
     case Qt::Key_Right:
 	m_data->selectedIndex = qMin(m_data->selectedIndex + 1, items().size() - 1);
-	setPositionHint( Ripple, m_data->selectedIndex );
+	setFocusedIndex( m_data->selectedIndex );
 	event->setAccepted( true );
 	update();
 	return;
     case Qt::Key_Select:
     case Qt::Key_Return:
     case Qt::Key_Space:
-	m_data->selectedIndex = positionHint( Ripple );
+	m_data->selectedIndex = m_data->focusedIndex;
 	event->setAccepted( true );
 	update();
 	return;
     }
 
-    auto currentTabIndex = positionHint( Ripple );
+    auto currentTabIndex = m_data->focusedIndex;
     auto nextTabIndex = currentTabIndex + qskFocusChainIncrement( event );
     if( nextTabIndex >= items().size()
 	|| nextTabIndex < 0 ) {	
 	Inherited::keyPressEvent( event );
-	setPositionHint(Ripple, -1);	
+	setFocusedIndex( -1);	
 	update();
     } else {
 	event->setAccepted( true );
-        setPositionHint( Ripple, (float) nextTabIndex );
+        setFocusedIndex( (float) nextTabIndex );
 
 	const auto aspect = Ripple | QskAspect::Metric | QskAspect::Position;
 	auto hint = animationHint(aspect | skinStates());
@@ -157,7 +195,7 @@ void QskRadioBox::mousePressEvent( QMouseEvent* e )
     m_data->pressedIndex = indexAtPosition;
     m_data->selectedIndex = -1;
 
-    setPositionHint( Ripple, indexAtPosition );
+    setFocusedIndex( indexAtPosition );
 
     e->setAccepted( true );
     update();
@@ -176,9 +214,9 @@ void QskRadioBox::mouseReleaseEvent( QMouseEvent* e )
 
 void QskRadioBox::focusInEvent( QFocusEvent* e ) {
     if( e->reason() == Qt::TabFocusReason ) {
-	setPositionHint( Ripple, 0 );
+	setFocusedIndex(0 );
     } else if( e->reason() == Qt::BacktabFocusReason ) {
-	setPositionHint( Ripple, items().size() - 1 );
+	setFocusedIndex(items().size() - 1 );
     }
 
     update();
@@ -186,7 +224,7 @@ void QskRadioBox::focusInEvent( QFocusEvent* e ) {
 }
 
 void QskRadioBox::focusOutEvent( QFocusEvent* e ) {
-    setPositionHint(Ripple, -1);
+    setFocusedIndex( -1 );
     update();
     
     Inherited::focusOutEvent( e );
@@ -200,6 +238,13 @@ int QskRadioBox::indexAt( const QPointF& target ) const {
 	return -1;
 
     return index;
+}
+
+void QskRadioBox::setFocusedIndex( int index ) {
+    qDebug() << "setting index " << index;
+    m_data->focusedIndex = index;
+    setPositionHint( Ripple, index );
+    focusIndicatorRectChanged();
 }
 
 #include "moc_QskRadioBox.cpp"

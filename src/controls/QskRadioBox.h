@@ -28,6 +28,8 @@ class QSK_EXPORT QskRadioBox : public QskControl
     QskRadioBox( QQuickItem* parent = nullptr );
     QskRadioBox( const QStringList&, QQuickItem* parent = nullptr );
     QskRadioBox( const QStringList&, int, QQuickItem* parent = nullptr );
+
+    QRectF focusIndicatorRect() const override;
     
     const QStringList& items() const;
     int selectedIndex() const;
@@ -54,6 +56,7 @@ class QSK_EXPORT QskRadioBox : public QskControl
     int indexAt( const QPointF& ) const;
 
   private:
+    void setFocusedIndex( int index );
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

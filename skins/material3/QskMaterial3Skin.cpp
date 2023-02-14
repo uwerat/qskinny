@@ -496,7 +496,7 @@ void Editor::setupRadioBox()
 
     setColor( Q::Symbol | Q::Disabled, m_pal.onSurface38 );
 	
-    setMargin( Q::Text, QskMargins( 10_dp, 0, 0, 0 ));
+    setMargin( Q::Text, QskMargins( 10_dp, 0, 10_dp, 0 ));
 
     setAlignment( Q::Text, Qt::AlignBottom );
 

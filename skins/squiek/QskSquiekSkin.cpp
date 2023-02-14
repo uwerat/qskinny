@@ -19,6 +19,7 @@
 #include <QskPopup.h>
 #include <QskProgressBar.h>
 #include <QskPushButton.h>
+#include <QskRadioBox.h>
 #include <QskScrollView.h>
 #include <QskSeparator.h>
 #include <QskSegmentedBar.h>
@@ -144,6 +145,7 @@ namespace
         void setupPopup();
         void setupProgressBar();
         void setupPushButton();
+	void setupRadioBox();
         void setupScrollView();
         void setupSegmentedBar();
         void setupSeparator();
@@ -259,6 +261,7 @@ void Editor::setup()
     setupPopup();
     setupProgressBar();
     setupPushButton();
+    setupRadioBox();
     setupScrollView();
     setupSegmentedBar();
     setupSeparator();
@@ -605,6 +608,38 @@ void Editor::setupPushButton()
 
     // Graphic
     setAlignment( Q::Graphic, Qt::AlignCenter );
+}
+
+void Editor::setupRadioBox()
+{
+    using Q = QskRadioBox;
+
+    setSpacing(Q::Panel, qskDpiScaled( 10 ) );
+    
+    setStrutSize( Q::Button, { qskDpiScaled( 20 ), qskDpiScaled( 20 ) });
+    setStrutSize( Q::Symbol, { qskDpiScaled( 9 ), qskDpiScaled( 9 ) });
+    
+    setBoxShape(Q::Button, qskDpiScaled( 20 ) );
+    setBoxShape(Q::Ripple, qskDpiScaled( 40 ) );
+    setBoxBorderMetrics( Q::Button, qskDpiScaled( 1 ) );
+
+    setBoxBorderColors( Q::Button, m_pal.darker125 );
+    setBoxBorderColors( Q::Button | Q::Disabled, m_pal.theme );
+
+    setColor( Q::Text, m_pal.themeForeground );
+    setColor( Q::Symbol, m_pal.themeForeground );
+    setColor( Q::Panel, m_pal.lighter125 );
+    setColor( Q::Panel | Q::Disabled, m_pal.lighter125 );
+
+    setColor( Q::Button | Q::Disabled, m_pal.lighter110 );
+    
+    setColor( Q::Text | Q::Disabled, m_pal.darker200 );
+
+    setColor( Q::Symbol | Q::Disabled, m_pal.darker200 );
+
+    setMargin( Q::Text, QskMargins( qskDpiScaled( 10 ), 0, qskDpiScaled( 10 ), 0 ));
+
+    setAlignment( Q::Text, Qt::AlignBottom );
 }
 
 void Editor::setupDialogButtonBox()
