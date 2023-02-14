@@ -4,7 +4,6 @@
  *****************************************************************************/
 
 #include "QskMaterial3Skin.h"
-#include "QskTextOptions.h"
 
 #include <QskSkinHintTableEditor.h>
 
