@@ -103,8 +103,8 @@ QSGNode* QskRadioBoxSkinlet::updateSubNode( const QskSkinnable* skinnable,
 
         case RippleRole:
 	{
-	    QskSkinStateChanger cleaner( radio );
-	    cleaner.setStates( statesForIndex( radio, radio->positionHint( Q::Ripple ) ) );
+	    QskSkinStateChanger changer( radio );
+	    changer.setStates( statesForIndex( radio, radio->positionHint( Q::Ripple ) ) );
 
 	    return updateBoxNode( radio, node, Q::Ripple );
 	}
