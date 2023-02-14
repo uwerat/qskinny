@@ -17,6 +17,7 @@
 #include <qvariant.h>
 #include <qeventloop.h>
 
+QSK_SUBCONTROL( QskMenu, Overlay )
 QSK_SUBCONTROL( QskMenu, Panel )
 QSK_SUBCONTROL( QskMenu, Segment )
 QSK_SUBCONTROL( QskMenu, Cursor )
@@ -80,6 +81,8 @@ QskMenu::QskMenu( QQuickItem* parent )
 
     setPopupFlag( QskPopup::CloseOnPressOutside, true );
     setPopupFlag( QskPopup::DeleteOnClose, true );
+
+    setSubcontrolProxy( Inherited::Overlay, Overlay );
 
     initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 }
