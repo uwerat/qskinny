@@ -8,6 +8,7 @@
 
 #include "QskMaterial3Global.h"
 
+#include <QskBoxShapeMetrics.h>
 #include <QskGraphicProvider.h>
 #include <QskHctColor.h>
 #include <QskSkin.h>
@@ -93,6 +94,8 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
     const qreal pressedOpacity = 0.12;
     const qreal draggedOpacity = 0.16;
 
+    QskBoxShapeMetrics shapeExtraSmallTop;
+
   private:
     std::array< QskHctColor, NumPaletteTypes > m_palettes;
 };
@@ -129,6 +132,7 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
         GraphicRoleOnSecondaryContainer,
         GraphicRoleOnSurface,
         GraphicRoleOnSurface38,
+        GraphicRoleOnSurfaceVariant,
         GraphicRoleSurface,
     };
 
