@@ -258,7 +258,12 @@ void QskMenu::keyPressEvent( QKeyEvent* event )
 
         default:
         {
-            return;
+            const int steps = qskFocusChainIncrement( event );
+
+            if( steps != 0 )
+            {
+                traverse( steps );
+            }
         }
     }
 }
@@ -356,8 +361,13 @@ void QskMenu::aboutToShow()
 
 QRectF QskMenu::focusIndicatorRect() const
 {
-    // highlighting the item is good enough
-    return QRectF();
+    if( currentIndex() >= 0 )
+    {
+        return effectiveSkinlet()->sampleRect( this,
+            contentsRect(), Segment, currentIndex() );
+    }
+
+    return Inherited::focusIndicatorRect();
 }
 
 void QskMenu::setSelectedIndex( int index )
