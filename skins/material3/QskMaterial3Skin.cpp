@@ -489,6 +489,12 @@ void Editor::setupRadioBox()
     setColor( Q::Symbol, m_pal.primary );
     setColor( Q::Ripple, stateLayerColor( m_pal.onSurface, m_pal.focusOpacity ) );
     setColor( Q::Ripple | Q::Selected, stateLayerColor( m_pal.primary, m_pal.focusOpacity ) );
+
+    setBoxBorderColors( Q::Button | Q::Disabled, m_pal.onSurface38 );
+    setBoxBorderColors( Q::Button | Q::Disabled | Q::Selected, m_pal.onSurface38 );
+    setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
+
+    setColor( Q::Symbol | Q::Disabled, m_pal.onSurface38 );
 	
     setMargin( Q::Text, QskMargins( 10_dp, 0, 0, 0 ));
 

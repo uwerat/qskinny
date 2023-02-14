@@ -233,6 +233,8 @@ QSGNode* QskRadioBoxSkinlet::updateSampleNode(  const QskSkinnable* skinnable,
 	*/
 	QskColorFilter filter;
 	filter.addColorSubstitution( Qt::black, color );
+	auto colorSub = radio->color( subcontrol | statesForIndex(radio, index) );
+	filter.addColorSubstitution( Qt::black, colorSub.rgb() );
 
 	QskGraphic::fromGraphic( graphic, filter );
 
