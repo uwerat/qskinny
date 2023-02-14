@@ -786,23 +786,15 @@ int QskBoxBasicStroker::fillCount() const
 
     if ( m_metrics.isInsideRounded )
     {
-        const auto c = m_metrics.corners;
-
         if ( m_metrics.preferredOrientation == Qt::Horizontal )
         {
-            n += qMax( c[ Qt::TopLeftCorner ].innerStepCount(),
-                c[ Qt::BottomLeftCorner ].innerStepCount() );
-
-            n += qMax( c[ Qt::TopRightCorner ].innerStepCount(),
-                c[ Qt::BottomRightCorner ].innerStepCount() );
+            n += m_metrics.innerStepCount( Qt::TopLeftCorner, Qt::BottomLeftCorner );
+            n += m_metrics.innerStepCount( Qt::TopRightCorner, Qt::BottomRightCorner );
         }
         else
         {
-            n += qMax( c[ Qt::TopLeftCorner ].innerStepCount(),
-                c[ Qt::TopRightCorner ].innerStepCount() );
-
-            n += qMax( c[ Qt::BottomLeftCorner ].innerStepCount(),
-                c[ Qt::BottomRightCorner ].innerStepCount() );
+            n += m_metrics.innerStepCount( Qt::TopLeftCorner, Qt::TopRightCorner );
+            n += m_metrics.innerStepCount( Qt::BottomLeftCorner, Qt::BottomRightCorner );
         }
     }
 

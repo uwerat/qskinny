@@ -173,15 +173,6 @@ QskBoxMetrics::QskBoxMetrics( const QRectF& rect,
         }
     }
 
-    if ( stepSymmetries == Qt::Horizontal )
-    {
-        preferredOrientation = Qt::Horizontal;
-    }
-    else if ( stepSymmetries == Qt::Vertical )
-    {
-        preferredOrientation = Qt::Vertical;
-    }
-    else
     {
         const auto tl = corners[ Qt::TopLeftCorner ].innerStepCount();
         const auto tr = corners[ Qt::TopRightCorner ].innerStepCount();

@@ -89,10 +89,7 @@ class QskBoxMetrics
      */
     Qt::Orientations stepSymmetries;
 
-    /*
-        In case stepSymmetries indicates both directions the direction
-        that needs less steps is preferred.
-     */
+    // the direction that needs less contour lines is preferred.
     Qt::Orientation preferredOrientation;
 };
 
