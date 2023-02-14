@@ -283,65 +283,31 @@ static inline void qskCreateFill(
             }
         }
     }
-    else if ( m_metrics.stepSymmetries )
-    {
-        auto line = lines;
-
-        if ( isHorizontal )
-        {
-            int stepCount = qMax( cn[TopLeftCorner].stepCount, cn[BottomLeftCorner].stepCount );
-
-            for ( ArcIterator it( stepCount, true ); !it.isDone(); ++it )
-                map.setVLine( TopLeftCorner, BottomLeftCorner, it.cos(), it.sin(), line++ );
-
-            stepCount = qMax( cn[TopRightCorner].stepCount, cn[BottomRightCorner].stepCount );
-
-            for ( ArcIterator it( stepCount, false ); !it.isDone(); ++it )
-                map.setVLine( TopRightCorner, BottomRightCorner, it.cos(), it.sin(), line++ );
-        }
-        else
-        {
-            int stepCount = qMax( cn[TopLeftCorner].stepCount, cn[TopRightCorner].stepCount );
-
-            for ( ArcIterator it( stepCount, false ); !it.isDone(); ++it )
-                map.setHLine( TopLeftCorner, TopRightCorner, it.cos(), it.sin(), line++ );
-
-            stepCount = qMax( cn[BottomLeftCorner].stepCount, cn[BottomRightCorner].stepCount );
-
-            for ( ArcIterator it( stepCount, true ); !it.isDone(); ++it )
-                map.setHLine( BottomLeftCorner, BottomRightCorner, it.cos(), it.sin(), line++ );
-        }
-    }
     else
     {
-        /*
-            This fallback code creates the same points. The cases above are
-            simply micro oprimization reducing the loops or calculations
-            to get there.
-         */
-
         auto line = lines;
+        int stepCount;
 
         if ( isHorizontal )
         {
-            int stepCount = qMax( cn[TopLeftCorner].stepCount, cn[BottomLeftCorner].stepCount );
+            stepCount = m_metrics.innerStepCount( TopLeftCorner, BottomLeftCorner );
 
             for ( ArcIterator it( stepCount, true ); !it.isDone(); ++it )
                 map.setLine( TopLeftCorner, BottomLeftCorner, it.cos(), it.sin(), line++ );
 
-            stepCount = qMax( cn[TopRightCorner].stepCount, cn[BottomRightCorner].stepCount );
+            stepCount = m_metrics.innerStepCount( TopRightCorner, BottomRightCorner );
 
             for ( ArcIterator it( stepCount, false ); !it.isDone(); ++it )
                 map.setLine( TopRightCorner, BottomRightCorner, it.cos(), it.sin(), line++ );
         }
         else
         {
-            int stepCount = qMax( cn[TopLeftCorner].stepCount, cn[TopRightCorner].stepCount );
+            stepCount = m_metrics.innerStepCount( TopLeftCorner, TopRightCorner );
 
             for ( ArcIterator it( stepCount, false ); !it.isDone(); ++it )
                 map.setLine( TopLeftCorner, TopRightCorner, it.cos(), it.sin(), line++ );
 
-            stepCount = qMax( cn[BottomLeftCorner].stepCount, cn[BottomRightCorner].stepCount );
+            stepCount = m_metrics.innerStepCount( BottomLeftCorner, BottomRightCorner );
 
             for ( ArcIterator it( stepCount, true ); !it.isDone(); ++it )
                 map.setLine( BottomLeftCorner, BottomRightCorner, it.cos(), it.sin(), line++ );
