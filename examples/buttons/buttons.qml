@@ -129,7 +129,7 @@ Qsk.Window
             shape
             {
                 sizeMode: Qt.RelativeSize
-                aspectRatioMode: Qt.IgnoreAspectRatio
+                scalingMode: Qsk.BoxShapeMetrics.Elliptic
                 radius: 100
             }
         }

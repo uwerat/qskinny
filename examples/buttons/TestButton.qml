@@ -19,7 +19,7 @@ Qsk.PushButton
     shape
     {
         sizeMode: Qt.RelativeSize
-        aspectRatioMode: Qt.KeepAspectRatio
+        scalingMode: Qsk.BoxShapeMetrics.Circular
         radius: 10
     }
 
