@@ -79,7 +79,12 @@ class QSK_EXPORT QskAspect
         Top    = 1,
         Left   = 2,
         Right  = 3,
-        Bottom = 4
+        Bottom = 4,
+
+        Tiny  = 1,
+        Small = 2,
+        Large = 3,
+        Huge  = 4
     };
     Q_ENUM( Variation )
 
