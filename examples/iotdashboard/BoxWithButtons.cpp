@@ -28,10 +28,10 @@ namespace
             setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
             setSpacing( 0 );
 
-            auto* const topButton = new RoundButton( QskAspect::Top, this );
+            auto* const topButton = new RoundButton( Qt::TopEdge, this );
             connect( topButton, &QskPushButton::clicked, this, &UpAndDownBox::increase );
 
-            auto* const bottomButton = new RoundButton( QskAspect::Bottom, this );
+            auto* const bottomButton = new RoundButton( Qt::BottomEdge, this );
             connect( bottomButton, &QskPushButton::clicked, this, &UpAndDownBox::decrease );
         }
 
