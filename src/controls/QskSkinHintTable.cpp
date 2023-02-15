@@ -47,11 +47,11 @@ inline const QVariant* qskResolvedHint( QskAspect aspect,
         }
 #endif
 
-        if ( aspect.placement() )
+        if ( aspect.variation() )
         {
-            // clear the placement bits and restart
+            // clear the variation bits and restart
             aspect = a;
-            aspect.setPlacement( QskAspect::NoPlacement );
+            aspect.setVariation( QskAspect::NoVariation );
 
             continue;
         }
@@ -285,15 +285,15 @@ bool QskSkinHintTable::isResolutionMatching(
 
                 if ( s1 == 0 )
                 {
-                    if ( aspect1.placement() == QskAspect::NoPlacement )
+                    if ( aspect1.variation() == QskAspect::NoVariation )
                         return true;
 
-                    // clear the placement bits and restart with the initial state
+                    // clear the variation bits and restart with the initial state
                     aspect1 = a1;
-                    aspect1.setPlacement( QskAspect::NoPlacement );
+                    aspect1.setVariation( QskAspect::NoVariation );
 
                     aspect2 = a2;
-                    aspect2.setPlacement( QskAspect::NoPlacement );
+                    aspect2.setVariation( QskAspect::NoVariation );
                 }
             }
             else

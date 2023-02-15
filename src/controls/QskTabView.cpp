@@ -206,9 +206,9 @@ int QskTabView::count() const
     return m_data->tabBar->count();
 }
 
-QskAspect::Placement QskTabView::effectivePlacement() const
+QskAspect::Variation QskTabView::effectiveVariation() const
 {
-    return m_data->tabBar->effectivePlacement();
+    return m_data->tabBar->effectiveVariation();
 }
 
 QSizeF QskTabView::layoutSizeHint(

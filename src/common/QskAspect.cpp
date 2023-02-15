@@ -260,9 +260,9 @@ QDebug operator<<( QDebug debug, QskAspect::Subcontrol subControl )
     return debug;
 }
 
-QDebug operator<<( QDebug debug, QskAspect::Placement placement )
+QDebug operator<<( QDebug debug, QskAspect::Variation variation )
 {
-    qskDebugEnum( debug, "Placement", placement );
+    qskDebugEnum( debug, "Variation", variation );
     return debug;
 }
 
@@ -334,8 +334,8 @@ void qskDebugAspect( QDebug debug, const QMetaObject* metaObject, QskAspect aspe
         }
     }
 
-    if ( aspect.placement() != QskAspect::NoPlacement )
-        debug << ", " << qskEnumString( "Placement", aspect.placement() );
+    if ( aspect.variation() != QskAspect::NoVariation )
+        debug << ", " << qskEnumString( "Variation", aspect.variation() );
 
     if ( aspect.hasStates() )
         debug << ", " << qskStatesToString( metaObject, aspect.states() );

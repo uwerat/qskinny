@@ -182,14 +182,14 @@
     \sa setSkinHint(), effectiveSkinHint()
 */
 
-/*! \fn QskSkinnable::effectivePlacement
+/*! \fn QskSkinnable::effectiveVariation
 
-    The placements bits are added to an unresolved aspect when
+    The variation bits are added to an unresolved aspect when
     inserting or looking up values in the hint table.
 
-    \return The default implementation returns QskAspect::NoPlacement;
+    \return The default implementation returns QskAspect::NoVariation;
 
-    \sa QskAspect::Placement, effectiveSkinHint()
+    \sa QskAspect::Variation, effectiveSkinHint()
 */
 
 /*! \fn QskSkinnable::hintStatus

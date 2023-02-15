@@ -35,7 +35,7 @@ class QSK_EXPORT QskSeparator : public QskControl
     void resetExtent();
     qreal extent() const;
 
-    QskAspect::Placement effectivePlacement() const override;
+    QskAspect::Variation effectiveVariation() const override;
 
   Q_SIGNALS:
     void orientationChanged( Qt::Orientation );

@@ -347,7 +347,7 @@ void WindowAnimator::addHints( const QskControl* control,
         if ( !isControlAffected( control, subControls, aspect ) )
             continue;
 
-        aspect.setPlacement( control->effectivePlacement() );
+        aspect.setVariation( control->effectiveVariation() );
         aspect.setStates( control->skinStates() );
 
         if ( localTable.resolvedHint( aspect ) )
@@ -365,8 +365,8 @@ void WindowAnimator::addHints( const QskControl* control,
         {
             if ( QskVariantAnimator::maybeInterpolate( *v1, *v2 ) )
             {
-                if ( r1.placement() == r2.placement() )
-                    aspect.setPlacement( r2.placement() );
+                if ( r1.variation() == r2.variation() )
+                    aspect.setVariation( r2.variation() );
 
                 if ( r1.states() == r2.states() )
                     aspect.setStates( r2.states() );
@@ -377,7 +377,7 @@ void WindowAnimator::addHints( const QskControl* control,
         }
         else if ( v1 )
         {
-            aspect.setPlacement( r1.placement() );
+            aspect.setVariation( r1.variation() );
             aspect.setStates( r1.states() );
 
             storeAnimator( control, aspect, *v1, QVariant(), animatorHint );
@@ -385,7 +385,7 @@ void WindowAnimator::addHints( const QskControl* control,
         }
         else if ( v2 )
         {
-            aspect.setPlacement( r1.placement() );
+            aspect.setVariation( r1.variation() );
             aspect.setStates( r1.states() );
 
             storeAnimator( control, aspect, QVariant(), *v2, animatorHint );

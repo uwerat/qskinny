@@ -159,9 +159,9 @@ QVariantList QskSegmentedBar::optionAt( int index ) const
     return list;
 }
 
-QskAspect::Placement QskSegmentedBar::effectivePlacement() const
+QskAspect::Variation QskSegmentedBar::effectiveVariation() const
 {
-    return static_cast< QskAspect::Placement >( m_data->orientation );
+    return static_cast< QskAspect::Variation >( m_data->orientation );
 }
 
 void QskSegmentedBar::mousePressEvent( QMouseEvent* event )

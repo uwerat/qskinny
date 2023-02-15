@@ -87,9 +87,9 @@ Qt::Orientation QskSlider::orientation() const
     return m_data->orientation;
 }
 
-QskAspect::Placement QskSlider::effectivePlacement() const
+QskAspect::Variation QskSlider::effectiveVariation() const
 {
-    return static_cast< QskAspect::Placement >( m_data->orientation );
+    return static_cast< QskAspect::Variation >( m_data->orientation );
 }
 
 void QskSlider::setTracking( bool on )

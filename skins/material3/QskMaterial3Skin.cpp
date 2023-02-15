@@ -525,9 +525,9 @@ void Editor::setupSeparator()
     using A = QskAspect;
     using Q = QskSeparator;
 
-    for ( auto placement : { A::Horizontal, A::Vertical } )
+    for ( auto variation : { A::Horizontal, A::Vertical } )
     {
-        const auto aspect = Q::Panel | placement;
+        const auto aspect = Q::Panel | variation;
 
         setMetric( aspect | A::Size, 4_dp );
         setBoxShape( Q::Panel, 0 );
@@ -742,13 +742,13 @@ void Editor::setupTabButton()
     setColor( Q::Text | Q::Checked, m_pal.primary );
     setColor( Q::Text | Q::Hovered, m_pal.primary );
 
-    for ( const auto placement : { A::Left, A::Right, A::Top, A::Bottom } )
+    for ( const auto variation : { A::Left, A::Right, A::Top, A::Bottom } )
     {
-        const auto aspect = Q::Panel | placement;
+        const auto aspect = Q::Panel | variation;
 
         Qt::Edge edge;
 
-        switch( placement )
+        switch( variation )
         {
             case A::Left:
                 edge = Qt::RightEdge;

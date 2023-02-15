@@ -225,9 +225,9 @@ void QskPushButton::updateResources()
     m_data->ensureGraphic( this );
 }
 
-QskAspect::Placement QskPushButton::effectivePlacement() const
+QskAspect::Variation QskPushButton::effectiveVariation() const
 {
-    return Inherited::effectivePlacement();
+    return Inherited::effectiveVariation();
 }
 
 QRectF QskPushButton::layoutRectForSize( const QSizeF& size ) const

@@ -98,12 +98,12 @@ QRectF QskTabButton::layoutRectForSize( const QSizeF& size ) const
     return subControlContentsRect( size, Panel );
 }
 
-QskAspect::Placement QskTabButton::effectivePlacement() const
+QskAspect::Variation QskTabButton::effectiveVariation() const
 {
     if ( m_data->tabBar )
-        return m_data->tabBar->effectivePlacement();
+        return m_data->tabBar->effectiveVariation();
 
-    return QskAspect::NoPlacement;
+    return QskAspect::NoVariation;
 }
 
 const QskTabBar* QskTabButton::tabBar() const

@@ -688,7 +688,7 @@ QskAspect::Subcontrol QskTabBar::substitutedSubcontrol(
     return Inherited::substitutedSubcontrol( subControl );
 }
 
-QskAspect::Placement QskTabBar::effectivePlacement() const
+QskAspect::Variation QskTabBar::effectiveVariation() const
 {
     switch ( edge() )
     {
@@ -705,7 +705,7 @@ QskAspect::Placement QskTabBar::effectivePlacement() const
             return QskAspect::Bottom;
     }
 
-    return QskAspect::NoPlacement;
+    return QskAspect::NoVariation;
 }
 
 #include "moc_QskTabBar.cpp"

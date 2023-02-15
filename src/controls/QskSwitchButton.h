@@ -32,7 +32,7 @@ class QSK_EXPORT QskSwitchButton : public QskAbstractButton
     bool isInverted() const;
     void setInverted( bool );
 
-    QskAspect::Placement effectivePlacement() const override;
+    QskAspect::Variation effectiveVariation() const override;
 
   Q_SIGNALS:
     void orientationChanged( Qt::Orientation );

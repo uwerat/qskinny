@@ -73,7 +73,7 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     QFont font() const;
 
     QRectF layoutRectForSize( const QSizeF& ) const override;
-    QskAspect::Placement effectivePlacement() const override;
+    QskAspect::Variation effectiveVariation() const override;
 
   public Q_SLOTS:
     void setText( const QString& );

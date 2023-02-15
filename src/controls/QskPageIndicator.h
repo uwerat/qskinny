@@ -42,7 +42,7 @@ class QSK_EXPORT QskPageIndicator : public QskControl
     QRectF bulletRect( int index ) const;
     int indexAtPosition( const QPointF& ) const;
 
-    QskAspect::Placement effectivePlacement() const override;
+    QskAspect::Variation effectiveVariation() const override;
 
   Q_SIGNALS:
     void countChanged( int );

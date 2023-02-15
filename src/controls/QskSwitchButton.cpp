@@ -72,13 +72,9 @@ void QskSwitchButton::setInverted( bool on )
     }
 }
 
-QskAspect::Placement QskSwitchButton::effectivePlacement() const
+QskAspect::Variation QskSwitchButton::effectiveVariation() const
 {
-    /*
-        So you can define different hints depending on the orientation,
-        but what about the layoutDirection ???
-     */
-    return static_cast< QskAspect::Placement >( m_data->orientation );
+    return static_cast< QskAspect::Variation >( m_data->orientation );
 }
 
 #include "moc_QskSwitchButton.cpp"

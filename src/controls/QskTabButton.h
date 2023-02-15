@@ -41,7 +41,7 @@ class QSK_EXPORT QskTabButton : public QskAbstractButton
 
     QRectF layoutRectForSize( const QSizeF& ) const override;
 
-    QskAspect::Placement effectivePlacement() const override;
+    QskAspect::Variation effectiveVariation() const override;
 
     const QskTabBar* tabBar() const;
     QskTabBar* tabBar();

@@ -69,9 +69,9 @@ class QSK_EXPORT QskAspect
     };
     Q_ENUM( Primitive )
 
-    enum Placement : quint8
+    enum Variation : quint8
     {
-        NoPlacement = 0,
+        NoVariation = 0,
 
         Vertical = Qt::Vertical,
         Horizontal = Qt::Horizontal,
@@ -81,7 +81,7 @@ class QSK_EXPORT QskAspect
         Right  = 3,
         Bottom = 4
     };
-    Q_ENUM( Placement )
+    Q_ENUM( Variation )
 
     enum Subcontrol : quint16
     {
@@ -111,7 +111,7 @@ class QSK_EXPORT QskAspect
     constexpr QskAspect( Subcontrol ) noexcept;
     constexpr QskAspect( Section ) noexcept;
     constexpr QskAspect( Type ) noexcept;
-    constexpr QskAspect( Placement ) noexcept;
+    constexpr QskAspect( Variation ) noexcept;
 
     constexpr QskAspect( const QskAspect& ) noexcept = default;
     constexpr QskAspect( QskAspect&& ) noexcept = default;
@@ -127,7 +127,7 @@ class QSK_EXPORT QskAspect
     constexpr QskAspect operator|( Section ) const noexcept;
     constexpr QskAspect operator|( Type ) const noexcept;
     constexpr QskAspect operator|( Primitive ) const noexcept;
-    constexpr QskAspect operator|( Placement ) const noexcept;
+    constexpr QskAspect operator|( Variation ) const noexcept;
 
     constexpr QskAspect operator|( State ) const noexcept;
     QskAspect& operator|=( State ) noexcept;
@@ -164,8 +164,8 @@ class QSK_EXPORT QskAspect
     constexpr bool isColor() const noexcept;
     constexpr bool isFlag() const noexcept;
 
-    constexpr Placement placement() const noexcept;
-    void setPlacement( Placement ) noexcept;
+    constexpr Variation variation() const noexcept;
+    void setVariation( Variation ) noexcept;
 
     constexpr States states() const noexcept;
     constexpr bool hasStates() const noexcept;
@@ -198,10 +198,10 @@ class QSK_EXPORT QskAspect
     static void reservePrimitives( quint8 count );
 
   private:
-    constexpr QskAspect( Subcontrol, Section, Type, Placement ) noexcept;
+    constexpr QskAspect( Subcontrol, Section, Type, Variation ) noexcept;
 
     constexpr QskAspect( uint subControl, uint section, uint type, bool isAnimator,
-        uint primitive, uint placement, uint states ) noexcept;
+        uint primitive, uint variation, uint states ) noexcept;
 
     struct Bits
     {
@@ -212,7 +212,7 @@ class QSK_EXPORT QskAspect
         uint isAnimator : 1;
 
         uint primitive : 5;
-        uint placement : 3;
+        uint variation : 3;
         uint reserved1 : 4;
 
         uint states    : 16;
@@ -243,39 +243,39 @@ constexpr inline QskAspect::State operator>>( QskAspect::State a, const int b ) 
 }
 
 inline constexpr QskAspect::QskAspect() noexcept
-    : QskAspect( NoSubcontrol, Body, Flag, NoPlacement )
+    : QskAspect( NoSubcontrol, Body, Flag, NoVariation )
 {
 }
 
 inline constexpr QskAspect::QskAspect( Subcontrol subControl ) noexcept
-    : QskAspect( subControl, Body, Flag, NoPlacement )
+    : QskAspect( subControl, Body, Flag, NoVariation )
 {
 }
 
 inline constexpr QskAspect::QskAspect( Section section ) noexcept
-    : QskAspect( NoSubcontrol, section, Flag, NoPlacement )
+    : QskAspect( NoSubcontrol, section, Flag, NoVariation )
 {
 }
 
 inline constexpr QskAspect::QskAspect( Type type ) noexcept
-    : QskAspect( NoSubcontrol, Body, type, NoPlacement )
+    : QskAspect( NoSubcontrol, Body, type, NoVariation )
 {
 }
 
-inline constexpr QskAspect::QskAspect( Placement placement ) noexcept
-    : QskAspect( NoSubcontrol, Body, Flag, placement )
+inline constexpr QskAspect::QskAspect( Variation variation ) noexcept
+    : QskAspect( NoSubcontrol, Body, Flag, variation )
 {
 }
 
 inline constexpr QskAspect::QskAspect(
-        Subcontrol subControl, Section section, Type type, Placement placement ) noexcept
-    : QskAspect( subControl, section, type, false, 0, placement, NoState )
+        Subcontrol subControl, Section section, Type type, Variation variation ) noexcept
+    : QskAspect( subControl, section, type, false, 0, variation, NoState )
 {
 }
 
-inline constexpr QskAspect::QskAspect( uint subControl, uint section, uint type, bool isAnimator,
-        uint primitive, uint placement, uint states ) noexcept
-    : m_bits { subControl, section, type, isAnimator, primitive, placement, 0, states, 0 }
+inline constexpr QskAspect::QskAspect( uint subControl, uint section, uint type,
+        bool isAnimator, uint primitive, uint variation, uint states ) noexcept
+    : m_bits { subControl, section, type, isAnimator, primitive, variation, 0, states, 0 }
 {
 }
 
@@ -297,37 +297,37 @@ inline bool QskAspect::operator<( const QskAspect& other ) const noexcept
 inline constexpr QskAspect QskAspect::operator|( Subcontrol subControl ) const noexcept
 {
     return QskAspect( subControl, m_bits.section, m_bits.type,
-        m_bits.isAnimator, m_bits.primitive, m_bits.placement, m_bits.states );
+        m_bits.isAnimator, m_bits.primitive, m_bits.variation, m_bits.states );
 }
 
 inline constexpr QskAspect QskAspect::operator|( Section section ) const noexcept
 {
     return QskAspect( m_bits.subControl, section, m_bits.type,
-        m_bits.isAnimator, m_bits.primitive, m_bits.placement, m_bits.states );
+        m_bits.isAnimator, m_bits.primitive, m_bits.variation, m_bits.states );
 }
 
 inline constexpr QskAspect QskAspect::operator|( Type type ) const noexcept
 {
     return QskAspect( m_bits.subControl, m_bits.section, type,
-        m_bits.isAnimator, m_bits.primitive, m_bits.placement, m_bits.states );
+        m_bits.isAnimator, m_bits.primitive, m_bits.variation, m_bits.states );
 }
 
 inline constexpr QskAspect QskAspect::operator|( Primitive primitive ) const noexcept
 {
     return QskAspect( m_bits.subControl, m_bits.section, m_bits.type,
-        m_bits.isAnimator, primitive, m_bits.placement, m_bits.states );
+        m_bits.isAnimator, primitive, m_bits.variation, m_bits.states );
 }
 
-inline constexpr QskAspect QskAspect::operator|( Placement placement ) const noexcept
+inline constexpr QskAspect QskAspect::operator|( Variation variation ) const noexcept
 {
     return QskAspect( m_bits.subControl, m_bits.section, m_bits.type,
-        m_bits.isAnimator, m_bits.primitive, placement, m_bits.states );
+        m_bits.isAnimator, m_bits.primitive, variation, m_bits.states );
 }
 
 inline constexpr QskAspect QskAspect::operator|( State state ) const noexcept
 {
     return QskAspect( m_bits.subControl, m_bits.section, m_bits.type,
-        m_bits.isAnimator, m_bits.primitive, m_bits.placement, m_bits.states | state );
+        m_bits.isAnimator, m_bits.primitive, m_bits.variation, m_bits.states | state );
 }
 
 inline QskAspect& QskAspect::operator|=( State state ) noexcept
@@ -339,7 +339,7 @@ inline QskAspect& QskAspect::operator|=( State state ) noexcept
 inline constexpr QskAspect QskAspect::operator&( State state ) const noexcept
 {
     return QskAspect( m_bits.subControl, m_bits.section, m_bits.type, m_bits.isAnimator,
-        m_bits.primitive, m_bits.placement, m_bits.states & state );
+        m_bits.primitive, m_bits.variation, m_bits.states & state );
 }
 
 inline QskAspect& QskAspect::operator&=( State state ) noexcept
@@ -351,7 +351,7 @@ inline QskAspect& QskAspect::operator&=( State state ) noexcept
 inline constexpr QskAspect QskAspect::operator|( States states ) const noexcept
 {
     return QskAspect( m_bits.subControl, m_bits.section, m_bits.type, m_bits.isAnimator,
-        m_bits.primitive, m_bits.placement, m_bits.states | states );
+        m_bits.primitive, m_bits.variation, m_bits.states | states );
 }
 
 inline QskAspect& QskAspect::operator|=( States states ) noexcept
@@ -363,7 +363,7 @@ inline QskAspect& QskAspect::operator|=( States states ) noexcept
 inline constexpr QskAspect QskAspect::operator&( States states ) const noexcept
 {
     return QskAspect( m_bits.subControl, m_bits.section, m_bits.type,
-        m_bits.isAnimator, m_bits.primitive, m_bits.placement, m_bits.states & states );
+        m_bits.isAnimator, m_bits.primitive, m_bits.variation, m_bits.states & states );
 }
 
 inline QskAspect& QskAspect::operator&=( States states ) noexcept
@@ -375,7 +375,7 @@ inline QskAspect& QskAspect::operator&=( States states ) noexcept
 inline constexpr QskAspect QskAspect::stateless() const noexcept
 {
     return QskAspect( m_bits.subControl, m_bits.section, m_bits.type,
-        m_bits.isAnimator, m_bits.primitive, m_bits.placement, 0 );
+        m_bits.isAnimator, m_bits.primitive, m_bits.variation, 0 );
 }
 
 inline constexpr QskAspect QskAspect::trunk() const noexcept
@@ -518,14 +518,14 @@ inline void QskAspect::clearPrimitive() noexcept
     m_bits.primitive = NoPrimitive;
 }
 
-inline constexpr QskAspect::Placement QskAspect::placement() const noexcept
+inline constexpr QskAspect::Variation QskAspect::variation() const noexcept
 {
-    return static_cast< Placement >( m_bits.placement );
+    return static_cast< Variation >( m_bits.variation );
 }
 
-inline void QskAspect::setPlacement( Placement placement ) noexcept
+inline void QskAspect::setVariation( Variation variation ) noexcept
 {
-    m_bits.placement = placement;
+    m_bits.variation = variation;
 }
 
 inline constexpr QskAspect operator|(
@@ -559,9 +559,9 @@ inline constexpr QskAspect operator|(
 }
 
 inline constexpr QskAspect operator|(
-    QskAspect::Placement placement, const QskAspect& aspect ) noexcept
+    QskAspect::Variation variation, const QskAspect& aspect ) noexcept
 {
-    return aspect | placement;
+    return aspect | variation;
 }
 
 inline constexpr QskAspect operator|(
@@ -601,15 +601,15 @@ inline constexpr QskAspect operator|(
 }
 
 inline constexpr QskAspect operator|(
-    QskAspect::Type type, QskAspect::Placement placement ) noexcept
+    QskAspect::Type type, QskAspect::Variation variation ) noexcept
 {
-    return QskAspect( type ) | placement;
+    return QskAspect( type ) | variation;
 }
 
 inline constexpr QskAspect operator|(
-    QskAspect::Placement placement, QskAspect::Type type ) noexcept
+    QskAspect::Variation variation, QskAspect::Type type ) noexcept
 {
-    return type | placement;
+    return type | variation;
 }
 
 inline constexpr QskAspect operator|(
@@ -637,15 +637,15 @@ inline constexpr QskAspect operator|(
 }
 
 inline constexpr QskAspect operator|(
-    QskAspect::Subcontrol subControl, QskAspect::Placement placement ) noexcept
+    QskAspect::Subcontrol subControl, QskAspect::Variation variation ) noexcept
 {
-    return QskAspect( subControl ) | placement;
+    return QskAspect( subControl ) | variation;
 }
 
 inline constexpr QskAspect operator|(
-    QskAspect::Placement placement, QskAspect::Subcontrol subControl ) noexcept
+    QskAspect::Variation variation, QskAspect::Subcontrol subControl ) noexcept
 {
-    return subControl | placement;
+    return subControl | variation;
 }
 
 namespace std
@@ -672,7 +672,7 @@ QSK_EXPORT QDebug operator<<( QDebug, QskAspect );
 QSK_EXPORT QDebug operator<<( QDebug, QskAspect::Type );
 QSK_EXPORT QDebug operator<<( QDebug, QskAspect::Subcontrol );
 QSK_EXPORT QDebug operator<<( QDebug, QskAspect::Primitive );
-QSK_EXPORT QDebug operator<<( QDebug, QskAspect::Placement );
+QSK_EXPORT QDebug operator<<( QDebug, QskAspect::Variation );
 QSK_EXPORT QDebug operator<<( QDebug, QskAspect::States );
 
 QSK_EXPORT void qskDebugStates( QDebug, const QMetaObject*, QskAspect::States );

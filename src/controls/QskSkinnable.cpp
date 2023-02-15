@@ -725,7 +725,7 @@ QskColorFilter QskSkinnable::effectiveGraphicFilter(
 
     QskAspect aspect( effectiveSubcontrol( subControl ) | QskAspect::GraphicRole );
     aspect.setSection( section() );
-    aspect.setPlacement( effectivePlacement() );
+    aspect.setVariation( effectiveVariation() );
 
     QskSkinHintStatus status;
 
@@ -735,7 +735,7 @@ QskColorFilter QskSkinnable::effectiveGraphicFilter(
 
     aspect.setSubcontrol( status.aspect.subControl() );
     aspect.setSection( QskAspect::Body );
-    aspect.setPlacement( QskAspect::NoPlacement );
+    aspect.setVariation( QskAspect::NoVariation );
 
     const auto v = animatedHint( aspect, nullptr );
 
@@ -877,8 +877,8 @@ QVariant QskSkinnable::effectiveSkinHint(
     if ( aspect.section() == QskAspect::Body )
         aspect.setSection( section() );
 
-    if ( aspect.placement() == QskAspect::NoPlacement )
-        aspect.setPlacement( effectivePlacement() );
+    if ( aspect.variation() == QskAspect::NoVariation )
+        aspect.setVariation( effectiveVariation() );
 
     if ( !aspect.hasStates() )
         aspect.setStates( skinStates() );
@@ -980,11 +980,11 @@ QVariant QskSkinnable::interpolatedHint(
                 continue;
             }
 
-            if ( aspect.placement() )
+            if ( aspect.variation() )
             {
-                // clear the placement bits and restart
+                // clear the variation bits and restart
                 aspect = a;
-                aspect.setPlacement( QskAspect::NoPlacement );
+                aspect.setVariation( QskAspect::NoVariation );
 
                 continue;
             }
@@ -1257,7 +1257,7 @@ void QskSkinnable::startHintTransition( QskAspect aspect, int index,
 
     aspect.clearStates();
     aspect.setSection( QskAspect::Body );
-    aspect.setPlacement( QskAspect::NoPlacement );
+    aspect.setVariation( QskAspect::NoVariation );
     aspect.setAnimator( false );
 
 #if DEBUG_ANIMATOR
@@ -1345,7 +1345,7 @@ bool QskSkinnable::startHintTransitions(
     bool started = false; // at least one transition has been started
 
     QskAspect aspect;
-    aspect.setPlacement( effectivePlacement() );
+    aspect.setVariation( effectiveVariation() );
     aspect.setSection( section() );
 
     const auto skin = effectiveSkin();
@@ -1426,9 +1426,9 @@ QskSkin* QskSkinnable::effectiveSkin() const
     return skin ? skin : qskSetup->skin();
 }
 
-QskAspect::Placement QskSkinnable::effectivePlacement() const
+QskAspect::Variation QskSkinnable::effectiveVariation() const
 {
-    return QskAspect::NoPlacement;
+    return QskAspect::NoVariation;
 }
 
 QskAspect::Section QskSkinnable::section() const
