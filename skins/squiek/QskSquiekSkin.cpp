@@ -598,8 +598,7 @@ void Editor::setupPushButton()
 
     setFlagHint( Q::Text | Q::Disabled | A::Style, Qsk::Sunken );
 
-    setAlignment( Q::Text | A::Vertical, Qt::AlignCenter );
-    setAlignment( Q::Text | A::Horizontal, Qt::AlignLeft | Qt::AlignVCenter );
+    setAlignment( Q::Text, Qt::AlignCenter );
 
     setColor( Q::Text, m_pal.themeForeground );
     setColor( Q::Text | Q::Disabled, m_pal.darker200 );
