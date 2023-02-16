@@ -5,6 +5,7 @@
 
 #include "QskPushButtonSkinlet.h"
 #include "QskPushButton.h"
+#include "QskTextOptions.h"
 
 #include "QskAnimationHint.h"
 #include "QskGraphic.h"
@@ -38,8 +39,16 @@ namespace
                 QskPushButton::Text, button->text(),
                 QskPushButton::Graphic, button->graphic().defaultSize() );
 
-            const auto alignment = button->alignmentHint( QskPushButton::Panel, Qt::AlignCenter );
-            setFixedContent( QskPushButton::Text, Qt::Horizontal, alignment );
+            const auto textOptions = button->textOptions();
+
+            if ( ( textOptions.elideMode() == Qt::ElideNone )
+                && ( textOptions.wrapMode() == QskTextOptions::NoWrap ) ) 
+            {
+                const auto alignment = button->alignmentHint(
+                    QskPushButton::Panel, Qt::AlignCenter );
+
+                setFixedContent( QskPushButton::Text, Qt::Horizontal, alignment );
+            }
         }
     };
 }
