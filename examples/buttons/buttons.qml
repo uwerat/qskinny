@@ -129,7 +129,7 @@ Qsk.Window
             shape
             {
                 sizeMode: Qt.RelativeSize
-                scalingMode: Qsk.BoxShapeMetrics.Elliptic
+                scalingMode: Qsk.BoxShapeMetrics.SymmetricByMaximum
                 radius: 100
             }
         }

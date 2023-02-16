@@ -108,23 +108,32 @@ QskBoxShapeMetrics QskBoxShapeMetrics::toAbsolute( const QSizeF& size ) const no
         const qreal rx = qskAbsoluted( size.width(), radius.width() );
         const qreal ry = qskAbsoluted( size.height(), radius.height() );
 
-        if ( m_scalingMode == Circular )
+        switch ( m_scalingMode )
         {
-            radius.rheight() = radius.rwidth() = std::min( rx, ry );
-        }
-        else
-        {
-            const auto ratio = radius.height() / radius.width();
-
-            if ( ratio >= 1.0 )
+            case Symmetric:
             {
-                radius.rwidth() = ry / ratio;
-                radius.rheight() = ry;
+                radius.rheight() = radius.rwidth() = std::min( rx, ry );
+                break;
             }
-            else
+            case SymmetricByMaximum:
             {
-                radius.rwidth() = rx;
-                radius.rheight() = rx * ratio;
+                radius.rheight() = radius.rwidth() = std::max( rx, ry );
+                break;
+            }
+            default:
+            {
+                const auto ratio = radius.height() / radius.width();
+
+                if ( ratio >= 1.0 )
+                {
+                    radius.rwidth() = ry / ratio;
+                    radius.rheight() = ry;
+                }
+                else
+                {
+                    radius.rwidth() = rx;
+                    radius.rheight() = rx * ratio;
+                }
             }
         }
     }
