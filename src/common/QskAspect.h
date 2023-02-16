@@ -32,11 +32,13 @@ class QSK_EXPORT QskAspect
         Body = 0,
 
         Header,
-        Footer
+        Footer,
+
+        Floating
     };
     Q_ENUM( Section )
 
-    static constexpr uint FirstUserSection = Section::Footer + 1;
+    static constexpr uint FirstUserSection = Section::Floating + 1;
     static constexpr uint LastSection = ( 1 << 4 ) - 1;
 
     enum Primitive : quint8
