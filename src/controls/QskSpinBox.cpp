@@ -172,7 +172,7 @@ using S = QskSpinBox;
 
 QskSpinBox::QskSpinBox(QQuickItem* const parent)
     : Inherited(parent)
-    , m_data(std::make_unique<PrivateData>(this))
+    , m_data( new PrivateData( this ) )
 {
   setBoundaries(0.0,1.0);
   setAcceptHoverEvents(true);
