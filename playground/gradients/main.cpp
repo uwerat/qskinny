@@ -23,6 +23,23 @@
 
 namespace
 {
+    class InputValidator : public QDoubleValidator
+    {
+      public:
+        InputValidator( QObject* parent = nullptr )
+            : QDoubleValidator( parent )
+        {
+            setRange( -9.99, 9.99 );
+            setDecimals( 2 );
+            setNotation( QDoubleValidator::StandardNotation );
+
+            auto locale = this->locale();
+            locale.setNumberOptions( QLocale::RejectGroupSeparator );
+
+            setLocale( locale );
+        }
+    };
+
     class NumberInput : public QskLinearBox
     {
         Q_OBJECT
@@ -34,7 +51,7 @@ namespace
             new QskTextLabel( label, this );
 
             m_input = new QskTextInput( this );
-            m_input->setValidator( new QDoubleValidator( -9.99, 9.99, 2, m_input ) );
+            m_input->setValidator( new InputValidator( m_input ) );
             m_input->setText( QString::number( value ) );
 
             const QFontMetricsF fm( m_input->font() );
