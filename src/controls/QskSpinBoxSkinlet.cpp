@@ -27,12 +27,13 @@ namespace
 
 QskSpinBoxSkinlet::QskSpinBoxSkinlet( QskSkin* )
 {
-    setNodeRoles( { IncPanel, IncText, DecPanel, DecText, TextPanel, TextText } );
+    setNodeRoles(
+        { IncrementPanel, IncrementText, DecrementPanel, DecrementText, TextPanel, TextText } );
 }
 
 int QskSpinBoxSkinlet::sampleCount( const QskSkinnable*, QskAspect::Subcontrol ) const
 {
-    return Count;
+    return 1;
 }
 
 QRectF QskSpinBoxSkinlet::sampleRect( const QskSkinnable* const skinnable, const QRectF& rect,
@@ -253,19 +254,19 @@ QSGNode* QskSpinBoxSkinlet::updateSubNode(
     const QskSkinnable* const skinnable, const quint8 nodeRole, QSGNode* const node ) const
 {
     using S = QskSpinBox;
-    if ( nodeRole == IncPanel )
+    if ( nodeRole == IncrementPanel )
     {
         return updateSeriesNode( skinnable, S::IncrementPanel, node );
     }
-    if ( nodeRole == DecPanel )
+    if ( nodeRole == DecrementPanel )
     {
         return updateSeriesNode( skinnable, S::DecrementPanel, node );
     }
-    if ( nodeRole == IncText )
+    if ( nodeRole == IncrementText )
     {
         return updateTextNode( skinnable, node, QStringLiteral( "+" ), S::IncrementText );
     }
-    if ( nodeRole == DecText )
+    if ( nodeRole == DecrementText )
     {
         return updateTextNode( skinnable, node, QStringLiteral( "-" ), S::DecrementText );
     }
