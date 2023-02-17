@@ -173,8 +173,6 @@ QRectF QskSpinBoxSkinlet::subControlRect(const QskSkinnable* const skinnable, co
   }
   else if(layout == (Qt::AlignBottom | Qt::AlignHCenter))
   {
-    const auto dx = qMax(rects[Inc].width(), rects[Dec].width());
-    const auto dy = qMax(rects[Inc].height(), rects[Dec].height());
     rects[Txt].moveTopLeft({center.x() - rects[Txt].width() * 0.5, center.y() - rects[Txt].height() * 0.5});
     rects[Dec].moveTopLeft({center.x() - spacing * 0.5 - rects[Dec].width() , rects[Txt].top() - spacing - rects[Dec].height() });
     rects[Inc].moveTopLeft({center.x() + spacing * 0.5, rects[Txt].top() - spacing - rects[Inc].height() });

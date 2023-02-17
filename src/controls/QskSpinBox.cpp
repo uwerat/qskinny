@@ -7,7 +7,6 @@
 #include <QskLinearBox.h>
 #include <QskGridBox.h>
 #include <QskTextInput.h>
-#include <QRegExpValidator>
 #include <QskBoxShapeMetrics.h>
 #include <QskBoxBorderColors.h>
 #include <QskBoxBorderMetrics.h>
@@ -17,7 +16,6 @@
 #include <QGuiApplication>
 #include <QStyleHints>
 #include <QskIntervalF.h>
-#include <array>
 
 QSK_SUBCONTROL(QskSpinBox, Inc)
 QSK_SUBCONTROL(QskSpinBox, Dec)
@@ -193,7 +191,7 @@ void QskSpinBox::hoverEnterEvent(QHoverEvent* event)
   m_data->saveMousePosition( qskHoverPosition( event ) );
 }
 
-void QskSpinBox::hoverLeaveEvent(QHoverEvent* event)
+void QskSpinBox::hoverLeaveEvent(QHoverEvent* )
 {
   m_data->saveMousePosition( {} );
 }
