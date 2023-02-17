@@ -126,8 +126,6 @@ namespace
         void setup();
 
       private:
-        void setupControl();
-
         void setupBox();
         void setupCheckBox();
         void setupDialogButtonBox();
@@ -185,8 +183,6 @@ namespace
 
 void Editor::setup()
 {
-    setupControl();
-
     setupBox();
     setupCheckBox();
     setupDialogButtonBox();
@@ -211,16 +207,6 @@ void Editor::setup()
     setupTabView();
     setupTextLabel();
     setupTextInput();
-}
-
-void Editor::setupControl()
-{
-    using A = QskAspect;
-
-    setPadding( A::NoSubcontrol, 11_dp );
-
-    setGradient( A::NoSubcontrol, m_pal.background );
-    setColor( A::NoSubcontrol | A::StyleColor, m_pal.onBackground );
 }
 
 void Editor::setupCheckBox()
