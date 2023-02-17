@@ -1,21 +1,24 @@
 /******************************************************************************
- * Copyright (C) 2023 Edelhirsch Software GmbH
- * This file may be used under the terms of the 3-clause BSD License
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
 #include "QskSpinBox.h"
-#include <QskLinearBox.h>
-#include <QskGridBox.h>
-#include <QskTextInput.h>
-#include <QskBoxShapeMetrics.h>
-#include <QskBoxBorderColors.h>
-#include <QskBoxBorderMetrics.h>
-#include <QskSkinlet.h>
-#include <QskEvent.h>
+#include "QskLinearBox.h"
+#include "QskGridBox.h"
+#include "QskTextInput.h"
+#include "QskBoxShapeMetrics.h"
+#include "QskBoxBorderColors.h"
+#include "QskBoxBorderMetrics.h"
+#include "QskSkinlet.h"
+#include "QskIntervalF.h"
+#include "QskEvent.h"
+
 #include <QtMath>
 #include <QGuiApplication>
 #include <QStyleHints>
-#include <QskIntervalF.h>
+
+#include <array>
 
 QSK_SUBCONTROL(QskSpinBox, Inc)
 QSK_SUBCONTROL(QskSpinBox, Dec)

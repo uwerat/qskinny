@@ -1,48 +1,49 @@
 /******************************************************************************
- * Copyright (C) 2023 Edelhirsch Software GmbH
- * This file may be used under the terms of the 3-clause BSD License
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#pragma once
+#ifndef QSK_SPIN_BOX_H
+#define QSK_SPIN_BOX_H
 
-#include <QskControl.h>
-#include <QskPushButton.h>
 #include <QskBoundedInput.h>
 
 class QSK_EXPORT QskSpinBox : public QskBoundedInput
 {
-  Q_OBJECT
-  using Inherited = QskBoundedInput;
+    Q_OBJECT
+    Q_PROPERTY(qreal value READ value NOTIFY valueChanged)
+
+    using Inherited = QskBoundedInput;
 public:
-  Q_PROPERTY(qreal value READ value NOTIFY valueChanged)
-  QSK_SUBCONTROLS(Inc, Dec, IncText, DecText, TextPanel, Text, Layout)
-  QSK_STATES( Pressed )
+    QSK_SUBCONTROLS(Inc, Dec, IncText, DecText, TextPanel, Text, Layout)
+    QSK_STATES( Pressed )
 
-  explicit QskSpinBox( QQuickItem* parent = nullptr );
-  ~QskSpinBox() override;
+    explicit QskSpinBox( QQuickItem* parent = nullptr );
+    ~QskSpinBox() override;
 
-  void increment( qreal offset ) override;
-  qreal value() const;
+    void increment( qreal offset ) override;
+    qreal value() const;
 
 Q_SIGNALS:
-  void valueChanged(qreal value);
+    void valueChanged( qreal );
+    void focusIndexChanged( int );
 
 private:
-  Q_SIGNAL void focusIndexChanged(int index);
+    void hoverEnterEvent( QHoverEvent* ) override;
+    void hoverLeaveEvent( QHoverEvent* ) override;
+    void hoverMoveEvent( QHoverEvent* ) override;
 
-  void hoverEnterEvent( QHoverEvent* event) override;
-  void hoverLeaveEvent( QHoverEvent* event) override;
-  void hoverMoveEvent( QHoverEvent* event) override;
+    void mouseReleaseEvent( QMouseEvent* ) override;
+    void mousePressEvent( QMouseEvent* ) override;
 
-  void mouseReleaseEvent(QMouseEvent* event) override;
-  void mousePressEvent(QMouseEvent* event) override;
+    void keyPressEvent( QKeyEvent* ) override;
+    void keyReleaseEvent( QKeyEvent* ) override;
 
-  void keyPressEvent( QKeyEvent* event ) override;
-  void keyReleaseEvent( QKeyEvent* event ) override;
+    void focusInEvent( QFocusEvent* ) override;
+    QRectF focusIndicatorRect() const override;
 
-  void focusInEvent(QFocusEvent* event) override;
-  QRectF focusIndicatorRect() const override;
-
-  class PrivateData;
-  std::unique_ptr<PrivateData> m_data;
+    class PrivateData;
+    std::unique_ptr<PrivateData> m_data;
 };
+
+#endif
