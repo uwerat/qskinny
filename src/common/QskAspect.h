@@ -387,7 +387,7 @@ inline constexpr QskAspect QskAspect::stateless() const noexcept
 
 inline constexpr QskAspect QskAspect::trunk() const noexcept
 {
-    return QskAspect( m_bits.subControl, m_bits.section, m_bits.type,
+    return QskAspect( m_bits.subControl, 0, m_bits.type,
         m_bits.isAnimator, m_bits.primitive, 0, 0 );
 }
 

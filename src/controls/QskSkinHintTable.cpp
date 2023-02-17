@@ -254,40 +254,55 @@ bool QskSkinHintTable::isResolutionMatching(
     if ( aspect1.trunk() != aspect2.trunk() )
         return false;
 
-    const auto a1 = aspect1;
-    const auto a2 = aspect2;
+    auto a1 = aspect1;
+    auto a2 = aspect2;
 
     Q_FOREVER
     {
-        const auto s1 = aspect1.topState();
-        const auto s2 = aspect2.topState();
+        const auto state1 = aspect1.topState();
+        const auto state2 = aspect2.topState();
 
-        if ( s1 > s2 )
+        if ( state1 > state2 )
         {
             if ( hasHint( aspect1 ) )
                 return false;
 
-            aspect1.clearState( s1 );
+            aspect1.clearState( state1 );
+            continue;
         }
-        else if ( s2 > s1 )
+
+        if ( state2 > state1 )
         {
             if ( hasHint( aspect2 ) )
                 return false;
 
-            aspect2.clearState( s2 );
+            aspect2.clearState( state2 );
+            continue;
         }
-        else
-        {
-            if ( aspect1 == aspect2 )
-            {
-                if ( hasHint( aspect1 ) )
-                    return true;
 
-                if ( s1 == 0 )
+        if ( aspect1 == aspect2 )
+        {
+            if ( hasHint( aspect1 ) )
+                return true;
+
+            if ( state1 == 0 )
+            {
+                if ( aspect1.variation() == QskAspect::NoVariation )
                 {
-                    if ( aspect1.variation() == QskAspect::NoVariation )
+                    if ( aspect1.section() == QskAspect::Body )
                         return true;
 
+                    // clear the section bits and restart with the initial state
+
+                    a1.setSection( QskAspect::Body );
+                    a2.setSection( QskAspect::Body );
+
+                    aspect1 = a1;
+                    aspect2 = a2;
+
+                }
+                else
+                {
                     // clear the variation bits and restart with the initial state
                     aspect1 = a1;
                     aspect1.setVariation( QskAspect::NoVariation );
@@ -295,15 +310,17 @@ bool QskSkinHintTable::isResolutionMatching(
                     aspect2 = a2;
                     aspect2.setVariation( QskAspect::NoVariation );
                 }
-            }
-            else
-            {
-                if ( hasHint( aspect1 ) || hasHint( aspect2 ) )
-                    return false;
-            }
 
-            aspect1.clearState( s1 );
-            aspect2.clearState( s2 );
+                continue;
+            }
         }
+        else
+        {
+            if ( hasHint( aspect1 ) || hasHint( aspect2 ) )
+                return false;
+        }
+
+        aspect1.clearState( state1 );
+        aspect2.clearState( state2 );
     }
 }
