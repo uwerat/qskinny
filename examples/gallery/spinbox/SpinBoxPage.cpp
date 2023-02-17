@@ -40,7 +40,7 @@ void SpinBoxPage::populate()
     const auto x = grid->elementCount() % cols;
     const auto y = grid->elementCount() / cols;
     auto* const column = new QskLinearBox(Qt::Vertical, grid);
-    auto* const label = new QskTextLabel(layouts.value(layout), column); // TODO put label either on top or on the bottom
+    auto* const label = new QskTextLabel(layouts.value(layout), column);
     auto* const spinbox = new QskSpinBox( column );
     spinbox->setAlignmentHint(QskSpinBox::Layout, layout);
     grid->addItem(column, y, x);

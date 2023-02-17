@@ -682,20 +682,20 @@ void Editor::setupSpinBox()
   setSpacing(QskSpinBox::Layout, 4_dp);
 
   setStrutSize(QskSpinBox::TextPanel | QskAspect::Size, {80_dp,40_dp});
-  setStrutSize(QskSpinBox::Inc | QskAspect::Size, {40_dp,40_dp});
-  setStrutSize(QskSpinBox::Dec | QskAspect::Size, {40_dp,40_dp});
+  setStrutSize(QskSpinBox::IncrementPanel | QskAspect::Size, {40_dp,40_dp});
+  setStrutSize(QskSpinBox::DecrementPanel | QskAspect::Size, {40_dp,40_dp});
 
   setAlignment(QskSpinBox::Layout, Qt::AlignHCenter);
   setAlignment(Q::Text, Qt::AlignCenter);
 
-  for(const auto& state : {QskSpinBox::Dec, QskSpinBox::Inc, QskSpinBox::TextPanel})
+  for(const auto& state : {QskSpinBox::DecrementPanel, QskSpinBox::IncrementPanel, QskSpinBox::TextPanel})
   {
     setBoxShape(state, 4_dp);
     setBoxBorderColors(state, QColor("#79747E"));
     setBoxBorderMetrics(state, 1_dp);
   }
 
-  for(const auto& state : {QskSpinBox::Dec, QskSpinBox::Inc})
+  for(const auto& state : {QskSpinBox::DecrementPanel, QskSpinBox::IncrementPanel})
   {
     setGradient( state, m_pal.primary );
     setGradient( state | Q::Disabled, m_pal.onSurface12 );
@@ -710,7 +710,7 @@ void Editor::setupSpinBox()
     setShadowColor( state | Q::Hovered, m_pal.shadow );
   }
 
-  for(const auto& state : {QskSpinBox::DecText, QskSpinBox::IncText})
+  for(const auto& state : {QskSpinBox::DecrementText, QskSpinBox::IncrementText})
   {
     setColor( state, m_pal.onPrimary );
     setColor( state | Q::Disabled, m_pal.onSurface38 );

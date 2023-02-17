@@ -14,8 +14,12 @@ class QSK_EXPORT QskSpinBox : public QskBoundedInput
   Q_OBJECT
   using Inherited = QskBoundedInput;
 public:
+  enum FocusIndeces : int { Decrement = 0, Textbox = 1, Increment = 2, None = 3 };
+  Q_ENUM(FocusIndeces)
+
   Q_PROPERTY(qreal value READ value NOTIFY valueChanged)
-  QSK_SUBCONTROLS(Inc, Dec, IncText, DecText, TextPanel, Text, Layout)
+  Q_PROPERTY(FocusIndeces focusIndex READ focusIndex NOTIFY focusIndexChanged)
+  QSK_SUBCONTROLS(IncrementPanel, DecrementPanel, IncrementText, DecrementText, TextPanel, Text, Layout)
   QSK_STATES( Pressed )
 
   explicit QskSpinBox( QQuickItem* parent = nullptr );
@@ -24,12 +28,13 @@ public:
   void increment( qreal offset ) override;
   qreal value() const;
 
+  FocusIndeces focusIndex() const;
+
 Q_SIGNALS:
   void valueChanged(qreal value);
+  void focusIndexChanged(int index);
 
 private:
-  Q_SIGNAL void focusIndexChanged(int index);
-
   void hoverEnterEvent( QHoverEvent* event) override;
   void hoverLeaveEvent( QHoverEvent* event) override;
   void hoverMoveEvent( QHoverEvent* event) override;
