@@ -49,7 +49,7 @@ class QSK_EXPORT QskProgressBar : public QskBoundedControl
     bool isIndeterminate() const;
     void setIndeterminate( bool on = true );
 
-    QskAspect::Placement effectivePlacement() const override;
+    QskAspect::Variation effectiveVariation() const override;
 
     void setBarGradient( const QskGradient& );
     void resetBarGradient();

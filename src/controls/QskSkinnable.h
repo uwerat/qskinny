@@ -101,7 +101,7 @@ class QSK_EXPORT QskSkinnable
         QskAspect::States, QskSkinHintStatus* status = nullptr ) const;
 
     QVariant effectiveSkinHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
-    virtual QskAspect::Placement effectivePlacement() const;
+    virtual QskAspect::Variation effectiveVariation() const;
 
     virtual QskAspect::Section section() const;
 

@@ -63,7 +63,7 @@ class QSK_EXPORT QskSegmentedBar : public QskControl
     int indexAtPosition( const QPointF& ) const;
 
     QRectF focusIndicatorRect() const override final;
-    QskAspect::Placement effectivePlacement() const override;
+    QskAspect::Variation effectiveVariation() const override;
 
   public Q_SLOTS:
     void setSelectedIndex( int index );

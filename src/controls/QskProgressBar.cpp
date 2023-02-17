@@ -154,10 +154,10 @@ void QskProgressBar::setIndeterminate( bool on )
     Q_EMIT indeterminateChanged( on );
 }
 
-QskAspect::Placement QskProgressBar::effectivePlacement() const
+QskAspect::Variation QskProgressBar::effectiveVariation() const
 {
     // so you can define different hints depending on the orientation
-    return static_cast< QskAspect::Placement >( m_data->orientation );
+    return static_cast< QskAspect::Variation >( m_data->orientation );
 }
 
 void QskProgressBar::setBarGradient( const QskGradient& gradient )

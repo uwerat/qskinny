@@ -6,6 +6,7 @@
 #pragma once
 
 #include <QskPushButton.h>
+#include <Qt>
 
 class RoundButton : public QskPushButton
 {
@@ -15,5 +16,5 @@ class RoundButton : public QskPushButton
     QSK_SUBCONTROLS( Panel )
     QSK_STATES( Top )
 
-    RoundButton( QskAspect::Placement, QQuickItem* parent );
+    RoundButton( Qt::Edge, QQuickItem* parent );
 };

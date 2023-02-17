@@ -70,9 +70,9 @@ qreal QskSeparator::extent() const
     return metric( Panel | QskAspect::Size );
 }
 
-QskAspect::Placement QskSeparator::effectivePlacement() const
+QskAspect::Variation QskSeparator::effectiveVariation() const
 {
-    return static_cast< QskAspect::Placement >( m_orientation );
+    return static_cast< QskAspect::Variation >( m_orientation );
 }
 
 #include "moc_QskSeparator.cpp"

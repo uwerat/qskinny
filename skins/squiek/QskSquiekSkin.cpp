@@ -598,8 +598,7 @@ void Editor::setupPushButton()
 
     setFlagHint( Q::Text | Q::Disabled | A::Style, Qsk::Sunken );
 
-    setAlignment( Q::Text | A::Vertical, Qt::AlignCenter );
-    setAlignment( Q::Text | A::Horizontal, Qt::AlignLeft | Qt::AlignVCenter );
+    setAlignment( Q::Text, Qt::AlignCenter );
 
     setColor( Q::Text, m_pal.themeForeground );
     setColor( Q::Text | Q::Disabled, m_pal.darker200 );
@@ -625,33 +624,33 @@ void Editor::setupTabButton()
 
     setStrutSize( Q::Panel, 30, 16 );
 
-    for ( auto placement : { A::Top, A::Bottom } )
+    for ( auto variation : { A::Top, A::Bottom } )
     {
-        setVGradient( Q::Panel | placement, m_pal.lighter125, m_pal.lighter110 );
+        setVGradient( Q::Panel | variation, m_pal.lighter125, m_pal.lighter110 );
 
         for ( const auto state : { Q::Checked | A::NoState, Q::Checked | Q::Pressed } )
         {
-            setGradient( Q::Panel | placement | state, m_pal.lighter125 );
-            setColor( Q::Text | placement | state, m_pal.themeForeground );
+            setGradient( Q::Panel | variation | state, m_pal.lighter125 );
+            setColor( Q::Text | variation | state, m_pal.themeForeground );
         }
     }
 
-    for ( auto placement : { A::Left, A::Right } )
+    for ( auto variation : { A::Left, A::Right } )
     {
-        setGradient( Q::Panel | placement, m_pal.lighter125 );
+        setGradient( Q::Panel | variation, m_pal.lighter125 );
 
         for ( const auto state : { Q::Checked | A::NoState, Q::Checked | Q::Pressed } )
         {
-            setGradient( Q::Panel | placement | state, m_pal.highlighted );
-            setColor( Q::Text | placement | state, m_pal.highlightedText );
+            setGradient( Q::Panel | variation | state, m_pal.highlighted );
+            setColor( Q::Text | variation | state, m_pal.highlightedText );
         }
     }
 
     setBoxBorderColors( Q::Panel, m_pal.darker200 );
 
-    for ( auto placement : { A::Left, A::Right, A::Top, A::Bottom } )
+    for ( auto variation : { A::Left, A::Right, A::Top, A::Bottom } )
     {
-        const auto aspect = Q::Panel | placement;
+        const auto aspect = Q::Panel | variation;
 
         QskMargins margins0, margins1, padding;
         QskBoxBorderMetrics border( 1 );
@@ -659,7 +658,7 @@ void Editor::setupTabButton()
 
         const int indent = 4;
 
-        if ( placement == A::Top )
+        if ( variation == A::Top )
         {
             margins0 = QskMargins( -1, indent, -1, -1 );
             margins1 = QskMargins( -1, 0, -1, -2 );
@@ -669,7 +668,7 @@ void Editor::setupTabButton()
             shape.setRadius( Qt::BottomLeftCorner, 0 );
             shape.setRadius( Qt::BottomRightCorner, 0 );
         }
-        else if ( placement == A::Bottom )
+        else if ( variation == A::Bottom )
         {
             margins0 = QskMargins( -1, -1, -1, indent );
             margins1 = QskMargins( -1, -2, -1, 0 );
@@ -679,7 +678,7 @@ void Editor::setupTabButton()
             shape.setRadius( Qt::TopLeftCorner, 0 );
             shape.setRadius( Qt::TopRightCorner, 0 );
         }
-        else if ( placement == A::Left )
+        else if ( variation == A::Left )
         {
             margins0 = QskMargins( indent, -1, -1, -1 );
             margins1 = QskMargins( 0, -1, -2, 0 );
@@ -689,7 +688,7 @@ void Editor::setupTabButton()
             shape.setRadius( Qt::TopRightCorner, 0 );
             shape.setRadius( Qt::BottomRightCorner, 0 );
         }
-        else if ( placement == A::Right )
+        else if ( variation == A::Right )
         {
             margins0 = QskMargins( -1, -1, indent, -1 );
             margins1 = QskMargins( -2, -1, 0, 0 );
@@ -732,9 +731,9 @@ void Editor::setupSlider()
 
     // Panel
 
-    for ( auto placement : { A::Horizontal, A::Vertical } )
+    for ( auto variation : { A::Horizontal, A::Vertical } )
     {
-        const auto aspect = Q::Panel | placement;
+        const auto aspect = Q::Panel | variation;
 
         setMetric( aspect | A::Size, extent );
         setBoxBorderMetrics( aspect, 0 );
@@ -747,11 +746,11 @@ void Editor::setupSlider()
 
     // Groove, Fill
 
-    for ( auto placement : { A::Horizontal, A::Vertical } )
+    for ( auto variation : { A::Horizontal, A::Vertical } )
     {
         for ( auto subControl : { Q::Groove, Q::Fill } )
         {
-            const auto aspect = subControl | placement;
+            const auto aspect = subControl | variation;
 
             setMetric( aspect | A::Size, 0.3 * extent );
             setPadding( aspect, 0 );
@@ -760,15 +759,15 @@ void Editor::setupSlider()
             setBoxShape( aspect, 0.1 * extent );
         }
 
-        setGradient( Q::Groove | placement, m_pal.darker200 );
-        setGradient( Q::Fill | placement, QskGradient() ); // no filling
+        setGradient( Q::Groove | variation, m_pal.darker200 );
+        setGradient( Q::Fill | variation, QskGradient() ); // no filling
     }
 
     // Handle
 
-    for ( auto placement : { A::Horizontal, A::Vertical } )
+    for ( auto variation : { A::Horizontal, A::Vertical } )
     {
-        const auto aspect = Q::Handle | placement;
+        const auto aspect = Q::Handle | variation;
 
         setButton( aspect, Raised, 1 );
         setBoxShape( aspect, 20.0, Qt::RelativeSize );

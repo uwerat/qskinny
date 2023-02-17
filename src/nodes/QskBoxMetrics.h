@@ -7,6 +7,7 @@
 #define QSK_BOX_METRICS_H
 
 #include <qrect.h>
+#include <qglobal.h>
 #include <qnamespace.h>
 
 class QskBoxShapeMetrics;
@@ -23,6 +24,12 @@ class QskBoxMetrics
 
     int outerStepCount() const;
     int innerStepCount() const;
+
+    int innerStepCount( int corner1, int corner2 ) const
+    {
+        return qMax( corners[ corner1 ].innerStepCount(),
+            corners[ corner2 ].innerStepCount() );
+    }
 
     struct Corner
     {
@@ -82,10 +89,7 @@ class QskBoxMetrics
      */
     Qt::Orientations stepSymmetries;
 
-    /*
-        In case stepSymmetries indicates both directions the direction
-        that needs less steps is preferred.
-     */
+    // the direction that needs less contour lines is preferred.
     Qt::Orientation preferredOrientation;
 };
 

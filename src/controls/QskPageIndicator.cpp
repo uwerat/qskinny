@@ -162,9 +162,9 @@ int QskPageIndicator::indexAtPosition( const QPointF& pos ) const
         this, contentsRect(), QskPageIndicator::Bullet, pos );
 }
 
-QskAspect::Placement QskPageIndicator::effectivePlacement() const
+QskAspect::Variation QskPageIndicator::effectiveVariation() const
 {
-    return static_cast< QskAspect::Placement >( m_data->orientation );
+    return static_cast< QskAspect::Variation >( m_data->orientation );
 }
 
 void QskPageIndicator::mousePressEvent( QMouseEvent* event )

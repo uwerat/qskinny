@@ -9,6 +9,15 @@
 #include "QskBoxColorMap.h"
 #include "QskBoxMetrics.h"
 
+static inline bool qskCanUseHVFiller(
+    const Qt::Orientations orientations, const QskLinearDirection& dir )
+{
+    if ( !dir.isTilted() )
+        return orientations & ( dir.isVertical() ? Qt::Vertical : Qt::Horizontal );
+
+    return false;
+}
+
 namespace
 {
     using namespace QskVertex;
@@ -770,7 +779,7 @@ int QskBoxGradientStroker::lineCount() const
 
     if ( m_metrics.isInsideRounded )
     {
-        if ( m_metrics.stepSymmetries && !m_dir.isTilted() )
+        if ( qskCanUseHVFiller( m_metrics.stepSymmetries, m_dir ) )
         {
             const QskBoxBasicStroker stroker( m_metrics, QskBoxBorderColors(), m_gradient );
             n += stroker.fillCount();
@@ -804,7 +813,7 @@ void QskBoxGradientStroker::setLines( int lineCount, QskVertex::ColoredLine* lin
 
     if ( m_metrics.isInsideRounded )
     {
-        if ( m_metrics.stepSymmetries && !m_dir.isTilted() )
+        if ( qskCanUseHVFiller( m_metrics.stepSymmetries, m_dir ) )
         {
             FillerHV filler( m_metrics );
             effectiveCount = filler.setLines( m_gradient, lines );

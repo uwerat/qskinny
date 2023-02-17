@@ -30,9 +30,9 @@ OtherSlider::OtherSlider( QQuickItem* parentItem )
 
     // Panel
 
-    for ( auto placement : { A::Horizontal, A::Vertical } )
+    for ( auto variation : { A::Horizontal, A::Vertical } )
     {
-        const auto aspect = Panel | placement;
+        const auto aspect = Panel | variation;
 
         ed.setMetric( aspect | A::Size, h );
         ed.setBoxShape( aspect, 4 );
@@ -40,7 +40,7 @@ OtherSlider::OtherSlider( QQuickItem* parentItem )
         ed.setBoxBorderColors( aspect, DimGray );
         ed.setGradient( aspect, Silver );
 
-        if ( placement == A::Horizontal )
+        if ( variation == A::Horizontal )
             ed.setPadding( aspect, QskMargins( paddingW, 0 ) );
         else
             ed.setPadding( aspect, QskMargins( 0, paddingW ) );
@@ -48,9 +48,9 @@ OtherSlider::OtherSlider( QQuickItem* parentItem )
 
     // Groove
 
-    for ( auto placement : { A::Horizontal, A::Vertical } )
+    for ( auto variation : { A::Horizontal, A::Vertical } )
     {
-        const auto aspect = Groove | placement;
+        const auto aspect = Groove | variation;
 
         ed.setMetric( aspect | A::Size, 4 );
         ed.setBoxBorderMetrics( aspect, 0 );
@@ -60,24 +60,24 @@ OtherSlider::OtherSlider( QQuickItem* parentItem )
     }
 
     // no Fill
-    for ( auto placement : { A::Horizontal, A::Vertical } )
+    for ( auto variation : { A::Horizontal, A::Vertical } )
     {
-        const auto aspect = Fill | placement;
+        const auto aspect = Fill | variation;
         ed.setMetric( aspect | A::Size, 0 );
     }
 
     // Handle
 
-    for ( auto placement : { A::Horizontal, A::Vertical } )
+    for ( auto variation : { A::Horizontal, A::Vertical } )
     {
-        const auto aspect = Handle | placement;
+        const auto aspect = Handle | variation;
 
         ed.setBoxBorderMetrics( aspect, 1 );
         ed.setBoxShape( aspect, 4 );
 
         const qreal m = 0.5 * std::ceil( 0.5 * ( w - h ) ) + 1;
 
-        if ( placement == A::Horizontal )
+        if ( variation == A::Horizontal )
             ed.setMargin( aspect, QskMargins( -m, 0 ) );
         else
             ed.setMargin( aspect, QskMargins( 0, -m ) );

@@ -4,23 +4,19 @@
  *****************************************************************************/
 
 #include "RoundButton.h"
-
 #include <QskGraphic.h>
-#include <QskPushButton.h>
-
-#include <QImage>
 
 QSK_SUBCONTROL( RoundButton, Panel )
 
 QSK_STATE( RoundButton, Top, ( QskAspect::FirstUserState << 1 ) )
 
-RoundButton::RoundButton( QskAspect::Placement placement, QQuickItem* parent )
+RoundButton::RoundButton( Qt::Edge edge, QQuickItem* parent )
     : QskPushButton( parent )
 {
     setSubcontrolProxy( QskPushButton::Panel, RoundButton::Panel );
     setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Expanding );
 
-    if( placement == QskAspect::Top )
+    if( edge == Qt::TopEdge )
     {
         setSkinStateFlag( Top );
         setGraphicSource( "up" );

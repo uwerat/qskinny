@@ -14,8 +14,6 @@
 #include "QskSkinlet.h"
 #include "QskTextOptions.h"
 
-#include <qfontmetrics.h>
-
 QSK_SUBCONTROL( QskPushButton, Panel )
 QSK_SUBCONTROL( QskPushButton, Ripple )
 QSK_SUBCONTROL( QskPushButton, Text )
@@ -227,29 +225,9 @@ void QskPushButton::updateResources()
     m_data->ensureGraphic( this );
 }
 
-QskAspect::Placement QskPushButton::effectivePlacement() const
+QskAspect::Variation QskPushButton::effectiveVariation() const
 {
-    if ( hasGraphic() && !text().isEmpty() )
-    {
-        // for the moment we only support the direction. TODO ...
-
-        auto aspect = Panel | QskAspect::Direction;
-        aspect.setPlacement( QskAspect::Vertical ); // to avoid recursions TODO ...
-
-        const auto dir = flagHint( aspect, Qsk::LeftToRight );
-        switch( dir )
-        {
-            case Qsk::LeftToRight:
-            case Qsk::RightToLeft:
-                return QskAspect::Horizontal;
-
-            case Qsk::TopToBottom:
-            case Qsk::BottomToTop:
-                return QskAspect::Vertical;
-        }
-    }
-
-    return Inherited::effectivePlacement();
+    return Inherited::effectiveVariation();
 }
 
 QRectF QskPushButton::layoutRectForSize( const QSizeF& size ) const

@@ -29,11 +29,35 @@ class QSK_EXPORT QskBoxShapeMetrics
     Q_PROPERTY( ScalingMode scalingMode READ scalingMode WRITE setScalingMode )
 
   public:
+    /*
+        How to scale, when translating to Qt::AbsoluteSize
+
+        Symmetric/SymmetricByMaximum sets the aspect ratio between x/y radii
+        to 1:1, while Proportional preserves the aspect ratio of the relative radii.
+
+        Symmetric or Proportional shrink the larger radius, while SymmetricByMaximum
+        expands the smaller radius to achieve the desired aspect ratio.
+
+        The effect of the scaling on the implemented box rendering is: 
+
+        - SymmetricByMaximum in combination with a relative radius of 100
+          results in an ellipse.
+
+        - Rectangles with rounded corners can be achieved by Symmetric in combination
+          with a relative radius < 100.
+
+        Note, that the scaling is affected by the aspect ratio of the relative radii and
+        the one of the absolute size.
+
+        The default setting is Symmetric.
+     */
+
     enum ScalingMode
     {
-        // How to scale, when translating to Qt::AbsoluteSize
-        Circular,
-        Elliptic
+        Symmetric,
+        SymmetricByMaximum,
+
+        Proportional
     };
     Q_ENUM( ScalingMode );
 
@@ -121,13 +145,13 @@ class QSK_EXPORT QskBoxShapeMetrics
 
     QSizeF m_radii[ 4 ];
     Qt::SizeMode m_sizeMode : 2;
-    ScalingMode m_scalingMode : 1;
+    ScalingMode m_scalingMode : 2;
 };
 
 inline constexpr QskBoxShapeMetrics::QskBoxShapeMetrics() noexcept
     : m_radii{ { 0.0, 0.0 }, { 0.0, 0.0 }, { 0.0, 0.0 }, { 0.0, 0.0 } }
     , m_sizeMode( Qt::AbsoluteSize )
-    , m_scalingMode( Circular )
+    , m_scalingMode( Symmetric )
 {
 }
 
@@ -142,7 +166,7 @@ inline constexpr QskBoxShapeMetrics::QskBoxShapeMetrics(
     : m_radii{ { radiusX, radiusY }, { radiusX, radiusY },
         { radiusX, radiusY }, { radiusX, radiusY } }
     , m_sizeMode( sizeMode )
-    , m_scalingMode( Circular )
+    , m_scalingMode( Symmetric )
 {
 }
 
@@ -151,7 +175,7 @@ inline constexpr QskBoxShapeMetrics::QskBoxShapeMetrics( qreal topLeft, qreal to
     : m_radii{ { topLeft, topLeft }, { topRight, topRight },
         { bottomLeft, bottomLeft }, { bottomRight, bottomRight } }
     , m_sizeMode( sizeMode )
-    , m_scalingMode( Circular )
+    , m_scalingMode( Symmetric )
 {
 }
 

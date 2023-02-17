@@ -89,7 +89,7 @@ class QSK_EXPORT QskTabBar : public QskBox
     int indexOf( const QskTabButton* ) const;
     Q_INVOKABLE int indexOf( QskTabButton* ) const;
 
-    QskAspect::Placement effectivePlacement() const override;
+    QskAspect::Variation effectiveVariation() const override;
 
   public Q_SLOTS:
     void setCurrentIndex( int index );

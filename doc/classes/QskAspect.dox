@@ -163,38 +163,38 @@
 */
 
 /*! 
-    \enum QskAspect::Placement
+    \enum QskAspect::Variation
 
-    \brief Represents an orientation or relative position
+    \brief Some sort of variation
 
-    The placement bits can be used to have different definitions for
-    a skinnable depending on its position or orientation. F.e a tab bar
+    The variation bits can be used to have different definitions for
+    a skinnable depending on its position, orientation or emphasis. F.e a tab bar
     looks slightly different depending on its position. 
 
     \note flags indicating an orientation can't be used together
           with the flags for the position
 
-    \sa QskSkinnable::effectivePlacement()
+    \sa QskSkinnable::effectiveVariation()
 
-    \var QskAspect::Placement QskAspect::NoPlacement
-        No specific placement bits
+    \var QskAspect::Variation QskAspect::NoVariation
+        No specific variation bits
 
-    \var QskAspect::Placement QskAspect::Vertical
+    \var QskAspect::Variation QskAspect::Vertical
         Indicates a vertical orientation
         
-    \var QskAspect::Placement QskAspect::Horizontal
+    \var QskAspect::Variation QskAspect::Horizontal
         Indicates a horizontal orientation
 
-    \var QskAspect::Placement QskAspect::Top
+    \var QskAspect::Variation QskAspect::Top
         Indicates a top position
 
-    \var QskAspect::Placement QskAspect::Left
+    \var QskAspect::Variation QskAspect::Left
         Indicates a left position
 
-    \var QskAspect::Placement QskAspect::Right
+    \var QskAspect::Variation QskAspect::Right
         Indicates a right position
 
-    \var QskAspect::Placement QskAspect::Bottom
+    \var QskAspect::Variation QskAspect::Bottom
         Indicates a bottom position
 */
 
@@ -288,10 +288,10 @@
 */
 
 /*!
-    \fn QskAspect::QskAspect( Placement )
+    \fn QskAspect::QskAspect( Variation )
 
-    Constructs an aspect with the placement bits being initialized
-    \param placement Initial placement
+    Constructs an aspect with the variation bits being initialized
+    \param variation Initial variation
 */
 
 /*!
@@ -351,9 +351,9 @@
 */
 
 /*!
-    \fn QskAspect::operator|( Placement ) const
+    \fn QskAspect::operator|( Variation ) const
 
-    Sets the placement bits
+    Sets the variation bits
 */
 
 /*!
@@ -378,7 +378,7 @@
 /*!
     \fn QskAspect::trunk
 
-    \return A copy of the aspect without the runtime bits ( state, placement ) bits
+    \return A copy of the aspect without the runtime bits ( state, variation ) bits
 */
 
 /*!
@@ -443,17 +443,17 @@
 */
 
 /*!
-    \fn QskAspect::placement
+    \fn QskAspect::variation
 
-    \return Placement bits
-    \sa setPlacement()
+    \return Variation bits
+    \sa setVariation()
 */
 
 /*!
-    \fn QskAspect::setPlacement
+    \fn QskAspect::setVariation
 
-    Sets the placement bits
-    \sa placement()
+    Sets the variation bits
+    \sa variation()
 */
 
 /*!
