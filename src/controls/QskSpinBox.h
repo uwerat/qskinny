@@ -7,31 +7,25 @@
 
 #include <QskControl.h>
 #include <QskPushButton.h>
-#include <QskBoundedInput.h>
+#include <QskBoundedValueInput.h>
 
-class QSK_EXPORT QskSpinBox : public QskBoundedInput
+class QSK_EXPORT QskSpinBox : public QskBoundedValueInput
 {
   Q_OBJECT
-  using Inherited = QskBoundedInput;
+  using Inherited = QskBoundedValueInput;
 public:
   enum FocusIndeces : int { Decrement = 0, Textbox = 1, Increment = 2, None = 3 };
   Q_ENUM(FocusIndeces)
 
-  Q_PROPERTY(qreal value READ value NOTIFY valueChanged)
   Q_PROPERTY(FocusIndeces focusIndex READ focusIndex NOTIFY focusIndexChanged)
   QSK_SUBCONTROLS(IncrementPanel, DecrementPanel, IncrementText, DecrementText, TextPanel, Text, Layout)
   QSK_STATES( Pressed )
 
   explicit QskSpinBox( QQuickItem* parent = nullptr );
   ~QskSpinBox() override;
-
-  void increment( qreal offset ) override;
-  qreal value() const;
-
   FocusIndeces focusIndex() const;
 
 Q_SIGNALS:
-  void valueChanged(qreal value);
   void focusIndexChanged(int index);
 
 private:

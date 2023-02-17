@@ -45,19 +45,6 @@ public:
   {
   }
 
-  void setValue(qreal value)
-  {
-    value = qBound(q->minimum(), value, q->maximum());
-    if(!qFuzzyCompare(m_value, value))
-    {
-      m_value = value;
-      Q_EMIT q->valueChanged(m_value);      
-      q->update();
-    }
-  }
-
-  qreal value() const { return m_value; }
-
   FocusIndeces defaultFocusIndex() const
   {
     const auto layout = q->alignmentHint(QskSpinBox::Layout);
@@ -170,7 +157,6 @@ public:
   }
 
 private:
-  qreal m_value{0.0f};
   QskSpinBox* const q;
   FocusIndeces m_focusIndex = FocusIndeces::None;
 };
@@ -187,8 +173,6 @@ QskSpinBox::QskSpinBox(QQuickItem* const parent)
   setFocusPolicy( Qt::StrongFocus );
 
   connect( this, &S::focusIndexChanged, this, &S::focusIndicatorRectChanged );
-  connect( this, &S::boundariesChanged, this, [this](const QskIntervalF& interval){ if(!interval.contains(value())) m_data->setValue(minimum()); });
-  connect( this, &S::valueChanged, this, [this](){ polish(); });
 }
 
 QskSpinBox::~QskSpinBox() = default;
@@ -362,16 +346,6 @@ QRectF QskSpinBox::focusIndicatorRect() const
 {
   auto rect = m_data->focusIndicatorRect();
   return rect;
-}
-
-void QskSpinBox::increment(qreal offset)
-{
-  m_data->setValue(m_data->value() + offset);
-}
-
-qreal QskSpinBox::value() const
-{
-  return m_data->value();
 }
 
 QskSpinBox::FocusIndeces QskSpinBox::focusIndex() const
