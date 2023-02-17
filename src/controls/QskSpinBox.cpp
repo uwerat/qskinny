@@ -294,7 +294,8 @@ void QskSpinBox::keyPressEvent(QKeyEvent *event)
       return;
     case Qt::Key_Select:
     case Qt::Key_Space:
-      // TODO click currently focused -/+
+      if(focusIndex() == Increment) increment(+stepSize());
+      if(focusIndex() == Decrement) increment(-stepSize());
       return;
     default:
     {
