@@ -61,10 +61,12 @@ public:
     if(layout == Qt::AlignRight) return Dec;
     if(layout == Qt::AlignHCenter) return Dec;
     if(layout == Qt::AlignTop) return Text;
-    if(layout == Qt::AlignBottom) return Dec;
+    if(layout == Qt::AlignBottom) return Inc;
     if(layout == Qt::AlignVCenter) return Inc;
     if(layout == (Qt::AlignLeft | Qt::AlignVCenter)) return Text;
     if(layout == (Qt::AlignRight | Qt::AlignVCenter)) return Inc;
+    if(layout == (Qt::AlignTop | Qt::AlignHCenter)) return Text;
+    if(layout == (Qt::AlignBottom | Qt::AlignHCenter)) return Dec;
 
     return None;
   }
@@ -84,6 +86,8 @@ public:
     if(layout == Qt::AlignVCenter) return LUT{None,Dec,Text,Inc}[m_focusIndex];
     if(layout == (Qt::AlignLeft | Qt::AlignVCenter)) return LUT{None,Inc,Dec,Text}[m_focusIndex];
     if(layout == (Qt::AlignRight | Qt::AlignVCenter)) return LUT{Text,None,Dec,Inc}[m_focusIndex];
+    if(layout == (Qt::AlignTop | Qt::AlignHCenter)) return LUT{Inc,Dec,None,Text}[m_focusIndex];
+    if(layout == (Qt::AlignBottom | Qt::AlignHCenter)) return LUT{Inc,None,Text,Dec}[m_focusIndex];
 
     return None;
   }
@@ -103,6 +107,8 @@ public:
     if(layout == Qt::AlignVCenter) return LUT{Text,Inc,None,Dec}[m_focusIndex];
     if(layout == (Qt::AlignLeft | Qt::AlignVCenter)) return LUT{Inc,None,Text,Dec}[m_focusIndex];
     if(layout == (Qt::AlignRight | Qt::AlignVCenter)) return LUT{Inc,Dec,None,Text}[m_focusIndex];
+    if(layout == (Qt::AlignTop | Qt::AlignHCenter)) return LUT{Text,None,Dec,Inc}[m_focusIndex];
+    if(layout == (Qt::AlignBottom | Qt::AlignHCenter)) return LUT{None,Inc,Dec,Text}[m_focusIndex];
 
     return None;
   }
