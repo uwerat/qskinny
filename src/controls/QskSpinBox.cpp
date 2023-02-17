@@ -51,8 +51,7 @@ public:
     if(!qFuzzyCompare(m_value, value))
     {
       m_value = value;
-      Q_EMIT q->valueChanged(m_value);
-      q->polish();
+      Q_EMIT q->valueChanged(m_value);      
       q->update();
     }
   }
@@ -88,8 +87,8 @@ public:
     if(layout == Qt::AlignLeft) return LUT{I,D,N,T}[m_focusIndex];
     if(layout == Qt::AlignRight) return LUT{I,N,T,D}[m_focusIndex];
     if(layout == Qt::AlignHCenter) return LUT{T,I,N,D}[m_focusIndex];
-    if(layout == Qt::AlignTop) return LUT{I,D,N,T}[m_focusIndex];
-    if(layout == Qt::AlignBottom) return LUT{I,N,T,D}[m_focusIndex];
+    if(layout == Qt::AlignTop) return LUT{N,I,D,T}[m_focusIndex];
+    if(layout == Qt::AlignBottom) return LUT{T,N,D,I}[m_focusIndex];
     if(layout == Qt::AlignVCenter) return LUT{N,D,T,I}[m_focusIndex];
     if(layout == (Qt::AlignLeft | Qt::AlignVCenter)) return LUT{N,I,D,T}[m_focusIndex];
     if(layout == (Qt::AlignRight | Qt::AlignVCenter)) return LUT{T,N,D,I}[m_focusIndex];
@@ -104,14 +103,14 @@ public:
     const auto layout = q->alignmentHint(QskSpinBox::Layout);
     using namespace aliased_enum;
 
-     // [0][1][2][3] := index
-     // [D][T][I][N] := control
+    // [0][1][2][3] := index
+    // [D][T][I][N] := control
     using LUT = std::array<FocusIndeces,4>;
-    if(layout == Qt::AlignLeft) return LUT{N,D,T,I}[m_focusIndex];
+    if(layout == Qt::AlignLeft) return LUT{T,N,D,I}[m_focusIndex];
     if(layout == Qt::AlignRight) return LUT{N,I,D,T}[m_focusIndex];
     if(layout == Qt::AlignHCenter) return LUT{N,D,T,I}[m_focusIndex];
-    if(layout == Qt::AlignTop) return LUT{T,N,D,I}[m_focusIndex];
-    if(layout == Qt::AlignBottom) return LUT{N,I,D,T}[m_focusIndex];
+    if(layout == Qt::AlignTop) return LUT{I,N,T,D}[m_focusIndex];
+    if(layout == Qt::AlignBottom) return LUT{I,D,N,T}[m_focusIndex];
     if(layout == Qt::AlignVCenter) return LUT{T,I,N,D}[m_focusIndex];
     if(layout == (Qt::AlignLeft | Qt::AlignVCenter)) return LUT{I,N,T,D}[m_focusIndex];
     if(layout == (Qt::AlignRight | Qt::AlignVCenter)) return LUT{I,D,N,T}[m_focusIndex];
@@ -140,7 +139,8 @@ public:
 
   void focusDefault()
   {
-    setFocus(defaultFocusIndex());
+    const auto index = defaultFocusIndex();
+    setFocus(index);
   }
 
   void setFocus(const FocusIndeces index)
@@ -151,6 +151,7 @@ public:
     {
       m_focusIndex = index;
       Q_EMIT q->focusIndexChanged(m_focusIndex);
+      q->update();
     }
   }
 
@@ -298,16 +299,26 @@ void QskSpinBox::keyPressEvent(QKeyEvent *event)
     default:
     {
       const int steps = qskFocusChainIncrement( event );
-      if(steps != 0)
+
+      if(steps < 0)
+      {
+        for(int i = 0; i < qAbs(steps); ++i)
+        {
+          m_data->focusPrevious();
+        }
+      }
+
+      if(steps > 0)
       {
         for(int i = 0; i < steps; ++i)
         {
           m_data->focusNext();
         }
-        for(int i = steps; i < 0; ++i)
-        {
-          m_data->focusPrevious();
-        }
+      }
+
+      if(steps != 0 && m_data->focusIndex() != None)
+      {
+        return;
       }
     }
   }
