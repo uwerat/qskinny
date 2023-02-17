@@ -43,6 +43,12 @@ SOURCES += \
     dialog/DialogPage.cpp \
 
 HEADERS += \
+    spinbox/SpinBoxPage.h
+
+SOURCES += \
+    spinbox/SpinBoxPage.cpp
+
+HEADERS += \
     Page.h
 
 SOURCES += \

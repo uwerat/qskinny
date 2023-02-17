@@ -27,6 +27,7 @@
 #include <QskSeparator.h>
 #include <QskShadowMetrics.h>
 #include <QskSlider.h>
+#include <QskSpinBox.h>
 #include <QskStandardSymbol.h>
 #include <QskSubWindow.h>
 #include <QskSwitchButton.h>
@@ -144,6 +145,7 @@ namespace
         void setupSeparator();
         void setupSubWindow();
         void setupSlider();
+        void setupSpinBox();
         void setupSwitchButton();
         void setupTabButton();
         void setupTabBar();
@@ -201,6 +203,7 @@ void Editor::setup()
     setupSegmentedBar();
     setupSeparator();
     setupSlider();
+    setupSpinBox();
     setupSubWindow();
     setupSwitchButton();
     setupTabButton();
@@ -670,6 +673,76 @@ void Editor::setupSlider()
     // move the handle smoothly, when using keys
     setAnimation( Q::Handle | A::Metric | A::Position, 2 * qskDuration );
     setAnimation( Q::Handle | A::Metric | A::Position | Q::Pressed, 0 );
+}
+
+void Editor::setupSpinBox()
+{
+  using Q = QskSpinBox;
+
+  setSpacing(QskSpinBox::Layout, 4_dp);
+
+  setStrutSize(QskSpinBox::TextPanel | QskAspect::Size, {80_dp,40_dp});
+  setStrutSize(QskSpinBox::Inc | QskAspect::Size, {40_dp,40_dp});
+  setStrutSize(QskSpinBox::Dec | QskAspect::Size, {40_dp,40_dp});
+
+  setAlignment(QskSpinBox::Layout, Qt::AlignHCenter);
+  setAlignment(Q::Text, Qt::AlignCenter);
+
+  for(const auto& state : {QskSpinBox::Dec, QskSpinBox::Inc, QskSpinBox::TextPanel})
+  {
+    setBoxShape(state, 4_dp);
+    setBoxBorderColors(state, QColor("#79747E"));
+    setBoxBorderMetrics(state, 1_dp);
+  }
+
+  for(const auto& state : {QskSpinBox::Dec, QskSpinBox::Inc})
+  {
+    setGradient( state, m_pal.primary );
+    setGradient( state | Q::Disabled, m_pal.onSurface12 );
+
+    const auto focusColor = flattenedColor( m_pal.onPrimary, m_pal.primary, 0.12 );
+    setGradient( state | Q::Focused, focusColor );
+    setGradient( state | Q::Pressed, focusColor );
+
+    const auto hoverColor = flattenedColor( m_pal.onPrimary, m_pal.primary, 0.08 );
+    setGradient( state | Q::Hovered, hoverColor );
+    setShadowMetrics( state | Q::Hovered, m_pal.elevationLight1 );
+    setShadowColor( state | Q::Hovered, m_pal.shadow );
+  }
+
+  for(const auto& state : {QskSpinBox::DecText, QskSpinBox::IncText})
+  {
+    setColor( state, m_pal.onPrimary );
+    setColor( state | Q::Disabled, m_pal.onSurface38 );
+    setAlignment(state, Qt::AlignCenter);
+    setFontRole( state, QskMaterial3Skin::M3LabelLarge );
+  }
+
+  setColor( Q::Text, m_pal.onBackground );
+  setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
+
+  setPadding( Q::TextPanel, 5_dp );
+  setBoxShape( Q::TextPanel, 4_dp, 4_dp, 0, 0 );
+  setBoxBorderMetrics( Q::TextPanel, 0, 0, 0, 1_dp );
+  setBoxBorderColors( Q::TextPanel, m_pal.onSurface );
+
+  setBoxBorderMetrics( Q::TextPanel | Q::Focused, 0, 0, 0, 2_dp );
+  setBoxBorderColors( Q::TextPanel | Q::Focused, m_pal.primary );
+
+//  setBoxBorderMetrics( Q::TextPanel | Q::Editing, 0, 0, 0, 2_dp );
+//  setBoxBorderColors( Q::TextPanel | Q::Editing, m_pal.primary );
+
+  setBoxBorderMetrics( Q::TextPanel | Q::Hovered, 0, 0, 0, 1_dp );
+  setBoxBorderColors( Q::TextPanel | Q::Hovered, m_pal.onSurface );
+
+  setGradient( Q::TextPanel, m_pal.surfaceVariant );
+
+  const auto c1 = QskRgb::toTransparentF( m_pal.onSurface, 0.04 );
+  setGradient( Q::TextPanel | Q::Disabled, c1 );
+  setBoxBorderMetrics( Q::TextPanel | Q::Disabled, 0, 0, 0, 1_dp );
+
+  setColor( Q::TextPanel | Q::Disabled, m_pal.onSurface38 );
+  setBoxBorderColors( Q::TextPanel | Q::Disabled, m_pal.onSurface38 );
 }
 
 void Editor::setupSwitchButton()
