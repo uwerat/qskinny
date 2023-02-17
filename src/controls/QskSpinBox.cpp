@@ -285,16 +285,16 @@ void QskSpinBox::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Up:
     case Qt::Key_Right:
       increment(+stepSize());
-      break;
+      return;
     case Qt::Key_Minus:
     case Qt::Key_Down:
     case Qt::Key_Left:
       increment(-stepSize());
-      break;
+      return;
     case Qt::Key_Select:
     case Qt::Key_Space:
       // TODO click currently focused -/+
-      break;
+      return;
     default:
     {
       const int steps = qskFocusChainIncrement( event );
