@@ -68,6 +68,9 @@ QSK_QT_PRIVATE_END
 #include "QskSlider.h"
 #include "QskSliderSkinlet.h"
 
+#include "QskSpinBox.h"
+#include "QskSpinBoxSkinlet.h"
+
 #include "QskSubWindow.h"
 #include "QskSubWindowSkinlet.h"
 
@@ -161,6 +164,7 @@ QskSkin::QskSkin( QObject* parent )
     declareSkinlet< QskSegmentedBar, QskSegmentedBarSkinlet >();
     declareSkinlet< QskSeparator, QskSeparatorSkinlet >();
     declareSkinlet< QskSlider, QskSliderSkinlet >();
+    declareSkinlet< QskSpinBox, QskSpinBoxSkinlet >();
     declareSkinlet< QskStatusIndicator, QskStatusIndicatorSkinlet >();
     declareSkinlet< QskSubWindow, QskSubWindowSkinlet >();
     declareSkinlet< QskSubWindowArea, QskSubWindowAreaSkinlet >();

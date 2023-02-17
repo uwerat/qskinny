@@ -10,6 +10,7 @@
 #include "textinput/TextInputPage.h"
 #include "selector/SelectorPage.h"
 #include "dialog/DialogPage.h"
+#include "spinbox/SpinBoxPage.h"
 
 #include <SkinnyShortcut.h>
 #include <SkinnyShapeProvider.h>
@@ -199,6 +200,9 @@ namespace
             tabView->addTab( "Text\nInputs", new TextInputPage() );
             tabView->addTab( "Selectors", new SelectorPage() );
             tabView->addTab( "Dialogs", new DialogPage() );
+            tabView->addTab( "SpinBoxes", new SpinBoxPage() );
+
+            tabView->setCurrentIndex(tabView->count() - 1);
 
             connect( header, &Header::enabledToggled,
                 tabView, &TabView::setTabsEnabled );

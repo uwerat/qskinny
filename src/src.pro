@@ -227,6 +227,8 @@ HEADERS += \
     controls/QskSliderSkinlet.h \
     controls/QskStatusIndicator.h \
     controls/QskStatusIndicatorSkinlet.h \
+    controls/QskSpinBox.h \
+    controls/QskSpinBoxSkinlet.h \
     controls/QskSubWindowArea.h \
     controls/QskSubWindowAreaSkinlet.h \
     controls/QskSubWindow.h \
@@ -309,6 +311,8 @@ SOURCES += \
     controls/QskSkinnable.cpp \
     controls/QskSlider.cpp \
     controls/QskSliderSkinlet.cpp \
+    controls/QskSpinBox.cpp \
+    controls/QskSpinBoxSkinlet.cpp \
     controls/QskStatusIndicator.cpp \
     controls/QskStatusIndicatorSkinlet.cpp \
     controls/QskSubWindowArea.cpp \
