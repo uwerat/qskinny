@@ -691,7 +691,6 @@ void Editor::setupSpinBox()
   for(const auto& state : {QskSpinBox::DecrementPanel, QskSpinBox::IncrementPanel, QskSpinBox::TextPanel})
   {
     setBoxShape(state, 4_dp);
-    setBoxBorderColors(state, QColor("#79747E"));
     setBoxBorderMetrics(state, 1_dp);
   }
 
