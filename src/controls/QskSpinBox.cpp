@@ -4,357 +4,464 @@
  *****************************************************************************/
 
 #include "QskSpinBox.h"
-#include "QskLinearBox.h"
-#include "QskGridBox.h"
-#include "QskTextInput.h"
-#include "QskBoxShapeMetrics.h"
-#include "QskBoxBorderColors.h"
-#include "QskBoxBorderMetrics.h"
-#include "QskSkinlet.h"
-#include "QskIntervalF.h"
-#include "QskEvent.h"
-
-#include <QtMath>
 #include <QGuiApplication>
+#include <QRegExpValidator>
 #include <QStyleHints>
+#include <QskBoxBorderColors.h>
+#include <QskBoxBorderMetrics.h>
+#include <QskBoxShapeMetrics.h>
+#include <QskEvent.h>
+#include <QskGridBox.h>
+#include <QskIntervalF.h>
+#include <QskLinearBox.h>
+#include <QskSkinlet.h>
+#include <QskTextInput.h>
+#include <QtMath>
 
 #include <array>
 
-QSK_SUBCONTROL(QskSpinBox, Inc)
-QSK_SUBCONTROL(QskSpinBox, Dec)
-QSK_SUBCONTROL(QskSpinBox, IncText)
-QSK_SUBCONTROL(QskSpinBox, DecText)
-QSK_SUBCONTROL(QskSpinBox, Text)
-QSK_SUBCONTROL(QskSpinBox, TextPanel)
-QSK_SUBCONTROL(QskSpinBox, Layout)
+QSK_SUBCONTROL( QskSpinBox, IncrementPanel )
+QSK_SUBCONTROL( QskSpinBox, DecrementPanel )
+QSK_SUBCONTROL( QskSpinBox, IncrementText )
+QSK_SUBCONTROL( QskSpinBox, DecrementText )
+QSK_SUBCONTROL( QskSpinBox, Text )
+QSK_SUBCONTROL( QskSpinBox, TextPanel )
+QSK_SUBCONTROL( QskSpinBox, Layout )
 
-QSK_SYSTEM_STATE(QskSpinBox, Pressed, ( QskAspect::QskAspect::FirstSystemState << 0))
+QSK_SYSTEM_STATE( QskSpinBox, Pressed, ( QskAspect::QskAspect::FirstSystemState << 0 ) )
+
+namespace aliased_enum
+{
+    constexpr auto D = QskSpinBox::Decrement;
+    constexpr auto T = QskSpinBox::Textbox;
+    constexpr auto I = QskSpinBox::Increment;
+    constexpr auto N = QskSpinBox::None;
+}
 
 class QskSpinBox::PrivateData
 {
-public:
-
-  enum FocusIndeces : int { Dec = 0, Text = 1, Inc = 2, None = 3 };
-
-  explicit PrivateData(QskSpinBox* const parent) : q(parent)
-  {
-  }
-
-  void setValue(qreal value)
-  {
-    value = qBound(q->minimum(), value, q->maximum());
-    if(!qFuzzyCompare(m_value, value))
+  public:
+    explicit PrivateData( QskSpinBox* const parent )
+        : q( parent )
     {
-      m_value = value;
-      Q_EMIT q->valueChanged(m_value);
-      q->polish();
-      q->update();
     }
-  }
 
-  qreal value() const { return m_value; }
-
-  FocusIndeces defaultFocusIndex() const
-  {
-    const auto layout = q->alignmentHint(QskSpinBox::Layout);
-
-    if(layout == Qt::AlignLeft) return Text;
-    if(layout == Qt::AlignRight) return Dec;
-    if(layout == Qt::AlignHCenter) return Dec;
-    if(layout == Qt::AlignTop) return Text;
-    if(layout == Qt::AlignBottom) return Inc;
-    if(layout == Qt::AlignVCenter) return Inc;
-    if(layout == (Qt::AlignLeft | Qt::AlignVCenter)) return Text;
-    if(layout == (Qt::AlignRight | Qt::AlignVCenter)) return Inc;
-    if(layout == (Qt::AlignTop | Qt::AlignHCenter)) return Text;
-    if(layout == (Qt::AlignBottom | Qt::AlignHCenter)) return Dec;
-
-    return None;
-  }
-
-  FocusIndeces nextFocusIndex() const
-  {
-    const auto layout = q->alignmentHint(QskSpinBox::Layout);
-
-    // [0  ][1   ][2  ][3   ]
-    // [Dec][Text][Inc][None]
-    using LUT = std::array<FocusIndeces,4>;
-    if(layout == Qt::AlignLeft) return LUT{Inc,Dec,None,Text}[m_focusIndex];
-    if(layout == Qt::AlignRight) return LUT{Inc,None,Text,Dec}[m_focusIndex];
-    if(layout == Qt::AlignHCenter) return LUT{Text,Inc,None,Dec}[m_focusIndex];
-    if(layout == Qt::AlignTop) return LUT{Inc,Dec,None,Text}[m_focusIndex];
-    if(layout == Qt::AlignBottom) return LUT{Inc,None,Text,Dec}[m_focusIndex];
-    if(layout == Qt::AlignVCenter) return LUT{None,Dec,Text,Inc}[m_focusIndex];
-    if(layout == (Qt::AlignLeft | Qt::AlignVCenter)) return LUT{None,Inc,Dec,Text}[m_focusIndex];
-    if(layout == (Qt::AlignRight | Qt::AlignVCenter)) return LUT{Text,None,Dec,Inc}[m_focusIndex];
-    if(layout == (Qt::AlignTop | Qt::AlignHCenter)) return LUT{Inc,Dec,None,Text}[m_focusIndex];
-    if(layout == (Qt::AlignBottom | Qt::AlignHCenter)) return LUT{Inc,None,Text,Dec}[m_focusIndex];
-
-    return None;
-  }
-
-  FocusIndeces previousFocusIndex() const
-  {
-    const auto layout = q->alignmentHint(QskSpinBox::Layout);
-
-    // [0  ][1   ][2  ][3   ]
-    // [Dec][Text][Inc][None]
-    using LUT = std::array<FocusIndeces,4>;
-    if(layout == Qt::AlignLeft) return LUT{None,Dec,Text,Inc}[m_focusIndex];
-    if(layout == Qt::AlignRight) return LUT{None,Inc,Dec,Text}[m_focusIndex];
-    if(layout == Qt::AlignHCenter) return LUT{None,Dec,Text,Inc}[m_focusIndex];
-    if(layout == Qt::AlignTop) return LUT{Text,None,Dec,Inc}[m_focusIndex];
-    if(layout == Qt::AlignBottom) return LUT{None,Inc,Dec,Text}[m_focusIndex];
-    if(layout == Qt::AlignVCenter) return LUT{Text,Inc,None,Dec}[m_focusIndex];
-    if(layout == (Qt::AlignLeft | Qt::AlignVCenter)) return LUT{Inc,None,Text,Dec}[m_focusIndex];
-    if(layout == (Qt::AlignRight | Qt::AlignVCenter)) return LUT{Inc,Dec,None,Text}[m_focusIndex];
-    if(layout == (Qt::AlignTop | Qt::AlignHCenter)) return LUT{Text,None,Dec,Inc}[m_focusIndex];
-    if(layout == (Qt::AlignBottom | Qt::AlignHCenter)) return LUT{None,Inc,Dec,Text}[m_focusIndex];
-
-    return None;
-  }
-
-  FocusIndeces focusIndex() const
-  {
-    return m_focusIndex;
-  }
-
-  void focusNext()
-  {
-    const auto index = nextFocusIndex();
-    setFocus(index);
-  }
-
-  void focusPrevious()
-  {
-    const auto index = previousFocusIndex();
-    setFocus(index);
-  }
-
-  void focusDefault()
-  {
-    setFocus(defaultFocusIndex());
-  }
-
-  void setFocus(const FocusIndeces index)
-  {
-    Q_ASSERT(index == Dec || index == Text || index == Inc || index == None);
-    if(index == Dec || index == Text || index == Inc || index == None)
+    FocusIndeces defaultFocusIndex() const
     {
-      m_focusIndex = index;
-      Q_EMIT q->focusIndexChanged(m_focusIndex); // TODO register enum
-    }
-  }
+        const auto layout = q->alignmentHint( QskSpinBox::Layout );
 
-  QRectF focusIndicatorRect() const
-  {
-    switch(m_focusIndex)
+        if ( layout == Qt::AlignLeft )
+        {
+            return QskSpinBox::Textbox;
+        }
+        if ( layout == Qt::AlignRight )
+        {
+            return QskSpinBox::Decrement;
+        }
+        if ( layout == Qt::AlignHCenter )
+        {
+            return QskSpinBox::Decrement;
+        }
+        if ( layout == Qt::AlignTop )
+        {
+            return QskSpinBox::Textbox;
+        }
+        if ( layout == Qt::AlignBottom )
+        {
+            return QskSpinBox::Increment;
+        }
+        if ( layout == Qt::AlignVCenter )
+        {
+            return QskSpinBox::Increment;
+        }
+        if ( layout == ( Qt::AlignLeft | Qt::AlignVCenter ) )
+        {
+            return QskSpinBox::Textbox;
+        }
+        if ( layout == ( Qt::AlignRight | Qt::AlignVCenter ) )
+        {
+            return QskSpinBox::Increment;
+        }
+        if ( layout == ( Qt::AlignTop | Qt::AlignHCenter ) )
+        {
+            return QskSpinBox::Textbox;
+        }
+        if ( layout == ( Qt::AlignBottom | Qt::AlignHCenter ) )
+        {
+            return QskSpinBox::Decrement;
+        }
+
+        return None;
+    }
+
+    FocusIndeces nextFocusIndex() const
     {
-    case PrivateData::FocusIndeces::Dec:
-      return q->subControlRect(QskSpinBox::Dec);
-    case PrivateData::FocusIndeces::Text:
-      return q->subControlRect(QskSpinBox::TextPanel);
-    case PrivateData::FocusIndeces::Inc:
-      return q->subControlRect(QskSpinBox::Inc);
-    default: return {};
+        const auto layout = q->alignmentHint( QskSpinBox::Layout );
+        using namespace aliased_enum;
+
+        // [0][1][2][3] := index
+        // [D][T][I][N] := control
+        using LUT = std::array< QskSpinBox::FocusIndeces, 4 >;
+        if ( layout == Qt::AlignLeft )
+        {
+            return LUT{ I, D, N, T }[ m_focusIndex ];
+        }
+        if ( layout == Qt::AlignRight )
+        {
+            return LUT{ I, N, T, D }[ m_focusIndex ];
+        }
+        if ( layout == Qt::AlignHCenter )
+        {
+            return LUT{ T, I, N, D }[ m_focusIndex ];
+        }
+        if ( layout == Qt::AlignTop )
+        {
+            return LUT{ N, I, D, T }[ m_focusIndex ];
+        }
+        if ( layout == Qt::AlignBottom )
+        {
+            return LUT{ T, N, D, I }[ m_focusIndex ];
+        }
+        if ( layout == Qt::AlignVCenter )
+        {
+            return LUT{ N, D, T, I }[ m_focusIndex ];
+        }
+        if ( layout == ( Qt::AlignLeft | Qt::AlignVCenter ) )
+        {
+            return LUT{ N, I, D, T }[ m_focusIndex ];
+        }
+        if ( layout == ( Qt::AlignRight | Qt::AlignVCenter ) )
+        {
+            return LUT{ T, N, D, I }[ m_focusIndex ];
+        }
+        if ( layout == ( Qt::AlignTop | Qt::AlignHCenter ) )
+        {
+            return LUT{ I, D, N, T }[ m_focusIndex ];
+        }
+        if ( layout == ( Qt::AlignBottom | Qt::AlignHCenter ) )
+        {
+            return LUT{ I, N, T, D }[ m_focusIndex ];
+        }
+
+        return None;
     }
-  }
 
-  void saveMousePosition(const QPointF& pos)
-  {
-    q->setSkinHint(QskSpinBox::Layout | QskAspect::Metric | QskAspect::Position, pos );
-  }
+    FocusIndeces previousFocusIndex() const
+    {
+        const auto layout = q->alignmentHint( QskSpinBox::Layout );
+        using namespace aliased_enum;
 
-private:
-  qreal m_value{0.0f};
-  QskSpinBox* const q;
-  FocusIndeces m_focusIndex = FocusIndeces::None;
+        // [0][1][2][3] := index
+        // [D][T][I][N] := control
+        using LUT = std::array< FocusIndeces, 4 >;
+        if ( layout == Qt::AlignLeft )
+        {
+            return LUT{ T, N, D, I }[ m_focusIndex ];
+        }
+        if ( layout == Qt::AlignRight )
+        {
+            return LUT{ N, I, D, T }[ m_focusIndex ];
+        }
+        if ( layout == Qt::AlignHCenter )
+        {
+            return LUT{ N, D, T, I }[ m_focusIndex ];
+        }
+        if ( layout == Qt::AlignTop )
+        {
+            return LUT{ I, N, T, D }[ m_focusIndex ];
+        }
+        if ( layout == Qt::AlignBottom )
+        {
+            return LUT{ I, D, N, T }[ m_focusIndex ];
+        }
+        if ( layout == Qt::AlignVCenter )
+        {
+            return LUT{ T, I, N, D }[ m_focusIndex ];
+        }
+        if ( layout == ( Qt::AlignLeft | Qt::AlignVCenter ) )
+        {
+            return LUT{ I, N, T, D }[ m_focusIndex ];
+        }
+        if ( layout == ( Qt::AlignRight | Qt::AlignVCenter ) )
+        {
+            return LUT{ I, D, N, T }[ m_focusIndex ];
+        }
+        if ( layout == ( Qt::AlignTop | Qt::AlignHCenter ) )
+        {
+            return LUT{ T, N, D, I }[ m_focusIndex ];
+        }
+        if ( layout == ( Qt::AlignBottom | Qt::AlignHCenter ) )
+        {
+            return LUT{ N, I, D, T }[ m_focusIndex ];
+        }
+
+        return None;
+    }
+
+    FocusIndeces focusIndex() const
+    {
+        return m_focusIndex;
+    }
+
+    void focusNext()
+    {
+        const auto index = nextFocusIndex();
+        setFocus( index );
+    }
+
+    void focusPrevious()
+    {
+        const auto index = previousFocusIndex();
+        setFocus( index );
+    }
+
+    void focusDefault()
+    {
+        const auto index = defaultFocusIndex();
+        setFocus( index );
+    }
+
+    void setFocus( const FocusIndeces index )
+    {
+        using namespace aliased_enum;
+        Q_ASSERT( index == D || index == T || index == I || index == N );
+        if ( index == D || index == T || index == I || index == N )
+        {
+            m_focusIndex = index;
+            Q_EMIT q->focusIndexChanged( m_focusIndex );
+            q->update();
+        }
+    }
+
+    QRectF focusIndicatorRect() const
+    {
+        if ( m_focusIndex == QskSpinBox::Decrement )
+        {
+            return q->subControlRect( QskSpinBox::DecrementPanel );
+        }
+        if ( m_focusIndex == QskSpinBox::Increment )
+        {
+            return q->subControlRect( QskSpinBox::IncrementPanel );
+        }
+        if ( m_focusIndex == QskSpinBox::Textbox )
+        {
+            return q->subControlRect( QskSpinBox::TextPanel );
+        }
+        return {};
+    }
+
+    void saveMousePosition( const QPointF& pos )
+    {
+        q->setSkinHint( QskSpinBox::Layout | QskAspect::Metric | QskAspect::Position, pos );
+    }
+
+    bool focusNow() const
+    {
+        const auto focusOnClick = ( q->focusPolicy() & Qt::ClickFocus ) == Qt::ClickFocus;
+        const auto focusOnTouchRelease = QGuiApplication::styleHints()->setFocusOnTouchRelease();
+        return focusOnClick && !focusOnTouchRelease;
+    }
+
+  private:
+    QskSpinBox* const q;
+    FocusIndeces m_focusIndex = FocusIndeces::None;
 };
 
 using S = QskSpinBox;
 
-QskSpinBox::QskSpinBox(QQuickItem* const parent)
-    : Inherited(parent)
-    , m_data( new PrivateData( this ) )
+QskSpinBox::QskSpinBox( QQuickItem* const parent )
+    : Inherited( parent )
+    , m_data( std::make_unique< PrivateData >( this ) )
 {
-  setBoundaries(0.0,1.0);
-  setAcceptHoverEvents(true);
-  setAcceptedMouseButtons(Qt::LeftButton);
-  setFocusPolicy( Qt::StrongFocus );
+    setBoundaries( 0.0, 1.0 );
+    setAcceptHoverEvents( true );
+    setAcceptedMouseButtons( Qt::LeftButton );
+    setFocusPolicy( Qt::StrongFocus );
 
-  connect( this, &S::focusIndexChanged, this, &S::focusIndicatorRectChanged );
-  connect( this, &S::boundariesChanged, this, [this](const QskIntervalF& interval){ if(!interval.contains(value())) m_data->setValue(minimum()); });
-  connect( this, &S::valueChanged, this, [this](){ polish(); });
+    connect( this, &S::focusIndexChanged, this, &S::focusIndicatorRectChanged );
 }
 
 QskSpinBox::~QskSpinBox() = default;
 
-void QskSpinBox::hoverEnterEvent(QHoverEvent* event)
+void QskSpinBox::hoverEnterEvent( QHoverEvent* const event )
 {
-  m_data->saveMousePosition( qskHoverPosition( event ) );
+    m_data->saveMousePosition( qskHoverPosition( event ) );
 }
 
-void QskSpinBox::hoverLeaveEvent(QHoverEvent* )
+void QskSpinBox::hoverLeaveEvent( QHoverEvent* /*const event */ )
 {
-  m_data->saveMousePosition( {} );
+    m_data->saveMousePosition( {} );
 }
 
-void QskSpinBox::hoverMoveEvent(QHoverEvent *event)
+void QskSpinBox::hoverMoveEvent( QHoverEvent* const event )
 {
-  m_data->saveMousePosition( qskHoverPosition( event ) );
+    m_data->saveMousePosition( qskHoverPosition( event ) );
 }
 
-void QskSpinBox::mouseReleaseEvent(QMouseEvent *event)
+void QskSpinBox::mouseReleaseEvent( QMouseEvent* const event )
 {
-  m_data->saveMousePosition( qskMousePosition( event ) );
+    m_data->saveMousePosition( qskMousePosition( event ) );
 
-  const auto focus = ( focusPolicy() & Qt::ClickFocus ) == Qt::ClickFocus && !QGuiApplication::styleHints()->setFocusOnTouchRelease();
+    const auto focus = m_data->focusNow();
 
-  if(subControlRect(QskSpinBox::Inc).contains( event->pos() ))
-  {
-    increment(+stepSize());
-
-    if( focus )
+    if ( subControlRect( QskSpinBox::IncrementPanel ).contains( event->pos() ) )
     {
-      m_data->setFocus(PrivateData::Inc);
-    }
+        increment( +stepSize() );
 
-    return;
-  }
-
-  if(subControlRect(QskSpinBox::Dec).contains( event->pos() ))
-  {
-    increment(-stepSize());
-
-    if( focus )
-    {
-      m_data->setFocus(PrivateData::Dec);
-    }
-
-    return;
-  }
-
-  if(subControlRect(QskSpinBox::TextPanel).contains( event->pos() ))
-  {
-    if( focus )
-    {
-      m_data->setFocus(PrivateData::Text);
-    }
-
-    return;
-  }
-
-  event->ignore();
-}
-
-void QskSpinBox::mousePressEvent(QMouseEvent *event)
-{
-  m_data->saveMousePosition( -1 * qskMousePosition( event ) );
-
-  const auto focus = ( focusPolicy() & Qt::ClickFocus ) == Qt::ClickFocus && !QGuiApplication::styleHints()->setFocusOnTouchRelease();
-
-  if(subControlRect(QskSpinBox::Inc).contains( event->pos() ))
-  {
-    if( focus )
-    {
-      m_data->setFocus(PrivateData::Inc);
-    }
-    return;
-  }
-
-  if(subControlRect(QskSpinBox::Dec).contains( event->pos() ))
-  {
-    if( focus )
-    {
-      m_data->setFocus(PrivateData::Dec);
-    }
-    return;
-  }
-
-  event->ignore();
-}
-
-void QskSpinBox::keyPressEvent(QKeyEvent *event)
-{
-  switch( event->key() )
-  {
-    case Qt::Key_Plus:
-    case Qt::Key_Up:
-    case Qt::Key_Right:
-      // TODO increment
-      break;
-    case Qt::Key_Minus:
-    case Qt::Key_Down:
-    case Qt::Key_Left:
-      // TODO decrement
-      break;
-    case Qt::Key_Select:
-    case Qt::Key_Space:
-      // TODO click currently focused -/+
-      break;
-    default:
-    {
-      const int steps = qskFocusChainIncrement( event );
-      if(steps != 0)
-      {
-        for(int i = 0; i < steps; ++i)
+        if ( focus )
         {
-          m_data->focusNext();
+            m_data->setFocus( Increment );
         }
-        for(int i = steps; i < 0; ++i)
-        {
-          m_data->focusPrevious();
-        }
-      }
+
+        return;
     }
-  }
-  Inherited::keyPressEvent( event );
+
+    if ( subControlRect( QskSpinBox::DecrementPanel ).contains( event->pos() ) )
+    {
+        increment( -stepSize() );
+
+        if ( focus )
+        {
+            m_data->setFocus( Decrement );
+        }
+
+        return;
+    }
+
+    if ( subControlRect( QskSpinBox::TextPanel ).contains( event->pos() ) )
+    {
+        if ( focus )
+        {
+            m_data->setFocus( Textbox );
+        }
+
+        return;
+    }
+
+    event->ignore();
 }
 
-void QskSpinBox::keyReleaseEvent( QKeyEvent* event )
+void QskSpinBox::mousePressEvent( QMouseEvent* const event )
 {
-  if( event->key() == Qt::Key_Select || event->key() == Qt::Key_Space )
-  {
-    return;
-  }
+    m_data->saveMousePosition( -1 * qskMousePosition( event ) );
 
-  Inherited::keyReleaseEvent( event );
+    const auto focus = m_data->focusNow();
+
+    if ( subControlRect( QskSpinBox::IncrementPanel ).contains( event->pos() ) )
+    {
+        if ( focus )
+        {
+            m_data->setFocus( QskSpinBox::Increment );
+        }
+        return;
+    }
+
+    if ( subControlRect( QskSpinBox::DecrementPanel ).contains( event->pos() ) )
+    {
+        if ( focus )
+        {
+            m_data->setFocus( QskSpinBox::Decrement );
+        }
+        return;
+    }
+
+    event->ignore();
 }
 
-void QskSpinBox::focusInEvent(QFocusEvent *event)
+void QskSpinBox::keyPressEvent( QKeyEvent* const event )
 {
-  switch( event->reason() )
-  {
-    case Qt::TabFocusReason:
-      m_data->focusNext();
-      break;
+    switch ( event->key() )
+    {
+        case Qt::Key_Plus:
+        case Qt::Key_Up:
+        case Qt::Key_Right:
+            increment( +stepSize() );
+            return;
+        case Qt::Key_Minus:
+        case Qt::Key_Down:
+        case Qt::Key_Left:
+            increment( -stepSize() );
+            return;
+        case Qt::Key_Select:
+        case Qt::Key_Space:
+            if ( focusIndex() == Increment )
+            {
+                increment( +stepSize() );
+            }
+            if ( focusIndex() == Decrement )
+            {
+                increment( -stepSize() );
+            }
+            return;
+        default:
+            break;
+    }
 
-    case Qt::BacktabFocusReason:
-      m_data->focusPrevious();
-      break;
+    const int steps = qskFocusChainIncrement( event );
 
-    default:
-      if(m_data->focusIndex() == PrivateData::None)
-      {
+    if ( steps < 0 )
+    {
+        for ( int i = 0; i < qAbs( steps ); ++i )
+        {
+            m_data->focusPrevious();
+        }
+    }
+
+    if ( steps > 0 )
+    {
+        for ( int i = 0; i < steps; ++i )
+        {
+            m_data->focusNext();
+        }
+    }
+
+    if ( steps != 0 && m_data->focusIndex() != None )
+    {
+        return;
+    }
+
+    Inherited::keyPressEvent( event );
+}
+
+void QskSpinBox::keyReleaseEvent( QKeyEvent* const event )
+{
+    if ( event->key() == Qt::Key_Select || event->key() == Qt::Key_Space )
+    {
+        return;
+    }
+
+    Inherited::keyReleaseEvent( event );
+}
+
+void QskSpinBox::focusInEvent( QFocusEvent* const event )
+{
+    if ( event->reason() == Qt::TabFocusReason )
+    {
+        m_data->focusNext();
+        return;
+    }
+
+    if ( event->reason() == Qt::BacktabFocusReason )
+    {
+        m_data->focusPrevious();
+        return;
+    }
+
+    if ( m_data->focusIndex() == QskSpinBox::None )
+    {
         m_data->focusDefault();
         return;
-      }
-  }
-  Inherited::focusInEvent( event );
+    }
+
+    Inherited::focusInEvent( event );
 }
 
 QRectF QskSpinBox::focusIndicatorRect() const
 {
-  auto rect = m_data->focusIndicatorRect();
-  return rect;
+    return m_data->focusIndicatorRect();
 }
 
-void QskSpinBox::increment(qreal offset)
+QskSpinBox::FocusIndeces QskSpinBox::focusIndex() const
 {
-  m_data->setValue(m_data->value() + offset);
-}
-
-qreal QskSpinBox::value() const
-{
-  return m_data->value();
+    return m_data->focusIndex();
 }
