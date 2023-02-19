@@ -4,6 +4,8 @@
  *****************************************************************************/
 
 #include "SelectorPage.h"
+
+#include <QskComboBox.h>
 #include <QskSegmentedBar.h>
 
 namespace
@@ -61,10 +63,24 @@ SelectorPage::SelectorPage( QQuickItem* parent )
 
 void SelectorPage::populate()
 {
-    setSpacing( 20 );
+    setSpacing( 40 );
 
     new Box( Qt::Horizontal, this );
-    new Box( Qt::Vertical, this );
+    auto* horizontalButtonsBox = new Box( Qt::Vertical, this );
+
+    auto* comboBoxBox = new QskLinearBox( Qt::Horizontal, horizontalButtonsBox );
+    auto* comboBox1 = new QskComboBox( comboBoxBox );
+    comboBox1->setLabel( "label" );
+    comboBox1->addOption( {}, "airport" );
+    comboBox1->addOption( {}, "flight" );
+    comboBox1->addOption( {}, "pizza" );
+    comboBox1->addOption( {}, "soccer" );
+
+    auto* comboBox2 = new QskComboBox( comboBoxBox );
+    comboBox2->addOption( { "airport_shuttle" }, "airport" );
+    comboBox2->addOption( { "flight" }, "flight" );
+    comboBox2->addOption( { "local_pizza" }, "pizza" );
+    comboBox2->addOption( { "sports_soccer" }, "soccer" );
 
     setStretchFactor( 0, 0 );
     setStretchFactor( 1, 10 );

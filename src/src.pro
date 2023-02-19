@@ -173,6 +173,8 @@ HEADERS += \
     controls/QskBoxSkinlet.h \
     controls/QskCheckBox.h \
     controls/QskCheckBoxSkinlet.h \
+    controls/QskComboBox.h \
+    controls/QskComboBoxSkinlet.h \
     controls/QskControl.h \
     controls/QskControlPrivate.h \
     controls/QskDirtyItemFilter.h \
@@ -260,6 +262,8 @@ SOURCES += \
     controls/QskBoxSkinlet.cpp \
     controls/QskCheckBox.cpp \
     controls/QskCheckBoxSkinlet.cpp \
+    controls/QskComboBox.cpp \
+    controls/QskComboBoxSkinlet.cpp \
     controls/QskControl.cpp \
     controls/QskControlPrivate.cpp \
     controls/QskDirtyItemFilter.cpp \

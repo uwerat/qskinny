@@ -9,6 +9,7 @@
 
 #include <QskBox.h>
 #include <QskCheckBox.h>
+#include <QskComboBox.h>
 #include <QskColorFilter.h>
 #include <QskDialogButtonBox.h>
 #include <QskFocusIndicator.h>
@@ -126,10 +127,9 @@ namespace
         void setup();
 
       private:
-        void setupControl();
-
         void setupBox();
         void setupCheckBox();
+        void setupComboBox();
         void setupDialogButtonBox();
         void setupFocusIndicator();
         void setupInputPanel();
@@ -185,10 +185,9 @@ namespace
 
 void Editor::setup()
 {
-    setupControl();
-
     setupBox();
     setupCheckBox();
+    setupComboBox();
     setupDialogButtonBox();
     setupFocusIndicator();
     setupInputPanel();
@@ -211,16 +210,6 @@ void Editor::setup()
     setupTabView();
     setupTextLabel();
     setupTextInput();
-}
-
-void Editor::setupControl()
-{
-    using A = QskAspect;
-
-    setPadding( A::NoSubcontrol, 11_dp );
-
-    setGradient( A::NoSubcontrol, m_pal.background );
-    setColor( A::NoSubcontrol | A::StyleColor, m_pal.onBackground );
 }
 
 void Editor::setupCheckBox()
@@ -296,6 +285,49 @@ void Editor::setupCheckBox()
     setGradient( Q::Ripple | Q::Error | Q::Pressed | Q::Checked, m_pal.error12 );
 }
 
+void Editor::setupComboBox()
+{
+    using Q = QskComboBox;
+
+    setStrutSize( Q::Panel, { -1, 56_dp } );
+    setPadding( Q::Panel, { 12_dp, 8_dp, 12_dp, 8_dp } );
+    setGradient( Q::Panel, m_pal.surfaceVariant );
+    setBoxShape( Q::Panel, m_pal.shapeExtraSmallTop );
+    setBoxBorderMetrics( Q::Panel, { 0, 0, 0, 1_dp } );
+    setBoxBorderColors( Q::Panel, m_pal.onSurfaceVariant );
+    setSpacing( Q::Panel, 8_dp );
+
+    const auto hoverColor = flattenedColor( m_pal.onSurfaceVariant, m_pal.surfaceVariant, m_pal.hoverOpacity );
+    setGradient( Q::Panel | Q::Hovered, hoverColor );
+
+    const auto focusColor = flattenedColor( m_pal.onSurfaceVariant, m_pal.surfaceVariant, m_pal.focusOpacity );
+    setGradient( Q::Panel | Q::Focused, focusColor );
+
+    const auto pressedColor = flattenedColor( m_pal.onSurfaceVariant, m_pal.surfaceVariant, m_pal.pressedOpacity );
+    setGradient( Q::Panel | Q::Pressed, pressedColor );
+
+    setStrutSize( Q::Graphic, { 24_dp, 24_dp } );
+    setGraphicRole( Q::Graphic, QskMaterial3Skin::GraphicRoleOnSurface );
+
+    setColor( Q::Text, m_pal.onSurface );
+    setFontRole( Q::Text, QskMaterial3Skin::M3BodyMedium );
+
+    setStrutSize( Q::OpenMenuGraphic, { 12_dp, 12_dp } );
+    setGraphicRole( Q::OpenMenuGraphic, QskMaterial3Skin::GraphicRoleOnSurface );
+    setAlignment( Q::OpenMenuGraphic, Qt::AlignRight | Qt::AlignVCenter );
+
+
+    const auto disabledPanelColor = QskRgb::toTransparentF( m_pal.onSurface, 0.04 );
+    setGradient( Q::Panel | Q::Disabled, disabledPanelColor );
+    setBoxBorderColors( Q::Panel | Q::Disabled, m_pal.onSurface38 );
+
+    setGraphicRole( Q::Graphic, QskMaterial3Skin::GraphicRoleOnSurface38 );
+
+    setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
+
+    setGraphicRole( Q::OpenMenuGraphic, QskMaterial3Skin::GraphicRoleOnSurface38 );
+}
+
 void Editor::setupBox()
 {
     using Q = QskBox;
@@ -324,6 +356,8 @@ void Editor::setupMenu()
     setBoxBorderMetrics( Q::Panel, 0 );
     setPadding( Q::Panel, 0 );
 
+    setGradient( Q::Overlay, Qt::transparent );
+
     // The color here is primary with an opacity of 8% - we blend that
     // with the background, because we don't want the menu to have transparency:
     const auto panel = flattenedColor( m_pal.primary, m_pal.background, 0.08 );
@@ -344,7 +378,8 @@ void Editor::setupMenu()
     setGradient( Q::Cursor, m_pal.primary12 );
 
     setPadding( Q::Graphic, 7_dp );
-    setStrutSize( Q::Graphic, { 46_dp, -1 } );
+    setStrutSize( Q::Graphic, { 24_dp, 24_dp } );
+    setGraphicRole( Q::Graphic, QskMaterial3Skin::GraphicRoleOnSurface );
 
     setColor( Q::Text, m_pal.onSurface );
     setFontRole( Q::Text, QskMaterial3Skin::M3BodyMedium );
@@ -1122,6 +1157,8 @@ QskMaterial3Theme::QskMaterial3Theme( Lightness lightness,
     elevationLight1 = QskShadowMetrics( -3, 5, { 0, 2 } );
     elevationLight2 = QskShadowMetrics( -2, 8, { 0, 2 } );
     elevationLight3 = QskShadowMetrics( -1, 11, { 0, 2 } );
+
+    shapeExtraSmallTop = QskBoxShapeMetrics( 4_dp, 4_dp, 0, 0 );
 }
 
 QskMaterial3GraphicProvder::QskMaterial3GraphicProvder( QObject* parent )
@@ -1155,11 +1192,12 @@ QskMaterial3Skin::~QskMaterial3Skin()
 
 QskGraphic QskMaterial3Skin::symbol( int symbolType ) const
 {
+    const auto* provider = graphicProvider( {} );
+
     switch ( symbolType )
     {
     case QskStandardSymbol::CheckMark:
     {
-        const auto* provider = graphicProvider( {} );
         return *( provider->requestGraphic( "check_small" ) );
     }
     case QskStandardSymbol::CrossMark:
@@ -1168,8 +1206,15 @@ QskGraphic QskMaterial3Skin::symbol( int symbolType ) const
     }
     case QskStandardSymbol::SegmentedBarCheckMark:
     {
-        const auto* provider = graphicProvider( {} );
         return *( provider->requestGraphic( "segmented-button-check" ) );
+    }
+    case QskStandardSymbol::ComboBoxSymbolPopupClosed:
+    {
+        return *( provider->requestGraphic( "combo-box-arrow-closed" ) );
+    }
+    case QskStandardSymbol::ComboBoxSymbolPopupOpen:
+    {
+        return *( provider->requestGraphic( "combo-box-arrow-open" ) );
     }
     default:
         return Inherited::symbol( symbolType );
@@ -1207,6 +1252,10 @@ void QskMaterial3Skin::setupGraphicFilters( const QskMaterial3Theme& palette )
     QskColorFilter onSurfaceFilter38;
     onSurfaceFilter38.addColorSubstitution( Qt::white, palette.onSurface38 );
     setGraphicFilter( GraphicRoleOnSurface38, onSurfaceFilter38 );
+
+    QskColorFilter onSurfaceVariantFilter;
+    onSurfaceVariantFilter.addColorSubstitution( Qt::white, palette.onSurfaceVariant );
+    setGraphicFilter( GraphicRoleOnSurfaceVariant, onSurfaceVariantFilter );
 
     QskColorFilter surfaceFilter;
     surfaceFilter.addColorSubstitution( Qt::white, palette.surface );

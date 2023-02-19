@@ -1,9 +1,10 @@
 /******************************************************************************
- * Copyright (C) 2023 Edelhirsch Software GmbH
- * This file may be used under the terms of the 3-clause BSD License
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#pragma once
+#ifndef QSK_SPIN_BOX_SKINLET_H
+#define QSK_SPIN_BOX_SKINLET_H
 
 #include <QskSkinlet.h>
 
@@ -109,3 +110,5 @@ class QSK_EXPORT QskSpinBoxSkinlet : public QskSkinlet
     QSGNode* updateSampleNode( const QskSkinnable* skinnable, QskAspect::Subcontrol subControl,
         int index, QSGNode* node ) const override;
 };
+
+#endif

@@ -17,6 +17,7 @@
 #include <qvariant.h>
 #include <qeventloop.h>
 
+QSK_SUBCONTROL( QskMenu, Overlay )
 QSK_SUBCONTROL( QskMenu, Panel )
 QSK_SUBCONTROL( QskMenu, Segment )
 QSK_SUBCONTROL( QskMenu, Cursor )
@@ -80,6 +81,8 @@ QskMenu::QskMenu( QQuickItem* parent )
 
     setPopupFlag( QskPopup::CloseOnPressOutside, true );
     setPopupFlag( QskPopup::DeleteOnClose, true );
+
+    setSubcontrolProxy( Inherited::Overlay, Overlay );
 
     initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 }
@@ -255,7 +258,12 @@ void QskMenu::keyPressEvent( QKeyEvent* event )
 
         default:
         {
-            return;
+            const int steps = qskFocusChainIncrement( event );
+
+            if( steps != 0 )
+            {
+                traverse( steps );
+            }
         }
     }
 }
@@ -353,8 +361,13 @@ void QskMenu::aboutToShow()
 
 QRectF QskMenu::focusIndicatorRect() const
 {
-    // highlighting the item is good enough
-    return QRectF();
+    if( currentIndex() >= 0 )
+    {
+        return effectiveSkinlet()->sampleRect( this,
+            contentsRect(), Segment, currentIndex() );
+    }
+
+    return Inherited::focusIndicatorRect();
 }
 
 void QskMenu::setSelectedIndex( int index )
