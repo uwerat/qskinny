@@ -4,19 +4,12 @@
  *****************************************************************************/
 
 #include "QskSpinBox.h"
-#include <QGuiApplication>
-#include <QRegExpValidator>
-#include <QStyleHints>
-#include <QskBoxBorderColors.h>
-#include <QskBoxBorderMetrics.h>
-#include <QskBoxShapeMetrics.h>
-#include <QskEvent.h>
-#include <QskGridBox.h>
-#include <QskIntervalF.h>
-#include <QskLinearBox.h>
-#include <QskSkinlet.h>
-#include <QskTextInput.h>
-#include <QtMath>
+#include "QskIntervalF.h"
+#include "QskEvent.h"
+
+#include <qguiapplication.h>
+#include <qstylehints.h>
+#include <qmath.h>
 
 #include <array>
 

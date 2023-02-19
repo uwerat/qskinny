@@ -58,19 +58,19 @@ void SpinBoxPage::populate()
 
     auto* const columnIncW = new QskLinearBox( Qt::Vertical, this );
     auto* const sliderIncW = new QskSlider( Qt::Vertical, columnIncW );
-    auto* const labelsIncW = new QskTextLabel( "+W", columnIncW );
+    new QskTextLabel( "+W", columnIncW );
 
     auto* const columnIncH = new QskLinearBox( Qt::Vertical, this );
     auto* const sliderIncH = new QskSlider( Qt::Vertical, columnIncH );
-    auto* const labelsIncH = new QskTextLabel( "+H", columnIncH );
+    new QskTextLabel( "+H", columnIncH );
 
     auto* const columnDecW = new QskLinearBox( Qt::Vertical, this );
     auto* const sliderDecW = new QskSlider( Qt::Vertical, columnDecW );
-    auto* const labelsDecW = new QskTextLabel( "-W", columnDecW );
+    new QskTextLabel( "-W", columnDecW );
 
     auto* const columnDecH = new QskLinearBox( Qt::Vertical, this );
     auto* const sliderDecH = new QskSlider( Qt::Vertical, columnDecH );
-    auto* const labelsDecH = new QskTextLabel( "-H", columnDecH );
+    new QskTextLabel( "-H", columnDecH );
 
     setStretchFactor( columnIncW, 1 );
     setStretchFactor( columnIncH, 1 );
@@ -88,7 +88,7 @@ void SpinBoxPage::populate()
     sliderDecW->setValue( strutDec.width() );
     sliderDecH->setValue( strutDec.height() );
 
-    auto update = [ spinboxes, sliderIncW, sliderIncH, sliderDecW, sliderDecH ]( qreal v ) {
+    auto update = [ spinboxes, sliderIncW, sliderIncH, sliderDecW, sliderDecH ]( qreal ) {
         const auto incSize = QSizeF{ sliderIncW->value(), sliderIncH->value() };
         const auto decSize = QSizeF{ sliderDecW->value(), sliderDecH->value() };
         for ( auto* spinbox : spinboxes )
