@@ -241,7 +241,6 @@ int QskRadioBox::indexAt( const QPointF& target ) const {
 }
 
 void QskRadioBox::setFocusedIndex( int index ) {
-    qDebug() << "setting index " << index;
     m_data->focusedIndex = index;
     setPositionHint( Ripple, index );
     focusIndicatorRectChanged();
