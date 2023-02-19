@@ -1,0 +1,20 @@
+/*!
+    \class QskSpinBoxSkinlet QskSpinBoxSkinlet.h
+
+    \brief This skinlet's purpose is to draw a QskSpinBox instance
+
+	In order to manage individual subcontrol states this skinlet uses
+	subcontrol sampling. Although it is most usefull when dealing with
+	dynamic or large numbers of subcontrols, it is a strategy to index
+	the subcontrol in order to have individual states instead of one
+	collective state on the skinnable object.
+
+	\note The placement and dimensions of all subcontrols depend on the
+	      following subctrontrol aspects:
+
+		- QskSpinBox::Layout's alignment hint ( which affects the positions of all controls )
+		- QskSpinBox::Layout's spacing hint
+		- QskSpinBox::IncrementPanel's strut size hint
+		- QskSpinBox::DecrementPanel's strut size hint
+		- QskSpinBox::TextPanel's strut size hint
+*/

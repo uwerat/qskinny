@@ -156,7 +156,8 @@ namespace
         const QskMaterial3Theme& m_pal;
     };
 
-    QFont createFont( const QString& name, int lineHeight, int size, qreal tracking, QFont::Weight weight )
+    QFont createFont( const QString& name, int lineHeight,
+        int size, qreal tracking, QFont::Weight weight )
     {
         QFont font( name, size );
         font.setPixelSize( lineHeight );
@@ -244,7 +245,7 @@ void Editor::setupCheckBox()
 
     setGraphicRole( Q::Indicator | Q::Error, QskMaterial3Skin::GraphicRoleOnError );
 
-    setStrutSize( Q::Ripple, { 40_dp, 40_dp } );
+    setStrutSize( Q::Ripple, 40_dp, 40_dp );
     setBoxShape( Q::Ripple, 100, Qt::RelativeSize );
     setGradient( Q::Ripple, Qt::transparent );
 
@@ -289,7 +290,7 @@ void Editor::setupComboBox()
 {
     using Q = QskComboBox;
 
-    setStrutSize( Q::Panel, { -1, 56_dp } );
+    setStrutSize( Q::Panel,  -1.0, 56_dp );
     setPadding( Q::Panel, { 12_dp, 8_dp, 12_dp, 8_dp } );
     setGradient( Q::Panel, m_pal.surfaceVariant );
     setBoxShape( Q::Panel, m_pal.shapeExtraSmallTop );
@@ -297,22 +298,25 @@ void Editor::setupComboBox()
     setBoxBorderColors( Q::Panel, m_pal.onSurfaceVariant );
     setSpacing( Q::Panel, 8_dp );
 
-    const auto hoverColor = flattenedColor( m_pal.onSurfaceVariant, m_pal.surfaceVariant, m_pal.hoverOpacity );
+    const auto hoverColor = flattenedColor( m_pal.onSurfaceVariant,
+        m_pal.surfaceVariant, m_pal.hoverOpacity );
     setGradient( Q::Panel | Q::Hovered, hoverColor );
 
-    const auto focusColor = flattenedColor( m_pal.onSurfaceVariant, m_pal.surfaceVariant, m_pal.focusOpacity );
+    const auto focusColor = flattenedColor( m_pal.onSurfaceVariant,
+        m_pal.surfaceVariant, m_pal.focusOpacity );
     setGradient( Q::Panel | Q::Focused, focusColor );
 
-    const auto pressedColor = flattenedColor( m_pal.onSurfaceVariant, m_pal.surfaceVariant, m_pal.pressedOpacity );
+    const auto pressedColor = flattenedColor( m_pal.onSurfaceVariant,
+        m_pal.surfaceVariant, m_pal.pressedOpacity );
     setGradient( Q::Panel | Q::Pressed, pressedColor );
 
-    setStrutSize( Q::Graphic, { 24_dp, 24_dp } );
+    setStrutSize( Q::Graphic, 24_dp, 24_dp );
     setGraphicRole( Q::Graphic, QskMaterial3Skin::GraphicRoleOnSurface );
 
     setColor( Q::Text, m_pal.onSurface );
     setFontRole( Q::Text, QskMaterial3Skin::M3BodyMedium );
 
-    setStrutSize( Q::OpenMenuGraphic, { 12_dp, 12_dp } );
+    setStrutSize( Q::OpenMenuGraphic, 12_dp, 12_dp );
     setGraphicRole( Q::OpenMenuGraphic, QskMaterial3Skin::GraphicRoleOnSurface );
     setAlignment( Q::OpenMenuGraphic, Qt::AlignRight | Qt::AlignVCenter );
 
@@ -378,7 +382,7 @@ void Editor::setupMenu()
     setGradient( Q::Cursor, m_pal.primary12 );
 
     setPadding( Q::Graphic, 7_dp );
-    setStrutSize( Q::Graphic, { 24_dp, 24_dp } );
+    setStrutSize( Q::Graphic, 24_dp, 24_dp );
     setGraphicRole( Q::Graphic, QskMaterial3Skin::GraphicRoleOnSurface );
 
     setColor( Q::Text, m_pal.onSurface );
@@ -516,18 +520,20 @@ void Editor::setupSegmentedBar()
         setBoxShape( Q::Cursor, 0 );
 
         setBoxShape( Q::Cursor | Q::Minimum | A::Horizontal,
-                     { 100, 0, 100, 0, Qt::RelativeSize },
-                     { QskStateCombination::CombinationNoState, Q::Disabled } );
+            { 100, 0, 100, 0, Qt::RelativeSize },
+            { QskStateCombination::CombinationNoState, Q::Disabled } );
+
         setBoxShape( Q::Cursor | Q::Maximum | A::Horizontal,
-                     { 0, 100, 0, 100, Qt::RelativeSize },
-                     { QskStateCombination::CombinationNoState, Q::Disabled } );
+            { 0, 100, 0, 100, Qt::RelativeSize },
+            { QskStateCombination::CombinationNoState, Q::Disabled } );
 
         setBoxShape( Q::Cursor | Q::Minimum | A::Vertical,
-                     { 100, 100, 0, 0, Qt::RelativeSize },
-                     { QskStateCombination::CombinationNoState, Q::Disabled } );
+            { 100, 100, 0, 0, Qt::RelativeSize },
+            { QskStateCombination::CombinationNoState, Q::Disabled } );
+
         setBoxShape( Q::Cursor | Q::Maximum | A::Vertical,
-                     { 0, 0, 100, 100, Qt::RelativeSize },
-                     { QskStateCombination::CombinationNoState, Q::Disabled } );
+            { 0, 0, 100, 100, Qt::RelativeSize },
+            { QskStateCombination::CombinationNoState, Q::Disabled } );
 
         setGradient( Q::Cursor, m_pal.secondaryContainer );
         setGradient( Q::Cursor | Q::Disabled, m_pal.onSurface12 );
@@ -550,10 +556,11 @@ void Editor::setupSegmentedBar()
         // Graphic
 
         setPadding( Q::Graphic, 0_dp );
-        setStrutSize( Q::Graphic, { 18_dp, 18_dp } );
+        setStrutSize( Q::Graphic, 18_dp, 18_dp );
 
         setGraphicRole( Q::Graphic, QskMaterial3Skin::GraphicRoleOnSurface );
-        setGraphicRole( Q::Graphic | Q::Selected, QskMaterial3Skin::GraphicRoleOnSecondaryContainer );
+        setGraphicRole( Q::Graphic | Q::Selected,
+            QskMaterial3Skin::GraphicRoleOnSecondaryContainer );
         setGraphicRole( Q::Graphic | Q::Disabled, QskMaterial3Skin::GraphicRoleOnSurface38 );
     }
 }
@@ -691,7 +698,7 @@ void Editor::setupSlider()
     setBoxShape( Q::Handle, 100, Qt::RelativeSize );
     setBoxBorderMetrics( Q::Handle, 0 );
 
-    setStrutSize( Q::Handle, { 20_dp, 20_dp } );
+    setStrutSize( Q::Handle, 20_dp, 20_dp );
 
     setGradient( Q::Handle, m_pal.primary );
     setGradient( Q::Handle | Q::Pressed, m_pal.primary );
@@ -699,7 +706,7 @@ void Editor::setupSlider()
     const auto disabledColor = flattenedColor( m_pal.onSurface, m_pal.background, 0.38 );
     setGradient( Q::Handle | Q::Disabled, disabledColor );
 
-    setStrutSize( Q::Ripple, { 40_dp, 40_dp } );
+    setStrutSize( Q::Ripple, 40_dp, 40_dp );
     setBoxShape( Q::Ripple, 100, Qt::RelativeSize );
     setGradient( Q::Ripple, Qt::transparent );
     setGradient( Q::Ripple | Q::Hovered, m_pal.primary12 );
@@ -712,71 +719,71 @@ void Editor::setupSlider()
 
 void Editor::setupSpinBox()
 {
-  using Q = QskSpinBox;
+    using Q = QskSpinBox;
 
-  setSpacing(QskSpinBox::Layout, 4_dp);
+    setSpacing( Q::Panel, 4_dp );
 
-  setStrutSize(QskSpinBox::TextPanel | QskAspect::Size, {80_dp,40_dp});
-  setStrutSize(QskSpinBox::IncrementPanel | QskAspect::Size, {40_dp,40_dp});
-  setStrutSize(QskSpinBox::DecrementPanel | QskAspect::Size, {40_dp,40_dp});
+    setStrutSize( Q::TextPanel, 80_dp, 40_dp );
+    setStrutSize( Q::IncrementPanel, 40_dp,40_dp );
+    setStrutSize( Q::DecrementPanel, 40_dp, 40_dp );
 
-  setAlignment(QskSpinBox::Layout, Qt::AlignHCenter);
-  setAlignment(Q::Text, Qt::AlignCenter);
+    setAlignment( Q::Panel, Qt::AlignHCenter );
+    setAlignment( Q::Text, Qt::AlignCenter );
 
-  for(const auto& state : {QskSpinBox::DecrementPanel, QskSpinBox::IncrementPanel, QskSpinBox::TextPanel})
-  {
-    setBoxShape(state, 4_dp);
-    setBoxBorderMetrics(state, 1_dp);
-  }
+    for( const auto& state : { Q::DecrementPanel, Q::IncrementPanel, Q::TextPanel } )
+    {
+        setBoxShape( state, 4_dp );
+        setBoxBorderMetrics( state, 1_dp );
+    }
 
-  for(const auto& state : {QskSpinBox::DecrementPanel, QskSpinBox::IncrementPanel})
-  {
-    setGradient( state, m_pal.primary );
-    setGradient( state | Q::Disabled, m_pal.onSurface12 );
+    for( const auto& state : { Q::DecrementPanel, Q::IncrementPanel } )
+    {
+        setGradient( state, m_pal.primary );
+        setGradient( state | Q::Disabled, m_pal.onSurface12 );
 
-    const auto focusColor = flattenedColor( m_pal.onPrimary, m_pal.primary, 0.12 );
-    setGradient( state | Q::Focused, focusColor );
-    setGradient( state | Q::Pressed, focusColor );
+        const auto focusColor = flattenedColor( m_pal.onPrimary, m_pal.primary, 0.12 );
+        setGradient( state | Q::Focused, focusColor );
+        setGradient( state | Q::Pressed, focusColor );
 
-    const auto hoverColor = flattenedColor( m_pal.onPrimary, m_pal.primary, 0.08 );
-    setGradient( state | Q::Hovered, hoverColor );
-    setShadowMetrics( state | Q::Hovered, m_pal.elevationLight1 );
-    setShadowColor( state | Q::Hovered, m_pal.shadow );
-  }
+        const auto hoverColor = flattenedColor( m_pal.onPrimary, m_pal.primary, 0.08 );
+        setGradient( state | Q::Hovered, hoverColor );
+        setShadowMetrics( state | Q::Hovered, m_pal.elevationLight1 );
+        setShadowColor( state | Q::Hovered, m_pal.shadow );
+    }
 
-  for(const auto& state : {QskSpinBox::DecrementText, QskSpinBox::IncrementText})
-  {
-    setColor( state, m_pal.onPrimary );
-    setColor( state | Q::Disabled, m_pal.onSurface38 );
-    setAlignment(state, Qt::AlignCenter);
-    setFontRole( state, QskMaterial3Skin::M3LabelLarge );
-  }
+    for( const auto& state : { Q::DecrementIndicator, Q::IncrementIndicator } )
+    {
+        setColor( state, m_pal.onPrimary );
+        setColor( state | Q::Disabled, m_pal.onSurface38 );
+        setAlignment(state, Qt::AlignCenter );
+        setFontRole( state, QskMaterial3Skin::M3LabelLarge );
+    }
 
-  setColor( Q::Text, m_pal.onBackground );
-  setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
+    setColor( Q::Text, m_pal.onBackground );
+    setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
 
-  setPadding( Q::TextPanel, 5_dp );
-  setBoxShape( Q::TextPanel, 4_dp, 4_dp, 0, 0 );
-  setBoxBorderMetrics( Q::TextPanel, 0, 0, 0, 1_dp );
-  setBoxBorderColors( Q::TextPanel, m_pal.onSurface );
+    setPadding( Q::TextPanel, 5_dp );
+    setBoxShape( Q::TextPanel, 4_dp, 4_dp, 0, 0 );
+    setBoxBorderMetrics( Q::TextPanel, 0, 0, 0, 1_dp );
+    setBoxBorderColors( Q::TextPanel, m_pal.onSurface );
 
-  setBoxBorderMetrics( Q::TextPanel | Q::Focused, 0, 0, 0, 2_dp );
-  setBoxBorderColors( Q::TextPanel | Q::Focused, m_pal.primary );
+    setBoxBorderMetrics( Q::TextPanel | Q::Focused, 0, 0, 0, 2_dp );
+    setBoxBorderColors( Q::TextPanel | Q::Focused, m_pal.primary );
 
 //  setBoxBorderMetrics( Q::TextPanel | Q::Editing, 0, 0, 0, 2_dp );
 //  setBoxBorderColors( Q::TextPanel | Q::Editing, m_pal.primary );
 
-  setBoxBorderMetrics( Q::TextPanel | Q::Hovered, 0, 0, 0, 1_dp );
-  setBoxBorderColors( Q::TextPanel | Q::Hovered, m_pal.onSurface );
+    setBoxBorderMetrics( Q::TextPanel | Q::Hovered, 0, 0, 0, 1_dp );
+    setBoxBorderColors( Q::TextPanel | Q::Hovered, m_pal.onSurface );
 
-  setGradient( Q::TextPanel, m_pal.surfaceVariant );
+    setGradient( Q::TextPanel, m_pal.surfaceVariant );
 
-  const auto c1 = QskRgb::toTransparentF( m_pal.onSurface, 0.04 );
-  setGradient( Q::TextPanel | Q::Disabled, c1 );
-  setBoxBorderMetrics( Q::TextPanel | Q::Disabled, 0, 0, 0, 1_dp );
+    const auto c1 = QskRgb::toTransparentF( m_pal.onSurface, 0.04 );
+    setGradient( Q::TextPanel | Q::Disabled, c1 );
+    setBoxBorderMetrics( Q::TextPanel | Q::Disabled, 0, 0, 0, 1_dp );
 
-  setColor( Q::TextPanel | Q::Disabled, m_pal.onSurface38 );
-  setBoxBorderColors( Q::TextPanel | Q::Disabled, m_pal.onSurface38 );
+    setColor( Q::TextPanel | Q::Disabled, m_pal.onSurface38 );
+    setBoxBorderColors( Q::TextPanel | Q::Disabled, m_pal.onSurface38 );
 }
 
 void Editor::setupSwitchButton()
@@ -801,7 +808,8 @@ void Editor::setupSwitchButton()
 
     setBoxShape( Q::Handle, 100, Qt::RelativeSize );
     setStrutSize( Q::Handle, 16_dp, 16_dp );
-    setStrutSize( Q::Handle | Q::Checked, 24_dp, 24_dp, { QskStateCombination::CombinationNoState, Q::Disabled } );
+    setStrutSize( Q::Handle | Q::Checked, 24_dp, 24_dp,
+        { QskStateCombination::CombinationNoState, Q::Disabled } );
 
     setGradient( Q::Handle, m_pal.outline );
     setGradient( Q::Handle | Q::Checked, m_pal.primaryContainer );
@@ -816,7 +824,8 @@ void Editor::setupSwitchButton()
     setStrutSize( Q::Ripple | Q::Hovered, 40_dp, 40_dp );
     setBoxShape( Q::Ripple, 100, Qt::RelativeSize );
     setGradient( Q::Ripple | Q::Hovered, stateLayerColor( m_pal.onSurface, m_pal.focusOpacity ) );
-    setGradient( Q::Ripple | Q::Hovered | Q::Checked, stateLayerColor( m_pal.primary, m_pal.focusOpacity ) );
+    setGradient( Q::Ripple | Q::Hovered | Q::Checked,
+        stateLayerColor( m_pal.primary, m_pal.focusOpacity ) );
 
     setBoxBorderColors( Q::Handle, m_pal.outline );
     setBoxBorderColors( Q::Handle | Q::Checked, m_pal.primary );
@@ -891,7 +900,7 @@ void Editor::setupTabButton()
     setGradient( Q::Panel | Q::Hovered,
         QskRgb::toTransparentF( m_pal.surface, m_pal.hoverOpacity ) );
 
-    setGradient( Q::Panel | Q::Focused, 
+    setGradient( Q::Panel | Q::Focused,
         QskRgb::toTransparentF( m_pal.surface, m_pal.focusOpacity ) );
 
     setGradient( Q::Panel | Q::Pressed,
@@ -899,12 +908,18 @@ void Editor::setupTabButton()
 
     setGradient( Q::Panel | A::Footer, m_pal.surface2 );
     setGradient( Q::Panel | A::Footer | Q::Checked, m_pal.secondaryContainer );
-    setGradient( Q::Panel | A::Footer | Q::Hovered, stateLayerColor( m_pal.onSurfaceVariant, m_pal.hoverOpacity ) );
-    setGradient( Q::Panel | A::Footer | Q::Hovered | Q::Checked, stateLayerColor( m_pal.onSurface, m_pal.hoverOpacity ) );
-    setGradient( Q::Panel | A::Footer | Q::Focused, stateLayerColor( m_pal.onSurfaceVariant, m_pal.focusOpacity ) );
-    setGradient( Q::Panel | A::Footer | Q::Focused | Q::Checked, stateLayerColor( m_pal.onSurface, m_pal.focusOpacity ) );
-    setGradient( Q::Panel | A::Footer | Q::Pressed, stateLayerColor( m_pal.onSurfaceVariant, m_pal.pressedOpacity ) );
-    setGradient( Q::Panel | A::Footer | Q::Pressed | Q::Checked, stateLayerColor( m_pal.onSurface, m_pal.pressedOpacity ) );
+    setGradient( Q::Panel | A::Footer | Q::Hovered,
+        stateLayerColor( m_pal.onSurfaceVariant, m_pal.hoverOpacity ) );
+    setGradient( Q::Panel | A::Footer | Q::Hovered | Q::Checked,
+        stateLayerColor( m_pal.onSurface, m_pal.hoverOpacity ) );
+    setGradient( Q::Panel | A::Footer | Q::Focused,
+        stateLayerColor( m_pal.onSurfaceVariant, m_pal.focusOpacity ) );
+    setGradient( Q::Panel | A::Footer | Q::Focused | Q::Checked,
+        stateLayerColor( m_pal.onSurface, m_pal.focusOpacity ) );
+    setGradient( Q::Panel | A::Footer | Q::Pressed,
+        stateLayerColor( m_pal.onSurfaceVariant, m_pal.pressedOpacity ) );
+    setGradient( Q::Panel | A::Footer | Q::Pressed | Q::Checked,
+        stateLayerColor( m_pal.onSurface, m_pal.pressedOpacity ) );
 
     setAnimation( Q::Panel | A::Color, qskDuration );
 
@@ -1066,7 +1081,7 @@ QskMaterial3Theme::QskMaterial3Theme( Lightness lightness )
 }
 
 QskMaterial3Theme::QskMaterial3Theme( Lightness lightness,
-                                      std::array< QskHctColor, NumPaletteTypes > palettes )
+        std::array< QskHctColor, NumPaletteTypes > palettes )
     : m_palettes( palettes )
 {
     if ( lightness == Light )
@@ -1196,28 +1211,23 @@ QskGraphic QskMaterial3Skin::symbol( int symbolType ) const
 
     switch ( symbolType )
     {
-    case QskStandardSymbol::CheckMark:
-    {
-        return *( provider->requestGraphic( "check_small" ) );
-    }
-    case QskStandardSymbol::CrossMark:
-    {
-        return {};
-    }
-    case QskStandardSymbol::SegmentedBarCheckMark:
-    {
-        return *( provider->requestGraphic( "segmented-button-check" ) );
-    }
-    case QskStandardSymbol::ComboBoxSymbolPopupClosed:
-    {
-        return *( provider->requestGraphic( "combo-box-arrow-closed" ) );
-    }
-    case QskStandardSymbol::ComboBoxSymbolPopupOpen:
-    {
-        return *( provider->requestGraphic( "combo-box-arrow-open" ) );
-    }
-    default:
-        return Inherited::symbol( symbolType );
+        case QskStandardSymbol::CheckMark:
+            return *( provider->requestGraphic( "check_small" ) );
+
+        case QskStandardSymbol::CrossMark:
+            return {};
+
+        case QskStandardSymbol::SegmentedBarCheckMark:
+            return *( provider->requestGraphic( "segmented-button-check" ) );
+
+        case QskStandardSymbol::ComboBoxSymbolPopupClosed:
+            return *( provider->requestGraphic( "combo-box-arrow-closed" ) );
+
+        case QskStandardSymbol::ComboBoxSymbolPopupOpen:
+            return *( provider->requestGraphic( "combo-box-arrow-open" ) );
+
+        default:
+            return Inherited::symbol( symbolType );
     }
 }
 
@@ -1225,9 +1235,12 @@ void QskMaterial3Skin::setupFonts()
 {
     Inherited::setupFonts( QStringLiteral( "Roboto" ) );
 
-    setFont( M3BodyMedium, createFont( QStringLiteral( "Roboto Regular"), 20_dp, 14_dp, 0.25, QFont::Normal ) );
-    setFont( M3BodyLarge, createFont( QStringLiteral( "Roboto Medium" ), 24_dp, 16_dp, 0.5, QFont::Normal ) );
-    setFont( M3HeadlineSmall, createFont( QStringLiteral( "Roboto Regular" ), 32_dp, 28_dp, 0.0, QFont::Normal ) );
+    setFont( M3BodyMedium,
+        createFont( QStringLiteral( "Roboto Regular"), 20_dp, 14_dp, 0.25, QFont::Normal ) );
+    setFont( M3BodyLarge,
+        createFont( QStringLiteral( "Roboto Medium" ), 24_dp, 16_dp, 0.5, QFont::Normal ) );
+    setFont( M3HeadlineSmall,
+        createFont( QStringLiteral( "Roboto Regular" ), 32_dp, 28_dp, 0.0, QFont::Normal ) );
     setFont( M3LabelLarge, createFont( "Roboto Medium", 20_dp, 14_dp, 0.1, QFont::Medium ) );
 }
 

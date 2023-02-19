@@ -1,0 +1,59 @@
+/*!
+    \class QskSpinBox QskSpinBox.h
+
+    \brief A control to edit, increment and decrement number values
+
+	QskSpinBox allows the user to choose a value by:
+
+	- clicking the up and down buttons
+	- pressing Up or Down on the keyboard
+	- using the wheel
+	- typing in the value manually
+
+    \subcontrols QskSpinBox::Panel, QskSpinBox::TextPanel,
+		         QskSpinBox::IncrementPanel, QskSpinBox::DecrementPanel,
+                 QskSpinBox::IncrementText, QskSpinBox::DecrementText
+
+	\states      QskSpinBox::Pressed
+
+    \skinlet QskSpinBoxSkinlet
+*/
+
+/*!
+    \var QskSpinBox::IncrementPanel
+
+	\brief The background of the increment button
+    \sa QskSpinBoxSkinlet
+ */
+
+/*!
+    \var QskSpinBox::DecrementPanel
+
+	\brief The background of the decrement button
+    \sa QskSpinBoxSkinlet
+ */
+
+/*!
+    \var QskSpinBox::TextPanel
+
+	\brief The background of the text showing the number
+    \sa QskSpinBoxSkinlet
+ */
+
+/*!
+    \var QskSpinBox::Text
+
+    \brief The text showing the number
+    \sa QskSpinBoxSkinlet
+ */
+
+/*!
+    \fn QskSpinBox::QskSpinBox( QQuickItem* )
+
+    Constructs a spin box with the given parent.
+*/
+
+/*!
+    \fn QskSeparator::~QskSeparator();
+    Destroys this spin box.
+*/

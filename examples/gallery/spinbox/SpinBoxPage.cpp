@@ -46,7 +46,7 @@ void SpinBoxPage::populate()
         auto* const column = new QskLinearBox( Qt::Vertical, grid );
         auto* const label = new QskTextLabel( layouts.value( layout ), column );
         auto* const spinbox = new QskSpinBox( column );
-        spinbox->setAlignmentHint( QskSpinBox::Layout, layout );
+        spinbox->setAlignmentHint( QskSpinBox::Panel, layout );
         grid->addItem( column, y, x );
         column->setStretchFactor( label, 1 );
         column->setStretchFactor( spinbox, 99 );
