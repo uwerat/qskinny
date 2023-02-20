@@ -36,6 +36,9 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     Q_PROPERTY( bool checkable READ isCheckable
         WRITE setCheckable NOTIFY checkableChanged FINAL )
 
+    Q_PROPERTY( Emphasis emphasis READ emphasis
+        WRITE setEmphasis NOTIFY emphasisChanged )
+
     Q_PROPERTY( QskBoxShapeMetrics shape READ shape
         WRITE setShape RESET resetShape NOTIFY shapeChanged )
 
@@ -44,10 +47,23 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
   public:
     QSK_SUBCONTROLS( Panel, Ripple, Text, Graphic )
 
+    enum Emphasis
+    {   
+        Emphasis1 = -2,
+        Emphasis2 = -1,
+        Emphasis3 = 0,
+        Emphasis4 = 1,
+        Emphasis5 = 2
+    };
+    Q_ENUM( Emphasis )
+
     QskPushButton( QQuickItem* parent = nullptr );
     QskPushButton( const QString& text, QQuickItem* parent = nullptr );
 
     ~QskPushButton() override;
+
+    void setEmphasis( Emphasis );
+    Emphasis emphasis() const;
 
     void setCheckable( bool );
     bool isCheckable() const override final;
@@ -83,6 +99,7 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
 
   Q_SIGNALS:
     void checkableChanged( bool );
+    void emphasisChanged( Emphasis ) const;
     void shapeChanged();
 
     void textChanged();

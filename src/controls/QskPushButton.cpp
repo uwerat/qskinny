@@ -26,6 +26,7 @@ class QskPushButton::PrivateData
         : text( txt )
         , isCheckable( false )
         , isGraphicSourceDirty( false )
+        , emphasis( Emphasis3 )
     {
     }
 
@@ -47,6 +48,7 @@ class QskPushButton::PrivateData
 
     bool isCheckable : 1;
     bool isGraphicSourceDirty : 1;
+    int emphasis : 4;
 };
 
 QskPushButton::QskPushButton( QQuickItem* parent )
@@ -77,6 +79,20 @@ void QskPushButton::setCheckable( bool on )
 bool QskPushButton::isCheckable() const
 {
     return m_data->isCheckable;
+}
+
+void QskPushButton::setEmphasis( Emphasis emphasis )
+{
+    if ( emphasis != m_data->emphasis )
+    {
+        m_data->emphasis = emphasis;
+        Q_EMIT emphasisChanged( emphasis );
+    }
+}
+
+QskPushButton::Emphasis QskPushButton::emphasis() const
+{
+    return static_cast< Emphasis >( m_data->emphasis );
 }
 
 void QskPushButton::setShape( const QskBoxShapeMetrics& shape )
@@ -227,7 +243,23 @@ void QskPushButton::updateResources()
 
 QskAspect::Variation QskPushButton::effectiveVariation() const
 {
-    return Inherited::effectiveVariation();
+    switch( m_data->emphasis )
+    {
+        case Emphasis1:
+            return QskAspect::Tiny;
+
+        case Emphasis2:
+            return QskAspect::Small;
+
+        case Emphasis4:
+            return QskAspect::Large;
+
+        case Emphasis5:
+            return QskAspect::Huge;
+
+        default:
+            return QskAspect::NoVariation;
+    }
 }
 
 QRectF QskPushButton::layoutRectForSize( const QSizeF& size ) const
