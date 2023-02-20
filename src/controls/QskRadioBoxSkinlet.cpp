@@ -250,3 +250,5 @@ QSGNode* QskRadioBoxSkinlet::updateSampleNode(  const QskSkinnable* skinnable,
 
     return node;
 }
+
+#include "moc_QskRadioBoxSkinlet.cpp"
