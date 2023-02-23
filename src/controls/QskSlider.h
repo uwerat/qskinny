@@ -17,7 +17,9 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
     Q_PROPERTY( Qt::Orientation orientation READ orientation
         WRITE setOrientation NOTIFY orientationChanged )
 
-    Q_PROPERTY( bool tracking READ isTracking WRITE setTracking NOTIFY trackingChanged )
+    Q_PROPERTY( bool tracking READ isTracking
+        WRITE setTracking NOTIFY trackingChanged )
+
     Q_PROPERTY( qreal handlePosition READ handlePosition )
 
     using Inherited = QskBoundedValueInput;

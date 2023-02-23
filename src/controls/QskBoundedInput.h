@@ -68,6 +68,8 @@ class QSK_EXPORT QskBoundedInput : public QskBoundedControl
     qreal alignedValue( qreal ) const;
     QskIntervalF alignedInterval( const QskIntervalF& ) const;
 
+    qreal incrementForKey( const QKeyEvent* ) const;
+
   private:
     qreal m_stepSize = 0.1;
     int m_pageSize = 1;

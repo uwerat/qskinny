@@ -177,21 +177,42 @@ bool QskBoundedInput::isReadOnly() const
     return hasSkinState( ReadOnly );
 }
 
+qreal QskBoundedInput::incrementForKey( const QKeyEvent* event ) const
+{
+    switch( event->key() )
+    {
+        case Qt::Key_Up:
+            return m_stepSize;
+
+        case Qt::Key_Down:
+            return -m_stepSize;
+
+        case Qt::Key_PageUp:
+            return m_pageSize;
+
+        case Qt::Key_PageDown:
+            return -m_pageSize;
+
+        default:
+        {
+            if ( qskIsStandardKeyInput( event, QKeySequence::MoveToNextChar ) )
+                return m_stepSize;
+
+            if ( qskIsStandardKeyInput( event, QKeySequence::MoveToPreviousChar ) )
+                return -m_stepSize;
+        }
+    }
+
+    return 0.0;
+}
+
 void QskBoundedInput::keyPressEvent( QKeyEvent* event )
 {
     if ( !isReadOnly() )
     {
-        if ( event->key() == Qt::Key_Up ||
-            qskIsStandardKeyInput( event, QKeySequence::MoveToNextChar ) )
+        if ( const auto offset = incrementForKey( event ) )
         {
-            increment( m_stepSize );
-            return;
-        }
-
-        if ( event->key() == Qt::Key_Down ||
-            qskIsStandardKeyInput( event, QKeySequence::MoveToPreviousChar ) )
-        {
-            increment( -m_stepSize );
+            increment( offset );
             return;
         }
     }
