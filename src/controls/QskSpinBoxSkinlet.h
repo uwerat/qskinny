@@ -18,13 +18,14 @@ class QSK_EXPORT QskSpinBoxSkinlet : public QskSkinlet
 
     enum NodeRole
     {
-        IncrementPanel, 
-        DecrementPanel,
         TextPanel,
-
-        IncrementIndicator,
-        DecrementIndicator,
         Text,
+
+        UpPanel, 
+        UpIndicator,
+
+        DownPanel,
+        DownIndicator,
 
         RoleCount
     };
@@ -35,21 +36,9 @@ class QSK_EXPORT QskSpinBoxSkinlet : public QskSkinlet
     QSizeF sizeHint( const QskSkinnable* skinnable,
         Qt::SizeHint, const QSizeF& ) const override;
 
-    int sampleCount(
-        const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const override;
-
-    QRectF sampleRect( const QskSkinnable* skinnable, const QRectF& rect,
-        QskAspect::Subcontrol subControl, int index ) const override;
-
-    QskAspect::States sampleStates( const QskSkinnable*,
-        QskAspect::Subcontrol, int index ) const override;
-
   protected:
     QSGNode* updateSubNode(
         const QskSkinnable* skinnable, quint8 role, QSGNode* node ) const override;
-
-    QSGNode* updateSampleNode( const QskSkinnable*, QskAspect::Subcontrol,
-        int index, QSGNode* node ) const override;
 };
 
 #endif

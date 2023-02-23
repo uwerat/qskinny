@@ -13,36 +13,53 @@ class QSK_EXPORT QskSpinBox : public QskBoundedValueInput
     Q_OBJECT
     using Inherited = QskBoundedValueInput;
 
+    Q_PROPERTY( bool wrapping READ isWrapping
+        WRITE setWrapping NOTIFY wrappingChanged )
+
+    Q_PROPERTY( bool tracking READ isTracking
+        WRITE setTracking NOTIFY trackingChanged )
+
+    Q_PROPERTY( bool accelerating READ isAccelerating
+        WRITE setAccelerating NOTIFY acceleratingChanged )
+
+    Q_PROPERTY( bool buttons READ hasButtons
+        WRITE setButtons NOTIFY buttonsChanged )
+
   public:
-
     QSK_SUBCONTROLS( Panel, TextPanel, Text,
-        IncrementPanel, IncrementIndicator, DecrementPanel, DecrementIndicator )
+        UpPanel, UpIndicator, DownPanel, DownIndicator )
 
-    QSK_STATES( Pressed )
+    QSK_STATES( Decreasing, Increasing )
 
     QskSpinBox( QQuickItem* parent = nullptr );
     ~QskSpinBox() override;
 
-#if 1
-    /*
-        -1: decrease
-         0: none
-         1: increment
-     */
-    int pressedButton() const;
-    int hoveredButton() const;
-#endif
+    void setButtons( bool );
+    bool hasButtons() const;
+
+    void setWrapping( bool );
+    bool isWrapping() const;
+
+    void setTracking( bool );
+    bool isTracking() const;
+
+    void setAccelerating( bool );
+    bool isAccelerating() const;
+
+  Q_SIGNALS:
+    void trackingChanged( bool );
+    void wrappingChanged( bool );
+    void acceleratingChanged( bool );
+    void buttonsChanged( bool );
 
   private:
-    void hoverEnterEvent( QHoverEvent* event ) override;
-    void hoverLeaveEvent( QHoverEvent* event ) override;
-    void hoverMoveEvent( QHoverEvent* event ) override;
+    void timerEvent( QTimerEvent* ) override;
 
-    void mouseReleaseEvent( QMouseEvent* event ) override;
-    void mousePressEvent( QMouseEvent* event ) override;
+    void mouseReleaseEvent( QMouseEvent* ) override;
+    void mousePressEvent( QMouseEvent* ) override;
 
-    void keyPressEvent( QKeyEvent* event ) override;
-    void keyReleaseEvent( QKeyEvent* event ) override;
+    void keyPressEvent( QKeyEvent* ) override;
+    void keyReleaseEvent( QKeyEvent* ) override;
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

@@ -53,8 +53,8 @@ void SpinBoxPage::populate()
         spinboxes << spinbox;
     }
 
-    const auto strutInc = spinboxes[ 0 ]->strutSizeHint( QskSpinBox::IncrementPanel );
-    const auto strutDec = spinboxes[ 0 ]->strutSizeHint( QskSpinBox::DecrementPanel );
+    const auto strutInc = spinboxes[ 0 ]->strutSizeHint( QskSpinBox::UpPanel );
+    const auto strutDec = spinboxes[ 0 ]->strutSizeHint( QskSpinBox::DownPanel );
 
     auto* const columnIncW = new QskLinearBox( Qt::Vertical, this );
     auto* const sliderIncW = new QskSlider( Qt::Vertical, columnIncW );
@@ -93,8 +93,8 @@ void SpinBoxPage::populate()
         const auto decSize = QSizeF{ sliderDecW->value(), sliderDecH->value() };
         for ( auto* spinbox : spinboxes )
         {
-            spinbox->setStrutSizeHint( QskSpinBox::IncrementPanel, incSize );
-            spinbox->setStrutSizeHint( QskSpinBox::DecrementPanel, decSize );
+            spinbox->setStrutSizeHint( QskSpinBox::UpPanel, incSize );
+            spinbox->setStrutSizeHint( QskSpinBox::DownPanel, decSize );
         }
     };
 

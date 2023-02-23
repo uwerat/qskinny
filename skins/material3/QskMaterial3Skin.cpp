@@ -818,39 +818,37 @@ void Editor::setupSpinBox()
     setSpacing( Q::Panel, 4_dp );
 
     setStrutSize( Q::TextPanel, 80_dp, 40_dp );
-    setStrutSize( Q::IncrementPanel, 40_dp,40_dp );
-    setStrutSize( Q::DecrementPanel, 40_dp, 40_dp );
+    setStrutSize( Q::UpPanel, 40_dp,40_dp );
+    setStrutSize( Q::DownPanel, 40_dp, 40_dp );
 
     setAlignment( Q::Panel, Qt::AlignHCenter );
     setAlignment( Q::Text, Qt::AlignCenter );
 
-    for( const auto& state : { Q::DecrementPanel, Q::IncrementPanel, Q::TextPanel } )
+    for( const auto subControl : { Q::DownPanel, Q::UpPanel, Q::TextPanel } )
     {
-        setBoxShape( state, 4_dp );
-        setBoxBorderMetrics( state, 1_dp );
+        setBoxShape( subControl, 4_dp );
+        setBoxBorderMetrics( subControl, 1_dp );
     }
 
-    for( const auto& state : { Q::DecrementPanel, Q::IncrementPanel } )
+    for( const auto subControl : { Q::DownPanel, Q::UpPanel } )
     {
-        setGradient( state, m_pal.primary );
-        setGradient( state | Q::Disabled, m_pal.onSurface12 );
+        setGradient( subControl, m_pal.primary );
+        setGradient( subControl | Q::Disabled, m_pal.onSurface12 );
+    }
 
+    {
         const auto focusColor = flattenedColor( m_pal.onPrimary, m_pal.primary, 0.12 );
-        setGradient( state | Q::Focused, focusColor );
-        setGradient( state | Q::Pressed, focusColor );
 
-        const auto hoverColor = flattenedColor( m_pal.onPrimary, m_pal.primary, 0.08 );
-        setGradient( state | Q::Hovered, hoverColor );
-        setShadowMetrics( state | Q::Hovered, m_pal.elevation1 );
-        setShadowColor( state | Q::Hovered, m_pal.shadow );
+        setGradient( Q::DownPanel | Q::Decreasing, focusColor );
+        setGradient( Q::UpPanel | Q::Increasing, focusColor );
     }
 
-    for( const auto& state : { Q::DecrementIndicator, Q::IncrementIndicator } )
+    for( const auto subControl : { Q::DownIndicator, Q::UpIndicator } )
     {
-        setColor( state, m_pal.onPrimary );
-        setColor( state | Q::Disabled, m_pal.onSurface38 );
-        setAlignment(state, Qt::AlignCenter );
-        setFontRole( state, QskMaterial3Skin::M3LabelLarge );
+        setColor( subControl, m_pal.onPrimary );
+        setColor( subControl | Q::Disabled, m_pal.onSurface38 );
+        setAlignment( subControl, Qt::AlignCenter );
+        setFontRole( subControl, QskMaterial3Skin::M3LabelLarge );
     }
 
     setColor( Q::Text, m_pal.onBackground );
@@ -863,12 +861,6 @@ void Editor::setupSpinBox()
 
     setBoxBorderMetrics( Q::TextPanel | Q::Focused, 0, 0, 0, 2_dp );
     setBoxBorderColors( Q::TextPanel | Q::Focused, m_pal.primary );
-
-//  setBoxBorderMetrics( Q::TextPanel | Q::Editing, 0, 0, 0, 2_dp );
-//  setBoxBorderColors( Q::TextPanel | Q::Editing, m_pal.primary );
-
-    setBoxBorderMetrics( Q::TextPanel | Q::Hovered, 0, 0, 0, 1_dp );
-    setBoxBorderColors( Q::TextPanel | Q::Hovered, m_pal.onSurface );
 
     setGradient( Q::TextPanel, m_pal.surfaceVariant );
 

@@ -4,77 +4,111 @@
  *****************************************************************************/
 
 #include "QskSpinBox.h"
-#include "QskIntervalF.h"
 #include "QskEvent.h"
+
+#include <qbasictimer.h>
 
 QSK_SUBCONTROL( QskSpinBox, Panel )
 
 QSK_SUBCONTROL( QskSpinBox, TextPanel )
 QSK_SUBCONTROL( QskSpinBox, Text )
 
-QSK_SUBCONTROL( QskSpinBox, IncrementPanel )
-QSK_SUBCONTROL( QskSpinBox, IncrementIndicator )
+QSK_SUBCONTROL( QskSpinBox, UpPanel )
+QSK_SUBCONTROL( QskSpinBox, UpIndicator )
 
-QSK_SUBCONTROL( QskSpinBox, DecrementPanel )
-QSK_SUBCONTROL( QskSpinBox, DecrementIndicator )
+QSK_SUBCONTROL( QskSpinBox, DownPanel )
+QSK_SUBCONTROL( QskSpinBox, DownIndicator )
 
-QSK_SYSTEM_STATE( QskSpinBox, Pressed, ( QskAspect::QskAspect::FirstSystemState << 0 ) )
+QSK_SYSTEM_STATE( QskSpinBox, Increasing, ( QskAspect::FirstSystemState << 2 ) )
+QSK_SYSTEM_STATE( QskSpinBox, Decreasing, ( QskAspect::FirstSystemState << 3 ) )
 
 namespace
 {
-    enum
+    inline QskAspect::Subcontrol buttonAt( const QskSpinBox* spinBox, const QPointF& pos )
     {
-        ButtonDecrement = -1,
-        ButtonNone      = 0,
-        ButtonIncrement = 1
-    };
+        if ( spinBox->subControlRect( QskSpinBox::UpPanel ).contains( pos ) )
+            return QskSpinBox::UpPanel;
 
-    inline int buttonAt( const QskSpinBox* spinBox, const QPointF& pos )
-    {
-        if ( spinBox->subControlRect( QskSpinBox::IncrementPanel ).contains( pos ) )
-            return ButtonIncrement;
+        if ( spinBox->subControlRect( QskSpinBox::DownPanel ).contains( pos ) )
+            return QskSpinBox::DownPanel;
 
-        if ( spinBox->subControlRect( QskSpinBox::DecrementPanel ).contains( pos ) )
-            return ButtonDecrement;
-
-        return ButtonNone;
+        return QskAspect::NoSubcontrol;
     }
 }
 
 class QskSpinBox::PrivateData
 {
   public:
-    inline void setPressed( QskSpinBox* spinBox, int button )
+    PrivateData()
+        : buttons( true )
+        , tracking( true )
+        , wrapping( false )
+        , accelerating( false )
     {
-        if ( pressedButton != button )
-        {
-            pressedButton = button;
-            spinBox->update();
-        }
     }
 
-    inline void setHovered( QskSpinBox* spinBox, int button )
+    inline void setAutoRepeat( QskSpinBox* spinBox, qreal offset )
     {
-        if ( hoveredButton != button )
+        this->autoRepeatIncrement = offset;
+        this->key = Qt::Key_unknown;
+
+        if( offset < 0.0 )
         {
-            hoveredButton = button;
-            spinBox->update();
+            if ( spinBox->hasSkinState( QskSpinBox::Increasing ) )
+                spinBox->setSkinStateFlag( QskSpinBox::Increasing, false );
+
+            if ( !spinBox->hasSkinState( QskSpinBox::Decreasing ) )
+            {
+                spinBox->setSkinStateFlag( QskSpinBox::Decreasing, true );
+                this->repeatTimer.start( autoRepeatDelay, spinBox );
+            }
+
+            return;
         }
+
+        if ( offset > 0.0 )
+        {
+            if ( spinBox->hasSkinState( QskSpinBox::Decreasing ) )
+                spinBox->setSkinStateFlag( QskSpinBox::Decreasing, false );
+
+            if ( !spinBox->hasSkinState( QskSpinBox::Increasing ) )
+            {
+                spinBox->setSkinStateFlag( QskSpinBox::Increasing, true );
+                this->repeatTimer.start( autoRepeatDelay, spinBox );
+            }
+
+            return;
+        }
+
+        spinBox->setSkinStateFlag( QskSpinBox::Decreasing, false );
+        spinBox->setSkinStateFlag( QskSpinBox::Increasing, false );
+
+        this->repeatTimer.stop();
     }
 
-    int pressedButton = ButtonNone;
-    int hoveredButton = ButtonNone;
+    int autoRepeatDelay = 300;
+    int autoRepeatInterval = 100;
 
-    // int decimals; ???
+    qreal autoRepeatIncrement = 0.0;
+
+    QBasicTimer repeatTimer;
+
+    int key = Qt::Key_unknown;
+
+    bool buttons : 1;
+    bool tracking : 1;
+    bool wrapping : 1;
+    bool accelerating : 1; // not yet implemented: TODO ...
 };
 
-QskSpinBox::QskSpinBox( QQuickItem* const parent )
+QskSpinBox::QskSpinBox( QQuickItem* parent )
     : Inherited( parent )
     , m_data( new PrivateData )
 {
+    initSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Fixed );
+
     setBoundaries( 0.0, 99.99 ); // this is what QDoubleSpinBox does
 
-    setAcceptHoverEvents( true );
     setAcceptedMouseButtons( Qt::LeftButton );
     setFocusPolicy( Qt::StrongFocus );
 }
@@ -83,29 +117,80 @@ QskSpinBox::~QskSpinBox()
 {
 }
 
-void QskSpinBox::hoverEnterEvent( QHoverEvent* )
+void QskSpinBox::setButtons( bool on )
 {
+    if ( on != m_data->buttons )
+    {
+        m_data->buttons = on;
+        Q_EMIT buttonsChanged( on );
+    }
 }
 
-void QskSpinBox::hoverLeaveEvent( QHoverEvent* )
+bool QskSpinBox::hasButtons() const
 {
-    m_data->setHovered( this, ButtonNone );
+    return m_data->buttons;
 }
 
-void QskSpinBox::hoverMoveEvent( QHoverEvent* event )
+void QskSpinBox::setTracking( bool on )
 {
-    const auto button = buttonAt( this, qskHoverPosition( event ) );
-    m_data->setHovered( this, button );
+    if ( on != m_data->tracking )
+    {
+        m_data->tracking = on;
+        Q_EMIT trackingChanged( on );
+    }
+}
+
+bool QskSpinBox::isTracking() const
+{
+    return m_data->tracking;
+}
+
+void QskSpinBox::setWrapping( bool on )
+{
+    if ( on != m_data->wrapping )
+    {
+        m_data->wrapping = on; 
+        Q_EMIT wrappingChanged( on );
+    }
+}
+
+bool QskSpinBox::isWrapping() const
+{
+    return m_data->wrapping;
+}
+
+void QskSpinBox::setAccelerating( bool on )
+{
+    if ( on != m_data->accelerating )
+    {
+        m_data->accelerating = on;
+        Q_EMIT acceleratingChanged( on );
+    }
+}
+
+bool QskSpinBox::isAccelerating() const
+{
+    return m_data->accelerating;
 }
 
 void QskSpinBox::mousePressEvent( QMouseEvent* event )
 {
-    if ( const auto button = buttonAt( this, qskMousePosition( event ) ) )
+    if ( !isReadOnly() )
     {
-        m_data->setPressed( this, button );
-        increment( stepSize() * button );
+        if ( auto subcontrol = buttonAt( this, qskMousePosition( event ) ) )
+        {
+            if ( !m_data->repeatTimer.isActive() )
+            {
+                auto increment = ( event->modifiers() == Qt::ControlModifier )
+                    ? stepSize() : pageSize();
 
-        return;
+                if ( subcontrol == QskSpinBox::DownPanel )
+                    increment = -increment;
+
+                m_data->setAutoRepeat( this, increment );
+            }
+            return;
+        }
     }
 
     Inherited::mousePressEvent( event );
@@ -113,65 +198,55 @@ void QskSpinBox::mousePressEvent( QMouseEvent* event )
 
 void QskSpinBox::mouseReleaseEvent( QMouseEvent* )
 {
-    m_data->setPressed( this, ButtonNone );
+    m_data->setAutoRepeat( this, 0.0 );
 }
 
-void QskSpinBox::keyPressEvent( QKeyEvent* const event )
+void QskSpinBox::keyPressEvent( QKeyEvent* event )
 {
-    switch ( event->key() )
+    if ( !isReadOnly() && !m_data->repeatTimer.isActive() )
     {
-        case Qt::Key_Minus:
-        case Qt::Key_Down:
-        case Qt::Key_Left:
+        const auto offset = incrementForKey( event );
+        if ( offset != 0.0 )
         {
-            increment( -stepSize() );
-            m_data->setPressed( this, ButtonDecrement );
+            if ( !m_data->repeatTimer.isActive() )
+            {
+                increment( offset );
+
+                m_data->setAutoRepeat( this, offset );
+                m_data->key = event->key();
+            }
             return;
         }
-
-        case Qt::Key_Plus:
-        case Qt::Key_Up:
-        case Qt::Key_Right:
-        {
-            increment( +stepSize() );
-            m_data->setPressed( this, ButtonIncrement );
-            return;
-        }
-
-#if 1
-        case Qt::Key_Select:
-        case Qt::Key_Space:
-
-            /*
-                All keys to navigate along the focus tab chain are not valid
-                for a spin box, as it accepts number inputs only. Guess this is why
-                QSpinBox goes straight into edit mode when receiving the focus
-
-                So once setting values by keyboard is implemented we have to decide
-                how to do it here. TODO ...
-             */
-            return;
-#endif
-
-        default:
-            break;
     }
 
     Inherited::keyPressEvent( event );
 }
 
-void QskSpinBox::keyReleaseEvent( QKeyEvent* const event )
+void QskSpinBox::keyReleaseEvent( QKeyEvent* event )
 {
-    m_data->setPressed( this, ButtonNone );
+    if ( m_data->key == event->key() )
+    {
+        m_data->setAutoRepeat( this, 0.0 );
+        return;
+    }
+
     Inherited::keyReleaseEvent( event );
 }
 
-int QskSpinBox::pressedButton() const
+void QskSpinBox::timerEvent( QTimerEvent* event )
 {
-    return m_data->pressedButton;
+    if ( event->timerId() == m_data->repeatTimer.timerId() )
+    {
+        if ( skinStates() & ( QskSpinBox::Increasing | QskSpinBox::Decreasing ) )
+        {
+            increment( m_data->autoRepeatIncrement );
+            m_data->repeatTimer.start( m_data->autoRepeatInterval, this );
+        }
+
+        return;
+    }
+
+    Inherited::timerEvent( event );
 }
 
-int QskSpinBox::hoveredButton() const
-{
-    return m_data->hoveredButton;
-}
+#include "moc_QskSpinBox.cpp"

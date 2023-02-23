@@ -8,70 +8,10 @@
 
 #include <array>
 
-namespace
-{
-    inline QPointF cursorPosSkinHint( const QskSpinBox& spinbox )
-    {
-        const auto aspect = QskSpinBox::Panel | QskAspect::Metric | QskAspect::Position;
-        return spinbox.effectiveSkinHint( aspect ).toPointF();
-    }
-
-    enum
-    {
-        Dec = 0,
-        Txt = 1,
-        Inc = 2,
-        Count
-    };
-}
-
 QskSpinBoxSkinlet::QskSpinBoxSkinlet( QskSkin* )
 {
-    setNodeRoles( { IncrementPanel, DecrementPanel, TextPanel,
-        IncrementIndicator, DecrementIndicator, Text } );
-}
-
-int QskSpinBoxSkinlet::sampleCount(
-    const QskSkinnable*, QskAspect::Subcontrol ) const
-{
-    return 1;
-}
-
-QRectF QskSpinBoxSkinlet::sampleRect( const QskSkinnable* skinnable, const QRectF& rect,
-    QskAspect::Subcontrol subControl, int index ) const
-{
-    if ( index == Dec || index == Inc || index == Txt )
-    {
-        return subControlRect( skinnable, rect, subControl );
-    }
-
-    return Inherited::sampleRect( skinnable, rect, subControl, index );
-}
-
-QskAspect::States QskSpinBoxSkinlet::sampleStates(
-    const QskSkinnable* const skinnable, QskAspect::Subcontrol subControl, int index ) const
-{
-    using S = QskSpinBox;
-
-    auto states = Inherited::sampleStates( skinnable, subControl, index );
-
-    if ( subControl == S::DecrementPanel || subControl == S::IncrementPanel ||
-         subControl == S::TextPanel )
-    {
-        const auto* const spinbox = static_cast< const S* >( skinnable );
-        const auto cursorPos = cursorPosSkinHint( *spinbox );
-        const QPointF cursorPosAbs{ qAbs( cursorPos.x() ), qAbs( cursorPos.y() ) };
-        const auto subControlRect = spinbox->subControlRect( subControl );
-
-        const auto contain = !cursorPosAbs.isNull() && subControlRect.contains( cursorPosAbs );
-        const auto pressed = contain && ( cursorPos.x() < 0 || cursorPos.y() < 0 );
-        const auto hovered = contain && !pressed;
-
-        states.setFlag( QskControl::Hovered, hovered );
-        states.setFlag( QskSpinBox::Pressed, pressed );
-    }
-
-    return states;
+    setNodeRoles( { UpPanel, DownPanel, TextPanel,
+        UpIndicator, DownIndicator, Text } );
 }
 
 QSizeF QskSpinBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
@@ -80,16 +20,16 @@ QSizeF QskSpinBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
-    using S = QskSpinBox;
+    using Q = QskSpinBox;
 
     const auto spinbox = static_cast< const QskSpinBox* >( skinnable );
 
-    const auto layout = spinbox->alignmentHint( S::Panel );
-    const auto spacing = spinbox->spacingHint( S::Panel );
+    const auto layout = spinbox->alignmentHint( Q::Panel );
+    const auto spacing = spinbox->spacingHint( Q::Panel );
 
-    const auto strutInc = spinbox->strutSizeHint( S::IncrementPanel );
-    const auto strutDec = spinbox->strutSizeHint( S::DecrementPanel );
-    const auto strutTxt = spinbox->strutSizeHint( S::TextPanel );
+    const auto strutInc = spinbox->strutSizeHint( Q::UpPanel );
+    const auto strutDec = spinbox->strutSizeHint( Q::DownPanel );
+    const auto strutTxt = spinbox->strutSizeHint( Q::TextPanel );
 
     if ( layout == Qt::AlignTop || layout == Qt::AlignBottom || layout == Qt::AlignVCenter )
     {
@@ -118,7 +58,7 @@ QSizeF QskSpinBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
     }
 
     if ( layout == ( Qt::AlignTop | Qt::AlignHCenter ) ||
-         layout == ( Qt::AlignTop | Qt::AlignHCenter ) )
+         layout == ( Qt::AlignBottom | Qt::AlignHCenter ) )
     {
         const auto w = qMax( strutTxt.width(), strutInc.width() + strutDec.width() );
         const auto h = strutTxt.height() + qMax( strutInc.height(), strutDec.height() );
@@ -134,11 +74,11 @@ QRectF QskSpinBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
 {
     using Q = QskSpinBox;
 
-    if ( subControl == Q::DecrementIndicator )
-        return skinnable->subControlContentsRect( contentsRect, Q::DecrementPanel );
+    if ( subControl == Q::DownIndicator )
+        return skinnable->subControlContentsRect( contentsRect, Q::DownPanel );
 
-    if ( subControl == Q::IncrementIndicator )
-        return skinnable->subControlContentsRect( contentsRect, Q::IncrementPanel );
+    if ( subControl == Q::UpIndicator )
+        return skinnable->subControlContentsRect( contentsRect, Q::UpPanel );
 
     if ( subControl == Q::Text )
         return skinnable->subControlContentsRect( contentsRect, Q::TextPanel );
@@ -148,10 +88,18 @@ QRectF QskSpinBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
     const auto layout = spinbox->alignmentHint( Q::Panel );
     const auto spacing = spinbox->spacingHint( Q::Panel );
 
+    enum
+    {
+        Dec = 0,
+        Txt = 1,
+        Inc = 2,
+        Count
+    };
+
     std::array< QRectF, Count > rects = {
-        QRectF{ QPointF(), spinbox->strutSizeHint( Q::DecrementPanel ) },
+        QRectF{ QPointF(), spinbox->strutSizeHint( Q::DownPanel ) },
         QRectF{ QPointF(), spinbox->strutSizeHint( Q::TextPanel ) },
-        QRectF{ QPointF(), spinbox->strutSizeHint( Q::IncrementPanel ) },
+        QRectF{ QPointF(), spinbox->strutSizeHint( Q::UpPanel ) },
     };
 
     const auto center = contentsRect.center();
@@ -238,13 +186,13 @@ QRectF QskSpinBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
             { center.x() + spacing * 0.5, rects[ Txt ].top() - spacing - rects[ Inc ].height() } );
     }
 
-    if ( subControl == Q::DecrementPanel )
+    if ( subControl == Q::DownPanel )
         return rects[ Dec ];
 
     if ( subControl == Q::TextPanel )
         return rects[ Txt ];
 
-    if ( subControl == Q::IncrementPanel )
+    if ( subControl == Q::UpPanel )
         return rects[ Inc ];
 
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
@@ -257,26 +205,26 @@ QSGNode* QskSpinBoxSkinlet::updateSubNode(
 
     switch( nodeRole )
     {
-        case IncrementPanel:
-            return updateSeriesNode( skinnable, Q::IncrementPanel, node );
+        case UpPanel:
+            return updateBoxNode( skinnable, node, Q::UpPanel );
 
-        case DecrementPanel:
-            return updateSeriesNode( skinnable, Q::DecrementPanel, node );
+        case DownPanel:
+            return updateBoxNode( skinnable, node, Q::DownPanel );
 
-        case IncrementIndicator:
+        case UpIndicator:
         {
             return updateTextNode( skinnable, node,
-                QStringLiteral( "+" ), Q::IncrementIndicator );
+                QStringLiteral( "+" ), Q::UpIndicator );
         }
 
-        case DecrementIndicator:
+        case DownIndicator:
         {
             return updateTextNode( skinnable, node,
-                QStringLiteral( "-" ), Q::DecrementIndicator );
+                QStringLiteral( "-" ), Q::DownIndicator );
         }
 
         case TextPanel:
-            return updateSeriesNode( skinnable, Q::TextPanel, node );
+            return updateBoxNode( skinnable, node, Q::TextPanel );
 
         case Text:
         {
@@ -288,20 +236,4 @@ QSGNode* QskSpinBoxSkinlet::updateSubNode(
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
-}
-
-QSGNode* QskSpinBoxSkinlet::updateSampleNode( const QskSkinnable* skinnable,
-    QskAspect::Subcontrol subControl, const int index, QSGNode* const node ) const
-{
-    using Q = QskSpinBox;
-    const auto* const spinbox = static_cast< const QskSpinBox* >( skinnable );
-
-    if ( subControl == Q::DecrementPanel || subControl == Q::IncrementPanel ||
-         subControl == Q::TextPanel )
-    {
-        const auto rect = sampleRect( spinbox, spinbox->contentsRect(), subControl, index );
-        return updateBoxNode( skinnable, node, rect, subControl );
-    }
-
-    return Inherited::updateSampleNode( skinnable, subControl, index, node );
 }
