@@ -670,6 +670,7 @@ void Editor::setupPushButton()
 
     setColor( Q::Text, m_pal.onPrimary );
     setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
+    setGraphicRole( Q::Graphic | Q::Disabled, QskMaterial3Skin::GraphicRoleOnSurface38 );
 
     setTextOptions( Q::Text, Qt::ElideMiddle, QskTextOptions::NoWrap );
 
@@ -1337,34 +1338,42 @@ void QskMaterial3Skin::setupFonts()
 void QskMaterial3Skin::setupGraphicFilters( const QskMaterial3Theme& palette )
 {
     QskColorFilter onPrimaryFilter;
+    onPrimaryFilter.setSubstituteAlphaValue( true );
     onPrimaryFilter.addColorSubstitution( Qt::white, palette.onPrimary );
     setGraphicFilter( GraphicRoleOnPrimary, onPrimaryFilter );
 
     QskColorFilter onSecondaryContainerFilter;
+    onSecondaryContainerFilter.setSubstituteAlphaValue( true );
     onSecondaryContainerFilter.addColorSubstitution( Qt::white, palette.onSecondaryContainer );
     setGraphicFilter( GraphicRoleOnSecondaryContainer, onSecondaryContainerFilter );
 
     QskColorFilter onErrorFilter;
+    onErrorFilter.setSubstituteAlphaValue( true );
     onErrorFilter.addColorSubstitution( Qt::white, palette.onError );
     setGraphicFilter( GraphicRoleOnError, onErrorFilter );
 
     QskColorFilter onSurfaceFilter;
+    onSurfaceFilter.setSubstituteAlphaValue( true );
     onSurfaceFilter.addColorSubstitution( Qt::white, palette.onSurface );
     setGraphicFilter( GraphicRoleOnSurface, onSurfaceFilter );
 
     QskColorFilter onSurfaceFilter38;
+    onSurfaceFilter38.setSubstituteAlphaValue( true );
     onSurfaceFilter38.addColorSubstitution( Qt::white, palette.onSurface38 );
     setGraphicFilter( GraphicRoleOnSurface38, onSurfaceFilter38 );
 
     QskColorFilter onSurfaceVariantFilter;
+    onSurfaceVariantFilter.setSubstituteAlphaValue( true );
     onSurfaceVariantFilter.addColorSubstitution( Qt::white, palette.onSurfaceVariant );
     setGraphicFilter( GraphicRoleOnSurfaceVariant, onSurfaceVariantFilter );
 
     QskColorFilter primaryFilter;
+    primaryFilter.setSubstituteAlphaValue( true );
     primaryFilter.addColorSubstitution( Qt::white, palette.primary );
     setGraphicFilter( GraphicRolePrimary, primaryFilter );
 
     QskColorFilter surfaceFilter;
+    surfaceFilter.setSubstituteAlphaValue( true );
     surfaceFilter.addColorSubstitution( Qt::white, palette.surface );
     setGraphicFilter( GraphicRoleSurface, surfaceFilter );
 }

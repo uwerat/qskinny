@@ -11,19 +11,21 @@
 #include <qvariant.h>
 
 static inline QRgb qskSubstitutedRgb(
-    const QVector< QPair< QRgb, QRgb > >& substitions, QRgb rgba )
+    const QVector< QPair< QRgb, QRgb > >& substitions, QRgb rgba, bool substituteAlpha )
 {
     // usually we have 2-3 substitutions, so we can simply iterate
     // and don't need to introduce some sort of sorting or search index
 
-    const QRgb rgb = rgba | QskRgb::AlphaMask;
+    const QRgb rgb = substituteAlpha ? rgba : ( rgba | QskRgb::AlphaMask );
 
     for ( const auto& s : substitions )
     {
         if ( rgb == s.first )
         {
-            return ( s.second & QskRgb::ColorMask ) |
-                ( rgba & QskRgb::AlphaMask );
+            const auto ret = substituteAlpha ? s.second
+                                             : ( s.second & QskRgb::ColorMask )
+                                               | ( rgba & QskRgb::AlphaMask );
+            return ret;
         }
     }
 
@@ -31,13 +33,13 @@ static inline QRgb qskSubstitutedRgb(
 }
 
 static inline QColor qskSubstitutedColor(
-    const QVector< QPair< QRgb, QRgb > >& substitions, const QColor& color )
+    const QVector< QPair< QRgb, QRgb > >& substitions, const QColor& color, bool substituteAlpha )
 {
-    return QColor::fromRgba( qskSubstitutedRgb( substitions, color.rgba() ) );
+    return QColor::fromRgba( qskSubstitutedRgb( substitions, color.rgba(), substituteAlpha ) );
 }
 
 static inline QBrush qskSubstitutedBrush(
-    const QVector< QPair< QRgb, QRgb > >& substitions, const QBrush& brush )
+    const QVector< QPair< QRgb, QRgb > >& substitions, const QBrush& brush, bool substituteAlpha )
 {
     QBrush newBrush;
 
@@ -48,7 +50,7 @@ static inline QBrush qskSubstitutedBrush(
         auto stops = gradient->stops();
         for ( auto& stop : stops )
         {
-            const QColor c = qskSubstitutedColor( substitions, stop.second );
+            const QColor c = qskSubstitutedColor( substitions, stop.second, substituteAlpha );
             if ( c != stop.second )
             {
                 stop.second = c;
@@ -66,7 +68,7 @@ static inline QBrush qskSubstitutedBrush(
     }
     else
     {
-        const QColor c = qskSubstitutedColor( substitions, brush.color() );
+        const QColor c = qskSubstitutedColor( substitions, brush.color(), substituteAlpha );
         if ( c != brush.color() )
         {
             newBrush = brush;
@@ -166,7 +168,7 @@ QPen QskColorFilter::substituted( const QPen& pen ) const
     if ( m_substitutions.isEmpty() || pen.style() == Qt::NoPen )
         return pen;
 
-    const auto newBrush = qskSubstitutedBrush( m_substitutions, pen.brush() );
+    const auto newBrush = qskSubstitutedBrush( m_substitutions, pen.brush(), m_substituteAlphaValue );
     if ( newBrush.style() == Qt::NoBrush )
         return pen;
 
@@ -180,18 +182,28 @@ QBrush QskColorFilter::substituted( const QBrush& brush ) const
     if ( m_substitutions.isEmpty() || brush.style() == Qt::NoBrush )
         return brush;
 
-    const auto newBrush = qskSubstitutedBrush( m_substitutions, brush );
+    const auto newBrush = qskSubstitutedBrush( m_substitutions, brush, m_substituteAlphaValue );
     return ( newBrush.style() != Qt::NoBrush ) ? newBrush : brush;
 }
 
 QColor QskColorFilter::substituted( const QColor& color ) const
 {
-    return qskSubstitutedColor( m_substitutions, color );
+    return qskSubstitutedColor( m_substitutions, color, m_substituteAlphaValue );
 }
 
 QRgb QskColorFilter::substituted( const QRgb& rgb ) const
 {
-    return qskSubstitutedRgb( m_substitutions, rgb );
+    return qskSubstitutedRgb( m_substitutions, rgb, m_substituteAlphaValue );
+}
+
+bool QskColorFilter::substituteAlphaValue() const noexcept
+{
+    return m_substituteAlphaValue;
+}
+
+void QskColorFilter::setSubstituteAlphaValue( bool on )
+{
+    m_substituteAlphaValue = on;
 }
 
 QskColorFilter QskColorFilter::interpolated(

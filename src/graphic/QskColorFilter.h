@@ -37,6 +37,9 @@ class QSK_EXPORT QskColorFilter
 
     bool isIdentity() const noexcept;
 
+    bool substituteAlphaValue() const noexcept;
+    void setSubstituteAlphaValue( bool );
+
     bool operator==( const QskColorFilter& other ) const noexcept;
     bool operator!=( const QskColorFilter& other ) const noexcept;
 
@@ -51,6 +54,7 @@ class QSK_EXPORT QskColorFilter
 
   private:
     QVector< QPair< QRgb, QRgb > > m_substitutions;
+    bool m_substituteAlphaValue = false;
 };
 
 inline bool QskColorFilter::isIdentity() const noexcept
