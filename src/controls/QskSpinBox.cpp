@@ -7,6 +7,9 @@
 #include "QskEvent.h"
 
 #include <qbasictimer.h>
+#include <qlocale.h>
+
+#include <cfloat>
 
 QSK_SUBCONTROL( QskSpinBox, Panel )
 
@@ -86,6 +89,8 @@ class QskSpinBox::PrivateData
         this->repeatTimer.stop();
     }
 
+    int decimals = 2;
+
     int autoRepeatDelay = 300;
     int autoRepeatInterval = 100;
 
@@ -111,6 +116,8 @@ QskSpinBox::QskSpinBox( QQuickItem* parent )
 
     setAcceptedMouseButtons( Qt::LeftButton );
     setFocusPolicy( Qt::StrongFocus );
+
+    connect( this, &QskSpinBox::valueChanged, this, &QskSpinBox::textChanged );
 }
 
 QskSpinBox::~QskSpinBox()
@@ -171,6 +178,33 @@ void QskSpinBox::setAccelerating( bool on )
 bool QskSpinBox::isAccelerating() const
 {
     return m_data->accelerating;
+}
+
+void QskSpinBox::setDecimals( int decimals )
+{
+    decimals = qBound( 0, decimals, DBL_MAX_10_EXP + DBL_DIG );
+    if ( decimals != m_data->decimals )
+    {
+        m_data->decimals = decimals;
+
+        update();
+        resetImplicitSize();
+    }
+}
+
+int QskSpinBox::decimals() const
+{
+    return m_data->decimals;
+}
+
+QString QskSpinBox::text() const
+{
+    return textFromValue( value() );
+}
+
+QString QskSpinBox::textFromValue( qreal value ) const
+{
+    return locale().toString( value, 'f', m_data->decimals );
 }
 
 void QskSpinBox::mousePressEvent( QMouseEvent* event )

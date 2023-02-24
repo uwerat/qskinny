@@ -25,6 +25,11 @@ class QSK_EXPORT QskSpinBox : public QskBoundedValueInput
     Q_PROPERTY( bool buttons READ hasButtons
         WRITE setButtons NOTIFY buttonsChanged )
 
+    Q_PROPERTY( int decimals READ decimals
+        WRITE setDecimals NOTIFY decimalsChanged )
+
+    Q_PROPERTY( QString text READ text NOTIFY textChanged )
+
   public:
     QSK_SUBCONTROLS( Panel, TextPanel, Text,
         UpPanel, UpIndicator, DownPanel, DownIndicator )
@@ -46,11 +51,23 @@ class QSK_EXPORT QskSpinBox : public QskBoundedValueInput
     void setAccelerating( bool );
     bool isAccelerating() const;
 
+    void setDecimals( int );
+    int decimals() const;
+
+    QString text() const;
+
   Q_SIGNALS:
+    void buttonsChanged( bool );
+
     void trackingChanged( bool );
     void wrappingChanged( bool );
     void acceleratingChanged( bool );
-    void buttonsChanged( bool );
+
+    void decimalsChanged( int );
+    void textChanged();
+
+  protected:
+    virtual QString textFromValue( qreal ) const;
 
   private:
     void timerEvent( QTimerEvent* ) override;

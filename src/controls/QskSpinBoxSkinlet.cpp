@@ -229,9 +229,7 @@ QSGNode* QskSpinBoxSkinlet::updateSubNode(
         case Text:
         {
             const auto* const spinbox = static_cast< const QskSpinBox* >( skinnable );
-
-            return updateTextNode( skinnable, node,
-                QString::number( spinbox->value() ), Q::Text );
+            return updateTextNode( skinnable, node, spinbox->text(), Q::Text );
         }
     }
 
