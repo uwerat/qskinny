@@ -410,32 +410,33 @@ void Editor::setupTextInput()
 {
     using Q = QskTextInput;
 
-    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignTop );
-
-    setColor( Q::Text, m_pal.onBackground );
-
-    setPadding( Q::Panel, 5_dp );
-    setBoxShape( Q::Panel, 4_dp, 4_dp, 0, 0 );
-    setBoxBorderMetrics( Q::Panel, 0, 0, 0, 1_dp );
-    setBoxBorderColors( Q::Panel, m_pal.onSurface );
-
-    setBoxBorderMetrics( Q::Panel | Q::Focused, 0, 0, 0, 2_dp );
-    setBoxBorderColors( Q::Panel | Q::Focused, m_pal.primary );
-
-    setBoxBorderMetrics( Q::Panel | Q::Editing, 0, 0, 0, 2_dp );
-    setBoxBorderColors( Q::Panel | Q::Editing, m_pal.primary );
-
-    setBoxBorderMetrics( Q::Panel | Q::Hovered, 0, 0, 0, 1_dp );
-    setBoxBorderColors( Q::Panel | Q::Hovered, m_pal.onSurface );
-
+    setStrutSize( Q::Panel,  -1.0, 56_dp );
+    setPadding( Q::Panel, { 12_dp, 8_dp, 12_dp, 8_dp } );
     setGradient( Q::Panel, m_pal.surfaceVariant );
+    setBoxShape( Q::Panel, m_pal.shapeExtraSmallTop );
+    setBoxBorderMetrics( Q::Panel, { 0, 0, 0, 1_dp } );
+    setBoxBorderColors( Q::Panel, m_pal.onSurfaceVariant );
+    setSpacing( Q::Panel, 8_dp );
 
-    const auto c1 = QskRgb::toTransparentF( m_pal.onSurface, 0.04 );
-    setGradient( Q::Panel | Q::Disabled, c1 );
-    setBoxBorderMetrics( Q::Panel | Q::Disabled, 0, 0, 0, 1_dp );
+    const auto hoverColor = flattenedColor( m_pal.onSurfaceVariant,
+        m_pal.surfaceVariant, m_pal.hoverOpacity );
+    setGradient( Q::Panel | Q::Hovered, hoverColor );
+
+    const auto focusColor = flattenedColor( m_pal.onSurfaceVariant,
+        m_pal.surfaceVariant, m_pal.focusOpacity );
+    setGradient( Q::Panel | Q::Focused, focusColor );
+
+    // ### Also add a pressed state
+
+    setColor( Q::Text, m_pal.onSurface );
+    setFontRole( Q::Text, QskMaterial3Skin::M3BodyMedium );
+    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
+
+    const auto disabledPanelColor = QskRgb::toTransparentF( m_pal.onSurface, 0.04 );
+    setGradient( Q::Panel | Q::Disabled, disabledPanelColor );
+    setBoxBorderColors( Q::Panel | Q::Disabled, m_pal.onSurface38 );
 
     setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
-    setBoxBorderColors( Q::Panel | Q::Disabled, m_pal.onSurface38 );
 }
 
 void Editor::setupProgressBar()
