@@ -17,7 +17,7 @@ namespace
     {
       public:
         ButtonBox( QQuickItem* parent = nullptr )
-            : QskLinearBox( Qt::Horizontal, 4, parent )
+            : QskLinearBox( Qt::Horizontal, 3, parent )
         {
             setSpacing( 20 );
             setExtraSpacingAt( Qt::BottomEdge );
@@ -29,90 +29,85 @@ namespace
       private:
         void populate()
         {
-            const char* texts[] = { "Press Me", "Check Me" };
+            auto* filledButton1 = new QskPushButton( this );
+            filledButton1->setGraphicSource( "airport_shuttle" );
+            filledButton1->setText( "normal" );
 
-            for ( int i = 0; i < 6; i++ )
-            {
-                const int index = i % 2;
+            auto* filledButton2 = new QskPushButton( this );
+            filledButton2->setText( "normal" );
 
-                auto button = new QskPushButton( this );
-                button->setCheckable( index != 0 );
-                //button->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
+            auto* filledButton3 = new QskPushButton( this );
+            filledButton3->setGraphicSource( "airport_shuttle" );
 
-                if ( i > 1 )
-                {
-                    auto src = QStringLiteral( "plus" );
-                    button->setGraphicSource( src );
-                }
 
-                if ( i < 2 || i > 3 )
-                {
-                    button->setText( texts[ index ] );
-                }
-            }
+            auto* checkableButton1 = new QskPushButton( this );
+            checkableButton1->setGraphicSource( "airport_shuttle" );
+            checkableButton1->setText( "checkable" );
+            checkableButton1->setCheckable( true );
 
-            addSpacer( 0 );
-            addSpacer( 0 );
+            auto* checkableButton2 = new QskPushButton( this );
+            checkableButton2->setText( "checkable" );
+            checkableButton2->setCheckable( true );
+
+            auto* checkableButton3 = new QskPushButton( this );
+            checkableButton3->setGraphicSource( "airport_shuttle" );
+            checkableButton3->setCheckable( true );
+
 
             auto* outlinedButton1 = new QskPushButton( this );
             outlinedButton1->setEmphasis( QskPushButton::LowEmphasis );
-            outlinedButton1->setGraphicSource( "plus" );
-            outlinedButton1->setText( "Outlined" );
+            outlinedButton1->setGraphicSource( "flight" );
+            outlinedButton1->setText( "low emphasis" );
 
             auto* outlinedButton2 = new QskPushButton( this );
             outlinedButton2->setEmphasis( QskPushButton::LowEmphasis );
-            outlinedButton2->setText( "Outlined" );
+            outlinedButton2->setText( "low emphasis" );
 
             auto* outlinedButton3 = new QskPushButton( this );
             outlinedButton3->setEmphasis( QskPushButton::LowEmphasis );
-            outlinedButton3->setGraphicSource( "plus" );
+            outlinedButton3->setGraphicSource( "flight" );
 
-            addSpacer( 0 );
 
             auto* textButton1 = new QskPushButton( this );
             textButton1->setEmphasis( QskPushButton::VeryLowEmphasis );
-            textButton1->setGraphicSource( "plus" );
-            textButton1->setText( "Text" );
+            textButton1->setGraphicSource( "local_pizza" );
+            textButton1->setText( "very low emphasis" );
 
             auto* textButton2 = new QskPushButton( this );
             textButton2->setEmphasis( QskPushButton::VeryLowEmphasis );
-            textButton2->setText( "Text" );
+            textButton2->setText( "very low emphasis" );
 
             auto* textButton3 = new QskPushButton( this );
             textButton3->setEmphasis( QskPushButton::VeryLowEmphasis );
-            textButton3->setGraphicSource( "plus" );
+            textButton3->setGraphicSource( "local_pizza" );
 
-            addSpacer( 0 );
 
             auto* elevatedButton1 = new QskPushButton( this );
             elevatedButton1->setEmphasis( QskPushButton::HighEmphasis );
             elevatedButton1->setGraphicSource( "plus" );
-            elevatedButton1->setText( "Elevated" );
+            elevatedButton1->setText( "high emphasis" );
 
             auto* elevatedButton2 = new QskPushButton( this );
             elevatedButton2->setEmphasis( QskPushButton::HighEmphasis );
-            elevatedButton2->setText( "Elevated" );
+            elevatedButton2->setText( "high emphasis" );
 
             auto* elevatedButton3 = new QskPushButton( this );
             elevatedButton3->setEmphasis( QskPushButton::HighEmphasis );
             elevatedButton3->setGraphicSource( "plus" );
 
-            addSpacer( 0 );
 
             auto* tonalButton1 = new QskPushButton( this );
             tonalButton1->setEmphasis( QskPushButton::VeryHighEmphasis );
-            tonalButton1->setGraphicSource( "plus" );
-            tonalButton1->setText( "Tonal" );
+            tonalButton1->setGraphicSource( "sports_soccer" );
+            tonalButton1->setText( "very high emphasis" );
 
             auto* tonalButton2 = new QskPushButton( this );
             tonalButton2->setEmphasis( QskPushButton::VeryHighEmphasis );
-            tonalButton2->setText( "Tonal" );
+            tonalButton2->setText( "very high emphasis" );
 
             auto* tonalButton3 = new QskPushButton( this );
             tonalButton3->setEmphasis( QskPushButton::VeryHighEmphasis );
-            tonalButton3->setGraphicSource( "plus" );
-
-            addSpacer( 0 );
+            tonalButton3->setGraphicSource( "sports_soccer" );
         }
     };
 
