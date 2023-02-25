@@ -158,6 +158,12 @@ QRectF QskRadioBoxSkinlet::buttonRect( const QskRadioBox* radio,
 
 QRectF QskRadioBoxSkinlet::textRect( const QskRadioBox* radio,
 				     const QRectF& rect, int index ) const {
+    auto text = radio->items()[index];
+
+    if(text.isEmpty()) {
+	return QRectF();
+    }
+
     QRectF result = rect;
     auto spacing = radio->spacingHint(Q::Panel);
     auto lh = lineHeight( radio );

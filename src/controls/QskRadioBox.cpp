@@ -69,6 +69,10 @@ QRectF QskRadioBox::focusIndicatorRect() const {
 	auto buttonRect = effectiveSkinlet()->sampleRect( this,
 	       contentsRect(), QskRadioBox::Button, m_data->focusedIndex );
 
+	if( textRect == QRectF() ) {
+	    return buttonRect;
+	}
+	
 	auto result = QRectF(
 	   qMin( textRect.x(), buttonRect.x() ),
            qMin( textRect.y(), buttonRect.y() ),
