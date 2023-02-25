@@ -9,8 +9,6 @@
 #include "QskGraphic.h"
 #include "QskFunctions.h"
 #include "QskSkin.h"
-#include <qnamespace.h>
-#include <type_traits>
 
 namespace {
     using Q = QskRadioBox;

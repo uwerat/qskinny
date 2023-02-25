@@ -54,7 +54,6 @@
 
 #include <QGuiApplication>
 #include <QScreen>
-#include <qnamespace.h>
 
 static const int qskDuration = 150;
 
