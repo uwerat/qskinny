@@ -9,6 +9,7 @@
 #include "QskGraphic.h"
 #include "QskFunctions.h"
 #include "QskSkin.h"
+#include <qnamespace.h>
 #include <type_traits>
 
 namespace {
@@ -48,36 +49,36 @@ QRectF QskRadioBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
     auto radio = static_cast<const QskRadioBox*>( skinnable );
 
     if( subcontrol == Q::Ripple ) {
-	return buttonRect(radio, Q::Ripple, contentsRect, radio->positionHint(Q::Ripple));
+	return rippleRect(radio, contentsRect);	
     } 
 
     return contentsRect;
 }
 
 QSizeF QskRadioBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
-    Qt::SizeHint, const QSizeF& ) const
+				     Qt::SizeHint, const QSizeF& ) const
 {
     auto radio = static_cast<const QskRadioBox*>( skinnable );
 
-    const auto font = skinnable->effectiveFont( Q::Text );
+    const auto font	= skinnable->effectiveFont( Q::Text );
     const auto textMargins = skinnable->marginHint( Q::Text );
     const auto buttonMargins = skinnable->marginHint( Q::Button );
     const auto symbolMargins = skinnable->marginHint( Q::Symbol );
-    
+			 
     qreal maxTextWidth = 0;
     for(auto& item : radio->items() ) {
 	maxTextWidth = std::max( maxTextWidth, qskHorizontalAdvance( font, item ) );
     }
 
-    auto radioWidth = radio->strutSizeHint(Q::Button).width();
+    auto buttonWidth = radio->strutSizeHint(Q::Button).width();
     auto symbolWidth = radio->strutSizeHint(Q::Symbol).width();
 
     maxTextWidth += textMargins.left() + textMargins.right();
-    radioWidth += buttonMargins.left() + buttonMargins.right();
+    buttonWidth += buttonMargins.left() + buttonMargins.right();
     symbolWidth += symbolMargins.left() + symbolMargins.right();
 
     auto spacing = radio->spacingHint(Q::Panel);
-    return QSizeF( maxTextWidth + qMax(radioWidth, symbolWidth),
+    return QSizeF( maxTextWidth + qMax(buttonWidth, symbolWidth),
 		   ( lineHeight( radio ) + spacing ) * radio->items().size()
 		   - spacing );
 }   
@@ -123,11 +124,38 @@ qreal QskRadioBoxSkinlet::lineHeight(const QskRadioBox* target) const {
     return qMax( strutHight, fontHeight );    
 }
 
-
 int QskRadioBoxSkinlet::sampleCount( const QskSkinnable* skinnable,
 					 QskAspect::Subcontrol ) const {
     const auto radio = static_cast< const QskRadioBox* >( skinnable );
     return radio->items().count();
+}
+
+QSizeF QskRadioBoxSkinlet::buttonSymbolSize( const QskRadioBox* radio ) const {
+    auto buttonStrut = radio->strutSizeHint( Q::Button );
+    auto symbolStrut = radio->strutSizeHint( Q::Symbol );
+
+    buttonStrut = buttonStrut.grownBy( radio->marginHint( Q::Button ) );
+    symbolStrut = symbolStrut.grownBy( radio->marginHint( Q::Symbol ) );
+
+    return QSizeF(
+        qMax( buttonStrut.width(), symbolStrut.width() ),
+        qMax( buttonStrut.height(), symbolStrut.height() ) );
+}
+
+QRectF QskRadioBoxSkinlet::rippleRect( const QskRadioBox* radio,
+				       const QRectF& rect ) const {
+    auto ripplePosition = radio->positionHint( Q::Ripple );
+
+    if( ripplePosition < 0 ) {
+	return QRectF();
+    }
+    
+    auto button = buttonRect( radio, Q::Button, rect, ripplePosition );
+    auto rippleSize = radio->strutSizeHint( Q::Ripple );
+    button.moveLeft( button.x() - ( rippleSize.width() - button.width() ) / 2 );
+    button.moveTop( button.y() - ( rippleSize.height() - button.height() ) / 2 );
+    button.setSize( rippleSize );
+    return button;
 }
 
 QRectF QskRadioBoxSkinlet::buttonRect( const QskRadioBox* radio,
@@ -138,19 +166,38 @@ QRectF QskRadioBoxSkinlet::buttonRect( const QskRadioBox* radio,
     }
 
     auto result = rect;
-    result.setSize( radio->strutSizeHint( target ) );
+    result.setSize( radio->strutSizeHint( target ));
 
     auto spacing = radio->spacingHint(Q::Panel);
-    result.moveTop( ( lineHeight( radio ) + spacing ) * index
-		    + (lineHeight(radio) - result.size().height()) / 2);
+    result.moveTop( ( lineHeight( radio ) + spacing ) * index );
 
-    auto maxWidth = qMax(radio->strutSizeHint( Q::Button ).width(),
-			 radio->strutSizeHint( Q::Symbol ).width());
-    
+    auto margins = radio->marginHint( target );
+    auto withMargins = result.size().grownBy( margins );
+
+    auto maxSize = buttonSymbolSize( radio );
+    auto alignment = radio->alignmentHint( target );
+
+    // Vertical positioning
+    auto alignHeight = maxSize.height() - withMargins.height();
+    if( alignment.testFlag( Qt::AlignVCenter )) {
+	result.moveTop( result.top() + alignHeight / 2);
+    } else if( alignment.testFlag( Qt::AlignBottom ) ) {
+	result.moveTop( result.top() + alignHeight );
+    }
+    result.moveTop( result.top() + margins.top());
+
+    // Horizontal positioning
+    auto alignWidth = 0;
+    if( alignment.testFlag( Qt::AlignHCenter ) ) {
+	alignWidth = (maxSize.width() - withMargins.width()) / 2;
+    } else if ( alignment.testFlag( Qt::AlignRight )) {
+	alignWidth = maxSize.width() - withMargins.width();
+    }
+
     if( radio->layoutMirroring() ) {
-	result.moveRight( rect.width() - (maxWidth - result.width())/2);
+	result.moveRight( rect.width() - (alignWidth + margins.right() ));
     } else {
-	result.moveLeft((maxWidth - result.width()) / 2);
+	result.moveLeft( margins.left() + alignWidth );	
     }
  
     return result;
@@ -175,16 +222,17 @@ QRectF QskRadioBoxSkinlet::textRect( const QskRadioBox* radio,
 		    + textMargins.top());
 
     result.setHeight( lh );
-    result.setWidth( qskHorizontalAdvance( font, radio->items()[index] ) );
+    result.setWidth( qskHorizontalAdvance( font, text ) );
 
-    auto buttonWidth = buttonRect( radio, Q::Button, rect, index ).width();
+    auto button = buttonRect( radio, Q::Button, rect, index );
     auto buttonsMargins = radio->marginHint( Q::Button );
+    auto buttonWidth = button.marginsAdded( buttonsMargins ).width();
+
     if( radio->layoutMirroring() ) {
 	result.moveLeft( rect.width() - textMargins.right()
-			 - result.width() - buttonWidth - buttonsMargins.left());
+			 - result.width() - buttonWidth);
     } else {
-	result.moveLeft( buttonWidth + textMargins.left()
-	    + radio->marginHint( Q::Button ).right());
+	result.moveLeft( buttonWidth + textMargins.left() );
     }
 
     return result;

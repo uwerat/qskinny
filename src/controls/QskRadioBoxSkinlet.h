@@ -37,8 +37,11 @@ class QSK_EXPORT QskRadioBoxSkinlet : public QskSkinlet
     QRectF sampleRect( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol, int index ) const override;
 
+    QSizeF buttonSymbolSize( const QskRadioBox* radio ) const;
     QRectF textRect( const QskRadioBox*, const QRectF&, int ) const;
     QRectF buttonRect( const QskRadioBox*, const QskAspect::Subcontrol target, const QRectF&, double ) const;
+    QRectF rippleRect( const QskRadioBox*, const QRectF& ) const;
+
 
     QskAspect::States sampleStates( const QskSkinnable*,
         QskAspect::Subcontrol, int index ) const override;

@@ -54,6 +54,7 @@
 
 #include <QGuiApplication>
 #include <QScreen>
+#include <qnamespace.h>
 
 static const int qskDuration = 150;
 
@@ -479,9 +480,10 @@ void Editor::setupRadioBox()
     setStrutSize( Q::Symbol, { 10_dp, 10_dp });
     setStrutSize( Q::Ripple, { 40_dp, 40_dp });
 
-    setMargin( Q::Button, QskMargins( 10_dp, 0, 10, 0));
-    setMargin( Q::Text, QskMargins( 10_dp, 0, 0, 0 ));
+    setAlignment( Q::Symbol, Qt::AlignCenter );
     setAlignment( Q::Text, Qt::AlignBottom );
+    
+    setMargin( Q::Text, QskMargins( 10_dp, 0, 10_dp, 0));
     
     setBoxShape(Q::Button, 20_dp);
     setBoxShape(Q::Ripple, 40_dp);
@@ -501,7 +503,6 @@ void Editor::setupRadioBox()
     setBoxBorderColors( Q::Button | Q::Disabled | Q::Selected, m_pal.onSurface38 );
     setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
     setColor( Q::Symbol | Q::Disabled, m_pal.onSurface38 );
-	
 }
 
 void Editor::setupFocusIndicator()

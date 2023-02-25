@@ -639,6 +639,7 @@ void Editor::setupRadioBox()
 
     setMargin( Q::Text, QskMargins( qskDpiScaled( 10 ), 0, qskDpiScaled( 10 ), 0 ));
 
+    setAlignment( Q::Symbol, Qt::AlignCenter );
     setAlignment( Q::Text, Qt::AlignBottom );
 }
 
