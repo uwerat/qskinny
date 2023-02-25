@@ -473,19 +473,19 @@ void Editor::setupRadioBox()
 
     setAnimation( Q::Ripple | A::Metric | A::Position, qskDuration );
     
-    setSpacing(Q::Panel, 10_dp);
+    setSpacing( Q::Panel, 10_dp );
     
-    setStrutSize( Q::Button, { 20_dp, 20_dp });
-    setStrutSize( Q::Symbol, { 10_dp, 10_dp });
-    setStrutSize( Q::Ripple, { 40_dp, 40_dp });
+    setStrutSize( Q::Button, { 20_dp, 20_dp } );
+    setStrutSize( Q::Symbol, { 10_dp, 10_dp } );
+    setStrutSize( Q::Ripple, { 40_dp, 40_dp } );
 
     setAlignment( Q::Symbol, Qt::AlignCenter );
     setAlignment( Q::Text, Qt::AlignBottom );
     
-    setMargin( Q::Text, QskMargins( 10_dp, 0, 10_dp, 0));
+    setMargin( Q::Text, QskMargins( 10_dp, 0, 10_dp, 0 ) );
     
-    setBoxShape(Q::Button, 20_dp);
-    setBoxShape(Q::Ripple, 40_dp);
+    setBoxShape( Q::Button, 20_dp );
+    setBoxShape( Q::Ripple, 40_dp );
     setBoxBorderMetrics( Q::Button, 2_dp );
     setBoxBorderColors( Q::Button, m_pal.onBackground );
     setColor( Q::Text, m_pal.onBackground );

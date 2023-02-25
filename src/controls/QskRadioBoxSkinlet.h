@@ -7,20 +7,20 @@ class QskRadioBox;
 
 class QSK_EXPORT QskRadioBoxSkinlet : public QskSkinlet
 {
-  Q_GADGET
+    Q_GADGET
 
     using Inherited = QskSkinlet;
 
- public:
-  enum NodeRole
+  public:
+    enum NodeRole
     {
-      PanelRole,
-      ButtonRole,
-      SymbolRole,
-      TextRole,
-      RippleRole,
+        PanelRole,
+        ButtonRole,
+        SymbolRole,
+        TextRole,
+        RippleRole,
 
-      RoleCount
+        RoleCount
     };
 
     Q_INVOKABLE QskRadioBoxSkinlet( QskSkin* = nullptr );
@@ -39,13 +39,14 @@ class QSK_EXPORT QskRadioBoxSkinlet : public QskSkinlet
 
     QSizeF buttonSymbolSize( const QskRadioBox* radio ) const;
     QRectF textRect( const QskRadioBox*, const QRectF&, int ) const;
-    QRectF buttonRect( const QskRadioBox*, const QskAspect::Subcontrol target, const QRectF&, double ) const;
+    QRectF buttonRect( const QskRadioBox*, const QskAspect::Subcontrol target, const QRectF&,
+        double ) const;
     QRectF rippleRect( const QskRadioBox*, const QRectF& ) const;
 
 
     QskAspect::States sampleStates( const QskSkinnable*,
         QskAspect::Subcontrol, int index ) const override;
-    
+
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;

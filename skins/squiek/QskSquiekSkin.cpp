@@ -145,7 +145,7 @@ namespace
         void setupPopup();
         void setupProgressBar();
         void setupPushButton();
-	void setupRadioBox();
+        void setupRadioBox();
         void setupScrollView();
         void setupSegmentedBar();
         void setupSeparator();
@@ -616,11 +616,11 @@ void Editor::setupRadioBox()
 
     setSpacing(Q::Panel, qskDpiScaled( 10 ) );
     
-    setStrutSize( Q::Button, { qskDpiScaled( 20 ), qskDpiScaled( 20 ) });
-    setStrutSize( Q::Symbol, { qskDpiScaled( 9 ), qskDpiScaled( 9 ) });
+    setStrutSize( Q::Button, { qskDpiScaled( 20 ), qskDpiScaled( 20 ) } );
+    setStrutSize( Q::Symbol, { qskDpiScaled( 9 ), qskDpiScaled( 9 ) }) ;
     
-    setBoxShape(Q::Button, qskDpiScaled( 20 ) );
-    setBoxShape(Q::Ripple, qskDpiScaled( 40 ) );
+    setBoxShape( Q::Button, qskDpiScaled( 20 ) );
+    setBoxShape( Q::Ripple, qskDpiScaled( 40 ) );
     setBoxBorderMetrics( Q::Button, qskDpiScaled( 1 ) );
 
     setBoxBorderColors( Q::Button, m_pal.darker125 );

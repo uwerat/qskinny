@@ -10,14 +10,14 @@ class QSK_EXPORT QskRadioBox : public QskControl
     Q_OBJECT
 
     Q_PROPERTY( int selectedIndex
-		READ selectedIndex
-		WRITE setSelectedIndex
-		NOTIFY selectedIndexChanged FINAL )
+        READ selectedIndex
+        WRITE setSelectedIndex
+        NOTIFY selectedIndexChanged FINAL )
 
     Q_PROPERTY( QStringList items
-		READ items
-		WRITE setItems
-		NOTIFY itemsChanged FINAL )
+        READ items
+        WRITE setItems
+        NOTIFY itemsChanged FINAL )
 
     using Inherited = QskControl;
 
@@ -30,7 +30,7 @@ class QSK_EXPORT QskRadioBox : public QskControl
     QskRadioBox( const QStringList&, int, QQuickItem* parent = nullptr );
 
     QRectF focusIndicatorRect() const override;
-    
+
     const QStringList& items() const;
     int selectedIndex() const;
     int pressedIndex() const;
@@ -43,7 +43,7 @@ class QSK_EXPORT QskRadioBox : public QskControl
     void selectedIndexChanged( int );
     void itemsChanged( const QStringList& );
 
- protected:
+  protected:
     void keyPressEvent( QKeyEvent* ) override;
     void keyReleaseEvent( QKeyEvent* ) override;
 
