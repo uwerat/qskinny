@@ -93,6 +93,7 @@ QskInputPanelBox::QskInputPanelBox( QQuickItem* parent )
 
     auto layout = new QskLinearBox( Qt::Vertical, this );
     layout->setDefaultAlignment( Qt::AlignLeft | Qt::AlignHCenter );
+    layout->setSpacing( 0 );
 
     layout->addItem( m_data->prompt );
     layout->addItem( m_data->inputProxy );

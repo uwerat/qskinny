@@ -1151,11 +1151,9 @@ void Editor::setupVirtualKeyboard()
     using Q = QskVirtualKeyboard;
 
     // key panel
-    setMargin( Q::ButtonPanel, 2_dp );
-
-    setBoxShape( Q::ButtonPanel, 20.0, Qt::RelativeSize );
-    setBoxBorderMetrics( Q::ButtonPanel, 2_dp );
-    setBoxBorderColors( Q::ButtonPanel, m_pal.background );
+    setMargin( Q::ButtonPanel, 5_dp );
+    setGradient( Q::ButtonPanel, m_pal.background );
+    setBoxShape( Q::ButtonPanel, 6_dp );
 
     for ( auto state : { A::NoState, Q::Focused } )
         setBoxBorderColors( Q::ButtonPanel | QskPushButton::Pressed | state,
@@ -1164,11 +1162,12 @@ void Editor::setupVirtualKeyboard()
     setAnimation( Q::ButtonPanel | A::Color, qskDuration );
     setAnimation( Q::ButtonPanel | A::Metric, qskDuration );
 
+    setColor( Q::ButtonText, m_pal.onBackground );
+    setFontRole( Q::ButtonText, QskMaterial3Skin::M3HeadlineSmall );
+
     // panel
-    setBoxShape( Q::Panel, 0 );
-    setBoxBorderMetrics( Q::Panel, 0 );
-    setGradient( Q::Panel, m_pal.secondaryContainer );
-    setBoxBorderColors( Q::Panel, m_pal.background );
+    setGradient( Q::Panel, m_pal.surfaceVariant );
+    setPadding( Q::Panel, { 3_dp, 25_dp, 3_dp, 5_dp } );
 }
 
 void Editor::setupScrollView()
