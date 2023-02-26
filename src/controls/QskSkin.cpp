@@ -56,6 +56,9 @@ QSK_QT_PRIVATE_END
 #include "QskProgressBar.h"
 #include "QskProgressBarSkinlet.h"
 
+#include "QskRadioBox.h"
+#include "QskRadioBoxSkinlet.h"
+
 #include "QskPushButton.h"
 #include "QskPushButtonSkinlet.h"
 
@@ -178,6 +181,7 @@ QskSkin::QskSkin( QObject* parent )
     declareSkinlet< QskTextLabel, QskTextLabelSkinlet >();
     declareSkinlet< QskTextInput, QskTextInputSkinlet >();
     declareSkinlet< QskProgressBar, QskProgressBarSkinlet >();
+    declareSkinlet< QskRadioBox, QskRadioBoxSkinlet >();
 
     const QFont font = QGuiApplication::font();
     setupFonts( font.family(), font.weight(), font.italic() );

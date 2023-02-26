@@ -23,6 +23,7 @@
 #include <QskPageIndicator.h>
 #include <QskPushButton.h>
 #include <QskProgressBar.h>
+#include <QskRadioBox.h>
 #include <QskScrollView.h>
 #include <QskSegmentedBar.h>
 #include <QskSeparator.h>
@@ -139,6 +140,7 @@ namespace
         void setupPageIndicator();
         void setupPopup();
         void setupProgressBar();
+        void setupRadioBox();
         void setupPushButton();
         void setupScrollView();
         void setupSegmentedBar();
@@ -199,6 +201,7 @@ void Editor::setup()
     setupPopup();
     setupProgressBar();
     setupPushButton();
+    setupRadioBox();
     setupScrollView();
     setupSegmentedBar();
     setupSeparator();
@@ -462,6 +465,44 @@ void Editor::setupProgressBar()
 
     setGradient( Q::Bar, m_pal.primary );
     setGradient( Q::Bar | Q::Disabled, m_pal.onSurface38 );
+}
+
+void Editor::setupRadioBox()
+{
+    using Q = QskRadioBox;
+    using A = QskAspect;
+
+    setAnimation( Q::Ripple | A::Metric | A::Position, qskDuration );
+    
+    setSpacing( Q::Panel, 10_dp );
+    
+    setStrutSize( Q::Button, { 20_dp, 20_dp } );
+    setStrutSize( Q::Symbol, { 10_dp, 10_dp } );
+    setStrutSize( Q::Ripple, { 40_dp, 40_dp } );
+
+    setAlignment( Q::Symbol, Qt::AlignCenter );
+    setAlignment( Q::Text, Qt::AlignBottom );
+    
+    setMargin( Q::Text, QskMargins( 10_dp, 0, 10_dp, 0 ) );
+    
+    setBoxShape( Q::Button, 20_dp );
+    setBoxShape( Q::Ripple, 40_dp );
+    setBoxBorderMetrics( Q::Button, 2_dp );
+    setBoxBorderColors( Q::Button, m_pal.onBackground );
+    setColor( Q::Text, m_pal.onBackground );
+    setColor( Q::Symbol, m_pal.primary );
+    setColor( Q::Ripple, stateLayerColor( m_pal.onSurface, m_pal.focusOpacity ) );
+
+    // Selected
+    setColor( Q::Ripple | Q::Selected,
+	stateLayerColor( m_pal.primary, m_pal.focusOpacity ) );
+    setBoxBorderColors( Q::Button | Q::Selected, m_pal.primary );
+
+    // Disabled
+    setBoxBorderColors( Q::Button | Q::Disabled, m_pal.onSurface38 );
+    setBoxBorderColors( Q::Button | Q::Disabled | Q::Selected, m_pal.onSurface38 );
+    setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
+    setColor( Q::Symbol | Q::Disabled, m_pal.onSurface38 );
 }
 
 void Editor::setupFocusIndicator()
