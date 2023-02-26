@@ -169,6 +169,7 @@ namespace QskRgb
     constexpr const QRgb Transparent = 0x00000000;
     constexpr const QRgb AlphaMask   = 0xff000000;
     constexpr const QRgb ColorMask   = 0x00ffffff;
+    constexpr const QRgb RGBAMask    = 0xffffffff;
 }
 
 namespace QskRgb
