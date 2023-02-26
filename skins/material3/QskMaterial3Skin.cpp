@@ -1336,47 +1336,25 @@ void QskMaterial3Skin::setupFonts()
     setFont( M3LabelLarge, createFont( "Roboto Medium", 20_dp, 14_dp, 0.1, QFont::Medium ) );
 }
 
+void QskMaterial3Skin::setGraphicColor( GraphicRole role, QRgb rgb )
+{
+    QskColorFilter colorFilter;
+    colorFilter.setMask( QskRgb::RGBAMask );
+    colorFilter.addColorSubstitution( QskRgb::White, rgb );
+
+    setGraphicFilter( role, colorFilter );
+}
+
 void QskMaterial3Skin::setupGraphicFilters( const QskMaterial3Theme& palette )
 {
-    QskColorFilter onPrimaryFilter;
-    onPrimaryFilter.setSubstituteAlphaValue( true );
-    onPrimaryFilter.addColorSubstitution( Qt::white, palette.onPrimary );
-    setGraphicFilter( GraphicRoleOnPrimary, onPrimaryFilter );
-
-    QskColorFilter onSecondaryContainerFilter;
-    onSecondaryContainerFilter.setSubstituteAlphaValue( true );
-    onSecondaryContainerFilter.addColorSubstitution( Qt::white, palette.onSecondaryContainer );
-    setGraphicFilter( GraphicRoleOnSecondaryContainer, onSecondaryContainerFilter );
-
-    QskColorFilter onErrorFilter;
-    onErrorFilter.setSubstituteAlphaValue( true );
-    onErrorFilter.addColorSubstitution( Qt::white, palette.onError );
-    setGraphicFilter( GraphicRoleOnError, onErrorFilter );
-
-    QskColorFilter onSurfaceFilter;
-    onSurfaceFilter.setSubstituteAlphaValue( true );
-    onSurfaceFilter.addColorSubstitution( Qt::white, palette.onSurface );
-    setGraphicFilter( GraphicRoleOnSurface, onSurfaceFilter );
-
-    QskColorFilter onSurfaceFilter38;
-    onSurfaceFilter38.setSubstituteAlphaValue( true );
-    onSurfaceFilter38.addColorSubstitution( Qt::white, palette.onSurface38 );
-    setGraphicFilter( GraphicRoleOnSurface38, onSurfaceFilter38 );
-
-    QskColorFilter onSurfaceVariantFilter;
-    onSurfaceVariantFilter.setSubstituteAlphaValue( true );
-    onSurfaceVariantFilter.addColorSubstitution( Qt::white, palette.onSurfaceVariant );
-    setGraphicFilter( GraphicRoleOnSurfaceVariant, onSurfaceVariantFilter );
-
-    QskColorFilter primaryFilter;
-    primaryFilter.setSubstituteAlphaValue( true );
-    primaryFilter.addColorSubstitution( Qt::white, palette.primary );
-    setGraphicFilter( GraphicRolePrimary, primaryFilter );
-
-    QskColorFilter surfaceFilter;
-    surfaceFilter.setSubstituteAlphaValue( true );
-    surfaceFilter.addColorSubstitution( Qt::white, palette.surface );
-    setGraphicFilter( GraphicRoleSurface, surfaceFilter );
+    setGraphicColor( GraphicRoleOnPrimary, palette.onPrimary );
+    setGraphicColor( GraphicRoleOnSecondaryContainer, palette.onSecondaryContainer );
+    setGraphicColor( GraphicRoleOnError, palette.onError );
+    setGraphicColor( GraphicRoleOnSurface, palette.onSurface );
+    setGraphicColor( GraphicRoleOnSurface38, palette.onSurface38 );
+    setGraphicColor( GraphicRoleOnSurfaceVariant, palette.onSurfaceVariant );
+    setGraphicColor( GraphicRolePrimary, palette.primary );
+    setGraphicColor( GraphicRoleSurface, palette.surface );
 }
 
 #include "moc_QskMaterial3Skin.cpp"

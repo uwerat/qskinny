@@ -11,35 +11,31 @@
 #include <qvariant.h>
 
 static inline QRgb qskSubstitutedRgb(
-    const QVector< QPair< QRgb, QRgb > >& substitions, QRgb rgba, bool substituteAlpha )
+    const QVector< QPair< QRgb, QRgb > >& substitions, QRgb rgba, QRgb mask )
 {
     // usually we have 2-3 substitutions, so we can simply iterate
     // and don't need to introduce some sort of sorting or search index
 
-    const QRgb rgb = substituteAlpha ? rgba : ( rgba | QskRgb::AlphaMask );
+    const QRgb rgb = rgba | ~mask;
 
     for ( const auto& s : substitions )
     {
-        if ( rgb == s.first )
-        {
-            const auto ret = substituteAlpha ? s.second
-                                             : ( s.second & QskRgb::ColorMask )
-                                               | ( rgba & QskRgb::AlphaMask );
-            return ret;
-        }
+        if ( rgb == ( s.first | ~mask ) )
+            return ( s.second & mask ) | ( rgba & ~mask );
     }
 
     return rgba;
 }
 
 static inline QColor qskSubstitutedColor(
-    const QVector< QPair< QRgb, QRgb > >& substitions, const QColor& color, bool substituteAlpha )
+    const QVector< QPair< QRgb, QRgb > >& substitions,
+    const QColor& color, QRgb mask )
 {
-    return QColor::fromRgba( qskSubstitutedRgb( substitions, color.rgba(), substituteAlpha ) );
+    return QColor::fromRgba( qskSubstitutedRgb( substitions, color.rgba(), mask ) );
 }
 
 static inline QBrush qskSubstitutedBrush(
-    const QVector< QPair< QRgb, QRgb > >& substitions, const QBrush& brush, bool substituteAlpha )
+    const QVector< QPair< QRgb, QRgb > >& substitions, const QBrush& brush, QRgb mask )
 {
     QBrush newBrush;
 
@@ -50,7 +46,7 @@ static inline QBrush qskSubstitutedBrush(
         auto stops = gradient->stops();
         for ( auto& stop : stops )
         {
-            const QColor c = qskSubstitutedColor( substitions, stop.second, substituteAlpha );
+            const QColor c = qskSubstitutedColor( substitions, stop.second, mask );
             if ( c != stop.second )
             {
                 stop.second = c;
@@ -68,7 +64,7 @@ static inline QBrush qskSubstitutedBrush(
     }
     else
     {
-        const QColor c = qskSubstitutedColor( substitions, brush.color(), substituteAlpha );
+        const QColor c = qskSubstitutedColor( substitions, brush.color(), mask );
         if ( c != brush.color() )
         {
             newBrush = brush;
@@ -168,7 +164,7 @@ QPen QskColorFilter::substituted( const QPen& pen ) const
     if ( m_substitutions.isEmpty() || pen.style() == Qt::NoPen )
         return pen;
 
-    const auto newBrush = qskSubstitutedBrush( m_substitutions, pen.brush(), m_substituteAlphaValue );
+    const auto newBrush = qskSubstitutedBrush( m_substitutions, pen.brush(), m_mask );
     if ( newBrush.style() == Qt::NoBrush )
         return pen;
 
@@ -182,28 +178,18 @@ QBrush QskColorFilter::substituted( const QBrush& brush ) const
     if ( m_substitutions.isEmpty() || brush.style() == Qt::NoBrush )
         return brush;
 
-    const auto newBrush = qskSubstitutedBrush( m_substitutions, brush, m_substituteAlphaValue );
+    const auto newBrush = qskSubstitutedBrush( m_substitutions, brush, m_mask );
     return ( newBrush.style() != Qt::NoBrush ) ? newBrush : brush;
 }
 
 QColor QskColorFilter::substituted( const QColor& color ) const
 {
-    return qskSubstitutedColor( m_substitutions, color, m_substituteAlphaValue );
+    return qskSubstitutedColor( m_substitutions, color, m_mask );
 }
 
 QRgb QskColorFilter::substituted( const QRgb& rgb ) const
 {
-    return qskSubstitutedRgb( m_substitutions, rgb, m_substituteAlphaValue );
-}
-
-bool QskColorFilter::substituteAlphaValue() const noexcept
-{
-    return m_substituteAlphaValue;
-}
-
-void QskColorFilter::setSubstituteAlphaValue( bool on )
-{
-    m_substituteAlphaValue = on;
+    return qskSubstitutedRgb( m_substitutions, rgb, m_mask );
 }
 
 QskColorFilter QskColorFilter::interpolated(
@@ -227,7 +213,7 @@ QDebug operator<<( QDebug debug, const QskColorFilter& filter )
     QDebugStateSaver saver( debug );
     debug.nospace();
 
-    debug << "Filter" << '(';
+    debug << "Filter" << '[' << filter.mask() << ']' << '(';
     for ( const auto& s : filter.substitutions() )
         debug << '[' << s.first << "->" << s.second << "]";
     debug << ')';
