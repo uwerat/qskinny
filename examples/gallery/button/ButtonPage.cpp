@@ -155,6 +155,7 @@ namespace
 
             auto button3 = new QskCheckBox( "Error", this );
             button3->setSkinStateFlag( QskCheckBox::Error );
+
             new QskRadioBox( { "One", "Two", "Three" }, this );
             auto radios = new QskRadioBox( { "One", "Two", "Three" }, this );
             radios->setLayoutMirroring(true);

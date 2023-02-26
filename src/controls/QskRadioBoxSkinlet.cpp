@@ -12,7 +12,7 @@
 
 namespace {
     using Q = QskRadioBox;
-};
+}
 
 QskRadioBoxSkinlet::QskRadioBoxSkinlet( QskSkin* )
 {
