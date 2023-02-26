@@ -32,7 +32,7 @@ namespace
             {
                 auto bar = new QskSegmentedBar( orientation, this );
 
-                for ( const auto text: texts )
+                for ( const auto text : texts )
                     bar->addOption( {}, text );
             }
 

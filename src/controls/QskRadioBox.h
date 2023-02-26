@@ -1,23 +1,23 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * This file may be used under the terms of the QSkinny License, Version 1.0
+ *****************************************************************************/
+
 #ifndef QSK_RADIO_BOX_H
 #define QSK_RADIO_BOX_H
 
 #include "QskControl.h"
-
-#include <QStringList>
+#include <qstringlist.h>
 
 class QSK_EXPORT QskRadioBox : public QskControl
 {
     Q_OBJECT
 
-    Q_PROPERTY( int selectedIndex
-        READ selectedIndex
-        WRITE setSelectedIndex
-        NOTIFY selectedIndexChanged FINAL )
+    Q_PROPERTY( int selectedIndex READ selectedIndex
+        WRITE setSelectedIndex NOTIFY selectedIndexChanged FINAL )
 
-    Q_PROPERTY( QStringList items
-        READ items
-        WRITE setItems
-        NOTIFY itemsChanged FINAL )
+    Q_PROPERTY( QStringList items READ items
+        WRITE setItems NOTIFY itemsChanged FINAL )
 
     using Inherited = QskControl;
 
@@ -29,9 +29,12 @@ class QSK_EXPORT QskRadioBox : public QskControl
     QskRadioBox( const QStringList&, QQuickItem* parent = nullptr );
     QskRadioBox( const QStringList&, int, QQuickItem* parent = nullptr );
 
+    ~QskRadioBox() override;
+
     QRectF focusIndicatorRect() const override;
 
     const QStringList& items() const;
+
     int selectedIndex() const;
     int pressedIndex() const;
 
@@ -57,6 +60,7 @@ class QSK_EXPORT QskRadioBox : public QskControl
 
   private:
     void setFocusedIndex( int index );
+
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

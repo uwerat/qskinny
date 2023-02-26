@@ -1,3 +1,8 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * This file may be used under the terms of the QSkinny License, Version 1.0
+ *****************************************************************************/
+
 #ifndef QSK_RADIO_BOX_SKINLET_H
 #define QSK_RADIO_BOX_SKINLET_H
 
@@ -37,13 +42,6 @@ class QSK_EXPORT QskRadioBoxSkinlet : public QskSkinlet
     QRectF sampleRect( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol, int index ) const override;
 
-    QSizeF buttonSymbolSize( const QskRadioBox* radio ) const;
-    QRectF textRect( const QskRadioBox*, const QRectF&, int ) const;
-    QRectF buttonRect( const QskRadioBox*, const QskAspect::Subcontrol target, const QRectF&,
-        double ) const;
-    QRectF rippleRect( const QskRadioBox*, const QRectF& ) const;
-
-
     QskAspect::States sampleStates( const QskSkinnable*,
         QskAspect::Subcontrol, int index ) const override;
 
@@ -55,7 +53,13 @@ class QSK_EXPORT QskRadioBoxSkinlet : public QskSkinlet
         QskAspect::Subcontrol, int index, QSGNode* ) const override;
 
   private:
-    qreal lineHeight( const QskRadioBox* target ) const;
+    QRectF textRect( const QskRadioBox*, const QRectF&, int ) const;
+
+    QSizeF buttonSymbolSize( const QskRadioBox* ) const;
+    QRectF buttonRect( const QskRadioBox*,
+        const QskAspect::Subcontrol, const QRectF&, double ) const;
+
+    QRectF rippleRect( const QskRadioBox*, const QRectF& ) const;
 };
 
 #endif
