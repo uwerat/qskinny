@@ -22,11 +22,14 @@ class QSK_EXPORT QskSpinBox : public QskBoundedValueInput
     Q_PROPERTY( bool accelerating READ isAccelerating
         WRITE setAccelerating NOTIFY acceleratingChanged )
 
-    Q_PROPERTY( bool buttons READ hasButtons
-        WRITE setButtons NOTIFY buttonsChanged )
+    Q_PROPERTY( Decoration decoration READ decoration
+        WRITE setDecoration RESET resetDecoration NOTIFY decorationChanged )
 
     Q_PROPERTY( int decimals READ decimals
         WRITE setDecimals NOTIFY decimalsChanged )
+
+    Q_PROPERTY( Qt::Alignment textAlignment READ textAlignment
+        WRITE setTextAlignment RESET textAlignment NOTIFY textAlignmentChanged )
 
     Q_PROPERTY( QString text READ text NOTIFY textChanged )
 
@@ -36,11 +39,29 @@ class QSK_EXPORT QskSpinBox : public QskBoundedValueInput
 
     QSK_STATES( Decreasing, Increasing )
 
+    enum Decoration
+    {
+        NoDecoration,
+
+        Buttons,
+        UpDownControl
+    };
+    Q_ENUM( Decoration )
+
     QskSpinBox( QQuickItem* parent = nullptr );
+    QskSpinBox( qreal min, qreal max, qreal stepSize,
+         QQuickItem* parent = nullptr );
+
     ~QskSpinBox() override;
 
-    void setButtons( bool );
-    bool hasButtons() const;
+    void setDecoration( Decoration );
+    void resetDecoration();
+    Decoration decoration() const;
+
+    // Qt::AlignLeft, Qt::AlignRight or Qt::AlignHCenter.
+    void setTextAlignment( Qt::Alignment );
+    void resetTextAlignment();
+    Qt::Alignment textAlignment() const;
 
     void setWrapping( bool );
     bool isWrapping() const;
@@ -55,9 +76,11 @@ class QSK_EXPORT QskSpinBox : public QskBoundedValueInput
     int decimals() const;
 
     QString text() const;
+    virtual QString textFromValue( qreal ) const;
 
   Q_SIGNALS:
-    void buttonsChanged( bool );
+    void decorationChanged( Decoration );
+    void textAlignmentChanged( Qt::Alignment );
 
     void trackingChanged( bool );
     void wrappingChanged( bool );
@@ -65,9 +88,6 @@ class QSK_EXPORT QskSpinBox : public QskBoundedValueInput
 
     void decimalsChanged( int );
     void textChanged();
-
-  protected:
-    virtual QString textFromValue( qreal ) const;
 
   private:
     void timerEvent( QTimerEvent* ) override;

@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) 2023 Edelhirsch Software GmbH
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
  * This file may be used under the terms of the 3-clause BSD License
  *****************************************************************************/
 
@@ -7,10 +7,10 @@
 
 #include "Page.h"
 
-class SpinBoxPage : public Page
+class InputPage : public Page
 {
   public:
-    SpinBoxPage( QQuickItem* = nullptr );
+    InputPage( QQuickItem* = nullptr );
 
   private:
     void populate();

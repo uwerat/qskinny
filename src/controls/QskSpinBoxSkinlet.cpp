@@ -5,68 +5,14 @@
 
 #include "QskSpinBoxSkinlet.h"
 #include "QskSpinBox.h"
+#include "QskFunctions.h"
 
-#include <array>
+#include <qfontmetrics.h>
 
 QskSpinBoxSkinlet::QskSpinBoxSkinlet( QskSkin* )
 {
     setNodeRoles( { UpPanel, DownPanel, TextPanel,
         UpIndicator, DownIndicator, Text } );
-}
-
-QSizeF QskSpinBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
-    Qt::SizeHint which, const QSizeF& size ) const
-{
-    if ( which != Qt::PreferredSize )
-        return QSizeF();
-
-    using Q = QskSpinBox;
-
-    const auto spinbox = static_cast< const QskSpinBox* >( skinnable );
-
-    const auto layout = spinbox->alignmentHint( Q::Panel );
-    const auto spacing = spinbox->spacingHint( Q::Panel );
-
-    const auto strutInc = spinbox->strutSizeHint( Q::UpPanel );
-    const auto strutDec = spinbox->strutSizeHint( Q::DownPanel );
-    const auto strutTxt = spinbox->strutSizeHint( Q::TextPanel );
-
-    if ( layout == Qt::AlignTop || layout == Qt::AlignBottom || layout == Qt::AlignVCenter )
-    {
-        const auto w = qMax( strutDec.width(), qMax( strutTxt.width(), strutInc.width() ) );
-        const auto h = strutDec.height() + strutTxt.height() + strutInc.height();
-
-        return QSizeF( w, h + 2.0 * spacing );
-    }
-
-    if ( layout == Qt::AlignLeft || layout == Qt::AlignRight || layout == Qt::AlignHCenter )
-    {
-        const auto w = strutDec.width() + strutTxt.width() + strutInc.width();
-        const auto h = qMax( strutDec.height(), qMax( strutTxt.height(), strutInc.height() ) );
-
-        return QSizeF( w + 2.0 * spacing, h );
-    }
-
-    if ( layout == ( Qt::AlignLeft | Qt::AlignVCenter ) ||
-         layout == ( Qt::AlignRight | Qt::AlignVCenter ) )
-    {
-        const auto w = strutTxt.width() + qMax( strutInc.width(), strutDec.width() );
-        const auto h =
-            qMax( 2.0 * qMax( strutInc.height(), strutDec.height() ), strutTxt.height() );
-
-        return QSizeF( w + spacing, h + spacing );
-    }
-
-    if ( layout == ( Qt::AlignTop | Qt::AlignHCenter ) ||
-         layout == ( Qt::AlignBottom | Qt::AlignHCenter ) )
-    {
-        const auto w = qMax( strutTxt.width(), strutInc.width() + strutDec.width() );
-        const auto h = strutTxt.height() + qMax( strutInc.height(), strutDec.height() );
-
-        return QSizeF( w + spacing, h + spacing );
-    }
-
-    return Inherited::sizeHint( skinnable, which, size );
 }
 
 QRectF QskSpinBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
@@ -83,117 +29,11 @@ QRectF QskSpinBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
     if ( subControl == Q::Text )
         return skinnable->subControlContentsRect( contentsRect, Q::TextPanel );
 
-    const auto* const spinbox = static_cast< const QskSpinBox* >( skinnable );
-
-    const auto layout = spinbox->alignmentHint( Q::Panel );
-    const auto spacing = spinbox->spacingHint( Q::Panel );
-
-    enum
-    {
-        Dec = 0,
-        Txt = 1,
-        Inc = 2,
-        Count
-    };
-
-    std::array< QRectF, Count > rects = {
-        QRectF{ QPointF(), spinbox->strutSizeHint( Q::DownPanel ) },
-        QRectF{ QPointF(), spinbox->strutSizeHint( Q::TextPanel ) },
-        QRectF{ QPointF(), spinbox->strutSizeHint( Q::UpPanel ) },
-    };
-
-    const auto center = contentsRect.center();
-
-    if ( layout == Qt::AlignLeft )
-    {
-        rects[ Txt ].moveTopLeft( { 0.0, center.y() - rects[ Txt ].height() * 0.5 } );
-        rects[ Dec ].moveTopLeft(
-            { rects[ Txt ].right() + spacing, center.y() - rects[ Dec ].height() * 0.5 } );
-        rects[ Inc ].moveTopLeft(
-            { rects[ Dec ].right() + spacing, center.y() - rects[ Inc ].height() * 0.5 } );
-    }
-    else if ( layout == Qt::AlignRight )
-    {
-        rects[ Dec ].moveTopLeft( { 0.0, center.y() - rects[ Dec ].height() * 0.5 } );
-        rects[ Inc ].moveTopLeft(
-            { rects[ Dec ].right() + spacing, center.y() - rects[ Inc ].height() * 0.5 } );
-        rects[ Txt ].moveTopLeft(
-            { rects[ Inc ].right() + spacing, center.y() - rects[ Txt ].height() * 0.5 } );
-    }
-    else if ( layout == Qt::AlignTop )
-    {
-        rects[ Txt ].moveTopLeft( { center.x() - rects[ Txt ].width() * 0.5, 0.0 } );
-        rects[ Inc ].moveTopLeft(
-            { center.x() - rects[ Inc ].width() * 0.5, rects[ Txt ].bottom() + spacing } );
-        rects[ Dec ].moveTopLeft(
-            { center.x() - rects[ Dec ].width() * 0.5, rects[ Inc ].bottom() + spacing } );
-    }
-    else if ( layout == Qt::AlignBottom )
-    {
-        rects[ Inc ].moveTopLeft( { center.x() - rects[ Inc ].width() * 0.5, 0.0 } );
-        rects[ Dec ].moveTopLeft(
-            { center.x() - rects[ Dec ].width() * 0.5, rects[ Inc ].bottom() + spacing } );
-        rects[ Txt ].moveTopLeft(
-            { center.x() - rects[ Txt ].width() * 0.5, rects[ Dec ].bottom() + spacing } );
-    }
-    else if ( layout == Qt::AlignHCenter )
-    {
-        rects[ Dec ].moveTopLeft( { 0.0, center.y() - rects[ Dec ].height() * 0.5 } );
-        rects[ Txt ].moveTopLeft(
-            { rects[ Dec ].right() + spacing, center.y() - rects[ Txt ].height() * 0.5 } );
-        rects[ Inc ].moveTopLeft(
-            { rects[ Txt ].right() + spacing, center.y() - rects[ Inc ].height() * 0.5 } );
-    }
-    else if ( layout == Qt::AlignVCenter )
-    {
-        rects[ Inc ].moveTopLeft( { center.x() - rects[ Inc ].width() * 0.5, 0.0 } );
-        rects[ Txt ].moveTopLeft(
-            { center.x() - rects[ Txt ].width() * 0.5, rects[ Inc ].bottom() + spacing } );
-        rects[ Dec ].moveTopLeft(
-            { center.x() - rects[ Dec ].width() * 0.5, rects[ Txt ].bottom() + spacing } );
-    }
-    else if ( layout == ( Qt::AlignLeft | Qt::AlignVCenter ) )
-    {
-        rects[ Txt ].moveTopLeft( { 0.0, center.y() - rects[ Txt ].height() * 0.5 } );
-        rects[ Inc ].moveTopLeft( { rects[ Txt ].right() + spacing,
-            center.y() - spacing * 0.5 - rects[ Inc ].height() } );
-        rects[ Dec ].moveTopLeft( { rects[ Txt ].right() + spacing, center.y() + spacing * 0.5 } );
-    }
-    else if ( layout == ( Qt::AlignRight | Qt::AlignVCenter ) )
-    {
-        const auto dx = qMax( rects[ Inc ].width(), rects[ Dec ].width() );
-        rects[ Inc ].moveTopLeft(
-            { dx - rects[ Inc ].width(), center.y() - spacing * 0.5 - rects[ Inc ].height() } );
-        rects[ Dec ].moveTopLeft( { dx - rects[ Dec ].width(), center.y() + spacing * 0.5 } );
-        rects[ Txt ].moveTopLeft( { dx + spacing, center.y() - rects[ Txt ].height() * 0.5 } );
-    }
-    else if ( layout == ( Qt::AlignTop | Qt::AlignHCenter ) )
-    {
-        rects[ Txt ].moveTopLeft( { center.x() - rects[ Txt ].width() * 0.5, 0.0 } );
-        rects[ Dec ].moveTopLeft(
-            { rects[ Txt ].center().x() - spacing * 0.5 - rects[ Dec ].width(),
-                rects[ Txt ].bottom() + spacing } );
-        rects[ Inc ].moveTopLeft(
-            { rects[ Txt ].center().x() + spacing * 0.5, rects[ Txt ].bottom() + spacing } );
-    }
-    else if ( layout == ( Qt::AlignBottom | Qt::AlignHCenter ) )
-    {
-        rects[ Txt ].moveTopLeft(
-            { center.x() - rects[ Txt ].width() * 0.5, center.y() - rects[ Txt ].height() * 0.5 } );
-        rects[ Dec ].moveTopLeft( { center.x() - spacing * 0.5 - rects[ Dec ].width(),
-            rects[ Txt ].top() - spacing - rects[ Dec ].height() } );
-        rects[ Inc ].moveTopLeft(
-            { center.x() + spacing * 0.5, rects[ Txt ].top() - spacing - rects[ Inc ].height() } );
-    }
-
-    if ( subControl == Q::DownPanel )
-        return rects[ Dec ];
+    if ( subControl == Q::DownPanel || subControl == Q::UpPanel )
+        return buttonRect( skinnable, contentsRect, subControl );
 
     if ( subControl == Q::TextPanel )
-        return rects[ Txt ];
-
-    if ( subControl == Q::UpPanel )
-        return rects[ Inc ];
+        return textPanelRect( skinnable, contentsRect );
 
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
@@ -228,10 +68,165 @@ QSGNode* QskSpinBoxSkinlet::updateSubNode(
 
         case Text:
         {
-            const auto* const spinbox = static_cast< const QskSpinBox* >( skinnable );
-            return updateTextNode( skinnable, node, spinbox->text(), Q::Text );
+            auto spinBox = static_cast< const QskSpinBox* >( skinnable );
+
+            const auto rect = subControlRect( spinBox, spinBox->contentsRect(), Q::Text );
+
+            return updateTextNode( spinBox, node, rect,
+                spinBox->textAlignment(), spinBox->text(), Q::Text );
         }
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
+
+QRectF QskSpinBoxSkinlet::textPanelRect(
+    const QskSkinnable* skinnable, const QRectF& rect ) const
+{
+    using Q = QskSpinBox;
+
+    auto spinBox = static_cast< const QskSpinBox* >( skinnable );
+
+    const auto decoration = spinBox->decoration();
+    if ( decoration == Q::NoDecoration )
+        return rect;
+
+    auto r = rect;
+
+    const auto spacing = spinBox->spacingHint( Q::Panel );
+
+    if ( decoration == Q::UpDownControl )
+    {
+        const auto w = subControlRect( skinnable, rect, Q::UpPanel ).width();
+        if ( w > 0.0 )
+            r.setRight( r.right() - spacing - w );
+    }
+    else
+    {
+        const auto w1 = subControlRect( skinnable, rect, Q::DownPanel ).width();
+        if ( w1 > 0.0 )
+            r.setLeft( r.left() + w1 + spacing );
+
+        const auto w2 = subControlRect( skinnable, rect, Q::UpPanel ).width();
+        if ( w2 > 0.0 )
+            r.setRight( r.right() - w2 - spacing );
+    }
+
+    return r;
+}
+
+QRectF QskSpinBoxSkinlet::buttonRect( const QskSkinnable* skinnable,
+    const QRectF& rect, QskAspect::Subcontrol subControl ) const
+{
+    using Q = QskSpinBox;
+
+    const auto spinBox = static_cast< const QskSpinBox* >( skinnable );
+
+    if ( const auto decoration = spinBox->decoration() )
+    {
+        qreal x, y, w, h;
+
+        if ( decoration == QskSpinBox::UpDownControl )
+        {
+            const auto hint1 = spinBox->strutSizeHint( Q::UpPanel );
+            const auto hint2 = spinBox->strutSizeHint( Q::DownPanel );
+
+            w = std::max( hint1.width(), hint2.width() );
+            if ( w <= 0 )
+                w = rect.height();
+
+            h = 0.5 * rect.height();
+
+            x = rect.right() - w;
+            y = ( subControl == Q::UpPanel ) ? rect.top() : rect.bottom() - h;
+        }
+        else
+        {
+            const auto hint = spinBox->strutSizeHint( subControl );
+
+            h = hint.height();
+            if ( h <= 0.0 )
+                h = rect.height();
+
+            w = hint.width();
+            if ( w <= 0.0 )
+                w = h;
+
+            x = ( subControl == Q::UpPanel ) ? rect.right() - w : rect.left();
+            y = 0.5 * ( rect.height() - h );
+        }
+
+        return QRectF( x, y, w, h );
+    }
+
+    return QRectF();
+}
+
+QSizeF QskSpinBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
+    Qt::SizeHint which, const QSizeF& ) const
+{
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
+
+    using Q = QskSpinBox;
+
+    const auto spinBox = static_cast< const QskSpinBox* >( skinnable );
+
+    QSizeF hint;
+
+    {
+        const QFontMetricsF fm( spinBox->effectiveFont( Q::Text ) );
+
+        // 18: QAbstractSpinBox does this
+        const auto w1 = qskHorizontalAdvance( fm,
+            spinBox->textFromValue( spinBox->minimum() ).left( 18 ) );
+
+        const auto w2 = qskHorizontalAdvance( fm,
+            spinBox->textFromValue( spinBox->maximum() ).left( 18 ) );
+
+        hint.setWidth( std::max( w1, w2 ) );
+        hint.setHeight( fm.height() );
+        
+        hint = hint.grownBy( spinBox->paddingHint( Q::TextPanel ) );
+        hint = hint.expandedTo( spinBox->strutSizeHint( Q::TextPanel ) );
+    }
+
+    if ( const auto decoration = spinBox->decoration() )
+    {
+        const auto spacing = spinBox->spacingHint( Q::Panel );
+        const auto hintUp = spinBox->strutSizeHint( Q::UpPanel );
+        const auto hintDown = spinBox->strutSizeHint( Q::DownPanel );
+
+        if ( decoration == QskSpinBox::UpDownControl )
+        {
+            qreal w = std::max( hintDown.width(), hintUp.width() );
+
+            qreal h = 0.0;
+            if ( hintDown.height() >= 0.0 )
+                h += hintDown.height();
+
+            if ( hintUp.height() >= 0.0 )
+                h += hintUp.height();
+
+            hint.rwidth() += ( w >= 0.0 ) ? w : hint.height();
+            hint.rwidth() += spacing;
+
+            hint.rheight() = std::max( h, hint.height() );
+        }
+        else
+        {
+            if ( hintDown.width() > 0.0 ) 
+                hint.rwidth() += hintDown.width() + spacing;
+
+            if ( hintUp.width() > 0.0 ) 
+                hint.rwidth() += hintUp.width() + spacing;
+
+            const auto h = std::max( hintUp.height(), hintDown.height() );
+            hint.rheight() = qMax( h, hint.height() );
+        }
+    }
+
+    hint = hint.expandedTo( spinBox->strutSizeHint( Q::Panel ) );
+    return hint;
+}
+

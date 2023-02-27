@@ -37,14 +37,23 @@ namespace
 
         return QskAspect::NoSubcontrol;
     }
+
+    inline QskAspect aspectDecoration()
+    {
+        return QskSpinBox::Panel | QskAspect::Flag | QskAspect::Style;
+    }
+
+    inline QskAspect aspectTextAlignment()
+    {
+        return QskSpinBox::TextPanel | QskAspect::Flag | QskAspect::Alignment;
+    }
 }
 
 class QskSpinBox::PrivateData
 {
   public:
     PrivateData()
-        : buttons( true )
-        , tracking( true )
+        : tracking( true )
         , wrapping( false )
         , accelerating( false )
     {
@@ -100,19 +109,19 @@ class QskSpinBox::PrivateData
 
     int key = Qt::Key_unknown;
 
-    bool buttons : 1;
-    bool tracking : 1;
-    bool wrapping : 1;
+    bool tracking     : 1;
+    bool wrapping     : 1;
     bool accelerating : 1; // not yet implemented: TODO ...
 };
 
-QskSpinBox::QskSpinBox( QQuickItem* parent )
+QskSpinBox::QskSpinBox( qreal min, qreal max, qreal stepSize, QQuickItem* parent )
     : Inherited( parent )
     , m_data( new PrivateData )
 {
     initSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Fixed );
 
-    setBoundaries( 0.0, 99.99 ); // this is what QDoubleSpinBox does
+    setBoundaries( min, max );
+    setStepSize( stepSize );
 
     setAcceptedMouseButtons( Qt::LeftButton );
     setFocusPolicy( Qt::StrongFocus );
@@ -120,22 +129,50 @@ QskSpinBox::QskSpinBox( QQuickItem* parent )
     connect( this, &QskSpinBox::valueChanged, this, &QskSpinBox::textChanged );
 }
 
+QskSpinBox::QskSpinBox( QQuickItem* parent )
+    : QskSpinBox( 0.0, 99.99, 0.1, parent )
+{
+}
+
 QskSpinBox::~QskSpinBox()
 {
 }
 
-void QskSpinBox::setButtons( bool on )
+void QskSpinBox::setDecoration( Decoration decoration )
 {
-    if ( on != m_data->buttons )
-    {
-        m_data->buttons = on;
-        Q_EMIT buttonsChanged( on );
-    }
+    if ( setFlagHint( aspectDecoration(), decoration ) )
+        Q_EMIT decorationChanged( decoration );
 }
 
-bool QskSpinBox::hasButtons() const
+void QskSpinBox::resetDecoration()
 {
-    return m_data->buttons;
+    if ( resetFlagHint( aspectDecoration() ) )
+        Q_EMIT decorationChanged( decoration() );
+}
+
+QskSpinBox::Decoration QskSpinBox::decoration() const
+{
+    return flagHint< QskSpinBox::Decoration >( aspectDecoration(), Buttons );
+}
+
+void QskSpinBox::setTextAlignment( Qt::Alignment alignment )
+{
+    alignment &= Qt::AlignHorizontal_Mask;
+
+    if ( setFlagHint( aspectTextAlignment(), alignment ) )
+        Q_EMIT textAlignmentChanged( alignment );
+}
+
+void QskSpinBox::resetTextAlignment()
+{
+    if ( resetFlagHint( aspectTextAlignment() ) )
+        Q_EMIT textAlignmentChanged( textAlignment() );
+}
+
+Qt::Alignment QskSpinBox::textAlignment() const
+{
+    return flagHint< Qt::Alignment >(
+        aspectTextAlignment(), Qt::AlignLeft ) & Qt::AlignHorizontal_Mask;
 }
 
 void QskSpinBox::setTracking( bool on )

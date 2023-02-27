@@ -5,12 +5,10 @@
 
 #include "label/LabelPage.h"
 #include "progressbar/ProgressBarPage.h"
-#include "slider/SliderPage.h"
+#include "inputs/InputPage.h"
 #include "button/ButtonPage.h"
-#include "textinput/TextInputPage.h"
 #include "selector/SelectorPage.h"
 #include "dialog/DialogPage.h"
-#include "spinbox/SpinBoxPage.h"
 
 #include <SkinnyShortcut.h>
 #include <SkinnyShapeProvider.h>
@@ -195,14 +193,10 @@ namespace
             auto tabView = new TabView( this );
             tabView->addTab( "Buttons", new ButtonPage() );
             tabView->addTab( "Labels", new LabelPage() );
-            tabView->addTab( "Sliders", new SliderPage() );
+            tabView->addTab( "Inputs", new InputPage() );
             tabView->addTab( "Progress\nBars", new ProgressBarPage() );
-            tabView->addTab( "Text\nInputs", new TextInputPage() );
             tabView->addTab( "Selectors", new SelectorPage() );
             tabView->addTab( "Dialogs", new DialogPage() );
-            tabView->addTab( "SpinBoxes", new SpinBoxPage() );
-
-            tabView->setCurrentIndex(tabView->count() - 1);
 
             connect( header, &Header::enabledToggled,
                 tabView, &TabView::setTabsEnabled );

@@ -7,10 +7,10 @@ SOURCES += \
     label/LabelPage.cpp \
 
 HEADERS += \
-    slider/SliderPage.h
+    inputs/InputPage.h
 
 SOURCES += \
-    slider/SliderPage.cpp
+    inputs/InputPage.cpp
 
 HEADERS += \
     progressbar/ProgressBarPage.h
@@ -25,12 +25,6 @@ SOURCES += \
     button/ButtonPage.cpp \
 
 HEADERS += \
-    textinput/TextInputPage.h
-
-SOURCES += \
-    textinput/TextInputPage.cpp \
-
-HEADERS += \
     selector/SelectorPage.h
 
 SOURCES += \
@@ -41,12 +35,6 @@ HEADERS += \
 
 SOURCES += \
     dialog/DialogPage.cpp \
-
-HEADERS += \
-    spinbox/SpinBoxPage.h
-
-SOURCES += \
-    spinbox/SpinBoxPage.cpp
 
 HEADERS += \
     Page.h

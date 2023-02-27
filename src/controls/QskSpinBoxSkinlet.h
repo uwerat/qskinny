@@ -39,6 +39,12 @@ class QSK_EXPORT QskSpinBoxSkinlet : public QskSkinlet
   protected:
     QSGNode* updateSubNode(
         const QskSkinnable* skinnable, quint8 role, QSGNode* node ) const override;
+
+  private:
+    QRectF textPanelRect( const QskSkinnable*, const QRectF& ) const;
+
+    QRectF buttonRect( const QskSkinnable*,
+        const QRectF&, QskAspect::Subcontrol ) const;
 };
 
 #endif
