@@ -178,6 +178,8 @@ namespace
         Header( QQuickItem* parent = nullptr )
             : QskLinearBox( Qt::Horizontal, parent )
         {
+            setPaddingHint( QskBox::Panel, 5 );
+
             initSizePolicy( QskSizePolicy::Ignored, QskSizePolicy::Fixed );
             setPanel( true );
 

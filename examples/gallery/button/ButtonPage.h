@@ -11,7 +11,4 @@ class ButtonPage : public Page
 {
   public:
     ButtonPage( QQuickItem* = nullptr );
-
-  private:
-    void populate();
 };

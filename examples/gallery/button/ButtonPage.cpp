@@ -17,13 +17,27 @@ namespace
     class ButtonBox : public QskLinearBox
     {
       public:
-        ButtonBox( QQuickItem* parent = nullptr )
-            : QskLinearBox( Qt::Horizontal, 3, parent )
+        ButtonBox( Qt::Orientation orientation, QQuickItem* parent = nullptr )
+            : ButtonBox( orientation, -1, parent )
         {
-            setSpacing( 20 );
-            setExtraSpacingAt( Qt::BottomEdge );
-            setDefaultAlignment( Qt::AlignCenter );
+        }
 
+        ButtonBox( Qt::Orientation orientation,
+                uint dimension, QQuickItem* parent = nullptr )
+            : QskLinearBox( orientation, dimension, parent )
+        {
+            setSpacing( 10 );
+            setExtraSpacingAt( Qt::LeftEdge | Qt::RightEdge | Qt::BottomEdge );
+        }
+    };
+
+    class PushButtonBox : public ButtonBox
+    {
+      public:
+        PushButtonBox( QQuickItem* parent = nullptr )
+            : ButtonBox( Qt::Horizontal, 3, parent )
+        {
+            setDefaultAlignment( Qt::AlignCenter );
             populate();
         }
 
@@ -112,43 +126,29 @@ namespace
         }
     };
 
-    class SwitchButtonBox : public QskLinearBox
+    class SwitchButtonBox : public ButtonBox
     {
       public:
         SwitchButtonBox( QQuickItem* parent = nullptr )
-            : QskLinearBox( Qt::Horizontal, parent )
+            : ButtonBox( Qt::Horizontal, parent )
         {
-            setSpacing( 20 );
-            setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
-
-            setExtraSpacingAt( Qt::LeftEdge | Qt::RightEdge | Qt::BottomEdge );
-
             for ( auto orientation : { Qt::Vertical, Qt::Horizontal } )
             {
                 (void) new QskSwitchButton( orientation, this );
 
                 auto button = new QskSwitchButton( orientation, this );
-                button->setChecked( true );
-
-                button = new QskSwitchButton( orientation, this );
-                button->setInverted( true );
-
-                button = new QskSwitchButton( orientation, this );
                 button->setInverted( true );
                 button->setChecked( true );
             }
         }
     };
 
-    class CheckButtonBox : public QskLinearBox
+    class CheckButtonBox : public ButtonBox
     {
       public:
         CheckButtonBox( QQuickItem* parent = nullptr )
-            : QskLinearBox( Qt::Horizontal, 2, parent )
+            : ButtonBox( Qt::Horizontal, 2, parent )
         {
-            setSpacing( 20 );
-            setExtraSpacingAt( Qt::LeftEdge | Qt::RightEdge | Qt::BottomEdge );
-
             auto button1 = new QskCheckBox( "Options 1", this );
             button1->setChecked( true );
 
@@ -160,15 +160,12 @@ namespace
         }
     };
 
-    class RadioButtonBox : public QskLinearBox
+    class RadioButtonBox : public ButtonBox
     {
       public:
         RadioButtonBox( QQuickItem* parent = nullptr )
-            : QskLinearBox( Qt::Horizontal, parent )
+            : ButtonBox( Qt::Horizontal, parent )
         {
-            setSpacing( 20 );
-            setExtraSpacingAt( Qt::LeftEdge | Qt::RightEdge | Qt::BottomEdge );
-
             new QskRadioBox( { "One", "Two", "Three" }, this );
 
             auto radioBox = new QskRadioBox( { "One", "Two", "Three" }, this );
@@ -180,18 +177,16 @@ namespace
 ButtonPage::ButtonPage( QQuickItem* parent )
     : Page( Qt::Vertical, parent )
 {
-    setSpacing( 40 );
-    populate();
-}
+    setSpacing( 20 );
 
-void ButtonPage::populate()
-{
-    new ButtonBox( this );
-    new QskSeparator( Qt::Horizontal, this );
-    new SwitchButtonBox( this );
+    new PushButtonBox( this );
     new QskSeparator( Qt::Horizontal, this );
 
     auto hBox = new QskLinearBox( Qt::Horizontal, this );
+
+    new SwitchButtonBox( hBox );
+    new QskSeparator( Qt::Vertical, hBox );
     new CheckButtonBox( hBox );
+    new QskSeparator( Qt::Vertical, hBox );
     new RadioButtonBox( hBox );
 }
