@@ -23,6 +23,7 @@
 #include <QskPageIndicator.h>
 #include <QskPushButton.h>
 #include <QskProgressBar.h>
+#include <QskRadioBox.h>
 #include <QskScrollView.h>
 #include <QskSegmentedBar.h>
 #include <QskSeparator.h>
@@ -139,6 +140,7 @@ namespace
         void setupPageIndicator();
         void setupPopup();
         void setupProgressBar();
+        void setupRadioBox();
         void setupPushButton();
         void setupScrollView();
         void setupSegmentedBar();
@@ -199,6 +201,7 @@ void Editor::setup()
     setupPopup();
     setupProgressBar();
     setupPushButton();
+    setupRadioBox();
     setupScrollView();
     setupSegmentedBar();
     setupSeparator();
@@ -462,6 +465,44 @@ void Editor::setupProgressBar()
 
     setGradient( Q::Bar, m_pal.primary );
     setGradient( Q::Bar | Q::Disabled, m_pal.onSurface38 );
+}
+
+void Editor::setupRadioBox()
+{
+    using Q = QskRadioBox;
+    using A = QskAspect;
+
+    setAnimation( Q::Ripple | A::Metric | A::Position, qskDuration );
+    
+    setSpacing( Q::Panel, 10_dp );
+    
+    setStrutSize( Q::Button, { 20_dp, 20_dp } );
+    setStrutSize( Q::Symbol, { 10_dp, 10_dp } );
+    setStrutSize( Q::Ripple, { 40_dp, 40_dp } );
+
+    setAlignment( Q::Symbol, Qt::AlignCenter );
+    setAlignment( Q::Text, Qt::AlignBottom );
+    
+    setMargin( Q::Text, QskMargins( 10_dp, 0, 10_dp, 0 ) );
+    
+    setBoxShape( Q::Button, 20_dp );
+    setBoxShape( Q::Ripple, 40_dp );
+    setBoxBorderMetrics( Q::Button, 2_dp );
+    setBoxBorderColors( Q::Button, m_pal.onBackground );
+    setColor( Q::Text, m_pal.onBackground );
+    setColor( Q::Symbol, m_pal.primary );
+    setColor( Q::Ripple, stateLayerColor( m_pal.onSurface, m_pal.focusOpacity ) );
+
+    // Selected
+    setColor( Q::Ripple | Q::Selected,
+	stateLayerColor( m_pal.primary, m_pal.focusOpacity ) );
+    setBoxBorderColors( Q::Button | Q::Selected, m_pal.primary );
+
+    // Disabled
+    setBoxBorderColors( Q::Button | Q::Disabled, m_pal.onSurface38 );
+    setBoxBorderColors( Q::Button | Q::Disabled | Q::Selected, m_pal.onSurface38 );
+    setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
+    setColor( Q::Symbol | Q::Disabled, m_pal.onSurface38 );
 }
 
 void Editor::setupFocusIndicator()
@@ -1336,47 +1377,25 @@ void QskMaterial3Skin::setupFonts()
     setFont( M3LabelLarge, createFont( "Roboto Medium", 20_dp, 14_dp, 0.1, QFont::Medium ) );
 }
 
+void QskMaterial3Skin::setGraphicColor( GraphicRole role, QRgb rgb )
+{
+    QskColorFilter colorFilter;
+    colorFilter.setMask( QskRgb::RGBAMask );
+    colorFilter.addColorSubstitution( QskRgb::White, rgb );
+
+    setGraphicFilter( role, colorFilter );
+}
+
 void QskMaterial3Skin::setupGraphicFilters( const QskMaterial3Theme& palette )
 {
-    QskColorFilter onPrimaryFilter;
-    onPrimaryFilter.setSubstituteAlphaValue( true );
-    onPrimaryFilter.addColorSubstitution( Qt::white, palette.onPrimary );
-    setGraphicFilter( GraphicRoleOnPrimary, onPrimaryFilter );
-
-    QskColorFilter onSecondaryContainerFilter;
-    onSecondaryContainerFilter.setSubstituteAlphaValue( true );
-    onSecondaryContainerFilter.addColorSubstitution( Qt::white, palette.onSecondaryContainer );
-    setGraphicFilter( GraphicRoleOnSecondaryContainer, onSecondaryContainerFilter );
-
-    QskColorFilter onErrorFilter;
-    onErrorFilter.setSubstituteAlphaValue( true );
-    onErrorFilter.addColorSubstitution( Qt::white, palette.onError );
-    setGraphicFilter( GraphicRoleOnError, onErrorFilter );
-
-    QskColorFilter onSurfaceFilter;
-    onSurfaceFilter.setSubstituteAlphaValue( true );
-    onSurfaceFilter.addColorSubstitution( Qt::white, palette.onSurface );
-    setGraphicFilter( GraphicRoleOnSurface, onSurfaceFilter );
-
-    QskColorFilter onSurfaceFilter38;
-    onSurfaceFilter38.setSubstituteAlphaValue( true );
-    onSurfaceFilter38.addColorSubstitution( Qt::white, palette.onSurface38 );
-    setGraphicFilter( GraphicRoleOnSurface38, onSurfaceFilter38 );
-
-    QskColorFilter onSurfaceVariantFilter;
-    onSurfaceVariantFilter.setSubstituteAlphaValue( true );
-    onSurfaceVariantFilter.addColorSubstitution( Qt::white, palette.onSurfaceVariant );
-    setGraphicFilter( GraphicRoleOnSurfaceVariant, onSurfaceVariantFilter );
-
-    QskColorFilter primaryFilter;
-    primaryFilter.setSubstituteAlphaValue( true );
-    primaryFilter.addColorSubstitution( Qt::white, palette.primary );
-    setGraphicFilter( GraphicRolePrimary, primaryFilter );
-
-    QskColorFilter surfaceFilter;
-    surfaceFilter.setSubstituteAlphaValue( true );
-    surfaceFilter.addColorSubstitution( Qt::white, palette.surface );
-    setGraphicFilter( GraphicRoleSurface, surfaceFilter );
+    setGraphicColor( GraphicRoleOnPrimary, palette.onPrimary );
+    setGraphicColor( GraphicRoleOnSecondaryContainer, palette.onSecondaryContainer );
+    setGraphicColor( GraphicRoleOnError, palette.onError );
+    setGraphicColor( GraphicRoleOnSurface, palette.onSurface );
+    setGraphicColor( GraphicRoleOnSurface38, palette.onSurface38 );
+    setGraphicColor( GraphicRoleOnSurfaceVariant, palette.onSurfaceVariant );
+    setGraphicColor( GraphicRolePrimary, palette.primary );
+    setGraphicColor( GraphicRoleSurface, palette.surface );
 }
 
 #include "moc_QskMaterial3Skin.cpp"

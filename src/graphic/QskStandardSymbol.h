@@ -34,6 +34,8 @@ namespace QskStandardSymbol
         ComboBoxSymbolPopupClosed,
         ComboBoxSymbolPopupOpen,
 
+        Bullet,
+
         SymbolTypeCount
     };
 

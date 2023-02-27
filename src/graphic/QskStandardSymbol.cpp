@@ -206,6 +206,12 @@ static void qskCrossMarkGraphic( QPainter* painter )
     painter->drawLine( 0.0, 1.0, 1.0, 0.0 );
 }
 
+static void qskBulletGraphic( QPainter* painter )
+{
+    painter->setPen( QPen( Qt::black, 1.0 ) );
+    painter->drawEllipse( QRectF( 0.0, 0.0, 1.0, 1.0 ) );
+}
+
 QskGraphic QskStandardSymbol::graphic( Type symbolType )
 {
     static QskGraphic graphics[ SymbolTypeCount ];
@@ -263,6 +269,11 @@ QskGraphic QskStandardSymbol::graphic( Type symbolType )
             case QskStandardSymbol::SegmentedBarCheckMark:
             {
                 qskCheckMarkGraphic( &painter );
+		break;
+	    }
+            case QskStandardSymbol::Bullet:
+            {
+                qskBulletGraphic( &painter );
                 break;
             }
             case QskStandardSymbol::NoSymbol:

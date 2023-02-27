@@ -20,7 +20,7 @@ class QVariant;
 class QSK_EXPORT QskColorFilter
 {
   public:
-    QskColorFilter() noexcept = default;
+    QskColorFilter( QRgb mask = 0x00ffffff ) noexcept;
 
     void addColorSubstitution( QRgb from, QRgb to );
     void addColorSubstitution( Qt::GlobalColor, QRgb );
@@ -37,8 +37,9 @@ class QSK_EXPORT QskColorFilter
 
     bool isIdentity() const noexcept;
 
-    bool substituteAlphaValue() const noexcept;
-    void setSubstituteAlphaValue( bool );
+    // the bits to be replaced
+    QRgb mask() const noexcept;
+    void setMask( QRgb ) noexcept;
 
     bool operator==( const QskColorFilter& other ) const noexcept;
     bool operator!=( const QskColorFilter& other ) const noexcept;
@@ -53,9 +54,14 @@ class QSK_EXPORT QskColorFilter
         const QskColorFilter&, const QskColorFilter&, qreal progress );
 
   private:
+    QRgb m_mask;
     QVector< QPair< QRgb, QRgb > > m_substitutions;
-    bool m_substituteAlphaValue = false;
 };
+
+inline QskColorFilter::QskColorFilter( QRgb mask ) noexcept
+    : m_mask( mask )
+{
+}
 
 inline bool QskColorFilter::isIdentity() const noexcept
 {
@@ -95,6 +101,16 @@ inline void QskColorFilter::addColorSubstitution(
     Qt::GlobalColor from, Qt::GlobalColor to )
 {
     addColorSubstitution( QColor( from ).rgb(), QColor( to ).rgb() );
+}
+
+inline void QskColorFilter::setMask( QRgb mask ) noexcept
+{
+    m_mask = mask;
+}
+
+inline QRgb QskColorFilter::mask() const noexcept
+{
+    return m_mask;
 }
 
 Q_DECLARE_METATYPE( QskColorFilter )

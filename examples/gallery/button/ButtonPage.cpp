@@ -8,6 +8,7 @@
 #include <QskSwitchButton.h>
 #include <QskPushButton.h>
 #include <QskCheckBox.h>
+#include <QskRadioBox.h>
 #include <QskSeparator.h>
 #include <QskLinearBox.h>
 
@@ -118,6 +119,8 @@ namespace
             : QskLinearBox( Qt::Horizontal, parent )
         {
             setSpacing( 20 );
+            setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
+
             setExtraSpacingAt( Qt::LeftEdge | Qt::RightEdge | Qt::BottomEdge );
 
             for ( auto orientation : { Qt::Vertical, Qt::Horizontal } )
@@ -143,7 +146,7 @@ namespace
         CheckButtonBox( QQuickItem* parent = nullptr )
             : QskLinearBox( Qt::Horizontal, 2, parent )
         {
-            setSpacing( 40 );
+            setSpacing( 20 );
             setExtraSpacingAt( Qt::LeftEdge | Qt::RightEdge | Qt::BottomEdge );
 
             auto button1 = new QskCheckBox( "Options 1", this );
@@ -154,6 +157,22 @@ namespace
 
             auto button3 = new QskCheckBox( "Error", this );
             button3->setSkinStateFlag( QskCheckBox::Error );
+        }
+    };
+
+    class RadioButtonBox : public QskLinearBox
+    {
+      public:
+        RadioButtonBox( QQuickItem* parent = nullptr )
+            : QskLinearBox( Qt::Horizontal, parent )
+        {
+            setSpacing( 20 );
+            setExtraSpacingAt( Qt::LeftEdge | Qt::RightEdge | Qt::BottomEdge );
+
+            new QskRadioBox( { "One", "Two", "Three" }, this );
+
+            auto radioBox = new QskRadioBox( { "One", "Two", "Three" }, this );
+            radioBox->setLayoutMirroring( true );
         }
     };
 }
@@ -171,5 +190,8 @@ void ButtonPage::populate()
     new QskSeparator( Qt::Horizontal, this );
     new SwitchButtonBox( this );
     new QskSeparator( Qt::Horizontal, this );
-    new CheckButtonBox( this );
+
+    auto hBox = new QskLinearBox( Qt::Horizontal, this );
+    new CheckButtonBox( hBox );
+    new RadioButtonBox( hBox );
 }

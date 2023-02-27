@@ -205,6 +205,8 @@ HEADERS += \
     controls/QskQuick.h \
     controls/QskQuickItem.h \
     controls/QskQuickItemPrivate.h \
+    controls/QskRadioBox.h \
+    controls/QskRadioBoxSkinlet.h \
     controls/QskScrollArea.h \
     controls/QskScrollBox.h \
     controls/QskScrollView.h \
@@ -297,6 +299,8 @@ SOURCES += \
     controls/QskScrollArea.cpp \
     controls/QskScrollBox.cpp \
     controls/QskScrollView.cpp \
+    controls/QskRadioBox.cpp \
+    controls/QskRadioBoxSkinlet.cpp \
     controls/QskScrollViewSkinlet.cpp \
     controls/QskSegmentedBar.cpp \
     controls/QskSegmentedBarSkinlet.cpp \

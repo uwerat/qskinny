@@ -157,6 +157,7 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
   private:
     void setupFonts();
     void setupGraphicFilters( const QskMaterial3Theme& palette );
+    void setGraphicColor( GraphicRole, QRgb );
 };
 
 #endif

@@ -14,51 +14,39 @@ namespace
 {
     class Box : public QskGridBox
     {
-    public:
+      public:
         Box( QQuickItem* parent )
             : QskGridBox( parent )
         {
             auto* messageButton = new QskPushButton( "message", this );
 
-            connect( messageButton, &QskPushButton::clicked, this, []()
-            {
-                qskDialog->message( "message", "text", QskStandardSymbol::Ok );
-            } );
+            connect( messageButton, &QskPushButton::clicked, this,
+                []() { qskDialog->message( "message", "text", QskStandardSymbol::Ok ); } );
 
             auto* informationButton = new QskPushButton( "information", this );
 
-            connect( informationButton, &QskPushButton::clicked, this, []()
-            {
-                qskDialog->information( "information", "text" );
-            } );
+            connect( informationButton, &QskPushButton::clicked, this,
+                []() { qskDialog->information( "information", "text" ); } );
 
             auto* warningButton = new QskPushButton( "warning", this );
 
-            connect( warningButton, &QskPushButton::clicked, this, []()
-            {
-                qskDialog->warning( "warning", "text" );
-            } );
+            connect( warningButton, &QskPushButton::clicked, this,
+                []() { qskDialog->warning( "warning", "text" ); } );
 
             auto* criticalButton = new QskPushButton( "critical", this );
 
-            connect( criticalButton, &QskPushButton::clicked, this, []()
-            {
-                qskDialog->critical( "critical", "text" );
-            } );
+            connect( criticalButton, &QskPushButton::clicked, this,
+                []() { qskDialog->critical( "critical", "text" ); } );
 
             auto* questionButton = new QskPushButton( "question", this );
 
-            connect( questionButton, &QskPushButton::clicked, this, []()
-            {
-                qskDialog->question( "question", "text" );
-            } );
+            connect( questionButton, &QskPushButton::clicked, this,
+                []() { qskDialog->question( "question", "text" ); } );
 
             auto* selectButton = new QskPushButton( "select", this );
 
-            connect( selectButton, &QskPushButton::clicked, this, []()
-            {
-                qskDialog->select( "select", "text", { "yes", "no", "maybe" } );
-            } );
+            connect( selectButton, &QskPushButton::clicked, this,
+                []() { qskDialog->select( "select", "text", { "yes", "no", "maybe" } ); } );
 
             addItem( messageButton, 0, 0 );
             addItem( informationButton, 0, 1 );
