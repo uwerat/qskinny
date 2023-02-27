@@ -616,10 +616,10 @@ void Editor::setupSeparator()
     {
         const auto aspect = Q::Panel | variation;
 
-        setMetric( aspect | A::Size, 4_dp );
+        setMetric( aspect | A::Size, 1_dp );
         setBoxShape( Q::Panel, 0 );
         setBoxBorderMetrics( Q::Panel, 0 );
-        setGradient( aspect, m_pal.background );
+        setGradient( aspect, m_pal.outline );
     }
 }
 
