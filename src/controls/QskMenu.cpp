@@ -75,8 +75,6 @@ QskMenu::QskMenu( QQuickItem* parent )
     , m_data( new PrivateData )
 {
     setModal( true );
-    setOverlay( true );
-
     setFaderAspect( QskMenu::Panel | QskAspect::Position | QskAspect::Metric );
 
     setPopupFlag( QskPopup::CloseOnPressOutside, true );

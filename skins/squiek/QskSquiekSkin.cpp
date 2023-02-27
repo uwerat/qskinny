@@ -340,6 +340,9 @@ void Editor::setupMenu()
     using A = QskAspect;
     using Q = QskMenu;
 
+    setFlagHint( Q::Overlay | A::Style, true );
+    setGradient( Q::Overlay, QColor( 220, 220, 220, 100 ) );
+
     setBoxShape( Q::Panel, qskDpiScaled( 4 ) );
     setBoxBorderMetrics( Q::Panel, qskDpiScaled( 1 ) );
     setBoxBorderColors( Q::Panel, m_pal.darker125 );

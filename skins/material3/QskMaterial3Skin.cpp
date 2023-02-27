@@ -359,11 +359,12 @@ void Editor::setupMenu()
     using A = QskAspect;
     using Q = QskMenu;
 
+    setFlagHint( Q::Overlay | A::Style, false );
+    setGradient( Q::Overlay, stateLayerColor( m_pal.outline, 0.8 ) );
+
     setBoxShape( Q::Panel, 4_dp );
     setBoxBorderMetrics( Q::Panel, 0 );
     setPadding( Q::Panel, 0 );
-
-    setGradient( Q::Overlay, Qt::transparent );
 
     // The color here is primary with an opacity of 8% - we blend that
     // with the background, because we don't want the menu to have transparency:
