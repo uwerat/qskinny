@@ -21,6 +21,7 @@
 #include <QskTextLabel.h>
 #include <QskSwitchButton.h>
 #include <QskPushButton.h>
+#include <QskScrollArea.h>
 #include <QskMenu.h>
 #include <QskWindow.h>
 #include <QskDialog.h>
@@ -28,6 +29,8 @@
 #include <QskSkin.h>
 #include <QskSkinTransition.h>
 #include <QskAnimationHint.h>
+#include <QskBoxBorderMetrics.h>
+#include <QskBoxShapeMetrics.h>
 #include <QskSetup.h>
 
 #include <QGuiApplication>
@@ -47,6 +50,22 @@ namespace
         {
             for ( int i = 0; i < count(); i++ )
                 itemAt( i )->setEnabled( on );
+        }
+
+        void addPage( const QString& tabText, QQuickItem* page )
+        {
+            auto scrollArea = new QskScrollArea();
+            scrollArea->setMargins( 5 );
+
+            // hiding the viewport
+            scrollArea->setGradientHint( QskScrollView::Viewport, QskGradient() );
+            scrollArea->setBoxShapeHint( QskScrollView::Viewport, 0 );
+            scrollArea->setBoxBorderMetricsHint( QskScrollView::Viewport, 0 );
+
+            scrollArea->setItemResizable( true );
+            scrollArea->setScrolledItem( page );
+
+            addTab( tabText, scrollArea );
         }
     };
 
@@ -191,12 +210,12 @@ namespace
             auto header = new Header( this );
 
             auto tabView = new TabView( this );
-            tabView->addTab( "Buttons", new ButtonPage() );
-            tabView->addTab( "Labels", new LabelPage() );
-            tabView->addTab( "Inputs", new InputPage() );
-            tabView->addTab( "Progress\nBars", new ProgressBarPage() );
-            tabView->addTab( "Selectors", new SelectorPage() );
-            tabView->addTab( "Dialogs", new DialogPage() );
+            tabView->addPage( "Buttons", new ButtonPage() );
+            tabView->addPage( "Labels", new LabelPage() );
+            tabView->addPage( "Inputs", new InputPage() );
+            tabView->addPage( "Progress\nBars", new ProgressBarPage() );
+            tabView->addPage( "Selectors", new SelectorPage() );
+            tabView->addPage( "Dialogs", new DialogPage() );
 
             connect( header, &Header::enabledToggled,
                 tabView, &TabView::setTabsEnabled );
@@ -224,14 +243,11 @@ int main( int argc, char* argv[] )
 
     auto mainView = new ApplicationView();
 
-    QSize size( 800, 600 );
-    size = size.expandedTo( mainView->sizeHint().toSize() );
-
     QskWindow window;
     window.addItem( mainView );
     window.addItem( new QskFocusIndicator() );
 
-    window.resize( size );
+    window.resize( 800, 600 );
     window.show();
 
     return app.exec();

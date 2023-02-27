@@ -11,7 +11,4 @@ class DialogPage : public Page
 {
   public:
     DialogPage( QQuickItem* = nullptr );
-
-  private:
-    void populate();
 };

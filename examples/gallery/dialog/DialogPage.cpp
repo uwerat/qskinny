@@ -6,65 +6,87 @@
 #include "DialogPage.h"
 
 #include <QskDialog.h>
-#include <QskGridBox.h>
+#include <QskLinearBox.h>
 #include <QskPushButton.h>
 #include <QskStandardSymbol.h>
+#include <QskBoxShapeMetrics.h>
 
 namespace
 {
-    class Box : public QskGridBox
+    class Button : public QskPushButton
     {
+        Q_OBJECT
+
       public:
-        Box( QQuickItem* parent )
-            : QskGridBox( parent )
+        enum ButtonType
         {
-            auto* messageButton = new QskPushButton( "message", this );
+            Message,
+            Information,
+            Warning,
+            Critical,
 
-            connect( messageButton, &QskPushButton::clicked, this,
-                []() { qskDialog->message( "message", "text", QskStandardSymbol::Ok ); } );
+            Question,
+            Selection,
 
-            auto* informationButton = new QskPushButton( "information", this );
+            TypeCount
+        };
+        Q_ENUM( ButtonType );
 
-            connect( informationButton, &QskPushButton::clicked, this,
-                []() { qskDialog->information( "information", "text" ); } );
+        Button( ButtonType type, QQuickItem* parent = nullptr )
+            : QskPushButton( parent )
+            , m_type( type )
+        {
+            setShape( 10 );
+            initSizePolicy( QskSizePolicy::Ignored, QskSizePolicy::Ignored );
 
-            auto* warningButton = new QskPushButton( "warning", this );
+            const int index = metaObject()->indexOfEnumerator( "ButtonType" );
+            setText( metaObject()->enumerator( index ).key( m_type ) );
 
-            connect( warningButton, &QskPushButton::clicked, this,
-                []() { qskDialog->warning( "warning", "text" ); } );
-
-            auto* criticalButton = new QskPushButton( "critical", this );
-
-            connect( criticalButton, &QskPushButton::clicked, this,
-                []() { qskDialog->critical( "critical", "text" ); } );
-
-            auto* questionButton = new QskPushButton( "question", this );
-
-            connect( questionButton, &QskPushButton::clicked, this,
-                []() { qskDialog->question( "question", "text" ); } );
-
-            auto* selectButton = new QskPushButton( "select", this );
-
-            connect( selectButton, &QskPushButton::clicked, this,
-                []() { qskDialog->select( "select", "text", { "yes", "no", "maybe" } ); } );
-
-            addItem( messageButton, 0, 0 );
-            addItem( informationButton, 0, 1 );
-            addItem( warningButton, 0, 2 );
-            addItem( criticalButton, 1, 0 );
-            addItem( questionButton, 1, 1 );
-            addItem( selectButton, 1, 2 );
+            connect( this, &QskPushButton::clicked, this, &Button::showDialog );
         }
+
+      private:
+        void showDialog()
+        {
+            switch( static_cast< int >( m_type ) )
+            {
+                case Message:
+                    qskDialog->message( text(), text(), QskStandardSymbol::Ok );
+                    break;
+
+                case Information:
+                    qskDialog->information( text(), text() );
+                    break;
+
+                case Warning:
+                    qskDialog->warning( text(), text() );
+                    break;
+
+                case Critical:
+                    qskDialog->critical( text(), text() );
+                    break;
+
+                case Question:
+                    qskDialog->question( text(), text() );
+                    break;
+
+                case Selection:
+                    qskDialog->select( text(), text(), { "yes", "no", "maybe" } );
+                    break;
+            }
+        }
+
+        const ButtonType m_type;
     };
 }
 
 DialogPage::DialogPage( QQuickItem* parent )
     : Page( Qt::Horizontal, parent )
 {
-    populate();
+    auto box = new QskLinearBox( Qt::Horizontal, 2, this );
+
+    for ( int i = 0; i < Button::TypeCount; i++ )
+        new Button( static_cast< Button::ButtonType >( i ), box );
 }
 
-void DialogPage::populate()
-{
-    new Box( this );
-}
+#include "DialogPage.moc"
