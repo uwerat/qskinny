@@ -1044,6 +1044,14 @@ void Editor::setupSpinBox()
         setPadding( subControl, 0.0 );
         setStrutSize( subControl, 20, 10 );
         setBoxShape( subControl, 0 );
+
+        const auto downState = ( subControl == Q::UpPanel )
+            ? Q::Increasing : Q::Decreasing; 
+
+        setButton( subControl | downState, Sunken, 1.0 );
+
+        setAnimation( subControl | A::Metric, 100 );
+        setAnimation( subControl | A::Color, 100 );
     }
 
     for ( auto subControl : { Q::UpIndicator, Q::DownIndicator } )
@@ -1052,6 +1060,7 @@ void Editor::setupSpinBox()
 #if 1
         setFontRole( subControl, QskSkin::TinyFont ); // until it is no graphic
 #endif
+        setAnimation( subControl | A::Color, 100 );
     }
 }
 

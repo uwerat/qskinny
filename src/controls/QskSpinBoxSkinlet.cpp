@@ -126,7 +126,7 @@ QRectF QskSpinBoxSkinlet::buttonRect( const QskSkinnable* skinnable,
     {
         qreal x, y, w, h;
 
-        if ( decoration == QskSpinBox::UpDownControl )
+        if ( decoration == Q::UpDownControl )
         {
             const auto hint1 = spinBox->strutSizeHint( Q::UpPanel );
             const auto hint2 = spinBox->strutSizeHint( Q::DownPanel );
