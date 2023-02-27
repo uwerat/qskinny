@@ -25,6 +25,7 @@
 #include <QskSegmentedBar.h>
 #include <QskSlider.h>
 #include <QskSubWindow.h>
+#include <QskSpinBox.h>
 #include <QskSwitchButton.h>
 #include <QskSwitchButtonSkinlet.h>
 #include <QskTabBar.h>
@@ -151,6 +152,7 @@ namespace
         void setupSeparator();
         void setupSlider();
         void setupSubWindow();
+        void setupSpinBox();
         void setupSwitchButton();
         void setupTabButton();
         void setupTabBar();
@@ -267,6 +269,7 @@ void Editor::setup()
     setupSeparator();
     setupSlider();
     setupSubWindow();
+    setupSpinBox();
     setupSwitchButton();
     setupTabButton();
     setupTabBar();
@@ -1012,6 +1015,44 @@ void Editor::setupSubWindow()
 
     for ( auto subControl : { Q::Panel, Q::TitleBarPanel, Q::TitleBarText } )
         setAnimation( subControl | A::Color, qskDuration );
+}
+
+void Editor::setupSpinBox()
+{
+    using A = QskAspect;
+    using Q = QskSpinBox;
+
+    setFlagHint( Q::Panel | A::Style, Q::UpDownControl );
+    setSpacing( Q::Panel, 2 );
+
+    setPadding( Q::TextPanel, 5 );
+    setBoxBorderMetrics( Q::TextPanel, 2 );
+    setBoxShape( Q::TextPanel, 4 );
+
+    const auto c = m_pal.base;
+
+    const QskBoxBorderColors borderColors(
+        c.darker( 170 ), c.darker( 170 ),
+        c.darker( 105 ), c.darker( 105 ) );
+
+    setBoxBorderColors( Q::TextPanel, borderColors );
+    setGradient( Q::TextPanel, c );
+
+    for ( auto subControl : { Q::UpPanel, Q::DownPanel } )
+    {
+        setButton( subControl, Raised, 1.0 );
+        setPadding( subControl, 0.0 );
+        setStrutSize( subControl, 20, 10 );
+        setBoxShape( subControl, 0 );
+    }
+
+    for ( auto subControl : { Q::UpIndicator, Q::DownIndicator } )
+    {
+        setAlignment( subControl, Qt::AlignCenter );
+#if 1
+        setFontRole( subControl, QskSkin::TinyFont ); // until it is no graphic
+#endif
+    }
 }
 
 void Editor::setupSwitchButton()
