@@ -86,8 +86,28 @@ static bool pluginPath = initPluginPath();
 
 #if defined( ENSURE_FONTS )
 
-    #include <QFontDatabase>
-    #include <QElapsedTimer>
+    #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+        #include <QFontDatabase>
+        #include <QElapsedTimer>
+    #endif
+
+    static void preloadFonts()
+    {
+    #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+        QElapsedTimer timer;
+        timer.start();
+
+        QFontDatabase(); // deprecated and doing nothing since Qt6
+
+        const auto elapsed = timer.elapsed();
+
+        if ( elapsed > 20 )
+        {
+            qWarning() << "Loading fonts needed" << elapsed << "ms"
+                << "- usually because of creating a font cache.";
+        }
+    #endif
+    }
 
     static void initFonts()
     {
@@ -100,18 +120,7 @@ static bool pluginPath = initPluginPath();
             qputenv( env, STRING( FONTCONFIG_FILE ) );
     #endif
 
-        QElapsedTimer timer;
-        timer.start();
-
-        QFontDatabase();
-
-        const auto elapsed = timer.elapsed();
-
-        if ( elapsed > 20 )
-        {
-            qWarning() << "Loading fonts needed" << elapsed << "ms"
-                << "- usually because of creating a font cache.";
-        }
+        preloadFonts();
 
         /*
             The default initialization in QskSkin sets up its font table
