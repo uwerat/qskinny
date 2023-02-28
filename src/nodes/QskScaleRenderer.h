@@ -31,6 +31,7 @@ class QSK_EXPORT QskScaleRenderer
     ~QskScaleRenderer();
 
     void setOrientation( Qt::Orientation );
+    void setAlignment( Qt::Alignment );
 
     void setBoundaries( const QskIntervalF& );
     void setTickmarks( const QskScaleTickmarks& );

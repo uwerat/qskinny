@@ -62,6 +62,7 @@ class QskScaleRenderer::PrivateData
     QskColorFilter colorFilter;
 
     Qt::Orientation orientation = Qt::Horizontal;
+    Qt::Alignment alignment = Qt::AlignBottom | Qt::AlignRight;
 };
 
 QskScaleRenderer::QskScaleRenderer()
@@ -76,6 +77,11 @@ QskScaleRenderer::~QskScaleRenderer()
 void QskScaleRenderer::setOrientation( Qt::Orientation orientation )
 {
     m_data->orientation = orientation;
+}
+
+void QskScaleRenderer::setAlignment( Qt::Alignment alignment )
+{
+    m_data->alignment = alignment;
 }
 
 void QskScaleRenderer::setBoundaries( const QskIntervalF& boundaries )
@@ -169,7 +175,8 @@ QSGNode* QskScaleRenderer::updateTicksNode(
         ticksNode = new QskTickmarksNode;
 
     ticksNode->update( m_data->tickColor, rect, m_data->boundaries,
-        m_data->tickmarks, m_data->tickWidth, m_data->orientation );
+        m_data->tickmarks, m_data->tickWidth, m_data->orientation,
+        m_data->alignment );
 
     return ticksNode;
 }

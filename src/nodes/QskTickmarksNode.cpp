@@ -12,7 +12,7 @@ QSK_QT_PRIVATE_END
 static constexpr inline qreal qskTickFactor( QskScaleTickmarks::TickType type )
 {
     using TM = QskScaleTickmarks;
-    return type == TM::MinorTick ? 0.7 : ( type == TM::MinorTick ? 0.85 : 1.0 );
+    return type == TM::MinorTick ? 0.7 : ( type == TM::MediumTick ? 0.85 : 1.0 );
 }
 
 class QskTickmarksNodePrivate final : public QSGGeometryNodePrivate
@@ -53,7 +53,7 @@ QskTickmarksNode::~QskTickmarksNode()
 void QskTickmarksNode::update(
     const QColor& color, const QRectF& rect,
     const QskIntervalF& boundaries, const QskScaleTickmarks& tickmarks,
-    int lineWidth, Qt::Orientation orientation )
+    int lineWidth, Qt::Orientation orientation, Qt::Alignment alignment )
 {
     Q_D( QskTickmarksNode );
 
@@ -94,8 +94,27 @@ void QskTickmarksNode::update(
                 {
                     const auto x = rect.x() + ( tick - min ) * ratio;
 
-                    vertexData[ 0 ].set( x, rect.bottom() );
-                    vertexData[ 1 ].set( x, rect.bottom() - len );
+                    qreal y1, y2;
+
+                    if( alignment & Qt::AlignTop )
+                    {
+                        y1 = rect.top() + len;
+                        y2 = rect.top();
+                    }
+                    else if( alignment & Qt::AlignVCenter )
+                    {
+                        const auto offset = ( rect.height() - len ) / 2;
+                        y1 = rect.bottom() - offset;
+                        y2 = rect.top() + offset;
+                    }
+                    else // Bottom (default)
+                    {
+                        y1 = rect.bottom();
+                        y2 = rect.bottom() - len;
+                    }
+
+                    vertexData[ 0 ].set( x, y1 );
+                    vertexData[ 1 ].set( x, y2 );
                     vertexData += 2;
                 }
             }
@@ -108,8 +127,27 @@ void QskTickmarksNode::update(
                 {
                     const auto y = rect.bottom() - ( tick - min ) * ratio;
 
-                    vertexData[ 0 ].set( rect.right(), y );
-                    vertexData[ 1 ].set( rect.right() - len, y );
+                    qreal x1, x2;
+
+                    if( alignment & Qt::AlignLeft )
+                    {
+                        x1 = rect.left() + len;
+                        x2 = rect.left();
+                    }
+                    else if( alignment & Qt::AlignHCenter )
+                    {
+                        const auto offset = ( rect.width() - len ) / 2;
+                        x1 = rect.right() - offset;
+                        x2 = rect.left() + offset;
+                    }
+                    else // Right (default)
+                    {
+                        x1 = rect.right();
+                        x2 = rect.right() - len;
+                    }
+
+                    vertexData[ 0 ].set( x1, y );
+                    vertexData[ 1 ].set( x2, y );
                     vertexData += 2;
                 }
             }
