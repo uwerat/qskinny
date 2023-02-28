@@ -206,9 +206,9 @@ void QskRadioBox::keyReleaseEvent( QKeyEvent* )
 {
 }
 
-void QskRadioBox::mousePressEvent( QMouseEvent* e )
+void QskRadioBox::mousePressEvent( QMouseEvent* event )
 {
-    auto indexAtPosition = indexAt( e->localPos() );
+    auto indexAtPosition = indexAt( qskMousePosition( event ) );
 
     m_data->pressedIndex = indexAtPosition;
     m_data->selectedIndex = -1;
@@ -217,36 +217,36 @@ void QskRadioBox::mousePressEvent( QMouseEvent* e )
     update();
 }
 
-void QskRadioBox::mouseReleaseEvent( QMouseEvent* e )
+void QskRadioBox::mouseReleaseEvent( QMouseEvent* event )
 {
-    const auto index = indexAt( e->localPos() );
+    const auto index = indexAt( qskMousePosition( event ) );
     if( index == m_data->pressedIndex )
         setSelectedIndex( index );
 
     update();
 }
 
-void QskRadioBox::focusInEvent( QFocusEvent* e )
+void QskRadioBox::focusInEvent( QFocusEvent* event )
 {
-    if( e->reason() == Qt::TabFocusReason )
+    if( event->reason() == Qt::TabFocusReason )
     {
         setFocusedIndex( 0 );
     }
-    else if( e->reason() == Qt::BacktabFocusReason )
+    else if( event->reason() == Qt::BacktabFocusReason )
     {
         setFocusedIndex( items().size() - 1 );
     }
 
     update();
-    Inherited::focusInEvent( e );
+    Inherited::focusInEvent( event );
 }
 
-void QskRadioBox::focusOutEvent( QFocusEvent* e )
+void QskRadioBox::focusOutEvent( QFocusEvent* event )
 {
     setFocusedIndex( -1 );
     update();
 
-    Inherited::focusOutEvent( e );
+    Inherited::focusOutEvent( event );
 }
 
 int QskRadioBox::indexAt( const QPointF& target ) const
