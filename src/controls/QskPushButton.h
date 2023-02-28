@@ -48,7 +48,7 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     QSK_SUBCONTROLS( Panel, Ripple, Text, Graphic )
 
     enum Emphasis
-    {   
+    {
         VeryLowEmphasis = -2,
         LowEmphasis = -1,
         NoEmphasis = 0,

@@ -42,7 +42,7 @@ namespace
             const auto textOptions = button->textOptions();
 
             if ( ( textOptions.elideMode() == Qt::ElideNone )
-                && ( textOptions.wrapMode() == QskTextOptions::NoWrap ) ) 
+                && ( textOptions.wrapMode() == QskTextOptions::NoWrap ) )
             {
                 const auto alignment = button->alignmentHint(
                     QskPushButton::Panel, Qt::AlignCenter );

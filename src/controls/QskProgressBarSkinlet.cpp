@@ -134,7 +134,7 @@ QSGNode* QskProgressBarSkinlet::updateBarNode(
             definition for the 100% situation and have to adjust
             the stops for smaller bars.
 
-            For this situation it would be more convenient to 
+            For this situation it would be more convenient to
             adjust the start/stop positions, but the box renderer is
             not supporting this yet. TODO ...
          */

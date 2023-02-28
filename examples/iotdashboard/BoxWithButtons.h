@@ -14,9 +14,10 @@ class BoxWithButtons : public Box
   public:
     QSK_SUBCONTROLS( Panel, ValuePanel, ValueText )
 
-    BoxWithButtons( const QString& title, const QString& prefix,
-                    const int initialValue, const QString& suffix,
-                    bool isBright, QQuickItem* parent = nullptr );
+    BoxWithButtons(
+        const QString& title, const QString& prefix,
+        const int initialValue, const QString& suffix,
+        bool isBright, QQuickItem* parent = nullptr );
 
   private:
     void setValue( const int value );

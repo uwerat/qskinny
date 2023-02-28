@@ -25,7 +25,7 @@
 namespace
 {
     // Some leftover definitions from M(aterial)2. TODO ...
-        
+
     constexpr const QRgb Grey400 = 0xffbdbdbd;
     constexpr const QRgb Grey500 = 0xff9e9e9e;
 
@@ -418,7 +418,8 @@ static void addColoredBorderRectangles1( QskLinearBox* parent,
         box->setShape( 30, Qt::AbsoluteSize );
 }
 
-static void addColoredBorderRectangles2( QskLinearBox* parent, bool rounded, Box::FillType fillType )
+static void addColoredBorderRectangles2( QskLinearBox* parent,
+    bool rounded, Box::FillType fillType )
 {
     Box* box = new Box( parent );
     box->setBorderWidth( 20 );
@@ -431,7 +432,8 @@ static void addColoredBorderRectangles2( QskLinearBox* parent, bool rounded, Box
         box->setShape( 30, Qt::AbsoluteSize );
 }
 
-static void addColoredBorderRectangles3( QskLinearBox* parent, bool rounded, Box::FillType fillType )
+static void addColoredBorderRectangles3( QskLinearBox* parent,
+    bool rounded, Box::FillType fillType )
 {
     Box* box = new Box( parent );
     box->setBorderWidth( 20 );
@@ -471,7 +473,8 @@ static void addColoredBorderRectangles3( QskLinearBox* parent, bool rounded, Box
         box->setShape( 30, Qt::AbsoluteSize );
 }
 
-static void addColoredBorderRectangles4( QskLinearBox* parent, bool rounded, Box::FillType fillType )
+static void addColoredBorderRectangles4( QskLinearBox* parent,
+    bool rounded, Box::FillType fillType )
 {
     Box* box = new Box( parent );
     box->setBorderWidth( 20 );
@@ -485,7 +488,8 @@ static void addColoredBorderRectangles4( QskLinearBox* parent, bool rounded, Box
         box->setShape( 30, Qt::AbsoluteSize );
 }
 
-static void addColoredBorderRectangles5( QskLinearBox* parent, bool rounded, Box::FillType fillType )
+static void addColoredBorderRectangles5( QskLinearBox* parent,
+    bool rounded, Box::FillType fillType )
 {
     Box* box = new Box( parent );
     box->setBorderWidth( 20 );

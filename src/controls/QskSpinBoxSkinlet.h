@@ -21,7 +21,7 @@ class QSK_EXPORT QskSpinBoxSkinlet : public QskSkinlet
         TextPanel,
         Text,
 
-        UpPanel, 
+        UpPanel,
         UpIndicator,
 
         DownPanel,

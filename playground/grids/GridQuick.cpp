@@ -75,7 +75,8 @@ void GridQuick::insert( const QByteArray& colorName,
         We need to create a temporary layout in QML, so that the
         object for the attachedProperties is created early
      */
-    auto layout = createQml( "import QtQuick 2.0\nimport QtQuick.Layouts 1.15\nGridLayout { Rectangle {} }" );
+    auto layout = createQml(
+        "import QtQuick 2.0\nimport QtQuick.Layouts 1.15\nGridLayout { Rectangle {} }" );
 
     auto rectangle = layout->childItems().constFirst();
     rectangle->setParent( nullptr );

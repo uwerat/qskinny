@@ -41,9 +41,10 @@ namespace
     };
 }
 
-BoxWithButtons::BoxWithButtons( const QString& title, const QString &prefix,
-                                const int initialValue, const QString &suffix,
-                                bool isBright, QQuickItem* parent )
+BoxWithButtons::BoxWithButtons(
+        const QString& title, const QString& prefix,
+        const int initialValue, const QString& suffix,
+        bool isBright, QQuickItem* parent )
     : Box( QString(), parent )
     , m_prefix( prefix )
     , m_suffix( suffix )

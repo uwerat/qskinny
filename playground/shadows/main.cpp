@@ -122,7 +122,7 @@ class GridBox : public QskGridBox
         addItem( label, row, 2 );
 
         connect( slider, &QskSlider::valueChanged,
-            label, [label]( qreal value ) { label->setText( QString::number( value ) ); } ); 
+            label, [label]( qreal value ) { label->setText( QString::number( value ) ); } );
     }
 };
 

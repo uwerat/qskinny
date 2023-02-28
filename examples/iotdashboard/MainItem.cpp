@@ -199,20 +199,24 @@ void Cube::keyPressEvent( QKeyEvent* event )
 
     switch( event->key() )
     {
-    case Qt::Key_Up:
-        direction = Qsk::TopToBottom;
-        break;
-    case Qt::Key_Down:
-        direction = Qsk::BottomToTop;
-        break;
-    case Qt::Key_Left:
-        direction = Qsk::LeftToRight;
-        break;
-    case Qt::Key_Right:
-        direction = Qsk::RightToLeft;
-        break;
-    default:
-        return;
+        case Qt::Key_Up:
+            direction = Qsk::TopToBottom;
+            break;
+
+        case Qt::Key_Down:
+            direction = Qsk::BottomToTop;
+            break;
+
+        case Qt::Key_Left:
+            direction = Qsk::LeftToRight;
+            break;
+
+        case Qt::Key_Right:
+            direction = Qsk::RightToLeft;
+            break;
+
+        default:
+            return;
     }
 
     switchPosition( direction );
@@ -307,7 +311,7 @@ MainItem::MainItem( QQuickItem* parent )
 void MainItem::gestureEvent( QskGestureEvent* event )
 {
     if( event->gesture()->state() == QskGesture::Finished
-            && event->gesture()->type() == QskGesture::Pan )
+        && event->gesture()->type() == QskGesture::Pan )
     {
         const auto* panGesture = static_cast< const QskPanGesture* >( event->gesture().get() );
 

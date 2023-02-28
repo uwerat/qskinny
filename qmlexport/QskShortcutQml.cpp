@@ -130,8 +130,7 @@ Qt::ShortcutContext QskShortcutQml::context() const
 
 void QskShortcutQml::setContext( Qt::ShortcutContext context )
 {
-    if ( context == Qt::ApplicationShortcut ||
-        context == Qt::WindowShortcut )
+    if ( context == Qt::ApplicationShortcut || context == Qt::WindowShortcut )
     {
         const bool isWindowContext = ( context == Qt::WindowShortcut );
 

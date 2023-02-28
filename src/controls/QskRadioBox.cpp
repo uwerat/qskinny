@@ -37,9 +37,7 @@ QskRadioBox::QskRadioBox( QQuickItem* parent )
 
     connect(this, &QskRadioBox::itemsChanged, this,
         [this]( const QStringList& items )
-        {
-            setFocusPolicy( items.count() > 0 ? Qt::StrongFocus : Qt::NoFocus );
-        }
+            { setFocusPolicy( items.count() > 0 ? Qt::StrongFocus : Qt::NoFocus ); }
     );
 
     setFocusedIndex( -1 );

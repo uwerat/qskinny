@@ -621,10 +621,10 @@ void Editor::setupRadioBox()
     using Q = QskRadioBox;
 
     setSpacing(Q::Panel, qskDpiScaled( 10 ) );
-    
+
     setStrutSize( Q::Button, { qskDpiScaled( 20 ), qskDpiScaled( 20 ) } );
-    setStrutSize( Q::Symbol, { qskDpiScaled( 9 ), qskDpiScaled( 9 ) }) ;
-    
+    setStrutSize( Q::Symbol, { qskDpiScaled( 9 ), qskDpiScaled( 9 ) });
+
     setBoxShape( Q::Button, qskDpiScaled( 20 ) );
     setBoxShape( Q::Ripple, qskDpiScaled( 40 ) );
     setBoxBorderMetrics( Q::Button, qskDpiScaled( 1 ) );
@@ -638,12 +638,12 @@ void Editor::setupRadioBox()
     setColor( Q::Panel | Q::Disabled, m_pal.lighter125 );
 
     setColor( Q::Button | Q::Disabled, m_pal.lighter110 );
-    
+
     setColor( Q::Text | Q::Disabled, m_pal.darker200 );
 
     setColor( Q::Symbol | Q::Disabled, m_pal.darker200 );
 
-    setMargin( Q::Text, QskMargins( qskDpiScaled( 10 ), 0, qskDpiScaled( 10 ), 0 ));
+    setMargin( Q::Text, QskMargins( qskDpiScaled( 10 ), 0, qskDpiScaled( 10 ), 0 ) );
 
     setAlignment( Q::Symbol, Qt::AlignCenter );
     setAlignment( Q::Text, Qt::AlignBottom );
@@ -1046,7 +1046,7 @@ void Editor::setupSpinBox()
         setBoxShape( subControl, 0 );
 
         const auto downState = ( subControl == Q::UpPanel )
-            ? Q::Increasing : Q::Decreasing; 
+            ? Q::Increasing : Q::Decreasing;
 
         setButton( subControl | downState, Sunken, 1.0 );
 

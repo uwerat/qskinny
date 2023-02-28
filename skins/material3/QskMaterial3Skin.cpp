@@ -474,18 +474,18 @@ void Editor::setupRadioBox()
     using A = QskAspect;
 
     setAnimation( Q::Ripple | A::Metric | A::Position, qskDuration );
-    
+
     setSpacing( Q::Panel, 10_dp );
-    
+
     setStrutSize( Q::Button, { 20_dp, 20_dp } );
     setStrutSize( Q::Symbol, { 10_dp, 10_dp } );
     setStrutSize( Q::Ripple, { 40_dp, 40_dp } );
 
     setAlignment( Q::Symbol, Qt::AlignCenter );
     setAlignment( Q::Text, Qt::AlignBottom );
-    
+
     setMargin( Q::Text, QskMargins( 10_dp, 0, 10_dp, 0 ) );
-    
+
     setBoxShape( Q::Button, 20_dp );
     setBoxShape( Q::Ripple, 40_dp );
     setBoxBorderMetrics( Q::Button, 2_dp );
@@ -496,7 +496,7 @@ void Editor::setupRadioBox()
 
     // Selected
     setColor( Q::Ripple | Q::Selected,
-	stateLayerColor( m_pal.primary, m_pal.focusOpacity ) );
+        stateLayerColor( m_pal.primary, m_pal.focusOpacity ) );
     setBoxBorderColors( Q::Button | Q::Selected, m_pal.primary );
 
     // Disabled
@@ -680,13 +680,16 @@ void Editor::setupPushButton()
     setGradient( Q::Panel | M3::Elevated | Q::Disabled, m_pal.onSurface12 );
     setShadowMetrics( Q::Panel | M3::Elevated | Q::Disabled, m_pal.elevation0 );
     setColor( Q::Text | M3::Elevated | Q::Disabled, m_pal.onSurface38 );
-    setGraphicRole( Q::Graphic | M3::Elevated | Q::Disabled, QskMaterial3Skin::GraphicRoleOnSurface38 );
+    setGraphicRole( Q::Graphic | M3::Elevated | Q::Disabled,
+        QskMaterial3Skin::GraphicRoleOnSurface38 );
 
-    const auto elevatedHoverColor = flattenedColor( m_pal.primary, m_pal.surface, m_pal.hoverOpacity );
+    const auto elevatedHoverColor =
+        flattenedColor( m_pal.primary, m_pal.surface, m_pal.hoverOpacity );
     setGradient( Q::Panel | M3::Elevated | Q::Hovered, elevatedHoverColor );
     setShadowMetrics( Q::Panel | M3::Elevated | Q::Hovered, m_pal.elevation2 );
 
-    const auto elevatedPressedColor = flattenedColor( m_pal.primary, m_pal.surface, m_pal.pressedOpacity );
+    const auto elevatedPressedColor =
+        flattenedColor( m_pal.primary, m_pal.surface, m_pal.pressedOpacity );
     setGradient( Q::Panel | M3::Elevated | Q::Focused, elevatedPressedColor );
     setShadowMetrics( Q::Panel | M3::Elevated | Q::Focused, m_pal.elevation1 );
 
@@ -724,17 +727,21 @@ void Editor::setupPushButton()
     setShadowMetrics( Q::Panel | M3::Tonal, m_pal.elevation0 );
     setColor( Q::Text | M3::Tonal, m_pal.onSecondaryContainer );
     setGraphicRole( Q::Graphic | M3::Tonal, QskMaterial3Skin::GraphicRoleOnSecondaryContainer );
-    setGradient( Q::Ripple | M3::Tonal, stateLayerColor( m_pal.onSecondaryContainer, m_pal.pressedOpacity ) );
+    setGradient( Q::Ripple | M3::Tonal,
+        stateLayerColor( m_pal.onSecondaryContainer, m_pal.pressedOpacity ) );
 
     setGradient( Q::Panel | M3::Tonal | Q::Disabled, m_pal.onSurface12 );
     setColor( Q::Text | M3::Tonal | Q::Disabled, m_pal.onSurface38 );
-    setGraphicRole( Q::Graphic | M3::Tonal | Q::Disabled, QskMaterial3Skin::GraphicRoleOnSurface38 );
+    setGraphicRole( Q::Graphic | M3::Tonal | Q::Disabled,
+        QskMaterial3Skin::GraphicRoleOnSurface38 );
 
-    const auto tonalHoverColor = flattenedColor( m_pal.onSecondaryContainer, m_pal.secondaryContainer, m_pal.hoverOpacity );
+    const auto tonalHoverColor = flattenedColor( m_pal.onSecondaryContainer,
+        m_pal.secondaryContainer, m_pal.hoverOpacity );
     setGradient( Q::Panel | M3::Tonal | Q::Hovered, tonalHoverColor );
     setShadowMetrics( Q::Panel | M3::Tonal | Q::Hovered, m_pal.elevation1 );
 
-    const auto tonalPressedColor = flattenedColor( m_pal.onSecondaryContainer, m_pal.secondaryContainer, m_pal.pressedOpacity );
+    const auto tonalPressedColor = flattenedColor( m_pal.onSecondaryContainer,
+        m_pal.secondaryContainer, m_pal.pressedOpacity );
     setGradient( Q::Panel | M3::Tonal | Q::Focused, tonalPressedColor );
     setShadowMetrics( Q::Panel | M3::Tonal | Q::Focused, m_pal.elevation0 );
 
@@ -754,7 +761,8 @@ void Editor::setupPushButton()
 
     setBoxBorderColors( Q::Panel | M3::Outlined | Q::Disabled, m_pal.onSurface12 );
     setColor( Q::Text | M3::Outlined | Q::Disabled, m_pal.onSurface38 );
-    setGraphicRole( Q::Graphic | M3::Outlined | Q::Disabled, QskMaterial3Skin::GraphicRoleOnSurface38 );
+    setGraphicRole( Q::Graphic | M3::Outlined | Q::Disabled,
+        QskMaterial3Skin::GraphicRoleOnSurface38 );
 
     setBoxBorderColors( Q::Panel | M3::Outlined | Q::Hovered, m_pal.outline );
     setGradient( Q::Panel | M3::Outlined | Q::Hovered, m_pal.primary8 );

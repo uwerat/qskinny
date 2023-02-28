@@ -73,7 +73,8 @@ RoomsPage::RoomsPage( QQuickItem* parent )
     const QVector< qreal > livingRoomWater = { 5, 8, 13, 2, 3, 9, 11 };
     const QVector< qreal > livingRoomElectricity = { 1, 8, 7, 4, 12, 6, 5 };
     const QVector< qreal > livingRoomGas = { 10, 11, 5, 8, 3, 1, 7 };
-    auto livingRoomDiagram = new RoomsDiagram( livingRoomWater, livingRoomElectricity, livingRoomGas );
+    auto livingRoomDiagram = new RoomsDiagram(
+        livingRoomWater, livingRoomElectricity, livingRoomGas );
     gridBox->addItem( new UsageDiagramBox( "Living Room", livingRoomDiagram ), 0, 0 );
 
     const QVector< qreal > bedroomWater = { 8, 6, 11, 2, 5, 4, 9 };

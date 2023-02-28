@@ -77,7 +77,7 @@ class QSK_EXPORT QskBoxBorderMetrics
 
     constexpr bool isEquidistant() const noexcept;
 
-    QRectF adjustedRect( const QRectF& )const ;
+    QRectF adjustedRect( const QRectF& ) const;
 
   private:
     QskMargins m_widths;

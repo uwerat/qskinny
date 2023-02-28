@@ -74,7 +74,7 @@ class QSK_EXPORT QskLinearDirection
     /*
         In direction of the gradient vector, where 0.0 corresponds to
         points on the perpendicular at the start and 1.0 to points on
-        the perpendicular of the end point. 
+        the perpendicular of the end point.
 
         Also corresponds to the positions of the color stops and can be
         used to calculate the color at a specific position.

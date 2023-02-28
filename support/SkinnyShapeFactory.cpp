@@ -154,7 +154,7 @@ QPainterPath SkinnyShapeFactory::shapePath( Shape shape, const QSizeF& size )
         {
             path.arcMoveTo( rect, -60 );
             path.arcTo( rect, -60, 300 );
-            
+
             const double w = 0.25 * rect.width();
             const auto r = rect.adjusted( w, w, -w, -w );
 
@@ -164,7 +164,7 @@ QPainterPath SkinnyShapeFactory::shapePath( Shape shape, const QSizeF& size )
             innerPath.arcTo( r, 240, -300 );
 
             path.connectPath( innerPath );
-            
+
             break;
         }
 

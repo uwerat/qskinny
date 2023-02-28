@@ -269,8 +269,8 @@ QskGraphic QskStandardSymbol::graphic( Type symbolType )
             case QskStandardSymbol::SegmentedBarCheckMark:
             {
                 qskCheckMarkGraphic( &painter );
-		break;
-	    }
+                break;
+            }
             case QskStandardSymbol::Bullet:
             {
                 qskBulletGraphic( &painter );

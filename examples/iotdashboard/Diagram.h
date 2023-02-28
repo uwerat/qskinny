@@ -15,9 +15,9 @@ class Diagram : public QskControl
 
   public:
     QSK_SUBCONTROLS( Chart, Segments,
-                     ChartLine1, ChartArea1, ChartLine2,
-                     ChartArea2, ChartLine3, ChartArea3,
-                     ChartBar1, ChartBar2, ChartBar3 )
+        ChartLine1, ChartArea1, ChartLine2,
+        ChartArea2, ChartLine3, ChartArea3,
+        ChartBar1, ChartBar2, ChartBar3 )
 
     enum Type
     {

@@ -131,7 +131,7 @@ void QskLinearDirection::setInterval( Qt::Orientation orientation, qreal from, q
 void QskLinearDirection::precalculate() const noexcept
 {
     m_dx = m_x2 - m_x1;
-    m_dy = m_y2 - m_y1; 
+    m_dy = m_y2 - m_y1;
     m_dot = m_dx * m_dx + m_dy * m_dy;
 }
 

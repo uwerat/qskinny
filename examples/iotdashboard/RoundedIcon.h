@@ -15,7 +15,8 @@ class RoundedIcon : public QskPushButton
     QSK_SUBCONTROLS( Panel, PalePanel, Graphic )
     QSK_STATES( Bright ) // to differentiate between orange and purple
 
-    enum {
+    enum
+    {
         NormalRole,
         CheckedRole,
     } GraphicRole;

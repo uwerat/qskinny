@@ -288,9 +288,9 @@ void Skin::initHints( const Palette& palette )
 
     // storage bar
     {
-        const auto make_gradient = []( const QColor color ) -> QskGradient {
-            return { color.lighter(), color };
-        };
+        const auto make_gradient = []( const QColor color ) -> QskGradient
+            { return { color.lighter(), color }; };
+
         ed.setGradient( StorageBar::Pictures, make_gradient( "#FFBE0B" ) );
         ed.setGradient( StorageBar::Music, make_gradient( "#FB5607" ) );
         ed.setGradient( StorageBar::Videos, make_gradient( "#FF006E" ) );

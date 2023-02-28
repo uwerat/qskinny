@@ -65,7 +65,7 @@ static inline QTransform qskTransformForRect( int, const QRectF& rect )
 
     return QTransform( w, 0, 0, h, x, y );
 }
-    
+
 QskGradient::QskGradient( const QColor& color )
     : QskGradient()
 {
@@ -751,7 +751,7 @@ QGradient QskGradient::toQGradient() const
         }
     }
 
-    g.setCoordinateMode( m_stretchMode == NoStretch 
+    g.setCoordinateMode( m_stretchMode == NoStretch
         ? QGradient::LogicalMode : QGradient::ObjectMode );
 
     g.setSpread( static_cast< QGradient::Spread >( m_spreadMode ) );

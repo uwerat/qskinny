@@ -153,32 +153,32 @@ void Skinny::changeSkin( QskAnimationHint hint )
 }
 
 void Skinny::changeFonts( int increment )
-{   
+{
     auto skin = qskSetup->skin();
-    
+
     const auto fonts = skin->fonts();
-    
+
     for ( auto it = fonts.begin(); it != fonts.end(); ++it )
-    {   
+    {
         auto role = it->first;
         auto font = it->second;
-        
+
         if ( font.pixelSize() > 0 )
-        {   
+        {
             const auto newSize = font.pixelSize() + increment;
             if ( newSize > 0 )
                 font.setPixelSize( newSize );
         }
         else
-        {   
+        {
             const auto newSize = font.pointSizeF() + increment;
             if ( newSize > 0 )
                 font.setPointSizeF( font.pointSizeF() + increment );
         }
-        
+
         skin->setFont( role, font );
     }
-    
+
     Q_EMIT qskSetup->skinChanged( skin );
 }
 

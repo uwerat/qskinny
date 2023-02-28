@@ -193,7 +193,7 @@ void QskSpinBox::setWrapping( bool on )
 {
     if ( on != m_data->wrapping )
     {
-        m_data->wrapping = on; 
+        m_data->wrapping = on;
         Q_EMIT wrappingChanged( on );
     }
 }

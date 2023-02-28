@@ -18,9 +18,9 @@ class QskSetupFlagsQml : public QskQuickItem::UpdateFlags
     Q_GADGET
 
   public:
-    template< typename... Args >
+    template< typename ... Args >
     QskSetupFlagsQml( Args&&... args )
-        : QskQuickItem::UpdateFlags( std::forward< Args >( args )... )
+        : QskQuickItem::UpdateFlags( std::forward< Args >( args ) ... )
     {
     }
 

@@ -403,7 +403,7 @@ QGradientStops qskToQGradientStops( const QskGradientStops& stops )
 
     for ( const auto& stop : stops )
     {
-        QPair<qreal, QColor> qStop = { stop.position(), stop.color() };
+        QPair< qreal, QColor > qStop = { stop.position(), stop.color() };
 
         if ( !qStops.isEmpty() && qStops.last().first == qStop.first )
         {

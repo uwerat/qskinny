@@ -38,7 +38,7 @@ class QSK_EXPORT QskBoxShapeMetrics
         Symmetric or Proportional shrink the larger radius, while SymmetricByMaximum
         expands the smaller radius to achieve the desired aspect ratio.
 
-        The effect of the scaling on the implemented box rendering is: 
+        The effect of the scaling on the implemented box rendering is:
 
         - SymmetricByMaximum in combination with a relative radius of 100
           results in an ellipse.

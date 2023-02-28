@@ -38,11 +38,8 @@ QVariant QskTextColors::interpolate(
 
 static inline void qskDebugColor( QDebug debug, const QColor& c )
 {
-    debug << '('
-        << c.red() << ','
-        << c.green() << ','
-        << c.blue() << ','
-        << c.alpha() << ')';
+    debug << '(' << c.red() << ',' << c.green() << ','
+        << c.blue() << ',' << c.alpha() << ')';
 }
 
 QDebug operator<<( QDebug debug, const QskTextColors& colors )

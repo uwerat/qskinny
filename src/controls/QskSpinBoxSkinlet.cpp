@@ -186,7 +186,7 @@ QSizeF QskSpinBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
 
         hint.setWidth( std::max( w1, w2 ) );
         hint.setHeight( fm.height() );
-        
+
         hint = hint.grownBy( spinBox->paddingHint( Q::TextPanel ) );
         hint = hint.expandedTo( spinBox->strutSizeHint( Q::TextPanel ) );
     }
@@ -215,10 +215,10 @@ QSizeF QskSpinBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
         }
         else
         {
-            if ( hintDown.width() > 0.0 ) 
+            if ( hintDown.width() > 0.0 )
                 hint.rwidth() += hintDown.width() + spacing;
 
-            if ( hintUp.width() > 0.0 ) 
+            if ( hintUp.width() > 0.0 )
                 hint.rwidth() += hintUp.width() + spacing;
 
             const auto h = std::max( hintUp.height(), hintDown.height() );

@@ -55,11 +55,8 @@ QskComboBox::QskComboBox( QQuickItem* parent )
     connect( this, &QskComboBox::currentIndexChanged,
         this, &QskControl::focusIndicatorRectChanged );
 
-    connect( m_data->menu, &QskMenu::closed, this, [ this ]()
-    {
-        setPopupOpen( false );
-        setFocus( true );
-    } );
+    connect( m_data->menu, &QskMenu::closed, this,
+        [ this ]() { setPopupOpen( false ); setFocus( true ); } );
 
     connect( this, &QskComboBox::pressed, this, &QskComboBox::togglePopup );
 }

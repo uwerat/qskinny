@@ -619,7 +619,7 @@ QTransform QskStackBoxAnimator4::transformation(
             transform.translate( dx, dy );
             transform.rotateRadians( radians - M_PI_2, Qt::YAxis );
             transform.translate( 0.0, -dy );
-        } 
+        }
     }
     else
     {

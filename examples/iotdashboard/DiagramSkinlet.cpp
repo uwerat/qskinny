@@ -26,17 +26,17 @@ namespace
 
         switch( type )
         {
-        case Diagram::Line:
-            row = 0;
-            break;
+            case Diagram::Line:
+                row = 0;
+                break;
 
-        case Diagram::Area:
-            row = 1;
-            break;
+            case Diagram::Area:
+                row = 1;
+                break;
 
-        case Diagram::Bar:
-            row = 2;
-            break;
+            case Diagram::Bar:
+                row = 2;
+                break;
         }
 
         return subcontrols[ row * 3 + i ];
@@ -146,7 +146,8 @@ QSGNode* DiagramSkinlet::updateChartNode( const Diagram* diagram, QSGNode* node 
 
                         if( barsNode->childCount() > k )
                         {
-                            barNode = static_cast< QskBoxRectangleNode* >( barsNode->childAtIndex( k ) );
+                            barNode = static_cast< QskBoxRectangleNode* >(
+                                barsNode->childAtIndex( k ) );
                         }
                         else
                         {
@@ -181,7 +182,8 @@ QSGNode* DiagramSkinlet::updateChartNode( const Diagram* diagram, QSGNode* node 
 
                     if( chartNode->childCount() > nodeIndex )
                     {
-                        dataPointNode = static_cast< DiagramDataNode* >( chartNode->childAtIndex( nodeIndex ) );
+                        dataPointNode = static_cast< DiagramDataNode* >(
+                            chartNode->childAtIndex( nodeIndex ) );
                     }
                     else
                     {
@@ -202,7 +204,8 @@ QSGNode* DiagramSkinlet::updateChartNode( const Diagram* diagram, QSGNode* node 
                         color = diagram->color( areaSubcontrol );
                     }
 
-                    dataPointNode->update( rect, nodeType, color, dataPoints, yMax, false, lineWidth );
+                    dataPointNode->update( rect, nodeType, color,
+                        dataPoints, yMax, false, lineWidth );
                 }
                 nodeIndex++;
             }

@@ -48,11 +48,11 @@ class SliderBox : public QskLinearBox
 
         {
             auto slider = new OtherSlider( this );
-        
+
             slider->setMinimum( 0 );
             slider->setMaximum( 10 );
             slider->setStepSize( 1 );
-        }   
+        }
 
         {
             auto slider = new CustomSlider( this );

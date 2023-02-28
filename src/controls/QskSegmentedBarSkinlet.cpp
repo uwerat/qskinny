@@ -59,16 +59,18 @@ namespace
         LayoutEngine( const QskSegmentedBar* bar, int index )
             : QskSubcontrolLayoutEngine( bar->orientation() )
         {
-            setSpacing( bar->spacingHint( QskSegmentedBar::Panel ) );
+            using Q = QskSegmentedBar;
+
+            setSpacing( bar->spacingHint( Q::Panel ) );
 
             setGraphicTextElements( bar,
-                QskSegmentedBar::Text, qskValueAt< QString >( bar, index ),
-                QskSegmentedBar::Graphic, graphicAt( bar, index ).defaultSize() );
+                Q::Text, qskValueAt< QString >( bar, index ),
+                Q::Graphic, graphicAt( bar, index ).defaultSize() );
 
             if( bar->orientation() == Qt::Horizontal )
             {
-                const auto alignment = bar->alignmentHint( QskSegmentedBar::Panel, Qt::AlignCenter );
-                setFixedContent( QskSegmentedBar::Text, Qt::Horizontal, alignment );
+                const auto alignment = bar->alignmentHint( Q::Panel, Qt::AlignCenter );
+                setFixedContent( Q::Text, Qt::Horizontal, alignment );
             }
         }
     };
@@ -151,7 +153,7 @@ QRectF QskSegmentedBarSkinlet::segmentRect(
     {
         const qreal h = rect.height() / count;
 
-        rect.setTop( index *  h );
+        rect.setTop( index * h );
         rect.setHeight( h );
     }
 
@@ -218,7 +220,8 @@ QSGNode* QskSegmentedBarSkinlet::updateSubNode(
     return nullptr;
 }
 
-QSizeF QskSegmentedBarSkinlet::segmentSizeHint( const QskSegmentedBar* bar, Qt::SizeHint which ) const
+QSizeF QskSegmentedBarSkinlet::segmentSizeHint(
+    const QskSegmentedBar* bar, Qt::SizeHint which ) const
 {
     using Q = QskSegmentedBar;
 
@@ -228,13 +231,14 @@ QSizeF QskSegmentedBarSkinlet::segmentSizeHint( const QskSegmentedBar* bar, Qt::
     {
         LayoutEngine layoutEngine( bar, i );
 
-        const auto graphic = bar->effectiveSkin()->symbol( QskStandardSymbol::SegmentedBarCheckMark );
+        const auto graphic = bar->effectiveSkin()->symbol(
+            QskStandardSymbol::SegmentedBarCheckMark );
 
         // We want to know how big the element can grow when it is selected,
         // i.e. when it has the checkmark symbol:
         layoutEngine.setGraphicTextElements( bar,
-            QskSegmentedBar::Text, qskValueAt< QString >( bar, i ),
-            QskSegmentedBar::Graphic, graphic.defaultSize() );
+            Q::Text, qskValueAt< QString >( bar, i ),
+            Q::Graphic, graphic.defaultSize() );
 
         const auto size = layoutEngine.sizeHint( which, QSizeF() );
 

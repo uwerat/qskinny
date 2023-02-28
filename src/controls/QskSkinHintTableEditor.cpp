@@ -245,7 +245,7 @@ void QskSkinHintTableEditor::setGradient(
     QskStateCombination combination )
 {
     const QskGradient gradient( color1, color2 );
-    setColorHint( aspect, gradient , combination );
+    setColorHint( aspect, gradient, combination );
 }
 
 void QskSkinHintTableEditor::setGradient(

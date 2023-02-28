@@ -24,7 +24,7 @@ namespace
     {
       public:
         Window()
-        { 
+        {
             setAutoLayoutChildren( true );
 
             const QImage image( QStringLiteral( ":/images/background.jpg" ) );

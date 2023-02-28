@@ -13,7 +13,7 @@
 QSK_SYSTEM_STATE( QskAbstractButton, Checked, QskAspect::LastSystemState >> 3 )
 QSK_SYSTEM_STATE( QskAbstractButton, Pressed, QskAspect::LastSystemState >> 2 )
 
-static QskAbstractButton* qskCheckedSibling( const QskAbstractButton* button )
+static QskAbstractButton* qskCheckedSibling( const QskAbstractButton * button )
 {
     const auto parentItem = button->parentItem();
     if ( parentItem == nullptr )

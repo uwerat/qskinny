@@ -23,11 +23,11 @@ class QWheelEvent;
 class QHoverEvent;
 class QKeyEvent;
 
-#define QSK_EVENT_DISABLE_COPY(Class) \
-        Class(const Class &) = default; \
-        Class(Class &&) = delete; \
-        Class &operator=(const Class &other) = default; \
-        Class &operator=(Class &&) = delete;
+#define QSK_EVENT_DISABLE_COPY( Class ) \
+        Class( const Class& ) = default; \
+        Class( Class && ) = delete; \
+        Class& operator=( const Class & ) = default; \
+        Class& operator=( Class && ) = delete;
 
 class QSK_EXPORT QskEvent : public QEvent
 {

@@ -39,7 +39,8 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
     {
         const auto textSize = textLabelsSize( display );
         const auto arcMetrics = display->arcMetricsHint( LightDisplay::ColdAndWarmArc );
-        const qreal ticksWidth = display->arcMetricsHint( LightDisplay::Tickmarks ).width() + ticksSpacing;
+        const qreal ticksWidth = display->arcMetricsHint(
+            LightDisplay::Tickmarks ).width() + ticksSpacing;
 
         const qreal x = textSize.width() + arcMetrics.width() + ticksWidth;
         const qreal w = contentsRect.width() -
@@ -104,7 +105,8 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
     }
     else if( subControl == LightDisplay::Knob )
     {
-        const auto arcRect = subControlRect( skinnable, contentsRect, LightDisplay::ColdAndWarmArc );
+        const auto arcRect = subControlRect( skinnable,
+            contentsRect, LightDisplay::ColdAndWarmArc );
         const auto arcMetrics = display->arcMetricsHint( LightDisplay::ColdAndWarmArc );
         const auto knobSize = display->strutSizeHint( LightDisplay::Knob );
 
@@ -165,19 +167,18 @@ QSGNode* LightDisplaySkinlet::updateSubNode(
         case ValueTextRole:
         {
             const QString valueText = QString::number( display->value(), 'f', 0 )
-                    + QStringLiteral( " %" );
-            return updateTextNode( skinnable, node, valueText,
-                                   LightDisplay::ValueText );
+                + QStringLiteral( " %" );
+            return updateTextNode( skinnable, node, valueText, LightDisplay::ValueText );
         }
         case LeftLabelRole:
         {
-            return updateTextNode( skinnable, node, QStringLiteral( "0  " ),
-                                   LightDisplay::LeftLabel );
+            return updateTextNode( skinnable, node,
+                QStringLiteral( "0  " ), LightDisplay::LeftLabel );
         }
         case RightLabelRole:
         {
-            return updateTextNode( skinnable, node, QStringLiteral( "  100" ),
-                                   LightDisplay::RightLabel );
+            return updateTextNode( skinnable, node,
+                QStringLiteral( "  100" ), LightDisplay::RightLabel );
         }
         case KnobRole:
         {

@@ -140,7 +140,8 @@ void UsageDiagram::addCurve( const qreal values[], const size_t count )
     addDataPoints( points, Diagram::Area );
 }
 
-UsageDiagramBox::UsageDiagramBox(const QString &title, Diagram *diagram, QQuickItem* parent )
+UsageDiagramBox::UsageDiagramBox(
+        const QString& title, Diagram* diagram, QQuickItem* parent )
     : Box( title, parent )
 {
     diagram->setParent( this );

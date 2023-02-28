@@ -22,7 +22,8 @@ QSK_SUBCONTROL( LightDisplay, Knob )
 
 QSK_STATE( LightDisplay, Pressed, ( QskAspect::FirstUserState << 1 ) )
 
-namespace {
+namespace
+{
     bool angleInRange( const QskArcMetrics& metrics, qreal angle )
     {
         return angle >= metrics.startAngle() && angle <= metrics.endAngle();
@@ -123,7 +124,7 @@ void LightDisplay::mouseReleaseEvent( QMouseEvent* /*event*/ )
 qreal LightDisplay::angleFromPoint( const QRectF& rect, const QPointF& point ) const
 {
     QPointF circlePos( point.x() - rect.center().x(),
-                 rect.center().y() - point.y() );
+        rect.center().y() - point.y() );
 
     const qreal atan = qAtan2( circlePos.y(), circlePos.x() );
     const qreal angle = qRadiansToDegrees( atan );

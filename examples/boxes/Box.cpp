@@ -218,7 +218,7 @@ void Box::setGradient( FillType fillType,
     QskGradientStops stops;
     stops += QskGradientStop( 0.0, color1 );
     stops += QskGradientStop( 1.0, color2 );
-    
+
     setGradient( fillType, stops );
 }
 

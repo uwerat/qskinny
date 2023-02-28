@@ -49,8 +49,8 @@ class QSK_EXPORT QskSpinBox : public QskBoundedValueInput
     Q_ENUM( Decoration )
 
     QskSpinBox( QQuickItem* parent = nullptr );
-    QskSpinBox( qreal min, qreal max, qreal stepSize,
-         QQuickItem* parent = nullptr );
+    QskSpinBox( qreal min, qreal max,
+        qreal stepSize, QQuickItem* parent = nullptr );
 
     ~QskSpinBox() override;
 

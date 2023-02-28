@@ -52,7 +52,8 @@ QskControl::~QskControl()
         if( this == w->mouseGrabberItem() )
         {
             // to catch suicide situations as a result of mouse clicks
-            qWarning() << "QskControl::~QskControl: probably suicide situation detected, control is the mouse grabber item" << this;
+            qWarning() << "QskControl::~QskControl: probably suicide situation detected, "
+                          "control is the mouse grabber item" << this;
         }
 
     }

@@ -43,9 +43,9 @@ class StorageBar final : public QskControl
     void othersChanged( qreal value );
 
   private:
-    qreal m_pictures{ 0.0 };
-    qreal m_music{ 0.0 };
-    qreal m_videos{ 0.0 };
-    qreal m_documents{ 0.0 };
-    qreal m_others{ 0.0 };
+    qreal m_pictures  = 0.0;
+    qreal m_music     = 0.0;
+    qreal m_videos    = 0.0;
+    qreal m_documents = 0.0;
+    qreal m_others    = 0.0;
 };
