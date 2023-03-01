@@ -54,9 +54,7 @@ class QskSpinBox::PrivateData
 {
   public:
     PrivateData()
-        : tracking( true )
-        , wrapping( false )
-        , accelerating( false )
+        : wrapping( false )
     {
     }
 
@@ -128,9 +126,13 @@ class QskSpinBox::PrivateData
 
     int key = Qt::Key_unknown;
 
-    bool tracking     : 1;
     bool wrapping     : 1;
-    bool accelerating : 1; // not yet implemented: TODO ...
+
+#if 0
+    // not yet implemented: TODO ...
+    bool tracking     : 1;
+    bool accelerating : 1;
+#endif
 };
 
 QskSpinBox::QskSpinBox( qreal min, qreal max, qreal stepSize, QQuickItem* parent )
@@ -194,20 +196,6 @@ Qt::Alignment QskSpinBox::textAlignment() const
         aspectTextAlignment(), Qt::AlignLeft ) & Qt::AlignHorizontal_Mask;
 }
 
-void QskSpinBox::setTracking( bool on )
-{
-    if ( on != m_data->tracking )
-    {
-        m_data->tracking = on;
-        Q_EMIT trackingChanged( on );
-    }
-}
-
-bool QskSpinBox::isTracking() const
-{
-    return m_data->tracking;
-}
-
 void QskSpinBox::setWrapping( bool on )
 {
     if ( on != m_data->wrapping )
@@ -220,20 +208,6 @@ void QskSpinBox::setWrapping( bool on )
 bool QskSpinBox::isWrapping() const
 {
     return m_data->wrapping;
-}
-
-void QskSpinBox::setAccelerating( bool on )
-{
-    if ( on != m_data->accelerating )
-    {
-        m_data->accelerating = on;
-        Q_EMIT acceleratingChanged( on );
-    }
-}
-
-bool QskSpinBox::isAccelerating() const
-{
-    return m_data->accelerating;
 }
 
 void QskSpinBox::setDecimals( int decimals )

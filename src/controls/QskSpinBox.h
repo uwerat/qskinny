@@ -16,12 +16,6 @@ class QSK_EXPORT QskSpinBox : public QskBoundedValueInput
     Q_PROPERTY( bool wrapping READ isWrapping
         WRITE setWrapping NOTIFY wrappingChanged )
 
-    Q_PROPERTY( bool tracking READ isTracking
-        WRITE setTracking NOTIFY trackingChanged )
-
-    Q_PROPERTY( bool accelerating READ isAccelerating
-        WRITE setAccelerating NOTIFY acceleratingChanged )
-
     Q_PROPERTY( Decoration decoration READ decoration
         WRITE setDecoration RESET resetDecoration NOTIFY decorationChanged )
 
@@ -66,12 +60,6 @@ class QSK_EXPORT QskSpinBox : public QskBoundedValueInput
     void setWrapping( bool );
     bool isWrapping() const;
 
-    void setTracking( bool );
-    bool isTracking() const;
-
-    void setAccelerating( bool );
-    bool isAccelerating() const;
-
     void setDecimals( int );
     int decimals() const;
 
@@ -84,9 +72,7 @@ class QSK_EXPORT QskSpinBox : public QskBoundedValueInput
     void decorationChanged( Decoration );
     void textAlignmentChanged( Qt::Alignment );
 
-    void trackingChanged( bool );
     void wrappingChanged( bool );
-    void acceleratingChanged( bool );
 
     void decimalsChanged( int );
     void textChanged();
