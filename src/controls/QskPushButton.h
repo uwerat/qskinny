@@ -45,14 +45,14 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     using Inherited = QskAbstractButton;
 
   public:
-    QSK_SUBCONTROLS( Panel, Ripple, Text, Graphic )
+    QSK_SUBCONTROLS( Panel, Splash, Text, Graphic )
 
     enum Emphasis
     {
-        VeryLowEmphasis = -2,
-        LowEmphasis = -1,
-        NoEmphasis = 0,
-        HighEmphasis = 1,
+        VeryLowEmphasis  = -2,
+        LowEmphasis      = -1,
+        NoEmphasis       = 0,
+        HighEmphasis     = 1,
         VeryHighEmphasis = 2
     };
     Q_ENUM( Emphasis )

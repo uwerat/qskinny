@@ -22,7 +22,7 @@ class QSK_EXPORT QskComboBox : public QskControl
     using Inherited = QskControl;
 
   public:
-    QSK_SUBCONTROLS( Panel, Graphic, Text, OpenMenuGraphic, Ripple )
+    QSK_SUBCONTROLS( Panel, Graphic, Text, OpenMenuGraphic, Splash )
     QSK_STATES( Pressed, PopupOpen )
 
     QskComboBox( QQuickItem* parent = nullptr );
@@ -61,7 +61,7 @@ class QSK_EXPORT QskComboBox : public QskControl
     virtual void closePopup();
 
     void click();
-    void setCurrentIndex( int index );
+    void setCurrentIndex( int );
 
   Q_SIGNALS:
     void currentIndexChanged( int );

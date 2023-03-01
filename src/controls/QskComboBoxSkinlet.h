@@ -23,7 +23,7 @@ class QSK_EXPORT QskComboBoxSkinlet : public QskSkinlet
         GraphicRole,
         TextRole,
         OpenMenuGraphicRole,
-        RippleRole,
+        SplashRole,
 
         RoleCount
     };
@@ -42,10 +42,10 @@ class QSK_EXPORT QskComboBoxSkinlet : public QskSkinlet
         quint8 nodeRole, QSGNode* ) const override;
 
   private:
-    QRectF rippleRect( const QskComboBox*, const QRectF& ) const;
+    QRectF splashRect( const QskComboBox*, const QRectF& ) const;
 
     QSGNode* updateTextNode( const QskComboBox*, QSGNode* ) const;
-    QSGNode* updateRippleNode( const QskComboBox*, QSGNode* ) const;
+    QSGNode* updateSplashNode( const QskComboBox*, QSGNode* ) const;
 };
 
 #endif

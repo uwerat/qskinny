@@ -67,7 +67,7 @@ namespace
 QskComboBoxSkinlet::QskComboBoxSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
-    setNodeRoles( { PanelRole, GraphicRole, TextRole, OpenMenuGraphicRole, RippleRole } );
+    setNodeRoles( { PanelRole, SplashRole, GraphicRole, TextRole, OpenMenuGraphicRole } );
 }
 
 QskComboBoxSkinlet::~QskComboBoxSkinlet() = default;
@@ -78,6 +78,12 @@ QRectF QskComboBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
     using Q = QskComboBox;
 
     const auto* box = static_cast< const QskComboBox* >( skinnable );
+
+    if ( subControl == Q::Panel )
+        return contentsRect;
+
+    if ( subControl == Q::Splash )
+        return splashRect( box, contentsRect );
 
     if ( subControl == Q::Text || subControl == Q::Graphic )
     {
@@ -97,16 +103,6 @@ QRectF QskComboBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
         return rect;
     }
 
-    if ( subControl == Q::Panel )
-    {
-        return contentsRect;
-    }
-
-    if ( subControl == Q::Ripple )
-    {
-        return rippleRect( box, contentsRect );
-    }
-
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
@@ -115,54 +111,56 @@ QSGNode* QskComboBoxSkinlet::updateSubNode(
 {
     using Q = QskComboBox;
 
-    const auto bar = static_cast< const QskComboBox* >( skinnable );
+    const auto box = static_cast< const QskComboBox* >( skinnable );
 
     switch ( nodeRole )
     {
         case PanelRole:
         {
-            return updateBoxNode( bar, node, Q::Panel );
+            return updateBoxNode( box, node, Q::Panel );
         }
 
         case GraphicRole:
         {
-            return updateGraphicNode( bar, node, bar->graphic(), Q::Graphic );
+            return updateGraphicNode( box, node, box->graphic(), Q::Graphic );
         }
 
         case TextRole:
         {
-            return updateTextNode( bar, node );
+            return updateTextNode( box, node );
         }
 
         case OpenMenuGraphicRole:
         {
-            const auto symbol = bar->isPopupOpen() ? QskStandardSymbol::ComboBoxSymbolPopupOpen
-                                                  : QskStandardSymbol::ComboBoxSymbolPopupClosed;
-            const auto graphic = bar->effectiveSkin()->symbol( symbol );
-            return updateGraphicNode( bar, node, graphic, Q::OpenMenuGraphic );
+            const auto symbol = box->isPopupOpen()
+                ? QskStandardSymbol::ComboBoxSymbolPopupOpen
+                : QskStandardSymbol::ComboBoxSymbolPopupClosed;
+
+            const auto graphic = box->effectiveSkin()->symbol( symbol );
+            return updateGraphicNode( box, node, graphic, Q::OpenMenuGraphic );
         }
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
-QRectF QskComboBoxSkinlet::rippleRect(
-    const QskComboBox* bar, const QRectF& contentsRect ) const
+QRectF QskComboBoxSkinlet::splashRect(
+    const QskComboBox* box, const QRectF& contentsRect ) const
 {
     using Q = QskComboBox;
 
     QRectF rect;
 
-    const auto ratio = bar->metric( Q::Ripple | QskAspect::Size );
+    const auto ratio = box->metric( Q::Splash | QskAspect::Size );
     if ( ratio > 0.0 )
     {
-        const auto pos = bar->effectiveSkinHint(
-            Q::Ripple | QskAspect::Metric | QskAspect::Position ).toPointF();
+        rect = subControlRect( box, contentsRect, Q::Panel );
 
-        const auto panelRect = subControlRect( bar, contentsRect, Q::Panel );
+        const auto pos = box->positionHint( Q::Splash );
+        const qreal w = 2.0 * rect.width() * ratio;
 
-        rect.setSize( 2.0 * panelRect.size() * ratio );
-        rect.moveCenter( pos );
+        rect.setX( pos - 0.5 * w ); 
+        rect.setWidth( w );
     }
 
     return rect;
@@ -185,27 +183,27 @@ QSGNode* QskComboBoxSkinlet::updateTextNode(
         alignment, box->text(), Q::Text );
 }
 
-QSGNode* QskComboBoxSkinlet::updateRippleNode(
-    const QskComboBox* button, QSGNode* node ) const
+QSGNode* QskComboBoxSkinlet::updateSplashNode(
+    const QskComboBox* box, QSGNode* node ) const
 {
     using Q = QskComboBox;
 
-    const auto rippleRect = button->subControlRect( Q::Ripple );
-    if ( rippleRect.isEmpty() )
+    const auto splashRect = box->subControlRect( Q::Splash );
+    if ( splashRect.isEmpty() )
         return nullptr;
 
-    auto clipNode = updateBoxClipNode( button, node,
-        button->subControlRect( Q::Panel ), Q::Panel );
+    auto clipNode = updateBoxClipNode( box, node,
+        box->subControlRect( Q::Panel ), Q::Panel );
 
     if ( clipNode )
     {
-        auto boxNode = QskSGNode::findChildNode( clipNode, RippleRole );
-        boxNode = updateBoxNode( button, boxNode, rippleRect, Q::Ripple );
+        auto boxNode = QskSGNode::findChildNode( clipNode, SplashRole );
+        boxNode = updateBoxNode( box, boxNode, splashRect, Q::Splash );
 
         if ( boxNode == nullptr )
             return nullptr;
 
-        QskSGNode::setNodeRole( boxNode, RippleRole );
+        QskSGNode::setNodeRole( boxNode, SplashRole );
         if ( boxNode->parent() != clipNode )
             clipNode->appendChildNode( boxNode );
     }

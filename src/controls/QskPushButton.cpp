@@ -13,9 +13,10 @@
 #include "QskSkin.h"
 #include "QskSkinlet.h"
 #include "QskTextOptions.h"
+#include "QskEvent.h"
 
 QSK_SUBCONTROL( QskPushButton, Panel )
-QSK_SUBCONTROL( QskPushButton, Ripple )
+QSK_SUBCONTROL( QskPushButton, Splash )
 QSK_SUBCONTROL( QskPushButton, Text )
 QSK_SUBCONTROL( QskPushButton, Graphic )
 
@@ -304,11 +305,11 @@ void QskPushButton::mousePressEvent( QMouseEvent* event )
 
     using A = QskAspect;
 
-    const auto hint = animationHint( Ripple | A::Color );
+    const auto hint = animationHint( Splash | A::Color );
     if( hint.isValid() )
     {
-        setSkinHint( Ripple | A::Metric | A::Position, event->pos() );
-        startTransition( Ripple | A::Metric | A::Size, hint, 0.0, 1.0 );
+        setPositionHint( Splash, qskMousePosition( event ).x() );
+        startTransition( Splash | A::Metric | A::Size, hint, 0.0, 1.0 );
     }
 }
 

@@ -56,7 +56,7 @@ namespace
 QskPushButtonSkinlet::QskPushButtonSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
-    setNodeRoles( { PanelRole, RippleRole, GraphicRole, TextRole } );
+    setNodeRoles( { PanelRole, SplashRole, GraphicRole, TextRole } );
 }
 
 QskPushButtonSkinlet::~QskPushButtonSkinlet() = default;
@@ -68,6 +68,12 @@ QRectF QskPushButtonSkinlet::subControlRect( const QskSkinnable* skinnable,
 
     const auto button = static_cast< const QskPushButton* >( skinnable );
 
+    if ( subControl == Q::Panel )
+        return contentsRect;
+
+    if ( subControl == Q::Splash )
+        return splashRect( button, contentsRect );
+
     if ( ( subControl == Q::Text ) || ( subControl == Q::Graphic ) )
     {
         const auto r = button->subControlContentsRect( contentsRect, Q::Panel );
@@ -76,16 +82,6 @@ QRectF QskPushButtonSkinlet::subControlRect( const QskSkinnable* skinnable,
         layoutEngine.setGeometries( r );
 
         return layoutEngine.subControlRect( subControl );
-    }
-
-    if ( subControl == Q::Panel )
-    {
-        return contentsRect;
-    }
-
-    if ( subControl == Q::Ripple )
-    {
-        return rippleRect( button, contentsRect );
     }
 
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
@@ -101,46 +97,38 @@ QSGNode* QskPushButtonSkinlet::updateSubNode(
     switch ( nodeRole )
     {
         case PanelRole:
-        {
             return updateBoxNode( button, node, Q::Panel );
-        }
 
-        case RippleRole:
-        {
-            return updateRippleNode( button, node );
-        }
+        case SplashRole:
+            return updateSplashNode( button, node );
 
         case TextRole:
-        {
             return updateTextNode( button, node );
-        }
 
         case GraphicRole:
-        {
             return updateGraphicNode( button, node, button->graphic(), Q::Graphic );
-        }
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
-QRectF QskPushButtonSkinlet::rippleRect(
+QRectF QskPushButtonSkinlet::splashRect(
     const QskPushButton* button, const QRectF& contentsRect ) const
 {
     using Q = QskPushButton;
 
     QRectF rect;
 
-    const auto ratio = button->metric( Q::Ripple | QskAspect::Size );
+    const auto ratio = button->metric( Q::Splash | QskAspect::Size );
     if ( ratio > 0.0 )
     {
-        const auto pos = button->effectiveSkinHint(
-            Q::Ripple | QskAspect::Metric | QskAspect::Position ).toPointF();
+        rect = subControlRect( button, contentsRect, Q::Panel );
 
-        const auto panelRect = subControlRect( button, contentsRect, Q::Panel );
+        const auto pos = button->positionHint( Q::Splash );
+        const qreal w = 2.0 * rect.width() * ratio;
 
-        rect.setSize( { 2.0 * panelRect.width() * ratio, panelRect.height() * 2.0 } );
-        rect.moveCenter( pos );
+        rect.setX( pos - 0.5 * w );
+        rect.setWidth( w );
     }
 
     return rect;
@@ -163,13 +151,13 @@ QSGNode* QskPushButtonSkinlet::updateTextNode(
         alignment, button->text(), Q::Text );
 }
 
-QSGNode* QskPushButtonSkinlet::updateRippleNode(
+QSGNode* QskPushButtonSkinlet::updateSplashNode(
     const QskPushButton* button, QSGNode* node ) const
 {
     using Q = QskPushButton;
 
-    const auto rippleRect = button->subControlRect( Q::Ripple );
-    if ( rippleRect.isEmpty() )
+    const auto splashRect = button->subControlRect( Q::Splash );
+    if ( splashRect.isEmpty() )
         return nullptr;
 
     auto clipNode = updateBoxClipNode( button, node,
@@ -177,13 +165,13 @@ QSGNode* QskPushButtonSkinlet::updateRippleNode(
 
     if ( clipNode )
     {
-        auto boxNode = QskSGNode::findChildNode( clipNode, RippleRole );
-        boxNode = updateBoxNode( button, boxNode, rippleRect, Q::Ripple );
+        auto boxNode = QskSGNode::findChildNode( clipNode, SplashRole );
+        boxNode = updateBoxNode( button, boxNode, splashRect, Q::Splash );
 
         if ( boxNode == nullptr )
             return nullptr;
 
-        QskSGNode::setNodeRole( boxNode, RippleRole );
+        QskSGNode::setNodeRole( boxNode, SplashRole );
         if ( boxNode->parent() != clipNode )
             clipNode->appendChildNode( boxNode );
     }

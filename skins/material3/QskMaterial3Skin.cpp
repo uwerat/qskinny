@@ -666,7 +666,7 @@ void Editor::setupPushButton()
 
     setShadowColor( Q::Panel, m_pal.shadow );
 
-    setAnimation( Q::Ripple | QskAspect::Color, qskDuration );
+    setAnimation( Q::Splash | QskAspect::Color, qskDuration );
 
 
     // elevated buttons:
@@ -675,7 +675,8 @@ void Editor::setupPushButton()
     setShadowMetrics( Q::Panel | M3::Elevated, m_pal.elevation1 );
     setColor( Q::Text | M3::Elevated, m_pal.primary );
     setGraphicRole( Q::Graphic | M3::Elevated, QskMaterial3Skin::GraphicRolePrimary );
-    setGradient( Q::Ripple | M3::Elevated, stateLayerColor( m_pal.primary, m_pal.pressedOpacity ) );
+    setGradient( Q::Splash | M3::Elevated,
+        stateLayerColor( m_pal.primary, m_pal.pressedOpacity ) );
 
     setGradient( Q::Panel | M3::Elevated | Q::Disabled, m_pal.onSurface12 );
     setShadowMetrics( Q::Panel | M3::Elevated | Q::Disabled, m_pal.elevation0 );
@@ -712,7 +713,7 @@ void Editor::setupPushButton()
 
     setGradient( Q::Panel | Q::Pressed, focusColor );
 
-    setGradient( Q::Ripple, stateLayerColor( m_pal.onPrimary, m_pal.hoverOpacity ) );
+    setGradient( Q::Splash, stateLayerColor( m_pal.onPrimary, m_pal.hoverOpacity ) );
 
     setColor( Q::Text, m_pal.onPrimary );
     setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
@@ -727,7 +728,7 @@ void Editor::setupPushButton()
     setShadowMetrics( Q::Panel | M3::Tonal, m_pal.elevation0 );
     setColor( Q::Text | M3::Tonal, m_pal.onSecondaryContainer );
     setGraphicRole( Q::Graphic | M3::Tonal, QskMaterial3Skin::GraphicRoleOnSecondaryContainer );
-    setGradient( Q::Ripple | M3::Tonal,
+    setGradient( Q::Splash | M3::Tonal,
         stateLayerColor( m_pal.onSecondaryContainer, m_pal.pressedOpacity ) );
 
     setGradient( Q::Panel | M3::Tonal | Q::Disabled, m_pal.onSurface12 );
@@ -755,9 +756,11 @@ void Editor::setupPushButton()
     setBoxBorderColors( Q::Panel | M3::Outlined, m_pal.outline );
     setBoxBorderMetrics( Q::Panel | M3::Outlined, 1_dp );
     setShadowMetrics( Q::Panel | M3::Outlined, m_pal.elevation0 );
+
     setColor( Q::Text | M3::Outlined, m_pal.primary );
     setGraphicRole( Q::Graphic | M3::Outlined, QskMaterial3Skin::GraphicRolePrimary );
-    setGradient( Q::Ripple | M3::Outlined, stateLayerColor( m_pal.outline, m_pal.pressedOpacity ) );
+    setGradient( Q::Splash | M3::Outlined,
+        stateLayerColor( m_pal.outline, m_pal.pressedOpacity ) );
 
     setBoxBorderColors( Q::Panel | M3::Outlined | Q::Disabled, m_pal.onSurface12 );
     setColor( Q::Text | M3::Outlined | Q::Disabled, m_pal.onSurface38 );
@@ -772,11 +775,13 @@ void Editor::setupPushButton()
     setGradient( Q::Panel | M3::Outlined | Q::Pressed, m_pal.primary12 );
 
 
-    // text buttons:
+    /*
+        text buttons:
 
-    // trick: Use a transparent color that changes between skins;
-    // otherwise we would fall back to the filled button color
-    // during skin change:
+        trick: Use a transparent color that changes between skins;
+        otherwise we would fall back to the filled button color
+        during skin change:
+     */
     QColor c( m_pal.background );
     c.setAlpha( 255 );
     setGradient( Q::Panel | M3::Text, c );
@@ -784,7 +789,8 @@ void Editor::setupPushButton()
     setShadowMetrics( Q::Panel | M3::Text, m_pal.elevation0 );
     setColor( Q::Text | M3::Text, m_pal.primary );
     setGraphicRole( Q::Graphic | M3::Text, QskMaterial3Skin::GraphicRolePrimary );
-    setGradient( Q::Ripple | M3::Text, stateLayerColor( m_pal.primary, m_pal.pressedOpacity ) );
+    setGradient( Q::Splash | M3::Text,
+        stateLayerColor( m_pal.primary, m_pal.pressedOpacity ) );
 
     setColor( Q::Text | M3::Text | Q::Disabled, m_pal.onSurface38 );
     setGraphicRole( Q::Graphic | M3::Text | Q::Disabled, QskMaterial3Skin::GraphicRoleOnSurface38 );
