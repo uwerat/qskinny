@@ -78,6 +78,8 @@ class QSK_EXPORT QskSpinBox : public QskBoundedValueInput
     QString text() const;
     virtual QString textFromValue( qreal ) const;
 
+    void increment( qreal ) override;
+
   Q_SIGNALS:
     void decorationChanged( Decoration );
     void textAlignmentChanged( Qt::Alignment );

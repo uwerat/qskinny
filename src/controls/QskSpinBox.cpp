@@ -5,6 +5,7 @@
 
 #include "QskSpinBox.h"
 #include "QskEvent.h"
+#include "QskFunctions.h"
 
 #include <qbasictimer.h>
 #include <qlocale.h>
@@ -244,6 +245,28 @@ QString QskSpinBox::textFromValue( qreal value ) const
     return locale().toString( value, 'f', m_data->decimals );
 }
 
+void QskSpinBox::increment( qreal offset )
+{
+    if ( m_data->wrapping )
+    {
+        const auto v = value();
+
+        if ( offset > 0.0 && qskFuzzyCompare( v, maximum() ) )
+        {
+            setValue( minimum() );
+            return;
+        }
+
+        if ( offset < 0.0 && qskFuzzyCompare( v, minimum() ) )
+        {
+            setValue( maximum() );
+            return;
+        }
+    }
+
+    Inherited::increment( offset );
+}
+
 void QskSpinBox::mousePressEvent( QMouseEvent* event )
 {
     if ( !isReadOnly() )
@@ -252,13 +275,15 @@ void QskSpinBox::mousePressEvent( QMouseEvent* event )
         {
             if ( !m_data->repeatTimer.isActive() )
             {
-                auto increment = ( event->modifiers() == Qt::ControlModifier )
-                    ? stepSize() : pageSize();
+                auto offset = stepSize();
+                if ( event->modifiers() & ( Qt::ControlModifier | Qt::ShiftModifier ) )
+                    offset *= pageSize();
 
                 if ( subcontrol == QskSpinBox::DownPanel )
-                    increment = -increment;
+                    offset = -offset;
 
-                m_data->setAutoRepeat( this, increment );
+                increment( offset );
+                m_data->setAutoRepeat( this, offset );
             }
             return;
         }

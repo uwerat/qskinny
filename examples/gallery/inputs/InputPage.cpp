@@ -64,6 +64,7 @@ namespace
 
             {
                 auto spinBox = new QskSpinBox( this );
+                spinBox->setPageSize( 10 );
                 spinBox->setDecoration( QskSpinBox::NoDecoration );
                 spinBox->setValue( 50 );
             }
