@@ -60,6 +60,11 @@ class QskSpinBox::PrivateData
     {
     }
 
+    inline bool isActivatedByMouse() const
+    {
+        return this->repeatTimer.isActive() && ( this->key == Qt::Key_unknown );
+    }
+
     inline void setAutoRepeat( QskSpinBox* spinBox, qreal offset )
     {
         this->autoRepeatIncrement = offset;
@@ -294,7 +299,33 @@ void QskSpinBox::mousePressEvent( QMouseEvent* event )
 
 void QskSpinBox::mouseReleaseEvent( QMouseEvent* )
 {
-    m_data->setAutoRepeat( this, 0.0 );
+    if ( m_data->isActivatedByMouse() )
+        m_data->setAutoRepeat( this, 0.0 );
+}
+
+void QskSpinBox::mouseMoveEvent( QMouseEvent* event )
+{
+    if ( m_data->isActivatedByMouse() )
+    {
+        const auto subcontrol = buttonAt( this, qskMousePosition( event ) );
+
+        if ( m_data->autoRepeatIncrement >= 0.0 )
+        {
+            if ( subcontrol != QskSpinBox::UpPanel )
+                m_data->setAutoRepeat( this, 0.0 );
+        }
+        else
+        {
+            if ( subcontrol != QskSpinBox::DownPanel )
+                m_data->setAutoRepeat( this, 0.0 );
+        }
+    }
+}
+
+void QskSpinBox::mouseUngrabEvent()
+{
+    if ( m_data->isActivatedByMouse() )
+        m_data->setAutoRepeat( this, 0.0 );
 }
 
 void QskSpinBox::keyPressEvent( QKeyEvent* event )

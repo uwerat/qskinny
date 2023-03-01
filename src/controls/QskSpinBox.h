@@ -95,7 +95,9 @@ class QSK_EXPORT QskSpinBox : public QskBoundedValueInput
     void timerEvent( QTimerEvent* ) override;
 
     void mouseReleaseEvent( QMouseEvent* ) override;
+    void mouseMoveEvent( QMouseEvent* ) override;
     void mousePressEvent( QMouseEvent* ) override;
+    void mouseUngrabEvent() override;
 
     void keyPressEvent( QKeyEvent* ) override;
     void keyReleaseEvent( QKeyEvent* ) override;
