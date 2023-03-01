@@ -65,6 +65,19 @@ class QskSpinBox::PrivateData
         return this->repeatTimer.isActive() && ( this->key == Qt::Key_unknown );
     }
 
+    inline bool isTimerBlocked( QskSpinBox* spinBox, qreal offset ) const
+    {
+        if ( !this->wrapping )
+        {
+            if ( offset >= 0.0 )
+                return spinBox->value() >= spinBox->maximum();
+            else
+                return spinBox->value() <= spinBox->minimum();
+        }
+
+        return false;
+    }
+
     inline void setAutoRepeat( QskSpinBox* spinBox, qreal offset )
     {
         this->autoRepeatIncrement = offset;
@@ -278,7 +291,17 @@ void QskSpinBox::mousePressEvent( QMouseEvent* event )
     {
         if ( auto subcontrol = buttonAt( this, qskMousePosition( event ) ) )
         {
-            if ( !m_data->repeatTimer.isActive() )
+            bool acceptPress = !m_data->repeatTimer.isActive();
+
+            if ( acceptPress && !m_data->wrapping )
+            {
+                if ( subcontrol == QskSpinBox::DownPanel )
+                    acceptPress = value() > minimum();
+                else
+                    acceptPress = value() < maximum();
+            }
+
+            if ( acceptPress )
             {
                 auto offset = stepSize();
                 if ( event->modifiers() & ( Qt::ControlModifier | Qt::ShiftModifier ) )
@@ -288,7 +311,9 @@ void QskSpinBox::mousePressEvent( QMouseEvent* event )
                     offset = -offset;
 
                 increment( offset );
-                m_data->setAutoRepeat( this, offset );
+
+                if ( !m_data->isTimerBlocked( this, offset ) )
+                    m_data->setAutoRepeat( this, offset );
             }
             return;
         }
@@ -339,8 +364,11 @@ void QskSpinBox::keyPressEvent( QKeyEvent* event )
             {
                 increment( offset );
 
-                m_data->setAutoRepeat( this, offset );
-                m_data->key = event->key();
+                if ( !m_data->isTimerBlocked( this, offset ) )
+                {
+                    m_data->setAutoRepeat( this, offset );
+                    m_data->key = event->key();
+                }
             }
             return;
         }
@@ -367,7 +395,11 @@ void QskSpinBox::timerEvent( QTimerEvent* event )
         if ( skinStates() & ( QskSpinBox::Increasing | QskSpinBox::Decreasing ) )
         {
             increment( m_data->autoRepeatIncrement );
-            m_data->repeatTimer.start( m_data->autoRepeatInterval, this );
+
+            if ( m_data->isTimerBlocked( this, m_data->autoRepeatIncrement ) )
+                m_data->setAutoRepeat( this, 0.0 );
+            else
+                m_data->repeatTimer.start( m_data->autoRepeatInterval, this );
         }
 
         return;

@@ -91,7 +91,7 @@ class QSK_EXPORT QskSpinBox : public QskBoundedValueInput
     void decimalsChanged( int );
     void textChanged();
 
-  private:
+  protected:
     void timerEvent( QTimerEvent* ) override;
 
     void mouseReleaseEvent( QMouseEvent* ) override;
@@ -102,6 +102,7 @@ class QSK_EXPORT QskSpinBox : public QskBoundedValueInput
     void keyPressEvent( QKeyEvent* ) override;
     void keyReleaseEvent( QKeyEvent* ) override;
 
+  private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

@@ -6,8 +6,35 @@
 #include "QskSpinBoxSkinlet.h"
 #include "QskSpinBox.h"
 #include "QskFunctions.h"
+#include "QskSkinStateChanger.h"
 
 #include <qfontmetrics.h>
+
+static inline QskAspect::States qskButtonStates(
+    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl )
+{
+    using Q = QskSpinBox;
+
+    auto spinBox = static_cast< const QskSpinBox* >( skinnable );
+
+    auto states = spinBox->skinStates();
+
+    if ( spinBox->isEnabled() && !spinBox->isWrapping() )
+    {
+        if ( subControl == Q::DownIndicator || subControl == Q::DownPanel )
+        {
+            if ( spinBox->value() <= spinBox->minimum() )
+                states |= QskControl::Disabled;
+        }
+        else if ( subControl == Q::UpIndicator || subControl == Q::UpPanel )
+        {
+            if ( spinBox->value() >= spinBox->maximum() )
+                states |= QskControl::Disabled;
+        }
+    }
+
+    return states;
+}
 
 QskSpinBoxSkinlet::QskSpinBoxSkinlet( QskSkin* )
 {
@@ -19,6 +46,9 @@ QRectF QskSpinBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
     using Q = QskSpinBox;
+
+    QskSkinStateChanger stateChanger( skinnable );
+    stateChanger.setStates( qskButtonStates( skinnable, subControl ) );
 
     if ( subControl == Q::DownIndicator )
         return skinnable->subControlContentsRect( contentsRect, Q::DownPanel );
@@ -43,28 +73,40 @@ QSGNode* QskSpinBoxSkinlet::updateSubNode(
 {
     using Q = QskSpinBox;
 
+    QskSkinStateChanger stateChanger( skinnable );
+
     switch( nodeRole )
     {
         case UpPanel:
+        {
+            stateChanger.setStates( qskButtonStates( skinnable, Q::UpPanel ) );
             return updateBoxNode( skinnable, node, Q::UpPanel );
+        }
 
         case DownPanel:
+        {
+            stateChanger.setStates( qskButtonStates( skinnable, Q::DownPanel ) );
             return updateBoxNode( skinnable, node, Q::DownPanel );
+        }
 
         case UpIndicator:
         {
+            stateChanger.setStates( qskButtonStates( skinnable, Q::UpIndicator ) );
             return updateTextNode( skinnable, node,
                 QStringLiteral( "+" ), Q::UpIndicator );
         }
 
         case DownIndicator:
         {
+            stateChanger.setStates( qskButtonStates( skinnable, Q::DownIndicator ) );
             return updateTextNode( skinnable, node,
                 QStringLiteral( "-" ), Q::DownIndicator );
         }
 
         case TextPanel:
+        {
             return updateBoxNode( skinnable, node, Q::TextPanel );
+        }
 
         case Text:
         {

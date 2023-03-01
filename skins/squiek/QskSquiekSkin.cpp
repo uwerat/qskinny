@@ -1059,6 +1059,8 @@ void Editor::setupSpinBox()
         setAlignment( subControl, Qt::AlignCenter );
 #if 1
         setFontRole( subControl, QskSkin::TinyFont ); // until it is no graphic
+        setColor( subControl, m_pal.themeForeground );
+        setColor( subControl | Q::Disabled, m_pal.darker200 );
 #endif
         setAnimation( subControl | A::Color, 100 );
     }
