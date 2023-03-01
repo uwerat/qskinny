@@ -18,12 +18,12 @@ namespace
         Slider( Qt::Orientation orientation, QQuickItem* parent = nullptr )
             : QskSlider( orientation, parent )
         {
-            setBoundaries( 0, 1000 );
-            setValue( 300 );
+            setBoundaries( 0, 100 );
+            setValue( 30 );
 
             setPageSize( 10 );
-            setStepSize( 10 );
-            setSnap( true );
+            setStepSize( 1 );
+            //setSnap( true );
 
 #if 0
             connect( this, &QskSlider::valueChanged,
@@ -63,7 +63,7 @@ namespace
             }
 
             {
-                auto spinBox = new QskSpinBox( this );
+                auto spinBox = new QskSpinBox( 10.0, 100.0, 1.0, this );
                 spinBox->setPageSize( 10 );
                 spinBox->setDecoration( QskSpinBox::NoDecoration );
                 spinBox->setValue( 50 );
@@ -75,11 +75,6 @@ namespace
 InputPage::InputPage( QQuickItem* parent )
     : Page( Qt::Horizontal, parent )
 {
-    populate();
-}
-
-void InputPage::populate()
-{
     auto sliderH = new Slider( Qt::Horizontal );
     auto sliderV = new Slider( Qt::Vertical );
 
@@ -90,4 +85,37 @@ void InputPage::populate()
     gridBox->addItem( sliderV, 0, 0, -1, 1 );
     gridBox->addItem( sliderH, 0, 1, 1, -1 );
     gridBox->addItem( inputBox, 1, 1, -1, -1 );
+
+    auto inputs = findChildren< QskBoundedValueInput* >();
+
+    for ( auto input : inputs )
+    {
+        connect( input, &QskBoundedValueInput::valueChanged,
+            this, &InputPage::syncValues );
+    }
+}
+
+void InputPage::syncValues( qreal value )
+{
+    static bool blockUpdates = false;
+
+    if ( blockUpdates )
+        return;
+
+    blockUpdates = true;
+    
+    if ( qobject_cast< const QskSlider* >( sender() ) )
+    {
+        auto spinBoxes = findChildren< QskSpinBox* >();
+        for ( auto spinBox : spinBoxes )
+            spinBox->setValue( value );
+    }
+    else
+    {
+        auto sliders = findChildren< QskSlider* >();
+        for ( auto slider : sliders )
+            slider->setValue( value );
+    }
+
+    blockUpdates = false;
 }

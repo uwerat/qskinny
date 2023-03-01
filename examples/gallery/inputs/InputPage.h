@@ -13,5 +13,5 @@ class InputPage : public Page
     InputPage( QQuickItem* = nullptr );
 
   private:
-    void populate();
+    void syncValues( qreal );
 };
