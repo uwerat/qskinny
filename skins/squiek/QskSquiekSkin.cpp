@@ -45,6 +45,8 @@
 #include <QskNamespace.h>
 #include <QskRgbValue.h>
 #include <QskColorFilter.h>
+#include <QskGraphic.h>
+#include <QskStandardSymbol.h>
 
 static const int qskDuration = 200;
 
@@ -323,8 +325,12 @@ void Editor::setupCheckBox()
     setGradient( Q::Box | Q::Disabled, m_pal.lighter110 );
     setBoxBorderColors( Q::Box, m_pal.theme );
 
-    setColor( Q::Indicator, m_pal.darker200 );
-    setColor( Q::Indicator | Q::Checked, m_pal.lighter135 );
+    for ( auto state : { A::NoState, Q::Disabled } )
+    {
+        const auto aspect = Q::Indicator | Q::Checked | state;
+        setSymbol( aspect,
+            QskStandardSymbol::graphic( QskStandardSymbol::CheckMark ) );
+    }
 
     setTextOptions( Q::Text, Qt::ElideMiddle, QskTextOptions::NoWrap );
 
@@ -1059,6 +1065,12 @@ void Editor::setupSpinBox()
         setAnimation( subControl | A::Metric, 100 );
         setAnimation( subControl | A::Color, 100 );
     }
+
+    setSymbol( Q::UpIndicator,
+        QskStandardSymbol::graphic( QskStandardSymbol::TriangleUp ) );
+
+    setSymbol( Q::DownIndicator,
+        QskStandardSymbol::graphic( QskStandardSymbol::TriangleDown ) );
 
     for ( auto subControl : { Q::UpIndicator, Q::DownIndicator } )
     {

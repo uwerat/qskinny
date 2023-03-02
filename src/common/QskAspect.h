@@ -54,6 +54,8 @@ class QSK_EXPORT QskAspect
         GraphicRole,
         FontRole,
 
+        Symbol,
+
         TextColor,
         StyleColor,
         LinkColor,

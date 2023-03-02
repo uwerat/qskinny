@@ -46,7 +46,6 @@ class QSK_EXPORT QskCheckBoxSkinlet : public QskSkinlet
     QRectF boxRect( const QskCheckBox*, const QRectF& ) const;
     QRectF rippleRect( const QskCheckBox*, const QRectF& ) const;
 
-    QSGNode* updateIndicatorNode( const QskCheckBox*, QSGNode* ) const;
     QSGNode* updateTextNode( const QskCheckBox*, QSGNode* ) const;
 };
 

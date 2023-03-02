@@ -12,6 +12,7 @@
 #include "QskBoxBorderMetrics.h"
 #include "QskBoxBorderColors.h"
 #include "QskShadowMetrics.h"
+#include "QskGraphic.h"
 
 namespace
 {
@@ -123,6 +124,11 @@ namespace
     inline QskAspect aspectOption( QskAspect aspect )
     {
         return aspect | QskAspect::Option;
+    }
+
+    inline QskAspect aspectSymbol( QskAspect aspect )
+    {
+        return aspect | QskAspect::Symbol;
     }
 }
 
@@ -600,7 +606,7 @@ void QskSkinHintTableEditor::setTextOptions( QskAspect aspect,
 }
 
 void QskSkinHintTableEditor::setTextOptions( QskAspect aspect,
-        const QskTextOptions& textOptions, QskStateCombination combination )
+    const QskTextOptions& textOptions, QskStateCombination combination )
 {
     setHint( aspectOption( aspect ), textOptions, combination );
 }
@@ -614,4 +620,21 @@ bool QskSkinHintTableEditor::removeTextOptions(
 QskTextOptions QskSkinHintTableEditor::textOptions( QskAspect aspect ) const
 {
     return hint< QskTextOptions >( aspectOption( aspect ) );
+}
+
+void QskSkinHintTableEditor::setSymbol( QskAspect aspect,
+    const QskGraphic& symbol, QskStateCombination combination )
+{
+    setHint( aspectSymbol( aspect ), symbol, combination );
+}
+
+bool QskSkinHintTableEditor::removeSymbol(
+    QskAspect aspect, QskStateCombination combination )
+{
+    return removeHint( aspectSymbol( aspect ), combination );
+}
+
+QskGraphic QskSkinHintTableEditor::symbol( QskAspect aspect ) const
+{
+    return hint< QskGraphic >( aspectSymbol( aspect ) );
 }

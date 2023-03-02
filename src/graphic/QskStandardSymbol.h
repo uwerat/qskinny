@@ -31,8 +31,6 @@ namespace QskStandardSymbol
         CrossMark,
 
         SegmentedBarCheckMark,
-        ComboBoxSymbolPopupClosed,
-        ComboBoxSymbolPopupOpen,
 
         Bullet,
 

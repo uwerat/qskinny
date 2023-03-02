@@ -342,8 +342,6 @@ QskGraphic QskStandardSymbol::graphic( Type symbolType )
             }
             case QskStandardSymbol::NoSymbol:
             case QskStandardSymbol::SymbolTypeCount:
-            case QskStandardSymbol::ComboBoxSymbolPopupClosed:
-            case QskStandardSymbol::ComboBoxSymbolPopupOpen:
             {
                 break;
             }

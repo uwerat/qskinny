@@ -32,6 +32,7 @@ class QskShadowMetrics;
 class QskTextOptions;
 class QskBoxHints;
 class QskGradient;
+class QskGraphic;
 
 class QskSkin;
 class QskSkinlet;
@@ -245,6 +246,10 @@ class QSK_EXPORT QskSkinnable
     bool setGraphicRoleHint( QskAspect, int role );
     bool resetGraphicRoleHint( QskAspect );
     int graphicRoleHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
+
+    bool setSymbolHint( const QskAspect, const QskGraphic& );
+    bool resetSymbolHint( const QskAspect );
+    QskGraphic symbolHint( const QskAspect, QskSkinHintStatus* = nullptr ) const;
 
     const QskSkinHintTable& hintTable() const;
 

@@ -26,6 +26,7 @@
 #include "QskBoxHints.h"
 #include "QskGradient.h"
 #include "QskTextOptions.h"
+#include "QskGraphic.h"
 
 #include <qfont.h>
 #include <qfontmetrics.h>
@@ -650,7 +651,7 @@ qreal QskSkinnable::spacingHint(
 bool QskSkinnable::setTextOptionsHint(
     const QskAspect aspect, const QskTextOptions& options )
 {
-    return setSkinHint( aspect | QskAspect::NoType | QskAspect::Option,
+    return setSkinHint( aspect | QskAspect::Option,
         QVariant::fromValue( options ) );
 }
 
@@ -663,7 +664,7 @@ QskTextOptions QskSkinnable::textOptionsHint(
     const QskAspect aspect, QskSkinHintStatus* status ) const
 {
     return effectiveSkinHint(
-        aspect | QskAspect::NoType | QskAspect::Option, status ).value< QskTextOptions >();
+        aspect | QskAspect::Option, status ).value< QskTextOptions >();
 }
 
 bool QskSkinnable::setFontRoleHint( const QskAspect aspect, int role )
@@ -708,6 +709,26 @@ int QskSkinnable::graphicRoleHint(
 {
     return qskFlag( this, aspect | QskAspect::GraphicRole, status );
 }
+
+bool QskSkinnable::setSymbolHint(
+    const QskAspect aspect, const QskGraphic& symbol )
+{
+    return setSkinHint( aspect | QskAspect::Symbol,
+        QVariant::fromValue( symbol ) );
+}
+
+bool QskSkinnable::resetSymbolHint( const QskAspect aspect )
+{
+    return resetSkinHint( aspect | QskAspect::Symbol );
+}
+
+QskGraphic QskSkinnable::symbolHint(
+    const QskAspect aspect, QskSkinHintStatus* status ) const
+{
+    return effectiveSkinHint(
+        aspect | QskAspect::Symbol, status ).value< QskGraphic >();
+}
+
 
 QskColorFilter QskSkinnable::effectiveGraphicFilter(
     const QskAspect::Subcontrol subControl ) const

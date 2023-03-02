@@ -7,10 +7,6 @@
 #include "QskCheckBox.h"
 #include "QskTextOptions.h"
 #include "QskFunctions.h"
-#include "QskGraphic.h"
-#include "QskStandardSymbol.h"
-#include "QskColorFilter.h"
-#include "QskSkin.h"
 
 QskCheckBoxSkinlet::QskCheckBoxSkinlet( QskSkin* skin )
     : QskSkinlet( skin )
@@ -25,32 +21,27 @@ QskCheckBoxSkinlet::~QskCheckBoxSkinlet()
 QRectF QskCheckBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
+    using Q = QskCheckBox;
+
     const auto checkBox = static_cast< const QskCheckBox* >( skinnable );
 
-    if ( subControl == QskCheckBox::Panel )
-    {
+    if ( subControl == Q::Panel )
         return contentsRect;
-    }
-    else if ( subControl == QskCheckBox::Box )
-    {
+
+    if ( subControl == Q::Box )
         return boxRect( checkBox, contentsRect );
-    }
-    else if ( subControl == QskCheckBox::Indicator )
-    {
-        const auto boxRect = subControlRect( skinnable, contentsRect, QskCheckBox::Box );
-        return skinnable->innerBox( QskCheckBox::Box, boxRect );
 
-        return skinnable->innerBox( QskCheckBox::Box, contentsRect );
-    }
-    else if ( subControl == QskCheckBox::Text )
+    if ( subControl == Q::Indicator )
     {
+        const auto boxRect = subControlRect( skinnable, contentsRect, Q::Box );
+        return skinnable->innerBox( Q::Box, boxRect );
+    }
+
+    if ( subControl == Q::Text )
         return textRect( checkBox, contentsRect );
-    }
 
-    if ( subControl == QskCheckBox::Ripple )
-    {
+    if ( subControl == Q::Ripple )
         return rippleRect( checkBox, contentsRect );
-    }
 
     return contentsRect;
 }
@@ -58,11 +49,13 @@ QRectF QskCheckBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
 QRectF QskCheckBoxSkinlet::textRect(
     const QskCheckBox* checkBox, const QRectF& contentsRect ) const
 {
-    const auto boxRect = subControlRect( checkBox, contentsRect, QskCheckBox::Box );
-    const qreal spacing = checkBox->spacingHint( QskCheckBox::Panel );
+    using Q = QskCheckBox;
 
-    auto r = subControlRect( checkBox, contentsRect, QskCheckBox::Panel );
-    r = checkBox->innerBox( QskCheckBox::Panel, r );
+    const auto boxRect = subControlRect( checkBox, contentsRect, Q::Box );
+    const qreal spacing = checkBox->spacingHint( Q::Panel );
+
+    auto r = subControlRect( checkBox, contentsRect, Q::Panel );
+    r = checkBox->innerBox( Q::Panel, r );
 
     if ( checkBox->layoutMirroring() )
         r.setRight( boxRect.left() - spacing );
@@ -108,46 +101,29 @@ QRectF QskCheckBoxSkinlet::rippleRect(
 QSGNode* QskCheckBoxSkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
+    using Q = QskCheckBox;
+
     auto checkBox = static_cast< const QskCheckBox* >( skinnable );
 
     switch( nodeRole )
     {
         case PanelRole:
-            return updateBoxNode( skinnable, node, QskCheckBox::Panel );
+            return updateBoxNode( skinnable, node, Q::Panel );
 
         case BoxRole:
-            return updateBoxNode( skinnable, node, QskCheckBox::Box );
+            return updateBoxNode( skinnable, node, Q::Box );
 
         case IndicatorRole:
-            return updateIndicatorNode( checkBox, node );
+            return updateSymbolNode( checkBox, node, Q::Indicator );
 
         case TextRole:
             return updateTextNode( checkBox, node );
 
         case RippleRole:
-        {
-            return updateBoxNode( checkBox, node, QskCheckBox::Ripple );
-        }
+            return updateBoxNode( checkBox, node, Q::Ripple );
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
-}
-
-QSGNode* QskCheckBoxSkinlet::updateIndicatorNode(
-    const QskCheckBox* checkBox, QSGNode* node ) const
-{
-    auto symbol = QskStandardSymbol::CheckMark;
-    if ( !checkBox->isChecked() )
-    {
-#if 0
-        symbol = QskStandardSymbol::NoSymbol;
-#else
-        symbol = QskStandardSymbol::CrossMark;
-#endif
-    }
-
-    auto graphic = checkBox->effectiveSkin()->symbol( symbol );
-    return updateGraphicNode( checkBox, node, graphic, QskCheckBox::Indicator );
 }
 
 QSGNode* QskCheckBoxSkinlet::updateTextNode(
@@ -156,10 +132,11 @@ QSGNode* QskCheckBoxSkinlet::updateTextNode(
     using Q = QskCheckBox;
 
     const auto rect = checkBox->subControlRect( Q::Text );
-    const auto alignH = checkBox->layoutMirroring() ? Qt::AlignRight : Qt::AlignLeft;
+    const auto alignH = checkBox->layoutMirroring()
+        ? Qt::AlignRight : Qt::AlignLeft;
 
-    return QskSkinlet::updateTextNode( checkBox, node, rect, alignH | Qt::AlignVCenter,
-        checkBox->text(), QskCheckBox::Text );
+    return QskSkinlet::updateTextNode( checkBox, node,
+        rect, alignH | Qt::AlignVCenter, checkBox->text(), Q::Text );
 }
 
 QSizeF QskCheckBoxSkinlet::sizeHint( const QskSkinnable* skinnable,

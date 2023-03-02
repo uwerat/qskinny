@@ -7,9 +7,7 @@
 #include "QskComboBox.h"
 
 #include "QskGraphic.h"
-#include "QskSkin.h"
 #include "QskSGNode.h"
-#include "QskStandardSymbol.h"
 #include "QskSubcontrolLayoutEngine.h"
 
 namespace
@@ -116,29 +114,16 @@ QSGNode* QskComboBoxSkinlet::updateSubNode(
     switch ( nodeRole )
     {
         case PanelRole:
-        {
             return updateBoxNode( box, node, Q::Panel );
-        }
 
         case GraphicRole:
-        {
             return updateGraphicNode( box, node, box->graphic(), Q::Graphic );
-        }
 
         case TextRole:
-        {
             return updateTextNode( box, node );
-        }
 
         case OpenMenuGraphicRole:
-        {
-            const auto symbol = box->isPopupOpen()
-                ? QskStandardSymbol::ComboBoxSymbolPopupOpen
-                : QskStandardSymbol::ComboBoxSymbolPopupClosed;
-
-            const auto graphic = box->effectiveSkin()->symbol( symbol );
-            return updateGraphicNode( box, node, graphic, Q::OpenMenuGraphic );
-        }
+            return updateSymbolNode( box, node, Q::OpenMenuGraphic );
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );

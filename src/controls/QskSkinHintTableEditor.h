@@ -22,6 +22,7 @@ class QskBoxShapeMetrics;
 class QskBoxBorderMetrics;
 class QskBoxBorderColors;
 class QskShadowMetrics;
+class QskGraphic;
 
 class QSK_EXPORT QskSkinHintTableEditor
 {
@@ -274,6 +275,14 @@ class QSK_EXPORT QskSkinHintTableEditor
 
     bool removeTextOptions( QskAspect, QskStateCombination = QskStateCombination() );
     QskTextOptions textOptions( QskAspect ) const;
+
+    // symbol
+
+    void setSymbol( QskAspect,
+        const QskGraphic&, QskStateCombination = QskStateCombination() );
+
+    bool removeSymbol( QskAspect, QskStateCombination = QskStateCombination() );
+    QskGraphic symbol( QskAspect ) const;
 
   private:
     QskSkinHintTable* m_table = nullptr;
