@@ -327,9 +327,12 @@ void Editor::setupCheckBox()
 
     for ( auto state : { A::NoState, Q::Disabled } )
     {
+        const auto symbol = QskStandardSymbol::graphic( QskStandardSymbol::CheckMark );
+
         const auto aspect = Q::Indicator | Q::Checked | state;
-        setSymbol( aspect,
-            QskStandardSymbol::graphic( QskStandardSymbol::CheckMark ) );
+
+        setSymbol( aspect, symbol );
+        setSymbol( aspect | Q::Error, symbol );
     }
 
     setTextOptions( Q::Text, Qt::ElideMiddle, QskTextOptions::NoWrap );
