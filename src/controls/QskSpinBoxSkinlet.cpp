@@ -6,7 +6,10 @@
 #include "QskSpinBoxSkinlet.h"
 #include "QskSpinBox.h"
 #include "QskFunctions.h"
+#include "QskSkin.h"
 #include "QskSkinStateChanger.h"
+#include "QskStandardSymbol.h"
+#include "QskGraphic.h"
 
 #include <qfontmetrics.h>
 
@@ -92,15 +95,19 @@ QSGNode* QskSpinBoxSkinlet::updateSubNode(
         case UpIndicator:
         {
             stateChanger.setStates( qskButtonStates( skinnable, Q::UpIndicator ) );
-            return updateTextNode( skinnable, node,
-                QStringLiteral( "+" ), Q::UpIndicator );
+
+            const auto skin = skinnable->effectiveSkin();
+            return updateGraphicNode( skinnable, node,
+                skin->symbol( QskStandardSymbol::TriangleUp ), Q::UpIndicator );
         }
 
         case DownIndicator:
         {
             stateChanger.setStates( qskButtonStates( skinnable, Q::DownIndicator ) );
-            return updateTextNode( skinnable, node,
-                QStringLiteral( "-" ), Q::DownIndicator );
+
+            const auto skin = skinnable->effectiveSkin();
+            return updateGraphicNode( skinnable, node,
+                skin->symbol( QskStandardSymbol::TriangleDown ), Q::DownIndicator );
         }
 
         case TextPanel:
@@ -271,4 +278,3 @@ QSizeF QskSpinBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
     hint = hint.expandedTo( spinBox->strutSizeHint( Q::Panel ) );
     return hint;
 }
-

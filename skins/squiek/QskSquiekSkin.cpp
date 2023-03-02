@@ -44,6 +44,7 @@
 #include <QskMargins.h>
 #include <QskNamespace.h>
 #include <QskRgbValue.h>
+#include <QskColorFilter.h>
 
 static const int qskDuration = 200;
 
@@ -174,6 +175,11 @@ namespace
         void setPanel( QskAspect, PanelStyle );
 
         const ColorPalette& m_pal;
+    };
+
+    enum ColorRole
+    {
+        DisabledColor = 1
     };
 }
 
@@ -1041,7 +1047,7 @@ void Editor::setupSpinBox()
     for ( auto subControl : { Q::UpPanel, Q::DownPanel } )
     {
         setButton( subControl, Raised, 1.0 );
-        setPadding( subControl, 0.0 );
+        setPadding( subControl, 4 );
         setStrutSize( subControl, 20, 10 );
         setBoxShape( subControl, 0 );
 
@@ -1056,12 +1062,9 @@ void Editor::setupSpinBox()
 
     for ( auto subControl : { Q::UpIndicator, Q::DownIndicator } )
     {
+        setGraphicRole( subControl | Q::Disabled, DisabledColor );
         setAlignment( subControl, Qt::AlignCenter );
-#if 1
-        setFontRole( subControl, QskSkin::TinyFont ); // until it is no graphic
-        setColor( subControl, m_pal.themeForeground );
-        setColor( subControl | Q::Disabled, m_pal.darker200 );
-#endif
+
         setAnimation( subControl | A::Color, 100 );
     }
 }
@@ -1122,6 +1125,8 @@ QskSquiekSkin::QskSquiekSkin( QObject* parent )
 {
     setupFonts( QStringLiteral( "DejaVuSans" ) );
 
+    addGraphicRole( DisabledColor, m_data->palette.lighter150 );
+
     Editor editor( &hintTable(), m_data->palette );
     editor.setup();
 }
@@ -1138,5 +1143,12 @@ void QskSquiekSkin::resetColors( const QColor& accent )
     editor.setup();
 }
 
+void QskSquiekSkin::addGraphicRole( int role, const QColor& color )
+{
+    QskColorFilter colorFilter;
+    colorFilter.addColorSubstitution( QskRgb::Black, color.rgba() );
+
+    setGraphicFilter( role, colorFilter );
+}
 
 #include "moc_QskSquiekSkin.cpp"

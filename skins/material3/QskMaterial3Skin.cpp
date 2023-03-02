@@ -893,6 +893,7 @@ void Editor::setupSpinBox()
     {
         setGradient( subControl, m_pal.primary );
         setGradient( subControl | Q::Disabled, m_pal.onSurface12 );
+        setPadding( subControl, 10 );
     }
 
     {
@@ -904,10 +905,9 @@ void Editor::setupSpinBox()
 
     for( const auto subControl : { Q::DownIndicator, Q::UpIndicator } )
     {
-        setColor( subControl, m_pal.onPrimary );
-        setColor( subControl | Q::Disabled, m_pal.onSurface38 );
         setAlignment( subControl, Qt::AlignCenter );
-        setFontRole( subControl, QskMaterial3Skin::M3LabelLarge );
+        setGraphicRole( subControl, QskMaterial3Skin::GraphicRoleOnPrimary );
+        setGraphicRole( subControl | Q::Disabled, QskMaterial3Skin::GraphicRoleOnSurface38 );
     }
 
     setColor( Q::Text, m_pal.onBackground );
@@ -1370,9 +1370,11 @@ QskGraphic QskMaterial3Skin::symbol( int symbolType ) const
             return *( provider->requestGraphic( "segmented-button-check" ) );
 
         case QskStandardSymbol::ComboBoxSymbolPopupClosed:
+        case QskStandardSymbol::TriangleDown:
             return *( provider->requestGraphic( "combo-box-arrow-closed" ) );
 
         case QskStandardSymbol::ComboBoxSymbolPopupOpen:
+        case QskStandardSymbol::TriangleUp:
             return *( provider->requestGraphic( "combo-box-arrow-open" ) );
 
         default:
