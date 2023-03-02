@@ -212,6 +212,58 @@ static void qskBulletGraphic( QPainter* painter )
     painter->drawEllipse( QRectF( 0.0, 0.0, 1.0, 1.0 ) );
 }
 
+static void qskTriangleGraphic( QPainter* painter, 
+    qreal width, qreal height, int type )
+{
+    const QRectF rect( 0.0, 0.0, width, height );
+
+    QPainterPath path;
+
+    QPolygonF triangle;
+
+    switch( type )
+    {
+        case QskStandardSymbol::TriangleUp:
+        {
+            triangle += rect.bottomLeft();
+            triangle += QPointF( rect.center().x(), rect.top() );
+            triangle += rect.bottomRight();
+
+            break;
+        }
+        case QskStandardSymbol::TriangleDown:
+        {
+            triangle += rect.topLeft();
+            triangle += QPointF( rect.center().x(), rect.bottom() );
+            triangle += rect.topRight();
+
+            break;
+        }
+        case QskStandardSymbol::TriangleRight:
+        {
+            triangle += rect.bottomLeft();
+            triangle += QPointF( rect.right(), rect.center().y() );
+            triangle += rect.topLeft();
+
+            break;
+        }
+        case QskStandardSymbol::TriangleLeft:
+        {
+            triangle += rect.bottomRight();
+            triangle += QPointF( rect.left(), rect.center().y() );
+            triangle += rect.topRight();
+
+            break;
+        }
+    }
+
+    path.addPolygon( triangle );
+
+    painter->setPen( Qt::NoPen );
+    painter->setBrush( QColor( Qt::black ) );
+    painter->drawPath( path );
+}
+
 QskGraphic QskStandardSymbol::graphic( Type symbolType )
 {
     static QskGraphic graphics[ SymbolTypeCount ];
@@ -269,6 +321,18 @@ QskGraphic QskStandardSymbol::graphic( Type symbolType )
             case QskStandardSymbol::SegmentedBarCheckMark:
             {
                 qskCheckMarkGraphic( &painter );
+                break;
+            }
+            case QskStandardSymbol::TriangleUp:
+            case QskStandardSymbol::TriangleDown:
+            {
+                qskTriangleGraphic( &painter, 2.0, 1.0, symbolType );
+                break;
+            }
+            case QskStandardSymbol::TriangleLeft:
+            case QskStandardSymbol::TriangleRight:
+            {
+                qskTriangleGraphic( &painter, 1.0, 2.0, symbolType );
                 break;
             }
             case QskStandardSymbol::Bullet:

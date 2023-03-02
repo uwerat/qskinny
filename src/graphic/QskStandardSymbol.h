@@ -36,6 +36,11 @@ namespace QskStandardSymbol
 
         Bullet,
 
+        TriangleUp,
+        TriangleDown,
+        TriangleLeft,
+        TriangleRight,
+
         SymbolTypeCount
     };
 
