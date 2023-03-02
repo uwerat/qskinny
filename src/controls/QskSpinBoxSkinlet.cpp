@@ -269,3 +269,5 @@ QSizeF QskSpinBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
     hint = hint.expandedTo( spinBox->strutSizeHint( Q::Panel ) );
     return hint;
 }
+
+#include "moc_QskSpinBoxSkinlet.cpp"
